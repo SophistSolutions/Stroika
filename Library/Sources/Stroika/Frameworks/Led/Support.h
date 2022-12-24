@@ -14,6 +14,9 @@
 #include "../../Foundation/StroikaPreComp.h"
 #include "../../Foundation/Time/Realtime.h"
 
+#if qPlatform_Windows
+#include "../../Foundation/Execution/Platform/Windows/HRESULTErrorException.h"
+#endif
 /*
 @MODULE:    LedSupport
 @DESCRIPTION:
@@ -58,6 +61,10 @@ namespace Stroika::Frameworks::Led {
     using Foundation::Characters::SDKString;
 
     constexpr size_t kBadIndex = size_t (-1);
+
+    #if qPlatform_Windows
+    using Foundation::Execution::Platform::Windows::ThrowIfErrorHRESULT;
+    #endif
 
     /*
     @CLASS:         Led_tChar
@@ -248,39 +255,6 @@ namespace Stroika::Frameworks::Led {
     void Led_Set_ThrowOSErrException_Handler (void (*throwOSErrExceptionCallback) (OSErr err));
 #endif
 
-#if qPlatform_Windows
-    class Win32ErrorException {
-    public:
-        Win32ErrorException (DWORD error);
-
-        operator DWORD () const;
-
-    private:
-        DWORD fError;
-    };
-
-    class HRESULTErrorException {
-    public:
-        HRESULTErrorException (HRESULT hresult);
-
-        operator HRESULT () const;
-
-    private:
-        HRESULT fHResult;
-    };
-#endif
-
-#if qPlatform_Windows
-    void Led_ThrowIfNotERROR_SUCCESS (DWORD win32ErrCode);
-#endif
-
-#if qPlatform_Windows
-    /*
-    @METHOD:        Led_ThrowIfErrorHRESULT
-    @DESCRIPTION:   <p>If the HRESULT failed, then throw that HRESULT.</p>
-    */
-    void Led_ThrowIfErrorHRESULT (HRESULT hr);
-#endif
 
 #if qPlatform_MacOS
     void Led_ThrowIfOSErr (OSErr err);
@@ -301,8 +275,8 @@ namespace Stroika::Frameworks::Led {
     uint32_t BufToUInt32 (const uint32_t* buf);
 
     /*
-        *  Store as UInt32, but throw if won't fit
-        */
+     *  Store as UInt32, but throw if won't fit
+     */
     void   SizeTToBuf (size_t ul, uint32_t* realBuf);
     size_t BufToSizeT (const uint32_t* buf);
 

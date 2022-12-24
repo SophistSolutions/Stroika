@@ -16,24 +16,6 @@ DISABLE_COMPILER_MSC_WARNING_END (5054)
 
 #include "UserConfigCommands.h"
 
-#define CATCH_AND_HANDLE_EXCEPTIONS()     \
-    catch (HRESULT hr)                    \
-    {                                     \
-        return hr;                        \
-    }                                     \
-    catch (Win32ErrorException & we)      \
-    {                                     \
-        return (HRESULT_FROM_WIN32 (we)); \
-    }                                     \
-    catch (HRESULTErrorException & h)     \
-    {                                     \
-        return static_cast<HRESULT> (h);  \
-    }                                     \
-    catch (...)                           \
-    {                                     \
-        return DISP_E_EXCEPTION;          \
-    }
-
 namespace {
     template <class EnumType, class CollType>
     HRESULT CreateSTLEnumerator (IUnknown** ppUnk, IUnknown* pUnkForRelease, CollType& collection)
@@ -68,7 +50,7 @@ namespace {
         if (SUCCEEDED (e2r.ChangeType (VT_UI4))) {
             size_t idx = e2r.ulVal;
             if (idx >= list->size ()) {
-                Led_ThrowIfErrorHRESULT (DISP_E_MEMBERNOTFOUND);
+                ThrowIfErrorHRESULT (DISP_E_MEMBERNOTFOUND);
             }
             list->erase (list->begin () + idx, list->begin () + idx + 1);
         }
@@ -123,7 +105,7 @@ namespace {
             CComQIPtr<IALCommand>            c    = fDisp;
 #endif
             CComBSTR name;
-            Led_ThrowIfErrorHRESULT (c->get_InternalName (&name));
+            ThrowIfErrorHRESULT (c->get_InternalName (&name));
             return wstring (name);
         }
         CComPtr<IDispatch> fDisp;
@@ -142,7 +124,7 @@ namespace {
             CComQIPtr<IALAcceleratorElement> c    = fDisp;
 #endif
             CComBSTR name;
-            Led_ThrowIfErrorHRESULT (c->get_CommandInternalName (&name));
+            ThrowIfErrorHRESULT (c->get_CommandInternalName (&name));
             return wstring (name);
         }
         CComPtr<IDispatch> fDisp;
@@ -292,7 +274,7 @@ STDMETHODIMP ActiveLedIt_CurrentEventArguments::get_InternalCommandName (BSTR* p
     try {
         *pVal = CComBSTR (fInternalName.c_str ()).Detach ();
     }
-    CATCH_AND_HANDLE_EXCEPTIONS ()
+    CATCH_AND_HANDLE_EXCEPTIONS_IN_HRESULT_FUNCTION ()
     return S_OK;
 }
 
@@ -304,7 +286,7 @@ STDMETHODIMP ActiveLedIt_CurrentEventArguments::put_InternalCommandName (BSTR va
     try {
         fInternalName = val;
     }
-    CATCH_AND_HANDLE_EXCEPTIONS ()
+    CATCH_AND_HANDLE_EXCEPTIONS_IN_HRESULT_FUNCTION ()
     return S_OK;
 }
 
@@ -316,7 +298,7 @@ STDMETHODIMP ActiveLedIt_CurrentEventArguments::get_Enabled (VARIANT_BOOL* pVal)
     try {
         *pVal = fEnabled;
     }
-    CATCH_AND_HANDLE_EXCEPTIONS ()
+    CATCH_AND_HANDLE_EXCEPTIONS_IN_HRESULT_FUNCTION ()
     return S_OK;
 }
 
@@ -334,7 +316,7 @@ STDMETHODIMP ActiveLedIt_CurrentEventArguments::get_Checked (VARIANT_BOOL* pVal)
     try {
         *pVal = fChecked;
     }
-    CATCH_AND_HANDLE_EXCEPTIONS ()
+    CATCH_AND_HANDLE_EXCEPTIONS_IN_HRESULT_FUNCTION ()
     return S_OK;
 }
 
@@ -352,7 +334,7 @@ STDMETHODIMP ActiveLedIt_CurrentEventArguments::get_Name (BSTR* pVal)
     try {
         *pVal = CComBSTR (fName.c_str ()).Detach ();
     }
-    CATCH_AND_HANDLE_EXCEPTIONS ()
+    CATCH_AND_HANDLE_EXCEPTIONS_IN_HRESULT_FUNCTION ()
     return S_OK;
 }
 
@@ -364,7 +346,7 @@ STDMETHODIMP ActiveLedIt_CurrentEventArguments::put_Name (BSTR val)
     try {
         fName = val;
     }
-    CATCH_AND_HANDLE_EXCEPTIONS ()
+    CATCH_AND_HANDLE_EXCEPTIONS_IN_HRESULT_FUNCTION ()
     return S_OK;
 }
 
@@ -405,13 +387,13 @@ STDMETHODIMP AL_CommandListHelper::GeneratePopupMenu (IDispatch* acceleratorTabl
             CComQIPtr<IALCommand>            alc  = *i;
 #endif
             CComBSTR cmdName;
-            Led_ThrowIfErrorHRESULT (alc->get_Name (&cmdName));
-            Led_ThrowIfErrorHRESULT (alc->AppendSelfToMenu (hMenu, acceleratorTable));
+            ThrowIfErrorHRESULT (alc->get_Name (&cmdName));
+            ThrowIfErrorHRESULT (alc->AppendSelfToMenu (hMenu, acceleratorTable));
         }
         *val = hMenu;
         return S_OK;
     }
-    CATCH_AND_HANDLE_EXCEPTIONS ()
+    CATCH_AND_HANDLE_EXCEPTIONS_IN_HRESULT_FUNCTION ()
 }
 
 STDMETHODIMP AL_CommandListHelper::LookupCommand (BSTR internalName, IDispatch** val)
@@ -428,7 +410,7 @@ STDMETHODIMP AL_CommandListHelper::LookupCommand (BSTR internalName, IDispatch**
             CComQIPtr<IALCommand>            alc  = *i;
 #endif
             CComBSTR iName;
-            Led_ThrowIfErrorHRESULT (alc->get_InternalName (&iName));
+            ThrowIfErrorHRESULT (alc->get_InternalName (&iName));
             if (iName == internalName) {
                 *val = *i;
                 AssertNotNull (*val);
@@ -442,7 +424,7 @@ STDMETHODIMP AL_CommandListHelper::LookupCommand (BSTR internalName, IDispatch**
 #endif
             if (alcl.p != NULL) {
                 // If its a popup menu - recurse
-                Led_ThrowIfErrorHRESULT (alcl->LookupCommand (internalName, val));
+                ThrowIfErrorHRESULT (alcl->LookupCommand (internalName, val));
                 if (*val != NULL) {
                     // then were done - found in a submenu - so return at this point
                     return S_OK;
@@ -451,7 +433,7 @@ STDMETHODIMP AL_CommandListHelper::LookupCommand (BSTR internalName, IDispatch**
         }
         return S_OK;
     }
-    CATCH_AND_HANDLE_EXCEPTIONS ()
+    CATCH_AND_HANDLE_EXCEPTIONS_IN_HRESULT_FUNCTION ()
 }
 
 STDMETHODIMP AL_CommandListHelper::IndexOf (VARIANT internalNameOrObject, UINT* val)
@@ -463,7 +445,7 @@ STDMETHODIMP AL_CommandListHelper::IndexOf (VARIANT internalNameOrObject, UINT* 
         *val = static_cast<UINT> (DoFindIndex<CMD_NAME_GRABBER> (&fOwnedItems, internalNameOrObject));
         return S_OK;
     }
-    CATCH_AND_HANDLE_EXCEPTIONS ()
+    CATCH_AND_HANDLE_EXCEPTIONS_IN_HRESULT_FUNCTION ()
 }
 
 STDMETHODIMP AL_CommandListHelper::get__NewEnum (IUnknown** ppUnk)
@@ -475,7 +457,7 @@ STDMETHODIMP AL_CommandListHelper::get__NewEnum (IUnknown** ppUnk)
     try {
         return CreateSTLEnumerator<VarVarEnum> (ppUnk, this, fOwnedItems);
     }
-    CATCH_AND_HANDLE_EXCEPTIONS ()
+    CATCH_AND_HANDLE_EXCEPTIONS_IN_HRESULT_FUNCTION ()
 }
 
 STDMETHODIMP AL_CommandListHelper::get_Item (long Index, IDispatch** pVal)
@@ -490,7 +472,7 @@ STDMETHODIMP AL_CommandListHelper::get_Item (long Index, IDispatch** pVal)
         *pVal = fOwnedItems[Index];
         (*pVal)->AddRef ();
     }
-    CATCH_AND_HANDLE_EXCEPTIONS ()
+    CATCH_AND_HANDLE_EXCEPTIONS_IN_HRESULT_FUNCTION ()
     return S_OK;
 }
 
@@ -502,7 +484,7 @@ STDMETHODIMP AL_CommandListHelper::get_Count (long* pVal)
     try {
         *pVal = static_cast<long> (fOwnedItems.size ());
     }
-    CATCH_AND_HANDLE_EXCEPTIONS ()
+    CATCH_AND_HANDLE_EXCEPTIONS_IN_HRESULT_FUNCTION ()
     return S_OK;
 }
 
@@ -540,7 +522,7 @@ STDMETHODIMP AL_UserCommandListHelper::Insert (IDispatch* newElt, UINT afterElt)
         size_t idx = min (static_cast<size_t> (afterElt), fOwnedItems.size ());
         fOwnedItems.insert (fOwnedItems.begin () + idx, newElt);
     }
-    CATCH_AND_HANDLE_EXCEPTIONS ()
+    CATCH_AND_HANDLE_EXCEPTIONS_IN_HRESULT_FUNCTION ()
     return S_OK;
 }
 
@@ -550,7 +532,7 @@ STDMETHODIMP AL_UserCommandListHelper::Remove (VARIANT eltIntNameOrIndex)
         DoRemove<CMD_NAME_GRABBER> (&fOwnedItems, eltIntNameOrIndex);
         return S_OK;
     }
-    CATCH_AND_HANDLE_EXCEPTIONS ()
+    CATCH_AND_HANDLE_EXCEPTIONS_IN_HRESULT_FUNCTION ()
 }
 
 STDMETHODIMP AL_UserCommandListHelper::Clear ()
@@ -559,7 +541,7 @@ STDMETHODIMP AL_UserCommandListHelper::Clear ()
         fOwnedItems.clear ();
         return S_OK;
     }
-    CATCH_AND_HANDLE_EXCEPTIONS ()
+    CATCH_AND_HANDLE_EXCEPTIONS_IN_HRESULT_FUNCTION ()
 }
 
 /*
@@ -593,7 +575,7 @@ STDMETHODIMP ActiveLedIt_UserCommand::put_Name (BSTR val)
     try {
         fName = val;
     }
-    CATCH_AND_HANDLE_EXCEPTIONS ()
+    CATCH_AND_HANDLE_EXCEPTIONS_IN_HRESULT_FUNCTION ()
     return S_OK;
 }
 
@@ -641,7 +623,7 @@ STDMETHODIMP ActiveLedIt_AcceleratorElement::get_CommandInternalName (BSTR* pVal
         *pVal = CComBSTR (fCommandInternalName.c_str ()).Detach ();
         return S_OK;
     }
-    CATCH_AND_HANDLE_EXCEPTIONS ()
+    CATCH_AND_HANDLE_EXCEPTIONS_IN_HRESULT_FUNCTION ()
 }
 
 STDMETHODIMP ActiveLedIt_AcceleratorElement::put_CommandInternalName (BSTR val)
@@ -652,7 +634,7 @@ STDMETHODIMP ActiveLedIt_AcceleratorElement::put_CommandInternalName (BSTR val)
     try {
         fCommandInternalName = val;
     }
-    CATCH_AND_HANDLE_EXCEPTIONS ()
+    CATCH_AND_HANDLE_EXCEPTIONS_IN_HRESULT_FUNCTION ()
     return S_OK;
 }
 
@@ -665,7 +647,7 @@ STDMETHODIMP ActiveLedIt_AcceleratorElement::get_ModifierFlag (AcceleratorModifi
         *pVal = fAcceleratorModifierFlag;
         return S_OK;
     }
-    CATCH_AND_HANDLE_EXCEPTIONS ()
+    CATCH_AND_HANDLE_EXCEPTIONS_IN_HRESULT_FUNCTION ()
 }
 
 STDMETHODIMP ActiveLedIt_AcceleratorElement::put_ModifierFlag (AcceleratorModifierFlag val)
@@ -676,7 +658,7 @@ STDMETHODIMP ActiveLedIt_AcceleratorElement::put_ModifierFlag (AcceleratorModifi
     try {
         fAcceleratorModifierFlag = val;
     }
-    CATCH_AND_HANDLE_EXCEPTIONS ()
+    CATCH_AND_HANDLE_EXCEPTIONS_IN_HRESULT_FUNCTION ()
     return S_OK;
 }
 
@@ -689,7 +671,7 @@ STDMETHODIMP ActiveLedIt_AcceleratorElement::get_Key (WORD* pVal)
         *pVal = fKey;
         return S_OK;
     }
-    CATCH_AND_HANDLE_EXCEPTIONS ()
+    CATCH_AND_HANDLE_EXCEPTIONS_IN_HRESULT_FUNCTION ()
 }
 
 STDMETHODIMP ActiveLedIt_AcceleratorElement::put_Key (WORD val)
@@ -700,7 +682,7 @@ STDMETHODIMP ActiveLedIt_AcceleratorElement::put_Key (WORD val)
     try {
         fKey = val;
     }
-    CATCH_AND_HANDLE_EXCEPTIONS ()
+    CATCH_AND_HANDLE_EXCEPTIONS_IN_HRESULT_FUNCTION ()
     return S_OK;
 }
 
@@ -730,7 +712,7 @@ void ActiveLedIt_AcceleratorTable::FinalRelease ()
 void ActiveLedIt_AcceleratorTable::AppendACCEL (const char* internalCmdName, AcceleratorModifierFlag modifierFlag, WORD key)
 {
     CComObject<ActiveLedIt_AcceleratorElement>* ae = NULL;
-    Led_ThrowIfErrorHRESULT (CComObject<ActiveLedIt_AcceleratorElement>::CreateInstance (&ae));
+    ThrowIfErrorHRESULT (CComObject<ActiveLedIt_AcceleratorElement>::CreateInstance (&ae));
     CComQIPtr<IDispatch> result = ae->GetUnknown ();
     ae->put_CommandInternalName (CComBSTR (internalCmdName));
     ae->put_ModifierFlag (modifierFlag);
@@ -747,7 +729,7 @@ STDMETHODIMP ActiveLedIt_AcceleratorTable::get__NewEnum (IUnknown** ppUnk)
     try {
         return CreateSTLEnumerator<VarVarEnum> (ppUnk, this, fAccelerators);
     }
-    CATCH_AND_HANDLE_EXCEPTIONS ()
+    CATCH_AND_HANDLE_EXCEPTIONS_IN_HRESULT_FUNCTION ()
 }
 
 STDMETHODIMP ActiveLedIt_AcceleratorTable::get_Item (long Index, IDispatch** pVal)
@@ -762,7 +744,7 @@ STDMETHODIMP ActiveLedIt_AcceleratorTable::get_Item (long Index, IDispatch** pVa
         *pVal = fAccelerators[Index];
         (*pVal)->AddRef ();
     }
-    CATCH_AND_HANDLE_EXCEPTIONS ()
+    CATCH_AND_HANDLE_EXCEPTIONS_IN_HRESULT_FUNCTION ()
     return S_OK;
 }
 
@@ -774,7 +756,7 @@ STDMETHODIMP ActiveLedIt_AcceleratorTable::get_Count (long* pVal)
     try {
         *pVal = static_cast<long> (fAccelerators.size ());
     }
-    CATCH_AND_HANDLE_EXCEPTIONS ()
+    CATCH_AND_HANDLE_EXCEPTIONS_IN_HRESULT_FUNCTION ()
     return S_OK;
 }
 
@@ -795,7 +777,7 @@ STDMETHODIMP ActiveLedIt_AcceleratorTable::Lookup (BSTR cmdInternalName, IDispat
             CComQIPtr<IALAcceleratorElement> ae   = *i;
 #endif
             CComBSTR itsInternalCmdName;
-            Led_ThrowIfErrorHRESULT (ae->get_CommandInternalName (&itsInternalCmdName));
+            ThrowIfErrorHRESULT (ae->get_CommandInternalName (&itsInternalCmdName));
             if (CComBSTR (cmdInternalName) == itsInternalCmdName) {
                 *pVal = *i;
                 (*pVal)->AddRef ();
@@ -804,7 +786,7 @@ STDMETHODIMP ActiveLedIt_AcceleratorTable::Lookup (BSTR cmdInternalName, IDispat
         }
         return S_OK;
     }
-    CATCH_AND_HANDLE_EXCEPTIONS ()
+    CATCH_AND_HANDLE_EXCEPTIONS_IN_HRESULT_FUNCTION ()
 }
 
 STDMETHODIMP ActiveLedIt_AcceleratorTable::Add (IDispatch* newElt, UINT atIndex)
@@ -816,7 +798,7 @@ STDMETHODIMP ActiveLedIt_AcceleratorTable::Add (IDispatch* newElt, UINT atIndex)
         size_t idx = min (static_cast<size_t> (atIndex), fAccelerators.size ());
         fAccelerators.insert (fAccelerators.begin () + idx, newElt);
     }
-    CATCH_AND_HANDLE_EXCEPTIONS ()
+    CATCH_AND_HANDLE_EXCEPTIONS_IN_HRESULT_FUNCTION ()
     return S_OK;
 }
 
@@ -826,7 +808,7 @@ STDMETHODIMP ActiveLedIt_AcceleratorTable::Remove (VARIANT eltIntNameOrIndex)
         DoRemove<ACCEL_NAME_GRABBER> (&fAccelerators, eltIntNameOrIndex);
         return S_OK;
     }
-    CATCH_AND_HANDLE_EXCEPTIONS ()
+    CATCH_AND_HANDLE_EXCEPTIONS_IN_HRESULT_FUNCTION ()
 }
 
 STDMETHODIMP ActiveLedIt_AcceleratorTable::Clear ()
@@ -834,7 +816,7 @@ STDMETHODIMP ActiveLedIt_AcceleratorTable::Clear ()
     try {
         fAccelerators.clear ();
     }
-    CATCH_AND_HANDLE_EXCEPTIONS ()
+    CATCH_AND_HANDLE_EXCEPTIONS_IN_HRESULT_FUNCTION ()
     return S_OK;
 }
 
@@ -859,7 +841,7 @@ STDMETHODIMP ActiveLedIt_AcceleratorTable::GenerateWin32AcceleratorTable (HACCEL
             CComQIPtr<IALAcceleratorElement> ae = *i;
 #endif
             CComBSTR internalCmdName;
-            Led_ThrowIfErrorHRESULT (ae->get_CommandInternalName (&internalCmdName));
+            ThrowIfErrorHRESULT (ae->get_CommandInternalName (&internalCmdName));
             UINT cmdNum = 0;
             if (cmdNum == 0) {
                 // See if its in the builtin command list
@@ -867,18 +849,18 @@ STDMETHODIMP ActiveLedIt_AcceleratorTable::GenerateWin32AcceleratorTable (HACCEL
                 builtins->get_Count (&bicc);
                 for (long ii = 0; ii < bicc; ++ii) {
                     CComPtr<IDispatch> e;
-                    Led_ThrowIfErrorHRESULT (builtins->get_Item (ii, &e));
+                    ThrowIfErrorHRESULT (builtins->get_Item (ii, &e));
 #if qCompilerAndStdLib_altComPtrCvt2ComQIPtrRequiresExtraCast_Buggy
                     CComQIPtr<IALCommand> alc = (IDispatch*)e;
 #else
                     CComQIPtr<IALCommand> alc = e;
 #endif
                     CComBSTR bicCmdName;
-                    Led_ThrowIfErrorHRESULT (alc->get_InternalName (&bicCmdName));
+                    ThrowIfErrorHRESULT (alc->get_InternalName (&bicCmdName));
                     if (bicCmdName == internalCmdName) {
                         // trick to extract CMD# from the element
                         HMENU hMenu = ::CreatePopupMenu ();
-                        Led_ThrowIfErrorHRESULT (alc->AppendSelfToMenu (hMenu, NULL));
+                        ThrowIfErrorHRESULT (alc->AppendSelfToMenu (hMenu, NULL));
                         cmdNum = ::GetMenuItemID (hMenu, 0);
                         ::DestroyMenu (hMenu);
                     }
@@ -892,9 +874,9 @@ STDMETHODIMP ActiveLedIt_AcceleratorTable::GenerateWin32AcceleratorTable (HACCEL
             // If we have a cmd# - then add it....
             if (cmdNum != 0) {
                 AcceleratorModifierFlag modfierFlag;
-                Led_ThrowIfErrorHRESULT (ae->get_ModifierFlag (&modfierFlag));
+                ThrowIfErrorHRESULT (ae->get_ModifierFlag (&modfierFlag));
                 WORD key;
-                Led_ThrowIfErrorHRESULT (ae->get_Key (&key));
+                ThrowIfErrorHRESULT (ae->get_Key (&key));
                 accels[goodKeysFound].fVirt = static_cast<BYTE> (modfierFlag);
                 accels[goodKeysFound].key   = key;
                 Assert (cmdNum <= numeric_limits<WORD>::max ());
@@ -904,7 +886,7 @@ STDMETHODIMP ActiveLedIt_AcceleratorTable::GenerateWin32AcceleratorTable (HACCEL
             *pVal = ::CreateAcceleratorTable (accels.data (), static_cast<int> (goodKeysFound));
         }
     }
-    CATCH_AND_HANDLE_EXCEPTIONS ()
+    CATCH_AND_HANDLE_EXCEPTIONS_IN_HRESULT_FUNCTION ()
     return S_OK;
 }
 
@@ -988,7 +970,7 @@ STDMETHODIMP ActiveLedIt_MenuItemPopup::Insert (IDispatch* newElt, UINT afterElt
         size_t idx = min (static_cast<size_t> (afterElt), fOwnedItems.size ());
         fOwnedItems.insert (fOwnedItems.begin () + idx, newElt);
     }
-    CATCH_AND_HANDLE_EXCEPTIONS ()
+    CATCH_AND_HANDLE_EXCEPTIONS_IN_HRESULT_FUNCTION ()
     return S_OK;
 }
 
@@ -998,7 +980,7 @@ STDMETHODIMP ActiveLedIt_MenuItemPopup::Remove (VARIANT eltIntNameOrIndex)
         DoRemove<CMD_NAME_GRABBER> (&fOwnedItems, eltIntNameOrIndex);
         return S_OK;
     }
-    CATCH_AND_HANDLE_EXCEPTIONS ()
+    CATCH_AND_HANDLE_EXCEPTIONS_IN_HRESULT_FUNCTION ()
 }
 
 STDMETHODIMP ActiveLedIt_MenuItemPopup::Clear ()
@@ -1006,7 +988,7 @@ STDMETHODIMP ActiveLedIt_MenuItemPopup::Clear ()
     try {
         fOwnedItems.clear ();
     }
-    CATCH_AND_HANDLE_EXCEPTIONS ()
+    CATCH_AND_HANDLE_EXCEPTIONS_IN_HRESULT_FUNCTION ()
     return S_OK;
 }
 
@@ -1014,11 +996,11 @@ STDMETHODIMP ActiveLedIt_MenuItemPopup::AppendSelfToMenu (HMENU menu, IDispatch*
 {
     try {
         HMENU subMenu = NULL;
-        Led_ThrowIfErrorHRESULT (GeneratePopupMenu (acceleratorTable, &subMenu));
+        ThrowIfErrorHRESULT (GeneratePopupMenu (acceleratorTable, &subMenu));
         ::AppendMenu (menu, MF_POPUP, reinterpret_cast<UINT_PTR> (subMenu), Wide2SDKString (L"&" + fName).c_str ());
         return S_OK;
     }
-    CATCH_AND_HANDLE_EXCEPTIONS ()
+    CATCH_AND_HANDLE_EXCEPTIONS_IN_HRESULT_FUNCTION ()
 }
 
 /*
@@ -1045,7 +1027,7 @@ STDMETHODIMP AL_CommandHelper::get_Name (BSTR* pVal)
     try {
         *pVal = CComBSTR (fName.c_str ()).Detach ();
     }
-    CATCH_AND_HANDLE_EXCEPTIONS ()
+    CATCH_AND_HANDLE_EXCEPTIONS_IN_HRESULT_FUNCTION ()
     return S_OK;
 }
 
@@ -1058,7 +1040,7 @@ STDMETHODIMP AL_CommandHelper::get_InternalName (BSTR* pVal)
         *pVal = CComBSTR (fInternalName.c_str ()).Detach ();
         return S_OK;
     }
-    CATCH_AND_HANDLE_EXCEPTIONS ()
+    CATCH_AND_HANDLE_EXCEPTIONS_IN_HRESULT_FUNCTION ()
 }
 
 STDMETHODIMP AL_CommandHelper::AppendSelfToMenu (HMENU menu, IDispatch* acceleratorTable)
@@ -1070,7 +1052,7 @@ STDMETHODIMP AL_CommandHelper::AppendSelfToMenu (HMENU menu, IDispatch* accelera
             CComQIPtr<IALAcceleratorTable> at = acceleratorTable;
             if (at.p != NULL) {
                 CComPtr<IDispatch> accelElt;
-                Led_ThrowIfErrorHRESULT (at->Lookup (CComBSTR (fInternalName.c_str ()), &accelElt));
+                ThrowIfErrorHRESULT (at->Lookup (CComBSTR (fInternalName.c_str ()), &accelElt));
                 if (accelElt.p != NULL) {
 #if qCompilerAndStdLib_altComPtrCvt2ComQIPtrRequiresExtraCast_Buggy
                     CComQIPtr<IALAcceleratorElement> accelerator = (IDispatch*)accelElt;
@@ -1079,9 +1061,9 @@ STDMETHODIMP AL_CommandHelper::AppendSelfToMenu (HMENU menu, IDispatch* accelera
 #endif
 
                     AcceleratorModifierFlag modFlag = static_cast<AcceleratorModifierFlag> (0);
-                    Led_ThrowIfErrorHRESULT (accelerator->get_ModifierFlag (&modFlag));
+                    ThrowIfErrorHRESULT (accelerator->get_ModifierFlag (&modFlag));
                     WORD key = 0;
-                    Led_ThrowIfErrorHRESULT (accelerator->get_Key (&key));
+                    ThrowIfErrorHRESULT (accelerator->get_Key (&key));
 
                     if (modFlag & eVIRTKEY) {
                         suffix += L"\t";
@@ -1133,7 +1115,7 @@ STDMETHODIMP AL_CommandHelper::AppendSelfToMenu (HMENU menu, IDispatch* accelera
         ::AppendMenu (menu, fCommandNumber == 0 ? MF_SEPARATOR : MF_STRING, fCommandNumber, Wide2SDKString ((fCommandNumber == 0 ? L"" : L"&") + fName + suffix).c_str ());
         return S_OK;
     }
-    CATCH_AND_HANDLE_EXCEPTIONS ()
+    CATCH_AND_HANDLE_EXCEPTIONS_IN_HRESULT_FUNCTION ()
 }
 
 /*
@@ -1158,7 +1140,7 @@ STDMETHODIMP AL_UserCommandHelper::put_Name (BSTR val)
         fName = val;
         return S_OK;
     }
-    CATCH_AND_HANDLE_EXCEPTIONS ()
+    CATCH_AND_HANDLE_EXCEPTIONS_IN_HRESULT_FUNCTION ()
 }
 
 STDMETHODIMP AL_UserCommandHelper::put_InternalName (BSTR val)
@@ -1170,7 +1152,7 @@ STDMETHODIMP AL_UserCommandHelper::put_InternalName (BSTR val)
         fInternalName = val;
         return S_OK;
     }
-    CATCH_AND_HANDLE_EXCEPTIONS ()
+    CATCH_AND_HANDLE_EXCEPTIONS_IN_HRESULT_FUNCTION ()
 }
 
 /*
@@ -1192,7 +1174,7 @@ ActiveLedIt_BuiltinCommand* ActiveLedIt_BuiltinCommand::mk (const BuiltinCmdSpec
     // be in balance when he first grabs a ref! So - be careful about catching excpetions while filling in detail
     // on object.
     CComObject<ActiveLedIt_BuiltinCommand>* o = NULL;
-    Led_ThrowIfErrorHRESULT (CComObject<ActiveLedIt_BuiltinCommand>::CreateInstance (&o));
+    ThrowIfErrorHRESULT (CComObject<ActiveLedIt_BuiltinCommand>::CreateInstance (&o));
     try {
         if constexpr (qCompilerAndStdLib_ATL_Assign_wstring_COMOBJ_Buggy) {
             wstring tmp = NarrowSDKStringToWide (cmdSpec.fCmdName);
@@ -1239,7 +1221,7 @@ CComPtr<IDispatch> GenerateBuiltinCommandsObject ()
 {
     CComPtr<IDispatch>                         builtinCmds;
     CComObject<ActiveLedIt_StaticCommandList>* o = NULL;
-    Led_ThrowIfErrorHRESULT (CComObject<ActiveLedIt_StaticCommandList>::CreateInstance (&o));
+    ThrowIfErrorHRESULT (CComObject<ActiveLedIt_StaticCommandList>::CreateInstance (&o));
     builtinCmds = o;
 
     o->AppendBuiltinCmds (kAllCmds, kAllCmds + Memory::NEltsOf (kAllCmds));
@@ -1303,7 +1285,7 @@ UINT CmdObjOrName2Num (const VARIANT& cmdObjOrName)
         else {
             HMENU hMenu = ::CreatePopupMenu ();
             try {
-                Led_ThrowIfErrorHRESULT (bicc->AppendSelfToMenu (hMenu, NULL));
+                ThrowIfErrorHRESULT (bicc->AppendSelfToMenu (hMenu, NULL));
                 UINT cmdNum = ::GetMenuItemID (hMenu, 0);
                 ::DestroyMenu (hMenu);
                 return static_cast<WORD> (cmdNum);

@@ -367,7 +367,7 @@ VariantArrayPacker::VariantArrayPacker (VARIANT* v, VARTYPE vt, size_t nElts)
     fSafeArrayVariant->parray = ::SafeArrayCreateVector (vt, 0, static_cast<ULONG> (nElts));
     Execution::ThrowIfNull (fSafeArrayVariant->parray);
     fSafeArrayVariant->vt = VT_ARRAY | vt;
-    Led_ThrowIfErrorHRESULT (::SafeArrayAccessData (fSafeArrayVariant->parray, &fPtr));
+    ThrowIfErrorHRESULT (::SafeArrayAccessData (fSafeArrayVariant->parray, &fPtr));
 }
 
 VariantArrayPacker::~VariantArrayPacker ()
@@ -398,7 +398,7 @@ VariantArrayUnpacker::VariantArrayUnpacker (const VARIANT& v)
         throw E_INVALIDARG;
     }
     void* useP = nullptr;
-    Led_ThrowIfErrorHRESULT (::SafeArrayAccessData (fSafeArray, &useP));
+    ThrowIfErrorHRESULT (::SafeArrayAccessData (fSafeArray, &useP));
     fPtr = useP;
 }
 
@@ -417,7 +417,7 @@ VARTYPE VariantArrayUnpacker::GetArrayElementType () const
 {
     AssertNotNull (fSafeArray);
     VARTYPE vt = VT_EMPTY;
-    Led_ThrowIfErrorHRESULT (::SafeArrayGetVartype (fSafeArray, &vt));
+    ThrowIfErrorHRESULT (::SafeArrayGetVartype (fSafeArray, &vt));
     return vt;
 }
 
@@ -426,8 +426,8 @@ size_t VariantArrayUnpacker::GetLength () const
     AssertNotNull (fSafeArray);
     long lb = 0;
     long ub = 0;
-    Led_ThrowIfErrorHRESULT (::SafeArrayGetLBound (fSafeArray, 1, &lb));
-    Led_ThrowIfErrorHRESULT (::SafeArrayGetUBound (fSafeArray, 1, &ub));
+    ThrowIfErrorHRESULT (::SafeArrayGetLBound (fSafeArray, 1, &lb));
+    ThrowIfErrorHRESULT (::SafeArrayGetUBound (fSafeArray, 1, &ub));
     return ub - lb + 1;
 }
 #endif
@@ -560,7 +560,7 @@ void Led::DumpSupportedInterfaces (IUnknown* obj, const char* objectName, const 
                     CLSID iid;
                     (void)::memset (&iid, 0, sizeof (iid));
                     tmpStr = ::SysAllocString (NarrowSDKStringToWide (subKey).c_str ());
-                    Led_ThrowIfErrorHRESULT (::CLSIDFromString (tmpStr, &iid));
+                    ThrowIfErrorHRESULT (::CLSIDFromString (tmpStr, &iid));
                     if (tmpStr != nullptr) {
                         ::SysFreeString (tmpStr);
                         tmpStr = nullptr;

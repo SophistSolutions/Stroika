@@ -425,7 +425,7 @@ void WriterClipboardFlavorPackage::AddFlavorData (Led_ClipFormat clipFormat, siz
     }
     if (::SetClipboardData (clipFormat, h) == nullptr) {
         DWORD err = ::GetLastError ();
-        Led_ThrowIfErrorHRESULT (MAKE_HRESULT (SEVERITY_ERROR, FACILITY_WIN32, err));
+        ThrowIfErrorHRESULT (MAKE_HRESULT (SEVERITY_ERROR, FACILITY_WIN32, err));
     }
 #elif qStroika_FeatureSupported_XWindows
     ReaderClipboardFlavorPackage::sPrivateClipData.insert (map<Led_ClipFormat, vector<char>>::value_type (clipFormat, vector<char> (reinterpret_cast<const char*> (buf), reinterpret_cast<const char*> (buf) + bufSize)));

@@ -99,8 +99,8 @@ bool COMBased_SpellCheckEngine::ScanForUndefinedWord (const Led_tChar* startBuf,
         ::SysFreeString (bstrVal);
         CComVariant result;
         CComVariant cursorIdxAsCCV = cursorIdx;
-        Led_ThrowIfErrorHRESULT (fEngine.Invoke2 (CA2W ("CreateScanContext"), &textToScan, &cursorIdxAsCCV, &result));
-        Led_ThrowIfErrorHRESULT (result.ChangeType (VT_DISPATCH));
+        ThrowIfErrorHRESULT (fEngine.Invoke2 (CA2W ("CreateScanContext"), &textToScan, &cursorIdxAsCCV, &result));
+        ThrowIfErrorHRESULT (result.ChangeType (VT_DISPATCH));
         if (result.vt == VT_DISPATCH) {
             CComPtr<IDispatch> scanContext = result.pdispVal;
             CComVariant        comCursor;
@@ -138,7 +138,7 @@ bool COMBased_SpellCheckEngine::LookupWord_ (const Led_tString& checkWord, Led_t
     CComVariant comMissingWord;
     CComVariant result;
     CComVariant checkWordCCV = CComVariant{checkWord.c_str ()};
-    Led_ThrowIfErrorHRESULT (fEngine.Invoke2 (CA2W ("LookupWord"), &checkWordCCV, matchedWordResult == NULL ? NULL : &comMissingWord, &result));
+    ThrowIfErrorHRESULT (fEngine.Invoke2 (CA2W ("LookupWord"), &checkWordCCV, matchedWordResult == NULL ? NULL : &comMissingWord, &result));
     if (SUCCEEDED (result.ChangeType (VT_BOOL)) and
         result.boolVal) {
         if (matchedWordResult != NULL) {
@@ -159,7 +159,7 @@ vector<Led_tString> COMBased_SpellCheckEngine::GenerateSuggestions (const Led_tS
 {
     CComVariant comResult;
     CComVariant misspelledWordAsCCV = misspelledWord.c_str ();
-    Led_ThrowIfErrorHRESULT (fEngine.Invoke1 (CA2W ("GenerateSuggestions"), &misspelledWordAsCCV, &comResult));
+    ThrowIfErrorHRESULT (fEngine.Invoke1 (CA2W ("GenerateSuggestions"), &misspelledWordAsCCV, &comResult));
     return UnpackVectorOfStringsFromVariantArray (comResult);
 }
 
@@ -176,29 +176,29 @@ void COMBased_SpellCheckEngine::FindWordBreaks (const Led_tChar* startOfText, si
     CComPtr<IDispatch> engine                               = fEngine;
     CComVariant        textOffsetToStartLookingForWordAsCCV = textOffsetToStartLookingForWord;
     CComVariant        textAsCCV                            = text.c_str ();
-    Led_ThrowIfErrorHRESULT (engine.Invoke2 (CA2W ("FindWordBreaks"), &textAsCCV, &textOffsetToStartLookingForWordAsCCV, &wordInfoResult));
-    Led_ThrowIfErrorHRESULT (wordInfoResult.ChangeType (VT_DISPATCH));
+    ThrowIfErrorHRESULT (engine.Invoke2 (CA2W ("FindWordBreaks"), &textAsCCV, &textOffsetToStartLookingForWordAsCCV, &wordInfoResult));
+    ThrowIfErrorHRESULT (wordInfoResult.ChangeType (VT_DISPATCH));
     if (wordInfoResult.vt == VT_DISPATCH) {
         CComPtr<IDispatch> wordInfo = wordInfoResult.pdispVal;
         // Validate COM results. They COULD be bogus - and that shouldn't crash/assert-out LED
         {
             CComVariant val;
-            Led_ThrowIfErrorHRESULT (wordInfo.GetPropertyByName (CA2W ("WordStart"), &val));
-            Led_ThrowIfErrorHRESULT (val.ChangeType (VT_UI4));
+            ThrowIfErrorHRESULT (wordInfo.GetPropertyByName (CA2W ("WordStart"), &val));
+            ThrowIfErrorHRESULT (val.ChangeType (VT_UI4));
             *wordStartResult = val.uintVal;
             *wordStartResult = min (*wordStartResult, lengthOfText);
         }
         {
             CComVariant val;
-            Led_ThrowIfErrorHRESULT (wordInfo.GetPropertyByName (CA2W ("WordEnd"), &val));
-            Led_ThrowIfErrorHRESULT (val.ChangeType (VT_UI4));
+            ThrowIfErrorHRESULT (wordInfo.GetPropertyByName (CA2W ("WordEnd"), &val));
+            ThrowIfErrorHRESULT (val.ChangeType (VT_UI4));
             *wordEndResult = val.uintVal;
             *wordEndResult = min (*wordEndResult, lengthOfText);
         }
         {
             CComVariant val;
-            Led_ThrowIfErrorHRESULT (wordInfo.GetPropertyByName (CA2W ("WordReal"), &val));
-            Led_ThrowIfErrorHRESULT (val.ChangeType (VT_BOOL));
+            ThrowIfErrorHRESULT (wordInfo.GetPropertyByName (CA2W ("WordReal"), &val));
+            ThrowIfErrorHRESULT (val.ChangeType (VT_BOOL));
             *wordReal = !!val.boolVal;
         }
     }
@@ -222,14 +222,14 @@ bool COMBased_SpellCheckEngine::AddWordToUserDictionarySupported () const
 {
     CComVariant        comResult;
     CComPtr<IDispatch> engine = fEngine;
-    Led_ThrowIfErrorHRESULT (engine.GetPropertyByName (CA2W ("AddWordToUserDictionarySupported"), &comResult));
+    ThrowIfErrorHRESULT (engine.GetPropertyByName (CA2W ("AddWordToUserDictionarySupported"), &comResult));
     return SUCCEEDED (comResult.ChangeType (VT_BOOL)) and comResult.boolVal;
 }
 
 void COMBased_SpellCheckEngine::AddWordToUserDictionary (const Led_tString& word)
 {
     CComVariant wordAsCCV = word.c_str ();
-    Led_ThrowIfErrorHRESULT (fEngine.Invoke1 (CA2W ("AddWordToUserDictionary"), &wordAsCCV));
+    ThrowIfErrorHRESULT (fEngine.Invoke1 (CA2W ("AddWordToUserDictionary"), &wordAsCCV));
 }
 
 /*
@@ -1579,7 +1579,7 @@ void ActiveLedItControl::FireUpdateUserCommand (const wstring& internalCmdName, 
 {
     try {
         CComObject<ActiveLedIt_CurrentEventArguments>* o = NULL;
-        Led_ThrowIfErrorHRESULT (CComObject<ActiveLedIt_CurrentEventArguments>::CreateInstance (&o));
+        ThrowIfErrorHRESULT (CComObject<ActiveLedIt_CurrentEventArguments>::CreateInstance (&o));
         o->fInternalName       = internalCmdName;
         o->fName               = *name;
         o->fEnabled            = !!*enabled;
@@ -1601,7 +1601,7 @@ void ActiveLedItControl::FireUserCommand (const wstring& internalCmdName)
 {
     try {
         CComObject<ActiveLedIt_CurrentEventArguments>* o = NULL;
-        Led_ThrowIfErrorHRESULT (CComObject<ActiveLedIt_CurrentEventArguments>::CreateInstance (&o));
+        ThrowIfErrorHRESULT (CComObject<ActiveLedIt_CurrentEventArguments>::CreateInstance (&o));
         o->fInternalName       = internalCmdName;
         fCurrentEventArguments = o;
         FireOLEEvent (DISPID_UserCommand);
@@ -1717,11 +1717,11 @@ void ActiveLedItControl::Layout ()
 #endif
             if (tbl.p != NULL) {
                 UINT preferredHeight = 0;
-                Led_ThrowIfErrorHRESULT (tbl->get_PreferredHeight (&preferredHeight));
+                ThrowIfErrorHRESULT (tbl->get_PreferredHeight (&preferredHeight));
                 toolbarHeightUsed = preferredHeight;
                 CRect tblRect     = cr;
                 tblRect.bottom    = tblRect.top + preferredHeight;
-                Led_ThrowIfErrorHRESULT (tbl->SetRectangle (tblRect.left, tblRect.top, tblRect.Width (), tblRect.Height ()));
+                ThrowIfErrorHRESULT (tbl->SetRectangle (tblRect.left, tblRect.top, tblRect.Width (), tblRect.Height ()));
             }
         }
         catch (...) {
@@ -2205,9 +2205,9 @@ inline void PackBytesIntoVariantSAFEARRAY (const void* bytes, size_t nBytes, VAR
     rgsaBounds[0].cElements = static_cast<ULONG> (nBytes);
     SAFEARRAY* ar           = ::SafeArrayCreate (VT_I1, 1, rgsaBounds);
     Execution::ThrowIfNull (ar);
-    Led_ThrowIfErrorHRESULT (::SafeArrayAllocData (ar));
+    ThrowIfErrorHRESULT (::SafeArrayAllocData (ar));
     void* ptr = NULL;
-    Led_ThrowIfErrorHRESULT (::SafeArrayAccessData (ar, &ptr));
+    ThrowIfErrorHRESULT (::SafeArrayAccessData (ar, &ptr));
     (void)::memcpy (ptr, bytes, nBytes);
     ::SafeArrayUnaccessData (ar);
     ::VariantInit (into);
@@ -2304,7 +2304,7 @@ VARIANT ActiveLedItControl::GetBufferTextAsDIB ()
         pictDesc.bmp.hbitmap    = memoryBitmap;
         pictDesc.bmp.hpal       = NULL; // NOT SURE THIS IS RIGHT???
         CComQIPtr<IDispatch> result;
-        Led_ThrowIfErrorHRESULT (::OleCreatePictureIndirect (&pictDesc, IID_IDispatch, true, (void**)&result));
+        ThrowIfErrorHRESULT (::OleCreatePictureIndirect (&pictDesc, IID_IDispatch, true, (void**)&result));
         v.vt       = VT_DISPATCH;
         v.pdispVal = result.Detach ();
     }
@@ -2572,10 +2572,10 @@ void ActiveLedItControl::OLE_SetSpellChecker (VARIANT& newValue)
             }
             ::VariantClear (&tmpV);
             ChangedSpellCheckerCOMObject ();
-            Led_ThrowIfErrorHRESULT (hr);
+            ThrowIfErrorHRESULT (hr);
         }
         else {
-            Led_ThrowIfErrorHRESULT (DISP_E_TYPEMISMATCH);
+            ThrowIfErrorHRESULT (DISP_E_TYPEMISMATCH);
         }
     }
     CATCH_AND_HANDLE_EXCEPTIONS ();
@@ -2619,7 +2619,7 @@ void ActiveLedItControl::OLE_SetContextMenu (VARIANT& newValue)
             ::VariantClear (&tmpV);
         }
         else {
-            Led_ThrowIfErrorHRESULT (DISP_E_TYPEMISMATCH);
+            ThrowIfErrorHRESULT (DISP_E_TYPEMISMATCH);
         }
     }
     CATCH_AND_HANDLE_EXCEPTIONS ();
@@ -2665,7 +2665,7 @@ void ActiveLedItControl::OLE_SetToolbarList (VARIANT& newValue)
             ::VariantClear (&tmpV);
         }
         else {
-            Led_ThrowIfErrorHRESULT (DISP_E_TYPEMISMATCH);
+            ThrowIfErrorHRESULT (DISP_E_TYPEMISMATCH);
         }
         {
 #if qCompilerAndStdLib_altComPtrCvt2ComQIPtrRequiresExtraCast_Buggy
@@ -2704,7 +2704,7 @@ namespace {
     {
         try {
             CComObject<ActiveLedIt_MenuItemPopup>* o = NULL;
-            Led_ThrowIfErrorHRESULT (CComObject<ActiveLedIt_MenuItemPopup>::CreateInstance (&o));
+            ThrowIfErrorHRESULT (CComObject<ActiveLedIt_MenuItemPopup>::CreateInstance (&o));
             CComQIPtr<IDispatch> result = o->GetUnknown ();
 
             o->put_Name (CComBSTR (L"Select"));
@@ -2746,7 +2746,7 @@ namespace {
     {
         try {
             CComObject<ActiveLedIt_MenuItemPopup>* o = NULL;
-            Led_ThrowIfErrorHRESULT (CComObject<ActiveLedIt_MenuItemPopup>::CreateInstance (&o));
+            ThrowIfErrorHRESULT (CComObject<ActiveLedIt_MenuItemPopup>::CreateInstance (&o));
             CComQIPtr<IDispatch> result = o->GetUnknown ();
 
             o->put_Name (CComBSTR (L"Insert"));
@@ -2771,7 +2771,7 @@ namespace {
     {
         try {
             CComObject<ActiveLedIt_MenuItemPopup>* o = NULL;
-            Led_ThrowIfErrorHRESULT (CComObject<ActiveLedIt_MenuItemPopup>::CreateInstance (&o));
+            ThrowIfErrorHRESULT (CComObject<ActiveLedIt_MenuItemPopup>::CreateInstance (&o));
             CComQIPtr<IDispatch> result = o->GetUnknown ();
 
             o->put_Name (CComBSTR (L"Font"));
@@ -2798,7 +2798,7 @@ namespace {
     {
         try {
             CComObject<ActiveLedIt_MenuItemPopup>* o = NULL;
-            Led_ThrowIfErrorHRESULT (CComObject<ActiveLedIt_MenuItemPopup>::CreateInstance (&o));
+            ThrowIfErrorHRESULT (CComObject<ActiveLedIt_MenuItemPopup>::CreateInstance (&o));
             CComQIPtr<IDispatch> result = o->GetUnknown ();
 
             o->put_Name (CComBSTR (L"Font Style"));
@@ -2824,7 +2824,7 @@ namespace {
     {
         try {
             CComObject<ActiveLedIt_MenuItemPopup>* o = NULL;
-            Led_ThrowIfErrorHRESULT (CComObject<ActiveLedIt_MenuItemPopup>::CreateInstance (&o));
+            ThrowIfErrorHRESULT (CComObject<ActiveLedIt_MenuItemPopup>::CreateInstance (&o));
             CComQIPtr<IDispatch> result = o->GetUnknown ();
 
             o->put_Name (CComBSTR (L"Font Size"));
@@ -2860,7 +2860,7 @@ namespace {
     {
         try {
             CComObject<ActiveLedIt_MenuItemPopup>* o = NULL;
-            Led_ThrowIfErrorHRESULT (CComObject<ActiveLedIt_MenuItemPopup>::CreateInstance (&o));
+            ThrowIfErrorHRESULT (CComObject<ActiveLedIt_MenuItemPopup>::CreateInstance (&o));
             CComQIPtr<IDispatch> result = o->GetUnknown ();
 
             o->put_Name (CComBSTR (L"Font Color"));
@@ -2896,7 +2896,7 @@ namespace {
     {
         try {
             CComObject<ActiveLedIt_MenuItemPopup>* o = NULL;
-            Led_ThrowIfErrorHRESULT (CComObject<ActiveLedIt_MenuItemPopup>::CreateInstance (&o));
+            ThrowIfErrorHRESULT (CComObject<ActiveLedIt_MenuItemPopup>::CreateInstance (&o));
             CComQIPtr<IDispatch> result = o->GetUnknown ();
 
             o->put_Name (CComBSTR (L"Paragraph Justification"));
@@ -2916,7 +2916,7 @@ namespace {
     {
         try {
             CComObject<ActiveLedIt_MenuItemPopup>* o = NULL;
-            Led_ThrowIfErrorHRESULT (CComObject<ActiveLedIt_MenuItemPopup>::CreateInstance (&o));
+            ThrowIfErrorHRESULT (CComObject<ActiveLedIt_MenuItemPopup>::CreateInstance (&o));
             CComQIPtr<IDispatch> result = o->GetUnknown ();
 
             o->put_Name (CComBSTR (L"List Style"));
@@ -2936,7 +2936,7 @@ VARIANT ActiveLedItControl::OLE_GetPredefinedMenus ()
     try {
         if (fPredefinedMenus.p == NULL) {
             CComObject<ActiveLedIt_StaticCommandList>* o = NULL;
-            Led_ThrowIfErrorHRESULT (CComObject<ActiveLedIt_StaticCommandList>::CreateInstance (&o));
+            ThrowIfErrorHRESULT (CComObject<ActiveLedIt_StaticCommandList>::CreateInstance (&o));
             CComPtr<IDispatch> saved = o; // so auto-deleted on exception
 
             o->Append (mkMenu_Select ());
@@ -2991,7 +2991,7 @@ void ActiveLedItControl::OLE_SetAcceleratorTable (VARIANT& newValue)
             ::VariantClear (&tmpV);
         }
         else {
-            Led_ThrowIfErrorHRESULT (DISP_E_TYPEMISMATCH);
+            ThrowIfErrorHRESULT (DISP_E_TYPEMISMATCH);
         }
     }
     CATCH_AND_HANDLE_EXCEPTIONS ();
@@ -3049,7 +3049,7 @@ IDispatch* ActiveLedItControl::OLE_GetDefaultContextMenu ()
 {
     try {
         CComObject<ActiveLedIt_UserCommandList>* o = NULL;
-        Led_ThrowIfErrorHRESULT (CComObject<ActiveLedIt_UserCommandList>::CreateInstance (&o));
+        ThrowIfErrorHRESULT (CComObject<ActiveLedIt_UserCommandList>::CreateInstance (&o));
         CComQIPtr<IDispatch> saved = o->GetUnknown (); // so deleted on exceptions during the subsequent add code
 
         o->AppendBuiltinCmd (kCmd_Undo);
@@ -3114,7 +3114,7 @@ IDispatch* ActiveLedItControl::OLE_GetDefaultAcceleratorTable ()
 {
     try {
         CComObject<ActiveLedIt_AcceleratorTable>* o = NULL;
-        Led_ThrowIfErrorHRESULT (CComObject<ActiveLedIt_AcceleratorTable>::CreateInstance (&o));
+        ThrowIfErrorHRESULT (CComObject<ActiveLedIt_AcceleratorTable>::CreateInstance (&o));
         CComQIPtr<IDispatch> saved = o->GetUnknown (); // so deleted on exceptions during the subsequent add code
 
         o->AppendACCEL ("Undo", static_cast<AcceleratorModifierFlag> (eVIRTKEY | eCONTROL), 'Z');
@@ -3159,7 +3159,7 @@ IDispatch* ActiveLedItControl::OLE_MakeNewPopupMenuItem ()
 {
     try {
         CComObject<ActiveLedIt_MenuItemPopup>* o = NULL;
-        Led_ThrowIfErrorHRESULT (CComObject<ActiveLedIt_MenuItemPopup>::CreateInstance (&o));
+        ThrowIfErrorHRESULT (CComObject<ActiveLedIt_MenuItemPopup>::CreateInstance (&o));
         o->AddRef (); // cuz returning a pointer
         CComQIPtr<IDispatch> result = o->GetUnknown ();
         return result;
@@ -3171,7 +3171,7 @@ IDispatch* ActiveLedItControl::OLE_MakeNewUserMenuItem ()
 {
     try {
         CComObject<ActiveLedIt_UserCommand>* o = NULL;
-        Led_ThrowIfErrorHRESULT (CComObject<ActiveLedIt_UserCommand>::CreateInstance (&o));
+        ThrowIfErrorHRESULT (CComObject<ActiveLedIt_UserCommand>::CreateInstance (&o));
         o->AddRef (); // cuz returning a pointer
         CComQIPtr<IDispatch> result = o->GetUnknown ();
         return result;
@@ -3183,7 +3183,7 @@ IDispatch* ActiveLedItControl::OLE_MakeNewAcceleratorElement ()
 {
     try {
         CComObject<ActiveLedIt_AcceleratorElement>* o = NULL;
-        Led_ThrowIfErrorHRESULT (CComObject<ActiveLedIt_AcceleratorElement>::CreateInstance (&o));
+        ThrowIfErrorHRESULT (CComObject<ActiveLedIt_AcceleratorElement>::CreateInstance (&o));
         o->AddRef (); // cuz returning a pointer
         CComQIPtr<IDispatch> result = o->GetUnknown ();
         return result;
@@ -3275,7 +3275,7 @@ IDispatch* ActiveLedItControl::OLE_MakeNewToolbarList ()
 {
     try {
         CComObject<ActiveLedIt_ToolbarList>* o = NULL;
-        Led_ThrowIfErrorHRESULT (CComObject<ActiveLedIt_ToolbarList>::CreateInstance (&o));
+        ThrowIfErrorHRESULT (CComObject<ActiveLedIt_ToolbarList>::CreateInstance (&o));
         o->AddRef (); // cuz returning a pointer
         CComQIPtr<IDispatch> result = o->GetUnknown ();
         return result;
@@ -3294,7 +3294,7 @@ IDispatch* ActiveLedItControl::OLE_MakeNewToolbar ()
 {
     try {
         CComObject<ActiveLedIt_Toolbar>* o = NULL;
-        Led_ThrowIfErrorHRESULT (CComObject<ActiveLedIt_Toolbar>::CreateInstance (&o));
+        ThrowIfErrorHRESULT (CComObject<ActiveLedIt_Toolbar>::CreateInstance (&o));
         o->AddRef (); // cuz returning a pointer
         CComQIPtr<IDispatch> result = o->GetUnknown ();
         return result;
@@ -3306,7 +3306,7 @@ IDispatch* ActiveLedItControl::OLE_MakeIconButtonToolbarItem ()
 {
     try {
         CComObject<ActiveLedIt_IconButtonToolbarElement>* o = NULL;
-        Led_ThrowIfErrorHRESULT (CComObject<ActiveLedIt_IconButtonToolbarElement>::CreateInstance (&o));
+        ThrowIfErrorHRESULT (CComObject<ActiveLedIt_IconButtonToolbarElement>::CreateInstance (&o));
         o->AddRef (); // cuz returning a pointer
         CComQIPtr<IDispatch> result = o->GetUnknown ();
         return result;
@@ -3325,7 +3325,7 @@ IDispatch* ActiveLedItControl::OLE_MakeSeparatorToolbarItem ()
 {
     try {
         CComObject<ActiveLedIt_SeparatorToolbarElement>* o = NULL;
-        Led_ThrowIfErrorHRESULT (CComObject<ActiveLedIt_SeparatorToolbarElement>::CreateInstance (&o));
+        ThrowIfErrorHRESULT (CComObject<ActiveLedIt_SeparatorToolbarElement>::CreateInstance (&o));
         o->AddRef (); // cuz returning a pointer
         CComQIPtr<IDispatch> result = o->GetUnknown ();
         return result;
@@ -3342,13 +3342,13 @@ CComPtr<IDispatch> ActiveLedItControl::MakeBuiltinToolbar (LPCOLESTR builtinTool
 #else
         CComQIPtr<IALToolbar> tb = newTB;
 #endif
-        Led_ThrowIfErrorHRESULT (tb->MergeAdd (MakeBuiltinToolbar (L"EditBar")));
-        Led_ThrowIfErrorHRESULT (tb->Add (MakeSeparatorToolbarItem ()));
-        Led_ThrowIfErrorHRESULT (tb->MergeAdd (MakeBuiltinToolbar (L"FormatBar")));
-        Led_ThrowIfErrorHRESULT (tb->Add (MakeSeparatorToolbarItem ()));
-        Led_ThrowIfErrorHRESULT (tb->Add (MakeBuiltinToolbarItem (CComBSTR ("Print"))));
-        Led_ThrowIfErrorHRESULT (tb->Add (MakeSeparatorToolbarItem ()));
-        Led_ThrowIfErrorHRESULT (tb->Add (MakeBuiltinToolbarItem (CComBSTR ("ActiveLedIt"))));
+        ThrowIfErrorHRESULT (tb->MergeAdd (MakeBuiltinToolbar (L"EditBar")));
+        ThrowIfErrorHRESULT (tb->Add (MakeSeparatorToolbarItem ()));
+        ThrowIfErrorHRESULT (tb->MergeAdd (MakeBuiltinToolbar (L"FormatBar")));
+        ThrowIfErrorHRESULT (tb->Add (MakeSeparatorToolbarItem ()));
+        ThrowIfErrorHRESULT (tb->Add (MakeBuiltinToolbarItem (CComBSTR ("Print"))));
+        ThrowIfErrorHRESULT (tb->Add (MakeSeparatorToolbarItem ()));
+        ThrowIfErrorHRESULT (tb->Add (MakeBuiltinToolbarItem (CComBSTR ("ActiveLedIt"))));
         return newTB;
     }
 
@@ -3359,15 +3359,15 @@ CComPtr<IDispatch> ActiveLedItControl::MakeBuiltinToolbar (LPCOLESTR builtinTool
 #else
         CComQIPtr<IALToolbar> tb = newTB;
 #endif
-        Led_ThrowIfErrorHRESULT (tb->MergeAdd (MakeBuiltinToolbar (L"EditBar")));
-        Led_ThrowIfErrorHRESULT (tb->Add (MakeSeparatorToolbarItem ()));
-        Led_ThrowIfErrorHRESULT (tb->MergeAdd (MakeBuiltinToolbar (L"SelectBar")));
-        Led_ThrowIfErrorHRESULT (tb->Add (MakeSeparatorToolbarItem ()));
-        Led_ThrowIfErrorHRESULT (tb->MergeAdd (MakeBuiltinToolbar (L"InsertBar")));
-        Led_ThrowIfErrorHRESULT (tb->Add (MakeSeparatorToolbarItem ()));
-        Led_ThrowIfErrorHRESULT (tb->Add (MakeBuiltinToolbarItem (CComBSTR ("Print"))));
-        Led_ThrowIfErrorHRESULT (tb->Add (MakeSeparatorToolbarItem ()));
-        Led_ThrowIfErrorHRESULT (tb->Add (MakeBuiltinToolbarItem (CComBSTR ("ActiveLedIt"))));
+        ThrowIfErrorHRESULT (tb->MergeAdd (MakeBuiltinToolbar (L"EditBar")));
+        ThrowIfErrorHRESULT (tb->Add (MakeSeparatorToolbarItem ()));
+        ThrowIfErrorHRESULT (tb->MergeAdd (MakeBuiltinToolbar (L"SelectBar")));
+        ThrowIfErrorHRESULT (tb->Add (MakeSeparatorToolbarItem ()));
+        ThrowIfErrorHRESULT (tb->MergeAdd (MakeBuiltinToolbar (L"InsertBar")));
+        ThrowIfErrorHRESULT (tb->Add (MakeSeparatorToolbarItem ()));
+        ThrowIfErrorHRESULT (tb->Add (MakeBuiltinToolbarItem (CComBSTR ("Print"))));
+        ThrowIfErrorHRESULT (tb->Add (MakeSeparatorToolbarItem ()));
+        ThrowIfErrorHRESULT (tb->Add (MakeBuiltinToolbarItem (CComBSTR ("ActiveLedIt"))));
         return newTB;
     }
 
@@ -3378,9 +3378,9 @@ CComPtr<IDispatch> ActiveLedItControl::MakeBuiltinToolbar (LPCOLESTR builtinTool
 #else
         CComQIPtr<IALToolbar> tb = newTB;
 #endif
-        Led_ThrowIfErrorHRESULT (tb->MergeAdd (MakeBuiltinToolbar (L"CharacterFormatBar")));
-        Led_ThrowIfErrorHRESULT (tb->Add (MakeSeparatorToolbarItem ()));
-        Led_ThrowIfErrorHRESULT (tb->MergeAdd (MakeBuiltinToolbar (L"ParagraphFormatBar")));
+        ThrowIfErrorHRESULT (tb->MergeAdd (MakeBuiltinToolbar (L"CharacterFormatBar")));
+        ThrowIfErrorHRESULT (tb->Add (MakeSeparatorToolbarItem ()));
+        ThrowIfErrorHRESULT (tb->MergeAdd (MakeBuiltinToolbar (L"ParagraphFormatBar")));
         return newTB;
     }
 
@@ -3391,12 +3391,12 @@ CComPtr<IDispatch> ActiveLedItControl::MakeBuiltinToolbar (LPCOLESTR builtinTool
 #else
         CComQIPtr<IALToolbar> tb = newTB;
 #endif
-        Led_ThrowIfErrorHRESULT (tb->Add (MakeBuiltinToolbarItem (CComBSTR ("Undo"))));
-        Led_ThrowIfErrorHRESULT (tb->Add (MakeBuiltinToolbarItem (CComBSTR ("Redo"))));
-        Led_ThrowIfErrorHRESULT (tb->Add (MakeSeparatorToolbarItem ()));
-        Led_ThrowIfErrorHRESULT (tb->Add (MakeBuiltinToolbarItem (CComBSTR ("Cut"))));
-        Led_ThrowIfErrorHRESULT (tb->Add (MakeBuiltinToolbarItem (CComBSTR ("Copy"))));
-        Led_ThrowIfErrorHRESULT (tb->Add (MakeBuiltinToolbarItem (CComBSTR ("Paste"))));
+        ThrowIfErrorHRESULT (tb->Add (MakeBuiltinToolbarItem (CComBSTR ("Undo"))));
+        ThrowIfErrorHRESULT (tb->Add (MakeBuiltinToolbarItem (CComBSTR ("Redo"))));
+        ThrowIfErrorHRESULT (tb->Add (MakeSeparatorToolbarItem ()));
+        ThrowIfErrorHRESULT (tb->Add (MakeBuiltinToolbarItem (CComBSTR ("Cut"))));
+        ThrowIfErrorHRESULT (tb->Add (MakeBuiltinToolbarItem (CComBSTR ("Copy"))));
+        ThrowIfErrorHRESULT (tb->Add (MakeBuiltinToolbarItem (CComBSTR ("Paste"))));
         return newTB;
     }
 
@@ -3407,9 +3407,9 @@ CComPtr<IDispatch> ActiveLedItControl::MakeBuiltinToolbar (LPCOLESTR builtinTool
 #else
         CComQIPtr<IALToolbar> tb = newTB;
 #endif
-        Led_ThrowIfErrorHRESULT (tb->Add (MakeBuiltinToolbarItem (CComBSTR ("Find"))));
-        Led_ThrowIfErrorHRESULT (tb->Add (MakeBuiltinToolbarItem (CComBSTR ("Replace"))));
-        Led_ThrowIfErrorHRESULT (tb->Add (MakeBuiltinToolbarItem (CComBSTR ("CheckSpelling"))));
+        ThrowIfErrorHRESULT (tb->Add (MakeBuiltinToolbarItem (CComBSTR ("Find"))));
+        ThrowIfErrorHRESULT (tb->Add (MakeBuiltinToolbarItem (CComBSTR ("Replace"))));
+        ThrowIfErrorHRESULT (tb->Add (MakeBuiltinToolbarItem (CComBSTR ("CheckSpelling"))));
         return newTB;
     }
 
@@ -3420,9 +3420,9 @@ CComPtr<IDispatch> ActiveLedItControl::MakeBuiltinToolbar (LPCOLESTR builtinTool
 #else
         CComQIPtr<IALToolbar> tb = newTB;
 #endif
-        Led_ThrowIfErrorHRESULT (tb->Add (MakeBuiltinToolbarItem (CComBSTR ("InsertTable"))));
-        Led_ThrowIfErrorHRESULT (tb->Add (MakeBuiltinToolbarItem (CComBSTR ("InsertURL"))));
-        Led_ThrowIfErrorHRESULT (tb->Add (MakeBuiltinToolbarItem (CComBSTR ("InsertSymbol"))));
+        ThrowIfErrorHRESULT (tb->Add (MakeBuiltinToolbarItem (CComBSTR ("InsertTable"))));
+        ThrowIfErrorHRESULT (tb->Add (MakeBuiltinToolbarItem (CComBSTR ("InsertURL"))));
+        ThrowIfErrorHRESULT (tb->Add (MakeBuiltinToolbarItem (CComBSTR ("InsertSymbol"))));
         return newTB;
     }
 
@@ -3433,14 +3433,14 @@ CComPtr<IDispatch> ActiveLedItControl::MakeBuiltinToolbar (LPCOLESTR builtinTool
 #else
         CComQIPtr<IALToolbar> tb = newTB;
 #endif
-        Led_ThrowIfErrorHRESULT (tb->Add (MakeBuiltinToolbarItem (CComBSTR ("FontNameComboBox"))));
-        Led_ThrowIfErrorHRESULT (tb->Add (MakeSeparatorToolbarItem ()));
-        Led_ThrowIfErrorHRESULT (tb->Add (MakeBuiltinToolbarItem (CComBSTR ("FontSizeComboBox"))));
-        Led_ThrowIfErrorHRESULT (tb->Add (MakeSeparatorToolbarItem ()));
-        Led_ThrowIfErrorHRESULT (tb->Add (MakeBuiltinToolbarItem (CComBSTR ("Bold"))));
-        Led_ThrowIfErrorHRESULT (tb->Add (MakeBuiltinToolbarItem (CComBSTR ("Italic"))));
-        Led_ThrowIfErrorHRESULT (tb->Add (MakeBuiltinToolbarItem (CComBSTR ("Underline"))));
-        Led_ThrowIfErrorHRESULT (tb->Add (MakeBuiltinToolbarItem (CComBSTR ("FontColor"))));
+        ThrowIfErrorHRESULT (tb->Add (MakeBuiltinToolbarItem (CComBSTR ("FontNameComboBox"))));
+        ThrowIfErrorHRESULT (tb->Add (MakeSeparatorToolbarItem ()));
+        ThrowIfErrorHRESULT (tb->Add (MakeBuiltinToolbarItem (CComBSTR ("FontSizeComboBox"))));
+        ThrowIfErrorHRESULT (tb->Add (MakeSeparatorToolbarItem ()));
+        ThrowIfErrorHRESULT (tb->Add (MakeBuiltinToolbarItem (CComBSTR ("Bold"))));
+        ThrowIfErrorHRESULT (tb->Add (MakeBuiltinToolbarItem (CComBSTR ("Italic"))));
+        ThrowIfErrorHRESULT (tb->Add (MakeBuiltinToolbarItem (CComBSTR ("Underline"))));
+        ThrowIfErrorHRESULT (tb->Add (MakeBuiltinToolbarItem (CComBSTR ("FontColor"))));
         return newTB;
     }
 
@@ -3451,16 +3451,16 @@ CComPtr<IDispatch> ActiveLedItControl::MakeBuiltinToolbar (LPCOLESTR builtinTool
 #else
         CComQIPtr<IALToolbar> tb = newTB;
 #endif
-        Led_ThrowIfErrorHRESULT (tb->Add (MakeBuiltinToolbarItem (CComBSTR ("JustifyLeft"))));
-        Led_ThrowIfErrorHRESULT (tb->Add (MakeBuiltinToolbarItem (CComBSTR ("JustifyCenter"))));
-        Led_ThrowIfErrorHRESULT (tb->Add (MakeBuiltinToolbarItem (CComBSTR ("JustifyRight"))));
-        Led_ThrowIfErrorHRESULT (tb->Add (MakeBuiltinToolbarItem (CComBSTR ("JustifyFull"))));
-        Led_ThrowIfErrorHRESULT (tb->Add (MakeSeparatorToolbarItem ()));
-        Led_ThrowIfErrorHRESULT (tb->Add (MakeBuiltinToolbarItem (CComBSTR ("ParagraphIndents"))));
-        Led_ThrowIfErrorHRESULT (tb->Add (MakeBuiltinToolbarItem (CComBSTR ("ParagraphSpacing"))));
-        Led_ThrowIfErrorHRESULT (tb->Add (MakeSeparatorToolbarItem ()));
-        Led_ThrowIfErrorHRESULT (tb->Add (MakeBuiltinToolbarItem (CComBSTR ("ListStyle_None"))));
-        Led_ThrowIfErrorHRESULT (tb->Add (MakeBuiltinToolbarItem (CComBSTR ("ListStyle_Bullet"))));
+        ThrowIfErrorHRESULT (tb->Add (MakeBuiltinToolbarItem (CComBSTR ("JustifyLeft"))));
+        ThrowIfErrorHRESULT (tb->Add (MakeBuiltinToolbarItem (CComBSTR ("JustifyCenter"))));
+        ThrowIfErrorHRESULT (tb->Add (MakeBuiltinToolbarItem (CComBSTR ("JustifyRight"))));
+        ThrowIfErrorHRESULT (tb->Add (MakeBuiltinToolbarItem (CComBSTR ("JustifyFull"))));
+        ThrowIfErrorHRESULT (tb->Add (MakeSeparatorToolbarItem ()));
+        ThrowIfErrorHRESULT (tb->Add (MakeBuiltinToolbarItem (CComBSTR ("ParagraphIndents"))));
+        ThrowIfErrorHRESULT (tb->Add (MakeBuiltinToolbarItem (CComBSTR ("ParagraphSpacing"))));
+        ThrowIfErrorHRESULT (tb->Add (MakeSeparatorToolbarItem ()));
+        ThrowIfErrorHRESULT (tb->Add (MakeBuiltinToolbarItem (CComBSTR ("ListStyle_None"))));
+        ThrowIfErrorHRESULT (tb->Add (MakeBuiltinToolbarItem (CComBSTR ("ListStyle_Bullet"))));
         return newTB;
     }
 
@@ -3554,10 +3554,10 @@ CComPtr<IDispatch> ActiveLedItControl::mkIconElement (int iconResID)
         pictDesc.cbSizeofstruct = sizeof (pictDesc);
         pictDesc.picType        = PICTYPE_ICON;
         pictDesc.icon.hicon     = reinterpret_cast<HICON> (::LoadImage (AfxGetInstanceHandle (), MAKEINTRESOURCE (iconResID), IMAGE_ICON, 0, 0, 0));
-        Led_ThrowIfErrorHRESULT (::OleCreatePictureIndirect (&pictDesc, IID_IDispatch, true, (void**)&picture));
+        ThrowIfErrorHRESULT (::OleCreatePictureIndirect (&pictDesc, IID_IDispatch, true, (void**)&picture));
     }
 
-    Led_ThrowIfErrorHRESULT (newIconButton->put_ButtonImage (picture));
+    ThrowIfErrorHRESULT (newIconButton->put_ButtonImage (picture));
     return item;
 }
 
@@ -3570,8 +3570,8 @@ CComPtr<IDispatch> ActiveLedItControl::mkIconElement (const ToolBarIconSpec& s)
     CComQIPtr<IALIconButtonToolbarElement> iconButton    = item;
 #endif
 
-    Led_ThrowIfErrorHRESULT (iconButton->put_Command (CComVariant{s.fCmdName}));
-    Led_ThrowIfErrorHRESULT (iconButton->put_ButtonStyle (s.fButtonStyle));
+    ThrowIfErrorHRESULT (iconButton->put_Command (CComVariant{s.fCmdName}));
+    ThrowIfErrorHRESULT (iconButton->put_ButtonStyle (s.fButtonStyle));
     return item;
 }
 
@@ -3584,7 +3584,7 @@ CComPtr<IDispatch> ActiveLedItControl::mkIconElement (int iconResID, CComPtr<IDi
     CComQIPtr<IALIconButtonToolbarElement> iconButton    = item;
 #endif
 
-    Led_ThrowIfErrorHRESULT (iconButton->put_Command (CComVariant{cmdList}));
+    ThrowIfErrorHRESULT (iconButton->put_Command (CComVariant{cmdList}));
     return item;
 }
 
@@ -3592,14 +3592,14 @@ CComPtr<IDispatch> ActiveLedItControl::MakeBuiltinComboBoxToolbarItem (CComPtr<I
 {
     try {
         CComObject<ActiveLedIt_ComboBoxToolbarElement>* o = NULL;
-        Led_ThrowIfErrorHRESULT (CComObject<ActiveLedIt_ComboBoxToolbarElement>::CreateInstance (&o));
+        ThrowIfErrorHRESULT (CComObject<ActiveLedIt_ComboBoxToolbarElement>::CreateInstance (&o));
         CComQIPtr<IDispatch> result = o->GetUnknown ();
 #if qCompilerAndStdLib_altComPtrCvt2ComQIPtrRequiresExtraCast_Buggy
         CComQIPtr<IALComboBoxToolbarElement> alcomboBox = (IDispatch*)result;
 #else
         CComQIPtr<IALComboBoxToolbarElement> alcomboBox = result;
 #endif
-        Led_ThrowIfErrorHRESULT (alcomboBox->put_CommandList (cmdList));
+        ThrowIfErrorHRESULT (alcomboBox->put_CommandList (cmdList));
         return result;
     }
     CATCH_AND_HANDLE_EXCEPTIONS ();

@@ -121,49 +121,6 @@ namespace Stroika::Frameworks::Led {
 #endif
     }
 
-#if qPlatform_Windows
-    //  class   Win32ErrorException
-    inline Win32ErrorException::Win32ErrorException (DWORD error)
-        : fError (error)
-    {
-    }
-    inline Win32ErrorException::operator DWORD () const
-    {
-        return fError;
-    }
-
-    //  class   HRESULTErrorException
-    inline HRESULTErrorException::HRESULTErrorException (HRESULT hresult)
-        : fHResult (hresult)
-    {
-    }
-    inline HRESULTErrorException::operator HRESULT () const
-    {
-        return fHResult;
-    }
-#endif
-
-#if qPlatform_Windows
-    /*
-    @METHOD:        Led_ThrowIfNotERROR_SUCCESS
-    @DESCRIPTION:   <p></p>
-    */
-    inline void Led_ThrowIfNotERROR_SUCCESS (DWORD win32ErrCode)
-    {
-        if (win32ErrCode != ERROR_SUCCESS) {
-            throw Win32ErrorException (win32ErrCode);
-        }
-    }
-#endif
-
-#if qPlatform_Windows
-    inline void Led_ThrowIfErrorHRESULT (HRESULT hr)
-    {
-        if (not SUCCEEDED (hr)) {
-            throw HRESULTErrorException (hr);
-        }
-    }
-#endif
 
 #if qPlatform_MacOS
     /*

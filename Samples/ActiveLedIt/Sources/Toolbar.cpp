@@ -64,7 +64,7 @@ namespace {
         if (SUCCEEDED (e2r.ChangeType (VT_UI4))) {
             size_t idx = e2r.ulVal;
             if (idx >= list->size ()) {
-                Led_ThrowIfErrorHRESULT (DISP_E_MEMBERNOTFOUND);
+                ThrowIfErrorHRESULT (DISP_E_MEMBERNOTFOUND);
             }
             return idx;
         }
@@ -127,13 +127,13 @@ namespace {
                 wstring     cmdName = CmdNum2Name (itemID);
                 CComVariant result;
                 CComVariant cmdNameCCV = cmdName.c_str ();
-                Led_ThrowIfErrorHRESULT (al.Invoke1 (DISPID_CommandEnabled, &cmdNameCCV, &result));
-                Led_ThrowIfErrorHRESULT (result.ChangeType (VT_BOOL));
+                ThrowIfErrorHRESULT (al.Invoke1 (DISPID_CommandEnabled, &cmdNameCCV, &result));
+                ThrowIfErrorHRESULT (result.ChangeType (VT_BOOL));
                 ::EnableMenuItem (menu, i, MF_BYPOSITION | (result.boolVal ? MF_ENABLED : MF_GRAYED));
 
                 cmdNameCCV = cmdName.c_str ();
-                Led_ThrowIfErrorHRESULT (al.Invoke1 (DISPID_CommandChecked, &cmdNameCCV, &result));
-                Led_ThrowIfErrorHRESULT (result.ChangeType (VT_BOOL));
+                ThrowIfErrorHRESULT (al.Invoke1 (DISPID_CommandChecked, &cmdNameCCV, &result));
+                ThrowIfErrorHRESULT (result.ChangeType (VT_BOOL));
                 ::CheckMenuItem (menu, i, MF_BYPOSITION | (result.boolVal ? MF_CHECKED : MF_UNCHECKED));
             }
         }
@@ -196,7 +196,7 @@ LRESULT ActiveLedIt_IconButtonToolbarElement::OnLButtonDown ([[maybe_unused]] UI
                 CComPtr<IALAcceleratorTable> accelerators;
                 {
                     CComVariant accel;
-                    Led_ThrowIfErrorHRESULT (oal.GetProperty (DISPID_AcceleratorTable, &accel));
+                    ThrowIfErrorHRESULT (oal.GetProperty (DISPID_AcceleratorTable, &accel));
                     if (SUCCEEDED (accel.ChangeType (VT_DISPATCH))) {
                         accelerators = CComQIPtr<IALAcceleratorTable> (accel.pdispVal);
                     }
@@ -215,7 +215,7 @@ LRESULT ActiveLedIt_IconButtonToolbarElement::OnLButtonDown ([[maybe_unused]] UI
                                     wstring cmdName = CmdNum2Name (cmdNum);
                                     if (cmdName.length () != 0) {
                                         CComVariant cmdNameCCV = cmdName.c_str ();
-                                        Led_ThrowIfErrorHRESULT (oal.Invoke1 (DISPID_InvokeCommand, &cmdNameCCV));
+                                        ThrowIfErrorHRESULT (oal.Invoke1 (DISPID_InvokeCommand, &cmdNameCCV));
                                     }
                                 }
                                 ::DestroyMenu (mH);
@@ -251,8 +251,8 @@ LRESULT ActiveLedIt_IconButtonToolbarElement::OnLButtonUp ([[maybe_unused]] UINT
     try {
         CComPtr<IDispatch> oal = fOwningActiveLedIt;
         CComVariant        res;
-        Led_ThrowIfErrorHRESULT (oal.GetProperty (DISPID_HWND, &res));
-        Led_ThrowIfErrorHRESULT (res.ChangeType (VT_UINT));
+        ThrowIfErrorHRESULT (oal.GetProperty (DISPID_HWND, &res));
+        ThrowIfErrorHRESULT (res.ChangeType (VT_UINT));
         HWND controlHWND = reinterpret_cast<HWND> (res.iVal);
         ::SetFocus (controlHWND);
     }
@@ -293,7 +293,7 @@ STDMETHODIMP ActiveLedIt_IconButtonToolbarElement::get_PreferredHeight (UINT* pV
             return S_OK;
         }
         OLE_XSIZE_HIMETRIC height = 0;
-        Led_ThrowIfErrorHRESULT (fButtonImage->get_Height (&height));
+        ThrowIfErrorHRESULT (fButtonImage->get_Height (&height));
         SIZEL hmSize;
         hmSize.cx = 0;
         hmSize.cy = height;
@@ -318,7 +318,7 @@ STDMETHODIMP ActiveLedIt_IconButtonToolbarElement::get_PreferredWidth (UINT* pVa
             return S_OK;
         }
         OLE_XSIZE_HIMETRIC width = 0;
-        Led_ThrowIfErrorHRESULT (fButtonImage->get_Width (&width));
+        ThrowIfErrorHRESULT (fButtonImage->get_Width (&width));
         SIZEL hmSize;
         hmSize.cx = width;
         hmSize.cy = 0;
@@ -407,7 +407,7 @@ STDMETHODIMP ActiveLedIt_IconButtonToolbarElement::NotifyOfOwningToolbar (IDispa
                 HWND parentHWND = 0;
                 {
                     CComQIPtr<IALToolbar> otb = fOwningToolbar;
-                    Led_ThrowIfErrorHRESULT (otb->get_hWnd (&parentHWND));
+                    ThrowIfErrorHRESULT (otb->get_hWnd (&parentHWND));
                 }
 
                 int itemID = 0;
@@ -433,8 +433,8 @@ STDMETHODIMP ActiveLedIt_IconButtonToolbarElement::UpdateEnableState ()
                 else {
                     CComVariant result;
                     CComVariant cmdCCV = fCommand;
-                    Led_ThrowIfErrorHRESULT (al.Invoke1 (DISPID_CommandEnabled, &cmdCCV, &result));
-                    Led_ThrowIfErrorHRESULT (result.ChangeType (VT_BOOL));
+                    ThrowIfErrorHRESULT (al.Invoke1 (DISPID_CommandEnabled, &cmdCCV, &result));
+                    ThrowIfErrorHRESULT (result.ChangeType (VT_BOOL));
                     enabled = !!result.boolVal;
                 }
             }
@@ -445,8 +445,8 @@ STDMETHODIMP ActiveLedIt_IconButtonToolbarElement::UpdateEnableState ()
                     CComPtr<IDispatch> al = fOwningActiveLedIt;
                     CComVariant        result;
                     CComVariant        commandCCV = fCommand;
-                    Led_ThrowIfErrorHRESULT (al.Invoke1 (DISPID_CommandChecked, &commandCCV, &result));
-                    Led_ThrowIfErrorHRESULT (result.ChangeType (VT_BOOL));
+                    ThrowIfErrorHRESULT (al.Invoke1 (DISPID_CommandChecked, &commandCCV, &result));
+                    ThrowIfErrorHRESULT (result.ChangeType (VT_BOOL));
                     checked = !!result.boolVal;
                 }
                 SendMessage (BM_SETSTATE, checked ? BST_PUSHED : 0);
@@ -542,9 +542,9 @@ void ActiveLedIt_IconButtonToolbarElement::UpdateButtonObj ()
         }
         else {
             short pictType = 0;
-            Led_ThrowIfErrorHRESULT (fButtonImage->get_Type (&pictType));
+            ThrowIfErrorHRESULT (fButtonImage->get_Type (&pictType));
             OLE_HANDLE pictHandle = NULL;
-            Led_ThrowIfErrorHRESULT (fButtonImage->get_Handle (&pictHandle));
+            ThrowIfErrorHRESULT (fButtonImage->get_Handle (&pictHandle));
             switch (pictType) {
                 case PICTYPE_BITMAP: {
                     SetWindowLong (GWL_STYLE, (GetWindowLong (GWL_STYLE) & ~BS_ICON) | BS_BITMAP);
@@ -635,8 +635,8 @@ LRESULT ActiveLedIt_ComboBoxToolbarElement::OnCBCloseUp ([[maybe_unused]] USHORT
     try {
         CComPtr<IDispatch> oal = fOwningActiveLedIt;
         CComVariant        res;
-        Led_ThrowIfErrorHRESULT (oal.GetProperty (DISPID_HWND, &res));
-        Led_ThrowIfErrorHRESULT (res.ChangeType (VT_UINT));
+        ThrowIfErrorHRESULT (oal.GetProperty (DISPID_HWND, &res));
+        ThrowIfErrorHRESULT (res.ChangeType (VT_UINT));
         HWND controlHWND = reinterpret_cast<HWND> (res.iVal);
         ::SetFocus (controlHWND);
     }
@@ -660,10 +660,10 @@ LRESULT ActiveLedIt_ComboBoxToolbarElement::OnCBSelChange ([[maybe_unused]] USHO
             CComQIPtr<IALCommand> alc = fCommandListCache[r];
 #endif
             CComBSTR internalName;
-            Led_ThrowIfErrorHRESULT (alc->get_InternalName (&internalName));
+            ThrowIfErrorHRESULT (alc->get_InternalName (&internalName));
             CComPtr<IDispatch> al              = fOwningActiveLedIt;
             CComVariant        internalNameCCV = internalName;
-            Led_ThrowIfErrorHRESULT (al.Invoke1 (DISPID_InvokeCommand, &internalNameCCV));
+            ThrowIfErrorHRESULT (al.Invoke1 (DISPID_InvokeCommand, &internalNameCCV));
         }
     }
     catch (...) {
@@ -776,7 +776,7 @@ STDMETHODIMP ActiveLedIt_ComboBoxToolbarElement::NotifyOfOwningToolbar (IDispatc
                 HWND parentHWND = 0;
                 {
                     CComQIPtr<IALToolbar> otb = fOwningToolbar;
-                    Led_ThrowIfErrorHRESULT (otb->get_hWnd (&parentHWND));
+                    ThrowIfErrorHRESULT (otb->get_hWnd (&parentHWND));
                 }
 
                 Create (parentHWND, &r, NULL, WS_CHILD | WS_VISIBLE);
@@ -811,8 +811,8 @@ STDMETHODIMP ActiveLedIt_ComboBoxToolbarElement::UpdateEnableState ()
 #else
                         CComVariant alcmdCCV = *i;
 #endif
-                        Led_ThrowIfErrorHRESULT (al.Invoke1 (DISPID_CommandEnabled, &alcmdCCV, &result));
-                        Led_ThrowIfErrorHRESULT (result.ChangeType (VT_BOOL));
+                        ThrowIfErrorHRESULT (al.Invoke1 (DISPID_CommandEnabled, &alcmdCCV, &result));
+                        ThrowIfErrorHRESULT (result.ChangeType (VT_BOOL));
                         if (result.boolVal) {
                             enabled = true;
                         }
@@ -824,8 +824,8 @@ STDMETHODIMP ActiveLedIt_ComboBoxToolbarElement::UpdateEnableState ()
 #else
                         CComVariant alcmdCCV = *i;
 #endif
-                        Led_ThrowIfErrorHRESULT (al.Invoke1 (DISPID_CommandChecked, &alcmdCCV, &result));
-                        Led_ThrowIfErrorHRESULT (result.ChangeType (VT_BOOL));
+                        ThrowIfErrorHRESULT (al.Invoke1 (DISPID_CommandChecked, &alcmdCCV, &result));
+                        ThrowIfErrorHRESULT (result.ChangeType (VT_BOOL));
                         if (result.boolVal) {
                             idxSelected = i - fCommandListCache.begin ();
                         }
@@ -886,21 +886,21 @@ void ActiveLedIt_ComboBoxToolbarElement::UpdatePopupObj ()
 #endif
         if (cmdList.p != NULL) {
             long cmdCount = 0;
-            Led_ThrowIfErrorHRESULT (cmdList->get_Count (&cmdCount));
+            ThrowIfErrorHRESULT (cmdList->get_Count (&cmdCount));
             HDC     hdc     = GetWindowDC ();
             HGDIOBJ oldFont = ::SelectObject (hdc, ::GetStockObject (DEFAULT_GUI_FONT));
             try {
                 DistanceType maxItemWidth = 0;
                 for (long i = 0; i < cmdCount; ++i) {
                     CComPtr<IDispatch> e;
-                    Led_ThrowIfErrorHRESULT (cmdList->get_Item (i, &e));
+                    ThrowIfErrorHRESULT (cmdList->get_Item (i, &e));
 #if qCompilerAndStdLib_altComPtrCvt2ComQIPtrRequiresExtraCast_Buggy
                     CComQIPtr<IALCommand> alc = (IDispatch*)e;
 #else
                     CComQIPtr<IALCommand> alc = e;
 #endif
                     CComBSTR name;
-                    Led_ThrowIfErrorHRESULT (alc->get_Name (&name));
+                    ThrowIfErrorHRESULT (alc->get_Name (&name));
                     fCommandListCache.push_back (alc);
                     SDKString itemPrintName = Wide2SDKString (wstring (name));
                     Verify (fComboBox.SendMessage (CB_ADDSTRING, 0, reinterpret_cast<LPARAM> (itemPrintName.c_str ())) != CB_ERR);
@@ -929,7 +929,7 @@ void ActiveLedIt_ComboBoxToolbarElement::CallInvalidateLayout ()
 {
     if (fOwningActiveLedIt != NULL) {
         CComPtr<IDispatch> oal = fOwningActiveLedIt;
-        Led_ThrowIfErrorHRESULT (oal.Invoke0 (DISPID_InvalidateLayout));
+        ThrowIfErrorHRESULT (oal.Invoke0 (DISPID_InvalidateLayout));
     }
 }
 
@@ -1115,7 +1115,7 @@ void ActiveLedIt_Toolbar::CallInvalidateLayout ()
 {
     if (fOwningActiveLedIt != NULL) {
         CComPtr<IDispatch> oal = fOwningActiveLedIt;
-        Led_ThrowIfErrorHRESULT (oal.Invoke0 (DISPID_InvalidateLayout));
+        ThrowIfErrorHRESULT (oal.Invoke0 (DISPID_InvalidateLayout));
     }
 }
 
@@ -1145,9 +1145,9 @@ void ActiveLedIt_Toolbar::DoLayout ()
         CComQIPtr<IALToolbarElement> tbi = *i;
 #endif
         UINT preferredWidth = 0;
-        Led_ThrowIfErrorHRESULT (tbi->get_PreferredWidth (&preferredWidth));
+        ThrowIfErrorHRESULT (tbi->get_PreferredWidth (&preferredWidth));
         UINT preferredHeight = 0;
-        Led_ThrowIfErrorHRESULT (tbi->get_PreferredHeight (&preferredHeight));
+        ThrowIfErrorHRESULT (tbi->get_PreferredHeight (&preferredHeight));
 
         DistanceType useHeight  = min (DistanceType (preferredHeight), itemBoundsCursor.GetHeight ());
         Led_Rect     itemBounds = itemBoundsCursor;
@@ -1182,7 +1182,7 @@ void ActiveLedIt_Toolbar::OnEnterIdle ()
 #else
             CComQIPtr<IALToolbarElement> tbi = *i;
 #endif
-            Led_ThrowIfErrorHRESULT (tbi->UpdateEnableState ());
+            ThrowIfErrorHRESULT (tbi->UpdateEnableState ());
         }
     }
     catch (...) {
@@ -1239,7 +1239,7 @@ STDMETHODIMP ActiveLedIt_Toolbar::Add (IDispatch* newElt, UINT atIndex)
         fToolbarItems.insert (fToolbarItems.begin () + idx, newElt);
         if (fOwningActiveLedIt != NULL) {
             CComQIPtr<IALToolbarElement> tbe = newElt;
-            Led_ThrowIfErrorHRESULT (tbe->NotifyOfOwningToolbar (this, fOwningActiveLedIt));
+            ThrowIfErrorHRESULT (tbe->NotifyOfOwningToolbar (this, fOwningActiveLedIt));
         }
         CallInvalidateLayout ();
     }
@@ -1256,10 +1256,10 @@ STDMETHODIMP ActiveLedIt_Toolbar::MergeAdd (IDispatch* newElts, UINT afterElt)
         size_t                idx       = min (static_cast<size_t> (afterElt), fToolbarItems.size ());
         CComQIPtr<IALToolbar> alt       = newElts;
         long                  nElts2Add = 0;
-        Led_ThrowIfErrorHRESULT (alt->get_Count (&nElts2Add));
+        ThrowIfErrorHRESULT (alt->get_Count (&nElts2Add));
         for (long i = 0; i < nElts2Add; ++i) {
             CComPtr<IDispatch> e;
-            Led_ThrowIfErrorHRESULT (alt->get_Item (i, &e));
+            ThrowIfErrorHRESULT (alt->get_Item (i, &e));
             fToolbarItems.insert (fToolbarItems.begin () + idx, e);
             if (fOwningActiveLedIt != NULL) {
 #if qCompilerAndStdLib_altComPtrCvt2ComQIPtrRequiresExtraCast_Buggy
@@ -1290,7 +1290,7 @@ STDMETHODIMP ActiveLedIt_Toolbar::Remove (VARIANT eltIntNameOrIndex)
 #else
             CComQIPtr<IALToolbarElement> tbe = fToolbarItems[idx];
 #endif
-            Led_ThrowIfErrorHRESULT (tbe->NotifyOfOwningToolbar (NULL, NULL));
+            ThrowIfErrorHRESULT (tbe->NotifyOfOwningToolbar (NULL, NULL));
         }
         fToolbarItems.erase (fToolbarItems.begin () + idx, fToolbarItems.begin () + idx + 1);
         CallInvalidateLayout ();
@@ -1309,7 +1309,7 @@ STDMETHODIMP ActiveLedIt_Toolbar::Clear ()
 #else
                 CComQIPtr<IALToolbarElement> tbe = *i;
 #endif
-                Led_ThrowIfErrorHRESULT (tbe->NotifyOfOwningToolbar (NULL, NULL));
+                ThrowIfErrorHRESULT (tbe->NotifyOfOwningToolbar (NULL, NULL));
             }
         }
         fToolbarItems.clear ();
@@ -1343,7 +1343,7 @@ STDMETHODIMP ActiveLedIt_Toolbar::get_PreferredHeight (UINT* pVal)
             CComQIPtr<IALToolbarElement> tbi = *i;
 #endif
             UINT preferredHeight = 0;
-            Led_ThrowIfErrorHRESULT (tbi->get_PreferredHeight (&preferredHeight));
+            ThrowIfErrorHRESULT (tbi->get_PreferredHeight (&preferredHeight));
             maxHeight = max (maxHeight, preferredHeight);
         }
 
@@ -1371,7 +1371,7 @@ STDMETHODIMP ActiveLedIt_Toolbar::get_PreferredWidth (UINT* pVal)
             CComQIPtr<IALToolbarElement> tbi = *i;
 #endif
             UINT preferredWidth = 0;
-            Led_ThrowIfErrorHRESULT (tbi->get_PreferredWidth (&preferredWidth));
+            ThrowIfErrorHRESULT (tbi->get_PreferredWidth (&preferredWidth));
             totalPrefWidth += preferredWidth;
         }
 
@@ -1398,7 +1398,7 @@ STDMETHODIMP ActiveLedIt_Toolbar::NotifyOfOwningActiveLedIt (IDispatch* owningAc
                 HWND                      parentHWND = 0;
                 CComQIPtr<IALToolbarList> altbl      = fOwningALToolbar;
                 if (altbl.p != NULL) {
-                    Led_ThrowIfErrorHRESULT (altbl->get_hWnd (&parentHWND));
+                    ThrowIfErrorHRESULT (altbl->get_hWnd (&parentHWND));
                 }
                 RECT r = AsRECT (fBounds);
                 Create (parentHWND, &r);
@@ -1533,7 +1533,7 @@ STDMETHODIMP ActiveLedIt_ToolbarList::Add (IDispatch* newElt, UINT atIndex)
     }
     try {
         CComQIPtr<IALToolbar> tb = newElt;
-        Led_ThrowIfErrorHRESULT (tb->NotifyOfOwningActiveLedIt (fOwningActiveLedIt, fOwningActiveLedIt == NULL ? NULL : this));
+        ThrowIfErrorHRESULT (tb->NotifyOfOwningActiveLedIt (fOwningActiveLedIt, fOwningActiveLedIt == NULL ? NULL : this));
         size_t idx = min (static_cast<size_t> (atIndex), fToolbars.size ());
         fToolbars.insert (fToolbars.begin () + idx, newElt);
         CallInvalidateLayout ();
@@ -1554,7 +1554,7 @@ STDMETHODIMP ActiveLedIt_ToolbarList::Remove (VARIANT eltIntNameOrIndex)
 #else
         CComQIPtr<IALToolbar> tb = fToolbars[idx];
 #endif
-        Led_ThrowIfErrorHRESULT (tb->NotifyOfOwningActiveLedIt (NULL, NULL));
+        ThrowIfErrorHRESULT (tb->NotifyOfOwningActiveLedIt (NULL, NULL));
         fToolbars.erase (fToolbars.begin () + idx, fToolbars.begin () + idx + 1);
         CallInvalidateLayout ();
         return S_OK;
@@ -1571,7 +1571,7 @@ STDMETHODIMP ActiveLedIt_ToolbarList::Clear ()
 #else
             CComQIPtr<IALToolbar> tb = *i;
 #endif
-            Led_ThrowIfErrorHRESULT (tb->NotifyOfOwningActiveLedIt (NULL, NULL));
+            ThrowIfErrorHRESULT (tb->NotifyOfOwningActiveLedIt (NULL, NULL));
         }
         fToolbars.clear ();
         CallInvalidateLayout ();
@@ -1584,7 +1584,7 @@ void ActiveLedIt_ToolbarList::CallInvalidateLayout ()
 {
     if (fOwningActiveLedIt != NULL) {
         CComPtr<IDispatch> oal = fOwningActiveLedIt;
-        Led_ThrowIfErrorHRESULT (oal.Invoke0 (DISPID_InvalidateLayout));
+        ThrowIfErrorHRESULT (oal.Invoke0 (DISPID_InvalidateLayout));
     }
 }
 
@@ -1609,7 +1609,7 @@ STDMETHODIMP ActiveLedIt_ToolbarList::NotifyOfOwningActiveLedIt (IDispatch* owni
 #else
                 CComQIPtr<IALToolbar> tb = *i;
 #endif
-                Led_ThrowIfErrorHRESULT (tb->NotifyOfOwningActiveLedIt (owningActiveLedIt, owningActiveLedIt == NULL ? NULL : this));
+                ThrowIfErrorHRESULT (tb->NotifyOfOwningActiveLedIt (owningActiveLedIt, owningActiveLedIt == NULL ? NULL : this));
             }
             CallInvalidateLayout ();
         }
@@ -1642,7 +1642,7 @@ STDMETHODIMP ActiveLedIt_ToolbarList::get_PreferredHeight (UINT* pVal)
             CComQIPtr<IALToolbar> tb = *i;
 #endif
             UINT preferredHeight = 0;
-            Led_ThrowIfErrorHRESULT (tb->get_PreferredHeight (&preferredHeight));
+            ThrowIfErrorHRESULT (tb->get_PreferredHeight (&preferredHeight));
             totalHeight += preferredHeight;
         }
 
@@ -1674,7 +1674,7 @@ STDMETHODIMP ActiveLedIt_ToolbarList::get_PreferredWidth (UINT* pVal)
             CComQIPtr<IALToolbar> tb = *i;
 #endif
             UINT preferredWidth = 0;
-            Led_ThrowIfErrorHRESULT (tb->get_PreferredWidth (&preferredWidth));
+            ThrowIfErrorHRESULT (tb->get_PreferredWidth (&preferredWidth));
             maxWidth = max (maxWidth, preferredWidth);
         }
 
@@ -1717,9 +1717,9 @@ void ActiveLedIt_ToolbarList::DoLayout ()
 #endif
         if (tb.p != NULL) {
             UINT height = 0;
-            Led_ThrowIfErrorHRESULT (tb->get_PreferredHeight (&height));
+            ThrowIfErrorHRESULT (tb->get_PreferredHeight (&height));
             itemBoundsCursor.bottom = itemBoundsCursor.top + height;
-            Led_ThrowIfErrorHRESULT (tb->SetRectangle (itemBoundsCursor.left, itemBoundsCursor.top, itemBoundsCursor.GetWidth (), itemBoundsCursor.GetHeight ()));
+            ThrowIfErrorHRESULT (tb->SetRectangle (itemBoundsCursor.left, itemBoundsCursor.top, itemBoundsCursor.GetWidth (), itemBoundsCursor.GetHeight ()));
             itemBoundsCursor.top = itemBoundsCursor.bottom;
         }
     }
