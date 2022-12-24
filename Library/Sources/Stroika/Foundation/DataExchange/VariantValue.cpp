@@ -649,6 +649,7 @@ boost::json::value VariantValue::As () const
         }
         default:
             AssertNotReached ();
+            return json::value{nullptr};
     }
 }
 #endif
