@@ -39,7 +39,7 @@ namespace Stroika::Foundation::Characters {
      * 
      *  Design Choices:
      *      o   Could have API to COMPUTE size of output buffer. But thats as much work to compute as actually doing the conversion (generally close).
-     *          So - instead - have ComputeOutputBufferSize () API, which quickly computes a reasonable buffer size, and just
+     *          So - instead - have ComputeTargetBufferSize () API, which quickly computes a reasonable buffer size, and just
      *          assert we never run out of space. Not a great plan, but probably pretty good, most of the time.
      * 
      *  Though you can construct your own UTFConverter with different options, a typical application will just use
@@ -109,19 +109,31 @@ namespace Stroika::Foundation::Characters {
          *      char16_t
          *      char32_t
          *      wchar_t
+         * 
+         *  \note buffer size NOT in 'bytes' but in units of 'TO' - so char32_t, or char8_t, or whatever.
          *
          *  @See ConvertQuietly ()
          *  @See Convert ()
          *  \Alias used to be called QuickComputeConversionOutputBufferSize
          */
         template <typename TO, typename FROM>
-        static constexpr size_t ComputeOutputBufferSize (span<const FROM> src);
+        static constexpr size_t ComputeTargetBufferSize (span<const FROM> src);
+
+    public:
+        /**
+         *  Result of Convert() call - saying how much of the source was consumed, and how many units of the target were produced.
+         *  units depend on the call, char8_ts, or char16_ts, or char32_ts.
+         */
+        struct ConversionResult {
+            size_t fSourceConsumed{};
+            size_t fTargetProduced{};
+        };
 
     public:
         /**
          *  \brief Convert UTFN -> UTFM (e.g. UTF8 to UTF32), throw on failure, return tuple of n source/target elements consumed/produced.
          * 
-         *  \req size of target span must be at least as large as specified by ComputeOutputBufferSize
+         *  \req size of target span must be at least as large as specified by ComputeTargetBufferSize
          * 
          *  \note overload taking mbstate_t maybe used if converting a large stream in parts which don't necesarily fall on multibyte boundaries.
          * 
@@ -142,10 +154,10 @@ namespace Stroika::Foundation::Characters {
          * 
          *  \par Example Usage
          *      \code
-         *          size_t                    cvtBufSize = UTFConverter::ComputeOutputBufferSize<wchar_t> (src);
+         *          size_t                    cvtBufSize = UTFConverter::ComputeTargetBufferSize<wchar_t> (src);
          *          StackBuffer<wchar_t>      buf{Memory::eUninitialized, cvtBufSize};
          *          auto result = UTFConverter::kThe.Convert (src, span<wchar_t>{buf});
-         *          return String{buf.begin (), buf.begin () + get<1> (result)};
+         *          return String{buf.begin (), buf.begin () + result.fTargetProduced};
          *      \endcode
          *
          *  @see ConvertQuietly for span overloads
@@ -159,16 +171,16 @@ namespace Stroika::Foundation::Characters {
          *      \endcode
          *
          */
-        nonvirtual tuple<size_t, size_t> Convert (span<const char8_t> source, span<char16_t> target) const;
-        nonvirtual tuple<size_t, size_t> Convert (span<const char16_t> source, span<char8_t> target) const;
-        nonvirtual tuple<size_t, size_t> Convert (span<const char8_t> source, span<char32_t> target) const;
-        nonvirtual tuple<size_t, size_t> Convert (span<const char32_t> source, span<char8_t> target) const;
-        nonvirtual tuple<size_t, size_t> Convert (span<const char16_t> source, span<char32_t> target) const;
-        nonvirtual tuple<size_t, size_t> Convert (span<const char32_t> source, span<char16_t> target) const;
-        nonvirtual tuple<size_t, size_t> Convert (span<const char8_t> source, span<char16_t> target, mbstate_t* multibyteConversionState) const;
-        nonvirtual tuple<size_t, size_t> Convert (span<const char8_t> source, span<char32_t> target, mbstate_t* multibyteConversionState) const;
+        nonvirtual ConversionResult Convert (span<const char8_t> source, span<char16_t> target) const;
+        nonvirtual ConversionResult Convert (span<const char16_t> source, span<char8_t> target) const;
+        nonvirtual ConversionResult Convert (span<const char8_t> source, span<char32_t> target) const;
+        nonvirtual ConversionResult Convert (span<const char32_t> source, span<char8_t> target) const;
+        nonvirtual ConversionResult Convert (span<const char16_t> source, span<char32_t> target) const;
+        nonvirtual ConversionResult Convert (span<const char32_t> source, span<char16_t> target) const;
+        nonvirtual ConversionResult Convert (span<const char8_t> source, span<char16_t> target, mbstate_t* multibyteConversionState) const;
+        nonvirtual ConversionResult Convert (span<const char8_t> source, span<char32_t> target, mbstate_t* multibyteConversionState) const;
         template <typename SRC_T, typename TRG_T>
-        nonvirtual tuple<size_t, size_t> Convert (span<const SRC_T> source, span<TRG_T> target) const
+        nonvirtual ConversionResult Convert (span<const SRC_T> source, span<TRG_T> target) const
             requires (not is_const_v<TRG_T>);
         template <typename TO, typename FROM>
         nonvirtual TO Convert (const FROM& from) const
@@ -180,10 +192,17 @@ namespace Stroika::Foundation::Characters {
         /**
          *  \brief used for ConvertQuietly
          */
-        enum class ConversionResults {
+        enum class ConversionStatusFlag {
             ok,              /* conversion successful */
             sourceExhausted, /* partial character in source, but hit end */
             sourceIllegal    /* source sequence is illegal/malformed */
+        };
+
+    public:
+        /**
+         */
+        struct ConversionResultWithStatus : ConversionResult {
+            ConversionStatusFlag fStatus{};
         };
 
     public:
@@ -193,16 +212,16 @@ namespace Stroika::Foundation::Characters {
          *  \see Convert () above for details. This only differs from Convert, in that it returns a result flag instead
          *       of throwing on errors.
          */
-        nonvirtual tuple<ConversionResults, size_t, size_t> ConvertQuietly (span<const char8_t> source, span<char16_t> target) const;
-        nonvirtual tuple<ConversionResults, size_t, size_t> ConvertQuietly (span<const char16_t> source, span<char8_t> target) const;
-        nonvirtual tuple<ConversionResults, size_t, size_t> ConvertQuietly (span<const char8_t> source, span<char32_t> target) const;
-        nonvirtual tuple<ConversionResults, size_t, size_t> ConvertQuietly (span<const char32_t> source, span<char8_t> target) const;
-        nonvirtual tuple<ConversionResults, size_t, size_t> ConvertQuietly (span<const char16_t> source, span<char32_t> target) const;
-        nonvirtual tuple<ConversionResults, size_t, size_t> ConvertQuietly (span<const char32_t> source, span<char16_t> target) const;
-        nonvirtual tuple<ConversionResults, size_t, size_t> ConvertQuietly (span<const char8_t> source, span<char16_t> target, mbstate_t* multibyteConversionState) const;
-        nonvirtual tuple<ConversionResults, size_t, size_t> ConvertQuietly (span<const char8_t> source, span<char32_t> target, mbstate_t* multibyteConversionState) const;
+        nonvirtual ConversionResultWithStatus ConvertQuietly (span<const char8_t> source, span<char16_t> target) const;
+        nonvirtual ConversionResultWithStatus ConvertQuietly (span<const char16_t> source, span<char8_t> target) const;
+        nonvirtual ConversionResultWithStatus ConvertQuietly (span<const char8_t> source, span<char32_t> target) const;
+        nonvirtual ConversionResultWithStatus ConvertQuietly (span<const char32_t> source, span<char8_t> target) const;
+        nonvirtual ConversionResultWithStatus ConvertQuietly (span<const char16_t> source, span<char32_t> target) const;
+        nonvirtual ConversionResultWithStatus ConvertQuietly (span<const char32_t> source, span<char16_t> target) const;
+        nonvirtual ConversionResultWithStatus ConvertQuietly (span<const char8_t> source, span<char16_t> target, mbstate_t* multibyteConversionState) const;
+        nonvirtual ConversionResultWithStatus ConvertQuietly (span<const char8_t> source, span<char32_t> target, mbstate_t* multibyteConversionState) const;
         template <typename SRC_T, typename TRG_T>
-        nonvirtual tuple<ConversionResults, size_t, size_t> ConvertQuietly (span<const SRC_T> source, span<TRG_T> target) const
+        nonvirtual ConversionResultWithStatus ConvertQuietly (span<const SRC_T> source, span<TRG_T> target) const
             requires (not is_const_v<TRG_T>);
 
     public:
@@ -231,32 +250,32 @@ namespace Stroika::Foundation::Characters {
 
     private:
 #if qPlatform_Windows
-        static tuple<ConversionResults, size_t, size_t> ConvertQuietly_Win32_ (span<const char8_t> source, span<char16_t> target);
-        static tuple<ConversionResults, size_t, size_t> ConvertQuietly_Win32_ (span<const char16_t> source, span<char8_t> target);
+        static ConversionResultWithStatus ConvertQuietly_Win32_ (span<const char8_t> source, span<char16_t> target);
+        static ConversionResultWithStatus ConvertQuietly_Win32_ (span<const char16_t> source, span<char8_t> target);
 #endif
     private:
-        static tuple<ConversionResults, size_t, size_t> ConvertQuietly_StroikaPortable_ (span<const char8_t> source, span<char16_t> target);
-        static tuple<ConversionResults, size_t, size_t> ConvertQuietly_StroikaPortable_ (span<const char8_t> source, span<char32_t> target);
-        static tuple<ConversionResults, size_t, size_t> ConvertQuietly_StroikaPortable_ (span<const char16_t> source, span<char32_t> target);
-        static tuple<ConversionResults, size_t, size_t> ConvertQuietly_StroikaPortable_ (span<const char32_t> source, span<char16_t> target);
-        static tuple<ConversionResults, size_t, size_t> ConvertQuietly_StroikaPortable_ (span<const char32_t> source, span<char8_t> target);
-        static tuple<ConversionResults, size_t, size_t> ConvertQuietly_StroikaPortable_ (span<const char16_t> source, span<char8_t> target);
+        static ConversionResultWithStatus ConvertQuietly_StroikaPortable_ (span<const char8_t> source, span<char16_t> target);
+        static ConversionResultWithStatus ConvertQuietly_StroikaPortable_ (span<const char8_t> source, span<char32_t> target);
+        static ConversionResultWithStatus ConvertQuietly_StroikaPortable_ (span<const char16_t> source, span<char32_t> target);
+        static ConversionResultWithStatus ConvertQuietly_StroikaPortable_ (span<const char32_t> source, span<char16_t> target);
+        static ConversionResultWithStatus ConvertQuietly_StroikaPortable_ (span<const char32_t> source, span<char8_t> target);
+        static ConversionResultWithStatus ConvertQuietly_StroikaPortable_ (span<const char16_t> source, span<char8_t> target);
 
 #if __has_include("boost/locale/encoding_utf.hpp")
     private:
-        static tuple<ConversionResults, size_t, size_t> ConvertQuietly_boost_locale_ (span<const char8_t> source, const span<char16_t> target);
+        static ConversionResultWithStatus ConvertQuietly_boost_locale_ (span<const char8_t> source, const span<char16_t> target);
 #endif
 
     private:
         // this API allows multibyteConversionState == nullptr, even though public APIs don't
-        static tuple<ConversionResults, size_t, size_t> ConvertQuietly_codeCvt_ (span<const char8_t> source, span<char16_t> target, mbstate_t* multibyteConversionState);
-        static tuple<ConversionResults, size_t, size_t> ConvertQuietly_codeCvt_ (span<const char8_t> source, span<char32_t> target, mbstate_t* multibyteConversionState);
-        static tuple<ConversionResults, size_t, size_t> ConvertQuietly_codeCvt_ (span<const char16_t> source, span<char8_t> target);
-        static tuple<ConversionResults, size_t, size_t> ConvertQuietly_codeCvt_ (span<const char32_t> source, span<char8_t> target);
+        static ConversionResultWithStatus ConvertQuietly_codeCvt_ (span<const char8_t> source, span<char16_t> target, mbstate_t* multibyteConversionState);
+        static ConversionResultWithStatus ConvertQuietly_codeCvt_ (span<const char8_t> source, span<char32_t> target, mbstate_t* multibyteConversionState);
+        static ConversionResultWithStatus ConvertQuietly_codeCvt_ (span<const char16_t> source, span<char8_t> target);
+        static ConversionResultWithStatus ConvertQuietly_codeCvt_ (span<const char32_t> source, span<char8_t> target);
 
     private:
-        static void ThrowIf_ (ConversionResults cr);
-        static void Throw_ (ConversionResults cr);
+        static void ThrowIf_ (ConversionStatusFlag cr);
+        static void Throw_ (ConversionStatusFlag cr);
     };
 
 }

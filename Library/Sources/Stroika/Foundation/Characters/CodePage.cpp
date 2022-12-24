@@ -2501,7 +2501,7 @@ size_t CodePageConverter::MapFromUNICODE_QuickComputeOutBufSize (const wchar_t* 
             resultSize = inCharCnt * 6;
             break; // ITHINK thats right... BOM appears to be 5 chars long? LGP 2001-09-11
         case kCodePage_UTF8:
-            resultSize = UTFConverter::ComputeOutputBufferSize<char> (span{inChars, inChars + inCharCnt});
+            resultSize = UTFConverter::ComputeTargetBufferSize<char> (span{inChars, inChars + inCharCnt});
         default:
             resultSize = inCharCnt * 8;
             break; // I THINK that should always be enough - but who knows...
@@ -2581,7 +2581,7 @@ void CodePageConverter::MapToUNICODE (const char* inMBChars, size_t inMBCharCnt,
             }
         } break;
         case kCodePage_UTF8: {
-            *outCharCnt = get<1> (UTFConverter::kThe.Convert (span{inMBChars, inMBChars + inMBCharCnt}, span{outChars, *outCharCnt}));
+            *outCharCnt = UTFConverter::kThe.Convert (span{inMBChars, inMBChars + inMBCharCnt}, span{outChars, *outCharCnt}).fTargetProduced;
         } break;
         default: {
 #if qPlatform_Windows
@@ -2735,7 +2735,7 @@ void CodePageConverter::MapFromUNICODE (const char16_t* inChars, size_t inCharCn
                     useOutCharCount = 0;
                 }
             }
-            useOutCharCount = get<1> (UTFConverter::kThe.Convert (span{inChars, inCharCnt}, span{useOutChars, useOutCharCount}));
+            useOutCharCount = UTFConverter::kThe.Convert (span{inChars, inCharCnt}, span{useOutChars, useOutCharCount}).fTargetProduced;
             if (GetHandleBOM ()) {
                 if (*outCharCnt >= 3) {
                     useOutCharCount += 3;
@@ -2771,8 +2771,7 @@ void CodePageConverter::MapFromUNICODE (const char16_t* inChars, size_t inCharCn
 
 void CodePageConverter::MapFromUNICODE (const char32_t* inChars, size_t inCharCnt, char* outChars, size_t* outCharCnt) const
 {
-    auto r      = UTFConverter::kThe.Convert (span{inChars, inCharCnt}, span{outChars, *outCharCnt});
-    *outCharCnt = get<1> (r);
+    *outCharCnt = UTFConverter::kThe.Convert (span{inChars, inCharCnt}, span{outChars, *outCharCnt}).fTargetProduced;
 }
 
 /*

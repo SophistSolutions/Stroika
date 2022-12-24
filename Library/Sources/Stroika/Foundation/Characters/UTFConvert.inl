@@ -54,7 +54,7 @@ namespace Stroika::Foundation::Characters {
     inline constexpr UTFConverter UTFConverter::kThe;
 
     template <typename TO, typename FROM>
-    constexpr size_t UTFConverter::ComputeOutputBufferSize (span<const FROM> src)
+    constexpr size_t UTFConverter::ComputeTargetBufferSize (span<const FROM> src)
     {
         if constexpr (sizeof (FROM) == sizeof (TO)) {
             return src.size (); // not super useful to do this conversion, but given how if constexpr works/evaluates, its often important than this code compiles, even if it doesn't execute
@@ -93,77 +93,75 @@ namespace Stroika::Foundation::Characters {
         }
     }
 
-    inline auto UTFConverter::Convert (span<const char8_t> source, span<char16_t> target) const -> tuple<size_t, size_t>
+    inline auto UTFConverter::Convert (span<const char8_t> source, span<char16_t> target) const -> ConversionResult
     {
-        Require ((target.size () >= ComputeOutputBufferSize<char16_t> (source)));
+        Require ((target.size () >= ComputeTargetBufferSize<char16_t> (source)));
         auto result = ConvertQuietly (source, target);
-        ThrowIf_ (get<0> (result));
-        return make_tuple (get<1> (result), get<2> (result));
+        ThrowIf_ (result.fStatus);
+        return result; // slice
     }
-    inline auto UTFConverter::Convert (span<const char16_t> source, span<char8_t> target) const -> tuple<size_t, size_t>
+    inline auto UTFConverter::Convert (span<const char16_t> source, span<char8_t> target) const -> ConversionResult
     {
-        Require ((target.size () >= ComputeOutputBufferSize<char8_t> (source)));
+        Require ((target.size () >= ComputeTargetBufferSize<char8_t> (source)));
         auto result = ConvertQuietly (source, target);
-        ThrowIf_ (get<0> (result));
-        return make_tuple (get<1> (result), get<2> (result));
+        ThrowIf_ (result.fStatus);
+        return result; // slice
     }
-    inline auto UTFConverter::Convert (span<const char8_t> source, span<char32_t> target) const -> tuple<size_t, size_t>
+    inline auto UTFConverter::Convert (span<const char8_t> source, span<char32_t> target) const -> ConversionResult
     {
-        Require ((target.size () >= ComputeOutputBufferSize<char32_t> (source)));
+        Require ((target.size () >= ComputeTargetBufferSize<char32_t> (source)));
         auto result = ConvertQuietly (source, target);
-        ThrowIf_ (get<0> (result));
-        return make_tuple (get<1> (result), get<2> (result));
+        ThrowIf_ (result.fStatus);
+        return result; // slice
     }
-    inline auto UTFConverter::Convert (span<const char32_t> source, span<char8_t> target) const -> tuple<size_t, size_t>
+    inline auto UTFConverter::Convert (span<const char32_t> source, span<char8_t> target) const -> ConversionResult
     {
-        Require ((target.size () >= ComputeOutputBufferSize<char8_t> (source)));
+        Require ((target.size () >= ComputeTargetBufferSize<char8_t> (source)));
         auto result = ConvertQuietly (source, target);
-        ThrowIf_ (get<0> (result));
-        return make_tuple (get<1> (result), get<2> (result));
+        ThrowIf_ (result.fStatus);
+        return result; // slice
     }
-    inline auto UTFConverter::Convert (span<const char16_t> source, span<char32_t> target) const -> tuple<size_t, size_t>
+    inline auto UTFConverter::Convert (span<const char16_t> source, span<char32_t> target) const -> ConversionResult
     {
-        Require ((target.size () >= ComputeOutputBufferSize<char32_t> (source)));
+        Require ((target.size () >= ComputeTargetBufferSize<char32_t> (source)));
         auto result = ConvertQuietly (source, target);
-        ThrowIf_ (get<0> (result));
-        return make_tuple (get<1> (result), get<2> (result));
+        ThrowIf_ (result.fStatus);
+        return result; // slice
     }
-    inline auto UTFConverter::Convert (span<const char32_t> source, span<char16_t> target) const -> tuple<size_t, size_t>
+    inline auto UTFConverter::Convert (span<const char32_t> source, span<char16_t> target) const -> ConversionResult
     {
-        Require ((target.size () >= ComputeOutputBufferSize<char16_t> (source)));
+        Require ((target.size () >= ComputeTargetBufferSize<char16_t> (source)));
         auto result = ConvertQuietly (source, target);
-        ThrowIf_ (get<0> (result));
-        return make_tuple (get<1> (result), get<2> (result));
+        ThrowIf_ (result.fStatus);
+        return result; // slice
     }
-    inline auto UTFConverter::Convert (span<const char8_t> source, span<char16_t> target, mbstate_t* multibyteConversionState) const -> tuple<size_t, size_t>
+    inline auto UTFConverter::Convert (span<const char8_t> source, span<char16_t> target, mbstate_t* multibyteConversionState) const -> ConversionResult
     {
-        Require ((target.size () >= ComputeOutputBufferSize<char16_t> (source)));
+        Require ((target.size () >= ComputeTargetBufferSize<char16_t> (source)));
         RequireNotNull (multibyteConversionState);
         auto result = ConvertQuietly (source, target, multibyteConversionState);
-        ThrowIf_ (get<0> (result));
-        return make_tuple (get<1> (result), get<2> (result));
+        ThrowIf_ (result.fStatus);
+        return result; // slice
     }
-    inline auto UTFConverter::Convert (span<const char8_t> source, span<char32_t> target, mbstate_t* multibyteConversionState) const -> tuple<size_t, size_t>
+    inline auto UTFConverter::Convert (span<const char8_t> source, span<char32_t> target, mbstate_t* multibyteConversionState) const -> ConversionResult
     {
-        Require ((target.size () >= ComputeOutputBufferSize<char32_t> (source)));
+        Require ((target.size () >= ComputeTargetBufferSize<char32_t> (source)));
         RequireNotNull (multibyteConversionState);
         auto result = ConvertQuietly (source, target, multibyteConversionState);
-        ThrowIf_ (get<0> (result));
-        return make_tuple (get<1> (result), get<2> (result));
+        ThrowIf_ (result.fStatus);
+        return result; // slice
     }
     template <typename SRC_T, typename TRG_T>
-    inline tuple<size_t, size_t> UTFConverter::Convert (span<const SRC_T> source, span<TRG_T> target) const
-        requires (not is_const_v<TRG_T>)
-    {
-        Require ((target.size () >= ComputeOutputBufferSize<TRG_T> (source)));
-        if constexpr (sizeof (SRC_T) == sizeof (TRG_T)) {
-            copy (source, target, source.size ()); // pointless conversion, but if requested...
-            return source.size ();
-        }
-        return Convert (ConvertCompatibleSpan_ (source), ConvertCompatibleSpan_ (target));
-    }
-    template <typename TO, typename FROM>
-    inline TO UTFConverter::Convert (const FROM& from) const
+    inline auto UTFConverter::Convert (span<const SRC_T> source, span<TRG_T> target) const -> ConversionResult
+        requires (not is_const_v<TRG_T>) {
+            Require ((target.size () >= ComputeTargetBufferSize<TRG_T> (source)));
+            if constexpr (sizeof (SRC_T) == sizeof (TRG_T)) {
+                copy (source, target, source.size ()); // pointless conversion, but if requested...
+                return source.size ();
+            }
+            return Convert (ConvertCompatibleSpan_ (source), ConvertCompatibleSpan_ (target));
+        } template <typename TO, typename FROM>
+        inline TO UTFConverter::Convert (const FROM& from) const
         requires (
             (is_same_v<TO, string> or is_same_v<TO, wstring> or is_same_v<TO, u8string> or is_same_v<TO, u16string> or is_same_v<TO, u32string>) and
             (is_same_v<FROM, string> or is_same_v<FROM, wstring> or is_same_v<FROM, u8string> or is_same_v<FROM, u16string> or is_same_v<FROM, u32string>))
@@ -172,15 +170,15 @@ namespace Stroika::Foundation::Characters {
             return from;
         }
         else {
-            size_t                                       cvtBufSize = ComputeOutputBufferSize<typename TO::value_type> (span{from});
+            size_t                                       cvtBufSize = ComputeTargetBufferSize<typename TO::value_type> (span{from});
             Memory::StackBuffer<typename TO::value_type> buf{Memory::eUninitialized, cvtBufSize};
             return TO{buf.begin (), get<1> (Convert (span{from}, span{buf}))};
         }
     }
 
-    inline auto UTFConverter::ConvertQuietly (span<const char8_t> source, span<char16_t> target) const -> tuple<ConversionResults, size_t, size_t>
+    inline auto UTFConverter::ConvertQuietly (span<const char8_t> source, span<char16_t> target) const -> ConversionResultWithStatus
     {
-        Require ((target.size () >= ComputeOutputBufferSize<char16_t> (source)));
+        Require ((target.size () >= ComputeTargetBufferSize<char16_t> (source)));
         switch (Private_::ValueOf_ (fUsingOptions.fPreferredImplementation)) {
 #if qPlatform_Windows
             case Options::Implementation::eWin32Wide2FromMultibyte: {
@@ -203,9 +201,9 @@ namespace Stroika::Foundation::Characters {
             }
         }
     }
-    inline auto UTFConverter::ConvertQuietly (span<const char16_t> source, span<char8_t> target) const -> tuple<ConversionResults, size_t, size_t>
+    inline auto UTFConverter::ConvertQuietly (span<const char16_t> source, span<char8_t> target) const -> ConversionResultWithStatus
     {
-        Require ((target.size () >= ComputeOutputBufferSize<char8_t> (source)));
+        Require ((target.size () >= ComputeTargetBufferSize<char8_t> (source)));
         switch (Private_::ValueOf_ (fUsingOptions.fPreferredImplementation)) {
 #if qPlatform_Windows
             case Options::Implementation::eWin32Wide2FromMultibyte: {
@@ -223,9 +221,9 @@ namespace Stroika::Foundation::Characters {
             }
         }
     }
-    inline auto UTFConverter::ConvertQuietly (span<const char8_t> source, span<char32_t> target) const -> tuple<ConversionResults, size_t, size_t>
+    inline auto UTFConverter::ConvertQuietly (span<const char8_t> source, span<char32_t> target) const -> ConversionResultWithStatus
     {
-        Require ((target.size () >= ComputeOutputBufferSize<char32_t> (source)));
+        Require ((target.size () >= ComputeTargetBufferSize<char32_t> (source)));
         switch (Private_::ValueOf_ (fUsingOptions.fPreferredImplementation)) {
             case Options::Implementation::eStroikaPortable: {
                 return ConvertQuietly_StroikaPortable_ (source, target);
@@ -238,9 +236,9 @@ namespace Stroika::Foundation::Characters {
             }
         }
     }
-    inline auto UTFConverter::ConvertQuietly (span<const char32_t> source, span<char8_t> target) const -> tuple<ConversionResults, size_t, size_t>
+    inline auto UTFConverter::ConvertQuietly (span<const char32_t> source, span<char8_t> target) const -> ConversionResultWithStatus
     {
-        Require ((target.size () >= ComputeOutputBufferSize<char8_t> (source)));
+        Require ((target.size () >= ComputeTargetBufferSize<char8_t> (source)));
         switch (Private_::ValueOf_ (fUsingOptions.fPreferredImplementation)) {
             case Options::Implementation::eStroikaPortable: {
                 return ConvertQuietly_StroikaPortable_ (source, target);
@@ -253,9 +251,9 @@ namespace Stroika::Foundation::Characters {
             }
         }
     }
-    inline auto UTFConverter::ConvertQuietly (span<const char16_t> source, span<char32_t> target) const -> tuple<ConversionResults, size_t, size_t>
+    inline auto UTFConverter::ConvertQuietly (span<const char16_t> source, span<char32_t> target) const -> ConversionResultWithStatus
     {
-        Require ((target.size () >= ComputeOutputBufferSize<char32_t> (source)));
+        Require ((target.size () >= ComputeTargetBufferSize<char32_t> (source)));
         switch (Private_::ValueOf_ (fUsingOptions.fPreferredImplementation)) {
             case Options::Implementation::eStroikaPortable: {
                 return ConvertQuietly_StroikaPortable_ (source, target);
@@ -270,9 +268,9 @@ namespace Stroika::Foundation::Characters {
             }
         }
     }
-    inline auto UTFConverter::ConvertQuietly (span<const char32_t> source, span<char16_t> target) const -> tuple<ConversionResults, size_t, size_t>
+    inline auto UTFConverter::ConvertQuietly (span<const char32_t> source, span<char16_t> target) const -> ConversionResultWithStatus
     {
-        Require ((target.size () >= ComputeOutputBufferSize<char16_t> (source)));
+        Require ((target.size () >= ComputeTargetBufferSize<char16_t> (source)));
         switch (Private_::ValueOf_ (fUsingOptions.fPreferredImplementation)) {
             case Options::Implementation::eStroikaPortable: {
                 return ConvertQuietly_StroikaPortable_ (source, target);
@@ -287,9 +285,9 @@ namespace Stroika::Foundation::Characters {
             }
         }
     }
-    inline auto UTFConverter::ConvertQuietly (span<const char8_t> source, span<char16_t> target, mbstate_t* multibyteConversionState) const -> tuple<ConversionResults, size_t, size_t>
+    inline auto UTFConverter::ConvertQuietly (span<const char8_t> source, span<char16_t> target, mbstate_t* multibyteConversionState) const -> ConversionResultWithStatus
     {
-        Require ((target.size () >= ComputeOutputBufferSize<char16_t> (source)));
+        Require ((target.size () >= ComputeTargetBufferSize<char16_t> (source)));
         RequireNotNull (multibyteConversionState);
         switch (Private_::ValueOf_ (fUsingOptions.fPreferredImplementation)) {
             case Options::Implementation::eCodeCVT: {
@@ -300,9 +298,9 @@ namespace Stroika::Foundation::Characters {
             }
         }
     }
-    inline auto UTFConverter::ConvertQuietly (span<const char8_t> source, span<char32_t> target, mbstate_t* multibyteConversionState) const -> tuple<ConversionResults, size_t, size_t>
+    inline auto UTFConverter::ConvertQuietly (span<const char8_t> source, span<char32_t> target, mbstate_t* multibyteConversionState) const -> ConversionResultWithStatus
     {
-        Require ((target.size () >= ComputeOutputBufferSize<char32_t> (source)));
+        Require ((target.size () >= ComputeTargetBufferSize<char32_t> (source)));
         RequireNotNull (multibyteConversionState);
         switch (Private_::ValueOf_ (fUsingOptions.fPreferredImplementation)) {
             case Options::Implementation::eCodeCVT: {
@@ -314,15 +312,14 @@ namespace Stroika::Foundation::Characters {
         }
     }
     template <typename SRC_T, typename TRG_T>
-    inline auto UTFConverter::ConvertQuietly (span<const SRC_T> source, span<TRG_T> target) const -> tuple<ConversionResults, size_t, size_t>
-        requires (not is_const_v<TRG_T>)
-    {
-        if constexpr (sizeof (SRC_T) == sizeof (TRG_T)) {
-            copy (source, target, source.size ()); // pointless conversion, but if requested...
-            return source.size ();
+    inline auto UTFConverter::ConvertQuietly (span<const SRC_T> source, span<TRG_T> target) const -> ConversionResultWithStatus
+        requires (not is_const_v<TRG_T>) {
+            if constexpr (sizeof (SRC_T) == sizeof (TRG_T)) {
+                copy (source, target, source.size ()); // pointless conversion, but if requested...
+                return source.size ();
+            }
+            return ConvertQuietly (ConvertCompatibleSpan_ (source), ConvertCompatibleSpan_ (target));
         }
-        return ConvertQuietly (ConvertCompatibleSpan_ (source), ConvertCompatibleSpan_ (target));
-    }
 
     template <typename FromT>
     constexpr auto UTFConverter::ConvertCompatibleSpan_ (span<FromT> f) -> span<CompatibleT_<FromT>>
@@ -334,56 +331,56 @@ namespace Stroika::Foundation::Characters {
     }
 
 #if qPlatform_Windows
-    inline auto UTFConverter::ConvertQuietly_Win32_ (span<const char8_t> source, span<char16_t> target) -> tuple<ConversionResults, size_t, size_t>
+    inline auto UTFConverter::ConvertQuietly_Win32_ (span<const char8_t> source, span<char16_t> target) -> ConversionResultWithStatus
     {
         if (source.begin () == source.end ()) {
-            return make_tuple (ConversionResults::ok, 0, 0);
+            return ConversionResultWithStatus{0, 0, ConversionStatusFlag::ok};
         }
         else {
             int srcLen          = static_cast<int> (source.size ());
             int trgLen          = static_cast<int> (target.size ());
             int convertedLength = ::MultiByteToWideChar (CP_UTF8, 0, reinterpret_cast<const char*> (&*source.begin ()), srcLen, reinterpret_cast<WCHAR*> (&*target.begin ()), trgLen);
-            return make_tuple (
-                convertedLength == 0 ? ConversionResults::sourceIllegal : ConversionResults::ok,
-                srcLen, // wag - dont think WideCharToMultiByte tells us how much source consumed
-                convertedLength);
+            return ConversionResultWithStatus{
+                static_cast<size_t> (srcLen), // wag - dont think WideCharToMultiByte tells us how much source consumed
+                static_cast<size_t> (convertedLength),
+                convertedLength == 0 ? ConversionStatusFlag::sourceIllegal : ConversionStatusFlag::ok};
         }
     }
-    inline auto UTFConverter::ConvertQuietly_Win32_ (span<const char16_t> source, span<char8_t> target) -> tuple<ConversionResults, size_t, size_t>
+    inline auto UTFConverter::ConvertQuietly_Win32_ (span<const char16_t> source, span<char8_t> target) -> ConversionResultWithStatus
     {
         if (source.begin () == source.end ()) {
-            return make_tuple (ConversionResults::ok, 0, 0);
+            return ConversionResultWithStatus{0, 0, ConversionStatusFlag::ok};
         }
         else {
             int srcLen          = static_cast<int> (source.size ());
             int trgLen          = static_cast<int> (target.size ());
             int convertedLength = ::WideCharToMultiByte (CP_UTF8, 0, reinterpret_cast<const WCHAR*> (&*source.begin ()), srcLen, reinterpret_cast<char*> (&*target.begin ()), trgLen, nullptr, nullptr);
-            return make_tuple (
-                convertedLength == 0 ? ConversionResults::sourceIllegal : ConversionResults::ok,
-                srcLen, // wag - dont think WideCharToMultiByte tells us how much source consumed
-                convertedLength);
+            return ConversionResultWithStatus{
+                static_cast<size_t> (srcLen), // wag - dont think WideCharToMultiByte tells us how much source consumed
+                static_cast<size_t> (convertedLength),
+                convertedLength == 0 ? ConversionStatusFlag::sourceIllegal : ConversionStatusFlag::ok};
         }
     }
 #endif
-    inline void UTFConverter::ThrowIf_ (ConversionResults cr)
+    inline void UTFConverter::ThrowIf_ (ConversionStatusFlag cr)
     {
         switch (cr) {
-            case ConversionResults::ok:;
+            case ConversionStatusFlag::ok:;
                 break;
             default:
                 Throw_ (cr);
         }
     }
 #if __has_include("boost/locale/encoding_utf.hpp")
-    inline auto UTFConverter::ConvertQuietly_boost_locale_ (span<const char8_t> source, const span<char16_t> target) -> tuple<ConversionResults, size_t, size_t>
+    inline auto UTFConverter::ConvertQuietly_boost_locale_ (span<const char8_t> source, const span<char16_t> target) -> ConversionResultWithStatus
     {
         if (source.empty ()) {
-            return make_tuple (ConversionResults::ok, 0, 0);
+            return ConversionResultWithStatus{0, 0, ConversionStatusFlag::ok};
         }
         basic_string<char8_t> src = basic_string<char8_t>{reinterpret_cast<const char8_t*> (&*source.begin ()), reinterpret_cast<const char8_t*> (&*source.begin ()) + source.size ()};
         u16string             r   = boost::locale::conv::utf_to_utf<char16_t> (src.c_str ());
         copy (r.begin (), r.end (), target.begin ());
-        return make_tuple (ConversionResults::ok, source.size (), r.size ());
+        return ConversionResultWithStatus{source.size (), r.size (), ConversionStatusFlag::ok};
 #if 0
          utf::code_point c;
          char16_t* p = target.begin ();
@@ -420,7 +417,7 @@ namespace Stroika::Foundation::Characters {
 #endif
 
         //tmphack to test
-        return make_tuple (ConversionResults::ok, 0, 0);
+        return ConversionResultWithStatus{0, 0, ConversionStatusFlag::ok};
     }
 #endif
 
