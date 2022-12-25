@@ -707,9 +707,9 @@ String String::Replace (size_t from, size_t to, const String& replacement) const
     Require (from <= to);
     Require (to <= this->size ());
     Assert (to + thisStart < thisEnd);
-    StringBuilder sb{thisStart, thisStart + from};
+    StringBuilder sb{span{thisStart, from}};
     sb.Append (replacement);
-    sb.Append (thisStart + from, thisStart + to);
+    sb.Append (span{thisStart + from, thisStart + to});
     Ensure (sb.str () == SubString (0, from) + replacement + SubString (to));
     return sb.str ();
 }

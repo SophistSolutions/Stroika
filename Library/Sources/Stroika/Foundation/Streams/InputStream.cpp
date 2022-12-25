@@ -114,7 +114,7 @@ String InputStream<Character>::Ptr::ReadAll (size_t upTo) const
         else {
             Assert (n <= nEltsLeft);
             nEltsLeft -= n;
-            result.Append (s, s + n);
+            result.Append (span<const Character>{s, n});
         }
     }
 #if USE_NOISY_TRACE_IN_THIS_MODULE_

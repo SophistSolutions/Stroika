@@ -1406,8 +1406,6 @@ namespace Stroika::Foundation::Characters {
         // PeekData () const -> span<const char> = 0;       // FOR  ASCII
         // PeekCStr () const -> const wchar_t* = nullptr;   // ...
 
-
-
     public:
         /*
          *  Return a pointer to mostly standard (wide, nul-terminated) C string,

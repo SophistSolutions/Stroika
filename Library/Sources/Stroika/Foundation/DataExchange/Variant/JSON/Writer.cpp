@@ -146,7 +146,7 @@ namespace {
                         sb.Append (buf);
                     }
                     else {
-                        sb.Append (&c, &c + 1);
+                        sb.Append (c);
                     }
                     break;
             }
