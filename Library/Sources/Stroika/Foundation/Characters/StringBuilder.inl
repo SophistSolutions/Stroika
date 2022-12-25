@@ -54,7 +54,7 @@ namespace Stroika::Foundation::Characters {
                 (void)::memcpy (fData_.begin () + i, &*s.begin (), sizeof (wchar_t) * rhsLen);
             }
             else {
-                Memory::StackBuffer<wchar_t> buf;
+                Memory::StackBuffer<wchar_t> buf{Memory::eUninitialized, UTFConverter::ComputeTargetBufferSize<wchar_t> (s)};
                 auto                         r = UTFConverter::kThe.Convert (s, span{buf});
                 Append (String{&*buf.begin (), &*buf.begin () + r.fTargetProduced});
             }
