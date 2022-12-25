@@ -2532,7 +2532,7 @@ void CodePageConverter::MapToUNICODE (const char* inMBChars, size_t inMBCharCnt,
 
     if (GetHandleBOM ()) {
         size_t bytesToStrip = 0;
-        if (CodePagesGuesser {}.Guess (inMBChars, inMBCharCnt, nullptr, &bytesToStrip) == fCodePage) {
+        if (CodePagesGuesser{}.Guess (inMBChars, inMBCharCnt, nullptr, &bytesToStrip) == fCodePage) {
             Assert (inMBCharCnt >= bytesToStrip);
             inMBChars += bytesToStrip;
             inMBCharCnt -= bytesToStrip;
@@ -2767,22 +2767,22 @@ void CodePageConverter::MapFromUNICODE (const char16_t* inChars, size_t inCharCn
 
 void CodePageConverter::MapFromUNICODE (const char32_t* inChars, size_t inCharCnt, char* outChars, size_t* outCharCnt) const
 {
-    char* useOutChars = outChars;
+    char*  useOutChars     = outChars;
     size_t useOutCharCount = *outCharCnt;
     if (GetHandleBOM ()) {
-     if (useOutCharCount >= 3) {
-                    useOutChars += 3; // skip BOM
-                    useOutCharCount -= 3;
-                    reinterpret_cast<unsigned char*> (outChars)[0] = 0xef;
-                    reinterpret_cast<unsigned char*> (outChars)[1] = 0xbb;
-                    reinterpret_cast<unsigned char*> (outChars)[2] = 0xbf;
-                }
+        if (useOutCharCount >= 3) {
+            useOutChars += 3; // skip BOM
+            useOutCharCount -= 3;
+            reinterpret_cast<unsigned char*> (outChars)[0] = 0xef;
+            reinterpret_cast<unsigned char*> (outChars)[1] = 0xbb;
+            reinterpret_cast<unsigned char*> (outChars)[2] = 0xbf;
+        }
     }
 
     *outCharCnt = UTFConverter::kThe.Convert (span{inChars, inCharCnt}, span{useOutChars, useOutCharCount}).fTargetProduced;
-     if (useOutCharCount >= 3) {
- *outCharCnt += 3;
-     }
+    if (useOutCharCount >= 3) {
+        *outCharCnt += 3;
+    }
 }
 
 /*
