@@ -1397,6 +1397,17 @@ namespace Stroika::Foundation::Characters {
     public:
         nonvirtual pair<const Character*, const Character*> GetData () const;
 
+        // NEW API VIRTUAL API ANY can return nullptr
+        // OR same API, taking BUF, and copies into that buf - in which case cannot return nullptr - maybe call GetData2();
+        // PeekData () const -> span<const Character> = 0;
+        // PeekData () const -> span<const char32_t> = 0;
+        // PeekData () const -> span<const char16_t> = 0;
+        // PeekData () const -> span<const char8_t> = 0;
+        // PeekData () const -> span<const char> = 0;       // FOR  ASCII
+        // PeekCStr () const -> const wchar_t* = nullptr;   // ...
+
+
+
     public:
         /*
          *  Return a pointer to mostly standard (wide, nul-terminated) C string,
