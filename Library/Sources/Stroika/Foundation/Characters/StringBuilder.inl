@@ -87,7 +87,7 @@ namespace Stroika::Foundation::Characters {
     }
     inline void StringBuilder::Append (wchar_t c)
     {
-        Append (span<const wchar_t>{&c, 1});    // @todo get working with explicit template param!
+        Append (span<const wchar_t>{&c, 1}); // @todo get working with explicit template param!
     }
     inline void StringBuilder::Append (Character c)
     {
