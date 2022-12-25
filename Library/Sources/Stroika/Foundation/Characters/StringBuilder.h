@@ -28,8 +28,6 @@
  *      @todo   Add InsertAt() methods - like from String class (before I deprecate them).
  *              https://stroika.atlassian.net/browse/STK-34
  *
- *      @todo   Use ExternallySynchronizedLock when copying from src.
- *
  *      @todo   Consider adding operator==, and or other String methods - esp so can compare as a value
  *              with String. Or maybe add As<> method, and force compare As<String> ()?
  *
@@ -57,10 +55,14 @@ namespace Stroika::Foundation::Characters {
         using value_type = Character;
 
     public:
+        /**
+         */
         StringBuilder ()                     = default;
         StringBuilder (const StringBuilder&) = default;
         StringBuilder (const String& initialValue);
-        StringBuilder (const wchar_t* start, const wchar_t* end);
+        template <typename CHAR_T>
+        StringBuilder (span<const CHAR_T> initialValue)
+            requires (is_same_v<CHAR_T, char8_t> or is_same_v<CHAR_T, char16_t> or is_same_v<CHAR_T, char32_t> or is_same_v<CHAR_T, wchar_t>);
 
     public:
         nonvirtual StringBuilder& operator= (const StringBuilder& rhs) = default;
@@ -68,44 +70,51 @@ namespace Stroika::Foundation::Characters {
 
     public:
         /**
-         *  add overloads
+         *  Append the given argument characters to this buffer.
+         * 
+         *  argument characters can be given by
+         *      o   span<unicode characters>
+         *      o   const T* - nul-terminated array of unicode characters
+         *      o   basic_string<unicode characters>
+         *      o   basic_string_view<unicode characters>
+         *      o   String
+         *      o   Character
          */
-        nonvirtual void Append (const Character* s, const Character* e);
-        nonvirtual void Append (const char16_t* s, const char16_t* e);
-        nonvirtual void Append (const char16_t* s);
-        nonvirtual void Append (const char32_t* s, const char32_t* e);
-        nonvirtual void Append (const char32_t* s);
-        nonvirtual void Append (const wchar_t* s, const wchar_t* e);
-        nonvirtual void Append (const wchar_t* s);
-        nonvirtual void Append (const basic_string_view<wchar_t>& s);
-        nonvirtual void Append (const wstring& s);
-        nonvirtual void Append (const u16string& s);
-        nonvirtual void Append (const u32string& s);
+        template <typename CHAR_T>
+        nonvirtual void Append (span<const CHAR_T> s)
+            requires (is_same_v<CHAR_T, char8_t> or is_same_v<CHAR_T, char16_t> or is_same_v<CHAR_T, char32_t> or is_same_v<CHAR_T, wchar_t> or is_same_v<CHAR_T, Character>);
+        template <typename CHAR_T>
+        nonvirtual void Append (const CHAR_T* s)
+            requires (is_same_v<CHAR_T, char8_t> or is_same_v<CHAR_T, char16_t> or is_same_v<CHAR_T, char32_t> or is_same_v<CHAR_T, wchar_t> or is_same_v<CHAR_T, Character>);
+        template <typename CHAR_T>
+        nonvirtual void Append (const basic_string<CHAR_T>& s)
+            requires (is_same_v<CHAR_T, char8_t> or is_same_v<CHAR_T, char16_t> or is_same_v<CHAR_T, char32_t> or is_same_v<CHAR_T, wchar_t>);
+        template <typename CHAR_T>
+        nonvirtual void Append (const basic_string_view<CHAR_T>& s)
+            requires (is_same_v<CHAR_T, char8_t> or is_same_v<CHAR_T, char16_t> or is_same_v<CHAR_T, char32_t> or is_same_v<CHAR_T, wchar_t>);
         nonvirtual void Append (const String& s);
-        nonvirtual void Append (wchar_t c);
         nonvirtual void Append (Character c);
+        nonvirtual void Append (wchar_t c); // @todo probably deprecate this...
 
     public:
         /**
          *  Alias for Append
+         * 
+         *      @todo fix the requires statement - not sure how todo this
          */
-        nonvirtual StringBuilder& operator+= (const char16_t* s);
-        nonvirtual StringBuilder& operator+= (const char32_t* s);
-        nonvirtual StringBuilder& operator+= (const wchar_t* s);
-        nonvirtual StringBuilder& operator+= (const wstring& s);
-        nonvirtual StringBuilder& operator+= (const u16string& s);
-        nonvirtual StringBuilder& operator+= (const u32string& s);
-        nonvirtual StringBuilder& operator+= (const String& s);
-        nonvirtual StringBuilder& operator+= (const Character& c);
+        template <typename APPEND_ARG_T>
+        nonvirtual StringBuilder& operator+= (APPEND_ARG_T&& a);
+        //requires (requires (APPEND_ARG_T a) { Append (a); })
 
     public:
         /**
          *  Alias for Append
+         * 
+         *      @todo fix the requires statement - not sure how todo this
          */
-        nonvirtual StringBuilder& operator<< (const String& s);
-        nonvirtual StringBuilder& operator<< (const wstring& s);
-        nonvirtual StringBuilder& operator<< (const wchar_t* s);
-        nonvirtual StringBuilder& operator<< (const Character& c);
+        template <typename APPEND_ARG_T>
+        nonvirtual StringBuilder& operator<< (APPEND_ARG_T&& a);
+        //requires (requires (APPEND_ARG_T a) { Append (a); })
 
     public:
         /**
@@ -113,6 +122,9 @@ namespace Stroika::Foundation::Characters {
         nonvirtual void push_back (Character c);
 
     public:
+        /**
+         *  returns number of characters (not bytes, not including any possible NUL-terminator)
+         */
         nonvirtual size_t size () const;
 
     public:
@@ -122,9 +134,13 @@ namespace Stroika::Foundation::Characters {
         nonvirtual bool empty () const;
 
     public:
+        /**
+         */
         nonvirtual Character GetAt (size_t index) const;
 
     public:
+        /**
+         */
         nonvirtual void SetAt (Character item, size_t index);
 
     public:
@@ -152,6 +168,8 @@ namespace Stroika::Foundation::Characters {
          *  This ensures nul-character termination. However, it returns an internal pointer only valid
          *  until the next non-const call to this object.
          */
+
+        // @todo MAYBE  DEPREACTE LIKE WITH STRING - CUZ DONT WANT TO BE TIED TO ALWAYS STORKING WCHAR_T (see begin/end)
         nonvirtual const wchar_t* c_str () const;
 
     public:
@@ -174,11 +192,13 @@ namespace Stroika::Foundation::Characters {
     public:
         /**
          */
+        // @todo MAYBE  DEPREACTE LIKE WITH STRING - CUZ DONT WANT TO BE TIED TO ALWAYS STORKING WCHAR_T (see begin/end)
         nonvirtual const wchar_t* begin ();
 
     public:
         /**
          */
+        // @todo MAYBE  DEPREACTE LIKE WITH STRING - CUZ DONT WANT TO BE TIED TO ALWAYS STORKING WCHAR_T (see begin/end)
         nonvirtual const wchar_t* end ();
 
     public:
@@ -197,6 +217,28 @@ namespace Stroika::Foundation::Characters {
          *  @see capacity
          */
         nonvirtual void reserve (size_t newCapacity);
+
+    public:
+        [[deprecated ("Since Stroika v3.0d1, use span{} argument")]] StringBuilder (const wchar_t* start, const wchar_t* end)
+        {
+            Append (span{start, end});
+        }
+        [[deprecated ("Since Stroika v3.0d1, use span{} argument")]] void Append (const char16_t* s, const char16_t* e)
+        {
+            Append (span{s, e});
+        }
+        [[deprecated ("Since Stroika v3.0d1, use span{} argument")]] void Append (const char32_t* s, const char32_t* e)
+        {
+            Append (span{s, e});
+        }
+        [[deprecated ("Since Stroika v3.0d1, use span{} argument")]] void Append (const wchar_t* s, const wchar_t* e)
+        {
+            Append (span{s, e});
+        }
+        [[deprecated ("Since Stroika v3.0d1, use span{} argument")]] void Append (const Character* s, const Character* e)
+        {
+            Append (span{s, e});
+        }
 
     private:
         [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fAssertExternallySyncrhonized_;

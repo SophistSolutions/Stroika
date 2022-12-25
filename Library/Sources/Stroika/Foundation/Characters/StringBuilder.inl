@@ -13,6 +13,8 @@
 
 #include "../Debug/Assertions.h"
 #include "../Execution/Common.h"
+#include "CString/Utilities.h"
+#include "UTFConvert.h"
 
 namespace Stroika::Foundation::Characters {
 
@@ -23,184 +25,89 @@ namespace Stroika::Foundation::Characters {
      */
     inline StringBuilder::StringBuilder (const String& initialValue)
     {
-        operator+= (initialValue);
+        Append (initialValue);
     }
-    inline StringBuilder::StringBuilder (const wchar_t* start, const wchar_t* end)
+    template <typename CHAR_T>
+    inline StringBuilder::StringBuilder (span<const CHAR_T> initialValue)
+        requires (is_same_v<CHAR_T, char8_t> or is_same_v<CHAR_T, char16_t> or is_same_v<CHAR_T, char32_t> or is_same_v<CHAR_T, wchar_t>)
     {
-        Append (start, end);
+        Append (initialValue);
     }
     inline StringBuilder& StringBuilder::operator= (const String& rhs)
     {
+        Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySyncrhonized_};
         clear ();
         Append (rhs);
         return *this;
     }
-    inline void StringBuilder::Append (const Character* s, const Character* e)
+    template <typename CHAR_T>
+    inline void StringBuilder::Append (span<const CHAR_T> s)
+        requires (is_same_v<CHAR_T, char8_t> or is_same_v<CHAR_T, char16_t> or is_same_v<CHAR_T, char32_t> or is_same_v<CHAR_T, wchar_t> or is_same_v<CHAR_T, Character>)
     {
-        static_assert (sizeof (Character) == sizeof (wchar_t), "assume wchar_t == Character roughly"); //tmphack
-        Append (reinterpret_cast<const wchar_t*> (s), reinterpret_cast<const wchar_t*> (e));
-    }
-    inline void StringBuilder::Append (const wchar_t* s, const wchar_t* e)
-    {
-        Require (s == e or (s != nullptr and e != nullptr));
-        Require (s <= e);
         Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySyncrhonized_};
-        size_t                                                 i      = fLength_;
-        size_t                                                 rhsLen = e - s;
-        fData_.GrowToSize_uninitialized (i + rhsLen);
-        fLength_ = i + rhsLen;
-        (void)::memcpy (fData_.begin () + i, s, sizeof (wchar_t) * rhsLen);
-    }
-    inline void StringBuilder::Append (const wchar_t* s)
-    {
-        RequireNotNull (s);
-        Append (s, s + ::wcslen (s));
-    }
-    inline void StringBuilder::Append (const basic_string_view<wchar_t>& s)
-    {
-        Append (s.data (), s.data () + s.length ());
-    }
-    inline void StringBuilder::Append (const char16_t* s, const char16_t* e)
-    {
-        Require (s == e or (s != nullptr and e != nullptr));
-        Require (s <= e);
-        if constexpr (sizeof (char16_t) == sizeof (wchar_t)) {
-            Append (reinterpret_cast<const wchar_t*> (s), reinterpret_cast<const wchar_t*> (e));
-        }
-        else {
-            Append (String{s, e});
+        size_t                                                 rhsLen = s.size ();
+        if (rhsLen != 0) {
+            if constexpr (sizeof (CHAR_T) == sizeof (wchar_t)) {
+                size_t i = fLength_;
+                fData_.GrowToSize_uninitialized (i + rhsLen);
+                fLength_ += rhsLen;
+                (void)::memcpy (fData_.begin () + i, &*s.begin (), sizeof (wchar_t) * rhsLen);
+            }
+            else {
+                Memory::StackBuffer<wchar_t> buf;
+                auto                         r = UTFConverter::kThe.Convert (s, span{buf});
+                Append (String{&*buf.begin (), &*buf.begin () + r.fTargetProduced});
+            }
         }
     }
-    inline void StringBuilder::Append (const char16_t* s)
+    template <typename CHAR_T>
+    inline void StringBuilder::Append (const CHAR_T* s)
+        requires (is_same_v<CHAR_T, char8_t> or is_same_v<CHAR_T, char16_t> or is_same_v<CHAR_T, char32_t> or is_same_v<CHAR_T, wchar_t> or is_same_v<CHAR_T, Character>)
     {
-        RequireNotNull (s);
-        if constexpr (sizeof (char16_t) == sizeof (wchar_t)) {
-            Append (reinterpret_cast<const wchar_t*> (s));
-        }
-        else {
-            Append (String{s});
-        }
+        Append (span{s, CString::Length (s)});
     }
-    inline void StringBuilder::Append (const char32_t* s, const char32_t* e)
+    template <typename CHAR_T>
+    inline void StringBuilder::Append (const basic_string<CHAR_T>& s)
+        requires (is_same_v<CHAR_T, char8_t> or is_same_v<CHAR_T, char16_t> or is_same_v<CHAR_T, char32_t> or is_same_v<CHAR_T, wchar_t>)
     {
-        Require (s == e or (s != nullptr and e != nullptr));
-        Require (s <= e);
-        if constexpr (sizeof (char32_t) == sizeof (wchar_t)) {
-            Append (reinterpret_cast<const wchar_t*> (s), reinterpret_cast<const wchar_t*> (e));
-        }
-        else {
-            Append (String{s, e});
-        }
+        Append (span{s});
     }
-    inline void StringBuilder::Append (const char32_t* s)
+    template <typename CHAR_T>
+    inline void StringBuilder::Append (const basic_string_view<CHAR_T>& s)
+        requires (is_same_v<CHAR_T, char8_t> or is_same_v<CHAR_T, char16_t> or is_same_v<CHAR_T, char32_t> or is_same_v<CHAR_T, wchar_t>)
     {
-        RequireNotNull (s);
-        if constexpr (sizeof (char32_t) == sizeof (wchar_t)) {
-            Append (reinterpret_cast<const wchar_t*> (s));
-        }
-        else {
-            Append (String{s});
-        }
-    }
-    inline void StringBuilder::Append (const wstring& s)
-    {
-        Append (s.c_str (), s.c_str () + s.length ()); // careful about s.end () if empty
-    }
-    inline void StringBuilder::Append (const u16string& s)
-    {
-        if constexpr (sizeof (char16_t) == sizeof (wchar_t)) {
-            Append (reinterpret_cast<const wchar_t*> (s.c_str ()), reinterpret_cast<const wchar_t*> (s.c_str ()) + s.length ());
-        }
-        else {
-            Append (String{s});
-        }
-    }
-    inline void StringBuilder::Append (const u32string& s)
-    {
-        if constexpr (sizeof (char32_t) == sizeof (wchar_t)) {
-            Append (reinterpret_cast<const wchar_t*> (s.c_str ()), reinterpret_cast<const wchar_t*> (s.c_str ()) + s.length ());
-        }
-        else {
-            Append (String{s});
-        }
+        Append (span{s});
     }
     inline void StringBuilder::Append (const String& s)
     {
         pair<const wchar_t*, const wchar_t*> p = s.GetData<wchar_t> ();
-        Append (p.first, p.second);
+        if (p.first != p.second) {
+            Append (span{p.first, p.second});
+        }
     }
     inline void StringBuilder::Append (wchar_t c)
     {
-        Append (&c, &c + 1);
+        Append (span<const wchar_t>{&c, 1});    // @todo get working with explicit template param!
     }
     inline void StringBuilder::Append (Character c)
     {
         Append (c.GetCharacterCode ());
     }
-    inline StringBuilder& StringBuilder::operator+= (const char16_t* s)
+    template <typename APPEND_ARG_T>
+    inline StringBuilder& StringBuilder::operator+= (APPEND_ARG_T&& a)
+    //requires (requires (APPEND_ARG_T a) { Append (a); })
     {
-        RequireNotNull (s);
-        Append (s);
+        Append (forward<APPEND_ARG_T> (a));
         return *this;
     }
-    inline StringBuilder& StringBuilder::operator+= (const char32_t* s)
+    template <typename APPEND_ARG_T>
+    inline StringBuilder& StringBuilder::operator<< (APPEND_ARG_T&& a)
+    //requires (requires (APPEND_ARG_T a) { Append (a); })
     {
-        RequireNotNull (s);
-        Append (s);
+        Append (forward<APPEND_ARG_T> (a));
         return *this;
     }
-    inline StringBuilder& StringBuilder::operator+= (const wchar_t* s)
-    {
-        RequireNotNull (s);
-        Append (s);
-        return *this;
-    }
-    inline StringBuilder& StringBuilder::operator+= (const wstring& s)
-    {
-        Append (s);
-        return *this;
-    }
-    inline StringBuilder& StringBuilder::operator+= (const u16string& s)
-    {
-        Append (s);
-        return *this;
-    }
-    inline StringBuilder& StringBuilder::operator+= (const u32string& s)
-    {
-        Append (s);
-        return *this;
-    }
-    inline StringBuilder& StringBuilder::operator+= (const String& s)
-    {
-        Append (s);
-        return *this;
-    }
-    inline StringBuilder& StringBuilder::operator+= (const Character& c)
-    {
-        Append (c);
-        return *this;
-    }
-    inline StringBuilder& StringBuilder::operator<< (const wstring& s)
-    {
-        Append (s);
-        return *this;
-    }
-    inline StringBuilder& StringBuilder::operator<< (const String& s)
-    {
-        Append (s);
-        return *this;
-    }
-    inline StringBuilder& StringBuilder::operator<< (const wchar_t* s)
-    {
-        RequireNotNull (s);
-        Append (s);
-        return *this;
-    }
-    inline StringBuilder& StringBuilder::operator<< (const Character& c)
-    {
-        Append (c);
-        return *this;
-    }
+
     inline void StringBuilder::push_back (Character c)
     {
         Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySyncrhonized_};
@@ -210,14 +117,17 @@ namespace Stroika::Foundation::Characters {
     }
     inline size_t StringBuilder::size () const
     {
+        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fAssertExternallySyncrhonized_};
         return fLength_;
     }
     inline bool StringBuilder::empty () const
     {
+        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fAssertExternallySyncrhonized_};
         return fLength_ == 0;
     }
     inline Character StringBuilder::GetAt (size_t index) const
     {
+        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fAssertExternallySyncrhonized_};
         Require (index < fLength_);
         return fData_[index];
     }
@@ -229,6 +139,7 @@ namespace Stroika::Foundation::Characters {
     }
     inline const wchar_t* StringBuilder::c_str () const
     {
+        // @todo PROBABLY DEPREACTE else -fix the constness at least - and make this WriteContext...
         Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fAssertExternallySyncrhonized_};
         fData_.GrowToSize_uninitialized (fLength_ + 1);
         fData_[fLength_] = '\0';
@@ -236,6 +147,7 @@ namespace Stroika::Foundation::Characters {
     }
     inline void StringBuilder::clear ()
     {
+        Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySyncrhonized_};
         fLength_ = 0;
     }
     inline String StringBuilder::str () const
