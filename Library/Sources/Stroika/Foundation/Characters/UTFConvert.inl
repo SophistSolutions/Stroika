@@ -334,30 +334,30 @@ namespace Stroika::Foundation::Characters {
     inline auto UTFConverter::ConvertQuietly_Win32_ (span<const char8_t> source, span<char16_t> target) -> ConversionResultWithStatus
     {
         if (source.begin () == source.end ()) {
-            return ConversionResultWithStatus{0, 0, ConversionStatusFlag::ok};
+            return ConversionResultWithStatus{{0, 0}, ConversionStatusFlag::ok};
         }
         else {
             int srcLen          = static_cast<int> (source.size ());
             int trgLen          = static_cast<int> (target.size ());
             int convertedLength = ::MultiByteToWideChar (CP_UTF8, 0, reinterpret_cast<const char*> (&*source.begin ()), srcLen, reinterpret_cast<WCHAR*> (&*target.begin ()), trgLen);
             return ConversionResultWithStatus{
-                static_cast<size_t> (srcLen), // wag - dont think WideCharToMultiByte tells us how much source consumed
-                static_cast<size_t> (convertedLength),
+                {static_cast<size_t> (srcLen), // wag - dont think WideCharToMultiByte tells us how much source consumed
+                static_cast<size_t> (convertedLength)},
                 convertedLength == 0 ? ConversionStatusFlag::sourceIllegal : ConversionStatusFlag::ok};
         }
     }
     inline auto UTFConverter::ConvertQuietly_Win32_ (span<const char16_t> source, span<char8_t> target) -> ConversionResultWithStatus
     {
         if (source.begin () == source.end ()) {
-            return ConversionResultWithStatus{0, 0, ConversionStatusFlag::ok};
+            return ConversionResultWithStatus{{0, 0}, ConversionStatusFlag::ok};
         }
         else {
             int srcLen          = static_cast<int> (source.size ());
             int trgLen          = static_cast<int> (target.size ());
             int convertedLength = ::WideCharToMultiByte (CP_UTF8, 0, reinterpret_cast<const WCHAR*> (&*source.begin ()), srcLen, reinterpret_cast<char*> (&*target.begin ()), trgLen, nullptr, nullptr);
             return ConversionResultWithStatus{
-                static_cast<size_t> (srcLen), // wag - dont think WideCharToMultiByte tells us how much source consumed
-                static_cast<size_t> (convertedLength),
+                {static_cast<size_t> (srcLen), // wag - dont think WideCharToMultiByte tells us how much source consumed
+                static_cast<size_t> (convertedLength)},
                 convertedLength == 0 ? ConversionStatusFlag::sourceIllegal : ConversionStatusFlag::ok};
         }
     }
@@ -375,12 +375,12 @@ namespace Stroika::Foundation::Characters {
     inline auto UTFConverter::ConvertQuietly_boost_locale_ (span<const char8_t> source, const span<char16_t> target) -> ConversionResultWithStatus
     {
         if (source.empty ()) {
-            return ConversionResultWithStatus{0, 0, ConversionStatusFlag::ok};
+            return ConversionResultWithStatus{{0, 0}, ConversionStatusFlag::ok};
         }
         basic_string<char8_t> src = basic_string<char8_t>{reinterpret_cast<const char8_t*> (&*source.begin ()), reinterpret_cast<const char8_t*> (&*source.begin ()) + source.size ()};
         u16string             r   = boost::locale::conv::utf_to_utf<char16_t> (src.c_str ());
         copy (r.begin (), r.end (), target.begin ());
-        return ConversionResultWithStatus{source.size (), r.size (), ConversionStatusFlag::ok};
+        return ConversionResultWithStatus{{source.size (), r.size ()}, ConversionStatusFlag::ok};
 #if 0
          utf::code_point c;
          char16_t* p = target.begin ();
@@ -417,7 +417,7 @@ namespace Stroika::Foundation::Characters {
 #endif
 
         //tmphack to test
-        return ConversionResultWithStatus{0, 0, ConversionStatusFlag::ok};
+        return ConversionResultWithStatus{{0, 0}, ConversionStatusFlag::ok};
     }
 #endif
 
