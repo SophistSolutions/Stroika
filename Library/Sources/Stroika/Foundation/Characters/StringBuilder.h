@@ -198,6 +198,17 @@ namespace Stroika::Foundation::Characters {
          * 
          *        Passing in a reference to the 'StackBuffer' class is a compromise among all these considerations. The only cost
          *        is initializing a pointer, and checking that pointer on destruction, if no memory allocation is needed.
+         * 
+         *  \par Example Usage:
+         *      \code
+         *          Memory::StackBuffer<wchar_t> probablyIgnoredBuf;
+         *          span<const wchar_t> s = sb.GetData (&probablyIgnoredBuf);
+         *      \encode
+         * 
+         *      \code
+         *          Memory::StackBuffer<wchar_t> probablyIgnoredBuf;
+         *          out.Write (sb.GetData (&probablyIgnoredBuf));
+         *      \encode
          */
         template <Character_Compatible CHAR_T>
         nonvirtual span<const CHAR_T> GetData (Memory::StackBuffer<CHAR_T>* probablyIgnoredBuf) const;
