@@ -137,14 +137,6 @@ namespace Stroika::Foundation::Characters {
         Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySyncrhonized_};
         fData_[index] = item.GetCharacterCode ();
     }
-    inline const wchar_t* StringBuilder::c_str () const
-    {
-        // @todo PROBABLY DEPREACTE else -fix the constness at least - and make this WriteContext...
-        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fAssertExternallySyncrhonized_};
-        fData_.GrowToSize_uninitialized (fLength_ + 1);
-        fData_[fLength_] = '\0';
-        return fData_.begin ();
-    }
     inline void StringBuilder::clear ()
     {
         Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySyncrhonized_};
@@ -191,14 +183,6 @@ namespace Stroika::Foundation::Characters {
     inline size_t StringBuilder::length () const
     {
         return size ();
-    }
-    inline const wchar_t* StringBuilder::begin ()
-    {
-        return c_str ();
-    }
-    inline const wchar_t* StringBuilder::end ()
-    {
-        return c_str () + length ();
     }
     inline size_t StringBuilder::capacity () const
     {

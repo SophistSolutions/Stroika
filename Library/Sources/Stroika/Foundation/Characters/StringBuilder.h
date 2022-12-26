@@ -165,16 +165,6 @@ namespace Stroika::Foundation::Characters {
 
     public:
         /**
-         *  This ensures nul-character termination. However, it returns an internal pointer only valid
-         *  until the next non-const call to this object.
-         */
-
-        // @todo MAYBE  DEPREACTE LIKE WITH STRING - CUZ DONT WANT TO BE TIED TO ALWAYS STORKING WCHAR_T (see begin/end)
-        [[deprecated ("test deprecate")]]
-        nonvirtual const wchar_t* c_str () const;
-
-    public:
-        /**
          */
         nonvirtual void clear ();
 
@@ -191,16 +181,23 @@ namespace Stroika::Foundation::Characters {
         nonvirtual size_t length () const;
 
     public:
-        /**
-         */
-        // @todo MAYBE  DEPREACTE LIKE WITH STRING - CUZ DONT WANT TO BE TIED TO ALWAYS STORKING WCHAR_T (see begin/end)
-        [[deprecated ("test deprecate")]] nonvirtual const wchar_t* begin ();
-
-    public:
-        /**
-         */
-        // @todo MAYBE  DEPREACTE LIKE WITH STRING - CUZ DONT WANT TO BE TIED TO ALWAYS STORKING WCHAR_T (see begin/end)
-        [[deprecated ("test deprecate")]] nonvirtual const wchar_t* end ();
+        // DEPRECATED SO WE CAN CHANGE INTERNAL POINTER REPRESENTATION
+        [[deprecated ("Deprecated Since v3.0d1, so we can change internal buffer rep")]]  const wchar_t* begin ()
+        {
+            return fData_.begin ();
+        }
+        [[deprecated ("Deprecated Since v3.0d1, so we can change internal buffer rep")]]  const wchar_t* end ()
+        {
+            return fData_.end ();
+        }
+        [[deprecated ("Deprecated Since v3.0d1, so we can change internal buffer rep")]]  const wchar_t* c_str () const
+        {
+            // @todo PROBABLY DEPREACTE else -fix the constness at least - and make this WriteContext...
+            Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fAssertExternallySyncrhonized_};
+            fData_.GrowToSize_uninitialized (fLength_ + 1);
+            fData_[fLength_] = '\0';
+            return fData_.begin ();
+        }
 
     public:
         /**
