@@ -60,7 +60,7 @@ Version Version::FromPrettyVersionString (const Characters::String& prettyVersio
         if (l < 0 or l > numeric_limits<uint8_t>::max ()) [[unlikely]] {
             DbgTrace (L"prettyVersionString=%s", ppv.c_str ());
 #if not qDefaultTracingOn
-            &ppv;
+            &ppv;   // silence warning
 #endif
             Execution::Throw (Execution::RuntimeErrorException{L"Invalid Version String: component out of range"_k});
         }
