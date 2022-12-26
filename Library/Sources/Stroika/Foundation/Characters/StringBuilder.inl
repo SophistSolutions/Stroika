@@ -193,6 +193,18 @@ namespace Stroika::Foundation::Characters {
         Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySyncrhonized_};
         fData_.reserve (newCapacity);
     }
+    template <Character_Compatible CHAR_T>
+    span<const CHAR_T> StringBuilder::GetData (Memory::StackBuffer<CHAR_T>* probablyIgnoredBuf) const
+    {
+        RequireNotNull (probablyIgnoredBuf); // required param even if not used
+        if constexpr (sizeof (CHAR_T) == sizeof (wchar_t)) {
+            return span{reinterpret_cast<const CHAR_T*> (fData_.data ()), fData_.size ()};
+        }
+        else {
+            probablyIgnoredBuf->resize_uninitialized (UTFConverter::ComputeTargetBufferSize<CHAR_T> (span{fData_}));
+            return span{probablyIgnoredBuf->data (), get<1> (UTFConverter::kThe.Convert (span{fData_}, span{*probablyIgnoredBuf}))};
+        }
+    }
 
 }
 #endif // _Stroika_Foundation_Characters_StringBuilder_inl_

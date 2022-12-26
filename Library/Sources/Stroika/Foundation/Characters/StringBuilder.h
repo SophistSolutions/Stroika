@@ -181,23 +181,31 @@ namespace Stroika::Foundation::Characters {
         nonvirtual size_t length () const;
 
     public:
-        // DEPRECATED SO WE CAN CHANGE INTERNAL POINTER REPRESENTATION
-        [[deprecated ("Deprecated Since v3.0d1, so we can change internal buffer rep")]] const wchar_t* begin ()
-        {
-            return fData_.begin ();
-        }
-        [[deprecated ("Deprecated Since v3.0d1, so we can change internal buffer rep")]] const wchar_t* end ()
-        {
-            return fData_.end ();
-        }
-        [[deprecated ("Deprecated Since v3.0d1, so we can change internal buffer rep")]] const wchar_t* c_str () const
-        {
-            // @todo PROBABLY DEPREACTE else -fix the constness at least - and make this WriteContext...
-            Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fAssertExternallySyncrhonized_};
-            fData_.GrowToSize_uninitialized (fLength_ + 1);
-            fData_[fLength_] = '\0';
-            return fData_.begin ();
-        }
+        /**
+         *  \brief access a span of data located inside the StringBuilder. Return internal pointer, or pointer internal to possiblyUsedBuffer
+         * 
+         *  \note Lifetime of resulting span is ONLY until the next change to the StackBuffer OR the StringBuilder.
+         *  \note The pointer MIGHT refer to data inside the (possibly resized) StackBuffer, or be internal to the StringBuilder
+         * 
+         *  The point of this queer API is too allow accessing the internal data by pointer, but allow StringBuilder to change
+         *  its internal representation (not necessarily matching the kind of string being requested).
+         * 
+         *  \note Caller should ignore the size of possiblyUsedBuffer; its for internal use inside of GetData() - and may not match the size
+         *        of the resulting string/span. Note also, the span will not in general be NUL-terminated.
+         * 
+         *  \note Why use this function?
+         *        You would think the point of StringBuilder was to - well - build a string - right? So why not use the str() API.
+         *        Well, that allocates memory, which must be freed, and that is not cost free. For some short-lived strings, it CAN
+         *        be cheaper to just peek at the constructed in memory stack based String already being produced in this StringBuilder.
+         *      
+         *        But this needs to be done in a way with data hiding (so we can change the internal represnetation of the StringBuilder class as needed)
+         *        and with respect for the possability that the string could be large (so break out of any small-string optimizations).
+         * 
+         *        Passing in a reference to the 'StackBuffer' class is a compromise among all these considerations. The only cost
+         *        is initializing a pointer, and checking that pointer on destruction, if no memory allocation is needed.
+         */
+        template <Character_Compatible CHAR_T>
+        nonvirtual span<const CHAR_T> GetData (Memory::StackBuffer<CHAR_T>* probablyIgnoredBuf) const;
 
     public:
         /**
@@ -217,6 +225,23 @@ namespace Stroika::Foundation::Characters {
         nonvirtual void reserve (size_t newCapacity);
 
     public:
+        [[deprecated ("Deprecated Since v3.0d1, so we can change internal buffer rep")]] const wchar_t* begin ()
+        {
+            return fData_.begin ();
+        }
+        [[deprecated ("Deprecated Since v3.0d1, so we can change internal buffer rep")]] const wchar_t* end ()
+        {
+            return fData_.end ();
+        }
+        [[deprecated ("Deprecated Since v3.0d1, so we can change internal buffer rep")]] const wchar_t* c_str () const
+        {
+            // @todo PROBABLY DEPREACTE else -fix the constness at least - and make this WriteContext...
+            Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fAssertExternallySyncrhonized_};
+            fData_.GrowToSize_uninitialized (fLength_ + 1);
+            fData_[fLength_] = '\0';
+            return fData_.begin ();
+        }
+
         [[deprecated ("Since Stroika v3.0d1, use span{} argument")]] StringBuilder (const wchar_t* start, const wchar_t* end)
         {
             Append (span{start, end});
