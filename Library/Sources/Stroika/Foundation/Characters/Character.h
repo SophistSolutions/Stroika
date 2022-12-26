@@ -18,12 +18,7 @@
  *              implementation based on UTF-8, to minimize the performance costs...
  *              https://stroika.atlassian.net/browse/STK-534
  *
- *      @todo       KEY ISSUES TO DECIDE:
- *          o   Can we use a class with no loss of performance (or must we use typdef wchar_t Character)
- *
- *          o   How do we handle char16_t versus char32_t - Windows uses 16bit, UNIX 32-bit. UNCLEAR how to
- *              handle here. (LEANING TOWARDS FORCING USE OF 16bit char??) - maybe irrlevelnt if our STRING
- *              class internally stores stuff as utf8
+ *      @todo   Use UTFConvert code directly to properly handle constructors from various codepoint types
  *
  *      @todo   Biggest thing todo is to work out 'surrogates' - and whether or not they are needed
  *              (depending on the size of wchar_t - which right now - we PRESUME is the same as the size
@@ -44,6 +39,41 @@ namespace Stroika::Foundation::Characters {
 
         Stroika_Define_Enum_Bounds (eWithCase, eCaseInsensitive)
     };
+
+    /**
+     *  \brief check if T is char8_t, char16_t, char32_t - one of the three possible unicode UTF code-point classes.
+     */
+    template <typename T>
+    concept Character_IsBasicUnicodeCodePoint =
+        is_same_v < remove_cv_t<T>,
+    char8_t > or is_same_v<remove_cv_t<T>, char16_t> or is_same_v<remove_cv_t<T>, char32_t>;
+
+    /**
+     *  \brief check if T is Character_IsBasicUnicodeCodePoint or wchar_t (any basic code-point class)
+     */
+    template <typename T>
+    concept Character_IsUnicodeCodePoint = Character_IsBasicUnicodeCodePoint<T> or is_same_v < remove_cv_t<T>,
+    wchar_t > ;
+
+    /**
+     *  \brief check if T is char8_t, char16_t, char32_t (Character_IsBasicUnicodeCodePoint) or wchar_t
+     */
+    template <typename T>
+    concept Character_IsUnicodeCodePointOrPlainChar = Character_IsUnicodeCodePoint<T> or is_same_v < remove_cv_t<T>,
+    char > ;
+
+    class Character;
+
+    /**
+     *  \brief char16_t, Character, wchar_t, char, etc - something that can be reasonably converted into a Unicode Character object.
+     * 
+     *  \note UNCLEAR if we want to include char in this list, since not so clear how to convert it, unless its ascii
+     * 
+     *  \note all these types are <= 4 bytes (size of char32_t)
+     */
+    template <typename T>
+    concept Character_Compatible = Character_IsUnicodeCodePointOrPlainChar<T> or is_same_v < remove_cv_t<T>,
+    Character > ;
 
     /**
      *  \note <a href="Design Overview.md#Comparisons">Comparisons</a>:
@@ -67,6 +97,8 @@ namespace Stroika::Foundation::Characters {
         nonvirtual char GetAsciiCode () const;
 
     public:
+        // @todo deprecate this and replace wtih GetCodePoint<CHAR_T> -> optional<CHAR_T> with charT required to be uncide-code-point concept
+        // return has-value if convertible
         nonvirtual wchar_t GetCharacterCode () const;
 
     public:
