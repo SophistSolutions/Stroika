@@ -152,7 +152,8 @@ namespace {
             }
         }
         sb.Append (L"\"");
-        out.Write (sb.begin (), sb.end ());
+        Memory::StackBuffer<wchar_t> probablyIgnoredBuf;
+        out.Write (sb.GetData (&probablyIgnoredBuf));
     }
     void PrettyPrint_ (const Options_& options, const wstring& v, const OutputStream<Character>::Ptr& out)
     {

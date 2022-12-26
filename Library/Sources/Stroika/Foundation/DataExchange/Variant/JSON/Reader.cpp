@@ -178,14 +178,16 @@ namespace {
             }
         }
         Assert (not tmp.empty ());
+        Memory::StackBuffer<wchar_t> ignoreBuf;
+        span<const wchar_t>          tmpData = tmp.GetData (&ignoreBuf);
         if (containsDot) {
-            return VariantValue{Characters::FloatConversion::ToFloat<long double> (tmp.begin (), tmp.end ())};
+            return VariantValue{Characters::FloatConversion::ToFloat<long double> (tmpData)};
         }
         else {
             // if no - use unsigned since has wider range (if no -)
             return (initialChar == kDash_)
-                       ? VariantValue{Characters::String2Int<long long int> (tmp.begin (), tmp.end ())}
-                       : VariantValue{Characters::String2Int<unsigned long long int> (tmp.begin (), tmp.end ())};
+                       ? VariantValue{Characters::String2Int<long long int> (tmpData)}
+                       : VariantValue{Characters::String2Int<unsigned long long int> (tmpData)};
         }
     }
 
