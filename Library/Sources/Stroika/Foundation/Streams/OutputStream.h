@@ -205,6 +205,7 @@ namespace Stroika::Foundation::Streams {
         template <typename TEST_TYPE = ELEMENT_TYPE, enable_if_t<is_same_v<TEST_TYPE, Characters::Character>>* = nullptr>
         nonvirtual void Write (const Characters::String& s) const;
         nonvirtual void Write (const ElementType& e) const;
+        nonvirtual void Write (span<const ElementType> s) const;
 
     public:
         /**

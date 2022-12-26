@@ -132,6 +132,15 @@ namespace Stroika::Foundation::Streams {
         Write (&e, &e + 1);
     }
     template <typename ELEMENT_TYPE>
+    inline void OutputStream<ELEMENT_TYPE>::Ptr::Write (span<const ElementType> s) const
+    {
+        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
+        Require (IsOpen ());
+        if (not s.empty()) {
+            Write (&*s.begin (), &*s.begin () + s.size ());
+        }
+    }
+    template <typename ELEMENT_TYPE>
     template <typename TEST_TYPE, enable_if_t<is_same_v<TEST_TYPE, Characters::Character>>*>
     inline void OutputStream<ELEMENT_TYPE>::Ptr::WriteLn (const wchar_t* cStr) const
     {
