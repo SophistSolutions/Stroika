@@ -182,15 +182,15 @@ namespace Stroika::Foundation::Characters {
 
     public:
         // DEPRECATED SO WE CAN CHANGE INTERNAL POINTER REPRESENTATION
-        [[deprecated ("Deprecated Since v3.0d1, so we can change internal buffer rep")]]  const wchar_t* begin ()
+        [[deprecated ("Deprecated Since v3.0d1, so we can change internal buffer rep")]] const wchar_t* begin ()
         {
             return fData_.begin ();
         }
-        [[deprecated ("Deprecated Since v3.0d1, so we can change internal buffer rep")]]  const wchar_t* end ()
+        [[deprecated ("Deprecated Since v3.0d1, so we can change internal buffer rep")]] const wchar_t* end ()
         {
             return fData_.end ();
         }
-        [[deprecated ("Deprecated Since v3.0d1, so we can change internal buffer rep")]]  const wchar_t* c_str () const
+        [[deprecated ("Deprecated Since v3.0d1, so we can change internal buffer rep")]] const wchar_t* c_str () const
         {
             // @todo PROBABLY DEPREACTE else -fix the constness at least - and make this WriteContext...
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fAssertExternallySyncrhonized_};
