@@ -27,9 +27,8 @@ namespace Stroika::Foundation::Characters {
     {
         Append (initialValue);
     }
-    template <typename CHAR_T>
+    template <Character_Compatible CHAR_T>
     inline StringBuilder::StringBuilder (span<const CHAR_T> initialValue)
-        requires (is_same_v<CHAR_T, char8_t> or is_same_v<CHAR_T, char16_t> or is_same_v<CHAR_T, char32_t> or is_same_v<CHAR_T, wchar_t>)
     {
         Append (initialValue);
     }
@@ -40,9 +39,8 @@ namespace Stroika::Foundation::Characters {
         Append (rhs);
         return *this;
     }
-    template <typename CHAR_T>
+    template <Character_SafelyCompatible CHAR_T>
     inline void StringBuilder::Append (span<const CHAR_T> s)
-        requires (is_same_v<CHAR_T, char8_t> or is_same_v<CHAR_T, char16_t> or is_same_v<CHAR_T, char32_t> or is_same_v<CHAR_T, wchar_t> or is_same_v<CHAR_T, Character>)
     {
         Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySyncrhonized_};
         size_t                                                 rhsLen = s.size ();
@@ -60,21 +58,18 @@ namespace Stroika::Foundation::Characters {
             }
         }
     }
-    template <typename CHAR_T>
+    template <Character_SafelyCompatible CHAR_T>
     inline void StringBuilder::Append (const CHAR_T* s)
-        requires (is_same_v<CHAR_T, char8_t> or is_same_v<CHAR_T, char16_t> or is_same_v<CHAR_T, char32_t> or is_same_v<CHAR_T, wchar_t> or is_same_v<CHAR_T, Character>)
     {
         Append (span{s, CString::Length (s)});
     }
-    template <typename CHAR_T>
+    template <Character_IsUnicodeCodePoint CHAR_T>
     inline void StringBuilder::Append (const basic_string<CHAR_T>& s)
-        requires (is_same_v<CHAR_T, char8_t> or is_same_v<CHAR_T, char16_t> or is_same_v<CHAR_T, char32_t> or is_same_v<CHAR_T, wchar_t>)
     {
         Append (span{s});
     }
-    template <typename CHAR_T>
+    template <Character_IsUnicodeCodePoint CHAR_T>
     inline void StringBuilder::Append (const basic_string_view<CHAR_T>& s)
-        requires (is_same_v<CHAR_T, char8_t> or is_same_v<CHAR_T, char16_t> or is_same_v<CHAR_T, char32_t> or is_same_v<CHAR_T, wchar_t>)
     {
         Append (span{s});
     }

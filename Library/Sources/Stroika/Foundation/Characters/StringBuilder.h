@@ -60,9 +60,8 @@ namespace Stroika::Foundation::Characters {
         StringBuilder ()                     = default;
         StringBuilder (const StringBuilder&) = default;
         StringBuilder (const String& initialValue);
-        template <typename CHAR_T>
-        StringBuilder (span<const CHAR_T> initialValue)
-            requires (is_same_v<CHAR_T, char8_t> or is_same_v<CHAR_T, char16_t> or is_same_v<CHAR_T, char32_t> or is_same_v<CHAR_T, wchar_t>);
+        template <Character_Compatible CHAR_T>
+        StringBuilder (span<const CHAR_T> initialValue);
 
     public:
         nonvirtual StringBuilder& operator= (const StringBuilder& rhs) = default;
@@ -80,18 +79,14 @@ namespace Stroika::Foundation::Characters {
          *      o   String
          *      o   Character
          */
-        template <typename CHAR_T>
-        nonvirtual void Append (span<const CHAR_T> s)
-            requires (is_same_v<CHAR_T, char8_t> or is_same_v<CHAR_T, char16_t> or is_same_v<CHAR_T, char32_t> or is_same_v<CHAR_T, wchar_t> or is_same_v<CHAR_T, Character>);
-        template <typename CHAR_T>
-        nonvirtual void Append (const CHAR_T* s)
-            requires (is_same_v<CHAR_T, char8_t> or is_same_v<CHAR_T, char16_t> or is_same_v<CHAR_T, char32_t> or is_same_v<CHAR_T, wchar_t> or is_same_v<CHAR_T, Character>);
-        template <typename CHAR_T>
-        nonvirtual void Append (const basic_string<CHAR_T>& s)
-            requires (is_same_v<CHAR_T, char8_t> or is_same_v<CHAR_T, char16_t> or is_same_v<CHAR_T, char32_t> or is_same_v<CHAR_T, wchar_t>);
-        template <typename CHAR_T>
-        nonvirtual void Append (const basic_string_view<CHAR_T>& s)
-            requires (is_same_v<CHAR_T, char8_t> or is_same_v<CHAR_T, char16_t> or is_same_v<CHAR_T, char32_t> or is_same_v<CHAR_T, wchar_t>);
+        template <Character_SafelyCompatible CHAR_T>
+        nonvirtual void Append (span<const CHAR_T> s);
+        template <Character_SafelyCompatible CHAR_T>
+        nonvirtual void Append (const CHAR_T* s);
+        template <Character_IsUnicodeCodePoint CHAR_T>
+        nonvirtual void Append (const basic_string<CHAR_T>& s);
+        template <Character_IsUnicodeCodePoint CHAR_T>
+        nonvirtual void Append (const basic_string_view<CHAR_T>& s);
         nonvirtual void Append (const String& s);
         nonvirtual void Append (Character c);
         nonvirtual void Append (wchar_t c); // @todo probably deprecate this...
