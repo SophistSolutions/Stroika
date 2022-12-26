@@ -13,6 +13,10 @@
 
 #include "../Debug/Assertions.h"
 #include "../Execution/Common.h"
+#if qCompilerAndStdLib_spanOfContainer_Buggy
+#include "../Memory/Common.h"
+#endif
+
 #include "CString/Utilities.h"
 #include "UTFConvert.h"
 
@@ -70,12 +74,20 @@ namespace Stroika::Foundation::Characters {
     template <Character_IsUnicodeCodePoint CHAR_T>
     inline void StringBuilder::Append (const basic_string<CHAR_T>& s)
     {
+#if qCompilerAndStdLib_spanOfContainer_Buggy
+        Append (Memory::mkSpan_BWA_ (s));
+#else
         Append (span{s});
+#endif
     }
     template <Character_IsUnicodeCodePoint CHAR_T>
     inline void StringBuilder::Append (const basic_string_view<CHAR_T>& s)
     {
+#if qCompilerAndStdLib_spanOfContainer_Buggy
+        Append (Memory::mkSpan_BWA_ (s));
+#else
         Append (span{s});
+#endif
     }
     inline void StringBuilder::Append (const String& s)
     {
