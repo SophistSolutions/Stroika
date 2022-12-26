@@ -13,6 +13,8 @@
 #include <boost/locale/encoding_utf.hpp>
 #endif
 
+#include "Character.h"
+
 /**
  *  \file
  *      This module is designed to provide mappings between various UTF encodings of UNICODE characters.</p>
@@ -120,7 +122,7 @@ namespace Stroika::Foundation::Characters {
          *  @See Convert ()
          *  \Alias used to be called QuickComputeConversionOutputBufferSize
          */
-        template <typename TO, typename FROM>
+        template <Character_Compatible TO, Character_Compatible FROM>
         static constexpr size_t ComputeTargetBufferSize (span<const FROM> src);
 
     public:
@@ -156,6 +158,9 @@ namespace Stroika::Foundation::Characters {
          *      o   wchar_t
          *  are mapped to the appropriate above type.
          * 
+         *  Source and target spans can be of any Character_Compatible character type (but source const and target non-const)
+         *  (or basic_string of said)...
+         * 
          *  \par Example Usage
          *      \code
          *          size_t                    cvtBufSize = UTFConverter::ComputeTargetBufferSize<wchar_t> (src);
@@ -183,7 +188,7 @@ namespace Stroika::Foundation::Characters {
         nonvirtual ConversionResult Convert (span<const char32_t> source, span<char16_t> target) const;
         nonvirtual ConversionResult Convert (span<const char8_t> source, span<char16_t> target, mbstate_t* multibyteConversionState) const;
         nonvirtual ConversionResult Convert (span<const char8_t> source, span<char32_t> target, mbstate_t* multibyteConversionState) const;
-        template <typename SRC_T, typename TRG_T>
+        template <Character_Compatible SRC_T, Character_Compatible TRG_T>
         nonvirtual ConversionResult Convert (span<const SRC_T> source, span<TRG_T> target) const
             requires (not is_const_v<TRG_T>);
         template <typename TO, typename FROM>
@@ -217,6 +222,8 @@ namespace Stroika::Foundation::Characters {
          * 
          *  \see Convert () above for details. This only differs from Convert, in that it returns a result flag instead
          *       of throwing on errors.
+         * 
+         *  Source and target spans can be of any Character_Compatible character type (but source const and target non-const)
          */
         nonvirtual ConversionResultWithStatus ConvertQuietly (span<const char8_t> source, span<char16_t> target) const;
         nonvirtual ConversionResultWithStatus ConvertQuietly (span<const char16_t> source, span<char8_t> target) const;
@@ -226,7 +233,7 @@ namespace Stroika::Foundation::Characters {
         nonvirtual ConversionResultWithStatus ConvertQuietly (span<const char32_t> source, span<char16_t> target) const;
         nonvirtual ConversionResultWithStatus ConvertQuietly (span<const char8_t> source, span<char16_t> target, mbstate_t* multibyteConversionState) const;
         nonvirtual ConversionResultWithStatus ConvertQuietly (span<const char8_t> source, span<char32_t> target, mbstate_t* multibyteConversionState) const;
-        template <typename SRC_T, typename TRG_T>
+        template <Character_Compatible SRC_T, Character_Compatible TRG_T>
         nonvirtual ConversionResultWithStatus ConvertQuietly (span<const SRC_T> source, span<TRG_T> target) const
             requires (not is_const_v<TRG_T>);
 
@@ -247,7 +254,7 @@ namespace Stroika::Foundation::Characters {
 
     private:
         // need generic way to convert char to char8_t, and wchar_t to char16_t or char32_t
-        template <typename FromT>
+        template <Character_Compatible FromT>
         static constexpr span<CompatibleT_<FromT>> ConvertCompatibleSpan_ (span<FromT> f);
 
     private:

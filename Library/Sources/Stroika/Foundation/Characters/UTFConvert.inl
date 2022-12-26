@@ -53,7 +53,7 @@ namespace Stroika::Foundation::Characters {
     }
     inline constexpr UTFConverter UTFConverter::kThe;
 
-    template <typename TO, typename FROM>
+    template <Character_Compatible TO, Character_Compatible FROM>
     constexpr size_t UTFConverter::ComputeTargetBufferSize (span<const FROM> src)
     {
         if constexpr (sizeof (FROM) == sizeof (TO)) {
@@ -151,7 +151,7 @@ namespace Stroika::Foundation::Characters {
         ThrowIf_ (result.fStatus);
         return result; // slice
     }
-    template <typename SRC_T, typename TRG_T>
+    template <Character_Compatible SRC_T, Character_Compatible TRG_T>
     inline auto UTFConverter::Convert (span<const SRC_T> source, span<TRG_T> target) const -> ConversionResult
         requires (not is_const_v<TRG_T>) {
             Require ((target.size () >= ComputeTargetBufferSize<TRG_T> (source)));
@@ -311,7 +311,7 @@ namespace Stroika::Foundation::Characters {
             }
         }
     }
-    template <typename SRC_T, typename TRG_T>
+    template <Character_Compatible SRC_T, Character_Compatible TRG_T>
     inline auto UTFConverter::ConvertQuietly (span<const SRC_T> source, span<TRG_T> target) const -> ConversionResultWithStatus
         requires (not is_const_v<TRG_T>) {
             if constexpr (sizeof (SRC_T) == sizeof (TRG_T)) {
@@ -321,7 +321,7 @@ namespace Stroika::Foundation::Characters {
             return ConvertQuietly (ConvertCompatibleSpan_ (source), ConvertCompatibleSpan_ (target));
         }
 
-    template <typename FromT>
+    template <Character_Compatible FromT>
     constexpr auto UTFConverter::ConvertCompatibleSpan_ (span<FromT> f) -> span<CompatibleT_<FromT>>
     {
         if (f.empty ()) {
