@@ -136,7 +136,7 @@ namespace Stroika::Foundation::Streams {
     {
         Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
         Require (IsOpen ());
-        if (not s.empty()) {
+        if (not s.empty ()) {
             Write (&*s.begin (), &*s.begin () + s.size ());
         }
     }
