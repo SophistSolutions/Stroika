@@ -342,7 +342,7 @@ namespace Stroika::Foundation::Characters {
             int convertedLength = ::MultiByteToWideChar (CP_UTF8, 0, reinterpret_cast<const char*> (&*source.begin ()), srcLen, reinterpret_cast<WCHAR*> (&*target.begin ()), trgLen);
             return ConversionResultWithStatus{
                 {static_cast<size_t> (srcLen), // wag - dont think WideCharToMultiByte tells us how much source consumed
-                static_cast<size_t> (convertedLength)},
+                 static_cast<size_t> (convertedLength)},
                 convertedLength == 0 ? ConversionStatusFlag::sourceIllegal : ConversionStatusFlag::ok};
         }
     }
@@ -357,7 +357,7 @@ namespace Stroika::Foundation::Characters {
             int convertedLength = ::WideCharToMultiByte (CP_UTF8, 0, reinterpret_cast<const WCHAR*> (&*source.begin ()), srcLen, reinterpret_cast<char*> (&*target.begin ()), trgLen, nullptr, nullptr);
             return ConversionResultWithStatus{
                 {static_cast<size_t> (srcLen), // wag - dont think WideCharToMultiByte tells us how much source consumed
-                static_cast<size_t> (convertedLength)},
+                 static_cast<size_t> (convertedLength)},
                 convertedLength == 0 ? ConversionStatusFlag::sourceIllegal : ConversionStatusFlag::ok};
         }
     }

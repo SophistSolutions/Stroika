@@ -170,6 +170,7 @@ namespace Stroika::Foundation::Characters {
          */
 
         // @todo MAYBE  DEPREACTE LIKE WITH STRING - CUZ DONT WANT TO BE TIED TO ALWAYS STORKING WCHAR_T (see begin/end)
+        [[deprecated ("test deprecate")]]
         nonvirtual const wchar_t* c_str () const;
 
     public:
@@ -193,13 +194,13 @@ namespace Stroika::Foundation::Characters {
         /**
          */
         // @todo MAYBE  DEPREACTE LIKE WITH STRING - CUZ DONT WANT TO BE TIED TO ALWAYS STORKING WCHAR_T (see begin/end)
-        nonvirtual const wchar_t* begin ();
+        [[deprecated ("test deprecate")]] nonvirtual const wchar_t* begin ();
 
     public:
         /**
          */
         // @todo MAYBE  DEPREACTE LIKE WITH STRING - CUZ DONT WANT TO BE TIED TO ALWAYS STORKING WCHAR_T (see begin/end)
-        nonvirtual const wchar_t* end ();
+        [[deprecated ("test deprecate")]] nonvirtual const wchar_t* end ();
 
     public:
         /**

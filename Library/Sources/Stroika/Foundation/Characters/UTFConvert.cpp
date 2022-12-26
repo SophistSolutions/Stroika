@@ -732,7 +732,7 @@ namespace {
         ConversionResult r           = realWork (&sourceStart, sourceEnd, &targetStart, targetEnd, ConversionFlags::lenientConversion); // @todo: look at options - lenientConversion
         return ConversionResultWithStatus{
             {static_cast<size_t> (sourceStart - reinterpret_cast<const IN_T*> (&*source.begin ())),
-            static_cast<size_t> (targetStart - reinterpret_cast<const OUT_T*> (&*target.begin ()))},
+             static_cast<size_t> (targetStart - reinterpret_cast<const OUT_T*> (&*target.begin ()))},
             cvt_ (r)};
     }
 }
@@ -777,7 +777,7 @@ namespace {
         if (r == ConversionStatusFlag::ok) {
             return ConversionResultWithStatus{
                 {static_cast<size_t> (sourceStart - reinterpret_cast<const IN_T*> (&*source.begin ())),
-                static_cast<size_t> (targetStart - reinterpret_cast<const OUT_T*> (&*target.begin ()))},
+                 static_cast<size_t> (targetStart - reinterpret_cast<const OUT_T*> (&*target.begin ()))},
                 ConversionStatusFlag::ok};
         }
         else {
@@ -799,7 +799,7 @@ namespace {
         if (r == ConversionStatusFlag::ok) {
             return ConversionResultWithStatus{
                 {static_cast<size_t> (sourceStart - reinterpret_cast<const IN_T*> (&*source.begin ())),
-                static_cast<size_t> (targetStart - reinterpret_cast<const OUT_T*> (&*target.begin ()))},
+                 static_cast<size_t> (targetStart - reinterpret_cast<const OUT_T*> (&*target.begin ()))},
                 ConversionStatusFlag::ok};
         }
         else {
