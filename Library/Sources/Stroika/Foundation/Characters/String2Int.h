@@ -61,6 +61,10 @@ namespace Stroika::Foundation::Characters {
     template <typename T = int>
     T String2Int (const wchar_t* start, const wchar_t* end);
     template <typename T = int>
+    T String2Int (span<const wchar_t> s);
+    template <typename T = int>
+    T String2Int (const wchar_t* s);
+    template <typename T = int>
     T String2Int (const String& s);
 
     /**

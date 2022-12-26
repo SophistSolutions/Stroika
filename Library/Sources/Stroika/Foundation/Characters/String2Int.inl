@@ -14,6 +14,8 @@
 #include "../Configuration/Common.h"
 #include "../Memory/StackBuffer.h"
 
+#include "CString/Utilities.h"
+
 namespace Stroika::Foundation::Characters {
 
     namespace Private_ {
@@ -78,6 +80,19 @@ namespace Stroika::Foundation::Characters {
         else {
             return Private_::String2IntOrUInt_<T> (String{start, end});
         }
+    }
+    template <typename T>
+    inline T String2Int (span<const wchar_t> s)
+    {
+        if (s.empty ()) {
+            return 0;
+        }
+        return String2Int<T> (&*s.begin (), &*s.begin () + s.size ());
+    }
+    template <typename T>
+    inline T String2Int (const wchar_t* s)
+    {
+        return String2Int<T> (span{s, s + CString::Length (s)});
     }
     template <typename T>
     inline T String2Int (const String& s)

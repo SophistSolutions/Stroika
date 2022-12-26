@@ -239,6 +239,8 @@ namespace Stroika::Foundation::Characters::FloatConversion {
      *
      *  \req start <= end; for overloads with start/end, and must point to valid string in that range
      *  \req remainder != nullptr
+     * 
+     *      // @todo redo all these with some concept to make it shorter - like ISCOVNERTIBLE TO STRING
      *
      */
     template <typename T = double>
@@ -246,7 +248,13 @@ namespace Stroika::Foundation::Characters::FloatConversion {
     template <typename T = double>
     T ToFloat (const wchar_t* start, const wchar_t* end);
     template <typename T = double>
+    T ToFloat (span<const wchar_t> s);
+    template <typename T = double>
+    T ToFloat (const wchar_t* s);
+    template <typename T = double>
     T ToFloat (const string& s);
+    template <typename T = double>
+    T ToFloat (const wstring& s);
     template <typename T = double>
     T ToFloat (const String& s);
     template <typename T = double>

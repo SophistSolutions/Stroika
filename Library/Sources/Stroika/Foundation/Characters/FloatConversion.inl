@@ -16,6 +16,8 @@
 #include "../Memory/Optional.h"
 #include "../Memory/StackBuffer.h"
 
+#include "CString/Utilities.h"
+
 namespace Stroika::Foundation::Characters::FloatConversion {
 
     /*
@@ -550,10 +552,30 @@ namespace Stroika::Foundation::Characters::FloatConversion {
         return result;
     }
     template <typename T>
+    inline T ToFloat (span<const wchar_t> s)
+    {
+        if (s.empty ()) {
+            return Math::nan<T> ();
+        }
+        return ToFloat<T> (&*s.begin (), &*s.begin () + s.size ());
+    }
+    template <typename T>
+    inline T ToFloat (const wchar_t* s)
+    {
+        return ToFloat<T> (span{s, CString::Length (s)});
+    }
+    template <typename T>
     inline T ToFloat (const string& s)
     {
         const char* start = s.c_str ();
         const char* end   = start + s.length ();
+        return ToFloat<T> (start, end);
+    }
+    template <typename T>
+    inline T ToFloat (const wstring& s)
+    {
+        const wchar_t* start = s.c_str ();
+        const wchar_t* end   = start + s.length ();
         return ToFloat<T> (start, end);
     }
     template <typename T>
