@@ -70,6 +70,9 @@ namespace Stroika::Foundation::Math {
      *  NearlyEquals() can be used as a utility for floating point comparisons.
      *  But, so that it is more effective with templates, it can also be used with any type,
      *  and becomes require equality (==).
+     * 
+     *  \note For floating points, NearlyEquals (Nan,Nan) is TRUE, unlike with operator==
+     *        https://medium.com/engineering-housing/nan-is-not-equal-to-nan-771321379694
      */
     template <typename T1, typename T2, typename TC = typename common_type<T1, T2>::type>
     bool NearlyEquals (T1 l, T2 r, enable_if_t<is_floating_point_v<TC>>* = nullptr);
