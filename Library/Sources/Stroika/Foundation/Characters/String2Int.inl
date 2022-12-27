@@ -103,7 +103,7 @@ namespace Stroika::Foundation::Characters {
             return String2Int<T> (span{s, CString::Length (s)});
         }
         else if constexpr (is_same_v<DecayedStringishArg, String>) {
-            auto [start, end] = s.GetData<wchar_t> ();
+            auto [start, end] = s.template GetData<wchar_t> ();
             return String2Int<T> (span{start, end});
         }
         else {
