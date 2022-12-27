@@ -243,27 +243,27 @@ namespace Stroika::Foundation::Characters::FloatConversion {
      *      // @todo redo all these with some concept to make it shorter - like ISCOVNERTIBLE TO STRING
      *
      */
-    template <typename T = double>
-    T ToFloat (const char* start, const char* end);
-    template <typename T = double>
-    T ToFloat (const wchar_t* start, const wchar_t* end);
-    template <typename T = double>
-    T ToFloat (span<const wchar_t> s);
-    template <typename T = double>
-    T ToFloat (const wchar_t* s);
-    template <typename T = double>
-    T ToFloat (const string& s);
-    template <typename T = double>
-    T ToFloat (const wstring& s);
-    template <typename T = double>
-    T ToFloat (const String& s);
+
+    // @TODO MODERNIZE
     template <typename T = double>
     T ToFloat (const wchar_t* start, const wchar_t* end, const wchar_t** remainder);
     template <typename T = double>
     T ToFloat (const String& s, String* remainder);
 
-    // REDO THIS AND FromFloat using concepts (like I did for String2Int)
-    // just two or thre overloads with concepts
+    template <typename T = double, Character_IsUnicodeCodePoint CHAR_T>
+    T ToFloat (span<const CHAR_T> s);
+    template <typename T = double, ConvertibleToString STRINGISH_ARG>
+    T ToFloat (STRINGISH_ARG&& s);
+
+    // @todo find better way to extend concept to ascii strings
+    template <typename T = double>
+    T ToFloat (const string& s)
+    {
+        if (s.empty ()) {
+            return ToFloat<T> (span<const char8_t>{});
+        }
+        return ToFloat<T> (span<const char8_t>{(const char8_t*)&*s.begin (), s.size ()});
+    }
 
 }
 
