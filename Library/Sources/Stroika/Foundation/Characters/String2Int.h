@@ -58,14 +58,18 @@ namespace Stroika::Foundation::Characters {
      *      @todo MAYBE replace this with String2IntQuietly () - just always mapping to a default (and maybe make that default a parameter).
      *            and otherwise THROW on invalid.
      */
-    template <typename T = int>
-    T String2Int (const wchar_t* start, const wchar_t* end);
-    template <typename T = int>
-    T String2Int (span<const wchar_t> s);
-    template <typename T = int>
-    T String2Int (const wchar_t* s);
+    template <typename T = int, Character_IsUnicodeCodePoint CHAR_T>
+    T String2Int (span<const CHAR_T> s);
     template <typename T = int>
     T String2Int (const String& s);
+    template <typename T = int, ConvertibleToString STRINGISH_ARG>
+    T String2Int (STRINGISH_ARG&& s)
+        requires (not is_same_v<remove_cvref_t<STRINGISH_ARG>, String>);
+    template <typename T = int>
+    [[deprecated ("Since Stroika v3.0d1, use span{} overload")]] T String2Int (const wchar_t* start, const wchar_t* end)
+    {
+        return String2Int (span<const wchar_t>{start, end});
+    }
 
     /**
      *  Convert the given hex-format string to an unsigned integer.

@@ -51,54 +51,58 @@ namespace Stroika::Foundation::Characters {
      *********************************** String2Int *********************************
      ********************************************************************************
      */
-    template <typename T>
-    T String2Int (const wchar_t* start, const wchar_t* end)
+    template <typename T, Character_IsUnicodeCodePoint CHAR_T>
+    inline T String2Int (span<const CHAR_T> s)
     {
-        Require ((String{start, end} == String{start, end}.Trim ()));
-
-        /*
-         *  Most of the time we can do this very efficiently, because there are just ascii characters.
-         *  Else, fallback on older algorithm that understands full unicode character set.
-         */
-        Memory::StackBuffer<char> asciiS;
-        if (String::AsASCIIQuietly (start, end, &asciiS)) {
-            T    r; // intentionally uninitialized
-            auto b = asciiS.begin ();
-            auto e = asciiS.end ();
-            if (b != e and *b == '+') {
-                ++b; // "the plus sign is not recognized outside of the exponent (only the minus sign is permitted at the beginning)" from https://en.cppreference.com/w/cpp/utility/from_chars
-            }
-            auto [ptr, ec] = from_chars (b, e, r);
-            if (ec == errc::result_out_of_range) [[UNLIKELY_ATTR]] {
-                return *b == '-' ? numeric_limits<T>::min () : numeric_limits<T>::max ();
-            }
-            // if error or trailing crap - return 0
-            T result = (ec == std::errc{} and ptr == e) ? r : 0;                    // a weird default, but what the algorithm advertises and for its not sure there is better?
-            Ensure (result == Private_::String2IntOrUInt_<T> (String{start, end})); // test backward compat with old algorithm --LGP 2021-11-08
-            return result;
-        }
-        else {
-            return Private_::String2IntOrUInt_<T> (String{start, end});
-        }
-    }
-    template <typename T>
-    inline T String2Int (span<const wchar_t> s)
-    {
+        Require ((String{s} == String{s}.Trim ()));
         if (s.empty ()) {
             return 0;
         }
-        return String2Int<T> (&*s.begin (), &*s.begin () + s.size ());
+        // @todo this can be further simplfied and optimized (ESPECIALLY the size=1 case)
+        if constexpr (sizeof (CHAR_T) == sizeof (wchar_t)) {
+            /*
+             *  Most of the time we can do this very efficiently, because there are just ascii characters.
+             *  Else, fallback on older algorithm that understands full unicode character set.
+             */
+            Memory::StackBuffer<char> asciiS;
+            if (String::AsASCIIQuietly (&*s.begin (), &*s.begin () + s.size (), &asciiS)) {
+                T    r; // intentionally uninitialized
+                auto b = asciiS.begin ();
+                auto e = asciiS.end ();
+                if (b != e and *b == '+') {
+                    ++b; // "the plus sign is not recognized outside of the exponent (only the minus sign is permitted at the beginning)" from https://en.cppreference.com/w/cpp/utility/from_chars
+                }
+                auto [ptr, ec] = from_chars (b, e, r);
+                if (ec == errc::result_out_of_range) [[unlikely]] {
+                    return *b == '-' ? numeric_limits<T>::min () : numeric_limits<T>::max ();
+                }
+                // if error or trailing crap - return 0
+                T result = (ec == std::errc{} and ptr == e) ? r : 0;           // a weird default, but what the algorithm advertises and for its not sure there is better?
+                Ensure (result == Private_::String2IntOrUInt_<T> (String{s})); // test backward compat with old algorithm --LGP 2021-11-08
+                return result;
+            }
+            else {
+                return Private_::String2IntOrUInt_<T> (String{s});
+            }
+        }
+        else {
+            return String2Int<T> (String{s});
+        }
     }
-    template <typename T>
-    inline T String2Int (const wchar_t* s)
+    template <typename T, ConvertibleToString STRINGISH_ARG>
+    inline T String2Int (STRINGISH_ARG&& s)
+        requires (not is_same_v<remove_cvref_t<STRINGISH_ARG>, String>)
     {
-        return String2Int<T> (span{s, s + CString::Length (s)});
+        if constexpr (is_same_v<STRINGISH_ARG, const wchar_t*>) {
+            return String2Int<T> (span{s, s + CString::Length (s)});
+        }
+        return String2Int<T> (String{forward<STRINGISH_ARG> (s)});
     }
     template <typename T>
     inline T String2Int (const String& s)
     {
         auto [start, end] = s.GetData<wchar_t> ();
-        return String2Int<T> (start, end);
+        return String2Int<T> (span{start, end});
     }
 
 }
