@@ -21,12 +21,12 @@
 namespace Stroika::Foundation::Characters::FloatConversion {
 
     template <typename T = double>
-    inline [[deprecated ("Since Stroika v3.0d1 - use span overload")]] T ToFloat (const char* start, const char* end)
+     [[deprecated ("Since Stroika v3.0d1 - use span overload")]]inline T ToFloat (const char* start, const char* end)
     {
         return ToFloat<T> (span{start, end});
     }
     template <typename T = double>
-    inline [[deprecated ("Since Stroika v3.0d1 - use span overload")]] T ToFloat (const wchar_t* start, const wchar_t* end)
+    [[deprecated ("Since Stroika v3.0d1 - use span overload")]] inline T ToFloat (const wchar_t* start, const wchar_t* end)
     {
         return ToFloat<T> (span{start, end});
     }
@@ -594,7 +594,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
             return ToFloat<T> (span{s, CString::Length (s)});
         }
         else if constexpr (is_same_v<DecayedStringishArg, String>) {
-            auto [start, end] = s.GetData<wchar_t> ();
+            auto [start, end] = s.template GetData<wchar_t> ();
             return ToFloat<T> (span{start, end});
         }
         else {
