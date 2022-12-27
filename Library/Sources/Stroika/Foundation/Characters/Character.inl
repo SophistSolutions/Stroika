@@ -122,27 +122,50 @@ namespace Stroika::Foundation::Characters {
             return fCharacterCode_;
         }
     }
-    template <Character_IsUnicodeCodePoint CHAR_T>
+    template <Character_SafelyCompatible CHAR_T>
     inline bool Character::IsAscii (span<const CHAR_T> fromS)
     {
-        for (CHAR_T c : fromS) {
-            if (static_cast<make_unsigned_t<CHAR_T>> (c) > 127) [[unlikely]] {
-                return false;
+        // note - tried to simplify with conditional_t but both sides evaluated
+        if constexpr (is_same_v<remove_cv_t<CHAR_T>, Character>) {
+            for (Character c : fromS) {
+                if (c.IsASCII ()) [[unlikely]] {
+                    return false;
+                }
+            }
+        }
+        else {
+            for (CHAR_T c : fromS) {
+                if (static_cast<make_unsigned_t<CHAR_T>> (c) > 127) [[unlikely]] {
+                    return false;
+                }
             }
         }
         return true;
     }
-    template <typename T, Character_IsUnicodeCodePoint CHAR_T>
+    template <typename T, Character_SafelyCompatible CHAR_T>
     inline bool Character::AsASCIIQuietly (span<const CHAR_T> fromS, T* into)
     {
         RequireNotNull (into);
         into->clear ();
-        for (CHAR_T c : fromS) {
-            if (static_cast<make_unsigned_t<CHAR_T>> (c) <= 127) [[likely]] {
-                into->push_back (c);
+        // note - tried to simplify with conditional_t but both sides evaluated
+        if constexpr (is_same_v<remove_cv_t<CHAR_T>, Character>) {
+            for (Character c : fromS) {
+                if (c.IsASCII ()) [[likely]] {
+                    into->push_back (c.GetAsciiCode ());
+                }
+                else {
+                    return false;
+                }
             }
-            else {
-                return false;
+        }
+        else {
+            for (CHAR_T c : fromS) {
+                if (static_cast<make_unsigned_t<CHAR_T>> (c) <= 127) [[likely]] {
+                    into->push_back (static_cast<char> (c));
+                }
+                else {
+                    return false;
+                }
             }
         }
         return true;

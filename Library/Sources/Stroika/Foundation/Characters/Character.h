@@ -114,6 +114,12 @@ namespace Stroika::Foundation::Characters {
         nonvirtual wchar_t GetCharacterCode () const;
 
     public:
+        explicit operator char32_t () const
+        {
+            return GetCharacterCode ();
+        }
+
+    public:
         /*
          * @todo    NOT SURE WE WANT THIS FOR wchar_t etc - maybe just get rid of this!!! TRICKYYY;
          *          IF we go with design based on char32_t - then thats all we can ever safely return.
@@ -181,7 +187,7 @@ namespace Stroika::Foundation::Characters {
     public:
         /**
          */
-        template <Character_IsUnicodeCodePoint CHAR_T>
+        template <Character_SafelyCompatible CHAR_T>
         static bool IsAscii (span<const CHAR_T> s);
 
     public:
@@ -194,7 +200,7 @@ namespace Stroika::Foundation::Characters {
          *      o   Memory::StackBuffer<char>
          *      o   string
          */
-        template <typename T = string, Character_IsUnicodeCodePoint CHAR_T>
+        template <typename T = string, Character_SafelyCompatible CHAR_T>
         static bool AsASCIIQuietly (span<const CHAR_T> fromS, T* into);
 
     public:
