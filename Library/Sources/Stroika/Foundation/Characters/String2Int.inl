@@ -71,7 +71,7 @@ namespace Stroika::Foundation::Characters {
              *  Else, fallback on older algorithm that understands full unicode character set.
              */
             Memory::StackBuffer<char> asciiS;
-            if (String::AsASCIIQuietly (&*s.begin (), &*s.begin () + s.size (), &asciiS)) {
+            if (Character::AsASCIIQuietly (s, &asciiS)) {
                 T    r; // intentionally uninitialized
                 auto b = asciiS.begin ();
                 auto e = asciiS.end ();
@@ -99,7 +99,7 @@ namespace Stroika::Foundation::Characters {
     inline T String2Int (STRINGISH_ARG&& s)
     {
         using DecayedStringishArg = remove_cvref_t<STRINGISH_ARG>;
-        if constexpr (is_same_v<DecayedStringishArg, const wchar_t*>) {
+        if constexpr (is_same_v<DecayedStringishArg, const char*> or is_same_v<DecayedStringishArg, const char8_t*> or is_same_v<DecayedStringishArg, const char16_t*> or is_same_v<DecayedStringishArg, const char32_t*> or is_same_v<DecayedStringishArg, const wchar_t*>) {
             return String2Int<T> (span{s, CString::Length (s)});
         }
         else if constexpr (is_same_v<DecayedStringishArg, String>) {
