@@ -1151,8 +1151,6 @@ namespace Stroika::Foundation::Characters {
          */
         template <typename T = string>
         nonvirtual bool AsASCIIQuietly (T* into) const;
-        template <typename T = string>
-        static bool AsASCIIQuietly (const wchar_t* fromStart, const wchar_t* fromEnd, T* into);
 
     public:
         /**
@@ -1281,6 +1279,11 @@ namespace Stroika::Foundation::Characters {
         nonvirtual String substr (size_t from, size_t count = npos) const;
 
     public:
+        template <typename T = string>
+        [[deprecated ("Since Stroika v3.0d1 - use Character::AsAsciiQuietly")]] static bool AsASCIIQuietly (const wchar_t* fromStart, const wchar_t* fromEnd, T* into)
+        {
+            return Character::AsASCIIQuietly (span<const wchar_t>{fromStart, fromEnd}, into);
+        }
         [[deprecated ("Since Stroika v3.0d1 due to https://stroika.atlassian.net/browse/STK-965 - NOT IMPLEMENTED")]] nonvirtual const wchar_t* data () const;
 
     protected:
@@ -1325,14 +1328,6 @@ namespace Stroika::Foundation::Characters {
     void String::AsASCII (string* into) const;
     template <>
     string String::AsASCII () const;
-    template <>
-    bool String::AsASCIIQuietly (const wchar_t* fromStart, const wchar_t* fromEnd, string* into);
-    template <>
-    bool String::AsASCIIQuietly (const wchar_t* fromStart, const wchar_t* fromEnd, Memory::StackBuffer<char>* into);
-    template <>
-    bool String::AsASCIIQuietly (string* into) const;
-    template <>
-    bool String::AsASCIIQuietly (Memory::StackBuffer<char>* into) const;
 
     template <>
     pair<const Character*, const Character*> String::GetData () const;

@@ -560,21 +560,13 @@ namespace Stroika::Foundation::Characters {
         AsASCII (&r);
         return r;
     }
-    template <>
-    inline bool String::AsASCIIQuietly (string* into) const
+    template <typename T>
+    inline bool String::AsASCIIQuietly (T* into) const
     {
         RequireNotNull (into);
         String::_SafeReadRepAccessor             thisAccessor{this};
         pair<const Character*, const Character*> p = thisAccessor._ConstGetRep ().GetData ();
-        return AsASCIIQuietly (reinterpret_cast<const wchar_t*> (p.first), reinterpret_cast<const wchar_t*> (p.second), into);
-    }
-    template <>
-    inline bool String::AsASCIIQuietly (Memory::StackBuffer<char>* into) const
-    {
-        RequireNotNull (into);
-        String::_SafeReadRepAccessor             thisAccessor{this};
-        pair<const Character*, const Character*> p = thisAccessor._ConstGetRep ().GetData ();
-        return AsASCIIQuietly (reinterpret_cast<const wchar_t*> (p.first), reinterpret_cast<const wchar_t*> (p.second), into);
+        return Character::AsASCIIQuietly (span<const Character>{p.first, p.second}, into);
     }
     inline string String::AsNarrowString (const locale& l) const
     {

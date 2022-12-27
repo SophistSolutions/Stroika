@@ -1241,36 +1241,6 @@ void String::AsASCII (Memory::StackBuffer<char>* into) const
     }
 }
 
-template <>
-bool String::AsASCIIQuietly (const wchar_t* fromStart, const wchar_t* fromEnd, string* into)
-{
-    RequireNotNull (into);
-    into->clear ();
-    into->reserve (fromEnd - fromStart);
-    for (const wchar_t* wi = fromStart; wi != fromEnd; ++wi) {
-        if (not Character{*wi}.IsASCII ()) [[unlikely]] {
-            return false;
-        }
-        into->push_back (static_cast<char> (*wi));
-    }
-    return true;
-}
-
-template <>
-bool String::AsASCIIQuietly (const wchar_t* fromStart, const wchar_t* fromEnd, Memory::StackBuffer<char>* into)
-{
-    RequireNotNull (into);
-    into->clear ();
-    into->reserve (fromEnd - fromStart);
-    for (const wchar_t* wi = fromStart; wi != fromEnd; ++wi) {
-        if (not Character{*wi}.IsASCII ()) [[unlikely]] {
-            return false;
-        }
-        into->push_back (static_cast<char> (*wi));
-    }
-    return true;
-}
-
 void String::erase (size_t from)
 {
     *this = RemoveAt (from, size ());
