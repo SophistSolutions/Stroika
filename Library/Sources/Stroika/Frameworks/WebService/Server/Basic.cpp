@@ -99,7 +99,7 @@ void WebService::Server::WriteDocsPage (Response* response, const Sequence<WebSe
         if (i.fCurlExample) {
             i.fCurlExample->Apply ([&] (const String& i) { tmpCurl += L"<div>" + substVars (i) + L"</div>"; });
         }
-        writeDocs (i.fOperation, tmpDocs.c_str (), tmpCurl.c_str ());
+        writeDocs (i.fOperation, tmpDocs.str (), tmpCurl.str ());
     }
     response->writeln (L"</ul>");
     response->writeln (L"</body>");
