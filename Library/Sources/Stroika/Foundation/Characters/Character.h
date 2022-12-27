@@ -85,7 +85,8 @@ namespace Stroika::Foundation::Characters {
      *        on this point).
      */
     template <typename T>
-    concept Character_Compatible = Character_IsUnicodeCodePointOrPlainChar<T> or is_same_v < remove_cv_t<T>,  Character > ;
+    concept Character_Compatible = Character_IsUnicodeCodePointOrPlainChar<T> or is_same_v < remove_cv_t<T>,
+    Character > ;
 
     /**
      *  \note <a href="Design Overview.md#Comparisons">Comparisons</a>:
