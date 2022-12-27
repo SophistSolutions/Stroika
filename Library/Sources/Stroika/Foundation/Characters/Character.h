@@ -62,7 +62,6 @@ namespace Stroika::Foundation::Characters {
     concept Character_IsUnicodeCodePointOrPlainChar = Character_IsUnicodeCodePoint<T> or is_same_v < remove_cv_t<T>,
     char > ;
 
-
     /// @TODO LOSE OrPlainChar busines sand simplfiy below???? Only if we ASSERT 'char' implies ASCIII, and check that with assertions
     // so assert each char <= 127.
     class Character;
@@ -73,8 +72,8 @@ namespace Stroika::Foundation::Characters {
      *  \note all these types are <= 4 bytes (size of char32_t)
      */
     template <typename T>
-    concept Character_SafelyCompatible = Character_IsUnicodeCodePoint<T> or is_same_v<remove_cv_t<T>,
-                                                                                           Character>;
+    concept Character_SafelyCompatible = Character_IsUnicodeCodePoint<T> or is_same_v < remove_cv_t<T>,
+    Character > ;
 
     /**
      *  \brief char16_t, Character, wchar_t, char, etc - something that can be reasonably converted into a Unicode Character object.
@@ -84,8 +83,8 @@ namespace Stroika::Foundation::Characters {
      *  \note all these types are <= 4 bytes (size of char32_t)
      */
     template <typename T>
-    concept Character_Compatible = Character_IsUnicodeCodePointOrPlainChar<T> or is_same_v<remove_cv_t<T>,
-                                                                                           Character>;
+    concept Character_Compatible = Character_IsUnicodeCodePointOrPlainChar<T> or is_same_v < remove_cv_t<T>,
+    Character > ;
 
     /**
      *  \note <a href="Design Overview.md#Comparisons">Comparisons</a>:
