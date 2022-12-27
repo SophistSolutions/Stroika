@@ -58,9 +58,9 @@ namespace Stroika::Foundation::Characters {
             else {
                 Memory::StackBuffer<wchar_t> buf{Memory::eUninitialized, UTFConverter::ComputeTargetBufferSize<wchar_t> (s)};
 #if qCompilerAndStdLib_spanOfContainer_Buggy
-                auto                         r = UTFConverter::kThe.Convert (s, mkSpan_BWA_(buf));
+                auto r = UTFConverter::kThe.Convert (s, mkSpan_BWA_ (buf));
 #else
-                auto                         r = UTFConverter::kThe.Convert (s, span{buf});
+                auto r = UTFConverter::kThe.Convert (s, span{buf});
 #endif
                 Append (String{&*buf.begin (), &*buf.begin () + r.fTargetProduced});
             }
@@ -213,8 +213,8 @@ namespace Stroika::Foundation::Characters {
         }
         else {
 #if qCompilerAndStdLib_spanOfContainer_Buggy
-            probablyIgnoredBuf->resize_uninitialized (UTFConverter::ComputeTargetBufferSize<CHAR_T> (mkSpan_BWA_(fData_)));
-            return span{probablyIgnoredBuf->data (), get<1> (UTFConverter::kThe.Convert (mkSpan_BWA_(fData_), mkSpan_BWA_(*probablyIgnoredBuf)))};
+            probablyIgnoredBuf->resize_uninitialized (UTFConverter::ComputeTargetBufferSize<CHAR_T> (mkSpan_BWA_ (fData_)));
+            return span{probablyIgnoredBuf->data (), get<1> (UTFConverter::kThe.Convert (mkSpan_BWA_ (fData_), mkSpan_BWA_ (*probablyIgnoredBuf)))};
 #else
             probablyIgnoredBuf->resize_uninitialized (UTFConverter::ComputeTargetBufferSize<CHAR_T> (span{fData_}));
             return span{probablyIgnoredBuf->data (), get<1> (UTFConverter::kThe.Convert (span{fData_}, span{*probablyIgnoredBuf}))};
