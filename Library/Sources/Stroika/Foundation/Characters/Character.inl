@@ -122,6 +122,31 @@ namespace Stroika::Foundation::Characters {
             return fCharacterCode_;
         }
     }
+    template <Character_IsUnicodeCodePoint CHAR_T>
+    inline bool Character::IsAscii (span<const CHAR_T> fromS)
+    {
+        for (CHAR_T c : fromS) {
+            if (static_cast<make_unsigned_t<CHAR_T>> (c) > 127) [[unlikely]] {
+                return false;
+            }
+        }
+        return true;
+    }
+    template <typename T, Character_IsUnicodeCodePoint CHAR_T>
+    inline bool Character::AsASCIIQuietly (span<const CHAR_T> fromS, T* into)
+    {
+        RequireNotNull (into);
+        into->clear ();
+        for (CHAR_T c : fromS) {
+            if (static_cast<make_unsigned_t<CHAR_T>> (c) <= 127) [[likely]] {
+                into->push_back (c);
+            }
+            else {
+                return false;
+            }
+        }
+        return true;
+    }
 
     /*
      ********************************************************************************

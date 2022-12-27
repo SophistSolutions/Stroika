@@ -7,6 +7,7 @@
 #include "../StroikaPreComp.h"
 
 #include <compare>
+#include <span>
 
 #include "../Common/Compare.h"
 #include "../Configuration/Enumeration.h"
@@ -176,6 +177,25 @@ namespace Stroika::Foundation::Characters {
          * original character if there is no sensible conversion.
          */
         nonvirtual Character ToUpperCase () const;
+
+    public:
+        /**
+         */
+        template <Character_IsUnicodeCodePoint CHAR_T>
+        static bool IsAscii (span<const CHAR_T> s);
+
+    public:
+        /**
+         * Convert String losslessly into a standard C++ type.
+         * Only specifically specialized variants are supported (right now just <string> supported).
+         * If this source contains any invalid ASCII characters, this returns false, and otherwise true (with set into).
+         * 
+         *  Supported Types:
+         *      o   Memory::StackBuffer<char>
+         *      o   string
+         */
+        template <typename T = string, Character_IsUnicodeCodePoint CHAR_T>
+        static bool AsASCIIQuietly (span<const CHAR_T> fromS, T* into);
 
     public:
         /**
