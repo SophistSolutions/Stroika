@@ -1434,6 +1434,13 @@ namespace Stroika::Foundation::Characters {
         friend class String;
     };
 
+    template <typename T>
+    concept ConvertibleToString = requires (T t) {
+                                      {
+                                          String{t}
+                                      };
+                                  };
+
     /**
      *  \brief user defined literal for ASCII string. Equivilent to String::FromASCII () - except this REQUIRES its argument
      *         be a forever-lived nul-terminated C string.
