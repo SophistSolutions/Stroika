@@ -262,6 +262,9 @@ namespace Stroika::Foundation::Characters::FloatConversion {
     template <typename T = double>
     T ToFloat (const String& s, String* remainder);
 
+    // REDO THIS AND FromFloat using concepts (like I did for String2Int)
+    // just two or thre overloads with concepts
+
 }
 
 /*

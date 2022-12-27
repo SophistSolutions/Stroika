@@ -37,9 +37,9 @@ unsigned int Characters::HexString2Int (const String& s)
  */
 long long int Characters::Private_::String2Int_ (const String& s)
 {
-    Memory::StackBuffer<wchar_t> sPossibleBackingStore;
+    Memory::StackBuffer<wchar_t> possibleBackingStore;
     wchar_t*                     endptr = nullptr;
-    unsigned long long int       l      = wcstoll (get<0> (s.c_str (&sPossibleBackingStore)), &endptr, 10);
+    unsigned long long int       l      = wcstoll (get<0> (s.c_str (&possibleBackingStore)), &endptr, 10);
     return *endptr == '\0' ? l : 0; // weird but I document default is zero if failed to fully parse
 }
 
@@ -50,8 +50,8 @@ long long int Characters::Private_::String2Int_ (const String& s)
  */
 unsigned long long int Characters::Private_::String2UInt_ (const String& s)
 {
-    Memory::StackBuffer<wchar_t> sPossibleBackingStore;
+    Memory::StackBuffer<wchar_t> possibleBackingStore;
     wchar_t*                     endptr = nullptr;
-    long long int                l      = wcstoull (get<0> (s.c_str (&sPossibleBackingStore)), &endptr, 10);
+    long long int                l      = wcstoull (get<0> (s.c_str (&possibleBackingStore)), &endptr, 10);
     return *endptr == '\0' ? l : 0; // weird but I document default is zero if failed to fully parse
 }

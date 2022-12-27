@@ -18,6 +18,12 @@
 
 namespace Stroika::Foundation::Characters {
 
+    template <typename T = int>
+    [[deprecated ("Since Stroika v3.0d1, use span{} overload")]] T String2Int (const wchar_t* start, const wchar_t* end)
+    {
+        return String2Int (span<const wchar_t>{start, end});
+    }
+
     namespace Private_ {
         unsigned long long int String2UInt_ (const String& s);
         long long int          String2Int_ (const String& s);
@@ -91,18 +97,18 @@ namespace Stroika::Foundation::Characters {
     }
     template <typename T, ConvertibleToString STRINGISH_ARG>
     inline T String2Int (STRINGISH_ARG&& s)
-        requires (not is_same_v<remove_cvref_t<STRINGISH_ARG>, String>)
     {
-        if constexpr (is_same_v<STRINGISH_ARG, const wchar_t*>) {
-            return String2Int<T> (span{s, s + CString::Length (s)});
+        using DecayedStringishArg = remove_cvref_t<STRINGISH_ARG>;
+        if constexpr (is_same_v<DecayedStringishArg, const wchar_t*>) {
+            return String2Int<T> (span{s, CString::Length (s)});
         }
-        return String2Int<T> (String{forward<STRINGISH_ARG> (s)});
-    }
-    template <typename T>
-    inline T String2Int (const String& s)
-    {
-        auto [start, end] = s.GetData<wchar_t> ();
-        return String2Int<T> (span{start, end});
+        else if constexpr (is_same_v<DecayedStringishArg, String>) {
+            auto [start, end] = s.GetData<wchar_t> ();
+            return String2Int<T> (span{start, end});
+        }
+        else {
+            return String2Int<T> (String{forward<STRINGISH_ARG> (s)});
+        }
     }
 
 }
