@@ -122,8 +122,8 @@ namespace Stroika::Foundation::Characters {
             return fCharacterCode_;
         }
     }
-    template <Character_SafelyCompatible CHAR_T>
-    inline bool Character::IsAscii (span<const CHAR_T> fromS)
+    template <Character_Compatible CHAR_T>
+    inline bool Character::IsASCII (span<const CHAR_T> fromS)
     {
         // note - tried to simplify with conditional_t but both sides evaluated
         if constexpr (is_same_v<remove_cv_t<CHAR_T>, Character>) {

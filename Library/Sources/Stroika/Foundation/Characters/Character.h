@@ -77,15 +77,15 @@ namespace Stroika::Foundation::Characters {
     Character > ;
 
     /**
-     *  \brief char16_t, Character, wchar_t, char, etc - something that can be reasonably converted into a Unicode Character object.
-     * 
-     *  \note UNCLEAR if we want to include char in this list, since not so clear how to convert it, unless its ascii
+     *  \brief Something that can be reasonably converted into a Unicode Character object (e.g. char16_t, Character, wchar_t, char)
      * 
      *  \note all these types are <= 4 bytes (size of char32_t)
+     * 
+     *  \note for many apis, when Character_Compatible==char, the API will require the characters are ASCII (but see each API for details
+     *        on this point).
      */
     template <typename T>
-    concept Character_Compatible = Character_IsUnicodeCodePointOrPlainChar<T> or is_same_v < remove_cv_t<T>,
-    Character > ;
+    concept Character_Compatible = Character_IsUnicodeCodePointOrPlainChar<T> or is_same_v < remove_cv_t<T>,  Character > ;
 
     /**
      *  \note <a href="Design Overview.md#Comparisons">Comparisons</a>:
@@ -187,8 +187,8 @@ namespace Stroika::Foundation::Characters {
     public:
         /**
          */
-        template <Character_SafelyCompatible CHAR_T>
-        static bool IsAscii (span<const CHAR_T> s);
+        template <Character_Compatible CHAR_T>
+        static bool IsASCII (span<const CHAR_T> s);
 
     public:
         /**
