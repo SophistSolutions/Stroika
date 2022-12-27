@@ -239,6 +239,13 @@ namespace Stroika::Foundation::Characters {
 
     public:
         /**
+         *  See what the given offset in the source text translates to in the target text
+         */
+        template <Character_IsUnicodeCodePoint TRG_T, Character_IsUnicodeCodePoint SRC_T>
+        nonvirtual size_t ConvertOffset (span<const SRC_T> source, size_t srcIndex) const;
+
+    public:
+        /**
          *  \brief Nearly always use this default UTFConverter.
          */
         static const UTFConverter kThe;

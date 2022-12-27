@@ -153,15 +153,17 @@ namespace Stroika::Foundation::Characters {
     }
     template <Character_Compatible SRC_T, Character_Compatible TRG_T>
     inline auto UTFConverter::Convert (span<const SRC_T> source, span<TRG_T> target) const -> ConversionResult
-        requires (not is_const_v<TRG_T>) {
-            Require ((target.size () >= ComputeTargetBufferSize<TRG_T> (source)));
-            if constexpr (sizeof (SRC_T) == sizeof (TRG_T)) {
-                copy (source, target, source.size ()); // pointless conversion, but if requested...
-                return source.size ();
-            }
-            return Convert (ConvertCompatibleSpan_ (source), ConvertCompatibleSpan_ (target));
-        } template <typename TO, typename FROM>
-        inline TO UTFConverter::Convert (const FROM& from) const
+        requires (not is_const_v<TRG_T>)
+    {
+        Require ((target.size () >= ComputeTargetBufferSize<TRG_T> (source)));
+        if constexpr (sizeof (SRC_T) == sizeof (TRG_T)) {
+            copy (source, target, source.size ()); // pointless conversion, but if requested...
+            return source.size ();
+        }
+        return Convert (ConvertCompatibleSpan_ (source), ConvertCompatibleSpan_ (target));
+    }
+    template <typename TO, typename FROM>
+    inline TO UTFConverter::Convert (const FROM& from) const
         requires (
             (is_same_v<TO, string> or is_same_v<TO, wstring> or is_same_v<TO, u8string> or is_same_v<TO, u16string> or is_same_v<TO, u32string>) and
             (is_same_v<FROM, string> or is_same_v<FROM, wstring> or is_same_v<FROM, u8string> or is_same_v<FROM, u16string> or is_same_v<FROM, u32string>))
@@ -313,13 +315,25 @@ namespace Stroika::Foundation::Characters {
     }
     template <Character_Compatible SRC_T, Character_Compatible TRG_T>
     inline auto UTFConverter::ConvertQuietly (span<const SRC_T> source, span<TRG_T> target) const -> ConversionResultWithStatus
-        requires (not is_const_v<TRG_T>) {
-            if constexpr (sizeof (SRC_T) == sizeof (TRG_T)) {
-                copy (source, target, source.size ()); // pointless conversion, but if requested...
-                return source.size ();
-            }
-            return ConvertQuietly (ConvertCompatibleSpan_ (source), ConvertCompatibleSpan_ (target));
+        requires (not is_const_v<TRG_T>)
+    {
+        if constexpr (sizeof (SRC_T) == sizeof (TRG_T)) {
+            copy (source, target, source.size ()); // pointless conversion, but if requested...
+            return source.size ();
         }
+        return ConvertQuietly (ConvertCompatibleSpan_ (source), ConvertCompatibleSpan_ (target));
+    }
+
+    template <Character_IsUnicodeCodePoint TRG_T, Character_IsUnicodeCodePoint SRC_T>
+    size_t UTFConverter::ConvertOffset (span<const SRC_T> source, size_t srcIndex) const
+    {
+        // needlessly costly way to compute, but hopefully adequate for now -- LGP 2022-12-27
+        Require (srcIndex <= source.size ());
+        span<const SRC_T>  fakeSrc{source.begin (), srcIndex};
+        Memory::StackBuffer<remove_cv_t<TRG_T>> fakeOut{ComputeTargetBufferSize<remove_cv_t<TRG_T>> (fakeSrc)};
+        ConversionResult   r = Convert (fakeSrc, fakeOut);
+        return r.fTargetProduced;
+    }
 
     template <Character_Compatible FromT>
     constexpr auto UTFConverter::ConvertCompatibleSpan_ (span<FromT> f) -> span<CompatibleT_<FromT>>
