@@ -546,7 +546,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
     T ToFloat (span<const CHAR_T> s)
     {
         if constexpr (is_same_v<remove_cv_t<CHAR_T>, char>) {
-            Require (Character::IsAscii (s));
+            Require (Character::IsASCII (s));
         }
         /*
          *  Most of the time we can do this very efficiently, because there are just ascii characters.
