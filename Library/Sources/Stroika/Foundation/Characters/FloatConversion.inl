@@ -453,8 +453,8 @@ namespace Stroika::Foundation::Characters::FloatConversion {
             }
             else {
                 // must utf convert to wchar_t which we support
-                Memory::StackBuffer<wchar_t> wideBuf{UTFConverter::ComputeTargetBufferSize<wchar_t> (s)};
-                size_t                       wideChars = UTFConverter::kThe.Convert (s, wideBuf).fTargetProduced;
+                Memory::StackBuffer<wchar_t> wideBuf{UTFConverter::ComputeTargetBufferSize<wchar_t> (srcSpan)};
+                size_t                       wideChars = UTFConverter::kThe.Convert (srcSpan, wideBuf).fTargetProduced;
                 if (remainder == nullptr) {
                     d = ToFloat_RespectingLocale_<T> (span<const wchar_t>{wideBuf.data (), wideChars}, nullptr);
                 }
