@@ -797,8 +797,8 @@ sub	SetDefaultForCompilerDriver_
 			$STDCXXLIB = "libstdc++";
 		}
 		if (IsClangOrClangPlusPlus_($COMPILER_DRIVER_CPlusPlus)) {
-			if (GetClangVersion_ ($COMPILER_DRIVER_CPlusPlus) < 15.0) {
-				$STDCXXLIB = "libstdc++";	# libc++ doesn't work with lib version# 14
+			if (GetClangVersion_ ($COMPILER_DRIVER_CPlusPlus) < 14.0) {
+				$STDCXXLIB = "libstdc++";	# libc++ doesn't work with lib version# 13 (think - maybe retest 13)
 			}
 			else {
 				$STDCXXLIB = "libc++";
@@ -2261,10 +2261,6 @@ sub PostProcessOptions_ ()
 				if ($STDCXXLIB eq "libc++") {
 					$EXTRA_SUFFIX_LINKER_ARGS .= " ";
 					push @LIB_DEPENDENCIES_ADD, "-lc++";
-					# from https://libcxx.llvm.org/docs/UsingLibcxx.html: Starting with LLVM 9.0, support for <filesystem> is provided in the main library and nothing special is required to use <filesystem>.
-					if (GetClangVersion_ ($COMPILER_DRIVER_CPlusPlus) < '9.0') {
-						push @LIB_DEPENDENCIES_ADD, "-lc++fs";
-					}
 				}
 				else {
 					push @LIB_DEPENDENCIES_ADD, "-lstdc++fs";
@@ -2358,17 +2354,18 @@ PostProcessOptions_ ();
 sub ValidateConfigurationAndEmitNeededWarnings_
 {
 	if (("$^O" eq "darwin") and IsClangPlusPlus_($COMPILER_DRIVER_CPlusPlus)) {
-		if (GetClangVersion_ ($COMPILER_DRIVER_CPlusPlus) < 11) {
-			print "CONFIGURATION-WARNING: Stroika v3 requires clang 11 (xcode 11) or later needed (compiler-driver: $COMPILER_DRIVER_CPlusPlus).\n";
+		if (GetClangVersion_ ($COMPILER_DRIVER_CPlusPlus) < 13) {
+			## maybe need xcode 14
+			print "CONFIGURATION-WARNING: Stroika v3 requires clang 13 (xcode 13) or later needed (compiler-driver: $COMPILER_DRIVER_CPlusPlus).\n";
 		}
 	}
 	if (!("$^O" eq "darwin") and IsClangPlusPlus_($COMPILER_DRIVER_CPlusPlus)) {
-		if (GetClangVersion_ ($COMPILER_DRIVER_CPlusPlus) < '11.0') {
-			print "CONFIGURATION-WARNING: Stroika v3 requires clang 11 or later (compiler-driver: $COMPILER_DRIVER_CPlusPlus).\n";
+		if (GetClangVersion_ ($COMPILER_DRIVER_CPlusPlus) < '10.0') {
+			print "CONFIGURATION-WARNING: Stroika v3 requires clang 10 or later (compiler-driver: $COMPILER_DRIVER_CPlusPlus).\n";
 		}
 	}
 	if (IsGCCOrGPlusPlus_($COMPILER_DRIVER_CPlusPlus)) {
-		if (GetGCCVersion_ ($COMPILER_DRIVER) < 7) {
+		if (GetGCCVersion_ ($COMPILER_DRIVER) < 11) {
 			print "CONFIGURATION-WARNING: Stroika 3 requires gcc 11 or later (compiler-driver: $COMPILER_DRIVER_CPlusPlus).\n";
 		}
 	}
