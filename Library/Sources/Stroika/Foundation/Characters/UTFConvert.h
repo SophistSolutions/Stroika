@@ -17,7 +17,7 @@
 
 /**
  *  \file
- *      This module is designed to provide mappings between various UTF encodings of UNICODE characters.</p>
+ *      This module is designed to provide mappings between various UTF encodings of UNICODE characters.
  * 
  *  TODO:
  *      @todo   Cleanup the option 'lenient' support - not respected in thourough way, and the bad-character / missing
@@ -34,15 +34,17 @@ namespace Stroika::Foundation::Characters {
      *  I BELIEVE still not replaced functionlity as of C++23 (I've searched, but no luck).
      * 
      *  Available (sensible) implementations:
-     *      o   std C++ code_cvt    (deprecated, and on windows, slow, but DOES support mbstate_t)
-     *      o   Boost no-wide       (untested so not sure about this)
-     *      o   Windows API         (appears most performant, but doesn't support mbstate_t)
-     *      o   Stroika portable implementation, based on libutfxx (slow but portable, and works, NOT supporting mbstate_t
+     *      o   std C++ code_cvt        (deprecated, and on windows, slow, but DOES support mbstate_t)
+     *      o   Boost locale utf_to_utf (untested so not sure about this)
+     *      o   Windows API             (appears most performant, but doesn't support mbstate_t)
+     *      o   Stroika portable implementation, based on libutfxx (slow but portable, and works, NOT supporting mbstate_t)
      * 
      *  Design Choices:
      *      o   Could have API to COMPUTE size of output buffer. But thats as much work to compute as actually doing the conversion (generally close).
      *          So - instead - have ComputeTargetBufferSize () API, which quickly computes a reasonable buffer size, and just
      *          assert we never run out of space. Not a great plan, but probably pretty good, most of the time.
+     * 
+     *          API setup so the compute-buf-size routine COULD walk the source and compute the exact needed size, without changing API.
      * 
      *  Though you can construct your own UTFConverter with different options, a typical application will just use
      *      \code
@@ -105,12 +107,13 @@ namespace Stroika::Foundation::Characters {
          *
          *  This will frequently (greatly) over-estimate the amount of space needed but it will always produce a sufficient answer without much computation.
          *
-         *  FROM and TO can be
+         *  FROM and TO can be Character_Compatible
          *      char
          *      char8_t
          *      char16_t
          *      char32_t
          *      wchar_t
+         *      Character
          * 
          *  \note buffer size NOT in 'bytes' but in units of 'TO' - so char32_t, or char8_t, or whatever.
          * 
@@ -149,7 +152,7 @@ namespace Stroika::Foundation::Characters {
          *      o   char8_t
          *      o   char16_t
          *      o   char32_t
-         *  to/from each other (NOT char8_t to char8_t).
+         *  to/from each other/
          * 
          *  Variations from char8_t are overloaded to optionally take a multibyteConversionState parameter.
          * 
@@ -163,9 +166,8 @@ namespace Stroika::Foundation::Characters {
          * 
          *  \par Example Usage
          *      \code
-         *          size_t                    cvtBufSize = UTFConverter::ComputeTargetBufferSize<wchar_t> (src);
-         *          StackBuffer<wchar_t>      buf{Memory::eUninitialized, cvtBufSize};
-         *          auto result = UTFConverter::kThe.Convert (src, span<wchar_t>{buf});
+         *          StackBuffer<wchar_t>      buf{Memory::eUninitialized, UTFConverter::ComputeTargetBufferSize<wchar_t> (src)};
+         *          auto result = UTFConverter::kThe.Convert (src, span{buf});
          *          return String{buf.begin (), buf.begin () + result.fTargetProduced};
          *      \endcode
          *

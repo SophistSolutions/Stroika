@@ -324,11 +324,12 @@ namespace Stroika::Foundation::Characters {
     template <Character_IsUnicodeCodePoint TRG_T, Character_IsUnicodeCodePoint SRC_T>
     size_t UTFConverter::ConvertOffset (span<const SRC_T> source, size_t srcIndex) const
     {
+        static_assert (not is_const_v<TRG_T>);
         // needlessly costly way to compute, but hopefully adequate for now -- LGP 2022-12-27
         Require (srcIndex <= source.size ());
-        span<const SRC_T>                       fakeSrc{source.begin (), srcIndex};
-        Memory::StackBuffer<remove_cv_t<TRG_T>> fakeOut{ComputeTargetBufferSize<remove_cv_t<TRG_T>> (fakeSrc)};
-        ConversionResult                        r = Convert (fakeSrc, fakeOut);
+        span<const SRC_T>          fakeSrc{source.begin (), srcIndex};
+        Memory::StackBuffer<TRG_T> fakeOut{ComputeTargetBufferSize<TRG_T> (fakeSrc)};
+        ConversionResult           r = Convert (fakeSrc, span{fakeOut});
         return r.fTargetProduced;
     }
 
