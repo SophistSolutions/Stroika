@@ -797,8 +797,8 @@ sub	SetDefaultForCompilerDriver_
 			$STDCXXLIB = "libstdc++";
 		}
 		if (IsClangOrClangPlusPlus_($COMPILER_DRIVER_CPlusPlus)) {
-			if (GetClangVersion_ ($COMPILER_DRIVER_CPlusPlus) < 15.0) {
-				$STDCXXLIB = "libstdc++";	# libc++ doesn't work with lib version# 14
+			if (GetClangVersion_ ($COMPILER_DRIVER_CPlusPlus) < 11.0) {
+				$STDCXXLIB = "libstdc++";	# libc++ doesn't work with lib version# 10
 			}
 			else {
 				$STDCXXLIB = "libc++";
@@ -880,7 +880,10 @@ sub	SetDefaultForCompilerDriver_
 				$ENABLE_LTO = true;
 			}
 			if (IsClangOrClangPlusPlus_ ($COMPILER_DRIVER_CPlusPlus)) {
-				$ENABLE_LTO = true;
+				# On ubuntu 18.04 gives error linking libcurl
+				if (7.0 <= GetClangVersion_ ($COMPILER_DRIVER_CPlusPlus)) {
+					$ENABLE_LTO = true;
+				}
 			}
 			if ($isVisualStudio) {
 				$ENABLE_LTO = true;
@@ -2258,16 +2261,28 @@ sub PostProcessOptions_ ()
 				}
 			}
 			else {
-				if ($STDCXXLIB eq "libc++") {
-					$EXTRA_SUFFIX_LINKER_ARGS .= " ";
-					push @LIB_DEPENDENCIES_ADD, "-lc++";
-					# from https://libcxx.llvm.org/docs/UsingLibcxx.html: Starting with LLVM 9.0, support for <filesystem> is provided in the main library and nothing special is required to use <filesystem>.
-					if (GetClangVersion_ ($COMPILER_DRIVER_CPlusPlus) < '9.0') {
-						push @LIB_DEPENDENCIES_ADD, "-lc++fs";
+				if (GetClangVersion_ ($COMPILER_DRIVER_CPlusPlus) < '7.0') {
+					if ($STDCXXLIB eq "libc++") {
+						$EXTRA_SUFFIX_LINKER_ARGS .= " ";
+						push @LIB_DEPENDENCIES_ADD, "-lc++";
+						push @LIB_DEPENDENCIES_ADD, "-lc++experimental";
+					}
+					else {
+						push @LIB_DEPENDENCIES_ADD, "-lstdc++fs";
 					}
 				}
 				else {
-					push @LIB_DEPENDENCIES_ADD, "-lstdc++fs";
+					if ($STDCXXLIB eq "libc++") {
+						$EXTRA_SUFFIX_LINKER_ARGS .= " ";
+						push @LIB_DEPENDENCIES_ADD, "-lc++";
+						# from https://libcxx.llvm.org/docs/UsingLibcxx.html: Starting with LLVM 9.0, support for <filesystem> is provided in the main library and nothing special is required to use <filesystem>.
+						if (GetClangVersion_ ($COMPILER_DRIVER_CPlusPlus) < '9.0') {
+							push @LIB_DEPENDENCIES_ADD, "-lc++fs";
+						}
+					}
+					else {
+						push @LIB_DEPENDENCIES_ADD, "-lstdc++fs";
+					}
 				}
 			}
 		}
@@ -2358,13 +2373,13 @@ PostProcessOptions_ ();
 sub ValidateConfigurationAndEmitNeededWarnings_
 {
 	if (("$^O" eq "darwin") and IsClangPlusPlus_($COMPILER_DRIVER_CPlusPlus)) {
-		if (GetClangVersion_ ($COMPILER_DRIVER_CPlusPlus) < 11) {
-			print "CONFIGURATION-WARNING: Stroika v3 requires clang 11 (xcode 11) or later needed (compiler-driver: $COMPILER_DRIVER_CPlusPlus).\n";
+		if (GetClangVersion_ ($COMPILER_DRIVER_CPlusPlus) < 10) {
+			print "CONFIGURATION-WARNING: Stroika 2.1 requires clang 10 (xcode 10) or later needed (compiler-driver: $COMPILER_DRIVER_CPlusPlus).\n";
 		}
 	}
 	if (!("$^O" eq "darwin") and IsClangPlusPlus_($COMPILER_DRIVER_CPlusPlus)) {
-		if (GetClangVersion_ ($COMPILER_DRIVER_CPlusPlus) < '11.0') {
-			print "CONFIGURATION-WARNING: Stroika v3 requires clang 11 or later (compiler-driver: $COMPILER_DRIVER_CPlusPlus).\n";
+		if (GetClangVersion_ ($COMPILER_DRIVER_CPlusPlus) < '6.0') {
+			print "CONFIGURATION-WARNING: Stroika 2.1 requires clang 6 or later (compiler-driver: $COMPILER_DRIVER_CPlusPlus).\n";
 		}
 	}
 	if (IsGCCOrGPlusPlus_($COMPILER_DRIVER_CPlusPlus)) {
@@ -2627,6 +2642,13 @@ if ($onlyGenerateIfCompilerExists) {
 		elsif ($itsVersion < 11.0) {
 			$generate = false;
 			$generateBecause = "GCC (" . $COMPILER_DRIVER_CPlusPlus . ") versions < 11 (v=" . $itsVersion . ") doesn't support chrono::month, etc";
+		}
+	}
+	if ($generate && IsClangOrClangPlusPlus_ ($COMPILER_DRIVER_CPlusPlus)) {
+		my $itsVersion = GetClangVersion_ ($COMPILER_DRIVER_CPlusPlus);
+		if ($itsVersion < 10.0) {
+			$generate = false;
+			$generateBecause = "Clang++ (" . $COMPILER_DRIVER_CPlusPlus . ") versions < 10 (v=" . $itsVersion . ") dont adequately support spaceship operator";
 		}
 	}
 	# if flag to use libc++ - check if right version is available (but not on XCode)
