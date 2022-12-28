@@ -21,17 +21,6 @@
 
 namespace Stroika::Foundation::Characters::FloatConversion {
 
-    template <typename T = double>
-    [[deprecated ("Since Stroika v3.0d1 - use span overload")]] inline T ToFloat (const char* start, const char* end)
-    {
-        return ToFloat<T> (span{start, end});
-    }
-    template <typename T = double>
-    [[deprecated ("Since Stroika v3.0d1 - use span overload")]] inline T ToFloat (const wchar_t* start, const wchar_t* end)
-    {
-        return ToFloat<T> (span{start, end});
-    }
-
     /*
      ********************************************************************************
      ************************ FloatConversion::Precision ****************************
@@ -388,15 +377,20 @@ namespace Stroika::Foundation::Characters::FloatConversion {
     }
 
     namespace Private_ {
-        // Version of code from pre-Stroika 2.1b14 (so b13 or earlier roughly)
-        template <typename T = double>
-        T ToFloat_Legacy_ (const String& s);
-        template <typename T = double>
-        T ToFloat_Legacy_ (const String& s, String* remainder);
+        //
         // New span/c++20 version of 'ToFloat_Legacy_'
         // This RESPECTS THE CURRENT LOCALE
-        template <typename T = double, Character_IsUnicodeCodePointOrPlainChar CHAR_T>
-        T ToFloat_RespectingLocale_ (const span<const CHAR_T> srcSpan, typename span<const CHAR_T>::iterator* remainder)
+        // this private function allows nullptr remainder, and behaves somewhat differntly if null or not (unlike PUBLIC API)
+        // Roughly (ignoring precision and characterset)
+        //      Calls strtod
+        //      Strtod Skips leading whitespace, but this routine does NOT allow that
+        //      if remainder==null, rejects if not all characters eaten (else returns how many eaten in remainder)
+        //
+        // Note - inlined though long, because most of the logic gets compiled out depending on (template or actual)
+        // parameters, and want to assure those 'seen' by optimizer so most of the code eliminated.
+        //
+        template <typename T, Character_IsUnicodeCodePointOrPlainChar CHAR_T>
+        inline T ToFloat_RespectingLocale_ (const span<const CHAR_T> srcSpan, typename span<const CHAR_T>::iterator* remainder)
         {
             if (srcSpan.empty ()) {
                 if (remainder != nullptr) {
@@ -407,7 +401,27 @@ namespace Stroika::Foundation::Characters::FloatConversion {
             const CHAR_T* s = &*srcSpan.begin ();
             const CHAR_T* e = &*srcSpan.begin () + srcSpan.size ();
             const CHAR_T* r = e;
-            T             d; // intentionally uninitialized - set below
+
+            // since strtod skips leading whitespace, prevent that
+            if (remainder == nullptr) {
+                bool isSpace;
+                if constexpr (sizeof (CHAR_T) == 1) {
+                    isSpace = std::isspace (*s);
+                }
+                else if constexpr (sizeof (CHAR_T) == sizeof (wchar_t)) {
+                    isSpace = std::iswspace (*s);
+                }
+                else {
+                    isSpace = std::iswspace (*s); // not sure how to check without complex conversion logic
+                }
+                if (isSpace) {
+                    if (remainder != nullptr) {
+                        *remainder = srcSpan.begin ();
+                    }
+                    return Math::nan<T> ();
+                }
+            }
+            T d; // intentionally uninitialized - set below
             static_assert (is_same_v<T, float> or is_same_v<T, double> or is_same_v<T, long double>);
             if constexpr (sizeof (CHAR_T) == 1) {
                 if constexpr (is_same_v<T, float>) {
@@ -449,14 +463,29 @@ namespace Stroika::Foundation::Characters::FloatConversion {
                     span<const wchar_t>           wideSpan = span<const wchar_t>{wideBuf.data (), wideChars};
                     span<const wchar_t>::iterator wideRemainder;
                     d = ToFloat_RespectingLocale_<T> (wideSpan, &wideRemainder);
-                    r = UTFConverter::kThe.ConvertOffset<const CHAR_T> (wideRemainder - wideSpan.begin ()) + s;
+                    r = UTFConverter::kThe.ConvertOffset<CHAR_T> (wideRemainder - wideSpan.begin ()) + s;
                 }
             }
-            if (remainder != nullptr) {
+            if (remainder == nullptr) {
+                // if no remainder argument, we require all the text is 'eaten'
+                if (r != e) {
+                    d = Math::nan<T> ();
+                }
+            }
+            else {
                 *remainder = srcSpan.begin () + (r - s);
             }
             return d;
         }
+
+        // @todo LOSE THIS CODE SOON -LGP 2022-12-28- after testing a bit more to see asserts not triggering. Better to add regtests or move
+        // this logic into REgtest file.
+
+        // Version of code from pre-Stroika 2.1b14 (so b13 or earlier roughly)
+        template <typename T = double>
+        T ToFloat_Legacy_ (const String& s);
+        template <typename T = double>
+        T ToFloat_Legacy_ (const String& s, String* remainder);
 
         // Once I test a bit - I think we can lose these (CPP file) implementations --LGP 2022-12-27
         template <>
@@ -550,7 +579,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
         }
         /*
          *  Most of the time we can do this very efficiently, because there are just ascii characters.
-         *  Else, fallback on older algorithm that understands full unicode character set.
+         *  Else, fallback on older algorithm that understands full unicode character set, and locales
          */
         Memory::StackBuffer<char> asciiS;
         if (Character::AsASCIIQuietly (s, &asciiS)) {
@@ -574,16 +603,17 @@ namespace Stroika::Foundation::Characters::FloatConversion {
                     result = Private_::ToFloat_RespectingLocale_<T> (s, nullptr);
                 }
             }
-            Ensure (Math::NearlyEquals (Private_::ToFloat_Legacy_<T> (String{s}), Private_::ToFloat_RespectingLocale_ (s, nullptr)));
+            Ensure (Math::NearlyEquals (Private_::ToFloat_Legacy_<T> (String{s}), Private_::ToFloat_RespectingLocale_<T> (s, nullptr)));
             Ensure (Math::NearlyEquals (Private_::ToFloat_Legacy_<T> (String{s}), result));
             return result;
         }
-        Ensure (Math::NearlyEquals (Private_::ToFloat_Legacy_<T> (String{s}), Private_::ToFloat_RespectingLocale_ (s, nullptr)));
+        Ensure (Math::NearlyEquals (Private_::ToFloat_Legacy_<T> (String{s}), Private_::ToFloat_RespectingLocale_<T> (s, nullptr)));
         return Private_::ToFloat_RespectingLocale_<T> (s, nullptr); // fallback for non-ascii strings to old code
     }
     template <typename T, Character_Compatible CHAR_T>
     T ToFloat (span<const CHAR_T> s, typename span<const CHAR_T>::iterator* remainder)
     {
+        RequireNotNull (remainder); // use other overload if 'null'
         if constexpr (is_same_v<remove_cv_t<CHAR_T>, char>) {
             Require (Character::IsASCII (s));
         }
@@ -594,9 +624,9 @@ namespace Stroika::Foundation::Characters::FloatConversion {
         if constexpr (not qCompilerAndStdLib_to_chars_FP_Buggy and not qCompilerAndStdLib_from_chars_and_tochars_FP_Precision_Buggy) {
             Memory::StackBuffer<char> asciiS;
             if (Character::AsASCIIQuietly (s, &asciiS)) {
-                T    result; // intentionally uninitialized
-                auto b = asciiS.begin ();
-                auto e = asciiS.end ();
+                T     result; // intentionally uninitialized
+                char* b = asciiS.begin ();
+                char* e = asciiS.end ();
                 if (b != e and *b == '+') [[unlikely]] {
                     ++b; // "the plus sign is not recognized outside of the exponent (only the minus sign is permitted at the beginning)" from https://en.cppreference.com/w/cpp/utility/from_chars
                 }
@@ -607,20 +637,18 @@ namespace Stroika::Foundation::Characters::FloatConversion {
                 else if (ec != std::errc{} or ptr != e) [[unlikely]] {
                     //result = Math::nan<T> (); "if # is 100,1 - in funny locale - may need to use legacy algorithm
                     // @todo ADD OPTION arg to ToFloat so we know if C-Locale so can just return NAN here!...
-                    span<const char> tmp{b, e};
+                    span<const char>           tmp{b, e};
                     span<const char>::iterator tmpI;
                     result = Private_::ToFloat_RespectingLocale_<T> (tmp, &tmpI);
                     ptr    = tmpI - tmp.begin () + b;
                 }
-                Ensure (Math::NearlyEquals (Private_::ToFloat_Legacy_<T> (String{s}), result));
-                if (remainder != nullptr) {
-                    *remainder = UTFConverter::kThe.ConvertOffset<CHAR_T,char> (s.begin () + ptr-b);
-                }
-                else {
-                    if (ptr != e) {
-                        result = Math::nan<T> ();
-                    }
-                }
+#if qDebug
+                String legacyRemainer;
+                Ensure (Math::NearlyEquals (Private_::ToFloat_Legacy_<T> (String{s}, &legacyRemainer), result));
+#endif
+                *remainder = s.begin () + UTFConverter::kThe.ConvertOffset<CHAR_T> (span{reinterpret_cast<const char8_t*> (b), reinterpret_cast<const char8_t*> (e)}, ptr - b);
+                Assert (*remainder <= s.end ());
+                // todo fix so can do this - Assert ((legacyRemainer == String{*remainder, s.end ()}));
                 return result;
             }
         }
@@ -628,7 +656,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
     }
     template <typename T, typename STRINGISH_ARG>
     inline T ToFloat (STRINGISH_ARG&& s)
-        requires (ConvertibleToString<STRINGISH_ARG> || is_convertible_v<STRINGISH_ARG, std::string>)
+        requires (ConvertibleToString<STRINGISH_ARG> or is_convertible_v<STRINGISH_ARG, std::string>)
     {
         using DecayedStringishArg = remove_cvref_t<STRINGISH_ARG>;
         if constexpr (is_same_v<DecayedStringishArg, const char*> or is_same_v<DecayedStringishArg, const char8_t*> or is_same_v<DecayedStringishArg, const char16_t*> or is_same_v<DecayedStringishArg, const char32_t*> or is_same_v<DecayedStringishArg, const wchar_t*>) {
@@ -643,7 +671,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
             if (ss.empty ()) {
                 return ToFloat<T> (span<const char8_t>{});
             }
-            return ToFloat<T> (span<const char8_t>{(const char8_t*)&*ss.begin (), ss.size ()});
+            return ToFloat<T> (span{(const char8_t*)&*ss.begin (), ss.size ()});
         }
         else {
             return ToFloat<T> (String{forward<STRINGISH_ARG> (s)});
@@ -654,12 +682,14 @@ namespace Stroika::Foundation::Characters::FloatConversion {
     {
         RequireNotNull (remainder);
         auto [start, end]                     = s.GetData<wchar_t> ();
-        span<const wchar_t>           srcSpan = span<const wchar_t>{start, end};
+        span<const wchar_t>           srcSpan = span{start, end};
         span<const wchar_t>::iterator tmpRemainder;
         auto                          result = ToFloat<T> (srcSpan, &tmpRemainder);
         *remainder                           = String{srcSpan.subspan (tmpRemainder - srcSpan.begin ())};
         return result;
     }
+
+    //////////////// DEPRECATED STUFF BELOW
 
     template <typename T>
     [[deprecated ("Since Stroika v3.0d1 - use span overload")]] inline T ToFloat (const wchar_t* start, const wchar_t* end, const wchar_t** remainder)
@@ -728,6 +758,16 @@ namespace Stroika::Foundation::Characters::FloatConversion {
             }
         }
         return result;
+    }
+    template <typename T = double>
+    [[deprecated ("Since Stroika v3.0d1 - use span overload")]] inline T ToFloat (const char* start, const char* end)
+    {
+        return ToFloat<T> (span{start, end});
+    }
+    template <typename T = double>
+    [[deprecated ("Since Stroika v3.0d1 - use span overload")]] inline T ToFloat (const wchar_t* start, const wchar_t* end)
+    {
+        return ToFloat<T> (span{start, end});
     }
 
 }

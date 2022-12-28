@@ -16,6 +16,10 @@
 
 /**
  * TODO:
+ *      @todo   REDO the FromFloat code with span/modern C++ the way I did the ToFloat code
+ * 
+ *      @todo   ToFloat code needs OPTIONS optional argument, to support locales etc.
+ * 
  *      @todo   Consider moving notion of Precision into Math module. And if so - and maybe otherwise - make
  *              correct.
  *
@@ -199,15 +203,14 @@ namespace Stroika::Foundation::Characters::FloatConversion {
     wstring ToString (long double f, const ToStringOptions& options);
 
     /**
-     *  ToFloat (no remainder parameter):
-     *
-     *      Convert the given decimal-format floating point string to an float,
-     *      double, or long double.
+     *  ToFloat all overloads:
+     *      Convert the given decimal-format floating point string to an float, double, or long double.
      *
      *      ToFloat will return nan () if no valid parse (for example, -1.#INF000000000000 is,
      *      invalid and returns nan, despite the fact that this is often emitted by the MSFT sprintf() for inf values).
      *
      *      The overloads taking string or const char* arguments Require() that the input is ASCII ('C' locale required/assumed).
+     *      (@todo revisit this point --LGP 2022-12-28)
      *
      *      If the argument value is too large or too small to fit in 'T' (ERANGE) - then the value will be
      *      pinned to -numeric_limits<T>::infinity () or numeric_limits<T>::infinity ().
@@ -215,23 +218,23 @@ namespace Stroika::Foundation::Characters::FloatConversion {
      *      If the input string is INF or INFINITY (with an optional +/- prefix) - the returned
      *      value will be the appropriate verison of infinity.
      *
-     *      The argument should be pre-trimmed. If there is any leading or trailing garbage (even whitespace)
-     *      this function will return nan() (**note - unlike overload with 'remainder' arg).
-     *
      *      If the argument is the string "NAN", a quiet NAN will be returned. If the string -INF or -INFINITY,
      *      a negative infinite float will be returned, and if INF or INFINITY is passed, a positive infinite
      *      value will be returned:
      *          @see http://en.cppreference.com/w/cpp/string/byte/strtof
      *
-     *      @see strtod(), or @see wcstod (), or ToFloat (with remainder parameter):. This maybe implemented as a simple wrapper on strtod() / wcstod () /
-     *      strtold, etc... except that it returns nan() on invalid data, instead of zero.
+     *      @todo TBD/TOCHANGE if using strtod or from_chars - about to add OPTIONS PARAM to decide
+     *      For now - tries both
+     *
+     *  ToFloat (no remainder parameter):
+     *      The argument should be pre-trimmed (whitespace). If there is any leading or trailing garbage (even whitespace)
+     *      this function will return nan() (**note - unlike overload with 'remainder' arg**).
      *
      *  ToFloat (with remainder parameter):
-     *
-     *  Logically a simple wrapper on std::wcstof, std::wcstod, std::wcstold - except using String class, and returns the
-     *  unused portion of the string in the REQUIRED remainder OUT parameter.
-     *
-     *  \note UNLIKE ToFloat/(no remainder parameter), this SKIPS leading spaces, and is OK with trailing extra characters.
+     *      Logically a simple wrapper on std::wcstof, std::wcstod, std::wcstold - except using String class, and returns the
+     *      unused portion of the string in the REQUIRED remainder OUT parameter.
+     * 
+     *      This means it ALLOWS leading whitespace (skipped). And it allows junk at the end (remainder parameter filled in with what).
      * 
      *  \note SEE https://stroika.atlassian.net/browse/STK-748
      *        We will PROBABLY change this API to take a ToFloatOptions parameter to handle proper locale/conversions of strings to numbers
@@ -251,7 +254,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
     T ToFloat (span<const CHAR_T> s, typename span<const CHAR_T>::iterator* remainder);
     template <typename T = double, typename STRINGISH_ARG>
     T ToFloat (STRINGISH_ARG&& s)
-        requires (ConvertibleToString<STRINGISH_ARG> || is_convertible_v<STRINGISH_ARG, std::string>);
+        requires (ConvertibleToString<STRINGISH_ARG> or is_convertible_v<STRINGISH_ARG, std::string>);
     template <typename T = double>
     T ToFloat (const String& s, String* remainder);
 
