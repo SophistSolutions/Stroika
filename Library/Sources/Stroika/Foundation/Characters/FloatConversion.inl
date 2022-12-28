@@ -398,21 +398,21 @@ namespace Stroika::Foundation::Characters::FloatConversion {
                 }
                 return Math::nan<T> ();
             }
-            const CHAR_T* s = &*srcSpan.begin ();
-            const CHAR_T* e = &*srcSpan.begin () + srcSpan.size ();
-            const CHAR_T* r = e;
+            const CHAR_T* si = &*srcSpan.begin ();
+            const CHAR_T* ei = &*srcSpan.begin () + srcSpan.size ();
+            const CHAR_T* ri = ei;
 
             // since strtod skips leading whitespace, prevent that
             if (remainder == nullptr) {
                 bool isSpace;
                 if constexpr (sizeof (CHAR_T) == 1) {
-                    isSpace = std::isspace (*s);
+                    isSpace = std::isspace (*si);
                 }
                 else if constexpr (sizeof (CHAR_T) == sizeof (wchar_t)) {
-                    isSpace = std::iswspace (*s);
+                    isSpace = std::iswspace (*si);
                 }
                 else {
-                    isSpace = std::iswspace (*s); // not sure how to check without complex conversion logic
+                    isSpace = std::iswspace (*si); // not sure how to check without complex conversion logic
                 }
                 if (isSpace) {
                     if (remainder != nullptr) {
@@ -425,13 +425,13 @@ namespace Stroika::Foundation::Characters::FloatConversion {
             static_assert (is_same_v<T, float> or is_same_v<T, double> or is_same_v<T, long double>);
             if constexpr (sizeof (CHAR_T) == 1) {
                 if constexpr (is_same_v<T, float>) {
-                    d = ::strtof (reinterpret_cast<const char*> (s), const_cast<char**> (reinterpret_cast<const char**> (&r)));
+                    d = ::strtof (reinterpret_cast<const char*> (si), const_cast<char**> (reinterpret_cast<const char**> (&ri)));
                 }
                 else if constexpr (is_same_v<T, double>) {
-                    d = ::strtod (reinterpret_cast<const char*> (s), const_cast<char**> (reinterpret_cast<const char**> (&r)));
+                    d = ::strtod (reinterpret_cast<const char*> (si), const_cast<char**> (reinterpret_cast<const char**> (&ri)));
                 }
                 else if constexpr (is_same_v<T, long double>) {
-                    d = ::strtold (reinterpret_cast<const char*> (s), const_cast<char**> (reinterpret_cast<const char**> (&r)));
+                    d = ::strtold (reinterpret_cast<const char*> (si), const_cast<char**> (reinterpret_cast<const char**> (&ri)));
                 }
                 else {
                     AssertNotReached ();
@@ -439,13 +439,13 @@ namespace Stroika::Foundation::Characters::FloatConversion {
             }
             else if constexpr (sizeof (CHAR_T) == sizeof (wchar_t)) {
                 if constexpr (is_same_v<T, float>) {
-                    d = ::wcstof (reinterpret_cast<const wchar_t*> (s), const_cast<wchar_t**> (reinterpret_cast<const wchar_t**> (&r)));
+                    d = ::wcstof (reinterpret_cast<const wchar_t*> (si), const_cast<wchar_t**> (reinterpret_cast<const wchar_t**> (&ri)));
                 }
                 else if constexpr (is_same_v<T, double>) {
-                    d = ::wcstod (reinterpret_cast<const wchar_t*> (s), const_cast<wchar_t**> (reinterpret_cast<const wchar_t**> (&r)));
+                    d = ::wcstod (reinterpret_cast<const wchar_t*> (si), const_cast<wchar_t**> (reinterpret_cast<const wchar_t**> (&ri)));
                 }
                 else if constexpr (is_same_v<T, long double>) {
-                    d = ::wcstold (reinterpret_cast<const wchar_t*> (s), const_cast<wchar_t**> (reinterpret_cast<const wchar_t**> (&r)));
+                    d = ::wcstold (reinterpret_cast<const wchar_t*> (si), const_cast<wchar_t**> (reinterpret_cast<const wchar_t**> (&ri)));
                 }
                 else {
                     AssertNotReached ();
@@ -463,17 +463,17 @@ namespace Stroika::Foundation::Characters::FloatConversion {
                     span<const wchar_t>           wideSpan = span<const wchar_t>{wideBuf.data (), wideChars};
                     span<const wchar_t>::iterator wideRemainder;
                     d = ToFloat_RespectingLocale_<T> (wideSpan, &wideRemainder);
-                    r = UTFConverter::kThe.ConvertOffset<CHAR_T> (wideRemainder - wideSpan.begin ()) + s;
+                    ri = UTFConverter::kThe.ConvertOffset<CHAR_T> (wideRemainder - wideSpan.begin ()) + si;
                 }
             }
             if (remainder == nullptr) {
                 // if no remainder argument, we require all the text is 'eaten'
-                if (r != e) {
+                if (ri != ei) {
                     d = Math::nan<T> ();
                 }
             }
             else {
-                *remainder = srcSpan.begin () + (r - s);
+                *remainder = srcSpan.begin () + (ri - si);
             }
             return d;
         }
