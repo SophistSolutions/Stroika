@@ -242,6 +242,8 @@ namespace Stroika::Foundation::Characters::FloatConversion {
      * 
      *      // @todo redo all these with some concept to make it shorter - like ISCOVNERTIBLE TO STRING
      *
+     *  
+     * \note when called with CHAR_T=char, we REQUIRE the argument string is ALL ASCII
      */
 
     // @TODO MODERNIZE
@@ -250,11 +252,20 @@ namespace Stroika::Foundation::Characters::FloatConversion {
     template <typename T = double>
     T ToFloat (const String& s, String* remainder);
 
-    template <typename T = double, Character_IsUnicodeCodePoint CHAR_T>
+    template <typename T = double, Character_Compatible CHAR_T>
     T ToFloat (span<const CHAR_T> s);
-    template <typename T = double, ConvertibleToString STRINGISH_ARG>
-    T ToFloat (STRINGISH_ARG&& s);
+#if 1
+    //draft untested
+    template <typename T = double, Character_Compatible CHAR_T>
+    T ToFloat (span<const CHAR_T> s, typename span<const CHAR_T>::iterator* remainder);
+#endif
+    template <typename T = double, typename STRINGISH_ARG>
+    T ToFloat (STRINGISH_ARG&& s)
+        requires (ConvertibleToString<STRINGISH_ARG> || is_convertible_v<STRINGISH_ARG, std::string>);
 
+//    static_assert (ConvertibleToString<String>);
+//  auto v = ToFloat<double> (String{});
+#if 0
     // @todo find better way to extend concept to ascii strings
     template <typename T = double>
     T ToFloat (const string& s)
@@ -264,7 +275,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
         }
         return ToFloat<T> (span<const char8_t>{(const char8_t*)&*s.begin (), s.size ()});
     }
-
+#endif
 }
 
 /*

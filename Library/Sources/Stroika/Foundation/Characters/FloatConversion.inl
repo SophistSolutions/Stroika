@@ -17,11 +17,12 @@
 #include "../Memory/StackBuffer.h"
 
 #include "CString/Utilities.h"
+#include "UTFConvert.h"
 
 namespace Stroika::Foundation::Characters::FloatConversion {
 
     template <typename T = double>
-     [[deprecated ("Since Stroika v3.0d1 - use span overload")]]inline T ToFloat (const char* start, const char* end)
+    [[deprecated ("Since Stroika v3.0d1 - use span overload")]] inline T ToFloat (const char* start, const char* end)
     {
         return ToFloat<T> (span{start, end});
     }
@@ -392,6 +393,60 @@ namespace Stroika::Foundation::Characters::FloatConversion {
         T ToFloat_Legacy_ (const String& s);
         template <typename T = double>
         T ToFloat_Legacy_ (const String& s, String* remainder);
+        // New span/c++20 version
+        template <typename T = double, Character_IsUnicodeCodePointOrPlainChar CHAR_T>
+        T ToFloat_Legacy_ (const span<const CHAR_T> s, typename span<const CHAR_T>::iterator* remainder)
+        {
+            using IteratorType = typename span<const CHAR_T>::iterator;
+            RequireNotNull (remainder);
+            auto         s = s.begin ();
+            auto         e = s.end ();
+            auto         r = e;
+            IteratorType e = nullptr;
+            T            d; // intentionally uninitialized - set below
+            static_assert (is_same_v<T, float> or is_same_v<T, double> or is_same_v<T, long double>);
+            if constexpr (sizeof (CHAR_T) == 1) {
+                if constexpr (is_same_v<T, float>) {
+                    d = ::strtof (reinterpret_cast<const char*> (s), reinterpret_cast<char**> (&r));
+                }
+                else if constexpr (is_same_v<T, double>) {
+                    d = ::strtod (reinterpret_cast<const char*> (s), reinterpret_cast<char**> (&r));
+                }
+                else if constexpr (is_same_v<T, long double>) {
+                    d = ::strtold (reinterpret_cast<const char*> (s), reinterpret_cast<char**> (&r));
+                }
+            }
+            else if constexpr (sizeof (CHAR_T) == sizeof (wchar_t)) {
+                if constexpr (is_same_v<T, float>) {
+                    d = ::wcstof (reinterpret_cast<const wchar_t*> (s), reinterpret_cast<wchar_t**> (&r));
+                }
+                else if constexpr (is_same_v<T, double>) {
+                    d = ::wcstod (reinterpret_cast<const wchar_t*> (s), reinterpret_cast<wchar_t**> (&r));
+                }
+                else if constexpr (is_same_v<T, long double>) {
+                    d = ::wcstold (reinterpret_cast<const wchar_t*> (s), reinterpret_cast<wchar_t**> (&r));
+                }
+            }
+            else {
+                // must utf convert to wchar_t which we support
+                Memory::StackBuffer<wchar_t> wideBuf{UTFConverter::ComputeTargetBufferSize<wchar_t> (s)};
+                size_t                       wideChars = UTFConverter::kThe.Convert (s, wideBuf).fTargetProduced;
+                if (remainder == nullptr) {
+                    d = ToFloat_Legacy_<T> (span<const wchar_t>{wideBuf.data (), wideChars}, nullptr);
+                }
+                else {
+                    // do the conversion using wchar_t, and then map back the resulting remainder offset
+                    span<const wchar_t>           wideSpan = span<const wchar_t>{wideBuf.data (), wideChars};
+                    span<const wchar_t>::iterator wideRemainder;
+                    d = ToFloat_Legacy_<T> (wideSpan, &wideRemainder);
+                    r = UTFConverter::kThe.ConvertOffset<const CHAR_T> (wideRemainder - wideSpan.begin ()) + s;
+                }
+            }
+            if (remainder != nullptr) {
+                *remainder = r;
+            }
+            return d;
+        }
 
         template <>
         float ToFloat_Legacy_ (const String& s);
@@ -552,9 +607,12 @@ namespace Stroika::Foundation::Characters::FloatConversion {
         return result;
     }
 
-    template <typename T, Character_IsUnicodeCodePoint CHAR_T>
+    template <typename T, Character_Compatible CHAR_T>
     T ToFloat (span<const CHAR_T> s)
     {
+        if constexpr (is_same_v<remove_cv_t<CHAR_T>, char>) {
+            Require (Character::IsAscii (s));
+        }
         /*
          *  Most of the time we can do this very efficiently, because there are just ascii characters.
          *  Else, fallback on older algorithm that understands full unicode character set.
@@ -586,8 +644,47 @@ namespace Stroika::Foundation::Characters::FloatConversion {
         }
         return Private_::ToFloat_Legacy_<T> (String{s}); // fallback for non-ascii strings to old code
     }
-    template <typename T, ConvertibleToString STRINGISH_ARG>
+    template <typename T, Character_Compatible CHAR_T>
+    T ToFloat (span<const CHAR_T> s, typename span<const CHAR_T>::iterator* remainder)
+    {
+        if constexpr (is_same_v<remove_cv_t<CHAR_T>, char>) {
+            Require (Character::IsAscii (s));
+        }
+        /*
+         *  Most of the time we can do this very efficiently, because there are just ascii characters.
+         *  Else, fallback on older algorithm that understands full unicode character set.
+         */
+        if constexpr (not qCompilerAndStdLib_to_chars_FP_Buggy and not qCompilerAndStdLib_from_chars_and_tochars_FP_Precision_Buggy) {
+            Memory::StackBuffer<char> asciiS;
+            if (Character::AsASCIIQuietly (s, &asciiS)) {
+                T    result; // intentionally uninitialized
+                auto b = asciiS.begin ();
+                auto e = asciiS.end ();
+                if (b != e and *b == '+') [[unlikely]] {
+                    ++b; // "the plus sign is not recognized outside of the exponent (only the minus sign is permitted at the beginning)" from https://en.cppreference.com/w/cpp/utility/from_chars
+                }
+                auto [ptr, ec] = from_chars (b, e, result);
+                if (ec == errc::result_out_of_range) [[unlikely]] {
+                    result = *b == '-' ? -numeric_limits<T>::infinity () : numeric_limits<T>::infinity ();
+                }
+                else if (ec != std::errc{} or ptr != e) [[unlikely]] {
+                    //result = Math::nan<T> (); "if # is 100,1 - in funny locale - may need to use legacy algorithm
+                    // @todo ADD OPTION arg to ToFloat so we know if C-Locale so can just return NAN here!...
+                    result = Private_::ToFloat_Legacy_<T> (String{s});
+                }
+                Ensure (Math::NearlyEquals (Private_::ToFloat_Legacy_<T> (String{s}), result));
+                if (remainder != nullptr) {
+                    // @todo must map back amount used here...
+                    // p  != e test above probably lost here..
+                }
+                return result;
+            }
+        }
+        return Private_::ToFloat_Legacy_<T> (s, remainder); // fallback for non-ascii strings to strtod etc code
+    }
+    template <typename T, typename STRINGISH_ARG>
     inline T ToFloat (STRINGISH_ARG&& s)
+        requires (ConvertibleToString<STRINGISH_ARG> || is_convertible_v<STRINGISH_ARG, std::string>)
     {
         using DecayedStringishArg = remove_cvref_t<STRINGISH_ARG>;
         if constexpr (is_same_v<DecayedStringishArg, const char*> or is_same_v<DecayedStringishArg, const char8_t*> or is_same_v<DecayedStringishArg, const char16_t*> or is_same_v<DecayedStringishArg, const char32_t*> or is_same_v<DecayedStringishArg, const wchar_t*>) {
@@ -596,6 +693,13 @@ namespace Stroika::Foundation::Characters::FloatConversion {
         else if constexpr (is_same_v<DecayedStringishArg, String>) {
             auto [start, end] = s.template GetData<wchar_t> ();
             return ToFloat<T> (span{start, end});
+        }
+        else if constexpr (is_convertible_v<DecayedStringishArg, std::string>) {
+            string ss = s;
+            if (ss.empty ()) {
+                return ToFloat<T> (span<const char8_t>{});
+            }
+            return ToFloat<T> (span<const char8_t>{(const char8_t*)&*ss.begin (), ss.size ()});
         }
         else {
             return ToFloat<T> (String{forward<STRINGISH_ARG> (s)});
