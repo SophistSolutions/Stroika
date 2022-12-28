@@ -33,11 +33,12 @@ namespace Stroika::Foundation::Characters {
      *  as of C++11 (though poorly, but better poor than none). But then that standardized code was deprecated in C++17, and
      *  I BELIEVE still not replaced functionlity as of C++23 (I've searched, but no luck).
      * 
-     *  Available (sensible) implementations:
+     *  Available (plausible) implementations:
      *      o   std C++ code_cvt        (deprecated, and on windows, slow, but DOES support mbstate_t)
      *      o   Boost locale utf_to_utf (untested so not sure about this)
      *      o   Windows API             (appears most performant, but doesn't support mbstate_t)
      *      o   Stroika portable implementation, based on libutfxx (slow but portable, and works, NOT supporting mbstate_t)
+     *          @todo easy to adapt StroikaPortable impl to support mbstate_t - just save last few mbchars and replay
      * 
      *  Design Choices:
      *      o   Could have API to COMPUTE size of output buffer. But thats as much work to compute as actually doing the conversion (generally close).
