@@ -501,7 +501,7 @@ namespace {
                     size_t newCapacity = Containers::Support::ReserveTweaks::GetScaledUpCapacity (len);
                     VerifyTestResult (newCapacity >= len);
                     currentCapacity    = newCapacity;
-                    DbgTrace (L"For %d (%f its log) resizes, we got %d reallocs, and allocated size=%d", len, log (len), countOfReallocCopies, newCapacity);
+                    //DbgTrace (L"For %d (%f its log) resizes, we got %d reallocs, and allocated size=%d", len, log (len), countOfReallocCopies, newCapacity);
                     if (len > 1) {
                        VerifyTestResult (countOfReallocCopies < log (len)*4);   // grows roughly logarithmically, but factor depends on scaling in GetScaledUpCapacity
                     }
