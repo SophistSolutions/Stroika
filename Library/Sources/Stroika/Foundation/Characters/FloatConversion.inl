@@ -398,9 +398,16 @@ namespace Stroika::Foundation::Characters::FloatConversion {
                 }
                 return Math::nan<T> ();
             }
-            const CHAR_T* si = &*srcSpan.begin ();
-            const CHAR_T* ei = &*srcSpan.begin () + srcSpan.size ();
-            const CHAR_T* ri = ei;
+
+            // because strtod, etc, require a NUL-terminated string, and span doesn't generally provide one,
+            // we must copy to a temporary buffer (not super costly, especially since this isn't the main
+            // approach tried typically)
+            Memory::StackBuffer<CHAR_T> srcBufWithNul{Memory::eUninitialized, srcSpan.size () + 1};
+            copy (srcSpan.begin (), srcSpan.end (), srcBufWithNul.begin ());
+            srcBufWithNul[srcSpan.size ()] = '\0';
+            const CHAR_T* si               = srcBufWithNul.begin ();
+            const CHAR_T* ei               = srcBufWithNul.end () - 1; // buf nul-terminated, but dont treat the NUL as part of our length
+            const CHAR_T* ri               = ei;
 
             // since strtod skips leading whitespace, prevent that
             if (remainder == nullptr) {
