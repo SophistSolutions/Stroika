@@ -181,20 +181,21 @@ namespace Stroika::Foundation::Memory {
         /**
          *  Provide a hint as to how much (contiguous) space to reserve.
          *
+         *  if (default true) atLeast flag is true, newCapacity is adjusted with GetScaledUpCapacity
+         *  to minimize needless copies as buffer grows.
+         *
          *  @see capacity
          *
          *  \req  (newCapacity >= size ());
          *  \ens  ((nElements <= BUF_SIZE && capacity () == BUF_SIZE) or (nElements > BUF_SIZE and nElements == capacity ()));
          */
-        nonvirtual void reserve (size_t newCapacity);
+        nonvirtual void reserve (size_t newCapacity, bool atLeast = true);
 
     public:
-        /**
-         *  Provide a hint as to how much (contiguous) space to reserve. Like @reserve () but this will not shrink the buffer.
-         *
-         *  @see reserve
-         */
-        nonvirtual void ReserveAtLeast (size_t newCapacityAtLeast);
+        [[deprecated ("Since Stroika v3.0d1, just use reserve with atLeast flag=true)")]] void ReserveAtLeast (size_t newCapacityAtLeast)
+        {
+            reserve (newCapacityAtLeast, true);
+        }
 
     public:
         /**
@@ -260,9 +261,6 @@ namespace Stroika::Foundation::Memory {
         /**
          */
         nonvirtual void clear ();
-
-    private:
-        nonvirtual void reserve_ (size_t nElements);
 
 #if qDebug
     private:
