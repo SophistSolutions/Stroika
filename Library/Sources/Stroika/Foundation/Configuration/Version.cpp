@@ -55,17 +55,16 @@ Version Version::FromPrettyVersionString (const Characters::String& prettyVersio
     wstring ppv = prettyVersionString.As<wstring> (); // copy so can c_str()
 
     // Helper to throw if out of range
+    DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wunused-lambda-capture\"");
     auto my_wcstol_ = [&ppv] (const wchar_t* i, wchar_t** endResult) -> uint8_t {
         long l = wcstol (i, endResult, 10);
         if (l < 0 or l > numeric_limits<uint8_t>::max ()) [[unlikely]] {
             DbgTrace (L"prettyVersionString=%s", ppv.c_str ());
-#if not qDefaultTracingOn
-            &ppv; // silence warning
-#endif
             Execution::Throw (Execution::RuntimeErrorException{L"Invalid Version String: component out of range"_k});
         }
         return static_cast<uint8_t> (l);
     };
+    DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wunused-lambda-capture\"");
 
     const wchar_t* i        = ppv.c_str ();
     wchar_t*       tokenEnd = nullptr;
