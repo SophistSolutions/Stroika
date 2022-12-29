@@ -168,8 +168,8 @@ namespace Stroika::Foundation::Characters::FloatConversion {
     private:
         optional<unsigned int>       fPrecision_;
         optional<ios_base::fmtflags> fFmtFlags_;
-        bool                         fUseCurrentLocale_{false};     // dynamically calculated current locale
-        optional<locale>             fUseLocale_; // if missing, use locale::classic (unless fUseCurrentLocale_)
+        bool                         fUseCurrentLocale_{false}; // dynamically calculated current locale
+        optional<locale>             fUseLocale_;               // if missing, use locale::classic (unless fUseCurrentLocale_)
         optional<bool>               fTrimTrailingZeros_;
         optional<FloatFormatType>    fFloatFormat_;
     };
