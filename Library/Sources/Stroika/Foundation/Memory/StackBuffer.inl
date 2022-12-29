@@ -58,7 +58,7 @@ namespace Stroika::Foundation::Memory {
     {
         static_assert (is_convertible_v<Configuration::ExtractValueType_t<ITERATOR_OF_T>, T>);
         auto sz = static_cast<size_t> (distance (start, end));
-        ReserveAtLeast (sz); // reserve not resize() so we can do uninitialized_copy (avoid constructing empty objects to be assigned over)
+        reserve (sz); // reserve not resize() so we can do uninitialized_copy (avoid constructing empty objects to be assigned over)
 #if qCompilerAndStdLib_uninitialized_copy_n_Warning_Buggy
         Configuration::uninitialized_copy_MSFT_BWA (start, end, this->begin ());
 #else
@@ -100,10 +100,7 @@ namespace Stroika::Foundation::Memory {
         if (nElements > fSize_) {
             // Growing
             if (nElements > capacity ()) {
-                /*
-                 *   tweak grow rate to avoid needless copy/realloc
-                 */
-                reserve (Foundation::Containers::Support::ReserveTweaks::GetScaledUpCapacity (nElements, sizeof (T)));
+                reserve (nElements);
             }
             Assert (this->begin () + fSize_ == this->end ()); // docs/clarity
             auto newEnd = this->begin () + nElements;
@@ -128,10 +125,7 @@ namespace Stroika::Foundation::Memory {
         if (nElements > fSize_) {
             // Growing
             if (nElements > capacity ()) [[unlikely]] {
-                /*
-                 *   tweak grow rate to avoid needless copy/realloc
-                 */
-                reserve (Foundation::Containers::Support::ReserveTweaks::GetScaledUpCapacity (nElements, sizeof (T)));
+                reserve (nElements);
             }
             fSize_ = nElements;
         }
@@ -142,46 +136,6 @@ namespace Stroika::Foundation::Memory {
         }
         Assert (fSize_ == nElements);
         Ensure (size () <= capacity ());
-    }
-    template <typename T, size_t BUF_SIZE>
-    void StackBuffer<T, BUF_SIZE>::reserve_ (size_t nElements)
-    {
-        Assert (nElements >= size ());
-        Invariant ();
-        size_t oldEltCount = capacity ();
-        if (nElements != oldEltCount) {
-            bool oldInPlaceBuffer = oldEltCount <= BUF_SIZE;
-            bool newInPlaceBuffer = nElements <= BUF_SIZE;
-            // Only if we changed if using inplace buffer, or if was and is using ramBuffer, and eltCount changed do we need to do anything
-            if (oldInPlaceBuffer != newInPlaceBuffer or (not newInPlaceBuffer)) {
-                bool  memoryAllocationNeeded = not newInPlaceBuffer;
-                byte* newPtr                 = memoryAllocationNeeded ? Allocate_ (SizeInBytes_ (nElements)) : std::begin (fInlinePreallocatedBuffer_);
-
-                // Initialize new memory from old
-                Assert (this->begin () != reinterpret_cast<T*> (newPtr));
-#if qCompilerAndStdLib_uninitialized_copy_n_Warning_Buggy
-                Configuration::uninitialized_copy_MSFT_BWA (this->begin (), this->end (), reinterpret_cast<T*> (newPtr));
-#else
-                uninitialized_copy (this->begin (), this->end (), reinterpret_cast<T*> (newPtr));
-#endif
-
-                // destroy objects in old memory
-                DestroyElts_ (this->begin (), this->end ());
-
-                // free old memory if needed
-                if (not oldInPlaceBuffer) {
-                    Assert (not UsingInlinePreallocatedBuffer_ ());
-                    Deallocate_ (LiveDataAsAllocatedBytes_ ());
-                }
-
-                fLiveData_ = reinterpret_cast<T*> (newPtr);
-                if (not newInPlaceBuffer) {
-                    fCapacityOfFreeStoreAllocation_ = nElements;
-                }
-            }
-        }
-        Ensure ((nElements <= BUF_SIZE && capacity () == BUF_SIZE) or (nElements > BUF_SIZE and nElements == capacity ()));
-        Invariant ();
     }
     template <typename T, size_t BUF_SIZE>
     inline typename StackBuffer<T, BUF_SIZE>::iterator StackBuffer<T, BUF_SIZE>::begin ()
@@ -219,17 +173,51 @@ namespace Stroika::Foundation::Memory {
         return UsingInlinePreallocatedBuffer_ () ? BUF_SIZE : fCapacityOfFreeStoreAllocation_; // @see class Design Note
     }
     template <typename T, size_t BUF_SIZE>
-    inline void StackBuffer<T, BUF_SIZE>::reserve (size_t newCapacity)
+    inline void StackBuffer<T, BUF_SIZE>::reserve (size_t newCapacity, bool atLeast)
     {
         Require (newCapacity >= size ());
-        reserve_ (newCapacity);
-    }
-    template <typename T, size_t BUF_SIZE>
-    inline void StackBuffer<T, BUF_SIZE>::ReserveAtLeast (size_t newCapacity)
-    {
-        if (newCapacity > capacity ()) {
-            reserve_ (newCapacity);
+        size_t useNewCapacity = newCapacity;
+        size_t oldCapacity    = capacity ();
+        if (atLeast) {
+            // if fits in inline buffer, round up to that size. If exceeding that, use ScalledUpCapcity exponential growth algorithm
+            if (useNewCapacity < BUF_SIZE) {
+                useNewCapacity = BUF_SIZE;
+            }
+            else {
+                useNewCapacity = Foundation::Containers::Support::ReserveTweaks::GetScaledUpCapacity (useNewCapacity, sizeof (T));
+            }
         }
+        Invariant ();
+        // NOTE - could be upsizing or downsizing, and could be moving to for from allocated or inline buffers
+        if (useNewCapacity != oldCapacity) {
+            bool oldInPlaceBuffer = oldCapacity <= BUF_SIZE;
+            bool newInPlaceBuffer = useNewCapacity <= BUF_SIZE;
+            // Only if we changed if using inplace buffer, or if was and is using ramBuffer, and eltCount changed do we need to do anything
+            if (oldInPlaceBuffer != newInPlaceBuffer or (not newInPlaceBuffer)) {
+                bool  memoryAllocationNeeded = not newInPlaceBuffer;
+                byte* newPtr                 = memoryAllocationNeeded ? Allocate_ (SizeInBytes_ (useNewCapacity)) : std::begin (fInlinePreallocatedBuffer_);
+
+                // Initialize new memory from old
+                Assert (this->begin () != reinterpret_cast<T*> (newPtr));
+                uninitialized_copy (this->begin (), this->end (), reinterpret_cast<T*> (newPtr));
+
+                // destroy objects in old memory
+                DestroyElts_ (this->begin (), this->end ());
+
+                // free old memory if needed
+                if (not oldInPlaceBuffer) {
+                    Assert (not UsingInlinePreallocatedBuffer_ ());
+                    Deallocate_ (LiveDataAsAllocatedBytes_ ());
+                }
+
+                fLiveData_ = reinterpret_cast<T*> (newPtr);
+                if (not newInPlaceBuffer) {
+                    fCapacityOfFreeStoreAllocation_ = useNewCapacity;
+                }
+            }
+        }
+        Ensure ((useNewCapacity <= BUF_SIZE && capacity () == BUF_SIZE) or (useNewCapacity > BUF_SIZE and useNewCapacity == capacity ()));
+        Invariant ();
     }
     template <typename T, size_t BUF_SIZE>
     inline size_t StackBuffer<T, BUF_SIZE>::GetSize () const
