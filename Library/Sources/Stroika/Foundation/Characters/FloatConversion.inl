@@ -469,7 +469,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
                     // do the conversion using wchar_t, and then map back the resulting remainder offset
                     span<const wchar_t>           wideSpan = span<const wchar_t>{wideBuf.data (), wideChars};
                     span<const wchar_t>::iterator wideRemainder;
-                    d = ToFloat_RespectingLocale_<T> (wideSpan, &wideRemainder);
+                    d  = ToFloat_RespectingLocale_<T> (wideSpan, &wideRemainder);
                     ri = UTFConverter::kThe.ConvertOffset<CHAR_T> (wideRemainder - wideSpan.begin ()) + si;
                 }
             }
@@ -586,13 +586,13 @@ namespace Stroika::Foundation::Characters::FloatConversion {
         }
         /*
          *  Most of the time we can do this very efficiently, because there are just ascii characters.
-         *  Else, fallback on older algorithm that understands full unicode character set, and locales
+         *  Else, fallback on algorithm that understands full unicode character set, and locales
          */
         Memory::StackBuffer<char> asciiS;
         if (Character::AsASCIIQuietly (s, &asciiS)) {
             T result; // intentionally uninitialized
             if constexpr (qCompilerAndStdLib_to_chars_FP_Buggy or qCompilerAndStdLib_from_chars_and_tochars_FP_Precision_Buggy) {
-                result = Private_::ToFloat_RespectingLocale_<T> (s, nullptr);
+                result = Private_::ToFloat_RespectingLocale_<T> (span<const char>{asciiS}, nullptr);
             }
             else {
                 auto b = asciiS.begin ();
@@ -610,11 +610,15 @@ namespace Stroika::Foundation::Characters::FloatConversion {
                     result = Private_::ToFloat_RespectingLocale_<T> (s, nullptr);
                 }
             }
-            Ensure (Math::NearlyEquals (Private_::ToFloat_Legacy_<T> (String{s}), Private_::ToFloat_RespectingLocale_<T> (s, nullptr)));
-            Ensure (Math::NearlyEquals (Private_::ToFloat_Legacy_<T> (String{s}), result));
+            if constexpr (ConvertibleToString<decltype (s)>) {
+                Ensure (Math::NearlyEquals (Private_::ToFloat_Legacy_<T> (String{s}), Private_::ToFloat_RespectingLocale_<T> (s, nullptr)));
+                Ensure (Math::NearlyEquals (Private_::ToFloat_Legacy_<T> (String{s}), result));
+            }
             return result;
         }
-        Ensure (Math::NearlyEquals (Private_::ToFloat_Legacy_<T> (String{s}), Private_::ToFloat_RespectingLocale_<T> (s, nullptr)));
+        if constexpr (ConvertibleToString<decltype (s)>) {
+            Ensure (Math::NearlyEquals (Private_::ToFloat_Legacy_<T> (String{s}), Private_::ToFloat_RespectingLocale_<T> (s, nullptr)));
+        }
         return Private_::ToFloat_RespectingLocale_<T> (s, nullptr); // fallback for non-ascii strings to old code
     }
     template <typename T, Character_Compatible CHAR_T>
@@ -626,7 +630,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
         }
         /*
          *  Most of the time we can do this very efficiently, because there are just ascii characters.
-         *  Else, fallback on older algorithm that understands full unicode character set.
+         *  Else, fallback on algorithm that understands full unicode character set.
          */
         if constexpr (not qCompilerAndStdLib_to_chars_FP_Buggy and not qCompilerAndStdLib_from_chars_and_tochars_FP_Precision_Buggy) {
             Memory::StackBuffer<char> asciiS;
@@ -644,10 +648,9 @@ namespace Stroika::Foundation::Characters::FloatConversion {
                 else if (ec != std::errc{} or ptr != e) [[unlikely]] {
                     //result = Math::nan<T> (); "if # is 100,1 - in funny locale - may need to use legacy algorithm
                     // @todo ADD OPTION arg to ToFloat so we know if C-Locale so can just return NAN here!...
-                    span<const char>           tmp{b, e};
-                    span<const char>::iterator tmpI;
-                    result = Private_::ToFloat_RespectingLocale_<T> (tmp, &tmpI);
-                    ptr    = tmpI - tmp.begin () + b;
+                    typename span<const CHAR_T>::iterator tmpI;
+                    result = Private_::ToFloat_RespectingLocale_<T> (s, &tmpI);
+                    ptr    = tmpI - s.begin () + b;
                 }
 #if qDebug
                 String legacyRemainer;
@@ -678,7 +681,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
             if (ss.empty ()) {
                 return ToFloat<T> (span<const char8_t>{});
             }
-            return ToFloat<T> (span{(const char8_t*)&*ss.begin (), ss.size ()});
+            return ToFloat<T> (span{(const char*)&*ss.begin (), ss.size ()});
         }
         else {
             return ToFloat<T> (String{forward<STRINGISH_ARG> (s)});
