@@ -129,9 +129,9 @@ namespace Stroika::Foundation::Memory {
             // Growing
             if (nElements > capacity ()) [[unlikely]] {
                 /*
-                 *   If we REALLY must grow, the double in size so unlikely we'll have to grow/malloc/copy again.
+                 *   tweak grow rate to avoid needless copy/realloc
                  */
-                reserve (max (nElements, capacity () * 2));
+                reserve (Foundation::Containers::Support::ReserveTweaks::GetScaledUpCapacity (nElements, sizeof (T)));
             }
             fSize_ = nElements;
         }
