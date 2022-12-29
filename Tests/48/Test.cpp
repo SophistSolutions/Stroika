@@ -493,17 +493,17 @@ namespace {
     namespace Test13_Resize_ {
         void DoTest ()
         {
-            size_t       currentCapacity = 0;
-            unsigned int countOfReallocCopies{};
+            size_t           currentCapacity = 0;
+            unsigned int     countOfReallocCopies{};
             constexpr size_t kCountOfResizes_ = 500 * 1024;
             for (size_t len = 0; len < kCountOfResizes_; ++len) {
                 if (len > currentCapacity) {
                     size_t newCapacity = Containers::Support::ReserveTweaks::GetScaledUpCapacity (len);
                     VerifyTestResult (newCapacity >= len);
-                    currentCapacity    = newCapacity;
+                    currentCapacity = newCapacity;
                     //DbgTrace (L"For %d (%f its log) resizes, we got %d reallocs, and allocated size=%d", len, log (len), countOfReallocCopies, newCapacity);
                     if (len > 1) {
-                       VerifyTestResult (countOfReallocCopies < log (len)*4);   // grows roughly logarithmically, but factor depends on scaling in GetScaledUpCapacity
+                        VerifyTestResult (countOfReallocCopies < log (len) * 4); // grows roughly logarithmically, but factor depends on scaling in GetScaledUpCapacity
                     }
                     ++countOfReallocCopies;
                 }
