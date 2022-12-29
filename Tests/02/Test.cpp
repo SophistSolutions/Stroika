@@ -1060,13 +1060,16 @@ namespace {
                         Configuration::ScopedUseLocale tmpLocale{locale{ln->AsNarrowSDKString ().c_str ()}};
                         VerifyTestResult (Math::NearlyEquals (FloatConversion::ToFloat<double> (L"100.1"), 100.1));
                         [[maybe_unused]] auto i2 = FloatConversion::ToFloat<double> (L"967,295.01");
-                        //VerifyTestResult (Math::NearlyEquals (FloatConversion::ToFloat<double> (L"967,295.01") , 967295.01));
+                        //VerifyTestResult (Math::NearlyEquals (FloatConversion::ToFloat<double> (L"967,295.01") , 967295.01));     -- https://stroika.atlassian.net/browse/STK-748
                     }
                     if (auto ln = Configuration::FindLocaleNameQuietly (L"es", L"ES")) {
                         Configuration::ScopedUseLocale tmpLocale{locale{ln->AsNarrowSDKString ().c_str ()}};
+                        //DbgTrace ("using locale %s", locale{}.name ().c_str ());
+                        //DbgTrace (L"decimal separator: %c", std::use_facet<std::numpunct<char>> (locale{}).decimal_point ());
+                        VerifyTestResult (std::use_facet<std::numpunct<char>> (locale{}).decimal_point () == ',');
                         VerifyTestResult (Math::NearlyEquals (FloatConversion::ToFloat<double> (L"100,1"), 100.1));
                         [[maybe_unused]] auto i2 = FloatConversion::ToFloat<double> (L"967.295,01");
-                        //VerifyTestResult (Math::NearlyEquals (FloatConversion::ToFloat<double> (L"967.295,01") , 967295.01));
+                        //VerifyTestResult (Math::NearlyEquals (FloatConversion::ToFloat<double> (L"967.295,01") , 967295.01)); -- https://stroika.atlassian.net/browse/STK-748
                     }
                 }
             }
