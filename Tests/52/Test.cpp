@@ -16,9 +16,7 @@
 #include "Stroika/Foundation/Characters/FloatConversion.h"
 #include "Stroika/Foundation/Characters/Format.h"
 #include "Stroika/Foundation/Characters/String.h"
-#if kStroika_Version_FullVersion >= Stroika_Make_FULL_VERSION(2, 0, kStroika_Version_Stage_Alpha, 21, 0)
 #include "Stroika/Foundation/Characters/StringBuilder.h"
-#endif
 #include "Stroika/Foundation/Characters/ToString.h"
 #include "Stroika/Foundation/Configuration/Enumeration.h"
 #include "Stroika/Foundation/Configuration/StroikaVersion.h"
@@ -46,10 +44,12 @@
 #include "Stroika/Foundation/Debug/Trace.h"
 #include "Stroika/Foundation/Execution/CommandLine.h"
 #include "Stroika/Foundation/Execution/Exceptions.h"
+#include "Stroika/Foundation/Execution/SpinLock.h"
 #include "Stroika/Foundation/IO/FileSystem/FileInputStream.h"
 #include "Stroika/Foundation/Math/Common.h"
 #include "Stroika/Foundation/Math/Statistics.h"
 #include "Stroika/Foundation/Memory/BLOB.h"
+#include "Stroika/Foundation/Memory/SharedPtr.h"
 #include "Stroika/Foundation/Memory/StackBuffer.h"
 #include "Stroika/Foundation/Streams/ExternallyOwnedMemoryInputStream.h"
 #include "Stroika/Foundation/Streams/MemoryStream.h"
@@ -63,15 +63,6 @@
 
 #include "../TestHarness/TestHarness.h"
 
-#if kStroika_Version_FullVersion >= Stroika_Make_FULL_VERSION(2, 0, kStroika_Version_Stage_Alpha, 21, 0)
-#include "Stroika/Foundation/Execution/SpinLock.h"
-#include "Stroika/Foundation/Memory/SharedPtr.h"
-#if kStroika_Version_FullVersion >= Stroika_Make_FULL_VERSION(2, 0, kStroika_Version_Stage_Alpha, 97, 0)
-#include "Stroika/Foundation/Streams/MemoryStream.h"
-#else
-#include "Stroika/Foundation/Streams/BasicTextOutputStream.h"
-#endif
-#endif
 
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
@@ -480,7 +471,6 @@ namespace {
     }
 }
 
-#if kStroika_Version_FullVersion >= Stroika_Make_FULL_VERSION(2, 0, kStroika_Version_Stage_Alpha, 21, 0)
 namespace {
 
     namespace Test_stdsharedptr_VERSUS_MemorySharedPtr_PRIVATE_ {
@@ -596,9 +586,7 @@ namespace {
         }
     }
 }
-#endif
 
-#if kStroika_Version_FullVersion >= Stroika_Make_FULL_VERSION(2, 0, kStroika_Version_Stage_Alpha, 21, 0)
 namespace {
 
     namespace Test_MutexVersusSpinLock_MUTEXT_PRIVATE_ {
@@ -641,9 +629,7 @@ namespace {
         VerifyTestResult (sRunningCnt_ == 1000); // so nothing optimized away
     }
 }
-#endif
 
-#if kStroika_Version_FullVersion >= Stroika_Make_FULL_VERSION(2, 0, kStroika_Version_Stage_Alpha, 21, 0)
 namespace {
     template <typename WIDESTRING_IMPL>
     void Test_OperatorINSERT_ostream_ ()
@@ -659,7 +645,6 @@ namespace {
         VerifyTestResult (out.str ().length () == 18 * 1000);
     }
 }
-#endif
 
 namespace {
 
@@ -1434,6 +1419,7 @@ namespace {
     void RunPerformanceTests_ ()
     {
 #if 0
+        // for profiling, handy to JUST do one test I'm working on for the profile - stick in here
         {
             using namespace JSONTests_;
             using filesystem::path;
@@ -1477,7 +1463,6 @@ namespace {
             24500,
             .65,
             &failedTests);
-#if kStroika_Version_FullVersion >= Stroika_Make_FULL_VERSION(2, 0, kStroika_Version_Stage_Alpha, 21, 0)
         Tester (
             L"Test of simple locking strategies (mutex v SpinLock)",
             Test_MutexVersusSpinLock_MUTEXT_LOCK, L"mutex",
@@ -1485,8 +1470,6 @@ namespace {
             24500,
             .5,
             &failedTests);
-#endif
-#if kStroika_Version_FullVersion >= Stroika_Make_FULL_VERSION(2, 0, kStroika_Version_Stage_Alpha, 21, 0)
         Tester (
             L"std::shared_ptr versus Memory::SharedPtr",
             Test_stdsharedptrBaseline, L"shared_ptr",
@@ -1501,8 +1484,6 @@ namespace {
             27000,
             1.15,
             &failedTests);
-#endif
-
         Tester (
             L"Simple Struct With Strings Filling And Copying",
             Test_StructWithStringsFillingAndCopying<wstring>, L"wstring",
@@ -1545,7 +1526,6 @@ namespace {
             2200000,
             1.7,
             &failedTests);
-#if kStroika_Version_FullVersion >= Stroika_Make_FULL_VERSION(2, 0, kStroika_Version_Stage_Alpha, 21, 0)
         Tester (
             L"wstringstream << test",
             Test_OperatorINSERT_ostream_<wstring>, L"wstring",
@@ -1553,7 +1533,6 @@ namespace {
             6000,
             1.5,
             &failedTests);
-#endif
         Tester (
             L"String::substr()",
             Test_StringSubStr_<wstring>, L"wstring",
@@ -1561,17 +1540,12 @@ namespace {
             2700000,
             2.1,
             &failedTests);
-#if kStroika_Version_FullVersion >= Stroika_Make_FULL_VERSION(2, 0, kStroika_Version_Stage_Alpha, 97, 0)
-#if kStroika_Version_FullVersion >= Stroika_Make_FULL_VERSION(2, 0, kStroika_Version_Stage_Alpha, 211, 0)
         struct MemStreamOfChars_ : public MemoryStream<Characters::Character>::Ptr {
             MemStreamOfChars_ ()
                 : Ptr (MemoryStream<Characters::Character>::New ())
             {
             }
         };
-#else
-        using MemStreamOfChars_ = MemoryStream<Characters::Character>;
-#endif
         Tester (
             L"wstringstream versus BasicTextOutputStream",
             [] () { Test_StreamBuilderStringBuildingWithExtract_<wstringstream> ([] (const wstringstream& w) { return w.str (); }); }, L"wstringstream",
@@ -1579,8 +1553,6 @@ namespace {
             210000,
             1.6,
             &failedTests);
-#endif
-#if kStroika_Version_FullVersion >= Stroika_Make_FULL_VERSION(2, 0, kStroika_Version_Stage_Alpha, 21, 0)
         Tester (
             L"wstringstream versus StringBuilder",
             [] () { Test_StreamBuilderStringBuildingWithExtract_<wstringstream> ([] (const wstringstream& w) { return w.str (); }); }, L"wstringstream",
@@ -1588,7 +1560,6 @@ namespace {
             220000,
             .23,
             &failedTests);
-#endif
         Tester (
             L"Simple c_str() test",
             Test_String_cstr_call_<wstring>, L"wstring",
@@ -1596,7 +1567,6 @@ namespace {
             51000,
             1.3,
             &failedTests);
-#if kStroika_Version_FullVersion >= Stroika_Make_FULL_VERSION(2, 0, kStroika_Version_Stage_Alpha, 21, 0)
         Tester (
             L"Sequence<int> basics",
             Test_SequenceVectorAdditionsAndCopies_<vector<int>>, L"vector<int>",
@@ -1653,7 +1623,6 @@ namespace {
             9600,
             0.6,
             &failedTests);
-#endif
         {
             // In Stroika 2.1b15, we changed the default Collection factory to use Collection_stdmultiset. This is probably a good choice,
             // but is a small pessimization so include original Collection_stdforward_list for comparison (maybe orig was something else but this works).
