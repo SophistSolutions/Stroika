@@ -29,11 +29,6 @@ using namespace Stroika::Foundation::Memory;
  ******************** FloatConversion::ToStringOptions **************************
  ********************************************************************************
  */
-FloatConversion::ToStringOptions::ToStringOptions (UseCurrentLocale)
-    : fUseLocale_{locale{}}
-{
-}
-
 String FloatConversion::ToStringOptions::ToString () const
 {
     StringBuilder sb;
@@ -88,8 +83,7 @@ namespace {
         s.str (string{});
         s.clear ();
 
-        static const locale kCLocale_ = locale::classic ();
-        s.imbue (options.GetUseLocale ().value_or (kCLocale_));
+        s.imbue (options.GetUseLocale ());
 
         //  must set explictly (even if defaulted)  because of the thread_local thing
         s.flags (options.GetIOSFmtFlags ().value_or (kDefaultIOSFmtFlags_));
@@ -129,7 +123,9 @@ namespace {
 
         s << f;
 
-        String tmp = options.GetUseLocale () ? String::FromNarrowString (s.str (), *options.GetUseLocale ()) : String::FromASCII (s.str ());
+        String tmp = options.GetUsingLocaleClassic ()
+                         ? String::FromASCII (s.str ())
+                         : String::FromNarrowString (s.str (), options.GetUseLocale ());
         if (options.GetTrimTrailingZeros ().value_or (FloatConversion::ToStringOptions::kDefaultTrimTrailingZeros)) {
             Characters::FloatConversion::Private_::TrimTrailingZeros_ (&tmp);
         }

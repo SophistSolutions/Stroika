@@ -37,11 +37,12 @@ namespace Stroika::Foundation::Characters::FloatConversion {
      ********************************************************************************
      */
     constexpr inline const Precision ToStringOptions::kDefaultPrecision{6};
-    constexpr ToStringOptions::ToStringOptions (UseCLocale)
-    {
-    }
     inline ToStringOptions::ToStringOptions (const locale& l)
         : fUseLocale_{l}
+    {
+    }
+    constexpr ToStringOptions::ToStringOptions (PredefinedLocale p)
+        : fUseLocale_{(p == PredefinedLocale::eUseCLocale) ? optional<locale>{} : optional<locale>{locale{}}}
     {
     }
     constexpr ToStringOptions::ToStringOptions (ios_base::fmtflags fmtFlags)
@@ -82,9 +83,23 @@ namespace Stroika::Foundation::Characters::FloatConversion {
     {
         return fTrimTrailingZeros_;
     }
-    inline optional<locale> ToStringOptions::GetUseLocale () const
+    inline locale ToStringOptions::GetUseLocale () const
     {
-        return fUseLocale_;
+        if (fUseCurrentLocale_) {
+            return locale{};
+        }
+        if (fUseLocale_) {
+            return *fUseLocale_;
+        }
+        static const locale kCLocale_ = locale::classic ();
+        return kCLocale_;
+    }
+    inline bool ToStringOptions::GetUsingLocaleClassic () const
+    {
+        if (not fUseLocale_ and not fUseCurrentLocale_) {
+            return true; // very common case
+        }
+        return GetUseLocale () == locale::classic ();
     }
     inline optional<FloatFormatType> ToStringOptions::GetFloatFormat () const
     {
@@ -315,8 +330,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
             s.str (string{});
             s.clear ();
 
-            static const locale kCLocale_ = locale::classic ();
-            s.imbue (options.GetUseLocale ().value_or (kCLocale_));
+            s.imbue (options.GetUseLocale ());
 
             //  must set explictly (even if defaulted)  because of the thread_local thing
             s.flags (options.GetIOSFmtFlags ().value_or (kDefaultIOSFmtFlags_));
@@ -356,7 +370,9 @@ namespace Stroika::Foundation::Characters::FloatConversion {
 
             s << f;
 
-            return options.GetUseLocale () ? String::FromNarrowString (s.str (), *options.GetUseLocale ()) : String::FromASCII (s.str ());
+            return options.GetUsingLocaleClassic ()
+                       ? String::FromASCII (s.str ())
+                       : String::FromNarrowString (s.str (), options.GetUseLocale ());
         }
     }
 
@@ -365,7 +381,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
         String ToString_String_Implementation_ (FLOAT_TYPE f, const ToStringOptions& options)
         {
             auto result =
-                (not options.GetUseLocale () and not options.GetIOSFmtFlags () and not options.GetFloatFormat ())
+                (options.GetUsingLocaleClassic () and not options.GetIOSFmtFlags () and not options.GetFloatFormat ())
                     ? Private_::ToString_OptimizedForCLocaleAndNoStreamFlags_ (f, options.GetPrecision ().value_or (ToStringOptions::kDefaultPrecision.fPrecision))
                     : Private_::ToString_GeneralCase_ (f, options);
             if (options.GetTrimTrailingZeros ().value_or (ToStringOptions::kDefaultTrimTrailingZeros)) {
@@ -534,42 +550,42 @@ namespace Stroika::Foundation::Characters::FloatConversion {
     inline string ToString (float f, const ToStringOptions& options)
     {
         // @todo improve performance for this case
-        Require (not options.GetUseLocale ());
+        Require (options.GetUsingLocaleClassic ());
         return Private_::ToString_String_Implementation_ (f, options).AsASCII ();
     }
     template <>
     inline string ToString (double f, const ToStringOptions& options)
     {
         // @todo improve performance for this case
-        Require (not options.GetUseLocale ());
+        Require (options.GetUsingLocaleClassic ());
         return Private_::ToString_String_Implementation_ (f, options).AsASCII ();
     }
     template <>
     inline string ToString (long double f, const ToStringOptions& options)
     {
         // @todo improve performance for this case
-        Require (not options.GetUseLocale ());
+        Require (options.GetUsingLocaleClassic ());
         return Private_::ToString_String_Implementation_ (f, options).AsASCII ();
     }
     template <>
     inline wstring ToString (float f, const ToStringOptions& options)
     {
         // @todo improve performance for this case
-        Require (not options.GetUseLocale ());
+        Require (options.GetUsingLocaleClassic ());
         return Private_::ToString_String_Implementation_ (f, options).As<wstring> ();
     }
     template <>
     inline wstring ToString (double f, const ToStringOptions& options)
     {
         // @todo improve performance for this case
-        Require (not options.GetUseLocale ());
+        Require (options.GetUsingLocaleClassic ());
         return Private_::ToString_String_Implementation_ (f, options).As<wstring> ();
     }
     template <>
     inline wstring ToString (long double f, const ToStringOptions& options)
     {
         // @todo improve performance for this case
-        Require (not options.GetUseLocale ());
+        Require (options.GetUsingLocaleClassic ());
         return Private_::ToString_String_Implementation_ (f, options).As<wstring> ();
     }
 

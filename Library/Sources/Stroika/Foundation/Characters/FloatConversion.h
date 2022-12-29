@@ -47,15 +47,18 @@ namespace Stroika::Foundation::Characters::FloatConversion {
     constexpr TrimTrailingZerosType eTrimZeros     = TrimTrailingZerosType::eTrim;
     constexpr TrimTrailingZerosType eDontTrimZeros = TrimTrailingZerosType::eDontTrim;
 
-    /**
-     */
-    enum class UseCLocale { eUseCLocale };
-    constexpr UseCLocale eUseCLocale = UseCLocale::eUseCLocale;
+    enum class PredefinedLocale { eUseCLocale,
+                                  eUseCurrentLocale };
 
     /**
      */
-    enum class UseCurrentLocale { eUseCurrentLocale };
-    constexpr UseCurrentLocale eUseCurrentLocale = UseCurrentLocale::eUseCurrentLocale;
+    constexpr PredefinedLocale eUseCLocale = PredefinedLocale::eUseCLocale;
+
+    /**
+     *  \note - this selects the current locale at the time the prefence is used, whereas
+     *          in Stroika v2.1, it used the current locale at the time the preference object was created.
+     */
+    constexpr PredefinedLocale eUseCurrentLocale = PredefinedLocale::eUseCurrentLocale;
 
     /**
      *  Precision (here) is defined to be the number of significant digits (including before and after decimal point).
@@ -117,8 +120,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
          *          basic ios flags
          */
         constexpr ToStringOptions () = default;
-        constexpr ToStringOptions (UseCLocale); // same as default
-        ToStringOptions (UseCurrentLocale);
+        constexpr ToStringOptions (PredefinedLocale p);
         ToStringOptions (const locale& l);
         constexpr ToStringOptions (ios_base::fmtflags fmtFlags);
         constexpr ToStringOptions (Precision precision);
@@ -135,7 +137,18 @@ namespace Stroika::Foundation::Characters::FloatConversion {
         nonvirtual optional<bool> GetTrimTrailingZeros () const;
 
     public:
-        nonvirtual optional<locale> GetUseLocale () const;
+        /**
+         *  \brief return the selected locale object
+         * 
+         *  \note before Stroika v3.0d1, this returned optional, and for the case of locale::classic, it retuned none
+         */
+        nonvirtual locale GetUseLocale () const;
+
+    public:
+        /**
+         *  \brief return true if locale used is locale::classic() - the 'C' locale; mostly used as optimization/special case
+         */
+        nonvirtual bool GetUsingLocaleClassic () const;
 
     public:
         nonvirtual optional<FloatFormatType> GetFloatFormat () const;
@@ -155,7 +168,8 @@ namespace Stroika::Foundation::Characters::FloatConversion {
     private:
         optional<unsigned int>       fPrecision_;
         optional<ios_base::fmtflags> fFmtFlags_;
-        optional<locale>             fUseLocale_; // if missing, use locale::classic
+        bool                         fUseCurrentLocale_{false};     // dynamically calculated current locale
+        optional<locale>             fUseLocale_; // if missing, use locale::classic (unless fUseCurrentLocale_)
         optional<bool>               fTrimTrailingZeros_;
         optional<FloatFormatType>    fFloatFormat_;
     };
