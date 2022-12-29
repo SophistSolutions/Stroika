@@ -973,19 +973,19 @@ namespace {
         }
         {
             // https://stroika.atlassian.net/browse/STK-966
-            auto doTest= [] (const wstring& w, long double wVal) {
+            auto doTest = [] (const wstring& w, long double wVal) {
                 StringBuilder sb1;
-                sb1 <<w;
+                sb1 << w;
                 Memory::StackBuffer<wchar_t> ignoreBuf1;
                 span<const wchar_t>          tmpData1 = sb1.GetData (&ignoreBuf1);
-                double ff2 = Characters::FloatConversion::ToFloat< double> (tmpData1);
+                double                       ff2      = Characters::FloatConversion::ToFloat<double> (tmpData1);
                 DbgTrace (L"*in reader:  ff2-> %f", ff2);
                 VerifyTestResult (Math::NearlyEquals (ff2, wVal, 0.001));
             };
             for (int i = 1; i < 10; ++i) {
-                doTest(L"405.1", 405.1);
-                doTest(L"4405.2", 4405.2);
-                doTest(L"44905.3", 44905.3);
+                doTest (L"405.1", 405.1);
+                doTest (L"4405.2", 4405.2);
+                doTest (L"44905.3", 44905.3);
             }
         }
         {
