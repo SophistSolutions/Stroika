@@ -42,7 +42,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
     {
     }
     constexpr ToStringOptions::ToStringOptions (PredefinedLocale p)
-        : fUseLocale_{(p == PredefinedLocale::eUseCLocale) ? optional<locale>{} : optional<locale>{locale{}}}
+        : fUseCurrentLocale_{p == PredefinedLocale::eUseCurrentLocale}
     {
     }
     constexpr ToStringOptions::ToStringOptions (ios_base::fmtflags fmtFlags)
@@ -66,6 +66,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
     {
         Memory::CopyToIf (&fPrecision_, b2.fPrecision_);
         Memory::CopyToIf (&fFmtFlags_, b2.fFmtFlags_);
+        fUseCurrentLocale_ = b2.fUseCurrentLocale_;
         Memory::CopyToIf (&fUseLocale_, b2.fUseLocale_);
         Memory::CopyToIf (&fTrimTrailingZeros_, b2.fTrimTrailingZeros_);
         Memory::CopyToIf (&fFloatFormat_, b2.fFloatFormat_);
