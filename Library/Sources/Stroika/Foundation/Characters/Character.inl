@@ -142,7 +142,7 @@ namespace Stroika::Foundation::Characters {
         }
         return true;
     }
-    template <typename T, Character_SafelyCompatible CHAR_T>
+    template <typename T, Character_Compatible CHAR_T>
     inline bool Character::AsASCIIQuietly (span<const CHAR_T> fromS, T* into)
     {
         RequireNotNull (into);

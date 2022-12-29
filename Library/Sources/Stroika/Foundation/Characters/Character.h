@@ -201,7 +201,7 @@ namespace Stroika::Foundation::Characters {
          *      o   Memory::StackBuffer<char>
          *      o   string
          */
-        template <typename T = string, Character_SafelyCompatible CHAR_T>
+        template <typename T = string, Character_Compatible CHAR_T>
         static bool AsASCIIQuietly (span<const CHAR_T> fromS, T* into);
 
     public:
