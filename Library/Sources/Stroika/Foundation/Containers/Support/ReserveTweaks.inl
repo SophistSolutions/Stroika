@@ -18,7 +18,7 @@ namespace Stroika::Foundation::Containers::Support::ReserveTweaks {
 
     /*
      ********************************************************************************
-     ********************************* GetScaledUpCapacity **************************
+     ****************************** GetScaledUpCapacity *****************************
      ********************************************************************************
      */
     constexpr inline size_t GetScaledUpCapacity (size_t targetSize, [[maybe_unused]] size_t eltSizeInBytes, size_t minChunk)
