@@ -471,6 +471,19 @@ String String::InsertAt (const Character* from, const Character* to, size_t at) 
     if (from == to) {
         return *this;
     }
+#if 0
+    Memory::StackBuffer<Character> possiblyUnusedBuf;
+    span<const Character>          d = GetData<Character> (&possiblyUnusedBuf);
+    if (d.empty ()) {
+        return String{from, to};
+    }
+    else {
+        return String{String::MakeSmartPtr<String_BufferedArray_Rep_> (
+            make_pair (&*d.begin (), &*d.begin () + at),
+            make_pair (from, to),
+            make_pair (&*d.begin () + at, &*d.begin () + d.size ()))};
+    }
+#else
     _SafeReadRepAccessor                     copyAccessor{this};
     pair<const Character*, const Character*> d = copyAccessor._ConstGetRep ().GetData ();
 
@@ -478,6 +491,7 @@ String String::InsertAt (const Character* from, const Character* to, size_t at) 
         make_pair (reinterpret_cast<const wchar_t*> (d.first), reinterpret_cast<const wchar_t*> (d.first + at)),
         make_pair (reinterpret_cast<const wchar_t*> (from), reinterpret_cast<const wchar_t*> (to)),
         make_pair (reinterpret_cast<const wchar_t*> (d.first + at), reinterpret_cast<const wchar_t*> (d.second)))};
+    #endif
 
 #if 0
     auto                                     sRep = MakeSmartPtr<String_BufferedArray_Rep_> (reinterpret_cast<const wchar_t*> (d.first), reinterpret_cast<const wchar_t*> (d.second), (to - from));
