@@ -1168,6 +1168,20 @@ namespace Stroika::Foundation::Characters {
         nonvirtual pair<const CHAR_TYPE*, const CHAR_TYPE*> GetData () const;
 
     public:
+        /**
+         *  \brief return the constant character data inside the string in the form of a span or nullopt if not available
+         */
+        template <Character_Compatible CHAR_TYPE>
+        nonvirtual optional<span<const CHAR_TYPE>> PeekData () const;
+
+    public:
+        /**
+         *  \brief return the constant character data inside the string in the form of a span, possibly quickly and direclty, and possibly copied into possiblyUsedBuffer
+         */
+        template <Character_SafelyCompatible CHAR_TYPE>
+        nonvirtual span<const CHAR_TYPE> GetData (Memory::StackBuffer<CHAR_TYPE>* possiblyUsedBuffer) const;
+
+    public:
         struct EqualsComparer;
 
     public:
@@ -1392,14 +1406,56 @@ namespace Stroika::Foundation::Characters {
     public:
         nonvirtual pair<const Character*, const Character*> GetData () const;
 
-        // NEW API VIRTUAL API ANY can return nullptr
-        // OR same API, taking BUF, and copies into that buf - in which case cannot return nullptr - maybe call GetData2();
-        // PeekData () const -> span<const Character> = 0;
-        // PeekData () const -> span<const char32_t> = 0;
-        // PeekData () const -> span<const char16_t> = 0;
-        // PeekData () const -> span<const char8_t> = 0;
-        // PeekData () const -> span<const char> = 0;       // FOR  ASCII
-        // PeekCStr () const -> const wchar_t* = nullptr;   // ...
+    public:
+        /**
+         *  Each rep will support a span of at least one code-point type (ascii, utf8, utf16, or utf32)
+         *
+         *  This API is guaranteed to support a span of at least one of these types (maybe more). The caller may
+         *  specify the code-point type preferred.
+         * 
+         *  \note eAscii is a subset of eChar8, so when the type eAscii is returned, EITHER fChar8 or fAscii maybe
+         *        maybe used.
+         */
+        enum StorageCodePointType { eAscii,
+                                    eChar8,
+                                    eChar16,
+                                    eChar32 };
+        struct PeekDataSpan {
+            StorageCodePointType fInCP;
+            union {
+                span<const char>     fAscii;
+                span<const char8_t>  fChar8;
+                span<const char16_t> fChar16;
+                span<const char32_t> fChar32;
+            };
+        };
+
+    public:
+        /**
+         *  Each rep will support a span of at least one code-point type (ascii, utf8, utf16, or utf32)
+         *
+         *  This API is guaranteed to support a span of at least one of these types (maybe more). The caller may
+         *  specify the code-point type preferred.
+         */
+        virtual PeekDataSpan PeekData ([[maybe_unused]] optional<StorageCodePointType> preferred) const noexcept
+        {
+            if constexpr (sizeof (wchar_t) == 2) {
+                return PeekDataSpan{eChar16, {.fChar16 = span<const char16_t>{reinterpret_cast<const char16_t*> (_fStart), reinterpret_cast<const char16_t*> (_fEnd)}}};
+            }
+            else if constexpr (sizeof (wchar_t) == 4) {
+                return PeekDataSpan{eChar32, {.fChar32 = span<const char32_t>{reinterpret_cast<const char32_t*> (_fStart), reinterpret_cast<const char32_t*> (_fEnd)}}};
+            }
+        }
+
+    public:
+        /**
+         *  The Peek_wchar_t_c_str returns a NUL-terminated string (instead of a span).
+         *  Depending on the Rep type, it may return nullptr (most frequently will)
+         */
+        virtual const wchar_t* Peek_wchar_t_c_str () const noexcept
+        {
+            return _fStart;
+        }
 
     public:
         /*
