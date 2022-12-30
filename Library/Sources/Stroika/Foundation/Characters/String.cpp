@@ -533,6 +533,42 @@ String String::Remove (Character c) const
 
 optional<size_t> String::Find (Character c, size_t startAt, CompareOptions co) const
 {
+    #if 1
+    PeekDataSpan pds = GetPeekSpanData<char> ();
+    // OPTIMIZED PATHS: Common case and should be fast
+    if (pds.fInCP == PeekDataSpan::StorageCodePointType::eAscii) {
+        if (c.IsASCII ()) {
+            if (co == CompareOptions::eWithCase) {
+                span<const char> examineSpan = pds.fAscii.subspan (startAt);
+                if (auto i = std::find (examineSpan.begin (), examineSpan.end (), c.GetAsciiCode ()); i != examineSpan.end ()) {
+                    return i - examineSpan.begin () + startAt;
+                }
+            }
+        }
+        return nullopt; // not found, possibly cuz not ascii
+    }
+    // fallback on more generic algorithm - and copy to full character objects
+    Memory::StackBuffer<Character> maybeIgnoreBuf;
+    span<const Character>          charSpan = GetData<Character> (pds, &maybeIgnoreBuf);
+    Require (startAt <= charSpan.size ());
+    span<const Character> examineSpan = charSpan.subspan (startAt);
+    switch (co) {
+        case CompareOptions::eCaseInsensitive: {
+            Character lcc = c.ToLowerCase ();
+            for (auto i = examineSpan.begin (); i != examineSpan.end (); ++i) {
+                if (i->ToLowerCase () == lcc) {
+                    return startAt + (i - examineSpan.begin ());
+                }
+            }
+        } break;
+        case CompareOptions::eWithCase: {
+            if (auto i = std::find (examineSpan.begin (), examineSpan.end (), c); i != examineSpan.end ()) {
+                return startAt + i - examineSpan.begin ();
+            }
+        } break;
+    }
+    return nullopt;     // not found any which way
+#else
     //@todo could improve performance with strength reduction
     _SafeReadRepAccessor accessor{this};
     Require (startAt <= accessor._ConstGetRep ()._GetLength ());
@@ -555,6 +591,7 @@ optional<size_t> String::Find (Character c, size_t startAt, CompareOptions co) c
         } break;
     }
     return {};
+    #endif
 }
 
 optional<size_t> String::Find (const String& subString, size_t startAt, CompareOptions co) const
