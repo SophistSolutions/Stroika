@@ -1169,6 +1169,8 @@ namespace Stroika::Foundation::Characters {
 
     public:
         /**
+         *  \brief Summary data for raw contents of rep - each rep will support at least one of these span forms
+         *
          *  Each rep will support a span of at least one code-point type (ascii, utf8, utf16, or utf32)
          *
          *  This API is guaranteed to support a span of at least one of these types (maybe more). The caller may
@@ -1177,8 +1179,7 @@ namespace Stroika::Foundation::Characters {
          *  \note eAscii is a subset of eChar8, so when the type eAscii is returned, EITHER fChar8 or fAscii maybe
          *        maybe used.
          */
-    public:
-        struct PeekDataSpan {
+        struct PeekSpanData {
             enum StorageCodePointType { eAscii,
                                         eChar8,
                                         eChar16,
@@ -1197,25 +1198,39 @@ namespace Stroika::Foundation::Characters {
         /**
          *  \brief return the constant character data inside the string in the form of a case variant union of different span types (at least one will be there)
          *         templated type arg just used to pick a preferred type.
+         * 
+         *  \note CHAR_TYPE == char implies eAscii
+         * 
+         *  \note Reason for the two step API - getting the PeekSpanData, and then using - is because getting
+         *        the data is most expensive part (virtual function), and the packaged PeekSpanData gives enuf
+         *        info to do the next steps (quickly inline usually)
          */
-        template <Character_Compatible CHAR_TYPE>
-        nonvirtual PeekDataSpan GetPeekSpanData () const;
+        template <Character_Compatible CHAR_TYPE = char>
+        nonvirtual PeekSpanData GetPeekSpanData () const;
 
     public:
         /**
          *  \brief return the constant character data inside the string in the form of a span or nullopt if not available
+         * 
+         *  \note CHAR_TYPE == char implies ASCII (so will return MISSING if data is not ascii)
          */
         template <Character_SafelyCompatible CHAR_TYPE>
-        nonvirtual optional<span<const CHAR_TYPE>> PeekData (const PeekDataSpan& pds) const;
+        static optional<span<const CHAR_TYPE>> PeekData (const PeekSpanData& pds);
         template <Character_Compatible CHAR_TYPE>
         nonvirtual optional<span<const CHAR_TYPE>> PeekData () const;
 
     public:
         /**
-         *  \brief return the constant character data inside the string in the form of a span, possibly quickly and direclty, and possibly copied into possiblyUsedBuffer
+         *  \brief return the constant character data inside the string (rep) in the form of a span, possibly quickly and direclty, and possibly copied into possiblyUsedBuffer
+         * 
+         *  This API will typically return a span of data which is internal pointers into the data of the rep (and so its invalidated on the
+         *  next change to the string).
+         * 
+         *  BUT - it maybe a span of data stored into the argument possiblyUsedBuffer (which is why it must be provided - cannot be nullptr).
+         *  If you want the freedom to not pass in this buffer, see the PeekData API.
          */
         template <Character_SafelyCompatible CHAR_TYPE>
-        nonvirtual span<const CHAR_TYPE> GetData (const PeekDataSpan& pds, Memory::StackBuffer<CHAR_TYPE>* possiblyUsedBuffer) const;
+        static span<const CHAR_TYPE> GetData (const PeekSpanData& pds, Memory::StackBuffer<CHAR_TYPE>* possiblyUsedBuffer);
         template <Character_SafelyCompatible CHAR_TYPE>
         nonvirtual span<const CHAR_TYPE> GetData (Memory::StackBuffer<CHAR_TYPE>* possiblyUsedBuffer) const;
 
@@ -1451,13 +1466,13 @@ namespace Stroika::Foundation::Characters {
          *  This API is guaranteed to support a span of at least one of these types (maybe more). The caller may
          *  specify the code-point type preferred.
          */
-        virtual PeekDataSpan PeekData ([[maybe_unused]] optional<PeekDataSpan::StorageCodePointType> preferred) const noexcept
+        virtual PeekSpanData PeekData ([[maybe_unused]] optional<PeekSpanData::StorageCodePointType> preferred) const noexcept
         {
             if constexpr (sizeof (wchar_t) == 2) {
-                return PeekDataSpan{PeekDataSpan::StorageCodePointType::eChar16, {.fChar16 = span<const char16_t>{reinterpret_cast<const char16_t*> (_fStart), reinterpret_cast<const char16_t*> (_fEnd)}}};
+                return PeekSpanData{PeekSpanData::StorageCodePointType::eChar16, {.fChar16 = span<const char16_t>{reinterpret_cast<const char16_t*> (_fStart), reinterpret_cast<const char16_t*> (_fEnd)}}};
             }
             else if constexpr (sizeof (wchar_t) == 4) {
-                return PeekDataSpan{PeekDataSpan::StorageCodePointType::eChar32, {.fChar32 = span<const char32_t>{reinterpret_cast<const char32_t*> (_fStart), reinterpret_cast<const char32_t*> (_fEnd)}}};
+                return PeekSpanData{PeekSpanData::StorageCodePointType::eChar32, {.fChar32 = span<const char32_t>{reinterpret_cast<const char32_t*> (_fStart), reinterpret_cast<const char32_t*> (_fEnd)}}};
             }
         }
 

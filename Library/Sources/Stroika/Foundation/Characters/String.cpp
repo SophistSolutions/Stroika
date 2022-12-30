@@ -491,7 +491,7 @@ String String::InsertAt (const Character* from, const Character* to, size_t at) 
         make_pair (reinterpret_cast<const wchar_t*> (d.first), reinterpret_cast<const wchar_t*> (d.first + at)),
         make_pair (reinterpret_cast<const wchar_t*> (from), reinterpret_cast<const wchar_t*> (to)),
         make_pair (reinterpret_cast<const wchar_t*> (d.first + at), reinterpret_cast<const wchar_t*> (d.second)))};
-    #endif
+#endif
 
 #if 0
     auto                                     sRep = MakeSmartPtr<String_BufferedArray_Rep_> (reinterpret_cast<const wchar_t*> (d.first), reinterpret_cast<const wchar_t*> (d.second), (to - from));
@@ -533,10 +533,10 @@ String String::Remove (Character c) const
 
 optional<size_t> String::Find (Character c, size_t startAt, CompareOptions co) const
 {
-    #if 1
-    PeekDataSpan pds = GetPeekSpanData<char> ();
+#if 1
+    PeekSpanData pds = GetPeekSpanData<char> ();
     // OPTIMIZED PATHS: Common case and should be fast
-    if (pds.fInCP == PeekDataSpan::StorageCodePointType::eAscii) {
+    if (pds.fInCP == PeekSpanData::StorageCodePointType::eAscii) {
         if (c.IsASCII ()) {
             if (co == CompareOptions::eWithCase) {
                 span<const char> examineSpan = pds.fAscii.subspan (startAt);
@@ -567,7 +567,7 @@ optional<size_t> String::Find (Character c, size_t startAt, CompareOptions co) c
             }
         } break;
     }
-    return nullopt;     // not found any which way
+    return nullopt; // not found any which way
 #else
     //@todo could improve performance with strength reduction
     _SafeReadRepAccessor accessor{this};
@@ -591,7 +591,7 @@ optional<size_t> String::Find (Character c, size_t startAt, CompareOptions co) c
         } break;
     }
     return {};
-    #endif
+#endif
 }
 
 optional<size_t> String::Find (const String& subString, size_t startAt, CompareOptions co) const

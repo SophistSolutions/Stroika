@@ -600,64 +600,65 @@ namespace Stroika::Foundation::Characters {
         return pair<const wchar_t*, const wchar_t*> (reinterpret_cast<const wchar_t*> (p.first), reinterpret_cast<const wchar_t*> (p.second));
     }
     template <Character_Compatible CHAR_TYPE>
-    inline String::PeekDataSpan String::GetPeekSpanData () const
+    inline String::PeekSpanData String::GetPeekSpanData () const
     {
-        PeekDataSpan::StorageCodePointType preferredSCP; // intentionally uninitialized
+        using StorageCodePointType = PeekSpanData::StorageCodePointType;
+        StorageCodePointType preferredSCP; // intentionally uninitialized
         if constexpr (is_same_v<CHAR_TYPE, char8_t>) {
-            preferredSCP = PeekDataSpan::StorageCodePointType::eChar8;
+            preferredSCP = StorageCodePointType::eChar8;
         }
         else if constexpr (is_same_v<CHAR_TYPE, char16_t>) {
-            preferredSCP = PeekDataSpan::StorageCodePointType::eChar16;
+            preferredSCP = StorageCodePointType::eChar16;
         }
         else if constexpr (is_same_v<CHAR_TYPE, char32_t> or is_same_v<CHAR_TYPE, Character>) {
-            preferredSCP = PeekDataSpan::StorageCodePointType::eChar32;
+            preferredSCP = StorageCodePointType::eChar32;
         }
         if constexpr (is_same_v<CHAR_TYPE, wchar_t>) {
             if constexpr (sizeof (wchar_t) == 2) {
-                preferredSCP = PeekDataSpan::StorageCodePointType::eChar16;
+                preferredSCP = StorageCodePointType::eChar16;
             }
             else if constexpr (sizeof (wchar_t) == 4) {
-                preferredSCP = PeekDataSpan::StorageCodePointType::eChar32;
+                preferredSCP = StorageCodePointType::eChar32;
             }
         }
         else if constexpr (is_same_v<CHAR_TYPE, Character>) {
             // later will map to char32_t, but for now same as wchar_t
             if constexpr (sizeof (wchar_t) == 2) {
-                preferredSCP = PeekDataSpan::StorageCodePointType::eChar16;
+                preferredSCP = StorageCodePointType::eChar16;
             }
             else if constexpr (sizeof (wchar_t) == 4) {
-                preferredSCP = PeekDataSpan::StorageCodePointType::eChar32;
+                preferredSCP = StorageCodePointType::eChar32;
             }
         }
-        _SafeReadRepAccessor accessor{this};
-        return accessor._ConstGetRep ().PeekData (preferredSCP);
+        return _SafeReadRepAccessor{this}._ConstGetRep ().PeekData (preferredSCP);
     }
     template <Character_SafelyCompatible CHAR_TYPE>
-    inline optional<span<const CHAR_TYPE>> String::PeekData (const PeekDataSpan& pds) const
+    inline optional<span<const CHAR_TYPE>> String::PeekData (const PeekSpanData& pds)
     {
+        using StorageCodePointType = PeekSpanData::StorageCodePointType;
         if constexpr (is_same_v<CHAR_TYPE, char>) {
-            if (pds.fInCP == PeekDataSpan::StorageCodePointType::eAscii) {
+            if (pds.fInCP == StorageCodePointType::eAscii) {
                 return pds.fAscii;
             }
         }
         else if constexpr (is_same_v<CHAR_TYPE, char8_t>) {
-            if (pds.fInCP == PeekDataSpan::StorageCodePointType::eAscii or pds.fInCP == PeekDataSpan::StorageCodePointType::eChar8) {
+            if (pds.fInCP == StorageCodePointType::eAscii or pds.fInCP == StorageCodePointType::eChar8) {
                 return pds.fChar8;
             }
         }
         else if constexpr (is_same_v<CHAR_TYPE, char16_t>) {
-            if (pds.fInCP == PeekDataSpan::StorageCodePointType::eChar16) {
+            if (pds.fInCP == StorageCodePointType::eChar16) {
                 return pds.fChar16;
             }
         }
         else if constexpr (is_same_v<CHAR_TYPE, char32_t>) {
-            if (pds.fInCP == PeekDataSpan::StorageCodePointType::eChar32) {
+            if (pds.fInCP == StorageCodePointType::eChar32) {
                 return pds.fChar32;
             }
         }
         else if constexpr (is_same_v<CHAR_TYPE, wchar_t>) {
             if constexpr (sizeof (wchar_t) == 2) {
-                if (pds.fInCP == PeekDataSpan::StorageCodePointType::eChar16) {
+                if (pds.fInCP == StorageCodePointType::eChar16) {
                     if (pds.fChar16.empty ()) {
                         return span<const wchar_t>{};
                     }
@@ -665,7 +666,7 @@ namespace Stroika::Foundation::Characters {
                 }
             }
             else if constexpr (sizeof (wchar_t) == 4) {
-                if (pds.fInCP == PeekDataSpan::StorageCodePointType::eChar32) {
+                if (pds.fInCP == StorageCodePointType::eChar32) {
                     if (pds.fChar32.empty ()) {
                         return span<const wchar_t>{};
                     }
@@ -677,7 +678,7 @@ namespace Stroika::Foundation::Characters {
         else if constexpr (is_same_v<CHAR_TYPE, Character>) {
             // later will map to char32_t, but for now same as wchar_t
             if constexpr (sizeof (wchar_t) == 2) {
-                if (pds.fInCP == PeekDataSpan::StorageCodePointType::eChar16) {
+                if (pds.fInCP == StorageCodePointType::eChar16) {
                     if (pds.fChar16.empty ()) {
                         return span<const wchar_t>{};
                     }
@@ -685,7 +686,7 @@ namespace Stroika::Foundation::Characters {
                 }
             }
             else if constexpr (sizeof (wchar_t) == 4) {
-                if (pds.fInCP == PeekDataSpan::StorageCodePointType::eChar32) {
+                if (pds.fInCP == StorageCodePointType::eChar32) {
                     if (pds.fChar32.empty ()) {
                         return span<const wchar_t>{};
                     }
@@ -702,9 +703,10 @@ namespace Stroika::Foundation::Characters {
         return PeekData<CHAR_TYPE> (GetPeekSpanData<CHAR_TYPE> ());
     }
     template <Character_SafelyCompatible CHAR_TYPE>
-    span<const CHAR_TYPE> String::GetData (const PeekDataSpan& pds, Memory::StackBuffer<CHAR_TYPE>* possiblyUsedBuffer) const
+    span<const CHAR_TYPE> String::GetData (const PeekSpanData& pds, Memory::StackBuffer<CHAR_TYPE>* possiblyUsedBuffer)
     {
         RequireNotNull (possiblyUsedBuffer);
+        using StorageCodePointType = PeekSpanData::StorageCodePointType;
         if constexpr (is_same_v<CHAR_TYPE, wchar_t>) {
             if constexpr (sizeof (CHAR_TYPE) == 2) {
                 auto p = GetData<char16_t> (pds, reinterpret_cast<Memory::StackBuffer<char16_t>*> (possiblyUsedBuffer));
@@ -724,14 +726,14 @@ namespace Stroika::Foundation::Characters {
         else if constexpr (is_same_v<CHAR_TYPE, Character>) {
             // later will map to char32_t, but for now same as wchar_t
             if constexpr (sizeof (wchar_t) == 2) {
-                auto p = GetData<char16_t> (reinterpret_cast<Memory::StackBuffer<char16_t>*> (possiblyUsedBuffer));
+                auto p = GetData<char16_t> (pds, reinterpret_cast<Memory::StackBuffer<char16_t>*> (possiblyUsedBuffer));
                 if (p.empty ()) {
                     return span<const CHAR_TYPE>{};
                 }
                 return span<const CHAR_TYPE>{reinterpret_cast<const CHAR_TYPE*> (&*p.begin ()), p.size ()};
             }
             else if constexpr (sizeof (wchar_t) == 4) {
-                auto p = GetData<char32_t> (reinterpret_cast<Memory::StackBuffer<char32_t>*> (possiblyUsedBuffer));
+                auto p = GetData<char32_t> (pds, reinterpret_cast<Memory::StackBuffer<char32_t>*> (possiblyUsedBuffer));
                 if (p.empty ()) {
                     return span<const CHAR_TYPE>{};
                 }
@@ -740,15 +742,15 @@ namespace Stroika::Foundation::Characters {
         }
         if constexpr (is_same_v<CHAR_TYPE, char8_t>) {
             switch (pds.fInCP) {
-                case PeekDataSpan::StorageCodePointType::eAscii:
-                case PeekDataSpan::StorageCodePointType::eChar8:
+                case StorageCodePointType::eAscii:
+                case StorageCodePointType::eChar8:
                     return pds.fChar8;
-                case PeekDataSpan::StorageCodePointType::eChar16: {
+                case StorageCodePointType::eChar16: {
                     possiblyUsedBuffer->resize_uninitialized (UTFConverter::ComputeTargetBufferSize<CHAR_TYPE> (pds.fChar16));
                     auto r = UTFConverter::kThe.Convert (pds.fChar16, span{*possiblyUsedBuffer});
                     return span{possiblyUsedBuffer->data (), r.fTargetProduced};
                 }
-                case PeekDataSpan::StorageCodePointType::eChar32: {
+                case StorageCodePointType::eChar32: {
                     possiblyUsedBuffer->resize_uninitialized (UTFConverter::ComputeTargetBufferSize<CHAR_TYPE> (pds.fChar32));
                     auto r = UTFConverter::kThe.Convert (pds.fChar32, span{*possiblyUsedBuffer});
                     return span{possiblyUsedBuffer->data (), r.fTargetProduced};
@@ -760,15 +762,15 @@ namespace Stroika::Foundation::Characters {
         }
         else if constexpr (is_same_v<CHAR_TYPE, char16_t>) {
             switch (pds.fInCP) {
-                case PeekDataSpan::StorageCodePointType::eAscii:
-                case PeekDataSpan::StorageCodePointType::eChar8: {
+                case StorageCodePointType::eAscii:
+                case StorageCodePointType::eChar8: {
                     possiblyUsedBuffer->resize_uninitialized (UTFConverter::ComputeTargetBufferSize<CHAR_TYPE> (pds.fChar8));
                     auto r = UTFConverter::kThe.Convert (pds.fChar8, span{*possiblyUsedBuffer});
                     return span{possiblyUsedBuffer->data (), r.fTargetProduced};
                 }
-                case PeekDataSpan::StorageCodePointType::eChar16:
+                case StorageCodePointType::eChar16:
                     return pds.fChar16;
-                case PeekDataSpan::StorageCodePointType::eChar32: {
+                case StorageCodePointType::eChar32: {
                     possiblyUsedBuffer->resize_uninitialized (UTFConverter::ComputeTargetBufferSize<CHAR_TYPE> (pds.fChar32));
                     auto r = UTFConverter::kThe.Convert (pds.fChar32, span{*possiblyUsedBuffer});
                     return span{possiblyUsedBuffer->data (), r.fTargetProduced};
@@ -780,18 +782,18 @@ namespace Stroika::Foundation::Characters {
         }
         else if constexpr (is_same_v<CHAR_TYPE, char32_t>) {
             switch (pds.fInCP) {
-                case PeekDataSpan::StorageCodePointType::eAscii:
-                case PeekDataSpan::StorageCodePointType::eChar8: {
+                case StorageCodePointType::eAscii:
+                case StorageCodePointType::eChar8: {
                     possiblyUsedBuffer->resize_uninitialized (UTFConverter::ComputeTargetBufferSize<CHAR_TYPE> (pds.fChar8));
                     auto r = UTFConverter::kThe.Convert (pds.fChar8, span{*possiblyUsedBuffer});
                     return span{possiblyUsedBuffer->data (), r.fTargetProduced};
                 }
-                case PeekDataSpan::StorageCodePointType::eChar16: {
+                case StorageCodePointType::eChar16: {
                     possiblyUsedBuffer->resize_uninitialized (UTFConverter::ComputeTargetBufferSize<CHAR_TYPE> (pds.fChar16));
                     auto r = UTFConverter::kThe.Convert (pds.fChar16, span{*possiblyUsedBuffer});
                     return span{possiblyUsedBuffer->data (), r.fTargetProduced};
                 }
-                case PeekDataSpan::StorageCodePointType::eChar32:
+                case StorageCodePointType::eChar32:
                     return pds.fChar32;
                 default:
                     AssertNotReached ();
