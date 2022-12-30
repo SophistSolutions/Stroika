@@ -1437,8 +1437,11 @@ namespace {
             if (not filesystem::exists (jsonTestRoot)) {
                 jsonTestRoot = path{".."} / path{".."} / path{".."} / "52" / "JSONTestData";
             }
-            //DoJSONParse_ (jsonTestRoot / "large-dict.json", 1, DoStroikaJSONParse_, "foo");
-            DoJSONParse_ (jsonTestRoot / "large-dict.json", 1, DoStroikaJSONParse_boost_json2Stk, "foo");
+
+            //DoJSONParse_ (jsonTestRoot / "large-dict.json", 1, DoStroikaJSONParse_nlohmann_json, "foo");
+            //DoJSONParse_ (jsonTestRoot / "large-dict.json", 1, DoStroikaJSONParse_boost_json, "foo");
+            DoJSONParse_ (jsonTestRoot / "large-dict.json", 1, DoStroikaJSONParse_, "foo");
+            //DoJSONParse_ (jsonTestRoot / "large-dict.json", 1, DoStroikaJSONParse_boost_json2Stk, "foo");
             return;
         }
 #endif
