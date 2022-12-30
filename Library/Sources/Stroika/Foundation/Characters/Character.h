@@ -128,7 +128,7 @@ namespace Stroika::Foundation::Characters {
          */
         template <typename T>
         nonvirtual T As () const
-            requires ( is_same_v<T,char32_t> or is_same_v<T,wchar_t>);
+            requires (is_same_v<T, char32_t> or is_same_v<T, wchar_t>);
 
     public:
         nonvirtual bool IsASCII () const;
