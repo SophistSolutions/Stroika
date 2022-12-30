@@ -672,22 +672,22 @@ namespace Stroika::Foundation::Characters {
         RequireNotNull (possiblyUsedBuffer);
         if constexpr (is_same_v<CHAR_TYPE, wchar_t>) {
             if constexpr (sizeof (wchar_t) == 2) {
-                auto p = GetData<char16_t> (reinterpret_cast<Memory::StackBuffer<wchar_t>*> (possiblyUsedBuffer));
+                auto p = GetData<char16_t> (reinterpret_cast<Memory::StackBuffer<char16_t>*> (possiblyUsedBuffer));
                 return span<const wchar_t>{reinterpret_cast<span<const wchar_t>::iterator> (p.begin ()), p.size ()};
             }
             else if constexpr (sizeof (wchar_t) == 4) {
-                auto p = GetData<char32_t> (reinterpret_cast<Memory::StackBuffer<wchar_t>*> (possiblyUsedBuffer));
+                auto p = GetData<char32_t> (reinterpret_cast<Memory::StackBuffer<char32_t>*> (possiblyUsedBuffer));
                 return span<const wchar_t>{reinterpret_cast<span<const wchar_t>::iterator> (p.begin ()), p.size ()};
             }
         }
         else if constexpr (is_same_v<CHAR_TYPE, Character>) {
             // later will map to char32_t, but for now same as wchar_t
             if constexpr (sizeof (wchar_t) == 2) {
-                auto p = GetData<char16_t> (reinterpret_cast<Memory::StackBuffer<Character>*> (possiblyUsedBuffer));
+                auto p = GetData<char16_t> (reinterpret_cast<Memory::StackBuffer<char16_t>*> (possiblyUsedBuffer));
                 return span<const Character>{reinterpret_cast<span<const Character>::iterator> (p.begin ()), p.size ()};
             }
             else if constexpr (sizeof (wchar_t) == 4) {
-                auto p = GetData<char32_t> (reinterpret_cast<Memory::StackBuffer<Character>*> (possiblyUsedBuffer));
+                auto p = GetData<char32_t> (reinterpret_cast<Memory::StackBuffer<char32_t>*> (possiblyUsedBuffer));
                 return span<const Character>{reinterpret_cast<span<const Character>::iterator> (p.begin ()), p.size ()};
             }
         }
