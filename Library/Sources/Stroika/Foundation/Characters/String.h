@@ -1169,6 +1169,39 @@ namespace Stroika::Foundation::Characters {
 
     public:
         /**
+         *  Each rep will support a span of at least one code-point type (ascii, utf8, utf16, or utf32)
+         *
+         *  This API is guaranteed to support a span of at least one of these types (maybe more). The caller may
+         *  specify the code-point type preferred.
+         * 
+         *  \note eAscii is a subset of eChar8, so when the type eAscii is returned, EITHER fChar8 or fAscii maybe
+         *        maybe used.
+         */
+    public:
+        struct PeekDataSpan {
+            enum StorageCodePointType { eAscii,
+                                        eChar8,
+                                        eChar16,
+                                        eChar32 };
+
+            StorageCodePointType fInCP;
+            union {
+                span<const char>     fAscii;
+                span<const char8_t>  fChar8;
+                span<const char16_t> fChar16;
+                span<const char32_t> fChar32;
+            };
+        };
+
+    public:
+        /**
+         *  \brief return the constant character data inside the string in the form of a span or nullopt if not available
+         */
+        template <Character_Compatible CHAR_TYPE>
+        nonvirtual PeekDataSpan GetPeekSpanData () const;
+
+    public:
+        /**
          *  \brief return the constant character data inside the string in the form of a span or nullopt if not available
          */
         template <Character_Compatible CHAR_TYPE>
@@ -1178,6 +1211,8 @@ namespace Stroika::Foundation::Characters {
         /**
          *  \brief return the constant character data inside the string in the form of a span, possibly quickly and direclty, and possibly copied into possiblyUsedBuffer
          */
+        template <Character_SafelyCompatible CHAR_TYPE>
+        nonvirtual span<const CHAR_TYPE> GetData (const PeekDataSpan& pds, Memory::StackBuffer<CHAR_TYPE>* possiblyUsedBuffer) const;
         template <Character_SafelyCompatible CHAR_TYPE>
         nonvirtual span<const CHAR_TYPE> GetData (Memory::StackBuffer<CHAR_TYPE>* possiblyUsedBuffer) const;
 
@@ -1412,38 +1447,14 @@ namespace Stroika::Foundation::Characters {
          *
          *  This API is guaranteed to support a span of at least one of these types (maybe more). The caller may
          *  specify the code-point type preferred.
-         * 
-         *  \note eAscii is a subset of eChar8, so when the type eAscii is returned, EITHER fChar8 or fAscii maybe
-         *        maybe used.
          */
-        enum StorageCodePointType { eAscii,
-                                    eChar8,
-                                    eChar16,
-                                    eChar32 };
-        struct PeekDataSpan {
-            StorageCodePointType fInCP;
-            union {
-                span<const char>     fAscii;
-                span<const char8_t>  fChar8;
-                span<const char16_t> fChar16;
-                span<const char32_t> fChar32;
-            };
-        };
-
-    public:
-        /**
-         *  Each rep will support a span of at least one code-point type (ascii, utf8, utf16, or utf32)
-         *
-         *  This API is guaranteed to support a span of at least one of these types (maybe more). The caller may
-         *  specify the code-point type preferred.
-         */
-        virtual PeekDataSpan PeekData ([[maybe_unused]] optional<StorageCodePointType> preferred) const noexcept
+        virtual PeekDataSpan PeekData ([[maybe_unused]] optional<PeekDataSpan::StorageCodePointType> preferred) const noexcept
         {
             if constexpr (sizeof (wchar_t) == 2) {
-                return PeekDataSpan{eChar16, {.fChar16 = span<const char16_t>{reinterpret_cast<const char16_t*> (_fStart), reinterpret_cast<const char16_t*> (_fEnd)}}};
+                return PeekDataSpan{PeekDataSpan::StorageCodePointType::eChar16, {.fChar16 = span<const char16_t>{reinterpret_cast<const char16_t*> (_fStart), reinterpret_cast<const char16_t*> (_fEnd)}}};
             }
             else if constexpr (sizeof (wchar_t) == 4) {
-                return PeekDataSpan{eChar32, {.fChar32 = span<const char32_t>{reinterpret_cast<const char32_t*> (_fStart), reinterpret_cast<const char32_t*> (_fEnd)}}};
+                return PeekDataSpan{PeekDataSpan::StorageCodePointType::eChar32, {.fChar32 = span<const char32_t>{reinterpret_cast<const char32_t*> (_fStart), reinterpret_cast<const char32_t*> (_fEnd)}}};
             }
         }
 
