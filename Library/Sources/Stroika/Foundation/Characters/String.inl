@@ -707,19 +707,19 @@ namespace Stroika::Foundation::Characters {
     {
         RequireNotNull (possiblyUsedBuffer);
         if constexpr (is_same_v<CHAR_TYPE, wchar_t>) {
-            if constexpr (sizeof (wchar_t) == 2) {
+            if constexpr (sizeof (CHAR_TYPE) == 2) {
                 auto p = GetData<char16_t> (pds, reinterpret_cast<Memory::StackBuffer<char16_t>*> (possiblyUsedBuffer));
                 if (p.empty ()) {
-                    return span<const wchar_t>{};
+                    return span<const CHAR_TYPE>{};
                 }
-                return span<const wchar_t>{reinterpret_cast<const wchar_t*> (&*p.begin ()), p.size ()};
+                return span<const CHAR_TYPE>{reinterpret_cast<const CHAR_TYPE*> (&*p.begin ()), p.size ()};
             }
             else if constexpr (sizeof (wchar_t) == 4) {
                 auto p = GetData<char32_t> (pds, reinterpret_cast<Memory::StackBuffer<char32_t>*> (possiblyUsedBuffer));
                 if (p.empty ()) {
-                    return span<const wchar_t>{};
+                    return span<const CHAR_TYPE>{};
                 }
-                return span<const wchar_t>{reinterpret_cast<const wchar_t*> (&*p.begin ()), p.size ()};
+                return span<const CHAR_TYPE>{reinterpret_cast<const CHAR_TYPE*> (&*p.begin ()), p.size ()};
             }
         }
         else if constexpr (is_same_v<CHAR_TYPE, Character>) {
@@ -727,16 +727,16 @@ namespace Stroika::Foundation::Characters {
             if constexpr (sizeof (wchar_t) == 2) {
                 auto p = GetData<char16_t> (reinterpret_cast<Memory::StackBuffer<char16_t>*> (possiblyUsedBuffer));
                 if (p.empty ()) {
-                    return span<const Character>{};
+                    return span<const CHAR_TYPE>{};
                 }
-                return span<const Character>{reinterpret_cast<const Character*> (&*p.begin ()), p.size ()};
+                return span<const CHAR_TYPE>{reinterpret_cast<const CHAR_TYPE*> (&*p.begin ()), p.size ()};
             }
             else if constexpr (sizeof (wchar_t) == 4) {
                 auto p = GetData<char32_t> (reinterpret_cast<Memory::StackBuffer<char32_t>*> (possiblyUsedBuffer));
                 if (p.empty ()) {
-                    return span<const Character>{};
+                    return span<const CHAR_TYPE>{};
                 }
-                return span<const Character>{reinterpret_cast<const Character*> (&*p.begin ()), p.size ()};
+                return span<const CHAR_TYPE>{reinterpret_cast<const CHAR_TYPE*> (&*p.begin ()), p.size ()};
             }
         }
         if constexpr (is_same_v<CHAR_TYPE, char8_t>) {
@@ -754,6 +754,9 @@ namespace Stroika::Foundation::Characters {
                     auto r = UTFConverter::kThe.Convert (pds.fChar32, span{*possiblyUsedBuffer});
                     return span{possiblyUsedBuffer->data (), r.fTargetProduced};
                 }
+                default:
+                    AssertNotReached ();
+                    return span<const CHAR_TYPE>{};
             }
         }
         else if constexpr (is_same_v<CHAR_TYPE, char16_t>) {
@@ -771,6 +774,9 @@ namespace Stroika::Foundation::Characters {
                     auto r = UTFConverter::kThe.Convert (pds.fChar32, span{*possiblyUsedBuffer});
                     return span{possiblyUsedBuffer->data (), r.fTargetProduced};
                 }
+                default:
+                    AssertNotReached ();
+                    return span<const CHAR_TYPE>{};
             }
         }
         else if constexpr (is_same_v<CHAR_TYPE, char32_t>) {
@@ -788,6 +794,9 @@ namespace Stroika::Foundation::Characters {
                 }
                 case PeekDataSpan::StorageCodePointType::eChar32:
                     return pds.fChar32;
+                default:
+                    AssertNotReached ();
+                    return span<const CHAR_TYPE>{};
             }
         }
     }
