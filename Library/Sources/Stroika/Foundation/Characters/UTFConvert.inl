@@ -56,6 +56,12 @@ namespace Stroika::Foundation::Characters {
     template <Character_Compatible TO, Character_Compatible FROM>
     constexpr size_t UTFConverter::ComputeTargetBufferSize (span<const FROM> src)
     {
+        // NOTE - most of these routines could be (easily) optimized to actually compute the number
+        // of characters, instead of using an upper bound, but that would involve walking the source
+        // and counting characters. NOT clearly worth while. MAYBE as a hueristic, if src > 50 or so
+        // its worth counting, but anything smaller will just end up in a fixed sized buffer, so the exact
+        // count doesn't matter
+        // @small performance todo!!!!
         if constexpr (sizeof (FROM) == sizeof (TO)) {
             return src.size (); // not super useful to do this conversion, but given how if constexpr works/evaluates, its often important than this code compiles, even if it doesn't execute
         }
@@ -67,6 +73,7 @@ namespace Stroika::Foundation::Characters {
             if constexpr (sizeof (TO) == 1) {
                 // From https://stackoverflow.com/questions/9533258/what-is-the-maximum-number-of-bytes-for-a-utf-8-encoded-character
                 // answer if translating only characters from UTF-16 to UTF-8: 4 bytes
+                // @todo fix this is really smaller... I think 3 - look at https://en.wikipedia.org/wiki/UTF-8 more closely
                 return 4 * src.size ();
             }
             else {
