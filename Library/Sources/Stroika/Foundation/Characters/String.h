@@ -1195,7 +1195,8 @@ namespace Stroika::Foundation::Characters {
 
     public:
         /**
-         *  \brief return the constant character data inside the string in the form of a span or nullopt if not available
+         *  \brief return the constant character data inside the string in the form of a case variant union of different span types (at least one will be there)
+         *         templated type arg just used to pick a preferred type.
          */
         template <Character_Compatible CHAR_TYPE>
         nonvirtual PeekDataSpan GetPeekSpanData () const;
@@ -1204,6 +1205,8 @@ namespace Stroika::Foundation::Characters {
         /**
          *  \brief return the constant character data inside the string in the form of a span or nullopt if not available
          */
+        template <Character_SafelyCompatible CHAR_TYPE>
+        nonvirtual optional<span<const CHAR_TYPE>> PeekData (const PeekDataSpan& pds) const;
         template <Character_Compatible CHAR_TYPE>
         nonvirtual optional<span<const CHAR_TYPE>> PeekData () const;
 

@@ -602,7 +602,6 @@ namespace Stroika::Foundation::Characters {
     template <Character_Compatible CHAR_TYPE>
     inline String::PeekDataSpan String::GetPeekSpanData () const
     {
-        _SafeReadRepAccessor               accessor{this};
         PeekDataSpan::StorageCodePointType preferredSCP; // intentionally uninitialized
         if constexpr (is_same_v<CHAR_TYPE, char8_t>) {
             preferredSCP = PeekDataSpan::StorageCodePointType::eChar8;
@@ -630,12 +629,12 @@ namespace Stroika::Foundation::Characters {
                 preferredSCP = PeekDataSpan::StorageCodePointType::eChar32;
             }
         }
+        _SafeReadRepAccessor accessor{this};
         return accessor._ConstGetRep ().PeekData (preferredSCP);
     }
-    template <Character_Compatible CHAR_TYPE>
-    inline optional<span<const CHAR_TYPE>> String::PeekData () const
+    template <Character_SafelyCompatible CHAR_TYPE>
+    inline optional<span<const CHAR_TYPE>> String::PeekData (const PeekDataSpan& pds) const
     {
-        PeekDataSpan pds = GetPeekSpanData<CHAR_TYPE> ();
         if constexpr (is_same_v<CHAR_TYPE, char>) {
             if (pds.fInCP == PeekDataSpan::StorageCodePointType::eAscii) {
                 return pds.fAscii;
@@ -697,6 +696,12 @@ namespace Stroika::Foundation::Characters {
         }
         return nullopt; // can easily happen if you request a type that is not stored in the rep
     }
+    template <Character_Compatible CHAR_TYPE>
+    inline optional<span<const CHAR_TYPE>> String::PeekData () const
+    {
+        PeekDataSpan pds = GetPeekSpanData<CHAR_TYPE> ();
+        return PeekData (pds);
+    }
     template <Character_SafelyCompatible CHAR_TYPE>
     span<const CHAR_TYPE> String::GetData (const PeekDataSpan& pds, Memory::StackBuffer<CHAR_TYPE>* possiblyUsedBuffer) const
     {
@@ -704,16 +709,16 @@ namespace Stroika::Foundation::Characters {
         if constexpr (is_same_v<CHAR_TYPE, wchar_t>) {
             if constexpr (sizeof (wchar_t) == 2) {
                 auto p = GetData<char16_t> (pds, reinterpret_cast<Memory::StackBuffer<char16_t>*> (possiblyUsedBuffer));
-                    if (p.empty ()) {
-                        return span<const wchar_t>{};
-                    }
+                if (p.empty ()) {
+                    return span<const wchar_t>{};
+                }
                 return span<const wchar_t>{reinterpret_cast<const wchar_t*> (&*p.begin ()), p.size ()};
             }
             else if constexpr (sizeof (wchar_t) == 4) {
                 auto p = GetData<char32_t> (pds, reinterpret_cast<Memory::StackBuffer<char32_t>*> (possiblyUsedBuffer));
-                    if (p.empty ()) {
-                        return span<const wchar_t>{};
-                    }
+                if (p.empty ()) {
+                    return span<const wchar_t>{};
+                }
                 return span<const wchar_t>{reinterpret_cast<const wchar_t*> (&*p.begin ()), p.size ()};
             }
         }
@@ -721,16 +726,16 @@ namespace Stroika::Foundation::Characters {
             // later will map to char32_t, but for now same as wchar_t
             if constexpr (sizeof (wchar_t) == 2) {
                 auto p = GetData<char16_t> (reinterpret_cast<Memory::StackBuffer<char16_t>*> (possiblyUsedBuffer));
-                    if (p.empty ()) {
-                        return span<const Character>{};
-                    }
+                if (p.empty ()) {
+                    return span<const Character>{};
+                }
                 return span<const Character>{reinterpret_cast<const Character*> (&*p.begin ()), p.size ()};
             }
             else if constexpr (sizeof (wchar_t) == 4) {
                 auto p = GetData<char32_t> (reinterpret_cast<Memory::StackBuffer<char32_t>*> (possiblyUsedBuffer));
-                    if (p.empty ()) {
-                        return span<const Character>{};
-                    }
+                if (p.empty ()) {
+                    return span<const Character>{};
+                }
                 return span<const Character>{reinterpret_cast<const Character*> (&*p.begin ()), p.size ()};
             }
         }
