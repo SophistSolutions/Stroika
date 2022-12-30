@@ -53,13 +53,9 @@ namespace Stroika::Foundation::Characters {
     {
         return fCharacterCode_;
     }
-    template <>
-    inline wchar_t Character::As () const
-    {
-        return GetCharacterCode ();
-    }
-    template <>
-    inline char32_t Character::As () const
+    template <typename T>
+    inline T Character::As () const
+        requires (is_same_v<T, char32_t> or is_same_v<T, wchar_t>)
     {
         return GetCharacterCode ();
     }

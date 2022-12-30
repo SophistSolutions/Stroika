@@ -127,7 +127,8 @@ namespace Stroika::Foundation::Characters {
          *          We need diff API to return up to 2 wchar_t's!!!
          */
         template <typename T>
-        nonvirtual T As () const;
+        nonvirtual T As () const
+            requires ( is_same_v<T,char32_t> or is_same_v<T,wchar_t>);
 
     public:
         nonvirtual bool IsASCII () const;
@@ -226,11 +227,6 @@ namespace Stroika::Foundation::Characters {
     private:
         wchar_t fCharacterCode_;
     };
-
-    template <>
-    wchar_t Character::As () const;
-    template <>
-    char32_t Character::As () const;
 
     /**
      *  Like equal_to<Character> but allow optional case insensitive compares
