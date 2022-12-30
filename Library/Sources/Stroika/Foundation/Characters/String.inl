@@ -659,12 +659,18 @@ namespace Stroika::Foundation::Characters {
         else if constexpr (is_same_v<CHAR_TYPE, wchar_t>) {
             if constexpr (sizeof (wchar_t) == 2) {
                 if (pds.fInCP == PeekDataSpan::StorageCodePointType::eChar16) {
-                    return span<const wchar_t>{reinterpret_cast<span<const wchar_t>::iterator> (pds.fChar16.begin ()), pds.fChar16.size ()};
+                    if (pds.fChar16.empty ()) {
+                        return span<const wchar_t>{};
+                    }
+                    return span<const wchar_t>{reinterpret_cast<const wchar_t*> (&*pds.fChar16.begin ()), pds.fChar16.size ()};
                 }
             }
             else if constexpr (sizeof (wchar_t) == 4) {
                 if (pds.fInCP == PeekDataSpan::StorageCodePointType::eChar32) {
-                    return span<const wchar_t>{reinterpret_cast<span<const wchar_t>::iterator> (pds.fChar32.begin ()), pds.fChar32.size ()};
+                    if (pds.fChar32.empty ()) {
+                        return span<const wchar_t>{};
+                    }
+                    return span<const wchar_t>{reinterpret_cast<const wchar_t*> (&*pds.fChar32.begin ()), pds.fChar32.size ()};
                 }
             }
             return span<const wchar_t>{};
@@ -673,12 +679,18 @@ namespace Stroika::Foundation::Characters {
             // later will map to char32_t, but for now same as wchar_t
             if constexpr (sizeof (wchar_t) == 2) {
                 if (pds.fInCP == PeekDataSpan::StorageCodePointType::eChar16) {
-                    return span<const Character>{reinterpret_cast<span<const Character>::iterator> (pds.fChar16.begin ()), pds.fChar16.size ()};
+                    if (pds.fChar16.empty ()) {
+                        return span<const wchar_t>{};
+                    }
+                    return span<const Character>{reinterpret_cast<const Character*> (&*pds.fChar16.begin ()), pds.fChar16.size ()};
                 }
             }
             else if constexpr (sizeof (wchar_t) == 4) {
                 if (pds.fInCP == PeekDataSpan::StorageCodePointType::eChar32) {
-                    return span<const Character>{reinterpret_cast<span<const Character>::iterator> (pds.fChar32.begin ()), pds.fChar32.size ()};
+                    if (pds.fChar32.empty ()) {
+                        return span<const wchar_t>{};
+                    }
+                    return span<const Character>{reinterpret_cast<const Character*> (&*pds.fChar32.begin ()), pds.fChar32.size ()};
                 }
             }
             return span<const Character>{};
@@ -692,22 +704,34 @@ namespace Stroika::Foundation::Characters {
         if constexpr (is_same_v<CHAR_TYPE, wchar_t>) {
             if constexpr (sizeof (wchar_t) == 2) {
                 auto p = GetData<char16_t> (pds, reinterpret_cast<Memory::StackBuffer<char16_t>*> (possiblyUsedBuffer));
-                return span<const wchar_t>{reinterpret_cast<span<const wchar_t>::iterator> (p.begin ()), p.size ()};
+                    if (p.empty ()) {
+                        return span<const wchar_t>{};
+                    }
+                return span<const wchar_t>{reinterpret_cast<const wchar_t*> (&*p.begin ()), p.size ()};
             }
             else if constexpr (sizeof (wchar_t) == 4) {
                 auto p = GetData<char32_t> (pds, reinterpret_cast<Memory::StackBuffer<char32_t>*> (possiblyUsedBuffer));
-                return span<const wchar_t>{reinterpret_cast<span<const wchar_t>::iterator> (p.begin ()), p.size ()};
+                    if (p.empty ()) {
+                        return span<const wchar_t>{};
+                    }
+                return span<const wchar_t>{reinterpret_cast<const wchar_t*> (&*p.begin ()), p.size ()};
             }
         }
         else if constexpr (is_same_v<CHAR_TYPE, Character>) {
             // later will map to char32_t, but for now same as wchar_t
             if constexpr (sizeof (wchar_t) == 2) {
                 auto p = GetData<char16_t> (reinterpret_cast<Memory::StackBuffer<char16_t>*> (possiblyUsedBuffer));
-                return span<const Character>{reinterpret_cast<span<const Character>::iterator> (p.begin ()), p.size ()};
+                    if (p.empty ()) {
+                        return span<const Character>{};
+                    }
+                return span<const Character>{reinterpret_cast<const Character*> (&*p.begin ()), p.size ()};
             }
             else if constexpr (sizeof (wchar_t) == 4) {
                 auto p = GetData<char32_t> (reinterpret_cast<Memory::StackBuffer<char32_t>*> (possiblyUsedBuffer));
-                return span<const Character>{reinterpret_cast<span<const Character>::iterator> (p.begin ()), p.size ()};
+                    if (p.empty ()) {
+                        return span<const Character>{};
+                    }
+                return span<const Character>{reinterpret_cast<const Character*> (&*p.begin ()), p.size ()};
             }
         }
         if constexpr (is_same_v<CHAR_TYPE, char8_t>) {
