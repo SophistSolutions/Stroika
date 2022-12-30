@@ -699,8 +699,7 @@ namespace Stroika::Foundation::Characters {
     template <Character_Compatible CHAR_TYPE>
     inline optional<span<const CHAR_TYPE>> String::PeekData () const
     {
-        PeekDataSpan pds = GetPeekSpanData<CHAR_TYPE> ();
-        return PeekData (pds);
+        return PeekData<CHAR_TYPE> (GetPeekSpanData<CHAR_TYPE> ());
     }
     template <Character_SafelyCompatible CHAR_TYPE>
     span<const CHAR_TYPE> String::GetData (const PeekDataSpan& pds, Memory::StackBuffer<CHAR_TYPE>* possiblyUsedBuffer) const
