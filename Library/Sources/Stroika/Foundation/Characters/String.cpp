@@ -301,7 +301,8 @@ String String::FromNarrowString (const char* from, const char* to, const locale&
     wchar_t*             to_next;
     codecvt_base::result result = cvt.in (mbstate, from, to, from_next, &resultWStr[0], &resultWStr[resultWStr.size ()], to_next);
     if (result != codecvt_base::ok) [[unlikely]] {
-        Execution::Throw (Execution::RuntimeErrorException{L"Error converting locale multibyte string to UNICODE"sv});
+        static const auto kException_ = Execution::RuntimeErrorException{L"Error converting locale multibyte string to UNICODE"sv};
+        Execution::Throw (kException_);
     }
     resultWStr.resize (to_next - &resultWStr[0]);
     return resultWStr;
@@ -315,7 +316,8 @@ String String::FromASCII (const char* from, const char* to)
     wchar_t*             pOut = buf.begin ();
     for (const char* i = from; i != to; ++i, pOut++) {
         if (not isascii (*i)) {
-            Execution::Throw (Execution::RuntimeErrorException{L"Error converting non-ascii text to String"sv});
+            static const auto kException_ = Execution::RuntimeErrorException{L"Error converting non-ascii text to String"sv};
+            Execution::Throw (kException_);
         }
         *pOut = *i;
     }
@@ -328,7 +330,8 @@ String String::FromASCII (const wchar_t* from, const wchar_t* to)
     Require (from <= to);
     for (const wchar_t* i = from; i != to; ++i) {
         if (not isascii (*i)) {
-            Execution::Throw (Execution::RuntimeErrorException{L"Error converting non-ascii text to String"sv});
+            static const auto kException_ = Execution::RuntimeErrorException{L"Error converting non-ascii text to String"sv};
+            Execution::Throw (kException_);
         }
     }
     return String{from, to};
@@ -1116,7 +1119,8 @@ void String::AsNarrowString (const locale& l, string* into) const
     char*                to_next;
     codecvt_base::result result = cvt.out (mbstate, &wstr[0], &wstr[wstr.size ()], from_next, &(*into)[0], &(*into)[into->size ()], to_next);
     if (result != codecvt_base::ok) [[unlikely]] {
-        Execution::Throw (Execution::RuntimeErrorException{L"Error converting locale multibyte string to UNICODE"sv});
+        static const auto kException_ = Execution::RuntimeErrorException{L"Error converting locale multibyte string to UNICODE"sv};
+        Execution::Throw (kException_);
     }
     into->resize (to_next - &(*into)[0]);
 }
@@ -1229,7 +1233,8 @@ template <>
 void String::AsASCII (string* into) const
 {
     if (not AsASCIIQuietly (into)) {
-        Execution::Throw (Execution::RuntimeErrorException{L"Error converting non-ascii text to string"sv});
+        static const auto kException_ = Execution::RuntimeErrorException{L"Error converting non-ascii text to string"sv};
+        Execution::Throw (kException_);
     }
 }
 
@@ -1237,7 +1242,8 @@ template <>
 void String::AsASCII (Memory::StackBuffer<char>* into) const
 {
     if (not AsASCIIQuietly (into)) {
-        Execution::Throw (Execution::RuntimeErrorException{L"Error converting non-ascii text to string"sv});
+        static const auto kException_ = Execution::RuntimeErrorException{L"Error converting non-ascii text to string"sv};
+        Execution::Throw (kException_);
     }
 }
 
