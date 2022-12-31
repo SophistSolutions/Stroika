@@ -419,9 +419,7 @@ namespace Stroika::Foundation::Time {
      */
     [[nodiscard]] Duration operator"" _duration (const char* str, size_t len) noexcept;
     [[nodiscard]] Duration operator"" _duration (const wchar_t* str, size_t len) noexcept;
-#if __cpp_char8_t >= 201811L
     [[nodiscard]] Duration operator"" _duration (const char8_t* str, size_t len) noexcept;
-#endif
     [[nodiscard]] Duration operator"" _duration (const char16_t* str, size_t len) noexcept;
     [[nodiscard]] Duration operator"" _duration (const char32_t* str, size_t len) noexcept;
     [[nodiscard]] Duration operator"" _duration (long double _Val) noexcept;

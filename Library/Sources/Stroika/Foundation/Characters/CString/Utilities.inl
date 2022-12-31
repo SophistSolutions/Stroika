@@ -27,14 +27,12 @@ namespace Stroika::Foundation::Characters::CString {
         RequireNotNull (p);
         return ::strlen (p);
     }
-#if __cpp_char8_t >= 201811L
     template <>
     inline size_t Length (const char8_t* p)
     {
         RequireNotNull (p);
         return ::strlen (reinterpret_cast<const char*> (p));
     }
-#endif
     template <>
     inline size_t Length (const wchar_t* p)
     {
@@ -74,7 +72,6 @@ namespace Stroika::Foundation::Characters::CString {
         RequireNotNull (rhs);
         return ::strcmp (lhs, rhs) == 0;
     }
-#if __cpp_char8_t >= 201811L
     template <>
     inline bool Equals (const char8_t* lhs, const char8_t* rhs)
     {
@@ -82,7 +79,6 @@ namespace Stroika::Foundation::Characters::CString {
         RequireNotNull (rhs);
         return ::strcmp (reinterpret_cast<const char*> (lhs), reinterpret_cast<const char*> (rhs)) == 0;
     }
-#endif
     template <>
     inline bool Equals (const char16_t* lhs, const char16_t* rhs)
     {

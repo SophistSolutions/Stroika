@@ -278,12 +278,10 @@ namespace Stroika::Foundation::Time {
     {
         return Duration{Characters::String{str, str + len}};
     }
-#if __cpp_char8_t >= 201811L
     [[nodiscard]] inline Duration operator"" _duration (const char8_t* str, size_t len) noexcept
     {
         return Duration{Characters::String{str, str + len}};
     }
-#endif
     [[nodiscard]] inline Duration operator"" _duration (const char16_t* str, size_t len) noexcept
     {
         return Duration{Characters::String{str, str + len}};

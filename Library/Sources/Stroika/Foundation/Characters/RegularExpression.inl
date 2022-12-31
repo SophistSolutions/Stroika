@@ -51,12 +51,10 @@ namespace Stroika::Foundation::Characters {
     {
         return RegularExpression{String{str, str + len}};
     }
-#if __cpp_char8_t >= 201811L
     inline RegularExpression operator"" _RegEx (const char8_t* str, size_t len) noexcept
     {
         return RegularExpression{String{str, str + len}};
     }
-#endif
     inline RegularExpression operator"" _RegEx (const char16_t* str, size_t len) noexcept
     {
         return RegularExpression{String{str, str + len}};

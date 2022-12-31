@@ -1470,27 +1470,14 @@ namespace {
         Debug::TraceContextBumper ctx{L"Test50_Utf8Conversions_"};
         {
             VerifyTestResult (String::FromUTF8 (u8"phred") == String{L"phred"});
-#if __cpp_char8_t >= 201811L
             // Need char8_t to use this constructor
             VerifyTestResult (String{u8"phred"} == String{L"phred"});
-#endif
         }
         {
             StringBuilder tmp;
             tmp.Append (String::FromUTF8 (u8"€"));
             Verify (tmp.str () == L"€");
         }
-#if __cpp_char8_t < 201811L
-        {
-            VerifyTestResult (u8"שלום" == String::FromUTF8 (u8"שלום").AsUTF8 ());
-            VerifyTestResult ((string{u8"phred"} == String::FromUTF8 (string (u8"phred")).AsUTF8 ()));
-            VerifyTestResult ((string{u8"שלום"} == String::FromUTF8 (string (u8"שלום")).AsUTF8 ()));
-        }
-        {
-            VerifyTestResult (string (u8"phred") == String::FromUTF8 (u8"phred").AsUTF8<string> ());
-            VerifyTestResult (string (u8"שלום") == String::FromUTF8 (u8"שלום").AsUTF8<string> ());
-        }
-#else
         {
             VerifyTestResult (u8"שלום" == String::FromUTF8 (u8"שלום").AsUTF8<u8string> ());
             VerifyTestResult (u8string (u8"phred") == String::FromUTF8 (u8string (u8"phred")).AsUTF8<u8string> ());
@@ -1500,7 +1487,6 @@ namespace {
             VerifyTestResult (u8string{u8"phred"} == String::FromUTF8 (u8"phred").AsUTF8<u8string> ());
             VerifyTestResult (u8string{u8"שלום"} == String::FromUTF8 (u8"שלום").AsUTF8<u8string> ());
         }
-#endif
         {
             // clang-format off
             // examples from https://en.wikipedia.org/wiki/UTF-8#Encoding
