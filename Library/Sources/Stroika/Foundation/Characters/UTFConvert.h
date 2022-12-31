@@ -249,6 +249,99 @@ namespace Stroika::Foundation::Characters {
 
     public:
         /**
+         *  Given a span, return the number of bytes into the span you would find the end or missing if invalid
+         */
+        template <typename CHAR_T>
+        optional<size_t> NextCharacter (span<const CHAR_T> s)
+            requires (is_same_v<remove_cv_t<CHAR_T>, char8_t> or is_same_v<remove_cv_t<CHAR_T>, char16_t>)
+        {
+            // Logic based on table from https://en.wikipedia.org/wiki/UTF-8#Encoding
+            // untested as of 2022-12-30
+            if constexpr (is_same_v<remove_cv_t<CHAR_T>, char8_t>) {
+                auto i = s.begin ();
+                // starting first byte
+                if (i != s.end ()) {
+                    uint8_t firstByte = static_cast<uint8_t> (*i);
+                    ++i;
+                    if (firstByte <= 0x7f) {
+                        return i == s.end () ? nullopt : 1;
+                    }
+                    Assert (i != s.end ());
+                    ++i;
+                    // @todo think I have the mask wrong, but the compare value right...
+                    if ((firstByte & 0b11000000) == 0b11000000) {
+                        return i == s.end () ? nullopt : 2;
+                    }
+                    ++i;
+                    if ((firstByte & 0b11100000) == 0b11100000) {
+                        return i == s.end () ? nullopt : 3;
+                    }
+                    ++i;
+                    if ((firstByte & 0b11110000) == 0b11110000) {
+                        return i == s.end () ? nullopt : 4;
+                    }
+                    return nullopt;
+                }
+            }
+            else if constexpr (is_same_v<remove_cv_t<CHAR_T>, char16_t>) {
+                auto i = s.begin ();
+                // starting first char16_t
+                if (i != s.end ()) {
+                    AssertNotImplemented ();
+                }
+                return nullopt;
+            }
+        }
+
+    public:
+        /**
+         *  Given a span, return the number of characters in the span, or nullopt if any character is incomplete/invalid (should we throw or skip or ???) - not sure
+         */
+        template <typename CHAR_T>
+        optional<size_t> ComputeCharacterLength (span<const CHAR_T> s)
+            requires (is_same_v<remove_cv_t<CHAR_T>, char8_t> or is_same_v<remove_cv_t<CHAR_T>, char16_t>)
+        {
+            // Logic based on table from https://en.wikipedia.org/wiki/UTF-8#Encoding
+            // untested as of 2022-12-30
+            if constexpr (is_same_v<remove_cv_t<CHAR_T>, char8_t>) {
+                auto i = s.begin ();
+                AssertNotImplemented ();
+                // starting first byte
+                if (i != s.end ()) {
+                    uint8_t firstByte = static_cast<uint8_t> (*i);
+                    ++i;
+                    if (firstByte <= 0x7f) {
+                        return i == s.end () ? nullopt : 1;
+                    }
+                    Assert (i != s.end ());
+                    ++i;
+                    // @todo think I have the mask wrong, but the compare value right...
+                    if ((firstByte & 0b11000000) == 0b11000000) {
+                        return i == s.end () ? nullopt : 2;
+                    }
+                    ++i;
+                    if ((firstByte & 0b11100000) == 0b11100000) {
+                        return i == s.end () ? nullopt : 3;
+                    }
+                    ++i;
+                    if ((firstByte & 0b11110000) == 0b11110000) {
+                        return i == s.end () ? nullopt : 4;
+                    }
+                    return nullopt;
+                }
+            }
+            else if constexpr (is_same_v<remove_cv_t<CHAR_T>, char16_t>) {
+                auto i = s.begin ();
+                // starting first char16_t
+                if (i != s.end ()) {
+                    AssertNotImplemented ();
+                }
+                return nullopt;
+            }
+        }
+
+    public:
+        /**
          *  \brief Nearly always use this default UTFConverter.
          */
         static const UTFConverter kThe;
