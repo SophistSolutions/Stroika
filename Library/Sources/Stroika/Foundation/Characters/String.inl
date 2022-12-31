@@ -603,7 +603,7 @@ namespace Stroika::Foundation::Characters {
     inline String::PeekSpanData String::GetPeekSpanData () const
     {
         using StorageCodePointType = PeekSpanData::StorageCodePointType;
-        StorageCodePointType preferredSCP; // intentionally uninitialized
+        StorageCodePointType preferredSCP{};
         if constexpr (is_same_v<CHAR_TYPE, char8_t>) {
             preferredSCP = StorageCodePointType::eChar8;
         }
