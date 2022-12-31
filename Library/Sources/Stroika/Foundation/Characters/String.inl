@@ -785,7 +785,7 @@ namespace Stroika::Foundation::Characters {
                 case StorageCodePointType::eAscii:
                 case StorageCodePointType::eChar8: {
                     possiblyUsedBuffer->resize_uninitialized (UTFConverter::ComputeTargetBufferSize<CHAR_TYPE> (pds.fChar8));
-                                    #if qCompilerAndStdLib_spanOfContainer_Buggy
+#if qCompilerAndStdLib_spanOfContainer_Buggy
                     auto r = UTFConverter::kThe.Convert (pds.fChar8, Memory::mkSpan_BWA_ (*possiblyUsedBuffer));
 #else
                     auto r = UTFConverter::kThe.Convert (pds.fChar8, span<CHAR_TYPE>{*possiblyUsedBuffer});
@@ -794,11 +794,11 @@ namespace Stroika::Foundation::Characters {
                 }
                 case StorageCodePointType::eChar16: {
                     possiblyUsedBuffer->resize_uninitialized (UTFConverter::ComputeTargetBufferSize<CHAR_TYPE> (pds.fChar16));
-                                    #if qCompilerAndStdLib_spanOfContainer_Buggy
-                    auto r = UTFConverter::kThe.Convert (pds.fChar16, Memory::mkSpan_BWA_(*possiblyUsedBuffer));
-                                    #else
+#if qCompilerAndStdLib_spanOfContainer_Buggy
+                    auto r = UTFConverter::kThe.Convert (pds.fChar16, Memory::mkSpan_BWA_ (*possiblyUsedBuffer));
+#else
                     auto r = UTFConverter::kThe.Convert (pds.fChar16, span<CHAR_TYPE>{*possiblyUsedBuffer});
-                                    #endif
+#endif
                     return span{possiblyUsedBuffer->data (), r.fTargetProduced};
                 }
                 case StorageCodePointType::eChar32:

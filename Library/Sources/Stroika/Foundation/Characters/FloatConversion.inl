@@ -609,11 +609,11 @@ namespace Stroika::Foundation::Characters::FloatConversion {
         if (Character::AsASCIIQuietly (s, &asciiS)) {
             T result; // intentionally uninitialized
             if constexpr (qCompilerAndStdLib_to_chars_FP_Buggy or qCompilerAndStdLib_from_chars_and_tochars_FP_Precision_Buggy) {
-                #if qCompilerAndStdLib_spanOfContainer_Buggy
-                result = Private_::ToFloat_RespectingLocale_<T> (span<const char>{asciiS.begin(), asciiS.end ()}, nullptr);
-                #else
+#if qCompilerAndStdLib_spanOfContainer_Buggy
+                result = Private_::ToFloat_RespectingLocale_<T> (span<const char>{asciiS.begin (), asciiS.end ()}, nullptr);
+#else
                 result = Private_::ToFloat_RespectingLocale_<T> (span<const char>{asciiS}, nullptr);
-                #endif
+#endif
             }
             else {
                 auto b = asciiS.begin ();

@@ -631,11 +631,11 @@ namespace {
                 }
                 if (lastCharNullRemappedToSpace) {
                     Assert (sb.length () > 0 and sb.GetAt (sb.length () - 1) == ' ');
-                #if qCompilerAndStdLib_spanOfContainer_Buggy
+#if qCompilerAndStdLib_spanOfContainer_Buggy
                     return String{span{sb.data (), sb.size ()}.subspan (0, sb.length () - 1)};
-                #else
+#else
                     return String{span{sb}.subspan (0, sb.length () - 1)};
-                #endif
+#endif
                 }
                 else {
                     return sb.As<String> ();
@@ -1574,7 +1574,7 @@ namespace {
                                 constexpr int kCmdLineOffset_        = 112;
 #else
                                 constexpr int kUserProcParamsOffset_ = 0x10;
-                                constexpr int kCmdLineOffset_        = 0x40;
+                                constexpr int kCmdLineOffset_ = 0x40;
 #endif
                                 /* get the address of ProcessParameters */
                                 void* rtlUserProcParamsAddress{};

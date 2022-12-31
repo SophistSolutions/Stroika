@@ -333,6 +333,7 @@ namespace Stroika::Foundation::Characters {
     {
         static_assert (not is_const_v<TRG_T>);
         // needlessly costly way to compute, but hopefully adequate for now -- LGP 2022-12-27
+        // @todo redo using CountCharacters...
         Require (srcIndex <= source.size ());
         span<const SRC_T>          fakeSrc{source.begin (), srcIndex};
         Memory::StackBuffer<TRG_T> fakeOut{ComputeTargetBufferSize<TRG_T> (fakeSrc)};
