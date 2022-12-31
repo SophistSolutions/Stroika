@@ -631,7 +631,11 @@ namespace {
                 }
                 if (lastCharNullRemappedToSpace) {
                     Assert (sb.length () > 0 and sb.GetAt (sb.length () - 1) == ' ');
+                #if qCompilerAndStdLib_spanOfContainer_Buggy
+                    return String{span{sb.data (), sb.size ()}.subspan (0, sb.length () - 1)};
+                #else
                     return String{span{sb}.subspan (0, sb.length () - 1)};
+                #endif
                 }
                 else {
                     return sb.As<String> ();
