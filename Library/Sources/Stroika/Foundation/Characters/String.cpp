@@ -533,7 +533,6 @@ String String::Remove (Character c) const
 
 optional<size_t> String::Find (Character c, size_t startAt, CompareOptions co) const
 {
-#if 1
     PeekSpanData pds = GetPeekSpanData<char> ();
     // OPTIMIZED PATHS: Common case and should be fast
     if (pds.fInCP == PeekSpanData::StorageCodePointType::eAscii) {
@@ -548,6 +547,13 @@ optional<size_t> String::Find (Character c, size_t startAt, CompareOptions co) c
         return nullopt; // not found, possibly cuz not ascii
     }
     // fallback on more generic algorithm - and copy to full character objects
+    //
+    // performance notes
+    //      Could iterate using CharAt() and that would perform better in the case where you find c early
+    //      in a string, and the string is short. The problem with the current code is that it converts the
+    //      entire string (could be long) and then might not look at much of the converted data.
+    //      on the other hand, if our reps are either 'ascii or char32_t wide' - which we may end up with - then
+    //      this isn't too bad - cuz no copying for char32_ case either...
     Memory::StackBuffer<Character> maybeIgnoreBuf;
     span<const Character>          charSpan = GetData<Character> (pds, &maybeIgnoreBuf);
     Require (startAt <= charSpan.size ());
@@ -568,30 +574,6 @@ optional<size_t> String::Find (Character c, size_t startAt, CompareOptions co) c
         } break;
     }
     return nullopt; // not found any which way
-#else
-    //@todo could improve performance with strength reduction
-    _SafeReadRepAccessor accessor{this};
-    Require (startAt <= accessor._ConstGetRep ()._GetLength ());
-    size_t length = accessor._ConstGetRep ()._GetLength ();
-    switch (co) {
-        case CompareOptions::eCaseInsensitive: {
-            Character lcc = c.ToLowerCase ();
-            for (size_t i = startAt; i < length; ++i) {
-                if (accessor._ConstGetRep ().GetAt (i).ToLowerCase () == lcc) {
-                    return i;
-                }
-            }
-        } break;
-        case CompareOptions::eWithCase: {
-            for (size_t i = startAt; i < length; ++i) {
-                if (accessor._ConstGetRep ().GetAt (i) == c) {
-                    return i;
-                }
-            }
-        } break;
-    }
-    return {};
-#endif
 }
 
 optional<size_t> String::Find (const String& subString, size_t startAt, CompareOptions co) const
@@ -645,7 +627,7 @@ optional<pair<size_t, size_t>> String::Find (const RegularExpression& regEx, siz
     wsmatch res;
     regex_search (tmp, res, regEx.GetCompiled ());
     if (res.size () >= 1) {
-        return pair<size_t, size_t> (startAt + res.position (), startAt + res.position () + res.length ());
+        return pair<size_t, size_t>{startAt + res.position (), startAt + res.position () + res.length ()};
     }
     return {};
 }
@@ -779,18 +761,28 @@ bool String::StartsWith (const Character& c, CompareOptions co) const
 
 bool String::StartsWith (const String& subString, CompareOptions co) const
 {
+#if 1
     _SafeReadRepAccessor subStrAccessor{&subString};
     _SafeReadRepAccessor accessor{this};
     size_t               subStrLen = subString.size ();
     if (subStrLen > accessor._ConstGetRep ()._GetLength ()) {
         return false;
     }
+#endif
 #if qDebug
     bool referenceResult = ThreeWayComparer{co}(SubString (0, subString.size ()), subString) == 0;
 #endif
+#if 1
+    Memory::StackBuffer<Character> maybeIgnoreBuf1;
+    Memory::StackBuffer<Character> maybeIgnoreBuf2;
+    span<const Character>          subStrData = subString.GetData<Character> (&maybeIgnoreBuf1);
+    span<const Character>          thisData   = GetData<Character> (&maybeIgnoreBuf2);
+    bool                           result     = Character::Compare (thisData.subspan (0, subStrData.size ()), subStrData, co) == 0;
+#else
     pair<const Character*, const Character*> subStrData = subStrAccessor._ConstGetRep ().GetData ();
     pair<const Character*, const Character*> thisData   = accessor._ConstGetRep ().GetData ();
     bool                                     result     = Character::Compare (thisData.first, thisData.first + subStrLen, subStrData.first, subStrData.second, co) == 0;
+#endif
     Assert (result == referenceResult);
     return result;
 }
@@ -818,9 +810,17 @@ bool String::EndsWith (const String& subString, CompareOptions co) const
 #if qDebug
     bool referenceResult = String::EqualsComparer{co}(SubString (thisStrLen - subStrLen, thisStrLen), subString);
 #endif
+#if 1
+    Memory::StackBuffer<Character> maybeIgnoreBuf1;
+    Memory::StackBuffer<Character> maybeIgnoreBuf2;
+    span<const Character>          subStrData = subString.GetData<Character> (&maybeIgnoreBuf1);
+    span<const Character>          thisData   = GetData<Character> (&maybeIgnoreBuf2);
+    bool                           result     = Character::Compare (thisData.subspan (thisStrLen - subStrLen), subStrData, co) == 0;
+#else
     pair<const Character*, const Character*> subStrData = subStrAccessor._ConstGetRep ().GetData ();
     pair<const Character*, const Character*> thisData   = accessor._ConstGetRep ().GetData ();
     bool                                     result     = (Character::Compare (thisData.first + thisStrLen - subStrLen, thisData.first + thisStrLen, subStrData.first, subStrData.second, co) == 0);
+#endif
     Assert (result == referenceResult);
     return result;
 }
@@ -1128,7 +1128,7 @@ String String::LimitLength (size_t maxLen, bool keepLeft) const
 #if qCompiler_vswprintf_on_elispisStr_Buggy
     static const String kELIPSIS_{L"..."sv};
 #else
-    static const String kELIPSIS_{L"\u2026"sv}; // OR L"..."
+    static const String                      kELIPSIS_{L"\u2026"sv}; // OR L"..."
 #endif
     return LimitLength (maxLen, keepLeft, kELIPSIS_);
 }
@@ -1180,95 +1180,51 @@ template <>
 void String::AsUTF8 (string* into) const
 {
     RequireNotNull (into);
-    _SafeReadRepAccessor                     accessor{this};
-    pair<const Character*, const Character*> lhsD = accessor._ConstGetRep ().GetData ();
-    Assert (sizeof (Character) == sizeof (wchar_t));
-    const wchar_t*    wcp        = (const wchar_t*)lhsD.first;
-    const wchar_t*    wcpe       = (const wchar_t*)lhsD.second;
-    size_t            cvtBufSize = UTFConverter::ComputeTargetBufferSize<char> (span{wcp, wcpe});
-    StackBuffer<char> buf{Memory::eUninitialized, cvtBufSize};
-#if qCompilerAndStdLib_spanOfContainer_Buggy
-    into->assign (buf.begin (), buf.begin () + UTFConverter::kThe.Convert (span{wcp, wcpe}, Memory::mkSpan_BWA_ (buf)).fTargetProduced);
-#else
-    into->assign (buf.begin (), buf.begin () + UTFConverter::kThe.Convert (span{wcp, wcpe}, span{buf}).fTargetProduced);
-#endif
+    Memory::StackBuffer<char8_t> maybeIgnoreBuf1;
+    span<const char8_t>          thisData = GetData<char8_t> (&maybeIgnoreBuf1);
+    into->assign (thisData.begin (), thisData.end ());
 }
 
 template <>
 void String::AsUTF8 (u8string* into) const
 {
     RequireNotNull (into);
-    _SafeReadRepAccessor                     accessor{this};
-    pair<const Character*, const Character*> lhsD = accessor._ConstGetRep ().GetData ();
-    Assert (sizeof (Character) == sizeof (wchar_t));
-    const wchar_t*       wcp        = (const wchar_t*)lhsD.first;
-    const wchar_t*       wcpe       = (const wchar_t*)lhsD.second;
-    size_t               cvtBufSize = UTFConverter::ComputeTargetBufferSize<char8_t> (span{wcp, wcpe});
-    StackBuffer<char8_t> buf{Memory::eUninitialized, cvtBufSize};
-#if qCompilerAndStdLib_spanOfContainer_Buggy
-    into->assign (buf.begin (), buf.begin () + UTFConverter::kThe.Convert (span{wcp, wcpe}, Memory::mkSpan_BWA_ (buf)).fTargetProduced);
-#else
-    into->assign (buf.begin (), buf.begin () + UTFConverter::kThe.Convert (span{wcp, wcpe}, span{buf}).fTargetProduced);
-#endif
+    Memory::StackBuffer<char8_t> maybeIgnoreBuf1;
+    span<const char8_t>          thisData = GetData<char8_t> (&maybeIgnoreBuf1);
+    into->assign (thisData.begin (), thisData.end ());
 }
 
 void String::AsUTF16 (u16string* into) const
 {
     RequireNotNull (into);
-    _SafeReadRepAccessor accessor{this};
-    size_t               n{accessor._ConstGetRep ()._GetLength ()};
-    const Character*     cp = accessor._ConstGetRep ()._Peek ();
-    if constexpr (sizeof (wchar_t) == sizeof (char16_t)) {
-        Assert (sizeof (Character) == sizeof (char16_t));
-        const char16_t* wcp = (const char16_t*)cp;
-        into->assign (wcp, wcp + n);
-    }
-    else {
-        Assert (sizeof (Character) == sizeof (wchar_t));
-        const wchar_t*        wcp        = (const wchar_t*)cp;
-        size_t                cvtBufSize = UTFConverter::ComputeTargetBufferSize<char16_t> (span{wcp, wcp + n});
-        StackBuffer<char16_t> buf{Memory::eUninitialized, cvtBufSize};
-#if qCompilerAndStdLib_spanOfContainer_Buggy
-        into->assign (buf.begin (), buf.begin () + UTFConverter::kThe.Convert (span{wcp, wcp + n}, Memory::mkSpan_BWA_ (buf)).fTargetProduced);
-#else
-        into->assign (buf.begin (), buf.begin () + UTFConverter::kThe.Convert (span{wcp, wcp + n}, span{buf}).fTargetProduced);
-#endif
-    }
+    Memory::StackBuffer<char16_t> maybeIgnoreBuf1;
+    span<const char16_t>          thisData = GetData<char16_t> (&maybeIgnoreBuf1);
+    into->assign (thisData.begin (), thisData.end ());
 }
 
 void String::AsUTF32 (u32string* into) const
 {
     RequireNotNull (into);
-    _SafeReadRepAccessor accessor{this};
-    size_t               n{accessor._ConstGetRep ()._GetLength ()};
-    const Character*     cp = accessor._ConstGetRep ()._Peek ();
-    if constexpr (sizeof (wchar_t) == sizeof (char32_t)) {
-        Assert (sizeof (Character) == sizeof (char32_t));
-        const char32_t* wcp = (const char32_t*)cp;
-        into->assign (wcp, wcp + n);
-    }
-    else {
-        Assert (sizeof (Character) == sizeof (wchar_t));
-        const wchar_t*        wcp        = (const wchar_t*)cp;
-        size_t                cvtBufSize = UTFConverter::ComputeTargetBufferSize<char32_t> (span{wcp, wcp + n});
-        StackBuffer<char32_t> buf{Memory::eUninitialized, cvtBufSize};
-#if qCompilerAndStdLib_spanOfContainer_Buggy
-        into->assign (buf.begin (), buf.begin () + UTFConverter::kThe.Convert (span{wcp, wcp + n}, Memory::mkSpan_BWA_ (buf)).fTargetProduced);
-#else
-        into->assign (buf.begin (), buf.begin () + UTFConverter::kThe.Convert (span{wcp, wcp + n}, span{buf}).fTargetProduced);
-#endif
-    }
+    Memory::StackBuffer<char32_t> maybeIgnoreBuf1;
+    span<const char32_t>          thisData = GetData<char32_t> (&maybeIgnoreBuf1);
+    into->assign (thisData.begin (), thisData.end ());
 }
 
 void String::AsSDKString (SDKString* into) const
 {
     RequireNotNull (into);
-    _SafeReadRepAccessor                     accessor{this};
-    pair<const Character*, const Character*> lhsD = accessor._ConstGetRep ().GetData ();
+    Memory::StackBuffer<wchar_t> maybeIgnoreBuf1;
+    span<const wchar_t>          thisData = GetData<wchar_t> (&maybeIgnoreBuf1);
+    into->assign (thisData.begin (), thisData.end ());
 #if qTargetPlatformSDKUseswchar_t
-    into->assign (reinterpret_cast<const wchar_t*> (lhsD.first), reinterpret_cast<const wchar_t*> (lhsD.second));
+    into->assign (thisData.begin (), thisData.end ());
 #else
-    WideStringToNarrow (reinterpret_cast<const wchar_t*> (lhsD.first), reinterpret_cast<const wchar_t*> (lhsD.second), GetDefaultSDKCodePage (), into);
+    if (thisData.empty ()) {
+        into->clear ();
+    }
+    else {
+        WideStringToNarrow (&*thisData.begin (), &*thisData.begin () + thisData.size (), GetDefaultSDKCodePage (), into);
+    }
 #endif
 }
 
