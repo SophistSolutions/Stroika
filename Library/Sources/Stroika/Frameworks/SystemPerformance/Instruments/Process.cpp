@@ -631,7 +631,7 @@ namespace {
                 }
                 if (lastCharNullRemappedToSpace) {
                     Assert (sb.length () > 0 and sb.GetAt (sb.length () - 1) == ' ');
-                    return sb.str ().SubString(0, sb.length () -1);
+                    return sb.str ().SubString (0, sb.length () - 1);
                 }
                 else {
                     return sb.As<String> ();
@@ -1570,7 +1570,7 @@ namespace {
                                 constexpr int kCmdLineOffset_        = 112;
 #else
                                 constexpr int kUserProcParamsOffset_ = 0x10;
-                                constexpr int kCmdLineOffset_ = 0x40;
+                                constexpr int kCmdLineOffset_        = 0x40;
 #endif
                                 /* get the address of ProcessParameters */
                                 void* rtlUserProcParamsAddress{};
