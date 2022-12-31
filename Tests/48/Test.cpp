@@ -254,6 +254,8 @@ namespace {
             VerifyTestResult (BitSubstring (0x3, 0, 3) == 0x3);
             VerifyTestResult (BitSubstring (0xff, 0, 8) == 0xff);
             VerifyTestResult (BitSubstring (0xff, 8, 16) == 0x0);
+            VerifyTestResult (BitSubstring (0b10101010, 0, 1) == 0x0);
+            VerifyTestResult (BitSubstring (0b10101010, 7, 8) == 0x1);
         }
         {
             VerifyTestResult (Bit (0) == 0x1);
