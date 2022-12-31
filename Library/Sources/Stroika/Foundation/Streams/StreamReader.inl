@@ -40,7 +40,7 @@ namespace Stroika::Foundation::Streams {
         SeekOffsetType offset          = *actualOffset;
         size_t         cacheWindowSize = fCacheWindowBuf_.size ();
         if (fCacheWindowBufStart_ <= offset and offset < fCacheWindowBufStart_ + cacheWindowSize) {
-            return fCacheWindowBuf_[offset - fCacheWindowBufStart_];
+            return fCacheWindowBuf_[static_cast<size_t> (offset - fCacheWindowBufStart_)];
         }
         return nullopt;
     }
