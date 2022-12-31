@@ -274,27 +274,16 @@ namespace {
                 [[maybe_unused]] Common::GUID h4                         = digesterWithResult_GUID_t (value2Hash);
 
                 /*
-                 *  NOTE - basically ALL these tests vary on a number of parameters.
-                 *      o   default serializer for string depends on sizeof wchar_t
+                 *  NOTE - basically ALL these tests vary on a number of parameters
                  *      o   some values involve casts of integers of byte array data which depends on endianness
                  *      but otherwise I dont think these values should float/vary (thus the VerifyTestResult tests).
+                 * Not important/promised these values will remain constant, but if serialize and hash dont change, they will, and those are unlikely to change
+                 * so if these fail, either something relevant changed or bug...
                  */
-                if constexpr (sizeof (wchar_t) == 2) {
-                    VerifyTestResult (h1 == 1969025828);                                                                 // before Stroika 2.1b10 (2512011991)
-                    VerifyTestResult (h2 == 36);                                                                         // before Stroika 2.1b10 (215)
-                    VerifyTestResult (h3[0] == std::byte{0x24} and h3[1] == std::byte{0xf3} and h3[39] == std::byte{0}); // value before Stroika 2.1b10 215, 66,... 0
-                    if (Configuration ::GetEndianness () == Configuration::Endian::eX86) {
-                        VerifyTestResult ((Digester<Digest::Algorithm::SuperFastHash, string>{}(value2Hash) == "0x1969025828")); // value before Stroika 2.1b10 ("0x2512011991")
-                    }
-                }
-                else if constexpr (sizeof (wchar_t) == 4) {
-                    VerifyTestResult (h1 == 4259971568);                                                              // before Stroika 2.1b10 3490201358
-                    VerifyTestResult (h2 == 240);                                                                     // before Stroika 2.1b10 (14)
-                    VerifyTestResult (h3[0] == std::byte{0xf0} and h3[1] == std::byte{1} and h3[39] == std::byte{0}); // value before Stroika 2.1b10 14, 63,... 0
-                    if (Configuration ::GetEndianness () == Configuration::Endian::eX86) {
-                        VerifyTestResult ((Digester<Digest::Algorithm::SuperFastHash, string>{}(value2Hash) == "0x4259971568")); // value before Stroika 2.1b10 ("0x3490201358")
-                    }
-                }
+                VerifyTestResult (h1 == 808390013);
+                VerifyTestResult (h2 == 125);
+                VerifyTestResult (h3[0] == std::byte{0x7d} and h3[1] == std::byte{0x0d} and h3[39] == std::byte{0});
+                VerifyTestResult ((Digester<Digest::Algorithm::SuperFastHash, string>{}(value2Hash) == "0x808390013"));
             }
 
             {
@@ -308,19 +297,10 @@ namespace {
                 uint8_t      h2                         = digesterWithResult_uint8_t (value2Hash);
                 VerifyTestResult (h2 == h1[0]);
                 auto digesterWithResult_string = Digester<Digest::Algorithm::MD5, string>{};
-
-                /*
-                 *  NOTE - basically ALL these tests vary on a number of parameters.
-                 *      o   default serializer for string depends on sizeof wchar_t
-                 */
-                if constexpr (sizeof (wchar_t) == 2) {
-                    VerifyTestResult (digesterWithResult_string (value2Hash) == "06d0b6f01666443614f2502b44386721");
-                    VerifyTestResult ((Digester<Digest::Algorithm::MD5, String>{}(value2Hash) == L"06d0b6f01666443614f2502b44386721"));
-                }
-                if constexpr (sizeof (wchar_t) == 4) {
-                    VerifyTestResult (digesterWithResult_string (value2Hash) == "32e6a57de2f9324edfc93863838d9015");
-                    VerifyTestResult ((Digester<Digest::Algorithm::MD5, String>{}(value2Hash) == L"32e6a57de2f9324edfc93863838d9015"));
-                }
+                // Not important/promised these values will remain constant, but if serialize and hash dont change, they will, and those are unlikely to change
+                // so if these fail, either something relevant changed or bug...
+                VerifyTestResult (digesterWithResult_string (value2Hash) == "4fa4ac89a4c435e7899a53afa9fcdc5b");
+                VerifyTestResult ((Digester<Digest::Algorithm::MD5, String>{}(value2Hash) == L"4fa4ac89a4c435e7899a53afa9fcdc5b"));
             }
             {
                 using namespace IO::Network;
@@ -331,21 +311,11 @@ namespace {
                 uint8_t              h2                       = hasherWithResult_uint8_t (value2Hash);
                 auto                 hasherWithResult_array40 = Hash<InternetAddress, Digester<Digest::Algorithm::SuperFastHash>, std::array<byte, 40>>{};
                 std::array<byte, 40> h3                       = hasherWithResult_array40 (value2Hash);
-
-                /*
-                 *  NOTE - basically ALL these tests vary on a number of parameters.
-                 *      o   default serializer for string depends on sizeof wchar_t
-                 */
-                if constexpr (sizeof (wchar_t) == 2) {
-                    VerifyTestResult (h1 == 1969025828);                                                                 // experimentally derived values but they shouldn't float (before Stroika 2.1b10 was 2512011991)
-                    VerifyTestResult (h2 == 36);                                                                         // before Stroika 2.1b10, value was 215
-                    VerifyTestResult (h3[0] == std::byte{0x24} and h3[1] == std::byte{0xf3} and h3[39] == std::byte{0}); // before Stroika 2.1b10, value was 215, 66, ...0
-                }
-                if constexpr (sizeof (wchar_t) == 4) {
-                    VerifyTestResult (h1 == 4259971568);                                                              // experimentally derived values but they shouldn't float (before Stroika 2.1b10 was 3490201358)
-                    VerifyTestResult (h2 == 240);                                                                     // before Stroika 2.1b10, value was 14
-                    VerifyTestResult (h3[0] == std::byte{0xf0} and h3[1] == std::byte{1} and h3[39] == std::byte{0}); // before Stroika 2.1b10, value was 14, 63, ...0
-                }
+                // Not important/promised these values will remain constant, but if serialize and hash dont change, they will, and those are unlikely to change
+                // so if these fail, either something relevant changed or bug...
+                VerifyTestResult (h1 == 808390013);
+                VerifyTestResult (h2 == 125);
+                VerifyTestResult (h3[0] == std::byte{0x7d} and h3[1] == std::byte{0x0d} and h3[39] == std::byte{0});
             }
             {
                 // verify can do digest of an Iterable<T>
@@ -402,13 +372,7 @@ namespace {
             {
                 VerifyTestResult ((Cryptography::Digest::Hash<int, USE_DIGESTER_>{}(ToLE_ (1)) == 10338022));
                 VerifyTestResult ((Cryptography::Digest::Hash<string, USE_DIGESTER_>{}("1") == 2154528969));
-                // DefaultSerializer<String> MAY produce different byte patterns depending on sizeof (wchar_t)
-                if constexpr (sizeof (wchar_t) == 2) {
-                    VerifyTestResult ((Cryptography::Digest::Hash<Characters::String, USE_DIGESTER_>{}(L"1") == 1243634960));
-                }
-                else if constexpr (sizeof (wchar_t) == 4) {
-                    VerifyTestResult ((Cryptography::Digest::Hash<Characters::String, USE_DIGESTER_>{}(L"1") == 2036516137));
-                }
+                VerifyTestResult ((Cryptography::Digest::Hash<Characters::String, USE_DIGESTER_>{}(L"1") == 2154528969));
                 VerifyTestResult ((Cryptography::Digest::Hash<string, USE_DIGESTER_>{"mysalt"}("1") == 1355707049));
                 VerifyTestResult ((Cryptography::Digest::Hash<int, USE_DIGESTER_>{}(ToLE_ (93993)) == 1748544338));
             }

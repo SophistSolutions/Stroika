@@ -761,28 +761,17 @@ bool String::StartsWith (const Character& c, CompareOptions co) const
 
 bool String::StartsWith (const String& subString, CompareOptions co) const
 {
-#if 1
-    _SafeReadRepAccessor subStrAccessor{&subString};
-    _SafeReadRepAccessor accessor{this};
-    size_t               subStrLen = subString.size ();
-    if (subStrLen > accessor._ConstGetRep ()._GetLength ()) {
+    if (subString.size () > size ()) {
         return false;
     }
-#endif
 #if qDebug
     bool referenceResult = ThreeWayComparer{co}(SubString (0, subString.size ()), subString) == 0;
 #endif
-#if 1
     Memory::StackBuffer<Character> maybeIgnoreBuf1;
     Memory::StackBuffer<Character> maybeIgnoreBuf2;
     span<const Character>          subStrData = subString.GetData<Character> (&maybeIgnoreBuf1);
     span<const Character>          thisData   = GetData<Character> (&maybeIgnoreBuf2);
     bool                           result     = Character::Compare (thisData.subspan (0, subStrData.size ()), subStrData, co) == 0;
-#else
-    pair<const Character*, const Character*> subStrData = subStrAccessor._ConstGetRep ().GetData ();
-    pair<const Character*, const Character*> thisData   = accessor._ConstGetRep ().GetData ();
-    bool                                     result     = Character::Compare (thisData.first, thisData.first + subStrLen, subStrData.first, subStrData.second, co) == 0;
-#endif
     Assert (result == referenceResult);
     return result;
 }
@@ -810,17 +799,11 @@ bool String::EndsWith (const String& subString, CompareOptions co) const
 #if qDebug
     bool referenceResult = String::EqualsComparer{co}(SubString (thisStrLen - subStrLen, thisStrLen), subString);
 #endif
-#if 1
     Memory::StackBuffer<Character> maybeIgnoreBuf1;
     Memory::StackBuffer<Character> maybeIgnoreBuf2;
     span<const Character>          subStrData = subString.GetData<Character> (&maybeIgnoreBuf1);
     span<const Character>          thisData   = GetData<Character> (&maybeIgnoreBuf2);
     bool                           result     = Character::Compare (thisData.subspan (thisStrLen - subStrLen), subStrData, co) == 0;
-#else
-    pair<const Character*, const Character*> subStrData = subStrAccessor._ConstGetRep ().GetData ();
-    pair<const Character*, const Character*> thisData   = accessor._ConstGetRep ().GetData ();
-    bool                                     result     = (Character::Compare (thisData.first + thisStrLen - subStrLen, thisData.first + thisStrLen, subStrData.first, subStrData.second, co) == 0);
-#endif
     Assert (result == referenceResult);
     return result;
 }
@@ -1128,7 +1111,7 @@ String String::LimitLength (size_t maxLen, bool keepLeft) const
 #if qCompiler_vswprintf_on_elispisStr_Buggy
     static const String kELIPSIS_{L"..."sv};
 #else
-    static const String                      kELIPSIS_{L"\u2026"sv}; // OR L"..."
+    static const String kELIPSIS_{L"\u2026"sv}; // OR L"..."
 #endif
     return LimitLength (maxLen, keepLeft, kELIPSIS_);
 }
@@ -1231,9 +1214,14 @@ void String::AsSDKString (SDKString* into) const
 void String::AsNarrowSDKString (string* into) const
 {
     RequireNotNull (into);
-    _SafeReadRepAccessor                     accessor{this};
-    pair<const Character*, const Character*> lhsD = accessor._ConstGetRep ().GetData ();
-    WideStringToNarrow (reinterpret_cast<const wchar_t*> (lhsD.first), reinterpret_cast<const wchar_t*> (lhsD.second), GetDefaultSDKCodePage (), into);
+    Memory::StackBuffer<wchar_t> maybeIgnoreBuf1;
+    span<const wchar_t>          thisData = GetData<wchar_t> (&maybeIgnoreBuf1);
+    if (thisData.empty ()) {
+        into->clear ();
+    }
+    else {
+        WideStringToNarrow (&*thisData.begin (), &*thisData.begin () + thisData.size (), GetDefaultSDKCodePage (), into);
+    }
 }
 
 template <>
@@ -1287,11 +1275,11 @@ String Characters::operator"" _k (const wchar_t* s, size_t len)
  */
 wostream& Characters::operator<< (wostream& out, const String& s)
 {
-    // Tried two impls, but first empirically appears quicker.
-    // HOWERVER - THIS IS INTRINSICALLY NOT THREASDAFE (if s changed while another thread writin it)
-    String::_SafeReadRepAccessor             thisAccessor{&s};
-    pair<const Character*, const Character*> p = thisAccessor._ConstGetRep ().GetData ();
-    out.write (reinterpret_cast<const wchar_t*> (p.first), p.second - p.first);
+    Memory::StackBuffer<wchar_t> maybeIgnoreBuf1;
+    span<const wchar_t>          sData = s.GetData<wchar_t> (&maybeIgnoreBuf1);
+    if (not sData.empty ()) {
+        out.write (&*sData.begin (), sData.size ());
+    }
     return out;
 }
 
@@ -1320,8 +1308,18 @@ size_t std::hash<String>::operator() (const String& arg) const
 {
     using namespace Cryptography::Digest;
     using DIGESTER = Digester<Algorithm::SuperFastHash>; // pick arbitrarily which algorithm to use for now -- err on the side of quick and dirty
-    auto p         = arg.GetData<wchar_t> ();
-    return DIGESTER{}(reinterpret_cast<const std::byte*> (p.first), reinterpret_cast<const std::byte*> (p.second));
+    // Note this could easily use char8_t, wchar_t, char32_t, or whatever. Choose char8_t on the theorey that
+    // this will most often avoid a copy, and making the most often case faster is probably a win. Also, even close, it
+    // will have less 'empty space' and be more compact, so will digest faster.
+    Memory::StackBuffer<char8_t> maybeIgnoreBuf1;
+    span<const char8_t>          s = arg.GetData<char8_t> (&maybeIgnoreBuf1);
+    if (s.empty ()) {
+        static const size_t kZeroDigest_ = DIGESTER{}(nullptr, nullptr);
+        return kZeroDigest_;
+    }
+    else {
+        return DIGESTER{}(reinterpret_cast<const std::byte*> (&*s.begin ()), reinterpret_cast<const std::byte*> (&*s.begin () + s.size ()));
+    }
 }
 
 /*
@@ -1331,13 +1329,20 @@ size_t std::hash<String>::operator() (const String& arg) const
  */
 Memory::BLOB DataExchange::DefaultSerializer<String>::operator() (const String& arg) const
 {
-    // NOTE: DefaultSerializer<String> MAY produce different byte patterns depending on sizeof (wchar_t)
-    // We could avoid this by converting to UTF before creating the BLOB, but that would be slower and
-    // would rarely be useful
     //
-    // Perhaps provide an additional 'serializer' in the string library that automatically unifies so you get
-    // the same answer (and that can be passed explcitly to Hash as your serializer).
+    // Could have used char8_t, char16_t, or char32_t here quite plausibly. Chose char8_t for several reasons:
+    //      >   Nearly always smallest representation (assuming most data is ascii)
+    //      >   It is cross-platform/portable - not byte order dependent (NOT a promise going forward, so maybe
+    //          not a good thing - but a thing)
+    //      >   Since we expect most data reps to be ascii, this will involve the least copying, most likely, in
+    //          the GetData call
     //
-    auto p = arg.GetData<wchar_t> ();
-    return Memory::BLOB (reinterpret_cast<const std::byte*> (p.first), reinterpret_cast<const std::byte*> (p.second));
+    Memory::StackBuffer<char8_t> maybeIgnoreBuf1;
+    span<const char8_t>          s = arg.GetData<char8_t> (&maybeIgnoreBuf1);
+    if (s.empty ()) {
+        return Memory::BLOB{};
+    }
+    else {
+        return Memory::BLOB{reinterpret_cast<const std::byte*> (&*s.begin ()), reinterpret_cast<const std::byte*> (&*s.begin () + s.size ())};
+    }
 }
