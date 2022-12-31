@@ -22,6 +22,8 @@ namespace Stroika::Foundation::Memory {
 
     using std::byte;
 
+    static constexpr size_t kStackBuffer_TargetInlineByteBufferSize = qPlatform_Windows ? 2 * 1024 : 4 * 1024;
+
     /**
      *  \brief Store variable sized array on the stack (\see also InlineBuffer<T,BUF_SIZE>)
      * 
@@ -89,13 +91,8 @@ namespace Stroika::Foundation::Memory {
      *
      */
     template <
-        typename T = std::byte,
-#if qPlatform_Windows
-        size_t BUF_SIZE = (((2 * 1024) / sizeof (T)) == 0 ? 1 : ((2 * 1024) / sizeof (T)))
-#else
-        size_t BUF_SIZE = ((4096 / sizeof (T)) == 0 ? 1 : (4096 / sizeof (T)))
-#endif
-        >
+        typename T      = std::byte,
+        size_t BUF_SIZE = ((kStackBuffer_TargetInlineByteBufferSize / sizeof (T)) == 0 ? 1 : (kStackBuffer_TargetInlineByteBufferSize / sizeof (T)))>
     class StackBuffer {
     public:
         /**
