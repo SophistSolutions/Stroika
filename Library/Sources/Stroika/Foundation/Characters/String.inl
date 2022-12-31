@@ -765,14 +765,14 @@ namespace Stroika::Foundation::Characters {
                 case StorageCodePointType::eAscii:
                 case StorageCodePointType::eChar8: {
                     possiblyUsedBuffer->resize_uninitialized (UTFConverter::ComputeTargetBufferSize<CHAR_TYPE> (pds.fChar8));
-                    auto r = UTFConverter::kThe.Convert (pds.fChar8, span{*possiblyUsedBuffer});
+                    auto r = UTFConverter::kThe.Convert (pds.fChar8, span<CHAR_TYPE>{*possiblyUsedBuffer});
                     return span{possiblyUsedBuffer->data (), r.fTargetProduced};
                 }
                 case StorageCodePointType::eChar16:
                     return pds.fChar16;
                 case StorageCodePointType::eChar32: {
                     possiblyUsedBuffer->resize_uninitialized (UTFConverter::ComputeTargetBufferSize<CHAR_TYPE> (pds.fChar32));
-                    auto r = UTFConverter::kThe.Convert (pds.fChar32, span{*possiblyUsedBuffer});
+                    auto r = UTFConverter::kThe.Convert (pds.fChar32, span<CHAR_TYPE>{*possiblyUsedBuffer});
                     return span{possiblyUsedBuffer->data (), r.fTargetProduced};
                 }
                 default:
@@ -785,12 +785,20 @@ namespace Stroika::Foundation::Characters {
                 case StorageCodePointType::eAscii:
                 case StorageCodePointType::eChar8: {
                     possiblyUsedBuffer->resize_uninitialized (UTFConverter::ComputeTargetBufferSize<CHAR_TYPE> (pds.fChar8));
-                    auto r = UTFConverter::kThe.Convert (pds.fChar8, span{*possiblyUsedBuffer});
+                                    #if qCompilerAndStdLib_spanOfContainer_Buggy
+                    auto r = UTFConverter::kThe.Convert (pds.fChar8, Memory::mkSpan_BWA_ (*possiblyUsedBuffer));
+#else
+                    auto r = UTFConverter::kThe.Convert (pds.fChar8, span<CHAR_TYPE>{*possiblyUsedBuffer});
+#endif
                     return span{possiblyUsedBuffer->data (), r.fTargetProduced};
                 }
                 case StorageCodePointType::eChar16: {
                     possiblyUsedBuffer->resize_uninitialized (UTFConverter::ComputeTargetBufferSize<CHAR_TYPE> (pds.fChar16));
-                    auto r = UTFConverter::kThe.Convert (pds.fChar16, span{*possiblyUsedBuffer});
+                                    #if qCompilerAndStdLib_spanOfContainer_Buggy
+                    auto r = UTFConverter::kThe.Convert (pds.fChar16, Memory::mkSpan_BWA_(*possiblyUsedBuffer));
+                                    #else
+                    auto r = UTFConverter::kThe.Convert (pds.fChar16, span<CHAR_TYPE>{*possiblyUsedBuffer});
+                                    #endif
                     return span{possiblyUsedBuffer->data (), r.fTargetProduced};
                 }
                 case StorageCodePointType::eChar32:
