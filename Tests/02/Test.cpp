@@ -1497,14 +1497,67 @@ namespace {
             VerifyTestResult (u8string (u8"שלום") == String::FromUTF8 (u8string (u8"שלום")).AsUTF8<u8string> ());
         }
         {
-            VerifyTestResult (u8string (u8"phred") == String::FromUTF8 (u8"phred").AsUTF8<u8string> ());
-            VerifyTestResult (u8string (u8"שלום") == String::FromUTF8 (u8"שלום").AsUTF8<u8string> ());
+            VerifyTestResult (u8string{u8"phred"} == String::FromUTF8 (u8"phred").AsUTF8<u8string> ());
+            VerifyTestResult (u8string{u8"שלום"} == String::FromUTF8 (u8"שלום").AsUTF8<u8string> ());
         }
 #endif
+        {
+            // clang-format off
+            // examples from https://en.wikipedia.org/wiki/UTF-8#Encoding
+            {
+                char8_t dollarSign[] = u8"$";
+                VerifyTestResult (sizeof (dollarSign) == 2);
+                VerifyTestResult (dollarSign[0] == 0x0024);
+                VerifyTestResult (UTFConverter::NextCharacter (span<const char8_t>{dollarSign}) == 1);
+                VerifyTestResult (dollarSign[*UTFConverter::NextCharacter (span<const char8_t>{dollarSign})] == '\0');
+                VerifyTestResult (UTFConverter::ComputeCharacterLength (span<const char8_t>{dollarSign}) == 2); // Nul byte
+            }
+            {
+                //char8_t poundSign[] = u8"£";
+                char8_t poundSign[] = u8"\u00a3";
+                static_assert (sizeof (poundSign) == 3);
+                VerifyTestResult (UTFConverter::NextCharacter (span<const char8_t>{poundSign}) == 2);
+                VerifyTestResult (poundSign[*UTFConverter::NextCharacter (span<const char8_t>{poundSign})] == '\0');
+                VerifyTestResult (UTFConverter::ComputeCharacterLength (span<const char8_t>{poundSign}) == 2); // Nul byte
+            }
+            {
+                char8_t devanagari[] = u8"\u0939";
+                //char8_t devanagari[] = u8"ह";
+                static_assert (sizeof (devanagari) == 4);
+                VerifyTestResult (UTFConverter::NextCharacter (span<const char8_t>{devanagari}) == 3);
+                VerifyTestResult (devanagari[*UTFConverter::NextCharacter (span<const char8_t>{devanagari})] == '\0');
+                VerifyTestResult (UTFConverter::ComputeCharacterLength (span<const char8_t>{devanagari}) == 2); // Nul byte
+            }
+            {
+                char8_t euroSign[] = u8"\u0939";
+                //char8_t euroSign[] = u8"€";
+                static_assert (sizeof (euroSign) == 4);
+                VerifyTestResult (UTFConverter::NextCharacter (span<const char8_t>{euroSign}) == 3);
+                VerifyTestResult (euroSign[*UTFConverter::NextCharacter (span<const char8_t>{euroSign})] == '\0');
+                VerifyTestResult (UTFConverter::ComputeCharacterLength (span<const char8_t>{euroSign}) == 2); // Nul byte
+            }
+            {
+                char8_t hangull[] = u8"\uD55C";
+                //char8_t hangull[] = u8"한";
+                static_assert (sizeof (hangull) == 4);
+                VerifyTestResult (UTFConverter::NextCharacter (span<const char8_t>{hangull}) == 3);
+                VerifyTestResult (hangull[*UTFConverter::NextCharacter (span<const char8_t>{hangull})] == '\0');
+                VerifyTestResult (UTFConverter::ComputeCharacterLength (span<const char8_t>{hangull}) == 2); // Nul byte
+            }
+            {
+                char8_t hwair[] = u8"\U00010348";
+                //char8_t hwair[] = u8"𐍈";
+                static_assert (sizeof (hwair) == 5);
+                VerifyTestResult (UTFConverter::NextCharacter (span<const char8_t>{hwair}) == 4);
+                VerifyTestResult (hwair[*UTFConverter::NextCharacter (span<const char8_t>{hwair})] == '\0');
+                VerifyTestResult (UTFConverter::ComputeCharacterLength (span<const char8_t>{hwair}) == 2); // Nul byte
+            }
+        }
         {
             // Intentionally no operator+ etc stuff for utf8 because type of u8"" is same as "", so no way to overload
         }
     }
+// clang-format on
 }
 
 namespace {

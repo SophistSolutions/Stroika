@@ -14,6 +14,7 @@
 #endif
 
 #include "../Debug/Assertions.h"
+#include "../Memory/Bits.h"
 #include "../Memory/StackBuffer.h"
 
 namespace Stroika::Foundation::Characters {
@@ -339,6 +340,71 @@ namespace Stroika::Foundation::Characters {
         Memory::StackBuffer<TRG_T> fakeOut{ComputeTargetBufferSize<TRG_T> (fakeSrc)};
         ConversionResult           r = Convert (fakeSrc, span{fakeOut});
         return r.fTargetProduced;
+    }
+
+    template <Character_IsUnicodeCodePoint CHAR_T>
+    inline optional<size_t> UTFConverter::NextCharacter (span<const CHAR_T> s)
+    {
+        // Logic based on table from https://en.wikipedia.org/wiki/UTF-8#Encoding
+        // untested as of 2022-12-30
+        if constexpr (sizeof (CHAR_T) == 1) {
+            auto i = s.begin ();
+            // starting first byte
+            if (i != s.end ()) {
+                uint8_t firstByte = static_cast<uint8_t> (*i);
+                if (Memory::BitSubstring (firstByte, 7, 8) == 0b0) {
+                    return 1;
+                }
+                if (i != s.end ()) {
+                    ++i;
+                    if (Memory::BitSubstring (firstByte, 5, 8) == 0b110) {
+                        return i == s.end () ? optional<size_t>{} : 2;
+                    }
+                }
+                if (i != s.end ()) {
+                    ++i;
+                    if (Memory::BitSubstring (firstByte, 4, 8) == 0b1110) {
+                        return i == s.end () ? optional<size_t>{} : 3;
+                    }
+                }
+                if (i != s.end ()) {
+                    ++i;
+                    if (Memory::BitSubstring (firstByte, 3, 8) == 0b11110) {
+                        return i == s.end () ? optional<size_t>{} : 4;
+                    }
+                }
+                return nullopt;
+            }
+        }
+        else if constexpr (sizeof (CHAR_T) == 2) {
+            // @todo - must find docs
+            auto i = s.begin ();
+            // starting first char16_t
+            if (i != s.end ()) {
+                AssertNotImplemented ();
+            }
+            return nullopt;
+        }
+        else if constexpr (sizeof (CHAR_T) == 4) {
+            return s.size () >= 4 ? 4 : optional<size_t>{};
+        }
+        AssertNotReached ();
+        return nullopt;
+    }
+
+    template <Character_IsUnicodeCodePoint CHAR_T>
+    optional<size_t> UTFConverter::ComputeCharacterLength (span<const CHAR_T> s)
+    {
+        size_t charCount{};
+        size_t i = 0;
+        while (auto nc = NextCharacter (s.subspan (i))) {
+            ++charCount;
+            i += *nc;
+            if (i == s.size ()) {
+                return charCount;
+            }
+        }
+        return nullopt; // didn't end evenly at end of span, so something went wrong
     }
 
     template <Character_Compatible FromT>
