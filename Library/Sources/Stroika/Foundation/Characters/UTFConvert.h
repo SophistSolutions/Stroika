@@ -250,17 +250,21 @@ namespace Stroika::Foundation::Characters {
     public:
         /**
          *  Given a span, return the number of bytes in the character, or return nullopt if the span of characters is invalid or incomplete
+         * 
+         *  \note for 'char' - the characters are ASSUMED/REQUIRED to be ASCII
          */
-        template <Character_IsUnicodeCodePoint CHAR_T>
-        static optional<size_t> NextCharacter (span<const CHAR_T> s);
+        template <Character_IsUnicodeCodePointOrPlainChar CHAR_T>
+        static constexpr optional<size_t> NextCharacter (span<const CHAR_T> s);
 
     public:
         /**
          *  Given a span of UTF-encoded characters, return the number of characters (unicode code points) in the span, or nullopt if any character is incomplete/invalid
          *  (should we throw or skip or ???) - not sure
+         * 
+         *  \note for 'char' - the characters are ASSUMED/REQUIRED to be ASCII
          */
-        template <Character_IsUnicodeCodePoint CHAR_T>
-        static optional<size_t> ComputeCharacterLength (span<const CHAR_T> s);
+        template <Character_IsUnicodeCodePointOrPlainChar CHAR_T>
+        static constexpr optional<size_t> ComputeCharacterLength (span<const CHAR_T> s);
 
     public:
         /**

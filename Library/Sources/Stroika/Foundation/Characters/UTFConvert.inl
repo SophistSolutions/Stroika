@@ -67,7 +67,15 @@ namespace Stroika::Foundation::Characters {
             return src.size (); // not super useful to do this conversion, but given how if constexpr works/evaluates, its often important than this code compiles, even if it doesn't execute
         }
         if constexpr (sizeof (FROM) == 1) {
-            // worst case is each src byte is a character
+            // worst case is each src byte is a character: for small buffers, not worth computing tighter limit but for larger, could
+            // plausibly avoid a malloc, and even without, more likely to avoid wasted RAM/fragmentation for larger allocations
+            if constexpr (sizeof (TO) == 4) {
+                if (src.size () * sizeof (TO) > Memory::kStackBuffer_TargetInlineByteBufferSize) {
+                    if (auto i = ComputeCharacterLength (src)) {
+                        return *i;
+                    }
+                }
+            }
             return src.size ();
         }
         else if constexpr (sizeof (FROM) == 2) {
@@ -75,6 +83,8 @@ namespace Stroika::Foundation::Characters {
                 // From https://stackoverflow.com/questions/9533258/what-is-the-maximum-number-of-bytes-for-a-utf-8-encoded-character
                 // answer if translating only characters from UTF-16 to UTF-8: 4 bytes
                 // @todo fix this is really smaller... I think 3 - look at https://en.wikipedia.org/wiki/UTF-8 more closely
+
+                // also - for larger strings - MIGHT be worth a closer estimate?
                 return 4 * src.size ();
             }
             else {
@@ -86,6 +96,21 @@ namespace Stroika::Foundation::Characters {
             if constexpr (sizeof (TO) == 1) {
                 // From https://stackoverflow.com/questions/9533258/what-is-the-maximum-number-of-bytes-for-a-utf-8-encoded-character
                 // the maximum number of bytes for a character in UTF-8 is ... 4 (really 4 safe now so use that - was 6 bytes)
+
+                // @todo this is probably worth walking the characters and doing a better estimate
+                if (src.size () * 4 > Memory::kStackBuffer_TargetInlineByteBufferSize) {
+                    // walk the characters, and see how much space each will use when encoded
+                    size_t sz{};
+                    for (char32_t c : src) {
+                        if (isascii (c)) {
+                            ++sz;
+                        }
+                        else {
+                            sz += 4; // @todo look at cases/ranges - not too hard to do better than this - very frequently just two bytes
+                        }
+                    }
+                    return sz;
+                }
                 return 4 * src.size ();
             }
             else if constexpr (sizeof (TO) == 2) {
@@ -342,12 +367,14 @@ namespace Stroika::Foundation::Characters {
         return r.fTargetProduced;
     }
 
-    template <Character_IsUnicodeCodePoint CHAR_T>
-    inline optional<size_t> UTFConverter::NextCharacter (span<const CHAR_T> s)
+    template <Character_IsUnicodeCodePointOrPlainChar CHAR_T>
+    constexpr optional<size_t> UTFConverter::NextCharacter (span<const CHAR_T> s)
     {
         // Logic based on table from https://en.wikipedia.org/wiki/UTF-8#Encoding
-        // untested as of 2022-12-30
-        if constexpr (sizeof (CHAR_T) == 1) {
+        if (is_same_v<CHAR_T, char>) {
+            return s.empty () ? optional<size_t>{} : 1;
+        }
+        else if constexpr (is_same_v<CHAR_T, char8_t>) {
             auto i = s.begin ();
             // starting first byte
             if (i != s.end ()) {
@@ -392,8 +419,8 @@ namespace Stroika::Foundation::Characters {
         return nullopt;
     }
 
-    template <Character_IsUnicodeCodePoint CHAR_T>
-    optional<size_t> UTFConverter::ComputeCharacterLength (span<const CHAR_T> s)
+    template <Character_IsUnicodeCodePointOrPlainChar CHAR_T>
+    constexpr optional<size_t> UTFConverter::ComputeCharacterLength (span<const CHAR_T> s)
     {
         size_t charCount{};
         size_t i = 0;
