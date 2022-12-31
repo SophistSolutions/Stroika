@@ -73,7 +73,7 @@ namespace Stroika::Foundation::Streams {
                     nToRead            = min (nToRead, nInBufAvail);
                 }
                 Assert (nToRead > 0); // because contained _fOffset
-                size_t curSeekPosOffsetIntoCache = *actualOffset - cacheWindow.GetLowerBound ();
+                size_t curSeekPosOffsetIntoCache = static_cast<size_t> (*actualOffset - cacheWindow.GetLowerBound ());
                 Assert (0 <= curSeekPosOffsetIntoCache and curSeekPosOffsetIntoCache < fCacheWindowBuf_.size ());
                 std::copy (fCacheWindowBuf_.data () + curSeekPosOffsetIntoCache, fCacheWindowBuf_.data () + curSeekPosOffsetIntoCache + nToRead, intoStart);
                 *actualOffset += nToRead;
