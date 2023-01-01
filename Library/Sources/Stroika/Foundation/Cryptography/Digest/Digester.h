@@ -236,7 +236,7 @@ namespace Stroika::Foundation::Cryptography::Digest {
         using ReturnType = RETURN_TYPE;
 
     public:
-        Digester ()                    = default;
+        constexpr Digester ()          = default;
         Digester (const Digester& src) = delete;
 
     public:
