@@ -20,7 +20,8 @@ Rough outline of plans for Stroika v3
   - use span<> **1/2 done**
   - use designated initializers **done**
   - use range<>
-  - use/leverage/support std::format
+  - use/leverage/support std::format (in Characters::Format or replacing Characters::Format)
+  - from_string/to_string - maybe updating - maybe replacing - Stroika ToString() mechanism
   - async
     Just planned to use in generators - not more widely
   - new chrono time support integrated with Time classes **3/4 done** [STK-925](https://stroika.atlassian.net/browse/STK-925), [STK-793](https://stroika.atlassian.net/browse/STK-793),[STK-950](https://stroika.atlassian.net/browse/STK-950)
