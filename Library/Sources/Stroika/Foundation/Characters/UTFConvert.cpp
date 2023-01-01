@@ -186,12 +186,12 @@ namespace {
         inline ConversionResult ConvertUTF8toUTF16_ (const char8_t** sourceStart, const char8_t* sourceEnd, char16_t** targetStart, char16_t* targetEnd, ConversionFlags flags)
         {
             ConversionResult result = conversionOK;
-            const char8_t*   source = reinterpret_cast<const char8_t*> (*sourceStart);
+            const char8_t*   source = *sourceStart;
             char16_t*        target = *targetStart;
-            while (source < reinterpret_cast<const char8_t*> (sourceEnd)) {
+            while (source < sourceEnd) {
                 char32_t       ch               = 0;
                 unsigned short extraBytesToRead = trailingBytesForUTF8[*source];
-                if (source + extraBytesToRead >= reinterpret_cast<const char8_t*> (sourceEnd)) {
+                if (source + extraBytesToRead >= sourceEnd) {
                     result = sourceExhausted;
                     break;
                 }
@@ -267,7 +267,7 @@ namespace {
                     *target++ = (char16_t)((ch & halfMask) + UNI_SUR_LOW_START);
                 }
             }
-            *sourceStart = reinterpret_cast<const char8_t*> (source);
+            *sourceStart = source;
             *targetStart = target;
             return result;
         }
@@ -275,7 +275,7 @@ namespace {
         {
             ConversionResult result = conversionOK;
             const char16_t*  source = *sourceStart;
-            char8_t*         target = reinterpret_cast<char8_t*> (*targetStart);
+            char8_t*         target = *targetStart;
             while (source < sourceEnd) {
                 char32_t           ch;
                 unsigned short     bytesToWrite = 0;
@@ -332,7 +332,7 @@ namespace {
                 }
 
                 target += bytesToWrite;
-                if (target > reinterpret_cast<char8_t*> (targetEnd)) {
+                if (target > targetEnd) {
                     source = oldSource; /* Back up source pointer! */
                     target -= bytesToWrite;
                     result = targetExhausted;
@@ -354,7 +354,7 @@ namespace {
                 target += bytesToWrite;
             }
             *sourceStart = source;
-            *targetStart = reinterpret_cast<char8_t*> (target);
+            *targetStart = target;
             return result;
         }
         DISABLE_COMPILER_MSC_WARNING_START (4701)                                                // potentially uninitialized local variable 'ch' used (WRONG cuz if we get into loop, initialized
@@ -469,12 +469,12 @@ namespace {
         inline ConversionResult ConvertUTF8toUTF32_ (const char8_t** sourceStart, const char8_t* sourceEnd, char32_t** targetStart, char32_t* targetEnd, ConversionFlags flags)
         {
             ConversionResult result = conversionOK;
-            const char8_t*   source = reinterpret_cast<const char8_t*> (*sourceStart);
+            const char8_t*   source = *sourceStart;
             char32_t*        target = *targetStart;
-            while (source < reinterpret_cast<const char8_t*> (sourceEnd)) {
+            while (source < sourceEnd) {
                 char32_t       ch               = 0;
                 unsigned short extraBytesToRead = trailingBytesForUTF8[*source];
-                if (source + extraBytesToRead >= reinterpret_cast<const char8_t*> (sourceEnd)) [[unlikely]] {
+                if (source + extraBytesToRead >= sourceEnd) [[unlikely]] {
                     result = sourceExhausted;
                     break;
                 }
@@ -536,7 +536,7 @@ namespace {
                     *target++ = UNI_REPLACEMENT_CHAR;
                 }
             }
-            *sourceStart = reinterpret_cast<const char8_t*> (source);
+            *sourceStart = source;
             *targetStart = target;
             return result;
         }
@@ -544,7 +544,7 @@ namespace {
         {
             ConversionResult result = conversionOK;
             const char32_t*  source = *sourceStart;
-            char8_t*         target = reinterpret_cast<char8_t*> (*targetStart);
+            char8_t*         target = *targetStart;
             while (source < sourceEnd) {
                 char32_t       ch;
                 unsigned short bytesToWrite = 0;
@@ -582,7 +582,7 @@ namespace {
                 }
 
                 target += bytesToWrite;
-                if (target > reinterpret_cast<char8_t*> (targetEnd)) {
+                if (target > targetEnd) {
                     --source; /* Back up source pointer! */
                     target -= bytesToWrite;
                     result = targetExhausted;
@@ -604,7 +604,7 @@ namespace {
                 target += bytesToWrite;
             }
             *sourceStart = source;
-            *targetStart = reinterpret_cast<char8_t*> (target);
+            *targetStart = target;
             return result;
         }
 
@@ -722,14 +722,14 @@ namespace {
     inline auto ConvertQuietly_StroikaPortable_helper_ (span<const IN_T> source, span<OUT_T> target, FUN2DO_REAL_WORK&& realWork) -> ConversionResultWithStatus
     {
         using namespace UTFConvert_libutfxx_;
-        const IN_T*      sourceStart = reinterpret_cast<const IN_T*> (source.data ());
+        const IN_T*      sourceStart = source.data ();
         const IN_T*      sourceEnd   = sourceStart + source.size ();
-        OUT_T*           targetStart = reinterpret_cast<OUT_T*> (target.data ());
+        OUT_T*           targetStart = target.data ();
         OUT_T*           targetEnd   = targetStart + target.size ();
         ConversionResult r           = realWork (&sourceStart, sourceEnd, &targetStart, targetEnd, ConversionFlags::lenientConversion); // @todo: look at options - lenientConversion
         return ConversionResultWithStatus{
-            {static_cast<size_t> (sourceStart - reinterpret_cast<const IN_T*> (source.data ())),
-             static_cast<size_t> (targetStart - reinterpret_cast<const OUT_T*> (target.data ()))},
+            {static_cast<size_t> (sourceStart - source.data ()),
+             static_cast<size_t> (targetStart - target.data ())},
             cvt_ (r)};
     }
 }

@@ -487,7 +487,7 @@ namespace Stroika::Foundation::Characters {
         if (source.empty ()) {
             return ConversionResultWithStatus{{0, 0}, ConversionStatusFlag::ok};
         }
-        basic_string<char8_t> src = basic_string<char8_t>{reinterpret_cast<const char8_t*> (&*source.begin ()), reinterpret_cast<const char8_t*> (&*source.begin ()) + source.size ()};
+        basic_string<char8_t> src = basic_string<char8_t>{source.data (), source.size ()};
         u16string             r   = boost::locale::conv::utf_to_utf<char16_t> (src.c_str ());
         copy (r.begin (), r.end (), target.begin ());
         return ConversionResultWithStatus{{source.size (), r.size ()}, ConversionStatusFlag::ok};
