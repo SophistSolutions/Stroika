@@ -127,19 +127,19 @@ namespace Stroika::Foundation::Characters {
 #if qCompilerAndStdLib_spanOfContainer_Buggy
             return mk_ (span{buf.data (), buf.size ()});
 #else
-            return mk_ (span{buf});
+            return mk_ (span<const char>{buf});
 #endif
         }
         else {
-            Memory::StackBuffer<char32_t> buf{UTFConverter::ComputeTargetBufferSize<char32_t> (s1) + UTFConverter::ComputeTargetBufferSize<char32_t> (s2)};
+            Memory::StackBuffer<wchar_t> buf{UTFConverter::ComputeTargetBufferSize<wchar_t> (s1) + UTFConverter::ComputeTargetBufferSize<wchar_t> (s2)};
 #if qCompilerAndStdLib_spanOfContainer_Buggy
-            auto len1 = UTFConverter::kThe.Convert (s1, span<wchar_t>{buf.data (), buf.size ()}).fTargetProduced;
-            auto len2 = UTFConverter::kThe.Convert (s2, span<wchar_t>{buf.data (), buf.size ()}.subspan (len1)).fTargetProduced;
+            size_t len1 = UTFConverter::kThe.Convert (s1, span<wchar_t>{buf.data (), buf.size ()}).fTargetProduced;
+            size_t len2 = UTFConverter::kThe.Convert (s2, span<wchar_t>{buf.data (), buf.size ()}.subspan (len1)).fTargetProduced;
 #else
-            auto len1 = UTFConverter::kThe.Convert (s1, span<wchar_t>{buf}).fTargetProduced;
-            auto len2 = UTFConverter::kThe.Convert (s2, span<wchar_t>{buf}.subspan (len1)).fTargetProduced;
+            size_t len1 = UTFConverter::kThe.Convert (s1, span{buf}).fTargetProduced;
+            size_t len2 = UTFConverter::kThe.Convert (s2, span{buf}.subspan (len1)).fTargetProduced;
 #endif
-            return mk_ (span{buf.data (), len1 + len2});
+            return mk_ (span<const wchar_t> {buf.data (), len1 + len2});
         }
     }
 
