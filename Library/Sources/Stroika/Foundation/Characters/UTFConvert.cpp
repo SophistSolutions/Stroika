@@ -722,9 +722,9 @@ namespace {
     inline auto ConvertQuietly_StroikaPortable_helper_ (span<const IN_T> source, span<OUT_T> target, FUN2DO_REAL_WORK&& realWork) -> ConversionResultWithStatus
     {
         using namespace UTFConvert_libutfxx_;
-        const IN_T*      sourceStart = reinterpret_cast<const IN_T*> (&*source.begin ());
+        const IN_T*      sourceStart = reinterpret_cast<const IN_T*> (source.data ());
         const IN_T*      sourceEnd   = sourceStart + source.size ();
-        OUT_T*           targetStart = reinterpret_cast<OUT_T*> (&*target.begin ());
+        OUT_T*           targetStart = reinterpret_cast<OUT_T*> (target.data ());
         OUT_T*           targetEnd   = targetStart + target.size ();
         ConversionResult r           = realWork (&sourceStart, sourceEnd, &targetStart, targetEnd, ConversionFlags::lenientConversion); // @todo: look at options - lenientConversion
         return ConversionResultWithStatus{
