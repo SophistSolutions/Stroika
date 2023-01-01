@@ -28,21 +28,8 @@
  *  \version    <a href="Code-Status.md#Beta">Beta</a>
  *
  * Description:
- *      This family of classes using something akin to the Letter/Envelope paradigm
- *      described in Copliens "Advanced C++ Programming Styles and Idioms").
- *
- *      The class String () is the main thing that users of this class will see. In
- *      fact, it would be EXTREMELY unusual to interact with the class String in any
- *      other way. However, as part of the internal implementation, and in some cases
- *      for optimizations in places where an alternate text representation is preferred,
- *      there may be some interest in the "letters" inside of Strings.
- *
- *      The class that String's own is a reference counted pointer to String::Rep.
- *      This class is abstract, and defines a protocol for getting at the string data
- *      (Character*) and for getting/setting the string length. All the rest of the
- *      String class is built in this interface, and subclasses of String::Rep only
- *      needed follow that prootcol to be used interchangably with the rest of Strings.
- *
+ *      (@todo REVISE - SOME OF THIS MAYBE RIGHT, btt little - REVIEW))
+ * 
  *      This is which NEED be used. However, Stroika provides several String SUBTYPES
  *      which act EXACTLY like a String, but offer different performance behaviors.
  *
@@ -279,6 +266,7 @@ namespace Stroika::Foundation::Characters {
          *  \req for String (const basic_string_view<wchar_t>& str) - str[str.length()]=='\0';   
          *       c-string nul-terminated (which happens automatically with L"xxx"sv)
          */
+        // @todo REFACTOR THESE CTORS USING LOCAL CONCEPT OR REQUIRES SO FEWER APPRANET ONES AND DEPRECATE FROM/TO CTORS
         String ();
         String (const char8_t* cString);
         String (const char16_t* cString);
@@ -345,6 +333,7 @@ namespace Stroika::Foundation::Characters {
          *  \note   Reading improperly encoded text may result in a RuntimeException indicating inproperly encoded characters.
          *
          */
+        // @todo refactor using requires and deprecate from/to and add span<const char>
         static String FromUTF8 (const char* from);
         static String FromUTF8 (const char* from, const char* to);
         static String FromUTF8 (const string& from);
@@ -427,6 +416,14 @@ namespace Stroika::Foundation::Characters {
         static _SharedPtrIRep mk_ (const wchar_t* start1, const wchar_t* end1, const wchar_t* start2, const wchar_t* end2);
         static _SharedPtrIRep mk_ (const char16_t* start, const char16_t* end);
         static _SharedPtrIRep mk_ (const char32_t* start, const char32_t* end);
+
+        // new mk_ routines, will replace above (except mkEmpty)
+        // template SPECIALIZE for the CHAR_T versions where there are backend reps...
+        // note here - for PlainChar overload - REQUIRE arg IsAscii
+        template <Character_IsUnicodeCodePointOrPlainChar CHAR_T>
+        static _SharedPtrIRep mk_ (span<const CHAR_T> s);
+        template <Character_IsUnicodeCodePointOrPlainChar CHAR_T>
+        static _SharedPtrIRep mk_ (span<const CHAR_T> s1, span<const CHAR_T> s2);
 
     public:
         nonvirtual String& operator+= (Character appendage);

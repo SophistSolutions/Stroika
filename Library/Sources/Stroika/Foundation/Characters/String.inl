@@ -85,6 +85,46 @@ namespace Stroika::Foundation::Characters {
      ************************************* String ***********************************
      ********************************************************************************
      */
+    template <Character_IsUnicodeCodePointOrPlainChar CHAR_T>
+    auto String::mk_ (span<const CHAR_T> s) -> _SharedPtrIRep
+    {
+        if (Character::IsASCII (s)) {
+            // if we already have ascii, just copy into a buffer that can be used for now with the legacy API, and
+            // later specialized into something we construct a special rep for
+            Memory::StackBuffer<wchar_t> buf{s.size ()};
+            copy (s.begin (), s.end (), buf.data ());   // all chars same since ascii
+            return mk_ (span{buf});                   // this case specialized
+        }
+        else {
+            Memory::StackBuffer<wchar_t> buf{UTFConverter::ComputeTargetBufferSize<wchar_t> (s)};
+            auto                         len = UTFConverter::kThe.Convert (s, span<wchar_t>{buf});
+            Assert (len <= buf.size ()); // if it was e
+            return mk_ (span{buf});      // this case specialized
+        }
+    }
+    template <Character_IsUnicodeCodePointOrPlainChar CHAR_T>
+    auto String::mk_ (span<const CHAR_T> s1, span<const CHAR_T> s2) -> _SharedPtrIRep
+    {
+        // Simplistic implementation, probably not too bad for most strings that fit in stack buffer, though involves
+        // extra copy
+        if (Character::IsASCII (s1) and Character::IsASCII (s2)) {
+            Memory::StackBuffer<char> buf{s1.size () + s2.size ()};
+            copy (s1.begin (), s1.end (), buf.data ());
+            copy (s2.begin (), s2.end (), buf.data () + s1.size ()); // append
+            return mk_ (span{buf});
+        }
+        else {
+            Memory::StackBuffer<char32_t> buf{UTFConverter::ComputeTargetBufferSize<char32_t> (s1) + UTFConverter::ComputeTargetBufferSize<char32_t> (s2)};
+            auto                         len1 = UTFConverter::kThe.Convert (s1, span<wchar_t>{buf});
+            auto                          len2 = UTFConverter::kThe.Convert (s2, span<wchar_t>{buf}.subspan(len1));
+            return mk_ (span{buf.data (), len1 + len2});
+        }
+    }
+
+    // FOR NOW - INITIALLY - but later specialize for char and char32_t and probably lose this one
+    template <>
+    auto String::mk_ (span<const wchar_t> s) -> _SharedPtrIRep;
+
     inline String::String (const _SharedPtrIRep& rep) noexcept
         : inherited{rep}
     {

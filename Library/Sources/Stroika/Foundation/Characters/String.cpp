@@ -360,6 +360,12 @@ String::_SharedPtrIRep String::mkEmpty_ ()
     return s_;
 }
 
+template <>
+auto String::mk_ (span<const wchar_t> s) -> _SharedPtrIRep
+{
+    return MakeSmartPtr<String_BufferedArray_Rep_> (s.data (), s.data () + s.size ());
+}
+
 String::_SharedPtrIRep String::mk_ (const wchar_t* start, const wchar_t* end)
 {
     RequireNotNull (start);
