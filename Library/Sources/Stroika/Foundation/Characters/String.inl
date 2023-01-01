@@ -14,6 +14,8 @@
 #include "../Debug/Assertions.h"
 #include "../Execution/Throw.h"
 
+#include "CString/Utilities.h"
+
 namespace Stroika::Foundation::Characters {
 
     /*
@@ -85,40 +87,43 @@ namespace Stroika::Foundation::Characters {
      ************************************* String ***********************************
      ********************************************************************************
      */
-    template <Character_IsUnicodeCodePointOrPlainChar CHAR_T>
+    template <Character_Compatible CHAR_T>
     auto String::mk_ (span<const CHAR_T> s) -> _SharedPtrIRep
     {
+        if (s.empty ()) {
+            return mkEmpty_ ();
+        }
         if (Character::IsASCII (s)) {
             // if we already have ascii, just copy into a buffer that can be used for now with the legacy API, and
             // later specialized into something we construct a special rep for
             Memory::StackBuffer<wchar_t> buf{s.size ()};
+            DISABLE_COMPILER_MSC_WARNING_START (4244)
             copy (s.begin (), s.end (), buf.data ()); // all chars same since ascii
+            DISABLE_COMPILER_MSC_WARNING_END (4244)
 #if qCompilerAndStdLib_spanOfContainer_Buggy
-            return mk_ (span{buf.data (), buf.size ()});
+            return mk_ (span<const wchar_t>{buf.data (), buf.size ()});
 #else
-            return mk_ (span{buf}); // this case specialized
+            return mk_ (span<const wchar_t>{buf}); // this case specialized
 #endif
         }
         else {
             Memory::StackBuffer<wchar_t> buf{UTFConverter::ComputeTargetBufferSize<wchar_t> (s)};
-            auto                         len = UTFConverter::kThe.Convert (s, span<wchar_t>{buf});
-            Assert (len <= buf.size ()); // if it was e
-#if qCompilerAndStdLib_spanOfContainer_Buggy
-            return mk_ (span{buf.data (), buf.size ()}); // this case specialized
-#else
-            return mk_ (span{buf}); // this case specialized
-#endif
+            auto                         len = UTFConverter::kThe.Convert (s, span<wchar_t>{buf}).fTargetProduced;
+            Assert (len <= buf.size ());
+            return mk_ (span<const wchar_t>{buf.data (), len}); // this case specialized
         }
     }
-    template <Character_IsUnicodeCodePointOrPlainChar CHAR_T>
+    template <Character_Compatible CHAR_T>
     auto String::mk_ (span<const CHAR_T> s1, span<const CHAR_T> s2) -> _SharedPtrIRep
     {
         // Simplistic implementation, probably not too bad for most strings that fit in stack buffer, though involves
         // extra copy
         if (Character::IsASCII (s1) and Character::IsASCII (s2)) {
             Memory::StackBuffer<char> buf{s1.size () + s2.size ()};
+            DISABLE_COMPILER_MSC_WARNING_START (4244)
             copy (s1.begin (), s1.end (), buf.data ());
             copy (s2.begin (), s2.end (), buf.data () + s1.size ()); // append
+            DISABLE_COMPILER_MSC_WARNING_END (4244)
 #if qCompilerAndStdLib_spanOfContainer_Buggy
             return mk_ (span{buf.data (), buf.size ()});
 #else
@@ -128,13 +133,13 @@ namespace Stroika::Foundation::Characters {
         else {
             Memory::StackBuffer<char32_t> buf{UTFConverter::ComputeTargetBufferSize<char32_t> (s1) + UTFConverter::ComputeTargetBufferSize<char32_t> (s2)};
 #if qCompilerAndStdLib_spanOfContainer_Buggy
-            auto len1 = UTFConverter::kThe.Convert (s1, span<wchar_t>{buf.data (), buf.size ()});
-            auto len2 = UTFConverter::kThe.Convert (s2, span<wchar_t>{buf.data (), buf.size ()}.subspan (len1));
+            auto len1 = UTFConverter::kThe.Convert (s1, span<wchar_t>{buf.data (), buf.size ()}).fTargetProduced;
+            auto len2 = UTFConverter::kThe.Convert (s2, span<wchar_t>{buf.data (), buf.size ()}.subspan (len1)).fTargetProduced;
 #else
-            auto len1 = UTFConverter::kThe.Convert (s1, span<wchar_t>{buf});
-            auto len2 = UTFConverter::kThe.Convert (s2, span<wchar_t>{buf}.subspan (len1));
+            auto len1 = UTFConverter::kThe.Convert (s1, span<wchar_t>{buf}).fTargetProduced;
+            auto len2 = UTFConverter::kThe.Convert (s2, span<wchar_t>{buf}.subspan (len1)).fTargetProduced;
 #endif
-            return mk_(span{buf.data(), len1 + len2});
+            return mk_ (span{buf.data (), len1 + len2});
         }
     }
 
@@ -158,8 +163,9 @@ namespace Stroika::Foundation::Characters {
     {
         _AssertRepValidType ();
     }
-    inline String::String (const wchar_t* cString)
-        : inherited{cString[0] == '\0' ? mkEmpty_ () : mk_ (cString, cString + ::wcslen (cString))}
+    template <Character_SafelyCompatible CHAR_T>
+    String::String (const CHAR_T* cString)
+        : inherited{mk_ (span{cString, CString::Length (cString)})}
     {
         RequireNotNull (cString);
         _AssertRepValidType ();

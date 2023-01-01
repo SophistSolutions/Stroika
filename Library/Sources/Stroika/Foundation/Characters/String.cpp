@@ -165,23 +165,6 @@ auto String::_IRep::Find (const function<bool (Configuration::ArgByValueType<val
  */
 static_assert (sizeof (Character) == sizeof (wchar_t), "Character and wchar_t must be same size");
 
-String::String (const char8_t* cString)
-    : String{cString, cString + Characters::CString::Length (cString)}
-{
-    RequireNotNull (cString);
-}
-
-String::String (const char16_t* cString)
-    : String{cString, cString + Characters::CString::Length (cString)}
-{
-    RequireNotNull (cString);
-}
-
-String::String (const char32_t* cString)
-    : String{cString, cString + CString::Length (cString)}
-{
-}
-
 String::String (const basic_string_view<wchar_t>& str)
     : String{String_Constant{str}} // safe to avoid copying string rep here - just point at memory for string
 {

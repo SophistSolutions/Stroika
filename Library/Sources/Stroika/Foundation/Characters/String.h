@@ -266,12 +266,10 @@ namespace Stroika::Foundation::Characters {
          *  \req for String (const basic_string_view<wchar_t>& str) - str[str.length()]=='\0';   
          *       c-string nul-terminated (which happens automatically with L"xxx"sv)
          */
-        // @todo REFACTOR THESE CTORS USING LOCAL CONCEPT OR REQUIRES SO FEWER APPRANET ONES AND DEPRECATE FROM/TO CTORS
+        // @todo REFACTOR THESE CTORS USING LOCAL CONCEPT OR REQUIRES SO FEWER APPRANET ONES AND DEPRECATE FROM/TO CTORS (MIDDLE OF REFACTOR)
         String ();
-        String (const char8_t* cString);
-        String (const char16_t* cString);
-        String (const char32_t* cString);
-        String (const wchar_t* cString);
+        template <Character_SafelyCompatible CHAR_T>
+        String (const CHAR_T* cString);
         String (const char8_t* from, const char8_t* to);
         String (const char16_t* from, const char16_t* to);
         String (const char32_t* from, const char32_t* to);
@@ -420,9 +418,9 @@ namespace Stroika::Foundation::Characters {
         // new mk_ routines, will replace above (except mkEmpty)
         // template SPECIALIZE for the CHAR_T versions where there are backend reps...
         // note here - for PlainChar overload - REQUIRE arg IsAscii
-        template <Character_IsUnicodeCodePointOrPlainChar CHAR_T>
+        template <Character_Compatible CHAR_T>
         static _SharedPtrIRep mk_ (span<const CHAR_T> s);
-        template <Character_IsUnicodeCodePointOrPlainChar CHAR_T>
+        template <Character_Compatible CHAR_T>
         static _SharedPtrIRep mk_ (span<const CHAR_T> s1, span<const CHAR_T> s2);
 
     public:
