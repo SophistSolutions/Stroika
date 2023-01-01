@@ -18,46 +18,27 @@ namespace Stroika::Foundation::Characters::CString {
 
     /*
      ********************************************************************************
-     *************************************** Length *********************************
+     ********************************** Length **************************************
      ********************************************************************************
      */
-    template <>
-    inline size_t Length (const char* p)
+    template <typename T>
+    inline size_t Length (const T* p)
+        requires (is_same_v<T, char> or is_same_v<T, char8_t> or is_same_v<T, char16_t> or is_same_v<T, char32_t> or is_same_v<T, wchar_t>)
     {
         RequireNotNull (p);
-        return ::strlen (p);
-    }
-    template <>
-    inline size_t Length (const char8_t* p)
-    {
-        RequireNotNull (p);
-        return ::strlen (reinterpret_cast<const char*> (p));
-    }
-    template <>
-    inline size_t Length (const wchar_t* p)
-    {
-        RequireNotNull (p);
-        return ::wcslen (p);
-    }
-    template <>
-    inline size_t Length (const char16_t* p)
-    {
-        RequireNotNull (p);
-        const char16_t* i = p;
-        while (*i++ != '\0')
-            ;
-        Assert (i > p);
-        return i - p - 1;
-    }
-    template <>
-    inline size_t Length (const char32_t* p)
-    {
-        RequireNotNull (p);
-        const char32_t* i = p;
-        while (*i++ != '\0')
-            ;
-        Assert (i > p);
-        return i - p - 1;
+        if constexpr (sizeof (T) == 1) {
+            return ::strlen (reinterpret_cast<const char*> (p));
+        }
+        else if constexpr (sizeof (T) == sizeof (wchar_t)) {
+            return ::wcslen (reinterpret_cast<const wchar_t*> (p));
+        }
+        else {
+            const T* i = p;
+            while (*i++ != '\0')
+                ;
+            Assert (i > p);
+            return i - p - 1;
+        }
     }
 
     /*

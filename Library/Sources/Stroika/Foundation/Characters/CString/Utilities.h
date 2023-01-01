@@ -43,17 +43,8 @@ namespace Stroika::Foundation::Characters::CString {
      * Only implemented for char/wchar_t. Reason for this is so code using old-style C++ strings can leverage overloading!
      */
     template <typename T>
-    size_t Length (const T* p);
-    template <>
-    size_t Length (const char8_t* p);
-    template <>
-    size_t Length (const char* p);
-    template <>
-    size_t Length (const char16_t* p);
-    template <>
-    size_t Length (const char32_t* p);
-    template <>
-    size_t Length (const wchar_t* p);
+    size_t Length (const T* p)
+        requires (is_same_v<T, char> or is_same_v<T, char8_t> or is_same_v<T, char16_t> or is_same_v<T, char32_t> or is_same_v<T, wchar_t>);
 
     /**
      *  \brief  strcmp or wsccmp() as appropriate == 0
