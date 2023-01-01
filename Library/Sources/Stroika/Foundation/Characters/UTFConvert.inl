@@ -256,8 +256,8 @@ namespace Stroika::Foundation::Characters {
         requires (not is_const_v<TRG_T>) {
             Require ((target.size () >= ComputeTargetBufferSize<TRG_T> (source)));
             if constexpr (sizeof (SRC_T) == sizeof (TRG_T)) {
-                copy (source, target, source.size ()); // pointless conversion, but if requested...
-                return source.size ();
+                copy (source.begin (), source.end (), target.data ());   // pointless conversion, but if requested...
+                return ConversionResult{source.size (), source.size ()}; // not a typo - target buffer allowed to be larger than what copied
             }
             return Convert (ConvertCompatibleSpan_ (source), ConvertCompatibleSpan_ (target));
         } template <typename TO, typename FROM>
