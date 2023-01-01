@@ -747,11 +747,11 @@ namespace Stroika::Foundation::Characters {
                     return pds.fChar8;
                 case StorageCodePointType::eChar16: {
                     possiblyUsedBuffer->resize_uninitialized (UTFConverter::ComputeTargetBufferSize<CHAR_TYPE> (pds.fChar16));
-                    #if qCompilerAndStdLib_spanOfContainer_Buggy
-                    auto r = UTFConverter::kThe.Convert (pds.fChar16, Memory::mkSpan_BWA_(*possiblyUsedBuffer));
-                    #else
+#if qCompilerAndStdLib_spanOfContainer_Buggy
+                    auto r = UTFConverter::kThe.Convert (pds.fChar16, Memory::mkSpan_BWA_ (*possiblyUsedBuffer));
+#else
                     auto r = UTFConverter::kThe.Convert (pds.fChar16, span{*possiblyUsedBuffer});
-                    #endif
+#endif
                     return span{possiblyUsedBuffer->data (), r.fTargetProduced};
                 }
                 case StorageCodePointType::eChar32: {

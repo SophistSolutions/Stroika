@@ -188,6 +188,8 @@ namespace Stroika::Foundation::Characters {
     class RegularExpressionMatch;
 
     /**
+     *  \brief String is like std::u32string, except it is much easier to use, often much more space efficient, and more easily interoperates with other string types
+     * 
      *  The Stroika String class is an alternatve for the wstring class, which should be largely
      *  interoperable with code using wstring (there is wstring constructor and As<wstring>()
      *  methods).
