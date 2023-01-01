@@ -45,6 +45,7 @@ namespace Stroika::Foundation::Memory {
     template <typename CONTAINER>
     auto mkSpan_BWA_ (CONTAINER& c)
     {
+        // used for stuff like initializer_list so cannot use .data
         if (c.size () == 0) {
             return std::span<remove_const_t<typename CONTAINER::value_type>>{};
         }
@@ -53,6 +54,7 @@ namespace Stroika::Foundation::Memory {
     template <typename CONTAINER>
     auto mkSpan_BWA_ (const CONTAINER& c)
     {
+        // used for stuff like initializer_list so cannot use .data
         if (c.size () == 0) {
             return std::span<const typename CONTAINER::value_type>{};
         }

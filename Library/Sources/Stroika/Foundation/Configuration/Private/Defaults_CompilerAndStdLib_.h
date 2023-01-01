@@ -653,6 +653,9 @@ make[3]: *** [/Sandbox/Str
 #endif
 
 /**
+ * 
+ * error: no viable constructor or deduction guide for deduction of template arguments of 'span'
+ * 
 error: no matching constructor for initialization of 'std::span<wchar_t, 18446744073709551615>'
     return String{buf.begin (), buf.begin () + get<1> (UTFConverter::kThe.Convert (span{from, to}, span{buf}))};
                                                                                                    ^   ~~~~~
