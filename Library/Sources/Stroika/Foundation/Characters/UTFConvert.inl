@@ -54,6 +54,21 @@ namespace Stroika::Foundation::Characters {
     }
     inline constexpr UTFConverter UTFConverter::kThe;
 
+    template <Character_IsUnicodeCodePointOrPlainChar CHAR_T>
+    constexpr optional<size_t> UTFConverter::ComputeCharacterLength (span<const CHAR_T> s)
+    {
+        size_t charCount{};
+        size_t i = 0;
+        while (auto nc = NextCharacter (s.subspan (i))) {
+            ++charCount;
+            i += *nc;
+            if (i == s.size ()) {
+                return charCount;
+            }
+        }
+        return nullopt; // didn't end evenly at end of span, so something went wrong
+    }
+
     template <Character_Compatible TO, Character_Compatible FROM>
     constexpr size_t UTFConverter::ComputeTargetBufferSize (span<const FROM> src)
     {
@@ -417,21 +432,6 @@ namespace Stroika::Foundation::Characters {
         }
         AssertNotReached ();
         return nullopt;
-    }
-
-    template <Character_IsUnicodeCodePointOrPlainChar CHAR_T>
-    constexpr optional<size_t> UTFConverter::ComputeCharacterLength (span<const CHAR_T> s)
-    {
-        size_t charCount{};
-        size_t i = 0;
-        while (auto nc = NextCharacter (s.subspan (i))) {
-            ++charCount;
-            i += *nc;
-            if (i == s.size ()) {
-                return charCount;
-            }
-        }
-        return nullopt; // didn't end evenly at end of span, so something went wrong
     }
 
     template <Character_Compatible FromT>
