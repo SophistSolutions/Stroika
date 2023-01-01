@@ -437,10 +437,7 @@ namespace Stroika::Foundation::Characters {
     template <Character_Compatible FromT>
     constexpr auto UTFConverter::ConvertCompatibleSpan_ (span<FromT> f) -> span<CompatibleT_<FromT>>
     {
-        if (f.empty ()) {
-            return span<CompatibleT_<FromT>>{}; // avoid the appearance of dereferencing an empty span (important for msvc runtime)
-        }
-        return span{(CompatibleT_<FromT>*)&*f.begin (), f.size ()};
+        return span{(CompatibleT_<FromT>*)f.data (), f.size ()};
     }
 
 #if qPlatform_Windows

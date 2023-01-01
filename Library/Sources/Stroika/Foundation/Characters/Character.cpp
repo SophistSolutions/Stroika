@@ -60,14 +60,11 @@ namespace {
 strong_ordering Character::Compare (span<const Character> lhs, span<const Character> rhs, CompareOptions co)
 {
     Require (co == CompareOptions::eWithCase or co == CompareOptions::eCaseInsensitive);
-    if (lhs.empty () or rhs.empty ()) {
-        return Common::CompareResultNormalizer (static_cast<ptrdiff_t> (lhs.size ()) - static_cast<ptrdiff_t> (rhs.size ()));
-    }
     switch (co) {
         case CompareOptions::eWithCase:
-            return Compare_CS_ (&*lhs.begin (), &*lhs.begin () + lhs.size (), &*rhs.begin (), &*rhs.begin () + rhs.size ());
+            return Compare_CS_ (lhs.data (), lhs.data () + lhs.size (), rhs.data (), rhs.data () + rhs.size ());
         case CompareOptions::eCaseInsensitive:
-            return Compare_CI_ (&*lhs.begin (), &*lhs.begin () + lhs.size (), &*rhs.begin (), &*rhs.begin () + rhs.size ());
+            return Compare_CI_ (lhs.data (), lhs.data () + lhs.size (), rhs.data (), rhs.data () + rhs.size ());
         default:
             AssertNotReached ();
             return strong_ordering::equal;

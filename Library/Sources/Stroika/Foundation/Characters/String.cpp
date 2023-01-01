@@ -241,7 +241,7 @@ String String::FromSDKString (const SDKChar* from)
 
 String String::FromSDKString (span<const SDKChar> s)
 {
-    return s.empty () ? String{} : FromSDKString (&*s.begin (), &*s.begin () + s.size ());
+    return FromSDKString (s.data (), s.data () + s.size ());
 }
 
 String String::FromSDKString (const SDKChar* from, const SDKChar* to)
@@ -414,7 +414,7 @@ String::_SharedPtrIRep String::mk_ (const char32_t* from, const char32_t* to)
 #else
         auto r = UTFConverter::kThe.Convert (span{from, to}, span{buf});
 #endif
-        return mk_ (buf.begin (), buf.begin () + r.fTargetProduced);
+        return mk_ (buf.data (), buf.data () + r.fTargetProduced);
     }
 }
 
@@ -1202,12 +1202,7 @@ void String::AsSDKString (SDKString* into) const
 #if qTargetPlatformSDKUseswchar_t
     into->assign (thisData.begin (), thisData.end ());
 #else
-    if (thisData.empty ()) {
-        into->clear ();
-    }
-    else {
-        WideStringToNarrow (&*thisData.begin (), &*thisData.begin () + thisData.size (), GetDefaultSDKCodePage (), into);
-    }
+    WideStringToNarrow (thisData.data (), thisData.data () + thisData.size (), GetDefaultSDKCodePage (), into);
 #endif
 }
 
@@ -1216,12 +1211,7 @@ void String::AsNarrowSDKString (string* into) const
     RequireNotNull (into);
     Memory::StackBuffer<wchar_t> maybeIgnoreBuf1;
     span<const wchar_t>          thisData = GetData<wchar_t> (&maybeIgnoreBuf1);
-    if (thisData.empty ()) {
-        into->clear ();
-    }
-    else {
-        WideStringToNarrow (&*thisData.begin (), &*thisData.begin () + thisData.size (), GetDefaultSDKCodePage (), into);
-    }
+    WideStringToNarrow (thisData.data (), thisData.data () + thisData.size (), GetDefaultSDKCodePage (), into);
 }
 
 template <>
@@ -1277,9 +1267,7 @@ wostream& Characters::operator<< (wostream& out, const String& s)
 {
     Memory::StackBuffer<wchar_t> maybeIgnoreBuf1;
     span<const wchar_t>          sData = s.GetData<wchar_t> (&maybeIgnoreBuf1);
-    if (not sData.empty ()) {
-        out.write (&*sData.begin (), sData.size ());
-    }
+    out.write (sData.data (), sData.size ());
     return out;
 }
 
@@ -1318,7 +1306,7 @@ size_t std::hash<String>::operator() (const String& arg) const
         return kZeroDigest_;
     }
     else {
-        return DIGESTER{}(reinterpret_cast<const std::byte*> (&*s.begin ()), reinterpret_cast<const std::byte*> (&*s.begin () + s.size ()));
+        return DIGESTER{}(as_bytes (s));
     }
 }
 
@@ -1338,11 +1326,5 @@ Memory::BLOB DataExchange::DefaultSerializer<String>::operator() (const String& 
     //          the GetData call
     //
     Memory::StackBuffer<char8_t> maybeIgnoreBuf1;
-    span<const char8_t>          s = arg.GetData<char8_t> (&maybeIgnoreBuf1);
-    if (s.empty ()) {
-        return Memory::BLOB{};
-    }
-    else {
-        return Memory::BLOB{reinterpret_cast<const std::byte*> (&*s.begin ()), reinterpret_cast<const std::byte*> (&*s.begin () + s.size ())};
-    }
+    return Memory::BLOB{as_bytes (arg.GetData<char8_t> (&maybeIgnoreBuf1))};
 }

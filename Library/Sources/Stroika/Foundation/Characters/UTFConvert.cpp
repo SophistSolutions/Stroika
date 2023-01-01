@@ -721,9 +721,6 @@ namespace {
     template <typename IN_T, typename OUT_T, typename FUN2DO_REAL_WORK>
     inline auto ConvertQuietly_StroikaPortable_helper_ (span<const IN_T> source, span<OUT_T> target, FUN2DO_REAL_WORK&& realWork) -> ConversionResultWithStatus
     {
-        if (source.empty ()) {
-            return ConversionResultWithStatus{{0, 0}, ConversionStatusFlag::ok}; // avoid dereferncing empty iterators
-        }
         using namespace UTFConvert_libutfxx_;
         const IN_T*      sourceStart = reinterpret_cast<const IN_T*> (&*source.begin ());
         const IN_T*      sourceEnd   = sourceStart + source.size ();
@@ -731,8 +728,8 @@ namespace {
         OUT_T*           targetEnd   = targetStart + target.size ();
         ConversionResult r           = realWork (&sourceStart, sourceEnd, &targetStart, targetEnd, ConversionFlags::lenientConversion); // @todo: look at options - lenientConversion
         return ConversionResultWithStatus{
-            {static_cast<size_t> (sourceStart - reinterpret_cast<const IN_T*> (&*source.begin ())),
-             static_cast<size_t> (targetStart - reinterpret_cast<const OUT_T*> (&*target.begin ()))},
+            {static_cast<size_t> (sourceStart - reinterpret_cast<const IN_T*> (source.data ())),
+             static_cast<size_t> (targetStart - reinterpret_cast<const OUT_T*> (target.data ()))},
             cvt_ (r)};
     }
 }
@@ -765,9 +762,6 @@ namespace {
     template <typename IN_T, typename OUT_T, typename FUN2DO_REAL_WORK>
     inline auto ConvertQuietly_codeCvt_helper_ (span<const IN_T> source, const span<OUT_T> target, FUN2DO_REAL_WORK&& realWork) -> ConversionResultWithStatus
     {
-        if (source.empty ()) {
-            return ConversionResultWithStatus{{0, 0}, ConversionStatusFlag::ok}; // avoid dereferncing empty iterators
-        }
         using namespace UTFConvert_codecvSupport_;
         const IN_T*          sourceStart = reinterpret_cast<const IN_T*> (&*source.begin ());
         const IN_T*          sourceEnd   = sourceStart + source.size ();
@@ -776,8 +770,8 @@ namespace {
         ConversionStatusFlag r           = realWork (&sourceStart, sourceEnd, &targetStart, targetEnd);
         if (r == ConversionStatusFlag::ok) {
             return ConversionResultWithStatus{
-                {static_cast<size_t> (sourceStart - reinterpret_cast<const IN_T*> (&*source.begin ())),
-                 static_cast<size_t> (targetStart - reinterpret_cast<const OUT_T*> (&*target.begin ()))},
+                {static_cast<size_t> (sourceStart - reinterpret_cast<const IN_T*> (source.data ())),
+                 static_cast<size_t> (targetStart - reinterpret_cast<const OUT_T*> (target.data ()))},
                 ConversionStatusFlag::ok};
         }
         else {
@@ -787,9 +781,6 @@ namespace {
     template <typename IN_T, typename OUT_T, typename FUN2DO_REAL_WORK>
     inline auto ConvertQuietly_codeCvt_helper_ (span<const IN_T> source, const span<OUT_T> target, mbstate_t* multibyteConversionState, FUN2DO_REAL_WORK&& realWork) -> ConversionResultWithStatus
     {
-        if (source.empty ()) {
-            return ConversionResultWithStatus{{0, 0}, ConversionStatusFlag::ok}; // avoid dereferncing empty iterators
-        }
         using namespace UTFConvert_codecvSupport_;
         const IN_T*          sourceStart = reinterpret_cast<const IN_T*> (&*source.begin ());
         const IN_T*          sourceEnd   = sourceStart + source.size ();
@@ -798,8 +789,8 @@ namespace {
         ConversionStatusFlag r           = realWork (multibyteConversionState, &sourceStart, sourceEnd, &targetStart, targetEnd);
         if (r == ConversionStatusFlag::ok) {
             return ConversionResultWithStatus{
-                {static_cast<size_t> (sourceStart - reinterpret_cast<const IN_T*> (&*source.begin ())),
-                 static_cast<size_t> (targetStart - reinterpret_cast<const OUT_T*> (&*target.begin ()))},
+                {static_cast<size_t> (sourceStart - reinterpret_cast<const IN_T*> (source.data ())),
+                 static_cast<size_t> (targetStart - reinterpret_cast<const OUT_T*> (target.data ()))},
                 ConversionStatusFlag::ok};
         }
         else {
