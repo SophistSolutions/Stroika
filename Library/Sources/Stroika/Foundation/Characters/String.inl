@@ -92,14 +92,22 @@ namespace Stroika::Foundation::Characters {
             // if we already have ascii, just copy into a buffer that can be used for now with the legacy API, and
             // later specialized into something we construct a special rep for
             Memory::StackBuffer<wchar_t> buf{s.size ()};
-            copy (s.begin (), s.end (), buf.data ());   // all chars same since ascii
-            return mk_ (span{buf});                   // this case specialized
+            copy (s.begin (), s.end (), buf.data ()); // all chars same since ascii
+#if qCompilerAndStdLib_spanOfContainer_Buggy
+            return mk_ (span{buf.data (), buf.size ()});
+#else
+            return mk_ (span{buf}); // this case specialized
+#endif
         }
         else {
             Memory::StackBuffer<wchar_t> buf{UTFConverter::ComputeTargetBufferSize<wchar_t> (s)};
             auto                         len = UTFConverter::kThe.Convert (s, span<wchar_t>{buf});
             Assert (len <= buf.size ()); // if it was e
-            return mk_ (span{buf});      // this case specialized
+#if qCompilerAndStdLib_spanOfContainer_Buggy
+            return mk_ (span{buf.data (), buf.size ()}); // this case specialized
+#else
+            return mk_ (span{buf}); // this case specialized
+#endif
         }
     }
     template <Character_IsUnicodeCodePointOrPlainChar CHAR_T>
@@ -111,13 +119,22 @@ namespace Stroika::Foundation::Characters {
             Memory::StackBuffer<char> buf{s1.size () + s2.size ()};
             copy (s1.begin (), s1.end (), buf.data ());
             copy (s2.begin (), s2.end (), buf.data () + s1.size ()); // append
+#if qCompilerAndStdLib_spanOfContainer_Buggy
+            return mk_ (span{buf.data (), buf.size ()});
+#else
             return mk_ (span{buf});
+#endif
         }
         else {
             Memory::StackBuffer<char32_t> buf{UTFConverter::ComputeTargetBufferSize<char32_t> (s1) + UTFConverter::ComputeTargetBufferSize<char32_t> (s2)};
-            auto                         len1 = UTFConverter::kThe.Convert (s1, span<wchar_t>{buf});
-            auto                          len2 = UTFConverter::kThe.Convert (s2, span<wchar_t>{buf}.subspan(len1));
-            return mk_ (span{buf.data (), len1 + len2});
+#if qCompilerAndStdLib_spanOfContainer_Buggy
+            auto len1 = UTFConverter::kThe.Convert (s1, span<wchar_t>{buf.data (), buf.size ()});
+            auto len2 = UTFConverter::kThe.Convert (s2, span<wchar_t>{buf.data (), buf.size ()}.subspan (len1));
+#else
+            auto len1 = UTFConverter::kThe.Convert (s1, span<wchar_t>{buf});
+            auto len2 = UTFConverter::kThe.Convert (s2, span<wchar_t>{buf}.subspan (len1));
+#endif
+            return mk_(span{buf.data(), len1 + len2});
         }
     }
 
