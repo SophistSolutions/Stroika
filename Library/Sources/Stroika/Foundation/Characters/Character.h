@@ -115,6 +115,9 @@ namespace Stroika::Foundation::Characters {
         nonvirtual wchar_t GetCharacterCode () const;
 
     public:
+        /**
+         *  Explicit cuz creates too many ambiguities with things like c == '\0' where conversions can go both ways.
+         */
         explicit operator char32_t () const
         {
             return GetCharacterCode ();
