@@ -125,7 +125,7 @@ namespace Stroika::Foundation::Characters {
             copy (s2.begin (), s2.end (), buf.data () + s1.size ()); // append
             DISABLE_COMPILER_MSC_WARNING_END (4244)
 #if qCompilerAndStdLib_spanOfContainer_Buggy
-            return mk_ (span{buf.data (), buf.size ()});
+            return mk_ (span<const char>{buf.data (), buf.size ()});
 #else
             return mk_ (span<const char>{buf});
 #endif
