@@ -62,19 +62,6 @@ namespace Stroika::Foundation::Memory {
         return MemCmp (reinterpret_cast<const uint8_t*> (lhs), reinterpret_cast<const uint8_t*> (rhs), count * sizeof (T));
     }
 
-#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
-    namespace Private {
-        template <typename _InIt, typename _OutIt>
-        inline void VC_BWA_std_copy (_InIt _First, _InIt _Last, _OutIt _Dest)
-        {
-            auto o = _Dest;
-            for (auto i = _First; i != _Last; ++i, ++o) {
-                *o = *i;
-            }
-        }
-    }
-#endif
-
     namespace PRIVATE_ {
         // @see https://gist.github.com/graphitemaster/494f21190bb2c63c5516 for more info on maybe how to
         // get this working with constexpr and without static object

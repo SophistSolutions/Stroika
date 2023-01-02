@@ -91,11 +91,7 @@ namespace Stroika::Foundation::Streams {
             }
             size_t nCopied = min (nAvail, nRequested);
             {
-#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
-                Memory::Private::VC_BWA_std_copy (fReadCursor_, fReadCursor_ + nCopied, intoStart);
-#else
                 copy (fReadCursor_, fReadCursor_ + nCopied, intoStart);
-#endif
                 fReadCursor_ = fReadCursor_ + nCopied;
             }
             return nCopied; // this can be zero on EOF
@@ -136,11 +132,7 @@ namespace Stroika::Foundation::Streams {
                     fWriteCursor_ = fData_.begin () + curWriteOffset;
                     Assert (fWriteCursor_ < fData_.end ());
                 }
-#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
-                Memory::Private::VC_BWA_std_copy (start, start + roomRequired, fWriteCursor_);
-#else
                 copy (start, start + roomRequired, fWriteCursor_);
-#endif
                 fWriteCursor_ += roomRequired;
                 Assert (fReadCursor_ < fData_.end ()); // < because we wrote at least one byte and that didnt move read cursor
                 Assert (fWriteCursor_ <= fData_.end ());

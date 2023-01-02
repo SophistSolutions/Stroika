@@ -62,11 +62,7 @@ namespace Stroika::Foundation::Streams {
             Assert ((fStart_ <= fCursor_) and (fCursor_ <= fEnd_));
             size_t nAvail  = fEnd_ - fCursor_;
             size_t nCopied = min (nAvail, nRequested);
-#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
-            Memory::Private::VC_BWA_std_copy (fCursor_, fCursor_ + nCopied, intoStart);
-#else
             copy (fCursor_, fCursor_ + nCopied, intoStart);
-#endif
             fCursor_ += nCopied;
             return nCopied; // this can be zero on EOF
         }

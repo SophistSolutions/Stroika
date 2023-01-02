@@ -94,19 +94,6 @@ namespace Stroika::Foundation::Memory {
     template <typename T>
     constexpr int MemCmp (const T* lhs, const T* rhs, size_t count);
 
-#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
-    namespace Private {
-        /**
-         *  Sadly, using pragmas to disable warnings didn't work with VC11. VC_BWA_std_copy
-         *  provides a little shared code for a worakround - implementation of std::copy that - while probably
-         *  inferior to the default - at least isn't much inferior, and doesn't give those
-         *  annoying warnings.
-         */
-        template <typename _InIt, typename _OutIt>
-        inline void VC_BWA_std_copy (_InIt _First, _InIt _Last, _OutIt _Dest);
-    }
-#endif
-
     /**
      *  \brief use Memory::OffsetOf(&CLASS::MEMBER) in place of offsetof(CLASS,MEMBER) to avoid compiler warnings, and cuz easier to 
      *         map from other constructors (e.g. StructFieldMetaInfo) cuz ptr to member legit C++ object, whereas CLASS and MEMBER are not.
