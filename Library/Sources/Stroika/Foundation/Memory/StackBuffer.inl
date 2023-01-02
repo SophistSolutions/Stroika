@@ -158,17 +158,17 @@ namespace Stroika::Foundation::Memory {
         return fLiveData_ + fSize_;
     }
     template <typename T, size_t BUF_SIZE>
-    inline typename StackBuffer<T, BUF_SIZE>::pointer StackBuffer<T, BUF_SIZE>::data ()
+    inline typename StackBuffer<T, BUF_SIZE>::pointer StackBuffer<T, BUF_SIZE>::data () noexcept
     {
         return fLiveData_;
     }
     template <typename T, size_t BUF_SIZE>
-    inline typename StackBuffer<T, BUF_SIZE>::const_pointer StackBuffer<T, BUF_SIZE>::data () const
+    inline typename StackBuffer<T, BUF_SIZE>::const_pointer StackBuffer<T, BUF_SIZE>::data () const noexcept
     {
         return fLiveData_;
     }
     template <typename T, size_t BUF_SIZE>
-    inline size_t StackBuffer<T, BUF_SIZE>::capacity () const
+    inline size_t StackBuffer<T, BUF_SIZE>::capacity () const noexcept
     {
         return UsingInlinePreallocatedBuffer_ () ? BUF_SIZE : fCapacityOfFreeStoreAllocation_; // @see class Design Note
     }
@@ -226,7 +226,7 @@ namespace Stroika::Foundation::Memory {
         return fSize_;
     }
     template <typename T, size_t BUF_SIZE>
-    inline size_t StackBuffer<T, BUF_SIZE>::size () const
+    inline size_t StackBuffer<T, BUF_SIZE>::size () const noexcept
     {
         Ensure (fSize_ <= capacity ());
         return fSize_;

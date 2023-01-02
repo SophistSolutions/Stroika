@@ -162,8 +162,8 @@ namespace Stroika::Foundation::Memory {
          *  \brief returns a (possibly const) pointer to the start of the live buffer data. This return value can be invalidated
          *         by any changes in size/capacity of the stackbuffer (but not by other changes, like at).
          */
-        nonvirtual pointer       data ();
-        nonvirtual const_pointer data () const;
+        nonvirtual pointer       data () noexcept;
+        nonvirtual const_pointer data () const noexcept;
 
     public:
         /**
@@ -184,7 +184,7 @@ namespace Stroika::Foundation::Memory {
          *
          *  @see reserve
          */
-        nonvirtual size_t capacity () const;
+        nonvirtual size_t capacity () const noexcept;
 
     public:
         /**
@@ -223,7 +223,7 @@ namespace Stroika::Foundation::Memory {
          *
          *  \ensure size () <= capacity ();
          */
-        nonvirtual size_t size () const;
+        nonvirtual size_t size () const noexcept;
 
     public:
         /**

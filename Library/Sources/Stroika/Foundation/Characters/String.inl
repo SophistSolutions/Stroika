@@ -123,7 +123,7 @@ namespace Stroika::Foundation::Characters {
         }
         else {
             Memory::StackBuffer<wchar_t> buf{UTFConverter::ComputeTargetBufferSize<wchar_t> (s)};
-            auto                         len = UTFConverter::kThe.Convert (s, span<wchar_t>{buf}).fTargetProduced;
+            auto                         len = UTFConverter::kThe.Convert (s, span{buf}).fTargetProduced;
             Assert (len <= buf.size ());
             return mk_ (span<const wchar_t>{buf.data (), len}); // this case specialized
         }
@@ -138,12 +138,12 @@ namespace Stroika::Foundation::Characters {
             copy (s1.begin (), s1.end (), buf.data ());
             copy (s2.begin (), s2.end (), buf.data () + s1.size ()); // append
 #if qCompilerAndStdLib_spanOfContainer_Buggy
-            Private_::CopyAsASCIICharacters_ (s1, span<wchar_t>{buf.data (), buf.size ()});
-            Private_::CopyAsASCIICharacters_ (s2, span<wchar_t>{buf.data (), buf.size ()}.subspan (s1.size ()));
-            return mk_ (span{buf.data (), buf.size ()});
+            Private_::CopyAsASCIICharacters_ (s1, span{buf.data (), buf.size ()});
+            Private_::CopyAsASCIICharacters_ (s2, span{buf.data (), buf.size ()}.subspan (s1.size ()));
+            return mk_ (span<const char>{buf.data (), buf.size ()});
 #else
-            Private_::CopyAsASCIICharacters_ (s1, span<wchar_t>{buf});
-            Private_::CopyAsASCIICharacters_ (s2, span<wchar_t>{buf}.subspan (s1.size ()));
+            Private_::CopyAsASCIICharacters_ (s1, span{buf});
+            Private_::CopyAsASCIICharacters_ (s2, span{buf}.subspan (s1.size ()));
             return mk_ (span<const char>{buf});
 #endif
         }
@@ -160,7 +160,7 @@ namespace Stroika::Foundation::Characters {
         }
     }
     template <Character_Compatible CHAR_T>
-    static auto String::mk_ (Iterable<CHAR_T> it) -> _SharedPtrIRep
+     auto String::mk_ (Iterable<CHAR_T> it) -> _SharedPtrIRep
     {
         // redo with small stackbuffer (character and dont do iterable<Characer> do Iterable<CHAR_T> where t is Characer_Compiabple)
         // then unoicode covert and use other mk_ existing overloads
@@ -305,7 +305,7 @@ namespace Stroika::Foundation::Characters {
         Require (bufFrom + accessor._ConstGetRep ()._GetLength () >= bufTo);
         accessor._ConstGetRep ().CopyTo (bufFrom, bufTo);
     }
-    inline size_t String::size () const
+    inline size_t String::size () const 
     {
         return _SafeReadRepAccessor{this}._ConstGetRep ()._GetLength ();
     }
