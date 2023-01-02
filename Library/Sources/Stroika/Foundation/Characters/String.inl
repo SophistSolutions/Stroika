@@ -159,6 +159,22 @@ namespace Stroika::Foundation::Characters {
                 return mk_ (span<const wchar_t>{buf.data (), len1 + len2});
             }
         }
+        template <Character_Compatible CHAR_T>
+        static auto String::mk_ (Iterable<CHAR_T> it)->_SharedPtrIRep
+        {
+            // redo with small stackbuffer (character and dont do iterable<Characer> do Iterable<CHAR_T> where t is Characer_Compiabple)
+            // then unoicode covert and use other mk_ existing overloads
+            Memory::StackBuffer<char32_t> r;
+            it.Apply ([&r] (CHAR_T c) {
+                if constexpr (is_same_v<CHAR_T, Character>) {
+                    r.push_back (static_cast<char32_t> (c)); // explicit operator char32_t to avoid ambiguities elsewhere
+                }
+                else {
+                    r.push_back (c);
+                }
+            });
+            return mk_ (span<const char32_t>{r.data (), r.size ()});
+        }
         // FOR NOW - INITIALLY - but later specialize for char and char32_t and probably lose this one
         template <>
         auto String::mk_ (span<const wchar_t> s)->_SharedPtrIRep;
@@ -200,6 +216,15 @@ namespace Stroika::Foundation::Characters {
         template <Character_IsUnicodeCodePoint CHAR_T>
         inline String::String (const basic_string<CHAR_T>& s)
             : inherited{mk_ (span<const CHAR_T>{s.data (), s.size ()})}
+        {
+        }
+        template <Character_SafelyCompatible CHAR_T>
+        inline String::String (const Iterable<CHAR_T>& src)
+            : inherited{mk_ (src)}
+        {
+        }
+        inline String::String (const Character& c)
+            : String{span{&c, 1}}
         {
         }
         inline String String::FromNarrowString (const char* from, const locale& l)

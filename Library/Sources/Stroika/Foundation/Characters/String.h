@@ -255,9 +255,10 @@ namespace Stroika::Foundation::Characters {
 
     public:
         /**
-         * All the constructors are obvious, except to note that NUL-character ARE allowed in strings,
-         * except for the case of single charX* argument constructors - which find the length based on
-         * the terminating NUL-character.
+         * All the constructors are obvious, except
+         *      o   NUL-character ARE allowed in strings, except for the case of single
+         *          charX* argument constructors - which find the length based on
+         *          the terminating NUL-character.
          *
          *  \note about lifetime of argument data
          *        All data is copied out / saved by the end of the constructor for all constructors EXCEPT
@@ -266,23 +267,23 @@ namespace Stroika::Foundation::Characters {
          *  \req for String (const basic_string_view<wchar_t>& str) - str[str.length()]=='\0';   
          *       c-string nul-terminated (which happens automatically with L"xxx"sv)
          */
-        // @todo REFACTOR THESE CTORS USING LOCAL CONCEPT OR REQUIRES SO FEWER APPRANET ONES AND DEPRECATE FROM/TO CTORS (MIDDLE OF REFACTOR)
         String ();
         template <Character_SafelyCompatible CHAR_T>
         String (const CHAR_T* cString);
         template <Character_SafelyCompatible CHAR_T>
         String (span<const CHAR_T> s);
-
-        // keep for now
-        String (const basic_string_view<wchar_t>& str);
-
         template <Character_IsUnicodeCodePoint CHAR_T>
         String (const basic_string<CHAR_T>& s);
-
-        // generalize and s... see commetns by iml
-        String (const Iterable<Character>& src);
-
+        template <Character_SafelyCompatible CHAR_T>
+        String (const Iterable<CHAR_T>& src);
         explicit String (const Character& c);
+
+        // keep for now - @todo generalize - though some cases may copy
+        String (const basic_string_view<wchar_t>& str);
+
+        // @todo add MOVE constructor from some kinds of strings - like u8string and u32string and maybe conditional
+        // wstring& for case where matches u32string.
+
         String (String&& from) noexcept      = default;
         String (const String& from) noexcept = default;
 
@@ -422,6 +423,8 @@ namespace Stroika::Foundation::Characters {
         static _SharedPtrIRep mk_ (span<const CHAR_T> s);
         template <Character_Compatible CHAR_T>
         static _SharedPtrIRep mk_ (span<const CHAR_T> s1, span<const CHAR_T> s2);
+        template <Character_Compatible CHAR_T>
+        static _SharedPtrIRep mk_ (Iterable<CHAR_T> it);
 
     public:
         nonvirtual String& operator+= (Character appendage);

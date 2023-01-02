@@ -175,29 +175,6 @@ String::String (const basic_string_view<wchar_t>& str)
                                                // -- LGP 2019-01-29
 }
 
-namespace {
-    inline String mkWS_ (const Traversal::Iterable<Character>& src)
-    {
-        // redo with small stackbuffer (character and dont do iterable<Characer> do Iterable<CHAR_T> where t is Characer_Compiabple)
-        // then unoicode covert and use other mk_ existing overloads
-        StringBuilder r;
-        for (const auto& i : src) {
-            r.push_back (i.As<wchar_t> ());
-        }
-        return r.str ();
-    }
-}
-
-String::String (const Iterable<Character>& src)
-    : String{mkWS_ (src)}
-{
-}
-
-String::String (const Character& c)
-    : String{span{&c, 1}}
-{
-}
-
 String String::FromUTF8 (const char* from, const char* to)
 {
     RequireNotNull (from);
