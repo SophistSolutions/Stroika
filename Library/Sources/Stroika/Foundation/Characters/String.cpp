@@ -183,7 +183,7 @@ String String::FromUTF8 (const char* from, const char* to)
     size_t               cvtBufSize = UTFConverter::kThe.ComputeTargetBufferSize<wchar_t> (span{from, to});
     StackBuffer<wchar_t> buf{Memory::eUninitialized, cvtBufSize};
 #if qCompilerAndStdLib_spanOfContainer_Buggy
-    return String{span<const wchar_t>{buf.data (), UTFConverter::kThe.Convert (span{from, to}, Memory::mkSpan_BWA_ (buf)).fTargetProduced}};
+    return String{span<const wchar_t>{buf.data (), UTFConverter::kThe.Convert (span{from, to}, span{buf.data (), buf.size ()}).fTargetProduced}};
 #else
     return String{span<const wchar_t>{buf.data (), UTFConverter::kThe.Convert (span{from, to}, span{buf}).fTargetProduced}};
 #endif
@@ -354,7 +354,7 @@ String::_SharedPtrIRep String::mk_ (const char16_t* from, const char16_t* to)
         size_t               cvtBufSize = UTFConverter::ComputeTargetBufferSize<wchar_t> (span{from, to});
         StackBuffer<wchar_t> buf{Memory::eUninitialized, cvtBufSize};
 #if qCompilerAndStdLib_spanOfContainer_Buggy
-        return mk_ (buf.begin (), buf.begin () + UTFConverter::kThe.Convert (span{from, to}, Memory::mkSpan_BWA_ (buf)).fTargetProduced);
+        return mk_ (buf.begin (), buf.begin () + UTFConverter::kThe.Convert (span{from, to}, span{buf.data (), buf.size ()}).fTargetProduced);
 #else
         return mk_ (buf.begin (), buf.begin () + UTFConverter::kThe.Convert (span{from, to}, span{buf}).fTargetProduced);
 #endif
@@ -373,7 +373,7 @@ String::_SharedPtrIRep String::mk_ (const char32_t* from, const char32_t* to)
         size_t               cvtBufSize = UTFConverter::ComputeTargetBufferSize<wchar_t> (span{from, to});
         StackBuffer<wchar_t> buf{Memory::eUninitialized, cvtBufSize};
 #if qCompilerAndStdLib_spanOfContainer_Buggy
-        auto r = UTFConverter::kThe.Convert (span{from, to}, Memory::mkSpan_BWA_ (buf));
+        auto r = UTFConverter::kThe.Convert (span{from, to}, span{buf.data (), buf.size ()});
 #else
         auto r = UTFConverter::kThe.Convert (span{from, to}, span{buf});
 #endif

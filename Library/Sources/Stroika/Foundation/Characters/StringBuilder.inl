@@ -13,9 +13,6 @@
 
 #include "../Debug/Assertions.h"
 #include "../Execution/Common.h"
-#if qCompilerAndStdLib_spanOfContainer_Buggy
-#include "../Memory/Common.h"
-#endif
 
 #include "CString/Utilities.h"
 #include "UTFConvert.h"
@@ -58,7 +55,7 @@ namespace Stroika::Foundation::Characters {
             else {
                 Memory::StackBuffer<wchar_t> buf{Memory::eUninitialized, UTFConverter::ComputeTargetBufferSize<wchar_t> (s)};
 #if qCompilerAndStdLib_spanOfContainer_Buggy
-                auto r = UTFConverter::kThe.Convert (s, mkSpan_BWA_ (buf));
+                auto r = UTFConverter::kThe.Convert (s, span{buf.data (), buf.size ()});
 #else
                 auto r = UTFConverter::kThe.Convert (s, span{buf});
 #endif
@@ -75,7 +72,7 @@ namespace Stroika::Foundation::Characters {
     inline void StringBuilder::Append (const basic_string<CHAR_T>& s)
     {
 #if qCompilerAndStdLib_spanOfContainer_Buggy
-        Append (Memory::mkSpan_BWA_ (s));
+        Append (span{s.data (), s.size ()});
 #else
         Append (span{s});
 #endif
@@ -84,7 +81,7 @@ namespace Stroika::Foundation::Characters {
     inline void StringBuilder::Append (const basic_string_view<CHAR_T>& s)
     {
 #if qCompilerAndStdLib_spanOfContainer_Buggy
-        Append (Memory::mkSpan_BWA_ (s));
+        Append (span{s.data (), s.size ()});
 #else
         Append (span{s});
 #endif
@@ -213,8 +210,8 @@ namespace Stroika::Foundation::Characters {
         }
         else {
 #if qCompilerAndStdLib_spanOfContainer_Buggy
-            probablyIgnoredBuf->resize_uninitialized (UTFConverter::ComputeTargetBufferSize<CHAR_T> (mkSpan_BWA_ (fData_)));
-            return span{probablyIgnoredBuf->data (), get<1> (UTFConverter::kThe.Convert (mkSpan_BWA_ (fData_), mkSpan_BWA_ (*probablyIgnoredBuf)))};
+            probablyIgnoredBuf->resize_uninitialized (UTFConverter::ComputeTargetBufferSize<CHAR_T> (span{fData_.data (), fData_.size ()}));
+            return span{probablyIgnoredBuf->data (), get<1> (UTFConverter::kThe.Convert (span{fData_}, span{probablyIgnoredBuf->data (), probablyIgnoredBuf->size ()}))};
 #else
             probablyIgnoredBuf->resize_uninitialized (UTFConverter::ComputeTargetBufferSize<CHAR_T> (span{fData_}));
             return span{probablyIgnoredBuf->data (), get<1> (UTFConverter::kThe.Convert (span{fData_}, span{*probablyIgnoredBuf}))};

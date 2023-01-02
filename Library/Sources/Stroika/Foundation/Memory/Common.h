@@ -41,28 +41,6 @@ namespace Stroika::Foundation::Memory {
         return s.empty () ? nullptr : &*s.begin () + s.size ();
     }
 
-#if qCompilerAndStdLib_spanOfContainer_Buggy
-    template <typename CONTAINER>
-    auto mkSpan_BWA_ (CONTAINER& c)
-    {
-        // used for stuff like initializer_list so cannot use .data
-        if (c.size () == 0) {
-            return std::span<remove_const_t<typename CONTAINER::value_type>>{};
-        }
-        return std::span<remove_const_t<typename CONTAINER::value_type>>{&*c.begin (), c.size ()};
-    }
-    template <typename CONTAINER>
-    auto mkSpan_BWA_ (const CONTAINER& c)
-    {
-        // used for stuff like initializer_list so cannot use .data
-        if (c.size () == 0) {
-            return std::span<const typename CONTAINER::value_type>{};
-        }
-        return std::span<const typename CONTAINER::value_type>{&*c.begin (), c.size ()};
-    }
-//static_assert (__is_span_compatible_container<StackBuffer<char>,char>::value);    // trying to debug why needed?
-#endif
-
     /**
      *  API to return memory allocation statistics. Generally - these will be inaccurate,
      *  unless certain defines are set in Memory.cpp - but at least some stats can be
