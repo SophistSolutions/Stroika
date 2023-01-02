@@ -792,7 +792,7 @@ void TextLayoutBlock_Basic::Construct_ICU (const TextDirection* initialDirection
 
 void TextLayoutBlock_Basic::Construct_Default ()
 {
-// Only do something for UNICODE/wide-chars - otherwise - just copy the chars by value...
+    // Only do something for UNICODE/wide-chars - otherwise - just copy the chars by value...
     copy (static_cast<Led_tChar*> (fRealText), static_cast<Led_tChar*> (fRealText) + fTextLength, static_cast<Led_tChar*> (fVirtualText));
     if (fTextLength != 0) {
         ScriptRunElt thisCharElt;
