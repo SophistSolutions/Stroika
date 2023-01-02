@@ -203,7 +203,7 @@ namespace Stroika::Foundation::Characters {
         _AssertRepValidType ();
     }
     template <Character_SafelyCompatible CHAR_T>
-    inline String::String (span< CHAR_T> s)
+    inline String::String (span<CHAR_T> s)
         : inherited{mk_ (span<const CHAR_T>{s})}
     {
         _AssertRepValidType ();
