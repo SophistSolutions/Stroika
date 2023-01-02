@@ -26,7 +26,7 @@ namespace Stroika::Foundation::Memory {
      ********************************************************************************
      */
     template <typename T, size_t BUF_SIZE>
-    inline InlineBuffer<T, BUF_SIZE>::InlineBuffer ()
+    inline InlineBuffer<T, BUF_SIZE>::InlineBuffer () noexcept
         : fLiveData_{BufferAsT_ ()}
     {
 #if qDebug
@@ -211,37 +211,37 @@ namespace Stroika::Foundation::Memory {
         Ensure (size () <= capacity ());
     }
     template <typename T, size_t BUF_SIZE>
-    inline typename InlineBuffer<T, BUF_SIZE>::iterator InlineBuffer<T, BUF_SIZE>::begin ()
+    inline typename InlineBuffer<T, BUF_SIZE>::iterator InlineBuffer<T, BUF_SIZE>::begin () noexcept
     {
         return fLiveData_;
     }
     template <typename T, size_t BUF_SIZE>
-    inline typename InlineBuffer<T, BUF_SIZE>::iterator InlineBuffer<T, BUF_SIZE>::end ()
+    inline typename InlineBuffer<T, BUF_SIZE>::iterator InlineBuffer<T, BUF_SIZE>::end () noexcept
     {
         return fLiveData_ + fSize_;
     }
     template <typename T, size_t BUF_SIZE>
-    inline typename InlineBuffer<T, BUF_SIZE>::const_iterator InlineBuffer<T, BUF_SIZE>::begin () const
+    inline typename InlineBuffer<T, BUF_SIZE>::const_iterator InlineBuffer<T, BUF_SIZE>::begin () const noexcept
     {
         return fLiveData_;
     }
     template <typename T, size_t BUF_SIZE>
-    inline typename InlineBuffer<T, BUF_SIZE>::const_iterator InlineBuffer<T, BUF_SIZE>::end () const
+    inline typename InlineBuffer<T, BUF_SIZE>::const_iterator InlineBuffer<T, BUF_SIZE>::end () const noexcept
     {
         return fLiveData_ + fSize_;
     }
     template <typename T, size_t BUF_SIZE>
-    inline typename InlineBuffer<T, BUF_SIZE>::pointer InlineBuffer<T, BUF_SIZE>::data ()
+    inline typename InlineBuffer<T, BUF_SIZE>::pointer InlineBuffer<T, BUF_SIZE>::data () noexcept
     {
         return fLiveData_;
     }
     template <typename T, size_t BUF_SIZE>
-    inline typename InlineBuffer<T, BUF_SIZE>::const_pointer InlineBuffer<T, BUF_SIZE>::data () const
+    inline typename InlineBuffer<T, BUF_SIZE>::const_pointer InlineBuffer<T, BUF_SIZE>::data () const noexcept
     {
         return fLiveData_;
     }
     template <typename T, size_t BUF_SIZE>
-    inline size_t InlineBuffer<T, BUF_SIZE>::capacity () const
+    inline size_t InlineBuffer<T, BUF_SIZE>::capacity () const noexcept
     {
         return UsingInlinePreallocatedBuffer_ () ? BUF_SIZE : fCapacityOfFreeStoreAllocation_; // @see class Design Note
     }
@@ -293,25 +293,25 @@ namespace Stroika::Foundation::Memory {
         Invariant ();
     }
     template <typename T, size_t BUF_SIZE>
-    inline size_t InlineBuffer<T, BUF_SIZE>::GetSize () const
+    inline size_t InlineBuffer<T, BUF_SIZE>::GetSize () const noexcept
     {
         Ensure (fSize_ <= capacity ());
         return fSize_;
     }
     template <typename T, size_t BUF_SIZE>
-    inline size_t InlineBuffer<T, BUF_SIZE>::size () const
+    inline size_t InlineBuffer<T, BUF_SIZE>::size () const noexcept
     {
         Ensure (fSize_ <= capacity ());
         return fSize_;
     }
     template <typename T, size_t BUF_SIZE>
-    inline typename InlineBuffer<T, BUF_SIZE>::reference InlineBuffer<T, BUF_SIZE>::at (size_t i)
+    inline typename InlineBuffer<T, BUF_SIZE>::reference InlineBuffer<T, BUF_SIZE>::at (size_t i) noexcept
     {
         Require (i < fSize_);
         return *(fLiveData_ + i);
     }
     template <typename T, size_t BUF_SIZE>
-    inline typename InlineBuffer<T, BUF_SIZE>::const_reference InlineBuffer<T, BUF_SIZE>::at (size_t i) const
+    inline typename InlineBuffer<T, BUF_SIZE>::const_reference InlineBuffer<T, BUF_SIZE>::at (size_t i) const noexcept
     {
         Require (i < fSize_);
         return *(fLiveData_ + i);
@@ -335,18 +335,18 @@ namespace Stroika::Foundation::Memory {
         }
     }
     template <typename T, size_t BUF_SIZE>
-    inline void InlineBuffer<T, BUF_SIZE>::clear ()
+    inline void InlineBuffer<T, BUF_SIZE>::clear () noexcept
     {
         resize (0);
     }
     template <typename T, size_t BUF_SIZE>
-    inline InlineBuffer<T, BUF_SIZE>::operator T* ()
+    inline InlineBuffer<T, BUF_SIZE>::operator T* () noexcept
     {
         AssertNotNull (fLiveData_);
         return fLiveData_;
     }
     template <typename T, size_t BUF_SIZE>
-    inline InlineBuffer<T, BUF_SIZE>::operator const T* () const
+    inline InlineBuffer<T, BUF_SIZE>::operator const T* () const noexcept
     {
         AssertNotNull (fLiveData_);
         return fLiveData_;
@@ -390,7 +390,7 @@ namespace Stroika::Foundation::Memory {
         }
     }
     template <typename T, size_t BUF_SIZE>
-    inline byte* InlineBuffer<T, BUF_SIZE>::LiveDataAsAllocatedBytes_ ()
+    inline byte* InlineBuffer<T, BUF_SIZE>::LiveDataAsAllocatedBytes_ () noexcept
     {
         Require (not UsingInlinePreallocatedBuffer_ ());
         return reinterpret_cast<byte*> (fLiveData_);
@@ -405,14 +405,14 @@ namespace Stroika::Foundation::Memory {
         return reinterpret_cast<byte*> (p);
     }
     template <typename T, size_t BUF_SIZE>
-    inline void InlineBuffer<T, BUF_SIZE>::Deallocate_ (byte* bytes)
+    inline void InlineBuffer<T, BUF_SIZE>::Deallocate_ (byte* bytes) noexcept
     {
         if (bytes != nullptr) {
             ::free (bytes);
         }
     }
     template <typename T, size_t BUF_SIZE>
-    inline bool InlineBuffer<T, BUF_SIZE>::UsingInlinePreallocatedBuffer_ () const
+    inline bool InlineBuffer<T, BUF_SIZE>::UsingInlinePreallocatedBuffer_ () const noexcept
     {
         return (fLiveData_ == BufferAsT_ ());
     }

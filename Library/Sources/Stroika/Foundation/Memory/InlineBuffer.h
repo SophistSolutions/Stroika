@@ -108,7 +108,7 @@ namespace Stroika::Foundation::Memory {
          *  InlineBuffer::InlineBuffer (size_t) specifies the initial size - like InlineBuffer::InlineBuffer {} followed by resize (n); 
          *  InlineBuffer::default-ctor creates a zero-sized stack buffer (so resize with resize, or push_back etc).
          */
-        InlineBuffer ();
+        InlineBuffer () noexcept;
         InlineBuffer (size_t nElements);
         InlineBuffer (UninitializedConstructorFlag, size_t nElements);
         template <size_t FROM_BUF_SIZE>
@@ -133,40 +133,40 @@ namespace Stroika::Foundation::Memory {
          * 
          *  \note This was changed from non-explicit to explicit in Stroika v3.0d1
          */
-        nonvirtual explicit operator const T* () const;
-        nonvirtual explicit operator T* ();
+        nonvirtual explicit operator const T* () const noexcept;
+        nonvirtual explicit operator T* () noexcept;
 
     public:
         /**
          *  \brief returns a (possibly const) pointer to the start of the live buffer data. This return value can be invalidated
          *         by any changes in size/capacity of the InlineBuffer (but not by other changes, like at).
          */
-        nonvirtual pointer       data ();
-        nonvirtual const_pointer data () const;
+        nonvirtual pointer       data () noexcept;
+        nonvirtual const_pointer data () const noexcept;
 
     public:
         /**
          */
-        nonvirtual iterator       begin ();
-        nonvirtual const_iterator begin () const;
+        nonvirtual iterator       begin () noexcept;
+        nonvirtual const_iterator begin () const noexcept;
 
     public:
         /**
          */
-        nonvirtual iterator       end ();
-        nonvirtual const_iterator end () const;
+        nonvirtual iterator       end () noexcept;
+        nonvirtual const_iterator end () const noexcept;
 
     public:
         /**
          */
-        nonvirtual reference       at (size_t i);
-        nonvirtual const_reference at (size_t i) const;
+        nonvirtual reference       at (size_t i) noexcept;
+        nonvirtual const_reference at (size_t i) const noexcept;
 
     public:
         /**
          */
-        nonvirtual reference       operator[] (size_t i) { return at (i); }
-        nonvirtual const_reference operator[] (size_t i) const { return at (i); }
+        nonvirtual reference       operator[] (size_t i) noexcept { return at (i); }
+        nonvirtual const_reference operator[] (size_t i) const noexcept { return at (i); }
 
     public:
         /**
@@ -175,7 +175,7 @@ namespace Stroika::Foundation::Memory {
          *
          *  @see reserve
          */
-        nonvirtual size_t capacity () const;
+        nonvirtual size_t capacity () const noexcept;
 
     public:
         /**
@@ -203,7 +203,7 @@ namespace Stroika::Foundation::Memory {
          *
          *  \ensure GetSize () <= capacity ();
          */
-        nonvirtual size_t GetSize () const;
+        nonvirtual size_t GetSize () const noexcept;
 
     public:
         /**
@@ -214,7 +214,7 @@ namespace Stroika::Foundation::Memory {
          *
          *  \ensure size () <= capacity ();
          */
-        nonvirtual size_t size () const;
+        nonvirtual size_t size () const noexcept;
 
     public:
         /**
@@ -260,7 +260,7 @@ namespace Stroika::Foundation::Memory {
     public:
         /**
          */
-        nonvirtual void clear ();
+        nonvirtual void clear () noexcept;
 
 #if qDebug
     private:
@@ -288,19 +288,19 @@ namespace Stroika::Foundation::Memory {
 
     private:
         // note must be inline declared here since used in type definition below
-        static constexpr size_t SizeInBytes_ (size_t nElts)
+        static constexpr size_t SizeInBytes_ (size_t nElts) noexcept
         {
             return sizeof (T[1]) * nElts; // not sure why return sizeof (T[nElts]); fails on vs2k17?
         }
 
     private:
-        nonvirtual byte* LiveDataAsAllocatedBytes_ ();
+        nonvirtual byte* LiveDataAsAllocatedBytes_ () noexcept;
 
     private:
         static byte* Allocate_ (size_t bytes);
 
     private:
-        static void Deallocate_ (byte* bytes);
+        static void Deallocate_ (byte* bytes) noexcept;
 
     private:
         size_t fSize_{};
@@ -320,7 +320,7 @@ namespace Stroika::Foundation::Memory {
         T* fLiveData_{};
 
     private:
-        nonvirtual bool UsingInlinePreallocatedBuffer_ () const;
+        nonvirtual bool UsingInlinePreallocatedBuffer_ () const noexcept;
 
     public:
         nonvirtual void Invariant () const noexcept;

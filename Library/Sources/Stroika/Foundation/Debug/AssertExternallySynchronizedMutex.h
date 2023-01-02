@@ -248,6 +248,8 @@ namespace Stroika::Foundation::Debug {
          * 
          *  \note we get away with 'const' in shared_lock<const AssertExternallySynchronizedMutex> because we chose to make
          *        lock_shared, and unlock_shared const methods (see their docs above).
+         * 
+         *  \note - though CTOR not declared noexcept, ReadContext cannot throw an exception (it asserts out on failure)
          */
         using ReadContext = shared_lock<const AssertExternallySynchronizedMutex>;
 
@@ -265,6 +267,8 @@ namespace Stroika::Foundation::Debug {
          *  makes it a little easier to catch cases where you accidentally use WriteContext and meant ReadContext.
          * 
          *  \note - considered using  scoped_lock, but it amounts to the same thing, and that gets some ambiguous construction issues (rare but why bother here)
+         * 
+         *  \note - though CTOR not declared noexcept, WriteContext cannot throw an exception (it asserts out on failure)
          */
         using WriteContext = lock_guard<AssertExternallySynchronizedMutex>;
 

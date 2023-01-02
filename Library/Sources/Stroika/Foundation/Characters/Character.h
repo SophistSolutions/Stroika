@@ -97,28 +97,28 @@ namespace Stroika::Foundation::Characters {
     public:
         /**
          */
-        constexpr Character ();
-        constexpr Character (char c);
-        constexpr Character (char16_t c);
-        constexpr Character (char32_t c); // @todo decide how to handle surrogates
-        constexpr Character (wchar_t wc);
+        constexpr Character () noexcept;
+        constexpr Character (char c) noexcept;
+        constexpr Character (char16_t c) noexcept;
+        constexpr Character (char32_t c) noexcept; // @todo decide how to handle surrogates
+        constexpr Character (wchar_t wc) noexcept;
 
     public:
         /**
          *  \req IsASCII()
          */
-        nonvirtual char GetAsciiCode () const;
+        nonvirtual char GetAsciiCode () const noexcept;
 
     public:
         // @todo deprecate this and replace wtih GetCodePoint<CHAR_T> -> optional<CHAR_T> with charT required to be uncide-code-point concept
         // return has-value if convertible
-        nonvirtual wchar_t GetCharacterCode () const;
+        nonvirtual wchar_t GetCharacterCode () const noexcept;
 
     public:
         /**
          *  Explicit cuz creates too many ambiguities with things like c == '\0' where conversions can go both ways.
          */
-        explicit operator char32_t () const
+        explicit operator char32_t () const noexcept
         {
             return GetCharacterCode ();
         }
@@ -130,42 +130,42 @@ namespace Stroika::Foundation::Characters {
          *          We need diff API to return up to 2 wchar_t's!!!
          */
         template <typename T>
-        nonvirtual T As () const
+        nonvirtual T As () const noexcept
             requires (is_same_v<T, char32_t> or is_same_v<T, wchar_t>);
 
     public:
-        nonvirtual bool IsASCII () const;
+        nonvirtual bool IsASCII () const noexcept;
 
     public:
-        nonvirtual bool IsWhitespace () const;
+        nonvirtual bool IsWhitespace () const noexcept;
 
     public:
-        nonvirtual bool IsDigit () const;
+        nonvirtual bool IsDigit () const noexcept;
 
     public:
-        nonvirtual bool IsHexDigit () const;
+        nonvirtual bool IsHexDigit () const noexcept;
 
     public:
-        nonvirtual bool IsAlphabetic () const;
+        nonvirtual bool IsAlphabetic () const noexcept;
 
     public:
         // Checks if the given character is uppper case. Can be called on any character.
         // Returns false if not alphabetic
-        nonvirtual bool IsUpperCase () const;
+        nonvirtual bool IsUpperCase () const noexcept;
 
     public:
         // Checks if the given character is lower case. Can be called on any character.
         // Returns false if not alphabetic
-        nonvirtual bool IsLowerCase () const;
+        nonvirtual bool IsLowerCase () const noexcept;
 
     public:
-        nonvirtual bool IsAlphaNumeric () const;
+        nonvirtual bool IsAlphaNumeric () const noexcept;
 
     public:
-        nonvirtual bool IsPunctuation () const;
+        nonvirtual bool IsPunctuation () const noexcept;
 
     public:
-        nonvirtual bool IsControl () const;
+        nonvirtual bool IsControl () const noexcept;
 
     public:
         /**
@@ -176,7 +176,7 @@ namespace Stroika::Foundation::Characters {
          * if the argument character is uppercase or alpabetic. ToLowerCase () just returns the
          * original character if there is no sensible conversion.
          */
-        nonvirtual Character ToLowerCase () const;
+        nonvirtual Character ToLowerCase () const noexcept;
 
     public:
         /**
@@ -187,13 +187,13 @@ namespace Stroika::Foundation::Characters {
          * if the argument character is lowercase or alpabetic. ToUpperCase () just returns the
          * original character if there is no sensible conversion.
          */
-        nonvirtual Character ToUpperCase () const;
+        nonvirtual Character ToUpperCase () const noexcept;
 
     public:
         /**
          */
         template <Character_Compatible CHAR_T>
-        static bool IsASCII (span<const CHAR_T> s);
+        static bool IsASCII (span<const CHAR_T> s) noexcept;
 
     public:
         /**
@@ -211,7 +211,7 @@ namespace Stroika::Foundation::Characters {
     public:
         /**
          */
-        nonvirtual strong_ordering operator<=> (const Character&) const = default;
+        nonvirtual strong_ordering operator<=> (const Character&) const noexcept = default;
 
     public:
         struct EqualsComparer;
@@ -225,8 +225,8 @@ namespace Stroika::Foundation::Characters {
          *
          *  \todo   Consider if this should be somehow packaged with Character::ThreeWayComparer?
          */
-        static strong_ordering Compare (span<const Character> lhs, span<const Character> rhs, CompareOptions co);
-        static strong_ordering Compare (const Character* lhsStart, const Character* lhsEnd, const Character* rhsStart, const Character* rhsEnd, CompareOptions co);
+        static strong_ordering Compare (span<const Character> lhs, span<const Character> rhs, CompareOptions co) noexcept;
+        static strong_ordering Compare (const Character* lhsStart, const Character* lhsEnd, const Character* rhsStart, const Character* rhsEnd, CompareOptions co) noexcept;
 
     private:
         wchar_t fCharacterCode_;
@@ -239,11 +239,11 @@ namespace Stroika::Foundation::Characters {
         /**
          *  optional CompareOptions to CTOR allows for case insensative compares
          */
-        constexpr EqualsComparer (Stroika::Foundation::Characters::CompareOptions co = Stroika::Foundation::Characters::CompareOptions::eWithCase);
+        constexpr EqualsComparer (Stroika::Foundation::Characters::CompareOptions co = Stroika::Foundation::Characters::CompareOptions::eWithCase) noexcept;
 
         /**
          */
-        constexpr bool operator() (Character lhs, Character rhs) const;
+        constexpr bool operator() (Character lhs, Character rhs) const noexcept;
 
         Stroika::Foundation::Characters::CompareOptions fCompareOptions;
     };
@@ -255,11 +255,11 @@ namespace Stroika::Foundation::Characters {
         /**
          *  optional CompareOptions to CTOR allows for case insensative compares
          */
-        constexpr ThreeWayComparer (Stroika::Foundation::Characters::CompareOptions co = Stroika::Foundation::Characters::CompareOptions::eWithCase);
+        constexpr ThreeWayComparer (Stroika::Foundation::Characters::CompareOptions co = Stroika::Foundation::Characters::CompareOptions::eWithCase) noexcept;
 
         /**
          */
-        nonvirtual auto operator() (Stroika::Foundation::Characters::Character lhs, Stroika::Foundation::Characters::Character rhs) const;
+        nonvirtual auto operator() (Stroika::Foundation::Characters::Character lhs, Stroika::Foundation::Characters::Character rhs) const noexcept;
 
         Stroika::Foundation::Characters::CompareOptions fCompareOptions;
     };

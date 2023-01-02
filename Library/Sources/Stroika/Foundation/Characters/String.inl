@@ -160,7 +160,7 @@ namespace Stroika::Foundation::Characters {
         }
     }
     template <Character_Compatible CHAR_T>
-     auto String::mk_ (Iterable<CHAR_T> it) -> _SharedPtrIRep
+    auto String::mk_ (Iterable<CHAR_T> it) -> _SharedPtrIRep
     {
         // redo with small stackbuffer (character and dont do iterable<Characer> do Iterable<CHAR_T> where t is Characer_Compiabple)
         // then unoicode covert and use other mk_ existing overloads
@@ -305,7 +305,7 @@ namespace Stroika::Foundation::Characters {
         Require (bufFrom + accessor._ConstGetRep ()._GetLength () >= bufTo);
         accessor._ConstGetRep ().CopyTo (bufFrom, bufTo);
     }
-    inline size_t String::size () const 
+    inline size_t String::size () const
     {
         return _SafeReadRepAccessor{this}._ConstGetRep ()._GetLength ();
     }

@@ -26,7 +26,7 @@ namespace Stroika::Foundation::Memory {
      ********************************************************************************
      */
     template <typename T, size_t BUF_SIZE>
-    inline StackBuffer<T, BUF_SIZE>::StackBuffer ()
+    inline StackBuffer<T, BUF_SIZE>::StackBuffer () noexcept
         : fLiveData_{BufferAsT_ ()}
     {
 #if qDebug
@@ -138,22 +138,22 @@ namespace Stroika::Foundation::Memory {
         Ensure (size () <= capacity ());
     }
     template <typename T, size_t BUF_SIZE>
-    inline typename StackBuffer<T, BUF_SIZE>::iterator StackBuffer<T, BUF_SIZE>::begin ()
+    inline typename StackBuffer<T, BUF_SIZE>::iterator StackBuffer<T, BUF_SIZE>::begin () noexcept
     {
         return fLiveData_;
     }
     template <typename T, size_t BUF_SIZE>
-    inline typename StackBuffer<T, BUF_SIZE>::iterator StackBuffer<T, BUF_SIZE>::end ()
+    inline typename StackBuffer<T, BUF_SIZE>::iterator StackBuffer<T, BUF_SIZE>::end () noexcept
     {
         return fLiveData_ + fSize_;
     }
     template <typename T, size_t BUF_SIZE>
-    inline typename StackBuffer<T, BUF_SIZE>::const_iterator StackBuffer<T, BUF_SIZE>::begin () const
+    inline typename StackBuffer<T, BUF_SIZE>::const_iterator StackBuffer<T, BUF_SIZE>::begin () const noexcept
     {
         return fLiveData_;
     }
     template <typename T, size_t BUF_SIZE>
-    inline typename StackBuffer<T, BUF_SIZE>::const_iterator StackBuffer<T, BUF_SIZE>::end () const
+    inline typename StackBuffer<T, BUF_SIZE>::const_iterator StackBuffer<T, BUF_SIZE>::end () const noexcept
     {
         return fLiveData_ + fSize_;
     }
@@ -220,7 +220,7 @@ namespace Stroika::Foundation::Memory {
         Invariant ();
     }
     template <typename T, size_t BUF_SIZE>
-    inline size_t StackBuffer<T, BUF_SIZE>::GetSize () const
+    inline size_t StackBuffer<T, BUF_SIZE>::GetSize () const noexcept
     {
         Ensure (fSize_ <= capacity ());
         return fSize_;
@@ -232,13 +232,13 @@ namespace Stroika::Foundation::Memory {
         return fSize_;
     }
     template <typename T, size_t BUF_SIZE>
-    inline typename StackBuffer<T, BUF_SIZE>::reference StackBuffer<T, BUF_SIZE>::at (size_t i)
+    inline typename StackBuffer<T, BUF_SIZE>::reference StackBuffer<T, BUF_SIZE>::at (size_t i) noexcept
     {
         Require (i < fSize_);
         return *(fLiveData_ + i);
     }
     template <typename T, size_t BUF_SIZE>
-    inline typename StackBuffer<T, BUF_SIZE>::const_reference StackBuffer<T, BUF_SIZE>::at (size_t i) const
+    inline typename StackBuffer<T, BUF_SIZE>::const_reference StackBuffer<T, BUF_SIZE>::at (size_t i) const noexcept
     {
         Require (i < fSize_);
         return *(fLiveData_ + i);
@@ -266,18 +266,18 @@ namespace Stroika::Foundation::Memory {
         }
     }
     template <typename T, size_t BUF_SIZE>
-    inline void StackBuffer<T, BUF_SIZE>::clear ()
+    inline void StackBuffer<T, BUF_SIZE>::clear () noexcept
     {
         resize (0);
     }
     template <typename T, size_t BUF_SIZE>
-    inline StackBuffer<T, BUF_SIZE>::operator T* ()
+    inline StackBuffer<T, BUF_SIZE>::operator T* () noexcept
     {
         AssertNotNull (fLiveData_);
         return fLiveData_;
     }
     template <typename T, size_t BUF_SIZE>
-    inline StackBuffer<T, BUF_SIZE>::operator const T* () const
+    inline StackBuffer<T, BUF_SIZE>::operator const T* () const noexcept
     {
         AssertNotNull (fLiveData_);
         return fLiveData_;
@@ -321,7 +321,7 @@ namespace Stroika::Foundation::Memory {
         }
     }
     template <typename T, size_t BUF_SIZE>
-    inline byte* StackBuffer<T, BUF_SIZE>::LiveDataAsAllocatedBytes_ ()
+    inline byte* StackBuffer<T, BUF_SIZE>::LiveDataAsAllocatedBytes_ () noexcept
     {
         Require (not UsingInlinePreallocatedBuffer_ ());
         return reinterpret_cast<byte*> (fLiveData_);
@@ -340,14 +340,14 @@ namespace Stroika::Foundation::Memory {
         return reinterpret_cast<byte*> (p);
     }
     template <typename T, size_t BUF_SIZE>
-    inline void StackBuffer<T, BUF_SIZE>::Deallocate_ (byte* bytes)
+    inline void StackBuffer<T, BUF_SIZE>::Deallocate_ (byte* bytes) noexcept
     {
         if (bytes != nullptr) {
             ::free (bytes);
         }
     }
     template <typename T, size_t BUF_SIZE>
-    inline bool StackBuffer<T, BUF_SIZE>::UsingInlinePreallocatedBuffer_ () const
+    inline bool StackBuffer<T, BUF_SIZE>::UsingInlinePreallocatedBuffer_ () const noexcept
     {
         return fLiveData_ == BufferAsT_ ();
     }

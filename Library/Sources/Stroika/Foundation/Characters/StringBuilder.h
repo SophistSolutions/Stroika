@@ -57,7 +57,7 @@ namespace Stroika::Foundation::Characters {
     public:
         /**
          */
-        StringBuilder ()                     = default;
+        StringBuilder () noexcept            = default;
         StringBuilder (const StringBuilder&) = default;
         StringBuilder (const String& initialValue);
         template <Character_Compatible CHAR_T>
@@ -120,23 +120,23 @@ namespace Stroika::Foundation::Characters {
         /**
          *  returns number of characters (not bytes, not including any possible NUL-terminator)
          */
-        nonvirtual size_t size () const;
+        nonvirtual size_t size () const noexcept;
 
     public:
         /**
          *  Returns true if this is an empty string (aka iff size () == 0);
          */
-        nonvirtual bool empty () const;
+        nonvirtual bool empty () const noexcept;
 
     public:
         /**
          */
-        nonvirtual Character GetAt (size_t index) const;
+        nonvirtual Character GetAt (size_t index) const noexcept;
 
     public:
         /**
          */
-        nonvirtual void SetAt (Character item, size_t index);
+        nonvirtual void SetAt (Character item, size_t index) noexcept;
 
     public:
         /**
@@ -161,7 +161,7 @@ namespace Stroika::Foundation::Characters {
     public:
         /**
          */
-        nonvirtual void clear ();
+        nonvirtual void clear () noexcept;
 
     public:
         /**
@@ -173,7 +173,7 @@ namespace Stroika::Foundation::Characters {
         /**
          *  STL-ish alias for size ()
          */
-        nonvirtual size_t length () const;
+        nonvirtual size_t length () const noexcept;
 
     public:
         /**
@@ -219,7 +219,7 @@ namespace Stroika::Foundation::Characters {
          *
          *  @see reserve
          */
-        nonvirtual size_t capacity () const;
+        nonvirtual size_t capacity () const noexcept;
 
     public:
         /**
@@ -274,7 +274,7 @@ namespace Stroika::Foundation::Characters {
 
     private:
         mutable Memory::InlineBuffer<wchar_t> fData_{0};   // maybe nul-terminated
-        size_t                                fLength_{0}; // seperate from Buffer<>::size ()
+        size_t                                fLength_{0}; // seperate from Buffer<>::size () ** but why **
     };
 
 }

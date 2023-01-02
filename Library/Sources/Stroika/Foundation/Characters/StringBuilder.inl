@@ -126,29 +126,29 @@ namespace Stroika::Foundation::Characters {
         fData_[fLength_] = c.GetCharacterCode ();
         ++fLength_;
     }
-    inline size_t StringBuilder::size () const
+    inline size_t StringBuilder::size () const noexcept
     {
         Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fAssertExternallySyncrhonized_};
         return fLength_;
     }
-    inline bool StringBuilder::empty () const
+    inline bool StringBuilder::empty () const noexcept
     {
         Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fAssertExternallySyncrhonized_};
         return fLength_ == 0;
     }
-    inline Character StringBuilder::GetAt (size_t index) const
+    inline Character StringBuilder::GetAt (size_t index) const noexcept
     {
         Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fAssertExternallySyncrhonized_};
         Require (index < fLength_);
         return fData_[index];
     }
-    inline void StringBuilder::SetAt (Character item, size_t index)
+    inline void StringBuilder::SetAt (Character item, size_t index) noexcept
     {
         Require (index < fLength_);
         Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySyncrhonized_};
         fData_[index] = item.GetCharacterCode ();
     }
-    inline void StringBuilder::clear ()
+    inline void StringBuilder::clear () noexcept
     {
         Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySyncrhonized_};
         fLength_ = 0;
@@ -191,11 +191,11 @@ namespace Stroika::Foundation::Characters {
     {
         return As<wstring> ();
     }
-    inline size_t StringBuilder::length () const
+    inline size_t StringBuilder::length () const noexcept
     {
         return size ();
     }
-    inline size_t StringBuilder::capacity () const
+    inline size_t StringBuilder::capacity () const noexcept
     {
         return fData_.capacity ();
     }
