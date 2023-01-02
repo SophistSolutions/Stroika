@@ -103,7 +103,7 @@ Common::GUID::operator Memory::BLOB () const
     return Memory::BLOB{begin (), end ()};
 }
 
-Common::GUID Common::GUID::GenerateNew ()
+Common::GUID Common::GUID::GenerateNew () noexcept
 {
     array<uint8_t, 16>         randomData;
     random_device              rd;

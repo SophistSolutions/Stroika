@@ -18,7 +18,7 @@ namespace Stroika::Foundation::Common {
      ********************************************************************************
      */
 #if qPlatform_Windows
-    constexpr GUID::GUID (const ::GUID& src)
+    constexpr GUID::GUID (const ::GUID& src)  noexcept
         : Data1{src.Data1}
         , Data2{src.Data2}
         , Data3{src.Data3}
@@ -28,27 +28,19 @@ namespace Stroika::Foundation::Common {
         }
     }
 #endif
-    inline Common::GUID::GUID (const array<uint8_t, 16>& src)
+    inline Common::GUID::GUID (const array<uint8_t, 16>& src)  noexcept
     {
         ::memcpy (this, src.data (), 16);
     }
-    inline std::byte* Common::GUID::begin ()
-    {
-        return reinterpret_cast<std::byte*> (this);
-    }
-    inline const std::byte* Common::GUID::begin () const
+    inline const std::byte* Common::GUID::begin () const  noexcept
     {
         return reinterpret_cast<const std::byte*> (this);
     }
-    inline std::byte* Common::GUID::end ()
-    {
-        return reinterpret_cast<std::byte*> (this) + 16;
-    }
-    inline const std::byte* Common::GUID::end () const
+    inline const std::byte* Common::GUID::end () const noexcept
     {
         return reinterpret_cast<const std::byte*> (this) + 16;
     }
-    constexpr size_t Common::GUID::size () const
+    constexpr size_t Common::GUID::size () const noexcept
     {
         return 16;
     }

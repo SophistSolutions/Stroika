@@ -28,6 +28,8 @@ namespace Stroika::Foundation::Common {
     /**
      *  A very common 16-byte opaque ID structure.
      *
+     *  \note Immutable object
+     *
      *  \note <a href="Design Overview.md#Comparisons">Comparisons</a>:
      *      o   Standard Stroika Comparison support (operator<=>,operator==, etc);
      */
@@ -42,13 +44,13 @@ namespace Stroika::Foundation::Common {
          *  @todo - should allow input format of raw bytes (though unclear of endian interpretation that would be best
          *        in that case)
          */
-        constexpr GUID () = default;
+        constexpr GUID () noexcept = default;
 #if qPlatform_Windows
-        constexpr GUID (const ::GUID& src);
+        constexpr GUID (const ::GUID& src)  noexcept;
 #endif
         GUID (const string& src);
         GUID (const Memory::BLOB& src);
-        GUID (const array<uint8_t, 16>& src);
+        GUID (const array<uint8_t, 16>& src)  noexcept;
         GUID (const Characters::String& src);
 
         uint32_t Data1{};
@@ -61,22 +63,20 @@ namespace Stroika::Foundation::Common {
 
     public:
         /**
-         *  Allow iterating and modifying in place of the GUID as a sequence of bytes
+         *  \nb: Stroika v2.1 allowed Allow iterating and modifying in place of the GUID as a sequence of bytes, but no more
          */
-        nonvirtual std::byte* begin ();
-        nonvirtual const std::byte* begin () const;
+        nonvirtual const std::byte* begin () const  noexcept;
 
     public:
         /**
-         *  Allow iterating and modifying in place of the GUID as a sequence of bytes
+         *  \nb: Stroika v2.1 allowed Allow iterating and modifying in place of the GUID as a sequence of bytes, but no more
          */
-        nonvirtual std::byte* end ();
-        nonvirtual const std::byte* end () const;
+        nonvirtual const std::byte* end () const  noexcept;
 
     public:
         /**
          */
-        constexpr size_t size () const;
+        constexpr size_t size () const  noexcept;
 
     public:
         /**
@@ -87,12 +87,12 @@ namespace Stroika::Foundation::Common {
         /**
          *  Like Windows UuidCreate, or CoCreateGuid - create a random GUID (but portably).
          */
-        static GUID GenerateNew ();
+        static GUID GenerateNew ()  noexcept;
 
     public:
         /**
          */
-        nonvirtual strong_ordering operator<=> (const GUID&) const = default;
+        nonvirtual strong_ordering operator<=> (const GUID&) const  noexcept = default;
 
     public:
         /**
@@ -100,6 +100,7 @@ namespace Stroika::Foundation::Common {
          *      o   String          -- format: {61e4d49d-8c26-3480-f5c8-564e155c67a6}
          *      o   string          -- ''
          *      o   BLOB
+         *      o   array<uint8_t, 16>
          */
         template <typename T>
         nonvirtual T As () const;
@@ -119,6 +120,11 @@ namespace Stroika::Foundation::Common {
     string GUID::As () const;
     template <>
     Memory::BLOB GUID::As () const;
+    template <>
+    inline array<uint8_t, 16> GUID::As () const
+    {
+        return *reinterpret_cast<const array<uint8_t, 16>*> (this);
+    }
 
 }
 
@@ -127,7 +133,7 @@ namespace Stroika::Foundation::DataExchange {
     struct DefaultSerializer; // Forward declare to avoid mutual include issues
     template <>
     struct DefaultSerializer<Stroika::Foundation::Common::GUID> {
-        Memory::BLOB operator() (const Stroika::Foundation::Common::GUID& arg) const;
+        Memory::BLOB operator() (const Stroika::Foundation::Common::GUID& arg) const ;
     };
 }
 

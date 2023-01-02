@@ -106,7 +106,14 @@ namespace Stroika::Foundation::Cryptography::Digest {
     template <typename RESULT_TYPE>
     inline RESULT_TYPE HashValueCombine (RESULT_TYPE lhs, RESULT_TYPE rhs)
     {
-        return Private_::HashValueCombine (lhs, rhs);
+        if constexpr (is_same_v<RESULT_TYPE, Common::GUID>) {
+            auto l = lhs.template As<array<uint8_t, 16>> ();
+            auto r = lhs.template As<array<uint8_t, 16>> ();
+            return RESULT_TYPE{Private_::HashValueCombine (l, r)};
+        }
+        else {
+            return Private_::HashValueCombine (lhs, rhs);
+        }
     }
 
 }
