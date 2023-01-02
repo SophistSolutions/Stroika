@@ -44,6 +44,14 @@ namespace Stroika::Foundation::Common {
     {
         return 16;
     }
+    template <>
+    inline Memory::BLOB Common::GUID::As () const  requires (
+                is_same_v<Memory::BLOB,Characters::String> 
+                    or is_same_v<Memory::BLOB,std::string> 
+                    or is_same_v<Memory::BLOB, Memory::BLOB> 
+                    or is_same_v<Memory::BLOB, array<std::byte, 16>> 
+                    or is_same_v<Memory::BLOB, array<uint8_t, 16>> 
+                    );  // so it can go in CPP file
     template <typename T>
     inline T Common::GUID::As () const
         requires (
@@ -67,9 +75,6 @@ namespace Stroika::Foundation::Common {
                        Data1, Data2, Data3,
                        Data4[0], Data4[1], Data4[2], Data4[3], Data4[4], Data4[5], Data4[6], Data4[7]) > 0);
              return  buf;
-        }
-        else if constexpr (is_same_v<T, Memory::BLOB>) {
-            return Memory::BLOB{begin (), end ()};
         }
         else if constexpr (is_same_v<T, array<std::byte, 16>>) {
             return *reinterpret_cast<const array<std::byte, 16>*> (this);
