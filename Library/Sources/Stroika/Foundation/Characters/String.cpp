@@ -307,7 +307,7 @@ String String::FromISOLatin1 (const char* start, const char* end)
     for (const char* i = s; i != e; ++i, pOut++) {
         *pOut = *i;
     }
-    return String{span<const wchar_t> {buf.begin (), pOut}};
+    return String{span<const wchar_t>{buf.begin (), pOut}};
 }
 
 String::_SharedPtrIRep String::mkEmpty_ ()
