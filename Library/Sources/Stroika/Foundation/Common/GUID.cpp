@@ -94,7 +94,15 @@ Common::GUID Common::GUID::GenerateNew () noexcept
 
     template <>
      Memory::BLOB Common::GUID::As () const
-      
+#if qCompilerAndStdLib_template_requresDefNeededonSpecializations_Buggy
+      requires (
+                is_same_v<Memory::BLOB,Characters::String> 
+                    or is_same_v<Memory::BLOB,std::string> 
+                    or is_same_v<Memory::BLOB, Memory::BLOB> 
+                    or is_same_v<Memory::BLOB, array<std::byte, 16>> 
+                    or is_same_v<Memory::BLOB, array<uint8_t, 16>> 
+                    ) 
+         #endif
     {
                     return Memory::BLOB{begin (), end ()};
 

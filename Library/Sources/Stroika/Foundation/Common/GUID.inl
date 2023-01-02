@@ -45,7 +45,17 @@ namespace Stroika::Foundation::Common {
         return 16;
     }
     template <>
-    inline Memory::BLOB Common::GUID::As () const ;  // so it can go in CPP file
+    inline Memory::BLOB Common::GUID::As () const 
+        #if qCompilerAndStdLib_template_requresDefNeededonSpecializations_Buggy
+        requires (
+                is_same_v<Memory::BLOB,Characters::String> 
+                    or is_same_v<Memory::BLOB,std::string> 
+                    or is_same_v<Memory::BLOB, Memory::BLOB> 
+                    or is_same_v<Memory::BLOB, array<std::byte, 16>> 
+                    or is_same_v<Memory::BLOB, array<uint8_t, 16>> 
+                    )
+        #endif
+        ;  // so it can go in CPP file
     template <typename T>
     inline T Common::GUID::As () const
         requires (
