@@ -610,9 +610,9 @@ namespace Stroika::Foundation::Characters::FloatConversion {
             T result; // intentionally uninitialized
             if constexpr (qCompilerAndStdLib_to_chars_FP_Buggy or qCompilerAndStdLib_from_chars_and_tochars_FP_Precision_Buggy) {
 #if qCompilerAndStdLib_spanOfContainer_Buggy
-                result = Private_::ToFloat_RespectingLocale_<T> (span{asciiS.data (), asciiS.size ()}, nullptr);
+                result = Private_::ToFloat_RespectingLocale_<T> (span<const char>{asciiS.data (), asciiS.size ()}, nullptr);
 #else
-                result = Private_::ToFloat_RespectingLocale_<T> (span{asciiS}, nullptr);
+                result = Private_::ToFloat_RespectingLocale_<T> (span<const char>{asciiS}, nullptr);
 #endif
             }
             else {
