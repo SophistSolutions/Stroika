@@ -132,7 +132,10 @@
 			"__bits": "cpp",
 			"__errc": "cpp",
 			"__node_handle": "cpp",
-			"semaphore": "cpp"
+			"semaphore": "cpp",
+			"barrier": "cpp",
+			"format": "cpp",
+			"latch": "cpp"
 		},
 		"git.ignoreLimitWarning": true,
 		"files.watcherExclude": {
