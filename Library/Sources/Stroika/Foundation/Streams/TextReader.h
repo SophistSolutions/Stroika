@@ -61,7 +61,7 @@ namespace Stroika::Foundation::Streams {
      *          Assert (TextReader::New (String{L"hello world"}).ReadAll () == L"hello world");
      *      \endcode
      *
-     *  \note   Reading improperly encoded text may result in a RuntimeException indicating inproperly encoded characters.
+     *  \note   Reading improperly encoded text may result in a RuntimeException indicating improperly encoded characters.
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety-For-Envelope-Plus-Must-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-For-Envelope-Plus-Must-Externally-Synchronize-Letter</a>
      */

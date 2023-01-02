@@ -331,7 +331,7 @@ namespace Stroika::Foundation::Characters {
          *          VerifyTestResult (string{u8"שלום"} == String::FromUTF8 (u8"שלום").AsUTF8 ());
          *      \endcode
          *
-         *  \note   Reading improperly encoded text may result in a RuntimeException indicating inproperly encoded characters.
+         *  \note   Reading improperly encoded text may result in a RuntimeException indicating improperly encoded characters.
          *
          */
         // @todo refactor using requires and deprecate from/to and add span<const char>
@@ -349,7 +349,7 @@ namespace Stroika::Foundation::Characters {
          *  See @SDKChar
          *  See @SDKString
          *
-         *  \note   Reading improperly encoded text may result in a RuntimeException indicating inproperly encoded characters.
+         *  \note   Reading improperly encoded text may result in a RuntimeException indicating improperly encoded characters.
          *
          */
         static String FromSDKString (const SDKChar* from);
@@ -361,7 +361,7 @@ namespace Stroika::Foundation::Characters {
         /**
          *  Create a String object from a 'char-based' (os-setting - current code page) encoded string.
          *
-         *  \note   Reading improperly encoded text may result in a RuntimeException indicating inproperly encoded characters.
+         *  \note   Reading improperly encoded text may result in a RuntimeException indicating improperly encoded characters.
          *
          */
         static String FromNarrowSDKString (const char* from);
@@ -373,7 +373,7 @@ namespace Stroika::Foundation::Characters {
          *  Create a String object from a 'char-based' on the encoding from the argument locale.
          *  This throws an exception if there is an error performing the conversion.
          *
-         *  \note   Reading improperly encoded text may result in a RuntimeException indicating inproperly encoded characters.
+         *  \note   Reading improperly encoded text may result in a RuntimeException indicating improperly encoded characters.
          *
          */
         static String FromNarrowString (const char* from, const locale& l);
@@ -384,7 +384,7 @@ namespace Stroika::Foundation::Characters {
         /**
          *  Create a String object from ascii text. 
          *
-         *  \note   Reading non-ascii text will result in a RuntimeException indicating inproperly encoded characters.
+         *  \note   Reading non-ascii text will result in a RuntimeException indicating improperly encoded characters.
          *
          *  \note - before Stroika v2.1d23 this was a requires check, and an assertion error to pass in non-ascii text
          */
