@@ -17,8 +17,8 @@ namespace Stroika::Foundation::Execution::Resources {
      ********************************************************************************
      */
     inline Accessor::Accessor (const std::byte* start, const std::byte* end)
-        : fDataStart_ (start)
-        , fDataEnd_ (end)
+        : fDataStart_ {start}
+        , fDataEnd_ {end}
     {
         Require (start != nullptr or (start == end));
         Require (end != nullptr or (start == end));
