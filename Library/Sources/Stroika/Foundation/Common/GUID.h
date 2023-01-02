@@ -96,6 +96,9 @@ namespace Stroika::Foundation::Common {
         nonvirtual strong_ordering operator<=> (const GUID&) const  noexcept = default;
 
     public:
+        const uint8_t* data () const noexcept { return reinterpret_cast<const uint8_t *> (this); }
+       
+    public:
         /**
          *  For now, only supported formats are
          *      o   String          -- format: {61e4d49d-8c26-3480-f5c8-564e155c67a6}
