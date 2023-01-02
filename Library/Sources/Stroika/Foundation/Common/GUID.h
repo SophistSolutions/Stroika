@@ -45,12 +45,14 @@ namespace Stroika::Foundation::Common {
          */
         constexpr GUID () noexcept = default;
 #if qPlatform_Windows
-        constexpr GUID (const ::GUID& src)  noexcept;
+        constexpr GUID (const ::GUID& src) noexcept;
 #endif
         GUID (const string& src);
         GUID (const Memory::BLOB& src);
-        GUID (const array<std::byte, 16>& src) noexcept;
-        GUID (const array<uint8_t, 16>& src) noexcept;
+        GUID (const array<std::byte, 16>& src)
+        noexcept;
+        GUID (const array<uint8_t, 16>& src)
+        noexcept;
         GUID (const Characters::String& src);
 
     public:
@@ -66,18 +68,18 @@ namespace Stroika::Foundation::Common {
         /**
          *  \nb: Stroika v2.1 allowed Allow iterating and modifying in place of the GUID as a sequence of bytes, but no more
          */
-        nonvirtual const std::byte* begin () const  noexcept;
+        nonvirtual const std::byte* begin () const noexcept;
 
     public:
         /**
          *  \nb: Stroika v2.1 allowed Allow iterating and modifying in place of the GUID as a sequence of bytes, but no more
          */
-        nonvirtual const std::byte* end () const  noexcept;
+        nonvirtual const std::byte* end () const noexcept;
 
     public:
         /**
          */
-        constexpr size_t size () const  noexcept;
+        constexpr size_t size () const noexcept;
 
     public:
         /**
@@ -88,16 +90,16 @@ namespace Stroika::Foundation::Common {
         /**
          *  Like Windows UuidCreate, or CoCreateGuid - create a random GUID (but portably).
          */
-        static GUID GenerateNew ()  noexcept;
+        static GUID GenerateNew () noexcept;
 
     public:
         /**
          */
-        nonvirtual strong_ordering operator<=> (const GUID&) const  noexcept = default;
+        nonvirtual strong_ordering operator<=> (const GUID&) const noexcept = default;
 
     public:
-        const uint8_t* data () const noexcept { return reinterpret_cast<const uint8_t *> (this); }
-       
+        const uint8_t* data () const noexcept { return reinterpret_cast<const uint8_t*> (this); }
+
     public:
         /**
          *  For now, only supported formats are
@@ -109,12 +111,7 @@ namespace Stroika::Foundation::Common {
         template <typename T>
         nonvirtual T As () const
             requires (
-                is_same_v<T,Characters::String> 
-                    or is_same_v<T,std::string> 
-                    or is_same_v<T, Memory::BLOB> 
-                    or is_same_v<T, array<std::byte, 16>> 
-                    or is_same_v<T, array<uint8_t, 16>> 
-                    ) ;
+                is_same_v<T, Characters::String> or is_same_v<T, std::string> or is_same_v<T, Memory::BLOB> or is_same_v<T, array<std::byte, 16>> or is_same_v<T, array<uint8_t, 16>>);
 
     public:
         /**
@@ -132,7 +129,7 @@ namespace Stroika::Foundation::DataExchange {
     struct DefaultSerializer; // Forward declare to avoid mutual include issues
     template <>
     struct DefaultSerializer<Stroika::Foundation::Common::GUID> {
-        Memory::BLOB operator() (const Stroika::Foundation::Common::GUID& arg) const ;
+        Memory::BLOB operator() (const Stroika::Foundation::Common::GUID& arg) const;
     };
 }
 

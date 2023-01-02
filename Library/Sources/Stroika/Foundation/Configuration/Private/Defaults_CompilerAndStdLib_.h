@@ -966,8 +966,6 @@ InternetMediaType.cpp:180:68: note:   couldn't deduce template parameter 'T_THRE
 
 #endif
 
-
-
 #ifndef qCompilerAndStdLib_template_requresDefNeededonSpecializations_Buggy
 
 #if defined(__clang__) && defined(__APPLE__)
