@@ -217,11 +217,11 @@ namespace Stroika::Frameworks::Led {
         struct BlockRep {
             nonvirtual void operator delete (void* p);
 
-            size_t              fTextLength;
-            const Led_tChar*    fRealText;
-            const Led_tChar*    fVirtualText;
-            const ScriptRunElt* fScriptRuns;
-            const ScriptRunElt* fScriptRunsEnd;
+            size_t              fTextLength{};
+            const Led_tChar*    fRealText{};
+            const Led_tChar*    fVirtualTex{};
+            const ScriptRunElt* fScriptRuns{};
+            const ScriptRunElt* fScriptRunsEnd{};
             // and we allocate extra space off the end of this object for the acutal data...
         };
         shared_ptr<BlockRep> fRep;
@@ -255,8 +255,8 @@ namespace Stroika::Frameworks::Led {
 
     private:
         const TextLayoutBlock&                      fSubsetOf;
-        size_t                                      fStart;
-        size_t                                      fEnd;
+        size_t                                      fStart{};
+        size_t                                      fEnd{};
         vector<ScriptRunElt>                        fScriptRuns;
         Foundation::Memory::InlineBuffer<Led_tChar> fRealText;
     };
