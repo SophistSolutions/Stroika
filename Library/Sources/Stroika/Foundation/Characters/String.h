@@ -270,25 +270,25 @@ namespace Stroika::Foundation::Characters {
         String ();
         template <Character_SafelyCompatible CHAR_T>
         String (const CHAR_T* cString);
-        String (const char8_t* from, const char8_t* to);
-        String (const char16_t* from, const char16_t* to);
-        String (const char32_t* from, const char32_t* to);
-        String (const wchar_t* from, const wchar_t* to);
-        String (const Character* from, const Character* to);
-        String (span<const char8_t> s);
-        String (span<const char16_t> s);
-        String (span<const char32_t> s);
-        String (span<const wchar_t> s);
-        String (span<const Character> s);
+        template <Character_SafelyCompatible CHAR_T>
+        String (span<const CHAR_T> s);
+
+        // keep for now
         String (const basic_string_view<wchar_t>& str);
-        String (const u8string& r);
-        String (const u16string& r);
-        String (const u32string& r);
-        String (const wstring& r);
+
+        template <Character_IsUnicodeCodePoint CHAR_T>
+        String (const basic_string<CHAR_T>& s);
+
+        // generalize and s... see commetns by iml
         String (const Iterable<Character>& src);
+
         explicit String (const Character& c);
         String (String&& from) noexcept      = default;
         String (const String& from) noexcept = default;
+
+        // DEPRECATE ME
+        template <Character_SafelyCompatible CHAR_T>
+        String (const CHAR_T* from, const CHAR_T* to);
 
     public:
         ~String () = default;

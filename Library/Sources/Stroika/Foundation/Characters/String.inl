@@ -87,6 +87,22 @@ namespace Stroika::Foundation::Characters {
      ************************************* String ***********************************
      ********************************************************************************
      */
+    namespace Private_ {
+        template <Character_Compatible SRC_T, Character_Compatible TRG_T>
+        inline void CopyAsASCIICharacters_ (span < const SRC_T> src, span<TRG_T> trg)
+        {
+            Require (trg.size () >= src.size ());
+            TRG_T* outI = trg.data ();
+            for (auto ii = src.begin (); ii != src.end (); ++ii) {
+                if constexpr (is_same_v<SRC_T, Character>) {
+                    *outI++ = ii->GetAsciiCode ();
+                }
+                else {
+                    *outI++ = static_cast<TRG_T> (*ii);
+                }
+            }
+        }
+    }
     template <Character_Compatible CHAR_T>
     auto String::mk_ (span<const CHAR_T> s) -> _SharedPtrIRep
     {
@@ -97,12 +113,11 @@ namespace Stroika::Foundation::Characters {
             // if we already have ascii, just copy into a buffer that can be used for now with the legacy API, and
             // later specialized into something we construct a special rep for
             Memory::StackBuffer<wchar_t> buf{s.size ()};
-            DISABLE_COMPILER_MSC_WARNING_START (4244)
-            copy (s.begin (), s.end (), buf.data ()); // all chars same since ascii
-            DISABLE_COMPILER_MSC_WARNING_END (4244)
 #if qCompilerAndStdLib_spanOfContainer_Buggy
+            Private_::CopyAsASCIICharacters_ (s, span<wchar_t>{buf.data (), buf.size ());
             return mk_ (span<const wchar_t>{buf.data (), buf.size ()});
 #else
+            Private_::CopyAsASCIICharacters_ (s, span<wchar_t>{buf});
             return mk_ (span<const wchar_t>{buf}); // this case specialized
 #endif
         }
@@ -120,13 +135,15 @@ namespace Stroika::Foundation::Characters {
         // extra copy
         if (Character::IsASCII (s1) and Character::IsASCII (s2)) {
             Memory::StackBuffer<char> buf{s1.size () + s2.size ()};
-            DISABLE_COMPILER_MSC_WARNING_START (4244)
             copy (s1.begin (), s1.end (), buf.data ());
             copy (s2.begin (), s2.end (), buf.data () + s1.size ()); // append
-            DISABLE_COMPILER_MSC_WARNING_END (4244)
 #if qCompilerAndStdLib_spanOfContainer_Buggy
-            return mk_ (span<const char>{buf.data (), buf.size ()});
+            Private_::CopyAsASCIICharacters_ (s1, span<wchar_t>{buf.data (), buf.size ()});
+            Private_::CopyAsASCIICharacters_ (s2, span<wchar_t>{buf.data (), buf.size ()}.subspan(s1.size ()));
+            return mk_ (span{buf.data (), buf.size ()});
 #else
+            Private_::CopyAsASCIICharacters_ (s1, span<wchar_t>{buf});
+            Private_::CopyAsASCIICharacters_ (s2, span<wchar_t>{buf}.subspan(s1.size ()));
             return mk_ (span<const char>{buf});
 #endif
         }
@@ -142,7 +159,6 @@ namespace Stroika::Foundation::Characters {
             return mk_ (span<const wchar_t> {buf.data (), len1 + len2});
         }
     }
-
     // FOR NOW - INITIALLY - but later specialize for char and char32_t and probably lose this one
     template <>
     auto String::mk_ (span<const wchar_t> s) -> _SharedPtrIRep;
@@ -164,92 +180,27 @@ namespace Stroika::Foundation::Characters {
         _AssertRepValidType ();
     }
     template <Character_SafelyCompatible CHAR_T>
-    String::String (const CHAR_T* cString)
+    inline String::String (const CHAR_T* cString)
         : inherited{mk_ (span{cString, CString::Length (cString)})}
     {
         RequireNotNull (cString);
         _AssertRepValidType ();
     }
-    inline String::String (const wstring& r)
-        : inherited{r.empty () ? mkEmpty_ () : mk_ (r.data (), r.data () + r.length ())}
+    template <Character_SafelyCompatible CHAR_T>
+    inline String::String (span < const CHAR_T> s)
+        : inherited{mk_ (s)}
     {
         _AssertRepValidType ();
     }
-    inline String::String (const u8string& r)
-        : inherited{r.empty () ? mkEmpty_ () : FromUTF8 (r.data (), r.data () + r.length ())}
+    template <Character_SafelyCompatible CHAR_T>
+    inline String::String (const CHAR_T* from, const CHAR_T* to)
+        : inherited{mk_ (span<const CHAR_T>{from, to})}
     {
-        _AssertRepValidType ();
     }
-    inline String::String (const u16string& r)
-        : inherited{r.empty () ? mkEmpty_ () : mk_ (r.data (), r.data () + r.length ())}
+    template <Character_IsUnicodeCodePoint CHAR_T>
+    inline String::String (const basic_string<CHAR_T>& s)
+        : inherited{mk_ (span<const CHAR_T>{s.data (), s.size ()})}
     {
-        _AssertRepValidType ();
-    }
-    inline String::String (const u32string& r)
-        : inherited{r.empty () ? mkEmpty_ () : mk_ (r.data (), r.data () + r.length ())}
-    {
-        _AssertRepValidType ();
-    }
-    inline String::String (const char8_t* from, const char8_t* to)
-        : inherited{(from == to) ? mkEmpty_ () : FromUTF8 (from, to)}
-    {
-        Require ((from == nullptr) == (to == nullptr));
-        Require (from <= to);
-        _AssertRepValidType (); // just make sure non-null and right type
-    }
-    inline String::String (const char16_t* from, const char16_t* to)
-        : inherited{(from == to) ? mkEmpty_ () : mk_ (from, to)}
-    {
-        Require ((from == nullptr) == (to == nullptr));
-        Require (from <= to);
-        _AssertRepValidType (); // just make sure non-null and right type
-    }
-    inline String::String (const char32_t* from, const char32_t* to)
-        : inherited{(from == to) ? mkEmpty_ () : mk_ (from, to)}
-    {
-        Require ((from == nullptr) == (to == nullptr));
-        Require (from <= to);
-        _AssertRepValidType (); // just make sure non-null and right type
-    }
-    inline String::String (const wchar_t* from, const wchar_t* to)
-        : inherited{(from == to) ? mkEmpty_ () : mk_ (from, to)}
-    {
-        Require (from <= to);
-        Require (from != nullptr or from == to);
-        _AssertRepValidType ();
-    }
-    inline String::String (const Character* from, const Character* to)
-        : inherited{(from == to) ? mkEmpty_ () : mk_ (reinterpret_cast<const wchar_t*> (from), reinterpret_cast<const wchar_t*> (to))}
-    {
-        static_assert (sizeof (Character) == sizeof (wchar_t), "Character and wchar_t must be same size");
-        Require (from <= to);
-        Require (from != nullptr or from == to);
-        _AssertRepValidType ();
-    }
-    inline String::String (span<const char8_t> s)
-        : inherited{s.empty () ? mkEmpty_ () : FromUTF8 (&*s.begin (), &*s.begin () + s.size ())}
-    {
-        _AssertRepValidType (); // just make sure non-null and right type
-    }
-    inline String::String (span<const char16_t> s)
-        : inherited{s.empty () ? mkEmpty_ () : mk_ (&*s.begin (), &*s.begin () + s.size ())}
-    {
-        _AssertRepValidType (); // just make sure non-null and right type
-    }
-    inline String::String (span<const char32_t> s)
-        : inherited{s.empty () ? mkEmpty_ () : mk_ (&*s.begin (), &*s.begin () + s.size ())}
-    {
-        _AssertRepValidType (); // just make sure non-null and right type
-    }
-    inline String::String (span<const wchar_t> s)
-        : inherited{s.empty () ? mkEmpty_ () : String (&*s.begin (), &*s.begin () + s.size ())}
-    {
-        _AssertRepValidType (); // just make sure non-null and right type
-    }
-    inline String::String (span<const Character> s)
-        : inherited{s.empty () ? mkEmpty_ () : String (&*s.begin (), &*s.begin () + s.size ())}
-    {
-        _AssertRepValidType (); // just make sure non-null and right type
     }
     inline String String::FromNarrowString (const char* from, const locale& l)
     {

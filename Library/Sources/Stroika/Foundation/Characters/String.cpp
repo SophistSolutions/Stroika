@@ -178,16 +178,13 @@ String::String (const basic_string_view<wchar_t>& str)
 namespace {
     inline String mkWS_ (const Traversal::Iterable<Character>& src)
     {
+        // redo with small stackbuffer (character and dont do iterable<Characer> do Iterable<CHAR_T> where t is Characer_Compiabple)
+        // then unoicode covert and use other mk_ existing overloads
         StringBuilder r;
         for (const auto& i : src) {
             r.push_back (i.As<wchar_t> ());
         }
         return r.str ();
-    }
-    inline String mkWS_ (const Character& src)
-    {
-        wchar_t c = src.As<wchar_t> ();
-        return String{&c, &c + 1};
     }
 }
 
@@ -197,7 +194,7 @@ String::String (const Iterable<Character>& src)
 }
 
 String::String (const Character& c)
-    : String{mkWS_ (c)}
+    : String{span{&c, 1}}
 {
 }
 

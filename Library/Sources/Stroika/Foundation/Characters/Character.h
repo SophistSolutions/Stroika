@@ -68,7 +68,7 @@ namespace Stroika::Foundation::Characters {
     class Character;
 
     /**
-     *  \brief char16_t, Character, wchar_t, Character - something that can be safely assumed to be a Character.ascii
+     *  \brief char8_t, char16_t, char32_t, wchar_t, Character - something that can be always safely interpreted as a UNICODE Character.
      * 
      *  \note all these types are <= 4 bytes (size of char32_t)
      */
@@ -77,7 +77,7 @@ namespace Stroika::Foundation::Characters {
     Character > ;
 
     /**
-     *  \brief Something that can be reasonably converted into a Unicode Character object (e.g. char16_t, Character, wchar_t, char)
+     *  \brief Something that can be reasonably converted into a Unicode Character object (Character_SafelyCompatible<T> or T==char)
      * 
      *  \note all these types are <= 4 bytes (size of char32_t)
      * 
@@ -85,8 +85,8 @@ namespace Stroika::Foundation::Characters {
      *        on this point).
      */
     template <typename T>
-    concept Character_Compatible = Character_IsUnicodeCodePointOrPlainChar<T> or is_same_v < remove_cv_t<T>,
-    Character > ;
+    concept Character_Compatible = Character_SafelyCompatible<T> or is_same_v < remove_cv_t<T>,
+    char > ;
 
     /**
      *  \note <a href="Design Overview.md#Comparisons">Comparisons</a>:
