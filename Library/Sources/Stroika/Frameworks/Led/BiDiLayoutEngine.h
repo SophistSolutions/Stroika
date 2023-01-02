@@ -219,7 +219,7 @@ namespace Stroika::Frameworks::Led {
 
             size_t              fTextLength{};
             const Led_tChar*    fRealText{};
-            const Led_tChar*    fVirtualTex{};
+            const Led_tChar*    fVirtualText{};
             const ScriptRunElt* fScriptRuns{};
             const ScriptRunElt* fScriptRunsEnd{};
             // and we allocate extra space off the end of this object for the acutal data...
