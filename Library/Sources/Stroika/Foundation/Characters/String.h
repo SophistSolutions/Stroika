@@ -267,8 +267,9 @@ namespace Stroika::Foundation::Characters {
          *  \req for String (const basic_string_view<wchar_t>& str) - str[str.length()]=='\0';   
          *       c-string nul-terminated (which happens automatically with L"xxx"sv)
          * 
-         *  \note even though the span<> constructor takes a CHAR_T, the span is not modified. The use of
-         *        CHAR_T here is just because it allows for easier deduction (maybe can fix better ways?)
+         *  \note even though the String (span<CHAR_T>) constructor takes a CHAR_T, the span data is not modified. The use of
+         *        CHAR_T (instead of const CHAR_T) here is just because it allows for easier deduction 
+         *        (@todo maybe can fix better ways? - try using const CHAR_T and see how many uses of span{a,b} have to become span<const chattype> {a,b})
          */
         String ();
         template <Character_SafelyCompatible CHAR_T>

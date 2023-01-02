@@ -124,9 +124,9 @@ namespace Stroika::Foundation::Characters {
         else {
             Memory::StackBuffer<wchar_t> buf{UTFConverter::ComputeTargetBufferSize<wchar_t> (s)};
 #if qCompilerAndStdLib_spanOfContainer_Buggy
-            auto                         len = UTFConverter::kThe.Convert (s, span{buf.data (), buf.size ()}).fTargetProduced;
+            auto len = UTFConverter::kThe.Convert (s, span{buf.data (), buf.size ()}).fTargetProduced;
 #else
-            auto                         len = UTFConverter::kThe.Convert (s, span{buf}).fTargetProduced;
+            auto len = UTFConverter::kThe.Convert (s, span{buf}).fTargetProduced;
 #endif
             Assert (len <= buf.size ());
             return mk_ (span<const wchar_t>{buf.data (), len}); // this case specialized

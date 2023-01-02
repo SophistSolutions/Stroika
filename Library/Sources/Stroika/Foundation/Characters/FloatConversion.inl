@@ -480,11 +480,11 @@ namespace Stroika::Foundation::Characters::FloatConversion {
                 Memory::StackBuffer<wchar_t> wideBuf{UTFConverter::ComputeTargetBufferSize<wchar_t> (srcSpan)};
                 size_t                       wideChars = UTFConverter::kThe.Convert (srcSpan, wideBuf).fTargetProduced;
                 if (remainder == nullptr) {
-                    d = ToFloat_RespectingLocale_<T> (span<const wchar_t>{wideBuf.data (), wideChars}, nullptr);
+                    d = ToFloat_RespectingLocale_<T> (span{wideBuf.data (), wideChars}, nullptr);
                 }
                 else {
                     // do the conversion using wchar_t, and then map back the resulting remainder offset
-                    span<const wchar_t>           wideSpan = span<const wchar_t>{wideBuf.data (), wideChars};
+                    span<const wchar_t>           wideSpan = span{wideBuf.data (), wideChars};
                     span<const wchar_t>::iterator wideRemainder;
                     d  = ToFloat_RespectingLocale_<T> (wideSpan, &wideRemainder);
                     ri = UTFConverter::kThe.ConvertOffset<CHAR_T> (wideRemainder - wideSpan.begin ()) + si;
@@ -610,9 +610,9 @@ namespace Stroika::Foundation::Characters::FloatConversion {
             T result; // intentionally uninitialized
             if constexpr (qCompilerAndStdLib_to_chars_FP_Buggy or qCompilerAndStdLib_from_chars_and_tochars_FP_Precision_Buggy) {
 #if qCompilerAndStdLib_spanOfContainer_Buggy
-                result = Private_::ToFloat_RespectingLocale_<T> (span<const char>{asciiS.begin (), asciiS.end ()}, nullptr);
+                result = Private_::ToFloat_RespectingLocale_<T> (span{asciiS.begin (), asciiS.end ()}, nullptr);
 #else
-                result = Private_::ToFloat_RespectingLocale_<T> (span<const char>{asciiS}, nullptr);
+                result = Private_::ToFloat_RespectingLocale_<T> (span{asciiS}, nullptr);
 #endif
             }
             else {
