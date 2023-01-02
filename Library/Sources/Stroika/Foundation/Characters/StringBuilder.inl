@@ -62,7 +62,7 @@ namespace Stroika::Foundation::Characters {
 #else
                 auto r = UTFConverter::kThe.Convert (s, span{buf});
 #endif
-                Append (String{&*buf.begin (), &*buf.begin () + r.fTargetProduced});
+                Append (String{span<const wchar_t>{buf.data (), r.fTargetProduced}});
             }
         }
     }
@@ -156,7 +156,7 @@ namespace Stroika::Foundation::Characters {
     inline String StringBuilder::str () const
     {
         Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fAssertExternallySyncrhonized_};
-        return String{fData_.begin (), fData_.begin () + fLength_};
+        return String{span<const wchar_t>{fData_.data (), fLength_}};
     }
     template <>
     inline void StringBuilder::As (String* into) const

@@ -266,12 +266,15 @@ namespace Stroika::Foundation::Characters {
          * 
          *  \req for String (const basic_string_view<wchar_t>& str) - str[str.length()]=='\0';   
          *       c-string nul-terminated (which happens automatically with L"xxx"sv)
+         * 
+         *  \note even though the span<> constructor takes a CHAR_T, the span is not modified. The use of
+         *        CHAR_T here is just because it allows for easier deduction (maybe can fix better ways?)
          */
         String ();
         template <Character_SafelyCompatible CHAR_T>
         String (const CHAR_T* cString);
         template <Character_SafelyCompatible CHAR_T>
-        String (span<const CHAR_T> s);
+        String (span<CHAR_T> s);
         template <Character_IsUnicodeCodePoint CHAR_T>
         String (const basic_string<CHAR_T>& s);
         template <Character_SafelyCompatible CHAR_T>
@@ -289,7 +292,7 @@ namespace Stroika::Foundation::Characters {
 
         // DEPRECATE ME
         template <Character_SafelyCompatible CHAR_T>
-        String (const CHAR_T* from, const CHAR_T* to);
+        [[deprecated ("Since Stroika v3.0d1, use span{} constructor for this")]] String (const CHAR_T* from, const CHAR_T* to);
 
     public:
         ~String () = default;

@@ -183,9 +183,9 @@ String String::FromUTF8 (const char* from, const char* to)
     size_t               cvtBufSize = UTFConverter::kThe.ComputeTargetBufferSize<wchar_t> (span{from, to});
     StackBuffer<wchar_t> buf{Memory::eUninitialized, cvtBufSize};
 #if qCompilerAndStdLib_spanOfContainer_Buggy
-    return String{buf.begin (), buf.begin () + UTFConverter::kThe.Convert (span{from, to}, Memory::mkSpan_BWA_ (buf)).fTargetProduced};
+    return String{span<const wchar_t>{buf.data (), UTFConverter::kThe.Convert (span{from, to}, Memory::mkSpan_BWA_ (buf)).fTargetProduced}};
 #else
-    return String{buf.begin (), buf.begin () + UTFConverter::kThe.Convert (span{from, to}, span{buf}).fTargetProduced};
+    return String{span<const wchar_t>{buf.data (), UTFConverter::kThe.Convert (span{from, to}, span{buf}).fTargetProduced}};
 #endif
 }
 
@@ -205,7 +205,7 @@ String String::FromSDKString (const SDKChar* from, const SDKChar* to)
 {
 // @todo FIX PERFORMANCE
 #if qTargetPlatformSDKUseswchar_t
-    return String{from, to};
+    return String{span{from, to}};
 #else
     wstring tmp;
     NarrowStringToWide (from, to, GetDefaultSDKCodePage (), &tmp);
@@ -278,7 +278,7 @@ String String::FromASCII (const char* from, const char* to)
         }
         *pOut = *i;
     }
-    return String{buf.begin (), pOut};
+    return String{span{buf.begin (), pOut}};
 }
 
 String String::FromASCII (const wchar_t* from, const wchar_t* to)
@@ -291,7 +291,7 @@ String String::FromASCII (const wchar_t* from, const wchar_t* to)
             Execution::Throw (kException_);
         }
     }
-    return String{from, to};
+    return String{span{from, to}};
 }
 
 String String::FromISOLatin1 (const char* start, const char* end)
@@ -307,7 +307,7 @@ String String::FromISOLatin1 (const char* start, const char* end)
     for (const char* i = s; i != e; ++i, pOut++) {
         *pOut = *i;
     }
-    return String{buf.begin (), pOut};
+    return String{span<const wchar_t> {buf.begin (), pOut}};
 }
 
 String::_SharedPtrIRep String::mkEmpty_ ()
