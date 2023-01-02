@@ -290,7 +290,6 @@ namespace Stroika::Foundation::Characters {
         String (String&& from) noexcept      = default;
         String (const String& from) noexcept = default;
 
-        // DEPRECATE ME
         template <Character_SafelyCompatible CHAR_T>
         [[deprecated ("Since Stroika v3.0d1, use span{} constructor for this")]] String (const CHAR_T* from, const CHAR_T* to);
 

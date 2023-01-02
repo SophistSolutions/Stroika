@@ -94,7 +94,7 @@ namespace Stroika::Foundation::Time {
     {
         //Require (not isnan (duration)); // inf is allowed
     }
-    constexpr Duration::Duration (long double duration)
+    constexpr Duration::Duration (long double duration) noexcept
         : inherited{static_cast<InternalNumericFormatType_> (duration)}
         , fRepType_{eNumeric_}
         , fNonStringRep_{}

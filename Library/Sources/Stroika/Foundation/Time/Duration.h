@@ -151,7 +151,7 @@ namespace Stroika::Foundation::Time {
         constexpr explicit Duration (long long duration);
         constexpr explicit Duration (float duration);
         constexpr explicit Duration (double duration);
-        constexpr explicit Duration (long double duration);
+        constexpr explicit Duration (long double duration) noexcept;
         template <typename DURATION_REP, typename DURATION_PERIOD>
         constexpr Duration (const chrono::duration<DURATION_REP, DURATION_PERIOD>& d);
 
