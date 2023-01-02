@@ -44,6 +44,40 @@ namespace Stroika::Foundation::Common {
     {
         return 16;
     }
+    template <typename T>
+    inline T Common::GUID::As () const
+        requires (
+                is_same_v<T,Characters::String> 
+                    or is_same_v<T,std::string> 
+                    or is_same_v<T, Memory::BLOB> 
+                    or is_same_v<T, array<std::byte, 16>> 
+                    or is_same_v<T, array<uint8_t, 16>> 
+                    ) 
+    {
+        if constexpr (is_same_v<T, Characters::String>) {
+            char buf[1024];
+            Verify (::snprintf (buf, Memory::NEltsOf (buf), "%08x-%04x-%04x-%02x%02x-%02x%02x%02x%02x%02x%02x",
+                             Data1, Data2, Data3,
+                             Data4[0], Data4[1], Data4[2], Data4[3], Data4[4], Data4[5], Data4[6], Data4[7]) > 0);
+            return Characters::String::FromASCII (buf);
+        }
+        else if constexpr (is_same_v<T, std::string>) {
+            char buf[1024];
+            Verify (::snprintf (buf, Memory::NEltsOf (buf), "%08x-%04x-%04x-%02x%02x-%02x%02x%02x%02x%02x%02x",
+                       Data1, Data2, Data3,
+                       Data4[0], Data4[1], Data4[2], Data4[3], Data4[4], Data4[5], Data4[6], Data4[7]) > 0);
+             return  buf;
+        }
+        else if constexpr (is_same_v<T, Memory::BLOB>) {
+            return Memory::BLOB{begin (), end ()};
+        }
+        else if constexpr (is_same_v<T, array<std::byte, 16>>) {
+            return *reinterpret_cast<const array<std::byte, 16>*> (this);
+        }
+        else if constexpr (is_same_v<T, array<uint8_t, 16>>) {
+            return *reinterpret_cast<const array<uint8_t, 16>*> (this);
+        }
+    }
 
 }
 

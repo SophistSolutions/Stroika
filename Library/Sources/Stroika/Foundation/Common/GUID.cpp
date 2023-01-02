@@ -67,34 +67,11 @@ Common::GUID::GUID (const Characters::String& src)
 {
 }
 
-template <>
-Characters::String Common::GUID::As () const
-{
-    return Characters::Format (L"%08x-%04x-%04x-%02x%02x-%02x%02x%02x%02x%02x%02x",
-                               Data1, Data2, Data3,
-                               Data4[0], Data4[1], Data4[2], Data4[3], Data4[4], Data4[5], Data4[6], Data4[7]);
-}
-
-template <>
-string Common::GUID::As () const
-{
-    return Characters::CString::Format ("%08x-%04x-%04x-%02x%02x-%02x%02x%02x%02x%02x%02x",
-                                        Data1, Data2, Data3,
-                                        Data4[0], Data4[1], Data4[2], Data4[3], Data4[4], Data4[5], Data4[6], Data4[7]);
-}
-
 Characters::String Common::GUID::ToString () const
 {
     return Characters::Format (L"%08x-%04x-%04x-%02x%02x-%02x%02x%02x%02x%02x%02x",
                                Data1, Data2, Data3,
                                Data4[0], Data4[1], Data4[2], Data4[3], Data4[4], Data4[5], Data4[6], Data4[7]);
-}
-
-template <>
-Memory::BLOB Common::GUID::As () const
-{
-    Assert ((end () - begin ()) == 16);
-    return Memory::BLOB{begin (), end ()};
 }
 
 Common::GUID::operator Memory::BLOB () const

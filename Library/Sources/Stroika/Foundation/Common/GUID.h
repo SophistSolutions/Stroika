@@ -28,12 +28,11 @@ namespace Stroika::Foundation::Common {
     /**
      *  A very common 16-byte opaque ID structure.
      *
-     *  \note Immutable object
-     *
      *  \note <a href="Design Overview.md#Comparisons">Comparisons</a>:
      *      o   Standard Stroika Comparison support (operator<=>,operator==, etc);
      */
     struct GUID {
+    public:
         /**
          *  \note - when converting from a string, GUID allows the leading/trailing {} to be optionally provided.
          *        - format's supported {61e4d49d-8c26-3480-f5c8-564e155c67a6} 
@@ -50,9 +49,11 @@ namespace Stroika::Foundation::Common {
 #endif
         GUID (const string& src);
         GUID (const Memory::BLOB& src);
-        GUID (const array<uint8_t, 16>& src)  noexcept;
+        GUID (const array<std::byte, 16>& src) noexcept;
+        GUID (const array<uint8_t, 16>& src) noexcept;
         GUID (const Characters::String& src);
 
+    public:
         uint32_t Data1{};
         uint16_t Data2{};
         uint16_t Data3{};
@@ -100,10 +101,17 @@ namespace Stroika::Foundation::Common {
          *      o   String          -- format: {61e4d49d-8c26-3480-f5c8-564e155c67a6}
          *      o   string          -- ''
          *      o   BLOB
-         *      o   array<uint8_t, 16>
+         *      o   array<uint8_t, 16> or array<byte, 16>
          */
         template <typename T>
-        nonvirtual T As () const;
+        nonvirtual T As () const
+            requires (
+                is_same_v<T,Characters::String> 
+                    or is_same_v<T,std::string> 
+                    or is_same_v<T, Memory::BLOB> 
+                    or is_same_v<T, array<std::byte, 16>> 
+                    or is_same_v<T, array<uint8_t, 16>> 
+                    ) ;
 
     public:
         /**
@@ -113,18 +121,6 @@ namespace Stroika::Foundation::Common {
     };
     static_assert (sizeof (GUID) == 16);
     static_assert (Configuration::IsIterable_v<GUID>);
-
-    template <>
-    Characters::String GUID::As () const;
-    template <>
-    string GUID::As () const;
-    template <>
-    Memory::BLOB GUID::As () const;
-    template <>
-    inline array<uint8_t, 16> GUID::As () const
-    {
-        return *reinterpret_cast<const array<uint8_t, 16>*> (this);
-    }
 
 }
 
