@@ -57,7 +57,7 @@ namespace {
     }
 }
 
-strong_ordering Character::Compare (span<const Character> lhs, span<const Character> rhs, CompareOptions co)
+strong_ordering Character::Compare (span<const Character> lhs, span<const Character> rhs, CompareOptions co) noexcept
 {
     Require (co == CompareOptions::eWithCase or co == CompareOptions::eCaseInsensitive);
     switch (co) {
@@ -71,7 +71,7 @@ strong_ordering Character::Compare (span<const Character> lhs, span<const Charac
     }
 }
 
-strong_ordering Character::Compare (const Character* lhsStart, const Character* lhsEnd, const Character* rhsStart, const Character* rhsEnd, CompareOptions co)
+strong_ordering Character::Compare (const Character* lhsStart, const Character* lhsEnd, const Character* rhsStart, const Character* rhsEnd, CompareOptions co) noexcept
 {
     Require (co == CompareOptions::eWithCase or co == CompareOptions::eCaseInsensitive);
     Require (lhsStart <= lhsEnd);
