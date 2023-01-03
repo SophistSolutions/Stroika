@@ -198,7 +198,7 @@ String String::FromNarrowString (span<const char> s, const locale& l)
 
 String::_SharedPtrIRep String::mkEmpty_ ()
 {
-    static const _SharedPtrIRep s_            = MakeSmartPtr<String_BufferedArray_Rep_> (nullptr, nullptr);
+    static const _SharedPtrIRep s_ = MakeSmartPtr<String_BufferedArray_Rep_> (nullptr, nullptr);
     return s_;
 }
 
@@ -244,7 +244,7 @@ String String::InsertAt (const Character* from, const Character* to, size_t at) 
             make_pair (&*d.begin () + at, &*d.begin () + d.size ()))};
     }
 #else
-    _SafeReadRepAccessor copyAccessor{this};
+    _SafeReadRepAccessor                     copyAccessor{this};
     pair<const Character*, const Character*> d = copyAccessor._ConstGetRep ().GetData ();
 
     return String{String::MakeSmartPtr<String_BufferedArray_Rep_> (
