@@ -17,6 +17,14 @@
 namespace Stroika::Foundation::Memory {
 
     /**
+     *  \brief convert a (possibly already const) span to the same span, but with const on the 'T' argument
+     * 
+     *  See https://stackoverflow.com/questions/62688814/stdspanconst-t-as-parameter-in-function-template
+     */
+    template <class T, size_t EXTENT>
+    constexpr std::span<const T, EXTENT> ConstSpan (std::span<T, EXTENT> s);
+
+    /**
      *  \brief NEltsOf(X) returns the number of elements in array argument (ie return sizeof (arg)/sizeof(arg[0]))
      *
      *      @todo   Found std::begin() could be used to replace old StartOfArray() macro -
