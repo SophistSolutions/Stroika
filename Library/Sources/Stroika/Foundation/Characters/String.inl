@@ -292,7 +292,9 @@ namespace Stroika::Foundation::Characters {
 #if qTargetPlatformSDKUseswchar_t
         return String{s};
 #else
-        return String{NarrowStringToWide (from, GetDefaultSDKCodePage ())};
+        wstring w;
+        NarrowStringToWide (s.data (), s.data () + s.size (), GetDefaultSDKCodePage (), &w);
+        return String{move (w)};
 #endif
     }
     inline String String::FromSDKString (const SDKString& from)
