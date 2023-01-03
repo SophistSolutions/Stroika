@@ -386,12 +386,12 @@ namespace Stroika::Foundation::Characters {
          *
          *  \note - before Stroika v2.1d23 this was a requires check, and an assertion error to pass in non-ascii text
          */
-        static String FromASCII (const char* from);
-        static String FromASCII (const string& from);
-        static String FromASCII (const wchar_t* from);
-        static String FromASCII (const wstring& from);
-        static String FromASCII (const char* from, const char* to);
-        static String FromASCII (const wchar_t* from, const wchar_t* to);
+        template <Character_Compatible CHAR_T>
+        static String FromASCII (const CHAR_T* cString);
+        template <Character_Compatible CHAR_T>
+        static String FromASCII (span<const CHAR_T> s);
+        template <Character_IsUnicodeCodePointOrPlainChar CHAR_T>
+        static String FromASCII (const basic_string<CHAR_T>& s);
 
     public:
         /**
@@ -400,29 +400,19 @@ namespace Stroika::Foundation::Characters {
          *  \note Though ISO-Latin-1 is is defined to only have 192 valid characters (source), UNICODE
          *        is defined so that the first 256 code points match ISO-Latin-1.
          *
-         *        Because of this, This function allows ANY 8-bit) characters at all - to be passed in, and those characters
+         *        Because of this, This function allows ANY 8-bit characters at all - to be passed in, and those characters
          *        will be mapped to UNICODE characters (of the same code point) in the resulting String.
+         * 
+         *  \note if character code point >= 256, this will throw an exception - not defined for that range (only checked if sizeof (CHAR_T) > 1)
          *
          *  \note Alias From8bitASCII () or FromExtendedASCII () or FromAnyCharset (), FromAnyCharacterSet ()
          */
-        static String FromISOLatin1 (const char* from);
-        static String FromISOLatin1 (const char* start, const char* end);
-        static String FromISOLatin1 (const string& from);
-
-    private:
-        static _SharedPtrIRep mkEmpty_ ();
-        // note here - for PlainChar overload - REQUIRE arg IsAscii
         template <Character_Compatible CHAR_T>
-        static _SharedPtrIRep mk_ (span<const CHAR_T> s);
+        static String FromISOLatin1 (const CHAR_T* cString);
         template <Character_Compatible CHAR_T>
-        static _SharedPtrIRep mk_ (span<const CHAR_T> s1, span<const CHAR_T> s2);
-        template <Character_Compatible CHAR_T>
-        static _SharedPtrIRep mk_ (Iterable<CHAR_T> it);
-
-    public:
-        nonvirtual String& operator+= (Character appendage);
-        nonvirtual String& operator+= (const String& appendage);
-        nonvirtual String& operator+= (const wchar_t* appendageCStr);
+        static String FromISOLatin1 (span<const CHAR_T> s);
+        template <Character_IsUnicodeCodePointOrPlainChar CHAR_T>
+        static String FromISOLatin1 (const basic_string<CHAR_T>& s);
 
     public:
         /**
@@ -503,6 +493,11 @@ namespace Stroika::Foundation::Characters {
         nonvirtual void Append (const wchar_t* s);
         nonvirtual void Append (const wchar_t* from, const wchar_t* to);
         nonvirtual void Append (const Character* from, const Character* to);
+
+    public:
+        nonvirtual String& operator+= (Character appendage);
+        nonvirtual String& operator+= (const String& appendage);
+        nonvirtual String& operator+= (const wchar_t* appendageCStr);
 
     public:
         /**
@@ -607,14 +602,6 @@ namespace Stroika::Foundation::Characters {
         template <typename SZ1, typename SZ2>
         nonvirtual String SubString (SZ1 from, SZ2 to) const;
 
-    private:
-        nonvirtual size_t SubString_adjust_ (unsigned int fromOrTo, size_t myLength) const;
-        nonvirtual size_t SubString_adjust_ (unsigned long fromOrTo, size_t myLength) const;
-        nonvirtual size_t SubString_adjust_ (unsigned long long fromOrTo, size_t myLength) const;
-        nonvirtual size_t SubString_adjust_ (int fromOrTo, size_t myLength) const;
-        nonvirtual size_t SubString_adjust_ (long fromOrTo, size_t myLength) const;
-        nonvirtual size_t SubString_adjust_ (long long fromOrTo, size_t myLength) const;
-
     public:
         /**
          *  Like SubString(), but no requirements on from/to. These are just adjusted to the edge of the string
@@ -630,9 +617,6 @@ namespace Stroika::Foundation::Characters {
         nonvirtual String SafeSubString (SZ from) const;
         template <typename SZ1, typename SZ2>
         nonvirtual String SafeSubString (SZ1 from, SZ2 to) const;
-
-    private:
-        nonvirtual String SubString_ (const _SafeReadRepAccessor& thisAccessor, size_t thisLen, size_t from, size_t to) const;
 
     public:
         /**
@@ -1345,6 +1329,18 @@ namespace Stroika::Foundation::Characters {
         static _SharedPtrIRep mk_ (const char32_t* start, const char32_t* end);
 
     public:
+        [[deprecated ("Since Stroika v3.0d1, use span{} overload for this")]] static String FromISOLatin1 (const char* start, const char* end)
+        {
+            return FromISOLatin1 (span{start, end});
+        }
+        [[deprecated ("Since Stroika v3.0d1, use span{} overload for this")]] static String FromASCII (const char* from, const char* to)
+        {
+            return FromASCII (span{from, to});
+        }
+        [[deprecated ("Since Stroika v3.0d1, use span{} overload for this")]] static String FromASCII (const wchar_t* from, const wchar_t* to)
+        {
+            return FromASCII (span{from, to});
+        }
         [[deprecated ("Since Stroika v3.0d1, use span{} constructor for this")]] static String FromNarrowString (const char* from, const char* to, const locale& l)
         {
             return FromNarrowString (span{from, to}, l);
@@ -1374,6 +1370,27 @@ namespace Stroika::Foundation::Characters {
             return Character::AsASCIIQuietly (span<const wchar_t>{fromStart, fromEnd}, into);
         }
         [[deprecated ("Since Stroika v3.0d1 due to https://stroika.atlassian.net/browse/STK-965 - NOT IMPLEMENTED")]] nonvirtual const wchar_t* data () const;
+
+    private:
+        static _SharedPtrIRep mkEmpty_ ();
+        // note here - for PlainChar overload - REQUIRE arg IsAscii
+        template <Character_Compatible CHAR_T>
+        static _SharedPtrIRep mk_ (span<const CHAR_T> s);
+        template <Character_Compatible CHAR_T>
+        static _SharedPtrIRep mk_ (span<const CHAR_T> s1, span<const CHAR_T> s2);
+        template <Character_Compatible CHAR_T>
+        static _SharedPtrIRep mk_ (Iterable<CHAR_T> it);
+
+    private:
+        nonvirtual size_t SubString_adjust_ (unsigned int fromOrTo, size_t myLength) const;
+        nonvirtual size_t SubString_adjust_ (unsigned long fromOrTo, size_t myLength) const;
+        nonvirtual size_t SubString_adjust_ (unsigned long long fromOrTo, size_t myLength) const;
+        nonvirtual size_t SubString_adjust_ (int fromOrTo, size_t myLength) const;
+        nonvirtual size_t SubString_adjust_ (long fromOrTo, size_t myLength) const;
+        nonvirtual size_t SubString_adjust_ (long long fromOrTo, size_t myLength) const;
+
+    private:
+        nonvirtual String SubString_ (const _SafeReadRepAccessor& thisAccessor, size_t thisLen, size_t from, size_t to) const;
 
     protected:
         nonvirtual void _AssertRepValidType () const;

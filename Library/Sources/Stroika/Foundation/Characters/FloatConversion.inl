@@ -315,7 +315,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
 #endif
             }
             Verify (resultStrLen > 0 and resultStrLen < static_cast<int> (sz));
-            return String::FromASCII (buf.data (), buf.data () + resultStrLen);
+            return String::FromASCII (Memory::ConstSpan (span{buf.data (), static_cast<size_t> (resultStrLen)}));
         }
     }
 

@@ -196,51 +196,6 @@ String String::FromNarrowString (span<const char> s, const locale& l)
     return resultWStr;
 }
 
-String String::FromASCII (const char* from, const char* to)
-{
-    RequireNotNull (from);
-    Require (from <= to);
-    StackBuffer<wchar_t> buf{Memory::eUninitialized, static_cast<size_t> (to - from)};
-    wchar_t*             pOut = buf.begin ();
-    for (const char* i = from; i != to; ++i, pOut++) {
-        if (not isascii (*i)) {
-            static const auto kException_ = Execution::RuntimeErrorException{L"Error converting non-ascii text to String"sv};
-            Execution::Throw (kException_);
-        }
-        *pOut = *i;
-    }
-    return String{span{buf.begin (), pOut}};
-}
-
-String String::FromASCII (const wchar_t* from, const wchar_t* to)
-{
-    RequireNotNull (from);
-    Require (from <= to);
-    for (const wchar_t* i = from; i != to; ++i) {
-        if (not isascii (*i)) {
-            static const auto kException_ = Execution::RuntimeErrorException{L"Error converting non-ascii text to String"sv};
-            Execution::Throw (kException_);
-        }
-    }
-    return String{span{from, to}};
-}
-
-String String::FromISOLatin1 (const char* start, const char* end)
-{
-    /*
-     *  From http://unicodebook.readthedocs.io/encodings.html
-     *      "For example, ISO-8859-1 are the first 256 Unicode code points (U+0000-U+00FF)."
-     */
-    const char*          s = start;
-    const char*          e = end;
-    StackBuffer<wchar_t> buf{Memory::eUninitialized, static_cast<size_t> (e - s)};
-    wchar_t*             pOut = buf.begin ();
-    for (const char* i = s; i != e; ++i, pOut++) {
-        *pOut = *i;
-    }
-    return String{span<const wchar_t>{buf.begin (), pOut}};
-}
-
 String::_SharedPtrIRep String::mkEmpty_ ()
 {
     static constexpr wchar_t    kEmptyStr_[1] = {};

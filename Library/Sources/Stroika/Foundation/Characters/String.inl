@@ -240,23 +240,64 @@ namespace Stroika::Foundation::Characters {
     {
         return FromNarrowString (span{from.c_str (), from.length ()}, l);
     }
-    inline String String::FromASCII (const char* from)
+    template <Character_Compatible CHAR_T>
+    inline String String::FromASCII (const CHAR_T* cString)
     {
-        RequireNotNull (from);
-        return FromASCII (from, from + ::strlen (from));
+        RequireNotNull (cString);
+        return FromASCII (span{cString, CString::Length (cString)});
     }
-    inline String String::FromASCII (const string& from)
+    template <Character_Compatible CHAR_T>
+    inline String String::FromASCII (span<const CHAR_T> s)
     {
-        return FromASCII (from.c_str (), from.c_str () + from.length ());
+        if (not Character::IsASCII (s)) {
+            static const auto kException_ = out_of_range{"Error converting non-ascii text to String"};
+            Execution::Throw (kException_);
+        }
+        // @todo redo using different rep
+        Memory::StackBuffer<wchar_t> buf{Memory::eUninitialized, UTFConverter::kThe.ComputeTargetBufferSize<wchar_t> (s)};
+#if qCompilerAndStdLib_spanOfContainer_Buggy
+        return String{span<const wchar_t>{buf.data (), UTFConverter::kThe.Convert (s, span{buf.data (), buf.size ()}).fTargetProduced}};
+#else
+        return String{span<const wchar_t>{buf.data (), UTFConverter::kThe.Convert (s, span{buf}).fTargetProduced}};
+#endif
     }
-    inline String String::FromASCII (const wchar_t* from)
+    template <Character_IsUnicodeCodePointOrPlainChar CHAR_T>
+    inline String String::FromISOLatin1 (const basic_string<CHAR_T>& s)
     {
-        RequireNotNull (from);
-        return FromASCII (from, from + ::wcslen (from));
+        return FromISOLatin1 (span{s.data (), s.size ()});
     }
-    inline String String::FromASCII (const wstring& from)
+    template <Character_Compatible CHAR_T>
+    inline String String::FromISOLatin1 (const CHAR_T* cString)
     {
-        return FromASCII (from.c_str (), from.c_str () + from.length ());
+        RequireNotNull (cString);
+        return FromISOLatin1 (span{cString, CString::Length (cString)});
+    }
+    template <Character_Compatible CHAR_T>
+    inline String String::FromISOLatin1 (span<const CHAR_T> s)
+    {
+        // @todo redo using different rep
+        /*
+         *  From http://unicodebook.readthedocs.io/encodings.html
+         *      "For example, ISO-8859-1 are the first 256 Unicode code points (U+0000-U+00FF)."
+         */
+        const CHAR_T*                e = s.data () + s.size ();
+        Memory::StackBuffer<wchar_t> buf{Memory::eUninitialized, static_cast<size_t> (e - s.data ())};
+        wchar_t*                     pOut = buf.begin ();
+        for (const CHAR_T* i = s.data (); i != e; ++i, ++pOut) {
+            if constexpr (sizeof (CHAR_T) > 1) {
+                if (*i >= 256) {
+                    static const auto kException_ = out_of_range{"Error converting non-iso-latin-1 text to String"};
+                    Execution::Throw (kException_);
+                }
+            }
+            *pOut = *i;
+        }
+        return String{span<const wchar_t>{buf.begin (), pOut}};
+    }
+    template <Character_IsUnicodeCodePointOrPlainChar CHAR_T>
+    inline String String::FromASCII (const basic_string<CHAR_T>& s)
+    {
+        return FromASCII (span{s.data (), s.size ()});
     }
     template <typename CHAR_T>
     String String::FromUTF8 (span<CHAR_T> s)
@@ -316,14 +357,6 @@ namespace Stroika::Foundation::Characters {
     inline String String::FromNarrowSDKString (const string& from)
     {
         return FromNarrowSDKString (span{from.c_str (), from.length ()});
-    }
-    inline String String::FromISOLatin1 (const char* from)
-    {
-        return FromISOLatin1 (from, from + ::strlen (from));
-    }
-    inline String String::FromISOLatin1 (const string& from)
-    {
-        return FromISOLatin1 (from.c_str (), from.c_str () + from.length ());
     }
     inline void String::_AssertRepValidType () const
     {
@@ -1276,7 +1309,7 @@ namespace Stroika::Foundation::Characters {
     {
         // a future verison of this API may do something like String_Constant, which is why this API requires its arg is a
         // forever-lifetime C++ constant.
-        return String::FromASCII (str, str + len);
+        return String::FromASCII (span{str, len});
     }
 
     /*
