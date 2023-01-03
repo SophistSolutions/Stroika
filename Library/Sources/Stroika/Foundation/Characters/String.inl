@@ -613,79 +613,101 @@ namespace Stroika::Foundation::Characters {
         Require (i < size ());
         return GetCharAt (i);
     }
-    template <>
-    inline void String::As (wstring* into) const
+
+    template <typename T>
+    inline T String::As () const
+        requires (BasicUnicodeString<T> or is_same_v<T, String>)
     {
-        RequireNotNull (into);
-        _SafeReadRepAccessor accessor{this};
-        size_t               n{accessor._ConstGetRep ()._GetLength ()};
-        const Character*     cp = accessor._ConstGetRep ()._Peek ();
-        Assert (sizeof (Character) == sizeof (wchar_t)); // going to want to clean this up!!!    --LGP 2011-09-01
-        const wchar_t* wcp = (const wchar_t*)cp;
-        into->assign (wcp, wcp + n);
-    }
-    template <>
-    inline void String::As (u8string* into) const
-    {
-        AsUTF8 (into);
-    }
-    template <>
-    inline void String::As (u16string* into) const
-    {
-        AsUTF16 (into);
-    }
-    template <>
-    inline void String::As (u32string* into) const
-    {
-        AsUTF32 (into);
-    }
-    template <>
-    inline wstring String::As () const
-    {
-        wstring r;
+        T r{};  // for now - KISS, but this can be optimized
         As (&r);
         return r;
     }
-    template <>
-    inline String String::As () const
+    template <typename T>
+    inline void String::As (T* into) const
+        requires (BasicUnicodeString<T> or is_same_v<T, String>)
     {
-        return *this;
+        if constexpr (is_same_v<T, u8string>) {
+            AsUTF8 (into);
+        }
+        else if constexpr (is_same_v<T, u16string>) {
+            AsUTF16 (into);
+        }
+        else if constexpr (is_same_v<T, u32string>)
+        {
+            AsUTF32 (into);
+        }
+        else if constexpr (is_same_v<T, wstring>) {
+            // @todo rewrite for new design
+            RequireNotNull (into);
+            _SafeReadRepAccessor accessor{this};
+            size_t               n{accessor._ConstGetRep ()._GetLength ()};
+            const Character*     cp = accessor._ConstGetRep ()._Peek ();
+            Assert (sizeof (Character) == sizeof (wchar_t)); // going to want to clean this up!!!    --LGP 2011-09-01
+            const wchar_t* wcp = (const wchar_t*)cp;
+            into->assign (wcp, wcp + n);
+        }
+        else if constexpr (is_same_v<T, String>) {
+            if (into != this) [[likely]] {
+                *into = *this;
+            }
+        }
     }
-    template <>
-    inline u16string String::As () const
+    inline string String::AsNarrowString (const locale& l) const
     {
-        return AsUTF16 ();
+        string result;
+        AsNarrowString (l, &result);
+        return result;
     }
-    template <>
-    inline u32string String::As () const
+    template <typename T>
+    inline T String::AsUTF8 () const
+        requires (is_same_v<T, string> or is_same_v<T, u8string>)
     {
-        return AsUTF32 ();
+        Memory::StackBuffer<char8_t> maybeIgnoreBuf1;
+        span<const char8_t>          thisData = GetData (&maybeIgnoreBuf1);
+        return T{reinterpret_cast < const typename T::value_type*> (thisData.data ()), thisData.size ()};
     }
-    template <>
-    inline string String::AsUTF8 () const
+    template <typename T>
+    inline void String::AsUTF8 (T* into) const
+        requires (is_same_v<T, string> or is_same_v<T, u8string>)
     {
-        string r;
-        AsUTF8 (&r);
-        return r;
+        RequireNotNull (into);
+        Memory::StackBuffer<char8_t> maybeIgnoreBuf1;
+        span<const char8_t>          thisData = GetData (&maybeIgnoreBuf1);
+        into->assign (reinterpret_cast<const typename T::value_type*> (thisData.data ()), thisData.size ());
     }
-    template <>
-    inline u8string String::AsUTF8 () const
+    template <typename T>
+    inline T String::AsUTF16 () const
+        requires (is_same_v<T, u16string>)
     {
-        u8string r;
-        AsUTF8 (&r);
-        return r;
+        Memory::StackBuffer<char16_t> maybeIgnoreBuf1;
+        span<const char16_t>          thisData = GetData (&maybeIgnoreBuf1);
+        return T{reinterpret_cast<const typename T::value_type*> (thisData.data ()), thisData.size ()};
     }
-    inline u16string String::AsUTF16 () const
+    template <typename T>
+    inline void String::AsUTF16 (T* into) const
+        requires (is_same_v<T, u16string>)
     {
-        u16string r;
-        AsUTF16 (&r);
-        return r;
+        RequireNotNull (into);
+        Memory::StackBuffer<char16_t> maybeIgnoreBuf1;
+        span<const char16_t>          thisData = GetData (&maybeIgnoreBuf1);
+        into->assign (reinterpret_cast<const typename T::value_type*> (thisData.data ()), thisData.size ());
     }
-    inline u32string String::AsUTF32 () const
+    template <typename T>
+    inline T String::AsUTF32 () const
+        requires (is_same_v<T, u32string>)
     {
-        u32string r;
-        AsUTF32 (&r);
-        return r;
+        Memory::StackBuffer<char32_t> maybeIgnoreBuf1;
+        span<const char32_t>          thisData = GetData (&maybeIgnoreBuf1);
+        return T{reinterpret_cast<const typename T::value_type*> (thisData.data ()), thisData.size ()};
+    }
+    template <typename T>
+    inline void String::AsUTF32 (T* into) const
+        requires (is_same_v<T, u32string>)
+    {
+        RequireNotNull (into);
+        Memory::StackBuffer<char32_t> maybeIgnoreBuf1;
+        span<const char32_t>          thisData = GetData (&maybeIgnoreBuf1);
+        into->assign (reinterpret_cast<const typename T::value_type*> (thisData.data ()), thisData.size ());
     }
     template <>
     inline string String::AsASCII () const
@@ -701,12 +723,6 @@ namespace Stroika::Foundation::Characters {
         String::_SafeReadRepAccessor             thisAccessor{this};
         pair<const Character*, const Character*> p = thisAccessor._ConstGetRep ().GetData ();
         return Character::AsASCIIQuietly (span<const Character>{p.first, p.second}, into);
-    }
-    inline string String::AsNarrowString (const locale& l) const
-    {
-        string result;
-        AsNarrowString (l, &result);
-        return result;
     }
     inline SDKString String::AsSDKString () const
     {

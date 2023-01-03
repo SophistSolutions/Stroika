@@ -978,40 +978,6 @@ void String::AsNarrowString (const locale& l, string* into) const
     into->resize (to_next - &(*into)[0]);
 }
 
-template <>
-void String::AsUTF8 (string* into) const
-{
-    RequireNotNull (into);
-    Memory::StackBuffer<char8_t> maybeIgnoreBuf1;
-    span<const char8_t>          thisData = GetData<char8_t> (&maybeIgnoreBuf1);
-    into->assign (thisData.begin (), thisData.end ());
-}
-
-template <>
-void String::AsUTF8 (u8string* into) const
-{
-    RequireNotNull (into);
-    Memory::StackBuffer<char8_t> maybeIgnoreBuf1;
-    span<const char8_t>          thisData = GetData<char8_t> (&maybeIgnoreBuf1);
-    into->assign (thisData.begin (), thisData.end ());
-}
-
-void String::AsUTF16 (u16string* into) const
-{
-    RequireNotNull (into);
-    Memory::StackBuffer<char16_t> maybeIgnoreBuf1;
-    span<const char16_t>          thisData = GetData<char16_t> (&maybeIgnoreBuf1);
-    into->assign (thisData.begin (), thisData.end ());
-}
-
-void String::AsUTF32 (u32string* into) const
-{
-    RequireNotNull (into);
-    Memory::StackBuffer<char32_t> maybeIgnoreBuf1;
-    span<const char32_t>          thisData = GetData<char32_t> (&maybeIgnoreBuf1);
-    into->assign (thisData.begin (), thisData.end ());
-}
-
 void String::AsSDKString (SDKString* into) const
 {
     RequireNotNull (into);

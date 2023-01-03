@@ -175,6 +175,12 @@ namespace Stroika::Foundation::Characters {
     class RegularExpressionMatch;
 
     /**
+     *  \brief returns true iff T == u8string, u16string, u32string, or wstring
+     */
+    template <typename T>
+    concept BasicUnicodeString = is_same_v<T, u8string> or is_same_v<T, u16string> or is_same_v<T, u32string> or is_same_v<T, wstring>;
+
+    /**
      *  \brief String is like std::u32string, except it is much easier to use, often much more space efficient, and more easily interoperates with other string types
      * 
      *  The Stroika String class is an alternatve for the wstring class, which should be largely
@@ -1044,7 +1050,7 @@ namespace Stroika::Foundation::Characters {
         /**
          * Convert String losslessly into a standard C++ type.
          *
-         *  Only specifically specialized variants are supported. Supported type 'T' values include:
+         *  Only specifically specialized variants supported: BasicUnicodeString<T> or is_same_v<T,String>
          *      o   wstring
          *      o   u8string
          *      o   u16string
@@ -1066,9 +1072,11 @@ namespace Stroika::Foundation::Characters {
          *          Set<String> x { *optional<String> {String{}) };       // works as expected
          */
         template <typename T>
-        nonvirtual T As () const;
+        nonvirtual T As () const
+            requires (BasicUnicodeString<T> or is_same_v<T, String>);
         template <typename T>
-        nonvirtual void As (T* into) const;
+        nonvirtual void As (T* into) const
+            requires (BasicUnicodeString<T> or is_same_v<T, String>);
 
     public:
         /**
@@ -1082,26 +1090,33 @@ namespace Stroika::Foundation::Characters {
     public:
         /**
          * Convert String losslessly into a standard C++ type.
-         * Only specifically specialized variants are supported (right now just <string> supported).
-         * Note - template param is optional.
+         * Only specifically specialized variants are supported.
          *
          *  SUPPORTED result type "T": values are:
          *      string
-         *      u8string        // C++2a or higher
+         *      u8string
          */
         template <typename T = u8string>
-        nonvirtual T AsUTF8 () const;
+        nonvirtual T AsUTF8 () const
+            requires (is_same_v<T, string> or is_same_v<T, u8string>);
         template <typename T = u8string>
-        nonvirtual void AsUTF8 (T* into) const;
+        nonvirtual void AsUTF8 (T* into) const
+            requires (is_same_v<T, string> or is_same_v<T, u8string>);
 
     public:
         /**
          * Convert String losslessly into a standard C++ type u16string.
          *
          *  \note - the resulting string may have a different length than this->size() due to surrogates
+         * 
+         *  @todo allow wchar_t if sizeof(wchar_t) == 2
          */
-        nonvirtual u16string AsUTF16 () const;
-        nonvirtual void      AsUTF16 (u16string* into) const;
+        template <typename T = u16string>
+        nonvirtual T AsUTF16 () const
+            requires (is_same_v<T, u16string>);
+        template <typename T = u16string>
+        nonvirtual void AsUTF16 (T* into) const
+            requires (is_same_v<T, u16string>);
 
     public:
         /**
@@ -1110,9 +1125,16 @@ namespace Stroika::Foundation::Characters {
          *  \note - As of Stroika 2.1d23 - the resulting string may have a different length than this->size() due to surrogates,
          *          but eventually the intent is to fix Stroika's string class so this is not true, and it returns the length of the string
          *          in size () with surrogates removed (in other words uses ucs32 represenation). But not there yet.
+         *
+         ** TODO UPDATE DOCS HERE
+         *  @todo allow wchar_t if sizeof(wchar_t) == 4
          */
-        nonvirtual u32string AsUTF32 () const;
-        nonvirtual void      AsUTF32 (u32string* into) const;
+        template <typename T = u32string>
+        nonvirtual T AsUTF32 () const
+            requires (is_same_v<T, u32string>);
+        template <typename T = u32string>
+        nonvirtual void AsUTF32 (T* into) const
+            requires (is_same_v<T, u32string>);
 
     public:
         /**
@@ -1426,36 +1448,6 @@ namespace Stroika::Foundation::Characters {
         friend wostream& operator<< (wostream& out, const String& s);
         friend String    operator+ (const wchar_t* lhs, const String& rhs);
     };
-
-    template <>
-    void String::As (wstring* into) const;
-    template <>
-    void String::As (u8string* into) const;
-    template <>
-    void String::As (u16string* into) const;
-    template <>
-    void String::As (u32string* into) const;
-    template <>
-    void String::As (String* into) const;
-    template <>
-    wstring String::As () const;
-    template <>
-    u8string String::As () const;
-    template <>
-    u16string String::As () const;
-    template <>
-    u32string String::As () const;
-    template <>
-    String String::As () const;
-
-    template <>
-    void String::AsUTF8 (string* into) const;
-    template <>
-    string String::AsUTF8 () const;
-    template <>
-    void String::AsUTF8 (u8string* into) const;
-    template <>
-    u8string String::AsUTF8 () const;
 
     template <>
     void String::AsASCII (string* into) const;
