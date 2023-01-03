@@ -174,41 +174,6 @@ String::String (const basic_string_view<wchar_t>& str)
                                                // be nul-terminated.
                                                // -- LGP 2019-01-29
 }
-
-String String::FromSDKString (const SDKChar* from)
-{
-    RequireNotNull (from);
-    // @todo FIX PERFORMANCE
-    return String{SDKString2Wide (from)};
-}
-
-String String::FromSDKString (span<const SDKChar> s)
-{
-    return FromSDKString (s.data (), s.data () + s.size ());
-}
-
-String String::FromSDKString (const SDKChar* from, const SDKChar* to)
-{
-// @todo FIX PERFORMANCE
-#if qTargetPlatformSDKUseswchar_t
-    return String{span{from, to}};
-#else
-    wstring tmp;
-    NarrowStringToWide (from, to, GetDefaultSDKCodePage (), &tmp);
-    return String{tmp};
-#endif
-}
-
-String String::FromSDKString (const SDKString& from)
-{
-// @todo FIX PERFORMANCE
-#if qTargetPlatformSDKUseswchar_t
-    return String{from};
-#else
-    return String{NarrowStringToWide (from, GetDefaultSDKCodePage ())};
-#endif
-}
-
 String String::FromNarrowSDKString (const char* from)
 {
     RequireNotNull (from);
@@ -433,7 +398,7 @@ String String::InsertAt (const Character* from, const Character* to, size_t at) 
             make_pair (&*d.begin () + at, &*d.begin () + d.size ()))};
     }
 #else
-    _SafeReadRepAccessor                     copyAccessor{this};
+    _SafeReadRepAccessor copyAccessor{this};
     pair<const Character*, const Character*> d = copyAccessor._ConstGetRep ().GetData ();
 
     return String{String::MakeSmartPtr<String_BufferedArray_Rep_> (

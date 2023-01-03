@@ -283,6 +283,23 @@ namespace Stroika::Foundation::Characters {
     {
         return FromUTF8 (span{from, ::strlen (reinterpret_cast<const char*> (from))});
     }
+    inline String String::FromSDKString (const SDKChar* from)
+    {
+        RequireNotNull (from);
+        return FromSDKString (span{from, CString::Length (from)});
+    }
+    inline String String::FromSDKString (span<const SDKChar> s)
+    {
+#if qTargetPlatformSDKUseswchar_t
+        return String{s};
+#else
+        return String{NarrowStringToWide (from, GetDefaultSDKCodePage ())};
+#endif
+    }
+    inline String String::FromSDKString (const SDKString& from)
+    {
+        return FromSDKString (span{from.c_str (), from.length ()});
+    }
     inline String String::FromISOLatin1 (const char* from)
     {
         return FromISOLatin1 (from, from + ::strlen (from));

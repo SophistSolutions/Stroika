@@ -355,11 +355,9 @@ namespace Stroika::Foundation::Characters {
          *  See @SDKString
          *
          *  \note   Reading improperly encoded text may result in a RuntimeException indicating improperly encoded characters.
-         *
          */
         static String FromSDKString (const SDKChar* from);
         static String FromSDKString (span<const SDKChar> s);
-        static String FromSDKString (const SDKChar* from, const SDKChar* to);
         static String FromSDKString (const SDKString& from);
 
     public:
@@ -367,7 +365,6 @@ namespace Stroika::Foundation::Characters {
          *  Create a String object from a 'char-based' (os-setting - current code page) encoded string.
          *
          *  \note   Reading improperly encoded text may result in a RuntimeException indicating improperly encoded characters.
-         *
          */
         static String FromNarrowSDKString (const char* from);
         static String FromNarrowSDKString (const char* from, const char* to);
@@ -1307,7 +1304,6 @@ namespace Stroika::Foundation::Characters {
          */
         nonvirtual const wchar_t* c_str ();
         nonvirtual tuple<const wchar_t*, wstring_view>                                                                                              c_str (Memory::StackBuffer<wchar_t>* possibleBackingStore) const;
-        [[deprecated ("Since Stroika v3.0d1 - use As<wstring> ().c_str () or other c_str() overload (*UNSAFE TO USE*)")]] nonvirtual const wchar_t* c_str () const noexcept;
 
     public:
         /**
@@ -1353,6 +1349,11 @@ namespace Stroika::Foundation::Characters {
         nonvirtual String substr (size_t from, size_t count = npos) const;
 
     public:
+        [[deprecated ("Since Stroika v3.0d1 - use As<wstring> ().c_str () or other c_str() overload (*UNSAFE TO USE*)")]] nonvirtual const wchar_t* c_str () const noexcept;
+        [[deprecated ("Since Stroika v3.0 - use span{} overloads")]] inline static String                                                           FromSDKString (const SDKChar* from, const SDKChar* to)
+        {
+            return FromSDKString (span{from, to});
+        }
         [[deprecated ("Since Stroika v3.0 - use span{} overloads")]] static String FromUTF8 (const char* from, const char* to)
         {
             return FromUTF8 (span{from, to});
