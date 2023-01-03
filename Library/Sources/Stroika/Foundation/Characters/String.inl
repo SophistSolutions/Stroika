@@ -281,7 +281,7 @@ namespace Stroika::Foundation::Characters {
     inline String String::FromUTF8 (const CHAR_T* from)
         requires (is_same_v<remove_cv_t<CHAR_T>, char8_t> or is_same_v<remove_cv_t<CHAR_T>, char>)
     {
-        return FromUTF8 (span{from, ::strlen (from)});
+        return FromUTF8 (span{from, ::strlen (reinterpret_cast<const char*> (from))});
     }
     inline String String::FromISOLatin1 (const char* from)
     {
