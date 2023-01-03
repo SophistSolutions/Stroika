@@ -161,8 +161,8 @@ namespace {
     }
     void PrettyPrint_ (const Options_& options, const String& v, const OutputStream<Character>::Ptr& out)
     {
-        Memory::StackBuffer<wchar_t>         ignored;
-        span<const wchar_t> p = v.GetData (&ignored);
+        Memory::StackBuffer<wchar_t> ignored;
+        span<const wchar_t>          p = v.GetData (&ignored);
         static_assert (sizeof (Character) == sizeof (wchar_t), "sizeof(Character) == sizeof(wchar_t)");
         PrettyPrint_ (options, p.data (), p.data () + p.size (), out);
     }

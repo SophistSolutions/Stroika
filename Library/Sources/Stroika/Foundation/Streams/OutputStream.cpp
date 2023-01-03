@@ -24,7 +24,7 @@ void OutputStream<Characters::Character>::Ptr::Write (const Characters::String& 
 {
     // @todo performance tweek so uses Peek
     Memory::StackBuffer<wchar_t> ignored;
-    span<const wchar_t> sp = s.GetData<wchar_t> (&ignored);
+    span<const wchar_t>          sp = s.GetData<wchar_t> (&ignored);
     Write (sp.data (), sp.data () + sp.size ());
 }
 
