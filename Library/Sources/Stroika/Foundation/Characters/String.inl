@@ -708,20 +708,17 @@ namespace Stroika::Foundation::Characters {
         span<const char32_t>          thisData = GetData (&maybeIgnoreBuf1);
         into->assign (reinterpret_cast<const typename T::value_type*> (thisData.data ()), thisData.size ());
     }
-    template <>
-    inline string String::AsASCII () const
-    {
-        string r;
-        AsASCII (&r);
-        return r;
-    }
-    template <typename T>
-    inline bool String::AsASCIIQuietly (T* into) const
+    inline void String::AsSDKString (SDKString* into) const
     {
         RequireNotNull (into);
-        String::_SafeReadRepAccessor             thisAccessor{this};
-        pair<const Character*, const Character*> p = thisAccessor._ConstGetRep ().GetData ();
-        return Character::AsASCIIQuietly (span<const Character>{p.first, p.second}, into);
+        Memory::StackBuffer<wchar_t> maybeIgnoreBuf1;
+        span<const wchar_t>          thisData = GetData<wchar_t> (&maybeIgnoreBuf1);
+        into->assign (thisData.begin (), thisData.end ());
+#if qTargetPlatformSDKUseswchar_t
+        into->assign (thisData.begin (), thisData.end ());
+#else
+        WideStringToNarrow (thisData.data (), thisData.data () + thisData.size (), GetDefaultSDKCodePage (), into);
+#endif
     }
     inline SDKString String::AsSDKString () const
     {
@@ -734,6 +731,38 @@ namespace Stroika::Foundation::Characters {
         string result;
         AsNarrowSDKString (&result);
         return result;
+    }
+    inline void String::AsNarrowSDKString (string* into) const
+    {
+        RequireNotNull (into);
+        Memory::StackBuffer<wchar_t> maybeIgnoreBuf1;
+        span<const wchar_t>          thisData = GetData<wchar_t> (&maybeIgnoreBuf1);
+        WideStringToNarrow (thisData.data (), thisData.data () + thisData.size (), GetDefaultSDKCodePage (), into);
+    }
+    template <typename T>
+    inline T String::AsASCII () const
+        requires (is_same_v<T, string> or is_same_v<T, Memory::StackBuffer<char>>)
+    {
+        T r;
+        AsASCII (&r);
+        return r;
+    }
+    template <typename T>
+    inline void String::AsASCII (T* into) const
+        requires (is_same_v<T, string> or is_same_v<T, Memory::StackBuffer<char>>)
+    {
+        if (not AsASCIIQuietly (into)) {
+            ThrowInvalidAsciiException_ ();
+        }
+    }
+    template <typename T>
+    inline bool String::AsASCIIQuietly (T* into) const
+        requires (is_same_v<T, string> or is_same_v<T, Memory::StackBuffer<char>>)
+    {
+        RequireNotNull (into);
+        String::_SafeReadRepAccessor             thisAccessor{this};
+        pair<const Character*, const Character*> p = thisAccessor._ConstGetRep ().GetData ();
+        return Character::AsASCIIQuietly (span<const Character>{p.first, p.second}, into);
     }
     template <>
     inline pair<const Character*, const Character*> String::GetData () const

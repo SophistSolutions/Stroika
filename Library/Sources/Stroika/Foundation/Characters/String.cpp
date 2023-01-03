@@ -978,44 +978,6 @@ void String::AsNarrowString (const locale& l, string* into) const
     into->resize (to_next - &(*into)[0]);
 }
 
-void String::AsSDKString (SDKString* into) const
-{
-    RequireNotNull (into);
-    Memory::StackBuffer<wchar_t> maybeIgnoreBuf1;
-    span<const wchar_t>          thisData = GetData<wchar_t> (&maybeIgnoreBuf1);
-    into->assign (thisData.begin (), thisData.end ());
-#if qTargetPlatformSDKUseswchar_t
-    into->assign (thisData.begin (), thisData.end ());
-#else
-    WideStringToNarrow (thisData.data (), thisData.data () + thisData.size (), GetDefaultSDKCodePage (), into);
-#endif
-}
-
-void String::AsNarrowSDKString (string* into) const
-{
-    RequireNotNull (into);
-    Memory::StackBuffer<wchar_t> maybeIgnoreBuf1;
-    span<const wchar_t>          thisData = GetData<wchar_t> (&maybeIgnoreBuf1);
-    WideStringToNarrow (thisData.data (), thisData.data () + thisData.size (), GetDefaultSDKCodePage (), into);
-}
-
-template <>
-void String::AsASCII (string* into) const
-{
-    if (not AsASCIIQuietly (into)) {
-        static const auto kException_ = Execution::RuntimeErrorException{L"Error converting non-ascii text to string"sv};
-        Execution::Throw (kException_);
-    }
-}
-
-template <>
-void String::AsASCII (Memory::StackBuffer<char>* into) const
-{
-    if (not AsASCIIQuietly (into)) {
-        static const auto kException_ = Execution::RuntimeErrorException{L"Error converting non-ascii text to string"sv};
-        Execution::Throw (kException_);
-    }
-}
 
 void String::erase (size_t from)
 {
@@ -1031,6 +993,12 @@ void String::erase (size_t from, size_t count)
     // TODO: Double check STL definition - but I think they allow for count to be 'too much' - and silently trim to end...
     size_t max2Erase = static_cast<size_t> (max (static_cast<ptrdiff_t> (0), static_cast<ptrdiff_t> (size ()) - static_cast<ptrdiff_t> (from)));
     *this            = RemoveAt (from, from + min (count, max2Erase));
+}
+
+void String::ThrowInvalidAsciiException_ ()
+{
+    static const auto kException_ = Execution::RuntimeErrorException{L"Error converting non-ascii text to string"sv};
+    Execution::Throw (kException_);
 }
 
 /*

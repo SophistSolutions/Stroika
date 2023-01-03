@@ -239,6 +239,10 @@ namespace Stroika::Foundation::Characters {
      *
      *      For now - stick to simple impl - of just copy on start of iteration.
      *          -- LGP 2013-12-17
+     * 
+     *  \note About spans, and the \0 NUL-termination - generally do NOT include
+     *        the NUL-character in your span! Stroika strings will allow this, and treat
+     *        it as just another character, but its probably not what you meant.
      *
      *  \note   Design note - mutability vs. immutability
      *          String objects are MUTABLE
@@ -1161,9 +1165,11 @@ namespace Stroika::Foundation::Characters {
          *      o   string
          */
         template <typename T = string>
-        nonvirtual T AsASCII () const;
+        nonvirtual T AsASCII () const
+            requires (is_same_v<T, string> or is_same_v<T, Memory::StackBuffer<char>>);
         template <typename T = string>
-        nonvirtual void AsASCII (T* into) const;
+        nonvirtual void AsASCII (T* into) const
+            requires (is_same_v<T, string> or is_same_v<T, Memory::StackBuffer<char>>);
 
     public:
         /**
@@ -1176,9 +1182,11 @@ namespace Stroika::Foundation::Characters {
          *      o   string
          */
         template <typename T = string>
-        nonvirtual bool AsASCIIQuietly (T* into) const;
+        nonvirtual bool AsASCIIQuietly (T* into) const
+            requires (is_same_v<T, string> or is_same_v<T, Memory::StackBuffer<char>>);
 
     public:
+        /// @TODO DEPRECATE
         /**
          *  Only defined for CHAR_TYPE=Character or wchar_t (for now).
          *
@@ -1444,15 +1452,13 @@ namespace Stroika::Foundation::Characters {
     protected:
         nonvirtual void _AssertRepValidType () const;
 
+    private:
+        static void ThrowInvalidAsciiException_ (); // avoid include
+
     public:
         friend wostream& operator<< (wostream& out, const String& s);
         friend String    operator+ (const wchar_t* lhs, const String& rhs);
     };
-
-    template <>
-    void String::AsASCII (string* into) const;
-    template <>
-    string String::AsASCII () const;
 
     template <>
     pair<const Character*, const Character*> String::GetData () const;
