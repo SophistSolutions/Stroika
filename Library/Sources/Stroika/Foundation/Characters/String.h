@@ -369,7 +369,7 @@ namespace Stroika::Foundation::Characters {
 
     public:
         /**
-         *  Create a String object from a 'char-based' on the encoding from the argument locale.
+         *  Create a String object from a char based on the encoding from the argument locale.
          *  This throws an exception if there is an error performing the conversion.
          *
          *  \note   Reading improperly encoded text may result in a RuntimeException indicating improperly encoded characters.
@@ -387,11 +387,11 @@ namespace Stroika::Foundation::Characters {
          *  \note - before Stroika v2.1d23 this was a requires check, and an assertion error to pass in non-ascii text
          */
         static String FromASCII (const char* from);
-        static String FromASCII (const char* from, const char* to);
         static String FromASCII (const string& from);
         static String FromASCII (const wchar_t* from);
-        static String FromASCII (const wchar_t* from, const wchar_t* to);
         static String FromASCII (const wstring& from);
+        static String FromASCII (const char* from, const char* to);
+        static String FromASCII (const wchar_t* from, const wchar_t* to);
 
     public:
         /**
