@@ -9,15 +9,12 @@
 #include <sstream>
 
 #include "Stroika/Foundation/Characters/CString/Utilities.h"
-#include "Stroika/Foundation/Characters/Concrete/String_ExternalMemoryOwnership_ApplicationLifetime.h"
-#include "Stroika/Foundation/Characters/Concrete/String_ExternalMemoryOwnership_StackLifetime.h"
 #include "Stroika/Foundation/Characters/FloatConversion.h"
 #include "Stroika/Foundation/Characters/Format.h"
 #include "Stroika/Foundation/Characters/RegularExpression.h"
 #include "Stroika/Foundation/Characters/String.h"
 #include "Stroika/Foundation/Characters/String2Int.h"
 #include "Stroika/Foundation/Characters/StringBuilder.h"
-#include "Stroika/Foundation/Characters/String_Constant.h"
 #include "Stroika/Foundation/Characters/ToString.h"
 #include "Stroika/Foundation/Configuration/Locale.h"
 #include "Stroika/Foundation/Containers/Common.h"
@@ -620,42 +617,6 @@ namespace {
         VerifyTestResult (w.ToUpperCase () == L"LEWIS");
         VerifyTestResult (w == L"Lewis");
     }
-}
-
-namespace {
-    void Test14_String_StackLifetimeReadOnly_ ()
-    {
-        Debug::TraceContextBumper ctx{L"Test14_String_StackLifetimeReadOnly_"};
-        wchar_t                   buf[1024] = L"fred";
-        {
-            String_ExternalMemoryOwnership_StackLifetime s (buf);
-            VerifyTestResult (s[0] == 'f');
-            s.erase (3);
-            VerifyTestResult (s[0] == 'f');
-            VerifyTestResult (s.size () == 3);
-            s += L"x";
-            VerifyTestResult (s.size () == 4);
-            VerifyTestResult (s[3] == 'x');
-        }
-        VerifyTestResult (::wcscmp (buf, L"fred") == 0);
-    }
-#if 0
-    void    Test14_String_StackLifetimeReadWrite_ ()
-    {
-        wchar_t buf[1024]   =   L"fred";
-        {
-            String_ExternalMemoryOwnership_StackLifetime_ReadWrite s (buf);
-            VerifyTestResult (s[0] == 'f');
-            s.erase (3);
-            VerifyTestResult (s[0] == 'f');
-            VerifyTestResult (s.size () == 3);
-            s += L"x";
-            VerifyTestResult (s.size () == 4);
-            VerifyTestResult (s[3] == 'x');
-        }
-        VerifyTestResult (::wcscmp (buf, L"fred") == 0);
-    }
-#endif
 }
 
 namespace {
@@ -1674,10 +1635,6 @@ namespace {
         Test11_Trim_ ();
         Test12_CodePageConverter_ ();
         Test13_ToLowerUpper_ ();
-        Test14_String_StackLifetimeReadOnly_ ();
-#if 0
-        Test14_String_StackLifetimeReadWrite_ ();
-#endif
         Test15_StripAll_ ();
         Test16_Format_ ();
         Test17_Find_ ();

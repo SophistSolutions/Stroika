@@ -8,7 +8,6 @@
 #include <sstream>
 
 #include "../Characters/Format.h"
-#include "../Characters/String_Constant.h"
 #include "../Debug/Assertions.h"
 #include "../Execution/Throw.h"
 #include "../Linguistics/MessageUtilities.h"

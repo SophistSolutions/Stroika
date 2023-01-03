@@ -30,7 +30,6 @@ Objs	=	\
 	$(ObjDir)UTFConvert${OBJ_SUFFIX}\
 
 SubDirs	=	\
-	Concrete \
 	CString \
 	Platform \
 

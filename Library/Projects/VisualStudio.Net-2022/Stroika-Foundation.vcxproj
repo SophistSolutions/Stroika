@@ -68,10 +68,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Cache\Statistics.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\Character.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\CodePage.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\Concrete\Private\String_BufferedStringRep.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\Concrete\String_ExternalMemoryOwnership_ApplicationLifetime.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\Concrete\String_ExternalMemoryOwnership_StackLifetime.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\Concrete\String_stdwstring.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\CString\Utilities.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\FloatConversion.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\Format.cpp" />
@@ -285,10 +281,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cache\TimedCache.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\Character.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\CodePage.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\Concrete\Private\String_BufferedStringRep.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\Concrete\String_ExternalMemoryOwnership_ApplicationLifetime.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\Concrete\String_ExternalMemoryOwnership_StackLifetime.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\Concrete\String_stdwstring.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\CString\Utilities.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\FloatConversion.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\Format.h" />
@@ -301,7 +293,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\String.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\String2Int.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\StringBuilder.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\String_Constant.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\ToString.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\UTFConvert.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Common\Compare.h" />
@@ -722,12 +713,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\Cache\TimedCache.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Characters\Character.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Characters\CodePage.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\Characters\Concrete\Makefile" />
-    <None Include="..\..\Sources\Stroika\Foundation\Characters\Concrete\Private\Makefile" />
-    <None Include="..\..\Sources\Stroika\Foundation\Characters\Concrete\Private\String_BufferedStringRep.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\Characters\Concrete\String_ExternalMemoryOwnership_ApplicationLifetime.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\Characters\Concrete\String_ExternalMemoryOwnership_StackLifetime.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\Characters\Concrete\String_stdwstring.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Characters\CString\Makefile" />
     <None Include="..\..\Sources\Stroika\Foundation\Characters\CString\ReadMe.md" />
     <None Include="..\..\Sources\Stroika\Foundation\Characters\CString\Utilities.inl" />
@@ -743,7 +728,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\Characters\String.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Characters\String2Int.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Characters\StringBuilder.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\Characters\String_Constant.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Characters\ToDo.md" />
     <None Include="..\..\Sources\Stroika\Foundation\Characters\ToString.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Characters\UTFConvert.inl" />

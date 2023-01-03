@@ -10,7 +10,6 @@
 #endif
 
 #include "../../../Characters/Format.h"
-#include "../../../Characters/String_Constant.h"
 #include "../../../Common/TemplateUtilities.h"
 #include "../../../Debug/Trace.h"
 #include "../../../Execution/Throw.h"
