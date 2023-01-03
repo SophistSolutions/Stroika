@@ -637,7 +637,7 @@ namespace {
 
                     //Association Attributes for this connection
                     if (pConnectInfo->wlanAssociationAttributes.dot11Ssid.uSSIDLength != 0) {
-                        wInfo.fSSID = String::FromNarrowSDKString (reinterpret_cast<const char*> (pConnectInfo->wlanAssociationAttributes.dot11Ssid.ucSSID), reinterpret_cast<const char*> (pConnectInfo->wlanAssociationAttributes.dot11Ssid.ucSSID + pConnectInfo->wlanAssociationAttributes.dot11Ssid.uSSIDLength));
+                        wInfo.fSSID = String::FromNarrowSDKString (span{reinterpret_cast<const char*> (pConnectInfo->wlanAssociationAttributes.dot11Ssid.ucSSID), pConnectInfo->wlanAssociationAttributes.dot11Ssid.uSSIDLength});
                     }
 
                     auto mapBSSType = [] (DOT11_BSS_TYPE s) -> WirelessInfo::BSSType {
@@ -649,7 +649,7 @@ namespace {
                             case dot11_BSS_type_any:
                                 return WirelessInfo::BSSType::eAny;
                             default:
-                                DbgTrace (L"Unknown connection mode %d\n", s);
+                                DbgTrace (L"Unknown connection mode %d", s);
                                 return WirelessInfo::BSSType::eUnknown;
                         }
                     };

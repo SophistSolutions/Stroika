@@ -291,9 +291,6 @@ namespace Stroika::Foundation::Characters {
         String (String&& from) noexcept      = default;
         String (const String& from) noexcept = default;
 
-        template <Character_SafelyCompatible CHAR_T>
-        [[deprecated ("Since Stroika v3.0d1, use span{} constructor for this")]] String (const CHAR_T* from, const CHAR_T* to);
-
     public:
         ~String () = default;
 
@@ -367,7 +364,7 @@ namespace Stroika::Foundation::Characters {
          *  \note   Reading improperly encoded text may result in a RuntimeException indicating improperly encoded characters.
          */
         static String FromNarrowSDKString (const char* from);
-        static String FromNarrowSDKString (const char* from, const char* to);
+        static String FromNarrowSDKString (span<const char> s);
         static String FromNarrowSDKString (const string& from);
 
     public:
@@ -376,10 +373,9 @@ namespace Stroika::Foundation::Characters {
          *  This throws an exception if there is an error performing the conversion.
          *
          *  \note   Reading improperly encoded text may result in a RuntimeException indicating improperly encoded characters.
-         *
          */
         static String FromNarrowString (const char* from, const locale& l);
-        static String FromNarrowString (const char* from, const char* to, const locale& l);
+        static String FromNarrowString (span<const char> s, const locale& l);
         static String FromNarrowString (const string& from, const locale& l);
 
     public:
@@ -415,13 +411,6 @@ namespace Stroika::Foundation::Characters {
 
     private:
         static _SharedPtrIRep mkEmpty_ ();
-        static _SharedPtrIRep mk_ (const wchar_t* start, const wchar_t* end);
-        static _SharedPtrIRep mk_ (const wchar_t* start1, const wchar_t* end1, const wchar_t* start2, const wchar_t* end2);
-        static _SharedPtrIRep mk_ (const char16_t* start, const char16_t* end);
-        static _SharedPtrIRep mk_ (const char32_t* start, const char32_t* end);
-
-        // new mk_ routines, will replace above (except mkEmpty)
-        // template SPECIALIZE for the CHAR_T versions where there are backend reps...
         // note here - for PlainChar overload - REQUIRE arg IsAscii
         template <Character_Compatible CHAR_T>
         static _SharedPtrIRep mk_ (span<const CHAR_T> s);
@@ -1303,7 +1292,7 @@ namespace Stroika::Foundation::Characters {
          *        surrogates properly (at least on windows where wchar_t isn't char32_t).
          */
         nonvirtual const wchar_t* c_str ();
-        nonvirtual tuple<const wchar_t*, wstring_view>                                                                                              c_str (Memory::StackBuffer<wchar_t>* possibleBackingStore) const;
+        nonvirtual tuple<const wchar_t*, wstring_view> c_str (Memory::StackBuffer<wchar_t>* possibleBackingStore) const;
 
     public:
         /**
@@ -1348,7 +1337,24 @@ namespace Stroika::Foundation::Characters {
          */
         nonvirtual String substr (size_t from, size_t count = npos) const;
 
+    private:
+        //*DEPRECATED VERSIONS
+        static _SharedPtrIRep mk_ (const wchar_t* start, const wchar_t* end);
+        static _SharedPtrIRep mk_ (const wchar_t* start1, const wchar_t* end1, const wchar_t* start2, const wchar_t* end2);
+        static _SharedPtrIRep mk_ (const char16_t* start, const char16_t* end);
+        static _SharedPtrIRep mk_ (const char32_t* start, const char32_t* end);
+
     public:
+        [[deprecated ("Since Stroika v3.0d1, use span{} constructor for this")]] static String FromNarrowString (const char* from, const char* to, const locale& l)
+        {
+            return FromNarrowString (span{from, to}, l);
+        }
+        [[deprecated ("Since Stroika v3.0d1, use span{} constructor for this")]] static String FromNarrowSDKString (const char* from, const char* to)
+        {
+            return FromNarrowSDKString (span{from, to});
+        }
+        template <Character_SafelyCompatible CHAR_T>
+        [[deprecated ("Since Stroika v3.0d1, use span{} constructor for this")]] String (const CHAR_T* from, const CHAR_T* to);
         [[deprecated ("Since Stroika v3.0d1 - use As<wstring> ().c_str () or other c_str() overload (*UNSAFE TO USE*)")]] nonvirtual const wchar_t* c_str () const noexcept;
         [[deprecated ("Since Stroika v3.0 - use span{} overloads")]] inline static String                                                           FromSDKString (const SDKChar* from, const SDKChar* to)
         {

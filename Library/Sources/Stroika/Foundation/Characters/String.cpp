@@ -174,28 +174,8 @@ String::String (const basic_string_view<wchar_t>& str)
                                                // be nul-terminated.
                                                // -- LGP 2019-01-29
 }
-String String::FromNarrowSDKString (const char* from)
-{
-    RequireNotNull (from);
-    // @todo FIX PERFORMANCE
-    return NarrowSDKStringToWide (from);
-}
 
-String String::FromNarrowSDKString (const char* from, const char* to)
-{
-    // @todo FIX PERFORMANCE
-    wstring tmp;
-    NarrowStringToWide (from, to, GetDefaultSDKCodePage (), &tmp);
-    return String{tmp};
-}
-
-String String::FromNarrowSDKString (const string& from)
-{
-    // @todo FIX PERFORMANCE
-    return NarrowSDKStringToWide (from);
-}
-
-String String::FromNarrowString (const char* from, const char* to, const locale& l)
+String String::FromNarrowString (span<const char> s, const locale& l)
 {
     // See http://en.cppreference.com/w/cpp/locale/codecvt/~codecvt
     using Destructible_codecvt_byname = deletable_facet_<codecvt_byname<wchar_t, char, mbstate_t>>;
@@ -203,11 +183,11 @@ String String::FromNarrowString (const char* from, const char* to, const locale&
 
     // http://en.cppreference.com/w/cpp/locale/codecvt/in
     mbstate_t            mbstate{};
-    size_t               externalSize = to - from;
+    size_t               externalSize = s.size ();
     wstring              resultWStr (externalSize, '\0');
     const char*          from_next;
     wchar_t*             to_next;
-    codecvt_base::result result = cvt.in (mbstate, from, to, from_next, &resultWStr[0], &resultWStr[resultWStr.size ()], to_next);
+    codecvt_base::result result = cvt.in (mbstate, s.data (), s.data () + s.size (), from_next, &resultWStr[0], &resultWStr[resultWStr.size ()], to_next);
     if (result != codecvt_base::ok) [[unlikely]] {
         static const auto kException_ = Execution::RuntimeErrorException{L"Error converting locale multibyte string to UNICODE"sv};
         Execution::Throw (kException_);

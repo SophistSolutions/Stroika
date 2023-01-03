@@ -234,11 +234,11 @@ namespace Stroika::Foundation::Characters {
     inline String String::FromNarrowString (const char* from, const locale& l)
     {
         RequireNotNull (from);
-        return FromNarrowString (from, from + ::strlen (from), l);
+        return FromNarrowString (span{from, ::strlen (from)}, l);
     }
     inline String String::FromNarrowString (const string& from, const locale& l)
     {
-        return FromNarrowString (from.c_str (), from.c_str () + from.length (), l);
+        return FromNarrowString (span{from.c_str (), from.length ()}, l);
     }
     inline String String::FromASCII (const char* from)
     {
@@ -258,7 +258,6 @@ namespace Stroika::Foundation::Characters {
     {
         return FromASCII (from.c_str (), from.c_str () + from.length ());
     }
-
     template <typename CHAR_T>
     String String::FromUTF8 (span<CHAR_T> s)
         requires (
@@ -299,6 +298,22 @@ namespace Stroika::Foundation::Characters {
     inline String String::FromSDKString (const SDKString& from)
     {
         return FromSDKString (span{from.c_str (), from.length ()});
+    }
+    inline String String::FromNarrowSDKString (const char* from)
+    {
+        RequireNotNull (from);
+        return FromNarrowSDKString (span{from, ::strlen (from)});
+    }
+    inline String String::FromNarrowSDKString (span<const char> s)
+    {
+        // @todo FIX PERFORMANCE
+        wstring tmp;
+        NarrowStringToWide (s.data (), s.data () + s.size (), GetDefaultSDKCodePage (), &tmp);
+        return String{tmp};
+    }
+    inline String String::FromNarrowSDKString (const string& from)
+    {
+        return FromNarrowSDKString (span{from.c_str (), from.length ()});
     }
     inline String String::FromISOLatin1 (const char* from)
     {
