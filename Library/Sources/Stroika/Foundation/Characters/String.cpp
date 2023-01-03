@@ -267,36 +267,6 @@ String::_SharedPtrIRep String::mk_ (const char32_t* from, const char32_t* to)
     }
 }
 
-String String::Concatenate (const String& rhs) const
-{
-    _SafeReadRepAccessor                     thisAccessor{this};
-    pair<const Character*, const Character*> lhsD   = thisAccessor._ConstGetRep ().GetData ();
-    size_t                                   lhsLen = lhsD.second - lhsD.first;
-    if (lhsLen == 0) {
-        return rhs;
-    }
-    _SafeReadRepAccessor                     rhsAccessor{&rhs};
-    pair<const Character*, const Character*> rhsD = rhsAccessor._ConstGetRep ().GetData ();
-    if (rhsD.first == rhsD.second) [[unlikely]] {
-        return *this;
-    }
-    return String{mk_ (reinterpret_cast<const wchar_t*> (lhsD.first), reinterpret_cast<const wchar_t*> (lhsD.second),
-                       reinterpret_cast<const wchar_t*> (rhsD.first), reinterpret_cast<const wchar_t*> (rhsD.second))};
-}
-
-String String::Concatenate (const wchar_t* appendageCStr) const
-{
-    RequireNotNull (appendageCStr);
-    _SafeReadRepAccessor                     thisAccessor{this};
-    pair<const Character*, const Character*> lhsD   = thisAccessor._ConstGetRep ().GetData ();
-    size_t                                   lhsLen = lhsD.second - lhsD.first;
-    if (lhsLen == 0) [[unlikely]] {
-        return String{appendageCStr};
-    }
-    return String{mk_ (reinterpret_cast<const wchar_t*> (lhsD.first), reinterpret_cast<const wchar_t*> (lhsD.second),
-                       appendageCStr, appendageCStr + ::wcslen (appendageCStr))};
-}
-
 void String::SetCharAt (Character c, size_t i)
 {
     // @Todo - redo with check if char is acttually chanigng and if so use

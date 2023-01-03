@@ -416,10 +416,13 @@ namespace Stroika::Foundation::Characters {
 
     public:
         /**
+         *  \brief appends 'rhs' string to this string (without modifying this string) and returns the combined string
+         *
          *  @see    Append() for a similar function that modifies 'this'
          */
-        nonvirtual String Concatenate (const String& rhs) const;
-        nonvirtual String Concatenate (const wchar_t* appendageCStr) const;
+        template <typename T>
+        nonvirtual String Concatenate (T&& rhs) const
+            requires (is_convertible_v<T, String>);
 
     public:
         /**
@@ -429,23 +432,23 @@ namespace Stroika::Foundation::Characters {
          * 
          * \note Alias GetLength ()
          */
-        nonvirtual size_t size () const;
+        nonvirtual size_t size () const noexcept;
 
     public:
         /**
          */
-        nonvirtual bool empty () const;
+        nonvirtual bool empty () const noexcept;
 
     public:
         /**
-         *  Alias for *this = String ();
+         *  Alias for *this = String{};
          */
         nonvirtual void clear ();
 
     public:
         /**
          */
-        nonvirtual const Character GetCharAt (size_t i) const;
+        nonvirtual const Character GetCharAt (size_t i) const noexcept;
 
     public:
         /**
@@ -460,7 +463,7 @@ namespace Stroika::Foundation::Characters {
          *
          *  Alias for GetCharAt (size_t i) const;
          */
-        nonvirtual const Character operator[] (size_t i) const;
+        nonvirtual const Character operator[] (size_t i) const noexcept;
 
     public:
         /**

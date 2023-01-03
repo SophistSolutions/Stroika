@@ -132,6 +132,7 @@ namespace Stroika::Foundation::Characters {
             return mk_ (span<const wchar_t>{buf.data (), len}); // this case specialized
         }
     }
+    DISABLE_COMPILER_MSC_WARNING_START (4244)   // just logically needed around copy () call inside, but compiler spews warnings unless out here
     template <Character_Compatible CHAR_T>
     auto String::mk_ (span<const CHAR_T> s1, span<const CHAR_T> s2) -> _SharedPtrIRep
     {
@@ -163,6 +164,7 @@ namespace Stroika::Foundation::Characters {
             return mk_ (span<const wchar_t>{buf.data (), len1 + len2});
         }
     }
+    DISABLE_COMPILER_MSC_WARNING_END (4244)
     template <Character_Compatible CHAR_T>
     auto String::mk_ (Iterable<CHAR_T> it) -> _SharedPtrIRep
     {
@@ -358,6 +360,16 @@ namespace Stroika::Foundation::Characters {
     {
         return FromNarrowSDKString (span{from.c_str (), from.length ()});
     }
+    template<typename T>
+     String String::Concatenate (T&& rhs) const
+        requires (is_convertible_v<T, String>)
+    {
+         // KISS for now - but this can and should be much more complex, dealing with ascii cases, etc...
+        String                       rrhs = rhs;
+        Memory::StackBuffer<char32_t> ignoredA;
+        Memory::StackBuffer<char32_t> ignoredB;
+        return mk_ (GetData<char32_t> (&ignoredA), rrhs.GetData<char32_t> (&ignoredB));
+     }
     inline void String::_AssertRepValidType () const
     {
         EnsureMember (&_SafeReadRepAccessor{this}._ConstGetRep (), String::_IRep);
@@ -376,7 +388,7 @@ namespace Stroika::Foundation::Characters {
         Require (bufFrom + accessor._ConstGetRep ()._GetLength () >= bufTo);
         accessor._ConstGetRep ().CopyTo (bufFrom, bufTo);
     }
-    inline size_t String::size () const
+    inline size_t String::size () const noexcept
     {
         return _SafeReadRepAccessor{this}._ConstGetRep ()._GetLength ();
     }
@@ -459,7 +471,7 @@ namespace Stroika::Foundation::Characters {
     {
         return RemoveAt (fromTo.first, fromTo.second);
     }
-    inline bool String::empty () const
+    inline bool String::empty () const noexcept
     {
         _SafeReadRepAccessor accessor{this};
         return accessor._ConstGetRep ()._GetLength () == 0;
@@ -576,14 +588,14 @@ namespace Stroika::Foundation::Characters {
         Append (appendageCStr);
         return *this;
     }
-    inline const Character String::GetCharAt (size_t i) const
+    inline const Character String::GetCharAt (size_t i) const noexcept
     {
         _SafeReadRepAccessor accessor{this};
         Require (i >= 0);
         Require (i < accessor._ConstGetRep ()._GetLength ());
         return accessor._ConstGetRep ().GetAt (i);
     }
-    inline const Character String::operator[] (size_t i) const
+    inline const Character String::operator[] (size_t i) const noexcept
     {
         Require (i >= 0);
         Require (i < size ());
