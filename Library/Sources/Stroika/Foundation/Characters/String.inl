@@ -132,7 +132,7 @@ namespace Stroika::Foundation::Characters {
             return mk_ (span<const wchar_t>{buf.data (), len}); // this case specialized
         }
     }
-    DISABLE_COMPILER_MSC_WARNING_START (4244)   // just logically needed around copy () call inside, but compiler spews warnings unless out here
+    DISABLE_COMPILER_MSC_WARNING_START (4244) // just logically needed around copy () call inside, but compiler spews warnings unless out here
     template <Character_Compatible CHAR_T>
     auto String::mk_ (span<const CHAR_T> s1, span<const CHAR_T> s2) -> _SharedPtrIRep
     {
@@ -360,16 +360,16 @@ namespace Stroika::Foundation::Characters {
     {
         return FromNarrowSDKString (span{from.c_str (), from.length ()});
     }
-    template<typename T>
-     String String::Concatenate (T&& rhs) const
+    template <typename T>
+    String String::Concatenate (T&& rhs) const
         requires (is_convertible_v<T, String>)
     {
-         // KISS for now - but this can and should be much more complex, dealing with ascii cases, etc...
-        String                       rrhs = rhs;
+        // KISS for now - but this can and should be much more complex, dealing with ascii cases, etc...
+        String                        rrhs = rhs;
         Memory::StackBuffer<char32_t> ignoredA;
         Memory::StackBuffer<char32_t> ignoredB;
         return mk_ (GetData<char32_t> (&ignoredA), rrhs.GetData<char32_t> (&ignoredB));
-     }
+    }
     inline void String::_AssertRepValidType () const
     {
         EnsureMember (&_SafeReadRepAccessor{this}._ConstGetRep (), String::_IRep);
@@ -953,7 +953,7 @@ namespace Stroika::Foundation::Characters {
         RequireNotNull (possiblyUsedBuffer);
         return GetData (GetPeekSpanData<CHAR_TYPE> (), possiblyUsedBuffer);
     }
-    inline size_t String::length () const
+    inline size_t String::length () const noexcept
     {
         return size ();
     }

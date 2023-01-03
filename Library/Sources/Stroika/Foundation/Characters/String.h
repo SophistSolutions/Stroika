@@ -210,12 +210,6 @@ namespace Stroika::Foundation::Characters {
      *      @see   Concrete::String_ExternalMemoryOwnership_StackLifetime
      *      @see   Concrete::String_Common
      *
-     *  \note   Design note - mutability vs. immutability
-     *          String objects are MUTABLE
-     *          String reps are IMMUTABLE.
-     *          Changes to string like +=, create new string reps (and so WORK but are quite costly). Consider
-     *          Use StringBuilder for that purpose in performance sensative code.
-     *
      *  \note   Design Choice - Iterable<T> / Iterator<T> behavior
      *      We have two basic choices of how to define the behavior of iterators:
      *      o   Live Update (like we do for Containers) - where changes to the
@@ -239,6 +233,30 @@ namespace Stroika::Foundation::Characters {
      *
      *      For now - stick to simple impl - of just copy on start of iteration.
      *          -- LGP 2013-12-17
+     *
+     *  \note   Design note - mutability vs. immutability
+     *          String objects are MUTABLE
+     *          String reps are IMMUTABLE.
+     *          Changes to string like +=, create new string reps (and so WORK but are quite costly). Consider
+     *          Use StringBuilder for that purpose in performance sensative code.
+     *
+     *          TODO WRITEUP AND MAYBE MAKE IMMUTABLE
+     * 
+     *          Current Mutating methods (as of v3.0d1x)
+     *          o   SetCharAt
+     *          o   c_str()
+     *          o   operator=
+     *          o   clear()
+     *          o   Append
+     *          o   operator+=
+     *          o   c_str ()  -- non-const
+     *          o   erase()
+     *
+     *          SOMEWHAT ironically, the only of these methods hard to replace is the non-const c_str () - and maybe there
+     *          not bad cuz I deprecated? COULD just deprecate ALL of these, and then the class is fully immutable. Probably
+     *          easier to udnerstand/reason about.
+     * 
+     *          @todo CONSIDER LOSIING THESE METHODS ABOVE (or deprecating at leats)
      *
      *  \note   Static Initialization, file scope variables, application lifetime variables.
      *          It \em IS safe to use the String class at file scope. The constructors are carefully crafted to
@@ -1251,7 +1269,7 @@ namespace Stroika::Foundation::Characters {
         /**
          *  basic_string alias: length = size
          */
-        nonvirtual size_t length () const;
+        nonvirtual size_t length () const noexcept;
 
     public:
         /**
