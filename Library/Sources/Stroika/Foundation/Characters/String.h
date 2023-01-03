@@ -849,7 +849,7 @@ namespace Stroika::Foundation::Characters {
          *
          *  \note   Alias - could have been called RIndexOf ()
          */
-        nonvirtual optional<size_t> RFind (Character c) const;
+        nonvirtual optional<size_t> RFind (Character c) const noexcept;
         nonvirtual optional<size_t> RFind (const String& subString) const;
 
     public:
@@ -1028,11 +1028,17 @@ namespace Stroika::Foundation::Characters {
     public:
         /**
          *  CopyTo () copies the contents of this string to the target buffer.
-         *  CopyTo () does NOT nul-terminate the target buffer, but DOES assert that (bufTo-bufFrom)
-         *  is >= this->size ()
+         *  CopyTo () does NOT nul-terminate the target buffer
+         * 
+         *  Returns span of CHAR_T objects written - a subspan of the argument span
+         * 
+         *  \req s.size () >= UTFConverter::ComputeTargetBufferSize<CHAR_T> (...this-string-data...);
+         * 
+         *  \see See also GetData<CHAR_T> (buf) - similar functionality - except caller doesn't need to know size of buffer to allocate
          */
-        nonvirtual void CopyTo (Character* bufFrom, Character* bufTo) const;
-        nonvirtual void CopyTo (wchar_t* bufFrom, wchar_t* bufTo) const;
+        template <Character_Compatible CHAR_T>
+        nonvirtual span<CHAR_T> CopyTo (span<CHAR_T> s) const
+            requires (not is_const_v<CHAR_T>);
 
     public:
         /**

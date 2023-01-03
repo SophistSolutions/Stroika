@@ -522,7 +522,7 @@ vector<String>  String::Find (const String& string2SearchFor, CompareOptions co)
     return result;
 }
 #endif
-optional<size_t> String::RFind (Character c) const
+optional<size_t> String::RFind (Character c) const noexcept
 {
     //@todo: FIX HORRIBLE PERFORMANCE!!!
     _SafeReadRepAccessor accessor{this};
