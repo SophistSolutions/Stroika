@@ -175,20 +175,6 @@ String::String (const basic_string_view<wchar_t>& str)
                                                // -- LGP 2019-01-29
 }
 
-String String::FromUTF8 (const char* from, const char* to)
-{
-    RequireNotNull (from);
-    RequireNotNull (to);
-    Require (from <= to);
-    size_t               cvtBufSize = UTFConverter::kThe.ComputeTargetBufferSize<wchar_t> (span{from, to});
-    StackBuffer<wchar_t> buf{Memory::eUninitialized, cvtBufSize};
-#if qCompilerAndStdLib_spanOfContainer_Buggy
-    return String{span<const wchar_t>{buf.data (), UTFConverter::kThe.Convert (span{from, to}, span{buf.data (), buf.size ()}).fTargetProduced}};
-#else
-    return String{span<const wchar_t>{buf.data (), UTFConverter::kThe.Convert (span{from, to}, span{buf}).fTargetProduced}};
-#endif
-}
-
 String String::FromSDKString (const SDKChar* from)
 {
     RequireNotNull (from);

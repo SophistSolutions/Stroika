@@ -335,14 +335,18 @@ namespace Stroika::Foundation::Characters {
          *  \note   Reading improperly encoded text may result in a RuntimeException indicating improperly encoded characters.
          *
          */
-        // @todo refactor using requires and deprecate from/to and add span<const char>
-        static String FromUTF8 (const char* from);
-        static String FromUTF8 (const char* from, const char* to);
-        static String FromUTF8 (const string& from);
-        static String FromUTF8 (const char8_t* from);
-        static String FromUTF8 (const char8_t* from, const char8_t* to);
-        static String FromUTF8 (const u8string& from);
-        static String FromUTF8 (span<const char8_t> from);
+        template <typename CHAR_T>
+        static String FromUTF8 (span<CHAR_T> from)
+            requires (
+                is_same_v<remove_cv_t<CHAR_T>, char8_t> or is_same_v<remove_cv_t<CHAR_T>, char>);
+        template <typename CHAR_T>
+        static String FromUTF8 (basic_string<CHAR_T> from)
+            requires (
+                is_same_v<remove_cv_t<CHAR_T>, char8_t> or is_same_v<remove_cv_t<CHAR_T>, char>);
+        template <typename CHAR_T>
+        static String FromUTF8 (const CHAR_T* from)
+            requires (
+                is_same_v<remove_cv_t<CHAR_T>, char8_t> or is_same_v<remove_cv_t<CHAR_T>, char>);
 
     public:
         /**
@@ -1349,6 +1353,14 @@ namespace Stroika::Foundation::Characters {
         nonvirtual String substr (size_t from, size_t count = npos) const;
 
     public:
+        [[deprecated ("Since Stroika v3.0 - use span{} overloads")]] static String FromUTF8 (const char* from, const char* to)
+        {
+            return FromUTF8 (span{from, to});
+        }
+        [[deprecated ("Since Stroika v3.0 - use span{} overloads")]] static String FromUTF8 (const char8_t* from, const char8_t* to)
+        {
+            return FromUTF8 (span{from, to});
+        }
         template <typename T = string>
         [[deprecated ("Since Stroika v3.0d1 - use Character::AsAsciiQuietly")]] static bool AsASCIIQuietly (const wchar_t* fromStart, const wchar_t* fromEnd, T* into)
         {

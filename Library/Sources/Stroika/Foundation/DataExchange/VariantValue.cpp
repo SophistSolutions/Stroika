@@ -244,7 +244,7 @@ VariantValue::VariantValue (const boost::json::value& val)
             break;
         case json::kind::string: {
             const json::string& bs = val.as_string (); // boost::json::string documents it represents a string as a series of UTF-8 characters
-            *this                  = String::FromUTF8 (bs.begin (), bs.end ());
+            *this                  = String::FromUTF8 (span{bs});
         } break;
         case json::kind::array: {
             const auto&               a = val.as_array ();
@@ -259,7 +259,7 @@ VariantValue::VariantValue (const boost::json::value& val)
             const auto&                                                          o = val.as_object ();
             Containers::Concrete::Mapping_stdmap<String, VariantValue>::STDMAP<> r; // performance tweak, add in STL, avoiding virtual calls for each add, and then move to Stroika mapping
             for (const auto& i : o) {
-                r.insert ({String::FromUTF8 (i.key ().begin (), i.key ().end ()), VariantValue{i.value ()}});
+                r.insert ({String::FromUTF8 (span{i.key ()}), VariantValue{i.value ()}});
             }
             *this = Containers::Concrete::Mapping_stdmap<String, VariantValue>{std::move (r)};
         } break;

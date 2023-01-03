@@ -258,30 +258,31 @@ namespace Stroika::Foundation::Characters {
     {
         return FromASCII (from.c_str (), from.c_str () + from.length ());
     }
-    inline String String::FromUTF8 (const char* from)
+
+
+template <typename CHAR_T>
+     String String::FromUTF8 (span<CHAR_T> s)
+        requires (
+            is_same_v<remove_cv_t<CHAR_T>, char8_t> or is_same_v<remove_cv_t<CHAR_T>, char>)
     {
-        RequireNotNull (from);
-        return FromUTF8 (from, from + ::strlen (from));
+        Memory::StackBuffer<wchar_t> buf{Memory::eUninitialized, UTFConverter::kThe.ComputeTargetBufferSize<wchar_t> (s)};
+#if qCompilerAndStdLib_spanOfContainer_Buggy
+            return String{span<const wchar_t>{buf.data (), UTFConverter::kThe.Convert (s, span{buf.data (), buf.size ()}).fTargetProduced}};
+#else
+            return String{span<const wchar_t>{buf.data (), UTFConverter::kThe.Convert (s, span{buf}).fTargetProduced}};
+#endif
     }
-    inline String String::FromUTF8 (const string& from)
+    template <typename CHAR_T>
+    inline String String::FromUTF8 (basic_string<CHAR_T> from)
+        requires (is_same_v<remove_cv_t<CHAR_T>, char8_t> or is_same_v<remove_cv_t<CHAR_T>, char>)
     {
-        return FromUTF8 (from.c_str (), from.c_str () + from.length ());
+        return FromUTF8 (span{from.c_str (), from.length ()});
     }
-    inline String String::FromUTF8 (const char8_t* from, const char8_t* to)
+    template <typename CHAR_T>
+    inline  String String::FromUTF8 (const CHAR_T* from)
+        requires ( is_same_v<remove_cv_t<CHAR_T>, char8_t> or is_same_v<remove_cv_t<CHAR_T>, char>)
     {
-        return FromUTF8 (reinterpret_cast<const char*> (from), reinterpret_cast<const char*> (to));
-    }
-    inline String String::FromUTF8 (const char8_t* from)
-    {
-        return FromUTF8 (from, from + ::strlen ((const char*)from));
-    }
-    inline String String::FromUTF8 (const u8string& from)
-    {
-        return FromUTF8 (from.c_str (), from.c_str () + from.length ());
-    }
-    inline String String::FromUTF8 (span<const char8_t> from)
-    {
-        return FromUTF8 (&*from.begin (), &*from.begin () + from.size ());
+            return FromUTF8 (span{from, ::strlen (from)});
     }
     inline String String::FromISOLatin1 (const char* from)
     {
