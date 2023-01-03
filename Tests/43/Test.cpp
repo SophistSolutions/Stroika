@@ -36,8 +36,6 @@ using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::IO;
 using namespace Stroika::Foundation::IO::Network;
 
-using Characters::String_Constant;
-
 #if qPlatform_Windows && qHasFeature_ATLMFC
 namespace {
     DISABLE_COMPILER_MSC_WARNING_START (6262)

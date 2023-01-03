@@ -301,6 +301,15 @@ namespace Stroika::Foundation::Characters {
     {
         return FromASCII (span{s.data (), s.size ()});
     }
+    template <size_t SIZE>
+    inline String String::FromStringConstant (const wchar_t (&cString)[SIZE])
+    {
+        return FromStringConstant (span<const wchar_t>{cString, SIZE-1});   // -1 because a literal array SIZE includes the NUL-character at the end
+    }
+    inline String String::FromStringConstant (const basic_string_view<wchar_t>& str)
+    {
+        return FromStringConstant (span<const wchar_t>{str.data (), str.size ()});
+    }
     template <typename CHAR_T>
     String String::FromUTF8 (span<CHAR_T> s)
         requires (
@@ -1381,6 +1390,23 @@ namespace Stroika::Foundation::Characters {
     {
         return lhs.Concatenate (rhs);
     }
+#if 0
+    /*
+     ********************************************************************************
+     ********************************* String_Constant ******************************
+     ********************************************************************************
+     */
+    template <size_t SIZE>
+    inline String_Constant::String_Constant (const wchar_t (&cString)[SIZE])
+        : String_Constant{&cString[0], &cString[SIZE - 1]}
+    {
+    }
+    inline String_Constant::String_Constant (const basic_string_view<wchar_t>& str)
+        : String_Constant{str.data (), str.data () + str.length ()}
+    {
+    }
+#endif
+
 }
 
 namespace Stroika::Foundation::Traversal {
@@ -1414,6 +1440,25 @@ namespace Stroika::Foundation::Traversal {
     {
         return Join (L", "sv);
     }
+}
+
+namespace Stroika::Foundation::Characters {
+    class [[deprecated ("Since Stroika v3.0 - just use String::FromStringConstant")]] String_Constant : public String{
+        public :
+            template <size_t SIZE>
+            explicit String_Constant (const wchar_t (&cString)[SIZE]) : String{String::FromStringConstant (basic_string_view<wchar_t>{cString, SIZE})} {} String_Constant (const wchar_t* start, const wchar_t* end) : String{String::FromStringConstant (basic_string_view<wchar_t>{start, end})} {} String_Constant (const basic_string_view<wchar_t>& str) : String{String::FromStringConstant (str)} {}
+    };
+}
+namespace Stroika::Foundation::Characters::Concrete {
+    class [[deprecated ("Since Stroika v3.0 - just use String::FromStringConstant")]] String_ExternalMemoryOwnership_ApplicationLifetime : public String{
+        public :
+            template <size_t SIZE>
+            explicit String_ExternalMemoryOwnership_ApplicationLifetime (const wchar_t (&cString)[SIZE]) : String{String::FromStringConstant (basic_string_view<wchar_t>{cString, SIZE})} {}
+
+        String_ExternalMemoryOwnership_ApplicationLifetime (const wchar_t* start, const wchar_t* end) : String{String::FromStringConstant (basic_string_view<wchar_t>{start, end})} {}
+
+        String_ExternalMemoryOwnership_ApplicationLifetime (const basic_string_view<wchar_t>& str) : String{String::FromStringConstant (str)} {}
+    };
 }
 
 #endif // _Stroika_Foundation_Characters_String_inl_

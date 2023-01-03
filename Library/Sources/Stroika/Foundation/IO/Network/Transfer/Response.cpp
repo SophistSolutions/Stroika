@@ -46,21 +46,21 @@ String Response::SSLResultInfo::ToString () const
  */
 optional<InternetMediaType> Response::GetContentType () const
 {
-    if (optional<String> i = fHeaders_.Lookup (String_Constant{HTTP::HeaderName::kContentType})) {
+    if (optional<String> i = fHeaders_.Lookup (String::FromStringConstant (HTTP::HeaderName::kContentType))) {
         return InternetMediaType{*i};
     }
-    return {};
+    return nullopt;
 }
 
 optional<String> Response::GetCharset () const
 {
-    if (optional<String> hi = fHeaders_.Lookup (String_Constant{HTTP::HeaderName::kContentType})) {
+    if (optional<String> hi = fHeaders_.Lookup (String::FromStringConstant (HTTP::HeaderName::kContentType))) {
         static const String_Constant kLBL_{L"; charset="};
         if (optional<size_t> oi = hi->Find (kLBL_)) {
             return hi->SubString (*oi + kLBL_.size ());
         }
     }
-    return {};
+    return nullopt;
 }
 
 String Response::ToString () const

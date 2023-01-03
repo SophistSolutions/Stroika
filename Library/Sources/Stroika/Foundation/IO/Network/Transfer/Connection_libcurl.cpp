@@ -325,7 +325,7 @@ Response Connection_LibCurl::Rep_::Send (const Request& request)
         overrideHeaders = kSilenceTheseHeaders_ + overrideHeaders;
     }
     if (fOptions_.fAuthentication and fOptions_.fAuthentication->GetOptions () == Connection::Options::Authentication::Options::eProactivelySendAuthentication) {
-        overrideHeaders.Add (String_Constant{HeaderName::kAuthorization}, fOptions_.fAuthentication->GetAuthToken ());
+        overrideHeaders.Add (String::FromStringConstant (HeaderName::kAuthorization), fOptions_.fAuthentication->GetAuthToken ());
     }
     {
         constexpr bool kDefault_FailConnectionIfSSLCertificateInvalid{false};

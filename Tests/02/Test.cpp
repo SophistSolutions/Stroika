@@ -60,7 +60,7 @@ namespace {
      */
     String s_TestEmptyString_;
     String s_TestStringInit_{L"my very good test"};
-    String s_TestStringConstantInit_{String_Constant{L"my very very good test"}};
+    String s_TestStringConstantInit_{String::FromStringConstant (L"my very very good test")};
     String s_TestStringAssignInit_{s_TestStringInit_};
 
     struct RunTest_VerifyStatics_ {
@@ -790,7 +790,7 @@ namespace {
                     VerifyTestResult (tmp2.size () == 1 and tmp2[0].GetFullMatch () == L"a=b," and tmp2[0].GetSubMatches () == Sequence<String>{L"b,"});
                 }
                 {
-                    const String_Constant   kTest_{L"a=b,"};
+                    const String            kTest_ = String::FromStringConstant (L"a=b,");
                     const RegularExpression kRE_{L"a=(.*),"};
                     Sequence<String>        tmp1{kTest_.FindEachString (kRE_)};
                     VerifyTestResult (tmp1.size () == 1 and tmp1[0] == L"a=b,");
@@ -799,7 +799,7 @@ namespace {
                 }
 
                 {
-                    const String_Constant   kTest_{L"a=b,"};
+                    const String            kTest_ = String::FromStringConstant (L"a=b,");
                     const RegularExpression kRE_{L"a=(.*)[, ]"};
                     Sequence<String>        tmp1{kTest_.FindEachString (kRE_)};
                     VerifyTestResult (tmp1.size () == 1 and tmp1[0] == L"a=b,");

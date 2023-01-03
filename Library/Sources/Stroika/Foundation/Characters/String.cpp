@@ -295,37 +295,46 @@ const wchar_t* Concrete::Private::BufferedStringRep::_Rep::c_str_peek () const n
  ************** String_ExternalMemoryOwnership_ApplicationLifetime **************
  ********************************************************************************
  */
-class Concrete::String_ExternalMemoryOwnership_ApplicationLifetime::MyRep_ : public String::_IRep, public Memory::UseBlockAllocationIfAppropriate<MyRep_> {
-private:
-    using inherited = String::_IRep;
 
-public:
-    MyRep_ (const wchar_t* start, const wchar_t* end)
-        : inherited{start, end} // don't copy memory - but copy raw pointers! So they MUST BE (externally promised) 'externally owned for the application lifetime and constant' - like c++ string constants
-    {
-        // NO - we allow embedded nuls, but require NUL-termination - so this is wrong - Require (start + ::wcslen (start) == end);
-        Require (*end == '\0' and start + ::wcslen (start) <= end);
-    }
-    virtual _IterableRepSharedPtr Clone () const override
-    {
-        AssertNotReached (); // Since String reps now immutable, this should never be called
-        return nullptr;
-    }
-    virtual const wchar_t* c_str_peek () const noexcept override
-    {
-        // This class ALWAYS constructed with String_ExternalMemoryOwnership_ApplicationLifetime and ALWAYS with NUL-terminated string
-        // NO - we allow embedded nuls, but require NUL-termination - so this is wrong - Assert (_fStart + ::wcslen (_fStart) == _fEnd);
-        Assert (*_fEnd == '\0' and _fStart + ::wcslen (_fStart) <= _fEnd);
-        return _fStart;
-    }
-};
+namespace {
+    struct MyStringConstant_ : public String {
+        using inherited = String;
 
-Concrete::String_ExternalMemoryOwnership_ApplicationLifetime::String_ExternalMemoryOwnership_ApplicationLifetime (const wchar_t* start, const wchar_t* end)
+        class MyRep_ : public String::_IRep, public Memory::UseBlockAllocationIfAppropriate<MyRep_> {
+        private:
+            using inherited = String::_IRep;
+
+        public:
+            MyRep_ (const wchar_t* start, const wchar_t* end)
+                : inherited{start, end} // don't copy memory - but copy raw pointers! So they MUST BE (externally promised) 'externally owned for the application lifetime and constant' - like c++ string constants
+            {
+                // NO - we allow embedded nuls, but require NUL-termination - so this is wrong - Require (start + ::wcslen (start) == end);
+                Require (*end == '\0' and start + ::wcslen (start) <= end);
+            }
+            virtual _IterableRepSharedPtr Clone () const override
+            {
+                AssertNotReached (); // Since String reps now immutable, this should never be called
+                return nullptr;
+            }
+            virtual const wchar_t* c_str_peek () const noexcept override
+            {
+                // This class ALWAYS constructed with String_ExternalMemoryOwnership_ApplicationLifetime and ALWAYS with NUL-terminated string
+                // NO - we allow embedded nuls, but require NUL-termination - so this is wrong - Assert (_fStart + ::wcslen (_fStart) == _fEnd);
+                Assert (*_fEnd == '\0' and _fStart + ::wcslen (_fStart) <= _fEnd);
+                return _fStart;
+            }
+        };
+    };
+}
+
+#if 0
+String_Constant::String_Constant (const wchar_t* start, const wchar_t* end)
     : inherited{MakeSmartPtr<MyRep_> (start, end)}
 {
     // NO - we allow embedded nuls, but require NUL-termination - so this is wrong - Require (start + ::wcslen (start) == end);
     Require (*end == '\0' and start + ::wcslen (start) <= end);
 }
+#endif
 
 namespace {
     class String_BufferedArray_Rep_ final
@@ -456,13 +465,20 @@ auto String::_IRep::Find (const function<bool (Configuration::ArgByValueType<val
 static_assert (sizeof (Character) == sizeof (wchar_t), "Character and wchar_t must be same size");
 
 String::String (const basic_string_view<wchar_t>& str)
-    : String{String_Constant{str}} // safe to avoid copying string rep here - just point at memory for string
+    : String{MakeSmartPtr<MyStringConstant_::MyRep_> (str.data (), str.data () + str.size ())}
 {
     Require (str.data ()[str.length ()] == 0); // Because Stroika strings provide the guarantee that they can be converted to c_str () - we require the input memory
                                                // for these const strings are also nul-terminated.
                                                // DONT try to CORRECT this if found wrong, because whenever you use "stuff"sv - the string literal will always
                                                // be nul-terminated.
                                                // -- LGP 2019-01-29
+}
+
+String String::FromStringConstant (const span<const wchar_t> s)
+{
+    Require (*(s.data () + s.size ()) == '\0'); // crazy weird requirement, but done cuz L"x"sv already does NUL-terminate and we can
+                                                // take advantage of that fact - re-using the NUL-terminator for our own c_str() implementation
+    return String{MakeSmartPtr<MyStringConstant_::MyRep_> (s.data (), s.data () + s.size ())};
 }
 
 String String::FromNarrowString (span<const char> s, const locale& l)
@@ -1239,7 +1255,7 @@ void String::ThrowInvalidAsciiException_ ()
  */
 String Characters::operator"" _k (const wchar_t* s, size_t len)
 {
-    return String_Constant{s, s + len};
+    return String::FromStringConstant (span<const wchar_t>{s, len});
 }
 
 /*

@@ -22,16 +22,15 @@ using namespace Stroika::Foundation::IO::Network::Transfer;
  */
 InternetMediaType Request::GetContentType () const
 {
-    optional<String> i = fOverrideHeaders.Lookup (String_Constant{HTTP::HeaderName::kContentType});
-    if (i) {
+    if (optional<String> i = fOverrideHeaders.Lookup (String::FromStringConstant (HTTP::HeaderName::kContentType)); i) {
         return InternetMediaType (*i);
     }
-    return InternetMediaType ();
+    return InternetMediaType{};
 }
 
 void Request::SetContentType (const InternetMediaType& ct)
 {
-    fOverrideHeaders.Add (String_Constant{HTTP::HeaderName::kContentType}, ct.As<String> ());
+    fOverrideHeaders.Add (String::FromStringConstant (HTTP::HeaderName::kContentType), ct.As<String> ());
 }
 
 String Request::ToString () const

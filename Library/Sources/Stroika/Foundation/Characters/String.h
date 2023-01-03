@@ -423,6 +423,41 @@ namespace Stroika::Foundation::Characters {
 
     public:
         /**
+         *   \brief Take the given argument data (constant span) - which must remain unchanged - constant - for the application lifetime - and treat it as a Stroika String object
+         * 
+         * This allows creation of String objects with fewer memory allocations, and more efficient storage, but only in constrained situations
+         *
+         *  The resulting String is a perfectly compliant Stroika String (somewhat akin to std::string_view vs std::string).
+         *
+         *  \par Example:
+         *      \code
+         *          String  tmp1    =   L"FRED";
+         *          String  tmp2    =   String{L"FRED"};
+         *          String  tmp3    =   String::FromStringConstant (L"FRED");       // same as 2 above, but faster
+         *          String  tmp4    =   L"FRED"sv;                      // equivilent to FromStringConstant
+         *          String  tmp5    =   L"FRED"_k;                      // equivilent to FromStringConstant
+         *      \endcode
+         *
+         *  \em WARNING - BE VERY CAREFUL - be sure arguments have application lifetime.
+         * 
+         *  \req argument string must be nul-terminated (but CAN contain additional embedded nul characters)
+         * 
+         *  \note In Stroika v2.1 this was called class String_ExternalMemoryOwnership_ApplicationLifetime.
+         *  \note In Stroika v2.1 this was called class String_Constant.
+         * 
+         *  The constructor requires an application lifetime NUL-terminated array of characters - such as one
+         *  created with L"sample" (but allows embedded NUL-characters).
+         *
+         *  \req ((str.data () + str.size ()) == '\0'); // crazy weird requirement, but done cuz L"x"sv already does NUL-terminate and we can
+         *                                              // take advantage of that fact - re-using the NUL-terminator for our own c_str() implementation
+         */
+        template <size_t SIZE>
+        static String FromStringConstant (const wchar_t (&cString)[SIZE]);
+        static String FromStringConstant (const basic_string_view<wchar_t>& str);
+        static String FromStringConstant (const span<const wchar_t> s);
+
+    public:
+        /**
          *  Create a String object from ISO-Latin-1 (https://en.wikipedia.org/wiki/ISO/IEC_8859-1)
          *
          *  \note Though ISO-Latin-1 is is defined to only have 192 valid characters (source), UNICODE
@@ -1727,114 +1762,6 @@ namespace Stroika::Foundation::DataExchange {
     };
 }
 
-// MOVE ELSEEHWERE
-
-namespace Stroika::Foundation::Characters::Concrete {
-
-    /**
-     *  \brief String_ExternalMemoryOwnership_ApplicationLifetime allow creation of String objects with fewer memory allocations, and more efficient storage, but only in constrained situations
-     *
-     *      String_ExternalMemoryOwnership_ApplicationLifetime is a subtype of string you can
-     * use to construct a String object, so long as the memory pointed to in the argument has a
-     *      o   FULL APPLICATION LIFETIME,
-     *      o   the member referenced never changes - is READONLY.
-     *
-     *      String_ExternalMemoryOwnership_ApplicationLifetime will NOT change the memory
-     * referenced in the CTOR.
-     *
-     *      Strings constructed with this String_ExternalMemoryOwnership_ApplicationLifetime
-     * maybe treated like normal strings - passed anywhere, and even modified via the String APIs.
-     *
-     *  \par Example:
-     *      \code
-     *          String  tmp1    =   L"FRED";
-     *          String  tmp2    =   String{L"FRED"};
-     *          String  tmp3    =   String_ExternalMemoryOwnership_ApplicationLifetime{L"FRED"};
-     *          String  tmp4    =   L"FRED"sv;
-     *
-     *          extern String saved;
-     *          inline  String  F(String x)         { saved = x; x.InsertAt ('X', 1); saved = x.ToUpperCase () + "fred";  return saved; }
-     *          F(tmp1);
-     *          F(tmp2);
-     *          F(tmp3);
-     *          F(tmp4);
-     *      \endcode
-     *
-     *      These ALL do essentially the same thing, and are all equally safe. The 'tmp3' implementation
-     * maybe slightly more efficent, but all are equally safe.
-     *
-     *  \em WARNING - BE VERY CAREFUL - be sure arguments have application lifetime.
-     * 
-     *  \req argument string must be nul-terminated (but CAN contain additional embedded nul characters)
-     */
-    class String_ExternalMemoryOwnership_ApplicationLifetime : public String {
-    private:
-        using inherited = String;
-
-    public:
-        /**
-         *  The constructor requires an application lifetime NUL-terminated array of characters - such as one
-         *  created with L"sample" (but allows embedded NUL-characters).
-         *
-         *      \req SIZE >= 1
-         *      \req cString[SIZE-1] == '\0'
-         *
-         *      \req *end == '\0' and start + ::wcslen (start) <= end;
-         */
-        template <size_t SIZE>
-        explicit String_ExternalMemoryOwnership_ApplicationLifetime (const wchar_t (&cString)[SIZE]);
-        String_ExternalMemoryOwnership_ApplicationLifetime (const wchar_t* start, const wchar_t* end);
-        String_ExternalMemoryOwnership_ApplicationLifetime (const basic_string_view<wchar_t>& str);
-        String_ExternalMemoryOwnership_ApplicationLifetime (String_ExternalMemoryOwnership_ApplicationLifetime&& s) noexcept      = default;
-        String_ExternalMemoryOwnership_ApplicationLifetime (const String_ExternalMemoryOwnership_ApplicationLifetime& s) noexcept = default;
-
-    public:
-        nonvirtual String_ExternalMemoryOwnership_ApplicationLifetime& operator= (String_ExternalMemoryOwnership_ApplicationLifetime&& s) noexcept = default;
-        nonvirtual String_ExternalMemoryOwnership_ApplicationLifetime& operator= (const String_ExternalMemoryOwnership_ApplicationLifetime& s)     = default;
-
-    private:
-        class MyRep_;
-    };
-
-}
-
-namespace Stroika::Foundation::Characters::Concrete {
-
-    /*
-     ********************************************************************************
-     ************* String_ExternalMemoryOwnership_ApplicationLifetime ***************
-     ********************************************************************************
-     */
-    template <size_t SIZE>
-    inline String_ExternalMemoryOwnership_ApplicationLifetime::String_ExternalMemoryOwnership_ApplicationLifetime (const wchar_t (&cString)[SIZE])
-        : String_ExternalMemoryOwnership_ApplicationLifetime{&cString[0], &cString[SIZE - 1]}
-    {
-    }
-    inline String_ExternalMemoryOwnership_ApplicationLifetime::String_ExternalMemoryOwnership_ApplicationLifetime (const basic_string_view<wchar_t>& str)
-        : String_ExternalMemoryOwnership_ApplicationLifetime{str.data (), str.data () + str.length ()}
-    {
-    }
-
-}
-
-namespace Stroika::Foundation::Characters {
-
-    /**
-     *  \brief String_Constant allows creation of String objects with fewer memory allocations, and more efficient storage, but only in constrained situations
-     *
-     *      String_Constant can safely be used to create Stroika String's from constant C-strings
-     *  (string literals) with a minimum of performance cost.
-     *
-     *  The resulting String is a perfectly compliant Stroika String, and can be modified. It's just
-     *  that the initial copy is nearly free.
-     *
-     *  \em WARNING - BE VERY CAREFUL - this is just an alias for String_ExternalMemoryOwnership_ApplicationLifetime - so be
-     *      sure arguments have application lifetime.
-     *
-     */
-    using String_Constant = Concrete::String_ExternalMemoryOwnership_ApplicationLifetime;
-
-}
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
