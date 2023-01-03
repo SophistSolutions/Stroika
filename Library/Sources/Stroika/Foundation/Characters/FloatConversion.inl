@@ -694,8 +694,9 @@ namespace Stroika::Foundation::Characters::FloatConversion {
             return ToFloat<T> (span{s, CString::Length (s)});
         }
         else if constexpr (is_same_v<DecayedStringishArg, String>) {
-            auto [start, end] = s.template GetData<wchar_t> ();
-            return ToFloat<T> (span{start, end});
+            Memory::StackBuffer<wchar_t> ignored; // todo optimize for keep ascii case
+            auto                         sp = s.template GetData<wchar_t> (&ignored);
+            return ToFloat<T> (sp);
         }
         else if constexpr (is_convertible_v<DecayedStringishArg, std::string>) {
             string ss = s;
@@ -712,8 +713,8 @@ namespace Stroika::Foundation::Characters::FloatConversion {
     inline T ToFloat (const String& s, String* remainder)
     {
         RequireNotNull (remainder);
-        auto [start, end]                     = s.GetData<wchar_t> ();
-        span<const wchar_t>           srcSpan = span{start, end};
+        Memory::StackBuffer<wchar_t>  ignored;
+        span<const wchar_t>           srcSpan = s.GetData (&ignored);
         span<const wchar_t>::iterator tmpRemainder;
         auto                          result = ToFloat<T> (srcSpan, &tmpRemainder);
         *remainder                           = String{srcSpan.subspan (tmpRemainder - srcSpan.begin ())};

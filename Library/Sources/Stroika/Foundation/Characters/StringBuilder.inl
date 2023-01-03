@@ -88,9 +88,10 @@ namespace Stroika::Foundation::Characters {
     }
     inline void StringBuilder::Append (const String& s)
     {
-        pair<const wchar_t*, const wchar_t*> p = s.GetData<wchar_t> ();
-        if (p.first != p.second) {
-            Append (span{p.first, p.second});
+        Memory::StackBuffer<wchar_t> ignored;
+        span<const wchar_t>          p = s.GetData<wchar_t> (&ignored);
+        if (not p.empty ()) {
+            Append (p);
         }
     }
     inline void StringBuilder::Append (wchar_t c)

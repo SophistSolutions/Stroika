@@ -195,7 +195,7 @@ namespace {
     void Test2_Helper_ (String& s1, String& s2)
     {
         VerifyTestResult (s1.size () == 12);
-        VerifyTestResult (String (s1).size () == 12);
+        VerifyTestResult (String{s1}.size () == 12);
         VerifyTestResult (s1 == s2);
         VerifyTestResult (!(s1 != s2));
         VerifyTestResult (s1 + s1 == s2 + s2);
@@ -265,11 +265,11 @@ namespace {
         String                    t4 = L"a";
 
         VerifyTestResult (t1 == L"");
-        VerifyTestResult (t1 == String ());
-        VerifyTestResult (t1 == String (L""));
+        VerifyTestResult (t1 == String{});
+        VerifyTestResult (t1 == String{L""});
         VerifyTestResult (t1 == t2);
         VerifyTestResult (t3 == L"a");
-        VerifyTestResult (t3 == String (L"a"));
+        VerifyTestResult (t3 == String{L"a"});
         VerifyTestResult (t4 == L"a");
 #if (defined(__clang_major__) && !defined(__APPLE__) && (__clang_major__ >= 7)) || (defined(__clang_major__) && defined(__APPLE__) && (__clang_major__ >= 10))
         DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wself-assign-overloaded\""); // explicitly assigning value of variable of type 'Stroika::Foundation::Characters::String' to itself
@@ -476,10 +476,10 @@ namespace {
         VerifyTestResult (String{L"1"} <= String{L"1"});
         VerifyTestResult (L"1" <= String{L"1"});
         VerifyTestResult (String{L"1"} <= L"1");
-        VerifyTestResult (String{L"1"} <= String (L"10"));
-        VerifyTestResult (not(String{L"1"} > String (L"10")));
-        VerifyTestResult (not(String{L"1"} >= String (L"10")));
-        VerifyTestResult (String{L"1"} < String (L"10"));
+        VerifyTestResult (String{L"1"} <= String{L"10"});
+        VerifyTestResult (not(String{L"1"} > String{L"10"}));
+        VerifyTestResult (not(String{L"1"} >= String{L"10"}));
+        VerifyTestResult (String{L"1"} < String{L"10"});
 
         VerifyTestResult (String (L"20") > String (L"11"));
         VerifyTestResult (String (L"20") >= String (L"11"));
@@ -532,7 +532,7 @@ namespace {
     void Test8_ExternalMemoryOwnershipStrings_ ()
     {
         Debug::TraceContextBumper ctx{L"Test8_ExternalMemoryOwnershipStrings_"};
-        String                    s = String_ExternalMemoryOwnership_ApplicationLifetime (L"fred");
+        String                    s = String_ExternalMemoryOwnership_ApplicationLifetime{L"fred"};
         VerifyTestResult (s[0] == 'f');
         s.erase (3);
         VerifyTestResult (s[0] == 'f');
@@ -591,7 +591,7 @@ namespace {
         VerifyTestResult (String{L" abc "}.Trim () == L"abc");
 
         VerifyTestResult (kT1.Trim ([] (Character c) -> bool { return c.IsAlphabetic (); }) == L"  ");
-        VerifyTestResult (String (L"/\n").Trim () == L"/");
+        VerifyTestResult (String{L"/\n"}.Trim () == L"/");
     }
 }
 
@@ -697,26 +697,30 @@ namespace {
     namespace Test17_Private_ {
         void Test17_Find_ ()
         {
-            VerifyTestResult (String (L"abc").Find (L"b") == 1u);
-            VerifyTestResult (not String (L"abc").Find (L"x").has_value ());
-            VerifyTestResult (not String (L"abc").Find (L"b", 2).has_value ());
+            VerifyTestResult (String{L"abc"}.Find (L"b") == 1u);
+            VerifyTestResult (not String{L"abc"}.Find (L"x").has_value ());
+            VerifyTestResult (not String{L"abc"}.Find (L"b", 2).has_value ());
         }
         void Test17_FindEach_ ()
         {
             {
                 // @todo - Either have FindEach return Sequence or fix vector stuff!!!
-                VerifyTestResult (String (L"abc").FindEach (L"b") == Containers::Sequence<size_t> ({1}).As<vector<size_t>> ());
+                VerifyTestResult (String{L"abc"}.FindEach (L"b") == Containers::Sequence<size_t> ({1}).As<vector<size_t>> ());
             }
             // @todo - Either have FindEach return Sequence or fix vector stuff!!!
-            VerifyTestResult (String (L"01-23-45-67-89").FindEach (L"-") == Containers::Sequence<size_t> ({2, 5, 8, 11}).As<vector<size_t>> ());
+            VerifyTestResult (String{L"01-23-45-67-89"}.FindEach (L"-") == Containers::Sequence<size_t> ({2, 5, 8, 11}).As<vector<size_t>> ());
             // @todo - Either have FindEach return Sequence or fix vector stuff!!!
-            VerifyTestResult (String (L"AAAA").FindEach (L"AA") == Containers::Sequence<size_t> ({0, 2}).As<vector<size_t>> ());
+            VerifyTestResult (String{L"AAAA"}.FindEach (L"AA") == Containers::Sequence<size_t> ({0, 2}).As<vector<size_t>> ());
         }
         void Test17_ReplaceAll_ ()
         {
-            VerifyTestResult (String (L"01-23-45-67-89").ReplaceAll (L"-", L"") == L"0123456789");
-            VerifyTestResult (String (L"01-23-45-67-89").ReplaceAll (L"-", L"x") == L"01x23x45x67x89");
-            VerifyTestResult (String (L"01-23-45-67-89").ReplaceAll (L"-", L"--") == L"01--23--45--67--89");
+            VerifyTestResult (String{L"01-23-45-67-89"}.ReplaceAll (L"-", L"") == L"0123456789");
+            VerifyTestResult (String{L"01-23-45-67-89"}.ReplaceAll (L"-", L"x") == L"01x23x45x67x89");
+            VerifyTestResult (String{L"01-23-45-67-89"}.ReplaceAll (L"-", L"--") == L"01--23--45--67--89");
+        }
+        void Test17_Replace_ ()
+        {
+            VerifyTestResult (String{u8"abc"}.Replace (1, 2, L"B") == L"aBc");
         }
         void Test17_RegExpMatch_ ()
         {
@@ -741,7 +745,7 @@ namespace {
         {
             {
                 RegularExpression regExp (L"abc");
-                String            testStr2Search = String (L"abc");
+                String            testStr2Search = String{L"abc"};
                 VerifyTestResult (testStr2Search.FindEach (regExp).size () == 1);
                 VerifyTestResult ((testStr2Search.FindEach (regExp)[0] == pair<size_t, size_t> (0, 3)));
             }
@@ -749,15 +753,15 @@ namespace {
                 // Test replace crlfs
                 String stringWithCRLFs = L"abc\r\ndef\r\n";
 #if !qCompilerAndStdLib_regexp_Compile_bracket_set_Star_Buggy
-                String replaced = stringWithCRLFs.ReplaceAll (RegularExpression (L"[\r\n]*"), L"");
+                String replaced = stringWithCRLFs.ReplaceAll (RegularExpression{L"[\r\n]*"}, L"");
                 VerifyTestResult (replaced == L"abcdef");
 #endif
             }
 #if 0
 // not sure why this didn't work! -
             {
-                String  abc     =   String (L"abc");
-                String  abcabc  =   String (L"abc abc");
+                String  abc     =   String {L"abc"};
+                String  abcabc  =   String {L"abc abc"};
                 VerifyTestResult (abcabc.Search (abc).size () == 2);
                 VerifyTestResult ((abcabc.Search (abc)[0] == pair<size_t, size_t> (0, abc.length ())));
                 VerifyTestResult ((abcabc.Search (abc)[1] == pair<size_t, size_t> (3, abc.length ())));
@@ -770,10 +774,11 @@ namespace {
             Test17_FindEach_ ();
             Test17_RegExp_Search_ ();
             Test17_RegExpMatch_ ();
-            VerifyTestResult ((String (L"Hello world").Find (RegularExpression (L"ello")) == pair<size_t, size_t> (1, 5)));
-            vector<RegularExpressionMatch> r = String (L"<h2>Egg prices</h2>").FindEachMatch (RegularExpression (L"<h(.)>([^<]+)"));
+            Test17_Replace_ ();
+            VerifyTestResult ((String{L"Hello world"}.Find (RegularExpression{L"ello"}) == pair<size_t, size_t> (1, 5)));
+            vector<RegularExpressionMatch> r = String{L"<h2>Egg prices</h2>"}.FindEachMatch (RegularExpression{L"<h(.)>([^<]+)"});
             VerifyTestResult (r.size () == 1 and r[0].GetSubMatches ()[0] == L"2" and r[0].GetSubMatches ()[1] == L"Egg prices");
-            VerifyTestResult (String (L"Hello world").ReplaceAll (RegularExpression (L"world"), L"Planet") == L"Hello Planet");
+            VerifyTestResult (String{L"Hello world"}.ReplaceAll (RegularExpression{L"world"}, L"Planet") == L"Hello Planet");
         }
         void docsTests_ ()
         {
@@ -1333,7 +1338,7 @@ namespace {
                 locale l{localName};
                 initializedLocale = true;
                 VerifyTestResult (String::FromNarrowString (localMBString, l) == wideStr);
-                VerifyTestResult (String (wideStr).AsNarrowString (l) == localMBString);
+                VerifyTestResult (String{wideStr}.AsNarrowString (l) == localMBString);
             }
             catch (const runtime_error&) {
                 // https://en.cppreference.com/w/cpp/locale/locale/locale says must throw std::runtime_error if invalid locale
@@ -1438,7 +1443,7 @@ namespace {
         VerifyTestResult (ToString (3u) == L"3");
         VerifyTestResult (ToString (1.0).StartsWith (L"1"));
         VerifyTestResult (ToString (L"abc") == L"'abc'");
-        VerifyTestResult (ToString (String (L"abc")) == L"'abc'");
+        VerifyTestResult (ToString (String{L"abc"}) == L"'abc'");
         VerifyTestResult (ToString (initializer_list<int>{3, 4, 5}) == L"[ 3, 4, 5 ]");
         {
             constexpr byte kSample_[] = {byte{0x34}, byte{0x55}, byte{0x1f}};
@@ -1459,7 +1464,7 @@ namespace {
     void Test49_SetOfStringCTORIssue_ ()
     {
         Debug::TraceContextBumper ctx{L"Test49_SetOfStringCTORIssue_"};
-        optional<String>          optString{String ()};
+        optional<String>          optString{String{}};
         Containers::Set<String>   s{*optString};
     }
 }
@@ -1480,8 +1485,8 @@ namespace {
         }
         {
             VerifyTestResult (u8"שלום" == String::FromUTF8 (u8"שלום").AsUTF8<u8string> ());
-            VerifyTestResult (u8string (u8"phred") == String::FromUTF8 (u8string (u8"phred")).AsUTF8<u8string> ());
-            VerifyTestResult (u8string (u8"שלום") == String::FromUTF8 (u8string (u8"שלום")).AsUTF8<u8string> ());
+            VerifyTestResult (u8string{u8"phred"} == String::FromUTF8 (u8string{u8"phred"}).AsUTF8<u8string> ());
+            VerifyTestResult (u8string{u8"שלום"} == String::FromUTF8 (u8string{u8"שלום"}).AsUTF8<u8string> ());
         }
         {
             VerifyTestResult (u8string{u8"phred"} == String::FromUTF8 (u8"phred").AsUTF8<u8string> ());
@@ -1589,15 +1594,15 @@ namespace {
             // test surrogates
             // From https://en.wikipedia.org/wiki/UTF-16
             // http://www.fileformat.info/info/unicode/char/2008a/index.htm
-            static const u16string kTestWithSurrogates_ = u16string (u"\U0002008A");
+            static const u16string kTestWithSurrogates_ = u16string{u"\U0002008A"};
             VerifyTestResult (kTestWithSurrogates_.size () == 2);
-            VerifyTestResult (kTestWithSurrogates_ == String (kTestWithSurrogates_).AsUTF16 ());
+            VerifyTestResult (kTestWithSurrogates_ == String{kTestWithSurrogates_}.AsUTF16 ());
             // For now (as of v2.1d10) - Stroika stores strings as 'wchar_t' so the length of this will depend on if wchar_t is 2bytes or 4
             if constexpr (sizeof (wchar_t) == sizeof (char16_t)) {
-                VerifyTestResult (String (kTestWithSurrogates_).length () == 2); // surrogate  surrogate pairs
+                VerifyTestResult (String{kTestWithSurrogates_}.length () == 2); // surrogate  surrogate pairs
             }
             if constexpr (sizeof (wchar_t) == sizeof (char32_t)) {
-                VerifyTestResult (String (kTestWithSurrogates_).length () == 1); // surrogate  surrogate pairs
+                VerifyTestResult (String{kTestWithSurrogates_}.length () == 1); // surrogate  surrogate pairs
             }
         }
     }

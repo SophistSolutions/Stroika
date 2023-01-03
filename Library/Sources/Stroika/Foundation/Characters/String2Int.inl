@@ -103,8 +103,10 @@ namespace Stroika::Foundation::Characters {
             return String2Int<T> (span{s, CString::Length (s)});
         }
         else if constexpr (is_same_v<DecayedStringishArg, String>) {
-            auto [start, end] = s.template GetData<wchar_t> ();
-            return String2Int<T> (span{start, end});
+            // @todo PERFORMANCE TWEEK - peek or just use ascii
+            Memory::StackBuffer<wchar_t> ignored;
+            auto                         sp = s.template GetData<wchar_t> (&ignored);
+            return String2Int<T> (sp);
         }
         else {
             return String2Int<T> (String{forward<STRINGISH_ARG> (s)});

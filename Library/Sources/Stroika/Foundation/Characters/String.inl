@@ -368,7 +368,7 @@ namespace Stroika::Foundation::Characters {
         String                        rrhs = rhs;
         Memory::StackBuffer<char32_t> ignoredA;
         Memory::StackBuffer<char32_t> ignoredB;
-        return mk_ (GetData<char32_t> (&ignoredA), rrhs.GetData<char32_t> (&ignoredB));
+        return mk_ (GetData (&ignoredA), rrhs.GetData (&ignoredB));
     }
     inline void String::_AssertRepValidType () const
     {
@@ -563,13 +563,8 @@ namespace Stroika::Foundation::Characters {
         Require (from <= to);
         if (from != to) {
             Memory::StackBuffer<wchar_t> ignored1;
-            span<const wchar_t>          thisSpan = this->GetData<wchar_t> (&ignored1);
+            span<const wchar_t>          thisSpan = this->GetData (&ignored1);
             *this                                 = mk_ (thisSpan, span{from, to});
-#if 0
-            _SafeReadRepAccessor                     thisAccessor{this};
-            pair<const Character*, const Character*> lhsD = thisAccessor._ConstGetRep ().GetData ();
-            *this                                         = String{mk_ (reinterpret_cast<const wchar_t*> (lhsD.first), reinterpret_cast<const wchar_t*> (lhsD.second), from, to)};
-#endif
         }
     }
     inline void String::Append (Character c)
@@ -717,7 +712,7 @@ namespace Stroika::Foundation::Characters {
     {
         RequireNotNull (into);
         Memory::StackBuffer<wchar_t> maybeIgnoreBuf1;
-        span<const wchar_t>          thisData = GetData<wchar_t> (&maybeIgnoreBuf1);
+        span<const wchar_t>          thisData = GetData (&maybeIgnoreBuf1);
         into->assign (thisData.begin (), thisData.end ());
 #if qTargetPlatformSDKUseswchar_t
         into->assign (thisData.begin (), thisData.end ());
@@ -741,7 +736,7 @@ namespace Stroika::Foundation::Characters {
     {
         RequireNotNull (into);
         Memory::StackBuffer<wchar_t> maybeIgnoreBuf1;
-        span<const wchar_t>          thisData = GetData<wchar_t> (&maybeIgnoreBuf1);
+        span<const wchar_t>          thisData = GetData (&maybeIgnoreBuf1);
         WideStringToNarrow (thisData.data (), thisData.data () + thisData.size (), GetDefaultSDKCodePage (), into);
     }
     template <typename T>
@@ -768,19 +763,6 @@ namespace Stroika::Foundation::Characters {
         String::_SafeReadRepAccessor             thisAccessor{this};
         pair<const Character*, const Character*> p = thisAccessor._ConstGetRep ().GetData ();
         return Character::AsASCIIQuietly (span<const Character>{p.first, p.second}, into);
-    }
-    template <>
-    inline pair<const Character*, const Character*> String::GetData () const
-    {
-        _SafeReadRepAccessor accessor{this};
-        return accessor._ConstGetRep ().GetData ();
-    }
-    template <>
-    inline pair<const wchar_t*, const wchar_t*> String::GetData () const
-    {
-        _SafeReadRepAccessor                     accessor{this};
-        pair<const Character*, const Character*> p = accessor._ConstGetRep ().GetData ();
-        return pair<const wchar_t*, const wchar_t*> (reinterpret_cast<const wchar_t*> (p.first), reinterpret_cast<const wchar_t*> (p.second));
     }
     template <Character_Compatible CHAR_TYPE>
     inline String::PeekSpanData String::GetPeekSpanData () const
@@ -892,14 +874,14 @@ namespace Stroika::Foundation::Characters {
         using StorageCodePointType = PeekSpanData::StorageCodePointType;
         if constexpr (is_same_v<CHAR_TYPE, wchar_t>) {
             if constexpr (sizeof (CHAR_TYPE) == 2) {
-                auto p = GetData<char16_t> (pds, reinterpret_cast<Memory::StackBuffer<char16_t>*> (possiblyUsedBuffer));
+                auto p = GetData (pds, reinterpret_cast<Memory::StackBuffer<char16_t>*> (possiblyUsedBuffer));
                 if (p.empty ()) {
                     return span<const CHAR_TYPE>{};
                 }
                 return span<const CHAR_TYPE>{reinterpret_cast<const CHAR_TYPE*> (&*p.begin ()), p.size ()};
             }
             else if constexpr (sizeof (wchar_t) == 4) {
-                auto p = GetData<char32_t> (pds, reinterpret_cast<Memory::StackBuffer<char32_t>*> (possiblyUsedBuffer));
+                auto p = GetData (pds, reinterpret_cast<Memory::StackBuffer<char32_t>*> (possiblyUsedBuffer));
                 if (p.empty ()) {
                     return span<const CHAR_TYPE>{};
                 }
@@ -909,14 +891,14 @@ namespace Stroika::Foundation::Characters {
         else if constexpr (is_same_v<CHAR_TYPE, Character>) {
             // later will map to char32_t, but for now same as wchar_t
             if constexpr (sizeof (wchar_t) == 2) {
-                auto p = GetData<char16_t> (pds, reinterpret_cast<Memory::StackBuffer<char16_t>*> (possiblyUsedBuffer));
+                auto p = GetData (pds, reinterpret_cast<Memory::StackBuffer<char16_t>*> (possiblyUsedBuffer));
                 if (p.empty ()) {
                     return span<const CHAR_TYPE>{};
                 }
                 return span<const CHAR_TYPE>{reinterpret_cast<const CHAR_TYPE*> (&*p.begin ()), p.size ()};
             }
             else if constexpr (sizeof (wchar_t) == 4) {
-                auto p = GetData<char32_t> (pds, reinterpret_cast<Memory::StackBuffer<char32_t>*> (possiblyUsedBuffer));
+                auto p = GetData (pds, reinterpret_cast<Memory::StackBuffer<char32_t>*> (possiblyUsedBuffer));
                 if (p.empty ()) {
                     return span<const CHAR_TYPE>{};
                 }

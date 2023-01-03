@@ -499,13 +499,14 @@ optional<size_t> String::RFind (const String& subString) const
 
 String String::Replace (size_t from, size_t to, const String& replacement) const
 {
-    [[maybe_unused]] auto [thisStart, thisEnd] = this->GetData<wchar_t> ();
+    Memory::StackBuffer<wchar_t> ignored;
+    span < const wchar_t>            thisSpan = GetData<wchar_t> (&ignored);
     Require (from <= to);
     Require (to <= this->size ());
-    Assert (to + thisStart < thisEnd);
-    StringBuilder sb{span{thisStart, from}};
+    Assert (to < thisSpan.size ());
+    StringBuilder sb{thisSpan.subspan (0, from)};
     sb.Append (replacement);
-    sb.Append (span{thisStart + from, thisStart + to});
+    sb.Append (thisSpan.subspan (to));
     Ensure (sb.str () == SubString (0, from) + replacement + SubString (to));
     return sb.str ();
 }

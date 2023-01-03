@@ -161,9 +161,10 @@ namespace {
     }
     void PrettyPrint_ (const Options_& options, const String& v, const OutputStream<Character>::Ptr& out)
     {
-        pair<const wchar_t*, const wchar_t*> p = v.GetData<wchar_t> ();
+        Memory::StackBuffer<wchar_t>         ignored;
+        span<const wchar_t> p = v.GetData (&ignored);
         static_assert (sizeof (Character) == sizeof (wchar_t), "sizeof(Character) == sizeof(wchar_t)");
-        PrettyPrint_ (options, p.first, p.second, out);
+        PrettyPrint_ (options, p.data (), p.data () + p.size (), out);
     }
     void PrettyPrint_ (const Options_& options, const vector<VariantValue>& v, const OutputStream<Character>::Ptr& out, int indentLevel)
     {

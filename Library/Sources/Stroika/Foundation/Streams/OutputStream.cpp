@@ -22,8 +22,10 @@ template <>
 template <>
 void OutputStream<Characters::Character>::Ptr::Write (const Characters::String& s) const
 {
-    auto [start, end] = s.GetData<wchar_t> ();
-    Write (start, end);
+    // @todo performance tweek so uses Peek
+    Memory::StackBuffer<wchar_t> ignored;
+    span<const wchar_t> sp = s.GetData<wchar_t> (&ignored);
+    Write (sp.data (), sp.data () + sp.size ());
 }
 
 template <>

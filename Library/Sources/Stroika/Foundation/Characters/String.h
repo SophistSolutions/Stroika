@@ -1186,22 +1186,6 @@ namespace Stroika::Foundation::Characters {
             requires (is_same_v<T, string> or is_same_v<T, Memory::StackBuffer<char>>);
 
     public:
-        /// @TODO DEPRECATE
-        /**
-         *  Only defined for CHAR_TYPE=Character or wchar_t (for now).
-         *
-         *  Lifetime is ONLY up until next method access to String.
-         *
-         *  @see c_str()
-         *
-         *  \note Design Note:
-         *      This is eqivilent to returning pair { c_str (), c_str () + length () } - only a bit faster since all in one call.
-         *      So long as we support c_str () returning an internal wchar_t* pointer, this adds no extra cost/constraints.
-         */
-        template <typename CHAR_TYPE>
-        nonvirtual pair<const CHAR_TYPE*, const CHAR_TYPE*> GetData () const;
-
-    public:
         /**
          *  \brief Summary data for raw contents of rep - each rep will support at least one of these span forms
          *
@@ -1262,6 +1246,17 @@ namespace Stroika::Foundation::Characters {
          * 
          *  BUT - it maybe a span of data stored into the argument possiblyUsedBuffer (which is why it must be provided - cannot be nullptr).
          *  If you want the freedom to not pass in this buffer, see the PeekData API.
+         * 
+         *  \par Example Usage
+         *      \code
+         *          Memory::StackBuffer<char8_t> maybeIgnoreBuf1;
+         *          span<const char8_t>          thisData = GetData (&maybeIgnoreBuf1);
+         *      \endcode
+         * 
+         *  \note Prior to Stroika v3.0d1, GetData() took no arguments, and returned pair<const CHAR_TYPE*, const CHAR_TYPE*>
+         *        which is pretty similar, but not quite the same. To adapt any existing code calling that older version of the API
+         *        just add a Memory::StackBuffer<T> b; and pass &b to GetData(); And the return span is not the same as pair<> but
+         *        easily convertible.
          */
         template <Character_SafelyCompatible CHAR_TYPE>
         static span<const CHAR_TYPE> GetData (const PeekSpanData& pds, Memory::StackBuffer<CHAR_TYPE>* possiblyUsedBuffer);
@@ -1452,11 +1447,6 @@ namespace Stroika::Foundation::Characters {
         friend wostream& operator<< (wostream& out, const String& s);
         friend String    operator+ (const wchar_t* lhs, const String& rhs);
     };
-
-    template <>
-    pair<const Character*, const Character*> String::GetData () const;
-    template <>
-    pair<const wchar_t*, const wchar_t*> String::GetData () const;
 
     /**
      * Protected helper Rep class.
