@@ -18,6 +18,9 @@ namespace Stroika::Foundation::Memory {
 
     /**
      *  \brief convert a (possibly already const) span to the same span, but with const on the 'T' argument
+     *
+     *  I hope this function isnt needed often. And whereever it is needed, I think is a std::span<> design
+     *  defect (or something I don't yet understand about how to use span better).
      * 
      *  See https://stackoverflow.com/questions/62688814/stdspanconst-t-as-parameter-in-function-template
      */
