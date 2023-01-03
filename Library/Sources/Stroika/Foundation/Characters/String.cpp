@@ -35,12 +35,6 @@ using namespace Stroika::Foundation::Characters;
 using Memory::StackBuffer;
 using Traversal::Iterator;
 
-
-
-
-
-
-
 /*
  ********************************************************************************
  ********************** BufferedStringRep ::_Rep ********************************
@@ -296,11 +290,6 @@ const wchar_t* Concrete::Private::BufferedStringRep::_Rep::c_str_peek () const n
     return _fStart;
 }
 
-
-
-
-
-
 /*
  ********************************************************************************
  ************** String_ExternalMemoryOwnership_ApplicationLifetime **************
@@ -337,9 +326,6 @@ Concrete::String_ExternalMemoryOwnership_ApplicationLifetime::String_ExternalMem
     // NO - we allow embedded nuls, but require NUL-termination - so this is wrong - Require (start + ::wcslen (start) == end);
     Require (*end == '\0' and start + ::wcslen (start) <= end);
 }
-
-
-
 
 namespace {
     class String_BufferedArray_Rep_ final
@@ -804,7 +790,7 @@ optional<size_t> String::RFind (const String& subString) const
 String String::Replace (size_t from, size_t to, const String& replacement) const
 {
     Memory::StackBuffer<wchar_t> ignored;
-    span < const wchar_t>            thisSpan = GetData<wchar_t> (&ignored);
+    span<const wchar_t>          thisSpan = GetData<wchar_t> (&ignored);
     Require (from <= to);
     Require (to <= this->size ());
     Assert (to < thisSpan.size ());
