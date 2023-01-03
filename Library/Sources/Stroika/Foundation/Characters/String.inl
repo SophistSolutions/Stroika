@@ -562,9 +562,14 @@ namespace Stroika::Foundation::Characters {
     {
         Require (from <= to);
         if (from != to) {
+            Memory::StackBuffer<wchar_t> ignored1;
+            span<const wchar_t>          thisSpan = this->GetData<wchar_t> (&ignored1);
+            *this                                 = mk_ (thisSpan, span{from, to});
+#if 0
             _SafeReadRepAccessor                     thisAccessor{this};
             pair<const Character*, const Character*> lhsD = thisAccessor._ConstGetRep ().GetData ();
             *this                                         = String{mk_ (reinterpret_cast<const wchar_t*> (lhsD.first), reinterpret_cast<const wchar_t*> (lhsD.second), from, to)};
+#endif
         }
     }
     inline void String::Append (Character c)

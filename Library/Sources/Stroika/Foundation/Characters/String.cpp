@@ -198,8 +198,7 @@ String String::FromNarrowString (span<const char> s, const locale& l)
 
 String::_SharedPtrIRep String::mkEmpty_ ()
 {
-    static constexpr wchar_t    kEmptyStr_[1] = {};
-    static const _SharedPtrIRep s_            = mk_ (std::begin (kEmptyStr_), std::begin (kEmptyStr_));
+    static const _SharedPtrIRep s_            = MakeSmartPtr<String_BufferedArray_Rep_> (nullptr, nullptr);
     return s_;
 }
 
@@ -207,64 +206,6 @@ template <>
 auto String::mk_ (span<const wchar_t> s) -> _SharedPtrIRep
 {
     return MakeSmartPtr<String_BufferedArray_Rep_> (s.data (), s.data () + s.size ());
-}
-
-String::_SharedPtrIRep String::mk_ (const wchar_t* start, const wchar_t* end)
-{
-    RequireNotNull (start);
-    RequireNotNull (end);
-    Require (start <= end);
-    return MakeSmartPtr<String_BufferedArray_Rep_> (start, end);
-}
-
-String::_SharedPtrIRep String::mk_ (const wchar_t* start1, const wchar_t* end1, const wchar_t* start2, const wchar_t* end2)
-{
-    RequireNotNull (start1);
-    RequireNotNull (end1);
-    Require (start1 <= end1);
-    RequireNotNull (start2);
-    RequireNotNull (end2);
-    Require (start2 <= end2);
-    return MakeSmartPtr<String_BufferedArray_Rep_> (make_pair (start1, end1), make_pair (start2, end2));
-}
-
-String::_SharedPtrIRep String::mk_ (const char16_t* from, const char16_t* to)
-{
-    RequireNotNull (from);
-    RequireNotNull (to);
-    Require (from <= to);
-    if constexpr (sizeof (char16_t) == sizeof (wchar_t)) {
-        return mk_ (reinterpret_cast<const wchar_t*> (from), reinterpret_cast<const wchar_t*> (to));
-    }
-    else {
-        size_t               cvtBufSize = UTFConverter::ComputeTargetBufferSize<wchar_t> (span{from, to});
-        StackBuffer<wchar_t> buf{Memory::eUninitialized, cvtBufSize};
-#if qCompilerAndStdLib_spanOfContainer_Buggy
-        return mk_ (buf.begin (), buf.begin () + UTFConverter::kThe.Convert (span{from, to}, span{buf.data (), buf.size ()}).fTargetProduced);
-#else
-        return mk_ (buf.begin (), buf.begin () + UTFConverter::kThe.Convert (span{from, to}, span{buf}).fTargetProduced);
-#endif
-    }
-}
-
-String::_SharedPtrIRep String::mk_ (const char32_t* from, const char32_t* to)
-{
-    RequireNotNull (from);
-    RequireNotNull (to);
-    Require (from <= to);
-    if constexpr (sizeof (char32_t) == sizeof (wchar_t)) {
-        return mk_ (reinterpret_cast<const wchar_t*> (from), reinterpret_cast<const wchar_t*> (to));
-    }
-    else {
-        size_t               cvtBufSize = UTFConverter::ComputeTargetBufferSize<wchar_t> (span{from, to});
-        StackBuffer<wchar_t> buf{Memory::eUninitialized, cvtBufSize};
-#if qCompilerAndStdLib_spanOfContainer_Buggy
-        auto r = UTFConverter::kThe.Convert (span{from, to}, span{buf.data (), buf.size ()});
-#else
-        auto r = UTFConverter::kThe.Convert (span{from, to}, span{buf});
-#endif
-        return mk_ (buf.data (), buf.data () + r.fTargetProduced);
-    }
 }
 
 void String::SetCharAt (Character c, size_t i)
@@ -337,7 +278,7 @@ String String::RemoveAt (size_t from, size_t to) const
     else {
         pair<const Character*, const Character*> d = accessor._ConstGetRep ().GetData ();
         const wchar_t*                           p = reinterpret_cast<const wchar_t*> (d.first);
-        return String{mk_ (p, p + from, p + to, p + length)};
+        return String{mk_ (span{p, from}, span{p + to, p + length})};
     }
 }
 
@@ -761,7 +702,7 @@ String String::SubString_ (const _SafeReadRepAccessor& thisAccessor, size_t this
         Assert (from == 0); // because we require from/to subrange of thisLen, so if equal, must be full range
         return *this;
     }
-    return mk_ (start, end);
+    return mk_ (span{start, end});
 }
 
 String String::Repeat (unsigned int count) const
@@ -977,7 +918,6 @@ void String::AsNarrowString (const locale& l, string* into) const
     }
     into->resize (to_next - &(*into)[0]);
 }
-
 
 void String::erase (size_t from)
 {

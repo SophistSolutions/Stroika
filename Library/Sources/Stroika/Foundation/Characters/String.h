@@ -1378,13 +1378,6 @@ namespace Stroika::Foundation::Characters {
          */
         nonvirtual String substr (size_t from, size_t count = npos) const;
 
-    private:
-        //*DEPRECATED VERSIONS
-        static _SharedPtrIRep mk_ (const wchar_t* start, const wchar_t* end);
-        static _SharedPtrIRep mk_ (const wchar_t* start1, const wchar_t* end1, const wchar_t* start2, const wchar_t* end2);
-        static _SharedPtrIRep mk_ (const char16_t* start, const char16_t* end);
-        static _SharedPtrIRep mk_ (const char32_t* start, const char32_t* end);
-
     public:
         [[deprecated ("Since Stroika v3.0d1, use span{} overload for this")]] static String FromISOLatin1 (const char* start, const char* end)
         {
@@ -1430,7 +1423,7 @@ namespace Stroika::Foundation::Characters {
 
     private:
         static _SharedPtrIRep mkEmpty_ ();
-        // note here - for PlainChar overload - REQUIRE arg IsAscii
+        // note here - for mk_ - for PlainChar overload - REQUIRE arg IsAscii
         template <Character_Compatible CHAR_T>
         static _SharedPtrIRep mk_ (span<const CHAR_T> s);
         template <Character_Compatible CHAR_T>
