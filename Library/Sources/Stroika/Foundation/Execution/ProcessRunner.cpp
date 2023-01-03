@@ -895,9 +895,9 @@ namespace {
                     StringBuilder stderrMsg;
                     if (trailingStderrBufNWritten > Memory::NEltsOf (trailingStderrBuf)) {
                         stderrMsg += L"...";
-                        stderrMsg += String::FromISOLatin1 (trailingStderrBufNextByte2WriteAt, end (trailingStderrBuf));
+                        stderrMsg += String::FromISOLatin1 (span{trailingStderrBufNextByte2WriteAt, end (trailingStderrBuf)});
                     }
-                    stderrMsg += String::FromISOLatin1 (begin (trailingStderrBuf), trailingStderrBufNextByte2WriteAt);
+                    stderrMsg += String::FromISOLatin1 (span{begin (trailingStderrBuf), trailingStderrBufNextByte2WriteAt});
                     Throw (ProcessRunner::Exception{
                         effectiveCmdLine,
                         L"Spawned program"sv,
