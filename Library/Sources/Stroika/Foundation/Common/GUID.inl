@@ -18,7 +18,7 @@ namespace Stroika::Foundation::Common {
      ********************************************************************************
      */
 #if qPlatform_Windows
-    constexpr GUID::GUID (const ::GUID& src)  noexcept
+    constexpr GUID::GUID (const ::GUID& src) noexcept
         : Data1{src.Data1}
         , Data2{src.Data2}
         , Data3{src.Data3}
@@ -28,11 +28,11 @@ namespace Stroika::Foundation::Common {
         }
     }
 #endif
-    inline Common::GUID::GUID (const array<uint8_t, 16>& src)  noexcept
+    inline Common::GUID::GUID (const array<uint8_t, 16>& src) noexcept
     {
         ::memcpy (this, src.data (), 16);
     }
-    inline const std::byte* Common::GUID::begin () const  noexcept
+    inline const std::byte* Common::GUID::begin () const noexcept
     {
         return reinterpret_cast<const std::byte*> (this);
     }
@@ -45,40 +45,30 @@ namespace Stroika::Foundation::Common {
         return 16;
     }
     template <>
-    Memory::BLOB Common::GUID::As () const 
-        #if qCompilerAndStdLib_template_requresDefNeededonSpecializations_Buggy
+    Memory::BLOB Common::GUID::As () const
+#if qCompilerAndStdLib_template_requresDefNeededonSpecializations_Buggy
         requires (
-                is_same_v<Memory::BLOB,Characters::String> 
-                    or is_same_v<Memory::BLOB,std::string> 
-                    or is_same_v<Memory::BLOB, Memory::BLOB> 
-                    or is_same_v<Memory::BLOB, array<std::byte, 16>> 
-                    or is_same_v<Memory::BLOB, array<uint8_t, 16>> 
-                    )
-        #endif
-        ;  // so it can go in CPP file
+            is_same_v<Memory::BLOB, Characters::String> or is_same_v<Memory::BLOB, std::string> or is_same_v<Memory::BLOB, Memory::BLOB> or is_same_v<Memory::BLOB, array<std::byte, 16>> or is_same_v<Memory::BLOB, array<uint8_t, 16>>)
+#endif
+    ; // so it can go in CPP file
     template <typename T>
     inline T Common::GUID::As () const
         requires (
-                is_same_v<T,Characters::String> 
-                    or is_same_v<T,std::string> 
-                    or is_same_v<T, Memory::BLOB> 
-                    or is_same_v<T, array<std::byte, 16>> 
-                    or is_same_v<T, array<uint8_t, 16>> 
-                    ) 
+            is_same_v<T, Characters::String> or is_same_v<T, std::string> or is_same_v<T, Memory::BLOB> or is_same_v<T, array<std::byte, 16>> or is_same_v<T, array<uint8_t, 16>>)
     {
         if constexpr (is_same_v<T, Characters::String>) {
             char buf[1024];
             Verify (::snprintf (buf, Memory::NEltsOf (buf), "%08x-%04x-%04x-%02x%02x-%02x%02x%02x%02x%02x%02x",
-                             Data1, Data2, Data3,
-                             Data4[0], Data4[1], Data4[2], Data4[3], Data4[4], Data4[5], Data4[6], Data4[7]) > 0);
+                                Data1, Data2, Data3,
+                                Data4[0], Data4[1], Data4[2], Data4[3], Data4[4], Data4[5], Data4[6], Data4[7]) > 0);
             return Characters::String::FromASCII (buf);
         }
         else if constexpr (is_same_v<T, std::string>) {
             char buf[1024];
             Verify (::snprintf (buf, Memory::NEltsOf (buf), "%08x-%04x-%04x-%02x%02x-%02x%02x%02x%02x%02x%02x",
-                       Data1, Data2, Data3,
-                       Data4[0], Data4[1], Data4[2], Data4[3], Data4[4], Data4[5], Data4[6], Data4[7]) > 0);
-             return  buf;
+                                Data1, Data2, Data3,
+                                Data4[0], Data4[1], Data4[2], Data4[3], Data4[4], Data4[5], Data4[6], Data4[7]) > 0);
+            return buf;
         }
         else if constexpr (is_same_v<T, array<std::byte, 16>>) {
             return *reinterpret_cast<const array<std::byte, 16>*> (this);
