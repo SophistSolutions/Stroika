@@ -618,7 +618,7 @@ namespace Stroika::Foundation::Characters {
     inline T String::As () const
         requires (BasicUnicodeString<T> or is_same_v<T, String>)
     {
-        T r{};  // for now - KISS, but this can be optimized
+        T r{}; // for now - KISS, but this can be optimized
         As (&r);
         return r;
     }
@@ -632,8 +632,7 @@ namespace Stroika::Foundation::Characters {
         else if constexpr (is_same_v<T, u16string>) {
             AsUTF16 (into);
         }
-        else if constexpr (is_same_v<T, u32string>)
-        {
+        else if constexpr (is_same_v<T, u32string>) {
             AsUTF32 (into);
         }
         else if constexpr (is_same_v<T, wstring>) {
@@ -664,7 +663,7 @@ namespace Stroika::Foundation::Characters {
     {
         Memory::StackBuffer<char8_t> maybeIgnoreBuf1;
         span<const char8_t>          thisData = GetData (&maybeIgnoreBuf1);
-        return T{reinterpret_cast < const typename T::value_type*> (thisData.data ()), thisData.size ()};
+        return T{reinterpret_cast<const typename T::value_type*> (thisData.data ()), thisData.size ()};
     }
     template <typename T>
     inline void String::AsUTF8 (T* into) const
