@@ -138,8 +138,9 @@ namespace Stroika::Foundation::Characters {
         }
         return true;
     }
-    template <typename T, Character_Compatible CHAR_T>
-    inline bool Character::AsASCIIQuietly (span<const CHAR_T> fromS, T* into)
+    template <typename RESULT_T, Character_Compatible CHAR_T>
+    inline bool Character::AsASCIIQuietly (span<const CHAR_T> fromS, RESULT_T* into)
+        requires (is_same_v<RESULT_T, string> or is_same_v<RESULT_T, Memory::StackBuffer<char>>)
     {
         RequireNotNull (into);
         into->clear ();

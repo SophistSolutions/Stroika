@@ -11,6 +11,7 @@
 
 #include "../Common/Compare.h"
 #include "../Configuration/Enumeration.h"
+#include "../Memory/StackBuffer.h"
 
 /**
  * TODO:
@@ -205,8 +206,9 @@ namespace Stroika::Foundation::Characters {
          *      o   Memory::StackBuffer<char>
          *      o   string
          */
-        template <typename T = string, Character_Compatible CHAR_T>
-        static bool AsASCIIQuietly (span<const CHAR_T> fromS, T* into);
+        template <typename RESULT_T = string, Character_Compatible CHAR_T>
+        static bool AsASCIIQuietly (span<const CHAR_T> fromS, RESULT_T* into)
+            requires (is_same_v<RESULT_T, string> or is_same_v<RESULT_T, Memory::StackBuffer<char>>);
 
     public:
         /**
