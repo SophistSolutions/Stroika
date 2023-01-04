@@ -304,7 +304,7 @@ namespace Stroika::Foundation::Characters {
     template <size_t SIZE>
     inline String String::FromStringConstant (const wchar_t (&cString)[SIZE])
     {
-        return FromStringConstant (span<const wchar_t>{cString, SIZE-1});   // -1 because a literal array SIZE includes the NUL-character at the end
+        return FromStringConstant (span<const wchar_t>{cString, SIZE - 1}); // -1 because a literal array SIZE includes the NUL-character at the end
     }
     inline String String::FromStringConstant (const basic_string_view<wchar_t>& str)
     {
@@ -1446,14 +1446,14 @@ namespace Stroika::Foundation::Characters {
     class [[deprecated ("Since Stroika v3.0 - just use String::FromStringConstant")]] String_Constant : public String{
         public :
             template <size_t SIZE>
-            explicit String_Constant (const wchar_t (&cString)[SIZE]) : String{String::FromStringConstant (basic_string_view<wchar_t>{cString, SIZE})} {} String_Constant (const wchar_t* start, const wchar_t* end) : String{String::FromStringConstant (basic_string_view<wchar_t>{start, end})} {} String_Constant (const basic_string_view<wchar_t>& str) : String{String::FromStringConstant (str)} {}
+            explicit String_Constant (const wchar_t (&cString)[SIZE]) : String{String::FromStringConstant (basic_string_view<wchar_t>{cString, SIZE - 1})} {} String_Constant (const wchar_t* start, const wchar_t* end) : String{String::FromStringConstant (basic_string_view<wchar_t>{start, end})} {} String_Constant (const basic_string_view<wchar_t>& str) : String{String::FromStringConstant (str)} {}
     };
 }
 namespace Stroika::Foundation::Characters::Concrete {
     class [[deprecated ("Since Stroika v3.0 - just use String::FromStringConstant")]] String_ExternalMemoryOwnership_ApplicationLifetime : public String{
         public :
             template <size_t SIZE>
-            explicit String_ExternalMemoryOwnership_ApplicationLifetime (const wchar_t (&cString)[SIZE]) : String{String::FromStringConstant (basic_string_view<wchar_t>{cString, SIZE})} {}
+            explicit String_ExternalMemoryOwnership_ApplicationLifetime (const wchar_t (&cString)[SIZE - 1]) : String{String::FromStringConstant (basic_string_view<wchar_t>{cString, SIZE})} {}
 
         String_ExternalMemoryOwnership_ApplicationLifetime (const wchar_t* start, const wchar_t* end) : String{String::FromStringConstant (basic_string_view<wchar_t>{start, end})} {}
 
