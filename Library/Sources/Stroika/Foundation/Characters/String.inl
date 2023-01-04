@@ -1212,22 +1212,6 @@ namespace Stroika::Foundation::Characters {
     {
         return lhs.Concatenate (rhs);
     }
-#if 0
-    /*
-     ********************************************************************************
-     ********************************* String_Constant ******************************
-     ********************************************************************************
-     */
-    template <size_t SIZE>
-    inline String_Constant::String_Constant (const wchar_t (&cString)[SIZE])
-        : String_Constant{&cString[0], &cString[SIZE - 1]}
-    {
-    }
-    inline String_Constant::String_Constant (const basic_string_view<wchar_t>& str)
-        : String_Constant{str.data (), str.data () + str.length ()}
-    {
-    }
-#endif
 
 }
 
