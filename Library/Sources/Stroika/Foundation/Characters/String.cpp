@@ -35,20 +35,16 @@ using namespace Stroika::Foundation::Characters;
 using Memory::StackBuffer;
 using Traversal::Iterator;
 
-/*
- ********************************************************************************
- ********************** BufferedStringRep ::_Rep ********************************
- ********************************************************************************
- */
-
-namespace Stroika::Foundation::Characters::Concrete::Private {
-
 // Experimental block allocation scheme for strings. We COULD enahce this to have 2 block sizes - say 16 and 32 characters?
 // But experiment with this a bit first, and see how it goes...
 //      -- LGP 2011-12-04
 #ifndef qString_Private_BufferedStringRep_UseBlockAllocatedForSmallBufStrings
 #define qString_Private_BufferedStringRep_UseBlockAllocatedForSmallBufStrings qAllowBlockAllocation
 #endif
+
+namespace {
+
+    constexpr bool kUseBlockAllocatedForSmallBufStrings_ = qString_Private_BufferedStringRep_UseBlockAllocatedForSmallBufStrings;
 
     /**
      *  This is a utility class to implement most of the basic String::_IRep functionality.
@@ -59,12 +55,11 @@ namespace Stroika::Foundation::Characters::Concrete::Private {
      *
      *  @todo Explain queer wrapper class cuz protected
      */
-    struct BufferedStringRep : String {
+    struct BufferedStringRep_ : String {
         struct _Rep : public _IRep {
         private:
             using inherited = String::_IRep;
 
-#if qString_Private_BufferedStringRep_UseBlockAllocatedForSmallBufStrings
         private:
             /*
              * magic 'automatic round-capacity-up-to' these (in wchar_ts) - and use block allocation for them...
@@ -78,7 +73,13 @@ namespace Stroika::Foundation::Characters::Concrete::Private {
             static constexpr size_t kNElts1_ = 16;
             static constexpr size_t kNElts2_ = 32;
             static constexpr size_t kNElts3_ = 64;
-#endif
+
+        private:
+            template <size_t SZ>
+            struct BufferedStringRepBlock_ {
+                static constexpr size_t kNElts = SZ;
+                wchar_t                 data[kNElts];
+            };
 
         protected:
             _Rep ()            = delete;
@@ -92,28 +93,120 @@ namespace Stroika::Foundation::Characters::Concrete::Private {
              *  The argument wchar_t* strings MAY or MAY NOT be nul-terminated
              */
             using TextSpan = pair<const wchar_t*, const wchar_t*>;
-            _Rep (const tuple<const wchar_t*, const wchar_t*, size_t>& strAndCapacity);
-            _Rep (const TextSpan& t1);
-            _Rep (const TextSpan& t1, const TextSpan& t2);
-            _Rep (const TextSpan& t1, const TextSpan& t2, const TextSpan& t3);
+            _Rep (const tuple<const wchar_t*, const wchar_t*, size_t>& strAndCapacity)
+                : inherited{make_pair (get<0> (strAndCapacity), get<1> (strAndCapacity))}
+                , fCapacity_{get<2> (strAndCapacity)}
+            {
+            }
+            _Rep (const TextSpan& t1)
+                : _Rep{mkBuf_ (t1)}
+            {
+            }
 
         public:
-            ~_Rep ();
+            ~_Rep ()
+            {
+                AssertNotNull (_fStart);
+                Assert (fCapacity_ == AdjustCapacity_ (this->_GetLength () + 1)); // see mkBuf_ (size_t length) - and possible optimize to not store fCapacity
+                if constexpr (kUseBlockAllocatedForSmallBufStrings_) {
+                    Assert (fCapacity_ >= kNElts1_);
+                    switch (fCapacity_) {
+                        case kNElts1_: {
+                            Memory::BlockAllocator<BufferedStringRepBlock_<kNElts1_>>{}.deallocate (reinterpret_cast<BufferedStringRepBlock_<kNElts1_>*> (const_cast<wchar_t*> (_fStart)), 1);
+                        } break;
+                        case kNElts2_: {
+                            Memory::BlockAllocator<BufferedStringRepBlock_<kNElts2_>>{}.deallocate (reinterpret_cast<BufferedStringRepBlock_<kNElts2_>*> (const_cast<wchar_t*> (_fStart)), 1);
+                        } break;
+                        case kNElts3_: {
+                            Memory::BlockAllocator<BufferedStringRepBlock_<kNElts3_>>{}.deallocate (reinterpret_cast<BufferedStringRepBlock_<kNElts3_>*> (const_cast<wchar_t*> (_fStart)), 1);
+                        } break;
+                        default: {
+                            delete[] _fStart;
+                        } break;
+                    }
+                }
+                else {
+                    delete[] _fStart;
+                }
+            }
 
         private:
-            static pair<wchar_t*, wchar_t*>                      mkBuf_ (size_t length);
-            static tuple<const wchar_t*, const wchar_t*, size_t> mkBuf_ (const TextSpan& t1);
-            static tuple<const wchar_t*, const wchar_t*, size_t> mkBuf_ (const TextSpan& t1, const TextSpan& t2);
-            static tuple<const wchar_t*, const wchar_t*, size_t> mkBuf_ (const TextSpan& t1, const TextSpan& t2, const TextSpan& t3);
+            static pair<wchar_t*, wchar_t*>                      mkBuf_ (size_t length)
+            {
+                size_t   capacity = AdjustCapacity_ (length + 1); // add one for '\0'
+                wchar_t* newBuf   = nullptr;
+                if constexpr (kUseBlockAllocatedForSmallBufStrings_) {
+                    Assert (capacity >= kNElts1_ or capacity >= kNElts2_ or capacity >= kNElts3_);
+                }
+                DISABLE_COMPILER_MSC_WARNING_START (4065)
+                if constexpr (kUseBlockAllocatedForSmallBufStrings_) {
+                    switch (capacity) {
+                        case kNElts1_: {
+                            static_assert (sizeof (BufferedStringRepBlock_<kNElts1_>) == sizeof (wchar_t) * kNElts1_, "sizes should match");
+                            newBuf = reinterpret_cast<wchar_t*> (Memory::BlockAllocator<BufferedStringRepBlock_<kNElts1_>>{}.allocate (1));
+                        } break;
+                        case kNElts2_: {
+                            static_assert (sizeof (BufferedStringRepBlock_<kNElts2_>) == sizeof (wchar_t) * kNElts2_, "sizes should match");
+                            newBuf = reinterpret_cast<wchar_t*> (Memory::BlockAllocator<BufferedStringRepBlock_<kNElts2_>>{}.allocate (1));
+                        } break;
+                        case kNElts3_: {
+                            static_assert (sizeof (BufferedStringRepBlock_<kNElts3_>) == sizeof (wchar_t) * kNElts3_, "sizes should match");
+                            newBuf = reinterpret_cast<wchar_t*> (Memory::BlockAllocator<BufferedStringRepBlock_<kNElts3_>>{}.allocate (1));
+                        } break;
+                        default: {
+                            newBuf = new wchar_t[capacity];
+                        } break;
+                    }
+                }
+                else {
+                    newBuf = new wchar_t[capacity];
+                }
+                DISABLE_COMPILER_MSC_WARNING_END (4065)
+                return make_pair (newBuf, newBuf + capacity);
+            }
+            static tuple<const wchar_t*, const wchar_t*, size_t> mkBuf_ (const TextSpan& t1)
+            {
+                size_t                   len    = t1.second - t1.first;
+                pair<wchar_t*, wchar_t*> result = mkBuf_ (len);
+                if (len != 0) {
+                    (void)::memcpy (result.first, t1.first, len * sizeof (wchar_t));
+                }
+                result.first[len] = '\0';
+                return make_tuple (result.first, result.first + len, result.second - result.first);
+            }
+        public:
+            virtual const wchar_t* c_str_peek () const noexcept override
+            {
+                [[maybe_unused]] size_t len = _GetLength ();
+                Ensure (_fStart[len] == '\0');
+                return _fStart;
+            }
 
         public:
-            virtual const wchar_t* c_str_peek () const noexcept override;
-
-        public:
-            virtual size_t size () const override;
+            virtual size_t size () const override
+            {
+                return _GetLength ();
+            }
 
         private:
-            static size_t AdjustCapacity_ (size_t initialCapacity);
+            static size_t AdjustCapacity_ (size_t initialCapacity)
+            {
+                if constexpr (kUseBlockAllocatedForSmallBufStrings_) {
+                    static_assert (kNElts1_ <= kNElts2_ and kNElts2_ <= kNElts3_);
+                    if (initialCapacity <= kNElts1_) {
+                        return kNElts1_;
+                    }
+                    else if (initialCapacity <= kNElts2_) {
+                        return kNElts2_;
+                    }
+                    else if (initialCapacity <= kNElts3_) {
+                        return kNElts3_;
+                    }
+                }
+                size_t result = Containers::Support::ReserveTweaks::GetScaledUpCapacity (initialCapacity, sizeof (Character));
+                Ensure (initialCapacity <= result);
+                return result;
+            }
 
         private:
             // includes INCLUDES nul/EOS char
@@ -122,181 +215,12 @@ namespace Stroika::Foundation::Characters::Concrete::Private {
             size_t fCapacity_;
         };
     };
-
 }
-namespace Stroika::Foundation::Characters::Concrete {
-    namespace Private {
-
-#if qString_Private_BufferedStringRep_UseBlockAllocatedForSmallBufStrings
-        template <size_t SZ>
-        struct BufferedStringRepBlock_ {
-            static constexpr size_t kNElts = SZ;
-            wchar_t                 data[kNElts];
-        };
-#endif
-
-        /*
-         ********************************************************************************
-         ************************** BufferedStringRep::_Rep *****************************
-         ********************************************************************************
-         */
-        inline size_t BufferedStringRep::_Rep::size () const
-        {
-            return _GetLength ();
-        }
-        inline size_t BufferedStringRep::_Rep::AdjustCapacity_ (size_t initialCapacity)
-        {
-#if qString_Private_BufferedStringRep_UseBlockAllocatedForSmallBufStrings
-            static_assert (kNElts1_ <= kNElts2_ and kNElts2_ <= kNElts3_);
-            if (initialCapacity <= kNElts1_) {
-                return kNElts1_;
-            }
-            else if (initialCapacity <= kNElts2_) {
-                return kNElts2_;
-            }
-            else if (initialCapacity <= kNElts3_) {
-                return kNElts3_;
-            }
-#endif
-            size_t result = Containers::Support::ReserveTweaks::GetScaledUpCapacity (initialCapacity, sizeof (Character));
-            Ensure (initialCapacity <= result);
-            return result;
-        }
-        inline pair<wchar_t*, wchar_t*> BufferedStringRep::_Rep::mkBuf_ (size_t length)
-        {
-            size_t   capacity = AdjustCapacity_ (length + 1); // add one for '\0'
-            wchar_t* newBuf   = nullptr;
-#if qString_Private_BufferedStringRep_UseBlockAllocatedForSmallBufStrings
-            Assert (capacity >= kNElts1_ or capacity >= kNElts2_ or capacity >= kNElts3_);
-#endif
-            DISABLE_COMPILER_MSC_WARNING_START (4065)
-            switch (capacity) {
-#if qString_Private_BufferedStringRep_UseBlockAllocatedForSmallBufStrings
-                case kNElts1_: {
-                    static_assert (sizeof (BufferedStringRepBlock_<kNElts1_>) == sizeof (wchar_t) * kNElts1_, "sizes should match");
-                    newBuf = reinterpret_cast<wchar_t*> (Memory::BlockAllocator<BufferedStringRepBlock_<kNElts1_>>{}.allocate (1));
-                } break;
-                case kNElts2_: {
-                    static_assert (sizeof (BufferedStringRepBlock_<kNElts2_>) == sizeof (wchar_t) * kNElts2_, "sizes should match");
-                    newBuf = reinterpret_cast<wchar_t*> (Memory::BlockAllocator<BufferedStringRepBlock_<kNElts2_>>{}.allocate (1));
-                } break;
-                case kNElts3_: {
-                    static_assert (sizeof (BufferedStringRepBlock_<kNElts3_>) == sizeof (wchar_t) * kNElts3_, "sizes should match");
-                    newBuf = reinterpret_cast<wchar_t*> (Memory::BlockAllocator<BufferedStringRepBlock_<kNElts3_>>{}.allocate (1));
-                } break;
-#endif
-                default: {
-                    newBuf = new wchar_t[capacity];
-                } break;
-            }
-            DISABLE_COMPILER_MSC_WARNING_END (4065)
-            return make_pair (newBuf, newBuf + capacity);
-        }
-        inline tuple<const wchar_t*, const wchar_t*, size_t> BufferedStringRep::_Rep::mkBuf_ (const TextSpan& t1)
-        {
-            size_t                   len    = t1.second - t1.first;
-            pair<wchar_t*, wchar_t*> result = mkBuf_ (len);
-            if (len != 0) {
-                (void)::memcpy (result.first, t1.first, len * sizeof (wchar_t));
-            }
-            result.first[len] = '\0';
-            return make_tuple (result.first, result.first + len, result.second - result.first);
-        }
-        inline tuple<const wchar_t*, const wchar_t*, size_t> BufferedStringRep::_Rep::mkBuf_ (const TextSpan& t1, const TextSpan& t2)
-        {
-            size_t                   l1     = (t1.second - t1.first);
-            size_t                   l2     = (t2.second - t2.first);
-            size_t                   len    = l1 + l2;
-            pair<wchar_t*, wchar_t*> result = mkBuf_ (len);
-            if (l1 != 0) {
-                (void)::memcpy (result.first, t1.first, l1 * sizeof (wchar_t));
-            }
-            if (l2 != 0) {
-                (void)::memcpy (result.first + l1, t2.first, l2 * sizeof (wchar_t));
-            }
-            result.first[len] = '\0';
-            return make_tuple (result.first, result.first + len, result.second - result.first);
-        }
-        inline tuple<const wchar_t*, const wchar_t*, size_t> BufferedStringRep::_Rep::mkBuf_ (const TextSpan& t1, const TextSpan& t2, const TextSpan& t3)
-        {
-            size_t                   l1     = (t1.second - t1.first);
-            size_t                   l2     = (t2.second - t2.first);
-            size_t                   l3     = (t3.second - t3.first);
-            size_t                   len    = l1 + l2 + l3;
-            pair<wchar_t*, wchar_t*> result = mkBuf_ (len);
-            if (l1 != 0) {
-                (void)::memcpy (result.first, t1.first, l1 * sizeof (wchar_t));
-            }
-            if (l2 != 0) {
-                (void)::memcpy (result.first + l1, t2.first, l2 * sizeof (wchar_t));
-            }
-            if (l3 != 0) {
-                (void)::memcpy (result.first + l1 + l2, t3.first, l3 * sizeof (wchar_t));
-            }
-            result.first[len] = '\0';
-            return make_tuple (result.first, result.first + len, result.second - result.first);
-        }
-        inline BufferedStringRep::_Rep::_Rep (const tuple<const wchar_t*, const wchar_t*, size_t>& strAndCapacity)
-            : inherited{make_pair (get<0> (strAndCapacity), get<1> (strAndCapacity))}
-            , fCapacity_{get<2> (strAndCapacity)}
-        {
-        }
-        inline BufferedStringRep::_Rep::_Rep (const TextSpan& t1)
-            : _Rep{mkBuf_ (t1)}
-        {
-        }
-        inline BufferedStringRep::_Rep::_Rep (const TextSpan& t1, const TextSpan& t2)
-            : _Rep{mkBuf_ (t1, t2)}
-        {
-        }
-        inline BufferedStringRep::_Rep::_Rep (const TextSpan& t1, const TextSpan& t2, const TextSpan& t3)
-            : _Rep{mkBuf_ (t1, t2, t3)}
-        {
-        }
-        //theory not tested- but inlined because its important this be fast, it it sb instantiated only in each of the 3 or 4 final DTORs
-        inline BufferedStringRep::_Rep::~_Rep ()
-        {
-            AssertNotNull (_fStart);
-            Assert (fCapacity_ == AdjustCapacity_ (this->_GetLength () + 1)); // see mkBuf_ (size_t length) - and possible optimize to not store fCapacity
-#if qString_Private_BufferedStringRep_UseBlockAllocatedForSmallBufStrings
-            Assert (fCapacity_ >= kNElts1_);
-#endif
-            DISABLE_COMPILER_MSC_WARNING_START (4065)
-            switch (fCapacity_) {
-#if qString_Private_BufferedStringRep_UseBlockAllocatedForSmallBufStrings
-                case kNElts1_: {
-                    Memory::BlockAllocator<BufferedStringRepBlock_<kNElts1_>>{}.deallocate (reinterpret_cast<BufferedStringRepBlock_<kNElts1_>*> (const_cast<wchar_t*> (_fStart)), 1);
-                } break;
-                case kNElts2_: {
-                    Memory::BlockAllocator<BufferedStringRepBlock_<kNElts2_>>{}.deallocate (reinterpret_cast<BufferedStringRepBlock_<kNElts2_>*> (const_cast<wchar_t*> (_fStart)), 1);
-                } break;
-                case kNElts3_: {
-                    Memory::BlockAllocator<BufferedStringRepBlock_<kNElts3_>>{}.deallocate (reinterpret_cast<BufferedStringRepBlock_<kNElts3_>*> (const_cast<wchar_t*> (_fStart)), 1);
-                } break;
-#endif
-                default: {
-                    delete[] _fStart;
-                } break;
-            }
-            DISABLE_COMPILER_MSC_WARNING_END (4065)
-        }
-    }
-
-}
-const wchar_t* Concrete::Private::BufferedStringRep::_Rep::c_str_peek () const noexcept
-{
-    [[maybe_unused]] size_t len = _GetLength ();
-    Ensure (_fStart[len] == '\0');
-    return _fStart;
-}
-
-/*
- ********************************************************************************
- ************** String_ExternalMemoryOwnership_ApplicationLifetime **************
- ********************************************************************************
- */
 
 namespace {
+    /**
+     *  For static full app lifetime string constants...
+     */
     struct MyStringConstant_ : public String {
         using inherited = String;
 
@@ -327,34 +251,17 @@ namespace {
     };
 }
 
-#if 0
-String_Constant::String_Constant (const wchar_t* start, const wchar_t* end)
-    : inherited{MakeSmartPtr<MyRep_> (start, end)}
-{
-    // NO - we allow embedded nuls, but require NUL-termination - so this is wrong - Require (start + ::wcslen (start) == end);
-    Require (*end == '\0' and start + ::wcslen (start) <= end);
-}
-#endif
-
 namespace {
     class String_BufferedArray_Rep_ final
-        : public Concrete::Private::BufferedStringRep::_Rep,
+        : public BufferedStringRep_::_Rep,
           public Memory::UseBlockAllocationIfAppropriate<String_BufferedArray_Rep_> {
 
     private:
-        using inherited = Concrete::Private::BufferedStringRep::_Rep;
+        using inherited = BufferedStringRep_::_Rep;
 
     public:
         String_BufferedArray_Rep_ (const wchar_t* start, const wchar_t* end)
             : inherited{make_pair (start, end)}
-        {
-        }
-        String_BufferedArray_Rep_ (const TextSpan& t1, const TextSpan& t2)
-            : inherited{t1, t2}
-        {
-        }
-        String_BufferedArray_Rep_ (const TextSpan& t1, const TextSpan& t2, const TextSpan& t3)
-            : inherited{t1, t2, t3}
         {
         }
         virtual _IterableRepSharedPtr Clone () const override
@@ -537,33 +444,12 @@ String String::InsertAt (const Character* from, const Character* to, size_t at) 
     if (from == to) {
         return *this;
     }
-#if 0
-    Memory::StackBuffer<Character> possiblyUnusedBuf;
-    span<const Character>          d = GetData<Character> (&possiblyUnusedBuf);
-    if (d.empty ()) {
-        return String{from, to};
-    }
-    else {
-        return String{String::MakeSmartPtr<String_BufferedArray_Rep_> (
-            make_pair (&*d.begin (), &*d.begin () + at),
-            make_pair (from, to),
-            make_pair (&*d.begin () + at, &*d.begin () + d.size ()))};
-    }
-#else
-    _SafeReadRepAccessor                     copyAccessor{this};
-    pair<const Character*, const Character*> d = copyAccessor._ConstGetRep ().GetData ();
-
-    return String{String::MakeSmartPtr<String_BufferedArray_Rep_> (
-        make_pair (reinterpret_cast<const wchar_t*> (d.first), reinterpret_cast<const wchar_t*> (d.first + at)),
-        make_pair (reinterpret_cast<const wchar_t*> (from), reinterpret_cast<const wchar_t*> (to)),
-        make_pair (reinterpret_cast<const wchar_t*> (d.first + at), reinterpret_cast<const wchar_t*> (d.second)))};
-#endif
-
-#if 0
-    auto                                     sRep = MakeSmartPtr<String_BufferedArray_Rep_> (reinterpret_cast<const wchar_t*> (d.first), reinterpret_cast<const wchar_t*> (d.second), (to - from));
-    sRep->InsertAt (from, to, at);
-    return String{move (sRep)};
-#endif
+    Memory::StackBuffer<Character> ignored1;
+    span<const Character>          thisStrData = GetData (&ignored1);
+    StringBuilder                  sb{thisStrData.subspan (0, at)};
+    sb.Append (span{from, to});
+    sb.Append (thisStrData.subspan (at));
+    return sb.str ();
 }
 
 String String::RemoveAt (size_t from, size_t to) const
@@ -621,7 +507,7 @@ optional<size_t> String::Find (Character c, size_t startAt, CompareOptions co) c
     //      on the other hand, if our reps are either 'ascii or char32_t wide' - which we may end up with - then
     //      this isn't too bad - cuz no copying for char32_ case either...
     Memory::StackBuffer<Character> maybeIgnoreBuf;
-    span<const Character>          charSpan = GetData<Character> (pds, &maybeIgnoreBuf);
+    span<const Character>          charSpan = GetData (pds, &maybeIgnoreBuf);
     Require (startAt <= charSpan.size ());
     span<const Character> examineSpan = charSpan.subspan (startAt);
     switch (co) {
@@ -806,7 +692,7 @@ optional<size_t> String::RFind (const String& subString) const
 String String::Replace (size_t from, size_t to, const String& replacement) const
 {
     Memory::StackBuffer<wchar_t> ignored;
-    span<const wchar_t>          thisSpan = GetData<wchar_t> (&ignored);
+    span<const wchar_t>          thisSpan = GetData (&ignored);
     Require (from <= to);
     Require (to <= this->size ());
     Assert (to < thisSpan.size ());
@@ -836,8 +722,8 @@ bool String::StartsWith (const String& subString, CompareOptions co) const
 #endif
     Memory::StackBuffer<Character> maybeIgnoreBuf1;
     Memory::StackBuffer<Character> maybeIgnoreBuf2;
-    span<const Character>          subStrData = subString.GetData<Character> (&maybeIgnoreBuf1);
-    span<const Character>          thisData   = GetData<Character> (&maybeIgnoreBuf2);
+    span<const Character>          subStrData = subString.GetData (&maybeIgnoreBuf1);
+    span<const Character>          thisData   = GetData (&maybeIgnoreBuf2);
     bool                           result     = Character::Compare (thisData.subspan (0, subStrData.size ()), subStrData, co) == 0;
     Assert (result == referenceResult);
     return result;
@@ -868,8 +754,8 @@ bool String::EndsWith (const String& subString, CompareOptions co) const
 #endif
     Memory::StackBuffer<Character> maybeIgnoreBuf1;
     Memory::StackBuffer<Character> maybeIgnoreBuf2;
-    span<const Character>          subStrData = subString.GetData<Character> (&maybeIgnoreBuf1);
-    span<const Character>          thisData   = GetData<Character> (&maybeIgnoreBuf2);
+    span<const Character>          subStrData = subString.GetData (&maybeIgnoreBuf1);
+    span<const Character>          thisData   = GetData (&maybeIgnoreBuf2);
     bool                           result     = Character::Compare (thisData.subspan (thisStrLen - subStrLen), subStrData, co) == 0;
     Assert (result == referenceResult);
     return result;
@@ -1266,7 +1152,7 @@ String Characters::operator"" _k (const wchar_t* s, size_t len)
 wostream& Characters::operator<< (wostream& out, const String& s)
 {
     Memory::StackBuffer<wchar_t> maybeIgnoreBuf1;
-    span<const wchar_t>          sData = s.GetData<wchar_t> (&maybeIgnoreBuf1);
+    span<const wchar_t>          sData = s.GetData (&maybeIgnoreBuf1);
     out.write (sData.data (), sData.size ());
     return out;
 }
@@ -1279,12 +1165,9 @@ wostream& Characters::operator<< (wostream& out, const String& s)
 String Characters::operator+ (const wchar_t* lhs, const String& rhs)
 {
     RequireNotNull (lhs);
-    String::_SafeReadRepAccessor             rhsAccessor{&rhs};
-    pair<const Character*, const Character*> rhsD   = rhsAccessor._ConstGetRep ().GetData ();
-    size_t                                   lhsLen = ::wcslen (lhs);
-    return String{String::MakeSmartPtr<String_BufferedArray_Rep_> (
-        make_pair (lhs, lhs + lhsLen),
-        make_pair (reinterpret_cast<const wchar_t*> (rhsD.first), reinterpret_cast<const wchar_t*> (rhsD.second)))};
+    Memory::StackBuffer<wchar_t> ignored1;
+    auto                         rhsDataSpan = rhs.GetData (&ignored1);
+    return String{String::mk_ (span{lhs, ::wcslen (lhs)}, rhsDataSpan)};
 }
 
 /*
@@ -1300,7 +1183,7 @@ size_t std::hash<String>::operator() (const String& arg) const
     // this will most often avoid a copy, and making the most often case faster is probably a win. Also, even close, it
     // will have less 'empty space' and be more compact, so will digest faster.
     Memory::StackBuffer<char8_t> maybeIgnoreBuf1;
-    span<const char8_t>          s = arg.GetData<char8_t> (&maybeIgnoreBuf1);
+    span<const char8_t>          s = arg.GetData (&maybeIgnoreBuf1);
     if (s.empty ()) {
         static const size_t kZeroDigest_ = DIGESTER{}(nullptr, nullptr);
         return kZeroDigest_;
@@ -1326,5 +1209,5 @@ Memory::BLOB DataExchange::DefaultSerializer<String>::operator() (const String& 
     //          the GetData call
     //
     Memory::StackBuffer<char8_t> maybeIgnoreBuf1;
-    return Memory::BLOB{as_bytes (arg.GetData<char8_t> (&maybeIgnoreBuf1))};
+    return Memory::BLOB{as_bytes (arg.GetData (&maybeIgnoreBuf1))};
 }
