@@ -55,14 +55,39 @@ namespace {
             using inherited = _IRep;
 
         protected:
+            const wchar_t* _fStart;
+            const wchar_t* _fEnd; // \note - _fEnd must always point to a 'NUL' character, so the underlying array extends one or more beyond
+
+        protected:
             Rep (const pair<const wchar_t*, const wchar_t*>& s)
-                : inherited{s}
+                : inherited{}
+                , _fStart{s.first}
+                , _fEnd{s.second}
             {
             }
             Rep (const wchar_t* start, const wchar_t* end)
-                : inherited{start, end}
+                : inherited{}
+                , _fStart{start}
+                , _fEnd{end}
             {
             }
+
+            virtual Character GetAt (size_t index) const noexcept
+            {
+                Assert (_fStart <= _fEnd);
+                Require (index < size ());
+                return _fStart[index];
+            }
+            virtual PeekSpanData PeekData ([[maybe_unused]] optional<PeekSpanData::StorageCodePointType> preferred) const noexcept override
+            {
+                if constexpr (sizeof (wchar_t) == 2) {
+                    return PeekSpanData{PeekSpanData::StorageCodePointType::eChar16, {.fChar16 = span<const char16_t>{reinterpret_cast<const char16_t*> (_fStart), reinterpret_cast<const char16_t*> (_fEnd)}}};
+                }
+                else if constexpr (sizeof (wchar_t) == 4) {
+                    return PeekSpanData{PeekSpanData::StorageCodePointType::eChar32, {.fChar32 = span<const char32_t>{reinterpret_cast<const char32_t*> (_fStart), reinterpret_cast<const char32_t*> (_fEnd)}}};
+                }
+            }
+
             // Overrides for Iterable<Character>
         public:
             virtual Traversal::Iterator<value_type> MakeIterator () const override
@@ -83,7 +108,7 @@ namespace {
                         : fStr{r}
                         , fCurIdx{idx}
                     {
-                        Require (fCurIdx <= AccessRep_ ()->_GetLength ());
+                        Require (fCurIdx <= AccessRep_ ()->size ());
                     }
                     virtual Iterator<Character>::RepSmartPtr Clone () const override
                     {
@@ -93,10 +118,10 @@ namespace {
                     {
                         RequireNotNull (result);
                         if (advance) [[likely]] {
-                            Require (fCurIdx <= AccessRep_ ()->_GetLength ());
+                            Require (fCurIdx <= AccessRep_ ()->size ());
                             ++fCurIdx;
                         }
-                        if (fCurIdx < AccessRep_ ()->_GetLength ()) [[likely]] {
+                        if (fCurIdx < AccessRep_ ()->size ()) [[likely]] {
                             *result = AccessRep_ ()->GetAt (fCurIdx);
                         }
                         else {
@@ -203,7 +228,7 @@ namespace {
             ~Rep ()
             {
                 AssertNotNull (_fStart);
-                Assert (fCapacity_ == AdjustCapacity_ (this->_GetLength () + 1)); // see mkBuf_ (size_t length) - and possible optimize to not store fCapacity
+                Assert (fCapacity_ == AdjustCapacity_ (this->size () + 1)); // see mkBuf_ (size_t length) - and possible optimize to not store fCapacity
                 if constexpr (kUseBlockAllocatedForSmallBufStrings_) {
                     Assert (fCapacity_ >= kNElts1_);
                     switch (fCapacity_) {
@@ -281,7 +306,7 @@ namespace {
         public:
             virtual const wchar_t* c_str_peek () const noexcept override
             {
-                [[maybe_unused]] size_t len = _GetLength ();
+                [[maybe_unused]] size_t len = size ();
                 Ensure (_fStart[len] == '\0');
                 return _fStart;
             }
@@ -289,7 +314,7 @@ namespace {
         public:
             virtual size_t size () const override
             {
-                return _GetLength ();
+                return _fEnd - _fStart;
             }
 
         private:
@@ -478,7 +503,7 @@ String String::RemoveAt (size_t from, size_t to) const
         return SubString (to);
     }
     _SafeReadRepAccessor accessor{this};
-    size_t               length = accessor._ConstGetRep ()._GetLength ();
+    size_t               length = accessor._ConstGetRep ().size ();
     if (to == length) {
         return SubString (0, from);
     }
@@ -547,17 +572,17 @@ optional<size_t> String::Find (const String& subString, size_t startAt, CompareO
 {
     //@todo: FIX HORRIBLE PERFORMANCE!!!
     _SafeReadRepAccessor accessor{this};
-    Require (startAt <= accessor._ConstGetRep ()._GetLength ());
+    Require (startAt <= accessor._ConstGetRep ().size ());
 
     size_t subStrLen = subString.size ();
     if (subStrLen == 0) {
-        return (accessor._ConstGetRep ()._GetLength () == 0) ? optional<size_t>{} : 0;
+        return (accessor._ConstGetRep ().size () == 0) ? optional<size_t>{} : 0;
     }
-    if (accessor._ConstGetRep ()._GetLength () < subStrLen) {
+    if (accessor._ConstGetRep ().size () < subStrLen) {
         return {}; // important test cuz size_t is unsigned
     }
 
-    size_t limit = accessor._ConstGetRep ()._GetLength () - subStrLen;
+    size_t limit = accessor._ConstGetRep ().size () - subStrLen;
     switch (co) {
         case CompareOptions::eCaseInsensitive: {
             for (size_t i = startAt; i <= limit; ++i) {
@@ -675,7 +700,7 @@ optional<size_t> String::RFind (Character c) const noexcept
     //@todo: FIX HORRIBLE PERFORMANCE!!!
     _SafeReadRepAccessor accessor{this};
     const _IRep&         useRep = accessor._ConstGetRep ();
-    size_t               length = useRep._GetLength ();
+    size_t               length = useRep.size ();
     for (size_t i = length; i > 0; --i) {
         if (useRep.GetAt (i - 1) == c) {
             return i - 1;
@@ -721,7 +746,7 @@ String String::Replace (size_t from, size_t to, const String& replacement) const
 bool String::StartsWith (const Character& c, CompareOptions co) const
 {
     _SafeReadRepAccessor accessor{this};
-    if (accessor._ConstGetRep ()._GetLength () == 0) {
+    if (accessor._ConstGetRep ().size () == 0) {
         return false;
     }
     return Character::EqualsComparer{co}(accessor._ConstGetRep ().GetAt (0), c);
@@ -748,7 +773,7 @@ bool String::EndsWith (const Character& c, CompareOptions co) const
 {
     _SafeReadRepAccessor accessor{this};
     const _IRep&         useRep     = accessor._ConstGetRep ();
-    size_t               thisStrLen = useRep._GetLength ();
+    size_t               thisStrLen = useRep.size ();
     if (thisStrLen == 0) {
         return false;
     }
@@ -759,7 +784,7 @@ bool String::EndsWith (const String& subString, CompareOptions co) const
 {
     _SafeReadRepAccessor subStrAccessor{&subString};
     _SafeReadRepAccessor accessor{this};
-    size_t               thisStrLen = accessor._ConstGetRep ()._GetLength ();
+    size_t               thisStrLen = accessor._ConstGetRep ().size ();
     size_t               subStrLen  = subString.size ();
     if (subStrLen > thisStrLen) {
         return false;
@@ -898,7 +923,7 @@ String String::SubString_ (const _SafeReadRepAccessor& thisAccessor, size_t this
     Require (from <= to);
     Require (to <= thisLen);
     Require (thisLen == this->size ());
-    const wchar_t* start = reinterpret_cast<const wchar_t*> (thisAccessor._ConstGetRep ()._Peek ()) + from;
+    const wchar_t* start = reinterpret_cast<const wchar_t*> (thisAccessor._ConstGetRep ().c_str_peek ()) + from;
     size_t         len   = to - from;
     const wchar_t* end   = start + len;
     Assert (start <= end);
@@ -936,7 +961,7 @@ String String::LTrim (bool (*shouldBeTrimmmed) (Character)) const
 {
     RequireNotNull (shouldBeTrimmmed);
     _SafeReadRepAccessor accessor{this};
-    size_t               length = accessor._ConstGetRep ()._GetLength ();
+    size_t               length = accessor._ConstGetRep ().size ();
     for (size_t i = 0; i < length; ++i) {
         if (not(*shouldBeTrimmmed) (accessor._ConstGetRep ().GetAt (i))) {
             if (i == 0) {
@@ -956,7 +981,7 @@ String String::RTrim (bool (*shouldBeTrimmmed) (Character)) const
 {
     RequireNotNull (shouldBeTrimmmed);
     _SafeReadRepAccessor accessor{this};
-    ptrdiff_t            length         = accessor._ConstGetRep ()._GetLength ();
+    ptrdiff_t            length         = accessor._ConstGetRep ().size ();
     ptrdiff_t            endOfFirstTrim = length;
     for (; endOfFirstTrim != 0; --endOfFirstTrim) {
         if ((*shouldBeTrimmmed) (accessor._ConstGetRep ().GetAt (endOfFirstTrim - 1))) {
@@ -1034,7 +1059,7 @@ String String::ToLowerCase () const
 {
     StringBuilder        result;
     _SafeReadRepAccessor accessor{this};
-    size_t               n         = accessor._ConstGetRep ()._GetLength ();
+    size_t               n         = accessor._ConstGetRep ().size ();
     bool                 anyChange = false;
     for (size_t i = 0; i < n; ++i) {
         Character c = accessor._ConstGetRep ().GetAt (i);
@@ -1053,7 +1078,7 @@ String String::ToUpperCase () const
 {
     StringBuilder        result;
     _SafeReadRepAccessor accessor{this};
-    size_t               n         = accessor._ConstGetRep ()._GetLength ();
+    size_t               n         = accessor._ConstGetRep ().size ();
     bool                 anyChange = false;
     for (size_t i = 0; i < n; ++i) {
         Character c = accessor._ConstGetRep ().GetAt (i);

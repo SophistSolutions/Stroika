@@ -1373,36 +1373,11 @@ namespace Stroika::Foundation::Characters {
     protected:
         using _SharedPtrIRep = String::_SharedPtrIRep;
 
-    protected:
-        _IRep () = default;
-
-    protected:
-        _IRep (const pair<const wchar_t*, const wchar_t*>& span);
-        _IRep (const wchar_t* start, const wchar_t* end);
-
     public:
-        virtual ~_IRep () = default;
-
-    protected:
         /**
-         *  PROTECTED INLINE UTILITY
+         *  Return the ith character in the string
          */
-        nonvirtual size_t _GetLength () const;
-
-    protected:
-        /**
-         *  PROTECTED INLINE UTILITY
-         */
-        nonvirtual Character _GetAt (size_t index) const;
-
-    protected:
-        /**
-         *  PROTECTED INLINE UTILITY
-         */
-        nonvirtual const Character* _Peek () const;
-
-    public:
-        nonvirtual Character GetAt (size_t index) const;
+        virtual Character GetAt (size_t index) const noexcept = 0;
 
     public:
         /**
@@ -1411,15 +1386,7 @@ namespace Stroika::Foundation::Characters {
          *  This API is guaranteed to support a span of at least one of these types (maybe more). The caller may
          *  specify the code-point type preferred.
          */
-        virtual PeekSpanData PeekData ([[maybe_unused]] optional<PeekSpanData::StorageCodePointType> preferred) const noexcept
-        {
-            if constexpr (sizeof (wchar_t) == 2) {
-                return PeekSpanData{PeekSpanData::StorageCodePointType::eChar16, {.fChar16 = span<const char16_t>{reinterpret_cast<const char16_t*> (_fStart), reinterpret_cast<const char16_t*> (_fEnd)}}};
-            }
-            else if constexpr (sizeof (wchar_t) == 4) {
-                return PeekSpanData{PeekSpanData::StorageCodePointType::eChar32, {.fChar32 = span<const char32_t>{reinterpret_cast<const char32_t*> (_fStart), reinterpret_cast<const char32_t*> (_fEnd)}}};
-            }
-        }
+        virtual PeekSpanData PeekData ([[maybe_unused]] optional<PeekSpanData::StorageCodePointType> preferred) const noexcept = 0;
 
     public:
         /*
@@ -1429,13 +1396,12 @@ namespace Stroika::Foundation::Characters {
          *  It is only 'mostly' standard because it is allowed to have nul-chars embedded in it. But it will
          *  always have str[len] == 0;
          *
+         * 
+         *  @todo CHANGE SO THIS CAN BE NULLPTR
+         *
          *  \ensure returnResult[len] == '\0';
          */
         virtual const wchar_t* c_str_peek () const noexcept = 0;
-
-    protected:
-        const wchar_t* _fStart;
-        const wchar_t* _fEnd; // \note - _fEnd must always point to a 'NUL' character, so the underlying array extends one or more beyond
 
     private:
         friend class String;
@@ -1516,39 +1482,13 @@ namespace Stroika::Foundation::Characters {
         template <ConvertibleToString LT, ConvertibleToString RT>
         nonvirtual strong_ordering operator() (LT&& lhs, RT&& rhs) const;
 
-#if 0
-        // Extra overloads a slight performance improvement
-        nonvirtual strong_ordering operator() (const String& lhs, const String& rhs) const;
-        nonvirtual strong_ordering operator() (const wstring_view& lhs, const wstring_view& rhs) const;
-        nonvirtual strong_ordering operator() (const Character* lhs, const String& rhs) const;
-        nonvirtual strong_ordering operator() (const Character* lhs, const wstring_view& rhs) const;
-        nonvirtual strong_ordering operator() (const String& lhs, const Character* rhs) const;
-        nonvirtual strong_ordering operator() (const wstring_view& lhs, const Character* rhs) const;
-        nonvirtual strong_ordering operator() (const Character* lhs, const Character* rhs) const;
-        nonvirtual strong_ordering operator() (const wchar_t* lhs, const String& rhs) const;
-        nonvirtual strong_ordering operator() (const wchar_t* lhs, const wstring_view& rhs) const;
-        nonvirtual strong_ordering operator() (const String& lhs, const wchar_t* rhs) const;
-        nonvirtual strong_ordering operator() (const wstring_view& lhs, const wchar_t* rhs) const;
-        nonvirtual strong_ordering operator() (const wchar_t* lhs, const wchar_t* rhs) const;
-#endif
-
         CompareOptions fCompareOptions;
 
-    private:
     private:
         template <Private_::SupportedComparableUnicodeStringTypes_ LT, Private_::SupportedComparableUnicodeStringTypes_ RT>
         strong_ordering Cmp_ (LT&& lhs, RT&& rhs) const;
         template <Private_::SupportedComparableUnicodeStringTypes_ USTRING>
         static span<const Character> Access_ (USTRING&& s, Memory::StackBuffer<Character>* mostlyIgnoredBuf);
-
-#if 0
-        template <typename LT, typename RT>
-        strong_ordering                                 Cmp_ (LT lhs, RT rhs) const;
-        static pair<const Character*, const Character*> Access_ (const String& s);
-        static pair<const Character*, const Character*> Access_ (const wstring_view& s);
-        static pair<const Character*, const Character*> Access_ (const Character* lhs);
-        static pair<const Character*, const Character*> Access_ (const wchar_t* lhs);
-#endif
     };
 
     /**

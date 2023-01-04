@@ -18,6 +18,7 @@
 
 namespace Stroika::Foundation::Characters {
 
+#if 0
     /*
      ********************************************************************************
      ********************************* String::_IRep ********************************
@@ -33,30 +34,7 @@ namespace Stroika::Foundation::Characters {
         , _fEnd{end}
     {
     }
-    inline Character String::_IRep::GetAt (size_t index) const
-    {
-        Assert (_fStart <= _fEnd);
-        Require (index < size ());
-        return _fStart[index];
-    }
-    inline size_t String::_IRep::_GetLength () const
-    {
-        Assert (_fStart <= _fEnd);
-        Assert (*_fEnd == '\0');
-        return _fEnd - _fStart;
-    }
-    inline Character String::_IRep::_GetAt (size_t index) const
-    {
-        Assert (_fStart <= _fEnd);
-        Require (index < _GetLength ());
-        return _fStart[index];
-    }
-    inline const Character* String::_IRep::_Peek () const
-    {
-        Assert (_fStart <= _fEnd);
-        static_assert (sizeof (Character) == sizeof (wchar_t), "Character and wchar_t must be same size");
-        return (const Character*)_fStart;
-    }
+#endif
 
     /*
      ********************************************************************************
@@ -387,7 +365,7 @@ namespace Stroika::Foundation::Characters {
     }
     inline size_t String::size () const noexcept
     {
-        return _SafeReadRepAccessor{this}._ConstGetRep ()._GetLength ();
+        return _SafeReadRepAccessor{this}._ConstGetRep ().size ();
     }
     inline size_t String::SubString_adjust_ (unsigned int from, [[maybe_unused]] size_t myLength) const
     {
@@ -417,7 +395,7 @@ namespace Stroika::Foundation::Characters {
     inline String String::SubString (SZ from) const
     {
         _SafeReadRepAccessor accessor{this};
-        size_t               myLength{accessor._ConstGetRep ()._GetLength ()};
+        size_t               myLength{accessor._ConstGetRep ().size ()};
         size_t               f = SubString_adjust_ (from, myLength);
         size_t               t = myLength;
         Require (f <= myLength);
@@ -427,7 +405,7 @@ namespace Stroika::Foundation::Characters {
     inline String String::SubString (SZ1 from, SZ2 to) const
     {
         _SafeReadRepAccessor accessor{this};
-        size_t               myLength{accessor._ConstGetRep ()._GetLength ()};
+        size_t               myLength{accessor._ConstGetRep ().size ()};
         size_t               f = SubString_adjust_ (from, myLength);
         size_t               t = SubString_adjust_ (to, myLength);
         Require (f <= t);
@@ -438,7 +416,7 @@ namespace Stroika::Foundation::Characters {
     inline String String::SafeSubString (SZ from) const
     {
         _SafeReadRepAccessor accessor{this};
-        size_t               myLength{accessor._ConstGetRep ()._GetLength ()};
+        size_t               myLength{accessor._ConstGetRep ().size ()};
         size_t               f = SubString_adjust_ (from, myLength);
         f                      = min (f, myLength);
         Assert (f <= myLength);
@@ -449,7 +427,7 @@ namespace Stroika::Foundation::Characters {
     inline String String::SafeSubString (SZ1 from, SZ2 to) const
     {
         _SafeReadRepAccessor accessor{this};
-        size_t               myLength{accessor._ConstGetRep ()._GetLength ()};
+        size_t               myLength{accessor._ConstGetRep ().size ()};
         size_t               f = SubString_adjust_ (from, myLength);
         size_t               t = SubString_adjust_ (to, myLength);
         f                      = min (f, myLength);
@@ -471,7 +449,7 @@ namespace Stroika::Foundation::Characters {
     inline bool String::empty () const noexcept
     {
         _SafeReadRepAccessor accessor{this};
-        return accessor._ConstGetRep ()._GetLength () == 0;
+        return accessor._ConstGetRep ().size () == 0;
     }
     inline void String::clear ()
     {
@@ -589,7 +567,7 @@ namespace Stroika::Foundation::Characters {
     {
         _SafeReadRepAccessor accessor{this};
         Require (i >= 0);
-        Require (i < accessor._ConstGetRep ()._GetLength ());
+        Require (i < accessor._ConstGetRep ().size ());
         return accessor._ConstGetRep ().GetAt (i);
     }
     inline const Character String::operator[] (size_t i) const noexcept
@@ -1029,7 +1007,7 @@ namespace Stroika::Foundation::Characters {
     inline String String::substr (size_t from, size_t count) const
     {
         _SafeReadRepAccessor accessor{this};
-        size_t               thisLen = accessor._ConstGetRep ()._GetLength ();
+        size_t               thisLen = accessor._ConstGetRep ().size ();
         if (from > thisLen) [[unlikely]] {
             Execution::Throw (out_of_range{"string index out of range"});
         }
