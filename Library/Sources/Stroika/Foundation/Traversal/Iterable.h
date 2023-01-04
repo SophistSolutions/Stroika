@@ -78,6 +78,10 @@ namespace Stroika::Foundation::Traversal {
      */
     struct IterableBase {
     public:
+        /**
+         *  Stroika - at least in Stroika 2.1 - supported building with shared_ptr or Memory::SharedPtr. MAY give
+         *  up on Memory::SharedPtr for v3? Must performance test. Much simpler to avoid this template.
+         */
         template <typename SHARED_T>
         using PtrImplementationTemplate = conditional_t<kIterableUsesStroikaSharedPtr, Memory::SharedPtr<SHARED_T>, shared_ptr<SHARED_T>>;
 
@@ -86,6 +90,9 @@ namespace Stroika::Foundation::Traversal {
         static PtrImplementationTemplate<SHARED_T> MakeSmartPtr (ARGS_TYPE&&... args);
 
     public:
+        /**
+         *  Use this template to ensure you enable_shared_from_this, for the right type of SharedPtr you've built Stroika with.
+         */
         template <typename SHARED_T>
         using enable_shared_from_this_PtrImplementationTemplate = conditional_t<kIterableUsesStroikaSharedPtr, Memory::enable_shared_from_this<SHARED_T>, std::enable_shared_from_this<SHARED_T>>;
     };
