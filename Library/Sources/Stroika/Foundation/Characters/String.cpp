@@ -131,7 +131,7 @@ namespace {
             }
 
         private:
-            static pair<wchar_t*, wchar_t*>                      mkBuf_ (size_t length)
+            static pair<wchar_t*, wchar_t*> mkBuf_ (size_t length)
             {
                 size_t   capacity = AdjustCapacity_ (length + 1); // add one for '\0'
                 wchar_t* newBuf   = nullptr;
@@ -174,6 +174,7 @@ namespace {
                 result.first[len] = '\0';
                 return make_tuple (result.first, result.first + len, result.second - result.first);
             }
+
         public:
             virtual const wchar_t* c_str_peek () const noexcept override
             {
