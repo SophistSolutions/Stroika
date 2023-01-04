@@ -479,9 +479,9 @@ String String::RemoveAt (size_t from, size_t to) const
         return SubString (0, from);
     }
     else {
-        pair<const Character*, const Character*> d = accessor._ConstGetRep ().GetData ();
-        const wchar_t*                           p = reinterpret_cast<const wchar_t*> (d.first);
-        return String{mk_ (span{p, from}, span{p + to, p + length})};
+        Memory::StackBuffer<wchar_t> ignored1;
+        span<const wchar_t> d = GetData (&ignored1);
+        return String{mk_ (d.subspan(0, from), d.subspan(to))};
     }
 }
 
