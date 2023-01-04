@@ -66,7 +66,6 @@ namespace {
         };
     };
 
-
     /**
      *  This is a utility class to implement most of the basic String::_IRep functionality.
      *  This implements functions that change the string, but don't GROW it,
@@ -480,8 +479,8 @@ String String::RemoveAt (size_t from, size_t to) const
     }
     else {
         Memory::StackBuffer<wchar_t> ignored1;
-        span<const wchar_t> d = GetData (&ignored1);
-        return String{mk_ (d.subspan(0, from), d.subspan(to))};
+        span<const wchar_t>          d = GetData (&ignored1);
+        return String{mk_ (d.subspan (0, from), d.subspan (to))};
     }
 }
 
