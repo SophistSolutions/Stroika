@@ -1127,7 +1127,7 @@ namespace Stroika::Foundation::Characters {
         using namespace Stroika::Foundation::Characters;
         pair<const Character*, const Character*> l = Access_ (lhs);
         pair<const Character*, const Character*> r = Access_ (rhs);
-        return Character::Compare (l.first, l.second, r.first, r.second, fCompareOptions) == 0;
+        return Character::Compare (span{l.first, l.second}, span{r.first, r.second}, fCompareOptions) == 0;
     }
     inline bool String::EqualsComparer::operator() (const String& lhs, const String& rhs) const
     {
@@ -1284,7 +1284,7 @@ namespace Stroika::Foundation::Characters {
         using namespace Stroika::Foundation::Characters;
         pair<const Character*, const Character*> l = Access_ (forward<LT> (lhs));
         pair<const Character*, const Character*> r = Access_ (forward<RT> (rhs));
-        return Character::Compare (l.first, l.second, r.first, r.second, fCompareOptions);
+        return Character::Compare (span{l.first, l.second}, span{r.first, r.second}, fCompareOptions);
     }
     inline strong_ordering String::ThreeWayComparer::operator() (const String& lhs, const String& rhs) const
     {

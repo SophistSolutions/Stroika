@@ -16,6 +16,57 @@
 
 namespace Stroika::Foundation::Characters {
 
+    namespace Private_ {
+        template <Character_Compatible CHAR_T>
+        inline strong_ordering Compare_CS_ (span<const CHAR_T> lhs, span<const CHAR_T> rhs)
+        {
+            size_t        lLen   = lhs.size ();
+            size_t        rLen   = rhs.size ();
+            size_t        length = min (lLen, rLen);
+            const CHAR_T* li     = lhs.data ();
+            const CHAR_T* ri     = rhs.data ();
+            for (size_t i = 0; i < length; ++i, ++li, ++ri) {
+                if constexpr (is_same_v<CHAR_T, Character>) {
+                    if (li->GetCharacterCode () != ri->GetCharacterCode ()) {
+                        return li->GetCharacterCode () <=> ri->GetCharacterCode ();
+                    }
+                }
+                else {
+                    if (*li != *ri) {
+                        return *li <=> *ri;
+                    }
+                }
+            }
+            return Common::CompareResultNormalizer (static_cast<ptrdiff_t> (lLen) - static_cast<ptrdiff_t> (rLen));
+        }
+        template <Character_Compatible CHAR_T>
+        inline strong_ordering Compare_CI_ (span<const CHAR_T> lhs, span<const CHAR_T> rhs)
+        {
+            size_t        lLen   = lhs.size ();
+            size_t        rLen   = rhs.size ();
+            size_t        length = min (lLen, rLen);
+            const CHAR_T* li     = lhs.data ();
+            const CHAR_T* ri     = rhs.data ();
+            for (size_t i = 0; i < length; ++i, ++li, ++ri) {
+                if constexpr (is_same_v<CHAR_T, Character>) {
+                    Character lc = li->ToLowerCase ();
+                    Character rc = ri->ToLowerCase ();
+                    if (lc != rc) {
+                        return lc <=> rc;
+                    }
+                }
+                else {
+                    CHAR_T lc = tolower (*li); // probably not quite right ?? for all cases?
+                    CHAR_T rc = tolower (*ri);
+                    if (lc != rc) {
+                        return lc <=> rc;
+                    }
+                }
+            }
+            return Common::CompareResultNormalizer (static_cast<ptrdiff_t> (lLen) - static_cast<ptrdiff_t> (rLen));
+        }
+    }
+
     /*
      ********************************************************************************
      *********************************** Character **********************************
@@ -167,6 +218,20 @@ namespace Stroika::Foundation::Characters {
         }
         return true;
     }
+    template <Character_Compatible CHAR_T>
+    inline strong_ordering Character::Compare (span<const CHAR_T> lhs, span<const CHAR_T> rhs, CompareOptions co) noexcept
+    {
+        Require (co == CompareOptions::eWithCase or co == CompareOptions::eCaseInsensitive);
+        switch (co) {
+            case CompareOptions::eWithCase:
+                return Private_::Compare_CS_ (lhs, rhs);
+            case CompareOptions::eCaseInsensitive:
+                return Private_::Compare_CI_ (lhs, rhs);
+            default:
+                AssertNotReached ();
+                return strong_ordering::equal;
+        }
+    }
 
     /*
      ********************************************************************************
@@ -180,15 +245,7 @@ namespace Stroika::Foundation::Characters {
     constexpr bool Character::EqualsComparer::operator() (Character lhs, Character rhs) const noexcept
     {
         using namespace Stroika::Foundation::Characters;
-        switch (fCompareOptions) {
-            case CompareOptions::eCaseInsensitive:
-                return Character::Compare (&lhs, &lhs + 1, &rhs, &rhs + 1, CompareOptions::eCaseInsensitive) == 0;
-            case CompareOptions::eWithCase:
-                return lhs.GetCharacterCode () == rhs.GetCharacterCode ();
-            default:
-                AssertNotReached ();
-                return false;
-        }
+        return Character::Compare (Memory::ConstSpan (span{&lhs, 1}), Memory::ConstSpan (span{&rhs, 1}), fCompareOptions) == 0;
     }
 
     /*
@@ -203,16 +260,7 @@ namespace Stroika::Foundation::Characters {
     inline auto Character::ThreeWayComparer::operator() (Stroika::Foundation::Characters::Character lhs, Stroika::Foundation::Characters::Character rhs) const noexcept
     {
         using namespace Stroika::Foundation::Characters;
-        using SIGNED_WCHART_ = make_signed_t<wchar_t>;
-        switch (fCompareOptions) {
-            case CompareOptions::eCaseInsensitive:
-                return Character::Compare (&lhs, &lhs + 1, &rhs, &rhs + 1, CompareOptions::eCaseInsensitive);
-            case CompareOptions::eWithCase:
-                return static_cast<SIGNED_WCHART_> (lhs.GetCharacterCode ()) <=> static_cast<SIGNED_WCHART_> (rhs.GetCharacterCode ());
-            default:
-                AssertNotReached ();
-                return strong_ordering::equal;
-        }
+        return Character::Compare (Memory::ConstSpan (span{&lhs, 1}), Memory::ConstSpan (span{&rhs, 1}), fCompareOptions);
     }
 
 }

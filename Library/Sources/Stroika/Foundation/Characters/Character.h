@@ -227,8 +227,14 @@ namespace Stroika::Foundation::Characters {
          *
          *  \todo   Consider if this should be somehow packaged with Character::ThreeWayComparer?
          */
-        static strong_ordering Compare (span<const Character> lhs, span<const Character> rhs, CompareOptions co) noexcept;
-        static strong_ordering Compare (const Character* lhsStart, const Character* lhsEnd, const Character* rhsStart, const Character* rhsEnd, CompareOptions co) noexcept;
+        template <Character_Compatible CHAR_T>
+        static strong_ordering Compare (span<const CHAR_T> lhs, span<const CHAR_T> rhs, CompareOptions co) noexcept;
+
+    public:
+        [[deprecated ("Since Stroika 3.0d1, use span based Compare")]] static strong_ordering Compare (const Character* lhsStart, const Character* lhsEnd, const Character* rhsStart, const Character* rhsEnd, CompareOptions co) noexcept
+        {
+            return Compare (span{lhsStart, lhsEnd}, span{rhsStart, rhsEnd}, co);
+        }
 
     private:
         wchar_t fCharacterCode_;
