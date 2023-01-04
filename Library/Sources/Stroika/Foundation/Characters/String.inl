@@ -1083,6 +1083,32 @@ namespace Stroika::Foundation::Characters {
         return EqualsComparer{}(*this, rhs);
     }
 
+
+    /*
+     ********************************************************************************
+     **************************** String::EqualsComparer ****************************
+     ********************************************************************************
+     */
+    template <Private_::SupportedComparableUnicodeStringTypes_ USTRING>
+    inline span<const Character> Characters::Private_::Access_ (USTRING&& s, Memory::StackBuffer<Character>* mostlyIgnoredBuf)
+    {
+        if constexpr (is_same_v<decay_t<USTRING>, String>) {
+            return s.GetData (mostlyIgnoredBuf);
+        }
+        else if constexpr (is_same_v<decay_t<USTRING>, const wchar_t*>) {
+            static_assert (sizeof (Character) == sizeof (wchar_t));
+            return span{reinterpret_cast<const Character*> (s), ::wcslen (s)};
+        }
+        else if constexpr (is_same_v<decay_t<USTRING>, wstring>) {
+            static_assert (sizeof (Character) == sizeof (wchar_t));
+            return span{reinterpret_cast<const Character*> (s.c_str ()), s.length ()};
+        }
+        else if constexpr (is_same_v<decay_t<USTRING>, wstring_view>) {
+            static_assert (sizeof (Character) == sizeof (wchar_t));
+            return span{reinterpret_cast<const Character*> (s.data ()), s.length ()};
+        }
+    }
+
     /*
      ********************************************************************************
      **************************** String::EqualsComparer ****************************
@@ -1092,155 +1118,29 @@ namespace Stroika::Foundation::Characters {
         : fCompareOptions{co}
     {
     }
-    inline pair<const Character*, const Character*> String::EqualsComparer::Access_ (const wstring& s)
+    template <Private_::SupportedComparableUnicodeStringTypes_ LT, Private_::SupportedComparableUnicodeStringTypes_ RT>
+    inline bool String::EqualsComparer::Cmp_ (LT&& lhs, RT&& rhs) const
     {
-        using namespace Stroika::Foundation::Traversal;
-        return s.empty () ? make_pair<const Character*, const Character*> (nullptr, nullptr) : make_pair (reinterpret_cast<const Character*> (Iterator2Pointer (s.begin ())), reinterpret_cast<const Character*> (Iterator2Pointer (s.begin ()) + s.size ()));
+        Memory::StackBuffer<Character> ignore1;
+        Memory::StackBuffer<Character> ignore2;
+        return Character::Compare (Private_::Access_ (lhs, &ignore1), Private_::Access_ (rhs, &ignore2), fCompareOptions) == 0;
     }
-    inline pair<const Character*, const Character*> String::EqualsComparer::Access_ (const wstring_view& s)
+    template <ConvertibleToString LT, ConvertibleToString RT>
+    inline bool String::EqualsComparer::operator() (LT&& lhs, RT&& rhs) const
     {
-        using namespace Stroika::Foundation::Traversal;
-        return s.empty () ? make_pair<const Character*, const Character*> (nullptr, nullptr) : make_pair (reinterpret_cast<const Character*> (Iterator2Pointer (s.begin ())), reinterpret_cast<const Character*> (Iterator2Pointer (s.begin ()) + s.size ()));
-    }
-    inline pair<const Character*, const Character*> String::EqualsComparer::Access_ (const Character* s)
-    {
-        using namespace Stroika::Foundation::Characters;
-        static_assert (sizeof (Character) == sizeof (wchar_t), "Character and wchar_t must be same size");
-        RequireNotNull (s);
-        return make_pair (s, s + ::wcslen (reinterpret_cast<const wchar_t*> (s)));
-    }
-    inline pair<const Character*, const Character*> String::EqualsComparer::Access_ (const wchar_t* s)
-    {
-        using namespace Stroika::Foundation::Characters;
-        static_assert (sizeof (Character) == sizeof (wchar_t), "Character and wchar_t must be same size");
-        RequireNotNull (s);
-        return make_pair (reinterpret_cast<const Character*> (s), reinterpret_cast<const Character*> (s) + ::wcslen (s));
-    }
-    inline pair<const Character*, const Character*> String::EqualsComparer::Access_ (const String& s)
-    {
-        using namespace Stroika::Foundation::Characters;
-        return String::_SafeReadRepAccessor{&s}._ConstGetRep ().GetData ();
-    }
-    template <typename LT, typename RT>
-    inline bool String::EqualsComparer::Cmp_ (LT lhs, RT rhs) const
-    {
-        using namespace Stroika::Foundation::Characters;
-        pair<const Character*, const Character*> l = Access_ (lhs);
-        pair<const Character*, const Character*> r = Access_ (rhs);
-        return Character::Compare (span{l.first, l.second}, span{r.first, r.second}, fCompareOptions) == 0;
-    }
-    inline bool String::EqualsComparer::operator() (const String& lhs, const String& rhs) const
-    {
-        if (lhs.size () != rhs.size ()) {
-            return false; // performance tweak
+        if constexpr (
+            requires { lhs.size (); } and requires { rhs.size (); }) {
+            if (lhs.size () != rhs.size ()) {
+                return false; // performance tweak
+            }
         }
-        return Cmp_ (lhs, rhs);
-    }
-    inline bool String::EqualsComparer::operator() (const String& lhs, const wstring& rhs) const
-    {
-        if (lhs.size () != rhs.size ()) {
-            return false; // performance tweak
+        if constexpr (Private_::SupportedComparableUnicodeStringTypes_<LT> and Private_::SupportedComparableUnicodeStringTypes_<RT>) {
+            return Cmp_ (lhs, rhs);
         }
-        return Cmp_ (lhs, rhs);
-    }
-    inline bool String::EqualsComparer::operator() (const String& lhs, const wstring_view& rhs) const
-    {
-        if (lhs.size () != rhs.size ()) {
-            return false; // performance tweak
+        else {
+            // should almost never happen, but if it does, fall back on using String
+            return operator() (String{forward<LT> (lhs)}, String{forward<RT> (rhs)});
         }
-        return Cmp_ (lhs, rhs);
-    }
-    inline bool String::EqualsComparer::operator() (const String& lhs, const Character* rhs) const
-    {
-        return Cmp_ (lhs, rhs);
-    }
-    inline bool String::EqualsComparer::operator() (const String& lhs, const wchar_t* rhs) const
-    {
-        return Cmp_ (lhs, rhs);
-    }
-    inline bool String::EqualsComparer::operator() (const wstring& lhs, const String& rhs) const
-    {
-        if (lhs.size () != rhs.size ()) {
-            return false; // performance tweak
-        }
-        return Cmp_ (lhs, rhs);
-    }
-    inline bool String::EqualsComparer::operator() (const wstring_view& lhs, const String& rhs) const
-    {
-        if (lhs.size () != rhs.size ()) {
-            return false; // performance tweak
-        }
-        return Cmp_ (lhs, rhs);
-    }
-    inline bool String::EqualsComparer::operator() (const wstring& lhs, const wstring_view& rhs) const
-    {
-        if (lhs.size () != rhs.size ()) {
-            return false; // performance tweak
-        }
-        return Cmp_ (lhs, rhs);
-    }
-    inline bool String::EqualsComparer::operator() (const wstring_view& lhs, const wstring_view& rhs) const
-    {
-        if (lhs.size () != rhs.size ()) {
-            return false; // performance tweak
-        }
-        return Cmp_ (lhs, rhs);
-    }
-    inline bool String::EqualsComparer::operator() (const wstring& lhs, const Character* rhs) const
-    {
-        return Cmp_ (lhs, rhs);
-    }
-    inline bool String::EqualsComparer::operator() (const wstring_view& lhs, const Character* rhs) const
-    {
-        return Cmp_ (lhs, rhs);
-    }
-    inline bool String::EqualsComparer::operator() (const wstring& lhs, const wchar_t* rhs) const
-    {
-        return Cmp_ (lhs, rhs);
-    }
-    inline bool String::EqualsComparer::operator() (const wstring_view& lhs, const wchar_t* rhs) const
-    {
-        return Cmp_ (lhs, rhs);
-    }
-    inline bool String::EqualsComparer::operator() (const Character* lhs, const String& rhs) const
-    {
-        return Cmp_ (lhs, rhs);
-    }
-    inline bool String::EqualsComparer::operator() (const Character* lhs, const wstring& rhs) const
-    {
-        return Cmp_ (lhs, rhs);
-    }
-    inline bool String::EqualsComparer::operator() (const Character* lhs, const wstring_view& rhs) const
-    {
-        return Cmp_ (lhs, rhs);
-    }
-    inline bool String::EqualsComparer::operator() (const Character* lhs, const Character* rhs) const
-    {
-        return Cmp_ (lhs, rhs);
-    }
-    inline bool String::EqualsComparer::operator() (const Character* lhs, const wchar_t* rhs) const
-    {
-        return Cmp_ (lhs, rhs);
-    }
-    inline bool String::EqualsComparer::operator() (const wchar_t* lhs, const String& rhs) const
-    {
-        return Cmp_ (lhs, rhs);
-    }
-    inline bool String::EqualsComparer::operator() (const wchar_t* lhs, const wstring& rhs) const
-    {
-        return Cmp_ (lhs, rhs);
-    }
-    inline bool String::EqualsComparer::operator() (const wchar_t* lhs, const wstring_view& rhs) const
-    {
-        return Cmp_ (lhs, rhs);
-    }
-    inline bool String::EqualsComparer::operator() (const wchar_t* lhs, const Character* rhs) const
-    {
-        return Cmp_ (lhs, rhs);
-    }
-    inline bool String::EqualsComparer::operator() (const wchar_t* lhs, const wchar_t* rhs) const
-    {
-        return Cmp_ (lhs, rhs);
     }
 
     /*
@@ -1252,87 +1152,23 @@ namespace Stroika::Foundation::Characters {
         : fCompareOptions{co}
     {
     }
-    inline pair<const Character*, const Character*> String::ThreeWayComparer::Access_ (const wstring_view& s)
+    template <Private_::SupportedComparableUnicodeStringTypes_ LT, Private_::SupportedComparableUnicodeStringTypes_ RT>
+    inline strong_ordering String::ThreeWayComparer::Cmp_ (LT&& lhs, RT&& rhs) const
     {
-        using namespace Stroika::Foundation::Characters;
-        return s.empty ()
-                   ? make_pair<const Character*, const Character*> (nullptr, nullptr)
-                   : make_pair (reinterpret_cast<const Character*> (Traversal::Iterator2Pointer (s.begin ())), reinterpret_cast<const Character*> (Traversal::Iterator2Pointer (s.begin ()) + s.size ()));
+        Memory::StackBuffer<Character> ignore1;
+        Memory::StackBuffer<Character> ignore2;
+        return Character::Compare (Private_::Access_ (lhs, &ignore1), Private_::Access_ (rhs, &ignore2), fCompareOptions);
     }
-    inline pair<const Character*, const Character*> String::ThreeWayComparer::Access_ (const Character* s)
+    template <ConvertibleToString LT, ConvertibleToString RT>
+    inline strong_ordering String::ThreeWayComparer::operator() (LT&& lhs, RT&& rhs) const
     {
-        using namespace Stroika::Foundation::Characters;
-        static_assert (sizeof (Character) == sizeof (wchar_t), "Character and wchar_t must be same size");
-        RequireNotNull (s);
-        return make_pair (s, s + ::wcslen (reinterpret_cast<const wchar_t*> (s)));
-    }
-    inline pair<const Character*, const Character*> String::ThreeWayComparer::Access_ (const wchar_t* s)
-    {
-        using namespace Stroika::Foundation::Characters;
-        static_assert (sizeof (Character) == sizeof (wchar_t), "Character and wchar_t must be same size");
-        RequireNotNull (s);
-        return make_pair (reinterpret_cast<const Character*> (s), reinterpret_cast<const Character*> (s) + ::wcslen (s));
-    }
-    inline pair<const Character*, const Character*> String::ThreeWayComparer::Access_ (const String& s)
-    {
-        using namespace Stroika::Foundation::Characters;
-        return String::_SafeReadRepAccessor{&s}._ConstGetRep ().GetData ();
-    }
-    template <typename LT, typename RT>
-    inline strong_ordering String::ThreeWayComparer::Cmp_ (LT lhs, RT rhs) const
-    {
-        using namespace Stroika::Foundation::Characters;
-        pair<const Character*, const Character*> l = Access_ (forward<LT> (lhs));
-        pair<const Character*, const Character*> r = Access_ (forward<RT> (rhs));
-        return Character::Compare (span{l.first, l.second}, span{r.first, r.second}, fCompareOptions);
-    }
-    inline strong_ordering String::ThreeWayComparer::operator() (const String& lhs, const String& rhs) const
-    {
-        return Cmp_ (lhs, rhs);
-    }
-    inline strong_ordering String::ThreeWayComparer::operator() (const wstring_view& lhs, const wstring_view& rhs) const
-    {
-        return Cmp_ (lhs, rhs);
-    }
-    inline strong_ordering String::ThreeWayComparer::operator() (const Character* lhs, const String& rhs) const
-    {
-        return Cmp_ (lhs, rhs);
-    }
-    inline strong_ordering String::ThreeWayComparer::operator() (const Character* lhs, const wstring_view& rhs) const
-    {
-        return Cmp_ (lhs, rhs);
-    }
-    inline strong_ordering String::ThreeWayComparer::operator() (const String& lhs, const Character* rhs) const
-    {
-        return Cmp_ (lhs, rhs);
-    }
-    inline strong_ordering String::ThreeWayComparer::operator() (const wstring_view& lhs, const Character* rhs) const
-    {
-        return Cmp_ (lhs, rhs);
-    }
-    inline strong_ordering String::ThreeWayComparer::operator() (const Character* lhs, const Stroika::Foundation::Characters::Character* rhs) const
-    {
-        return Cmp_ (lhs, rhs);
-    }
-    inline strong_ordering String::ThreeWayComparer::operator() (const wchar_t* lhs, const Stroika::Foundation::Characters::String& rhs) const
-    {
-        return Cmp_ (lhs, rhs);
-    }
-    inline strong_ordering String::ThreeWayComparer::operator() (const wchar_t* lhs, const wstring_view& rhs) const
-    {
-        return Cmp_ (lhs, rhs);
-    }
-    inline strong_ordering String::ThreeWayComparer::operator() (const Stroika::Foundation::Characters::String& lhs, const wchar_t* rhs) const
-    {
-        return Cmp_ (lhs, rhs);
-    }
-    inline strong_ordering String::ThreeWayComparer::operator() (const wstring_view& lhs, const wchar_t* rhs) const
-    {
-        return Cmp_ (lhs, rhs);
-    }
-    inline strong_ordering String::ThreeWayComparer::operator() (const wchar_t* lhs, const wchar_t* rhs) const
-    {
-        return Cmp_ (lhs, rhs);
+        if constexpr (Private_::SupportedComparableUnicodeStringTypes_<LT> and Private_::SupportedComparableUnicodeStringTypes_<RT>) {
+            return Cmp_ (lhs, rhs);
+        }
+        else {
+            // should almost never happen, but if it does, fall back on using String
+            return operator() (String{forward<LT> (lhs)}, String{forward<RT> (rhs)});
+        }
     }
 
     /*

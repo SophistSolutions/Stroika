@@ -1617,6 +1617,17 @@ namespace Stroika::Foundation::Characters {
      */
     wostream& operator<< (wostream& out, const String& s);
 
+    namespace Private_ {
+        template <typename T>
+        concept SupportedComparableUnicodeStringTypes_ =
+            is_same_v < decay_t<T>,
+        String >
+            or is_same_v<decay_t<T>, wstring> or is_same_v<decay_t<T>, wstring_view> or is_same_v<decay_t<T>, const Character*> or is_same_v<decay_t<T>, const wchar_t*>;
+
+        template <SupportedComparableUnicodeStringTypes_ USTRING>
+        span<const Character> Access_ (USTRING&& s, Memory::StackBuffer<Character>* mostlyIgnoredBuf);
+    }
+
     /**
      */
     struct String::EqualsComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eEquals> {
@@ -1628,40 +1639,14 @@ namespace Stroika::Foundation::Characters {
         /**
          * Extra overloads a slight performance improvement
          */
-        nonvirtual bool operator() (const String& lhs, const String& rhs) const;
-        nonvirtual bool operator() (const String& lhs, const wstring& rhs) const;
-        nonvirtual bool operator() (const String& lhs, const wstring_view& rhs) const;
-        nonvirtual bool operator() (const String& lhs, const Character* rhs) const;
-        nonvirtual bool operator() (const String& lhs, const wchar_t* rhs) const;
-        nonvirtual bool operator() (const wstring& lhs, const String& rhs) const;
-        nonvirtual bool operator() (const wstring& lhs, const wstring_view& rhs) const;
-        nonvirtual bool operator() (const wstring& lhs, const Character* rhs) const;
-        nonvirtual bool operator() (const wstring& lhs, const wchar_t* rhs) const;
-        nonvirtual bool operator() (const wstring_view& lhs, const String& rhs) const;
-        nonvirtual bool operator() (const wstring_view& lhs, const wstring_view& rhs) const;
-        nonvirtual bool operator() (const wstring_view& lhs, const Character* rhs) const;
-        nonvirtual bool operator() (const wstring_view& lhs, const wchar_t* rhs) const;
-        nonvirtual bool operator() (const Character* lhs, const String& rhs) const;
-        nonvirtual bool operator() (const Character* lhs, const wstring& rhs) const;
-        nonvirtual bool operator() (const Character* lhs, const wstring_view& rhs) const;
-        nonvirtual bool operator() (const Character* lhs, const Character* rhs) const;
-        nonvirtual bool operator() (const Character* lhs, const wchar_t* rhs) const;
-        nonvirtual bool operator() (const wchar_t* lhs, const String& rhs) const;
-        nonvirtual bool operator() (const wchar_t* lhs, const wstring& rhs) const;
-        nonvirtual bool operator() (const wchar_t* lhs, const wstring_view& rhs) const;
-        nonvirtual bool operator() (const wchar_t* lhs, const Character* rhs) const;
-        nonvirtual bool operator() (const wchar_t* lhs, const wchar_t* rhs) const;
+        template <ConvertibleToString LT, ConvertibleToString RT>
+        nonvirtual bool operator() (LT&& lhs, RT&& rhs) const;
 
         CompareOptions fCompareOptions;
 
     private:
-        template <typename LT, typename RT>
-        bool                                            Cmp_ (LT lhs, RT rhs) const;
-        static pair<const Character*, const Character*> Access_ (const String& s);
-        static pair<const Character*, const Character*> Access_ (const wstring& s);
-        static pair<const Character*, const Character*> Access_ (const wstring_view& s);
-        static pair<const Character*, const Character*> Access_ (const Character* lhs);
-        static pair<const Character*, const Character*> Access_ (const wchar_t* lhs);
+        template <Private_::SupportedComparableUnicodeStringTypes_ LT, Private_::SupportedComparableUnicodeStringTypes_ RT>
+        bool Cmp_ (LT&& lhs, RT&& rhs) const;
     };
 
     /**
@@ -1672,6 +1657,13 @@ namespace Stroika::Foundation::Characters {
          */
         constexpr ThreeWayComparer (CompareOptions co = CompareOptions::eWithCase);
 
+        /**
+         * Extra overloads a slight performance improvement
+         */
+        template <ConvertibleToString LT, ConvertibleToString RT>
+        nonvirtual strong_ordering operator() (LT&& lhs, RT&& rhs) const;
+
+#if 0
         // Extra overloads a slight performance improvement
         nonvirtual strong_ordering operator() (const String& lhs, const String& rhs) const;
         nonvirtual strong_ordering operator() (const wstring_view& lhs, const wstring_view& rhs) const;
@@ -1685,16 +1677,25 @@ namespace Stroika::Foundation::Characters {
         nonvirtual strong_ordering operator() (const String& lhs, const wchar_t* rhs) const;
         nonvirtual strong_ordering operator() (const wstring_view& lhs, const wchar_t* rhs) const;
         nonvirtual strong_ordering operator() (const wchar_t* lhs, const wchar_t* rhs) const;
+#endif
 
         CompareOptions fCompareOptions;
 
     private:
+    private:
+        template <Private_::SupportedComparableUnicodeStringTypes_ LT, Private_::SupportedComparableUnicodeStringTypes_ RT>
+        strong_ordering Cmp_ (LT&& lhs, RT&& rhs) const;
+        template <Private_::SupportedComparableUnicodeStringTypes_ USTRING>
+        static span<const Character> Access_ (USTRING&& s, Memory::StackBuffer<Character>* mostlyIgnoredBuf);
+
+#if 0
         template <typename LT, typename RT>
         strong_ordering                                 Cmp_ (LT lhs, RT rhs) const;
         static pair<const Character*, const Character*> Access_ (const String& s);
         static pair<const Character*, const Character*> Access_ (const wstring_view& s);
         static pair<const Character*, const Character*> Access_ (const Character* lhs);
         static pair<const Character*, const Character*> Access_ (const wchar_t* lhs);
+#endif
     };
 
     /**
