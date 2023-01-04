@@ -98,7 +98,7 @@ namespace {
         void StressTest1_ (String big)
         {
             for (size_t j = 1; j <= kLoopEnd / 50; j++) {
-                String_ExternalMemoryOwnership_ApplicationLifetime a (L"a");
+                String a = L"a"_k;
                 for (size_t i = 0; i <= kLoopEnd; ++i) {
                     big += a;
                     VerifyTestResult ((big.size () - 1) == i);
@@ -237,8 +237,8 @@ namespace {
             }
 
             {
-                String s1 = String_ExternalMemoryOwnership_ApplicationLifetime{L"test strings"};
-                String s2 = String_ExternalMemoryOwnership_ApplicationLifetime{L"test strings"};
+                String s1 = String::FromStringConstant (L"test strings");
+                String s2 = String::FromStringConstant (L"test strings");
                 Test2_Helper_ (s1, s2);
             }
         }
@@ -478,24 +478,24 @@ namespace {
         VerifyTestResult (not(String{L"1"} >= String{L"10"}));
         VerifyTestResult (String{L"1"} < String{L"10"});
 
-        VerifyTestResult (String (L"20") > String (L"11"));
-        VerifyTestResult (String (L"20") >= String (L"11"));
-        VerifyTestResult (not(String (L"20") < String (L"11")));
-        VerifyTestResult (not(String (L"20") <= String (L"11")));
-        VerifyTestResult (String (L"11") < String (L"20"));
-        VerifyTestResult (String (L"11") <= String (L"20"));
-        VerifyTestResult (not(String (L"11") > String (L"20")));
-        VerifyTestResult (not(String (L"11") >= String (L"20")));
+        VerifyTestResult (String{L"20"} > String (L"11"));
+        VerifyTestResult (String{L"20"} >= String (L"11"));
+        VerifyTestResult (not(String{L"20"} < String (L"11")));
+        VerifyTestResult (not(String{L"20"} <= String (L"11")));
+        VerifyTestResult (String (L"11") < String{L"20"});
+        VerifyTestResult (String (L"11") <= String{L"20"});
+        VerifyTestResult (not(String (L"11") > String{L"20"}));
+        VerifyTestResult (not(String (L"11") >= String{L"20"}));
 
-        VerifyTestResult (String (L"aac") > String (L"aab"));
-        VerifyTestResult (String (L"aac") >= String (L"aab"));
-        VerifyTestResult (not(String (L"aac") < String (L"aab")));
-        VerifyTestResult (not(String (L"aac") <= String (L"aab")));
+        VerifyTestResult (String{L"aac"} > String{L"aab"});
+        VerifyTestResult (String{L"aac"} >= String{L"aab"});
+        VerifyTestResult (not(String{L"aac"} < String{L"aab"}));
+        VerifyTestResult (not(String{L"aac"} <= String{L"aab"}));
 
-        VerifyTestResult (String (L"apple") < String (L"apples"));
-        VerifyTestResult (String (L"apple") <= String (L"apples"));
-        VerifyTestResult (not(String (L"apple") > String (L"apples")));
-        VerifyTestResult (not(String (L"apple") >= String (L"apples")));
+        VerifyTestResult (String{L"apple"} < String{L"apples"});
+        VerifyTestResult (String{L"apple"} <= String{L"apples"});
+        VerifyTestResult (not(String{L"apple"} > String{L"apples"}));
+        VerifyTestResult (not(String{L"apple"} >= String{L"apples"}));
     }
 
     void Test8_ReadOnlyStrings_ ()
@@ -503,7 +503,7 @@ namespace {
         Debug::TraceContextBumper ctx{L"Test8_ReadOnlyStrings_"};
         // NOTE - THIS TESTS String_Constant
         //  using   String_Constant =   String_ExternalMemoryOwnership_ApplicationLifetime;
-        String s = String_ExternalMemoryOwnership_ApplicationLifetime (L"fred");
+        String s = String::FromStringConstant (L"fred");
         VerifyTestResult (s[0] == 'f');
         s.erase (3);
         VerifyTestResult (s[0] == 'f');
@@ -529,7 +529,7 @@ namespace {
     void Test8_ExternalMemoryOwnershipStrings_ ()
     {
         Debug::TraceContextBumper ctx{L"Test8_ExternalMemoryOwnershipStrings_"};
-        String                    s = String_ExternalMemoryOwnership_ApplicationLifetime{L"fred"};
+        String                    s = String::FromStringConstant (L"fred");
         VerifyTestResult (s[0] == 'f');
         s.erase (3);
         VerifyTestResult (s[0] == 'f');

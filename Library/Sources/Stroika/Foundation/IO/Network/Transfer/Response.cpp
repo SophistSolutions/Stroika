@@ -55,7 +55,7 @@ optional<InternetMediaType> Response::GetContentType () const
 optional<String> Response::GetCharset () const
 {
     if (optional<String> hi = fHeaders_.Lookup (String::FromStringConstant (HTTP::HeaderName::kContentType))) {
-        static const String_Constant kLBL_{L"; charset="};
+        static const String kLBL_ = L"; charset="_k;
         if (optional<size_t> oi = hi->Find (kLBL_)) {
             return hi->SubString (*oi + kLBL_.size ());
         }
