@@ -55,8 +55,8 @@ namespace {
      *
      *  @todo Explain queer wrapper class cuz protected
      */
-    struct BufferedStringRep_ : String {
-        struct _Rep : public _IRep {
+    struct BufferedString_ : String {
+        struct Rep : public _IRep, public Memory::UseBlockAllocationIfAppropriate<Rep> {
         private:
             using inherited = String::_IRep;
 
@@ -81,30 +81,31 @@ namespace {
                 wchar_t                 data[kNElts];
             };
 
+         public:
+            Rep (span<const wchar_t> t1)
+                : Rep{mkBuf_ (t1)}
+            {
+            }
+
         protected:
-            _Rep ()            = delete;
-            _Rep (const _Rep&) = delete;
+            Rep ()             = delete;
+            Rep (const Rep&) = delete;
 
         public:
-            nonvirtual _Rep& operator= (const _Rep&) = delete;
+            nonvirtual Rep& operator= (const Rep&) = delete;
 
         protected:
             /**
              *  The argument wchar_t* strings MAY or MAY NOT be nul-terminated
              */
-            using TextSpan = pair<const wchar_t*, const wchar_t*>;
-            _Rep (const tuple<const wchar_t*, const wchar_t*, size_t>& strAndCapacity)
+            Rep (const tuple<const wchar_t*, const wchar_t*, size_t>& strAndCapacity)
                 : inherited{make_pair (get<0> (strAndCapacity), get<1> (strAndCapacity))}
                 , fCapacity_{get<2> (strAndCapacity)}
             {
             }
-            _Rep (const TextSpan& t1)
-                : _Rep{mkBuf_ (t1)}
-            {
-            }
 
         public:
-            ~_Rep ()
+            ~Rep ()
             {
                 AssertNotNull (_fStart);
                 Assert (fCapacity_ == AdjustCapacity_ (this->_GetLength () + 1)); // see mkBuf_ (size_t length) - and possible optimize to not store fCapacity
@@ -164,17 +165,23 @@ namespace {
                 DISABLE_COMPILER_MSC_WARNING_END (4065)
                 return make_pair (newBuf, newBuf + capacity);
             }
-            static tuple<const wchar_t*, const wchar_t*, size_t> mkBuf_ (const TextSpan& t1)
+            static tuple<const wchar_t*, const wchar_t*, size_t> mkBuf_ (span<const wchar_t> t1)
             {
-                size_t                   len    = t1.second - t1.first;
+                size_t                   len    = t1.size ();
                 pair<wchar_t*, wchar_t*> result = mkBuf_ (len);
                 if (len != 0) {
-                    (void)::memcpy (result.first, t1.first, len * sizeof (wchar_t));
+                    (void)::memcpy (result.first, t1.data (), len * sizeof (wchar_t));
                 }
                 result.first[len] = '\0';
                 return make_tuple (result.first, result.first + len, result.second - result.first);
             }
 
+        public:
+            virtual _IterableRepSharedPtr Clone () const override
+            {
+                AssertNotReached (); // Since String reps now immutable, this should never be called
+                return nullptr;
+            }
         public:
             virtual const wchar_t* c_str_peek () const noexcept override
             {
@@ -222,17 +229,19 @@ namespace {
     /**
      *  For static full app lifetime string constants...
      */
-    struct MyStringConstant_ : public String {
+    struct StringConstant_ : public String {
         using inherited = String;
 
-        class MyRep_ : public String::_IRep, public Memory::UseBlockAllocationIfAppropriate<MyRep_> {
+        class Rep : public String::_IRep, public Memory::UseBlockAllocationIfAppropriate<Rep> {
         private:
             using inherited = String::_IRep;
 
         public:
-            MyRep_ (const wchar_t* start, const wchar_t* end)
-                : inherited{start, end} // don't copy memory - but copy raw pointers! So they MUST BE (externally promised) 'externally owned for the application lifetime and constant' - like c++ string constants
+            Rep (span<const wchar_t> s)
+                : inherited{s.data (), s.data () + s.size ()} // don't copy memory - but copy raw pointers! So they MUST BE (externally promised) 'externally owned for the application lifetime and constant' - like c++ string constants
             {
+                const wchar_t* start = s.data ();
+                const wchar_t* end   = start + s.size ();
                 // NO - we allow embedded nuls, but require NUL-termination - so this is wrong - Require (start + ::wcslen (start) == end);
                 Require (*end == '\0' and start + ::wcslen (start) <= end);
             }
@@ -252,26 +261,6 @@ namespace {
     };
 }
 
-namespace {
-    class String_BufferedArray_Rep_ final
-        : public BufferedStringRep_::_Rep,
-          public Memory::UseBlockAllocationIfAppropriate<String_BufferedArray_Rep_> {
-
-    private:
-        using inherited = BufferedStringRep_::_Rep;
-
-    public:
-        String_BufferedArray_Rep_ (const wchar_t* start, const wchar_t* end)
-            : inherited{make_pair (start, end)}
-        {
-        }
-        virtual _IterableRepSharedPtr Clone () const override
-        {
-            AssertNotReached (); // Since String reps now immutable, this should never be called
-            return nullptr;
-        }
-    };
-}
 
 namespace {
     template <typename FACET>
@@ -373,7 +362,7 @@ auto String::_IRep::Find (const function<bool (Configuration::ArgByValueType<val
 static_assert (sizeof (Character) == sizeof (wchar_t), "Character and wchar_t must be same size");
 
 String::String (const basic_string_view<wchar_t>& str)
-    : String{MakeSmartPtr<MyStringConstant_::MyRep_> (str.data (), str.data () + str.size ())}
+    : String{MakeSmartPtr<StringConstant_::Rep> (span{str.data (), str.size ()})}
 {
     Require (str.data ()[str.length ()] == 0); // Because Stroika strings provide the guarantee that they can be converted to c_str () - we require the input memory
                                                // for these const strings are also nul-terminated.
@@ -386,7 +375,7 @@ String String::FromStringConstant (const span<const wchar_t> s)
 {
     Require (*(s.data () + s.size ()) == '\0'); // crazy weird requirement, but done cuz L"x"sv already does NUL-terminate and we can
                                                 // take advantage of that fact - re-using the NUL-terminator for our own c_str() implementation
-    return String{MakeSmartPtr<MyStringConstant_::MyRep_> (s.data (), s.data () + s.size ())};
+    return String{MakeSmartPtr<StringConstant_::Rep> (span{s.data (), s.size ()})};
 }
 
 String String::FromNarrowString (span<const char> s, const locale& l)
@@ -412,14 +401,14 @@ String String::FromNarrowString (span<const char> s, const locale& l)
 
 String::_SharedPtrIRep String::mkEmpty_ ()
 {
-    static const _SharedPtrIRep s_ = MakeSmartPtr<String_BufferedArray_Rep_> (nullptr, nullptr);
+    static const _SharedPtrIRep s_ = MakeSmartPtr<BufferedString_::Rep> (span<const wchar_t>{});
     return s_;
 }
 
 template <>
 auto String::mk_ (span<const wchar_t> s) -> _SharedPtrIRep
 {
-    return MakeSmartPtr<String_BufferedArray_Rep_> (s.data (), s.data () + s.size ());
+    return MakeSmartPtr<BufferedString_::Rep> (s);
 }
 
 void String::SetCharAt (Character c, size_t i)
