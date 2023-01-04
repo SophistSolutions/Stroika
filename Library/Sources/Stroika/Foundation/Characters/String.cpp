@@ -81,14 +81,14 @@ namespace {
                 wchar_t                 data[kNElts];
             };
 
-         public:
+        public:
             Rep (span<const wchar_t> t1)
                 : Rep{mkBuf_ (t1)}
             {
             }
 
         protected:
-            Rep ()             = delete;
+            Rep ()           = delete;
             Rep (const Rep&) = delete;
 
         public:
@@ -182,6 +182,7 @@ namespace {
                 AssertNotReached (); // Since String reps now immutable, this should never be called
                 return nullptr;
             }
+
         public:
             virtual const wchar_t* c_str_peek () const noexcept override
             {
@@ -260,7 +261,6 @@ namespace {
         };
     };
 }
-
 
 namespace {
     template <typename FACET>

@@ -45,20 +45,6 @@ namespace Stroika::Foundation::Characters {
         static_assert (sizeof (Character) == sizeof (wchar_t), "Character and wchar_t must be same size");
         return pair<const Character*, const Character*> (reinterpret_cast<const Character*> (_fStart), reinterpret_cast<const Character*> (_fEnd));
     }
-    inline void String::_IRep::CopyTo (Character* bufFrom, [[maybe_unused]] Character* bufTo) const
-    {
-        RequireNotNull (bufFrom);
-        Require (bufFrom + _GetLength () >= bufTo);
-        size_t nChars = _GetLength ();
-        (void)::memcpy (bufFrom, _Peek (), nChars * sizeof (Character));
-    }
-    inline void String::_IRep::CopyTo (wchar_t* bufFrom, [[maybe_unused]] wchar_t* bufTo) const
-    {
-        RequireNotNull (bufFrom);
-        Require (bufFrom + _GetLength () >= bufTo);
-        size_t nChars = _GetLength ();
-        (void)::memcpy (bufFrom, _Peek (), nChars * sizeof (Character));
-    }
     inline size_t String::_IRep::_GetLength () const
     {
         Assert (_fStart <= _fEnd);
@@ -559,9 +545,9 @@ namespace Stroika::Foundation::Characters {
     }
     inline String String::InsertAt (const String& s, size_t at) const
     {
-        _SafeReadRepAccessor                     copyAccessor{&s};
-        pair<const Character*, const Character*> d = copyAccessor._ConstGetRep ().GetData ();
-        return InsertAt (d.first, d.second, at);
+        Memory::StackBuffer<wchar_t> ignored1;
+        auto                         insertSpan = s.GetData (&ignored1);
+        return InsertAt (insertSpan.data (), insertSpan.data () + insertSpan.size (), at);
     }
     inline String String::InsertAt (const wchar_t* from, const wchar_t* to, size_t at) const
     {
@@ -582,9 +568,9 @@ namespace Stroika::Foundation::Characters {
     }
     inline void String::Append (const String& s)
     {
-        _SafeReadRepAccessor                     rhsAccessor{&s};
-        pair<const Character*, const Character*> rhsD = rhsAccessor._ConstGetRep ().GetData ();
-        Append (reinterpret_cast<const wchar_t*> (rhsD.first), reinterpret_cast<const wchar_t*> (rhsD.second));
+        Memory::StackBuffer<wchar_t> ignored1;
+        auto                         rhsSpan = s.GetData (&ignored1);
+        Append (rhsSpan.data (), rhsSpan.data () + rhsSpan.size ());
     }
     inline void String::Append (const wchar_t* s)
     {
@@ -769,9 +755,9 @@ namespace Stroika::Foundation::Characters {
         requires (is_same_v<T, string> or is_same_v<T, Memory::StackBuffer<char>>)
     {
         RequireNotNull (into);
-        String::_SafeReadRepAccessor             thisAccessor{this};
-        pair<const Character*, const Character*> p = thisAccessor._ConstGetRep ().GetData ();
-        return Character::AsASCIIQuietly (span<const Character>{p.first, p.second}, into);
+        Memory::StackBuffer<wchar_t> ignored1;
+        auto                         thisSpan = GetData (&ignored1);
+        return Character::AsASCIIQuietly (thisSpan, into);
     }
     template <Character_Compatible CHAR_TYPE>
     inline String::PeekSpanData String::GetPeekSpanData () const

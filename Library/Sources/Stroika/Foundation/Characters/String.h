@@ -1580,14 +1580,6 @@ namespace Stroika::Foundation::Characters {
          */
         virtual const wchar_t* c_str_peek () const noexcept = 0;
 
-    public:
-        /*
-         *  CopyTo () copies the contents of this string to the target buffer.
-         *  CopyTo () does NOT nul-terminate the target buffer, but DOES assert that (bufTo-bufFrom) is >= this->size ()
-         */
-        nonvirtual void CopyTo (Character* bufFrom, Character* bufTo) const;
-        nonvirtual void CopyTo (wchar_t* bufFrom, wchar_t* bufTo) const;
-
     protected:
         const wchar_t* _fStart;
         const wchar_t* _fEnd; // \note - _fEnd must always point to a 'NUL' character, so the underlying array extends one or more beyond
