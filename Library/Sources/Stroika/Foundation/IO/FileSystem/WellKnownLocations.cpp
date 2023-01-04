@@ -116,7 +116,7 @@ filesystem::path FileSystem::WellKnownLocations::GetApplicationData (bool create
     filesystem::path result = fileBuf;
     // Assure non-empty result
     if (result.empty ()) {
-        result = filesystem::path ("c:"); // shouldn't happen
+        result = filesystem::path{"c:"}; // shouldn't happen
     }
     Ensure (not createIfNotPresent or filesystem::is_directory (result));
     return result;

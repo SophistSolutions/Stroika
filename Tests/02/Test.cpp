@@ -744,8 +744,8 @@ namespace {
         void docsTests_ ()
         {
             {
-                const String_Constant kTest_{L"a=b"};
-                const String_Constant kLbl2LookFor_{L"a="};
+                const String kTest_ = String::FromStringConstant (L"a=b");
+                const String kLbl2LookFor_{L"a="_k};
                 String                tmp;
                 if (kTest_.Find (kLbl2LookFor_)) {
                     tmp = String{kTest_.SubString (kLbl2LookFor_.length ())};
@@ -782,7 +782,7 @@ namespace {
                 }
 #endif
                 {
-                    const String_Constant   kTest_{L"a=b,"};
+                    const String   kTest_{L"a=b,"_k};
                     const RegularExpression kRE_{L"a=(.*)"};
                     Sequence<String>        tmp1{kTest_.FindEachString (kRE_)};
                     VerifyTestResult (tmp1.size () == 1 and tmp1[0] == L"a=b,");
@@ -807,7 +807,7 @@ namespace {
                     VerifyTestResult (tmp2.size () == 1 and tmp2[0].GetFullMatch () == L"a=b," and tmp2[0].GetSubMatches () == Sequence<String>{L"b"});
                 }
                 {
-                    const String_Constant   kTest_{L"a=b, c=d"};
+                    const String   kTest_{L"a=b, c=d"sv};
                     const RegularExpression kRE_{L"(.)=(.)"};
                     VerifyTestResult ((kTest_.FindEachString (kRE_) == vector<String>{L"a=b", L"c=d"}));
                 }
@@ -1384,8 +1384,8 @@ namespace {
             VerifyTestResult (tmp.SubString (5) == L"is good");
         }
         {
-            const String_Constant kTest_{L"a=b"};
-            const String_Constant kLbl2LookFor_{L"a="};
+            const String kTest_{L"a=b"_k};
+            const String kLbl2LookFor_{L"a="_k};
             String                tmp;
             if (kTest_.Find (kLbl2LookFor_)) {
                 tmp = String{kTest_.SubString (kLbl2LookFor_.length ())};
