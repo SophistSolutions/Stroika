@@ -52,7 +52,7 @@ namespace {
     struct StringRepHelper_ : String {
         struct Rep : public _IRep {
         private:
-            using inherited = String::_IRep;
+            using inherited = _IRep;
 
         protected:
             Rep (const pair<const wchar_t*, const wchar_t*>& s)
@@ -62,6 +62,81 @@ namespace {
             Rep (const wchar_t* start, const wchar_t* end)
                 : inherited{start, end}
             {
+            }
+            // Overrides for Iterable<Character>
+        public:
+            virtual Traversal::Iterator<value_type> MakeIterator () const override
+            {
+                struct MyIterRep_ final : Iterator<Character>::IRep, public Memory::UseBlockAllocationIfAppropriate<MyIterRep_> {
+                    _SharedPtrIRep fStr; // effectively RO, since if anyone modifies, our copy will remain unchanged
+                    size_t         fCurIdx;
+
+                    Rep* AccessRep_ ()
+                    {
+                        return Debug::UncheckedDynamicCast<Rep*> (fStr.get ());
+                    }
+                    const Rep* AccessRep_ () const
+                    {
+                        return Debug::UncheckedDynamicCast<Rep*> (fStr.get ());
+                    }
+                    MyIterRep_ (const _SharedPtrIRep& r, size_t idx = 0)
+                        : fStr{r}
+                        , fCurIdx{idx}
+                    {
+                        Require (fCurIdx <= AccessRep_ ()->_GetLength ());
+                    }
+                    virtual Iterator<Character>::RepSmartPtr Clone () const override
+                    {
+                        return Iterator<Character>::MakeSmartPtr<MyIterRep_> (fStr, fCurIdx);
+                    }
+                    virtual void More (optional<Character>* result, bool advance) override
+                    {
+                        RequireNotNull (result);
+                        if (advance) [[likely]] {
+                            Require (fCurIdx <= AccessRep_ ()->_GetLength ());
+                            ++fCurIdx;
+                        }
+                        if (fCurIdx < AccessRep_ ()->_GetLength ()) [[likely]] {
+                            *result = AccessRep_ ()->GetAt (fCurIdx);
+                        }
+                        else {
+                            *result = nullopt;
+                        }
+                    }
+                    virtual bool Equals (const IRep* rhs) const override
+                    {
+                        RequireNotNull (rhs);
+                        RequireMember (rhs, MyIterRep_);
+                        const MyIterRep_* rrhs = Debug::UncheckedDynamicCast<const MyIterRep_*> (rhs);
+                        AssertNotNull (rrhs);
+                        Require (fStr == rrhs->fStr); // from same string object
+                        return fCurIdx == rrhs->fCurIdx;
+                    }
+                };
+                _SharedPtrIRep sharedContainerRep = const_cast<_IRep*> (static_cast<const _IRep*> (this))->shared_from_this ();
+                return Iterator<Character>{Iterator<Character>::MakeSmartPtr<MyIterRep_> (sharedContainerRep)};
+            }
+            virtual size_t size () const override
+            {
+                Assert (_fStart <= _fEnd);
+                return _fEnd - _fStart;
+            }
+            virtual bool empty () const override
+            {
+                Assert (_fStart <= _fEnd);
+                return _fEnd == _fStart;
+            }
+            virtual void Apply (const function<void (Configuration::ArgByValueType<value_type> item)>& doToElement) const override
+            {
+                _Apply (doToElement);
+            }
+            virtual Traversal::Iterator<value_type> Find (const function<bool (Configuration::ArgByValueType<value_type> item)>& that) const override
+            {
+                return _Find (that);
+            }
+            virtual Traversal::Iterator<value_type> Find_equal_to (const Configuration::ArgByValueType<value_type>& v) const override
+            {
+                return this->_Find_equal_to_default_implementation (v);
             }
         };
     };
@@ -306,76 +381,6 @@ const wregex& Characters::Private_::RegularExpression_GetCompiled (const Regular
 
 /*
  ********************************************************************************
- ****************************** String::_IRep ***********************************
- ********************************************************************************
- */
-Traversal::Iterator<Character> String::_IRep::MakeIterator () const
-{
-    struct MyIterRep_ final : Iterator<Character>::IRep, public Memory::UseBlockAllocationIfAppropriate<MyIterRep_> {
-        _SharedPtrIRep fStr; // effectively RO, since if anyone modifies, our copy will remain unchanged
-        size_t         fCurIdx;
-        MyIterRep_ (const _SharedPtrIRep& r, size_t idx = 0)
-            : fStr{r}
-            , fCurIdx{idx}
-        {
-            Require (fCurIdx <= fStr->_GetLength ());
-        }
-        virtual Iterator<Character>::RepSmartPtr Clone () const override
-        {
-            return Iterator<Character>::MakeSmartPtr<MyIterRep_> (fStr, fCurIdx);
-        }
-        virtual void More (optional<Character>* result, bool advance) override
-        {
-            RequireNotNull (result);
-            if (advance) [[likely]] {
-                Require (fCurIdx <= fStr->_GetLength ());
-                ++fCurIdx;
-            }
-            if (fCurIdx < fStr->_GetLength ()) [[likely]] {
-                *result = fStr->GetAt (fCurIdx);
-            }
-            else {
-                *result = nullopt;
-            }
-        }
-        virtual bool Equals (const IRep* rhs) const override
-        {
-            RequireNotNull (rhs);
-            RequireMember (rhs, MyIterRep_);
-            const MyIterRep_* rrhs = Debug::UncheckedDynamicCast<const MyIterRep_*> (rhs);
-            AssertNotNull (rrhs);
-            Require (fStr == rrhs->fStr); // from same string object
-            return fCurIdx == rrhs->fCurIdx;
-        }
-    };
-    _SharedPtrIRep sharedContainerRep = const_cast<String::_IRep*> (this)->shared_from_this ();
-    return Iterator<Character>{Iterator<Character>::MakeSmartPtr<MyIterRep_> (sharedContainerRep)};
-}
-
-size_t String::_IRep::size () const
-{
-    Assert (_fStart <= _fEnd);
-    return _fEnd - _fStart;
-}
-
-bool String::_IRep::empty () const
-{
-    Assert (_fStart <= _fEnd);
-    return _fEnd == _fStart;
-}
-
-void String::_IRep::Apply (const function<void (Configuration::ArgByValueType<value_type> item)>& doToElement) const
-{
-    _Apply (doToElement);
-}
-
-auto String::_IRep::Find (const function<bool (Configuration::ArgByValueType<value_type> item)>& that) const -> Traversal::Iterator<value_type>
-{
-    return _Find (that);
-}
-
-/*
- ********************************************************************************
  ************************************* String ***********************************
  ********************************************************************************
  */
@@ -391,7 +396,7 @@ String::String (const basic_string_view<wchar_t>& str)
                                                // -- LGP 2019-01-29
 }
 
-String String::FromStringConstant (const span<const wchar_t> s)
+String String::FromStringConstant (span<const wchar_t> s)
 {
     Require (*(s.data () + s.size ()) == '\0'); // crazy weird requirement, but done cuz L"x"sv already does NUL-terminate and we can
                                                 // take advantage of that fact - re-using the NUL-terminator for our own c_str() implementation

@@ -57,10 +57,6 @@ namespace Stroika::Foundation::Characters {
         static_assert (sizeof (Character) == sizeof (wchar_t), "Character and wchar_t must be same size");
         return (const Character*)_fStart;
     }
-    inline auto String::_IRep::Find_equal_to (const Configuration::ArgByValueType<value_type>& v) const -> Traversal::Iterator<value_type>
-    {
-        return this->_Find_equal_to_default_implementation (v);
-    }
 
     /*
      ********************************************************************************
@@ -625,14 +621,12 @@ namespace Stroika::Foundation::Characters {
             AsUTF32 (into);
         }
         else if constexpr (is_same_v<T, wstring>) {
-            // @todo rewrite for new design
-            RequireNotNull (into);
-            _SafeReadRepAccessor accessor{this};
-            size_t               n{accessor._ConstGetRep ()._GetLength ()};
-            const Character*     cp = accessor._ConstGetRep ()._Peek ();
-            Assert (sizeof (Character) == sizeof (wchar_t)); // going to want to clean this up!!!    --LGP 2011-09-01
-            const wchar_t* wcp = (const wchar_t*)cp;
-            into->assign (wcp, wcp + n);
+            if constexpr (sizeof (wchar_t) == 2) {
+                AsUTF16 (into);
+            }
+            else {
+                AsUTF32 (into);
+            }
         }
         else if constexpr (is_same_v<T, String>) {
             if (into != this) [[likely]] {
@@ -665,7 +659,7 @@ namespace Stroika::Foundation::Characters {
     }
     template <typename T>
     inline T String::AsUTF16 () const
-        requires (is_same_v<T, u16string>)
+        requires (is_same_v<T, u16string> or (sizeof (wchar_t) == 2 and is_same_v<T, wstring>))
     {
         Memory::StackBuffer<char16_t> maybeIgnoreBuf1;
         span<const char16_t>          thisData = GetData (&maybeIgnoreBuf1);
@@ -673,7 +667,7 @@ namespace Stroika::Foundation::Characters {
     }
     template <typename T>
     inline void String::AsUTF16 (T* into) const
-        requires (is_same_v<T, u16string>)
+        requires (is_same_v<T, u16string> or (sizeof (wchar_t) == 2 and is_same_v<T, wstring>))
     {
         RequireNotNull (into);
         Memory::StackBuffer<char16_t> maybeIgnoreBuf1;
@@ -682,7 +676,7 @@ namespace Stroika::Foundation::Characters {
     }
     template <typename T>
     inline T String::AsUTF32 () const
-        requires (is_same_v<T, u32string>)
+        requires (is_same_v<T, u32string> or (sizeof (wchar_t) == 4 and is_same_v<T, wstring>))
     {
         Memory::StackBuffer<char32_t> maybeIgnoreBuf1;
         span<const char32_t>          thisData = GetData (&maybeIgnoreBuf1);
@@ -690,7 +684,7 @@ namespace Stroika::Foundation::Characters {
     }
     template <typename T>
     inline void String::AsUTF32 (T* into) const
-        requires (is_same_v<T, u32string>)
+        requires (is_same_v<T, u32string> or (sizeof (wchar_t) == 4 and is_same_v<T, wstring>))
     {
         RequireNotNull (into);
         Memory::StackBuffer<char32_t> maybeIgnoreBuf1;

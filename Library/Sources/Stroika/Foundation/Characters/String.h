@@ -27,26 +27,7 @@
  *
  *  \version    <a href="Code-Status.md#Beta">Beta</a>
  *
- * Description:
- *      (@todo REVISE - SOME OF THIS MAYBE RIGHT, btt little - REVIEW))
- * 
- *      This is which NEED be used. However, Stroika provides several String SUBTYPES
- *      which act EXACTLY like a String, but offer different performance behaviors.
- *
- *              o   String_BufferedArray
- *              o   String_ExternalMemoryOwnership_ApplicationLifetime     (aka String_Constant)
- *              o   String_ExternalMemoryOwnership_StackLifetime
- *              o   String_wstring
- *
- *      Possible future additions
- *              o   String_Common
- *              o   String_AsciiOnlyOptimized
- *
  * TODO:
- *      @todo   https://stroika.atlassian.net/browse/STK-684 - 
- *              Change internal format / rep for String class to UTF8
- *              .. WORKING...
- *
  *      @todo   EXPLAIN why InsertAt () returns string and Append() doesn't! Or - change it!
  *              Basic idea is that append is SO convnentit (+=) - that we just must support that
  *              and it can be done safely.
@@ -72,39 +53,8 @@
  *              produce a string which is indentical to the orig except that IF start len < n, then expand it with
  *              the given arg char repeated on the left or right.
  *
- *      @todo   Performance optimize FromUTF8, and AsUtf8() functions to not go through intermediate string
- *              objects!
- *
- *      @todo   Add #include of Comparer and template specialize Comparer for String??? Maybe
- *              Maybe not needed. Or maybe can avoid the #include and just do template specializaiton?
- *
- *      @todo   WHEN we have String_stdwstring implemented  - we can do String (wstring&& ctor that
- *              does std::move of wstring - and builds String_stdwstring rep! That could be notably
- *              faster for constructing Strings from wstring - in some cases...
- *
- *      @todo   Add a String_AsciiOnlyOptimized or String_isolatin1Optimized class (instead of String_UTF8).
- *              Idea is THIS can be very efficient and we can detect automatically when to create in
- *              normal string CTOR (i think - if strlen > 3? - check if all ascii and do).
- *
- *              This will automatically morph to other class (like buffered as we do for readonly). Maybe that
- *              means we need a backend, but no front-end?
- *
- *              OBSOLETE TODO
- *                  Consider adding a new subtype of string - OPTIMIZATION - which takes an ASCII argument (so can do less checking
- *                  and be more compact??? Perhaps similarly for REP storing stuff as UTF8?
- *
- *                  CLOSELY RELATED - MAYBE DO part of above (no check CTOR except assert).
- *
- *      @todo   Think out and document the whole choice about 'readonly' strings and all modifying member
- *              functions returning a new string. Has performance implications, but also usability.
- *              Not sure what way to go (probably do it), but clearly document!!! And docment reasons.
- *              Maybe can be done transparently with envelope (maybe already done?)
- *
  *      @todo   RFind() API should be embellished to include startAt etc, like regular Find () - but not 100%
  *              sure - think through...
- *
- *      @todo   Document better what APIs CHANGE the string, and what APIs have no effect. Verbs like
- *              "ToLowerCase" are AMBIGUOUS.
  *
  *      @todo   MAYBE also add ReplaceOne() function (we have ReplaceAll() now).
  *
@@ -123,8 +73,6 @@
  *      @todo   Add Ranged insert public envelope API, and add APPEND (not just operator+) API. See/maybe use new
  *              Stroika Range type?
  *
- *      @todo   Add Left()/Right()/Mid() funtions - like basic (simple, vaguely useful - especially 'Right'()).
- *
  *      @todo   Add NormalizeSpace (Character useSpaceCharacter = ' ');
  *              see Qt 'QString::simplify()'. Idea is Trim() (right and left) - plus replace contiguous substrings with
  *              Character::IsSpace() with a single (given) space character.
@@ -141,28 +89,6 @@
  *                      return basic_string<TCHAR> (text.begin (), i);
  *                  }
  *          with the TRIM() implementation I wrote here - in String. Not sure we want to use the locale stuff? Maybe?
- *
- *      @todo   Implement String_Common
- *              NOT YET IMPLEMETNED - EVEN IN FAKE FORM - BECAUSE I"M NOT SURE OF SEMANTICS YET!
- *
- *              String_Common is a subtype of string you can use to construct a String object freely.
- *              It has no semantics requirements. However, it SHOULD only be used for strings which are
- *              commonly used, and where you wish to save space. The implementation will keep the memory for String_Common strings
- *              allocated permanently - for the lifetime of the application, and will take potentially
- *              extra time looking for the given string.
- *
- *              We MAY handle this like the DataExchange::Atom<> class - where we store the string in
- *              a hashtable (or map), and do quick lookup of associated index, and also store in a table
- *              (intead of vector of strings, use a big buffer we APPEND to, and whose index is the value
- *              of the stored rep. Then doing a PEEK() is trivial and efficient.
- *              class   String_Common : public String {
- *                  public:
- *                      explicit String_Common (const String& from);
- *              };
- *
- *      @todo   Handle Turkish toupper('i') problem. Maybe use ICU. Maybe add optional LOCALE parameter to routines where this matters.
- *              Maybe use per-thread global LOCALE settings. Discuss with KDJ.
- *              KDJ's BASIC SUGGESTION is - USE ICU and 'stand on their shoulders'.
  */
 namespace Stroika::Foundation::Containers {
     template <typename T>
@@ -183,66 +109,21 @@ namespace Stroika::Foundation::Characters {
     /**
      *  \brief String is like std::u32string, except it is much easier to use, often much more space efficient, and more easily interoperates with other string types
      * 
-     *  The Stroika String class is an alternatve for the wstring class, which should be largely
-     *  interoperable with code using wstring (there is wstring constructor and As<wstring>()
-     *  methods).
-     *
      *  The Stroika String class is conceptually a sequence of (UNICODE) Characters, and so there is
      *  no obvious way to map the Stroika String to a string. However, if you specify a codepage
      *  for conversion, or are converting to/from SDKString/SDKChar, there is builtin support for that.
      *
      *  EOS Handling:
-     *      The Stroika String class does support having embedded NUL-characters. It also supports
-     *      returning wchar_t* strings which are NUL-terminated. In order to provide NUL-terminated
-     *      strings through the cost c_str () API, Stroika may maintain strings internally as NUL-terminted
-     *      wchar_t* (or at least retains the ability to as needed).
+     *      The Stroika String class supports having embedded NUL-characters. It also supports
+     *      easy construction from NUL-terminated character strings.
+     * 
+     *      There is an API - c_str () - to return a NUL-terminated C-String.
      *
-     *      See String::c_str ().
+     *      About spans, and the \0 NUL-termination - generally do NOT include
+     *      the NUL-character in your span! Stroika strings will allow this, and treat
+     *      it as just another character, but its probably not what you meant.
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
-     *                              with caveats!
-     *
-     *                              const wchar_t* c_str ()
-     *                              const wchar_t* As<const wchar_t*> ()
-     *                              const Character* As<const Character*> ()
-     *
-     *                              all return 'internal' pointers whose lifetime extends until the next modification of the String object.
-     *                              But if another thread modifies this String object, that might not be usefully long.
-     *
-     *                              You can always copy a 'shared' String to a copy no other thread is modifying, and call c_str() on that.
-     *
-     *      @see   Concrete::String_BufferedArray
-     *      @see   Concrete::String_ExternalMemoryOwnership_ApplicationLifetime     (aka String_Constant)
-     *      @see   Concrete::String_ExternalMemoryOwnership_StackLifetime
-     *      @see   Concrete::String_Common
-     *
-     *  \note   Design Choice - Iterable<T> / Iterator<T> behavior
-     *      We have two basic choices of how to define the behavior of iterators:
-     *      o   Live Update (like we do for Containers) - where changes to the
-     *          String appear in iteration.
-     *
-     *      o   Snapshot at the start of iteration
-     *
-     *      The advantages of 'live update' are that its probably better / clearer semantics. We may
-     *      want to switch to that. But to implement, we need to keep the update and iteration code
-     *      in sync.
-     *
-     *      'Snapshot at the start of iteration' can be more efficient, and easier to implement.
-     *      So - we do that for now.
-     *
-     *      Among 'snapshot' impl choices - we COULD do lazy copy snapshot (COW). That would perform best.
-     *      But to do so - the way the code is currently structured, we would need to use enable_shared_from_this
-     *      so we can recover a shared_ptr in ReadOnlyRep::_Rep::MakeIterator.
-     *
-     *      enable_shared_from_this() would add costs (at least size) even when we don't use String iteration
-     *      (which we didnt even impelement for a couple years, so may not be that critical).
-     *
-     *      For now - stick to simple impl - of just copy on start of iteration.
-     *          -- LGP 2013-12-17
-     * 
-     *  \note About spans, and the \0 NUL-termination - generally do NOT include
-     *        the NUL-character in your span! Stroika strings will allow this, and treat
-     *        it as just another character, but its probably not what you meant.
      *
      *  \note   Design note - mutability vs. immutability
      *          String objects are MUTABLE
@@ -267,11 +148,6 @@ namespace Stroika::Foundation::Characters {
      *          easier to udnerstand/reason about.
      * 
      *          @todo CONSIDER LOSIING THESE METHODS ABOVE (or deprecating at leats)
-     *
-     *  \note   Static Initialization, file scope variables, application lifetime variables.
-     *          It \em IS safe to use the String class at file scope. The constructors are carefully crafted to
-     *          operate properly, even if used at file scope, and to initialize other strings or objects.
-     *          @see "Test of STATIC FILE SCOPE INITIALIZATION"
      *
      *  \note <a href="Design Overview.md#Comparisons">Comparisons</a>:
      *      o   Standard Stroika Comparison support (operator<=>,operator==, etc);
@@ -358,7 +234,6 @@ namespace Stroika::Foundation::Characters {
          *      \endcode
          *
          *  \note   Reading improperly encoded text may result in a RuntimeException indicating improperly encoded characters.
-         *
          */
         template <typename CHAR_T>
         static String FromUTF8 (span<CHAR_T> from)
@@ -454,7 +329,7 @@ namespace Stroika::Foundation::Characters {
         template <size_t SIZE>
         static String FromStringConstant (const wchar_t (&cString)[SIZE]);
         static String FromStringConstant (const basic_string_view<wchar_t>& str);
-        static String FromStringConstant (const span<const wchar_t> s);
+        static String FromStringConstant (span<const wchar_t> s);
 
     public:
         /**
@@ -622,8 +497,8 @@ namespace Stroika::Foundation::Characters {
          *
          *  \par Example Usage
          *      \code
-         *          const String_Constant kTest_ { L"a=b" };
-         *          const String_Constant kLbl2LookFor_ { L"a=" };
+         *          const String kTest_ { L"a=b"sv };
+         *          const String kLbl2LookFor_ { L"a="_k };
          *          if (resultLine.Find (kLbl2LookFor_)) {
          *              String  tmp { resultLine.SubString (kLbl2LookFor_.length ()) };
          *          }
@@ -857,7 +732,7 @@ namespace Stroika::Foundation::Characters {
         /**
          *  \par Example Usage
          *      \code
-         *          const String_Constant kTest_    { L"a=b," };
+         *          const String kTest_    { L"a=b,"sv };
          *          const RegularExpression kRE_    { L"a=(.*)[, ]" };
          *          Sequence<String>      tmp1      { kTest_.FindEachString (kRE_) };
          *          Assert (tmp1.size () == 1 and tmp1[0] == L"a=b,");
@@ -875,7 +750,7 @@ namespace Stroika::Foundation::Characters {
         /**
          *  \par Example Usage
          *      \code
-         *          const String_Constant kTest_ { L"a=b, c=d" };
+         *          const String kTest_ { L"a=b, c=d"_k };
          *          const RegularExpression kRE_ { L"(.)=(.)" };
          *          Assert ((kTest_.FindEachString (kRE_) ==  vector<String> {L"a=b", L"c=d"}));
          *      \endcode
@@ -1152,10 +1027,10 @@ namespace Stroika::Foundation::Characters {
          */
         template <typename T = u16string>
         nonvirtual T AsUTF16 () const
-            requires (is_same_v<T, u16string>);
+            requires (is_same_v<T, u16string> or (sizeof (wchar_t) == 2 and is_same_v<T, wstring>));
         template <typename T = u16string>
         nonvirtual void AsUTF16 (T* into) const
-            requires (is_same_v<T, u16string>);
+            requires (is_same_v<T, u16string> or (sizeof (wchar_t) == 2 and is_same_v<T, wstring>));
 
     public:
         /**
@@ -1170,10 +1045,10 @@ namespace Stroika::Foundation::Characters {
          */
         template <typename T = u32string>
         nonvirtual T AsUTF32 () const
-            requires (is_same_v<T, u32string>);
+            requires (is_same_v<T, u32string> or (sizeof (wchar_t) == 4 and is_same_v<T, wstring>));
         template <typename T = u32string>
         nonvirtual void AsUTF32 (T* into) const
-            requires (is_same_v<T, u32string>);
+            requires (is_same_v<T, u32string> or (sizeof (wchar_t) == 4 and is_same_v<T, wstring>));
 
     public:
         /**
@@ -1526,15 +1401,6 @@ namespace Stroika::Foundation::Characters {
          */
         nonvirtual const Character* _Peek () const;
 
-        // Overrides for Iterable<Character>
-    public:
-        virtual Traversal::Iterator<value_type> MakeIterator () const override;
-        virtual size_t                          size () const override;
-        virtual bool                            empty () const override;
-        virtual void                            Apply (const function<void (Configuration::ArgByValueType<value_type> item)>& doToElement) const override;
-        virtual Traversal::Iterator<value_type> Find (const function<bool (Configuration::ArgByValueType<value_type> item)>& that) const override;
-        virtual Traversal::Iterator<value_type> Find_equal_to (const Configuration::ArgByValueType<value_type>& v) const override;
-
     public:
         nonvirtual Character GetAt (size_t index) const;
 
@@ -1553,16 +1419,6 @@ namespace Stroika::Foundation::Characters {
             else if constexpr (sizeof (wchar_t) == 4) {
                 return PeekSpanData{PeekSpanData::StorageCodePointType::eChar32, {.fChar32 = span<const char32_t>{reinterpret_cast<const char32_t*> (_fStart), reinterpret_cast<const char32_t*> (_fEnd)}}};
             }
-        }
-
-    public:
-        /**
-         *  The Peek_wchar_t_c_str returns a NUL-terminated string (instead of a span).
-         *  Depending on the Rep type, it may return nullptr (most frequently will)
-         */
-        virtual const wchar_t* Peek_wchar_t_c_str () const noexcept
-        {
-            return _fStart;
         }
 
     public:
@@ -1709,12 +1565,12 @@ namespace Stroika::Foundation::Characters {
     };
 
     /**
-     *  \brief shorthand for String_Constant { ARGUMENT }
+     *  \brief shorthand for String::FromStringConstant { ARGUMENT }
      *
      *  \par Example:
      *      \code
      *          String s1 = L"some-string"_k;
-     *          String s2 = String_Constant{ L"some-string" };
+     *          String s2 = String::FromStringConstant (L"some-string");
      *          String s3 = L"some-string"sv;           // in most cases this will also work fine, and is preferable (since sv is part of C++ standard)
      *      \endcode
      *
