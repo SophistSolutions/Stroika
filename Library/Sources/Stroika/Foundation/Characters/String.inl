@@ -39,12 +39,6 @@ namespace Stroika::Foundation::Characters {
         Require (index < size ());
         return _fStart[index];
     }
-    inline pair<const Character*, const Character*> String::_IRep::GetData () const
-    {
-        Assert (_fStart <= _fEnd);
-        static_assert (sizeof (Character) == sizeof (wchar_t), "Character and wchar_t must be same size");
-        return pair<const Character*, const Character*> (reinterpret_cast<const Character*> (_fStart), reinterpret_cast<const Character*> (_fEnd));
-    }
     inline size_t String::_IRep::_GetLength () const
     {
         Assert (_fStart <= _fEnd);
@@ -1082,7 +1076,6 @@ namespace Stroika::Foundation::Characters {
     {
         return EqualsComparer{}(*this, rhs);
     }
-
 
     /*
      ********************************************************************************

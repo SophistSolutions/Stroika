@@ -47,6 +47,27 @@ namespace {
     constexpr bool kUseBlockAllocatedForSmallBufStrings_ = qString_Private_BufferedStringRep_UseBlockAllocatedForSmallBufStrings;
 
     /**
+     *  Helper for sharing implementation code on string reps
+     */
+    struct StringRepHelper_ : String {
+        struct Rep : public _IRep {
+        private:
+            using inherited = String::_IRep;
+
+        protected:
+            Rep (const pair<const wchar_t*, const wchar_t*>& s)
+                : inherited{s}
+            {
+            }
+            Rep (const wchar_t* start, const wchar_t* end)
+                : inherited{start, end}
+            {
+            }
+        };
+    };
+
+
+    /**
      *  This is a utility class to implement most of the basic String::_IRep functionality.
      *  This implements functions that change the string, but don't GROW it,
      *  since we don't know in general we can (thats left to subtypes).
@@ -55,10 +76,10 @@ namespace {
      *
      *  @todo Explain queer wrapper class cuz protected
      */
-    struct BufferedString_ : String {
-        struct Rep : public _IRep, public Memory::UseBlockAllocationIfAppropriate<Rep> {
+    struct BufferedString_ : StringRepHelper_ {
+        struct Rep : public StringRepHelper_::Rep, public Memory::UseBlockAllocationIfAppropriate<Rep> {
         private:
-            using inherited = String::_IRep;
+            using inherited = StringRepHelper_::Rep;
 
         private:
             /*
@@ -230,12 +251,12 @@ namespace {
     /**
      *  For static full app lifetime string constants...
      */
-    struct StringConstant_ : public String {
+    struct StringConstant_ : public StringRepHelper_ {
         using inherited = String;
 
-        class Rep : public String::_IRep, public Memory::UseBlockAllocationIfAppropriate<Rep> {
+        class Rep : public StringRepHelper_::Rep, public Memory::UseBlockAllocationIfAppropriate<Rep> {
         private:
-            using inherited = String::_IRep;
+            using inherited = StringRepHelper_::Rep;
 
         public:
             Rep (span<const wchar_t> s)

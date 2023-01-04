@@ -1539,9 +1539,6 @@ namespace Stroika::Foundation::Characters {
         nonvirtual Character GetAt (size_t index) const;
 
     public:
-        nonvirtual pair<const Character*, const Character*> GetData () const;
-
-    public:
         /**
          *  Each rep will support a span of at least one code-point type (ascii, utf8, utf16, or utf32)
          *
