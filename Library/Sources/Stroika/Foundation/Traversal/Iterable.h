@@ -338,6 +338,10 @@ namespace Stroika::Foundation::Traversal {
          *
          *  \note Alias GetLength () - in fact in Stroika before 2.1b14, this was called GetLength ()
          *
+         *  \note Design Note: noexcept
+         *      We chose to allow the empty () method to allow exceptions, since an Iterable<T>
+         *      is general enough (say externally network data sourced) - it could be temporily or otherwise unavailable.
+         * 
          *  \em Performance:
          *      The performance of size() may vary wildly. It could be anywhere from O(1) to O(N)
          *      depending on the underlying type of Iterable<T>.
@@ -350,6 +354,10 @@ namespace Stroika::Foundation::Traversal {
          *
          *  \note Alias IsEmpty () - called IsEmpty () in Stroika 2.1b13 and prior
          *
+         *  \note Design Note: noexcept
+         *      We chose to allow the empty () method to allow exceptions, since an Iterable<T>
+         *      is general enough (say externally network data sourced) - it could be temporily or otherwise unavailable.
+         * 
          *  \em Performance:
          *      The performance of empty() may vary wildly (@see size) but will nearly always be O(1).
          */
