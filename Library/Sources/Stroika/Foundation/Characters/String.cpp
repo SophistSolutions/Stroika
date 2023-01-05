@@ -48,27 +48,26 @@ namespace {
 
     /**
      *  Helper for sharing implementation code on string reps
+     *  This REP is templated on CHAR_T. The key is that ALL characters for that string fit inside
+     *  CHAR_T, so that the implementation can store them as an array, and index.
+     *  So mixed 1,2,3 byte characters all get stored in a char32_t array, and a string with all ascii
+     *  characters get stored in a char (1byte stride) array.
      */
-    struct StringRepHelper_ : String {
+    struct StringRepHelperAllFitInSize_ : String {
+        template <Character_IsUnicodeCodePointOrPlainChar CHAR_T = wchar_t>
         struct Rep : public _IRep {
         private:
             using inherited = _IRep;
 
         protected:
-            const wchar_t* _fStart;
-            const wchar_t* _fEnd; // \note - _fEnd must always point to a 'NUL' character, so the underlying array extends one or more beyond
+            const CHAR_T*  _fStart;
+            const CHAR_T* _fEnd; // \note - _fEnd must always point to a 'NUL' character, so the underlying array extends one or more beyond
 
         protected:
-            Rep (const pair<const wchar_t*, const wchar_t*>& s)
+            Rep (span<const CHAR_T> s)
                 : inherited{}
-                , _fStart{s.first}
-                , _fEnd{s.second}
-            {
-            }
-            Rep (const wchar_t* start, const wchar_t* end)
-                : inherited{}
-                , _fStart{start}
-                , _fEnd{end}
+                , _fStart{s.data ()}
+                , _fEnd{s.data () + s.size ()}
             {
             }
             virtual Character GetAt (size_t index) const noexcept override
@@ -174,10 +173,11 @@ namespace {
      *
      *  @todo Explain queer wrapper class cuz protected
      */
-    struct BufferedString_ : StringRepHelper_ {
-        struct Rep : public StringRepHelper_::Rep, public Memory::UseBlockAllocationIfAppropriate<Rep> {
+    struct BufferedString_ : StringRepHelperAllFitInSize_ {
+        template <Character_IsUnicodeCodePointOrPlainChar CHAR_T = wchar_t>
+        struct Rep : public StringRepHelperAllFitInSize_::Rep<CHAR_T>, public Memory::UseBlockAllocationIfAppropriate < Rep<CHAR_T>> {
         private:
-            using inherited = StringRepHelper_::Rep;
+            using inherited = StringRepHelperAllFitInSize_::Rep<CHAR_T>;
 
         private:
             /*
@@ -197,7 +197,7 @@ namespace {
             template <size_t SZ>
             struct BufferedStringRepBlock_ {
                 static constexpr size_t kNElts = SZ;
-                wchar_t                 data[kNElts];
+                CHAR_T                  data[kNElts];
             };
 
         public:
@@ -218,7 +218,7 @@ namespace {
              *  The argument wchar_t* strings MAY or MAY NOT be nul-terminated
              */
             Rep (const tuple<const wchar_t*, const wchar_t*, size_t>& strAndCapacity)
-                : inherited{make_pair (get<0> (strAndCapacity), get<1> (strAndCapacity))}
+                : inherited{span<const wchar_t> {get<0> (strAndCapacity), get<1> (strAndCapacity)}}
                 , fCapacity_{get<2> (strAndCapacity)}
             {
             }
@@ -226,27 +226,27 @@ namespace {
         public:
             ~Rep ()
             {
-                AssertNotNull (_fStart);
+                AssertNotNull (this->_fStart);
                 Assert (fCapacity_ == AdjustCapacity_ (this->size () + 1)); // see mkBuf_ (size_t length) - and possible optimize to not store fCapacity
                 if constexpr (kUseBlockAllocatedForSmallBufStrings_) {
                     Assert (fCapacity_ >= kNElts1_);
                     switch (fCapacity_) {
                         case kNElts1_: {
-                            Memory::BlockAllocator<BufferedStringRepBlock_<kNElts1_>>{}.deallocate (reinterpret_cast<BufferedStringRepBlock_<kNElts1_>*> (const_cast<wchar_t*> (_fStart)), 1);
+                            Memory::BlockAllocator<BufferedStringRepBlock_<kNElts1_>>{}.deallocate (reinterpret_cast<BufferedStringRepBlock_<kNElts1_>*> (const_cast<wchar_t*> (this->_fStart)), 1);
                         } break;
                         case kNElts2_: {
-                            Memory::BlockAllocator<BufferedStringRepBlock_<kNElts2_>>{}.deallocate (reinterpret_cast<BufferedStringRepBlock_<kNElts2_>*> (const_cast<wchar_t*> (_fStart)), 1);
+                            Memory::BlockAllocator<BufferedStringRepBlock_<kNElts2_>>{}.deallocate (reinterpret_cast<BufferedStringRepBlock_<kNElts2_>*> (const_cast<wchar_t*> (this->_fStart)), 1);
                         } break;
                         case kNElts3_: {
-                            Memory::BlockAllocator<BufferedStringRepBlock_<kNElts3_>>{}.deallocate (reinterpret_cast<BufferedStringRepBlock_<kNElts3_>*> (const_cast<wchar_t*> (_fStart)), 1);
+                            Memory::BlockAllocator<BufferedStringRepBlock_<kNElts3_>>{}.deallocate (reinterpret_cast<BufferedStringRepBlock_<kNElts3_>*> (const_cast<wchar_t*> (this->_fStart)), 1);
                         } break;
                         default: {
-                            delete[] _fStart;
+                            delete[] this->_fStart;
                         } break;
                     }
                 }
                 else {
-                    delete[] _fStart;
+                    delete[] this->_fStart;
                 }
             }
 
@@ -307,14 +307,14 @@ namespace {
             {
                 return nullptr; // NEW APPROACH...
                 [[maybe_unused]] size_t len = size ();
-                Ensure (_fStart[len] == '\0');
-                return _fStart;
+                Ensure (this->_fStart[len] == '\0');
+                return this->_fStart;
             }
 
         public:
             virtual size_t size () const override
             {
-                return _fEnd - _fStart;
+                return this->_fEnd - this->_fStart;
             }
 
         private:
@@ -348,20 +348,21 @@ namespace {
     /**
      *  For static full app lifetime string constants...
      */
-    struct StringConstant_ : public StringRepHelper_ {
+    struct StringConstant_ : public StringRepHelperAllFitInSize_ {
         using inherited = String;
 
-        class Rep : public StringRepHelper_::Rep, public Memory::UseBlockAllocationIfAppropriate<Rep> {
+        template <Character_IsUnicodeCodePointOrPlainChar CHAR_T = wchar_t>
+        class Rep : public StringRepHelperAllFitInSize_::Rep<CHAR_T>, public Memory::UseBlockAllocationIfAppropriate<Rep<CHAR_T>> {
         private:
-            using inherited = StringRepHelper_::Rep;
+            using inherited = StringRepHelperAllFitInSize_::Rep<CHAR_T>;
 
         public:
-            Rep (span<const wchar_t> s)
-                : inherited{s.data (), s.data () + s.size ()} // don't copy memory - but copy raw pointers! So they MUST BE (externally promised) 'externally owned for the application lifetime and constant' - like c++ string constants
+            Rep (span<const CHAR_T> s)
+                : inherited{s} // don't copy memory - but copy raw pointers! So they MUST BE (externally promised) 'externally owned for the application lifetime and constant' - like c++ string constants
             {
 #if qDebug
-                const wchar_t* start = s.data ();
-                const wchar_t* end   = start + s.size ();
+                const CHAR_T*  start = s.data ();
+                const CHAR_T* end   = start + s.size ();
 #endif
                 // NO - we allow embedded nuls, but require NUL-termination - so this is wrong - Require (start + ::wcslen (start) == end);
                 Require (*end == '\0' and start + ::wcslen (start) <= end);
@@ -375,21 +376,26 @@ namespace {
             {
                 // This class ALWAYS constructed with String_ExternalMemoryOwnership_ApplicationLifetime and ALWAYS with NUL-terminated string
                 // NO - we allow embedded nuls, but require NUL-termination - so this is wrong - Assert (_fStart + ::wcslen (_fStart) == _fEnd);
-                Assert (*_fEnd == '\0' and _fStart + ::wcslen (_fStart) <= _fEnd);
-                return _fStart;
+                Assert (*this->_fEnd == '\0' and this->_fStart + ::wcslen (this->_fStart) <= this->_fEnd);
+                return this->_fStart;
             }
         };
     };
 
     /**
      *  Delegate to original String::Rep, and add in support for c_str ()
+     * 
+     *      @todo switch to using StringRepHelperAllFitInSize_::Rep - so we dont DELEGATE impl!!!!! hold onto base rep (so memory stays
+     *      alive) - but use StringRepHelperAllFitInSize_::Rep to point into it to avoid delegating and be as fast as any other rep.
      */
     struct StringWithCStr_ : public String {
         using inherited = String;
 
-        class Rep : public String::_IRep, public Memory::UseBlockAllocationIfAppropriate<Rep> {
+        template <Character_IsUnicodeCodePointOrPlainChar CHAR_T = wchar_t>
+        class Rep : public String::_IRep, public Memory::UseBlockAllocationIfAppropriate<Rep<CHAR_T>> {
         private:
-            using inherited = StringRepHelper_::Rep;
+            // using inherited = StringRepHelperAllFitInSize_::Rep<>;
+            using inherited = String::_IRep;
 
             _SharedPtrIRep fUnderlyingRep_;
             wstring        fCString_;
@@ -461,7 +467,7 @@ const wregex& Characters::Private_::RegularExpression_GetCompiled (const Regular
 static_assert (sizeof (Character) == sizeof (wchar_t), "Character and wchar_t must be same size");
 
 String::String (const basic_string_view<wchar_t>& str)
-    : String{MakeSmartPtr<StringConstant_::Rep> (span{str.data (), str.size ()})}
+    : String{MakeSmartPtr<StringConstant_::Rep<wchar_t>> (span{str.data (), str.size ()})}
 {
     Require (str.data ()[str.length ()] == 0); // Because Stroika strings provide the guarantee that they can be converted to c_str () - we require the input memory
                                                // for these const strings are also nul-terminated.
@@ -474,7 +480,7 @@ String String::FromStringConstant (span<const wchar_t> s)
 {
     Require (*(s.data () + s.size ()) == '\0'); // crazy weird requirement, but done cuz L"x"sv already does NUL-terminate and we can
                                                 // take advantage of that fact - re-using the NUL-terminator for our own c_str() implementation
-    return String{MakeSmartPtr<StringConstant_::Rep> (s)};
+    return String{MakeSmartPtr<StringConstant_::Rep<wchar_t>> (s)};
 }
 
 String String::FromNarrowString (span<const char> s, const locale& l)
@@ -502,14 +508,14 @@ String::_SharedPtrIRep String::mkEmpty_ ()
 {
     static constexpr wchar_t kEmptyCStr_[] = L"";
     // use StringConstant_ since nul-terminated, and for now works better with CSTR - and why allocate anything...
-    static const _SharedPtrIRep s_ = MakeSmartPtr<StringConstant_::Rep> (span{std::begin (kEmptyCStr_), 0});
+    static const _SharedPtrIRep s_ = MakeSmartPtr<StringConstant_::Rep<wchar_t>> (span{std::begin (kEmptyCStr_), 0});
     return s_;
 }
 
 template <>
 auto String::mk_ (span<const wchar_t> s) -> _SharedPtrIRep
 {
-    return MakeSmartPtr<BufferedString_::Rep> (s);
+    return MakeSmartPtr<BufferedString_::Rep<wchar_t>> (s);
 }
 
 void String::SetCharAt (Character c, size_t i)
@@ -1225,7 +1231,7 @@ const wchar_t* String::c_str ()
     const wchar_t* result = (wchar_t*)_SafeReadRepAccessor{this}._ConstGetRep ().c_str_peek ();
     if (result == nullptr) {
         _SharedPtrIRep originalRep = dynamic_pointer_cast<_IRep> (_fRep.cget_ptr ());
-        _fRep                      = MakeSmartPtr<StringWithCStr_::Rep> (originalRep);
+        _fRep                      = MakeSmartPtr<StringWithCStr_::Rep<wchar_t>> (originalRep);
         result                     = (wchar_t*)_SafeReadRepAccessor{this}._ConstGetRep ().c_str_peek ();
         AssertNotNull (result);
     }

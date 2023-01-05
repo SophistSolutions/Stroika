@@ -1616,7 +1616,6 @@ namespace {
     }
 }
 
-
 namespace {
     void Test54_StringAs_ ()
     {
@@ -1624,7 +1623,7 @@ namespace {
         {
             try {
                 string a2 = String{u"שלום"}.AsASCII (); // throws
-                VerifyTestResult (false);// not reached
+                VerifyTestResult (false);               // not reached
             }
             catch (...) {
                 // good
@@ -1632,7 +1631,6 @@ namespace {
         }
     }
 }
-
 
 namespace {
 
