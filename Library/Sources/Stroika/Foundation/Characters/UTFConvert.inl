@@ -257,9 +257,9 @@ namespace Stroika::Foundation::Characters {
             Require ((target.size () >= ComputeTargetBufferSize<TRG_T> (source)));
             if constexpr (sizeof (SRC_T) == sizeof (TRG_T)) {
                 auto srcB = as_bytes (source);
-            if (srcB.size () != 0) {
-                ::memcpy (target.data (), srcB.data (), srcB.size ());
-            }
+                if (srcB.size () != 0) {
+                    ::memcpy (target.data (), srcB.data (), srcB.size ());
+                }
                 return ConversionResult{source.size (), source.size ()}; // not a typo - target buffer allowed to be larger than what copied
             }
             return Convert (ConvertCompatibleSpan_ (source), ConvertCompatibleSpan_ (target));
