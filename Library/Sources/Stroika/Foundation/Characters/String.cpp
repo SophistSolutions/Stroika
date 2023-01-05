@@ -271,7 +271,7 @@ namespace {
                         } break;
                         case kNElts3_: {
                             static_assert (sizeof (BufferedStringRepBlock_<kNElts3_>) == sizeof (wchar_t) * kNElts3_, "sizes should match");
-                            newBuf = reinterpret_cast<wchaCHAR_Tr_t*> (Memory::BlockAllocator<BufferedStringRepBlock_<kNElts3_>>{}.allocate (1));
+                            newBuf = reinterpret_cast<CHAR_T*> (Memory::BlockAllocator<BufferedStringRepBlock_<kNElts3_>>{}.allocate (1));
                         } break;
                         default: {
                             newBuf = new CHAR_T[capacity];
