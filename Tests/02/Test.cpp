@@ -1620,10 +1620,10 @@ namespace {
 namespace {
     void Test54_StringAs_ ()
     {
-        VerifyTestResult (String{"hi mom"}.AsASCII () == "hi mom");
+        VerifyTestResult (String{L"hi mom"}.AsASCII () == "hi mom");
         {
             try {
-                string a2 = String{"שלום"}.AsASCII (); // throws
+                string a2 = String{u"שלום"}.AsASCII (); // throws
                 VerifyTestResult (false);// not reached
             }
             catch (...) {

@@ -344,9 +344,7 @@ namespace {
             size_t fCapacity_;
         };
     };
-}
 
-namespace {
     /**
      *  For static full app lifetime string constants...
      */
@@ -382,9 +380,7 @@ namespace {
             }
         };
     };
-}
 
-namespace {
     /**
      *  Delegate to original String::Rep, and add in support for c_str ()
      */
