@@ -1616,6 +1616,24 @@ namespace {
     }
 }
 
+
+namespace {
+    void Test54_StringAs_ ()
+    {
+        VerifyTestResult (String{"hi mom"}.AsASCII () == "hi mom");
+        {
+            try {
+                string a2 = String{"שלום"}.AsASCII (); // throws
+                VerifyTestResult (false);// not reached
+            }
+            catch (...) {
+                // good
+            }
+        }
+    }
+}
+
+
 namespace {
 
     void DoRegressionTests_ ()
@@ -1664,6 +1682,7 @@ namespace {
         Test51_Utf16Conversions_ ();
         Test52_Utf32Conversions_ ();
         Test53_vswprintf_on_2_strings_longish_Buggy_ ();
+        Test54_StringAs_ ();
     }
 }
 

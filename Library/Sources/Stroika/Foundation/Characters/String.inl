@@ -646,7 +646,7 @@ namespace Stroika::Foundation::Characters {
     }
     template <typename T>
     inline T String::AsUTF16 () const
-        requires (is_same_v<T, u16string> or (sizeof (wchar_t) == 2 and is_same_v<T, wstring>))
+        requires (is_same_v<T, u16string> or (sizeof (wchar_t) == sizeof (char16_t) and is_same_v<T, wstring>))
     {
         Memory::StackBuffer<char16_t> maybeIgnoreBuf1;
         span<const char16_t>          thisData = GetData (&maybeIgnoreBuf1);
@@ -654,7 +654,7 @@ namespace Stroika::Foundation::Characters {
     }
     template <typename T>
     inline void String::AsUTF16 (T* into) const
-        requires (is_same_v<T, u16string> or (sizeof (wchar_t) == 2 and is_same_v<T, wstring>))
+        requires (is_same_v<T, u16string> or (sizeof (wchar_t) == sizeof (char16_t) and is_same_v<T, wstring>))
     {
         RequireNotNull (into);
         Memory::StackBuffer<char16_t> maybeIgnoreBuf1;
@@ -663,7 +663,7 @@ namespace Stroika::Foundation::Characters {
     }
     template <typename T>
     inline T String::AsUTF32 () const
-        requires (is_same_v<T, u32string> or (sizeof (wchar_t) == 4 and is_same_v<T, wstring>))
+        requires (is_same_v<T, u32string> or (sizeof (wchar_t) == sizeof (char32_t) and is_same_v<T, wstring>))
     {
         Memory::StackBuffer<char32_t> maybeIgnoreBuf1;
         span<const char32_t>          thisData = GetData (&maybeIgnoreBuf1);
@@ -671,7 +671,7 @@ namespace Stroika::Foundation::Characters {
     }
     template <typename T>
     inline void String::AsUTF32 (T* into) const
-        requires (is_same_v<T, u32string> or (sizeof (wchar_t) == 4 and is_same_v<T, wstring>))
+        requires (is_same_v<T, u32string> or (sizeof (wchar_t) == sizeof (char32_t) and is_same_v<T, wstring>))
     {
         RequireNotNull (into);
         Memory::StackBuffer<char32_t> maybeIgnoreBuf1;
@@ -982,11 +982,11 @@ namespace Stroika::Foundation::Characters {
         (*possibleBackingStore)[tmp.length ()] = '\0'; // assure NUL-terminated
         return make_tuple (possibleBackingStore->begin (), wstring_view{possibleBackingStore->begin (), tmp.length ()});
     }
-    inline size_t String::find (wchar_t c, size_t startAt) const
+    inline size_t String::find (Character c, size_t startAt) const
     {
         return Find (c, startAt, CompareOptions::eWithCase).value_or (npos);
     }
-    inline size_t String::rfind (wchar_t c) const
+    inline size_t String::rfind (Character c) const
     {
         return RFind (c).value_or (npos);
     }

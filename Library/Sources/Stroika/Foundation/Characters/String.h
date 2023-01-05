@@ -1021,34 +1021,43 @@ namespace Stroika::Foundation::Characters {
         /**
          * Convert String losslessly into a standard C++ type u16string.
          *
+         *  \par Example Usage:
+         *      \code
+         *          String s = u"hi mom";
+         *          u16string su    =   AsUTF16 ();
+         *      \endcode
+         * 
          *  \note - the resulting string may have a different length than this->size() due to surrogates
          * 
          *  @todo allow wchar_t if sizeof(wchar_t) == 2
          */
         template <typename T = u16string>
         nonvirtual T AsUTF16 () const
-            requires (is_same_v<T, u16string> or (sizeof (wchar_t) == 2 and is_same_v<T, wstring>));
+            requires (is_same_v<T, u16string> or (sizeof (wchar_t) == sizeof (char16_t) and is_same_v<T, wstring>));
         template <typename T = u16string>
         nonvirtual void AsUTF16 (T* into) const
-            requires (is_same_v<T, u16string> or (sizeof (wchar_t) == 2 and is_same_v<T, wstring>));
+            requires (is_same_v<T, u16string> or (sizeof (wchar_t) == sizeof (char16_t) and is_same_v<T, wstring>));
 
     public:
         /**
          * Convert String losslessly into a standard C++ type u32string.
+         * 
+         *  \par Example Usage:
+         *      \code
+         *          String s = u"hi mom";
+         *          u32string su    =   AsUTF32 ();
+         *      \endcode
          *
          *  \note - As of Stroika 2.1d23 - the resulting string may have a different length than this->size() due to surrogates,
          *          but eventually the intent is to fix Stroika's string class so this is not true, and it returns the length of the string
          *          in size () with surrogates removed (in other words uses ucs32 represenation). But not there yet.
-         *
-         ** TODO UPDATE DOCS HERE
-         *  @todo allow wchar_t if sizeof(wchar_t) == 4
          */
         template <typename T = u32string>
         nonvirtual T AsUTF32 () const
-            requires (is_same_v<T, u32string> or (sizeof (wchar_t) == 4 and is_same_v<T, wstring>));
+            requires (is_same_v<T, u32string> or (sizeof (wchar_t) == sizeof (char32_t) and is_same_v<T, wstring>));
         template <typename T = u32string>
         nonvirtual void AsUTF32 (T* into) const
-            requires (is_same_v<T, u32string> or (sizeof (wchar_t) == 4 and is_same_v<T, wstring>));
+            requires (is_same_v<T, u32string> or (sizeof (wchar_t) == sizeof (char32_t) and is_same_v<T, wstring>));
 
     public:
         /**
@@ -1068,6 +1077,12 @@ namespace Stroika::Foundation::Characters {
          * Only specifically specialized variants are supported (right now just <string> supported).
          * The source string MUST be valid ascii characters - throw RuntimeErrorException<>
          *
+         *  \par Example Usage:
+         *      \code
+         *          string a1    =  String{"hi mom"}.AsASCII ();    // OK
+         *          string a2    =  String{"שלום"}.AsASCII ();      // throws
+         *      \endcode
+
          *  \note - this is a (compatible) change of behavior: before Stroika v2.1d23, this would assert out on invalid ASCII.
          * 
          *  Supported Types:
@@ -1106,6 +1121,9 @@ namespace Stroika::Foundation::Characters {
          * 
          *  \note eAscii is a subset of eChar8, so when the type eAscii is returned, EITHER fChar8 or fAscii maybe
          *        maybe used.
+         * 
+         *  This API is public, but best to avoid depending on internals of String API - like PeekSpanData - since
+         *  this reasonably likely to change in future versions.
          */
         struct PeekSpanData {
             enum StorageCodePointType { eAscii,
@@ -1132,6 +1150,9 @@ namespace Stroika::Foundation::Characters {
          *  \note Reason for the two step API - getting the PeekSpanData, and then using - is because getting
          *        the data is most expensive part (virtual function), and the packaged PeekSpanData gives enuf
          *        info to do the next steps (quickly inline usually)
+         * 
+         *  This API is public, but best to avoid depending on internals of String API - like PeekSpanData - since
+         *  this reasonably likely to change in future versions.
          */
         template <Character_Compatible CHAR_TYPE = char>
         nonvirtual PeekSpanData GetPeekSpanData () const;
@@ -1141,6 +1162,9 @@ namespace Stroika::Foundation::Characters {
          *  \brief return the constant character data inside the string in the form of a span or nullopt if not available
          * 
          *  \note CHAR_TYPE == char implies ASCII (so will return MISSING if data is not ascii)
+         * 
+         *  This API is public, but best to avoid depending on internals of String API - like PeekSpanData - since
+         *  this reasonably likely to change in future versions.
          */
         template <Character_SafelyCompatible CHAR_TYPE>
         static optional<span<const CHAR_TYPE>> PeekData (const PeekSpanData& pds);
@@ -1246,7 +1270,7 @@ namespace Stroika::Foundation::Characters {
          *
          *  Returns String::npos if not found, else the zero based index.
          */
-        nonvirtual size_t find (wchar_t c, size_t startAt = 0) const;
+        nonvirtual size_t find (Character c, size_t startAt = 0) const;
 
     public:
         /**
@@ -1254,7 +1278,7 @@ namespace Stroika::Foundation::Characters {
          *
          *   Returns String::npos if not found, else the zero based index.
          */
-        nonvirtual size_t rfind (wchar_t c) const;
+        nonvirtual size_t rfind (Character c) const;
 
     public:
         /**
@@ -1375,7 +1399,7 @@ namespace Stroika::Foundation::Characters {
 
     public:
         /**
-         *  Return the ith character in the string
+         *  Return the ith character in the string.
          */
         virtual Character GetAt (size_t index) const noexcept = 0;
 
