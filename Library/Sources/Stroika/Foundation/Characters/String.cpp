@@ -361,8 +361,10 @@ namespace {
             Rep (span<const wchar_t> s)
                 : inherited{s.data (), s.data () + s.size ()} // don't copy memory - but copy raw pointers! So they MUST BE (externally promised) 'externally owned for the application lifetime and constant' - like c++ string constants
             {
+                #if qDebug
                 const wchar_t* start = s.data ();
                 const wchar_t* end   = start + s.size ();
+                #endif
                 // NO - we allow embedded nuls, but require NUL-termination - so this is wrong - Require (start + ::wcslen (start) == end);
                 Require (*end == '\0' and start + ::wcslen (start) <= end);
             }
@@ -923,7 +925,16 @@ String String::SubString_ (const _SafeReadRepAccessor& thisAccessor, size_t this
     Require (from <= to);
     Require (to <= thisLen);
     Require (thisLen == this->size ());
-    const wchar_t* start = reinterpret_cast<const wchar_t*> (thisAccessor._ConstGetRep ().c_str_peek ()) + from;
+
+    // @todo REWRITE ALL THIS MESS
+    Memory::StackBuffer<wchar_t> ignored1;
+
+    const wchar_t* thisStrStart = thisAccessor._ConstGetRep ().c_str_peek ();
+    if (thisStrStart == nullptr) {
+        thisStrStart = GetData (&ignored1).data ();
+    }
+
+    const wchar_t* start = reinterpret_cast<const wchar_t*> (thisStrStart) + from;
     size_t         len   = to - from;
     const wchar_t* end   = start + len;
     Assert (start <= end);
