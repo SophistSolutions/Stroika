@@ -72,7 +72,7 @@ namespace {
             {
             }
 
-            virtual Character GetAt (size_t index) const noexcept
+            virtual Character GetAt (size_t index) const noexcept override
             {
                 Assert (_fStart <= _fEnd);
                 Require (index < size ());
@@ -417,17 +417,17 @@ namespace {
                 AssertNotReached (); // Since String reps now immutable, this should never be called
                 return nullptr;
             }
-            virtual Iterator<value_type> MakeIterator () const { return fUnderlyingRep_->MakeIterator (); }
-            virtual size_t               size () const { return fUnderlyingRep_->size (); }
-            virtual bool                 empty () const { return fUnderlyingRep_->empty (); }
-            virtual void                 Apply (const function<void (Configuration::ArgByValueType<Character> item)>& doToElement) const { fUnderlyingRep_->Apply (doToElement); }
-            virtual Iterator<value_type> Find (const function<bool (Configuration::ArgByValueType<Character> item)>& that) const { return fUnderlyingRep_->Find (that); }
-            virtual Iterator<value_type> Find_equal_to (const Configuration::ArgByValueType<Character>& v) const { return fUnderlyingRep_->Find_equal_to (v); }
+            virtual Iterator<value_type> MakeIterator () const override { return fUnderlyingRep_->MakeIterator (); }
+            virtual size_t               size () const override { return fUnderlyingRep_->size (); }
+            virtual bool                 empty () const override { return fUnderlyingRep_->empty (); }
+            virtual void                 Apply (const function<void (Configuration::ArgByValueType<Character> item)>& doToElement) const override { fUnderlyingRep_->Apply (doToElement); }
+            virtual Iterator<value_type> Find (const function<bool (Configuration::ArgByValueType<Character> item)>& that) const override { return fUnderlyingRep_->Find (that); }
+            virtual Iterator<value_type> Find_equal_to (const Configuration::ArgByValueType<Character>& v) const override { return fUnderlyingRep_->Find_equal_to (v); }
 
             // String::_IRep overrides - delegate
         public:
-            virtual Character      GetAt (size_t index) const noexcept { return fUnderlyingRep_->GetAt (index); }
-            virtual PeekSpanData   PeekData ([[maybe_unused]] optional<PeekSpanData::StorageCodePointType> preferred) const noexcept { return fUnderlyingRep_->PeekData (preferred); }
+            virtual Character      GetAt (size_t index) const noexcept override { return fUnderlyingRep_->GetAt (index); }
+            virtual PeekSpanData   PeekData ([[maybe_unused]] optional<PeekSpanData::StorageCodePointType> preferred) const noexcept override { return fUnderlyingRep_->PeekData (preferred); }
             virtual const wchar_t* c_str_peek () const noexcept override
             {
                 return fCString_.c_str ();
