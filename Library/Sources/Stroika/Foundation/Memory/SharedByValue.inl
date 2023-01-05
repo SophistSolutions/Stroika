@@ -89,24 +89,22 @@ namespace Stroika::Foundation::Memory {
         return fSharedImpl_.get ();
     }
     template <typename T, typename TRAITS>
+    inline auto SharedByValue<T, TRAITS>::cget_ptr () const -> shared_ptr_type
+    {
+        return fSharedImpl_;
+    }
+    template <typename T, typename TRAITS>
     inline auto SharedByValue<T, TRAITS>::rwget_ptr () -> shared_ptr_type
     {
         return rwget_ptr (fCopier_);
     }
     template <typename T, typename TRAITS>
     template <typename COPIER>
-    inline auto SharedByValue<T, TRAITS>::rwget_ptr (COPIER&& copier) -> shared_ptr_type
+    auto SharedByValue<T, TRAITS>::rwget_ptr (COPIER&& copier) -> shared_ptr_type
     {
-        /*
-         *  Increment refCount before assureNReferences/breakreferencs so we can save
-         *  the original shared_ptr and return it in case its needed (e.g. to update iterators).
-         * 
-         *  Save this way so no race (after Assure1Reference() other remaining ptr could go away.
-         */
         if (fSharedImpl_ != nullptr) [[likely]] {
-            AssureNOrFewerReferences (forward<COPIER> (copier));
-            shared_ptr_type result = fSharedImpl_;
-            Ensure (result.use_count () == 1);
+            auto result = forward<COPIER> (copier) (fSharedImpl_);
+            Assert (result.use_count () == 1);
             return result;
         }
         return nullptr;

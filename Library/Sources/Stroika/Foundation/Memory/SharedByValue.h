@@ -162,6 +162,18 @@ namespace Stroika::Foundation::Memory {
 
     public:
         /**
+         *  \brief access te underlying shared_ptr stored in the SharedByValue. This shouldbe treated as readonly and
+         *         only used to make calls that don't change / mutate the underlying object.
+         * 
+         *  \todo @todo Consider if using const somehow can help make this safer - returing a shared_ptr<const T>?? somehow
+         */
+        nonvirtual shared_ptr_type cget_ptr () const;
+
+    public:
+        /**
+         *  \brief forced copy of the underlying shared_ptr data
+         * 
+         *  \note In Stroika v2.1, this was broken.
          */
         nonvirtual shared_ptr_type rwget_ptr ();
         template <typename COPIER>
@@ -170,6 +182,9 @@ namespace Stroika::Foundation::Memory {
     public:
         /**
          * rwget () returns the real underlying (modifyable) ptr we store. It can be nullptr.
+         * 
+         * Importantly, it makes sure that there is at most one reference to the 'shared_ptr' value
+         * before returing that pointer, so the caller is the only one modifying the object.
          *
          * The no-arg overload uses the builtin copier (overwhelmingly most common), but occasionally its helpful
          * to specify an alternate copier (see CONTAINER::_GetWritableRepAndPatchAssociatedIterator for example).
