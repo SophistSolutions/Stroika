@@ -478,7 +478,7 @@ String String::FromStringConstant (span<const wchar_t> s)
 {
     Require (*(s.data () + s.size ()) == '\0'); // crazy weird requirement, but done cuz L"x"sv already does NUL-terminate and we can
                                                 // take advantage of that fact - re-using the NUL-terminator for our own c_str() implementation
-    return String{MakeSmartPtr<StringConstant_::Rep> (span{s.data (), s.size ()})};
+    return String{MakeSmartPtr<StringConstant_::Rep> (s)};
 }
 
 String String::FromNarrowString (span<const char> s, const locale& l)
@@ -504,7 +504,9 @@ String String::FromNarrowString (span<const char> s, const locale& l)
 
 String::_SharedPtrIRep String::mkEmpty_ ()
 {
-    static const _SharedPtrIRep s_ = MakeSmartPtr<BufferedString_::Rep> (span<const wchar_t>{});
+    static constexpr wchar_t kEmptyCStr_[] = L"";
+    // use StringConstant_ since nul-terminated, and for now works better with CSTR - and why allocate anything...
+    static const _SharedPtrIRep s_ = MakeSmartPtr<StringConstant_::Rep> (span{std::begin (kEmptyCStr_), 0});
     return s_;
 }
 
@@ -732,22 +734,6 @@ vector<String> String::FindEachString (const RegularExpression& regEx) const
     return result;
 }
 
-#if 0
-vector<String>  String::Find (const String& string2SearchFor, CompareOptions co) const
-{
-    AssertNotReached ();
-    vector<String>  result;
-    wstring tmp     =   As<wstring> ();
-    wregex  regExp  =   wregex (string2SearchFor.As<wstring> ());
-    wsmatch res;
-    regex_search (tmp, res, regExp);
-    result.reserve (res.size ());
-    for (auto i = res.begin (); i != res.end (); ++i) {
-        result.push_back (String{*i});
-    }
-    return result;
-}
-#endif
 optional<size_t> String::RFind (Character c) const noexcept
 {
     //@todo: FIX HORRIBLE PERFORMANCE!!!
@@ -759,7 +745,7 @@ optional<size_t> String::RFind (Character c) const noexcept
             return i - 1;
         }
     }
-    return {};
+    return nullopt;
 }
 
 optional<size_t> String::RFind (const String& subString) const
@@ -779,7 +765,7 @@ optional<size_t> String::RFind (const String& subString) const
             return i - 1;
         }
     }
-    return {};
+    return nullopt;
 }
 
 String String::Replace (size_t from, size_t to, const String& replacement) const
@@ -1105,7 +1091,7 @@ String String::StripAll (bool (*removeCharIf) (Character)) const
 String String::Join (const Iterable<String>& list, const String& separator)
 {
     StringBuilder result;
-    for (String i : list) {
+    for (const String& i : list) {
         result += i;
         result += separator;
     }
@@ -1119,6 +1105,7 @@ String String::Join (const Iterable<String>& list, const String& separator)
 
 String String::ToLowerCase () const
 {
+    // @todo easy to optimize - get ascii case and use that as peek...
     StringBuilder        result;
     _SafeReadRepAccessor accessor{this};
     size_t               n         = accessor._ConstGetRep ().size ();
@@ -1138,6 +1125,7 @@ String String::ToLowerCase () const
 
 String String::ToUpperCase () const
 {
+    // @todo easy to optimize - get ascii case and use that as peek...
     StringBuilder        result;
     _SafeReadRepAccessor accessor{this};
     size_t               n         = accessor._ConstGetRep ().size ();
@@ -1254,16 +1242,6 @@ void String::ThrowInvalidAsciiException_ ()
 {
     static const auto kException_ = Execution::RuntimeErrorException{L"Error converting non-ascii text to string"sv};
     Execution::Throw (kException_);
-}
-
-/*
- ********************************************************************************
- ******************************** operator"" _k *********************************
- ********************************************************************************
- */
-String Characters::operator"" _k (const wchar_t* s, size_t len)
-{
-    return String::FromStringConstant (span<const wchar_t>{s, len});
 }
 
 /*
