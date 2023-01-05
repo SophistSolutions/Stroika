@@ -385,7 +385,7 @@ namespace {
                     // This class ALWAYS constructed with String_ExternalMemoryOwnership_ApplicationLifetime and ALWAYS with NUL-terminated string
                     // NO - we allow embedded nuls, but require NUL-termination - so this is wrong - Assert (_fStart + ::wcslen (_fStart) == _fEnd);
                     Assert (*this->_fEnd == '\0' and this->_fStart + ::wcslen (this->_fStart) <= this->_fEnd);
-                    return reinterpret_cast < const wchar_t * > (this->_fStart);
+                    return reinterpret_cast<const wchar_t*> (this->_fStart);
                 }
                 else {
                     return nullptr;
@@ -520,12 +520,12 @@ String String::FromNarrowString (span<const char> s, const locale& l)
 String::_SharedPtrIRep String::mkEmpty_ ()
 {
     static constexpr wchar_t kEmptyCStr_[] = L"";
-    // use StringConstant_ since nul-terminated, and for now works better with CSTR - and why allocate anything...
-    #if qCompilerAndStdLib_spanOfContainer_Buggy
+// use StringConstant_ since nul-terminated, and for now works better with CSTR - and why allocate anything...
+#if qCompilerAndStdLib_spanOfContainer_Buggy
     static const _SharedPtrIRep s_ = MakeSmartPtr<StringConstant_::Rep<wchar_t>> (span<const wchar_t>{&kEmptyCStr_[0], &kEmptyCStr_[0]});
-    #else
+#else
     static const _SharedPtrIRep s_ = MakeSmartPtr<StringConstant_::Rep<wchar_t>> (span{std::begin (kEmptyCStr_), 0});
-    #endif
+#endif
     return s_;
 }
 
@@ -1173,7 +1173,7 @@ String String::LimitLength (size_t maxLen, bool keepLeft) const
 #if qCompiler_vswprintf_on_elispisStr_Buggy
     static const String kELIPSIS_{L"..."sv};
 #else
-    static const String kELIPSIS_{L"\u2026"sv}; // OR L"..."
+    static const String         kELIPSIS_{L"\u2026"sv}; // OR L"..."
 #endif
     return LimitLength (maxLen, keepLeft, kELIPSIS_);
 }

@@ -245,9 +245,9 @@ VariantValue::VariantValue (const boost::json::value& val)
         case json::kind::string: {
             const json::string& bs = val.as_string (); // boost::json::string documents it represents a string as a series of UTF-8 characters
 #if qCompilerAndStdLib_spanOfContainer_Buggy
-            *this                  = String::FromUTF8 (span{bs.data (), bs.size ()});
+            *this = String::FromUTF8 (span{bs.data (), bs.size ()});
 #else
-            *this                  = String::FromUTF8 (span{bs});
+            *this = String::FromUTF8 (span{bs});
 #endif
         } break;
         case json::kind::array: {
