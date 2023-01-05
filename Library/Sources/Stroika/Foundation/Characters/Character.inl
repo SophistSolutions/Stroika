@@ -18,7 +18,7 @@ namespace Stroika::Foundation::Characters {
 
     namespace Private_ {
         template <Character_Compatible CHAR_T>
-        inline strong_ordering Compare_CS_ (span<const CHAR_T> lhs, span<const CHAR_T> rhs)
+        constexpr strong_ordering Compare_CS_ (span<const CHAR_T> lhs, span<const CHAR_T> rhs)
         {
             size_t        lLen   = lhs.size ();
             size_t        rLen   = rhs.size ();
@@ -40,7 +40,7 @@ namespace Stroika::Foundation::Characters {
             return Common::CompareResultNormalizer (static_cast<ptrdiff_t> (lLen) - static_cast<ptrdiff_t> (rLen));
         }
         template <Character_Compatible CHAR_T>
-        inline strong_ordering Compare_CI_ (span<const CHAR_T> lhs, span<const CHAR_T> rhs)
+        constexpr strong_ordering Compare_CI_ (span<const CHAR_T> lhs, span<const CHAR_T> rhs)
         {
             size_t        lLen   = lhs.size ();
             size_t        rLen   = rhs.size ();
@@ -219,7 +219,7 @@ namespace Stroika::Foundation::Characters {
         return true;
     }
     template <Character_Compatible CHAR_T>
-    inline strong_ordering Character::Compare (span<const CHAR_T> lhs, span<const CHAR_T> rhs, CompareOptions co) noexcept
+    constexpr strong_ordering Character::Compare (span<const CHAR_T> lhs, span<const CHAR_T> rhs, CompareOptions co) noexcept
     {
         Require (co == CompareOptions::eWithCase or co == CompareOptions::eCaseInsensitive);
         switch (co) {
