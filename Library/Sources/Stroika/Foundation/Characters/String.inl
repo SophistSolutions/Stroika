@@ -75,13 +75,13 @@ namespace Stroika::Foundation::Characters {
         if (Character::IsASCII (s)) {
             // if we already have ascii, just copy into a buffer that can be used for now with the legacy API, and
             // later specialized into something we construct a special rep for
-            Memory::StackBuffer<wchar_t> buf{s.size ()};
+            Memory::StackBuffer<char> buf{s.size ()};
 #if qCompilerAndStdLib_spanOfContainer_Buggy
             Private_::CopyAsASCIICharacters_ (s, span{buf.data (), buf.size ()});
-            return mk_ (span<const wchar_t>{buf.data (), buf.size ()});
+            return mk_ (span<const char>{buf.data (), buf.size ()});
 #else
             Private_::CopyAsASCIICharacters_ (s, span{buf});
-            return mk_ (span<const wchar_t>{buf}); // this case specialized
+            return mk_ (span<const char>{buf}); // this case specialized
 #endif
         }
         else {
@@ -145,6 +145,8 @@ namespace Stroika::Foundation::Characters {
         return mk_ (span<const char32_t>{r.data (), r.size ()});
     }
     // FOR NOW - INITIALLY - but later specialize for char and char32_t and probably lose this one
+    template <>
+    auto String::mk_ (span<const char> s) -> _SharedPtrIRep;
     template <>
     auto String::mk_ (span<const wchar_t> s) -> _SharedPtrIRep;
 

@@ -58,29 +58,35 @@ namespace {
             using inherited = _IRep;
 
         protected:
-            const CHAR_T* _fStart;
-            const CHAR_T* _fEnd; // \note - _fEnd must always point to a 'NUL' character, so the underlying array extends one or more beyond
+            span<const CHAR_T> _fData;
 
         protected:
             Rep (span<const CHAR_T> s)
-                : inherited{}
-                , _fStart{s.data ()}
-                , _fEnd{s.data () + s.size ()}
+                requires (not is_same_v<CHAR_T, char8_t>) // char8 ironically involves 2-byte characters, cuz only ascii encoded as 1 byte
+            : _fData{s}
             {
             }
             virtual Character GetAt (size_t index) const noexcept override
             {
-                Assert (_fStart <= _fEnd);
                 Require (index < size ());
-                return _fStart[index];
+                return Character{_fData[index]};
             }
             virtual PeekSpanData PeekData ([[maybe_unused]] optional<PeekSpanData::StorageCodePointType> preferred) const noexcept override
             {
-                if constexpr (sizeof (wchar_t) == 2) {
-                    return PeekSpanData{PeekSpanData::StorageCodePointType::eChar16, {.fChar16 = span<const char16_t>{reinterpret_cast<const char16_t*> (_fStart), reinterpret_cast<const char16_t*> (_fEnd)}}};
+                if constexpr (sizeof (CHAR_T) == 1) {
+                    return PeekSpanData{PeekSpanData::StorageCodePointType::eAscii, {.fAscii = _fData}};
                 }
-                else if constexpr (sizeof (wchar_t) == 4) {
-                    return PeekSpanData{PeekSpanData::StorageCodePointType::eChar32, {.fChar32 = span<const char32_t>{reinterpret_cast<const char32_t*> (_fStart), reinterpret_cast<const char32_t*> (_fEnd)}}};
+                else if constexpr (sizeof (CHAR_T) == 2) {
+                    // reinterpret_cast needed cuz of wchar_t case
+                    return PeekSpanData{
+                        PeekSpanData::StorageCodePointType::eChar16,
+                        {.fChar16 = span<const char16_t>{reinterpret_cast<const char16_t*> (_fData.data ()), _fData.size ()}}};
+                }
+                else if constexpr (sizeof (CHAR_T) == 4) {
+                    // reinterpret_cast needed cuz of wchar_t case
+                    return PeekSpanData{
+                        PeekSpanData::StorageCodePointType::eChar32,
+                        {.fChar32 = span<const char16_t>{reinterpret_cast<const char32_t*> (_fData.data ()), _fData.size ()}}};
                 }
             }
 
@@ -89,36 +95,29 @@ namespace {
             virtual Traversal::Iterator<value_type> MakeIterator () const override
             {
                 struct MyIterRep_ final : Iterator<Character>::IRep, public Memory::UseBlockAllocationIfAppropriate<MyIterRep_> {
-                    _SharedPtrIRep fStr; // effectively RO, since if anyone modifies, our copy will remain unchanged
-                    size_t         fCurIdx;
-
-                    Rep* AccessRep_ ()
-                    {
-                        return Debug::UncheckedDynamicCast<Rep*> (fStr.get ());
-                    }
-                    const Rep* AccessRep_ () const
-                    {
-                        return Debug::UncheckedDynamicCast<Rep*> (fStr.get ());
-                    }
+                    _SharedPtrIRep     fHoldRepToAssureDataNotDestroyed_; // bump reference count
+                    span<const CHAR_T> fData_;                            // clone span (not underlying data) pointing inside fHoldRepToAssureDataNotDestroyed
+                    size_t             fCurIdx_;                          // could replace with pointer??
                     MyIterRep_ (const _SharedPtrIRep& r, size_t idx = 0)
-                        : fStr{r}
-                        , fCurIdx{idx}
+                        : fHoldRepToAssureDataNotDestroyed_{r}
+                        , fCurIdx_{idx}
+                        , fData_{Debug::UncheckedDynamicCast<Rep*> (r.get ())->_fData}
                     {
-                        Require (fCurIdx <= AccessRep_ ()->size ());
+                        Assert (r->size () == fData_.size ());
                     }
                     virtual Iterator<Character>::RepSmartPtr Clone () const override
                     {
-                        return Iterator<Character>::MakeSmartPtr<MyIterRep_> (fStr, fCurIdx);
+                        return Iterator<Character>::MakeSmartPtr<MyIterRep_> (fHoldRepToAssureDataNotDestroyed_, fCurIdx_);
                     }
                     virtual void More (optional<Character>* result, bool advance) override
                     {
                         RequireNotNull (result);
                         if (advance) [[likely]] {
-                            Require (fCurIdx <= AccessRep_ ()->size ());
-                            ++fCurIdx;
+                            Require (fCurIdx_ <= fData_.size ());
+                            ++fCurIdx_;
                         }
-                        if (fCurIdx < AccessRep_ ()->size ()) [[likely]] {
-                            *result = AccessRep_ ()->GetAt (fCurIdx);
+                        if (fCurIdx_ < fData_.size ()) [[likely]] {
+                            *result = Character{fData_[fCurIdx_]};
                         }
                         else {
                             *result = nullopt;
@@ -130,8 +129,8 @@ namespace {
                         RequireMember (rhs, MyIterRep_);
                         const MyIterRep_* rrhs = Debug::UncheckedDynamicCast<const MyIterRep_*> (rhs);
                         AssertNotNull (rrhs);
-                        Require (fStr == rrhs->fStr); // from same string object
-                        return fCurIdx == rrhs->fCurIdx;
+                        Require (fHoldRepToAssureDataNotDestroyed_ == rrhs->fHoldRepToAssureDataNotDestroyed_); // from same string object
+                        return fCurIdx_ == rrhs->fCurIdx_;
                     }
                 };
                 _SharedPtrIRep sharedContainerRep = const_cast<_IRep*> (static_cast<const _IRep*> (this))->shared_from_this ();
@@ -139,13 +138,11 @@ namespace {
             }
             virtual size_t size () const override
             {
-                Assert (_fStart <= _fEnd);
-                return _fEnd - _fStart;
+                return _fData.size ();
             }
             virtual bool empty () const override
             {
-                Assert (_fStart <= _fEnd);
-                return _fEnd == _fStart;
+                return _fData.empty ();
             }
             virtual void Apply (const function<void (Configuration::ArgByValueType<value_type> item)>& doToElement) const override
             {
@@ -157,6 +154,7 @@ namespace {
             }
             virtual Traversal::Iterator<value_type> Find_equal_to (const Configuration::ArgByValueType<value_type>& v) const override
             {
+                // @todo this is fine, but can be more efficient, so consider rewriting explicitly (avoid extra virt call)
                 return this->_Find_equal_to_default_implementation (v);
             }
         };
@@ -181,7 +179,7 @@ namespace {
 
         private:
             /*
-             * magic 'automatic round-capacity-up-to' these (in wchar_ts) - and use block allocation for them...
+             * magic 'automatic round-capacity-up-to' these (in CHAR_T) - and use block allocation for them...
              * 
              * getconf LEVEL1_DCACHE_LINESIZE; getconf LEVEL2_CACHE_LINESIZE
              * typically returns 64,64 so 16*2 is 32, and 16*4 (unix) is 64. So the blocks allocated will generally fit
@@ -205,8 +203,6 @@ namespace {
                 : Rep{mkBuf_ (t1)}
             {
             }
-
-        protected:
             Rep ()           = delete;
             Rep (const Rep&) = delete;
 
@@ -215,7 +211,7 @@ namespace {
 
         protected:
             /**
-             *  The argument wchar_t* strings MAY or MAY NOT be nul-terminated
+             *  The argument CHAR_T* strings MAY or MAY NOT be nul-terminated
              */
             Rep (const tuple<const CHAR_T*, const CHAR_T*, size_t>& strAndCapacity)
                 : inherited{span{get<0> (strAndCapacity), get<1> (strAndCapacity)}}
@@ -226,27 +222,26 @@ namespace {
         public:
             ~Rep ()
             {
-                AssertNotNull (this->_fStart);
                 Assert (fCapacity_ == AdjustCapacity_ (this->size () + 1)); // see mkBuf_ (size_t length) - and possible optimize to not store fCapacity
                 if constexpr (kUseBlockAllocatedForSmallBufStrings_) {
                     Assert (fCapacity_ >= kNElts1_);
                     switch (fCapacity_) {
                         case kNElts1_: {
-                            Memory::BlockAllocator<BufferedStringRepBlock_<kNElts1_>>{}.deallocate (reinterpret_cast<BufferedStringRepBlock_<kNElts1_>*> (const_cast<CHAR_T*> (this->_fStart)), 1);
+                            Memory::BlockAllocator<BufferedStringRepBlock_<kNElts1_>>{}.deallocate (reinterpret_cast<BufferedStringRepBlock_<kNElts1_>*> (const_cast<CHAR_T*> (this->_fData.data ())), 1);
                         } break;
                         case kNElts2_: {
-                            Memory::BlockAllocator<BufferedStringRepBlock_<kNElts2_>>{}.deallocate (reinterpret_cast<BufferedStringRepBlock_<kNElts2_>*> (const_cast<CHAR_T*> (this->_fStart)), 1);
+                            Memory::BlockAllocator<BufferedStringRepBlock_<kNElts2_>>{}.deallocate (reinterpret_cast<BufferedStringRepBlock_<kNElts2_>*> (const_cast<CHAR_T*> (this->_fData.data ())), 1);
                         } break;
                         case kNElts3_: {
-                            Memory::BlockAllocator<BufferedStringRepBlock_<kNElts3_>>{}.deallocate (reinterpret_cast<BufferedStringRepBlock_<kNElts3_>*> (const_cast<CHAR_T*> (this->_fStart)), 1);
+                            Memory::BlockAllocator<BufferedStringRepBlock_<kNElts3_>>{}.deallocate (reinterpret_cast<BufferedStringRepBlock_<kNElts3_>*> (const_cast<CHAR_T*> (this->_fData.data ())), 1);
                         } break;
                         default: {
-                            delete[] this->_fStart;
+                            delete[] this->_fData.data ();
                         } break;
                     }
                 }
                 else {
-                    delete[] this->_fStart;
+                    delete[] this->_fData.data ();
                 }
             }
 
@@ -262,15 +257,15 @@ namespace {
                 if constexpr (kUseBlockAllocatedForSmallBufStrings_) {
                     switch (capacity) {
                         case kNElts1_: {
-                            static_assert (sizeof (BufferedStringRepBlock_<kNElts1_>) == sizeof (wchar_t) * kNElts1_, "sizes should match");
+                            static_assert (sizeof (BufferedStringRepBlock_<kNElts1_>) == sizeof (CHAR_T) * kNElts1_, "sizes should match");
                             newBuf = reinterpret_cast<CHAR_T*> (Memory::BlockAllocator<BufferedStringRepBlock_<kNElts1_>>{}.allocate (1));
                         } break;
                         case kNElts2_: {
-                            static_assert (sizeof (BufferedStringRepBlock_<kNElts2_>) == sizeof (wchar_t) * kNElts2_, "sizes should match");
+                            static_assert (sizeof (BufferedStringRepBlock_<kNElts2_>) == sizeof (CHAR_T) * kNElts2_, "sizes should match");
                             newBuf = reinterpret_cast<CHAR_T*> (Memory::BlockAllocator<BufferedStringRepBlock_<kNElts2_>>{}.allocate (1));
                         } break;
                         case kNElts3_: {
-                            static_assert (sizeof (BufferedStringRepBlock_<kNElts3_>) == sizeof (wchar_t) * kNElts3_, "sizes should match");
+                            static_assert (sizeof (BufferedStringRepBlock_<kNElts3_>) == sizeof (CHAR_T) * kNElts3_, "sizes should match");
                             newBuf = reinterpret_cast<CHAR_T*> (Memory::BlockAllocator<BufferedStringRepBlock_<kNElts3_>>{}.allocate (1));
                         } break;
                         default: {
@@ -319,7 +314,7 @@ namespace {
         public:
             virtual size_t size () const override
             {
-                return this->_fEnd - this->_fStart;
+                return this->_fData.size ();
             }
 
         private:
@@ -382,10 +377,11 @@ namespace {
                 // if used for appropriately sized character (equiv to wchar_t) - then use that nul-terminated string
                 // and else return nullptr, so it will get wrapped
                 if constexpr (sizeof (CHAR_T) == sizeof (wchar_t)) {
-                    // This class ALWAYS constructed with String_ExternalMemoryOwnership_ApplicationLifetime and ALWAYS with NUL-terminated string
-                    // NO - we allow embedded nuls, but require NUL-termination - so this is wrong - Assert (_fStart + ::wcslen (_fStart) == _fEnd);
-                    Assert (*this->_fEnd == '\0' and this->_fStart + ::wcslen (this->_fStart) <= this->_fEnd);
-                    return reinterpret_cast<const wchar_t*> (this->_fStart);
+                    // we check/require this in CTOR, so should still be true
+                    const wchar_t* start = reinterpret_cast<const wchar_t*> (this->_fData.data ());
+                    const wchar_t* end   = start + this->_fData.size ();
+                    Assert (*end == '\0' and start + ::wcslen (start) <= end); // less or equal because you can call c_str() even through the string has embedded nuls
+                    return start;
                 }
                 else {
                     return nullptr;
@@ -530,8 +526,26 @@ String::_SharedPtrIRep String::mkEmpty_ ()
 }
 
 template <>
+auto String::mk_ (span<const char> s) -> _SharedPtrIRep
+{
+    return MakeSmartPtr<BufferedString_::Rep<char>> (s);
+}
+
+template <>
 auto String::mk_ (span<const wchar_t> s) -> _SharedPtrIRep
 {
+    if (Character::IsASCII (s)) {
+        // if we already have ascii, just copy into a buffer that can be used for now with the legacy API, and
+        // later specialized into something we construct a special rep for
+        Memory::StackBuffer<char> buf{s.size ()};
+#if qCompilerAndStdLib_spanOfContainer_Buggy
+        Private_::CopyAsASCIICharacters_ (s, span{buf.data (), buf.size ()});
+        return mk_ (span<const char>{buf.data (), buf.size ()});
+#else
+        Private_::CopyAsASCIICharacters_ (s, span{buf});
+        return mk_ (span<const char>{buf});     // this case specialized
+#endif
+    }
     return MakeSmartPtr<BufferedString_::Rep<wchar_t>> (s);
 }
 
@@ -600,17 +614,27 @@ String String::Remove (Character c) const
 optional<size_t> String::Find (Character c, size_t startAt, CompareOptions co) const
 {
     PeekSpanData pds = GetPeekSpanData<char> ();
-    // OPTIMIZED PATHS: Common case and should be fast
+    // OPTIMIZED PATHS: Common case(s) and should be fast
     if (pds.fInCP == PeekSpanData::StorageCodePointType::eAscii) {
         if (c.IsASCII ()) {
+            span<const char> examineSpan = pds.fAscii.subspan (startAt);
             if (co == CompareOptions::eWithCase) {
-                span<const char> examineSpan = pds.fAscii.subspan (startAt);
                 if (auto i = std::find (examineSpan.begin (), examineSpan.end (), c.GetAsciiCode ()); i != examineSpan.end ()) {
                     return i - examineSpan.begin () + startAt;
                 }
             }
+            else {
+                char   lc        = c.ToLowerCase ().GetAsciiCode ();
+                size_t reportIdx = startAt;
+                for (auto ci : examineSpan) {
+                    if (tolower (ci) == lc) {
+                        return reportIdx;
+                    }
+                    ++reportIdx;
+                }
+            }
+            return nullopt; // not found, possibly cuz not ascii
         }
-        return nullopt; // not found, possibly cuz not ascii
     }
     // fallback on more generic algorithm - and copy to full character objects
     //
@@ -1173,7 +1197,7 @@ String String::LimitLength (size_t maxLen, bool keepLeft) const
 #if qCompiler_vswprintf_on_elispisStr_Buggy
     static const String kELIPSIS_{L"..."sv};
 #else
-    static const String         kELIPSIS_{L"\u2026"sv}; // OR L"..."
+    static const String kELIPSIS_{L"\u2026"sv}; // OR L"..."
 #endif
     return LimitLength (maxLen, keepLeft, kELIPSIS_);
 }
