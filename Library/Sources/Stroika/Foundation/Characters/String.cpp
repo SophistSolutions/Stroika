@@ -521,7 +521,11 @@ String::_SharedPtrIRep String::mkEmpty_ ()
 {
     static constexpr wchar_t kEmptyCStr_[] = L"";
     // use StringConstant_ since nul-terminated, and for now works better with CSTR - and why allocate anything...
+    #if qCompilerAndStdLib_spanOfContainer_Buggy
+    static const _SharedPtrIRep s_ = MakeSmartPtr<StringConstant_::Rep<wchar_t>> (span<const wchar_t>{&kEmptyCStr_[0], &kEmptyCStr_[0]});
+    #else
     static const _SharedPtrIRep s_ = MakeSmartPtr<StringConstant_::Rep<wchar_t>> (span{std::begin (kEmptyCStr_), 0});
+    #endif
     return s_;
 }
 
