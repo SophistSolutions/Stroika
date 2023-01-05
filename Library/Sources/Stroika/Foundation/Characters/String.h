@@ -683,7 +683,7 @@ namespace Stroika::Foundation::Characters {
          *
          *  \par Example Usage
          *      \code
-         *          const String kTest_ { L"a=b" };
+         *          const String kTest_{ L"a=b" };
          *          const String kLbl2LookFor_ { L"a=" };
          *          if (kTest_.Find (kLbl2LookFor_)) {
          *              String  tmp { kTest_.SubString (kLbl2LookFor_.length ()) };
@@ -732,11 +732,11 @@ namespace Stroika::Foundation::Characters {
         /**
          *  \par Example Usage
          *      \code
-         *          const String kTest_    { L"a=b,"sv };
-         *          const RegularExpression kRE_    { L"a=(.*)[, ]" };
-         *          Sequence<String>      tmp1      { kTest_.FindEachString (kRE_) };
+         *          const String                        kTest_{ L"a=b,"sv };
+         *          const RegularExpression             kRE_{ L"a=(.*)[, ]" };
+         *          Sequence<String>                    tmp1{ kTest_.FindEachString (kRE_) };
          *          Assert (tmp1.size () == 1 and tmp1[0] == L"a=b,");
-         *          Sequence<RegularExpressionMatch>      tmp2 { kTest_.FindEachMatch (kRE_) };
+         *          Sequence<RegularExpressionMatch>    tmp2 { kTest_.FindEachMatch (kRE_) };
          *          Assert (tmp2.size () == 1 and tmp2[0].GetFullMatch () == L"a=b," and tmp2[0].GetSubMatches () == Sequence<String> {L"b"});
          *      \endcode
          *
@@ -750,7 +750,7 @@ namespace Stroika::Foundation::Characters {
         /**
          *  \par Example Usage
          *      \code
-         *          const String kTest_ { L"a=b, c=d"_k };
+         *          const String            kTest_ { L"a=b, c=d"_k };
          *          const RegularExpression kRE_ { L"(.)=(.)" };
          *          Assert ((kTest_.FindEachString (kRE_) ==  vector<String> {L"a=b", L"c=d"}));
          *      \endcode
@@ -883,7 +883,7 @@ namespace Stroika::Foundation::Characters {
          *
          *  \par Example Usage
          *      \code
-         *       String name = origName.RTrim ([] (Character c) { return c == '\\';});        // Trim a trailing backslash(s), if present
+         *          String name = origName.RTrim ([] (Character c) { return c == '\\';});        // Trim a trailing backslash(s), if present
          *      \endcode
          */
         nonvirtual String RTrim (bool (*shouldBeTrimmmed) (Character) = [] (Character c) -> bool { return c.IsWhitespace (); }) const;

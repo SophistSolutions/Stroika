@@ -71,7 +71,6 @@ namespace {
                 , _fEnd{end}
             {
             }
-
             virtual Character GetAt (size_t index) const noexcept override
             {
                 Assert (_fStart <= _fEnd);
@@ -362,10 +361,10 @@ namespace {
             Rep (span<const wchar_t> s)
                 : inherited{s.data (), s.data () + s.size ()} // don't copy memory - but copy raw pointers! So they MUST BE (externally promised) 'externally owned for the application lifetime and constant' - like c++ string constants
             {
-                #if qDebug
+#if qDebug
                 const wchar_t* start = s.data ();
                 const wchar_t* end   = start + s.size ();
-                #endif
+#endif
                 // NO - we allow embedded nuls, but require NUL-termination - so this is wrong - Require (start + ::wcslen (start) == end);
                 Require (*end == '\0' and start + ::wcslen (start) <= end);
             }

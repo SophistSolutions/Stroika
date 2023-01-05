@@ -197,7 +197,7 @@ struct Statement::MyRep_ : IRep {
         : fConnectionPtr_{db}
     {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-        TraceContextBumper ctx{"SQLite::Statement::MyRep_::CTOR", Stroika_Foundation_Debug_OptionalizeTraceArgs (L "db=%p, query='%s'", db, query.c_str ())};
+        TraceContextBumper ctx{"SQLite::Statement::MyRep_::CTOR", Stroika_Foundation_Debug_OptionalizeTraceArgs (L "db=%p, query='%s'", db, query.As<wstring> ().c_str ())};
 #endif
         RequireNotNull (db);
 #if qDebug

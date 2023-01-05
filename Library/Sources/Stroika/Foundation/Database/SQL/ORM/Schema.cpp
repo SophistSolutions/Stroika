@@ -146,7 +146,7 @@ Mapping<String, VariantValue> ORM::Schema::Table::MapToDB (const Mapping<String,
         resultFields.Add (fSpecialCatchAll->fName, fSpecialCatchAll->GetEffectiveRawToCombined () (extraFields));
     }
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    DbgTrace (L"returning: %s", Characters::ToString (resultFields).c_str ());
+    DbgTrace (L"returning: %s", Characters::ToString (resultFields).As<wstring> ().c_str ());
 #endif
     return resultFields;
 }
