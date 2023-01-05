@@ -86,7 +86,7 @@ namespace {
                     // reinterpret_cast needed cuz of wchar_t case
                     return PeekSpanData{
                         PeekSpanData::StorageCodePointType::eChar32,
-                        {.fChar32 = span<const char16_t>{reinterpret_cast<const char32_t*> (_fData.data ()), _fData.size ()}}};
+                        {.fChar32 = span<const char32_t>{reinterpret_cast<const char32_t*> (_fData.data ()), _fData.size ()}}};
                 }
             }
 
@@ -100,8 +100,8 @@ namespace {
                     size_t             fCurIdx_;                          // could replace with pointer??
                     MyIterRep_ (const _SharedPtrIRep& r, size_t idx = 0)
                         : fHoldRepToAssureDataNotDestroyed_{r}
-                        , fCurIdx_{idx}
                         , fData_{Debug::UncheckedDynamicCast<Rep*> (r.get ())->_fData}
+                        , fCurIdx_{idx}
                     {
                         Assert (r->size () == fData_.size ());
                     }
