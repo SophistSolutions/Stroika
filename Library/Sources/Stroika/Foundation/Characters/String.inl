@@ -18,23 +18,32 @@
 
 namespace Stroika::Foundation::Characters {
 
-#if 0
     /*
      ********************************************************************************
-     ********************************* String::_IRep ********************************
+     ********************* Characters::Private_::Access_ ****************************
      ********************************************************************************
      */
-    inline String::_IRep::_IRep (const pair<const wchar_t*, const wchar_t*>& span)
-        : _fStart{span.first}
-        , _fEnd{span.second}
-    {
+    namespace Private_ {
+        template <SupportedComparableUnicodeStringTypes_ USTRING>
+        span<const Character> Access_ (USTRING&& s, Memory::StackBuffer<Character>* mostlyIgnoredBuf)
+        {
+            if constexpr (is_same_v<decay_t<USTRING>, String>) {
+                return s.GetData (mostlyIgnoredBuf);
+            }
+            else if constexpr (is_same_v<decay_t<USTRING>, const wchar_t*>) {
+                static_assert (sizeof (Character) == sizeof (wchar_t));
+                return span{reinterpret_cast<const Character*> (s), ::wcslen (s)};
+            }
+            else if constexpr (is_same_v<decay_t<USTRING>, wstring>) {
+                static_assert (sizeof (Character) == sizeof (wchar_t));
+                return span{reinterpret_cast<const Character*> (s.c_str ()), s.length ()};
+            }
+            else if constexpr (is_same_v<decay_t<USTRING>, wstring_view>) {
+                static_assert (sizeof (Character) == sizeof (wchar_t));
+                return span{reinterpret_cast<const Character*> (s.data ()), s.length ()};
+            }
+        }
     }
-    inline String::_IRep::_IRep (const wchar_t* start, const wchar_t* end)
-        : _fStart{start}
-        , _fEnd{end}
-    {
-    }
-#endif
 
     /*
      ********************************************************************************
@@ -1032,31 +1041,6 @@ namespace Stroika::Foundation::Characters {
     inline bool String::operator== (const wstring_view& rhs) const
     {
         return EqualsComparer{}(*this, rhs);
-    }
-
-    /*
-     ********************************************************************************
-     **************************** String::EqualsComparer ****************************
-     ********************************************************************************
-     */
-    template <Private_::SupportedComparableUnicodeStringTypes_ USTRING>
-    inline span<const Character> Characters::Private_::Access_ (USTRING&& s, Memory::StackBuffer<Character>* mostlyIgnoredBuf)
-    {
-        if constexpr (is_same_v<decay_t<USTRING>, String>) {
-            return s.GetData (mostlyIgnoredBuf);
-        }
-        else if constexpr (is_same_v<decay_t<USTRING>, const wchar_t*>) {
-            static_assert (sizeof (Character) == sizeof (wchar_t));
-            return span{reinterpret_cast<const Character*> (s), ::wcslen (s)};
-        }
-        else if constexpr (is_same_v<decay_t<USTRING>, wstring>) {
-            static_assert (sizeof (Character) == sizeof (wchar_t));
-            return span{reinterpret_cast<const Character*> (s.c_str ()), s.length ()};
-        }
-        else if constexpr (is_same_v<decay_t<USTRING>, wstring_view>) {
-            static_assert (sizeof (Character) == sizeof (wchar_t));
-            return span{reinterpret_cast<const Character*> (s.data ()), s.length ()};
-        }
     }
 
     /*

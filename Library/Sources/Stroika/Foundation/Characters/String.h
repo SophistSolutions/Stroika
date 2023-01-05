@@ -1441,9 +1441,6 @@ namespace Stroika::Foundation::Characters {
             is_same_v < decay_t<T>,
         String >
             or is_same_v<decay_t<T>, wstring> or is_same_v<decay_t<T>, wstring_view> or is_same_v<decay_t<T>, const Character*> or is_same_v<decay_t<T>, const wchar_t*>;
-
-        template <SupportedComparableUnicodeStringTypes_ USTRING>
-        span<const Character> Access_ (USTRING&& s, Memory::StackBuffer<Character>* mostlyIgnoredBuf);
     }
 
     /**
@@ -1486,8 +1483,6 @@ namespace Stroika::Foundation::Characters {
     private:
         template <Private_::SupportedComparableUnicodeStringTypes_ LT, Private_::SupportedComparableUnicodeStringTypes_ RT>
         strong_ordering Cmp_ (LT&& lhs, RT&& rhs) const;
-        template <Private_::SupportedComparableUnicodeStringTypes_ USTRING>
-        static span<const Character> Access_ (USTRING&& s, Memory::StackBuffer<Character>* mostlyIgnoredBuf);
     };
 
     /**
