@@ -1391,15 +1391,14 @@ namespace Stroika::Foundation::Characters {
     public:
         /*
          *  Return a pointer to mostly standard (wide, nul-terminated) C string,
-         *  whose lifetime extends to the next non-const call on this rep.
+         *  whose lifetime extends to the next non-const call on this rep, or nullptr.
          *
          *  It is only 'mostly' standard because it is allowed to have nul-chars embedded in it. But it will
          *  always have str[len] == 0;
          *
+         *  \note Since Stroika v3.0d1, this can return nullptr (in which case the String library will allocate a new backend)
          * 
-         *  @todo CHANGE SO THIS CAN BE NULLPTR
-         *
-         *  \ensure returnResult[len] == '\0';
+         *  \ensure returnResult == nullptr or returnResult[len] == '\0';
          */
         virtual const wchar_t* c_str_peek () const noexcept = 0;
 

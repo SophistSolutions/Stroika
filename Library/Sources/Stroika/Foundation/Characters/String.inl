@@ -961,21 +961,6 @@ namespace Stroika::Foundation::Characters {
     {
         return size ();
     }
-    inline const wchar_t* String::c_str () const noexcept
-    {
-        const wchar_t* result = _SafeReadRepAccessor{this}._ConstGetRep ().c_str_peek ();
-        EnsureNotNull (result);
-        Ensure (result[size ()] == '\0');
-        return result;
-    }
-    inline const wchar_t* String::c_str ()
-    {
-        // @todo must totally re-impelemnt use switches rep!!!
-        const wchar_t* result = (wchar_t*)_SafeReadRepAccessor{this}._ConstGetRep ().c_str_peek ();
-        EnsureNotNull (result);
-        Ensure (result[size ()] == '\0');
-        return result;
-    }
     inline tuple<const wchar_t*, wstring_view> String::c_str (Memory::StackBuffer<wchar_t>* possibleBackingStore) const
     {
         // @todo FIRST check if default impl already returns c_str () and just use it if we can. ONLY if that fails, do we

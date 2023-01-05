@@ -306,6 +306,7 @@ namespace {
         public:
             virtual const wchar_t* c_str_peek () const noexcept override
             {
+                return nullptr; // NEW APPROACH...
                 [[maybe_unused]] size_t len = size ();
                 Ensure (_fStart[len] == '\0');
                 return _fStart;
@@ -379,6 +380,57 @@ namespace {
                 // NO - we allow embedded nuls, but require NUL-termination - so this is wrong - Assert (_fStart + ::wcslen (_fStart) == _fEnd);
                 Assert (*_fEnd == '\0' and _fStart + ::wcslen (_fStart) <= _fEnd);
                 return _fStart;
+            }
+        };
+    };
+}
+
+namespace {
+    /**
+     *  Delegate to original String::Rep, and add in support for c_str ()
+     */
+    struct StringWithCStr_ : public String {
+        using inherited = String;
+
+        class Rep : public String::_IRep, public Memory::UseBlockAllocationIfAppropriate<Rep> {
+        private:
+            using inherited = StringRepHelper_::Rep;
+
+            _SharedPtrIRep fUnderlyingRep_;
+            wstring        fCString_;
+
+        public:
+            Rep (const _SharedPtrIRep& underlyingRep)
+                : fUnderlyingRep_{underlyingRep}
+                , fCString_{}
+            {
+                PeekSpanData                 peekData = underlyingRep->PeekData (PeekSpanData::StorageCodePointType::eChar32);
+                Memory::StackBuffer<wchar_t> ignored1;
+                span<const wchar_t>          s = String::GetData (peekData, &ignored1);
+                fCString_.assign (s.data (), s.size ());
+            }
+
+            // Iterable<T>::_IRep overrides - delegate
+        public:
+            virtual _IterableRepSharedPtr Clone () const override
+            {
+                AssertNotReached (); // Since String reps now immutable, this should never be called
+                return nullptr;
+            }
+            virtual Iterator<value_type> MakeIterator () const { return fUnderlyingRep_->MakeIterator (); }
+            virtual size_t               size () const { return fUnderlyingRep_->size (); }
+            virtual bool                 empty () const { return fUnderlyingRep_->empty (); }
+            virtual void                 Apply (const function<void (Configuration::ArgByValueType<Character> item)>& doToElement) const { fUnderlyingRep_->Apply (doToElement); }
+            virtual Iterator<value_type> Find (const function<bool (Configuration::ArgByValueType<Character> item)>& that) const { return fUnderlyingRep_->Find (that); }
+            virtual Iterator<value_type> Find_equal_to (const Configuration::ArgByValueType<Character>& v) const { return fUnderlyingRep_->Find_equal_to (v); }
+
+            // String::_IRep overrides - delegate
+        public:
+            virtual Character      GetAt (size_t index) const noexcept { return fUnderlyingRep_->GetAt (index); }
+            virtual PeekSpanData   PeekData ([[maybe_unused]] optional<PeekSpanData::StorageCodePointType> preferred) const noexcept { return fUnderlyingRep_->PeekData (preferred); }
+            virtual const wchar_t* c_str_peek () const noexcept override
+            {
+                return fCString_.c_str ();
             }
         };
     };
@@ -1177,6 +1229,26 @@ void String::erase (size_t from, size_t count)
     // TODO: Double check STL definition - but I think they allow for count to be 'too much' - and silently trim to end...
     size_t max2Erase = static_cast<size_t> (max (static_cast<ptrdiff_t> (0), static_cast<ptrdiff_t> (size ()) - static_cast<ptrdiff_t> (from)));
     *this            = RemoveAt (from, from + min (count, max2Erase));
+}
+
+const wchar_t* String::c_str () const noexcept
+{
+    // UNSAFE - DEPRECATED API
+    return const_cast<String*> (this)->c_str ();
+}
+const wchar_t* String::c_str ()
+{
+    // Rarely used mechanism, of replacing the underlying rep, for the iterable, as needed
+    const wchar_t* result = (wchar_t*)_SafeReadRepAccessor{this}._ConstGetRep ().c_str_peek ();
+    if (result == nullptr) {
+        _SharedPtrIRep originalRep = dynamic_pointer_cast<_IRep> (_fRep.cget_ptr ());
+        _fRep                      = MakeSmartPtr<StringWithCStr_::Rep> (originalRep);
+        result                     = (wchar_t*)_SafeReadRepAccessor{this}._ConstGetRep ().c_str_peek ();
+        AssertNotNull (result);
+    }
+    EnsureNotNull (result);
+    Ensure (result[size ()] == '\0');
+    return result;
 }
 
 void String::ThrowInvalidAsciiException_ ()
