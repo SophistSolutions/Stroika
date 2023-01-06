@@ -69,6 +69,55 @@ namespace {
 
     VariantValue Reader_value_ (MyBufferedStreamReader_& in);
 
+    /*
+     */
+    inline bool IsJSONSpace_ (wchar_t c)
+    {
+        // iswspace was pretty slow (on windoze) - showing up as significant in performance profiling.
+        // According to:
+        //      https://www.json.org/json-en.html
+        // only spaces allowed in json source are:
+        //  ws = *(
+        //       %x20 /              ; Space
+        //       %x09 /              ; Horizontal tab
+        //       %x0A /              ; Line feed or New line
+        //       %x0D                ; Carriage return
+        //       )
+        switch (c) {
+            case ' ':
+            case '\t':
+            case '\r':
+            case '\n':
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    inline bool IsJSONDigit_ (wchar_t c)
+    {
+        // iswdigit tweak (showed up as significant - 6% of full runtime)
+        // According to:
+        //      https://www.json.org/json-en.html
+        // appears just digits 0..9
+        // slightly longer way but doesn't assume ascii, and probably compiles to the same thing is '0' <= n <= '9'
+        switch (c) {
+            case '0':
+            case '1':
+            case '2':
+            case '3':
+            case '4':
+            case '5':
+            case '6':
+            case '7':
+            case '8':
+            case '9':
+                return true;
+            default:
+                return false;
+        }
+    }
+
     // throw if bad hex digit
     uint8_t HexChar2Num_ (char c)
     {
@@ -156,14 +205,14 @@ namespace {
     static constexpr Character kDash_{'-'};
     VariantValue               Reader_Number_ (wchar_t initialChar, MyBufferedStreamReader_& in)
     {
-        Require (initialChar == '-' or iswdigit (initialChar));
+        Require (initialChar == '-' or IsJSONDigit_ (initialChar));
 
         bool containsDot = false;
         // ACCUMULATE STRING, and then call builtin number parsing functions...
         // This accumulation is NOT as restrictive as it could be - but should accept all valid numbers
         StringBuilder tmp;
         for (wchar_t c = initialChar; c != '\0'; c = in.Read ().value_or ('\0').As<wchar_t> ()) {
-            if (iswdigit (c) or c == '.' or c == 'e' or c == 'E' or c == '+' or c == '-') [[likely]] {
+            if (IsJSONDigit_ (c) or c == '.' or c == 'e' or c == 'E' or c == '+' or c == '-') [[likely]] {
                 tmp += c;
                 if (c == '.') [[unlikely]] {
                     containsDot = true;
@@ -242,7 +291,7 @@ namespace {
                     Execution::Throw (kException_);
                 }
             }
-            else if (iswspace (nextChar)) {
+            else if (IsJSONSpace_ (nextChar)) {
                 // skip char
             }
             else {
@@ -294,7 +343,7 @@ namespace {
                 }
                 in.AdvanceOne ();
             }
-            else if (iswspace (peekedChar)) {
+            else if (IsJSONSpace_ (peekedChar)) {
                 in.AdvanceOne ();
             }
             else {
@@ -388,7 +437,7 @@ namespace {
                     return Reader_SpecialToken_ (oc->As<wchar_t> (), in);
 
                 default: {
-                    if (iswspace (oc->As<wchar_t> ())) [[likely]] {
+                    if (IsJSONSpace_ (oc->As<wchar_t> ())) [[likely]] {
                         // ignore
                     }
                     else {
