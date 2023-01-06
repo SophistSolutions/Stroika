@@ -25,8 +25,16 @@ namespace Stroika::Foundation::Characters {
      */
     namespace Private_ {
         template <SupportedComparableUnicodeStringTypes_ USTRING>
-        span<const Character> Access_ (USTRING&& s, Memory::StackBuffer<Character>* mostlyIgnoredBuf)
+        inline span<const Character> Access_ (USTRING&& s, Memory::StackBuffer<Character>* mostlyIgnoredBuf)
         {
+            /*
+             * Genericly convert the argument to a span<const Character> object; for a string, complex and requires
+             * a function call (GetData) and ESSENTIALLY optional mostlyIgnoredBuf argument. For most other types
+             * mostlyIgnoredBuf is ignored.
+             * 
+             * This must be highly optimized as its used in critical locations, to quickly access argument data and
+             * convert it into a usable comparable form.
+             */
             if constexpr (is_same_v<decay_t<USTRING>, String>) {
                 return s.GetData (mostlyIgnoredBuf);
             }
@@ -769,7 +777,7 @@ namespace Stroika::Foundation::Characters {
         }
         return _SafeReadRepAccessor{this}._ConstGetRep ().PeekData (preferredSCP);
     }
-    template <Character_SafelyCompatible CHAR_TYPE>
+    template <Character_Compatible CHAR_TYPE>
     inline optional<span<const CHAR_TYPE>> String::PeekData (const PeekSpanData& pds)
     {
         using StorageCodePointType = PeekSpanData::StorageCodePointType;
@@ -1067,9 +1075,32 @@ namespace Stroika::Foundation::Characters {
     template <Private_::SupportedComparableUnicodeStringTypes_ LT, Private_::SupportedComparableUnicodeStringTypes_ RT>
     inline bool String::EqualsComparer::Cmp_ (LT&& lhs, RT&& rhs) const
     {
+        // optimize very common case of ASCII String vs ASCII String
+        if constexpr (is_same_v<decay_t<LT>, String> and is_same_v<decay_t<RT>, String>) {
+            if (auto lhsAsciiSpan = lhs.PeekData<char> ()) {
+                if (auto rhsAsciiSpan = rhs.PeekData<char> ()) {
+                    if (fCompareOptions == CompareOptions::eWithCase) {
+                        if (lhsAsciiSpan->size () != rhsAsciiSpan->size ()) {
+                            return false;
+                        }
+                        return Memory::MemCmp (lhsAsciiSpan->data (), rhsAsciiSpan->data (), lhsAsciiSpan->size ()) == 0;
+                    }
+                    else {
+                        return Character::Compare (*lhsAsciiSpan, *rhsAsciiSpan, CompareOptions::eCaseInsensitive) == 0;
+                    }
+                }
+            }
+        }
+        return Cmp_Generic_ (forward<LT> (lhs), forward<RT> (rhs));
+    }
+    template <Private_::SupportedComparableUnicodeStringTypes_ LT, Private_::SupportedComparableUnicodeStringTypes_ RT>
+    bool String::EqualsComparer::Cmp_Generic_ (LT&& lhs, RT&& rhs) const
+    {
+        // separate function - cuz large stackframe and on windows generates chkstk calls, so dont have in
+        // same frame where we do optimizations
         Memory::StackBuffer<Character> ignore1;
         Memory::StackBuffer<Character> ignore2;
-        return Character::Compare (Private_::Access_ (lhs, &ignore1), Private_::Access_ (rhs, &ignore2), fCompareOptions) == 0;
+        return Character::Compare (Private_::Access_ (forward<LT> (lhs), &ignore1), Private_::Access_ (forward<RT> (rhs), &ignore2), fCompareOptions) == 0;
     }
     template <ConvertibleToString LT, ConvertibleToString RT>
     inline bool String::EqualsComparer::operator() (LT&& lhs, RT&& rhs) const
@@ -1101,9 +1132,24 @@ namespace Stroika::Foundation::Characters {
     template <Private_::SupportedComparableUnicodeStringTypes_ LT, Private_::SupportedComparableUnicodeStringTypes_ RT>
     inline strong_ordering String::ThreeWayComparer::Cmp_ (LT&& lhs, RT&& rhs) const
     {
+        // optimize very common case of ASCII String vs ASCII String
+        if constexpr (is_same_v<decay_t<LT>, String> and is_same_v<decay_t<RT>, String>) {
+            if (auto lhsAsciiSpan = lhs.PeekData<char> ()) {
+                if (auto rhsAsciiSpan = rhs.PeekData<char> ()) {
+                    return Character::Compare (*lhsAsciiSpan, *rhsAsciiSpan, fCompareOptions);
+                }
+            }
+        }
+        return Cmp_Generic_ (forward<LT> (lhs), forward<RT> (rhs));
+    }
+    template <Private_::SupportedComparableUnicodeStringTypes_ LT, Private_::SupportedComparableUnicodeStringTypes_ RT>
+    strong_ordering String::ThreeWayComparer::Cmp_Generic_ (LT&& lhs, RT&& rhs) const
+    {
+        // separate function - cuz large stackframe and on windows generates chkstk calls, so dont have in
+        // same frame where we do optimizations
         Memory::StackBuffer<Character> ignore1;
         Memory::StackBuffer<Character> ignore2;
-        return Character::Compare (Private_::Access_ (lhs, &ignore1), Private_::Access_ (rhs, &ignore2), fCompareOptions);
+        return Character::Compare (Private_::Access_ (forward<LT> (lhs), &ignore1), Private_::Access_ (forward<RT> (rhs), &ignore2), fCompareOptions);
     }
     template <ConvertibleToString LT, ConvertibleToString RT>
     inline strong_ordering String::ThreeWayComparer::operator() (LT&& lhs, RT&& rhs) const

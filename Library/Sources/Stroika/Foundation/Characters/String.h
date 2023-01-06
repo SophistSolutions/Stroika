@@ -1166,7 +1166,7 @@ namespace Stroika::Foundation::Characters {
          *  This API is public, but best to avoid depending on internals of String API - like PeekSpanData - since
          *  this reasonably likely to change in future versions.
          */
-        template <Character_SafelyCompatible CHAR_TYPE>
+        template <Character_Compatible CHAR_TYPE>
         static optional<span<const CHAR_TYPE>> PeekData (const PeekSpanData& pds);
         template <Character_Compatible CHAR_TYPE>
         nonvirtual optional<span<const CHAR_TYPE>> PeekData () const;
@@ -1486,6 +1486,8 @@ namespace Stroika::Foundation::Characters {
     private:
         template <Private_::SupportedComparableUnicodeStringTypes_ LT, Private_::SupportedComparableUnicodeStringTypes_ RT>
         bool Cmp_ (LT&& lhs, RT&& rhs) const;
+        template <Private_::SupportedComparableUnicodeStringTypes_ LT, Private_::SupportedComparableUnicodeStringTypes_ RT>
+        bool Cmp_Generic_ (LT&& lhs, RT&& rhs) const;
     };
 
     /**
@@ -1507,6 +1509,8 @@ namespace Stroika::Foundation::Characters {
     private:
         template <Private_::SupportedComparableUnicodeStringTypes_ LT, Private_::SupportedComparableUnicodeStringTypes_ RT>
         strong_ordering Cmp_ (LT&& lhs, RT&& rhs) const;
+        template <Private_::SupportedComparableUnicodeStringTypes_ LT, Private_::SupportedComparableUnicodeStringTypes_ RT>
+        strong_ordering Cmp_Generic_ (LT&& lhs, RT&& rhs) const;
     };
 
     /**

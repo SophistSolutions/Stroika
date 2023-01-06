@@ -50,6 +50,13 @@ namespace {
      *  CHAR_T, so that the implementation can store them as an array, and index.
      *  So mixed 1,2,3 byte characters all get stored in a char32_t array, and a string with all ascii
      *  characters get stored in a char (1byte stride) array.
+     * 
+     *  \note - the KEY design choice in StringRepHelperAllFitInSize_::Rep<CHAR_T> is that it contains no
+     *        multi-code-point characters. This is what allows the simple calculation of array index
+     *        to character offset. So use 
+     *              StringRepHelperAllFitInSize_::Rep<char> for ascii text
+     *              StringRepHelperAllFitInSize_::Rep<char16_t> for isolatin/anything which is a 2-byte unicode char (not surrogates)
+     *              StringRepHelperAllFitInSize_::Rep<char32_t> for anything else - this always works
      */
     struct StringRepHelperAllFitInSize_ : String {
         template <Character_IsUnicodeCodePointOrPlainChar CHAR_T = wchar_t>
@@ -379,7 +386,9 @@ namespace {
                 if constexpr (sizeof (CHAR_T) == sizeof (wchar_t)) {
                     // we check/require this in CTOR, so should still be true
                     const wchar_t* start = reinterpret_cast<const wchar_t*> (this->_fData.data ());
-                    const wchar_t* end   = start + this->_fData.size ();
+#if qDebug
+                    const wchar_t* end = start + this->_fData.size ();
+#endif
                     Assert (*end == '\0' and start + ::wcslen (start) <= end); // less or equal because you can call c_str() even through the string has embedded nuls
                     return start;
                 }
