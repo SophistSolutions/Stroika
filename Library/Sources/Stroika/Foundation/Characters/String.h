@@ -1359,6 +1359,8 @@ namespace Stroika::Foundation::Characters {
         static _SharedPtrIRep mk_ (span<const CHAR_T> s1, span<const CHAR_T> s2);
         template <Character_Compatible CHAR_T>
         static _SharedPtrIRep mk_ (Iterable<CHAR_T> it);
+        template <Character_Compatible CHAR_T>
+        static _SharedPtrIRep mk_ (span<CHAR_T> s);
 
     private:
         nonvirtual size_t SubString_adjust_ (unsigned int fromOrTo, size_t myLength) const;

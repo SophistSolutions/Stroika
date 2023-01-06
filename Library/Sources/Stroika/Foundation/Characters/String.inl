@@ -20,10 +20,24 @@ namespace Stroika::Foundation::Characters {
 
     /*
      ********************************************************************************
-     ********************* Characters::Private_::Access_ ****************************
+     *************************** Characters::Private_ *******************************
      ********************************************************************************
      */
     namespace Private_ {
+        template <Character_Compatible SRC_T, Character_Compatible TRG_T>
+        inline void CopyAsASCIICharacters_ (span<const SRC_T> src, span<TRG_T> trg)
+        {
+            Require (trg.size () >= src.size ());
+            TRG_T* outI = trg.data ();
+            for (auto ii = src.begin (); ii != src.end (); ++ii) {
+                if constexpr (is_same_v<SRC_T, Character>) {
+                    *outI++ = ii->GetAsciiCode ();
+                }
+                else {
+                    *outI++ = static_cast<TRG_T> (*ii);
+                }
+            }
+        }
         template <SupportedComparableUnicodeStringTypes_ USTRING>
         inline span<const Character> Access_ (USTRING&& s, Memory::StackBuffer<Character>* mostlyIgnoredBuf)
         {
@@ -58,31 +72,22 @@ namespace Stroika::Foundation::Characters {
      ************************************* String ***********************************
      ********************************************************************************
      */
-    namespace Private_ {
-        template <Character_Compatible SRC_T, Character_Compatible TRG_T>
-        inline void CopyAsASCIICharacters_ (span<const SRC_T> src, span<TRG_T> trg)
-        {
-            Require (trg.size () >= src.size ());
-            TRG_T* outI = trg.data ();
-            for (auto ii = src.begin (); ii != src.end (); ++ii) {
-                if constexpr (is_same_v<SRC_T, Character>) {
-                    *outI++ = ii->GetAsciiCode ();
-                }
-                else {
-                    *outI++ = static_cast<TRG_T> (*ii);
-                }
-            }
-        }
-    }
     template <Character_Compatible CHAR_T>
     auto String::mk_ (span<const CHAR_T> s) -> _SharedPtrIRep
     {
         if (s.empty ()) {
             return mkEmpty_ ();
         }
-        if (Character::IsASCII (s)) {
+        if constexpr (sizeof (CHAR_T) == 1) {
             // if we already have ascii, just copy into a buffer that can be used for now with the legacy API, and
             // later specialized into something we construct a special rep for
+            Assert ((is_same_v<CHAR_T, char8_t>)); // cuz we specailized the span<const char> case
+            if (Character::IsASCII (s)) {
+                return mk_ (span<const char>{reinterpret_cast<const char*> (s.data ()), s.size ()});
+            }
+        }
+        else if (UTFConverter::AllFitsInOneByteEncoding (s)) {
+            Assert (sizeof (CHAR_T) == 2 or sizeof (CHAR_T) == 4);
             Memory::StackBuffer<char> buf{s.size ()};
 #if qCompilerAndStdLib_spanOfContainer_Buggy
             Private_::CopyAsASCIICharacters_ (s, span{buf.data (), buf.size ()});
@@ -92,15 +97,25 @@ namespace Stroika::Foundation::Characters {
             return mk_ (span<const char>{buf}); // this case specialized
 #endif
         }
-        else {
-            Memory::StackBuffer<wchar_t> buf{UTFConverter::ComputeTargetBufferSize<wchar_t> (s)};
+        else if (UTFConverter::AllFitsInTwoByteEncoding (s)) {
+            Memory::StackBuffer<char16_t> buf{UTFConverter::ComputeTargetBufferSize<char16_t> (s)};
 #if qCompilerAndStdLib_spanOfContainer_Buggy
             auto len = UTFConverter::kThe.Convert (s, span{buf.data (), buf.size ()}).fTargetProduced;
 #else
             auto len = UTFConverter::kThe.Convert (s, span{buf}).fTargetProduced;
 #endif
             Assert (len <= buf.size ());
-            return mk_ (span<const wchar_t>{buf.data (), len}); // this case specialized
+            return mk_ (span{buf.data (), len}); // this case specialized
+        }
+        else {
+            Memory::StackBuffer<char32_t> buf{UTFConverter::ComputeTargetBufferSize<char32_t> (s)};
+#if qCompilerAndStdLib_spanOfContainer_Buggy
+            auto len = UTFConverter::kThe.Convert (s, span{buf.data (), buf.size ()}).fTargetProduced;
+#else
+            auto len = UTFConverter::kThe.Convert (s, span{buf}).fTargetProduced;
+#endif
+            Assert (len <= buf.size ());
+            return mk_ (span{buf.data (), len}); // this case specialized
         }
     }
     DISABLE_COMPILER_MSC_WARNING_START (4244) // just logically needed around copy () call inside, but compiler spews warnings unless out here
@@ -123,19 +138,27 @@ namespace Stroika::Foundation::Characters {
             return mk_ (span<const char>{buf});
 #endif
         }
+        // CHECK IF ANY SURROGATES...
         else {
-            Memory::StackBuffer<wchar_t> buf{UTFConverter::ComputeTargetBufferSize<wchar_t> (s1) + UTFConverter::ComputeTargetBufferSize<wchar_t> (s2)};
+            Memory::StackBuffer<char32_t> buf{UTFConverter::ComputeTargetBufferSize<char32_t> (s1) + UTFConverter::ComputeTargetBufferSize<char32_t> (s2)};
 #if qCompilerAndStdLib_spanOfContainer_Buggy
-            size_t len1 = UTFConverter::kThe.Convert (s1, span<wchar_t>{buf.data (), buf.size ()}).fTargetProduced;
+            size_t len1 = UTFConverter::kThe.Convert (s1, span<char32_t>{buf.data (), buf.size ()}).fTargetProduced;
             size_t len2 = UTFConverter::kThe.Convert (s2, span<wchar_t>{buf.data (), buf.size ()}.subspan (len1)).fTargetProduced;
 #else
             size_t len1 = UTFConverter::kThe.Convert (s1, span{buf}).fTargetProduced;
             size_t len2 = UTFConverter::kThe.Convert (s2, span{buf}.subspan (len1)).fTargetProduced;
 #endif
-            return mk_ (span<const wchar_t>{buf.data (), len1 + len2});
+            return mk_ (span<const char32_t>{buf.data (), len1 + len2});
         }
     }
     DISABLE_COMPILER_MSC_WARNING_END (4244)
+    template <Character_Compatible CHAR_T>
+    auto String::mk_ (span<CHAR_T> s) -> _SharedPtrIRep
+    {
+        // weird and unfortunate overload needed for non-const spans, not automatically promoted to const
+        return mk_ (Memory::ConstSpan (s));
+    }
+
     template <Character_Compatible CHAR_T>
     auto String::mk_ (Iterable<CHAR_T> it) -> _SharedPtrIRep
     {
@@ -152,11 +175,14 @@ namespace Stroika::Foundation::Characters {
         });
         return mk_ (span<const char32_t>{r.data (), r.size ()});
     }
-    // FOR NOW - INITIALLY - but later specialize for char and char32_t and probably lose this one
+    // Since we don't mix spans of single/2-3-4 byte chars in a single rep (would make char indexing too expensive)
+    // just specialize 3 cases - ASCII (char), utf-16, and utf-32 (others - like char8_t, wchar_t mappeed appropriately)
     template <>
     auto String::mk_ (span<const char> s) -> _SharedPtrIRep;
     template <>
-    auto String::mk_ (span<const wchar_t> s) -> _SharedPtrIRep;
+    auto String::mk_ (span<const char16_t> s) -> _SharedPtrIRep;
+    template <>
+    auto String::mk_ (span<const char32_t> s) -> _SharedPtrIRep;
 
     inline String::String (const _SharedPtrIRep& rep) noexcept
         : inherited{rep}
@@ -228,13 +254,7 @@ namespace Stroika::Foundation::Characters {
             static const auto kException_ = out_of_range{"Error converting non-ascii text to String"};
             Execution::Throw (kException_);
         }
-        // @todo redo using different rep
-        Memory::StackBuffer<wchar_t> buf{Memory::eUninitialized, UTFConverter::kThe.ComputeTargetBufferSize<wchar_t> (s)};
-#if qCompilerAndStdLib_spanOfContainer_Buggy
-        return String{span<const wchar_t>{buf.data (), UTFConverter::kThe.Convert (s, span{buf.data (), buf.size ()}).fTargetProduced}};
-#else
-        return String{span<const wchar_t>{buf.data (), UTFConverter::kThe.Convert (s, span{buf}).fTargetProduced}};
-#endif
+        return String{mk_ (span<const char>{reinterpret_cast<const char*> (s.data ()), s.size ()})};
     }
     template <Character_IsUnicodeCodePointOrPlainChar CHAR_T>
     inline String String::FromISOLatin1 (const basic_string<CHAR_T>& s)
@@ -288,12 +308,25 @@ namespace Stroika::Foundation::Characters {
         requires (
             is_same_v<remove_cv_t<CHAR_T>, char8_t> or is_same_v<remove_cv_t<CHAR_T>, char>)
     {
-        Memory::StackBuffer<wchar_t> buf{Memory::eUninitialized, UTFConverter::kThe.ComputeTargetBufferSize<wchar_t> (s)};
+        if (Character::IsASCII (s)) {
+            return mk_ (span<const char>{reinterpret_cast<const char*> (s.data ()), s.size ()});
+        }
+        if (UTFConverter::AllFitsInTwoByteEncoding (s)) {
+            Memory::StackBuffer<char16_t> buf{Memory::eUninitialized, UTFConverter::kThe.ComputeTargetBufferSize<char16_t> (s)};
 #if qCompilerAndStdLib_spanOfContainer_Buggy
-        return String{span<const wchar_t>{buf.data (), UTFConverter::kThe.Convert (s, span{buf.data (), buf.size ()}).fTargetProduced}};
+            return String{span{buf.data (), UTFConverter::kThe.Convert (s, span{buf.data (), buf.size ()}).fTargetProduced}};
 #else
-        return String{span<const wchar_t>{buf.data (), UTFConverter::kThe.Convert (s, span{buf}).fTargetProduced}};
+            return String{span{buf.data (), UTFConverter::kThe.Convert (s, span{buf}).fTargetProduced}};
 #endif
+        }
+        else {
+            Memory::StackBuffer<char32_t> buf{Memory::eUninitialized, UTFConverter::kThe.ComputeTargetBufferSize<char32_t> (s)};
+#if qCompilerAndStdLib_spanOfContainer_Buggy
+            return String{span{buf.data (), UTFConverter::kThe.Convert (s, span{buf.data (), buf.size ()}).fTargetProduced}};
+#else
+            return String{span{buf.data (), UTFConverter::kThe.Convert (s, span{buf}).fTargetProduced}};
+#endif
+        }
     }
     template <typename CHAR_T>
     inline String String::FromUTF8 (basic_string<CHAR_T> from)

@@ -537,11 +537,30 @@ String::_SharedPtrIRep String::mkEmpty_ ()
 template <>
 auto String::mk_ (span<const char> s) -> _SharedPtrIRep
 {
+    Require (Character::IsASCII (s));
     return MakeSmartPtr<BufferedString_::Rep<char>> (s);
 }
 
 template <>
-auto String::mk_ (span<const wchar_t> s) -> _SharedPtrIRep
+auto String::mk_ (span<const char16_t> s) -> _SharedPtrIRep
+{
+    if (Character::IsASCII (s)) {
+        // if we already have ascii, just copy into a buffer that can be used for now with the legacy API, and
+        // later specialized into something we construct a special rep for
+        Memory::StackBuffer<char> buf{s.size ()};
+#if qCompilerAndStdLib_spanOfContainer_Buggy
+        Private_::CopyAsASCIICharacters_ (s, span{buf.data (), buf.size ()});
+        return mk_ (span<const char>{buf.data (), buf.size ()});
+#else
+        Private_::CopyAsASCIICharacters_ (s, span{buf});
+        return mk_ (span<const char>{buf}); // this case specialized
+#endif
+    }
+    return MakeSmartPtr<BufferedString_::Rep<char16_t>> (s);
+}
+
+template <>
+auto String::mk_ (span<const char32_t> s) -> _SharedPtrIRep
 {
     if (Character::IsASCII (s)) {
         // if we already have ascii, just copy into a buffer that can be used for now with the legacy API, and
@@ -555,7 +574,7 @@ auto String::mk_ (span<const wchar_t> s) -> _SharedPtrIRep
         return mk_ (span<const char>{buf});     // this case specialized
 #endif
     }
-    return MakeSmartPtr<BufferedString_::Rep<wchar_t>> (s);
+    return MakeSmartPtr<BufferedString_::Rep<char32_t>> (s);
 }
 
 void String::SetCharAt (Character c, size_t i)

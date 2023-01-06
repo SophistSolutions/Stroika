@@ -47,6 +47,10 @@ namespace Stroika::Foundation::Characters {
      * 
      *          API setup so the compute-buf-size routine COULD walk the source and compute the exact needed size, without changing API.
      * 
+     *  Web Pages/ Specs:
+     *      o   https://en.wikipedia.org/wiki/UTF-8
+     *      o   https://en.wikipedia.org/wiki/UTF-16
+     * 
      *  Though you can construct your own UTFConverter with different options, a typical application will just use
      *      \code
      *          UTFConverter::kThe
@@ -128,6 +132,20 @@ namespace Stroika::Foundation::Characters {
          */
         template <Character_Compatible TO, Character_Compatible FROM>
         static constexpr size_t ComputeTargetBufferSize (span<const FROM> src);
+
+    public:
+        /**
+         *  Check if each character in the span fits in a 1-byte encoding (ie is an ascii character)
+         */
+        template <Character_Compatible CHAR_T>
+        static constexpr bool AllFitsInOneByteEncoding (span<const CHAR_T> s) noexcept;
+
+    public:
+        /**
+         *  Check if each character in the span fits in a 2-byte encoding (ie no characters surrogate pairs)
+         */
+        template <Character_Compatible CHAR_T>
+        static constexpr bool AllFitsInTwoByteEncoding (span<const CHAR_T> s) noexcept;
 
     public:
         /**

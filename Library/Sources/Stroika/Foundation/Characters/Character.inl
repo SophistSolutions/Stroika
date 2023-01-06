@@ -176,7 +176,7 @@ namespace Stroika::Foundation::Characters {
         // note - tried to simplify with conditional_t but both sides evaluated
         if constexpr (is_same_v<remove_cv_t<CHAR_T>, Character>) {
             for (Character c : fromS) {
-                if (c.IsASCII ()) [[unlikely]] {
+                if (not c.IsASCII ()) [[unlikely]] {
                     return false;
                 }
             }

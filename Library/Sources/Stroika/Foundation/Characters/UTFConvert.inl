@@ -193,6 +193,51 @@ namespace Stroika::Foundation::Characters {
         }
     }
 
+    template <Character_Compatible CHAR_T>
+    constexpr bool UTFConverter::AllFitsInOneByteEncoding (span<const CHAR_T> s) noexcept
+    {
+        // note - tried to simplify with conditional_t but both sides evaluated
+        if constexpr (is_same_v<remove_cv_t<CHAR_T>, Character>) {
+            for (Character c : s) {
+                if (not c.IsASCII ()) [[unlikely]] {
+                    return false;
+                }
+            }
+        }
+        else {
+            for (CHAR_T c : s) {
+                if (static_cast<make_unsigned_t<CHAR_T>> (c) > 127) [[unlikely]] {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    template <Character_Compatible CHAR_T>
+    constexpr bool UTFConverter::AllFitsInTwoByteEncoding (span<const CHAR_T> s) noexcept
+    {
+        // see https://en.wikipedia.org/wiki/UTF-16
+        // @todo - THIS IS VERY WRONG - and MUCH MORE COMPLEX - but will only return false negatives so OK to start
+
+        // note - tried to simplify with conditional_t but both sides evaluated
+        if constexpr (is_same_v<remove_cv_t<CHAR_T>, Character>) {
+            for (Character c : s) {
+                if (c.GetCharacterCode () > 0xd7ff) [[unlikely]] {
+                    return false;
+                }
+            }
+        }
+        else {
+            for (CHAR_T c : s) {
+                if (static_cast<make_unsigned_t<CHAR_T>> (c) > 0xd7ff) [[unlikely]] {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
     inline auto UTFConverter::Convert (span<const char8_t> source, span<char16_t> target) const -> ConversionResult
     {
         Require ((target.size () >= ComputeTargetBufferSize<char16_t> (source)));
