@@ -56,8 +56,9 @@ namespace Stroika::Foundation::Characters {
                     }
                 }
                 else {
-                    CHAR_T lc = tolower (*li); // probably not quite right ?? for all cases?
-                    CHAR_T rc = tolower (*ri);
+                    // see https://en.cppreference.com/w/cpp/string/byte/tolower for rationale for this crazy casting
+                    CHAR_T lc = static_cast<CHAR_T> (tolower (static_cast<unsigned char> (*li)));
+                    CHAR_T rc = static_cast<CHAR_T> (tolower (static_cast<unsigned char> (*ri)));
                     if (lc != rc) {
                         return lc <=> rc;
                     }
