@@ -1077,8 +1077,8 @@ namespace Stroika::Foundation::Characters {
     {
         // optimize very common case of ASCII String vs ASCII String
         if constexpr (is_same_v<decay_t<LT>, String> and is_same_v<decay_t<RT>, String>) {
-            if (auto lhsAsciiSpan = lhs.PeekData<char> ()) {
-                if (auto rhsAsciiSpan = rhs.PeekData<char> ()) {
+            if (auto lhsAsciiSpan = lhs.template PeekData<char> ()) {
+                if (auto rhsAsciiSpan = rhs.template PeekData<char> ()) {
                     if (fCompareOptions == CompareOptions::eWithCase) {
                         if (lhsAsciiSpan->size () != rhsAsciiSpan->size ()) {
                             return false;
@@ -1134,8 +1134,8 @@ namespace Stroika::Foundation::Characters {
     {
         // optimize very common case of ASCII String vs ASCII String
         if constexpr (is_same_v<decay_t<LT>, String> and is_same_v<decay_t<RT>, String>) {
-            if (auto lhsAsciiSpan = lhs.PeekData<char> ()) {
-                if (auto rhsAsciiSpan = rhs.PeekData<char> ()) {
+            if (auto lhsAsciiSpan = lhs.template PeekData<char> ()) {
+                if (auto rhsAsciiSpan = rhs.template PeekData<char> ()) {
                     return Character::Compare (*lhsAsciiSpan, *rhsAsciiSpan, fCompareOptions);
                 }
             }
