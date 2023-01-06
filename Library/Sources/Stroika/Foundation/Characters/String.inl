@@ -86,7 +86,7 @@ namespace Stroika::Foundation::Characters {
                 return mk_ (span<const char>{reinterpret_cast<const char*> (s.data ()), s.size ()});
             }
         }
-        else if (UTFConverter::AllFitsInOneByteEncoding (s)) {
+        if (UTFConverter::AllFitsInOneByteEncoding (s)) {
             Assert (sizeof (CHAR_T) == 2 or sizeof (CHAR_T) == 4);
             Memory::StackBuffer<char> buf{s.size ()};
 #if qCompilerAndStdLib_spanOfContainer_Buggy
@@ -143,7 +143,7 @@ namespace Stroika::Foundation::Characters {
             Memory::StackBuffer<char32_t> buf{UTFConverter::ComputeTargetBufferSize<char32_t> (s1) + UTFConverter::ComputeTargetBufferSize<char32_t> (s2)};
 #if qCompilerAndStdLib_spanOfContainer_Buggy
             size_t len1 = UTFConverter::kThe.Convert (s1, span<char32_t>{buf.data (), buf.size ()}).fTargetProduced;
-            size_t len2 = UTFConverter::kThe.Convert (s2, span<wchar_t>{buf.data (), buf.size ()}.subspan (len1)).fTargetProduced;
+            size_t len2 = UTFConverter::kThe.Convert (s2, span<char32_t>{buf.data (), buf.size ()}.subspan (len1)).fTargetProduced;
 #else
             size_t len1 = UTFConverter::kThe.Convert (s1, span{buf}).fTargetProduced;
             size_t len2 = UTFConverter::kThe.Convert (s2, span{buf}.subspan (len1)).fTargetProduced;
