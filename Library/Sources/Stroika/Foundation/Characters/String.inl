@@ -304,7 +304,7 @@ namespace Stroika::Foundation::Characters {
         return FromStringConstant (span<const wchar_t>{str.data (), str.size ()});
     }
     template <typename CHAR_T>
-    String String::FromUTF8 (span<CHAR_T> s)
+    inline String String::FromUTF8 (span<CHAR_T> s)
         requires (
             is_same_v<remove_cv_t<CHAR_T>, char8_t> or is_same_v<remove_cv_t<CHAR_T>, char>)
     {
