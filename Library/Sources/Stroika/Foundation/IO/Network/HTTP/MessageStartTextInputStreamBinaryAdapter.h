@@ -35,7 +35,7 @@ namespace Stroika::Foundation::IO::Network::HTTP {
      *
      *  \par TODO
      *      @todo   Must rewrite this to properly handle other than ASCII characterset on incoming headers
-     *              and URL lines.
+     *              and URL lines - https://stroika.atlassian.net/browse/STK-969
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety-For-Envelope-Plus-Must-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-For-Envelope-Plus-Must-Externally-Synchronize-Letter</a>
      */

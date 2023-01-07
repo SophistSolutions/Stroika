@@ -194,7 +194,8 @@ protected:
         size_t outN = 0;
         for (Character* outChar = intoStart; outChar != intoEnd; ++outChar) {
             if (fOffset_ < fBufferFilledUpValidBytes_) {
-                *outChar = Characters::Character{(char)*(fAllDataReadBuf_.begin () + fOffset_)};
+                // SEE https://stroika.atlassian.net/browse/STK-969 - treat incoming chars as ascii for now
+                *outChar = Characters::Character{(char32_t)*(fAllDataReadBuf_.begin () + fOffset_)};
                 fOffset_++;
                 outN++;
             }
