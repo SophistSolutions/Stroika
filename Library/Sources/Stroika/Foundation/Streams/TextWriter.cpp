@@ -71,7 +71,9 @@ protected:
     virtual void Write (const Character* start, const Character* end) override
     {
         Require (IsOpenWrite ());
-        [[maybe_unused]] conditional_t<sizeof (wchar_t) != sizeof (char32_t), Memory::StackBuffer<wchar_t>, void> ignored1;
+        // for now - temporarily - we use codecvt_utf8, so must convert to wchar_t
+//        [[maybe_unused]] conditional_t<sizeof (wchar_t) == sizeof (char32_t), char, Memory::StackBuffer<wchar_t>, char> ignored1;
+        [[maybe_unused]] Memory::StackBuffer<wchar_t> ignored1;
         const wchar_t*                                                                                            sc = nullptr;
         const wchar_t*                                                                                            ec = nullptr;
         if constexpr (sizeof (wchar_t) == sizeof (char32_t)) {
