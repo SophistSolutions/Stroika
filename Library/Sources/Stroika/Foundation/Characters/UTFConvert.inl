@@ -123,6 +123,7 @@ namespace Stroika::Foundation::Characters {
 
     template <Character_Compatible TO, Character_Compatible FROM>
     constexpr size_t UTFConverter::ComputeTargetBufferSize (span<const FROM> src)
+        requires (not is_const_v<TO>)
     {
         // NOTE - most of these routines could be (easily) optimized to actually compute the number
         // of characters, instead of using an upper bound, but that would involve walking the source
@@ -191,6 +192,12 @@ namespace Stroika::Foundation::Characters {
             AssertNotReached ();
             return 0;
         }
+    }
+    template <Character_Compatible TO, Character_Compatible FROM>
+    constexpr size_t UTFConverter::ComputeTargetBufferSize (span<FROM> src)
+        requires (not is_const_v<TO>)
+    {
+        return ComputeTargetBufferSize<TO> (Memory::ConstSpan (src));
     }
 
     template <Character_Compatible CHAR_T>
@@ -308,6 +315,10 @@ namespace Stroika::Foundation::Characters {
                 return ConversionResult{source.size (), source.size ()}; // not a typo - target buffer allowed to be larger than what copied
             }
             return Convert (ConvertCompatibleSpan_ (source), ConvertCompatibleSpan_ (target));
+        } template <Character_Compatible SRC_T, Character_Compatible TRG_T>
+        inline auto UTFConverter::Convert (span<SRC_T> source, span<TRG_T> target) const -> ConversionResult
+        requires (not is_const_v<TRG_T>) {
+            return Convert (Memory::ConstSpan (source), target);
         } template <typename TO, typename FROM>
         inline TO UTFConverter::Convert (const FROM& from) const
         requires (
@@ -469,7 +480,7 @@ namespace Stroika::Foundation::Characters {
             return ConvertQuietly (ConvertCompatibleSpan_ (source), ConvertCompatibleSpan_ (target));
         }
 
-    template <Character_IsUnicodeCodePoint TRG_T, Character_IsUnicodeCodePoint SRC_T>
+    template <Character_Compatible TRG_T, Character_Compatible SRC_T>
     size_t UTFConverter::ConvertOffset (span<const SRC_T> source, size_t srcIndex) const
     {
         static_assert (not is_const_v<TRG_T>);

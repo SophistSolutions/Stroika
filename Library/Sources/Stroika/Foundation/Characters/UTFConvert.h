@@ -87,6 +87,10 @@ namespace Stroika::Foundation::Characters {
 
                 // Deprecated by stdc++, and windows implementation appears quite slow, but only one supporting mbstate_t
                 eCodeCVT,
+
+                // @todo LIBS TO LOOK AT
+                //      https://github.com/nemtrif/utfcpp
+                //      https://github.com/simdutf/simdutf      ((probably best/fastest - so try))
             };
 
             /**
@@ -131,7 +135,11 @@ namespace Stroika::Foundation::Characters {
          *  \Alias used to be called QuickComputeConversionOutputBufferSize
          */
         template <Character_Compatible TO, Character_Compatible FROM>
-        static constexpr size_t ComputeTargetBufferSize (span<const FROM> src);
+        static constexpr size_t ComputeTargetBufferSize (span<const FROM> src)
+            requires (not is_const_v<TO>);
+        template <Character_Compatible TO, Character_Compatible FROM>
+        static constexpr size_t ComputeTargetBufferSize (span<FROM> src)
+            requires (not is_const_v<TO>);
 
     public:
         /**
@@ -212,6 +220,9 @@ namespace Stroika::Foundation::Characters {
         template <Character_Compatible SRC_T, Character_Compatible TRG_T>
         nonvirtual ConversionResult Convert (span<const SRC_T> source, span<TRG_T> target) const
             requires (not is_const_v<TRG_T>);
+        template <Character_Compatible SRC_T, Character_Compatible TRG_T>
+        nonvirtual ConversionResult Convert (span<SRC_T> source, span<TRG_T> target) const
+            requires (not is_const_v<TRG_T>);
         template <typename TO, typename FROM>
         nonvirtual TO Convert (const FROM& from) const
             requires (
@@ -261,8 +272,12 @@ namespace Stroika::Foundation::Characters {
     public:
         /**
          *  See what the given offset in the source text translates to in the target text
+         * 
+         *  For example, if you are translating UTF32 text to UTF8 text, the 3rd character in
+         *  UTF32 text would start at offset 3, but in the corresponding UTF8 text it might
+         *  start at offset 6.
          */
-        template <Character_IsUnicodeCodePoint TRG_T, Character_IsUnicodeCodePoint SRC_T>
+        template <Character_Compatible TRG_T, Character_Compatible SRC_T>
         nonvirtual size_t ConvertOffset (span<const SRC_T> source, size_t srcIndex) const;
 
     public:
@@ -337,6 +352,14 @@ namespace Stroika::Foundation::Characters {
         static void ThrowIf_ (ConversionStatusFlag cr);
         static void Throw_ (ConversionStatusFlag cr);
     };
+
+    /**
+     *  This is a function that takes a span of bytes, and an OPTIONAL mbstate_t (TBD), and targetBuffer, translates into targetBuffer, and returns the changes.
+     *  This utility wrapper funciton is meant to capture what you can easily put together from a (configured or default) UTFConverter,
+     *  but in a form more easily used/consumed by a the TextReader code.
+     */
+    template <typename OUTPUT_CHAR_T>
+    using UTFCodeConverter = function<UTFConverter::ConversionResult (span<const std::byte> source, span<OUTPUT_CHAR_T> targetBuffer, mbstate_t* state)>;
 
 }
 
