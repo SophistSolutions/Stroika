@@ -72,10 +72,10 @@ protected:
     {
         Require (IsOpenWrite ());
         // for now - temporarily - we use codecvt_utf8, so must convert to wchar_t
-//        [[maybe_unused]] conditional_t<sizeof (wchar_t) == sizeof (char32_t), char, Memory::StackBuffer<wchar_t>, char> ignored1;
+        //        [[maybe_unused]] conditional_t<sizeof (wchar_t) == sizeof (char32_t), char, Memory::StackBuffer<wchar_t>, char> ignored1;
         [[maybe_unused]] Memory::StackBuffer<wchar_t> ignored1;
-        const wchar_t*                                                                                            sc = nullptr;
-        const wchar_t*                                                                                            ec = nullptr;
+        const wchar_t*                                sc = nullptr;
+        const wchar_t*                                ec = nullptr;
         if constexpr (sizeof (wchar_t) == sizeof (char32_t)) {
             sc = reinterpret_cast<const wchar_t*> (start);
             ec = reinterpret_cast<const wchar_t*> (end);
@@ -122,9 +122,9 @@ public:
     UnSeekable_WCharT_Rep_ (const OutputStream<byte>::Ptr& src, bool useBOM)
         : _fSource{src}
     {
-        constexpr Character kBOM = L'\xFEFF'; //  same whether 16 or 32 bit encoding -- see http://en.wikipedia.org/wiki/Byte_order_mark
+        constexpr wchar_t kBOM = L'\xFEFF'; //  same whether 16 or 32 bit encoding -- see http://en.wikipedia.org/wiki/Byte_order_mark
         if (useBOM) {
-            Write (&kBOM, &kBOM + 1);
+            src.Write (reinterpret_cast<const byte*> (&kBOM), reinterpret_cast<const byte*> (&kBOM + 1));
         }
     }
 

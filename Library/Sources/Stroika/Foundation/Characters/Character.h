@@ -102,10 +102,6 @@ namespace Stroika::Foundation::Characters {
         constexpr Character () noexcept;
         constexpr Character (char32_t c) noexcept;
 
-        constexpr Character (char c) noexcept;     // @todo figure out how to interpret 'c' > 128 - UNCIDE code point or error? - PROBABLY ERROR?
-        constexpr Character (char16_t c) noexcept; // @todo decide how to handle surrogates
-        constexpr Character (wchar_t wc) noexcept;
-
     public:
         /**
          *  \req IsASCII()
@@ -115,16 +111,13 @@ namespace Stroika::Foundation::Characters {
     public:
         // @todo deprecate this and replace wtih GetCodePoint<CHAR_T> -> optional<CHAR_T> with charT required to be uncide-code-point concept
         // return has-value if convertible
-        nonvirtual char32_t GetCharacterCode () const noexcept;
+        constexpr char32_t GetCharacterCode () const noexcept;
 
     public:
         /**
          *  Explicit cuz creates too many ambiguities with things like c == '\0' where conversions can go both ways.
          */
-        explicit operator char32_t () const noexcept
-        {
-            return GetCharacterCode ();
-        }
+        explicit constexpr operator char32_t () const noexcept;
 
     public:
         /*

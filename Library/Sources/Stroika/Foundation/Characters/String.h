@@ -126,6 +126,7 @@ namespace Stroika::Foundation::Characters {
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      *
      *  \note   Design note - mutability vs. immutability
+     *          https://stroika.atlassian.net/browse/STK-968
      *          String objects are MUTABLE
      *          String reps are IMMUTABLE.
      *          Changes to string like +=, create new string reps (and so WORK but are quite costly). Consider

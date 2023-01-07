@@ -76,7 +76,7 @@ namespace {
             virtual Character GetAt (size_t index) const noexcept override
             {
                 Require (index < size ());
-                return Character{_fData[index]};
+                return Character{static_cast<char32_t> (_fData[index])};
             }
             virtual PeekSpanData PeekData ([[maybe_unused]] optional<PeekSpanData::StorageCodePointType> preferred) const noexcept override
             {
@@ -124,7 +124,7 @@ namespace {
                             ++fCurIdx_;
                         }
                         if (fCurIdx_ < fData_.size ()) [[likely]] {
-                            *result = Character{fData_[fCurIdx_]};
+                            *result = Character{static_cast<char32_t> (fData_[fCurIdx_])};
                         }
                         else {
                             *result = nullopt;
