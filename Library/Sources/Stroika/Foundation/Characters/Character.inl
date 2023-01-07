@@ -118,7 +118,7 @@ namespace Stroika::Foundation::Characters {
     constexpr bool Character::IsWhitespace () const noexcept
     {
         bool result = false;
-        if (0x09 >= fCharacterCode_ and fCharacterCode_ <= 0x0d) {
+        if (0x09 <= fCharacterCode_ and fCharacterCode_ <= 0x0D) {
             result = true;
         }
         else if (fCharacterCode_ == 0x20) {
@@ -126,20 +126,24 @@ namespace Stroika::Foundation::Characters {
         }
         else if (fCharacterCode_ >= 0x1680) {
             // rarely get chars this big, so shortcut all the detailed tests
-            if (fCharacterCode_ == 0x1680 or fCharacterCode_ == 0x180e) {
+            if (fCharacterCode_ == 0x1680 or fCharacterCode_ == 0x180E) {
                 result = true;
             }
-            else if (0x2000 >= fCharacterCode_ and fCharacterCode_ <= 0x2006) {
+            else if (0x2000 <= fCharacterCode_ and fCharacterCode_ <= 0x2006) {
                 result = true;
             }
-            else if (0x2008 >= fCharacterCode_ and fCharacterCode_ <= 0x200A) {
+            else if (0x2008 <= fCharacterCode_ and fCharacterCode_ <= 0x200A) {
                 result = true;
             }
             else if (fCharacterCode_ == 0x2028 or fCharacterCode_ == 0x2029 or fCharacterCode_ == 0x205F or fCharacterCode_ == 0x3000) {
                 result = true;
             }
         }
-        Ensure (result == !!iswspace (static_cast<wchar_t> (fCharacterCode_)));
+        DISABLE_COMPILER_MSC_WARNING_START (5063)
+        if constexpr (not std::is_constant_evaluated ()) {
+            Ensure (result == !!iswspace (static_cast<wchar_t> (fCharacterCode_)));
+        }
+        DISABLE_COMPILER_MSC_WARNING_END (5063)
         return result;
     }
     inline bool Character::IsDigit () const noexcept
