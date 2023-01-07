@@ -8,6 +8,8 @@
 
 #include <optional>
 
+#include "../Characters/UTFConvert.h"
+
 #include "InputStream.h"
 #include "InternallySynchronizedInputStream.h"
 
@@ -87,6 +89,11 @@ namespace Stroika::Foundation::Streams {
         };
         static constexpr ReadAhead eReadAheadNever   = ReadAhead::eReadAheadNever;
         static constexpr ReadAhead eReadAheadAllowed = ReadAhead::eReadAheadAllowed;
+
+    public:
+        /**
+         */
+        static const Characters::UTFCodeConverter<Character> kDefaultUTFCoodeCoverter;
 
     public:
         /**

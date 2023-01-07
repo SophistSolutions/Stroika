@@ -139,8 +139,9 @@ namespace {
                     break;
                 default:
                     // JSON rule is Any code point except " or \ or control character. So OK to emit most large unicode chars - just not control chars
-                    wchar_t c = *i;
-                    if (iswcntrl (c)) {
+                    char32_t c = *i;
+                    Assert (c < 0xffff); // @todo must fix to support WIDE/SURROGATE CHARACTERS
+                    if (iswcntrl (static_cast<wint_t> (c))) {
                         wchar_t buf[10];
                         (void)::swprintf (buf, Memory::NEltsOf (buf), L"\\u%04x", static_cast<char16_t> (c));
                         sb.Append (buf);
@@ -161,9 +162,8 @@ namespace {
     }
     void PrettyPrint_ (const Options_& options, const String& v, const OutputStream<Character>::Ptr& out)
     {
-        Memory::StackBuffer<wchar_t> ignored;
-        span<const wchar_t>          p = v.GetData (&ignored);
-        static_assert (sizeof (Character) == sizeof (wchar_t), "sizeof(Character) == sizeof(wchar_t)");
+        Memory::StackBuffer<char32_t> ignored;
+        span<const char32_t>          p = v.GetData (&ignored);
         PrettyPrint_ (options, p.data (), p.data () + p.size (), out);
     }
     void PrettyPrint_ (const Options_& options, const vector<VariantValue>& v, const OutputStream<Character>::Ptr& out, int indentLevel)

@@ -101,13 +101,13 @@ namespace Stroika::Foundation::Characters {
         Require (IsASCII ());
         return static_cast<char> (fCharacterCode_);
     }
-    inline wchar_t Character::GetCharacterCode () const noexcept
+    inline char32_t Character::GetCharacterCode () const noexcept
     {
         return fCharacterCode_;
     }
     template <typename T>
     inline T Character::As () const noexcept
-        requires (is_same_v<T, char32_t> or is_same_v<T, wchar_t>)
+        requires (is_same_v<T, char32_t> or (sizeof (wchar_t) == sizeof (char32_t) and is_same_v<T, wchar_t>))
     {
         return GetCharacterCode ();
     }
@@ -117,45 +117,56 @@ namespace Stroika::Foundation::Characters {
     }
     inline bool Character::IsWhitespace () const noexcept
     {
-        return !!iswspace (fCharacterCode_);
+        // https://stackoverflow.com/questions/60353945/isthing-equivalents-for-char32-t
+        // @todo RECONSIDER IF THIS IS RIGHT FOR char32_t?
+        return !!iswspace (static_cast<wchar_t> (fCharacterCode_));
     }
     inline bool Character::IsDigit () const noexcept
     {
-        return !!iswdigit (fCharacterCode_);
+        // https://stackoverflow.com/questions/60353945/isthing-equivalents-for-char32-t
+        // @todo RECONSIDER IF THIS IS RIGHT FOR char32_t?
+        return !!iswdigit (static_cast<wchar_t> (fCharacterCode_));
     }
     inline bool Character::IsHexDigit () const noexcept
     {
-        return !!iswxdigit (fCharacterCode_);
+        // https://stackoverflow.com/questions/60353945/isthing-equivalents-for-char32-t
+        return !!iswxdigit (static_cast<wchar_t> (fCharacterCode_));
     }
     inline bool Character::IsAlphabetic () const noexcept
     {
-        return !!iswalpha (fCharacterCode_);
+        // https://stackoverflow.com/questions/60353945/isthing-equivalents-for-char32-t
+        return !!iswalpha (static_cast<wchar_t> (fCharacterCode_));
     }
     inline bool Character::IsUpperCase () const noexcept
     {
-        return !!iswupper (fCharacterCode_);
+        // https://stackoverflow.com/questions/60353945/isthing-equivalents-for-char32-t
+        return !!iswupper (static_cast<wchar_t> (fCharacterCode_));
     }
     inline bool Character::IsLowerCase () const noexcept
     {
-        return !!iswlower (fCharacterCode_);
+        // https://stackoverflow.com/questions/60353945/isthing-equivalents-for-char32-t
+        return !!iswlower (static_cast<wchar_t> (fCharacterCode_));
     }
     inline bool Character::IsAlphaNumeric () const noexcept
     {
-        return !!iswalnum (fCharacterCode_);
+        // https://stackoverflow.com/questions/60353945/isthing-equivalents-for-char32-t
+        return !!iswalnum (static_cast<wchar_t> (fCharacterCode_));
     }
     inline bool Character::IsPunctuation () const noexcept
     {
-        return !!iswpunct (fCharacterCode_);
+        // https://stackoverflow.com/questions/60353945/isthing-equivalents-for-char32-t
+        return !!iswpunct (static_cast<wchar_t> (fCharacterCode_));
     }
     inline bool Character::IsControl () const noexcept
     {
-        return !!iswcntrl (fCharacterCode_);
+        return !!iswcntrl (static_cast<wchar_t> (fCharacterCode_));
     }
     inline Character Character::ToLowerCase () const noexcept
     {
+        // https://stackoverflow.com/questions/60353945/isthing-equivalents-for-char32-t
         // Cannot find good spec on towlower/towupper, so not sure that this check is necessary
-        if (::iswupper (fCharacterCode_)) {
-            return static_cast<wchar_t> (::towlower (fCharacterCode_));
+        if (::iswupper (static_cast<wchar_t> (fCharacterCode_))) {
+            return static_cast<wchar_t> (::towlower (static_cast<wchar_t> (fCharacterCode_)));
         }
         else {
             return fCharacterCode_;
@@ -163,8 +174,9 @@ namespace Stroika::Foundation::Characters {
     }
     inline Character Character::ToUpperCase () const noexcept
     {
-        if (::iswlower (fCharacterCode_)) {
-            return static_cast<wchar_t> (::towupper (fCharacterCode_));
+        // https://stackoverflow.com/questions/60353945/isthing-equivalents-for-char32-t
+        if (::iswlower (static_cast<wchar_t> (fCharacterCode_))) {
+            return static_cast<wchar_t> (::towupper (static_cast<wchar_t> (fCharacterCode_)));
         }
         else {
             return fCharacterCode_;

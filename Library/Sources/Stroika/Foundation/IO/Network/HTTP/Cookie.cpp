@@ -132,10 +132,10 @@ Cookie Cookie::Parse (Streams::InputStream<Character>::Ptr src)
         }
     };
     // scan up to target char; leave stream after that character, but return string just before it
-    auto skipUpTo = [&] (wchar_t targetChar, String* s) {
+    auto skipUpTo = [&] (Character targetChar, String* s) {
         StringBuilder sb;
         while (optional<Character> c = src.Read ()) {
-            if (c->As<wchar_t> () == targetChar) {
+            if (*c == targetChar) {
                 break;
             }
             else {
@@ -145,10 +145,10 @@ Cookie Cookie::Parse (Streams::InputStream<Character>::Ptr src)
         *s = sb.str ();
     };
     // same as skipUpTo, but with 2 possible characters
-    auto skipUpTo2 = [&] (wchar_t targetChar, wchar_t targetChar2, String* s) {
+    auto skipUpTo2 = [&] (Character targetChar, Character targetChar2, String* s) {
         StringBuilder sb;
         while (optional<Character> c = src.Read ()) {
-            if (c->As<wchar_t> () == targetChar or c->As<wchar_t> () == targetChar2) {
+            if (*c == targetChar or *c == targetChar2) {
                 break;
             }
             else {

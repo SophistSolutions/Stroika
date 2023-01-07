@@ -7,6 +7,7 @@
 
 #include "../Characters/Format.h"
 #include "../Characters/String.h"
+#include "../Characters/UTFConvert.h"
 
 #include "OutputStream.h"
 
@@ -32,8 +33,14 @@ template <>
 template <>
 void OutputStream<Characters::Character>::Ptr::Write (const wchar_t* start, const wchar_t* end) const
 {
-    static_assert (sizeof (wchar_t) == sizeof (Characters::Character), "This cast assumes the types are the same");
-    Write (reinterpret_cast<const Characters::Character*> (start), reinterpret_cast<const Characters::Character*> (end));
+    if constexpr (sizeof (wchar_t) == sizeof (Characters::Character)) {
+        Write (reinterpret_cast<const Characters::Character*> (start), reinterpret_cast<const Characters::Character*> (end));
+    }
+    else {
+        Memory::StackBuffer<Characters::Character> buf{Characters::UTFConverter::ComputeTargetBufferSize<Characters::Character> (span{start, end})};
+        size_t                                     n2Write = Characters::UTFConverter::kThe.Convert (span{start, end}, span{buf}).fTargetProduced;
+        Write (buf.data (), buf.data () + n2Write);
+    }
 }
 
 namespace Stroika::Foundation::Streams {

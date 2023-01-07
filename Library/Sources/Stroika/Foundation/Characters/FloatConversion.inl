@@ -436,7 +436,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
                     isSpace = std::iswspace (*si);
                 }
                 else {
-                    isSpace = std::iswspace (*si); // not sure how to check without complex conversion logic
+                    isSpace = std::iswspace (static_cast<wint_t> (*si)); // not sure how to check without complex conversion logic
                 }
                 if (isSpace) {
                     if (remainder != nullptr) {
@@ -478,16 +478,16 @@ namespace Stroika::Foundation::Characters::FloatConversion {
             else {
                 // must utf convert to wchar_t which we support
                 Memory::StackBuffer<wchar_t> wideBuf{UTFConverter::ComputeTargetBufferSize<wchar_t> (srcSpan)};
-                size_t                       wideChars = UTFConverter::kThe.Convert (srcSpan, wideBuf).fTargetProduced;
+                size_t                       wideChars = UTFConverter::kThe.Convert (srcSpan, span{wideBuf}).fTargetProduced;
                 if (remainder == nullptr) {
-                    d = ToFloat_RespectingLocale_<T> (span{wideBuf.data (), wideChars}, nullptr);
+                    d = ToFloat_RespectingLocale_<T, wchar_t> (span{wideBuf.data (), wideChars}, nullptr);
                 }
                 else {
                     // do the conversion using wchar_t, and then map back the resulting remainder offset
                     span<const wchar_t>           wideSpan = span{wideBuf.data (), wideChars};
                     span<const wchar_t>::iterator wideRemainder;
                     d  = ToFloat_RespectingLocale_<T> (wideSpan, &wideRemainder);
-                    ri = UTFConverter::kThe.ConvertOffset<CHAR_T> (wideRemainder - wideSpan.begin ()) + si;
+                    ri = UTFConverter::kThe.ConvertOffset<CHAR_T> (wideSpan, wideRemainder - wideSpan.begin ()) + si;
                 }
             }
             if (remainder == nullptr) {

@@ -46,20 +46,20 @@ namespace Stroika::Foundation::Characters {
         Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySyncrhonized_};
         size_t                                                 rhsLen = s.size ();
         if (rhsLen != 0) {
-            if constexpr (sizeof (CHAR_T) == sizeof (wchar_t)) {
+            if constexpr (sizeof (CHAR_T) == sizeof (char32_t)) {
                 size_t i = fLength_;
                 fData_.GrowToSize_uninitialized (i + rhsLen);
                 fLength_ += rhsLen;
-                (void)::memcpy (fData_.begin () + i, &*s.begin (), sizeof (wchar_t) * rhsLen);
+                (void)::memcpy (fData_.begin () + i, &*s.begin (), sizeof (char32_t) * rhsLen);
             }
             else {
-                Memory::StackBuffer<wchar_t> buf{Memory::eUninitialized, UTFConverter::ComputeTargetBufferSize<wchar_t> (s)};
+                Memory::StackBuffer<char32_t> buf{Memory::eUninitialized, UTFConverter::ComputeTargetBufferSize<char32_t> (s)};
 #if qCompilerAndStdLib_spanOfContainer_Buggy
                 auto r = UTFConverter::kThe.Convert (s, span{buf.data (), buf.size ()});
 #else
                 auto r = UTFConverter::kThe.Convert (s, span{buf});
 #endif
-                Append (String{span<const wchar_t>{buf.data (), r.fTargetProduced}});
+                Append (String{span<const char32_t>{buf.data (), r.fTargetProduced}});
             }
         }
     }
@@ -88,19 +88,16 @@ namespace Stroika::Foundation::Characters {
     }
     inline void StringBuilder::Append (const String& s)
     {
-        Memory::StackBuffer<wchar_t> ignored;
-        span<const wchar_t>          p = s.GetData<wchar_t> (&ignored);
+        Memory::StackBuffer<char32_t> ignored;
+        span                          p = s.GetData<char32_t> (&ignored);
         if (not p.empty ()) {
             Append (p);
         }
     }
-    inline void StringBuilder::Append (wchar_t c)
-    {
-        Append (span<const wchar_t>{&c, 1}); // @todo get working with explicit template param!
-    }
     inline void StringBuilder::Append (Character c)
     {
-        Append (c.GetCharacterCode ());
+        char32_t cc = c.GetCharacterCode ();
+        Append (span{&cc, 1});
     }
     template <typename APPEND_ARG_T>
     inline StringBuilder& StringBuilder::operator+= (APPEND_ARG_T&& a)
@@ -154,7 +151,7 @@ namespace Stroika::Foundation::Characters {
     inline String StringBuilder::str () const
     {
         Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fAssertExternallySyncrhonized_};
-        return String{span<const wchar_t>{fData_.data (), fLength_}};
+        return String{Memory::ConstSpan (span{fData_.data (), fLength_})};
     }
     template <>
     inline void StringBuilder::As (String* into) const
@@ -204,18 +201,19 @@ namespace Stroika::Foundation::Characters {
     }
     template <Character_Compatible CHAR_T>
     span<const CHAR_T> StringBuilder::GetData (Memory::StackBuffer<CHAR_T>* probablyIgnoredBuf) const
+        requires (not is_const_v<CHAR_T>)
     {
         RequireNotNull (probablyIgnoredBuf); // required param even if not used
-        if constexpr (sizeof (CHAR_T) == sizeof (wchar_t)) {
+        if constexpr (sizeof (CHAR_T) == sizeof (char32_t)) {
             return span{reinterpret_cast<const CHAR_T*> (fData_.data ()), fData_.size ()};
         }
         else {
 #if qCompilerAndStdLib_spanOfContainer_Buggy
             probablyIgnoredBuf->resize_uninitialized (UTFConverter::ComputeTargetBufferSize<CHAR_T> (span{fData_.data (), fData_.size ()}));
-            return span{probablyIgnoredBuf->data (), get<1> (UTFConverter::kThe.Convert (span{fData_.data (), fData_.size ()}, span{probablyIgnoredBuf->data (), probablyIgnoredBuf->size ()}))};
+            return span{probablyIgnoredBuf->data (), UTFConverter::kThe.Convert (span{fData_.data (), fData_.size ()}, span{probablyIgnoredBuf->data (), probablyIgnoredBuf->size ()}).fTargetProduced};
 #else
             probablyIgnoredBuf->resize_uninitialized (UTFConverter::ComputeTargetBufferSize<CHAR_T> (span{fData_}));
-            return span{probablyIgnoredBuf->data (), get<1> (UTFConverter::kThe.Convert (span{fData_}, span{*probablyIgnoredBuf}))};
+            return span{probablyIgnoredBuf->data (), UTFConverter::kThe.Convert (span{fData_}, span{*probablyIgnoredBuf}).fTargetProduced};
 #endif
         }
     }

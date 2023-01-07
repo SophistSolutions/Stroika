@@ -71,8 +71,19 @@ protected:
     virtual void Write (const Character* start, const Character* end) override
     {
         Require (IsOpenWrite ());
-        const wchar_t* sc = CVT_CHARACTER_2_wchar_t (start);
-        const wchar_t* ec = CVT_CHARACTER_2_wchar_t (end);
+        [[maybe_unused]] conditional_t<sizeof (wchar_t) != sizeof (char32_t), Memory::StackBuffer<wchar_t>, void> ignored1;
+        const wchar_t*                                                                                            sc = nullptr;
+        const wchar_t*                                                                                            ec = nullptr;
+        if constexpr (sizeof (wchar_t) == sizeof (char32_t)) {
+            sc = reinterpret_cast<const wchar_t*> (start);
+            ec = reinterpret_cast<const wchar_t*> (end);
+        }
+        else {
+            ignored1.GrowToSize_uninitialized (UTFConverter::ComputeTargetBufferSize<wchar_t> (span{start, end}));
+            auto sz = UTFConverter::kThe.Convert (span{start, end}, span{ignored1.begin (), ignored1.size ()}).fTargetProduced;
+            sc      = ignored1.data ();
+            ec      = sc + sz;
+        }
         const wchar_t* pc = sc;
 
         char outBuf[10 * 1024];

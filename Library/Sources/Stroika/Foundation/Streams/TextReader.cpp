@@ -245,7 +245,7 @@ protected:
             Containers::Support::ReserveTweaks::Reserve4AddN (fCache_, n);
             fCache_.resize_uninitialized (newCacheSize);
             for (size_t i = 0; i < n; ++i) {
-                fCache_[i + static_cast<size_t> (origOffset)] = bufStart[i].As<wchar_t> ();
+                fCache_[i + static_cast<size_t> (origOffset)] = bufStart[i];
             }
         };
         // if not a cache hit, use inherited Read (), and fill the cache.
@@ -265,18 +265,17 @@ protected:
         else {
             // if argument buffer not big enough, read into a temporary buffer
             constexpr size_t kUseCacheSize_ = 8 * kMinCachedReadSize_;
-            static_assert (sizeof (wchar_t) == sizeof (Character));
-            wchar_t buf[kUseCacheSize_]; // use wchar_t and cast to Character* so we get this array uninitialized
-            size_t  n = inherited::Read (reinterpret_cast<Character*> (std::begin (buf)), reinterpret_cast<Character*> (std::end (buf)));
+            Character        buf[kUseCacheSize_]; // use wchar_t and cast to Character* so we get this array uninitialized
+            size_t           n = inherited::Read (reinterpret_cast<Character*> (std::begin (buf)), reinterpret_cast<Character*> (std::end (buf)));
             if (n != 0) {
                 if (origOffset + n > numeric_limits<size_t>::max ()) [[unlikely]] {
                     // size_t can be less bits than SeekOffsetType, in which case we cannot cahce all in RAM
                     Execution::Throw (range_error{"seek past max size for size_t"});
                 }
-                pushIntoCacheBuf (reinterpret_cast<Character*> (std::begin (buf)), reinterpret_cast<Character*> (std::begin (buf)) + n);
+                pushIntoCacheBuf (std::begin (buf), std::begin (buf) + n);
                 n = intoEnd - intoStart;
                 DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wclass-memaccess\"");
-                (void)::memcpy (intoStart, std::begin (buf), n * sizeof (wchar_t));
+                (void)::memcpy (intoStart, std::begin (buf), n * sizeof (Character));
                 DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wclass-memaccess\"");
                 _fOffset = origOffset + n;
             }
@@ -343,8 +342,8 @@ private:
     }
 
 private:
-    bool                  fReadAheadAllowed_{false};
-    InlineBuffer<wchar_t> fCache_; // Cache uses wchar_t instead of Character so can use resize_uninitialized () - requires is_trivially_constructible
+    bool                    fReadAheadAllowed_{false};
+    InlineBuffer<Character> fCache_; // Cache uses wchar_t instead of Character so can use resize_uninitialized () - requires is_trivially_constructible
 };
 
 class TextReader::IterableAdapterStreamRep_ final : public InputStream<Character>::_IRep {

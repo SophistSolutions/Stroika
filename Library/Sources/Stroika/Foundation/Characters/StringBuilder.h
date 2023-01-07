@@ -89,7 +89,7 @@ namespace Stroika::Foundation::Characters {
         nonvirtual void Append (const basic_string_view<CHAR_T>& s);
         nonvirtual void Append (const String& s);
         nonvirtual void Append (Character c);
-        nonvirtual void Append (wchar_t c); // @todo probably deprecate this...
+        //    nonvirtual void Append (wchar_t c); // @todo probably deprecate this...
 
     public:
         /**
@@ -211,7 +211,8 @@ namespace Stroika::Foundation::Characters {
          *      \encode
          */
         template <Character_Compatible CHAR_T>
-        nonvirtual span<const CHAR_T> GetData (Memory::StackBuffer<CHAR_T>* probablyIgnoredBuf) const;
+        nonvirtual span<const CHAR_T> GetData (Memory::StackBuffer<CHAR_T>* probablyIgnoredBuf) const
+            requires (not is_const_v<CHAR_T>);
 
     public:
         /**
@@ -231,15 +232,10 @@ namespace Stroika::Foundation::Characters {
         nonvirtual void reserve (size_t newCapacity);
 
     public:
-        [[deprecated ("Deprecated Since v3.0d1, so we can change internal buffer rep")]] const wchar_t* begin ()
-        {
-            return fData_.begin ();
-        }
-        [[deprecated ("Deprecated Since v3.0d1, so we can change internal buffer rep")]] const wchar_t* end ()
-        {
-            return fData_.end ();
-        }
-        [[deprecated ("Deprecated Since v3.0d1, so we can change internal buffer rep")]] const wchar_t* c_str () const
+        [[deprecated ("DESUPPORTED Since v3.0d1, so we can change internal buffer rep")]] const wchar_t* begin ();
+        [[deprecated ("DESUPPORTED Since v3.0d1, so we can change internal buffer rep")]] const wchar_t* end ();
+        [[deprecated ("DESUPPORTED Since v3.0d1, so we can change internal buffer rep")]] const wchar_t* c_str () const;
+#if 0
         {
             // @todo PROBABLY DEPREACTE else -fix the constness at least - and make this WriteContext...
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fAssertExternallySyncrhonized_};
@@ -247,7 +243,7 @@ namespace Stroika::Foundation::Characters {
             fData_[fLength_] = '\0';
             return fData_.begin ();
         }
-
+#endif
         [[deprecated ("Since Stroika v3.0d1, use span{} argument")]] StringBuilder (const wchar_t* start, const wchar_t* end)
         {
             Append (span{start, end});
@@ -273,8 +269,8 @@ namespace Stroika::Foundation::Characters {
         [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fAssertExternallySyncrhonized_;
 
     private:
-        mutable Memory::InlineBuffer<wchar_t> fData_{0};   // maybe nul-terminated
-        size_t                                fLength_{0}; // seperate from Buffer<>::size () ** but why **
+        mutable Memory::InlineBuffer<char32_t> fData_{0};   // maybe nul-terminated
+        size_t                                 fLength_{0}; // seperate from Buffer<>::size () ** but why **
     };
 
 }

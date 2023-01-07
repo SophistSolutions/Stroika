@@ -482,8 +482,6 @@ const wregex& Characters::Private_::RegularExpression_GetCompiled (const Regular
  ************************************* String ***********************************
  ********************************************************************************
  */
-static_assert (sizeof (Character) == sizeof (wchar_t), "Character and wchar_t must be same size");
-
 String::String (const basic_string_view<wchar_t>& str)
     : String{MakeSmartPtr<StringConstant_::Rep<wchar_t>> (span{str.data (), str.size ()})}
 {
@@ -556,7 +554,13 @@ auto String::mk_ (span<const char16_t> s) -> _SharedPtrIRep
         return mk_ (span<const char>{buf}); // this case specialized
 #endif
     }
-    return MakeSmartPtr<BufferedString_::Rep<char16_t>> (s);
+    if (UTFConverter::AllFitsInTwoByteEncoding (s)) {
+        return MakeSmartPtr<BufferedString_::Rep<char16_t>> (s);
+    }
+    else {
+        Memory::StackBuffer<char32_t> wideUnicodeBuf{UTFConverter::ComputeTargetBufferSize<char32_t> (s)};
+        return MakeSmartPtr<BufferedString_::Rep<char32_t>> (UTFConverter::kThe.ConvertSpan (s, span{wideUnicodeBuf}));
+    }
 }
 
 template <>
@@ -590,20 +594,17 @@ void String::SetCharAt (Character c, size_t i)
     *this = sb.str ();
 }
 
-String String::InsertAt (const Character* from, const Character* to, size_t at) const
+String String::InsertAt (span<const Character> s, size_t at) const
 {
     Require (at >= 0);
     Require (at <= size ());
-    Require (from <= to);
-    Require (from != nullptr or from == to);
-    Require (to != nullptr or from == to);
-    if (from == to) {
+    if (s.empty ()) {
         return *this;
     }
     Memory::StackBuffer<Character> ignored1;
     span<const Character>          thisStrData = GetData (&ignored1);
     StringBuilder                  sb{thisStrData.subspan (0, at)};
-    sb.Append (span{from, to});
+    sb.Append (s);
     sb.Append (thisStrData.subspan (at));
     return sb.str ();
 }

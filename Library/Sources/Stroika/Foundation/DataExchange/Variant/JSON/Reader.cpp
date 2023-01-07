@@ -51,10 +51,10 @@ namespace {
             : StreamReader<Character>{underlyingReadFromStreamAdopted}
         {
         }
-        [[nodiscard]] inline wchar_t NextChar ()
+        [[nodiscard]] inline char32_t NextChar ()
         {
             Require (not IsAtEOF ());
-            return Read ()->As<wchar_t> ();
+            return Read ()->As<char32_t> ();
         }
         inline void AdvanceOne ()
         {
@@ -71,7 +71,7 @@ namespace {
 
     /*
      */
-    inline bool IsJSONSpace_ (wchar_t c)
+    inline bool IsJSONSpace_ (char32_t c)
     {
         // iswspace was pretty slow (on windoze) - showing up as significant in performance profiling.
         // According to:
@@ -94,7 +94,7 @@ namespace {
         }
     }
 
-    inline bool IsJSONDigit_ (wchar_t c)
+    inline bool IsJSONDigit_ (char32_t c)
     {
         // iswdigit tweak (showed up as significant - 6% of full runtime)
         // According to:
@@ -138,7 +138,7 @@ namespace {
     VariantValue Reader_String_ (MyBufferedStreamReader_& in)
     {
         Require (not in.IsAtEOF ());
-        wchar_t c = in.NextChar ();
+        char32_t c = in.NextChar ();
         if (c != '\"') [[unlikely]] {
             static const auto kException_{BadFormatException{L"JSON: Expected quoted string"sv}};
             Execution::Throw (kException_);
@@ -179,7 +179,7 @@ namespace {
                         break;
                     case 'u': {
                         // Not sure this is right -- But I hope so ... -- LGP 2012-11-29
-                        wchar_t newC = '\0';
+                        char32_t newC = '\0';
                         for (int n = 0; n < 4; ++n) {
                             if (in.IsAtEOF ()) [[unlikely]] {
                                 static const auto kException_{BadFormatException{L"JSON: Unexpected EOF reading string (looking for close quote)"sv}};
@@ -203,7 +203,7 @@ namespace {
 
     // 'in' is positioned to the second character of number (first passed as arg), and we read, leaving in positioned just after end of number
     static constexpr Character kDash_{'-'};
-    VariantValue               Reader_Number_ (wchar_t initialChar, MyBufferedStreamReader_& in)
+    VariantValue               Reader_Number_ (char32_t initialChar, MyBufferedStreamReader_& in)
     {
         Require (initialChar == '-' or IsJSONDigit_ (initialChar));
 
@@ -211,7 +211,7 @@ namespace {
         // ACCUMULATE STRING, and then call builtin number parsing functions...
         // This accumulation is NOT as restrictive as it could be - but should accept all valid numbers
         StringBuilder tmp;
-        for (wchar_t c = initialChar; c != '\0'; c = in.Read ().value_or ('\0').As<wchar_t> ()) {
+        for (char32_t c = initialChar; c != '\0'; c = in.Read ().value_or ('\0').As<char32_t> ()) {
             if (IsJSONDigit_ (c) or c == '.' or c == 'e' or c == 'E' or c == '+' or c == '-') [[likely]] {
                 tmp += c;
                 if (c == '.') [[unlikely]] {
@@ -227,8 +227,8 @@ namespace {
             }
         }
         Assert (not tmp.empty ());
-        Memory::StackBuffer<wchar_t> ignoreBuf;
-        span<const wchar_t>          tmpData = tmp.GetData (&ignoreBuf);
+        Memory::StackBuffer<char32_t> ignoreBuf;
+        span<const char32_t>          tmpData = tmp.GetData (&ignoreBuf);
         if (containsDot) {
             return VariantValue{Characters::FloatConversion::ToFloat<long double> (tmpData)};
         }
@@ -260,7 +260,7 @@ namespace {
                 static const auto kException_{BadFormatException{L"JSON: Unexpected EOF reading object (looking for '}')"sv}};
                 Execution::Throw (kException_);
             }
-            wchar_t nextChar = oNextChar->As<wchar_t> ();
+            char32_t nextChar = oNextChar->As<char32_t> ();
             if (nextChar == '}') {
                 if (lf == eName or lf == eComma) {
                     // skip char
@@ -325,7 +325,7 @@ namespace {
                 static const auto kException_{BadFormatException{L"JSON: Unexpected EOF reading array (looking for ']')"sv}};
                 Execution::Throw (kException_);
             }
-            wchar_t peekedChar = in.Peek ()->As<wchar_t> ();
+            char32_t peekedChar = in.Peek ()->As<char32_t> ();
             if (peekedChar == ']') {
                 if (lookingForElt) {
                     // allow ending ',' - harmless - could  be more aggressive - but if so - careful of zero-sized array special case
@@ -361,7 +361,7 @@ namespace {
         }
     }
 
-    VariantValue Reader_SpecialToken_ (wchar_t initialChar, MyBufferedStreamReader_& in)
+    VariantValue Reader_SpecialToken_ (char32_t initialChar, MyBufferedStreamReader_& in)
     {
         switch (initialChar) {
             case 'f': {
@@ -408,7 +408,7 @@ namespace {
         //      false
         //      null
         for (optional<Character> oc = in.Read (); oc; oc = in.Read ()) {
-            switch (oc->As<wchar_t> ()) {
+            switch (oc->As<char32_t> ()) {
                 case '\"':
                     in.BackupOne ();
                     return Reader_String_ (in);
@@ -424,7 +424,7 @@ namespace {
                 case '8':
                 case '9':
                 case '-':
-                    return Reader_Number_ (oc->As<wchar_t> (), in);
+                    return Reader_Number_ (oc->As<char32_t> (), in);
 
                 case '{':
                     return Reader_Object_ (in);
@@ -434,10 +434,10 @@ namespace {
                 case 't':
                 case 'f':
                 case 'n':
-                    return Reader_SpecialToken_ (oc->As<wchar_t> (), in);
+                    return Reader_SpecialToken_ (oc->As<char32_t> (), in);
 
                 default: {
-                    if (IsJSONSpace_ (oc->As<wchar_t> ())) [[likely]] {
+                    if (IsJSONSpace_ (oc->As<char32_t> ())) [[likely]] {
                         // ignore
                     }
                     else {

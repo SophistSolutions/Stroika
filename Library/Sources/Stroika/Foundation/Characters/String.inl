@@ -38,7 +38,7 @@ namespace Stroika::Foundation::Characters {
                 }
             }
         }
-        template <SupportedComparableUnicodeStringTypes_ USTRING>
+        template <CanBeTreatedAsSpanOfCharacter_ USTRING>
         inline span<const Character> Access_ (USTRING&& s, Memory::StackBuffer<Character>* mostlyIgnoredBuf)
         {
             /*
@@ -52,17 +52,35 @@ namespace Stroika::Foundation::Characters {
             if constexpr (is_same_v<decay_t<USTRING>, String>) {
                 return s.GetData (mostlyIgnoredBuf);
             }
-            else if constexpr (is_same_v<decay_t<USTRING>, const wchar_t*>) {
-                static_assert (sizeof (Character) == sizeof (wchar_t));
-                return span{reinterpret_cast<const Character*> (s), ::wcslen (s)};
+            else if constexpr (sizeof (wchar_t) == sizeof (Character) and is_same_v<decay_t<USTRING>, const wchar_t*>) {
+                return span{reinterpret_cast<const Character*> (s), CString::Length (s)};
             }
-            else if constexpr (is_same_v<decay_t<USTRING>, wstring>) {
-                static_assert (sizeof (Character) == sizeof (wchar_t));
+            else if constexpr (sizeof (wchar_t) == sizeof (Character) and is_same_v<decay_t<USTRING>, wstring>) {
                 return span{reinterpret_cast<const Character*> (s.c_str ()), s.length ()};
             }
-            else if constexpr (is_same_v<decay_t<USTRING>, wstring_view>) {
-                static_assert (sizeof (Character) == sizeof (wchar_t));
+            else if constexpr (sizeof (wchar_t) == sizeof (Character) and is_same_v<decay_t<USTRING>, wstring_view>) {
                 return span{reinterpret_cast<const Character*> (s.data ()), s.length ()};
+            }
+            else if constexpr (is_same_v<decay_t<USTRING>, const wchar_t*>) {
+                span spn{s, CString::Length (s)};
+                mostlyIgnoredBuf->resize_uninitialized (UTFConverter::ComputeTargetBufferSize<Character> (spn));
+                return span<const Character>{mostlyIgnoredBuf->data (), UTFConverter::kThe.Convert (spn, span{*mostlyIgnoredBuf}).fTargetProduced};
+            }
+            else if constexpr (is_same_v<decay_t<USTRING>, wstring>) {
+                span spn{s.data (), s.size ()};
+                mostlyIgnoredBuf->resize_uninitialized (UTFConverter::ComputeTargetBufferSize<Character> (spn));
+                return span<const Character>{mostlyIgnoredBuf->data (), UTFConverter::kThe.Convert (spn, span{*mostlyIgnoredBuf}).fTargetProduced};
+            }
+            else if constexpr (is_same_v<decay_t<USTRING>, wstring_view>) {
+                span spn{s.data (), s.size ()};
+                mostlyIgnoredBuf->resize_uninitialized (UTFConverter::ComputeTargetBufferSize<Character> (spn));
+                return span<const Character>{mostlyIgnoredBuf->data (), UTFConverter::kThe.Convert (spn, span{*mostlyIgnoredBuf}).fTargetProduced};
+            }
+            else {
+                // else must copy data to mostlyIgnoredBuf and use that, so just need a span
+                span spn{s}; // tricky part
+                mostlyIgnoredBuf->resize_uninitialized (UTFConverter::ComputeTargetBufferSize<Character> (spn));
+                return span<const Character>{mostlyIgnoredBuf->data (), UTFConverter::kThe.Convert (spn).fTargetProduced};
             }
         }
     }
@@ -561,17 +579,27 @@ namespace Stroika::Foundation::Characters {
     }
     inline String String::InsertAt (Character c, size_t at) const
     {
-        return InsertAt (&c, &c + 1, at);
+        return InsertAt (span<const Character>{&c, 1}, at);
     }
     inline String String::InsertAt (const String& s, size_t at) const
     {
-        Memory::StackBuffer<wchar_t> ignored1;
-        auto                         insertSpan = s.GetData (&ignored1);
-        return InsertAt (insertSpan.data (), insertSpan.data () + insertSpan.size (), at);
+        Memory::StackBuffer<Character> ignored1;
+        return InsertAt (s.GetData (&ignored1), at);
     }
-    inline String String::InsertAt (const wchar_t* from, const wchar_t* to, size_t at) const
+    inline void String::Append (span<const Character> s)
     {
-        return InsertAt (reinterpret_cast<const Character*> (from), reinterpret_cast<const Character*> (to), at);
+        if (not s.empty ()) {
+            Memory::StackBuffer<char32_t> ignored1;
+            span<const char32_t>          thisSpan = this->GetData (&ignored1);
+            Memory::StackBuffer<char32_t> combinedBuf{thisSpan.size () + s.size ()};
+            copy (thisSpan.begin (), thisSpan.end (), combinedBuf.data ());
+            char32_t* write2Buf = combinedBuf.data () + thisSpan.size ();
+            for (auto i : s) {
+                *write2Buf = i.As<char32_t> ();
+                ++write2Buf;
+            }
+            *this = mk_ (span{combinedBuf});
+        }
     }
     inline void String::Append (const wchar_t* from, const wchar_t* to)
     {
@@ -598,7 +626,7 @@ namespace Stroika::Foundation::Characters {
     }
     inline void String::Append (const Character* from, const Character* to)
     {
-        Append (reinterpret_cast<const wchar_t*> (from), reinterpret_cast<const wchar_t*> (to));
+        Append (span{from, to});
     }
     inline String& String::operator+= (Character appendage)
     {
@@ -854,22 +882,8 @@ namespace Stroika::Foundation::Characters {
             return span<const wchar_t>{};
         }
         else if constexpr (is_same_v<CHAR_TYPE, Character>) {
-            // later will map to char32_t, but for now same as wchar_t
-            if constexpr (sizeof (wchar_t) == 2) {
-                if (pds.fInCP == StorageCodePointType::eChar16) {
-                    if (pds.fChar16.empty ()) {
-                        return span<const wchar_t>{};
-                    }
-                    return span<const Character>{reinterpret_cast<const Character*> (&*pds.fChar16.begin ()), pds.fChar16.size ()};
-                }
-            }
-            else if constexpr (sizeof (wchar_t) == 4) {
-                if (pds.fInCP == StorageCodePointType::eChar32) {
-                    if (pds.fChar32.empty ()) {
-                        return span<const wchar_t>{};
-                    }
-                    return span<const Character>{reinterpret_cast<const Character*> (&*pds.fChar32.begin ()), pds.fChar32.size ()};
-                }
+            if (pds.fInCP == StorageCodePointType::eChar32) {
+                return span<const Character>{reinterpret_cast<const Character*> (pds.fChar32.data ()), pds.fChar32.size ()};
             }
             return span<const Character>{};
         }
@@ -902,21 +916,11 @@ namespace Stroika::Foundation::Characters {
             }
         }
         else if constexpr (is_same_v<CHAR_TYPE, Character>) {
-            // later will map to char32_t, but for now same as wchar_t
-            if constexpr (sizeof (wchar_t) == 2) {
-                auto p = GetData (pds, reinterpret_cast<Memory::StackBuffer<char16_t>*> (possiblyUsedBuffer));
-                if (p.empty ()) {
-                    return span<const CHAR_TYPE>{};
-                }
-                return span<const CHAR_TYPE>{reinterpret_cast<const CHAR_TYPE*> (&*p.begin ()), p.size ()};
+            auto p = GetData (pds, reinterpret_cast<Memory::StackBuffer<char32_t>*> (possiblyUsedBuffer));
+            if (p.empty ()) {
+                return span<const CHAR_TYPE>{};
             }
-            else if constexpr (sizeof (wchar_t) == 4) {
-                auto p = GetData (pds, reinterpret_cast<Memory::StackBuffer<char32_t>*> (possiblyUsedBuffer));
-                if (p.empty ()) {
-                    return span<const CHAR_TYPE>{};
-                }
-                return span<const CHAR_TYPE>{reinterpret_cast<const CHAR_TYPE*> (&*p.begin ()), p.size ()};
-            }
+            return span<const CHAR_TYPE>{reinterpret_cast<const CHAR_TYPE*> (&*p.begin ()), p.size ()};
         }
         if constexpr (is_same_v<CHAR_TYPE, char8_t>) {
             switch (pds.fInCP) {
@@ -1105,7 +1109,7 @@ namespace Stroika::Foundation::Characters {
         : fCompareOptions{co}
     {
     }
-    template <Private_::SupportedComparableUnicodeStringTypes_ LT, Private_::SupportedComparableUnicodeStringTypes_ RT>
+    template <Private_::CanBeTreatedAsSpanOfCharacter_ LT, Private_::CanBeTreatedAsSpanOfCharacter_ RT>
     inline bool String::EqualsComparer::Cmp_ (LT&& lhs, RT&& rhs) const
     {
         // optimize very common case of ASCII String vs ASCII String
@@ -1126,7 +1130,7 @@ namespace Stroika::Foundation::Characters {
         }
         return Cmp_Generic_ (forward<LT> (lhs), forward<RT> (rhs));
     }
-    template <Private_::SupportedComparableUnicodeStringTypes_ LT, Private_::SupportedComparableUnicodeStringTypes_ RT>
+    template <Private_::CanBeTreatedAsSpanOfCharacter_ LT, Private_::CanBeTreatedAsSpanOfCharacter_ RT>
     bool String::EqualsComparer::Cmp_Generic_ (LT&& lhs, RT&& rhs) const
     {
         // separate function - cuz large stackframe and on windows generates chkstk calls, so dont have in
@@ -1144,7 +1148,7 @@ namespace Stroika::Foundation::Characters {
                 return false; // performance tweak
             }
         }
-        if constexpr (Private_::SupportedComparableUnicodeStringTypes_<LT> and Private_::SupportedComparableUnicodeStringTypes_<RT>) {
+        if constexpr (Private_::CanBeTreatedAsSpanOfCharacter_<LT> and Private_::CanBeTreatedAsSpanOfCharacter_<RT>) {
             return Cmp_ (lhs, rhs);
         }
         else {
@@ -1162,7 +1166,7 @@ namespace Stroika::Foundation::Characters {
         : fCompareOptions{co}
     {
     }
-    template <Private_::SupportedComparableUnicodeStringTypes_ LT, Private_::SupportedComparableUnicodeStringTypes_ RT>
+    template <Private_::CanBeTreatedAsSpanOfCharacter_ LT, Private_::CanBeTreatedAsSpanOfCharacter_ RT>
     inline strong_ordering String::ThreeWayComparer::Cmp_ (LT&& lhs, RT&& rhs) const
     {
         // optimize very common case of ASCII String vs ASCII String
@@ -1175,7 +1179,7 @@ namespace Stroika::Foundation::Characters {
         }
         return Cmp_Generic_ (forward<LT> (lhs), forward<RT> (rhs));
     }
-    template <Private_::SupportedComparableUnicodeStringTypes_ LT, Private_::SupportedComparableUnicodeStringTypes_ RT>
+    template <Private_::CanBeTreatedAsSpanOfCharacter_ LT, Private_::CanBeTreatedAsSpanOfCharacter_ RT>
     strong_ordering String::ThreeWayComparer::Cmp_Generic_ (LT&& lhs, RT&& rhs) const
     {
         // separate function - cuz large stackframe and on windows generates chkstk calls, so dont have in
@@ -1187,7 +1191,7 @@ namespace Stroika::Foundation::Characters {
     template <ConvertibleToString LT, ConvertibleToString RT>
     inline strong_ordering String::ThreeWayComparer::operator() (LT&& lhs, RT&& rhs) const
     {
-        if constexpr (Private_::SupportedComparableUnicodeStringTypes_<LT> and Private_::SupportedComparableUnicodeStringTypes_<RT>) {
+        if constexpr (Private_::CanBeTreatedAsSpanOfCharacter_<LT> and Private_::CanBeTreatedAsSpanOfCharacter_<RT>) {
             return Cmp_ (lhs, rhs);
         }
         else {

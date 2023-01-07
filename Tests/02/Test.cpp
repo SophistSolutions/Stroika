@@ -1558,13 +1558,8 @@ namespace {
             static const u16string kTestWithSurrogates_ = u16string{u"\U0002008A"};
             VerifyTestResult (kTestWithSurrogates_.size () == 2);
             VerifyTestResult (kTestWithSurrogates_ == String{kTestWithSurrogates_}.AsUTF16 ());
-            // For now (as of v2.1d10) - Stroika stores strings as 'wchar_t' so the length of this will depend on if wchar_t is 2bytes or 4
-            if constexpr (sizeof (wchar_t) == sizeof (char16_t)) {
-                VerifyTestResult (String{kTestWithSurrogates_}.length () == 2); // surrogate  surrogate pairs
-            }
-            if constexpr (sizeof (wchar_t) == sizeof (char32_t)) {
-           //tmphack disable while working on fix this and related     VerifyTestResult (String{kTestWithSurrogates_}.length () == 1); // surrogate  surrogate pairs
-            }
+            VerifyTestResult (String{kTestWithSurrogates_}.length () == 1);
+            VerifyTestResult (String{kTestWithSurrogates_}.AsUTF16 ().length () == 2);
         }
     }
 }

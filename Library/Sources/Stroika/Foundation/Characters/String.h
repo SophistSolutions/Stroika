@@ -410,11 +410,12 @@ namespace Stroika::Foundation::Characters {
          *
          *  \em Note that for repeated insertions, this is much less efficient than just
          *      using StringBuilder.
+         * 
+         *  \note that if at == this->size (), you are appending.
          */
         nonvirtual String InsertAt (Character c, size_t at) const;
         nonvirtual String InsertAt (const String& s, size_t at) const;
-        nonvirtual String InsertAt (const wchar_t* from, const wchar_t* to, size_t at) const;
-        nonvirtual String InsertAt (const Character* from, const Character* to, size_t at) const;
+        nonvirtual String InsertAt (span<const Character> s, size_t at) const;
 
     public:
         /**
@@ -434,6 +435,7 @@ namespace Stroika::Foundation::Characters {
         nonvirtual void Append (const wchar_t* s);
         nonvirtual void Append (const wchar_t* from, const wchar_t* to);
         nonvirtual void Append (const Character* from, const Character* to);
+        nonvirtual void Append (span<const Character> s);
 
     public:
         nonvirtual String& operator+= (Character appendage);
@@ -1308,6 +1310,15 @@ namespace Stroika::Foundation::Characters {
         nonvirtual String substr (size_t from, size_t count = npos) const;
 
     public:
+        [[deprecated ("Since Stroika v3.0d1, use span overloads")]] String InsertAt (const wchar_t* from, const wchar_t* to, size_t at) const
+        {
+            Memory::StackBuffer<Character> buf{UTFConverter::ComputeTargetBufferSize<Character> (span{from, to})};
+            return InsertAt (span<const Character>{buf.data (), UTFConverter::kThe.Convert (span{from, to}, span{buf}).fTargetProduced}, at);
+        }
+        [[deprecated ("Since Stroika v3.0d1, use span overloads")]] String InsertAt (const Character* from, const Character* to, size_t at) const
+        {
+            return InsertAt (span{from, to}, at);
+        }
         [[deprecated ("Since Stroika v3.0d1, use span{} overload for this")]] static String FromISOLatin1 (const char* start, const char* end)
         {
             return FromISOLatin1 (span{start, end});
@@ -1462,11 +1473,12 @@ namespace Stroika::Foundation::Characters {
     wostream& operator<< (wostream& out, const String& s);
 
     namespace Private_ {
+        // This is just anything that can be treated as a 'span< const Character>'
         template <typename T>
-        concept SupportedComparableUnicodeStringTypes_ =
+        concept CanBeTreatedAsSpanOfCharacter_ =
             is_same_v < decay_t<T>,
         String >
-            or is_same_v<decay_t<T>, wstring> or is_same_v<decay_t<T>, wstring_view> or is_same_v<decay_t<T>, const Character*> or is_same_v<decay_t<T>, const wchar_t*>;
+            or is_same_v<decay_t<T>, u32string> or is_same_v<decay_t<T>, u32string_view> or is_same_v<decay_t<T>, const Character*> or is_same_v<decay_t<T>, const char32_t*>;
     }
 
     /**
@@ -1486,9 +1498,9 @@ namespace Stroika::Foundation::Characters {
         CompareOptions fCompareOptions;
 
     private:
-        template <Private_::SupportedComparableUnicodeStringTypes_ LT, Private_::SupportedComparableUnicodeStringTypes_ RT>
+        template <Private_::CanBeTreatedAsSpanOfCharacter_ LT, Private_::CanBeTreatedAsSpanOfCharacter_ RT>
         bool Cmp_ (LT&& lhs, RT&& rhs) const;
-        template <Private_::SupportedComparableUnicodeStringTypes_ LT, Private_::SupportedComparableUnicodeStringTypes_ RT>
+        template <Private_::CanBeTreatedAsSpanOfCharacter_ LT, Private_::CanBeTreatedAsSpanOfCharacter_ RT>
         bool Cmp_Generic_ (LT&& lhs, RT&& rhs) const;
     };
 
@@ -1509,9 +1521,9 @@ namespace Stroika::Foundation::Characters {
         CompareOptions fCompareOptions;
 
     private:
-        template <Private_::SupportedComparableUnicodeStringTypes_ LT, Private_::SupportedComparableUnicodeStringTypes_ RT>
+        template <Private_::CanBeTreatedAsSpanOfCharacter_ LT, Private_::CanBeTreatedAsSpanOfCharacter_ RT>
         strong_ordering Cmp_ (LT&& lhs, RT&& rhs) const;
-        template <Private_::SupportedComparableUnicodeStringTypes_ LT, Private_::SupportedComparableUnicodeStringTypes_ RT>
+        template <Private_::CanBeTreatedAsSpanOfCharacter_ LT, Private_::CanBeTreatedAsSpanOfCharacter_ RT>
         strong_ordering Cmp_Generic_ (LT&& lhs, RT&& rhs) const;
     };
 

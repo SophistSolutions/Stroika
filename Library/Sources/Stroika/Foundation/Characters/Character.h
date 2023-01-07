@@ -16,10 +16,6 @@
 /**
  * TODO:
  *
- *      @todo   REDO THIS SO ALWAYS USES char32_t - NOT wchar_t!!!! But DON'T DO until I have a STRING class
- *              implementation based on UTF-8, to minimize the performance costs...
- *              https://stroika.atlassian.net/browse/STK-534
- *
  *      @todo   Use UTFConvert code directly to properly handle constructors from various codepoint types
  *
  *      @todo   Biggest thing todo is to work out 'surrogates' - and whether or not they are needed
@@ -97,11 +93,17 @@ namespace Stroika::Foundation::Characters {
     class Character {
     public:
         /**
+         *  Default constructor produces a zero character.
+         *  Constructor with char32_t always produces a valid character.
+         * 
+         *  .. others TBD - maybe throw if out of range, maybe trunctate.
+         *  .. maybe char16_t/2 throws if args not valid surrogate pair. But need mthod to check if valid surrogate pair so no throw maybe fromXXXquaetly
          */
         constexpr Character () noexcept;
-        constexpr Character (char c) noexcept;
-        constexpr Character (char16_t c) noexcept;
-        constexpr Character (char32_t c) noexcept; // @todo decide how to handle surrogates
+        constexpr Character (char32_t c) noexcept;
+
+        constexpr Character (char c) noexcept;     // @todo figure out how to interpret 'c' > 128 - UNCIDE code point or error? - PROBABLY ERROR?
+        constexpr Character (char16_t c) noexcept; // @todo decide how to handle surrogates
         constexpr Character (wchar_t wc) noexcept;
 
     public:
@@ -113,7 +115,7 @@ namespace Stroika::Foundation::Characters {
     public:
         // @todo deprecate this and replace wtih GetCodePoint<CHAR_T> -> optional<CHAR_T> with charT required to be uncide-code-point concept
         // return has-value if convertible
-        nonvirtual wchar_t GetCharacterCode () const noexcept;
+        nonvirtual char32_t GetCharacterCode () const noexcept;
 
     public:
         /**
@@ -126,18 +128,33 @@ namespace Stroika::Foundation::Characters {
 
     public:
         /*
-         * @todo    NOT SURE WE WANT THIS FOR wchar_t etc - maybe just get rid of this!!! TRICKYYY;
-         *          IF we go with design based on char32_t - then thats all we can ever safely return.
-         *          We need diff API to return up to 2 wchar_t's!!!
+         * \brief return the character as a char32_t  (or on systems where wchar_t is large enuf, as wchar_t)
+         * 
+         *  \note Before Stroika v3, this always supported wchar_t.
          */
         template <typename T>
         nonvirtual T As () const noexcept
-            requires (is_same_v<T, char32_t> or is_same_v<T, wchar_t>);
+            requires (is_same_v<T, char32_t> or (sizeof (wchar_t) == sizeof (char32_t) and is_same_v<T, wchar_t>));
 
     public:
         nonvirtual bool IsASCII () const noexcept;
 
     public:
+        /**
+        * SEE https://en.cppreference.com/w/cpp/string/wide/iswspace 
+        * FROM https://en.cppreference.com/w/cpp/string/wide/iswspace:
+        * 
+        * ...In the default locale, the whitespace characters are the following:
+            space (0x20, ' ')
+            form feed (0x0c, '\f')
+            line feed (0x0a, '\n')
+            carriage return (0x0d, '\r')
+            horizontal tab (0x09, '\t')
+            vertical tab (0x0b, '\v')
+
+        *   ISO 30112 defines POSIX space characters as Unicode characters U+0009..U+000D, U+0020, U+1680, U+180E, U+2000..U+2006, U+2008..U+200A, U+2028, U+2029, U+205F, and U+3000.
+        * 
+         */
         nonvirtual bool IsWhitespace () const noexcept;
 
     public:
@@ -237,7 +254,7 @@ namespace Stroika::Foundation::Characters {
         }
 
     private:
-        wchar_t fCharacterCode_;
+        char32_t fCharacterCode_;
     };
 
     /**
@@ -272,15 +289,7 @@ namespace Stroika::Foundation::Characters {
         Stroika::Foundation::Characters::CompareOptions fCompareOptions;
     };
 
-    /// NOT GOOD IDEA/NOT GOOD PRACTICE - BUT AT LEAST MODULARIZE THE BAD PRACTICE
-    /// SO I CAN SEARCH FOR IT AND FIX IT WHEN I HAVE A GOOD IDEA HOW.
-    //
-    // ASSUME sizeof(wchar_t) same as sizeof (Character) everwhere so the cast between
-    // them is safe
-    inline const wchar_t* CVT_CHARACTER_2_wchar_t (const Character* c)
-    {
-        return reinterpret_cast<const wchar_t*> (c);
-    }
+    [[deprecated ("UNSUPPORTED Since Stroika v3.0d1")]] const wchar_t* CVT_CHARACTER_2_wchar_t (const Character* c);
 
 }
 
