@@ -78,7 +78,7 @@ namespace Stroika::Foundation::Characters {
     {
     }
     constexpr inline Character::Character (char c) noexcept
-        : fCharacterCode_{static_cast<wchar_t> (c)}
+        : fCharacterCode_{static_cast<char32_t> (c)}
     {
     }
     constexpr inline Character::Character (char16_t c) noexcept
@@ -88,12 +88,12 @@ namespace Stroika::Foundation::Characters {
     DISABLE_COMPILER_MSC_WARNING_START (4244)
     // NB: THIS IS A REAL BUG/ISSUE. WE MUST DO WORK TO TRANSFORM. REDESIGN REQUIRED!!!
     constexpr inline Character::Character (char32_t c) noexcept
-        : fCharacterCode_{static_cast<wchar_t> (c)}
+        : fCharacterCode_{static_cast<char32_t> (c)}
     {
     }
     DISABLE_COMPILER_MSC_WARNING_END (4244)
     constexpr inline Character::Character (wchar_t wc) noexcept
-        : fCharacterCode_{wc}
+        : fCharacterCode_{(char32_t)wc}
     {
     }
     inline char Character::GetAsciiCode () const noexcept
