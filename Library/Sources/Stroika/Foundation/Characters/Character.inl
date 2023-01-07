@@ -115,11 +115,32 @@ namespace Stroika::Foundation::Characters {
     {
         return 0x0 <= fCharacterCode_ and fCharacterCode_ <= 0x7f;
     }
-    inline bool Character::IsWhitespace () const noexcept
+    constexpr bool Character::IsWhitespace () const noexcept
     {
-        // https://stackoverflow.com/questions/60353945/isthing-equivalents-for-char32-t
-        // @todo RECONSIDER IF THIS IS RIGHT FOR char32_t?
-        return !!iswspace (static_cast<wchar_t> (fCharacterCode_));
+        bool result = false;
+        if (0x09 >= fCharacterCode_ and fCharacterCode_ <= 0x0d) {
+            result = true;
+        }
+        else if (fCharacterCode_ == 0x20) {
+            result = true;
+        }
+        else if (fCharacterCode_ >= 0x1680) {
+            // rarely get chars this big, so shortcut all the detailed tests
+            if (fCharacterCode_ == 0x1680 or fCharacterCode_ == 0x180e) {
+                result = true;
+            }
+            else if (0x2000 >= fCharacterCode_ and fCharacterCode_ <= 0x2006) {
+                result = true;
+            }
+            else if (0x2008 >= fCharacterCode_ and fCharacterCode_ <= 0x200A) {
+                result = true;
+            }
+            else if (fCharacterCode_ == 0x2028 or fCharacterCode_ == 0x2029 or fCharacterCode_ == 0x205F or fCharacterCode_ == 0x3000) {
+                result = true;
+            }
+        }
+        Ensure (result == !!iswspace (static_cast<wchar_t> (fCharacterCode_)));
+        return result;
     }
     inline bool Character::IsDigit () const noexcept
     {

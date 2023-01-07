@@ -141,21 +141,21 @@ namespace Stroika::Foundation::Characters {
 
     public:
         /**
-        * SEE https://en.cppreference.com/w/cpp/string/wide/iswspace 
-        * FROM https://en.cppreference.com/w/cpp/string/wide/iswspace:
-        * 
-        * ...In the default locale, the whitespace characters are the following:
-            space (0x20, ' ')
-            form feed (0x0c, '\f')
-            line feed (0x0a, '\n')
-            carriage return (0x0d, '\r')
-            horizontal tab (0x09, '\t')
-            vertical tab (0x0b, '\v')
-
-        *   ISO 30112 defines POSIX space characters as Unicode characters U+0009..U+000D, U+0020, U+1680, U+180E, U+2000..U+2006, U+2008..U+200A, U+2028, U+2029, U+205F, and U+3000.
-        * 
+         * FROM https://en.cppreference.com/w/cpp/string/wide/iswspace:
+         *      In the default (C) locale, the whitespace characters are the following:
+         *          space (0x20, ' ')
+         *          form feed (0x0c, '\f')
+         *          line feed (0x0a, '\n')
+         *          carriage return (0x0d, '\r')
+         *          horizontal tab (0x09, '\t')
+         *          vertical tab (0x0b, '\v')
+         *       ...
+         *       ISO 30112 defines POSIX space characters as Unicode characters 
+         *          U+0009..U+000D, U+0020, U+1680, U+180E, U+2000..U+2006, U+2008..U+200A, U+2028, U+2029, U+205F, and U+3000.
+         * 
+         *  \note before Stroika v3.0d1, this just used iswspace()
          */
-        nonvirtual bool IsWhitespace () const noexcept;
+        constexpr bool IsWhitespace () const noexcept;
 
     public:
         nonvirtual bool IsDigit () const noexcept;
