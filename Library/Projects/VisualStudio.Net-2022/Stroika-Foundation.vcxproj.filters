@@ -822,6 +822,9 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\UTFConvert.cpp">
       <Filter>Sources\Characters</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\Character.cpp">
+      <Filter>Sources\Characters</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.h">

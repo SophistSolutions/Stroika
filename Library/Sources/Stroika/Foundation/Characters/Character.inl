@@ -66,6 +66,7 @@ namespace Stroika::Foundation::Characters {
             }
             return Common::CompareResultNormalizer (static_cast<ptrdiff_t> (lLen) - static_cast<ptrdiff_t> (rLen));
         }
+        void ThrowSurrogatesOutOfRange_ ();
     }
 
     /*
@@ -80,6 +81,25 @@ namespace Stroika::Foundation::Characters {
     constexpr inline Character::Character (char32_t c) noexcept
         : fCharacterCode_{c}
     {
+    }
+    inline Character::Character (char16_t hiSurrogate, char16_t lowSurrogate)
+    {
+        /*
+         * See https://en.wikipedia.org/wiki/Universal_Character_Set_characters#Surrogates
+         * 
+         * A surrogate pair denotes the code point
+         *      0x10000 + (H - 0xD800) × 0x400 + (L - 0xDC00)
+         */
+        static const auto  kException_ = out_of_range{"Surrogates out of range"};
+        constexpr int      halfShift   = 10; /* used for shifting by 10 bits */
+        constexpr char32_t halfBase    = 0x0010000UL;
+        if (not(UNI_SUR_HIGH_START <= hiSurrogate and hiSurrogate <= UNI_SUR_HIGH_END)) {
+            Private_::ThrowSurrogatesOutOfRange_ ();
+        }
+        if (not(UNI_SUR_LOW_START <= lowSurrogate and lowSurrogate <= UNI_SUR_LOW_END)) {
+            Private_::ThrowSurrogatesOutOfRange_ ();
+        }
+        fCharacterCode_ = ((hiSurrogate - UNI_SUR_HIGH_START) << halfShift) + (lowSurrogate - UNI_SUR_LOW_START) + halfBase;
     }
     inline char Character::GetAsciiCode () const noexcept
     {

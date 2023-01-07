@@ -16,15 +16,11 @@
 /**
  * TODO:
  *
- *      @todo   Use UTFConvert code directly to properly handle constructors from various codepoint types
- *
- *      @todo   Biggest thing todo is to work out 'surrogates' - and whether or not they are needed
- *              (depending on the size of wchar_t - which right now - we PRESUME is the same as the size
- *              of Character.
- *
  *      @todo   ToLower ('GERMAN ES-ZETT' or 'SHARP S') returns two esses ('ss') - and we return a single chararcter.
  *              We COULD change return value, or simply document that issue here and define ToLower() of STRING todo
  *              the right thing for queer cases like this, and use this API for the most common cases.
+ * 
+ *              I HOPE - though am not sure - that this is now addressed in Stroika v3 - by encoding Character as utf32_t.
  */
 
 namespace Stroika::Foundation::Characters {
@@ -96,11 +92,11 @@ namespace Stroika::Foundation::Characters {
          *  Default constructor produces a zero character.
          *  Constructor with char32_t always produces a valid character.
          * 
-         *  .. others TBD - maybe throw if out of range, maybe trunctate.
-         *  .. maybe char16_t/2 throws if args not valid surrogate pair. But need mthod to check if valid surrogate pair so no throw maybe fromXXXquaetly
+         *  The overload taking two char16_t surrogate pairs, may throw if given invalid code-points
          */
         constexpr Character () noexcept;
         constexpr Character (char32_t c) noexcept;
+        Character (char16_t hiSurrogate, char16_t lowSurrogate);
 
     public:
         /**
@@ -239,6 +235,15 @@ namespace Stroika::Foundation::Characters {
          */
         template <Character_Compatible CHAR_T>
         static constexpr strong_ordering Compare (span<const CHAR_T> lhs, span<const CHAR_T> rhs, CompareOptions co) noexcept;
+
+    public:
+        /**
+         * See https://en.wikipedia.org/wiki/Universal_Character_Set_characters#Surrogates
+         */
+        static constexpr char16_t UNI_SUR_HIGH_START{0xD800};
+        static constexpr char16_t UNI_SUR_HIGH_END{0xDBFF};
+        static constexpr char16_t UNI_SUR_LOW_START{0xDC00};
+        static constexpr char16_t UNI_SUR_LOW_END{0xDFFF};
 
     public:
         [[deprecated ("Since Stroika 3.0d1, use span based Compare")]] static strong_ordering Compare (const Character* lhsStart, const Character* lhsEnd, const Character* rhsStart, const Character* rhsEnd, CompareOptions co) noexcept

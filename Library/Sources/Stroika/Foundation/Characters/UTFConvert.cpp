@@ -85,10 +85,7 @@ namespace {
         constexpr char32_t halfBase = 0x0010000UL;
         constexpr char32_t halfMask = 0x3FFUL;
 
-        constexpr char32_t UNI_SUR_HIGH_START{(char32_t)0xD800};
-        constexpr char32_t UNI_SUR_HIGH_END{(char32_t)0xDBFF};
-        constexpr char32_t UNI_SUR_LOW_START{(char32_t)0xDC00};
-        constexpr char32_t UNI_SUR_LOW_END{(char32_t)0xDFFF};
+     
 
         /*
          * Magic values subtracted from a buffer value during UTF8 conversion.
@@ -231,7 +228,7 @@ namespace {
                 }
                 if (ch <= UNI_MAX_BMP) { /* Target is a character <= 0xFFFF */
                     /* UTF-16 surrogate values are illegal in UTF-32 */
-                    if (ch >= UNI_SUR_HIGH_START && ch <= UNI_SUR_LOW_END) {
+                    if (ch >= Character::UNI_SUR_HIGH_START && ch <= Character::UNI_SUR_LOW_END) {
                         if (flags == strictConversion) {
                             source -= (extraBytesToRead + 1); /* return to the illegal value itself */
                             result = sourceIllegal;
@@ -263,8 +260,8 @@ namespace {
                         break;
                     }
                     ch -= halfBase;
-                    *target++ = (char16_t)((ch >> halfShift) + UNI_SUR_HIGH_START);
-                    *target++ = (char16_t)((ch & halfMask) + UNI_SUR_LOW_START);
+                    *target++ = (char16_t)((ch >> halfShift) + Character::UNI_SUR_HIGH_START);
+                    *target++ = (char16_t)((ch & halfMask) + Character::UNI_SUR_LOW_START);
                 }
             }
             *sourceStart = source;
@@ -284,13 +281,13 @@ namespace {
                 const char16_t*    oldSource    = source; /* In case we have to back up because of target overflow. */
                 ch                              = *source++;
                 /* If we have a surrogate pair, convert to char32_t first. */
-                if (ch >= UNI_SUR_HIGH_START && ch <= UNI_SUR_HIGH_END) [[unlikely]] {
+                if (ch >= Character::UNI_SUR_HIGH_START && ch <= Character::UNI_SUR_HIGH_END) [[unlikely]] {
                     /* If the 16 bits following the high surrogate are in the source buffer... */
                     if (source < sourceEnd) [[likely]] {
                         char32_t ch2 = *source;
                         /* If it's a low surrogate, convert to char32_t. */
-                        if (ch2 >= UNI_SUR_LOW_START && ch2 <= UNI_SUR_LOW_END) {
-                            ch = ((ch - UNI_SUR_HIGH_START) << halfShift) + (ch2 - UNI_SUR_LOW_START) + halfBase;
+                        if (ch2 >= Character::UNI_SUR_LOW_START && ch2 <= Character::UNI_SUR_LOW_END) {
+                            ch = ((ch - Character::UNI_SUR_HIGH_START) << halfShift) + (ch2 - Character::UNI_SUR_LOW_START) + halfBase;
                             ++source;
                         }
                         else if (flags == strictConversion) { /* it's an unpaired high surrogate */
@@ -307,7 +304,7 @@ namespace {
                 }
                 else if (flags == strictConversion) {
                     /* UTF-16 surrogate values are illegal in UTF-32 */
-                    if (ch >= UNI_SUR_LOW_START && ch <= UNI_SUR_LOW_END) {
+                    if (ch >= Character::UNI_SUR_LOW_START && ch <= Character::UNI_SUR_LOW_END) {
                         --source; /* return to the illegal value itself */
                         result = sourceIllegal;
                         break;
@@ -369,13 +366,13 @@ namespace {
                 const char16_t* oldSource = source; /*  In case we have to back up because of target overflow. */
                 ch                        = *source++;
                 /* If we have a surrogate pair, convert to UTF32 first. */
-                if (ch >= UNI_SUR_HIGH_START && ch <= UNI_SUR_HIGH_END) [[unlikely]] {
+                if (ch >= Character::UNI_SUR_HIGH_START && ch <= Character::UNI_SUR_HIGH_END) [[unlikely]] {
                     /* If the 16 bits following the high surrogate are in the source buffer... */
                     if (source < sourceEnd) {
                         ch2 = *source;
                         /* If it's a low surrogate, convert to UTF32. */
-                        if (ch2 >= UNI_SUR_LOW_START && ch2 <= UNI_SUR_LOW_END) {
-                            ch = ((ch - UNI_SUR_HIGH_START) << halfShift) + (ch2 - UNI_SUR_LOW_START) + halfBase;
+                        if (ch2 >= Character::UNI_SUR_LOW_START && ch2 <= Character::UNI_SUR_LOW_END) {
+                            ch = ((ch - Character::UNI_SUR_HIGH_START) << halfShift) + (ch2 - Character::UNI_SUR_LOW_START) + halfBase;
                             ++source;
                         }
                         else if (flags == strictConversion) { /* it's an unpaired high surrogate */
@@ -392,7 +389,7 @@ namespace {
                 }
                 else if (flags == strictConversion) {
                     /* UTF-16 surrogate values are illegal in UTF-32 */
-                    if (ch >= UNI_SUR_LOW_START && ch <= UNI_SUR_LOW_END) {
+                    if (ch >= Character::UNI_SUR_LOW_START && ch <= Character::UNI_SUR_LOW_END) {
                         --source; /* return to the illegal value itself */
                         result = sourceIllegal;
                         break;
@@ -428,7 +425,7 @@ namespace {
                 ch = *source++;
                 if (ch <= UNI_MAX_BMP) [[likely]] { /* Target is a character <= 0xFFFF */
                     /*   UTF-16 surrogate values are illegal in UTF-32; 0xffff or 0xfffe are both reserved values */
-                    if (ch >= UNI_SUR_HIGH_START && ch <= UNI_SUR_LOW_END) [[unlikely]] {
+                    if (ch >= Character::UNI_SUR_HIGH_START && ch <= Character::UNI_SUR_LOW_END) [[unlikely]] {
                         if (flags == strictConversion) {
                             --source; /* return to the illegal value itself */
                             result = sourceIllegal;
@@ -458,8 +455,8 @@ namespace {
                         break;
                     }
                     ch -= halfBase;
-                    *target++ = (char16_t)((ch >> halfShift) + UNI_SUR_HIGH_START);
-                    *target++ = (char16_t)((ch & halfMask) + UNI_SUR_LOW_START);
+                    *target++ = (char16_t)((ch >> halfShift) + Character::UNI_SUR_HIGH_START);
+                    *target++ = (char16_t)((ch & halfMask) + Character::UNI_SUR_LOW_START);
                 }
             }
             *sourceStart = source;
@@ -517,7 +514,7 @@ namespace {
                      * UTF-16 surrogate values are illegal in UTF-32, and anything
                      * over Plane 17 (> 0x10FFFF) is illegal.
                      */
-                    if (ch >= UNI_SUR_HIGH_START && ch <= UNI_SUR_LOW_END) {
+                    if (ch >= Character::UNI_SUR_HIGH_START && ch <= Character::UNI_SUR_LOW_END) {
                         if (flags == strictConversion) {
                             source -= (extraBytesToRead + 1); /* return to the illegal value itself */
                             result = sourceIllegal;
@@ -553,7 +550,7 @@ namespace {
                 ch                          = *source++;
                 if (flags == strictConversion) {
                     /* UTF-16 surrogate values are illegal in UTF-32 */
-                    if (ch >= UNI_SUR_HIGH_START && ch <= UNI_SUR_LOW_END) [[unlikely]] {
+                    if (ch >= Character::UNI_SUR_HIGH_START && ch <= Character::UNI_SUR_LOW_END) [[unlikely]] {
                         --source; /* return to the illegal value itself */
                         result = sourceIllegal;
                         break;
