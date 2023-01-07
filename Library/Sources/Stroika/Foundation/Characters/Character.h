@@ -109,8 +109,9 @@ namespace Stroika::Foundation::Characters {
         nonvirtual char GetAsciiCode () const noexcept;
 
     public:
-        // @todo deprecate this and replace wtih GetCodePoint<CHAR_T> -> optional<CHAR_T> with charT required to be uncide-code-point concept
-        // return has-value if convertible
+        /**
+         *  \brief Return the char32_t UNICODE code-point associated with this character.
+         */
         constexpr char32_t GetCharacterCode () const noexcept;
 
     public:
@@ -130,7 +131,12 @@ namespace Stroika::Foundation::Characters {
             requires (is_same_v<T, char32_t> or (sizeof (wchar_t) == sizeof (char32_t) and is_same_v<T, wchar_t>));
 
     public:
-        nonvirtual bool IsASCII () const noexcept;
+        /**
+         *  \brief Return true iff the given character (or all in span) is (are) in the ascii range [0..0xff]
+         */
+        constexpr bool IsASCII () const noexcept;
+        template <Character_Compatible CHAR_T>
+        static constexpr bool IsASCII (span<const CHAR_T> s) noexcept;
 
     public:
         /**
@@ -199,12 +205,6 @@ namespace Stroika::Foundation::Characters {
          * original character if there is no sensible conversion.
          */
         nonvirtual Character ToUpperCase () const noexcept;
-
-    public:
-        /**
-         */
-        template <Character_Compatible CHAR_T>
-        static bool IsASCII (span<const CHAR_T> s) noexcept;
 
     public:
         /**

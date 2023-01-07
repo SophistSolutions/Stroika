@@ -100,9 +100,29 @@ namespace Stroika::Foundation::Characters {
     {
         return GetCharacterCode ();
     }
-    inline bool Character::IsASCII () const noexcept
+    constexpr bool Character::IsASCII () const noexcept
     {
         return 0x0 <= fCharacterCode_ and fCharacterCode_ <= 0x7f;
+    }
+    template <Character_Compatible CHAR_T>
+    constexpr bool Character::IsASCII (span<const CHAR_T> fromS) noexcept
+    {
+        // note - tried to simplify with conditional_t but both sides evaluated
+        if constexpr (is_same_v<remove_cv_t<CHAR_T>, Character>) {
+            for (Character c : fromS) {
+                if (not c.IsASCII ()) [[unlikely]] {
+                    return false;
+                }
+            }
+        }
+        else {
+            for (CHAR_T c : fromS) {
+                if (static_cast<make_unsigned_t<CHAR_T>> (c) > 127) [[unlikely]] {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
     constexpr bool Character::IsWhitespace () const noexcept
     {
@@ -195,26 +215,6 @@ namespace Stroika::Foundation::Characters {
         else {
             return fCharacterCode_;
         }
-    }
-    template <Character_Compatible CHAR_T>
-    inline bool Character::IsASCII (span<const CHAR_T> fromS) noexcept
-    {
-        // note - tried to simplify with conditional_t but both sides evaluated
-        if constexpr (is_same_v<remove_cv_t<CHAR_T>, Character>) {
-            for (Character c : fromS) {
-                if (not c.IsASCII ()) [[unlikely]] {
-                    return false;
-                }
-            }
-        }
-        else {
-            for (CHAR_T c : fromS) {
-                if (static_cast<make_unsigned_t<CHAR_T>> (c) > 127) [[unlikely]] {
-                    return false;
-                }
-            }
-        }
-        return true;
     }
     template <typename RESULT_T, Character_Compatible CHAR_T>
     inline bool Character::AsASCIIQuietly (span<const CHAR_T> fromS, RESULT_T* into)
