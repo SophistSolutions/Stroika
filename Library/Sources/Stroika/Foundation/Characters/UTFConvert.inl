@@ -315,11 +315,15 @@ namespace Stroika::Foundation::Characters {
                 return ConversionResult{source.size (), source.size ()}; // not a typo - target buffer allowed to be larger than what copied
             }
             return Convert (ConvertCompatibleSpan_ (source), ConvertCompatibleSpan_ (target));
-        } template <Character_Compatible SRC_T, Character_Compatible TRG_T>
+        } 
+        
+        template <Character_Compatible SRC_T, Character_Compatible TRG_T>
         inline auto UTFConverter::Convert (span<SRC_T> source, span<TRG_T> target) const -> ConversionResult
         requires (not is_const_v<TRG_T>) {
             return Convert (Memory::ConstSpan (source), target);
-        } template <typename TO, typename FROM>
+        } 
+        
+        template <typename TO, typename FROM>
         inline TO UTFConverter::Convert (const FROM& from) const
         requires (
             (is_same_v<TO, string> or is_same_v<TO, wstring> or is_same_v<TO, u8string> or is_same_v<TO, u16string> or is_same_v<TO, u32string>) and
@@ -333,6 +337,13 @@ namespace Stroika::Foundation::Characters {
             Memory::StackBuffer<typename TO::value_type> buf{Memory::eUninitialized, cvtBufSize};
             return TO{buf.begin (), get<1> (Convert (span{from}, span{buf}))};
         }
+    }
+
+    template <Character_Compatible SRC_T, Character_Compatible TRG_T>
+    inline span<TRG_T> UTFConverter::ConvertSpan (span<const SRC_T> source, span<TRG_T> target) const
+        requires (not is_const_v<TRG_T>)
+    {
+        return span{target.data (), Convert (source, target).fTargetProduced};
     }
 
     inline auto UTFConverter::ConvertQuietly (span<const char8_t> source, span<char16_t> target) const -> ConversionResultWithStatus

@@ -231,6 +231,17 @@ namespace Stroika::Foundation::Characters {
 
     public:
         /**
+         * \brief Same as Convert(), except returns a span
+         * 
+         *   So loses information (number of source characters consumed). Not a general purpose API. But very frequently
+         *   this is all you need, for the next stage, a new span, and for that case, this saves a little typing.
+         */
+        template <Character_Compatible SRC_T, Character_Compatible TRG_T>
+        nonvirtual span<TRG_T> ConvertSpan (span<const SRC_T> source, span<TRG_T> target) const
+            requires (not is_const_v<TRG_T>);
+
+    public:
+        /**
          *  \brief used for ConvertQuietly
          * 
          *  \note no need to have status code for 'targetExhausted' because we assert error in that case. DONT DO IT.
