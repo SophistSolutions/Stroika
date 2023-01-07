@@ -345,6 +345,12 @@ namespace Stroika::Foundation::Characters {
     {
         return span{target.data (), Convert (source, target).fTargetProduced};
     }
+    template <Character_Compatible SRC_T, Character_Compatible TRG_T>
+    inline span<TRG_T> UTFConverter::ConvertSpan (span<SRC_T> source, span<TRG_T> target) const
+        requires (not is_const_v<TRG_T>)
+    {
+        return ConvertSpan (Memory::ConstSpan (source), target);
+    }
 
     inline auto UTFConverter::ConvertQuietly (span<const char8_t> source, span<char16_t> target) const -> ConversionResultWithStatus
     {

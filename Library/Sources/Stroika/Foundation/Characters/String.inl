@@ -112,7 +112,7 @@ namespace Stroika::Foundation::Characters {
             return mk_ (span<const char>{buf.data (), buf.size ()});
 #else
             Private_::CopyAsASCIICharacters_ (s, span{buf});
-            return mk_ (span<const char>{buf}); // this case specialized
+            return mk_ (span<const char>{buf});                         // this case specialized
 #endif
         }
         else if (UTFConverter::AllFitsInTwoByteEncoding (s)) {
@@ -120,7 +120,7 @@ namespace Stroika::Foundation::Characters {
 #if qCompilerAndStdLib_spanOfContainer_Buggy
             return mk_ (UTFConverter::kThe.ConvertSpan (s, span{buf.data (), buf.size ()}));
 #else
-            return mk_ (UTFConverter::kThe.ConvertSpan (s, span{buf}));// this case specialized
+            return mk_ (UTFConverter::kThe.ConvertSpan (s, span{buf})); // this case specialized
 #endif
         }
         else {

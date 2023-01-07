@@ -39,6 +39,8 @@ namespace Stroika::Foundation::Characters {
      *      o   Windows API             (appears most performant, but doesn't support mbstate_t)
      *      o   Stroika portable implementation, based on libutfxx (slow but portable, and works, NOT supporting mbstate_t)
      *          @todo easy to adapt StroikaPortable impl to support mbstate_t - just save last few mbchars and replay
+     *      o   nemtrif/utfcpp (haven't tried yet)
+     *      o   simdutf (allegedly fastest, but haven't tried yet)
      * 
      *  Design Choices:
      *      o   Could have API to COMPUTE size of output buffer. But thats as much work to compute as actually doing the conversion (generally close).
@@ -47,6 +49,9 @@ namespace Stroika::Foundation::Characters {
      * 
      *          API setup so the compute-buf-size routine COULD walk the source and compute the exact needed size, without changing API.
      * 
+     *  \note Byte Order Markers
+     *      UTFConverter does NOT support byte order marks (BOM) - for that - see Streams::TextReader, and Streams::TextWriter
+     *
      *  Web Pages/ Specs:
      *      o   https://en.wikipedia.org/wiki/UTF-8
      *      o   https://en.wikipedia.org/wiki/UTF-16
@@ -247,6 +252,9 @@ namespace Stroika::Foundation::Characters {
          */
         template <Character_Compatible SRC_T, Character_Compatible TRG_T>
         nonvirtual span<TRG_T> ConvertSpan (span<const SRC_T> source, span<TRG_T> target) const
+            requires (not is_const_v<TRG_T>);
+        template <Character_Compatible SRC_T, Character_Compatible TRG_T>
+        nonvirtual span<TRG_T> ConvertSpan (span<SRC_T> source, span<TRG_T> target) const
             requires (not is_const_v<TRG_T>);
 
     public:
