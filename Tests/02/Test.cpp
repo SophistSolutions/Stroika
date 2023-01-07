@@ -517,11 +517,11 @@ namespace {
         VerifyTestResult (s == L"frxex");
         {
             wchar_t kZero[] = L"";
-            s               = s.InsertAt (std::begin (kZero), std::begin (kZero), 0);
+            s               = s.InsertAt (span{std::begin (kZero), std::begin (kZero)}, 0);
             VerifyTestResult (s == L"frxex");
-            s = s.InsertAt (std::begin (kZero), std::begin (kZero), 1);
+            s = s.InsertAt (span{std::begin (kZero), std::begin (kZero)}, 1);
             VerifyTestResult (s == L"frxex");
-            s = s.InsertAt (std::begin (kZero), std::begin (kZero), 5);
+            s = s.InsertAt (span{std::begin (kZero), std::begin (kZero)}, 5);
             VerifyTestResult (s == L"frxex");
         }
     }
