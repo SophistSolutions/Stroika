@@ -10,8 +10,6 @@
 using namespace Stroika;
 using namespace Stroika::Foundation;
 
-
-
 /*
  ********************************************************************************
  **************** Private_::ThrowSurrogatesOutOfRange_ **************************

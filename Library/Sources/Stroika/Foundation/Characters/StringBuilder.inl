@@ -210,10 +210,10 @@ namespace Stroika::Foundation::Characters {
         else {
 #if qCompilerAndStdLib_spanOfContainer_Buggy
             probablyIgnoredBuf->resize_uninitialized (UTFConverter::ComputeTargetBufferSize<CHAR_T> (span{fData_.data (), fData_.size ()}));
-            return span{probablyIgnoredBuf->data (), UTFConverter::kThe.Convert (span{fData_.data (), fData_.size ()}, span{probablyIgnoredBuf->data (), probablyIgnoredBuf->size ()}).fTargetProduced};
+            return UTFConverter::kThe.ConvertSpan (span{fData_.data (), fData_.size ()}, span{probablyIgnoredBuf->data (), probablyIgnoredBuf->size ()});
 #else
             probablyIgnoredBuf->resize_uninitialized (UTFConverter::ComputeTargetBufferSize<CHAR_T> (span{fData_}));
-            return span{probablyIgnoredBuf->data (), UTFConverter::kThe.Convert (span{fData_}, span{*probablyIgnoredBuf}).fTargetProduced};
+            return UTFConverter::kThe.ConvertSpan (span{fData_}, span{*probablyIgnoredBuf});
 #endif
         }
     }

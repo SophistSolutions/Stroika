@@ -38,8 +38,8 @@ void OutputStream<Characters::Character>::Ptr::Write (const wchar_t* start, cons
     }
     else {
         Memory::StackBuffer<Characters::Character> buf{Characters::UTFConverter::ComputeTargetBufferSize<Characters::Character> (span{start, end})};
-        size_t                                     n2Write = Characters::UTFConverter::kThe.Convert (span{start, end}, span{buf}).fTargetProduced;
-        Write (buf.data (), buf.data () + n2Write);
+        span<Characters::Character>                writeSpan = Characters::UTFConverter::kThe.ConvertSpan (span{start, end}, span{buf});
+        Write (writeSpan.data (), writeSpan.data () + writeSpan.size ());
     }
 }
 

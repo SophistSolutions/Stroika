@@ -417,6 +417,7 @@ namespace Stroika::Foundation::Characters {
         nonvirtual String InsertAt (Character c, size_t at) const;
         nonvirtual String InsertAt (const String& s, size_t at) const;
         nonvirtual String InsertAt (span<const Character> s, size_t at) const;
+        nonvirtual String InsertAt (span<Character> s, size_t at) const;
 
     public:
         /**
@@ -1314,7 +1315,7 @@ namespace Stroika::Foundation::Characters {
         [[deprecated ("Since Stroika v3.0d1, use span overloads")]] String InsertAt (const wchar_t* from, const wchar_t* to, size_t at) const
         {
             Memory::StackBuffer<Character> buf{UTFConverter::ComputeTargetBufferSize<Character> (span{from, to})};
-            return InsertAt (span<const Character>{buf.data (), UTFConverter::kThe.Convert (span{from, to}, span{buf}).fTargetProduced}, at);
+            return InsertAt (UTFConverter::kThe.ConvertSpan (span{from, to}, span{buf}), at);
         }
         [[deprecated ("Since Stroika v3.0d1, use span overloads")]] String InsertAt (const Character* from, const Character* to, size_t at) const
         {

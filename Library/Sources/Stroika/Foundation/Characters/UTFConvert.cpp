@@ -85,8 +85,6 @@ namespace {
         constexpr char32_t halfBase = 0x0010000UL;
         constexpr char32_t halfMask = 0x3FFUL;
 
-     
-
         /*
          * Magic values subtracted from a buffer value during UTF8 conversion.
          * This table contains as many values as there might be trailing bytes

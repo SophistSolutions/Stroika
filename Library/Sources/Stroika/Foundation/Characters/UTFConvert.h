@@ -195,7 +195,7 @@ namespace Stroika::Foundation::Characters {
          *      \code
          *          StackBuffer<wchar_t>      buf{Memory::eUninitialized, UTFConverter::ComputeTargetBufferSize<wchar_t> (src)};
          *          auto result = UTFConverter::kThe.Convert (src, span{buf});
-         *          return String{buf.begin (), buf.begin () + result.fTargetProduced};
+         *          return String{buf.begin (), buf.begin () + result.fTargetProduced}; // OR better yet see ConvertSpan
          *      \endcode
          *
          *  @see ConvertQuietly for span overloads
@@ -235,6 +235,15 @@ namespace Stroika::Foundation::Characters {
          * 
          *   So loses information (number of source characters consumed). Not a general purpose API. But very frequently
          *   this is all you need, for the next stage, a new span, and for that case, this saves a little typing.
+         * 
+         *  NOTE - the returned span is ALWAYS (not necessarily propper) sub-span of its 'target' argument
+         *
+         *  \par Example Usage
+         *      \code
+         *          StackBuffer<wchar_t>      buf{Memory::eUninitialized, UTFConverter::ComputeTargetBufferSize<wchar_t> (src)};
+         *          span<wchar_t> spanOfTargetBufferUsed = UTFConverter::kThe.ConvertSpan (src, span{buf});
+         *          return String{spanOfTargetBufferUsed};
+         *      \endcode
          */
         template <Character_Compatible SRC_T, Character_Compatible TRG_T>
         nonvirtual span<TRG_T> ConvertSpan (span<const SRC_T> source, span<TRG_T> target) const

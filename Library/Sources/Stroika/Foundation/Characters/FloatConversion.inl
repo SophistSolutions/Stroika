@@ -478,13 +478,12 @@ namespace Stroika::Foundation::Characters::FloatConversion {
             else {
                 // must utf convert to wchar_t which we support
                 Memory::StackBuffer<wchar_t> wideBuf{UTFConverter::ComputeTargetBufferSize<wchar_t> (srcSpan)};
-                size_t                       wideChars = UTFConverter::kThe.Convert (srcSpan, span{wideBuf}).fTargetProduced;
+                span<const wchar_t>          wideSpan = UTFConverter::kThe.ConvertSpan (srcSpan, span{wideBuf});
                 if (remainder == nullptr) {
-                    d = ToFloat_RespectingLocale_<T, wchar_t> (span{wideBuf.data (), wideChars}, nullptr);
+                    d = ToFloat_RespectingLocale_<T, wchar_t> (wideSpan, nullptr);
                 }
                 else {
                     // do the conversion using wchar_t, and then map back the resulting remainder offset
-                    span<const wchar_t>           wideSpan = span{wideBuf.data (), wideChars};
                     span<const wchar_t>::iterator wideRemainder;
                     d  = ToFloat_RespectingLocale_<T> (wideSpan, &wideRemainder);
                     ri = UTFConverter::kThe.ConvertOffset<CHAR_T> (wideSpan, wideRemainder - wideSpan.begin ()) + si;
