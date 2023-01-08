@@ -50,14 +50,14 @@ Common::GUID::GUID (const string& src)
     }
     DISABLE_COMPILER_MSC_WARNING_END (4996) // MSVC SILLY WARNING ABOUT USING swscanf_s
     if (nfields != 11 and nchars != 36) {
-        Execution::Throw (DataExchange::BadFormatException{L"Badly formatted GUID"sv});
+        Execution::Throw (DataExchange::BadFormatException{"Badly formatted GUID"sv});
     }
 }
 
 Common::GUID::GUID (const Memory::BLOB& src)
 {
     if (src.size () != 16) {
-        Execution::Throw (DataExchange::BadFormatException{L"GUID from BLOB must be 16 bytes"sv});
+        Execution::Throw (DataExchange::BadFormatException{"GUID from BLOB must be 16 bytes"sv});
     }
     ::memcpy (this, src.begin (), 16);
 }

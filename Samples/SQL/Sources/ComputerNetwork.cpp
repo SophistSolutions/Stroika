@@ -68,10 +68,10 @@ namespace {
         mapper.AddCommonType<Common::GUID> (VariantValue::eBLOB);
 
         mapper.AddClass<Device> (initializer_list<ObjectVariantMapper::StructFieldInfo>{
-            {L"id", StructFieldMetaInfo{&Device::id}},
-            {L"name", StructFieldMetaInfo{&Device::name}},
-            {L"openPorts", StructFieldMetaInfo{&Device::openPorts}},
-            {L"hardwareAddresses", StructFieldMetaInfo{&Device::hardwareAddresses}},
+            {"id", StructFieldMetaInfo{&Device::id}},
+            {"name", StructFieldMetaInfo{&Device::name}},
+            {"openPorts", StructFieldMetaInfo{&Device::openPorts}},
+            {"hardwareAddresses", StructFieldMetaInfo{&Device::hardwareAddresses}},
         });
 
         return mapper;
@@ -81,7 +81,7 @@ namespace {
      *  This defines the mapping from our external data model (Device::kMapper) to the SQL data model.
      */
     const SQL::ORM::Schema::Table kDeviceTableSchema_{
-        L"Devices",
+        "Devices",
         /*
          *  use the same names as the ObjectVariantMapper for simpler mapping, or specify an alternate name
          *  for ID, just as an example.
@@ -90,8 +90,8 @@ namespace {
             /**
              *  For ID, generate random GUID (BLOB) automatically in database
              */
-            {.fName = L"ID", .fVariantValueName = L"id"sv, .fRequired = true, .fVariantValueType = VariantValue::eBLOB, .fIsKeyField = true, .fDefaultExpression = L"randomblob(16)"sv},
-            {.fName = L"name", .fRequired = true, .fVariantValueType = VariantValue::eString}},
+            {.fName = "ID", .fVariantValueName = "id"sv, .fRequired = true, .fVariantValueType = VariantValue::eBLOB, .fIsKeyField = true, .fDefaultExpression = "randomblob(16)"sv},
+            {.fName = "name", .fRequired = true, .fVariantValueType = VariantValue::eString}},
         SQL::ORM::Schema::CatchAllField{}};
 }
 
@@ -123,23 +123,23 @@ void Stroika::Samples::SQL::ComputerNetworksModel (const std::function<Connectio
         deleteDeviceStatement.Execute (initializer_list<Common::KeyValuePair<String, VariantValue>>{{kDeviceTableSchema_.GetIDField ()->fName, VariantValue{static_cast<Memory::BLOB> (id)}}});
     };
 
-    const Device kDevice1_ = Device{GUID::GenerateNew (), Set<int>{33}, L"myLaptop"sv, Set<String>{L"ff:33:aa:da:ff:33"}};
-    const Device kDevice2_ = Device{GUID::GenerateNew (), Set<int>{123, 145}, L"some machine"sv, Set<String>{L"33:aa:dd:ad:af:11"}};
+    const Device kDevice1_ = Device{GUID::GenerateNew (), Set<int>{33}, "myLaptop"sv, Set<String>{"ff:33:aa:da:ff:33"}};
+    const Device kDevice2_ = Device{GUID::GenerateNew (), Set<int>{123, 145}, "some machine"sv, Set<String>{"33:aa:dd:ad:af:11"}};
     if (not getAllDevices ().empty ()) {
-        Execution::Throw (Execution::RuntimeErrorException{L"database should start empty"});
+        Execution::Throw (Execution::RuntimeErrorException{"database should start empty"});
     }
     addDevice (kDevice1_);
     addDevice (kDevice2_);
     {
         auto devices = getAllDevices ();
         if (devices.size () != 2) {
-            Execution::Throw (Execution::RuntimeErrorException{L"we should have the ones we just added"});
+            Execution::Throw (Execution::RuntimeErrorException{"we should have the ones we just added"sv});
         }
         if (not devices.Contains (kDevice1_)) {
-            Execution::Throw (Execution::RuntimeErrorException{L"we should have the ones we just added{1}"});
+            Execution::Throw (Execution::RuntimeErrorException{"we should have the ones we just added{1}"sv});
         }
         if (not devices.Contains (kDevice2_)) {
-            Execution::Throw (Execution::RuntimeErrorException{L"we should have the ones we just added{2}"});
+            Execution::Throw (Execution::RuntimeErrorException{"we should have the ones we just added{2}"sv});
         }
     }
     removeDevice (kDevice2_.id);

@@ -49,7 +49,7 @@ struct Connection::Rep_ final : IRep {
     {
         TraceContextBumper ctx{"SQLite::Connection::Rep_::Rep_"};
         if (not options.fDSN) {
-            Execution::Throw (Exception{L"DSN Required"sv});
+            Execution::Throw (Exception{"DSN Required"sv});
         }
         try {
             ThrowIfSQLError_ (::SQLAllocHandle (SQL_HANDLE_ENV, SQL_NULL_HANDLE, &fODBCEnvironmentHandle), L"Error AllocHandle"sv);
@@ -305,13 +305,13 @@ struct Transaction::MyRep_ : public SQL::Transaction::IRep {
     {
         Require (not fCompleted_);
         fCompleted_ = true;
-        fConnectionPtr_->Exec (L"COMMIT;"sv);
+        fConnectionPtr_->Exec ("COMMIT;"sv);
     }
     virtual void Rollback () override
     {
         Require (not fCompleted_);
         fCompleted_ = true;
-        fConnectionPtr_->Exec (L"ROLLBACK;"sv);
+        fConnectionPtr_->Exec ("ROLLBACK;"sv);
     }
     virtual Disposition GetDisposition () const override
     {

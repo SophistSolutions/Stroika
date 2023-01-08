@@ -227,7 +227,7 @@ public:
         if (e != nullptr) {
             rethrow_exception (e);
         }
-        Execution::Throw (Execution::Exception{L"No matching / available neighbors strategy"sv});
+        Execution::Throw (Execution::Exception{"No matching / available neighbors strategy"sv});
     }
     Collection<NeighborsMonitor::Neighbor> GetNeighbors_ (Options::Strategy s) const
     {

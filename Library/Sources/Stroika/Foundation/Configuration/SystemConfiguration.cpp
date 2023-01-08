@@ -71,9 +71,9 @@ using Memory::StackBuffer;
 String SystemConfiguration::BootInformation::ToString () const
 {
     StringBuilder sb;
-    sb += L"{";
-    sb += L"Booted-At: " + Characters::ToString (fBootedAt);
-    sb += L"}";
+    sb += "{";
+    sb += "Booted-At: " + Characters::ToString (fBootedAt);
+    sb += "}";
     return sb.str ();
 };
 
@@ -86,10 +86,10 @@ String SystemConfiguration::BootInformation::ToString () const
 String SystemConfiguration::CPU::CoreDetails::ToString () const
 {
     StringBuilder sb;
-    sb += L"{";
-    sb += L"Socket-ID: " + Characters::ToString (fSocketID) + L", ";
-    sb += L"Model-Name: " + Characters::ToString (fModelName);
-    sb += L"}";
+    sb += "{";
+    sb += "Socket-ID: " + Characters::ToString (fSocketID) + ", ";
+    sb += "Model-Name: " + Characters::ToString (fModelName);
+    sb += "}";
     return sb.str ();
 }
 
@@ -101,9 +101,9 @@ String SystemConfiguration::CPU::CoreDetails::ToString () const
 String SystemConfiguration::CPU::ToString () const
 {
     StringBuilder sb;
-    sb += L"{";
-    sb += L"Cores: " + Characters::ToString (fCores);
-    sb += L"}";
+    sb += "{";
+    sb += "Cores: " + Characters::ToString (fCores);
+    sb += "}";
     return sb.str ();
 };
 
@@ -115,11 +115,11 @@ String SystemConfiguration::CPU::ToString () const
 String SystemConfiguration::Memory::ToString () const
 {
     StringBuilder sb;
-    sb += L"{";
-    sb += L"Page-Size: " + Characters::ToString (fPageSize) + L", ";
-    sb += L"Total-Physical-RAM: " + Characters::ToString (fTotalPhysicalRAM) + L", ";
-    sb += L"Total-Virtual-RAM: " + Characters::ToString (fTotalVirtualRAM);
-    sb += L"}";
+    sb += "{";
+    sb += "Page-Size: " + Characters::ToString (fPageSize) + ", ";
+    sb += "Total-Physical-RAM: " + Characters::ToString (fTotalPhysicalRAM) + ", ";
+    sb += "Total-Virtual-RAM: " + Characters::ToString (fTotalVirtualRAM);
+    sb += "}";
     return sb.str ();
 };
 
@@ -131,9 +131,9 @@ String SystemConfiguration::Memory::ToString () const
 String SystemConfiguration::ComputerNames::ToString () const
 {
     StringBuilder sb;
-    sb += L"{";
-    sb += L"Hostname: " + Characters::ToString (fHostname) + L", ";
-    sb += L"}";
+    sb += "{";
+    sb += "Hostname: " + Characters::ToString (fHostname) + ", ";
+    sb += "}";
     return sb.str ();
 };
 
@@ -145,18 +145,18 @@ String SystemConfiguration::ComputerNames::ToString () const
 String SystemConfiguration::OperatingSystem::ToString () const
 {
     StringBuilder sb;
-    sb += L"{";
-    sb += L"Token-Name: " + Characters::ToString (fTokenName) + L", ";
-    sb += L"Short-Pretty-Name: " + Characters::ToString (fShortPrettyName) + L", ";
-    sb += L"Pretty-Name-With-Major-Version: " + Characters::ToString (fPrettyNameWithMajorVersion) + L", ";
-    sb += L"Pretty-Name-With-Details: " + Characters::ToString (fPrettyNameWithVersionDetails) + L", ";
-    sb += L"Major-Minor-Version-String: " + Characters::ToString (fMajorMinorVersionString) + L", ";
-    sb += L"RFC1945-Compat-Product-Token-With-Version: " + Characters::ToString (fRFC1945CompatProductTokenWithVersion) + L", ";
-    sb += L"Bits: " + Characters::ToString (fBits) + L", ";
+    sb += "{";
+    sb += "Token-Name: " + Characters::ToString (fTokenName) + ", ";
+    sb += "Short-Pretty-Name: " + Characters::ToString (fShortPrettyName) + ", ";
+    sb += "Pretty-Name-With-Major-Version: " + Characters::ToString (fPrettyNameWithMajorVersion) + ", ";
+    sb += "Pretty-Name-With-Details: " + Characters::ToString (fPrettyNameWithVersionDetails) + ", ";
+    sb += "Major-Minor-Version-String: " + Characters::ToString (fMajorMinorVersionString) + ", ";
+    sb += "RFC1945-Compat-Product-Token-With-Version: " + Characters::ToString (fRFC1945CompatProductTokenWithVersion) + ", ";
+    sb += "Bits: " + Characters::ToString (fBits) + ", ";
     if (fPreferedInstallerTechnology) {
-        sb += L"Prefered-Installer-Technology: " + Characters::ToString (*fPreferedInstallerTechnology) + L", ";
+        sb += "Prefered-Installer-Technology: " + Characters::ToString (*fPreferedInstallerTechnology) + ", ";
     }
-    sb += L"}";
+    sb += "}";
     return sb.str ();
 };
 
@@ -168,14 +168,14 @@ String SystemConfiguration::OperatingSystem::ToString () const
 String SystemConfiguration::ToString () const
 {
     StringBuilder sb;
-    sb += L"{";
-    sb += L"Boot-Information: " + Characters::ToString (fBootInformation) + L", ";
-    sb += L"CPU: " + Characters::ToString (fCPU) + L", ";
-    sb += L"Memory: " + Characters::ToString (fMemory) + L", ";
-    sb += L"Actual-Operating-System: " + Characters::ToString (fActualOperatingSystem) + L", ";
-    sb += L"Apparent-Operating-System: " + Characters::ToString (fApparentOperatingSystem) + L", ";
-    sb += L"Computer-Names: " + Characters::ToString (fComputerNames) + L", ";
-    sb += L"}";
+    sb += "{";
+    sb += "Boot-Information: " + Characters::ToString (fBootInformation) + ", ";
+    sb += "CPU: " + Characters::ToString (fCPU) + ", ";
+    sb += "Memory: " + Characters::ToString (fMemory) + ", ";
+    sb += "Actual-Operating-System: " + Characters::ToString (fActualOperatingSystem) + ", ";
+    sb += "Apparent-Operating-System: " + Characters::ToString (fApparentOperatingSystem) + ", ";
+    sb += "Computer-Names: " + Characters::ToString (fComputerNames) + ", ";
+    sb += "}";
     return sb.str ();
 };
 
@@ -367,10 +367,10 @@ SystemConfiguration::CPU Configuration::GetSystemConfiguration_CPU ()
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
             DbgTrace (L"in Configuration::GetSystemConfiguration_CPU capture_ line=%s", line.c_str ());
 #endif
-            static const String kOldProcessorLabel_{L"Processor"sv};
-            static const String kProcessorIDLabel_{L"processor"sv};
-            static const String kModelNameLabel_{L"model name"sv};
-            static const String kSocketIDLabel_{L"physical id"sv}; // a bit of a guess?
+            static const String kOldProcessorLabel_{"Processor"sv};
+            static const String kProcessorIDLabel_{"processor"sv};
+            static const String kModelNameLabel_{"model name"sv};
+            static const String kSocketIDLabel_{"physical id"sv}; // a bit of a guess?
             if (not line.Trim ().empty ()) {
                 Sequence<String> lineTokens = line.Tokenize ({':'});
                 if (lineTokens.size () >= 2) {
@@ -551,26 +551,26 @@ SystemConfiguration::OperatingSystem Configuration::GetSystemConfiguration_Actua
     static const OperatingSystem kCachedResult_ = [] () -> OperatingSystem {
         OperatingSystem tmp;
 #if qPlatform_POSIX
-        tmp.fTokenName = L"Unix"sv;
+        tmp.fTokenName = "Unix"sv;
         try {
-            tmp.fTokenName = Execution::ProcessRunner{L"uname"}.Run (String{}).Trim ();
+            tmp.fTokenName = Execution::ProcessRunner{"uname"}.Run (String{}).Trim ();
         }
         catch (...) {
             DbgTrace ("Failure running uname");
         }
         try {
             DataExchange::Variant::INI::Profile p = DataExchange::Variant::INI::Reader{}.ReadProfile (IO::FileSystem::FileInputStream::New ("/etc/os-release"sv));
-            tmp.fShortPrettyName                  = p.fUnnamedSection.fProperties.LookupValue (L"NAME"sv);
-            tmp.fPrettyNameWithMajorVersion       = p.fUnnamedSection.fProperties.LookupValue (L"PRETTY_NAME"sv);
-            tmp.fMajorMinorVersionString          = p.fUnnamedSection.fProperties.LookupValue (L"VERSION_ID"sv);
+            tmp.fShortPrettyName                  = p.fUnnamedSection.fProperties.LookupValue ("NAME"sv);
+            tmp.fPrettyNameWithMajorVersion       = p.fUnnamedSection.fProperties.LookupValue ("PRETTY_NAME"sv);
+            tmp.fMajorMinorVersionString          = p.fUnnamedSection.fProperties.LookupValue ("VERSION_ID"sv);
         }
         catch (...) {
             DbgTrace (L"Failure reading /etc/os-release: %s", Characters::ToString (current_exception ()).c_str ());
         }
         if (tmp.fShortPrettyName.empty ()) {
             try {
-                String n                        = Streams::TextReader::New (IO::FileSystem::FileInputStream::New (L"/etc/centos-release"sv)).ReadAll ().Trim ();
-                tmp.fShortPrettyName            = L"Centos"sv;
+                String n                        = Streams::TextReader::New (IO::FileSystem::FileInputStream::New ("/etc/centos-release"sv)).ReadAll ().Trim ();
+                tmp.fShortPrettyName            = "Centos"sv;
                 tmp.fPrettyNameWithMajorVersion = n;
                 Sequence<String> tokens         = n.Tokenize ();
                 if (tokens.size () >= 3) {
@@ -583,8 +583,8 @@ SystemConfiguration::OperatingSystem Configuration::GetSystemConfiguration_Actua
         }
         if (tmp.fShortPrettyName.empty ()) {
             try {
-                String n                        = Streams::TextReader::New (IO::FileSystem::FileInputStream::New (L"/etc/redhat-release"sv)).ReadAll ().Trim ();
-                tmp.fShortPrettyName            = L"RedHat"sv;
+                String n                        = Streams::TextReader::New (IO::FileSystem::FileInputStream::New ("/etc/redhat-release"sv)).ReadAll ().Trim ();
+                tmp.fShortPrettyName            = "RedHat"sv;
                 tmp.fPrettyNameWithMajorVersion = n;
                 Sequence<String> tokens         = n.Tokenize ();
                 if (tokens.size () >= 3) {
@@ -605,9 +605,9 @@ SystemConfiguration::OperatingSystem Configuration::GetSystemConfiguration_Actua
             tmp.fPrettyNameWithVersionDetails = tmp.fPrettyNameWithMajorVersion;
         }
         if (tmp.fRFC1945CompatProductTokenWithVersion.empty ()) {
-            tmp.fRFC1945CompatProductTokenWithVersion = tmp.fShortPrettyName.Trim ().ReplaceAll (L" "sv, L"-"sv);
+            tmp.fRFC1945CompatProductTokenWithVersion = tmp.fShortPrettyName.Trim ().ReplaceAll (" "sv, "-"sv);
             if (not tmp.fMajorMinorVersionString.empty ()) {
-                tmp.fRFC1945CompatProductTokenWithVersion += L"/"sv + tmp.fMajorMinorVersionString;
+                tmp.fRFC1945CompatProductTokenWithVersion += "/"sv + tmp.fMajorMinorVersionString;
             }
         }
 
@@ -634,18 +634,18 @@ SystemConfiguration::OperatingSystem Configuration::GetSystemConfiguration_Actua
         // No good way I can find to tell...
         if (not tmp.fPreferedInstallerTechnology.has_value ()) {
             auto nameEqComparer = String::EqualsComparer{CompareOptions::eCaseInsensitive};
-            if (nameEqComparer (tmp.fShortPrettyName, L"Centos"sv) or
-                nameEqComparer (tmp.fShortPrettyName, L"RedHat"sv)) {
+            if (nameEqComparer (tmp.fShortPrettyName, "Centos"sv) or
+                nameEqComparer (tmp.fShortPrettyName, "RedHat"sv)) {
                 tmp.fPreferedInstallerTechnology = SystemConfiguration::OperatingSystem::InstallerTechnology::eRPM;
             }
-            else if (nameEqComparer (tmp.fShortPrettyName, L"Ubuntu"sv)) {
+            else if (nameEqComparer (tmp.fShortPrettyName, "Ubuntu"sv)) {
                 tmp.fPreferedInstallerTechnology = SystemConfiguration::OperatingSystem::InstallerTechnology::eDPKG;
             }
         }
         // not a great way to test since some systems have both, like ubuntu
         if (not tmp.fPreferedInstallerTechnology.has_value ()) {
             try {
-                Execution::ProcessRunner{L"dpkg --help"}.Run (String{});
+                Execution::ProcessRunner{"dpkg --help"}.Run (String{});
                 tmp.fPreferedInstallerTechnology = SystemConfiguration::OperatingSystem::InstallerTechnology::eDPKG;
             }
             catch (...) {
@@ -653,14 +653,14 @@ SystemConfiguration::OperatingSystem Configuration::GetSystemConfiguration_Actua
         }
         if (not tmp.fPreferedInstallerTechnology.has_value ()) {
             try {
-                Execution::ProcessRunner{L"rpm --help"}.Run (String{});
+                Execution::ProcessRunner{"rpm --help"}.Run (String{});
                 tmp.fPreferedInstallerTechnology = SystemConfiguration::OperatingSystem::InstallerTechnology::eRPM;
             }
             catch (...) {
             }
         }
 #elif qPlatform_Windows
-        tmp.fTokenName = L"Windows"sv;
+        tmp.fTokenName = "Windows"sv;
 
         /*
          *  Best (of a bad bunch) official reference from Microsoft on finding version#s
@@ -711,18 +711,18 @@ SystemConfiguration::OperatingSystem Configuration::GetSystemConfiguration_Actua
         optional<String> currentVersion; // windows major-minor version
         try {
              const Configuration::Platform::Windows::RegistryKey kWinVersionInfo_{HKEY_LOCAL_MACHINE, L"SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion"sv};
-             if (auto o = kWinVersionInfo_.Lookup (L"ReleaseId"sv)) {
+             if (auto o = kWinVersionInfo_.Lookup ("ReleaseId"sv)) {
                  platformVersion = o.As<String> ();
             }
-             if (auto o = kWinVersionInfo_.Lookup (L"ProductName"sv)) {
+             if (auto o = kWinVersionInfo_.Lookup ("ProductName"sv)) {
                  productName = o.As<String> ();
             }
              // try to get current version from CurrentMajorVersionNumber/CurrentMinorVersionNumber which appears
              // to be the new way
              try {
-                 if (auto oMajor = kWinVersionInfo_.Lookup (L"CurrentMajorVersionNumber"sv)) {
-                     if (auto oMinor = kWinVersionInfo_.Lookup (L"CurrentMinorVersionNumber"sv)) {
-                         currentVersion = oMajor.As<String> () + L"." + oMinor.As<String> ();
+                 if (auto oMajor = kWinVersionInfo_.Lookup ("CurrentMajorVersionNumber"sv)) {
+                     if (auto oMinor = kWinVersionInfo_.Lookup ("CurrentMinorVersionNumber"sv)) {
+                         currentVersion = oMajor.As<String> () + "." + oMinor.As<String> ();
                     }
                 }
             }
@@ -730,7 +730,7 @@ SystemConfiguration::OperatingSystem Configuration::GetSystemConfiguration_Actua
                  // ignore - older OS may not have this so fallthrough (though that shouldn't cause exception but in case)
             }
              if (not currentVersion) {
-                 if (auto o = kWinVersionInfo_.Lookup (L"CurrentVersion"sv)) {
+                 if (auto o = kWinVersionInfo_.Lookup ("CurrentVersion"sv)) {
                      currentVersion = o.As<String> ();
                 }
             }
@@ -740,23 +740,23 @@ SystemConfiguration::OperatingSystem Configuration::GetSystemConfiguration_Actua
         }
 
         if (tmp.fShortPrettyName.empty ()) {
-             tmp.fShortPrettyName = productName.value_or (L"Windows"sv);
+             tmp.fShortPrettyName = productName.value_or ("Windows"sv);
         }
         tmp.fPrettyNameWithMajorVersion = tmp.fShortPrettyName;
 
         {
              StringBuilder sb = tmp.fShortPrettyName;
              if (platformVersion) {
-                 sb += L" Version "sv + *platformVersion;
+                 sb += " Version "sv + *platformVersion;
             }
              if (not kernelVersion.empty ()) {
-                 sb += L" (OS Build "sv + kernelOSBuildVersion + L")"sv;
+                 sb += " (OS Build "sv + kernelOSBuildVersion + ")"sv;
             }
              tmp.fPrettyNameWithVersionDetails = sb.str ();
         }
 
-        tmp.fMajorMinorVersionString              = currentVersion.value_or (L"unknown"sv);
-        tmp.fRFC1945CompatProductTokenWithVersion = L"Windows/"sv + tmp.fMajorMinorVersionString;
+        tmp.fMajorMinorVersionString              = currentVersion.value_or ("unknown"sv);
+        tmp.fRFC1945CompatProductTokenWithVersion = "Windows/"sv + tmp.fMajorMinorVersionString;
         if constexpr (sizeof (void*) == 4) {
              tmp.fBits = 32;
              //IsWow64Process is not available on all supported versions of Windows.
@@ -803,34 +803,34 @@ SystemConfiguration::OperatingSystem Configuration::GetSystemConfiguration_Appar
         optional<String> winCompatabilityVersionNumber;
         {
             if (not winCompatabilityVersionName and IsWindows10OrGreater ()) {
-                winCompatabilityVersionName   = L"10.0"sv;
-                winCompatabilityVersionNumber = L"10.0"sv;
+                winCompatabilityVersionName   = "10.0"sv;
+                winCompatabilityVersionNumber = "10.0"sv;
             }
             if (not winCompatabilityVersionName and IsWindows8Point1OrGreater ()) {
-                winCompatabilityVersionName   = L"8.1"sv;
-                winCompatabilityVersionNumber = L"6.3"sv;
+                winCompatabilityVersionName   = "8.1"sv;
+                winCompatabilityVersionNumber = "6.3"sv;
             }
             if (not winCompatabilityVersionName and IsWindows8OrGreater ()) {
-                winCompatabilityVersionName   = L"8.0"sv;
-                winCompatabilityVersionNumber = L"6.2"sv;
+                winCompatabilityVersionName   = "8.0"sv;
+                winCompatabilityVersionNumber = "6.2"sv;
             }
             if (not winCompatabilityVersionName and IsWindows7SP1OrGreater ()) {
                 // unclear cuz 7.1 not listed as operating system on that page???
-                winCompatabilityVersionName   = L"7.1"sv;
-                winCompatabilityVersionNumber = L"6.2"sv;
+                winCompatabilityVersionName   = "7.1"sv;
+                winCompatabilityVersionNumber = "6.2"sv;
             }
             if (not winCompatabilityVersionName and IsWindows7OrGreater ()) {
-                winCompatabilityVersionName   = L"7.0"sv;
-                winCompatabilityVersionNumber = L"6.1"sv;
+                winCompatabilityVersionName   = "7.0"sv;
+                winCompatabilityVersionNumber = "6.1"sv;
             }
         }
-        String useWinMajorMinorVersionNameStr     = winCompatabilityVersionName.value_or (L"unknown"sv);
-        String useWinMajorMinorVersionNumberStr   = winCompatabilityVersionNumber.value_or (L"unknown"sv);
-        tmp.fShortPrettyName                      = L"Windows "sv + useWinMajorMinorVersionNameStr;
+        String useWinMajorMinorVersionNameStr     = winCompatabilityVersionName.value_or ("unknown"sv);
+        String useWinMajorMinorVersionNumberStr   = winCompatabilityVersionNumber.value_or ("unknown"sv);
+        tmp.fShortPrettyName                      = "Windows "sv + useWinMajorMinorVersionNameStr;
         tmp.fPrettyNameWithMajorVersion           = tmp.fShortPrettyName;
         tmp.fPrettyNameWithVersionDetails         = tmp.fShortPrettyName;
         tmp.fMajorMinorVersionString              = useWinMajorMinorVersionNumberStr;
-        tmp.fRFC1945CompatProductTokenWithVersion = L"Windows/"sv + useWinMajorMinorVersionNumberStr;
+        tmp.fRFC1945CompatProductTokenWithVersion = "Windows/"sv + useWinMajorMinorVersionNumberStr;
 #endif
         return tmp;
     }();

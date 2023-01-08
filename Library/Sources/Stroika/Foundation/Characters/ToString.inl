@@ -118,22 +118,22 @@ namespace Stroika::Foundation::Characters {
         String ToString_ (const T& t, enable_if_t<Configuration::IsIterable_v<T> and not has_ToStringMethod_v<T> and not is_convertible_v<T, String>>* = 0)
         {
             StringBuilder sb;
-            sb << L"[";
+            sb << "[";
             bool didFirst{false};
             for (const auto& i : t) {
                 if (didFirst) {
-                    sb << L", ";
+                    sb << ", "_k;
                 }
                 else {
-                    sb << L" ";
+                    sb << " "_k;
                 }
                 sb << ToString (i);
                 didFirst = true;
             }
             if (didFirst) {
-                sb << L" ";
+                sb << " "_k;
             }
-            sb << L"]";
+            sb << "]"_k;
             return sb.str ();
         }
         template <typename T>
@@ -154,42 +154,42 @@ namespace Stroika::Foundation::Characters {
         template <typename T>
         inline String ToString_ ([[maybe_unused]] const T& t, enable_if_t<is_convertible_v<T, tuple<>>>* = 0)
         {
-            return L"{}"sv;
+            return "{}"sv;
         }
         template <typename T1>
         String ToString_ (const tuple<T1>& t)
         {
             StringBuilder sb;
-            sb << L"{";
+            sb << "{";
             sb << ToString (t);
-            sb << L"}";
+            sb << "}";
             return sb.str ();
         }
         template <typename T1, typename T2>
         String ToString_ (const tuple<T1, T2>& t)
         {
             StringBuilder sb;
-            sb << L"{";
+            sb << "{";
             sb << ToString (get<0> (t)) + L", " + ToString (get<1> (t));
-            sb << L"}";
+            sb << "}";
             return sb.str ();
         }
         template <typename T1, typename T2, typename T3>
         String ToString_ (const tuple<T1, T2, T3>& t)
         {
             StringBuilder sb;
-            sb << L"{";
-            sb << ToString (get<0> (t)) + L", " + ToString (get<1> (t)) + L", " + ToString (get<2> (t));
-            sb << L"}";
+            sb << "{";
+            sb << ToString (get<0> (t)) + ", " + ToString (get<1> (t)) + ", " + ToString (get<2> (t));
+            sb << "}";
             return sb.str ();
         }
         template <typename T1, typename T2, typename T3, typename T4>
         String ToString_ (const tuple<T1, T2, T3>& t)
         {
             StringBuilder sb;
-            sb << L"{";
-            sb << ToString (get<0> (t)) + L", " + ToString (get<1> (t)) + L", " + ToString (get<2> (t)) + L", " + ToString (get<3> (t));
-            sb << L"}";
+            sb << "{";
+            sb << ToString (get<0> (t)) + L", " + ToString (get<1> (t)) + ", " + ToString (get<2> (t)) + ", " + ToString (get<3> (t));
+            sb << "}";
             return sb.str ();
         }
         template <typename T>
@@ -205,18 +205,18 @@ namespace Stroika::Foundation::Characters {
         String ToString_ (const T& t, enable_if_t<has_KeyValuePair_v<T>>* = 0)
         {
             StringBuilder sb;
-            sb << L"{";
-            sb << ToString (t.fKey) << L": " << ToString (t.fValue);
-            sb << L"}";
+            sb << "{";
+            sb << ToString (t.fKey) << ": " << ToString (t.fValue);
+            sb << "}";
             return sb.str ();
         }
         template <typename T>
         String ToString_ (const T& t, enable_if_t<has_CountedValue_v<T>>* = 0)
         {
             StringBuilder sb;
-            sb << L"{";
-            sb << L"'" << ToString (t.fValue) << L"': " << ToString (t.fCount);
-            sb << L"}";
+            sb << "{";
+            sb << "'" << ToString (t.fValue) << "': " << ToString (t.fCount);
+            sb << "}";
             return sb.str ();
         }
         template <typename T>
@@ -234,17 +234,17 @@ namespace Stroika::Foundation::Characters {
         template <typename T>
         inline String ToString_ (const shared_ptr<T>& pt)
         {
-            return (pt == nullptr) ? L"nullptr"sv : ToString (*pt);
+            return (pt == nullptr) ? "nullptr"sv : ToString (*pt);
         }
         template <typename T>
         inline String ToString_ (const unique_ptr<T>& pt)
         {
-            return (pt == nullptr) ? L"nullptr"sv : ToString (*pt);
+            return (pt == nullptr) ? "nullptr"sv : ToString (*pt);
         }
         template <typename T>
         inline String ToString_ (const optional<T>& o)
         {
-            return o.has_value () ? Characters::ToString (*o) : L"[missing]"sv;
+            return o.has_value () ? Characters::ToString (*o) : "[missing]"sv;
         }
         template <typename FUNCTION_SIGNATURE>
         inline String ToString_ (const function<FUNCTION_SIGNATURE>& f)

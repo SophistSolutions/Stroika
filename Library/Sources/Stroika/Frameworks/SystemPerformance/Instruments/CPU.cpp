@@ -449,27 +449,27 @@ const ObjectVariantMapper Instruments::CPU::Instrument::kObjectVariantMapper = [
     ObjectVariantMapper mapper;
 #if qSupport_SystemPerformance_Instruments_CPU_LoadAverage
     mapper.AddClass<Info::LoadAverage> (initializer_list<StructFieldInfo>{
-        {L"1-minute", StructFieldMetaInfo{&Info::LoadAverage::f1MinuteAve}},
-        {L"5-minute", StructFieldMetaInfo{&Info::LoadAverage::f5MinuteAve}},
-        {L"15-minute", StructFieldMetaInfo{&Info::LoadAverage::f15MinuteAve}},
+        {"1-minute"_k, StructFieldMetaInfo{&Info::LoadAverage::f1MinuteAve}},
+        {"5-minute"_k, StructFieldMetaInfo{&Info::LoadAverage::f5MinuteAve}},
+        {"15-minute"_k, StructFieldMetaInfo{&Info::LoadAverage::f15MinuteAve}},
     });
     mapper.AddCommonType<optional<Info::LoadAverage>> ();
 #endif
     mapper.AddClass<Info> (initializer_list<StructFieldInfo> {
 #if qSupport_SystemPerformance_Instruments_CPU_LoadAverage
-        {L"Load-Average", StructFieldMetaInfo{&Info::fLoadAverage}, StructFieldInfo::eOmitNullFields},
+        {"Load-Average"_k, StructFieldMetaInfo{&Info::fLoadAverage}, StructFieldInfo::eOmitNullFields},
 #endif
-            {L"Total-Logical-Cores", StructFieldMetaInfo{&Info::fTotalLogicalCores}, StructFieldInfo::eOmitNullFields},
-            {L"Total-Process-CPU-Usage", StructFieldMetaInfo{&Info::fTotalProcessCPUUsage}, StructFieldInfo::eOmitNullFields},
-            {L"Total-CPU-Usage", StructFieldMetaInfo{&Info::fTotalCPUUsage}, StructFieldInfo::eOmitNullFields},
-            {L"Run-Q-Length", StructFieldMetaInfo{&Info::fRunQLength}, StructFieldInfo::eOmitNullFields},
+            {"Total-Logical-Cores"_k, StructFieldMetaInfo{&Info::fTotalLogicalCores}, StructFieldInfo::eOmitNullFields},
+            {"Total-Process-CPU-Usage"_k, StructFieldMetaInfo{&Info::fTotalProcessCPUUsage}, StructFieldInfo::eOmitNullFields},
+            {"Total-CPU-Usage"_k, StructFieldMetaInfo{&Info::fTotalCPUUsage}, StructFieldInfo::eOmitNullFields},
+            {"Run-Q-Length"_k, StructFieldMetaInfo{&Info::fRunQLength}, StructFieldInfo::eOmitNullFields},
     });
     return mapper;
 }();
 
 Instruments::CPU::Instrument::Instrument (const Options& options)
     : SystemPerformance::Instrument{
-          InstrumentNameType{L"CPU"sv},
+          InstrumentNameType{"CPU"_k},
           make_unique<CPUInstrumentRep_> (options),
           {kCPUMeasurment_},
           {KeyValuePair<type_index, MeasurementType>{typeid (Info), kCPUMeasurment_}},

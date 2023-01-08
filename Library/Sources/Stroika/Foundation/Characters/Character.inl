@@ -66,6 +66,7 @@ namespace Stroika::Foundation::Characters {
             }
             return Common::CompareResultNormalizer (static_cast<ptrdiff_t> (lLen) - static_cast<ptrdiff_t> (rLen));
         }
+        void ThrowNotIsASCII_ ();
         void ThrowSurrogatesOutOfRange_ ();
     }
 
@@ -143,6 +144,13 @@ namespace Stroika::Foundation::Characters {
             }
         }
         return true;
+    }
+    template <Character_Compatible CHAR_T>
+    inline void Character::CheckASCII (span<const CHAR_T> s)
+    {
+        if (not IsASCII (s)) {
+            Private_::ThrowNotIsASCII_ ();
+        }
     }
     constexpr bool Character::IsWhitespace () const noexcept
     {

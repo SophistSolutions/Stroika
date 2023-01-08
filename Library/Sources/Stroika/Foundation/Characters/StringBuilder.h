@@ -72,20 +72,20 @@ namespace Stroika::Foundation::Characters {
          *  Append the given argument characters to this buffer.
          * 
          *  argument characters can be given by
-         *      o   span<unicode characters>
-         *      o   const T* - nul-terminated array of unicode characters
-         *      o   basic_string<unicode characters>
-         *      o   basic_string_view<unicode characters>
+         *      o   span<unicode (or narrow ASCII) characters>
+         *      o   const T* - nul-terminated array of unicode (or narrow ASCII) characters
+         *      o   basic_string<unicode (or narrow ASCII) characters>
+         *      o   basic_string_view<unicode (or narrow ASCII) characters>
          *      o   String
          *      o   Character
          */
-        template <Character_SafelyCompatible CHAR_T>
+        template <Character_Compatible CHAR_T>
         nonvirtual void Append (span<const CHAR_T> s);
-        template <Character_SafelyCompatible CHAR_T>
+        template <Character_Compatible CHAR_T>
         nonvirtual void Append (const CHAR_T* s);
-        template <Character_IsUnicodeCodePoint CHAR_T>
+        template <Character_IsUnicodeCodePointOrPlainChar CHAR_T>
         nonvirtual void Append (const basic_string<CHAR_T>& s);
-        template <Character_IsUnicodeCodePoint CHAR_T>
+        template <Character_IsUnicodeCodePointOrPlainChar CHAR_T>
         nonvirtual void Append (const basic_string_view<CHAR_T>& s);
         nonvirtual void Append (const String& s);
         nonvirtual void Append (Character c);

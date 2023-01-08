@@ -31,7 +31,7 @@ using namespace Stroika::Foundation::Debug;
  */
 ORM::Schema::CatchAllField::CatchAllField ()
 {
-    fName             = L"_other_fields_"sv;
+    fName             = "_other_fields_"sv;
     fVariantValueType = VariantValue::Type::eBLOB; // can be BLOB or String, but BLOB more compact/efficient
 }
 
@@ -172,7 +172,8 @@ Mapping<String, VariantValue> ORM::Schema::Table::MapFromDB (const Mapping<Strin
             }
         }
         else if (fi.fRequired) {
-            Execution::Throw (Exception{L"missing required field"});
+            static const auto kException_ = Exception{"missing required field"};
+            Execution::Throw (kException_);
         }
     }
     // now fold remaining fields into special 'extra' field (for structured non-indexed/non-searchable data)
@@ -213,24 +214,24 @@ namespace {
         if (f.fVariantValueType) {
             switch (*f.fVariantValueType) {
                 case VariantValue::eBLOB:
-                    return L"BLOB"sv;
+                    return "BLOB"sv;
                 case VariantValue::eDate:
                 case VariantValue::eDateTime:
                 case VariantValue::eString:
-                    return L"TEXT"sv;
+                    return "TEXT"sv;
                 case VariantValue::eBoolean:
                 case VariantValue::eInteger:
                 case VariantValue::eUnsignedInteger:
                     if (f.fIsKeyField) {
                         // see https://stackoverflow.com/questions/20289410/difference-between-int-primary-key-and-integer-primary-key-sqlite/20289487#:~:text=Yes%2C%20there%20is%20a%20difference,separate%20primary%20key%20is%20created.
-                        return L"INTEGER"sv;
+                        return "INTEGER"sv;
                     }
-                    return L"INT"sv;
+                    return "INT"sv;
                 case VariantValue::eFloat:
-                    return L"REAL"sv;
+                    return "REAL"sv;
             }
         }
-        return L"TEXT"sv; // @todo better
+        return "TEXT"sv; // @todo better
     }
 }
 
@@ -244,30 +245,30 @@ String ORM::Schema::StandardSQLStatements::CreateTable () const
      *      NAME           TEXT    NOT NULL
      *     );
      */
-    sb += L"CREATE TABLE " + fTable.fName + L" (";
+    sb += "CREATE TABLE " + fTable.fName + " (";
     bool firstField = true;
     auto addField   = [&] (const Field& fi) {
         if (firstField) {
             firstField = false;
         }
         else {
-            sb += L", ";
+            sb += ", ";
         }
-        sb += fi.fName + L" ";
-        sb += GetSQLiteFldType_ (fi) + L" ";
+        sb += fi.fName + " ";
+        sb += GetSQLiteFldType_ (fi) + " ";
         if (fi.fIsKeyField == true) {
-            sb += L" PRIMARY KEY";
+            sb += " PRIMARY KEY"_k;
         }
         if (fi.fDefaultExpression) {
             if (*fi.fDefaultExpression == Field::kDefaultExpression_AutoIncrement) {
-                sb += L" AUTOINCREMENT";
+                sb += " AUTOINCREMENT"_k;
             }
             else {
-                sb += L" DEFAULT(" + *fi.fDefaultExpression + L")";
+                sb += " DEFAULT(" + *fi.fDefaultExpression + ")";
             }
         }
         if (fi.fRequired) {
-            sb += L" NOT NULL";
+            sb += " NOT NULL"_k;
         }
     };
     for (const Field& i : fTable.fNamedFields) {
@@ -276,7 +277,7 @@ String ORM::Schema::StandardSQLStatements::CreateTable () const
     if (fTable.fSpecialCatchAll) {
         addField (*fTable.fSpecialCatchAll);
     }
-    sb += L");";
+    sb += ");";
 
     return sb.str ();
 }
@@ -288,14 +289,14 @@ String ORM::Schema::StandardSQLStatements::Insert () const
     /*
      *   INSERT INTO DEVICES (name) values (:NAME);
      */
-    sb += L"INSERT INTO " + fTable.fName + L" (";
+    sb += "INSERT INTO "_k + fTable.fName + " ("_k;
     bool firstField   = true;
     auto addFieldName = [&] (const Field& fi) {
         if (firstField) {
             firstField = false;
         }
         else {
-            sb += L", ";
+            sb += ", ";
         }
         sb += fi.fName;
     };
@@ -305,16 +306,16 @@ String ORM::Schema::StandardSQLStatements::Insert () const
     if (fTable.fSpecialCatchAll) {
         addFieldName (*fTable.fSpecialCatchAll);
     }
-    sb += L") VALUES (";
+    sb += ") VALUES ("_k;
     firstField                     = true;
     auto addFieldValueVariableName = [&] (const Field& fi) {
         if (firstField) {
             firstField = false;
         }
         else {
-            sb += L", ";
+            sb += ", ";
         }
-        sb += L":" + fi.fName;
+        sb += ":" + fi.fName;
     };
     for (const Field& i : fTable.fNamedFields) {
         addFieldValueVariableName (i);
@@ -322,7 +323,7 @@ String ORM::Schema::StandardSQLStatements::Insert () const
     if (fTable.fSpecialCatchAll) {
         addFieldValueVariableName (*fTable.fSpecialCatchAll);
     }
-    sb += L");";
+    sb += ");"_k;
     return sb.str ();
 }
 
@@ -333,7 +334,7 @@ String ORM::Schema::StandardSQLStatements::DeleteByID () const
      *   Delete from DEVICES (ID) where ID=:ID;
      */
     Field indexField = Memory::ValueOf (fTable.GetIDField ());
-    sb += L"DELETE FROM " + fTable.fName + L" WHERE " + indexField.fName + L"=:" + indexField.fName + L";";
+    sb += "DELETE FROM "_k + fTable.fName + " WHERE " + indexField.fName + "=:" + indexField.fName + ";";
     return sb.str ();
 }
 
@@ -344,7 +345,7 @@ String ORM::Schema::StandardSQLStatements::GetByID () const
      *   SELECT * FROM DEVICES where ID=:ID;
      */
     Field indexField = Memory::ValueOf (fTable.GetIDField ());
-    sb += L"SELECT * FROM " + fTable.fName + L" WHERE " + indexField.fName + L"=:" + indexField.fName + L";";
+    sb += "SELECT * FROM "_k + fTable.fName + " WHERE " + indexField.fName + "=:" + indexField.fName + ";";
     return sb.str ();
 }
 
@@ -357,17 +358,17 @@ String ORM::Schema::StandardSQLStatements::UpdateByID () const
      *   WHERE ID=:ID;
      */
     Field indexField = Memory::ValueOf (fTable.GetIDField ());
-    sb += L"UPDATE " + fTable.fName;
+    sb += "UPDATE "_k + fTable.fName;
     bool firstField  = true;
     auto addSetField = [&] (const Field& fi) {
         if (firstField) {
             firstField = false;
-            sb += L" SET ";
+            sb += " SET "_k;
         }
         else {
-            sb += L", ";
+            sb += ", "_k;
         }
-        sb += fi.fName + L"=:" + fi.fName;
+        sb += fi.fName + "=:" + fi.fName;
     };
     for (const Field& i : fTable.fNamedFields) {
         if (not i.fIsKeyField) {
@@ -377,7 +378,7 @@ String ORM::Schema::StandardSQLStatements::UpdateByID () const
     if (fTable.fSpecialCatchAll) {
         addSetField (*fTable.fSpecialCatchAll);
     }
-    sb += L" WHERE " + indexField.fName + L"=:" + indexField.fName + L";";
+    sb += " WHERE "_k + indexField.fName + "=:" + indexField.fName + ";";
     return sb.str ();
 }
 
@@ -387,6 +388,6 @@ String ORM::Schema::StandardSQLStatements::GetAllElements () const
     /*
      *   Select * from DEVICES;
      */
-    sb += L"SELECT * FROM " + fTable.fName + L";";
+    sb += "SELECT * FROM " + fTable.fName + ";";
     return sb.str ();
 }

@@ -30,7 +30,7 @@ using namespace Time;
  ********************************************************************************
  */
 Date::FormatException::FormatException ()
-    : Execution::RuntimeErrorException<>{L"Invalid Date Format"sv}
+    : Execution::RuntimeErrorException<>{"Invalid Date Format"sv}
 {
 }
 

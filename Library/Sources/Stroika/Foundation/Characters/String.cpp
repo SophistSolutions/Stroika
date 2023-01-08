@@ -72,6 +72,9 @@ namespace {
                 requires (not is_same_v<CHAR_T, char8_t>) // char8 ironically involves 2-byte characters, cuz only ascii encoded as 1 byte
             : _fData{s}
             {
+                if constexpr (is_same_v<CHAR_T, char>) {
+                    Require (Character::IsASCII (s));
+                }
             }
             virtual Character GetAt (size_t index) const noexcept override
             {
@@ -80,9 +83,15 @@ namespace {
             }
             virtual PeekSpanData PeekData ([[maybe_unused]] optional<PeekSpanData::StorageCodePointType> preferred) const noexcept override
             {
-                if constexpr (sizeof (CHAR_T) == 1) {
+                if constexpr (is_same_v<CHAR_T, char>) {
                     return PeekSpanData{PeekSpanData::StorageCodePointType::eAscii, {.fAscii = _fData}};
                 }
+#if 0
+                // todo replace fChar8 support with this
+                else if constexpr (is_same_v<CHAR_T, uchar8_t>) {
+                    return PeekSpanData{PeekSpanData::StorageCodePointType::eAscii, {.f = _fData}};
+                }
+#endif
                 else if constexpr (sizeof (CHAR_T) == 2) {
                     // reinterpret_cast needed cuz of wchar_t case
                     return PeekSpanData{
@@ -367,12 +376,14 @@ namespace {
             Rep (span<const CHAR_T> s)
                 : inherited{s} // don't copy memory - but copy raw pointers! So they MUST BE (externally promised) 'externally owned for the application lifetime and constant' - like c++ string constants
             {
+                if constexpr (is_same_v<CHAR_T, wchar_t>) {
 #if qDebug
-                const CHAR_T* start = s.data ();
-                const CHAR_T* end   = start + s.size ();
+                    const CHAR_T* start = s.data ();
+                    const CHAR_T* end   = start + s.size ();
 #endif
-                // NO - we allow embedded nuls, but require NUL-termination - so this is wrong - Require (start + ::wcslen (start) == end);
-                Require (*end == '\0' and start + ::wcslen (start) <= end);
+                    // NO - we allow embedded nuls, but require NUL-termination - so this is wrong - Require (start + ::wcslen (start) == end);
+                    Require (*end == '\0' and start + ::wcslen (start) <= end);
+                }
             }
             virtual _IterableRepSharedPtr Clone () const override
             {
@@ -383,7 +394,7 @@ namespace {
             {
                 // if used for appropriately sized character (equiv to wchar_t) - then use that nul-terminated string
                 // and else return nullptr, so it will get wrapped
-                if constexpr (sizeof (CHAR_T) == sizeof (wchar_t)) {
+                if constexpr (is_same_v<CHAR_T, wchar_t>) {
                     // we check/require this in CTOR, so should still be true
                     const wchar_t* start = reinterpret_cast<const wchar_t*> (this->_fData.data ());
 #if qDebug
@@ -482,6 +493,41 @@ const wregex& Characters::Private_::RegularExpression_GetCompiled (const Regular
  ************************************* String ***********************************
  ********************************************************************************
  */
+String::String (const basic_string_view<char>& str)
+    : String{MakeSmartPtr<StringConstant_::Rep<char>> (span{str.data (), str.size ()})}
+{
+    Require (Character::IsASCII (span{str.data (), str.size ()}));
+}
+
+namespace {
+    String mkStr_ (const basic_string_view<char8_t>& str)
+    {
+        // StringConstant_::Rep<char8_t> not supported
+        if (Character::IsASCII (span{str.data (), str.size ()})) {
+            // saves data ptr - without copying
+            return String{basic_string_view{reinterpret_cast<const char*> (str.data ()), str.size ()}};
+        }
+        else {
+            return String{span{str.data (), str.size ()}}; // copies data
+        }
+    }
+}
+
+String::String (const basic_string_view<char8_t>& str)
+    : String{mkStr_ (str)}
+{
+}
+
+String::String (const basic_string_view<char16_t>& str)
+    : String{MakeSmartPtr<StringConstant_::Rep<char16_t>> (span{str.data (), str.size ()})}
+{
+}
+
+String::String (const basic_string_view<char32_t>& str)
+    : String{MakeSmartPtr<StringConstant_::Rep<char32_t>> (span{str.data (), str.size ()})}
+{
+}
+
 String::String (const basic_string_view<wchar_t>& str)
     : String{MakeSmartPtr<StringConstant_::Rep<wchar_t>> (span{str.data (), str.size ()})}
 {
@@ -490,6 +536,11 @@ String::String (const basic_string_view<wchar_t>& str)
                                                // DONT try to CORRECT this if found wrong, because whenever you use "stuff"sv - the string literal will always
                                                // be nul-terminated.
                                                // -- LGP 2019-01-29
+}
+
+String String::FromStringConstant (span<const char> s)
+{
+    return String{MakeSmartPtr<StringConstant_::Rep<char>> (s)};
 }
 
 String String::FromStringConstant (span<const wchar_t> s)
@@ -513,7 +564,7 @@ String String::FromNarrowString (span<const char> s, const locale& l)
     wchar_t*             to_next;
     codecvt_base::result result = cvt.in (mbstate, s.data (), s.data () + s.size (), from_next, &resultWStr[0], &resultWStr[resultWStr.size ()], to_next);
     if (result != codecvt_base::ok) [[unlikely]] {
-        static const auto kException_ = Execution::RuntimeErrorException{L"Error converting locale multibyte string to UNICODE"sv};
+        static const auto kException_ = Execution::RuntimeErrorException{"Error converting locale multibyte string to UNICODE"sv};
         Execution::Throw (kException_);
     }
     resultWStr.resize (to_next - &resultWStr[0]);
@@ -535,7 +586,7 @@ String::_SharedPtrIRep String::mkEmpty_ ()
 template <>
 auto String::mk_ (span<const char> s) -> _SharedPtrIRep
 {
-    Require (Character::IsASCII (s));
+    Character::CheckASCII (s);
     return MakeSmartPtr<BufferedString_::Rep<char>> (s);
 }
 
@@ -548,10 +599,10 @@ auto String::mk_ (span<const char16_t> s) -> _SharedPtrIRep
         Memory::StackBuffer<char> buf{s.size ()};
 #if qCompilerAndStdLib_spanOfContainer_Buggy
         Private_::CopyAsASCIICharacters_ (s, span{buf.data (), buf.size ()});
-        return mk_ (span<const char>{buf.data (), buf.size ()});
+        return MakeSmartPtr<BufferedString_::Rep<char>> (span<const char>{buf.data (), buf.size ()});
 #else
         Private_::CopyAsASCIICharacters_ (s, span{buf});
-        return mk_ (span<const char>{buf}); // this case specialized
+        return MakeSmartPtr<BufferedString_::Rep<char>> (span<const char>{buf}); // MakeSmartPtr not mk_ to avoid Character::CheckASCII
 #endif
     }
     if (UTFConverter::AllFitsInTwoByteEncoding (s)) {
@@ -572,10 +623,10 @@ auto String::mk_ (span<const char32_t> s) -> _SharedPtrIRep
         Memory::StackBuffer<char> buf{s.size ()};
 #if qCompilerAndStdLib_spanOfContainer_Buggy
         Private_::CopyAsASCIICharacters_ (s, span{buf.data (), buf.size ()});
-        return mk_ (span<const char>{buf.data (), buf.size ()});
+        return MakeSmartPtr<BufferedString_::Rep<char>> (span<const char>{buf.data (), buf.size ()});
 #else
         Private_::CopyAsASCIICharacters_ (s, span{buf});
-        return mk_ (span<const char>{buf});     // this case specialized
+        return MakeSmartPtr<BufferedString_::Rep<char>> (span<const char>{buf}); // MakeSmartPtr not mk_ to avoid Character::CheckASCII
 #endif
     }
     return MakeSmartPtr<BufferedString_::Rep<char32_t>> (s);
@@ -1229,9 +1280,9 @@ bool String::IsWhitespace () const
 String String::LimitLength (size_t maxLen, bool keepLeft) const
 {
 #if qCompiler_vswprintf_on_elispisStr_Buggy
-    static const String kELIPSIS_{L"..."sv};
+    static const String kELIPSIS_{"..."_k};
 #else
-    static const String kELIPSIS_{L"\u2026"sv}; // OR L"..."
+    static const String kELIPSIS_{u"\u2026"sv};                                  // OR L"..."
 #endif
     return LimitLength (maxLen, keepLeft, kELIPSIS_);
 }
@@ -1273,7 +1324,7 @@ void String::AsNarrowString (const locale& l, string* into) const
     char*                to_next;
     codecvt_base::result result = cvt.out (mbstate, &wstr[0], &wstr[wstr.size ()], from_next, &(*into)[0], &(*into)[into->size ()], to_next);
     if (result != codecvt_base::ok) [[unlikely]] {
-        static const auto kException_ = Execution::RuntimeErrorException{L"Error converting locale multibyte string to UNICODE"sv};
+        static const auto kException_ = Execution::RuntimeErrorException{"Error converting locale multibyte string to UNICODE"sv};
         Execution::Throw (kException_);
     }
     into->resize (to_next - &(*into)[0]);
@@ -1317,7 +1368,7 @@ const wchar_t* String::c_str ()
 
 void String::ThrowInvalidAsciiException_ ()
 {
-    static const auto kException_ = Execution::RuntimeErrorException{L"Error converting non-ascii text to string"sv};
+    static const auto kException_ = Execution::RuntimeErrorException{"Error converting non-ascii text to string"sv};
     Execution::Throw (kException_);
 }
 

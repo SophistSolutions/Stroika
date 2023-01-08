@@ -17,7 +17,7 @@ using namespace Stroika::Foundation::Execution;
  ********************************************************************************
  */
 Execution::InvalidCommandLineArgument::InvalidCommandLineArgument ()
-    : Execution::RuntimeErrorException<>{L"Invalid Command Argument"sv}
+    : Execution::RuntimeErrorException<>{"Invalid Command Argument"sv}
 {
 }
 Execution::InvalidCommandLineArgument::InvalidCommandLineArgument (const String& message)

@@ -215,7 +215,7 @@ void LibraryContext::LoadProvider ([[maybe_unused]] const String& providerName)
         // really load cuz not already loaded
         DbgTrace (L"calling OSSL_PROVIDER_load");
         p = ::OSSL_PROVIDER_load (nullptr, providerName.AsNarrowSDKString ().c_str ());
-        static const Execution::RuntimeErrorException kErr_{L"No such SSL provider"sv};
+        static const Execution::RuntimeErrorException kErr_{"No such SSL provider"sv};
         Execution::ThrowIfNull (p, kErr_);
     }
     fLoadedProviders_.Add (providerName, p); // add association (perhaps redundantly)

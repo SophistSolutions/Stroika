@@ -109,7 +109,7 @@ public:
                         }
                         // demo getting either query arg, or url encoded arg
                         if (not number) {
-                            static const String kValueParamName_ = L"value"sv;
+                            static const String kValueParamName_ = "value"sv;
                             // NOTE - PickoutParamValues combines PickoutParamValuesFromURL, and PickoutParamValuesFromBody. You can use
                             // Either one of those instead. PickoutParamValuesFromURL assumes you know the name of the parameter, and its
                             // encoded in the query string. PickoutParamValuesFromBody assumes you have something equivilent you can parse ouf
@@ -118,7 +118,7 @@ public:
                             number                                           = Model::kMapper.ToObject<Number> (args.LookupValue (kValueParamName_));
                         }
                         if (not number) {
-                            Execution::Throw (HTTP::ClientErrorException{L"Expected argument to PUT/POST variable"sv});
+                            Execution::Throw (HTTP::ClientErrorException{"Expected argument to PUT/POST variable"sv});
                         }
                         fWSImpl_->Variables_SET (varName, *number);
                         WriteResponse (&m->rwResponse (), kVariables_);
@@ -146,7 +146,7 @@ public:
     {
         // @todo - move this to some framework-specific regtests...
         using VariantValue         = DataExchange::VariantValue;
-        Sequence<VariantValue> tmp = OrderParamValues (Iterable<String>{L"page", L"xxx"}, PickoutParamValuesFromURL (URI{L"http://www.sophist.com?page=5"}));
+        Sequence<VariantValue> tmp = OrderParamValues (Iterable<String>{"page", "xxx"}, PickoutParamValuesFromURL (URI{"http://www.sophist.com?page=5"}));
         Assert (tmp.size () == 2);
         Assert (tmp[0] == 5);
         Assert (tmp[1] == nullptr);
@@ -163,7 +163,7 @@ public:
                 kTimes,
                 kDivide,
             },
-            DocsOptions{L"Stroika Sample WebService - Web Methods"_k, L"Note - curl lines all in bash quoting syntax"_k});
+            DocsOptions{"Stroika Sample WebService - Web Methods"_k, "Note - curl lines all in bash quoting syntax"_k});
     }
     static void SetAppState_ (Message* message)
     {

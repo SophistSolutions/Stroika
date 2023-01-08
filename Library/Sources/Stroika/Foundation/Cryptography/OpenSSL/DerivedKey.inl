@@ -30,13 +30,10 @@ namespace Stroika::Foundation::Cryptography::OpenSSL {
     {
         return passwd;
     }
-    inline BLOB DerivedKey::NormalizePassword (const string& passwd)
-    {
-        return BLOB (reinterpret_cast<const std::byte*> (passwd.c_str ()), reinterpret_cast<const std::byte*> (passwd.c_str () + passwd.length ()));
-    }
     inline BLOB DerivedKey::NormalizePassword (const String& passwd)
     {
-        return NormalizePassword (passwd.AsUTF8<string> ());
+        string ascii = passwd.AsASCII ();
+        return BLOB{reinterpret_cast<const std::byte*> (ascii.c_str ()), reinterpret_cast<const std::byte*> (ascii.c_str () + ascii.length ())};
     }
 
     /*

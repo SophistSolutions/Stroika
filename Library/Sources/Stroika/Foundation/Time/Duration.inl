@@ -51,14 +51,22 @@ namespace Stroika::Foundation::Time {
         }
         src.fRepType_ = eEmpty_;
     }
-    inline Duration::Duration (const string& durationStr)
+    template <Characters::ConvertibleToString STRINGISH_T>
+    inline Duration::Duration (STRINGISH_T&& durationStr)
         : inherited{kValueWhenEmptyRenderedAsNumber_}
         , fNonStringRep_{}
     {
         Assert (fRepType_ == eEmpty_);
-        if (not durationStr.empty ()) {
-            (*(inherited*)this) = inherited{ParseTime_ (durationStr)};
-            new (&fStringRep_) string{durationStr};
+        string asciiRep;
+        if constexpr (is_same_v<STRINGISH_T, string>) {
+            asciiRep = durationStr;
+        }
+        else {
+            asciiRep = Characters::String{durationStr}.AsASCII ();
+        }
+        if (not asciiRep.empty ()) {
+            (*(inherited*)this) = inherited{ParseTime_ (asciiRep)};
+            new (&fStringRep_) string{asciiRep};
             fRepType_ = eString_;
         }
     }

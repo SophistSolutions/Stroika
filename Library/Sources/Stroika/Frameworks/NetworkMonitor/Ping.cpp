@@ -43,17 +43,17 @@ using namespace Stroika::Frameworks::NetworkMonitor::Ping;
 String Ping::Options::ToString () const
 {
     StringBuilder sb;
-    sb += L"{";
+    sb += "{";
     if (fMaxHops) {
-        sb += L"Max-Hops: " + Characters::Format (L"%d", *fMaxHops) + L", ";
+        sb += "Max-Hops: " + Characters::Format (L"%d", *fMaxHops) + L", ";
     }
     if (fTimeout) {
-        sb += L"Timeout: " + Characters::ToString (*fTimeout) + L", ";
+        sb += "Timeout: " + Characters::ToString (*fTimeout) + L", ";
     }
     if (fPacketPayloadSize) {
-        sb += L"Packet-Payload-Size: " + Characters::Format (L"%d", *fPacketPayloadSize) + L", ";
+        sb += "Packet-Payload-Size: " + Characters::Format (L"%d", *fPacketPayloadSize) + L", ";
     }
-    sb += L"}";
+    sb += "}";
     return sb.str ();
 }
 
@@ -211,10 +211,10 @@ Pinger::ResultType Pinger::RunOnce_ICMP_ (unsigned int ttl)
 Characters::String SampleOptions::ToString () const
 {
     StringBuilder sb;
-    sb += L"{";
-    sb += L"Interval: " + Characters::ToString (fInterval) + L", ";
-    sb += L"Count: " + Characters::Format (L"%d", fSampleCount) + L", ";
-    sb += L"}";
+    sb += "{";
+    sb += "Interval: " + Characters::ToString (fInterval) + ", ";
+    sb += "Count: " + Characters::Format (L"%d", fSampleCount) + ", ";
+    sb += "}";
     return sb.str ();
 }
 

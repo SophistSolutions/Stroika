@@ -122,6 +122,12 @@ namespace Stroika::Foundation::Characters {
      *      About spans, and the \0 NUL-termination - generally do NOT include
      *      the NUL-character in your span! Stroika strings will allow this, and treat
      *      it as just another character, but its probably not what you meant.
+     * 
+     *  \note Narrow String handling
+     *      Becuase the characterset of strings of type 'char' is ambiguous, if you construct a String
+     *      with char (char* etc) - it is somehow required that the characters be ASCII. If using the FromConstantString () API
+     *      , or operator"" _k, it is checked with Require () - so assertion failure. If you construct
+     *      with String::CTOR, it will generate a runtime exception (so more costly checking).
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      *
@@ -175,19 +181,25 @@ namespace Stroika::Foundation::Characters {
          *  \note even though the String (span<CHAR_T>) constructor takes a CHAR_T, the span data is not modified. The use of
          *        CHAR_T (instead of const CHAR_T) here is just because it allows for easier deduction 
          *        (@todo maybe can fix better ways? - try using const CHAR_T and see how many uses of span{a,b} have to become span<const chattype> {a,b})
+         * 
+         *  \note Becuase the characterset of strings of type 'char' is ambiguous, if you construct a String
+         *        with char (char* etc) - it runtime checked that the characters are ASCII (except for the basic_string_view
+         *        constructors where we check but with assertions).
          */
         String ();
-        template <Character_SafelyCompatible CHAR_T>
+        template <Character_Compatible CHAR_T>
         String (const CHAR_T* cString);
-        template <Character_SafelyCompatible CHAR_T>
+        template <Character_Compatible CHAR_T>
         String (span<CHAR_T> s);
-        template <Character_IsUnicodeCodePoint CHAR_T>
+        template <Character_IsUnicodeCodePointOrPlainChar CHAR_T>
         String (const basic_string<CHAR_T>& s);
         template <Character_SafelyCompatible CHAR_T>
         String (const Iterable<CHAR_T>& src);
         explicit String (const Character& c);
-
-        // keep for now - @todo generalize - though some cases may copy
+        String (const basic_string_view<char>& str);
+        String (const basic_string_view<char8_t>& str);
+        String (const basic_string_view<char16_t>& str);
+        String (const basic_string_view<char32_t>& str);
         String (const basic_string_view<wchar_t>& str);
 
         // @todo add MOVE constructor from some kinds of strings - like u8string and u32string and maybe conditional
@@ -307,11 +319,11 @@ namespace Stroika::Foundation::Characters {
          *
          *  \par Example:
          *      \code
-         *          String  tmp1    =   L"FRED";
-         *          String  tmp2    =   String{L"FRED"};
-         *          String  tmp3    =   String::FromStringConstant (L"FRED");       // same as 2 above, but faster
-         *          String  tmp4    =   L"FRED"sv;                      // equivilent to FromStringConstant
-         *          String  tmp5    =   L"FRED"_k;                      // equivilent to FromStringConstant
+         *          String  tmp1    =   "FRED";
+         *          String  tmp2    =   String{"FRED"};
+         *          String  tmp3    =   String::FromStringConstant ("FRED");       // same as 2 above, but faster
+         *          String  tmp4    =   "FRED"sv;                      // equivilent to FromStringConstant
+         *          String  tmp5    =   "FRED"_k;                      // equivilent to FromStringConstant
          *      \endcode
          *
          *  \em WARNING - BE VERY CAREFUL - be sure arguments have application lifetime.
@@ -326,10 +338,17 @@ namespace Stroika::Foundation::Characters {
          *
          *  \req ((str.data () + str.size ()) == '\0'); // crazy weird requirement, but done cuz L"x"sv already does NUL-terminate and we can
          *                                              // take advantage of that fact - re-using the NUL-terminator for our own c_str() implementation
+         * 
+         *  \note FromStringConstant with 'char' - requires that the char elements are ASCII (someday this maybe lifted and iterpret as ISOLATIN1)
+         *        For the case of char, we also do not check/require the nul-termination bit.
          */
         template <size_t SIZE>
+        static String FromStringConstant (const char (&cString)[SIZE]);
+        template <size_t SIZE>
         static String FromStringConstant (const wchar_t (&cString)[SIZE]);
+        static String FromStringConstant (const basic_string_view<char>& str);
         static String FromStringConstant (const basic_string_view<wchar_t>& str);
+        static String FromStringConstant (span<const char> s);
         static String FromStringConstant (span<const wchar_t> s);
 
     public:
@@ -617,10 +636,10 @@ namespace Stroika::Foundation::Characters {
          *
          *  \par Example Usage
          *      \code
-         *          Assert (String{L"abc"}.Matches (L"abc"));
-         *          Assert (not (String{L"abc"}.Matches (L"bc")));
-         *          Assert (String{L"abc"}.Matches (L".*bc"));
-         *          Assert (not String{L"abc"}.Matches (L"b.*c"));
+         *          Assert (String{"abc"}.Matches ("abc"));
+         *          Assert (not (String{"abc"}.Matches ("bc")));
+         *          Assert (String{"abc"}.Matches (".*bc"));
+         *          Assert (not String{"abc"}.Matches ("b.*c"));
          *      \endcode
          *
          *  \par Example Usage
@@ -687,12 +706,12 @@ namespace Stroika::Foundation::Characters {
          *
          *  \par Example Usage
          *      \code
-         *          const String kTest_{ L"a=b" };
-         *          const String kLbl2LookFor_ { L"a=" };
+         *          const String kTest_{ "a=b" };
+         *          const String kLbl2LookFor_ { "a=" };
          *          if (kTest_.Find (kLbl2LookFor_)) {
          *              String  tmp { kTest_.SubString (kLbl2LookFor_.length ()) };
          *          }
-         *          Assert (tmp == L"b");
+         *          Assert (tmp == "b");
          *      \endcode
          *
          *  @see FindEach ()
@@ -754,8 +773,8 @@ namespace Stroika::Foundation::Characters {
         /**
          *  \par Example Usage
          *      \code
-         *          const String            kTest_ { L"a=b, c=d"_k };
-         *          const RegularExpression kRE_ { L"(.)=(.)" };
+         *          const String            kTest_ { "a=b, c=d"_k };
+         *          const RegularExpression kRE_ { "(.)=(.)" };
          *          Assert ((kTest_.FindEachString (kRE_) ==  vector<String> {L"a=b", L"c=d"}));
          *      \endcode
          *
@@ -1342,7 +1361,10 @@ namespace Stroika::Foundation::Characters {
             return FromNarrowSDKString (span{from, to});
         }
         template <Character_SafelyCompatible CHAR_T>
-        [[deprecated ("Since Stroika v3.0d1, use span{} constructor for this")]] String (const CHAR_T* from, const CHAR_T* to);
+        [[deprecated ("Since Stroika v3.0d1, use span{} constructor for this")]] String (const CHAR_T* from, const CHAR_T* to)
+            : String{span<const CHAR_T>{from, to}}
+        {
+        }
         [[deprecated ("Since Stroika v3.0d1 - use As<wstring> ().c_str () or other c_str() overload (*UNSAFE TO USE*)")]] nonvirtual const wchar_t* c_str () const noexcept;
         [[deprecated ("Since Stroika v3.0 - use span{} overloads")]] inline static String                                                           FromSDKString (const SDKChar* from, const SDKChar* to)
         {
@@ -1365,7 +1387,11 @@ namespace Stroika::Foundation::Characters {
 
     private:
         static _SharedPtrIRep mkEmpty_ ();
-        // note here - for mk_ - for PlainChar overload - REQUIRE arg IsAscii
+
+    private:
+        /**
+         * note here - for mk_(span<const char>) - calls Character::CheckASCII (), and other <char> guys delegate through that
+         */
         template <Character_Compatible CHAR_T>
         static _SharedPtrIRep mk_ (span<const CHAR_T> s);
         template <Character_Compatible CHAR_T>
@@ -1448,14 +1474,6 @@ namespace Stroika::Foundation::Characters {
                                           String{t}
                                       };
                                   };
-
-    /**
-     *  \brief user defined literal for ASCII string. Equivilent to String::FromASCII () - except this REQUIRES its argument
-     *         be a forever-lived nul-terminated C string.
-     *
-     *  \req each character isascii()
-     */
-    String operator"" _ASCII (const char* str, size_t len);
 
     /**
      *  Use Stroika String more easily with std::ostream.
@@ -1569,7 +1587,10 @@ namespace Stroika::Foundation::Characters {
      *
      *  \note _k is STILL sometimes useful and better than sv, since the TYPE returned by _k is a String_Constant which IS a String
      *        so it will work in some overload contexts where sv would fail.
+     * 
+     *  \note operator"" _k with char*, requires that the argument string MUST BE ASCII (someday maybe lifted to allow ISOLATIN1)
      */
+    String operator"" _k (const char* s, size_t len);
     String operator"" _k (const wchar_t* s, size_t len);
 
     /**

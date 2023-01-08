@@ -55,7 +55,7 @@ DigestAlgorithm::DigestAlgorithm (const ::EVP_MD* digester)
 
 DigestAlgorithm DigestAlgorithm::GetByName (const String& digestName)
 {
-    static const Execution::RuntimeErrorException kErr_{L"No such digest"sv};
+    static const Execution::RuntimeErrorException kErr_{"No such digest"sv};
     auto                                          p = ::EVP_get_digestbyname (digestName.AsNarrowSDKString ().c_str ());
     Execution::ThrowIfNull (p, kErr_);
     return p;

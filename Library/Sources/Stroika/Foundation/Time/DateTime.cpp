@@ -148,7 +148,7 @@ namespace {
  ********************************************************************************
  */
 DateTime::FormatException::FormatException ()
-    : RuntimeErrorException<>{L"Invalid DateTime Format"sv}
+    : RuntimeErrorException<>{"Invalid DateTime Format"sv}
 {
 }
 

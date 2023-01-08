@@ -32,23 +32,23 @@ using namespace Stroika::Foundation::Memory;
 String FloatConversion::ToStringOptions::ToString () const
 {
     StringBuilder sb;
-    sb += L"{";
+    sb += "{"_k;
     if (fPrecision_) {
-        sb += L"Precision:" + Characters::ToString (*fPrecision_) + L",";
+        sb += "Precision:"_k + Characters::ToString (*fPrecision_) + ",";
     }
     if (fFmtFlags_) {
-        sb += L"Fmt-Flags:" + Characters::ToString ((int)*fFmtFlags_, ios_base::hex) + L",";
+        sb += "Fmt-Flags:"_k + Characters::ToString ((int)*fFmtFlags_, ios_base::hex) + ",";
     }
     if (fUseLocale_) {
-        sb += L"Use-Locale" + String::FromNarrowSDKString (fUseLocale_->name ()) + L",";
+        sb += "Use-Locale"_k + String::FromNarrowSDKString (fUseLocale_->name ()) + ",";
     }
     if (fTrimTrailingZeros_) {
-        sb += L"Trim-Trailing-Zeros: " + Characters::ToString (*fTrimTrailingZeros_) + L",";
+        sb += "Trim-Trailing-Zeros: "_k + Characters::ToString (*fTrimTrailingZeros_) + ",";
     }
     if (fFloatFormat_) {
-        sb += L"Scientific-Notation: " + Characters::ToString ((int)*fFloatFormat_) + L",";
+        sb += "Scientific-Notation: "_k + Characters::ToString ((int)*fFloatFormat_) + ",";
     }
-    sb += L"}";
+    sb += "}"_k;
     return sb.str ();
 }
 
@@ -138,14 +138,14 @@ namespace {
             case FP_INFINITE: {
                 Assert (isinf (f));
                 Assert (!isnan (f));
-                static const String kNEG_INF_STR_{L"-INF"sv};
-                static const String kINF_STR_{L"INF"sv};
+                static const String kNEG_INF_STR_{"-INF"_k};
+                static const String kINF_STR_{"INF"_k};
                 return f > 0 ? kINF_STR_ : kNEG_INF_STR_;
             }
             case FP_NAN: {
                 Assert (isnan (f));
                 Assert (!isinf (f));
-                static const String kNAN_STR_{L"NAN"sv};
+                static const String kNAN_STR_{"NAN"_k};
                 return kNAN_STR_;
             }
             default: {
@@ -153,8 +153,8 @@ namespace {
                     if (Debug::IsRunningUnderValgrind ()) {
                         if (isinf (f)) {
                             DbgTrace ("fpclassify (%f) = %d", (double)f, fpclassify (f));
-                            static const String kNEG_INF_STR_{L"-INF"sv};
-                            static const String kINF_STR_{L"INF"sv};
+                            static const String kNEG_INF_STR_{"-INF"_k};
+                            static const String kINF_STR_{"INF"_k};
                             return f > 0 ? kINF_STR_ : kNEG_INF_STR_;
                         }
                     }

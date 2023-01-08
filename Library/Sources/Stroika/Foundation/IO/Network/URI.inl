@@ -30,12 +30,15 @@ namespace Stroika::Foundation::IO::Network {
         }
         CheckValidPathForAuthority_ (authority, path);
     }
+#if 0
     inline URI::URI (const string& encodedURI)
         : URI{Parse (encodedURI)}
     {
     }
-    inline URI::URI (const String& encodedURI)
-        : URI{Parse (encodedURI)}
+#endif
+    template <Characters::ConvertibleToString STRISH_TYPE>
+    inline URI::URI (STRISH_TYPE&& encodedURI)
+        : URI{Parse (forward<STRISH_TYPE> (encodedURI))}
     {
     }
     inline bool URI::IsRelativeReference () const

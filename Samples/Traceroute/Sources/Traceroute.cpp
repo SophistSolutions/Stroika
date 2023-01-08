@@ -53,45 +53,45 @@ int main (int argc, const char* argv[])
             if (Execution::MatchesCommandLineArgument (*argi, L"ping")) {
                 majorOp = MajorOp::ePing;
             }
-            else if (Execution::MatchesCommandLineArgument (*argi, L"traceroute")) {
+            else if (Execution::MatchesCommandLineArgument (*argi, "traceroute")) {
                 majorOp = MajorOp::eTraceroute;
             }
-            else if (Execution::MatchesCommandLineArgument (*argi, L"packetSize")) {
+            else if (Execution::MatchesCommandLineArgument (*argi, "packetSize")) {
                 ++argi;
                 if (argi != args.end ()) {
                     packetSize = Characters::String2Int<unsigned int> (*argi);
                 }
                 else {
-                    usage (L"Expected arg to -packetSize");
+                    usage ("Expected arg to -packetSize");
                     return EXIT_FAILURE;
                 }
             }
-            else if (Execution::MatchesCommandLineArgument (*argi, L"maxHops")) {
+            else if (Execution::MatchesCommandLineArgument (*argi, "maxHops")) {
                 ++argi;
                 if (argi != args.end ()) {
                     maxHops = Characters::String2Int<unsigned int> (*argi);
                 }
                 else {
-                    usage (L"Expected arg to -maxHops");
+                    usage ("Expected arg to -maxHops");
                     return EXIT_FAILURE;
                 }
             }
-            else if (Execution::MatchesCommandLineArgument (*argi, L"sampleCount")) {
+            else if (Execution::MatchesCommandLineArgument (*argi, "sampleCount")) {
                 ++argi;
                 if (argi != args.end ()) {
                     sampleCount = Characters::String2Int<unsigned int> (*argi);
                 }
                 else {
-                    usage (L"Expected arg to -sampleCount");
+                    usage ("Expected arg to -sampleCount");
                     return EXIT_FAILURE;
                 }
             }
-            else if (Execution::MatchesCommandLineArgument (*argi, L"help") or Execution::MatchesCommandLineArgument (*argi, L"h")) {
+            else if (Execution::MatchesCommandLineArgument (*argi, "help") or Execution::MatchesCommandLineArgument (*argi, L"h")) {
                 usage ();
                 return EXIT_SUCCESS;
             }
             else if (argi->StartsWith (L"-")) {
-                usage (L"unrecognized option: " + *argi);
+                usage ("unrecognized option: " + *argi);
                 return EXIT_FAILURE;
             }
             else {

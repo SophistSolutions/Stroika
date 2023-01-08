@@ -55,10 +55,10 @@ using Memory::StackBuffer;
 String DerivedKey::ToString () const
 {
     Characters::StringBuilder result;
-    result += L"{";
-    result += L"key: " + Characters::ToString (fKey) + L", ";
-    result += L"IV: " + Characters::ToString (fIV);
-    result += L"}";
+    result += "{";
+    result += "key: " + Characters::ToString (fKey) + ", ";
+    result += "IV: " + Characters::ToString (fIV);
+    result += "}";
     return result.str ();
 }
 #endif
@@ -169,7 +169,7 @@ namespace {
         StackBuffer<byte> useIV{Memory::eUninitialized, cipherAlgorithm.IVLength ()};
         if (salt and salt->GetSize () != 8) [[unlikely]] {
             // Could truncate and fill to adapt to different sized salt...
-            Execution::Throw (Execution::Exception{L"only 8-byte salt with EVP_BytesToKey"sv});
+            Execution::Throw (Execution::Exception{"only 8-byte salt with EVP_BytesToKey"sv});
         }
         int i = ::EVP_BytesToKey (
             cipherAlgorithm,
@@ -214,7 +214,7 @@ namespace {
             static_cast<int> (keyLen + ivLen),
             reinterpret_cast<unsigned char*> (outBuf.begin ()));
         if (a == 0) [[unlikely]] {
-            Execution::Throw (Execution::Exception{L"PKCS5_PBKDF2_HMAC error"sv});
+            Execution::Throw (Execution::Exception{"PKCS5_PBKDF2_HMAC error"sv});
         }
         const byte* p = outBuf.begin ();
         return pair<BLOB, BLOB> (BLOB{p, p + keyLen}, BLOB{p + keyLen, p + keyLen + ivLen});

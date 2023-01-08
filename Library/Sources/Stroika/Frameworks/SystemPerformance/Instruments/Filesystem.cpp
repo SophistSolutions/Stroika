@@ -177,38 +177,38 @@ namespace {
     {
         RequireNotNull (volumes);
         static const Set<String> kRealDiskFS{
-            L"ext2"sv,
-            L"ext3"sv,
-            L"ext4"sv,
-            L"xfs"sv,
-            L"jfs2"sv,
+            "ext2"sv,
+            "ext3"sv,
+            "ext4"sv,
+            "xfs"sv,
+            "jfs2"sv,
         };
         static const Set<String> kSysFSList_{
-            L"autofs"sv,
-            L"binfmt_misc"sv,
-            L"cgroup"sv,
-            L"configfs"sv,
-            L"debugfs"sv,
-            L"devpts"sv,
-            L"devtmpfs"sv,
-            L"fusectl"sv,
-            L"fuse.gvfsd-fuse"sv,
-            L"hugetlbfs"sv,
-            L"mqueue"sv,
-            L"nfsd"sv, // not nfs filesystem, but special config fs - http://linux.die.net/man/7/nfsd
-            L"pstore"sv,
-            L"proc"sv,
-            L"rpc_pipefs"sv,
-            L"securityfs"sv,
-            L"selinuxfs"sv,
-            L"sunrpc"sv,
-            L"sysfs"sv,
-            L"usbfs"sv,
+            "autofs"sv,
+            "binfmt_misc"sv,
+            "cgroup"sv,
+            "configfs"sv,
+            "debugfs"sv,
+            "devpts"sv,
+            "devtmpfs"sv,
+            "fusectl"sv,
+            "fuse.gvfsd-fuse"sv,
+            "hugetlbfs"sv,
+            "mqueue"sv,
+            "nfsd"sv, // not nfs filesystem, but special config fs - http://linux.die.net/man/7/nfsd
+            "pstore"sv,
+            "proc"sv,
+            "rpc_pipefs"sv,
+            "securityfs"sv,
+            "selinuxfs"sv,
+            "sunrpc"sv,
+            "sysfs"sv,
+            "usbfs"sv,
         };
         static const Set<String> kNetworkFS_{
-            L"nfs"sv,
-            L"nfs3"sv,
-            L"vboxsf"sv,
+            "nfs"sv,
+            "nfs3"sv,
+            "vboxsf"sv,
         };
         for (auto vi = volumes->begin (); vi != volumes->end (); ++vi) {
             // @todo - NOTE - this is NOT a reliable way to tell, but hopefully good enough for starters
@@ -224,11 +224,11 @@ namespace {
                     val2Update.fDeviceKind = BlockDeviceKind::eNetworkDrive;
                     changed                = true;
                 }
-                else if (fstype == L"tmpfs") {
+                else if (fstype == "tmpfs"_k) {
                     val2Update.fDeviceKind = BlockDeviceKind::eTemporaryFiles;
                     changed                = true;
                 }
-                else if (fstype == L"iso9660") {
+                else if (fstype == "iso9660"_k) {
                     val2Update.fDeviceKind = BlockDeviceKind::eReadOnlyEjectable;
                     changed                = true;
                 }
@@ -510,7 +510,7 @@ namespace {
             //
             //  NEW NOTE - I THINK ITS IN THERE.... RE-EXAMINE proc/filesystems proc/partitions, and http://en.wikipedia.org/wiki/Procfs
             //      -- LGP 2014-08-01
-            ProcessRunner                    pr{includeFSTypes ? L"/bin/df -k -T"sv : L"/bin/df -k"sv};
+            ProcessRunner                    pr{includeFSTypes ? "/bin/df -k -T"sv : "/bin/df -k"sv};
             Streams::MemoryStream<byte>::Ptr useStdOut = Streams::MemoryStream<byte>::New ();
             pr.SetStdOut (useStdOut);
             std::exception_ptr runException;
@@ -539,7 +539,7 @@ namespace {
                 }
                 {
                     String d = l[0].Trim ();
-                    if (not d.empty () and d != L"none") {
+                    if (not d.empty () and d != "none"_k) {
                         v.fDeviceOrVolumeName = d;
                     }
                 }
@@ -1030,30 +1030,30 @@ const ObjectVariantMapper Instruments::Filesystem::Instrument::kObjectVariantMap
     mapper.AddCommonType<Set<filesystem::path>> ();
     mapper.AddCommonType<optional<Set<filesystem::path>>> ();
     mapper.AddClass<MountedFilesystemInfoType> (initializer_list<StructFieldInfo>{
-        {L"Device-Kind", StructFieldMetaInfo{&MountedFilesystemInfoType::fDeviceKind}, StructFieldInfo::eOmitNullFields},
-        {L"Filesystem-Type", StructFieldMetaInfo{&MountedFilesystemInfoType::fFileSystemType}, StructFieldInfo::eOmitNullFields},
-        {L"Device-Name", StructFieldMetaInfo{&MountedFilesystemInfoType::fDeviceOrVolumeName}, StructFieldInfo::eOmitNullFields},
-        {L"On-Physical-Drives", StructFieldMetaInfo{&MountedFilesystemInfoType::fOnPhysicalDrive}, StructFieldInfo::eOmitNullFields},
-        {L"Volume-ID", StructFieldMetaInfo{&MountedFilesystemInfoType::fVolumeID}, StructFieldInfo::eOmitNullFields},
-        {L"Total-Size", StructFieldMetaInfo{&MountedFilesystemInfoType::fSizeInBytes}, StructFieldInfo::eOmitNullFields},
-        {L"Available-Size", StructFieldMetaInfo{&MountedFilesystemInfoType::fAvailableSizeInBytes}, StructFieldInfo::eOmitNullFields},
-        {L"Used-Size", StructFieldMetaInfo{&MountedFilesystemInfoType::fUsedSizeInBytes}, StructFieldInfo::eOmitNullFields},
-        {L"Read-IO-Stats", StructFieldMetaInfo{&MountedFilesystemInfoType::fReadIOStats}, StructFieldInfo::eOmitNullFields},
-        {L"Write-IO-Stats", StructFieldMetaInfo{&MountedFilesystemInfoType::fWriteIOStats}, StructFieldInfo::eOmitNullFields},
-        {L"Combined-IO-Stats", StructFieldMetaInfo{&MountedFilesystemInfoType::fCombinedIOStats}, StructFieldInfo::eOmitNullFields},
+        {"Device-Kind"_k, StructFieldMetaInfo{&MountedFilesystemInfoType::fDeviceKind}, StructFieldInfo::eOmitNullFields},
+        {"Filesystem-Type"_k, StructFieldMetaInfo{&MountedFilesystemInfoType::fFileSystemType}, StructFieldInfo::eOmitNullFields},
+        {"Device-Name"_k, StructFieldMetaInfo{&MountedFilesystemInfoType::fDeviceOrVolumeName}, StructFieldInfo::eOmitNullFields},
+        {"On-Physical-Drives"_k, StructFieldMetaInfo{&MountedFilesystemInfoType::fOnPhysicalDrive}, StructFieldInfo::eOmitNullFields},
+        {"Volume-ID"_k, StructFieldMetaInfo{&MountedFilesystemInfoType::fVolumeID}, StructFieldInfo::eOmitNullFields},
+        {"Total-Size"_k, StructFieldMetaInfo{&MountedFilesystemInfoType::fSizeInBytes}, StructFieldInfo::eOmitNullFields},
+        {"Available-Size"_k, StructFieldMetaInfo{&MountedFilesystemInfoType::fAvailableSizeInBytes}, StructFieldInfo::eOmitNullFields},
+        {"Used-Size"_k, StructFieldMetaInfo{&MountedFilesystemInfoType::fUsedSizeInBytes}, StructFieldInfo::eOmitNullFields},
+        {"Read-IO-Stats"_k, StructFieldMetaInfo{&MountedFilesystemInfoType::fReadIOStats}, StructFieldInfo::eOmitNullFields},
+        {"Write-IO-Stats"_k, StructFieldMetaInfo{&MountedFilesystemInfoType::fWriteIOStats}, StructFieldInfo::eOmitNullFields},
+        {"Combined-IO-Stats"_k, StructFieldMetaInfo{&MountedFilesystemInfoType::fCombinedIOStats}, StructFieldInfo::eOmitNullFields},
     });
     mapper.AddCommonType<Mapping<DynamicDiskIDType, DiskInfoType>> ();
     mapper.AddCommonType<Mapping<MountedFilesystemNameType, MountedFilesystemInfoType>> ();
     mapper.AddClass<Info> (initializer_list<StructFieldInfo>{
-        {L"Disks", StructFieldMetaInfo{&Info::fDisks}},
-        {L"Mounted-Filesystems", StructFieldMetaInfo{&Info::fMountedFilesystems}},
+        {"Disks"_k, StructFieldMetaInfo{&Info::fDisks}},
+        {"Mounted-Filesystems"_k, StructFieldMetaInfo{&Info::fMountedFilesystems}},
     });
     return mapper;
 }();
 
 Instruments::Filesystem::Instrument::Instrument (const Options& options)
     : SystemPerformance::Instrument{
-          InstrumentNameType{L"Filesystem"sv},
+          InstrumentNameType{"Filesystem"sv},
           make_unique<FilesystemInstrumentRep_> (options),
           {kMountedVolumeUsage_},
           {KeyValuePair<type_index, MeasurementType>{typeid (Info), kMountedVolumeUsage_}},

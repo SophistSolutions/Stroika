@@ -23,49 +23,49 @@ namespace {
         if (effectiveReason.empty ()) {
             switch (status) {
                 case StatusCodes::kOK:
-                    effectiveReason = L"OK"sv;
+                    effectiveReason = "OK"sv;
                     break;
                 case StatusCodes::kCreated:
-                    effectiveReason = L"Created"sv;
+                    effectiveReason = "Created"sv;
                     break;
                 case StatusCodes::kNoContent:
-                    effectiveReason = L"No Content"sv;
+                    effectiveReason = "No Content"sv;
                     break;
                 case StatusCodes::kMovedPermanently:
-                    effectiveReason = L"Moved Permanently"sv;
+                    effectiveReason = "Moved Permanently"sv;
                     break;
                 case StatusCodes::kNotModified:
-                    effectiveReason = L"Not Modified"sv;
+                    effectiveReason = "Not Modified"sv;
                     break;
                 case StatusCodes::kBadRequest:
-                    effectiveReason = L"Bad Request"sv;
+                    effectiveReason = "Bad Request"sv;
                     break;
                 case StatusCodes::kUnauthorized:
-                    effectiveReason = L"Unauthorized access"sv;
+                    effectiveReason = "Unauthorized access"sv;
                     break;
                 case 402:
-                    effectiveReason = L"Payment required"sv;
+                    effectiveReason = "Payment required"sv;
                     break;
                 case 403:
-                    effectiveReason = L"Forbidden"sv;
+                    effectiveReason = "Forbidden"sv;
                     break;
                 case StatusCodes::kNotFound:
-                    effectiveReason = L"URL not found"sv;
+                    effectiveReason = "URL not found"sv;
                     break;
                 case StatusCodes::kMethodNotAllowed:
-                    effectiveReason = L"Method Not allowed"sv;
+                    effectiveReason = "Method Not allowed"sv;
                     break;
                 case 410:
-                    effectiveReason = L"Gone (service has been discontinued)"sv;
+                    effectiveReason = "Gone (service has been discontinued)"sv;
                     break;
                 case 413:
-                    effectiveReason = L"Request entity too large"sv;
+                    effectiveReason = "Request entity too large"sv;
                     break;
                 case 415:
-                    effectiveReason = L"Unsupported media type"sv;
+                    effectiveReason = "Unsupported media type"sv;
                     break;
                 case StatusCodes::kServiceUnavailable:
-                    effectiveReason = L"Service temporarily unavailable: try again later"sv;
+                    effectiveReason = "Service temporarily unavailable: try again later"sv;
                     break;
             }
         }
@@ -127,7 +127,7 @@ void Exception::ThrowIfError (Status status, const String& reason)
     }
     else {
         // not sure we should throw on status 100 etc, but not sure what else todo...
-        Execution::Throw (Exception (status, reason));
+        Execution::Throw (Exception{status, reason});
     }
 }
 
@@ -141,7 +141,7 @@ void Exception::ThrowIfError (const String& status, const String& reason)
     }
     unsigned int s = String2Int<unsigned int> (ss);
     if (s == 0) {
-        ThrowIfError (599, L"Status: " + status + L"; " + reason);
+        ThrowIfError (599, "Status: " + status + "; " + reason);
     }
     else {
         ThrowIfError (s, reason);

@@ -20,8 +20,8 @@ namespace Stroika::Foundation::Characters {
     template <>
     String ToString (const exception_ptr& e)
     {
-        static const String kExceptPefix_{L"Exception: "sv};
-        static const String kUnknown_{L"Unknown Exception"sv};
+        static const String kExceptPefix_{"Exception: "sv};
+        static const String kUnknown_{"Unknown Exception"sv};
         try {
             rethrow_exception (e);
         }
@@ -61,8 +61,8 @@ namespace Stroika::Foundation::Characters {
     template <>
     String ToString (const bool& t)
     {
-        static const String kTrue_{L"true"sv};
-        static const String kFalse{L"false"sv};
+        static const String kTrue_{"true"sv};
+        static const String kFalse{"false"sv};
         return t ? kTrue_ : kFalse;
     }
 

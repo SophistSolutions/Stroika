@@ -814,11 +814,11 @@ void UTFConverter::Throw_ (ConversionStatusFlag cr)
 {
     switch (cr) {
         case ConversionStatusFlag::sourceExhausted: {
-            static const auto kException_ = Execution::RuntimeErrorException{L"Invalid UNICODE source string (incomplete UTF character)"sv};
+            static const auto kException_ = Execution::RuntimeErrorException{"Invalid UNICODE source string (incomplete UTF character)"sv};
             Execution::Throw (kException_);
         }
         case ConversionStatusFlag::sourceIllegal: {
-            static const auto kException_ = Execution::RuntimeErrorException{L"Invalid UNICODE source string"sv};
+            static const auto kException_ = Execution::RuntimeErrorException{"Invalid UNICODE source string"sv};
             Execution::Throw (kException_);
         }
         default:

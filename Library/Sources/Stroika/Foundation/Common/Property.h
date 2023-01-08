@@ -475,7 +475,7 @@ namespace Stroika::Foundation::Common {
      *
      *  \par Example Usage
      *      \code
-     *          inline String                 kXGetter_ () { return L"X"; }
+     *          inline String                 kXGetter_ () { return "X"; }
      *          const VirtualConstant<String> kX {kXGetter_};
      *          ...
      *          const String a = kX;
@@ -483,7 +483,7 @@ namespace Stroika::Foundation::Common {
      *
      *  \par Example Usage
      *      \code
-     *          const Execution::VirtualConstant<String> kX {[] () { return L"6"; }};
+     *          const Execution::VirtualConstant<String> kX {[] () { return "6"; }};
      *          ...
      *          const String a = kX;
      *      \endcode

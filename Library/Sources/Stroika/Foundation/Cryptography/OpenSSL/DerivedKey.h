@@ -71,7 +71,6 @@ namespace Stroika::Foundation::Cryptography::OpenSSL {
          *  ascii bytes (thus the interoperability).
          */
         static BLOB NormalizePassword (const BLOB& passwd);
-        static BLOB NormalizePassword (const string& passwd);
         static BLOB NormalizePassword (const String& passwd);
     };
 

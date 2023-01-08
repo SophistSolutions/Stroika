@@ -160,21 +160,21 @@ namespace {
                     IO::Network::URI uri = IO::Network::URI::Parse (L"dyn:/StyleSheet.css?ThemeName=Cupertino");
                     VerifyTestResult (*uri.GetScheme () == SchemeType{L"dyn"});
                     VerifyTestResult (not uri.GetAuthority ().has_value ());
-                    VerifyTestResult (uri.GetPath () == L"/StyleSheet.css");
-                    VerifyTestResult (uri.GetQuery<String> () == L"ThemeName=Cupertino");
-                    VerifyTestResult (uri.GetQuery ()->operator() (L"ThemeName") == L"Cupertino");
+                    VerifyTestResult (uri.GetPath () == "/StyleSheet.css");
+                    VerifyTestResult (uri.GetQuery<String> () == "ThemeName=Cupertino");
+                    VerifyTestResult (uri.GetQuery ()->operator() (L"ThemeName") == "Cupertino");
                 }
                 {
                     IO::Network::URI uri = IO::Network::URI::Parse (L"HTTPS://www.MICROSOFT.com/Path");
                     VerifyTestResult (uri.Normalize ().As<String> () == L"https://www.microsoft.com/Path");
                 }
                 {
-                    URI base{"http://www.sophists.com"};
-                    VerifyTestResult (base.Combine (URI{"/blag/foo.icon"}).As<String> () == L"http://www.sophists.com/blag/foo.icon");
+                    URI base{L"http://www.sophists.com"};
+                    VerifyTestResult (base.Combine (URI{L"/blag/foo.icon"}).As<String> () == L"http://www.sophists.com/blag/foo.icon");
                 }
                 {
-                    URI base{"http://www.sophists.com/"};
-                    VerifyTestResult (base.Combine (URI{"/blag/foo.icon"}).As<String> () == L"http://www.sophists.com/blag/foo.icon");
+                    URI base{L"http://www.sophists.com/"};
+                    VerifyTestResult (base.Combine (URI{L"/blag/foo.icon"}).As<String> () == L"http://www.sophists.com/blag/foo.icon");
                 }
             }
             void Test_Reference_Resolution_Examples_From_RFC_3986_ ()
@@ -257,7 +257,7 @@ namespace {
                      *      o.port
                      *      o.geturl ()
                      */
-                    auto o = URI{"http://www.cwi.nl:80/%7Eguido/Python.html"};
+                    auto o = URI{L"http://www.cwi.nl:80/%7Eguido/Python.html"};
                     VerifyTestResult (o.GetScheme () == SchemeType{L"http"});
                     VerifyTestResult (o.GetAuthority ()->GetPort () == 80);
                     // NOTE - here python emits '%7Eguido' instead of '~guido'. However, according to

@@ -98,7 +98,7 @@ optional<Timezone> Timezone::ParseTimezoneOffsetString (const char* tzStr)
             int16_t n = (isNeg ? -1 : 1) * static_cast<int16_t> (tzHr * 60 + tzMn);
             return Timezone{n, DataExchange::ValidationStrategy::eThrow};
         }
-        Execution::Throw (Execution::RuntimeErrorException{L"invalid timezone offset"sv});
+        Execution::Throw (Execution::RuntimeErrorException{"invalid timezone offset"sv});
     }
 }
 

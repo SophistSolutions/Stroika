@@ -22,7 +22,7 @@ namespace Stroika::Foundation::Containers {
      ********************************************************************************
      */
     inline Bijection_Base::InjectivityViolation::InjectivityViolation ()
-        : inherited{L"Injectivity violation"sv}
+        : inherited{"Injectivity violation"sv}
     {
     }
 

@@ -27,6 +27,6 @@ Database::Exception::Exception (const String& message)
  ********************************************************************************
  */
 Database::NoDataException::NoDataException ()
-    : Exception{L"No Data"sv}
+    : Exception{"No Data"sv}
 {
 }

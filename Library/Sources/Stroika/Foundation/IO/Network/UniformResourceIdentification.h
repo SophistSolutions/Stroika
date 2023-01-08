@@ -432,7 +432,6 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
          *
          *  If the argument string is fully empty, this will return an empty optional authority. If its invalid/illegal, it will throw.
          */
-        static optional<Authority> Parse (const string& rawURLAuthorityText);
         static optional<Authority> Parse (const String& rawURLAuthorityText);
 
     public:

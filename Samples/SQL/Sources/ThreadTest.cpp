@@ -73,32 +73,32 @@ namespace {
 
         // Add Initial Employees
         addEmployeeStatement.Execute (initializer_list<Statement::ParameterDescription>{
-            {L":NAME", L"Paul"},
-            {L":AGE", 32},
-            {L":ADDRESS", L"California"},
-            {L":SALARY", 20000.00},
-            {L":STILL_EMPLOYED", 1},
+            {":NAME", L"Paul"},
+            {":AGE", 32},
+            {":ADDRESS", L"California"},
+            {":SALARY", 20000.00},
+            {":STILL_EMPLOYED", 1},
         });
         addEmployeeStatement.Execute (initializer_list<Statement::ParameterDescription>{
-            {L":NAME", L"Allen"},
-            {L":AGE", 25},
-            {L":ADDRESS", L"Texas"},
-            {L":SALARY", 15000.00},
-            {L":STILL_EMPLOYED", 1},
+            {":NAME", L"Allen"},
+            {":AGE", 25},
+            {":ADDRESS", L"Texas"},
+            {":SALARY", 15000.00},
+            {":STILL_EMPLOYED", 1},
         });
         addEmployeeStatement.Execute (initializer_list<Statement::ParameterDescription>{
-            {L":NAME", L"Teddy"},
-            {L":AGE", 23},
-            {L":ADDRESS", L"Norway"},
-            {L":SALARY", 20000.00},
-            {L":STILL_EMPLOYED", 1},
+            {":NAME", L"Teddy"},
+            {":AGE", 23},
+            {":ADDRESS", L"Norway"},
+            {":SALARY", 20000.00},
+            {":STILL_EMPLOYED", 1},
         });
         addEmployeeStatement.Execute (initializer_list<Statement::ParameterDescription>{
-            {L":NAME", L"Mark"},
-            {L":AGE", 25},
-            {L":ADDRESS", L"Rich-Mond"},
-            {L":SALARY", 65000.00},
-            {L":STILL_EMPLOYED", 1},
+            {":NAME", L"Mark"},
+            {":AGE", 25},
+            {":ADDRESS", L"Rich-Mond"},
+            {":SALARY", 65000.00},
+            {":STILL_EMPLOYED", 1},
         });
         addEmployeeStatement.Execute (initializer_list<Statement::ParameterDescription>{
             {L":NAME", L"David"},
@@ -132,7 +132,7 @@ namespace {
         // then keep adding/removing people randomly (but dont really remove just mark no longer employed so we
         // can REF in paycheck table
         while (true) {
-            static const Sequence<String>    kNames_{L"Joe", L"Phred", L"Barny", L"Sue", L"Anne"};
+            static const Sequence<String>    kNames_{"Joe", "Phred", "Barny", "Sue", "Anne"};
             uniform_int_distribution<int>    namesDistr{0, static_cast<int> (kNames_.size () - 1)};
             uniform_int_distribution<int>    ageDistr{25, 50};
             static const Sequence<String>    kAddresses{L"Houston", L"Pittsburg", L"New York", L"Paris", L"California"};

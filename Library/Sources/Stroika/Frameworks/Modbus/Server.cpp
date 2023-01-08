@@ -116,15 +116,15 @@ namespace Stroika::Foundation::Characters {
     {
         switch (f) {
             case FunctionCodeType_::kReadCoils_:
-                return L"Read-Coils";
+                return "Read-Coils"_k;
             case FunctionCodeType_::kReadDiscreteInputs_:
-                return L"Read-Discrete-Inputs";
+                return "Read-Discrete-Inputs"_k;
             case FunctionCodeType_::kReadHoldingResisters_:
-                return L"Read-Holding-Resisters_";
+                return "Read-Holding-Resisters_"_k;
             case FunctionCodeType_::kReadInputRegister_:
-                return L"Read-Input-Register_";
+                return "Read-Input-Register_"_k;
             case FunctionCodeType_::kWriteSingleCoil_:
-                return L"WriteSingleCoil";
+                return "WriteSingleCoil"_k;
         }
         return Format (L"%d", f);
     }
@@ -132,13 +132,13 @@ namespace Stroika::Foundation::Characters {
     String ToString (const MBAPHeaderIsh_& mh)
     {
         StringBuilder sb;
-        sb += L"{";
-        sb += L"TransactionID: " + Characters::ToString (mh.fTransactionID) + L", ";
-        sb += L"ProtocolID: " + Characters::ToString (mh.fProtocolID) + L", ";
-        sb += L"Length: " + Characters::ToString (mh.fLength) + L", ";
-        sb += L"UnitID: " + Characters::ToString (mh.fUnitID) + L", ";
-        sb += L"FunctionCode: " + Characters::ToString (mh.fFunctionCode) + L", ";
-        sb += L"}";
+        sb += "{";
+        sb += "TransactionID: " + Characters::ToString (mh.fTransactionID) + ", ";
+        sb += "ProtocolID: " + Characters::ToString (mh.fProtocolID) + ", ";
+        sb += "Length: " + Characters::ToString (mh.fLength) + ", ";
+        sb += "UnitID: " + Characters::ToString (mh.fUnitID) + ", ";
+        sb += "FunctionCode: " + Characters::ToString (mh.fFunctionCode) + ", ";
+        sb += "}";
         return sb.str ();
     }
 }
@@ -194,7 +194,7 @@ namespace {
                         break; // just EOF - so quietly end/close connection
                     }
                     else {
-                        Throw (Execution::Exception{L"Incomplete MBAP header"sv}); // Bad packet - incomplete header - so closing connection
+                        Throw (Execution::Exception{"Incomplete MBAP header"sv}); // Bad packet - incomplete header - so closing connection
                     }
                 }
                 requestHeader = FromNetwork_ (requestHeader);
@@ -203,11 +203,11 @@ namespace {
                  * Perform minimal validation and - for now - abandon conneciton - but soon bettter error handling (see above)
                  */
                 if (requestHeader.fProtocolID != 0) {
-                    Throw (Execution::Exception{L"bad protocol"sv});
+                    Throw (Execution::Exception{"bad protocol"sv});
                 }
                 if (requestHeader.fLength < 2) {
                     // Error cuz each full header I know of requires 2 bytes at least
-                    Throw (Execution::Exception{L"Illegal short MBAP request length"sv});
+                    Throw (Execution::Exception{"Illegal short MBAP request length"sv});
                 }
 
                 Memory::BLOB requestPayload      = in.ReadAll (requestHeader.GetPayloadLength ());
@@ -416,5 +416,5 @@ Execution::Thread::Ptr Modbus::MakeModbusTCPServerThread (const shared_ptr<IModb
             }
             WaitableEvent{}.Wait (); // forever (til thread abort)
         },
-        L"Modbus-Listener"_k);
+        "Modbus-Listener"_k);
 }

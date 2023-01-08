@@ -40,12 +40,15 @@ namespace Stroika::Foundation::Characters {
         Append (rhs);
         return *this;
     }
-    template <Character_SafelyCompatible CHAR_T>
+    template <Character_Compatible CHAR_T>
     inline void StringBuilder::Append (span<const CHAR_T> s)
     {
         Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySyncrhonized_};
         size_t                                                 rhsLen = s.size ();
         if (rhsLen != 0) {
+            if constexpr (is_same_v<CHAR_T, char>) {
+                Character::CheckASCII (s);
+            }
             if constexpr (sizeof (CHAR_T) == sizeof (char32_t)) {
                 size_t i = fLength_;
                 fData_.GrowToSize_uninitialized (i + rhsLen);
@@ -63,12 +66,12 @@ namespace Stroika::Foundation::Characters {
             }
         }
     }
-    template <Character_SafelyCompatible CHAR_T>
+    template <Character_Compatible CHAR_T>
     inline void StringBuilder::Append (const CHAR_T* s)
     {
         Append (span{s, CString::Length (s)});
     }
-    template <Character_IsUnicodeCodePoint CHAR_T>
+    template <Character_IsUnicodeCodePointOrPlainChar CHAR_T>
     inline void StringBuilder::Append (const basic_string<CHAR_T>& s)
     {
 #if qCompilerAndStdLib_spanOfContainer_Buggy
@@ -77,7 +80,7 @@ namespace Stroika::Foundation::Characters {
         Append (span{s});
 #endif
     }
-    template <Character_IsUnicodeCodePoint CHAR_T>
+    template <Character_IsUnicodeCodePointOrPlainChar CHAR_T>
     inline void StringBuilder::Append (const basic_string_view<CHAR_T>& s)
     {
 #if qCompilerAndStdLib_spanOfContainer_Buggy

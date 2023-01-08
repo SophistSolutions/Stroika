@@ -43,21 +43,21 @@ const ObjectVariantMapper StroikaSample::WebServices::Model::kMapper = [] () {
                     sb += ' ';
                 }
                 if (obj->imag () > 0 and sb.length () > 1) {
-                    sb += L"+ ";
+                    sb += "+ "_k;
                 }
                 if (obj->imag () == 1) {
                     // skip
                 }
                 else if (obj->imag () == -1) {
-                    sb += L"- "_k;
+                    sb += "- "_k;
                 }
                 else {
                     sb += FloatConversion::ToString (obj->imag (), kFloat2StringOptions_);
                 }
-                sb += L"i"_k;
+                sb += "i"_k;
             }
             if (sb.empty ()) {
-                return L"0"_k;
+                return "0"_k;
             }
             return sb.str ();
         },
@@ -66,23 +66,23 @@ const ObjectVariantMapper StroikaSample::WebServices::Model::kMapper = [] () {
             // Trick: parse one number, and then accumulate second number (if any)
             // Works with a few minor rewrites
             String remainingNumber2Parse = vv.As<String> ();
-            remainingNumber2Parse        = remainingNumber2Parse.ReplaceAll (L" "_k, String{}); // strip spaces - not needed and cause 2 + 4i to not parse (where 2+4i would) with simple trick we use (parse numbers and accum)
+            remainingNumber2Parse        = remainingNumber2Parse.ReplaceAll (" "_k, String{}); // strip spaces - not needed and cause 2 + 4i to not parse (where 2+4i would) with simple trick we use (parse numbers and accum)
             Number accum{};
             for (unsigned int cnt = 0; cnt < 2 and not remainingNumber2Parse.empty (); ++cnt) {
                 // special case rewrite bare 'i' as '1i' with +/- cases
-                if (remainingNumber2Parse.StartsWith (L"i"_k)) {
-                    static_assert (is_base_of_v<String,decltype(remainingNumber2Parse)>);
-                    remainingNumber2Parse = "1i"_ASCII + remainingNumber2Parse.Skip (1);
+                if (remainingNumber2Parse.StartsWith ("i"_k)) {
+                    static_assert (is_base_of_v<String, decltype (remainingNumber2Parse)>);
+                    remainingNumber2Parse = "1i"_k + remainingNumber2Parse.Skip (1);
                 }
                 else if (remainingNumber2Parse.StartsWith (L"+i"_k)) {
-                    remainingNumber2Parse = "+1i"_ASCII + remainingNumber2Parse.Skip (2);
+                    remainingNumber2Parse = "+1i"_k + remainingNumber2Parse.Skip (2);
                 }
                 else if (remainingNumber2Parse.StartsWith (L"-i"_k)) {
-                    remainingNumber2Parse = "-1i"_ASCII + remainingNumber2Parse.Skip (2);
+                    remainingNumber2Parse = "-1i"_k + remainingNumber2Parse.Skip (2);
                 }
                 Number::value_type d = Characters::FloatConversion::ToFloat<Number::value_type> (remainingNumber2Parse, &remainingNumber2Parse);
-                if (remainingNumber2Parse.StartsWith ("i"_ASCII)) {
-                    accum += Number {0, d};
+                if (remainingNumber2Parse.StartsWith ("i"_k)) {
+                    accum += Number{0, d};
                     remainingNumber2Parse = remainingNumber2Parse.Skip (1);
                 }
                 else {
@@ -90,7 +90,7 @@ const ObjectVariantMapper StroikaSample::WebServices::Model::kMapper = [] () {
                 }
             }
             if (not remainingNumber2Parse.empty ()) {
-                Execution::Throw (Execution::Exception{L"invalid complex number: "sv + vv.As<String> ()});
+                Execution::Throw (Execution::Exception{"invalid complex number: "sv + vv.As<String> ()});
             }
             *intoObj = accum;
         });

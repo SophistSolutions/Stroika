@@ -179,25 +179,20 @@ namespace Stroika::Foundation::Characters {
     {
         _AssertRepValidType ();
     }
-    template <Character_SafelyCompatible CHAR_T>
+    template <Character_Compatible CHAR_T>
     inline String::String (const CHAR_T* cString)
         : inherited{mk_ (span{cString, CString::Length (cString)})}
     {
         RequireNotNull (cString);
         _AssertRepValidType ();
     }
-    template <Character_SafelyCompatible CHAR_T>
+    template <Character_Compatible CHAR_T>
     inline String::String (span<CHAR_T> s)
         : inherited{mk_ (span<const CHAR_T>{s})}
     {
         _AssertRepValidType ();
     }
-    template <Character_SafelyCompatible CHAR_T>
-    inline String::String (const CHAR_T* from, const CHAR_T* to)
-        : inherited{mk_ (span<const CHAR_T>{from, to})}
-    {
-    }
-    template <Character_IsUnicodeCodePoint CHAR_T>
+    template <Character_IsUnicodeCodePointOrPlainChar CHAR_T>
     inline String::String (const basic_string<CHAR_T>& s)
         : inherited{mk_ (span<const CHAR_T>{s.data (), s.size ()})}
     {
@@ -274,9 +269,18 @@ namespace Stroika::Foundation::Characters {
         return FromASCII (span{s.data (), s.size ()});
     }
     template <size_t SIZE>
+    inline String String::FromStringConstant (const char (&cString)[SIZE])
+    {
+        return FromStringConstant (span<const char>{cString, SIZE - 1}); // -1 because a literal array SIZE includes the NUL-character at the end
+    }
+    template <size_t SIZE>
     inline String String::FromStringConstant (const wchar_t (&cString)[SIZE])
     {
         return FromStringConstant (span<const wchar_t>{cString, SIZE - 1}); // -1 because a literal array SIZE includes the NUL-character at the end
+    }
+    inline String String::FromStringConstant (const basic_string_view<char>& str)
+    {
+        return FromStringConstant (span<const char>{str.data (), str.size ()});
     }
     inline String String::FromStringConstant (const basic_string_view<wchar_t>& str)
     {
@@ -1062,6 +1066,10 @@ namespace Stroika::Foundation::Characters {
      ******************************** operator"" _k *********************************
      ********************************************************************************
      */
+    inline String operator"" _k (const char* s, size_t len)
+    {
+        return String::FromStringConstant (span<const char>{s, len});
+    }
     inline String operator"" _k (const wchar_t* s, size_t len)
     {
         return String::FromStringConstant (span<const wchar_t>{s, len});
@@ -1184,18 +1192,6 @@ namespace Stroika::Foundation::Characters {
 
     /*
      ********************************************************************************
-     *********************************** operator"" *********************************
-     ********************************************************************************
-     */
-    inline String operator"" _ASCII (const char* str, size_t len)
-    {
-        // a future verison of this API may do something like String_Constant, which is why this API requires its arg is a
-        // forever-lifetime C++ constant.
-        return String::FromASCII (span{str, len});
-    }
-
-    /*
-     ********************************************************************************
      *********************************** operator+ **********************************
      ********************************************************************************
      */
@@ -1239,7 +1235,7 @@ namespace Stroika::Foundation::Traversal {
     template <typename T>
     inline Characters::String Iterable<T>::Join (const function<Characters::String (const T&)>& convertToT) const
     {
-        return Join (convertToT, L", "sv);
+        return Join (convertToT, ", "sv);
     }
     template <typename T>
     inline Characters::String Iterable<T>::Join (const Characters::String& separator) const
@@ -1250,11 +1246,17 @@ namespace Stroika::Foundation::Traversal {
     template <typename T>
     inline Characters::String Iterable<T>::Join () const
     {
-        return Join (L", "sv);
+        return Join (", "sv);
     }
 }
 
 namespace Stroika::Foundation::Characters {
+    [[deprecated ("Since Stroika v3.0d1 - just use _k")]] inline String operator"" _ASCII (const char* str, size_t len)
+    {
+        // a future verison of this API may do something like String_Constant, which is why this API requires its arg is a
+        // forever-lifetime C++ constant.
+        return String::FromASCII (span{str, len});
+    }
     class [[deprecated ("Since Stroika v3.0 - just use String::FromStringConstant")]] String_Constant : public String{
         public :
             template <size_t SIZE>

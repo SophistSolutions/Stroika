@@ -96,10 +96,12 @@ namespace {
     };
 }
 
+#if 0
 URI URI::Parse (const string& rawURL)
 {
     return Parse (String::FromASCII (rawURL));
 }
+#endif
 
 URI URI::Parse (const String& rawURL)
 {
@@ -290,7 +292,7 @@ URI URI::Combine (const URI& overridingURI) const
      */
     URI baseURI = Normalize ();
     if (not baseURI.GetScheme ()) {
-        Execution::Throw (Execution::RuntimeErrorException{L"Scheme is required in base URI to combine with another URI"sv});
+        Execution::Throw (Execution::RuntimeErrorException{"Scheme is required in base URI to combine with another URI"sv});
     }
     auto merge = [&] (const String& base, const String& rhs) {
         // @see https://tools.ietf.org/html/rfc3986#section-5.2.3

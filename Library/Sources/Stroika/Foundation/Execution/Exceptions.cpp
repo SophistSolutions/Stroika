@@ -89,39 +89,39 @@ optional<String> TryToOverrideDefaultWindowsSystemCategoryMessage_ (error_code e
     if (errCode.category () == system_category ()) {
         switch (errCode.value ()) {
             case ERROR_NOT_ENOUGH_MEMORY:
-                return L"Not enough memory to complete that operation (ERROR_NOT_ENOUGH_MEMORY)"sv;
+                return "Not enough memory to complete that operation (ERROR_NOT_ENOUGH_MEMORY)"sv;
             case ERROR_OUTOFMEMORY:
-                return L"Not enough memory to complete that operation (ERROR_OUTOFMEMORY)"sv;
+                return "Not enough memory to complete that operation (ERROR_OUTOFMEMORY)"sv;
             case WSAEADDRNOTAVAIL:
-                return L"Socket address not available (WSAEADDRNOTAVAIL)"sv;
+                return "Socket address not available (WSAEADDRNOTAVAIL)"sv;
             case ERROR_INTERNET_INVALID_URL:
-                return L"ERROR_INTERNET_INVALID_URL"sv;
+                return "ERROR_INTERNET_INVALID_URL"sv;
             case ERROR_INTERNET_CANNOT_CONNECT:
-                return L"Failed to connect to internet URL (ERROR_INTERNET_CANNOT_CONNECT)"sv;
+                return "Failed to connect to internet URL (ERROR_INTERNET_CANNOT_CONNECT)"sv;
             case ERROR_INTERNET_NAME_NOT_RESOLVED:
-                return L"ERROR_INTERNET_NAME_NOT_RESOLVED"sv;
+                return "ERROR_INTERNET_NAME_NOT_RESOLVED"sv;
             case ERROR_INTERNET_INCORRECT_HANDLE_STATE:
-                return L"ERROR_INTERNET_INCORRECT_HANDLE_STATE"sv;
+                return "ERROR_INTERNET_INCORRECT_HANDLE_STATE"sv;
             case ERROR_INTERNET_TIMEOUT:
-                return L"Operation timed out (ERROR_INTERNET_TIMEOUT)"sv;
+                return "Operation timed out (ERROR_INTERNET_TIMEOUT)"sv;
             case ERROR_INTERNET_CONNECTION_ABORTED:
-                return L"ERROR_INTERNET_CONNECTION_ABORTED"sv;
+                return "ERROR_INTERNET_CONNECTION_ABORTED"sv;
             case ERROR_INTERNET_CONNECTION_RESET:
-                return L"ERROR_INTERNET_CONNECTION_RESET"sv;
+                return "ERROR_INTERNET_CONNECTION_RESET"sv;
             case ERROR_HTTP_INVALID_SERVER_RESPONSE:
-                return L"Invalid Server Response (ERROR_HTTP_INVALID_SERVER_RESPONSE)"sv;
+                return "Invalid Server Response (ERROR_HTTP_INVALID_SERVER_RESPONSE)"sv;
             case ERROR_INTERNET_PROTOCOL_NOT_FOUND: {
                 DWORD r = 0;
                 if (::InternetGetConnectedState (&r, 0) and (r & INTERNET_CONNECTION_OFFLINE) == 0) {
-                    return L"ERROR_INTERNET_PROTOCOL_NOT_FOUND"sv;
+                    return "ERROR_INTERNET_PROTOCOL_NOT_FOUND"sv;
                 }
                 else {
-                    return L"ERROR_INTERNET_PROTOCOL_NOT_FOUND (offline mode)"sv;
+                    return "ERROR_INTERNET_PROTOCOL_NOT_FOUND (offline mode)"sv;
                 }
             }
         }
     }
-    return {};
+    return nullopt;
 }
 #endif
 Characters::String Execution::Private_::SystemErrorExceptionPrivate_::mkMsg_ (error_code errCode)

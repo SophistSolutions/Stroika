@@ -116,8 +116,9 @@ namespace Stroika::Foundation::IO::Network {
          */
         URI () = default;
         URI (const optional<SchemeType>& scheme, const optional<Authority>& authority, const String& path = String{}, const optional<String>& query = nullopt, const optional<String>& fragment = nullopt);
-        URI (const string& encodedURI);
-        URI (const String& encodedURI);
+        //URI (const string& encodedURI);
+        template <Characters::ConvertibleToString STRISH_TYPE>
+        URI (STRISH_TYPE&& encodedURI);
         URI (const URI&) = default;
         // clang-format off
         URI (URI&&) noexcept = default;
@@ -133,7 +134,7 @@ namespace Stroika::Foundation::IO::Network {
          *  The input characterset is always ASCII (but may encode UCS after %PCT substitions).
          *  If not handed ASCII text, an exception will be thrown.
          */
-        static URI Parse (const string& rawURL);
+        //static URI Parse (const string& rawURL);
         static URI Parse (const String& rawURL);
 
     public:

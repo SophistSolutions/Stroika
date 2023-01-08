@@ -56,7 +56,7 @@ using namespace Stroika::Frameworks::Service;
 
 namespace {
     // safe to declare here because we cannot start the threads before main...
-    const String kServiceRunThreadName_ = L"Service 'Run' thread"sv;
+    const String kServiceRunThreadName_ = "Service 'Run' thread"sv;
 }
 
 /*
@@ -521,19 +521,19 @@ Main::State Main::BasicUNIXServiceImpl::_GetState () const
 
 void Main::BasicUNIXServiceImpl::_Install ()
 {
-    Execution::Throw (Execution::OperationNotSupportedException{L"Install"sv});
+    Execution::Throw (Execution::OperationNotSupportedException{"Install"sv});
 }
 
 void Main::BasicUNIXServiceImpl::_UnInstall ()
 {
-    Execution::Throw (Execution::OperationNotSupportedException{L"UnInstall"sv});
+    Execution::Throw (Execution::OperationNotSupportedException{"UnInstall"sv});
 }
 
 void Main::BasicUNIXServiceImpl::_RunAsService ()
 {
     Debug::TraceContextBumper ctx{"Stroika::Frameworks::Service::Main::BasicUNIXServiceImpl::_RunAsService"};
     if (_GetServicePID () > 0) {
-        Execution::Throw (Execution::Exception{L"Service Already Running"sv});
+        Execution::Throw (Execution::Exception{"Service Already Running"sv});
     }
 
     shared_ptr<IApplicationRep> appRep = fAppRep_;

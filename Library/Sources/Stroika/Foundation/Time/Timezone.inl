@@ -34,7 +34,7 @@ namespace Stroika::Foundation::Time {
     {
         if (validationStrategy == DataExchange::ValidationStrategy::eThrow) {
             if (not kBiasInMinutesFromUTCTypeValidRange.Contains (biasInMinutesFromUTC)) {
-                Execution::Throw (Execution::RuntimeErrorException{L"invalid timezone offset"sv});
+                Execution::Throw (Execution::RuntimeErrorException{"invalid timezone offset"sv});
             }
         }
         Require (kBiasInMinutesFromUTCTypeValidRange.Contains (biasInMinutesFromUTC));

@@ -17,6 +17,17 @@ using namespace Stroika::Foundation;
  */
 void Characters::Private_::ThrowSurrogatesOutOfRange_ ()
 {
-    static const auto kException_ = out_of_range{"UNICODE char16_t surrogates out of range"};
+    static const auto kException_ = Execution::RuntimeErrorException<out_of_range>{"UNICODE char16_t surrogates out of range"};
+    Execution::Throw (kException_);
+}
+
+/*
+ ********************************************************************************
+ ************************** Private_::ThrowNotIsASCII_ **************************
+ ********************************************************************************
+ */
+void Characters::Private_::ThrowNotIsASCII_ ()
+{
+    static const auto kException_ = Execution::RuntimeErrorException{"Argument not valid ASCII"};
     Execution::Throw (kException_);
 }

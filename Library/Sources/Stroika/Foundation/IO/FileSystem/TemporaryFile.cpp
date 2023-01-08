@@ -155,7 +155,7 @@ String AppTempFileManager::GetTempFile (const String& fileNameBase)
 #else
     AssertNotImplemented ();
 #endif
-    Execution::Throw (Exception (L"Unknown error creating file"sv), "AppTempFileManager::GetTempFile (): failed to create tempfile");
+    Execution::Throw (Exception{"Unknown error creating file"sv}, "AppTempFileManager::GetTempFile (): failed to create tempfile");
 }
 
 String AppTempFileManager::GetTempDir (const String& fileNameBase)
@@ -168,145 +168,21 @@ String AppTempFileManager::GetTempDir (const String& fileNameBase)
         char   buf[100];
         (void)snprintf (buf, NEltsOf (buf), "%d\\", ::rand ());
         s += String::FromASCII (buf);
-        if (not Directory (s).Exists ()) {
+        if (not Directory{s}.Exists ()) {
             CreateDirectory (s, true);
             DbgTrace (L"AppTempFileManager::GetTempDir (): returning '%s'", s.c_str ());
             return s;
         }
     }
-    Execution::Throw (Exception{L"Unknown error creating temporary file"sv}, "AppTempFileManager::GetTempDir (): failed to create tempdir");
+    Execution::Throw (Exception{"Unknown error creating temporary file"sv}, "AppTempFileManager::GetTempDir (): failed to create tempdir");
 }
-
-#if 0
-
-
-    /*
-     ********************************************************************************
-     **************************** TempFileLibrarian *********************************
-     ********************************************************************************
-     */
-    TempFileLibrarian::TempFileLibrarian (const String& privateDirectory, bool purgeDirectory, bool makeTMPDIRRel, bool deleteFilesOnDescruction)
-        : fFiles ()
-        , fPrivateDirectory (privateDirectory)
-        , fMakeTMPDIRRel (makeTMPDIRRel)
-        , fDeleteFilesOnDescruction (deleteFilesOnDescruction)
-        , fCriticalSection_ ()
-    {
-        ::srand (static_cast<unsigned int> (::time (0)));
-        if (purgeDirectory and fPrivateDirectory.size () > 0) {
-            DeleteAllFilesInDirectory (AppTempFileManager::Get ().GetMasterTempDir () + fPrivateDirectory + L"\\");
-        }
-    }
-
-    TempFileLibrarian::~TempFileLibrarian ()
-    {
-#if qPlatform_Windows
-        if (fDeleteFilesOnDescruction) {
-            for (auto it = fFiles.begin (); it != fFiles.end (); ++it) {
-                // item could be a file or directory, so see if dir delete works, and only if that fails,
-                // then try to delete the item as a directory ... all silently ignoring failures...
-                if (::DeleteFileW (it->c_str ()) == 0) {
-                    FileSystem::DeleteAllFilesInDirectory (*it);
-                    (void)::RemoveDirectoryW (it->c_str ());
-                }
-            }
-            if (fPrivateDirectory.size () > 0) {
-                (void)::RemoveDirectoryW ((AppTempFileManager::Get ().GetMasterTempDir () + fPrivateDirectory + L"\\").c_str ());
-            }
-        }
-#else
-        AssertNotImplemented ();
-#endif
-    }
-
-    String TempFileLibrarian::GetTempFile (const String& fileNameBase)
-    {
-#if qPlatform_Windows
-        String fn  =   fileNameBase;
-        if (fn.find (':') == -1) {
-            if (fPrivateDirectory.size () > 0) {
-                fn = fPrivateDirectory + L"\\" + fn;
-            }
-
-            if (fMakeTMPDIRRel) {
-                fn = AppTempFileManager::Get ().GetMasterTempDir () + fn;
-            }
-        }
-        FileSystem::CreateDirectoryForFile (fn);
-
-        SDKString::size_type  suffixStart = fn.rfind ('.');
-        if (suffixStart == SDKString::npos) {
-            fn += L".txt";
-            suffixStart = fn.rfind ('.');
-        }
-
-        int attempts = 0;
-        while (attempts < 5) {
-            wstring s = fn.As<wstring> ();
-            char    buf[100];
-            (void)snprintf (buf, NEltsOf (buf), "%d", ::rand ());
-            s.insert (suffixStart, NarrowSDKStringToWide (buf));
-            if (not FileSystem::FileExists (s.c_str ())) {
-                HANDLE  f = ::CreateFileW (s.c_str (), FILE_ALL_ACCESS, 0, nullptr, CREATE_NEW, FILE_ATTRIBUTE_NORMAL, nullptr);
-                if (f != nullptr) {
-                    CloseHandle (f);
-                    [[maybe_unused]]auto&& critSec = lock_guard{fCriticalSection_};
-                    fFiles.insert (s);
-                    return s;
-                }
-            }
-        }
-        Execution::Throw (Exception (L"Unknown error creating file"sv));
-#else
-        AssertNotImplemented ();
-#endif
-    }
-
-    String TempFileLibrarian::GetTempDir (const String& fileNameBase)
-    {
-#if qPlatform_Windows
-        String fn  =   fileNameBase;
-        if (fn.find (':') == -1) {
-            if (fPrivateDirectory.size () > 0) {
-                fn = fPrivateDirectory + L"\\" + fn;
-            }
-            if (fMakeTMPDIRRel) {
-                fn = AppTempFileManager::Get ().GetMasterTempDir () + fn;
-            }
-        }
-
-        int attempts = 0;
-        while (attempts < 5) {
-            wstring s = fn.As<wstring> ();
-            char    buf[100];
-            {
-                // man page doesn't gaurantee thread-safety of rand ()
-                [[maybe_unused]]auto&& critSec = lock_guard{fCriticalSection_};
-                (void)snprintf (buf, NEltsOf (buf), "%d\\", ::rand ());
-            }
-            s.append (NarrowSDKStringToWide  (buf));
-            if (not Directory (s).Exists ()) {
-                FileSystem::CreateDirectory (s, true);
-                [[maybe_unused]]auto&& critSec = lock_guard{fCriticalSection_};
-                fFiles.insert (s);
-                return s;
-            }
-        }
-#else
-        AssertNotImplemented ();
-#endif
-        Execution::Throw (Exception (L"Unknown error creating temporary file"sv));
-    }
-
-#endif
-
 /*
  ********************************************************************************
  **************************** FileSystem::ScopedTmpDir **************************
  ********************************************************************************
  */
 ScopedTmpDir::ScopedTmpDir (const String& fileNameBase)
-    : fTmpDir (AppTempFileManager::Get ().GetTempDir (fileNameBase))
+    : fTmpDir{AppTempFileManager::Get ().GetTempDir (fileNameBase)}
 {
 }
 

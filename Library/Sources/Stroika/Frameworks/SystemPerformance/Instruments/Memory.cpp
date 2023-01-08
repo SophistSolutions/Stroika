@@ -178,16 +178,16 @@ namespace {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                 DbgTrace (L"***in Instruments::Memory::Info capture_ linesize=%d, line[0]=%s", line.size (), line.empty () ? L"" : line[0].c_str ());
 #endif
-                static const String kMemTotalLabel_{L"MemTotal"sv};
-                static const String kMemFreelLabel_{L"MemFree"sv};
-                static const String kMemAvailableLabel_{L"MemAvailable"sv};
-                static const String kActiveLabel_{L"Active"sv};
-                static const String kInactiveLabel_{L"Inactive"sv};
-                static const String kCommitLimitLabel_{L"CommitLimit"sv};
-                static const String kCommitted_ASLabel_{L"Committed_AS"sv};
-                static const String kSwapTotalLabel_{L"SwapTotal"sv};
-                static const String kSReclaimableLabel_{L"SReclaimable"sv};
-                static const String kSlabLabel_{L"Slab"sv};
+                static const String kMemTotalLabel_{"MemTotal"sv};
+                static const String kMemFreelLabel_{"MemFree"sv};
+                static const String kMemAvailableLabel_{"MemAvailable"sv};
+                static const String kActiveLabel_{"Active"sv};
+                static const String kInactiveLabel_{"Inactive"sv};
+                static const String kCommitLimitLabel_{"CommitLimit"sv};
+                static const String kCommitted_ASLabel_{"Committed_AS"sv};
+                static const String kSwapTotalLabel_{"SwapTotal"sv};
+                static const String kSReclaimableLabel_{"SReclaimable"sv};
+                static const String kSlabLabel_{"Slab"sv};
                 readMemInfoLine (&memTotal, kMemTotalLabel_, line);
                 readMemInfoLine (&updateResult->fPhysicalMemory.fFree, kMemFreelLabel_, line);
                 readMemInfoLine (&updateResult->fPhysicalMemory.fAvailable, kMemAvailableLabel_, line);
@@ -241,9 +241,9 @@ namespace {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                         DbgTrace (L"***in Instruments::Memory::Info capture_ linesize=%d, line[0]=%s", line.size (), line.empty () ? L"" : line[0].c_str ());
 #endif
-                        static const String kpgfaultLabel_{L"pgfault"sv};
-                        static const String kpgpgoutLabel_{L"pgpgout"sv};
-                        static const String kpgmajfaultLabel_{L"pgmajfault"sv};
+                        static const String kpgfaultLabel_{"pgfault"sv};
+                        static const String kpgpgoutLabel_{"pgpgout"sv};
+                        static const String kpgmajfaultLabel_{"pgmajfault"sv};
                         nFound += readVMStatLine (&pgfault, kpgfaultLabel_, line);
                         // Unsure if this should be pgpgout or pgpgout, or none of the above. On a system with no swap, I seem to get both happening,
                         // which makes no sense
@@ -283,7 +283,7 @@ namespace {
 namespace {
     struct _Context : SystemPerformance::Support::Context {
 #if qUseWMICollectionSupport_
-        WMICollector fMemoryWMICollector_{L"Memory"sv, {kInstanceName_}, {kCommittedBytes_, kCommitLimit_, kHardPageFaultsPerSec_, kPagesOutPerSec_, kFreeMem_, kHardwareReserved1_, kHardwareReserved2_}};
+        WMICollector fMemoryWMICollector_{"Memory"sv, {kInstanceName_}, {kCommittedBytes_, kCommitLimit_, kHardPageFaultsPerSec_, kPagesOutPerSec_, kFreeMem_, kHardwareReserved1_, kHardwareReserved2_}};
 #endif
     };
     struct InstrumentRep_Windows_ : InstrumentRepBase_<_Context> {
@@ -432,36 +432,36 @@ const ObjectVariantMapper Instruments::Memory::Instrument::kObjectVariantMapper 
     using StructFieldInfo = ObjectVariantMapper::StructFieldInfo;
     ObjectVariantMapper mapper;
     mapper.AddClass<Info::PhysicalRAMDetailsType> (initializer_list<StructFieldInfo>{
-        {L"Available", StructFieldMetaInfo{&Info::PhysicalRAMDetailsType::fAvailable}, StructFieldInfo::eOmitNullFields},
-        {L"Active", StructFieldMetaInfo{&Info::PhysicalRAMDetailsType::fActive}, StructFieldInfo::eOmitNullFields},
-        {L"Inactive", StructFieldMetaInfo{&Info::PhysicalRAMDetailsType::fInactive}, StructFieldInfo::eOmitNullFields},
-        {L"Free", StructFieldMetaInfo{&Info::PhysicalRAMDetailsType::fFree}, StructFieldInfo::eOmitNullFields},
-        {L"OS-Reserved", StructFieldMetaInfo{&Info::PhysicalRAMDetailsType::fOSReserved}, StructFieldInfo::eOmitNullFields},
+        {"Available"sv, StructFieldMetaInfo{&Info::PhysicalRAMDetailsType::fAvailable}, StructFieldInfo::eOmitNullFields},
+        {"Active"sv, StructFieldMetaInfo{&Info::PhysicalRAMDetailsType::fActive}, StructFieldInfo::eOmitNullFields},
+        {"Inactive"sv, StructFieldMetaInfo{&Info::PhysicalRAMDetailsType::fInactive}, StructFieldInfo::eOmitNullFields},
+        {"Free"sv, StructFieldMetaInfo{&Info::PhysicalRAMDetailsType::fFree}, StructFieldInfo::eOmitNullFields},
+        {"OS-Reserved"sv, StructFieldMetaInfo{&Info::PhysicalRAMDetailsType::fOSReserved}, StructFieldInfo::eOmitNullFields},
     });
     mapper.AddClass<Info::VirtualMemoryDetailsType> (initializer_list<StructFieldInfo>{
-        {L"Commit-Limit", StructFieldMetaInfo{&Info::VirtualMemoryDetailsType::fCommitLimit}, StructFieldInfo::eOmitNullFields},
-        {L"Committed-Bytes", StructFieldMetaInfo{&Info::VirtualMemoryDetailsType::fCommittedBytes}, StructFieldInfo::eOmitNullFields},
-        {L"Pagefile-Total-Size", StructFieldMetaInfo{&Info::VirtualMemoryDetailsType::fPagefileTotalSize}, StructFieldInfo::eOmitNullFields},
+        {"Commit-Limit"sv, StructFieldMetaInfo{&Info::VirtualMemoryDetailsType::fCommitLimit}, StructFieldInfo::eOmitNullFields},
+        {"Committed-Bytes"sv, StructFieldMetaInfo{&Info::VirtualMemoryDetailsType::fCommittedBytes}, StructFieldInfo::eOmitNullFields},
+        {"Pagefile-Total-Size"sv, StructFieldMetaInfo{&Info::VirtualMemoryDetailsType::fPagefileTotalSize}, StructFieldInfo::eOmitNullFields},
     });
     mapper.AddClass<Info::PagingDetailsType> (initializer_list<StructFieldInfo>{
-        {L"Major-Faults-Since-Boot", StructFieldMetaInfo{&Info::PagingDetailsType::fMajorPageFaultsSinceBoot}, StructFieldInfo::eOmitNullFields},
-        {L"Minor-Faults-Since-Boot", StructFieldMetaInfo{&Info::PagingDetailsType::fMinorPageFaultsSinceBoot}, StructFieldInfo::eOmitNullFields},
-        {L"Page-Outs-Since-Boot", StructFieldMetaInfo{&Info::PagingDetailsType::fPageOutsSinceBoot}, StructFieldInfo::eOmitNullFields},
-        {L"Major-Faults-Per-Second", StructFieldMetaInfo{&Info::PagingDetailsType::fMajorPageFaultsPerSecond}, StructFieldInfo::eOmitNullFields},
-        {L"Minor-Faults-Per-Second", StructFieldMetaInfo{&Info::PagingDetailsType::fMinorPageFaultsPerSecond}, StructFieldInfo::eOmitNullFields},
-        {L"Page-Outs-Per-Second", StructFieldMetaInfo{&Info::PagingDetailsType::fPageOutsPerSecond}, StructFieldInfo::eOmitNullFields},
+        {"Major-Faults-Since-Boot"sv, StructFieldMetaInfo{&Info::PagingDetailsType::fMajorPageFaultsSinceBoot}, StructFieldInfo::eOmitNullFields},
+        {"Minor-Faults-Since-Boot"sv, StructFieldMetaInfo{&Info::PagingDetailsType::fMinorPageFaultsSinceBoot}, StructFieldInfo::eOmitNullFields},
+        {"Page-Outs-Since-Boot"sv, StructFieldMetaInfo{&Info::PagingDetailsType::fPageOutsSinceBoot}, StructFieldInfo::eOmitNullFields},
+        {"Major-Faults-Per-Second"sv, StructFieldMetaInfo{&Info::PagingDetailsType::fMajorPageFaultsPerSecond}, StructFieldInfo::eOmitNullFields},
+        {"Minor-Faults-Per-Second"sv, StructFieldMetaInfo{&Info::PagingDetailsType::fMinorPageFaultsPerSecond}, StructFieldInfo::eOmitNullFields},
+        {"Page-Outs-Per-Second"sv, StructFieldMetaInfo{&Info::PagingDetailsType::fPageOutsPerSecond}, StructFieldInfo::eOmitNullFields},
     });
     mapper.AddClass<Info> (initializer_list<StructFieldInfo>{
-        {L"Physical-Memory", StructFieldMetaInfo{&Info::fPhysicalMemory}},
-        {L"Virtual-Memory", StructFieldMetaInfo{&Info::fVirtualMemory}},
-        {L"Paging", StructFieldMetaInfo{&Info::fPaging}},
+        {"Physical-Memory"sv, StructFieldMetaInfo{&Info::fPhysicalMemory}},
+        {"Virtual-Memory"sv, StructFieldMetaInfo{&Info::fVirtualMemory}},
+        {"Paging"sv, StructFieldMetaInfo{&Info::fPaging}},
     });
     return mapper;
 }();
 
 Instruments::Memory::Instrument::Instrument (const Options& options)
     : SystemPerformance::Instrument{
-          InstrumentNameType{L"Memory"sv},
+          InstrumentNameType{"Memory"sv},
           make_unique<MemoryInstrumentRep_> (options),
           {kMemoryUsageMeasurement_},
           {KeyValuePair<type_index, MeasurementType>{typeid (Info), kMemoryUsageMeasurement_}},

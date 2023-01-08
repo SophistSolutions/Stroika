@@ -65,7 +65,7 @@ namespace Stroika::Foundation::Cryptography::Digest {
      *  \par Example Usage
      *      \code
      *          using namespace IO::Network;
-     *          Memory::BLOB value2Hash     = DefaultSerializer<InternetAddress>{}(InternetAddress{L"192.168.244.33"});
+     *          Memory::BLOB value2Hash     = DefaultSerializer<InternetAddress>{}(InternetAddress{"192.168.244.33"});
      *          auto         h1             = ComputeDigest<Digest::Algorithm::SuperFastHash> (value2Hash);
      *          uint8_t      h2             = ComputeDigest<Digest::Algorithm::SuperFastHash, uint8_t> (value2Hash);
      *          VerifyTestResult (h1 == 2512011991); // experimentally derived values but they shouldn't float (actually may depend on endiannesss?)
@@ -79,7 +79,7 @@ namespace Stroika::Foundation::Cryptography::Digest {
      *
      *  \par Example Usage
      *      \code
-     *          String s1 = L"abc";
+     *          String s1 = "abc";
      *          auto   r1 = Digest::ComputeDigest<Digest::Algorithm::MD5> (s1);
      *      \endcode
      *

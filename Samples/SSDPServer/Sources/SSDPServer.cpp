@@ -48,14 +48,14 @@ namespace {
                                             [=] (Message* m) {
                                                 RequireNotNull (m);
                                                 Response& response           = m->rwResponse ();
-                                                response.rwHeaders ().server = L"stroika-ssdp-server-demo"sv;
+                                                response.rwHeaders ().server = "stroika-ssdp-server-demo"sv;
                                                 response.contentType         = DataExchange::InternetMediaTypes::kXML;
                                                 response.write (Stroika::Frameworks::UPnP::Serialize (dd));
                                             }}}};
                     conn.remainingConnectionLimits = HTTP::KeepAlive{0, 0}; // disable keep-alives
                     conn.ReadAndProcessMessage ();
                 });
-                runConnectionOnAnotherThread.SetThreadName (L"SSDP Service Connection Thread"sv);
+                runConnectionOnAnotherThread.SetThreadName ("SSDP Service Connection Thread"sv);
                 runConnectionOnAnotherThread.Start ();
             };
             fListener = Listener{SocketAddresses (InternetAddresses_Any (), webServerPortNumber), onConnect};
@@ -77,7 +77,7 @@ int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
 
     Sequence<String> args = Execution::ParseCommandLine (argc, argv);
     for (auto argi = args.begin (); argi != args.end (); ++argi) {
-        if (Execution::MatchesCommandLineArgument (*argi, L"quit-after")) {
+        if (Execution::MatchesCommandLineArgument (*argi, "quit-after")) {
             ++argi;
             if (argi != args.end ()) {
                 quitAfter = Characters::FloatConversion::ToFloat<Time::DurationSecondsType> (*argi);
@@ -93,23 +93,23 @@ int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
 
     try {
         Device d;
-        d.fLocation.SetScheme (URI::SchemeType{L"http"sv});
+        d.fLocation.SetScheme (URI::SchemeType{"http"sv});
         d.fLocation.SetAuthority (URI::Authority{nullopt, portForOurWS});
-        d.fServer   = UPnP::SSDP::MakeServerHeaderValue (L"MyStroikaBasedSampleProduct/1.0"sv);
-        d.fDeviceID = UPnP::MungePrimaryMacAddrIntoBaseDeviceID (L"315CAAE0-1335-57BF-A178-24C9EE756627"sv);
+        d.fServer   = UPnP::SSDP::MakeServerHeaderValue ("MyStroikaBasedSampleProduct/1.0"sv);
+        d.fDeviceID = UPnP::MungePrimaryMacAddrIntoBaseDeviceID ("315CAAE0-1335-57BF-A178-24C9EE756627"sv);
 
         DeviceDescription deviceInfo;
-        deviceInfo.fPresentationURL  = URI{L"http://www.sophists.com/"sv};
-        deviceInfo.fDeviceType       = L"urn:sophists.com:device:deviceType:1.0"sv;
-        deviceInfo.fManufactureName  = L"Sophist Solutions, Inc."sv;
-        deviceInfo.fFriendlyName     = L"Sophist Solutions fake device"sv;
-        deviceInfo.fManufacturingURL = URI{L"http://www.sophists.com/"sv};
-        deviceInfo.fModelDescription = L"long user-friendly title"sv;
-        deviceInfo.fModelName        = L"model name"sv;
-        deviceInfo.fModelNumber      = L"model number"sv;
-        deviceInfo.fModelURL         = URI{L"http://www.sophists.com/"sv};
-        deviceInfo.fSerialNumber     = L"manufacturer's serial number"sv;
-        deviceInfo.fUDN              = L"uuid:" + d.fDeviceID;
+        deviceInfo.fPresentationURL  = URI{"http://www.sophists.com/"sv};
+        deviceInfo.fDeviceType       = "urn:sophists.com:device:deviceType:1.0"sv;
+        deviceInfo.fManufactureName  = "Sophist Solutions, Inc."sv;
+        deviceInfo.fFriendlyName     = "Sophist Solutions fake device"sv;
+        deviceInfo.fManufacturingURL = URI{"http://www.sophists.com/"sv};
+        deviceInfo.fModelDescription = "long user-friendly title"sv;
+        deviceInfo.fModelName        = "model name"sv;
+        deviceInfo.fModelNumber      = "model number"sv;
+        deviceInfo.fModelURL         = URI{"http://www.sophists.com/"sv};
+        deviceInfo.fSerialNumber     = "manufacturer's serial number"sv;
+        deviceInfo.fUDN              = "uuid:" + d.fDeviceID;
 
         WebServerForDeviceDescription_ deviceWS{portForOurWS, deviceInfo};
         BasicServer                    b{d, deviceInfo};

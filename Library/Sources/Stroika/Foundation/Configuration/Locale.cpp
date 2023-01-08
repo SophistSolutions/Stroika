@@ -59,7 +59,7 @@ vector<Characters::String> Configuration::GetAvailableLocales ()
     // horrible!!!! - see TOOD
     vector<Characters::String> result;
     result.reserve (10);
-    IgnoreExceptionsForCall (result.push_back (FindLocaleName (L"en"sv, L"us"sv)));
+    IgnoreExceptionsForCall (result.push_back (FindLocaleName ("en"sv, "us"sv)));
     return result;
 }
 
@@ -98,10 +98,10 @@ optional<Characters::String> Configuration::FindLocaleNameQuietly (const Charact
         iso2LetterLanguageCode.ToUpperCase (),
     };
     static const set<String> part2{
-        L"-"sv,
-        L"_"sv,
-        L"."sv,
-        L" "sv,
+        "-"sv,
+        "_"sv,
+        "."sv,
+        " "sv,
     };
     set<String> part3{
         iso2LetterTerritoryCode,
@@ -110,7 +110,7 @@ optional<Characters::String> Configuration::FindLocaleNameQuietly (const Charact
     };
     static const set<String> part4{
         String{},
-        L".utf8"sv,
+        ".utf8"sv,
     };
     for (const auto& i1 : part1) {
         for (const auto& i2 : part2) {

@@ -175,9 +175,9 @@ namespace Stroika::Foundation::Cache {
      *          void DoIt ()
      *          {
      *              // example usage
-     *              VerifyTestResult (Memory::NullCoalesce (LookupDiskStats_Try1 (L"xx")).size == 33);
-     *              VerifyTestResult (LookupDiskStats_Try2 (L"xx").size == 33);
-     *              VerifyTestResult (LookupDiskStats_Try3 (L"xx").size == 33);
+     *              VerifyTestResult (Memory::NullCoalesce (LookupDiskStats_Try1 ("xx")).size == 33);
+     *              VerifyTestResult (LookupDiskStats_Try2 ("xx").size == 33);
+     *              VerifyTestResult (LookupDiskStats_Try3 ("xx").size == 33);
      *          }
      *      \endcode
      *
@@ -231,9 +231,9 @@ namespace Stroika::Foundation::Cache {
      *
      *          void DoIt ()
      *          {
-     *              auto f1 = AccessFolder_ (L"folder1");
-     *              auto f2 = AccessFolder_ (L"folder2");
-     *              auto f1again = AccessFolder_ (L"folder1");  // if you trace through the debug code you'll see this is a cache hit
+     *              auto f1 = AccessFolder_ ("folder1"_k);
+     *              auto f2 = AccessFolder_ ("folder2"_k);
+     *              auto f1again = AccessFolder_ ("folder1");  // if you trace through the debug code you'll see this is a cache hit
      *          }
      *      \endcode
      *

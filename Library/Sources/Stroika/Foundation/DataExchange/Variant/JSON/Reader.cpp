@@ -130,7 +130,7 @@ namespace {
         if ('a' <= c and c <= 'f') {
             return static_cast<uint8_t> ((c - 'a') + 10);
         }
-        static const auto kException_{BadFormatException{L"JSON: bad hex digit after \\u"sv}};
+        static const auto kException_{BadFormatException{"JSON: bad hex digit after \\u"sv}};
         Execution::Throw (kException_);
     }
 
@@ -140,14 +140,14 @@ namespace {
         Require (not in.IsAtEOF ());
         char32_t c = in.NextChar ();
         if (c != '\"') [[unlikely]] {
-            static const auto kException_{BadFormatException{L"JSON: Expected quoted string"sv}};
+            static const auto kException_{BadFormatException{"JSON: Expected quoted string"sv}};
             Execution::Throw (kException_);
         }
         // accumulate chars, and check for close-quote
         StringBuilder result;
         while (true) {
             if (in.IsAtEOF ()) [[unlikely]] {
-                static const auto kException_{BadFormatException{L"JSON: Unexpected EOF reading string (looking for close quote)"sv}};
+                static const auto kException_{BadFormatException{"JSON: Unexpected EOF reading string (looking for close quote)"sv}};
                 Execution::Throw (kException_);
             }
             c = in.NextChar ();
@@ -157,7 +157,7 @@ namespace {
             else if (c == '\\') {
                 // quoted character read...
                 if (in.IsAtEOF ()) [[unlikely]] {
-                    static const auto kException_{BadFormatException{L"JSON: Unexpected EOF reading string (looking for close quote)"sv}};
+                    static const auto kException_{BadFormatException{"JSON: Unexpected EOF reading string (looking for close quote)"sv}};
                     Execution::Throw (kException_);
                 }
                 c = in.NextChar ();
@@ -182,7 +182,7 @@ namespace {
                         char32_t newC = '\0';
                         for (int n = 0; n < 4; ++n) {
                             if (in.IsAtEOF ()) [[unlikely]] {
-                                static const auto kException_{BadFormatException{L"JSON: Unexpected EOF reading string (looking for close quote)"sv}};
+                                static const auto kException_{BadFormatException{"JSON: Unexpected EOF reading string (looking for close quote)"sv}};
                                 Execution::Throw (kException_);
                             }
                             newC += HexChar2Num_ (static_cast<char> (in.NextChar ()));
@@ -257,7 +257,7 @@ namespace {
         while (true) {
             optional<Character> oNextChar = in.Read ();
             if (not oNextChar.has_value ()) [[unlikely]] {
-                static const auto kException_{BadFormatException{L"JSON: Unexpected EOF reading object (looking for '}')"sv}};
+                static const auto kException_{BadFormatException{"JSON: Unexpected EOF reading object (looking for '}')"sv}};
                 Execution::Throw (kException_);
             }
             char32_t nextChar = oNextChar->As<char32_t> ();
@@ -267,7 +267,7 @@ namespace {
                     return VariantValue{Containers::Concrete::Mapping_stdmap<String, VariantValue>{move (result)}};
                 }
                 else {
-                    static const auto kException_{BadFormatException{L"JSON: Unexpected '}' reading object"sv}};
+                    static const auto kException_{BadFormatException{"JSON: Unexpected '}' reading object"sv}};
                     Execution::Throw (kException_);
                 }
             }
@@ -277,7 +277,7 @@ namespace {
                     lf = eName; // next elt
                 }
                 else {
-                    static const auto kException_{BadFormatException{L"JSON: Unexpected ',' reading object"sv}};
+                    static const auto kException_{BadFormatException{"JSON: Unexpected ',' reading object"sv}};
                     Execution::Throw (kException_);
                 }
             }
@@ -287,7 +287,7 @@ namespace {
                     lf = eValue; // next elt
                 }
                 else {
-                    static const auto kException_{BadFormatException{L"JSON: Unexpected ':' reading object"sv}};
+                    static const auto kException_{BadFormatException{"JSON: Unexpected ':' reading object"sv}};
                     Execution::Throw (kException_);
                 }
             }
@@ -306,7 +306,7 @@ namespace {
                     lf      = eComma;
                 }
                 else {
-                    static const auto kException_{BadFormatException{L"JSON: Unexpected character looking for colon or comma reading object"sv}};
+                    static const auto kException_{BadFormatException{"JSON: Unexpected character looking for colon or comma reading object"sv}};
                     Execution::Throw (kException_);
                 }
             }
@@ -322,7 +322,7 @@ namespace {
         bool lookingForElt = true;
         while (true) {
             if (in.IsAtEOF ()) [[unlikely]] {
-                static const auto kException_{BadFormatException{L"JSON: Unexpected EOF reading array (looking for ']')"sv}};
+                static const auto kException_{BadFormatException{"JSON: Unexpected EOF reading array (looking for ']')"sv}};
                 Execution::Throw (kException_);
             }
             char32_t peekedChar = in.Peek ()->As<char32_t> ();
@@ -335,7 +335,7 @@ namespace {
             }
             else if (peekedChar == ',') {
                 if (lookingForElt) [[unlikely]] {
-                    static const auto kException_{BadFormatException{L"JSON: Unexpected second ',' in reading array"sv}};
+                    static const auto kException_{BadFormatException{"JSON: Unexpected second ',' in reading array"sv}};
                     Execution::Throw (kException_);
                 }
                 else {
@@ -354,7 +354,7 @@ namespace {
                     lookingForElt = false;
                 }
                 else {
-                    static const auto kException_{BadFormatException{L"JSON: Unexpected character (missing ',' ?) in reading array"sv}};
+                    static const auto kException_{BadFormatException{"JSON: Unexpected character (missing ',' ?) in reading array"sv}};
                     Execution::Throw (kException_);
                 }
             }
@@ -393,7 +393,7 @@ namespace {
                 }
             } break;
         }
-        static const auto kException_{BadFormatException{L"JSON: Unrecognized token"sv}};
+        static const auto kException_{BadFormatException{"JSON: Unrecognized token"sv}};
         Execution::Throw (kException_);
     }
 
@@ -441,14 +441,14 @@ namespace {
                         // ignore
                     }
                     else {
-                        static const auto kException_{BadFormatException{L"JSON: Unexpected character looking for start of value"sv}};
+                        static const auto kException_{BadFormatException{"JSON: Unexpected character looking for start of value"sv}};
                         Execution::Throw (kException_);
                     }
                 }
             }
         }
         // if we get here - nothing found
-        static const auto kException_{BadFormatException{L"JSON: Unexpected EOF looking for value"sv}};
+        static const auto kException_{BadFormatException{"JSON: Unexpected EOF looking for value"sv}};
         Execution::Throw (kException_);
     }
 }
@@ -466,7 +466,7 @@ public:
     }
     virtual String GetDefaultFileSuffix () const override
     {
-        static const String kResult_ = L".json"sv;
+        static const String kResult_ = ".json"sv;
         return kResult_;
     }
     virtual VariantValue Read (const Streams::InputStream<byte>::Ptr& in) override

@@ -136,6 +136,13 @@ namespace Stroika::Foundation::Characters {
 
     public:
         /**
+         *  \brief if not IsASCII (arg) throw RuntimeException...
+         */
+        template <Character_Compatible CHAR_T>
+        static void CheckASCII (span<const CHAR_T> s);
+
+    public:
+        /**
          * FROM https://en.cppreference.com/w/cpp/string/wide/iswspace:
          *      In the default (C) locale, the whitespace characters are the following:
          *          space (0x20, ' ')

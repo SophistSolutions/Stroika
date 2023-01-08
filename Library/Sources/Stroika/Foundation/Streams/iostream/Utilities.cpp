@@ -34,7 +34,7 @@ wstring Streams::iostream::ReadTextStream (istream& in)
     DISABLE_COMPILER_MSC_WARNING_START (6237)
     DISABLE_COMPILER_MSC_WARNING_START (4127)
     if ((sizeof (streamoff) > sizeof (size_t)) and ((end - start) > static_cast<streamoff> (numeric_limits<ptrdiff_t>::max ()))) [[unlikely]] {
-        Execution::Throw (Execution::RuntimeErrorException{L"stream too large"sv});
+        Execution::Throw (Execution::RuntimeErrorException{"stream too large"sv});
     }
     size_t                    bufLen = static_cast<size_t> (end - start);
     Memory::StackBuffer<byte> buf{Memory::eUninitialized, bufLen};
@@ -57,7 +57,7 @@ wstring Streams::iostream::ReadTextStream (wistream& in)
     DISABLE_COMPILER_MSC_WARNING_START (4127)
     DISABLE_COMPILER_MSC_WARNING_START (6237)
     if ((sizeof (streamoff) > sizeof (size_t)) and ((end - start) > static_cast<streamoff> (numeric_limits<ptrdiff_t>::max ()))) [[unlikely]] {
-        Execution::Throw (Execution::RuntimeErrorException{L"stream too large"sv});
+        Execution::Throw (Execution::RuntimeErrorException{"stream too large"sv});
     }
     size_t                       bufLen = static_cast<size_t> (end - start);
     Memory::StackBuffer<wchar_t> buf{Memory::eUninitialized, bufLen};

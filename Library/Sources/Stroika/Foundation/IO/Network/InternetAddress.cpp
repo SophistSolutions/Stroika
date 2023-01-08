@@ -124,21 +124,21 @@ InternetAddress::InternetAddress (const string& s, AddressFamily af)
         switch (af) {
             case AddressFamily::V4: {
                 if (::inet_pton (AF_INET, s.c_str (), &fV4_) == 0) {
-                    static const auto kException_{Execution::RuntimeErrorException{L"unable to parse string as IPv4 internet address"sv}};
+                    static const auto kException_{Execution::RuntimeErrorException{"unable to parse string as IPv4 internet address"sv}};
                     Execution::Throw (kException_);
                 }
                 fAddressFamily_ = af;
             } break;
             case AddressFamily::V6: {
                 if (::inet_pton (AF_INET6, s.c_str (), &fV6_) == 0) {
-                    static const auto kException_{Execution::RuntimeErrorException{L"unable to parse string as IPv6 internet address"sv}};
+                    static const auto kException_{Execution::RuntimeErrorException{"unable to parse string as IPv6 internet address"sv}};
                     Execution::Throw (kException_);
                 }
                 fAddressFamily_ = af;
             } break;
             default: {
                 // @todo need better exception
-                static const auto kException_{Execution::RuntimeErrorException{L"Unrecognized address family"sv}};
+                static const auto kException_{Execution::RuntimeErrorException{"Unrecognized address family"sv}};
                 Execution::Throw (kException_);
             } break;
         }

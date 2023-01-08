@@ -1628,6 +1628,19 @@ namespace {
 }
 
 namespace {
+    void Test55_StringAscii_CTORs_ ()
+    {
+        String{"a"};
+        try {
+            String{"\x81"};
+            VerifyTestResult (false); // not reached
+        }
+        catch (...) {
+            // good
+        }
+    }
+}
+namespace {
 
     void DoRegressionTests_ ()
     {
@@ -1676,6 +1689,7 @@ namespace {
         Test52_Utf32Conversions_ ();
         Test53_vswprintf_on_2_strings_longish_Buggy_ ();
         Test54_StringAs_ ();
+        Test55_StringAscii_CTORs_ ();
     }
 }
 

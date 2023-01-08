@@ -56,7 +56,7 @@ CipherAlgorithm::CipherAlgorithm (const ::EVP_CIPHER* cipher)
 
 CipherAlgorithm CipherAlgorithm::GetByName (const String& cipherName)
 {
-    static const Execution::RuntimeErrorException kErr_{L"No such cipher"sv};
+    static const Execution::RuntimeErrorException kErr_{"No such cipher"sv};
     auto                                          p = ::EVP_get_cipherbyname (cipherName.AsNarrowSDKString ().c_str ());
     Execution::ThrowIfNull (p, kErr_);
     return p;

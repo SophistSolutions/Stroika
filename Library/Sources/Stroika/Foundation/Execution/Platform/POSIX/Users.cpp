@@ -38,7 +38,7 @@ uid_t Platform::POSIX::UserName2UID (const String& name)
         ThrowPOSIXErrNo (err);
     }
     if (result == nullptr) [[unlikely]] {
-        Execution::Throw (RuntimeErrorException{L"No such username"sv});
+        Execution::Throw (RuntimeErrorException{"No such username"sv});
     }
     return pwd.pw_uid;
 }
@@ -64,7 +64,7 @@ String Platform::POSIX::uid_t2UserName (uid_t uid)
         ThrowPOSIXErrNo (err);
     }
     if (result == nullptr) {
-        Execution::Throw (RuntimeErrorException (L"No such username"sv));
+        Execution::Throw (RuntimeErrorException ("No such username"sv));
     }
     return String::FromSDKString (pwd.pw_name);
 }

@@ -87,7 +87,7 @@ namespace {
                 } break;
                 default: {
                     WeakAssert (false); // NYI
-                    Execution::Throw (Execution::Exception<> (L"Unsupported registry format"sv));
+                    Execution::Throw (Execution::Exception<> ("Unsupported registry format"sv));
                 } break;
             }
         }

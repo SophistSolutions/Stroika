@@ -214,19 +214,19 @@ int main (int argc, const char* argv[])
     Set<InstrumentNameType>   run;
     Sequence<String>          args = Execution::ParseCommandLine (argc, argv);
     for (auto argi = args.begin (); argi != args.end (); ++argi) {
-        if (Execution::MatchesCommandLineArgument (*argi, L"h") or Execution::MatchesCommandLineArgument (*argi, L"help")) {
+        if (Execution::MatchesCommandLineArgument (*argi, "h"sv) or Execution::MatchesCommandLineArgument (*argi, "help"sv)) {
             printUsage = true;
         }
-        if (Execution::MatchesCommandLineArgument (*argi, L"l")) {
+        if (Execution::MatchesCommandLineArgument (*argi, "l"sv)) {
             printNames = true;
         }
-        if (Execution::MatchesCommandLineArgument (*argi, L"m")) {
+        if (Execution::MatchesCommandLineArgument (*argi, "m"sv)) {
             mostRecentCaptureMode = true;
         }
-        if (Execution::MatchesCommandLineArgument (*argi, L"o")) {
+        if (Execution::MatchesCommandLineArgument (*argi, "o"sv)) {
             oneLineMode = true;
         }
-        if (Execution::MatchesCommandLineArgument (*argi, L"r")) {
+        if (Execution::MatchesCommandLineArgument (*argi, "r"sv)) {
             ++argi;
             if (argi != args.end ()) {
                 run.Add (*argi);
@@ -236,7 +236,7 @@ int main (int argc, const char* argv[])
                 return EXIT_FAILURE;
             }
         }
-        if (Execution::MatchesCommandLineArgument (*argi, L"t")) {
+        if (Execution::MatchesCommandLineArgument (*argi, "t"sv)) {
             ++argi;
             if (argi != args.end ()) {
                 runFor = Characters::FloatConversion::ToFloat<Time::DurationSecondsType> (*argi);
@@ -246,7 +246,7 @@ int main (int argc, const char* argv[])
                 return EXIT_FAILURE;
             }
         }
-        if (Execution::MatchesCommandLineArgument (*argi, L"c")) {
+        if (Execution::MatchesCommandLineArgument (*argi, "c"sv)) {
             ++argi;
             if (argi != args.end ()) {
                 captureInterval = Characters::FloatConversion::ToFloat<Time::DurationSecondsType> (*argi);

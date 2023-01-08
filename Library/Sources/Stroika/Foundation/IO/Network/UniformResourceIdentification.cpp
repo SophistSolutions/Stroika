@@ -27,6 +27,7 @@ using namespace Stroika::Foundation::IO::Network::UniformResourceIdentification;
 namespace {
     inline uint8_t ConvertReadSingleHexDigit_ (char digit)
     {
+        static const auto kException_ = Execution::RuntimeErrorException{"illegal hex digit"sv};
         if (isupper (digit)) {
             digit = static_cast<char> (tolower (digit));
         }
@@ -35,12 +36,12 @@ namespace {
         }
         else if (islower (digit)) {
             if (digit > 'f') {
-                Execution::Throw (Execution::RuntimeErrorException{L"illegal hex digit"sv});
+                Execution::Throw (kException_);
             }
             return static_cast<uint8_t> (10 + (digit - 'a'));
         }
         else {
-            Execution::Throw (Execution::RuntimeErrorException{L"illegal hex digit"sv});
+            Execution::Throw (kException_);
         }
     }
 }
@@ -112,7 +113,7 @@ pair<optional<String>, optional<InternetAddress>> Host::ParseRaw_ (const String&
         // must be ipv6 address
         // must be surrounded with []
         if (raw.Last () != ']') {
-            Execution::Throw (Execution::RuntimeErrorException{L"IPV6 hostname in URL must be surrounded with []"sv});
+            Execution::Throw (Execution::RuntimeErrorException{"IPV6 hostname in URL must be surrounded with []"sv});
         }
         return pair<optional<String>, optional<InternetAddress>>{nullopt, InternetAddress{raw.SubString (1, -1), InternetAddress::AddressFamily::V6}};
     }
@@ -192,11 +193,6 @@ String UserInfo::ToString () const
  ********************************* Authority ************************************
  ********************************************************************************
  */
-optional<Authority> Authority::Parse (const string& rawURL)
-{
-    return Parse (String::FromASCII (rawURL));
-}
-
 optional<Authority> Authority::Parse (const String& rawURLAuthorityText)
 {
     if (rawURLAuthorityText.empty ()) {
@@ -234,7 +230,7 @@ optional<Authority> Authority::Parse (const String& rawURLAuthorityText)
                 remainingString2Parse = remainingString2Parse.SubString (*closeBracket + 1);
             }
             else {
-                Execution::Throw (Execution::RuntimeErrorException{L"no closing bracket in host part of authority of URI"sv});
+                Execution::Throw (Execution::RuntimeErrorException{"no closing bracket in host part of authority of URI"sv});
             }
         }
         else {
@@ -538,7 +534,7 @@ string UniformResourceIdentification::PCTDecode (const string& s)
                     result += (newC);
                 }
                 else {
-                    Execution::Throw (Execution::RuntimeErrorException{L"incomplete % encoded character in URI"sv});
+                    Execution::Throw (Execution::RuntimeErrorException{"incomplete % encoded character in URI"sv});
                 }
             } break;
             default: {

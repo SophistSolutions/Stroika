@@ -14,12 +14,12 @@ using namespace Stroika::Foundation::Execution;
  ********************************************************************************
  */
 TimeOutException::TimeOutException ()
-    : TimeOutException{L"Timeout Expired"sv}
+    : TimeOutException{"Timeout Expired"sv}
 {
 }
 
 TimeOutException::TimeOutException (error_code ec)
-    : TimeOutException{ec, L"Timeout Expired"sv}
+    : TimeOutException{ec, "Timeout Expired"sv}
 {
 }
 
