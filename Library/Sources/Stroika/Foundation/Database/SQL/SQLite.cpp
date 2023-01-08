@@ -253,7 +253,7 @@ struct Connection::Rep_ final : IRep {
             {
                 switch (n) {
                     case NonStandardSQL::eDoesTableExist:
-                        return L"SELECT name FROM sqlite_master WHERE type='table' AND name="sv + SQL::EngineProperties::kDoesTableExistParameterName;
+                        return L"SELECT name FROM sqlite_master WHERE type='table' AND name="_k + SQL::EngineProperties::kDoesTableExistParameterName;
                 }
                 AssertNotReached ();
                 return String{};

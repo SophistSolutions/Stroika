@@ -1472,7 +1472,7 @@ namespace Stroika::Foundation::Characters {
     wostream& operator<< (wostream& out, const String& s);
 
     namespace Private_ {
-        // This is just anything that can be treated as a 'span< const Character>'
+        // This is just anything that can be treated as a 'span<const Character>'
         template <typename T>
         concept CanBeTreatedAsSpanOfCharacter_ =
             is_same_v < decay_t<T>,
@@ -1556,8 +1556,14 @@ namespace Stroika::Foundation::Characters {
 
     /**
      *  Basic operator overload with the obvious meaning, and simply indirect to @String::Concatenate (const String& rhs)
+     *
+     *  \note Design Note
+     *      Don't use member function so L"x" + String{u"x"} works.
+     *      Insist that EITHER LHS or RHS is a string (else operator applies too widely).
      */
-    String operator+ (const String& lhs, const String& rhs);
+    template <ConvertibleToString LHS_T, ConvertibleToString RHS_T>
+    String operator+ (LHS_T&& lhs, RHS_T&& rhs)
+        requires (is_base_of_v<String, decay_t<LHS_T>> or is_base_of_v<String, decay_t<RHS_T>>);
 
 }
 

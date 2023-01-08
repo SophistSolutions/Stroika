@@ -1199,9 +1199,24 @@ namespace Stroika::Foundation::Characters {
      *********************************** operator+ **********************************
      ********************************************************************************
      */
-    inline String operator+ (const String& lhs, const String& rhs)
+    template <ConvertibleToString LHS_T, ConvertibleToString RHS_T>
+    String operator+ (LHS_T&& lhs, RHS_T&& rhs)
+        requires (is_base_of_v<String, decay_t<LHS_T>> or is_base_of_v<String, decay_t<RHS_T>>)
     {
-        return lhs.Concatenate (rhs);
+        if constexpr (Private_::CanBeTreatedAsSpanOfCharacter_<LHS_T> and Private_::CanBeTreatedAsSpanOfCharacter_<RHS_T>) {
+            // maybe always true?
+            Memory::StackBuffer<Character> ignored1;
+            span<const Character>          lSpan = Private_::Access_ (forward<LHS_T> (lhs), &ignored1);
+            Memory::StackBuffer<Character> ignored2;
+            span<const Character>          rSpan = Private_::Access_ (forward<RHS_T> (rhs), &ignored2);
+            Memory::StackBuffer<Character> buf{lSpan.size () + rSpan.size ()};
+            copy (lSpan.begin (), lSpan.end (), buf.data ());
+            copy (rSpan.begin (), rSpan.end (), buf.data () + lSpan.size ());
+            return String{span{buf}};
+        }
+        else {
+            return String{forward<LHS_T> (lhs)}.Concatenate (forward<RHS_T> (rhs));
+        }
     }
 
 }
