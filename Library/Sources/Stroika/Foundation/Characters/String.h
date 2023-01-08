@@ -1473,11 +1473,29 @@ namespace Stroika::Foundation::Characters {
 
     namespace Private_ {
         // This is just anything that can be treated as a 'span<const Character>'
+        // clang-format off
         template <typename T>
         concept CanBeTreatedAsSpanOfCharacter_ =
-            is_same_v < decay_t<T>,
-        String >
-            or is_same_v<decay_t<T>, u32string> or is_same_v<decay_t<T>, u32string_view> or is_same_v<decay_t<T>, const Character*> or is_same_v<decay_t<T>, const char32_t*>;
+            is_base_of_v<String, decay_t<T>>
+            or is_same_v<decay_t<T>, u8string> 
+            or is_same_v<decay_t<T>, u8string_view> 
+            or is_same_v<decay_t<T>, u16string> 
+            or is_same_v<decay_t<T>, u16string_view> 
+            or is_same_v<decay_t<T>, u32string> 
+            or is_same_v<decay_t<T>, u32string_view> 
+            or is_same_v<decay_t<T>, wstring> 
+            or is_same_v<decay_t<T>, wstring_view> 
+            or is_same_v<decay_t<T>, const Character*> 
+            or is_same_v<decay_t<T>, const char8_t*>
+            or is_same_v<decay_t<T>, const char16_t*>
+            or is_same_v<decay_t<T>, const char32_t*>
+            or is_same_v<decay_t<T>, const wchar_t*> 
+            ;
+        // clang-format on
+
+        template <CanBeTreatedAsSpanOfCharacter_ USTRING>
+        span<const Character> AsSpanOfCharacters_ (USTRING&& s, Memory::StackBuffer<Character>* mostlyIgnoredBuf);
+
     }
 
     /**

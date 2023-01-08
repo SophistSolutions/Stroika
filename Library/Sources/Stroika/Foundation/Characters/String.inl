@@ -39,7 +39,7 @@ namespace Stroika::Foundation::Characters {
             }
         }
         template <CanBeTreatedAsSpanOfCharacter_ USTRING>
-        inline span<const Character> Access_ (USTRING&& s, Memory::StackBuffer<Character>* mostlyIgnoredBuf)
+        inline span<const Character> AsSpanOfCharacters_ (USTRING&& s, Memory::StackBuffer<Character>* mostlyIgnoredBuf)
         {
             /*
              * Genericly convert the argument to a span<const Character> object; for a string, complex and requires
@@ -47,10 +47,19 @@ namespace Stroika::Foundation::Characters {
              * mostlyIgnoredBuf is ignored.
              * 
              * This must be highly optimized as its used in critical locations, to quickly access argument data and
-             * convert it into a usable comparable form.
+             * convert it into a usable form.
              */
-            if constexpr (is_same_v<decay_t<USTRING>, String>) {
+            if constexpr (is_base_of_v<String, decay_t<USTRING>>) {
                 return s.GetData (mostlyIgnoredBuf);
+            }
+            else if constexpr (is_same_v<decay_t<USTRING>, const char32_t*>) {
+                return span{reinterpret_cast<const Character*> (s), CString::Length (s)};
+            }
+            else if constexpr (is_same_v<decay_t<USTRING>, u32string>) {
+                return span{reinterpret_cast<const Character*> (s.c_str ()), s.length ()};
+            }
+            else if constexpr (is_same_v<decay_t<USTRING>, u32string_view>) {
+                return span{reinterpret_cast<const Character*> (s.data ()), s.length ()};
             }
             else if constexpr (sizeof (wchar_t) == sizeof (Character) and is_same_v<decay_t<USTRING>, const wchar_t*>) {
                 return span{reinterpret_cast<const Character*> (s), CString::Length (s)};
@@ -1104,7 +1113,7 @@ namespace Stroika::Foundation::Characters {
         // same frame where we do optimizations
         Memory::StackBuffer<Character> ignore1;
         Memory::StackBuffer<Character> ignore2;
-        return Character::Compare (Private_::Access_ (forward<LT> (lhs), &ignore1), Private_::Access_ (forward<RT> (rhs), &ignore2), fCompareOptions) == 0;
+        return Character::Compare (Private_::AsSpanOfCharacters_ (forward<LT> (lhs), &ignore1), Private_::AsSpanOfCharacters_ (forward<RT> (rhs), &ignore2), fCompareOptions) == 0;
     }
     template <ConvertibleToString LT, ConvertibleToString RT>
     inline bool String::EqualsComparer::operator() (LT&& lhs, RT&& rhs) const
@@ -1153,7 +1162,7 @@ namespace Stroika::Foundation::Characters {
         // same frame where we do optimizations
         Memory::StackBuffer<Character> ignore1;
         Memory::StackBuffer<Character> ignore2;
-        return Character::Compare (Private_::Access_ (forward<LT> (lhs), &ignore1), Private_::Access_ (forward<RT> (rhs), &ignore2), fCompareOptions);
+        return Character::Compare (Private_::AsSpanOfCharacters_ (forward<LT> (lhs), &ignore1), Private_::AsSpanOfCharacters_ (forward<RT> (rhs), &ignore2), fCompareOptions);
     }
     template <ConvertibleToString LT, ConvertibleToString RT>
     inline strong_ordering String::ThreeWayComparer::operator() (LT&& lhs, RT&& rhs) const
@@ -1206,9 +1215,9 @@ namespace Stroika::Foundation::Characters {
         if constexpr (Private_::CanBeTreatedAsSpanOfCharacter_<LHS_T> and Private_::CanBeTreatedAsSpanOfCharacter_<RHS_T>) {
             // maybe always true?
             Memory::StackBuffer<Character> ignored1;
-            span<const Character>          lSpan = Private_::Access_ (forward<LHS_T> (lhs), &ignored1);
+            span<const Character>          lSpan = Private_::AsSpanOfCharacters_ (forward<LHS_T> (lhs), &ignored1);
             Memory::StackBuffer<Character> ignored2;
-            span<const Character>          rSpan = Private_::Access_ (forward<RHS_T> (rhs), &ignored2);
+            span<const Character>          rSpan = Private_::AsSpanOfCharacters_ (forward<RHS_T> (rhs), &ignored2);
             Memory::StackBuffer<Character> buf{lSpan.size () + rSpan.size ()};
             copy (lSpan.begin (), lSpan.end (), buf.data ());
             copy (rSpan.begin (), rSpan.end (), buf.data () + lSpan.size ());
