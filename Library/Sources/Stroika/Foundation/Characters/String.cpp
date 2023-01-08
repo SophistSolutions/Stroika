@@ -616,7 +616,7 @@ String String::RemoveAt (size_t from, size_t to) const
     if (from == to) {
         return *this;
     }
-    else if (from == 0) {
+    if (from == 0) {
         return SubString (to);
     }
     _SafeReadRepAccessor accessor{this};
@@ -625,9 +625,14 @@ String String::RemoveAt (size_t from, size_t to) const
         return SubString (0, from);
     }
     else {
-        Memory::StackBuffer<wchar_t> ignored1;
-        span<const wchar_t>          d = GetData (&ignored1);
-        return String{mk_ (d.subspan (0, from), d.subspan (to))};
+        Memory::StackBuffer<char32_t> ignored1;
+        span                          d = GetData (&ignored1);
+        Memory::StackBuffer<char32_t> buf{d.size () - (to-from)};
+        span                          s1 = d.subspan (0, from);
+        span                          s2 = d.subspan (to);
+        copy (s1.begin (), s1.end (), buf.data ());
+        copy (s2.begin (), s2.end (), buf.data () + s1.size ());
+        return String{mk_ (span{buf})};
     }
 }
 
@@ -1327,19 +1332,6 @@ wostream& Characters::operator<< (wostream& out, const String& s)
     span<const wchar_t>          sData = s.GetData (&maybeIgnoreBuf1);
     out.write (sData.data (), sData.size ());
     return out;
-}
-
-/*
- ********************************************************************************
- *********************************** operator+ **********************************
- ********************************************************************************
- */
-String Characters::operator+ (const wchar_t* lhs, const String& rhs)
-{
-    RequireNotNull (lhs);
-    Memory::StackBuffer<wchar_t> ignored1;
-    auto                         rhsDataSpan = rhs.GetData (&ignored1);
-    return String{String::mk_ (span{lhs, ::wcslen (lhs)}, rhsDataSpan)};
 }
 
 /*

@@ -1369,8 +1369,6 @@ namespace Stroika::Foundation::Characters {
         template <Character_Compatible CHAR_T>
         static _SharedPtrIRep mk_ (span<const CHAR_T> s);
         template <Character_Compatible CHAR_T>
-        static _SharedPtrIRep mk_ (span<const CHAR_T> s1, span<const CHAR_T> s2);
-        template <Character_Compatible CHAR_T>
         static _SharedPtrIRep mk_ (Iterable<CHAR_T> it);
         template <Character_Compatible CHAR_T>
         static _SharedPtrIRep mk_ (span<CHAR_T> s);
@@ -1394,7 +1392,6 @@ namespace Stroika::Foundation::Characters {
 
     public:
         friend wostream& operator<< (wostream& out, const String& s);
-        friend String    operator+ (const wchar_t* lhs, const String& rhs);
     };
 
     /**
@@ -1560,9 +1557,7 @@ namespace Stroika::Foundation::Characters {
     /**
      *  Basic operator overload with the obvious meaning, and simply indirect to @String::Concatenate (const String& rhs)
      */
-    String operator+ (const String& lhs, const wchar_t* rhs);
     String operator+ (const String& lhs, const String& rhs);
-    String operator+ (const wchar_t* lhs, const String& rhs);
 
 }
 

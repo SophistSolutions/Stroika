@@ -90,6 +90,14 @@ namespace Stroika::Foundation::Characters {
      ************************************* String ***********************************
      ********************************************************************************
      */
+    // Since we don't mix spans of single/2-3-4 byte chars in a single rep (would make char indexing too expensive)
+    // just specialize 3 cases - ASCII (char), utf-16, and utf-32 (others - like char8_t, wchar_t mappeed appropriately)
+    template <>
+    auto String::mk_ (span<const char> s) -> _SharedPtrIRep;
+    template <>
+    auto String::mk_ (span<const char16_t> s) -> _SharedPtrIRep;
+    template <>
+    auto String::mk_ (span<const char32_t> s) -> _SharedPtrIRep;
     template <Character_Compatible CHAR_T>
     auto String::mk_ (span<const CHAR_T> s) -> _SharedPtrIRep
     {
@@ -132,47 +140,12 @@ namespace Stroika::Foundation::Characters {
 #endif
         }
     }
-    DISABLE_COMPILER_MSC_WARNING_START (4244) // just logically needed around copy () call inside, but compiler spews warnings unless out here
-    template <Character_Compatible CHAR_T>
-    auto String::mk_ (span<const CHAR_T> s1, span<const CHAR_T> s2) -> _SharedPtrIRep
-    {
-        // Simplistic implementation, probably not too bad for most strings that fit in stack buffer, though involves
-        // extra copy
-        if (Character::IsASCII (s1) and Character::IsASCII (s2)) {
-            Memory::StackBuffer<char> buf{s1.size () + s2.size ()};
-            copy (s1.begin (), s1.end (), buf.data ());
-            copy (s2.begin (), s2.end (), buf.data () + s1.size ()); // append
-#if qCompilerAndStdLib_spanOfContainer_Buggy
-            Private_::CopyAsASCIICharacters_ (s1, span{buf.data (), buf.size ()});
-            Private_::CopyAsASCIICharacters_ (s2, span{buf.data (), buf.size ()}.subspan (s1.size ()));
-            return mk_ (span<const char>{buf.data (), buf.size ()});
-#else
-            Private_::CopyAsASCIICharacters_ (s1, span{buf});
-            Private_::CopyAsASCIICharacters_ (s2, span{buf}.subspan (s1.size ()));
-            return mk_ (span<const char>{buf});
-#endif
-        }
-        // CHECK IF ANY SURROGATES...
-        else {
-            Memory::StackBuffer<char32_t> buf{UTFConverter::ComputeTargetBufferSize<char32_t> (s1) + UTFConverter::ComputeTargetBufferSize<char32_t> (s2)};
-#if qCompilerAndStdLib_spanOfContainer_Buggy
-            size_t len1 = UTFConverter::kThe.Convert (s1, span<char32_t>{buf.data (), buf.size ()}).fTargetProduced;
-            size_t len2 = UTFConverter::kThe.Convert (s2, span<char32_t>{buf.data (), buf.size ()}.subspan (len1)).fTargetProduced;
-#else
-            size_t len1 = UTFConverter::kThe.Convert (s1, span{buf}).fTargetProduced;
-            size_t len2 = UTFConverter::kThe.Convert (s2, span{buf}.subspan (len1)).fTargetProduced;
-#endif
-            return mk_ (span<const char32_t>{buf.data (), len1 + len2});
-        }
-    }
-    DISABLE_COMPILER_MSC_WARNING_END (4244)
     template <Character_Compatible CHAR_T>
     auto String::mk_ (span<CHAR_T> s) -> _SharedPtrIRep
     {
         // weird and unfortunate overload needed for non-const spans, not automatically promoted to const
         return mk_ (Memory::ConstSpan (s));
     }
-
     template <Character_Compatible CHAR_T>
     auto String::mk_ (Iterable<CHAR_T> it) -> _SharedPtrIRep
     {
@@ -187,16 +160,8 @@ namespace Stroika::Foundation::Characters {
                 r.push_back (c);
             }
         });
-        return mk_ (span<const char32_t>{r.data (), r.size ()});
+        return mk_ (span{r.data (), r.size ()});
     }
-    // Since we don't mix spans of single/2-3-4 byte chars in a single rep (would make char indexing too expensive)
-    // just specialize 3 cases - ASCII (char), utf-16, and utf-32 (others - like char8_t, wchar_t mappeed appropriately)
-    template <>
-    auto String::mk_ (span<const char> s) -> _SharedPtrIRep;
-    template <>
-    auto String::mk_ (span<const char16_t> s) -> _SharedPtrIRep;
-    template <>
-    auto String::mk_ (span<const char32_t> s) -> _SharedPtrIRep;
 
     inline String::String (const _SharedPtrIRep& rep) noexcept
         : inherited{rep}
@@ -396,8 +361,13 @@ namespace Stroika::Foundation::Characters {
         // KISS for now - but this can and should be much more complex, dealing with ascii cases, etc...
         String                        rrhs = rhs;
         Memory::StackBuffer<char32_t> ignoredA;
+        span                          leftSpan = GetData (&ignoredA);
         Memory::StackBuffer<char32_t> ignoredB;
-        return mk_ (GetData (&ignoredA), rrhs.GetData (&ignoredB));
+        span                          rightSpan = rrhs.GetData (&ignoredB);
+        Memory::StackBuffer<char32_t> buf{leftSpan.size () + rightSpan.size ()};
+        copy (leftSpan.begin (), leftSpan.end (), buf.data ());
+        copy (rightSpan.begin (), rightSpan.end (), buf.data () + leftSpan.size ());
+        return mk_ (span{buf});
     }
     inline void String::_AssertRepValidType () const
     {
@@ -607,7 +577,10 @@ namespace Stroika::Foundation::Characters {
         if (from != to) {
             Memory::StackBuffer<wchar_t> ignored1;
             span<const wchar_t>          thisSpan = this->GetData (&ignored1);
-            *this                                 = mk_ (thisSpan, span{from, to});
+            Memory::StackBuffer<wchar_t> buf{thisSpan.size () + (to - from)};
+            copy (thisSpan.begin (), thisSpan.end (), buf.data ());
+            copy (from, to, buf.data () + thisSpan.size ());
+            *this = mk_ (span{buf});
         }
     }
     inline void String::Append (Character c)
@@ -1226,11 +1199,6 @@ namespace Stroika::Foundation::Characters {
      *********************************** operator+ **********************************
      ********************************************************************************
      */
-    inline String operator+ (const String& lhs, const wchar_t* rhs)
-    {
-        RequireNotNull (rhs);
-        return lhs.Concatenate (rhs);
-    }
     inline String operator+ (const String& lhs, const String& rhs)
     {
         return lhs.Concatenate (rhs);
