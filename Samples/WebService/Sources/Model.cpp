@@ -71,17 +71,18 @@ const ObjectVariantMapper StroikaSample::WebServices::Model::kMapper = [] () {
             for (unsigned int cnt = 0; cnt < 2 and not remainingNumber2Parse.empty (); ++cnt) {
                 // special case rewrite bare 'i' as '1i' with +/- cases
                 if (remainingNumber2Parse.StartsWith (L"i"_k)) {
-                    remainingNumber2Parse = L"1i" + remainingNumber2Parse.Skip (1);
+                    static_assert (is_base_of_v<String,decltype(remainingNumber2Parse)>);
+                    remainingNumber2Parse = "1i"_ASCII + remainingNumber2Parse.Skip (1);
                 }
                 else if (remainingNumber2Parse.StartsWith (L"+i"_k)) {
-                    remainingNumber2Parse = L"+1i" + remainingNumber2Parse.Skip (2);
+                    remainingNumber2Parse = "+1i"_ASCII + remainingNumber2Parse.Skip (2);
                 }
                 else if (remainingNumber2Parse.StartsWith (L"-i"_k)) {
-                    remainingNumber2Parse = L"-1i" + remainingNumber2Parse.Skip (2);
+                    remainingNumber2Parse = "-1i"_ASCII + remainingNumber2Parse.Skip (2);
                 }
                 Number::value_type d = Characters::FloatConversion::ToFloat<Number::value_type> (remainingNumber2Parse, &remainingNumber2Parse);
-                if (remainingNumber2Parse.StartsWith (L"i"_k)) {
-                    accum += Number (0, d);
+                if (remainingNumber2Parse.StartsWith ("i"_ASCII)) {
+                    accum += Number {0, d};
                     remainingNumber2Parse = remainingNumber2Parse.Skip (1);
                 }
                 else {
