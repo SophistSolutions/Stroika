@@ -169,10 +169,12 @@ namespace Stroika::Foundation::Characters {
             }
         }
         DISABLE_COMPILER_MSC_WARNING_START (5063)
+        DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wconstant-evaluated\"");
         if constexpr (not std::is_constant_evaluated ()) {
             Ensure (result == !!iswspace (static_cast<wchar_t> (fCharacterCode_)));
         }
         DISABLE_COMPILER_MSC_WARNING_END (5063)
+        DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wconstant-evaluated\"");
         return result;
     }
     inline bool Character::IsDigit () const noexcept
