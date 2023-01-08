@@ -627,7 +627,7 @@ String String::RemoveAt (size_t from, size_t to) const
     else {
         Memory::StackBuffer<char32_t> ignored1;
         span                          d = GetData (&ignored1);
-        Memory::StackBuffer<char32_t> buf{d.size () - (to-from)};
+        Memory::StackBuffer<char32_t> buf{d.size () - (to - from)};
         span                          s1 = d.subspan (0, from);
         span                          s2 = d.subspan (to);
         copy (s1.begin (), s1.end (), buf.data ());
