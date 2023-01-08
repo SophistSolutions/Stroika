@@ -52,35 +52,26 @@ namespace Stroika::Foundation::Characters {
             if constexpr (is_base_of_v<String, decay_t<USTRING>>) {
                 return s.GetData (mostlyIgnoredBuf);
             }
-            else if constexpr (is_same_v<decay_t<USTRING>, const char32_t*>) {
+            else if constexpr (is_same_v<decay_t<USTRING>, const char32_t*> or (sizeof (wchar_t) == sizeof (Character) and is_same_v<decay_t<USTRING>, const wchar_t*>)) {
                 return span{reinterpret_cast<const Character*> (s), CString::Length (s)};
             }
-            else if constexpr (is_same_v<decay_t<USTRING>, u32string>) {
+            else if constexpr (is_same_v<decay_t<USTRING>, u32string> or (sizeof (wchar_t) == sizeof (Character) and is_same_v<decay_t<USTRING>, wstring>)) {
                 return span{reinterpret_cast<const Character*> (s.c_str ()), s.length ()};
             }
-            else if constexpr (is_same_v<decay_t<USTRING>, u32string_view>) {
+            else if constexpr (is_same_v<decay_t<USTRING>, u32string_view> or (sizeof (wchar_t) == sizeof (Character) and is_same_v<decay_t<USTRING>, wstring_view>)) {
                 return span{reinterpret_cast<const Character*> (s.data ()), s.length ()};
             }
-            else if constexpr (sizeof (wchar_t) == sizeof (Character) and is_same_v<decay_t<USTRING>, const wchar_t*>) {
-                return span{reinterpret_cast<const Character*> (s), CString::Length (s)};
-            }
-            else if constexpr (sizeof (wchar_t) == sizeof (Character) and is_same_v<decay_t<USTRING>, wstring>) {
-                return span{reinterpret_cast<const Character*> (s.c_str ()), s.length ()};
-            }
-            else if constexpr (sizeof (wchar_t) == sizeof (Character) and is_same_v<decay_t<USTRING>, wstring_view>) {
-                return span{reinterpret_cast<const Character*> (s.data ()), s.length ()};
-            }
-            else if constexpr (is_same_v<decay_t<USTRING>, const wchar_t*>) {
+            else if constexpr (is_same_v<decay_t<USTRING>, const char8_t*> or is_same_v<decay_t<USTRING>, const char16_t*> or is_same_v<decay_t<USTRING>, const wchar_t*>) {
                 span spn{s, CString::Length (s)};
                 mostlyIgnoredBuf->resize_uninitialized (UTFConverter::ComputeTargetBufferSize<Character> (spn));
                 return UTFConverter::kThe.ConvertSpan (spn, span{*mostlyIgnoredBuf});
             }
-            else if constexpr (is_same_v<decay_t<USTRING>, wstring>) {
+            else if constexpr (is_same_v<decay_t<USTRING>, u8string> or is_same_v<decay_t<USTRING>, u16string> or is_same_v<decay_t<USTRING>, wstring>) {
                 span spn{s.data (), s.size ()};
                 mostlyIgnoredBuf->resize_uninitialized (UTFConverter::ComputeTargetBufferSize<Character> (spn));
                 return UTFConverter::kThe.ConvertSpan (spn, span{*mostlyIgnoredBuf});
             }
-            else if constexpr (is_same_v<decay_t<USTRING>, wstring_view>) {
+            else if constexpr (is_same_v<decay_t<USTRING>, u8string_view> or is_same_v<decay_t<USTRING>, u16string_view> or is_same_v<decay_t<USTRING>, wstring_view>) {
                 span spn{s.data (), s.size ()};
                 mostlyIgnoredBuf->resize_uninitialized (UTFConverter::ComputeTargetBufferSize<Character> (spn));
                 return UTFConverter::kThe.ConvertSpan (spn, span{*mostlyIgnoredBuf});
