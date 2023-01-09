@@ -367,7 +367,7 @@ namespace {
     struct StringConstant_ : public StringRepHelperAllFitInSize_ {
         using inherited = String;
 
-        template <Character_IsUnicodeCodePointOrPlainChar CHAR_T = wchar_t>
+        template <Character_IsUnicodeCodePointOrPlainChar CHAR_T>
         class Rep : public StringRepHelperAllFitInSize_::Rep<CHAR_T>, public Memory::UseBlockAllocationIfAppropriate<Rep<CHAR_T>> {
         private:
             using inherited = StringRepHelperAllFitInSize_::Rep<CHAR_T>;

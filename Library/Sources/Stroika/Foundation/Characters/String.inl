@@ -187,8 +187,14 @@ namespace Stroika::Foundation::Characters {
         _AssertRepValidType ();
     }
     template <Character_Compatible CHAR_T>
-    inline String::String (span<CHAR_T> s)
+    inline String::String (span<const CHAR_T> s)
         : inherited{mk_ (span<const CHAR_T>{s})}
+    {
+        _AssertRepValidType ();
+    }
+    template <Character_Compatible CHAR_T>
+    inline String::String (span<CHAR_T> s)
+        : inherited{Memory::ConstSpan (s)}
     {
         _AssertRepValidType ();
     }

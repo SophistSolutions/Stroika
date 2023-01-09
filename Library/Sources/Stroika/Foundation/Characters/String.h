@@ -171,24 +171,28 @@ namespace Stroika::Foundation::Characters {
          *          charX* argument constructors - which find the length based on
          *          the terminating NUL-character.
          *
-         *  \note about lifetime of argument data
+         *  \note about lifetime of argument data (basic_string_view<CHAR_T> constructors)
          *        All data is copied out / saved by the end of the constructor for all constructors EXCEPT
-         *        the basic_string_view<wchar_t> constructor - where it is REQUIRED the data last 'forever'.
+         *        the basic_string_view<CHAR_T> constructors - where it is REQUIRED the data last 'forever'.
          * 
          *  \req for String (const basic_string_view<wchar_t>& str) - str[str.length()]=='\0';   
          *       c-string nul-terminated (which happens automatically with L"xxx"sv)
          * 
-         *  \note even though the String (span<CHAR_T>) constructor takes a CHAR_T, the span data is not modified. The use of
-         *        CHAR_T (instead of const CHAR_T) here is just because it allows for easier deduction 
-         *        (@todo maybe can fix better ways? - try using const CHAR_T and see how many uses of span{a,b} have to become span<const chattype> {a,b})
-         * 
-         *  \note Becuase the characterset of strings of type 'char' is ambiguous, if you construct a String
+         *  \note 'char' constructors:
+         *        Becuase the characterset of strings of type 'char' is ambiguous, if you construct a String
          *        with char (char* etc) - it runtime checked that the characters are ASCII (except for the basic_string_view
          *        constructors where we check but with assertions).
+         * 
+         *        This mimics the behavior in Stroika v2.1 with String::FromASCII ()
+         * 
+         *  \note the basic_string move Constructors MAY move or copy the underlying std string, but they still maintain
+         *        the same requirements on their arguments as the copy basic_string constructors (eg. char must be ascii)
          */
         String ();
         template <Character_Compatible CHAR_T>
         String (const CHAR_T* cString);
+        template <Character_Compatible CHAR_T>
+        String (span<const CHAR_T> s);
         template <Character_Compatible CHAR_T>
         String (span<CHAR_T> s);
         template <Character_IsUnicodeCodePointOrPlainChar CHAR_T>
@@ -306,9 +310,9 @@ namespace Stroika::Foundation::Characters {
          *      \code
          *          String  tmp1    =   "FRED";
          *          String  tmp2    =   String{"FRED"};
-         *          String  tmp3    =   String::FromStringConstant ("FRED");       // same as 2 above, but faster
-         *          String  tmp4    =   "FRED"sv;                      // equivilent to FromStringConstant
-         *          String  tmp5    =   "FRED"_k;                      // equivilent to FromStringConstant
+         *          String  tmp3    =   String::FromStringConstant ("FRED");    // same as 2 above, but faster
+         *          String  tmp4    =   "FRED"sv;                               // equivilent to FromStringConstant
+         *          String  tmp5    =   "FRED"_k;                               // equivilent to FromStringConstant
          *      \endcode
          *
          *  \em WARNING - BE VERY CAREFUL - be sure arguments have application lifetime.
