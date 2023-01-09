@@ -51,7 +51,7 @@ namespace Stroika::Foundation::DataExchange {
     template <Characters::ConvertibleToString STRINGISH_T>
     inline VariantValue::VariantValue (STRINGISH_T&& val)
         requires (not is_same_v<remove_cv_t<STRINGISH_T>, String>)
-        : VariantValue{String{forward<STRINGISH_T> (val)}}
+    : VariantValue{String{forward<STRINGISH_T> (val)}}
     {
     }
     inline VariantValue::VariantValue (VariantValue&& src) noexcept

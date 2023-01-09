@@ -68,10 +68,10 @@ PeriodicNotifier::PeriodicNotifier (const Iterable<Advertisement>& advertisement
         for ([[maybe_unused]] const auto& a : advertisements) {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
             String msg;
-            msg += "alive,"sz;
-            msg += "location="sz + a.fLocation + ", "sz;
-            msg += "ST="sz + a.fST + ", "sz;
-            msg += "USN="sz + a.fUSN;
+            msg += "alive," sz;
+            msg += "location=" sz + a.fLocation + ", " sz;
+            msg += "ST=" sz + a.fST + ", " sz;
+            msg += "USN=" sz + a.fUSN;
             DbgTrace (L"(%s)", msg.c_str ());
 #endif
         }

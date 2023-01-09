@@ -633,12 +633,12 @@ namespace {
         // for collecting IO statistics
         WMICollector fLogicalDiskWMICollector_{
             "LogicalDisk"sv, {}, { kDiskReadBytesPerSec_,
-                                    kDiskWriteBytesPerSec_,
-                                    kDiskReadsPerSec_,
-                                    kDiskWritesPerSec_,
-                                    (kUseDiskPercentReadTime_ElseAveQLen_ToComputeQLen_ ? kPctDiskReadTime_ : kAveDiskReadQLen_),
-                                    (kUseDiskPercentReadTime_ElseAveQLen_ToComputeQLen_ ? kPctDiskWriteTime_ : kAveDiskWriteQLen_),
-                                    kPctIdleTime_ }};
+                                   kDiskWriteBytesPerSec_,
+                                   kDiskReadsPerSec_,
+                                   kDiskWritesPerSec_,
+                                   (kUseDiskPercentReadTime_ElseAveQLen_ToComputeQLen_ ? kPctDiskReadTime_ : kAveDiskReadQLen_),
+                                   (kUseDiskPercentReadTime_ElseAveQLen_ToComputeQLen_ ? kPctDiskWriteTime_ : kAveDiskWriteQLen_),
+                                   kPctIdleTime_ }};
 #endif
     };
 
