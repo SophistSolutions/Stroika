@@ -37,9 +37,9 @@ namespace {
         if (err != Z_OK) [[unlikely]] {
             switch (err) {
                 case Z_VERSION_ERROR:
-                    Execution::Throw (Execution::RuntimeErrorException{L"ZLIB Z_VERSION_ERROR"sv});
+                    Execution::Throw (Execution::RuntimeErrorException{"ZLIB Z_VERSION_ERROR"sv});
                 case Z_DATA_ERROR:
-                    Execution::Throw (Execution::RuntimeErrorException{L"ZLIB Z_DATA_ERROR"sv});
+                    Execution::Throw (Execution::RuntimeErrorException{"ZLIB Z_DATA_ERROR"sv});
                 case Z_ERRNO:
                     Execution::Throw (Execution::RuntimeErrorException{Characters::Format (L"ZLIB Z_ERRNO (errno=%d", errno)});
                 default:

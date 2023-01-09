@@ -214,7 +214,7 @@ namespace Stroika::Foundation::Cryptography::Digest {
      *          using namespace IO::Network;
      *          auto         digesterWithDefaultResult  = Digester<Algorithm::SuperFastHash>{};
      *          auto         digesterWithResult_uint8_t = Digester<Algorithm::SuperFastHash, uint8_t>{};
-     *          Memory::BLOB value2Hash                 = DefaultSerializer<InternetAddress>{}(InternetAddress{L"192.168.244.33"});
+     *          Memory::BLOB value2Hash                 = DefaultSerializer<InternetAddress>{}(InternetAddress{"192.168.244.33"});
      *          auto         h1                         = digesterWithDefaultResult (value2Hash);
      *          uint8_t      h2                         = digesterWithResult_uint8_t (value2Hash);
      *          VerifyTestResult (h1 == 2512011991); // experimentally derived values but they shouldn't float (actually may depend on endiannesss?)

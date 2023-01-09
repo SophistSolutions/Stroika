@@ -32,10 +32,10 @@ using namespace Time;
 String Statement::ColumnDescription::ToString () const
 {
     StringBuilder sb;
-    sb += L"{";
-    sb += L"name: " + Characters::ToString (fName) + L", ";
-    sb += L"type: " + Characters::ToString (fType);
-    sb += L"}";
+    sb += "{";
+    sb += "name: " + Characters::ToString (fName) + ", ";
+    sb += "type: " + Characters::ToString (fType);
+    sb += "}";
     return sb.str ();
 }
 

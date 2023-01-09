@@ -2171,7 +2171,7 @@ FAILED: RegressionTestFailure; f1 < f2 or f2 < f1;;C:\Sandbox\Stroika\DevRoot\Te
  *   (void)tmget.get (itbegin, itend, iss, errState, &when, formatPattern.c_str (), formatPattern.c_str () + formatPattern.length ());
  *
  *#if qCompilerAndStdLib_locale_time_get_loses_part_of_date_Buggy
- *    if (formatPattern == L"%x %X") {
+ *    if (formatPattern == "%x %X") {
  *        if ((errState & ios::badbit) or (errState & ios::failbit)) {
  *            Execution::Throw (Date::FormatException::kThe);
  *        }

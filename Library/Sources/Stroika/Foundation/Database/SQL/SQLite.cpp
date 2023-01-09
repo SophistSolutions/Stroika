@@ -61,12 +61,12 @@ namespace {
                     Execution::Throw (Exception{Characters::Format (L"SQLITE_CONSTRAINT: %s", errMsgDetails->c_str ())});
                 }
                 else {
-                    static const auto kEx_ = Exception{L"SQLITE_CONSTRAINT"sv};
+                    static const auto kEx_ = Exception{"SQLITE_CONSTRAINT"sv};
                     Execution::Throw (kEx_);
                 }
             } break;
             case SQLITE_TOOBIG: {
-                static const auto kEx_ = Exception{L"SQLITE_TOOBIG"sv};
+                static const auto kEx_ = Exception{"SQLITE_TOOBIG"sv};
                 Execution::Throw (kEx_);
             } break;
             case SQLITE_FULL: {
@@ -74,7 +74,7 @@ namespace {
                 Execution::Throw (system_error{make_error_code (errc::no_space_on_device)});
             } break;
             case SQLITE_READONLY: {
-                static const auto kEx_ = Exception{L"SQLITE_READONLY"sv};
+                static const auto kEx_ = Exception{"SQLITE_READONLY"sv};
                 Execution::Throw (kEx_);
             } break;
             case SQLITE_MISUSE: {
@@ -82,7 +82,7 @@ namespace {
                     Execution::Throw (Exception{Characters::Format (L"SQLITE_MISUSE: %s", errMsgDetails->c_str ())});
                 }
                 else {
-                    static const auto kEx_ = Exception{L"SQLITE_MISUSE"sv};
+                    static const auto kEx_ = Exception{"SQLITE_MISUSE"sv};
                     Execution::Throw (kEx_);
                 }
             } break;
@@ -91,7 +91,7 @@ namespace {
                     Execution::Throw (Exception{Characters::Format (L"SQLITE_ERROR: %s", errMsgDetails->c_str ())});
                 }
                 else {
-                    static const auto kEx_ = Exception{L"SQLITE_ERROR"sv};
+                    static const auto kEx_ = Exception{"SQLITE_ERROR"sv};
                     Execution::Throw (kEx_);
                 }
             } break;
@@ -247,13 +247,13 @@ struct Connection::Rep_ final : IRep {
         struct MyEngineProperties_ final : EngineProperties {
             virtual String GetEngineName () const override
             {
-                return L"SQLite"sv;
+                return "SQLite"sv;
             }
             virtual String GetSQL (NonStandardSQL n) const override
             {
                 switch (n) {
                     case NonStandardSQL::eDoesTableExist:
-                        return L"SELECT name FROM sqlite_master WHERE type='table' AND name="_k + SQL::EngineProperties::kDoesTableExistParameterName;
+                        return "SELECT name FROM sqlite_master WHERE type='table' AND name="_k + SQL::EngineProperties::kDoesTableExistParameterName;
                 }
                 AssertNotReached ();
                 return String{};
@@ -566,7 +566,7 @@ struct Statement::MyRep_ : IRep {
         AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
         String                                          pn = parameterName;
         if (pn[0] != ':') {
-            pn = L":" + pn;
+            pn = ":"_k + pn;
         }
         for (unsigned int i = 0; i < fParameters_.length (); ++i) {
             if (fParameters_[i].fName == pn) {

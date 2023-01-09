@@ -334,13 +334,16 @@ namespace Stroika::Foundation::Characters {
          *  \note In Stroika v2.1 this was called class String_Constant.
          * 
          *  The constructor requires an application lifetime NUL-terminated array of characters - such as one
-         *  created with L"sample" (but allows embedded NUL-characters).
+         *  created with "sample" (but allows embedded NUL-characters).
          *
          *  \req ((str.data () + str.size ()) == '\0'); // crazy weird requirement, but done cuz L"x"sv already does NUL-terminate and we can
          *                                              // take advantage of that fact - re-using the NUL-terminator for our own c_str() implementation
          * 
          *  \note FromStringConstant with 'char' - requires that the char elements are ASCII (someday this maybe lifted and iterpret as ISOLATIN1)
          *        For the case of char, we also do not check/require the nul-termination bit.
+         * 
+         *  \note for overloads with wchar_t, if sizeof (wchar_t) == 2
+         *        \req Require (UTFConverter::AllFitsInTwoByteEncoding (s));
          */
         template <size_t SIZE>
         static String FromStringConstant (const char (&cString)[SIZE]);
@@ -471,8 +474,8 @@ namespace Stroika::Foundation::Characters {
          *
          *  \par Example Usage
          *      \code
-         *          String mungedData = L"04 July 2014;
-         *          if (optional<pair<size_t, size_t>> i = mungedData.Find (RegularExpression {L"0[^\b]"})) {
+         *          String mungedData = "04 July 2014";
+         *          if (optional<pair<size_t, size_t>> i = mungedData.Find (RegularExpression{"0[^\b]"})) {
          *              mungedData = mungedData.RemoveAt (*i);
          *          }
          *      \endcode
@@ -514,18 +517,18 @@ namespace Stroika::Foundation::Characters {
          *
          *  \par Example Usage
          *      \code
-         *          String tmp { L"This is good" };
-         *          Assert (tmp.SubString (5) == L"is good");
+         *          String tmp { "This is good" };
+         *          Assert (tmp.SubString (5) == "is good");
          *      \endcode
          *
          *  \par Example Usage
          *      \code
-         *          const String kTest_ { L"a=b"sv };
-         *          const String kLbl2LookFor_ { L"a="_k };
+         *          const String kTest_ { "a=b"sv };
+         *          const String kLbl2LookFor_ { "a="_k };
          *          if (resultLine.Find (kLbl2LookFor_)) {
          *              String  tmp { resultLine.SubString (kLbl2LookFor_.length ()) };
          *          }
-         *          Assert (tmp == L"b");
+         *          Assert (tmp == "b");
          *      \endcode
          *
          *  OVERLOADS WITH ptrdiff_t:
@@ -592,7 +595,7 @@ namespace Stroika::Foundation::Characters {
         /**
          *  Returns true if the argument character or string is found anywhere inside this string.
          *  This is equivalent to
-         *      return Matches (".*" + X + L".*");    // If X had no characters which look like they are part of
+         *      return Matches (".*" + X + ".*");    // If X had no characters which look like they are part of
          *                                            // a regular expression
          *
          *  @see Match
@@ -605,7 +608,7 @@ namespace Stroika::Foundation::Characters {
          *  Returns true iff the given substring is contained in this string.
          *
          *  Similar to:
-         *      return Matches (X + L".*");
+         *      return Matches (X + ".*");
          *  except for the fact that with StartsWith() doesn't interpet 'X' as a regular expression
          *
          *  @see Match
@@ -619,7 +622,7 @@ namespace Stroika::Foundation::Characters {
          *  Returns true iff the given substring is contained in this string.
          *
          *  Similar to:
-         *      return Matches (X + L".*");
+         *      return Matches (X + ".*");
          *  except for the fact that with StartsWith() doesn't interpet 'X' as a regular expression
          *
          *  @see Match
@@ -648,13 +651,13 @@ namespace Stroika::Foundation::Characters {
          *          static const String            kTestStr_{"192.168.244.104 - Sonos Play:5"};
          *          optional<String> match1;
          *          optional<String> match2;
-         *          VerifyTestResult (kTestStr_.Matches (kSonosRE_, &match1, &match2) and match1 == L"192.168.244.104" and match2 == L" - Sonos Play:5");
+         *          VerifyTestResult (kTestStr_.Matches (kSonosRE_, &match1, &match2) and match1 == "192.168.244.104" and match2 == " - Sonos Play:5");
          *      \endcode
          *
          *  \par Example Usage
          *      \code
          *          // https://tools.ietf.org/html/rfc3986#appendix-B
-         *          static const RegularExpression kParseURLRegExp_{L"^(([^:/?#]+):)?(//([^/?#]*))?([^?#]*)(\\?([^#]*))?(#(.*))?"_RegEx};
+         *          static const RegularExpression kParseURLRegExp_{"^(([^:/?#]+):)?(//([^/?#]*))?([^?#]*)(\\?([^#]*))?(#(.*))?"_RegEx};
          *          optional<String>               scheme;
          *          optional<String>               authority;
          *          optional<String>               path;
@@ -760,7 +763,7 @@ namespace Stroika::Foundation::Characters {
          *          Sequence<String>                    tmp1{ kTest_.FindEachString (kRE_) };
          *          Assert (tmp1.size () == 1 and tmp1[0] == "a=b,");
          *          Sequence<RegularExpressionMatch>    tmp2 { kTest_.FindEachMatch (kRE_) };
-         *          Assert (tmp2.size () == 1 and tmp2[0].GetFullMatch () == L"a=b," and tmp2[0].GetSubMatches () == Sequence<String> {L"b"});
+         *          Assert (tmp2.size () == 1 and tmp2[0].GetFullMatch () == "a=b," and tmp2[0].GetSubMatches () == Sequence<String> {"b"});
          *      \endcode
          *
          *  @see Find ()
@@ -775,7 +778,7 @@ namespace Stroika::Foundation::Characters {
          *      \code
          *          const String            kTest_ { "a=b, c=d"_k };
          *          const RegularExpression kRE_ { "(.)=(.)" };
-         *          Assert ((kTest_.FindEachString (kRE_) ==  vector<String> {L"a=b", L"c=d"}));
+         *          Assert ((kTest_.FindEachString (kRE_) ==  vector<String> {"a=b", "c=d"}));
          *      \endcode
          *
          *  @see Find ()
@@ -814,7 +817,7 @@ namespace Stroika::Foundation::Characters {
          *
          *  \par Example Usage
          *      \code
-         *          mungedData = mungedData.ReplaceAll (RegularExpression{ "\\b0+" }, L"");    // strip all leading zeros
+         *          mungedData = mungedData.ReplaceAll (RegularExpression{ "\\b0+" }, "");    // strip all leading zeros
          *      \endcode
          *
          *  Note - it IS legal to have with contain the original search for string, or even
@@ -845,9 +848,9 @@ namespace Stroika::Foundation::Characters {
          *
          *  \par Example Usage
          *      \code
-         *          String  t { L"ABC DEF G" };
+         *          String  t { "ABC DEF G" };
          *          Assert (t.Tokenize ().length () == 3);
-         *          Assert (t.Tokenize ()[1] == L"DEF");
+         *          Assert (t.Tokenize ()[1] == "DEF");
          *      \endcode
          *
          *  \par Example Usage
@@ -855,7 +858,7 @@ namespace Stroika::Foundation::Characters {
          *          String  t { "foo=   7" };
          *          auto    tt = t.Tokenize ({ '=' });
          *          Assert (t.length () == 2);
-         *          Assert (t[1] == L"7");
+         *          Assert (t[1] == "7");
          *      \endcode
          *
          *  \par Example Usage
@@ -933,7 +936,7 @@ namespace Stroika::Foundation::Characters {
          *  \note Java version - https://docs.oracle.com/javase/8/docs/api/java/lang/String.html#join-java.lang.CharSequence-java.lang.CharSequence...-
          *  \note Javascript   - https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/join
          */
-        static String Join (const Iterable<String>& list, const String& separator = L", "sv);
+        static String Join (const Iterable<String>& list, const String& separator = ", "sv);
 
     public:
         /**
@@ -1102,7 +1105,7 @@ namespace Stroika::Foundation::Characters {
          *
          *  \par Example Usage:
          *      \code
-         *          string a1    =  String{L"hi mom"}.AsASCII ();    // OK
+         *          string a1    =  String{"hi mom"}.AsASCII ();    // OK
          *          string a2    =  String{u"שלום"}.AsASCII ();      // throws
          *      \endcode
 
@@ -1580,9 +1583,9 @@ namespace Stroika::Foundation::Characters {
      *
      *  \par Example:
      *      \code
-     *          String s1 = L"some-string"_k;
-     *          String s2 = String::FromStringConstant (L"some-string");
-     *          String s3 = L"some-string"sv;           // in most cases this will also work fine, and is preferable (since sv is part of C++ standard)
+     *          String s1 = "some-string"_k;
+     *          String s2 = String::FromStringConstant ("some-string");
+     *          String s3 = "some-string"sv;           // in most cases this will also work fine, and is preferable (since sv is part of C++ standard)
      *      \endcode
      *
      *  \note _k is STILL sometimes useful and better than sv, since the TYPE returned by _k is a String_Constant which IS a String
@@ -1597,7 +1600,7 @@ namespace Stroika::Foundation::Characters {
      *  Basic operator overload with the obvious meaning, and simply indirect to @String::Concatenate (const String& rhs)
      *
      *  \note Design Note
-     *      Don't use member function so L"x" + String{u"x"} works.
+     *      Don't use member function so "x" + String{u"x"} works.
      *      Insist that EITHER LHS or RHS is a string (else operator applies too widely).
      */
     template <ConvertibleToString LHS_T, ConvertibleToString RHS_T>

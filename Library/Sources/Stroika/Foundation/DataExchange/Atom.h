@@ -165,7 +165,7 @@ namespace Stroika::Foundation::DataExchange {
          *  This corresponds to an empty string. An 'empty' Atom can be constructed with:
          *      \code
          *          Atom<> a1;
-         *          Atom<> a2 = L"";
+         *          Atom<> a2 = "";
          *      \endcode
          */
         nonvirtual constexpr bool empty () const;

@@ -540,11 +540,15 @@ String::String (const basic_string_view<wchar_t>& str)
 
 String String::FromStringConstant (span<const char> s)
 {
+    Require (Character::IsASCII (s));
     return String{MakeSmartPtr<StringConstant_::Rep<char>> (s)};
 }
 
 String String::FromStringConstant (span<const wchar_t> s)
 {
+    if constexpr (sizeof (wchar_t) == 2) {
+        Require (UTFConverter::AllFitsInTwoByteEncoding (s));
+    }
     Require (*(s.data () + s.size ()) == '\0'); // crazy weird requirement, but done cuz "x"sv already does NUL-terminate and we can
                                                 // take advantage of that fact - re-using the NUL-terminator for our own c_str() implementation
     return String{MakeSmartPtr<StringConstant_::Rep<wchar_t>> (s)};

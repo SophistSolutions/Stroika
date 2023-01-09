@@ -36,7 +36,7 @@ namespace {
         }
         if (fileOffset.has_value ()) {
             if (not result.empty ()) {
-                result += L"; "sv;
+                result += "; "sv;
             }
             result += Format (L"; FileOffset %d", *fileOffset);
         }
@@ -44,7 +44,7 @@ namespace {
     }
     inline String mkMessage_ ()
     {
-        return L"Badly formatted input"sv;
+        return "Badly formatted input"sv;
     }
     inline String mkMessage_ (const String& details)
     {
@@ -55,7 +55,7 @@ namespace {
         String msg           = mkMessage_ ();
         String lineInfoExtra = mkMessage_OffsetInfo_ (lineNumber, columnNumber, fileOffset);
         if (not lineInfoExtra.empty ()) {
-            msg += L" ("sv + lineInfoExtra + L")."sv;
+            msg += " ("sv + lineInfoExtra + ")."sv;
         }
         return msg;
     }
@@ -64,7 +64,7 @@ namespace {
         String msg           = mkMessage_ (details);
         String lineInfoExtra = mkMessage_OffsetInfo_ (lineNumber, columnNumber, fileOffset);
         if (not lineInfoExtra.empty ()) {
-            msg += L" ("sv + lineInfoExtra + L")."sv;
+            msg += " ("sv + lineInfoExtra + L")."sv;
         }
         return msg;
     }

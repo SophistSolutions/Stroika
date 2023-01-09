@@ -32,7 +32,7 @@ InternetMediaType::InternetMediaType (const String& ct)
     //
     // but I'm not sure its really correct (but probably OK)
     // based on https://www.regextester.com/110183 and fiddling with that regexp to add suffix/params
-    static const RegularExpression kTopLevelMatcher_ = L"(^[-\\w.]+)/([-\\w.]+)(\\+[a-z]*)?(.*)"_RegEx;
+    static const RegularExpression kTopLevelMatcher_ = "(^[-\\w.]+)/([-\\w.]+)(\\+[a-z]*)?(.*)"_RegEx;
     Containers::Sequence<String>   matches;
     if (ct.Matches (kTopLevelMatcher_, &matches) and matches.length () >= 2) {
         fType_    = matches[0];
@@ -43,12 +43,12 @@ InternetMediaType::InternetMediaType (const String& ct)
         if (matches.length () == 4) {
             String moreParameters = matches[3];
             while (not moreParameters.empty ()) {
-                static const RegularExpression kParameterMatcher_ = L"\\s*;\\s*([_\\-[:alnum:]]+)\\s*=\\s*(\\S+)(.*)"_RegEx;
+                static const RegularExpression kParameterMatcher_ = "\\s*;\\s*([_\\-[:alnum:]]+)\\s*=\\s*(\\S+)(.*)"_RegEx;
                 matches.clear ();
                 if (moreParameters.Matches (kParameterMatcher_, &matches)) {
                     String pName  = matches[0];
                     String pValue = matches[1];
-                    if (pValue.StartsWith (L"\"") and pValue.EndsWith (L"\"")) {
+                    if (pValue.StartsWith ("\""_k) and pValue.EndsWith ("\""_k)) {
                         pValue = pValue.SubString (1, -1);
                     }
                     fParameters_.Add (pName, pValue);
@@ -66,7 +66,7 @@ InternetMediaType::InternetMediaType (const String& ct)
         }
     }
     else {
-        static const auto kException_ = DataExchange::BadFormatException{L"Badly formatted InternetMediaType"sv};
+        static const auto kException_ = DataExchange::BadFormatException{"Badly formatted InternetMediaType"sv};
         Execution::Throw (kException_);
     }
 }
@@ -87,10 +87,10 @@ String InternetMediaType::As () const
     sb += L"/";
     sb += fSubType_.GetPrintName ();
     if (fSuffix_) {
-        sb += L"+" + fSuffix_->GetPrintName ();
+        sb += "+"_k + fSuffix_->GetPrintName ();
     }
     for (const auto& p : fParameters_) {
-        sb += L"; " + p.fKey + L": " + p.fValue;
+        sb += "; "_k + p.fKey + ": "_k + p.fValue;
     }
     return sb.str ();
 }
