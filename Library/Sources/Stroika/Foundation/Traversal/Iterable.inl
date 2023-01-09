@@ -247,7 +247,6 @@ namespace Stroika::Foundation::Traversal {
     template <typename CONTAINER_OF_T>
     Iterable<T> Iterable<T>::mk_ (CONTAINER_OF_T&& from)
     {
-#if 1
         using DECAYED_CONTAINER = decay_t<CONTAINER_OF_T>;
         // Most containers are safe to use copy-by-value, except not initializer_list<> - not sure how to check for that generically...
         using USE_CONTAINER_TYPE                             = conditional_t<is_copy_constructible_v<DECAYED_CONTAINER> and not is_same_v<DECAYED_CONTAINER, initializer_list<T>>, DECAYED_CONTAINER, vector<T>>;
@@ -262,23 +261,6 @@ namespace Stroika::Foundation::Traversal {
             return nullopt;
         };
         return CreateGenerator (getNext);
-#else
-        // @todo consider if this should use forward_list<> and stroika blockallocator? Just have to be more careful on the indexing (using iterator carefully)
-        // Or even better, maybe just capture 'from' itself (without references) in a shared_context(make_shared) and then do a regular iterator pointing
-        // to that. THat should work fine, and be much cheaper
-        // -- LGP 2021-12-03
-        vector<T>                tmp{from.begin (), from.end ()}; // Somewhat simplistic / inefficient implementation
-        size_t                   idx{0};
-        function<optional<T> ()> getNext = [tmp, idx] () mutable -> optional<T> {
-            if (idx < tmp.size ()) [[likely]] {
-                return tmp[idx++];
-            }
-            else {
-                return nullopt;
-            }
-        };
-        return CreateGenerator (getNext);
-#endif
     }
     template <typename T>
     inline Memory::SharedByValue_State Iterable<T>::_GetSharingState () const
