@@ -40,10 +40,10 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents {
             result += L"@";
         }
         else if (fType == NameType::eValue) {
-            return L"{value}";
+            return "{value}"sv;
         }
         if (fNamespaceURI) {
-            result += *fNamespaceURI + L":";
+            result += *fNamespaceURI + ":"sv;
         }
         result += fLocalName;
         return result;

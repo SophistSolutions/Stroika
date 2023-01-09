@@ -84,7 +84,7 @@ String InternetMediaType::As () const
     }
     StringBuilder sb;
     sb += fType_.GetPrintName ();
-    sb += L"/";
+    sb += "/"_k;
     sb += fSubType_.GetPrintName ();
     if (fSuffix_) {
         sb += "+"_k + fSuffix_->GetPrintName ();

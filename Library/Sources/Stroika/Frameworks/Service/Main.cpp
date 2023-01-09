@@ -169,25 +169,25 @@ void Main::Run (const CommandArgs& args, const Streams::OutputStream<Characters:
         fServiceRep_->HandleCommandLineArgument (i);
     }
     if (not args.fMajorOperation.has_value ()) {
-        Execution::Throw (Execution::InvalidCommandLineArgument{L"No recognized operation"sv});
+        Execution::Throw (Execution::InvalidCommandLineArgument{"No recognized operation"sv});
     }
     switch (*args.fMajorOperation) {
         case CommandArgs::MajorOperation::eInstall: {
             if (out != nullptr) {
-                out.Write (L"Installing...");
+                out.Write ("Installing..."sv);
             }
             Install ();
             if (out != nullptr) {
-                out.Write (L"done\n");
+                out.Write ("done\n"sv);
             }
         } break;
         case CommandArgs::MajorOperation::eUnInstall: {
             if (out != nullptr) {
-                out.Write (L"UnInstalling...");
+                out.Write ("UnInstalling..."sv);
             }
             UnInstall ();
             if (out != nullptr) {
-                out.Write (L"done\n");
+                out.Write ("done\n"sv);
             }
         } break;
         case CommandArgs::MajorOperation::eRunServiceMain: {
@@ -202,22 +202,22 @@ void Main::Run (const CommandArgs& args, const Streams::OutputStream<Characters:
         } break;
         case CommandArgs::MajorOperation::eStart: {
             if (out != nullptr) {
-                out.Write (L"Starting...");
+                out.Write ("Starting..."sv);
             }
             constexpr Time::DurationSecondsType kTimeOut_{30.0}; // a vaguely reasonable default - apps can override by handling before calling Run
             Start (kTimeOut_);
             if (out != nullptr) {
-                out.Write (L"done\n");
+                out.Write ("done\n"sv);
             }
         } break;
         case CommandArgs::MajorOperation::eStop: {
             if (out != nullptr) {
-                out.Write (L"Stopping...");
+                out.Write ("Stopping..."sv);
             }
             constexpr Time::DurationSecondsType kTimeOut_{30.0}; // a vaguely reasonable default - apps can override by handling before calling Run
             Stop (kTimeOut_);
             if (out != nullptr) {
-                out.Write (L"done\n");
+                out.Write ("done\n"sv);
             }
         } break;
         case CommandArgs::MajorOperation::eForcedStop: {
@@ -226,12 +226,12 @@ void Main::Run (const CommandArgs& args, const Streams::OutputStream<Characters:
         } break;
         case CommandArgs::MajorOperation::eRestart: {
             if (out != nullptr) {
-                out.Write (L"Restarting...");
+                out.Write ("Restarting..."sv);
             }
             constexpr Time::DurationSecondsType kTimeOut_{30.0}; // a vaguely reasonable default - apps can override by handling before calling Run
             Restart (kTimeOut_);
             if (out != nullptr) {
-                out.Write (L"done\n");
+                out.Write ("done\n"sv);
             }
         } break;
         case CommandArgs::MajorOperation::eForcedRestart: {
@@ -603,7 +603,7 @@ void Main::BasicUNIXServiceImpl::_Start (Time::DurationSecondsType timeout)
         Execution::Throw (Execution::Exception{L"Cannot Start service because its already running"sv});
     }
 
-    (void)Execution::DetachedProcessRunner (Execution::GetEXEPath (), Sequence<String>{{String{}, (L"--"sv + String{CommandNames::kRunAsService})}});
+    (void)Execution::DetachedProcessRunner (Execution::GetEXEPath (), Sequence<String>{{String{}, ("--"sv + String{CommandNames::kRunAsService})}});
 
     while (_GetServicePID () <= 0) {
         Execution::Sleep (500ms);

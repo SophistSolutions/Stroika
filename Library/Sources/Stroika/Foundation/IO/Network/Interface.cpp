@@ -141,41 +141,41 @@ String Interface::Bindings::ToString () const
 String Interface::ToString () const
 {
     Characters::StringBuilder sb;
-    sb += L"{";
-    sb += L"Internal-Interface-ID: " + Characters::ToString (fInternalInterfaceID) + L", ";
+    sb += "{";
+    sb += "Internal-Interface-ID: " + Characters::ToString (fInternalInterfaceID) + ", ";
 #if qPlatform_POSIX
-    sb += L"InterfaceName: " + Characters::ToString (GetInterfaceName ()) + L", ";
+    sb += "InterfaceName: " + Characters::ToString (GetInterfaceName ()) + ", ";
 #endif
-    sb += L"Friendly-Name: " + Characters::ToString (fFriendlyName) + L", ";
+    sb += "Friendly-Name: " + Characters::ToString (fFriendlyName) + ", ";
     if (fDescription) {
-        sb += L"Description: " + Characters::ToString (*fDescription) + L", ";
+        sb += "Description: " + Characters::ToString (*fDescription) + ", ";
     }
     if (fNetworkGUID) {
-        sb += L"Network-GUID: " + Characters::ToString (*fNetworkGUID) + L", ";
+        sb += "Network-GUID: " + Characters::ToString (*fNetworkGUID) + ", ";
     }
     if (fType) {
-        sb += L"Type: " + Characters::ToString (*fType) + L", ";
+        sb += "Type: " + Characters::ToString (*fType) + ", ";
     }
     if (fHardwareAddress) {
-        sb += L"Hardware-Address: " + Characters::ToString (*fHardwareAddress) + L", ";
+        sb += "Hardware-Address: " + Characters::ToString (*fHardwareAddress) + ", ";
     }
     if (fTransmitSpeedBaud) {
-        sb += L"Transmit-Speed-Baud: " + Characters::ToString (*fTransmitSpeedBaud) + L", ";
+        sb += "Transmit-Speed-Baud: " + Characters::ToString (*fTransmitSpeedBaud) + ", ";
     }
     if (fReceiveLinkSpeedBaud) {
-        sb += L"Receive-Link-Speed-Baud: " + Characters::ToString (*fReceiveLinkSpeedBaud) + L", ";
+        sb += "Receive-Link-Speed-Baud: " + Characters::ToString (*fReceiveLinkSpeedBaud) + ", ";
     }
     if (fWirelessInfo) {
-        sb += L"Wireless-Info: " + Characters::ToString (fWirelessInfo) + L", ";
+        sb += "Wireless-Info: " + Characters::ToString (fWirelessInfo) + ", ";
     }
-    sb += L"Bindings: " + Characters::ToString (fBindings) + L", ";
+    sb += "Bindings: " + Characters::ToString (fBindings) + ", ";
 
-    sb += L"Gateways: " + Characters::ToString (fGateways) + L", ";
-    sb += L"DNS-Servers: " + Characters::ToString (fDNSServers) + L", ";
+    sb += "Gateways: " + Characters::ToString (fGateways) + ", ";
+    sb += "DNS-Servers: " + Characters::ToString (fDNSServers) + ", ";
     if (fStatus) {
-        sb += L"Status: " + Characters::ToString (*fStatus) + L", ";
+        sb += "Status: " + Characters::ToString (*fStatus) + ", ";
     }
-    sb += L"}";
+    sb += "}";
     return sb.str ();
 }
 
@@ -724,17 +724,17 @@ namespace {
                     auto mapCipher = [] (DOT11_CIPHER_ALGORITHM s) -> String {
                         switch (s) {
                             case DOT11_CIPHER_ALGO_NONE:
-                                return L"None"sv;
+                                return "None"sv;
                             case DOT11_CIPHER_ALGO_WEP40:
-                                return L"WEP-40"sv;
+                                return "WEP-40"sv;
                             case DOT11_CIPHER_ALGO_TKIP:
-                                return L"TKIP"sv;
+                                return "TKIP"sv;
                             case DOT11_CIPHER_ALGO_CCMP:
-                                return L"CCMP"sv;
+                                return "CCMP"sv;
                             case DOT11_CIPHER_ALGO_WEP104:
-                                return L"WEP-104"sv;
+                                return "WEP-104"sv;
                             case DOT11_CIPHER_ALGO_WEP:
-                                return L"WEP"sv;
+                                return "WEP"sv;
                             default:
                                 return Characters::Format (L"%d", s);
                         }

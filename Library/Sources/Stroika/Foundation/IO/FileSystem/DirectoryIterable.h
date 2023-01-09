@@ -35,7 +35,7 @@ namespace Stroika::Foundation::IO::FileSystem {
      *
      *  \par Example Usage
      *      \code
-     *          Iterable<String> textFilesInSlashTmp = DirectoryIterable ("/tmp").Where ([] (const String& i) { return i.EndsWith (L".txt"); });
+     *          Iterable<String> textFilesInSlashTmp = DirectoryIterable ("/tmp").Where ([] (const String& i) { return i.EndsWith (".txt"); });
      *      \endcode
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety-For-Envelope-Plus-Must-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-For-Envelope-Plus-Must-Externally-Synchronize-Letter</a>

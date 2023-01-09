@@ -49,8 +49,8 @@ namespace Stroika::Foundation::DataExchange::Variant::JSON {
      *  \par Example Usage
      *      \code
      *          Mapping<String, VariantValue> m;
-     *          m.Add (L"max-files", 10);
-     *          m.Add (L"max-processes", 3);
+     *          m.Add ("max-files", 10);
+     *          m.Add ("max-processes", 3);
      *          stringstream stringBuf;
      *          JSON::Writer{}.Write (VariantValue{m}, Streams::iostream::OutputStreamFromStdOStream (stringBuf));
      *      \endcode

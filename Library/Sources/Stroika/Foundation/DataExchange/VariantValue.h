@@ -98,7 +98,7 @@ namespace Stroika::Foundation::DataExchange {
      *          When comparing two items, at least one of which is a floating point number, the other type
      *          is coereced into a floating point number and  @Math::NearlyEquals() is used
      *          (because often these values come from serializaiton/deserializaiton which loses a tiny bit of precision).
-     *          Note that NANs compare as equal, and Equals (L"NAN", Math::nan<double> ()) compares as true.
+     *          Note that NANs compare as equal, and Equals ("NAN", Math::nan<double> ()) compares as true.
      *
      *          When comparing any other types (except Map or Array) with a String, the to types are coerceced
      *          into Strings, and compared as strings.

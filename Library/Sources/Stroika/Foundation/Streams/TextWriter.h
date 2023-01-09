@@ -95,7 +95,7 @@ namespace Stroika::Foundation::Streams {
          *  \par Example Usage
          *      \code
          *          Streams::TextWriter::Ptr         textOut = Streams::TextWriter::New (binOut);
-         *          textOut.Write (L"Hello World\n");
+         *          textOut.Write ("Hello World\n");
          *      \endcode
          */
         static Ptr New (const OutputStream<byte>::Ptr& src, Format format = Format::eUTF8);
@@ -140,7 +140,7 @@ namespace Stroika::Foundation::Streams {
          *  \par Example Usage
          *      \code
          *          Streams::TextWriter::Ptr         textOut = Streams::TextWriter::New (binOut);
-         *          textOut.Write (L"Hello World\n");
+         *          textOut.Write ("Hello World\n");
          *      \endcode
          */
         Ptr ()                = default;

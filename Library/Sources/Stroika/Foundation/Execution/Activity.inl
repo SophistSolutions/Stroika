@@ -14,22 +14,18 @@ namespace Stroika::Foundation::Execution {
 
     /*
      ********************************************************************************
-     *********************** Activity<Characters::String> ***************************
+     ************************************** Activity ********************************
      ********************************************************************************
      */
-    inline Activity<Characters::String>::Activity (const Characters::String& arg)
+    template <typename STRINGISH_T>
+    constexpr Activity<STRINGISH_T>::Activity (const STRINGISH_T& arg)
         : fArg_{arg}
     {
     }
-
-    /*
-     ********************************************************************************
-     *************************** Activity<wstring_view> *****************************
-     ********************************************************************************
-     */
-    constexpr Activity<wstring_view>::Activity (const wstring_view& arg) noexcept
-        : fArg_{arg}
+    template <typename CTOR_ARG>
+    Characters::String Activity<CTOR_ARG>::AsString () const
     {
+        return fArg_;
     }
 
     /*

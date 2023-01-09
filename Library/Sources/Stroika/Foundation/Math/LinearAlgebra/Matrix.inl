@@ -164,15 +164,15 @@ namespace Stroika::Foundation::Math::LinearAlgebra {
     Characters::String Matrix<T>::ToString () const
     {
         Characters::StringBuilder sb;
-        sb += L"[";
+        sb += "[";
         for (size_t row = 0; row < GetDimensions ().fRows; ++row) {
-            sb += L"[";
+            sb += "[";
             for (size_t col = 0; col < GetDimensions ().fColumns; ++col) {
-                sb += Characters::ToString (GetAt (row, col)) + L", ";
+                sb += Characters::ToString (GetAt (row, col)) + ", ";
             }
-            sb += L"],";
+            sb += "],";
         }
-        sb += L"]";
+        sb += "]";
         return sb.str ();
     }
 

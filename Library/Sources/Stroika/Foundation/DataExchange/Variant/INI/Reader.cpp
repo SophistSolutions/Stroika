@@ -33,7 +33,7 @@ public:
     }
     virtual String GetDefaultFileSuffix () const override
     {
-        return L".ini"sv;
+        return ".ini"sv;
     }
     virtual VariantValue Read (const Streams::InputStream<byte>::Ptr& in) override
     {
@@ -49,21 +49,21 @@ public:
         Section          currentSection;
         for (String line : in.ReadLines ()) {
             line = line.Trim ();
-            if (line.StartsWith (L"["sv) and line.EndsWith (L"]"sv)) {
+            if (line.StartsWith ("["sv) and line.EndsWith ("]"sv)) {
                 if (readingSection.has_value ()) {
                     p.fNamedSections.Add (*readingSection, currentSection);
                     currentSection.fProperties.clear ();
                 }
                 readingSection = line.SubString (1, -1);
             }
-            else if (line.StartsWith (L";"sv)) {
+            else if (line.StartsWith (";"sv)) {
                 // drop comments on the floor
             }
-            else if (line.Contains (L"="sv)) {
+            else if (line.Contains ("="sv)) {
                 size_t i     = *line.Find ('=');
                 String key   = line.SubString (0, i).Trim ();
                 String value = line.SubString (i + 1).Trim ();
-                if (value.StartsWith (L"\""sv) and value.EndsWith (L"\""sv)) {
+                if (value.StartsWith ("\""sv) and value.EndsWith ("\""sv)) {
                     value = value.SubString (1, -1);
                 }
                 if (readingSection.has_value ()) {

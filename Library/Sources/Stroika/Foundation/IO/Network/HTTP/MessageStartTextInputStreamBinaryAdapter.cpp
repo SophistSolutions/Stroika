@@ -105,10 +105,10 @@ public:
     {
         AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
         StringBuilder                                  sb;
-        sb += L"{";
-        sb += L"Offset: " + Characters::Format (L"%d", fOffset_) + L", ";
-        sb += L"HighWaterMark: " + Characters::Format (L"%d", fBufferFilledUpValidBytes_) + L", ";
-        sb += L"TEXT: ";
+        sb += "{";
+        sb += "Offset: " + Characters::Format (L"%d", fOffset_) + L", ";
+        sb += "HighWaterMark: " + Characters::Format (L"%d", fBufferFilledUpValidBytes_) + L", ";
+        sb += "TEXT: ";
         switch (format) {
             case ToStringFormat::eAsBytes: {
                 for (size_t i = 0; i < fBufferFilledUpValidBytes_; ++i) {
@@ -120,20 +120,20 @@ public:
                 for (Character c : String::FromISOLatin1 (span{reinterpret_cast<const char*> (begin (fAllDataReadBuf_)), fBufferFilledUpValidBytes_})) {
                     switch (c.GetCharacterCode ()) {
                         case '\r':
-                            sb += L"\\r";
+                            sb += "\\r";
                             break;
                         case '\n':
-                            sb += L"\\n";
+                            sb += "\\n";
                             break;
                         default:
                             sb += c.GetCharacterCode ();
                             break;
                     }
                 }
-                sb += L"'";
+                sb += "'";
             } break;
         }
-        sb += L"}";
+        sb += "}";
         return sb.str ();
     }
 

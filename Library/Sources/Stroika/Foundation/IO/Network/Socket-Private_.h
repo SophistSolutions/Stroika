@@ -191,7 +191,7 @@ namespace Stroika::Foundation::IO::Network {
                     }
                     return isV6 ? SocketAddress::FamilyType::INET6 : SocketAddress::FamilyType::INET;
 #else
-                    Execution::Throw (Execution::OperationNotSupportedException (L"SO_DOMAIN"));
+                    Execution::Throw (Execution::OperationNotSupportedException ("SO_DOMAIN"sv));
 #endif
                 }
                 virtual Socket::PlatformNativeHandle GetNativeSocket () const override

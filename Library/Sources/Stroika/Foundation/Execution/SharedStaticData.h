@@ -61,7 +61,7 @@ namespace Stroika::Foundation::Execution {
      *                  : fCleanupThread (Thread::New (&AuditLogSink::SimpleCleanupThread_))
      *              {
      *                  fCleanupThread.SetThreadPriority (Thread::Priority::eLowest);
-     *                  fCleanupThread.SetThreadName (L"AuditTrailCleanupThread");
+     *                  fCleanupThread.SetThreadName ("AuditTrailCleanupThread"sv);
      *                  fCleanupThread.Start ();
      *              }
      *              ~SharedData_ ()

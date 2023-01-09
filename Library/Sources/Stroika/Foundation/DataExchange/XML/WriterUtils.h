@@ -55,7 +55,7 @@ namespace Stroika::Foundation::DataExchange::XML {
 
     class Indenter {
     public:
-        Indenter (const String& indentText = L"\t"sv);
+        Indenter (const String& indentText = "\t"sv);
 
     public:
         nonvirtual void Indent (unsigned int indentLevel, ostream& out) const;

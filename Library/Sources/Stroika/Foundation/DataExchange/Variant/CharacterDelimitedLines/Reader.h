@@ -44,7 +44,7 @@ namespace Stroika::Foundation::DataExchange::Variant::CharacterDelimitedLines {
      *...
      *      \code
      *          Bijection<InternetMediaType, FileSuffixType> results{};
-     *          for (Sequence<String> line : DataExchange::Variant::CharacterDelimitedLines::Reader{{':'}}.ReadMatrix (IO::FileSystem::FileInputStream::New (L"/usr/share/mime/globs"))) {
+     *          for (Sequence<String> line : DataExchange::Variant::CharacterDelimitedLines::Reader{{':'}}.ReadMatrix (IO::FileSystem::FileInputStream::New ("/usr/share/mime/globs"sv))) {
      *              if (line.length () == 2) {
      *                  String glob = line[1];
      *                  if (glob.StartsWith ('*')) {

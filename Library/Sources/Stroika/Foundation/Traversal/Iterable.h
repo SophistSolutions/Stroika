@@ -708,7 +708,7 @@ namespace Stroika::Foundation::Traversal {
          *  \par Example Usage
          *      \code
          *          Iterable<int> c { 3, 4, 7 };
-         *          VerifyTestResult (c.Map<String> ([] (int i) { return Characters::Format (L"%d", i); }).SequentialEquals (Iterable<String> { L"3", L"4", L"7" }));
+         *          VerifyTestResult (c.Map<String> ([] (int i) { return Characters::Format (L"%d", i); }).SequentialEquals (Iterable<String> { "3", "4", "7" }));
          *      \endcode
          *
          *  \par Example Usage
@@ -764,8 +764,8 @@ namespace Stroika::Foundation::Traversal {
          *  \par Example Usage
          *      \code
          *          Iterable<InternetAddress> c{IO::Network::V4::kLocalhost, IO::Network::V4::kAddrAny};
-         *          VerifyTestResult (c.Join () == L"localhost, INADDR_ANY");
-         *          VerifyTestResult (c.Join (L"; ") == L"localhost, INADDR_ANY");
+         *          VerifyTestResult (c.Join () == "localhost, INADDR_ANY");
+         *          VerifyTestResult (c.Join (L"; ") == "localhost, INADDR_ANY");
          *      \endcode
          *
          *  See:

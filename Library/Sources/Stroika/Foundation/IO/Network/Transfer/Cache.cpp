@@ -55,8 +55,8 @@ namespace {
             nonvirtual String ToString () const
             {
                 StringBuilder sb = Element::ToString ().SubString (0, -1);
-                sb += L", fExpiresDefault: " + Characters::ToString (fExpiresDefault);
-                sb += L"}";
+                sb += ", fExpiresDefault: " + Characters::ToString (fExpiresDefault);
+                sb += "}";
                 return sb.str ();
             }
             optional<Time::DateTime> fExpiresDefault;
@@ -95,13 +95,13 @@ namespace {
                         bool canCheckCacheETAG = o->fETag.has_value ();
                         if (canCheckCacheETAG) {
                             context->fCachedElement = *o;
-                            request->fOverrideHeaders.Add (HTTP::HeaderName::kIfNoneMatch, L"\"" + *o->fETag + L"\"");
+                            request->fOverrideHeaders.Add (HTTP::HeaderName::kIfNoneMatch, "\""sv + *o->fETag + "\""sv);
                             // keep going as we can combine If-None-Match/If-Modified-Since
                         }
                         bool canCheckModifiedSince = o->fLastModified.has_value ();
                         if (canCheckModifiedSince) {
                             context->fCachedElement = *o;
-                            request->fOverrideHeaders.Add (HTTP::HeaderName::kIfModifiedSince, L"\"" + o->fLastModified->Format (DateTime::kRFC1123Format) + L"\"");
+                            request->fOverrideHeaders.Add (HTTP::HeaderName::kIfModifiedSince, "\""sv + o->fLastModified->Format (DateTime::kRFC1123Format) + "\""sv);
                         }
                     }
                 }
@@ -203,8 +203,8 @@ Transfer::Cache::Element::Element (const Response& response)
         //      a fixed - length and single - zone subset of the date and time specification used by the Internet Message Format[RFC5322].
         //
         if (hi->fKey == HTTP::HeaderName::kETag) {
-            if (hi->fValue.size () < 2 or not hi->fValue.StartsWith (L"\"") or not hi->fValue.EndsWith (L"\"")) {
-                Execution::Throw (Execution::Exception{L"malformed etag"sv});
+            if (hi->fValue.size () < 2 or not hi->fValue.StartsWith ("\""sv) or not hi->fValue.EndsWith ("\""sv)) {
+                Execution::Throw (Execution::Exception{"malformed etag"sv});
             }
             fETag = hi->fValue.SubString (1, -1);
             hi    = headers.erase (hi);
@@ -233,7 +233,7 @@ Transfer::Cache::Element::Element (const Response& response)
         else if (hi->fKey == HTTP::HeaderName::kCacheControl) {
             fCacheControl = Set<String>{hi->fValue.Tokenize ({','})};
             hi            = headers.erase (hi);
-            static const String kMaxAgeEquals_{L"max-age="sv};
+            static const String kMaxAgeEquals_{"max-age="sv};
             for (const String& cci : *fCacheControl) {
                 if (cci.StartsWith (kMaxAgeEquals_)) {
                     fExpiresDueToMaxAge = DateTime::Now () + Duration{Characters::FloatConversion::ToFloat (cci.SubString (kMaxAgeEquals_.size ()))};
@@ -255,7 +255,7 @@ Mapping<String, String> Transfer::Cache::Element::GetCombinedHeaders () const
 {
     Mapping<String, String> result = fOtherHeaders;
     if (fETag) {
-        result.Add (HTTP::HeaderName::kETag, L"\""sv + *fETag + L"\""sv);
+        result.Add (HTTP::HeaderName::kETag, "\""sv + *fETag + "\""sv);
     }
     if (fExpires) {
         result.Add (HTTP::HeaderName::kExpires, fExpires->Format (DateTime::kRFC1123Format));
@@ -264,7 +264,7 @@ Mapping<String, String> Transfer::Cache::Element::GetCombinedHeaders () const
         result.Add (HTTP::HeaderName::kLastModified, fLastModified->Format (DateTime::kRFC1123Format));
     }
     if (fCacheControl) {
-        function<String (const String& lhs, const String& rhs)> a = [] (const String& lhs, const String& rhs) -> String { return lhs.empty () ? rhs : (lhs + L"," + rhs); };
+        function<String (const String& lhs, const String& rhs)> a = [] (const String& lhs, const String& rhs) -> String { return lhs.empty () ? rhs : (lhs + ","sv + rhs); };
         result.Add (HTTP::HeaderName::kCacheControl, fCacheControl->Reduce (a).value_or (String{}));
     }
     if (fContentType) {
@@ -275,7 +275,7 @@ Mapping<String, String> Transfer::Cache::Element::GetCombinedHeaders () const
 
 bool Transfer::Cache::Element::IsCachable () const
 {
-    static const String kNoStore_{L"no-store"sv};
+    static const String kNoStore_{"no-store"sv};
     if (fCacheControl) {
         return not fCacheControl->Contains (kNoStore_);
     }
@@ -290,7 +290,7 @@ optional<DateTime> Transfer::Cache::Element::IsValidUntil () const
     if (fExpiresDueToMaxAge) {
         return *fExpiresDueToMaxAge;
     }
-    static const String kNoCache_{L"no-cache"sv};
+    static const String kNoCache_{"no-cache"sv};
     if (fCacheControl and fCacheControl->Contains (kNoCache_)) {
         return DateTime::Now ().AddSeconds (-1);
     }
@@ -300,16 +300,16 @@ optional<DateTime> Transfer::Cache::Element::IsValidUntil () const
 String Transfer::Cache::Element::ToString () const
 {
     StringBuilder sb;
-    sb += L"{";
-    sb += L", ETag: " + Characters::ToString (fETag);
-    sb += L", Expires: " + Characters::ToString (fExpires);
-    sb += L", ExpiresDueToMaxAge: " + Characters::ToString (fExpiresDueToMaxAge);
-    sb += L", LastModified: " + Characters::ToString (fLastModified);
-    sb += L", CacheControl: " + Characters::ToString (fCacheControl);
-    sb += L", ContentType: " + Characters::ToString (fContentType);
-    sb += L", OtherHeaders: " + Characters::ToString (fOtherHeaders);
-    sb += L", Body: " + Characters::ToString (fBody);
-    sb += L"}";
+    sb += "{";
+    sb += ", ETag: " + Characters::ToString (fETag);
+    sb += ", Expires: " + Characters::ToString (fExpires);
+    sb += ", ExpiresDueToMaxAge: " + Characters::ToString (fExpiresDueToMaxAge);
+    sb += ", LastModified: " + Characters::ToString (fLastModified);
+    sb += ", CacheControl: " + Characters::ToString (fCacheControl);
+    sb += ", ContentType: " + Characters::ToString (fContentType);
+    sb += ", OtherHeaders: " + Characters::ToString (fOtherHeaders);
+    sb += ", Body: " + Characters::ToString (fBody);
+    sb += "}";
     return sb.str ();
 }
 

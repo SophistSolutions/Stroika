@@ -549,8 +549,8 @@ namespace Stroika::Foundation::Traversal {
          *
          *  \par Example Usage
          *      \code
-         *          Assert (Range<int>{3, 4}.ToString () == L"[3 ... 4)");
-         *          Assert (Range<int>{3, 4}.ToString ([] (int n) { return Characters::Format (L"%d", n); }) == L"[3 ... 4)");
+         *          Assert (Range<int>{3, 4}.ToString () == "[3 ... 4)");
+         *          Assert (Range<int>{3, 4}.ToString ([] (int n) { return Characters::Format (L"%d", n); }) == "[3 ... 4)");
          *      \endcode
          *
          *  @see Characters::ToString ();

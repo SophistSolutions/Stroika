@@ -256,7 +256,7 @@ String ProcessRunner::Exception::mkMsg_ (const String& cmdLine, const String& er
 {
     Characters::StringBuilder sb;
     sb += errorMessage;
-    sb += L" '" + cmdLine + L"' failed";
+    sb += " '" + cmdLine + "' failed";
     {
         Characters::StringBuilder extraMsg;
         if (wExitStatus) {
@@ -264,22 +264,22 @@ String ProcessRunner::Exception::mkMsg_ (const String& cmdLine, const String& er
         }
         if (wTermSig) {
             if (not extraMsg.empty ()) {
-                extraMsg += L", ";
+                extraMsg += ", "sv;
             }
             extraMsg += Characters::Format (L"terminated by signal %d", int (*wTermSig));
         }
         if (wStopSig) {
             if (not extraMsg.empty ()) {
-                extraMsg += L", ";
+                extraMsg += ", "sv;
             }
             extraMsg += Characters::Format (L"stopped by signal %d", int (*wStopSig));
         }
         if (not extraMsg.empty ()) {
-            sb += L": " + extraMsg.str ();
+            sb += ": "sv + extraMsg.str ();
         }
     }
     if (stderrSubset) {
-        sb += L"; " + stderrSubset->LimitLength (100);
+        sb += "; "sv + stderrSubset->LimitLength (100);
     }
     return sb.str ();
 }
@@ -288,18 +288,18 @@ String ProcessRunner::Exception::mkMsg_ (const String& cmdLine, const String& er
 {
     Characters::StringBuilder sb;
     sb += errorMessage;
-    sb += L" '" + cmdLine + L"' failed";
+    sb += " '"sv + cmdLine + "' failed";
     {
         Characters::StringBuilder extraMsg;
         if (err) {
             extraMsg += Characters::Format (L"error: %d", int (*err));
         }
         if (not extraMsg.empty ()) {
-            sb += L": " + extraMsg.str ();
+            sb += ": " + extraMsg.str ();
         }
     }
     if (stderrSubset) {
-        sb += L"; " + stderrSubset->LimitLength (100);
+        sb += "; " + stderrSubset->LimitLength (100);
     }
     return sb.str ();
 }
@@ -417,11 +417,11 @@ String ProcessRunner::GetEffectiveCmdLine_ () const
     }
     Characters::StringBuilder sb;
     if (not fExecutable_.has_value ()) [[unlikely]] {
-        Execution::Throw (Execution::Exception{L"need command-line or executable path to run a process"sv});
+        Execution::Throw (Execution::Exception{"need command-line or executable path to run a process"sv});
     }
     sb += IO::FileSystem::FromPath (*fExecutable_);
     for (const String& i : fArgs_) {
-        sb += L" "sv + i;
+        sb += " "sv + i;
     }
     return sb.str ();
 }
@@ -496,13 +496,13 @@ void ProcessRunner::Run (optional<ProcessResultType>* processResult, ProgressMon
     else {
         // @todo warning: https://stroika.atlassian.net/browse/STK-585 - lots broken here - must shutdown threads on timeout!
         if (processResult == nullptr) {
-            Thread::Ptr t = Thread::New (CreateRunnable_ (nullptr, nullptr, progress), Thread::eAutoStart, L"ProcessRunner thread");
+            Thread::Ptr t = Thread::New (CreateRunnable_ (nullptr, nullptr, progress), Thread::eAutoStart, "ProcessRunner thread"_k);
             t.Join (timeout);
         }
         else {
             Synchronized<optional<ProcessResultType>> pr;
             [[maybe_unused]] auto&&                   cleanup = Finally ([&] () noexcept { *processResult = pr.load (); });
-            Thread::Ptr                               t       = Thread::New (CreateRunnable_ (&pr, nullptr, progress), Thread::eAutoStart, L"ProcessRunner thread");
+            Thread::Ptr                               t       = Thread::New (CreateRunnable_ (&pr, nullptr, progress), Thread::eAutoStart, "ProcessRunner thread"_k);
             t.Join (timeout);
         }
     }
@@ -548,7 +548,7 @@ ProcessRunner::BackgroundProcess ProcessRunner::RunInBackground (ProgressMonitor
 {
     TraceContextBumper ctx{"ProcessRunner::RunInBackground"};
     BackgroundProcess  result;
-    result.fRep_->fProcessRunner = Thread::New (CreateRunnable_ (&result.fRep_->fResult, nullptr, progress), Thread::eAutoStart, L"ProcessRunner background thread");
+    result.fRep_->fProcessRunner = Thread::New (CreateRunnable_ (&result.fRep_->fResult, nullptr, progress), Thread::eAutoStart, "ProcessRunner background thread"sv);
     return result;
 }
 
@@ -894,13 +894,13 @@ namespace {
                 if (processResult == nullptr) {
                     StringBuilder stderrMsg;
                     if (trailingStderrBufNWritten > Memory::NEltsOf (trailingStderrBuf)) {
-                        stderrMsg += L"...";
+                        stderrMsg += "..."sv;
                         stderrMsg += String::FromISOLatin1 (Memory::ConstSpan (span{trailingStderrBufNextByte2WriteAt, end (trailingStderrBuf)}));
                     }
                     stderrMsg += String::FromISOLatin1 (Memory::ConstSpan (span{begin (trailingStderrBuf), trailingStderrBufNextByte2WriteAt}));
                     Throw (ProcessRunner::Exception{
                         effectiveCmdLine,
-                        L"Spawned program"sv,
+                        "Spawned program"sv,
                         stderrMsg.str (),
                         WIFEXITED (status) ? WEXITSTATUS (status) : optional<uint8_t>{},
                         WIFSIGNALED (status) ? WTERMSIG (status) : optional<uint8_t>{},
@@ -1163,7 +1163,7 @@ namespace {
 
                 if (processResult == nullptr) {
                     if (processExitCode != 0) {
-                        Throw (ProcessRunner::Exception{effectiveCmdLine, L"Spawned program", {}, processExitCode});
+                        Throw (ProcessRunner::Exception{effectiveCmdLine, "Spawned program"sv, {}, processExitCode});
                     }
                 }
                 else {
@@ -1227,7 +1227,7 @@ pid_t Execution::DetachedProcessRunner (const String& commandLine)
     {
         Sequence<String> tmp{Execution::ParseCommandLine (commandLine)};
         if (tmp.size () == 0) [[unlikely]] {
-            Execution::Throw (Execution::Exception{L"invalid command argument to DetachedProcessRunner"sv});
+            Execution::Throw (Execution::Exception{"invalid command argument to DetachedProcessRunner"sv});
         }
         exe  = IO::FileSystem::ToPath (tmp[0]);
         args = tmp;

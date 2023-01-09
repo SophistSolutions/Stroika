@@ -79,12 +79,12 @@ optional<PortType> SchemeType::GetDefaultPort () const
     static const Mapping<String, PortType> kPredefined_{
         String::EqualsComparer{CompareOptions::eCaseInsensitive},
         initializer_list<Common::KeyValuePair<String, PortType>>{
-            {L"http"sv, static_cast<PortType> (80)},
-            {L"https"sv, static_cast<PortType> (443)},
-            {L"ldap"sv, static_cast<PortType> (389)},
-            {L"ldaps"sv, static_cast<PortType> (636)},
-            {L"ftp"sv, static_cast<PortType> (21)},
-            {L"ftps"sv, static_cast<PortType> (990)},
+            {"http"sv, static_cast<PortType> (80)},
+            {"https"sv, static_cast<PortType> (443)},
+            {"ldap"sv, static_cast<PortType> (389)},
+            {"ldaps"sv, static_cast<PortType> (636)},
+            {"ftp"sv, static_cast<PortType> (21)},
+            {"ftps"sv, static_cast<PortType> (990)},
         }};
     return kPredefined_.Lookup (*this);
 }
@@ -263,7 +263,7 @@ String Authority::As () const
 {
     StringBuilder sb;
     if (fUserInfo_) {
-        sb += fUserInfo_->AsEncoded () + L"@";
+        sb += fUserInfo_->AsEncoded () + "@"sv;
     }
     if (fHost_) {
         sb += fHost_->AsEncoded ();

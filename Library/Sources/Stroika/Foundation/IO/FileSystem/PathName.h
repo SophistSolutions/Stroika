@@ -49,7 +49,7 @@ namespace Stroika::Foundation::IO::FileSystem {
      *  gets rid of { ':', '/', '\', and '.' }
      *
      *      @todo - consider having optional parameter to specify which characters get mapped, and how.
-     *              maybe static const Mapping<Character,String> kDefaultSafeFilenmaeCharsMapping = {{':', L" ", etc...}). 
+     *              maybe static const Mapping<Character,String> kDefaultSafeFilenmaeCharsMapping = {{':', " ", etc...}). 
      */
     String SafeFilenameChars (const String& s);
 

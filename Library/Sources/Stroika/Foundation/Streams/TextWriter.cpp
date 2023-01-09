@@ -102,7 +102,7 @@ protected:
         }
         if (r != codecvt_utf8<wchar_t>::ok) [[unlikely]] {
             // not sure waht to throw!
-            Execution::Throw (Execution::RuntimeErrorException{L"Error converting characters codepage"sv});
+            Execution::Throw (Execution::RuntimeErrorException{"Error converting characters codepage"sv});
         }
     }
     virtual void Flush () override

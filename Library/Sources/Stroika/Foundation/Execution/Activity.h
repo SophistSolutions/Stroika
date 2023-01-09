@@ -49,11 +49,11 @@ namespace Stroika::Foundation::Execution {
      *
      *  \par Example Usage
      *      \code
-     *          static constexpr Activity  kBuildingThingy_{ L"building thingy"sv };
-     *          static const auto kOtherActivity = Activity<String>{  L"abc" };
+     *          static constexpr Activity  kBuildingThingy_{ "building thingy"sv };
+     *          static const auto kOtherActivity = Activity<String>{  "abc" };
      *                                                                          // automatic variable activity OK as long as it's lifetime longer than reference in DeclareActivity
-     *          auto otherActivity = Activity<String> { L"abc" + argument };    // activities can be stack based, but these cost more to define
-     *          auto lazyEvalActivity = LazyEvalActivity ([&] () -> String { return argument.Repeat (5) + L"x"; });
+     *          auto otherActivity = Activity<String> { "abc" + argument };    // activities can be stack based, but these cost more to define
+     *          auto lazyEvalActivity = LazyEvalActivity ([&] () -> String { return argument.Repeat (5) + "x"; });
      *          // then for how to use activity object - see DeclareActivity
      *      \endcode
      *
@@ -67,32 +67,17 @@ namespace Stroika::Foundation::Execution {
      *          there they at least allow virtual constexpr methods. That might impact (indirecly) whether an object
      *          can be constexpr (having a virtual dtor).
      */
-    template <typename CTOR_ARG = Characters::String>
-    class Activity;
-
-    template <>
-    class Activity<Characters::String> final : public Private_::Activities_::AsStringObj_ {
+    template <typename STRINGISH_T = Characters::String>
+    class Activity final : public Private_::Activities_::AsStringObj_ {
     public:
-        Activity (const Characters::String& arg);
+        constexpr Activity (const STRINGISH_T& arg);
         Activity (const Activity& src) = default;
 
     public:
         virtual Characters::String AsString () const override;
 
     private:
-        Characters::String fArg_;
-    };
-    template <>
-    class Activity<wstring_view> final : public Private_::Activities_::AsStringObj_ {
-    public:
-        constexpr Activity (const wstring_view& arg) noexcept;
-        constexpr Activity (const Activity& src) = default;
-
-    public:
-        virtual Characters::String AsString () const override;
-
-    private:
-        wstring_view fArg_;
+        STRINGISH_T fArg_;
     };
 
     /**
@@ -147,7 +132,7 @@ namespace Stroika::Foundation::Execution {
      *
      *  \par Example Usage
      *      \code
-     *          static constexpr Activity   kBuildingThingy_ {L"building thingy"sv };
+     *          static constexpr Activity   kBuildingThingy_ {"building thingy"sv };
      *          try {
      *              DeclareActivity declareActivity { &kBuildingThingy_ };
      *              doBuildThing  ();   // throw any exception (that inherits from Exception<>)

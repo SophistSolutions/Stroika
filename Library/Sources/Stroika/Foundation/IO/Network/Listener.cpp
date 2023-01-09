@@ -63,7 +63,7 @@ struct Listener::Rep_ {
                 }
             },
             Thread::eAutoStart,
-            L"Socket Listener: " + Characters::ToString (addrs));
+            "Socket Listener: " + Characters::ToString (addrs));
     }
 #if qDefaultTracingOn
     ~Rep_ ()

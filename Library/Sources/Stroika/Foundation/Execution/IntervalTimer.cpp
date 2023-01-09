@@ -31,12 +31,12 @@ using namespace Stroika::Foundation::Time;
 Characters::String IntervalTimer::RegisteredTask::ToString () const
 {
     StringBuilder sb;
-    sb += L"{";
-    sb += L"Callback: " + Characters::ToString (fCallback) + L", ";
-    sb += L"CallNextAt: " + Characters::ToString (fCallNextAt) + L", ";
-    sb += L"Frequency: " + Characters::ToString (fFrequency) + L", ";
-    sb += L"Hysteresis: " + Characters::ToString (fHysteresis) + L", ";
-    sb += L"}";
+    sb += "{";
+    sb += "Callback: " + Characters::ToString (fCallback) + ", ";
+    sb += "CallNextAt: " + Characters::ToString (fCallNextAt) + ", ";
+    sb += "Frequency: " + Characters::ToString (fFrequency) + ", ";
+    sb += "Hysteresis: " + Characters::ToString (fHysteresis) + ", ";
+    sb += "}";
     return sb.str ();
 }
 
@@ -147,7 +147,7 @@ struct IntervalTimer::Manager::DefaultRep ::Rep_ {
                                                            Thread::New ([this] () {
                                                                RunnerLoop_ ();
                                                            },
-                                                                        Thread::eAutoStart, L"Default-Interval-Timer"sv)));
+                                                                        Thread::eAutoStart, "Default-Interval-Timer"sv)));
             }
             else {
                 fDataChanged_.Set (); // if there was and still is a thread, it maybe sleeping too long, so wake it up

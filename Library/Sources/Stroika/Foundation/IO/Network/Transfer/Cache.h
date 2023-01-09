@@ -59,7 +59,7 @@ namespace Stroika::Foundation::IO::Network::Transfer {
 
             /**
              */
-            static const inline String kCachedResultHeaderDefault{L"X-Stroika-Cached-Result"sv};
+            static const inline String kCachedResultHeaderDefault{"X-Stroika-Cached-Result"sv};
 
             /**
              *  This header will always appear in cached results. If missing it will not be generated. It defaults to kCachedResultHeaderDefault.

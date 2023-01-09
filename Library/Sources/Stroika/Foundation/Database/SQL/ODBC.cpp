@@ -69,7 +69,7 @@ struct Connection::Rep_ final : IRep {
                     nullptr, SQL_NTS);
                 if ((return_value != SQL_SUCCESS) && (return_value != SQL_SUCCESS_WITH_INFO)) {
                     // This logic for producing an error message completely sucks and is largely incorrect
-                    wstring     errorString = L"Error SQLConnect: ";
+                    String      errorString = "Error SQLConnect: "_k;
                     SQLTCHAR    sqlState[6];
                     SQLINTEGER  errorCode;
                     SQLSMALLINT messageLength;
@@ -87,13 +87,13 @@ struct Connection::Rep_ final : IRep {
                         errorString += SDKString2Wide (reinterpret_cast<TCHAR*> (errorMessage));
                     }
                     else if (errValue == SQL_SUCCESS_WITH_INFO) {
-                        errorString = L"Error message too long at";
+                        errorString = "Error message too long at"_k;
                     }
                     else if (errValue == SQL_ERROR) {
-                        errorString += L"RecNumber was negative or 0 or BufferLength was less tha 0";
+                        errorString += "RecNumber was negative or 0 or BufferLength was less than 0"_k;
                     }
                     else if (errValue == SQL_NO_DATA) {
-                        errorString += L"SQL no data";
+                        errorString += "SQL no data"_k;
                     }
                     Execution::Throw (Exception{errorString});
                 }
@@ -251,7 +251,7 @@ struct Statement::MyRep_ : IRep {
         AssertNotImplemented ();
         String pn = parameterName;
         if (pn[0] != ':') {
-            pn = L":" + pn;
+            pn = ":"_k + pn;
         }
         for (unsigned int i = 0; i < fParameters_.length (); ++i) {
             if (fParameters_[i].fName == pn) {

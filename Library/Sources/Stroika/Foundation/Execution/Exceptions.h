@@ -142,7 +142,7 @@ namespace Stroika::Foundation::Execution {
      *
      *  \par Example Usage
      *      \code
-     *          static constexpr Activity   kBuildingThingy_ {L"building thingy"sv };
+     *          static constexpr Activity   kBuildingThingy_ {"building thingy"sv };
      *          try {
      *              DeclareActivity declareActivity { &kBuildingThingy_ };
      *              doBuildThing  ();   // throw any exception (that inherits from Exception<>)
@@ -221,7 +221,7 @@ namespace Stroika::Foundation::Execution {
      *          catch (const std::system_error& e) {
      *              VerifyTestResult (e.code ().value () == make_error_code (errc::bad_address).value ());
      *              VerifyTestResult (e.code ().category () == system_category () or e.code ().category () == generic_category ());
-     *              Assert (Characters::ToString (e).Contains (L"bad address {errno: 14}"));
+     *              Assert (Characters::ToString (e).Contains ("bad address {errno: 14}"));
      *          }
      *      \endcode
      *

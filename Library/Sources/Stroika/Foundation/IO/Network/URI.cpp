@@ -40,7 +40,7 @@ namespace {
             return s;
         }
         if (a) {
-            return L"/" + s;
+            return "/" + s;
         }
         return s;
     }
@@ -89,19 +89,12 @@ namespace {
         for (const String& segment : segments2) {
             result += segment;
         }
-        if (lastSegmentShouldHaveSlash and not result.str ().EndsWith (L"/")) {
-            result += L"/";
+        if (lastSegmentShouldHaveSlash and not result.str ().EndsWith ("/"sv)) {
+            result += "/"sv;
         }
         return result.str ();
     };
 }
-
-#if 0
-URI URI::Parse (const string& rawURL)
-{
-    return Parse (String::FromASCII (rawURL));
-}
-#endif
 
 URI URI::Parse (const String& rawURL)
 {
@@ -109,7 +102,7 @@ URI URI::Parse (const String& rawURL)
     Debug::TraceContextBumper{L"IO::Network::URI::Parse", L"%s", rawURL.c_str ()};
 #endif
     // https://tools.ietf.org/html/rfc3986#appendix-B
-    static const RegularExpression kParseURLRegExp_{L"^(([^:/?#]+):)?(//([^/?#]*))?([^?#]*)(\\?([^#]*))?(#(.*))?"_RegEx};
+    static const RegularExpression kParseURLRegExp_{"^(([^:/?#]+):)?(//([^/?#]*))?([^?#]*)(\\?([^#]*))?(#(.*))?"_RegEx};
     optional<String>               scheme;
     optional<String>               authority;
     optional<String>               path;
@@ -128,7 +121,7 @@ URI URI::Parse (const String& rawURL)
         return URI{emptyStr2Missing (scheme), Authority::Parse (authority.value_or (String{})), UniformResourceIdentification::PCTDecode2String (path.value_or (String{})), emptyStr2Missing (query), emptyStr2Missing (fragment)};
     }
     else {
-        Execution::Throw (Execution::RuntimeErrorException{L"Ill-formed URI"sv}); // doesn't match regexp in https://tools.ietf.org/html/rfc3986#appendix-B
+        Execution::Throw (Execution::RuntimeErrorException{"Ill-formed URI"sv}); // doesn't match regexp in https://tools.ietf.org/html/rfc3986#appendix-B
     }
 }
 
@@ -146,23 +139,23 @@ String URI::As () const
     }
     if (fAuthority_) {
         Assert (fAuthority_->As<String> ().All ([] (Character c) { return c.IsASCII (); }));
-        result += L"//" + fAuthority_->As<String> (); // this already produces 'raw' (pct encoded) format
+        result += "//"sv + fAuthority_->As<String> (); // this already produces 'raw' (pct encoded) format
     }
 
     if (fAuthority_ and not(fPath_.empty () or fPath_.StartsWith (L"/"))) {
         // NOT SURE HOW TO HANDLE
-        Execution::Throw (Execution::RuntimeErrorException{L"This is not a legal URI to encode (authority present, but path not empty or absolute)"sv});
+        Execution::Throw (Execution::RuntimeErrorException{"This is not a legal URI to encode (authority present, but path not empty or absolute)"sv});
     }
 
     static constexpr UniformResourceIdentification::PCTEncodeOptions kPathEncodeOptions_{false, false, false, false, true};
     result += UniformResourceIdentification::PCTEncode2String (fPath_, kPathEncodeOptions_);
     if (fQuery_) {
         static constexpr UniformResourceIdentification::PCTEncodeOptions kQueryEncodeOptions_{false, false, false, true};
-        result += L"?"sv + UniformResourceIdentification::PCTEncode2String (*fQuery_, kQueryEncodeOptions_);
+        result += "?"sv + UniformResourceIdentification::PCTEncode2String (*fQuery_, kQueryEncodeOptions_);
     }
     if (fFragment_) {
         static constexpr UniformResourceIdentification::PCTEncodeOptions kFragmentEncodeOptiosn_{false, false, false, true};
-        result += L"#"sv + UniformResourceIdentification::PCTEncode2String (*fFragment_, kFragmentEncodeOptiosn_);
+        result += "#"sv + UniformResourceIdentification::PCTEncode2String (*fFragment_, kFragmentEncodeOptiosn_);
     }
     Ensure (result.str ().All ([] (Character c) { return c.IsASCII (); }));
     return result.str ();
@@ -213,7 +206,7 @@ String URI::GetAuthorityRelativeResource () const
 String URI::GetAuthorityRelativeResourceDir () const
 {
     AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
-    static const RegularExpression                 kSelectDir_ = L"(.*\\/)[^\\/]*"_RegEx;
+    static const RegularExpression                 kSelectDir_ = "(.*\\/)[^\\/]*"_RegEx;
     optional<String>                               baseDir;
     (void)fPath_.Matches (kSelectDir_, &baseDir);
     return baseDir.value_or (String{});
@@ -241,17 +234,17 @@ String URI::ToString () const
     AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
     StringBuilder                                  result;
     if (fScheme_) {
-        result += *fScheme_ + L":";
+        result += *fScheme_ + ":"sv;
     }
     if (fAuthority_) {
-        result += L"//" + fAuthority_->As<String> ();
+        result += "//"sv + fAuthority_->As<String> ();
     }
     result += fPath_;
     if (fQuery_) {
-        result += L"?"sv + *fQuery_;
+        result += "?"sv + *fQuery_;
     }
     if (fFragment_) {
-        result += L"#"sv + *fFragment_;
+        result += "#"sv + *fFragment_;
     }
     return Characters::ToString (result.str ());
 }
@@ -264,7 +257,7 @@ void URI::CheckValidPathForAuthority_ (const optional<Authority>& authority, con
      *      must either be empty or begin with a slash ("/") character
      */
     if (authority and (not path.empty () and not path.StartsWith (L"/"))) {
-        Execution::Throw (Execution::RuntimeErrorException{L"A URI with an authority must have an empty path, or an absolute path"sv});
+        Execution::Throw (Execution::RuntimeErrorException{"A URI with an authority must have an empty path, or an absolute path"sv});
     }
 }
 
@@ -294,19 +287,19 @@ URI URI::Combine (const URI& overridingURI) const
     if (not baseURI.GetScheme ()) {
         Execution::Throw (Execution::RuntimeErrorException{"Scheme is required in base URI to combine with another URI"sv});
     }
-    auto merge = [&] (const String& base, const String& rhs) {
+    auto merge = [&] (const String& base, const String& rhs) -> String {
         // @see https://tools.ietf.org/html/rfc3986#section-5.2.3
         if (baseURI.GetAuthority () and base.empty ()) {
-            return L"/" + rhs;
+            return "/"sv + rhs;
         }
-        static const RegularExpression kSelectDir_ = L"(.*\\/)[^\\/]*"_RegEx;
+        static const RegularExpression kSelectDir_ = "(.*\\/)[^\\/]*"_RegEx;
         optional<String>               baseDir;
         (void)base.Matches (kSelectDir_, &baseDir);
         return baseDir.value_or (String{}) + rhs;
     };
 
-    Assert (remove_dot_segments_ (L"/a/b/c/./../../g") == L"/a/g");    // from https://tools.ietf.org/html/rfc3986#section-5.2.4
-    Assert (remove_dot_segments_ (L"mid/content=5/../6") == L"mid/6"); // ditto
+    Assert (remove_dot_segments_ ("/a/b/c/./../../g") == L"/a/g");    // from https://tools.ietf.org/html/rfc3986#section-5.2.4
+    Assert (remove_dot_segments_ ("mid/content=5/../6") == L"mid/6"); // ditto
 
     // Algorithm copied from https://tools.ietf.org/html/rfc3986#section-5.2.2
     URI result;

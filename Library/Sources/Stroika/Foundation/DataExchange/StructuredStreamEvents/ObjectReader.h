@@ -205,8 +205,8 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
      *          Registry mapper;
      *          mapper.AddCommonType<String> ();
      *          mapper.AddClass<Person_> (initializer_list<StructFieldInfo> {
-     *              { Name { L"FirstName" }, StructFieldMetaInfo{&Person_::firstName} },
-     *              { Name { L"LastName" }, StructFieldMetaInfo{&Person_::lastName} },
+     *              { Name { "FirstName" }, StructFieldMetaInfo{&Person_::firstName} },
+     *              { Name { "LastName" }, StructFieldMetaInfo{&Person_::lastName} },
      *          });
      *          Person_ p;
      *          IConsumerDelegateToContext tmpCtx1 (mapper, make_shared<ReadDownToReader> (mapper.MakeContextReader (&p)));
@@ -219,7 +219,7 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
      *      \code
      *          .. start with the types and mapper from Example 1, and add
      *          Sequence<Person_> people;
-     *          mapper.AddCommonType<Sequence<Person_>> (Name (L"WithWhom"));
+     *          mapper.AddCommonType<Sequence<Person_>> (Name{"WithWhom"});
      *          IConsumerDelegateToContext tmpCtx2 { mapper, make_shared<ReadDownToReader> (newRegistry.MakeContextReader (&people)) };
      *          XML::SAXParse (mkdata_ (), tmp);
      *      \endcode
@@ -329,8 +329,8 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
          *              Stroika_Define_Enum_Bounds (Male, Female)
          *          };
          *          registry.AddCommonReader_NamedEnumerations<GenderType_> (Containers::Bijection<GenderType_, String>{
-         *              pair<GenderType_, String>{GenderType_::Male, L"Male"},
-         *              pair<GenderType_, String>{GenderType_::Female, L"Female"},
+         *              pair<GenderType_, String>{GenderType_::Male, "Male"},
+         *              pair<GenderType_, String>{GenderType_::Female, "Female"},
          *          });
          *      \endcode
          *
@@ -846,7 +846,7 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
     template <typename T>
     class RangeReader : public IElementConsumer {
     public:
-        static const inline pair<Name, Name> kDefaultBoundsNames{Name{L"LowerBound"sv, Name::eAttribute}, Name{L"UpperBound"sv, Name::eAttribute}};
+        static const inline pair<Name, Name> kDefaultBoundsNames{Name{"LowerBound"sv, Name::eAttribute}, Name{"UpperBound"sv, Name::eAttribute}};
 
     public:
         /**
@@ -926,19 +926,19 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
      *      Registry registry;
      *      registry.AddCommonType<String> ();
      *      registry.AddClass<Person_> (initializer_list<Registry::StructFieldInfo> {
-     *          { Name { L"FirstName" }, StructFieldMetaInfo{&Person_::firstName} },
-     *          { Name { L"LastName" }, StructFieldMetaInfo{&Person_::lastName} },
+     *          { Name { "FirstName" }, StructFieldMetaInfo{&Person_::firstName} },
+     *          { Name { "LastName" }, StructFieldMetaInfo{&Person_::lastName} },
      *      });
      *      registry.AddCommonType<vector<Person_>> ();
      *      registry.Add<vector<Person_>> (Registry::ConvertReaderToFactory <vector<Person_>, RepeatedElementReader<vector<Person_>>> ());
      *      registry.AddClass<Address_> (initializer_list<Registry::StructFieldInfo> {
-     *          { Name { L"city" }, StructFieldMetaInfo{&Address_::city} },
-     *          { Name { L"state" }, StructFieldMetaInfo{&Address_::state} },
+     *          { Name { "city" }, StructFieldMetaInfo{&Address_::city} },
+     *          { Name { "state" }, StructFieldMetaInfo{&Address_::state} },
      *      });
      *      registry.Add<vector<Address_>> (Registry::ConvertReaderToFactory <vector<Address_>, RepeatedElementReader<vector<Address_>>> ());
      *      registry.AddClass<Data_> (initializer_list<Registry::StructFieldInfo> {
-     *          { Name { L"person" }, StructFieldMetaInfo{&Data_::people} },
-     *          { Name { L"address" }, StructFieldMetaInfo{&Data_::addresses} },
+     *          { Name { "person" }, StructFieldMetaInfo{&Data_::people} },
+     *          { Name { "address" }, StructFieldMetaInfo{&Data_::addresses} },
      *      });
      *      Data_   data;
      *      Registry::IConsumerDelegateToContext ctx { registry, make_shared<ReadDownToReader> (registry.MakeContextReader (&data)) };

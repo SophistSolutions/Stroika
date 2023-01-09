@@ -22,13 +22,13 @@ namespace {
     void Indent_ (const OutputStream<Character>::Ptr& out, int indentLevel)
     {
         for (int i = 0; i < indentLevel; ++i) {
-            out.Write (L"    "sv);
+            out.Write ("    "sv);
         }
     }
 }
 namespace {
-    static const String kTrueLbl_  = L"true"sv;
-    static const String kFalseLbl_ = L"false"sv;
+    static const String kTrueLbl_  = "true"sv;
+    static const String kFalseLbl_ = "false"sv;
     void                PrettyPrint_ (const VariantValue& v, const OutputStream<Character>::Ptr& out, int indentLevel);
     void                PrettyPrint_ (bool v, const OutputStream<Character>::Ptr& out)
     {
@@ -76,25 +76,25 @@ namespace {
     {
         for (auto i = v.begin (); i != v.end (); ++i) {
             PrettyPrint_ (*i, out, indentLevel + 1);
-            out.Write (L"\n");
+            out.Write ("\n"sv);
         }
         Indent_ (out, indentLevel);
     }
     void PrettyPrint_ (const map<wstring, VariantValue>& v, const OutputStream<Character>::Ptr& out, int indentLevel)
     {
         //@@@@TODO - must validate first legit xml elt args
-        out.Write (L"\n");
+        out.Write ("\n"sv);
         for (auto i = v.begin (); i != v.end ();) {
             Indent_ (out, indentLevel);
-            out.Write (L"<");
+            out.Write ("<"sv);
             out.Write (i->first.c_str ());
-            out.Write (L">");
+            out.Write (">"sv);
             PrettyPrint_ (i->second, out, indentLevel + 1);
-            out.Write (L"</");
+            out.Write ("</"sv);
             out.Write (i->first.c_str ());
-            out.Write (L">");
+            out.Write (">"sv);
             ++i;
-            out.Write (L"\n");
+            out.Write ("\n"sv);
         }
     }
     void PrettyPrint_ (const VariantValue& v, const OutputStream<Character>::Ptr& out, int indentLevel)
@@ -153,7 +153,7 @@ public:
     }
     virtual String GetDefaultFileSuffix () const override
     {
-        return L".xml"sv;
+        return ".xml"sv;
     }
     virtual void Write (const VariantValue& v, const Streams::OutputStream<byte>::Ptr& out) override
     {

@@ -59,9 +59,9 @@ using SystemPerformance::Support::WMICollector;
 
 #if qUseWMICollectionSupport_
 namespace {
-    const String kInstanceName_{L""sv};
+    const String kInstanceName_{""sv};
 
-    const String kProcessorQueueLength_{L"Processor Queue Length"sv};
+    const String kProcessorQueueLength_{"Processor Queue Length"sv};
 }
 #endif
 
@@ -213,7 +213,7 @@ namespace {
                 DbgTrace (L"in Instruments::CPU::capture_GetSysTimes_ linesize=%d, line[0]=%s", line.size (), line.empty () ? L"" : line[0].c_str ());
 #endif
                 size_t sz = line.size ();
-                if (sz >= 5 and line[0] == L"cpu") {
+                if (sz >= 5 and line[0] == "cpu"sv) {
                     result.user   = ToFloat<double> (line[1]);
                     result.nice   = ToFloat<double> (line[2]);
                     result.system = ToFloat<double> (line[3]);
@@ -315,7 +315,7 @@ namespace {
     struct _Context : SystemPerformance::Support::Context {
         optional<WinSysTimeCaptureContext_> fLastSysTimeCapture{};
 #if qUseWMICollectionSupport_
-        WMICollector fSystemWMICollector_{L"System"sv, {kInstanceName_}, {kProcessorQueueLength_}};
+        WMICollector fSystemWMICollector_{"System"sv, {kInstanceName_}, {kProcessorQueueLength_}};
 #endif
     };
 
@@ -383,7 +383,7 @@ namespace {
 #endif
 
 namespace {
-    const MeasurementType kCPUMeasurment_ = MeasurementType{L"CPU-Usage"sv};
+    const MeasurementType kCPUMeasurment_ = MeasurementType{"CPU-Usage"sv};
 }
 
 namespace {

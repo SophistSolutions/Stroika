@@ -218,7 +218,7 @@ CookieList::CookieList ()
 
 String CookieList::EncodeForCookieHeader () const
 {
-    return String::Join (fCookieDetails_.Map<String> ([] (const auto& i) { return i.fKey + L"=" + i.fValue; }), L"; "sv);
+    return String::Join (fCookieDetails_.Map<String> ([] (const auto& i) { return i.fKey + "=" + i.fValue; }), "; "sv);
 }
 
 CookieList CookieList::Parse (const String& cookieValueArg)

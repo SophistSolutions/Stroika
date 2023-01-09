@@ -35,7 +35,7 @@ public:
     }
     virtual String GetDefaultFileSuffix () const override
     {
-        return L".ini"sv;
+        return ".ini"sv;
     }
     virtual void Write (const VariantValue& v, const OutputStream<byte>::Ptr& out) override
     {
@@ -59,14 +59,14 @@ public:
     {
         StringBuilder sb;
         if (sectionName) {
-            sb += L"[";
+            sb += "[";
             sb += *sectionName;
-            sb += L"]";
+            sb += "]";
             sb += Characters::GetEOL<wchar_t> ();
         }
         for (const Common::KeyValuePair<String, String>& kvp : profile.fProperties) {
             sb += kvp.fKey;
-            sb += L"=";
+            sb += "=";
             sb += kvp.fValue;
             sb += Characters::GetEOL<wchar_t> ();
         }

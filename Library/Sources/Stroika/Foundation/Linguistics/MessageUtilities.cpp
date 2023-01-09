@@ -33,14 +33,14 @@ bool MessageUtilities_en::AppliesToThisLocale (const String& localeName) const
 pair<String, optional<String>> MessageUtilities_en::RemoveTrailingSentencePunctuation (const String& msg) const
 {
     // super primitive (may want to trim trailing whitespace if any on msg after remove of punctuation but shouldnt be any)
-    if (msg.EndsWith (L"."sv)) {
-        return pair<String, optional<String>>{msg.SubString (0, -1), L"."sv};
+    if (msg.EndsWith ("."sv)) {
+        return pair<String, optional<String>>{msg.SubString (0, -1), "."sv};
     }
-    if (msg.EndsWith (L"?"sv)) {
-        return pair<String, optional<String>>{msg.SubString (0, -1), L"?"sv};
+    if (msg.EndsWith ("?"sv)) {
+        return pair<String, optional<String>>{msg.SubString (0, -1), "?"sv};
     }
-    if (msg.EndsWith (L"!"sv)) {
-        return pair<String, optional<String>>{msg.SubString (0, -1), L"!"sv};
+    if (msg.EndsWith ("!"sv)) {
+        return pair<String, optional<String>>{msg.SubString (0, -1), "!"sv};
     }
     return pair<String, optional<String>>{msg, nullopt};
 }

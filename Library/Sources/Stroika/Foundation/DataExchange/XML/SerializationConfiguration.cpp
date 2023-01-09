@@ -17,7 +17,7 @@ using namespace Stroika::Foundation::DataExchange::XML;
  ********************************************************************************
  */
 SerializationConfiguration::SerializationConfiguration ()
-    : fDocumentElementName_{L"Document"sv}
-    , fArrayElementName_{L"Array"sv}
+    : fDocumentElementName_{"Document"sv}
+    , fArrayElementName_{"Array"sv}
 {
 }

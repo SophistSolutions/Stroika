@@ -43,16 +43,16 @@ namespace {
         StringBuilder sb;
         auto          tmp = Linguistics::MessageUtiltiesManager::Get ()->RemoveTrailingSentencePunctuation (reasonForError);
         sb += tmp.first;
-        sb += L" while ";
+        sb += " while "sv;
         for (auto i = activities.begin (); i != activities.end ();) {
             sb += i->AsString ();
             ++i;
             if (i == activities.end ()) {
-                sb += tmp.second.value_or (L"."sv);
+                sb += tmp.second.value_or ("."sv);
             }
             else {
                 // not clear yet what message will work here
-                sb += L", while ";
+                sb += ", while "sv;
             }
         }
         return sb.str ();

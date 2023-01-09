@@ -26,23 +26,9 @@ namespace Stroika::Foundation::DataExchange {
     {
     }
     template <typename ATOM_MANAGER>
-    inline Atom<ATOM_MANAGER>::Atom (const wstring& src)
-        : fValue_{ATOM_MANAGER::Intern (src)}
-    {
-    }
-    template <typename ATOM_MANAGER>
-    inline Atom<ATOM_MANAGER>::Atom (const wstring_view& src)
-        : fValue_{ATOM_MANAGER::Intern (src)}
-    {
-    }
-    template <typename ATOM_MANAGER>
-    inline Atom<ATOM_MANAGER>::Atom (const wchar_t* src)
-        : fValue_{ATOM_MANAGER::Intern (src)}
-    {
-    }
-    template <typename ATOM_MANAGER>
-    inline Atom<ATOM_MANAGER>::Atom (const String& src)
-        : fValue_{ATOM_MANAGER::Intern (src)}
+    template <Characters::ConvertibleToString STRING_LIKE>
+    inline Atom<ATOM_MANAGER>::Atom (STRING_LIKE&& src)
+        : fValue_{ATOM_MANAGER::Intern (forward<STRING_LIKE> (src))}
     {
     }
     template <typename ATOM_MANAGER>

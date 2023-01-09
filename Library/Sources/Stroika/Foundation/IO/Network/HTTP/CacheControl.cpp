@@ -43,32 +43,32 @@ CacheControl CacheControl::Parse (const String& headerValue)
                 goto DoneWithV;
             }
         }
-        if (String::EqualsComparer{CompareOptions::eCaseInsensitive}(token, L"must-revalidate")) {
+        if (String::EqualsComparer{CompareOptions::eCaseInsensitive}(token, "must-revalidate"sv)) {
             r.fMustRevalidate = true;
         }
-        else if (String::EqualsComparer{CompareOptions::eCaseInsensitive}(token, L"no-transform")) {
+        else if (String::EqualsComparer{CompareOptions::eCaseInsensitive}(token, "no-transform"sv)) {
             r.fNoTransform = true;
         }
-        else if (String::EqualsComparer{CompareOptions::eCaseInsensitive}(token, L"only-if-cached")) {
+        else if (String::EqualsComparer{CompareOptions::eCaseInsensitive}(token, "only-if-cached"sv)) {
             r.fOnlyIfCached = true;
         }
-        else if (String::EqualsComparer{CompareOptions::eCaseInsensitive}(token, L"age") && vv.length () >= 2) {
+        else if (String::EqualsComparer{CompareOptions::eCaseInsensitive}(token, "age"sv) && vv.length () >= 2) {
             r.fAge = parseInt (vv[1]);
         }
-        else if (String::EqualsComparer{CompareOptions::eCaseInsensitive}(token, L"max-age") && vv.length () >= 2) {
+        else if (String::EqualsComparer{CompareOptions::eCaseInsensitive}(token, "max-age"sv) && vv.length () >= 2) {
             r.fMaxAge = parseInt (vv[1]);
         }
-        else if (String::EqualsComparer{CompareOptions::eCaseInsensitive}(token, L"s-max-age") && vv.length () >= 2) {
+        else if (String::EqualsComparer{CompareOptions::eCaseInsensitive}(token, "s-max-age"sv) && vv.length () >= 2) {
             r.fSharedMaxAge = parseInt (vv[1]);
         }
-        else if (String::EqualsComparer{CompareOptions::eCaseInsensitive}(token, L"max-stale")) {
+        else if (String::EqualsComparer{CompareOptions::eCaseInsensitive}(token, "max-stale"sv)) {
             MaxStale m;
             if (vv.length () >= 2) {
                 m.fAmount = parseInt (vv[1]);
             }
             r.fMaxStale = m;
         }
-        else if (String::EqualsComparer{CompareOptions::eCaseInsensitive}(token, L"min-fresh") && vv.length () >= 2) {
+        else if (String::EqualsComparer{CompareOptions::eCaseInsensitive}(token, "min-fresh"sv) && vv.length () >= 2) {
             r.fMinFresh = parseInt (vv[1]);
         }
     DoneWithV:;
@@ -90,19 +90,19 @@ String CacheControl::As () const
     }
     if (fMustRevalidate) {
         handleComma ();
-        sb += L"must-revalidate"sv;
+        sb += "must-revalidate"sv;
     }
     if (fImmutable) {
         handleComma ();
-        sb += L"immutable"sv;
+        sb += "immutable"sv;
     }
     if (fNoTransform) {
         handleComma ();
-        sb += L"no-transform"sv;
+        sb += "no-transform"sv;
     }
     if (fOnlyIfCached) {
         handleComma ();
-        sb += L"only-if-cached"sv;
+        sb += "only-if-cached"sv;
     }
     if (fAge) {
         handleComma ();
@@ -118,7 +118,7 @@ String CacheControl::As () const
     }
     if (fMaxStale) {
         handleComma ();
-        sb += L"max-stale";
+        sb += "max-stale";
         if (fMaxStale->fAmount) {
             sb += Characters::Format (L"=%d", *fMaxStale->fAmount);
         }

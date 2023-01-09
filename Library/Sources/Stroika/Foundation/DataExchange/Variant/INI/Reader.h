@@ -70,8 +70,8 @@ namespace Stroika::Foundation::DataExchange::Variant::INI {
      *          tmp << "BUG_REPORT_URL=\"http://bugs.launchpad.net/ubuntu/\"" << endl;
      *          Variant::INI::Profile p = Variant::INI::Reader ().ReadProfile (tmp);
      *          VerifyTestResult (p.fNamedSections.empty ());
-     *          VerifyTestResult (p.fUnnamedSection.fProperties.LookupValue (L"NAME") == L"Ubuntu");
-     *          VerifyTestResult (p.fUnnamedSection.fProperties.LookupValue (L"SUPPORT_URL") == L"http://help.ubuntu.com/");
+     *          VerifyTestResult (p.fUnnamedSection.fProperties.LookupValue ("NAME") == "Ubuntu");
+     *          VerifyTestResult (p.fUnnamedSection.fProperties.LookupValue ("SUPPORT_URL") == "http://help.ubuntu.com/");
      *      \endcode
      */
     class Reader : public Variant::Reader {

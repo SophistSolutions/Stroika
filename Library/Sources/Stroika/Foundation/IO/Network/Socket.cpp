@@ -128,7 +128,7 @@ void Socket::Ptr::Bind (const SocketAddress& sockAddr, BindFlags bindFlags)
     }
     catch (const Execution::SystemErrorException<>& e) {
         if (e.code () == errc::permission_denied) {
-            Throw (SystemErrorException<>{e.code (), e.GetBasicErrorMessage () + L"(probably already bound with SO_EXCLUSIVEADDRUSE)"sv});
+            Throw (SystemErrorException<>{e.code (), e.GetBasicErrorMessage () + "(probably already bound with SO_EXCLUSIVEADDRUSE)"sv});
         }
         else {
             ReThrow ();
@@ -136,7 +136,7 @@ void Socket::Ptr::Bind (const SocketAddress& sockAddr, BindFlags bindFlags)
     }
     catch (const system_error& e) {
         if (e.code () == errc::permission_denied) {
-            Throw (SystemErrorException<>{e.code (), L"(probably already bound with SO_EXCLUSIVEADDRUSE)"sv});
+            Throw (SystemErrorException<>{e.code (), "(probably already bound with SO_EXCLUSIVEADDRUSE)"sv});
         }
         else {
             ReThrow ();
@@ -158,15 +158,15 @@ String Socket::Ptr::ToString () const
     AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
     StringBuilder                                  sb;
     if (fRep_ == nullptr) {
-        sb += L"nullptr";
+        sb += "nullptr"sv;
     }
     else {
-        sb += L"{";
-        sb += L"Native-Socket: " + ((fRep_->GetNativeSocket () == kINVALID_NATIVE_HANDLE_) ? L"CLOSED" : Characters::ToString (fRep_->GetNativeSocket ())) + L", ";
+        sb += "{";
+        sb += "Native-Socket: " + ((fRep_->GetNativeSocket () == kINVALID_NATIVE_HANDLE_) ? "CLOSED" : Characters::ToString (fRep_->GetNativeSocket ())) + ", ";
         if (auto ola = GetLocalAddress ()) {
-            sb += L"Local-Address: " + Characters::ToString (*ola);
+            sb += "Local-Address: " + Characters::ToString (*ola);
         }
-        sb += L"}";
+        sb += "}";
     }
     return sb.str ();
 }

@@ -274,7 +274,7 @@ namespace {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                 DbgTrace (L"in Instruments::Network::Info Read_proc_net_netstat_ linesize=%d, line[0]=%s", line.size (), line.empty () ? L"" : line[0].c_str ());
 #endif
-                if (line.size () >= 2 and line[0].Trim () == L"TcpExt:") {
+                if (line.size () >= 2 and line[0].Trim () == "TcpExt:"sv) {
                     if (firstTime) {
                         size_t idx = 0;
                         for (const String& i : line) {
@@ -284,7 +284,7 @@ namespace {
                     }
                     else {
                         // @todo must sum several fields - NYI
-                        if (auto oTCPSynRetransIdx = labelMap.Lookup (L"TCPSynRetrans")) {
+                        if (auto oTCPSynRetransIdx = labelMap.Lookup ("TCPSynRetrans"sv)) {
                             if (*oTCPSynRetransIdx < line.length ()) {
                                 uint64_t TCPSynRetrans                       = Characters::String2Int<uint64_t> (line[*oTCPSynRetransIdx]);
                                 accumSummary->fTotalTCPRetransmittedSegments = TCPSynRetrans;
@@ -298,7 +298,7 @@ namespace {
         {
             RequireNotNull (accumSummary);
             DataExchange::Variant::CharacterDelimitedLines::Reader reader{{' ', '\t'}};
-            static const filesystem::path                          kProcFileName_{"/proc/net/snmp"};
+            static const filesystem::path                          kProcFileName_{"/proc/net/snmp"sv};
             // Note - /procfs files always unseekable
             bool                    firstTime = true;
             Mapping<String, size_t> labelMap;
@@ -307,7 +307,7 @@ namespace {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                 DbgTrace (L"in Instruments::Network::Info Read_proc_net_snmp_ linesize=%d, line[0]=%s", line.size (), line.empty () ? L"" : line[0].c_str ());
 #endif
-                if (line.size () >= 2 and line[0].Trim () == L"Tcp:") {
+                if (line.size () >= 2 and line[0].Trim () == "Tcp:"sv) {
                     if (firstTime) {
                         size_t idx = 0;
                         for (const String& i : line) {
@@ -316,9 +316,9 @@ namespace {
                         firstTime = false;
                     }
                     else {
-                        static const String kInSegs_{L"InSegs"sv};
-                        static const String kOutSegs_{L"OutSegs"sv};
-                        static const String kRetransSegs_{L"RetransSegs"sv};
+                        static const String kInSegs_{"InSegs"sv};
+                        static const String kOutSegs_{"OutSegs"sv};
+                        static const String kRetransSegs_{"RetransSegs"sv};
                         if (auto idx = labelMap.Lookup (kInSegs_)) {
                             if (*idx < line.length ()) {
                                 Memory::AccumulateIf (&totalTCPSegments, Characters::String2Int<uint64_t> (line[*idx]));
@@ -348,9 +348,9 @@ namespace {
 namespace {
     struct _Context : SystemPerformance::Support::Context {
 #if qUseWMICollectionSupport_
-        WMICollector fNetworkWMICollector_{L"Network Interface"sv, {}, {kBytesReceivedPerSecond_, kBytesSentPerSecond_, kPacketsReceivedPerSecond_, kPacketsSentPerSecond_}};
-        WMICollector fTCPv4WMICollector_{L"TCPv4"sv, {}, {kTCPSegmentsPerSecond_, kSegmentsRetransmittedPerSecond_}};
-        WMICollector fTCPv6WMICollector_{L"TCPv6"sv, {}, {kTCPSegmentsPerSecond_, kSegmentsRetransmittedPerSecond_}};
+        WMICollector fNetworkWMICollector_{"Network Interface"sv, {}, {kBytesReceivedPerSecond_, kBytesSentPerSecond_, kPacketsReceivedPerSecond_, kPacketsSentPerSecond_}};
+        WMICollector fTCPv4WMICollector_{"TCPv4"sv, {}, {kTCPSegmentsPerSecond_, kSegmentsRetransmittedPerSecond_}};
+        WMICollector fTCPv6WMICollector_{"TCPv6"sv, {}, {kTCPSegmentsPerSecond_, kSegmentsRetransmittedPerSecond_}};
         Set<String>  fAvailableInstances_{fNetworkWMICollector_.GetAvailableInstaces ()};
 #endif
     };
@@ -427,7 +427,7 @@ namespace {
              *          a research question.
              *          --LGP 2015-04-16
              */
-            String wmiInstanceName = NullCoalesce (iFace.fDescription).ReplaceAll (L"(", L"[").ReplaceAll (L")", L"]").ReplaceAll (L"#", L"_");
+            String wmiInstanceName = NullCoalesce (iFace.fDescription).ReplaceAll ("("sv, "["sv).ReplaceAll (")"sv, "]"sv).ReplaceAll ("#"sv, "_"sv);
 
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
             DbgTrace (L"iFace.fDescription='%s'", iFace.fDescription.Value ().c_str ());

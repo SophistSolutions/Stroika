@@ -58,20 +58,20 @@ Characters::String Traceroute::Options::SampleInfo::ToString () const
 String Traceroute::Options::ToString () const
 {
     StringBuilder sb;
-    sb += L"{";
+    sb += "{";
     if (fMaxHops) {
-        sb += L"Max-Hops: " + Characters::Format (L"%d", *fMaxHops) + L", ";
+        sb += "Max-Hops: " + Characters::Format (L"%d", *fMaxHops) + ", ";
     }
     if (fTimeout) {
-        sb += L"Timeout: " + Characters::ToString (*fTimeout) + L", ";
+        sb += "Timeout: " + Characters::ToString (*fTimeout) + ", ";
     }
     if (fPacketPayloadSize) {
-        sb += L"Packet-Payload-Size: " + Characters::Format (L"%d", *fPacketPayloadSize) + L", ";
+        sb += "Packet-Payload-Size: " + Characters::Format (L"%d", *fPacketPayloadSize) + ", ";
     }
     if (fSampleInfo) {
-        sb += L"Sample: " + Characters::ToString (*fSampleInfo) + L", ";
+        sb += "Sample: " + Characters::ToString (*fSampleInfo) + ", ";
     }
-    sb += L"}";
+    sb += "}";
     return sb.str ();
 }
 

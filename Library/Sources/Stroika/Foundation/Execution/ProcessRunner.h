@@ -125,14 +125,14 @@ namespace Stroika::Foundation::Execution {
         *
         *  \par Example Usage
         *      \code
-        *          String name = Execution::ProcessRunner (L"uname").Run (String {}).Trim ();
+        *          String name = Execution::ProcessRunner{"uname"}.Run (String {}).Trim ();
         *      \endcode
         *
         *      \code
-        *          Memory::BLOB kData_{ Memory::BLOB::Raw ("this is a test")  };
+        *          Memory::BLOB                     kData_{ Memory::BLOB::Raw ("this is a test")  };
         *          Streams::MemoryStream<byte>::Ptr processStdIn = Streams::MemoryStream<byte> { kData_ };
         *          Streams::MemoryStream<byte>::Ptr processStdOut = Streams::MemoryStream<byte> {};
-        *          ProcessRunner               pr (L"cat", processStdIn, processStdOut);
+        *          ProcessRunner                    pr{"cat", processStdIn, processStdOut};
         *          pr.Run ();
         *          VerifyTestResult (processStdOut.ReadAll () == kData_);
         *      \endcode

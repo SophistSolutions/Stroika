@@ -320,8 +320,8 @@ Response Connection_LibCurl::Rep_::Send (const Request& request)
     Mapping<String, String> overrideHeaders = useRequest.fOverrideHeaders;
     if (fOptions_.fAssumeLowestCommonDenominatorHTTPServer) {
         static const Mapping<String, String> kSilenceTheseHeaders_{
-            {pair<String, String>{L"Expect"sv, {}},
-             pair<String, String>{L"Transfer-Encoding"sv, {}}}};
+            {pair<String, String>{"Expect"sv, {}},
+             pair<String, String>{"Transfer-Encoding"sv, {}}}};
         overrideHeaders = kSilenceTheseHeaders_ + overrideHeaders;
     }
     if (fOptions_.fAuthentication and fOptions_.fAuthentication->GetOptions () == Connection::Options::Authentication::Options::eProactivelySendAuthentication) {
@@ -375,7 +375,7 @@ Response Connection_LibCurl::Rep_::Send (const Request& request)
     // grab initial headers and do POST/etc based on args in request...
     curl_slist* tmpH = nullptr;
     for (const auto& i : overrideHeaders) {
-        tmpH = ::curl_slist_append (tmpH, (i.fKey + L": "sv + i.fValue).AsUTF8<string> ().c_str ());
+        tmpH = ::curl_slist_append (tmpH, (i.fKey + ": "sv + i.fValue).AsUTF8<string> ().c_str ());
     }
     AssertNotNull (fCurlHandle_);
     ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_HTTPHEADER, tmpH));

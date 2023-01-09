@@ -551,7 +551,7 @@ optional<DateTime> DateTime::ParseQuietly_ (const wstring& rep, const time_get<w
 
     if constexpr (qCompilerAndStdLib_locale_time_get_reverses_month_day_with_2digit_year_Buggy) {
         // Now that I've understood this bug better, I think I can do a better/wider workaround, not just this special case...
-        if (formatPattern == L"%x %X") {
+        if (formatPattern == "%x %X"sv) {
             // It now appears this MSFT-only issue is that if you have a 2-digit year, their %x-parse code reverses the month and day
             wistringstream               iss{rep};
             istreambuf_iterator<wchar_t> itbegin{iss};
@@ -671,10 +671,10 @@ String DateTime::Format (LocaleIndependentFormat format) const
             String r = fDate_.Format (Date::kISO8601Format);
             if (fTimeOfDay_.has_value ()) {
                 String timeStr = fTimeOfDay_->Format (TimeOfDay::kISO8601Format);
-                r += L"T"sv + timeStr;
+                r += "T"sv + timeStr;
                 if (fTimezone_) {
                     if (fTimezone_ == Timezone::kUTC) {
-                        static const String kZ_{L"Z"sv};
+                        static const String kZ_{"Z"sv};
                         r += kZ_;
                     }
                     else {
@@ -690,13 +690,13 @@ String DateTime::Format (LocaleIndependentFormat format) const
         } break;
         case LocaleIndependentFormat::eRFC1123: {
             optional<Timezone>  tz     = GetTimezone ();
-            static const String kFMT_  = L"%a, %d %b %Y %H:%M:%S"_k;
+            static const String kFMT_  = "%a, %d %b %Y %H:%M:%S"_k;
             String              result = Format (locale::classic (), {kFMT_});
             if (tz == Timezone::kUnknown) {
                 return result;
             }
             else {
-                return result + L" " + tz->AsRFC1123 (fDate_, Memory::NullCoalesce (fTimeOfDay_, TimeOfDay{0}));
+                return result + " "sv + tz->AsRFC1123 (fDate_, Memory::NullCoalesce (fTimeOfDay_, TimeOfDay{0}));
             }
         } break;
         default: {
@@ -716,7 +716,7 @@ String DateTime::Format (NonStandardPrintFormat pf) const
              *  Test regexp with test string "Sun Jun 04, 2017 Sun Jun 004 2001 00 10/17/18 13:15:39    04/03/2222 Jun 03, 2004 is 1/1/03   04/04/03 4/4/04" and https://regex101.com/
              */
             String                         mungedData = Format (locale{});
-            static const RegularExpression kZero2StripPattern_{L"\\b0+"};
+            static const RegularExpression kZero2StripPattern_{"\\b0+"sv};
             constexpr bool                 kKeepZeroOnLastOfYear_ = true; // (MM / DD / 03 should keep the 0 in 03)
             if constexpr (kKeepZeroOnLastOfYear_) {
                 size_t startAt = 0;
@@ -791,7 +791,7 @@ String DateTime::ToString () const
     // @todo - reconsider how we format this cuz unclear if Format() already incldues timezone -- LGP 2018-10-16
     String tmp = Format ();
     if (const auto& tz = GetTimezone ()) {
-        tmp += L" " + Characters::ToString (*tz);
+        tmp += " "sv + Characters::ToString (*tz);
     }
     return tmp;
 }

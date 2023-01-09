@@ -347,7 +347,7 @@ struct LinkMonitor::Rep_ {
                     }
                 }
             });
-            fMonitorThread_.SetThreadName (L"Network LinkMonitor thread"sv);
+            fMonitorThread_.SetThreadName ("Network LinkMonitor thread"sv);
             fMonitorThread_.Start ();
         }
 #elif qPlatform_Windows

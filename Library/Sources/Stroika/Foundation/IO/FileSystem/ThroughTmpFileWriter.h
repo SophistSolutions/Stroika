@@ -63,7 +63,7 @@ namespace Stroika::Foundation::IO::FileSystem {
      */
     class ThroughTmpFileWriter {
     public:
-        ThroughTmpFileWriter (const filesystem::path& realFileName, const String& tmpSuffix = L".tmp"sv);
+        ThroughTmpFileWriter (const filesystem::path& realFileName, const String& tmpSuffix = ".tmp"sv);
         ThroughTmpFileWriter (const ThroughTmpFileWriter&) = delete;
         ~ThroughTmpFileWriter ();
 

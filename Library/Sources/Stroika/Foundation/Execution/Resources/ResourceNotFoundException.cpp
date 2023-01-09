@@ -15,6 +15,6 @@ using namespace Stroika::Foundation::Execution;
  ********************************************************************************
  */
 ResourceNotFoundException::ResourceNotFoundException ()
-    : Execution::RuntimeErrorException<>{L"Resource Not Found"sv}
+    : Execution::RuntimeErrorException<>{"Resource Not Found"sv}
 {
 }

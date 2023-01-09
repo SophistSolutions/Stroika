@@ -343,8 +343,8 @@ bool VariantValue::As () const
             return v->fVal;
         }
         case Type::eString: {
-            //return tmp != L"false";           // no need to worry about case etc - cuz XML-Schema  xs:boolean is case-sensative
-            return As<String> () == L"true"sv; // no need to worry about case etc - cuz XML-Schema  xs:boolean is case-sensative
+            //return tmp != "false";          // no need to worry about case etc - cuz XML-Schema  xs:boolean is case-sensative
+            return As<String> () == "true"sv; // no need to worry about case etc - cuz XML-Schema  xs:boolean is case-sensative
         }
         case Type::eInteger: {
             return As<IntegerType_> () != 0;
@@ -356,7 +356,7 @@ bool VariantValue::As () const
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
             DbgTrace (L"failed coerce-to-bool: type=%s, value=%s", Characters::ToString (fVal_->GetType ()).c_str (), Characters::ToString (*this).c_str ());
 #endif
-            Execution::Throw (DataExchange::BadFormatException{L"Cannot coerce VariantValue to bool"sv});
+            Execution::Throw (DataExchange::BadFormatException{"Cannot coerce VariantValue to bool"sv});
         }
     }
 }
@@ -381,7 +381,7 @@ VariantValue VariantValue::ConvertTo (Type to) const
     if (GetType () == to) [[likely]] {
         return *this; // performance tweak
     }
-    static const DataExchange::BadFormatException kCannotCoerce2Null_{L"Cannot coerce VariantValue to null"sv};
+    static const DataExchange::BadFormatException kCannotCoerce2Null_{"Cannot coerce VariantValue to null"sv};
     switch (to) {
         case Type::eNull:
             // Only null (caught above) can translate to null...
@@ -463,7 +463,7 @@ VariantValue::IntegerType_ VariantValue::AsInteger_ () const
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
             DbgTrace (L"failed coerce-to-int: type=%s, value=%s", Characters::ToString (fVal_->GetType ()).c_str (), Characters::ToString (*this).c_str ());
 #endif
-            Execution::Throw (DataExchange::BadFormatException{L"Cannot coerce VariantValue to integer"sv});
+            Execution::Throw (DataExchange::BadFormatException{"Cannot coerce VariantValue to integer"sv});
         }
     }
 }
@@ -500,7 +500,7 @@ VariantValue::UnsignedIntegerType_ VariantValue::AsUnsignedInteger_ () const
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
             DbgTrace (L"failed coerce-to-uint: type=%s, value=%s", Characters::ToString (fVal_->GetType ()).c_str (), Characters::ToString (*this).c_str ());
 #endif
-            Execution::Throw (DataExchange::BadFormatException{L"Cannot coerce VariantValue to unsigned integer"sv});
+            Execution::Throw (DataExchange::BadFormatException{"Cannot coerce VariantValue to unsigned integer"sv});
         }
     }
 }
@@ -536,7 +536,7 @@ VariantValue::FloatType_ VariantValue::AsFloatType_ () const
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
             DbgTrace (L"failed coerce-to-float: type=%s, value=%s", Characters::ToString (fVal_->GetType ()).c_str (), Characters::ToString (*this).c_str ());
 #endif
-            Execution::Throw (DataExchange::BadFormatException{L"Cannot coerce VariantValue to float"sv});
+            Execution::Throw (DataExchange::BadFormatException{"Cannot coerce VariantValue to float"sv});
         }
     }
 }
@@ -567,7 +567,7 @@ Date VariantValue::As () const
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
             DbgTrace (L"failed coerce-to-date: type=%s, value=%s", Characters::ToString (fVal_->GetType ()).c_str (), Characters::ToString (*this).c_str ());
 #endif
-            Execution::Throw (DataExchange::BadFormatException{L"Cannot coerce VariantValue to date"sv});
+            Execution::Throw (DataExchange::BadFormatException{"Cannot coerce VariantValue to date"sv});
         }
     }
 }
@@ -598,7 +598,7 @@ DateTime VariantValue::As () const
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
             DbgTrace (L"failed coerce-to-datetime: type=%s, value=%s", Characters::ToString (fVal_->GetType ()).c_str (), Characters::ToString (*this).c_str ());
 #endif
-            Execution::Throw (DataExchange::BadFormatException{L"Cannot coerce VariantValue to date-time"sv});
+            Execution::Throw (DataExchange::BadFormatException{"Cannot coerce VariantValue to date-time"sv});
         }
     }
 }
@@ -676,7 +676,7 @@ String VariantValue::AsString_ () const
         case Type::eBoolean: {
             auto v = Debug::UncheckedDynamicCast<const TIRep_<bool>*> (fVal_.get ());
             AssertNotNull (v);
-            return v->fVal ? L"true"sv : L"false"sv;
+            return v->fVal ? "true"sv : "false"sv;
         }
         case Type::eBLOB: {
             auto v = Debug::UncheckedDynamicCast<const TIRep_<Memory::BLOB>*> (fVal_.get ());
@@ -764,7 +764,7 @@ String VariantValue::AsString_ () const
                 }
                 tmp << i->fKey.As<wstring> () << L" -> " << i->fValue.As<wstring> ();
             }
-            tmp << L"}";
+            tmp << L"}"sv;
             return tmp.str ();
         }
         default: {
@@ -795,7 +795,7 @@ map<wstring, VariantValue> VariantValue::As () const
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
             DbgTrace (L"failed coerce-to-map<>: type=%s, value=%s", Characters::ToString (fVal_->GetType ()).c_str (), Characters::ToString (*this).c_str ());
 #endif
-            Execution::Throw (DataExchange::BadFormatException{L"Cannot coerce VariantValue to map"sv});
+            Execution::Throw (DataExchange::BadFormatException{"Cannot coerce VariantValue to map"sv});
         }
     }
 }
@@ -817,7 +817,7 @@ Mapping<String, VariantValue> VariantValue::As () const
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
             DbgTrace (L"failed coerce-to-Mapping<>: type=%s, value=%s", Characters::ToString (fVal_->GetType ()).c_str (), Characters::ToString (*this).c_str ());
 #endif
-            Execution::Throw (DataExchange::BadFormatException{L"Cannot coerce VariantValue to map"sv});
+            Execution::Throw (DataExchange::BadFormatException{"Cannot coerce VariantValue to map"sv});
         }
     }
 }
@@ -844,7 +844,7 @@ Sequence<VariantValue> VariantValue::As () const
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
             DbgTrace (L"failed coerce-to-Sequence<>: type=%s, value=%s", Characters::ToString (fVal_->GetType ()).c_str (), Characters::ToString (*this).c_str ());
 #endif
-            Execution::Throw (DataExchange::BadFormatException{L"Cannot coerce VariantValue to array"sv});
+            Execution::Throw (DataExchange::BadFormatException{"Cannot coerce VariantValue to array"sv});
         }
     }
 }

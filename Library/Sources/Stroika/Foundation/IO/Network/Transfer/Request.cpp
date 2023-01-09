@@ -36,11 +36,11 @@ void Request::SetContentType (const InternetMediaType& ct)
 String Request::ToString () const
 {
     StringBuilder sb;
-    sb += L"{";
-    sb += L"Method: " + Characters::ToString (fMethod) + L",";
-    sb += L"fAuthorityRelativeURL: " + Characters::ToString (fAuthorityRelativeURL) + L",";
-    sb += L"fOverrideHeaders: " + Characters::ToString (fOverrideHeaders) + L",";
-    sb += L"fData: " + Characters::ToString (fData) + L",";
-    sb += L"}";
+    sb += "{";
+    sb += "Method: " + Characters::ToString (fMethod) + ",";
+    sb += "fAuthorityRelativeURL: " + Characters::ToString (fAuthorityRelativeURL) + ",";
+    sb += "fOverrideHeaders: " + Characters::ToString (fOverrideHeaders) + ",";
+    sb += "fData: " + Characters::ToString (fData) + ",";
+    sb += "}";
     return sb.str ();
 }

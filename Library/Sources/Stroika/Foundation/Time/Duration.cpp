@@ -45,35 +45,35 @@ Duration::FormatException::FormatException ()
  */
 const Duration::PrettyPrintInfo Duration::kDefaultPrettyPrintInfo = {
     {
-        L"year"sv,
-        L"years"sv,
-        L"month"sv,
-        L"months"sv,
-        L"week"sv,
-        L"weeks"sv,
-        L"day"sv,
-        L"days"sv,
-        L"hour"sv,
-        L"hours"sv,
-        L"minute"sv,
-        L"minutes"sv,
-        L"second"sv,
-        L"seconds"sv,
-        L"ms"sv,
-        L"ms"sv,
-        L"µs"sv,
-        L"µs"sv,
-        L"ns"sv,
-        L"ns"sv,
-        L"ps"sv,
-        L"ps"sv,
+        "year"sv,
+        "years"sv,
+        "month"sv,
+        "months"sv,
+        "week"sv,
+        "weeks"sv,
+        "day"sv,
+        "days"sv,
+        "hour"sv,
+        "hours"sv,
+        "minute"sv,
+        "minutes"sv,
+        "second"sv,
+        "seconds"sv,
+        "ms"sv,
+        "ms"sv,
+        U"µs"sv,
+        U"µs"sv,
+        "ns"sv,
+        "ns"sv,
+        "ps"sv,
+        "ps"sv,
     }};
 
 const Duration::AgePrettyPrintInfo Duration::kDefaultAgePrettyPrintInfo = {
     {
-        L"now"sv,
-        L"ago"sv,
-        L"from now"sv,
+        "now"sv,
+        "ago"sv,
+        "from now"sv,
     },
     12 * 60 /*fNowThreshold*/
 };
@@ -177,7 +177,7 @@ namespace {
 String Duration::PrettyPrint (const PrettyPrintInfo& prettyPrintInfo) const
 {
     auto                lingMgr = Linguistics::MessageUtiltiesManager::Get ();
-    static const String kCommaSpace_{L", "sv};
+    static const String kCommaSpace_{", "sv};
     if (empty ()) {
         return String{};
     }
@@ -186,7 +186,7 @@ String Duration::PrettyPrint (const PrettyPrintInfo& prettyPrintInfo) const
      *      There is a space between the numerical value and unit symbol, even when the value is used
      *      in an adjectival sense, except in the case of superscript units for plane angle.
      */
-    static const String kSpaceBeforeUnit_{L" "sv};
+    static const String kSpaceBeforeUnit_{" "sv};
 
     InternalNumericFormatType_ t        = As<InternalNumericFormatType_> ();
     bool                       isNeg    = (t < 0);
@@ -331,7 +331,7 @@ String Duration::PrettyPrint (const PrettyPrintInfo& prettyPrintInfo) const
         result = L"0" + kSpaceBeforeUnit_ + prettyPrintInfo.fLabels.fSeconds;
     }
     if (isNeg) {
-        static const String kNeg_{L"-"sv};
+        static const String kNeg_{"-"sv};
         result = kNeg_ + result;
     }
     return result;
@@ -384,10 +384,10 @@ Duration Duration::operator- () const
         return *this;
     }
     if (tmp[0] == '-') {
-        return Duration (tmp.substr (1));
+        return Duration{tmp.substr (1)};
     }
     else {
-        return Duration (L"-" + tmp);
+        return Duration{L"-" + tmp};
     }
 }
 

@@ -121,9 +121,9 @@ namespace Stroika::Foundation::IO::Network {
     {
         Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
         if (fPath_.empty ()) {
-            return L"/"sv;
+            return "/"sv;
         }
-        if (fPath_.StartsWith (L"/")) {
+        if (fPath_.StartsWith ("/"sv)) {
             return fPath_;
         }
         return nullopt;
@@ -135,7 +135,7 @@ namespace Stroika::Foundation::IO::Network {
         if (auto op = GetAbsPath<optional<String>> ()) {
             return *op;
         }
-        Execution::Throw (Execution::RuntimeErrorException{L"This URI does not have an absolute path"sv});
+        Execution::Throw (Execution::RuntimeErrorException{"This URI does not have an absolute path"sv});
     }
     template <>
     inline auto URI::GetQuery () const -> optional<String>

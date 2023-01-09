@@ -21,52 +21,52 @@ Characters::String Execution::SignalToName (SignalID signal)
 {
     switch (signal) {
         case SIGINT:
-            return L"SIGINT"sv;
+            return "SIGINT"sv;
         case SIGILL:
-            return L"SIGILL"sv;
+            return "SIGILL"sv;
         case SIGSEGV:
-            return L"SIGSEGV"sv;
+            return "SIGSEGV"sv;
         case SIGABRT:
-            return L"SIGABRT"sv;
+            return "SIGABRT"sv;
         case SIGFPE:
-            return L"SIGFPE"sv;
+            return "SIGFPE"sv;
 #if defined(SIGSYS)
         case SIGSYS:
-            return L"SIGSYS"sv;
+            return "SIGSYS"sv;
 #endif
 #if defined(SIGBUS)
         case SIGBUS:
-            return L"SIGBUS"sv;
+            return "SIGBUS"sv;
 #endif
 #if defined(SIGUSR1)
         case SIGUSR1:
-            return L"SIGUSR1"sv;
+            return "SIGUSR1"sv;
 #endif
 #if defined(SIGUSR2)
         case SIGUSR2:
-            return L"SIGUSR2"sv;
+            return "SIGUSR2"sv;
 #endif
 #if defined(SIGHUP)
         case SIGHUP:
-            return L"SIGHUP"sv;
+            return "SIGHUP"sv;
 #endif
         case SIGTERM:
-            return L"SIGTERM"sv;
+            return "SIGTERM"sv;
 #if defined(SIGPIPE)
         case SIGPIPE:
-            return L"SIGPIPE"sv;
+            return "SIGPIPE"sv;
 #endif
 #if defined(SIGQUIT)
         case SIGQUIT:
-            return L"SIGQUIT"sv;
+            return "SIGQUIT"sv;
 #endif
 #if defined(SIGXCPU)
         case SIGXCPU:
-            return L"SIGXCPU"sv;
+            return "SIGXCPU"sv;
 #endif
 #if defined(SIGXFSZ)
         case SIGXFSZ:
-            return L"SIGXFSZ"sv;
+            return "SIGXFSZ"sv;
 #endif
 
         default:

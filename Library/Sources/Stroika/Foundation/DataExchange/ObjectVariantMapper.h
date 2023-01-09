@@ -158,16 +158,16 @@ namespace Stroika::Foundation::DataExchange {
      *
      *          // register each of your mappable (even private) types
      *          mapper.AddClass<SharedContactsConfig_> ({
-     *              ObjectVariantMapper::StructFieldInfo{ L"Enabled", StructFieldMetaInfo{&SharedContactsConfig_::fEnabled} },
-     *              ObjectVariantMapper::StructFieldInfo{ L"Last-Synchronized-At", StructFieldMetaInfo{&SharedContactsConfig_::fLastSynchronizedAt} },
-     *              ObjectVariantMapper::StructFieldInfo{ L"This-HR-ContactID-To-SharedContactID-Map", StructFieldMetaInfo{&SharedContactsConfig_::fThisPHRsIDToSharedContactID} },
+     *              ObjectVariantMapper::StructFieldInfo{ "Enabled", StructFieldMetaInfo{&SharedContactsConfig_::fEnabled} },
+     *              ObjectVariantMapper::StructFieldInfo{ "Last-Synchronized-At", StructFieldMetaInfo{&SharedContactsConfig_::fLastSynchronizedAt} },
+     *              ObjectVariantMapper::StructFieldInfo{ "This-HR-ContactID-To-SharedContactID-Map", StructFieldMetaInfo{&SharedContactsConfig_::fThisPHRsIDToSharedContactID} },
      *          });
      *
      *          // OR Equivalently
      *          mapper.AddClass<SharedContactsConfig_> (initializer_list<ObjectVariantMapper::StructFieldInfo> {
-     *              { L"Enabled", StructFieldMetaInfo{&SharedContactsConfig_::fEnabled} },
-     *              { L"Last-Synchronized-At", StructFieldMetaInfo{&SharedContactsConfig_::fLastSynchronizedAt} },
-     *              { L"This-HR-ContactID-To-SharedContactID-Map", StructFieldMetaInfo{&SharedContactsConfig_::fThisPHRsIDToSharedContactID} },
+     *              { "Enabled", StructFieldMetaInfo{&SharedContactsConfig_::fEnabled} },
+     *              { "Last-Synchronized-At", StructFieldMetaInfo{&SharedContactsConfig_::fLastSynchronizedAt} },
+     *              { "This-HR-ContactID-To-SharedContactID-Map", StructFieldMetaInfo{&SharedContactsConfig_::fThisPHRsIDToSharedContactID} },
      *          });
      *
      *          SharedContactsConfig_   tmp;
@@ -376,15 +376,15 @@ namespace Stroika::Foundation::DataExchange {
          *
          *           mapper.Add<RGBColor> (
          *              [](const ObjectVariantMapper& mapper, const RGBColor* obj) -> VariantValue {
-         *                  return L"#" + Characters::Format (L"%02x%02x%02x", obj->red, obj->green, obj->blue);
+         *                  return "#" + Characters::Format (L"%02x%02x%02x", obj->red, obj->green, obj->blue);
          *              },
          *              [](const ObjectVariantMapper& mapper, const VariantValue& d, RGBColor* intoObj) -> void {
          *                  String tmpInBuf = d.As<String> ();
          *                  if (tmpInBuf.length () != 7) {
-         *                      Execution::Throw (DataExchange::BadFormatException{L"RGBColor should have length 7")};
+         *                      Execution::Throw (DataExchange::BadFormatException{"RGBColor should have length 7")};
          *                  }
          *                  if (tmpInBuf[0] != '#') {
-         *                      Execution::Throw (DataExchange::BadFormatException{L"RGBColor must start with #")};
+         *                      Execution::Throw (DataExchange::BadFormatException{"RGBColor must start with #")};
          *                  }
          *                  auto readColorComponent = [](const wchar_t* start, const wchar_t* end) -> uint8_t {
          *                      wchar_t buf[1024];
@@ -394,7 +394,7 @@ namespace Stroika::Foundation::DataExchange {
          *                      wchar_t* e      = nullptr;
          *                      auto     result = wcstoul (buf, &e, 16);
          *                      if (e != buf + 2) {
-         *                          Execution::Throw (DataExchange::BadFormatException{L"expected 6 hex bytes")};
+         *                          Execution::Throw (DataExchange::BadFormatException{"expected 6 hex bytes")};
          *                      }
          *                      Assert (result <= 255);
          *                      return static_cast<uint8_t> (result);
@@ -509,13 +509,13 @@ namespace Stroika::Foundation::DataExchange {
          *
          *          // register each of your mappable (even private) types
          *          mapper.AddClass<MyConfig_> (initializer_list<ObjectVariantMapper::StructFieldInfo> {
-         *              { L"fURL1_", StructFieldMetaInfo{&SharedContactsConfig_::fURL1_} },        // use default parser
+         *              { "fURL1_", StructFieldMetaInfo{&SharedContactsConfig_::fURL1_} },        // use default parser
          *              // for fURL2_ - instead - allow parsing of things like 'localhost:1234' - helpful for configuration files
-         *              { L"fURL2_", StructFieldMetaInfo{&SharedContactsConfig_::fURL2_}, ObjectVariantMapper::MakeCommonSerializer<IO::Network::URI> ()  },
+         *              { "fURL2_", StructFieldMetaInfo{&SharedContactsConfig_::fURL2_}, ObjectVariantMapper::MakeCommonSerializer<IO::Network::URI> ()  },
          *          });
          *
          *          MyConfig_   tmp;
-         *          tmp.fURL2_ = IO::Network::URI{L"http://localhost:1234"};
+         *          tmp.fURL2_ = IO::Network::URI{"http://localhost:1234"};
          *          VariantValue v = mapper.Serialize  (tmp);
          *
          *          Streams::MemoryStream<byte>   tmpStream;
@@ -547,10 +547,10 @@ namespace Stroika::Foundation::DataExchange {
          *          };
          *          ObjectVariantMapper mapper;
          *          mapper.AddClass<BaseObj_> (initializer_list<ObjectVariantMapper::StructFieldInfo>{
-         *              {L"fVV1", StructFieldMetaInfo{&BaseObj_, fVV1}},
+         *              {"fVV1", StructFieldMetaInfo{&BaseObj_, fVV1}},
          *          });
          *          mapper.AddSubClass<Derived_, BaseObj_> (initializer_list<ObjectVariantMapper::StructFieldInfo>{
-         *              {L"fVV2", StructFieldMetaInfo{&Derived_::fVV2}},
+         *              {"fVV2", StructFieldMetaInfo{&Derived_::fVV2}},
          *          });
          *      \endcode
          * 
@@ -928,17 +928,17 @@ namespace Stroika::Foundation::DataExchange {
      *
      *  \par Example Usage
      *       \code
-     *          ObjectVariantMapper::StructFieldInfo{L"fInt1", StructFieldMetaInfo{&SharedContactsConfig_::fInt1}},
+     *          ObjectVariantMapper::StructFieldInfo{"fInt1", StructFieldMetaInfo{&SharedContactsConfig_::fInt1}},
      *      \endcode
      *
      *  \par Example Usage
      *      \code
-     *          ObjectVariantMapper::StructFieldInfo{L"fInt2", StructFieldMetaInfo{&SharedContactsConfig_::fInt2}, ObjectVariantMapper::StructFieldInfo::eOmitNullFields},
+     *          ObjectVariantMapper::StructFieldInfo{"fInt2", StructFieldMetaInfo{&SharedContactsConfig_::fInt2}, ObjectVariantMapper::StructFieldInfo::eOmitNullFields},
      *      \endcode
      *
      *  \par Example Usage
      *      \code
-     *          ObjectVariantMapper::StructFieldInfo{L"fBasicArray1", StructFieldMetaInfo{&SharedContactsConfig_::fBasicArray1}, ObjectVariantMapper::MakeCommonSerializer<int[5]> ()},
+     *          ObjectVariantMapper::StructFieldInfo{"fBasicArray1", StructFieldMetaInfo{&SharedContactsConfig_::fBasicArray1}, ObjectVariantMapper::MakeCommonSerializer<int[5]> ()},
      *      \endcode
      *
      */

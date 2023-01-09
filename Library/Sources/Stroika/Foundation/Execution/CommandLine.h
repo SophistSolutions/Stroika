@@ -38,7 +38,7 @@ namespace Stroika::Foundation::Execution {
      *  squeezed out.
      *
      *  So - for example, you can call:
-     *           MatchesCommandLineArgument (L"--runFast", L"run-fast") and it will return true.
+     *           MatchesCommandLineArgument ("--runFast", "run-fast") and it will return true.
      *
      *  To use the second (associatedArgResult) overload, the caller MUST specify a pattern in matchesArgPattern that ends with '='
      */
@@ -48,7 +48,7 @@ namespace Stroika::Foundation::Execution {
     /**
      *  \par Example Usage
      *      \code
-     *          optional<String> arg = MatchesCommandLineArgumentWithValue (cmdLine, L"x");
+     *          optional<String> arg = MatchesCommandLineArgumentWithValue (cmdLine, "x");
      *          if (arg.has_value ()) {
      *              sTimeMultiplier_ = String2Float<double> (*arg);
      *          }

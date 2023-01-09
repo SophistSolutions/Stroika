@@ -33,6 +33,6 @@ String Platform::Windows::SID22UserName (PSID sid)
         return String::FromSDKString (name);
     }
     else {
-        return String::FromSDKString (name) + L"@" + String::FromSDKString (domain);
+        return String::FromSDKString (name) + "@"sv + String::FromSDKString (domain);
     }
 }

@@ -47,9 +47,9 @@ namespace {
         Collection<Neighbor> result;
         using std::byte;
 #if qPlatform_POSIX
-        ProcessRunner pr{L"arp -an"sv}; // -a means 'BSD-style output' and -n means numeric (dont do reverse dns)
+        ProcessRunner pr{"arp -an"sv}; // -a means 'BSD-style output' and -n means numeric (dont do reverse dns)
 #elif qPlatform_Windows
-        ProcessRunner pr{includePurgedEntries ? L"arp -av"sv : L"arp -a"sv}; // -a means 'BSD-style output', -v verbose(show invalid items)
+        ProcessRunner pr{includePurgedEntries ? "arp -av"sv : "arp -a"sv}; // -a means 'BSD-style output', -v verbose(show invalid items)
 #endif
         Streams::MemoryStream<byte>::Ptr useStdOut = Streams::MemoryStream<byte>::New ();
         pr.SetStdOut (useStdOut);
@@ -75,20 +75,20 @@ namespace {
                 // According to https://unix.stackexchange.com/questions/192313/how-do-you-clear-the-arp-cache-on-linux
                 // 'incomplete' entries mean about to be removed from the ARP table (or mostly removed).
                 //
-                if (s[1].StartsWith (L"("sv) and s[1].EndsWith (L")"sv)) {
-                    if (not includePurgedEntries and s[3].Contains (L"incomplete"sv)) {
+                if (s[1].StartsWith ("("sv) and s[1].EndsWith (")"sv)) {
+                    if (not includePurgedEntries and s[3].Contains ("incomplete"sv)) {
                         continue;
                     }
                     String interfaceID;
                     size_t l = s.length ();
-                    if (l >= 6 and s[l - 2] == L"on"sv) {
+                    if (l >= 6 and s[l - 2] == "on"sv) {
                         interfaceID = s[l - 1];
                     }
                     result += Neighbor{InternetAddress{s[1].SubString (1, -1)}, s[3], interfaceID};
                 }
             }
 #elif qPlatform_Windows
-            if (i.StartsWith (L"Interface:"sv)) {
+            if (i.StartsWith ("Interface:"sv)) {
                 Sequence<String> s = i.Tokenize ();
                 if (s.length () >= 2) {
                     curInterface = s[1];
@@ -101,15 +101,15 @@ namespace {
                     }
                 }
             }
-            if (i.StartsWith (L" ") and not curInterface.empty ()) {
+            if (i.StartsWith (" "sv) and not curInterface.empty ()) {
                 Sequence<String> s = i.Tokenize ();
-                if (s.length () >= 3 and (s[2] == L"static"sv or s[2] == L"dynamic"sv)) {
+                if (s.length () >= 3 and (s[2] == "static"sv or s[2] == "dynamic"sv)) {
                     // Windows arp produces address of the form xy-ab-cd, while most other platforms produce xy:ab:cd, so standardize the
                     // format we produce; helpful for WTF for example, sharing data among servers from different platforms --LGP 2022-06-14
-                    static const String kDash_  = L"-"sv;
-                    static const String kColon_ = L":"sv;
+                    static const String kDash_  = "-"sv;
+                    static const String kColon_ = ":"sv;
                     if (omitAllFFHardwareAddresses) {
-                        static const String kFFFF_ = L"ff-ff-ff-ff-ff-ff"sv;
+                        static const String kFFFF_ = "ff-ff-ff-ff-ff-ff"sv;
                         if (s[1] == kFFFF_) {
                             //DbgTrace (L"ignoring arped fake(broadcast) address %s", s[1].c_str ());
                             continue;
@@ -178,11 +178,11 @@ namespace {
 String NeighborsMonitor::Neighbor::ToString () const
 {
     StringBuilder sb;
-    sb += L"{"sv;
-    sb += L"fInternetAddress:"sv + Characters::ToString (fInternetAddress) + L",";
-    sb += L"fHardwareAddress:"sv + Characters::ToString (fHardwareAddress) + L",";
-    sb += L"fInterfaceID:"sv + Characters::ToString (fInterfaceID);
-    sb += L"}"sv;
+    sb += "{"sv;
+    sb += "InternetAddress:"sv + Characters::ToString (fInternetAddress) + ",";
+    sb += "HardwareAddress:"sv + Characters::ToString (fHardwareAddress) + ",";
+    sb += "InterfaceID:"sv + Characters::ToString (fInterfaceID);
+    sb += "}"sv;
     return sb.str ();
 }
 

@@ -420,20 +420,20 @@ namespace Stroika::Foundation::Traversal {
     {
         Characters::StringBuilder out;
         if (empty ()) {
-            out += L"{}";
+            out += "{}"sv;
         }
         else if (GetLowerBound () == GetUpperBound ()) {
             // if single point, open and closed must be same (or always must be closed?)
-            out += L"[";
+            out += "["sv;
             out += eltToString (GetLowerBound ());
-            out += L"]";
+            out += "]"sv;
         }
         else {
-            out += (GetLowerBoundOpenness () == Openness::eClosed) ? L"[" : L"(";
+            out += (GetLowerBoundOpenness () == Openness::eClosed) ? "["sv : "("sv;
             out += eltToString (GetLowerBound ());
-            out += L" ... ";
+            out += " ... "sv;
             out += eltToString (GetUpperBound ());
-            out += (GetUpperBoundOpenness () == Openness::eClosed) ? L"]" : L")";
+            out += (GetUpperBoundOpenness () == Openness::eClosed) ? "]"sv : ")"sv;
         }
         return out.str ();
     }

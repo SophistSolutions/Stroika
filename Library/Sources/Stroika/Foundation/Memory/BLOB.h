@@ -266,7 +266,7 @@ namespace Stroika::Foundation::Memory {
          *
          *  \par Example Usage
          *      \code
-         *          Assert  ((BLOB::Hex ("29144adb4ece20450956e813652fe8d6").AsHex () == L"29144adb4ece20450956e813652fe8d6"));
+         *          Assert  ((BLOB::Hex ("29144adb4ece20450956e813652fe8d6").AsHex () == "29144adb4ece20450956e813652fe8d6"));
          *      \endcode
          */
         nonvirtual Characters::String AsHex (size_t maxBytesToShow = numeric_limits<size_t>::max ()) const;
@@ -337,7 +337,7 @@ namespace Stroika::Foundation::Memory {
          *
          *  \note this displays the BLOB as hex bytes. To interpret as a string, try 
          *      \code
-         *          Assert (TextReader::New (blob).ReadAll () == L"hello world");
+         *          Assert (TextReader::New (blob).ReadAll () == "hello world");
          *      \endcode
          */
         nonvirtual Characters::String ToString (size_t maxBytesToShow = 80) const;

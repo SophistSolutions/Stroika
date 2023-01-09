@@ -36,7 +36,7 @@ public:
     }
     virtual String GetDefaultFileSuffix () const override
     {
-        return L".txt"sv;
+        return ".txt"sv;
     }
     virtual void Write (const VariantValue& v, const OutputStream<byte>::Ptr& out) override
     {
@@ -71,7 +71,7 @@ public:
             if (i + 1 != line.end ()) {
                 sb += fOptions_.fSeparator;
                 if (fOptions_.fSpaceSeparate) {
-                    sb += L" "sv;
+                    sb += " "sv;
                 }
             }
         }

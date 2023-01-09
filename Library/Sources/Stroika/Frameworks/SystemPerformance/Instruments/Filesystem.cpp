@@ -146,15 +146,15 @@ String Instruments::Filesystem::Info::ToString () const
 
 namespace {
 #if qUseWMICollectionSupport_
-    const String kDiskReadBytesPerSec_{L"Disk Read Bytes/sec"sv};
-    const String kDiskWriteBytesPerSec_{L"Disk Write Bytes/sec"sv};
-    const String kDiskReadsPerSec_{L"Disk Reads/sec"sv};
-    const String kDiskWritesPerSec_{L"Disk Writes/sec"sv};
-    const String kPctDiskReadTime_{L"% Disk Read Time"sv};
-    const String kPctDiskWriteTime_{L"% Disk Write Time"sv};
-    const String kAveDiskReadQLen_{L"Avg. Disk Read Queue Length"sv};
-    const String kAveDiskWriteQLen_{L"Avg. Disk Write Queue Length"sv};
-    const String kPctIdleTime_{L"% Idle Time"sv};
+    const String kDiskReadBytesPerSec_{"Disk Read Bytes/sec"sv};
+    const String kDiskWriteBytesPerSec_{"Disk Write Bytes/sec"sv};
+    const String kDiskReadsPerSec_{"Disk Reads/sec"sv};
+    const String kDiskWritesPerSec_{"Disk Writes/sec"sv};
+    const String kPctDiskReadTime_{"% Disk Read Time"sv};
+    const String kPctDiskWriteTime_{"% Disk Write Time"sv};
+    const String kAveDiskReadQLen_{"Avg. Disk Read Queue Length"sv};
+    const String kAveDiskWriteQLen_{"Avg. Disk Write Queue Length"sv};
+    const String kPctIdleTime_{"% Idle Time"sv};
 
     constexpr bool kUseDiskPercentReadTime_ElseAveQLen_ToComputeQLen_{false};
     /*
@@ -404,7 +404,7 @@ namespace {
         static optional<filesystem::path> GetSysBlockDirPathForDevice_ (const String& deviceName)
         {
             Require (not deviceName.empty ());
-            Require (not deviceName.Contains (L"/"));
+            Require (not deviceName.Contains ("/"sv));
             // Sometimes the /sys/block directory appears to have data for the each major/minor pair, and sometimes it appears
             // to only have it for the top level (minor=0) one without the digit after in the name.
             //
@@ -474,7 +474,7 @@ namespace {
                 MountedFilesystemInfoType v;
                 {
                     String d = l[0].Trim ();
-                    if (not d.empty () and d != L"none") {
+                    if (not d.empty () and d != "none"sv) {
                         v.fDeviceOrVolumeName = d;
                     }
                 }
@@ -855,7 +855,7 @@ namespace {
 #endif
 
 namespace {
-    static const MeasurementType kMountedVolumeUsage_ = MeasurementType{L"Mounted-Filesystem-Usage"sv};
+    static const MeasurementType kMountedVolumeUsage_ = MeasurementType{"Mounted-Filesystem-Usage"sv};
 }
 
 namespace {
@@ -1011,19 +1011,19 @@ const ObjectVariantMapper Instruments::Filesystem::Instrument::kObjectVariantMap
     mapper.Add (mapper.MakeCommonSerializer_NamedEnumerations<BlockDeviceKind> ());
     mapper.AddCommonType<optional<BlockDeviceKind>> ();
     mapper.AddClass<IOStatsType> (initializer_list<StructFieldInfo>{
-        {L"Bytes", StructFieldMetaInfo{&IOStatsType::fBytesTransfered}, StructFieldInfo::eOmitNullFields},
-        {L"Q-Length", StructFieldMetaInfo{&IOStatsType::fQLength}, StructFieldInfo::eOmitNullFields},
-        {L"In-Use-%", StructFieldMetaInfo{&IOStatsType::fInUsePercent}, StructFieldInfo::eOmitNullFields},
-        {L"Total-Transfers", StructFieldMetaInfo{&IOStatsType::fTotalTransfers}, StructFieldInfo::eOmitNullFields},
+        {"Bytes"sv, StructFieldMetaInfo{&IOStatsType::fBytesTransfered}, StructFieldInfo::eOmitNullFields},
+        {"Q-Length"sv, StructFieldMetaInfo{&IOStatsType::fQLength}, StructFieldInfo::eOmitNullFields},
+        {"In-Use-%"sv, StructFieldMetaInfo{&IOStatsType::fInUsePercent}, StructFieldInfo::eOmitNullFields},
+        {"Total-Transfers"sv, StructFieldMetaInfo{&IOStatsType::fTotalTransfers}, StructFieldInfo::eOmitNullFields},
     });
     mapper.AddCommonType<optional<IOStatsType>> ();
     mapper.AddClass<DiskInfoType> (initializer_list<StructFieldInfo>{
-        {L"Persistence-Volume-ID", StructFieldMetaInfo{&DiskInfoType::fPersistenceVolumeID}, StructFieldInfo::eOmitNullFields},
-        {L"Device-Kind", StructFieldMetaInfo{&DiskInfoType::fDeviceKind}, StructFieldInfo::eOmitNullFields},
-        {L"Size", StructFieldMetaInfo{&DiskInfoType::fSizeInBytes}, StructFieldInfo::eOmitNullFields},
-        {L"Read-IO-Stats", StructFieldMetaInfo{&DiskInfoType::fReadIOStats}, StructFieldInfo::eOmitNullFields},
-        {L"Write-IO-Stats", StructFieldMetaInfo{&DiskInfoType::fWriteIOStats}, StructFieldInfo::eOmitNullFields},
-        {L"Combined-IO-Stats", StructFieldMetaInfo{&DiskInfoType::fCombinedIOStats}, StructFieldInfo::eOmitNullFields},
+        {"Persistence-Volume-ID"sv, StructFieldMetaInfo{&DiskInfoType::fPersistenceVolumeID}, StructFieldInfo::eOmitNullFields},
+        {"Device-Kind"sv, StructFieldMetaInfo{&DiskInfoType::fDeviceKind}, StructFieldInfo::eOmitNullFields},
+        {"Size"sv, StructFieldMetaInfo{&DiskInfoType::fSizeInBytes}, StructFieldInfo::eOmitNullFields},
+        {"Read-IO-Stats"sv, StructFieldMetaInfo{&DiskInfoType::fReadIOStats}, StructFieldInfo::eOmitNullFields},
+        {"Write-IO-Stats"sv, StructFieldMetaInfo{&DiskInfoType::fWriteIOStats}, StructFieldInfo::eOmitNullFields},
+        {"Combined-IO-Stats"sv, StructFieldMetaInfo{&DiskInfoType::fCombinedIOStats}, StructFieldInfo::eOmitNullFields},
     });
     mapper.AddCommonType<Set<String>> ();
     mapper.AddCommonType<optional<Set<String>>> ();

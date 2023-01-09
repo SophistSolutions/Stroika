@@ -119,7 +119,7 @@ namespace {
             String newRep = rep;
             if (newRep.length () == 4 and
                 newRep[0].IsDigit () and newRep[1].IsDigit () and newRep[2].IsDigit () and newRep[3].IsDigit ()) {
-                newRep = newRep.substr (0, 2) + L":" + newRep.substr (2, 2);
+                newRep = newRep.substr (0, 2) + ":"sv + newRep.substr (2, 2);
                 ThrowIfErrorHRESULT (::VarDateFromStr (Characters::Platform::Windows::SmartBSTR{newRep.c_str ()}, lcid, VAR_TIMEVALUEONLY, &d));
             }
             else {
@@ -278,7 +278,7 @@ optional<TimeOfDay> TimeOfDay::ParseQuietly_ (const wstring& rep, const time_get
     istreambuf_iterator<wchar_t> itbegin{iss}; // beginning of iss
     istreambuf_iterator<wchar_t> itend;        // end-of-stream
 #if qCompilerAndStdLib_std_get_time_pctx_Buggy
-    if (formatPattern == L"%X") {
+    if (formatPattern == "%X"sv) {
         tmget.get_time (itbegin, itend, iss, errState, &when);
     }
     else {
@@ -319,7 +319,7 @@ String TimeOfDay::Format (NonStandardPrintFormat pf) const
              * This logic probably needs to be locale-specific, but this is good enuf for now...
              */
             optional<size_t> i;
-            while ((i = tmp.RFind (L":00"sv))) {
+            while ((i = tmp.RFind (":00"sv))) {
                 // if its a TRAILING :00 - lose it...
                 bool trailing = false;
                 if (*i + 3 == tmp.size ()) {

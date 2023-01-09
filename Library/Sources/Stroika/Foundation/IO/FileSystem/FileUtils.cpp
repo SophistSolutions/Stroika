@@ -255,8 +255,8 @@ vector<String> IO::FileSystem::FindFilesOneDirUnder (const filesystem::path& pat
             //SDKString fileName = (LPCTSTR)&fd.cFileName;
             if (fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
                 String              fileName = String::FromSDKString ((LPCTSTR)&fd.cFileName);
-                static const String kDOT     = L"."sv;
-                static const String kDOTDOT  = L".."sv;
+                static const String kDOT     = "."sv;
+                static const String kDOTDOT  = ".."sv;
                 if ((fileName != kDOT) and (fileName != kDOTDOT)) {
                     resultSet += Containers::Set<String> (FindFiles (ToPath (usePath) / ToPath (fileName), fileNameToMatch));
                 }

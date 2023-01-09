@@ -47,8 +47,8 @@ namespace Stroika::Foundation::Cryptography::OpenSSL {
          * nrounds is the number of times the we hash the material. More rounds are more secure but
          * slower.
          *
-         *  For the string overload, we treat the strings as an array of bytes (len bytes) long.
-         *  For the String overload, we convert to UTF8 and treat as string (so L"fred" and "fred" produce the same thing).
+         *  For the ascii string, we treat the strings as an array of bytes (len bytes) long.
+         *  For the String overload, we convert to UTF8 and treat as string (so "fred"_k and "fred" produce the same thing).
          */
         DerivedKey (const BLOB& key, const BLOB& iv);
         DerivedKey (const pair<BLOB, BLOB>& keyAndIV);

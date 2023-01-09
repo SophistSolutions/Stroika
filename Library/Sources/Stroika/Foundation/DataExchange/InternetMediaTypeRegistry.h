@@ -347,21 +347,21 @@ namespace Stroika::Foundation::DataExchange {
          *
          *  This is the major type (atom) making up a class of InternetMediaTypes.
          */
-        inline const InternetMediaType::AtomType kApplication{L"application"sv};
+        inline const InternetMediaType::AtomType kApplication{"application"sv};
 
         /**
          *  \brief 'image'
          *
          *  This is the major type (atom) making up a class of InternetMediaTypes.
          */
-        inline const InternetMediaType::AtomType kImage{L"image"sv};
+        inline const InternetMediaType::AtomType kImage{"image"sv};
 
         /**
          *  \brief 'text'
          *
          *  This is the major type (atom) making up a class of InternetMediaTypes.
          */
-        inline const InternetMediaType::AtomType kText{L"text"sv};
+        inline const InternetMediaType::AtomType kText{"text"sv};
 
     }
 
@@ -370,64 +370,64 @@ namespace Stroika::Foundation::DataExchange {
         /**
          *  \brief application/octet-stream
          */
-        inline const InternetMediaType kOctetStream{Types::kApplication, L"octet-stream"sv};
+        inline const InternetMediaType kOctetStream{Types::kApplication, "octet-stream"sv};
 
         /**
          *  \brief image/png
          */
-        inline const InternetMediaType kPNG{Types::kImage, L"png"sv};
+        inline const InternetMediaType kPNG{Types::kImage, "png"sv};
 
         /**
          *  \brief image/gif
          */
-        inline const InternetMediaType kGIF{Types::kImage, L"gif"sv};
+        inline const InternetMediaType kGIF{Types::kImage, "gif"sv};
 
         /**
          *  \brief image/jpeg
          */
-        inline const InternetMediaType kJPEG{Types::kImage, L"jpeg"sv};
+        inline const InternetMediaType kJPEG{Types::kImage, "jpeg"sv};
 
         /**
          * \brief text/html
          */
-        inline const InternetMediaType kHTML{Types::kText, L"html"sv};
+        inline const InternetMediaType kHTML{Types::kText, "html"sv};
 
         /**
          * \brief text/javascript
          */
-        inline const InternetMediaType kJavascript{Types::kText, L"javascript"sv};
+        inline const InternetMediaType kJavascript{Types::kText, "javascript"sv};
 
         /**
          * \brief text/css
          */
-        inline const InternetMediaType kCSS{Types::kText, L"css"sv};
+        inline const InternetMediaType kCSS{Types::kText, "css"sv};
 
         /**
          *  \brief text/plain
          */
-        inline const InternetMediaType kText_PLAIN{Types::kText, L"plain"sv};
+        inline const InternetMediaType kText_PLAIN{Types::kText, "plain"sv};
 
         /**
          *  \brief text/cvs
          */
-        inline const InternetMediaType kCSV{Types::kText, L"csv"sv};
+        inline const InternetMediaType kCSV{Types::kText, "csv"sv};
 
         /**
          *  \brief application/json
          */
-        inline const InternetMediaType kJSON{Types::kApplication, L"json"sv};
+        inline const InternetMediaType kJSON{Types::kApplication, "json"sv};
 
         /**
          *  \brief application/pdf
          */
-        inline const InternetMediaType kPDF{Types::kApplication, L"pdf"sv};
+        inline const InternetMediaType kPDF{Types::kApplication, "pdf"sv};
 
         /**
          * \brief text/uri-list (@see https://tools.ietf.org/html/rfc2483#section-5)
          *
          *  \note until Stroika 2.1b2, this was defined as application/x-url
          */
-        inline const InternetMediaType kURL{Types::kText, L"uri-list"sv};
+        inline const InternetMediaType kURL{Types::kText, "uri-list"sv};
 
         /**
          *  \brief application/xml (@see https://www.w3.org/2006/02/son-of-3023/draft-murata-kohn-lilley-xml-04.html#rfc.section.3.2)
@@ -439,21 +439,21 @@ namespace Stroika::Foundation::DataExchange {
         /**
          *  \brief application/x-xslt
          */
-        inline const InternetMediaType kXSLT{Types::kApplication, L"x-xslt"sv};
+        inline const InternetMediaType kXSLT{Types::kApplication, "x-xslt"sv};
 
         /**
          */
-        inline const InternetMediaType kJavaArchive{Types::kApplication, L"java-archive"sv};
+        inline const InternetMediaType kJavaArchive{Types::kApplication, "java-archive"sv};
 
         /**
          * Microsoft RTF - Rich Text Format
          */
-        inline const InternetMediaType kRTF{Types::kApplication, L"rtf"sv};
+        inline const InternetMediaType kRTF{Types::kApplication, "rtf"sv};
 
         /**
          *  \brief application/zip
          */
-        inline const InternetMediaType kZip{Types::kApplication, L"zip"sv};
+        inline const InternetMediaType kZip{Types::kApplication, "zip"sv};
 
     }
 

@@ -422,12 +422,12 @@ namespace {
 
                     if (grabStaticData) {
                         processDetails.fEXEPath = OptionallyResolveShortcut_ (dir / kEXEFilename_);
-                        if (processDetails.fEXEPath and IO::FileSystem::FromPath (*processDetails.fEXEPath).EndsWith (L" (deleted)")) {
+                        if (processDetails.fEXEPath and IO::FileSystem::FromPath (*processDetails.fEXEPath).EndsWith (" (deleted)"sv)) {
                             processDetails.fEXEPath = IO::FileSystem::ToPath (IO::FileSystem::FromPath (*processDetails.fEXEPath).SubString (0, -10));
                         }
 
                         if (_fOptions.fProcessNameReadPolicy == Options::eAlways or (_fOptions.fProcessNameReadPolicy == Options::eOnlyIfEXENotRead and not processDetails.fEXEPath.has_value ())) {
-                            processDetails.fProcessName = OptionallyReadIfFileExists_<String> (dir / "comm", [] (const Streams::InputStream<byte>::Ptr& in) { return TextReader::New (in).ReadAll ().Trim (); });
+                            processDetails.fProcessName = OptionallyReadIfFileExists_<String> (dir / "comm"sv, [] (const Streams::InputStream<byte>::Ptr& in) { return TextReader::New (in).ReadAll ().Trim (); });
                         }
 
                         /*
@@ -527,7 +527,7 @@ namespace {
                         try {
                             if (processDetails.fKernelProcess == true) {
                                 // I think these are always running as root -- LGP 2015-05-21
-                                processDetails.fUserName = L"root"sv;
+                                processDetails.fUserName = "root"sv;
                             }
                             else {
                                 proc_status_data_ stats  = Readproc_proc_status_data_ (dir / kStatusFilename_);
@@ -1105,7 +1105,7 @@ namespace {
             constexpr size_t                 kUser_Idx_{6};
             constexpr size_t                 kThreadCnt_Idx_{7};
             constexpr size_t                 kColCountIncludingCmd_{9};
-            ProcessRunner                    pr{L"ps -A -o \"pid,ppid,s,time,rss,vsz,user,nlwp,cmd\""};
+            ProcessRunner                    pr{"ps -A -o \"pid,ppid,s,time,rss,vsz,user,nlwp,cmd\""sv};
             Streams::MemoryStream<byte>::Ptr useStdOut = Streams::MemoryStream<byte>::New ();
             pr.SetStdOut (useStdOut);
             pr.Run ();
@@ -1197,16 +1197,16 @@ namespace {
 
 #if qUseWMICollectionSupport_
 namespace {
-    const String kProcessID_{L"ID Process"sv};
-    const String kThreadCount_{L"Thread Count"sv};
-    const String kIOReadBytesPerSecond_{L"IO Read Bytes/sec"sv};
-    const String kIOWriteBytesPerSecond_{L"IO Write Bytes/sec"sv};
-    const String kPercentProcessorTime_{L"% Processor Time"sv}; // % Processor Time is the percentage of elapsed time that all of process threads
+    const String kProcessID_{"ID Process"sv};
+    const String kThreadCount_{"Thread Count"sv};
+    const String kIOReadBytesPerSecond_{"IO Read Bytes/sec"sv};
+    const String kIOWriteBytesPerSecond_{"IO Write Bytes/sec"sv};
+    const String kPercentProcessorTime_{"% Processor Time"sv}; // % Processor Time is the percentage of elapsed time that all of process threads
     // used the processor to execution instructions. An instruction is the basic unit of
     // execution in a computer, a thread is the object that executes instructions, and a
     // process is the object created when a program is run. Code executed to handle some
     // hardware interrupts and trap conditions are included in this count.
-    const String kElapsedTime_{L"Elapsed Time"sv}; // The total elapsed time, in seconds, that this process has been running.
+    const String kElapsedTime_{"Elapsed Time"sv}; // The total elapsed time, in seconds, that this process has been running.
 }
 #endif
 
@@ -1220,7 +1220,7 @@ namespace {
     };
     struct _Context : ModuleCommonContext_ {
 #if qUseWMICollectionSupport_
-        WMICollector fProcessWMICollector_{L"Process"sv, {WMICollector::kWildcardInstance}, { kProcessID_,
+        WMICollector fProcessWMICollector_{"Process"sv, {WMICollector::kWildcardInstance}, { kProcessID_,
                                                                                               kThreadCount_,
                                                                                               kIOReadBytesPerSecond_,
                                                                                               kIOWriteBytesPerSecond_,
@@ -1703,39 +1703,39 @@ const ObjectVariantMapper Instruments::Process::Instrument::kObjectVariantMapper
     mapper.AddCommonType<optional<DurationSecondsType>> ();
     mapper.AddCommonType<optional<Mapping<String, String>>> ();
     mapper.AddClass<ProcessType::TCPStats> (initializer_list<StructFieldInfo>{
-        {L"Established", StructFieldMetaInfo{&ProcessType::TCPStats::fEstablished}},
-        {L"Listening", StructFieldMetaInfo{&ProcessType::TCPStats::fListening}},
-        {L"Other", StructFieldMetaInfo{&ProcessType::TCPStats::fOther}},
+        {"Established"sv, StructFieldMetaInfo{&ProcessType::TCPStats::fEstablished}},
+        {"Listening"sv, StructFieldMetaInfo{&ProcessType::TCPStats::fListening}},
+        {"Other"sv, StructFieldMetaInfo{&ProcessType::TCPStats::fOther}},
     });
     mapper.AddCommonType<optional<ProcessType::TCPStats>> ();
     mapper.AddClass<ProcessType> (initializer_list<StructFieldInfo>{
-        {L"Kernel-Process", StructFieldMetaInfo{&ProcessType::fKernelProcess}, StructFieldInfo::eOmitNullFields},
-        {L"Parent-Process-ID", StructFieldMetaInfo{&ProcessType::fParentProcessID}, StructFieldInfo::eOmitNullFields},
-        {L"Process-Name", StructFieldMetaInfo{&ProcessType::fProcessName}, StructFieldInfo::eOmitNullFields},
-        {L"User-Name", StructFieldMetaInfo{&ProcessType::fUserName}, StructFieldInfo::eOmitNullFields},
-        {L"Command-Line", StructFieldMetaInfo{&ProcessType::fCommandLine}, StructFieldInfo::eOmitNullFields},
-        {L"Current-Working-Directory", StructFieldMetaInfo{&ProcessType::fCurrentWorkingDirectory}, StructFieldInfo::eOmitNullFields},
-        {L"Environment-Variables", StructFieldMetaInfo{&ProcessType::fEnvironmentVariables}, StructFieldInfo::eOmitNullFields},
-        {L"EXE-Path", StructFieldMetaInfo{&ProcessType::fEXEPath}, StructFieldInfo::eOmitNullFields},
-        {L"Root", StructFieldMetaInfo{&ProcessType::fRoot}, StructFieldInfo::eOmitNullFields},
-        {L"Process-Started-At", StructFieldMetaInfo{&ProcessType::fProcessStartedAt}, StructFieldInfo::eOmitNullFields},
-        {L"Run-Status", StructFieldMetaInfo{&ProcessType::fRunStatus}, StructFieldInfo::eOmitNullFields},
-        {L"Private-Virtual-Memory-Size", StructFieldMetaInfo{&ProcessType::fPrivateVirtualMemorySize}, StructFieldInfo::eOmitNullFields},
-        {L"Total-Virtual-Memory-Size", StructFieldMetaInfo{&ProcessType::fTotalVirtualMemorySize}, StructFieldInfo::eOmitNullFields},
-        {L"Resident-Memory-Size", StructFieldMetaInfo{&ProcessType::fResidentMemorySize}, StructFieldInfo::eOmitNullFields},
-        {L"Private-Bytes", StructFieldMetaInfo{&ProcessType::fPrivateBytes}, StructFieldInfo::eOmitNullFields},
-        {L"Page-Fault-Count", StructFieldMetaInfo{&ProcessType::fPageFaultCount}, StructFieldInfo::eOmitNullFields},
-        {L"Major-Page-Fault-Count", StructFieldMetaInfo{&ProcessType::fMajorPageFaultCount}, StructFieldInfo::eOmitNullFields},
-        {L"Working-Set-Size", StructFieldMetaInfo{&ProcessType::fWorkingSetSize}, StructFieldInfo::eOmitNullFields},
-        {L"Private-Working-Set-Size", StructFieldMetaInfo{&ProcessType::fPrivateWorkingSetSize}, StructFieldInfo::eOmitNullFields},
-        {L"Total-CPUTime-Ever-Used", StructFieldMetaInfo{&ProcessType::fTotalCPUTimeEverUsed}, StructFieldInfo::eOmitNullFields},
-        {L"Average-CPUTime-Used", StructFieldMetaInfo{&ProcessType::fAverageCPUTimeUsed}, StructFieldInfo::eOmitNullFields},
-        {L"Thread-Count", StructFieldMetaInfo{&ProcessType::fThreadCount}, StructFieldInfo::eOmitNullFields},
-        {L"Combined-IO-Read-Rate", StructFieldMetaInfo{&ProcessType::fCombinedIOReadRate}, StructFieldInfo::eOmitNullFields},
-        {L"Combined-IO-Write-Rate", StructFieldMetaInfo{&ProcessType::fCombinedIOWriteRate}, StructFieldInfo::eOmitNullFields},
-        {L"Combined-IO-Read-Bytes", StructFieldMetaInfo{&ProcessType::fCombinedIOReadBytes}, StructFieldInfo::eOmitNullFields},
-        {L"Combined-IO-Write-Bytes", StructFieldMetaInfo{&ProcessType::fCombinedIOWriteBytes}, StructFieldInfo::eOmitNullFields},
-        {L"TCP-Stats", StructFieldMetaInfo{&ProcessType::fTCPStats}, StructFieldInfo::eOmitNullFields},
+        {"Kernel-Process"sv, StructFieldMetaInfo{&ProcessType::fKernelProcess}, StructFieldInfo::eOmitNullFields},
+        {"Parent-Process-ID"sv, StructFieldMetaInfo{&ProcessType::fParentProcessID}, StructFieldInfo::eOmitNullFields},
+        {"Process-Name"sv, StructFieldMetaInfo{&ProcessType::fProcessName}, StructFieldInfo::eOmitNullFields},
+        {"User-Name"sv, StructFieldMetaInfo{&ProcessType::fUserName}, StructFieldInfo::eOmitNullFields},
+        {"Command-Line"sv, StructFieldMetaInfo{&ProcessType::fCommandLine}, StructFieldInfo::eOmitNullFields},
+        {"Current-Working-Directory"sv, StructFieldMetaInfo{&ProcessType::fCurrentWorkingDirectory}, StructFieldInfo::eOmitNullFields},
+        {"Environment-Variables"sv, StructFieldMetaInfo{&ProcessType::fEnvironmentVariables}, StructFieldInfo::eOmitNullFields},
+        {"EXE-Path"sv, StructFieldMetaInfo{&ProcessType::fEXEPath}, StructFieldInfo::eOmitNullFields},
+        {"Root"sv, StructFieldMetaInfo{&ProcessType::fRoot}, StructFieldInfo::eOmitNullFields},
+        {"Process-Started-At"sv, StructFieldMetaInfo{&ProcessType::fProcessStartedAt}, StructFieldInfo::eOmitNullFields},
+        {"Run-Status"sv, StructFieldMetaInfo{&ProcessType::fRunStatus}, StructFieldInfo::eOmitNullFields},
+        {"Private-Virtual-Memory-Size"sv, StructFieldMetaInfo{&ProcessType::fPrivateVirtualMemorySize}, StructFieldInfo::eOmitNullFields},
+        {"Total-Virtual-Memory-Size"sv, StructFieldMetaInfo{&ProcessType::fTotalVirtualMemorySize}, StructFieldInfo::eOmitNullFields},
+        {"Resident-Memory-Size"sv, StructFieldMetaInfo{&ProcessType::fResidentMemorySize}, StructFieldInfo::eOmitNullFields},
+        {"Private-Bytes"sv, StructFieldMetaInfo{&ProcessType::fPrivateBytes}, StructFieldInfo::eOmitNullFields},
+        {"Page-Fault-Count"sv, StructFieldMetaInfo{&ProcessType::fPageFaultCount}, StructFieldInfo::eOmitNullFields},
+        {"Major-Page-Fault-Count"sv, StructFieldMetaInfo{&ProcessType::fMajorPageFaultCount}, StructFieldInfo::eOmitNullFields},
+        {"Working-Set-Size"sv, StructFieldMetaInfo{&ProcessType::fWorkingSetSize}, StructFieldInfo::eOmitNullFields},
+        {"Private-Working-Set-Size"sv, StructFieldMetaInfo{&ProcessType::fPrivateWorkingSetSize}, StructFieldInfo::eOmitNullFields},
+        {"Total-CPUTime-Ever-Used"sv, StructFieldMetaInfo{&ProcessType::fTotalCPUTimeEverUsed}, StructFieldInfo::eOmitNullFields},
+        {"Average-CPUTime-Used"sv, StructFieldMetaInfo{&ProcessType::fAverageCPUTimeUsed}, StructFieldInfo::eOmitNullFields},
+        {"Thread-Count"sv, StructFieldMetaInfo{&ProcessType::fThreadCount}, StructFieldInfo::eOmitNullFields},
+        {"Combined-IO-Read-Rate"sv, StructFieldMetaInfo{&ProcessType::fCombinedIOReadRate}, StructFieldInfo::eOmitNullFields},
+        {"Combined-IO-Write-Rate"sv, StructFieldMetaInfo{&ProcessType::fCombinedIOWriteRate}, StructFieldInfo::eOmitNullFields},
+        {"Combined-IO-Read-Bytes"sv, StructFieldMetaInfo{&ProcessType::fCombinedIOReadBytes}, StructFieldInfo::eOmitNullFields},
+        {"Combined-IO-Write-Bytes"sv, StructFieldMetaInfo{&ProcessType::fCombinedIOWriteBytes}, StructFieldInfo::eOmitNullFields},
+        {"TCP-Stats"sv, StructFieldMetaInfo{&ProcessType::fTCPStats}, StructFieldInfo::eOmitNullFields},
     });
     mapper.AddCommonType<ProcessMapType> ();
     return mapper;
@@ -1743,7 +1743,7 @@ const ObjectVariantMapper Instruments::Process::Instrument::kObjectVariantMapper
 
 Instruments::Process::Instrument::Instrument (const Options& options)
     : SystemPerformance::Instrument{
-          InstrumentNameType{L"Process"sv},
+          InstrumentNameType{"Process"sv},
           make_unique<ProcessInstrumentRep_> (options),
           {kProcessMapMeasurement},
           {KeyValuePair<type_index, MeasurementType>{typeid (Info), kProcessMapMeasurement}},

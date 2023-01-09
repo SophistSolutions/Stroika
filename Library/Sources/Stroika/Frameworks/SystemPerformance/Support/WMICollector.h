@@ -68,12 +68,12 @@ namespace Stroika::Frameworks::SystemPerformance::Support {
      *      "LogicalDisk"
      *
      *  \par Example Usage
-     *      WMICollector  tmp { L"Processor", {L"_Total"}, {L"% Processor Time"} };
-     *      double x = tmp.GetCurrentValue (L"_Total", L"% Processor Time");
+     *      WMICollector  tmp { "Processor", {"_Total"}, {"% Processor Time"} };
+     *      double x = tmp.GetCurrentValue ("_Total", "% Processor Time");
      *
      *  \par Example Usage
-     *      WMICollector  tmp { L"LogicalDisk", {L"E:"},  {L"% Free Space"} };
-     *      double x = tmp.GetCurrentValue (L"E:", L"% Free Space");
+     *      WMICollector  tmp { "LogicalDisk", {"E:"},  {"% Free Space"} };
+     *      double x = tmp.GetCurrentValue ("E:", "% Free Space");
      *
      * Use the Windows 'Performance Monitor' tool and click PerformanceMonitor and "Add Counters" to see more/list
     */

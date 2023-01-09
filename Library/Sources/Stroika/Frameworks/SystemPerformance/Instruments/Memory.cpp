@@ -60,18 +60,18 @@ using SystemPerformance::Support::WMICollector;
 
 #if qUseWMICollectionSupport_
 namespace {
-    const String kInstanceName_{L"_Total"sv};
+    const String kInstanceName_{"_Total"sv};
 
-    const String kCommittedBytes_{L"Committed Bytes"sv};
-    const String kCommitLimit_{L"Commit Limit"sv};
-    const String kHardPageFaultsPerSec_{L"Pages/sec"sv};
-    const String kPagesOutPerSec_{L"Pages Output/sec"sv};
+    const String kCommittedBytes_{"Committed Bytes"sv};
+    const String kCommitLimit_{"Commit Limit"sv};
+    const String kHardPageFaultsPerSec_{"Pages/sec"sv};
+    const String kPagesOutPerSec_{"Pages Output/sec"sv};
 
-    const String kFreeMem_{L"Free & Zero Page List Bytes"sv};
+    const String kFreeMem_{"Free & Zero Page List Bytes"sv};
 
     // Something of an empirical WAG (kHardwareReserved*) but not super important to get right -- LGP 2015-09-24
-    const String kHardwareReserved1_{L"System Driver Resident Bytes"sv};
-    const String kHardwareReserved2_{L"System Driver Total Bytes"sv};
+    const String kHardwareReserved1_{"System Driver Resident Bytes"sv};
+    const String kHardwareReserved2_{"System Driver Total Bytes"sv};
 }
 #endif
 

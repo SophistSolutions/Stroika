@@ -126,11 +126,11 @@ namespace Stroika::Foundation::Math::LinearAlgebra {
     Characters::String Vector<T>::ToString () const
     {
         Characters::StringBuilder sb;
-        sb += L"[";
+        sb += "[";
         for (const T& i : fRep_.cget ()->fData) {
-            sb += Characters::ToString (i) + L", ";
+            sb += Characters::ToString (i) + ", ";
         }
-        sb += L"]";
+        sb += "]";
         return sb.str ();
     }
 

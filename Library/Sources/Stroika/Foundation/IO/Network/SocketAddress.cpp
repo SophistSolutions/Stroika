@@ -37,10 +37,10 @@ SocketAddress::SocketAddress (const SOCKET_ADDRESS& sockaddr)
 String SocketAddress::ToString () const
 {
     if (IsInternetAddress ()) {
-        return Characters::ToString (GetInternetAddress ()) + L":" + Characters::Format (L"%d", static_cast<int> (GetPort ()));
+        return Characters::ToString (GetInternetAddress ()) + ":" + Characters::Format (L"%d", static_cast<int> (GetPort ()));
     }
     else {
-        return Characters::ToString (Memory::BLOB (reinterpret_cast<const byte*> (&fSocketAddress_), reinterpret_cast<const byte*> (&fSocketAddress_) + GetRequiredSize ()));
+        return Characters::ToString (Memory::BLOB{reinterpret_cast<const byte*> (&fSocketAddress_), reinterpret_cast<const byte*> (&fSocketAddress_) + GetRequiredSize ()});
     }
 }
 
@@ -52,8 +52,8 @@ String SocketAddress::ToString () const
 Traversal::Iterable<SocketAddress> Network::SocketAddresses (const Traversal::Iterable<InternetAddress>& internetAddresses, PortType portNumber)
 {
     Containers::Collection<SocketAddress> tmp;
-    for (const auto i : internetAddresses) {
+    for (const auto& i : internetAddresses) {
         tmp += SocketAddress{i, portNumber};
     }
-    return move (tmp);
+    return tmp;
 }

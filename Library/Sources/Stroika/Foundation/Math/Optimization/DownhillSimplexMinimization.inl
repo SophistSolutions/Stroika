@@ -30,14 +30,14 @@ namespace Stroika::Foundation::Math::Optimization::DownhillSimplexMinimization {
     Characters::String Options<FLOAT_TYPE>::ToString () const
     {
         Characters::StringBuilder sb;
-        sb += L"{";
+        sb += "{";
         if (fMaxIterations) {
-            sb += L"Max-Iterations: " + Characters::ToString (fMaxIterations) + L",";
+            sb += "Max-Iterations: " + Characters::ToString (fMaxIterations) + ",";
         }
         if (fNoImprovementThreshold) {
-            sb += L"No-Improvement-Threshold: " + Characters::ToString (fNoImprovementThreshold) + L",";
+            sb += "No-Improvement-Threshold: " + Characters::ToString (fNoImprovementThreshold) + ",";
         }
-        sb += L"}";
+        sb += "}";
         return sb.str ();
     }
 
@@ -50,11 +50,11 @@ namespace Stroika::Foundation::Math::Optimization::DownhillSimplexMinimization {
     Characters::String Results<FLOAT_TYPE>::ToString () const
     {
         Characters::StringBuilder sb;
-        sb += L"{";
-        sb += L"Optimized-Parameters: " + Characters::ToString (fOptimizedParameters) + L",";
-        sb += L"Score: " + Characters::ToString (fScore) + L",";
-        sb += L"Iteration-Count: " + Characters::Format (L"%d", fIterationCount) + L",";
-        sb += L"}";
+        sb += "{";
+        sb += "Optimized-Parameters: " + Characters::ToString (fOptimizedParameters) + ",";
+        sb += "Score: " + Characters::ToString (fScore) + ",";
+        sb += "Iteration-Count: " + Characters::Format (L"%d", fIterationCount) + ",";
+        sb += "}";
         return sb.str ();
     }
 

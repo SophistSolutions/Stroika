@@ -169,8 +169,8 @@ namespace Stroika::Foundation::Memory {
      *      \endcode
      *
      *  \note   I tried making this an Optional<T> constructor overload, but it lead to dangerous confusion with things like
-     *          URL url = URL (L"dyn:/StyleSheet.css?ThemeName=Cupertino", URL::eStroikaPre20a50BackCompatMode);
-     *          VerifyTestResult (url.GetScheme () == L"dyn");
+     *          URL url = URL{"dyn:/StyleSheet.css?ThemeName=Cupertino", URL::eStroikaPre20a50BackCompatMode};
+     *          VerifyTestResult (url.GetScheme () == "dyn");
      *          // wchar_t* overload is optional gets STRING with value "d";
      */
     template <typename RHS_CONVERTIBLE_TO_OPTIONAL_OF_T, typename T = RHS_CONVERTIBLE_TO_OPTIONAL_OF_T, typename SFINAE_SAFE_CONVERTIBLE = enable_if_t<Configuration::is_explicitly_convertible_v<RHS_CONVERTIBLE_TO_OPTIONAL_OF_T, T>>>

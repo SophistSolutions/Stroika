@@ -330,7 +330,7 @@ namespace Stroika::Foundation::Execution {
             /**
              *  \par Example Usage
              *      \code
-             *          Thread::Ptr t   = Thread::New ([r]() { r->Run (); }, Thread::eAutoStart, L"Thread Name");
+             *          Thread::Ptr t   = Thread::New ([r]() { r->Run (); }, Thread::eAutoStart, "Thread Name");
              *          Thread::Ptr t2  = t;
              *      \endcode
              */
@@ -919,7 +919,7 @@ namespace Stroika::Foundation::Execution {
          *
          *  \par Example Usage
          *      \code
-         *          Thread::Ptr t = Thread::New ([r]() { r->Run (); }, Thread::eAutoStart, L"Thread Name");
+         *          Thread::Ptr t = Thread::New ([r]() { r->Run (); }, Thread::eAutoStart, "Thread Name");
          *      \endcode
          *
          *  \par Example Usage

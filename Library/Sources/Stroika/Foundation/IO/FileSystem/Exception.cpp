@@ -25,10 +25,10 @@ Characters::String FileSystem::Exception::mkMsg_ (error_code errCode, const path
 {
     StringBuilder sb = Execution::Private_::SystemErrorExceptionPrivate_::mkMsg_ (errCode);
     if (not p1.empty ()) {
-        sb += L" {" + String{p1.wstring ()}.LimitLength (25, false) + L"}";
+        sb += " {"sv + String{p1.wstring ()}.LimitLength (25, false) + "}"sv;
     }
     if (not p2.empty ()) {
-        sb += L" {" + String{p2.wstring ()}.LimitLength (25, false) + L"}";
+        sb += " {"sv + String{p2.wstring ()}.LimitLength (25, false) + "}"sv;
     }
     return sb.str ();
 }
@@ -37,10 +37,10 @@ Characters::String FileSystem::Exception::mkMsg_ (error_code errCode, const Char
 {
     StringBuilder sb = Execution::Private_::SystemErrorExceptionPrivate_::mkCombinedMsg_ (errCode, message);
     if (not p1.empty ()) {
-        sb += L" {" + String{p1.wstring ()}.LimitLength (25, false) + L"}";
+        sb += " {"sv + String{p1.wstring ()}.LimitLength (25, false) + "}"sv;
     }
     if (not p2.empty ()) {
-        sb += L" {" + String{p2.wstring ()}.LimitLength (25, false) + L"}";
+        sb += " {"sv + String{p2.wstring ()}.LimitLength (25, false) + "}"sv;
     }
     return sb.str ();
 }
@@ -56,7 +56,7 @@ void Exception::ThrowPOSIXErrNo (errno_t errNo, const path& p1, const path& p2)
 #else
     error_code ec{errNo, generic_category ()};
 #endif
-    Throw (Exception (ec, p1, p2));
+    Throw (Exception{ec, p1, p2});
 }
 
 void Exception::ThrowSystemErrNo (int sysErr, const path& p1, const path& p2)
@@ -66,7 +66,7 @@ void Exception::ThrowSystemErrNo (int sysErr, const path& p1, const path& p2)
 #endif
     Require (sysErr != 0);
     error_code ec{sysErr, system_category ()};
-    Throw (Exception (ec, p1, p2));
+    Throw (Exception{ec, p1, p2});
 }
 
 void Exception::ThrowSystemErrNo (const path& p1, const path& p2)

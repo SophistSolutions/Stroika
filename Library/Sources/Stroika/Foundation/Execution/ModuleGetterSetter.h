@@ -35,17 +35,17 @@ namespace Stroika::Foundation ::Execution {
      *          struct  ModuleGetterSetter_Implementation_MyData_ {
      *              ModuleGetterSetter_Implementation_MyData_ ()
      *                  : fOptionsFile_ {
-     *                      L"MyModule",
+     *                      "MyModule",
      *                      [] () -> ObjectVariantMapper {
      *                          ObjectVariantMapper mapper;
      *                          mapper.AddClass<MyData_> (initializer_list<ObjectVariantMapper::StructFieldInfo> {
-     *                              { L"Enabled", StructFieldMetaInfo{&MyData_::fEnabled} },
-     *                              { L"Last-Synchronized-At", StructFieldMetaInfo{&MyData_::fLastSynchronizedAt} },
+     *                              { "Enabled", StructFieldMetaInfo{&MyData_::fEnabled} },
+     *                              { "Last-Synchronized-At", StructFieldMetaInfo{&MyData_::fLastSynchronizedAt} },
      *                          });
      *                          return mapper;
      *                      } ()
      *                      , OptionsFile::kDefaultUpgrader
-     *                      , OptionsFile::mkFilenameMapper (L"Put-Your-App-Name-Here")
+     *                      , OptionsFile::mkFilenameMapper ("Put-Your-App-Name-Here")
      *                  }
      *                  , fActualCurrentConfigData_{fOptionsFile_.Read<MyData_> (MyData_{})}
      *                  {

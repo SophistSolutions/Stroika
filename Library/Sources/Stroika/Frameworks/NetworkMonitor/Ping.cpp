@@ -45,13 +45,13 @@ String Ping::Options::ToString () const
     StringBuilder sb;
     sb += "{";
     if (fMaxHops) {
-        sb += "Max-Hops: " + Characters::Format (L"%d", *fMaxHops) + L", ";
+        sb += "Max-Hops: " + Characters::Format (L"%d", *fMaxHops) + ", ";
     }
     if (fTimeout) {
-        sb += "Timeout: " + Characters::ToString (*fTimeout) + L", ";
+        sb += "Timeout: " + Characters::ToString (*fTimeout) + ", ";
     }
     if (fPacketPayloadSize) {
-        sb += "Packet-Payload-Size: " + Characters::Format (L"%d", *fPacketPayloadSize) + L", ";
+        sb += "Packet-Payload-Size: " + Characters::Format (L"%d", *fPacketPayloadSize) + ", ";
     }
     sb += "}";
     return sb.str ();
@@ -65,10 +65,10 @@ String Ping::Options::ToString () const
 String Pinger::ResultType::ToString () const
 {
     StringBuilder sb;
-    sb += L"{";
-    sb += L"Ping-Time: " + Characters::ToString (fPingTime) + L", ";
-    sb += L"Hop-Count: " + Characters::Format (L"%d", fHopCount) + L", ";
-    sb += L"}";
+    sb += "{"sv;
+    sb += "Ping-Time: "sv + Characters::ToString (fPingTime) + ", ";
+    sb += "Hop-Count: "sv + Characters::Format (L"%d", fHopCount) + ", ";
+    sb += "}"sv;
     return sb.str ();
 }
 
@@ -136,7 +136,7 @@ Pinger::ResultType Pinger::RunOnce_ICMP_ (unsigned int ttl)
 
         // Make sure the reply is sane
         if (n < header_len + ICMP::V4::ICMP_MIN) {
-            Execution::Throw (Execution::Exception{L"too few bytes from "sv + Characters::ToString (fromAddress)}); // draft @todo fix
+            Execution::Throw (Execution::Exception{"too few bytes from "sv + Characters::ToString (fromAddress)}); // draft @todo fix
         }
 
         /*

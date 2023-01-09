@@ -58,7 +58,7 @@ filesystem::path FileSystem::WellKnownLocations::GetMyDocuments (bool createIfNo
     filesystem::path result = fileBuf;
     // Assure non-empty result
     if (result.empty ()) {
-        result = path (L"c:"); // shouldn't happen
+        result = path{"c:"sv}; // shouldn't happen
     }
     Ensure (not createIfNotPresent or filesystem::is_directory (result));
     return result;
@@ -134,7 +134,7 @@ filesystem::path FileSystem::WellKnownLocations::GetApplicationData (bool create
 filesystem::path FileSystem::WellKnownLocations::GetRuntimeVariableData ()
 {
 #if qPlatform_POSIX
-    static const filesystem::path kResult_{L"/var/run/"};
+    static const filesystem::path kResult_{"/var/run/"sv};
     return kResult_;
 #elif qPlatform_Windows
     return GetTemporary ();

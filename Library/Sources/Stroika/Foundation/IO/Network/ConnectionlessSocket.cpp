@@ -165,7 +165,7 @@ namespace {
             }
             virtual void SetMulticastTTL (uint8_t ttl) override
             {
-                static constexpr Execution::Activity            kSettingMulticastTTL{L"setting multicast TTL"sv};
+                static constexpr Execution::Activity            kSettingMulticastTTL{"setting multicast TTL"sv};
                 Execution::DeclareActivity                      activityDeclare{&kSettingMulticastTTL};
                 AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
                 switch (GetAddressFamily ()) {
@@ -213,7 +213,7 @@ namespace {
             }
             virtual void SetMulticastLoopMode (bool loopMode) override
             {
-                static constexpr Execution::Activity            kSettingMulticastLoopMode{L"setting multicast loop mode"sv};
+                static constexpr Execution::Activity            kSettingMulticastLoopMode{"setting multicast loop mode"sv};
                 Execution::DeclareActivity                      activityDeclare{&kSettingMulticastLoopMode};
                 AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
                 switch (GetAddressFamily ()) {

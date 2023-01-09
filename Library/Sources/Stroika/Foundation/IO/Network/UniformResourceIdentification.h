@@ -212,7 +212,7 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
          *  This takes argument a possibly %-encoded name, or [] encoded internet addresse etc, and produces a properly parsed host object
          *  This may throw if given an invalid raw URL hostname value.
          *
-         *  Require (not rawURLHostnameText.empty ());  // use optional instead, and treat empty text as invalid. NBL L" " is OK.
+         *  Require (not rawURLHostnameText.empty ());  // use optional instead, and treat empty text as invalid. NB " " is OK.
          */
         static Host Parse (const String& rawURLHostnameText);
 

@@ -60,12 +60,12 @@ namespace Stroika::Foundation::DataExchange {
      *         };
      *         // Execution::Logger::Activator logMgrActivator;    // be sure a line like this in Main before the 'of' object usage
      *         OptionsFile of {
-     *             L"MyModule",
+     *             "MyModule",
      *             [] () -> ObjectVariantMapper {
      *                 ObjectVariantMapper mapper;
      *                 mapper.AddClass<MyData_> (initializer_list<StructFieldInfo> {
-     *                     { L"Enabled", StructFieldMetaInfo{&MyData_::fEnabled} },
-     *                     { L"Last-Synchronized-At", StructFieldMetaInfo{&MyData_::fLastSynchronizedAt} },
+     *                     { "Enabled", StructFieldMetaInfo{&MyData_::fEnabled} },
+     *                     { "Last-Synchronized-At", StructFieldMetaInfo{&MyData_::fLastSynchronizedAt} },
      *                 });
      *                 return mapper;
      *             } (),

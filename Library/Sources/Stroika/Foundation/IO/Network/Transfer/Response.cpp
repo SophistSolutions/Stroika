@@ -55,7 +55,7 @@ optional<InternetMediaType> Response::GetContentType () const
 optional<String> Response::GetCharset () const
 {
     if (optional<String> hi = fHeaders_.Lookup (String::FromStringConstant (HTTP::HeaderName::kContentType))) {
-        static const String kLBL_ = L"; charset="_k;
+        static const String kLBL_ = "; charset="_k;
         if (optional<size_t> oi = hi->Find (kLBL_)) {
             return hi->SubString (*oi + kLBL_.size ());
         }
@@ -66,11 +66,11 @@ optional<String> Response::GetCharset () const
 String Response::ToString () const
 {
     StringBuilder sb;
-    sb += L"{";
-    sb += L"Headers: " + Characters::ToString (fHeaders_) + L",";
-    sb += L"Status: " + Characters::ToString (fStatus_) + L",";
-    sb += L"fServerEndpointSSLInfo_: " + Characters::ToString (fServerEndpointSSLInfo_) + L",";
-    sb += L"}";
+    sb += "{";
+    sb += "Headers: " + Characters::ToString (fHeaders_) + ",";
+    sb += "Status: " + Characters::ToString (fStatus_) + ",";
+    sb += "ServerEndpointSSLInfo_: " + Characters::ToString (fServerEndpointSSLInfo_) + ",";
+    sb += "}";
     return sb.str ();
 }
 

@@ -21,10 +21,10 @@ namespace {
     {
         String cName = component;
         if (cName == RequiredComponentMissingException::kPDFViewer) {
-            cName = L"PDF Viewer"sv;
+            cName = "PDF Viewer"sv;
         }
         else if (cName == RequiredComponentMissingException::kPDFOCXViewer) {
-            cName = L"PDF Viewer (OCX)"sv;
+            cName = "PDF Viewer (OCX)"sv;
         }
         return Characters::Format (L"A required component - %s - is missing, or is out of date", component.As<wstring> ().c_str ());
     }

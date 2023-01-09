@@ -54,16 +54,16 @@ String Connection::Options::Authentication::GetAuthToken () const
 String Connection::Options::Authentication::ToString () const
 {
     StringBuilder sb;
-    sb += L"{";
-    sb += L"options: " + Characters::ToString (fOptions_);
+    sb += "{";
+    sb += "options: " + Characters::ToString (fOptions_);
     if (fExplicitAuthToken_) {
-        sb += L", Explicit-Auth-Token: " + Characters::ToString (*fExplicitAuthToken_);
+        sb += ", Explicit-Auth-Token: " + Characters::ToString (*fExplicitAuthToken_);
     }
     else if (fUsernamePassword_) {
-        sb += L", username: " + fUsernamePassword_->first;
-        sb += L", password: " + fUsernamePassword_->second;
+        sb += ", username: " + fUsernamePassword_->first;
+        sb += ", password: " + fUsernamePassword_->second;
     }
-    sb += L"}";
+    sb += "}";
     return sb.str ();
 }
 
@@ -156,7 +156,9 @@ namespace {
 
 Response Connection::Ptr::Send (const Request& r)
 {
-    const LazyEvalActivity activity{[&] () { return L"sending '" + r.fMethod + L"' request to " + Characters::ToString (GetSchemeAndAuthority ().Combine (r.fAuthorityRelativeURL)); }};
+    const LazyEvalActivity activity{[&] () {
+        return "sending '"sv + r.fMethod + "' request to "sv + Characters::ToString (GetSchemeAndAuthority ().Combine (r.fAuthorityRelativeURL));
+    }};
     DeclareActivity        declaredActivity{GetOptions ().fDeclareActivities.value_or (kDeclareActivitiesFlag_Default_) ? &activity : nullptr};
     Response               response = fRep_->Send (r);
     if (not response.GetSucceeded ()) [[unlikely]] {

@@ -57,26 +57,26 @@ struct InternetMediaTypeRegistry::FrontendRep_ : InternetMediaTypeRegistry::IFro
     // These are adjustable by API, serve the purpose of providing a default on systems with no MIME content database -- LGP 2020-07-27
     static const inline Mapping<InternetMediaType, OverrideRecord> kDefaults_{initializer_list<KeyValuePair<InternetMediaType, OverrideRecord>>{
         {InternetMediaTypes::kText_PLAIN, OverrideRecord{nullopt,
-                                                         Containers::Set<String>{L".txt"sv},
-                                                         L".txt"sv}},
+                                                         Containers::Set<String>{".txt"sv},
+                                                         ".txt"sv}},
         {InternetMediaTypes::kCSS, OverrideRecord{nullopt,
-                                                  Containers::Set<String>{L".css"sv},
-                                                  L".css"sv}},
+                                                  Containers::Set<String>{".css"sv},
+                                                  ".css"sv}},
         {InternetMediaTypes::kHTML, OverrideRecord{nullopt,
-                                                   Containers::Set<String>{L".htm"sv, L".html"sv},
-                                                   L".htm"sv}},
+                                                   Containers::Set<String>{".htm"sv, ".html"sv},
+                                                   ".htm"sv}},
         {InternetMediaTypes::kJavascript, OverrideRecord{nullopt,
-                                                         Containers::Set<String>{L".js"sv},
-                                                         L".js"sv}},
+                                                         Containers::Set<String>{".js"sv},
+                                                         ".js"sv}},
         {InternetMediaTypes::kJSON, OverrideRecord{nullopt,
-                                                   Containers::Set<String>{L".json"sv},
-                                                   L".json"sv}},
+                                                   Containers::Set<String>{".json"sv},
+                                                   ".json"sv}},
         {InternetMediaTypes::kPNG, OverrideRecord{nullopt,
-                                                  Containers::Set<String>{L".png"sv},
-                                                  L".png"sv}},
+                                                  Containers::Set<String>{".png"sv},
+                                                  ".png"sv}},
         {InternetMediaTypes::kXML, OverrideRecord{nullopt,
-                                                  Containers::Set<String>{L".xml"sv},
-                                                  L".xml"sv}},
+                                                  Containers::Set<String>{".xml"sv},
+                                                  ".xml"sv}},
     }};
 
     // OVERRIDE values (take precedence over backend) and any other data we need to keep locked (syncrhonized)
@@ -297,8 +297,8 @@ auto InternetMediaTypeRegistry::EtcMimeTypesDefaultBackend () -> shared_ptr<IBac
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
             Debug::TraceContextBumper ctx{L"InternetMediaTypeRegistry::{}::EtcMimeTypesRep_::CTOR"};
 #endif
-            for (Sequence<String> line : DataExchange::Variant::CharacterDelimitedLines::Reader{{' ', '\t'}}.ReadMatrix (IO::FileSystem::FileInputStream::New (L"/etc/mime.types"))) {
-                if (line.length () >= 2 and not line[0].StartsWith (L"#")) {
+            for (Sequence<String> line : DataExchange::Variant::CharacterDelimitedLines::Reader{{' ', '\t'}}.ReadMatrix (IO::FileSystem::FileInputStream::New ("/etc/mime.types"sv))) {
+                if (line.length () >= 2 and not line[0].StartsWith ("#"_k)) {
                     InternetMediaType ct;
                     try {
                         ct = InternetMediaType{line[0]};
@@ -310,7 +310,7 @@ auto InternetMediaTypeRegistry::EtcMimeTypesDefaultBackend () -> shared_ptr<IBac
                     Containers::Set<FileSuffixType> fileSuffixes;
                     for (size_t i = 1; i < line.length (); ++i) {
                         Assert (not line[i].empty ());
-                        String suffix = L"."sv + line[i];
+                        String suffix = "."sv + line[i];
                         fSuffix2MediaTypeMap_.Add (suffix, ct);
                         fMediaType2PreferredSuffixMap_.Add (ct, suffix, AddReplaceMode::eAddIfMissing);
                         fileSuffixes.Add (suffix);
@@ -319,7 +319,7 @@ auto InternetMediaTypeRegistry::EtcMimeTypesDefaultBackend () -> shared_ptr<IBac
                 }
             }
             // Because on raspberrypi/debian, this comes out with a crazy default for text\plain -- LGP 2020-07-27
-            fMediaType2PreferredSuffixMap_.Add (InternetMediaTypes::kText_PLAIN, L".txt"sv);
+            fMediaType2PreferredSuffixMap_.Add (InternetMediaTypes::kText_PLAIN, ".txt"sv);
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
             DbgTrace (L"succeeded with %d fSuffix2MediaTypeMap entries, and %d fMediaType2PreferredSuffixMap entries", fSuffix2MediaTypeMap_.size (), fMediaType2PreferredSuffixMap_.size ());
 #endif
@@ -423,7 +423,7 @@ auto InternetMediaTypeRegistry::UsrSharedDefaultBackend () -> shared_ptr<IBacken
                         }
 
                         // Because on raspberrypi/debian, this comes out with a crazy default for text\plain -- LGP 2020-07-27
-                        fMediaType2PreferredSuffixMap_.Add (InternetMediaTypes::kText_PLAIN, L".txt");
+                        fMediaType2PreferredSuffixMap_.Add (InternetMediaTypes::kText_PLAIN, ".txt"_k);
                     }
                     catch (...) {
                         // log error
@@ -499,7 +499,7 @@ auto InternetMediaTypeRegistry::UsrSharedDefaultBackend () -> shared_ptr<IBacken
                     StringBuilder    fAccum;
                     virtual void     StartElement (const StructuredStreamEvents::Name& name) override
                     {
-                        if (name == StructuredStreamEvents::Name{L"content"} and not fResult.has_value ()) {
+                        if (name == StructuredStreamEvents::Name{"content"_k} and not fResult.has_value ()) {
                             onContentElt = true;
                         }
                     }
@@ -520,7 +520,7 @@ auto InternetMediaTypeRegistry::UsrSharedDefaultBackend () -> shared_ptr<IBacken
                 filesystem::path mimeRoot{"/usr/share/mime/"};
                 myHander_        handler;
                 // @todo validate ct.GetType () to make sure not a ../../ ATTACK
-                DataExchange::XML::SAXParse (IO::FileSystem::FileInputStream::New (mimeRoot / IO::FileSystem::ToPath (ct.GetType () + L"/" + ct.GetSubType () + L".xml")), handler);
+                DataExchange::XML::SAXParse (IO::FileSystem::FileInputStream::New (mimeRoot / IO::FileSystem::ToPath (ct.GetType () + "/"_k + ct.GetSubType () + ".xml"_k)), handler);
                 if (handler.fResult) {
                     fMediaType2PrettyNameCache.rwget ()->Add (ct, *handler.fResult);
                     return *handler.fResult;
@@ -605,7 +605,7 @@ auto InternetMediaTypeRegistry::WindowsRegistryDefaultBackend () -> shared_ptr<I
             for (shared_ptr<RegistryKey> sk : RegistryKey{HKEY_CLASSES_ROOT}.EnumerateSubKeys ()) {
                 String name = sk->GetFullPathOfKey ().Tokenize ({'\\'}).LastValue ();
                 if (name.StartsWith ('.')) {
-                    if (auto o = sk->Lookup (L"Content Type"sv)) {
+                    if (auto o = sk->Lookup ("Content Type"sv)) {
                         InternetMediaType imt;
                         try {
                             imt = InternetMediaType{o.As<String> ()};
@@ -644,8 +644,8 @@ auto InternetMediaTypeRegistry::WindowsRegistryDefaultBackend () -> shared_ptr<I
                 using Configuration::Platform::Windows::RegistryKey;
                 for (shared_ptr<RegistryKey> sk : RegistryKey{HKEY_CLASSES_ROOT}.EnumerateSubKeys ()) {
                     String name = sk->GetFullPathOfKey ().Tokenize ({'\\'}).LastValue ();
-                    if (name.StartsWith (L".")) {
-                        if (auto o = sk->Lookup (L"Content Type"sv)) {
+                    if (name.StartsWith ("."_k)) {
+                        if (auto o = sk->Lookup ("Content Type"sv)) {
                             InternetMediaType imt;
                             try {
                                 imt = InternetMediaType{o.As<String> ()};
@@ -668,8 +668,8 @@ auto InternetMediaTypeRegistry::WindowsRegistryDefaultBackend () -> shared_ptr<I
         {
             if (optional<FileSuffixType> fileSuffix = GetPreferredAssociatedFileSuffix (ct)) {
                 return fFileSuffix2PrettyNameCache_.LookupValue (*fileSuffix, [] (const String& suffix) -> optional<String> {
-                    if (auto fileTypeID = Configuration::Platform::Windows::RegistryKey{HKEY_CLASSES_ROOT}.Lookup (suffix + L"\\")) {
-                        if (auto prettyName = Configuration::Platform::Windows::RegistryKey{HKEY_CLASSES_ROOT}.Lookup (fileTypeID.As<String> () + L"\\")) {
+                    if (auto fileTypeID = Configuration::Platform::Windows::RegistryKey{HKEY_CLASSES_ROOT}.Lookup (suffix + "\\"_k)) {
+                        if (auto prettyName = Configuration::Platform::Windows::RegistryKey{HKEY_CLASSES_ROOT}.Lookup (fileTypeID.As<String> () + "\\"_k)) {
                             return prettyName.As<String> ();
                         }
                     }
@@ -787,12 +787,12 @@ bool InternetMediaTypeRegistry::IsXMLFormat (const InternetMediaType& ct) const
         }
     }
     if (ct.GetType<AtomType> () == InternetMediaTypes::Types::kText) {
-        static const AtomType kXMLAtom_ = L"xml"sv;
+        static const AtomType kXMLAtom_ = "xml"sv;
         if (ct.GetSubType<AtomType> () == kXMLAtom_) {
             return true;
         }
     }
-    static const AtomType kXMLMediaTypeSuffix{L"xml"sv};
+    static const AtomType kXMLMediaTypeSuffix{"xml"sv};
     if (ct.GetSuffix<AtomType> () == kXMLMediaTypeSuffix) {
         return true;
     }

@@ -20,7 +20,7 @@ using namespace Stroika::Foundation::DataExchange::Variant::INI;
  */
 String Section::ToString () const
 {
-    return L"{ properties: " + Characters::ToString (fProperties) + L"}";
+    return "{ properties: " + Characters::ToString (fProperties) + "}";
 }
 
 /*
@@ -31,14 +31,14 @@ String Section::ToString () const
 String Profile::ToString () const
 {
     Characters::StringBuilder sb;
-    sb += L"{";
+    sb += "{";
     if (not fUnnamedSection.fProperties.empty ()) {
-        sb += L"fUnnamedSection: " + Characters::ToString (fUnnamedSection) + L",";
+        sb += "fUnnamedSection: " + Characters::ToString (fUnnamedSection) + ",";
     }
     if (not fNamedSections.empty ()) {
-        sb += L"fNamedSections: " + Characters::ToString (fNamedSections) + L",";
+        sb += "fNamedSections: " + Characters::ToString (fNamedSections) + ",";
     }
-    sb += L"}";
+    sb += "}";
     return sb.str ();
 }
 

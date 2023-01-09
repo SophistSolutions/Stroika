@@ -35,7 +35,7 @@ public:
     }
     virtual String GetDefaultFileSuffix () const override
     {
-        return L".xml"sv;
+        return ".xml"sv;
     }
     virtual VariantValue Read (const Streams::InputStream<byte>::Ptr& in) override
     {

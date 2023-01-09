@@ -54,13 +54,13 @@ namespace Stroika::Foundation::Streams {
      *
      *  \par Example Usage
      *      \code
-     *          for (String line : TextReader::New (FileInputStream::New (L"/tmp/foo")).ReadLines ()) {
+     *          for (String line : TextReader::New (FileInputStream::New ("/tmp/foo")).ReadLines ()) {
      *          }
      *      \endcode
      *
      *  \par Example Usage
      *      \code
-     *          Assert (TextReader::New (String{L"hello world"}).ReadAll () == L"hello world");
+     *          Assert (TextReader::New (String{"hello world"}).ReadAll () == "hello world");
      *      \endcode
      *
      *  \note   Reading improperly encoded text may result in a RuntimeException indicating improperly encoded characters.

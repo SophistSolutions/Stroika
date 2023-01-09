@@ -125,7 +125,7 @@ void Registry::SimpleReader_<unsigned long long int>::Deactivating ()
 template <>
 void Registry::SimpleReader_<bool>::Deactivating ()
 {
-    *fValue_ = (fBuf_.str ().ToLowerCase () == L"true");
+    *fValue_ = (fBuf_.str ().ToLowerCase () == "true"sv);
 }
 
 template <>
@@ -191,7 +191,7 @@ Context::Context (const Registry& registry, const shared_ptr<IElementConsumer>& 
 #if qStroika_Foundation_DataExchange_StructuredStreamEvents_SupportTracing
 String Context::TraceLeader_ () const
 {
-    static const String kOneTabLevel_{L"    "sv};
+    static const String kOneTabLevel_{"    "sv};
     return kOneTabLevel_.Repeat (static_cast<unsigned int> (fStack_.size ()));
 }
 #endif

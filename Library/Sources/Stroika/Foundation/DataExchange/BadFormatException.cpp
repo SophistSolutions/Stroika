@@ -64,7 +64,7 @@ namespace {
         String msg           = mkMessage_ (details);
         String lineInfoExtra = mkMessage_OffsetInfo_ (lineNumber, columnNumber, fileOffset);
         if (not lineInfoExtra.empty ()) {
-            msg += " ("sv + lineInfoExtra + L")."sv;
+            msg += " ("sv + lineInfoExtra + ")."sv;
         }
         return msg;
     }

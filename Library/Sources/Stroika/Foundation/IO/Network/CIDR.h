@@ -76,7 +76,7 @@ namespace Stroika::Foundation::IO::Network {
          *
          *  \par Example Usage
          *      \code
-         *          CIDR cidr { L"192.168.243.0/24" };
+         *          CIDR cidr { "192.168.243.0/24" };
          *          InternetAddress lb = cidr.GetRange ().GetLowerBound ();
          *          InternetAddress ub = cidr.GetRange ().GetUpperBound ();
          *          unsigned int    nAddresses = cird.GetRange ().GetNumberOfContainedPoints ();

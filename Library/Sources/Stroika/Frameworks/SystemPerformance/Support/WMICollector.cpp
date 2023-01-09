@@ -149,7 +149,7 @@ Mapping<String, double> WMICollector::PerInstanceData_::GetCurrentValues (const 
  ********************* SystemPerformance::Support::WMICollector *****************
  ********************************************************************************
  */
-String WMICollector::kWildcardInstance = L"*"sv;
+String WMICollector::kWildcardInstance = "*"sv;
 
 WMICollector::WMICollector (const String& objectName, const Iterable<String>& instances, const Iterable<String>& counterName)
     : fObjectName_{objectName}

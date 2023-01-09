@@ -22,9 +22,9 @@ using namespace Stroika::Frameworks::UPnP;
 const ObjectVariantMapper Device::kMapper = [] () {
     ObjectVariantMapper mapper;
     mapper.AddClass<Device> (initializer_list<ObjectVariantMapper::StructFieldInfo>{
-        {L"Alive", StructFieldMetaInfo{&Device::fDeviceID}},
-        {L"USN", StructFieldMetaInfo{&Device::fLocation}},
-        {L"Server", StructFieldMetaInfo{&Device::fServer}},
+        {"Alive"sv, StructFieldMetaInfo{&Device::fDeviceID}},
+        {"USN"sv, StructFieldMetaInfo{&Device::fLocation}},
+        {"Server"sv, StructFieldMetaInfo{&Device::fServer}},
     });
     return mapper;
 }();
@@ -39,12 +39,12 @@ String UPnP::MungePrimaryMacAddrIntoBaseDeviceID (String baseDeviceID)
     Require (baseDeviceID.length () == 36); // also require layout normal as in 315CAAE0-1335-57BF-A178-24C9EE756627 but check later
     String result  = baseDeviceID;
     String macAddr = IO::Network::GetPrimaryNetworkDeviceMacAddress ();
-    macAddr        = macAddr.ReplaceAll (L"-"sv, String{});
+    macAddr        = macAddr.ReplaceAll ("-"sv, String{});
     if (macAddr.length () > 12) {
         macAddr = macAddr.SubString (0, 12);
     }
     while (macAddr.length () < 12) {
-        macAddr += L"0"sv;
+        macAddr += "0"sv;
     }
     result = baseDeviceID.SubString (0, 36 - 12) + macAddr;
     Ensure (result.length () == 36);

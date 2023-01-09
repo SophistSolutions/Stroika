@@ -77,7 +77,7 @@ namespace Stroika::Foundation::IO::Network::HTTP {
     inline Characters::String IfNoneMatch::As () const
     {
         if (IsAsterisk ()) {
-            return L"*"sv;
+            return "*"sv;
         }
         return String::Join (fETags.Map<String> ([] (const ETag& e) { return e.As<String> (); }));
     }

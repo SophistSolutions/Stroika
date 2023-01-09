@@ -114,7 +114,7 @@ namespace Stroika::Foundation::IO::Network::Transfer {
          *  \par Example Usage
          *      \code
          *          Connection  c   =   IO::Network::Transfer::CreateConnection ();
-         *          Response    r   =   c.GET (IO::Network::URI {L"http://www.google.com"});
+         *          Response    r   =   c.GET (IO::Network::URI{"http://www.google.com"});
          *          Assert (r.GetSucceeded ()); // else it would have thrown
          *          String result = r.GetDataTextInputStream ().ReadAll ();
          *      \endcode
@@ -122,7 +122,7 @@ namespace Stroika::Foundation::IO::Network::Transfer {
          *  \par Example Usage
          *      \code
          *          auto&&             connection = IO::Network::Transfer::New ();
-         *          auto&&             response = connection.GET (IO::Network::URI{L"http://myexternalip.com/raw"});
+         *          auto&&             response = connection.GET (IO::Network::URI{"http://myexternalip.com/raw"});
          *          nw.fExternalIPAddress = IO::Network::InternetAddress{response.GetDataTextInputStream ().ReadAll ()};
          *      \endcode
          */
@@ -211,7 +211,7 @@ namespace Stroika::Foundation::IO::Network::Transfer {
          *
          *  \par Example Usage
          *      \code
-         *          Request r = conn.GET (URI{L"https://www.sophists.com/"});
+         *          Request r = conn.GET (URI{"https://www.sophists.com/"});
          *          ...
          *      \endcode
          *
@@ -228,7 +228,7 @@ namespace Stroika::Foundation::IO::Network::Transfer {
          *
          *  \par Example Usage
          *      \code
-         *          Request r = conn.POST (URI{L"https://www.sophists.com/obj/"}, data);
+         *          Request r = conn.POST (URI{"https://www.sophists.com/obj/"}, data);
          *          ...
          *      \endcode
          *
@@ -245,7 +245,7 @@ namespace Stroika::Foundation::IO::Network::Transfer {
          *
          *  \par Example Usage
          *      \code
-         *          Request r = conn.PATCH (URI{L"https://www.sophists.com/obj/"}, data);
+         *          Request r = conn.PATCH (URI{"https://www.sophists.com/obj/"}, data);
          *          ...
          *      \endcode
          *
@@ -264,7 +264,7 @@ namespace Stroika::Foundation::IO::Network::Transfer {
          *
          *  \par Example Usage
          *      \code
-         *          Request r = conn.Delete (URI{L"https://www.sophists.com/obj/{id}"});
+         *          Request r = conn.Delete (URI{"https://www.sophists.com/obj/{id}"});
          *          ...
          *      \endcode
          *
@@ -281,7 +281,7 @@ namespace Stroika::Foundation::IO::Network::Transfer {
          *
          *  \par Example Usage
          *      \code
-         *          Request r = conn.PUT (URI{L"https://www.sophists.com/obj/{id}"}, data);
+         *          Request r = conn.PUT (URI{"https://www.sophists.com/obj/{id}"}, data);
          *          ...
          *      \endcode
          *
@@ -298,7 +298,7 @@ namespace Stroika::Foundation::IO::Network::Transfer {
          *
          *  \par Example Usage
          *      \code
-         *          Request r = conn.OPTIONS (URI{L"https://www.sophists.com/"});
+         *          Request r = conn.OPTIONS (URI{"https://www.sophists.com/"});
          *      \endcode
          *
          *  \note   This function only returns a Response on success. To see HTTP status response, catch (Exception e), and look
@@ -359,7 +359,7 @@ namespace Stroika::Foundation::IO::Network::Transfer {
 
         /**
          */
-        String fUserAgent{L"Stroika/2.1"sv};
+        String fUserAgent{"Stroika/3.0"sv};
 
         /**
          */
@@ -386,13 +386,13 @@ namespace Stroika::Foundation::IO::Network::Transfer {
              *  If the constructor with an authToken is specified, we automatically use eProactivelySendAuthentication.
              *
              *      \note   digest/basic/etc - normal username/password:
-             *              Authentication (L"Mr-Smith", L"Super-Secret") is equivalent to curl --user Mr-Smith:Super-Secret URL
+             *              Authentication{L"Mr-Smith", L"Super-Secret"} is equivalent to curl --user Mr-Smith:Super-Secret URL
              *
              *      \note   For OAuth2:
-             *              Authentication (L"OAuth <ACCESS_TOKEN>") is equivalent to curl -H "Authorization: OAuth <ACCESS_TOKEN>" URL
+             *              Authentication{"OAuth <ACCESS_TOKEN>"} is equivalent to curl -H "Authorization: OAuth <ACCESS_TOKEN>" URL
              *
              *      \note   For Bearer tokens:
-             *              Authentication (L"Bearer <ACCESS_TOKEN>") is equivalent to curl -H "Authorization: Bearer <ACCESS_TOKEN>" URL
+             *              Authentication{"Bearer <ACCESS_TOKEN>"} is equivalent to curl -H "Authorization: Bearer <ACCESS_TOKEN>" URL
              */
             Authentication () = delete;
             Authentication (const String& authToken);

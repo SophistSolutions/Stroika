@@ -66,21 +66,21 @@ using Time::DurationSecondsType;
 Characters::String SignalHandler::ToString () const
 {
     Characters::StringBuilder sb;
-    sb += L"{";
-    sb += L"type: " + Characters::ToString (GetType ()) + L", ";
+    sb += "{";
+    sb += "type: " + Characters::ToString (GetType ()) + L", ";
     // rough guess what to print...
     Function<void (SignalID)>::STDFUNCTION stdFuncTarget = static_cast<Function<void (SignalID)>::STDFUNCTION> (fCall_);
     if (stdFuncTarget.target_type () == typeid (void (*) (SignalID))) {
-        sb += L"target: " + Characters::Format (L"%p", reinterpret_cast<const void*> (stdFuncTarget.target<void (*) (SignalID)> ()));
+        sb += "target: " + Characters::Format (L"%p", reinterpret_cast<const void*> (stdFuncTarget.target<void (*) (SignalID)> ()));
     }
     else if (stdFuncTarget.target_type () == typeid (Function<void (SignalID)>)) {
-        sb += L"target: " + Characters::Format (L"%p", reinterpret_cast<const void*> (stdFuncTarget.target<Function<void (SignalID)>> ()));
+        sb += "target: " + Characters::Format (L"%p", reinterpret_cast<const void*> (stdFuncTarget.target<Function<void (SignalID)>> ()));
     }
     else {
         // type only/mainly interesting if not one of the above so we're printing nullptr
-        sb += L"target-type: " + Characters::ToString (stdFuncTarget.target_type ());
+        sb += "target-type: " + Characters::ToString (stdFuncTarget.target_type ());
     }
-    sb += L"}";
+    sb += "}";
     return sb.str ();
 }
 
@@ -177,7 +177,7 @@ public:
                 }
             },
             Thread::eAutoStart,
-            L"Signal Handler Safe Execution Thread"sv);
+            "Signal Handler Safe Execution Thread"sv);
     }
 
 public:

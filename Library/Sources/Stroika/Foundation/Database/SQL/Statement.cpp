@@ -178,10 +178,10 @@ String Statement::ToString () const
 {
     AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
     StringBuilder                                  sb;
-    sb += L"{";
-    sb += L"Parameter-Bindings: " + Characters::ToString (GetParameters ()) + L", ";
-    sb += L"Column-Descriptions: " + Characters::ToString (GetColumns ()) + L", ";
-    sb += L"Original-SQL: " + Characters::ToString (GetSQL ());
-    sb += L"}";
+    sb += "{";
+    sb += "Parameter-Bindings: " + Characters::ToString (GetParameters ()) + ", ";
+    sb += "Column-Descriptions: " + Characters::ToString (GetColumns ()) + ", ";
+    sb += "Original-SQL: " + Characters::ToString (GetSQL ());
+    sb += "}";
     return sb.str ();
 }

@@ -202,7 +202,7 @@ Thread::SuppressInterruptionInContext::~SuppressInterruptionInContext ()
  ********************************************************************************
  */
 Thread::InterruptException::InterruptException ()
-    : InterruptException{L"Thread Interrupt"sv}
+    : InterruptException{"Thread Interrupt"sv}
 {
 }
 
@@ -217,7 +217,7 @@ Thread::InterruptException::InterruptException (const Characters::String& msg)
  ********************************************************************************
  */
 Thread::AbortException::AbortException ()
-    : InterruptException{L"Thread Abort"sv}
+    : InterruptException{"Thread Abort"sv}
 {
 }
 
@@ -370,16 +370,16 @@ void Thread::Ptr::Rep_::Run_ ()
 Characters::String Thread::Ptr::Rep_::ToString () const
 {
     StringBuilder sb;
-    sb += L"{";
-    sb += L"id: " + Characters::ToString (GetID ()) + L", ";
+    sb += "{"sv;
+    sb += "id: " + Characters::ToString (GetID ()) + ", ";
     if (qStroika_Foundation_Debug_Trace_ShowThreadIndex) {
-        sb += L"index: " + Characters::ToString (static_cast<int> (IndexRegistrar::sThe.GetIndex (GetID ()))) + L", ";
+        sb += "index: " + Characters::ToString (static_cast<int> (IndexRegistrar::sThe.GetIndex (GetID ()))) + ", ";
     }
     if (not fThreadName_.empty ()) {
-        sb += L"name: '" + fThreadName_ + L"', ";
+        sb += "name: '"_k + fThreadName_ + "', ";
     }
-    sb += L"status: " + Characters::ToString (fStatus_.load ());
-    sb += L"}";
+    sb += "status: " + Characters::ToString (fStatus_.load ());
+    sb += "}"sv;
     return sb.str ();
 }
 

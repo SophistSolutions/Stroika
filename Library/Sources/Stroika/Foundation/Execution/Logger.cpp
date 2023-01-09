@@ -136,7 +136,7 @@ struct Logger::Rep_ : enable_shared_from_this<Logger::Rep_> {
 
         Time::Duration      suppressDuplicatesThreshold = fSuppressDuplicatesThreshold_.cget ()->value_or (0s);
         bool                suppressDuplicates          = suppressDuplicatesThreshold > 0s;
-        static const String kThreadName_{L"Logger Bookkeeping"sv};
+        static const String kThreadName_{"Logger Bookkeeping"sv};
         if (suppressDuplicates or fBufferingEnabled_) {
             Thread::Ptr      newBookKeepThread;
             shared_ptr<Rep_> useRepInThread = shared_from_this (); // capture by value the shared_ptr

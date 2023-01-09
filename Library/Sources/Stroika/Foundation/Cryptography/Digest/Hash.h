@@ -109,8 +109,8 @@ namespace Stroika::Foundation::Cryptography::Digest {
      *      \code
      *          VerifyTestResult (Hash<int>{} (1) == someNumber);
      *          VerifyTestResult (Hash<string>{} ("1") == someNumber2);
-     *          VerifyTestResult (Hash<String>{} (L"1") == someNumber3);
-     *          VerifyTestResult (Hash<String>{L"somesalt"} (L"1") == someNumber4);
+     *          VerifyTestResult (Hash<String>{} ("1") == someNumber3);
+     *          VerifyTestResult (Hash<String>{"somesalt"} ("1") == someNumber4);
      *      \endcode
      *
      *  \par Example Usage
@@ -118,7 +118,7 @@ namespace Stroika::Foundation::Cryptography::Digest {
      *          using   USE_DIGESTER_     =   Digester<Algorithm::Jenkins>;
      *          VerifyTestResult (Hash<int, USE_DIGESTER_>{} (1) == 10338022);
      *          VerifyTestResult (Hash<string, USE_DIGESTER_>{} ("1") == 2154528969);
-     *          VerifyTestResult (Hash<String, USE_DIGESTER_>{} (L"1") == 2154528969);
+     *          VerifyTestResult (Hash<String, USE_DIGESTER_>{} ("1") == 2154528969);
      *      \endcode
      * 
      *  \par Example Usage (using explicitly specified serializer)
@@ -129,8 +129,8 @@ namespace Stroika::Foundation::Cryptography::Digest {
      *          };
      *          // NICE to figure out how to get this working instead of the 'struct' above - @todo
      *          //constexpr auto altStringSerializer = [] (const String& s) { return s.empty () ? Memory::BLOB{} : Memory::BLOB ((const byte*)s.c_str (), (const byte*)s.c_str () + 1); };
-     *          VerifyTestResult ((Hash<String, DefaultHashDigester, DefaultHashDigester::ReturnType, altStringSerializer>{}(L"xxx") != Hash<String>{}(L"xxx")));
-     *          VerifyTestResult ((Hash<String, DefaultHashDigester, DefaultHashDigester::ReturnType, altStringSerializer>{}(L"x1") == Hash<String, DefaultHashDigester, DefaultHashDigester::ReturnType, altStringSerializer>{}(L"x2")));
+     *          VerifyTestResult ((Hash<String, DefaultHashDigester, DefaultHashDigester::ReturnType, altStringSerializer>{}("xxx") != Hash<String>{}(L"xxx")));
+     *          VerifyTestResult ((Hash<String, DefaultHashDigester, DefaultHashDigester::ReturnType, altStringSerializer>{}("x1") == Hash<String, DefaultHashDigester, DefaultHashDigester::ReturnType, altStringSerializer>{}("x2")));
      *      \endcode
      * 
      *  \par Example Usage (using explicit result type - typically string)
