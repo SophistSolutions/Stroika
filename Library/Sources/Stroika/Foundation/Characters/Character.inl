@@ -153,7 +153,7 @@ namespace Stroika::Foundation::Characters {
         }
     }
     template <Character_Compatible CHAR_T>
-    inline void Character::CheckASCII (span< CHAR_T> s)
+    inline void Character::CheckASCII (span<CHAR_T> s)
     {
         CheckASCII (Memory::ConstSpan (s));
     }
