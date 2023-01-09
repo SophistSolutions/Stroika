@@ -36,7 +36,7 @@ namespace {
                 fSpacesPerIndent = 0;
             }
             if (fSpacesPerIndent != 0) {
-                fIndentSpace = String{L" "sv}.Repeat (fSpacesPerIndent);
+                fIndentSpace = String{" "sv}.Repeat (fSpacesPerIndent);
             }
         }
         Characters::FloatConversion::ToStringOptions fFloatOptions;
@@ -188,7 +188,7 @@ namespace {
         for (auto i = v.begin (); i != v.end ();) {
             Indent_ (options, out, indentLevel + 1);
             PrettyPrint_ (options, i->fKey, out, indentLevel + 1);
-            out.Write (L" : ");
+            out.Write (" : "sv);
             PrettyPrint_ (options, i->fValue, out, indentLevel + 1);
             ++i;
             if (i != v.end ()) {

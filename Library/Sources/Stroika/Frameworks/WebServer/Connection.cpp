@@ -384,7 +384,7 @@ Connection::ReadAndProcessResult Connection::ReadAndProcessMessage () noexcept
 #if qStroika_Framework_WebServer_Connection_DetailedMessagingLog
 void Connection::WriteLogConnectionMsg_ (const String& msg) const
 {
-    String useMsg = Time::DateTime::Now ().Format () + L" -- " + msg.Trim ();
+    String useMsg = Time::DateTime::Now ().Format () + " -- "sv + msg.Trim ();
     fLogConnectionState_.WriteLn (useMsg);
 }
 #endif

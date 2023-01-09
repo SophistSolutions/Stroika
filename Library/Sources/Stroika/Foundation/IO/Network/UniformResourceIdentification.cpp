@@ -62,7 +62,7 @@ void SchemeType::Validate () const
     // https://tools.ietf.org/html/rfc3986#appendix-A  -- scheme        = ALPHA *( ALPHA / DIGIT / "+" / "-" / "." )
     for (Characters::Character c : *this) {
         if (not c.IsASCII () or not(c.IsAlphabetic () or c.IsDigit () or c == '-' or c == '.' or c == '+')) [[unlikely]] {
-            Execution::Throw (Execution::RuntimeErrorException{L"bad character in URI scheme"sv});
+            Execution::Throw (Execution::RuntimeErrorException{"bad character in URI scheme"sv});
         }
     }
 }
@@ -70,7 +70,7 @@ void SchemeType::Validate () const
 bool SchemeType::IsSecure () const
 {
     SchemeType ns = Normalize ();
-    return ns == L"https"sv or ns == L"ftps"sv or ns == L"ldaps"sv or ns == L"ssh"sv;
+    return ns == "https"sv or ns == "ftps"sv or ns == "ldaps"sv or ns == "ssh"sv;
 }
 
 optional<PortType> SchemeType::GetDefaultPort () const
@@ -147,7 +147,7 @@ String Host::EncodeAsRawURL_ (const InternetAddress& ipAddr)
             return ipAddr.As<String> ();
         } break;
         case InternetAddress::AddressFamily::V6: {
-            return L"[" + ipAddr.As<String> () + L"]";
+            return "["sv + ipAddr.As<String> () + "]"sv;
         } break;
         default: {
             WeakAssertNotImplemented ();

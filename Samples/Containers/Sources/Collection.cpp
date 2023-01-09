@@ -142,10 +142,10 @@ namespace {
         {
             using Characters::String;
             Collection<String> fruits;
-            fruits += L"apple";
-            fruits += L"APPLE";
-            fruits += L"bananas";
-            fruits += L"cherries";
+            fruits += "apple";
+            fruits += "APPLE";
+            fruits += "bananas";
+            fruits += "cherries";
             DbgTrace (L"fruits=%s", Characters::ToString (fruits.Distinct (String::EqualsComparer{CompareOptions::eCaseInsensitive})).c_str ());
             Assert (fruits.Distinct (String::EqualsComparer{CompareOptions::eCaseInsensitive}).size () == 3); // only one apple or the other (case squished)
         }

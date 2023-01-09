@@ -37,7 +37,7 @@ namespace Stroika::Foundation::IO::Network::HTTP {
     template <>
     inline Characters::String ETag::As () const
     {
-        return (fWeak ? L"\\W\""sv : L"\"") + fValue + L"\""sv;
+        return (fWeak ? "\\W\""sv : "\"") + fValue + "\""sv;
     }
     inline Characters::String ETag::ToString () const
     {

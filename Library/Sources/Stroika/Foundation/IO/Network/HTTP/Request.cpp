@@ -55,8 +55,8 @@ Request::Request ()
           [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, const auto& versionOrVersionLabel) {
               Request*                                        thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Request::httpVersion);
               AssertExternallySynchronizedMutex::WriteContext declareContext{*thisObj};
-              static const String                             kLabeled_10_{L"HTTP/1.0"sv};
-              static const String                             kLabeled_11_{L"HTTP/1.1"sv};
+              static const String                             kLabeled_10_{"HTTP/1.0"sv};
+              static const String                             kLabeled_11_{"HTTP/1.1"sv};
               auto                                            versionStringComparer = String::EqualsComparer{Characters::CompareOptions::eCaseInsensitive};
               if (versionOrVersionLabel == kLabeled_11_ or versionOrVersionLabel == IO::Network::HTTP::Versions::kOnePointOne or versionStringComparer (versionOrVersionLabel, kLabeled_11_)) {
                   thisObj->fHTTPVersion_ = IO::Network::HTTP::Versions::kOnePointOne;
@@ -64,7 +64,7 @@ Request::Request ()
               else if (versionOrVersionLabel == kLabeled_10_ or versionOrVersionLabel == IO::Network::HTTP::Versions::kOnePointZero or versionStringComparer (versionOrVersionLabel, kLabeled_10_)) {
                   thisObj->fHTTPVersion_ = IO::Network::HTTP::Versions::kOnePointZero;
               }
-              else if (versionOrVersionLabel.StartsWith (L"HTTP/", Characters::CompareOptions::eCaseInsensitive)) {
+              else if (versionOrVersionLabel.StartsWith ("HTTP/"sv, Characters::CompareOptions::eCaseInsensitive)) {
                   thisObj->fHTTPVersion_ = versionOrVersionLabel.SubString (5);
               }
               else {

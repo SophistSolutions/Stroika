@@ -36,32 +36,32 @@ namespace {
         SQL::ORM::ProvisionForVersion (conn,
                                        kCurrentVersion_,
                                        initializer_list<SQL::ORM::TableProvisioner>{
-                                           {L"EMPLOYEES"sv,
+                                           {"EMPLOYEES"sv,
                                             [] (SQL::Connection::Ptr c, optional<Configuration::Version> v, [[maybe_unused]] Configuration::Version targetDBVersion) -> void {
                                                 // for now no upgrade support
                                                 if (not v) {
                                                     c.Exec (
-                                                        L"CREATE TABLE EMPLOYEES("
-                                                        L"ID INTEGER PRIMARY KEY AUTOINCREMENT,"
-                                                        L"NAME           TEXT    NOT NULL,"
-                                                        L"AGE            INT     NOT NULL,"
-                                                        L"ADDRESS        CHAR(50),"
-                                                        L"SALARY         REAL,"
-                                                        L"STILL_EMPLOYED INT"
-                                                        L");");
+                                                        "CREATE TABLE EMPLOYEES("
+                                                        "ID INTEGER PRIMARY KEY AUTOINCREMENT,"
+                                                        "NAME           TEXT    NOT NULL,"
+                                                        "AGE            INT     NOT NULL,"
+                                                        "ADDRESS        CHAR(50),"
+                                                        "SALARY         REAL,"
+                                                        "STILL_EMPLOYED INT"
+                                                        ");");
                                                 }
                                             }},
-                                           {L"PAYCHECKS"sv,
+                                           {"PAYCHECKS"sv,
                                             [] (SQL::Connection::Ptr c, optional<Configuration::Version> v, [[maybe_unused]] Configuration::Version targetDBVersion) -> void {
                                                 // for now no upgrade support
                                                 if (not v) {
                                                     c.Exec (
-                                                        L"CREATE TABLE PAYCHECKS("
-                                                        L"ID INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
-                                                        L"EMPLOYEEREF INT NOT NULL,"
-                                                        L"AMOUNT REAL,"
-                                                        L"DATE TEXT"
-                                                        L");");
+                                                        "CREATE TABLE PAYCHECKS("
+                                                        "ID INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
+                                                        "EMPLOYEEREF INT NOT NULL,"
+                                                        "AMOUNT REAL,"
+                                                        "DATE TEXT"
+                                                        ");");
                                                 }
                                             }},
                                        });
@@ -69,7 +69,7 @@ namespace {
 
     void PeriodicallyUpdateEmployeesTable_ (Connection::Ptr conn)
     {
-        Statement addEmployeeStatement = conn.mkStatement (L"INSERT INTO EMPLOYEES (NAME,AGE,ADDRESS,SALARY,STILL_EMPLOYED) values (:NAME, :AGE, :ADDRESS, :SALARY, :STILL_EMPLOYED);");
+        Statement addEmployeeStatement = conn.mkStatement ("INSERT INTO EMPLOYEES (NAME,AGE,ADDRESS,SALARY,STILL_EMPLOYED) values (:NAME, :AGE, :ADDRESS, :SALARY, :STILL_EMPLOYED);");
 
         // Add Initial Employees
         addEmployeeStatement.Execute (initializer_list<Statement::ParameterDescription>{
@@ -87,37 +87,37 @@ namespace {
             {":STILL_EMPLOYED", 1},
         });
         addEmployeeStatement.Execute (initializer_list<Statement::ParameterDescription>{
-            {":NAME", L"Teddy"},
+            {":NAME", "Teddy"sv},
             {":AGE", 23},
-            {":ADDRESS", L"Norway"},
+            {":ADDRESS", "Norway"sv},
             {":SALARY", 20000.00},
             {":STILL_EMPLOYED", 1},
         });
         addEmployeeStatement.Execute (initializer_list<Statement::ParameterDescription>{
-            {":NAME", L"Mark"},
+            {":NAME", "Mark"sv},
             {":AGE", 25},
-            {":ADDRESS", L"Rich-Mond"},
+            {":ADDRESS", "Rich-Mond"sv},
             {":SALARY", 65000.00},
             {":STILL_EMPLOYED", 1},
         });
         addEmployeeStatement.Execute (initializer_list<Statement::ParameterDescription>{
-            {":NAME", L"David"},
+            {":NAME", "David"sv},
             {":AGE", 27},
-            {":ADDRESS", L"Texas"},
+            {":ADDRESS", "Texas"sv},
             {":SALARY", 85000.00},
             {":STILL_EMPLOYED", 1},
         });
         addEmployeeStatement.Execute (initializer_list<Statement::ParameterDescription>{
-            {":NAME", L"Kim"},
+            {":NAME", "Kim"sv},
             {":AGE", 22},
             {":ADDRESS", L"South-Hall"},
             {":SALARY", 45000.00},
             {":STILL_EMPLOYED", 1},
         });
         addEmployeeStatement.Execute (initializer_list<Statement::ParameterDescription>{
-            {":NAME", L"James"},
+            {":NAME", "James"sv},
             {":AGE", 24},
-            {":ADDRESS", L"Houston"},
+            {":ADDRESS", "Houston"sv},
             {":SALARY", 10000.00},
             {":STILL_EMPLOYED", 1},
         });
@@ -135,7 +135,7 @@ namespace {
             static const Sequence<String>    kNames_{"Joe", "Phred", "Barny", "Sue", "Anne"};
             uniform_int_distribution<int>    namesDistr{0, static_cast<int> (kNames_.size () - 1)};
             uniform_int_distribution<int>    ageDistr{25, 50};
-            static const Sequence<String>    kAddresses{L"Houston", L"Pittsburg", L"New York", L"Paris", L"California"};
+            static const Sequence<String>    kAddresses{"Houston", "Pittsburg", "New York", "Paris", "California"};
             uniform_int_distribution<int>    addressesDistr{0, static_cast<int> (kAddresses.size () - 1)};
             uniform_real_distribution<float> salaryDistr{10000.00, 50000.00};
 

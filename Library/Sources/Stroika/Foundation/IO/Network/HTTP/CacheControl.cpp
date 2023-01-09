@@ -82,7 +82,7 @@ String CacheControl::As () const
     StringBuilder sb;
     auto          handleComma = [&] () {
         if (not sb.empty ()) {
-            sb += L", ";
+            sb += ", "sv;
         }
     };
     if (fCacheability) {

@@ -102,20 +102,20 @@ namespace {
 String Interface::WirelessInfo::ToString () const
 {
     Characters::StringBuilder sb;
-    sb += L"{";
-    sb += L"SSID: " + Characters::ToString (fSSID) + L", ";
-    sb += L"State: " + Characters::ToString (fState) + L", ";
-    sb += L"ConnectionMode: " + Characters::ToString (fConnectionMode) + L", ";
-    sb += L"ProfileName: " + Characters::ToString (fProfileName) + L", ";
-    sb += L"BSSType: " + Characters::ToString (fBSSType) + L", ";
-    sb += L"MACAddress: " + Characters::ToString (fMACAddress) + L", ";
-    sb += L"PhysicalConnectionType: " + Characters::ToString (fPhysicalConnectionType) + L", ";
-    sb += L"SignalQuality: " + Characters::ToString (fSignalQuality) + L", ";
-    sb += L"SecurityEnabled: " + Characters::ToString (fSecurityEnabled) + L", ";
-    sb += L"8021XEnabled: " + Characters::ToString (f8021XEnabled) + L", ";
-    sb += L"AuthAlgorithm: " + Characters::ToString (fAuthAlgorithm) + L", ";
-    sb += L"Cipher: " + Characters::ToString (fCipher) + L", ";
-    sb += L"}";
+    sb += "{";
+    sb += "SSID: " + Characters::ToString (fSSID) + ", ";
+    sb += "State: " + Characters::ToString (fState) + ", ";
+    sb += "ConnectionMode: " + Characters::ToString (fConnectionMode) + ", ";
+    sb += "ProfileName: " + Characters::ToString (fProfileName) + ", ";
+    sb += "BSSType: " + Characters::ToString (fBSSType) + ", ";
+    sb += "MACAddress: " + Characters::ToString (fMACAddress) + ", ";
+    sb += "PhysicalConnectionType: " + Characters::ToString (fPhysicalConnectionType) + ", ";
+    sb += "SignalQuality: " + Characters::ToString (fSignalQuality) + ", ";
+    sb += "SecurityEnabled: " + Characters::ToString (fSecurityEnabled) + ", ";
+    sb += "8021XEnabled: " + Characters::ToString (f8021XEnabled) + ", ";
+    sb += "AuthAlgorithm: " + Characters::ToString (fAuthAlgorithm) + ", ";
+    sb += "Cipher: " + Characters::ToString (fCipher) + ", ";
+    sb += "}";
     return sb.str ();
 }
 
@@ -127,10 +127,10 @@ String Interface::WirelessInfo::ToString () const
 String Interface::Bindings::ToString () const
 {
     Characters::StringBuilder sb;
-    sb += L"{";
-    sb += L"BoundAddressRanges: " + Characters::ToString (fAddressRanges) + L", ";
-    sb += L"BoundAddresses: " + Characters::ToString (fAddresses) + L", ";
-    sb += L"}";
+    sb += "{";
+    sb += "BoundAddressRanges: " + Characters::ToString (fAddressRanges) + ", ";
+    sb += "BoundAddresses: " + Characters::ToString (fAddresses) + ", ";
+    sb += "}";
     return sb.str ();
 }
 /*
@@ -310,7 +310,7 @@ namespace {
                  *       recvpipe  sendpipe  ssthresh  rtt,msec    rttvar  hopcount      mtu     expire
                  *             0         0         0         0         0         0      1500         0
                  */
-                ProcessRunner                    pr (L"route get default");
+                ProcessRunner                    pr{"route get default"sv};
                 Streams::MemoryStream<byte>::Ptr useStdOut = Streams::MemoryStream<byte>::New ();
                 pr.SetStdOut (useStdOut);
                 pr.Run ();
@@ -318,10 +318,10 @@ namespace {
                 optional<String>                                       forInterface;
                 optional<String>                                       gateway;
                 for (const Sequence<String>& line : reader.ReadMatrix (useStdOut)) {
-                    if (line.size () == 2 and line[0] == L"interface") {
+                    if (line.size () == 2 and line[0] == "interface"sv) {
                         forInterface = line[1];
                     }
-                    else if (line.size () == 2 and line[0] == L"gateway") {
+                    else if (line.size () == 2 and line[0] == "gateway"sv) {
                         gateway = line[1];
                     }
                 }
@@ -796,8 +796,8 @@ namespace {
                         newInterface.fType = Interface::Type::eWIFI;
                         break;
                     case IF_TYPE_ETHERNET_CSMACD:
-                        if (newInterface.fDescription->Contains (L"VirtualBox Host-Only Ethernet Adapter"sv) or
-                            newInterface.fDescription->Contains (L"Hyper-V Virtual Ethernet Adapter"sv)) {
+                        if (newInterface.fDescription->Contains ("VirtualBox Host-Only Ethernet Adapter"sv) or
+                            newInterface.fDescription->Contains ("Hyper-V Virtual Ethernet Adapter"sv)) {
                             // a fairly good guess - not sure how to tell for sure
                             newInterface.fType = Interface::Type::eDeviceVirtualInternalNetwork;
                         }

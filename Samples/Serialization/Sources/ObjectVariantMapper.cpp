@@ -45,7 +45,7 @@ namespace {
 
         // Add the types to the mapper, which it will need
         mapper.AddClass<MyType2Serialize1_> (initializer_list<ObjectVariantMapper::StructFieldInfo>{
-            {L"Enabled", StructFieldMetaInfo{&MyType2Serialize1_::fEnabled}},
+            {"Enabled"sv, StructFieldMetaInfo{&MyType2Serialize1_::fEnabled}},
         });
 
         // Create a test object to serialize

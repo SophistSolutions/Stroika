@@ -141,7 +141,7 @@ void SSDP::DeSerialize (const Memory::BLOB& b, String* headLine, Advertisement* 
         if (kLabelComparer_ (label, "Location"sv) == 0) {
             advertisement->fLocation = IO::Network::URI{value};
         }
-        else if (kLabelComparer_ (label,L"NT"sv) == 0) {
+        else if (kLabelComparer_ (label,"NT"sv) == 0) {
             advertisement->fTarget = value;
         }
         else if (kLabelComparer_ (label, "USN"sv) == 0) {
@@ -155,7 +155,7 @@ void SSDP::DeSerialize (const Memory::BLOB& b, String* headLine, Advertisement* 
             if (kValueComparer_ (value, "ssdp:alive"sv) == 0) {
                 advertisement->fAlive = true;
             }
-            else if (kValueComparer_ (value, L"ssdp:byebye"sv) == 0) {
+            else if (kValueComparer_ (value, "ssdp:byebye"sv) == 0) {
                 advertisement->fAlive = false;
             }
         }

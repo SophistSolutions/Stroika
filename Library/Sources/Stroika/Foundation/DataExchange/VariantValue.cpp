@@ -177,22 +177,10 @@ VariantValue::VariantValue (const DateTime& val)
     : fVal_{MakeSharedPtr_<TIRep_<DateTime>> (val)}
 {
 }
-
-VariantValue::VariantValue (const wchar_t* val)
-    : fVal_{MakeSharedPtr_<TIRep_<String>> (val)}
-{
-}
-
-VariantValue::VariantValue (const wstring& val)
-    : fVal_{MakeSharedPtr_<TIRep_<String>> (val)}
-{
-}
-
 VariantValue::VariantValue (const String& val)
     : fVal_{MakeSharedPtr_<TIRep_<String>> (val)}
 {
 }
-
 VariantValue::VariantValue (const map<wstring, VariantValue>& val)
     : fVal_{MakeSharedPtr_<TIRep_<Mapping<String, VariantValue>>> (Mapping<String, VariantValue>{val})}
 {

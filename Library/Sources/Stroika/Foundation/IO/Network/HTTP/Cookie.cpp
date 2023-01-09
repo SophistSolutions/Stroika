@@ -106,14 +106,14 @@ String Cookie::As<String> () const
     // @todo re-read spec more carefully about character encoding...
     StringBuilder sb;
     sb += fKey;
-    sb += L"=";
+    sb += "="sv;
     sb += fValue;
     for (const KeyValuePair<String, String>& kvp : GetAttributes ()) {
-        sb += L"; ";
+        sb += "; "sv;
         sb += kvp.fKey;
         static const Set<String> kNoValueAttributes_{kSecureAttributeLabel, kHttpOnlyAttributeLabel};
         if (not kNoValueAttributes_.Contains (kvp.fKey)) {
-            sb += L"=";
+            sb += "="sv;
             sb += kvp.fValue;
         }
     }

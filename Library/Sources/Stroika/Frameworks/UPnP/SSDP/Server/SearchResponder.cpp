@@ -105,7 +105,7 @@ namespace {
                     }
 
                     if (includeThisAdvertisement) {
-                        Memory::BLOB data = SSDP::Serialize (L"HTTP/1.1 200 OK"sv, SearchOrNotify::SearchResponse, a);
+                        Memory::BLOB data = SSDP::Serialize ("HTTP/1.1 200 OK"sv, SearchOrNotify::SearchResponse, a);
                         useSocket.SendTo (data.begin (), data.end (), sendTo);
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                         String msg;

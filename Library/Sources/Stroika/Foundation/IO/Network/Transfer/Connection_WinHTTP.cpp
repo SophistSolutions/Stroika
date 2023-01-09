@@ -483,7 +483,7 @@ RetryWithAuth:
         }
         auto equalsComparer = String::EqualsComparer{CompareOptions::eCaseInsensitive};
         if (not equalsComparer (*fURL_.GetAuthority ()->GetHost ()->AsRegisteredName (), resultSSLInfo.fSubjectCommonName) and
-            not equalsComparer (*fURL_.GetAuthority ()->GetHost ()->AsRegisteredName (), L"www." + resultSSLInfo.fSubjectCommonName)) {
+            not equalsComparer (*fURL_.GetAuthority ()->GetHost ()->AsRegisteredName (), "www."sv + resultSSLInfo.fSubjectCommonName)) {
             resultSSLInfo.fValidationStatus = Response::SSLResultInfo::ValidationStatus::eHostnameMismatch;
         }
 

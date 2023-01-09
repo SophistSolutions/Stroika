@@ -226,17 +226,17 @@ Characters::String SampleOptions::ToString () const
 String SampleResults::ToString () const
 {
     StringBuilder sb;
-    sb += L"{";
+    sb += "{";
     if (fMedianPingTime) {
-        sb += L"Median-Ping-Time: " + Characters::ToString (*fMedianPingTime) + L", ";
+        sb += "Median-Ping-Time: " + Characters::ToString (*fMedianPingTime) + ", ";
     }
     if (fMedianHopCount) {
-        sb += L"Median-Hop-Count: " + Characters::Format (L"%d", *fMedianHopCount) + L", ";
+        sb += "Median-Hop-Count: " + Characters::Format (L"%d", *fMedianHopCount) + ", ";
     }
     if (fExceptionCount != 0) {
-        sb += L"Exception-Count: " + Characters::Format (L"%d", fExceptionCount) + L", "; // to see exceptions - run with sample-count = 1
+        sb += "Exception-Count: " + Characters::Format (L"%d", fExceptionCount) + ", "; // to see exceptions - run with sample-count = 1
     }
-    sb += L"}";
+    sb += "}";
     return sb.str ();
 }
 

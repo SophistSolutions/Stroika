@@ -56,9 +56,9 @@ namespace Stroika::Foundation::DataExchange {
      *          // updating media type registry, create a new one and call Set
      *          InternetMediaTypeRegistry origRegistry    = InternetMediaTypeRegistry::Get ();
      *          InternetMediaTypeRegistry updatedRegistry = origRegistry;
-     *          const auto                kHFType_        = InternetMediaType{L"application/fake-heatlthframe-phr+xml"};
+     *          const auto                kHFType_        = InternetMediaType{"application/fake-heatlthframe-phr+xml"};
      *          VerifyTestResult (not InternetMediaTypeRegistry::Get ().GetMediaTypes ().Contains (kHFType_));
-     *          updatedRegistry.AddOverride (kHFType_, InternetMediaTypeRegistry::OverrideRecord{nullopt, Set<String>{L".HPHR"}, L".HPHR"});
+     *          updatedRegistry.AddOverride (kHFType_, InternetMediaTypeRegistry::OverrideRecord{nullopt, Set<String>{".HPHR"}, L".HPHR"});
      *          InternetMediaTypeRegistry::Set (updatedRegistry);
      *          Assert (InternetMediaTypeRegistry::Get ().IsXMLFormat (kHFType_));
      *          Assert (InternetMediaTypeRegistry::Get ().GetMediaTypes ().Contains (kHFType_));
@@ -275,7 +275,7 @@ namespace Stroika::Foundation::DataExchange {
          *
          *  This examines the 'Type' field, sometimes subtype field, as well as leverages the Suffix field (if present).
          *
-         *  \note This returns true if 'ct.GetSuffix () == L"xml"
+         *  \note This returns true if 'ct.GetSuffix () == "xml"
          */
         nonvirtual bool IsXMLFormat (const InternetMediaType& ct) const;
 
@@ -434,7 +434,7 @@ namespace Stroika::Foundation::DataExchange {
          *
          *  \note use this because text/xml deprecated - https://www.w3.org/2006/02/son-of-3023/draft-murata-kohn-lilley-xml-04.html#:~:text=Text%2Fxml%20Registration%20(deprecated),-MIME%20media%20type&text=Although%20listed%20as%20an%20optional,based%20content%20negotiation%20in%20HTTP.
          */
-        inline const InternetMediaType kXML{Types::kApplication, L"xml"sv};
+        inline const InternetMediaType kXML{Types::kApplication, "xml"sv};
 
         /**
          *  \brief application/x-xslt

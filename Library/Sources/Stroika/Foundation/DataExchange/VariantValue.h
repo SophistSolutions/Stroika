@@ -195,6 +195,9 @@ namespace Stroika::Foundation::DataExchange {
         /**
          *  \brief construct a VariantValue from most any 'basic type' you would expect to find in a weakly typed language (e.g. lisp, javascript)
          *
+         *  When constructing a 'stringish' VariantValue, any arguments used to construct a String object maybe used, with the same constraints
+         *  (e.g. req basic_string_view<char> MUST contain only ascii text)
+         * 
          *  \note   Most constructors are not explicit to make it more easy to assign to (could do operator= for that)?
          *          A few are marked as explicit, only because its too easy to accidentally invoke 
          *          (as with https://stroika.atlassian.net/browse/STK-739) - Iterable<VariantValue> or Set<VariantValue> etc...
@@ -219,8 +222,9 @@ namespace Stroika::Foundation::DataExchange {
         VariantValue (long double val);
         VariantValue (const Date& val);
         VariantValue (const DateTime& val);
-        VariantValue (const wstring& val);
-        VariantValue (const wchar_t* val);
+        template <Characters::ConvertibleToString STRINGISH_T>
+        VariantValue (STRINGISH_T&& val)
+           requires (not is_same_v<remove_cv_t<STRINGISH_T>,String>);
         VariantValue (const String& val);
         explicit VariantValue (const map<wstring, VariantValue>& val);
         explicit VariantValue (Mapping<String, VariantValue>&& val);
@@ -238,7 +242,7 @@ namespace Stroika::Foundation::DataExchange {
 #endif
 
     private:
-        VariantValue (const string& val) = delete;
+        //VariantValue (const string& val) = delete;
         VariantValue (const char* val)   = delete;
 
     public:

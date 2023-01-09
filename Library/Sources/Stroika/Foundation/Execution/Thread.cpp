@@ -867,7 +867,7 @@ void Thread::Ptr::SetThreadName (const String& threadName) const
 Characters::String Thread::Ptr::ToString () const
 {
     AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
-    return fRep_ == nullptr ? L"nullptr"sv : fRep_->ToString ();
+    return fRep_ == nullptr ? "nullptr"sv : fRep_->ToString ();
 }
 
 void Thread::Ptr::Start () const
@@ -991,7 +991,7 @@ void Thread::Ptr::ThrowIfDoneWithException () const
 #endif
     AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
     if (fRep_ and fRep_->fStatus_ == Status::eCompleted and fRep_->fSavedException_) {
-        ReThrow (fRep_->fSavedException_, L"Rethrowing exception across threads");
+        ReThrow (fRep_->fSavedException_, "Rethrowing exception across threads");
     }
 }
 

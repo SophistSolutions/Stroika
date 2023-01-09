@@ -66,13 +66,13 @@ namespace {
         bool           lastSegmentShouldHaveSlash{false}; // not sure about this
         for (const String& segment : segments) {
             lastSegmentShouldHaveSlash = false;
-            if (segment == L"." or segment == L"/.") {
+            if (segment == "."sv or segment == "/."sv) {
                 // drop it on the floor
                 if (segment[0] == '/') {
                     lastSegmentShouldHaveSlash = true;
                 }
             }
-            else if (segment == L".." or segment == L"/..") {
+            else if (segment == ".."sv or segment == "/.."sv) {
                 if (not segments2.empty ()) {
                     segments2.pop_back ();
                 }
@@ -135,14 +135,14 @@ String URI::As () const
         //      scheme        = ALPHA *( ALPHA / DIGIT / "+" / "-" / "." )
         // no need to pct encode this
         Assert (fScheme_->All ([] (Character c) { return c.IsASCII (); }));
-        result += *fScheme_ + L":";
+        result += *fScheme_ + ":";
     }
     if (fAuthority_) {
         Assert (fAuthority_->As<String> ().All ([] (Character c) { return c.IsASCII (); }));
         result += "//"sv + fAuthority_->As<String> (); // this already produces 'raw' (pct encoded) format
     }
 
-    if (fAuthority_ and not(fPath_.empty () or fPath_.StartsWith (L"/"))) {
+    if (fAuthority_ and not(fPath_.empty () or fPath_.StartsWith ("/"sv))) {
         // NOT SURE HOW TO HANDLE
         Execution::Throw (Execution::RuntimeErrorException{"This is not a legal URI to encode (authority present, but path not empty or absolute)"sv});
     }
@@ -198,7 +198,7 @@ String URI::GetAuthorityRelativeResource () const
     Characters::StringBuilder                                        result = UniformResourceIdentification::PCTEncode2String (fPath_, kPathEncodeOptions_);
     if (fQuery_) {
         static constexpr UniformResourceIdentification::PCTEncodeOptions kQueryEncodeOptions_{false, false, false, true};
-        result += L"?"sv + UniformResourceIdentification::PCTEncode2String (*fQuery_, kQueryEncodeOptions_);
+        result += "?"sv + UniformResourceIdentification::PCTEncode2String (*fQuery_, kQueryEncodeOptions_);
     }
     return result.str ();
 }
@@ -256,7 +256,7 @@ void URI::CheckValidPathForAuthority_ (const optional<Authority>& authority, con
      *      If a URI contains an authority component, then the path component
      *      must either be empty or begin with a slash ("/") character
      */
-    if (authority and (not path.empty () and not path.StartsWith (L"/"))) {
+    if (authority and (not path.empty () and not path.StartsWith ("/"sv))) {
         Execution::Throw (Execution::RuntimeErrorException{"A URI with an authority must have an empty path, or an absolute path"sv});
     }
 }
@@ -298,8 +298,8 @@ URI URI::Combine (const URI& overridingURI) const
         return baseDir.value_or (String{}) + rhs;
     };
 
-    Assert (remove_dot_segments_ ("/a/b/c/./../../g") == L"/a/g");    // from https://tools.ietf.org/html/rfc3986#section-5.2.4
-    Assert (remove_dot_segments_ ("mid/content=5/../6") == L"mid/6"); // ditto
+    Assert (remove_dot_segments_ ("/a/b/c/./../../g") == "/a/g");    // from https://tools.ietf.org/html/rfc3986#section-5.2.4
+    Assert (remove_dot_segments_ ("mid/content=5/../6") == "mid/6"); // ditto
 
     // Algorithm copied from https://tools.ietf.org/html/rfc3986#section-5.2.2
     URI result;
@@ -333,7 +333,7 @@ URI URI::Combine (const URI& overridingURI) const
                 result.SetQuery (overridingURI.GetQuery<String> () ? overridingURI.GetQuery<String> () : baseURI.GetQuery<String> ());
             }
             else {
-                if (overridingURI.GetPath ().StartsWith (L"/")) {
+                if (overridingURI.GetPath ().StartsWith ("/"sv)) {
                     result.SetPath (remove_dot_segments_ (overridingURI.GetPath ()));
                 }
                 else {

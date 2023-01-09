@@ -50,8 +50,8 @@ namespace {
      */
     const ConstantProperty<FileSystemRequestHandler::Options> kFileSystemRouterOptions_{[] () {
         Sequence<pair<RegularExpression, CacheControl>> cacheControlSettings_{
-            {RegularExpression{L".*\\.gif", CompareOptions::eCaseInsensitive}, CacheControl{.fMaxAge = Duration{24h}.As<int32_t> ()}}};
-        return FileSystemRequestHandler::Options{L"Files"_k, Sequence<String>{L"index.html"_k}, nullopt, cacheControlSettings_};
+            {RegularExpression{".*\\.gif", CompareOptions::eCaseInsensitive}, CacheControl{.fMaxAge = Duration{24h}.As<int32_t> ()}}};
+        return FileSystemRequestHandler::Options{"Files"_k, Sequence<String>{"index.html"_k}, nullopt, cacheControlSettings_};
     }};
 
     /**
@@ -59,7 +59,7 @@ namespace {
      */
     const ConstantProperty<Headers> kDefaultResponseHeaders_{[] () {
         Headers h;
-        h.server = L"Stroika-Sample-WebServer/"_k + AppVersion::kVersion.AsMajorMinorString ();
+        h.server = "Stroika-Sample-WebServer/"_k + AppVersion::kVersion.AsMajorMinorString ();
         return h;
     }};
 
@@ -104,23 +104,23 @@ namespace {
                 response->rwHeaders ().transferEncoding = HTTP::TransferEncoding::eChunked;
             }
             response->contentType = DataExchange::InternetMediaTypes::kHTML;
-            response->writeln (L"<html><body>");
-            response->writeln (L"<p>Hi Mom</p>");
-            response->writeln (L"<ul>");
-            response->writeln (L"Run the service (under the debugger if you wish)");
-            response->writeln (L"<li>curl http://localhost:8080/ OR</li>");
-            response->writeln (L"<li>curl http://localhost:8080/FRED OR      (to see error handling)</li>");
-            response->writeln (L"<li>curl -H \"Content-Type: application/json\" -X POST -d '{\"AppState\":\"Start\"}' http://localhost:8080/SetAppState</li>");
-            response->writeln (L"<li>curl http://localhost:8080/Files/index.html -v</li>");
-            response->writeln (L"</ul>");
-            response->writeln (L"</body></html>");
+            response->writeln ("<html><body>"sv);
+            response->writeln ("<p>Hi Mom</p>"sv);
+            response->writeln ("<ul>"sv);
+            response->writeln ("Run the service (under the debugger if you wish)"sv);
+            response->writeln ("<li>curl http://localhost:8080/ OR</li>"sv);
+            response->writeln ("<li>curl http://localhost:8080/FRED OR      (to see error handling)</li>"sv);
+            response->writeln ("<li>curl -H \"Content-Type: application/json\" -X POST -d '{\"AppState\":\"Start\"}' http://localhost:8080/SetAppState</li>"sv);
+            response->writeln ("<li>curl http://localhost:8080/Files/index.html -v</li>"sv);
+            response->writeln ("</ul>"sv);
+            response->writeln ("</body></html>"sv);
         }
         // Can declare arguments as Message* message
         static void SetAppState_ (Message* message)
         {
             message->rwResponse ().contentType = DataExchange::InternetMediaTypes::kHTML;
             String argsAsString                = Streams::TextReader::New (message->rwRequest ().GetBody ()).ReadAll ();
-            message->rwResponse ().writeln (L"<html><body><p>Hi SetAppState (" + argsAsString.As<wstring> () + L")</p></body></html>");
+            message->rwResponse ().writeln ("<html><body><p>Hi SetAppState ("sv + argsAsString + ")</p></body></html>");
         }
     };
 }

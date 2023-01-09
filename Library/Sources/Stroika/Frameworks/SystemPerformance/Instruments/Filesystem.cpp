@@ -448,7 +448,7 @@ namespace {
         static Mapping<MountedFilesystemNameType, MountedFilesystemInfoType> RunDF_POSIX_ ()
         {
             Mapping<MountedFilesystemNameType, MountedFilesystemInfoType> result;
-            ProcessRunner                                                 pr{L"/bin/df -k -P"};
+            ProcessRunner                                                 pr{"/bin/df -k -P"sv};
             Streams::MemoryStream<byte>::Ptr                              useStdOut = Streams::MemoryStream<byte>::New ();
             pr.SetStdOut (useStdOut);
             std::exception_ptr runException;
@@ -632,7 +632,7 @@ namespace {
 #if qUseWMICollectionSupport_
         // for collecting IO statistics
         WMICollector fLogicalDiskWMICollector_{
-            L"LogicalDisk"sv, {}, { kDiskReadBytesPerSec_,
+            "LogicalDisk"sv, {}, { kDiskReadBytesPerSec_,
                                     kDiskWriteBytesPerSec_,
                                     kDiskReadsPerSec_,
                                     kDiskWritesPerSec_,

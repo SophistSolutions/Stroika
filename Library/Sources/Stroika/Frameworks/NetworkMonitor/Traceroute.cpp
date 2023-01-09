@@ -83,10 +83,10 @@ String Traceroute::Options::ToString () const
 String Hop::ToString () const
 {
     StringBuilder sb;
-    sb += L"{";
-    sb += L"Time: " + Characters::ToString (fTime) + L", ";
-    sb += L"Address: " + Characters::ToString (fAddress) + L", ";
-    sb += L"}";
+    sb += "{";
+    sb += "Time: " + Characters::ToString (fTime) + ", ";
+    sb += "Address: " + Characters::ToString (fAddress) + ", ";
+    sb += "}";
     return sb.str ();
 }
 

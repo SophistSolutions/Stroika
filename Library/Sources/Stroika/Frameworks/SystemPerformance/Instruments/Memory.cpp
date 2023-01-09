@@ -363,7 +363,7 @@ namespace {
 #endif
 
 namespace {
-    const MeasurementType kMemoryUsageMeasurement_ = MeasurementType{L"Memory-Usage"sv};
+    const MeasurementType kMemoryUsageMeasurement_ = MeasurementType{"Memory-Usage"sv};
 }
 
 namespace {

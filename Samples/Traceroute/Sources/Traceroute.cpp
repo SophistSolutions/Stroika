@@ -103,7 +103,7 @@ int main (int argc, const char* argv[])
     try {
         Collection<InternetAddress> addrList = IO::Network::DNS::kThe.GetHostAddresses (targetAddress);
         if (addrList.empty ()) {
-            Execution::Throw (Execution::Exception{L"whoops no addrs"sv});
+            Execution::Throw (Execution::Exception{"whoops no addrs"sv});
         }
         InternetAddress addr = addrList.Nth (0);
 

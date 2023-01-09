@@ -765,7 +765,7 @@ namespace Stroika::Foundation::Traversal {
          *      \code
          *          Iterable<InternetAddress> c{IO::Network::V4::kLocalhost, IO::Network::V4::kAddrAny};
          *          VerifyTestResult (c.Join () == "localhost, INADDR_ANY");
-         *          VerifyTestResult (c.Join (L"; ") == "localhost, INADDR_ANY");
+         *          VerifyTestResult (c.Join ("; ") == "localhost, INADDR_ANY");
          *      \endcode
          *
          *  See:

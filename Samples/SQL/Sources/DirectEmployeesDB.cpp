@@ -80,56 +80,56 @@ void Stroika::Samples::SQL::DirectEmployeesDB (const std::function<Connection::P
     Statement addDepartment = conn.mkStatement ("INSERT INTO DEPARTMENT (ID, NAME) values (:ID, :NAME);"sv);
     addDepartment.Execute (initializer_list<Statement::ParameterDescription>{
         {":ID"sv, 1},
-        {":NAME"sv, L"Washing machines"},
+        {":NAME"sv, "Washing machines"sv},
     });
     Statement addEmployeeStatement = conn.mkStatement ("INSERT INTO EMPLOYEES (ID,NAME,AGE,ADDRESS,SALARY) values (:ID, :NAME, :AGE, :ADDRESS, :SALARY);"sv);
     addEmployeeStatement.Execute (initializer_list<Statement::ParameterDescription>{
         {":ID"sv, 1},
-        {":NAME"sv, L"Paul"},
+        {":NAME"sv, "Paul"sv},
         {":AGE"sv, 32},
-        {":ADDRESS"sv, L"California"},
+        {":ADDRESS"sv, "California"sv},
         {":SALARY"sv, 20000.00},
     });
     addEmployeeStatement.Execute (initializer_list<Statement::ParameterDescription>{
         {":ID"sv, 2},
-        {":NAME"sv, L"Allen"},
+        {":NAME"sv, "Allen"sv},
         {":AGE"sv, 25},
-        {":ADDRESS"sv, L"Texas"},
+        {":ADDRESS"sv, "Texas"sv},
         {":SALARY"sv, 15000.00},
     });
     addEmployeeStatement.Execute (initializer_list<Statement::ParameterDescription>{
         {":ID", 3},
-        {":NAME", L"Teddy"},
+        {":NAME", "Teddy"sv},
         {":AGE", 23},
-        {":ADDRESS", L"Norway"},
+        {":ADDRESS", "Norway"sv},
         {":SALARY", 20000.00},
     });
     addEmployeeStatement.Execute (initializer_list<Statement::ParameterDescription>{
         {":ID", 4},
-        {":NAME", L"Mark"},
+        {":NAME", "Mark"sv},
         {":AGE", 25},
-        {":ADDRESS", L"Rich-Mond"},
+        {":ADDRESS", "Rich-Mond"sv},
         {":SALARY", 65000.00},
     });
     addEmployeeStatement.Execute (initializer_list<Statement::ParameterDescription>{
         {":ID", 5},
-        {":NAME", L"David"},
+        {":NAME", "David"sv},
         {":AGE", 27},
-        {":ADDRESS", L"Texas"},
+        {":ADDRESS", "Texas"sv},
         {":SALARY", 85000.00},
     });
     addEmployeeStatement.Execute (initializer_list<Statement::ParameterDescription>{
         {":ID", 6},
-        {":NAME", L"Kim"},
+        {":NAME", "Kim"sv},
         {":AGE", 22},
-        {":ADDRESS", L"South-Hall"},
+        {":ADDRESS", "South-Hall"sv},
         {":SALARY", 45000.00},
     });
     addEmployeeStatement.Execute (initializer_list<Statement::ParameterDescription>{
         {":ID", 7},
-        {":NAME", L"James"},
+        {":NAME", "James"sv},
         {":AGE", 24},
-        {":ADDRESS", L"Houston"},
+        {":ADDRESS", "Houston"sv},
         {":SALARY", 10000.00},
     });
     /*
@@ -139,9 +139,9 @@ void Stroika::Samples::SQL::DirectEmployeesDB (const std::function<Connection::P
     if (false) {
         addEmployeeStatement.Execute (initializer_list<Statement::ParameterDescription>{
             {":BAD-ARGUMENT", 7}, // almost as good as static type checking to make sure paramter names match call
-            {":NAME", L"James"},
+            {":NAME", "James"sv},
             {":AGE", 24},
-            {":ADDRESS", L"Houston"},
+            {":ADDRESS", "Houston"sv},
             {":SALARY", 10000.00},
         });
         AssertNotReached ();
@@ -150,9 +150,9 @@ void Stroika::Samples::SQL::DirectEmployeesDB (const std::function<Connection::P
     try {
         addEmployeeStatement.Execute (initializer_list<Statement::ParameterDescription>{
             {":ID", 7},
-            {":NAME", L"James"},
+            {":NAME", "James"sv},
             {":AGE", 24},
-            {":ADDRESS", L"Houston"},
+            {":ADDRESS", "Houston"sv},
             {":SALARY", 10000.00},
         });
         AssertNotReached (); // RE-USED ID!!! - only detectable at runtime - so exception thrown

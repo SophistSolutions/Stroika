@@ -73,12 +73,12 @@ using SystemPerformance::Support::WMICollector;
 
 #if qUseWMICollectionSupport_
 namespace {
-    const String kBytesReceivedPerSecond_{L"Bytes Received/sec"sv};
-    const String kBytesSentPerSecond_{L"Bytes Sent/sec"sv};
-    const String kPacketsReceivedPerSecond_{L"Packets Received/sec"sv};
-    const String kPacketsSentPerSecond_{L"Packets Sent/sec"sv};
-    const String kTCPSegmentsPerSecond_{L"Segments/sec"sv};
-    const String kSegmentsRetransmittedPerSecond_{L"Segments Retransmitted/sec"sv};
+    const String kBytesReceivedPerSecond_{"Bytes Received/sec"sv};
+    const String kBytesSentPerSecond_{"Bytes Sent/sec"sv};
+    const String kPacketsReceivedPerSecond_{"Packets Received/sec"sv};
+    const String kPacketsSentPerSecond_{"Packets Sent/sec"sv};
+    const String kTCPSegmentsPerSecond_{"Segments/sec"sv};
+    const String kSegmentsRetransmittedPerSecond_{"Segments Retransmitted/sec"sv};
 }
 #endif
 

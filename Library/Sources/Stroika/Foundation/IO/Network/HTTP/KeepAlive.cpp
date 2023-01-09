@@ -28,12 +28,12 @@ KeepAlive KeepAlive::Parse (const String& headerValue)
         Containers::Sequence<String> kvp = token.Tokenize ({'='});
         if (kvp.length () == 2) {
             // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Keep-Alive
-            if (kvp[0] == L"timeout"sv) {
+            if (kvp[0] == "timeout"sv) {
                 Time::DurationSecondsType toAt = Characters::FloatConversion::ToFloat<> (kvp[1]);
                 r.fTimeoutAt                   = Time::GetTickCount () + toAt;
                 return r;
             }
-            else if (kvp[0] == L"max"sv) {
+            else if (kvp[0] == "max"sv) {
                 unsigned int maxMsg = Characters::String2Int<unsigned int> (kvp[1]);
                 r.fMessages         = maxMsg;
                 return r;

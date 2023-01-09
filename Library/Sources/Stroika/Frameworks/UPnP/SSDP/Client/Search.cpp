@@ -64,7 +64,7 @@ public:
         if (fThread_ != nullptr) {
             fThread_.AbortAndWaitForDone ();
         }
-        fThread_ = Execution::Thread::New ([this, serviceType, autoRetryInterval] () { DoRun_ (serviceType, autoRetryInterval); }, Execution::Thread::eAutoStart, L"SSDP Searcher"sv);
+        fThread_ = Execution::Thread::New ([this, serviceType, autoRetryInterval] () { DoRun_ (serviceType, autoRetryInterval); }, Execution::Thread::eAutoStart, "SSDP Searcher"sv);
     }
     void Stop ()
     {
@@ -215,8 +215,8 @@ private:
  ********************************** Search **************************************
  ********************************************************************************
  */
-const String Search::kSSDPAny    = L"ssdp:any"sv;
-const String Search::kRootDevice = L"upnp:rootdevice"sv;
+const String Search::kSSDPAny    = "ssdp:any"sv;
+const String Search::kRootDevice = "upnp:rootdevice"sv;
 
 Search::Search (IO::Network::InternetProtocol::IP::IPVersionSupport ipVersion)
     : fRep_{make_shared<Rep_> (ipVersion)}

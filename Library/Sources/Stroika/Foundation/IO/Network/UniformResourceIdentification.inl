@@ -18,15 +18,8 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
      ******************* UniformResourceIdentification::SchemeType ******************
      ********************************************************************************
      */
-    inline SchemeType::SchemeType (const wchar_t* s)
-        : inherited{s}
-    {
-    }
-    inline SchemeType::SchemeType (const wstring_view& s)
-        : inherited{s}
-    {
-    }
-    inline SchemeType::SchemeType (const String& s)
+    template <Characters::ConvertibleToString STRINGISH_T>
+    inline SchemeType::SchemeType (STRINGISH_T&& s)
         : inherited{s}
     {
     }

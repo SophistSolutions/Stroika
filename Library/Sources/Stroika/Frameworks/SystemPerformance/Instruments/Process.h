@@ -275,7 +275,7 @@ namespace Stroika::Frameworks::SystemPerformance::Instruments::Process {
      *              ...
      *      \endcode
      */
-    const inline MeasurementType kProcessMapMeasurement{L"Process-Details"sv};
+    const inline MeasurementType kProcessMapMeasurement{"Process-Details"sv};
 
     /**
      */

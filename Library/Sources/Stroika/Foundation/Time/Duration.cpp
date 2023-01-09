@@ -379,7 +379,7 @@ Characters::String Duration::PrettyPrintAge (const AgePrettyPrintInfo& agePretty
 
 Duration Duration::operator- () const
 {
-    wstring tmp = As<wstring> ();
+    String tmp = As<String> ();
     if (tmp.empty ()) {
         return *this;
     }
@@ -387,7 +387,7 @@ Duration Duration::operator- () const
         return Duration{tmp.substr (1)};
     }
     else {
-        return Duration{L"-" + tmp};
+        return Duration{"-"sv + tmp};
     }
 }
 

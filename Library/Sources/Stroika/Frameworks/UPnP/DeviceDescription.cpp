@@ -111,21 +111,21 @@ ObjectVariantMapper DeviceDescription::mkMapper_ ()
     ObjectVariantMapper mapper;
 
     mapper.AddClass<Icon> (initializer_list<ObjectVariantMapper::StructFieldInfo>{
-        {L"Alive", StructFieldMetaInfo{&Icon::fMimeType}},
-        {L"USN", StructFieldMetaInfo{&Icon::fHorizontalPixels}},
-        {L"Server", StructFieldMetaInfo{&Icon::fVerticalPixels}},
-        {L"Target", StructFieldMetaInfo{&Icon::fColorDepth}},
-        {L"RawHeaders", StructFieldMetaInfo{&Icon::fURL}},
+        {"Alive"sv, StructFieldMetaInfo{&Icon::fMimeType}},
+        {"USN"sv, StructFieldMetaInfo{&Icon::fHorizontalPixels}},
+        {"Server"sv, StructFieldMetaInfo{&Icon::fVerticalPixels}},
+        {"Target"sv, StructFieldMetaInfo{&Icon::fColorDepth}},
+        {"RawHeaders"sv, StructFieldMetaInfo{&Icon::fURL}},
     });
     mapper.AddCommonType<Collection<Icon>> ();
     mapper.AddCommonType<optional<Collection<Icon>>> ();
 
     mapper.AddClass<Service> (initializer_list<ObjectVariantMapper::StructFieldInfo>{
-        {L"Alive", StructFieldMetaInfo{&Service::fServiceType}},
-        {L"USN", StructFieldMetaInfo{&Service::fServiceID}},
-        {L"Server", StructFieldMetaInfo{&Service::fSCPDURL}},
-        {L"Target", StructFieldMetaInfo{&Service::fControlURL}},
-        {L"RawHeaders", StructFieldMetaInfo{&Service::fEventSubURL}},
+        {"Alive"sv, StructFieldMetaInfo{&Service::fServiceType}},
+        {"USN"sv, StructFieldMetaInfo{&Service::fServiceID}},
+        {"Server"sv, StructFieldMetaInfo{&Service::fSCPDURL}},
+        {"Target"sv, StructFieldMetaInfo{&Service::fControlURL}},
+        {"RawHeaders"sv, StructFieldMetaInfo{&Service::fEventSubURL}},
     });
     mapper.AddCommonType<Collection<Service>> ();
     mapper.AddCommonType<optional<Collection<Service>>> ();
@@ -134,20 +134,20 @@ ObjectVariantMapper DeviceDescription::mkMapper_ ()
     mapper.AddCommonType<optional<URI>> ();
 
     mapper.AddClass<DeviceDescription> (initializer_list<ObjectVariantMapper::StructFieldInfo>{
-        {L"PresentationURL", StructFieldMetaInfo{&DeviceDescription::fPresentationURL}},
-        {L"DeviceType", StructFieldMetaInfo{&DeviceDescription::fDeviceType}},
-        {L"ManufactureName", StructFieldMetaInfo{&DeviceDescription::fManufactureName}},
-        {L"FriendlyName", StructFieldMetaInfo{&DeviceDescription::fFriendlyName}},
-        {L"ManufacturingURL", StructFieldMetaInfo{&DeviceDescription::fManufacturingURL}},
-        {L"ModelDescription", StructFieldMetaInfo{&DeviceDescription::fModelDescription}},
-        {L"ModelName", StructFieldMetaInfo{&DeviceDescription::fModelName}},
-        {L"ModelNumber", StructFieldMetaInfo{&DeviceDescription::fModelNumber}},
-        {L"ModelURL", StructFieldMetaInfo{&DeviceDescription::fModelURL}},
-        {L"SerialNumber", StructFieldMetaInfo{&DeviceDescription::fSerialNumber}},
-        {L"UDN", StructFieldMetaInfo{&DeviceDescription::fUDN}},
-        {L"UPC", StructFieldMetaInfo{&DeviceDescription::fUPC}},
-        {L"Icons", StructFieldMetaInfo{&DeviceDescription::fIcons}},
-        {L"Services", StructFieldMetaInfo{&DeviceDescription::fServices}},
+        {"PresentationURL"sv, StructFieldMetaInfo{&DeviceDescription::fPresentationURL}},
+        {"DeviceType"sv, StructFieldMetaInfo{&DeviceDescription::fDeviceType}},
+        {"ManufactureName"sv, StructFieldMetaInfo{&DeviceDescription::fManufactureName}},
+        {"FriendlyName"sv, StructFieldMetaInfo{&DeviceDescription::fFriendlyName}},
+        {"ManufacturingURL"sv, StructFieldMetaInfo{&DeviceDescription::fManufacturingURL}},
+        {"ModelDescription"sv, StructFieldMetaInfo{&DeviceDescription::fModelDescription}},
+        {"ModelName"sv, StructFieldMetaInfo{&DeviceDescription::fModelName}},
+        {"ModelNumber"sv, StructFieldMetaInfo{&DeviceDescription::fModelNumber}},
+        {"ModelURL"sv, StructFieldMetaInfo{&DeviceDescription::fModelURL}},
+        {"SerialNumber"sv, StructFieldMetaInfo{&DeviceDescription::fSerialNumber}},
+        {"UDN"sv, StructFieldMetaInfo{&DeviceDescription::fUDN}},
+        {"UPC"sv, StructFieldMetaInfo{&DeviceDescription::fUPC}},
+        {"Icons"sv, StructFieldMetaInfo{&DeviceDescription::fIcons}},
+        {"Services"sv, StructFieldMetaInfo{&DeviceDescription::fServices}},
     });
     return mapper;
 };
@@ -300,7 +300,7 @@ DeviceDescription UPnP::DeSerialize (const Memory::BLOB& b)
     DbgTrace (L"xml data: %s", Streams::TextReader::New (b).ReadAll ().c_str ());
 #endif
     {
-        ObjectReader::IConsumerDelegateToContext ctx{kTypesRegistry_, make_shared<ObjectReader::ReadDownToReader> (kTypesRegistry_.MakeContextReader (&deviceDescription), Name{L"device"})};
+        ObjectReader::IConsumerDelegateToContext ctx{kTypesRegistry_, make_shared<ObjectReader::ReadDownToReader> (kTypesRegistry_.MakeContextReader (&deviceDescription), Name{"device"sv})};
         XML::SAXParse (b, ctx);
     }
 #if USE_NOISY_TRACE_IN_THIS_MODULE_

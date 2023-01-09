@@ -313,7 +313,7 @@ String Time::GetFormattedAge (const optional<Date>& birthDate, const optional<Da
         return Format (L"%d", yearDiff);
     }
     else {
-        return L"?"sv;
+        return "?"sv;
     }
 }
 
@@ -338,6 +338,6 @@ String Time::GetFormattedAgeWithUnit (const optional<Date>& birthDate, const opt
         }
     }
     else {
-        return L"?"sv;
+        return "?"sv;
     }
 }

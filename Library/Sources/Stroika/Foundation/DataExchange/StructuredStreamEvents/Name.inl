@@ -37,7 +37,7 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents {
     {
         String result;
         if (fType == NameType::eAttribute) {
-            result += L"@";
+            result += "@"sv;
         }
         else if (fType == NameType::eValue) {
             return "{value}"sv;

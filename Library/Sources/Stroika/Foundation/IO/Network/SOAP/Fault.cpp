@@ -36,7 +36,7 @@ optional<Fault> SOAP::Deserialize_Fault (const Streams::InputStream<byte>::Ptr& 
     }();
     Fault result;
     try {
-        IConsumerDelegateToContext ctx{kSOAPTypeMapper_, make_shared<ReadDownToReader> (kSOAPTypeMapper_.MakeContextReader (&result), Name (L"Fault"))};
+        IConsumerDelegateToContext ctx{kSOAPTypeMapper_, make_shared<ReadDownToReader> (kSOAPTypeMapper_.MakeContextReader (&result), Name{"Fault"sv})};
 #if qStroika_Foundation_DataExchange_StructuredStreamEvents_SupportTracing && USE_NOISY_TRACE_IN_THIS_MODULE_
         ctx.fContext.fTraceThisReader = true;
 #endif

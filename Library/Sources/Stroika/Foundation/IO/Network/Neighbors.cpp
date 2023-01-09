@@ -157,7 +157,7 @@ namespace {
                 readFirstLine = true;
                 continue;
             }
-            if (line[2] == L"0x0"sv) {
+            if (line[2] == "0x0"sv) {
                 continue; // I think this means disabled item
             }
             result += Neighbor{InternetAddress{line[0]}, line[3], line[5]};
