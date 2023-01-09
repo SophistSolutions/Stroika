@@ -296,21 +296,6 @@ namespace Stroika::Foundation::Characters {
 
     public:
         /**
-         *  Create a String object from ascii text. 
-         *
-         *  \note   Reading non-ascii text will result in a RuntimeException indicating improperly encoded characters.
-         *
-         *  \note - before Stroika v2.1d23 this was a requires check, and an assertion error to pass in non-ascii text
-         */
-        template <Character_Compatible CHAR_T>
-        static String FromASCII (const CHAR_T* cString);
-        template <Character_Compatible CHAR_T>
-        static String FromASCII (span<const CHAR_T> s);
-        template <Character_IsUnicodeCodePointOrPlainChar CHAR_T>
-        static String FromASCII (const basic_string<CHAR_T>& s);
-
-    public:
-        /**
          *   \brief Take the given argument data (constant span) - which must remain unchanged - constant - for the application lifetime - and treat it as a Stroika String object
          * 
          * This allows creation of String objects with fewer memory allocations, and more efficient storage, but only in constrained situations
@@ -339,7 +324,7 @@ namespace Stroika::Foundation::Characters {
          *  \req ((str.data () + str.size ()) == '\0'); // crazy weird requirement, but done cuz L"x"sv already does NUL-terminate and we can
          *                                              // take advantage of that fact - re-using the NUL-terminator for our own c_str() implementation
          * 
-         *  \note FromStringConstant with 'char' - requires that the char elements are ASCII (someday this maybe lifted and iterpret as ISOLATIN1)
+         *  \note FromStringConstant with 'char' - REQUIRES that the char elements are ASCII (someday this maybe lifted and iterpret as ISOLATIN1)
          *        For the case of char, we also do not check/require the nul-termination bit.
          * 
          *  \note for overloads with wchar_t, if sizeof (wchar_t) == 2
@@ -1334,6 +1319,29 @@ namespace Stroika::Foundation::Characters {
         nonvirtual String substr (size_t from, size_t count = npos) const;
 
     public:
+        template <Character_Compatible CHAR_T>
+        [[deprecated ("Since Stroika v3.0d1, String{}")]] static String FromASCII (span<const CHAR_T> s)
+        {
+            return String{s};
+        }
+        template <Character_Compatible CHAR_T>
+        [[deprecated ("Since Stroika v3.0d1, String{}")]] static String FromASCII (const CHAR_T* cString)
+        {
+            return String{cString};
+        }
+        template <Character_IsUnicodeCodePointOrPlainChar CHAR_T>
+        [[deprecated ("Since Stroika v3.0d1, String{}")]] static String FromASCII (const basic_string<CHAR_T>& str)
+        {
+            return String{str};
+        }
+        [[deprecated ("Since Stroika v3.0d1, use span{} overload for this")]] static String FromASCII (const char* from, const char* to)
+        {
+            return String{span{from, to}};
+        }
+        [[deprecated ("Since Stroika v3.0d1, use span{} overload for this")]] static String FromASCII (const wchar_t* from, const wchar_t* to)
+        {
+            return String{span{from, to}};
+        }
         [[deprecated ("Since Stroika v3.0d1, use span overloads")]] String InsertAt (const wchar_t* from, const wchar_t* to, size_t at) const
         {
             Memory::StackBuffer<Character> buf{UTFConverter::ComputeTargetBufferSize<Character> (span{from, to})};
@@ -1346,14 +1354,6 @@ namespace Stroika::Foundation::Characters {
         [[deprecated ("Since Stroika v3.0d1, use span{} overload for this")]] static String FromISOLatin1 (const char* start, const char* end)
         {
             return FromISOLatin1 (span{start, end});
-        }
-        [[deprecated ("Since Stroika v3.0d1, use span{} overload for this")]] static String FromASCII (const char* from, const char* to)
-        {
-            return FromASCII (span{from, to});
-        }
-        [[deprecated ("Since Stroika v3.0d1, use span{} overload for this")]] static String FromASCII (const wchar_t* from, const wchar_t* to)
-        {
-            return FromASCII (span{from, to});
         }
         [[deprecated ("Since Stroika v3.0d1, use span{} constructor for this")]] static String FromNarrowString (const char* from, const char* to, const locale& l)
         {

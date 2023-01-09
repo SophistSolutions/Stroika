@@ -215,21 +215,6 @@ namespace Stroika::Foundation::Characters {
     {
         return FromNarrowString (span{from.c_str (), from.length ()}, l);
     }
-    template <Character_Compatible CHAR_T>
-    inline String String::FromASCII (const CHAR_T* cString)
-    {
-        RequireNotNull (cString);
-        return FromASCII (span{cString, CString::Length (cString)});
-    }
-    template <Character_Compatible CHAR_T>
-    inline String String::FromASCII (span<const CHAR_T> s)
-    {
-        if (not Character::IsASCII (s)) {
-            static const auto kException_ = out_of_range{"Error converting non-ascii text to String"};
-            Execution::Throw (kException_);
-        }
-        return String{mk_ (span<const char>{reinterpret_cast<const char*> (s.data ()), s.size ()})};
-    }
     template <Character_IsUnicodeCodePointOrPlainChar CHAR_T>
     inline String String::FromISOLatin1 (const basic_string<CHAR_T>& s)
     {
@@ -262,11 +247,6 @@ namespace Stroika::Foundation::Characters {
             *pOut = *i;
         }
         return String{span<const wchar_t>{buf.begin (), pOut}};
-    }
-    template <Character_IsUnicodeCodePointOrPlainChar CHAR_T>
-    inline String String::FromASCII (const basic_string<CHAR_T>& s)
-    {
-        return FromASCII (span{s.data (), s.size ()});
     }
     template <size_t SIZE>
     inline String String::FromStringConstant (const char (&cString)[SIZE])
@@ -1251,11 +1231,9 @@ namespace Stroika::Foundation::Traversal {
 }
 
 namespace Stroika::Foundation::Characters {
-    [[deprecated ("Since Stroika v3.0d1 - just use _k")]] inline String operator"" _ASCII (const char* str, size_t len)
+    [[deprecated ("Since Stroika v3.0d1 - just use _k, sv, or nothing")]] inline String operator"" _ASCII (const char* str, size_t len)
     {
-        // a future verison of this API may do something like String_Constant, which is why this API requires its arg is a
-        // forever-lifetime C++ constant.
-        return String::FromASCII (span{str, len});
+        return String{span{str, len}};
     }
     class [[deprecated ("Since Stroika v3.0 - just use String::FromStringConstant")]] String_Constant : public String{
         public :
