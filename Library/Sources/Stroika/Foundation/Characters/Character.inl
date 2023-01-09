@@ -152,6 +152,11 @@ namespace Stroika::Foundation::Characters {
             Private_::ThrowNotIsASCII_ ();
         }
     }
+    template <Character_Compatible CHAR_T>
+    inline void Character::CheckASCII (span< CHAR_T> s)
+    {
+        CheckASCII (Memory::ConstSpan (s));
+    }
     constexpr bool Character::IsWhitespace () const noexcept
     {
         bool result = false;

@@ -140,6 +140,8 @@ namespace Stroika::Foundation::Characters {
          */
         template <Character_Compatible CHAR_T>
         static void CheckASCII (span<const CHAR_T> s);
+        template <Character_Compatible CHAR_T>
+        static void CheckASCII (span<CHAR_T> s);
 
     public:
         /**
