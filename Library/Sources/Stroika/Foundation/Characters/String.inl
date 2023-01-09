@@ -169,9 +169,8 @@ namespace Stroika::Foundation::Characters {
         _AssertRepValidType ();
     }
     inline String::String (_SharedPtrIRep&& rep) noexcept
-        : inherited{move (rep)}
+        : inherited{(RequireNotNull (rep), move (rep))}
     {
-        //RequireNotNull (rep); -- logically required, but we cannot test here, must test before mem-initializers
         _AssertRepValidType ();
     }
     inline String::String ()
