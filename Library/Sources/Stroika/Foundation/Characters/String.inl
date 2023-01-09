@@ -636,7 +636,7 @@ namespace Stroika::Foundation::Characters {
 
     template <typename T>
     inline T String::As () const
-        requires (BasicUnicodeString<T> or is_same_v<T, String>)
+        requires (BasicUnicodeStdString<T> or is_same_v<T, String>)
     {
         T r{}; // for now - KISS, but this can be optimized
         As (&r);
@@ -644,7 +644,7 @@ namespace Stroika::Foundation::Characters {
     }
     template <typename T>
     inline void String::As (T* into) const
-        requires (BasicUnicodeString<T> or is_same_v<T, String>)
+        requires (BasicUnicodeStdString<T> or is_same_v<T, String>)
     {
         if constexpr (is_same_v<T, u8string>) {
             AsUTF8 (into);

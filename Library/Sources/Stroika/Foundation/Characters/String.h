@@ -104,7 +104,7 @@ namespace Stroika::Foundation::Characters {
      *  \brief returns true iff T == u8string, u16string, u32string, or wstring
      */
     template <typename T>
-    concept BasicUnicodeString = is_same_v<T, u8string> or is_same_v<T, u16string> or is_same_v<T, u32string> or is_same_v<T, wstring>;
+    concept BasicUnicodeStdString = is_same_v<T, u8string> or is_same_v<T, u16string> or is_same_v<T, u32string> or is_same_v<T, wstring>;
 
     /**
      *  \brief String is like std::u32string, except it is much easier to use, often much more space efficient, and more easily interoperates with other string types
@@ -990,7 +990,7 @@ namespace Stroika::Foundation::Characters {
         /**
          * Convert String losslessly into a standard C++ type.
          *
-         *  Only specifically specialized variants supported: BasicUnicodeString<T> or is_same_v<T,String>
+         *  Only specifically specialized variants supported: BasicUnicodeStdString<T> or is_same_v<T,String>
          *      o   wstring
          *      o   u8string
          *      o   u16string
@@ -1013,10 +1013,10 @@ namespace Stroika::Foundation::Characters {
          */
         template <typename T>
         nonvirtual T As () const
-            requires (BasicUnicodeString<T> or is_same_v<T, String>);
+            requires (BasicUnicodeStdString<T> or is_same_v<T, String>);
         template <typename T>
         nonvirtual void As (T* into) const
-            requires (BasicUnicodeString<T> or is_same_v<T, String>);
+            requires (BasicUnicodeStdString<T> or is_same_v<T, String>);
 
     public:
         /**
