@@ -271,7 +271,7 @@ namespace Stroika::Foundation::Characters {
     template <>
     String ToString (const thread::id& t)
     {
-        return String::FromASCII (Execution::Thread::FormatThreadID_A (t));
+        return String{Execution::Thread::FormatThreadID_A (t)};
     }
 }
 

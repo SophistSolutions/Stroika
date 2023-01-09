@@ -315,7 +315,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
 #endif
             }
             Verify (resultStrLen > 0 and resultStrLen < static_cast<int> (sz));
-            return String::FromASCII (Memory::ConstSpan (span{buf.data (), static_cast<size_t> (resultStrLen)}));
+            return String{Memory::ConstSpan (span{buf.data (), static_cast<size_t> (resultStrLen)})};
         }
     }
 
@@ -372,7 +372,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
             s << f;
 
             return options.GetUsingLocaleClassic ()
-                       ? String::FromASCII (s.str ())
+                       ? String{s.str ()}
                        : String::FromNarrowString (s.str (), options.GetUseLocale ());
         }
     }

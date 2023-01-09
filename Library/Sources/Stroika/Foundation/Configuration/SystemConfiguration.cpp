@@ -492,7 +492,7 @@ SystemConfiguration::CPU Configuration::GetSystemConfiguration_CPU ()
             else if (i == 0x80000004)
                 (void)::memcpy (CPUBrandString + 32, CPUInfo, sizeof (CPUInfo));
         }
-        return String::FromASCII (CPUBrandString);
+        return String{CPUBrandString};
     }();
 
     if constexpr (qDebug) {

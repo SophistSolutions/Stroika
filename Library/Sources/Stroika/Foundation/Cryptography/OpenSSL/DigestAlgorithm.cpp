@@ -46,7 +46,7 @@ DigestAlgorithm::DigestAlgorithm (const ::EVP_MD* digester)
           [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> String {
               const DigestAlgorithm* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &DigestAlgorithm::pName);
               AssertNotNull (EVP_MD_name (thisObj->fDigester_));
-              return String::FromASCII (EVP_MD_name (thisObj->fDigester_));
+              return String{EVP_MD_name (thisObj->fDigester_)};
           }}
     , fDigester_{digester}
 {

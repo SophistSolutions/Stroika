@@ -45,7 +45,7 @@ namespace Stroika::Foundation::Characters {
      */
     inline RegularExpression operator"" _RegEx (const char* str, size_t len)
     {
-        return RegularExpression{String::FromASCII (span{str, len})};
+        return RegularExpression{String::FromStringConstant (span{str, len})};
     }
     inline RegularExpression operator"" _RegEx (const wchar_t* str, size_t len)
     {

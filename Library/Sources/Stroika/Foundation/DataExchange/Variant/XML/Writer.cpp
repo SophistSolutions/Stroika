@@ -70,7 +70,7 @@ namespace {
         // characters
         //
         // then can clean this up
-        out.Write (String::FromASCII (QuoteForXML (v)));
+        out.Write (String{QuoteForXML (v)});
     }
     void PrettyPrint_ (const vector<VariantValue>& v, const OutputStream<Character>::Ptr& out, int indentLevel)
     {

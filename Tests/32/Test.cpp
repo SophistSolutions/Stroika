@@ -263,7 +263,7 @@ namespace {
             using WriterOptions = Variant::CharacterDelimitedLines::Writer::Options;
             {
                 auto   serialized = Variant::CharacterDelimitedLines::Writer{WriterOptions{.fSpaceSeparate = true}}.WriteAsString (kCase1_spaceSep_.data);
-                String aaa        = String::FromASCII (kCase1_spaceSep_.dataAsFile);
+                String aaa        = String{kCase1_spaceSep_.dataAsFile};
                 VerifyTestResult (serialized.AsASCII () == kCase1_spaceSep_.dataAsFile);
                 stringstream tmp{kCase1_spaceSep_.dataAsFile};
                 VerifyTestResult ((kCase1_spaceSep_.data == Sequence<Sequence<String>>{Variant::CharacterDelimitedLines::Reader{{','}}.ReadMatrix (tmp)}));

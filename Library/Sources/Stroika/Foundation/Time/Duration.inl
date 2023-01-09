@@ -249,9 +249,9 @@ namespace Stroika::Foundation::Time {
             case eEmpty_:
                 return String{};
             case eString_:
-                return String::FromASCII (fStringRep_);
+                return String{fStringRep_};
             case eNumeric_:
-                return String::FromASCII (UnParseTime_ (count ()));
+                return String{UnParseTime_ (count ())};
         }
         AssertNotReached ();
         return String{};

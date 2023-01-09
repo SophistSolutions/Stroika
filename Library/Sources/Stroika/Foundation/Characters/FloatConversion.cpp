@@ -124,7 +124,7 @@ namespace {
         s << f;
 
         String tmp = options.GetUsingLocaleClassic ()
-                         ? String::FromASCII (s.str ())
+                         ? String{s.str ()}
                          : String::FromNarrowString (s.str (), options.GetUseLocale ());
         if (options.GetTrimTrailingZeros ().value_or (FloatConversion::ToStringOptions::kDefaultTrimTrailingZeros)) {
             Characters::FloatConversion::Private_::TrimTrailingZeros_ (&tmp);

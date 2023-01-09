@@ -1744,7 +1744,7 @@ namespace {
                 Stroika::TestHarness::WarnTestIssue ((L"At least one test did not meet expected time constaint (see above): " + listAsMsg).c_str ());
             }
             else {
-                Stroika::TestHarness::WarnTestIssue ((Format (L"At least one test (%s) did not meet expected time constraint (see %s)", listAsMsg.c_str (), String::FromASCII (kDefaultPerfOutFile_).c_str ())).c_str ());
+                Stroika::TestHarness::WarnTestIssue ((Format (L"At least one test (%s) did not meet expected time constraint (see %s)", listAsMsg.c_str (), String{kDefaultPerfOutFile_}.c_str ())).c_str ());
             }
         }
     }

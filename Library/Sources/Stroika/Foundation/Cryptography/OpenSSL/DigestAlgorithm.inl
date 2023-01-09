@@ -42,7 +42,7 @@ namespace Stroika::Foundation::Cryptography::OpenSSL {
     }
     inline String DigestAlgorithm::ToString () const
     {
-        return String::FromASCII (::EVP_MD_name (fDigester_));
+        return String{::EVP_MD_name (fDigester_)};
     }
 #endif
 

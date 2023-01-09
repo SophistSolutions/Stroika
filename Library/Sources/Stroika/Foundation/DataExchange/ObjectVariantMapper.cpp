@@ -287,7 +287,7 @@ TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ (const Memory::BLO
     // Note - callers can easily replace this converter
     using T                                  = Memory::BLOB;
     FromObjectMapperType<T> fromObjectMapper = [] (const ObjectVariantMapper&, const T* fromObjOfTypeT) -> VariantValue {
-        return VariantValue{String::FromASCII (Cryptography::Encoding::Algorithm::EncodeBase64 (*fromObjOfTypeT))};
+        return VariantValue{String{Cryptography::Encoding::Algorithm::EncodeBase64 (*fromObjOfTypeT)}};
     };
     ToObjectMapperType<T> toObjectMapper = [] (const ObjectVariantMapper&, const VariantValue& d, T* intoObjOfTypeT) -> void {
         *intoObjOfTypeT = Cryptography::Encoding::Algorithm::DecodeBase64 (d.As<String> ());

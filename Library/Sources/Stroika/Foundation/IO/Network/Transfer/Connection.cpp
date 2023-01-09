@@ -45,7 +45,7 @@ String Connection::Options::Authentication::GetAuthToken () const
         // This spec says nothing of the character encoding of the username / password (at least not that section) - so assume utf8
         u8string tmp{fUsernamePassword_->first.AsUTF8 () + u8":" + fUsernamePassword_->second.AsUTF8 ()};
         using namespace Stroika::Foundation::Cryptography;
-        return String::FromASCII (Encoding::Algorithm::EncodeBase64 (BLOB::Raw (tmp.c_str (), tmp.length ())));
+        return String{Encoding::Algorithm::EncodeBase64 (BLOB::Raw (tmp.c_str (), tmp.length ()))};
     }
     AssertNotReached ();
     return String{};

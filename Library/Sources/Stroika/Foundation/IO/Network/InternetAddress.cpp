@@ -195,7 +195,7 @@ namespace Stroika::Foundation::IO::Network {
                 Assert (result != nullptr);             // no need to throw, because according to list of errors in http://man7.org/linux/man-pages/man3/inet_ntop.3.html cannot be error
                 Assert (::strlen (buf) < sizeof (buf)); // docs don't say explicitly, but assuming it nul-terminates
                 Assert (result == buf);
-                return String::FromASCII (result);
+                return String{result};
             } break;
             case AddressFamily::V6: {
                 char        buf[INET6_ADDRSTRLEN];
@@ -203,7 +203,7 @@ namespace Stroika::Foundation::IO::Network {
                 Assert (result != nullptr); // no need to throw, because according to list of errors in http://man7.org/linux/man-pages/man3/inet_ntop.3.html cannot be error
                 Assert (result == buf);
                 Assert (::strlen (buf) < sizeof (buf)); // docs don't say explicitly, but assuming it nul-terminates
-                return String::FromASCII (result);
+                return String{result};
             } break;
             default: {
                 RequireNotReached ();

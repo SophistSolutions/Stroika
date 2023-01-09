@@ -42,7 +42,7 @@ namespace Stroika::Foundation::Cryptography::OpenSSL {
     }
     inline String CipherAlgorithm::ToString () const
     {
-        return String::FromASCII (::EVP_CIPHER_name (fCipher_));
+        return String{::EVP_CIPHER_name (fCipher_)};
     }
     inline size_t CipherAlgorithm::KeyLength () const
     {

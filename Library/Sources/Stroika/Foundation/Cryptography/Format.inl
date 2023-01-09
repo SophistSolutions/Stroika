@@ -58,7 +58,7 @@ namespace Stroika::Foundation::Cryptography {
         template <typename CRYTO_RESULT_TO_FORMAT_TYPE>
         inline String Format_ (const CRYTO_RESULT_TO_FORMAT_TYPE& arr, const String*)
         {
-            return String::FromASCII (Format_ (arr, static_cast<const string*> (nullptr)));
+            return String{Format_ (arr, static_cast<const string*> (nullptr))};
         }
 
         template <typename CRYTO_RESULT_TO_FORMAT_TYPE>
