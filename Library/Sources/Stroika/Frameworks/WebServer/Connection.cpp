@@ -68,7 +68,7 @@ Connection::MyMessage_::ReadHeadersResult Connection::MyMessage_::ReadHeaders (
 )
 {
 #if qStroika_Framework_WebServer_Connection_DetailedMessagingLog
-    logMsg (L"Starting ReadHeaders_");
+    logMsg ("Starting ReadHeaders_"sv);
 #endif
 
     /*
@@ -76,7 +76,7 @@ Connection::MyMessage_::ReadHeadersResult Connection::MyMessage_::ReadHeaders (
      */
     if (not fMsgHeaderInTextStream.AssureHeaderSectionAvailable ()) {
 #if qStroika_Framework_WebServer_Connection_DetailedMessagingLog
-        logMsg (L"got fMsgHeaderInTextStream.AssureHeaderSectionAvailable INCOMPLETE");
+        logMsg ("got fMsgHeaderInTextStream.AssureHeaderSectionAvailable INCOMPLETE"sv);
 #endif
         return ReadHeadersResult::eIncompleteButMoreMayBeAvailable;
     }
@@ -90,7 +90,7 @@ Connection::MyMessage_::ReadHeadersResult Connection::MyMessage_::ReadHeaders (
         String line = fMsgHeaderInTextStream.ReadLine ();
         if (line.length () == 0) {
 #if qStroika_Framework_WebServer_Connection_DetailedMessagingLog
-            logMsg (L"got EOF from src stream reading headers(incomplete)");
+            logMsg ("got EOF from src stream reading headers(incomplete)"sv);
 #endif
             return ReadHeadersResult::eIncompleteDeadEnd; // could throw here, but this is common enough we don't want the noise in the logs.
         }
@@ -104,18 +104,18 @@ Connection::MyMessage_::ReadHeadersResult Connection::MyMessage_::ReadHeaders (
         if (tokens[1].empty ()) {
             // should check if GET/PUT/DELETE etc...
             DbgTrace (L"tokens=%s, line='%s'", Characters::ToString (tokens).c_str (), line.c_str ());
-            Execution::Throw (ClientErrorException{L"Bad HTTP Request line - missing host-relative URL"sv});
+            Execution::Throw (ClientErrorException{"Bad HTTP Request line - missing host-relative URL"sv});
         }
         using IO::Network::URL;
         updatableRequest.url = URI{tokens[1]};
         if (updatableRequest.httpMethod ().empty ()) {
             // should check if GET/PUT/DELETE etc...
             DbgTrace (L"tokens=%s, line='%s'", Characters::ToString (tokens).c_str (), line.c_str ());
-            Execution::Throw (ClientErrorException{L"Bad METHOD in Request HTTP line"sv});
+            Execution::Throw (ClientErrorException{"Bad METHOD in Request HTTP line"sv});
         }
     }
     while (true) {
-        static const String kCRLF_{L"\r\n"sv};
+        static const String kCRLF_{"\r\n"sv};
         String              line = fMsgHeaderInTextStream.ReadLine ();
         if (line == kCRLF_ or line.empty ()) {
             break; // done
@@ -125,7 +125,7 @@ Connection::MyMessage_::ReadHeadersResult Connection::MyMessage_::ReadHeaders (
         size_t i = line.find (':');
         if (i == string::npos) {
             DbgTrace (L"line=%s", Characters::ToString (line).c_str ());
-            Execution::Throw (ClientErrorException{L"Bad HTTP Request missing colon in headers"sv});
+            Execution::Throw (ClientErrorException{"Bad HTTP Request missing colon in headers"sv});
         }
         else {
             String hdr   = line.SubString (0, i).Trim ();
@@ -134,7 +134,7 @@ Connection::MyMessage_::ReadHeadersResult Connection::MyMessage_::ReadHeaders (
         }
     }
 #if qStroika_Framework_WebServer_Connection_DetailedMessagingLog
-    logMsg (L"ReadHeaders completed normally");
+    logMsg ("ReadHeaders completed normally"sv);
 #endif
     return ReadHeadersResult::eCompleteGood;
 }
@@ -393,13 +393,13 @@ String Connection::ToString (bool abbreviatedOutput) const
 {
     AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
     StringBuilder                                  sb;
-    sb += L"{";
-    sb += L"Socket: " + Characters::ToString (fSocket_) + L", ";
+    sb += "{";
+    sb += "Socket: " + Characters::ToString (fSocket_) + ", ";
     if (not abbreviatedOutput) {
-        sb += L"Message: " + Characters::ToString (fMessage_) + L", ";
-        sb += L"Remaining: " + Characters::ToString (fRemaining_) + L", ";
+        sb += "Message: " + Characters::ToString (fMessage_) + ", ";
+        sb += "Remaining: " + Characters::ToString (fRemaining_) + ", ";
     }
-    sb += L"Connection-Started-At: " + Characters::ToString (fConnectionStartedAt_);
-    sb += L"}";
+    sb += "Connection-Started-At: " + Characters::ToString (fConnectionStartedAt_);
+    sb += "}";
     return sb.str ();
 }

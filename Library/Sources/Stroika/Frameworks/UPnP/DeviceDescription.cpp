@@ -260,37 +260,37 @@ DeviceDescription UPnP::DeSerialize (const Memory::BLOB& b)
         registry.AddCommonType<optional<URI>> ();
         registry.AddCommonReader_Simple<InternetMediaType> ([] (const String& s) { return InternetMediaType{s}; });
         registry.AddCommonReader_Class<DeviceDescription::Icon> (initializer_list<ObjectReader::StructFieldInfo>{
-            {Name{L"mimetype"sv}, StructFieldMetaInfo{&DeviceDescription::Icon::fMimeType}},
-            {Name{L"width"sv}, StructFieldMetaInfo{&DeviceDescription::Icon::fHorizontalPixels}},
-            {Name{L"height"sv}, StructFieldMetaInfo{&DeviceDescription::Icon::fVerticalPixels}},
-            {Name{L"depth"sv}, StructFieldMetaInfo{&DeviceDescription::Icon::fColorDepth}},
-            {Name{L"url"sv}, StructFieldMetaInfo{&DeviceDescription::Icon::fURL}},
+            {Name{"mimetype"sv}, StructFieldMetaInfo{&DeviceDescription::Icon::fMimeType}},
+            {Name{"width"sv}, StructFieldMetaInfo{&DeviceDescription::Icon::fHorizontalPixels}},
+            {Name{"height"sv}, StructFieldMetaInfo{&DeviceDescription::Icon::fVerticalPixels}},
+            {Name{"depth"sv}, StructFieldMetaInfo{&DeviceDescription::Icon::fColorDepth}},
+            {Name{"url"sv}, StructFieldMetaInfo{&DeviceDescription::Icon::fURL}},
         });
         registry.AddCommonReader_Class<DeviceDescription::Service> (initializer_list<ObjectReader::StructFieldInfo>{
-            {Name{L"serviceType"sv}, StructFieldMetaInfo{&DeviceDescription::Service::fServiceType}},
-            {Name{L"serviceId"sv}, StructFieldMetaInfo{&DeviceDescription::Service::fServiceID}},
-            {Name{L"SCPDURL"sv}, StructFieldMetaInfo{&DeviceDescription::Service::fSCPDURL}},
-            {Name{L"controlURL"sv}, StructFieldMetaInfo{&DeviceDescription::Service::fControlURL}},
+            {Name{"serviceType"sv}, StructFieldMetaInfo{&DeviceDescription::Service::fServiceType}},
+            {Name{"serviceId"sv}, StructFieldMetaInfo{&DeviceDescription::Service::fServiceID}},
+            {Name{"SCPDURL"sv}, StructFieldMetaInfo{&DeviceDescription::Service::fSCPDURL}},
+            {Name{"controlURL"sv}, StructFieldMetaInfo{&DeviceDescription::Service::fControlURL}},
         });
-        registry.AddCommonType<Collection<DeviceDescription::Icon>> (Name{L"icon"});
+        registry.AddCommonType<Collection<DeviceDescription::Icon>> (Name{"icon"});
         registry.AddCommonType<optional<Collection<DeviceDescription::Icon>>> ();
-        registry.AddCommonType<Collection<DeviceDescription::Service>> (Name{L"service"});
+        registry.AddCommonType<Collection<DeviceDescription::Service>> (Name{"service"});
         registry.AddCommonType<optional<Collection<DeviceDescription::Service>>> ();
         registry.AddCommonReader_Class<DeviceDescription> (initializer_list<ObjectReader::StructFieldInfo>{
-            {Name{L"presentationURL"sv}, StructFieldMetaInfo{&DeviceDescription::fPresentationURL}},
-            {Name{L"deviceType"sv}, StructFieldMetaInfo{&DeviceDescription::fDeviceType}},
-            {Name{L"manufacturer"sv}, StructFieldMetaInfo{&DeviceDescription::fManufactureName}},
-            {Name{L"friendlyName"sv}, StructFieldMetaInfo{&DeviceDescription::fFriendlyName}},
-            {Name{L"manufacturerURL"sv}, StructFieldMetaInfo{&DeviceDescription::fManufacturingURL}},
-            {Name{L"modelDescription"sv}, StructFieldMetaInfo{&DeviceDescription::fModelDescription}},
-            {Name{L"modelName"sv}, StructFieldMetaInfo{&DeviceDescription::fModelName}},
-            {Name{L"modelNumber"sv}, StructFieldMetaInfo{&DeviceDescription::fModelNumber}},
-            {Name{L"modelURL"sv}, StructFieldMetaInfo{&DeviceDescription::fModelURL}},
-            {Name{L"serialNum"sv}, StructFieldMetaInfo{&DeviceDescription::fSerialNumber}},
-            {Name{L"UDN"sv}, StructFieldMetaInfo{&DeviceDescription::fUDN}},
-            {Name{L"UPC"sv}, StructFieldMetaInfo{&DeviceDescription::fUPC}},
-            {Name{L"iconList"sv}, StructFieldMetaInfo{&DeviceDescription::fIcons}},
-            {Name{L"serviceList"sv}, StructFieldMetaInfo{&DeviceDescription::fServices}},
+            {Name{"presentationURL"sv}, StructFieldMetaInfo{&DeviceDescription::fPresentationURL}},
+            {Name{"deviceType"sv}, StructFieldMetaInfo{&DeviceDescription::fDeviceType}},
+            {Name{"manufacturer"sv}, StructFieldMetaInfo{&DeviceDescription::fManufactureName}},
+            {Name{"friendlyName"sv}, StructFieldMetaInfo{&DeviceDescription::fFriendlyName}},
+            {Name{"manufacturerURL"sv}, StructFieldMetaInfo{&DeviceDescription::fManufacturingURL}},
+            {Name{"modelDescription"sv}, StructFieldMetaInfo{&DeviceDescription::fModelDescription}},
+            {Name{"modelName"sv}, StructFieldMetaInfo{&DeviceDescription::fModelName}},
+            {Name{"modelNumber"sv}, StructFieldMetaInfo{&DeviceDescription::fModelNumber}},
+            {Name{"modelURL"sv}, StructFieldMetaInfo{&DeviceDescription::fModelURL}},
+            {Name{"serialNum"sv}, StructFieldMetaInfo{&DeviceDescription::fSerialNumber}},
+            {Name{"UDN"sv}, StructFieldMetaInfo{&DeviceDescription::fUDN}},
+            {Name{"UPC"sv}, StructFieldMetaInfo{&DeviceDescription::fUPC}},
+            {Name{"iconList"sv}, StructFieldMetaInfo{&DeviceDescription::fIcons}},
+            {Name{"serviceList"sv}, StructFieldMetaInfo{&DeviceDescription::fServices}},
         });
         return registry;
     }();

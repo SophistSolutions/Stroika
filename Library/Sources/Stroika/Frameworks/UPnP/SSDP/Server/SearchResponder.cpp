@@ -47,7 +47,7 @@ namespace {
         Debug::TraceContextBumper ctx{"Read SSDP Packet"};
         DbgTrace (L"firstLine: %s", firstLine.c_str ());
 #endif
-        static const String kNOTIFY_LEAD = L"M-SEARCH "sv;
+        static const String kNOTIFY_LEAD = "M-SEARCH "sv;
         if (firstLine.length () > kNOTIFY_LEAD.length () and firstLine.SubString (0, kNOTIFY_LEAD.length ()) == kNOTIFY_LEAD) {
             SSDP::Advertisement da;
             while (true) {
@@ -67,7 +67,7 @@ namespace {
                     da.fRawHeaders.Add (label, value);
                 }
                 constexpr auto kLabelComparer_ = String::ThreeWayComparer{Characters::CompareOptions::eCaseInsensitive};
-                if (kLabelComparer_ (label, L"ST"sv) == 0) {
+                if (kLabelComparer_ (label, "ST"sv) == 0) {
                     da.fTarget = value;
                 }
             }
@@ -109,9 +109,9 @@ namespace {
                         useSocket.SendTo (data.begin (), data.end (), sendTo);
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                         String msg;
-                        msg += L"location=" sz + a.fLocation + L", ";
-                        msg += L"TARGET(ST/NT)=" sz + a.fTarget + L", ";
-                        msg += L"USN=" sz + a.fUSN;
+                        msg += "location="sz + a.fLocation + ", "sv;
+                        msg += "TARGET(ST/NT)="sz + a.fTarget + ", "sv;
+                        msg += "USN="sz + a.fUSN;
                         DbgTrace (L"(%s)", msg.c_str ());
 #endif
                     }
@@ -130,7 +130,7 @@ SearchResponder::SearchResponder (const Iterable<Advertisement>& advertisements,
     // Construction of search responder will fail if we cannot bind - instead of failing quietly inside the loop
     Collection<pair<ConnectionlessSocket::Ptr, SocketAddress>> sockets;
     {
-        static constexpr Execution::Activity kActivity_{L"SSDP Binding in SearchResponder"sv};
+        static constexpr Execution::Activity kActivity_{"SSDP Binding in SearchResponder"sv};
         Execution::DeclareActivity           da{&kActivity_};
         constexpr unsigned int               kMaxHops_ = 4;
         if (InternetProtocol::IP::SupportIPV4 (ipVersion)) {
@@ -150,7 +150,7 @@ SearchResponder::SearchResponder (const Iterable<Advertisement>& advertisements,
     }
 
     // Use a thread to wait on a set of sockets we are listening for requests on
-    static const String kThreadName_{L"SSDP Search Responder"sv};
+    static const String kThreadName_{"SSDP Search Responder"sv};
     fListenThread_ = Execution::Thread::New (
         [advertisements, sockets] () {
             Debug::TraceContextBumper ctx{"SSDP SearchResponder thread loop"};

@@ -85,13 +85,13 @@ namespace {
 
         MyWebServer_ (uint16_t portNumber)
             : kRoutes_{
-                  Route{L""_RegEx, DefaultPage_},
-                  Route{HTTP::MethodsRegEx::kPost, L"SetAppState"_RegEx, SetAppState_},
-                  Route{L"FRED"_RegEx, [] (Request*, Response* response) {
+                  Route{""_RegEx, DefaultPage_},
+                  Route{HTTP::MethodsRegEx::kPost, "SetAppState"_RegEx, SetAppState_},
+                  Route{"FRED"_RegEx, [] (Request*, Response* response) {
                             response->contentType = DataExchange::InternetMediaTypes::kText_PLAIN;
                             response->write (L"FRED");
                         }},
-                  Route{L"Files/.*"_RegEx, FileSystemRequestHandler{Execution::GetEXEDir () / L"html", kFileSystemRouterOptions_}}}
+                  Route{"Files/.*"_RegEx, FileSystemRequestHandler{Execution::GetEXEDir () / "html", kFileSystemRouterOptions_}}}
             , fConnectionMgr_{SocketAddresses (InternetAddresses_Any (), portNumber), kRoutes_, ConnectionManager::Options{.fBindFlags = Socket::BindFlags{}, .fDefaultResponseHeaders = kDefaultResponseHeaders_}}
         {
         }
@@ -137,7 +137,7 @@ int main (int argc, const char* argv[])
 
     Sequence<String> args = Execution::ParseCommandLine (argc, argv);
     for (auto argi = args.begin (); argi != args.end (); ++argi) {
-        if (Execution::MatchesCommandLineArgument (*argi, L"port")) {
+        if (Execution::MatchesCommandLineArgument (*argi, "port"sv)) {
             ++argi;
             if (argi != args.end ()) {
                 portNumber = Characters::String2Int<uint16_t> (*argi);
@@ -147,7 +147,7 @@ int main (int argc, const char* argv[])
                 return EXIT_FAILURE;
             }
         }
-        else if (Execution::MatchesCommandLineArgument (*argi, L"quit-after")) {
+        else if (Execution::MatchesCommandLineArgument (*argi, "quit-after"sv)) {
             ++argi;
             if (argi != args.end ()) {
                 quitAfter = Characters::FloatConversion::ToFloat<Time::DurationSecondsType> (*argi);

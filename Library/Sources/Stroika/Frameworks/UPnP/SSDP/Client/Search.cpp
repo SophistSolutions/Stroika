@@ -39,7 +39,7 @@ class Search::Rep_ {
 public:
     Rep_ (IO::Network::InternetProtocol::IP::IPVersionSupport ipVersion)
     {
-        static constexpr Execution::Activity kConstructingSSDPSearcher_{L"constucting SSDP searcher"sv};
+        static constexpr Execution::Activity kConstructingSSDPSearcher_{"constucting SSDP searcher"sv};
         Execution::DeclareActivity           activity{&kConstructingSSDPSearcher_};
         if (InternetProtocol::IP::SupportIPV4 (ipVersion)) {
             ConnectionlessSocket::Ptr s = ConnectionlessSocket::New (SocketAddress::INET, Socket::DGRAM);
@@ -100,7 +100,7 @@ public:
                  */
                 const unsigned int kMaxHops_ = 4;
                 stringstream       requestBuf;
-                requestBuf << "M-SEARCH * HTTP/1.1\r\n";
+                requestBuf << "M-SEARCH * HTTP/1.1\r\n"sv;
                 UniformResourceIdentification::Authority hostAuthority = [&] () -> UniformResourceIdentification::Authority {
                     switch (s.GetAddressFamily ()) {
                         case SocketAddress::FamilyType::INET: {
@@ -114,11 +114,11 @@ public:
                             return UniformResourceIdentification::Authority{};
                     }
                 }();
-                requestBuf << "Host: " << hostAuthority.As<String> ().AsUTF8<string> () << "\r\n";
-                requestBuf << "Man: \"ssdp:discover\"\r\n";
-                requestBuf << "ST: " << serviceType.AsUTF8<string> ().c_str () << "\r\n";
-                requestBuf << "MX: " << kMaxHops_ << "\r\n";
-                requestBuf << "\r\n";
+                requestBuf << "Host: "sv << hostAuthority.As<String> ().AsUTF8<string> () << "\r\n";
+                requestBuf << "Man: \"ssdp:discover\"\r\n"sv;
+                requestBuf << "ST: "sv << serviceType.AsUTF8<string> ().c_str () << "\r\n";
+                requestBuf << "MX: "sv << kMaxHops_ << "\r\n";
+                requestBuf << "\r\n"sv;
                 request = requestBuf.str ();
                 s.SetMulticastTTL (kMaxHops_);
             }
@@ -163,7 +163,7 @@ public:
         DbgTrace (L"firstLine: %s", firstLine.c_str ());
 #endif
 
-        static const String kOKRESPONSELEAD_ = L"HTTP/1.1 200"sv;
+        static const String kOKRESPONSELEAD_ = "HTTP/1.1 200"sv;
         if (firstLine.length () >= kOKRESPONSELEAD_.length () and firstLine.SubString (0, kOKRESPONSELEAD_.length ()) == kOKRESPONSELEAD_) {
             SSDP::Advertisement d;
             while (true) {
@@ -179,16 +179,16 @@ public:
                 if (optional<size_t> n = line.Find (':')) {
                     String label = line.SubString (0, *n);
                     String value = line.SubString (*n + 1).Trim ();
-                    if (String::ThreeWayComparer{Characters::CompareOptions::eCaseInsensitive}(label, L"Location") == 0) {
+                    if (String::ThreeWayComparer{CompareOptions::eCaseInsensitive}(label, "Location"sv) == 0) {
                         d.fLocation = IO::Network::URI{value};
                     }
-                    else if (String::ThreeWayComparer{Characters::CompareOptions::eCaseInsensitive}(label, L"ST") == 0) {
+                    else if (String::ThreeWayComparer{CompareOptions::eCaseInsensitive}(label, "ST"sv) == 0) {
                         d.fTarget = value;
                     }
-                    else if (String::ThreeWayComparer{Characters::CompareOptions::eCaseInsensitive}(label, L"USN") == 0) {
+                    else if (String::ThreeWayComparer{CompareOptions::eCaseInsensitive}(label, "USN"sv) == 0) {
                         d.fUSN = value;
                     }
-                    else if (String::ThreeWayComparer{Characters::CompareOptions::eCaseInsensitive}(label, L"Server") == 0) {
+                    else if (String::ThreeWayComparer{CompareOptions::eCaseInsensitive}(label, "Server"sv) == 0) {
                         d.fServer = value;
                     }
                 }

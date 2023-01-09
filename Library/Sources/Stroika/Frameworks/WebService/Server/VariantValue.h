@@ -43,7 +43,7 @@ namespace Stroika::Frameworks::WebService::Server::VariantValue {
      *
      *  \par Example Usage
      *      \code
-     *         static const String                         kValueParamName_ = L"value"sv;
+     *         static const String                         kValueParamName_ = "value"sv;
      *         Mapping<String, DataExchange::VariantValue> args             = PickoutParamValuesFromURL (m->request ());
      *         number                                                       = Model::kMapper.ToObject<Number> (args.LookupValue (kValueParamName_));
      *      \endcode
@@ -61,7 +61,7 @@ namespace Stroika::Frameworks::WebService::Server::VariantValue {
      *
      *  \par Example Usage
      *      \code
-     *         static const String                         kValueParamName_ = L"value"sv;
+     *         static const String                         kValueParamName_ = "value"sv;
      *         Mapping<String, DataExchange::VariantValue> args             = PickoutParamValuesFromBody (m->request ());
      *         number                                                       = Model::kMapper.ToObject<Number> (args.LookupValue (kValueParamName_));
      *      \endcode
@@ -87,7 +87,7 @@ namespace Stroika::Frameworks::WebService::Server::VariantValue {
      *
      *  \par Example Usage
      *      \code
-     *         static const String                         kValueParamName_ = L"value"sv;
+     *         static const String                         kValueParamName_ = "value"sv;
      *         Mapping<String, DataExchange::VariantValue> args             = PickoutParamValues (m->rwRequest ());
      *         number                                                       = Model::kMapper.ToObject<Number> (args.LookupValue (kValueParamName_));
      *      \endcode
@@ -120,7 +120,7 @@ namespace Stroika::Frameworks::WebService::Server::VariantValue {
      *
      *  \par Example Usage
      *      \code
-     *          Sequence<VariantValue> tmp = OrderParamValues ( Iterable<String>{L"page", L"xxx"}, PickoutParamValuesFromURL (URI {L"http://www.sophist.com?page=5"}));
+     *          Sequence<VariantValue> tmp = OrderParamValues ( Iterable<String>{"page", "xxx"}, PickoutParamValuesFromURL (URI {"http://www.sophist.com?page=5"}));
      *          Assert (tmp.size () == 2);
      *          Assert (tmp[0] == 5);
      *          Assert (tmp[1] == nullptr);
@@ -169,11 +169,11 @@ namespace Stroika::Frameworks::WebService::Server::VariantValue {
      *  \par Example Usage
      *      \code
      *           Route{
-     *              RegularExpression{L"plus"},
+     *              RegularExpression{"plus"},
      *              mkRequestHandler (
      *                  kPlusWSDescriptor_,
      *                  kObjectVariantMapper,
-     *                  Sequence<String>{L"lhs", L"rhs"},
+     *                  Sequence<String>{"lhs", "rhs"},
      *                  function<float (float, float)>{[=](float lhs, float rhs) { return lhs + rhs }})},
      *      \endcode
      *

@@ -46,7 +46,7 @@ class Listener::Rep_ {
 public:
     Rep_ (IO::Network::InternetProtocol::IP::IPVersionSupport ipVersion)
     {
-        static constexpr Execution::Activity kConstructingSSDPListener_{L"constucting SSDP Listener"sv};
+        static constexpr Execution::Activity kConstructingSSDPListener_{"constucting SSDP Listener"sv};
         Execution::DeclareActivity           activity{&kConstructingSSDPListener_};
         Socket::BindFlags                    bindFlags = Socket::BindFlags{};
         bindFlags.fSO_REUSEADDR                        = true;
@@ -71,7 +71,7 @@ public:
     }
     void Start ()
     {
-        static const String kThreadName_ = L"SSDP Listener"sv;
+        static const String kThreadName_ = "SSDP Listener"sv;
         fThread_                         = Execution::Thread::New (
             [this] () { DoRun_ (); }, Execution::Thread::eAutoStart, kThreadName_);
     }
@@ -118,7 +118,7 @@ public:
         Debug::TraceContextBumper ctx{"Read SSDP Packet"};
         DbgTrace (L"firstLine: %s", firstLine.c_str ());
 #endif
-        const String kNOTIFY_LEAD = L"NOTIFY "sv;
+        const String kNOTIFY_LEAD = "NOTIFY "sv;
         if (firstLine.length () > kNOTIFY_LEAD.length () and firstLine.SubString (0, kNOTIFY_LEAD.length ()) == kNOTIFY_LEAD) {
             SSDP::Advertisement d;
             while (true) {
@@ -138,7 +138,7 @@ public:
                     d.fRawHeaders.Add (label, value);
                 }
                 constexpr auto kLabelComparer_ = String::ThreeWayComparer{Characters::CompareOptions::eCaseInsensitive};
-                if (kLabelComparer_ (label, L"Location") == 0) {
+                if (kLabelComparer_ (label, "Location"sv) == 0) {
                     try {
                         d.fLocation = IO::Network::URI{value};
                     }
@@ -146,21 +146,21 @@ public:
                         DbgTrace (L"A notification without a valid location probably won't be useful, so we could allow the exception to propagate and the notification to be ignored. However, we don't throw when the location is missing altogether. So for now, treat as missing: e=%s", Characters::ToString (current_exception ()).c_str ());
                     }
                 }
-                else if (kLabelComparer_ (label, L"NT") == 0) {
+                else if (kLabelComparer_ (label, "NT"sv) == 0) {
                     d.fTarget = value;
                 }
-                else if (kLabelComparer_ (label, L"USN") == 0) {
+                else if (kLabelComparer_ (label, "USN"sv) == 0) {
                     d.fUSN = value;
                 }
-                else if (kLabelComparer_ (label, L"Server") == 0) {
+                else if (kLabelComparer_ (label, "Server"sv) == 0) {
                     d.fServer = value;
                 }
-                else if (kLabelComparer_ (label, L"NTS") == 0) {
+                else if (kLabelComparer_ (label, "NTS"sv) == 0) {
                     constexpr auto kValueComparer_ = String::ThreeWayComparer{Characters::CompareOptions::eCaseInsensitive};
-                    if (kValueComparer_ (value, L"ssdp:alive") == 0) {
+                    if (kValueComparer_ (value, "ssdp:alive"sv) == 0) {
                         d.fAlive = true;
                     }
-                    else if (kValueComparer_ (value, L"ssdp:byebye") == 0) {
+                    else if (kValueComparer_ (value, "ssdp:byebye"sv) == 0) {
                         d.fAlive = false;
                     }
                 }

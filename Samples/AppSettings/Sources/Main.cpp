@@ -45,7 +45,7 @@ namespace {
                    * But if you have multiple modules with configuration data, pick a name that matches that module,
                    * and they will all be stored under a folder for all your apps configuration.
                    */
-                  L"MyModule"sv,
+                  "MyModule"sv,
 
                   /*
                    * C++ doesn't have intrinsically enough metadata to effectively serialize deserialize data, but its close.
@@ -57,8 +57,8 @@ namespace {
                   [] () -> ObjectVariantMapper {
                       ObjectVariantMapper mapper;
                       mapper.AddClass<OptionsData_> (initializer_list<ObjectVariantMapper::StructFieldInfo>{
-                          {L"Enabled", StructFieldMetaInfo{&OptionsData_::fEnabled}},
-                          {L"Last-Synchronized-At", StructFieldMetaInfo{&OptionsData_::fLastSynchronizedAt}},
+                          {"Enabled", StructFieldMetaInfo{&OptionsData_::fEnabled}},
+                          {"Last-Synchronized-At", StructFieldMetaInfo{&OptionsData_::fLastSynchronizedAt}},
                       });
                       return mapper;
                   }(),
@@ -74,10 +74,10 @@ namespace {
                    * This defaults to 
                    *       FileSystem::WellKnownLocations::GetApplicationData () + appName + String{IO::FileSystem::kPathComponentSeperator} + moduleName + suffix
                    * or folder:
-                   *      L"/var/opt/Put-Your-App-Name-Here" or "C:\ProgramData\Put-Your-App-Name-Here"
+                   *      "/var/opt/Put-Your-App-Name-Here" or "C:\ProgramData\Put-Your-App-Name-Here"
                    *  and this module configuration file would be:
-                   *      L"/var/opt/Put-Your-App-Name-Here/MyModule.json" OR
-                   *      L"C:/ProgramData/Put-Your-App-Name-Here/MyModule.json" OR
+                   *      "/var/opt/Put-Your-App-Name-Here/MyModule.json" OR
+                   *      "C:/ProgramData/Put-Your-App-Name-Here/MyModule.json" OR
                    *
                    *    \note - this function does NOT create the 'Put-Your-App-Name-Here' folder first, and will NOT persist
                    *            files if this folder does not exist.
@@ -87,7 +87,7 @@ namespace {
                    *
                    *            But a better pattern is to create the folder in your application installer, typically.
                    */
-                  OptionsFile::mkFilenameMapper (L"Put-Your-App-Name-Here")}
+                  OptionsFile::mkFilenameMapper ("Put-Your-App-Name-Here")}
             , fActualCurrentConfigData_{fOptionsFile_.Read<OptionsData_> (OptionsData_{})}
         {
             Set (fActualCurrentConfigData_); // assure derived data (and changed fields etc) up to date

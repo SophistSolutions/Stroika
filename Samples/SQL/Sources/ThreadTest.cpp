@@ -101,33 +101,33 @@ namespace {
             {":STILL_EMPLOYED", 1},
         });
         addEmployeeStatement.Execute (initializer_list<Statement::ParameterDescription>{
-            {L":NAME", L"David"},
-            {L":AGE", 27},
-            {L":ADDRESS", L"Texas"},
-            {L":SALARY", 85000.00},
-            {L":STILL_EMPLOYED", 1},
+            {":NAME", L"David"},
+            {":AGE", 27},
+            {":ADDRESS", L"Texas"},
+            {":SALARY", 85000.00},
+            {":STILL_EMPLOYED", 1},
         });
         addEmployeeStatement.Execute (initializer_list<Statement::ParameterDescription>{
-            {L":NAME", L"Kim"},
-            {L":AGE", 22},
-            {L":ADDRESS", L"South-Hall"},
-            {L":SALARY", 45000.00},
-            {L":STILL_EMPLOYED", 1},
+            {":NAME", L"Kim"},
+            {":AGE", 22},
+            {":ADDRESS", L"South-Hall"},
+            {":SALARY", 45000.00},
+            {":STILL_EMPLOYED", 1},
         });
         addEmployeeStatement.Execute (initializer_list<Statement::ParameterDescription>{
-            {L":NAME", L"James"},
-            {L":AGE", 24},
-            {L":ADDRESS", L"Houston"},
-            {L":SALARY", 10000.00},
-            {L":STILL_EMPLOYED", 1},
+            {":NAME", L"James"},
+            {":AGE", 24},
+            {":ADDRESS", L"Houston"},
+            {":SALARY", 10000.00},
+            {":STILL_EMPLOYED", 1},
         });
 
         default_random_engine         generator;
         uniform_int_distribution<int> distribution{1, 6};
 
-        Statement getAllActiveEmployees = conn.mkStatement (L"Select ID,NAME from EMPLOYEES where STILL_EMPLOYED=1;");
+        Statement getAllActiveEmployees = conn.mkStatement ("Select ID,NAME from EMPLOYEES where STILL_EMPLOYED=1;"sv);
 
-        Statement fireEmployee = conn.mkStatement (L"Update EMPLOYEES Set STILL_EMPLOYED=0 where ID=:ID;");
+        Statement fireEmployee = conn.mkStatement ("Update EMPLOYEES Set STILL_EMPLOYED=0 where ID=:ID;"sv);
 
         // then keep adding/removing people randomly (but dont really remove just mark no longer employed so we
         // can REF in paycheck table
@@ -147,11 +147,11 @@ namespace {
                         String name = kNames_[namesDistr (generator)];
                         DbgTrace (L"Adding employee %s", name.c_str ());
                         addEmployeeStatement.Execute (initializer_list<Statement::ParameterDescription>{
-                            {L":NAME", name},
-                            {L":AGE", ageDistr (generator)},
-                            {L":ADDRESS", kAddresses[addressesDistr (generator)]},
-                            {L":SALARY", salaryDistr (generator)},
-                            {L":STILL_EMPLOYED", 1},
+                            {":NAME"sv, name},
+                            {":AGE"sv, ageDistr (generator)},
+                            {":ADDRESS"sv, kAddresses[addressesDistr (generator)]},
+                            {":SALARY"sv, salaryDistr (generator)},
+                            {":STILL_EMPLOYED"sv, 1},
                         });
                     } break;
                     case 2: {
@@ -178,8 +178,8 @@ namespace {
 
     void PeriodicallyWriteChecksForEmployeesTable_ (Connection::Ptr conn)
     {
-        Statement addPaycheckStatement  = conn.mkStatement (L"INSERT INTO PAYCHECKS (EMPLOYEEREF,AMOUNT,DATE) values (:EMPLOYEEREF, :AMOUNT, :DATE);");
-        Statement getAllActiveEmployees = conn.mkStatement (L"Select ID,NAME,SALARY from EMPLOYEES where STILL_EMPLOYED=1;");
+        Statement addPaycheckStatement  = conn.mkStatement ("INSERT INTO PAYCHECKS (EMPLOYEEREF,AMOUNT,DATE) values (:EMPLOYEEREF, :AMOUNT, :DATE);"sv);
+        Statement getAllActiveEmployees = conn.mkStatement ("Select ID,NAME,SALARY from EMPLOYEES where STILL_EMPLOYED=1;"sv);
 
         while (true) {
             try {
@@ -189,9 +189,9 @@ namespace {
                     double salary = get<2> (employee).As<double> ();
                     DbgTrace (L"Writing paycheck for employee #%d (%s) amount %f", id, name.c_str (), salary);
                     addPaycheckStatement.Execute (initializer_list<Statement::ParameterDescription>{
-                        {L":EMPLOYEEREF", id},
-                        {L":AMOUNT", salary / 12},
-                        {L":DATE", DateTime::Now ().Format (DateTime::kISO8601Format)},
+                        {":EMPLOYEEREF"sv, id},
+                        {":AMOUNT"sv, salary / 12},
+                        {":DATE"sv, DateTime::Now ().Format (DateTime::kISO8601Format)},
                     });
                 }
             }
@@ -213,7 +213,7 @@ void Stroika::Samples::SQL::ThreadTest (const function<Connection::Ptr ()>& conn
     SQL::Connection::Ptr conn1 = connectionFactory ();
     SQL::Connection::Ptr conn2 = connectionFactory ();
     SetupDB_ (conn1);
-    Thread::CleanupPtr updateEmpDBThread{Thread::CleanupPtr::eAbortBeforeWaiting, Thread::New ([=] () { PeriodicallyUpdateEmployeesTable_ (conn1); }, Thread::eAutoStart, L"Update Employee Table")};
-    Thread::CleanupPtr writeChecks{Thread::CleanupPtr::eAbortBeforeWaiting, Thread::New ([=] () { PeriodicallyWriteChecksForEmployeesTable_ (conn2); }, Thread::eAutoStart, L"Write Checks")};
+    Thread::CleanupPtr updateEmpDBThread{Thread::CleanupPtr::eAbortBeforeWaiting, Thread::New ([=] () { PeriodicallyUpdateEmployeesTable_ (conn1); }, Thread::eAutoStart, "Update Employee Table"sv)};
+    Thread::CleanupPtr writeChecks{Thread::CleanupPtr::eAbortBeforeWaiting, Thread::New ([=] () { PeriodicallyWriteChecksForEmployeesTable_ (conn2); }, Thread::eAutoStart, "Write Checks"sv)};
     Execution::WaitableEvent{}.WaitQuietly (15s);
 }

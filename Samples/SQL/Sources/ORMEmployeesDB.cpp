@@ -50,12 +50,12 @@ namespace {
         ObjectVariantMapper mapper;
         mapper.AddCommonType<optional<int>> ();
         mapper.AddClass<Employee> (initializer_list<ObjectVariantMapper::StructFieldInfo>{
-            {L"id", StructFieldMetaInfo{&Employee::ID}},
-            {L"Name", StructFieldMetaInfo{&Employee::fName}},
-            {L"Age", StructFieldMetaInfo{&Employee::fAge}},
-            {L"Address", StructFieldMetaInfo{&Employee::fAddress}},
-            {L"Salary", StructFieldMetaInfo{&Employee::fSalary}},
-            {L"Still-Employed", StructFieldMetaInfo{&Employee::fStillEmployed}},
+            {"id"sv, StructFieldMetaInfo{&Employee::ID}},
+            {"Name"sv, StructFieldMetaInfo{&Employee::fName}},
+            {"Age"sv, StructFieldMetaInfo{&Employee::fAge}},
+            {"Address"sv, StructFieldMetaInfo{&Employee::fAddress}},
+            {"Salary"sv, StructFieldMetaInfo{&Employee::fSalary}},
+            {"Still-Employed"sv, StructFieldMetaInfo{&Employee::fStillEmployed}},
         });
         return mapper;
     }};
@@ -75,10 +75,10 @@ namespace {
         ObjectVariantMapper mapper;
         mapper.AddCommonType<optional<int>> ();
         mapper.AddClass<Paycheck> (initializer_list<ObjectVariantMapper::StructFieldInfo>{
-            {L"id", StructFieldMetaInfo{&Paycheck::ID}},
-            {L"Employee-Ref", StructFieldMetaInfo{&Paycheck::fEmployeeRef}},
-            {L"Amount", StructFieldMetaInfo{&Paycheck::fAmount}},
-            {L"Date", StructFieldMetaInfo{&Paycheck::fDate}},
+            {"id"sv, StructFieldMetaInfo{&Paycheck::ID}},
+            {"Employee-Ref"sv, StructFieldMetaInfo{&Paycheck::fEmployeeRef}},
+            {"Amount"sv, StructFieldMetaInfo{&Paycheck::fAmount}},
+            {"Date"sv, StructFieldMetaInfo{&Paycheck::fDate}},
         });
         return mapper;
     }};
@@ -100,17 +100,17 @@ namespace {
      * for the EMPLOYEES table.
      */
     const Schema::Table kEmployeesTableSchema_{
-        L"EMPLOYEES",
+        "EMPLOYEES",
         /*
          *  use the same names as the ObjectVariantMapper for simpler mapping, or specify an alternate name
          *  for ID, just as an example.
          */
         // clang-format off
         Collection<Schema::Field>{
-            {.fName = L"ID", .fVariantValueName = L"id"sv, .fRequired = true, .fVariantValueType = VariantValue::eInteger, .fIsKeyField = true, .fDefaultExpression = Schema::Field::kDefaultExpression_AutoIncrement}
-            , {.fName = L"NAME", .fVariantValueName = L"Name"sv, .fVariantValueType = VariantValue::eString}
-            , {.fName = L"AGE", .fVariantValueName = L"Age"sv, .fVariantValueType = VariantValue::eInteger}, {.fName = L"ADDRESS", .fVariantValueName = L"Address"sv, .fVariantValueType = VariantValue::eString}
-            , {.fName = L"SALARY", .fVariantValueName = L"Salary"sv, .fVariantValueType = VariantValue::eFloat}, {.fName = L"STILL_EMPLOYED", .fVariantValueName = L"Still-Employed"sv, .fVariantValueType = VariantValue::eInteger}},
+            {.fName = "ID", .fVariantValueName = "id"sv, .fRequired = true, .fVariantValueType = VariantValue::eInteger, .fIsKeyField = true, .fDefaultExpression = Schema::Field::kDefaultExpression_AutoIncrement}
+            , {.fName = "NAME", .fVariantValueName = "Name"sv, .fVariantValueType = VariantValue::eString}
+            , {.fName = "AGE", .fVariantValueName = "Age"sv, .fVariantValueType = VariantValue::eInteger}, {.fName = "ADDRESS", .fVariantValueName = "Address"sv, .fVariantValueType = VariantValue::eString}
+            , {.fName = "SALARY", .fVariantValueName = "Salary"sv, .fVariantValueType = VariantValue::eFloat}, {.fName = "STILL_EMPLOYED", .fVariantValueName = "Still-Employed"sv, .fVariantValueType = VariantValue::eInteger}},
         Schema::CatchAllField{}};
     // clang-format on
 
@@ -122,10 +122,10 @@ namespace {
         L"PAYCHECKS",
         Collection<Schema::Field>{
             // clang-format off
-            {.fName = L"ID", .fVariantValueName = L"id"sv, .fRequired = true, .fVariantValueType = VariantValue::eInteger, .fIsKeyField = true, .fDefaultExpression = Schema::Field::kDefaultExpression_AutoIncrement}
-            , {.fName = L"EMPLOYEEREF", .fVariantValueName = L"Employee-Ref"sv, .fRequired = true, .fVariantValueType = VariantValue::eInteger}
-            , {.fName = L"AMOUNT", .fVariantValueName = L"Amount"sv, .fVariantValueType = VariantValue::eFloat}
-            , {.fName = L"DATE", .fVariantValueName = L"Date"sv, .fVariantValueType = VariantValue::eDate}}};
+            {.fName = "ID", .fVariantValueName = "id"sv, .fRequired = true, .fVariantValueType = VariantValue::eInteger, .fIsKeyField = true, .fDefaultExpression = Schema::Field::kDefaultExpression_AutoIncrement}
+            , {.fName = "EMPLOYEEREF", .fVariantValueName = "Employee-Ref"sv, .fRequired = true, .fVariantValueType = VariantValue::eInteger}
+            , {.fName = "AMOUNT", .fVariantValueName = "Amount"sv, .fVariantValueType = VariantValue::eFloat}
+            , {.fName = "DATE", .fVariantValueName = "Date"sv, .fVariantValueType = VariantValue::eDate}}};
     // clang-format on
 
     /*
@@ -138,13 +138,13 @@ namespace {
         auto employeeTableConnection = make_unique<SQL::ORM::TableConnection<Employee>> (conn, kEmployeesTableSchema_, kDBObjectMapper_);
 
         // Add Initial Employees
-        employeeTableConnection->AddNew (Employee{.fName = L"Paul", .fAge = 32, .fAddress = L"California", .fSalary = 20000.00, .fStillEmployed = true});
-        employeeTableConnection->AddNew (Employee{.fName = L"Allen", .fAge = 25, .fAddress = L"Texas", .fSalary = 15000.00, .fStillEmployed = true});
-        employeeTableConnection->AddNew (Employee{.fName = L"Teddy", .fAge = 23, .fAddress = L"Norway", .fSalary = 20000.00, .fStillEmployed = true});
-        employeeTableConnection->AddNew (Employee{.fName = L"Mark", .fAge = 25, .fAddress = L"Rich-Mond", .fSalary = 65000.00, .fStillEmployed = true});
-        employeeTableConnection->AddNew (Employee{.fName = L"David", .fAge = 27, .fAddress = L"Texas", .fSalary = 85000.00, .fStillEmployed = true});
-        employeeTableConnection->AddNew (Employee{.fName = L"Kim", .fAge = 22, .fAddress = L"South-Hall", .fSalary = 45000.00, .fStillEmployed = true});
-        employeeTableConnection->AddNew (Employee{.fName = L"James", .fAge = 24, .fAddress = L"Houston", .fSalary = 10000.00, .fStillEmployed = true});
+        employeeTableConnection->AddNew (Employee{.fName = "Paul", .fAge = 32, .fAddress = "California", .fSalary = 20000.00, .fStillEmployed = true});
+        employeeTableConnection->AddNew (Employee{.fName = "Allen", .fAge = 25, .fAddress = "Texas", .fSalary = 15000.00, .fStillEmployed = true});
+        employeeTableConnection->AddNew (Employee{.fName = "Teddy", .fAge = 23, .fAddress = "Norway", .fSalary = 20000.00, .fStillEmployed = true});
+        employeeTableConnection->AddNew (Employee{.fName = "Mark", .fAge = 25, .fAddress = "Rich-Mond", .fSalary = 65000.00, .fStillEmployed = true});
+        employeeTableConnection->AddNew (Employee{.fName = "David", .fAge = 27, .fAddress = "Texas", .fSalary = 85000.00, .fStillEmployed = true});
+        employeeTableConnection->AddNew (Employee{.fName = "Kim", .fAge = 22, .fAddress = "South-Hall", .fSalary = 45000.00, .fStillEmployed = true});
+        employeeTableConnection->AddNew (Employee{.fName = "James", .fAge = 24, .fAddress = "Houston", .fSalary = 10000.00, .fStillEmployed = true});
 
         default_random_engine         generator;
         uniform_int_distribution<int> distribution{1, 6};
@@ -152,10 +152,10 @@ namespace {
         // then keep adding/removing people randomly (but dont really remove just mark no longer employed so we
         // can REF in paycheck table
         while (true) {
-            static const Sequence<String>    kNames_{L"Joe", L"Phred", L"Barny", L"Sue", L"Anne"};
+            static const Sequence<String>    kNames_{"Joe", "Phred", "Barny", "Sue", "Anne"};
             uniform_int_distribution<int>    namesDistr{0, static_cast<int> (kNames_.size () - 1)};
             uniform_int_distribution<int>    ageDistr{25, 50};
-            static const Sequence<String>    kAddresses{L"Houston", L"Pittsburg", L"New York", L"Paris", L"California"};
+            static const Sequence<String>    kAddresses{"Houston", "Pittsburg", "New York", "Paris", "California"};
             uniform_int_distribution<int>    addressesDistr{0, static_cast<int> (kAddresses.size () - 1)};
             uniform_real_distribution<float> salaryDistr{10000.00, 50000.00};
 
@@ -233,7 +233,7 @@ void Stroika::Samples::SQL::ORMEmployeesDB (const std::function<Connection::Ptr 
      *  Create threads for each of our activities.
      *  When the waitable even times out, the threads will automatically be 'canceled' as they go out of scope.
      */
-    Thread::CleanupPtr updateEmpDBThread{Thread::CleanupPtr::eAbortBeforeWaiting, Thread::New ([=] () { PeriodicallyUpdateEmployeesTable_ (conn1); }, Thread::eAutoStart, L"Update Employee Table")};
-    Thread::CleanupPtr writeChecks{Thread::CleanupPtr::eAbortBeforeWaiting, Thread::New ([=] () { PeriodicallyWriteChecksForEmployeesTable_ (conn2); }, Thread::eAutoStart, L"Write Checks")};
+    Thread::CleanupPtr updateEmpDBThread{Thread::CleanupPtr::eAbortBeforeWaiting, Thread::New ([=] () { PeriodicallyUpdateEmployeesTable_ (conn1); }, Thread::eAutoStart, "Update Employee Table"sv)};
+    Thread::CleanupPtr writeChecks{Thread::CleanupPtr::eAbortBeforeWaiting, Thread::New ([=] () { PeriodicallyWriteChecksForEmployeesTable_ (conn2); }, Thread::eAutoStart, "Write Checks"sv)};
     Execution::WaitableEvent{}.WaitQuietly (15s);
 }

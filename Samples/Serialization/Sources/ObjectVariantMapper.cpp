@@ -90,11 +90,11 @@ namespace {
             Characters::String ToString () const
             {
                 StringBuilder sb;
-                sb += L"{";
-                sb += L" Enabled: " + Characters::ToString (fEnabled) + L", ";
-                sb += L" Last-Synchronized-At: " + Characters::ToString (fLastSynchronizedAt) + L", ";
-                sb += L" This-PHRs-ID-To-Shared-Contact-ID: " + Characters::ToString (fThisPHRsIDToSharedContactID) + L", ";
-                sb += L"}";
+                sb += "{";
+                sb += " Enabled: " + Characters::ToString (fEnabled) + ", ";
+                sb += " Last-Synchronized-At: " + Characters::ToString (fLastSynchronizedAt) + ", ";
+                sb += " This-PHRs-ID-To-Shared-Contact-ID: " + Characters::ToString (fThisPHRsIDToSharedContactID) + ", ";
+                sb += "}";
                 return sb.str ();
             }
         };
@@ -106,9 +106,9 @@ namespace {
         // The rest must be explicitly added to the registry before use.
 
         mapper.AddClass<SharedContactsConfig_> (initializer_list<ObjectVariantMapper::StructFieldInfo>{
-            {L"Enabled", StructFieldMetaInfo{&SharedContactsConfig_::fEnabled}},
-            {L"Last-Synchronized-At", StructFieldMetaInfo{&SharedContactsConfig_::fLastSynchronizedAt}},
-            {L"This-HR-ContactID-To-SharedContactID-Map", StructFieldMetaInfo{&SharedContactsConfig_::fThisPHRsIDToSharedContactID}},
+            {"Enabled"sv, StructFieldMetaInfo{&SharedContactsConfig_::fEnabled}},
+            {"Last-Synchronized-At"sv, StructFieldMetaInfo{&SharedContactsConfig_::fLastSynchronizedAt}},
+            {"This-HR-ContactID-To-SharedContactID-Map"sv, StructFieldMetaInfo{&SharedContactsConfig_::fThisPHRsIDToSharedContactID}},
         });
 
         // fill in a sample object to write
@@ -116,8 +116,8 @@ namespace {
         {
             bool newEnabled = true;
             tmp.fEnabled    = newEnabled;
-            tmp.fThisPHRsIDToSharedContactID.Add (L"A", L"B");
-            tmp.fLastSynchronizedAt = DateTime{1998y / Time::April / 11d, Time::TimeOfDay::Parse (L"3pm", locale::classic ())};
+            tmp.fThisPHRsIDToSharedContactID.Add ("A", "B");
+            tmp.fLastSynchronizedAt = DateTime{1998y / Time::April / 11d, Time::TimeOfDay::Parse ("3pm", locale::classic ())};
         }
 
         /// Map that object to a VariantValue
@@ -170,7 +170,7 @@ namespace {
 
         // Add the types to the mapper, which it will need
         mapper.AddClass<MyType2Serialize1_> (initializer_list<ObjectVariantMapper::StructFieldInfo>{
-            {L"Enabled", StructFieldMetaInfo{&MyType2Serialize1_::fEnabled}},
+            {"Enabled"sv, StructFieldMetaInfo{&MyType2Serialize1_::fEnabled}},
         });
 
         auto trySerializing = [] (const ObjectVariantMapper& mapper, auto obj) {
@@ -201,8 +201,8 @@ namespace {
 
         // Now a fancier mapper
         mapper.AddClass<MyType2Serialize1_> (initializer_list<ObjectVariantMapper::StructFieldInfo>{
-            {L"Enabled", StructFieldMetaInfo{&MyType2Serialize1_::fEnabled}},
-            {L"RandomValue", myReadOnlyPropertyTypeMapper},
+            {"Enabled"sv, StructFieldMetaInfo{&MyType2Serialize1_::fEnabled}},
+            {"RandomValue"sv, myReadOnlyPropertyTypeMapper},
         });
         trySerializing (mapper, tmp);
     }

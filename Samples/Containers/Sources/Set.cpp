@@ -61,10 +61,10 @@ namespace {
     {
         {
             using Characters::String;
-            SortedSet<String> tmp{String::LessComparer{Characters::CompareOptions::eCaseInsensitive}, {L"a", L"b", L"A"}};
+            SortedSet<String> tmp{String::LessComparer{Characters::CompareOptions::eCaseInsensitive}, {"a", "b", "A"}};
             Assert (tmp.size () == 2);
-            Assert (tmp.Contains (L"A"));
-            Assert (tmp.Contains (L"B"));
+            Assert (tmp.Contains ("A"));
+            Assert (tmp.Contains ("B"));
         }
     }
 }

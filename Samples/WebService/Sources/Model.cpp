@@ -74,10 +74,10 @@ const ObjectVariantMapper StroikaSample::WebServices::Model::kMapper = [] () {
                     static_assert (is_base_of_v<String, decltype (remainingNumber2Parse)>);
                     remainingNumber2Parse = "1i"_k + remainingNumber2Parse.Skip (1);
                 }
-                else if (remainingNumber2Parse.StartsWith (L"+i"_k)) {
+                else if (remainingNumber2Parse.StartsWith ("+i"_k)) {
                     remainingNumber2Parse = "+1i"_k + remainingNumber2Parse.Skip (2);
                 }
-                else if (remainingNumber2Parse.StartsWith (L"-i"_k)) {
+                else if (remainingNumber2Parse.StartsWith ("-i"_k)) {
                     remainingNumber2Parse = "-1i"_k + remainingNumber2Parse.Skip (2);
                 }
                 Number::value_type d = Characters::FloatConversion::ToFloat<Number::value_type> (remainingNumber2Parse, &remainingNumber2Parse);

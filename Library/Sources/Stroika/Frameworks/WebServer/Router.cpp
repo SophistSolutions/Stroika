@@ -39,7 +39,7 @@ namespace {
             return url.GetAbsPath<String> ().SubString (1); // According to https://tools.ietf.org/html/rfc2616#section-5.1.2 - the URI must be abs_path
         }
         catch (...) {
-            Execution::Throw (ClientErrorException{HTTP::StatusCodes::kBadRequest, L"request URI requires an absolute path"sv});
+            Execution::Throw (ClientErrorException{HTTP::StatusCodes::kBadRequest, "request URI requires an absolute path"sv});
         }
     }
 }
@@ -94,7 +94,7 @@ struct Router::Rep_ : Interceptor::_IRep {
     Rep_ (const Sequence<Route>& routes, const CORSOptions& filledInCORSOptions)
         : fAllowedOrigins_{MapStartToNullOpt_ (filledInCORSOptions.fAllowedOrigins)}
         , fAllowedHeaders_{MapStartToNullOpt_ (filledInCORSOptions.fAllowedHeaders)}
-        , fAccessControlAllowCredentialsValue_{*filledInCORSOptions.fAllowCredentials ? L"true"sv : L"false"sv}
+        , fAccessControlAllowCredentialsValue_{*filledInCORSOptions.fAllowCredentials ? "true"sv : "false"sv}
         , fAccessControlMaxAgeValue_{Characters::Format (L"%d", *filledInCORSOptions.fAccessControlMaxAge)}
         , fRoutes_{routes}
     {

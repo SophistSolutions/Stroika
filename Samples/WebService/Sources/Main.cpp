@@ -40,7 +40,7 @@ int main (int argc, const char* argv[])
 
     Sequence<String> args = Execution::ParseCommandLine (argc, argv);
     for (auto argi = args.begin (); argi != args.end (); ++argi) {
-        if (Execution::MatchesCommandLineArgument (*argi, L"port")) {
+        if (Execution::MatchesCommandLineArgument (*argi, "port"sv)) {
             ++argi;
             if (argi != args.end ()) {
                 portNumber = Characters::String2Int<uint16_t> (*argi);
@@ -50,7 +50,7 @@ int main (int argc, const char* argv[])
                 return EXIT_FAILURE;
             }
         }
-        else if (Execution::MatchesCommandLineArgument (*argi, L"quit-after")) {
+        else if (Execution::MatchesCommandLineArgument (*argi, "quit-after"sv)) {
             ++argi;
             if (argi != args.end ()) {
                 quitAfter = Characters::FloatConversion::ToFloat<Time::DurationSecondsType> (*argi);

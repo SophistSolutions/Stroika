@@ -1221,11 +1221,11 @@ namespace {
     struct _Context : ModuleCommonContext_ {
 #if qUseWMICollectionSupport_
         WMICollector fProcessWMICollector_{"Process"sv, {WMICollector::kWildcardInstance}, { kProcessID_,
-                                                                                              kThreadCount_,
-                                                                                              kIOReadBytesPerSecond_,
-                                                                                              kIOWriteBytesPerSecond_,
-                                                                                              kPercentProcessorTime_,
-                                                                                              kElapsedTime_ }};
+                                                                                             kThreadCount_,
+                                                                                             kIOReadBytesPerSecond_,
+                                                                                             kIOWriteBytesPerSecond_,
+                                                                                             kPercentProcessorTime_,
+                                                                                             kElapsedTime_ }};
 #endif
         Mapping<pid_t, PerfStats_> fMap;
     };

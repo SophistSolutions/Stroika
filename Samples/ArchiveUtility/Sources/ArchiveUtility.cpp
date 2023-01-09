@@ -71,23 +71,23 @@ namespace {
             if (argi == args.begin ()) {
                 continue; // skip argv[0] - command name
             }
-            if (Execution::MatchesCommandLineArgument (*argi, L"h") or Execution::MatchesCommandLineArgument (*argi, L"help")) {
+            if (Execution::MatchesCommandLineArgument (*argi, "h"sv) or Execution::MatchesCommandLineArgument (*argi, "help"sv)) {
                 Usage_ ();
                 return optional<Options_>{};
             }
-            else if (Execution::MatchesCommandLineArgument (*argi, L"no-fail-on-missing-library")) {
+            else if (Execution::MatchesCommandLineArgument (*argi, "no-fail-on-missing-library")) {
                 noFailOnMissingLibrary = true;
             }
-            else if (Execution::MatchesCommandLineArgument (*argi, L"list")) {
+            else if (Execution::MatchesCommandLineArgument (*argi, "list")) {
                 operation = Options_::Operation::eList;
             }
-            else if (Execution::MatchesCommandLineArgument (*argi, L"create")) {
+            else if (Execution::MatchesCommandLineArgument (*argi, "create")) {
                 operation = Options_::Operation::eCreate;
             }
-            else if (Execution::MatchesCommandLineArgument (*argi, L"extract")) {
+            else if (Execution::MatchesCommandLineArgument (*argi, "extract")) {
                 operation = Options_::Operation::eExtract;
             }
-            else if (Execution::MatchesCommandLineArgument (*argi, L"update")) {
+            else if (Execution::MatchesCommandLineArgument (*argi, "update")) {
                 operation = Options_::Operation::eUpdate;
             }
             else if (not archiveName.has_value ()) {
@@ -118,16 +118,16 @@ namespace {
     {
 // @todo - must support other formats, have a registry, and autodetect
 #if qHasFeature_LZMA
-        if (IO::FileSystem::FromPath (archiveName).EndsWith (L".7z", Characters::CompareOptions::eCaseInsensitive)) {
+        if (IO::FileSystem::FromPath (archiveName).EndsWith (".7z"sv, Characters::CompareOptions::eCaseInsensitive)) {
             return move (Archive::_7z::Reader{IO::FileSystem::FileInputStream::New (archiveName)});
         }
 #endif
 #if qHasFeature_ZLib
-        if (IO::FileSystem::FromPath (archiveName).EndsWith (L".zip", Characters::CompareOptions::eCaseInsensitive)) {
+        if (IO::FileSystem::FromPath (archiveName).EndsWith (".zip"sv, Characters::CompareOptions::eCaseInsensitive)) {
             return move (Archive::Zip::Reader{IO::FileSystem::FileInputStream::New (archiveName)});
         }
 #endif
-        Execution::Throw (Execution::Exception{L"Unrecognized format"sv});
+        Execution::Throw (Execution::Exception{"Unrecognized format"sv});
     }
 }
 
@@ -166,7 +166,7 @@ int main (int argc, const char* argv[])
                     ListArchive_ (o->fArchiveFileName);
                     break;
                 case Options_::Operation::eExtract:
-                    ExtractArchive_ (o->fArchiveFileName, o->fOutputDirectory.value_or (L"."));
+                    ExtractArchive_ (o->fArchiveFileName, o->fOutputDirectory.value_or ("."sv));
                     break;
                 default:
                     cerr << "that option NYI" << endl;
@@ -178,7 +178,7 @@ int main (int argc, const char* argv[])
             cerr << "Exception: " << exceptMsg.AsNarrowSDKString () << " - terminating..." << endl;
             if (o->fNoFailOnMissingLibrary.value_or (false)) {
 #if !qHasFeature_LZMA || !qHasFeature_ZLib
-                if (exceptMsg.Contains (L"Unrecognized format"sv)) {
+                if (exceptMsg.Contains ("Unrecognized format"sv)) {
                     return EXIT_SUCCESS;
                 }
 #endif

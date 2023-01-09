@@ -62,10 +62,10 @@ namespace {
         {
             using Characters::String;
             Collection<String> fruits;
-            fruits += L"apple";
-            fruits += L"bananas";
-            fruits += L"cherries";
-            fruits += L"APPLE";
+            fruits += "apple";
+            fruits += "bananas";
+            fruits += "cherries";
+            fruits += "APPLE";
             // Print (to debugger/tracelog) the fruits - but now they could come out in any order
             DbgTrace (L"fruits=%s", Characters::ToString (fruits).c_str ());
             Assert (fruits.size () == 4); // they are all there
@@ -76,13 +76,13 @@ namespace {
             DbgTrace (L"sorted fruits=%s", Characters::ToString (fruits).c_str ());
             Assert (fruits.size () == 4); // only one apple or the other (case squished)
             // note they must now be in alphabetic order
-            Assert (fruits.SequentialEquals (initializer_list<String>{L"APPLE", L"apple", L"bananas", L"cherries"}));
+            Assert (fruits.SequentialEquals (initializer_list<String>{"APPLE", "apple", "bananas", "cherries"}));
 
             // But, we can do the same thing with a compare function that sorts case insensitively
             fruits = SortedCollection<String>{String::LessComparer{CompareOptions::eCaseInsensitive}, fruits};
             DbgTrace (L"sorted case insensitve fruits=%s", Characters::ToString (fruits).c_str ());
-            Assert (fruits.SequentialEquals (initializer_list<String>{L"apple", L"APPLE", L"bananas", L"cherries"}) or
-                    fruits.SequentialEquals (initializer_list<String>{L"APPLE", L"apple", L"bananas", L"cherries"}));
+            Assert (fruits.SequentialEquals (initializer_list<String>{"apple", "APPLE", "bananas", "cherries"}) or
+                    fruits.SequentialEquals (initializer_list<String>{"APPLE", "apple", "bananas", "cherries"}));
         }
     }
 }
@@ -188,22 +188,22 @@ namespace {
     {
         using Characters::String;
         Collection<String> fruits;
-        fruits += L"apple";
-        fruits += L"APPLE";
-        fruits += L"bananas";
-        fruits += L"cherries";
+        fruits += "apple";
+        fruits += "APPLE";
+        fruits += "bananas";
+        fruits += "cherries";
 
         {
             // Note how Stroika iterators have a type that depends on the type of thing you are iterating over, but
             // UNLIKE STL containers, their type does NOT depend on the type of the underlying container you are iterating over.
             // This is a great simplication of APIs (passing iterators to functions no longer requires templates), but
             // comes at a slight cost (operator++ involves a virtual function call to get the next item).
-            Iterator<String> i = fruits.Find ([] (String i) { return i == L"apple"; });
+            Iterator<String> i = fruits.Find ([] (String i) { return i == "apple"; });
             Assert (i != fruits.end ());
             Assert (fruits.size () == 4);
         }
         for (Iterator<String> i = fruits.begin (); i != fruits.end ();) {
-            if (String::EqualsComparer{CompareOptions::eCaseInsensitive}(*i, L"apple")) {
+            if (String::EqualsComparer{CompareOptions::eCaseInsensitive}(*i, "apple")) {
                 fruits.Remove (i, &i); // 'i' has already been updated to refer to the next element, regardless of how the Collection<> represents its data
                 // If you forget to pass in &i and continue iterating, this is a DETECTED bug (in debug builds)
                 // And stroika will assert out when you next use the iterator (i++).

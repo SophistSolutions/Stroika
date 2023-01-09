@@ -106,10 +106,10 @@ int main (int argc, const char* argv[])
 
     Sequence<String> args = Execution::ParseCommandLine (argc, argv);
     for (auto argi = args.begin (); argi != args.end (); ++argi) {
-        if (Execution::MatchesCommandLineArgument (*argi, L"l")) {
+        if (Execution::MatchesCommandLineArgument (*argi, "l"sv)) {
             listen = true;
         }
-        else if (Execution::MatchesCommandLineArgument (*argi, L"s")) {
+        else if (Execution::MatchesCommandLineArgument (*argi, "s"sv)) {
             ++argi;
             if (argi != args.end ()) {
                 searchFor = *argi;
@@ -119,7 +119,7 @@ int main (int argc, const char* argv[])
                 return EXIT_FAILURE;
             }
         }
-        else if (Execution::MatchesCommandLineArgument (*argi, L"quit-after")) {
+        else if (Execution::MatchesCommandLineArgument (*argi, "quit-after"sv)) {
             ++argi;
             if (argi != args.end ()) {
                 quitAfter = Characters::FloatConversion::ToFloat<Time::DurationSecondsType> (*argi);

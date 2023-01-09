@@ -240,7 +240,7 @@ InternetMediaType Response::AdjustContentTypeForCodePageIfNeeded_ (const Interne
         using AtomType = InternetMediaType::AtomType;
         // Don't override already specifed characterset
         Containers::Mapping<String, String> params = ct.GetParameters ();
-        params.Add (L"charset"sv, Characters::GetCharsetString (fCodePage_), AddReplaceMode::eAddIfMissing);
+        params.Add ("charset"sv, Characters::GetCharsetString (fCodePage_), AddReplaceMode::eAddIfMissing);
         return InternetMediaType{ct.GetType<AtomType> (), ct.GetSubType<AtomType> (), ct.GetSuffix (), params};
     }
     return ct;
@@ -409,13 +409,13 @@ String Response::ToString () const
 {
     AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
     StringBuilder                                  sb = inherited::ToString ().SubString (0, -1); // strip trailing '}'
-    sb += L"Socket: " + Characters::ToString (fSocket_) + L", ";
-    sb += L"InChunkedMode: " + Characters::ToString (fInChunkedModeCache_) + L", ";
-    sb += L"State: " + Characters::ToString (fState_) + L", ";
-    sb += L"CodePage: " + Characters::ToString (fCodePage_) + L", ";
-    sb += L"BodyBytes: " + Characters::ToString (fBodyBytes_) + L", ";
-    sb += L"HeadMode: " + Characters::ToString (fHeadMode_) + L", ";
-    sb += L"ETagDigester: " + String{fETagDigester_ ? L"true" : L"false"} + L", ";
-    sb += L"}";
+    sb += "Socket: " + Characters::ToString (fSocket_) + ", ";
+    sb += "InChunkedMode: " + Characters::ToString (fInChunkedModeCache_) + ", ";
+    sb += "State: " + Characters::ToString (fState_) + ", ";
+    sb += "CodePage: " + Characters::ToString (fCodePage_) + ", ";
+    sb += "BodyBytes: " + Characters::ToString (fBodyBytes_) + ", ";
+    sb += "HeadMode: " + Characters::ToString (fHeadMode_) + ", ";
+    sb += "ETagDigester: " + String{fETagDigester_ ? "true" : "false"} + ", ";
+    sb += "}";
     return sb.str ();
 }

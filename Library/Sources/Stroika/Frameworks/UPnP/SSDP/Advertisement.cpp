@@ -34,16 +34,16 @@ using namespace Stroika::Frameworks::UPnP::SSDP;
 String Advertisement::ToString () const
 {
     Characters::StringBuilder sb;
-    sb += L"{";
+    sb += "{";
     if (fAlive) {
-        sb += L"Alive : " + Characters::ToString (fAlive) + L", ";
+        sb += "Alive : " + Characters::ToString (fAlive) + ", ";
     }
-    sb += L"USN : " + Characters::ToString (fUSN) + L", ";
-    sb += L"Location : " + Characters::ToString (fLocation) + L", ";
-    sb += L"Server : " + Characters::ToString (fServer) + L", ";
-    sb += L"Target : " + Characters::ToString (fTarget) + L", ";
-    sb += L"Raw-Headers : " + Characters::ToString (fRawHeaders) + L", ";
-    sb += L"}";
+    sb += "USN : " + Characters::ToString (fUSN) + ", ";
+    sb += "Location : " + Characters::ToString (fLocation) + ", ";
+    sb += "Server : " + Characters::ToString (fServer) + ", ";
+    sb += "Target : " + Characters::ToString (fTarget) + ", ";
+    sb += "Raw-Headers : " + Characters::ToString (fRawHeaders) + ", ";
+    sb += "}";
     return sb.str ();
 }
 
@@ -53,11 +53,11 @@ ObjectVariantMapper Advertisement::kMapperGetter_ ()
     mapper.AddCommonType<Set<String>> ();
     mapper.AddCommonType<optional<Set<String>>> ();
     mapper.AddClass<Advertisement> (initializer_list<ObjectVariantMapper::StructFieldInfo>{
-        {L"Alive", StructFieldMetaInfo{&Advertisement::fAlive}, ObjectVariantMapper::StructFieldInfo::eOmitNullFields},
-        {L"USN", StructFieldMetaInfo{&Advertisement::fUSN}},
-        {L"Server", StructFieldMetaInfo{&Advertisement::fServer}},
-        {L"Target", StructFieldMetaInfo{&Advertisement::fTarget}},
-        {L"RawHeaders", StructFieldMetaInfo{&Advertisement::fRawHeaders}},
+        {"Alive"sv, StructFieldMetaInfo{&Advertisement::fAlive}, ObjectVariantMapper::StructFieldInfo::eOmitNullFields},
+        {"USN"sv, StructFieldMetaInfo{&Advertisement::fUSN}},
+        {"Server"sv, StructFieldMetaInfo{&Advertisement::fServer}},
+        {"Target"sv, StructFieldMetaInfo{&Advertisement::fTarget}},
+        {"RawHeaders"sv, StructFieldMetaInfo{&Advertisement::fRawHeaders}},
     });
     return mapper;
 };
@@ -69,9 +69,9 @@ ObjectVariantMapper Advertisement::kMapperGetter_ ()
  */
 Memory::BLOB SSDP::Serialize (const String& headLine, SearchOrNotify searchOrNotify, const Advertisement& ad)
 {
-    Require (not headLine.Contains (L"\n"));
-    Require (not headLine.Contains (L"\r"));
-    Require (headLine.StartsWith (L"NOTIFY") or (headLine == L"HTTP/1.1 200 OK"));
+    Require (not headLine.Contains ("\n"));
+    Require (not headLine.Contains ("\r"));
+    Require (headLine.StartsWith ("NOTIFY") or (headLine == "HTTP/1.1 200 OK"));
     Streams::MemoryStream<byte>::Ptr out     = Streams::MemoryStream<byte>::New ();
     Streams::TextWriter::Ptr         textOut = Streams::TextWriter::New (out, Streams::TextWriter::Format::eUTF8WithoutBOM);
 
@@ -82,10 +82,10 @@ Memory::BLOB SSDP::Serialize (const String& headLine, SearchOrNotify searchOrNot
     textOut.Write (Characters::Format (L"Location: %s\r\n", ad.fLocation.As<String> ().As<wstring> ().c_str ()));
     if (ad.fAlive.has_value ()) {
         if (*ad.fAlive) {
-            textOut.Write (Characters::Format (L"NTS: ssdp:alive\r\n"));
+            textOut.Write ("NTS: ssdp:alive\r\n"sv);
         }
         else {
-            textOut.Write (Characters::Format (L"NTS: ssdp:byebye\r\n"));
+            textOut.Write ("NTS: ssdp:byebye\r\n"sv);
         }
     }
     if (not ad.fServer.empty ()) {
@@ -100,7 +100,7 @@ Memory::BLOB SSDP::Serialize (const String& headLine, SearchOrNotify searchOrNot
     textOut.Write (Characters::Format (L"USN: %s\r\n", ad.fUSN.As<wstring> ().c_str ()));
 
     // Terminate list of headers
-    textOut.Write (L"\r\n");
+    textOut.Write ("\r\n"sv);
 
     // need flush API on
 
@@ -138,21 +138,21 @@ void SSDP::DeSerialize (const Memory::BLOB& b, String* headLine, Advertisement* 
             advertisement->fRawHeaders.Add (label, value);
         }
         constexpr auto kLabelComparer_ = String::ThreeWayComparer{Characters::CompareOptions::eCaseInsensitive};
-        if (kLabelComparer_ (label, L"Location") == 0) {
+        if (kLabelComparer_ (label, "Location"sv) == 0) {
             advertisement->fLocation = IO::Network::URI{value};
         }
-        else if (kLabelComparer_ (label, L"NT") == 0) {
+        else if (kLabelComparer_ (label,L"NT"sv) == 0) {
             advertisement->fTarget = value;
         }
-        else if (kLabelComparer_ (label, L"USN") == 0) {
+        else if (kLabelComparer_ (label, "USN"sv) == 0) {
             advertisement->fUSN = value;
         }
-        else if (kLabelComparer_ (label, L"Server") == 0) {
+        else if (kLabelComparer_ (label, "Server"sv) == 0) {
             advertisement->fServer = value;
         }
-        else if (kLabelComparer_ (label, L"NTS") == 0) {
+        else if (kLabelComparer_ (label, "NTS"sv) == 0) {
             constexpr auto kValueComparer_ = String::ThreeWayComparer{Characters::CompareOptions::eCaseInsensitive};
-            if (kValueComparer_ (value, L"ssdp:alive"sv) == 0) {
+            if (kValueComparer_ (value, "ssdp:alive"sv) == 0) {
                 advertisement->fAlive = true;
             }
             else if (kValueComparer_ (value, L"ssdp:byebye"sv) == 0) {

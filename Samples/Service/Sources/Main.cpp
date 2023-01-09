@@ -185,15 +185,15 @@ int main (int argc, const char* argv[])
      *  Run request.
      */
     try {
-        if (Execution::MatchesCommandLineArgument (args, L"status")) {
+        if (Execution::MatchesCommandLineArgument (args, "status")) {
             cout << m.GetServiceStatusMessage ().AsUTF8<string> ();
             return EXIT_SUCCESS;
         }
-        else if (Execution::MatchesCommandLineArgument (args, L"help")) {
+        else if (Execution::MatchesCommandLineArgument (args, "help")) {
             ShowUsage_ (m);
             return EXIT_SUCCESS;
         }
-        else if (Execution::MatchesCommandLineArgument (args, L"version")) {
+        else if (Execution::MatchesCommandLineArgument (args, "version")) {
             cout << m.GetServiceDescription ().fPrettyName.AsNarrowSDKString () << ": " << Characters::ToString (AppVersion::kVersion).AsNarrowSDKString () << endl;
             return EXIT_SUCCESS;
         }

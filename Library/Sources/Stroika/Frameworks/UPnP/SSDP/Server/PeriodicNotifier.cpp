@@ -41,7 +41,7 @@ PeriodicNotifier::PeriodicNotifier (const Iterable<Advertisement>& advertisement
     // Construction of notifier will fail if we cannot bind - instead of failing quietly inside the loop
     Collection<pair<ConnectionlessSocket::Ptr, SocketAddress>> sockets;
     {
-        static constexpr Execution::Activity kActivity_{L"SSDP Binding in PeriodNotifier"sv};
+        static constexpr Execution::Activity kActivity_{"SSDP Binding in PeriodNotifier"sv};
         Execution::DeclareActivity           da{&kActivity_};
         if (InternetProtocol::IP::SupportIPV4 (ipVersion)) {
             ConnectionlessSocket::Ptr s = ConnectionlessSocket::New (SocketAddress::INET, Socket::DGRAM);
@@ -68,10 +68,10 @@ PeriodicNotifier::PeriodicNotifier (const Iterable<Advertisement>& advertisement
         for ([[maybe_unused]] const auto& a : advertisements) {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
             String msg;
-            msg += L"alive," sz;
-            msg += L"location=" sz + a.fLocation + L", " sz;
-            msg += L"ST=" sz + a.fST + L", " sz;
-            msg += L"USN=" sz + a.fUSN;
+            msg += "alive,"sz;
+            msg += "location="sz + a.fLocation + ", "sz;
+            msg += "ST="sz + a.fST + ", "sz;
+            msg += "USN="sz + a.fUSN;
             DbgTrace (L"(%s)", msg.c_str ());
 #endif
         }
@@ -79,7 +79,7 @@ PeriodicNotifier::PeriodicNotifier (const Iterable<Advertisement>& advertisement
         try {
             for (auto a : advertisements) {
                 a.fAlive          = true; // periodic notifier must announce alive (we don't support 'going down' yet)
-                Memory::BLOB data = SSDP::Serialize (L"NOTIFY * HTTP/1.1"sv, SearchOrNotify::Notify, a);
+                Memory::BLOB data = SSDP::Serialize ("NOTIFY * HTTP/1.1"sv, SearchOrNotify::Notify, a);
                 for (pair<ConnectionlessSocket::Ptr, SocketAddress> s : sockets) {
                     s.first.SendTo (data.begin (), data.end (), s.second);
                 }

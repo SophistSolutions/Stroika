@@ -45,8 +45,8 @@ namespace Stroika::Frameworks::WebService::Server {
     /**
      */
     struct DocsOptions {
-        String                  fH1Text           = L"Operations";
-        String                  fIntroductoryText = L""; // div section of introductory text about operations
+        String                  fH1Text           = "Operations";
+        String                  fIntroductoryText = ""; // div section of introductory text about operations
         Mapping<String, String> fVariables2Substitute;
         String                  fCSSSection = kDefaultCSSSection;
         static const String     kDefaultCSSSection;

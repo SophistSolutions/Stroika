@@ -74,10 +74,10 @@ String Message::ToString () const
 {
     AssertExternallySynchronizedMutex::ReadContext readLock{fThisAssertExternallySynchronized_};
     StringBuilder                                  sb;
-    sb += L"{";
-    sb += L"PeerAddress: " + Characters::ToString (fPeerAddress_) + L", ";
-    sb += L"Request: " + Characters::ToString (fRequest_) + L", ";
-    sb += L"Response: " + Characters::ToString (fResponse_);
-    sb += L"}";
+    sb += "{";
+    sb += "PeerAddress: " + Characters::ToString (fPeerAddress_) + ", ";
+    sb += "Request: " + Characters::ToString (fRequest_) + ", ";
+    sb += "Response: " + Characters::ToString (fResponse_);
+    sb += "}";
     return sb.str ();
 }

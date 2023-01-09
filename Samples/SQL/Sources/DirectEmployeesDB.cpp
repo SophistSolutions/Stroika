@@ -36,28 +36,28 @@ void Stroika::Samples::SQL::DirectEmployeesDB (const std::function<Connection::P
     ORM::ProvisionForVersion (conn,
                               kCurrentVersion_,
                               initializer_list<ORM::TableProvisioner>{
-                                  {L"DEPARTMENT"sv,
+                                  {"DEPARTMENT"sv,
                                    [] (SQL::Connection::Ptr c, optional<Configuration::Version> v, [[maybe_unused]] Configuration::Version targetDBVersion) -> void {
                                        // for now no upgrade support
                                        if (not v) {
                                            c.Exec (
-                                               L"CREATE TABLE DEPARTMENT(ID INT PRIMARY KEY NOT NULL,"
-                                               L"NAME CHAR (50) NOT NULL"
-                                               L");");
+                                               "CREATE TABLE DEPARTMENT(ID INT PRIMARY KEY NOT NULL,"
+                                               "NAME CHAR (50) NOT NULL"
+                                               ");"sv);
                                        }
                                    }},
-                                  {L"EMPLOYEES"sv,
+                                  {"EMPLOYEES"sv,
                                    [] (Connection::Ptr c, optional<Configuration::Version> v, [[maybe_unused]] Configuration::Version targetDBVersion) -> void {
                                        // for now no upgrade support
                                        if (not v) {
                                            c.Exec (
-                                               L"CREATE TABLE EMPLOYEES("
-                                               L"ID INT PRIMARY KEY     NOT NULL," // See example ThreadTest for simple example using AUTOINCREMENT instead of explicit IDs
-                                               L"NAME           TEXT    NOT NULL,"
-                                               L"AGE            INT     NOT NULL,"
-                                               L"ADDRESS        CHAR(50),"
-                                               L"SALARY         REAL"
-                                               L");");
+                                               "CREATE TABLE EMPLOYEES("
+                                               "ID INT PRIMARY KEY     NOT NULL," // See example ThreadTest for simple example using AUTOINCREMENT instead of explicit IDs
+                                               "NAME           TEXT    NOT NULL,"
+                                               "AGE            INT     NOT NULL,"
+                                               "ADDRESS        CHAR(50),"
+                                               "SALARY         REAL"
+                                               ");"sv);
                                        }
                                    }},
                               });
@@ -77,60 +77,60 @@ void Stroika::Samples::SQL::DirectEmployeesDB (const std::function<Connection::P
      ***** INSERT ROWS ****
      */
     // Use Statement with named parameters (to avoid sql injection and to add clarity)
-    Statement addDepartment = conn.mkStatement (L"INSERT INTO DEPARTMENT (ID, NAME) values (:ID, :NAME);");
+    Statement addDepartment = conn.mkStatement ("INSERT INTO DEPARTMENT (ID, NAME) values (:ID, :NAME);"sv);
     addDepartment.Execute (initializer_list<Statement::ParameterDescription>{
-        {L":ID", 1},
-        {L":NAME", L"Washing machines"},
+        {":ID"sv, 1},
+        {":NAME"sv, L"Washing machines"},
     });
-    Statement addEmployeeStatement = conn.mkStatement (L"INSERT INTO EMPLOYEES (ID,NAME,AGE,ADDRESS,SALARY) values (:ID, :NAME, :AGE, :ADDRESS, :SALARY);");
+    Statement addEmployeeStatement = conn.mkStatement ("INSERT INTO EMPLOYEES (ID,NAME,AGE,ADDRESS,SALARY) values (:ID, :NAME, :AGE, :ADDRESS, :SALARY);"sv);
     addEmployeeStatement.Execute (initializer_list<Statement::ParameterDescription>{
-        {L":ID", 1},
-        {L":NAME", L"Paul"},
-        {L":AGE", 32},
-        {L":ADDRESS", L"California"},
-        {L":SALARY", 20000.00},
-    });
-    addEmployeeStatement.Execute (initializer_list<Statement::ParameterDescription>{
-        {L":ID", 2},
-        {L":NAME", L"Allen"},
-        {L":AGE", 25},
-        {L":ADDRESS", L"Texas"},
-        {L":SALARY", 15000.00},
+        {":ID"sv, 1},
+        {":NAME"sv, L"Paul"},
+        {":AGE"sv, 32},
+        {":ADDRESS"sv, L"California"},
+        {":SALARY"sv, 20000.00},
     });
     addEmployeeStatement.Execute (initializer_list<Statement::ParameterDescription>{
-        {L":ID", 3},
-        {L":NAME", L"Teddy"},
-        {L":AGE", 23},
-        {L":ADDRESS", L"Norway"},
-        {L":SALARY", 20000.00},
+        {":ID"sv, 2},
+        {":NAME"sv, L"Allen"},
+        {":AGE"sv, 25},
+        {":ADDRESS"sv, L"Texas"},
+        {":SALARY"sv, 15000.00},
     });
     addEmployeeStatement.Execute (initializer_list<Statement::ParameterDescription>{
-        {L":ID", 4},
-        {L":NAME", L"Mark"},
-        {L":AGE", 25},
-        {L":ADDRESS", L"Rich-Mond"},
-        {L":SALARY", 65000.00},
+        {":ID", 3},
+        {":NAME", L"Teddy"},
+        {":AGE", 23},
+        {":ADDRESS", L"Norway"},
+        {":SALARY", 20000.00},
     });
     addEmployeeStatement.Execute (initializer_list<Statement::ParameterDescription>{
-        {L":ID", 5},
-        {L":NAME", L"David"},
-        {L":AGE", 27},
-        {L":ADDRESS", L"Texas"},
-        {L":SALARY", 85000.00},
+        {":ID", 4},
+        {":NAME", L"Mark"},
+        {":AGE", 25},
+        {":ADDRESS", L"Rich-Mond"},
+        {":SALARY", 65000.00},
     });
     addEmployeeStatement.Execute (initializer_list<Statement::ParameterDescription>{
-        {L":ID", 6},
-        {L":NAME", L"Kim"},
-        {L":AGE", 22},
-        {L":ADDRESS", L"South-Hall"},
-        {L":SALARY", 45000.00},
+        {":ID", 5},
+        {":NAME", L"David"},
+        {":AGE", 27},
+        {":ADDRESS", L"Texas"},
+        {":SALARY", 85000.00},
     });
     addEmployeeStatement.Execute (initializer_list<Statement::ParameterDescription>{
-        {L":ID", 7},
-        {L":NAME", L"James"},
-        {L":AGE", 24},
-        {L":ADDRESS", L"Houston"},
-        {L":SALARY", 10000.00},
+        {":ID", 6},
+        {":NAME", L"Kim"},
+        {":AGE", 22},
+        {":ADDRESS", L"South-Hall"},
+        {":SALARY", 45000.00},
+    });
+    addEmployeeStatement.Execute (initializer_list<Statement::ParameterDescription>{
+        {":ID", 7},
+        {":NAME", L"James"},
+        {":AGE", 24},
+        {":ADDRESS", L"Houston"},
+        {":SALARY", 10000.00},
     });
     /*
      ***** INSERT ROWS (ERROR CHECKING) ****
@@ -138,22 +138,22 @@ void Stroika::Samples::SQL::DirectEmployeesDB (const std::function<Connection::P
     // This call will generate a REQUIRE assertion error - terminating your program. Don't violate assertions!
     if (false) {
         addEmployeeStatement.Execute (initializer_list<Statement::ParameterDescription>{
-            {L":BAD-ARGUMENT", 7}, // almost as good as static type checking to make sure paramter names match call
-            {L":NAME", L"James"},
-            {L":AGE", 24},
-            {L":ADDRESS", L"Houston"},
-            {L":SALARY", 10000.00},
+            {":BAD-ARGUMENT", 7}, // almost as good as static type checking to make sure paramter names match call
+            {":NAME", L"James"},
+            {":AGE", 24},
+            {":ADDRESS", L"Houston"},
+            {":SALARY", 10000.00},
         });
         AssertNotReached ();
     }
 
     try {
         addEmployeeStatement.Execute (initializer_list<Statement::ParameterDescription>{
-            {L":ID", 7},
-            {L":NAME", L"James"},
-            {L":AGE", 24},
-            {L":ADDRESS", L"Houston"},
-            {L":SALARY", 10000.00},
+            {":ID", 7},
+            {":NAME", L"James"},
+            {":AGE", 24},
+            {":ADDRESS", L"Houston"},
+            {":SALARY", 10000.00},
         });
         AssertNotReached (); // RE-USED ID!!! - only detectable at runtime - so exception thrown
     }
@@ -164,14 +164,14 @@ void Stroika::Samples::SQL::DirectEmployeesDB (const std::function<Connection::P
     /*
      ***** SIMPLE QUERIES ****
      */
-    Statement   getAllNames = conn.mkStatement (L"Select NAME from EMPLOYEES;");
+    Statement   getAllNames = conn.mkStatement ("Select NAME from EMPLOYEES;");
     Set<String> allNames    = getAllNames.GetAllRows (0).Map<String> ([] (VariantValue v) { return v.As<String> (); }).As<Set<String>> ();
-    Assert ((allNames == Set<String>{L"Paul", L"Allen", L"Kim", L"David", L"Mark", L"James", L"Teddy"}));
+    Assert ((allNames == Set<String>{"Paul", "Allen", "Kim", "David", "Mark", "James", "Teddy"}));
 
     // Either rollup using SQL, or using C++ functional (Iterable) wrappers.
-    Statement               sumAllSalarys               = conn.mkStatement (L"select SUM(SALARY) from EMPLOYEES;");
+    Statement               sumAllSalarys               = conn.mkStatement ("select SUM(SALARY) from EMPLOYEES;");
     [[maybe_unused]] double sumSalaryUsingSQL           = sumAllSalarys.GetAllRows (0)[0].As<double> ();
-    Statement               getAllSalarys               = conn.mkStatement (L"select SALARY from EMPLOYEES;");
+    Statement               getAllSalarys               = conn.mkStatement ("select SALARY from EMPLOYEES;");
     [[maybe_unused]] double sumSalaryUsingIterableApply = getAllSalarys.GetAllRows (0).Map<double> ([] (VariantValue v) { return v.As<double> (); }).SumValue ();
     Assert (Math::NearlyEquals (sumSalaryUsingSQL, sumSalaryUsingIterableApply));
 }

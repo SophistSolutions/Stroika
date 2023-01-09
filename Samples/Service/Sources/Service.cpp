@@ -32,7 +32,7 @@ using Execution::Logger;
 #endif
 
 namespace {
-    const Main::ServiceDescription kServiceDescription_{L"Stroika-Sample-Service"_k, L"Stroika Sample Service"_k};
+    const Main::ServiceDescription kServiceDescription_{"Stroika-Sample-Service"_k, "Stroika Sample Service"_k};
 }
 
 namespace {

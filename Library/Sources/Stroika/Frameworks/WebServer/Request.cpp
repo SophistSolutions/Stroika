@@ -114,6 +114,6 @@ String Request::ToString () const
     AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
     StringBuilder                                  sb = inherited::ToString ().SubString (0, -1); // strip trialing '{'
     // @todo add stuff about body
-    sb += L"}";
+    sb += "}";
     return sb.str ();
 }

@@ -146,10 +146,10 @@ void Stroika::Samples::SQL::ComputerNetworksModel (const std::function<Connectio
     {
         auto devices = getAllDevices ();
         if (devices.size () != 1) {
-            Execution::Throw (Execution::RuntimeErrorException{L"we should have the ones we just added"});
+            Execution::Throw (Execution::RuntimeErrorException{"we should have the ones we just added"});
         }
         if (not devices.Contains (kDevice1_)) {
-            Execution::Throw (Execution::RuntimeErrorException{L"we should have kDevice1_"});
+            Execution::Throw (Execution::RuntimeErrorException{"we should have kDevice1_"});
         }
     }
 }

@@ -24,6 +24,6 @@ String UPnP::SSDP::MakeServerHeaderValue (const String& useProductTokenWithVersi
     Require (not useProductTokenWithVersion.empty ());
     Require (not usePlatformTokenAndVersion.empty ());
     Require (not useUPNPVersion.empty ());
-    static const String kSpace_{L" "sv};
+    static const String kSpace_{" "sv};
     return usePlatformTokenAndVersion + kSpace_ + useUPNPVersion + kSpace_ + useProductTokenWithVersion;
 }

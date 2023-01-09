@@ -52,7 +52,7 @@ int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
         // the ODBC layer NYI (as of 2021-08-08) so commented out...
         // @todo change this sample so command-line arg grabs dsn from command-line
         auto connectionFactory = [=] () {
-            return ODBC::Connection::New (ODBC::Options{L"some-dsn"});
+            return ODBC::Connection::New (ODBC::Options{"some-dsn"});
         };
         // NYI - DirectEmployeesDB (connectionFactory);
     }

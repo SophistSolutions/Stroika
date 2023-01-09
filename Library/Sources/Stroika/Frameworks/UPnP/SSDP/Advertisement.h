@@ -62,11 +62,11 @@ namespace Stroika::Frameworks::UPnP::SSDP {
 
     /**
      */
-    static const String kTarget_UPNPRootDevice{L"upnp:rootdevice"sv};
+    static const String kTarget_UPNPRootDevice{"upnp:rootdevice"sv};
 
     /**
      */
-    static const String kTarget_SSDPAll{L"ssdp:all"sv};
+    static const String kTarget_SSDPAll{"ssdp:all"sv};
 
     /**
      */

@@ -106,7 +106,7 @@ namespace {
             if (fURLPrefix2Strip) {
                 if (urlHostRelPath.StartsWith (*fURLPrefix2Strip)) {
                     urlHostRelPath = urlHostRelPath.SubString (fURLPrefix2Strip->length ());
-                    if (urlHostRelPath.StartsWith (L"/"sv)) {
+                    if (urlHostRelPath.StartsWith ("/"sv)) {
                         urlHostRelPath = urlHostRelPath.SubString (1);
                     }
                 }

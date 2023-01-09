@@ -90,25 +90,25 @@ namespace Stroika::Frameworks::UPnP::SSDP::Client {
          *  ssdp:all: Search for all devices and services.
          *  \par Example Usage
          *      \code
-         *          Start (L"ssdp:all");                                                // Search for all devices and services
+         *          Start ("ssdp:all");                                                 // Search for all devices and services
          *          Start (kSSDPAny);                                                   // ...
          *      \endcode
          *
          *  \par Example Usage
          *      \code
-         *          Start (L"upnp:rootdevice");                                         // Search for all root devices
+         *          Start ("upnp:rootdevice");                                          // Search for all root devices
          *          Start (kRootDevice);                                                // ...
          *      \endcode
          *
          *  \par Example Usage
          *      \code
-         *          Start (L"urn:schemas-wifialliance-org:service:WFAWLANConfig:1");    // Search for all devices of this type
+         *          Start ("urn:schemas-wifialliance-org:service:WFAWLANConfig:1");    // Search for all devices of this type
          *      \endcode
          *
          *
          *  \par Example Usage
          *      \code
-         *          Start (L"uuid:9cd09dd4-fd8d-5737-abc3-2faa8c11cbdb");               // Search specific device
+         *          Start ("uuid:9cd09dd4-fd8d-5737-abc3-2faa8c11cbdb");               // Search specific device
          *      \endcode
          *
          */

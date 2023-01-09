@@ -79,7 +79,7 @@ void WebService::Server::WriteDocsPage (Response* response, const Sequence<WebSe
     auto substVars = [=] (const String& origStr) {
         String str = origStr;
         for (const auto& i : docsOptions.fVariables2Substitute) {
-            str = str.ReplaceAll (L"{{" + i.fKey + L"}}", i.fValue);
+            str = str.ReplaceAll ("{{" + i.fKey + "}}", i.fValue);
         }
         return str;
     };

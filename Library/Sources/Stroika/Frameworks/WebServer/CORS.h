@@ -46,7 +46,7 @@ namespace Stroika::Frameworks::WebServer {
         static constexpr unsigned int kAccessControlMaxAge_Default{24 * 60 * 60};
 
         /**
-         *  This can be {L"*"} meaning any origin (default). 
+         *  This can be {"*"} meaning any origin (default). 
          *  Or it can be a list of values present in HTTP Origin Headers (typically just hostname but can be Host:port)
          */
         optional<Set<String>> fAllowedOrigins;

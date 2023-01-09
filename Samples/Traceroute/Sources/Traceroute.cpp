@@ -50,48 +50,48 @@ int main (int argc, const char* argv[])
     {
         Sequence<String> args = Execution::ParseCommandLine (argc, argv);
         for (auto argi = args.begin (); argi != args.end (); ++argi) {
-            if (Execution::MatchesCommandLineArgument (*argi, L"ping")) {
+            if (Execution::MatchesCommandLineArgument (*argi, "ping"sv)) {
                 majorOp = MajorOp::ePing;
             }
-            else if (Execution::MatchesCommandLineArgument (*argi, "traceroute")) {
+            else if (Execution::MatchesCommandLineArgument (*argi, "traceroute"sv)) {
                 majorOp = MajorOp::eTraceroute;
             }
-            else if (Execution::MatchesCommandLineArgument (*argi, "packetSize")) {
+            else if (Execution::MatchesCommandLineArgument (*argi, "packetSize"sv)) {
                 ++argi;
                 if (argi != args.end ()) {
                     packetSize = Characters::String2Int<unsigned int> (*argi);
                 }
                 else {
-                    usage ("Expected arg to -packetSize");
+                    usage ("Expected arg to -packetSize"sv);
                     return EXIT_FAILURE;
                 }
             }
-            else if (Execution::MatchesCommandLineArgument (*argi, "maxHops")) {
+            else if (Execution::MatchesCommandLineArgument (*argi, "maxHops"sv)) {
                 ++argi;
                 if (argi != args.end ()) {
                     maxHops = Characters::String2Int<unsigned int> (*argi);
                 }
                 else {
-                    usage ("Expected arg to -maxHops");
+                    usage ("Expected arg to -maxHops"sv);
                     return EXIT_FAILURE;
                 }
             }
-            else if (Execution::MatchesCommandLineArgument (*argi, "sampleCount")) {
+            else if (Execution::MatchesCommandLineArgument (*argi, "sampleCount"sv)) {
                 ++argi;
                 if (argi != args.end ()) {
                     sampleCount = Characters::String2Int<unsigned int> (*argi);
                 }
                 else {
-                    usage ("Expected arg to -sampleCount");
+                    usage ("Expected arg to -sampleCount"sv);
                     return EXIT_FAILURE;
                 }
             }
-            else if (Execution::MatchesCommandLineArgument (*argi, "help") or Execution::MatchesCommandLineArgument (*argi, L"h")) {
+            else if (Execution::MatchesCommandLineArgument (*argi, "help"sv) or Execution::MatchesCommandLineArgument (*argi, "h"sv)) {
                 usage ();
                 return EXIT_SUCCESS;
             }
-            else if (argi->StartsWith (L"-")) {
-                usage ("unrecognized option: " + *argi);
+            else if (argi->StartsWith ("-"sv)) {
+                usage ("unrecognized option: "sv + *argi);
                 return EXIT_FAILURE;
             }
             else {
@@ -133,7 +133,7 @@ int main (int argc, const char* argv[])
                     String hopName = [=] () {
                         String addrStr = h.fAddress.As<String> ();
                         if (auto rdnsName = DNS::kThe.QuietReverseLookup (h.fAddress)) {
-                            return *rdnsName + L" [" + addrStr + L"]";
+                            return *rdnsName + " ["sv + addrStr + "]"sv;
                         }
                         else {
                             return addrStr;

@@ -72,11 +72,11 @@ public:
 
     Rep_ (uint16_t portNumber, const shared_ptr<IWSAPI>& wsImpl)
         : kRoutes_{
-              Route{L""_RegEx, DefaultPage_},
+              Route{""_RegEx, DefaultPage_},
 
-              Route{HTTP::MethodsRegEx::kPost, L"SetAppState"_RegEx, SetAppState_},
+              Route{HTTP::MethodsRegEx::kPost, "SetAppState"_RegEx, SetAppState_},
 
-              Route{L"FRED"_RegEx, [] (Request*, Response* response) {
+              Route{"FRED"_RegEx, [] (Request*, Response* response) {
                         response->write (L"FRED");
                         response->contentType = InternetMediaTypes::kText_PLAIN;
                     }},
@@ -85,13 +85,13 @@ public:
                * the 'variable' API demonstrates a typical REST style CRUD usage - where the 'arguments' mainly come from 
                * the URL itself.
                */
-              Route{L"variables(/?)"_RegEx, [this] (Message* m) {
+              Route{"variables(/?)"_RegEx, [this] (Message* m) {
                         WriteResponse (&m->rwResponse (), kVariables_, kMapper.FromObject (fWSImpl_->Variables_GET ()));
                     }},
-              Route{L"variables/(.+)"_RegEx, [this] (Message* m, const String& varName) {
+              Route{"variables/(.+)"_RegEx, [this] (Message* m, const String& varName) {
                         WriteResponse (&m->rwResponse (), kVariables_, kMapper.FromObject (fWSImpl_->Variables_GET (varName)));
                     }},
-              Route{HTTP::MethodsRegEx::kPostOrPut, L"variables/(.+)"_RegEx, [this] (Message* m, const String& varName) {
+              Route{HTTP::MethodsRegEx::kPostOrPut, "variables/(.+)"_RegEx, [this] (Message* m, const String& varName) {
                         optional<Number> number;
                         // demo getting argument from the body
                         if (not number) {
@@ -103,7 +103,7 @@ public:
                         }
                         // demo getting argument from the query argument
                         if (not number) {
-                            static const String                         kValueParamName_ = L"value"sv;
+                            static const String                         kValueParamName_ = "value"sv;
                             Mapping<String, DataExchange::VariantValue> args             = PickoutParamValuesFromURL (&m->request ());
                             number                                                       = Model::kMapper.ToObject<Number> (args.LookupValue (kValueParamName_));
                         }
@@ -123,7 +123,7 @@ public:
                         fWSImpl_->Variables_SET (varName, *number);
                         WriteResponse (&m->rwResponse (), kVariables_);
                     }},
-              Route{HTTP::MethodsRegEx::kDelete, L"variables/(.+)"_RegEx, [this] (Message* m, const String& varName) {
+              Route{HTTP::MethodsRegEx::kDelete, "variables/(.+)"_RegEx, [this] (Message* m, const String& varName) {
                         fWSImpl_->Variables_DELETE (varName);
                         WriteResponse (&m->rwResponse (), kVariables_);
                     }},
@@ -131,11 +131,11 @@ public:
               /*
                *    plus, minus, times, and divide, test-void-return all all demonstrate passing in variables through either the POST body, or query-arguments.
                */
-              Route{HTTP::MethodsRegEx::kPost, L"plus"_RegEx, mkRequestHandler (kPlus_, Model::kMapper, Traversal::Iterable<String>{L"arg1", L"arg2"}, function<Number (Number, Number)>{[this] (Number arg1, Number arg2) { return fWSImpl_->plus (arg1, arg2); }})},
-              Route{HTTP::MethodsRegEx::kPost, L"minus"_RegEx, mkRequestHandler (kMinus, Model::kMapper, Traversal::Iterable<String>{L"arg1", L"arg2"}, function<Number (Number, Number)>{[this] (Number arg1, Number arg2) { return fWSImpl_->minus (arg1, arg2); }})},
-              Route{HTTP::MethodsRegEx::kPost, L"times"_RegEx, mkRequestHandler (kTimes, Model::kMapper, Traversal::Iterable<String>{L"arg1", L"arg2"}, function<Number (Number, Number)>{[this] (Number arg1, Number arg2) { return fWSImpl_->times (arg1, arg2); }})},
-              Route{HTTP::MethodsRegEx::kPost, L"divide"_RegEx, mkRequestHandler (kDivide, Model::kMapper, Traversal::Iterable<String>{L"arg1", L"arg2"}, function<Number (Number, Number)>{[this] (Number arg1, Number arg2) { return fWSImpl_->divide (arg1, arg2); }})},
-              Route{L"test-void-return"_RegEx, mkRequestHandler (WebServiceMethodDescription{}, Model::kMapper, Traversal::Iterable<String>{L"err-if-more-than-10"}, function<void (double)>{[] (double check) {
+              Route{HTTP::MethodsRegEx::kPost, "plus"_RegEx, mkRequestHandler (kPlus_, Model::kMapper, Traversal::Iterable<String>{"arg1", "arg2"}, function<Number (Number, Number)>{[this] (Number arg1, Number arg2) { return fWSImpl_->plus (arg1, arg2); }})},
+              Route{HTTP::MethodsRegEx::kPost, "minus"_RegEx, mkRequestHandler (kMinus, Model::kMapper, Traversal::Iterable<String>{"arg1", "arg2"}, function<Number (Number, Number)>{[this] (Number arg1, Number arg2) { return fWSImpl_->minus (arg1, arg2); }})},
+              Route{HTTP::MethodsRegEx::kPost, "times"_RegEx, mkRequestHandler (kTimes, Model::kMapper, Traversal::Iterable<String>{"arg1", "arg2"}, function<Number (Number, Number)>{[this] (Number arg1, Number arg2) { return fWSImpl_->times (arg1, arg2); }})},
+              Route{HTTP::MethodsRegEx::kPost, "divide"_RegEx, mkRequestHandler (kDivide, Model::kMapper, Traversal::Iterable<String>{"arg1", "arg2"}, function<Number (Number, Number)>{[this] (Number arg1, Number arg2) { return fWSImpl_->divide (arg1, arg2); }})},
+              Route{"test-void-return"_RegEx, mkRequestHandler (WebServiceMethodDescription{}, Model::kMapper, Traversal::Iterable<String>{"err-if-more-than-10"}, function<void (double)>{[] (double check) {
                                     if (check > 10) {
                                         Execution::Throw (Execution::Exception{L"more than 10"sv});
                                     } }})},
@@ -182,54 +182,54 @@ const WebServiceMethodDescription WebServer::Rep_::kVariables_{
     InternetMediaTypes::kJSON,
     {},
     Sequence<String>{
-        L"curl http://localhost:8080/variables -v --output -",
-        L"curl http://localhost:8080/variables/x -v --output -",
-        L"curl  -X POST http://localhost:8080/variables/x -v --output -",
-        L"curl -H \"Content-Type: application/json\" -X POST -d '{\"value\": 3}' http://localhost:8080/variables/x --output -",
-        L"curl -H \"Content-Type: text/plain\" -X POST -d 3 http://localhost:8080/variables/x --output -"},
-    Sequence<String>{L"@todo - this is a rough draft (but functional). It could use alot of cleanup and review to see WHICH way I recommend using, and just provide the recommended ways in samples"},
+        "curl http://localhost:8080/variables -v --output -",
+        "curl http://localhost:8080/variables/x -v --output -",
+        "curl  -X POST http://localhost:8080/variables/x -v --output -",
+        "curl -H \"Content-Type: application/json\" -X POST -d '{\"value\": 3}' http://localhost:8080/variables/x --output -",
+        "curl -H \"Content-Type: text/plain\" -X POST -d 3 http://localhost:8080/variables/x --output -"},
+    Sequence<String>{"@todo - this is a rough draft (but functional). It could use alot of cleanup and review to see WHICH way I recommend using, and just provide the recommended ways in samples"},
 };
 
 const WebServiceMethodDescription WebServer::Rep_::kPlus_{
-    L"plus"_k,
+    "plus"_k,
     Set<String>{HTTP::Methods::kPost},
     InternetMediaTypes::kJSON,
     {},
     Sequence<String>{
-        L"curl -H \"Content-Type: application/json\" -X POST -d '{\"arg1\": 3, \"arg2\": 5 }' http://localhost:8080/plus --output -",
+        "curl -H \"Content-Type: application/json\" -X POST -d '{\"arg1\": 3, \"arg2\": 5 }' http://localhost:8080/plus --output -",
     },
-    Sequence<String>{L"add the two argument numbers"},
+    Sequence<String>{"add the two argument numbers"},
 };
 const WebServiceMethodDescription WebServer::Rep_::kMinus{
-    L"minus"_k,
+    "minus"_k,
     Set<String>{HTTP::Methods::kPost},
     InternetMediaTypes::kJSON,
     {},
     Sequence<String>{
-        L"curl -H \"Content-Type: application/json\" -X POST -d '{\"arg1\": 4.5, \"arg2\": -3.23 }' http://localhost:8080/minus --output -",
+        "curl -H \"Content-Type: application/json\" -X POST -d '{\"arg1\": 4.5, \"arg2\": -3.23 }' http://localhost:8080/minus --output -",
     },
-    Sequence<String>{L"subtract the two argument numbers"},
+    Sequence<String>{"subtract the two argument numbers"},
 };
 const WebServiceMethodDescription WebServer::Rep_::kTimes{
-    L"times"_k,
+    "times"_k,
     Set<String>{HTTP::Methods::kPost},
     InternetMediaTypes::kJSON,
     {},
     Sequence<String>{
-        L"curl -H \"Content-Type: application/json\" -X POST -d '{\"arg1\":\"2 + 4i\", \"arg2\": 3.2 }' http://localhost:8080/times --output -",
-        L"curl -H \"Content-Type: application/json\" -X POST -d '{\"arg1\":\"2 + i\", \"arg2\": \"2 - i\" }' http://localhost:8080/times --output -",
+        "curl -H \"Content-Type: application/json\" -X POST -d '{\"arg1\":\"2 + 4i\", \"arg2\": 3.2 }' http://localhost:8080/times --output -",
+        "curl -H \"Content-Type: application/json\" -X POST -d '{\"arg1\":\"2 + i\", \"arg2\": \"2 - i\" }' http://localhost:8080/times --output -",
     },
-    Sequence<String>{L"multiply the two argument numbers"},
+    Sequence<String>{"multiply the two argument numbers"},
 };
 const WebServiceMethodDescription WebServer::Rep_::kDivide{
-    L"divide"_k,
+    "divide"_k,
     Set<String>{HTTP::Methods::kPost},
     InternetMediaTypes::kJSON,
     {},
     Sequence<String>{
-        L"curl -H \"Content-Type: application/json\" -X POST -d '{\"arg1\":\"2 + i\", \"arg2\": 0 }' http://localhost:8080/divide --output -",
+        "curl -H \"Content-Type: application/json\" -X POST -d '{\"arg1\":\"2 + i\", \"arg2\": 0 }' http://localhost:8080/divide --output -",
     },
-    Sequence<String>{L"divide the two argument numbers"},
+    Sequence<String>{"divide the two argument numbers"},
 };
 
 WebServer::WebServer (uint16_t portNumber, const shared_ptr<IWSAPI>& wsImpl)
