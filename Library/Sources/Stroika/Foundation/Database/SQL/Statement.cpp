@@ -47,10 +47,10 @@ String Statement::ColumnDescription::ToString () const
 String Statement::ParameterDescription::ToString () const
 {
     StringBuilder sb;
-    sb += L"{";
-    sb += L"name: " + Characters::ToString (fName) + L", ";
-    sb += L"value: " + Characters::ToString (fValue);
-    sb += L"}";
+    sb += "{";
+    sb += "name: " + Characters::ToString (fName) + ", ";
+    sb += "value: " + Characters::ToString (fValue);
+    sb += "}";
     return sb.str ();
 }
 

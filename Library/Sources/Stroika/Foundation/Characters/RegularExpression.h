@@ -73,7 +73,7 @@ namespace Stroika::Foundation::Characters {
          *   \note Since this is a static object, bewaware, it cannot be (safely) used before or after main
          *   \note Equivilent to
          *       \code
-         *           const  RegularExpression   kMatchNone (L"(?!)");   // OR
+         *           const  RegularExpression   kMatchNone ("(?!)");   // OR
          *           const  RegularExpression   kMatchNoneAlternative{};
          *       \endcode
          */
@@ -86,7 +86,7 @@ namespace Stroika::Foundation::Characters {
          *   \note Since this is a static object, bewaware, it cannot be (safely) used before or after main
          *   \note Equivilent to
          *       \code
-         *           const  RegularExpression   kAny {L".*"};
+         *           const  RegularExpression   kAny {".*"};
          *       \endcode
          */
         static const RegularExpression kAny;
@@ -97,8 +97,8 @@ namespace Stroika::Foundation::Characters {
     private:
         wregex fCompiledRegExp_;
     };
-    inline const RegularExpression RegularExpression::kNONE{L"(?!)"sv};
-    inline const RegularExpression RegularExpression::kAny{L".*"sv};
+    inline const RegularExpression RegularExpression::kNONE{"(?!)"sv};
+    inline const RegularExpression RegularExpression::kAny{".*"sv};
 
     /**
      */

@@ -141,7 +141,7 @@ namespace Stroika::Foundation::Characters {
         {
             constexpr size_t kMaxLen2Display_{100}; // no idea what a good value here will be or if we should provide ability to override. I suppose
                                                     // users can template-specialize ToString(const String&)???
-            return L"'"sv + static_cast<String> (t).LimitLength (kMaxLen2Display_) + L"'"sv;
+            return "'"sv + static_cast<String> (t).LimitLength (kMaxLen2Display_) + "'"sv;
         }
 
         String ToString_ex_ (const exception& t);
@@ -170,7 +170,7 @@ namespace Stroika::Foundation::Characters {
         {
             StringBuilder sb;
             sb << "{";
-            sb << ToString (get<0> (t)) + L", " + ToString (get<1> (t));
+            sb << ToString (get<0> (t)) + ", " + ToString (get<1> (t));
             sb << "}";
             return sb.str ();
         }
@@ -188,7 +188,7 @@ namespace Stroika::Foundation::Characters {
         {
             StringBuilder sb;
             sb << "{";
-            sb << ToString (get<0> (t)) + L", " + ToString (get<1> (t)) + ", " + ToString (get<2> (t)) + ", " + ToString (get<3> (t));
+            sb << ToString (get<0> (t)) + ", " + ToString (get<1> (t)) + ", " + ToString (get<2> (t)) + ", " + ToString (get<3> (t));
             sb << "}";
             return sb.str ();
         }
@@ -196,9 +196,9 @@ namespace Stroika::Foundation::Characters {
         String ToString_ (const T& t, enable_if_t<has_pair_v<T>>* = 0)
         {
             StringBuilder sb;
-            sb << L"{";
-            sb << ToString (t.first) << L": " << ToString (t.second);
-            sb << L"}";
+            sb << "{";
+            sb << ToString (t.first) << ": " << ToString (t.second);
+            sb << "}";
             return sb.str ();
         }
         template <typename T>

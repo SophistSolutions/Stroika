@@ -644,8 +644,8 @@ namespace Stroika::Foundation::Characters {
          *
          *  \par Example Usage
          *      \code
-         *          static const RegularExpression kSonosRE_{L"([0-9.:]*)( - .*)"_RegEx};
-         *          static const String            kTestStr_{L"192.168.244.104 - Sonos Play:5"};
+         *          static const RegularExpression kSonosRE_{"([0-9.:]*)( - .*)"_RegEx};
+         *          static const String            kTestStr_{"192.168.244.104 - Sonos Play:5"};
          *          optional<String> match1;
          *          optional<String> match2;
          *          VerifyTestResult (kTestStr_.Matches (kSonosRE_, &match1, &match2) and match1 == L"192.168.244.104" and match2 == L" - Sonos Play:5");
@@ -755,10 +755,10 @@ namespace Stroika::Foundation::Characters {
         /**
          *  \par Example Usage
          *      \code
-         *          const String                        kTest_{ L"a=b,"sv };
-         *          const RegularExpression             kRE_{ L"a=(.*)[, ]" };
+         *          const String                        kTest_{ "a=b,"sv };
+         *          const RegularExpression             kRE_{ "a=(.*)[, ]" };
          *          Sequence<String>                    tmp1{ kTest_.FindEachString (kRE_) };
-         *          Assert (tmp1.size () == 1 and tmp1[0] == L"a=b,");
+         *          Assert (tmp1.size () == 1 and tmp1[0] == "a=b,");
          *          Sequence<RegularExpressionMatch>    tmp2 { kTest_.FindEachMatch (kRE_) };
          *          Assert (tmp2.size () == 1 and tmp2[0].GetFullMatch () == L"a=b," and tmp2[0].GetSubMatches () == Sequence<String> {L"b"});
          *      \endcode
@@ -814,7 +814,7 @@ namespace Stroika::Foundation::Characters {
          *
          *  \par Example Usage
          *      \code
-         *          mungedData = mungedData.ReplaceAll (RegularExpression{ L"\\b0+" }, L"");    // strip all leading zeros
+         *          mungedData = mungedData.ReplaceAll (RegularExpression{ "\\b0+" }, L"");    // strip all leading zeros
          *      \endcode
          *
          *  Note - it IS legal to have with contain the original search for string, or even
@@ -852,7 +852,7 @@ namespace Stroika::Foundation::Characters {
          *
          *  \par Example Usage
          *      \code
-         *          String  t { L"foo=   7" };
+         *          String  t { "foo=   7" };
          *          auto    tt = t.Tokenize ({ '=' });
          *          Assert (t.length () == 2);
          *          Assert (t[1] == L"7");
@@ -860,10 +860,10 @@ namespace Stroika::Foundation::Characters {
          *
          *  \par Example Usage
          *      \code
-         *          String  t { L"foo=   7" };
+         *          String  t { "foo=   7" };
          *          auto    tt = t.Tokenize ({ '=' });
          *          Assert (t.length () == 2);
-         *          Assert (t[1] == L"7");
+         *          Assert (t[1] == "7");
          *      \endcode
          *
          *  @see Find

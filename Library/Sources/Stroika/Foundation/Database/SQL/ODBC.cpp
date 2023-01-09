@@ -52,9 +52,9 @@ struct Connection::Rep_ final : IRep {
             Execution::Throw (Exception{"DSN Required"sv});
         }
         try {
-            ThrowIfSQLError_ (::SQLAllocHandle (SQL_HANDLE_ENV, SQL_NULL_HANDLE, &fODBCEnvironmentHandle), L"Error AllocHandle"sv);
-            ThrowIfSQLError_ (::SQLSetEnvAttr (fODBCEnvironmentHandle, SQL_ATTR_ODBC_VERSION, reinterpret_cast<void*> (SQL_OV_ODBC3), 0), L"Error SetEnv"sv);
-            ThrowIfSQLError_ (::SQLAllocHandle (SQL_HANDLE_DBC, fODBCEnvironmentHandle, &fConnectionHandle), L"Error AllocHDB"sv);
+            ThrowIfSQLError_ (::SQLAllocHandle (SQL_HANDLE_ENV, SQL_NULL_HANDLE, &fODBCEnvironmentHandle), "Error AllocHandle"sv);
+            ThrowIfSQLError_ (::SQLSetEnvAttr (fODBCEnvironmentHandle, SQL_ATTR_ODBC_VERSION, reinterpret_cast<void*> (SQL_OV_ODBC3), 0), "Error SetEnv"sv);
+            ThrowIfSQLError_ (::SQLAllocHandle (SQL_HANDLE_DBC, fODBCEnvironmentHandle, &fConnectionHandle), "Error AllocHDB"sv);
 
             ::SQLSetConnectAttr (fConnectionHandle, SQL_LOGIN_TIMEOUT, reinterpret_cast<SQLPOINTER*> (5), 0);
             {
@@ -125,7 +125,7 @@ struct Connection::Rep_ final : IRep {
         struct MyEngineProperties_ final : EngineProperties {
             virtual String GetEngineName () const override
             {
-                return L"ODBC"sv; // must indirect to connection to get more info (from dns at least? not clear)
+                return "ODBC"sv; // must indirect to connection to get more info (from dns at least? not clear)
             }
             virtual String GetSQL ([[maybe_unused]] NonStandardSQL n) const override
             {

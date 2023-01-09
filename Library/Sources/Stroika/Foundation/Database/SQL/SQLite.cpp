@@ -460,7 +460,7 @@ struct Statement::MyRep_ : IRep {
         Assert (pzTail != nullptr);
         if (*pzTail != '\0') {
             // @todo possibly should allow 0 or string of whitespace and ignore that too? -- LGP 2021-04-29
-            Execution::Throw (Exception{L"Unexpected text after query"sv});
+            Execution::Throw (Exception{"Unexpected text after query"sv});
         }
         AssertNotNull (fStatementObj_);
         unsigned int colCount = static_cast<unsigned int> (::sqlite3_column_count (fStatementObj_));
@@ -661,13 +661,13 @@ struct Transaction::MyRep_ : public SQL::Transaction::IRep {
     {
         switch (f) {
             case Flag::eDeferred:
-                db->Exec (L"BEGIN DEFERRED TRANSACTION;"sv);
+                db->Exec ("BEGIN DEFERRED TRANSACTION;"sv);
                 break;
             case Flag::eExclusive:
-                db->Exec (L"BEGIN EXCLUSIVE TRANSACTION;"sv);
+                db->Exec ("BEGIN EXCLUSIVE TRANSACTION;"sv);
                 break;
             case Flag::eImmediate:
-                db->Exec (L"BEGIN IMMEDIATE TRANSACTION;"sv);
+                db->Exec ("BEGIN IMMEDIATE TRANSACTION;"sv);
                 break;
             default:
                 RequireNotReached ();
@@ -677,13 +677,13 @@ struct Transaction::MyRep_ : public SQL::Transaction::IRep {
     {
         Require (not fCompleted_);
         fCompleted_ = true;
-        fConnectionPtr_->Exec (L"COMMIT TRANSACTION;"sv);
+        fConnectionPtr_->Exec ("COMMIT TRANSACTION;"sv);
     }
     virtual void Rollback () override
     {
         Require (not fCompleted_);
         fCompleted_ = true;
-        fConnectionPtr_->Exec (L"ROLLBACK TRANSACTION;"sv);
+        fConnectionPtr_->Exec ("ROLLBACK TRANSACTION;"sv);
     }
     virtual Disposition GetDisposition () const override
     {

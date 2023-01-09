@@ -545,7 +545,7 @@ String String::FromStringConstant (span<const char> s)
 
 String String::FromStringConstant (span<const wchar_t> s)
 {
-    Require (*(s.data () + s.size ()) == '\0'); // crazy weird requirement, but done cuz L"x"sv already does NUL-terminate and we can
+    Require (*(s.data () + s.size ()) == '\0'); // crazy weird requirement, but done cuz "x"sv already does NUL-terminate and we can
                                                 // take advantage of that fact - re-using the NUL-terminator for our own c_str() implementation
     return String{MakeSmartPtr<StringConstant_::Rep<wchar_t>> (s)};
 }
@@ -1282,7 +1282,7 @@ String String::LimitLength (size_t maxLen, bool keepLeft) const
 #if qCompiler_vswprintf_on_elispisStr_Buggy
     static const String kELIPSIS_{"..."_k};
 #else
-    static const String kELIPSIS_{u"\u2026"sv};                                  // OR L"..."
+    static const String kELIPSIS_{u"\u2026"sv};                                  // OR "..."
 #endif
     return LimitLength (maxLen, keepLeft, kELIPSIS_);
 }
