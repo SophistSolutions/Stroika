@@ -82,6 +82,8 @@ namespace Stroika::Foundation::Characters {
         template <Character_Compatible CHAR_T>
         nonvirtual void Append (span<const CHAR_T> s);
         template <Character_Compatible CHAR_T>
+        nonvirtual void Append (span<CHAR_T> s);
+        template <Character_Compatible CHAR_T>
         nonvirtual void Append (const CHAR_T* s);
         template <Character_IsUnicodeCodePointOrPlainChar CHAR_T>
         nonvirtual void Append (const basic_string<CHAR_T>& s);
@@ -89,7 +91,6 @@ namespace Stroika::Foundation::Characters {
         nonvirtual void Append (const basic_string_view<CHAR_T>& s);
         nonvirtual void Append (const String& s);
         nonvirtual void Append (Character c);
-        //    nonvirtual void Append (wchar_t c); // @todo probably deprecate this...
 
     public:
         /**

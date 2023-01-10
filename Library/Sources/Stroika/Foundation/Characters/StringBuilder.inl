@@ -53,7 +53,7 @@ namespace Stroika::Foundation::Characters {
                 size_t i = fLength_;
                 fData_.GrowToSize_uninitialized (i + rhsLen);
                 fLength_ += rhsLen;
-                (void)::memcpy (fData_.begin () + i, &*s.begin (), sizeof (char32_t) * rhsLen);
+                (void)::memcpy (fData_.data () + i, s.data (), sizeof (char32_t) * rhsLen);
             }
             else {
                 Memory::StackBuffer<char32_t> buf{Memory::eUninitialized, UTFConverter::ComputeTargetBufferSize<char32_t> (s)};
@@ -65,6 +65,11 @@ namespace Stroika::Foundation::Characters {
                 Append (String{span<const char32_t>{buf.data (), r.fTargetProduced}});
             }
         }
+    }
+    template <Character_Compatible CHAR_T>
+    inline void StringBuilder::Append (span<CHAR_T> s)
+    {
+        Append (Memory::ConstSpan (s));
     }
     template <Character_Compatible CHAR_T>
     inline void StringBuilder::Append (const CHAR_T* s)
@@ -99,8 +104,7 @@ namespace Stroika::Foundation::Characters {
     }
     inline void StringBuilder::Append (Character c)
     {
-        char32_t cc = c.GetCharacterCode ();
-        Append (span{&cc, 1});
+        Append (span{&c, 1});
     }
     template <typename APPEND_ARG_T>
     inline StringBuilder& StringBuilder::operator+= (APPEND_ARG_T&& a)
