@@ -195,21 +195,12 @@ namespace Stroika::Foundation::Memory {
     }
     template <typename T, size_t BUF_SIZE>
     inline void InlineBuffer<T, BUF_SIZE>::resize_uninitialized (size_t nElements)
-        requires (is_trivially_copyable_v<T>)
+        requires (is_trivially_copyable_v<T> and is_trivially_destructible_v<T>)
     {
-        static_assert (is_trivially_copyable_v<T>);
-        if (nElements > fSize_) {
-            // Growing
-            if (nElements > capacity ()) [[unlikely]] {
-                reserve (nElements);
-            }
-            fSize_ = nElements;
+        if (nElements > capacity ()) [[unlikely]] {
+            reserve (nElements);
         }
-        else if (nElements < fSize_) {
-            // Shrinking
-            static_assert (is_trivially_destructible_v<T>); // This API requires is_trivially_destructible_v so no need to call DestroyElts_
-            fSize_ = nElements;
-        }
+        fSize_ = nElements;
         Assert (fSize_ == nElements);
         Ensure (size () <= capacity ());
     }
@@ -427,7 +418,7 @@ namespace Stroika::Foundation::Memory {
     template <typename T, size_t BUF_SIZE>
     inline bool InlineBuffer<T, BUF_SIZE>::UsingInlinePreallocatedBuffer_ () const noexcept
     {
-        return (fLiveData_ == BufferAsT_ ());
+        return fLiveData_ == BufferAsT_ ();
     }
 
 }

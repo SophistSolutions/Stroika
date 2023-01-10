@@ -122,20 +122,12 @@ namespace Stroika::Foundation::Memory {
     }
     template <typename T, size_t BUF_SIZE>
     inline void StackBuffer<T, BUF_SIZE>::resize_uninitialized (size_t nElements)
-        requires (is_trivially_copyable_v<T>)
+        requires (is_trivially_copyable_v<T> and is_trivially_destructible_v<T>)
     {
-        if (nElements > fSize_) {
-            // Growing
-            if (nElements > capacity ()) [[unlikely]] {
-                reserve (nElements);
-            }
-            fSize_ = nElements;
+        if (nElements > capacity ()) [[unlikely]] {
+            reserve (nElements);
         }
-        else if (nElements < fSize_) {
-            // Shrinking
-            DestroyElts_ (this->begin () + nElements, this->end ());
-            fSize_ = nElements;
-        }
+        fSize_ = nElements;
         Assert (fSize_ == nElements);
         Ensure (size () <= capacity ());
     }
