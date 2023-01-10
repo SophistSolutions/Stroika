@@ -233,7 +233,8 @@ namespace Stroika::Foundation::IO::Network {
          *      o   URI (in which case it just copies the path, and query elements)
          */
         template <typename RETURN_TYPE = String>
-        nonvirtual RETURN_TYPE GetAuthorityRelativeResource () const;
+        nonvirtual RETURN_TYPE GetAuthorityRelativeResource () const
+            requires (is_same_v<RETURN_TYPE,String> or is_same_v<RETURN_TYPE,string> or is_same_v<RETURN_TYPE,URI>);
 
     public:
         /**
@@ -260,7 +261,8 @@ namespace Stroika::Foundation::IO::Network {
          *  So in either case, if a string is returned, its length always >= 1.
          */
         template <typename RETURN_VALUE = String>
-        nonvirtual RETURN_VALUE GetAbsPath () const;
+        nonvirtual RETURN_VALUE GetAbsPath () const
+            requires (is_same_v<RETURN_VALUE, String> or is_same_v < RETURN_VALUE, optional<String>>);
 
     public:
         /*
@@ -272,7 +274,8 @@ namespace Stroika::Foundation::IO::Network {
          *
          */
         template <typename RETURN_TYPE = Query>
-        nonvirtual optional<RETURN_TYPE> GetQuery () const;
+        nonvirtual optional<RETURN_TYPE> GetQuery () const
+            requires (is_same_v<RETURN_TYPE, String> or is_same_v<RETURN_TYPE, URI::Query>);
 
     public:
         /**
@@ -308,7 +311,11 @@ namespace Stroika::Foundation::IO::Network {
          *      string - ditto
          */
         template <typename T>
-        nonvirtual T As () const;
+        nonvirtual T As () const
+            requires (is_same_v<T,String> or is_same_v<T,string>);
+
+    private:
+        nonvirtual String AsString_ () const;
 
     public:
         /**
@@ -363,29 +370,7 @@ namespace Stroika::Foundation::IO::Network {
         optional<String>                                               fFragment_;  // ditto
         [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
     };
-
-    template <>
-    optional<String> URI::GetQuery () const;
-    template <>
-    optional<URI::Query> URI::GetQuery () const;
-
-    template <>
-    String URI::As () const;
-    template <>
-    string URI::As () const;
-
-    template <>
-    String URI::GetAuthorityRelativeResource () const;
-    template <>
-    string URI::GetAuthorityRelativeResource () const;
-    template <>
-    URI URI::GetAuthorityRelativeResource () const;
-
-    template <>
-    String URI::GetAbsPath () const;
-    template <>
-    optional<String> URI::GetAbsPath () const;
-
+    
 }
 
 namespace std {

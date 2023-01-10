@@ -104,6 +104,27 @@ namespace Stroika::Foundation::IO::Network {
     {
         return URI{GetScheme (), GetAuthority ()};
     }
+    template <typename RETURN_TYPE >
+    RETURN_TYPE URI::GetAuthorityRelativeResource () const
+        requires (is_same_v<RETURN_TYPE, String> or is_same_v<RETURN_TYPE, string> or is_same_v<RETURN_TYPE, URI>)
+    {
+        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
+        if constexpr (is_same_v<RETURN_TYPE, String>) {
+            static constexpr UniformResourceIdentification::PCTEncodeOptions kPathEncodeOptions_{false, false, false, false, true};
+            Characters::StringBuilder                                        result = UniformResourceIdentification::PCTEncode2String (fPath_, kPathEncodeOptions_);
+            if (fQuery_) {
+                static constexpr UniformResourceIdentification::PCTEncodeOptions kQueryEncodeOptions_{false, false, false, true};
+                result += "?"sv + UniformResourceIdentification::PCTEncode2String (*fQuery_, kQueryEncodeOptions_);
+            }
+            return result.str ();
+        }
+        if constexpr (is_same_v<RETURN_TYPE, string>) {
+            return GetAuthorityRelativeResource<String> ().AsASCII ();
+        }
+        if constexpr (is_same_v<RETURN_TYPE, URI>) {
+            return URI{nullopt, nullopt, GetPath (), GetQuery<String> ()};
+        }
+    }
     template <>
     inline string URI::GetAuthorityRelativeResource () const
     {
@@ -116,41 +137,42 @@ namespace Stroika::Foundation::IO::Network {
         Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
         return URI{nullopt, nullopt, GetPath (), GetQuery<String> ()};
     }
-    template <>
-    inline optional<String> URI::GetAbsPath () const
+     template <typename RETURN_VALUE>
+     RETURN_VALUE URI::GetAbsPath () const
+        requires (is_same_v<RETURN_VALUE, String> or is_same_v<RETURN_VALUE, optional<String>>)
     {
         Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
-        if (fPath_.empty ()) {
-            return "/"sv;
+        if constexpr (is_same_v<RETURN_VALUE, String>) {
+            Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
+            if (auto op = GetAbsPath<optional<String>> ()) {
+                return *op;
+            }
+            Execution::Throw (Execution::RuntimeErrorException{"This URI does not have an absolute path"sv});
         }
-        if (fPath_.StartsWith ("/"sv)) {
-            return fPath_;
+        if constexpr (is_same_v < RETURN_VALUE, optional<String>>) {
+            if (fPath_.empty ()) {
+                return "/"sv;
+            }
+            if (fPath_.StartsWith ("/"sv)) {
+                return fPath_;
+            }
+            return nullopt;
         }
-        return nullopt;
     }
-    template <>
-    inline String URI::GetAbsPath () const
+    template <typename RETURN_TYPE>
+    inline optional<RETURN_TYPE> URI::GetQuery () const
+        requires (is_same_v<RETURN_TYPE, String> or is_same_v<RETURN_TYPE, URI::Query>)
     {
         Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
-        if (auto op = GetAbsPath<optional<String>> ()) {
-            return *op;
+        if constexpr (is_same_v<RETURN_TYPE, String>) {
+            return fQuery_;
         }
-        Execution::Throw (Execution::RuntimeErrorException{"This URI does not have an absolute path"sv});
-    }
-    template <>
-    inline auto URI::GetQuery () const -> optional<String>
-    {
-        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
-        return fQuery_;
-    }
-    template <>
-    inline auto URI::GetQuery () const -> optional<Query>
-    {
-        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
-        if (fQuery_) {
-            return Query{*fQuery_};
+        if constexpr (is_same_v<RETURN_TYPE, Query>) {
+            if (fQuery_) {
+                return Query{*fQuery_};
+            }
+            return nullopt;
         }
-        return nullopt;
     }
     inline void URI::SetQuery (const optional<String>& query)
     {
@@ -179,6 +201,17 @@ namespace Stroika::Foundation::IO::Network {
     inline bool URI::operator== (const URI& rhs) const
     {
         return URI::TWC_ (*this, rhs) == 0;
+    }
+    template <typename T>
+    inline T URI::As () const
+        requires (is_same_v<T, String> or is_same_v<T, string>)
+    {
+        if constexpr (is_same_v<T, String>) {
+            return AsString_ ();
+        }
+        if constexpr (is_same_v<T, string>) {
+            return AsString_ ().AsASCII ();
+        }
     }
 
 }

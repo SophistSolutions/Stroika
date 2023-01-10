@@ -125,8 +125,7 @@ URI URI::Parse (const String& rawURL)
     }
 }
 
-template <>
-String URI::As () const
+String URI::AsString_ () const
 {
     AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
     StringBuilder                                  result;
@@ -161,14 +160,6 @@ String URI::As () const
     return result.str ();
 }
 
-template <>
-string URI::As () const
-{
-    AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
-    // @todo - Could be more efficient doing String algorithm directly
-    return As<String> ().AsASCII ();
-}
-
 URI::operator bool () const
 {
     AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
@@ -188,19 +179,6 @@ URI::operator bool () const
         return true;
     }
     return false;
-}
-
-template <>
-String URI::GetAuthorityRelativeResource () const
-{
-    AssertExternallySynchronizedMutex::ReadContext                   readLock{fThisAssertExternallySynchronized_};
-    static constexpr UniformResourceIdentification::PCTEncodeOptions kPathEncodeOptions_{false, false, false, false, true};
-    Characters::StringBuilder                                        result = UniformResourceIdentification::PCTEncode2String (fPath_, kPathEncodeOptions_);
-    if (fQuery_) {
-        static constexpr UniformResourceIdentification::PCTEncodeOptions kQueryEncodeOptions_{false, false, false, true};
-        result += "?"sv + UniformResourceIdentification::PCTEncode2String (*fQuery_, kQueryEncodeOptions_);
-    }
-    return result.str ();
 }
 
 String URI::GetAuthorityRelativeResourceDir () const
