@@ -96,7 +96,7 @@ namespace Stroika::Foundation::Characters {
          */
         constexpr Character () noexcept;
         constexpr Character (char32_t c) noexcept;
-        Character (char16_t hiSurrogate, char16_t lowSurrogate);
+        constexpr Character (char16_t hiSurrogate, char16_t lowSurrogate);
 
     public:
         /**

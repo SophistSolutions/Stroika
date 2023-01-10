@@ -83,7 +83,7 @@ namespace Stroika::Foundation::Characters {
         : fCharacterCode_{c}
     {
     }
-    inline Character::Character (char16_t hiSurrogate, char16_t lowSurrogate)
+    constexpr Character::Character (char16_t hiSurrogate, char16_t lowSurrogate)
     {
         /*
          * See https://en.wikipedia.org/wiki/Universal_Character_Set_characters#Surrogates
@@ -91,9 +91,8 @@ namespace Stroika::Foundation::Characters {
          * A surrogate pair denotes the code point
          *      0x10000 + (H - 0xD800) × 0x400 + (L - 0xDC00)
          */
-        static const auto  kException_ = out_of_range{"Surrogates out of range"};
-        constexpr int      halfShift   = 10; /* used for shifting by 10 bits */
-        constexpr char32_t halfBase    = 0x0010000UL;
+        constexpr int      halfShift = 10; /* used for shifting by 10 bits */
+        constexpr char32_t halfBase  = 0x0010000UL;
         if (not(UNI_SUR_HIGH_START <= hiSurrogate and hiSurrogate <= UNI_SUR_HIGH_END)) {
             Private_::ThrowSurrogatesOutOfRange_ ();
         }
