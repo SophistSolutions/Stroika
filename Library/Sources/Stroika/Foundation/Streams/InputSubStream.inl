@@ -39,7 +39,13 @@ namespace Stroika::Foundation::Streams {
                     SeekOffsetType realSeekOffset = realIn.GetOffset ();
                     if (realSeekOffset < *start) {
                         Assert (*start - realSeekOffset < sizeof (size_t)); // NYI crazy corner case
-                        Memory::StackBuffer<ELEMENT_TYPE> buf{static_cast<size_t> (*start - realSeekOffset)};
+                        Memory::StackBuffer<ELEMENT_TYPE> buf;
+                        if constexpr (is_trivially_copyable_v<ELEMENT_TYPE>) {
+                            buf.resize_uninitialized (static_cast<size_t> (*start - realSeekOffset));
+                        }
+                        else {
+                            buf.resize (static_cast<size_t> (*start - realSeekOffset));
+                        }
                         (void)realIn.ReadAll (buf.begin (), buf.end ()); // read exactly that many elements, and drop them on the floor
                     }
                 }

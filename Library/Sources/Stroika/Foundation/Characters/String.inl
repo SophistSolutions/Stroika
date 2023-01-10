@@ -124,7 +124,7 @@ namespace Stroika::Foundation::Characters {
 #endif
         }
         else if (UTFConverter::AllFitsInTwoByteEncoding (s)) {
-            Memory::StackBuffer<char16_t> buf{UTFConverter::ComputeTargetBufferSize<char16_t> (s)};
+            Memory::StackBuffer<char16_t> buf{Memory::eUninitialized, UTFConverter::ComputeTargetBufferSize<char16_t> (s)};
 #if qCompilerAndStdLib_spanOfContainer_Buggy
             return mk_ (UTFConverter::kThe.ConvertSpan (s, span{buf.data (), buf.size ()}));
 #else
@@ -132,7 +132,7 @@ namespace Stroika::Foundation::Characters {
 #endif
         }
         else {
-            Memory::StackBuffer<char32_t> buf{UTFConverter::ComputeTargetBufferSize<char32_t> (s)};
+            Memory::StackBuffer<char32_t> buf{Memory::eUninitialized, UTFConverter::ComputeTargetBufferSize<char32_t> (s)};
 #if qCompilerAndStdLib_spanOfContainer_Buggy
             return mk_ (UTFConverter::kThe.ConvertSpan (s, span{buf.data (), buf.size ()}));
 #else
@@ -371,7 +371,7 @@ namespace Stroika::Foundation::Characters {
         span                          leftSpan = GetData (&ignoredA);
         Memory::StackBuffer<char32_t> ignoredB;
         span                          rightSpan = rrhs.GetData (&ignoredB);
-        Memory::StackBuffer<char32_t> buf{leftSpan.size () + rightSpan.size ()};
+        Memory::StackBuffer<char32_t> buf{Memory::eUninitialized, leftSpan.size () + rightSpan.size ()};
         copy (leftSpan.begin (), leftSpan.end (), buf.data ());
         copy (rightSpan.begin (), rightSpan.end (), buf.data () + leftSpan.size ());
         return mk_ (span{buf});
@@ -568,7 +568,7 @@ namespace Stroika::Foundation::Characters {
         if (not s.empty ()) {
             Memory::StackBuffer<char32_t> ignored1;
             span<const char32_t>          thisSpan = this->GetData (&ignored1);
-            Memory::StackBuffer<char32_t> combinedBuf{thisSpan.size () + s.size ()};
+            Memory::StackBuffer<char32_t> combinedBuf{Memory::eUninitialized, thisSpan.size () + s.size ()};
             copy (thisSpan.begin (), thisSpan.end (), combinedBuf.data ());
             char32_t* write2Buf = combinedBuf.data () + thisSpan.size ();
             for (auto i : s) {
@@ -584,7 +584,7 @@ namespace Stroika::Foundation::Characters {
         if (from != to) {
             Memory::StackBuffer<wchar_t> ignored1;
             span<const wchar_t>          thisSpan = this->GetData (&ignored1);
-            Memory::StackBuffer<wchar_t> buf{thisSpan.size () + (to - from)};
+            Memory::StackBuffer<wchar_t> buf{Memory::eUninitialized, thisSpan.size () + (to - from)};
             copy (thisSpan.begin (), thisSpan.end (), buf.data ());
             copy (from, to, buf.data () + thisSpan.size ());
             *this = mk_ (span{buf});
@@ -1208,7 +1208,7 @@ namespace Stroika::Foundation::Characters {
             span<const Character>          lSpan = Private_::AsSpanOfCharacters_ (forward<LHS_T> (lhs), &ignored1);
             Memory::StackBuffer<Character> ignored2;
             span<const Character>          rSpan = Private_::AsSpanOfCharacters_ (forward<RHS_T> (rhs), &ignored2);
-            Memory::StackBuffer<Character> buf{lSpan.size () + rSpan.size ()};
+            Memory::StackBuffer<Character> buf{Memory::eUninitialized, lSpan.size () + rSpan.size ()};
             copy (lSpan.begin (), lSpan.end (), buf.data ());
             copy (rSpan.begin (), rSpan.end (), buf.data () + lSpan.size ());
             return String{span{buf}};

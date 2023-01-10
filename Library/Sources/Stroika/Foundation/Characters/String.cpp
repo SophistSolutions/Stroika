@@ -641,7 +641,7 @@ auto String::mk_ (span<const char16_t> s) -> _SharedPtrIRep
     if (Character::IsASCII (s)) {
         // if we already have ascii, just copy into a buffer that can be used for now with the legacy API, and
         // later specialized into something we construct a special rep for
-        Memory::StackBuffer<char> buf{s.size ()};
+        Memory::StackBuffer<char> buf{Memory::eUninitialized, s.size ()};
 #if qCompilerAndStdLib_spanOfContainer_Buggy
         Private_::CopyAsASCIICharacters_ (s, span{buf.data (), buf.size ()});
         return MakeSmartPtr<BufferedString_::Rep<char>> (span<const char>{buf.data (), buf.size ()});
@@ -654,7 +654,7 @@ auto String::mk_ (span<const char16_t> s) -> _SharedPtrIRep
         return MakeSmartPtr<BufferedString_::Rep<char16_t>> (s);
     }
     else {
-        Memory::StackBuffer<char32_t> wideUnicodeBuf{UTFConverter::ComputeTargetBufferSize<char32_t> (s)};
+        Memory::StackBuffer<char32_t> wideUnicodeBuf{Memory::eUninitialized, UTFConverter::ComputeTargetBufferSize<char32_t> (s)};
         return MakeSmartPtr<BufferedString_::Rep<char32_t>> (UTFConverter::kThe.ConvertSpan (s, span{wideUnicodeBuf}));
     }
 }
@@ -665,7 +665,7 @@ auto String::mk_ (span<const char32_t> s) -> _SharedPtrIRep
     if (Character::IsASCII (s)) {
         // if we already have ascii, just copy into a buffer that can be used for now with the legacy API, and
         // later specialized into something we construct a special rep for
-        Memory::StackBuffer<char> buf{s.size ()};
+        Memory::StackBuffer<char> buf{Memory::eUninitialized, s.size ()};
 #if qCompilerAndStdLib_spanOfContainer_Buggy
         Private_::CopyAsASCIICharacters_ (s, span{buf.data (), buf.size ()});
         return MakeSmartPtr<BufferedString_::Rep<char>> (span<const char>{buf.data (), buf.size ()});
@@ -691,7 +691,7 @@ auto String::mk_ (basic_string<char16_t>&& s) -> _SharedPtrIRep
         return MakeSmartPtr<StdStringDelegator_::Rep<char16_t>> (move (s));
     }
     // copy the data if any surrogates
-    Memory::StackBuffer<char32_t> wideUnicodeBuf{UTFConverter::ComputeTargetBufferSize<char32_t> (span{s.data (), s.size ()})};
+    Memory::StackBuffer<char32_t> wideUnicodeBuf{Memory::eUninitialized, UTFConverter::ComputeTargetBufferSize<char32_t> (span{s.data (), s.size ()})};
     return MakeSmartPtr<BufferedString_::Rep<char32_t>> (UTFConverter::kThe.ConvertSpan (span{s.data (), s.size ()}, span{wideUnicodeBuf}));
 }
 
@@ -709,7 +709,7 @@ auto String::mk_ (basic_string<wchar_t>&& s) -> _SharedPtrIRep
             return MakeSmartPtr<StdStringDelegator_::Rep<wchar_t>> (move (s));
         }
         // copy the data if any surrogates
-        Memory::StackBuffer<char32_t> wideUnicodeBuf{UTFConverter::ComputeTargetBufferSize<char32_t> (span{s.data (), s.size ()})};
+        Memory::StackBuffer<char32_t> wideUnicodeBuf{Memory::eUninitialized, UTFConverter::ComputeTargetBufferSize<char32_t> (span{s.data (), s.size ()})};
         return MakeSmartPtr<BufferedString_::Rep<char32_t>> (UTFConverter::kThe.ConvertSpan (span{s.data (), s.size ()}, span{wideUnicodeBuf}));
     }
     else {
@@ -763,7 +763,7 @@ String String::RemoveAt (size_t from, size_t to) const
     else {
         Memory::StackBuffer<char32_t> ignored1;
         span                          d = GetData (&ignored1);
-        Memory::StackBuffer<char32_t> buf{d.size () - (to - from)};
+        Memory::StackBuffer<char32_t> buf{Memory::eUninitialized, d.size () - (to - from)};
         span                          s1 = d.subspan (0, from);
         span                          s2 = d.subspan (to);
         copy (s1.begin (), s1.end (), buf.data ());
