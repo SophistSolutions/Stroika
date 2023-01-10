@@ -44,25 +44,25 @@ namespace Stroika::Foundation::Characters {
     inline void StringBuilder::Append (span<const CHAR_T> s)
     {
         Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySyncrhonized_};
-        size_t                                                 rhsLen = s.size ();
-        if (rhsLen != 0) {
+        size_t                                                 spanSize = s.size ();
+        if (spanSize != 0) {
             if constexpr (is_same_v<CHAR_T, char>) {
                 Character::CheckASCII (s);
             }
-            if constexpr (sizeof (CHAR_T) == sizeof (char32_t)) {
-                size_t i = fLength_;
-                fData_.GrowToSize_uninitialized (i + rhsLen);
-                fLength_ += rhsLen;
-                (void)::memcpy (fData_.data () + i, s.data (), sizeof (char32_t) * rhsLen);
+            using BUFFER_ELT_TYPE = decltype (fData_)::value_type;
+            if constexpr (sizeof (CHAR_T) == sizeof (BUFFER_ELT_TYPE)) {
+                size_t i = fData_.size ();
+                fData_.GrowToSize_uninitialized (i + spanSize);
+                const BUFFER_ELT_TYPE* copyFrom = reinterpret_cast<const BUFFER_ELT_TYPE*> (s.data ());
+                std::copy (copyFrom, copyFrom + spanSize, fData_.data () + i);
             }
             else {
                 Memory::StackBuffer<char32_t> buf{Memory::eUninitialized, UTFConverter::ComputeTargetBufferSize<char32_t> (s)};
 #if qCompilerAndStdLib_spanOfContainer_Buggy
-                auto r = UTFConverter::kThe.Convert (s, span{buf.data (), buf.size ()});
+                Append (String{UTFConverter::kThe.ConvertSpan (s, span{buf.data (), buf.size ()})});
 #else
-                auto r = UTFConverter::kThe.Convert (s, span{buf});
+                Append (String{UTFConverter::kThe.ConvertSpan (s, span{buf})});
 #endif
-                Append (String{span<const char32_t>{buf.data (), r.fTargetProduced}});
             }
         }
     }
@@ -104,7 +104,10 @@ namespace Stroika::Foundation::Characters {
     }
     inline void StringBuilder::Append (Character c)
     {
-        Append (span{&c, 1});
+        Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySyncrhonized_};
+        size_t                                                 len = fData_.size ();
+        fData_.resize_uninitialized (len + 1);
+        fData_[len] = c.GetCharacterCode ();
     }
     template <typename APPEND_ARG_T>
     inline StringBuilder& StringBuilder::operator+= (APPEND_ARG_T&& a)
@@ -123,42 +126,39 @@ namespace Stroika::Foundation::Characters {
 
     inline void StringBuilder::push_back (Character c)
     {
-        Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySyncrhonized_};
-        fData_.GrowToSize_uninitialized (fLength_ + 1);
-        fData_[fLength_] = c.GetCharacterCode ();
-        ++fLength_;
+        Append (c);
     }
     inline size_t StringBuilder::size () const noexcept
     {
         Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fAssertExternallySyncrhonized_};
-        return fLength_;
+        return fData_.size ();
     }
     inline bool StringBuilder::empty () const noexcept
     {
         Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fAssertExternallySyncrhonized_};
-        return fLength_ == 0;
+        return fData_.size () == 0;
     }
     inline Character StringBuilder::GetAt (size_t index) const noexcept
     {
         Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fAssertExternallySyncrhonized_};
-        Require (index < fLength_);
+        Require (index < fData_.size ());
         return fData_[index];
     }
     inline void StringBuilder::SetAt (Character item, size_t index) noexcept
     {
-        Require (index < fLength_);
+        Require (index < fData_.size ());
         Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySyncrhonized_};
         fData_[index] = item.GetCharacterCode ();
     }
     inline void StringBuilder::clear () noexcept
     {
         Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySyncrhonized_};
-        fLength_ = 0;
+        fData_.resize (0);
     }
     inline String StringBuilder::str () const
     {
         Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fAssertExternallySyncrhonized_};
-        return String{Memory::ConstSpan (span{fData_.data (), fLength_})};
+        return String{Memory::ConstSpan (span{fData_.data (), fData_.size ()})};
     }
     template <>
     inline void StringBuilder::As (String* into) const
