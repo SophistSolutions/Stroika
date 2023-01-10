@@ -186,7 +186,7 @@ namespace {
                 istreambuf_iterator<wchar_t> itend;        // end-of-stream
                 tm                           resultTM{};
                 VerifyTestResultWarning (tmget.date_order () == time_base::mdy or qCompilerAndStdLib_locale_time_get_date_order_no_order_Buggy);
-                static const wstring         kFmt_ = String{DateTime::kShortLocaleFormatPattern}.As<wstring> ();
+                static const wstring  kFmt_ = String{DateTime::kShortLocaleFormatPattern}.As<wstring> ();
                 [[maybe_unused]] auto i     = tmget.get (itbegin, itend, iss, state, &resultTM, kFmt_.data (), kFmt_.data () + kFmt_.length ());
                 if ((state & ios::badbit) or (state & ios::failbit)) {
 #if !_LIBCPP_VERSION

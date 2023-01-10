@@ -41,7 +41,7 @@ namespace Stroika::Foundation::Characters {
                 }
             }
             else {
-                const CHAR_T* lie = li + length;    // just end of what we are comparing in this loop
+                const CHAR_T* lie = li + length; // just end of what we are comparing in this loop
                 for (; li != lie; ++li, ++ri) {
                     if (*li != *ri) {
                         return *li <=> *ri;

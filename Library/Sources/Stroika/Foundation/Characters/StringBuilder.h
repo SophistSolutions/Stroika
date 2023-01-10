@@ -236,15 +236,6 @@ namespace Stroika::Foundation::Characters {
         [[deprecated ("DESUPPORTED Since v3.0d1, so we can change internal buffer rep")]] const wchar_t* begin ();
         [[deprecated ("DESUPPORTED Since v3.0d1, so we can change internal buffer rep")]] const wchar_t* end ();
         [[deprecated ("DESUPPORTED Since v3.0d1, so we can change internal buffer rep")]] const wchar_t* c_str () const;
-#if 0
-        {
-            // @todo PROBABLY DEPREACTE else -fix the constness at least - and make this WriteContext...
-            Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fAssertExternallySyncrhonized_};
-            fData_.GrowToSize_uninitialized (fLength_ + 1);
-            fData_[fLength_] = '\0';
-            return fData_.begin ();
-        }
-#endif
         [[deprecated ("Since Stroika v3.0d1, use span{} argument")]] StringBuilder (const wchar_t* start, const wchar_t* end)
         {
             Append (span{start, end});
@@ -270,8 +261,7 @@ namespace Stroika::Foundation::Characters {
         [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fAssertExternallySyncrhonized_;
 
     private:
-        mutable Memory::InlineBuffer<char32_t> fData_{0};   // maybe nul-terminated
-        size_t                                 fLength_{0}; // seperate from Buffer<>::size () ** but why **
+        mutable Memory::InlineBuffer<char32_t> fData_{0}; // not nul-terminated
     };
 
 }

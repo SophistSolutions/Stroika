@@ -238,7 +238,7 @@ namespace Stroika::Foundation::Memory {
          *  \ensure GetSize () <= capacity ();
          */
         nonvirtual void resize_uninitialized (size_t nElements)
-            requires (is_trivially_copyable_v<T>);
+            requires (is_trivially_copyable_v<T> and is_trivially_destructible_v<T>);
 
     public:
         /**
