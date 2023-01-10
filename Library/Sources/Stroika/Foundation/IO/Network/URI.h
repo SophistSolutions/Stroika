@@ -234,7 +234,7 @@ namespace Stroika::Foundation::IO::Network {
          */
         template <typename RETURN_TYPE = String>
         nonvirtual RETURN_TYPE GetAuthorityRelativeResource () const
-            requires (is_same_v<RETURN_TYPE,String> or is_same_v<RETURN_TYPE,string> or is_same_v<RETURN_TYPE,URI>);
+            requires (is_same_v<RETURN_TYPE, String> or is_same_v<RETURN_TYPE, string> or is_same_v<RETURN_TYPE, URI>);
 
     public:
         /**
@@ -262,7 +262,7 @@ namespace Stroika::Foundation::IO::Network {
          */
         template <typename RETURN_VALUE = String>
         nonvirtual RETURN_VALUE GetAbsPath () const
-            requires (is_same_v<RETURN_VALUE, String> or is_same_v < RETURN_VALUE, optional<String>>);
+            requires (is_same_v<RETURN_VALUE, String> or is_same_v<RETURN_VALUE, optional<String>>);
 
     public:
         /*
@@ -312,7 +312,7 @@ namespace Stroika::Foundation::IO::Network {
          */
         template <typename T>
         nonvirtual T As () const
-            requires (is_same_v<T,String> or is_same_v<T,string>);
+            requires (is_same_v<T, String> or is_same_v<T, string>);
 
     private:
         nonvirtual String AsString_ () const;
@@ -370,7 +370,7 @@ namespace Stroika::Foundation::IO::Network {
         optional<String>                                               fFragment_;  // ditto
         [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
     };
-    
+
 }
 
 namespace std {

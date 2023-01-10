@@ -104,7 +104,7 @@ namespace Stroika::Foundation::IO::Network {
     {
         return URI{GetScheme (), GetAuthority ()};
     }
-    template <typename RETURN_TYPE >
+    template <typename RETURN_TYPE>
     RETURN_TYPE URI::GetAuthorityRelativeResource () const
         requires (is_same_v<RETURN_TYPE, String> or is_same_v<RETURN_TYPE, string> or is_same_v<RETURN_TYPE, URI>)
     {
@@ -137,8 +137,8 @@ namespace Stroika::Foundation::IO::Network {
         Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
         return URI{nullopt, nullopt, GetPath (), GetQuery<String> ()};
     }
-     template <typename RETURN_VALUE>
-     RETURN_VALUE URI::GetAbsPath () const
+    template <typename RETURN_VALUE>
+    RETURN_VALUE URI::GetAbsPath () const
         requires (is_same_v<RETURN_VALUE, String> or is_same_v<RETURN_VALUE, optional<String>>)
     {
         Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
@@ -149,7 +149,7 @@ namespace Stroika::Foundation::IO::Network {
             }
             Execution::Throw (Execution::RuntimeErrorException{"This URI does not have an absolute path"sv});
         }
-        if constexpr (is_same_v < RETURN_VALUE, optional<String>>) {
+        if constexpr (is_same_v<RETURN_VALUE, optional<String>>) {
             if (fPath_.empty ()) {
                 return "/"sv;
             }
