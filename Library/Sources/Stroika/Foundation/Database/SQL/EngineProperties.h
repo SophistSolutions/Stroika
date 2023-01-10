@@ -46,7 +46,7 @@ namespace Stroika::Foundation::Database::SQL {
     public:
         /**
          */
-        static constexpr inline wstring_view kDoesTableExistParameterName{L":TABLENAME"sv};
+        static constexpr inline string_view kDoesTableExistParameterName{":TABLENAME"sv};
 
     public:
         /**

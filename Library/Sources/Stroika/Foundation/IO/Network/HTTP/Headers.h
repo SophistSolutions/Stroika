@@ -43,38 +43,38 @@ namespace Stroika::Foundation::IO::Network::HTTP {
      */
     namespace HeaderName {
 
-        constexpr wstring_view kAcceptEncoding                = L"Accept-Encoding"sv;
-        constexpr wstring_view kAllow                         = L"Allow"sv;
-        constexpr wstring_view kAccessControlAllowCredentials = L"Access-Control-Allow-Credentials"sv;
-        constexpr wstring_view kAccessControlAllowOrigin      = L"Access-Control-Allow-Origin"sv;
-        constexpr wstring_view kAccessControlAllowHeaders     = L"Access-Control-Allow-Headers"sv;
-        constexpr wstring_view kAccessControlAllowMethods     = L"Access-Control-Allow-Methods"sv;
-        constexpr wstring_view kAccessControlRequestHeaders   = L"Access-Control-Request-Headers"sv;
-        constexpr wstring_view kAccessControlMaxAge           = L"Access-Control-Max-Age"sv;
-        constexpr wstring_view kAuthorization                 = L"Authorization"sv;
-        constexpr wstring_view kCacheControl                  = L"Cache-Control"sv;
-        constexpr wstring_view kContentLength                 = L"Content-Length"sv;
-        constexpr wstring_view kContentType                   = L"Content-Type"sv;
-        constexpr wstring_view kConnection                    = L"Connection"sv;
-        constexpr wstring_view kCookie                        = L"Cookie"sv;
-        constexpr wstring_view kDate                          = L"Date"sv;
-        constexpr wstring_view kETag                          = L"ETag"sv;
-        constexpr wstring_view kExpect                        = L"Expect"sv;
-        constexpr wstring_view kExpires                       = L"Expires"sv;
-        constexpr wstring_view kHost                          = L"Host"sv;
-        constexpr wstring_view kIfNoneMatch                   = L"If-None-Match"sv;
-        constexpr wstring_view kIfModifiedSince               = L"If-Modified-Since"sv;
-        constexpr wstring_view kKeepAlive                     = L"Keep-Alive"sv;
-        constexpr wstring_view kLastModified                  = L"Last-Modified"sv;
-        constexpr wstring_view kLocation                      = L"Location"sv;
-        constexpr wstring_view kOrigin                        = L"Origin"sv;
-        constexpr wstring_view kReferrer                      = L"Referer"sv; // intentionally spelled this way - misspelled in the HTTP RFC
-        constexpr wstring_view kServer                        = L"Server"sv;
-        constexpr wstring_view kSetCookie                     = L"Set-Cookie"sv;
-        constexpr wstring_view kSOAPAction                    = L"SOAPAction"sv;
-        constexpr wstring_view kTransferEncoding              = L"Transfer-Encoding"sv;
-        constexpr wstring_view kUserAgent                     = L"User-Agent"sv;
-        constexpr wstring_view kVary                          = L"Vary"sv;
+        constexpr string_view kAcceptEncoding                = "Accept-Encoding"sv;
+        constexpr string_view kAllow                         = "Allow"sv;
+        constexpr string_view kAccessControlAllowCredentials = "Access-Control-Allow-Credentials"sv;
+        constexpr string_view kAccessControlAllowOrigin      = "Access-Control-Allow-Origin"sv;
+        constexpr string_view kAccessControlAllowHeaders     = "Access-Control-Allow-Headers"sv;
+        constexpr string_view kAccessControlAllowMethods     = "Access-Control-Allow-Methods"sv;
+        constexpr string_view kAccessControlRequestHeaders   = "Access-Control-Request-Headers"sv;
+        constexpr string_view kAccessControlMaxAge           = "Access-Control-Max-Age"sv;
+        constexpr string_view kAuthorization                 = "Authorization"sv;
+        constexpr string_view kCacheControl                  = "Cache-Control"sv;
+        constexpr string_view kContentLength                 = "Content-Length"sv;
+        constexpr string_view kContentType                   = "Content-Type"sv;
+        constexpr string_view kConnection                    = "Connection"sv;
+        constexpr string_view kCookie                        = "Cookie"sv;
+        constexpr string_view kDate                          = "Date"sv;
+        constexpr string_view kETag                          = "ETag"sv;
+        constexpr string_view kExpect                        = "Expect"sv;
+        constexpr string_view kExpires                       = "Expires"sv;
+        constexpr string_view kHost                          = "Host"sv;
+        constexpr string_view kIfNoneMatch                   = "If-None-Match"sv;
+        constexpr string_view kIfModifiedSince               = "If-Modified-Since"sv;
+        constexpr string_view kKeepAlive                     = "Keep-Alive"sv;
+        constexpr string_view kLastModified                  = "Last-Modified"sv;
+        constexpr string_view kLocation                      = "Location"sv;
+        constexpr string_view kOrigin                        = "Origin"sv;
+        constexpr string_view kReferrer                      = "Referer"sv; // intentionally spelled this way - misspelled in the HTTP RFC
+        constexpr string_view kServer                        = "Server"sv;
+        constexpr string_view kSetCookie                     = "Set-Cookie"sv;
+        constexpr string_view kSOAPAction                    = "SOAPAction"sv;
+        constexpr string_view kTransferEncoding              = "Transfer-Encoding"sv;
+        constexpr string_view kUserAgent                     = "User-Agent"sv;
+        constexpr string_view kVary                          = "Vary"sv;
 
     }
 

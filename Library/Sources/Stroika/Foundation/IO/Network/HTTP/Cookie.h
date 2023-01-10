@@ -38,42 +38,42 @@ namespace Stroika::Foundation::IO::Network::HTTP {
         /*
          * https://tools.ietf.org/html/rfc6265#section-4.1.2.1
          */
-        static constexpr wstring_view kExpiresAttributeLabel = L"Expires"sv;
-        optional<Time::DateTime>      fExpires;
+        static constexpr string_view kExpiresAttributeLabel = "Expires"sv;
+        optional<Time::DateTime>     fExpires;
 
         /*
          * https://tools.ietf.org/html/rfc6265#section-4.1.2.2
          */
-        static constexpr wstring_view kMaxAgeAttributeLabel = L"Max-Age"sv;
-        optional<int>                 fMaxAge;
+        static constexpr string_view kMaxAgeAttributeLabel = "Max-Age"sv;
+        optional<int>                fMaxAge;
 
         /*
          * https://tools.ietf.org/html/rfc6265#section-4.1.2.3
          */
-        static constexpr wstring_view kDomainAttributeLabel = L"Domain"sv;
-        optional<String>              fDomain;
+        static constexpr string_view kDomainAttributeLabel = "Domain"sv;
+        optional<String>             fDomain;
 
         /*
          * https://tools.ietf.org/html/rfc6265#section-4.1.2.4
          */
-        static constexpr wstring_view kPathAttributeLabel = L"Path"sv;
-        optional<String>              fPath;
+        static constexpr string_view kPathAttributeLabel = "Path"sv;
+        optional<String>             fPath;
 
         /*
          * https://tools.ietf.org/html/rfc6265#section-4.1.2.5
          *
          *  valueless attribute- just presence/absense of this attribute counts
          */
-        static constexpr wstring_view kSecureAttributeLabel = L"Secure"sv;
-        bool                          fSecure{false};
+        static constexpr string_view kSecureAttributeLabel = "Secure"sv;
+        bool                         fSecure{false};
 
         /*
          * https://tools.ietf.org/html/rfc6265#section-4.1.2.6
          *
          *  valueless attribute- just presence/absense of this attribute counts
          */
-        static constexpr wstring_view kHttpOnlyAttributeLabel = L"HttpOnly"sv;
-        bool                          fHttpOnly{false};
+        static constexpr string_view kHttpOnlyAttributeLabel = "HttpOnly"sv;
+        bool                         fHttpOnly{false};
 
         /*
          * https://tools.ietf.org/html/rfc6265#section-4.1.1

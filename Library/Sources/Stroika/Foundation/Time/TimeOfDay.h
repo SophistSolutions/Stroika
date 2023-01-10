@@ -102,19 +102,19 @@ namespace Stroika::Foundation::Time {
          *  \note leading zeros in hours, minutes, seconds, required, not optional
          *  \note this is locale-independent
          */
-        static constexpr wstring_view kISO8601Format = L"%T"sv;
+        static constexpr string_view kISO8601Format = "%T"sv;
 
     public:
         /**
          *  \note https://en.cppreference.com/w/cpp/locale/time_get/get and https://en.cppreference.com/w/cpp/locale/time_put/put
          */
-        static constexpr wstring_view kLocaleStandardFormat = L"%X"sv;
+        static constexpr string_view kLocaleStandardFormat = "%X"sv;
 
     public:
         /**
          *  \note https://en.cppreference.com/w/cpp/locale/time_get/get and https://en.cppreference.com/w/cpp/locale/time_put/put
          */
-        static constexpr wstring_view kLocaleStandardAlternateFormat = L"%EX"sv;
+        static constexpr string_view kLocaleStandardAlternateFormat = "%EX"sv;
 
     public:
         /**

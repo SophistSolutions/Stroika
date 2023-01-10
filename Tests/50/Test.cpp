@@ -140,7 +140,8 @@ namespace {
             istreambuf_iterator<wchar_t> itbegin{iss}; // beginning of iss
             istreambuf_iterator<wchar_t> itend;        // end-of-stream
             tm                           resultTM{};
-            [[maybe_unused]] auto        i = tmget.get (itbegin, itend, iss, state, &resultTM, Date::kMonthDayYearFormat.data (), Date::kMonthDayYearFormat.data () + Date::kMonthDayYearFormat.length ());
+            wstring                      fmt = String{Date::kMonthDayYearFormat}.As<wstring> ();
+            [[maybe_unused]] auto        i   = tmget.get (itbegin, itend, iss, state, &resultTM, fmt.data (), fmt.data () + fmt.length ());
 #if qCompilerAndStdLib_locale_time_get_PCTM_RequiresLeadingZero_Buggy
             VerifyTestResult ((state & ios::badbit) or (state & ios::failbit));
 #else
@@ -185,7 +186,8 @@ namespace {
                 istreambuf_iterator<wchar_t> itend;        // end-of-stream
                 tm                           resultTM{};
                 VerifyTestResultWarning (tmget.date_order () == time_base::mdy or qCompilerAndStdLib_locale_time_get_date_order_no_order_Buggy);
-                [[maybe_unused]] auto i = tmget.get (itbegin, itend, iss, state, &resultTM, DateTime::kShortLocaleFormatPattern.data (), DateTime::kShortLocaleFormatPattern.data () + DateTime::kShortLocaleFormatPattern.length ());
+                static const wstring         kFmt_ = String{DateTime::kShortLocaleFormatPattern}.As<wstring> ();
+                [[maybe_unused]] auto i     = tmget.get (itbegin, itend, iss, state, &resultTM, kFmt_.data (), kFmt_.data () + kFmt_.length ());
                 if ((state & ios::badbit) or (state & ios::failbit)) {
 #if !_LIBCPP_VERSION
                     // Known that _LIBCPP_VERSION (clang libc++) treats this as an error and quite reasonable - so only warn for other cases so I can add exclusions here

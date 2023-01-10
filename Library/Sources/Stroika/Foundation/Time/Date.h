@@ -367,19 +367,19 @@ namespace Stroika::Foundation::Time {
          * 
          *  \note also used for XML
          */
-        static constexpr wstring_view kISO8601Format = L"%Y-%m-%d"sv;
+        static constexpr string_view kISO8601Format = "%Y-%m-%d"sv;
 
     public:
         /**
          *  \note https://en.cppreference.com/w/cpp/locale/time_get/get
          */
-        static constexpr wstring_view kLocaleStandardFormat = L"%x"sv;
+        static constexpr string_view kLocaleStandardFormat = "%x"sv;
 
     public:
         /**
          *  \note https://en.cppreference.com/w/cpp/locale/time_get/get 
          */
-        static constexpr wstring_view kLocaleStandardAlternateFormat = L"%Ex"sv;
+        static constexpr string_view kLocaleStandardAlternateFormat = "%Ex"sv;
 
     public:
         /**
@@ -389,7 +389,7 @@ namespace Stroika::Foundation::Time {
          *  \note This format is LOCALE INDEPENDENT (according to https://en.cppreference.com/w/cpp/locale/time_get/get)
          *  \see kISO8601Format
          */
-        static constexpr wstring_view kMonthDayYearFormat = L"%m/%d/%Y"sv;
+        static constexpr string_view kMonthDayYearFormat = "%m/%d/%Y"sv;
 
     public:
         /**

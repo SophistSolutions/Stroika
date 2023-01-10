@@ -774,7 +774,7 @@ String DateTime::Format (const locale& l, const String& formatPattern) const
         if (l == locale::classic () and formatPattern == kLocaleStandardFormat) {
             // this seems a weird format, but from https://en.cppreference.com/w/cpp/chrono/c/strftime: writes standard date and time string, e.g. Sun Oct 17 04:41:13 2010 (locale dependent)
             static const wstring_view kAltPattern_{L"%a %b %e %T %Y"sv};
-            tmput.put (oss, oss, ' ', &when, &*kAltPattern_.begin (), &*kAltPattern_.begin () + kAltPattern_.length ());
+            tmput.put (oss, oss, ' ', &when, kAltPattern_.data (), kAltPattern_.data () + kAltPattern_.length ());
             return String{oss.str ()};
         }
     }

@@ -111,7 +111,7 @@ namespace Stroika::Foundation::Database::SQL::ORM {
             /**
              *  Sentinal value for fDefaultExpression, meaning the default value is 1 + the previous max for the field.
              */
-            static inline constexpr wstring_view kDefaultExpression_AutoIncrement = L"<<auto-increment>>"sv;
+            static inline constexpr string_view kDefaultExpression_AutoIncrement = "<<auto-increment>>"sv;
 
             /**
              *  Each field has two names - the field name in the object map and the fieldname used in the database.

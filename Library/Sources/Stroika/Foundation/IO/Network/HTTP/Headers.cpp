@@ -21,8 +21,8 @@ using namespace Stroika::Foundation::Streams;
 using Debug::AssertExternallySynchronizedMutex;
 
 namespace {
-    constexpr wstring_view kKeepAlive_ = L"Keep-Alive"sv;
-    constexpr wstring_view kClose_     = L"close"sv;
+    constexpr string_view kKeepAlive_ = "Keep-Alive"sv;
+    constexpr string_view kClose_     = "close"sv;
 }
 
 /*

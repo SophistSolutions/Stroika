@@ -24,13 +24,13 @@ namespace Stroika::Foundation::IO::Network::HTTP {
      *  \note https://tools.ietf.org/html/rfc5789 (for PATCH)
      */
     namespace Methods {
-        constexpr wstring_view kGet     = L"GET"sv;
-        constexpr wstring_view kPatch   = L"PATCH"sv;
-        constexpr wstring_view kPut     = L"PUT"sv;
-        constexpr wstring_view kPost    = L"POST"sv;
-        constexpr wstring_view kDelete  = L"DELETE"sv;
-        constexpr wstring_view kOptions = L"OPTIONS"sv;
-        constexpr wstring_view kHead    = L"HEAD"sv;
+        constexpr string_view kGet     = "GET"sv;
+        constexpr string_view kPatch   = "PATCH"sv;
+        constexpr string_view kPut     = "PUT"sv;
+        constexpr string_view kPost    = "POST"sv;
+        constexpr string_view kDelete  = "DELETE"sv;
+        constexpr string_view kOptions = "OPTIONS"sv;
+        constexpr string_view kHead    = "HEAD"sv;
     }
 
     namespace MethodsRegEx {
