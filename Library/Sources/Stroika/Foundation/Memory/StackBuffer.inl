@@ -46,7 +46,7 @@ namespace Stroika::Foundation::Memory {
     template <typename T, size_t BUF_SIZE>
     inline StackBuffer<T, BUF_SIZE>::StackBuffer (UninitializedConstructorFlag, size_t nElements)
         requires (is_trivially_copyable_v<T>)
-        : StackBuffer{}
+    : StackBuffer{}
     {
         static_assert (is_trivially_copyable_v<T>);
         resize_uninitialized (nElements);
