@@ -478,10 +478,10 @@ namespace Stroika::Foundation::Characters::FloatConversion {
             else {
                 // must utf convert to wchar_t which we support
                 Memory::StackBuffer<wchar_t> wideBuf{Memory::eUninitialized, UTFConverter::ComputeTargetBufferSize<wchar_t> (srcSpan)};
-    #if qCompilerAndStdLib_spanOfContainer_Buggy
-                span<const wchar_t>          wideSpan = UTFConverter::kThe.ConvertSpan (srcSpan, span{wideBuf.data (), wideBuf.size ()});
+#if qCompilerAndStdLib_spanOfContainer_Buggy
+                span<const wchar_t> wideSpan = UTFConverter::kThe.ConvertSpan (srcSpan, span{wideBuf.data (), wideBuf.size ()});
 #else
-                span<const wchar_t>          wideSpan = UTFConverter::kThe.ConvertSpan (srcSpan, span{wideBuf});
+                span<const wchar_t> wideSpan = UTFConverter::kThe.ConvertSpan (srcSpan, span{wideBuf});
 #endif
                 if (remainder == nullptr) {
                     d = ToFloat_RespectingLocale_<T, wchar_t> (wideSpan, nullptr);
@@ -615,7 +615,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
 #if qCompilerAndStdLib_spanOfContainer_Buggy
                 result = Private_::ToFloat_RespectingLocale_<T> (span<const char>{asciiS.data (), asciiS.size ()}, nullptr);
 #else
-                result = Private_::ToFloat_RespectingLocale_<T> (span<const char>{asciiS}, nullptr);
+                result                       = Private_::ToFloat_RespectingLocale_<T> (span<const char>{asciiS}, nullptr);
 #endif
             }
             else {
