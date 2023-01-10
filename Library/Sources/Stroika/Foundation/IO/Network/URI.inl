@@ -119,18 +119,6 @@ namespace Stroika::Foundation::IO::Network {
             return URI{nullopt, nullopt, GetPath (), GetQuery<String> ()};
         }
     }
-    template <>
-    inline string URI::GetAuthorityRelativeResource () const
-    {
-        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
-        return GetAuthorityRelativeResource<String> ().AsASCII ();
-    }
-    template <>
-    inline URI URI::GetAuthorityRelativeResource () const
-    {
-        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
-        return URI{nullopt, nullopt, GetPath (), GetQuery<String> ()};
-    }
     template <typename RETURN_VALUE>
     RETURN_VALUE URI::GetAbsPath () const
         requires (is_same_v<RETURN_VALUE, String> or is_same_v<RETURN_VALUE, optional<String>>)
