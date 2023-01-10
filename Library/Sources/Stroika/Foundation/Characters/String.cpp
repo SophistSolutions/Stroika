@@ -72,8 +72,11 @@ namespace {
                 requires (not is_same_v<CHAR_T, char8_t>) // char8 ironically involves 2-byte characters, cuz only ascii encoded as 1 byte
             : _fData{s}
             {
-                if constexpr (is_same_v<CHAR_T, char>) {
+                if constexpr (is_same_v<CHAR_T, char> or is_same_v<CHAR_T, char8_t>) {
                     Require (Character::IsASCII (s));
+                }
+                if constexpr (is_same_v<CHAR_T, char16_t>) {
+                    Require (UTFConverter::AllFitsInTwoByteEncoding (s));
                 }
             }
             virtual Character GetAt (size_t index) const noexcept override
@@ -684,9 +687,14 @@ auto String::mk_ (basic_string<char>&& s) -> _SharedPtrIRep
 template <>
 auto String::mk_ (basic_string<char16_t>&& s) -> _SharedPtrIRep
 {
-    // @todo CHECK FITS IN CHAR16 - and if not DONT THROW, but convert - only throw for ascii case
-    return MakeSmartPtr<StdStringDelegator_::Rep<char16_t>> (move (s));
+    if (UTFConverter::AllFitsInTwoByteEncoding (Memory::ConstSpan (span{s.data (), s.size ()}))) {
+        return MakeSmartPtr<StdStringDelegator_::Rep<char16_t>> (move (s));
+    }
+    // copy the data if any surrogates
+    Memory::StackBuffer<char32_t> wideUnicodeBuf{UTFConverter::ComputeTargetBufferSize<char32_t> (span{s.data (), s.size ()})};
+    return MakeSmartPtr<BufferedString_::Rep<char32_t>> (UTFConverter::kThe.ConvertSpan (span{s.data (), s.size ()}, span{wideUnicodeBuf}));
 }
+
 template <>
 auto String::mk_ (basic_string<char32_t>&& s) -> _SharedPtrIRep
 {
@@ -696,8 +704,17 @@ auto String::mk_ (basic_string<char32_t>&& s) -> _SharedPtrIRep
 template <>
 auto String::mk_ (basic_string<wchar_t>&& s) -> _SharedPtrIRep
 {
-    // @todo CHECK FITS IN CHAR16 - and if not DONT THROW, but convert - only throw for ascii case
-    return MakeSmartPtr<StdStringDelegator_::Rep<wchar_t>> (move (s));
+    if constexpr (sizeof (wchar_t) == 2) {
+        if (UTFConverter::AllFitsInTwoByteEncoding (Memory::ConstSpan (span{s.data (), s.size ()}))) {
+            return MakeSmartPtr<StdStringDelegator_::Rep<wchar_t>> (move (s));
+        }
+        // copy the data if any surrogates
+        Memory::StackBuffer<char32_t> wideUnicodeBuf{UTFConverter::ComputeTargetBufferSize<char32_t> (span{s.data (), s.size ()})};
+        return MakeSmartPtr<BufferedString_::Rep<char32_t>> (UTFConverter::kThe.ConvertSpan (span{s.data (), s.size ()}, span{wideUnicodeBuf}));
+    }
+    else {
+        return MakeSmartPtr<StdStringDelegator_::Rep<wchar_t>> (move (s));
+    }
 }
 
 void String::SetCharAt (Character c, size_t i)
