@@ -128,7 +128,7 @@ namespace Stroika::Foundation::Characters {
 
     public:
         /**
-         *  \brief Return true iff the given character (or all in span) is (are) in the ascii range [0..0xff]
+         *  \brief Return true iff the given character (or all in span) is (are) in the ascii range [0..0x7f]
          */
         constexpr bool IsASCII () const noexcept;
         template <Character_Compatible CHAR_T>
