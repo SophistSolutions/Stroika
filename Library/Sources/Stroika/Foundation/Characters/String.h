@@ -205,10 +205,8 @@ namespace Stroika::Foundation::Characters {
         String (const basic_string_view<char16_t>& str);
         String (const basic_string_view<char32_t>& str);
         String (const basic_string_view<wchar_t>& str);
-
-        // @todo add MOVE constructor from some kinds of strings - like u8string and u32string and maybe conditional
-        // wstring& for case where matches u32string.
-
+        template <Character_IsUnicodeCodePointOrPlainChar CHAR_T>
+        explicit String (basic_string<CHAR_T>&& s);
         String (String&& from) noexcept      = default;
         String (const String& from) noexcept = default;
 
@@ -1405,6 +1403,8 @@ namespace Stroika::Foundation::Characters {
         static _SharedPtrIRep mk_ (Iterable<CHAR_T> it);
         template <Character_Compatible CHAR_T>
         static _SharedPtrIRep mk_ (span<CHAR_T> s);
+        template <Character_IsUnicodeCodePointOrPlainChar CHAR_T>
+        static _SharedPtrIRep mk_ (basic_string<CHAR_T>&& s);
 
     private:
         nonvirtual size_t SubString_adjust_ (unsigned int fromOrTo, size_t myLength) const;

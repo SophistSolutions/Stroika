@@ -410,6 +410,44 @@ namespace {
         };
     };
 
+    /*
+     *  Used for String{move(some_string)}
+     */
+    struct StdStringDelegator_ : public StringRepHelperAllFitInSize_ {
+        using inherited = String;
+
+        template <Character_IsUnicodeCodePointOrPlainChar CHAR_T>
+        class Rep : public StringRepHelperAllFitInSize_::Rep<CHAR_T>, public Memory::UseBlockAllocationIfAppropriate<Rep<CHAR_T>> {
+        private:
+            using inherited = StringRepHelperAllFitInSize_::Rep<CHAR_T>;
+
+        public:
+            Rep (basic_string<CHAR_T>&& s)
+                : inherited{span{}}
+                , fMovedData_{move (s)}
+            {
+                this->_fData = span{fMovedData_.data (), fMovedData_.size ()};  // must grab after move
+            }
+            virtual _IterableRepSharedPtr Clone () const override
+            {
+                AssertNotReached (); // Since String reps now immutable, this should never be called
+                return nullptr;
+            }
+            virtual const wchar_t* c_str_peek () const noexcept override
+            {
+                if constexpr (is_same_v<CHAR_T, wchar_t>) {
+                    return fMovedData_.c_str ();
+                }
+                else {
+                    return nullptr;
+                }
+            }
+
+        private:
+            basic_string<CHAR_T> fMovedData_;
+        };
+    };
+
     /**
      *  Delegate to original String::Rep, and add in support for c_str ()
      * 
@@ -634,6 +672,32 @@ auto String::mk_ (span<const char32_t> s) -> _SharedPtrIRep
 #endif
     }
     return MakeSmartPtr<BufferedString_::Rep<char32_t>> (s);
+}
+
+template <>
+auto String::mk_ (basic_string<char>&& s) -> _SharedPtrIRep
+{
+    Character::CheckASCII (span{s.data (), s.size ()});
+    return MakeSmartPtr<StdStringDelegator_::Rep<char>> (move (s));
+}
+
+template <>
+auto String::mk_ (basic_string<char16_t>&& s) -> _SharedPtrIRep
+{
+    // @todo CHECK FITS IN CHAR16 - and if not DONT THROW, but convert - only throw for ascii case
+    return MakeSmartPtr<StdStringDelegator_::Rep<char16_t>> (move (s));
+}
+template <>
+auto String::mk_ (basic_string<char32_t>&& s) -> _SharedPtrIRep
+{
+    return MakeSmartPtr<StdStringDelegator_::Rep<char32_t>> (move (s));
+}
+
+template <>
+auto String::mk_ (basic_string<wchar_t>&& s) -> _SharedPtrIRep
+{
+    // @todo CHECK FITS IN CHAR16 - and if not DONT THROW, but convert - only throw for ascii case
+    return MakeSmartPtr<StdStringDelegator_::Rep<wchar_t>> (move (s));
 }
 
 void String::SetCharAt (Character c, size_t i)

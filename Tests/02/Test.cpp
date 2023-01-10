@@ -1640,6 +1640,18 @@ namespace {
         }
     }
 }
+
+namespace {
+    void Test56_StdStringMoveCTORs_ ()
+    {
+        {
+            wstring stuff{L"abc"};
+            String  a{move (stuff)};
+            VerifyTestResult (a == "abc");
+        }
+    }
+}
+
 namespace {
 
     void DoRegressionTests_ ()
@@ -1690,6 +1702,7 @@ namespace {
         Test53_vswprintf_on_2_strings_longish_Buggy_ ();
         Test54_StringAs_ ();
         Test55_StringAscii_CTORs_ ();
+        Test56_StdStringMoveCTORs_ ();
     }
 }
 
