@@ -30,12 +30,6 @@ namespace Stroika::Foundation::IO::Network {
         }
         CheckValidPathForAuthority_ (authority, path);
     }
-#if 0
-    inline URI::URI (const string& encodedURI)
-        : URI{Parse (encodedURI)}
-    {
-    }
-#endif
     template <Characters::ConvertibleToString STRISH_TYPE>
     inline URI::URI (STRISH_TYPE&& encodedURI)
         : URI{Parse (forward<STRISH_TYPE> (encodedURI))}
@@ -143,11 +137,11 @@ namespace Stroika::Foundation::IO::Network {
     {
         Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
         if constexpr (is_same_v<RETURN_VALUE, String>) {
-            Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
             if (auto op = GetAbsPath<optional<String>> ()) {
                 return *op;
             }
-            Execution::Throw (Execution::RuntimeErrorException{"This URI does not have an absolute path"sv});
+            static const auto kException_ = Execution::RuntimeErrorException{"This URI does not have an absolute path"sv};
+            Execution::Throw (kException_);
         }
         if constexpr (is_same_v<RETURN_VALUE, optional<String>>) {
             if (fPath_.empty ()) {
