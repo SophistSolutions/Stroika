@@ -264,13 +264,8 @@ namespace Stroika::Foundation::Characters {
     }
     inline Character Character::ToUpperCase () const noexcept
     {
-        // https://stackoverflow.com/questions/60353945/isthing-equivalents-for-char32-t
-        if (::iswlower (static_cast<wchar_t> (fCharacterCode_))) {
-            return static_cast<wchar_t> (::towupper (static_cast<wchar_t> (fCharacterCode_)));
-        }
-        else {
-            return fCharacterCode_;
-        }
+        // See ToLowerCase() for implementation comments
+        return static_cast<wchar_t> (::towupper (static_cast<wchar_t> (fCharacterCode_)));
     }
     template <typename RESULT_T, Character_Compatible CHAR_T>
     inline bool Character::AsASCIIQuietly (span<const CHAR_T> fromS, RESULT_T* into)
