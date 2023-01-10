@@ -423,10 +423,10 @@ namespace {
 
         public:
             Rep (basic_string<CHAR_T>&& s)
-                : inherited{span{}}
+                : inherited{span<const CHAR_T>{}}
                 , fMovedData_{move (s)}
             {
-                this->_fData = span{fMovedData_.data (), fMovedData_.size ()};  // must grab after move
+                this->_fData = span{fMovedData_.data (), fMovedData_.size ()}; // must grab after move
             }
             virtual _IterableRepSharedPtr Clone () const override
             {
