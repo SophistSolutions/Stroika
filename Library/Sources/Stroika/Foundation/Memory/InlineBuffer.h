@@ -110,7 +110,8 @@ namespace Stroika::Foundation::Memory {
          */
         InlineBuffer () noexcept;
         InlineBuffer (size_t nElements);
-        InlineBuffer (UninitializedConstructorFlag, size_t nElements);
+        InlineBuffer (UninitializedConstructorFlag, size_t nElements)
+            requires (is_trivially_copyable_v<T>);
         template <size_t FROM_BUF_SIZE>
         InlineBuffer (const InlineBuffer<T, FROM_BUF_SIZE>& src);
         InlineBuffer (const InlineBuffer& src);
@@ -234,7 +235,8 @@ namespace Stroika::Foundation::Memory {
          *  \req is_trivially_copyable_v<T>
          *  \ensure GetSize () <= capacity ();
          */
-        nonvirtual void resize_uninitialized (size_t nElements);
+        nonvirtual void resize_uninitialized (size_t nElements)
+            requires (is_trivially_copyable_v<T>);
 
     public:
         /**
@@ -252,7 +254,8 @@ namespace Stroika::Foundation::Memory {
          *  \req is_trivially_copyable_v<T>
          *  \ensure GetSize () <= capacity ();
          */
-        nonvirtual void GrowToSize_uninitialized (size_t nElements);
+        nonvirtual void GrowToSize_uninitialized (size_t nElements)
+            requires (is_trivially_copyable_v<T>);
 
     public:
         nonvirtual void push_back (Configuration::ArgByValueType<T> e);

@@ -45,6 +45,7 @@ namespace Stroika::Foundation::Memory {
     }
     template <typename T, size_t BUF_SIZE>
     inline InlineBuffer<T, BUF_SIZE>::InlineBuffer (UninitializedConstructorFlag, size_t nElements)
+        requires (is_trivially_copyable_v<T>)
         : InlineBuffer{}
     {
         static_assert (is_trivially_copyable_v<T>);
@@ -159,6 +160,7 @@ namespace Stroika::Foundation::Memory {
     }
     template <typename T, size_t BUF_SIZE>
     inline void InlineBuffer<T, BUF_SIZE>::GrowToSize_uninitialized (size_t nElements)
+        requires (is_trivially_copyable_v<T>)
     {
         static_assert (is_trivially_copyable_v<T>);
         if (nElements > size ()) {
@@ -193,6 +195,7 @@ namespace Stroika::Foundation::Memory {
     }
     template <typename T, size_t BUF_SIZE>
     inline void InlineBuffer<T, BUF_SIZE>::resize_uninitialized (size_t nElements)
+        requires (is_trivially_copyable_v<T>)
     {
         static_assert (is_trivially_copyable_v<T>);
         if (nElements > fSize_) {

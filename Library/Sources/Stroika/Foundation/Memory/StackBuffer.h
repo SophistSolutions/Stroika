@@ -124,7 +124,8 @@ namespace Stroika::Foundation::Memory {
          */
         StackBuffer () noexcept;
         explicit StackBuffer (size_t nElements);
-        StackBuffer (UninitializedConstructorFlag, size_t nElements);
+        StackBuffer (UninitializedConstructorFlag, size_t nElements)
+            requires (is_trivially_copyable_v<T>);
         StackBuffer (const StackBuffer& src) = delete;
         StackBuffer (StackBuffer&& src)      = delete;
         template <typename ITERATOR_OF_T, enable_if_t<Configuration::IsIterator_v<ITERATOR_OF_T>, char>* = nullptr>
@@ -237,7 +238,8 @@ namespace Stroika::Foundation::Memory {
          *  \req is_trivially_copyable_v<T>
          *  \ensure GetSize () <= capacity ();
          */
-        nonvirtual void resize_uninitialized (size_t nElements);
+        nonvirtual void resize_uninitialized (size_t nElements)
+            requires (is_trivially_copyable_v<T>);
 
     public:
         /**
@@ -255,7 +257,8 @@ namespace Stroika::Foundation::Memory {
          *  \req is_trivially_copyable_v<T>
          *  \ensure GetSize () <= capacity ();
          */
-        nonvirtual void GrowToSize_uninitialized (size_t nElements);
+        nonvirtual void GrowToSize_uninitialized (size_t nElements)
+            requires (is_trivially_copyable_v<T>);
 
     public:
         nonvirtual void push_back (Configuration::ArgByValueType<T> e);

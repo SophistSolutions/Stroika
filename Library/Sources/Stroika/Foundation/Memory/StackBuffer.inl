@@ -45,6 +45,7 @@ namespace Stroika::Foundation::Memory {
     }
     template <typename T, size_t BUF_SIZE>
     inline StackBuffer<T, BUF_SIZE>::StackBuffer (UninitializedConstructorFlag, size_t nElements)
+        requires (is_trivially_copyable_v<T>)
         : StackBuffer{}
     {
         static_assert (is_trivially_copyable_v<T>);
@@ -87,6 +88,7 @@ namespace Stroika::Foundation::Memory {
     }
     template <typename T, size_t BUF_SIZE>
     inline void StackBuffer<T, BUF_SIZE>::GrowToSize_uninitialized (size_t nElements)
+        requires (is_trivially_copyable_v<T>)
     {
         static_assert (is_trivially_copyable_v<T>);
         if (nElements > size ()) {
@@ -120,8 +122,8 @@ namespace Stroika::Foundation::Memory {
     }
     template <typename T, size_t BUF_SIZE>
     inline void StackBuffer<T, BUF_SIZE>::resize_uninitialized (size_t nElements)
+        requires (is_trivially_copyable_v<T>)
     {
-        static_assert (is_trivially_copyable_v<T>);
         if (nElements > fSize_) {
             // Growing
             if (nElements > capacity ()) [[unlikely]] {
