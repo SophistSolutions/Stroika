@@ -168,15 +168,17 @@ namespace Stroika::Foundation::Memory {
 
     public:
         /**
+         *  \req i < size ()
          */
         nonvirtual reference       at (size_t i) noexcept;
         nonvirtual const_reference at (size_t i) const noexcept;
 
     public:
         /**
+         *  \req i < size ()
          */
-        reference       operator[] (size_t i) noexcept { return at (i); }
-        const_reference operator[] (size_t i) const noexcept { return at (i); }
+        nonvirtual reference       operator[] (size_t i) noexcept;
+        nonvirtual const_reference operator[] (size_t i) const noexcept;
 
     public:
         /**

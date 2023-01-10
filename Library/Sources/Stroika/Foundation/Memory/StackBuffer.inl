@@ -246,6 +246,16 @@ namespace Stroika::Foundation::Memory {
         return *(fLiveData_ + i);
     }
     template <typename T, size_t BUF_SIZE>
+    inline auto StackBuffer<T, BUF_SIZE>::operator[] (size_t i) noexcept -> reference
+    {
+        return at (i);
+    }
+    template <typename T, size_t BUF_SIZE>
+    inline auto StackBuffer<T, BUF_SIZE>::operator[] (size_t i) const noexcept -> const_reference
+    {
+        return at (i);
+    }
+    template <typename T, size_t BUF_SIZE>
     inline void StackBuffer<T, BUF_SIZE>::push_back (Configuration::ArgByValueType<T> e)
     {
         size_t s = size ();
