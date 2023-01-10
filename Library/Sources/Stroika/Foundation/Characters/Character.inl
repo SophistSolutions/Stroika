@@ -34,7 +34,10 @@ namespace Stroika::Foundation::Characters {
             // this will have the same 'ordering' when we compare characters as when we compare as bytes
             constexpr bool kCanUseMemCmpOptimization_ = sizeof (CHAR_T) == 1 or (std::endian::native == std::endian::big);
             if constexpr (kCanUseMemCmpOptimization_) {
-                return Common::CompareResultNormalizer (std::memcmp (li, ri, length));
+                int r = std::memcmp (li, ri, length);
+                if (r != 0) {
+                    return Common::CompareResultNormalizer (r);
+                }
             }
             else {
                 for (size_t i = 0; i < length; ++i, ++li, ++ri) {
