@@ -655,7 +655,11 @@ auto String::mk_ (span<const char16_t> s) -> _SharedPtrIRep
     }
     else {
         Memory::StackBuffer<char32_t> wideUnicodeBuf{Memory::eUninitialized, UTFConverter::ComputeTargetBufferSize<char32_t> (s)};
+    #if qCompilerAndStdLib_spanOfContainer_Buggy
+        return MakeSmartPtr<BufferedString_::Rep<char32_t>> (UTFConverter::kThe.ConvertSpan (s, span{wideUnicodeBuf.data (), wideUnicodeBuf.size()}));
+#else
         return MakeSmartPtr<BufferedString_::Rep<char32_t>> (UTFConverter::kThe.ConvertSpan (s, span{wideUnicodeBuf}));
+#endif
     }
 }
 
@@ -692,7 +696,11 @@ auto String::mk_ (basic_string<char16_t>&& s) -> _SharedPtrIRep
     }
     // copy the data if any surrogates
     Memory::StackBuffer<char32_t> wideUnicodeBuf{Memory::eUninitialized, UTFConverter::ComputeTargetBufferSize<char32_t> (span{s.data (), s.size ()})};
+    #if qCompilerAndStdLib_spanOfContainer_Buggy
+    return MakeSmartPtr<BufferedString_::Rep<char32_t>> (UTFConverter::kThe.ConvertSpan (span{s.data (), s.size ()}, span{wideUnicodeBuf.data (), wideUnicodeBuf.size ()}));
+#else
     return MakeSmartPtr<BufferedString_::Rep<char32_t>> (UTFConverter::kThe.ConvertSpan (span{s.data (), s.size ()}, span{wideUnicodeBuf}));
+#endif
 }
 
 template <>
@@ -710,7 +718,11 @@ auto String::mk_ (basic_string<wchar_t>&& s) -> _SharedPtrIRep
         }
         // copy the data if any surrogates
         Memory::StackBuffer<char32_t> wideUnicodeBuf{Memory::eUninitialized, UTFConverter::ComputeTargetBufferSize<char32_t> (span{s.data (), s.size ()})};
+    #if qCompilerAndStdLib_spanOfContainer_Buggy
+        return MakeSmartPtr<BufferedString_::Rep<char32_t>> (UTFConverter::kThe.ConvertSpan (span{s.data (), s.size ()}, span{wideUnicodeBuf.data (), wideUnicodeBuf.size ()}));
+#else
         return MakeSmartPtr<BufferedString_::Rep<char32_t>> (UTFConverter::kThe.ConvertSpan (span{s.data (), s.size ()}, span{wideUnicodeBuf}));
+#endif
     }
     else {
         return MakeSmartPtr<StdStringDelegator_::Rep<wchar_t>> (move (s));
@@ -768,7 +780,11 @@ String String::RemoveAt (size_t from, size_t to) const
         span                          s2 = d.subspan (to);
         copy (s1.begin (), s1.end (), buf.data ());
         copy (s2.begin (), s2.end (), buf.data () + s1.size ());
+    #if qCompilerAndStdLib_spanOfContainer_Buggy
+        return String{mk_ (span{buf.data (), buf.size ()})};
+#else
         return String{mk_ (span{buf})};
+#endif
     }
 }
 

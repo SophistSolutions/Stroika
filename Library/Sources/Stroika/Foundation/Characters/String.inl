@@ -64,17 +64,29 @@ namespace Stroika::Foundation::Characters {
             else if constexpr (is_same_v<decay_t<USTRING>, const char8_t*> or is_same_v<decay_t<USTRING>, const char16_t*> or is_same_v<decay_t<USTRING>, const wchar_t*>) {
                 span spn{s, CString::Length (s)};
                 mostlyIgnoredBuf->resize_uninitialized (UTFConverter::ComputeTargetBufferSize<Character> (spn));
+    #if qCompilerAndStdLib_spanOfContainer_Buggy
+                return UTFConverter::kThe.ConvertSpan (spn, span{mostlyIgnoredBuf->data (), mostlyIgnoredBuf->size ()});
+#else
                 return UTFConverter::kThe.ConvertSpan (spn, span{*mostlyIgnoredBuf});
+#endif
             }
             else if constexpr (is_same_v<decay_t<USTRING>, u8string> or is_same_v<decay_t<USTRING>, u16string> or is_same_v<decay_t<USTRING>, wstring>) {
                 span spn{s.data (), s.size ()};
                 mostlyIgnoredBuf->resize_uninitialized (UTFConverter::ComputeTargetBufferSize<Character> (spn));
+    #if qCompilerAndStdLib_spanOfContainer_Buggy
+                return UTFConverter::kThe.ConvertSpan (spn, span{mostlyIgnoredBuf->data (), mostlyIgnoredBuf->size ()});
+#else
                 return UTFConverter::kThe.ConvertSpan (spn, span{*mostlyIgnoredBuf});
+#endif
             }
             else if constexpr (is_same_v<decay_t<USTRING>, u8string_view> or is_same_v<decay_t<USTRING>, u16string_view> or is_same_v<decay_t<USTRING>, wstring_view>) {
                 span spn{s.data (), s.size ()};
                 mostlyIgnoredBuf->resize_uninitialized (UTFConverter::ComputeTargetBufferSize<Character> (spn));
+    #if qCompilerAndStdLib_spanOfContainer_Buggy
+                return UTFConverter::kThe.ConvertSpan (spn, span{mostlyIgnoredBuf->data (), mostlyIgnoredBuf->size ()});
+#else
                 return UTFConverter::kThe.ConvertSpan (spn, span{*mostlyIgnoredBuf});
+                #endif
             }
             else {
                 // else must copy data to mostlyIgnoredBuf and use that, so just need a span
@@ -374,7 +386,11 @@ namespace Stroika::Foundation::Characters {
         Memory::StackBuffer<char32_t> buf{Memory::eUninitialized, leftSpan.size () + rightSpan.size ()};
         copy (leftSpan.begin (), leftSpan.end (), buf.data ());
         copy (rightSpan.begin (), rightSpan.end (), buf.data () + leftSpan.size ());
+        #if qCompilerAndStdLib_spanOfContainer_Buggy
+        return mk_ (span{buf.data (), buf.size ()});
+#else
         return mk_ (span{buf});
+#endif
     }
     inline void String::_AssertRepValidType () const
     {
@@ -575,7 +591,11 @@ namespace Stroika::Foundation::Characters {
                 *write2Buf = i.As<char32_t> ();
                 ++write2Buf;
             }
+#if qCompilerAndStdLib_spanOfContainer_Buggy
+            *this = mk_ (span{combinedBuf.data (), combinedBuf.size ()});
+#else
             *this = mk_ (span{combinedBuf});
+#endif
         }
     }
     inline void String::Append (const wchar_t* from, const wchar_t* to)
@@ -587,7 +607,11 @@ namespace Stroika::Foundation::Characters {
             Memory::StackBuffer<wchar_t> buf{Memory::eUninitialized, thisSpan.size () + (to - from)};
             copy (thisSpan.begin (), thisSpan.end (), buf.data ());
             copy (from, to, buf.data () + thisSpan.size ());
+    #if qCompilerAndStdLib_spanOfContainer_Buggy
+            *this = mk_ (span{buf.data (), buf.size ()});
+#else
             *this = mk_ (span{buf});
+#endif
         }
     }
     inline void String::Append (Character c)
@@ -1211,7 +1235,11 @@ namespace Stroika::Foundation::Characters {
             Memory::StackBuffer<Character> buf{Memory::eUninitialized, lSpan.size () + rSpan.size ()};
             copy (lSpan.begin (), lSpan.end (), buf.data ());
             copy (rSpan.begin (), rSpan.end (), buf.data () + lSpan.size ());
+            #if qCompilerAndStdLib_spanOfContainer_Buggy
+            return String{span{buf.data (), buf.size ()}};
+            #else
             return String{span{buf}};
+            #endif
         }
         else {
             return String{forward<LHS_T> (lhs)}.Concatenate (forward<RHS_T> (rhs));
