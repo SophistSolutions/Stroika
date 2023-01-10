@@ -33,6 +33,7 @@ namespace Stroika::Foundation::Characters {
             // |HI-1|LO-1|HI-2|LO-2... - for this case, we are all set, because
             // this will have the same 'ordering' when we compare characters as when we compare as bytes
             constexpr bool kCanUseMemCmpOptimization_ = sizeof (CHAR_T) == 1 or (std::endian::native == std::endian::big);
+
             if constexpr (kCanUseMemCmpOptimization_) {
                 int r = std::memcmp (li, ri, length);
                 if (r != 0) {
@@ -40,16 +41,10 @@ namespace Stroika::Foundation::Characters {
                 }
             }
             else {
-                for (size_t i = 0; i < length; ++i, ++li, ++ri) {
-                    if constexpr (is_same_v<CHAR_T, Character>) {
-                        if (li->GetCharacterCode () != ri->GetCharacterCode ()) {
-                            return li->GetCharacterCode () <=> ri->GetCharacterCode ();
-                        }
-                    }
-                    else {
-                        if (*li != *ri) {
-                            return *li <=> *ri;
-                        }
+                const CHAR_T* lie = li + length;    // just end of what we are comparing in this loop
+                for (; li != lie; ++li, ++ri) {
+                    if (*li != *ri) {
+                        return *li <=> *ri;
                     }
                 }
             }
@@ -71,10 +66,18 @@ namespace Stroika::Foundation::Characters {
                         return lc <=> rc;
                     }
                 }
+                else if constexpr (is_same_v<CHAR_T, char>) {
+                    // see https://en.cppreference.com/w/cpp/string/byte/tolower for rationale for this crazy casting
+                    CHAR_T lc = static_cast<CHAR_T> (std::tolower (static_cast<unsigned char> (*li)));
+                    CHAR_T rc = static_cast<CHAR_T> (std::tolower (static_cast<unsigned char> (*ri)));
+                    if (lc != rc) {
+                        return lc <=> rc;
+                    }
+                }
                 else {
                     // see https://en.cppreference.com/w/cpp/string/byte/tolower for rationale for this crazy casting
-                    CHAR_T lc = static_cast<CHAR_T> (tolower (static_cast<unsigned char> (*li)));
-                    CHAR_T rc = static_cast<CHAR_T> (tolower (static_cast<unsigned char> (*ri)));
+                    CHAR_T lc = static_cast<CHAR_T> (std::towlower (static_cast<wchar_t> (*li)));
+                    CHAR_T rc = static_cast<CHAR_T> (std::towlower (static_cast<wchar_t> (*ri)));
                     if (lc != rc) {
                         return lc <=> rc;
                     }
@@ -249,12 +252,15 @@ namespace Stroika::Foundation::Characters {
     {
         // https://stackoverflow.com/questions/60353945/isthing-equivalents-for-char32-t
         // Cannot find good spec on towlower/towupper, so not sure that this check is necessary
-        if (::iswupper (static_cast<wchar_t> (fCharacterCode_))) {
-            return static_cast<wchar_t> (::towlower (static_cast<wchar_t> (fCharacterCode_)));
-        }
-        else {
-            return fCharacterCode_;
-        }
+        //
+        // before Stroika v3.0d1 - we used to check iswupper first, but according to https://en.cppreference.com/w/cpp/string/wide/towlower
+        // that appears unnecessary
+        //if (::iswupper (static_cast<wchar_t> (fCharacterCode_))) {
+        return static_cast<wchar_t> (::towlower (static_cast<wchar_t> (fCharacterCode_)));
+        //}
+        //else {
+        //    return fCharacterCode_;
+        //}
     }
     inline Character Character::ToUpperCase () const noexcept
     {

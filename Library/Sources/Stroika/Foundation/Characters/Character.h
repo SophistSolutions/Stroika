@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright(c) Sophist Solutions, Inc. 1990-2022.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Characters_Character_h_
@@ -197,6 +197,14 @@ namespace Stroika::Foundation::Characters {
          *      It is not necessary to first check
          * if the argument character is uppercase or alpabetic. ToLowerCase () just returns the
          * original character if there is no sensible conversion.
+         * 
+         *  \todo @todo See https://www.open-std.org/JTC1/SC35/WG5/docs/30112d10.pdf
+         * 
+         *  \see https://en.cppreference.com/w/cpp/string/wide/towlower
+         *      Only 1:1 character mapping can be performed by this function, 
+         *      e.g. the Greek uppercase letter 'Σ' has two lowercase forms, depending on the
+         *      position in a word: 'σ' and 'ς'. A call to std::towlower cannot be used to
+         *      obtain the correct lowercase form in this case.
          */
         nonvirtual Character ToLowerCase () const noexcept;
 
@@ -208,6 +216,8 @@ namespace Stroika::Foundation::Characters {
          *      It is not necessary to first check
          * if the argument character is lowercase or alpabetic. ToUpperCase () just returns the
          * original character if there is no sensible conversion.
+         * 
+         *  \todo @todo See https://www.open-std.org/JTC1/SC35/WG5/docs/30112d10.pdf
          */
         nonvirtual Character ToUpperCase () const noexcept;
 
@@ -228,7 +238,12 @@ namespace Stroika::Foundation::Characters {
     public:
         /**
          */
-        nonvirtual strong_ordering operator<=> (const Character&) const noexcept = default;
+        constexpr bool operator== (const Character&) const noexcept = default;
+
+    public:
+        /**
+         */
+        constexpr strong_ordering operator<=> (const Character&) const noexcept = default;
 
     public:
         struct EqualsComparer;
