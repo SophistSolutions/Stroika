@@ -9,6 +9,7 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
+#include <bit>
 #include <cwctype>
 #include <type_traits>
 
@@ -25,15 +26,27 @@ namespace Stroika::Foundation::Characters {
             size_t        length = min (lLen, rLen);
             const CHAR_T* li     = lhs.data ();
             const CHAR_T* ri     = rhs.data ();
-            for (size_t i = 0; i < length; ++i, ++li, ++ri) {
-                if constexpr (is_same_v<CHAR_T, Character>) {
-                    if (li->GetCharacterCode () != ri->GetCharacterCode ()) {
-                        return li->GetCharacterCode () <=> ri->GetCharacterCode ();
+
+            // when can we use memcmp() instead of a loop comparing?
+            // for sizeof CHAR_T == 1, sure.
+            // for bigger CHAR_T, we have to worry about endianness
+            // |HI-1|LO-1|HI-2|LO-2... - for this case, we are all set, because
+            // this will have the same 'ordering' when we compare characters as when we compare as bytes
+            constexpr bool kCanUseMemCmpOptimization_ = sizeof (CHAR_T) == 1 or (std::endian::native == std::endian::big);
+            if constexpr (kCanUseMemCmpOptimization_) {
+                return Common::CompareResultNormalizer (std::memcmp (li, ri, length)); 
+            }
+            else {
+                for (size_t i = 0; i < length; ++i, ++li, ++ri) {
+                    if constexpr (is_same_v<CHAR_T, Character>) {
+                        if (li->GetCharacterCode () != ri->GetCharacterCode ()) {
+                            return li->GetCharacterCode () <=> ri->GetCharacterCode ();
+                        }
                     }
-                }
-                else {
-                    if (*li != *ri) {
-                        return *li <=> *ri;
+                    else {
+                        if (*li != *ri) {
+                            return *li <=> *ri;
+                        }
                     }
                 }
             }
