@@ -201,14 +201,12 @@ namespace {
              * magic 'automatic round-capacity-up-to' these (in CHAR_T) - and use block allocation for them...
              * 
              * getconf LEVEL1_DCACHE_LINESIZE; getconf LEVEL2_CACHE_LINESIZE
-             * typically returns 64,64 so 16*2 is 32, and 16*4 (unix) is 64. So the blocks allocated will generally fit
-             * in a cache line.
-             * 
-             * Maybe the 'roundup' numbers should differ between UNIX / Windows (2/4 byte wchar_t)?
+             * typically returns 64 bytes. So the blocks allocated will generally fit
+             * in a cache line (except kNElts3_ with char32_t)
              */
-            static constexpr size_t kNElts1_ = 16;
-            static constexpr size_t kNElts2_ = 32;
-            static constexpr size_t kNElts3_ = 64;
+            static constexpr size_t kNElts1_ = 8;
+            static constexpr size_t kNElts2_ = 16;
+            static constexpr size_t kNElts3_ = sizeof(CHAR_T)==1? 64: 32;
 
         private:
             template <size_t SZ>
