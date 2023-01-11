@@ -1733,6 +1733,34 @@ error C2975: '_Test': invalid template argument for 'std::conditional', expected
 
 #endif
 
+
+
+/**
+ Sandbox/Stroika-Dev/Builds/clang++-11-release-libstdc++/Stroika-Foundation.a(UniformResourceIdentification.o): in function `basic_string':
+/usr/bin/../lib/gcc/x86_64-linux-gnu/12/../../../../include/c++/12/bits/basic_string.h:620: undefined reference to `void std::__cxx11::basic_string<char8_t, std::char_traits<char8_t>, std::allocator<char8_t> >::_M_construct<char8_t const*>(char8_t const*, char8_t const*, std::forward_iterator_tag)'
+clang: error: linker command failed with exit code 1 (use -v to see invocation)
+make
+ * 
+ */
+// only seen on Ubuntu 22.04
+#ifndef qCompilerAndStdLib_clangWithLibStdCPPStringConstexpr_Buggy
+
+#if defined(__clang__) && !defined(__APPLE__)
+// still broken in clang++-11
+// still broken in clang++-12
+// still broken in clang++-13
+// still broken in clang++-14
+#define qCompilerAndStdLib_clangWithLibStdCPPStringConstexpr_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 14)) && defined(_GLIBCXX_RELEASE)
+#else
+#define qCompilerAndStdLib_clangWithLibStdCPPStringConstexpr_Buggy 0
+#endif
+
+#endif
+
+
+
+
+
 /*
  * NOW ALLOWED IN C++17
 Test.cpp:173:31: error: template template argument has different template parameters than its corresponding template template parameter

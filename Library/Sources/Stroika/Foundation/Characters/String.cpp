@@ -1525,3 +1525,10 @@ Memory::BLOB DataExchange::DefaultSerializer<String>::operator() (const String& 
     Memory::StackBuffer<char8_t> maybeIgnoreBuf1;
     return Memory::BLOB{as_bytes (arg.GetData (&maybeIgnoreBuf1))};
 }
+
+
+#if qCompilerAndStdLib_clangWithLibStdCPPStringConstexpr_Buggy
+namespace {
+    std::u8string clang_string_workaround1(const char8_t* a, const char8_t* b) { return {a, b}; }
+}
+#endif
