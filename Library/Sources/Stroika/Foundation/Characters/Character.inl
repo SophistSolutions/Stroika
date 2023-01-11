@@ -36,14 +36,14 @@ namespace Stroika::Foundation::Characters {
 
             if constexpr (kCanUseMemCmpOptimization_) {
                 int r = std::memcmp (li, ri, length);
-                if (r != 0) {
+                if (r != 0) [[likely]] {
                     return Common::CompareResultNormalizer (r);
                 }
             }
             else {
-                const CHAR_T* lie = li + length; // just end of what we are comparing in this loop
-                for (; li != lie; ++li, ++ri) {
-                    if (*li != *ri) {
+                const CHAR_T* lend = li + length; // just end of what we are comparing in this loop
+                for (; li != lend; ++li, ++ri) {
+                    if (*li != *ri) [[likely]] {
                         return *li <=> *ri;
                     }
                 }
@@ -58,11 +58,12 @@ namespace Stroika::Foundation::Characters {
             size_t        length = min (lLen, rLen);
             const CHAR_T* li     = lhs.data ();
             const CHAR_T* ri     = rhs.data ();
-            for (size_t i = 0; i < length; ++i, ++li, ++ri) {
+            const CHAR_T* lend   = li + length; // just end of what we are comparing in this loop
+            for (; li != lend; ++li, ++ri) {
                 if constexpr (is_same_v<CHAR_T, Character>) {
                     Character lc = li->ToLowerCase ();
                     Character rc = ri->ToLowerCase ();
-                    if (lc != rc) {
+                    if (lc != rc) [[likely]] {
                         return lc <=> rc;
                     }
                 }
@@ -70,7 +71,7 @@ namespace Stroika::Foundation::Characters {
                     // see https://en.cppreference.com/w/cpp/string/byte/tolower for rationale for this crazy casting
                     CHAR_T lc = static_cast<CHAR_T> (std::tolower (static_cast<unsigned char> (*li)));
                     CHAR_T rc = static_cast<CHAR_T> (std::tolower (static_cast<unsigned char> (*ri)));
-                    if (lc != rc) {
+                    if (lc != rc) [[likely]] {
                         return lc <=> rc;
                     }
                 }
@@ -78,7 +79,7 @@ namespace Stroika::Foundation::Characters {
                     // see https://en.cppreference.com/w/cpp/string/byte/tolower for rationale for this crazy casting
                     CHAR_T lc = static_cast<CHAR_T> (std::towlower (static_cast<wchar_t> (*li)));
                     CHAR_T rc = static_cast<CHAR_T> (std::towlower (static_cast<wchar_t> (*ri)));
-                    if (lc != rc) {
+                    if (lc != rc) [[likely]] {
                         return lc <=> rc;
                     }
                 }
