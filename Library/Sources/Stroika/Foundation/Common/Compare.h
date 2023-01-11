@@ -89,7 +89,7 @@ namespace Stroika::Foundation::Common {
      * different sized values and just returning an int, but don't want the warnings about overflow etc.
      */
     template <typename FROM_INT_TYPE>
-    strong_ordering CompareResultNormalizer (FROM_INT_TYPE f);
+    constexpr strong_ordering CompareResultNormalizer (FROM_INT_TYPE f);
 
     /**
      *  \brief return true if argument is a function like object (callable) taking 2 arguments (FUNCTOR_ARG) and

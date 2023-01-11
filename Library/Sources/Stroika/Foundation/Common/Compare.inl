@@ -63,7 +63,7 @@ namespace Stroika::Foundation::Common {
      ********************************************************************************
      */
     template <typename FROM_INT_TYPE>
-    inline strong_ordering CompareResultNormalizer (FROM_INT_TYPE f)
+    constexpr strong_ordering CompareResultNormalizer (FROM_INT_TYPE f)
     {
         if (f == 0) {
             return strong_ordering::equal;
