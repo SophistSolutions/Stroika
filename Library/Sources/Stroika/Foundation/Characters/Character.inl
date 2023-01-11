@@ -38,7 +38,7 @@ namespace Stroika::Foundation::Characters {
             constexpr bool kUseStdTraitsCompare_ = true;
 
             if constexpr (kUseStdTraitsCompare_) {
-                using TRAITS_CHAR_T = conditional_t<sizeof(CHAR_T)==4,char32_t,CHAR_T>;
+                using TRAITS_CHAR_T = conditional_t<sizeof (CHAR_T) == 4, char32_t, CHAR_T>;
                 int r               = std::char_traits<TRAITS_CHAR_T>::compare (reinterpret_cast<const TRAITS_CHAR_T*> (li), reinterpret_cast<const TRAITS_CHAR_T*> (ri), length);
                 if (r != 0) [[likely]] {
                     return Common::CompareResultNormalizer (r);
@@ -70,28 +70,24 @@ namespace Stroika::Foundation::Characters {
             const CHAR_T* ri     = rhs.data ();
             const CHAR_T* lend   = li + length; // just end of what we are comparing in this loop
             for (; li != lend; ++li, ++ri) {
+                CHAR_T lc; // intentionally uninitialized
+                CHAR_T rc; // ""
                 if constexpr (is_same_v<CHAR_T, Character>) {
-                    Character lc = li->ToLowerCase ();
-                    Character rc = ri->ToLowerCase ();
-                    if (lc != rc) [[likely]] {
-                        return lc <=> rc;
-                    }
+                    lc = li->ToLowerCase ();
+                    rc = ri->ToLowerCase ();
                 }
                 else if constexpr (is_same_v<CHAR_T, char>) {
                     // see https://en.cppreference.com/w/cpp/string/byte/tolower for rationale for this crazy casting
-                    CHAR_T lc = static_cast<CHAR_T> (std::tolower (static_cast<unsigned char> (*li)));
-                    CHAR_T rc = static_cast<CHAR_T> (std::tolower (static_cast<unsigned char> (*ri)));
-                    if (lc != rc) [[likely]] {
-                        return lc <=> rc;
-                    }
+                    lc = static_cast<CHAR_T> (std::tolower (static_cast<unsigned char> (*li)));
+                    rc = static_cast<CHAR_T> (std::tolower (static_cast<unsigned char> (*ri)));
                 }
                 else {
                     // see https://en.cppreference.com/w/cpp/string/byte/tolower for rationale for this crazy casting
-                    CHAR_T lc = static_cast<CHAR_T> (std::towlower (static_cast<wchar_t> (*li)));
-                    CHAR_T rc = static_cast<CHAR_T> (std::towlower (static_cast<wchar_t> (*ri)));
-                    if (lc != rc) [[likely]] {
-                        return lc <=> rc;
-                    }
+                    lc = static_cast<CHAR_T> (std::towlower (static_cast<wchar_t> (*li)));
+                    rc = static_cast<CHAR_T> (std::towlower (static_cast<wchar_t> (*ri)));
+                }
+                if (lc != rc) [[likely]] {
+                    return lc <=> rc;
                 }
             }
             return Common::CompareResultNormalizer (static_cast<ptrdiff_t> (lLen) - static_cast<ptrdiff_t> (rLen));
