@@ -156,7 +156,7 @@ namespace Stroika::Foundation::Memory {
      *        But again, this is the same as if they used *v, which is the obvious alternative.
      */
     template <typename T>
-    const T& ValueOf (const optional<T>& t);
+    constexpr const T& ValueOf (const optional<T>& t);
 
     /**
      *  'Constructor' taking const RHS_CONVERTIBLE_TO_OPTIONAL_OF_T* is to allow easier interoperability
