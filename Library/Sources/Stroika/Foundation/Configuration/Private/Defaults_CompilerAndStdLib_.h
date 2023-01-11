@@ -1736,6 +1736,10 @@ error C2975: '_Test': invalid template argument for 'std::conditional', expected
 
 
 /**
+ * 
+ * WORKAROUND THANKS TO 
+ *      https://github.com/llvm/llvm-project/issues/55560
+ * 
  Sandbox/Stroika-Dev/Builds/clang++-11-release-libstdc++/Stroika-Foundation.a(UniformResourceIdentification.o): in function `basic_string':
 /usr/bin/../lib/gcc/x86_64-linux-gnu/12/../../../../include/c++/12/bits/basic_string.h:620: undefined reference to `void std::__cxx11::basic_string<char8_t, std::char_traits<char8_t>, std::allocator<char8_t> >::_M_construct<char8_t const*>(char8_t const*, char8_t const*, std::forward_iterator_tag)'
 clang: error: linker command failed with exit code 1 (use -v to see invocation)
