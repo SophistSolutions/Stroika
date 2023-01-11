@@ -117,7 +117,7 @@ namespace Stroika::Foundation::Streams {
             size_t                GetSize () const;
             SeekOffsetType        GetStart () const;
             SeekOffsetType        GetEnd () const;
-            optional<ElementType> Peek1FromCache (const SeekOffsetType* actualOffset);
+            optional<ElementType> Peek1FromCache (SeekOffsetType actualOffset);
             optional<ElementType> Read1FromCache (SeekOffsetType* actualOffset);
             optional<size_t>      ReadFromCache (SeekOffsetType* actualOffset, ElementType* intoStart, ElementType* intoEnd);
             void                  FillCacheWith (SeekOffsetType s, const InlineBufferElementType_* intoStart, const InlineBufferElementType_* intoEnd);

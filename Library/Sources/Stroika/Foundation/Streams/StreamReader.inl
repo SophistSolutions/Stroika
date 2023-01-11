@@ -35,19 +35,19 @@ namespace Stroika::Foundation::Streams {
         return fCacheWindowBufStart_ + fCacheWindowBuf_.GetSize ();
     }
     template <typename ELEMENT_TYPE>
-    inline auto StreamReader<ELEMENT_TYPE>::CacheBlock_::Peek1FromCache (const SeekOffsetType* actualOffset) -> optional<ElementType>
+    inline auto StreamReader<ELEMENT_TYPE>::CacheBlock_::Peek1FromCache (SeekOffsetType actualOffset) -> optional<ElementType>
     {
-        SeekOffsetType offset          = *actualOffset;
         size_t         cacheWindowSize = fCacheWindowBuf_.size ();
-        if (fCacheWindowBufStart_ <= offset and offset < fCacheWindowBufStart_ + cacheWindowSize) {
-            return fCacheWindowBuf_[static_cast<size_t> (offset - fCacheWindowBufStart_)];
+        if (fCacheWindowBufStart_ <= actualOffset and actualOffset < fCacheWindowBufStart_ + cacheWindowSize) {
+            return fCacheWindowBuf_[static_cast<size_t> (actualOffset - fCacheWindowBufStart_)];
         }
         return nullopt;
     }
     template <typename ELEMENT_TYPE>
     inline auto StreamReader<ELEMENT_TYPE>::CacheBlock_::Read1FromCache (SeekOffsetType* actualOffset) -> optional<ElementType>
     {
-        auto result = Peek1FromCache (actualOffset);
+        RequireNotNull (actualOffset);
+        auto result = Peek1FromCache (*actualOffset);
         if (result) {
             ++(*actualOffset);
         }
@@ -223,12 +223,12 @@ namespace Stroika::Foundation::Streams {
     {
         // first try last filled - generally will be the right one
         for (size_t i = fCacheBlockLastFilled_; i < Memory::NEltsOf (fCacheBlocks_); ++i) {
-            if (auto r = fCacheBlocks_[i].Peek1FromCache (&this->fOffset_)) {
+            if (auto r = fCacheBlocks_[i].Peek1FromCache (this->fOffset_)) {
                 return r;
             }
         }
         for (size_t i = 0; i < fCacheBlockLastFilled_; ++i) {
-            if (auto r = fCacheBlocks_[i].Peek1FromCache (&this->fOffset_)) {
+            if (auto r = fCacheBlocks_[i].Peek1FromCache (this->fOffset_)) {
                 return r;
             }
         }
