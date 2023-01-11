@@ -169,10 +169,13 @@ namespace Stroika::Foundation::Memory {
     template <typename T, size_t BUF_SIZE>
     inline void StackBuffer<T, BUF_SIZE>::reserve (size_t newCapacity, bool atLeast)
     {
-        Require (newCapacity >= size ());
+        Require (atLeast or newCapacity >= size ());
         size_t useNewCapacity = newCapacity;
         size_t oldCapacity    = capacity ();
         if (atLeast) {
+            if (useNewCapacity < oldCapacity) {
+                return; // no work todo here...
+            }
             // if fits in inline buffer, round up to that size. If exceeding that, use ScalledUpCapcity exponential growth algorithm
             if (useNewCapacity < BUF_SIZE) {
                 useNewCapacity = BUF_SIZE;
