@@ -1733,8 +1733,6 @@ error C2975: '_Test': invalid template argument for 'std::conditional', expected
 
 #endif
 
-
-
 /**
  * 
  * WORKAROUND THANKS TO 
@@ -1754,16 +1752,12 @@ make
 // still broken in clang++-12
 // still broken in clang++-13
 // still broken in clang++-14
-#define qCompilerAndStdLib_clangWithLibStdCPPStringConstexpr_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 14)) && defined(_GLIBCXX_RELEASE)
+#define qCompilerAndStdLib_clangWithLibStdCPPStringConstexpr_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 14)) && defined (_GLIBCXX_RELEASE)
 #else
 #define qCompilerAndStdLib_clangWithLibStdCPPStringConstexpr_Buggy 0
 #endif
 
 #endif
-
-
-
-
 
 /*
  * NOW ALLOWED IN C++17

@@ -206,7 +206,7 @@ namespace {
              */
             static constexpr size_t kNElts1_ = 8;
             static constexpr size_t kNElts2_ = 16;
-            static constexpr size_t kNElts3_ = sizeof(CHAR_T)==1? 64: 32;
+            static constexpr size_t kNElts3_ = sizeof (CHAR_T) == 1 ? 64 : 32;
 
         private:
             template <size_t SZ>
@@ -653,8 +653,8 @@ auto String::mk_ (span<const char16_t> s) -> _SharedPtrIRep
     }
     else {
         Memory::StackBuffer<char32_t> wideUnicodeBuf{Memory::eUninitialized, UTFConverter::ComputeTargetBufferSize<char32_t> (s)};
-    #if qCompilerAndStdLib_spanOfContainer_Buggy
-        return MakeSmartPtr<BufferedString_::Rep<char32_t>> (UTFConverter::kThe.ConvertSpan (s, span{wideUnicodeBuf.data (), wideUnicodeBuf.size()}));
+#if qCompilerAndStdLib_spanOfContainer_Buggy
+        return MakeSmartPtr<BufferedString_::Rep<char32_t>> (UTFConverter::kThe.ConvertSpan (s, span{wideUnicodeBuf.data (), wideUnicodeBuf.size ()}));
 #else
         return MakeSmartPtr<BufferedString_::Rep<char32_t>> (UTFConverter::kThe.ConvertSpan (s, span{wideUnicodeBuf}));
 #endif
@@ -694,7 +694,7 @@ auto String::mk_ (basic_string<char16_t>&& s) -> _SharedPtrIRep
     }
     // copy the data if any surrogates
     Memory::StackBuffer<char32_t> wideUnicodeBuf{Memory::eUninitialized, UTFConverter::ComputeTargetBufferSize<char32_t> (span{s.data (), s.size ()})};
-    #if qCompilerAndStdLib_spanOfContainer_Buggy
+#if qCompilerAndStdLib_spanOfContainer_Buggy
     return MakeSmartPtr<BufferedString_::Rep<char32_t>> (UTFConverter::kThe.ConvertSpan (span{s.data (), s.size ()}, span{wideUnicodeBuf.data (), wideUnicodeBuf.size ()}));
 #else
     return MakeSmartPtr<BufferedString_::Rep<char32_t>> (UTFConverter::kThe.ConvertSpan (span{s.data (), s.size ()}, span{wideUnicodeBuf}));
@@ -716,7 +716,7 @@ auto String::mk_ (basic_string<wchar_t>&& s) -> _SharedPtrIRep
         }
         // copy the data if any surrogates
         Memory::StackBuffer<char32_t> wideUnicodeBuf{Memory::eUninitialized, UTFConverter::ComputeTargetBufferSize<char32_t> (span{s.data (), s.size ()})};
-    #if qCompilerAndStdLib_spanOfContainer_Buggy
+#if qCompilerAndStdLib_spanOfContainer_Buggy
         return MakeSmartPtr<BufferedString_::Rep<char32_t>> (UTFConverter::kThe.ConvertSpan (span{s.data (), s.size ()}, span{wideUnicodeBuf.data (), wideUnicodeBuf.size ()}));
 #else
         return MakeSmartPtr<BufferedString_::Rep<char32_t>> (UTFConverter::kThe.ConvertSpan (span{s.data (), s.size ()}, span{wideUnicodeBuf}));
@@ -778,7 +778,7 @@ String String::RemoveAt (size_t from, size_t to) const
         span                          s2 = d.subspan (to);
         copy (s1.begin (), s1.end (), buf.data ());
         copy (s2.begin (), s2.end (), buf.data () + s1.size ());
-    #if qCompilerAndStdLib_spanOfContainer_Buggy
+#if qCompilerAndStdLib_spanOfContainer_Buggy
         return String{mk_ (span{buf.data (), buf.size ()})};
 #else
         return String{mk_ (span{buf})};
@@ -1381,7 +1381,7 @@ String String::LimitLength (size_t maxLen, bool keepLeft) const
 #if qCompiler_vswprintf_on_elispisStr_Buggy
     static const String kELIPSIS_{"..."_k};
 #else
-    static const String kELIPSIS_{u"\u2026"sv};                                  // OR "..."
+    static const String kELIPSIS_{u"\u2026"sv}; // OR "..."
 #endif
     return LimitLength (maxLen, keepLeft, kELIPSIS_);
 }
@@ -1526,9 +1526,8 @@ Memory::BLOB DataExchange::DefaultSerializer<String>::operator() (const String& 
     return Memory::BLOB{as_bytes (arg.GetData (&maybeIgnoreBuf1))};
 }
 
-
 #if qCompilerAndStdLib_clangWithLibStdCPPStringConstexpr_Buggy
 namespace {
-    std::u8string clang_string_workaround1(const char8_t* a, const char8_t* b) { return {a, b}; }
+    std::u8string clang_string_workaround1 (const char8_t* a, const char8_t* b) { return {a, b}; }
 }
 #endif
