@@ -151,7 +151,7 @@ namespace Stroika::Foundation::Memory {
      ********************************************************************************
      */
     template <typename T>
-    inline T ValueOf (const optional<T>& t)
+    inline const T& ValueOf (const optional<T>& t)
     {
         Require (t);
         return *t;

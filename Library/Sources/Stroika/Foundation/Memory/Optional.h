@@ -151,9 +151,12 @@ namespace Stroika::Foundation::Memory {
 
     /**
      *  \brief Same as *t, but Requires that 't' is engaged.
+     *  \note operator* for optional returns a const T& internal pointer, and so does this. That means the caller
+     *        MAY need to be careful to finish using the result of the function before the end of the full expression calling ValueOf ().
+     *        But again, this is the same as if they used *v, which is the obvious alternative.
      */
     template <typename T>
-    T ValueOf (const optional<T>& t);
+    const T& ValueOf (const optional<T>& t);
 
     /**
      *  'Constructor' taking const RHS_CONVERTIBLE_TO_OPTIONAL_OF_T* is to allow easier interoperability
