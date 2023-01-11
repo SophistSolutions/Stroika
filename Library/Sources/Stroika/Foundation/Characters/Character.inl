@@ -34,7 +34,17 @@ namespace Stroika::Foundation::Characters {
             // this will have the same 'ordering' when we compare characters as when we compare as bytes
             constexpr bool kCanUseMemCmpOptimization_ = sizeof (CHAR_T) == 1 or (std::endian::native == std::endian::big);
 
-            if constexpr (kCanUseMemCmpOptimization_) {
+            // tested on windows, and no obvious difference
+            constexpr bool kUseStdTraitsCompare_ = true;
+
+            if constexpr (kUseStdTraitsCompare_) {
+                using TRAITS_CHAR_T = conditional_t<sizeof(CHAR_T)==4,char32_t,CHAR_T>;
+                int r               = std::char_traits<TRAITS_CHAR_T>::compare (reinterpret_cast<const TRAITS_CHAR_T*> (li), reinterpret_cast<const TRAITS_CHAR_T*> (ri), length);
+                if (r != 0) [[likely]] {
+                    return Common::CompareResultNormalizer (r);
+                }
+            }
+            else if constexpr (kCanUseMemCmpOptimization_) {
                 int r = std::memcmp (li, ri, length);
                 if (r != 0) [[likely]] {
                     return Common::CompareResultNormalizer (r);
