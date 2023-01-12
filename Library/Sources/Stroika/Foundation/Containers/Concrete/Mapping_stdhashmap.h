@@ -31,11 +31,6 @@ namespace Stroika::Foundation::Containers::Concrete {
     KEY_TYPE >
         and Common::IsEqualsComparer<std::equal_to<KEY_TYPE>, KEY_TYPE> ();
 
-#if defined(__clang__) && defined(__APPLE__)
-#define qCOMPILERBUG_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy 1
-#else
-#define qCOMPILERBUG_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy 0
-#endif
 
     /**
      *  \brief   Mapping_stdhashmap<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS> is an std::map-based concrete implementation of the Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, typename TRAITS::MappingTraitsType> container pattern.
@@ -102,7 +97,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         explicit Mapping_stdhashmap (ITERABLE_OF_ADDABLE&& src)
             requires (
                 Mapping_stdhashmap_IsDefaultConstructible<KEY_TYPE> and Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>
-#if !qCOMPILERBUG_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
+#if !qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
                 and not is_base_of_v<Mapping_stdhashmap<KEY_TYPE, MAPPED_VALUE_TYPE>, decay_t<ITERABLE_OF_ADDABLE>>
 #endif
             );
@@ -110,7 +105,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         Mapping_stdhashmap (HASH&& hasher, KEY_EQUALS_COMPARER&& keyComparer, ITERABLE_OF_ADDABLE&& src)
             requires (
                 Cryptography::Digest::IsHashFunction<HASH, KEY_TYPE> and Common::IsEqualsComparer<KEY_EQUALS_COMPARER, KEY_TYPE> () and Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>
-#if !qCOMPILERBUG_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
+#if !qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
                 and not is_base_of_v<Mapping_stdhashmap<KEY_TYPE, MAPPED_VALUE_TYPE>, decay_t<ITERABLE_OF_ADDABLE>>
 #endif
             );

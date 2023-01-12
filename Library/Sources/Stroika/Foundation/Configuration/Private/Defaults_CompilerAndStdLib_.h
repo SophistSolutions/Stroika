@@ -552,6 +552,32 @@ READ of size 6 at 0x0110ed9d thread T0
 
 #endif
 
+
+
+/*
+In file included from Test.cpp:16:
+In file included from /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Containers/Concrete/Mapping_stdhashmap.h:157:
+/Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Containers/Factory/../Concrete/Mapping_stdhashmap.inl:267:61: error: out-of-line definition of 'Mapping_stdhashmap<KEY_TYPE, MAPPED_VALUE_TYPE>' does not match any declaration in 'Mapping_stdhashmap<KEY_TYPE, MAPPED_VALUE_TYPE>'
+    inline Mapping_stdhashmap<KEY_TYPE, MAPPED_VALUE_TYPE>::Mapping_stdhashmap (ITERABLE_OF_ADDABLE&& src)
+                                                            ^~~~~~~~~~~~~~~~~~
+/Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Containers/Factory/../Concrete/Mapping_stdhashmap.inl:283:61: error: out-of-line definition of 'Mapping_stdhashmap<KEY_TYPE, MAPPED_VALUE_TYPE>' does not match any declaration in 'Mapping_stdhashmap<KEY_TYPE, MAPPED_VALUE_TYPE>'
+    inline Mapping_stdhashmap<KEY_TYPE, MAPPED_VALUE_TYPE>::Mapping_stdhashmap (HASH&& hasher, KEY_EQUALS_COMPARER&& keyComparer, ITERABLE_OF_ADDABLE&& src)
+                                                            ^~~~~~~~~~~~~~~~~~
+2 errors generated.
+make[4]: *** [/Sandbox/Stroika-Dev//ScriptsLib/SharedBuildRules-Default.mk:30: /Sandbox/Stroika-Dev/IntermediateFiles/clang++-10-debug/
+*/
+#ifndef qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
+
+#elif defined(__clang__) && defined(__APPLE__)
+// first noticed broken in apply clang 14
+#define qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 14))
+#elif defined(__clang__) && !defined(__APPLE__)
+// test if broken in clang++14 on linux
+#define qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 13))
+
+#endif
+
+
 /**
  *
 On Vs2k19:
