@@ -12,6 +12,7 @@
 #define _Stroika_Foundation_Containers_Concrete_Mapping_Factory_inl_
 
 #include "../Concrete/Mapping_LinkedList.h"
+#include "../Concrete/Mapping_stdhashmap.h"
 #include "../Concrete/Mapping_stdmap.h"
 
 namespace Stroika::Foundation::Containers::Factory {
