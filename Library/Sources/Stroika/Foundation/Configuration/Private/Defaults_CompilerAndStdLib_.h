@@ -1774,12 +1774,12 @@ make
 // only seen on Ubuntu 22.04
 #ifndef qCompilerAndStdLib_clangWithLibStdCPPStringConstexpr_Buggy
 
-#if defined(__clang__) && !defined(__APPLE__)
+#if defined(__clang__) && !defined(__APPLE__) && defined (_GLIBCXX_RELEASE)
 // still broken in clang++-11
 // still broken in clang++-12
 // still broken in clang++-13
 // still broken in clang++-14
-#define qCompilerAndStdLib_clangWithLibStdCPPStringConstexpr_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 14)) && defined (_GLIBCXX_RELEASE)
+#define qCompilerAndStdLib_clangWithLibStdCPPStringConstexpr_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 14))
 #else
 #define qCompilerAndStdLib_clangWithLibStdCPPStringConstexpr_Buggy 0
 #endif
