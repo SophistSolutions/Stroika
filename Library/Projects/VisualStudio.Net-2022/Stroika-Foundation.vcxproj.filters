@@ -3468,6 +3468,9 @@
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Mapping_stdhashmap.inl">
       <Filter>Sources\Containers\Concrete</Filter>
     </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\HashBase.inl">
+      <Filter>Sources\Cryptography\Digest</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Natvis Include="VisualStudio-Stroika-Foundation-Debugger-Template.natvis" />
