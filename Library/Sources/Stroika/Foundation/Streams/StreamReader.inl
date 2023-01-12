@@ -37,7 +37,7 @@ namespace Stroika::Foundation::Streams {
     template <typename ELEMENT_TYPE>
     inline auto StreamReader<ELEMENT_TYPE>::CacheBlock_::Peek1FromCache (SeekOffsetType actualOffset) -> optional<ElementType>
     {
-        size_t         cacheWindowSize = fCacheWindowBuf_.size ();
+        size_t cacheWindowSize = fCacheWindowBuf_.size ();
         if (fCacheWindowBufStart_ <= actualOffset and actualOffset < fCacheWindowBufStart_ + cacheWindowSize) {
             return fCacheWindowBuf_[static_cast<size_t> (actualOffset - fCacheWindowBufStart_)];
         }
