@@ -26,10 +26,10 @@ namespace Stroika::Foundation::Containers::Concrete {
     using Cryptography::Digest::IsHashFunction;
 
     template <typename KEY_TYPE>
-    concept Mapping_stdhashmap_IsDefaultConstructible = 
-        IsHashFunction<std::hash<KEY_TYPE>, KEY_TYPE>
-        and Common::IsEqualsComparer<std::equal_to<KEY_TYPE>, KEY_TYPE> ()
-        ;
+    concept Mapping_stdhashmap_IsDefaultConstructible =
+        IsHashFunction < std::hash<KEY_TYPE>,
+    KEY_TYPE >
+        and Common::IsEqualsComparer<std::equal_to<KEY_TYPE>, KEY_TYPE> ();
 
 #if defined(__clang__) && defined(__APPLE__)
 #define qCOMPILERBUG_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy 1
@@ -89,9 +89,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         template <typename HASH, typename KEY_EQUALS_COMPARER>
         explicit Mapping_stdhashmap (HASH&& hasher, KEY_EQUALS_COMPARER&& keyComparer)
             requires (
-                Cryptography::Digest::IsHashFunction<HASH, KEY_TYPE> 
-                    and Common::IsEqualsComparer<KEY_EQUALS_COMPARER, KEY_TYPE> ()
-                    );
+                Cryptography::Digest::IsHashFunction<HASH, KEY_TYPE> and Common::IsEqualsComparer<KEY_EQUALS_COMPARER, KEY_TYPE> ());
         Mapping_stdhashmap (Mapping_stdhashmap&& src) noexcept      = default;
         Mapping_stdhashmap (const Mapping_stdhashmap& src) noexcept = default;
         Mapping_stdhashmap (const initializer_list<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src)
@@ -99,9 +97,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         template <typename HASH, typename KEY_EQUALS_COMPARER>
         Mapping_stdhashmap (HASH&& hasher, KEY_EQUALS_COMPARER&& keyComparer, const initializer_list<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src)
             requires (
-                Cryptography::Digest::IsHashFunction<HASH, KEY_TYPE> 
-                and Common::IsEqualsComparer<KEY_EQUALS_COMPARER, KEY_TYPE> ()
-                );
+                Cryptography::Digest::IsHashFunction<HASH, KEY_TYPE> and Common::IsEqualsComparer<KEY_EQUALS_COMPARER, KEY_TYPE> ());
         template <typename ITERABLE_OF_ADDABLE>
         explicit Mapping_stdhashmap (ITERABLE_OF_ADDABLE&& src)
             requires (
