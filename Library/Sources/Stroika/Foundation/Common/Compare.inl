@@ -188,7 +188,7 @@ namespace Stroika::Foundation::Common {
     constexpr inline Common::ComparisonRelationDeclaration<ComparisonRelationType::eEquals, decay_t<FUNCTOR>> DeclareEqualsComparer (FUNCTOR&& f)
     {
         static_assert (IsPotentiallyComparerRelation<decay_t<FUNCTOR>, typename Configuration::function_traits<decay_t<FUNCTOR>>::template arg<0>::type> ());
-        return Common::ComparisonRelationDeclaration < ComparisonRelationType::eEquals, decay_t<FUNCTOR>>{std::forward<FUNCTOR> (f)};
+        return Common::ComparisonRelationDeclaration<ComparisonRelationType::eEquals, decay_t<FUNCTOR>>{std::forward<FUNCTOR> (f)};
     }
 
     /*
