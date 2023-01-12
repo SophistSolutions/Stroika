@@ -31,7 +31,6 @@ namespace Stroika::Foundation::Containers::Concrete {
     KEY_TYPE >
         and Common::IsEqualsComparer<std::equal_to<KEY_TYPE>, KEY_TYPE> ();
 
-
     /**
      *  \brief   Mapping_stdhashmap<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS> is an std::map-based concrete implementation of the Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, typename TRAITS::MappingTraitsType> container pattern.
      *
@@ -97,10 +96,8 @@ namespace Stroika::Foundation::Containers::Concrete {
         template <typename ITERABLE_OF_ADDABLE>
         explicit Mapping_stdhashmap (ITERABLE_OF_ADDABLE&& src)
             requires (
-                Mapping_stdhashmap_IsDefaultConstructible<KEY_TYPE> and Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>
-                and not is_base_of_v<Mapping_stdhashmap<KEY_TYPE, MAPPED_VALUE_TYPE>, decay_t<ITERABLE_OF_ADDABLE>>
-            )
-            : Mapping_stdhashmap{}
+                Mapping_stdhashmap_IsDefaultConstructible<KEY_TYPE> and Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and not is_base_of_v<Mapping_stdhashmap<KEY_TYPE, MAPPED_VALUE_TYPE>, decay_t<ITERABLE_OF_ADDABLE>>)
+        : Mapping_stdhashmap{}
         {
             static_assert (IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>);
             this->AddAll (forward<ITERABLE_OF_ADDABLE> (src));
@@ -110,30 +107,24 @@ namespace Stroika::Foundation::Containers::Concrete {
         template <typename ITERABLE_OF_ADDABLE>
         explicit Mapping_stdhashmap (ITERABLE_OF_ADDABLE&& src)
             requires (
-                Mapping_stdhashmap_IsDefaultConstructible<KEY_TYPE> and Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>
-                and not is_base_of_v<Mapping_stdhashmap<KEY_TYPE, MAPPED_VALUE_TYPE>, decay_t<ITERABLE_OF_ADDABLE>>
-            );
+                Mapping_stdhashmap_IsDefaultConstructible<KEY_TYPE> and Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and not is_base_of_v<Mapping_stdhashmap<KEY_TYPE, MAPPED_VALUE_TYPE>, decay_t<ITERABLE_OF_ADDABLE>>);
 #endif
 #if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
         template <typename HASH, typename KEY_EQUALS_COMPARER, typename ITERABLE_OF_ADDABLE>
         Mapping_stdhashmap (HASH&& hasher, KEY_EQUALS_COMPARER&& keyComparer, ITERABLE_OF_ADDABLE&& src)
             requires (
-                Cryptography::Digest::IsHashFunction<HASH, KEY_TYPE> and Common::IsEqualsComparer<KEY_EQUALS_COMPARER, KEY_TYPE> () and Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>
-                and not is_base_of_v<Mapping_stdhashmap<KEY_TYPE, MAPPED_VALUE_TYPE>, decay_t<ITERABLE_OF_ADDABLE>>
-            )
-            : Mapping_stdhashmap{forward<HASH> (hasher), forward<KEY_EQUALS_COMPARER> (keyComparer)}
+                Cryptography::Digest::IsHashFunction<HASH, KEY_TYPE> and Common::IsEqualsComparer<KEY_EQUALS_COMPARER, KEY_TYPE> () and Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and not is_base_of_v<Mapping_stdhashmap<KEY_TYPE, MAPPED_VALUE_TYPE>, decay_t<ITERABLE_OF_ADDABLE>>)
+        : Mapping_stdhashmap{forward<HASH> (hasher), forward<KEY_EQUALS_COMPARER> (keyComparer)}
         {
             static_assert (IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>);
             this->AddAll (forward<ITERABLE_OF_ADDABLE> (src));
             AssertRepValidType_ ();
         }
-        #else
+#else
         template <typename HASH, typename KEY_EQUALS_COMPARER, typename ITERABLE_OF_ADDABLE>
         Mapping_stdhashmap (HASH&& hasher, KEY_EQUALS_COMPARER&& keyComparer, ITERABLE_OF_ADDABLE&& src)
             requires (
-                Cryptography::Digest::IsHashFunction<HASH, KEY_TYPE> and Common::IsEqualsComparer<KEY_EQUALS_COMPARER, KEY_TYPE> () and Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>
-                and not is_base_of_v<Mapping_stdhashmap<KEY_TYPE, MAPPED_VALUE_TYPE>, decay_t<ITERABLE_OF_ADDABLE>>
-            );
+                Cryptography::Digest::IsHashFunction<HASH, KEY_TYPE> and Common::IsEqualsComparer<KEY_EQUALS_COMPARER, KEY_TYPE> () and Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and not is_base_of_v<Mapping_stdhashmap<KEY_TYPE, MAPPED_VALUE_TYPE>, decay_t<ITERABLE_OF_ADDABLE>>);
 #endif
 #if 0
         template <typename ITERATOR_OF_ADDABLE, enable_if_t<Configuration::IsIterator_v<ITERATOR_OF_ADDABLE>>* = nullptr>
