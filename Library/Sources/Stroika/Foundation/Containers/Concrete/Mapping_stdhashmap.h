@@ -7,7 +7,7 @@
 #include <unordered_map>
 
 #include "../../Common/Compare.h"
-#include "../../Cryptography/Digest/Hash.h"
+#include "../../Cryptography/Digest/HashBase.h"
 #include "../Mapping.h"
 
 #ifndef _Stroika_Foundation_Containers_Concrete_Mapping_stdhashmap_h_
@@ -23,11 +23,9 @@
 
 namespace Stroika::Foundation::Containers::Concrete {
 
-    using Cryptography::Digest::IsHashFunction;
-
     template <typename KEY_TYPE>
     concept Mapping_stdhashmap_IsDefaultConstructible =
-        IsHashFunction < std::hash<KEY_TYPE>,
+        Cryptography::Digest::IsHashFunction<std::hash<KEY_TYPE>,
     KEY_TYPE >
         and Common::IsEqualsComparer<std::equal_to<KEY_TYPE>, KEY_TYPE> ();
 
