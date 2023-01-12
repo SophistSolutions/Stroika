@@ -13,6 +13,7 @@
 #include "../../Memory/BLOB.h"
 
 #include "Digester.h"
+#include "HashBase.h"
 
 #include "Algorithm/SuperFastHash.h" // for default algorithm
 
@@ -22,15 +23,6 @@
  */
 
 namespace Stroika::Foundation::Cryptography::Digest {
-
-    // see https://stackoverflow.com/questions/65127936/defining-a-c20-concept-for-hash-functions
-    // https://en.cppreference.com/w/cpp/utility/hash
-    template <typename FUNCTION, typename HASHABLE_T>
-    concept IsHashFunction = std::regular_invocable<FUNCTION, HASHABLE_T> && requires (FUNCTION f, HASHABLE_T t) {
-                                                                                 {
-                                                                                     std::invoke (f, t)
-                                                                                     } -> std::convertible_to<size_t>;
-                                                                             };
 
     /**
      *  \brief use std::hash<T> to digest a type t. AKA  stdhash_Digester
