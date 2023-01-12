@@ -12,7 +12,9 @@
 
 #include "Stroika/Foundation/Characters/String.h"
 #include "Stroika/Foundation/Containers/Concrete/Mapping_Array.h"
+#include "Stroika/Foundation/Containers/Concrete/Mapping_stdhashmap.h"
 #include "Stroika/Foundation/Containers/Concrete/Mapping_LinkedList.h"
+#include "Stroika/Foundation/Containers/Concrete/Mapping_stdhashmap.h"
 #include "Stroika/Foundation/Containers/Concrete/Mapping_stdmap.h"
 #include "Stroika/Foundation/Containers/Concrete/SortedMapping_stdmap.h"
 #include "Stroika/Foundation/Containers/Mapping.h"
@@ -30,6 +32,7 @@ using namespace Stroika::Foundation::Containers;
 using Concrete::Mapping_Array;
 using Concrete::Mapping_LinkedList;
 using Concrete::Mapping_stdmap;
+using Concrete::Mapping_stdhashmap;
 
 namespace {
     template <typename CONCRETE_CONTAINER>
@@ -246,6 +249,38 @@ namespace {
                 [] () { return Mapping_stdmap<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators> (MySimpleClassWithoutComparisonOperators_ComparerWithLess_{}); },
                 //Common::mkEqualsComparerAdapter (MySimpleClassWithoutComparisonOperators_ComparerWithLess_{})
                 MySimpleClassWithoutComparisonOperators_ComparerWithEquals_{});
+        }
+
+        {
+            {
+                Mapping_stdhashmap<size_t, size_t> fred{};
+                fred.Add (1, 2);
+                fred.Add (1, 3);
+                VerifyTestResult (fred.size () == 1);
+            }
+            {
+                Mapping_stdhashmap<size_t, size_t> fred{};
+                fred.Add (1, 2);
+                fred.Add (2, 4);
+                fred.Add (3, 9);
+                VerifyTestResult (fred.size () == 3);
+                VerifyTestResult ((fred == Mapping<size_t, size_t>{{1, 2}, {2, 4}, {3, 9}}));
+            }
+            {
+                Mapping_stdhashmap<size_t, size_t> fred{
+                    std::hash<size_t>{}, std::equal_to<size_t>{}};
+                VerifyTestResult ((fred == Mapping_stdhashmap<size_t, size_t>{}));
+            }
+            {
+                using Characters::String;
+                Mapping_stdhashmap<String, String> m{};
+                m.Add ("a", "alpha");
+                m.Add ("b", "beta");
+                m.Add ("c", "gamma");
+                m.Add ("d", "delta");
+                VerifyTestResult (m.size () == 4);
+                VerifyTestResult ((m == Mapping<String, String>{{"a", "alpha"}, {"b", "beta"}, {"c", "gamma"}, {"d", "delta"}}));
+            }
         }
 
         Test2_SimpleBaseClassConversionTraitsConfusion_ ();
