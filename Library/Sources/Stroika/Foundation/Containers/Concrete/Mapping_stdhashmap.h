@@ -3,9 +3,11 @@
  */
 #include "../../StroikaPreComp.h"
 
-#include <map>
+//#include <map>
 #include <unordered_map>
 
+#include "../../Common/Compare.h"
+#include "../../Cryptography/Digest/Hash.h"
 #include "../Mapping.h"
 
 #ifndef _Stroika_Foundation_Containers_Concrete_Mapping_stdhashmap_h_
@@ -20,6 +22,14 @@
  */
 
 namespace Stroika::Foundation::Containers::Concrete {
+
+    using Cryptography::Digest::IsHashFunction;
+
+    template <typename KEY_TYPE>
+    concept Mapping_stdhashmap_IsDefaultConstructible = 
+        IsHashFunction<std::hash<KEY_TYPE>, KEY_TYPE>
+        and Common::IsEqualsComparer<std::equal_to<KEY_TYPE>, KEY_TYPE> ()
+        ;
 
     /**
      *  \brief   Mapping_stdhashmap<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS> is an std::map-based concrete implementation of the Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, typename TRAITS::MappingTraitsType> container pattern.
@@ -62,24 +72,44 @@ namespace Stroika::Foundation::Containers::Concrete {
 
     public:
         /**
+        *   @todo UPDATE THESE DOCS - REVIEW AND COMPARE - BUT THIS IS LITERALLY QUTIE WRONG
          *  \see docs on Mapping<> constructor, except that KEY_EQUALS_COMPARER is replaced with KEY_INORDER_COMPARER and IsEqualsComparer is replaced by IsStrictInOrderComparer
          *       and added Mapping_stdhashmap (STDHASHMAP<>&& src)
          */
-        Mapping_stdhashmap ();
-        Mapping_stdhashmap (STDHASHMAP<>&& src);
-        template <typename HASH, typename KEY_EQUALS_COMPARER, enable_if_t<Common::IsEqualsComparer<KEY_EQUALS_COMPARER, KEY_TYPE> ()>* = nullptr>
-        explicit Mapping_stdhashmap (HASH&& hasher, KEY_EQUALS_COMPARER&& keyComparer);
+        Mapping_stdhashmap ()
+            requires (Mapping_stdhashmap_IsDefaultConstructible<KEY_TYPE>);
+        Mapping_stdhashmap (STDHASHMAP<>&& src)
+            requires (Mapping_stdhashmap_IsDefaultConstructible<KEY_TYPE>);
+        template <typename HASH, typename KEY_EQUALS_COMPARER>
+        explicit Mapping_stdhashmap (HASH&& hasher, KEY_EQUALS_COMPARER&& keyComparer)
+            requires (
+                Cryptography::Digest::IsHashFunction<HASH, KEY_TYPE> 
+                    and Common::IsEqualsComparer<KEY_EQUALS_COMPARER, KEY_TYPE> ()
+                    );
         Mapping_stdhashmap (Mapping_stdhashmap&& src) noexcept      = default;
         Mapping_stdhashmap (const Mapping_stdhashmap& src) noexcept = default;
-
+        Mapping_stdhashmap (const initializer_list<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src)
+            requires (Mapping_stdhashmap_IsDefaultConstructible<KEY_TYPE>);
+        template <typename HASH, typename KEY_EQUALS_COMPARER>
+        Mapping_stdhashmap (HASH&& hasher, KEY_EQUALS_COMPARER&& keyComparer, const initializer_list<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src)
+            requires (
+                Cryptography::Digest::IsHashFunction<HASH, KEY_TYPE> 
+                and Common::IsEqualsComparer<KEY_EQUALS_COMPARER, KEY_TYPE> ()
+                );
+        template <typename ITERABLE_OF_ADDABLE>
+        explicit Mapping_stdhashmap (ITERABLE_OF_ADDABLE&& src)
+            requires (
+                Mapping_stdhashmap_IsDefaultConstructible<KEY_TYPE> 
+                and Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and not is_base_of_v<Mapping_stdhashmap<KEY_TYPE, MAPPED_VALUE_TYPE>, decay_t<ITERABLE_OF_ADDABLE>>
+                );
+        template <typename HASH, typename KEY_EQUALS_COMPARER, typename ITERABLE_OF_ADDABLE>
+        Mapping_stdhashmap (HASH&& hasher, KEY_EQUALS_COMPARER&& keyComparer, ITERABLE_OF_ADDABLE&& src)
+            requires (
+                Cryptography::Digest::IsHashFunction<HASH, KEY_TYPE> 
+                and Common::IsEqualsComparer<KEY_EQUALS_COMPARER, KEY_TYPE> ()
+                and Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and not is_base_of_v<Mapping_stdhashmap<KEY_TYPE, MAPPED_VALUE_TYPE>, decay_t<ITERABLE_OF_ADDABLE>>
+            );
 #if 0
-        Mapping_stdhashmap (const initializer_list<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src);
-        template <typename KEY_INORDER_COMPARER, enable_if_t<Common::IsStrictInOrderComparer<KEY_INORDER_COMPARER, KEY_TYPE> ()>* = nullptr>
-        Mapping_stdhashmap (KEY_INORDER_COMPARER&& keyComparer, const initializer_list<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src);
-        template <typename ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and not is_base_of_v<Mapping_stdhashmap<KEY_TYPE, MAPPED_VALUE_TYPE>, decay_t<ITERABLE_OF_ADDABLE>>>* = nullptr>
-        explicit Mapping_stdhashmap (ITERABLE_OF_ADDABLE&& src);
-        template <typename KEY_INORDER_COMPARER, typename ITERABLE_OF_ADDABLE, enable_if_t<Common::IsStrictInOrderComparer<KEY_INORDER_COMPARER, KEY_TYPE> () and Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>>* = nullptr>
-        Mapping_stdhashmap (KEY_INORDER_COMPARER&& keyComparer, ITERABLE_OF_ADDABLE&& src);
         template <typename ITERATOR_OF_ADDABLE, enable_if_t<Configuration::IsIterator_v<ITERATOR_OF_ADDABLE>>* = nullptr>
         Mapping_stdhashmap (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
         template <typename KEY_INORDER_COMPARER, typename ITERATOR_OF_ADDABLE, enable_if_t<Common::IsStrictInOrderComparer<KEY_INORDER_COMPARER, KEY_TYPE> () and Configuration::IsIterator_v<ITERATOR_OF_ADDABLE>>* = nullptr>

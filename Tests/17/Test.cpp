@@ -12,7 +12,6 @@
 
 #include "Stroika/Foundation/Characters/String.h"
 #include "Stroika/Foundation/Containers/Concrete/Mapping_Array.h"
-#include "Stroika/Foundation/Containers/Concrete/Mapping_stdhashmap.h"
 #include "Stroika/Foundation/Containers/Concrete/Mapping_LinkedList.h"
 #include "Stroika/Foundation/Containers/Concrete/Mapping_stdhashmap.h"
 #include "Stroika/Foundation/Containers/Concrete/Mapping_stdmap.h"
@@ -31,8 +30,8 @@ using namespace Stroika::Foundation::Containers;
 
 using Concrete::Mapping_Array;
 using Concrete::Mapping_LinkedList;
-using Concrete::Mapping_stdmap;
 using Concrete::Mapping_stdhashmap;
+using Concrete::Mapping_stdmap;
 
 namespace {
     template <typename CONCRETE_CONTAINER>
@@ -267,6 +266,7 @@ namespace {
                 VerifyTestResult ((fred == Mapping<size_t, size_t>{{1, 2}, {2, 4}, {3, 9}}));
             }
             {
+                static_assert (Cryptography::Digest::IsHashFunction<std::hash<size_t>, size_t>);
                 Mapping_stdhashmap<size_t, size_t> fred{
                     std::hash<size_t>{}, std::equal_to<size_t>{}};
                 VerifyTestResult ((fred == Mapping_stdhashmap<size_t, size_t>{}));
@@ -281,6 +281,14 @@ namespace {
                 VerifyTestResult (m.size () == 4);
                 VerifyTestResult ((m == Mapping<String, String>{{"a", "alpha"}, {"b", "beta"}, {"c", "gamma"}, {"d", "delta"}}));
             }
+
+            DoTestForConcreteContainer_<Mapping_stdhashmap<size_t, size_t>> ();
+            //DoTestForConcreteContainer_<Mapping_stdhashmap<SimpleClass, SimpleClass>> (); // -- wont work cuz not hashable
+#if 0
+            DoTestForConcreteContainer_<Mapping<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators>> (
+                [] () { return Mapping<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators> (MySimpleClassWithoutComparisonOperators_ComparerWithEquals_{}); },
+                MySimpleClassWithoutComparisonOperators_ComparerWithEquals_{});
+#endif
         }
 
         Test2_SimpleBaseClassConversionTraitsConfusion_ ();
