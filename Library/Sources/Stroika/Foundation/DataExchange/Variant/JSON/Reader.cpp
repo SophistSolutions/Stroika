@@ -10,6 +10,7 @@
 #include "../../../Characters/String2Int.h"
 #include "../../../Characters/StringBuilder.h"
 #include "../../../Containers/Support/ReserveTweaks.h"
+#include "../../../Containers/Concrete/Mapping_stdhashmap.h"
 #include "../../../Memory/InlineBuffer.h"
 #include "../../../Streams/StreamReader.h"
 #include "../../../Streams/TextReader.h"
@@ -244,7 +245,7 @@ namespace {
     VariantValue Reader_Object_ (MyBufferedStreamReader_& in)
     {
         // @todo consider using other optimizations like Mapping_hashmap<>
-        Containers::Concrete::Mapping_stdmap<String, VariantValue>::STDMAP<> result; // slight tweak using stl map, and move-construct Stroika map at the end
+        Containers::Concrete::Mapping_stdhashmap<String, VariantValue>::STDHASHMAP<> result; // slight tweak using stl map, and move-construct Stroika map at the end
 
         // accumulate elements, and check for close-array
         enum LookingFor { eName,
@@ -264,7 +265,7 @@ namespace {
             if (nextChar == '}') {
                 if (lf == eName or lf == eComma) {
                     // skip char
-                    return VariantValue{Containers::Concrete::Mapping_stdmap<String, VariantValue>{move (result)}};
+                    return VariantValue{Containers::Concrete::Mapping_stdhashmap<String, VariantValue>{move (result)}};
                 }
                 else {
                     static const auto kException_{BadFormatException{"JSON: Unexpected '}' reading object"sv}};
