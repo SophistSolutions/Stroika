@@ -185,10 +185,10 @@ namespace Stroika::Foundation::Common {
      ********************************************************************************
      */
     template <typename FUNCTOR>
-    constexpr inline Common::ComparisonRelationDeclaration<ComparisonRelationType::eEquals, FUNCTOR> DeclareEqualsComparer (FUNCTOR&& f)
+    constexpr inline Common::ComparisonRelationDeclaration<ComparisonRelationType::eEquals, decay_t<FUNCTOR>> DeclareEqualsComparer (FUNCTOR&& f)
     {
-        static_assert (IsPotentiallyComparerRelation<FUNCTOR, typename Configuration::function_traits<FUNCTOR>::template arg<0>::type> ());
-        return Common::ComparisonRelationDeclaration<ComparisonRelationType::eEquals, FUNCTOR>{std::forward<FUNCTOR> (f)};
+        static_assert (IsPotentiallyComparerRelation<decay_t<FUNCTOR>, typename Configuration::function_traits<decay_t<FUNCTOR>>::template arg<0>::type> ());
+        return Common::ComparisonRelationDeclaration < ComparisonRelationType::eEquals, decay_t<FUNCTOR>>{std::forward<FUNCTOR> (f)};
     }
 
     /*
@@ -197,10 +197,10 @@ namespace Stroika::Foundation::Common {
      ********************************************************************************
      */
     template <typename FUNCTOR>
-    constexpr inline Common::ComparisonRelationDeclaration<ComparisonRelationType::eStrictInOrder, FUNCTOR> DeclareInOrderComparer (FUNCTOR&& f)
+    constexpr inline Common::ComparisonRelationDeclaration<ComparisonRelationType::eStrictInOrder, decay_t<FUNCTOR>> DeclareInOrderComparer (FUNCTOR&& f)
     {
-        static_assert (IsPotentiallyComparerRelation<FUNCTOR, typename Configuration::function_traits<FUNCTOR>::template arg<0>::type> ());
-        return Common::ComparisonRelationDeclaration<ComparisonRelationType::eStrictInOrder, FUNCTOR>{std::forward<FUNCTOR> (f)};
+        static_assert (IsPotentiallyComparerRelation<decay_t<FUNCTOR>, typename Configuration::function_traits<decay_t<FUNCTOR>>::template arg<0>::type> ());
+        return Common::ComparisonRelationDeclaration<ComparisonRelationType::eStrictInOrder, decay_t<FUNCTOR>>{std::forward<FUNCTOR> (f)};
     }
 
     /*

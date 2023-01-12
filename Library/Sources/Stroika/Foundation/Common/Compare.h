@@ -302,7 +302,7 @@ namespace Stroika::Foundation::Common {
      *        Whereas InOrderComparerAdapter looks at the type of 'f' and does the appropriate mapping logic.
      */
     template <typename FUNCTOR>
-    constexpr Common::ComparisonRelationDeclaration<ComparisonRelationType::eEquals, FUNCTOR> DeclareEqualsComparer (FUNCTOR&& f);
+    constexpr Common::ComparisonRelationDeclaration<ComparisonRelationType::eEquals, decay_t<FUNCTOR>> DeclareEqualsComparer (FUNCTOR&& f);
 
     /**
      *  \brief  DeclareInOrderComparer () marks a FUNCTOR (lambda or not) as being a FUNCTOR which compares for in-order
@@ -317,7 +317,7 @@ namespace Stroika::Foundation::Common {
      *        Whereas InOrderComparerAdapter looks at the type of 'f' and does the appropriate mapping logic.
      */
     template <typename FUNCTOR>
-    constexpr Common::ComparisonRelationDeclaration<ComparisonRelationType::eStrictInOrder, FUNCTOR> DeclareInOrderComparer (FUNCTOR&& f);
+    constexpr Common::ComparisonRelationDeclaration<ComparisonRelationType::eStrictInOrder, decay_t<FUNCTOR>> DeclareInOrderComparer (FUNCTOR&& f);
 
     /**
      *  \brief Use this to wrap any basic comparer, and produce an Equals comparer.
