@@ -254,7 +254,8 @@ VariantValue::VariantValue (const boost::json::value& val)
         } break;
         case json::kind::object: {
             const auto&                                                          o = val.as_object ();
-            Containers::Concrete::Mapping_stdmap<String, VariantValue>::STDMAP<> r; // performance tweak, add in STL, avoiding virtual calls for each add, and then move to Stroika mapping
+            Containers::Concrete::Mapping_stdhashmap<String, VariantValue>::STDHASHMAP<> r; // performance tweak, add in STL, avoiding virtual calls for each add, and then move to Stroika mapping
+            r.reserve (o.size ());
             for (const auto& i : o) {
 #if qCompilerAndStdLib_spanOfContainer_Buggy
                 auto keyStr = i.key ();
@@ -263,7 +264,7 @@ VariantValue::VariantValue (const boost::json::value& val)
                 r.insert ({String::FromUTF8 (span{i.key ()}), VariantValue{i.value ()}});
 #endif
             }
-            *this = Containers::Concrete::Mapping_stdmap<String, VariantValue>{std::move (r)};
+            *this = Containers::Concrete::Mapping_stdhashmap<String, VariantValue>{std::move (r)};
         } break;
         default:
             AssertNotReached ();
