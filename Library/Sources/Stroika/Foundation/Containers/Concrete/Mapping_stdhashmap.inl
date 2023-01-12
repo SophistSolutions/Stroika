@@ -46,7 +46,7 @@ namespace Stroika::Foundation::Containers::Concrete {
 
     public:
         Rep_ (const HASH& hashFun, const KEY_EQUALS_COMPARER& equalsComparer)
-            : fData_{10, hashFun, equalsComparer}
+            : fData_{10u, hashFun, equalsComparer}
         {
         }
         Rep_ (STDHASHMAP<>&& src)
@@ -266,7 +266,12 @@ namespace Stroika::Foundation::Containers::Concrete {
     template <typename ITERABLE_OF_ADDABLE>
     inline Mapping_stdhashmap<KEY_TYPE, MAPPED_VALUE_TYPE>::Mapping_stdhashmap (ITERABLE_OF_ADDABLE&& src)
         requires (
-            Mapping_stdhashmap_IsDefaultConstructible<KEY_TYPE> and Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and not is_base_of_v<Mapping_stdhashmap<KEY_TYPE, MAPPED_VALUE_TYPE>, decay_t<ITERABLE_OF_ADDABLE>>)
+                Mapping_stdhashmap_IsDefaultConstructible<KEY_TYPE> 
+                and Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>
+#if !qCOMPILERBUG_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
+              and not is_base_of_v<Mapping_stdhashmap<KEY_TYPE, MAPPED_VALUE_TYPE>, decay_t<ITERABLE_OF_ADDABLE>>
+#endif
+                )
         : Mapping_stdhashmap{}
     {
         static_assert (IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>);
@@ -277,7 +282,13 @@ namespace Stroika::Foundation::Containers::Concrete {
     template <typename HASH, typename KEY_EQUALS_COMPARER, typename ITERABLE_OF_ADDABLE>
     inline Mapping_stdhashmap<KEY_TYPE, MAPPED_VALUE_TYPE>::Mapping_stdhashmap (HASH&& hasher, KEY_EQUALS_COMPARER&& keyComparer, ITERABLE_OF_ADDABLE&& src)
         requires (
-            Cryptography::Digest::IsHashFunction<HASH, KEY_TYPE> and Common::IsEqualsComparer<KEY_EQUALS_COMPARER, KEY_TYPE> () and Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and not is_base_of_v<Mapping_stdhashmap<KEY_TYPE, MAPPED_VALUE_TYPE>, decay_t<ITERABLE_OF_ADDABLE>>)
+            Cryptography::Digest::IsHashFunction<HASH, KEY_TYPE> and Common::IsEqualsComparer<KEY_EQUALS_COMPARER, KEY_TYPE> () 
+            and Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> 
+                         #if !qCOMPILERBUG_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
+              and not is_base_of_v<Mapping_stdhashmap<KEY_TYPE, MAPPED_VALUE_TYPE>, decay_t<ITERABLE_OF_ADDABLE>>
+              #endif
+
+            )
         : Mapping_stdhashmap{forward<HASH> (hasher), forward<KEY_EQUALS_COMPARER> (keyComparer)}
     {
         static_assert (IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>);
