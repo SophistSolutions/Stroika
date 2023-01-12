@@ -51,7 +51,7 @@ namespace Stroika::Foundation::Containers::Concrete {
 
     public:
         Rep_ (const HASH& hashFun, const KEY_EQUALS_COMPARER& equalsComparer)
-            : fData_{kDefaultMapping_stdhashmapHashSize_, hashFun, equalsComparer}
+            : fData_{Private_::kDefaultMapping_stdhashmapHashSize_, hashFun, equalsComparer}
         {
         }
         Rep_ (STDHASHMAP<>&& src)
