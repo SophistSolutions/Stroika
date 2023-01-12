@@ -552,8 +552,6 @@ READ of size 6 at 0x0110ed9d thread T0
 
 #endif
 
-
-
 /*
 In file included from Test.cpp:16:
 In file included from /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Containers/Concrete/Mapping_stdhashmap.h:157:
@@ -572,12 +570,11 @@ make[4]: *** [/Sandbox/Stroika-Dev//ScriptsLib/SharedBuildRules-Default.mk:30: /
 // first noticed broken in apply clang 14
 #define qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 14))
 #elif defined(__clang__) && !defined(__APPLE__)
-// test if broken in clang++14 on linux
-#define qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 13))
+// first noticed broken in apply clang 14
+#define qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 14))
 #endif
 
 #endif
-
 
 /**
  *
@@ -1774,7 +1771,7 @@ make
 // only seen on Ubuntu 22.04
 #ifndef qCompilerAndStdLib_clangWithLibStdCPPStringConstexpr_Buggy
 
-#if defined(__clang__) && !defined(__APPLE__) && defined (_GLIBCXX_RELEASE)
+#if defined(__clang__) && !defined(__APPLE__) && defined(_GLIBCXX_RELEASE)
 // still broken in clang++-11
 // still broken in clang++-12
 // still broken in clang++-13
