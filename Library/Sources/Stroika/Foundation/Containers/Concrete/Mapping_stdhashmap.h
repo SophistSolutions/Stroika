@@ -34,6 +34,12 @@ namespace Stroika::Foundation::Containers::Concrete {
     /**
      *  \brief   Mapping_stdhashmap<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS> is an std::map-based concrete implementation of the Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, typename TRAITS::MappingTraitsType> container pattern.
      *
+     *  \note Alias
+     *          Could have been called Mapping_stdunorderedmap - but that name would not be nearly as suggestive.
+     *          the name std::unordered_map is something of an move towards the approach taken by Stroika - focusing
+     *          on data access patterns, rather than implementation data structure. But the API - truely has hash-table
+     *          written all over it (so the name is really misleading in std).
+     * 
      *  \note   \em Implementation Details
      *          This module is essentially identical to SortedMapping_stdhashmap, but making it dependent on SortedMapping<> creates
      *          problems with circular dependencies - especially give how the default Mapping CTOR calls the factory class
@@ -63,7 +69,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         /**
          *  \brief STDHASHMAP is std::map<> that can be used inside Mapping_stdhashmap
          * 
-         *      STK appraoch to blockallocation not working for unordred map cuz allocates many at a time
+         *      @todo - STK appraoch to blockallocation not working for unordred map cuz allocates many at a time
          */
         template <typename HASH = std::hash<key_type>, typename KEY_EQUALS_COMPARER = std::equal_to<key_type>>
         using STDHASHMAP = unordered_map<KEY_TYPE, MAPPED_VALUE_TYPE, HASH, KEY_EQUALS_COMPARER>;
@@ -126,12 +132,14 @@ namespace Stroika::Foundation::Containers::Concrete {
             requires (
                 Cryptography::Digest::IsHashFunction<HASH, KEY_TYPE> and Common::IsEqualsComparer<KEY_EQUALS_COMPARER, KEY_TYPE> () and Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and not is_base_of_v<Mapping_stdhashmap<KEY_TYPE, MAPPED_VALUE_TYPE>, decay_t<ITERABLE_OF_ADDABLE>>);
 #endif
-#if 0
-        template <typename ITERATOR_OF_ADDABLE, enable_if_t<Configuration::IsIterator_v<ITERATOR_OF_ADDABLE>>* = nullptr>
-        Mapping_stdhashmap (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
-        template <typename KEY_INORDER_COMPARER, typename ITERATOR_OF_ADDABLE, enable_if_t<Common::IsStrictInOrderComparer<KEY_INORDER_COMPARER, KEY_TYPE> () and Configuration::IsIterator_v<ITERATOR_OF_ADDABLE>>* = nullptr>
-        Mapping_stdhashmap (KEY_INORDER_COMPARER&& keyComparer, ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
-#endif
+        template <typename ITERATOR_OF_ADDABLE>
+        Mapping_stdhashmap (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
+            requires (
+                Mapping_stdhashmap_IsDefaultConstructible<KEY_TYPE> and Configuration::IsIterator_v<ITERATOR_OF_ADDABLE>);
+        template <typename HASH, typename KEY_EQUALS_COMPARER, typename ITERATOR_OF_ADDABLE>
+        Mapping_stdhashmap (HASH&& hasher, KEY_EQUALS_COMPARER&& keyComparer, ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
+            requires (
+                Cryptography::Digest::IsHashFunction<HASH, KEY_TYPE> and Common::IsEqualsComparer<KEY_EQUALS_COMPARER, KEY_TYPE> () and Configuration::IsIterator_v<ITERATOR_OF_ADDABLE>);
 
     public:
         /**
