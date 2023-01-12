@@ -403,6 +403,10 @@ namespace Stroika::Foundation::DataExchange {
     private:
         template <typename T>
         struct TIRep_;
+
+    private:
+        static const SharedRepImpl_<IRep_> kFalseRep_; // avoid even cheap needless allocations
+        static const SharedRepImpl_<IRep_> kTrueRep_;
     };
 
     template <>
