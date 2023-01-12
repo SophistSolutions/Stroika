@@ -16,7 +16,7 @@ namespace Stroika::Foundation::Cryptography::Digest {
 
     /*
      ********************************************************************************
-     ******************* IncrementalDigester<ALGORITHM, RETURN_TYPE> ****************
+     ****************** IncrementalDigester<ALGORITHM, RETURN_TYPE> *****************
      ********************************************************************************
      */
     template <typename ALGORITHM, typename RETURN_TYPE>
@@ -25,6 +25,11 @@ namespace Stroika::Foundation::Cryptography::Digest {
         Require (not fCompleted_);
         Require ((from == nullptr and to == nullptr) or (from != nullptr and from <= to));
         fDigesterAlgorithm_.Write (from, to);
+    }
+    template <typename ALGORITHM, typename RETURN_TYPE>
+    inline void IncrementalDigester<ALGORITHM, RETURN_TYPE>::Write (span<const std::byte> from)
+    {
+        this->Write (from.data (), from.data () + from.size ());
     }
     template <typename ALGORITHM, typename RETURN_TYPE>
     inline void IncrementalDigester<ALGORITHM, RETURN_TYPE>::Write (const BLOB& from)
@@ -84,6 +89,11 @@ namespace Stroika::Foundation::Cryptography::Digest {
         return Digest::ComputeDigest<ALGORITHM, RETURN_TYPE> (from, to);
     }
     template <typename ALGORITHM, typename RETURN_TYPE>
+    inline auto Digester<ALGORITHM, RETURN_TYPE>::operator() (span<const std::byte> from) const -> ReturnType
+    {
+        return Digest::ComputeDigest<ALGORITHM, RETURN_TYPE> (from.data (), from.data () + from.size ());
+    }
+    template <typename ALGORITHM, typename RETURN_TYPE>
     inline auto Digester<ALGORITHM, RETURN_TYPE>::operator() (const BLOB& from) const -> ReturnType
     {
         return Digest::ComputeDigest<ALGORITHM, RETURN_TYPE> (from);
@@ -126,6 +136,11 @@ namespace Stroika::Foundation::Cryptography::Digest {
         else {
             return ConvertResult<RETURN_TYPE> (ctx.Complete ());
         }
+    }
+    template <typename ALGORITHM, typename RETURN_TYPE>
+    inline RETURN_TYPE ComputeDigest (span<const std::byte> from)
+    {
+        return ComputeDigest<ALGORITHM, RETURN_TYPE> (from.data (), from.data () + from.size ());
     }
     template <typename ALGORITHM, typename RETURN_TYPE>
     inline RETURN_TYPE ComputeDigest (const BLOB& from)
