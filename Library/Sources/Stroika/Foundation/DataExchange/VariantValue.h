@@ -358,6 +358,18 @@ namespace Stroika::Foundation::DataExchange {
          */
         nonvirtual VariantValue ConvertTo (Type to) const;
 
+    public:
+        /**
+         *  Return a (possibly new, possibly same) object with certain 'features' standardized. Essentially this converts to basic
+         *  JSON-writable types. So BLOB, and Date, etc, converted to string, integers converted to Float (number), nans converted
+         *  to strings, etc.
+         * 
+         *  This also produced 'sorted' mappings.
+         * 
+         *  You generally dont need to use this, but its helpful for the definition of equality and comparison.
+         */
+        nonvirtual VariantValue Normalize () const;
+
     private:
         nonvirtual Memory::BLOB         AsBLOB_ () const;
         nonvirtual IntegerType_         AsInteger_ () const;
@@ -367,14 +379,13 @@ namespace Stroika::Foundation::DataExchange {
 
     public:
         /**
-         * https://stroika.atlassian.net/browse/STK-971 - BROKEN FOR CASE OF MAPPINGS.
+         * \brief compares as if first normalized with Normalize()
          */
         nonvirtual strong_ordering operator<=> (const VariantValue& rhs) const;
 
     public:
         /**
-         *  \note this is extra expensive, because if two objects (Mapping) are unordered, comparing them is a bit more costly.
-         *        But being in differnt order doesn't affect their equality (whereas it does for arrays).
+         * \brief compares as if first normalized with Normalize()
          */
         nonvirtual bool operator== (const VariantValue& rhs) const;
 
@@ -457,6 +468,8 @@ namespace Stroika::Foundation::DataExchange {
     Sequence<VariantValue> VariantValue::As () const;
 
     /**
+     *  \brief Compares values as if first normalized with Normalize () method
+     * 
      *  \note Before Stroika v3.0d1, EqualsComparer had an fExactTypeMatchOnly option, which defaulted false.
      *        This did various not clearly specified type coersions - being expensive, and buggy, and confusing.
      * 
@@ -467,9 +480,6 @@ namespace Stroika::Foundation::DataExchange {
      * 
      *        The ONLY remaining coertions that are done in comparing, are that if two numbers (int,unsigned, float) are compared
      *        they are first promoted.
-     * 
-     *  \note This comparison is somewhat expensive because if two objects (Mapping) are unordered, comparing them is a bit more costly.
-     *        But being in different order doesn't affect their equality (whereas it does for arrays).
      */
     struct VariantValue::EqualsComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eEquals> {
         constexpr EqualsComparer ();
@@ -477,6 +487,8 @@ namespace Stroika::Foundation::DataExchange {
     };
 
     /**
+     *  \brief Compares values as if first normalized with Normalize () method
+     * 
      *  \note Before Stroika v3.0d1, EqualsComparer had an fExactTypeMatchOnly option, which defaulted false.
      *        This did various not clearly specified type coersions - being expensive, and buggy, and confusing.
      * 
@@ -487,9 +499,6 @@ namespace Stroika::Foundation::DataExchange {
      * 
      *        The ONLY remaining coertions that are done in comparing, are that if two numbers (int,unsigned, float) are compared
      *        they are first promoted.
-     * 
-     *  \note This comparison is somewhat expensive because if two objects (Mapping) are unordered, comparing them is a bit more costly.
-     *        But being in different order doesn't affect their equality (whereas it does for arrays).
      */
     struct VariantValue::ThreeWayComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eThreeWayCompare> {
         constexpr ThreeWayComparer ();

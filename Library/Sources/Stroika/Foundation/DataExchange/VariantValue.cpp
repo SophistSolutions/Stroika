@@ -390,7 +390,7 @@ VariantValue VariantValue::ConvertTo (Type to) const
         case Type::eUnsignedInteger:
             return As<unsigned int> ();
         case Type::eFloat:
-            return As<float> ();
+            return As<FloatType_> ();
         case Type::eDate:
             return As<Time::Date> ();
         case Type::eDateTime:
@@ -404,6 +404,53 @@ VariantValue VariantValue::ConvertTo (Type to) const
     }
     static const DataExchange::BadFormatException kCannotCoerce2ThatType_{L"Cannot coerce VariantValue to that type"sv};
     Execution::Throw (kCannotCoerce2ThatType_);
+}
+
+VariantValue VariantValue::Normalize () const
+{
+    using KVPT = Common::KeyValuePair<String,VariantValue>;
+    switch (GetType ()) {
+        case Type::eNull:
+            return *this;
+        case Type::eBLOB:
+            return ConvertTo (Type::eString);
+        case Type::eBoolean:
+            return *this;
+        case Type::eInteger:
+            return ConvertTo (Type::eFloat);
+        case Type::eUnsignedInteger:
+            return ConvertTo (Type::eFloat);
+        case Type::eFloat: {
+            // tricky case - nans and infs must be converted to strings, because they cannot be emitted in JSON as 'numbers'
+            // and so when are read back, they are read back as strings.
+            FloatType_ f = As<FloatType_> ();
+            if (std::isnan (f) or std::isinf (f)) {
+                return Characters::FloatConversion::ToString (f);
+            }
+            return *this;
+        }
+        case Type::eDate:
+            return ConvertTo (Type::eString);
+        case Type::eDateTime:
+            return ConvertTo (Type::eString);
+        case Type::eString:
+            return *this;
+        case Type::eArray:
+            // must recursively normalize all sub-elements
+            return VariantValue{
+                As<Sequence<VariantValue>> ().Map<VariantValue, Sequence<VariantValue>> (
+                    [] (const VariantValue& v) { return v.Normalize (); }
+            )};
+        case Type::eMap:
+            // must recursively normalize all sub-elements, but also produce a sorted-map
+            return VariantValue{
+                As<Mapping<String, VariantValue>> ().Map<KVPT, Containers::SortedMapping<String, VariantValue>> (
+                    [] (const KVPT& kvp) { return KVPT{kvp.fKey, kvp.fValue.Normalize ()}; }
+            )};
+        default:
+            AssertNotReached ();
+            return nullptr;
+    }
 }
 
 Memory::BLOB VariantValue::AsBLOB_ () const
@@ -851,53 +898,36 @@ Sequence<VariantValue> VariantValue::As () const
  */
 bool Stroika::Foundation::DataExchange::VariantValue::EqualsComparer::operator() (const VariantValue& lhs, const VariantValue& rhs) const
 {
-    VariantValue::Type lt = lhs.GetType ();
-    VariantValue::Type rt = rhs.GetType ();
+    VariantValue       ln = lhs.Normalize ();
+    VariantValue       rn = rhs.Normalize ();
+    VariantValue::Type lt = ln.GetType ();
+    VariantValue::Type rt = rn.GetType ();
     if (lt != rt) {
-        // always do exact match, except json treats all numbers as same type, so treat likewise here
-        auto isNumber = [] (VariantValue::Type lt) {
-            return lt == VariantValue::eInteger or lt == VariantValue::eUnsignedInteger or lt == VariantValue::eFloat;
-        };
-        if (isNumber (lt) and isNumber (rt)) {
-            if (lt == VariantValue::eFloat or rt == VariantValue::eFloat) {
-                lt = VariantValue::eFloat;
-            }
-            else {
-                lt = VariantValue::eInteger;
-            }
-        }
+        return false;
     }
     switch (lt) {
         case VariantValue::eNull:
             return true;
-        case VariantValue::eBLOB:
-            return lhs.As<Memory::BLOB> () == rhs.As<Memory::BLOB> ();
         case VariantValue::eBoolean:
-            return lhs.As<bool> () == rhs.As<bool> ();
-        case VariantValue::eInteger:
-            return lhs.As<IntegerType_> () == rhs.As<IntegerType_> ();
-        case VariantValue::eUnsignedInteger:
-            return lhs.As<UnsignedIntegerType_> () == rhs.As<UnsignedIntegerType_> ();
+            return ln.As<bool> () == ln.As<bool> ();
         case VariantValue::eFloat:
-            return Math::NearlyEquals (lhs.As<FloatType_> (), rhs.As<FloatType_> ());
-        case VariantValue::eDate:
-            return lhs.As<Date> () == rhs.As<Date> ();
-        case VariantValue::eDateTime:
-            return lhs.As<DateTime> () == rhs.As<DateTime> ();
+            return Math::NearlyEquals (ln.As<FloatType_> (), ln.As<FloatType_> ());
         case VariantValue::eString:
-            return lhs.As<String> () == rhs.As<String> ();
+            return ln.As<String> () == ln.As<String> ();
         case VariantValue::eArray: {
-            // same iff all elts same
-            Sequence<VariantValue> lhsV = lhs.As<Sequence<VariantValue>> ();
-            Sequence<VariantValue> rhsV = rhs.As<Sequence<VariantValue>> ();
-            return lhsV == rhsV;
+            // same iff all elts same (after normalizing sub-elts above)
+            return ln.As<Sequence<VariantValue>> () == rn.As<Sequence<VariantValue>> ();
         }
         case VariantValue::eMap: {
-            // same iff all elts same
-            Mapping<String, VariantValue> lhsM = lhs.As<Mapping<String, VariantValue>> ();
-            Mapping<String, VariantValue> rhsM = rhs.As<Mapping<String, VariantValue>> ();
-            return lhsM == rhsM;
+            // same iff all elts same (importantly after normalizing which sorts)
+            return ln.As<Mapping<String, VariantValue>> () == rn.As<Mapping<String, VariantValue>> ();
         }
+        case VariantValue::eBLOB:
+        case VariantValue::eInteger:
+        case VariantValue::eUnsignedInteger:
+        case VariantValue::eDate:
+        case VariantValue::eDateTime:
+            AssertNotReached (); // cuz normalized
         default:
             AssertNotReached ();
             return false;
@@ -911,39 +941,22 @@ bool Stroika::Foundation::DataExchange::VariantValue::EqualsComparer::operator()
  */
 strong_ordering VariantValue::ThreeWayComparer::operator() (const VariantValue& lhs, const VariantValue& rhs) const
 {
-    VariantValue::Type lt = lhs.GetType ();
-    VariantValue::Type rt = rhs.GetType ();
+    VariantValue       ln = lhs.Normalize ();
+    VariantValue       rn = rhs.Normalize ();
+    VariantValue::Type lt = ln.GetType ();
+    VariantValue::Type rt = rn.GetType ();
     if (lt != rt) {
-        auto isNumber = [] (VariantValue::Type lt) {
-            return lt == VariantValue::eInteger or lt == VariantValue::eUnsignedInteger or lt == VariantValue::eFloat;
-        };
-        if (isNumber (lt) and isNumber (rt)) {
-            if (lt == VariantValue::eFloat or rt == VariantValue::eFloat) {
-                lt = VariantValue::eFloat;
-            }
-            else {
-                lt = VariantValue::eInteger;
-            }
-            rt = lt;
-        }
-        // No obvious way to compare elements of different type, so just use the ordering of the types (new in Stroika v2.1d5, and ONLY if new (not default) fExactTypeMatchOnly flag set
-        if (lt != rt) {
-            return lt <=> rt;
-        }
+        return lt <=> rt;   // no obvious sort order, so just use numeric type value
     }
     switch (lt) {
         case VariantValue::eNull:
-            return rt == VariantValue::eNull ? strong_ordering::equal : strong_ordering::greater;
+            return strong_ordering::equal;
         case VariantValue::eBoolean:
-            return lhs.As<bool> () <=> rhs.As<bool> ();
-        case VariantValue::eInteger:
-            return lhs.As<IntegerType_> () <=> rhs.As<IntegerType_> ();
-        case VariantValue::eUnsignedInteger:
-            return lhs.As<UnsignedIntegerType_> () <=> rhs.As<UnsignedIntegerType_> ();
+            return ln.As<bool> () <=> ln.As<bool> ();
         case VariantValue::eFloat: {
             // explicit test so we can do NearlyEquals()
-            FloatType_ l = lhs.As<FloatType_> ();
-            FloatType_ r = rhs.As<FloatType_> ();
+            FloatType_ l = ln.As<FloatType_> ();
+            FloatType_ r = rn.As<FloatType_> ();
             if (Math::NearlyEquals (l, r)) {
                 return strong_ordering::equal;
             }
@@ -954,21 +967,30 @@ strong_ordering VariantValue::ThreeWayComparer::operator() (const VariantValue& 
                 return strong_ordering::greater;
             }
         }
-        case VariantValue::eDate:
-            return lhs.As<Date> () <=> rhs.As<Date> ();
-        case VariantValue::eDateTime:
-            return lhs.As<DateTime> () <=> rhs.As<DateTime> ();
         case VariantValue::eString:
-            return lhs.As<String> () <=> rhs.As<String> ();
-        case VariantValue::eArray:
-            return lhs.As<Sequence<VariantValue>> () <=> rhs.As<Sequence<VariantValue>> ();
-        case VariantValue::eMap: {
-            // terribly costly, only obvious way to compare two maps is with a consistent ordering of the objects.
-            // producing this is expensive, but for now - til shows up in a profile - KISS...
-            Containers::SortedMapping<String, VariantValue> lhsM{lhs.As<Mapping<String, VariantValue>> ()};
-            Containers::SortedMapping<String, VariantValue> rhsM{rhs.As<Mapping<String, VariantValue>> ()};
-            return lhsM <=> rhsM;
+            return ln.As<String> () <=> ln.As<String> ();
+        case VariantValue::eArray: {
+            // same iff all elts same (after normalizing sub-elts above)
+            return ln.As<Sequence<VariantValue>> () <=> rn.As<Sequence<VariantValue>> ();
         }
+        case VariantValue::eMap: {
+            // same iff all elts same (importantly after normalizing which sorts)
+            // @todo find way to make this compare work, but for now, just hack and re-create sorted mapping
+            if (false) {
+                //return ln.As<Mapping<String, VariantValue>> () <=> rn.As<Mapping<String, VariantValue>> ();
+            }
+            else {
+                using SMT = Containers::SortedMapping<String, VariantValue>;
+                return SMT{ln.As<Mapping<String, VariantValue>> ()} <=> SMT{rn.As<Mapping<String, VariantValue>> ()};
+            
+            }
+        }
+        case VariantValue::eBLOB:
+        case VariantValue::eInteger:
+        case VariantValue::eUnsignedInteger:
+        case VariantValue::eDate:
+        case VariantValue::eDateTime:
+            AssertNotReached (); // cuz normalized
         default:
             AssertNotReached ();
             return strong_ordering::equal;
