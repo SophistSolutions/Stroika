@@ -108,8 +108,10 @@ namespace Stroika::Foundation::Containers {
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     inline strong_ordering SortedMapping<KEY_TYPE, MAPPED_VALUE_TYPE>::operator<=> (const SortedMapping& rhs) const
     {
-        // nb: no need to take into account comparison on values, because total ordering on keys sequences these elements
-        return typename Iterable<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>::SequentialThreeWayComparer{Common::ThreeWayComparerAdapter{GetInOrderKeyComparer ()}}(*this, rhs);
+        // Iterate over both mappings at the same time, only looking at the keys. If any two elements are !=,
+        // then use the value as a tie-breaker
+        using SeqCmp = typename Iterable<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>::template SequentialThreeWayComparer<compare_three_way>;
+        return SeqCmp{}(*this, rhs);
     }
 
 }
