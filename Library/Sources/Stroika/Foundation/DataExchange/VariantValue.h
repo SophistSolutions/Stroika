@@ -367,11 +367,14 @@ namespace Stroika::Foundation::DataExchange {
 
     public:
         /**
+         * https://stroika.atlassian.net/browse/STK-971 - BROKEN FOR CASE OF MAPPINGS.
          */
         nonvirtual strong_ordering operator<=> (const VariantValue& rhs) const;
 
     public:
         /**
+         *  \note this is extra expensive, because if two objects (Mapping) are unordered, comparing them is a bit more costly.
+         *        But being in differnt order doesn't affect their equality (whereas it does for arrays).
          */
         nonvirtual bool operator== (const VariantValue& rhs) const;
 
@@ -451,6 +454,9 @@ namespace Stroika::Foundation::DataExchange {
 
     /**
      *  Not default, and not sure useful, but you can pass in exactTypeMatchOnly to prevent type coercion before comparison.
+     * 
+     *  \note this is extra expensive, because if two objects (Mapping) are unordered, comparing them is a bit more costly.
+     *        But being in differnt order doesn't affect their equality (whereas it does for arrays).
      */
     struct VariantValue::EqualsComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eEquals> {
         constexpr EqualsComparer (bool exactTypeMatchOnly = false);
@@ -460,6 +466,8 @@ namespace Stroika::Foundation::DataExchange {
 
     /**
      *  Not default, and not sure useful, but you can pass in exactTypeMatchOnly to prevent type coercion.
+     * 
+     * * https://stroika.atlassian.net/browse/STK-971 - BROKEN FOR CASE OF MAPPINGS.
      */
     struct VariantValue::ThreeWayComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eThreeWayCompare> {
         constexpr ThreeWayComparer (bool exactTypeMatchOnly = false);

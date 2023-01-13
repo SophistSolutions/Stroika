@@ -900,33 +900,13 @@ bool Stroika::Foundation::DataExchange::VariantValue::EqualsComparer::operator()
             // same iff all elts same
             Sequence<VariantValue> lhsV = lhs.As<Sequence<VariantValue>> ();
             Sequence<VariantValue> rhsV = rhs.As<Sequence<VariantValue>> ();
-            if (lhsV.size () != rhsV.size ()) {
-                return false;
-            }
-            for (size_t i = 0; i < lhsV.size (); ++i) {
-                if (lhsV[i] != rhsV[i]) {
-                    return false;
-                }
-            }
-            return true;
+            return Sequence<VariantValue>::EqualsComparer<std::equal_to<VariantValue>> {} (lhsV, rhsV);
         }
         case VariantValue::eMap: {
             // same iff all elts same
             Mapping<String, VariantValue> lhsM = lhs.As<Mapping<String, VariantValue>> ();
             Mapping<String, VariantValue> rhsM = rhs.As<Mapping<String, VariantValue>> ();
-            if (lhsM.size () != rhsM.size ()) {
-                return false;
-            }
-            auto li = lhsM.begin ();
-            auto ri = rhsM.begin ();
-            for (; li != lhsM.end (); ++li, ++ri) {
-                if (*li != *ri) {
-                    return false;
-                }
-            }
-            Ensure (li == lhsM.end ());
-            Ensure (ri == rhsM.end ());
-            return true;
+           return lhsM == rhsM;
         }
         default:
             AssertNotReached ();
@@ -981,6 +961,9 @@ strong_ordering VariantValue::ThreeWayComparer::operator() (const VariantValue& 
         case VariantValue::eArray:
             return lhs.As<Sequence<VariantValue>> () <=> rhs.As<Sequence<VariantValue>> ();
         case VariantValue::eMap: {
+
+            // * https://stroika.atlassian.net/browse/STK-971 - BROKEN FOR CASE OF MAPPINGS.
+            
             // @todo FIX - THIS IS LOGICALLY WRONG... CUZ MAPPINGS COULD BE IN DIFFERENT ORDER!
             // MUST FORCE TO SAME ORDER AND THEN ITERABLE NEEDS METHOD TO CREATE ITERABLE COMPARE - SequentialThreeWayComparer
             //  NOT RIGHT unless you order things properly first
