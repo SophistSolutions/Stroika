@@ -1504,7 +1504,7 @@ size_t std::hash<String>::operator() (const String& arg) const
         return kZeroDigest_;
     }
     else {
-        return kDigester_(as_bytes (s));
+        return kDigester_ (as_bytes (s));
     }
 }
 
