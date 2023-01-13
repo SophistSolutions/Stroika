@@ -299,7 +299,15 @@ namespace {
                 string x = out.As<string> ();
                 for (string::size_type i = 0; i < min (x.length (), expected.length ()); ++i) {
                     if (x[i] != expected[i]) {
-                        VerifyTestResult (false);
+                        // Might be a bug, but probably not; before Stroika v3.0d1, we used Mapping_stdmap<> so
+                        // the maps were really ordered. But now they are not, so the text representation can
+                        // vary. If diff, reverse the parse, and see if OK.
+                        VariantValue vvv = DataExchange::Variant::JSON::Reader{}.Read (x);
+                        if (vvv != v) {
+                            Stroika::TestHarness::WarnTestIssue (string{"x: " + x}.c_str ());
+                            Stroika::TestHarness::WarnTestIssue (string{"expected: " + expected}.c_str ());
+                            VerifyTestResult (false);
+                        }
                     }
                 }
                 VerifyTestResult (out.As<string> () == expected);
