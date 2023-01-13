@@ -460,6 +460,7 @@ namespace Stroika::Foundation::Containers {
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     inline bool Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::operator== (const Mapping& rhs) const
+        requires (Configuration::EqualityComparable<MAPPED_VALUE_TYPE> ())
     {
         return EqualsComparer<>{}(*this, rhs);
     }

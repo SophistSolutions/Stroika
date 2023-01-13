@@ -324,7 +324,7 @@ namespace Stroika::Foundation::Containers {
         /**
          *  Likely inefficient for a map, but perhaps helpful. Walks entire list of entires
          *  and applies VALUE_EQUALS_COMPARER (defaults to operator==) on each value, and returns
-         *  true if contained. Perhpas not very useful but symetric to ContainsKey().
+         *  true if contained. Perhaps not very useful but symetric to ContainsKey().
          */
         template <typename VALUE_EQUALS_COMPARER = equal_to<MAPPED_VALUE_TYPE>>
         nonvirtual bool ContainsMappedValue (ArgByValueType<mapped_type> v, VALUE_EQUALS_COMPARER&& valueEqualsComparer = {}) const;
@@ -532,10 +532,13 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
+         *  \brief compares if the two mappings have the same keys, and corresponding values (doesn't check ordering same). Note this can be costly, as the Mappings are not necessarily in the same order
+         * 
          * simply indirect to @Mapping<>::EqualsComparer;
          * only defined if there is a default equals comparer for mapped_type
          */
-        nonvirtual bool operator== (const Mapping& rhs) const;
+        nonvirtual bool operator== (const Mapping& rhs) const
+            requires (Configuration::EqualityComparable<MAPPED_VALUE_TYPE> ());
 
     public:
         /**
@@ -653,7 +656,7 @@ namespace Stroika::Foundation::Containers {
     };
 
     /**
-     *  \brief Compare Mappings<>s for equality. 
+     *  \brief Compare Mappings<>s for equality. Note this can be costly, as the Mappings are not necessarily in the same order.
      *
      *  \note   Not to be confused with GetKeyEqualsComparer () which compares KEY ELEMENTS of Mapping for equality.
      */
