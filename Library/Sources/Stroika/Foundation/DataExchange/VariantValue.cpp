@@ -408,7 +408,7 @@ VariantValue VariantValue::ConvertTo (Type to) const
 
 VariantValue VariantValue::Normalize () const
 {
-    using KVPT = Common::KeyValuePair<String,VariantValue>;
+    using KVPT = Common::KeyValuePair<String, VariantValue>;
     switch (GetType ()) {
         case Type::eNull:
             return *this;
@@ -439,14 +439,12 @@ VariantValue VariantValue::Normalize () const
             // must recursively normalize all sub-elements
             return VariantValue{
                 As<Sequence<VariantValue>> ().Map<VariantValue, Sequence<VariantValue>> (
-                    [] (const VariantValue& v) { return v.Normalize (); }
-            )};
+                    [] (const VariantValue& v) { return v.Normalize (); })};
         case Type::eMap:
             // must recursively normalize all sub-elements, but also produce a sorted-map
             return VariantValue{
                 As<Mapping<String, VariantValue>> ().Map<KVPT, Containers::SortedMapping<String, VariantValue>> (
-                    [] (const KVPT& kvp) { return KVPT{kvp.fKey, kvp.fValue.Normalize ()}; }
-            )};
+                    [] (const KVPT& kvp) { return KVPT{kvp.fKey, kvp.fValue.Normalize ()}; })};
         default:
             AssertNotReached ();
             return nullptr;
@@ -946,7 +944,7 @@ strong_ordering VariantValue::ThreeWayComparer::operator() (const VariantValue& 
     VariantValue::Type lt = ln.GetType ();
     VariantValue::Type rt = rn.GetType ();
     if (lt != rt) {
-        return lt <=> rt;   // no obvious sort order, so just use numeric type value
+        return lt <=> rt; // no obvious sort order, so just use numeric type value
     }
     switch (lt) {
         case VariantValue::eNull:
@@ -982,7 +980,6 @@ strong_ordering VariantValue::ThreeWayComparer::operator() (const VariantValue& 
             else {
                 using SMT = Containers::SortedMapping<String, VariantValue>;
                 return SMT{ln.As<Mapping<String, VariantValue>> ()} <=> SMT{rn.As<Mapping<String, VariantValue>> ()};
-            
             }
         }
         case VariantValue::eBLOB:
