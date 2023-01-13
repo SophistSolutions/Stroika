@@ -457,26 +457,43 @@ namespace Stroika::Foundation::DataExchange {
     Sequence<VariantValue> VariantValue::As () const;
 
     /**
-     *  Not default, and not sure useful, but you can pass in exactTypeMatchOnly to prevent type coercion before comparison.
+     *  \note Before Stroika v3.0d1, EqualsComparer had an fExactTypeMatchOnly option, which defaulted false.
+     *        This did various not clearly specified type coersions - being expensive, and buggy, and confusing.
      * 
-     *  \note this is extra expensive, because if two objects (Mapping) are unordered, comparing them is a bit more costly.
-     *        But being in differnt order doesn't affect their equality (whereas it does for arrays).
+     *        The trickiest part is that to do this properly, we needed to pass along the flag (through default constructors
+     *        using thread_local storage trick) - and that was never done.
+     * 
+     *        I know of no use-case for this functionality, its ambiguous, and costly. So we lose it.
+     * 
+     *        The ONLY remaining coertions that are done in comparing, are that if two numbers (int,unsigned, float) are compared
+     *        they are first promoted.
+     * 
+     *  \note This comparison is somewhat expensive because if two objects (Mapping) are unordered, comparing them is a bit more costly.
+     *        But being in different order doesn't affect their equality (whereas it does for arrays).
      */
     struct VariantValue::EqualsComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eEquals> {
-        constexpr EqualsComparer (bool exactTypeMatchOnly = false);
+        constexpr EqualsComparer ();
         nonvirtual bool operator() (const VariantValue& lhs, const VariantValue& rhs) const;
-        bool            fExactTypeMatchOnly;
     };
 
     /**
-     *  Not default, and not sure useful, but you can pass in exactTypeMatchOnly to prevent type coercion.
+     *  \note Before Stroika v3.0d1, EqualsComparer had an fExactTypeMatchOnly option, which defaulted false.
+     *        This did various not clearly specified type coersions - being expensive, and buggy, and confusing.
      * 
-     * * https://stroika.atlassian.net/browse/STK-971 - BROKEN FOR CASE OF MAPPINGS.
+     *        The trickiest part is that to do this properly, we needed to pass along the flag (through default constructors
+     *        using thread_local storage trick) - and that was never done.
+     * 
+     *        I know of no use-case for this functionality, its ambiguous, and costly. So we lose it.
+     * 
+     *        The ONLY remaining coertions that are done in comparing, are that if two numbers (int,unsigned, float) are compared
+     *        they are first promoted.
+     * 
+     *  \note This comparison is somewhat expensive because if two objects (Mapping) are unordered, comparing them is a bit more costly.
+     *        But being in different order doesn't affect their equality (whereas it does for arrays).
      */
     struct VariantValue::ThreeWayComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eThreeWayCompare> {
-        constexpr ThreeWayComparer (bool exactTypeMatchOnly = false);
+        constexpr ThreeWayComparer ();
         nonvirtual strong_ordering operator() (const VariantValue& lhs, const VariantValue& rhs) const;
-        bool                       fExactTypeMatchOnly;
     };
 
 }

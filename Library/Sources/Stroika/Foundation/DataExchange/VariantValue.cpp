@@ -9,6 +9,7 @@
 #include "../Characters/Format.h"
 #include "../Characters/String2Int.h"
 #include "../Characters/ToString.h"
+#include "../Containers/SortedMapping.h"
 #include "../Cryptography/Encoding/Algorithm/Base64.h"
 #include "../DataExchange/BadFormatException.h"
 #include "../Debug/Cast.h"
@@ -253,7 +254,7 @@ VariantValue::VariantValue (const boost::json::value& val)
             *this = Containers::Concrete::Sequence_stdvector<VariantValue>{std::move (r)};
         } break;
         case json::kind::object: {
-            const auto&                                                          o = val.as_object ();
+            const auto&                                                                  o = val.as_object ();
             Containers::Concrete::Mapping_stdhashmap<String, VariantValue>::STDHASHMAP<> r; // performance tweak, add in STL, avoiding virtual calls for each add, and then move to Stroika mapping
             r.reserve (o.size ());
             for (const auto& i : o) {
@@ -853,35 +854,18 @@ bool Stroika::Foundation::DataExchange::VariantValue::EqualsComparer::operator()
     VariantValue::Type lt = lhs.GetType ();
     VariantValue::Type rt = rhs.GetType ();
     if (lt != rt) {
-        if (fExactTypeMatchOnly) {
-            return false;
+        // always do exact match, except json treats all numbers as same type, so treat likewise here
+        auto isNumber = [] (VariantValue::Type lt) {
+            return lt == VariantValue::eInteger or lt == VariantValue::eUnsignedInteger or lt == VariantValue::eFloat;
+        };
+        if (isNumber (lt) and isNumber (rt)) {
+            if (lt == VariantValue::eFloat or rt == VariantValue::eFloat) {
+                lt = VariantValue::eFloat;
+            }
+            else {
+                lt = VariantValue::eInteger;
+            }
         }
-        else if (
-            (lt == VariantValue::eInteger or lt == VariantValue::eUnsignedInteger) and
-            (rt == VariantValue::eInteger or rt == VariantValue::eUnsignedInteger)) {
-            // Set compare as type and fall through
-            lt = VariantValue::eUnsignedInteger;
-            rt = VariantValue::eUnsignedInteger;
-        }
-        else if (
-            (lt == VariantValue::eFloat and (rt == VariantValue::eString or rt == VariantValue::eInteger or rt == VariantValue::eUnsignedInteger)) or
-            (rt == VariantValue::eFloat and (lt == VariantValue::eString or lt == VariantValue::eInteger or lt == VariantValue::eUnsignedInteger))) {
-            // Set compare as type and fall through
-            lt = VariantValue::eFloat;
-            rt = VariantValue::eFloat;
-        }
-        else if (
-            ((lt != VariantValue::eArray and lt != VariantValue::eMap) and rt == VariantValue::eString) or
-            ((rt != VariantValue::eArray and rt != VariantValue::eMap) and lt == VariantValue::eString)) {
-            // special case - comparing a string with any type except map or array, trat as strings
-            // Set compare as type and fall through
-            lt = VariantValue::eString;
-            rt = VariantValue::eString;
-        }
-        else {
-            return false;
-        }
-        // can fall through for some fallthrough cases above...
     }
     switch (lt) {
         case VariantValue::eNull:
@@ -906,13 +890,13 @@ bool Stroika::Foundation::DataExchange::VariantValue::EqualsComparer::operator()
             // same iff all elts same
             Sequence<VariantValue> lhsV = lhs.As<Sequence<VariantValue>> ();
             Sequence<VariantValue> rhsV = rhs.As<Sequence<VariantValue>> ();
-            return Sequence<VariantValue>::EqualsComparer<std::equal_to<VariantValue>> {} (lhsV, rhsV);
+            return lhsV == rhsV;
         }
         case VariantValue::eMap: {
             // same iff all elts same
             Mapping<String, VariantValue> lhsM = lhs.As<Mapping<String, VariantValue>> ();
             Mapping<String, VariantValue> rhsM = rhs.As<Mapping<String, VariantValue>> ();
-           return lhsM == rhsM;
+            return lhsM == rhsM;
         }
         default:
             AssertNotReached ();
@@ -929,7 +913,19 @@ strong_ordering VariantValue::ThreeWayComparer::operator() (const VariantValue& 
 {
     VariantValue::Type lt = lhs.GetType ();
     VariantValue::Type rt = rhs.GetType ();
-    if (fExactTypeMatchOnly) {
+    if (lt != rt) {
+        auto isNumber = [] (VariantValue::Type lt) {
+            return lt == VariantValue::eInteger or lt == VariantValue::eUnsignedInteger or lt == VariantValue::eFloat;
+        };
+        if (isNumber (lt) and isNumber (rt)) {
+            if (lt == VariantValue::eFloat or rt == VariantValue::eFloat) {
+                lt = VariantValue::eFloat;
+            }
+            else {
+                lt = VariantValue::eInteger;
+            }
+            rt = lt;
+        }
         // No obvious way to compare elements of different type, so just use the ordering of the types (new in Stroika v2.1d5, and ONLY if new (not default) fExactTypeMatchOnly flag set
         if (lt != rt) {
             return lt <=> rt;
@@ -967,51 +963,11 @@ strong_ordering VariantValue::ThreeWayComparer::operator() (const VariantValue& 
         case VariantValue::eArray:
             return lhs.As<Sequence<VariantValue>> () <=> rhs.As<Sequence<VariantValue>> ();
         case VariantValue::eMap: {
-
-            // * https://stroika.atlassian.net/browse/STK-971 - BROKEN FOR CASE OF MAPPINGS.
-            
-            // @todo FIX - THIS IS LOGICALLY WRONG... CUZ MAPPINGS COULD BE IN DIFFERENT ORDER!
-            // MUST FORCE TO SAME ORDER AND THEN ITERABLE NEEDS METHOD TO CREATE ITERABLE COMPARE - SequentialThreeWayComparer
-            //  NOT RIGHT unless you order things properly first
-            //  return lhs.As<Mapping<String, VariantValue>> () <=> rhs.As<Mapping<String, VariantValue>> ();
-
-#if 0
-    &&& @todo PUT THIS SOMEHOW INTO MAPPING - THREEWAY COMPARE WITH OPTION OF FIRST SORTING BY KEY
-// expensive for rare case, but if we must compare parameters, need some standardized way to iterate over them (key)
-        using namespace Containers;
-        using namespace Characters;
-        auto sortedMapping = [] (auto m) { return SortedMapping<String, String>{String::LessComparer{CompareOptions::eCaseInsensitive}, m}; };
-#if qCompilerAndStdLib_template_DefaultArgIgnoredWhenFailedDeduction_Buggy
-        return Mapping<String, String>::SequentialThreeWayComparer{compare_three_way{}}(sortedMapping (fParameters_), sortedMapping (rhs.fParameters_));
-#else
-        return Mapping<String, String>::SequentialThreeWayComparer{}(sortedMapping (fParameters_), sortedMapping (rhs.fParameters_));
-#endif
-#endif
-
-#if 0
-                return As<Mapping<String, VariantValue>> ().Keys () <=> rhs.As<Mapping<String, VariantValue>>.Keys () ();
-#endif
-            // same iff all elts same
-            Mapping<String, VariantValue> lhsM{lhs.As<Mapping<String, VariantValue>> ()};
-            Mapping<String, VariantValue> rhsM{rhs.As<Mapping<String, VariantValue>> ()};
-            auto                          li = lhsM.begin ();
-            auto                          ri = rhsM.begin ();
-            for (; li != lhsM.end (); ++li, ++ri) {
-                if (ri == rhsM.end ()) {
-                    return strong_ordering::less;
-                }
-                if (*li != *ri) {
-                    //return false; CHANGE IN BEHAVIOR (I THINK FIX) 2020-05-04
-                    return *li <=> *ri;
-                }
-            }
-            Ensure (li == lhsM.end ());
-            if (ri == rhsM.end ()) {
-                return strong_ordering::equal;
-            }
-            else {
-                return strong_ordering::greater;
-            }
+            // terribly costly, only obvious way to compare two maps is with a consistent ordering of the objects.
+            // producing this is expensive, but for now - til shows up in a profile - KISS...
+            Containers::SortedMapping<String, VariantValue> lhsM{lhs.As<Mapping<String, VariantValue>> ()};
+            Containers::SortedMapping<String, VariantValue> rhsM{rhs.As<Mapping<String, VariantValue>> ()};
+            return lhsM <=> rhsM;
         }
         default:
             AssertNotReached ();
