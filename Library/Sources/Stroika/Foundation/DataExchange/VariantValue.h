@@ -159,6 +159,9 @@ namespace Stroika::Foundation::DataExchange {
          *              T y = v2.As<T> (); // will produce value x == y
          *
          *  \note   Configuration::DefaultNames<> supported
+         * 
+         *  \note   the Normalize () method can be used to return the limited subset of information that appears in JSON
+         *          (but beware, that also sorts the mappings).
          */
         enum class Type : uint8_t {
             eNull,
@@ -224,7 +227,7 @@ namespace Stroika::Foundation::DataExchange {
         VariantValue (const DateTime& val);
         template <Characters::ConvertibleToString STRINGISH_T>
         VariantValue (STRINGISH_T&& val)
-            requires (not is_same_v<remove_cv_t<STRINGISH_T>, String>);
+            requires (not is_same_v<remove_cvref_t<STRINGISH_T>, String>);
         VariantValue (const String& val);
         explicit VariantValue (const map<wstring, VariantValue>& val);
         explicit VariantValue (Mapping<String, VariantValue>&& val);

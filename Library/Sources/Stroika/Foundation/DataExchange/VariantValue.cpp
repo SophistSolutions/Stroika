@@ -974,6 +974,10 @@ strong_ordering VariantValue::ThreeWayComparer::operator() (const VariantValue& 
         case VariantValue::eMap: {
             // same iff all elts same (importantly after normalizing which sorts)
             // @todo find way to make this compare work, but for now, just hack and re-create sorted mapping
+            // Maybe add 'virtual' rep method on Mapping - AsSorted - and then say
+            // As<SortedMapping<...>> on the mapping that comes back from VariantValue.
+            // Or add that same 'feature' just in VariantValue - with flag when creating with SortedMapping (maybe additional 'type')
+            // and logic privately in here so you dont need to worry outside.
             if (false) {
                 //return ln.As<Mapping<String, VariantValue>> () <=> rn.As<Mapping<String, VariantValue>> ();
             }
