@@ -190,11 +190,6 @@ namespace Stroika::Frameworks::Led {
 #else
 #define Led_SDK_TCHAROF(X) X
 #endif
-    using Foundation::Characters::NarrowSDK2SDKString;
-    using Foundation::Characters::NarrowSDKStringToWide;
-    using Foundation::Characters::SDKString2NarrowSDK;
-    using Foundation::Characters::SDKString2Wide;
-    using Foundation::Characters::Wide2SDKString;
 
     /*
     @METHOD:        Led_tString2SDKString

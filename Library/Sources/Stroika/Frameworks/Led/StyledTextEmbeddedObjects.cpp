@@ -753,7 +753,7 @@ void StandardURLStyleMarker::MeasureSegmentWidth (const StyledTextImager* imager
         Verify (font1.CreateFontIndirect (&lf));
     }
     GDI_Obj_Selector font1Selector (tablet, font1);
-    DistanceType     string1Width = name == nullptr ? 0 : dc->GetTextExtent (NarrowSDK2SDKString (name).c_str (), nameStrLen).cx;
+    DistanceType     string1Width = name == nullptr ? 0 : dc->GetTextExtent (String::FromNarrowSDKString (name).AsSDKString ().c_str (), nameStrLen).cx;
 
     FontObject font2;
     {
@@ -764,7 +764,7 @@ void StandardURLStyleMarker::MeasureSegmentWidth (const StyledTextImager* imager
         lf.lfHeight = -8;
     }
     GDI_Obj_Selector font2Selector (tablet, font2);
-    DistanceType     string2Width = dc->GetTextExtent (NarrowSDK2SDKString (url).c_str (), urlStrLen).cx;
+    DistanceType     string2Width = dc->GetTextExtent (String::FromNarrowSDKString (url).AsSDKString ().c_str (), urlStrLen).cx;
 
     distanceResults[0] += max (string1Width, string2Width) + 2 * kDefaultEmbeddingMargin.h;
 #endif

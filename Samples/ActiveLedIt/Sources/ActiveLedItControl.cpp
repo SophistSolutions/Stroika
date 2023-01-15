@@ -40,6 +40,9 @@ DISABLE_COMPILER_MSC_WARNING_END (5054)
 
 #include "ActiveLedIt_h.h"
 
+using Stroika::Foundation::Characters::String;
+
+
 // Not sure about this - experiment... See spr#0521
 #define qDisableEditorWhenNotActive 0
 
@@ -71,11 +74,13 @@ using namespace Stroika::Frameworks;
 using namespace Stroika::Frameworks::Led;
 using namespace Stroika::Frameworks::Led::StyledTextIO;
 
+using Foundation::Characters::String;
+
 /*
-     ********************************************************************************
-     ************************** COMBased_SpellCheckEngine ***************************
-     ********************************************************************************
-     */
+ ********************************************************************************
+ ************************** COMBased_SpellCheckEngine ***************************
+ ********************************************************************************
+ */
 
 COMBased_SpellCheckEngine::COMBased_SpellCheckEngine (IDispatch* engine)
     : inherited ()
@@ -887,7 +892,7 @@ void ActiveLedItControl::ExchangeTextAsRTFBlob (CPropExchange* pPX)
                 if (data != NULL) {
                     size_t size = *(size_t*)data;
                     string s    = string{((const char*)data) + sizeof (size_t), size};
-                    SetBufferTextAsRTF (NarrowSDK2SDKString (s).c_str ());
+                    SetBufferTextAsRTF (String::FromNarrowSDKString (s).AsSDKString ().c_str ());
                 }
                 ::GlobalFree (hglobal);
             }
@@ -2151,7 +2156,7 @@ void ActiveLedItControl::SetBufferTextAsRTF (LPCTSTR text)
         TextInteractor::TemporarilySetUpdateMode tsum (fEditor, m_hWnd == NULL ? TextInteractor::eNoUpdate : TextInteractor::eDefaultUpdate);
         fCommandHandler.Commit ();
 
-        string                                       s = SDKString2NarrowSDK (text);
+        string                                       s = String::FromSDKString (text).AsNarrowSDKString ();
         StyledTextIOSrcStream_Memory                 source (s.c_str (), s.length ());
         WordProcessor::WordProcessorTextIOSinkStream sink (&fEditor);
         StyledTextIOReader_RTF                       textReader (&source, &sink);
@@ -2185,7 +2190,7 @@ void ActiveLedItControl::SetBufferTextAsHTML (LPCTSTR text)
     try {
         IdleManager::NonIdleContext nonIdleContext;
         fCommandHandler.Commit ();
-        string                                       s = SDKString2NarrowSDK (text);
+        string                                       s = String::FromSDKString (text).AsNarrowSDKString ();
         StyledTextIOSrcStream_Memory                 source (s.c_str (), s.length ());
         WordProcessor::WordProcessorTextIOSinkStream sink (&fEditor);
         StyledTextIOReader_HTML                      textReader (&source, &sink);
@@ -2797,7 +2802,7 @@ namespace {
                     break; // asserted out before above - now just ignore extra font names...
                 }
                 ActiveLedIt_BuiltinCommand* c = ActiveLedIt_BuiltinCommand::mk (BuiltinCmdSpec (cmdNum, mkFontNameCMDName (fontNames[i]).c_str ()));
-                c->SetName (SDKString2Wide (fontNames[i]));
+                c->SetName (String::FromSDKString (fontNames[i]).As<wstring> ());
                 o->Insert (c);
             }
 

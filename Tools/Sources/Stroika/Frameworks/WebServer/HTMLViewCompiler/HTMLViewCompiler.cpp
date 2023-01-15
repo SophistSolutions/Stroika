@@ -121,8 +121,8 @@ private:
     {
         wstring orig = Streams::iostream::ReadTextStream (in);
 
-        out << "/*Auto-Generated C++ file from the Source HTML file '" << SDKString2NarrowSDK (fInputFile) << "'*/" << endl;
-        out << "void    " << SDKString2NarrowSDK (fFormGeneratorName) << " ()" << endl;
+        out << "/*Auto-Generated C++ file from the Source HTML file '" << String::FromSDKString (fInputFile).AsNarrowSDKString () << "'*/" << endl;
+        out << "void    " << String::FromSDKString (fFormGeneratorName).AsNarrowSDKString () << " ()" << endl;
         out << "{" << endl;
         {
             bool inCode           = false;
@@ -169,7 +169,7 @@ private:
                 }
                 else {
                     if (inCode) {
-                        out << WideStringToNarrowSDKString (wstring (i, next));
+                        out << String{wstring{i, next}}.AsNarrowSDKString ();
                     }
                     else {
                         // Really long 'C' strings cause MSVC to barf - so break it up

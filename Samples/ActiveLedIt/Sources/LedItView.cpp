@@ -865,7 +865,7 @@ void LedItView::OnUpdateOLEUserCommand (CCmdUI* pCmdUI)
         pCmdUI->Enable (enabled);
         pCmdUI->SetCheck (checked);
         if (not name.empty ()) {
-            pCmdUI->SetText (Wide2SDKString (name).c_str ());
+            pCmdUI->SetText (String{name}.AsSDKString ().c_str ());
         }
     }
 }

@@ -1178,7 +1178,7 @@ ActiveLedIt_BuiltinCommand* ActiveLedIt_BuiltinCommand::mk (const BuiltinCmdSpec
     ThrowIfErrorHRESULT (CComObject<ActiveLedIt_BuiltinCommand>::CreateInstance (&o));
     try {
         if constexpr (qCompilerAndStdLib_ATL_Assign_wstring_COMOBJ_Buggy) {
-            wstring tmp = NarrowSDKStringToWide (cmdSpec.fCmdName);
+            wstring tmp = String::FromNarrowSDKString (cmdSpec.fCmdName).As<wstring> ();
             o->fName    = move (tmp);
         }
         else {

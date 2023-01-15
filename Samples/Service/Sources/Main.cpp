@@ -90,19 +90,19 @@ namespace {
         }
         cerr << "Usage: " << m.GetServiceDescription ().fRegistrationName.AsNarrowSDKString () << " [options] where options can be :\n ";
         if (m.GetServiceIntegrationFeatures ().Contains (Main::ServiceIntegrationFeatures::eInstall)) {
-            cerr << "\t--" << Characters::WideStringToNarrowSDKString (Main::CommandNames::kInstall) << "               /* Install service (only when debugging - should use real installer like WIX) */" << endl;
-            cerr << "\t--" << Characters::WideStringToNarrowSDKString (Main::CommandNames::kUnInstall) << "             /* UnInstall service (only when debugging - should use real installer like WIX) */" << endl;
+            cerr << "\t--" << String{Main::CommandNames::kInstall}.AsNarrowSDKString () << "               /* Install service (only when debugging - should use real installer like WIX) */" << endl;
+            cerr << "\t--" << String{Main::CommandNames::kUnInstall}.AsNarrowSDKString () << "             /* UnInstall service (only when debugging - should use real installer like WIX) */" << endl;
         }
-        cerr << "\t--" << Characters::WideStringToNarrowSDKString (Main::CommandNames::kRunAsService) << "        /* Run this process as a service (doesn't exit until the serivce is done ...) */" << endl;
-        cerr << "\t--" << Characters::WideStringToNarrowSDKString (Main::CommandNames::kRunDirectly) << "          /* Run this process as a directly (doesn't exit until the serivce is done or ARGUMENT TIMEOUT seconds elapsed ...) but not using service infrastructure */" << endl;
-        cerr << "\t--" << Characters::WideStringToNarrowSDKString (Main::CommandNames::kStart) << "                 /* Service/Control Function: Start the service */" << endl;
-        cerr << "\t--" << Characters::WideStringToNarrowSDKString (Main::CommandNames::kStop) << "                  /* Service/Control Function: Stop the service */" << endl;
-        cerr << "\t--" << Characters::WideStringToNarrowSDKString (Main::CommandNames::kForcedStop) << "            /* Service/Control Function: Forced stop the service (after trying to normally stop) */" << endl;
-        cerr << "\t--" << Characters::WideStringToNarrowSDKString (Main::CommandNames::kRestart) << "               /* Service/Control Function: Stop and then re-start the service (ok if already stopped) */" << endl;
-        cerr << "\t--" << Characters::WideStringToNarrowSDKString (Main::CommandNames::kForcedRestart) << "         /* Service/Control Function: Stop (force if needed) and then re-start the service (ok if already stopped) */" << endl;
-        cerr << "\t--" << Characters::WideStringToNarrowSDKString (Main::CommandNames::kReloadConfiguration) << "  /* Reload service configuration */" << endl;
-        cerr << "\t--" << Characters::WideStringToNarrowSDKString (Main::CommandNames::kPause) << "                 /* Service/Control Function: Pause the service */" << endl;
-        cerr << "\t--" << Characters::WideStringToNarrowSDKString (Main::CommandNames::kContinue) << "              /* Service/Control Function: Continue the paused service */" << endl;
+        cerr << "\t--" << String{Main::CommandNames::kRunAsService}.AsNarrowSDKString () << "        /* Run this process as a service (doesn't exit until the serivce is done ...) */" << endl;
+        cerr << "\t--" << String{Main::CommandNames::kRunDirectly}.AsNarrowSDKString () << "          /* Run this process as a directly (doesn't exit until the serivce is done or ARGUMENT TIMEOUT seconds elapsed ...) but not using service infrastructure */" << endl;
+        cerr << "\t--" << String{Main::CommandNames::kStart}.AsNarrowSDKString () << "                 /* Service/Control Function: Start the service */" << endl;
+        cerr << "\t--" << String{Main::CommandNames::kStop}.AsNarrowSDKString () << "                  /* Service/Control Function: Stop the service */" << endl;
+        cerr << "\t--" << String{Main::CommandNames::kForcedStop}.AsNarrowSDKString () << "            /* Service/Control Function: Forced stop the service (after trying to normally stop) */" << endl;
+        cerr << "\t--" << String{Main::CommandNames::kRestart}.AsNarrowSDKString () << "               /* Service/Control Function: Stop and then re-start the service (ok if already stopped) */" << endl;
+        cerr << "\t--" << String{Main::CommandNames::kForcedRestart}.AsNarrowSDKString () << "         /* Service/Control Function: Stop (force if needed) and then re-start the service (ok if already stopped) */" << endl;
+        cerr << "\t--" << String{Main::CommandNames::kReloadConfiguration}.AsNarrowSDKString () << "  /* Reload service configuration */" << endl;
+        cerr << "\t--" << String{Main::CommandNames::kPause}.AsNarrowSDKString () << "                 /* Service/Control Function: Pause the service */" << endl;
+        cerr << "\t--" << String{Main::CommandNames::kContinue}.AsNarrowSDKString () << "              /* Service/Control Function: Continue the paused service */" << endl;
         cerr << "\t--Status                /* Service/Control Function: Print status of running service */ " << endl;
         cerr << "\t--Version               /* print this application version */ " << endl;
         cerr << "\t--help                  /* Print this help. */ " << endl;
