@@ -680,7 +680,11 @@ namespace Stroika::Foundation::Traversal {
     {
         // @todo https://stroika.atlassian.net/browse/STK-972 - optimize case where 'iterable' is already sortable
         vector<T> tmp{this->begin (), this->end ()};
+        #if __cpp_lib_execution >= 201603L
         sort (std::execution::par, tmp.begin (), tmp.end (), forward<COMPARER> (cmp));
+        #else
+        sort (tmp.begin (), tmp.end (), forward<COMPARER> (cmp));
+        #endif
         size_t                   idx{0};
         function<optional<T> ()> getNext = [tmp, idx] () mutable -> optional<T> {
             if (idx < tmp.size ()) {
@@ -701,7 +705,11 @@ namespace Stroika::Foundation::Traversal {
         }
         // @todo https://stroika.atlassian.net/browse/STK-972 - optimize case where 'iterable' is already sortable
         vector<T> tmp{this->begin (), this->end ()};
+        #if __cpp_lib_execution >= 201603L
         partial_sort (std::execution::par, tmp.begin (), tmp.begin () + n, tmp.end (), forward<COMPARER> (cmp));
+        #else
+        partial_sort (tmp.begin (), tmp.begin () + n, tmp.end (), forward<COMPARER> (cmp));
+        #endif
         size_t idx{0};
         tmp.erase (tmp.begin () + n, tmp.end ());
         function<optional<T> ()> getNext = [tmp, idx] () mutable -> optional<T> {
