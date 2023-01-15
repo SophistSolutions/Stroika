@@ -250,6 +250,28 @@ namespace Stroika::Foundation::Common {
     template <typename COMPARER>
     constexpr bool IsStrictInOrderComparer (const COMPARER&);
 
+
+    /**
+     *  This concept checks if the given function argument (COMPARER) appears to compare 'ARG_T's and return true/false.
+     *  This doesn't require that that you've annotated the comparer, so it can false-positive (like mixing up
+     *  an equality comparer for an in-order comparer).
+     * 
+     *  \see InOrderComparer for something stricter
+     */
+    template <typename COMPARER, typename ARG_T>
+    concept PossiblyInOrderComparer = predicate<COMPARER, ARG_T, ARG_T>;
+
+    /**
+     *  Checks that the argument comparer compares values of type ARG_T, and returns an in-order comparison result.
+     * 
+     *  This won't let confuse equal_to with actual in-order comparison functions.
+     * 
+     *  \see PossiblyInOrderComparer, and use DeclareInOrderComparer to mark a given function as an in-order comparer.
+     */
+    template <typename COMPARER, typename ARG_T>
+    concept InOrderComparer = PossiblyInOrderComparer<COMPARER, ARG_T> and IsStrictInOrderComparer<COMPARER, ARG_T> ();
+
+
     /**
      *  Utility class to serve as base class when constructing user-defined 'function' object comparer so ExtractComparisonTraits<> knows
      *  the type, or (with just one argument) as base for class that itself provives the operator() method.
