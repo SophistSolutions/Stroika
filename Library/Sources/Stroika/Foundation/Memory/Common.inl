@@ -56,6 +56,8 @@ namespace Stroika::Foundation::Memory {
     template <>
     constexpr int MemCmp (const uint8_t* lhs, const uint8_t* rhs, std::size_t count)
     {
+        DISABLE_COMPILER_MSC_WARNING_START (5063)
+        DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wconstant-evaluated\"");
         if constexpr (is_constant_evaluated ()) {
             //Require (count == 0 or lhs != nullptr);
             //Require (count == 0 or rhs != nullptr);
@@ -74,6 +76,8 @@ namespace Stroika::Foundation::Memory {
             }
             return std::memcmp (lhs, rhs, count);
         }
+        DISABLE_COMPILER_MSC_WARNING_END (5063)
+        DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wconstant-evaluated\"");
     }
     template <typename T>
     constexpr int MemCmp (const T* lhs, const T* rhs, size_t count)
