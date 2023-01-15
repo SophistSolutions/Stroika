@@ -9,6 +9,7 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
+#include "../../Foundation/Characters/String.h"
 
 namespace Stroika::Frameworks::Led {
 
@@ -108,16 +109,16 @@ namespace Stroika::Frameworks::Led {
 #if qWideCharacters == qTargetPlatformSDKUseswchar_t
     inline SDKString Led_tString2SDKString (const Led_tString& s)
     {
-        return s;
+        return Foundation::Characters::String{s}.AsSDKString ();
     }
 #endif
 
     inline Led_tString Led_SDKString2tString (const SDKString& s)
     {
 #if qWideCharacters
-        return SDKString2Wide (s);
+        return Foundation::Characters::String::FromSDKString (s).As<wstring> ();
 #else
-        return SDKString2NarrowSDK (s);
+        return Foundation::Characters::String::FromSDKString (s).AsNarrowSDKString ();
 #endif
     }
 

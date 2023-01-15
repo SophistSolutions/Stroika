@@ -32,29 +32,6 @@ namespace Stroika::Foundation::Characters {
 #define SDKSTR(x) x
 #endif
 
-    /**
-     * Even when the platform sdk uses wide strings (but more especially when it does not) it will typically have
-     * a prefered code-page for mapping narrow characters to/from wide ones (part of locale?). WideStringToNarrowSDKString will
-     * perform that mapping.
-     */
-    string WideStringToNarrowSDKString (const wstring& ws);
-
-    /**
-     * Even when the platform sdk uses wide strings (but more especially when it does not) it will typically have
-     * a prefered code-page for mapping narrow characters to/from wide ones (part of locale?). NarrowSDKStringToWide will
-     * perform that mapping.
-     */
-    wstring NarrowSDKStringToWide (const string& s);
-
-    string    SDKString2NarrowSDK (const SDKString& s);
-    SDKString NarrowSDK2SDKString (const string& s);
-
-    wstring   SDKString2Wide (const SDKString& s);
-    SDKString Wide2SDKString (const wstring& s);
-
-    SDKString ToSDKString (const string& s);
-    SDKString ToSDKString (const wstring& s);
-
 }
 
 /*

@@ -84,7 +84,7 @@ struct Connection::Rep_ final : IRep {
                     if (errValue == SQL_SUCCESS) {
                         // TCHAR isn't the same SQLTCHAR for 'ANSI' because for some crazy reason, they
                         // used unsigned char for SQLCHAR!
-                        errorString += SDKString2Wide (reinterpret_cast<TCHAR*> (errorMessage));
+                        errorString += String::FromSDKString (reinterpret_cast<TCHAR*> (errorMessage));
                     }
                     else if (errValue == SQL_SUCCESS_WITH_INFO) {
                         errorString = "Error message too long at"_k;

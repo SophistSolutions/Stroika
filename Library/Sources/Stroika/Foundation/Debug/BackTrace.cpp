@@ -76,10 +76,10 @@ wstring Debug::BackTrace::Capture ([[maybe_unused]] const BackTrace::Options& op
         result.width (w);
         result << L"# ";
         if (includeSrcLines) {
-            result << Characters::NarrowSDKStringToWide (boost::stacktrace::to_string (bt[i]));
+            result << String::FromNarrowSDKString (boost::stacktrace::to_string (bt[i])).As<wstring> ();
         }
         else {
-            result << Characters::NarrowSDKStringToWide (bt[i].name ());
+            result << String::FromNarrowSDKString (bt[i].name ()).As<wstring> ();
         }
         result << L";" << Characters::GetEOL<wchar_t> ();
         if (i - useSkipFrames >= usingMaxFrames) {

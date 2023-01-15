@@ -43,7 +43,7 @@ namespace {
     void FatalErrorHandler_ (const Characters::SDKChar* msg) noexcept
     {
 #if qTargetPlatformSDKUseswchar_t
-        cerr << "FAILED: " << Characters::WideStringToNarrowSDKString (msg) << endl;
+        cerr << "FAILED: " << Characters::String::FromSDKString (msg).AsNarrowSDKString () << endl;
 #else
         cerr << "FAILED: " << msg << endl;
 #endif

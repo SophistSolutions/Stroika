@@ -142,7 +142,7 @@ String AppTempFileManager::GetTempFile (const String& fileNameBase)
         wstring s = fn.As<wstring> ();
         char    buf[100];
         (void)snprintf (buf, NEltsOf (buf), "%d", ::rand ());
-        s.insert (suffixStart, NarrowSDKStringToWide (buf));
+        s.insert (suffixStart, String::FromNarrowSDKString (buf).As<wstring> ());
         if (not IO::FileSystem::Default ().Access (s.c_str ())) {
             HANDLE f = ::CreateFileW (s.c_str (), FILE_ALL_ACCESS, 0, nullptr, CREATE_NEW, FILE_ATTRIBUTE_NORMAL, nullptr);
             if (f != nullptr) {

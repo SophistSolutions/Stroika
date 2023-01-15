@@ -102,7 +102,7 @@ string XML::QuoteForXMLAttribute (const optional<String>& s)
 String XML::QuoteForXMLAttributeW (const String& s)
 {
     string tmp = QuoteForXMLAttribute (s);
-    return NarrowSDKStringToWide (tmp);
+    return String::FromNarrowSDKString (tmp);
 }
 
 /*
@@ -193,7 +193,7 @@ string XML::QuoteForXML (const wstring& s)
 String XML::QuoteForXMLW (const String& s)
 {
     string tmp = QuoteForXML (s);
-    return NarrowSDKStringToWide (tmp);
+    return String::FromNarrowSDKString (tmp);
 }
 
 string XML::QuoteForXML (const String& s)

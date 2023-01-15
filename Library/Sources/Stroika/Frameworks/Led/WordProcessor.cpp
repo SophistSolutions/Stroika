@@ -2939,7 +2939,7 @@ void WordProcessor::OnInsertURLCommand ()
     if (GetDialogSupport ().ShowAddURLEmbeddingInfoDialog (&title, &url)) {
         UndoableContextHelper context (*this, GetCommandNames ().fInsertURLCommandName, false);
         {
-            SimpleEmbeddedObjectStyleMarker* e = new StandardURLStyleMarker (Led_URLD (SDKString2NarrowSDK (url).c_str (), SDKString2NarrowSDK (title).c_str ()));
+            SimpleEmbeddedObjectStyleMarker* e = new StandardURLStyleMarker (Led_URLD (String::FromSDKString (url).AsNarrowSDKString ().c_str (), String::FromSDKString (title).AsNarrowSDKString ().c_str ()));
             AddEmbedding (e, GetTextStore (), GetSelectionStart (), GetStyleDatabase ().get ());
             SetSelection (e->GetEnd (), e->GetEnd ());
         }
@@ -2996,13 +2996,13 @@ bool WordProcessor::OnSelectedEmbeddingExtendedCommand (CommandNumber cmdNum)
     if (cmdNum == kSelectedEmbeddingProperties_CmdID) {
         if (dynamic_cast<StandardURLStyleMarker*> (embedding) != nullptr) {
             StandardURLStyleMarker* e     = dynamic_cast<StandardURLStyleMarker*> (embedding);
-            SDKString               title = NarrowSDK2SDKString (e->GetURLData ().GetTitle ());
-            SDKString               url   = NarrowSDK2SDKString (e->GetURLData ().GetURL ());
+            SDKString               title = String::FromNarrowSDKString (e->GetURLData ().GetTitle ()).AsSDKString ();
+            SDKString               url   = String::FromNarrowSDKString (e->GetURLData ().GetURL ()).AsSDKString ();
             if (GetDialogSupport ().ShowURLEmbeddingInfoDialog (GetPrettyTypeName (embedding), &title, &url)) {
                 // Change URL contents...
                 {
                     TextStore::SimpleUpdater updater (GetTextStore (), e->GetStart (), e->GetEnd ());
-                    e->SetURLData (Led_URLD{SDKString2NarrowSDK (url).c_str (), SDKString2NarrowSDK (title).c_str ()});
+                    e->SetURLData (Led_URLD{String::FromSDKString (url).AsNarrowSDKString ().c_str (), String::FromSDKString (title).AsNarrowSDKString ().c_str ()});
                 }
             }
         }
