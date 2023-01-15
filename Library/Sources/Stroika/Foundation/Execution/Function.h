@@ -85,7 +85,7 @@ namespace Stroika::Foundation::Execution {
         Function (nullptr_t);
         Function (const Function&) = default;
         Function (Function&&)      = default;
-        template <typename CTOR_FUNC_SIG, enable_if_t<is_convertible_v<CTOR_FUNC_SIG, function<FUNCTION_SIGNATURE>> and not is_base_of_v<Function<FUNCTION_SIGNATURE>, Configuration::remove_cvref_t<CTOR_FUNC_SIG>>>* = nullptr>
+        template <typename CTOR_FUNC_SIG, enable_if_t<is_convertible_v<CTOR_FUNC_SIG, function<FUNCTION_SIGNATURE>> and not is_base_of_v<Function<FUNCTION_SIGNATURE>, remove_cvref_t<CTOR_FUNC_SIG>>>* = nullptr>
         Function (CTOR_FUNC_SIG&& f);
 
     public:
@@ -129,7 +129,7 @@ namespace Stroika::Foundation::Execution {
 
     private:
         /*
-         *  Before Stroika 2.1.11, we used f.template target<Configuration::remove_cvref_t<CTOR_FUNC_SIG>> ()
+         *  Before Stroika 2.1.11, we used f.template target<remove_cvref_t<CTOR_FUNC_SIG>> ()
          *  as OrderingType_. But this caused problems on g++-10 release builds (at least inside WTF). Not sure
          *  exactly how this happened, but sometimes different lambdas produced the same address. And the docs
          *  for std::function<> suggest this is possible.

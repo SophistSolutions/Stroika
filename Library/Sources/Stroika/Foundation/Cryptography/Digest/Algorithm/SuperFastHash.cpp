@@ -8,7 +8,8 @@
 #include "../../../StroikaPreComp.h"
 
 #include "../../../Configuration/Endian.h"
-#include "../../../Memory/Common.h""
+#include "../../../Memory/Common.h"
+         "
 
 #include "SuperFastHash.h"
 

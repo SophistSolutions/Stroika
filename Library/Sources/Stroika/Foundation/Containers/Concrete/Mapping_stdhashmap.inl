@@ -245,7 +245,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     template <typename HASH, typename KEY_EQUALS_COMPARER>
     inline Mapping_stdhashmap<KEY_TYPE, MAPPED_VALUE_TYPE>::Mapping_stdhashmap (HASH&& hasher, KEY_EQUALS_COMPARER&& keyComparer)
         requires (Cryptography::Digest::IsHashFunction<HASH, KEY_TYPE> and Common::IsEqualsComparer<KEY_EQUALS_COMPARER, KEY_TYPE> ())
-    : inherited{inherited::template MakeSmartPtr<Rep_<Configuration::remove_cvref_t<HASH>, Configuration::remove_cvref_t<KEY_EQUALS_COMPARER>>> (forward<HASH> (hasher), forward<KEY_EQUALS_COMPARER> (keyComparer))}
+    : inherited{inherited::template MakeSmartPtr<Rep_<remove_cvref_t<HASH>, remove_cvref_t<KEY_EQUALS_COMPARER>>> (forward<HASH> (hasher), forward<KEY_EQUALS_COMPARER> (keyComparer))}
     {
         AssertRepValidType_ ();
     }
