@@ -26,6 +26,9 @@ using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::DataExchange;
 using namespace Stroika::Foundation::Traversal;
 
+using Containers::Concrete::Mapping_stdhashmap;
+
+
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 //#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
 
@@ -244,71 +247,77 @@ namespace {
     // NOTE: THIS STARTS SEEKED JUST PAST OPENING '{'
     VariantValue Reader_Object_ (MyBufferedStreamReader_& in)
     {
-        Containers::Concrete::Mapping_stdhashmap<String, VariantValue>::STDHASHMAP<> result; // slight tweak using stl map, and move-construct Stroika map at the end
+        Mapping_stdhashmap<String, VariantValue>::STDHASHMAP<> result; // slight tweak using stl map, and move-construct Stroika map at the end
 
         // accumulate elements, and check for close-array
-        enum LookingFor { eName,
-                          eValue,
-                          eColon,
-                          eComma };
+        enum LookingFor { 
+            eName,     // this means looking for start of next field/member of the object
+            eValue,
+            eColon,
+            eComma     // when looking for comma could either find it, or } marking end of object
+        };
         LookingFor lf = eName;
-
         optional<String> curName;
         while (true) {
-            optional<Character> oNextChar = in.Read ();
+            optional<Character> oNextChar = in.Peek ();
             if (not oNextChar.has_value ()) [[unlikely]] {
                 static const auto kException_{BadFormatException{"JSON: Unexpected EOF reading object (looking for '}')"sv}};
                 Execution::Throw (kException_);
             }
             char32_t nextChar = oNextChar->As<char32_t> ();
-            if (nextChar == '}') {
-                if (lf == eName or lf == eComma) {
-                    // skip char
-                    return VariantValue{Containers::Concrete::Mapping_stdhashmap<String, VariantValue>{move (result)}};
-                }
-                else {
-                    static const auto kException_{BadFormatException{"JSON: Unexpected '}' reading object"sv}};
-                    Execution::Throw (kException_);
-                }
+            if (IsJSONSpace_ (nextChar)) [[likely]] {
+                in.AdvanceOne ();   // skip char
+                continue;
             }
-            else if (nextChar == ',') {
-                if (lf == eComma) [[likely]] {
-                    // skip char
-                    lf = eName; // next elt
-                }
-                else {
-                    static const auto kException_{BadFormatException{"JSON: Unexpected ',' reading object"sv}};
-                    Execution::Throw (kException_);
-                }
-            }
-            else if (nextChar == ':') {
-                if (lf == eColon) [[likely]] {
-                    // skip char
-                    lf = eValue; // next elt
-                }
-                else {
-                    static const auto kException_{BadFormatException{"JSON: Unexpected ':' reading object"sv}};
-                    Execution::Throw (kException_);
-                }
-            }
-            else if (IsJSONSpace_ (nextChar)) {
-                // skip char
-            }
-            else {
-                in.BackupOne ();
-                if (lf == eName) {
-                    curName = Reader_String_ (in);
-                    lf      = eColon;
-                }
-                else if (lf == eValue) [[likely]] {
+            switch (lf) {
+                case eName: {
+                    Assert (curName == nullopt);
+                    if (nextChar == '}') {
+                        in.AdvanceOne ();    // finished object
+                        return VariantValue{Mapping_stdhashmap<String, VariantValue>{move (result)}};
+                    }
+                    else if (nextChar == '\"') [[likely]] {
+                        curName = Reader_String_ (in);  // starting a new data member (with a string)
+                        lf      = eColon;
+                    }
+                    else {
+                        static const auto kException_{BadFormatException{"JSON: Reading object, looking for a name, didn't find a close brace or open quote"sv}};
+                        Execution::Throw (kException_);
+                    }
+                } break;
+                case eComma: {
+                    Assert (curName == nullopt);
+                    if (nextChar == '}') {
+                        in.AdvanceOne (); // finished object
+                        return VariantValue{Mapping_stdhashmap<String, VariantValue>{move (result)}};
+                    }
+                    else if (nextChar == ',') [[likely]] {
+                        in.AdvanceOne (); // consume it, and look for name next (start of next object member)
+                        lf = eName;
+                    }
+                    else {
+                        static const auto kException_{BadFormatException{"JSON: Reading object, looking for a comma, but found something else"sv}};
+                        Execution::Throw (kException_);
+                    }
+                } break;
+                case eColon: {
+                    Assert (curName);
+                    if (nextChar == ':') [[likely]] {
+                        in.AdvanceOne (); // consume the separator, and look the the value
+                        lf = eValue;
+                    }
+                    else {
+                        static const auto kException_{BadFormatException{"JSON: Reading object, looking for a colon, but found something else"sv}};
+                        Execution::Throw (kException_);
+                    }
+                } break;
+                case eValue: {
+                    Assert (curName);
+                    // dont care what the character is, read a new value
                     result.insert ({Memory::ValueOf (curName), Reader_value_ (in)});
                     curName = nullopt;
-                    lf      = eComma;
-                }
-                else {
-                    static const auto kException_{BadFormatException{"JSON: Unexpected character looking for colon or comma reading object"sv}};
-                    Execution::Throw (kException_);
-                }
+                    lf      = eComma;         // and look for another field/data member         
+                } break;
             }
         }
     }
