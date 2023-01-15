@@ -1014,6 +1014,19 @@ namespace {
 }
 
 namespace {
+    void Test22_Top_ ()
+    {
+        Debug::TraceContextBumper ctx{L"{}::Test22_Top_"};
+        {
+            Iterable<int> c{3, 5, 9, 38, 3, 5};
+            VerifyTestResult (c.Top ().SequentialEquals (c.OrderBy (std::greater<int>{})));
+            VerifyTestResult (c.Top (2).SequentialEquals ({38, 9}));
+            VerifyTestResult (c.Top (2, std::greater<int>{}).SequentialEquals ({38, 9}));
+            VerifyTestResult (c.Top (3, std::less<int>{}).SequentialEquals ({3, 3, 5}));
+        }
+    }
+}
+namespace {
     void DoRegressionTests_ ()
     {
         Debug::TraceContextBumper ctx{L"{}::DoRegressionTests_"};
@@ -1038,6 +1051,7 @@ namespace {
         Test19_CreateGeneratorBug_ ();
         Test20_Join_ ();
         Test21_Repeat_ ();
+        Test22_Top_ ();
     }
 }
 

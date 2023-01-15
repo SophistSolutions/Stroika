@@ -10,6 +10,7 @@
  ********************************************************************************
  */
 #include <bitset>
+#include <execution>
 #include <set>
 
 #include "../Debug/Assertions.h"
@@ -674,9 +675,60 @@ namespace Stroika::Foundation::Traversal {
         return CreateGenerator (getNext);
     }
     template <typename T>
+    template <Common::PossiblyInOrderComparer<T> COMPARER>
+    Iterable<T> Iterable<T>::Top (COMPARER&& cmp) const
+    {
+        // @todo https://stroika.atlassian.net/browse/STK-972 - optimize case where 'iterable' is already sortable
+        vector<T> tmp{this->begin (), this->end ()};
+        sort (std::execution::par, tmp.begin (), tmp.end (), forward<COMPARER> (cmp));
+        size_t                   idx{0};
+        function<optional<T> ()> getNext = [tmp, idx] () mutable -> optional<T> {
+            if (idx < tmp.size ()) {
+                return tmp[idx++];
+            }
+            else {
+                return nullopt;
+            }
+        };
+        return CreateGenerator (getNext);
+    }
+    template <typename T>
+    template <Common::PossiblyInOrderComparer<T> COMPARER>
+    Iterable<T> Iterable<T>::Top (size_t n, COMPARER&& cmp) const
+    {
+        if (n >= size ()) {
+            return Top (cmp);
+        }
+        // @todo https://stroika.atlassian.net/browse/STK-972 - optimize case where 'iterable' is already sortable
+        vector<T> tmp{this->begin (), this->end ()};
+        partial_sort (std::execution::par, tmp.begin (), tmp.begin () + n, tmp.end (), forward<COMPARER> (cmp));
+        size_t idx{0};
+        tmp.erase (tmp.begin () + n, tmp.end ());
+        function<optional<T> ()> getNext = [tmp, idx] () mutable -> optional<T> {
+            if (idx < tmp.size ()) {
+                return tmp[idx++];
+            }
+            else {
+                return nullopt;
+            }
+        };
+        return CreateGenerator (getNext);
+    }
+    template <typename T>
+    inline Iterable<T> Iterable<T>::Top () const
+    {
+        return Top (std::greater<T>{});
+    }
+    template <typename T>
+    inline Iterable<T> Iterable<T>::Top (size_t n) const
+    {
+        return Top (n, std::greater<int>{});
+    }
+    template <typename T>
     template <typename INORDER_COMPARER_TYPE>
     Iterable<T> Iterable<T>::OrderBy (INORDER_COMPARER_TYPE&& inorderComparer) const
     {
+        // @todo https://stroika.atlassian.net/browse/STK-972 - optimize case where 'iterable' is already sortable
         vector<T> tmp{begin (), end ()}; // Somewhat simplistic implementation (always over copy and index so no need to worry about iterator refereincing inside container)
         stable_sort (tmp.begin (), tmp.end (), inorderComparer);
         size_t                   idx{0};

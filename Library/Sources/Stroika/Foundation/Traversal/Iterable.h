@@ -892,6 +892,36 @@ namespace Stroika::Foundation::Traversal {
 
     public:
         /**
+         *  \brief return the top/largest (possibly just top N) values from this Iterable<T>
+         * 
+         *  Provide a function object that says how you want to compare the 'T' elements.
+         *  OPTIONALLY, provide a number N, saying to return the top N results (if N < size, just return size elements).
+         * 
+         *  \em Performance:
+         *      let S = this->size();
+         *      O(S) * ln (N)  ; so S*log(S) if you get all of them, but if you just need the top three, its O(S)
+         *
+         *  \par Example Usage
+         *      \code
+         *          Iterable<int> c{ 3, 5, 9, 38, 3, 5 };
+         *          VerifyTestResult (c.Top ().SequentialEquals (c.OrderBy (std::greater<int>{})));
+         *          VerifyTestResult (c.Top (2).SequentialEquals ({38, 9}));
+         *          VerifyTestResult (c.Top (2, std::greater<int>{}).SequentialEquals ({38, 9}));   // same as previous line
+         *          VerifyTestResult (c.Top (3, std::less<int>{}).SequentialEquals ({3, 3, 5}));
+         *      \endcode
+         * 
+         *  \note Uses PossiblyInOrderComparer instead of InOrderComparer since from context, if you pass in a lambda, it
+         *        should be clear about intent.
+         */
+        nonvirtual Iterable<T> Top () const;
+        nonvirtual Iterable<T> Top (size_t n) const;
+        template <Common::PossiblyInOrderComparer<T> COMPARER>
+        nonvirtual Iterable<T> Top (COMPARER&& cmp) const;
+        template <Common::PossiblyInOrderComparer<T> COMPARER>
+        nonvirtual Iterable<T> Top (size_t n, COMPARER&& cmp) const;
+
+    public:
+        /**
          *  BASED ON Microsoft .net Linq.
          *
          *  \par Example Usage

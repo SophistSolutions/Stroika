@@ -250,7 +250,6 @@ namespace Stroika::Foundation::Common {
     template <typename COMPARER>
     constexpr bool IsStrictInOrderComparer (const COMPARER&);
 
-
     /**
      *  This concept checks if the given function argument (COMPARER) appears to compare 'ARG_T's and return true/false.
      *  This doesn't require that that you've annotated the comparer, so it can false-positive (like mixing up
@@ -270,7 +269,6 @@ namespace Stroika::Foundation::Common {
      */
     template <typename COMPARER, typename ARG_T>
     concept InOrderComparer = PossiblyInOrderComparer<COMPARER, ARG_T> and IsStrictInOrderComparer<COMPARER, ARG_T> ();
-
 
     /**
      *  Utility class to serve as base class when constructing user-defined 'function' object comparer so ExtractComparisonTraits<> knows
