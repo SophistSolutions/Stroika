@@ -1308,4 +1308,12 @@ namespace Stroika::Foundation::Characters::Concrete {
     };
 }
 
+
+#if qCompilerAndStdLib_clangWithLibStdCPPStringConstexpr_Buggy
+namespace {
+    inline std::u8string clang_string_BWA_ (const char8_t* a, const char8_t* b) { return {a, b}; }
+}
+#endif
+
+
 #endif // _Stroika_Foundation_Characters_String_inl_
