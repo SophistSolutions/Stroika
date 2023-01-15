@@ -1493,17 +1493,18 @@ size_t std::hash<String>::operator() (const String& arg) const
 {
     using namespace Cryptography::Digest;
     using DIGESTER = Digester<Algorithm::SuperFastHash>; // pick arbitrarily which algorithm to use for now -- err on the side of quick and dirty
+    static constexpr DIGESTER kDigester_{};
     // Note this could easily use char8_t, wchar_t, char32_t, or whatever. Choose char8_t on the theorey that
     // this will most often avoid a copy, and making the most often case faster is probably a win. Also, even close, it
     // will have less 'empty space' and be more compact, so will digest faster.
     Memory::StackBuffer<char8_t> maybeIgnoreBuf1;
     span<const char8_t>          s = arg.GetData (&maybeIgnoreBuf1);
     if (s.empty ()) {
-        static const size_t kZeroDigest_ = DIGESTER{}(nullptr, nullptr);
+        static const size_t kZeroDigest_ = kDigester_ (nullptr, nullptr);
         return kZeroDigest_;
     }
     else {
-        return DIGESTER{}(as_bytes (s));
+        return kDigester_ (as_bytes (s));
     }
 }
 

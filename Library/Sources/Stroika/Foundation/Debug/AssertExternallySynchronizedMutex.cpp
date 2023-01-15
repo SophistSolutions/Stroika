@@ -15,7 +15,7 @@ using namespace Stroika;
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Debug;
 
-#if qDebug
+#if qStroikaFoundationDebugAssertExternallySynchronizedMutexEnabled
 /*
  ********************************************************************************
  ****************** Debug::AssertExternallySynchronizedMutex ********************

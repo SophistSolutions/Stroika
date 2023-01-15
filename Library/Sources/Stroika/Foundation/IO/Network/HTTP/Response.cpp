@@ -93,7 +93,7 @@ Response::Response (const optional<Headers>& initialHeaders)
 {
 }
 
-#if qDebug
+#if qStroikaFoundationDebugAssertExternallySynchronizedMutexEnabled
 void Response::SetAssertExternallySynchronizedMutexContext (const shared_ptr<SharedContext>& sharedContext)
 {
     AssertExternallySynchronizedMutex::SetAssertExternallySynchronizedMutexContext (sharedContext);

@@ -9,6 +9,7 @@
 #include "../Characters/Format.h"
 #include "../Characters/String2Int.h"
 #include "../Characters/ToString.h"
+#include "../Containers/SortedMapping.h"
 #include "../Cryptography/Encoding/Algorithm/Base64.h"
 #include "../DataExchange/BadFormatException.h"
 #include "../Debug/Cast.h"
@@ -93,9 +94,14 @@ struct VariantValue::TIRep_ : VariantValue::IRep_, public Memory::UseBlockAlloca
  ******************************** VariantValue **********************************
  ********************************************************************************
  */
+const VariantValue::SharedRepImpl_<VariantValue::IRep_> VariantValue::kFalseRep_ = MakeSharedPtr_<TIRep_<bool>> (false);
+const VariantValue::SharedRepImpl_<VariantValue::IRep_> VariantValue::kTrueRep_  = MakeSharedPtr_<TIRep_<bool>> (true);
+
 VariantValue::VariantValue (bool val)
-    : fVal_{MakeSharedPtr_<TIRep_<bool>> (val)}
+    : fVal_{val ? kTrueRep_ : kFalseRep_}
 {
+    // not inline so this is guaranteed true (to inline would need to be defs for TIRep_ stuff into .inl file)
+    // due to link time codegen/inlining, probably not needed
 }
 
 VariantValue::VariantValue (const Memory::BLOB& val)
@@ -248,8 +254,9 @@ VariantValue::VariantValue (const boost::json::value& val)
             *this = Containers::Concrete::Sequence_stdvector<VariantValue>{std::move (r)};
         } break;
         case json::kind::object: {
-            const auto&                                                          o = val.as_object ();
-            Containers::Concrete::Mapping_stdmap<String, VariantValue>::STDMAP<> r; // performance tweak, add in STL, avoiding virtual calls for each add, and then move to Stroika mapping
+            const auto&                                                                  o = val.as_object ();
+            Containers::Concrete::Mapping_stdhashmap<String, VariantValue>::STDHASHMAP<> r; // performance tweak, add in STL, avoiding virtual calls for each add, and then move to Stroika mapping
+            r.reserve (o.size ());
             for (const auto& i : o) {
 #if qCompilerAndStdLib_spanOfContainer_Buggy
                 auto keyStr = i.key ();
@@ -258,7 +265,7 @@ VariantValue::VariantValue (const boost::json::value& val)
                 r.insert ({String::FromUTF8 (span{i.key ()}), VariantValue{i.value ()}});
 #endif
             }
-            *this = Containers::Concrete::Mapping_stdmap<String, VariantValue>{std::move (r)};
+            *this = Containers::Concrete::Mapping_stdhashmap<String, VariantValue>{std::move (r)};
         } break;
         default:
             AssertNotReached ();
@@ -383,7 +390,7 @@ VariantValue VariantValue::ConvertTo (Type to) const
         case Type::eUnsignedInteger:
             return As<unsigned int> ();
         case Type::eFloat:
-            return As<float> ();
+            return As<FloatType_> ();
         case Type::eDate:
             return As<Time::Date> ();
         case Type::eDateTime:
@@ -397,6 +404,51 @@ VariantValue VariantValue::ConvertTo (Type to) const
     }
     static const DataExchange::BadFormatException kCannotCoerce2ThatType_{L"Cannot coerce VariantValue to that type"sv};
     Execution::Throw (kCannotCoerce2ThatType_);
+}
+
+VariantValue VariantValue::Normalize () const
+{
+    using KVPT = Common::KeyValuePair<String, VariantValue>;
+    switch (GetType ()) {
+        case Type::eNull:
+            return *this;
+        case Type::eBLOB:
+            return ConvertTo (Type::eString);
+        case Type::eBoolean:
+            return *this;
+        case Type::eInteger:
+            return ConvertTo (Type::eFloat);
+        case Type::eUnsignedInteger:
+            return ConvertTo (Type::eFloat);
+        case Type::eFloat: {
+            // tricky case - nans and infs must be converted to strings, because they cannot be emitted in JSON as 'numbers'
+            // and so when are read back, they are read back as strings.
+            FloatType_ f = As<FloatType_> ();
+            if (std::isnan (f) or std::isinf (f)) {
+                return Characters::FloatConversion::ToString (f);
+            }
+            return *this;
+        }
+        case Type::eDate:
+            return ConvertTo (Type::eString);
+        case Type::eDateTime:
+            return ConvertTo (Type::eString);
+        case Type::eString:
+            return *this;
+        case Type::eArray:
+            // must recursively normalize all sub-elements
+            return VariantValue{
+                As<Sequence<VariantValue>> ().Map<VariantValue, Sequence<VariantValue>> (
+                    [] (const VariantValue& v) { return v.Normalize (); })};
+        case Type::eMap:
+            // must recursively normalize all sub-elements, but also produce a sorted-map
+            return VariantValue{
+                As<Mapping<String, VariantValue>> ().Map<KVPT, Containers::SortedMapping<String, VariantValue>> (
+                    [] (const KVPT& kvp) { return KVPT{kvp.fKey, kvp.fValue.Normalize ()}; })};
+        default:
+            AssertNotReached ();
+            return nullptr;
+    }
 }
 
 Memory::BLOB VariantValue::AsBLOB_ () const
@@ -844,70 +896,36 @@ Sequence<VariantValue> VariantValue::As () const
  */
 bool Stroika::Foundation::DataExchange::VariantValue::EqualsComparer::operator() (const VariantValue& lhs, const VariantValue& rhs) const
 {
-    VariantValue::Type lt = lhs.GetType ();
-    VariantValue::Type rt = rhs.GetType ();
+    VariantValue       ln = lhs.Normalize ();
+    VariantValue       rn = rhs.Normalize ();
+    VariantValue::Type lt = ln.GetType ();
+    VariantValue::Type rt = rn.GetType ();
     if (lt != rt) {
-        if (fExactTypeMatchOnly) {
-            return false;
-        }
-        else if (
-            (lt == VariantValue::eInteger or lt == VariantValue::eUnsignedInteger) and
-            (rt == VariantValue::eInteger or rt == VariantValue::eUnsignedInteger)) {
-            // Set compare as type and fall through
-            lt = VariantValue::eUnsignedInteger;
-            rt = VariantValue::eUnsignedInteger;
-        }
-        else if (
-            (lt == VariantValue::eFloat and (rt == VariantValue::eString or rt == VariantValue::eInteger or rt == VariantValue::eUnsignedInteger)) or
-            (rt == VariantValue::eFloat and (lt == VariantValue::eString or lt == VariantValue::eInteger or lt == VariantValue::eUnsignedInteger))) {
-            // Set compare as type and fall through
-            lt = VariantValue::eFloat;
-            rt = VariantValue::eFloat;
-        }
-        else if (
-            ((lt != VariantValue::eArray and lt != VariantValue::eMap) and rt == VariantValue::eString) or
-            ((rt != VariantValue::eArray and rt != VariantValue::eMap) and lt == VariantValue::eString)) {
-            // special case - comparing a string with any type except map or array, trat as strings
-            // Set compare as type and fall through
-            lt = VariantValue::eString;
-            rt = VariantValue::eString;
-        }
-        else {
-            return false;
-        }
-        // can fall through for some fallthrough cases above...
+        return false;
     }
     switch (lt) {
         case VariantValue::eNull:
             return true;
-        case VariantValue::eBLOB:
-            return lhs.As<Memory::BLOB> () == rhs.As<Memory::BLOB> ();
         case VariantValue::eBoolean:
-            return lhs.As<bool> () == rhs.As<bool> ();
-        case VariantValue::eInteger:
-            return lhs.As<IntegerType_> () == rhs.As<IntegerType_> ();
-        case VariantValue::eUnsignedInteger:
-            return lhs.As<UnsignedIntegerType_> () == rhs.As<UnsignedIntegerType_> ();
+            return ln.As<bool> () == ln.As<bool> ();
         case VariantValue::eFloat:
-            return Math::NearlyEquals (lhs.As<FloatType_> (), rhs.As<FloatType_> ());
-        case VariantValue::eDate:
-            return lhs.As<Date> () == rhs.As<Date> ();
-        case VariantValue::eDateTime:
-            return lhs.As<DateTime> () == rhs.As<DateTime> ();
+            return Math::NearlyEquals (ln.As<FloatType_> (), ln.As<FloatType_> ());
         case VariantValue::eString:
-            return lhs.As<String> () == rhs.As<String> ();
+            return ln.As<String> () == ln.As<String> ();
         case VariantValue::eArray: {
-            // same iff all elts same
-            Sequence<VariantValue> lhsV = lhs.As<Sequence<VariantValue>> ();
-            Sequence<VariantValue> rhsV = rhs.As<Sequence<VariantValue>> ();
-            return Sequence<VariantValue>::EqualsComparer<std::equal_to<VariantValue>> {} (lhsV, rhsV);
+            // same iff all elts same (after normalizing sub-elts above)
+            return ln.As<Sequence<VariantValue>> () == rn.As<Sequence<VariantValue>> ();
         }
         case VariantValue::eMap: {
-            // same iff all elts same
-            Mapping<String, VariantValue> lhsM = lhs.As<Mapping<String, VariantValue>> ();
-            Mapping<String, VariantValue> rhsM = rhs.As<Mapping<String, VariantValue>> ();
-           return lhsM == rhsM;
+            // same iff all elts same (importantly after normalizing which sorts)
+            return ln.As<Mapping<String, VariantValue>> () == rn.As<Mapping<String, VariantValue>> ();
         }
+        case VariantValue::eBLOB:
+        case VariantValue::eInteger:
+        case VariantValue::eUnsignedInteger:
+        case VariantValue::eDate:
+        case VariantValue::eDateTime:
+            AssertNotReached (); // cuz normalized
         default:
             AssertNotReached ();
             return false;
@@ -921,27 +939,22 @@ bool Stroika::Foundation::DataExchange::VariantValue::EqualsComparer::operator()
  */
 strong_ordering VariantValue::ThreeWayComparer::operator() (const VariantValue& lhs, const VariantValue& rhs) const
 {
-    VariantValue::Type lt = lhs.GetType ();
-    VariantValue::Type rt = rhs.GetType ();
-    if (fExactTypeMatchOnly) {
-        // No obvious way to compare elements of different type, so just use the ordering of the types (new in Stroika v2.1d5, and ONLY if new (not default) fExactTypeMatchOnly flag set
-        if (lt != rt) {
-            return lt <=> rt;
-        }
+    VariantValue       ln = lhs.Normalize ();
+    VariantValue       rn = rhs.Normalize ();
+    VariantValue::Type lt = ln.GetType ();
+    VariantValue::Type rt = rn.GetType ();
+    if (lt != rt) {
+        return lt <=> rt; // no obvious sort order, so just use numeric type value
     }
     switch (lt) {
         case VariantValue::eNull:
-            return rt == VariantValue::eNull ? strong_ordering::equal : strong_ordering::greater;
+            return strong_ordering::equal;
         case VariantValue::eBoolean:
-            return lhs.As<bool> () <=> rhs.As<bool> ();
-        case VariantValue::eInteger:
-            return lhs.As<IntegerType_> () <=> rhs.As<IntegerType_> ();
-        case VariantValue::eUnsignedInteger:
-            return lhs.As<UnsignedIntegerType_> () <=> rhs.As<UnsignedIntegerType_> ();
+            return ln.As<bool> () <=> ln.As<bool> ();
         case VariantValue::eFloat: {
             // explicit test so we can do NearlyEquals()
-            FloatType_ l = lhs.As<FloatType_> ();
-            FloatType_ r = rhs.As<FloatType_> ();
+            FloatType_ l = ln.As<FloatType_> ();
+            FloatType_ r = rn.As<FloatType_> ();
             if (Math::NearlyEquals (l, r)) {
                 return strong_ordering::equal;
             }
@@ -952,61 +965,33 @@ strong_ordering VariantValue::ThreeWayComparer::operator() (const VariantValue& 
                 return strong_ordering::greater;
             }
         }
-        case VariantValue::eDate:
-            return lhs.As<Date> () <=> rhs.As<Date> ();
-        case VariantValue::eDateTime:
-            return lhs.As<DateTime> () <=> rhs.As<DateTime> ();
         case VariantValue::eString:
-            return lhs.As<String> () <=> rhs.As<String> ();
-        case VariantValue::eArray:
-            return lhs.As<Sequence<VariantValue>> () <=> rhs.As<Sequence<VariantValue>> ();
+            return ln.As<String> () <=> ln.As<String> ();
+        case VariantValue::eArray: {
+            // same iff all elts same (after normalizing sub-elts above)
+            return ln.As<Sequence<VariantValue>> () <=> rn.As<Sequence<VariantValue>> ();
+        }
         case VariantValue::eMap: {
-
-            // * https://stroika.atlassian.net/browse/STK-971 - BROKEN FOR CASE OF MAPPINGS.
-            
-            // @todo FIX - THIS IS LOGICALLY WRONG... CUZ MAPPINGS COULD BE IN DIFFERENT ORDER!
-            // MUST FORCE TO SAME ORDER AND THEN ITERABLE NEEDS METHOD TO CREATE ITERABLE COMPARE - SequentialThreeWayComparer
-            //  NOT RIGHT unless you order things properly first
-            //  return lhs.As<Mapping<String, VariantValue>> () <=> rhs.As<Mapping<String, VariantValue>> ();
-
-#if 0
-    &&& @todo PUT THIS SOMEHOW INTO MAPPING - THREEWAY COMPARE WITH OPTION OF FIRST SORTING BY KEY
-// expensive for rare case, but if we must compare parameters, need some standardized way to iterate over them (key)
-        using namespace Containers;
-        using namespace Characters;
-        auto sortedMapping = [] (auto m) { return SortedMapping<String, String>{String::LessComparer{CompareOptions::eCaseInsensitive}, m}; };
-#if qCompilerAndStdLib_template_DefaultArgIgnoredWhenFailedDeduction_Buggy
-        return Mapping<String, String>::SequentialThreeWayComparer{compare_three_way{}}(sortedMapping (fParameters_), sortedMapping (rhs.fParameters_));
-#else
-        return Mapping<String, String>::SequentialThreeWayComparer{}(sortedMapping (fParameters_), sortedMapping (rhs.fParameters_));
-#endif
-#endif
-
-#if 0
-                return As<Mapping<String, VariantValue>> ().Keys () <=> rhs.As<Mapping<String, VariantValue>>.Keys () ();
-#endif
-            // same iff all elts same
-            Mapping<String, VariantValue> lhsM{lhs.As<Mapping<String, VariantValue>> ()};
-            Mapping<String, VariantValue> rhsM{rhs.As<Mapping<String, VariantValue>> ()};
-            auto                          li = lhsM.begin ();
-            auto                          ri = rhsM.begin ();
-            for (; li != lhsM.end (); ++li, ++ri) {
-                if (ri == rhsM.end ()) {
-                    return strong_ordering::less;
-                }
-                if (*li != *ri) {
-                    //return false; CHANGE IN BEHAVIOR (I THINK FIX) 2020-05-04
-                    return *li <=> *ri;
-                }
-            }
-            Ensure (li == lhsM.end ());
-            if (ri == rhsM.end ()) {
-                return strong_ordering::equal;
+            // same iff all elts same (importantly after normalizing which sorts)
+            // @todo find way to make this compare work, but for now, just hack and re-create sorted mapping
+            // Maybe add 'virtual' rep method on Mapping - AsSorted - and then say
+            // As<SortedMapping<...>> on the mapping that comes back from VariantValue.
+            // Or add that same 'feature' just in VariantValue - with flag when creating with SortedMapping (maybe additional 'type')
+            // and logic privately in here so you dont need to worry outside.
+            if (false) {
+                //return ln.As<Mapping<String, VariantValue>> () <=> rn.As<Mapping<String, VariantValue>> ();
             }
             else {
-                return strong_ordering::greater;
+                using SMT = Containers::SortedMapping<String, VariantValue>;
+                return SMT{ln.As<Mapping<String, VariantValue>> ()} <=> SMT{rn.As<Mapping<String, VariantValue>> ()};
             }
         }
+        case VariantValue::eBLOB:
+        case VariantValue::eInteger:
+        case VariantValue::eUnsignedInteger:
+        case VariantValue::eDate:
+        case VariantValue::eDateTime:
+            AssertNotReached (); // cuz normalized
         default:
             AssertNotReached ();
             return strong_ordering::equal;

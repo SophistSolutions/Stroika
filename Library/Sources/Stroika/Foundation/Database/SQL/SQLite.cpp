@@ -419,7 +419,7 @@ SQL::SQLite::Connection::Ptr::Ptr (const shared_ptr<IRep>& src)
               thisObj->operator->()->SetJournalMode (journalMode);
           }}
 {
-#if qDebug
+#if qStroikaFoundationDebugAssertExternallySynchronizedMutexEnabled
     if (src != nullptr) {
         SetAssertExternallySynchronizedMutexContext (src->GetSharedContext ());
     }
@@ -450,7 +450,7 @@ struct Statement::MyRep_ : IRep {
 #endif
         RequireNotNull (db);
         RequireNotNull (db->Peek ());
-#if qDebug
+#if qStroikaFoundationDebugAssertExternallySynchronizedMutexEnabled
         SetAssertExternallySynchronizedMutexContext (fConnectionPtr_.GetSharedContext ());
 #endif
         string                                          queryUTF8 = query.AsUTF8<string> ();

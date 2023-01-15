@@ -20,7 +20,7 @@ namespace Stroika::Foundation::Database::SQL {
     inline Transaction::Transaction (unique_ptr<IRep>&& rep)
         : _fRep{move (rep)}
     {
-#if qDebug
+#if qStroikaFoundationDebugAssertExternallySynchronizedMutexEnabled
         this->SetAssertExternallySynchronizedMutexContext (_fRep->GetSharedContext ());
 #endif
     }

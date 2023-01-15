@@ -9,8 +9,8 @@
 #include "../../../Characters/Format.h"
 #include "../../../Characters/String2Int.h"
 #include "../../../Characters/StringBuilder.h"
-#include "../../../Containers/Support/ReserveTweaks.h"
 #include "../../../Containers/Concrete/Mapping_stdhashmap.h"
+#include "../../../Containers/Support/ReserveTweaks.h"
 #include "../../../Memory/InlineBuffer.h"
 #include "../../../Streams/StreamReader.h"
 #include "../../../Streams/TextReader.h"
@@ -136,7 +136,7 @@ namespace {
     }
 
     // 'in' is positioned to the start of string, and we read, leaving in possitioned just after the end of the string
-    VariantValue Reader_String_ (MyBufferedStreamReader_& in)
+    String Reader_String_ (MyBufferedStreamReader_& in)
     {
         Require (not in.IsAtEOF ());
         char32_t c = in.NextChar ();
@@ -153,7 +153,7 @@ namespace {
             }
             c = in.NextChar ();
             if (c == '\"') [[unlikely]] {
-                return VariantValue{result.str ()};
+                return result.str ();
             }
             else if (c == '\\') {
                 // quoted character read...
@@ -244,7 +244,6 @@ namespace {
     // NOTE: THIS STARTS SEEKED JUST PAST OPENING '{'
     VariantValue Reader_Object_ (MyBufferedStreamReader_& in)
     {
-        // @todo consider using other optimizations like Mapping_hashmap<>
         Containers::Concrete::Mapping_stdhashmap<String, VariantValue>::STDHASHMAP<> result; // slight tweak using stl map, and move-construct Stroika map at the end
 
         // accumulate elements, and check for close-array
@@ -298,7 +297,7 @@ namespace {
             else {
                 in.BackupOne ();
                 if (lf == eName) {
-                    curName = Reader_String_ (in).As<String> ();
+                    curName = Reader_String_ (in);
                     lf      = eColon;
                 }
                 else if (lf == eValue) [[likely]] {

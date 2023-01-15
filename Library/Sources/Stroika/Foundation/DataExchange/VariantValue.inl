@@ -50,7 +50,7 @@ namespace Stroika::Foundation::DataExchange {
     }
     template <Characters::ConvertibleToString STRINGISH_T>
     inline VariantValue::VariantValue (STRINGISH_T&& val)
-        requires (not is_same_v<remove_cv_t<STRINGISH_T>, String>)
+        requires (not is_same_v<remove_cvref_t<STRINGISH_T>, String>)
     : VariantValue{String{forward<STRINGISH_T> (val)}}
     {
     }
@@ -185,8 +185,7 @@ namespace Stroika::Foundation::DataExchange {
     }
     inline bool VariantValue::operator== (const VariantValue& rhs) const
     {
-        // * https://stroika.atlassian.net/browse/STK-971 - BROKEN FOR CASE OF MAPPINGS.
-        // FAILS NOW FOR REGTESTS - Ensure (EqualsComparer{}(*this, rhs) == (ThreeWayComparer{}(*this, rhs) == 0)); // These must return the same answer
+        Ensure (EqualsComparer{}(*this, rhs) == (ThreeWayComparer{}(*this, rhs) == 0)); // These must return the same answer
         return EqualsComparer{}(*this, rhs);
     }
 
@@ -195,8 +194,7 @@ namespace Stroika::Foundation::DataExchange {
      ***** Stroika::Foundation::DataExchange::VariantValue::EqualsComparer **********
      ********************************************************************************
      */
-    constexpr VariantValue::EqualsComparer::EqualsComparer (bool exactTypeMatchOnly)
-        : fExactTypeMatchOnly{exactTypeMatchOnly}
+    constexpr VariantValue::EqualsComparer::EqualsComparer ()
     {
     }
 
@@ -205,8 +203,7 @@ namespace Stroika::Foundation::DataExchange {
      ************************* VariantValue::ThreeWayComparer ***********************
      ********************************************************************************
      */
-    constexpr VariantValue::ThreeWayComparer::ThreeWayComparer (bool exactTypeMatchOnly)
-        : fExactTypeMatchOnly{exactTypeMatchOnly}
+    constexpr VariantValue::ThreeWayComparer::ThreeWayComparer ()
     {
     }
 
