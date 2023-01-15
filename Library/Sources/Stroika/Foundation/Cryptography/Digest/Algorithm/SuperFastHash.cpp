@@ -8,7 +8,6 @@
 #include "../../../StroikaPreComp.h"
 
 #include "../../../Configuration/Endian.h"
-#include "../../../Memory/Common.h"
 
 #include "SuperFastHash.h"
 
@@ -84,7 +83,7 @@ void Algorithm::DigesterAlgorithm<Algorithm::SuperFastHash>::Write (const std::b
     }
     fHash_ = hash;
     Assert (0 <= fRemainder_ and fRemainder_ <= 3);
-    Memory::MemCmp (&fFinalBytes_, data, fRemainder_);
+    copy (data, data + fRemainder_, fFinalBytes_.data ());
 }
 
 auto Algorithm::DigesterAlgorithm<Algorithm::SuperFastHash>::Complete () -> ReturnType
