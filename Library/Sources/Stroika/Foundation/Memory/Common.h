@@ -37,22 +37,6 @@ namespace Stroika::Foundation::Memory {
     constexpr size_t NEltsOf ([[maybe_unused]] const ARRAY_TYPE (&arr)[SIZE_OF_ARRAY]);
 
     /**
-     *  Return the beginning address (not iterator) of a span - nullptr if its empty
-     * 
-     *  \note this is helpful because its TECHNICALLY not legal C++ (and fails on visual studio) to just use &*s.begin ()
-     */
-    template <class T, size_t E>
-    constexpr T* SafeBegin (span<T, E> s)
-    {
-        return s.empty () ? nullptr : &*s.begin ();
-    }
-    template <class T, size_t E>
-    constexpr T* SafeEnd (span<T, E> s)
-    {
-        return s.empty () ? nullptr : &*s.begin () + s.size ();
-    }
-
-    /**
      *  API to return memory allocation statistics. Generally - these will be inaccurate,
      *  unless certain defines are set in Memory.cpp - but at least some stats can be
      *  returned in either case.
@@ -63,13 +47,13 @@ namespace Stroika::Foundation::Memory {
      *  @todo   Does this belong in "Execution" module"
      */
     struct GlobalAllocationStatistics {
-        GlobalAllocationStatistics ();
+        constexpr GlobalAllocationStatistics () = default;
 
-        size_t fTotalOutstandingAllocations;
-        size_t fTotalOutstandingBytesAllocated;
-        size_t fPageFaultCount;
-        size_t fWorkingSetSize;
-        size_t fPagefileUsage;
+        size_t fTotalOutstandingAllocations{0};
+        size_t fTotalOutstandingBytesAllocated{0};
+        size_t fPageFaultCount{0};
+        size_t fWorkingSetSize{0};
+        size_t fPagefileUsage{0};
     };
     GlobalAllocationStatistics GetGlobalAllocationStatistics ();
 

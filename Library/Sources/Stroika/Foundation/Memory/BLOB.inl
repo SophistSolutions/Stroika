@@ -192,7 +192,8 @@ namespace Stroika::Foundation::Memory {
     }
     inline BLOB BLOB::Attach (span<const byte> s)
     {
-        return Attach (SafeBegin (s), SafeEnd (s));
+        const byte* b = s.data ();
+        return Attach (b, b + s.size ());
     }
     inline BLOB BLOB::AttachApplicationLifetime (const byte* start, const byte* end)
     {
@@ -218,7 +219,7 @@ namespace Stroika::Foundation::Memory {
         RequireNotNull (into);
         Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
         auto                                                  s = fRep_->GetBounds ();
-        *into                                                   = span<const uint8_t>{reinterpret_cast<const uint8_t*> (SafeBegin (s)), s.size ()};
+        *into                                                   = span<const uint8_t>{reinterpret_cast<const uint8_t*> (s.data ()), s.size ()};
     }
     template <>
     inline vector<byte> BLOB::As () const
@@ -289,7 +290,7 @@ namespace Stroika::Foundation::Memory {
         Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
         span<const byte>                                      tmp = fRep_->GetBounds ();
         Assert (tmp.begin () <= tmp.end ());
-        into->assign (reinterpret_cast<const uint8_t*> (SafeBegin (tmp)), reinterpret_cast<const uint8_t*> (SafeEnd (tmp)));
+        into->assign (reinterpret_cast<const uint8_t*> (tmp.data ()), reinterpret_cast<const uint8_t*> (tmp.data () + tmp.size ()));
     }
     template <>
     inline void BLOB::As (string* into) const
@@ -299,7 +300,7 @@ namespace Stroika::Foundation::Memory {
         span<const byte>                                      tmp = fRep_->GetBounds ();
         Assert (tmp.begin () <= tmp.end ());
         into->clear ();
-        into->assign (reinterpret_cast<const char*> (SafeBegin (tmp)), reinterpret_cast<const char*> (SafeEnd (tmp)));
+        into->assign (reinterpret_cast<const char*> (tmp.data ()), reinterpret_cast<const char*> (tmp.data () + tmp.size ()));
         Ensure (into->size () == tmp.size ());
     }
     template <>
@@ -315,15 +316,15 @@ namespace Stroika::Foundation::Memory {
         RequireNotNull (into);
         Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
         auto                                                  s = fRep_->GetBounds ();
-        *into                                                   = make_pair (SafeBegin (s), SafeEnd (s));
+        *into                                                   = make_pair (s.data (), s.data () + s.size ());
     }
     template <>
     inline void BLOB::As (pair<const uint8_t*, const uint8_t*>* into) const
     {
         RequireNotNull (into);
         Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
-        auto                                                  s = fRep_->GetBounds ();
-        *into                                                   = make_pair (reinterpret_cast<const uint8_t*> (SafeBegin (s)), reinterpret_cast<const uint8_t*> (SafeEnd (s)));
+        span<const byte>                                      s = fRep_->GetBounds ();
+        *into                                                   = make_pair (reinterpret_cast<const uint8_t*> (s.data ()), reinterpret_cast<const uint8_t*> (s.data () + s.size ()));
     }
     template <typename T>
     inline void BLOB::As (T* into) const
@@ -350,12 +351,13 @@ namespace Stroika::Foundation::Memory {
     inline const byte* BLOB::begin () const
     {
         Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
-        return SafeBegin (fRep_->GetBounds ());
+        return fRep_->GetBounds ().data ();
     }
     inline const byte* BLOB::end () const
     {
         Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
-        return SafeEnd (fRep_->GetBounds ());
+        auto                                                  b = fRep_->GetBounds ();
+        return b.data () + b.size ();
     }
     inline size_t BLOB::GetSize () const
     {
@@ -395,7 +397,7 @@ namespace Stroika::Foundation::Memory {
         if (lSize == 0) {
             return true; // see http://stackoverflow.com/questions/16362925/can-i-pass-a-null-pointer-to-memcmp -- illegal to pass nullptr to memcmp() even if size 0
         }
-        return ::memcmp (SafeBegin (l), SafeBegin (r), lSize) == 0;
+        return ::memcmp (l.data (), r.data (), lSize) == 0;
     }
     inline BLOB BLOB::operator+ (const BLOB& rhs) const
     {
@@ -413,7 +415,7 @@ namespace Stroika::Foundation::Memory {
         size_t                                                nCommonBytes = min (lSize, rSize);
         if (nCommonBytes != 0) {
             // see http://stackoverflow.com/questions/16362925/can-i-pass-a-null-pointer-to-memcmp -- illegal to pass nullptr to memcmp() even if size 0
-            if (int tmp = ::memcmp (SafeBegin (l), SafeBegin (r), nCommonBytes)) {
+            if (int tmp = ::memcmp (l.data (), r.data (), nCommonBytes)) {
                 return tmp <=> 0;
             }
         }

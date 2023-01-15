@@ -37,20 +37,6 @@ namespace Stroika::Foundation::Memory {
 
     /*
      ********************************************************************************
-     ********************* Memory::GlobalAllocationStatistics ***********************
-     ********************************************************************************
-     */
-    inline GlobalAllocationStatistics::GlobalAllocationStatistics ()
-        : fTotalOutstandingAllocations{0}
-        , fTotalOutstandingBytesAllocated{0}
-        , fPageFaultCount{0}
-        , fWorkingSetSize{0}
-        , fPagefileUsage{0}
-    {
-    }
-
-    /*
-     ********************************************************************************
      ********************************* Memory::MemCmp *******************************
      ********************************************************************************
      */

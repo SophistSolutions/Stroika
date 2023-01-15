@@ -42,7 +42,6 @@ DISABLE_COMPILER_MSC_WARNING_END (5054)
 
 using Stroika::Foundation::Characters::String;
 
-
 // Not sure about this - experiment... See spr#0521
 #define qDisableEditorWhenNotActive 0
 
