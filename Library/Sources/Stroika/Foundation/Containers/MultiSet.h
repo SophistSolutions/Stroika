@@ -364,7 +364,6 @@ namespace Stroika::Foundation::Containers {
          */
         nonvirtual Iterable<T> UniqueElements () const;
 
-
     public:
         /**
          *  \brief Find the most commonly occurring elements of the multiset (list with count ordered most to last)
@@ -402,7 +401,6 @@ namespace Stroika::Foundation::Containers {
          */
         nonvirtual Iterable<T> TopElements () const;
         nonvirtual Iterable<T> TopElements (size_t n) const;
-
 
     public:
         /**

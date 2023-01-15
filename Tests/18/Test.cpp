@@ -70,15 +70,13 @@ namespace {
                 VerifyTestResult (test.Top (1).SequentialEquals ({{1, 3}}));
             }
             {
-               MultiSet<int> test{1, 1, 5, 1, 6, 5};
-              VerifyTestResult (test.TopElements ().SequentialEquals ({1, 5, 6}));
-               VerifyTestResult (test.TopElements (1).SequentialEquals ({1}));
+                MultiSet<int> test{1, 1, 5, 1, 6, 5};
+                VerifyTestResult (test.TopElements ().SequentialEquals ({1, 5, 6}));
+                VerifyTestResult (test.TopElements (1).SequentialEquals ({1}));
             }
         }
     }
 }
-
-
 
 namespace {
 
