@@ -69,14 +69,14 @@ namespace {
                     using Memory::byte;
                     using Streams::InputStream;
                     using Streams::TextReader;
-                    VerifyTestResult (reader.GetData (L"sample_zip/TODO.txt").size () == 243);
-                    VerifyTestResult (reader.GetData (L"sample_zip/BlockAllocation-Valgrind.supp").size () == 4296);
-                    VerifyTestResult (reader.GetData (L"sample_zip/Common-Valgrind.supp").size () == 1661);
-                    VerifyTestResult (reader.GetData (L"sample_zip/Tests-Description.txt").size () == 1934);
-                    VerifyTestResult (TextReader::New (reader.GetData (L"sample_zip/TODO.txt").As<InputStream<byte>::Ptr> ()).ReadAll ().Contains (L"Once any of the ThreadSafetyBuiltinObject tests work - with the locking stuff - add more concrete tyeps"));
-                    VerifyTestResult (TextReader::New (reader.GetData (L"sample_zip/Tests-Description.txt").As<InputStream<byte>::Ptr> ()).ReadAll ().Contains (L"[30]\tFoundation::DataExchange::Other"));
+                    VerifyTestResult (reader.GetData ("sample_zip/TODO.txt").size () == 243);
+                    VerifyTestResult (reader.GetData ("sample_zip/BlockAllocation-Valgrind.supp").size () == 4296);
+                    VerifyTestResult (reader.GetData ("sample_zip/Common-Valgrind.supp").size () == 1661);
+                    VerifyTestResult (reader.GetData ("sample_zip/Tests-Description.txt").size () == 1934);
+                    VerifyTestResult (TextReader::New (reader.GetData ("sample_zip/TODO.txt").As<InputStream<byte>::Ptr> ()).ReadAll ().Contains ("Once any of the ThreadSafetyBuiltinObject tests work - with the locking stuff - add more concrete tyeps"));
+                    VerifyTestResult (TextReader::New (reader.GetData ("sample_zip/Tests-Description.txt").As<InputStream<byte>::Ptr> ()).ReadAll ().Contains ("[30]\tFoundation::DataExchange::Other"));
                     try {
-                        auto i = reader.GetData (L"file-not-found");
+                        auto i = reader.GetData ("file-not-found");
                         VerifyTestResult (false);
                     }
                     catch (...) {
@@ -107,16 +107,16 @@ namespace {
 #if qHasFeature_ZLib
                 Archive::Zip::Reader reader{Streams::ExternallyOwnedMemoryInputStream<byte>::New (begin (ksample_zip_), end (ksample_zip_))};
 
-                VerifyTestResult ((reader.GetContainedFiles () == Containers::Set<String>{L"sample_zip/BlockAllocation-Valgrind.supp", L"sample_zip/Common-Valgrind.supp", L"sample_zip/TODO.txt", L"sample_zip/Tests-Description.txt"}));
+                VerifyTestResult ((reader.GetContainedFiles () == Containers::Set<String>{"sample_zip/BlockAllocation-Valgrind.supp", "sample_zip/Common-Valgrind.supp", "sample_zip/TODO.txt", "sample_zip/Tests-Description.txt"}));
                 {
                     using Streams::InputStream;
                     using Streams::TextReader;
-                    VerifyTestResult (reader.GetData (L"sample_zip/TODO.txt").size () == 243);
-                    VerifyTestResult (reader.GetData (L"sample_zip/BlockAllocation-Valgrind.supp").size () == 4296);
-                    VerifyTestResult (reader.GetData (L"sample_zip/Common-Valgrind.supp").size () == 1661);
-                    VerifyTestResult (reader.GetData (L"sample_zip/Tests-Description.txt").size () == 1934);
-                    VerifyTestResult (TextReader::New (reader.GetData (L"sample_zip/TODO.txt").As<InputStream<byte>::Ptr> ()).ReadAll ().Contains (L"Once any of the ThreadSafetyBuiltinObject tests work - with the locking stuff - add more concrete tyeps"));
-                    VerifyTestResult (TextReader::New (reader.GetData (L"sample_zip/Tests-Description.txt").As<InputStream<byte>::Ptr> ()).ReadAll ().Contains (L"[30]\tFoundation::DataExchange::Other"));
+                    VerifyTestResult (reader.GetData ("sample_zip/TODO.txt").size () == 243);
+                    VerifyTestResult (reader.GetData ("sample_zip/BlockAllocation-Valgrind.supp").size () == 4296);
+                    VerifyTestResult (reader.GetData ("sample_zip/Common-Valgrind.supp").size () == 1661);
+                    VerifyTestResult (reader.GetData ("sample_zip/Tests-Description.txt").size () == 1934);
+                    VerifyTestResult (TextReader::New (reader.GetData ("sample_zip/TODO.txt").As<InputStream<byte>::Ptr> ()).ReadAll ().Contains ("Once any of the ThreadSafetyBuiltinObject tests work - with the locking stuff - add more concrete tyeps"));
+                    VerifyTestResult (TextReader::New (reader.GetData ("sample_zip/Tests-Description.txt").As<InputStream<byte>::Ptr> ()).ReadAll ().Contains ("[30]\tFoundation::DataExchange::Other"));
                     try {
                         auto i = reader.GetData (L"file-not-found");
                         VerifyTestResult (false);
@@ -153,8 +153,8 @@ namespace {
             tmp << "BUG_REPORT_URL=\"http://bugs.launchpad.net/ubuntu/\"" << endl;
             Variant::INI::Profile p = Variant::INI::Reader{}.ReadProfile (tmp);
             VerifyTestResult (p.fNamedSections.empty ());
-            VerifyTestResult (p.fUnnamedSection.fProperties.LookupValue (L"NAME") == L"Ubuntu");
-            VerifyTestResult (p.fUnnamedSection.fProperties.LookupValue (L"SUPPORT_URL") == L"http://help.ubuntu.com/");
+            VerifyTestResult (p.fUnnamedSection.fProperties.LookupValue ("NAME") == "Ubuntu");
+            VerifyTestResult (p.fUnnamedSection.fProperties.LookupValue ("SUPPORT_URL") == "http://help.ubuntu.com/");
         }
 
         struct Case_ {
@@ -164,15 +164,15 @@ namespace {
         const Case_ kCase1_{
             [] () {
                 DataExchange::Variant::INI::Section section{{
-                    {L"NAME", L"Ubuntu"},
-                    {L"VERSION", L"13.10, Saucy Salamander"},
-                    {L"ID", L"ubuntu"},
-                    {L"ID_LIKE", L"debian"},
-                    {L"PRETTY_NAME", L"Ubuntu 13.10"},
-                    {L"VERSION_ID", L"13.10"},
-                    {L"HOME_URL", L"http://www.ubuntu.com/"},
-                    {L"SUPPORT_URL", L"http://help.ubuntu.com/"},
-                    {L"BUG_REPORT_URL", L"http://bugs.launchpad.net/ubuntu/"},
+                    {"NAME", L"Ubuntu"},
+                    {"VERSION", L"13.10, Saucy Salamander"},
+                    {"ID", L"ubuntu"},
+                    {"ID_LIKE", L"debian"},
+                    {"PRETTY_NAME", L"Ubuntu 13.10"},
+                    {"VERSION_ID", L"13.10"},
+                    {"HOME_URL", L"http://www.ubuntu.com/"},
+                    {"SUPPORT_URL", L"http://help.ubuntu.com/"},
+                    {"BUG_REPORT_URL", L"http://bugs.launchpad.net/ubuntu/"},
                 }};
                 return DataExchange::Variant::INI::Profile{section};
             }(),
@@ -222,7 +222,7 @@ namespace {
             tmp << "4,5" << endl;
             Iterable<Sequence<String>> s = Variant::CharacterDelimitedLines::Reader{{','}}.ReadMatrix (tmp);
             VerifyTestResult (s.size () == 2);
-            VerifyTestResult (s.Nth (1)[1] == L"5");
+            VerifyTestResult (s.Nth (1)[1] == "5");
         }
 
         struct Case_ {
@@ -232,8 +232,8 @@ namespace {
         const Case_ kCase1_spaceSep_{
             [] () {
                 return Sequence<Sequence<String>>{
-                    Sequence<String>{L"3", L"4"},
-                    Sequence<String>{L"4", L"5"},
+                    Sequence<String>{"3", "4"},
+                    Sequence<String>{"4", "5"},
                 };
             }(),
             [] () {
@@ -245,9 +245,9 @@ namespace {
         const Case_ kCase2_noSpace_{
             [] () {
                 return Sequence<Sequence<String>>{
-                    Sequence<String>{L"a", L"b"},
-                    Sequence<String>{L"1", L"2", L"3"}, // Can be different lengths
-                    Sequence<String>{L"x", L"7"},
+                    Sequence<String>{"a", "b"},
+                    Sequence<String>{"1", "2", "3"}, // Can be different lengths
+                    Sequence<String>{"x", "7"},
                 };
             }(),
             [] () {
