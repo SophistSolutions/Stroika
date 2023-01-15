@@ -476,21 +476,22 @@ basic-unix-test-configurations_g++_versions_:
 
 basic-unix-test-configurations_clang++_versions_:
 	# clang-10
-	./configure clang++-10-debug --config-tag Unix --compiler-driver clang++-10 --apply-default-debug-flags --only-if-has-compiler --trace2file enable
+	./configure clang++-10-debug --config-tag Unix --compiler-driver clang++-10 --apply-default-debug-flags --only-if-has-compiler
 	./configure clang++-10-release --config-tag Unix --compiler-driver clang++-10 --apply-default-release-flags --only-if-has-compiler --trace2file enable
 	# clang-11
-	./configure clang++-11-debug-libc++ --config-tag Unix --compiler-driver clang++-11 --apply-default-debug-flags --stdlib libc++ --only-if-has-compiler --trace2file enable
+	./configure clang++-11-debug-libc++ --config-tag Unix --compiler-driver clang++-11 --apply-default-debug-flags --stdlib libc++ --only-if-has-compiler
 	./configure clang++-11-release-libstdc++ --config-tag Unix --compiler-driver clang++-11 --apply-default-release-flags --stdlib libstdc++ --only-if-has-compiler --trace2file enable
 	# clang-12
-	./configure clang++-12-debug-libc++ --config-tag Unix --compiler-driver clang++-12 --apply-default-debug-flags --stdlib libc++ --only-if-has-compiler --trace2file enable
+	./configure clang++-12-debug-libc++ --config-tag Unix --compiler-driver clang++-12 --apply-default-debug-flags --stdlib libc++ --only-if-has-private_compiler_versions_
+	./configure clang++-12-debug-libstdc++ --config-tag Unix --compiler-driver clang++-12 --apply-default-debug-flags --stdlib libstdc++ --only-if-has-compiler
 	./configure clang++-12-release-libstdc++ --config-tag Unix --compiler-driver clang++-12 --apply-default-release-flags --stdlib libstdc++ --only-if-has-compiler --trace2file enable
 	# clang-13
 	./configure clang++-13-debug-libc++ --config-tag Unix --compiler-driver clang++-13 --apply-default-debug-flags --stdlib libc++ --only-if-has-compiler --trace2file enable
 	./configure clang++-13-release-libstdc++ --config-tag Unix --compiler-driver clang++-13 --apply-default-release-flags --stdlib libstdc++ --only-if-has-compiler --trace2file enable
 	# clang-14
-	./configure clang++-14-debug-libc++ --config-tag Unix --compiler-driver clang++-14 --apply-default-debug-flags --stdlib libc++ --only-if-has-compiler --trace2file enable
+	./configure clang++-14-debug-libc++ --config-tag Unix --compiler-driver clang++-14 --apply-default-debug-flags --stdlib libc++ --only-if-has-compiler
 	./configure clang++-14-release-libstdc++ --config-tag Unix --compiler-driver clang++-14 --apply-default-release-flags --stdlib libstdc++ --only-if-has-compiler --trace2file enable
-	./configure clang++-14-debug-libc++-c++2b --config-tag Unix --compiler-driver clang++-14 --apply-default-debug-flags --stdlib libc++ --only-if-has-compiler --trace2file enable --cppstd-version c++2b
+	./configure clang++-14-debug-libc++-c++2b --config-tag Unix --compiler-driver clang++-14 --apply-default-debug-flags --stdlib libc++ --only-if-has-compiler --cppstd-version c++2b
 	./configure clang++-14-release-libstdc++2b --config-tag Unix --compiler-driver clang++-14 --apply-default-release-flags --stdlib libstdc++ --only-if-has-compiler --trace2file enable --cppstd-version c++2b
 
 basic-unix-test-configurations_sanitizer_configs_:
