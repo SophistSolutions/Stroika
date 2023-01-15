@@ -82,8 +82,7 @@ using Stroika::Foundation::Characters::String;
  */
 
 COMBased_SpellCheckEngine::COMBased_SpellCheckEngine (IDispatch* engine)
-    : inherited ()
-    , fEngine (engine)
+    : fEngine{engine}
 {
     // NB: We use IDispatch interface rather than the vtable interface to avoid having to directly include the spellchecker IDL here,
     // and having to compile it ourselves in this project
