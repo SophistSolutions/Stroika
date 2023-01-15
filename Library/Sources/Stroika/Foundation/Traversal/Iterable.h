@@ -510,6 +510,12 @@ namespace Stroika::Foundation::Traversal {
          *      o   Apply could have logically been called ForEach, and is nearly identical to
          *          std::for_each (), except for not taking iterators as arguments, and not having
          *          any return value.
+         * 
+         *  \note   Why Apply takes std::function argument instead of templated FUNCTION parameter?
+         *          Because Stroika iterables use a 'virtual' APPLY, you cannot pass arbitrary templated
+         *          function calls passed that boundary. That choice ALLOWS traversal to be implemented
+         *          quickly, and without and subsequent (virtual) calls on the container side, but one
+         *          - CALL per iteration to the function itself.
          *
          *  \note   \em Thread-Safety   The argument function (lambda) may
          *              directly (or indirectly) access the Iterable<> being iterated over.
@@ -564,8 +570,6 @@ namespace Stroika::Foundation::Traversal {
          *  \note - because the lifetime of the iterable must exceed that of the iterator, its generally unsafe to use Find()
          *          on a temporary (except with the trick if (auto i = x().Find(...)) { ok to access i here cuz x() temporary
          *          not destroyed yet).
-         * 
-         *  \note Before Stroika 2.1b14, the overload taking just THAT_FUNCTION was called FindFirstThat, and used function<bool(T)> instead of a templated function.
          * 
          *  \note THAT_FUNTION type used to be hardwired to function<bool (ArgByValueType<T> item)>&, but now use template argument
          *     and (SOON concept) but for now enable_if_t
@@ -750,6 +754,54 @@ namespace Stroika::Foundation::Traversal {
 
     public:
         /**
+         *  \brief Walk the entire list of items, and use the argument 'op' to combine (reduce) items to a resulting single item.
+         * 
+         *  \see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/reduce
+         *  \see https://learn.microsoft.com/en-us/dotnet/api/system.linq.enumerable.aggregate?redirectedfrom=MSDN&view=net-7.0#overloads
+         * 
+         *  \note   Alias - Accumulate
+         * 
+         *  \note   This was called Accumulate in Stroika up until 2.1.10
+         *
+         *  \par Example Usage
+         *      \code
+         *          Iterable<int> c { 1, 2, 3, 4, 5, 9 };
+         *          VerifyTestResult (c.Reduce ([] (T lhs, T rhs) { return lhs + rhs; }) == 24);
+         *      \endcode
+         * 
+         *  \par Implementation As if:
+         *      \code
+         *          optional<RESULT_TYPE> result;
+         *          for (const auto& i : *this) {
+         *              if (result) {
+         *                  result = op (i, *result);
+         *              }
+         *              else {
+         *                  result = i;
+         *              }
+         *          }
+         *      \endcode
+         *
+         *  \note   returns nullopt if empty list
+         *
+         *  See:
+         *      @see ReduceValue
+         *      @see Join
+         *      @see Sum
+         *      @see SumValue
+         */
+        template <typename RESULT_TYPE = T>
+        nonvirtual optional<RESULT_TYPE> Reduce (const function<RESULT_TYPE (ArgByValueType<T>, ArgByValueType<T>)>& op) const;
+
+    public:
+        /**
+         *  @see @Reduce, but if value is missing, returns defaultValue arg or {}
+         */
+        template <typename RESULT_TYPE = T>
+        nonvirtual RESULT_TYPE ReduceValue (const function<RESULT_TYPE (ArgByValueType<T>, ArgByValueType<T>)>& op, ArgByValueType<RESULT_TYPE> defaultValue = {}) const;
+
+    public:
+        /**
          * \brief ape the javascript/python 'join' function - take the parts of 'this' iterable and combine them into a new object (typically a string)
          *
          *  This Join () API - if you use the template, is fairly generic and lets the caller iterate over subelements of this iterable, and
@@ -829,6 +881,8 @@ namespace Stroika::Foundation::Traversal {
          *      \endcode
          *
          *  \req from <= to
+         * 
+         *  \note equivilent to Skip (from).Take (to-from)
          *
          *  @see https://www.w3schools.com/jsref/jsref_slice_array.asp  (EXCEPT FOR NOW - we don't support negative indexes or optional args; maybe do that for SEQUENCE subclass?)
          *  @see Take
@@ -840,17 +894,15 @@ namespace Stroika::Foundation::Traversal {
         /**
          *  BASED ON Microsoft .net Linq.
          *
-         *  @todo FOR NOW VERY LIMITED API. Linq has params to let you select just the KEY to use in compare. Could add overloads
-         *
          *  \par Example Usage
          *      \code
-         *          Iterable<int> c { 3, 5, 9, 38, 3, 5 };
+         *          Iterable<int> c{ 3, 5, 9, 38, 3, 5 };
          *          VerifyTestResult (c.OrderBy ().SequentialEquals ({ 3, 3, 5, 5, 9, 38 }));
          *      \endcode
          *
          *  \par Example Usage
          *      \code
-         *          Iterable<int> c { 3, 5, 9, 38, 3, 5 };
+         *          Iterable<int> c{ 3, 5, 9, 38, 3, 5 };
          *          VerifyTestResult (c.OrderBy ([](int lhs, int rhs) -> bool { return lhs < rhs; }).SequentialEquals ({ 3, 3, 5, 5, 9, 38 }));
          *      \endcode
          *
@@ -963,54 +1015,6 @@ namespace Stroika::Foundation::Traversal {
          *  @see also Iterable<T>::Where ()
          */
         nonvirtual bool All (const function<bool (ArgByValueType<T>)>& testEachElt) const;
-
-    public:
-        /**
-         *  \brief Walk the entire list of items, and use the argument 'op' to combine (reduce) items to a resulting single item.
-         * 
-         *  \see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/reduce
-         *  \see https://learn.microsoft.com/en-us/dotnet/api/system.linq.enumerable.aggregate?redirectedfrom=MSDN&view=net-7.0#overloads
-         * 
-         *  \note   Alias - Accumulate
-         * 
-         *  \note   This was called Accumulate in Stroika up until 2.1.10
-         *
-         *  \par Example Usage
-         *      \code
-         *          Iterable<int> c { 1, 2, 3, 4, 5, 9 };
-         *          VerifyTestResult (c.Reduce ([] (T lhs, T rhs) { return lhs + rhs; }) == 24);
-         *      \endcode
-         * 
-         *  \par Implementation As if:
-         *      \code
-         *          optional<RESULT_TYPE> result;
-         *          for (const auto& i : *this) {
-         *              if (result) {
-         *                  result = op (i, *result);
-         *              }
-         *              else {
-         *                  result = i;
-         *              }
-         *          }
-         *      \endcode
-         *
-         *  \note   returns nullopt if empty list
-         *
-         *  See:
-         *      @see ReduceValue
-         *      @see Join
-         *      @see Sum
-         *      @see SumValue
-         */
-        template <typename RESULT_TYPE = T>
-        nonvirtual optional<RESULT_TYPE> Reduce (const function<RESULT_TYPE (ArgByValueType<T>, ArgByValueType<T>)>& op) const;
-
-    public:
-        /**
-         *  @see @Reduce, but if value is missing, returns defaultValue arg or {}
-         */
-        template <typename RESULT_TYPE = T>
-        nonvirtual RESULT_TYPE ReduceValue (const function<RESULT_TYPE (ArgByValueType<T>, ArgByValueType<T>)>& op, ArgByValueType<RESULT_TYPE> defaultValue = {}) const;
 
     public:
         /**
