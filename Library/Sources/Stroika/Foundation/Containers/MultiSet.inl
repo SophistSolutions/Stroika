@@ -400,12 +400,12 @@ namespace Stroika::Foundation::Containers {
     template <typename T, typename TRAITS>
     Iterable<T> MultiSet<T, TRAITS>::TopElements () const
     {
-        return Top ().Map<T> ([] (const CountedValue<T>& cv) { return cv.fValue; });
+        return Top ().template Map<T> ([] (const CountedValue<T>& cv) { return cv.fValue; });
     }
     template <typename T, typename TRAITS>
     Iterable<T> MultiSet<T, TRAITS>::TopElements (size_t n) const
     {
-        return Top (n).Map<T> ([] (const CountedValue<T>& cv) { return cv.fValue; });
+        return Top (n).template Map<T> ([] (const CountedValue<T>& cv) { return cv.fValue; });
     }
     template <typename T, typename TRAITS>
     inline auto MultiSet<T, TRAITS>::GetElementEqualsComparer () const -> ElementEqualityComparerType
