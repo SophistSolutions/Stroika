@@ -168,7 +168,7 @@ public:
     static void SetAppState_ (Message* message)
     {
         String argsAsString = Streams::TextReader::New (message->rwRequest ().GetBody ()).ReadAll ();
-        message->rwResponse ().writeln (L"<html><body><p>Hi SetAppState (" + argsAsString.As<wstring> () + L")</p></body></html>");
+        message->rwResponse ().writeln ("<html><body><p>Hi SetAppState ("sv + argsAsString + ")</p></body></html>"sv);
         message->rwResponse ().contentType = InternetMediaTypes::kHTML;
     }
 };
@@ -177,7 +177,7 @@ public:
  *  Documentation on WSAPIs
  */
 const WebServiceMethodDescription WebServer::Rep_::kVariables_{
-    L"variables"_k,
+    "variables"_k,
     Set<String>{HTTP::Methods::kGet, HTTP::Methods::kPost, HTTP::Methods::kDelete},
     InternetMediaTypes::kJSON,
     {},
