@@ -56,16 +56,24 @@ namespace Stroika::Foundation::Memory {
     template <>
     constexpr int MemCmp (const uint8_t* lhs, const uint8_t* rhs, std::size_t count)
     {
-        //Require (count == 0 or lhs != nullptr);
-        //Require (count == 0 or rhs != nullptr);
-        const uint8_t* li = lhs;
-        const uint8_t* ri = rhs;
-        for (; count--; ++li, ++ri) {
-            if (int cmp = static_cast<int> (*li) - static_cast<int> (*ri)) {
-                return cmp;
+        if constexpr (is_constant_evaluated ()) {
+            //Require (count == 0 or lhs != nullptr);
+            //Require (count == 0 or rhs != nullptr);
+            const uint8_t* li = lhs;
+            const uint8_t* ri = rhs;
+            for (; count--; ++li, ++ri) {
+                if (int cmp = static_cast<int> (*li) - static_cast<int> (*ri)) {
+                    return cmp;
+                }
             }
+            return 0;
         }
-        return 0;
+        else {
+            if (count == 0) {
+                return 0;
+            }
+            return std::memcmp (lhs, rhs, count);
+        }
     }
     template <typename T>
     constexpr int MemCmp (const T* lhs, const T* rhs, size_t count)
