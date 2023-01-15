@@ -3361,7 +3361,7 @@ ReadRest:
 
     size_t startOfName = GetSrcStream ().current_offset ();
     ScanForwardFor ("{;");
-    entry.fFontName = NarrowSDK2SDKString (GrabString (startOfName));
+    entry.fFontName = String::FromNarrowSDKString (GrabString (startOfName)).AsSDKString ();
 
     // SEE SPR#0749 - can also get these funky groups after the font name - skip them til I better understand them...
     if (PeekNextChar () == RTFIO::kRTFOpenGroupChar) {
@@ -4672,7 +4672,7 @@ bool StyledTextIOWriter_RTF::PossiblyWriteOLERTFEmbedding (WriterContext& /*writ
         //      WriteTagNValue ("objw", 100);   // get real values here!
         //&&&FIX&&&objw ETC
 
-        string className = SDKString2NarrowSDK (anRTFOLEEmbedding->GetObjClassName ());
+        string className = String::FromSDKString (anRTFOLEEmbedding->GetObjClassName ()).AsNarrowSDKString ();
         if (not className.empty ()) {
             write ("{\\*\\objclass ");
             // probably SHOULD check className doesn't have any bad characters, like a "{" - or some such...
@@ -4965,7 +4965,7 @@ void StyledTextIOWriter_RTF::WriteFontTablesEntry (const FontTableEntry& entry)
         WriteTagNValue ("fprq", entry.fPitch);
     }
 
-    write (SDKString2NarrowSDK (entry.fFontName));
+    write (String::FromSDKString (entry.fFontName).AsNarrowSDKString ());
 
     write (';');
 

@@ -559,7 +559,7 @@ void Led::DumpSupportedInterfaces (IUnknown* obj, const char* objectName, const 
                 try {
                     CLSID iid;
                     (void)::memset (&iid, 0, sizeof (iid));
-                    tmpStr = ::SysAllocString (NarrowSDKStringToWide (subKey).c_str ());
+                    tmpStr = ::SysAllocString (String::FromNarrowSDKString (subKey).As<wstring> ().c_str ());
                     ThrowIfErrorHRESULT (::CLSIDFromString (tmpStr, &iid));
                     if (tmpStr != nullptr) {
                         ::SysFreeString (tmpStr);

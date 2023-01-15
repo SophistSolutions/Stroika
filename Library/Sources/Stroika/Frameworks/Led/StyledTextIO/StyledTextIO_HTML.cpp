@@ -1074,7 +1074,7 @@ IncrementalFontSpecification StyledTextIOReader_HTML::ExtractFontSpecFromCSSStyl
         if (comma != string::npos) {
             itemValue = itemValue.substr (0, comma);
         }
-        f.SetFontName (NarrowSDK2SDKString (itemValue));
+        f.SetFontName (String::FromNarrowSDKString (itemValue).AsSDKString ());
     }
     if (ParseCSSTagArgOut (fullCSSString, "font-size", &itemValue)) {
         if (itemValue.length () >= 3 and
@@ -1323,7 +1323,7 @@ void StyledTextIOReader_HTML::HandleHTMLThingyTag_font (bool start, const char* 
             if (tagValue.find (',') != string::npos) {
                 tagValue = tagValue.substr (0, tagValue.find (','));
             }
-            fsp.SetFontName (NarrowSDK2SDKString (tagValue));
+            fsp.SetFontName (String::FromNarrowSDKString (tagValue).AsSDKString ());
 #if qPlatform_MacOS
             // cuz the mac does so badly on this, and just sets the font to chicago if its unknown, and cuz
             // this looks so bad, try a nicer default font...
@@ -2522,7 +2522,7 @@ void StyledTextIOWriter_HTML::EmitBodyFontInfoChange (WriterContext& writerConte
         if (not IsTagOnStack (writerContext, "span")) {
             char   sprintfBuffer[1024];
             string cssInfo = "style=\"";
-            cssInfo += "font-family: '" + SDKString2NarrowSDK (newOne.GetFontName ()) + "'; ";
+            cssInfo += "font-family: '" + String::FromSDKString (newOne.GetFontName ()).AsNarrowSDKString () + "'; ";
             cssInfo += (snprintf (sprintfBuffer, Memory::NEltsOf (sprintfBuffer), "font-size: %dpt; ", newOne.GetPointSize ()), sprintfBuffer);
             cssInfo += "color: " + PrintColorString (newOne.GetTextColor ());
             cssInfo += "\"";
