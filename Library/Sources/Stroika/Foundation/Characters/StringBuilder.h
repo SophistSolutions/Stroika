@@ -38,10 +38,6 @@
 namespace Stroika::Foundation::Characters {
 
     /**
-     *
-     *  \note   Uses Execution::ExternallySynchronizedLock - so you must externally assure this isn't updated by
-     *          one thread while being accessed on another.
-     *
      *  @see String
      *  @see .Net StringBuilder - http://msdn.microsoft.com/en-us/library/system.text.stringbuilder(v=vs.110).aspx
      *  @see Java StringBuilder - http://docs.oracle.com/javase/7/docs/api/java/lang/StringBuilder.html

@@ -74,7 +74,7 @@ using namespace Stroika::Frameworks;
 using namespace Stroika::Frameworks::Led;
 using namespace Stroika::Frameworks::Led::StyledTextIO;
 
-using Foundation::Characters::String;
+using Stroika::Foundation::Characters::String;
 
 /*
  ********************************************************************************

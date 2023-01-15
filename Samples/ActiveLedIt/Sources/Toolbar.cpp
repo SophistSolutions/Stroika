@@ -13,6 +13,8 @@ DISABLE_COMPILER_MSC_WARNING_END (5054)
 
 #include "Toolbar.h"
 
+using Stroika::Foundation::Characters::String;
+
 namespace {
     template <class EnumType, class CollType>
     HRESULT CreateSTLEnumerator (IUnknown** ppUnk, IUnknown* pUnkForRelease, CollType& collection)
