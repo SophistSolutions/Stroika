@@ -388,6 +388,26 @@ namespace Stroika::Foundation::Containers {
         return ss->UniqueElements (ss);
     }
     template <typename T, typename TRAITS>
+    Iterable<CountedValue<T>> MultiSet<T, TRAITS>::Top () const
+    {
+        return this->inherited::Top ([] (const CountedValue<T>& lhs, const CountedValue<T>& rhs) { return lhs.fCount > rhs.fCount; });
+    }
+    template <typename T, typename TRAITS>
+    Iterable<CountedValue<T>> MultiSet<T, TRAITS>::Top (size_t n) const
+    {
+        return this->inherited::Top (n, [] (const CountedValue<T>& lhs, const CountedValue<T>& rhs) { return lhs.fCount > rhs.fCount; });
+    }
+    template <typename T, typename TRAITS>
+    Iterable<T> MultiSet<T, TRAITS>::TopElements () const
+    {
+        return Top ().Map<T> ([] (const CountedValue<T>& cv) { return cv.fValue; });
+    }
+    template <typename T, typename TRAITS>
+    Iterable<T> MultiSet<T, TRAITS>::TopElements (size_t n) const
+    {
+        return Top (n).Map<T> ([] (const CountedValue<T>& cv) { return cv.fValue; });
+    }
+    template <typename T, typename TRAITS>
     inline auto MultiSet<T, TRAITS>::GetElementEqualsComparer () const -> ElementEqualityComparerType
     {
         return _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().GetElementEqualsComparer ();

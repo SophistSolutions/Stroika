@@ -364,6 +364,46 @@ namespace Stroika::Foundation::Containers {
          */
         nonvirtual Iterable<T> UniqueElements () const;
 
+
+    public:
+        /**
+         *  \brief Find the most commonly occurring elements of the multiset (list with count ordered most to last)
+         * 
+         *  \par Example Usage
+         *      \code
+         *          MultiSet<int> test{1, 1, 5, 1, 6, 5};
+         *          VerifyTestResult (test.Top ().SequentialEquals ({{1, 3}, {5, 2}, {6, 1}}));
+         *          VerifyTestResult (test.Top (1).SequentialEquals ({{1, 3}}));
+         *      \endcode
+         * 
+         *  \note n is allowed to exceed the size of the MultiSet, and the result of Top (n) maybe fewer than n values
+         *
+         *  \See Iterable<T>::Top
+         *  \See TopElements
+         */
+        nonvirtual Iterable<CountedValue<T>> Top () const;
+        nonvirtual Iterable<CountedValue<T>> Top (size_t n) const;
+
+    public:
+        /**
+         *  \brief Find the most commonly occurring elements of the multiset (list of elements - without count - ordered most to last)
+         * 
+         *  \par Example Usage
+         *      \code
+         *          MultiSet<int> test{1, 1, 5, 1, 6, 5};
+         *          VerifyTestResult (test.TopElements ().SequentialEquals ({1, 5, 6}));
+         *          VerifyTestResult (test.TopElements (1).SequentialEquals ({1}));
+         *      \endcode
+         * 
+         *  \note n is allowed to exceed the size of the MultiSet, and the result of Top (n) maybe fewer than n values
+         *
+         *  \See Iterable<T>::Top
+         *  \See Top
+         */
+        nonvirtual Iterable<T> TopElements () const;
+        nonvirtual Iterable<T> TopElements (size_t n) const;
+
+
     public:
         /**
          *  Return the function used to compare if two elements are equal (not to be confused with MultiSet<>::EqualsComparer)

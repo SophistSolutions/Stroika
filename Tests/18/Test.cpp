@@ -61,6 +61,26 @@ namespace {
 }
 
 namespace {
+    namespace Top_Test_3_ {
+        void DoTest ()
+        {
+            {
+                MultiSet<int> test{1, 1, 5, 1, 6, 5};
+                VerifyTestResult (test.Top ().SequentialEquals ({{1, 3}, {5, 2}, {6, 1}}));
+                VerifyTestResult (test.Top (1).SequentialEquals ({{1, 3}}));
+            }
+            {
+               MultiSet<int> test{1, 1, 5, 1, 6, 5};
+              VerifyTestResult (test.TopElements ().SequentialEquals ({1, 5, 6}));
+               VerifyTestResult (test.TopElements (1).SequentialEquals ({1}));
+            }
+        }
+    }
+}
+
+
+
+namespace {
 
     void DoRegressionTests_ ()
     {
@@ -110,6 +130,7 @@ namespace {
         }
 
         ExampleCTORS_Test_2_::DoTest ();
+        Top_Test_3_::DoTest ();
 
         VerifyTestResult (SimpleClass::GetTotalLiveCount () == 0 and SimpleClassWithoutComparisonOperators::GetTotalLiveCount () == 0); // simple portable leak check
     }
