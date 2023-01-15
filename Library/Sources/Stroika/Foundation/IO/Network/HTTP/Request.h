@@ -42,7 +42,7 @@ namespace Stroika::Foundation::IO::Network::HTTP {
     public:
         nonvirtual Request& operator= (const Request&) = delete;
 
-#if qDebug
+#if qStroikaFoundationDebugAssertExternallySynchronizedMutexEnabled
     public:
         /**
          *  Allow users of the Headers object to have it share a 'assure externally synchronized' context.

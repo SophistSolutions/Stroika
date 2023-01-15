@@ -117,7 +117,7 @@ Request::Request ()
 {
 }
 
-#if qDebug
+#if qStroikaFoundationDebugAssertExternallySynchronizedMutexEnabled
 void Request::SetAssertExternallySynchronizedMutexContext (const shared_ptr<SharedContext>& sharedContext)
 {
     AssertExternallySynchronizedMutex::SetAssertExternallySynchronizedMutexContext (sharedContext);

@@ -168,7 +168,7 @@ struct Connection::Rep_ final : IRep {
 SQL::ODBC::Connection::Ptr::Ptr (const shared_ptr<IRep>& src)
     : inherited{src}
 {
-#if qDebug
+#if qStroikaFoundationDebugAssertExternallySynchronizedMutexEnabled
     if (src != nullptr) {
         SetAssertExternallySynchronizedMutexContext (src->GetSharedContext ());
     }
@@ -200,7 +200,7 @@ struct Statement::MyRep_ : IRep {
         TraceContextBumper ctx{"SQLite::Statement::MyRep_::CTOR", Stroika_Foundation_Debug_OptionalizeTraceArgs (L "db=%p, query='%s'", db, query.As<wstring> ().c_str ())};
 #endif
         RequireNotNull (db);
-#if qDebug
+#if qStroikaFoundationDebugAssertExternallySynchronizedMutexEnabled
         SetAssertExternallySynchronizedMutexContext (fConnectionPtr_.GetSharedContext ());
 #endif
         u8string                                        queryUTF8 = query.AsUTF8 ();

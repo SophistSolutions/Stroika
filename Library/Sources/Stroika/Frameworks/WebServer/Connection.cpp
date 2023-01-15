@@ -238,7 +238,7 @@ Connection::ReadAndProcessResult Connection::ReadAndProcessMessage () noexcept
         Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"Connection::ReadAndProcessMessage", L"this->socket=%s", Characters::ToString (fSocket_).c_str ())};
 #endif
         fMessage_ = make_unique<MyMessage_> (fSocket_, fSocketStream_, fDefaultResponseHeaders_, fAutoComputeETagResponse_);
-#if qDebug
+#if qStroikaFoundationDebugAssertExternallySynchronizedMutexEnabled
         fMessage_->SetAssertExternallySynchronizedMutexContext (GetSharedContext ());
 #endif
 
