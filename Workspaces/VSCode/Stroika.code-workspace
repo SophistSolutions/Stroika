@@ -135,7 +135,8 @@
 			"semaphore": "cpp",
 			"barrier": "cpp",
 			"format": "cpp",
-			"latch": "cpp"
+			"latch": "cpp",
+			"execution": "cpp"
 		},
 		"git.ignoreLimitWarning": true,
 		"files.watcherExclude": {
