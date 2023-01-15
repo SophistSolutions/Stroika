@@ -45,7 +45,7 @@ using namespace StroikaSample::WebServices;
 namespace {
     const Common::ConstantProperty<Headers> kDefaultResponseHeaders_{[] () {
         Headers h;
-        h.server = L"Stroika-Sample-WebServices/"_k + AppVersion::kVersion.AsMajorMinorString ();
+        h.server = "Stroika-Sample-WebServices/"_k + AppVersion::kVersion.AsMajorMinorString ();
         return h;
     }};
 }
@@ -77,7 +77,7 @@ public:
               Route{HTTP::MethodsRegEx::kPost, "SetAppState"_RegEx, SetAppState_},
 
               Route{"FRED"_RegEx, [] (Request*, Response* response) {
-                        response->write (L"FRED");
+                        response->write ("FRED");
                         response->contentType = InternetMediaTypes::kText_PLAIN;
                     }},
 
@@ -137,7 +137,7 @@ public:
               Route{HTTP::MethodsRegEx::kPost, "divide"_RegEx, mkRequestHandler (kDivide, Model::kMapper, Traversal::Iterable<String>{"arg1", "arg2"}, function<Number (Number, Number)>{[this] (Number arg1, Number arg2) { return fWSImpl_->divide (arg1, arg2); }})},
               Route{"test-void-return"_RegEx, mkRequestHandler (WebServiceMethodDescription{}, Model::kMapper, Traversal::Iterable<String>{"err-if-more-than-10"}, function<void (double)>{[] (double check) {
                                     if (check > 10) {
-                                        Execution::Throw (Execution::Exception{L"more than 10"sv});
+                                        Execution::Throw (Execution::Exception{"more than 10"sv});
                                     } }})},
 
           }
