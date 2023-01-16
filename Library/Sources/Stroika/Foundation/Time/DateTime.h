@@ -538,6 +538,7 @@ namespace Stroika::Foundation::Time {
 
     public:
         /**
+         *  just a predefined instance of the FormatException you can use, to avoid creating your own.
          */
         static const FormatException kThe;
     };

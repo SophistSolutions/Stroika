@@ -55,28 +55,32 @@ namespace Stroika::Foundation::Time {
     using chrono::month;
     using chrono::months;
 
-    using chrono::April;
-    using chrono::August;
-    using chrono::December;
-    using chrono::February;
+    // clang-format off
     using chrono::January;
-    using chrono::July;
-    using chrono::June;
+    using chrono::February;
     using chrono::March;
+    using chrono::April;
     using chrono::May;
-    using chrono::November;
-    using chrono::October;
+    using chrono::June;
+    using chrono::July;
+    using chrono::August;
     using chrono::September;
+    using chrono::October;
+    using chrono::November;
+    using chrono::December;
+    // clang-format on
 
     using chrono::weekday;
 
-    using chrono::Friday;
-    using chrono::Monday;
-    using chrono::Saturday;
+    // clang-format off
     using chrono::Sunday;
-    using chrono::Thursday;
+    using chrono::Monday;
     using chrono::Tuesday;
     using chrono::Wednesday;
+    using chrono::Thursday;
+    using chrono::Friday;
+    using chrono::Saturday;
+    // clang-format on
 
     using chrono::day;
     using chrono::days;
