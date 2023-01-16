@@ -482,7 +482,7 @@ basic-unix-test-configurations_clang++_versions_:
 	./configure clang++-11-debug-libc++ --config-tag Unix --compiler-driver clang++-11 --apply-default-debug-flags --stdlib libc++ --only-if-has-compiler
 	./configure clang++-11-release-libstdc++ --config-tag Unix --compiler-driver clang++-11 --apply-default-release-flags --stdlib libstdc++ --only-if-has-compiler --trace2file enable
 	# clang-12
-	./configure clang++-12-debug-libc++ --config-tag Unix --compiler-driver clang++-12 --apply-default-debug-flags --stdlib libc++ --only-if-has-private_compiler_versions_
+	./configure clang++-12-debug-libc++ --config-tag Unix --compiler-driver clang++-12 --apply-default-debug-flags --stdlib libc++ --only-if-has-compiler
 	./configure clang++-12-debug-libstdc++ --config-tag Unix --compiler-driver clang++-12 --apply-default-debug-flags --stdlib libstdc++ --only-if-has-compiler
 	./configure clang++-12-release-libstdc++ --config-tag Unix --compiler-driver clang++-12 --apply-default-release-flags --stdlib libstdc++ --only-if-has-compiler --trace2file enable
 	# clang-13
