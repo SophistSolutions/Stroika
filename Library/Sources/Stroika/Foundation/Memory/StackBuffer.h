@@ -277,6 +277,17 @@ namespace Stroika::Foundation::Memory {
         }
 
     private:
+        constexpr bool HasEnoughCapacity_ (size_t sz) const
+        {
+            // Computing capacity - while simple and quick, is much slower than this check which
+            // is nearly always sufficient. So a slight performance tweak
+            if (sz <= BUF_SIZE) [[likely]] {
+                return true;
+            }
+            return sz <= capacity ();
+        }
+
+    private:
         nonvirtual void reserve_ (size_t nElements);
 
 #if qDebug

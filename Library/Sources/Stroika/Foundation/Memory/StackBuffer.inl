@@ -101,7 +101,7 @@ namespace Stroika::Foundation::Memory {
     {
         if (nElements > fSize_) {
             // Growing
-            if (nElements > capacity ()) {
+            if (not this->HasEnoughCapacity_ (nElements)) [[unlikely]] {
                 reserve (nElements);
             }
             Assert (this->begin () + fSize_ == this->end ()); // docs/clarity
@@ -124,7 +124,7 @@ namespace Stroika::Foundation::Memory {
     inline void StackBuffer<T, BUF_SIZE>::resize_uninitialized (size_t nElements)
         requires (is_trivially_copyable_v<T> and is_trivially_destructible_v<T>)
     {
-        if (nElements > capacity ()) [[unlikely]] {
+        if (not this->HasEnoughCapacity_ (nElements)) [[unlikely]] {
             reserve (nElements);
         }
         fSize_ = nElements;
@@ -254,7 +254,7 @@ namespace Stroika::Foundation::Memory {
     inline void StackBuffer<T, BUF_SIZE>::push_back (Configuration::ArgByValueType<T> e)
     {
         size_t s = size ();
-        if (s < capacity ()) {
+        if (this->HasEnoughCapacity_ (s + 1)) {
 #if qCompilerAndStdLib_uninitialized_copy_n_Warning_Buggy
             Configuration::uninitialized_copy_MSFT_BWA (&e, &e + 1, this->end ());
 #else

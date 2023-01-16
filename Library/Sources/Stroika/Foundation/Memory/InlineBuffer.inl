@@ -173,7 +173,7 @@ namespace Stroika::Foundation::Memory {
     {
         if (nElements > fSize_) {
             // Growing
-            if (nElements > capacity ()) {
+            if (not this->HasEnoughCapacity_ (nElements)) [[unlikely]] {
                 reserve (nElements, true);
             }
             Assert (nElements <= capacity ());
@@ -197,7 +197,7 @@ namespace Stroika::Foundation::Memory {
     inline void InlineBuffer<T, BUF_SIZE>::resize_uninitialized (size_t nElements)
         requires (is_trivially_copyable_v<T> and is_trivially_destructible_v<T>)
     {
-        if (nElements > capacity ()) [[unlikely]] {
+        if (not this->HasEnoughCapacity_ (nElements)) [[unlikely]] {
             reserve (nElements);
         }
         fSize_ = nElements;
@@ -328,7 +328,7 @@ namespace Stroika::Foundation::Memory {
     inline void InlineBuffer<T, BUF_SIZE>::push_back (Configuration::ArgByValueType<T> e)
     {
         size_t s = size ();
-        if (s < capacity ()) {
+        if (this->HasEnoughCapacity_ (s + 1)) {
             uninitialized_copy (&e, &e + 1, this->end ());
             ++this->fSize_;
         }
