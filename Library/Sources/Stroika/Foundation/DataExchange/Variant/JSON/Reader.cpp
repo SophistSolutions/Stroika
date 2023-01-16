@@ -28,7 +28,6 @@ using namespace Stroika::Foundation::Traversal;
 
 using Containers::Concrete::Mapping_stdhashmap;
 
-
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 //#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
 
@@ -158,7 +157,7 @@ namespace {
             if (c == '\"') [[unlikely]] {
                 return result.str ();
             }
-            else if (c == '\\') {
+            else if (c == '\\') [[unlikely]] {
                 // quoted character read...
                 if (in.IsAtEOF ()) [[unlikely]] {
                     static const auto kException_{BadFormatException{"JSON: Unexpected EOF reading string (looking for close quote)"sv}};
@@ -250,13 +249,13 @@ namespace {
         Mapping_stdhashmap<String, VariantValue>::STDHASHMAP<> result; // slight tweak using stl map, and move-construct Stroika map at the end
 
         // accumulate elements, and check for close-array
-        enum LookingFor { 
-            eName,     // this means looking for start of next field/member of the object
+        enum LookingFor {
+            eName, // this means looking for start of next field/member of the object
             eValue,
             eColon,
-            eComma     // when looking for comma could either find it, or } marking end of object
+            eComma // when looking for comma could either find it, or } marking end of object
         };
-        LookingFor lf = eName;
+        LookingFor       lf = eName;
         optional<String> curName;
         while (true) {
             optional<Character> oNextChar = in.Peek ();
@@ -266,18 +265,18 @@ namespace {
             }
             char32_t nextChar = oNextChar->As<char32_t> ();
             if (IsJSONSpace_ (nextChar)) [[likely]] {
-                in.AdvanceOne ();   // skip char
+                in.AdvanceOne (); // skip char
                 continue;
             }
             switch (lf) {
                 case eName: {
                     Assert (curName == nullopt);
                     if (nextChar == '}') {
-                        in.AdvanceOne ();    // finished object
+                        in.AdvanceOne (); // finished object
                         return VariantValue{Mapping_stdhashmap<String, VariantValue>{move (result)}};
                     }
                     else if (nextChar == '\"') [[likely]] {
-                        curName = Reader_String_ (in);  // starting a new data member (with a string)
+                        curName = Reader_String_ (in); // starting a new data member (with a string)
                         lf      = eColon;
                     }
                     else {
@@ -316,7 +315,7 @@ namespace {
                     // dont care what the character is, read a new value
                     result.insert ({Memory::ValueOf (curName), Reader_value_ (in)});
                     curName = nullopt;
-                    lf      = eComma;         // and look for another field/data member         
+                    lf      = eComma; // and look for another field/data member
                 } break;
             }
         }
