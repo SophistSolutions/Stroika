@@ -1174,7 +1174,8 @@ namespace {
             // @todo MAYBE need to copy STDERRR TOO!!!
         }
         catch (...) {
-            if (processInfo.hProcess != INVALID_HANDLE_VALUE) {
+            // sadly and confusingly, CreateProcess() appears to set processInfo.hProcess and processInfo.hThread to nullptr - at least on some failures
+            if (processInfo.hProcess != INVALID_HANDLE_VALUE and processInfo.hProcess != nullptr) {
                 (void)::TerminateProcess (processInfo.hProcess, static_cast<UINT> (-1)); // if it exceeded the timeout - kill it
                 SAFE_HANDLE_CLOSER_ (&processInfo.hProcess);
                 SAFE_HANDLE_CLOSER_ (&processInfo.hThread);
