@@ -243,13 +243,13 @@ namespace Stroika::Foundation::Containers {
     Iterable<T> MultiSet<T, TRAITS>::_IRep::_Elements_Reference_Implementation (const _IRepSharedPtr& rep) const
     {
         Require (rep.get () == this); // allows reference counting but without using enable_shared_from_this (so cheap!)
-        return _ElementsIterableHelper (rep);
+        return _ElementsIterableHelper{rep};
     }
     template <typename T, typename TRAITS>
     Iterable<T> MultiSet<T, TRAITS>::_IRep::_UniqueElements_Reference_Implementation (const _IRepSharedPtr& rep) const
     {
         Require (rep.get () == this); // allows reference counting but without using enable_shared_from_this (so cheap!)
-        return _UniqueElementsHelper (rep);
+        return _UniqueElementsHelper{rep};
     }
 
     /*
