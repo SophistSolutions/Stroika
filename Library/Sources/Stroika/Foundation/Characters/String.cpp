@@ -186,7 +186,7 @@ namespace {
      *  This implements functions that change the string, but don't GROW it,
      *  since we don't know in general we can (thats left to subtypes).
      *
-     *  \note   This class always assure nul-terminated, and so 'capacity' always at least one greater than length.
+     *  \note   This class may assure nul-terminated (kAddNullTerminator_), and so 'capacity' always at least one greater than length.
      *
      *  @todo Explain queer wrapper class cuz protected
      */
@@ -217,7 +217,7 @@ namespace {
 
         public:
             Rep (span<const CHAR_T> t1)
-                : Rep{mkBuf_ (t1)}
+                : inherited{mkBuf_ (t1)}
             {
             }
             Rep ()           = delete;
@@ -226,23 +226,13 @@ namespace {
         public:
             nonvirtual Rep& operator= (const Rep&) = delete;
 
-        protected:
-            /**
-             *  The argument CHAR_T* strings MAY or MAY NOT be nul-terminated
-             */
-            Rep (const tuple<const CHAR_T*, const CHAR_T*, size_t>& strAndCapacity)
-                : inherited{span{get<0> (strAndCapacity), get<1> (strAndCapacity)}}
-                , fCapacity_{get<2> (strAndCapacity)}
-            {
-            }
-
         public:
             ~Rep ()
             {
-                Assert (fCapacity_ == AdjustCapacity_ (this->size () + 1)); // see mkBuf_ (size_t length) - and possible optimize to not store fCapacity
+                size_t cap = capacity ();
                 if constexpr (kUseBlockAllocatedForSmallBufStrings_) {
-                    Assert (fCapacity_ >= kNElts1_);
-                    switch (fCapacity_) {
+                    Assert (cap >= kNElts1_);
+                    switch (cap) {
                         case kNElts1_: {
                             Memory::BlockAllocator<BufferedStringRepBlock_<kNElts1_>>{}.deallocate (reinterpret_cast<BufferedStringRepBlock_<kNElts1_>*> (const_cast<CHAR_T*> (this->_fData.data ())), 1);
                         } break;
@@ -263,10 +253,14 @@ namespace {
             }
 
         private:
-            static pair<CHAR_T*, CHAR_T*> mkBuf_ (size_t length)
+            static span<CHAR_T> mkBuf_ (size_t length)
             {
-                size_t  capacity = AdjustCapacity_ (length + 1); // add one for '\0'
-                CHAR_T* newBuf   = nullptr;
+                size_t capacity = AdjustCapacity_ (length);
+                Assert (length <= capacity);
+                if constexpr (kAddNullTerminator_) {
+                    Assert (length + 1 <= capacity);
+                }
+                CHAR_T* newBuf = nullptr;
                 if constexpr (kUseBlockAllocatedForSmallBufStrings_) {
                     Assert (capacity >= kNElts1_ or capacity >= kNElts2_ or capacity >= kNElts3_);
                 }
@@ -294,17 +288,16 @@ namespace {
                     newBuf = new CHAR_T[capacity];
                 }
                 DISABLE_COMPILER_MSC_WARNING_END (4065)
-                return make_pair (newBuf, newBuf + capacity);
+                return span{newBuf, capacity};
             }
-            static tuple<const CHAR_T*, const CHAR_T*, size_t> mkBuf_ (span<const CHAR_T> t1)
+            static span<CHAR_T> mkBuf_ (span<const CHAR_T> t1)
             {
-                size_t                 len    = t1.size ();
-                pair<CHAR_T*, CHAR_T*> result = mkBuf_ (len);
+                size_t       len = t1.size ();
+                span<CHAR_T> buf = mkBuf_ (len);
                 if (len != 0) {
-                    (void)::memcpy (result.first, t1.data (), len * sizeof (CHAR_T));
+                    (void)::memcpy (buf.data (), t1.data (), len * sizeof (CHAR_T));
                 }
-                result.first[len] = '\0';
-                return make_tuple (result.first, result.first + len, result.second - result.first);
+                return buf.subspan (0, len); // return span of just characters, even if we have extra NUL-byte (outside span)
             }
 
         public:
@@ -317,15 +310,12 @@ namespace {
         public:
             virtual const wchar_t* c_str_peek () const noexcept override
             {
-                // @todo PERFORMANCE TODO
-                // @todo - IF sizeof (CHAR_T) == sizeof (wchar_t) - then DO the old trick
-                // about enlarging allocated size, and NUL-termiating and returnign that here!!
-                return nullptr; // subclasses may do this
-#if 0
-                [[maybe_unused]] size_t len = size ();
-                Ensure (this->_fStart[len] == '\0');
-                return this->_fStart;
-#endif
+                if (kAddNullTerminator_) {
+                    return reinterpret_cast<const wchar_t*> (this->_fData.data ());
+                }
+                else {
+                    return nullptr;
+                }
             }
 
         public:
@@ -335,8 +325,15 @@ namespace {
             }
 
         private:
+            // Stick nul-terminator byte just past the end of the span
+            static constexpr bool kAddNullTerminator_ = sizeof (CHAR_T) == sizeof (wchar_t); // costs nothing to nul-terminate in this case
+
+        private:
             static size_t AdjustCapacity_ (size_t initialCapacity)
             {
+                if (kAddNullTerminator_) {
+                    ++initialCapacity;
+                }
                 if constexpr (kUseBlockAllocatedForSmallBufStrings_) {
                     static_assert (kNElts1_ <= kNElts2_ and kNElts2_ <= kNElts3_);
                     if (initialCapacity <= kNElts1_) {
@@ -349,13 +346,20 @@ namespace {
                         return kNElts3_;
                     }
                 }
-                size_t result = Containers::Support::ReserveTweaks::GetScaledUpCapacity (initialCapacity, sizeof (Character));
+                size_t result = Containers::Support::ReserveTweaks::GetScaledUpCapacity (initialCapacity, sizeof (CHAR_T));
                 Ensure (initialCapacity <= result);
                 return result;
             }
 
         private:
-            // includes INCLUDES nul/EOS char
+            // Compute from the base class span size to avoid storing capacity as data member
+            nonvirtual size_t capacity () const
+            {
+                return AdjustCapacity_ (this->_fData.size ());
+            }
+
+        private:
+            // INCLUDES nul/EOS char if kAddNullTerminator_
             // @todo add constexpr config var here, and play with it: COULD have recomputed this from the length in the DTOR (only place its used) - but that recompute could be moderately expensive, so just
             // save it (perhaps reconsider as CPU faster and memory bandwidth more limiting)
             size_t fCapacity_;
