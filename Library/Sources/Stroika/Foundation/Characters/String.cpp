@@ -262,7 +262,8 @@ namespace {
                 }
                 CHAR_T* newBuf = nullptr;
                 if constexpr (kUseBlockAllocatedForSmallBufStrings_) {
-                    Assert (capacity >= kNElts1_ or capacity >= kNElts2_ or capacity >= kNElts3_);
+                    Assert ((capacity == kNElts1_ or capacity == kNElts2_ or capacity == kNElts3_) or
+                            (capacity > kNElts1_ and capacity > kNElts2_ and capacity > kNElts3_));
                 }
                 DISABLE_COMPILER_MSC_WARNING_START (4065)
                 if constexpr (kUseBlockAllocatedForSmallBufStrings_) {
@@ -280,6 +281,7 @@ namespace {
                             newBuf = reinterpret_cast<CHAR_T*> (Memory::BlockAllocator<BufferedStringRepBlock_<kNElts3_>>{}.allocate (1));
                         } break;
                         default: {
+                            Assert (capacity > kNElts1_ and capacity > kNElts2_ and capacity > kNElts3_);
                             newBuf = new CHAR_T[capacity];
                         } break;
                     }
@@ -293,9 +295,12 @@ namespace {
             static span<CHAR_T> mkBuf_ (span<const CHAR_T> t1)
             {
                 size_t       len = t1.size ();
-                span<CHAR_T> buf = mkBuf_ (len);
-                if (len != 0) {
-                    (void)::memcpy (buf.data (), t1.data (), len * sizeof (CHAR_T));
+                span<CHAR_T> buf = mkBuf_ (len); // note buf span is over capacity, not size
+                Assert (buf.size () >= len);
+                copy (t1.begin (), t1.end (), buf.data ());
+                if constexpr (kAddNullTerminator_) {
+                    Assert (len + 1 <= buf.size ());
+                    *(buf.data () + len) = '\0';
                 }
                 return buf.subspan (0, len); // return span of just characters, even if we have extra NUL-byte (outside span)
             }
@@ -310,7 +315,8 @@ namespace {
         public:
             virtual const wchar_t* c_str_peek () const noexcept override
             {
-                if (kAddNullTerminator_) {
+                if constexpr (kAddNullTerminator_) {
+                    Assert (*(this->_fData.data () + size ()) == '\0'); // dont index into buf cuz we cheat and go one past end on purpose
                     return reinterpret_cast<const wchar_t*> (this->_fData.data ());
                 }
                 else {
@@ -331,18 +337,18 @@ namespace {
         private:
             static size_t AdjustCapacity_ (size_t initialCapacity)
             {
-                if (kAddNullTerminator_) {
+                if constexpr (kAddNullTerminator_) {
                     ++initialCapacity;
                 }
                 if constexpr (kUseBlockAllocatedForSmallBufStrings_) {
                     static_assert (kNElts1_ <= kNElts2_ and kNElts2_ <= kNElts3_);
-                    if (initialCapacity <= kNElts1_) {
+                    if (initialCapacity <= kNElts1_) [[likely]] {
                         return kNElts1_;
                     }
-                    else if (initialCapacity <= kNElts2_) {
+                    else if (initialCapacity <= kNElts2_) [[likely]] {
                         return kNElts2_;
                     }
-                    else if (initialCapacity <= kNElts3_) {
+                    else if (initialCapacity <= kNElts3_) [[likely]] {
                         return kNElts3_;
                     }
                 }
@@ -357,12 +363,6 @@ namespace {
             {
                 return AdjustCapacity_ (this->_fData.size ());
             }
-
-        private:
-            // INCLUDES nul/EOS char if kAddNullTerminator_
-            // @todo add constexpr config var here, and play with it: COULD have recomputed this from the length in the DTOR (only place its used) - but that recompute could be moderately expensive, so just
-            // save it (perhaps reconsider as CPU faster and memory bandwidth more limiting)
-            size_t fCapacity_;
         };
     };
 
