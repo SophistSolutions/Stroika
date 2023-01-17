@@ -115,7 +115,7 @@ namespace Stroika::Foundation::Characters {
          * See https://en.wikipedia.org/wiki/Universal_Character_Set_characters#Surrogates
          * 
          * A surrogate pair denotes the code point
-         *      0x10000 + (H - 0xD800) × 0x400 + (L - 0xDC00)
+         *      0x10000 + (H - 0xD800) x 0x400 + (L - 0xDC00)
          */
         constexpr int      halfShift = 10; /* used for shifting by 10 bits */
         constexpr char32_t halfBase  = 0x0010000UL;
@@ -208,11 +208,13 @@ namespace Stroika::Foundation::Characters {
         }
         DISABLE_COMPILER_MSC_WARNING_START (5063)
         DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wconstant-evaluated\"");
+        DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wtautological-compare\"");
         if constexpr (not std::is_constant_evaluated ()) {
             Ensure (result == !!iswspace (static_cast<wchar_t> (fCharacterCode_)));
         }
-        DISABLE_COMPILER_MSC_WARNING_END (5063)
+        DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wtautological-compare\"");
         DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wconstant-evaluated\"");
+        DISABLE_COMPILER_MSC_WARNING_END (5063)
         return result;
     }
     inline bool Character::IsDigit () const noexcept
