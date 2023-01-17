@@ -178,7 +178,7 @@ namespace Stroika::Foundation::Memory {
          *
          *  @see reserve
          */
-        nonvirtual size_t capacity () const noexcept;
+        constexpr size_t capacity () const noexcept;
 
     public:
         /**
@@ -295,7 +295,7 @@ namespace Stroika::Foundation::Memory {
         // note must be inline declared here since used in type definition below
         static constexpr size_t SizeInBytes_ (size_t nElts) noexcept
         {
-            return sizeof (T[1]) * nElts; // not sure why return sizeof (T[nElts]); fails on vs2k17?
+            return sizeof (T[1]) * nElts; // not sure why return sizeof (T[nElts]); fails on vs2k21?
         }
 
     private:
@@ -336,7 +336,7 @@ namespace Stroika::Foundation::Memory {
         }
 
     private:
-        nonvirtual bool UsingInlinePreallocatedBuffer_ () const noexcept;
+        constexpr bool UsingInlinePreallocatedBuffer_ () const noexcept;
 
     public:
         nonvirtual void Invariant () const noexcept;
@@ -348,8 +348,8 @@ namespace Stroika::Foundation::Memory {
 #endif
 
     private:
-        nonvirtual T*       BufferAsT_ () noexcept;
-        nonvirtual const T* BufferAsT_ () const noexcept;
+        nonvirtual T*      BufferAsT_ () noexcept;
+        constexpr const T* BufferAsT_ () const noexcept;
 
     private:
         static void DestroyElts_ (T* start, T* end) noexcept;

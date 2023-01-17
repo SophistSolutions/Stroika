@@ -48,7 +48,6 @@ namespace Stroika::Foundation::Memory {
         requires (is_trivially_copyable_v<T>)
     : StackBuffer{}
     {
-        static_assert (is_trivially_copyable_v<T>);
         resize_uninitialized (nElements);
         Invariant ();
     }
@@ -162,7 +161,7 @@ namespace Stroika::Foundation::Memory {
         return fLiveData_;
     }
     template <typename T, size_t BUF_SIZE>
-    inline size_t StackBuffer<T, BUF_SIZE>::capacity () const noexcept
+    constexpr size_t StackBuffer<T, BUF_SIZE>::capacity () const noexcept
     {
         return UsingInlinePreallocatedBuffer_ () ? BUF_SIZE : fCapacityOfFreeStoreAllocation_; // @see class Design Note
     }
@@ -254,7 +253,7 @@ namespace Stroika::Foundation::Memory {
     inline void StackBuffer<T, BUF_SIZE>::push_back (Configuration::ArgByValueType<T> e)
     {
         size_t s = size ();
-        if (this->HasEnoughCapacity_ (s + 1)) {
+        if (this->HasEnoughCapacity_ (s + 1)) [[likely]] {
 #if qCompilerAndStdLib_uninitialized_copy_n_Warning_Buggy
             Configuration::uninitialized_copy_MSFT_BWA (&e, &e + 1, this->end ());
 #else
@@ -316,7 +315,7 @@ namespace Stroika::Foundation::Memory {
         return reinterpret_cast<T*> (&fInlinePreallocatedBuffer_[0]);
     }
     template <typename T, size_t BUF_SIZE>
-    inline const T* StackBuffer<T, BUF_SIZE>::BufferAsT_ () const noexcept
+    constexpr const T* StackBuffer<T, BUF_SIZE>::BufferAsT_ () const noexcept
     {
         return reinterpret_cast<const T*> (&fInlinePreallocatedBuffer_[0]);
     }
@@ -354,7 +353,7 @@ namespace Stroika::Foundation::Memory {
         }
     }
     template <typename T, size_t BUF_SIZE>
-    inline bool StackBuffer<T, BUF_SIZE>::UsingInlinePreallocatedBuffer_ () const noexcept
+    constexpr bool StackBuffer<T, BUF_SIZE>::UsingInlinePreallocatedBuffer_ () const noexcept
     {
         return fLiveData_ == BufferAsT_ ();
     }
