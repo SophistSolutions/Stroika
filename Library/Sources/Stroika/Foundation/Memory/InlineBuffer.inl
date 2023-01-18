@@ -254,7 +254,7 @@ namespace Stroika::Foundation::Memory {
                 useNewCapacity = BUF_SIZE;
             }
             else {
-                useNewCapacity = Foundation::Containers::Support::ReserveTweaks::GetScaledUpCapacity (useNewCapacity, sizeof (T));
+                useNewCapacity = Foundation::Containers::Support::ReserveTweaks::GetScaledUpCapacity (useNewCapacity, sizeof (T), BUF_SIZE);
             }
         }
         Invariant ();

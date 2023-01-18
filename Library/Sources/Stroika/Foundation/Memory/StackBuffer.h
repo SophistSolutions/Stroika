@@ -25,6 +25,17 @@ namespace Stroika::Foundation::Memory {
     static constexpr size_t kStackBuffer_TargetInlineByteBufferSize = qPlatform_Windows ? 2 * 1024 : 4 * 1024;
 
     /**
+     */
+    template <typename T = byte>
+    constexpr size_t StackBuffer_DefaultInlineSize ()
+    {
+        // note must be defined here, not in inl file, due to use as default template argument
+        auto r = ((kStackBuffer_TargetInlineByteBufferSize / sizeof (T)) == 0 ? 1 : (kStackBuffer_TargetInlineByteBufferSize / sizeof (T)));
+        Ensure (r >= 1);
+        return r;
+    }
+
+    /**
      *  \brief Store variable sized array on the stack (\see also InlineBuffer<T,BUF_SIZE>)
      * 
      *  Typically, StackBuffer<> combines the performance of using a stack buffer (inline array on stack) to store arrays with
@@ -90,9 +101,7 @@ namespace Stroika::Foundation::Memory {
      *          to BUF_SIZE
      *
      */
-    template <
-        typename T      = std::byte,
-        size_t BUF_SIZE = ((kStackBuffer_TargetInlineByteBufferSize / sizeof (T)) == 0 ? 1 : (kStackBuffer_TargetInlineByteBufferSize / sizeof (T)))>
+    template <typename T = std::byte, size_t BUF_SIZE = StackBuffer_DefaultInlineSize<T> ()>
     class StackBuffer {
     public:
         /**

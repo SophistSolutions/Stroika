@@ -38,7 +38,7 @@ namespace Stroika::Foundation::Streams {
     inline auto StreamReader<ELEMENT_TYPE>::CacheBlock_::Peek1FromCache (SeekOffsetType actualOffset) -> optional<ElementType>
     {
         size_t cacheWindowSize = fCacheWindowBuf_.size ();
-        if (fCacheWindowBufStart_ <= actualOffset and actualOffset < fCacheWindowBufStart_ + cacheWindowSize) {
+        if (fCacheWindowBufStart_ <= actualOffset and actualOffset < fCacheWindowBufStart_ + cacheWindowSize) [[likely]] {
             return fCacheWindowBuf_[static_cast<size_t> (actualOffset - fCacheWindowBufStart_)];
         }
         return nullopt;
@@ -48,7 +48,7 @@ namespace Stroika::Foundation::Streams {
     {
         RequireNotNull (actualOffset);
         auto result = Peek1FromCache (*actualOffset);
-        if (result) {
+        if (result) [[likely]] {
             ++(*actualOffset);
         }
         return result;
@@ -58,14 +58,14 @@ namespace Stroika::Foundation::Streams {
     {
         using namespace Traversal;
         size_t cacheWindowSize = fCacheWindowBuf_.size ();
-        if (cacheWindowSize != 0) {
+        if (cacheWindowSize != 0) [[likely]] {
             Range<SignedSeekOffsetType> cacheWindow{
                 static_cast<SignedSeekOffsetType> (fCacheWindowBufStart_),
                 static_cast<SignedSeekOffsetType> (fCacheWindowBufStart_ + cacheWindowSize),
                 Openness::eClosed,
                 Openness::eOpen,
             };
-            if (cacheWindow.Contains (*actualOffset)) {
+            if (cacheWindow.Contains (*actualOffset)) [[likely]] {
                 // then we can return at least some data from the cache - do that now
                 size_t nToRead = intoEnd - intoStart;
                 if (nToRead != 1) {
@@ -129,7 +129,7 @@ namespace Stroika::Foundation::Streams {
     template <typename ELEMENT_TYPE>
     inline auto StreamReader<ELEMENT_TYPE>::Read () -> optional<ElementType>
     {
-        if (auto p = Read1FromCache_ ()) { // usually will get hit - else default to standard algorithm
+        if (auto p = Read1FromCache_ ()) [[likely]] { // usually will get hit - else default to standard algorithm
             return p;
         }
         ElementType b; // intentionally not initialized, since will be filled in by Read_Slow_Case_ or unused
@@ -148,7 +148,7 @@ namespace Stroika::Foundation::Streams {
     template <typename ELEMENT_TYPE>
     inline auto StreamReader<ELEMENT_TYPE>::Peek () -> optional<ElementType>
     {
-        if (auto p = Peek1FromCache_ ()) { // usually will get hit - else default to standard algorithm
+        if (auto p = Peek1FromCache_ ()) [[likely]] { // usually will get hit - else default to standard algorithm
             return p;
         }
         SeekOffsetType saved  = fOffset_;
@@ -213,7 +213,7 @@ namespace Stroika::Foundation::Streams {
     template <typename ELEMENT_TYPE>
     inline bool StreamReader<ELEMENT_TYPE>::IsAtEOF ()
     {
-        if (fOffset_ < fFarthestReadInUnderlyingStream_) {
+        if (fOffset_ < fFarthestReadInUnderlyingStream_) [[likely]] {
             return false; // not logically needed, but optimization
         }
         return not Peek ().has_value ();
@@ -223,7 +223,7 @@ namespace Stroika::Foundation::Streams {
     {
         // first try last filled - generally will be the right one
         for (size_t i = fCacheBlockLastFilled_; i < Memory::NEltsOf (fCacheBlocks_); ++i) {
-            if (auto r = fCacheBlocks_[i].Peek1FromCache (this->fOffset_)) {
+            if (auto r = fCacheBlocks_[i].Peek1FromCache (this->fOffset_)) [[likely]] {
                 return r;
             }
         }
@@ -235,11 +235,11 @@ namespace Stroika::Foundation::Streams {
         return nullopt;
     }
     template <typename ELEMENT_TYPE>
-    auto StreamReader<ELEMENT_TYPE>::Read1FromCache_ () -> optional<ElementType>
+    inline auto StreamReader<ELEMENT_TYPE>::Read1FromCache_ () -> optional<ElementType>
     {
         // first try last filled - generally will be the right one
         for (size_t i = fCacheBlockLastFilled_; i < Memory::NEltsOf (fCacheBlocks_); ++i) {
-            if (auto r = fCacheBlocks_[i].Read1FromCache (&this->fOffset_)) {
+            if (auto r = fCacheBlocks_[i].Read1FromCache (&this->fOffset_)) [[likely]] {
                 return r;
             }
         }

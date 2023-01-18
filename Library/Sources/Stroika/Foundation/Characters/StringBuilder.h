@@ -257,7 +257,11 @@ namespace Stroika::Foundation::Characters {
         [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fAssertExternallySyncrhonized_;
 
     private:
-        mutable Memory::InlineBuffer<char32_t> fData_{0}; // not nul-terminated
+        // Super unclear what size to use. Default is 1024 characters.
+        // Using smaller may provide better processor cache friendliness
+        // and frequently its enuf. And when not, could be much more
+        // @todo maybe expose this parameter in StringBuilder TEMPLATE
+        mutable Memory::InlineBuffer<char32_t, 128> fData_{0}; // not nul-terminated
     };
 
 }

@@ -104,7 +104,11 @@ namespace Stroika::Foundation::Streams {
         // may want to tune these; but I did a little tuning on Windows --LGP 2022-12-17
         static constexpr size_t kDefaultReadBufferSize_ = 8 * 1024;
         static constexpr size_t kMaxBufferedChunkSize_  = 64 * 1024;
-        static constexpr size_t kCountPingPingBufs_     = 2;
+        // Note the reason for kCountPingPingBufs_ == 2: generally we get a hit with one which is best. You
+        // typically read through the buffer one element after another. But its not rare to do put-backs of an
+        // element or two. And if you do that - at the edges - you can get degenerate behavior - keep filling cache
+        // going back one and forward one. The PingPong/2 value here prevents that degenerate case.
+        static constexpr size_t kCountPingPingBufs_ = 2;
 
     private:
         // Hack to allow use of inline buffer and uninitialized array even thoug Character class not 'trivial', it probably should be (or I'm not checking the right trait)

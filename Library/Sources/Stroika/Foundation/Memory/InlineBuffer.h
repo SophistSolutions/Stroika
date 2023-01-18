@@ -23,6 +23,17 @@ namespace Stroika::Foundation::Memory {
     using std::byte;
 
     /**
+     */
+    template <typename T = byte>
+    constexpr size_t InlineBuffer_DefaultInlineSize ()
+    {
+        // note must be defined here, not in inl file, due to use as default template argument
+        auto r = ((4096 / sizeof (T)) == 0 ? 1 : (4096 / sizeof (T)));
+        Ensure (r >= 1);
+        return r;
+    }
+
+    /**
      *  Typically, InlineBuffer<> combines the performance of using a pre-allocated fixed-sized buffer to store arrays with
      *  the safety and flexability of using the free store (malloc).
      *
@@ -72,7 +83,7 @@ namespace Stroika::Foundation::Memory {
      *          to BUF_SIZE
      *
      */
-    template <typename T = std::byte, size_t BUF_SIZE = ((4096 / sizeof (T)) == 0 ? 1 : (4096 / sizeof (T)))>
+    template <typename T = std::byte, size_t BUF_SIZE = InlineBuffer_DefaultInlineSize<T> ()>
     class InlineBuffer {
     public:
         /**
