@@ -316,7 +316,7 @@ namespace {
             virtual const wchar_t* c_str_peek () const noexcept override
             {
                 if constexpr (kAddNullTerminator_) {
-                    Assert (*(this->_fData.data () + size ()) == '\0'); // dont index into buf cuz we cheat and go one past end on purpose
+                    Assert (*(this->_fData.data () + this->size ()) == '\0'); // dont index into buf cuz we cheat and go one past end on purpose
                     return reinterpret_cast<const wchar_t*> (this->_fData.data ());
                 }
                 else {
@@ -361,6 +361,78 @@ namespace {
     };
 
     /**
+     *  This String rep is like BufferedString_, except that the storage is inline in one struct/allocation
+     *  for better memory allocation performance, and more importantly, better locality of data (more cpu cache friendly)
+     */
+    struct FixedCapacityInlineStorageString_ : StringRepHelperAllFitInSize_ {
+        template <Character_IsUnicodeCodePointOrPlainChar CHAR_T, size_t CAPACITY>
+        struct Rep : public StringRepHelperAllFitInSize_::Rep<CHAR_T>, public Memory::UseBlockAllocationIfAppropriate<Rep<CHAR_T, CAPACITY>> {
+        private:
+            using inherited = StringRepHelperAllFitInSize_::Rep<CHAR_T>;
+
+        private:
+            bool IncludesNullTerminator_ () const
+            {
+                if constexpr (sizeof (CHAR_T) == sizeof (wchar_t)) {
+                    return this->_fData.size () < CAPACITY; // else no room
+                }
+                else {
+                    return false;
+                }
+            }
+            span<const CHAR_T> ctor_helper_ (span<const CHAR_T> t1)
+            {
+                // technically this is C++ violation, cuz called before fBuf_ constructed, but nothing done in that
+                // construction, so SB OK -- LGP 2023-01-19
+                // and done this way cuz base class CTOR assumes data its given (assert checks) is valid data (maybe ascii)
+                Require (t1.size () <= CAPACITY);
+                copy (t1.begin (), t1.end (), fBuf_);
+                if (IncludesNullTerminator_ ()) {
+                    Assert (t1.size () + 1 <= CAPACITY);
+                    fBuf_[t1.size ()] = '\0';
+                }
+                return span<const CHAR_T>{fBuf_, t1.size ()};
+            }
+
+        private:
+            CHAR_T fBuf_[CAPACITY]; // important uninitialized due to ctor_helper_ usage...
+
+        public:
+            Rep (span<const CHAR_T> t1)
+                : inherited{ctor_helper_ (t1)}
+            {
+            }
+            Rep ()           = delete;
+            Rep (const Rep&) = delete;
+
+        public:
+            nonvirtual Rep& operator= (const Rep&) = delete;
+
+        public:
+            ~Rep () = default;
+
+        public:
+            virtual _IterableRepSharedPtr Clone () const override
+            {
+                AssertNotReached (); // Since String reps now immutable, this should never be called
+                return nullptr;
+            }
+
+        public:
+            virtual const wchar_t* c_str_peek () const noexcept override
+            {
+                if (IncludesNullTerminator_ ()) {
+                    Assert (*(this->_fData.data () + this->size ()) == '\0'); // dont index into buf cuz we cheat and go one past end on purpose
+                    return reinterpret_cast<const wchar_t*> (this->_fData.data ());
+                }
+                else {
+                    return nullptr;
+                }
+            }
+        };
+    };
+
+    /**
      *  For static full app lifetime string constants...
      */
     struct StringConstant_ : public StringRepHelperAllFitInSize_ {
@@ -379,9 +451,9 @@ namespace {
 #if qDebug
                     const CHAR_T* start = s.data ();
                     const CHAR_T* end   = start + s.size ();
-#endif
                     // NO - we allow embedded nuls, but require NUL-termination - so this is wrong - Require (start + ::wcslen (start) == end);
                     Require (*end == '\0' and start + ::wcslen (start) <= end);
+#endif
                 }
             }
             virtual _IterableRepSharedPtr Clone () const override
@@ -398,8 +470,8 @@ namespace {
                     const wchar_t* start = reinterpret_cast<const wchar_t*> (this->_fData.data ());
 #if qDebug
                     const wchar_t* end = start + this->_fData.size ();
-#endif
                     Assert (*end == '\0' and start + ::wcslen (start) <= end); // less or equal because you can call c_str() even through the string has embedded nuls
+#endif
                     return start;
                 }
                 else {
@@ -624,11 +696,35 @@ String::_SharedPtrIRep String::mkEmpty_ ()
     return s_;
 }
 
+template <Character_Compatible CHAR_T>
+inline auto String::mk_nocheck_justPickBufRep_ (span<const CHAR_T> s) -> _SharedPtrIRep
+{
+    constexpr size_t kBaseOfFixedBufSize_ = sizeof (StringRepHelperAllFitInSize_::Rep<CHAR_T>);
+    static_assert (kBaseOfFixedBufSize_ < 64);      // this code below assumes, so must re-tune if this ever fails
+
+    static constexpr size_t kNElts1_ = (64  - kBaseOfFixedBufSize_)/ sizeof (CHAR_T);       // 24:  on visual studio/x64 for char, as of 2023-01-19
+    static constexpr size_t kNElts2_ = (128 - kBaseOfFixedBufSize_) / sizeof (CHAR_T);      // so 88 for char in that case
+
+    static_assert (kNElts1_ >= 6);          // crazy otherwise
+    static_assert (kNElts2_ >= kNElts1_);   // ""
+
+    static_assert (sizeof (FixedCapacityInlineStorageString_::Rep<CHAR_T, kNElts1_>) == 64);     // not quite guaranteed but close
+    static_assert (sizeof (FixedCapacityInlineStorageString_::Rep<CHAR_T, kNElts2_>) == 128);    // ""
+    size_t sz = s.size ();
+    if (sz <= kNElts1_) {
+        return MakeSmartPtr<FixedCapacityInlineStorageString_::Rep<CHAR_T, kNElts1_>> (s);
+    }
+    else if (sz <= kNElts2_) {
+        return MakeSmartPtr<FixedCapacityInlineStorageString_::Rep<CHAR_T, kNElts2_>> (s);
+    }
+    return MakeSmartPtr<BufferedString_::Rep<CHAR_T>> (s);
+}
+
 template <>
 auto String::mk_ (span<const char> s) -> _SharedPtrIRep
 {
     Character::CheckASCII (s);
-    return MakeSmartPtr<BufferedString_::Rep<char>> (s);
+    return mk_nocheck_justPickBufRep_ (s);
 }
 
 template <>
@@ -640,21 +736,21 @@ auto String::mk_ (span<const char16_t> s) -> _SharedPtrIRep
         Memory::StackBuffer<char> buf{Memory::eUninitialized, s.size ()};
 #if qCompilerAndStdLib_spanOfContainer_Buggy
         Private_::CopyAsASCIICharacters_ (s, span{buf.data (), buf.size ()});
-        return MakeSmartPtr<BufferedString_::Rep<char>> (span<const char>{buf.data (), buf.size ()});
+        return mk_nocheck_justPickBufRep_ (span<const char>{buf.data (), buf.size ()});
 #else
         Private_::CopyAsASCIICharacters_ (s, span{buf});
-        return MakeSmartPtr<BufferedString_::Rep<char>> (span<const char>{buf}); // MakeSmartPtr not mk_ to avoid Character::CheckASCII
+        return mk_nocheck_justPickBufRep_ (span<const char>{buf}); // MakeSmartPtr not mk_ to avoid Character::CheckASCII
 #endif
     }
     if (UTFConverter::AllFitsInTwoByteEncoding (s)) {
-        return MakeSmartPtr<BufferedString_::Rep<char16_t>> (s);
+        return mk_nocheck_justPickBufRep_ (s);
     }
     else {
         Memory::StackBuffer<char32_t> wideUnicodeBuf{Memory::eUninitialized, UTFConverter::ComputeTargetBufferSize<char32_t> (s)};
 #if qCompilerAndStdLib_spanOfContainer_Buggy
-        return MakeSmartPtr<BufferedString_::Rep<char32_t>> (UTFConverter::kThe.ConvertSpan (s, span{wideUnicodeBuf.data (), wideUnicodeBuf.size ()}));
+        return mk_nocheck_justPickBufRep_ (Memory::ConstSpan (UTFConverter::kThe.ConvertSpan (s, span{wideUnicodeBuf.data (), wideUnicodeBuf.size ()})));
 #else
-        return MakeSmartPtr<BufferedString_::Rep<char32_t>> (UTFConverter::kThe.ConvertSpan (s, span{wideUnicodeBuf}));
+        return mk_nocheck_justPickBufRep_ (Memory::ConstSpan (UTFConverter::kThe.ConvertSpan (s, span{wideUnicodeBuf})));
 #endif
     }
 }
@@ -668,13 +764,13 @@ auto String::mk_ (span<const char32_t> s) -> _SharedPtrIRep
         Memory::StackBuffer<char> buf{Memory::eUninitialized, s.size ()};
 #if qCompilerAndStdLib_spanOfContainer_Buggy
         Private_::CopyAsASCIICharacters_ (s, span{buf.data (), buf.size ()});
-        return MakeSmartPtr<BufferedString_::Rep<char>> (span<const char>{buf.data (), buf.size ()});
+        return mk_nocheck_justPickBufRep_ (span<const char>{buf.data (), buf.size ()});
 #else
         Private_::CopyAsASCIICharacters_ (s, span{buf});
-        return MakeSmartPtr<BufferedString_::Rep<char>> (span<const char>{buf}); // MakeSmartPtr not mk_ to avoid Character::CheckASCII
+        return mk_nocheck_justPickBufRep_ (span<const char>{buf}); // MakeSmartPtr not mk_ to avoid Character::CheckASCII
 #endif
     }
-    return MakeSmartPtr<BufferedString_::Rep<char32_t>> (s);
+    return mk_nocheck_justPickBufRep_ (s);
 }
 
 template <>
@@ -693,9 +789,9 @@ auto String::mk_ (basic_string<char16_t>&& s) -> _SharedPtrIRep
     // copy the data if any surrogates
     Memory::StackBuffer<char32_t> wideUnicodeBuf{Memory::eUninitialized, UTFConverter::ComputeTargetBufferSize<char32_t> (span{s.data (), s.size ()})};
 #if qCompilerAndStdLib_spanOfContainer_Buggy
-    return MakeSmartPtr<BufferedString_::Rep<char32_t>> (UTFConverter::kThe.ConvertSpan (span{s.data (), s.size ()}, span{wideUnicodeBuf.data (), wideUnicodeBuf.size ()}));
+    return mk_nocheck_justPickBufRep_ (Memory::ConstSpan (UTFConverter::kThe.ConvertSpan (span{s.data (), s.size ()}, span{wideUnicodeBuf.data (), wideUnicodeBuf.size ()})));
 #else
-    return MakeSmartPtr<BufferedString_::Rep<char32_t>> (UTFConverter::kThe.ConvertSpan (span{s.data (), s.size ()}, span{wideUnicodeBuf}));
+    return mk_nocheck_justPickBufRep_ (Memory::ConstSpan (UTFConverter::kThe.ConvertSpan (span{s.data (), s.size ()}, span{wideUnicodeBuf})));
 #endif
 }
 
@@ -715,9 +811,9 @@ auto String::mk_ (basic_string<wchar_t>&& s) -> _SharedPtrIRep
         // copy the data if any surrogates
         Memory::StackBuffer<char32_t> wideUnicodeBuf{Memory::eUninitialized, UTFConverter::ComputeTargetBufferSize<char32_t> (span{s.data (), s.size ()})};
 #if qCompilerAndStdLib_spanOfContainer_Buggy
-        return MakeSmartPtr<BufferedString_::Rep<char32_t>> (UTFConverter::kThe.ConvertSpan (span{s.data (), s.size ()}, span{wideUnicodeBuf.data (), wideUnicodeBuf.size ()}));
+        return mk_nocheck_justPickBufRep_ (Memory::ConstSpan (UTFConverter::kThe.ConvertSpan (span{s.data (), s.size ()}, span{wideUnicodeBuf.data (), wideUnicodeBuf.size ()})));
 #else
-        return MakeSmartPtr<BufferedString_::Rep<char32_t>> (UTFConverter::kThe.ConvertSpan (span{s.data (), s.size ()}, span{wideUnicodeBuf}));
+        return mk_nocheck_justPickBufRep_ (Memory::ConstSpan (UTFConverter::kThe.ConvertSpan (span{s.data (), s.size ()}, span{wideUnicodeBuf})));
 #endif
     }
     else {
