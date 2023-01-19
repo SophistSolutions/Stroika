@@ -700,22 +700,35 @@ template <Character_Compatible CHAR_T>
 inline auto String::mk_nocheck_justPickBufRep_ (span<const CHAR_T> s) -> _SharedPtrIRep
 {
     constexpr size_t kBaseOfFixedBufSize_ = sizeof (StringRepHelperAllFitInSize_::Rep<CHAR_T>);
-    static_assert (kBaseOfFixedBufSize_ < 64);      // this code below assumes, so must re-tune if this ever fails
+    static_assert (kBaseOfFixedBufSize_ < 64); // this code below assumes, so must re-tune if this ever fails
 
-    static constexpr size_t kNElts1_ = (64  - kBaseOfFixedBufSize_)/ sizeof (CHAR_T);       // 24:  on visual studio/x64 for char, as of 2023-01-19
-    static constexpr size_t kNElts2_ = (128 - kBaseOfFixedBufSize_) / sizeof (CHAR_T);      // so 88 for char in that case
+    static constexpr size_t kNElts1_ = (64 - kBaseOfFixedBufSize_) / sizeof (CHAR_T);
+    static constexpr size_t kNElts2_ = (96 - kBaseOfFixedBufSize_) / sizeof (CHAR_T);
+    static constexpr size_t kNElts3_ = (128 - kBaseOfFixedBufSize_) / sizeof (CHAR_T);
 
-    static_assert (kNElts1_ >= 6);          // crazy otherwise
-    static_assert (kNElts2_ >= kNElts1_);   // ""
+    if constexpr (qPlatform_Windows and sizeof (CHAR_T) == 1) {
+        // These checks are NOT important, just for documentation/reference
+        static_assert (kNElts1_ == 24);
+        static_assert (kNElts2_ == 56);
+        static_assert (kNElts2_ == 88);
+    }
 
-    static_assert (sizeof (FixedCapacityInlineStorageString_::Rep<CHAR_T, kNElts1_>) == 64);     // not quite guaranteed but close
-    static_assert (sizeof (FixedCapacityInlineStorageString_::Rep<CHAR_T, kNElts2_>) == 128);    // ""
+    static_assert (kNElts1_ >= 6);        // crazy otherwise
+    static_assert (kNElts2_ >= kNElts1_); // ""
+    static_assert (kNElts3_ >= kNElts2_); // ""
+
+    static_assert (sizeof (FixedCapacityInlineStorageString_::Rep<CHAR_T, kNElts1_>) == 64);  // not quite guaranteed but close
+    static_assert (sizeof (FixedCapacityInlineStorageString_::Rep<CHAR_T, kNElts2_>) == 96);  // ""
+    static_assert (sizeof (FixedCapacityInlineStorageString_::Rep<CHAR_T, kNElts3_>) == 128); // ""
     size_t sz = s.size ();
     if (sz <= kNElts1_) {
         return MakeSmartPtr<FixedCapacityInlineStorageString_::Rep<CHAR_T, kNElts1_>> (s);
     }
     else if (sz <= kNElts2_) {
         return MakeSmartPtr<FixedCapacityInlineStorageString_::Rep<CHAR_T, kNElts2_>> (s);
+    }
+    else if (sz <= kNElts3_) {
+        return MakeSmartPtr<FixedCapacityInlineStorageString_::Rep<CHAR_T, kNElts3_>> (s);
     }
     return MakeSmartPtr<BufferedString_::Rep<CHAR_T>> (s);
 }
