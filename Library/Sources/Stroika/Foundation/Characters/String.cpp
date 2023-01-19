@@ -79,6 +79,9 @@ namespace {
                     Require (UTFConverter::AllFitsInTwoByteEncoding (s));
                 }
             }
+
+        public:
+            // String::_IRep OVERRIDES
             virtual Character GetAt (size_t index) const noexcept override
             {
                 Require (index < size ());
@@ -111,6 +114,11 @@ namespace {
 
             // Overrides for Iterable<Character>
         public:
+            virtual _IterableRepSharedPtr Clone () const override
+            {
+                AssertNotReached (); // Since String reps now immutable, this should never be called
+                return nullptr;
+            }
             virtual Traversal::Iterator<value_type> MakeIterator () const override
             {
                 struct MyIterRep_ final : Iterator<Character>::IRep, public Memory::UseBlockAllocationIfAppropriate<MyIterRep_> {
@@ -306,13 +314,7 @@ namespace {
             }
 
         public:
-            virtual _IterableRepSharedPtr Clone () const override
-            {
-                AssertNotReached (); // Since String reps now immutable, this should never be called
-                return nullptr;
-            }
-
-        public:
+            // String::_IRep OVERRIDES
             virtual const wchar_t* c_str_peek () const noexcept override
             {
                 if constexpr (kAddNullTerminator_) {
@@ -412,13 +414,7 @@ namespace {
             ~Rep () = default;
 
         public:
-            virtual _IterableRepSharedPtr Clone () const override
-            {
-                AssertNotReached (); // Since String reps now immutable, this should never be called
-                return nullptr;
-            }
-
-        public:
+            // String::_IRep OVERRIDES
             virtual const wchar_t* c_str_peek () const noexcept override
             {
                 if (IncludesNullTerminator_ ()) {
@@ -456,11 +452,9 @@ namespace {
 #endif
                 }
             }
-            virtual _IterableRepSharedPtr Clone () const override
-            {
-                AssertNotReached (); // Since String reps now immutable, this should never be called
-                return nullptr;
-            }
+
+        public:
+            // String::_IRep OVERRIDES
             virtual const wchar_t* c_str_peek () const noexcept override
             {
                 // if used for appropriately sized character (equiv to wchar_t) - then use that nul-terminated string
@@ -499,11 +493,9 @@ namespace {
             {
                 this->_fData = span{fMovedData_.data (), fMovedData_.size ()}; // must grab after move
             }
-            virtual _IterableRepSharedPtr Clone () const override
-            {
-                AssertNotReached (); // Since String reps now immutable, this should never be called
-                return nullptr;
-            }
+
+        public:
+            // String::_IRep OVERRIDES
             virtual const wchar_t* c_str_peek () const noexcept override
             {
                 if constexpr (is_same_v<CHAR_T, wchar_t>) {
@@ -551,11 +543,7 @@ namespace {
 
             // Iterable<T>::_IRep overrides - delegate
         public:
-            virtual _IterableRepSharedPtr Clone () const override
-            {
-                AssertNotReached (); // Since String reps now immutable, this should never be called
-                return nullptr;
-            }
+            virtual _IterableRepSharedPtr Clone () const override { AssertNotReached ();   return nullptr;}
             virtual Iterator<value_type> MakeIterator () const override { return fUnderlyingRep_->MakeIterator (); }
             virtual size_t               size () const override { return fUnderlyingRep_->size (); }
             virtual bool                 empty () const override { return fUnderlyingRep_->empty (); }
@@ -710,7 +698,7 @@ inline auto String::mk_nocheck_justPickBufRep_ (span<const CHAR_T> s) -> _Shared
         // These checks are NOT important, just for documentation/reference
         static_assert (kNElts1_ == 24);
         static_assert (kNElts2_ == 56);
-        static_assert (kNElts2_ == 88);
+        static_assert (kNElts3_ == 88);
     }
 
     static_assert (kNElts1_ >= 6);        // crazy otherwise
