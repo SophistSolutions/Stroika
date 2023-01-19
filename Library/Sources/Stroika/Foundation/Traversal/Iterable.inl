@@ -738,7 +738,11 @@ namespace Stroika::Foundation::Traversal {
     {
         // @todo https://stroika.atlassian.net/browse/STK-972 - optimize case where 'iterable' is already sortable
         vector<T> tmp{begin (), end ()}; // Somewhat simplistic implementation (always over copy and index so no need to worry about iterator refereincing inside container)
+#if __cpp_lib_execution >= 201603L
+        stable_sort (std::execution::par, tmp.begin (), tmp.end (), inorderComparer);
+#else
         stable_sort (tmp.begin (), tmp.end (), inorderComparer);
+#endif
         size_t                   idx{0};
         function<optional<T> ()> getNext = [tmp, idx] () mutable -> optional<T> {
             if (idx < tmp.size ()) {
