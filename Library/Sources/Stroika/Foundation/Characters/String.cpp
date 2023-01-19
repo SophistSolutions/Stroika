@@ -751,8 +751,13 @@ inline auto String::mk_nocheck_justPickBufRep_ (span<const CHAR_T> s) -> _Shared
     static constexpr size_t kNElts2_ = (96 - kBaseOfFixedBufSize_) / sizeof (CHAR_T);
     static constexpr size_t kNElts3_ = (128 - kBaseOfFixedBufSize_) / sizeof (CHAR_T);
 
-    if constexpr (qPlatform_Windows and sizeof (CHAR_T) == 1) {
-        // These checks are NOT important, just for documentation/reference
+    // These checks are NOT important, just for documentation/reference
+    if constexpr (qPlatform_Windows and sizeof (CHAR_T) == 1 and sizeof (void*) == 4) {
+        static_assert (kNElts1_ == 44);
+        static_assert (kNElts2_ == 76);
+        static_assert (kNElts3_ == 108);
+    }
+    if constexpr (qPlatform_Windows and sizeof (CHAR_T) == 1 and sizeof (void*) == 8) {
         static_assert (kNElts1_ == 24);
         static_assert (kNElts2_ == 56);
         static_assert (kNElts3_ == 88);
