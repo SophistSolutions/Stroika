@@ -59,7 +59,7 @@ namespace {
      *              StringRepHelperAllFitInSize_::Rep<char32_t> for anything else - this always works
      */
     struct StringRepHelperAllFitInSize_ : String {
-        template <Character_IsUnicodeCodePointOrPlainChar CHAR_T = wchar_t>
+        template <Character_IsUnicodeCodePointOrPlainChar CHAR_T>
         struct Rep : public _IRep {
         private:
             using inherited = _IRep;
@@ -191,7 +191,7 @@ namespace {
      *  @todo Explain queer wrapper class cuz protected
      */
     struct BufferedString_ : StringRepHelperAllFitInSize_ {
-        template <Character_IsUnicodeCodePointOrPlainChar CHAR_T = wchar_t>
+        template <Character_IsUnicodeCodePointOrPlainChar CHAR_T>
         struct Rep : public StringRepHelperAllFitInSize_::Rep<CHAR_T>, public Memory::UseBlockAllocationIfAppropriate<Rep<CHAR_T>> {
         private:
             using inherited = StringRepHelperAllFitInSize_::Rep<CHAR_T>;
@@ -322,12 +322,6 @@ namespace {
                 else {
                     return nullptr;
                 }
-            }
-
-        public:
-            virtual size_t size () const override
-            {
-                return this->_fData.size ();
             }
 
         private:
