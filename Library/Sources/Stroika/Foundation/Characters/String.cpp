@@ -591,7 +591,7 @@ namespace {
     public:
         // Use StringRepHelperAllFitInSize_::Rep<>; to avoid indirection to the rep except in constrution
         template <Character_IsUnicodeCodePointOrPlainChar CHAR_T>
-        class Rep : public StringRepHelperAllFitInSize_::Rep<CHAR_T>, public Memory::UseBlockAllocationIfAppropriate < Rep<CHAR_T>> {
+        class Rep : public StringRepHelperAllFitInSize_::Rep<CHAR_T>, public Memory::UseBlockAllocationIfAppropriate<Rep<CHAR_T>> {
         private:
             using inherited = StringRepHelperAllFitInSize_::Rep<CHAR_T>;
 
@@ -599,14 +599,14 @@ namespace {
             wstring        fCString_;
 
         public:
-            // Caller MUST REQUIRE generates right size of Rep based on size in underlyingRepPDS
+            // Caller MUST ASSURE generates right size of Rep based on size in underlyingRepPDS
             Rep (const _SharedPtrIRep& underlyingRep, const PeekSpanData& underlyingRepPDS)
                 : inherited{Memory::ValueOf (String::PeekData<CHAR_T> (underlyingRepPDS))}
                 , fUnderlyingRep_{underlyingRep}
                 , fCString_{}
             {
                 Memory::StackBuffer<wchar_t> possibleUsedBuf;
-                auto wideSpan = String::GetData<wchar_t> (underlyingRepPDS, &possibleUsedBuf);
+                auto                         wideSpan = String::GetData<wchar_t> (underlyingRepPDS, &possibleUsedBuf);
                 fCString_.assign (wideSpan.begin (), wideSpan.end ());
             }
 
@@ -1607,7 +1607,7 @@ const wchar_t* String::c_str ()
     // Rarely used mechanism, of replacing the underlying rep, for the iterable, as needed
     const wchar_t* result = (wchar_t*)_SafeReadRepAccessor{this}._ConstGetRep ().c_str_peek ();
     if (result == nullptr) {
-        _SharedPtrIRep                originalRep = dynamic_pointer_cast<_IRep> (_fRep.cget_ptr ());
+        _SharedPtrIRep originalRep    = dynamic_pointer_cast<_IRep> (_fRep.cget_ptr ());
         PeekSpanData   originalRepPDS = originalRep->PeekData (nullopt);
         switch (originalRepPDS.fInCP) {
             case PeekSpanData::eAscii:
