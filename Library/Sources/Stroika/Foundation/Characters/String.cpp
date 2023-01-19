@@ -190,6 +190,8 @@ namespace {
     constexpr bool kUseBlockAllocatedForSmallBufStrings_ = qString_Private_BufferedStringRep_UseBlockAllocatedForSmallBufStrings;
 
     /**
+     *  \brief THIS CLASS IS OBSOLETE - AS OF 2023-01-19 - makes sense - works - but less performant than other options so UNUSED (for now)
+     * 
      *  This is a utility class to implement most of the basic String::_IRep functionality.
      *  This implements functions that change the string, but don't GROW it,
      *  since we don't know in general we can (thats left to subtypes).
@@ -235,7 +237,7 @@ namespace {
             nonvirtual Rep& operator= (const Rep&) = delete;
 
         public:
-            ~Rep ()
+            virtual ~Rep () override
             {
                 size_t cap = capacity ();
                 if constexpr (kUseBlockAllocatedForSmallBufStrings_) {
@@ -363,6 +365,86 @@ namespace {
     };
 
     /**
+     *  Simple string rep, which dynamically allocates its storage on the heap, through an indirect pointer reference.
+     *  \note   This class may assure nul-terminated (kAddNullTerminator_), and so 'capacity' always at least one greater than length.
+     */
+    struct DynamicallyAllocatedString : StringRepHelperAllFitInSize_ {
+        template <Character_IsUnicodeCodePointOrPlainChar CHAR_T>
+        struct Rep : public StringRepHelperAllFitInSize_::Rep<CHAR_T>, public Memory::UseBlockAllocationIfAppropriate<Rep<CHAR_T>> {
+        private:
+            using inherited = StringRepHelperAllFitInSize_::Rep<CHAR_T>;
+
+        public:
+            Rep (span<const CHAR_T> t1)
+                : inherited{mkBuf_ (t1)}
+            {
+            }
+            Rep ()           = delete;
+            Rep (const Rep&) = delete;
+
+        public:
+            nonvirtual Rep& operator= (const Rep&) = delete;
+
+        public:
+            virtual ~Rep () override
+            {
+                delete[] this->_fData.data ();
+            }
+
+        private:
+            static span<CHAR_T> mkBuf_ (size_t length)
+            {
+                size_t capacity = AdjustCapacity_ (length);
+                Assert (length <= capacity);
+                if constexpr (kAddNullTerminator_) {
+                    Assert (length + 1 <= capacity);
+                }
+                CHAR_T* newBuf = new CHAR_T[capacity];
+                return span{newBuf, capacity};
+            }
+            static span<CHAR_T> mkBuf_ (span<const CHAR_T> t1)
+            {
+                size_t       len = t1.size ();
+                span<CHAR_T> buf = mkBuf_ (len); // note buf span is over capacity, not size
+                Assert (buf.size () >= len);
+                copy (t1.begin (), t1.end (), buf.data ());
+                if constexpr (kAddNullTerminator_) {
+                    Assert (len + 1 <= buf.size ());
+                    *(buf.data () + len) = '\0';
+                }
+                return buf.subspan (0, len); // return span of just characters, even if we have extra NUL-byte (outside span)
+            }
+
+        public:
+            // String::_IRep OVERRIDES
+            virtual const wchar_t* c_str_peek () const noexcept override
+            {
+                if constexpr (kAddNullTerminator_) {
+                    Assert (*(this->_fData.data () + this->size ()) == '\0'); // dont index into buf cuz we cheat and go one past end on purpose
+                    return reinterpret_cast<const wchar_t*> (this->_fData.data ());
+                }
+                else {
+                    return nullptr;
+                }
+            }
+
+        private:
+            // Stick nul-terminator byte just past the end of the span
+            static constexpr bool kAddNullTerminator_ = sizeof (CHAR_T) == sizeof (wchar_t); // costs nothing to nul-terminate in this case
+
+        private:
+            static size_t AdjustCapacity_ (size_t initialCapacity)
+            {
+                size_t result = initialCapacity;
+                if constexpr (kAddNullTerminator_) {
+                    ++result;
+                }
+                return result;
+            }
+        };
+    };
+
+    /**
      *  This String rep is like BufferedString_, except that the storage is inline in one struct/allocation
      *  for better memory allocation performance, and more importantly, better locality of data (more cpu cache friendly)
      */
@@ -411,7 +493,7 @@ namespace {
             nonvirtual Rep& operator= (const Rep&) = delete;
 
         public:
-            ~Rep () = default;
+            virtual ~Rep () override = default;
 
         public:
             // String::_IRep OVERRIDES
@@ -543,7 +625,11 @@ namespace {
 
             // Iterable<T>::_IRep overrides - delegate
         public:
-            virtual _IterableRepSharedPtr Clone () const override { AssertNotReached ();   return nullptr;}
+            virtual _IterableRepSharedPtr Clone () const override
+            {
+                AssertNotReached ();
+                return nullptr;
+            }
             virtual Iterator<value_type> MakeIterator () const override { return fUnderlyingRep_->MakeIterator (); }
             virtual size_t               size () const override { return fUnderlyingRep_->size (); }
             virtual bool                 empty () const override { return fUnderlyingRep_->empty (); }
@@ -718,7 +804,7 @@ inline auto String::mk_nocheck_justPickBufRep_ (span<const CHAR_T> s) -> _Shared
     else if (sz <= kNElts3_) {
         return MakeSmartPtr<FixedCapacityInlineStorageString_::Rep<CHAR_T, kNElts3_>> (s);
     }
-    return MakeSmartPtr<BufferedString_::Rep<CHAR_T>> (s);
+    return MakeSmartPtr<DynamicallyAllocatedString::Rep<CHAR_T>> (s);
 }
 
 template <>
