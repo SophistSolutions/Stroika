@@ -470,32 +470,33 @@ namespace {
     void Test7_Comparisons_ ()
     {
         Debug::TraceContextBumper ctx{L"Test7_Comparisons_"};
-        VerifyTestResult (String{L"1"} <= String{L"1"});
-        VerifyTestResult (L"1" <= String{L"1"});
-        VerifyTestResult (String{L"1"} <= L"1");
-        VerifyTestResult (String{L"1"} <= String{L"10"});
+        VerifyTestResult (String{"1"} <= String{"1"});
+        VerifyTestResult ("1" <= String{"1"});
+        VerifyTestResult (String{"1"} <= "1");
+        VerifyTestResult (String{"1"} <= String{"10"});
+        VerifyTestResult (not(String{"1"} > String{"10"}));
         VerifyTestResult (not(String{L"1"} > String{L"10"}));
-        VerifyTestResult (not(String{L"1"} >= String{L"10"}));
-        VerifyTestResult (String{L"1"} < String{L"10"});
+        VerifyTestResult (not(String{"1"} >= String{"10"}));
+        VerifyTestResult (String{"1"} < String{"10"});
 
-        VerifyTestResult (String{L"20"} > String (L"11"));
-        VerifyTestResult (String{L"20"} >= String (L"11"));
-        VerifyTestResult (not(String{L"20"} < String (L"11")));
-        VerifyTestResult (not(String{L"20"} <= String (L"11")));
-        VerifyTestResult (String (L"11") < String{L"20"});
-        VerifyTestResult (String (L"11") <= String{L"20"});
-        VerifyTestResult (not(String (L"11") > String{L"20"}));
-        VerifyTestResult (not(String (L"11") >= String{L"20"}));
+        VerifyTestResult (String{"20"} > String{"11"});
+        VerifyTestResult (String{"20"} >= String{"11"});
+        VerifyTestResult (not(String{"20"} < String{"11"}));
+        VerifyTestResult (not(String{"20"} <= String{"11"}));
+        VerifyTestResult (String{"11"} < String{L"20"});
+        VerifyTestResult (String{"11"} <= String{L"20"});
+        VerifyTestResult (not(String{"11"} > String{L"20"}));
+        VerifyTestResult (not(String{"11"} >= String{L"20"}));
 
-        VerifyTestResult (String{L"aac"} > String{L"aab"});
-        VerifyTestResult (String{L"aac"} >= String{L"aab"});
-        VerifyTestResult (not(String{L"aac"} < String{L"aab"}));
-        VerifyTestResult (not(String{L"aac"} <= String{L"aab"}));
+        VerifyTestResult (String{"aac"} > String{"aab"});
+        VerifyTestResult (String{"aac"} >= String{"aab"});
+        VerifyTestResult (not(String{"aac"} < String{"aab"}));
+        VerifyTestResult (not(String{"aac"} <= String{"aab"}));
 
-        VerifyTestResult (String{L"apple"} < String{L"apples"});
-        VerifyTestResult (String{L"apple"} <= String{L"apples"});
-        VerifyTestResult (not(String{L"apple"} > String{L"apples"}));
-        VerifyTestResult (not(String{L"apple"} >= String{L"apples"}));
+        VerifyTestResult (String{"apple"} < String{"apples"});
+        VerifyTestResult (String{"apple"} <= String{"apples"});
+        VerifyTestResult (not(String{"apple"} > String{"apples"}));
+        VerifyTestResult (not(String{"apple"} >= String{"apples"}));
     }
 
     void Test8_ReadOnlyStrings_ ()
