@@ -35,13 +35,6 @@ using namespace Stroika::Foundation::Characters;
 using Memory::StackBuffer;
 using Traversal::Iterator;
 
-// Experimental block allocation scheme for strings. We COULD enahce this to have 2 block sizes - say 16 and 32 characters?
-// But experiment with this a bit first, and see how it goes...
-//      -- LGP 2011-12-04
-#ifndef qString_Private_BufferedStringRep_UseBlockAllocatedForSmallBufStrings
-#define qString_Private_BufferedStringRep_UseBlockAllocatedForSmallBufStrings qAllowBlockAllocation
-#endif
-
 namespace {
 
     /**
@@ -187,8 +180,6 @@ namespace {
         };
     };
 
-    constexpr bool kUseBlockAllocatedForSmallBufStrings_ = qString_Private_BufferedStringRep_UseBlockAllocatedForSmallBufStrings;
-
     /**
      *  \brief THIS CLASS IS OBSOLETE - AS OF 2023-01-19 - makes sense - works - but less performant than other options so UNUSED (for now)
      * 
@@ -240,7 +231,7 @@ namespace {
             virtual ~Rep () override
             {
                 size_t cap = capacity ();
-                if constexpr (kUseBlockAllocatedForSmallBufStrings_) {
+                if constexpr (qAllowBlockAllocation) {
                     Assert (cap >= kNElts1_);
                     switch (cap) {
                         case kNElts1_: {
@@ -271,12 +262,12 @@ namespace {
                     Assert (length + 1 <= capacity);
                 }
                 CHAR_T* newBuf = nullptr;
-                if constexpr (kUseBlockAllocatedForSmallBufStrings_) {
+                if constexpr (qAllowBlockAllocation) {
                     Assert ((capacity == kNElts1_ or capacity == kNElts2_ or capacity == kNElts3_) or
                             (capacity > kNElts1_ and capacity > kNElts2_ and capacity > kNElts3_));
                 }
                 DISABLE_COMPILER_MSC_WARNING_START (4065)
-                if constexpr (kUseBlockAllocatedForSmallBufStrings_) {
+                if constexpr (qAllowBlockAllocation) {
                     switch (capacity) {
                         case kNElts1_: {
                             static_assert (sizeof (BufferedStringRepBlock_<kNElts1_>) == sizeof (CHAR_T) * kNElts1_, "sizes should match");
@@ -338,7 +329,7 @@ namespace {
                 if constexpr (kAddNullTerminator_) {
                     ++initialCapacity;
                 }
-                if constexpr (kUseBlockAllocatedForSmallBufStrings_) {
+                if constexpr (qAllowBlockAllocation) {
                     static_assert (kNElts1_ <= kNElts2_ and kNElts2_ <= kNElts3_);
                     if (initialCapacity <= kNElts1_) [[likely]] {
                         return kNElts1_;
@@ -595,52 +586,32 @@ namespace {
 
     /**
      *  Delegate to original String::Rep, and add in support for c_str ()
-     * 
-     *      @todo switch to using StringRepHelperAllFitInSize_::Rep - so we dont DELEGATE impl!!!!! hold onto base rep (so memory stays
-     *      alive) - but use StringRepHelperAllFitInSize_::Rep to point into it to avoid delegating and be as fast as any other rep.
      */
     struct StringWithCStr_ : public String {
-        using inherited = String;
-
-        // @todo REDO this with StringRepHelperAllFitInSize_::Rep<>; to avoid indirection
-        template <Character_IsUnicodeCodePointOrPlainChar CHAR_T = wchar_t>
-        class Rep : public String::_IRep, public Memory::UseBlockAllocationIfAppropriate<Rep<CHAR_T>> {
+    public:
+        // Use StringRepHelperAllFitInSize_::Rep<>; to avoid indirection to the rep except in constrution
+        template <Character_IsUnicodeCodePointOrPlainChar CHAR_T>
+        class Rep : public StringRepHelperAllFitInSize_::Rep<CHAR_T>, public Memory::UseBlockAllocationIfAppropriate < Rep<CHAR_T>> {
         private:
-            // using inherited = StringRepHelperAllFitInSize_::Rep<>;
-            using inherited = String::_IRep;
+            using inherited = StringRepHelperAllFitInSize_::Rep<CHAR_T>;
 
             _SharedPtrIRep fUnderlyingRep_;
             wstring        fCString_;
 
         public:
-            Rep (const _SharedPtrIRep& underlyingRep)
-                : fUnderlyingRep_{underlyingRep}
+            // Caller MUST REQUIRE generates right size of Rep based on size in underlyingRepPDS
+            Rep (const _SharedPtrIRep& underlyingRep, const PeekSpanData& underlyingRepPDS)
+                : inherited{Memory::ValueOf (String::PeekData<CHAR_T> (underlyingRepPDS))}
+                , fUnderlyingRep_{underlyingRep}
                 , fCString_{}
             {
-                PeekSpanData                 peekData = underlyingRep->PeekData (PeekSpanData::StorageCodePointType::eChar32);
-                Memory::StackBuffer<wchar_t> ignored1;
-                span<const wchar_t>          s = String::GetData (peekData, &ignored1);
-                fCString_.assign (s.data (), s.size ());
+                Memory::StackBuffer<wchar_t> possibleUsedBuf;
+                auto wideSpan = String::GetData<wchar_t> (underlyingRepPDS, &possibleUsedBuf);
+                fCString_.assign (wideSpan.begin (), wideSpan.end ());
             }
-
-            // Iterable<T>::_IRep overrides - delegate
-        public:
-            virtual _IterableRepSharedPtr Clone () const override
-            {
-                AssertNotReached ();
-                return nullptr;
-            }
-            virtual Iterator<value_type> MakeIterator () const override { return fUnderlyingRep_->MakeIterator (); }
-            virtual size_t               size () const override { return fUnderlyingRep_->size (); }
-            virtual bool                 empty () const override { return fUnderlyingRep_->empty (); }
-            virtual void                 Apply (const function<void (Configuration::ArgByValueType<Character> item)>& doToElement) const override { fUnderlyingRep_->Apply (doToElement); }
-            virtual Iterator<value_type> Find (const function<bool (Configuration::ArgByValueType<Character> item)>& that) const override { return fUnderlyingRep_->Find (that); }
-            virtual Iterator<value_type> Find_equal_to (const Configuration::ArgByValueType<Character>& v) const override { return fUnderlyingRep_->Find_equal_to (v); }
 
             // String::_IRep overrides - delegate
         public:
-            virtual Character      GetAt (size_t index) const noexcept override { return fUnderlyingRep_->GetAt (index); }
-            virtual PeekSpanData   PeekData ([[maybe_unused]] optional<PeekSpanData::StorageCodePointType> preferred) const noexcept override { return fUnderlyingRep_->PeekData (preferred); }
             virtual const wchar_t* c_str_peek () const noexcept override
             {
                 return fCString_.c_str ();
@@ -1636,9 +1607,23 @@ const wchar_t* String::c_str ()
     // Rarely used mechanism, of replacing the underlying rep, for the iterable, as needed
     const wchar_t* result = (wchar_t*)_SafeReadRepAccessor{this}._ConstGetRep ().c_str_peek ();
     if (result == nullptr) {
-        _SharedPtrIRep originalRep = dynamic_pointer_cast<_IRep> (_fRep.cget_ptr ());
-        _fRep                      = MakeSmartPtr<StringWithCStr_::Rep<wchar_t>> (originalRep);
-        result                     = (wchar_t*)_SafeReadRepAccessor{this}._ConstGetRep ().c_str_peek ();
+        _SharedPtrIRep                originalRep = dynamic_pointer_cast<_IRep> (_fRep.cget_ptr ());
+        PeekSpanData   originalRepPDS = originalRep->PeekData (nullopt);
+        switch (originalRepPDS.fInCP) {
+            case PeekSpanData::eAscii:
+                _fRep = MakeSmartPtr<StringWithCStr_::Rep<char>> (originalRep, originalRepPDS);
+                break;
+            case PeekSpanData::eChar8:
+                _fRep = MakeSmartPtr<StringWithCStr_::Rep<char>> (originalRep, originalRepPDS);
+                break;
+            case PeekSpanData::eChar16:
+                _fRep = MakeSmartPtr<StringWithCStr_::Rep<char16_t>> (originalRep, originalRepPDS);
+                break;
+            case PeekSpanData::eChar32:
+                _fRep = MakeSmartPtr<StringWithCStr_::Rep<char32_t>> (originalRep, originalRepPDS);
+                break;
+        }
+        result = (wchar_t*)_SafeReadRepAccessor{this}._ConstGetRep ().c_str_peek ();
         AssertNotNull (result);
     }
     EnsureNotNull (result);
