@@ -262,6 +262,8 @@ namespace Stroika::Foundation::Characters {
          *  U+007F..U+009F, U+2028, and U+2029 (Unicode classes Cc, Zl, and Zp)
          * 
          *  Be explicit here so can use constexpr
+         *
+         *  WAS:    return !!iswcntrl (static_cast<wchar_t> (fCharacterCode_));
          */
         if (0 <= fCharacterCode_ and fCharacterCode_ <= 0x1f) {
             return true;
@@ -273,7 +275,6 @@ namespace Stroika::Foundation::Characters {
             return true;
         }
         return false;
-        //return !!iswcntrl (static_cast<wchar_t> (fCharacterCode_));
     }
     inline Character Character::ToLowerCase () const noexcept
     {
