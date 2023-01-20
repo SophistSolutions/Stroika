@@ -61,6 +61,7 @@ namespace {
             span<const CHAR_T> _fData;
 
         protected:
+            Rep () = default;
             Rep (span<const CHAR_T> s)
                 requires (not is_same_v<CHAR_T, char8_t>) // char8 ironically involves 2-byte characters, cuz only ascii encoded as 1 byte
             : _fData{s}
@@ -71,6 +72,17 @@ namespace {
                 if constexpr (is_same_v<CHAR_T, char16_t>) {
                     Require (UTFConverter::AllFitsInTwoByteEncoding (s));
                 }
+            }
+            Rep& operator= (span<const CHAR_T> s) 
+            {
+                if constexpr (is_same_v<CHAR_T, char> or is_same_v<CHAR_T, char8_t>) {
+                    Require (Character::IsASCII (s));
+                }
+                if constexpr (is_same_v<CHAR_T, char16_t>) {
+                    Require (UTFConverter::AllFitsInTwoByteEncoding (s));
+                }
+                _fData = s;
+                return *this;
             }
 
         public:
@@ -455,27 +467,24 @@ namespace {
                     return false;
                 }
             }
-            span<const CHAR_T> ctor_helper_ (span<const CHAR_T> t1)
+
+        private:
+            CHAR_T fBuf_[CAPACITY];
+
+        public:
+            Rep (span<const CHAR_T> t1)
+                : inherited{}
             {
-                // technically this is C++ violation, cuz called before fBuf_ constructed, but nothing done in that
-                // construction, so SB OK -- LGP 2023-01-19
-                // and done this way cuz base class CTOR assumes data its given (assert checks) is valid data (maybe ascii)
+                // must do this logic after base construction since references data member which doesn't exist
+                // til after base class construction. SHOULDNT really matter (since uninitialized data), but on
+                // g++-11, and other compilers, detected as vptr UB violation if we access first
                 Require (t1.size () <= CAPACITY);
                 copy (t1.begin (), t1.end (), fBuf_);
                 if (IncludesNullTerminator_ ()) {
                     Assert (t1.size () + 1 <= CAPACITY);
                     fBuf_[t1.size ()] = '\0';
                 }
-                return span<const CHAR_T>{fBuf_, t1.size ()};
-            }
-
-        private:
-            CHAR_T fBuf_[CAPACITY]; // important uninitialized due to ctor_helper_ usage...
-
-        public:
-            Rep (span<const CHAR_T> t1)
-                : inherited{ctor_helper_ (t1)}
-            {
+                inherited::operator= (span<const CHAR_T>{fBuf_, t1.size ()});
             }
             Rep ()           = delete;
             Rep (const Rep&) = delete;
