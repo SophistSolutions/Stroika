@@ -73,7 +73,7 @@ namespace {
                     Require (UTFConverter::AllFitsInTwoByteEncoding (s));
                 }
             }
-            Rep& operator= (span<const CHAR_T> s) 
+            Rep& operator= (span<const CHAR_T> s)
             {
                 if constexpr (is_same_v<CHAR_T, char> or is_same_v<CHAR_T, char8_t>) {
                     Require (Character::IsASCII (s));
@@ -493,9 +493,6 @@ namespace {
             nonvirtual Rep& operator= (const Rep&) = delete;
 
         public:
-            virtual ~Rep () override = default;
-
-        public:
             // String::_IRep OVERRIDES
             virtual const wchar_t* c_str_peek () const noexcept override
             {
@@ -573,7 +570,7 @@ namespace {
                 : inherited{span<const CHAR_T>{}}
                 , fMovedData_{move (s)}
             {
-                this->_fData = span{fMovedData_.data (), fMovedData_.size ()}; // must grab after move
+                inherited::operator= (span{fMovedData_.data (), fMovedData_.size ()}); // must grab after move
             }
 
         public:
