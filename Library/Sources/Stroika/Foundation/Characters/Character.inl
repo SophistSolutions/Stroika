@@ -119,10 +119,10 @@ namespace Stroika::Foundation::Characters {
          */
         constexpr int      halfShift = 10; /* used for shifting by 10 bits */
         constexpr char32_t halfBase  = 0x0010000UL;
-        if (not(UNI_SUR_HIGH_START <= hiSurrogate and hiSurrogate <= UNI_SUR_HIGH_END)) {
+        if (not IsSurrogatePair_Hi (hiSurrogate)) {
             Private_::ThrowSurrogatesOutOfRange_ ();
         }
-        if (not(UNI_SUR_LOW_START <= lowSurrogate and lowSurrogate <= UNI_SUR_LOW_END)) {
+        if (not IsSurrogatePair_Lo (lowSurrogate)) {
             Private_::ThrowSurrogatesOutOfRange_ ();
         }
         fCharacterCode_ = ((hiSurrogate - UNI_SUR_HIGH_START) << halfShift) + (lowSurrogate - UNI_SUR_LOW_START) + halfBase;
@@ -253,9 +253,27 @@ namespace Stroika::Foundation::Characters {
         // https://stackoverflow.com/questions/60353945/isthing-equivalents-for-char32-t
         return !!iswpunct (static_cast<wchar_t> (fCharacterCode_));
     }
-    inline bool Character::IsControl () const noexcept
+    constexpr bool Character::IsControl () const noexcept
     {
-        return !!iswcntrl (static_cast<wchar_t> (fCharacterCode_));
+        /*
+         *  According to https://en.cppreference.com/w/cpp/string/wide/iswcntrl
+         * 
+         *  ISO 30112 defines POSIX control characters as Unicode characters U+0000..U+001F, 
+         *  U+007F..U+009F, U+2028, and U+2029 (Unicode classes Cc, Zl, and Zp)
+         * 
+         *  Be explicit here so can use constexpr
+         */
+        if (0 <= fCharacterCode_ and fCharacterCode_ <= 0x1f) {
+            return true;
+        }
+        if (0x7f <= fCharacterCode_ and fCharacterCode_ <= 0x9f) {
+            return true;
+        }
+        if (0x2028 == fCharacterCode_ or 0x2029 == fCharacterCode_) {
+            return true;
+        }
+        return false;
+        //return !!iswcntrl (static_cast<wchar_t> (fCharacterCode_));
     }
     inline Character Character::ToLowerCase () const noexcept
     {
@@ -318,6 +336,30 @@ namespace Stroika::Foundation::Characters {
                 AssertNotReached ();
                 return strong_ordering::equal;
         }
+    }
+    constexpr bool Character::IsSurrogatePair () const
+    {
+        /*
+         * See https://en.wikipedia.org/wiki/Universal_Character_Set_characters#Surrogates
+         * 
+         * A surrogate pair denotes the code point
+         *      0x10000 + (H - 0xD800) x 0x400 + (L - 0xDC00)
+         */
+        constexpr char32_t kMinCode_ = 0x10000;
+        constexpr char32_t kMaxCode_ = kMinCode_ + (UNI_SUR_HIGH_END - UNI_SUR_HIGH_START) * 0x400 + (UNI_SUR_LOW_END - UNI_SUR_LOW_START);
+        return kMinCode_ <= fCharacterCode_ and fCharacterCode_ <= kMaxCode_;
+    }
+    constexpr bool Character::IsSurrogatePair (char16_t hiSurrogate, char16_t lowSurrogate)
+    {
+        return IsSurrogatePair_Hi (hiSurrogate) and IsSurrogatePair_Lo (lowSurrogate);
+    }
+    constexpr bool Character::IsSurrogatePair_Hi (char16_t hiSurrogate)
+    {
+        return UNI_SUR_HIGH_START <= hiSurrogate and hiSurrogate <= UNI_SUR_HIGH_END;
+    }
+    constexpr bool Character::IsSurrogatePair_Lo (char16_t lowSurrogate)
+    {
+        return UNI_SUR_LOW_START <= lowSurrogate and lowSurrogate <= UNI_SUR_LOW_END;
     }
 
     /*

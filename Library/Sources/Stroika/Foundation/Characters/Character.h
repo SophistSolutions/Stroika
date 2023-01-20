@@ -171,23 +171,33 @@ namespace Stroika::Foundation::Characters {
         nonvirtual bool IsAlphabetic () const noexcept;
 
     public:
-        // Checks if the given character is uppper case. Can be called on any character.
-        // Returns false if not alphabetic
+        /**
+         * Checks if the given character is uppper case. Can be called on any character.
+         * Returns false if not alphabetic
+         */
         nonvirtual bool IsUpperCase () const noexcept;
 
     public:
-        // Checks if the given character is lower case. Can be called on any character.
-        // Returns false if not alphabetic
+        /**
+         * Checks if the given character is lower case. Can be called on any character.
+         * Returns false if not alphabetic
+         */
         nonvirtual bool IsLowerCase () const noexcept;
 
     public:
+        /**
+         */
         nonvirtual bool IsAlphaNumeric () const noexcept;
 
     public:
+        /**
+         */
         nonvirtual bool IsPunctuation () const noexcept;
 
     public:
-        nonvirtual bool IsControl () const noexcept;
+        /**
+         */
+        constexpr bool IsControl () const noexcept;
 
     public:
         /**
@@ -237,6 +247,25 @@ namespace Stroika::Foundation::Characters {
 
     public:
         /**
+         * See https://en.wikipedia.org/wiki/Universal_Character_Set_characters#Surrogates
+         */
+        static constexpr char16_t UNI_SUR_HIGH_START{0xD800};
+        static constexpr char16_t UNI_SUR_HIGH_END{0xDBFF};
+        static constexpr char16_t UNI_SUR_LOW_START{0xDC00};
+        static constexpr char16_t UNI_SUR_LOW_END{0xDFFF};
+
+    public:
+        /**
+         *  Return true iff this Character (or argument codepoints) represent a
+         *  character which would be represented in UCS-16 as a surrogate pair.
+         */
+        constexpr bool        IsSurrogatePair () const;
+        static constexpr bool IsSurrogatePair (char16_t hiSurrogate, char16_t lowSurrogate);
+        static constexpr bool IsSurrogatePair_Hi (char16_t hiSurrogate);
+        static constexpr bool IsSurrogatePair_Lo (char16_t lowSurrogate);
+
+    public:
+        /**
          */
         constexpr bool operator== (const Character&) const noexcept = default;
 
@@ -259,15 +288,6 @@ namespace Stroika::Foundation::Characters {
          */
         template <Character_Compatible CHAR_T>
         static constexpr strong_ordering Compare (span<const CHAR_T> lhs, span<const CHAR_T> rhs, CompareOptions co) noexcept;
-
-    public:
-        /**
-         * See https://en.wikipedia.org/wiki/Universal_Character_Set_characters#Surrogates
-         */
-        static constexpr char16_t UNI_SUR_HIGH_START{0xD800};
-        static constexpr char16_t UNI_SUR_HIGH_END{0xDBFF};
-        static constexpr char16_t UNI_SUR_LOW_START{0xDC00};
-        static constexpr char16_t UNI_SUR_LOW_END{0xDFFF};
 
     public:
         [[deprecated ("Since Stroika 3.0d1, use span based Compare")]] static strong_ordering Compare (const Character* lhsStart, const Character* lhsEnd, const Character* rhsStart, const Character* rhsEnd, CompareOptions co) noexcept
