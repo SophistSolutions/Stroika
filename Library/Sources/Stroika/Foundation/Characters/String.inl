@@ -331,7 +331,7 @@ namespace Stroika::Foundation::Characters {
             const CHAR_T*                         b = reinterpret_cast<const CHAR_T*> (s.data ());
             const CHAR_T*                         e = b + s.size ();
             Memory::StackBuffer<Character_Latin1> buf{Memory::eUninitialized, static_cast<size_t> (e - b)};
-            wchar_t*                              pOut = buf.begin ();
+            Character_Latin1*                     pOut = buf.begin ();
             for (const CHAR_T* i = b; i != e; ++i, ++pOut) {
                 if (*i >= 256) {
                     static const auto kException_ = out_of_range{"Error converting non-iso-latin-1 text to String"};
