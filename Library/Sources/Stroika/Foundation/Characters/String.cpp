@@ -677,9 +677,9 @@ String::String (const basic_string_view<wchar_t>& str)
 {
     Require (str.data ()[str.length ()] == 0); // Because Stroika strings provide the guarantee that they can be converted to c_str () - we require the input memory
                                                // for these const strings are also nul-terminated.
-        // DONT try to CORRECT this if found wrong, because whenever you use "stuff"sv - the string literal will always
-        // be nul-terminated.
-        // -- LGP 2019-01-29
+    // DONT try to CORRECT this if found wrong, because whenever you use "stuff"sv - the string literal will always
+    // be nul-terminated.
+    // -- LGP 2019-01-29
 }
 
 String String::FromStringConstant (span<const char> s)
