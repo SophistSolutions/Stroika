@@ -112,17 +112,15 @@ namespace Stroika::Foundation::Characters {
      *  One nice thing about modern C++ for our purposes, is C++ offers so many 'distinct' 'unsigned byte' basic types, we can
      *  just hijack one that won't be confused with a regular character (string) - thus the static_assert.
      */
-    //    using Character_ISOLatin1 = uint8_t;
-    struct Character_ISOLatin1 {
+    //    using Character_Latin1 = uint8_t;
+    struct Character_Latin1 {
         uint8_t data;
     };
-    static_assert (sizeof (Character_ISOLatin1) == 1);
-    static_assert (not Character_Compatible<Character_ISOLatin1>);
-
-    //static_assert (sizeof (Character_ISOLatin1x) == 1);
+    static_assert (sizeof (Character_Latin1) == 1);
+    static_assert (not Character_Compatible<Character_Latin1>);
 
     /**
-     *  \brief Character_CompatibleIsh extends Character_Compatible with  Character_ISOLatin1
+     *  \brief Character_CompatibleIsh extends Character_Compatible with  Character_Latin1
      * 
      *  \note Character_CompatibleIsh means any 'basic character type' - size <= 4 bytes, which
      *        could reasonably, in context (so with extra info), could be safely converted into
@@ -134,16 +132,16 @@ namespace Stroika::Foundation::Characters {
      *      o   char32_t                ""
      *      o   wchar_t                 ""
      *      o   Character_ASCII (char)  must be ASCII
-     *      o   Character_ISOLatin1
+     *      o   Character_Latin1
      */
     template <typename T>
-    concept Character_CompatibleIsh = Character_Compatible<T> or is_same_v<remove_cv_t<T>, Character_ISOLatin1>;
+    concept Character_CompatibleIsh = Character_Compatible<T> or is_same_v<remove_cv_t<T>, Character_Latin1>;
     static_assert (Character_CompatibleIsh<char8_t>);
     static_assert (Character_CompatibleIsh<char16_t>);
     static_assert (Character_CompatibleIsh<char32_t>);
     static_assert (Character_CompatibleIsh<wchar_t>);
     static_assert (Character_CompatibleIsh<Character_ASCII>);
-    static_assert (Character_CompatibleIsh<Character_ISOLatin1>);
+    static_assert (Character_CompatibleIsh<Character_Latin1>);
 
     /**
      *  \note <a href="Design Overview.md#Comparisons">Comparisons</a>:

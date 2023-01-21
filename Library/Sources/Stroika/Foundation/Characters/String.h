@@ -323,7 +323,7 @@ namespace Stroika::Foundation::Characters {
          *  \req ((str.data () + str.size ()) == '\0'); // crazy weird requirement, but done cuz L"x"sv already does NUL-terminate and we can
          *                                              // take advantage of that fact - re-using the NUL-terminator for our own c_str() implementation
          * 
-         *  \note FromStringConstant with 'char' - REQUIRES that the char elements are ASCII (someday this maybe lifted and iterpret as ISOLATIN1)
+         *  \note FromStringConstant with 'char' - REQUIRES that the char elements are ASCII (someday this maybe lifted and iterpret as Character_Latin1)
          *        For the case of char, we also do not check/require the nul-termination bit.
          * 
          *  \note for overloads with wchar_t, if sizeof (wchar_t) == 2
@@ -1598,7 +1598,7 @@ namespace Stroika::Foundation::Characters {
      *  \note _k is STILL sometimes useful and better than sv, since the TYPE returned by _k is a String_Constant which IS a String
      *        so it will work in some overload contexts where sv would fail.
      * 
-     *  \note operator"" _k with char*, requires that the argument string MUST BE ASCII (someday maybe lifted to allow ISOLATIN1)
+     *  \note operator"" _k with char*, requires that the argument string MUST BE ASCII (someday maybe lifted to allow Character_Latin1)
      */
     String operator"" _k (const char* s, size_t len);
     String operator"" _k (const wchar_t* s, size_t len);
