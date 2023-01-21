@@ -1658,15 +1658,20 @@ namespace {
          *      A few random characters selected from https://en.wikipedia.org/wiki/Latin-1_Supplement
          */
         string                  plainAsciiTest = "fred";
-        constexpr unsigned char kMicroSign     = static_cast<unsigned char> ('µ');
-        static_assert (kMicroSign == 0xb5);
-        constexpr unsigned char kCedilla = static_cast<unsigned char> ('¸');
-        static_assert (kCedilla == 0xb8);
-        constexpr unsigned char kInvertedQuestionMark = static_cast<unsigned char> ('¿');
-        static_assert (kInvertedQuestionMark == 0xbf);
-
-        string nonAsciiLatin1Test{{(char)kMicroSign, (char)kCedilla, (char)kInvertedQuestionMark}};
-        Assert (nonAsciiLatin1Test.length () == 3 and static_cast<unsigned char> (nonAsciiLatin1Test[1]) == kCedilla);
+        string nonAsciiLatin1Test;
+        {
+            constexpr unsigned char kMicroSign     = 0xb5;
+            constexpr unsigned char kCedilla = 0xb8;
+            constexpr unsigned char kInvertedQuestionMark = 0xbf;
+            #if defined (_MSC_VER)
+            // other compilers don't seem to allow this check, and one compiler enuf to verify I have the right codes
+            static_assert (kMicroSign == static_cast<unsigned char> ('µ'));
+            static_assert (kCedilla == static_cast<unsigned char> ('¸'));
+            static_assert (kInvertedQuestionMark == static_cast<unsigned char> ('¿'));
+            #endif
+            nonAsciiLatin1Test = string{{(char)kMicroSign, (char)kCedilla, (char)kInvertedQuestionMark}};
+            Assert (nonAsciiLatin1Test.length () == 3 and static_cast<unsigned char> (nonAsciiLatin1Test[1]) == kCedilla);
+        }
         {
             VerifyTestResult (String{plainAsciiTest} == String{plainAsciiTest});
             try {
