@@ -775,7 +775,7 @@ inline auto String::mk_nocheck_justPickBufRep_ (span<const CHAR_T> s) -> _Shared
 template <>
 auto String::mk_nocheck_ (span<const Character_ASCII> s) -> _SharedPtrIRep
 {
-    Require (Character::IsASCII (s));   // caller must check
+    Require (Character::IsASCII (s)); // caller must check
     return mk_nocheck_justPickBufRep_ (s);
 }
 template <>
