@@ -24,6 +24,17 @@ namespace Stroika::Foundation::Characters {
      ********************************************************************************
      */
     namespace Private_ {
+        template <Character_CompatibleIsh CHAR_T>
+        static size_t StrLen_ (const CHAR_T* s)
+        {
+            if constexpr (is_same_v<CHAR_T, Character_Latin1>) {
+                return StrLen_ (reinterpret_cast<const char*> (s));
+            }
+            else {
+                return CString::Length (s);
+            }
+        }
+
         template <Character_Compatible SRC_T, Character_Compatible TRG_T>
         inline void CopyAsASCIICharacters_ (span<const SRC_T> src, span<TRG_T> trg)
         {
