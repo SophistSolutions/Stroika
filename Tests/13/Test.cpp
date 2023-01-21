@@ -36,8 +36,7 @@ namespace {
     {
         Debug::TraceContextBumper ctx{L"{}::RunTests_"};
         CommonTests::CollectionTests::SimpleCollectionTest_Generic<CONCRETE_CONTAINER> (
-            factory,
-            [] ([[maybe_unused]] const typename CONCRETE_CONTAINER::ArchetypeContainerType& c) {});
+            factory, [] ([[maybe_unused]] const typename CONCRETE_CONTAINER::ArchetypeContainerType& c) {});
     }
     template <typename CONCRETE_CONTAINER>
     void RunTests_ ()
@@ -98,10 +97,7 @@ namespace {
     {
         struct MySimpleClassWithoutComparisonOperators_ComparerWithEquals_ {
             using value_type = SimpleClassWithoutComparisonOperators;
-            static bool Equals (value_type v1, value_type v2)
-            {
-                return v1.GetValue () == v2.GetValue ();
-            }
+            static bool Equals (value_type v1, value_type v2) { return v1.GetValue () == v2.GetValue (); }
         };
         struct MySimpleClassWithoutComparisonOperators_LESS_ : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eStrictInOrder> {
             bool operator() (const SimpleClassWithoutComparisonOperators& lhs, const SimpleClassWithoutComparisonOperators& rhs) const
@@ -127,7 +123,9 @@ namespace {
 
         RunTests_<Collection_stdmultiset<size_t>> ();
         RunTests_<Collection_stdmultiset<SimpleClass>> ();
-        RunTests_<Collection_stdmultiset<SimpleClassWithoutComparisonOperators>> ([] () { return Collection_stdmultiset<SimpleClassWithoutComparisonOperators> (MySimpleClassWithoutComparisonOperators_LESS_ ()); });
+        RunTests_<Collection_stdmultiset<SimpleClassWithoutComparisonOperators>> ([] () {
+            return Collection_stdmultiset<SimpleClassWithoutComparisonOperators> (MySimpleClassWithoutComparisonOperators_LESS_ ());
+        });
 
         ExampleCTORS_Test_2_::DoTest ();
         RemoveAndUpdateIteratorUpdate_Test3::DoTest ();

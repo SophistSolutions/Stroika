@@ -144,16 +144,16 @@ namespace Stroika::Foundation::Characters {
 }
 
 namespace {
-    void ConnectionHandler_ (const ConnectionOrientedStreamSocket::Ptr& connectionSocket, shared_ptr<IModbusService> serviceHandler, const ServerOptions& options)
+    void ConnectionHandler_ (const ConnectionOrientedStreamSocket::Ptr& connectionSocket, shared_ptr<IModbusService> serviceHandler,
+                             const ServerOptions& options)
     {
         TraceContextBumper ctx{"Modbus-Connection"};
 #if qDefaultTracingOn
         static atomic<uint32_t> sConnectionNumber_;
         uint32_t                thisModbusConnectionNumber = ++sConnectionNumber_;
         DbgTrace ("Starting modbus connection %d", thisModbusConnectionNumber);
-        [[maybe_unused]] auto&& cleanup = Execution::Finally ([thisModbusConnectionNumber] () {
-            DbgTrace ("Finishing modbus connection %d", thisModbusConnectionNumber);
-        });
+        [[maybe_unused]] auto&& cleanup =
+            Execution::Finally ([thisModbusConnectionNumber] () { DbgTrace ("Finishing modbus connection %d", thisModbusConnectionNumber); });
 #endif
         if constexpr (qDebug) {
             if (auto p = connectionSocket.GetPeerAddress ()) {
@@ -161,11 +161,12 @@ namespace {
             }
         }
 
-        SocketStream::Ptr       socketStream = SocketStream::New (connectionSocket);
-        InputStream<byte>::Ptr  in           = BufferedInputStream<byte>::New (socketStream);  // not important, but a good idea, to avoid excessive kernel calls
-        OutputStream<byte>::Ptr out          = BufferedOutputStream<byte>::New (socketStream); // critical so we don't write multiple packets - at least some apps assume whole thing comes in one packet
+        SocketStream::Ptr socketStream = SocketStream::New (connectionSocket);
+        InputStream<byte>::Ptr in = BufferedInputStream<byte>::New (socketStream); // not important, but a good idea, to avoid excessive kernel calls
+        OutputStream<byte>::Ptr out = BufferedOutputStream<byte>::New (socketStream); // critical so we don't write multiple packets - at least some apps assume whole thing comes in one packet
 
-        auto checkedReadHelperPayload2Shorts = [] (const Memory::BLOB& requestPayload, uint16_t minSecondValue, uint16_t maxSecondValue) -> pair<uint16_t, uint16_t> {
+        auto checkedReadHelperPayload2Shorts = [] (const Memory::BLOB& requestPayload, uint16_t minSecondValue,
+                                                   uint16_t maxSecondValue) -> pair<uint16_t, uint16_t> {
             /*
              *  From http://www.modbus.org/docs/Modbus_Application_Protocol_V1_1b.pdf - page 16 (etc)
              */
@@ -174,9 +175,10 @@ namespace {
                 Throw (Execution::Exception{Characters::Format (L"Invalid payload length (got %d, expected 4)", requestPayload.size ())});
             }
             uint16_t startingAddress = FromNetwork_ (*reinterpret_cast<const uint16_t*> (requestPayload.begin () + 0));
-            uint16_t quantity        = FromNetwork_ (*reinterpret_cast<const uint16_t*> (requestPayload.begin () + 2)); // allowed 1..maxSecondValue
+            uint16_t quantity = FromNetwork_ (*reinterpret_cast<const uint16_t*> (requestPayload.begin () + 2)); // allowed 1..maxSecondValue
             if (not(minSecondValue <= quantity and quantity <= maxSecondValue)) {
-                Throw (Execution::Exception{Characters::Format (L"Invalid quantity parameter (%d): expected value from %d..%d", quantity, minSecondValue, maxSecondValue)});
+                Throw (Execution::Exception{Characters::Format (L"Invalid quantity parameter (%d): expected value from %d..%d", quantity,
+                                                                minSecondValue, maxSecondValue)});
             }
             return pair<uint16_t, uint16_t>{startingAddress, quantity};
         };
@@ -226,25 +228,38 @@ namespace {
                         StackBuffer<uint8_t> results{quantityBytes};
                         (void)::memset (results.begin (), 0, quantityBytes); // for now - fill zeros for values not returned by backend
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                        DbgTrace (L"Processing kReadCoils_ (starting0Address: %d, quantity: %d) message with request-header=%s", startingAddress, quantity, Characters::ToString (requestHeader).c_str ());
+                        DbgTrace (L"Processing kReadCoils_ (starting0Address: %d, quantity: %d) message with request-header=%s",
+                                  startingAddress, quantity, Characters::ToString (requestHeader).c_str ());
 #endif
-                        for (const auto& i : serviceHandler->ReadCoils (DiscreteRange<uint16_t>{zeroToOneBased (startingAddress), zeroToOneBased (endInclusiveAddress)}.Elements ().As<IModbusService::SetRegisterNames<CoilsDescriptorType>> ())) {
+                        for (const auto& i :
+                             serviceHandler->ReadCoils (DiscreteRange<uint16_t>{zeroToOneBased (startingAddress), zeroToOneBased (endInclusiveAddress)}
+                                                            .Elements ()
+                                                            .As<IModbusService::SetRegisterNames<CoilsDescriptorType>> ())) {
                             if (startingAddress <= oneBasedToZeroBased (i.fKey) and oneBasedToZeroBased (i.fKey) < endInclusiveAddress and i.fValue) {
-                                results[(oneBasedToZeroBased (i.fKey) - startingAddress) / 8] |= Memory::Bit ((oneBasedToZeroBased (i.fKey) - startingAddress) % 8);
+                                results[(oneBasedToZeroBased (i.fKey) - startingAddress) / 8] |=
+                                    Memory::Bit ((oneBasedToZeroBased (i.fKey) - startingAddress) % 8);
                             }
                         }
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                        DbgTrace (L"results bitmask bytes=%s", Characters::ToString (Memory::BLOB (reinterpret_cast<const byte*> (results.begin ()), reinterpret_cast<const byte*> (results.end ()))).c_str ());
+                        DbgTrace (L"results bitmask bytes=%s", Characters::ToString (Memory::BLOB (reinterpret_cast<const byte*> (results.begin ()),
+                                                                                                   reinterpret_cast<const byte*> (results.end ())))
+                                                                   .c_str ());
 #endif
                         {
                             // Response ready - format, toNetwork, and write
-                            uint8_t        responseLen    = static_cast<uint8_t> (quantityBytes); // OK cuz validated in checkedReadHelperPayload2Shorts (and converted to bytes)
-                            MBAPHeaderIsh_ responseHeader = MBAPHeaderIsh_{requestHeader.fTransactionID, requestHeader.fProtocolID, static_cast<uint16_t> (MBAPHeaderIsh_::kExtraLengthFromThisHeaderAccountedInPayloadLength + sizeof (responseLen) + responseLen), requestHeader.fUnitID, requestHeader.fFunctionCode};
+                            uint8_t responseLen = static_cast<uint8_t> (quantityBytes); // OK cuz validated in checkedReadHelperPayload2Shorts (and converted to bytes)
+                            MBAPHeaderIsh_ responseHeader =
+                                MBAPHeaderIsh_{requestHeader.fTransactionID, requestHeader.fProtocolID,
+                                               static_cast<uint16_t> (MBAPHeaderIsh_::kExtraLengthFromThisHeaderAccountedInPayloadLength +
+                                                                      sizeof (responseLen) + responseLen),
+                                               requestHeader.fUnitID, requestHeader.fFunctionCode};
                             out.WriteRaw (ToNetwork_ (responseHeader));
                             out.WriteRaw (responseLen);
                             out.Write (results.begin (), results.begin () + responseLen);
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                            DbgTrace (L"Sent response: header=%s, responseLen=%d, responsePayload=%s", Characters::ToString (responseHeader).c_str (), responseLen, Characters::ToString (Memory::BLOB (results.begin (), results.begin () + responseLen)).c_str ());
+                            DbgTrace (L"Sent response: header=%s, responseLen=%d, responsePayload=%s",
+                                      Characters::ToString (responseHeader).c_str (), responseLen,
+                                      Characters::ToString (Memory::BLOB (results.begin (), results.begin () + responseLen)).c_str ());
 #endif
                         }
                     } break;
@@ -259,19 +274,28 @@ namespace {
                         size_t               quantityBytes       = (quantity + 7) / 8;
                         StackBuffer<uint8_t> results{quantityBytes}; // for now - fill zeros for values not returned by backend
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                        DbgTrace (L"Processing kReadDiscreteInputs_ (starting0Address: %d, quantity: %d) message with request-header=%s", startingAddress, quantity, Characters::ToString (requestHeader).c_str ());
+                        DbgTrace (L"Processing kReadDiscreteInputs_ (starting0Address: %d, quantity: %d) message with request-header=%s",
+                                  startingAddress, quantity, Characters::ToString (requestHeader).c_str ());
 #endif
-                        for (const auto& i : serviceHandler->ReadDiscreteInput (DiscreteRange<uint16_t>{zeroToOneBased (startingAddress), zeroToOneBased (endInclusiveAddress)}.Elements ().As<IModbusService::SetRegisterNames<DiscreteInputDescriptorType>> ())) {
+                        for (const auto& i : serviceHandler->ReadDiscreteInput (
+                                 DiscreteRange<uint16_t>{zeroToOneBased (startingAddress), zeroToOneBased (endInclusiveAddress)}
+                                     .Elements ()
+                                     .As<IModbusService::SetRegisterNames<DiscreteInputDescriptorType>> ())) {
                             if (startingAddress <= oneBasedToZeroBased (i.fKey) and oneBasedToZeroBased (i.fKey) <= endInclusiveAddress) {
                                 if (i.fValue) {
-                                    results[(oneBasedToZeroBased (i.fKey) - startingAddress) / 8] |= Memory::Bit ((oneBasedToZeroBased (i.fKey) - startingAddress) % 8);
+                                    results[(oneBasedToZeroBased (i.fKey) - startingAddress) / 8] |=
+                                        Memory::Bit ((oneBasedToZeroBased (i.fKey) - startingAddress) % 8);
                                 }
                             }
                         }
                         {
                             // Response ready - format, toNetwork, and write
-                            uint8_t        responseLen    = static_cast<uint8_t> (quantityBytes); // OK cuz validated in checkedReadHelperPayload2Shorts (and converted to bytes)
-                            MBAPHeaderIsh_ responseHeader = MBAPHeaderIsh_{requestHeader.fTransactionID, requestHeader.fProtocolID, static_cast<uint16_t> (MBAPHeaderIsh_::kExtraLengthFromThisHeaderAccountedInPayloadLength + sizeof (responseLen) + responseLen), requestHeader.fUnitID, requestHeader.fFunctionCode};
+                            uint8_t responseLen = static_cast<uint8_t> (quantityBytes); // OK cuz validated in checkedReadHelperPayload2Shorts (and converted to bytes)
+                            MBAPHeaderIsh_ responseHeader =
+                                MBAPHeaderIsh_{requestHeader.fTransactionID, requestHeader.fProtocolID,
+                                               static_cast<uint16_t> (MBAPHeaderIsh_::kExtraLengthFromThisHeaderAccountedInPayloadLength +
+                                                                      sizeof (responseLen) + responseLen),
+                                               requestHeader.fUnitID, requestHeader.fFunctionCode};
                             out.WriteRaw (ToNetwork_ (responseHeader));
                             out.WriteRaw (responseLen);
                             out.Write (results.begin (), results.begin () + responseLen);
@@ -290,17 +314,25 @@ namespace {
                         uint16_t              endInclusiveAddress = startingAddress + quantity - 1u;
                         StackBuffer<uint16_t> results{quantity}; // for now - fill zeros for values not returned by backend
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                        DbgTrace (L"Processing kReadHoldingResisters_ (starting0Address: %d, quantity: %d) message with request-header=%s", startingAddress, quantity, Characters::ToString (requestHeader).c_str ());
+                        DbgTrace (L"Processing kReadHoldingResisters_ (starting0Address: %d, quantity: %d) message with request-header=%s",
+                                  startingAddress, quantity, Characters::ToString (requestHeader).c_str ());
 #endif
-                        for (const auto& i : serviceHandler->ReadHoldingRegisters (DiscreteRange<uint16_t>{zeroToOneBased (startingAddress), zeroToOneBased (endInclusiveAddress)}.Elements ().As<IModbusService::SetRegisterNames<HoldingRegisterDescriptorType>> ())) {
+                        for (const auto& i : serviceHandler->ReadHoldingRegisters (
+                                 DiscreteRange<uint16_t>{zeroToOneBased (startingAddress), zeroToOneBased (endInclusiveAddress)}
+                                     .Elements ()
+                                     .As<IModbusService::SetRegisterNames<HoldingRegisterDescriptorType>> ())) {
                             if (startingAddress <= oneBasedToZeroBased (i.fKey) and oneBasedToZeroBased (i.fKey) <= endInclusiveAddress) {
                                 results[oneBasedToZeroBased (i.fKey) - startingAddress] = ToNetwork_ (i.fValue);
                             }
                         }
                         {
                             // Response ready - format, toNetwork, and write
-                            uint8_t        responseLen    = static_cast<uint8_t> (quantity * sizeof (results[0])); // (responseLen in bytes) OK cuz validated in checkedReadHelperPayload2Shorts
-                            MBAPHeaderIsh_ responseHeader = MBAPHeaderIsh_{requestHeader.fTransactionID, requestHeader.fProtocolID, static_cast<uint16_t> (MBAPHeaderIsh_::kExtraLengthFromThisHeaderAccountedInPayloadLength + sizeof (responseLen) + responseLen), requestHeader.fUnitID, requestHeader.fFunctionCode};
+                            uint8_t responseLen = static_cast<uint8_t> (quantity * sizeof (results[0])); // (responseLen in bytes) OK cuz validated in checkedReadHelperPayload2Shorts
+                            MBAPHeaderIsh_ responseHeader =
+                                MBAPHeaderIsh_{requestHeader.fTransactionID, requestHeader.fProtocolID,
+                                               static_cast<uint16_t> (MBAPHeaderIsh_::kExtraLengthFromThisHeaderAccountedInPayloadLength +
+                                                                      sizeof (responseLen) + responseLen),
+                                               requestHeader.fUnitID, requestHeader.fFunctionCode};
                             out.WriteRaw (ToNetwork_ (responseHeader));
                             out.WriteRaw (responseLen);
                             out.Write (reinterpret_cast<const byte*> (results.begin ()), reinterpret_cast<const byte*> (results.begin ()) + responseLen);
@@ -319,17 +351,25 @@ namespace {
                         uint16_t              endInclusiveAddress = startingAddress + quantity - 1u;
                         StackBuffer<uint16_t> results{quantity}; // for now - fill zeros for values not returned by backend
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                        DbgTrace (L"Processing kReadInputRegister_ (starting0Address: %d, quantity: %d) message with request-header=%s", startingAddress, quantity, Characters::ToString (requestHeader).c_str ());
+                        DbgTrace (L"Processing kReadInputRegister_ (starting0Address: %d, quantity: %d) message with request-header=%s",
+                                  startingAddress, quantity, Characters::ToString (requestHeader).c_str ());
 #endif
-                        for (const auto& i : serviceHandler->ReadInputRegisters (DiscreteRange<uint16_t>{zeroToOneBased (startingAddress), zeroToOneBased (endInclusiveAddress)}.Elements ().As<IModbusService::SetRegisterNames<InputRegisterDescriptorType>> ())) {
+                        for (const auto& i : serviceHandler->ReadInputRegisters (
+                                 DiscreteRange<uint16_t>{zeroToOneBased (startingAddress), zeroToOneBased (endInclusiveAddress)}
+                                     .Elements ()
+                                     .As<IModbusService::SetRegisterNames<InputRegisterDescriptorType>> ())) {
                             if (startingAddress <= oneBasedToZeroBased (i.fKey) and oneBasedToZeroBased (i.fKey) <= endInclusiveAddress) {
                                 results[oneBasedToZeroBased (i.fKey) - startingAddress] = ToNetwork_ (i.fValue);
                             }
                         }
                         {
                             // Response ready - format, toNetwork, and write
-                            uint8_t        responseLen    = static_cast<uint8_t> (quantity * sizeof (results[0])); // (responseLen in bytes) OK cuz validated in checkedReadHelperPayload2Shorts
-                            MBAPHeaderIsh_ responseHeader = MBAPHeaderIsh_{requestHeader.fTransactionID, requestHeader.fProtocolID, static_cast<uint16_t> (MBAPHeaderIsh_::kExtraLengthFromThisHeaderAccountedInPayloadLength + sizeof (responseLen) + responseLen), requestHeader.fUnitID, requestHeader.fFunctionCode};
+                            uint8_t responseLen = static_cast<uint8_t> (quantity * sizeof (results[0])); // (responseLen in bytes) OK cuz validated in checkedReadHelperPayload2Shorts
+                            MBAPHeaderIsh_ responseHeader =
+                                MBAPHeaderIsh_{requestHeader.fTransactionID, requestHeader.fProtocolID,
+                                               static_cast<uint16_t> (MBAPHeaderIsh_::kExtraLengthFromThisHeaderAccountedInPayloadLength +
+                                                                      sizeof (responseLen) + responseLen),
+                                               requestHeader.fUnitID, requestHeader.fFunctionCode};
                             out.WriteRaw (ToNetwork_ (responseHeader));
                             out.WriteRaw (responseLen);
                             out.Write (reinterpret_cast<const byte*> (results.begin ()), reinterpret_cast<const byte*> (results.begin ()) + responseLen);
@@ -345,9 +385,11 @@ namespace {
                         uint16_t outputAddress = checkedReadHelperPayload2Shorts (requestPayload, 0, 0xff00).first;
                         uint16_t value         = checkedReadHelperPayload2Shorts (requestPayload, 0, 0xff00).second;
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                        DbgTrace (L"Processing kWriteSingleCoil_ (outputAddress: %d, value: %d) message with request-header=%s", outputAddress, value, Characters::ToString (requestHeader).c_str ());
+                        DbgTrace (L"Processing kWriteSingleCoil_ (outputAddress: %d, value: %d) message with request-header=%s",
+                                  outputAddress, value, Characters::ToString (requestHeader).c_str ());
 #endif
-                        serviceHandler->WriteCoils (initializer_list<KeyValuePair<CoilsDescriptorType::NameType, CoilsDescriptorType::ValueType>>{{zeroToOneBased (outputAddress), value == 0 ? false : true}});
+                        serviceHandler->WriteCoils (initializer_list<KeyValuePair<CoilsDescriptorType::NameType, CoilsDescriptorType::ValueType>>{
+                            {zeroToOneBased (outputAddress), value == 0 ? false : true}});
                         {
                             // Response ready - format, toNetwork, and write
                             out.WriteRaw (requestHeader);
@@ -359,17 +401,20 @@ namespace {
                         }
                     } break;
                     default: {
-                        DbgTrace (L"UNREGONIZED FunctionCode (NYI probably) - %d - so echo ILLEGAL_FUNCTION code", Characters::ToString (requestHeader.fFunctionCode).c_str ());
+                        DbgTrace (L"UNREGONIZED FunctionCode (NYI probably) - %d - so echo ILLEGAL_FUNCTION code",
+                                  Characters::ToString (requestHeader.fFunctionCode).c_str ());
                         if (options.fLogger) {
-                            options.fLogger.value ()->Log (Logger::eWarning, L"ModbusTCP unrecognized function code '%s'- rejected as ILLEGAL_FUNCTION", Characters::ToString (requestHeader.fFunctionCode).c_str ());
+                            options.fLogger.value ()->Log (Logger::eWarning, L"ModbusTCP unrecognized function code '%s'- rejected as ILLEGAL_FUNCTION",
+                                                           Characters::ToString (requestHeader.fFunctionCode).c_str ());
                         }
                         MBAPHeaderIsh_ responseHeader = requestHeader;
-                        responseHeader.fFunctionCode  = static_cast<FunctionCodeType_> (responseHeader.fFunctionCode | 0x80); // set high bit
+                        responseHeader.fFunctionCode = static_cast<FunctionCodeType_> (responseHeader.fFunctionCode | 0x80); // set high bit
                         out.WriteRaw (ToNetwork_ (responseHeader));
                         uint8_t exceptionCode = static_cast<uint8_t> (ExceptionCode::ILLEGAL_FUNCTION);
                         out.Write (reinterpret_cast<const byte*> (&exceptionCode), reinterpret_cast<const byte*> (&exceptionCode + 1));
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                        DbgTrace (L"Sent UNREGONIZED_FUNCTION response: header=%s, and exceptionCode=%d", Characters::ToString (responseHeader).c_str (), exceptionCode);
+                        DbgTrace (L"Sent UNREGONIZED_FUNCTION response: header=%s, and exceptionCode=%d",
+                                  Characters::ToString (responseHeader).c_str (), exceptionCode);
 #endif
                     }
                 }
@@ -382,7 +427,8 @@ namespace {
         catch (...) {
             // Anytime we leave the loop due to an exception, thats worth a log note
             if (options.fLogger) {
-                options.fLogger.value ()->Log (Logger::eWarning, L"ModbusTCP connection ended abnormally: %s", Characters::ToString (current_exception ()).c_str ());
+                options.fLogger.value ()->Log (Logger::eWarning, L"ModbusTCP connection ended abnormally: %s",
+                                               Characters::ToString (current_exception ()).c_str ());
             }
             ReThrow ();
         }

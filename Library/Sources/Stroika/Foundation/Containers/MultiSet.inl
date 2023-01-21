@@ -23,7 +23,8 @@ namespace Stroika::Foundation::Containers {
      */
     template <typename T, typename TRAITS>
     struct MultiSet<T, TRAITS>::_IRep::ElementsIteratorHelperContext_ {
-        ElementsIteratorHelperContext_ (const typename Iterable<value_type>::_IterableRepSharedPtr& tally, const Iterator<value_type>& delegateTo, size_t countMoreTimesToGoBeforeAdvance = 0, optional<T> saved2Return = optional<T>{})
+        ElementsIteratorHelperContext_ (const typename Iterable<value_type>::_IterableRepSharedPtr& tally, const Iterator<value_type>& delegateTo,
+                                        size_t countMoreTimesToGoBeforeAdvance = 0, optional<T> saved2Return = optional<T>{})
             : fMultiSet{tally}
             , fMultiSetIterator{delegateTo}
             , fCountMoreTimesToGoBeforeAdvance{countMoreTimesToGoBeforeAdvance}
@@ -80,11 +81,8 @@ namespace Stroika::Foundation::Containers {
                     }
                 }
             }
-            virtual typename Iterator<T>::RepSmartPtr Clone () const override
-            {
-                return Iterator<T>::template MakeSmartPtr<Rep> (*this);
-            }
-            virtual bool Equals (const typename Iterator<T>::IRep* /*rhs*/) const override
+            virtual typename Iterator<T>::RepSmartPtr Clone () const override { return Iterator<T>::template MakeSmartPtr<Rep> (*this); }
+            virtual bool                              Equals (const typename Iterator<T>::IRep* /*rhs*/) const override
             {
                 AssertNotImplemented ();
                 return false;
@@ -105,7 +103,8 @@ namespace Stroika::Foundation::Containers {
     struct MultiSet<T, TRAITS>::_IRep::_ElementsIterableHelper : public Iterable<T> {
         using MyIteratorRep_ = typename ElementsIteratorHelper_::Rep;
         using MyDataBLOB_    = ElementsIteratorHelperContext_;
-        struct MyIterableRep_ : Traversal::IterableFromIterator<T, MyIteratorRep_, MyDataBLOB_>::_Rep, public Memory::UseBlockAllocationIfAppropriate<MyIterableRep_> {
+        struct MyIterableRep_ : Traversal::IterableFromIterator<T, MyIteratorRep_, MyDataBLOB_>::_Rep,
+                                public Memory::UseBlockAllocationIfAppropriate<MyIterableRep_> {
             using inherited = typename Traversal::IterableFromIterator<T, MyIteratorRep_, MyDataBLOB_>::_Rep;
             MyIterableRep_ (const ElementsIteratorHelperContext_& context)
                 : inherited{context}
@@ -119,17 +118,15 @@ namespace Stroika::Foundation::Containers {
                 }
                 return n;
             }
-            virtual bool empty () const override
-            {
-                return this->_fContextForEachIterator.fMultiSet->empty ();
-            }
+            virtual bool empty () const override { return this->_fContextForEachIterator.fMultiSet->empty (); }
             virtual typename Iterable<T>::_IterableRepSharedPtr Clone () const override
             {
                 return Iterable<T>::template MakeSmartPtr<MyIterableRep_> (*this);
             }
         };
         _ElementsIterableHelper (const typename Iterable<CountedValue<T>>::_IterableRepSharedPtr& iterateOverMultiSet)
-            : Iterable<T>{Iterable<T>::template MakeSmartPtr<MyIterableRep_> (ElementsIteratorHelperContext_ (iterateOverMultiSet, iterateOverMultiSet->MakeIterator ()))}
+            : Iterable<T>{Iterable<T>::template MakeSmartPtr<MyIterableRep_> (
+                  ElementsIteratorHelperContext_ (iterateOverMultiSet, iterateOverMultiSet->MakeIterator ()))}
         {
         }
     };
@@ -169,11 +166,8 @@ namespace Stroika::Foundation::Containers {
                     *result = fContext.fMultiSetIterator->fValue;
                 }
             }
-            virtual typename Iterator<T>::RepSmartPtr Clone () const override
-            {
-                return Iterator<T>::template MakeSmartPtr<Rep> (*this);
-            }
-            virtual bool Equals (const typename Iterator<T>::IRep* /*rhs*/) const override
+            virtual typename Iterator<T>::RepSmartPtr Clone () const override { return Iterator<T>::template MakeSmartPtr<Rep> (*this); }
+            virtual bool                              Equals (const typename Iterator<T>::IRep* /*rhs*/) const override
             {
                 AssertNotImplemented ();
                 return false;
@@ -193,20 +187,15 @@ namespace Stroika::Foundation::Containers {
     struct MultiSet<T, TRAITS>::_IRep::_UniqueElementsHelper : public Iterable<T> {
         using MyIteratorRep_ = typename UniqueElementsIteratorHelper_::Rep;
         using MyDataBLOB_    = UniqueElementsIteratorHelperContext_;
-        struct MyIterableRep_ : Traversal::IterableFromIterator<T, MyIteratorRep_, MyDataBLOB_>::_Rep, public Memory::UseBlockAllocationIfAppropriate<MyIterableRep_> {
+        struct MyIterableRep_ : Traversal::IterableFromIterator<T, MyIteratorRep_, MyDataBLOB_>::_Rep,
+                                public Memory::UseBlockAllocationIfAppropriate<MyIterableRep_> {
             using inherited = typename Traversal::IterableFromIterator<T, MyIteratorRep_, MyDataBLOB_>::_Rep;
             MyIterableRep_ (const UniqueElementsIteratorHelperContext_& context)
                 : inherited{context}
             {
             }
-            virtual size_t size () const override
-            {
-                return this->_fContextForEachIterator.fMultiSet->size ();
-            }
-            virtual bool empty () const override
-            {
-                return this->_fContextForEachIterator.fMultiSet->empty ();
-            }
+            virtual size_t size () const override { return this->_fContextForEachIterator.fMultiSet->size (); }
+            virtual bool   empty () const override { return this->_fContextForEachIterator.fMultiSet->empty (); }
             virtual typename Iterable<T>::_IterableRepSharedPtr Clone () const override
             {
                 return Iterable<T>::template MakeSmartPtr<MyIterableRep_> (*this);
@@ -269,7 +258,9 @@ namespace Stroika::Foundation::Containers {
         // @todo see https://stroika.atlassian.net/browse/STK-933 for why this decay_t is needed - unclear why!
         : inherited{Factory::MultiSet_Factory<T, TRAITS, decay_t<EQUALS_COMPARER>> (forward<EQUALS_COMPARER> (equalsComparer)) ()}
     {
-        static_assert (Common::IsEqualsComparer<EQUALS_COMPARER> (), "MultiSet constructor with EQUALS_COMPARER - comparer not valid EqualsComparer- see ComparisonRelationDeclaration<Common::ComparisonRelationType::eEquals, function<bool(T, T)>");
+        static_assert (Common::IsEqualsComparer<EQUALS_COMPARER> (),
+                       "MultiSet constructor with EQUALS_COMPARER - comparer not valid EqualsComparer- see "
+                       "ComparisonRelationDeclaration<Common::ComparisonRelationType::eEquals, function<bool(T, T)>");
         _AssertRepValidType ();
     }
     template <typename T, typename TRAITS>
@@ -532,10 +523,9 @@ namespace Stroika::Foundation::Containers {
         Require (not i.Done ());
         using element_type                   = typename inherited::_SharedByValueRepType::element_type;
         Iterator<value_type> patchedIterator = i;
-        element_type*        writableRep     = this->_fRep.rwget (
-            [&] (const element_type& prevRepPtr) -> typename inherited::_SharedByValueRepType::shared_ptr_type {
-                return Debug::UncheckedDynamicCast<const _IRep&> (prevRepPtr).CloneAndPatchIterator (&patchedIterator);
-            });
+        element_type* writableRep = this->_fRep.rwget ([&] (const element_type& prevRepPtr) -> typename inherited::_SharedByValueRepType::shared_ptr_type {
+            return Debug::UncheckedDynamicCast<const _IRep&> (prevRepPtr).CloneAndPatchIterator (&patchedIterator);
+        });
         AssertNotNull (writableRep);
         return make_tuple (Debug::UncheckedDynamicCast<_IRep*> (writableRep), move (patchedIterator));
     }

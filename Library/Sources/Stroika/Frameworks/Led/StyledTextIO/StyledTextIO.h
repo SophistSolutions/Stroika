@@ -111,7 +111,8 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
         class BadInputHandler;
 
     protected:
-        StyledTextIOReader (SrcStream* srcStream, SinkStream* sinkStream, const shared_ptr<BadInputHandler>& badInputHander = shared_ptr<BadInputHandler> ()); // callers responsability to destroy srcStream/sinkStream
+        StyledTextIOReader (SrcStream* srcStream, SinkStream* sinkStream,
+                            const shared_ptr<BadInputHandler>& badInputHander = shared_ptr<BadInputHandler> ()); // callers responsability to destroy srcStream/sinkStream
 
         // The Read() method must be overriden by one subclass to provide the format interpretation
     public:
@@ -172,8 +173,7 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
         class SrcStreamSeekSaver;
 
     protected:
-        struct ReadEOFException {
-        }; // not an error state necesserily. Just allows our Read helper routines
+        struct ReadEOFException {}; // not an error state necesserily. Just allows our Read helper routines
         // to be simpler. Don't need to worry as much about this special case,
         // and they can just return chars (and throw on eof).
 
@@ -402,16 +402,14 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
         @METHOD:        StyledTextIOWriter::SrcStream::GetStyleInfo
         @DESCRIPTION:
         */
-        virtual vector<StandardStyledTextImager::InfoSummaryRecord>
-        GetStyleInfo (size_t from, size_t len) const = 0;
+        virtual vector<StandardStyledTextImager::InfoSummaryRecord> GetStyleInfo (size_t from, size_t len) const = 0;
 
     public:
         /*
         @METHOD:        StyledTextIOWriter::SrcStream::CollectAllEmbeddingMarkersInRange
         @DESCRIPTION:
         */
-        virtual vector<SimpleEmbeddedObjectStyleMarker*>
-        CollectAllEmbeddingMarkersInRange (size_t from, size_t to) const = 0;
+        virtual vector<SimpleEmbeddedObjectStyleMarker*> CollectAllEmbeddingMarkersInRange (size_t from, size_t to) const = 0;
 
     public:
         class Table;
@@ -559,11 +557,10 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
     */
     class StyledTextIOSrcStream_Memory : public StyledTextIOReader::SrcStream {
     public:
-        StyledTextIOSrcStream_Memory (
-            const void* data, size_t nBytes
+        StyledTextIOSrcStream_Memory (const void* data, size_t nBytes
 #if qPlatform_MacOS
-            ,
-            Handle resourceHandle = nullptr
+                                      ,
+                                      Handle resourceHandle = nullptr
 #endif
         );
 
@@ -612,11 +609,8 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
         Ensure (fWindowTop_Data <= fCursor_Data and fCursor_Data <= fWindowBottom_Data);
         Ensure (fWindowTop_Offset <= fCursor_Offset and fCursor_Offset <= fWindowBottom_Offset);
     }
-    inline size_t StyledTextIOReader::BufferedIndirectSrcStream::current_offset () const
-    {
-        return fCursor_Offset;
-    }
-    inline void StyledTextIOReader::BufferedIndirectSrcStream::seek_to (size_t to)
+    inline size_t StyledTextIOReader::BufferedIndirectSrcStream::current_offset () const { return fCursor_Offset; }
+    inline void   StyledTextIOReader::BufferedIndirectSrcStream::seek_to (size_t to)
     {
         // If seekpos inside our window (at end of buffer counts as inside window even though next read may force a FillCache),
         // just update offset(s), and otherwise - mark fCursor_Data as nullptr so we know cache invalid
@@ -724,11 +718,10 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
     class StyledTextIOSrcStream_FileDescriptor : public StyledTextIOReader::SrcStream {
     public:
         // NB: On the Mac - this FD refers to a mac file access path - not the result of an ::open () call.
-        StyledTextIOSrcStream_FileDescriptor (
-            int fd
+        StyledTextIOSrcStream_FileDescriptor (int fd
 #if qPlatform_MacOS
-            ,
-            Handle resourceHandle = nullptr
+                                              ,
+                                              Handle resourceHandle = nullptr
 #endif
         );
         virtual ~StyledTextIOSrcStream_FileDescriptor ();
@@ -877,10 +870,7 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
             fBadInputHandler = make_shared<BadInputHandler> ();
         }
     }
-    inline StyledTextIOReader::SrcStream& StyledTextIOReader::GetSrcStream () const
-    {
-        return fSrcStream;
-    }
+    inline StyledTextIOReader::SrcStream&  StyledTextIOReader::GetSrcStream () const { return fSrcStream; }
     inline StyledTextIOReader::SinkStream& StyledTextIOReader::GetSinkStream () const
     {
         EnsureNotNull (fSinkStream);
@@ -956,10 +946,7 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
             return 0; // NOT REACHED
         }
     }
-    inline void StyledTextIOReader::ConsumeNextChar () const
-    {
-        (void)GetNextChar ();
-    }
+    inline void StyledTextIOReader::ConsumeNextChar () const { (void)GetNextChar (); }
 
     // class StyledTextIOWriter
     inline StyledTextIOWriter::StyledTextIOWriter (SrcStream* srcStream, SinkStream* sinkStream)
@@ -985,10 +972,7 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
     @METHOD:        StyledTextIOReader::SinkStream::GetCountOfTCharsInserted
     @DESCRIPTION:
     */
-    inline size_t StyledTextIOReader::SinkStream::GetCountOfTCharsInserted () const
-    {
-        return current_offset ();
-    }
+    inline size_t StyledTextIOReader::SinkStream::GetCountOfTCharsInserted () const { return current_offset (); }
 
     // class StyledTextIOWriter::SrcStream::Table::CellInfo
     inline StyledTextIOWriter::SrcStream::Table::CellInfo::CellInfo ()
@@ -998,26 +982,14 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
     }
 
     // class StyledTextIOSrcStream_FileDescriptor
-    inline size_t StyledTextIOSrcStream_FileDescriptor::GetBufferSize () const
-    {
-        return fInputBufferSize;
-    }
+    inline size_t StyledTextIOSrcStream_FileDescriptor::GetBufferSize () const { return fInputBufferSize; }
 
     // class StyledTextIOWriterSinkStream_Memory
-    inline const void* StyledTextIOWriterSinkStream_Memory::PeekAtData () const
-    {
-        return fData;
-    }
-    inline size_t StyledTextIOWriterSinkStream_Memory::GetLength () const
-    {
-        return fBytesUsed;
-    }
+    inline const void* StyledTextIOWriterSinkStream_Memory::PeekAtData () const { return fData; }
+    inline size_t      StyledTextIOWriterSinkStream_Memory::GetLength () const { return fBytesUsed; }
 
     // class StyledTextIOWriterSinkStream_FileDescriptor
-    inline size_t StyledTextIOWriterSinkStream_FileDescriptor::GetBufferSize () const
-    {
-        return fOutputBufferSize;
-    }
+    inline size_t StyledTextIOWriterSinkStream_FileDescriptor::GetBufferSize () const { return fOutputBufferSize; }
 
 }
 

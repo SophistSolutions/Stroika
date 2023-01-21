@@ -843,7 +843,7 @@ namespace {
         {
             using IO::Network::InternetAddress;
             Sequence<InternetAddress> s1;
-            auto                      s2 = s1.Where ([] (InternetAddress i) { return i.GetAddressFamily () == InternetAddress::AddressFamily::V4; });
+            auto s2 = s1.Where ([] (InternetAddress i) { return i.GetAddressFamily () == InternetAddress::AddressFamily::V4; });
         }
     }
 }
@@ -856,10 +856,7 @@ namespace {
         using COMPARE_SimpleClass = equal_to<SimpleClass>;
         struct COMPARE_SimpleClassWithoutComparisonOperators {
             using value_type = SimpleClassWithoutComparisonOperators;
-            bool operator() (value_type v1, value_type v2) const
-            {
-                return v1.GetValue () == v2.GetValue ();
-            }
+            bool operator() (value_type v1, value_type v2) const { return v1.GetValue () == v2.GetValue (); }
         };
 
         SimpleSequenceTest_All_For_Type_<Sequence<size_t>, COMPARE_SIZET> ();

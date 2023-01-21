@@ -34,9 +34,7 @@ Mapping<String, DataExchange::VariantValue> Server::VariantValue::PickoutParamVa
         Mapping<String, VariantValue> result;
         if (auto query = url.GetQuery ()) {
             Mapping<String, String> unconverted = query->GetMap ();
-            unconverted.Apply ([&] (const KeyValuePair<String, String>& kvp) {
-                result.Add (kvp.fKey, VariantValue{kvp.fValue});
-            });
+            unconverted.Apply ([&] (const KeyValuePair<String, String>& kvp) { result.Add (kvp.fKey, VariantValue{kvp.fValue}); });
         }
         return result;
     });
@@ -52,7 +50,9 @@ Mapping<String, DataExchange::VariantValue> Server::VariantValue::PickoutParamVa
     using namespace Characters;
     static const InternetMediaType kDefaultCT_ = DataExchange::InternetMediaTypes::kJSON;
     if (bodyContentType.value_or (kDefaultCT_) == DataExchange::InternetMediaTypes::kJSON) {
-        return body.empty () ? Mapping<String, DataExchange::VariantValue>{} : ClientErrorException::TreatExceptionsAsClientError ([&] () { return Variant::JSON::Reader ().Read (body).As<Mapping<String, DataExchange::VariantValue>> (); });
+        return body.empty () ? Mapping<String, DataExchange::VariantValue>{} : ClientErrorException::TreatExceptionsAsClientError ([&] () {
+            return Variant::JSON::Reader ().Read (body).As<Mapping<String, DataExchange::VariantValue>> ();
+        });
     }
     Execution::Throw (ClientErrorException{"Unrecognized content-type"sv});
 }
@@ -106,7 +106,8 @@ Mapping<String, DataExchange::VariantValue> Server::VariantValue::PickoutParamVa
  ************ WebService::Server::VariantValue::OrderParamValues ****************
  ********************************************************************************
  */
-Sequence<DataExchange::VariantValue> Server::VariantValue::OrderParamValues (const Iterable<String>& paramNames, const Mapping<String, DataExchange::VariantValue>& paramValues)
+Sequence<DataExchange::VariantValue> Server::VariantValue::OrderParamValues (const Iterable<String>&                            paramNames,
+                                                                             const Mapping<String, DataExchange::VariantValue>& paramValues)
 {
     Sequence<DataExchange::VariantValue> result;
     paramNames.Apply ([&] (const String& name) {
@@ -138,7 +139,9 @@ void Server::VariantValue::WriteResponse (Response* response, const WebServiceMe
 
 void Server::VariantValue::WriteResponse (Response* response, const WebServiceMethodDescription& webServiceDescription, const VariantValue& responseValue)
 {
-    Require (not webServiceDescription.fResponseType.has_value () or (webServiceDescription.fResponseType == DataExchange::InternetMediaTypes::kJSON or webServiceDescription.fResponseType == DataExchange::InternetMediaTypes::kText_PLAIN)); // all we support for now
+    Require (not webServiceDescription.fResponseType.has_value () or
+             (webServiceDescription.fResponseType == DataExchange::InternetMediaTypes::kJSON or
+              webServiceDescription.fResponseType == DataExchange::InternetMediaTypes::kText_PLAIN)); // all we support for now
     if (webServiceDescription.fResponseType) {
         if (webServiceDescription.fResponseType == DataExchange::InternetMediaTypes::kJSON) {
             response->contentType = *webServiceDescription.fResponseType;
@@ -162,7 +165,8 @@ void Server::VariantValue::WriteResponse (Response* response, const WebServiceMe
  **************** WebService::Server::VariantValue::mkRequestHandler ************
  ********************************************************************************
  */
-WebServer::RequestHandler Server::VariantValue::mkRequestHandler (const WebServiceMethodDescription& webServiceDescription, const function<Memory::BLOB (WebServer::Message* m)>& f)
+WebServer::RequestHandler Server::VariantValue::mkRequestHandler (const WebServiceMethodDescription& webServiceDescription,
+                                                                  const function<Memory::BLOB (WebServer::Message* m)>& f)
 {
     return [=] (WebServer::Message* m) {
         RequireNotNull (m);

@@ -82,13 +82,15 @@ namespace {
 
     void DoRegressionTests_ ()
     {
-        struct MySimpleClassWithoutComparisonOperators_ComparerWithEquals_ : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eEquals> {
+        struct MySimpleClassWithoutComparisonOperators_ComparerWithEquals_
+            : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eEquals> {
             bool operator() (const SimpleClassWithoutComparisonOperators& lhs, const SimpleClassWithoutComparisonOperators& rhs) const
             {
                 return lhs.GetValue () == rhs.GetValue ();
             }
         };
-        struct MySimpleClassWithoutComparisonOperators_ComparerWithLess_ : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eStrictInOrder> {
+        struct MySimpleClassWithoutComparisonOperators_ComparerWithLess_
+            : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eStrictInOrder> {
             bool operator() (const SimpleClassWithoutComparisonOperators& lhs, const SimpleClassWithoutComparisonOperators& rhs) const
             {
                 return lhs.GetValue () < rhs.GetValue ();
@@ -98,33 +100,45 @@ namespace {
         {
             DoTestForConcreteContainer_<MultiSet<size_t>> ();
             DoTestForConcreteContainer_<MultiSet<SimpleClass>> ();
-            auto msFactory = [] () { return MultiSet<SimpleClassWithoutComparisonOperators>{MySimpleClassWithoutComparisonOperators_ComparerWithEquals_{}}; };
+            auto msFactory = [] () {
+                return MultiSet<SimpleClassWithoutComparisonOperators>{MySimpleClassWithoutComparisonOperators_ComparerWithEquals_{}};
+            };
             DoTestForConcreteContainer_<MultiSet<SimpleClassWithoutComparisonOperators>> (
-                CommonTests::MultiSetTests::DEFAULT_TESTING_SCHEMA<MultiSet<SimpleClassWithoutComparisonOperators>, MySimpleClassWithoutComparisonOperators_ComparerWithEquals_, decltype (msFactory)> (msFactory));
+                CommonTests::MultiSetTests::DEFAULT_TESTING_SCHEMA<MultiSet<SimpleClassWithoutComparisonOperators>, MySimpleClassWithoutComparisonOperators_ComparerWithEquals_,
+                                                                   decltype (msFactory)> (msFactory));
         }
 
         {
             DoTestForConcreteContainer_<MultiSet_Array<size_t>> ();
             DoTestForConcreteContainer_<MultiSet_Array<SimpleClass>> ();
-            auto msFactory = [] () { return MultiSet_Array<SimpleClassWithoutComparisonOperators>{MySimpleClassWithoutComparisonOperators_ComparerWithEquals_{}}; };
+            auto msFactory = [] () {
+                return MultiSet_Array<SimpleClassWithoutComparisonOperators>{MySimpleClassWithoutComparisonOperators_ComparerWithEquals_{}};
+            };
             DoTestForConcreteContainer_<MultiSet_Array<SimpleClassWithoutComparisonOperators>> (
-                CommonTests::MultiSetTests::DEFAULT_TESTING_SCHEMA<MultiSet<SimpleClassWithoutComparisonOperators>, MySimpleClassWithoutComparisonOperators_ComparerWithEquals_, decltype (msFactory)> (msFactory));
+                CommonTests::MultiSetTests::DEFAULT_TESTING_SCHEMA<MultiSet<SimpleClassWithoutComparisonOperators>, MySimpleClassWithoutComparisonOperators_ComparerWithEquals_,
+                                                                   decltype (msFactory)> (msFactory));
         }
 
         {
             DoTestForConcreteContainer_<MultiSet_LinkedList<size_t>> ();
             DoTestForConcreteContainer_<MultiSet_LinkedList<SimpleClass>> ();
-            auto msFactory = [] () { return MultiSet_LinkedList<SimpleClassWithoutComparisonOperators>{MySimpleClassWithoutComparisonOperators_ComparerWithEquals_{}}; };
+            auto msFactory = [] () {
+                return MultiSet_LinkedList<SimpleClassWithoutComparisonOperators>{MySimpleClassWithoutComparisonOperators_ComparerWithEquals_{}};
+            };
             DoTestForConcreteContainer_<MultiSet_LinkedList<SimpleClassWithoutComparisonOperators>> (
-                CommonTests::MultiSetTests::DEFAULT_TESTING_SCHEMA<MultiSet<SimpleClassWithoutComparisonOperators>, MySimpleClassWithoutComparisonOperators_ComparerWithEquals_, decltype (msFactory)> (msFactory));
+                CommonTests::MultiSetTests::DEFAULT_TESTING_SCHEMA<MultiSet<SimpleClassWithoutComparisonOperators>, MySimpleClassWithoutComparisonOperators_ComparerWithEquals_,
+                                                                   decltype (msFactory)> (msFactory));
         }
 
         {
             DoTestForConcreteContainer_<MultiSet_stdmap<size_t>> ();
             DoTestForConcreteContainer_<MultiSet_stdmap<SimpleClass>> ();
-            auto msFactory = [] () { return MultiSet_stdmap<SimpleClassWithoutComparisonOperators>{MySimpleClassWithoutComparisonOperators_ComparerWithLess_{}}; };
+            auto msFactory = [] () {
+                return MultiSet_stdmap<SimpleClassWithoutComparisonOperators>{MySimpleClassWithoutComparisonOperators_ComparerWithLess_{}};
+            };
             DoTestForConcreteContainer_<MultiSet_stdmap<SimpleClassWithoutComparisonOperators>> (
-                CommonTests::MultiSetTests::DEFAULT_TESTING_SCHEMA<MultiSet_stdmap<SimpleClassWithoutComparisonOperators>, MySimpleClassWithoutComparisonOperators_ComparerWithEquals_, decltype (msFactory)> (msFactory));
+                CommonTests::MultiSetTests::DEFAULT_TESTING_SCHEMA<MultiSet_stdmap<SimpleClassWithoutComparisonOperators>, MySimpleClassWithoutComparisonOperators_ComparerWithEquals_,
+                                                                   decltype (msFactory)> (msFactory));
         }
 
         ExampleCTORS_Test_2_::DoTest ();

@@ -103,13 +103,13 @@ namespace Stroika::Frameworks::Led {
 
         // Row Reference support routines...
     public:
-        nonvirtual bool GetNextRowReference (RowReference* adjustMeInPlace) const;     // return true if there is a next, and false if at end
+        nonvirtual bool GetNextRowReference (RowReference* adjustMeInPlace) const; // return true if there is a next, and false if at end
         nonvirtual bool GetPreviousRowReference (RowReference* adjustMeInPlace) const; // return true if there is a previous, and false if at the beginning
 
         // NB: if ith==1, that means do NOTHING - for convenience...
-        nonvirtual bool         GetIthRowReferenceFromHere (RowReference* adjustMeInPlace, ptrdiff_t ith) const; // return true if there is an ith, and false if we run off end... (ith==0 implies no change, < 0 means go back)
-        nonvirtual RowReference GetIthRowReferenceFromHere (RowReference fromHere, ptrdiff_t ith) const;         // ERROR if ith doesn't exist... (ith==0 implies no change, < 0 means go back)
-        nonvirtual RowReference GetIthRowReference (size_t ith) const;                                           // ERROR if ith doesn't exist...(1 th is first row)
+        nonvirtual bool GetIthRowReferenceFromHere (RowReference* adjustMeInPlace, ptrdiff_t ith) const; // return true if there is an ith, and false if we run off end... (ith==0 implies no change, < 0 means go back)
+        nonvirtual RowReference GetIthRowReferenceFromHere (RowReference fromHere, ptrdiff_t ith) const; // ERROR if ith doesn't exist... (ith==0 implies no change, < 0 means go back)
+        nonvirtual RowReference GetIthRowReference (size_t ith) const; // ERROR if ith doesn't exist...(1 th is first row)
 
         nonvirtual size_t GetRowNumber (RowReference rowRef) const; // Use of row numbers is discouraged, but this routine
         // can be helpful in implementing those APIs anyhow
@@ -159,14 +159,14 @@ namespace Stroika::Frameworks::Led {
         virtual Led_Rect GetCharWindowLocation (size_t afterPosition) const override;
         virtual size_t   GetCharAtWindowLocation (const Led_Point& where) const override;
 
-        virtual size_t   GetStartOfRow (size_t rowNumber) const override;
-        virtual size_t   GetStartOfRowContainingPosition (size_t charPosition) const override;
-        virtual size_t   GetEndOfRow (size_t rowNumber) const override;
-        virtual size_t   GetEndOfRowContainingPosition (size_t charPosition) const override;
-        virtual size_t   GetRealEndOfRow (size_t rowNumber) const override;
-        virtual size_t   GetRealEndOfRowContainingPosition (size_t charPosition) const override;
-        virtual size_t   GetRowContainingPosition (size_t charPosition) const override;
-        virtual size_t   GetRowCount () const override;
+        virtual size_t GetStartOfRow (size_t rowNumber) const override;
+        virtual size_t GetStartOfRowContainingPosition (size_t charPosition) const override;
+        virtual size_t GetEndOfRow (size_t rowNumber) const override;
+        virtual size_t GetEndOfRowContainingPosition (size_t charPosition) const override;
+        virtual size_t GetRealEndOfRow (size_t rowNumber) const override;
+        virtual size_t GetRealEndOfRowContainingPosition (size_t charPosition) const override;
+        virtual size_t GetRowContainingPosition (size_t charPosition) const override;
+        virtual size_t GetRowCount () const override;
         virtual Led_Rect GetCharLocationRowRelativeByPosition (size_t afterPosition, size_t positionOfTopRow, size_t maxRowsToCheck) const override;
 
     public:
@@ -188,14 +188,15 @@ namespace Stroika::Frameworks::Led {
         nonvirtual DistanceType GetHeightOfRows (RowReference startingRow, size_t rowCount) const;
 
     public:
-        virtual void GetStableTypingRegionContaingMarkerRange (size_t fromMarkerPos, size_t toMarkerPos,
-                                                               size_t* expandedFromMarkerPos, size_t* expandedToMarkerPos) const;
+        virtual void GetStableTypingRegionContaingMarkerRange (size_t fromMarkerPos, size_t toMarkerPos, size_t* expandedFromMarkerPos,
+                                                               size_t* expandedToMarkerPos) const;
 
     public:
         virtual void Draw (const Led_Rect& subsetToDraw, bool printing);
 
     public:
-        virtual void DrawPartitionElement (PartitionMarker* pm, size_t startSubRow, size_t maxSubRow, Tablet* tablet, OffscreenTablet* offscreenTablet, bool printing, const Led_Rect& subsetToDraw, Led_Rect* remainingDrawArea, size_t* rowsDrawn);
+        virtual void DrawPartitionElement (PartitionMarker* pm, size_t startSubRow, size_t maxSubRow, Tablet* tablet, OffscreenTablet* offscreenTablet,
+                                           bool printing, const Led_Rect& subsetToDraw, Led_Rect* remainingDrawArea, size_t* rowsDrawn);
 
     protected:
         virtual Led_Rect GetCharLocationRowRelative (size_t afterPosition, RowReference topRow, size_t maxRowsToCheck = UINT_MAX) const;
@@ -270,7 +271,7 @@ namespace Stroika::Frameworks::Led {
         nonvirtual size_t       GetLastRow () const;
         nonvirtual DistanceType GetRowHeight (size_t ithRow) const;
         nonvirtual size_t       GetLineRelativeRowStartPosition (size_t ithRow) const;
-        nonvirtual size_t       LineRelativePositionInWhichRow (size_t charPos) const; // ZERO based charPos - ie zero is just before first byte in first row
+        nonvirtual size_t LineRelativePositionInWhichRow (size_t charPos) const; // ZERO based charPos - ie zero is just before first byte in first row
 
     public:
         nonvirtual DistanceType GetInterLineSpace () const;
@@ -303,8 +304,12 @@ namespace Stroika::Frameworks::Led {
         // If we switch to that - then we can use unsigned char for this as with the rowHeight guy!!!
         // LGP 950519
         using RowStart_ = size_t;
-        enum { kPackRowStartCount = sizeof (RowStart_*) / sizeof (RowStart_) };
-        enum { kPackRowHeightCount = sizeof (RowHeight_*) / sizeof (RowHeight_) };
+        enum {
+            kPackRowStartCount = sizeof (RowStart_*) / sizeof (RowStart_)
+        };
+        enum {
+            kPackRowHeightCount = sizeof (RowHeight_*) / sizeof (RowHeight_)
+        };
 
     private:
         struct Rep : public Foundation::Memory::UseBlockAllocationIfAppropriate<Rep> {

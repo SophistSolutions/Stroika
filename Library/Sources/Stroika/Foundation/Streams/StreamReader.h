@@ -124,11 +124,11 @@ namespace Stroika::Foundation::Streams {
             optional<ElementType> Peek1FromCache (SeekOffsetType actualOffset);
             optional<ElementType> Read1FromCache (SeekOffsetType* actualOffset);
             optional<size_t>      ReadFromCache (SeekOffsetType* actualOffset, ElementType* intoStart, ElementType* intoEnd);
-            void                  FillCacheWith (SeekOffsetType s, const InlineBufferElementType_* intoStart, const InlineBufferElementType_* intoEnd);
+            void FillCacheWith (SeekOffsetType s, const InlineBufferElementType_* intoStart, const InlineBufferElementType_* intoEnd);
 
         private:
             // Cache uses wchar_t instead of Character so can use resize_uninitialized () - requires is_trivially_constructible
-            SeekOffsetType                                 fCacheWindowBufStart_{0}; // buffer a 'window' around the current data. Not infinite the whole file, but can be pretty big
+            SeekOffsetType fCacheWindowBufStart_{0}; // buffer a 'window' around the current data. Not infinite the whole file, but can be pretty big
             Memory::InlineBuffer<InlineBufferElementType_> fCacheWindowBuf_;
         };
 
@@ -143,9 +143,9 @@ namespace Stroika::Foundation::Streams {
         nonvirtual optional<ElementType> Peek1FromCache_ ();
         nonvirtual optional<ElementType> Read1FromCache_ ();
         nonvirtual optional<size_t> ReadFromCache_ (ElementType* intoStart, ElementType* intoEnd);
-        nonvirtual void             FillCacheWith_ (SeekOffsetType s, const InlineBufferElementType_* intoStart, const InlineBufferElementType_* intoEnd);
-        nonvirtual void             FillCacheWith_ (SeekOffsetType s, const ElementType* intoStart, const ElementType* intoEnd);
-        size_t                      Read_Slow_Case_ (ElementType* intoStart, ElementType* intoEnd);
+        nonvirtual void FillCacheWith_ (SeekOffsetType s, const InlineBufferElementType_* intoStart, const InlineBufferElementType_* intoEnd);
+        nonvirtual void FillCacheWith_ (SeekOffsetType s, const ElementType* intoStart, const ElementType* intoEnd);
+        size_t          Read_Slow_Case_ (ElementType* intoStart, ElementType* intoEnd);
     };
 
 }

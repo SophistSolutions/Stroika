@@ -90,16 +90,13 @@ namespace Stroika::Foundation::Containers::Concrete {
 
         // Sequence<T>::_IRep overrides
     public:
-        virtual _SequenceRepSharedPtr CloneEmpty () const override
-        {
-            return Iterable<T>::template MakeSmartPtr<Rep_> ();
-        }
+        virtual _SequenceRepSharedPtr CloneEmpty () const override { return Iterable<T>::template MakeSmartPtr<Rep_> (); }
         virtual _SequenceRepSharedPtr CloneAndPatchIterator (Iterator<value_type>* i) const override
         {
             RequireNotNull (i);
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
             auto                                                  result = Iterable<value_type>::template MakeSmartPtr<Rep_> (*this);
-            auto&                                                 mir    = Debug::UncheckedDynamicCast<const IteratorRep_&> (i->ConstGetRep ());
+            auto& mir = Debug::UncheckedDynamicCast<const IteratorRep_&> (i->ConstGetRep ());
             result->fData_.MoveIteratorHereAfterClone (&mir.fIterator, &fData_);
             return result;
         }
@@ -185,11 +182,8 @@ namespace Stroika::Foundation::Containers::Concrete {
             fData_.shrink_to_fit ();
             fChangeCounts_.PerformedChange ();
         }
-        virtual size_t capacity () const override
-        {
-            return fData_.capacity ();
-        }
-        virtual void reserve (size_t slotsAlloced) override
+        virtual size_t capacity () const override { return fData_.capacity (); }
+        virtual void   reserve (size_t slotsAlloced) override
         {
             Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fData_};
             fData_.reserve (slotsAlloced);

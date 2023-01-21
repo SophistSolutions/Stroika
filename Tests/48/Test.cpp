@@ -153,31 +153,19 @@ namespace {
         };
         struct jimStdSP_ : std::enable_shared_from_this<jimStdSP_> {
             int                   field = 1;
-            shared_ptr<jimStdSP_> doIt ()
-            {
-                return shared_from_this ();
-            }
+            shared_ptr<jimStdSP_> doIt () { return shared_from_this (); }
         };
         struct jimMIXStdSP_ : X_, std::enable_shared_from_this<jimMIXStdSP_> {
             int                      field = 1;
-            shared_ptr<jimMIXStdSP_> doIt ()
-            {
-                return shared_from_this ();
-            }
+            shared_ptr<jimMIXStdSP_> doIt () { return shared_from_this (); }
         };
         struct jimStkSP_ : Memory::enable_shared_from_this<jimStkSP_> {
             int                  field = 1;
-            SharedPtr<jimStkSP_> doIt ()
-            {
-                return shared_from_this ();
-            }
+            SharedPtr<jimStkSP_> doIt () { return shared_from_this (); }
         };
         struct jimMIStkSP_ : X_, Memory::enable_shared_from_this<jimMIStkSP_> {
             int                    field = 1;
-            SharedPtr<jimMIStkSP_> doIt ()
-            {
-                return shared_from_this ();
-            }
+            SharedPtr<jimMIStkSP_> doIt () { return shared_from_this (); }
         };
     }
 
@@ -193,22 +181,12 @@ namespace {
             static int nCreates  = 0;
             static int nDestroys = 0;
             struct COUNTED_OBJ {
-                COUNTED_OBJ ()
-                {
-                    ++nCreates;
-                }
-                COUNTED_OBJ (const COUNTED_OBJ&)
-                {
-                    ++nCreates;
-                }
-                ~COUNTED_OBJ ()
-                {
-                    ++nDestroys;
-                }
+                COUNTED_OBJ () { ++nCreates; }
+                COUNTED_OBJ (const COUNTED_OBJ&) { ++nCreates; }
+                ~COUNTED_OBJ () { ++nDestroys; }
                 const COUNTED_OBJ& operator= (const COUNTED_OBJ&) = delete;
             };
-            struct CNT2 : COUNTED_OBJ {
-            };
+            struct CNT2 : COUNTED_OBJ {};
             {
                 SharedPtr<COUNTED_OBJ> p (new COUNTED_OBJ ());
             }
@@ -282,7 +260,8 @@ namespace {
             VerifyTestResult (bl.size () == 5 and bl.As<vector<uint8_t>> () == (vector<uint8_t>{1, 2, 3, 4, 5}));
         }
         {
-#if (defined(__clang_major__) && !defined(__APPLE__) && (__clang_major__ >= 7)) || (defined(__clang_major__) && defined(__APPLE__) && (__clang_major__ >= 10))
+#if (defined(__clang_major__) && !defined(__APPLE__) && (__clang_major__ >= 7)) ||                                                         \
+    (defined(__clang_major__) && defined(__APPLE__) && (__clang_major__ >= 10))
             DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wself-assign-overloaded\"")
 #endif
             DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wself-move\"")
@@ -291,7 +270,8 @@ namespace {
             bl = move (bl);
             VerifyTestResult (bl.size () == 5 and bl.As<vector<uint8_t>> () == (vector<uint8_t>{1, 2, 3, 4, 5}));
             DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wself-move\"")
-#if (defined(__clang_major__) && !defined(__APPLE__) && (__clang_major__ >= 7)) || (defined(__clang_major__) && defined(__APPLE__) && (__clang_major__ >= 10))
+#if (defined(__clang_major__) && !defined(__APPLE__) && (__clang_major__ >= 7)) ||                                                         \
+    (defined(__clang_major__) && defined(__APPLE__) && (__clang_major__ >= 10))
             DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wself-assign-overloaded\"")
 #endif
         }
@@ -301,23 +281,35 @@ namespace {
             const char kSrc3_[] = "We eat wiggly worms. That was a very good time to eat the worms. They are awesome!";
             const char kSrc4_[] = "0123456789";
 
-            VerifyTestResult (Memory::BLOB ((const byte*)kSrc1_, (const byte*)kSrc1_ + ::strlen (kSrc1_)) == Memory::BLOB::Raw (kSrc1_, kSrc1_ + strlen (kSrc1_)));
-            VerifyTestResult (Memory::BLOB ((const byte*)kSrc2_, (const byte*)kSrc2_ + ::strlen (kSrc2_)) == Memory::BLOB::Raw (kSrc2_, kSrc2_ + strlen (kSrc2_)));
-            VerifyTestResult (Memory::BLOB ((const byte*)kSrc3_, (const byte*)kSrc3_ + ::strlen (kSrc3_)) == Memory::BLOB::Raw (kSrc3_, kSrc3_ + strlen (kSrc3_)));
-            VerifyTestResult (Memory::BLOB ((const byte*)kSrc4_, (const byte*)kSrc4_ + ::strlen (kSrc4_)) == Memory::BLOB::Raw (kSrc4_, kSrc4_ + strlen (kSrc4_)));
+            VerifyTestResult (Memory::BLOB ((const byte*)kSrc1_, (const byte*)kSrc1_ + ::strlen (kSrc1_)) ==
+                              Memory::BLOB::Raw (kSrc1_, kSrc1_ + strlen (kSrc1_)));
+            VerifyTestResult (Memory::BLOB ((const byte*)kSrc2_, (const byte*)kSrc2_ + ::strlen (kSrc2_)) ==
+                              Memory::BLOB::Raw (kSrc2_, kSrc2_ + strlen (kSrc2_)));
+            VerifyTestResult (Memory::BLOB ((const byte*)kSrc3_, (const byte*)kSrc3_ + ::strlen (kSrc3_)) ==
+                              Memory::BLOB::Raw (kSrc3_, kSrc3_ + strlen (kSrc3_)));
+            VerifyTestResult (Memory::BLOB ((const byte*)kSrc4_, (const byte*)kSrc4_ + ::strlen (kSrc4_)) ==
+                              Memory::BLOB::Raw (kSrc4_, kSrc4_ + strlen (kSrc4_)));
 
-            VerifyTestResult (Memory::BLOB ((const byte*)kSrc1_, (const byte*)kSrc1_ + ::strlen (kSrc1_)) == Memory::BLOB::Raw (kSrc1_, kSrc1_ + NEltsOf (kSrc1_) - 1));
-            VerifyTestResult (Memory::BLOB ((const byte*)kSrc2_, (const byte*)kSrc2_ + ::strlen (kSrc2_)) == Memory::BLOB::Raw (kSrc2_, kSrc2_ + NEltsOf (kSrc2_) - 1));
-            VerifyTestResult (Memory::BLOB ((const byte*)kSrc3_, (const byte*)kSrc3_ + ::strlen (kSrc3_)) == Memory::BLOB::Raw (kSrc3_, kSrc3_ + NEltsOf (kSrc3_) - 1));
-            VerifyTestResult (Memory::BLOB ((const byte*)kSrc4_, (const byte*)kSrc4_ + ::strlen (kSrc4_)) == Memory::BLOB::Raw (kSrc4_, kSrc4_ + NEltsOf (kSrc4_) - 1));
+            VerifyTestResult (Memory::BLOB ((const byte*)kSrc1_, (const byte*)kSrc1_ + ::strlen (kSrc1_)) ==
+                              Memory::BLOB::Raw (kSrc1_, kSrc1_ + NEltsOf (kSrc1_) - 1));
+            VerifyTestResult (Memory::BLOB ((const byte*)kSrc2_, (const byte*)kSrc2_ + ::strlen (kSrc2_)) ==
+                              Memory::BLOB::Raw (kSrc2_, kSrc2_ + NEltsOf (kSrc2_) - 1));
+            VerifyTestResult (Memory::BLOB ((const byte*)kSrc3_, (const byte*)kSrc3_ + ::strlen (kSrc3_)) ==
+                              Memory::BLOB::Raw (kSrc3_, kSrc3_ + NEltsOf (kSrc3_) - 1));
+            VerifyTestResult (Memory::BLOB ((const byte*)kSrc4_, (const byte*)kSrc4_ + ::strlen (kSrc4_)) ==
+                              Memory::BLOB::Raw (kSrc4_, kSrc4_ + NEltsOf (kSrc4_) - 1));
         }
         {
             using Memory::BLOB;
-            VerifyTestResult ((BLOB::Hex ("61 70 70 6c 65 73 20 61 6e 64 20 70 65 61 72 73 0d 0a") == BLOB{0x61, 0x70, 0x70, 0x6c, 0x65, 0x73, 0x20, 0x61, 0x6e, 0x64, 0x20, 0x70, 0x65, 0x61, 0x72, 0x73, 0x0d, 0x0a}));
-            VerifyTestResult ((BLOB::Hex ("4a 94 99 ac 55 f7 a2 8b 1b ca 75 62 f6 9a cf de 41 9d") == BLOB{0x4a, 0x94, 0x99, 0xac, 0x55, 0xf7, 0xa2, 0x8b, 0x1b, 0xca, 0x75, 0x62, 0xf6, 0x9a, 0xcf, 0xde, 0x41, 0x9d}));
+            VerifyTestResult ((BLOB::Hex ("61 70 70 6c 65 73 20 61 6e 64 20 70 65 61 72 73 0d 0a") ==
+                               BLOB{0x61, 0x70, 0x70, 0x6c, 0x65, 0x73, 0x20, 0x61, 0x6e, 0x64, 0x20, 0x70, 0x65, 0x61, 0x72, 0x73, 0x0d, 0x0a}));
+            VerifyTestResult ((BLOB::Hex ("4a 94 99 ac 55 f7 a2 8b 1b ca 75 62 f6 9a cf de 41 9d") ==
+                               BLOB{0x4a, 0x94, 0x99, 0xac, 0x55, 0xf7, 0xa2, 0x8b, 0x1b, 0xca, 0x75, 0x62, 0xf6, 0x9a, 0xcf, 0xde, 0x41, 0x9d}));
             VerifyTestResult ((BLOB::Hex ("68 69 20 6d 6f 6d 0d 0a") == BLOB{0x68, 0x69, 0x20, 0x6d, 0x6f, 0x6d, 0x0d, 0x0a}));
-            VerifyTestResult ((BLOB::Hex ("29 14 4a db 4e ce 20 45 09 56 e8 13 65 2f e8 d6") == BLOB{0x29, 0x14, 0x4a, 0xdb, 0x4e, 0xce, 0x20, 0x45, 0x09, 0x56, 0xe8, 0x13, 0x65, 0x2f, 0xe8, 0xd6}));
-            VerifyTestResult ((BLOB::Hex ("29144adb4ece20450956e813652fe8d6") == BLOB{0x29, 0x14, 0x4a, 0xdb, 0x4e, 0xce, 0x20, 0x45, 0x09, 0x56, 0xe8, 0x13, 0x65, 0x2f, 0xe8, 0xd6}));
+            VerifyTestResult ((BLOB::Hex ("29 14 4a db 4e ce 20 45 09 56 e8 13 65 2f e8 d6") ==
+                               BLOB{0x29, 0x14, 0x4a, 0xdb, 0x4e, 0xce, 0x20, 0x45, 0x09, 0x56, 0xe8, 0x13, 0x65, 0x2f, 0xe8, 0xd6}));
+            VerifyTestResult ((BLOB::Hex ("29144adb4ece20450956e813652fe8d6") ==
+                               BLOB{0x29, 0x14, 0x4a, 0xdb, 0x4e, 0xce, 0x20, 0x45, 0x09, 0x56, 0xe8, 0x13, 0x65, 0x2f, 0xe8, 0xd6}));
             VerifyTestResult ((BLOB::Hex ("29144adb4ece20450956e813652fe8d6").AsHex () == L"29144adb4ece20450956e813652fe8d6"));
         }
     }
@@ -380,7 +372,8 @@ namespace {
         void DoTest ()
         {
             {
-#if (defined(__clang_major__) && !defined(__APPLE__) && (__clang_major__ >= 7)) || (defined(__clang_major__) && defined(__APPLE__) && (__clang_major__ >= 10))
+#if (defined(__clang_major__) && !defined(__APPLE__) && (__clang_major__ >= 7)) ||                                                         \
+    (defined(__clang_major__) && defined(__APPLE__) && (__clang_major__ >= 10))
                 DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wself-assign-overloaded\""); // explicitly assigning value of variable ... to itself
 #endif
                 // ASSIGN
@@ -402,7 +395,8 @@ namespace {
                 }
             }
             // note - see https://stroika.atlassian.net/browse/STK-556 - we DON'T support Optional self-move
-#if (defined(__clang_major__) && !defined(__APPLE__) && (__clang_major__ >= 7)) || (defined(__clang_major__) && defined(__APPLE__) && (__clang_major__ >= 10))
+#if (defined(__clang_major__) && !defined(__APPLE__) && (__clang_major__ >= 7)) ||                                                         \
+    (defined(__clang_major__) && defined(__APPLE__) && (__clang_major__ >= 10))
             DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wself-assign-overloaded\"");
 #endif
         }
@@ -431,10 +425,10 @@ namespace {
         void DoTest ()
         {
             {
-                VerifyTestResult (
-                    ConvertPointerToDataMemberToOffset (&Private_::X1::a) == 0 or ConvertPointerToDataMemberToOffset (&Private_::X1::b) == 0);
-                VerifyTestResult (
-                    ConvertPointerToDataMemberToOffset (&Private_::X1::a) != 0 or ConvertPointerToDataMemberToOffset (&Private_::X1::b) != 0);
+                VerifyTestResult (ConvertPointerToDataMemberToOffset (&Private_::X1::a) == 0 or
+                                  ConvertPointerToDataMemberToOffset (&Private_::X1::b) == 0);
+                VerifyTestResult (ConvertPointerToDataMemberToOffset (&Private_::X1::a) != 0 or
+                                  ConvertPointerToDataMemberToOffset (&Private_::X1::b) != 0);
             }
             {
                 Private_::X1 t;

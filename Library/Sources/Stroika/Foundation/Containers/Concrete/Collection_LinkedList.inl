@@ -20,8 +20,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     /*
     */
     template <typename T>
-    class Collection_LinkedList<T>::IImplRep_ : public Collection<T>::_IRep {
-    };
+    class Collection_LinkedList<T>::IImplRep_ : public Collection<T>::_IRep {};
 
     /*
      */
@@ -79,16 +78,13 @@ namespace Stroika::Foundation::Containers::Concrete {
 
         // Collection<T>::_IRep overrides
     public:
-        virtual _CollectionRepSharedPtr CloneEmpty () const override
-        {
-            return Iterable<value_type>::template MakeSmartPtr<Rep_> ();
-        }
+        virtual _CollectionRepSharedPtr CloneEmpty () const override { return Iterable<value_type>::template MakeSmartPtr<Rep_> (); }
         virtual _CollectionRepSharedPtr CloneAndPatchIterator (Iterator<value_type>* i) const override
         {
             RequireNotNull (i);
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
             auto                                                  result = Iterable<T>::template MakeSmartPtr<Rep_> (*this);
-            auto&                                                 mir    = Debug::UncheckedDynamicCast<const IteratorRep_&> (i->ConstGetRep ());
+            auto& mir = Debug::UncheckedDynamicCast<const IteratorRep_&> (i->ConstGetRep ());
             result->fData_.MoveIteratorHereAfterClone (&mir.fIterator, &fData_);
             i->Refresh (); // reflect updated rep
             return result;

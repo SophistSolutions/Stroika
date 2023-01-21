@@ -16,30 +16,12 @@ namespace Stroika::Foundation::DataExchange::Variant::INI {
      ********************************** INI::Reader *********************************
      ********************************************************************************
      */
-    inline Profile Reader::ReadProfile (const Streams::InputStream<std::byte>::Ptr& in)
-    {
-        return Convert (Read (in));
-    }
-    inline Profile Reader::ReadProfile (const Streams::InputStream<Characters::Character>::Ptr& in)
-    {
-        return Convert (Read (in));
-    }
-    inline Profile Reader::ReadProfile (const Traversal::Iterable<Characters::Character>& in)
-    {
-        return Convert (Read (in));
-    }
-    inline Profile Reader::ReadProfile (const Memory::BLOB& in)
-    {
-        return Convert (Read (in));
-    }
-    inline Profile Reader::ReadProfile (istream& in)
-    {
-        return Convert (Read (in));
-    }
-    inline Profile Reader::ReadProfile (wistream& in)
-    {
-        return Convert (Read (in));
-    }
+    inline Profile Reader::ReadProfile (const Streams::InputStream<std::byte>::Ptr& in) { return Convert (Read (in)); }
+    inline Profile Reader::ReadProfile (const Streams::InputStream<Characters::Character>::Ptr& in) { return Convert (Read (in)); }
+    inline Profile Reader::ReadProfile (const Traversal::Iterable<Characters::Character>& in) { return Convert (Read (in)); }
+    inline Profile Reader::ReadProfile (const Memory::BLOB& in) { return Convert (Read (in)); }
+    inline Profile Reader::ReadProfile (istream& in) { return Convert (Read (in)); }
+    inline Profile Reader::ReadProfile (wistream& in) { return Convert (Read (in)); }
 
 }
 #endif /*_Stroika_Foundation_DataExchange_Variant_INI_Reader_inl_*/

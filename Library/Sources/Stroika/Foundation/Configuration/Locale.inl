@@ -37,10 +37,7 @@ namespace Stroika::Foundation::Configuration {
         : fPrev_{locale::global (l)}
     {
     }
-    inline ScopedUseLocale::~ScopedUseLocale ()
-    {
-        IgnoreExceptionsForCall (locale::global (fPrev_));
-    }
+    inline ScopedUseLocale::~ScopedUseLocale () { IgnoreExceptionsForCall (locale::global (fPrev_)); }
 
 }
 

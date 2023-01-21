@@ -97,7 +97,9 @@ String Hop::ToString () const
  */
 Sequence<Hop> NetworkMonitor::Traceroute::Run (const InternetAddress& addr, const Options& options)
 {
-    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"Frameworks::NetworkMonitor::Traceroute::Run", L"addr=%s, options=%s", Characters::ToString (addr).c_str (), Characters::ToString (options).c_str ())};
+    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"Frameworks::NetworkMonitor::Traceroute::Run",
+                                                                                 L"addr=%s, options=%s", Characters::ToString (addr).c_str (),
+                                                                                 Characters::ToString (options).c_str ())};
     Sequence<Hop>             results;
     unsigned int              maxTTL = options.fMaxHops.value_or (Options::kDefaultMaxHops);
 
@@ -119,14 +121,16 @@ Sequence<Hop> NetworkMonitor::Traceroute::Run (const InternetAddress& addr, cons
         }
         catch (const ICMP::V4::TTLExpiredException& ttlExpiredException) {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-            DbgTrace (L"exception %s - ipaddr = %s", Characters::ToString (ttlExpiredException).c_str (), Characters::ToString (ttlExpiredException.GetReachedIP ()).c_str ());
+            DbgTrace (L"exception %s - ipaddr = %s", Characters::ToString (ttlExpiredException).c_str (),
+                      Characters::ToString (ttlExpiredException.GetReachedIP ()).c_str ());
 #endif
             // totally normal - this is how we find out the hops
             results += Hop{Duration{Time::GetTickCount () - startOfPingRequest}, ttlExpiredException.GetUnreachedIP ()};
         }
         catch (const ICMP::V4::DestinationUnreachableException& destinationUnreachableException) {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-            DbgTrace (L"exception %s - ipaddr = %s", Characters::ToString (destinationUnreachableException).c_str (), Characters::ToString (destinationUnreachableException.GetReachedIP ()).c_str ());
+            DbgTrace (L"exception %s - ipaddr = %s", Characters::ToString (destinationUnreachableException).c_str (),
+                      Characters::ToString (destinationUnreachableException.GetReachedIP ()).c_str ());
 #endif
             // Not sure how normal this is? @todo - research - maybe abandon ping when this happens... -- LGP 2017-03-27
             results += Hop{Duration{Time::GetTickCount () - startOfPingRequest}, destinationUnreachableException.GetUnreachedIP ()};

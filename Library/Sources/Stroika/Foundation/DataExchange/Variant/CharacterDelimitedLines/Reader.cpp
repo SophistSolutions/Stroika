@@ -39,27 +39,16 @@ public:
         : fDelimiters_{columnDelimiters}
     {
     }
-    virtual _SharedPtrIRep Clone () const override
-    {
-        return make_shared<Rep_> (fDelimiters_);
-    }
-    virtual String GetDefaultFileSuffix () const override
-    {
-        return ".txt"sv;
-    }
-    virtual VariantValue Read (const Streams::InputStream<byte>::Ptr& in) override
-    {
-        return Read (Streams::TextReader::New (in));
-    }
-    virtual VariantValue Read (const Streams::InputStream<Character>::Ptr& in) override
+    virtual _SharedPtrIRep Clone () const override { return make_shared<Rep_> (fDelimiters_); }
+    virtual String         GetDefaultFileSuffix () const override { return ".txt"sv; }
+    virtual VariantValue   Read (const Streams::InputStream<byte>::Ptr& in) override { return Read (Streams::TextReader::New (in)); }
+    virtual VariantValue   Read (const Streams::InputStream<Character>::Ptr& in) override
     {
         // @todo consider if this functional style is more clear than a nested for-loop. Was harder for me to
         // write this way, but that could be my inexpereince... --LGP 2022-12-04
-        return VariantValue{
-            ReadMatrix (in).Map<VariantValue, Sequence<VariantValue>> (
-                [] (const Sequence<String>& line) -> VariantValue {
-                    return VariantValue{line.Map<VariantValue> ([] (const String& i) { return VariantValue{i}; })};
-                })};
+        return VariantValue{ReadMatrix (in).Map<VariantValue, Sequence<VariantValue>> ([] (const Sequence<String>& line) -> VariantValue {
+            return VariantValue{line.Map<VariantValue> ([] (const String& i) { return VariantValue{i}; })};
+        })};
     }
     nonvirtual Iterable<Sequence<String>> ReadMatrix (const Streams::InputStream<Character>::Ptr& in) const
     {

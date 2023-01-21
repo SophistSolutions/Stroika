@@ -22,9 +22,7 @@ CompileTimeFlagChecker_SOURCE (Stroika::Frameworks::Led::Platform, qHookIMEEndCo
 namespace Stroika::Frameworks::Led::Platform {
 
     namespace Private {
-        IdleMangerLinkerSupport::IdleMangerLinkerSupport ()
-        {
-        }
+        IdleMangerLinkerSupport::IdleMangerLinkerSupport () {}
     }
 
     /*
@@ -43,7 +41,7 @@ namespace Stroika::Frameworks::Led::Platform {
         virtual void                                  StartSpendTimeCalls () override;
         virtual void                                  TerminateSpendTimeCalls () override;
         virtual Foundation::Time::DurationSecondsType GetSuggestedFrequency () const override;
-        virtual void                                  SetSuggestedFrequency (Foundation::Time::DurationSecondsType suggestedFrequency) override;
+        virtual void SetSuggestedFrequency (Foundation::Time::DurationSecondsType suggestedFrequency) override;
 
     protected:
         nonvirtual void OnTimer_Msg (UINT_PTR nEventID, TIMERPROC* proc);
@@ -55,7 +53,9 @@ namespace Stroika::Frameworks::Led::Platform {
         static LRESULT CALLBACK StaticWndProc (HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 
     private:
-        enum { eTimerEventID = 34252 }; // Magic#
+        enum {
+            eTimerEventID = 34252
+        }; // Magic#
         HWND                                  fIdleWnd;
         Foundation::Time::DurationSecondsType fSuggestedFrequency;
         UINT_PTR                              fTimerID;
@@ -66,14 +66,8 @@ namespace Stroika::Frameworks::Led::Platform {
             *  Code to automatically install and remove our idle manager.
             */
         struct IdleMangerSetter {
-            IdleMangerSetter ()
-            {
-                IdleManager::SetIdleManagerOSImpl (&fIdleManagerOSImpl);
-            }
-            ~IdleMangerSetter ()
-            {
-                IdleManager::SetIdleManagerOSImpl (NULL);
-            }
+            IdleMangerSetter () { IdleManager::SetIdleManagerOSImpl (&fIdleManagerOSImpl); }
+            ~IdleMangerSetter () { IdleManager::SetIdleManagerOSImpl (NULL); }
             IdleManagerOSImpl_Win32 fIdleManagerOSImpl;
         };
         struct IdleMangerSetter sIdleMangerSetter;
@@ -91,9 +85,9 @@ namespace Stroika::Frameworks::Led::Platform {
 
     void FunnyMSPageUpDownAdjustSelectionHelper::CaptureInfo (TextInteractor& ti)
     {
-        size_t    pinPoint = ti.GetSelectionStart ();
-        ptrdiff_t rowNum   = ti.CalculateRowDeltaFromCharDeltaFromTopOfWindow (long (pinPoint) - long (ti.GetMarkerPositionOfStartOfWindow ()));
-        fRowNum            = ::abs (rowNum);
+        size_t pinPoint = ti.GetSelectionStart ();
+        ptrdiff_t rowNum = ti.CalculateRowDeltaFromCharDeltaFromTopOfWindow (long (pinPoint) - long (ti.GetMarkerPositionOfStartOfWindow ()));
+        fRowNum = ::abs (rowNum);
     }
 
     void FunnyMSPageUpDownAdjustSelectionHelper::CompleteAdjustment (TextInteractor& ti)
@@ -144,7 +138,8 @@ namespace Stroika::Frameworks::Led::Platform {
     @METHOD:        SimpleWin32WndProcHelper::Create
     @DESCRIPTION:   <p></p>
     */
-    void SimpleWin32WndProcHelper::Create (DWORD dwExStyle, LPCTSTR lpClassName, LPCTSTR lpWindowName, DWORD dwStyle, int x, int y, int nWidth, int nHeight, HWND hWndParent, HMENU hMenu, HINSTANCE hInstance)
+    void SimpleWin32WndProcHelper::Create (DWORD dwExStyle, LPCTSTR lpClassName, LPCTSTR lpWindowName, DWORD dwStyle, int x, int y,
+                                           int nWidth, int nHeight, HWND hWndParent, HMENU hMenu, HINSTANCE hInstance)
     {
         SDKString tmpClassName;
         if (lpClassName == NULL) {
@@ -172,7 +167,8 @@ namespace Stroika::Frameworks::Led::Platform {
                 }
             }
         }
-        [[maybe_unused]] HWND hWnd = ::CreateWindowEx (dwExStyle, lpClassName, lpWindowName, dwStyle, x, y, nWidth, nHeight, hWndParent, hMenu, hInstance, this);
+        [[maybe_unused]] HWND hWnd =
+            ::CreateWindowEx (dwExStyle, lpClassName, lpWindowName, dwStyle, x, y, nWidth, nHeight, hWndParent, hMenu, hInstance, this);
         Assert (hWnd == GetValidatedHWND ()); // already pre-set on the WM_CREATE message...
     }
 
@@ -241,10 +237,7 @@ namespace Stroika::Frameworks::Led::Platform {
         }
     }
 
-    Foundation::Time::DurationSecondsType IdleManagerOSImpl_Win32::GetSuggestedFrequency () const
-    {
-        return fSuggestedFrequency;
-    }
+    Foundation::Time::DurationSecondsType IdleManagerOSImpl_Win32::GetSuggestedFrequency () const { return fSuggestedFrequency; }
 
     void IdleManagerOSImpl_Win32::SetSuggestedFrequency (Foundation::Time::DurationSecondsType suggestedFrequency)
     {
@@ -302,7 +295,7 @@ namespace Stroika::Frameworks::Led::Platform {
     {
         if (fIdleWnd == NULL) {
             // Because of SPR#1549 - make sure the className depends on the ADDRESS of StaticWndProc
-            SDKString        className = Characters::CString::Format (Led_SDK_TCHAROF ("Led::IdleManagerOSImpl_Win32 (%p)"), &StaticWndProc);
+            SDKString className = Characters::CString::Format (Led_SDK_TCHAROF ("Led::IdleManagerOSImpl_Win32 (%p)"), &StaticWndProc);
             static SDKString sRegisteredClassName;
             if (sRegisteredClassName != className) {
                 WNDCLASSEX wcex;

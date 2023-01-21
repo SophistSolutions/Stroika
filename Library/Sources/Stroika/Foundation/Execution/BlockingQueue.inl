@@ -31,7 +31,10 @@ namespace Stroika::Foundation::Execution {
         // Our locks are short-lived, so its safe to ignore the timeout - this will always be fast
         //
         // note also: this must be NotifyAll, not NotifyOne () - because we could wake a useless, ineffective thread, e.g. https://stackoverflow.com/questions/13774802/notify-instead-of-notifyall-for-blocking-queue
-        fCondtionVariable_.MutateDataNotifyAll ([&, this] () { Require (not fEndOfInput_);  fQueue_.AddTail (e); });
+        fCondtionVariable_.MutateDataNotifyAll ([&, this] () {
+            Require (not fEndOfInput_);
+            fQueue_.AddTail (e);
+        });
     }
     template <typename T>
     inline void BlockingQueue<T>::SignalEndOfInput ()

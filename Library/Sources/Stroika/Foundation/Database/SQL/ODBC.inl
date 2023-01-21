@@ -29,10 +29,7 @@ namespace Stroika::Foundation::Database::SQL::ODBC {
         inherited::operator= (move (src));
         return *this;
     }
-    inline Connection::IRep* Connection::Ptr::operator->() const noexcept
-    {
-        return dynamic_pointer_cast<IRep> (_fRep).get ();
-    }
+    inline Connection::IRep* Connection::Ptr::operator->() const noexcept { return dynamic_pointer_cast<IRep> (_fRep).get (); }
 #endif
 
 }

@@ -39,7 +39,8 @@ namespace Stroika::Foundation::Containers::Factory {
         static inline atomic<Queue<T> (*) ()> sFactory_{nullptr};
 
     public:
-        static_assert (not is_reference_v<T>, "typically if this fails its because a (possibly indirect) caller forgot to use forward<>(), or remove_cvref_t");
+        static_assert (not is_reference_v<T>,
+                       "typically if this fails its because a (possibly indirect) caller forgot to use forward<>(), or remove_cvref_t");
 
     public:
         /**

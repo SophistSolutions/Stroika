@@ -88,11 +88,8 @@ namespace Stroika::Foundation::Traversal {
                 , fForcedEnd{false}
             {
             }
-            virtual _IterableRepSharedPtr Clone () const override
-            {
-                return Iterable<T>::template MakeSmartPtr<MyRep_> (*this);
-            }
-            virtual Iterator<T> MakeIterator () const override
+            virtual _IterableRepSharedPtr Clone () const override { return Iterable<T>::template MakeSmartPtr<MyRep_> (*this); }
+            virtual Iterator<T>           MakeIterator () const override
             {
                 if (fForcedEnd) {
                     return Iterator<T>{Iterator<T>::template MakeSmartPtr<DiscreteRange::MyIteratorRep_> ()};

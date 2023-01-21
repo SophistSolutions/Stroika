@@ -50,10 +50,13 @@ Socket::PlatformNativeHandle Socket::mkLowLevelSocket_ (SocketAddress::FamilyTyp
 #endif
     Socket::PlatformNativeHandle sfd;
 #if qPlatform_POSIX
-    sfd = Handle_ErrNoResultInterruption ([=] () -> int { return socket (static_cast<int> (family), static_cast<int> (socketKind), static_cast<int> (NullCoalesce (protocol))); });
+    sfd = Handle_ErrNoResultInterruption ([=] () -> int {
+        return socket (static_cast<int> (family), static_cast<int> (socketKind), static_cast<int> (NullCoalesce (protocol)));
+    });
 #elif qPlatform_Windows
     DISABLE_COMPILER_MSC_WARNING_START (28193) // dump warning about examining sfd
-    ThrowWSASystemErrorIfSOCKET_ERROR (sfd = ::socket (static_cast<int> (family), static_cast<int> (socketKind), static_cast<int> (NullCoalesce (protocol))));
+    ThrowWSASystemErrorIfSOCKET_ERROR (
+        sfd = ::socket (static_cast<int> (family), static_cast<int> (socketKind), static_cast<int> (NullCoalesce (protocol))));
     DISABLE_COMPILER_MSC_WARNING_END (28193)
 #else
     AssertNotImplemented ();
@@ -104,11 +107,14 @@ Socket::Type Socket::Ptr::GetType () const
 
 void Socket::Ptr::Bind (const SocketAddress& sockAddr, BindFlags bindFlags)
 {
-    Debug::TraceContextBumper                       ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"IO::Network::Socket::Bind", L"sockAddr=%s bindFlags.fReUseAddr=%s", Characters::ToString (sockAddr).c_str (), Characters::ToString (bindFlags.fSO_REUSEADDR).c_str ())};
+    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"IO::Network::Socket::Bind", L"sockAddr=%s bindFlags.fReUseAddr=%s",
+                                                                                 Characters::ToString (sockAddr).c_str (),
+                                                                                 Characters::ToString (bindFlags.fSO_REUSEADDR).c_str ())};
     AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
     RequireNotNull (fRep_); // Construct with Socket::Kind::SOCKET_STREAM?
 
-    auto                    bindingActivity = Execution::LazyEvalActivity{[&] () -> Characters::String { return L"binding to " + Characters::ToString (sockAddr); }};
+    auto bindingActivity =
+        Execution::LazyEvalActivity{[&] () -> Characters::String { return L"binding to " + Characters::ToString (sockAddr); }};
     [[maybe_unused]] auto&& declareActivity = Execution::DeclareActivity{&bindingActivity};
 
     // Indicates that the rules used in validating addresses supplied in a bind(2) call should allow
@@ -123,7 +129,8 @@ void Socket::Ptr::Bind (const SocketAddress& sockAddr, BindFlags bindFlags)
 #if qPlatform_Windows
         ThrowWSASystemErrorIfSOCKET_ERROR (::bind (sfd, (sockaddr*)&useSockAddr, static_cast<int> (sockAddr.GetRequiredSize ())));
 #else
-        Handle_ErrNoResultInterruption ([sfd, &useSockAddr, &sockAddr] () -> int { return ::bind (sfd, (sockaddr*)&useSockAddr, sockAddr.GetRequiredSize ()); });
+        Handle_ErrNoResultInterruption (
+            [sfd, &useSockAddr, &sockAddr] () -> int { return ::bind (sfd, (sockaddr*)&useSockAddr, sockAddr.GetRequiredSize ()); });
 #endif
     }
     catch (const Execution::SystemErrorException<>& e) {
@@ -162,7 +169,8 @@ String Socket::Ptr::ToString () const
     }
     else {
         sb += "{";
-        sb += "Native-Socket: " + ((fRep_->GetNativeSocket () == kINVALID_NATIVE_HANDLE_) ? "CLOSED" : Characters::ToString (fRep_->GetNativeSocket ())) + ", ";
+        sb += "Native-Socket: " +
+              ((fRep_->GetNativeSocket () == kINVALID_NATIVE_HANDLE_) ? "CLOSED" : Characters::ToString (fRep_->GetNativeSocket ())) + ", ";
         if (auto ola = GetLocalAddress ()) {
             sb += "Local-Address: " + Characters::ToString (*ola);
         }

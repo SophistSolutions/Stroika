@@ -93,15 +93,16 @@ namespace {
             }
         };
 
-        constexpr auto kDefaultPrioritizedName_OrderByDefault_Less = Stroika::Foundation::Common::DeclareInOrderComparer ([] (const PrioritizedName& lhs, const PrioritizedName& rhs) -> bool {
-            if (lhs.fPriority > rhs.fPriority) {
-                return true;
-            }
-            else if (lhs.fPriority < rhs.fPriority) {
-                return false;
-            }
-            return lhs.fName < rhs.fName;
-        });
+        constexpr auto kDefaultPrioritizedName_OrderByDefault_Less =
+            Stroika::Foundation::Common::DeclareInOrderComparer ([] (const PrioritizedName& lhs, const PrioritizedName& rhs) -> bool {
+                if (lhs.fPriority > rhs.fPriority) {
+                    return true;
+                }
+                else if (lhs.fPriority < rhs.fPriority) {
+                    return false;
+                }
+                return lhs.fName < rhs.fName;
+            });
 
         struct PrioritizedNames : Containers::SortedCollection<PrioritizedName> {
             PrioritizedNames ()
@@ -159,15 +160,21 @@ namespace {
 
         RunTests_<SortedCollection<size_t>> ();
         RunTests_<SortedCollection<SimpleClass>> ();
-        RunTests_<SortedCollection<SimpleClassWithoutComparisonOperators>> (MySimpleClassWithoutComparisonOperators_LESS_{}, [] () { return SortedCollection<SimpleClassWithoutComparisonOperators> (MySimpleClassWithoutComparisonOperators_LESS_{}); });
+        RunTests_<SortedCollection<SimpleClassWithoutComparisonOperators>> (MySimpleClassWithoutComparisonOperators_LESS_{}, [] () {
+            return SortedCollection<SimpleClassWithoutComparisonOperators> (MySimpleClassWithoutComparisonOperators_LESS_{});
+        });
 
         RunTests_<SortedCollection_LinkedList<size_t>> ();
         RunTests_<SortedCollection_LinkedList<SimpleClass>> ();
-        RunTests_<SortedCollection_LinkedList<SimpleClassWithoutComparisonOperators>> (MySimpleClassWithoutComparisonOperators_LESS_{}, [] () { return SortedCollection_LinkedList<SimpleClassWithoutComparisonOperators> (MySimpleClassWithoutComparisonOperators_LESS_{}); });
+        RunTests_<SortedCollection_LinkedList<SimpleClassWithoutComparisonOperators>> (MySimpleClassWithoutComparisonOperators_LESS_{}, [] () {
+            return SortedCollection_LinkedList<SimpleClassWithoutComparisonOperators> (MySimpleClassWithoutComparisonOperators_LESS_{});
+        });
 
         RunTests_<SortedCollection_stdmultiset<size_t>> ();
         RunTests_<SortedCollection_stdmultiset<SimpleClass>> ();
-        RunTests_<SortedCollection_stdmultiset<SimpleClassWithoutComparisonOperators>> (MySimpleClassWithoutComparisonOperators_LESS_{}, [] () { return SortedCollection_stdmultiset<SimpleClassWithoutComparisonOperators> (MySimpleClassWithoutComparisonOperators_LESS_{}); });
+        RunTests_<SortedCollection_stdmultiset<SimpleClassWithoutComparisonOperators>> (MySimpleClassWithoutComparisonOperators_LESS_{}, [] () {
+            return SortedCollection_stdmultiset<SimpleClassWithoutComparisonOperators> (MySimpleClassWithoutComparisonOperators_LESS_{});
+        });
 
         TestOverwriteContainerWhileIteratorRunning_ ();
         Test6_SortedCollection_NoDefaultSortFunctionExplicitOne_::DoIt ();

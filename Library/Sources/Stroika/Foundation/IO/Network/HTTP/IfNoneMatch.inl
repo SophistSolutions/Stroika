@@ -21,10 +21,7 @@ namespace Stroika::Foundation::IO::Network::HTTP {
         : fETags{etags}
     {
     }
-    inline bool IfNoneMatch::IsAsterisk () const
-    {
-        return fETags.empty ();
-    }
+    inline bool                  IfNoneMatch::IsAsterisk () const { return fETags.empty (); }
     inline optional<IfNoneMatch> IfNoneMatch::Parse (const String& wireFormat)
     {
         // @see https://tools.ietf.org/html/rfc7232#section-3.2
@@ -81,10 +78,7 @@ namespace Stroika::Foundation::IO::Network::HTTP {
         }
         return String::Join (fETags.Map<String> ([] (const ETag& e) { return e.As<String> (); }));
     }
-    inline Characters::String IfNoneMatch::ToString () const
-    {
-        return As<String> ();
-    }
+    inline Characters::String IfNoneMatch::ToString () const { return As<String> (); }
 
 }
 

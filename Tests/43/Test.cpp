@@ -51,7 +51,8 @@ namespace {
         wchar_t outBuf[10 * 1024];
 
         String canonical;
-        ThrowIfErrorHRESULT (::CoInternetParseUrl (CComBSTR{w.As<wstring> ().c_str ()}, PARSE_CANONICALIZE, 0, outBuf, static_cast<DWORD> (Memory::NEltsOf (outBuf)), &ignr, 0));
+        ThrowIfErrorHRESULT (::CoInternetParseUrl (CComBSTR{w.As<wstring> ().c_str ()}, PARSE_CANONICALIZE, 0, outBuf,
+                                                   static_cast<DWORD> (Memory::NEltsOf (outBuf)), &ignr, 0));
         canonical = outBuf;
 
         {
@@ -61,7 +62,8 @@ namespace {
             }
         }
 
-        if (SUCCEEDED (::CoInternetParseUrl (CComBSTR{canonical.As<wstring> ().c_str ()}, PARSE_DOMAIN, 0, outBuf, static_cast<DWORD> (Memory::NEltsOf (outBuf)), &ignr, 0))) {
+        if (SUCCEEDED (::CoInternetParseUrl (CComBSTR{canonical.As<wstring> ().c_str ()}, PARSE_DOMAIN, 0, outBuf,
+                                             static_cast<DWORD> (Memory::NEltsOf (outBuf)), &ignr, 0))) {
             *host = outBuf;
         }
 
@@ -102,7 +104,8 @@ namespace {
                 VerifyTestResult ((Host{Network::V4::kLocalhost}.AsEncoded () == L"127.0.0.1"sv));
                 VerifyTestResult ((Host{InternetAddress{169, 254, 0, 1}}.AsEncoded () == L"169.254.0.1"sv));
                 VerifyTestResult ((Host{InternetAddress{L"fe80::44de:4247:5b76:ddc9"}}.AsEncoded () == L"[fe80::44de:4247:5b76:ddc9]"sv));
-                VerifyTestResult ((Host::Parse (L"[fe80::44de:4247:5b76:ddc9]").AsInternetAddress () == InternetAddress{L"fe80::44de:4247:5b76:ddc9"}));
+                VerifyTestResult (
+                    (Host::Parse (L"[fe80::44de:4247:5b76:ddc9]").AsInternetAddress () == InternetAddress{L"fe80::44de:4247:5b76:ddc9"}));
                 VerifyTestResult ((Host{L"www.sophists.com"}.AsEncoded () == L"www.sophists.com"sv));
                 VerifyTestResult ((Host{L"hello mom"}.AsEncoded () == L"hello%20mom"sv));
                 VerifyTestResult ((Host::Parse (L"hello%20mom") == Host{L"hello mom"}));
@@ -369,7 +372,8 @@ namespace {
                 }
 // workaround really only needed if ASAN enabled, but more of a PITA to test that
 #if qCompilerAndStdLib_ASAN_initializerlist_scope_Buggy
-                static const auto kInitList_ = initializer_list<URI>{URI{L"http://httpbin.org/get"}, URI{L"http://www.google.com"}, fred, URI{L"http://www.cnn.com"}};
+                static const auto kInitList_ =
+                    initializer_list<URI>{URI{L"http://httpbin.org/get"}, URI{L"http://www.google.com"}, fred, URI{L"http://www.cnn.com"}};
 #endif
                 for (URI u :
 #if qCompilerAndStdLib_ASAN_initializerlist_scope_Buggy
@@ -407,7 +411,8 @@ namespace {
                     }
                 }
                 try {
-                    auto uri = URI::Parse (L"http://[fe80::354f:9016:fed2:8b9b]:2869/upnphost/udhisapi.dll?content=uuid:4becec11-428e-46e0-801b-9b293cf1d2c7");
+                    auto uri = URI::Parse (
+                        L"http://[fe80::354f:9016:fed2:8b9b]:2869/upnphost/udhisapi.dll?content=uuid:4becec11-428e-46e0-801b-9b293cf1d2c7");
                     VerifyTestResult (uri.GetAuthority ()->GetPort () == 2869);
                     VerifyTestResult (uri.GetAuthority ()->GetHost () == InternetAddress{L"fe80::354f:9016:fed2:8b9b"});
                     VerifyTestResult (uri.GetAbsPath () == L"/upnphost/udhisapi.dll");
@@ -515,10 +520,12 @@ namespace {
         }
         {
             VerifyTestResult (InternetAddress (V4::kLocalhost.As<in_addr> ()) == V4::kLocalhost);
-            VerifyTestResult (InternetAddress (V4::kLocalhost.As<in_addr> (InternetAddress::ByteOrder::Host)) != V4::kLocalhost or ntohl (0x01020304) == 0x01020304); // if big-endian machine, net byte order equals host byte order
+            VerifyTestResult (InternetAddress (V4::kLocalhost.As<in_addr> (InternetAddress::ByteOrder::Host)) != V4::kLocalhost or
+                              ntohl (0x01020304) == 0x01020304); // if big-endian machine, net byte order equals host byte order
         }
         {
-            VerifyTestResult (InternetAddress{L"192.168.99.1"}.AsAddressFamily (InternetAddress::AddressFamily::V6) == InternetAddress{L"2002:C0A8:6301::"});
+            VerifyTestResult (InternetAddress{L"192.168.99.1"}.AsAddressFamily (InternetAddress::AddressFamily::V6) ==
+                              InternetAddress{L"2002:C0A8:6301::"});
             VerifyTestResult (InternetAddress{L"2002:C0A8:6301::"}.AsAddressFamily (InternetAddress::AddressFamily::V4) == InternetAddress{L"192.168.99.1"});
         }
     }
@@ -571,7 +578,8 @@ namespace {
                 VerifyTestResult (cidr == cidr2);
                 VerifyTestResult (Characters::ToString (cidr) == L"10.70.0.0/15");
                 VerifyTestResult (cidr.GetNumberOfSignificantBits () == 15);
-                VerifyTestResult ((cidr.GetRange () == Traversal::DiscreteRange<InternetAddress>{InternetAddress{10, 70, 0, 0}, InternetAddress{10, 71, 255, 255}}));
+                VerifyTestResult ((cidr.GetRange () == Traversal::DiscreteRange<InternetAddress>{InternetAddress{10, 70, 0, 0},
+                                                                                                 InternetAddress{10, 71, 255, 255}}));
             }
             {
                 auto cidr = CIDR{InternetAddress{"192.168.56.1"}, 24};
@@ -613,7 +621,9 @@ namespace {
                     catch ([[maybe_unused]] const filesystem::filesystem_error& e) {
 #if qPlatform_Linux
                         if (e.code () == errc::no_such_file_or_directory) {
-                            TestHarness::WarnTestIssue ((L"Ignoring NeighborsMonitor exeption on linux cuz probably WSL failure: " + Characters::ToString (current_exception ())).c_str ()); // hopefully fixed soon on WSL - arp -a --LGP 2020-03-19
+                            TestHarness::WarnTestIssue ((L"Ignoring NeighborsMonitor exeption on linux cuz probably WSL failure: " +
+                                                         Characters::ToString (current_exception ()))
+                                                            .c_str ()); // hopefully fixed soon on WSL - arp -a --LGP 2020-03-19
                             return;
                         }
 #endif

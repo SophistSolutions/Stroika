@@ -177,7 +177,8 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
 
         /**
          */
-        StructFieldInfo (const Name& serializedFieldName, const StructFieldMetaInfo& fieldMetaInfo, const optional<ReaderFromVoidStarFactory>& typeMapper = nullopt);
+        StructFieldInfo (const Name& serializedFieldName, const StructFieldMetaInfo& fieldMetaInfo,
+                         const optional<ReaderFromVoidStarFactory>& typeMapper = nullopt);
     };
 
     /**
@@ -314,7 +315,8 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
         template <typename ENUM_TYPE>
         static ReaderFromVoidStarFactory MakeCommonReader_NamedEnumerations (const Containers::Bijection<ENUM_TYPE, String>& nameMap);
         template <typename ENUM_TYPE>
-        static ReaderFromVoidStarFactory MakeCommonReader_NamedEnumerations (const Configuration::EnumNames<ENUM_TYPE>& nameMap = Configuration::DefaultNames<ENUM_TYPE>::k);
+        static ReaderFromVoidStarFactory
+        MakeCommonReader_NamedEnumerations (const Configuration::EnumNames<ENUM_TYPE>& nameMap = Configuration::DefaultNames<ENUM_TYPE>::k);
 
     public:
         /**
@@ -458,7 +460,8 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
         template <typename T>
         static ReaderFromVoidStarFactory MakeCommonReader_ (const T*, enable_if_t<is_enum_v<T>>* = nullptr);
         template <typename T>
-        static ReaderFromVoidStarFactory MakeCommonReader_ (const T*, enable_if_t<is_trivially_copyable_v<T> and is_standard_layout_v<T> and not is_enum_v<T>>* = nullptr);
+        static ReaderFromVoidStarFactory
+        MakeCommonReader_ (const T*, enable_if_t<is_trivially_copyable_v<T> and is_standard_layout_v<T> and not is_enum_v<T>>* = nullptr);
         template <typename T>
         static ReaderFromVoidStarFactory MakeCommonReader_ (const optional<T>*);
         template <typename T>
@@ -807,10 +810,15 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
 
             static const function<std::byte*(T*)> kDefaultAddressOfSubElementFetcher;
 
-            MixinEltTraits (const ReaderFromVoidStarFactory& readerFactory, const function<std::byte*(T*)>& addressOfSubEltFetcher = kDefaultAddressOfSubElementFetcher);
-            MixinEltTraits (const ReaderFromVoidStarFactory& readerFactory, const function<bool (const Name& name)>& readsName, const function<std::byte*(T*)>& addressOfSubEltFetcher = kDefaultAddressOfSubElementFetcher);
-            MixinEltTraits (const ReaderFromVoidStarFactory& readerFactory, const function<bool ()>& readsText, const function<std::byte*(T*)>& addressOfSubEltFetcher = kDefaultAddressOfSubElementFetcher);
-            MixinEltTraits (const ReaderFromVoidStarFactory& readerFactory, const function<bool (const Name& name)>& readsName, const function<bool ()>& readsText, const function<std::byte*(T*)>& addressOfSubEltFetcher = kDefaultAddressOfSubElementFetcher);
+            MixinEltTraits (const ReaderFromVoidStarFactory& readerFactory,
+                            const function<std::byte*(T*)>&  addressOfSubEltFetcher = kDefaultAddressOfSubElementFetcher);
+            MixinEltTraits (const ReaderFromVoidStarFactory& readerFactory, const function<bool (const Name& name)>& readsName,
+                            const function<std::byte*(T*)>& addressOfSubEltFetcher = kDefaultAddressOfSubElementFetcher);
+            MixinEltTraits (const ReaderFromVoidStarFactory& readerFactory, const function<bool ()>& readsText,
+                            const function<std::byte*(T*)>& addressOfSubEltFetcher = kDefaultAddressOfSubElementFetcher);
+            MixinEltTraits (const ReaderFromVoidStarFactory& readerFactory, const function<bool (const Name& name)>& readsName,
+                            const function<bool ()>&        readsText,
+                            const function<std::byte*(T*)>& addressOfSubEltFetcher = kDefaultAddressOfSubElementFetcher);
         };
 
     public:

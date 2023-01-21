@@ -215,7 +215,8 @@ namespace Stroika::Foundation::DataExchange {
         struct Rep_Cloner_ {
             shared_ptr<IFrontendRep_> operator() (const IFrontendRep_& t) const;
         };
-        using SharedRepByValuePtr_ = Memory::SharedByValue<IFrontendRep_, Memory::SharedByValue_Traits<IFrontendRep_, shared_ptr<IFrontendRep_>, Rep_Cloner_>>;
+        using SharedRepByValuePtr_ =
+            Memory::SharedByValue<IFrontendRep_, Memory::SharedByValue_Traits<IFrontendRep_, shared_ptr<IFrontendRep_>, Rep_Cloner_>>;
 
         SharedRepByValuePtr_ fFrontEndRep_;
 
@@ -317,16 +318,16 @@ namespace Stroika::Foundation::DataExchange {
     /**
      */
     struct InternetMediaTypeRegistry::IFrontendRep_ {
-        virtual ~IFrontendRep_ ()                                                                                                              = default;
-        virtual Mapping<InternetMediaType, OverrideRecord> GetOverrides () const                                                               = 0;
-        virtual void                                       SetOverrides (const Mapping<InternetMediaType, OverrideRecord>& overrides)          = 0;
-        virtual void                                       AddOverride (const InternetMediaType& mediaType, const OverrideRecord& overrideRec) = 0;
-        virtual shared_ptr<IBackendRep>                    GetBackendRep () const                                                              = 0;
-        virtual Containers::Set<InternetMediaType>         GetMediaTypes (optional<InternetMediaType::AtomType> majorType) const               = 0;
-        virtual optional<FileSuffixType>                   GetPreferredAssociatedFileSuffix (const InternetMediaType& ct) const                = 0;
-        virtual Containers::Set<FileSuffixType>            GetAssociatedFileSuffixes (const InternetMediaType& ct) const                       = 0;
-        virtual optional<String>                           GetAssociatedPrettyName (const InternetMediaType& ct) const                         = 0;
-        virtual optional<InternetMediaType>                GetAssociatedContentType (const FileSuffixType& fileNameOrSuffix) const             = 0;
+        virtual ~IFrontendRep_ ()                                                = default;
+        virtual Mapping<InternetMediaType, OverrideRecord> GetOverrides () const = 0;
+        virtual void                                       SetOverrides (const Mapping<InternetMediaType, OverrideRecord>& overrides)  = 0;
+        virtual void                               AddOverride (const InternetMediaType& mediaType, const OverrideRecord& overrideRec) = 0;
+        virtual shared_ptr<IBackendRep>            GetBackendRep () const                                                              = 0;
+        virtual Containers::Set<InternetMediaType> GetMediaTypes (optional<InternetMediaType::AtomType> majorType) const               = 0;
+        virtual optional<FileSuffixType>           GetPreferredAssociatedFileSuffix (const InternetMediaType& ct) const                = 0;
+        virtual Containers::Set<FileSuffixType>    GetAssociatedFileSuffixes (const InternetMediaType& ct) const                       = 0;
+        virtual optional<String>                   GetAssociatedPrettyName (const InternetMediaType& ct) const                         = 0;
+        virtual optional<InternetMediaType>        GetAssociatedContentType (const FileSuffixType& fileNameOrSuffix) const             = 0;
     };
 
     /**

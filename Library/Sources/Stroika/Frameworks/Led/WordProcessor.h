@@ -85,16 +85,14 @@ namespace Stroika::Frameworks::Led {
 
     public:
 #if qTroubleLookingUpBaseClassInNestedClassDeclaration_VC6
-        class NoParagraphDatabaseAvailable : public TextImager::NotFullyInitialized {
-        };
+        class NoParagraphDatabaseAvailable : public TextImager::NotFullyInitialized {};
 #else
         /*
         @CLASS:         WordProcessor::NoParagraphDatabaseAvailable
         @BASES:         @'TextImager::NotFullyInitialized'
         @DESCRIPTION:   <p>Thrown by @'WordProcessor::GetLayoutMargins' etc when no @'WordProcessor::ParagraphDatabasePtr' available.</p>
         */
-        class NoParagraphDatabaseAvailable : public NotFullyInitialized {
-        };
+        class NoParagraphDatabaseAvailable : public NotFullyInitialized {};
 #endif
 
     public:
@@ -227,7 +225,8 @@ namespace Stroika::Frameworks::Led {
         virtual Led_Rect CalculateCaretRect () const override;
 
     public:
-        virtual void OnTypedNormalCharacter (Led_tChar theChar, bool optionPressed, bool shiftPressed, bool commandPressed, bool controlPressed, bool altKeyPressed) override;
+        virtual void OnTypedNormalCharacter (Led_tChar theChar, bool optionPressed, bool shiftPressed, bool commandPressed,
+                                             bool controlPressed, bool altKeyPressed) override;
 
     public:
         virtual bool ProcessSimpleClick (Led_Point clickedAt, unsigned clickCount, bool extendSelection, size_t* dragAnchor) override;
@@ -494,7 +493,8 @@ namespace Stroika::Frameworks::Led {
         class EmptySelectionParagraphSavedTextRep;
 
     protected:
-        virtual InteractiveReplaceCommand::SavedTextRep* InteractiveUndoHelperMakeTextRep (size_t regionStart, size_t regionEnd, size_t selStart, size_t selEnd) override;
+        virtual InteractiveReplaceCommand::SavedTextRep* InteractiveUndoHelperMakeTextRep (size_t regionStart, size_t regionEnd,
+                                                                                           size_t selStart, size_t selEnd) override;
 
     public:
         virtual void InteractiveSetFont (const IncrementalFontSpecification& defaultFont) override;
@@ -505,7 +505,8 @@ namespace Stroika::Frameworks::Led {
         nonvirtual void InteractiveSetMargins (TWIPS leftMargin, TWIPS rightMargin);
         nonvirtual void InteractiveSetFirstIndent (TWIPS firstIndent);
         nonvirtual void InteractiveSetMarginsAndFirstIndent (TWIPS leftMargin, TWIPS rightMargin, TWIPS firstIndent);
-        nonvirtual void InteractiveSetParagraphSpacing (TWIPS spaceBefore, bool spaceBeforeValid, TWIPS spaceAfter, bool spaceAfterValid, LineSpacing lineSpacing, bool lineSpacingValid);
+        nonvirtual void InteractiveSetParagraphSpacing (TWIPS spaceBefore, bool spaceBeforeValid, TWIPS spaceAfter, bool spaceAfterValid,
+                                                        LineSpacing lineSpacing, bool lineSpacingValid);
         nonvirtual void InteractiveSetListStyle (ListStyle listStyle);
         nonvirtual void InteractiveDoIndentChange (bool increase);
 
@@ -520,12 +521,12 @@ namespace Stroika::Frameworks::Led {
                                       const TextLayoutBlock& text, size_t rowStart, size_t rowEnd) override;
 
     protected:
-        virtual vector<Led_Rect> GetRowHilightRects (const TextLayoutBlock& text, size_t rowStart, size_t rowEnd, size_t hilightStart, size_t hilightEnd) const override;
+        virtual vector<Led_Rect> GetRowHilightRects (const TextLayoutBlock& text, size_t rowStart, size_t rowEnd, size_t hilightStart,
+                                                     size_t hilightEnd) const override;
 
     public:
-        virtual void DrawSegment (Tablet* tablet,
-                                  size_t from, size_t to, const TextLayoutBlock& text, const Led_Rect& drawInto, const Led_Rect& invalidRect,
-                                  CoordinateType useBaseLine, DistanceType* pixelsDrawn) override;
+        virtual void DrawSegment (Tablet* tablet, size_t from, size_t to, const TextLayoutBlock& text, const Led_Rect& drawInto,
+                                  const Led_Rect& invalidRect, CoordinateType useBaseLine, DistanceType* pixelsDrawn) override;
 
     protected:
         virtual DistanceType MeasureSegmentHeight (size_t from, size_t to) const override;
@@ -573,14 +574,14 @@ namespace Stroika::Frameworks::Led {
         virtual size_t ResetTabStops (size_t from, const Led_tChar* text, size_t nTChars, DistanceType* charLocations, size_t startSoFar) const override;
 
     private:
-        nonvirtual size_t ResetTabStopsWithMargin (DistanceType lhsMargin, size_t from, const Led_tChar* text, size_t nTChars, DistanceType* charLocations, size_t startSoFar) const;
+        nonvirtual size_t ResetTabStopsWithMargin (DistanceType lhsMargin, size_t from, const Led_tChar* text, size_t nTChars,
+                                                   DistanceType* charLocations, size_t startSoFar) const;
 
     public:
         virtual void GetLayoutMargins (RowReference row, CoordinateType* lhs, CoordinateType* rhs) const override;
 
     protected:
-        virtual void ExpandedFromAndToInPostReplace (size_t from, size_t newTo,
-                                                     size_t stableTypingRegionStart, size_t stableTypingRegionEnd,
+        virtual void ExpandedFromAndToInPostReplace (size_t from, size_t newTo, size_t stableTypingRegionStart, size_t stableTypingRegionEnd,
                                                      size_t startPositionOfRowWhereReplaceBegins, size_t startPositionOfRowAfterReplaceEnds,
                                                      size_t* expandedFrom, size_t* expandedTo) override;
         virtual void PostReplace (PreReplaceInfo& preReplaceInfo) override;
@@ -799,12 +800,12 @@ namespace Stroika::Frameworks::Led {
         virtual void         SetPartition (const PartitionPtr& partitionPtr) = 0;
 
     public:
-        virtual const ParagraphInfo&                               GetParagraphInfo (size_t charAfterPos) const                          = 0;
+        virtual const ParagraphInfo& GetParagraphInfo (size_t charAfterPos) const = 0;
         virtual vector<pair<WordProcessor::ParagraphInfo, size_t>> GetParagraphInfo (size_t charAfterPos, size_t nTCharsFollowing) const = 0;
 
-        virtual void SetParagraphInfo (size_t charAfterPos, size_t nTCharsFollowing, const IncrementalParagraphInfo& infoForMarkers)             = 0;
+        virtual void SetParagraphInfo (size_t charAfterPos, size_t nTCharsFollowing, const IncrementalParagraphInfo& infoForMarkers) = 0;
         virtual void SetParagraphInfo (size_t charAfterPos, const vector<pair<WordProcessor::IncrementalParagraphInfo, size_t>>& infoForMarkers) = 0;
-        virtual void SetParagraphInfo (size_t charAfterPos, const vector<pair<ParagraphInfo, size_t>>& infoForMarkers)                           = 0;
+        virtual void SetParagraphInfo (size_t charAfterPos, const vector<pair<ParagraphInfo, size_t>>& infoForMarkers) = 0;
 
     private:
         bool fSomeInvalidTables;
@@ -825,7 +826,9 @@ namespace Stroika::Frameworks::Led {
                 identical ones). Paragraphs are defined by the @'Partition' object associated
                 (@'WordProcessor::ParagraphDatabaseRep::SetPartition').</p>
     */
-    class WordProcessor::ParagraphDatabaseRep : public WordProcessor::AbstractParagraphDatabaseRep, private MarkerCover<WordProcessor::ParagraphInfoMarker, WordProcessor::ParagraphInfo, WordProcessor::IncrementalParagraphInfo> {
+    class WordProcessor::ParagraphDatabaseRep
+        : public WordProcessor::AbstractParagraphDatabaseRep,
+          private MarkerCover<WordProcessor::ParagraphInfoMarker, WordProcessor::ParagraphInfo, WordProcessor::IncrementalParagraphInfo> {
     private:
         using inheritedMC = MarkerCover<ParagraphInfoMarker, ParagraphInfo, IncrementalParagraphInfo>;
 
@@ -845,11 +848,11 @@ namespace Stroika::Frameworks::Led {
 
         // override the AbstractParagraphDatabase API
     public:
-        virtual const ParagraphInfo&                               GetParagraphInfo (size_t charAfterPos) const override;
+        virtual const ParagraphInfo& GetParagraphInfo (size_t charAfterPos) const override;
         virtual vector<pair<WordProcessor::ParagraphInfo, size_t>> GetParagraphInfo (size_t charAfterPos, size_t nTCharsFollowing) const override;
-        virtual void                                               SetParagraphInfo (size_t charAfterPos, size_t nTCharsFollowing, const IncrementalParagraphInfo& infoForMarkers) override;
-        virtual void                                               SetParagraphInfo (size_t charAfterPos, const vector<pair<WordProcessor::IncrementalParagraphInfo, size_t>>& infoForMarkers) override;
-        virtual void                                               SetParagraphInfo (size_t charAfterPos, const vector<pair<ParagraphInfo, size_t>>& infoForMarkers) override;
+        virtual void SetParagraphInfo (size_t charAfterPos, size_t nTCharsFollowing, const IncrementalParagraphInfo& infoForMarkers) override;
+        virtual void SetParagraphInfo (size_t charAfterPos, const vector<pair<WordProcessor::IncrementalParagraphInfo, size_t>>& infoForMarkers) override;
+        virtual void SetParagraphInfo (size_t charAfterPos, const vector<pair<ParagraphInfo, size_t>>& infoForMarkers) override;
 
     public:
         virtual void SetInfo (size_t charAfterPos, size_t nTCharsFollowing, const IncrementalParagraphInfo& infoForMarkers) override;
@@ -880,11 +883,9 @@ namespace Stroika::Frameworks::Led {
         using inherited = StandardStyledTextInteractor::StandardStyledTextIOSinkStream;
 
     public:
-        WordProcessorTextIOSinkStream (TextStore*                                        textStore,
-                                       const StandardStyledTextImager::StyleDatabasePtr& textStyleDatabase,
-                                       const WordProcessor::ParagraphDatabasePtr&        paragraphDatabase,
-                                       const WordProcessor::HidableTextDatabasePtr&      hidableTextDatabase,
-                                       size_t                                            insertionStart = 0);
+        WordProcessorTextIOSinkStream (TextStore* textStore, const StandardStyledTextImager::StyleDatabasePtr& textStyleDatabase,
+                                       const WordProcessor::ParagraphDatabasePtr&   paragraphDatabase,
+                                       const WordProcessor::HidableTextDatabasePtr& hidableTextDatabase, size_t insertionStart = 0);
         WordProcessorTextIOSinkStream (WordProcessor* wp, size_t insertionStart = 0);
         ~WordProcessorTextIOSinkStream ();
 
@@ -941,11 +942,9 @@ namespace Stroika::Frameworks::Led {
         nonvirtual void SetIgnoreLastParaAttributes (bool ignoreLastParaAttributes);
 
     protected:
-        nonvirtual void PushContext (TextStore*                                        ts,
-                                     const StandardStyledTextImager::StyleDatabasePtr& textStyleDatabase,
-                                     const WordProcessor::ParagraphDatabasePtr&        paragraphDatabase,
-                                     const WordProcessor::HidableTextDatabasePtr&      hidableTextDatabase,
-                                     size_t                                            insertionStart);
+        nonvirtual void PushContext (TextStore* ts, const StandardStyledTextImager::StyleDatabasePtr& textStyleDatabase,
+                                     const WordProcessor::ParagraphDatabasePtr&   paragraphDatabase,
+                                     const WordProcessor::HidableTextDatabasePtr& hidableTextDatabase, size_t insertionStart);
         nonvirtual void PopContext ();
 
     private:
@@ -993,11 +992,10 @@ namespace Stroika::Frameworks::Led {
         using inherited = StandardStyledTextInteractor::StandardStyledTextIOSrcStream;
 
     public:
-        WordProcessorTextIOSrcStream (TextStore*                                        textStore,
-                                      const StandardStyledTextImager::StyleDatabasePtr& textStyleDatabase,
-                                      const WordProcessor::ParagraphDatabasePtr&        paragraphDatabase,
-                                      const WordProcessor::HidableTextDatabasePtr&      hidableTextDatabase,
-                                      size_t selectionStart = 0, size_t selectionEnd = kBadIndex);
+        WordProcessorTextIOSrcStream (TextStore* textStore, const StandardStyledTextImager::StyleDatabasePtr& textStyleDatabase,
+                                      const WordProcessor::ParagraphDatabasePtr&   paragraphDatabase,
+                                      const WordProcessor::HidableTextDatabasePtr& hidableTextDatabase, size_t selectionStart = 0,
+                                      size_t selectionEnd = kBadIndex);
         WordProcessorTextIOSrcStream (WordProcessor* textImager, size_t selectionStart = 0, size_t selectionEnd = kBadIndex);
 
     public:
@@ -1040,9 +1038,8 @@ namespace Stroika::Frameworks::Led {
         using inherited = StyledTextIO::StyledTextIOWriter::SrcStream::Table;
 
     public:
-        TableIOMapper (WordProcessor::Table& realTable,
-                       size_t startRow = 0, size_t endRow = static_cast<size_t> (-1),
-                       size_t startCol = 0, size_t endCol = static_cast<size_t> (-1));
+        TableIOMapper (WordProcessor::Table& realTable, size_t startRow = 0, size_t endRow = static_cast<size_t> (-1), size_t startCol = 0,
+                       size_t endCol = static_cast<size_t> (-1));
 
     public:
         virtual size_t                                       GetRows () const override;
@@ -1220,12 +1217,11 @@ namespace Stroika::Frameworks::Led {
         class CellRep;
 
     public:
-        virtual void         DrawSegment (const StyledTextImager* imager, const RunElement& runElement, Tablet* tablet,
-                                          size_t from, size_t to, const TextLayoutBlock& text, const Led_Rect& drawInto, const Led_Rect& invalidRect,
-                                          CoordinateType useBaseLine, DistanceType* pixelsDrawn) override;
-        virtual void         MeasureSegmentWidth (const StyledTextImager* imager, const RunElement& runElement, size_t from, size_t to,
-                                                  const Led_tChar* text,
-                                                  DistanceType*    distanceResults) const override;
+        virtual void DrawSegment (const StyledTextImager* imager, const RunElement& runElement, Tablet* tablet, size_t from, size_t to,
+                                  const TextLayoutBlock& text, const Led_Rect& drawInto, const Led_Rect& invalidRect,
+                                  CoordinateType useBaseLine, DistanceType* pixelsDrawn) override;
+        virtual void MeasureSegmentWidth (const StyledTextImager* imager, const RunElement& runElement, size_t from, size_t to,
+                                          const Led_tChar* text, DistanceType* distanceResults) const override;
         virtual DistanceType MeasureSegmentHeight (const StyledTextImager* imager, const RunElement& runElement, size_t from, size_t to) const override;
 
     public:
@@ -1266,11 +1262,12 @@ namespace Stroika::Frameworks::Led {
         virtual Led_Rect CalculateCaretRect () const;
 
     public:
-        virtual bool OnTypedNormalCharacter (Led_tChar theChar, bool optionPressed, bool shiftPressed, bool commandPressed, bool controlPressed, bool altKeyPressed);
+        virtual bool OnTypedNormalCharacter (Led_tChar theChar, bool optionPressed, bool shiftPressed, bool commandPressed,
+                                             bool controlPressed, bool altKeyPressed);
 
     protected:
-        virtual bool DoSingleCharCursorEdit (CursorMovementDirection direction, CursorMovementUnit movementUnit, CursorMovementAction action,
-                                             UpdateMode updateMode, bool scrollToSelection);
+        virtual bool DoSingleCharCursorEdit (CursorMovementDirection direction, CursorMovementUnit movementUnit,
+                                             CursorMovementAction action, UpdateMode updateMode, bool scrollToSelection);
 
     public:
         virtual bool OnUpdateCommand (CommandUpdater* enabler);
@@ -1340,11 +1337,13 @@ namespace Stroika::Frameworks::Led {
         nonvirtual const Cell& GetRealCell (size_t row, size_t column) const;
 
     public:
-        enum CellMergeFlags { ePlainCell       = 0,
-                              eMergeCellLeft   = 1,
-                              eMergeCellUp     = 2,
-                              eMergeCellLeftUp = eMergeCellLeft + eMergeCellUp,
-                              eInvalidCell     = 99 };
+        enum CellMergeFlags {
+            ePlainCell       = 0,
+            eMergeCellLeft   = 1,
+            eMergeCellUp     = 2,
+            eMergeCellLeftUp = eMergeCellLeft + eMergeCellUp,
+            eInvalidCell     = 99
+        };
 
     public:
         nonvirtual CellMergeFlags GetCellFlags (size_t row, size_t column) const;
@@ -1377,12 +1376,8 @@ namespace Stroika::Frameworks::Led {
         size_t fIntraCellDragAnchor;
 
     protected:
-        nonvirtual void SaveIntraCellContextInfo (
-            bool                     leftSideOfSelectionInteresting,
-            const FontSpecification& intraCellSelectionEmptySelFontSpecification);
-        nonvirtual bool RestoreIntraCellContextInfo (
-            bool*              leftSideOfSelectionInteresting,
-            FontSpecification* intraCellSelectionEmptySelFontSpecification);
+        nonvirtual void SaveIntraCellContextInfo (bool leftSideOfSelectionInteresting, const FontSpecification& intraCellSelectionEmptySelFontSpecification);
+        nonvirtual bool RestoreIntraCellContextInfo (bool* leftSideOfSelectionInteresting, FontSpecification* intraCellSelectionEmptySelFontSpecification);
         nonvirtual void InvalidateIntraCellContextInfo ();
 
     private:
@@ -1410,12 +1405,12 @@ namespace Stroika::Frameworks::Led {
         class EmbeddedTableWordProcessor;
 
     protected:
-        virtual EmbeddedTableWordProcessor* ConstructEmbeddedTableWordProcessor (WordProcessor& forWordProcessor, size_t forRow, size_t forColumn, const Led_Rect& cellWindowRect, bool captureChangesForUndo);
-        virtual void                        ReleaseEmbeddedTableWordProcessor (EmbeddedTableWordProcessor* e);
+        virtual EmbeddedTableWordProcessor* ConstructEmbeddedTableWordProcessor (WordProcessor& forWordProcessor, size_t forRow, size_t forColumn,
+                                                                                 const Led_Rect& cellWindowRect, bool captureChangesForUndo);
+        virtual void ReleaseEmbeddedTableWordProcessor (EmbeddedTableWordProcessor* e);
 
     public:
-        virtual void GetCellWordProcessorDatabases (size_t row, size_t column,
-                                                    TextStore**                                 ts,
+        virtual void GetCellWordProcessorDatabases (size_t row, size_t column, TextStore** ts,
                                                     StandardStyledTextImager::StyleDatabasePtr* styleDatabase       = nullptr,
                                                     WordProcessor::ParagraphDatabasePtr*        paragraphDatabase   = nullptr,
                                                     WordProcessor::HidableTextDatabasePtr*      hidableTextDatabase = nullptr);
@@ -1434,8 +1429,10 @@ namespace Stroika::Frameworks::Led {
         virtual void    PerformLayout ();
 
     private:
-        enum LayoutFlag { eDone,
-                          eNeedFullLayout };
+        enum LayoutFlag {
+            eDone,
+            eNeedFullLayout
+        };
         mutable LayoutFlag fNeedLayout;
 
     public:
@@ -1522,11 +1519,9 @@ namespace Stroika::Frameworks::Led {
         CellMergeFlags fCellMergeFlags;
 
     public:
-        nonvirtual void GetCellWordProcessorDatabases (
-            TextStore**                                 ts,
-            StandardStyledTextImager::StyleDatabasePtr* styleDatabase       = nullptr,
-            WordProcessor::ParagraphDatabasePtr*        paragraphDatabase   = nullptr,
-            WordProcessor::HidableTextDatabasePtr*      hidableTextDatabase = nullptr);
+        nonvirtual void GetCellWordProcessorDatabases (TextStore** ts, StandardStyledTextImager::StyleDatabasePtr* styleDatabase = nullptr,
+                                                       WordProcessor::ParagraphDatabasePtr*   paragraphDatabase   = nullptr,
+                                                       WordProcessor::HidableTextDatabasePtr* hidableTextDatabase = nullptr);
         nonvirtual TextStore& GetTextStore () const;
         nonvirtual StandardStyledTextImager::StyleDatabasePtr GetStyleDatabase () const;
         nonvirtual WordProcessor::ParagraphDatabasePtr GetParagraphDatabase () const;
@@ -1673,10 +1668,13 @@ namespace Stroika::Frameworks::Led {
         bool                 fActiveEditCell;
 
     public:
-        virtual void PostInteractiveUndoPostHelper (InteractiveReplaceCommand::SavedTextRep** beforeRep, InteractiveReplaceCommand::SavedTextRep** afterRep, size_t startOfInsert, const SDKString& cmdName) override;
+        virtual void PostInteractiveUndoPostHelper (InteractiveReplaceCommand::SavedTextRep** beforeRep,
+                                                    InteractiveReplaceCommand::SavedTextRep** afterRep, size_t startOfInsert,
+                                                    const SDKString& cmdName) override;
 
     protected:
-        virtual InteractiveReplaceCommand::SavedTextRep* InteractiveUndoHelperMakeTextRep (size_t regionStart, size_t regionEnd, size_t selStart, size_t selEnd) override;
+        virtual InteractiveReplaceCommand::SavedTextRep* InteractiveUndoHelperMakeTextRep (size_t regionStart, size_t regionEnd,
+                                                                                           size_t selStart, size_t selEnd) override;
 
     private:
         class DisableRefreshContext;
@@ -1704,13 +1702,16 @@ namespace Stroika::Frameworks::Led {
     @BASES:         @'WordProcessor::Table::SavedTextRepWSel'
     @DESCRIPTION:
     */
-    class WordProcessor::Table::SavedTextRepWSel : public InteractiveReplaceCommand::SavedTextRep, public Foundation::Memory::UseBlockAllocationIfAppropriate<SavedTextRepWSel> {
+    class WordProcessor::Table::SavedTextRepWSel : public InteractiveReplaceCommand::SavedTextRep,
+                                                   public Foundation::Memory::UseBlockAllocationIfAppropriate<SavedTextRepWSel> {
     private:
         using inherited = InteractiveReplaceCommand::SavedTextRep;
 
     public:
-        enum WPRelativeFlag { eWPDirect,
-                              eWPAbove };
+        enum WPRelativeFlag {
+            eWPDirect,
+            eWPAbove
+        };
 
     public:
         SavedTextRepWSel (SavedTextRep* delegateTo, Table& table, WPRelativeFlag wPRelativeFlag);
@@ -1745,8 +1746,10 @@ namespace Stroika::Frameworks::Led {
         using EmbeddedTableWordProcessor = WordProcessor::Table::EmbeddedTableWordProcessor;
 
     public:
-        enum DoTextMetricsChangedCall { eDoTextMetricsChangedCall,
-                                        eDontDoTextMetricsChangedCall };
+        enum DoTextMetricsChangedCall {
+            eDoTextMetricsChangedCall,
+            eDontDoTextMetricsChangedCall
+        };
         TemporarilyUseTablet (EmbeddedTableWordProcessor& editor, Tablet* t, DoTextMetricsChangedCall tmChanged = eDoTextMetricsChangedCall);
         ~TemporarilyUseTablet ();
 
@@ -1801,7 +1804,8 @@ namespace Stroika::Frameworks::Led {
         using EmbeddedTableWordProcessor = WordProcessor::Table::EmbeddedTableWordProcessor;
 
     public:
-        TemporarilyAllocateCellWP (Table& forTable, WordProcessor& forWordProcessor, size_t forRow, size_t forColumn, const Led_Rect& cellWindowRect, bool captureChangesForUndo = true);
+        TemporarilyAllocateCellWP (Table& forTable, WordProcessor& forWordProcessor, size_t forRow, size_t forColumn,
+                                   const Led_Rect& cellWindowRect, bool captureChangesForUndo = true);
         ~TemporarilyAllocateCellWP ();
 
         nonvirtual                             operator EmbeddedTableWordProcessor* ();
@@ -1891,19 +1895,21 @@ namespace Stroika::Frameworks::Led {
 
     public:
         virtual FontNameSpecifier CmdNumToFontName (CommandNumber cmdNum);
-        virtual bool              IsPredefinedFontSize (DistanceType fontSize); // return true iff the arg fontSize is one of the predefined ones from the menu
-        virtual DistanceType      FontCmdToSize (CommandNumber commandNum);
-        virtual DistanceType      PickOtherFontHeight (DistanceType origHeight); // display UI (dialog box) and query user for new height)
-        virtual bool              PickNewParagraphLineSpacing (TWIPS* spaceBefore, bool* spaceBeforeValid, TWIPS* spaceAfter, bool* spaceAfterValid, LineSpacing* lineSpacing, bool* lineSpacingValid);
-        virtual bool              PickNewParagraphMarginsAndFirstIndent (TWIPS* leftMargin, bool* leftMarginValid, TWIPS* rightMargin, bool* rightMarginValid, TWIPS* firstIndent, bool* firstIndentValid);
-        virtual Color             FontCmdToColor (CommandNumber cmd);
-        virtual CommandNumber     FontColorToCmd (Color color);
-        virtual bool              PickOtherFontColor (Color* color);
-        virtual bool              ChooseFont (IncrementalFontSpecification* font); // display UI (e.g. CFontDialog) to pick a new font/color
-        virtual void              ShowSimpleEmbeddingInfoDialog (const SDKString& embeddingTypeName);
-        virtual bool              ShowURLEmbeddingInfoDialog (const SDKString& embeddingTypeName, SDKString* urlTitle, SDKString* urlValue);
-        virtual bool              ShowAddURLEmbeddingInfoDialog (SDKString* urlTitle, SDKString* urlValue);
-        virtual bool              AddNewTableDialog (size_t* nRows, size_t* nCols);
+        virtual bool IsPredefinedFontSize (DistanceType fontSize); // return true iff the arg fontSize is one of the predefined ones from the menu
+        virtual DistanceType FontCmdToSize (CommandNumber commandNum);
+        virtual DistanceType PickOtherFontHeight (DistanceType origHeight); // display UI (dialog box) and query user for new height)
+        virtual bool  PickNewParagraphLineSpacing (TWIPS* spaceBefore, bool* spaceBeforeValid, TWIPS* spaceAfter, bool* spaceAfterValid,
+                                                   LineSpacing* lineSpacing, bool* lineSpacingValid);
+        virtual bool  PickNewParagraphMarginsAndFirstIndent (TWIPS* leftMargin, bool* leftMarginValid, TWIPS* rightMargin,
+                                                             bool* rightMarginValid, TWIPS* firstIndent, bool* firstIndentValid);
+        virtual Color FontCmdToColor (CommandNumber cmd);
+        virtual CommandNumber FontColorToCmd (Color color);
+        virtual bool          PickOtherFontColor (Color* color);
+        virtual bool          ChooseFont (IncrementalFontSpecification* font); // display UI (e.g. CFontDialog) to pick a new font/color
+        virtual void          ShowSimpleEmbeddingInfoDialog (const SDKString& embeddingTypeName);
+        virtual bool          ShowURLEmbeddingInfoDialog (const SDKString& embeddingTypeName, SDKString* urlTitle, SDKString* urlValue);
+        virtual bool          ShowAddURLEmbeddingInfoDialog (SDKString* urlTitle, SDKString* urlValue);
+        virtual bool          AddNewTableDialog (size_t* nRows, size_t* nCols);
         struct TableSelectionPropertiesInfo;
         virtual bool EditTablePropertiesDialog (TableSelectionPropertiesInfo* tableProperties);
 

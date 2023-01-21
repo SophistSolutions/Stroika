@@ -45,65 +45,58 @@ namespace {
 
     struct Options_Storage_IMPL_ {
         Options_Storage_IMPL_ ()
-            : fOptionsFile_{
-                  L"AppSettings"sv,
-                  [] () -> ObjectVariantMapper {
-                      ObjectVariantMapper mapper;
+            : fOptionsFile_{L"AppSettings"sv,
+                            [] () -> ObjectVariantMapper {
+                                ObjectVariantMapper mapper;
 
-                      // really should use String, no longer Led_tString, but for now... (note this only works as is for wchar_t Led_tString
-                      mapper.Add<Led_tString> (
-                          [] (const ObjectVariantMapper& /*mapper*/, const Led_tString* obj) -> VariantValue {
-                              return String{*obj};
-                          },
-                          [] (const ObjectVariantMapper& /*mapper*/, const VariantValue& d, Led_tString* intoObj) -> void {
-                              *intoObj = d.As<String> ().As<Led_tString> ();
-                          });
-                      mapper.AddCommonType<vector<Led_tString>> ();
-                      mapper.AddCommonType<Memory::BLOB> ();
+                                // really should use String, no longer Led_tString, but for now... (note this only works as is for wchar_t Led_tString
+                                mapper.Add<Led_tString> ([] (const ObjectVariantMapper& /*mapper*/,
+                                                             const Led_tString* obj) -> VariantValue { return String{*obj}; },
+                                                         [] (const ObjectVariantMapper& /*mapper*/, const VariantValue& d,
+                                                             Led_tString* intoObj) -> void { *intoObj = d.As<String> ().As<Led_tString> (); });
+                                mapper.AddCommonType<vector<Led_tString>> ();
+                                mapper.AddCommonType<Memory::BLOB> ();
 
 #if qSupportSyntaxColoring
-                      mapper.AddCommonType<SyntaxColoringOption> ();
+                                mapper.AddCommonType<SyntaxColoringOption> ();
 #endif
 
-                      mapper.AddClass<SearchParameters> (initializer_list<ObjectVariantMapper::StructFieldInfo>{
-                          {L"Match-String", StructFieldMetaInfo{&SearchParameters::fMatchString}},
-                          {L"Wrap-Search", StructFieldMetaInfo{&SearchParameters::fWrapSearch}},
-                          {L"Whole-Word-Search", StructFieldMetaInfo{&SearchParameters::fWholeWordSearch}},
-                          {L"Case-Sensative-Search", StructFieldMetaInfo{&SearchParameters::fCaseSensativeSearch}},
-                          {L"Recent-Match-Strings", StructFieldMetaInfo{&SearchParameters::fRecentFindStrings}},
-                      });
+                                mapper.AddClass<SearchParameters> (initializer_list<ObjectVariantMapper::StructFieldInfo>{
+                                    {L"Match-String", StructFieldMetaInfo{&SearchParameters::fMatchString}},
+                                    {L"Wrap-Search", StructFieldMetaInfo{&SearchParameters::fWrapSearch}},
+                                    {L"Whole-Word-Search", StructFieldMetaInfo{&SearchParameters::fWholeWordSearch}},
+                                    {L"Case-Sensative-Search", StructFieldMetaInfo{&SearchParameters::fCaseSensativeSearch}},
+                                    {L"Recent-Match-Strings", StructFieldMetaInfo{&SearchParameters::fRecentFindStrings}},
+                                });
 
-                      mapper.AddClass<Options_> (initializer_list<ObjectVariantMapper::StructFieldInfo> {
-                          {L"Dock-Bar-State", StructFieldMetaInfo{&Options_::fDockBarState}},
-                              {L"Search-Parameters", StructFieldMetaInfo{&Options_::fSearchParameters}},
-                              {L"Smart-Cut-And-Paste", StructFieldMetaInfo{&Options_::fSmartCutAndPaste}},
-                              {L"Auto-Indent", StructFieldMetaInfo{&Options_::fAutoIndent}},
-                              {L"Tabs-Auto-Shifts-Text", StructFieldMetaInfo{&Options_::fTabsAutoShiftsText}},
+                                mapper.AddClass<Options_> (initializer_list<ObjectVariantMapper::StructFieldInfo> {
+                                    {L"Dock-Bar-State", StructFieldMetaInfo{&Options_::fDockBarState}},
+                                        {L"Search-Parameters", StructFieldMetaInfo{&Options_::fSearchParameters}},
+                                        {L"Smart-Cut-And-Paste", StructFieldMetaInfo{&Options_::fSmartCutAndPaste}},
+                                        {L"Auto-Indent", StructFieldMetaInfo{&Options_::fAutoIndent}},
+                                        {L"Tabs-Auto-Shifts-Text", StructFieldMetaInfo{&Options_::fTabsAutoShiftsText}},
 
 #if qSupportSyntaxColoring
-                              {L"Syntax-Coloring", StructFieldMetaInfo{&Options_::fSyntaxColoring}},
+                                        {L"Syntax-Coloring", StructFieldMetaInfo{&Options_::fSyntaxColoring}},
 #endif
 
 #if qPlatform_Windows
-                              {L"Check-File-Assoc-At-Startup", StructFieldMetaInfo{&Options_::fCheckFileAssocAtStartup}},
-                              {L"Default-New-Doc-Font", StructFieldMetaInfo{&Options_::fDefaultNewDocFont}},
+                                        {L"Check-File-Assoc-At-Startup", StructFieldMetaInfo{&Options_::fCheckFileAssocAtStartup}},
+                                        {L"Default-New-Doc-Font", StructFieldMetaInfo{&Options_::fDefaultNewDocFont}},
 #endif
-                      });
-                      return mapper;
-                  }(),
+                                });
+                                return mapper;
+                            }(),
 
-                  OptionsFile::kDefaultUpgrader,
+                            OptionsFile::kDefaultUpgrader,
 
-                  OptionsFile::mkFilenameMapper (L"LedLineIt"sv)}
+                            OptionsFile::mkFilenameMapper (L"LedLineIt"sv)}
             , fActualCurrentConfigData_{fOptionsFile_.Read<Options_> (Options_{})}
         {
             Set (fActualCurrentConfigData_); // assure derived data (and changed fields etc) up to date
         }
-        Options_ Get () const
-        {
-            return fActualCurrentConfigData_;
-        }
-        void Set (const Options_& v)
+        Options_ Get () const { return fActualCurrentConfigData_; }
+        void     Set (const Options_& v)
         {
             fActualCurrentConfigData_ = v;
             fOptionsFile_.Write (v);
@@ -122,14 +115,14 @@ namespace {
  *********************************** Options ************************************
  ********************************************************************************
  */
-SearchParameters Options::GetSearchParameters () const
-{
-    return sOptions_.Get ().fSearchParameters;
-}
+SearchParameters Options::GetSearchParameters () const { return sOptions_.Get ().fSearchParameters; }
 
 void Options::SetSearchParameters (const SearchParameters& searchParameters)
 {
-    sOptions_.Update ([=] (Options_ d) { d.fSearchParameters = searchParameters; return d; });
+    sOptions_.Update ([=] (Options_ d) {
+        d.fSearchParameters = searchParameters;
+        return d;
+    });
 }
 
 #if qPlatform_Windows
@@ -164,62 +157,65 @@ void Options::SetDocBarState (const CDockState& dockState)
     byte* p = new byte[nSize];
     file.SeekToBegin ();
     file.Read (p, nSize);
-    sOptions_.Update ([=] (Options_ d) { d.fDockBarState = BLOB{ p, p + nSize }; return d; });
+    sOptions_.Update ([=] (Options_ d) {
+        d.fDockBarState = BLOB{p, p + nSize};
+        return d;
+    });
     delete[] p;
 }
 #endif
 
-bool Options::GetSmartCutAndPaste () const
-{
-    return sOptions_.Get ().fSmartCutAndPaste;
-}
+bool Options::GetSmartCutAndPaste () const { return sOptions_.Get ().fSmartCutAndPaste; }
 
 void Options::SetSmartCutAndPaste (bool smartCutAndPaste)
 {
-    sOptions_.Update ([=] (Options_ d) { d.fSmartCutAndPaste = smartCutAndPaste; return d; });
+    sOptions_.Update ([=] (Options_ d) {
+        d.fSmartCutAndPaste = smartCutAndPaste;
+        return d;
+    });
 }
 
-bool Options::GetAutoIndent () const
-{
-    return sOptions_.Get ().fAutoIndent;
-}
+bool Options::GetAutoIndent () const { return sOptions_.Get ().fAutoIndent; }
 
 void Options::SetAutoIndent (bool autoIndent)
 {
-    sOptions_.Update ([=] (Options_ d) { d.fAutoIndent = autoIndent; return d; });
+    sOptions_.Update ([=] (Options_ d) {
+        d.fAutoIndent = autoIndent;
+        return d;
+    });
 }
 
-bool Options::GetTreatTabAsIndentChar () const
-{
-    return sOptions_.Get ().fTabsAutoShiftsText;
-}
+bool Options::GetTreatTabAsIndentChar () const { return sOptions_.Get ().fTabsAutoShiftsText; }
 
 void Options::SetTreatTabAsIndentChar (bool tabAsIndentChar)
 {
-    sOptions_.Update ([=] (Options_ d) { d.fTabsAutoShiftsText = tabAsIndentChar; return d; });
+    sOptions_.Update ([=] (Options_ d) {
+        d.fTabsAutoShiftsText = tabAsIndentChar;
+        return d;
+    });
 }
 
 #if qSupportSyntaxColoring
-Options::SyntaxColoringOption Options::GetSyntaxColoringOption () const
-{
-    return sOptions_.Get ().fSyntaxColoring;
-}
+Options::SyntaxColoringOption Options::GetSyntaxColoringOption () const { return sOptions_.Get ().fSyntaxColoring; }
 
 void Options::SetSyntaxColoringOption (SyntaxColoringOption syntaxColoringOption)
 {
-    sOptions_.Update ([=] (Options_ d) { d.fSyntaxColoring = syntaxColoringOption; return d; });
+    sOptions_.Update ([=] (Options_ d) {
+        d.fSyntaxColoring = syntaxColoringOption;
+        return d;
+    });
 }
 #endif
 
 #if qPlatform_Windows
-bool Options::GetCheckFileAssocsAtStartup () const
-{
-    return sOptions_.Get ().fCheckFileAssocAtStartup;
-}
+bool Options::GetCheckFileAssocsAtStartup () const { return sOptions_.Get ().fCheckFileAssocAtStartup; }
 
 void Options::SetCheckFileAssocsAtStartup (bool checkFileAssocsAtStartup)
 {
-    sOptions_.Update ([=] (Options_ d) { d.fCheckFileAssocAtStartup = checkFileAssocsAtStartup; return d; });
+    sOptions_.Update ([=] (Options_ d) {
+        d.fCheckFileAssocAtStartup = checkFileAssocsAtStartup;
+        return d;
+    });
 }
 #endif
 
@@ -248,6 +244,9 @@ FontSpecification Options::GetDefaultNewDocFont () const
 void Options::SetDefaultNewDocFont ([[maybe_unused]] const FontSpecification& defaultNewDocFont)
 {
 #if qPlatform_Windows
-    sOptions_.Update ([&] (Options_ d) { d.fDefaultNewDocFont = BLOB::Raw (defaultNewDocFont.GetOSRep ()); return d; });
+    sOptions_.Update ([&] (Options_ d) {
+        d.fDefaultNewDocFont = BLOB::Raw (defaultNewDocFont.GetOSRep ());
+        return d;
+    });
 #endif
 }

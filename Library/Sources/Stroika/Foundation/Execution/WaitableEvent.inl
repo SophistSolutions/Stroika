@@ -69,18 +69,9 @@ namespace Stroika::Foundation::Execution {
         //Debug::TraceContextBumper ctx{"WaitableEvent::Reset"};
         fWE_.Reset ();
     }
-    inline bool WaitableEvent::PeekIsSet () const noexcept
-    {
-        return fWE_.PeekIsSet ();
-    }
-    inline void WaitableEvent::Wait (Time::DurationSecondsType timeout)
-    {
-        fWE_.WaitUntil (timeout + Time::GetTickCount ());
-    }
-    inline void WaitableEvent::Wait (Time::Duration timeout)
-    {
-        Wait (timeout.As<Time::DurationSecondsType> ());
-    }
+    inline bool WaitableEvent::PeekIsSet () const noexcept { return fWE_.PeekIsSet (); }
+    inline void WaitableEvent::Wait (Time::DurationSecondsType timeout) { fWE_.WaitUntil (timeout + Time::GetTickCount ()); }
+    inline void WaitableEvent::Wait (Time::Duration timeout) { Wait (timeout.As<Time::DurationSecondsType> ()); }
     inline bool WaitableEvent::WaitQuietly (Time::DurationSecondsType timeout)
     {
         return fWE_.WaitUntilQuietly (timeout + Time::GetTickCount ());
@@ -89,14 +80,8 @@ namespace Stroika::Foundation::Execution {
     {
         return WaitQuietly (timeout.As<Time::DurationSecondsType> ());
     }
-    inline void WaitableEvent::WaitUntil (Time::DurationSecondsType timeoutAt)
-    {
-        fWE_.WaitUntil (timeoutAt);
-    }
-    inline bool WaitableEvent::WaitUntilQuietly (Time::DurationSecondsType timeoutAt)
-    {
-        return fWE_.WaitUntilQuietly (timeoutAt);
-    }
+    inline void WaitableEvent::WaitUntil (Time::DurationSecondsType timeoutAt) { fWE_.WaitUntil (timeoutAt); }
+    inline bool WaitableEvent::WaitUntilQuietly (Time::DurationSecondsType timeoutAt) { return fWE_.WaitUntilQuietly (timeoutAt); }
 #if qExecution_WaitableEvent_SupportWaitForMultipleObjects
     template <typename CONTAINER_OF_WAITABLE_EVENTS, typename SET_OF_WAITABLE_EVENTS_RESULT>
     inline SET_OF_WAITABLE_EVENTS_RESULT WaitableEvent::WaitForAny (CONTAINER_OF_WAITABLE_EVENTS waitableEvents, Time::DurationSecondsType timeout)
@@ -104,7 +89,8 @@ namespace Stroika::Foundation::Execution {
         return WaitForAnyUntil (waitableEvents, timeout + Time::GetTickCount ());
     }
     template <typename ITERATOR_OF_WAITABLE_EVENTS, typename SET_OF_WAITABLE_EVENTS_RESULT>
-    inline SET_OF_WAITABLE_EVENTS_RESULT WaitableEvent::WaitForAny (ITERATOR_OF_WAITABLE_EVENTS waitableEventsStart, ITERATOR_OF_WAITABLE_EVENTS waitableEventsEnd, Time::DurationSecondsType timeout)
+    inline SET_OF_WAITABLE_EVENTS_RESULT WaitableEvent::WaitForAny (ITERATOR_OF_WAITABLE_EVENTS waitableEventsStart,
+                                                                    ITERATOR_OF_WAITABLE_EVENTS waitableEventsEnd, Time::DurationSecondsType timeout)
     {
         return WaitForAnyUntil (waitableEventsStart, waitableEventsEnd, timeout + Time::GetTickCount ());
     }
@@ -114,7 +100,8 @@ namespace Stroika::Foundation::Execution {
         return WaitForAnyUntil (begin (waitableEvents), end (waitableEvents), timeoutAt);
     }
     template <typename ITERATOR_OF_WAITABLE_EVENTS, typename SET_OF_WAITABLE_EVENTS_RESULT>
-    SET_OF_WAITABLE_EVENTS_RESULT WaitableEvent::WaitForAnyUntil (ITERATOR_OF_WAITABLE_EVENTS waitableEventsStart, ITERATOR_OF_WAITABLE_EVENTS waitableEventsEnd, Time::DurationSecondsType timeoutAt)
+    SET_OF_WAITABLE_EVENTS_RESULT WaitableEvent::WaitForAnyUntil (ITERATOR_OF_WAITABLE_EVENTS waitableEventsStart,
+                                                                  ITERATOR_OF_WAITABLE_EVENTS waitableEventsEnd, Time::DurationSecondsType timeoutAt)
     {
         SET_OF_WAITABLE_EVENTS_RESULT result;
         /*
@@ -126,14 +113,13 @@ namespace Stroika::Foundation::Execution {
          *  <<< @todo DOCUMENT AND EXPLAIN MUTEX >>>
          */
         shared_ptr<WE_>         we      = make_shared<WE_> (eAutoReset);
-        [[maybe_unused]] auto&& cleanup = Finally (
-            [we, waitableEventsStart, waitableEventsEnd] () noexcept {
-                Thread::SuppressInterruptionInContext suppressThreadInterrupts;
-                [[maybe_unused]] auto&&               critSec = lock_guard{sExtraWaitableEventsMutex_};
-                for (ITERATOR_OF_WAITABLE_EVENTS i = waitableEventsStart; i != waitableEventsEnd; ++i) {
-                    (*i)->fExtraWaitableEvents_.remove (we);
-                }
-            });
+        [[maybe_unused]] auto&& cleanup = Finally ([we, waitableEventsStart, waitableEventsEnd] () noexcept {
+            Thread::SuppressInterruptionInContext suppressThreadInterrupts;
+            [[maybe_unused]] auto&&               critSec = lock_guard{sExtraWaitableEventsMutex_};
+            for (ITERATOR_OF_WAITABLE_EVENTS i = waitableEventsStart; i != waitableEventsEnd; ++i) {
+                (*i)->fExtraWaitableEvents_.remove (we);
+            }
+        });
         {
             [[maybe_unused]] auto&& critSec = lock_guard{sExtraWaitableEventsMutex_};
             for (ITERATOR_OF_WAITABLE_EVENTS i = waitableEventsStart; i != waitableEventsEnd; ++i) {
@@ -160,7 +146,8 @@ namespace Stroika::Foundation::Execution {
         WaitForAllUntil (waitableEvents, timeout + Time::GetTickCount ());
     }
     template <typename ITERATOR_OF_WAITABLE_EVENTS>
-    inline void WaitableEvent::WaitForAll (ITERATOR_OF_WAITABLE_EVENTS waitableEventsStart, ITERATOR_OF_WAITABLE_EVENTS waitableEventsEnd, Time::DurationSecondsType timeout)
+    inline void WaitableEvent::WaitForAll (ITERATOR_OF_WAITABLE_EVENTS waitableEventsStart, ITERATOR_OF_WAITABLE_EVENTS waitableEventsEnd,
+                                           Time::DurationSecondsType timeout)
     {
         WaitForAllUntil (waitableEventsStart, waitableEventsEnd, timeout + Time::GetTickCount ());
     }
@@ -170,7 +157,8 @@ namespace Stroika::Foundation::Execution {
         WaitForAllUntil (begin (waitableEvents), end (waitableEvents), timeoutAt);
     }
     template <typename ITERATOR_OF_WAITABLE_EVENTS>
-    void WaitableEvent::WaitForAllUntil (ITERATOR_OF_WAITABLE_EVENTS waitableEventsStart, ITERATOR_OF_WAITABLE_EVENTS waitableEventsEnd, Time::DurationSecondsType timeoutAt)
+    void WaitableEvent::WaitForAllUntil (ITERATOR_OF_WAITABLE_EVENTS waitableEventsStart, ITERATOR_OF_WAITABLE_EVENTS waitableEventsEnd,
+                                         Time::DurationSecondsType timeoutAt)
     {
         /*
          *  Create another WE as shared.
@@ -181,14 +169,13 @@ namespace Stroika::Foundation::Execution {
          *  <<< @todo DOCUMENT AND EXPLAIN MUTEX >>>
          */
         shared_ptr<WE_>         we      = make_shared<WE_> (eAutoReset);
-        [[maybe_unused]] auto&& cleanup = Finally (
-            [we, waitableEventsStart, waitableEventsEnd] () noexcept {
-                Thread::SuppressInterruptionInContext suppressThreadInterrupts;
-                [[maybe_unused]] auto&&               critSec = lock_guard{sExtraWaitableEventsMutex_};
-                for (ITERATOR_OF_WAITABLE_EVENTS i = waitableEventsStart; i != waitableEventsEnd; ++i) {
-                    (*i)->fExtraWaitableEvents_.remove (we);
-                }
-            });
+        [[maybe_unused]] auto&& cleanup = Finally ([we, waitableEventsStart, waitableEventsEnd] () noexcept {
+            Thread::SuppressInterruptionInContext suppressThreadInterrupts;
+            [[maybe_unused]] auto&&               critSec = lock_guard{sExtraWaitableEventsMutex_};
+            for (ITERATOR_OF_WAITABLE_EVENTS i = waitableEventsStart; i != waitableEventsEnd; ++i) {
+                (*i)->fExtraWaitableEvents_.remove (we);
+            }
+        });
         {
             [[maybe_unused]] auto&& critSec = lock_guard{sExtraWaitableEventsMutex_};
             for (ITERATOR_OF_WAITABLE_EVENTS i = waitableEventsStart; i != waitableEventsEnd; ++i) {

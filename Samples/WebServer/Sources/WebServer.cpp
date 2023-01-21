@@ -84,15 +84,15 @@ namespace {
         ConnectionManager fConnectionMgr_;
 
         MyWebServer_ (uint16_t portNumber)
-            : kRoutes_{
-                  Route{""_RegEx, DefaultPage_},
-                  Route{HTTP::MethodsRegEx::kPost, "SetAppState"_RegEx, SetAppState_},
-                  Route{"FRED"_RegEx, [] (Request*, Response* response) {
-                            response->contentType = DataExchange::InternetMediaTypes::kText_PLAIN;
-                            response->write (L"FRED");
-                        }},
-                  Route{"Files/.*"_RegEx, FileSystemRequestHandler{Execution::GetEXEDir () / "html", kFileSystemRouterOptions_}}}
-            , fConnectionMgr_{SocketAddresses (InternetAddresses_Any (), portNumber), kRoutes_, ConnectionManager::Options{.fBindFlags = Socket::BindFlags{}, .fDefaultResponseHeaders = kDefaultResponseHeaders_}}
+            : kRoutes_{Route{""_RegEx, DefaultPage_}, Route{HTTP::MethodsRegEx::kPost, "SetAppState"_RegEx, SetAppState_},
+                       Route{"FRED"_RegEx,
+                             [] (Request*, Response* response) {
+                                 response->contentType = DataExchange::InternetMediaTypes::kText_PLAIN;
+                                 response->write (L"FRED");
+                             }},
+                       Route{"Files/.*"_RegEx, FileSystemRequestHandler{Execution::GetEXEDir () / "html", kFileSystemRouterOptions_}}}
+            , fConnectionMgr_{SocketAddresses (InternetAddresses_Any (), portNumber), kRoutes_,
+                              ConnectionManager::Options{.fBindFlags = Socket::BindFlags{}, .fDefaultResponseHeaders = kDefaultResponseHeaders_}}
         {
         }
         // Can declare arguments as Request*,Response*
@@ -127,7 +127,8 @@ namespace {
 
 int main (int argc, const char* argv[])
 {
-    Debug::TraceContextBumper                            ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"main", L"argv=%s", Characters::ToString (vector<const char*>{argv, argv + argc}).c_str ())};
+    Debug::TraceContextBumper                            ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (
+        L"main", L"argv=%s", Characters::ToString (vector<const char*>{argv, argv + argc}).c_str ())};
     Execution::SignalHandlerRegistry::SafeSignalsManager safeSignals;
 #if qPlatform_POSIX
     Execution::SignalHandlerRegistry::Get ().SetSignalHandlers (SIGPIPE, Execution::SignalHandlerRegistry::kIGNORED);

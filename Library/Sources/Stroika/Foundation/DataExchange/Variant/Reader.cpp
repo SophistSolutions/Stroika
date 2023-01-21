@@ -21,10 +21,7 @@ using Streams::iostream::InputStreamFromStdIStream;
  ******************************* Variant::Reader ********************************
  ********************************************************************************
  */
-Streams::InputStream<std::byte>::Ptr Variant::Reader::_ToByteReader (istream& in)
-{
-    return InputStreamFromStdIStream<byte>::New (in);
-}
+Streams::InputStream<std::byte>::Ptr Variant::Reader::_ToByteReader (istream& in) { return InputStreamFromStdIStream<byte>::New (in); }
 
 Streams::InputStream<Characters::Character>::Ptr Variant::Reader::_ToCharacterReader (const Traversal::Iterable<Characters::Character>& in)
 {

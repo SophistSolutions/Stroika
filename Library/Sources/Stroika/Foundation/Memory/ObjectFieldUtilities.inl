@@ -41,12 +41,14 @@ namespace Stroika::Foundation::Memory {
         return reinterpret_cast<OUTER_OBJECT*> (adjustedAggregatedMember - adjustment);
     }
     template <typename APPARENT_MEMBER_TYPE, typename OUTER_OBJECT, typename AGGREGATED_OBJECT_TYPE>
-    inline const OUTER_OBJECT* GetObjectOwningField (const APPARENT_MEMBER_TYPE* aggregatedMember, AGGREGATED_OBJECT_TYPE (OUTER_OBJECT::*aggregatedPtrToMember))
+    inline const OUTER_OBJECT* GetObjectOwningField (const APPARENT_MEMBER_TYPE* aggregatedMember,
+                                                     AGGREGATED_OBJECT_TYPE (OUTER_OBJECT::*aggregatedPtrToMember))
     {
         RequireNotNull (aggregatedMember);
         RequireNotNull (aggregatedPtrToMember);
-        const std::byte* adjustedAggregatedMember = reinterpret_cast<const std::byte*> (static_cast<const AGGREGATED_OBJECT_TYPE*> (aggregatedMember));
-        ptrdiff_t        adjustment               = static_cast<ptrdiff_t> (ConvertPointerToDataMemberToOffset (aggregatedPtrToMember));
+        const std::byte* adjustedAggregatedMember =
+            reinterpret_cast<const std::byte*> (static_cast<const AGGREGATED_OBJECT_TYPE*> (aggregatedMember));
+        ptrdiff_t adjustment = static_cast<ptrdiff_t> (ConvertPointerToDataMemberToOffset (aggregatedPtrToMember));
         return reinterpret_cast<const OUTER_OBJECT*> (adjustedAggregatedMember - adjustment);
     }
 

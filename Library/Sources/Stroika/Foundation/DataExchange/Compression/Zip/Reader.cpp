@@ -75,10 +75,7 @@ namespace {
                 Assert (fInStream_ == nullptr);
                 Ensure (not IsOpenRead ());
             }
-            virtual bool IsOpenRead () const override
-            {
-                return fInStream_ != nullptr;
-            }
+            virtual bool           IsOpenRead () const override { return fInStream_ != nullptr; }
             virtual SeekOffsetType GetReadOffset () const override
             {
                 Require (IsOpenRead ());
@@ -108,10 +105,7 @@ namespace {
                 int level = Z_DEFAULT_COMPRESSION;
                 ThrowIfZLibErr_ (::deflateInit (&fZStream_, level));
             }
-            virtual ~DeflateRep_ ()
-            {
-                Verify (::deflateEnd (&fZStream_) == Z_OK);
-            }
+            virtual ~DeflateRep_ () { Verify (::deflateEnd (&fZStream_) == Z_OK); }
             virtual size_t Read (ElementType* intoStart, ElementType* intoEnd) override
             {
                 Require (intoStart < intoEnd); // API rule for streams
@@ -221,10 +215,7 @@ namespace {
                 constexpr int ENABLE_ZLIB_GZIP = 32;
                 ThrowIfZLibErr_ (::inflateInit2 (&fZStream_, windowBits | ENABLE_ZLIB_GZIP));
             }
-            virtual ~InflateRep_ ()
-            {
-                Verify (::inflateEnd (&fZStream_) == Z_OK);
-            }
+            virtual ~InflateRep_ () { Verify (::inflateEnd (&fZStream_) == Z_OK); }
             virtual size_t Read (ElementType* intoStart, ElementType* intoEnd) override
             {
                 Require (intoStart < intoEnd); // API rule for streams
@@ -263,8 +254,12 @@ namespace {
                 return {};
             }
         };
-        enum Compression { eCompression };
-        enum DeCompression { eDeCompression };
+        enum Compression {
+            eCompression
+        };
+        enum DeCompression {
+            eDeCompression
+        };
         MyCompressionStream_ (Compression, const Streams::InputStream<byte>::Ptr& in)
             : InputStream<byte>::Ptr{make_shared<DeflateRep_> (in)}
         {

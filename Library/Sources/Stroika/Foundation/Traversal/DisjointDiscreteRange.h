@@ -50,9 +50,13 @@ namespace Stroika::Foundation::Traversal {
         template <typename CONTAINER_OF_DISCRETERANGE_OF_T>
         explicit DisjointDiscreteRange (const CONTAINER_OF_DISCRETERANGE_OF_T& from);
         template <typename COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T>
-        explicit DisjointDiscreteRange (COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T start, COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T end, enable_if_t<is_convertible_v<Configuration::ExtractValueType_t<COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T>, RangeType>, int>* = nullptr);
+        explicit DisjointDiscreteRange (
+            COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T start, COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T end,
+            enable_if_t<is_convertible_v<Configuration::ExtractValueType_t<COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T>, RangeType>, int>* = nullptr);
         template <typename COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T>
-        explicit DisjointDiscreteRange (COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T start, COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T end, enable_if_t<is_convertible_v<Configuration::ExtractValueType_t<COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T>, value_type>, int>* = nullptr);
+        explicit DisjointDiscreteRange (
+            COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T start, COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T end,
+            enable_if_t<is_convertible_v<Configuration::ExtractValueType_t<COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T>, value_type>, int>* = nullptr);
 
     public:
         nonvirtual DisjointDiscreteRange& operator= (const DisjointDiscreteRange& rhs) = default;
@@ -119,7 +123,8 @@ namespace Stroika::Foundation::Traversal {
         nonvirtual optional<value_type> FindLastThat (const function<bool (value_type)>& testF, const FindHints& hints) const;
 
     private:
-        nonvirtual optional<value_type> ScanTil_ (const function<bool (value_type)>& testF, const function<optional<value_type> (value_type)>& iterNext, value_type seedPosition) const;
+        nonvirtual optional<value_type> ScanTil_ (const function<bool (value_type)>& testF,
+                                                  const function<optional<value_type> (value_type)>& iterNext, value_type seedPosition) const;
         nonvirtual optional<value_type> ScanFindAny_ (const function<bool (value_type)>& testF, value_type seedPosition, bool forwardFirst) const;
     };
 

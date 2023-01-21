@@ -29,15 +29,10 @@ namespace Stroika::Foundation::IO::Network {
     constexpr InternetAddress::InternetAddress (const in_addr_t& i)
         : fAddressFamily_ (AddressFamily::V4)
 #if qPlatform_POSIX
-        , fV4_{
-              i}
+        , fV4_{i}
 #elif qPlatform_Windows
-        , fV4_{
-              in_addr{
-                  {static_cast<uint8_t> (Memory::BitSubstring (i, 0, 8)),
-                   static_cast<uint8_t> (Memory::BitSubstring (i, 8, 16)),
-                   static_cast<uint8_t> (Memory::BitSubstring (i, 16, 24)),
-                   static_cast<uint8_t> (Memory::BitSubstring (i, 24, 32))}}}
+        , fV4_{in_addr{{static_cast<uint8_t> (Memory::BitSubstring (i, 0, 8)), static_cast<uint8_t> (Memory::BitSubstring (i, 8, 16)),
+                        static_cast<uint8_t> (Memory::BitSubstring (i, 16, 24)), static_cast<uint8_t> (Memory::BitSubstring (i, 24, 32))}}}
 #endif
     {
 #if qPlatform_Windows
@@ -45,8 +40,7 @@ namespace Stroika::Foundation::IO::Network {
 #endif
     }
     inline InternetAddress::InternetAddress (const in_addr_t& i, ByteOrder byteOrder)
-        : fAddressFamily_{
-              AddressFamily::V4}
+        : fAddressFamily_{AddressFamily::V4}
 #if qPlatform_POSIX
         , fV4_{i}
 #endif
@@ -115,19 +109,10 @@ namespace Stroika::Foundation::IO::Network {
             fArray_16_uint_[i++] = static_cast<uint8_t> (b);
         }
     }
-    constexpr bool InternetAddress::empty () const
-    {
-        return fAddressFamily_ == AddressFamily::UNKNOWN;
-    }
-    inline void InternetAddress::clear ()
-    {
-        fAddressFamily_ = AddressFamily::UNKNOWN;
-    }
-    constexpr InternetAddress::AddressFamily InternetAddress::GetAddressFamily () const
-    {
-        return fAddressFamily_;
-    }
-    constexpr optional<size_t> InternetAddress::GetAddressSize () const
+    constexpr bool                           InternetAddress::empty () const { return fAddressFamily_ == AddressFamily::UNKNOWN; }
+    inline void                              InternetAddress::clear () { fAddressFamily_ = AddressFamily::UNKNOWN; }
+    constexpr InternetAddress::AddressFamily InternetAddress::GetAddressFamily () const { return fAddressFamily_; }
+    constexpr optional<size_t>               InternetAddress::GetAddressSize () const
     {
         switch (GetAddressFamily ()) {
             case AddressFamily::V4:
@@ -138,10 +123,7 @@ namespace Stroika::Foundation::IO::Network {
                 return nullopt;
         }
     }
-    constexpr InternetAddress InternetAddress::min ()
-    {
-        return InternetAddress{};
-    }
+    constexpr InternetAddress InternetAddress::min () { return InternetAddress{}; }
     constexpr InternetAddress InternetAddress::max ()
     {
         // @todo - consider if this is really the max (could have longer address at some point in the future - IPV8, 9, 10??)
@@ -245,15 +227,9 @@ namespace Stroika::Foundation::IO::Network {
             return tmp;
         }
     }
-    inline strong_ordering InternetAddress::operator<=> (const InternetAddress& rhs) const
-    {
-        return TWC_ (*this, rhs);
-    }
-    inline bool InternetAddress::operator== (const InternetAddress& rhs) const
-    {
-        return TWC_ (*this, rhs) == 0;
-    }
-    inline strong_ordering InternetAddress::TWC_ (const InternetAddress& lhs, const InternetAddress& rhs)
+    inline strong_ordering InternetAddress::operator<=> (const InternetAddress& rhs) const { return TWC_ (*this, rhs); }
+    inline bool InternetAddress::operator== (const InternetAddress& rhs) const { return TWC_ (*this, rhs) == 0; }
+    inline strong_ordering       InternetAddress::TWC_ (const InternetAddress& lhs, const InternetAddress& rhs)
     {
         if (auto cmp = lhs.fAddressFamily_ <=> rhs.fAddressFamily_; cmp != strong_ordering::equal) {
             return cmp;
@@ -263,10 +239,12 @@ namespace Stroika::Foundation::IO::Network {
                 return strong_ordering::equal;
             } break;
             case AddressFamily::V4: {
-                return Memory::MemCmp (Traversal::Iterator2Pointer (lhs.fArray_4_uint_.begin ()), Traversal::Iterator2Pointer (rhs.fArray_4_uint_.begin ()), 4) <=> 0;
+                return Memory::MemCmp (Traversal::Iterator2Pointer (lhs.fArray_4_uint_.begin ()),
+                                       Traversal::Iterator2Pointer (rhs.fArray_4_uint_.begin ()), 4) <=> 0;
             } break;
             case AddressFamily::V6: {
-                return Memory::MemCmp (Traversal::Iterator2Pointer (lhs.fArray_16_uint_.begin ()), Traversal::Iterator2Pointer (rhs.fArray_16_uint_.begin ()), 16) <=> 0;
+                return Memory::MemCmp (Traversal::Iterator2Pointer (lhs.fArray_16_uint_.begin ()),
+                                       Traversal::Iterator2Pointer (rhs.fArray_16_uint_.begin ()), 16) <=> 0;
             } break;
         }
         //AssertNotReached ();  @todo - this really should be an assertion failure, but tricky cuz constexpr function could fix with template)
@@ -305,7 +283,8 @@ namespace Stroika::Foundation::Traversal::RangeTraits {
         return kLowerBound;
         //return n.Offset (-1); // must fix InternetAddress::Offset to support signed offsets
     }
-    constexpr auto Default<IO::Network::InternetAddress>::Difference (Configuration::ArgByValueType<value_type> lhs, Configuration::ArgByValueType<value_type> rhs) -> SignedDifferenceType
+    constexpr auto Default<IO::Network::InternetAddress>::Difference (Configuration::ArgByValueType<value_type> lhs,
+                                                                      Configuration::ArgByValueType<value_type> rhs) -> SignedDifferenceType
     {
         using IO::Network::InternetAddress;
         Require (lhs.GetAddressFamily () == InternetAddress::AddressFamily::V4);

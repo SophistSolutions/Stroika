@@ -24,7 +24,4 @@ void AbortableMutex::lock ()
     }
 }
 
-void AbortableMutex::unlock ()
-{
-    fM_.unlock ();
-}
+void AbortableMutex::unlock () { fM_.unlock (); }

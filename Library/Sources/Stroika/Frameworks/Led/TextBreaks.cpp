@@ -22,22 +22,10 @@ using namespace Stroika::Frameworks;
 using namespace Stroika::Frameworks::Led;
 
 // These SHOULD work for UNICODE, MBYTE and SingleByte case...
-inline bool IsASCIISpace (Led_tChar c)
-{
-    return isascii (c) and isspace (c);
-}
-inline bool IsASCIIAlnum (Led_tChar c)
-{
-    return isascii (c) and isalnum (c);
-}
-inline bool IsASCIIAlpha (Led_tChar c)
-{
-    return isascii (c) and isalpha (c);
-}
-inline bool IsASCIIDigit (Led_tChar c)
-{
-    return isascii (c) and isdigit (c);
-}
+inline bool IsASCIISpace (Led_tChar c) { return isascii (c) and isspace (c); }
+inline bool IsASCIIAlnum (Led_tChar c) { return isascii (c) and isalnum (c); }
+inline bool IsASCIIAlpha (Led_tChar c) { return isascii (c) and isalpha (c); }
+inline bool IsASCIIDigit (Led_tChar c) { return isascii (c) and isdigit (c); }
 
 #if qWideCharacters
 static bool SJIS_IsLeadByte (unsigned char c)
@@ -52,25 +40,16 @@ static bool SJIS_IsBOLChar (const char* mbChar)
     unsigned char byte1 = (unsigned char)mbChar[1];
     // Based on code from LEC - jwrap.c
     static unsigned char yBits[8]         = {0x1, 0x2, 0x4, 0x8, 0x10, 0x20, 0x40, 0x80};
-    static unsigned char yBOLTable[4][32] = {
-        {0x0, 0x0, 0x0, 0x0, 0x2, 0x52, 0x0, 0xcc,
-         0x0, 0x0, 0x0, 0x20, 0x0, 0x0, 0x0, 0x20,
-         0x0, 0x0, 0x0, 0x0, 0x98, 0xff, 0x0, 0x0,
-         0x0, 0x0, 0x0, 0xc0, 0x0, 0x0, 0x0, 0x0},
-        {0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0,
-         0xdf, 0x3, 0x3c, 0x1, 0x40, 0x55, 0x55, 0x5,
-         0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0,
-         0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0},
-        {0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0,
-         0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0,
-         0x0, 0x0, 0x0, 0x80, 0xa2, 0x0, 0x0, 0x0,
-         0x0, 0x0, 0x0, 0x0, 0x2a, 0x10, 0x0, 0x0},
-        {0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0,
-         0x55, 0x1, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0,
-         0xa8, 0x40, 0x60, 0x0, 0x8, 0x0, 0x0, 0x0,
-         0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0}};
-    unsigned char hi;
-    unsigned char lo;
+    static unsigned char yBOLTable[4][32] = {{0x0, 0x0, 0x0, 0x0, 0x2,  0x52, 0x0, 0xcc, 0x0, 0x0, 0x0, 0x20, 0x0, 0x0, 0x0, 0x20,
+                                              0x0, 0x0, 0x0, 0x0, 0x98, 0xff, 0x0, 0x0,  0x0, 0x0, 0x0, 0xc0, 0x0, 0x0, 0x0, 0x0},
+                                             {0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0xdf, 0x3, 0x3c, 0x1, 0x40, 0x55, 0x55, 0x5,
+                                              0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0,  0x0, 0x0,  0x0, 0x0,  0x0,  0x0,  0x0},
+                                             {0x0, 0x0, 0x0, 0x0,  0x0,  0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0,  0x0,  0x0, 0x0,
+                                              0x0, 0x0, 0x0, 0x80, 0xa2, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x2a, 0x10, 0x0, 0x0},
+                                             {0x0,  0x0,  0x0,  0x0, 0x0, 0x0, 0x0, 0x0, 0x55, 0x1, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0,
+                                              0xa8, 0x40, 0x60, 0x0, 0x8, 0x0, 0x0, 0x0, 0x0,  0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0}};
+    unsigned char        hi;
+    unsigned char        lo;
     if (SJIS_IsLeadByte (byte0)) {
         if (byte0 < (unsigned char)0x81 || byte0 > (unsigned char)0x83)
             return FALSE;
@@ -94,17 +73,12 @@ static bool SJIS_IsEOLChar (const char* mbChar)
     unsigned char byte1 = (unsigned char)mbChar[1];
     // Based on code from LEC - jwrap.c
     static unsigned char yBits[8]         = {0x1, 0x2, 0x4, 0x8, 0x10, 0x20, 0x40, 0x80};
-    static unsigned char yEOLTable[2][32] = {
-        {0x0, 0x0, 0x0, 0x0, 0x0, 0x1, 0x0, 0x10,
-         0x0, 0x0, 0x0, 0x8, 0x0, 0x0, 0x0, 0x8,
-         0x0, 0x0, 0x0, 0x0, 0x4, 0x0, 0x0, 0x0,
-         0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0},
-        {0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0,
-         0x0, 0x0, 0x0, 0x0, 0xa0, 0xaa, 0xaa, 0x2,
-         0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0,
-         0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0}};
-    unsigned char hi;
-    unsigned char lo;
+    static unsigned char yEOLTable[2][32] = {{0x0, 0x0, 0x0, 0x0, 0x0, 0x1, 0x0, 0x10, 0x0, 0x0, 0x0, 0x8, 0x0, 0x0, 0x0, 0x8,
+                                              0x0, 0x0, 0x0, 0x0, 0x4, 0x0, 0x0, 0x0,  0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0},
+                                             {0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0xa0, 0xaa, 0xaa, 0x2,
+                                              0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0,  0x0,  0x0,  0x0}};
+    unsigned char        hi;
+    unsigned char        lo;
     if (SJIS_IsLeadByte (byte0)) {
         if (byte0 != 0x81) {
             return false;
@@ -292,14 +266,15 @@ void TextBreaks_Basic::FindLineBreaks (const Led_tChar* startOfText, size_t leng
 
 #if qMultiByteCharacters
     Assert (textOffsetToStartLookingForWord <= lengthOfText);
-    Assert (Led_IsValidMultiByteString (startOfText, textOffsetToStartLookingForWord));                                                  // initial segment valid
+    Assert (Led_IsValidMultiByteString (startOfText, textOffsetToStartLookingForWord)); // initial segment valid
     Assert (Led_IsValidMultiByteString (&startOfText[textOffsetToStartLookingForWord], lengthOfText - textOffsetToStartLookingForWord)); // second segment valid
 #endif
 
 #if qSingleByteCharacters || qWideCharacters
     Led_tChar thisChar = startOfText[textOffsetToStartLookingForWord];
 #elif qMultiByteCharacters
-    Led_tChar thisChar[2] = {startOfText[textOffsetToStartLookingForWord], Led_IsLeadByte (startOfText[textOffsetToStartLookingForWord]) ? startOfText[textOffsetToStartLookingForWord + 1] : '\0'};
+    Led_tChar thisChar[2] = {startOfText[textOffsetToStartLookingForWord],
+                             Led_IsLeadByte (startOfText[textOffsetToStartLookingForWord]) ? startOfText[textOffsetToStartLookingForWord + 1] : '\0'};
 #endif
 
     bool             isSpaceChar    = IsASCIISpace (thisChar);
@@ -349,7 +324,8 @@ void TextBreaks_Basic::FindLineBreaks (const Led_tChar* startOfText, size_t leng
             //   any character followed by an BOL character.
             //   any non-white space english characters.
             if (not isSpaceChar) {
-                if ((charClass != eWordClass or prevCharWordClass != eWordClass or IsASCIISpace (thisLoopCurChar)) and not IsJapaneseEOLChar (prevChar) and not IsJapaneseBOLChar (thisLoopCurChar)) {
+                if ((charClass != eWordClass or prevCharWordClass != eWordClass or IsASCIISpace (thisLoopCurChar)) and
+                    not IsJapaneseEOLChar (prevChar) and not IsJapaneseBOLChar (thisLoopCurChar)) {
                     break;
                 }
             }
@@ -368,7 +344,8 @@ void TextBreaks_Basic::FindLineBreaks (const Led_tChar* startOfText, size_t leng
 }
 
 #if qSingleByteCharacters || qWideCharacters
-TextBreaks_Basic::CharacterClasses TextBreaks_Basic::CharToCharacterClass (const Led_tChar* startOfText, size_t lengthOfText, const Led_tChar* charToExamine) const
+TextBreaks_Basic::CharacterClasses TextBreaks_Basic::CharToCharacterClass (const Led_tChar* startOfText, size_t lengthOfText,
+                                                                           const Led_tChar* charToExamine) const
 {
 #if qSingleByteCharacters || qWideCharacters
     Led_tChar c = *charToExamine;
@@ -470,7 +447,8 @@ TextBreaks_Basic_WP::TextBreaks_Basic_WP ()
 #endif
 }
 
-TextBreaks_Basic_WP::CharacterClasses TextBreaks_Basic_WP::CharToCharacterClass (const Led_tChar* startOfText, size_t lengthOfText, const Led_tChar* charToExamine) const
+TextBreaks_Basic_WP::CharacterClasses TextBreaks_Basic_WP::CharToCharacterClass (const Led_tChar* startOfText, size_t lengthOfText,
+                                                                                 const Led_tChar* charToExamine) const
 {
     switch (*charToExamine) {
         case ',': { // COMMA between digits
@@ -580,7 +558,8 @@ TextBreaks_Basic_TextEditor::TextBreaks_Basic_TextEditor ()
 #endif
 }
 
-TextBreaks_Basic_TextEditor::CharacterClasses TextBreaks_Basic_TextEditor::CharToCharacterClass (const Led_tChar* startOfText, size_t lengthOfText, const Led_tChar* charToExamine) const
+TextBreaks_Basic_TextEditor::CharacterClasses TextBreaks_Basic_TextEditor::CharToCharacterClass (const Led_tChar* startOfText, size_t lengthOfText,
+                                                                                                 const Led_tChar* charToExamine) const
 {
     if (*charToExamine == '$' or *charToExamine == '%') {
         return (eWordClass);
@@ -678,7 +657,7 @@ void TextBreaks_System::FindLineBreaks (const Led_tChar* startOfText, size_t len
 
 #if qMultiByteCharacters
     Assert (textOffsetToStartLookingForWord <= lengthOfText);
-    Assert (Led_IsValidMultiByteString (startOfText, textOffsetToStartLookingForWord));                                                  // initial segment valid
+    Assert (Led_IsValidMultiByteString (startOfText, textOffsetToStartLookingForWord)); // initial segment valid
     Assert (Led_IsValidMultiByteString (&startOfText[textOffsetToStartLookingForWord], lengthOfText - textOffsetToStartLookingForWord)); // second segment valid
 #endif
 

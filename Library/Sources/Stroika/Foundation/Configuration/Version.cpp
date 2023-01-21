@@ -38,8 +38,9 @@ Version Version::FromWin32Version4DotString (const Characters::String& win32Vers
     }
     int verStage = static_cast<uint16_t> (verStageOctet) >> 5;
     Assert (verStage == Memory::BitSubstring (verStageOctet, 5, 8)); // really only true cuz verStageOctet SB 8-bits - so if this fails, this answer probably better --LGP 2016-07-08
-    uint16_t verSubStage = static_cast<uint16_t> ((Memory::BitSubstring (verStageOctet, 0, 5) << 7) + Memory::BitSubstring (verSubStageOctet, 1, 8));
-    bool     verFinal    = verSubStageOctet & 0x1;
+    uint16_t verSubStage =
+        static_cast<uint16_t> ((Memory::BitSubstring (verStageOctet, 0, 5) << 7) + Memory::BitSubstring (verSubStageOctet, 1, 8));
+    bool verFinal = verSubStageOctet & 0x1;
     if (nMatchingItems != 4 or not(ToInt (VersionStage::eSTART) <= verStage and verStage <= ToInt (VersionStage::eLAST))) {
         DbgTrace (L"win32Version4DotString=%s", win32Version4DotStr.c_str ());
         Execution::Throw (Execution::Exception{"Invalid Version String"sv});
@@ -129,7 +130,8 @@ Version Version::FromPrettyVersionString (const Characters::String& prettyVersio
 
 Characters::String Version::AsWin32Version4DotString () const
 {
-    return Characters::Format (L"%d.%d.%d.%d", fMajorVer, fMinorVer, (static_cast<uint8_t> (fVerStage) << 5) | (fVerSubStage >> 7), (static_cast<uint8_t> (fVerSubStage & 0x7f) << 1) | static_cast<uint8_t> (fFinalBuild));
+    return Characters::Format (L"%d.%d.%d.%d", fMajorVer, fMinorVer, (static_cast<uint8_t> (fVerStage) << 5) | (fVerSubStage >> 7),
+                               (static_cast<uint8_t> (fVerSubStage & 0x7f) << 1) | static_cast<uint8_t> (fFinalBuild));
 }
 
 Characters::String Version::AsPrettyVersionString () const
@@ -162,7 +164,4 @@ Characters::String Version::AsPrettyVersionString () const
     return Characters::Format (L"%d.%d%s%s", fMajorVer, fMinorVer, stageStr.c_str (), verSubStagStr.c_str ());
 }
 
-Characters::String Version::AsMajorMinorString () const
-{
-    return Characters::Format (L"%d.%d", fMajorVer, fMinorVer);
-}
+Characters::String Version::AsMajorMinorString () const { return Characters::Format (L"%d.%d", fMajorVer, fMinorVer); }

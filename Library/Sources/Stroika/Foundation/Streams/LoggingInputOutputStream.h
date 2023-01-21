@@ -42,14 +42,17 @@ namespace Stroika::Foundation::Streams {
          *      \code
          *      \endcode
          */
-        static Ptr New (const typename InputOutputStream<ELEMENT_TYPE>::Ptr& realStream, const typename OutputStream<ELEMENT_TYPE>::Ptr& logInput, const typename OutputStream<ELEMENT_TYPE>::Ptr& logOutput);
-        static Ptr New (Execution::InternallySynchronized internallySynchronized, const typename InputOutputStream<ELEMENT_TYPE>::Ptr& realStream, const typename OutputStream<ELEMENT_TYPE>::Ptr& logInput, const typename OutputStream<ELEMENT_TYPE>::Ptr& logOutput);
+        static Ptr New (const typename InputOutputStream<ELEMENT_TYPE>::Ptr& realStream,
+                        const typename OutputStream<ELEMENT_TYPE>::Ptr& logInput, const typename OutputStream<ELEMENT_TYPE>::Ptr& logOutput);
+        static Ptr New (Execution::InternallySynchronized internallySynchronized, const typename InputOutputStream<ELEMENT_TYPE>::Ptr& realStream,
+                        const typename OutputStream<ELEMENT_TYPE>::Ptr& logInput, const typename OutputStream<ELEMENT_TYPE>::Ptr& logOutput);
 
     private:
         class Rep_;
 
     private:
-        using InternalSyncRep_ = InternallySynchronizedInputOutputStream<ELEMENT_TYPE, Streams::LoggingInputOutputStream<ELEMENT_TYPE>, typename LoggingInputOutputStream<ELEMENT_TYPE>::Rep_>;
+        using InternalSyncRep_ =
+            InternallySynchronizedInputOutputStream<ELEMENT_TYPE, Streams::LoggingInputOutputStream<ELEMENT_TYPE>, typename LoggingInputOutputStream<ELEMENT_TYPE>::Rep_>;
     };
 
 }

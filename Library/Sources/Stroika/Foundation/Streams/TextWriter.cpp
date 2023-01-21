@@ -40,10 +40,7 @@ public:
     }
 
 protected:
-    virtual bool IsSeekable () const override
-    {
-        return false;
-    }
+    virtual bool IsSeekable () const override { return false; }
     virtual void CloseWrite () override
     {
         Require (IsOpenWrite ());
@@ -52,10 +49,7 @@ protected:
         Assert (_fSource == nullptr);
         Ensure (not IsOpenWrite ());
     }
-    virtual bool IsOpenWrite () const override
-    {
-        return _fSource != nullptr;
-    }
+    virtual bool           IsOpenWrite () const override { return _fSource != nullptr; }
     virtual SeekOffsetType GetWriteOffset () const override
     {
         AssertNotImplemented ();
@@ -129,10 +123,7 @@ public:
     }
 
 protected:
-    virtual bool IsSeekable () const override
-    {
-        return false;
-    }
+    virtual bool IsSeekable () const override { return false; }
     virtual void CloseWrite () override
     {
         Require (IsOpenWrite ());
@@ -141,10 +132,7 @@ protected:
         Assert (_fSource == nullptr);
         Ensure (not IsOpenWrite ());
     }
-    virtual bool IsOpenWrite () const override
-    {
-        return _fSource != nullptr;
-    }
+    virtual bool           IsOpenWrite () const override { return _fSource != nullptr; }
     virtual SeekOffsetType GetWriteOffset () const override
     {
         AssertNotImplemented ();
@@ -184,10 +172,7 @@ public:
     }
 
 protected:
-    virtual bool IsSeekable () const override
-    {
-        return true;
-    }
+    virtual bool IsSeekable () const override { return true; }
 #if 0
     virtual void    Write (const Character* start, const Character* end)  override
     {
@@ -223,10 +208,7 @@ public:
     }
 
 protected:
-    virtual bool IsSeekable () const override
-    {
-        return true;
-    }
+    virtual bool IsSeekable () const override { return true; }
 #if 0
     virtual void    Write (const Character* start, const Character* end)  override
     {
@@ -258,10 +240,7 @@ private:
  ****************************** Streams::TextWriter *****************************
  ********************************************************************************
  */
-auto TextWriter::New (const OutputStream<byte>::Ptr& src, Format format) -> Ptr
-{
-    return Ptr{mk_ (src, format)};
-}
+auto TextWriter::New (const OutputStream<byte>::Ptr& src, Format format) -> Ptr { return Ptr{mk_ (src, format)}; }
 
 auto TextWriter::New (Execution::InternallySynchronized internallySynchronized, const OutputStream<Characters::Character>::Ptr& src) -> Ptr
 {

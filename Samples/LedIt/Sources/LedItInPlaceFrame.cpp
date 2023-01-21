@@ -34,9 +34,7 @@ LedItInPlaceFrame::LedItInPlaceFrame ()
 {
 }
 
-LedItInPlaceFrame::~LedItInPlaceFrame ()
-{
-}
+LedItInPlaceFrame::~LedItInPlaceFrame () {}
 
 int LedItInPlaceFrame::OnCreate (LPCREATESTRUCT lpCreateStruct)
 {
@@ -68,15 +66,13 @@ BOOL LedItInPlaceFrame::OnCreateControlBars (CFrameWnd* pWndFrame, CFrameWnd* /*
     m_wndToolBar.SetOwner (this);
 
     // Create toolbar on client's frame window
-    if (!m_wndToolBar.Create (pWndFrame) ||
-        !m_wndToolBar.LoadToolBar (IDR_SRVR_INPLACE)) {
+    if (!m_wndToolBar.Create (pWndFrame) || !m_wndToolBar.LoadToolBar (IDR_SRVR_INPLACE)) {
         TRACE0 ("Failed to create toolbar\n");
         return FALSE;
     }
 
     // TODO: Remove this if you don't want tool tips or a resizeable toolbar
-    m_wndToolBar.SetBarStyle (m_wndToolBar.GetBarStyle () |
-                              CBRS_TOOLTIPS | CBRS_FLYBY | CBRS_SIZE_DYNAMIC);
+    m_wndToolBar.SetBarStyle (m_wndToolBar.GetBarStyle () | CBRS_TOOLTIPS | CBRS_FLYBY | CBRS_SIZE_DYNAMIC);
 
     // TODO: Delete these three lines if you don't want the toolbar to
     //  be dockable
@@ -96,13 +92,7 @@ BOOL LedItInPlaceFrame::PreCreateWindow (CREATESTRUCT& cs)
 }
 
 #ifdef _DEBUG
-void LedItInPlaceFrame::AssertValid () const
-{
-    COleIPFrameWnd::AssertValid ();
-}
+void LedItInPlaceFrame::AssertValid () const { COleIPFrameWnd::AssertValid (); }
 
-void LedItInPlaceFrame::Dump (CDumpContext& dc) const
-{
-    COleIPFrameWnd::Dump (dc);
-}
+void LedItInPlaceFrame::Dump (CDumpContext& dc) const { COleIPFrameWnd::Dump (dc); }
 #endif //_DEBUG

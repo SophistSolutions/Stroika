@@ -15,8 +15,7 @@
 namespace Stroika::Foundation::Cryptography::SSL {
 
     // Certs, policies, options etc - for a client trying to open an SSL conneciton
-    class ServerContext {
-    };
+    class ServerContext {};
 }
 
 /*

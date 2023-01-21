@@ -33,34 +33,32 @@ void Stroika::Samples::SQL::DirectEmployeesDB (const std::function<Connection::P
      */
     // Example schema roughly from https://www.tutorialspoint.com/sqlite/sqlite_insert_query.htm
     constexpr Configuration::Version kCurrentVersion_ = Configuration::Version{1, 0, Configuration::VersionStage::Alpha, 0};
-    ORM::ProvisionForVersion (conn,
-                              kCurrentVersion_,
-                              initializer_list<ORM::TableProvisioner>{
-                                  {"DEPARTMENT"sv,
-                                   [] (SQL::Connection::Ptr c, optional<Configuration::Version> v, [[maybe_unused]] Configuration::Version targetDBVersion) -> void {
-                                       // for now no upgrade support
-                                       if (not v) {
-                                           c.Exec (
-                                               "CREATE TABLE DEPARTMENT(ID INT PRIMARY KEY NOT NULL,"
-                                               "NAME CHAR (50) NOT NULL"
-                                               ");"sv);
-                                       }
-                                   }},
-                                  {"EMPLOYEES"sv,
-                                   [] (Connection::Ptr c, optional<Configuration::Version> v, [[maybe_unused]] Configuration::Version targetDBVersion) -> void {
-                                       // for now no upgrade support
-                                       if (not v) {
-                                           c.Exec (
-                                               "CREATE TABLE EMPLOYEES("
-                                               "ID INT PRIMARY KEY     NOT NULL," // See example ThreadTest for simple example using AUTOINCREMENT instead of explicit IDs
-                                               "NAME           TEXT    NOT NULL,"
-                                               "AGE            INT     NOT NULL,"
-                                               "ADDRESS        CHAR(50),"
-                                               "SALARY         REAL"
-                                               ");"sv);
-                                       }
-                                   }},
-                              });
+    ORM::ProvisionForVersion (
+        conn, kCurrentVersion_,
+        initializer_list<ORM::TableProvisioner>{
+            {"DEPARTMENT"sv,
+             [] (SQL::Connection::Ptr c, optional<Configuration::Version> v, [[maybe_unused]] Configuration::Version targetDBVersion) -> void {
+                 // for now no upgrade support
+                 if (not v) {
+                     c.Exec ("CREATE TABLE DEPARTMENT(ID INT PRIMARY KEY NOT NULL,"
+                             "NAME CHAR (50) NOT NULL"
+                             ");"sv);
+                 }
+             }},
+            {"EMPLOYEES"sv,
+             [] (Connection::Ptr c, optional<Configuration::Version> v, [[maybe_unused]] Configuration::Version targetDBVersion) -> void {
+                 // for now no upgrade support
+                 if (not v) {
+                     c.Exec ("CREATE TABLE EMPLOYEES("
+                             "ID INT PRIMARY KEY     NOT NULL," // See example ThreadTest for simple example using AUTOINCREMENT instead of explicit IDs
+                             "NAME           TEXT    NOT NULL,"
+                             "AGE            INT     NOT NULL,"
+                             "ADDRESS        CHAR(50),"
+                             "SALARY         REAL"
+                             ");"sv);
+                 }
+             }},
+        });
 
     /*
         ID          NAME        AGE         ADDRESS     SALARY
@@ -82,7 +80,8 @@ void Stroika::Samples::SQL::DirectEmployeesDB (const std::function<Connection::P
         {":ID"sv, 1},
         {":NAME"sv, "Washing machines"sv},
     });
-    Statement addEmployeeStatement = conn.mkStatement ("INSERT INTO EMPLOYEES (ID,NAME,AGE,ADDRESS,SALARY) values (:ID, :NAME, :AGE, :ADDRESS, :SALARY);"sv);
+    Statement addEmployeeStatement =
+        conn.mkStatement ("INSERT INTO EMPLOYEES (ID,NAME,AGE,ADDRESS,SALARY) values (:ID, :NAME, :AGE, :ADDRESS, :SALARY);"sv);
     addEmployeeStatement.Execute (initializer_list<Statement::ParameterDescription>{
         {":ID"sv, 1},
         {":NAME"sv, "Paul"sv},
@@ -169,9 +168,10 @@ void Stroika::Samples::SQL::DirectEmployeesDB (const std::function<Connection::P
     Assert ((allNames == Set<String>{"Paul", "Allen", "Kim", "David", "Mark", "James", "Teddy"}));
 
     // Either rollup using SQL, or using C++ functional (Iterable) wrappers.
-    Statement               sumAllSalarys               = conn.mkStatement ("select SUM(SALARY) from EMPLOYEES;");
-    [[maybe_unused]] double sumSalaryUsingSQL           = sumAllSalarys.GetAllRows (0)[0].As<double> ();
-    Statement               getAllSalarys               = conn.mkStatement ("select SALARY from EMPLOYEES;");
-    [[maybe_unused]] double sumSalaryUsingIterableApply = getAllSalarys.GetAllRows (0).Map<double> ([] (VariantValue v) { return v.As<double> (); }).SumValue ();
+    Statement               sumAllSalarys     = conn.mkStatement ("select SUM(SALARY) from EMPLOYEES;");
+    [[maybe_unused]] double sumSalaryUsingSQL = sumAllSalarys.GetAllRows (0)[0].As<double> ();
+    Statement               getAllSalarys     = conn.mkStatement ("select SALARY from EMPLOYEES;");
+    [[maybe_unused]] double sumSalaryUsingIterableApply =
+        getAllSalarys.GetAllRows (0).Map<double> ([] (VariantValue v) { return v.As<double> (); }).SumValue ();
     Assert (Math::NearlyEquals (sumSalaryUsingSQL, sumSalaryUsingIterableApply));
 }

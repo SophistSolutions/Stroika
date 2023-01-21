@@ -71,7 +71,8 @@ namespace Stroika::Foundation::IO::Network {
         void BreakWriteIntoParts_ (const T* start, const T* end, size_t maxSendAtATime, const function<size_t (const T*, const T*)>& writeFunc)
         {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-            Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"{}::BreakWriteIntoParts_", L"end-start=%lld", static_cast<long long> (end - start))};
+            Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"{}::BreakWriteIntoParts_", L"end-start=%lld",
+                                                                                         static_cast<long long> (end - start))};
 #endif
             ptrdiff_t amountToSend          = end - start;
             ptrdiff_t amountRemainingToSend = amountToSend;
@@ -85,7 +86,10 @@ namespace Stroika::Foundation::IO::Network {
                 remainingSendFrom += amountSent;
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                 if (amountSent < amountToSendThisIteration) {
-                    DbgTrace (L"write broken into parts - amountSent=%lld out of amountToSendThisIteration=%lld, amountRemainingToSend=%lld", static_cast<long long> (amountSent), static_cast<long long> (amountToSendThisIteration), static_cast<long long> (amountRemainingToSend));
+                    DbgTrace (
+                        L"write broken into parts - amountSent=%lld out of amountToSendThisIteration=%lld, amountRemainingToSend=%lld",
+                        static_cast<long long> (amountSent), static_cast<long long> (amountToSendThisIteration),
+                        static_cast<long long> (amountRemainingToSend));
                 }
 #endif
             }
@@ -185,7 +189,8 @@ namespace Stroika::Foundation::IO::Network {
                         */
                     DWORD dwBytesRet;
                     sockaddr_storage bcast;
-                    bool isV6 = (WSAIoctl (this->GetNativeSocket (), SIO_GET_BROADCAST_ADDRESS, NULL, 0, &bcast, sizeof (bcast), &dwBytesRet, NULL, NULL) == SOCKET_ERROR);
+                    bool isV6 = (WSAIoctl (this->GetNativeSocket (), SIO_GET_BROADCAST_ADDRESS, NULL, 0, &bcast, sizeof (bcast),
+                                           &dwBytesRet, NULL, NULL) == SOCKET_ERROR);
                     if (isV6) {
                         Assert (::WSAGetLastError () == WSAENOPROTOOPT);
                     }

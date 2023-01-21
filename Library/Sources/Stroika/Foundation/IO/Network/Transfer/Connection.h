@@ -237,7 +237,8 @@ namespace Stroika::Foundation::IO::Network::Transfer {
          *
          *  \ensure (r.GetSucceeded());
          */
-        nonvirtual Response POST (const URI& l, const BLOB& data, const InternetMediaType& contentType, const Mapping<String, String>& extraHeaders = Mapping<String, String> ());
+        nonvirtual Response POST (const URI& l, const BLOB& data, const InternetMediaType& contentType,
+                                  const Mapping<String, String>& extraHeaders = Mapping<String, String> ());
 
     public:
         /*
@@ -256,7 +257,8 @@ namespace Stroika::Foundation::IO::Network::Transfer {
          *
          *  \note see https://tools.ietf.org/html/rfc5789 for docs on Patch
          */
-        nonvirtual Response PATCH (const URI& l, const BLOB& data, const InternetMediaType& contentType, const Mapping<String, String>& extraHeaders = Mapping<String, String> ());
+        nonvirtual Response PATCH (const URI& l, const BLOB& data, const InternetMediaType& contentType,
+                                   const Mapping<String, String>& extraHeaders = Mapping<String, String> ());
 
     public:
         /*
@@ -290,7 +292,8 @@ namespace Stroika::Foundation::IO::Network::Transfer {
          *
          *  \ensure (r.GetSucceeded());
          */
-        nonvirtual Response PUT (const URI& l, const BLOB& data, const InternetMediaType& contentType, const Mapping<String, String>& extraHeaders = Mapping<String, String> ());
+        nonvirtual Response PUT (const URI& l, const BLOB& data, const InternetMediaType& contentType,
+                                 const Mapping<String, String>& extraHeaders = Mapping<String, String> ());
 
     public:
         /*

@@ -76,16 +76,15 @@ bool SchemeType::IsSecure () const
 optional<PortType> SchemeType::GetDefaultPort () const
 {
     // From http://www.iana.org/assignments/port-numbers
-    static const Mapping<String, PortType> kPredefined_{
-        String::EqualsComparer{CompareOptions::eCaseInsensitive},
-        initializer_list<Common::KeyValuePair<String, PortType>>{
-            {"http"sv, static_cast<PortType> (80)},
-            {"https"sv, static_cast<PortType> (443)},
-            {"ldap"sv, static_cast<PortType> (389)},
-            {"ldaps"sv, static_cast<PortType> (636)},
-            {"ftp"sv, static_cast<PortType> (21)},
-            {"ftps"sv, static_cast<PortType> (990)},
-        }};
+    static const Mapping<String, PortType> kPredefined_{String::EqualsComparer{CompareOptions::eCaseInsensitive},
+                                                        initializer_list<Common::KeyValuePair<String, PortType>>{
+                                                            {"http"sv, static_cast<PortType> (80)},
+                                                            {"https"sv, static_cast<PortType> (443)},
+                                                            {"ldap"sv, static_cast<PortType> (389)},
+                                                            {"ldaps"sv, static_cast<PortType> (636)},
+                                                            {"ftp"sv, static_cast<PortType> (21)},
+                                                            {"ftps"sv, static_cast<PortType> (990)},
+                                                        }};
     return kPredefined_.Lookup (*this);
 }
 
@@ -157,10 +156,7 @@ String Host::EncodeAsRawURL_ (const InternetAddress& ipAddr)
     }
 }
 
-String Host::ToString () const
-{
-    return Characters::ToString (AsDecoded ());
-}
+String Host::ToString () const { return Characters::ToString (AsDecoded ()); }
 
 /*
  ********************************************************************************
@@ -183,10 +179,7 @@ String UserInfo::EncodeAsRawURL_ (const String& decodedName)
     return UniformResourceIdentification::PCTEncode2String (decodedName, kUserInfoEncodeOptions_);
 }
 
-String UserInfo::ToString () const
-{
-    return Characters::ToString (AsDecoded ());
-}
+String UserInfo::ToString () const { return Characters::ToString (AsDecoded ()); }
 
 /*
  ********************************************************************************
@@ -253,10 +246,7 @@ optional<Authority> Authority::Parse (const String& rawURLAuthorityText)
     return Authority{host, port, userInfo};
 }
 
-Authority Authority::Normalize () const
-{
-    return Authority{fHost_ ? fHost_->Normalize () : optional<Host>{}, fPort_, fUserInfo_};
-}
+Authority Authority::Normalize () const { return Authority{fHost_ ? fHost_->Normalize () : optional<Host>{}, fPort_, fUserInfo_}; }
 
 template <>
 String Authority::As () const
@@ -274,10 +264,7 @@ String Authority::As () const
     return sb.str ();
 }
 
-String Authority::ToString () const
-{
-    return Characters::ToString (As<String> ());
-}
+String Authority::ToString () const { return Characters::ToString (As<String> ()); }
 
 /*
  ********************************************************************************
@@ -333,10 +320,7 @@ Query::Query (const string& query)
     InitURLQueryDecoder_ (&fMap_, query);
 }
 
-void Query::RemoveFieldIfAny (const String& idx)
-{
-    fMap_.Remove (idx);
-}
+void Query::RemoveFieldIfAny (const String& idx) { fMap_.Remove (idx); }
 
 String Query::ComputeQueryString () const
 {
@@ -550,22 +534,17 @@ string UniformResourceIdentification::PCTDecode (const string& s)
  ************** UniformResourceIdentification::PCTDecode2String *****************
  ********************************************************************************
  */
-String UniformResourceIdentification::PCTDecode2String (const string& s)
-{
-    return String::FromUTF8 (PCTDecode (s));
-}
+String UniformResourceIdentification::PCTDecode2String (const string& s) { return String::FromUTF8 (PCTDecode (s)); }
 
-String UniformResourceIdentification::PCTDecode2String (const String& s)
-{
-    return String::FromUTF8 (PCTDecode (s.AsASCII ()));
-}
+String UniformResourceIdentification::PCTDecode2String (const String& s) { return String::FromUTF8 (PCTDecode (s.AsASCII ())); }
 
 /*
  ********************************************************************************
  *********** hash<Stroika::Foundation::IO::Network::URI> ************************
  ********************************************************************************
  */
-size_t std::hash<Stroika::Foundation::IO::Network::UniformResourceIdentification::Host>::operator() (const Stroika::Foundation::IO::Network::UniformResourceIdentification::Host& arg) const
+size_t std::hash<Stroika::Foundation::IO::Network::UniformResourceIdentification::Host>::operator() (
+    const Stroika::Foundation::IO::Network::UniformResourceIdentification::Host& arg) const
 {
     return hash<Characters::String> () (arg.AsEncoded<Characters::String> ());
 }

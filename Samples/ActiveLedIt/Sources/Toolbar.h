@@ -19,11 +19,12 @@
 
 #include "ActiveLedIt_h.h"
 
-class ATL_NO_VTABLE ActiveLedIt_IconButtonToolbarElement : public CComObjectRootEx<CComSingleThreadModel>,
-                                                           public CComCoClass<ActiveLedIt_IconButtonToolbarElement>,
-                                                           public IDispatchImpl<IALToolbarElement, &IID_IALToolbarElement, &LIBID_ACTIVELEDITLib, qActiveLedIt_MajorVersion, qActiveLedIt_MinorVersion>,
-                                                           public IDispatchImpl<IALIconButtonToolbarElement, &IID_IALIconButtonToolbarElement, &LIBID_ACTIVELEDITLib, qActiveLedIt_MajorVersion, qActiveLedIt_MinorVersion>,
-                                                           public CWindowImpl<ActiveLedIt_IconButtonToolbarElement> {
+class ATL_NO_VTABLE ActiveLedIt_IconButtonToolbarElement
+    : public CComObjectRootEx<CComSingleThreadModel>,
+      public CComCoClass<ActiveLedIt_IconButtonToolbarElement>,
+      public IDispatchImpl<IALToolbarElement, &IID_IALToolbarElement, &LIBID_ACTIVELEDITLib, qActiveLedIt_MajorVersion, qActiveLedIt_MinorVersion>,
+      public IDispatchImpl<IALIconButtonToolbarElement, &IID_IALIconButtonToolbarElement, &LIBID_ACTIVELEDITLib, qActiveLedIt_MajorVersion, qActiveLedIt_MinorVersion>,
+      public CWindowImpl<ActiveLedIt_IconButtonToolbarElement> {
 public:
     ActiveLedIt_IconButtonToolbarElement ();
     virtual ~ActiveLedIt_IconButtonToolbarElement ();
@@ -109,11 +110,12 @@ private:
     Led_Rect            fBounds;
 };
 
-class ATL_NO_VTABLE ActiveLedIt_ComboBoxToolbarElement : public CComObjectRootEx<CComSingleThreadModel>,
-                                                         public CComCoClass<ActiveLedIt_ComboBoxToolbarElement>,
-                                                         public IDispatchImpl<IALToolbarElement, &IID_IALToolbarElement, &LIBID_ACTIVELEDITLib, qActiveLedIt_MajorVersion, qActiveLedIt_MinorVersion>,
-                                                         public IDispatchImpl<IALComboBoxToolbarElement, &IID_IALComboBoxToolbarElement, &LIBID_ACTIVELEDITLib, qActiveLedIt_MajorVersion, qActiveLedIt_MinorVersion>,
-                                                         public CWindowImpl<ActiveLedIt_ComboBoxToolbarElement> {
+class ATL_NO_VTABLE ActiveLedIt_ComboBoxToolbarElement
+    : public CComObjectRootEx<CComSingleThreadModel>,
+      public CComCoClass<ActiveLedIt_ComboBoxToolbarElement>,
+      public IDispatchImpl<IALToolbarElement, &IID_IALToolbarElement, &LIBID_ACTIVELEDITLib, qActiveLedIt_MajorVersion, qActiveLedIt_MinorVersion>,
+      public IDispatchImpl<IALComboBoxToolbarElement, &IID_IALComboBoxToolbarElement, &LIBID_ACTIVELEDITLib, qActiveLedIt_MajorVersion, qActiveLedIt_MinorVersion>,
+      public CWindowImpl<ActiveLedIt_ComboBoxToolbarElement> {
 public:
     ActiveLedIt_ComboBoxToolbarElement ();
     virtual ~ActiveLedIt_ComboBoxToolbarElement ();
@@ -194,9 +196,10 @@ private:
     Led_Rect                    fBounds;
 };
 
-class ATL_NO_VTABLE ActiveLedIt_SeparatorToolbarElement : public CComObjectRootEx<CComSingleThreadModel>,
-                                                          public CComCoClass<ActiveLedIt_SeparatorToolbarElement>,
-                                                          public IDispatchImpl<IALToolbarElement, &IID_IALToolbarElement, &LIBID_ACTIVELEDITLib, qActiveLedIt_MajorVersion, qActiveLedIt_MinorVersion> {
+class ATL_NO_VTABLE ActiveLedIt_SeparatorToolbarElement
+    : public CComObjectRootEx<CComSingleThreadModel>,
+      public CComCoClass<ActiveLedIt_SeparatorToolbarElement>,
+      public IDispatchImpl<IALToolbarElement, &IID_IALToolbarElement, &LIBID_ACTIVELEDITLib, qActiveLedIt_MajorVersion, qActiveLedIt_MinorVersion> {
 public:
     ActiveLedIt_SeparatorToolbarElement ();
     virtual ~ActiveLedIt_SeparatorToolbarElement ();
@@ -242,11 +245,12 @@ private:
     Led_Rect fBounds;
 };
 
-class ATL_NO_VTABLE ActiveLedIt_Toolbar : public CComObjectRootEx<CComSingleThreadModel>,
-                                          public CComCoClass<ActiveLedIt_Toolbar>,
-                                          public IDispatchImpl<IALToolbar, &IID_IALToolbar, &LIBID_ACTIVELEDITLib, qActiveLedIt_MajorVersion, qActiveLedIt_MinorVersion>,
-                                          public CWindowImpl<ActiveLedIt_Toolbar>,
-                                          public EnterIdler {
+class ATL_NO_VTABLE ActiveLedIt_Toolbar
+    : public CComObjectRootEx<CComSingleThreadModel>,
+      public CComCoClass<ActiveLedIt_Toolbar>,
+      public IDispatchImpl<IALToolbar, &IID_IALToolbar, &LIBID_ACTIVELEDITLib, qActiveLedIt_MajorVersion, qActiveLedIt_MinorVersion>,
+      public CWindowImpl<ActiveLedIt_Toolbar>,
+      public EnterIdler {
 public:
     ActiveLedIt_Toolbar ();
     virtual ~ActiveLedIt_Toolbar ();
@@ -263,9 +267,15 @@ protected:
     nonvirtual LRESULT OnCommand (UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 
 public:
-    enum { kHSluff = 1 };
-    enum { kVInset = 3 };
-    enum { kHTBEdge = 3 };
+    enum {
+        kHSluff = 1
+    };
+    enum {
+        kVInset = 3
+    };
+    enum {
+        kHTBEdge = 3
+    };
 
 public:
     BEGIN_COM_MAP (ActiveLedIt_Toolbar)
@@ -320,10 +330,11 @@ private:
     Led_Rect                   fBounds;
 };
 
-class ATL_NO_VTABLE ActiveLedIt_ToolbarList : public CComObjectRootEx<CComSingleThreadModel>,
-                                              public CComCoClass<ActiveLedIt_ToolbarList>,
-                                              public IDispatchImpl<IALToolbarList, &IID_IALToolbarList, &LIBID_ACTIVELEDITLib, qActiveLedIt_MajorVersion, qActiveLedIt_MinorVersion>,
-                                              public CWindowImpl<ActiveLedIt_ToolbarList> {
+class ATL_NO_VTABLE ActiveLedIt_ToolbarList
+    : public CComObjectRootEx<CComSingleThreadModel>,
+      public CComCoClass<ActiveLedIt_ToolbarList>,
+      public IDispatchImpl<IALToolbarList, &IID_IALToolbarList, &LIBID_ACTIVELEDITLib, qActiveLedIt_MajorVersion, qActiveLedIt_MinorVersion>,
+      public CWindowImpl<ActiveLedIt_ToolbarList> {
 public:
     ActiveLedIt_ToolbarList ();
     virtual ~ActiveLedIt_ToolbarList ();
@@ -332,7 +343,9 @@ public:
     DECLARE_NO_REGISTRY ()
 
 public:
-    enum { kRoomForBotLine = 1 };
+    enum {
+        kRoomForBotLine = 1
+    };
 
 public:
     DECLARE_WND_CLASS_EX (NULL, CS_HREDRAW | CS_VREDRAW | CS_DBLCLKS, COLOR_BTNFACE);

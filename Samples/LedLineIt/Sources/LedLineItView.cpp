@@ -52,17 +52,12 @@ My_CMDNUM_MAPPING sMy_CMDNUM_MAPPING;
 
 struct LedLineIt_DialogSupport : TextInteractor::DialogSupport {
 public:
-    LedLineIt_DialogSupport ()
-    {
-        TextInteractor::SetDialogSupport (this);
-    }
-    ~LedLineIt_DialogSupport ()
-    {
-        TextInteractor::SetDialogSupport (NULL);
-    }
+    LedLineIt_DialogSupport () { TextInteractor::SetDialogSupport (this); }
+    ~LedLineIt_DialogSupport () { TextInteractor::SetDialogSupport (NULL); }
 #if qSupportStdFindDlg
 public:
-    virtual void DisplayFindDialog (Led_tString* findText, const vector<Led_tString>& recentFindSuggestions, bool* wrapSearch, bool* wholeWordSearch, bool* caseSensative, bool* pressedOK) override
+    virtual void DisplayFindDialog (Led_tString* findText, const vector<Led_tString>& recentFindSuggestions, bool* wrapSearch,
+                                    bool* wholeWordSearch, bool* caseSensative, bool* pressedOK) override
     {
         Led_StdDialogHelper_FindDialog findDialog{::AfxGetResourceHandle (), ::GetActiveWindow ()};
 
@@ -83,7 +78,8 @@ public:
 #endif
 #if qSupportStdReplaceDlg
 public:
-    virtual ReplaceButtonPressed DisplayReplaceDialog (Led_tString* findText, const vector<Led_tString>& recentFindSuggestions, Led_tString* replaceText, bool* wrapSearch, bool* wholeWordSearch, bool* caseSensative) override
+    virtual ReplaceButtonPressed DisplayReplaceDialog (Led_tString* findText, const vector<Led_tString>& recentFindSuggestions,
+                                                       Led_tString* replaceText, bool* wrapSearch, bool* wholeWordSearch, bool* caseSensative) override
     {
         Led_StdDialogHelper_ReplaceDialog replaceDialog{::AfxGetResourceHandle (), ::GetActiveWindow ()};
 
@@ -195,10 +191,7 @@ inline bool IsPredefinedFontSize (int size)
     }
 }
 
-inline bool IsASCIISpace (int c)
-{
-    return isascii (c) and isspace (c);
-}
+inline bool IsASCIISpace (int c) { return isascii (c) and isspace (c); }
 
 // Perhaps replace this with a user-configuration option in the options dialog?
 const unsigned int kCharsPerTab = 4;
@@ -242,10 +235,7 @@ END_MESSAGE_MAP ()
 #if qSupportGenRandomCombosCommand
 namespace {
     struct AtStartup {
-        AtStartup ()
-        {
-            ::srand ((unsigned)::time (NULL));
-        }
+        AtStartup () { ::srand ((unsigned)::time (NULL)); }
     } X_AtStartup;
 }
 #endif
@@ -310,7 +300,8 @@ LedLineItView::LedLineItView ()
     const TWIPS kLedItViewRHSMargin    = TWIPS (60);
 #if qPlatform_Windows
     // This SHOULD be available on other platforms, but only now done for WIN32
-    SetDefaultWindowMargins (TWIPS_Rect (kLedItViewTopMargin, kLedItViewLHSMargin, kLedItViewBottomMargin - kLedItViewTopMargin, kLedItViewRHSMargin - kLedItViewLHSMargin));
+    SetDefaultWindowMargins (TWIPS_Rect (kLedItViewTopMargin, kLedItViewLHSMargin, kLedItViewBottomMargin - kLedItViewTopMargin,
+                                         kLedItViewRHSMargin - kLedItViewLHSMargin));
 #endif
 
 #if qPlatform_MacOS || qPlatform_Windows
@@ -430,10 +421,7 @@ void LedLineItView::SetCurUserLine (size_t newCurLine)
     ScrollToSelection ();
 }
 
-const LedLineItView::TabStopList& LedLineItView::GetTabStopList (size_t /*containingPos*/) const
-{
-    return fTabStopList;
-}
+const LedLineItView::TabStopList& LedLineItView::GetTabStopList (size_t /*containingPos*/) const { return fTabStopList; }
 
 void LedLineItView::TabletChangedMetrics ()
 {
@@ -492,7 +480,8 @@ DistanceType LedLineItView::ComputeMaxHScrollPos () const
     }
 }
 
-void LedLineItView::OnTypedNormalCharacter (Led_tChar theChar, bool optionPressed, bool shiftPressed, bool commandPressed, bool controlPressed, bool altKeyPressed)
+void LedLineItView::OnTypedNormalCharacter (Led_tChar theChar, bool optionPressed, bool shiftPressed, bool commandPressed,
+                                            bool controlPressed, bool altKeyPressed)
 {
     if (theChar == '\t' and Options{}.GetTreatTabAsIndentChar ()) {
         // Check if the selection looks like its likely an auto-indent situation...
@@ -683,15 +672,9 @@ DistanceType LedLineItView::PickOtherFontHeight (DistanceType origHeight)
     }
 }
 
-LedLineItView::SearchParameters LedLineItView::GetSearchParameters () const
-{
-    return Options{}.GetSearchParameters ();
-}
+LedLineItView::SearchParameters LedLineItView::GetSearchParameters () const { return Options{}.GetSearchParameters (); }
 
-void LedLineItView::SetSearchParameters (const SearchParameters& sp)
-{
-    Options{}.SetSearchParameters (sp);
-}
+void LedLineItView::SetSearchParameters (const SearchParameters& sp) { Options{}.SetSearchParameters (sp); }
 
 void LedLineItView::OnGotoLineCommand ()
 {
@@ -721,8 +704,7 @@ void LedLineItView::OnGenRandomCombosCommand ()
 
     {
         size_t lastStart = static_cast<size_t> (-1);
-        for (size_t i = GetStartOfRowContainingPosition (GetSelectionStart ());
-             i < GetSelectionEnd () and lastStart != i;
+        for (size_t i  = GetStartOfRowContainingPosition (GetSelectionStart ()); i < GetSelectionEnd () and lastStart != i;
              lastStart = i, i = GetStartOfNextRowFromRowContainingPosition (i)) {
             size_t                 rowEnd = GetEndOfRowContainingPosition (i);
             size_t                 rowLen = rowEnd - i;
@@ -769,15 +751,9 @@ void LedLineItView::OnGenRandomCombosCommand ()
 }
 #endif
 
-void LedLineItView::OnShiftLeftCommand ()
-{
-    OnShiftNCommand (false);
-}
+void LedLineItView::OnShiftLeftCommand () { OnShiftNCommand (false); }
 
-void LedLineItView::OnShiftRightCommand ()
-{
-    OnShiftNCommand (true);
-}
+void LedLineItView::OnShiftRightCommand () { OnShiftNCommand (true); }
 
 void LedLineItView::OnShiftNCommand (bool shiftRight)
 {
@@ -793,12 +769,9 @@ void LedLineItView::OnShiftNCommand (bool shiftRight)
         AssertNotNull (lastPM);
     }
 
-    TextInteractor::UndoableContextHelper undoContext (
-        *this,
-        shiftRight ? Led_SDK_TCHAROF ("Shift Right") : Led_SDK_TCHAROF ("Shift Left"),
-        firstPM->GetStart (), min (lastPM->GetEnd (), GetTextStore ().GetEnd ()),
-        GetSelectionStart (), GetSelectionEnd (),
-        false);
+    TextInteractor::UndoableContextHelper undoContext (*this, shiftRight ? Led_SDK_TCHAROF ("Shift Right") : Led_SDK_TCHAROF ("Shift Left"),
+                                                       firstPM->GetStart (), min (lastPM->GetEnd (), GetTextStore ().GetEnd ()),
+                                                       GetSelectionStart (), GetSelectionEnd (), false);
     {
         SetSelection (firstPM->GetStart (), min (lastPM->GetEnd (), GetTextStore ().GetEnd ()));
 
@@ -866,15 +839,9 @@ void LedLineItView::OnSetFocus (CWnd* pOldWnd)
     inherited::OnSetFocus (pOldWnd);
 }
 
-void LedLineItView::OnCancelEditSrvr ()
-{
-    GetDocument ().OnDeactivateUI (FALSE);
-}
+void LedLineItView::OnCancelEditSrvr () { GetDocument ().OnDeactivateUI (FALSE); }
 
-void LedLineItView::OnSelectAllCommand ()
-{
-    SetSelection (0, GetLength ());
-}
+void LedLineItView::OnSelectAllCommand () { SetSelection (0, GetLength ()); }
 
 void LedLineItView::OnChooseFontCommand ()
 {
@@ -899,15 +866,9 @@ void LedLineItView::OnChooseFontCommand ()
 }
 
 #ifdef _DEBUG
-void LedLineItView::AssertValid () const
-{
-    inherited::AssertValid ();
-}
+void LedLineItView::AssertValid () const { inherited::AssertValid (); }
 
-void LedLineItView::Dump (CDumpContext& dc) const
-{
-    inherited::Dump (dc);
-}
+void LedLineItView::Dump (CDumpContext& dc) const { inherited::Dump (dc); }
 
 LedLineItDocument& LedLineItView::GetDocument () const // non-debug version is inline
 {

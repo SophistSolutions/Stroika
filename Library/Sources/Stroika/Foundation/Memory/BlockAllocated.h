@@ -124,7 +124,8 @@ namespace Stroika::Foundation::Memory {
      *  @see Stroika::Foundation::Memory::ManuallyBlockAllocated
      */
     template <typename T, bool andTrueCheck = true>
-    using UseBlockAllocationIfAppropriate = conditional_t<qAllowBlockAllocation and andTrueCheck, BlockAllocationUseHelper<T>, Configuration::Empty>;
+    using UseBlockAllocationIfAppropriate =
+        conditional_t<qAllowBlockAllocation and andTrueCheck, BlockAllocationUseHelper<T>, Configuration::Empty>;
 
     /**
      */

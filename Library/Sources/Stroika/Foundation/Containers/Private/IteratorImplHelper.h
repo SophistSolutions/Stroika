@@ -63,7 +63,9 @@ namespace Stroika::Foundation::Containers::Private {
      *  its not likely well suited for use elsewhere.
      */
     template <typename T, typename DATASTRUCTURE_CONTAINER, typename DATASTRUCTURE_CONTAINER_ITERATOR = typename DATASTRUCTURE_CONTAINER::ForwardIterator, typename DATASTRUCTURE_CONTAINER_VALUE = T>
-    class IteratorImplHelper_ : public Iterator<T>::IRep, public Memory::UseBlockAllocationIfAppropriate<IteratorImplHelper_<T, DATASTRUCTURE_CONTAINER, DATASTRUCTURE_CONTAINER_ITERATOR, DATASTRUCTURE_CONTAINER_VALUE>> {
+    class IteratorImplHelper_
+        : public Iterator<T>::IRep,
+          public Memory::UseBlockAllocationIfAppropriate<IteratorImplHelper_<T, DATASTRUCTURE_CONTAINER, DATASTRUCTURE_CONTAINER_ITERATOR, DATASTRUCTURE_CONTAINER_VALUE>> {
     private:
         using inherited = typename Iterator<T>::IRep;
 
@@ -76,11 +78,13 @@ namespace Stroika::Foundation::Containers::Private {
         IteratorImplHelper_ (const IteratorImplHelper_&) = default;
 #if qCompilerAndStdLib_template_default_arguments_then_paramPack_Buggy
         template <typename... ADDITIONAL_BACKEND_ITERATOR_CTOR_ARGUMENTS>
-        explicit IteratorImplHelper_ (const DATASTRUCTURE_CONTAINER* data, const ContainerDebugChangeCounts_* changeCounter, ADDITIONAL_BACKEND_ITERATOR_CTOR_ARGUMENTS&&... args);
+        explicit IteratorImplHelper_ (const DATASTRUCTURE_CONTAINER* data, const ContainerDebugChangeCounts_* changeCounter,
+                                      ADDITIONAL_BACKEND_ITERATOR_CTOR_ARGUMENTS&&... args);
         explicit IteratorImplHelper_ (const DATASTRUCTURE_CONTAINER* data);
 #else
         template <typename... ADDITIONAL_BACKEND_ITERATOR_CTOR_ARGUMENTS>
-        explicit IteratorImplHelper_ (const DATASTRUCTURE_CONTAINER* data, const ContainerDebugChangeCounts_* changeCounter = nullptr, ADDITIONAL_BACKEND_ITERATOR_CTOR_ARGUMENTS&&... args);
+        explicit IteratorImplHelper_ (const DATASTRUCTURE_CONTAINER* data, const ContainerDebugChangeCounts_* changeCounter = nullptr,
+                                      ADDITIONAL_BACKEND_ITERATOR_CTOR_ARGUMENTS&&... args);
 #endif
 
     public:

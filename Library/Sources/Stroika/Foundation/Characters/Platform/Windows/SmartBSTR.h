@@ -58,14 +58,8 @@ namespace Stroika::Foundation::Characters::Platform::Windows {
             }
             return *this;
         }
-        operator BSTR () const noexcept
-        {
-            return fStr_;
-        }
-        unsigned int Length () const noexcept
-        {
-            return ::SysStringLen (fStr_);
-        }
+                     operator BSTR () const noexcept { return fStr_; }
+        unsigned int Length () const noexcept { return ::SysStringLen (fStr_); }
 
     private:
         BSTR fStr_ = nullptr;

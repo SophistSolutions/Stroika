@@ -76,11 +76,8 @@ namespace Stroika::Foundation::Containers::Concrete {
 
         // Stack<T>::_IRep overrides
     public:
-        virtual _StackRepSharedPtr CloneEmpty () const override
-        {
-            return Iterable<value_type>::template MakeSmartPtr<Rep_> ();
-        }
-        virtual void Push (ArgByValueType<value_type> item) override
+        virtual _StackRepSharedPtr CloneEmpty () const override { return Iterable<value_type>::template MakeSmartPtr<Rep_> (); }
+        virtual void               Push (ArgByValueType<value_type> item) override
         {
             Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fData_};
             fData_.Append (item);

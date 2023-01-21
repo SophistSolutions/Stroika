@@ -41,10 +41,7 @@ namespace {
     struct EventFD_Based_ : public EventFD {
 
         EventFD_Based_ () = default;
-        virtual bool IsSet () const override
-        {
-            return fIsSet_;
-        }
+        virtual bool IsSet () const override { return fIsSet_; }
         virtual void Set () override
         {
             // If already set, nothing todo. To set, we set flag, and write so anybody selecting will wakeup
@@ -97,7 +94,8 @@ namespace {
         virtual pair<SDKPollableType, WaitForIOReady_Base::TypeOfMonitorSet> GetWaitInfo () override
         {
             // Poll on read FD to see if data available to read
-            return pair<SDKPollableType, WaitForIOReady_Base::TypeOfMonitorSet>{fReadSocket_.GetNativeSocket (), WaitForIOReady_Base::TypeOfMonitorSet{WaitForIOReady_Base::TypeOfMonitor::eRead}};
+            return pair<SDKPollableType, WaitForIOReady_Base::TypeOfMonitorSet>{
+                fReadSocket_.GetNativeSocket (), WaitForIOReady_Base::TypeOfMonitorSet{WaitForIOReady_Base::TypeOfMonitor::eRead}};
         }
         virtual void _ReadAllAvail () override
         {
@@ -105,10 +103,7 @@ namespace {
             while (fReadSocket_.ReadNonBlocking (begin (buf), end (buf)))
                 ;
         }
-        virtual void _WriteOne () override
-        {
-            fWriteSocket_.Write (sSingleEltDatum);
-        }
+        virtual void _WriteOne () override { fWriteSocket_.Write (sSingleEltDatum); }
     };
 
 }
@@ -132,7 +127,8 @@ unique_ptr<EventFD> WaitForIOReady_Support::mkEventFD ()
  **************** Execution::WaitForIOReady::WaitForIOReady_Base ****************
  ********************************************************************************
  */
-auto WaitForIOReady_Base::_WaitQuietlyUntil (const pair<SDKPollableType, TypeOfMonitorSet>* start, const pair<SDKPollableType, TypeOfMonitorSet>* end, Time::DurationSecondsType timeoutAt) -> Containers::Set<size_t>
+auto WaitForIOReady_Base::_WaitQuietlyUntil (const pair<SDKPollableType, TypeOfMonitorSet>* start, const pair<SDKPollableType, TypeOfMonitorSet>* end,
+                                             Time::DurationSecondsType timeoutAt) -> Containers::Set<size_t>
 {
     DurationSecondsType time2Wait = Math::AtLeast<Time::DurationSecondsType> (timeoutAt - Time::GetTickCount (), 0);
     Thread::CheckForInterruption ();
@@ -173,9 +169,12 @@ auto WaitForIOReady_Base::_WaitQuietlyUntil (const pair<SDKPollableType, TypeOfM
 #if qStroika_Foundation_Exececution_WaitForIOReady_BreakWSAPollIntoTimedMillisecondChunks > 0
     while (true) {
         Thread::CheckForInterruption ();
-        DurationSecondsType timeLeft2Wait                 = Math::AtLeast<Time::DurationSecondsType> (timeoutAt - Time::GetTickCount (), 0);
-        DurationSecondsType time2WaitThisLoop             = Math::AtLeast<Time::DurationSecondsType> (Math::AtMost<Time::DurationSecondsType> (timeLeft2Wait, qStroika_Foundation_Exececution_WaitForIOReady_BreakWSAPollIntoTimedMillisecondChunks / 1000.0), 0);
-        int                 time2WaitMillisecondsThisLoop = static_cast<int> (time2WaitThisLoop * 1000);
+        DurationSecondsType timeLeft2Wait     = Math::AtLeast<Time::DurationSecondsType> (timeoutAt - Time::GetTickCount (), 0);
+        DurationSecondsType time2WaitThisLoop = Math::AtLeast<Time::DurationSecondsType> (
+            Math::AtMost<Time::DurationSecondsType> (
+                timeLeft2Wait, qStroika_Foundation_Exececution_WaitForIOReady_BreakWSAPollIntoTimedMillisecondChunks / 1000.0),
+            0);
+        int time2WaitMillisecondsThisLoop = static_cast<int> (time2WaitThisLoop * 1000);
         if ((pollResult = ::WSAPoll (pollData.begin (), static_cast<ULONG> (pollData.GetSize ()), time2WaitMillisecondsThisLoop)) == SOCKET_ERROR) {
             Execution::ThrowSystemErrNo (::WSAGetLastError ());
         }

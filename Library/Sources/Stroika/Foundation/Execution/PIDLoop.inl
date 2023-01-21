@@ -48,7 +48,8 @@ namespace Stroika::Foundation::Execution {
      ********************************************************************************
      */
     template <typename CONTROL_VAR_TYPE>
-    PIDLoop<CONTROL_VAR_TYPE>::PIDLoop (const ControlParams& pidParams, Time::DurationSecondsType updatePeriod, const function<ValueType ()>& measureFunction, const function<void (ValueType o)>& outputFunction, ValueType initialSetPoint)
+    PIDLoop<CONTROL_VAR_TYPE>::PIDLoop (const ControlParams& pidParams, Time::DurationSecondsType updatePeriod, const function<ValueType ()>& measureFunction,
+                                        const function<void (ValueType o)>& outputFunction, ValueType initialSetPoint)
         : fPIDParams_{pidParams}
         , fUpdatePeriod_{updatePeriod}
         , fMeasureFunction_{measureFunction}
@@ -58,7 +59,9 @@ namespace Stroika::Foundation::Execution {
         fUpdatableParams_.rwget ()->fSetPoint_ = (initialSetPoint);
     }
     template <typename CONTROL_VAR_TYPE>
-    PIDLoop<CONTROL_VAR_TYPE>::PIDLoop (AutoStartFlag, const ControlParams& pidParams, Time::DurationSecondsType updatePeriod, const function<ValueType ()>& measureFunction, const function<void (ValueType o)>& outputFunction, ValueType initialSetPoint)
+    PIDLoop<CONTROL_VAR_TYPE>::PIDLoop (AutoStartFlag, const ControlParams& pidParams, Time::DurationSecondsType updatePeriod,
+                                        const function<ValueType ()>& measureFunction, const function<void (ValueType o)>& outputFunction,
+                                        ValueType initialSetPoint)
         : PIDLoop{pidParams, updatePeriod, measureFunction, outputFunction, initialSetPoint}
     {
         (void)RunInThread ();
@@ -113,7 +116,12 @@ namespace Stroika::Foundation::Execution {
                 fOutputFunction_ (outputFunctionArgument);
                 nextRunAt += fUpdatePeriod_;
 #if Stroika_Foundation_Execution_PIDLoop_USE_NOISY_TRACE_IN_THIS_MODULE_
-                DbgTrace (L"Completed PIDLoop update: set-point=%s, measuredValue=%s, error=%s, derivative=%s, integral=%s, outputFunctionArgument=%s, nextRunAt=%f", Characters::ToString (setPoint).c_str (), Characters::ToString (measuredValue).c_str (), Characters::ToString (error).c_str (), Characters::ToString (derivative).c_str (), Characters::ToString (fUpdatableParams_->fIntegral_).c_str (), Characters::ToString (outputFunctionArgument).c_str (), nextRunAt);
+                DbgTrace (L"Completed PIDLoop update: set-point=%s, measuredValue=%s, error=%s, derivative=%s, integral=%s, "
+                          L"outputFunctionArgument=%s, nextRunAt=%f",
+                          Characters::ToString (setPoint).c_str (), Characters::ToString (measuredValue).c_str (),
+                          Characters::ToString (error).c_str (), Characters::ToString (derivative).c_str (),
+                          Characters::ToString (fUpdatableParams_->fIntegral_).c_str (),
+                          Characters::ToString (outputFunctionArgument).c_str (), nextRunAt);
 #endif
             }
             catch (const Thread::InterruptException&) {

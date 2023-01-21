@@ -342,7 +342,8 @@ namespace Stroika::Frameworks::Led {
                     <p>Note that this class uses Memory::UseBlockAllocationIfAppropriate<>  - so be carefull when subclass.
                 </p>
     */
-    class InteractiveReplaceCommand::PlainTextRep : public InteractiveReplaceCommand::SavedTextRep, public Foundation::Memory::UseBlockAllocationIfAppropriate<PlainTextRep> {
+    class InteractiveReplaceCommand::PlainTextRep : public InteractiveReplaceCommand::SavedTextRep,
+                                                    public Foundation::Memory::UseBlockAllocationIfAppropriate<PlainTextRep> {
     private:
         using inherited = SavedTextRep;
 

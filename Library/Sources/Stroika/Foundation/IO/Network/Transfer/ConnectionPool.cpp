@@ -36,43 +36,22 @@ namespace {
         {
         }
         DelegatingConnectionRepWithDeleteHook_ (const DelegatingConnectionRepWithDeleteHook_&) = delete;
-        virtual ~DelegatingConnectionRepWithDeleteHook_ ()
-        {
-            fDeleter (fDelegateTo);
-        }
+        virtual ~DelegatingConnectionRepWithDeleteHook_ () { fDeleter (fDelegateTo); }
 
     public:
         nonvirtual DelegatingConnectionRepWithDeleteHook_& operator= (const DelegatingConnectionRepWithDeleteHook_&) = delete;
 
     public:
-        virtual Options GetOptions () const override
-        {
-            return fDelegateTo.GetOptions ();
-        }
-        virtual DurationSecondsType GetTimeout () const override
-        {
-            return fDelegateTo.GetTimeout ();
-        }
-        virtual void SetTimeout (DurationSecondsType timeout) override
-        {
-            fDelegateTo.SetTimeout (timeout);
-        }
-        virtual URI GetSchemeAndAuthority () const override
-        {
-            return fDelegateTo.GetSchemeAndAuthority ();
-        }
-        virtual void SetSchemeAndAuthority (const URI& schemeAndAuthority) override
+        virtual Options             GetOptions () const override { return fDelegateTo.GetOptions (); }
+        virtual DurationSecondsType GetTimeout () const override { return fDelegateTo.GetTimeout (); }
+        virtual void                SetTimeout (DurationSecondsType timeout) override { fDelegateTo.SetTimeout (timeout); }
+        virtual URI                 GetSchemeAndAuthority () const override { return fDelegateTo.GetSchemeAndAuthority (); }
+        virtual void                SetSchemeAndAuthority (const URI& schemeAndAuthority) override
         {
             fDelegateTo.SetSchemeAndAuthority (schemeAndAuthority);
         }
-        virtual void Close () override
-        {
-            fDelegateTo.Close ();
-        }
-        virtual Response Send (const Request& request) override
-        {
-            return fDelegateTo.Send (request);
-        }
+        virtual void     Close () override { fDelegateTo.Close (); }
+        virtual Response Send (const Request& request) override { return fDelegateTo.Send (request); }
     };
 }
 
@@ -153,11 +132,7 @@ public:
         }
         // wrap the connection-ptr in an envelope that will restore the connection to the pool
         return Connection::Ptr{
-            make_shared<DelegatingConnectionRepWithDeleteHook_> (
-                *poolEntryResult,
-                [this] (const Ptr& p) {
-                    this->AddConnection_ (p);
-                })};
+            make_shared<DelegatingConnectionRepWithDeleteHook_> (*poolEntryResult, [this] (const Ptr& p) { this->AddConnection_ (p); })};
     }
     optional<Connection::Ptr> FindAndAllocateFromAvailableByURIMatch_ (const URI& matchScemeAndAuthority)
     {
@@ -195,8 +170,8 @@ public:
     // where there is no URL/hint
 
     Collection<Connection::Ptr> fAvailableConnections;
-    size_t                      fOutstandingConnections{}; // # connections handed out : this number + fAvailableConnections.size () must be less_or_equal to fOptions.GetMaxConnections - but
-                                                           // then don't actually allocate extra connections until/unless needed
+    size_t fOutstandingConnections{}; // # connections handed out : this number + fAvailableConnections.size () must be less_or_equal to fOptions.GetMaxConnections - but
+                                      // then don't actually allocate extra connections until/unless needed
     ConditionVariable<> fAvailableConnectionsChanged;
 };
 
@@ -210,19 +185,11 @@ ConnectionPool::ConnectionPool (const Options& options)
 {
 }
 
-ConnectionPool::~ConnectionPool ()
-{
-}
+ConnectionPool::~ConnectionPool () {}
 
-Connection::Ptr ConnectionPool::New (URI hint)
-{
-    return fRep_->New (nullopt, hint, nullopt);
-}
+Connection::Ptr ConnectionPool::New (URI hint) { return fRep_->New (nullopt, hint, nullopt); }
 
-Connection::Ptr ConnectionPool::New (const Time::Duration& timeout, URI hint)
-{
-    return fRep_->New (timeout, hint, nullopt);
-}
+Connection::Ptr ConnectionPool::New (const Time::Duration& timeout, URI hint) { return fRep_->New (timeout, hint, nullopt); }
 
 Connection::Ptr ConnectionPool::New (AllocateGloballyIfTimeout, const Time::Duration& timeout, URI hint)
 {

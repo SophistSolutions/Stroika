@@ -18,13 +18,16 @@ namespace Stroika::Foundation::Traversal {
      */
     template <typename T, typename OPENNESS, typename DIFF_TYPE>
     template <typename TYPE2CHECK, typename SFINAE_CAN_CONVERT_TYPE_TO_SIGNEDDIFFTYPE>
-    inline constexpr auto RangeTraits::ExplicitOpennessAndDifferenceType<T, OPENNESS, DIFF_TYPE>::Difference (Configuration::ArgByValueType<value_type> lhs, Configuration::ArgByValueType<value_type> rhs, SFINAE_CAN_CONVERT_TYPE_TO_SIGNEDDIFFTYPE*) -> SignedDifferenceType
+    inline constexpr auto RangeTraits::ExplicitOpennessAndDifferenceType<T, OPENNESS, DIFF_TYPE>::Difference (
+        Configuration::ArgByValueType<value_type> lhs, Configuration::ArgByValueType<value_type> rhs, SFINAE_CAN_CONVERT_TYPE_TO_SIGNEDDIFFTYPE*)
+        -> SignedDifferenceType
     {
         return static_cast<SignedDifferenceType> (rhs) - static_cast<SignedDifferenceType> (lhs);
     }
     template <typename T, typename OPENNESS, typename DIFF_TYPE>
     template <typename TYPE2CHECK, typename SFINAE_CANNOT_CONVERT_TYPE_TO_SIGNEDDIFFTYPE>
-    inline constexpr auto RangeTraits::ExplicitOpennessAndDifferenceType<T, OPENNESS, DIFF_TYPE>::Difference (Configuration::ArgByValueType<value_type> lhs, Configuration::ArgByValueType<value_type> rhs, ...) -> SignedDifferenceType
+    inline constexpr auto RangeTraits::ExplicitOpennessAndDifferenceType<T, OPENNESS, DIFF_TYPE>::Difference (
+        Configuration::ArgByValueType<value_type> lhs, Configuration::ArgByValueType<value_type> rhs, ...) -> SignedDifferenceType
     {
         return static_cast<SignedDifferenceType> (rhs - lhs);
     }
@@ -50,7 +53,8 @@ namespace Stroika::Foundation::Traversal {
     }
     template <typename T, typename OPENNESS, typename BOUNDS, typename DIFF_TYPE>
     template <typename SFINAE>
-    constexpr T RangeTraits::Explicit<T, OPENNESS, BOUNDS, DIFF_TYPE>::GetPrevious (value_type i, enable_if_t<is_integral_v<SFINAE> or is_enum_v<SFINAE>>*)
+    constexpr T RangeTraits::Explicit<T, OPENNESS, BOUNDS, DIFF_TYPE>::GetPrevious (value_type i,
+                                                                                    enable_if_t<is_integral_v<SFINAE> or is_enum_v<SFINAE>>*)
     {
         Require (i != kLowerBound);
         return static_cast<value_type> (static_cast<SignedDifferenceType> (i) - 1);
@@ -90,7 +94,8 @@ namespace Stroika::Foundation::Traversal {
     }
     template <typename T, typename TRAITS>
     constexpr Range<T, TRAITS>::Range (const optional<T>& begin, const optional<T>& end)
-        : Range{begin.has_value () ? *begin : TRAITS::kLowerBound, end.has_value () ? *end : TRAITS::kUpperBound, TRAITS::kLowerBoundOpenness, TRAITS::kUpperBoundOpenness}
+        : Range{begin.has_value () ? *begin : TRAITS::kLowerBound, end.has_value () ? *end : TRAITS::kUpperBound,
+                TRAITS::kLowerBoundOpenness, TRAITS::kUpperBoundOpenness}
     {
     }
     template <typename T, typename TRAITS>
@@ -113,7 +118,8 @@ namespace Stroika::Foundation::Traversal {
     {
     }
     template <typename T, typename TRAITS>
-    constexpr Range<T, TRAITS> Range<T, TRAITS>::Ball (Configuration::ArgByValueType<T> center, Configuration::ArgByValueType<UnsignedDifferenceType> radius, Openness lhsOpen, Openness rhsOpen)
+    constexpr Range<T, TRAITS> Range<T, TRAITS>::Ball (Configuration::ArgByValueType<T> center,
+                                                       Configuration::ArgByValueType<UnsignedDifferenceType> radius, Openness lhsOpen, Openness rhsOpen)
     {
         return Range{center - radius, center + radius, lhsOpen, rhsOpen};
     }
@@ -126,9 +132,7 @@ namespace Stroika::Foundation::Traversal {
     template <typename T, typename TRAITS>
     constexpr Range<T, TRAITS> Range<T, TRAITS>::FullRange ()
     {
-        return Range{
-            TraitsType::kLowerBound, TraitsType::kUpperBound,
-            TraitsType::kLowerBoundOpenness, TraitsType::kUpperBoundOpenness};
+        return Range{TraitsType::kLowerBound, TraitsType::kUpperBound, TraitsType::kLowerBoundOpenness, TraitsType::kUpperBoundOpenness};
     }
     template <typename T, typename TRAITS>
     constexpr bool Range<T, TRAITS>::empty () const
@@ -443,7 +447,8 @@ namespace Stroika::Foundation::Traversal {
         if (empty ()) {
             return rhs.empty ();
         }
-        return GetLowerBound () == rhs.GetLowerBound () and GetUpperBound () == rhs.GetUpperBound () and GetLowerBoundOpenness () == rhs.GetLowerBoundOpenness () and GetUpperBoundOpenness () == rhs.GetUpperBoundOpenness ();
+        return GetLowerBound () == rhs.GetLowerBound () and GetUpperBound () == rhs.GetUpperBound () and
+               GetLowerBoundOpenness () == rhs.GetLowerBoundOpenness () and GetUpperBoundOpenness () == rhs.GetUpperBoundOpenness ();
     }
 
     /*
@@ -490,11 +495,10 @@ namespace Stroika::Foundation::Configuration {
 #if !qCompilerAndStdLib_template_specialization_internalErrorWithSpecializationSignifier_Buggy
     template <>
 #endif
-    constexpr EnumNames<Traversal::Openness> DefaultNames<Traversal::Openness>::k{
-        EnumNames<Traversal::Openness>::BasicArrayInitializer{{
-            {Traversal::Openness::eOpen, L"Open"},
-            {Traversal::Openness::eClosed, L"Closed"},
-        }}};
+    constexpr EnumNames<Traversal::Openness> DefaultNames<Traversal::Openness>::k{EnumNames<Traversal::Openness>::BasicArrayInitializer{{
+        {Traversal::Openness::eOpen, L"Open"},
+        {Traversal::Openness::eClosed, L"Closed"},
+    }}};
 }
 
 #endif /* _Stroika_Foundation_Traversal_Range_inl_ */

@@ -257,7 +257,8 @@ namespace {
             n.Append (1);
             n.Append (2);
             n.Append (3);
-            Containers::Sequence<int> n1 = Containers::Sequence<int> (FunctionalApplicationContext<int> (n).Map<int> ([] (int i) -> int { return i + 1; }));
+            Containers::Sequence<int> n1 =
+                Containers::Sequence<int> (FunctionalApplicationContext<int> (n).Map<int> ([] (int i) -> int { return i + 1; }));
             VerifyTestResult (n1.size () == 3);
             VerifyTestResult (n1[0] == 2);
             VerifyTestResult (n1[1] == 3);
@@ -291,33 +292,51 @@ namespace {
             Containers::Sequence<int> s = {1, 2, 3};
             {
                 shared_ptr<int>         countSoFar = shared_ptr<int> (new int (0));
-                [[maybe_unused]] size_t answer =
-                    FunctionalApplicationContext<int> (s).Filter<int> ([countSoFar] (int) -> bool { ++(*countSoFar); return (*countSoFar) & 1; }).Map<int> ([] (int s) { return s + 5; }).Reduce<size_t> ([] ([[maybe_unused]] int s, size_t memo) { return memo + 1; });
+                [[maybe_unused]] size_t answer     = FunctionalApplicationContext<int> (s)
+                                                     .Filter<int> ([countSoFar] (int) -> bool {
+                                                         ++(*countSoFar);
+                                                         return (*countSoFar) & 1;
+                                                     })
+                                                     .Map<int> ([] (int s) { return s + 5; })
+                                                     .Reduce<size_t> ([] ([[maybe_unused]] int s, size_t memo) { return memo + 1; });
                 VerifyTestResult (answer == 2);
             }
             {
                 int countSoFar = 0; // ONLY OK - cuz FunctionalApplicationContext <> and resulting iterators go
                 // out of scope before this does
-                size_t answer =
-                    FunctionalApplicationContext<int> (s).Filter<int> ([&countSoFar] (int) -> bool { ++countSoFar; return countSoFar & 1; }).Map<int> ([] (int s) { return s + 5; }).Reduce<size_t> ([] ([[maybe_unused]] int s, size_t memo) { return memo + 1; });
+                size_t answer = FunctionalApplicationContext<int> (s)
+                                    .Filter<int> ([&countSoFar] (int) -> bool {
+                                        ++countSoFar;
+                                        return countSoFar & 1;
+                                    })
+                                    .Map<int> ([] (int s) { return s + 5; })
+                                    .Reduce<size_t> ([] ([[maybe_unused]] int s, size_t memo) { return memo + 1; });
                 VerifyTestResult (answer == 2);
             }
             {
                 int countSoFar = 0; // ONLY OK - cuz FunctionalApplicationContext <> and resulting iterators go
                 // out of scope before this does
-                Containers::Sequence<int> r = Containers::Sequence<int> (
-                    FunctionalApplicationContext<int> (s).Filter<int> ([&countSoFar] (int) -> bool { ++countSoFar; return countSoFar & 1; }).Map<int> ([] (int s) { return s + 5; }));
+                Containers::Sequence<int> r = Containers::Sequence<int> (FunctionalApplicationContext<int> (s)
+                                                                             .Filter<int> ([&countSoFar] (int) -> bool {
+                                                                                 ++countSoFar;
+                                                                                 return countSoFar & 1;
+                                                                             })
+                                                                             .Map<int> ([] (int s) { return s + 5; }));
                 VerifyTestResult (r.length () == 2);
                 VerifyTestResult (r[0] == 6 and r[1] == 8);
             }
             {
                 optional<int> answer =
-                    FunctionalApplicationContext<int> (s).Filter<int> ([] (int i) -> bool { return (i & 1); }).Find<int> ([] (int i) -> bool { return i == 1; });
+                    FunctionalApplicationContext<int> (s).Filter<int> ([] (int i) -> bool { return (i & 1); }).Find<int> ([] (int i) -> bool {
+                        return i == 1;
+                    });
                 VerifyTestResult (*answer == 1);
             }
             {
                 optional<int> answer =
-                    FunctionalApplicationContext<int> (s).Filter<int> ([] (int i) -> bool { return (i & 1); }).Find<int> ([] (int i) -> bool { return i == 8; });
+                    FunctionalApplicationContext<int> (s).Filter<int> ([] (int i) -> bool { return (i & 1); }).Find<int> ([] (int i) -> bool {
+                        return i == 8;
+                    });
                 VerifyTestResult (not answer.has_value ());
             }
         }
@@ -328,15 +347,24 @@ namespace {
             {
                 int countSoFar = 0; // ONLY OK - cuz FunctionalApplicationContext <> and resulting iterators go
                 // out of scope before this does
-                size_t answer =
-                    FunctionalApplicationContext<String> (s).Filter<String> ([&countSoFar] (String) -> bool { ++countSoFar; return countSoFar & 1; }).Map<String> ([] (String s) { return s + L" hello"; }).Reduce<size_t> ([] ([[maybe_unused]] String s, size_t memo) { return memo + 1; });
+                size_t answer = FunctionalApplicationContext<String> (s)
+                                    .Filter<String> ([&countSoFar] (String) -> bool {
+                                        ++countSoFar;
+                                        return countSoFar & 1;
+                                    })
+                                    .Map<String> ([] (String s) { return s + L" hello"; })
+                                    .Reduce<size_t> ([] ([[maybe_unused]] String s, size_t memo) { return memo + 1; });
                 VerifyTestResult (answer == 2);
             }
             {
                 int countSoFar = 0; // ONLY OK - cuz FunctionalApplicationContext <> and resulting iterators go
                 // out of scope before this does
-                Containers::Sequence<String> r = Containers::Sequence<String> (
-                    FunctionalApplicationContext<String> (s).Filter<String> ([&countSoFar] (String) -> bool { ++countSoFar; return countSoFar & 1; }).Map<String> ([] (String s) { return s + L" hello"; }));
+                Containers::Sequence<String> r = Containers::Sequence<String> (FunctionalApplicationContext<String> (s)
+                                                                                   .Filter<String> ([&countSoFar] (String) -> bool {
+                                                                                       ++countSoFar;
+                                                                                       return countSoFar & 1;
+                                                                                   })
+                                                                                   .Map<String> ([] (String s) { return s + L" hello"; }));
                 VerifyTestResult (r.length () == 2);
                 VerifyTestResult (r[0] == L"alpha hello" and r[1] == L"gamma hello");
             }
@@ -355,9 +383,12 @@ namespace {
             for (auto i : FunctionalApplicationContext<uint32_t> (DiscreteRange<uint32_t>{1, 100}.Elements ()).Filter<uint32_t> (isPrimeCheck)) {
                 VerifyTestResult (Math::IsPrime (i));
             }
-            Sequence<uint32_t> s = Sequence<uint32_t> (FunctionalApplicationContext<uint32_t> (DiscreteRange<uint32_t>{1, 100}.Elements ()).Filter<uint32_t> (isPrimeCheck));
+            Sequence<uint32_t> s = Sequence<uint32_t> (
+                FunctionalApplicationContext<uint32_t> (DiscreteRange<uint32_t>{1, 100}.Elements ()).Filter<uint32_t> (isPrimeCheck));
             VerifyTestResult (s == Sequence<uint32_t> (begin (kRefCheck_), end (kRefCheck_)));
-            VerifyTestResult (Memory::NEltsOf (kRefCheck_) == FunctionalApplicationContext<uint32_t> (DiscreteRange<uint32_t>{1, 100}.Elements ()).Filter<uint32_t> (isPrimeCheck).size ());
+            VerifyTestResult (
+                Memory::NEltsOf (kRefCheck_) ==
+                FunctionalApplicationContext<uint32_t> (DiscreteRange<uint32_t>{1, 100}.Elements ()).Filter<uint32_t> (isPrimeCheck).size ());
         }
     }
 }
@@ -715,12 +746,16 @@ namespace {
         VerifyTestResult ((Range<int>{3, 4}.ToString () == L"[3 ... 4]"));
         {
             using namespace Time;
-            VerifyTestResult ((Range<DateTime>{DateTime{Date (Year{1903}, April, DayOfMonth{4})}, DateTime{Date (Year{1903}, April, DayOfMonth{5})}}.ToString () == L"[4/4/03 ... 4/5/03]"));
+            VerifyTestResult (
+                (Range<DateTime>{DateTime{Date (Year{1903}, April, DayOfMonth{4})}, DateTime{Date (Year{1903}, April, DayOfMonth{5})}}.ToString () ==
+                 L"[4/4/03 ... 4/5/03]"));
         }
         {
             Configuration::ScopedUseLocale tmpLocale{Configuration::FindNamedLocale (L"en", L"us")};
             using namespace Time;
-            VerifyTestResult ((Range<DateTime>{DateTime{Date (Year{1903}, April, DayOfMonth{4})}, DateTime{Date (Year{1903}, April, DayOfMonth{5})}}.ToString () == L"[4/4/1903 ... 4/5/1903]"));
+            VerifyTestResult (
+                (Range<DateTime>{DateTime{Date (Year{1903}, April, DayOfMonth{4})}, DateTime{Date (Year{1903}, April, DayOfMonth{5})}}.ToString () ==
+                 L"[4/4/1903 ... 4/5/1903]"));
         }
     }
 }
@@ -778,7 +813,9 @@ namespace {
         }
         {
             Iterable<pair<int, char>> c{{1, 'a'}, {2, 'b'}, {3, 'c'}};
-            VerifyTestResult (c.Map<int> ([] (pair<int, char> p) { return (p.first & 1) ? optional<int>{p.first} : nullopt; }).SequentialEquals (Iterable<int>{1, 3}));
+            VerifyTestResult (c.Map<int> ([] (pair<int, char> p) {
+                                   return (p.first & 1) ? optional<int>{p.first} : nullopt;
+                               }).SequentialEquals (Iterable<int>{1, 3}));
         }
         {
             using Characters::String;

@@ -45,7 +45,8 @@ namespace Stroika::Foundation::Containers::Concrete {
         /**
          */
         template <typename INORDER_COMPARER>
-        using STDMULTISET = multiset<value_type, INORDER_COMPARER, Memory::BlockAllocatorOrStdAllocatorAsAppropriate<value_type, sizeof (value_type) <= 1024>>;
+        using STDMULTISET =
+            multiset<value_type, INORDER_COMPARER, Memory::BlockAllocatorOrStdAllocatorAsAppropriate<value_type, sizeof (value_type) <= 1024>>;
 
     public:
         /**
@@ -57,7 +58,8 @@ namespace Stroika::Foundation::Containers::Concrete {
         Collection_stdmultiset (Collection_stdmultiset&& src) noexcept      = default;
         Collection_stdmultiset (const Collection_stdmultiset& src) noexcept = default;
         Collection_stdmultiset (const initializer_list<value_type>& src);
-        template <typename ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and not is_base_of_v<Collection_stdmultiset<T>, decay_t<ITERABLE_OF_ADDABLE>>>* = nullptr>
+        template <typename ITERABLE_OF_ADDABLE,
+                  enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and not is_base_of_v<Collection_stdmultiset<T>, decay_t<ITERABLE_OF_ADDABLE>>>* = nullptr>
         Collection_stdmultiset (ITERABLE_OF_ADDABLE&& src);
         template <typename ITERATOR_OF_ADDABLE>
         Collection_stdmultiset (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);

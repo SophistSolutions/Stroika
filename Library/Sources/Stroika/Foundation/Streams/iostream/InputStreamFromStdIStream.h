@@ -113,7 +113,8 @@ namespace Stroika::Foundation::Streams::iostream {
         class Rep_;
 
     private:
-        using InternalSyncRep_ = InternallySynchronizedInputStream<ELEMENT_TYPE, InputStreamFromStdIStream<ELEMENT_TYPE, TRAITS>, typename InputStreamFromStdIStream<ELEMENT_TYPE, TRAITS>::Rep_>;
+        using InternalSyncRep_ =
+            InternallySynchronizedInputStream<ELEMENT_TYPE, InputStreamFromStdIStream<ELEMENT_TYPE, TRAITS>, typename InputStreamFromStdIStream<ELEMENT_TYPE, TRAITS>::Rep_>;
     };
 
     /**

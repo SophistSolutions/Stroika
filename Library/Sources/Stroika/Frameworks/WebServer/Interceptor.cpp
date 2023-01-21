@@ -25,14 +25,8 @@ public:
         , fHandleFault_{handleFault}
     {
     }
-    virtual void HandleFault (Message* m, const exception_ptr& e) const noexcept override
-    {
-        fHandleFault_ (m, e);
-    }
-    virtual void HandleMessage (Message* m) const override
-    {
-        fHandleMessage_ (m);
-    }
+    virtual void HandleFault (Message* m, const exception_ptr& e) const noexcept override { fHandleFault_ (m, e); }
+    virtual void HandleMessage (Message* m) const override { fHandleMessage_ (m); }
 };
 
 /*
@@ -50,10 +44,6 @@ Interceptor::Interceptor (const function<void (Message*)>& handleMessage, const 
  *********************** WebServer::Interceptor::_IRep **************************
  ********************************************************************************
  */
-void Interceptor::_IRep::HandleFault ([[maybe_unused]] Message* m, [[maybe_unused]] const exception_ptr& e) const noexcept
-{
-}
+void Interceptor::_IRep::HandleFault ([[maybe_unused]] Message* m, [[maybe_unused]] const exception_ptr& e) const noexcept {}
 
-void Interceptor::_IRep::CompleteNormally ([[maybe_unused]] Message* m) const
-{
-}
+void Interceptor::_IRep::CompleteNormally ([[maybe_unused]] Message* m) const {}

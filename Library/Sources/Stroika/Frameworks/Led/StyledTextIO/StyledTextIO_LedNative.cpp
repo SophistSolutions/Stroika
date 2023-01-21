@@ -78,8 +78,10 @@ struct PortableStyleRunData_Version4 {
     char          fFontName[256];
     unsigned char fItalic;
     unsigned char fBoldWeight; // use Windows definition here/4...
-    enum { eBoldnessNormal = 400 / 4,
-           eBoldnessBold   = 700 / 4 };
+    enum {
+        eBoldnessNormal = 400 / 4,
+        eBoldnessBold   = 700 / 4
+    };
     uint8_t  fUnderline;
     uint8_t  fUnused1_; // so we get good cross-platform / cross-compiler alignment
     uint16_t fFontSize; // note this size is a POINT-SIZE (not the tmHeight)
@@ -138,7 +140,7 @@ struct PortableStyleRunData_Version5 {
     unsigned char  fStyleSet;  // or in BitFlagStyles
     unsigned short fPointSize; // note this size is a POINT-SIZE (not the tmHeight)
     uint32_t       fLength;
-    char           fFontName[256]; // to file, we really only write as many bytes as needed (no NUL char TERM - infer size from fThisRecordLength)
+    char fFontName[256]; // to file, we really only write as many bytes as needed (no NUL char TERM - infer size from fThisRecordLength)
 
     static size_t NameLenFromRecordLen (unsigned char len)
     {
@@ -447,7 +449,8 @@ void StyledTextIOReader_LedNativeFileFormat::Read_Version4 (const char* cookie)
         vector<StandardStyledTextImager::InfoSummaryRecord> styleRunInfo;
         {
             StackBuffer<PortableStyleRunData_Version4> portableStyleRuns{Memory::eUninitialized, nStyleRuns};
-            if (GetSrcStream ().read (portableStyleRuns.data (), nStyleRuns * sizeof (PortableStyleRunData_Version4)) != nStyleRuns * sizeof (PortableStyleRunData_Version4)) {
+            if (GetSrcStream ().read (portableStyleRuns.data (), nStyleRuns * sizeof (PortableStyleRunData_Version4)) !=
+                nStyleRuns * sizeof (PortableStyleRunData_Version4)) {
                 Execution::Throw (DataExchange::BadFormatException::kThe);
             }
             for (size_t i = 0; i < nStyleRuns; ++i) {
@@ -770,10 +773,7 @@ StyledTextIOWriter_LedNativeFileFormat::StyledTextIOWriter_LedNativeFileFormat (
 {
 }
 
-void StyledTextIOWriter_LedNativeFileFormat::Write ()
-{
-    Write_Version6 ();
-}
+void StyledTextIOWriter_LedNativeFileFormat::Write () { Write_Version6 (); }
 
 #if !qWideCharacters
 void StyledTextIOWriter_LedNativeFileFormat::Write_Version5 ()

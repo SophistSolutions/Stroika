@@ -20,8 +20,7 @@ using namespace Stroika::Frameworks::Led;
  *********************************** Unit ***************************************
  ********************************************************************************
  */
-Unit::Unit (int nTPU, int nSmallDiv, int nMediumDiv, int nLargeDiv,
-            int nMinMove, const char* nAbbrev, BOOL bSpaceAbbrev)
+Unit::Unit (int nTPU, int nSmallDiv, int nMediumDiv, int nLargeDiv, int nMinMove, const char* nAbbrev, BOOL bSpaceAbbrev)
 {
     m_nTPU         = nTPU;
     m_nSmallDiv    = nSmallDiv;

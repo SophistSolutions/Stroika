@@ -97,7 +97,9 @@ namespace Stroika::Foundation::Characters {
     class CodePageConverter {
     public:
         class CodePageNotSupportedException;
-        enum class HandleBOMFlag { eHandleBOM };
+        enum class HandleBOMFlag {
+            eHandleBOM
+        };
         static constexpr HandleBOMFlag eHandleBOM = HandleBOMFlag::eHandleBOM;
 
     public:
@@ -234,9 +236,11 @@ namespace Stroika::Foundation::Characters {
     */
     class CodePagesGuesser {
     public:
-        enum class Confidence : uint8_t { eLow    = 0,
-                                          eMedium = 10,
-                                          eHigh   = 100 };
+        enum class Confidence : uint8_t {
+            eLow    = 0,
+            eMedium = 10,
+            eHigh   = 100
+        };
 
     public:
         /*
@@ -313,7 +317,7 @@ namespace Stroika::Foundation::Characters {
     wstring ASCIIStringToWide (const string& s);
     string  WideStringToASCII (const wstring& s);
 
-    wstring      MapUNICODETextWithMaybeBOMTowstring (const char* start, const char* end);
+    wstring MapUNICODETextWithMaybeBOMTowstring (const char* start, const char* end);
     vector<byte> MapUNICODETextToSerializedFormat (const wchar_t* start, const wchar_t* end, CodePage useCP = kCodePage_UTF8); // suitable for files
 
     /**

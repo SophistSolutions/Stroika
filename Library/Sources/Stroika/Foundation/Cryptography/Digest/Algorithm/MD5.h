@@ -24,8 +24,7 @@ namespace Stroika::Foundation::Cryptography::Digest::Algorithm {
     /**
      *  Algorithm 'type tag' indicating this particular algorithm.
      */
-    struct MD5 {
-    };
+    struct MD5 {};
 
     /**
      *  Traits for the MD5 algorithm.

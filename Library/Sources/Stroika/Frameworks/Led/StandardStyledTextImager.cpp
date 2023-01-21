@@ -20,17 +20,16 @@ using InfoSummaryRecord = StandardStyledTextImager::InfoSummaryRecord;
  */
 using StandardStyleMarker = StandardStyledTextImager::StandardStyleMarker;
 
-void StandardStyleMarker::DrawSegment (const StyledTextImager* imager, const RunElement& /*runElement*/, Tablet* tablet,
-                                       size_t from, size_t to, const TextLayoutBlock& text,
-                                       const Led_Rect& drawInto, const Led_Rect& /*invalidRect*/, CoordinateType useBaseLine, DistanceType* pixelsDrawn)
+void StandardStyleMarker::DrawSegment (const StyledTextImager* imager, const RunElement& /*runElement*/, Tablet* tablet, size_t from,
+                                       size_t to, const TextLayoutBlock& text, const Led_Rect& drawInto, const Led_Rect& /*invalidRect*/,
+                                       CoordinateType useBaseLine, DistanceType* pixelsDrawn)
 {
     RequireNotNull (imager);
     imager->DrawSegment_ (tablet, fFontSpecification, from, to, text, drawInto, useBaseLine, pixelsDrawn);
 }
 
 void StandardStyleMarker::MeasureSegmentWidth (const StyledTextImager* imager, const RunElement& /*runElement*/, size_t from, size_t to,
-                                               const Led_tChar* text,
-                                               DistanceType*    distanceResults) const
+                                               const Led_tChar* text, DistanceType* distanceResults) const
 {
     RequireNotNull (imager);
     imager->MeasureSegmentWidth_ (fFontSpecification, from, to, text, distanceResults);
@@ -109,9 +108,7 @@ void StandardStyledTextImager::SetStyleDatabase (const StyleDatabasePtr& styleDa
     is changed. This means when a new one is provided, created, or disassociated. It does NOT mean that its called when any of the
     data in the style database changes.</p>
 */
-void StandardStyledTextImager::HookStyleDatabaseChanged ()
-{
-}
+void StandardStyledTextImager::HookStyleDatabaseChanged () {}
 
 FontMetrics StandardStyledTextImager::GetFontMetricsAt (size_t charAfterPos) const
 {
@@ -164,14 +161,13 @@ IncrementalFontSpecification StandardStyledTextImager::GetContinuousStyleInfo_ (
     //
     // Note - we COULD have simply checked at the end of each loop count a bunch of 'IsValid' booleans. That would have
     // been simpler. But it would have been more costly (performance).
-    int countOfValidThings =
-        7 +
+    int countOfValidThings = 7 +
 #if qPlatform_MacOS
-        4
+                             4
 #elif qPlatform_Windows
-        1
+                             1
 #elif qStroika_FeatureSupported_XWindows
-        0 //  X-TMP-HACK-LGP991213    -- Not quite a hack - but revisit when we have REAL X-Font support
+                             0 //  X-TMP-HACK-LGP991213    -- Not quite a hack - but revisit when we have REAL X-Font support
 #endif
         ;
 
@@ -370,9 +366,7 @@ void StandardStyledTextImager::Invariant_ () const
  ********************************************************************************
  */
 #if qDebug
-void StandardStyledTextImager::AbstractStyleDatabaseRep::Invariant_ () const
-{
-}
+void StandardStyledTextImager::AbstractStyleDatabaseRep::Invariant_ () const {}
 #endif
 
 /*
@@ -446,8 +440,5 @@ void StyleDatabaseRep::SetStyleInfo (size_t charAfterPos, size_t nTCharsFollowin
 }
 
 #if qDebug
-void StyleDatabaseRep::Invariant_ () const
-{
-    inheritedMC::Invariant_ ();
-}
+void StyleDatabaseRep::Invariant_ () const { inheritedMC::Invariant_ (); }
 #endif

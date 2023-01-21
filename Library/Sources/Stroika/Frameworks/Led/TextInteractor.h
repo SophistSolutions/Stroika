@@ -98,7 +98,9 @@ namespace Stroika::Frameworks::Led {
 
     public:
 #if qCannotStaticlyInitializeConstantsDataMembersInClassDeclaration
-        enum {kNoCommand_CmdID = 0};
+        enum {
+            kNoCommand_CmdID = 0
+        };
 #else
         static const CommandNumber kNoCommand_CmdID = 0;
 #endif
@@ -211,10 +213,12 @@ namespace Stroika::Frameworks::Led {
             window that can get out of data, and needs to be updated. These updateModes control
             the basic updating/timing strategies for redrawing portions of the textimager.</p>
         */
-        enum UpdateMode { eDelayedUpdate,
-                          eImmediateUpdate,
-                          eNoUpdate,
-                          eDefaultUpdate };
+        enum UpdateMode {
+            eDelayedUpdate,
+            eImmediateUpdate,
+            eNoUpdate,
+            eDefaultUpdate
+        };
 
         /*
             #if 0
@@ -346,8 +350,7 @@ namespace Stroika::Frameworks::Led {
                     calls if updates are for some reason (perhaps temporarily) unavailable. Can usually be safely
                     ignored.</p>
         */
-        class CannotUpdateNow {
-        };
+        class CannotUpdateNow {};
         nonvirtual void Update (bool ignoreCannotUpdateNowErrors = true) const;
         nonvirtual void UpdateWindowRect (const Led_Rect& windowRectArea, bool ignoreCannotUpdateNowErrors = true) const;
 
@@ -438,10 +441,9 @@ namespace Stroika::Frameworks::Led {
         virtual void PreReplace (size_t from, size_t to, size_t withWhatCharCount, UpdateMode updateMode, PreReplaceInfo* preReplaceInfo);
         virtual void PostReplace (PreReplaceInfo& preReplaceInfo);
         virtual void AbortReplace (PreReplaceInfo& preReplaceInfo);
-        virtual void ExpandedFromAndToInPostReplace (size_t from, size_t newTo,
-                                                     size_t stableTypingRegionStart, size_t stableTypingRegionEnd,
-                                                     size_t startPositionOfRowWhereReplaceBegins, size_t startPositionOfRowAfterReplaceEnds,
-                                                     size_t* expandedFrom, size_t* expandedTo);
+        virtual void ExpandedFromAndToInPostReplace (size_t from, size_t newTo, size_t stableTypingRegionStart,
+                                                     size_t stableTypingRegionEnd, size_t startPositionOfRowWhereReplaceBegins,
+                                                     size_t startPositionOfRowAfterReplaceEnds, size_t* expandedFrom, size_t* expandedTo);
 
     protected:
         // NB: PreReplaceInfo declared here instead of outside TextInteractor class cuz an instance is
@@ -489,20 +491,27 @@ namespace Stroika::Frameworks::Led {
         virtual void InteractiveReplace (const Led_tChar* withWhat, size_t withWhatCharCount, UpdateMode updateMode = eDefaultUpdate);
 
     protected:
-        nonvirtual void InteractiveReplace_ (size_t from, size_t to, const Led_tChar* withWhat, size_t withWhatCharCount, bool updateCursorPosition = true, bool validateTextForCharsetConformance = true, UpdateMode updateMode = eDefaultUpdate);
+        nonvirtual void InteractiveReplace_ (size_t from, size_t to, const Led_tChar* withWhat, size_t withWhatCharCount,
+                                             bool updateCursorPosition = true, bool validateTextForCharsetConformance = true,
+                                             UpdateMode updateMode = eDefaultUpdate);
 
     protected:
         virtual bool InteractiveReplaceEarlyPostReplaceHook (size_t withWhatCharCount);
 
         // utilities to help with undo
     public:
-        virtual void PreInteractiveUndoHelper (InteractiveReplaceCommand::SavedTextRep** beforeRep, size_t regionStart, size_t regionEnd, size_t selStart, size_t selEnd);
-        virtual void PostInteractiveUndoHelper (InteractiveReplaceCommand::SavedTextRep** beforeRep, size_t startOfInsert, size_t endOfInsert, const SDKString& cmdName);
-        virtual void PostInteractiveSimpleCharInsertUndoHelper (InteractiveReplaceCommand::SavedTextRep** beforeRep, size_t startOfInsert, size_t endOfInsert, const SDKString& cmdName);
-        virtual void PostInteractiveUndoPostHelper (InteractiveReplaceCommand::SavedTextRep** beforeRep, InteractiveReplaceCommand::SavedTextRep** afterRep, size_t startOfInsert, const SDKString& cmdName);
+        virtual void PreInteractiveUndoHelper (InteractiveReplaceCommand::SavedTextRep** beforeRep, size_t regionStart, size_t regionEnd,
+                                               size_t selStart, size_t selEnd);
+        virtual void PostInteractiveUndoHelper (InteractiveReplaceCommand::SavedTextRep** beforeRep, size_t startOfInsert,
+                                                size_t endOfInsert, const SDKString& cmdName);
+        virtual void PostInteractiveSimpleCharInsertUndoHelper (InteractiveReplaceCommand::SavedTextRep** beforeRep, size_t startOfInsert,
+                                                                size_t endOfInsert, const SDKString& cmdName);
+        virtual void PostInteractiveUndoPostHelper (InteractiveReplaceCommand::SavedTextRep** beforeRep,
+                                                    InteractiveReplaceCommand::SavedTextRep** afterRep, size_t startOfInsert, const SDKString& cmdName);
 
     protected:
-        virtual InteractiveReplaceCommand::SavedTextRep* InteractiveUndoHelperMakeTextRep (size_t regionStart, size_t regionEnd, size_t selStart, size_t selEnd);
+        virtual InteractiveReplaceCommand::SavedTextRep* InteractiveUndoHelperMakeTextRep (size_t regionStart, size_t regionEnd,
+                                                                                           size_t selStart, size_t selEnd);
 
     protected:
         nonvirtual void OnUndoCommand ();
@@ -510,9 +519,11 @@ namespace Stroika::Frameworks::Led {
 
         // Utility routine for lots of editing cases - like backspace, cursor arrows, etc...
     public:
-        enum CursorMovementAction { eCursorDestroying,
-                                    eCursorMoving,
-                                    eCursorExtendingSelection };
+        enum CursorMovementAction {
+            eCursorDestroying,
+            eCursorMoving,
+            eCursorExtendingSelection
+        };
 
     protected:
         virtual void DoSingleCharCursorEdit (CursorMovementDirection direction, CursorMovementUnit movementUnit, CursorMovementAction action,
@@ -565,10 +576,10 @@ namespace Stroika::Frameworks::Led {
 
         // Internalizing
     public:
-        virtual void InternalizeBestFlavor (ReaderFlavorPackage& flavorPackage,
-                                            bool updateCursorPosition = true, bool autoScroll = true, UpdateMode updateMode = eDefaultUpdate);
-        virtual void InternalizeFlavor_Specific (ReaderFlavorPackage& flavorPackage, Led_ClipFormat format,
-                                                 bool updateCursorPosition = true, bool autoScroll = true, UpdateMode updateMode = eDefaultUpdate);
+        virtual void InternalizeBestFlavor (ReaderFlavorPackage& flavorPackage, bool updateCursorPosition = true, bool autoScroll = true,
+                                            UpdateMode updateMode = eDefaultUpdate);
+        virtual void InternalizeFlavor_Specific (ReaderFlavorPackage& flavorPackage, Led_ClipFormat format, bool updateCursorPosition = true,
+                                                 bool autoScroll = true, UpdateMode updateMode = eDefaultUpdate);
 
     public:
         nonvirtual shared_ptr<FlavorPackageInternalizer> GetInternalizer () const;
@@ -604,13 +615,17 @@ namespace Stroika::Frameworks::Led {
 
         // Scrollbar support
     public:
-        enum VHSelect { v,
-                        h,
-                        eFirst = v,
-                        eLast  = h };
-        enum ScrollBarType { eScrollBarNever,
-                             eScrollBarAsNeeded,
-                             eScrollBarAlways };
+        enum VHSelect {
+            v,
+            h,
+            eFirst = v,
+            eLast  = h
+        };
+        enum ScrollBarType {
+            eScrollBarNever,
+            eScrollBarAsNeeded,
+            eScrollBarAlways
+        };
         nonvirtual ScrollBarType GetScrollBarType (VHSelect vh) const;
         virtual void             SetScrollBarType (VHSelect vh, ScrollBarType scrollBarType);
 
@@ -675,7 +690,8 @@ namespace Stroika::Frameworks::Led {
         bool fCaretShownAfterPos; // If true show after, else before
 
     public:
-        virtual void OnTypedNormalCharacter (Led_tChar theChar, bool optionPressed, bool shiftPressed, bool commandPressed, bool controlPressed, bool altKeyPressed);
+        virtual void OnTypedNormalCharacter (Led_tChar theChar, bool optionPressed, bool shiftPressed, bool commandPressed,
+                                             bool controlPressed, bool altKeyPressed);
 
 #if qMultiByteCharacters
     protected:
@@ -767,15 +783,19 @@ namespace Stroika::Frameworks::Led {
         using CommandNumber = TextInteractor::CommandNumber;
 
     public:
-        virtual void DisplayFindDialog (Led_tString* findText, const vector<Led_tString>& recentFindSuggestions, bool* wrapSearch, bool* wholeWordSearch, bool* caseSensative, bool* pressedOK);
+        virtual void DisplayFindDialog (Led_tString* findText, const vector<Led_tString>& recentFindSuggestions, bool* wrapSearch,
+                                        bool* wholeWordSearch, bool* caseSensative, bool* pressedOK);
 
     public:
-        enum ReplaceButtonPressed { eReplaceButton_Cancel,
-                                    eReplaceButton_Find,
-                                    eReplaceButton_Replace,
-                                    eReplaceButton_ReplaceAll,
-                                    eReplaceButton_ReplaceAllInSelection };
-        virtual ReplaceButtonPressed DisplayReplaceDialog (Led_tString* findText, const vector<Led_tString>& recentFindSuggestions, Led_tString* replaceText, bool* wrapSearch, bool* wholeWordSearch, bool* caseSensative);
+        enum ReplaceButtonPressed {
+            eReplaceButton_Cancel,
+            eReplaceButton_Find,
+            eReplaceButton_Replace,
+            eReplaceButton_ReplaceAll,
+            eReplaceButton_ReplaceAllInSelection
+        };
+        virtual ReplaceButtonPressed DisplayReplaceDialog (Led_tString* findText, const vector<Led_tString>& recentFindSuggestions,
+                                                           Led_tString* replaceText, bool* wrapSearch, bool* wholeWordSearch, bool* caseSensative);
 
     public:
         class SpellCheckDialogCallback;
@@ -865,7 +885,8 @@ namespace Stroika::Frameworks::Led {
     public:
         UndoableContextHelper (TextInteractor& ti, const SDKString& cmdName, bool allowSmartCNPExpansion);
         UndoableContextHelper (TextInteractor& ti, const SDKString& cmdName, size_t regionAndSelStart, size_t regionAndSelEnd, bool allowSmartCNPExpansion);
-        UndoableContextHelper (TextInteractor& ti, const SDKString& cmdName, size_t regionStart, size_t regionEnd, size_t selStart, size_t selEnd, bool allowSmartCNPExpansion);
+        UndoableContextHelper (TextInteractor& ti, const SDKString& cmdName, size_t regionStart, size_t regionEnd, size_t selStart,
+                               size_t selEnd, bool allowSmartCNPExpansion);
         ~UndoableContextHelper ();
 
     public:
@@ -950,8 +971,7 @@ namespace Stroika::Frameworks::Led {
     @CLASS:         TextInteractor::BadUserInput
     @DESCRIPTION:   <p>See @'TextInteractor::OnBadUserInput'.</p>
     */
-    class TextInteractor::BadUserInput {
-    };
+    class TextInteractor::BadUserInput {};
 
     /*
     @CLASS:         CommandNumberMapping<TARGET_COMMAND_NUMBER>
@@ -971,7 +991,8 @@ namespace Stroika::Frameworks::Led {
 
     public:
         nonvirtual void               AddAssociation (TARGET_COMMAND_NUMBER externalCommandNumber, CommandNumber internalCommandNumber);
-        nonvirtual void               AddRangeAssociation (TARGET_COMMAND_NUMBER externalRangeStart, TARGET_COMMAND_NUMBER externalRangeEnd, CommandNumber internalRangeStart, CommandNumber internalRangeEnd);
+        nonvirtual void               AddRangeAssociation (TARGET_COMMAND_NUMBER externalRangeStart, TARGET_COMMAND_NUMBER externalRangeEnd,
+                                                           CommandNumber internalRangeStart, CommandNumber internalRangeEnd);
         virtual CommandNumber         Lookup (TARGET_COMMAND_NUMBER tcn) const;
         virtual TARGET_COMMAND_NUMBER ReverseLookup (CommandNumber cmdNum) const;
 
@@ -1051,7 +1072,9 @@ namespace Stroika::Frameworks::Led {
     public:
         using UpdateMode = typename IMAGER::UpdateMode;
         virtual bool QueryInputKeyStrokesPending () const override { return false; };
-        virtual void RefreshWindowRect_ ([[maybe_unused]] const Led_Rect& windowRectArea, [[maybe_unused]] UpdateMode updateMode) const override {}
+        virtual void RefreshWindowRect_ ([[maybe_unused]] const Led_Rect& windowRectArea, [[maybe_unused]] UpdateMode updateMode) const override
+        {
+        }
         virtual void UpdateWindowRect_ ([[maybe_unused]] const Led_Rect& windowRectArea) const override {}
     };
     DISABLE_COMPILER_MSC_WARNING_END (4250) // inherits via dominance warning

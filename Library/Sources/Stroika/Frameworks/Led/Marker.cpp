@@ -27,46 +27,31 @@ void Stroika::Frameworks::Led::TextStore_RemoveMarkers (TextStore& ts, Marker* c
 @METHOD:        MarkerOwner::FindNextCharacter
 @DESCRIPTION:   <p>Return the associated @'TextStore::FindNextCharacter' ().</p>
 */
-size_t MarkerOwner::FindNextCharacter (size_t afterPos) const
-{
-    return GetTextStore ().FindNextCharacter (afterPos);
-}
+size_t MarkerOwner::FindNextCharacter (size_t afterPos) const { return GetTextStore ().FindNextCharacter (afterPos); }
 
 /*
 @METHOD:        MarkerOwner::FindPreviousCharacter
 @DESCRIPTION:   <p>Return the associated @'TextStore::FindPreviousCharacter' ().</p>
 */
-size_t MarkerOwner::FindPreviousCharacter (size_t beforePos) const
-{
-    return GetTextStore ().FindPreviousCharacter (beforePos);
-}
+size_t MarkerOwner::FindPreviousCharacter (size_t beforePos) const { return GetTextStore ().FindPreviousCharacter (beforePos); }
 
 /*
 @METHOD:        MarkerOwner::GetLength
 @DESCRIPTION:   <p>Return the associated @'TextStore::GetLength' ().</p>
 */
-size_t MarkerOwner::GetLength () const
-{
-    return GetTextStore ().GetLength ();
-}
+size_t MarkerOwner::GetLength () const { return GetTextStore ().GetLength (); }
 
 /*
 @METHOD:        MarkerOwner::GetEnd
 @DESCRIPTION:   <p>Return the associated @'TextStore::GetEnd' ().</p>
 */
-size_t MarkerOwner::GetEnd () const
-{
-    return GetTextStore ().GetEnd ();
-}
+size_t MarkerOwner::GetEnd () const { return GetTextStore ().GetEnd (); }
 
 /*
 @METHOD:        MarkerOwner::CopyOut
 @DESCRIPTION:   <p>Calls the associated @'TextStore::CopyOut' ().</p>
 */
-void MarkerOwner::CopyOut (size_t from, size_t count, Led_tChar* buffer) const
-{
-    GetTextStore ().CopyOut (from, count, buffer);
-}
+void MarkerOwner::CopyOut (size_t from, size_t count, Led_tChar* buffer) const { GetTextStore ().CopyOut (from, count, buffer); }
 
 #if qMultiByteCharacters
 void MarkerOwner::Assert_CharPosDoesNotSplitCharacter (size_t charPos) const
@@ -110,7 +95,4 @@ TempMarker::~TempMarker ()
     }
 }
 
-TextStore* TempMarker::PeekAtTextStore () const
-{
-    return &fTextStore;
-}
+TextStore* TempMarker::PeekAtTextStore () const { return &fTextStore; }

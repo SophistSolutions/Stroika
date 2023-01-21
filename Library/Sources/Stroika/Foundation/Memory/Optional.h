@@ -83,7 +83,8 @@ namespace Stroika::Foundation::Memory {
      *              std::multiplies{}
      *              std::divides{}
      */
-    template <typename T, typename CONVERTIBLE_TO_T, typename OP = plus<T>, enable_if_t<is_convertible_v<CONVERTIBLE_TO_T, T> and is_convertible_v<OP, function<T (T, T)>>>* = nullptr>
+    template <typename T, typename CONVERTIBLE_TO_T, typename OP = plus<T>,
+              enable_if_t<is_convertible_v<CONVERTIBLE_TO_T, T> and is_convertible_v<OP, function<T (T, T)>>>* = nullptr>
     void AccumulateIf (optional<T>* lhsOptionalValue, const optional<CONVERTIBLE_TO_T>& rhsOptionalValue, const OP& op = OP{});
     template <typename T, typename OP = plus<T>, enable_if_t<is_convertible_v<OP, function<T (T, T)>>>* = nullptr>
     void AccumulateIf (optional<T>* lhsOptionalValue, const T& rhsValue, const OP& op = OP{});
@@ -91,7 +92,8 @@ namespace Stroika::Foundation::Memory {
     void AccumulateIf (optional<CONTAINER<T>>* lhsOptionalValue, const optional<T>& rhsOptionalValue);
     template <typename T, template <typename> typename CONTAINER, enable_if_t<is_convertible_v<typename Containers::Adapters::Adder<CONTAINER<T>>::value_type, T>>* = nullptr>
     void AccumulateIf (optional<CONTAINER<T>>* lhsOptionalValue, const T& rhsValue);
-    template <typename T, typename CONVERTIBLE_TO_T, typename OP = plus<T>, enable_if_t<is_convertible_v<CONVERTIBLE_TO_T, T> and is_convertible_v<OP, function<T (T, T)>>>* = nullptr>
+    template <typename T, typename CONVERTIBLE_TO_T, typename OP = plus<T>,
+              enable_if_t<is_convertible_v<CONVERTIBLE_TO_T, T> and is_convertible_v<OP, function<T (T, T)>>>* = nullptr>
     optional<T> AccumulateIf (const optional<T>& lhsOptionalValue, const optional<CONVERTIBLE_TO_T>& rhsOptionalValue, const OP& op = OP{});
     template <typename T, typename OP = plus<T>, enable_if_t<is_convertible_v<OP, function<T (T, T)>>>* = nullptr>
     optional<T> AccumulateIf (const optional<T>& lhsOptionalValue, const T& rhsValue, const OP& op = OP{});
@@ -176,7 +178,8 @@ namespace Stroika::Foundation::Memory {
      *          VerifyTestResult (url.GetScheme () == "dyn");
      *          // wchar_t* overload is optional gets STRING with value "d";
      */
-    template <typename RHS_CONVERTIBLE_TO_OPTIONAL_OF_T, typename T = RHS_CONVERTIBLE_TO_OPTIONAL_OF_T, typename SFINAE_SAFE_CONVERTIBLE = enable_if_t<Configuration::is_explicitly_convertible_v<RHS_CONVERTIBLE_TO_OPTIONAL_OF_T, T>>>
+    template <typename RHS_CONVERTIBLE_TO_OPTIONAL_OF_T, typename T = RHS_CONVERTIBLE_TO_OPTIONAL_OF_T,
+              typename SFINAE_SAFE_CONVERTIBLE = enable_if_t<Configuration::is_explicitly_convertible_v<RHS_CONVERTIBLE_TO_OPTIONAL_OF_T, T>>>
     optional<T> OptionalFromNullable (const RHS_CONVERTIBLE_TO_OPTIONAL_OF_T* from);
 
     /**

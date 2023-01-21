@@ -64,7 +64,8 @@ namespace {
                 VerifyTestResult (sv.AsFullVersionNum () == fullVer);
             };
             // Could try a variety of these versions, but this should be enough...
-            testRoundTrip (kStroika_Version_FullVersion, kStroika_Version_Major, kStroika_Version_Minor, static_cast<VersionStage> (kStroika_Version_Stage), kStroika_Version_SubStage, kStroika_Version_FinalBuild);
+            testRoundTrip (kStroika_Version_FullVersion, kStroika_Version_Major, kStroika_Version_Minor,
+                           static_cast<VersionStage> (kStroika_Version_Stage), kStroika_Version_SubStage, kStroika_Version_FinalBuild);
         }
     }
 }
@@ -144,8 +145,7 @@ namespace {
             struct CONTAINER {
                 using value_type = T;
                 template <typename POTENTIALLY_ADDABLE_T>
-                class IsAddable_t : public is_convertible<POTENTIALLY_ADDABLE_T, value_type> {
-                };
+                class IsAddable_t : public is_convertible<POTENTIALLY_ADDABLE_T, value_type> {};
             };
             template <typename TT>
             void TEST ()

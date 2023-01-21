@@ -44,14 +44,8 @@ inline Win32FileAssociationRegistrationHelper::KeyHolder::KeyHolder (HKEY baseKe
     DWORD ignored = 0;
     ThrowIfRegError (::RegCreateKeyEx (baseKey, lpSubKey, 0, REG_NONE, REG_OPTION_NON_VOLATILE, KEY_WRITE | KEY_READ, NULL, &fKey, &ignored));
 }
-inline Win32FileAssociationRegistrationHelper::KeyHolder::~KeyHolder ()
-{
-    ::RegCloseKey (fKey);
-}
-inline Win32FileAssociationRegistrationHelper::KeyHolder::operator HKEY ()
-{
-    return fKey;
-}
+inline Win32FileAssociationRegistrationHelper::KeyHolder::~KeyHolder () { ::RegCloseKey (fKey); }
+inline Win32FileAssociationRegistrationHelper::KeyHolder::operator HKEY () { return fKey; }
 
 /*
  ********************************************************************************
@@ -129,7 +123,9 @@ SDKString Win32FileAssociationRegistrationHelper::GetAssociatedOpenCommand () co
     }
 }
 
-void Win32FileAssociationRegistrationHelper::SetAssociatedProgIDAndOpenCommand (const SDKString& progID, const SDKString& progIDPrettyName, const SDKString& defaultIcon, const SDKString& editCommandLine, const SDKString& openCommandLine)
+void Win32FileAssociationRegistrationHelper::SetAssociatedProgIDAndOpenCommand (const SDKString& progID, const SDKString& progIDPrettyName,
+                                                                                const SDKString& defaultIcon, const SDKString& editCommandLine,
+                                                                                const SDKString& openCommandLine)
 {
     /*
      *  Make HKCR/SUFFIX point to the progID
@@ -139,21 +135,25 @@ void Win32FileAssociationRegistrationHelper::SetAssociatedProgIDAndOpenCommand (
     /*
      *  The Create/Make the pointed to progID, with appropriate subkeys.
      */
-    ThrowIfRegError (::RegSetValue (HKEY_CLASSES_ROOT, progID.c_str (), REG_SZ, progIDPrettyName.c_str (), static_cast<DWORD> (progIDPrettyName.length ())));
+    ThrowIfRegError (::RegSetValue (HKEY_CLASSES_ROOT, progID.c_str (), REG_SZ, progIDPrettyName.c_str (),
+                                    static_cast<DWORD> (progIDPrettyName.length ())));
 
     KeyHolder progIDKey (HKEY_CLASSES_ROOT, progID.c_str (), KeyHolder::eCreateIfNotThere);
     if (defaultIcon != Win32UIFileAssociationInfo::kNoChange) {
-        ThrowIfRegError (::RegSetValue (progIDKey, Led_SDK_TCHAROF ("DefaultIcon"), REG_SZ, defaultIcon.c_str (), static_cast<DWORD> (defaultIcon.length ())));
+        ThrowIfRegError (::RegSetValue (progIDKey, Led_SDK_TCHAROF ("DefaultIcon"), REG_SZ, defaultIcon.c_str (),
+                                        static_cast<DWORD> (defaultIcon.length ())));
     }
     if (editCommandLine != Win32UIFileAssociationInfo::kNoChange) {
         KeyHolder shellKey (progIDKey, Led_SDK_TCHAROF ("shell"), KeyHolder::eCreateIfNotThere);
         KeyHolder openKey (shellKey, Led_SDK_TCHAROF ("edit"), KeyHolder::eCreateIfNotThere);
-        ThrowIfRegError (::RegSetValue (openKey, Led_SDK_TCHAROF ("command"), REG_SZ, editCommandLine.c_str (), static_cast<DWORD> (editCommandLine.length ())));
+        ThrowIfRegError (::RegSetValue (openKey, Led_SDK_TCHAROF ("command"), REG_SZ, editCommandLine.c_str (),
+                                        static_cast<DWORD> (editCommandLine.length ())));
     }
     if (openCommandLine != Win32UIFileAssociationInfo::kNoChange) {
         KeyHolder shellKey (progIDKey, Led_SDK_TCHAROF ("shell"), KeyHolder::eCreateIfNotThere);
         KeyHolder openKey (shellKey, Led_SDK_TCHAROF ("open"), KeyHolder::eCreateIfNotThere);
-        ThrowIfRegError (::RegSetValue (openKey, Led_SDK_TCHAROF ("command"), REG_SZ, openCommandLine.c_str (), static_cast<DWORD> (openCommandLine.length ())));
+        ThrowIfRegError (::RegSetValue (openKey, Led_SDK_TCHAROF ("command"), REG_SZ, openCommandLine.c_str (),
+                                        static_cast<DWORD> (openCommandLine.length ())));
     }
 }
 
@@ -163,12 +163,8 @@ void Win32FileAssociationRegistrationHelper::SetAssociatedProgIDAndOpenCommand (
  ********************************************************************************
  */
 SDKString Win32UIFileAssociationInfo::kNoChange;
-Win32UIFileAssociationInfo::Win32UIFileAssociationInfo (
-    const SDKString& fileSuffix,
-    const SDKString& fileProgID,
-    const SDKString& fileProgIDPrettyName,
-    const SDKString& defaultIcon,
-    const SDKString& shellEditNOpenCommandLine)
+Win32UIFileAssociationInfo::Win32UIFileAssociationInfo (const SDKString& fileSuffix, const SDKString& fileProgID, const SDKString& fileProgIDPrettyName,
+                                                        const SDKString& defaultIcon, const SDKString& shellEditNOpenCommandLine)
     : fFileSuffix{fileSuffix}
     , fFileProgID{fileProgID}
     , fFileProgIDPrettyName{fileProgIDPrettyName}
@@ -178,13 +174,9 @@ Win32UIFileAssociationInfo::Win32UIFileAssociationInfo (
 {
 }
 
-Win32UIFileAssociationInfo::Win32UIFileAssociationInfo (
-    const SDKString& fileSuffix,
-    const SDKString& fileProgID,
-    const SDKString& fileProgIDPrettyName,
-    const SDKString& defaultIcon,
-    const SDKString& shellEditCommandLine,
-    const SDKString& shellOpenCommandLine)
+Win32UIFileAssociationInfo::Win32UIFileAssociationInfo (const SDKString& fileSuffix, const SDKString& fileProgID,
+                                                        const SDKString& fileProgIDPrettyName, const SDKString& defaultIcon,
+                                                        const SDKString& shellEditCommandLine, const SDKString& shellOpenCommandLine)
     : fFileSuffix (fileSuffix)
     , fFileProgID (fileProgID)
     , fFileProgIDPrettyName (fileProgIDPrettyName)
@@ -211,10 +203,7 @@ Win32UIFileAssociationRegistrationHelper::Win32UIFileAssociationRegistrationHelp
 {
 }
 
-void Win32UIFileAssociationRegistrationHelper::Add (const Win32UIFileAssociationInfo& infoRec)
-{
-    fInfoRecs.push_back (infoRec);
-}
+void Win32UIFileAssociationRegistrationHelper::Add (const Win32UIFileAssociationInfo& infoRec) { fInfoRecs.push_back (infoRec); }
 
 void Win32UIFileAssociationRegistrationHelper::DoIt () noexcept
 {
@@ -253,8 +242,7 @@ bool Win32UIFileAssociationRegistrationHelper::RegisteredToSomeoneElse () const
             SDKString                              openCommandLine = (*i).fShellOpenCommandLine;
             ExpandVariables (&editCommandLine);
             ExpandVariables (&openCommandLine);
-            if (progid != (*i).fFileProgID or
-                (not editCommandLine.empty () and assocEditCmd != editCommandLine) or
+            if (progid != (*i).fFileProgID or (not editCommandLine.empty () and assocEditCmd != editCommandLine) or
                 (not openCommandLine.empty () and assocOpenCmd != openCommandLine)) {
                 return true;
             }

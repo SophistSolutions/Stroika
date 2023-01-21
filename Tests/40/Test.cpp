@@ -219,9 +219,9 @@ namespace {
             // So we wait a shorter time for it, and that should fail
             {
                 Debug::TraceContextBumper           ctx1{L"expect-failed-wait"};
-                constexpr Time::DurationSecondsType kMarginOfErrorLo_       = .5;
-                constexpr Time::DurationSecondsType kMarginOfErrorHi_Warn_  = qDebug ? 5.0 : 3.0; // if sys busy, thread could be put to sleep almost any amount of time
-                constexpr Time::DurationSecondsType kMarginOfErrorHi_Error_ = 10.0;               // ""
+                constexpr Time::DurationSecondsType kMarginOfErrorLo_ = .5;
+                constexpr Time::DurationSecondsType kMarginOfErrorHi_Warn_ = qDebug ? 5.0 : 3.0; // if sys busy, thread could be put to sleep almost any amount of time
+                constexpr Time::DurationSecondsType kMarginOfErrorHi_Error_ = 10.0; // ""
                 constexpr Time::DurationSecondsType kWaitOnAbortFor         = 1.0;
                 Time::DurationSecondsType           startTestAt             = Time::GetTickCount ();
                 Time::DurationSecondsType           caughtExceptAt          = 0;
@@ -261,7 +261,7 @@ namespace {
 
             // Now ABORT and WAITFORDONE - that should kill it nearly immediately
             {
-                Debug::TraceContextBumper           ctx1{L"expect-abort-to-work-and-wait-to-succceed"};
+                Debug::TraceContextBumper ctx1{L"expect-abort-to-work-and-wait-to-succceed"};
                 constexpr Time::DurationSecondsType kMarginOfError_ = 10; // larger margin of error cuz sometimes fails on raspberrypi (esp with asan)
                 constexpr Time::DurationSecondsType kWaitOnAbortFor = qDebug ? 7.0 : 3.0;
                 // use such a long timeout cuz we run this on 'debug' builds,
@@ -366,8 +366,7 @@ namespace {
 namespace {
     namespace RegressionTest4_Synchronized_ {
         namespace Private_ {
-            struct data_ {
-            };
+            struct data_ {};
             void Test1_ ()
             {
                 using namespace Execution;
@@ -527,27 +526,23 @@ namespace {
         Debug::TraceContextBumper traceCtx{"RegressionTest6_ThreadWaiting_"};
 #if qStroika_Foundation_Exection_Thread_SupportThreadStatistics
         // if this triggers - add waits to end of procedure - so we assure no 'side effects' moving on to next test...
-        [[maybe_unused]] auto&& cleanupReport = Finally (
-            [] () {
-                again:
-                    auto runningThreads = Execution::Thread::GetStatistics ().fRunningThreads;
-                    DbgTrace (L"Total Running threads at end: %d", runningThreads.size ());
-                    for (Execution::Thread::IDType threadID : runningThreads) {
-                        DbgTrace (L"Exiting main with thread %s running", Characters::ToString (threadID).c_str ());
-                    }
-                    if (not runningThreads.empty ()) {
-                        Execution::Sleep (1.0);
-                        DbgTrace ("trying again...");
-                        goto again;
-                    }
-                    VerifyTestResult (runningThreads.size () == 0);
-            });
+        [[maybe_unused]] auto&& cleanupReport = Finally ([] () {
+            again:
+                auto runningThreads = Execution::Thread::GetStatistics ().fRunningThreads;
+                DbgTrace (L"Total Running threads at end: %d", runningThreads.size ());
+                for (Execution::Thread::IDType threadID : runningThreads) {
+                    DbgTrace (L"Exiting main with thread %s running", Characters::ToString (threadID).c_str ());
+                }
+                if (not runningThreads.empty ()) {
+                    Execution::Sleep (1.0);
+                    DbgTrace ("trying again...");
+                    goto again;
+                }
+                VerifyTestResult (runningThreads.size () == 0);
+        });
 #endif
         struct FRED {
-            static void DoIt ()
-            {
-                Execution::Sleep (0.01);
-            }
+            static void DoIt () { Execution::Sleep (0.01); }
         };
 
         //https://stroika.atlassian.net/browse/STK-717
@@ -591,10 +586,7 @@ namespace {
             ThreadPool p;
             p.SetPoolSize (1);
             int                  intVal = 3;
-            ThreadPool::TaskType task{
-                [&intVal] () {
-                    intVal++;
-                }};
+            ThreadPool::TaskType task{[&intVal] () { intVal++; }};
             p.AddTask (task);
             p.WaitForTask (task);
             VerifyTestResult (intVal == 4);
@@ -642,10 +634,8 @@ namespace {
         // I was seeing SOME rare thread bug - trying to abort a thread which was itself trying to create a new thread - and was
         // between the create of thread and Abort
         Containers::Collection<Thread::Ptr> innerThreads;
-        auto                                DoItInnerThread = [] () {
-            Execution::Sleep (.01);
-        };
-        auto DoOuterThread = [DoItInnerThread, &innerThreads] () {
+        auto                                DoItInnerThread = [] () { Execution::Sleep (.01); };
+        auto                                DoOuterThread   = [DoItInnerThread, &innerThreads] () {
             while (true) {
                 Thread::Ptr t = Thread::New (DoItInnerThread);
                 innerThreads.Add (t);
@@ -670,11 +660,14 @@ namespace {
         //https://stroika.atlassian.net/browse/STK-717
         //FATAL: ThreadSanitizer CHECK failed: ../../../../src/libsanitizer/sanitizer_common/sanitizer_deadlock_detector.h:67 "((n_all_locks_)) < (((sizeof(all_locks_with_contexts_)/sizeof((all_locks_with_contexts_)[0]))))" (0x40, 0x40)
         if constexpr (qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy and Debug::kBuiltWithThreadSanitizer) {
-            DbgTrace ("Skipping RegressionTest10_BlockingQueue_ due to qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy and Debug::kBuiltWithThreadSanitizer");
+            DbgTrace ("Skipping RegressionTest10_BlockingQueue_ due to qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy and "
+                      "Debug::kBuiltWithThreadSanitizer");
             return;
         }
-        enum { START = 0,
-               END   = 100 };
+        enum {
+            START = 0,
+            END   = 100
+        };
         int                              expectedValue = (START + END) * (END - START + 1) / 2;
         int                              counter       = 0;
         BlockingQueue<function<void ()>> q;
@@ -688,8 +681,7 @@ namespace {
                 }
                 q.SignalEndOfInput ();
             },
-            Thread::eAutoStart,
-            L"Producer");
+            Thread::eAutoStart, L"Producer");
         Thread::Ptr consumerThread = Thread::New (
             [&q] () {
                 // Since we call SignalEndOfInput () - the RemoveHead () will eventually timeout
@@ -698,8 +690,7 @@ namespace {
                     f ();
                 }
             },
-            Thread::eAutoStart,
-            L"Consumer");
+            Thread::eAutoStart, L"Consumer");
         // producer already set to run off the end...
         // consumer will end due to exception reading from end
         Thread::WaitForDone ({producerThread, consumerThread});
@@ -712,9 +703,7 @@ namespace {
     {
         Debug::TraceContextBumper ctx{"RegressionTest11_AbortSubAbort_"};
         auto                      testFailToProperlyAbort = [] () {
-            Thread::Ptr innerThread = Thread::New ([] () {
-                Execution::Sleep (1000);
-            });
+            Thread::Ptr innerThread = Thread::New ([] () { Execution::Sleep (1000); });
             innerThread.SetThreadName (L"innerThread");
             Thread::Ptr testThread = Thread::New ([&innerThread] () {
                 innerThread.Start ();
@@ -730,17 +719,14 @@ namespace {
             innerThread.AbortAndWaitForDone ();
         };
         auto testInnerThreadProperlyShutDownByOuterThread = [] () {
-            Thread::Ptr innerThread = Thread::New ([] () {
-                Execution::Sleep (1000);
-            });
+            Thread::Ptr innerThread = Thread::New ([] () { Execution::Sleep (1000); });
             innerThread.SetThreadName (L"innerThread");
             Thread::Ptr testThread = Thread::New ([&innerThread] () {
                 innerThread.Start ();
-                [[maybe_unused]] auto&& cleanup = Finally (
-                    [&innerThread] () noexcept {
-                        Thread::SuppressInterruptionInContext suppressInterruptions;
-                        innerThread.AbortAndWaitForDone ();
-                    });
+                [[maybe_unused]] auto&& cleanup = Finally ([&innerThread] () noexcept {
+                    Thread::SuppressInterruptionInContext suppressInterruptions;
+                    innerThread.AbortAndWaitForDone ();
+                });
                 Execution::Sleep (1000);
             });
             testThread.SetThreadName (L"testThread");
@@ -783,7 +769,8 @@ namespace {
          *      2021-05-29 - saw happen on Ubuntu 2004(docker), but still very rare
          *      2022-04-10 - saw happen on Ununtu 2004(docker), but still very rare
          */
-        VerifyTestResultWarning (WaitableEvent::WaitForAny (Sequence<WaitableEvent*> ({&we1, &we2})) == set<WaitableEvent*> ({&we2})); // may not indicate a real problem if triggered rarely - just threads ran in queer order, but can happen
+        VerifyTestResultWarning (WaitableEvent::WaitForAny (Sequence<WaitableEvent*> ({&we1, &we2})) ==
+                                 set<WaitableEvent*> ({&we2})); // may not indicate a real problem if triggered rarely - just threads ran in queer order, but can happen
         Time::DurationSecondsType timeTaken = Time::GetTickCount () - startAt;
         VerifyTestResult (timeTaken <= kMaxWaitTime_); // make sure we didnt wait for the full kMaxWaitTime_ on first thread
         // They capture so must wait for them to complete
@@ -865,12 +852,12 @@ namespace {
         //
         Debug::TraceContextBumper traceCtx{"RegressionTest15_ThreadPoolStarvationBug_"};
         {
-            Time::DurationSecondsType                  testStartedAt       = Time::GetTickCount ();
-            static constexpr unsigned                  kThreadPoolSize_    = 10;
-            static constexpr unsigned                  kStepsToGetTrouble_ = 100 * kThreadPoolSize_; // wag - should go through each thread pretty quickly
+            Time::DurationSecondsType testStartedAt       = Time::GetTickCount ();
+            static constexpr unsigned kThreadPoolSize_    = 10;
+            static constexpr unsigned kStepsToGetTrouble_ = 100 * kThreadPoolSize_; // wag - should go through each thread pretty quickly
             static constexpr Time::DurationSecondsType kTime2WaitPerTask_{0.01};
             static constexpr Time::DurationSecondsType kRoughEstimateOfTime2Run_ = kTime2WaitPerTask_ * kStepsToGetTrouble_ / kThreadPoolSize_;
-            ThreadPool                                 p;
+            ThreadPool p;
             p.SetPoolSize (kThreadPoolSize_);
             auto doItHandler = [] () { Execution::Sleep (kTime2WaitPerTask_); }; // sb pretty quick
 
@@ -878,7 +865,7 @@ namespace {
                 p.AddTask (doItHandler);
             }
 
-            const double              kBigSafetyMultiplierIncaseRunningUnderValgrind_{10000}; // valgrind not speedy ;-)
+            const double kBigSafetyMultiplierIncaseRunningUnderValgrind_{10000}; // valgrind not speedy ;-)
             Time::DurationSecondsType betterFinishBy = Time::GetTickCount () + kBigSafetyMultiplierIncaseRunningUnderValgrind_ * kRoughEstimateOfTime2Run_;
             while (Time::GetTickCount () <= betterFinishBy) {
                 if (p.GetTasksCount () == 0) {
@@ -957,7 +944,7 @@ namespace {
                  *  Verify that both threads are maintaining the lock at the same time.
                  */
                 // NOTE - CRITICALLY - IF YOU CHANGE RWSynchronized to Synchronized the VerifyTestResult about countWhereTwoHoldingRead below will fail!
-                SYNCRHONIZED_INT     sharedData{0};
+                SYNCRHONIZED_INT sharedData{0};
                 atomic<unsigned int> countMaybeHoldingReadLock{0}; // if >0, definitely holding lock, if 0, maybe holding lock (cuz we decremenent before losing lock)
                 atomic<unsigned int> countWhereTwoHoldingRead{0};
                 atomic<unsigned int> sum1{};
@@ -985,7 +972,8 @@ namespace {
                     // This failed once under helgrind && docker, perhaps while other tests running, so not worrisome unless we see again -- LGP 2018-12-14
                     VerifyTestResult (countWhereTwoHoldingRead >= 1 or sleepTime <= 0); // not logically true, but a good test.. (if sleepTime == 0, this is less likely to be true - so dont fail test because of it)
                 }
-                DbgTrace (L"countWhereTwoHoldingRead=%u (percent=%f)", countWhereTwoHoldingRead.load (), 100.0 * double (countWhereTwoHoldingRead.load ()) / (2 * repeatCount));
+                DbgTrace (L"countWhereTwoHoldingRead=%u (percent=%f)", countWhereTwoHoldingRead.load (),
+                          100.0 * double (countWhereTwoHoldingRead.load ()) / (2 * repeatCount));
             }
             void Test2_LongWritesBlock_ ()
             {
@@ -1008,7 +996,7 @@ namespace {
                     Debug::TraceContextBumper ctx{"writerThread"};
                     for (int i = 0; i < kBaseRepititionCount_; ++i) {
                         auto rwLock = syncData.rwget ();
-                        rwLock.store (rwLock.load () + 1);  // set to a value that will cause reader thread to fail
+                        rwLock.store (rwLock.load () + 1); // set to a value that will cause reader thread to fail
                         Execution::Sleep (kBaseSleepTime_); // hold the lock kBaseSleepTime_
                         VerifyTestResult (rwLock.load () % 2 == 1);
                         rwLock.store (rwLock.load () + 1); // set to a safe value
@@ -1072,21 +1060,17 @@ namespace {
                 static const size_t kTaskCounts_ = kRunningValgrind_ ? (kThreadPoolSize_ * 5) : (kThreadPoolSize_ * 10);
 
                 for (size_t i = 0; i < kTaskCounts_; ++i) {
-                    producerThreadPool.AddTask (
-                        [&q, &counter] () {
-                            for (int incBy = START; incBy <= END; ++incBy) {
-                                q.AddTail ([&counter, incBy] () {
-                                    counter += incBy;
-                                });
-                            }
-                        });
-                    consumerThreadPool.AddTask (
-                        [&q] () {
-                            while (true) {
-                                function<void ()> f = q.RemoveHead ();
-                                f ();
-                            }
-                        });
+                    producerThreadPool.AddTask ([&q, &counter] () {
+                        for (int incBy = START; incBy <= END; ++incBy) {
+                            q.AddTail ([&counter, incBy] () { counter += incBy; });
+                        }
+                    });
+                    consumerThreadPool.AddTask ([&q] () {
+                        while (true) {
+                            function<void ()> f = q.RemoveHead ();
+                            f ();
+                        }
+                    });
                 }
 
                 // wait for all producers to be done, and then mark the input Q with EOF
@@ -1138,8 +1122,7 @@ namespace {
                     }
                 }
             },
-            Thread::eAutoStart,
-            L"Consumer");
+            Thread::eAutoStart, L"Consumer");
         Execution::Sleep (0.1); // so consume gets a chance to fail removehead at least once...
         Thread::Ptr producerThread = Thread::New (
             [&q, &counter] () {
@@ -1151,8 +1134,7 @@ namespace {
                 }
                 q.SignalEndOfInput ();
             },
-            Thread::eAutoStart,
-            L"Producer");
+            Thread::eAutoStart, L"Producer");
         // producer already set to run off the end...
         // consumer will end due to exception reading from end
         Thread::WaitForDone ({producerThread, consumerThread});
@@ -1176,8 +1158,7 @@ namespace {
                     f ();
                 }
             },
-            Thread::eAutoStart,
-            L"Consumer");
+            Thread::eAutoStart, L"Consumer");
         Execution::Sleep (0.5);
         // make sure we can interrupt a blocking read on the BlockingQueue
         consumerThread.AbortAndWaitForDone ();
@@ -1263,40 +1244,39 @@ namespace {
                     Thread::CheckForInterruption ();
                     auto rLock = isEven.cget ();
                     if (rLock.load ()) {
-                        isEven.UpgradeLockNonAtomicallyQuietly (
-                            &rLock,
-                            [&] (auto&& writeLock, bool interveningWriteLock) {
-                                if (interveningWriteLock) {
-                                    return false; // will get retried
-                                }
-                                else {
+                        isEven.UpgradeLockNonAtomicallyQuietly (&rLock, [&] (auto&& writeLock, bool interveningWriteLock) {
+                            if (interveningWriteLock) {
+                                return false; // will get retried
+                            }
+                            else {
                                 // in this case we effectively did an atomic upgrade, because no intervening writers
 #if qCompilerAndStdLib_GenericLambdaInsideGenericLambdaAssertCall_Buggy
-                                    bool t = writeLock.load ();
-                                    if (not t) {
-                                        DbgTrace ("***assert false");
-                                    }
+                                bool t = writeLock.load ();
+                                if (not t) {
+                                    DbgTrace ("***assert false");
+                                }
 #else
                                     VerifyTestResult (writeLock.load ());
 #endif
-                                    writeLock.store (false);
-                                    return true; // instead of reloading here, could return false and let retyr code happen
-                                }
-                            });
+                                writeLock.store (false);
+                                return true; // instead of reloading here, could return false and let retyr code happen
+                            }
+                        });
                     }
                 }
             };
 
             auto runSyncTest = [] (auto& isEven, auto readerFun) {
-                Thread::Ptr writerThread                     = Thread::New ([&] () {
-                    while (true) {
-                        Execution::Sleep (50ms);
-                        Execution::Thread::CheckForInterruption ();
-                        auto rwLock = isEven.rwget ();
-                        rwLock.store (not rwLock.load ()); // toggle back and forth
-                    }
-                },
-                                                        Thread::eAutoStart);
+                Thread::Ptr writerThread = Thread::New (
+                    [&] () {
+                        while (true) {
+                            Execution::Sleep (50ms);
+                            Execution::Thread::CheckForInterruption ();
+                            auto rwLock = isEven.rwget ();
+                            rwLock.store (not rwLock.load ()); // toggle back and forth
+                        }
+                    },
+                    Thread::eAutoStart);
                 Thread::Ptr readerThatSometimesWritesThread1 = Thread::New (readerFun, Thread::eAutoStart);
                 Thread::Ptr readerThatSometimesWritesThread2 = Thread::New (readerFun, Thread::eAutoStart);
                 Execution::Sleep (3s);
@@ -1331,8 +1311,7 @@ namespace {
                 auto lk = test.cget ();
                 Sleep (30s);
             },
-            Thread::eAutoStart,
-            L"t1");
+            Thread::eAutoStart, L"t1");
         [[maybe_unused]] Time::DurationSecondsType waitStart = Time::GetTickCount ();
         Sleep (1s); // long enough so t1 running
         try {
@@ -1394,8 +1373,7 @@ namespace {
             return r;
         }
         template <typename _Clock, typename _Duration>
-        bool
-        try_lock_until (const chrono::time_point<_Clock, _Duration>& __atime)
+        bool try_lock_until (const chrono::time_point<_Clock, _Duration>& __atime)
         {
             if (kDoLoggingToStdErr_) {
                 cerr << this_thread::get_id () << "]ENtering try_lock_until" << endl;
@@ -1422,8 +1400,8 @@ namespace {
         static constexpr bool kDbgTraceLockUnlockIfNameSet = qDefaultTracingOn;
         static constexpr bool kSupportsTimedLocks          = true;
         static constexpr bool kSupportSharedLocks          = false;
-        using ReadLockType                                 = conditional_t<kSupportSharedLocks, shared_lock<MutexType>, unique_lock<MutexType>>;
-        using WriteLockType                                = unique_lock<MutexType>;
+        using ReadLockType  = conditional_t<kSupportSharedLocks, shared_lock<MutexType>, unique_lock<MutexType>>;
+        using WriteLockType = unique_lock<MutexType>;
     };
     DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wunused-const-variable\""); // kIsRecursiveLockMutex
     void RegressionTest24_qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy_ ()
@@ -1434,8 +1412,7 @@ namespace {
                 auto lk = test.cget ();
                 Sleep (30s);
             },
-            Thread::eAutoStart,
-            L"t1");
+            Thread::eAutoStart, L"t1");
         [[maybe_unused]] Time::DurationSecondsType waitStart = Time::GetTickCount ();
         Sleep (1s); // long enough so t1 running
         try {
@@ -1468,15 +1445,14 @@ namespace {
     void DoRegressionTests_ ()
     {
 #if qStroika_Foundation_Exection_Thread_SupportThreadStatistics
-        [[maybe_unused]] auto&& cleanupReport = Finally (
-            [] () {
-                auto runningThreads = Execution::Thread::GetStatistics ().fRunningThreads;
-                DbgTrace (L"Total Running threads at end: %d", runningThreads.size ());
-                for (Execution::Thread::IDType threadID : runningThreads) {
-                    DbgTrace (L"Exiting main with thread %s running", Characters::ToString (threadID).c_str ());
-                }
-                VerifyTestResult (runningThreads.size () == 0);
-            });
+        [[maybe_unused]] auto&& cleanupReport = Finally ([] () {
+            auto runningThreads = Execution::Thread::GetStatistics ().fRunningThreads;
+            DbgTrace (L"Total Running threads at end: %d", runningThreads.size ());
+            for (Execution::Thread::IDType threadID : runningThreads) {
+                DbgTrace (L"Exiting main with thread %s running", Characters::ToString (threadID).c_str ());
+            }
+            VerifyTestResult (runningThreads.size () == 0);
+        });
 #endif
 
         RegressionTest1_ ();

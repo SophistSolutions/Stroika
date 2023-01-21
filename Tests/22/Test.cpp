@@ -96,7 +96,7 @@ namespace {
             constexpr auto kHeaderNameEqualsComparer = String::EqualsComparer{Characters::CompareOptions::eCaseInsensitive};
             Set<String>    m;
             auto           m1 = Set<String>{decltype (kHeaderNameEqualsComparer) (kHeaderNameEqualsComparer), m};
-            auto           m2 = Set<String>{kHeaderNameEqualsComparer, m}; // https://stroika.atlassian.net/browse/STK-720 failed to compile before fix in 2.1b10x
+            auto m2 = Set<String>{kHeaderNameEqualsComparer, m}; // https://stroika.atlassian.net/browse/STK-720 failed to compile before fix in 2.1b10x
         }
     }
 }
@@ -121,15 +121,18 @@ namespace {
 
         DoTestForConcreteContainer_<Set<size_t>> ();
         DoTestForConcreteContainer_<Set<SimpleClass>> ();
-        DoTestForConcreteContainer_<Set<SimpleClassWithoutComparisonOperators>> ([] () { return Set<SimpleClassWithoutComparisonOperators> (MySimpleClassWithoutComparisonOperators_EQUAL_TO_ ()); });
+        DoTestForConcreteContainer_<Set<SimpleClassWithoutComparisonOperators>> (
+            [] () { return Set<SimpleClassWithoutComparisonOperators> (MySimpleClassWithoutComparisonOperators_EQUAL_TO_ ()); });
 
         DoTestForConcreteContainer_<Set_LinkedList<size_t>> ();
         DoTestForConcreteContainer_<Set_LinkedList<SimpleClass>> ();
-        DoTestForConcreteContainer_<Set_LinkedList<SimpleClassWithoutComparisonOperators>> ([] () { return Set_LinkedList<SimpleClassWithoutComparisonOperators> (MySimpleClassWithoutComparisonOperators_EQUAL_TO_ ()); });
+        DoTestForConcreteContainer_<Set_LinkedList<SimpleClassWithoutComparisonOperators>> (
+            [] () { return Set_LinkedList<SimpleClassWithoutComparisonOperators> (MySimpleClassWithoutComparisonOperators_EQUAL_TO_ ()); });
 
         DoTestForConcreteContainer_<Set_stdset<size_t>> ();
         DoTestForConcreteContainer_<Set_stdset<SimpleClass>> ();
-        DoTestForConcreteContainer_<Set_stdset<SimpleClassWithoutComparisonOperators>> ([] () { return Set_stdset<SimpleClassWithoutComparisonOperators> (MySimpleClassWithoutComparisonOperators_LESS_ ()); });
+        DoTestForConcreteContainer_<Set_stdset<SimpleClassWithoutComparisonOperators>> (
+            [] () { return Set_stdset<SimpleClassWithoutComparisonOperators> (MySimpleClassWithoutComparisonOperators_LESS_ ()); });
 
         ExampleCTORS_Test_2_::DoTest ();
 

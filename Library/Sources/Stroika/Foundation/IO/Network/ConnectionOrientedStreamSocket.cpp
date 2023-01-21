@@ -62,7 +62,8 @@ namespace {
                         int nb    = ::recv (fSD_, data, (int)NEltsOf (data), flags);
 #endif
                         if (nb > 0) {
-                            DbgTrace (L"Warning: %d unread bytes to be read on socket when it was closed.", nb); // SHOULD READ ZERO AFTER SHUTDOWN to indicate client other side of connection handled the close
+                            DbgTrace (L"Warning: %d unread bytes to be read on socket when it was closed.",
+                                      nb); // SHOULD READ ZERO AFTER SHUTDOWN to indicate client other side of connection handled the close
                             goto again;
                         }
                     }
@@ -79,7 +80,8 @@ namespace {
                 AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
                 sockaddr_storage                               useSockAddr = sockAddr.As<sockaddr_storage> ();
 #if qPlatform_POSIX
-                Handle_ErrNoResultInterruption ([&] () -> int { return ::connect (fSD_, (sockaddr*)&useSockAddr, sockAddr.GetRequiredSize ()); });
+                Handle_ErrNoResultInterruption (
+                    [&] () -> int { return ::connect (fSD_, (sockaddr*)&useSockAddr, sockAddr.GetRequiredSize ()); });
 #elif qPlatform_Windows
                 ThrowWSASystemErrorIfSOCKET_ERROR (::connect (fSD_, (sockaddr*)&useSockAddr, static_cast<int> (sockAddr.GetRequiredSize ())));
 #else
@@ -176,7 +178,9 @@ namespace {
             }
             virtual void Connect (const SocketAddress& sockAddr, const optional<Time::Duration>& timeout) const override
             {
-                Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"ConnectionOrientedStreamSocket_IMPL_::Connect", L"sockAddr=%s, timeout=%s", Characters::ToString (sockAddr).c_str (), Characters::ToString (timeout).c_str ())};
+                Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (
+                    L"ConnectionOrientedStreamSocket_IMPL_::Connect", L"sockAddr=%s, timeout=%s", Characters::ToString (sockAddr).c_str (),
+                    Characters::ToString (timeout).c_str ())};
                 if (timeout) {
                     Connect_AsyncWTimeout_ (sockAddr, *timeout);
                 }
@@ -194,7 +198,8 @@ namespace {
 #endif
 
 #if qPlatform_POSIX
-                return Handle_ErrNoResultInterruption ([this, &intoStart, &intoEnd] () -> int { return ::read (fSD_, intoStart, intoEnd - intoStart); });
+                return Handle_ErrNoResultInterruption (
+                    [this, &intoStart, &intoEnd] () -> int { return ::read (fSD_, intoStart, intoEnd - intoStart); });
 #elif qPlatform_Windows
                 int flags = 0;
                 int nBytesToRead = static_cast<int> (min<size_t> ((intoEnd - intoStart), numeric_limits<int>::max ()));
@@ -215,8 +220,7 @@ namespace {
                     fd_set input;
                     FD_ZERO (&input);
                     FD_SET (fSD_, &input);
-                    struct timeval timeout {
-                    };
+                    struct timeval timeout {};
                     if (::select (static_cast<int> (fSD_) + 1, &input, NULL, NULL, &timeout) == 1) {
                         if (intoStart == nullptr) {
                             // don't know how much, but doesn't matter, since read allows returning just one byte if thats all thats available
@@ -250,7 +254,8 @@ namespace {
             {
                 AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"IO::Network::Socket...rep...::Write", L"end-start=%lld", static_cast<long long> (end - start))};
+                Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (
+                    L"IO::Network::Socket...rep...::Write", L"end-start=%lld", static_cast<long long> (end - start))};
 #endif
 #if qPlatform_POSIX
                 /*
@@ -258,17 +263,14 @@ namespace {
                  *  Actually, for most of the cases called out, we cannot really continue anyhow, so this maybe pointless, but the
                  *  docs aren't fully clear, so play it safe --LGP 2017-04-13
                  */
-                BreakWriteIntoParts_<byte> (
-                    start,
-                    end,
-                    numeric_limits<int>::max (),
-                    [this] (const byte* start, const byte* end) -> size_t {
-                        Assert ((end - start) < numeric_limits<int>::max ());
-                        ssize_t n = Handle_ErrNoResultInterruption ([this, &start, &end] () -> ssize_t { return ::write (fSD_, start, end - start); });
-                        ThrowPOSIXErrNoIfNegative (n);
-                        Assert (0 <= n and n <= (end - start));
-                        return static_cast<size_t> (n);
-                    });
+                BreakWriteIntoParts_<byte> (start, end, numeric_limits<int>::max (), [this] (const byte* start, const byte* end) -> size_t {
+                    Assert ((end - start) < numeric_limits<int>::max ());
+                    ssize_t n =
+                        Handle_ErrNoResultInterruption ([this, &start, &end] () -> ssize_t { return ::write (fSD_, start, end - start); });
+                    ThrowPOSIXErrNoIfNegative (n);
+                    Assert (0 <= n and n <= (end - start));
+                    return static_cast<size_t> (n);
+                });
 #elif qPlatform_Windows
                 /*
                  *  Note sure what the best way is here, but with WinSock, you cannot use write() directly. Sockets are not
@@ -277,19 +279,15 @@ namespace {
                  *          int       n   =   ::_write (fSD_, start, end - start);
                  */
                 size_t maxSendAtATime = getsockopt<unsigned int> (SOL_SOCKET, SO_MAX_MSG_SIZE);
-                BreakWriteIntoParts_<byte> (
-                    start,
-                    end,
-                    maxSendAtATime,
-                    [this, maxSendAtATime] (const byte* start, const byte* end) -> size_t {
-                        Require (static_cast<size_t> (end - start) <= maxSendAtATime);
-                        Assert ((end - start) < numeric_limits<int>::max ());
-                        int len = static_cast<int> (end - start);
-                        int flags = 0;
-                        int n = ThrowWSASystemErrorIfSOCKET_ERROR (::send (fSD_, reinterpret_cast<const char*> (start), len, flags));
-                        Assert (0 <= n and n <= (end - start));
-                        return static_cast<size_t> (n);
-                    });
+                BreakWriteIntoParts_<byte> (start, end, maxSendAtATime, [this, maxSendAtATime] (const byte* start, const byte* end) -> size_t {
+                    Require (static_cast<size_t> (end - start) <= maxSendAtATime);
+                    Assert ((end - start) < numeric_limits<int>::max ());
+                    int len = static_cast<int> (end - start);
+                    int flags = 0;
+                    int n = ThrowWSASystemErrorIfSOCKET_ERROR (::send (fSD_, reinterpret_cast<const char*> (start), len, flags));
+                    Assert (0 <= n and n <= (end - start));
+                    return static_cast<size_t> (n);
+                });
 #else
                 AssertNotImplemented ();
 #endif
@@ -348,7 +346,8 @@ namespace {
                 }
 #elif qPlatform_Windows
                 // windows only allows setting these two, and both at the same time
-                if (keepAliveOptions.fEnabled and (keepAliveOptions.fTimeIdleBeforeSendingKeepalives or keepAliveOptions.fTimeBetweenIndividualKeepaliveProbes)) {
+                if (keepAliveOptions.fEnabled and
+                    (keepAliveOptions.fTimeIdleBeforeSendingKeepalives or keepAliveOptions.fTimeBetweenIndividualKeepaliveProbes)) {
                     tcp_keepalive alive{keepAliveOptions.fEnabled};
                     // from https://msdn.microsoft.com/en-us/library/windows/desktop/dd877220(v=vs.85).aspx - "The default settings when a TCP socket is initialized sets the keep-alive timeout to 2 hours and the keep-alive interval to 1 second"
                     alive.keepalivetime = Math::Round<ULONG> (keepAliveOptions.fTimeIdleBeforeSendingKeepalives.value_or (2 * 60 * 60) * 1000.0);
@@ -429,7 +428,4 @@ void ConnectionOrientedStreamSocket::Ptr::SetLinger (const optional<int>& linger
     setsockopt<::linger> (SOL_SOCKET, SO_LINGER, so_linger);
 }
 
-void ConnectionOrientedStreamSocket::Ptr::Write (const Memory::BLOB& b) const
-{
-    Write (b.begin (), b.end ());
-}
+void ConnectionOrientedStreamSocket::Ptr::Write (const Memory::BLOB& b) const { Write (b.begin (), b.end ()); }

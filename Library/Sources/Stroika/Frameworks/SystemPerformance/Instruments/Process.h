@@ -369,14 +369,15 @@ namespace Stroika::Foundation::Configuration {
 #if !qCompilerAndStdLib_template_specialization_internalErrorWithSpecializationSignifier_Buggy
     template <>
 #endif
-    constexpr EnumNames<Frameworks::SystemPerformance::Instruments::Process::ProcessType::RunStatus> DefaultNames<Frameworks::SystemPerformance::Instruments::Process::ProcessType::RunStatus>::k{
-        EnumNames<Frameworks::SystemPerformance::Instruments::Process::ProcessType::RunStatus>::BasicArrayInitializer{{
-            {Frameworks::SystemPerformance::Instruments::Process::ProcessType::RunStatus::eRunning, L"Running"},
-            {Frameworks::SystemPerformance::Instruments::Process::ProcessType::RunStatus::eSleeping, L"Sleeping"},
-            {Frameworks::SystemPerformance::Instruments::Process::ProcessType::RunStatus::eWaitingOnDisk, L"WaitingOnDisk"},
-            {Frameworks::SystemPerformance::Instruments::Process::ProcessType::RunStatus::eWaitingOnPaging, L"WaitingOnPaging"},
-            {Frameworks::SystemPerformance::Instruments::Process::ProcessType::RunStatus::eZombie, L"Zombie"},
-            {Frameworks::SystemPerformance::Instruments::Process::ProcessType::RunStatus::eSuspended, L"Suspended"},
-        }}};
+    constexpr EnumNames<Frameworks::SystemPerformance::Instruments::Process::ProcessType::RunStatus>
+        DefaultNames<Frameworks::SystemPerformance::Instruments::Process::ProcessType::RunStatus>::k{
+            EnumNames<Frameworks::SystemPerformance::Instruments::Process::ProcessType::RunStatus>::BasicArrayInitializer{{
+                {Frameworks::SystemPerformance::Instruments::Process::ProcessType::RunStatus::eRunning, L"Running"},
+                {Frameworks::SystemPerformance::Instruments::Process::ProcessType::RunStatus::eSleeping, L"Sleeping"},
+                {Frameworks::SystemPerformance::Instruments::Process::ProcessType::RunStatus::eWaitingOnDisk, L"WaitingOnDisk"},
+                {Frameworks::SystemPerformance::Instruments::Process::ProcessType::RunStatus::eWaitingOnPaging, L"WaitingOnPaging"},
+                {Frameworks::SystemPerformance::Instruments::Process::ProcessType::RunStatus::eZombie, L"Zombie"},
+                {Frameworks::SystemPerformance::Instruments::Process::ProcessType::RunStatus::eSuspended, L"Suspended"},
+            }}};
 }
 #endif /*_Stroika_Framework_SystemPerformance_Instruments_Process_h_*/

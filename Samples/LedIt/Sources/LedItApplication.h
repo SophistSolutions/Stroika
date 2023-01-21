@@ -177,9 +177,7 @@ public:
     virtual void ShowAboutBox () override;
 
     virtual Boolean ObeyCommand (CommandT inCommand, void* ioParam = nil) override;
-    virtual void    FindCommandStatus (CommandT inCommand,
-                                       Boolean& outEnabled, Boolean& outUsesMark,
-                                       UInt16& outMark, Str255 outName) override;
+    virtual void FindCommandStatus (CommandT inCommand, Boolean& outEnabled, Boolean& outUsesMark, UInt16& outMark, Str255 outName) override;
 
 public:
     nonvirtual void OnHelpMenuCommand ();
@@ -242,9 +240,7 @@ private:
     nonvirtual void UpdateFrameWindowTitle ();
 
 public:
-    static void AppCmdDispatcher (gpointer   callback_data,
-                                  guint      callback_action,
-                                  GtkWidget* widget);
+    static void AppCmdDispatcher (gpointer callback_data, guint callback_action, GtkWidget* widget);
     static void AppCmdOnInitMenu (GtkMenuItem* menuItem, gpointer callback_data);
 
 public:

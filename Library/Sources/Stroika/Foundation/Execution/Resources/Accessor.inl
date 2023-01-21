@@ -24,22 +24,10 @@ namespace Stroika::Foundation::Execution::Resources {
         Require (end != nullptr or (start == end));
         Require (start <= end);
     }
-    inline const std::byte* Accessor::begin () const
-    {
-        return fDataStart_;
-    }
-    inline const std::byte* Accessor::end () const
-    {
-        return fDataEnd_;
-    }
-    inline size_t Accessor::size () const
-    {
-        return fDataEnd_ - fDataStart_;
-    }
-    inline vector<std::byte> Accessor::GetData () const
-    {
-        return vector<std::byte> (fDataStart_, fDataEnd_);
-    }
+    inline const std::byte*  Accessor::begin () const { return fDataStart_; }
+    inline const std::byte*  Accessor::end () const { return fDataEnd_; }
+    inline size_t            Accessor::size () const { return fDataEnd_ - fDataStart_; }
+    inline vector<std::byte> Accessor::GetData () const { return vector<std::byte> (fDataStart_, fDataEnd_); }
 
 }
 

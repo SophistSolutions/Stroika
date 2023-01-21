@@ -115,7 +115,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             RequireNotNull (i);
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
             auto                                                  result = Iterable<value_type>::template MakeSmartPtr<Rep_> (*this);
-            auto&                                                 mir    = Debug::UncheckedDynamicCast<const IteratorRep_&> (i->ConstGetRep ());
+            auto& mir = Debug::UncheckedDynamicCast<const IteratorRep_&> (i->ConstGetRep ());
             result->fData_.MoveIteratorHereAfterClone (&mir.fIterator, &fData_);
             i->Refresh (); // reflect updated rep
             return result;
@@ -186,7 +186,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual void UpdateCount (const Iterator<value_type>& i, CounterType newCount, Iterator<value_type>* nextI) override
         {
             Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fData_};
-            auto&                                                  mir = Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ());
+            auto& mir = Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ());
             if (newCount == 0) {
                 if (nextI != nullptr) {
                     *nextI = i;
@@ -295,7 +295,9 @@ namespace Stroika::Foundation::Containers::Concrete {
     inline MultiSet_Array<T, TRAITS>::MultiSet_Array (EQUALS_COMPARER&& equalsComparer)
         : inherited{inherited::template MakeSmartPtr<Rep_<remove_cvref_t<EQUALS_COMPARER>>> (forward<EQUALS_COMPARER> (equalsComparer))}
     {
-        static_assert (Common::IsEqualsComparer<EQUALS_COMPARER> (), "MultiSet_Array constructor with EQUALS_COMPARER - comparer not valid EqualsComparer- see ComparisonRelationDeclaration<Common::ComparisonRelationType::eEquals, function<bool(T, T)>");
+        static_assert (Common::IsEqualsComparer<EQUALS_COMPARER> (),
+                       "MultiSet_Array constructor with EQUALS_COMPARER - comparer not valid EqualsComparer- see "
+                       "ComparisonRelationDeclaration<Common::ComparisonRelationType::eEquals, function<bool(T, T)>");
         AssertRepValidType_ ();
     }
     template <typename T, typename TRAITS>

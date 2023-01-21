@@ -29,8 +29,7 @@ namespace Stroika::Foundation::Cryptography::Digest::Algorithm {
     /**
      *  Algorithm 'type tag' indicating this particular algorithm.
      */
-    struct Jenkins {
-    };
+    struct Jenkins {};
 
     /**
      *  Traits for the Jenkins algorithm.

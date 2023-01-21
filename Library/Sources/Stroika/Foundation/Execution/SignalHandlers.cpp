@@ -128,7 +128,8 @@ public:
     Rep_ ()
     {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-        Debug::TraceContextBumper trcCtx{L"Stroika::Foundation::Execution::SignalHandlerRegistry::SafeSignalsManager::Rep_::CTOR", Stroika_Foundation_Debug_OptionalizeTraceArgs (L"this=%p", this)};
+        Debug::TraceContextBumper trcCtx{L"Stroika::Foundation::Execution::SignalHandlerRegistry::SafeSignalsManager::Rep_::CTOR",
+                                         Stroika_Foundation_Debug_OptionalizeTraceArgs (L"this=%p", this)};
 #endif
         Stroika_Foundation_Debug_ValgrindDisableCheck_stdatomic (fIncomingSignalCounts_);
         Stroika_Foundation_Debug_ValgrindDisableCheck_stdatomic (fLastSignalRecieved_);
@@ -176,14 +177,14 @@ public:
                     }
                 }
             },
-            Thread::eAutoStart,
-            "Signal Handler Safe Execution Thread"sv);
+            Thread::eAutoStart, "Signal Handler Safe Execution Thread"sv);
     }
 
 public:
     ~Rep_ ()
     {
-        Debug::TraceContextBumper trcCtx{L"Stroika::Foundation::Execution::SignalHandlerRegistry::SafeSignalsManager::Rep_::~Rep_", Stroika_Foundation_Debug_OptionalizeTraceArgs (L"this=%p", this)};
+        Debug::TraceContextBumper trcCtx{L"Stroika::Foundation::Execution::SignalHandlerRegistry::SafeSignalsManager::Rep_::~Rep_",
+                                         Stroika_Foundation_Debug_OptionalizeTraceArgs (L"this=%p", this)};
         Stroika_Foundation_Debug_ValgrindDisableHelgrind (fRecievedSig_); // For RARE (1/10 times) failure in regtest Foundation::Execution::Signals
         Thread::SuppressInterruptionInContext suppressInterruption;
         fBlockingQueuePusherThread_.Abort ();
@@ -208,16 +209,10 @@ public:
     }
 
 public:
-    Set<SignalID> GetHandledSignals () const
-    {
-        return Set<SignalID>{fHandlers_.cget ()->Keys ()};
-    }
+    Set<SignalID> GetHandledSignals () const { return Set<SignalID>{fHandlers_.cget ()->Keys ()}; }
 
 public:
-    Set<SignalHandler> GetSignalHandlers (SignalID signal) const
-    {
-        return fHandlers_.cget ()->LookupValue (signal);
-    }
+    Set<SignalHandler> GetSignalHandlers (SignalID signal) const { return fHandlers_.cget ()->LookupValue (signal); }
 
 public:
     void Remove (SignalID signal)
@@ -251,7 +246,7 @@ private:
      */
     atomic<unsigned int> fIncomingSignalCounts_[NSIG]{};
     atomic<SignalID>     fLastSignalRecieved_{NSIG};
-    Thread::Ptr          fBlockingQueuePusherThread_; // no need to synchonize cuz only called from thread which constructs/destroys safetymfg
+    Thread::Ptr fBlockingQueuePusherThread_; // no need to synchonize cuz only called from thread which constructs/destroys safetymfg
 private:
     atomic<bool> fWorkMaybeAvailable_{false};
 #if qConditionVariablesSafeInAsyncSignalHanlders
@@ -352,10 +347,7 @@ Set<SignalHandler> SignalHandlerRegistry::GetSignalHandlers (SignalID signal) co
     return result;
 }
 
-void SignalHandlerRegistry::SetSignalHandlers (SignalID signal)
-{
-    SetSignalHandlers (signal, Set<SignalHandler>{});
-}
+void SignalHandlerRegistry::SetSignalHandlers (SignalID signal) { SetSignalHandlers (signal, Set<SignalHandler>{}); }
 
 void SignalHandlerRegistry::SetSignalHandlers (SignalID signal, const SignalHandler& handler)
 {
@@ -364,7 +356,9 @@ void SignalHandlerRegistry::SetSignalHandlers (SignalID signal, const SignalHand
 
 void SignalHandlerRegistry::SetSignalHandlers (SignalID signal, const Set<SignalHandler>& handlers)
 {
-    Debug::TraceContextBumper trcCtx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"Stroika::Foundation::Execution::SignalHandlerRegistry::{}::SetSignalHandlers", L"signal: %s, handlers: %s", SignalToName (signal).c_str (), Characters::ToString (handlers).c_str ())};
+    Debug::TraceContextBumper trcCtx{Stroika_Foundation_Debug_OptionalizeTraceArgs (
+        L"Stroika::Foundation::Execution::SignalHandlerRegistry::{}::SetSignalHandlers", L"signal: %s, handlers: %s",
+        SignalToName (signal).c_str (), Characters::ToString (handlers).c_str ())};
 
     Set<SignalHandler> directHandlers;
     Set<SignalHandler> safeHandlers;
@@ -395,11 +389,10 @@ void SignalHandlerRegistry::SetSignalHandlers (SignalID signal, const Set<Signal
 
     auto sigSetHandler = [] (SignalID signal, [[maybe_unused]] void (*fun) (int)) {
 #if qPlatform_POSIX
-        struct sigaction sa {
-        };
+        struct sigaction sa {};
         sa.sa_handler = fun;
         Verify (sigemptyset (&sa.sa_mask) == 0); // nb: cannot use :: on macos - macro - LGP 2016-12-30
-        sa.sa_flags = 0;                         // important NOT to set SA_RESTART for interrupt() - but maybe for others helpful - maybe add option?
+        sa.sa_flags = 0; // important NOT to set SA_RESTART for interrupt() - but maybe for others helpful - maybe add option?
         Verify (::sigaction (signal, &sa, nullptr) == 0);
 #else
         Verify (::signal (signal, FirstPassSignalHandler_) != SIG_ERR);
@@ -605,7 +598,8 @@ Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_THREAD void SignalHandlerRegistry
      *      >   Be CAREFUL to do as little as possible here.
      */
 #if qDoDbgTraceOnSignalHandlers_
-    Debug::TraceContextBumper trcCtx{L"Stroika::Foundation::Execution::SignalHandlerRegistry::FirstPassSignalHandler_", L"signal = %s", SignalToName (signal).c_str ()};
+    Debug::TraceContextBumper trcCtx{L"Stroika::Foundation::Execution::SignalHandlerRegistry::FirstPassSignalHandler_", L"signal = %s",
+                                     SignalToName (signal).c_str ()};
 #endif
 #if qDoBacktraceOnFirstPassSignalHandler_ and qDefaultTracingOn
     {

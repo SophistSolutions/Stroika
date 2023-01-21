@@ -95,10 +95,7 @@ namespace Stroika::Foundation::DataExchange {
         }
         return fVal_->GetType ();
     }
-    inline VariantValue::operator bool () const
-    {
-        return GetType () != Type::eNull;
-    }
+    inline VariantValue::operator bool () const { return GetType () != Type::eNull; }
     template <>
     inline Memory::BLOB VariantValue::As () const
     {
@@ -179,10 +176,7 @@ namespace Stroika::Foundation::DataExchange {
     {
         return AsString_ ();
     }
-    inline strong_ordering VariantValue::operator<=> (const VariantValue& rhs) const
-    {
-        return ThreeWayComparer{}(*this, rhs);
-    }
+    inline strong_ordering VariantValue::operator<=> (const VariantValue& rhs) const { return ThreeWayComparer{}(*this, rhs); }
     inline bool VariantValue::operator== (const VariantValue& rhs) const
     {
         Ensure (EqualsComparer{}(*this, rhs) == (ThreeWayComparer{}(*this, rhs) == 0)); // These must return the same answer
@@ -194,18 +188,14 @@ namespace Stroika::Foundation::DataExchange {
      ***** Stroika::Foundation::DataExchange::VariantValue::EqualsComparer **********
      ********************************************************************************
      */
-    constexpr VariantValue::EqualsComparer::EqualsComparer ()
-    {
-    }
+    constexpr VariantValue::EqualsComparer::EqualsComparer () {}
 
     /*
      ********************************************************************************
      ************************* VariantValue::ThreeWayComparer ***********************
      ********************************************************************************
      */
-    constexpr VariantValue::ThreeWayComparer::ThreeWayComparer ()
-    {
-    }
+    constexpr VariantValue::ThreeWayComparer::ThreeWayComparer () {}
 
 }
 

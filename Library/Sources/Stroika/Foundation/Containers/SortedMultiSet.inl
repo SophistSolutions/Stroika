@@ -26,7 +26,9 @@ namespace Stroika::Foundation::Containers {
         // @todo see https://stroika.atlassian.net/browse/STK-933 for why this decay_t is needed - unclear why!
         : inherited{Factory::SortedMultiSet_Factory<T, TRAITS, decay_t<INORDER_COMPARER>> (forward<INORDER_COMPARER> (inorderComparer)) ()}
     {
-        static_assert (Common::IsStrictInOrderComparer<INORDER_COMPARER> (), "SortedMultiSet constructor with INORDER_COMPARER - comparer not valid IsStrictInOrderComparer- see ComparisonRelationDeclaration<Common::ComparisonRelationType::eStrictInOrder, function<bool(T, T)>");
+        static_assert (Common::IsStrictInOrderComparer<INORDER_COMPARER> (),
+                       "SortedMultiSet constructor with INORDER_COMPARER - comparer not valid IsStrictInOrderComparer- see "
+                       "ComparisonRelationDeclaration<Common::ComparisonRelationType::eStrictInOrder, function<bool(T, T)>");
         _AssertRepValidType ();
     }
     template <typename T, typename TRAITS>
@@ -81,7 +83,8 @@ namespace Stroika::Foundation::Containers {
         _AssertRepValidType ();
     }
     template <typename T, typename TRAITS>
-    template <typename INORDER_COMPARER, typename ITERABLE_OF_ADDABLE, enable_if_t<Common::IsStrictInOrderComparer<INORDER_COMPARER, T> () and Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>>*>
+    template <typename INORDER_COMPARER, typename ITERABLE_OF_ADDABLE,
+              enable_if_t<Common::IsStrictInOrderComparer<INORDER_COMPARER, T> () and Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>>*>
     inline SortedMultiSet<T, TRAITS>::SortedMultiSet (INORDER_COMPARER&& inorderComparer, ITERABLE_OF_ADDABLE&& src)
         : SortedMultiSet{forward<INORDER_COMPARER> (inorderComparer)}
     {
@@ -99,7 +102,8 @@ namespace Stroika::Foundation::Containers {
         _AssertRepValidType ();
     }
     template <typename T, typename TRAITS>
-    template <typename INORDER_COMPARER, typename ITERATOR_OF_ADDABLE, enable_if_t<Common::IsStrictInOrderComparer<INORDER_COMPARER, T> () and Configuration::IsIterator_v<ITERATOR_OF_ADDABLE>>*>
+    template <typename INORDER_COMPARER, typename ITERATOR_OF_ADDABLE,
+              enable_if_t<Common::IsStrictInOrderComparer<INORDER_COMPARER, T> () and Configuration::IsIterator_v<ITERATOR_OF_ADDABLE>>*>
     SortedMultiSet<T, TRAITS>::SortedMultiSet (INORDER_COMPARER&& inorderComparer, ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
         : SortedMultiSet{forward<INORDER_COMPARER> (inorderComparer)}
     {

@@ -35,7 +35,8 @@ namespace Stroika::Frameworks::Led {
         WordWrappedTextInteractor () = default;
 
     public:
-        virtual void OnTypedNormalCharacter (Led_tChar theChar, bool optionPressed, bool shiftPressed, bool commandPressed, bool controlPressed, bool altKeyPressed) override;
+        virtual void OnTypedNormalCharacter (Led_tChar theChar, bool optionPressed, bool shiftPressed, bool commandPressed,
+                                             bool controlPressed, bool altKeyPressed) override;
 
         /*
             *  Must combine behaviors of different mixins.

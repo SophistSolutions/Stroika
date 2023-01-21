@@ -281,24 +281,10 @@ namespace Stroika::Foundation::Memory {
 #if qDebug
     private:
         static constexpr byte kGuard1_[8] = {
-            byte{0x45},
-            byte{0x23},
-            byte{0x12},
-            byte{0x56},
-            byte{0x99},
-            byte{0x76},
-            byte{0x12},
-            byte{0x55},
+            byte{0x45}, byte{0x23}, byte{0x12}, byte{0x56}, byte{0x99}, byte{0x76}, byte{0x12}, byte{0x55},
         };
         static constexpr byte kGuard2_[8] = {
-            byte{0x15},
-            byte{0x32},
-            byte{0xa5},
-            byte{0x16},
-            byte{0x11},
-            byte{0x7a},
-            byte{0x90},
-            byte{0x10},
+            byte{0x15}, byte{0x32}, byte{0xa5}, byte{0x16}, byte{0x11}, byte{0x7a}, byte{0x90}, byte{0x10},
         };
 #endif
 
@@ -325,7 +311,7 @@ namespace Stroika::Foundation::Memory {
 #endif
         DISABLE_COMPILER_MSC_WARNING_START (4324)
         union {
-            size_t fCapacityOfFreeStoreAllocation_;                               // only valid if fLiveData_ != &fInlinePreallocatedBuffer_[0]
+            size_t fCapacityOfFreeStoreAllocation_; // only valid if fLiveData_ != &fInlinePreallocatedBuffer_[0]
             alignas (T) byte fInlinePreallocatedBuffer_[SizeInBytes_ (BUF_SIZE)]; // alignas both since sometimes accessed as array of T, and sometimes as size_t
         };
         DISABLE_COMPILER_MSC_WARNING_END (4324)

@@ -39,53 +39,46 @@ namespace {
 
     struct Options_Storage_IMPL_ {
         Options_Storage_IMPL_ ()
-            : fOptionsFile_{
-                  L"AppSettings"sv,
-                  [] () -> ObjectVariantMapper {
-                      ObjectVariantMapper mapper;
+            : fOptionsFile_{L"AppSettings"sv,
+                            [] () -> ObjectVariantMapper {
+                                ObjectVariantMapper mapper;
 
-                      // really should use String, no longer Led_tString, but for now... (note this only works as is for wchar_t Led_tString
-                      mapper.Add<Led_tString> (
-                          [] (const ObjectVariantMapper& /*mapper*/, const Led_tString* obj) -> VariantValue {
-                              return String{*obj};
-                          },
-                          [] (const ObjectVariantMapper& /*mapper*/, const VariantValue& d, Led_tString* intoObj) -> void {
-                              *intoObj = d.As<String> ().As<Led_tString> ();
-                          });
-                      mapper.AddCommonType<vector<Led_tString>> ();
+                                // really should use String, no longer Led_tString, but for now... (note this only works as is for wchar_t Led_tString
+                                mapper.Add<Led_tString> ([] (const ObjectVariantMapper& /*mapper*/,
+                                                             const Led_tString* obj) -> VariantValue { return String{*obj}; },
+                                                         [] (const ObjectVariantMapper& /*mapper*/, const VariantValue& d,
+                                                             Led_tString* intoObj) -> void { *intoObj = d.As<String> ().As<Led_tString> (); });
+                                mapper.AddCommonType<vector<Led_tString>> ();
 
-                      mapper.AddClass<SearchParameters> (initializer_list<ObjectVariantMapper::StructFieldInfo>{
-                          {L"MatchString", StructFieldMetaInfo{&SearchParameters::fMatchString}},
-                          {L"WrapSearch", StructFieldMetaInfo{&SearchParameters::fWrapSearch}},
-                          {L"WholeWordSearch", StructFieldMetaInfo{&SearchParameters::fWholeWordSearch}},
-                          {L"CaseSensativeSearch", StructFieldMetaInfo{&SearchParameters::fCaseSensativeSearch}},
-                          {L"RecentMatchStrings", StructFieldMetaInfo{&SearchParameters::fRecentFindStrings}},
-                      });
+                                mapper.AddClass<SearchParameters> (initializer_list<ObjectVariantMapper::StructFieldInfo>{
+                                    {L"MatchString", StructFieldMetaInfo{&SearchParameters::fMatchString}},
+                                    {L"WrapSearch", StructFieldMetaInfo{&SearchParameters::fWrapSearch}},
+                                    {L"WholeWordSearch", StructFieldMetaInfo{&SearchParameters::fWholeWordSearch}},
+                                    {L"CaseSensativeSearch", StructFieldMetaInfo{&SearchParameters::fCaseSensativeSearch}},
+                                    {L"RecentMatchStrings", StructFieldMetaInfo{&SearchParameters::fRecentFindStrings}},
+                                });
 
-                      mapper.AddClass<Options_> (initializer_list<ObjectVariantMapper::StructFieldInfo>{
-                          {L"Search-Parameters", StructFieldMetaInfo{&Options_::fSearchParameters}},
-                      });
-                      return mapper;
-                  }(),
+                                mapper.AddClass<Options_> (initializer_list<ObjectVariantMapper::StructFieldInfo>{
+                                    {L"Search-Parameters", StructFieldMetaInfo{&Options_::fSearchParameters}},
+                                });
+                                return mapper;
+                            }(),
 
-                  OptionsFile::kDefaultUpgrader,
+                            OptionsFile::kDefaultUpgrader,
 
-                  // override the default name mapper to assure folder created, since no installer for activex controls
-                  [] (const String& moduleName, const String& fileSuffix) {
-                      static const auto kDefaultMapper_ = OptionsFile::mkFilenameMapper (L"ActiveLedIt"sv);
-                      filesystem::path  fileName        = kDefaultMapper_ (moduleName, fileSuffix);
-                      filesystem::create_directories (fileName.parent_path ());
-                      return fileName;
-                  }}
+                            // override the default name mapper to assure folder created, since no installer for activex controls
+                            [] (const String& moduleName, const String& fileSuffix) {
+                                static const auto kDefaultMapper_ = OptionsFile::mkFilenameMapper (L"ActiveLedIt"sv);
+                                filesystem::path  fileName        = kDefaultMapper_ (moduleName, fileSuffix);
+                                filesystem::create_directories (fileName.parent_path ());
+                                return fileName;
+                            }}
             , fActualCurrentConfigData_{fOptionsFile_.Read<Options_> (Options_{})}
         {
             Set (fActualCurrentConfigData_); // assure derived data (and changed fields etc) up to date
         }
-        Options_ Get () const
-        {
-            return fActualCurrentConfigData_;
-        }
-        void Set (const Options_& v)
+        Options_ Get () const { return fActualCurrentConfigData_; }
+        void     Set (const Options_& v)
         {
             fActualCurrentConfigData_ = v;
             fOptionsFile_.Write (v);
@@ -169,9 +162,7 @@ public:
         AddAssociation (kIncreaseIndentCmd, LedItView::kIncreaseIndent_CmdID);
         AddAssociation (kDecreaseIndentCmd, LedItView::kDecreaseIndent_CmdID);
 
-        AddRangeAssociation (
-            kBaseFontNameCmd, kLastFontNameCmd,
-            LedItView::kFontMenuFirst_CmdID, LedItView::kFontMenuLast_CmdID);
+        AddRangeAssociation (kBaseFontNameCmd, kLastFontNameCmd, LedItView::kFontMenuFirst_CmdID, LedItView::kFontMenuLast_CmdID);
 
         AddAssociation (kFontStylePlainCmd, LedItView::kFontStylePlain_CmdID);
         AddAssociation (kFontStyleBoldCmd, LedItView::kFontStyleBold_CmdID);
@@ -191,9 +182,8 @@ public:
         AddAssociation (kInsertSymbolCmd, LedItView::kInsertSymbol_CmdID);
 
         //              AddAssociation (kPropertiesForSelectionCmd,     LedItView::kSelectedEmbeddingProperties_CmdID);
-        AddRangeAssociation (
-            kFirstSelectedEmbeddingCmd, kLastSelectedEmbeddingCmd,
-            LedItView::kFirstSelectedEmbedding_CmdID, LedItView::kLastSelectedEmbedding_CmdID);
+        AddRangeAssociation (kFirstSelectedEmbeddingCmd, kLastSelectedEmbeddingCmd, LedItView::kFirstSelectedEmbedding_CmdID,
+                             LedItView::kLastSelectedEmbedding_CmdID);
 
 // Not 100% sure why this are disabled??? But they were before in AL (as of 2003-04-04 - AL 3.1a6x so leave it for now)
 #if 0
@@ -232,7 +222,8 @@ public:
 //  TextInteractor::DialogSupport
 #if qSupportStdFindDlg
 public:
-    virtual void DisplayFindDialog (Led_tString* findText, const vector<Led_tString>& recentFindSuggestions, bool* wrapSearch, bool* wholeWordSearch, bool* caseSensative, bool* pressedOK) override
+    virtual void DisplayFindDialog (Led_tString* findText, const vector<Led_tString>& recentFindSuggestions, bool* wrapSearch,
+                                    bool* wholeWordSearch, bool* caseSensative, bool* pressedOK) override
     {
         Led_StdDialogHelper_FindDialog findDialog (::AfxGetResourceHandle (), ::GetActiveWindow ());
 
@@ -253,7 +244,8 @@ public:
 #endif
 #if qSupportStdReplaceDlg
 public:
-    virtual ReplaceButtonPressed DisplayReplaceDialog (Led_tString* findText, const vector<Led_tString>& recentFindSuggestions, Led_tString* replaceText, bool* wrapSearch, bool* wholeWordSearch, bool* caseSensative) override
+    virtual ReplaceButtonPressed DisplayReplaceDialog (Led_tString* findText, const vector<Led_tString>& recentFindSuggestions,
+                                                       Led_tString* replaceText, bool* wrapSearch, bool* wholeWordSearch, bool* caseSensative) override
     {
         Led_StdDialogHelper_ReplaceDialog replaceDialog (::AfxGetResourceHandle (), ::GetActiveWindow ());
 
@@ -331,7 +323,8 @@ public:
     }
 #endif
 #if qSupportParagraphSpacingDlg
-    virtual bool PickNewParagraphLineSpacing (TWIPS* spaceBefore, bool* spaceBeforeValid, TWIPS* spaceAfter, bool* spaceAfterValid, LineSpacing* lineSpacing, bool* lineSpacingValid) override
+    virtual bool PickNewParagraphLineSpacing (TWIPS* spaceBefore, bool* spaceBeforeValid, TWIPS* spaceAfter, bool* spaceAfterValid,
+                                              LineSpacing* lineSpacing, bool* lineSpacingValid) override
     {
 #if qPlatform_MacOS
         Led_StdDialogHelper_ParagraphSpacingDialog dlg;
@@ -361,7 +354,8 @@ public:
     }
 #endif
 #if qSupportParagraphIndentsDlg
-    virtual bool PickNewParagraphMarginsAndFirstIndent (TWIPS* leftMargin, bool* leftMarginValid, TWIPS* rightMargin, bool* rightMarginValid, TWIPS* firstIndent, bool* firstIndentValid) override
+    virtual bool PickNewParagraphMarginsAndFirstIndent (TWIPS* leftMargin, bool* leftMarginValid, TWIPS* rightMargin,
+                                                        bool* rightMarginValid, TWIPS* firstIndent, bool* firstIndentValid) override
     {
 #if qPlatform_MacOS
         Led_StdDialogHelper_ParagraphIndentsDialog dlg;
@@ -471,8 +465,7 @@ static BOOL CALLBACK _AfxAbortProc (HDC, int)
 {
     _AFX_WIN_STATE* pWinState = _afxWinState;
     MSG             msg;
-    while (!pWinState->m_bUserAbort &&
-           ::PeekMessage (&msg, NULL, NULL, NULL, PM_NOREMOVE)) {
+    while (!pWinState->m_bUserAbort && ::PeekMessage (&msg, NULL, NULL, NULL, PM_NOREMOVE)) {
         if (!AfxGetThread ()->PumpMessage ())
             return FALSE; // terminate if WM_QUIT received
     }
@@ -493,9 +486,7 @@ LedItViewController::LedItViewController ()
     fHidableTextDatabase = WordProcessor::HidableTextDatabasePtr (new ColoredUniformHidableTextMarkerOwner (fTextStore));
 }
 
-LedItViewController::~LedItViewController ()
-{
-}
+LedItViewController::~LedItViewController () {}
 
 /*
  ********************************************************************************
@@ -551,13 +542,11 @@ LedItView::LedItView ()
     const TWIPS kLedItViewBottomMargin = TWIPS (0);
     const TWIPS kLedItViewLHSMargin    = TWIPS (150);
     const TWIPS kLedItViewRHSMargin    = TWIPS (0);
-    SetDefaultWindowMargins (TWIPS_Rect (kLedItViewTopMargin, kLedItViewLHSMargin, kLedItViewBottomMargin - kLedItViewTopMargin, kLedItViewRHSMargin - kLedItViewLHSMargin));
+    SetDefaultWindowMargins (TWIPS_Rect (kLedItViewTopMargin, kLedItViewLHSMargin, kLedItViewBottomMargin - kLedItViewTopMargin,
+                                         kLedItViewRHSMargin - kLedItViewLHSMargin));
 }
 
-LedItView::~LedItView ()
-{
-    SetController (NULL);
-}
+LedItView::~LedItView () { SetController (NULL); }
 
 void LedItView::SetController (LedItViewController* controller)
 {
@@ -574,10 +563,7 @@ void LedItView::SetController (LedItViewController* controller)
     }
 }
 
-void LedItView::SetSupportContextMenu (bool allowContextMenu)
-{
-    fSupportContextMenu = allowContextMenu;
-}
+void LedItView::SetSupportContextMenu (bool allowContextMenu) { fSupportContextMenu = allowContextMenu; }
 
 void LedItView::SetHideDisabledContextMenuItems (bool hideDisabledContextMenuItems)
 {
@@ -593,10 +579,7 @@ void LedItView::SetWrapToWindow (bool wrapToWindow)
     }
 }
 
-void LedItView::SetMaxLength (long maxLength)
-{
-    fMaxLength = maxLength;
-}
+void LedItView::SetMaxLength (long maxLength) { fMaxLength = maxLength; }
 
 void LedItView::GetLayoutMargins (RowReference row, CoordinateType* lhs, CoordinateType* rhs) const
 {
@@ -643,9 +626,7 @@ DistanceType LedItView::CalculateFarthestRightMarginInWindow () const
     }
 }
 
-void LedItView::PostNcDestroy ()
-{
-}
+void LedItView::PostNcDestroy () {}
 
 int LedItView::OnMouseActivate (CWnd* pDesktopWnd, UINT nHitTest, UINT message)
 {
@@ -842,10 +823,7 @@ void LedItView::OnPasteAsTextCommand ()
     BreakInGroupedCommands ();
 }
 
-void LedItView::OnUpdatePasteAsTextCommand (CCmdUI* pCmdUI)
-{
-    OnUpdatePasteCommand (Led_MFC_TmpCmdUpdater (pCmdUI));
-}
+void LedItView::OnUpdatePasteAsTextCommand (CCmdUI* pCmdUI) { OnUpdatePasteCommand (Led_MFC_TmpCmdUpdater (pCmdUI)); }
 
 void LedItView::OnOLEUserCommand (UINT nID)
 {
@@ -870,14 +848,14 @@ void LedItView::OnUpdateOLEUserCommand (CCmdUI* pCmdUI)
     }
 }
 
-LedItView::SearchParameters LedItView::GetSearchParameters () const
-{
-    return sOptions_.Get ().fSearchParameters;
-}
+LedItView::SearchParameters LedItView::GetSearchParameters () const { return sOptions_.Get ().fSearchParameters; }
 
 void LedItView::SetSearchParameters (const SearchParameters& sp)
 {
-    sOptions_.Update ([=] (Options_ d) { d.fSearchParameters = sp; return d; });
+    sOptions_.Update ([=] (Options_ d) {
+        d.fSearchParameters = sp;
+        return d;
+    });
 }
 
 void LedItView::SetSelection (size_t start, size_t end)
@@ -912,7 +890,7 @@ void LedItView::EraseBackground (Tablet* tablet, const Led_Rect& subsetToDraw, b
 
 #if qFunnyDisplayInDesignMode
     if (fController->IsInDesignMode ()) {
-        Led_tString              message = LED_TCHAR_OF ("Design Mode");
+        Led_tString message = LED_TCHAR_OF ("Design Mode");
         static WaterMarkHelper<> waterMarkerImager (message); // make this static - just as a performance hack. Also could be an instance variable of 'this'.
         waterMarkerImager.SetWatermarkColor (Color::kYellow);
         Led_Rect designModeRect = Led_Rect (0, 0, 20, 150);
@@ -956,7 +934,8 @@ void LedItView::EraseBackground (Tablet* tablet, const Led_Rect& subsetToDraw, b
 #endif
 }
 
-long LedItView::OLE_FindReplace (long searchFrom, const Led_tString& findText, const Led_tString& replaceText, BOOL wrapSearch, BOOL wholeWordSearch, BOOL caseSensativeSearch)
+long LedItView::OLE_FindReplace (long searchFrom, const Led_tString& findText, const Led_tString& replaceText, BOOL wrapSearch,
+                                 BOOL wholeWordSearch, BOOL caseSensativeSearch)
 {
     TextStore::SearchParameters parameters;
     parameters.fMatchString         = findText;
@@ -968,7 +947,8 @@ long LedItView::OLE_FindReplace (long searchFrom, const Led_tString& findText, c
     if (whereTo != kBadIndex) {
         size_t                                replaceStart = whereTo;
         size_t                                replaceEnd   = whereTo + parameters.fMatchString.length ();
-        TextInteractor::UndoableContextHelper undoContext (*this, TextInteractor::GetCommandNames ().fReplaceCommandName, replaceStart, replaceEnd, GetSelectionStart (), GetSelectionEnd (), false);
+        TextInteractor::UndoableContextHelper undoContext (*this, TextInteractor::GetCommandNames ().fReplaceCommandName, replaceStart,
+                                                           replaceEnd, GetSelectionStart (), GetSelectionEnd (), false);
         {
             InteractiveReplace_ (undoContext.GetUndoRegionStart (), undoContext.GetUndoRegionEnd (), replaceText.c_str (), replaceText.length ());
         }
@@ -1006,15 +986,9 @@ void LedItView::OnAboutBoxCommand ()
     }
 }
 
-void LedItView::OnFilePrintOnce ()
-{
-    DoPrintHelper (false);
-}
+void LedItView::OnFilePrintOnce () { DoPrintHelper (false); }
 
-void LedItView::OnFilePrint ()
-{
-    DoPrintHelper (true);
-}
+void LedItView::OnFilePrint () { DoPrintHelper (true); }
 
 void LedItView::OnFilePrintSetup ()
 {
@@ -1036,7 +1010,9 @@ void LedItView::DoPrintHelper (bool showPrintDlg)
 {
     class CPrintingDialog : public CDialog {
     public:
-        enum { IDD = AFX_IDD_PRINTDLG };
+        enum {
+            IDD = AFX_IDD_PRINTDLG
+        };
         CPrintingDialog (CWnd* pParent)
         {
             Create (CPrintingDialog::IDD, pParent); // modeless !
@@ -1077,8 +1053,7 @@ void LedItView::DoPrintHelper (bool showPrintDlg)
             CString     strPrintDef (MAKEINTRESOURCE (AFX_IDS_PRINTDEFAULT));
             CString     strFilter (MAKEINTRESOURCE (AFX_IDS_PRINTFILTER));
             CString     strCaption (MAKEINTRESOURCE (AFX_IDS_PRINTCAPTION));
-            CFileDialog dlg (FALSE, strDef, strPrintDef,
-                             OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT, strFilter);
+            CFileDialog dlg (FALSE, strDef, strPrintDef, OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT, strFilter);
             dlg.m_ofn.lpstrTitle = strCaption;
 
             if (dlg.DoModal () != IDOK)
@@ -1188,9 +1163,7 @@ void LedItView::DoPrintHelper (bool showPrintDlg)
                     dlgPrintStatus.SetDlgItemText (AFX_IDC_PRINT_PAGENUM, szBuf);
 
                     // set up drawing rect to entire page (in logical coordinates)
-                    printInfo.m_rectDraw.SetRect (0, 0,
-                                                  dcPrint.GetDeviceCaps (HORZRES),
-                                                  dcPrint.GetDeviceCaps (VERTRES));
+                    printInfo.m_rectDraw.SetRect (0, 0, dcPrint.GetDeviceCaps (HORZRES), dcPrint.GetDeviceCaps (VERTRES));
                     dcPrint.DPtoLP (&printInfo.m_rectDraw);
 
                     // attempt to start the current page
@@ -1256,13 +1229,7 @@ void LedItView::DoPrintHelper (bool showPrintDlg)
 }
 
 #ifdef _DEBUG
-void LedItView::AssertValid () const
-{
-    inherited::AssertValid ();
-}
+void LedItView::AssertValid () const { inherited::AssertValid (); }
 
-void LedItView::Dump (CDumpContext& dc) const
-{
-    inherited::Dump (dc);
-}
+void LedItView::Dump (CDumpContext& dc) const { inherited::Dump (dc); }
 #endif //_DEBUG

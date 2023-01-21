@@ -38,7 +38,8 @@ namespace Stroika::Foundation::Containers::Factory {
         static inline atomic<SortedMultiSet<T, TRAITS> (*) (const INORDER_COMPARER&)> sFactory_{nullptr};
 
     public:
-        static_assert (not is_reference_v<T> and not is_reference_v<INORDER_COMPARER>, "typically if this fails its because a (possibly indirect) caller forgot to use forward<>(), or remove_cvref_t");
+        static_assert (not is_reference_v<T> and not is_reference_v<INORDER_COMPARER>,
+                       "typically if this fails its because a (possibly indirect) caller forgot to use forward<>(), or remove_cvref_t");
         static_assert (Common::IsStrictInOrderComparer<INORDER_COMPARER> (), "StrictInOrder comparer required with SortedMultiSet");
 
     public:

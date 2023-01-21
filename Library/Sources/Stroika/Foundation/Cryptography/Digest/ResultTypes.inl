@@ -24,12 +24,12 @@ namespace Stroika::Foundation::Cryptography::Digest {
         }
         // Else if both (IN AND OUT) values trivially copyable, use memcpy (and zero fill result as needed)
         template <typename OUT_RESULT, typename IN_RESULT>
-        OUT_RESULT mkReturnType_ (IN_RESULT hashVal,
-                                  enable_if_t<
-                                      not is_constructible_v<OUT_RESULT, IN_RESULT> and (is_trivially_copyable_v<IN_RESULT> and is_trivially_copyable_v<OUT_RESULT>), char>* = nullptr)
+        OUT_RESULT mkReturnType_ (
+            IN_RESULT hashVal,
+            enable_if_t<not is_constructible_v<OUT_RESULT, IN_RESULT> and (is_trivially_copyable_v<IN_RESULT> and is_trivially_copyable_v<OUT_RESULT>), char>* = nullptr)
         {
             size_t     mBytes2Copy = std::min (sizeof (OUT_RESULT), sizeof (IN_RESULT));
-            OUT_RESULT result{};                                                                // zero initialize non-copied bits (@todo could just zero-fill end bits)
+            OUT_RESULT result{}; // zero initialize non-copied bits (@todo could just zero-fill end bits)
             DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wclass-memaccess\"") // memcpy only requires trivially_copyable, not is_trivial
             ::memcpy (&result, &hashVal, mBytes2Copy);
             DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wclass-memaccess\"")
@@ -38,10 +38,11 @@ namespace Stroika::Foundation::Cryptography::Digest {
         // NOTE - mkReturnType1_<string,XXX> () here uses enable_if and is_same, since C++ doesn't currently allow partial function template
         // specialization -- LGP 2020-10-02
         template <typename OUT_RESULT, typename IN_RESULT>
-        inline OUT_RESULT mkReturnType_ (IN_RESULT hashVal, enable_if_t<not is_constructible_v<OUT_RESULT, IN_RESULT> and
-                                                                            not(is_trivially_copyable_v<IN_RESULT> and is_trivially_copyable_v<OUT_RESULT>) and
-                                                                            (is_same_v<OUT_RESULT, string> or is_same_v<OUT_RESULT, Characters::String> or is_same_v<OUT_RESULT, Common::GUID>),
-                                                                        short>* = nullptr)
+        inline OUT_RESULT mkReturnType_ (
+            IN_RESULT hashVal,
+            enable_if_t<not is_constructible_v<OUT_RESULT, IN_RESULT> and not(is_trivially_copyable_v<IN_RESULT> and is_trivially_copyable_v<OUT_RESULT>) and
+                            (is_same_v<OUT_RESULT, string> or is_same_v<OUT_RESULT, Characters::String> or is_same_v<OUT_RESULT, Common::GUID>),
+                        short>* = nullptr)
         {
             return Format<OUT_RESULT> (hashVal);
         }

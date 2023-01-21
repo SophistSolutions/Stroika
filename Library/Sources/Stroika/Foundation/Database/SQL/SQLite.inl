@@ -74,14 +74,8 @@ namespace Stroika::Foundation::Database::SQL::SQLite {
         inherited::operator= (move (src));
         return *this;
     }
-    inline Connection::IRep* Connection::Ptr::operator->() const noexcept
-    {
-        return dynamic_pointer_cast<IRep> (_fRep).get ();
-    }
-    inline ::sqlite3* Connection::Ptr::Peek () const
-    {
-        return dynamic_pointer_cast<IRep> (_fRep)->Peek ();
-    }
+    inline Connection::IRep* Connection::Ptr::operator->() const noexcept { return dynamic_pointer_cast<IRep> (_fRep).get (); }
+    inline ::sqlite3*                         Connection::Ptr::Peek () const { return dynamic_pointer_cast<IRep> (_fRep)->Peek (); }
 #endif
 
 }

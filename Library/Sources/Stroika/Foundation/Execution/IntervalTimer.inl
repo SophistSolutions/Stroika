@@ -29,7 +29,8 @@ namespace Stroika::Foundation::Execution {
         Require (not fRep_->GetAllRegisteredTasks ().Contains (intervalTimer));
         fRep_->AddOneShot (intervalTimer, when);
     }
-    inline void IntervalTimer::Manager ::AddRepeating (const TimerCallback& intervalTimer, const Time::Duration& repeatInterval, const optional<Time::Duration>& hysteresis)
+    inline void IntervalTimer::Manager ::AddRepeating (const TimerCallback& intervalTimer, const Time::Duration& repeatInterval,
+                                                       const optional<Time::Duration>& hysteresis)
     {
         RequireNotNull (intervalTimer);
         Require (repeatInterval >= 0s);
@@ -57,11 +58,13 @@ namespace Stroika::Foundation::Execution {
      ***************************** IntervalTimer::Adder *****************************
      ********************************************************************************
      */
-    inline IntervalTimer::Adder::Adder (const Function<void (void)>& f, const Time::Duration& repeatInterval, RunImmediatelyFlag runImmediately, const optional<Time::Duration>& hysteresis)
+    inline IntervalTimer::Adder::Adder (const Function<void (void)>& f, const Time::Duration& repeatInterval,
+                                        RunImmediatelyFlag runImmediately, const optional<Time::Duration>& hysteresis)
         : Adder{Manager::sThe, f, repeatInterval, runImmediately, hysteresis}
     {
     }
-    inline IntervalTimer::Adder::Adder (IntervalTimer::Manager& manager, const Function<void (void)>& f, const Time::Duration& repeatInterval, const optional<Time::Duration>& hysteresis)
+    inline IntervalTimer::Adder::Adder (IntervalTimer::Manager& manager, const Function<void (void)>& f,
+                                        const Time::Duration& repeatInterval, const optional<Time::Duration>& hysteresis)
         : Adder{manager, f, repeatInterval, RunImmediatelyFlag::eDontRunImmediately, hysteresis}
     {
     }
@@ -97,10 +100,7 @@ namespace Stroika::Foundation::Execution {
         }
         return *this;
     }
-    inline Function<void (void)> IntervalTimer::Adder::GetCallback () const
-    {
-        return fFunction_;
-    }
+    inline Function<void (void)> IntervalTimer::Adder::GetCallback () const { return fFunction_; }
 
 }
 

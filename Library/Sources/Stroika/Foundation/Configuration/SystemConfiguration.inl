@@ -16,11 +16,13 @@ namespace Stroika::Foundation::Configuration {
      **************** SystemConfiguration::CPU::CoreDetails *************************
      ********************************************************************************
      */
-    inline SystemConfiguration::SystemConfiguration (const BootInformation& bi, const CPU& ci, const Memory& mi, const OperatingSystem& oi, const ComputerNames& cn)
+    inline SystemConfiguration::SystemConfiguration (const BootInformation& bi, const CPU& ci, const Memory& mi, const OperatingSystem& oi,
+                                                     const ComputerNames& cn)
         : SystemConfiguration{bi, ci, mi, oi, oi, cn}
     {
     }
-    inline SystemConfiguration::SystemConfiguration (const BootInformation& bi, const CPU& ci, const Memory& mi, const OperatingSystem& actualOS, const OperatingSystem& apparentOS, const ComputerNames& cn)
+    inline SystemConfiguration::SystemConfiguration (const BootInformation& bi, const CPU& ci, const Memory& mi, const OperatingSystem& actualOS,
+                                                     const OperatingSystem& apparentOS, const ComputerNames& cn)
         : fBootInformation{bi}
         , fCPU{ci}
         , fMemory{mi}
@@ -46,14 +48,8 @@ namespace Stroika::Foundation::Configuration {
      **************************** SystemConfiguration::CPU **************************
      ********************************************************************************
      */
-    inline unsigned int SystemConfiguration::CPU::GetNumberOfLogicalCores () const
-    {
-        return static_cast<unsigned int> (fCores.size ());
-    }
-    inline String SystemConfiguration::CPU::GetCPUModelPrintName () const
-    {
-        return fCores.empty () ? String{} : fCores[0].fModelName;
-    }
+    inline unsigned int SystemConfiguration::CPU::GetNumberOfLogicalCores () const { return static_cast<unsigned int> (fCores.size ()); }
+    inline String SystemConfiguration::CPU::GetCPUModelPrintName () const { return fCores.empty () ? String{} : fCores[0].fModelName; }
 
 }
 
@@ -62,12 +58,13 @@ namespace Stroika::Foundation::Configuration {
 #if !qCompilerAndStdLib_template_specialization_internalErrorWithSpecializationSignifier_Buggy
     template <>
 #endif
-    constexpr EnumNames<Configuration::SystemConfiguration::OperatingSystem::InstallerTechnology> DefaultNames<Configuration::SystemConfiguration::OperatingSystem::InstallerTechnology>::k{
-        EnumNames<Configuration::SystemConfiguration::OperatingSystem::InstallerTechnology>::BasicArrayInitializer{{
-            {Configuration::SystemConfiguration::OperatingSystem::InstallerTechnology::eRPM, L"RPM"},
-            {Configuration::SystemConfiguration::OperatingSystem::InstallerTechnology::eMSI, L"MSI"},
-            {Configuration::SystemConfiguration::OperatingSystem::InstallerTechnology::eDPKG, L"DPKG"},
-        }}};
+    constexpr EnumNames<Configuration::SystemConfiguration::OperatingSystem::InstallerTechnology>
+        DefaultNames<Configuration::SystemConfiguration::OperatingSystem::InstallerTechnology>::k{
+            EnumNames<Configuration::SystemConfiguration::OperatingSystem::InstallerTechnology>::BasicArrayInitializer{{
+                {Configuration::SystemConfiguration::OperatingSystem::InstallerTechnology::eRPM, L"RPM"},
+                {Configuration::SystemConfiguration::OperatingSystem::InstallerTechnology::eMSI, L"MSI"},
+                {Configuration::SystemConfiguration::OperatingSystem::InstallerTechnology::eDPKG, L"DPKG"},
+            }}};
 
 }
 

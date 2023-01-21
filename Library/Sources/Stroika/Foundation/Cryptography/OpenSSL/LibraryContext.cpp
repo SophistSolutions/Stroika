@@ -45,10 +45,11 @@ namespace {
         if (ciph != nullptr) {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
 #if OPENSSL_VERSION_MAJOR >= 3
-            DbgTrace (L"cipher: %p (name: %s), provider: %p (name %s)", ciph,
-                      CipherAlgorithm{ciph}.pName ().c_str (),
+            DbgTrace (L"cipher: %p (name: %s), provider: %p (name %s)", ciph, CipherAlgorithm{ciph}.pName ().c_str (),
                       ::EVP_CIPHER_get0_provider (ciph),
-                      (::EVP_CIPHER_get0_provider (ciph) == nullptr ? L"null" : String::FromNarrowSDKString (::OSSL_PROVIDER_get0_name (::EVP_CIPHER_get0_provider (ciph))).c_str ()));
+                      (::EVP_CIPHER_get0_provider (ciph) == nullptr
+                           ? L"null"
+                           : String::FromNarrowSDKString (::OSSL_PROVIDER_get0_name (::EVP_CIPHER_get0_provider (ciph))).c_str ()));
 #else
             DbgTrace (L"cipher: %p (name: %s)", ciph, CipherAlgorithm{ciph}.pName ().c_str ());
 #endif
@@ -66,10 +67,11 @@ namespace {
         if (digest != nullptr) {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
 #if OPENSSL_VERSION_MAJOR >= 3
-            DbgTrace (L"digest: %p (name: %s), provider: %p (name %s)",
-                      digest, DigestAlgorithm{digest}.pName ().c_str (),
+            DbgTrace (L"digest: %p (name: %s), provider: %p (name %s)", digest, DigestAlgorithm{digest}.pName ().c_str (),
                       ::EVP_MD_get0_provider (digest),
-                      (::EVP_MD_get0_provider (digest) == nullptr ? L"null" : String::FromNarrowSDKString (::OSSL_PROVIDER_get0_name (::EVP_MD_get0_provider (digest))).c_str ()));
+                      (::EVP_MD_get0_provider (digest) == nullptr
+                           ? L"null"
+                           : String::FromNarrowSDKString (::OSSL_PROVIDER_get0_name (::EVP_MD_get0_provider (digest))).c_str ()));
 #else
             DbgTrace (L"digest: %p (name: %s)", digest, DigestAlgorithm{digest}.pName ().c_str ());
 #endif
@@ -85,31 +87,29 @@ namespace {
  ********************************************************************************
  */
 LibraryContext::LibraryContext ()
-    : pAvailableCipherAlgorithms{
-          [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> Set<CipherAlgorithm> {
-              const LibraryContext*                          thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &LibraryContext::pAvailableCipherAlgorithms);
-              AssertExternallySynchronizedMutex::ReadContext declareContext{thisObj->fThisAssertExternallySynchronized_};
-              Set<String>                                    cipherNames;
+    : pAvailableCipherAlgorithms{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> Set<CipherAlgorithm> {
+        const LibraryContext* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &LibraryContext::pAvailableCipherAlgorithms);
+        AssertExternallySynchronizedMutex::ReadContext declareContext{thisObj->fThisAssertExternallySynchronized_};
+        Set<String>                                    cipherNames;
 #if OPENSSL_VERSION_MAJOR >= 3
-              ::EVP_CIPHER_do_all_provided (
-                  nullptr,
-                  [] (::EVP_CIPHER* ciph, void* arg) { AccumulateIntoSetOfCipherNames_ (ciph, reinterpret_cast<Set<String>*> (arg)); },
-                  &cipherNames);
+        ::EVP_CIPHER_do_all_provided (
+            nullptr, [] (::EVP_CIPHER* ciph, void* arg) { AccumulateIntoSetOfCipherNames_ (ciph, reinterpret_cast<Set<String>*> (arg)); }, &cipherNames);
 #else
-              ::EVP_CIPHER_do_all_sorted (
-                  [] (const ::EVP_CIPHER* ciph, [[maybe_unused]] const char* from, [[maybe_unused]] const char* to, void* arg) { AccumulateIntoSetOfCipherNames_ (ciph, reinterpret_cast<Set<String>*> (arg)); },
-                  &cipherNames);
+        ::EVP_CIPHER_do_all_sorted ([] (const ::EVP_CIPHER* ciph, [[maybe_unused]] const char* from, [[maybe_unused]] const char* to,
+                                        void* arg) { AccumulateIntoSetOfCipherNames_ (ciph, reinterpret_cast<Set<String>*> (arg)); },
+                                    &cipherNames);
 #endif
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-              DbgTrace (L"Found pAvailableCipherAlgorithms-FIRST-PASS (cnt=%d): %s", cipherNames.size (), Characters::ToString (cipherNames).c_str ());
+        DbgTrace (L"Found pAvailableCipherAlgorithms-FIRST-PASS (cnt=%d): %s", cipherNames.size (), Characters::ToString (cipherNames).c_str ());
 #endif
 
-              Set<CipherAlgorithm> results{cipherNames.Map<CipherAlgorithm> ([] (const String& n) -> optional<CipherAlgorithm> { return OpenSSL::CipherAlgorithm::GetByNameQuietly (n); })};
-              DbgTrace (L"Found pAvailableCipherAlgorithms (cnt=%d): %s", results.size (), Characters::ToString (results).c_str ());
-              return results;
-          }}
+        Set<CipherAlgorithm> results{cipherNames.Map<CipherAlgorithm> (
+            [] (const String& n) -> optional<CipherAlgorithm> { return OpenSSL::CipherAlgorithm::GetByNameQuietly (n); })};
+        DbgTrace (L"Found pAvailableCipherAlgorithms (cnt=%d): %s", results.size (), Characters::ToString (results).c_str ());
+        return results;
+    }}
     , pStandardCipherAlgorithms{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> Set<CipherAlgorithm> {
-        const LibraryContext*                          thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &LibraryContext::pStandardCipherAlgorithms);
+        const LibraryContext* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &LibraryContext::pStandardCipherAlgorithms);
         AssertExternallySynchronizedMutex::ReadContext declareContext{thisObj->fThisAssertExternallySynchronized_};
         Set<CipherAlgorithm>                           results;
 
@@ -151,31 +151,30 @@ LibraryContext::LibraryContext ()
         return results;
     }}
     , pAvailableDigestAlgorithms{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> Set<DigestAlgorithm> {
-        const LibraryContext*                          thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &LibraryContext::pAvailableDigestAlgorithms);
+        const LibraryContext* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &LibraryContext::pAvailableDigestAlgorithms);
         AssertExternallySynchronizedMutex::ReadContext declareContext{thisObj->fThisAssertExternallySynchronized_};
 
         Set<String> digestNames;
 #if OPENSSL_VERSION_MAJOR >= 3
         ::EVP_MD_do_all_provided (
-            nullptr,
-            [] (::EVP_MD* md, void* arg) { AccumulateIntoSetOfDigestNames_ (md, reinterpret_cast<Set<String>*> (arg)); },
-            &digestNames);
+            nullptr, [] (::EVP_MD* md, void* arg) { AccumulateIntoSetOfDigestNames_ (md, reinterpret_cast<Set<String>*> (arg)); }, &digestNames);
 #else
-        ::EVP_MD_do_all_sorted (
-            [] (const ::EVP_MD* md, [[maybe_unused]] const char* from, [[maybe_unused]] const char* to, void* arg) { AccumulateIntoSetOfDigestNames_ (md, reinterpret_cast<Set<String>*> (arg)); },
-            &digestNames);
+        ::EVP_MD_do_all_sorted ([] (const ::EVP_MD* md, [[maybe_unused]] const char* from, [[maybe_unused]] const char* to,
+                                    void* arg) { AccumulateIntoSetOfDigestNames_ (md, reinterpret_cast<Set<String>*> (arg)); },
+                                &digestNames);
 #endif
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
         DbgTrace (L"Found pAvailableDigestAlgorithms-FIRST-PASS (cnt=%d): %s", digestNames.size (), Characters::ToString (digestNames).c_str ());
 #endif
 
-        Set<DigestAlgorithm> results{digestNames.Map<DigestAlgorithm> ([] (const String& n) -> optional<DigestAlgorithm> { return OpenSSL::DigestAlgorithm::GetByNameQuietly (n); })};
+        Set<DigestAlgorithm> results{digestNames.Map<DigestAlgorithm> (
+            [] (const String& n) -> optional<DigestAlgorithm> { return OpenSSL::DigestAlgorithm::GetByNameQuietly (n); })};
         DbgTrace (L"Found pAvailableDigestAlgorithms (cnt=%d): %s", results.size (), Characters::ToString (results).c_str ());
 
         return results;
     }}
     , pStandardDigestAlgorithms{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> Set<DigestAlgorithm> {
-        const LibraryContext*                          thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &LibraryContext::pStandardDigestAlgorithms);
+        const LibraryContext* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &LibraryContext::pStandardDigestAlgorithms);
         AssertExternallySynchronizedMutex::ReadContext declareContext{thisObj->fThisAssertExternallySynchronized_};
         Set<DigestAlgorithm>                           results;
         results += DigestAlgorithms::kMD5;
@@ -207,7 +206,8 @@ LibraryContext ::~LibraryContext ()
 
 void LibraryContext::LoadProvider ([[maybe_unused]] const String& providerName)
 {
-    Debug::TraceContextBumper                              ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"OpenSSL::LibraryContext::LoadProvider", L"%s", providerName.As<wstring> ().c_str ())};
+    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"OpenSSL::LibraryContext::LoadProvider", L"%s",
+                                                                                 providerName.As<wstring> ().c_str ())};
     Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
 #if OPENSSL_VERSION_MAJOR >= 3
     auto p = fLoadedProviders_.LookupOneValue (providerName);
@@ -226,7 +226,8 @@ void LibraryContext::LoadProvider ([[maybe_unused]] const String& providerName)
 
 void LibraryContext ::UnLoadProvider ([[maybe_unused]] const String& providerName)
 {
-    Debug::TraceContextBumper                              ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"OpenSSL::LibraryContext::UnLoadProvider", L"%s", providerName.As<wstring> ().c_str ())};
+    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"OpenSSL::LibraryContext::UnLoadProvider", L"%s",
+                                                                                 providerName.As<wstring> ().c_str ())};
     Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
 #if OPENSSL_VERSION_MAJOR >= 3
     Require (fLoadedProviders_.ContainsKey (providerName));

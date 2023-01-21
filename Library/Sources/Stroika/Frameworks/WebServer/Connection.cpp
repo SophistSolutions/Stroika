@@ -49,11 +49,9 @@ using IO::Network::HTTP::KeepAlive;
  ******************** WebServer::Connection::MyMessage_ *************************
  ********************************************************************************
  */
-Connection::MyMessage_::MyMessage_ (const ConnectionOrientedStreamSocket::Ptr& socket, const Streams::InputOutputStream<byte>::Ptr& socketStream, const Headers& defaultResponseHeaders, const optional<bool> autoComputeETagResponse)
-    : Message{
-          Request{socketStream},
-          Response{socket, socketStream, defaultResponseHeaders},
-          socket.GetPeerAddress ()}
+Connection::MyMessage_::MyMessage_ (const ConnectionOrientedStreamSocket::Ptr& socket, const Streams::InputOutputStream<byte>::Ptr& socketStream,
+                                    const Headers& defaultResponseHeaders, const optional<bool> autoComputeETagResponse)
+    : Message{Request{socketStream}, Response{socket, socketStream, defaultResponseHeaders}, socket.GetPeerAddress ()}
     , fMsgHeaderInTextStream{HTTP::MessageStartTextInputStreamBinaryAdapter::New (rwRequest ().GetInputStream ())}
 {
     if (autoComputeETagResponse) {
@@ -96,7 +94,8 @@ Connection::MyMessage_::ReadHeadersResult Connection::MyMessage_::ReadHeaders (
         }
         Sequence<String> tokens{line.Tokenize ({' '})};
         if (tokens.size () < 3) {
-            DbgTrace (L"tokens=%s, line='%s', fMsgHeaderInTextStream=%s", Characters::ToString (tokens).c_str (), line.c_str (), fMsgHeaderInTextStream.ToString ().c_str ());
+            DbgTrace (L"tokens=%s, line='%s', fMsgHeaderInTextStream=%s", Characters::ToString (tokens).c_str (), line.c_str (),
+                      fMsgHeaderInTextStream.ToString ().c_str ());
             Execution::Throw (ClientErrorException{Characters::Format (L"Bad METHOD Request HTTP line (%s)", line.c_str ())});
         }
         updatableRequest.httpMethod  = tokens[0];
@@ -144,38 +143,39 @@ Connection::MyMessage_::ReadHeadersResult Connection::MyMessage_::ReadHeaders (
  ***************************** WebServer::Connection ****************************
  ********************************************************************************
  */
-Connection::Connection (const ConnectionOrientedStreamSocket::Ptr& s, const InterceptorChain& interceptorChain, const Headers& defaultResponseHeaders, const optional<Headers>& defaultGETResponseHeaders, const optional<bool> autoComputeETagResponse)
-    : socket{
-          [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> ConnectionOrientedStreamSocket::Ptr {
-              const Connection*                              thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Connection::socket);
-              AssertExternallySynchronizedMutex::ReadContext declareContext{*thisObj};
-              return thisObj->fSocket_;
-          }}
+Connection::Connection (const ConnectionOrientedStreamSocket::Ptr& s, const InterceptorChain& interceptorChain, const Headers& defaultResponseHeaders,
+                        const optional<Headers>& defaultGETResponseHeaders, const optional<bool> autoComputeETagResponse)
+    : socket{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> ConnectionOrientedStreamSocket::Ptr {
+        const Connection* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Connection::socket);
+        AssertExternallySynchronizedMutex::ReadContext declareContext{*thisObj};
+        return thisObj->fSocket_;
+    }}
     , request{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> const Request& {
-        const Connection*                              thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Connection::request);
+        const Connection* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Connection::request);
         AssertExternallySynchronizedMutex::ReadContext declareContext{*thisObj};
         return thisObj->fMessage_->request ();
     }}
     , response{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> const Response& {
-        const Connection*                              thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Connection::response);
+        const Connection* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Connection::response);
         AssertExternallySynchronizedMutex::ReadContext declareContext{*thisObj};
         return thisObj->fMessage_->response ();
     }}
     , rwResponse{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> Response& {
-        Connection*                                     thisObj = const_cast<Connection*> (qStroika_Foundation_Common_Property_OuterObjPtr (property, &Connection::rwResponse));
+        Connection* thisObj = const_cast<Connection*> (qStroika_Foundation_Common_Property_OuterObjPtr (property, &Connection::rwResponse));
         AssertExternallySynchronizedMutex::WriteContext declareContext{*thisObj};
         return thisObj->fMessage_->rwResponse ();
     }}
-    , remainingConnectionLimits{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> optional<HTTP::KeepAlive> {
-                                    const Connection*                              thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Connection::remainingConnectionLimits);
-                                    AssertExternallySynchronizedMutex::ReadContext declareContext{*thisObj};
-                                    return thisObj->fRemaining_;
-                                },
-                                [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, const auto& remainingConnectionLimits) {
-                                    Connection*                                     thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Connection::remainingConnectionLimits);
-                                    AssertExternallySynchronizedMutex::WriteContext declareContext{*thisObj};
-                                    thisObj->fRemaining_ = remainingConnectionLimits;
-                                }}
+    , remainingConnectionLimits{
+          [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> optional<HTTP::KeepAlive> {
+              const Connection* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Connection::remainingConnectionLimits);
+              AssertExternallySynchronizedMutex::ReadContext declareContext{*thisObj};
+              return thisObj->fRemaining_;
+          },
+          [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, const auto& remainingConnectionLimits) {
+              Connection* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Connection::remainingConnectionLimits);
+              AssertExternallySynchronizedMutex::WriteContext declareContext{*thisObj};
+              thisObj->fRemaining_ = remainingConnectionLimits;
+          }}
     , fInterceptorChain_{interceptorChain}
     , fDefaultResponseHeaders_{defaultResponseHeaders}
     , fDefaultGETResponseHeaders_{defaultGETResponseHeaders}
@@ -193,9 +193,14 @@ Connection::Connection (const ConnectionOrientedStreamSocket::Ptr& s, const Inte
         String socketName = Characters::Format (L"%ld-%d", (long)Time::DateTime::Now ().As<time_t> (), (int)s.GetNativeSocket ());
         fSocketStream_    = Streams::LoggingInputOutputStream<byte>::New (
             fSocketStream_,
-            IO::FileSystem::FileOutputStream::New (IO::FileSystem::WellKnownLocations::GetTemporary () + Characters::Format (L"socket-%s-input-trace.txt", socketName.c_str ())),
-            IO::FileSystem::FileOutputStream::New (IO::FileSystem::WellKnownLocations::GetTemporary () + Characters::Format (L"socket-%s-output-trace.txt", socketName.c_str ())));
-        fLogConnectionState_ = Streams::TextWriter::New (IO::FileSystem::FileOutputStream::New (IO::FileSystem::WellKnownLocations::GetTemporary () + Characters::Format (L"socket-%s-highlevel-trace.txt", socketName.c_str ())), Streams::TextWriter::Format::eUTF8WithoutBOM);
+            IO::FileSystem::FileOutputStream::New (IO::FileSystem::WellKnownLocations::GetTemporary () +
+                                                      Characters::Format (L"socket-%s-input-trace.txt", socketName.c_str ())),
+            IO::FileSystem::FileOutputStream::New (IO::FileSystem::WellKnownLocations::GetTemporary () +
+                                                      Characters::Format (L"socket-%s-output-trace.txt", socketName.c_str ())));
+        fLogConnectionState_ = Streams::TextWriter::New (
+            IO::FileSystem::FileOutputStream::New (IO::FileSystem::WellKnownLocations::GetTemporary () +
+                                                   Characters::Format (L"socket-%s-highlevel-trace.txt", socketName.c_str ())),
+            Streams::TextWriter::Format::eUTF8WithoutBOM);
     }
 #endif
 }
@@ -235,7 +240,8 @@ Connection::ReadAndProcessResult Connection::ReadAndProcessMessage () noexcept
     AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
     try {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-        Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"Connection::ReadAndProcessMessage", L"this->socket=%s", Characters::ToString (fSocket_).c_str ())};
+        Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"Connection::ReadAndProcessMessage", L"this->socket=%s",
+                                                                                     Characters::ToString (fSocket_).c_str ())};
 #endif
         fMessage_ = make_unique<MyMessage_> (fSocket_, fSocketStream_, fDefaultResponseHeaders_, fAutoComputeETagResponse_);
 #if qStroikaFoundationDebugAssertExternallySynchronizedMutexEnabled
@@ -249,7 +255,8 @@ Connection::ReadAndProcessResult Connection::ReadAndProcessMessage () noexcept
 #endif
             )) {
             case MyMessage_::eIncompleteDeadEnd: {
-                DbgTrace (L"ReadHeaders failed - typically because the client closed the connection before we could handle it (e.g. in web browser hitting refresh button fast).");
+                DbgTrace (L"ReadHeaders failed - typically because the client closed the connection before we could handle it (e.g. in web "
+                          L"browser hitting refresh button fast).");
                 return eClose; // don't keep-alive - so this closes connection
             } break;
             case MyMessage_::eIncompleteButMoreMayBeAvailable: {
@@ -322,7 +329,8 @@ Connection::ReadAndProcessResult Connection::ReadAndProcessMessage () noexcept
             DbgTrace (L"Interceptor-Chain caught exception handling message: %s", Characters::ToString (current_exception ()).c_str ());
 #endif
 #if qStroika_Framework_WebServer_Connection_DetailedMessagingLog
-            WriteLogConnectionMsg_ (Characters::Format (L"Interceptor-Chain caught exception handling message: %s", Characters::ToString (current_exception ()).c_str ()));
+            WriteLogConnectionMsg_ (Characters::Format (L"Interceptor-Chain caught exception handling message: %s",
+                                                        Characters::ToString (current_exception ()).c_str ()));
 #endif
         }
 
@@ -375,7 +383,8 @@ Connection::ReadAndProcessResult Connection::ReadAndProcessMessage () noexcept
         return thisMessageKeepAlive ? eTryAgainLater : eClose;
     }
     catch (...) {
-        DbgTrace (L"ReadAndProcessMessage Exception caught (%s), so returning ReadAndProcessResult::eClose", Characters::ToString (current_exception ()).c_str ());
+        DbgTrace (L"ReadAndProcessMessage Exception caught (%s), so returning ReadAndProcessResult::eClose",
+                  Characters::ToString (current_exception ()).c_str ());
         this->rwResponse ().Abort ();
         return Connection::ReadAndProcessResult::eClose;
     }

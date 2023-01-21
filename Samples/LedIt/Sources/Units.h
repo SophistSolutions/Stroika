@@ -24,8 +24,7 @@ public:
     CString m_strAbbrev{};    // cm, pt, pi, ", in, inch, inches
 
     Unit () = default;
-    Unit (int nTPU, int nSmallDiv, int nMediumDiv, int nLargeDiv,
-          int nMinMove, const char* nAbbrev, BOOL bSpaceAbbrev);
+    Unit (int nTPU, int nSmallDiv, int nMediumDiv, int nLargeDiv, int nMinMove, const char* nAbbrev, BOOL bSpaceAbbrev);
 
 public:
     int GetTPU () const { return m_nTPU; };
@@ -33,8 +32,12 @@ public:
 
 class StandardUnits {
 public:
-    enum { kPrimaryNumUnits = 4 };
-    enum { kNumUnits = 7 };
+    enum {
+        kPrimaryNumUnits = 4
+    };
+    enum {
+        kNumUnits = 7
+    };
     static const Unit kUnits[kNumUnits];
 
 public:

@@ -136,9 +136,11 @@ namespace Stroika::Frameworks::WebService::Server::VariantValue {
      *  \note we only use the overload taking Sequence<VariantValue>, and MAY want to lose the Mapping<> overload.
      */
     template <typename RETURN_TYPE, typename... ARG_TYPES>
-    VariantValue ApplyArgs (const Sequence<VariantValue>& variantValueArgs, const DataExchange::ObjectVariantMapper& objVarMapper, const function<RETURN_TYPE (ARG_TYPES...)>& f);
+    VariantValue ApplyArgs (const Sequence<VariantValue>& variantValueArgs, const DataExchange::ObjectVariantMapper& objVarMapper,
+                            const function<RETURN_TYPE (ARG_TYPES...)>& f);
     template <typename RETURN_TYPE, typename... ARG_TYPES>
-    VariantValue ApplyArgs (const Mapping<String, VariantValue>& variantValueArgs, const DataExchange::ObjectVariantMapper& objVarMapper, const Traversal::Iterable<String>& paramNames, const function<RETURN_TYPE (ARG_TYPES...)>& f);
+    VariantValue ApplyArgs (const Mapping<String, VariantValue>& variantValueArgs, const DataExchange::ObjectVariantMapper& objVarMapper,
+                            const Traversal::Iterable<String>& paramNames, const function<RETURN_TYPE (ARG_TYPES...)>& f);
 
     /**
      *  Send the argument value as a web-service response. If no argument (response value) response is empty. If resposne is a VariantValue,
@@ -180,12 +182,18 @@ namespace Stroika::Frameworks::WebService::Server::VariantValue {
      *  The overload with f (void) as argument, takes no arguments (and so omits paramNames), and just returns the given result.
      */
     template <typename RETURN_TYPE, typename ARG_TYPE_COMBINED>
-    WebServer::RequestHandler mkRequestHandler (const WebServiceMethodDescription& webServiceDescription, const DataExchange::ObjectVariantMapper& objVarMapper, const function<RETURN_TYPE (ARG_TYPE_COMBINED)>& f);
+    WebServer::RequestHandler mkRequestHandler (const WebServiceMethodDescription&               webServiceDescription,
+                                                const DataExchange::ObjectVariantMapper&         objVarMapper,
+                                                const function<RETURN_TYPE (ARG_TYPE_COMBINED)>& f);
     template <typename RETURN_TYPE, typename... IN_ARGS>
-    WebServer::RequestHandler mkRequestHandler (const WebServiceMethodDescription& webServiceDescription, const DataExchange::ObjectVariantMapper& objVarMapper, const Traversal::Iterable<String>& paramNames, const function<RETURN_TYPE (IN_ARGS...)>& f);
+    WebServer::RequestHandler mkRequestHandler (const WebServiceMethodDescription&       webServiceDescription,
+                                                const DataExchange::ObjectVariantMapper& objVarMapper,
+                                                const Traversal::Iterable<String>& paramNames, const function<RETURN_TYPE (IN_ARGS...)>& f);
     template <typename RETURN_TYPE>
-    WebServer::RequestHandler mkRequestHandler (const WebServiceMethodDescription& webServiceDescription, const DataExchange::ObjectVariantMapper& objVarMapper, const function<RETURN_TYPE (void)>& f);
-    WebServer::RequestHandler mkRequestHandler (const WebServiceMethodDescription& webServiceDescription, const function<BLOB (WebServer::Message* m)>& f);
+    WebServer::RequestHandler mkRequestHandler (const WebServiceMethodDescription& webServiceDescription,
+                                                const DataExchange::ObjectVariantMapper& objVarMapper, const function<RETURN_TYPE (void)>& f);
+    WebServer::RequestHandler mkRequestHandler (const WebServiceMethodDescription&            webServiceDescription,
+                                                const function<BLOB (WebServer::Message* m)>& f);
 
 }
 

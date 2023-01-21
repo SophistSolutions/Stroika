@@ -107,7 +107,8 @@ namespace Stroika::Frameworks::Modbus {
         virtual ~IModbusService () = default;
 
         template <typename MODBUS_REGISTER_DESCRIPTOR>
-        using RegisterValuesMapping = Containers::Mapping<typename MODBUS_REGISTER_DESCRIPTOR::NameType, typename MODBUS_REGISTER_DESCRIPTOR::ValueType>;
+        using RegisterValuesMapping =
+            Containers::Mapping<typename MODBUS_REGISTER_DESCRIPTOR::NameType, typename MODBUS_REGISTER_DESCRIPTOR::ValueType>;
         template <typename MODBUS_REGISTER_DESCRIPTOR>
         using SetRegisterNames = Containers::Set<typename MODBUS_REGISTER_DESCRIPTOR::NameType>;
 

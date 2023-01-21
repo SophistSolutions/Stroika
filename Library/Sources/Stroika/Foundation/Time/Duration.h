@@ -306,7 +306,8 @@ namespace Stroika::Foundation::Time {
          *          VerifyTestResult (Duration{"PT4H"}.PrettyPrintAge () == "4 hours from now");
          *      \endcode
          */
-        nonvirtual Characters::String PrettyPrintAge (const AgePrettyPrintInfo& agePrettyPrintInfo = kDefaultAgePrettyPrintInfo, const PrettyPrintInfo& prettyPrintInfo = kDefaultPrettyPrintInfo) const;
+        nonvirtual Characters::String PrettyPrintAge (const AgePrettyPrintInfo& agePrettyPrintInfo = kDefaultAgePrettyPrintInfo,
+                                                      const PrettyPrintInfo&    prettyPrintInfo    = kDefaultPrettyPrintInfo) const;
 
     public:
         /**
@@ -361,7 +362,7 @@ namespace Stroika::Foundation::Time {
         };
         RepType_ fRepType_{eEmpty_};
         union {
-            char   fNonStringRep_{}; // unused except to allow constexpr initialization (allow selecting non fStringRep_ to initialize since union must be initialized)
+            char fNonStringRep_{}; // unused except to allow constexpr initialization (allow selecting non fStringRep_ to initialize since union must be initialized)
             string fStringRep_;
         };
         void destroy_ (); // allow call if already empty
@@ -443,11 +444,9 @@ namespace Stroika::Foundation::Time {
 namespace Stroika::Foundation::Traversal::RangeTraits {
 
     template <>
-    struct DefaultOpenness<Time::Duration> : ExplicitOpenness<Openness::eClosed, Openness::eClosed> {
-    };
+    struct DefaultOpenness<Time::Duration> : ExplicitOpenness<Openness::eClosed, Openness::eClosed> {};
     template <>
-    struct DefaultDifferenceTypes<Time::Duration> : ExplicitDifferenceTypes<Time::DurationSecondsType> {
-    };
+    struct DefaultDifferenceTypes<Time::Duration> : ExplicitDifferenceTypes<Time::DurationSecondsType> {};
     /**
      *  \note   This type's properties (kLowerBound/kUpperBound) can only be used after static initialization, and before
      *          static de-initialization.

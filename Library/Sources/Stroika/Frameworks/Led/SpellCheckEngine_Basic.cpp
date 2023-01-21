@@ -36,10 +36,7 @@ namespace {
 #endif
 #endif
 
-    inline bool IsASCIIUpper (Led_tChar c)
-    {
-        return isascii (c) and isupper (c);
-    }
+    inline bool IsASCIIUpper (Led_tChar c) { return isascii (c) and isupper (c); }
 
     inline bool AsymmetricCaseInsensativeCompare (Led_tChar wordChar, Led_tChar dictChar)
     {
@@ -92,14 +89,8 @@ namespace {
 }
 
 namespace {
-    inline bool IsASCIISpace (Led_tChar c)
-    {
-        return isascii (c) and isspace (c);
-    }
-    inline bool IsASCIIAlnum (Led_tChar c)
-    {
-        return isascii (c) and isalnum (c);
-    }
+    inline bool IsASCIISpace (Led_tChar c) { return isascii (c) and isspace (c); }
+    inline bool IsASCIIAlnum (Led_tChar c) { return isascii (c) and isalnum (c); }
 }
 
 /*
@@ -120,9 +111,7 @@ SpellCheckEngine_Basic::SpellCheckEngine_Basic (const Dictionary* mainDictionary
     }
 }
 
-SpellCheckEngine_Basic::~SpellCheckEngine_Basic ()
-{
-}
+SpellCheckEngine_Basic::~SpellCheckEngine_Basic () {}
 
 /*
 @METHOD:        SpellCheckEngine_Basic::ScanForUndefinedWord
@@ -144,8 +133,7 @@ bool SpellCheckEngine_Basic::ScanForUndefinedWord (const Led_tChar* startBuf, co
 
     // preliminary implementation - shouldn't set output vars (wordStartResult/wordEndResult) result UNLESS WE are returning true...
     while (ScanForWord (startBuf, endBuf, cursor, wordStartResult, wordEndResult)) {
-        if (not LookupWord (Led_tString{*wordStartResult, *wordEndResult}) and
-            not OtherStringToIgnore (Led_tString{*wordStartResult, *wordEndResult})) {
+        if (not LookupWord (Led_tString{*wordStartResult, *wordEndResult}) and not OtherStringToIgnore (Led_tString{*wordStartResult, *wordEndResult})) {
             return true;
         }
     }
@@ -336,9 +324,7 @@ bool SpellCheckEngine_Basic::LookupWordHelper_ (const Led_tString& checkWord, Le
 */
 bool SpellCheckEngine_Basic::OtherStringToIgnore (const Led_tString& checkWord)
 {
-    return OtherStringToIgnore_AllPunctuation (checkWord) or
-           OtherStringToIgnore_Sentinals (checkWord) or
-           OtherStringToIgnore_Number (checkWord);
+    return OtherStringToIgnore_AllPunctuation (checkWord) or OtherStringToIgnore_Sentinals (checkWord) or OtherStringToIgnore_Number (checkWord);
 }
 
 bool SpellCheckEngine_Basic::OtherStringToIgnore_AllPunctuation (const Led_tString& checkWord)
@@ -412,9 +398,9 @@ vector<Led_tString> SpellCheckEngine_Basic::GenerateSuggestions (const Led_tStri
     if (misspelledWord.find ('-') == Led_tString::npos) {
         size_t maxInitSegSize = misspelledWord.size () - 1;
         for (size_t initialWordSize = 1; initialWordSize < maxInitSegSize; ++initialWordSize) {
-            if (LookupWord (misspelledWord.substr (0, initialWordSize)) and
-                LookupWord (misspelledWord.substr (initialWordSize))) {
-                AddToListsHelper (kMaxSug, topSugs, topSugScores, &scoreCutOff, -1.2f, misspelledWord.substr (0, initialWordSize) + LED_TCHAR_OF ("-") + misspelledWord.substr (initialWordSize));
+            if (LookupWord (misspelledWord.substr (0, initialWordSize)) and LookupWord (misspelledWord.substr (initialWordSize))) {
+                AddToListsHelper (kMaxSug, topSugs, topSugScores, &scoreCutOff, -1.2f,
+                                  misspelledWord.substr (0, initialWordSize) + LED_TCHAR_OF ("-") + misspelledWord.substr (initialWordSize));
             }
         }
     }
@@ -516,15 +502,9 @@ vector<Led_tString> SpellCheckEngine_Basic::GenerateSuggestions (const Led_tStri
     return result;
 }
 
-SpellCheckEngine_Basic::UDInterface* SpellCheckEngine_Basic::GetUDInterface ()
-{
-    return NULL;
-}
+SpellCheckEngine_Basic::UDInterface* SpellCheckEngine_Basic::GetUDInterface () { return NULL; }
 
-TextBreaks* SpellCheckEngine_Basic::PeekAtTextBreaksUsed ()
-{
-    return GetTextBreaker ().get ();
-}
+TextBreaks* SpellCheckEngine_Basic::PeekAtTextBreaksUsed () { return GetTextBreaker ().get (); }
 
 float SpellCheckEngine_Basic::Heuristic (const Led_tString& misspelledWord, const Led_tString& candidateWord, float atLeast)
 {
@@ -661,15 +641,9 @@ bool SpellCheckEngine_Basic::ScanForWord (const Led_tChar* startBuf, const Led_t
     return true;
 }
 
-vector<const SpellCheckEngine_Basic::Dictionary*> SpellCheckEngine_Basic::GetDictionaries () const
-{
-    return fDictionaries;
-}
+vector<const SpellCheckEngine_Basic::Dictionary*> SpellCheckEngine_Basic::GetDictionaries () const { return fDictionaries; }
 
-void SpellCheckEngine_Basic::SetDictionaries (const vector<const Dictionary*>& dictionaries)
-{
-    fDictionaries = dictionaries;
-}
+void SpellCheckEngine_Basic::SetDictionaries (const vector<const Dictionary*>& dictionaries) { fDictionaries = dictionaries; }
 
 #if qDebug
 /*
@@ -767,8 +741,7 @@ void SpellCheckEngine_Basic::RegressionTest_1 ()
         const Led_tChar* wordStartResult = NULL;
         const Led_tChar* wordEndResult   = NULL;
         int              nWordsFound     = 0;
-        while (tester.ScanForUndefinedWord (testText, testText + Led_tStrlen (testText), &cursor,
-                                            &wordStartResult, &wordEndResult)) {
+        while (tester.ScanForUndefinedWord (testText, testText + Led_tStrlen (testText), &cursor, &wordStartResult, &wordEndResult)) {
             // we found a possible undefined word.
             Led_tString word = Led_tString{wordStartResult, wordEndResult};
             ++nWordsFound;
@@ -801,10 +774,7 @@ SpellCheckEngine_Basic::EditableDictionary::EditableDictionary ()
 {
 }
 
-SpellCheckEngine_Basic::EditableDictionary::~EditableDictionary ()
-{
-    delete[] fDictBufStart;
-}
+SpellCheckEngine_Basic::EditableDictionary::~EditableDictionary () { delete[] fDictBufStart; }
 
 void SpellCheckEngine_Basic::EditableDictionary::AddWordToUserDictionary (const Led_tString& word)
 {
@@ -812,15 +782,9 @@ void SpellCheckEngine_Basic::EditableDictionary::AddWordToUserDictionary (const 
     ConstructInfoBlocksEtcFromWordList ();
 }
 
-const Led_tChar* SpellCheckEngine_Basic::EditableDictionary::GetTextBase () const
-{
-    return fDictBufStart;
-}
+const Led_tChar* SpellCheckEngine_Basic::EditableDictionary::GetTextBase () const { return fDictBufStart; }
 
-const Led_tChar* SpellCheckEngine_Basic::EditableDictionary::GetTextEnd () const
-{
-    return fDictBufEnd;
-}
+const Led_tChar* SpellCheckEngine_Basic::EditableDictionary::GetTextEnd () const { return fDictBufEnd; }
 
 void SpellCheckEngine_Basic::EditableDictionary::GetInfoBlocks (const InfoBlock** start, const InfoBlock** end) const
 {
@@ -959,15 +923,9 @@ SpellCheckEngine_Basic::CompiledDictionary::CompiledDictionary (const CompiledDi
 {
 }
 
-const Led_tChar* SpellCheckEngine_Basic::CompiledDictionary::GetTextBase () const
-{
-    return fData.fTextDataStart;
-}
+const Led_tChar* SpellCheckEngine_Basic::CompiledDictionary::GetTextBase () const { return fData.fTextDataStart; }
 
-const Led_tChar* SpellCheckEngine_Basic::CompiledDictionary::GetTextEnd () const
-{
-    return fData.fTextDataEnd;
-}
+const Led_tChar* SpellCheckEngine_Basic::CompiledDictionary::GetTextEnd () const { return fData.fTextDataEnd; }
 
 void SpellCheckEngine_Basic::CompiledDictionary::GetInfoBlocks (const InfoBlock** start, const InfoBlock** end) const
 {
@@ -995,7 +953,8 @@ TextBreaks_SpellChecker::TextBreaks_SpellChecker ()
 #endif
 }
 
-TextBreaks_SpellChecker::CharacterClasses TextBreaks_SpellChecker::CharToCharacterClass (const Led_tChar* startOfText, size_t lengthOfText, const Led_tChar* charToExamine) const
+TextBreaks_SpellChecker::CharacterClasses TextBreaks_SpellChecker::CharToCharacterClass (const Led_tChar* startOfText, size_t lengthOfText,
+                                                                                         const Led_tChar* charToExamine) const
 {
     switch (*charToExamine) {
         case '$':
@@ -1054,20 +1013,11 @@ SpellCheckEngine_Basic_Simple::SpellCheckEngine_Basic_Simple ()
 #endif
 }
 
-SpellCheckEngine_Basic_Simple::~SpellCheckEngine_Basic_Simple ()
-{
-    delete fUD;
-}
+SpellCheckEngine_Basic_Simple::~SpellCheckEngine_Basic_Simple () { delete fUD; }
 
-SpellCheckEngine_Basic_Simple::UDInterface* SpellCheckEngine_Basic_Simple::GetUDInterface ()
-{
-    return this;
-}
+SpellCheckEngine_Basic_Simple::UDInterface* SpellCheckEngine_Basic_Simple::GetUDInterface () { return this; }
 
-bool SpellCheckEngine_Basic_Simple::AddWordToUserDictionarySupported () const
-{
-    return fUD != NULL;
-}
+bool SpellCheckEngine_Basic_Simple::AddWordToUserDictionarySupported () const { return fUD != NULL; }
 
 void SpellCheckEngine_Basic_Simple::AddWordToUserDictionary (const Led_tString& word)
 {
@@ -1076,10 +1026,7 @@ void SpellCheckEngine_Basic_Simple::AddWordToUserDictionary (const Led_tString& 
     WriteToUD ();
 }
 
-const SpellCheckEngine_Basic_Simple::Dictionary* SpellCheckEngine_Basic_Simple::GetMainDictionary () const
-{
-    return fMainDictionary;
-}
+const SpellCheckEngine_Basic_Simple::Dictionary* SpellCheckEngine_Basic_Simple::GetMainDictionary () const { return fMainDictionary; }
 
 void SpellCheckEngine_Basic_Simple::SetMainDictionary (const Dictionary* mainDictionary)
 {
@@ -1094,10 +1041,7 @@ void SpellCheckEngine_Basic_Simple::SetMainDictionary (const Dictionary* mainDic
     SetDictionaries (dicts);
 }
 
-SpellCheckEngine_Basic_Simple::UDDictionaryName SpellCheckEngine_Basic_Simple::GetUserDictionary () const
-{
-    return fUDName;
-}
+SpellCheckEngine_Basic_Simple::UDDictionaryName SpellCheckEngine_Basic_Simple::GetUserDictionary () const { return fUDName; }
 
 void SpellCheckEngine_Basic_Simple::SetUserDictionary (const UDDictionaryName& userDictionary)
 {
@@ -1154,7 +1098,8 @@ void SpellCheckEngine_Basic_Simple::WriteToUD ()
     size_t            outCharCnt = cpc.MapFromUNICODE_QuickComputeOutBufSize (Traversal::Iterator2Pointer (data.begin ()), data.size ());
     StackBuffer<char> fileData2{Memory::eUninitialized, outCharCnt};
     cpc.MapFromUNICODE (Traversal::Iterator2Pointer (data.begin ()), data.size (), fileData2.data (), &outCharCnt);
-    writer.Write (reinterpret_cast<const byte*> (static_cast<char*> (fileData2)), reinterpret_cast<const byte*> (static_cast<char*> (fileData2)) + outCharCnt);
+    writer.Write (reinterpret_cast<const byte*> (static_cast<char*> (fileData2)),
+                  reinterpret_cast<const byte*> (static_cast<char*> (fileData2)) + outCharCnt);
 #else
     writer.Append (reinterpret_cast<const byte*> (Traversal::Iterator2Pointer (data.begin ())), data.size ());
 #endif

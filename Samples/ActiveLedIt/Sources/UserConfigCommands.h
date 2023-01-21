@@ -241,9 +241,10 @@ const BuiltinCmdSpec kAllCmds[] = {
     kCmd_ContextHelp,
 };
 
-class ATL_NO_VTABLE ActiveLedIt_CurrentEventArguments : public CComObjectRootEx<CComSingleThreadModel>,
-                                                        public CComCoClass<ActiveLedIt_CurrentEventArguments>,
-                                                        public IDispatchImpl<IALCurrentEventArguments, &IID_IALCurrentEventArguments, &LIBID_ACTIVELEDITLib, qActiveLedIt_MajorVersion, qActiveLedIt_MinorVersion> {
+class ATL_NO_VTABLE ActiveLedIt_CurrentEventArguments
+    : public CComObjectRootEx<CComSingleThreadModel>,
+      public CComCoClass<ActiveLedIt_CurrentEventArguments>,
+      public IDispatchImpl<IALCurrentEventArguments, &IID_IALCurrentEventArguments, &LIBID_ACTIVELEDITLib, qActiveLedIt_MajorVersion, qActiveLedIt_MinorVersion> {
 public:
     ActiveLedIt_CurrentEventArguments ();
     virtual ~ActiveLedIt_CurrentEventArguments ();
@@ -289,7 +290,8 @@ public:
     wstring fName;
 };
 
-class ATL_NO_VTABLE AL_CommandHelper : public IDispatchImpl<IALCommand, &IID_IALCommand, &LIBID_ACTIVELEDITLib, qActiveLedIt_MajorVersion, qActiveLedIt_MinorVersion> {
+class ATL_NO_VTABLE AL_CommandHelper
+    : public IDispatchImpl<IALCommand, &IID_IALCommand, &LIBID_ACTIVELEDITLib, qActiveLedIt_MajorVersion, qActiveLedIt_MinorVersion> {
 public:
     AL_CommandHelper ();
     virtual ~AL_CommandHelper ();
@@ -308,8 +310,9 @@ protected:
     UINT    fCommandNumber;
 };
 
-class ATL_NO_VTABLE AL_UserCommandHelper : public IDispatchImpl<IALUserCommand, &IID_IALUserCommand, &LIBID_ACTIVELEDITLib, qActiveLedIt_MajorVersion, qActiveLedIt_MinorVersion>,
-                                           public AL_CommandHelper {
+class ATL_NO_VTABLE AL_UserCommandHelper
+    : public IDispatchImpl<IALUserCommand, &IID_IALUserCommand, &LIBID_ACTIVELEDITLib, qActiveLedIt_MajorVersion, qActiveLedIt_MinorVersion>,
+      public AL_CommandHelper {
 public:
     AL_UserCommandHelper ();
     virtual ~AL_UserCommandHelper ();
@@ -331,7 +334,8 @@ public:
     (HMENU menu, IDispatch* acceleratorTable) { return AL_CommandHelper::AppendSelfToMenu (menu, acceleratorTable); }
 };
 
-class ATL_NO_VTABLE AL_CommandListHelper : public IDispatchImpl<IALCommandList, &IID_IALCommandList, &LIBID_ACTIVELEDITLib, qActiveLedIt_MajorVersion, qActiveLedIt_MinorVersion> {
+class ATL_NO_VTABLE AL_CommandListHelper
+    : public IDispatchImpl<IALCommandList, &IID_IALCommandList, &LIBID_ACTIVELEDITLib, qActiveLedIt_MajorVersion, qActiveLedIt_MinorVersion> {
 public:
     AL_CommandListHelper ();
     virtual ~AL_CommandListHelper ();
@@ -358,8 +362,9 @@ protected:
     vector<CComPtr<IDispatch>> fOwnedItems;
 };
 
-class ATL_NO_VTABLE AL_UserCommandListHelper : public AL_CommandListHelper,
-                                               public IDispatchImpl<IALUserCommandList, &IID_IALUserCommandList, &LIBID_ACTIVELEDITLib, qActiveLedIt_MajorVersion, qActiveLedIt_MinorVersion> {
+class ATL_NO_VTABLE AL_UserCommandListHelper
+    : public AL_CommandListHelper,
+      public IDispatchImpl<IALUserCommandList, &IID_IALUserCommandList, &LIBID_ACTIVELEDITLib, qActiveLedIt_MajorVersion, qActiveLedIt_MinorVersion> {
 public:
     AL_UserCommandListHelper ();
     virtual ~AL_UserCommandListHelper ();
@@ -417,10 +422,11 @@ public:
     void    FinalRelease ();
 };
 
-class ATL_NO_VTABLE ActiveLedIt_UserCommand : public CComObjectRootEx<CComSingleThreadModel>,
-                                              public CComCoClass<ActiveLedIt_BuiltinCommand>,
-                                              public IDispatchImpl<IALUserCommand, &IID_IALUserCommand, &LIBID_ACTIVELEDITLib, qActiveLedIt_MajorVersion, qActiveLedIt_MinorVersion>,
-                                              public AL_CommandHelper {
+class ATL_NO_VTABLE ActiveLedIt_UserCommand
+    : public CComObjectRootEx<CComSingleThreadModel>,
+      public CComCoClass<ActiveLedIt_BuiltinCommand>,
+      public IDispatchImpl<IALUserCommand, &IID_IALUserCommand, &LIBID_ACTIVELEDITLib, qActiveLedIt_MajorVersion, qActiveLedIt_MinorVersion>,
+      public AL_CommandHelper {
 public:
     ActiveLedIt_UserCommand ();
     virtual ~ActiveLedIt_UserCommand ();
@@ -457,9 +463,10 @@ public:
     void    FinalRelease ();
 };
 
-class ATL_NO_VTABLE ActiveLedIt_AcceleratorElement : public CComObjectRootEx<CComSingleThreadModel>,
-                                                     public CComCoClass<ActiveLedIt_AcceleratorElement>,
-                                                     public IDispatchImpl<IALAcceleratorElement, &IID_IALAcceleratorElement, &LIBID_ACTIVELEDITLib, qActiveLedIt_MajorVersion, qActiveLedIt_MinorVersion> {
+class ATL_NO_VTABLE ActiveLedIt_AcceleratorElement
+    : public CComObjectRootEx<CComSingleThreadModel>,
+      public CComCoClass<ActiveLedIt_AcceleratorElement>,
+      public IDispatchImpl<IALAcceleratorElement, &IID_IALAcceleratorElement, &LIBID_ACTIVELEDITLib, qActiveLedIt_MajorVersion, qActiveLedIt_MinorVersion> {
 public:
     ActiveLedIt_AcceleratorElement ();
     virtual ~ActiveLedIt_AcceleratorElement () = default;
@@ -500,9 +507,10 @@ private:
     WORD                    fKey;
 };
 
-class ATL_NO_VTABLE ActiveLedIt_AcceleratorTable : public CComObjectRootEx<CComSingleThreadModel>,
-                                                   public CComCoClass<ActiveLedIt_AcceleratorTable>,
-                                                   public IDispatchImpl<IALAcceleratorTable, &IID_IALAcceleratorTable, &LIBID_ACTIVELEDITLib, qActiveLedIt_MajorVersion, qActiveLedIt_MinorVersion> {
+class ATL_NO_VTABLE ActiveLedIt_AcceleratorTable
+    : public CComObjectRootEx<CComSingleThreadModel>,
+      public CComCoClass<ActiveLedIt_AcceleratorTable>,
+      public IDispatchImpl<IALAcceleratorTable, &IID_IALAcceleratorTable, &LIBID_ACTIVELEDITLib, qActiveLedIt_MajorVersion, qActiveLedIt_MinorVersion> {
 public:
     ActiveLedIt_AcceleratorTable ();
     virtual ~ActiveLedIt_AcceleratorTable ();
@@ -617,11 +625,12 @@ public:
     void    FinalRelease ();
 };
 
-class ATL_NO_VTABLE ActiveLedIt_MenuItemPopup : public CComObjectRootEx<CComSingleThreadModel>,
-                                                public CComCoClass<ActiveLedIt_MenuItemPopup, &CLSID_ActiveLedIt_MenuItemPopup>,
-                                                public IDispatchImpl<IALMenuItemPopup, &IID_IALMenuItemPopup, &LIBID_ACTIVELEDITLib, qActiveLedIt_MajorVersion, qActiveLedIt_MinorVersion>,
-                                                public AL_CommandListHelper,
-                                                public AL_UserCommandHelper {
+class ATL_NO_VTABLE ActiveLedIt_MenuItemPopup
+    : public CComObjectRootEx<CComSingleThreadModel>,
+      public CComCoClass<ActiveLedIt_MenuItemPopup, &CLSID_ActiveLedIt_MenuItemPopup>,
+      public IDispatchImpl<IALMenuItemPopup, &IID_IALMenuItemPopup, &LIBID_ACTIVELEDITLib, qActiveLedIt_MajorVersion, qActiveLedIt_MinorVersion>,
+      public AL_CommandListHelper,
+      public AL_UserCommandHelper {
 public:
     ActiveLedIt_MenuItemPopup ();
     virtual ~ActiveLedIt_MenuItemPopup ();

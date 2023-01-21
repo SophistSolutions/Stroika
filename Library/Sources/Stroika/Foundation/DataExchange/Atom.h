@@ -191,8 +191,7 @@ namespace Stroika::Foundation::DataExchange {
 
     private:
         template <typename T>
-        struct type_ {
-        };
+        struct type_ {};
 
         template <typename T>
         nonvirtual T       As_ (type_<T>) const;

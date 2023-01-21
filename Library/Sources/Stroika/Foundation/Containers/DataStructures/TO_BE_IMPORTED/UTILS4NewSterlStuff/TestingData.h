@@ -38,9 +38,7 @@ public:
     {
     }
 
-    ~ZipfDistribution ()
-    {
-    }
+    ~ZipfDistribution () {}
 
     template <class Engine>
     size_t operator() (Engine& eng)
@@ -54,7 +52,7 @@ private:
     static double CalcDistribution (double k)
     {
         // our input is a not discrete, but somewhere "in the middle" of our range, which doesn't make sense for indexes
-        k             = (size_t)k;
+        k = (size_t)k;
         double result = std::pow (k, -1); // in full Mandelbrot generality this is std::pow (k+shift, -exp), but for classic Zipf shift = 0 and exp = 1
         return result;
     }
@@ -102,9 +100,6 @@ void FillTestData (std::vector<T>& data, size_t elementsToAdd, bool offset)
     AssertNotReached ();
 }
 
-inline size_t ComputeUniqueValue (size_t index, bool offset)
-{
-    return index * 2 + ((offset) ? 1 : 0);
-}
+inline size_t ComputeUniqueValue (size_t index, bool offset) { return index * 2 + ((offset) ? 1 : 0); }
 
 #include "TestingData.inl"

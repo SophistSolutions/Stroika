@@ -49,10 +49,7 @@ namespace Stroika::Foundation::Configuration {
         // @todo validate arg verSubStage < kMaxVersionSubStage
         return Stroika_Make_FULL_VERSION (fMajorVer, fMinorVer, ((uint8_t)fVerStage), fVerSubStage, static_cast<int> (fFinalBuild));
     }
-    inline Characters::String Version::ToString () const
-    {
-        return AsPrettyVersionString ();
-    }
+    inline Characters::String Version::ToString () const { return AsPrettyVersionString (); }
     constexpr bool Version::operator== (const Version& rhs) const
     {
         return make_signed_t<Binary32BitFullVersionType> (AsFullVersionNum ()) == make_signed_t<Binary32BitFullVersionType> (rhs.AsFullVersionNum ());

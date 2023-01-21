@@ -73,13 +73,9 @@ namespace {
         kinfo_proc info{};
         // Initialize mib, which tells sysctl the info we want, in this case
         // we're looking for information about a specific process ID.
-        int mib[4] = {
-            CTL_KERN,
-            KERN_PROC,
-            KERN_PROC_PID,
-            getpid ()};
-        size_t               size = sizeof (info);
-        [[maybe_unused]] int junk = sysctl (mib, sizeof (mib) / sizeof (*mib), &info, &size, NULL, 0);
+        int                  mib[4] = {CTL_KERN, KERN_PROC, KERN_PROC_PID, getpid ()};
+        size_t               size   = sizeof (info);
+        [[maybe_unused]] int junk   = sysctl (mib, sizeof (mib) / sizeof (*mib), &info, &size, NULL, 0);
         Assert (junk == 0);
         return (info.kp_proc.p_flag & P_TRACED) != 0;
     }

@@ -18,7 +18,8 @@ using namespace Stroika::Frameworks::Led;
 @METHOD:        WordWrappedTextInteractor::OnTypedNormalCharacter
 @DESCRIPTION:   <p>Override @'TextInteractor::OnTypedNormalCharacter' to map 'shiftPressed' + NL to a soft-line break.</p>
 */
-void WordWrappedTextInteractor::OnTypedNormalCharacter (Led_tChar theChar, bool optionPressed, bool shiftPressed, bool commandPressed, bool controlPressed, bool altKeyPressed)
+void WordWrappedTextInteractor::OnTypedNormalCharacter (Led_tChar theChar, bool optionPressed, bool shiftPressed, bool commandPressed,
+                                                        bool controlPressed, bool altKeyPressed)
 {
     if (theChar == '\n' and shiftPressed) {
         /*
@@ -28,7 +29,8 @@ void WordWrappedTextInteractor::OnTypedNormalCharacter (Led_tChar theChar, bool 
         bool savedSuppressFlag = GetSuppressTypedControlCharacters ();
         SetSuppressTypedControlCharacters (false);
         try {
-            inherited::OnTypedNormalCharacter (WordWrappedTextImager::kSoftLineBreakChar, optionPressed, shiftPressed, commandPressed, controlPressed, altKeyPressed);
+            inherited::OnTypedNormalCharacter (WordWrappedTextImager::kSoftLineBreakChar, optionPressed, shiftPressed, commandPressed,
+                                               controlPressed, altKeyPressed);
         }
         catch (...) {
             SetSuppressTypedControlCharacters (savedSuppressFlag);

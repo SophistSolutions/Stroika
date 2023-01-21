@@ -75,7 +75,8 @@ namespace Stroika::Foundation::Debug {
         : fSharedContext_{sharedContext ? sharedContext : make_shared<SharedContext> ()}
     {
     }
-    inline AssertExternallySynchronizedMutex::AssertExternallySynchronizedMutex (const shared_ptr<SharedContext>& sharedContext, const AssertExternallySynchronizedMutex& src) noexcept
+    inline AssertExternallySynchronizedMutex::AssertExternallySynchronizedMutex (const shared_ptr<SharedContext>&         sharedContext,
+                                                                                 const AssertExternallySynchronizedMutex& src) noexcept
         : AssertExternallySynchronizedMutex{sharedContext}
     {
         ReadContext readLockSrc{src}; // to copy, the src can have shared_locks, but no (write) locks
@@ -85,7 +86,8 @@ namespace Stroika::Foundation::Debug {
     {
         ReadContext readLockSrc{src}; // to copy, the src can have shared_locks, but no (write) locks
     }
-    inline AssertExternallySynchronizedMutex::AssertExternallySynchronizedMutex (const shared_ptr<SharedContext>& sharedContext, [[maybe_unused]] AssertExternallySynchronizedMutex&& src) noexcept
+    inline AssertExternallySynchronizedMutex::AssertExternallySynchronizedMutex (const shared_ptr<SharedContext>& sharedContext,
+                                                                                 [[maybe_unused]] AssertExternallySynchronizedMutex&& src) noexcept
         : AssertExternallySynchronizedMutex{sharedContext}
     {
         WriteContext declareWriteContext4Src{src}; // move we must be able to modify source
@@ -109,10 +111,7 @@ namespace Stroika::Foundation::Debug {
         return *this;
     }
 #if qStroikaFoundationDebugAssertExternallySynchronizedMutexEnabled
-    inline auto AssertExternallySynchronizedMutex::GetSharedContext () const -> shared_ptr<SharedContext>
-    {
-        return fSharedContext_;
-    }
+    inline auto AssertExternallySynchronizedMutex::GetSharedContext () const -> shared_ptr<SharedContext> { return fSharedContext_; }
     inline void AssertExternallySynchronizedMutex::SetAssertExternallySynchronizedMutexContext (const shared_ptr<SharedContext>& sharedContext)
     {
         Require (sharedContext != nullptr);

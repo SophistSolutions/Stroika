@@ -73,7 +73,7 @@ bool IsRunningUnderValgrind ();
  *      o   magic statics
  */
 #if qStroika_FeatureSupported_Valgrind
-#define Stroika_Foundation_Debug_ValgrindDisableHelgrindRange(START, END) \
+#define Stroika_Foundation_Debug_ValgrindDisableHelgrindRange(START, END)                                                                  \
     VALGRIND_HG_DISABLE_CHECKING (START, ((const byte*)END - (const byte*)START))
 #else
 #define Stroika_Foundation_Debug_ValgrindDisableHelgrindRange(START, END) ((void)0)
@@ -85,7 +85,7 @@ bool IsRunningUnderValgrind ();
  *
  *  \see Stroika_Foundation_Debug_ValgrindDisableHelgrindRange
  */
-#define Stroika_Foundation_Debug_ValgrindDisableHelgrind(X) \
+#define Stroika_Foundation_Debug_ValgrindDisableHelgrind(X)                                                                                \
     Stroika_Foundation_Debug_ValgrindDisableHelgrindRange (&(X), ((byte*)(&X) + sizeof (X)))
 
 /**
@@ -112,12 +112,10 @@ bool IsRunningUnderValgrind ();
  *          Stroika_Foundation_Debug_ValgrindDisableHelgrind_END(var);
  *      \endcode
  */
-#define Stroika_Foundation_Debug_ValgrindDisableHelgrind_START(X) \
-    Stroika_Foundation_Debug_ValgrindDisableHelgrind (X)
+#define Stroika_Foundation_Debug_ValgrindDisableHelgrind_START(X) Stroika_Foundation_Debug_ValgrindDisableHelgrind (X)
 
 #if qStroika_FeatureSupported_Valgrind
-#define Stroika_Foundation_Debug_ValgrindDisableHelgrind_END(X) \
-    VALGRIND_HG_ENABLE_CHECKING (&(X), sizeof (X))
+#define Stroika_Foundation_Debug_ValgrindDisableHelgrind_END(X) VALGRIND_HG_ENABLE_CHECKING (&(X), sizeof (X))
 #else
 #define Stroika_Foundation_Debug_ValgrindDisableHelgrind_END(X)
 #endif
@@ -127,27 +125,22 @@ bool IsRunningUnderValgrind ();
  *  
  *  \note this still appears broken in valigrind on Ubuntu 1804/gcc
  */
-#define Stroika_Foundation_Debug_ValgrindDisableCheck_stdatomic(X) \
-    Stroika_Foundation_Debug_ValgrindDisableHelgrind (X)
+#define Stroika_Foundation_Debug_ValgrindDisableCheck_stdatomic(X) Stroika_Foundation_Debug_ValgrindDisableHelgrind (X)
 
 /**
  */
 #if qStroika_FeatureSupported_Valgrind
-#define Stroika_Foundation_Debug_ValgrindMarkAddressAsAllocated(P, SIZE) \
-    ANNOTATE_NEW_MEMORY (P, SIZE)
+#define Stroika_Foundation_Debug_ValgrindMarkAddressAsAllocated(P, SIZE) ANNOTATE_NEW_MEMORY (P, SIZE)
 #else
-#define Stroika_Foundation_Debug_ValgrindMarkAddressAsAllocated(P, SIZE) \
-    ((void)0)
+#define Stroika_Foundation_Debug_ValgrindMarkAddressAsAllocated(P, SIZE) ((void)0)
 #endif
 
 /**
  */
 #if qStroika_FeatureSupported_Valgrind
-#define Stroika_Foundation_Debug_ValgrindMarkAddressAsDeAllocated(P, SIZE) \
-    VALGRIND_HG_CLEAN_MEMORY (P, SIZE)
+#define Stroika_Foundation_Debug_ValgrindMarkAddressAsDeAllocated(P, SIZE) VALGRIND_HG_CLEAN_MEMORY (P, SIZE)
 #else
-#define Stroika_Foundation_Debug_ValgrindMarkAddressAsDeAllocated(P, SIZE) \
-    ((void)0)
+#define Stroika_Foundation_Debug_ValgrindMarkAddressAsDeAllocated(P, SIZE) ((void)0)
 #endif
 
 /**
@@ -173,8 +166,7 @@ bool IsRunningUnderValgrind ();
  *  \see Stroika_Foundation_Debug_Valgrind_ANNOTATE_HAPPENS_AFTER
  */
 #if qStroika_FeatureSupported_Valgrind
-#define Stroika_Foundation_Debug_Valgrind_ANNOTATE_HAPPENS_BEFORE(X) \
-    Stroika::Foundation::Debug::Do_Valgrind_ANNOTATE_HAPPENS_BEFORE_ (X)
+#define Stroika_Foundation_Debug_Valgrind_ANNOTATE_HAPPENS_BEFORE(X) Stroika::Foundation::Debug::Do_Valgrind_ANNOTATE_HAPPENS_BEFORE_ (X)
 #else
 #define Stroika_Foundation_Debug_Valgrind_ANNOTATE_HAPPENS_BEFORE(X) ((void)0)
 #endif
@@ -192,8 +184,7 @@ bool IsRunningUnderValgrind ();
  *  \see Stroika_Foundation_Debug_Valgrind_ANNOTATE_HAPPENS_BEFORE
  */
 #if qStroika_FeatureSupported_Valgrind
-#define Stroika_Foundation_Debug_Valgrind_ANNOTATE_HAPPENS_AFTER(X) \
-    Stroika::Foundation::Debug::Do_Valgrind_ANNOTATE_HAPPENS_AFTER_ (X)
+#define Stroika_Foundation_Debug_Valgrind_ANNOTATE_HAPPENS_AFTER(X) Stroika::Foundation::Debug::Do_Valgrind_ANNOTATE_HAPPENS_AFTER_ (X)
 #else
 #define Stroika_Foundation_Debug_Valgrind_ANNOTATE_HAPPENS_AFTER(X) ((void)0)
 #endif

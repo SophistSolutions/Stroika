@@ -37,19 +37,16 @@ namespace Stroika::Foundation::Configuration {
      *  LIFTED -@todo add docs/reference
      *  from Stroustrup C++11 book - page 800
      */
-    struct substitution_failure {
-    };
+    struct substitution_failure {};
 
     /**
      *  LIFTED -@todo add docs/reference
      *  from Stroustrup C++11 book - page 800
      */
     template <typename T>
-    struct substitution_succeeded : true_type {
-    };
+    struct substitution_succeeded : true_type {};
     template <>
-    struct substitution_succeeded<substitution_failure> : false_type {
-    };
+    struct substitution_succeeded<substitution_failure> : false_type {};
 
     /**
      * 
@@ -59,16 +56,10 @@ namespace Stroika::Foundation::Configuration {
      *  For his suggestion in https://stackoverflow.com/questions/70119120/how-to-fix-sfinae-check-for-operator-existing-so-that-it-works-with-stdpair/70122139#70122139
      *  See also Detection Idioms - https://segmentfault.com/a/1190000040852065/en
      */
-    template <
-        template <typename...> typename Detector,
-        typename T,
-        typename SFINAE = void>
+    template <template <typename...> typename Detector, typename T, typename SFINAE = void>
     constexpr inline bool is_detected_v = false;
-    template <
-        template <typename...> typename Detector,
-        typename T>
-    constexpr inline bool is_detected_v<
-        Detector, T, std::void_t<Detector<T>>> = true;
+    template <template <typename...> typename Detector, typename T>
+    constexpr inline bool is_detected_v<Detector, T, std::void_t<Detector<T>>> = true;
 
 }
 

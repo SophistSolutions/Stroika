@@ -169,9 +169,7 @@ namespace {
                 DiskSpaceUsageType LookupDiskStats_Try2 (String diskName)
                 {
                     return sDiskUsageCache_.LookupValue (diskName,
-                                                         [] (String diskName) -> DiskSpaceUsageType {
-                                                             return LookupDiskStats_ (diskName);
-                                                         });
+                                                         [] (String diskName) -> DiskSpaceUsageType { return LookupDiskStats_ (diskName); });
                 }
                 // or still simpler
                 DiskSpaceUsageType LookupDiskStats_Try3 (String diskName)
@@ -195,15 +193,13 @@ namespace {
                 struct FolderDetails_ {
                     int size; // ...info to cache about a folder
                 };
-                Synchronized<Cache::TimedCache<
-                    ScanFolderKey_,
-                    shared_ptr<FolderDetails_>>>
-                    sCachedScanFoldersDetails_{kAgeForScanPersistenceCache_};
+                Synchronized<Cache::TimedCache<ScanFolderKey_, shared_ptr<FolderDetails_>>> sCachedScanFoldersDetails_{kAgeForScanPersistenceCache_};
 
                 shared_ptr<FolderDetails_> AccessFolder_ (const ScanFolderKey_& folder)
                 {
                     auto lockedCache = sCachedScanFoldersDetails_.rwget ();
-                    if (optional<shared_ptr<FolderDetails_>> o = lockedCache->Lookup (folder, TimedCacheSupport::LookupMarksDataAsRefreshed::eTreatFoundThroughLookupAsRefreshed)) {
+                    if (optional<shared_ptr<FolderDetails_>> o =
+                            lockedCache->Lookup (folder, TimedCacheSupport::LookupMarksDataAsRefreshed::eTreatFoundThroughLookupAsRefreshed)) {
                         return *o;
                     }
                     else {
@@ -239,9 +235,15 @@ namespace {
             {
                 unsigned int totalCallsCount{};
 #if qCompilerAndStdLib_template_template_argument_as_different_template_paramters_Buggy
-                Memoizer<int, MemoizerSupport::DEFAULT_CACHE_BWA_, int, int> memoizer{[&totalCallsCount] (int a, int b) { totalCallsCount++;  return a + b; }};
+                Memoizer<int, MemoizerSupport::DEFAULT_CACHE_BWA_, int, int> memoizer{[&totalCallsCount] (int a, int b) {
+                    totalCallsCount++;
+                    return a + b;
+                }};
 #else
-                Memoizer<int, LRUCache, int, int> memoizer{[&totalCallsCount] (int a, int b) { totalCallsCount++;  return a + b; }};
+                Memoizer<int, LRUCache, int, int> memoizer{[&totalCallsCount] (int a, int b) {
+                    totalCallsCount++;
+                    return a + b;
+                }};
 #endif
                 VerifyTestResult (memoizer (1, 1) == 2 and totalCallsCount == 1);
                 VerifyTestResult (memoizer (1, 1) == 2 and totalCallsCount == 1);
@@ -336,7 +338,7 @@ namespace {
                 DbgTrace (L"Probability of false positives = %f", f.ProbabilityOfFalsePositive (kTotalEntries_));
                 DbgTrace (L"false positives: %d, expected: %f", falsePositives, falsePositivesMax * f.ProbabilityOfFalsePositive (kTotalEntries_));
                 VerifyTestResultWarning (falsePositives < 100); // last measured was 75 (was 60 with old hash function) no matter how things change
-                auto pfp                        = f.ProbabilityOfFalsePositive (kTotalEntries_);
+                auto pfp = f.ProbabilityOfFalsePositive (kTotalEntries_);
                 auto expectedFalsePositiveRange = falsePositivesMax * pfp * (Traversal::Range<double>{.1, 1.1}); // my probs estimate not perfect, so add some wiggle around it
                 DbgTrace (L"expectedFalsePositiveRange: %s", Characters::ToString (expectedFalsePositiveRange).c_str ());
                 VerifyTestResultWarning (expectedFalsePositiveRange.Contains (falsePositives));
@@ -347,8 +349,8 @@ namespace {
                 using Characters::String;
                 using IO::Network::CIDR;
                 using IO::Network::InternetAddress;
-                CIDR                             cidr{L"192.168.243.0/24"};
-                BloomFilter<InternetAddress>     f{BloomFilter<InternetAddress>{cidr.GetRange ().GetNumberOfContainedPoints ()}}; // way more than needed so SB small # of false positives
+                CIDR cidr{L"192.168.243.0/24"};
+                BloomFilter<InternetAddress> f{BloomFilter<InternetAddress>{cidr.GetRange ().GetNumberOfContainedPoints ()}}; // way more than needed so SB small # of false positives
                 Containers::Set<InternetAddress> oracle;
                 for (const InternetAddress& ia : cidr.GetRange ()) {
                     default_random_engine      gen (random_device{}()); //Standard mersenne_twister_engine seeded with rd()
@@ -375,7 +377,7 @@ namespace {
                 DbgTrace (L"Probability of false positives = %f", f.ProbabilityOfFalsePositive (totalEntries));
                 DbgTrace (L"false positives: %d, expected: %f", falsePositives, falsePositivesMax * f.ProbabilityOfFalsePositive (totalEntries));
                 VerifyTestResultWarning (falsePositives < 75); // typically 15, but anything over 75 probably buggy, no matter how things change
-                auto pfp                        = f.ProbabilityOfFalsePositive (totalEntries);
+                auto pfp = f.ProbabilityOfFalsePositive (totalEntries);
                 auto expectedFalsePositiveRange = falsePositivesMax * pfp * (Traversal::Range<double>{.1, 1.1}); // my probs estimate not perfect, so add some wiggle around it
                 DbgTrace (L"expectedFalsePositiveRange: %s", Characters::ToString (expectedFalsePositiveRange).c_str ());
                 VerifyTestResultWarning (expectedFalsePositiveRange.Contains (falsePositives));
@@ -386,9 +388,9 @@ namespace {
                 using Characters::String;
                 using IO::Network::CIDR;
                 using IO::Network::InternetAddress;
-                auto                             hashFunction = [] (const InternetAddress& a) -> size_t { return hash<string>{}(a.As<String> ().AsUTF8<string> ()); };
-                CIDR                             cidr{L"192.168.243.0/24"};
-                BloomFilter<InternetAddress>     f{BloomFilter<InternetAddress>{cidr.GetRange ().GetNumberOfContainedPoints (), hashFunction}}; // way more than needed so SB small # of false positives
+                auto hashFunction = [] (const InternetAddress& a) -> size_t { return hash<string>{}(a.As<String> ().AsUTF8<string> ()); };
+                CIDR cidr{L"192.168.243.0/24"};
+                BloomFilter<InternetAddress> f{BloomFilter<InternetAddress>{cidr.GetRange ().GetNumberOfContainedPoints (), hashFunction}}; // way more than needed so SB small # of false positives
                 Containers::Set<InternetAddress> oracle;
                 for (const InternetAddress& ia : cidr.GetRange ()) {
                     default_random_engine      gen{random_device{}()}; //Standard mersenne_twister_engine seeded with rd()
@@ -415,7 +417,7 @@ namespace {
                 DbgTrace (L"Probability of false positives = %f", f.ProbabilityOfFalsePositive (totalEntries));
                 DbgTrace (L"false positives: %d, expected: %f", falsePositives, falsePositivesMax * f.ProbabilityOfFalsePositive (totalEntries));
                 VerifyTestResultWarning (falsePositives < 75); // typically 15, but anything over 75 probably buggy, no matter how things change
-                auto pfp                        = f.ProbabilityOfFalsePositive (totalEntries);
+                auto pfp = f.ProbabilityOfFalsePositive (totalEntries);
                 auto expectedFalsePositiveRange = falsePositivesMax * pfp * (Traversal::Range<double>{.1, 1.1}); // my probs estimate not perfect, so add some wiggle around it
                 DbgTrace (L"expectedFalsePositiveRange: %s", Characters::ToString (expectedFalsePositiveRange).c_str ());
                 VerifyTestResultWarning (expectedFalsePositiveRange.Contains (falsePositives));
@@ -427,9 +429,11 @@ namespace {
                 using Characters::String;
                 using IO::Network::CIDR;
                 using IO::Network::InternetAddress;
-                auto                             hashFunction = [] (const InternetAddress& a) -> int { return Digester<Algorithm::SuperFastHash>{}(Memory::BLOB{a.As<vector<uint8_t>> ()}); };
-                CIDR                             cidr{L"192.168.243.0/24"};
-                BloomFilter<InternetAddress>     f{BloomFilter<InternetAddress>{cidr.GetRange ().GetNumberOfContainedPoints (), hashFunction}};
+                auto hashFunction = [] (const InternetAddress& a) -> int {
+                    return Digester<Algorithm::SuperFastHash>{}(Memory::BLOB{a.As<vector<uint8_t>> ()});
+                };
+                CIDR                         cidr{L"192.168.243.0/24"};
+                BloomFilter<InternetAddress> f{BloomFilter<InternetAddress>{cidr.GetRange ().GetNumberOfContainedPoints (), hashFunction}};
                 Containers::Set<InternetAddress> oracle;
                 for (const InternetAddress& ia : cidr.GetRange ()) {
                     default_random_engine      gen (random_device{}()); //Standard mersenne_twister_engine seeded with rd()
@@ -456,7 +460,7 @@ namespace {
                 DbgTrace (L"Probability of false positives = %f", f.ProbabilityOfFalsePositive (totalEntries));
                 DbgTrace (L"false positives: %d, expected: %f", falsePositives, falsePositivesMax * f.ProbabilityOfFalsePositive (totalEntries));
                 VerifyTestResultWarning (falsePositives < 75); // typically around 14 (now 20)
-                auto pfp                        = f.ProbabilityOfFalsePositive (totalEntries);
+                auto pfp = f.ProbabilityOfFalsePositive (totalEntries);
                 auto expectedFalsePositiveRange = falsePositivesMax * pfp * (Traversal::Range<double>{.1, 1.1}); // my probs estimate not perfect, so add some wiggle around it
                 DbgTrace (L"expectedFalsePositiveRange: %s", Characters::ToString (expectedFalsePositiveRange).c_str ());
                 VerifyTestResultWarning (expectedFalsePositiveRange.Contains (falsePositives));
@@ -469,21 +473,28 @@ namespace {
                 using Traversal::DiscreteRange;
 
                 auto runTest = [] (CIDR cidr, double runToProbOfFalsePositive, double runToFractionFull, double bitSizeFactor = 1.0) {
-                    Debug::TraceContextBumper                 ctx{L"runTest", L"cidr=%s, runToProbOfFalsePositive=%f, runToFractionFull=%f, bitSizeFactor=%f", Characters::ToString (cidr).c_str (), runToProbOfFalsePositive, runToFractionFull, bitSizeFactor};
+                    Debug::TraceContextBumper                 ctx{L"runTest",
+                                                  L"cidr=%s, runToProbOfFalsePositive=%f, runToFractionFull=%f, bitSizeFactor=%f",
+                                                  Characters::ToString (cidr).c_str (),
+                                                  runToProbOfFalsePositive,
+                                                  runToFractionFull,
+                                                  bitSizeFactor};
                     Containers::Set<InternetAddress>          oracle;
                     Traversal::DiscreteRange<InternetAddress> scanAddressRange = cidr.GetRange ();
-                    BloomFilter<InternetAddress>              addressesProbablyUsed{BloomFilter<InternetAddress>{static_cast<size_t> (bitSizeFactor * scanAddressRange.GetNumberOfContainedPoints ())}};
-                    unsigned int                              nLoopIterations{};
-                    unsigned int                              nActualCollisions{};
-                    unsigned int                              nContainsMistakes{};
+                    BloomFilter<InternetAddress>              addressesProbablyUsed{
+                        BloomFilter<InternetAddress>{static_cast<size_t> (bitSizeFactor * scanAddressRange.GetNumberOfContainedPoints ())}};
+                    unsigned int nLoopIterations{};
+                    unsigned int nActualCollisions{};
+                    unsigned int nContainsMistakes{};
                     while (true) {
                         nLoopIterations++;
                         auto bloomFilterStats = addressesProbablyUsed.GetStatistics ();
                         //DbgTrace (L"***addressesProbablyUsed.GetStatistics ()=%s", Characters::ToString (bloomFilterStats).c_str ());
                         if (bloomFilterStats.ProbabilityOfFalsePositive () < runToProbOfFalsePositive and
                             double (bloomFilterStats.fApparentlyDistinctAddCalls) / scanAddressRange.GetNumberOfContainedPoints () < runToFractionFull) {
-                            static mt19937  sRng_{std::random_device{}()};
-                            unsigned int    selected              = uniform_int_distribution<unsigned int>{1, scanAddressRange.GetNumberOfContainedPoints () - 2}(sRng_);
+                            static mt19937 sRng_{std::random_device{}()};
+                            unsigned int   selected =
+                                uniform_int_distribution<unsigned int>{1, scanAddressRange.GetNumberOfContainedPoints () - 2}(sRng_);
                             InternetAddress ia                    = scanAddressRange.GetLowerBound ().Offset (selected);
                             bool            wasAlreadyPresent     = oracle.Contains (ia);
                             bool            appearsAlreadyPresent = addressesProbablyUsed.Contains (ia);
@@ -497,8 +508,11 @@ namespace {
                             oracle.Add (ia);
                         }
                         else {
-                            DbgTrace (L"Completed full scan: nIterations=%d, nActualCollisions=%d, nContainsMistakes=%d, pctActualCoverage=%f", nLoopIterations, nActualCollisions, nContainsMistakes, double (oracle.size ()) / scanAddressRange.GetNumberOfContainedPoints ());
-                            DbgTrace (L"addressesProbablyUsed.GetStatistics ()=%s", Characters::ToString (addressesProbablyUsed.GetStatistics ()).c_str ());
+                            DbgTrace (
+                                L"Completed full scan: nIterations=%d, nActualCollisions=%d, nContainsMistakes=%d, pctActualCoverage=%f", nLoopIterations,
+                                nActualCollisions, nContainsMistakes, double (oracle.size ()) / scanAddressRange.GetNumberOfContainedPoints ());
+                            DbgTrace (L"addressesProbablyUsed.GetStatistics ()=%s",
+                                      Characters::ToString (addressesProbablyUsed.GetStatistics ()).c_str ());
                             break;
                         }
                     }

@@ -101,14 +101,9 @@ namespace {
     //  static void Transform (UINT4* buf, UINT4* in);
 
     constexpr static unsigned char kPADDING_[64] = {
-        0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+        0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
 
 /* F, G and H are basic MD5 functions: selection, majority, parity */
 #define F(x, y, z) (((x) & (y)) | ((~x) & (z)))
@@ -121,29 +116,29 @@ namespace {
 
 /* FF, GG, HH, and II transformations for rounds 1, 2, 3, and 4 */
 /* Rotation is separate from addition to prevent recomputation */
-#define FF(a, b, c, d, x, s, ac)                      \
-    {                                                 \
-        (a) += F ((b), (c), (d)) + (x) + (UINT4)(ac); \
-        (a) = ROTATE_LEFT ((a), (s));                 \
-        (a) += (b);                                   \
+#define FF(a, b, c, d, x, s, ac)                                                                                                           \
+    {                                                                                                                                      \
+        (a) += F ((b), (c), (d)) + (x) + (UINT4)(ac);                                                                                      \
+        (a) = ROTATE_LEFT ((a), (s));                                                                                                      \
+        (a) += (b);                                                                                                                        \
     }
-#define GG(a, b, c, d, x, s, ac)                      \
-    {                                                 \
-        (a) += G ((b), (c), (d)) + (x) + (UINT4)(ac); \
-        (a) = ROTATE_LEFT ((a), (s));                 \
-        (a) += (b);                                   \
+#define GG(a, b, c, d, x, s, ac)                                                                                                           \
+    {                                                                                                                                      \
+        (a) += G ((b), (c), (d)) + (x) + (UINT4)(ac);                                                                                      \
+        (a) = ROTATE_LEFT ((a), (s));                                                                                                      \
+        (a) += (b);                                                                                                                        \
     }
-#define HH(a, b, c, d, x, s, ac)                      \
-    {                                                 \
-        (a) += H ((b), (c), (d)) + (x) + (UINT4)(ac); \
-        (a) = ROTATE_LEFT ((a), (s));                 \
-        (a) += (b);                                   \
+#define HH(a, b, c, d, x, s, ac)                                                                                                           \
+    {                                                                                                                                      \
+        (a) += H ((b), (c), (d)) + (x) + (UINT4)(ac);                                                                                      \
+        (a) = ROTATE_LEFT ((a), (s));                                                                                                      \
+        (a) += (b);                                                                                                                        \
     }
-#define II(a, b, c, d, x, s, ac)                      \
-    {                                                 \
-        (a) += I ((b), (c), (d)) + (x) + (UINT4)(ac); \
-        (a) = ROTATE_LEFT ((a), (s));                 \
-        (a) += (b);                                   \
+#define II(a, b, c, d, x, s, ac)                                                                                                           \
+    {                                                                                                                                      \
+        (a) += I ((b), (c), (d)) + (x) + (UINT4)(ac);                                                                                      \
+        (a) = ROTATE_LEFT ((a), (s));                                                                                                      \
+        (a) += (b);                                                                                                                        \
     }
 
 }
@@ -180,10 +175,8 @@ void Algorithm::DigesterAlgorithm<Algorithm::MD5>::MD5Update_ (MD5_CTX* mdContex
         /* transform if necessary */
         if (mdi == 0x40) {
             for (i = 0, ii = 0; i < 16; i++, ii += 4)
-                in[i] = (((UINT4)mdContext->in[ii + 3]) << 24) |
-                        (((UINT4)mdContext->in[ii + 2]) << 16) |
-                        (((UINT4)mdContext->in[ii + 1]) << 8) |
-                        ((UINT4)mdContext->in[ii]);
+                in[i] = (((UINT4)mdContext->in[ii + 3]) << 24) | (((UINT4)mdContext->in[ii + 2]) << 16) |
+                        (((UINT4)mdContext->in[ii + 1]) << 8) | ((UINT4)mdContext->in[ii]);
             Transform (mdContext->buf, in);
             mdi = 0;
         }
@@ -214,21 +207,16 @@ void Algorithm::DigesterAlgorithm<Algorithm::MD5>::MD5Final_ (MD5_CTX* mdContext
 
     /* append length in bits and transform */
     for (i = 0, ii = 0; i < 14; i++, ii += 4)
-        in[i] = (((UINT4)mdContext->in[ii + 3]) << 24) |
-                (((UINT4)mdContext->in[ii + 2]) << 16) |
-                (((UINT4)mdContext->in[ii + 1]) << 8) |
+        in[i] = (((UINT4)mdContext->in[ii + 3]) << 24) | (((UINT4)mdContext->in[ii + 2]) << 16) | (((UINT4)mdContext->in[ii + 1]) << 8) |
                 ((UINT4)mdContext->in[ii]);
     Transform (mdContext->buf, in);
 
     /* store buffer in digest */
     for (i = 0, ii = 0; i < 4; i++, ii += 4) {
-        mdContext->digest[ii] = (unsigned char)(mdContext->buf[i] & 0xFF);
-        mdContext->digest[ii + 1] =
-            (unsigned char)((mdContext->buf[i] >> 8) & 0xFF);
-        mdContext->digest[ii + 2] =
-            (unsigned char)((mdContext->buf[i] >> 16) & 0xFF);
-        mdContext->digest[ii + 3] =
-            (unsigned char)((mdContext->buf[i] >> 24) & 0xFF);
+        mdContext->digest[ii]     = (unsigned char)(mdContext->buf[i] & 0xFF);
+        mdContext->digest[ii + 1] = (unsigned char)((mdContext->buf[i] >> 8) & 0xFF);
+        mdContext->digest[ii + 2] = (unsigned char)((mdContext->buf[i] >> 16) & 0xFF);
+        mdContext->digest[ii + 3] = (unsigned char)((mdContext->buf[i] >> 24) & 0xFF);
     }
 }
 
@@ -342,10 +330,7 @@ void Algorithm::DigesterAlgorithm<Algorithm::MD5>::Transform (UINT4* buf, UINT4*
  **************** Algorithm::DigesterAlgorithm<Algorithm::MD5> ******************
  ********************************************************************************
  */
-Algorithm::DigesterAlgorithm<Algorithm::MD5>::DigesterAlgorithm ()
-{
-    MD5Init_ (&fCtx_);
-}
+Algorithm::DigesterAlgorithm<Algorithm::MD5>::DigesterAlgorithm () { MD5Init_ (&fCtx_); }
 
 void Algorithm::DigesterAlgorithm<Algorithm::MD5>::Write (const std::byte* start, const std::byte* end)
 {

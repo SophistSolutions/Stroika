@@ -191,11 +191,11 @@ namespace Stroika::Frameworks::SystemPerformance {
         nonvirtual void UpdateMeasurementSet_ (const MeasurementSet& ms);
 
     private:
-        Execution::Synchronized<Collection<CaptureSet>>                  fCaptureSets_;
-        uint64_t                                                         fCaptureSetChangeCount_{0}; // doesn't need to be atomic because only updated/checked holdign capturesets lock
+        Execution::Synchronized<Collection<CaptureSet>> fCaptureSets_;
+        uint64_t fCaptureSetChangeCount_{0}; // doesn't need to be atomic because only updated/checked holdign capturesets lock
         Execution::Synchronized<Collection<NewMeasurementsCallbackType>> fCallbacks_;
         Execution::Synchronized<MeasurementSet>                          fCurrentMeasurementSet_;
-        Execution::ThreadPool                                            fThreadPool_; // Subtle - construct last so auto-destructed first (shuts down threads)
+        Execution::ThreadPool fThreadPool_; // Subtle - construct last so auto-destructed first (shuts down threads)
     };
 
 }

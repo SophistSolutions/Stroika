@@ -30,7 +30,8 @@ void AssertExternallySynchronizedMutex::lock_ () noexcept
             sharedContext->fThreadWithFullLock_ = this_thread::get_id ();
             if (not sharedContext->GetSharedLockEmpty_ ()) {
                 // If first already shared locks - OK - so long as same thread
-                Require (sharedContext->CountOfIInSharedLockThreads_ (sharedContext->fThreadWithFullLock_) == sharedContext->GetSharedLockThreadsCount_ ());
+                Require (sharedContext->CountOfIInSharedLockThreads_ (sharedContext->fThreadWithFullLock_) ==
+                         sharedContext->GetSharedLockThreadsCount_ ());
             }
         }
         else {
@@ -39,8 +40,12 @@ void AssertExternallySynchronizedMutex::lock_ () noexcept
                 // Duplicate the  Require() below, but with more debug information, because this is a COMMON and IMPORANT case;
                 // If this happens, this means one thread has (the object containing this) is using this object (fake locked)
                 // while we are trying to use it (again doing fake write lock) - so we want to PRINT INFO about that thread!!!
-                DbgTrace (L"ATTEMPT TO modify (lock for write) an object which is already in use (debuglocked) in another thread (thisthread=%s)", Characters::ToString (this_thread::get_id ()).c_str ());
-                DbgTrace ("Original thread holding lock: threadID=%s, and DbgTraceThreadName=%s", Execution::Thread::FormatThreadID_A (sharedContext->fThreadWithFullLock_).c_str (), Debug::GetDbgTraceThreadName_A (sharedContext->fThreadWithFullLock_).c_str ());
+                DbgTrace (
+                    L"ATTEMPT TO modify (lock for write) an object which is already in use (debuglocked) in another thread (thisthread=%s)",
+                    Characters::ToString (this_thread::get_id ()).c_str ());
+                DbgTrace ("Original thread holding lock: threadID=%s, and DbgTraceThreadName=%s",
+                          Execution::Thread::FormatThreadID_A (sharedContext->fThreadWithFullLock_).c_str (),
+                          Debug::GetDbgTraceThreadName_A (sharedContext->fThreadWithFullLock_).c_str ());
             }
             Require (sharedContext->fThreadWithFullLock_ == this_thread::get_id ());
         }
@@ -72,8 +77,11 @@ void AssertExternallySynchronizedMutex::lock_shared_ () const noexcept
                 // Duplicate the  Require() below, but with more debug information, because this is a COMMON and IMPORANT case;
                 // If this happens, this means one thread has (the object containing this) is using this object (fake locked)
                 // while we are trying to use it (again doing fake write lock) - so we want to PRINT INFO about that thread!!!
-                DbgTrace (L"ATTEMPT TO shared_lock (lock for READ) an object which is already in use (debuglocked for WRITE) in another thread");
-                DbgTrace ("Original thread holding (write) lock: threadID=%s, and DbgTraceThreadName=%s", Execution::Thread::FormatThreadID_A (sharedContext->fThreadWithFullLock_).c_str (), Debug::GetDbgTraceThreadName_A (sharedContext->fThreadWithFullLock_).c_str ());
+                DbgTrace (
+                    L"ATTEMPT TO shared_lock (lock for READ) an object which is already in use (debuglocked for WRITE) in another thread");
+                DbgTrace ("Original thread holding (write) lock: threadID=%s, and DbgTraceThreadName=%s",
+                          Execution::Thread::FormatThreadID_A (sharedContext->fThreadWithFullLock_).c_str (),
+                          Debug::GetDbgTraceThreadName_A (sharedContext->fThreadWithFullLock_).c_str ());
             }
             Require (sharedContext->fThreadWithFullLock_ == this_thread::get_id ());
         }

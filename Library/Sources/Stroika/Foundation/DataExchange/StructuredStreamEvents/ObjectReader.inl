@@ -37,24 +37,15 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
         {
             fBuf_.clear (); // readers can legally be re-used
         }
-        virtual shared_ptr<IElementConsumer> HandleChildStart (const Name& name) override
-        {
-            ThrowUnRecognizedStartElt (name);
-        }
-        virtual void HandleTextInside (const String& text) override
-        {
-            fBuf_ += text;
-        }
-        virtual void Deactivating () override;
+        virtual shared_ptr<IElementConsumer> HandleChildStart (const Name& name) override { ThrowUnRecognizedStartElt (name); }
+        virtual void                         HandleTextInside (const String& text) override { fBuf_ += text; }
+        virtual void                         Deactivating () override;
 
     public:
         /**
          *  Helper to convert a reader to a factory (something that creates the reader).
          */
-        static ReaderFromVoidStarFactory AsFactory ()
-        {
-            return IElementConsumer::AsFactory<T, SimpleReader_> ();
-        }
+        static ReaderFromVoidStarFactory AsFactory () { return IElementConsumer::AsFactory<T, SimpleReader_> (); }
 
     private:
         Characters::StringBuilder fBuf_{};
@@ -156,14 +147,8 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
         Require (not fStack_.empty ());
         return fStack_.back ();
     }
-    inline const Registry& Context::GetObjectReaderRegistry () const
-    {
-        return fObjectReaderRegistry_;
-    }
-    inline bool Context::empty () const
-    {
-        return fStack_.empty ();
-    }
+    inline const Registry& Context::GetObjectReaderRegistry () const { return fObjectReaderRegistry_; }
+    inline bool            Context::empty () const { return fStack_.empty (); }
 
     /*
      ********************************************************************************
@@ -188,7 +173,8 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
      ************** ObjectReaderRegistry::StructFieldInfo ***************************
      ********************************************************************************
      */
-    inline StructFieldInfo::StructFieldInfo (const Name& serializedFieldName, const StructFieldMetaInfo& fieldMetaInfo, const optional<ReaderFromVoidStarFactory>& typeMapper)
+    inline StructFieldInfo::StructFieldInfo (const Name& serializedFieldName, const StructFieldMetaInfo& fieldMetaInfo,
+                                             const optional<ReaderFromVoidStarFactory>& typeMapper)
         : fSerializedFieldName{serializedFieldName}
         , fFieldMetaInfo{fieldMetaInfo}
         , fOverrideTypeMapper{typeMapper}
@@ -400,7 +386,8 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
      ********************************************************************************
      */
     template <typename T>
-    const function<std::byte*(T*)> MixinReader<T>::MixinEltTraits::kDefaultAddressOfSubElementFetcher = [] (T* b) { return reinterpret_cast<std::byte*> (b); };
+    const function<std::byte*(T*)> MixinReader<T>::MixinEltTraits::kDefaultAddressOfSubElementFetcher =
+        [] (T* b) { return reinterpret_cast<std::byte*> (b); };
     template <typename T>
     inline MixinReader<T>::MixinEltTraits::MixinEltTraits (const ReaderFromVoidStarFactory& readerFactory, const function<std::byte*(T*)>& addressOfSubEltFetcher)
         : fReaderFactory{readerFactory}
@@ -408,21 +395,26 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
     {
     }
     template <typename T>
-    inline MixinReader<T>::MixinEltTraits::MixinEltTraits (const ReaderFromVoidStarFactory& readerFactory, const function<bool (const Name& name)>& readsName, const function<std::byte*(T*)>& addressOfSubEltFetcher)
+    inline MixinReader<T>::MixinEltTraits::MixinEltTraits (const ReaderFromVoidStarFactory&         readerFactory,
+                                                           const function<bool (const Name& name)>& readsName,
+                                                           const function<std::byte*(T*)>&          addressOfSubEltFetcher)
         : fReaderFactory{readerFactory}
         , fReadsName{readsName}
         , fAddressOfSubElementFetcher{addressOfSubEltFetcher}
     {
     }
     template <typename T>
-    inline MixinReader<T>::MixinEltTraits::MixinEltTraits (const ReaderFromVoidStarFactory& readerFactory, const function<bool ()>& readsText, const function<std::byte*(T*)>& addressOfSubEltFetcher)
+    inline MixinReader<T>::MixinEltTraits::MixinEltTraits (const ReaderFromVoidStarFactory& readerFactory, const function<bool ()>& readsText,
+                                                           const function<std::byte*(T*)>& addressOfSubEltFetcher)
         : fReaderFactory{readerFactory}
         , fReadsText{readsText}
         , fAddressOfSubElementFetcher{addressOfSubEltFetcher}
     {
     }
     template <typename T>
-    inline MixinReader<T>::MixinEltTraits::MixinEltTraits (const ReaderFromVoidStarFactory& readerFactory, const function<bool (const Name& name)>& readsName, const function<bool ()>& readsText, const function<std::byte*(T*)>& addressOfSubEltFetcher)
+    inline MixinReader<T>::MixinEltTraits::MixinEltTraits (const ReaderFromVoidStarFactory& readerFactory,
+                                                           const function<bool (const Name& name)>& readsName, const function<bool ()>& readsText,
+                                                           const function<std::byte*(T*)>& addressOfSubEltFetcher)
         : fReaderFactory{readerFactory}
         , fReadsName{readsName}
         , fReadsText{readsText}
@@ -512,11 +504,10 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
     void RangeReader<T>::Activated (Context& r)
     {
         Assert (fActualReader_ == nullptr);
-        fActualReader_ = Registry::MakeClassReader<RangeData_> (
-            initializer_list<StructFieldInfo>{
-                {fPairNames.first, StructFieldMetaInfo{&RangeData_::fLowerBound}},
-                {fPairNames.second, StructFieldMetaInfo{&RangeData_::fUpperBound}},
-            }) (&fProxyValue_);
+        fActualReader_ = Registry::MakeClassReader<RangeData_> (initializer_list<StructFieldInfo>{
+            {fPairNames.first, StructFieldMetaInfo{&RangeData_::fLowerBound}},
+            {fPairNames.second, StructFieldMetaInfo{&RangeData_::fUpperBound}},
+        }) (&fProxyValue_);
         fActualReader_->Activated (r);
     }
     template <typename T>
@@ -566,7 +557,9 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
     }
     inline ReaderFromVoidStarFactory ReadDownToReader::AsFactory (const ReaderFromVoidStarFactory& theUseReader, const Name& tagToHandOff)
     {
-        return [theUseReader, tagToHandOff] (void* p) -> shared_ptr<IElementConsumer> { return make_shared<ReadDownToReader> (theUseReader (p), tagToHandOff); };
+        return [theUseReader, tagToHandOff] (void* p) -> shared_ptr<IElementConsumer> {
+            return make_shared<ReadDownToReader> (theUseReader (p), tagToHandOff);
+        };
     }
 
     /*
@@ -586,7 +579,8 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
     {
     }
     template <typename T, typename TRAITS>
-    inline RepeatedElementReader<T, TRAITS>::RepeatedElementReader (ContainerType* v, const Name& readonlyThisName, const ReaderFromVoidStarFactory& actualElementFactory)
+    inline RepeatedElementReader<T, TRAITS>::RepeatedElementReader (ContainerType* v, const Name& readonlyThisName,
+                                                                    const ReaderFromVoidStarFactory& actualElementFactory)
         : fValuePtr_{v}
         , fReaderRactory_{actualElementFactory}
         , fReadThisName_{[readonlyThisName] (const Name& n) { return n == readonlyThisName; }}
@@ -642,7 +636,8 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
         return IElementConsumer::AsFactory<T, RepeatedElementReader> ();
     }
     template <typename T, typename TRAITS>
-    inline ReaderFromVoidStarFactory RepeatedElementReader<T, TRAITS>::AsFactory (const Name& readonlyThisName, const ReaderFromVoidStarFactory& actualElementFactory)
+    inline ReaderFromVoidStarFactory RepeatedElementReader<T, TRAITS>::AsFactory (const Name&                      readonlyThisName,
+                                                                                  const ReaderFromVoidStarFactory& actualElementFactory)
     {
         return IElementConsumer::AsFactory<T, RepeatedElementReader> (readonlyThisName, actualElementFactory);
     }
@@ -675,7 +670,8 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
     {
         if constexpr (qDebug) {
             if (not fFactories_.ContainsKey (ti)) {
-                Debug::TraceContextBumper ctx{L"Registry::MakeContextReader", L"FAILED TO FIND READER! (forTypeInfo = %s) - Use of UnRegistered Type!", Characters::ToString (ti).c_str ()};
+                Debug::TraceContextBumper ctx{L"Registry::MakeContextReader", L"FAILED TO FIND READER! (forTypeInfo = %s) - Use of UnRegistered Type!",
+                                              Characters::ToString (ti).c_str ()};
             }
         }
         ReaderFromVoidStarFactory factory = *fFactories_.Lookup (ti); // must be found or caller/assert error
@@ -691,17 +687,18 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
     {
         Add<T> (MakeCommonReader<T> (forward<ARGS> (args)...));
     }
-    inline optional<ReaderFromVoidStarFactory> Registry::Lookup (type_index t) const
-    {
-        return fFactories_.Lookup (t);
-    }
+    inline optional<ReaderFromVoidStarFactory> Registry::Lookup (type_index t) const { return fFactories_.Lookup (t); }
     template <typename CLASS>
     void Registry::AddCommonReader_Class (const Traversal::Iterable<StructFieldInfo>& fieldDescriptions)
     {
         if constexpr (qDebug) {
             for (const auto& kv : fieldDescriptions) {
                 if (not kv.fOverrideTypeMapper.has_value () and not fFactories_.ContainsKey (kv.fFieldMetaInfo.fTypeInfo)) {
-                    Debug::TraceContextBumper ctx{L"Registry::AddCommonReader_Class", L"CLASS=%s field-TypeInfo-not-found = %s, for field named '%s' - UnRegistered Type!", Characters::ToString (typeid (CLASS)).c_str (), Characters::ToString (kv.fFieldMetaInfo.fTypeInfo).c_str (), Characters::ToString (kv.fSerializedFieldName).c_str ()};
+                    Debug::TraceContextBumper ctx{L"Registry::AddCommonReader_Class",
+                                                  L"CLASS=%s field-TypeInfo-not-found = %s, for field named '%s' - UnRegistered Type!",
+                                                  Characters::ToString (typeid (CLASS)).c_str (),
+                                                  Characters::ToString (kv.fFieldMetaInfo.fTypeInfo).c_str (),
+                                                  Characters::ToString (kv.fSerializedFieldName).c_str ()};
                     RequireNotReached ();
                 }
             }
@@ -711,12 +708,15 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
     template <typename CLASS>
     auto Registry::MakeClassReader (const Traversal::Iterable<StructFieldInfo>& fieldDescriptions) -> ReaderFromVoidStarFactory
     {
-        return [fieldDescriptions] (void* data) -> shared_ptr<IElementConsumer> { return make_shared<ClassReader<CLASS>> (fieldDescriptions, reinterpret_cast<CLASS*> (data)); };
+        return [fieldDescriptions] (void* data) -> shared_ptr<IElementConsumer> {
+            return make_shared<ClassReader<CLASS>> (fieldDescriptions, reinterpret_cast<CLASS*> (data));
+        };
     }
     template <typename T, typename READER, typename... ARGS>
     auto Registry::ConvertReaderToFactory (ARGS&&... args) -> ReaderFromVoidStarFactory
     {
-        ReaderFromTStarFactory<T> tmpFactory{[args...] (T* o) -> shared_ptr<IElementConsumer> { return make_shared<READER> (o, forward<ARGS> (args)...); }};
+        ReaderFromTStarFactory<T> tmpFactory{
+            [args...] (T* o) -> shared_ptr<IElementConsumer> { return make_shared<READER> (o, forward<ARGS> (args)...); }};
         return [tmpFactory] (void* data) { return tmpFactory (reinterpret_cast<T*> (data)); };
     }
     template <typename T>
@@ -743,26 +743,22 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
             }
             Characters::StringBuilder            fBuf_{};
             ENUM_TYPE*                           fValue_{};
-            virtual shared_ptr<IElementConsumer> HandleChildStart (const Name& name) override
-            {
-                ThrowUnRecognizedStartElt (name);
-            }
-            virtual void HandleTextInside (const String& text) override
-            {
-                fBuf_ += text;
-            }
-            virtual void Deactivating () override
+            virtual shared_ptr<IElementConsumer> HandleChildStart (const Name& name) override { ThrowUnRecognizedStartElt (name); }
+            virtual void                         HandleTextInside (const String& text) override { fBuf_ += text; }
+            virtual void                         Deactivating () override
             {
                 if (auto optVal = fNameMap.InverseLookup (fBuf_.str ())) [[likely]] {
                     *fValue_ = *optVal;
                 }
                 else {
-                    DbgTrace (L"Enumeration ('%s') value '%s' out of range", Characters::ToString (typeid (ENUM_TYPE)).c_str (), fBuf_.str ().c_str ());
+                    DbgTrace (L"Enumeration ('%s') value '%s' out of range", Characters::ToString (typeid (ENUM_TYPE)).c_str (),
+                              fBuf_.str ().c_str ());
                     Execution::Throw (BadFormatException{"Enumeration value out of range"sv});
                 }
             }
         };
-        return cvtFactory_<ENUM_TYPE> ([nameMap] (ENUM_TYPE* o) -> shared_ptr<IElementConsumer> { return make_shared<myReader_> (nameMap, o); });
+        return cvtFactory_<ENUM_TYPE> (
+            [nameMap] (ENUM_TYPE* o) -> shared_ptr<IElementConsumer> { return make_shared<myReader_> (nameMap, o); });
     };
     template <typename ENUM_TYPE>
     auto Registry::MakeCommonReader_NamedEnumerations (const Configuration::EnumNames<ENUM_TYPE>& nameMap) -> ReaderFromVoidStarFactory
@@ -791,15 +787,9 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
             }
             Characters::StringBuilder            fBuf_{};
             ENUM_TYPE*                           fValue_{};
-            virtual shared_ptr<IElementConsumer> HandleChildStart (const Name& name) override
-            {
-                ThrowUnRecognizedStartElt (name);
-            }
-            virtual void HandleTextInside (const String& text) override
-            {
-                fBuf_ += text;
-            }
-            virtual void Deactivating () override
+            virtual shared_ptr<IElementConsumer> HandleChildStart (const Name& name) override { ThrowUnRecognizedStartElt (name); }
+            virtual void                         HandleTextInside (const String& text) override { fBuf_ += text; }
+            virtual void                         Deactivating () override
             {
                 using SerializeAsType = typename std::underlying_type<ENUM_TYPE>::type;
                 SerializeAsType tmp   = Characters::String2Int<SerializeAsType> (fBuf_.str ());
@@ -807,7 +797,8 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
                     *fValue_ = Configuration::ToEnum<ENUM_TYPE> (tmp);
                 }
                 else {
-                    DbgTrace (L"Enumeration ('%s') value '%s' out of range", Characters::ToString (typeid (ENUM_TYPE)).c_str (), fBuf_.str ().c_str ());
+                    DbgTrace (L"Enumeration ('%s') value '%s' out of range", Characters::ToString (typeid (ENUM_TYPE)).c_str (),
+                              fBuf_.str ().c_str ());
                     Execution::Throw (BadFormatException{"Enumeration value out of range"sv});
                 }
             }
@@ -833,30 +824,22 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
             }
             Characters::StringBuilder            fBuf_{};
             T*                                   fValue_{};
-            virtual shared_ptr<IElementConsumer> HandleChildStart (const Name& name) override
-            {
-                ThrowUnRecognizedStartElt (name);
-            }
-            virtual void HandleTextInside (const String& text) override
-            {
-                fBuf_ += text;
-            }
-            virtual void Deactivating () override
+            virtual shared_ptr<IElementConsumer> HandleChildStart (const Name& name) override { ThrowUnRecognizedStartElt (name); }
+            virtual void                         HandleTextInside (const String& text) override { fBuf_ += text; }
+            virtual void                         Deactivating () override
             {
                 *fValue_ = fString2TMapper_ (fBuf_.str ()); // its up to fString2TMapper_ to throw if this conversion cannot be done
             }
         };
-        return cvtFactory_<T> ([converterFromString2T] (T* o) -> shared_ptr<IElementConsumer> { return make_shared<myReader_> (converterFromString2T, o); });
+        return cvtFactory_<T> (
+            [converterFromString2T] (T* o) -> shared_ptr<IElementConsumer> { return make_shared<myReader_> (converterFromString2T, o); });
     };
     template <typename T>
     inline void Registry::AddCommonReader_Simple (const function<T (String)>& converterFromString2T)
     {
         Add<T> (MakeCommonReader_Simple<T> (converterFromString2T));
     }
-    inline ReaderFromVoidStarFactory Registry::MakeCommonReader_ (const String*)
-    {
-        return MakeCommonReader_SimpleReader_<String> ();
-    }
+    inline ReaderFromVoidStarFactory Registry::MakeCommonReader_ (const String*) { return MakeCommonReader_SimpleReader_<String> (); }
     inline ReaderFromVoidStarFactory Registry::MakeCommonReader_ (const IO::Network::URI*)
     {
         return MakeCommonReader_SimpleReader_<IO::Network::URI> ();
@@ -867,7 +850,8 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
         return MakeCommonReader_NamedEnumerations<T> ();
     }
     template <typename T>
-    inline ReaderFromVoidStarFactory Registry::MakeCommonReader_ (const T*, enable_if_t<is_trivially_copyable_v<T> and is_standard_layout_v<T> and not is_enum_v<T>>*)
+    inline ReaderFromVoidStarFactory
+    Registry::MakeCommonReader_ (const T*, enable_if_t<is_trivially_copyable_v<T> and is_standard_layout_v<T> and not is_enum_v<T>>*)
     {
         return MakeCommonReader_SimpleReader_<T> ();
     }

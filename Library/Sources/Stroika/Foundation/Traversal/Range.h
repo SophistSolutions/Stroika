@@ -68,8 +68,7 @@ namespace Stroika::Foundation::Traversal {
          *  \note really just used to construct Explicit<> or ExplicitOpennessAndDifferenceType<>
          */
         template <typename T>
-        struct DefaultDifferenceTypes : ExplicitDifferenceTypes<Common::DifferenceType<T>> {
-        };
+        struct DefaultDifferenceTypes : ExplicitDifferenceTypes<Common::DifferenceType<T>> {};
 
         /**
          *  \note really just used to construct Explicit<> or ExplicitOpennessAndDifferenceType<>
@@ -90,10 +89,8 @@ namespace Stroika::Foundation::Traversal {
          *  \note really just used to construct Explicit<> or ExplicitOpennessAndDifferenceType<>
          */
         template <typename T>
-        struct DefaultOpenness : conditional_t<
-                                     is_floating_point_v<T>,
-                                     ExplicitOpenness<Openness::eClosed, Openness::eOpen>,
-                                     ExplicitOpenness<Openness::eClosed, Openness::eClosed>> {
+        struct DefaultOpenness
+            : conditional_t<is_floating_point_v<T>, ExplicitOpenness<Openness::eClosed, Openness::eOpen>, ExplicitOpenness<Openness::eClosed, Openness::eClosed>> {
         };
 
         /**
@@ -128,10 +125,7 @@ namespace Stroika::Foundation::Traversal {
          *  The ONLY reason this exists (as opposed to just Explicit<> is because we cannot create templates taking arguments
          *  of BOUNDS sometimes (because the VALUES MIN/MAX cannot be used as template parameters).
          */
-        template <
-            typename T,
-            typename OPENNESS  = DefaultOpenness<T>,
-            typename DIFF_TYPE = DefaultDifferenceTypes<T>>
+        template <typename T, typename OPENNESS = DefaultOpenness<T>, typename DIFF_TYPE = DefaultDifferenceTypes<T>>
         struct ExplicitOpennessAndDifferenceType {
             using value_type             = T;
             using SignedDifferenceType   = typename DIFF_TYPE::SignedDifferenceType;
@@ -144,15 +138,16 @@ namespace Stroika::Foundation::Traversal {
              *  Compute the difference between two elements of type T for the Range (RHS - LHS)
              */
             template <typename TYPE2CHECK = value_type, typename SFINAE_CAN_CONVERT_TYPE_TO_SIGNEDDIFFTYPE = enable_if_t<is_enum_v<TYPE2CHECK> or is_convertible_v<TYPE2CHECK, SignedDifferenceType>>>
-            static constexpr SignedDifferenceType Difference (Configuration::ArgByValueType<value_type> lhs, Configuration::ArgByValueType<value_type> rhs, SFINAE_CAN_CONVERT_TYPE_TO_SIGNEDDIFFTYPE* = nullptr);
-            template <typename TYPE2CHECK = value_type, typename SFINAE_CANNOT_CONVERT_TYPE_TO_SIGNEDDIFFTYPE = enable_if_t<not(is_enum_v<TYPE2CHECK> or is_convertible_v<TYPE2CHECK, SignedDifferenceType>)>>
-            static constexpr SignedDifferenceType Difference (Configuration::ArgByValueType<value_type> lhs, Configuration::ArgByValueType<value_type> rhs, ...);
+            static constexpr SignedDifferenceType Difference (Configuration::ArgByValueType<value_type> lhs,
+                                                              Configuration::ArgByValueType<value_type> rhs,
+                                                              SFINAE_CAN_CONVERT_TYPE_TO_SIGNEDDIFFTYPE* = nullptr);
+            template <typename TYPE2CHECK = value_type,
+                      typename SFINAE_CANNOT_CONVERT_TYPE_TO_SIGNEDDIFFTYPE = enable_if_t<not(is_enum_v<TYPE2CHECK> or is_convertible_v<TYPE2CHECK, SignedDifferenceType>)>>
+            static constexpr SignedDifferenceType Difference (Configuration::ArgByValueType<value_type> lhs,
+                                                              Configuration::ArgByValueType<value_type> rhs, ...);
 
             // Must be able to convert the underlying 'T' difference type to size_t sometimes
-            static size_t DifferenceToSizeT (UnsignedDifferenceType s)
-            {
-                return size_t (s);
-            }
+            static size_t DifferenceToSizeT (UnsignedDifferenceType s) { return size_t (s); }
             template <typename T1C = UnsignedDifferenceType, typename T2C = SignedDifferenceType, typename SFINAE_CAN_ARE_DIFF_CHECK = enable_if_t<not is_same_v<T1C, T2C>>>
             static size_t DifferenceToSizeT (SignedDifferenceType s)
             {
@@ -166,11 +161,7 @@ namespace Stroika::Foundation::Traversal {
          *  Explicit<> can be used to specify inline (type) all the details for the range functionality
          *  for a given type T. Also, it provides often usable default implementations of things like GetNext, GetPrevious ().
          */
-        template <
-            typename T,
-            typename OPENNESS  = DefaultOpenness<T>,
-            typename BOUNDS    = DefaultBounds<T>,
-            typename DIFF_TYPE = DefaultDifferenceTypes<T>>
+        template <typename T, typename OPENNESS = DefaultOpenness<T>, typename BOUNDS = DefaultBounds<T>, typename DIFF_TYPE = DefaultDifferenceTypes<T>>
         struct Explicit : ExplicitOpennessAndDifferenceType<T, OPENNESS, DIFF_TYPE> {
             using inherited  = ExplicitOpennessAndDifferenceType<T, OPENNESS, DIFF_TYPE>;
             using value_type = T;
@@ -210,8 +201,7 @@ namespace Stroika::Foundation::Traversal {
          *  \note Only used to construct/define a specific Range<> type
          */
         template <typename T>
-        struct Default_Integral : Explicit<T, ExplicitOpenness<Openness::eClosed, Openness::eClosed>> {
-        };
+        struct Default_Integral : Explicit<T, ExplicitOpenness<Openness::eClosed, Openness::eClosed>> {};
 
         /**
          *  \note Only used to construct/define a specific Range<> type
@@ -220,8 +210,7 @@ namespace Stroika::Foundation::Traversal {
          *  if you've applied the Stroika_Define_Enum_Bounds() macro to the given enumeration.
          */
         template <typename T>
-        struct Default_Enum : Explicit<T, ExplicitOpenness<Openness::eClosed, Openness::eClosed>, ExplicitBounds<T, T::eSTART, T::eLAST>> {
-        };
+        struct Default_Enum : Explicit<T, ExplicitOpenness<Openness::eClosed, Openness::eClosed>, ExplicitBounds<T, T::eSTART, T::eLAST>> {};
 
         /**
          *  \note Only used to construct/define a specific Range<> type
@@ -230,8 +219,7 @@ namespace Stroika::Foundation::Traversal {
          *  (where you can subtract elements, etc)
          */
         template <typename T>
-        struct Default_Arithmetic : Explicit<T, ExplicitOpenness<Openness::eClosed, Openness::eOpen>> {
-        };
+        struct Default_Arithmetic : Explicit<T, ExplicitOpenness<Openness::eClosed, Openness::eOpen>> {};
 
         /**
          *  Default<> contains the default traits used by a Range<> class. For most builtin types, this will
@@ -246,14 +234,10 @@ namespace Stroika::Foundation::Traversal {
          *       using declarations cannot be specailized in C++17 (@todo add reference)
          */
         template <typename T>
-        struct Default : conditional_t<
-                             is_enum_v<T>, typename Common::LazyType<Default_Enum, T>::type,
-                             conditional_t<
-                                 is_integral_v<T>, typename Common::LazyType<Default_Integral, T>::type,
-                                 conditional_t<
-                                     is_arithmetic_v<T>, typename Common::LazyType<Default_Arithmetic, T>::type,
-                                     void>>> {
-        };
+        struct Default
+            : conditional_t<is_enum_v<T>, typename Common::LazyType<Default_Enum, T>::type,
+                            conditional_t<is_integral_v<T>, typename Common::LazyType<Default_Integral, T>::type,
+                                          conditional_t<is_arithmetic_v<T>, typename Common::LazyType<Default_Arithmetic, T>::type, void>>> {};
 
     }
 
@@ -359,7 +343,8 @@ namespace Stroika::Foundation::Traversal {
         /**
          *  \brief returns a range centered around center, with the given radius (and optionally argument openness).
          */
-        static constexpr Range Ball (Configuration::ArgByValueType<T> center, Configuration::ArgByValueType<UnsignedDifferenceType> radius, Openness lhsOpen = TRAITS::kLowerBoundOpenness, Openness rhsOpen = TRAITS::kUpperBoundOpenness);
+        static constexpr Range Ball (Configuration::ArgByValueType<T> center, Configuration::ArgByValueType<UnsignedDifferenceType> radius,
+                                     Openness lhsOpen = TRAITS::kLowerBoundOpenness, Openness rhsOpen = TRAITS::kUpperBoundOpenness);
 
     public:
         /**
@@ -555,7 +540,9 @@ namespace Stroika::Foundation::Traversal {
          *
          *  @see Characters::ToString ();
          */
-        nonvirtual Characters::String ToString (const function<Characters::String (T)>& elt2String = [] (T x) -> Characters::String { return Characters::ToString (x); }) const;
+        nonvirtual Characters::String ToString (const function<Characters::String (T)>& elt2String = [] (T x) -> Characters::String {
+            return Characters::ToString (x);
+        }) const;
 
     private:
         T        fBegin_;

@@ -86,10 +86,7 @@ string XML::QuoteForXMLAttribute (const wstring& s)
     return r;
 }
 
-string XML::QuoteForXMLAttribute (const String& s)
-{
-    return QuoteForXMLAttribute (s.As<wstring> ());
-}
+string XML::QuoteForXMLAttribute (const String& s) { return QuoteForXMLAttribute (s.As<wstring> ()); }
 
 string XML::QuoteForXMLAttribute (const optional<String>& s)
 {
@@ -196,10 +193,7 @@ String XML::QuoteForXMLW (const String& s)
     return String::FromNarrowSDKString (tmp);
 }
 
-string XML::QuoteForXML (const String& s)
-{
-    return QuoteForXML (s.As<wstring> ());
-}
+string XML::QuoteForXML (const String& s) { return QuoteForXML (s.As<wstring> ()); }
 
 string XML::QuoteForXML (const optional<String>& s)
 {
@@ -234,7 +228,4 @@ void Indenter::Indent (unsigned int indentLevel, wostream& out) const
     }
 }
 
-string XML::Format4XML (bool v)
-{
-    return v ? "true" : "false";
-}
+string XML::Format4XML (bool v) { return v ? "true" : "false"; }

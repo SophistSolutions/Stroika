@@ -113,14 +113,13 @@ void IO::FileSystem::SetFileAccessWideOpened (const filesystem::path& filePathNa
     }
 
     // Try to modify the object's DACL.
-    [[maybe_unused]] DWORD dwRes = ::SetNamedSecurityInfo (
-        const_cast<SDKChar*> (filePathName.c_str ()), // name of the object
-        SE_FILE_OBJECT,                               // type of object
-        DACL_SECURITY_INFORMATION,                    // change only the object's DACL
-        nullptr, nullptr,                             // don't change owner or group
-        pACL,                                         // DACL specified
-        nullptr);                                     // don't change SACL
-                                                      // ignore error from this routine for now  - probably means either we don't have permissions or OS too old to support...
+    [[maybe_unused]] DWORD dwRes = ::SetNamedSecurityInfo (const_cast<SDKChar*> (filePathName.c_str ()), // name of the object
+                                                           SE_FILE_OBJECT,                               // type of object
+                                                           DACL_SECURITY_INFORMATION,                    // change only the object's DACL
+                                                           nullptr, nullptr,                             // don't change owner or group
+                                                           pACL,                                         // DACL specified
+                                                           nullptr);                                     // don't change SACL
+        // ignore error from this routine for now  - probably means either we don't have permissions or OS too old to support...
 #elif qPlatform_POSIX
     ////TODO: Somewhat PRIMITIVE - TMPHACK
     if (filePathName.empty ()) [[unlikely]] {
@@ -159,15 +158,8 @@ String IO::FileSystem::GetVolumeName (const filesystem::path& driveLetterAbsPath
     DWORD   ignored = 0;
     SDKChar volNameBuf[1024]{};
     SDKChar igBuf[1024]{};
-    BOOL    result = ::GetVolumeInformation (
-        driveLetterAbsPath.c_str (),
-        volNameBuf,
-        static_cast<DWORD> (NEltsOf (volNameBuf)),
-        nullptr,
-        &ignored,
-        &ignored,
-        igBuf,
-        static_cast<DWORD> (NEltsOf (igBuf)));
+    BOOL    result = ::GetVolumeInformation (driveLetterAbsPath.c_str (), volNameBuf, static_cast<DWORD> (NEltsOf (volNameBuf)), nullptr,
+                                             &ignored, &ignored, igBuf, static_cast<DWORD> (NEltsOf (igBuf)));
     if (result) {
         return String::FromSDKString (volNameBuf);
     }
@@ -304,9 +296,7 @@ IO::FileSystem::DirectoryChangeWatcher::~DirectoryChangeWatcher ()
     }
 }
 
-void IO::FileSystem::DirectoryChangeWatcher::ValueChanged ()
-{
-}
+void IO::FileSystem::DirectoryChangeWatcher::ValueChanged () {}
 
 void IO::FileSystem::DirectoryChangeWatcher::ThreadProc (void* lpParameter)
 {
@@ -342,8 +332,5 @@ AdjustSysErrorMode::AdjustSysErrorMode (UINT newErrorMode)
 {
 }
 
-AdjustSysErrorMode::~AdjustSysErrorMode ()
-{
-    (void)::SetErrorMode (fSavedErrorMode);
-}
+AdjustSysErrorMode::~AdjustSysErrorMode () { (void)::SetErrorMode (fSavedErrorMode); }
 #endif

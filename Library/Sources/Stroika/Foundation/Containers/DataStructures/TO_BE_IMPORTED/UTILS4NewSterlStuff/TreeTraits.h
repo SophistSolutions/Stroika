@@ -6,12 +6,10 @@
 namespace TreeTraits {
 
     template <typename KEY>
-    struct DefaultComp : public Comparer<KEY> {
-    };
+    struct DefaultComp : public Comparer<KEY> {};
 
     template <typename KEY, typename VALUE>
-    struct DefaultKeyValue : public KeyValue<KEY, VALUE> {
-    };
+    struct DefaultKeyValue : public KeyValue<KEY, VALUE> {};
 
     enum {
         eInvalidRemoveIgnored        = 0x00,

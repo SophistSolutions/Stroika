@@ -251,7 +251,8 @@ namespace Stroika::Foundation::Execution {
         template <typename CONTAINER_OF_WAITABLE_EVENTS, typename SET_OF_WAITABLE_EVENTS_RESULT = set<WaitableEvent*>>
         static SET_OF_WAITABLE_EVENTS_RESULT WaitForAny (CONTAINER_OF_WAITABLE_EVENTS waitableEvents, Time::DurationSecondsType timeout = Time::kInfinite);
         template <typename ITERATOR_OF_WAITABLE_EVENTS, typename SET_OF_WAITABLE_EVENTS_RESULT = set<WaitableEvent*>>
-        static SET_OF_WAITABLE_EVENTS_RESULT WaitForAny (ITERATOR_OF_WAITABLE_EVENTS waitableEventsStart, ITERATOR_OF_WAITABLE_EVENTS waitableEventsEnd, Time::DurationSecondsType timeout = Time::kInfinite);
+        static SET_OF_WAITABLE_EVENTS_RESULT WaitForAny (ITERATOR_OF_WAITABLE_EVENTS waitableEventsStart, ITERATOR_OF_WAITABLE_EVENTS waitableEventsEnd,
+                                                         Time::DurationSecondsType timeout = Time::kInfinite);
 
     public:
         /**
@@ -264,7 +265,8 @@ namespace Stroika::Foundation::Execution {
         template <typename CONTAINER_OF_WAITABLE_EVENTS, typename SET_OF_WAITABLE_EVENTS_RESULT = set<WaitableEvent*>>
         static SET_OF_WAITABLE_EVENTS_RESULT WaitForAnyUntil (CONTAINER_OF_WAITABLE_EVENTS waitableEvents, Time::DurationSecondsType timeoutAt);
         template <typename ITERATOR_OF_WAITABLE_EVENTS, typename SET_OF_WAITABLE_EVENTS_RESULT = set<WaitableEvent*>>
-        static SET_OF_WAITABLE_EVENTS_RESULT WaitForAnyUntil (ITERATOR_OF_WAITABLE_EVENTS waitableEventsStart, ITERATOR_OF_WAITABLE_EVENTS waitableEventsEnd, Time::DurationSecondsType timeoutAt);
+        static SET_OF_WAITABLE_EVENTS_RESULT WaitForAnyUntil (ITERATOR_OF_WAITABLE_EVENTS waitableEventsStart,
+                                                              ITERATOR_OF_WAITABLE_EVENTS waitableEventsEnd, Time::DurationSecondsType timeoutAt);
 
     public:
         /**
@@ -277,7 +279,8 @@ namespace Stroika::Foundation::Execution {
         template <typename CONTAINER_OF_WAITABLE_EVENTS>
         static void WaitForAll (CONTAINER_OF_WAITABLE_EVENTS waitableEvents, Time::DurationSecondsType timeout = Time::kInfinite);
         template <typename ITERATOR_OF_WAITABLE_EVENTS>
-        static void WaitForAll (ITERATOR_OF_WAITABLE_EVENTS waitableEventsStart, ITERATOR_OF_WAITABLE_EVENTS waitableEventsEnd, Time::DurationSecondsType timeout = Time::kInfinite);
+        static void WaitForAll (ITERATOR_OF_WAITABLE_EVENTS waitableEventsStart, ITERATOR_OF_WAITABLE_EVENTS waitableEventsEnd,
+                                Time::DurationSecondsType timeout = Time::kInfinite);
 
     public:
         /**
@@ -290,7 +293,8 @@ namespace Stroika::Foundation::Execution {
         template <typename CONTAINER_OF_WAITABLE_EVENTS>
         static void WaitForAllUntil (CONTAINER_OF_WAITABLE_EVENTS waitableEvents, Time::DurationSecondsType timeoutAt);
         template <typename ITERATOR_OF_WAITABLE_EVENTS>
-        static void WaitForAllUntil (ITERATOR_OF_WAITABLE_EVENTS waitableEventsStart, ITERATOR_OF_WAITABLE_EVENTS waitableEventsEnd, Time::DurationSecondsType timeoutAt);
+        static void WaitForAllUntil (ITERATOR_OF_WAITABLE_EVENTS waitableEventsStart, ITERATOR_OF_WAITABLE_EVENTS waitableEventsEnd,
+                                     Time::DurationSecondsType timeoutAt);
 
     private:
         static inline SpinLock sExtraWaitableEventsMutex_;

@@ -527,8 +527,8 @@ namespace Stroika::Foundation::Time {
         struct ThreeWayComparer;
 
     private:
-        optional<Timezone>  fTimezone_;
-        Date                fDate_;
+        optional<Timezone> fTimezone_;
+        Date               fDate_;
         optional<TimeOfDay> fTimeOfDay_; // for now - still can be 'empty' - but API (as of v2.1d4) disallows passing in or getting out empty TimeOfDay
     };
 
@@ -613,11 +613,9 @@ namespace Stroika::Foundation::Time {
 namespace Stroika::Foundation::Traversal::RangeTraits {
 
     template <>
-    struct DefaultOpenness<Time::DateTime> : ExplicitOpenness<Openness::eClosed, Openness::eClosed> {
-    };
+    struct DefaultOpenness<Time::DateTime> : ExplicitOpenness<Openness::eClosed, Openness::eClosed> {};
     template <>
-    struct DefaultDifferenceTypes<Time::DateTime> : ExplicitDifferenceTypes<Time::Duration> {
-    };
+    struct DefaultDifferenceTypes<Time::DateTime> : ExplicitDifferenceTypes<Time::Duration> {};
     /**
      *  \note   Default<Time::DateTime> properties (kLowerBound/kUpperBound) can only be used after static initialization, and before
      *          static de-initialization.

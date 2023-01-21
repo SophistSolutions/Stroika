@@ -26,8 +26,7 @@ namespace Stroika::Foundation::Cryptography::Digest::Algorithm {
     /**
      *  Algorithm 'type tag' indicating this particular algorithm.
      */
-    struct CRC32 {
-    };
+    struct CRC32 {};
 
     /**
      *  Traits for the CRC32 algorithm.

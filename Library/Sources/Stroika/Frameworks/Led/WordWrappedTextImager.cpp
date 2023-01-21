@@ -110,7 +110,8 @@ void WordWrappedTextImager::FillCache (PartitionMarker* pm, PartitionElementCach
                 Assert (lhsMargin < rhsMargin);
                 wrapWidth = rhsMargin - lhsMargin;
             }
-            size_t bestRowLength = FindWrapPointForMeasuredText (buf.data () + startSoFar, leftToGo, wrapWidth, start + startSoFar, distanceVector.data (), startSoFar);
+            size_t bestRowLength = FindWrapPointForMeasuredText (buf.data () + startSoFar, leftToGo, wrapWidth, start + startSoFar,
+                                                                 distanceVector.data (), startSoFar);
 
             Assert (bestRowLength != 0); // FindWrapPoint() could only do this if we gave it a zero leftToGo - but we wouldn't
             // be in the loop in that case!!!
@@ -299,7 +300,8 @@ size_t WordWrappedTextImager::FindWrapPointForMeasuredText (const Led_tChar* tex
         // we'd be in other part of if-test.
 
         if (guessIndex != 0) {
-            bestRowLength = TryToFindWrapPointForMeasuredText1 (text, length, wrapWidth, offsetToMarkerCoords, widthsVector, startSoFar, guessIndex, wordWrapMax);
+            bestRowLength = TryToFindWrapPointForMeasuredText1 (text, length, wrapWidth, offsetToMarkerCoords, widthsVector, startSoFar,
+                                                                guessIndex, wordWrapMax);
 
             if (bestRowLength == 0) {
                 if (bestBreakPointIndex > (kCharsFromEndToSearchFrom * 3 + 5)) { // no point on a short search
@@ -307,7 +309,8 @@ size_t WordWrappedTextImager::FindWrapPointForMeasuredText (const Led_tChar* tex
 #if qMultiByteCharacters
                     guessIndex = AdjustToValidCharIndex (text, guessIndex);
 #endif
-                    bestRowLength = TryToFindWrapPointForMeasuredText1 (text, length, wrapWidth, offsetToMarkerCoords, widthsVector, startSoFar, guessIndex, wordWrapMax);
+                    bestRowLength = TryToFindWrapPointForMeasuredText1 (text, length, wrapWidth, offsetToMarkerCoords, widthsVector,
+                                                                        startSoFar, guessIndex, wordWrapMax);
                 }
             }
         }
@@ -319,7 +322,8 @@ size_t WordWrappedTextImager::FindWrapPointForMeasuredText (const Led_tChar* tex
                  *      If we got here then there was no good breaking point - we must have one VERY long word
                  *  (or a relatively narrow layout width).
                  */
-                Assert (bestBreakPointIndex == FindWrapPointForOneLongWordForMeasuredText (text, length, wrapWidth, offsetToMarkerCoords, widthsVector, startSoFar));
+                Assert (bestBreakPointIndex ==
+                        FindWrapPointForOneLongWordForMeasuredText (text, length, wrapWidth, offsetToMarkerCoords, widthsVector, startSoFar));
                 bestRowLength = bestBreakPointIndex;
             }
         }
@@ -338,8 +342,7 @@ size_t WordWrappedTextImager::TryToFindWrapPointForMeasuredText1 (const Led_tCha
 #else
                                                                   size_t /*offsetToMarkerCoords*/,
 #endif
-                                                                  const DistanceType* widthsVector, size_t startSoFar,
-                                                                  size_t searchStart, size_t wrapLength)
+                                                                  const DistanceType* widthsVector, size_t startSoFar, size_t searchStart, size_t wrapLength)
 {
     AssertNotNull (widthsVector);
 #if qMultiByteCharacters
@@ -408,9 +411,7 @@ size_t WordWrappedTextImager::FindWrapPointForOneLongWordForMeasuredText (
 #else
     const Led_tChar* /*text*/,
 #endif
-    size_t length, DistanceType wrapWidth,
-    size_t              offsetToMarkerCoords,
-    const DistanceType* widthsVector, size_t startSoFar)
+    size_t length, DistanceType wrapWidth, size_t offsetToMarkerCoords, const DistanceType* widthsVector, size_t startSoFar)
 {
     size_t bestRowLength = 0;
 

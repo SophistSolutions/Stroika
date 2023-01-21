@@ -80,7 +80,8 @@ namespace Stroika::Foundation::Traversal {
     }
     template <typename T, typename MAPPER_ENGINE>
     template <typename INOUT_T>
-    inline FunctionalApplicationContext<INOUT_T, MAPPER_ENGINE> FunctionalApplicationContext<T, MAPPER_ENGINE>::Filter (const function<bool (INOUT_T)>& includeTest)
+    inline FunctionalApplicationContext<INOUT_T, MAPPER_ENGINE>
+    FunctionalApplicationContext<T, MAPPER_ENGINE>::Filter (const function<bool (INOUT_T)>& includeTest)
     {
         return FunctionalApplicationContext<INOUT_T, MAPPER_ENGINE>{fMappingEngine_.Filter (inherited{*this}, includeTest), fMappingEngine_};
     }

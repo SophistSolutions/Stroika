@@ -430,12 +430,12 @@ inline RTFIO::ControlWordNameMap RTFIO::mkDefaultControlWordNameMap ()
 {
     RTFIO::ControlWordNameMap table;
 #if qUseMapForControlWordMap
-#define TAB_INS_METHOD(name)                              \
-    Assert (table.size () == RTFIO::eControlAtom_##name); \
+#define TAB_INS_METHOD(name)                                                                                                               \
+    Assert (table.size () == RTFIO::eControlAtom_##name);                                                                                  \
     table.insert (ControlWordNameMap::value_type (#name, RTFIO::eControlAtom_##name))
 #else
-#define TAB_INS_METHOD(name)                              \
-    Assert (table.size () == RTFIO::eControlAtom_##name); \
+#define TAB_INS_METHOD(name)                                                                                                               \
+    Assert (table.size () == RTFIO::eControlAtom_##name);                                                                                  \
     table.push_back (ControlWordNameMap::value_type (#name, RTFIO::eControlAtom_##name))
 #endif
 
@@ -615,10 +615,7 @@ string RTFIO::GetAtomName (ControlWordAtom atom)
 
 #if !qUseMapForControlWordMap
 struct RTFIO::StringNControlWordAtom_Comparator : binary_function<RTFIO::StringNControlWordAtom, const char*, bool> {
-    bool operator() (const RTFIO::StringNControlWordAtom& x, const char* y) const
-    {
-        return x.first < y;
-    }
+    bool operator() (const RTFIO::StringNControlWordAtom& x, const char* y) const { return x.first < y; }
 };
 #endif
 RTFIO::ControlWordAtom RTFIO::EnterControlWord (
@@ -848,7 +845,8 @@ void SinkStreamDestination::SetSpaceBetweenLinesMult (bool multipleLineSpacing)
     AboutToChange ();
     if (fCurrentContext.fSpaceBetweenLinesMult != multipleLineSpacing) {
         Flush ();
-        fSinkStream.SetLineSpacing (mkLineSpacing_From_RTFValues_ (fCurrentContext.fSpaceBetweenLines, fCurrentContext.fSpaceBetweenLinesMult = multipleLineSpacing));
+        fSinkStream.SetLineSpacing (mkLineSpacing_From_RTFValues_ (fCurrentContext.fSpaceBetweenLines,
+                                                                   fCurrentContext.fSpaceBetweenLinesMult = multipleLineSpacing));
     }
 }
 
@@ -970,30 +968,15 @@ void SinkStreamDestination::Call_trowd ()
     fThisRow      = RowInfo ();  // ditto
 }
 
-void SinkStreamDestination::Set_trleft (TWIPS t)
-{
-    fThisRow.f_trleft = t;
-}
+void SinkStreamDestination::Set_trleft (TWIPS t) { fThisRow.f_trleft = t; }
 
-void SinkStreamDestination::SetDefaultCellMarginsForRow_top (TWIPS t)
-{
-    fThisRow.fDefaultCellMargins.top = t;
-}
+void SinkStreamDestination::SetDefaultCellMarginsForRow_top (TWIPS t) { fThisRow.fDefaultCellMargins.top = t; }
 
-void SinkStreamDestination::SetDefaultCellMarginsForRow_left (TWIPS t)
-{
-    fThisRow.fDefaultCellMargins.left = t;
-}
+void SinkStreamDestination::SetDefaultCellMarginsForRow_left (TWIPS t) { fThisRow.fDefaultCellMargins.left = t; }
 
-void SinkStreamDestination::SetDefaultCellMarginsForRow_bottom (TWIPS t)
-{
-    fThisRow.fDefaultCellMargins.bottom = t;
-}
+void SinkStreamDestination::SetDefaultCellMarginsForRow_bottom (TWIPS t) { fThisRow.fDefaultCellMargins.bottom = t; }
 
-void SinkStreamDestination::SetDefaultCellMarginsForRow_right (TWIPS t)
-{
-    fThisRow.fDefaultCellMargins.right = t;
-}
+void SinkStreamDestination::SetDefaultCellMarginsForRow_right (TWIPS t) { fThisRow.fDefaultCellMargins.right = t; }
 
 void SinkStreamDestination::SetDefaultCellSpacingForRow_top (TWIPS t)
 {
@@ -1050,14 +1033,10 @@ void SinkStreamDestination::DoStartRow ()
             cellWidths.push_back (thisCellW);
         }
         fSinkStream.SetCellWidths (cellWidths);
-        fSinkStream.SetDefaultCellMarginsForCurrentRow (fThisRow.fDefaultCellMargins.top,
-                                                        fThisRow.fDefaultCellMargins.left,
-                                                        fThisRow.fDefaultCellMargins.bottom,
-                                                        fThisRow.fDefaultCellMargins.right);
-        fSinkStream.SetDefaultCellSpacingForCurrentRow (fThisRow.fDefaultCellSpacing.top,
-                                                        fThisRow.fDefaultCellSpacing.left,
-                                                        fThisRow.fDefaultCellSpacing.bottom,
-                                                        fThisRow.fDefaultCellSpacing.right);
+        fSinkStream.SetDefaultCellMarginsForCurrentRow (fThisRow.fDefaultCellMargins.top, fThisRow.fDefaultCellMargins.left,
+                                                        fThisRow.fDefaultCellMargins.bottom, fThisRow.fDefaultCellMargins.right);
+        fSinkStream.SetDefaultCellSpacingForCurrentRow (fThisRow.fDefaultCellSpacing.top, fThisRow.fDefaultCellSpacing.left,
+                                                        fThisRow.fDefaultCellSpacing.bottom, fThisRow.fDefaultCellSpacing.right);
     }
     fTableInRow       = true;
     fTableNextCellNum = 0;
@@ -1105,10 +1084,7 @@ void SinkStreamDestination::Done ()
     Flush ();
 }
 
-SinkStreamDestination::Context SinkStreamDestination::GetContext () const
-{
-    return fCurrentContext;
-}
+SinkStreamDestination::Context SinkStreamDestination::GetContext () const { return fCurrentContext; }
 
 void SinkStreamDestination::SetContext (const Context& c)
 {
@@ -1334,7 +1310,7 @@ void StyledTextIOReader_RTF::ReaderContext::UseOutputCharSetEncoding (CodePage c
 {
     if (fCurrentOutputCharSetEncoding != codePage) {
         fCurrentOutputCharSetEncoding = codePage;
-        fCharsetMappingTable          = RTFIO::SingleByteCharsetToCharsetMappingTable (fCurrentInputCharSetEncoding, fCurrentOutputCharSetEncoding);
+        fCharsetMappingTable = RTFIO::SingleByteCharsetToCharsetMappingTable (fCurrentInputCharSetEncoding, fCurrentOutputCharSetEncoding);
     }
 }
 #endif
@@ -1371,8 +1347,7 @@ void StyledTextIOReader_RTF::ReaderContext::PutRawCharToDestination (char c)
     //
 
 #if qWideCharacters
-    if ((GetCurrentGroupContext ()->fCCHSCodePage != 0) and
-        fDocumentCharacterSet == codePage) {
+    if ((GetCurrentGroupContext ()->fCCHSCodePage != 0) and fDocumentCharacterSet == codePage) {
         codePage = GetCurrentGroupContext ()->fCCHSCodePage;
     }
 
@@ -1436,8 +1411,8 @@ StyledTextIOReader_RTF::ReaderContext::GroupContext::GroupContext (ReaderContext
 {
     if (fParentGroup != nullptr) {
         fDestinationContext = fParentGroup->fDestinationContext; // SEE ABOVE - DON'T GET FROM PARENT GROUP BUT FROM CUR DESTINATION CONTEXT!!!
-        fCurrentCodePage    = fParentGroup->fCurrentCodePage;
-        fCCHSCodePage       = fParentGroup->fCCHSCodePage;
+        fCurrentCodePage = fParentGroup->fCurrentCodePage;
+        fCCHSCodePage    = fParentGroup->fCCHSCodePage;
     }
     readerContext.fCurrentGroup = this;
 }
@@ -1465,14 +1440,9 @@ RTFIO::ControlWordAtomName::ControlWordAtomName (const char* c)
  ********************************************************************************
  */
 const StyledTextIOReader_RTF::SpecialCharMappings StyledTextIOReader_RTF::kMappings[8] = {
-    {RTFIO::eControlAtom_tab, 0x0009},
-    {RTFIO::eControlAtom_bullet, 0x2022},
-    {RTFIO::eControlAtom_endash, 0x2014},
-    {RTFIO::eControlAtom_emdash, 0x2013},
-    {RTFIO::eControlAtom_lquote, 0x2018},
-    {RTFIO::eControlAtom_rquote, 0x2019},
-    {RTFIO::eControlAtom_ldblquote, 0x201c},
-    {RTFIO::eControlAtom_rdblquote, 0x201d},
+    {RTFIO::eControlAtom_tab, 0x0009},       {RTFIO::eControlAtom_bullet, 0x2022},    {RTFIO::eControlAtom_endash, 0x2014},
+    {RTFIO::eControlAtom_emdash, 0x2013},    {RTFIO::eControlAtom_lquote, 0x2018},    {RTFIO::eControlAtom_rquote, 0x2019},
+    {RTFIO::eControlAtom_ldblquote, 0x201c}, {RTFIO::eControlAtom_rdblquote, 0x201d},
 };
 
 StyledTextIOReader_RTF::StyledTextIOReader_RTF (SrcStream* srcStream, SinkStream* sinkStream, RTFInfo* rtfInfo)
@@ -1722,8 +1692,7 @@ void StyledTextIOReader_RTF::ReadGroup (ReaderContext& readerContext)
                         goto ReadNormalChar;
                     } break;
                 }
-            };
-                break;
+            }; break;
 
             case '\n':
             case '\r': {
@@ -2265,7 +2234,8 @@ bool StyledTextIOReader_RTF::HandleControlWord_fi (ReaderContext& readerContext,
         HandleBadlyFormattedInput (); // must have a numeric argument
     }
     else {
-        readerContext.GetDestination ().SetFirstIndent (readerContext.GetCurrentGroupContext ()->fDestinationContext.fFirstIndent = TWIPS (controlWord.fValue));
+        readerContext.GetDestination ().SetFirstIndent (readerContext.GetCurrentGroupContext ()->fDestinationContext.fFirstIndent =
+                                                            TWIPS (controlWord.fValue));
     }
     return false;
 }
@@ -2383,7 +2353,8 @@ bool StyledTextIOReader_RTF::HandleControlWord_li (ReaderContext& readerContext,
         HandleBadlyFormattedInput (); // must have a numeric argument
     }
     else {
-        readerContext.GetDestination ().SetLeftMargin (readerContext.GetCurrentGroupContext ()->fDestinationContext.fLeftMargin = TWIPS (controlWord.fValue));
+        readerContext.GetDestination ().SetLeftMargin (readerContext.GetCurrentGroupContext ()->fDestinationContext.fLeftMargin =
+                                                           TWIPS (controlWord.fValue));
     }
     return false;
 }
@@ -2619,9 +2590,12 @@ bool StyledTextIOReader_RTF::HandleControlWord_object (ReaderContext& readerCont
                                  *  meta-file data to DIB data can be lossy, and can make the data size much larger - both bad things.
                                  *      --LGP 2000-07-08
                                  */
-                                unique_ptr<Led_DIB> dib = unique_ptr<Led_DIB> (ConstructDIBFromData (shownSize, imageFormat, bmSize, objData.size (), &pictureData.front ()));
+                                unique_ptr<Led_DIB> dib = unique_ptr<Led_DIB> (
+                                    ConstructDIBFromData (shownSize, imageFormat, bmSize, objData.size (), &pictureData.front ()));
                                 if (dib.get () != nullptr) {
-                                    RTFIO::UnknownRTFEmbedding* e = new RTFIO::UnknownRTFEmbedding (RTFIO::kRTFBodyGroupFragmentClipFormat, RTFIO::kRTFBodyGroupFragmentEmbeddingTag, s.c_str (), s.length (), dib.get ());
+                                    RTFIO::UnknownRTFEmbedding* e = new RTFIO::UnknownRTFEmbedding (RTFIO::kRTFBodyGroupFragmentClipFormat,
+                                                                                                    RTFIO::kRTFBodyGroupFragmentEmbeddingTag,
+                                                                                                    s.c_str (), s.length (), dib.get ());
                                     e->SetShownSize (shownSize);
                                     embedding = e;
                                 }
@@ -2631,7 +2605,8 @@ bool StyledTextIOReader_RTF::HandleControlWord_object (ReaderContext& readerCont
                     }
 
                     if (embedding == nullptr) {
-                        RTFIO::UnknownRTFEmbedding* e = new RTFIO::UnknownRTFEmbedding (RTFIO::kRTFBodyGroupFragmentClipFormat, RTFIO::kRTFBodyGroupFragmentEmbeddingTag, s.c_str (), s.length ());
+                        RTFIO::UnknownRTFEmbedding* e = new RTFIO::UnknownRTFEmbedding (
+                            RTFIO::kRTFBodyGroupFragmentClipFormat, RTFIO::kRTFBodyGroupFragmentEmbeddingTag, s.c_str (), s.length ());
                         e->SetShownSize (shownSize);
                         embedding = e;
                     }
@@ -2669,7 +2644,8 @@ bool StyledTextIOReader_RTF::HandleControlWord_pard (ReaderContext& readerContex
 {
     // Reset ALL defaults here
     // Assign to current context AND destination at the same time...
-    readerContext.GetDestination ().SetTabStops (readerContext.GetCurrentGroupContext ()->fDestinationContext.fTabStops = TextImager::StandardTabStopList (GetRTFInfo ().GetDefaultTabStop ()));
+    readerContext.GetDestination ().SetTabStops (readerContext.GetCurrentGroupContext ()->fDestinationContext.fTabStops =
+                                                     TextImager::StandardTabStopList (GetRTFInfo ().GetDefaultTabStop ()));
     readerContext.GetDestination ().SetJustification (readerContext.GetCurrentGroupContext ()->fDestinationContext.fJustification = eLeftJustify);
     readerContext.GetDestination ().SetFirstIndent (readerContext.GetCurrentGroupContext ()->fDestinationContext.fFirstIndent = TWIPS{0});
     readerContext.GetDestination ().SetLeftMargin (readerContext.GetCurrentGroupContext ()->fDestinationContext.fLeftMargin = TWIPS{0});
@@ -2718,7 +2694,7 @@ bool StyledTextIOReader_RTF::HandleControlWord_pict (ReaderContext& readerContex
      *  meta-file data to DIB data can be lossy, and can make the data size much larger - both bad things.
      *      --LGP 2000-07-08
      */
-    unique_ptr<Led_DIB>              dib             = unique_ptr<Led_DIB> (ConstructDIBFromData (shownSize, imageFormat, bmSize, objData.size (), &objData.front ()));
+    unique_ptr<Led_DIB> dib = unique_ptr<Led_DIB> (ConstructDIBFromData (shownSize, imageFormat, bmSize, objData.size (), &objData.front ()));
     bool                             createSucceeded = dib.get () != nullptr;
     SimpleEmbeddedObjectStyleMarker* embedding       = nullptr;
     if (createSucceeded) {
@@ -2728,7 +2704,8 @@ bool StyledTextIOReader_RTF::HandleControlWord_pict (ReaderContext& readerContex
         // make a fake-embedding object for what we couldn't read in.
         GetSrcStream ().seek_to (readerContext.GetCurrentGroupContext ()->fCurrentGroupStartIdx);
         string s  = ReadInGroupAndSave ();
-        embedding = new RTFIO::UnknownRTFEmbedding (RTFIO::kRTFBodyGroupFragmentClipFormat, RTFIO::kRTFBodyGroupFragmentEmbeddingTag, s.c_str (), s.length ());
+        embedding = new RTFIO::UnknownRTFEmbedding (RTFIO::kRTFBodyGroupFragmentClipFormat, RTFIO::kRTFBodyGroupFragmentEmbeddingTag,
+                                                    s.c_str (), s.length ());
     }
 
     if (embedding != nullptr) {
@@ -2785,7 +2762,8 @@ bool StyledTextIOReader_RTF::HandleControlWord_ri (ReaderContext& readerContext,
         HandleBadlyFormattedInput (); // must have a numeric argument
     }
     else {
-        readerContext.GetDestination ().SetRightMargin (readerContext.GetCurrentGroupContext ()->fDestinationContext.fRightMargin = TWIPS (controlWord.fValue));
+        readerContext.GetDestination ().SetRightMargin (readerContext.GetCurrentGroupContext ()->fDestinationContext.fRightMargin =
+                                                            TWIPS (controlWord.fValue));
     }
     return false;
 }
@@ -2809,7 +2787,8 @@ bool StyledTextIOReader_RTF::HandleControlWord_sa (ReaderContext& readerContext,
         HandleBadlyFormattedInput (); // must have a numeric argument
     }
     else {
-        readerContext.GetDestination ().SetSpaceAfter (readerContext.GetCurrentGroupContext ()->fDestinationContext.fSpaceAfter = TWIPS (controlWord.fValue));
+        readerContext.GetDestination ().SetSpaceAfter (readerContext.GetCurrentGroupContext ()->fDestinationContext.fSpaceAfter =
+                                                           TWIPS (controlWord.fValue));
     }
     return false;
 }
@@ -2820,7 +2799,8 @@ bool StyledTextIOReader_RTF::HandleControlWord_sb (ReaderContext& readerContext,
         HandleBadlyFormattedInput (); // must have a numeric argument
     }
     else {
-        readerContext.GetDestination ().SetSpaceBefore (readerContext.GetCurrentGroupContext ()->fDestinationContext.fSpaceBefore = TWIPS (controlWord.fValue));
+        readerContext.GetDestination ().SetSpaceBefore (readerContext.GetCurrentGroupContext ()->fDestinationContext.fSpaceBefore =
+                                                            TWIPS (controlWord.fValue));
     }
     return false;
 }
@@ -2837,7 +2817,8 @@ bool StyledTextIOReader_RTF::HandleControlWord_sl (ReaderContext& readerContext,
         HandleBadlyFormattedInput (); // must have a numeric argument
     }
     else {
-        readerContext.GetDestination ().SetSpaceBetweenLines (readerContext.GetCurrentGroupContext ()->fDestinationContext.fSpaceBetweenLines = controlWord.fValue);
+        readerContext.GetDestination ().SetSpaceBetweenLines (readerContext.GetCurrentGroupContext ()->fDestinationContext.fSpaceBetweenLines =
+                                                                  controlWord.fValue);
     }
     return false;
 }
@@ -2848,7 +2829,8 @@ bool StyledTextIOReader_RTF::HandleControlWord_slmult (ReaderContext& readerCont
         HandleBadlyFormattedInput (); // must have a numeric argument
     }
     else {
-        readerContext.GetDestination ().SetSpaceBetweenLinesMult (readerContext.GetCurrentGroupContext ()->fDestinationContext.fSpaceBetweenLinesMult = static_cast<bool> (controlWord.fValue));
+        readerContext.GetDestination ().SetSpaceBetweenLinesMult (
+            readerContext.GetCurrentGroupContext ()->fDestinationContext.fSpaceBetweenLinesMult = static_cast<bool> (controlWord.fValue));
     }
     return false;
 }
@@ -3116,15 +3098,8 @@ void StyledTextIOReader_RTF::ReadIn_pn_Group (ReaderContext& readerContext)
 }
 
 #define qTryQuickISXXX 1
-inline bool quickIsAlpha (char c)
-{
-    return (c >= 'a' and c <= 'z') or
-           (c >= 'A' and c <= 'Z');
-}
-inline bool quickIsDigit (char c)
-{
-    return (c >= '0' and c <= '9');
-}
+inline bool quickIsAlpha (char c) { return (c >= 'a' and c <= 'z') or (c >= 'A' and c <= 'Z'); }
+inline bool quickIsDigit (char c) { return (c >= '0' and c <= '9'); }
 
 RTFIO::ControlWord StyledTextIOReader_RTF::ReadControlWord ()
 {
@@ -3435,7 +3410,8 @@ void StyledTextIOReader_RTF::ReadObjData (vector<char>* data)
     ConsumeNextChar (); // Eat terminating brace
 }
 
-void StyledTextIOReader_RTF::ConstructOLEEmebddingFromRTFInfo ([[maybe_unused]] ReaderContext& readerContext, [[maybe_unused]] TWIPS_Point size, [[maybe_unused]] size_t nBytes, [[maybe_unused]] const void* data)
+void StyledTextIOReader_RTF::ConstructOLEEmebddingFromRTFInfo ([[maybe_unused]] ReaderContext& readerContext, [[maybe_unused]] TWIPS_Point size,
+                                                               [[maybe_unused]] size_t nBytes, [[maybe_unused]] const void* data)
 {
 #if qPlatform_Windows
     using RTFOLEEmbedding = RTFIO::RTFOLEEmbedding;
@@ -3639,7 +3615,8 @@ void StyledTextIOReader_RTF::ReadTopLevelPictData (TWIPS_Point* shownSize, Image
 @DESCRIPTION:   <p>Take the given size and data parameters, and consturct a new Led_DIB (which must be freed by caller using delete()). Returns nullptr
     if unable to convert the given format.</p>
 */
-Led_DIB* StyledTextIOReader_RTF::ConstructDIBFromData ([[maybe_unused]] TWIPS_Point shownSize, ImageFormat imageFormat, [[maybe_unused]] TWIPS_Point bmSize, size_t nBytes, const void* data)
+Led_DIB* StyledTextIOReader_RTF::ConstructDIBFromData ([[maybe_unused]] TWIPS_Point shownSize, ImageFormat imageFormat,
+                                                       [[maybe_unused]] TWIPS_Point bmSize, size_t nBytes, const void* data)
 {
     if (data == nullptr) {
         HandleBadlyFormattedInput ();
@@ -3669,8 +3646,8 @@ Led_DIB* StyledTextIOReader_RTF::ConstructDIBFromData ([[maybe_unused]] TWIPS_Po
             return result;
         } break;
         case eWMF: {
-            Led_DIB*     result = nullptr;
-            HENHMETAFILE hMF    = ::SetWinMetaFileBits (static_cast<UINT> (nBytes), reinterpret_cast<const unsigned char*> (data), nullptr, nullptr);
+            Led_DIB* result = nullptr;
+            HENHMETAFILE hMF = ::SetWinMetaFileBits (static_cast<UINT> (nBytes), reinterpret_cast<const unsigned char*> (data), nullptr, nullptr);
             try {
                 result = ConstructDIBFromEMFHelper (shownSize, bmSize, hMF);
             }
@@ -3733,7 +3710,7 @@ Led_DIB* StyledTextIOReader_RTF::ConstructDIBFromEMFHelper (TWIPS_Point shownSiz
             UINT nPalEntries = ::GetEnhMetaFilePaletteEntries (hMF, 0, nullptr);
             Assert (nPalEntries != GDI_ERROR);
             if (nPalEntries != 0) {
-                LOGPALETTE* paletteData    = reinterpret_cast<LOGPALETTE*> (new char[sizeof (LOGPALETTE) + nPalEntries * sizeof (PALETTEENTRY)]);
+                LOGPALETTE* paletteData = reinterpret_cast<LOGPALETTE*> (new char[sizeof (LOGPALETTE) + nPalEntries * sizeof (PALETTEENTRY)]);
                 paletteData->palVersion    = 0;
                 paletteData->palNumEntries = static_cast<WORD> (nPalEntries);
                 Verify (::GetEnhMetaFilePaletteEntries (hMF, nPalEntries, paletteData->palPalEntry) == nPalEntries);
@@ -4099,10 +4076,7 @@ RTFInfo& StyledTextIOReader_RTF::GetRTFInfo () const
  ************************ StyledTextIOWriter_RTF::WriterContext *****************
  ********************************************************************************
  */
-size_t StyledTextIOWriter_RTF::WriterContext::GetCurSrcOffset () const
-{
-    return GetSrcStream ().current_offset ();
-}
+size_t StyledTextIOWriter_RTF::WriterContext::GetCurSrcOffset () const { return GetSrcStream ().current_offset (); }
 
 SimpleEmbeddedObjectStyleMarker* StyledTextIOWriter_RTF::WriterContext::GetCurSimpleEmbeddedObjectStyleMarker () const
 {
@@ -4157,12 +4131,9 @@ StyledTextIOWriter_RTF::StyledTextIOWriter_RTF (SrcStream* srcStream, SinkStream
     , fHidableTextRuns (srcStream->GetHidableTextRuns ())
 {
     static const pair<string, wchar_t> kCharsWrittenByName[] = {
-        pair<string, wchar_t> ("tab", L'\x0009'),
-        pair<string, wchar_t> ("emdash", L'\x2013'),
-        pair<string, wchar_t> ("endash", L'\x2014'),
-        pair<string, wchar_t> ("lquote", L'\x2018'),
-        pair<string, wchar_t> ("rquote", L'\x2019'),
-        pair<string, wchar_t> ("ldblquote", L'\x201c'),
+        pair<string, wchar_t> ("tab", L'\x0009'),       pair<string, wchar_t> ("emdash", L'\x2013'),
+        pair<string, wchar_t> ("endash", L'\x2014'),    pair<string, wchar_t> ("lquote", L'\x2018'),
+        pair<string, wchar_t> ("rquote", L'\x2019'),    pair<string, wchar_t> ("ldblquote", L'\x201c'),
         pair<string, wchar_t> ("rdblquote", L'\x201d'),
     };
     SetCharactersSavedByName (vector<pair<string, wchar_t>> (&kCharsWrittenByName[0], &kCharsWrittenByName[Memory::NEltsOf (kCharsWrittenByName)]));
@@ -4192,7 +4163,7 @@ void StyledTextIOWriter_RTF::UseInputCharSetEncoding (CodePage codePage)
 {
     if (fCurrentInputCharSetEncoding != codePage) {
         fCurrentInputCharSetEncoding = codePage;
-        fCharsetMappingTable         = RTFIO::SingleByteCharsetToCharsetMappingTable (fCurrentInputCharSetEncoding, fCurrentOutputCharSetEncoding);
+        fCharsetMappingTable = RTFIO::SingleByteCharsetToCharsetMappingTable (fCurrentInputCharSetEncoding, fCurrentOutputCharSetEncoding);
     }
 }
 #endif
@@ -4757,7 +4728,8 @@ bool StyledTextIOWriter_RTF::PossiblyWritePICTEmbedding (WriterContext& /*writer
                 const char* lpBits = reinterpret_cast<const char*> (dib) + Led_GetDIBPalletByteCount (dib) + sizeof (BITMAPINFOHEADER);
                 Assert (mapMode == MM_TWIPS or mapMode == MM_TEXT);
                 if (mapMode == MM_TWIPS) {
-                    ::StretchDIBits (hMFDC, 0, 0, Led_CvtScreenPixelsToTWIPSH (size.h), Led_CvtScreenPixelsToTWIPSV (size.v), 0, 0, size.h, size.v, lpBits, dib, DIB_RGB_COLORS, SRCCOPY);
+                    ::StretchDIBits (hMFDC, 0, 0, Led_CvtScreenPixelsToTWIPSH (size.h), Led_CvtScreenPixelsToTWIPSV (size.v), 0, 0, size.h,
+                                     size.v, lpBits, dib, DIB_RGB_COLORS, SRCCOPY);
                 }
                 else if (mapMode == MM_TEXT) {
                     ::StretchDIBits (hMFDC, 0, 0, size.h, size.v, 0, 0, size.h, size.v, lpBits, dib, DIB_RGB_COLORS, SRCCOPY);

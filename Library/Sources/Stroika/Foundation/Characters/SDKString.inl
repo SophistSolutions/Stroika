@@ -17,15 +17,20 @@ namespace Stroika::Foundation::Characters {
     DISABLE_COMPILER_MSC_WARNING_START (4996);
     DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
     DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
-    [[deprecated ("Since Stroika v3.0d1 use String::FromNarrowSDKString (s).As<wstring> () - less efficent but this is never used")]] inline wstring NarrowSDKStringToWide (const string& s)
+    [[deprecated (
+        "Since Stroika v3.0d1 use String::FromNarrowSDKString (s).As<wstring> () - less efficent but this is never used")]] inline wstring
+    NarrowSDKStringToWide (const string& s)
     {
         return NarrowStringToWide (s, GetDefaultSDKCodePage ());
     }
-    [[deprecated ("Since Stroika v3.0d1 use String (s).AsNarrowSDKString () - less efficent but this is never used")]] inline string WideStringToNarrowSDKString (const wstring& ws)
+    [[deprecated ("Since Stroika v3.0d1 use String (s).AsNarrowSDKString () - less efficent but this is never used")]] inline string
+    WideStringToNarrowSDKString (const wstring& ws)
     {
         return WideStringToNarrow (ws, GetDefaultSDKCodePage ());
     }
-    [[deprecated ("Since Stroika v3.0d1 use String::FromSDKString (s).AsNarrowSDKString () - less efficent but this is never used")]] inline string SDKString2NarrowSDK (const SDKString& s)
+    [[deprecated (
+        "Since Stroika v3.0d1 use String::FromSDKString (s).AsNarrowSDKString () - less efficent but this is never used")]] inline string
+    SDKString2NarrowSDK (const SDKString& s)
     {
 #if qTargetPlatformSDKUseswchar_t
         return WideStringToNarrowSDKString (s);
@@ -33,7 +38,9 @@ namespace Stroika::Foundation::Characters {
         return s;
 #endif
     }
-    [[deprecated ("Since Stroika v3.0d1 use String::FromNarrowSDKString (s).AsSDKString () - less efficent but this is never used")]] inline SDKString NarrowSDK2SDKString (const string& s)
+    [[deprecated (
+        "Since Stroika v3.0d1 use String::FromNarrowSDKString (s).AsSDKString () - less efficent but this is never used")]] inline SDKString
+    NarrowSDK2SDKString (const string& s)
     {
 #if qTargetPlatformSDKUseswchar_t
         return NarrowSDKStringToWide (s);
@@ -41,7 +48,9 @@ namespace Stroika::Foundation::Characters {
         return s;
 #endif
     }
-    [[deprecated ("Since Stroika v3.0d1 use String::FromSDKString ().As<wstring> () - less efficent but this is never used")]] inline wstring SDKString2Wide (const SDKString& s)
+    [[deprecated (
+        "Since Stroika v3.0d1 use String::FromSDKString ().As<wstring> () - less efficent but this is never used")]] inline wstring
+    SDKString2Wide (const SDKString& s)
     {
 #if qTargetPlatformSDKUseswchar_t
         return s;
@@ -49,7 +58,8 @@ namespace Stroika::Foundation::Characters {
         return NarrowSDKStringToWide (s);
 #endif
     }
-    [[deprecated ("Since Stroika v3.0d1 use String{s}.AsSDKString () - less efficent but this is never used")]] inline SDKString Wide2SDKString (const wstring& s)
+    [[deprecated ("Since Stroika v3.0d1 use String{s}.AsSDKString () - less efficent but this is never used")]] inline SDKString
+    Wide2SDKString (const wstring& s)
     {
 #if qTargetPlatformSDKUseswchar_t
         return s;

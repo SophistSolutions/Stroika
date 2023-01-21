@@ -12,7 +12,8 @@ namespace Stroika::Foundation::Traversal {
 
     namespace Private_ {
         template <typename RANGETYPE, typename RANGE_ELT_COMPARER>
-        bool IsPartition_Helper_ (const Iterable<RANGETYPE>& iterable, RANGE_ELT_COMPARER comparer /*, enable_if_t <isomethingto check for operator <> usesInsertPair = 0*/)
+        bool IsPartition_Helper_ (const Iterable<RANGETYPE>& iterable,
+                                  RANGE_ELT_COMPARER comparer /*, enable_if_t <isomethingto check for operator <> usesInsertPair = 0*/)
         {
             using Common::KeyValuePair;
             using Containers::SortedMapping;
@@ -52,7 +53,8 @@ namespace Stroika::Foundation::Traversal {
     template <typename RANGETYPE>
     inline bool IsPartition (const Iterable<RANGETYPE>& iterable)
     {
-        return Private_::IsPartition_Helper_<RANGETYPE> (iterable, [] (typename RANGETYPE::value_type lhs, typename RANGETYPE::value_type rhs) { return Math::NearlyEquals (lhs, rhs); });
+        return Private_::IsPartition_Helper_<RANGETYPE> (
+            iterable, [] (typename RANGETYPE::value_type lhs, typename RANGETYPE::value_type rhs) { return Math::NearlyEquals (lhs, rhs); });
     }
     template <typename RANGETYPE, typename RANGE_ELT_COMPARER>
     inline bool IsPartition (const Iterable<RANGETYPE>& iterable, RANGE_ELT_COMPARER comparer)

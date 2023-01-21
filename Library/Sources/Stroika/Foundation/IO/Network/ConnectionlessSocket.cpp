@@ -37,15 +37,21 @@ namespace {
             virtual void SendTo (const byte* start, const byte* end, const SocketAddress& sockAddr) override
             {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"IO::Network::Socket...rep...::SendTo", L"end-start=%lld, sockAddr=%s", static_cast<long long> (end - start), Characters::ToString (sockAddr).c_str ())};
+                Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (
+                    L"IO::Network::Socket...rep...::SendTo", L"end-start=%lld, sockAddr=%s", static_cast<long long> (end - start),
+                    Characters::ToString (sockAddr).c_str ())};
 #endif
                 AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
                 sockaddr_storage                                sa = sockAddr.As<sockaddr_storage> ();
 #if qPlatform_POSIX
-                Handle_ErrNoResultInterruption ([this, &start, &end, &sa, &sockAddr] () -> int { return ::sendto (fSD_, reinterpret_cast<const char*> (start), end - start, 0, reinterpret_cast<sockaddr*> (&sa), sockAddr.GetRequiredSize ()); });
+                Handle_ErrNoResultInterruption ([this, &start, &end, &sa, &sockAddr] () -> int {
+                    return ::sendto (fSD_, reinterpret_cast<const char*> (start), end - start, 0, reinterpret_cast<sockaddr*> (&sa),
+                                     sockAddr.GetRequiredSize ());
+                });
 #elif qPlatform_Windows
                 Require (end - start < numeric_limits<int>::max ());
-                ThrowWSASystemErrorIfSOCKET_ERROR (::sendto (fSD_, reinterpret_cast<const char*> (start), static_cast<int> (end - start), 0, reinterpret_cast<sockaddr*> (&sa), static_cast<int> (sockAddr.GetRequiredSize ())));
+                ThrowWSASystemErrorIfSOCKET_ERROR (::sendto (fSD_, reinterpret_cast<const char*> (start), static_cast<int> (end - start), 0,
+                                                             reinterpret_cast<sockaddr*> (&sa), static_cast<int> (sockAddr.GetRequiredSize ())));
 #else
                 AssertNotImplemented ();
 #endif
@@ -87,14 +93,20 @@ namespace {
                 struct sockaddr_storage sa;
                 socklen_t               salen = sizeof (sa);
 #if qPlatform_POSIX
-                size_t result = static_cast<size_t> (Handle_ErrNoResultInterruption ([&] () -> int { return ::recvfrom (fSD_, reinterpret_cast<char*> (intoStart), intoEnd - intoStart, flag, fromAddress == nullptr ? nullptr : reinterpret_cast<sockaddr*> (&sa), fromAddress == nullptr ? nullptr : &salen); }));
+                size_t result = static_cast<size_t> (Handle_ErrNoResultInterruption ([&] () -> int {
+                    return ::recvfrom (fSD_, reinterpret_cast<char*> (intoStart), intoEnd - intoStart, flag,
+                                       fromAddress == nullptr ? nullptr : reinterpret_cast<sockaddr*> (&sa),
+                                       fromAddress == nullptr ? nullptr : &salen);
+                }));
                 if (fromAddress != nullptr) {
                     *fromAddress = sa;
                 }
                 return result;
 #elif qPlatform_Windows
                 Require (intoEnd - intoStart < numeric_limits<int>::max ());
-                size_t result = static_cast<size_t> (ThrowWSASystemErrorIfSOCKET_ERROR (::recvfrom (fSD_, reinterpret_cast<char*> (intoStart), static_cast<int> (intoEnd - intoStart), flag, fromAddress == nullptr ? nullptr : reinterpret_cast<sockaddr*> (&sa), fromAddress == nullptr ? nullptr : &salen)));
+                size_t result = static_cast<size_t> (ThrowWSASystemErrorIfSOCKET_ERROR (::recvfrom (
+                    fSD_, reinterpret_cast<char*> (intoStart), static_cast<int> (intoEnd - intoStart), flag,
+                    fromAddress == nullptr ? nullptr : reinterpret_cast<sockaddr*> (&sa), fromAddress == nullptr ? nullptr : &salen)));
                 if (fromAddress != nullptr) {
                     *fromAddress = sa;
                 }
@@ -105,10 +117,15 @@ namespace {
             }
             virtual void JoinMulticastGroup (const InternetAddress& iaddr, const InternetAddress& onInterface) override
             {
-                Debug::TraceContextBumper                       ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"IO::Network::Socket::JoinMulticastGroup", L"iaddr=%s onInterface=%s", Characters::ToString (iaddr).c_str (), Characters::ToString (onInterface).c_str ())};
+                Debug::TraceContextBumper                       ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (
+                    L"IO::Network::Socket::JoinMulticastGroup", L"iaddr=%s onInterface=%s", Characters::ToString (iaddr).c_str (),
+                    Characters::ToString (onInterface).c_str ())};
                 AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
-                Assert (iaddr.GetAddressFamily () == InternetAddress::AddressFamily::V4 or iaddr.GetAddressFamily () == InternetAddress::AddressFamily::V6);
-                auto                       activity = Execution::LazyEvalActivity{[&] () -> Characters::String { return L"joining multicast group " + Characters::ToString (iaddr) + L" on interface " + Characters::ToString (onInterface); }};
+                Assert (iaddr.GetAddressFamily () == InternetAddress::AddressFamily::V4 or
+                        iaddr.GetAddressFamily () == InternetAddress::AddressFamily::V6);
+                auto                       activity = Execution::LazyEvalActivity{[&] () -> Characters::String {
+                    return L"joining multicast group " + Characters::ToString (iaddr) + L" on interface " + Characters::ToString (onInterface);
+                }};
                 Execution::DeclareActivity activityDeclare{&activity};
                 switch (iaddr.GetAddressFamily ()) {
                     case InternetAddress::AddressFamily::V4: {
@@ -129,7 +146,9 @@ namespace {
             }
             virtual void LeaveMulticastGroup (const InternetAddress& iaddr, const InternetAddress& onInterface) override
             {
-                Debug::TraceContextBumper                       ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"IO::Network::Socket::LeaveMulticastGroup", L"iaddr=%s onInterface=%s", Characters::ToString (iaddr).c_str (), Characters::ToString (onInterface).c_str ())};
+                Debug::TraceContextBumper                       ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (
+                    L"IO::Network::Socket::LeaveMulticastGroup", L"iaddr=%s onInterface=%s", Characters::ToString (iaddr).c_str (),
+                    Characters::ToString (onInterface).c_str ())};
                 AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
                 switch (iaddr.GetAddressFamily ()) {
                     case InternetAddress::AddressFamily::V4: {
@@ -182,7 +201,8 @@ namespace {
                             catch (const std::system_error& e) {
                                 // I've dug into this, and have no idea why its failing - with EINVAL
                                 if (e.code () == errc::invalid_argument) {
-                                    DbgTrace (L"IPV6_MULTICAST_HOPS: For now ignoring what is probbaly a very small, minor bug, but one where I have no idea why this is happening - but I saw reliably on Ubuntu/Linux");
+                                    DbgTrace (L"IPV6_MULTICAST_HOPS: For now ignoring what is probbaly a very small, minor bug, but one "
+                                              L"where I have no idea why this is happening - but I saw reliably on Ubuntu/Linux");
                                 }
                                 // @todo - fix this code - almost certainly wrong...
                             }
@@ -230,7 +250,8 @@ namespace {
                             catch (const std::system_error& e) {
                                 // I've dug into this, and have no idea why its failing - with EINVAL
                                 if (e.code () == errc::invalid_argument) {
-                                    DbgTrace (L"IPV6_MULTICAST_LOOP: For now ignoring what is probbaly a very small, minor bug, but one where I have no idea why this is happening - but I saw reliably on Ubuntu/Linux");
+                                    DbgTrace (L"IPV6_MULTICAST_LOOP: For now ignoring what is probbaly a very small, minor bug, but one "
+                                              L"where I have no idea why this is happening - but I saw reliably on Ubuntu/Linux");
                                 }
                                 // @todo - fix this code - almost certainly wrong...
                             }

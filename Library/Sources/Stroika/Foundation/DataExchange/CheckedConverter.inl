@@ -43,8 +43,10 @@ namespace Stroika::Foundation::DataExchange {
     template <typename RANGE_TYPE>
     RANGE_TYPE CheckedConverter_Range (const typename RANGE_TYPE::value_type& s, const typename RANGE_TYPE::value_type& e)
     {
-        typename RANGE_TYPE::value_type useS = Private_::CheckedConverter_Range_Helper_Pinner_ (s, RANGE_TYPE::TraitsType::kLowerBound, RANGE_TYPE::TraitsType::kUpperBound);
-        typename RANGE_TYPE::value_type useE = Private_::CheckedConverter_Range_Helper_Pinner_ (e, RANGE_TYPE::TraitsType::kLowerBound, RANGE_TYPE::TraitsType::kUpperBound);
+        typename RANGE_TYPE::value_type useS =
+            Private_::CheckedConverter_Range_Helper_Pinner_ (s, RANGE_TYPE::TraitsType::kLowerBound, RANGE_TYPE::TraitsType::kUpperBound);
+        typename RANGE_TYPE::value_type useE =
+            Private_::CheckedConverter_Range_Helper_Pinner_ (e, RANGE_TYPE::TraitsType::kLowerBound, RANGE_TYPE::TraitsType::kUpperBound);
         // Note: these checks MUST use <= and >= and IGNORE openness, because the bounds need not be in the range.
         if (not(RANGE_TYPE::TraitsType::kLowerBound <= useS)) {
             Execution::Throw (BadFormatException{"Value less than RangeType lower bounds"sv});
@@ -66,7 +68,8 @@ namespace Stroika::Foundation::DataExchange {
     template <typename RANGE_TYPE>
     typename RANGE_TYPE::value_type CheckedConverter_ValueInRange (typename RANGE_TYPE::value_type val, const RANGE_TYPE& range)
     {
-        typename RANGE_TYPE::value_type useVal = Private_::CheckedConverter_Range_Helper_Pinner_ (val, RANGE_TYPE::TraitsType::kLowerBound, RANGE_TYPE::TraitsType::kUpperBound);
+        typename RANGE_TYPE::value_type useVal =
+            Private_::CheckedConverter_Range_Helper_Pinner_ (val, RANGE_TYPE::TraitsType::kLowerBound, RANGE_TYPE::TraitsType::kUpperBound);
         if (not range.Contains (useVal)) {
             if (useVal <= range.GetLowerBound ()) {
                 Execution::Throw (BadFormatException{"Value out of range (too low)"sv});

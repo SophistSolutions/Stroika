@@ -45,10 +45,7 @@ namespace Stroika::Foundation::Streams {
         ~Rep_ ()                                 = default;
         nonvirtual Rep_& operator= (const Rep_&) = delete;
 
-        virtual bool IsSeekable () const override
-        {
-            return true;
-        }
+        virtual bool IsSeekable () const override { return true; }
         virtual void CloseWrite () override
         {
             Require (IsOpenWrite ());
@@ -58,19 +55,13 @@ namespace Stroika::Foundation::Streams {
             }
             fMoreDataWaiter_.Set ();
         }
-        virtual bool IsOpenWrite () const override
-        {
-            return not fClosedForWrites_;
-        }
+        virtual bool IsOpenWrite () const override { return not fClosedForWrites_; }
         virtual void CloseRead () override
         {
             Require (IsOpenRead ());
             fIsOpenForRead_ = false;
         }
-        virtual bool IsOpenRead () const override
-        {
-            return fIsOpenForRead_;
-        }
+        virtual bool   IsOpenRead () const override { return fIsOpenForRead_; }
         virtual size_t Read (ELEMENT_TYPE* intoStart, ELEMENT_TYPE* intoEnd) override
         {
             RequireNotNull (intoStart);
@@ -249,8 +240,8 @@ namespace Stroika::Foundation::Streams {
         }
 
     private:
-        mutable recursive_mutex                fMutex_;
-        Execution::WaitableEvent               fMoreDataWaiter_{Execution::WaitableEvent::eManualReset}; // not a race cuz always set/reset when holding fMutex; no need to pre-set cuz auto set when someone adds data (Write)
+        mutable recursive_mutex fMutex_;
+        Execution::WaitableEvent fMoreDataWaiter_{Execution::WaitableEvent::eManualReset}; // not a race cuz always set/reset when holding fMutex; no need to pre-set cuz auto set when someone adds data (Write)
         vector<ElementType>                    fData_;
         typename vector<ElementType>::iterator fReadCursor_;
         typename vector<ElementType>::iterator fWriteCursor_;
@@ -276,7 +267,8 @@ namespace Stroika::Foundation::Streams {
         return make_shared<Rep_> (start, end);
     }
     template <typename ELEMENT_TYPE>
-    inline auto SharedMemoryStream<ELEMENT_TYPE>::New (Execution::InternallySynchronized internallySynchronized, const ELEMENT_TYPE* start, const ELEMENT_TYPE* end) -> Ptr
+    inline auto SharedMemoryStream<ELEMENT_TYPE>::New (Execution::InternallySynchronized internallySynchronized, const ELEMENT_TYPE* start,
+                                                       const ELEMENT_TYPE* end) -> Ptr
     {
         return New (start, end);
     }

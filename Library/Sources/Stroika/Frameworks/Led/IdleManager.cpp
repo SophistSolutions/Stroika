@@ -18,18 +18,14 @@ using namespace Stroika::Frameworks::Led;
  ************************************ Idler *************************************
  ********************************************************************************
  */
-void Idler::SpendIdleTime ()
-{
-}
+void Idler::SpendIdleTime () {}
 
 /*
  ********************************************************************************
  ******************************* EnterIdler *************************************
  ********************************************************************************
  */
-void EnterIdler::OnEnterIdle ()
-{
-}
+void EnterIdler::OnEnterIdle () {}
 
 /*
  ********************************************************************************
@@ -180,7 +176,4 @@ void IdleManager::SetIdleManagerOSImpl (IdleManagerOSImpl* impl)
  ************************** IdleManager::IdleManagerOSImpl **********************
  ********************************************************************************
  */
-void IdleManager::IdleManagerOSImpl::CallSpendTime ()
-{
-    IdleManager::Get ().CallSpendTime ();
-}
+void IdleManager::IdleManagerOSImpl::CallSpendTime () { IdleManager::Get ().CallSpendTime (); }

@@ -133,7 +133,9 @@ namespace Stroika::Frameworks::Led {
         SimpleEmbeddedObjectStyleMarker () = default;
 
     public:
-        enum { eEmbeddedObjectPriority = eBaselinePriority + 100 };
+        enum {
+            eEmbeddedObjectPriority = eBaselinePriority + 100
+        };
         virtual int GetPriority () const override;
 
         // Subclasses simply must override DrawSegment and MeasureSegmentWidth/MeasureSegmentHeight
@@ -163,9 +165,11 @@ namespace Stroika::Frameworks::Led {
         virtual bool HandleOpen ();
 
     public:
-        enum PrivateCmdNumber { eMinPrivateCmdNum = 1,
-                                eOpenCmdNum       = eMinPrivateCmdNum,
-                                eMaxPrivateCmdNum = 100 };
+        enum PrivateCmdNumber {
+            eMinPrivateCmdNum = 1,
+            eOpenCmdNum       = eMinPrivateCmdNum,
+            eMaxPrivateCmdNum = 100
+        };
         virtual vector<PrivateCmdNumber> GetCmdNumbers () const;
         virtual bool                     IsCmdEnabled (PrivateCmdNumber cmd) const;
         virtual SDKString                GetCmdText (PrivateCmdNumber cmd);
@@ -230,16 +234,15 @@ namespace Stroika::Frameworks::Led {
                                                       // objects, or an assert error.
                                                       // Reason for this design is we need access to some pict resource, but we don't want
                                                       // Led to depend on any such things (would make build/distr/name conflicts etc
-                                                      // more complex). So in main, if you ever plan to use these, then load resource and assign
-                                                      // to this member.
+            // more complex). So in main, if you ever plan to use these, then load resource and assign
+            // to this member.
 #endif
     public:
-        virtual void         DrawSegment (const StyledTextImager* imager, const RunElement& runElement, Tablet* tablet,
-                                          size_t from, size_t to, const TextLayoutBlock& text, const Led_Rect& drawInto, const Led_Rect& /*invalidRect*/,
-                                          CoordinateType useBaseLine, DistanceType* pixelsDrawn) override;
-        virtual void         MeasureSegmentWidth (const StyledTextImager* imager, const RunElement& runElement, size_t from, size_t to,
-                                                  const Led_tChar* text,
-                                                  DistanceType*    distanceResults) const override;
+        virtual void DrawSegment (const StyledTextImager* imager, const RunElement& runElement, Tablet* tablet, size_t from, size_t to,
+                                  const TextLayoutBlock& text, const Led_Rect& drawInto, const Led_Rect& /*invalidRect*/,
+                                  CoordinateType useBaseLine, DistanceType* pixelsDrawn) override;
+        virtual void MeasureSegmentWidth (const StyledTextImager* imager, const RunElement& runElement, size_t from, size_t to,
+                                          const Led_tChar* text, DistanceType* distanceResults) const override;
         virtual DistanceType MeasureSegmentHeight (const StyledTextImager* imager, const RunElement& runElement, size_t from, size_t to) const override;
 
     public:
@@ -287,17 +290,16 @@ namespace Stroika::Frameworks::Led {
                                                      // objects, or an assert error.
                                                      // Reason for this design is we need access to some pict resource, but we don't want
                                                      // Led to depend on any such things (would make build/distr/name conflicts etc
-                                                     // more complex). So in main, if you ever plan to use these, then load resource and assign
-                                                     // to this member.
+            // more complex). So in main, if you ever plan to use these, then load resource and assign
+            // to this member.
 #endif
 
     public:
-        virtual void         DrawSegment (const StyledTextImager* imager, const RunElement& runElement, Tablet* tablet,
-                                          size_t from, size_t to, const TextLayoutBlock& text, const Led_Rect& drawInto, const Led_Rect& /*invalidRect*/,
-                                          CoordinateType useBaseLine, DistanceType* pixelsDrawn) override;
-        virtual void         MeasureSegmentWidth (const StyledTextImager* imager, const RunElement& runElement, size_t from, size_t to,
-                                                  const Led_tChar* text,
-                                                  DistanceType*    distanceResults) const override;
+        virtual void DrawSegment (const StyledTextImager* imager, const RunElement& runElement, Tablet* tablet, size_t from, size_t to,
+                                  const TextLayoutBlock& text, const Led_Rect& drawInto, const Led_Rect& /*invalidRect*/,
+                                  CoordinateType useBaseLine, DistanceType* pixelsDrawn) override;
+        virtual void MeasureSegmentWidth (const StyledTextImager* imager, const RunElement& runElement, size_t from, size_t to,
+                                          const Led_tChar* text, DistanceType* distanceResults) const override;
         virtual DistanceType MeasureSegmentHeight (const StyledTextImager* imager, const RunElement& runElement, size_t from, size_t to) const override;
 
     public:
@@ -361,12 +363,11 @@ namespace Stroika::Frameworks::Led {
 #endif
 
     public:
-        virtual void         DrawSegment (const StyledTextImager* imager, const RunElement& runElement, Tablet* tablet,
-                                          size_t from, size_t to, const TextLayoutBlock& text, const Led_Rect& drawInto, const Led_Rect& /*invalidRect*/,
-                                          CoordinateType useBaseLine, DistanceType* pixelsDrawn) override;
-        virtual void         MeasureSegmentWidth (const StyledTextImager* imager, const RunElement& runElement, size_t from, size_t to,
-                                                  const Led_tChar* text,
-                                                  DistanceType*    distanceResults) const override;
+        virtual void DrawSegment (const StyledTextImager* imager, const RunElement& runElement, Tablet* tablet, size_t from, size_t to,
+                                  const TextLayoutBlock& text, const Led_Rect& drawInto, const Led_Rect& /*invalidRect*/,
+                                  CoordinateType useBaseLine, DistanceType* pixelsDrawn) override;
+        virtual void MeasureSegmentWidth (const StyledTextImager* imager, const RunElement& runElement, size_t from, size_t to,
+                                          const Led_tChar* text, DistanceType* distanceResults) const override;
         virtual DistanceType MeasureSegmentHeight (const StyledTextImager* imager, const RunElement& runElement, size_t from, size_t to) const override;
 
     public:
@@ -413,12 +414,11 @@ namespace Stroika::Frameworks::Led {
         static SimpleEmbeddedObjectStyleMarker* mk (ReaderFlavorPackage& flavorPackage);
 
     public:
-        virtual void         DrawSegment (const StyledTextImager* imager, const RunElement& runElement, Tablet* tablet,
-                                          size_t from, size_t to, const TextLayoutBlock& text, const Led_Rect& drawInto, const Led_Rect& /*invalidRect*/,
-                                          CoordinateType useBaseLine, DistanceType* pixelsDrawn) override;
-        virtual void         MeasureSegmentWidth (const StyledTextImager* imager, const RunElement& runElement, size_t from, size_t to,
-                                                  const Led_tChar* text,
-                                                  DistanceType*    distanceResults) const override;
+        virtual void DrawSegment (const StyledTextImager* imager, const RunElement& runElement, Tablet* tablet, size_t from, size_t to,
+                                  const TextLayoutBlock& text, const Led_Rect& drawInto, const Led_Rect& /*invalidRect*/,
+                                  CoordinateType useBaseLine, DistanceType* pixelsDrawn) override;
+        virtual void MeasureSegmentWidth (const StyledTextImager* imager, const RunElement& runElement, size_t from, size_t to,
+                                          const Led_tChar* text, DistanceType* distanceResults) const override;
         virtual DistanceType MeasureSegmentHeight (const StyledTextImager* imager, const RunElement& runElement, size_t from, size_t to) const override;
 
     public:
@@ -468,12 +468,11 @@ namespace Stroika::Frameworks::Led {
         static SimpleEmbeddedObjectStyleMarker* mk (ReaderFlavorPackage& flavorPackage);
 
     public:
-        virtual void         DrawSegment (const StyledTextImager* imager, const RunElement& runElement, Tablet* tablet,
-                                          size_t from, size_t to, const TextLayoutBlock& text, const Led_Rect& drawInto, const Led_Rect& /*invalidRect*/,
-                                          CoordinateType useBaseLine, DistanceType* pixelsDrawn) override;
-        virtual void         MeasureSegmentWidth (const StyledTextImager* imager, const RunElement& runElement, size_t from, size_t to,
-                                                  const Led_tChar* text,
-                                                  DistanceType*    distanceResults) const override;
+        virtual void DrawSegment (const StyledTextImager* imager, const RunElement& runElement, Tablet* tablet, size_t from, size_t to,
+                                  const TextLayoutBlock& text, const Led_Rect& drawInto, const Led_Rect& /*invalidRect*/,
+                                  CoordinateType useBaseLine, DistanceType* pixelsDrawn) override;
+        virtual void MeasureSegmentWidth (const StyledTextImager* imager, const RunElement& runElement, size_t from, size_t to,
+                                          const Led_tChar* text, DistanceType* distanceResults) const override;
         virtual DistanceType MeasureSegmentHeight (const StyledTextImager* imager, const RunElement& runElement, size_t from, size_t to) const override;
 
     public:
@@ -516,7 +515,8 @@ namespace Stroika::Frameworks::Led {
         static const Led_PrivateEmbeddingTag kDefaultEmbeddingTag;
 
     public:
-        StandardUnknownTypeStyleMarker (Led_ClipFormat format, const char* embeddingTag, const void* unknownTypeData, size_t nBytes, const Led_DIB* dib = nullptr);
+        StandardUnknownTypeStyleMarker (Led_ClipFormat format, const char* embeddingTag, const void* unknownTypeData, size_t nBytes,
+                                        const Led_DIB* dib = nullptr);
         ~StandardUnknownTypeStyleMarker ();
 
     public:
@@ -532,12 +532,11 @@ namespace Stroika::Frameworks::Led {
 #endif
 
     public:
-        virtual void         DrawSegment (const StyledTextImager* imager, const RunElement& runElement, Tablet* tablet,
-                                          size_t from, size_t to, const TextLayoutBlock& text, const Led_Rect& drawInto, const Led_Rect& /*invalidRect*/,
-                                          CoordinateType useBaseLine, DistanceType* pixelsDrawn) override;
-        virtual void         MeasureSegmentWidth (const StyledTextImager* imager, const RunElement& runElement, size_t from, size_t to,
-                                                  const Led_tChar* text,
-                                                  DistanceType*    distanceResults) const override;
+        virtual void DrawSegment (const StyledTextImager* imager, const RunElement& runElement, Tablet* tablet, size_t from, size_t to,
+                                  const TextLayoutBlock& text, const Led_Rect& drawInto, const Led_Rect& /*invalidRect*/,
+                                  CoordinateType useBaseLine, DistanceType* pixelsDrawn) override;
+        virtual void MeasureSegmentWidth (const StyledTextImager* imager, const RunElement& runElement, size_t from, size_t to,
+                                          const Led_tChar* text, DistanceType* distanceResults) const override;
         virtual DistanceType MeasureSegmentHeight (const StyledTextImager* imager, const RunElement& runElement, size_t from, size_t to) const override;
 
     public:
@@ -572,7 +571,8 @@ namespace Stroika::Frameworks::Led {
                 @'TextStore', at a given position in the text. To use this routine, the sentinal character must already
                 be present. Use @'AddEmbedding' if the sentinal has not yet been added.</p>
     */
-    void InsertEmbeddingForExistingSentinal (SimpleEmbeddedObjectStyleMarker* embedding, TextStore& textStore, size_t insertAt, MarkerOwner* ownerForEmbedding);
+    void InsertEmbeddingForExistingSentinal (SimpleEmbeddedObjectStyleMarker* embedding, TextStore& textStore, size_t insertAt,
+                                             MarkerOwner* ownerForEmbedding);
 
     /*
     @METHOD:        AddEmbedding

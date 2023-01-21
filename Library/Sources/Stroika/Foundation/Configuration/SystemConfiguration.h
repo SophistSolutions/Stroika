@@ -259,7 +259,8 @@ namespace Stroika::Foundation::Configuration {
         /**
          */
         SystemConfiguration (const BootInformation& bi, const CPU& ci, const Memory& mi, const OperatingSystem& oi, const ComputerNames& cn);
-        SystemConfiguration (const BootInformation& bi, const CPU& ci, const Memory& mi, const OperatingSystem& actualOS, const OperatingSystem& apparentOS, const ComputerNames& cn);
+        SystemConfiguration (const BootInformation& bi, const CPU& ci, const Memory& mi, const OperatingSystem& actualOS,
+                             const OperatingSystem& apparentOS, const ComputerNames& cn);
 
         /**
          *  @see Characters::ToString ();

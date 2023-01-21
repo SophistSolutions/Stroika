@@ -24,10 +24,7 @@ namespace Stroika::Foundation::Characters {
      ***************************** Implementation Details ***************************
      ********************************************************************************
      */
-    inline StringBuilder::StringBuilder (const String& initialValue)
-    {
-        Append (initialValue);
-    }
+    inline StringBuilder::StringBuilder (const String& initialValue) { Append (initialValue); }
     template <Character_Compatible CHAR_T>
     inline StringBuilder::StringBuilder (span<const CHAR_T> initialValue)
     {
@@ -124,10 +121,7 @@ namespace Stroika::Foundation::Characters {
         return *this;
     }
 
-    inline void StringBuilder::push_back (Character c)
-    {
-        Append (c);
-    }
+    inline void   StringBuilder::push_back (Character c) { Append (c); }
     inline size_t StringBuilder::size () const noexcept
     {
         Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fAssertExternallySyncrhonized_};
@@ -185,23 +179,11 @@ namespace Stroika::Foundation::Characters {
         // @todo could do more efficiently
         return str ().As<wstring> ();
     }
-    inline StringBuilder::operator String () const
-    {
-        return As<String> ();
-    }
-    inline StringBuilder::operator wstring () const
-    {
-        return As<wstring> ();
-    }
-    inline size_t StringBuilder::length () const noexcept
-    {
-        return size ();
-    }
-    inline size_t StringBuilder::capacity () const noexcept
-    {
-        return fData_.capacity ();
-    }
-    inline void StringBuilder::reserve (size_t newCapacity)
+    inline StringBuilder::operator String () const { return As<String> (); }
+    inline StringBuilder::operator wstring () const { return As<wstring> (); }
+    inline size_t         StringBuilder::length () const noexcept { return size (); }
+    inline size_t         StringBuilder::capacity () const noexcept { return fData_.capacity (); }
+    inline void           StringBuilder::reserve (size_t newCapacity)
     {
         Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySyncrhonized_};
         fData_.reserve (newCapacity);
@@ -217,7 +199,8 @@ namespace Stroika::Foundation::Characters {
         else {
 #if qCompilerAndStdLib_spanOfContainer_Buggy
             probablyIgnoredBuf->resize_uninitialized (UTFConverter::ComputeTargetBufferSize<CHAR_T> (span{fData_.data (), fData_.size ()}));
-            return UTFConverter::kThe.ConvertSpan (span{fData_.data (), fData_.size ()}, span{probablyIgnoredBuf->data (), probablyIgnoredBuf->size ()});
+            return UTFConverter::kThe.ConvertSpan (span{fData_.data (), fData_.size ()},
+                                                   span{probablyIgnoredBuf->data (), probablyIgnoredBuf->size ()});
 #else
             probablyIgnoredBuf->resize_uninitialized (UTFConverter::ComputeTargetBufferSize<CHAR_T> (span{fData_}));
             return UTFConverter::kThe.ConvertSpan (span{fData_}, span{*probablyIgnoredBuf});

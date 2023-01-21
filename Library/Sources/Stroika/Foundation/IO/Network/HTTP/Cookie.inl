@@ -20,10 +20,7 @@ namespace Stroika::Foundation::IO::Network::HTTP {
         : KeyValuePair<String, String>{name, value}
     {
     }
-    inline String HTTP::Cookie::ToString () const
-    {
-        return As<String> ();
-    }
+    inline String HTTP::Cookie::ToString () const { return As<String> (); }
 
     /*
      ********************************************************************************
@@ -60,10 +57,7 @@ namespace Stroika::Foundation::IO::Network::HTTP {
         this->fCookieDetails_ = rhs.fCookieDetails_;
         return *this;
     }
-    inline String HTTP::CookieList::ToString () const
-    {
-        return EncodeForCookieHeader ();
-    }
+    inline String HTTP::CookieList::ToString () const { return EncodeForCookieHeader (); }
     inline bool CookieList::operator== (const CookieList& rhs) const
     {
         return Traversal::Iterable<Cookie>::SequentialEqualsComparer<>{}(fCookieDetails_, rhs.fCookieDetails_);

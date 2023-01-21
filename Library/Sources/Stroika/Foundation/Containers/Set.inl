@@ -28,7 +28,9 @@ namespace Stroika::Foundation::Containers {
         // @todo see https://stroika.atlassian.net/browse/STK-933 for why this decay_t is needed - unclear why!
         : inherited{Factory::Set_Factory<T, decay_t<EQUALS_COMPARER>> (forward<EQUALS_COMPARER> (equalsComparer)) ()}
     {
-        static_assert (Common::IsEqualsComparer<EQUALS_COMPARER> (), "Set constructor with EQUALS_COMPARER - comparer not valid EqualsComparer- see ComparisonRelationDeclaration<Common::ComparisonRelationType::eEquals, function<bool(T, T)>");
+        static_assert (Common::IsEqualsComparer<EQUALS_COMPARER> (),
+                       "Set constructor with EQUALS_COMPARER - comparer not valid EqualsComparer- see "
+                       "ComparisonRelationDeclaration<Common::ComparisonRelationType::eEquals, function<bool(T, T)>");
         _AssertRepValidType ();
     }
     template <typename T>
@@ -476,10 +478,9 @@ namespace Stroika::Foundation::Containers {
         Require (not i.Done ());
         using element_type                   = typename inherited::_SharedByValueRepType::element_type;
         Iterator<value_type> patchedIterator = i;
-        element_type*        writableRep     = this->_fRep.rwget (
-            [&] (const element_type& prevRepPtr) -> typename inherited::_SharedByValueRepType::shared_ptr_type {
-                return Debug::UncheckedDynamicCast<const _IRep&> (prevRepPtr).CloneAndPatchIterator (&patchedIterator);
-            });
+        element_type* writableRep = this->_fRep.rwget ([&] (const element_type& prevRepPtr) -> typename inherited::_SharedByValueRepType::shared_ptr_type {
+            return Debug::UncheckedDynamicCast<const _IRep&> (prevRepPtr).CloneAndPatchIterator (&patchedIterator);
+        });
         AssertNotNull (writableRep);
         return make_tuple (Debug::UncheckedDynamicCast<_IRep*> (writableRep), move (patchedIterator));
     }

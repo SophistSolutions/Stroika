@@ -65,7 +65,8 @@ namespace Stroika::Foundation::Cache {
          *          defined.
          */
         BloomFilter (const Containers::Sequence<HashFunctionType>& hashFunctions, size_t bitCount);
-        BloomFilter (size_t expectedMaxSetSize, const HashFunctionType& defaultHashFunction = Cryptography::Digest::Hash<T>{}, double desiredFalsePositivityRate = kDefaultDesiredFalsePositivityRate);
+        BloomFilter (size_t expectedMaxSetSize, const HashFunctionType& defaultHashFunction = Cryptography::Digest::Hash<T>{},
+                     double desiredFalsePositivityRate = kDefaultDesiredFalsePositivityRate);
         BloomFilter (BloomFilter&& src) noexcept = default;
         BloomFilter (const BloomFilter& src)     = default;
 

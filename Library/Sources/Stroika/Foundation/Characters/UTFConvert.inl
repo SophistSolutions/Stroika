@@ -327,9 +327,9 @@ namespace Stroika::Foundation::Characters {
 
     template <typename TO, typename FROM>
     inline TO UTFConverter::Convert (const FROM& from) const
-        requires (
-            (is_same_v<TO, string> or is_same_v<TO, wstring> or is_same_v<TO, u8string> or is_same_v<TO, u16string> or is_same_v<TO, u32string>) and
-            (is_same_v<FROM, string> or is_same_v<FROM, wstring> or is_same_v<FROM, u8string> or is_same_v<FROM, u16string> or is_same_v<FROM, u32string>))
+        requires ((is_same_v<TO, string> or is_same_v<TO, wstring> or is_same_v<TO, u8string> or is_same_v<TO, u16string> or is_same_v<TO, u32string>) and
+                  (is_same_v<FROM, string> or is_same_v<FROM, wstring> or is_same_v<FROM, u8string> or is_same_v<FROM, u16string> or
+                   is_same_v<FROM, u32string>))
     {
         if constexpr (is_same_v<TO, FROM>) {
             return from;
@@ -528,11 +528,11 @@ namespace Stroika::Foundation::Characters {
         else {
             int srcLen          = static_cast<int> (source.size ());
             int trgLen          = static_cast<int> (target.size ());
-            int convertedLength = ::MultiByteToWideChar (CP_UTF8, 0, reinterpret_cast<const char*> (&*source.begin ()), srcLen, reinterpret_cast<WCHAR*> (&*target.begin ()), trgLen);
-            return ConversionResultWithStatus{
-                {static_cast<size_t> (srcLen), // wag - dont think WideCharToMultiByte tells us how much source consumed
-                 static_cast<size_t> (convertedLength)},
-                convertedLength == 0 ? ConversionStatusFlag::sourceIllegal : ConversionStatusFlag::ok};
+            int convertedLength = ::MultiByteToWideChar (CP_UTF8, 0, reinterpret_cast<const char*> (&*source.begin ()), srcLen,
+                                                         reinterpret_cast<WCHAR*> (&*target.begin ()), trgLen);
+            return ConversionResultWithStatus{{static_cast<size_t> (srcLen), // wag - dont think WideCharToMultiByte tells us how much source consumed
+                                               static_cast<size_t> (convertedLength)},
+                                              convertedLength == 0 ? ConversionStatusFlag::sourceIllegal : ConversionStatusFlag::ok};
         }
     }
     inline auto UTFConverter::ConvertQuietly_Win32_ (span<const char16_t> source, span<char8_t> target) -> ConversionResultWithStatus
@@ -543,11 +543,11 @@ namespace Stroika::Foundation::Characters {
         else {
             int srcLen          = static_cast<int> (source.size ());
             int trgLen          = static_cast<int> (target.size ());
-            int convertedLength = ::WideCharToMultiByte (CP_UTF8, 0, reinterpret_cast<const WCHAR*> (&*source.begin ()), srcLen, reinterpret_cast<char*> (&*target.begin ()), trgLen, nullptr, nullptr);
-            return ConversionResultWithStatus{
-                {static_cast<size_t> (srcLen), // wag - dont think WideCharToMultiByte tells us how much source consumed
-                 static_cast<size_t> (convertedLength)},
-                convertedLength == 0 ? ConversionStatusFlag::sourceIllegal : ConversionStatusFlag::ok};
+            int convertedLength = ::WideCharToMultiByte (CP_UTF8, 0, reinterpret_cast<const WCHAR*> (&*source.begin ()), srcLen,
+                                                         reinterpret_cast<char*> (&*target.begin ()), trgLen, nullptr, nullptr);
+            return ConversionResultWithStatus{{static_cast<size_t> (srcLen), // wag - dont think WideCharToMultiByte tells us how much source consumed
+                                               static_cast<size_t> (convertedLength)},
+                                              convertedLength == 0 ? ConversionStatusFlag::sourceIllegal : ConversionStatusFlag::ok};
         }
     }
 #endif

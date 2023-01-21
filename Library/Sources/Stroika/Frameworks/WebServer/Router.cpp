@@ -59,9 +59,8 @@ bool Route::Matches (const String& method, const String& hostRelPath, const Requ
         if (not method.Matches (fVerbAndPathMatch_->first)) {
             return false;
         }
-        return (pathRegExpMatches == nullptr)
-                   ? hostRelPath.Matches (fVerbAndPathMatch_->second)
-                   : hostRelPath.Matches (fVerbAndPathMatch_->second, pathRegExpMatches);
+        return (pathRegExpMatches == nullptr) ? hostRelPath.Matches (fVerbAndPathMatch_->second)
+                                              : hostRelPath.Matches (fVerbAndPathMatch_->second, pathRegExpMatches);
     }
     else if (fRequestMatch_) {
         return (*fRequestMatch_) (method, hostRelPath, request);
@@ -102,7 +101,8 @@ struct Router::Rep_ : Interceptor::_IRep {
     virtual void HandleMessage (Message* m) const override
     {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-        Debug::TraceContextBumper ctx{L"Router::Rep_::HandleMessage", L"(...method=%s,url=%s)", m->request ().httpMethod ().c_str (), Characters::ToString (m->request ().url ()).c_str ()};
+        Debug::TraceContextBumper ctx{L"Router::Rep_::HandleMessage", L"(...method=%s,url=%s)", m->request ().httpMethod ().c_str (),
+                                      Characters::ToString (m->request ().url ()).c_str ()};
 #endif
         Sequence<String>         matches;
         optional<RequestHandler> handler = Lookup_ (m->request (), &matches);
@@ -179,7 +179,8 @@ struct Router::Rep_ : Interceptor::_IRep {
     nonvirtual optional<Set<String>> GetAllowedMethodsForRequest_ (const Request& request) const
     {
         String                   hostRelPath = ExtractHostRelPath_ (request.url);
-        static const Set<String> kMethods2Try_{HTTP::Methods::kGet, HTTP::Methods::kPut, HTTP::Methods::kOptions, HTTP::Methods::kDelete, HTTP::Methods::kPost};
+        static const Set<String> kMethods2Try_{HTTP::Methods::kGet, HTTP::Methods::kPut, HTTP::Methods::kOptions, HTTP::Methods::kDelete,
+                                               HTTP::Methods::kPost};
         Set<String>              methods;
         for (const String& method : kMethods2Try_) {
             for (const Route& r : fRoutes_) {
@@ -261,10 +262,10 @@ struct Router::Rep_ : Interceptor::_IRep {
 namespace {
     CORSOptions FillIn_ (CORSOptions corsOptions)
     {
-        corsOptions.fAllowCredentials    = Memory::NullCoalesce (corsOptions.fAllowCredentials, kDefault_CORSOptions.fAllowCredentials);
+        corsOptions.fAllowCredentials = Memory::NullCoalesce (corsOptions.fAllowCredentials, kDefault_CORSOptions.fAllowCredentials);
         corsOptions.fAccessControlMaxAge = Memory::NullCoalesce (corsOptions.fAccessControlMaxAge, kDefault_CORSOptions.fAccessControlMaxAge);
-        corsOptions.fAllowedHeaders      = Memory::NullCoalesce (corsOptions.fAllowedHeaders, kDefault_CORSOptions.fAllowedHeaders);
-        corsOptions.fAllowedOrigins      = Memory::NullCoalesce (corsOptions.fAllowedOrigins, kDefault_CORSOptions.fAllowedOrigins);
+        corsOptions.fAllowedHeaders = Memory::NullCoalesce (corsOptions.fAllowedHeaders, kDefault_CORSOptions.fAllowedHeaders);
+        corsOptions.fAllowedOrigins = Memory::NullCoalesce (corsOptions.fAllowedOrigins, kDefault_CORSOptions.fAllowedOrigins);
         return corsOptions;
     }
 }
@@ -273,7 +274,4 @@ Router::Router (const Sequence<Route>& routes, const CORSOptions& corsOptions)
 {
 }
 
-optional<RequestHandler> Router::Lookup (const Request& request) const
-{
-    return _GetRep<Rep_> ().Lookup_ (request, nullptr);
-}
+optional<RequestHandler> Router::Lookup (const Request& request) const { return _GetRep<Rep_> ().Lookup_ (request, nullptr); }

@@ -125,10 +125,10 @@ namespace Stroika::Foundation::Debug {
         nonvirtual TraceLastBufferedWriteTokenType DoEmitMessage_ (size_t bufferLastNChars, const CHARTYPE* p, const CHARTYPE* e);
 
     private:
-        size_t                          fLastNCharBufCharCount_{0}; // len of valid data in fLastNCharBuf_CHAR_ or fLastNCharBuf_WCHAR_
-        char                            fLastNCharBuf_CHAR_[10];    // always filled in before used, so no need to initialize - NOT nul-terminated(see fLastNCharBufCharCount_)
-        wchar_t                         fLastNCharBuf_WCHAR_[10];
-        bool                            fLastNCharBuf_WCHARFlag_{false}; // determines (if fLastNCharBufCharCount_!=0) which buffer CHAR or WCHAR to use
+        size_t fLastNCharBufCharCount_{0}; // len of valid data in fLastNCharBuf_CHAR_ or fLastNCharBuf_WCHAR_
+        char fLastNCharBuf_CHAR_[10]; // always filled in before used, so no need to initialize - NOT nul-terminated(see fLastNCharBufCharCount_)
+        wchar_t fLastNCharBuf_WCHAR_[10];
+        bool    fLastNCharBuf_WCHARFlag_{false}; // determines (if fLastNCharBufCharCount_!=0) which buffer CHAR or WCHAR to use
         TraceLastBufferedWriteTokenType fLastNCharBuf_Token_{0};
         Time::DurationSecondsType       fLastNCharBuf_WriteTickcount_{0.0};
 

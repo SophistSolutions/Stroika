@@ -17,10 +17,7 @@ using namespace Stroika::Foundation;
 using namespace Stroika::Frameworks;
 using namespace Stroika::Frameworks::Led;
 
-inline bool IsASCIIAlpha (int c)
-{
-    return isascii (c) and isalpha (c);
-}
+inline bool IsASCIIAlpha (int c) { return isascii (c) and isalpha (c); }
 
 /*
  ********************************************************************************
@@ -658,8 +655,7 @@ searchSMORE:
             }
 #undef X_COMPARESTRING
 #else
-            if (IsASCIIAlpha (lookingAtData[i]) and IsASCIIAlpha (pattern[i]) and
-                (tolower (lookingAtData[i]) == tolower (pattern[i]))) {
+            if (IsASCIIAlpha (lookingAtData[i]) and IsASCIIAlpha (pattern[i]) and (tolower (lookingAtData[i]) == tolower (pattern[i]))) {
                 charsEqual = true;
             }
 #endif
@@ -834,10 +830,7 @@ void TextStore::DoDidUpdateCalls (const UpdateInfo& updateInfo, Marker* const* m
 @METHOD:        TextStore::PeekAtTextStore
 @DESCRIPTION:   <p>Since a TextStore is a MarkerOwner, is must OVERRIDE the PeekAtTextStore method, and return itself.</p>
 */
-TextStore* TextStore::PeekAtTextStore () const
-{
-    return const_cast<TextStore*> (this);
-}
+TextStore* TextStore::PeekAtTextStore () const { return const_cast<TextStore*> (this); }
 
 #if qDebug
 /*

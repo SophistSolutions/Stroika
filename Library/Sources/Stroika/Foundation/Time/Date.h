@@ -299,13 +299,16 @@ namespace Stroika::Foundation::Time {
     public:
         /**
          */
-        constexpr static JulianRepType ToJulianRep (month m, day d, year y, DataExchange::ValidationStrategy validationStrategy = DataExchange::ValidationStrategy::eAssertion);
-        constexpr static JulianRepType ToJulianRep (year_month_day ymd, DataExchange::ValidationStrategy validationStrategy = DataExchange::ValidationStrategy::eAssertion);
+        constexpr static JulianRepType ToJulianRep (month m, day d, year y,
+                                                    DataExchange::ValidationStrategy validationStrategy = DataExchange::ValidationStrategy::eAssertion);
+        constexpr static JulianRepType ToJulianRep (year_month_day ymd,
+                                                    DataExchange::ValidationStrategy validationStrategy = DataExchange::ValidationStrategy::eAssertion);
 
     public:
         /**
          */
-        constexpr static year_month_day FromJulianRep (JulianRepType j, DataExchange::ValidationStrategy validationStrategy = DataExchange::ValidationStrategy::eAssertion);
+        constexpr static year_month_day
+        FromJulianRep (JulianRepType j, DataExchange::ValidationStrategy validationStrategy = DataExchange::ValidationStrategy::eAssertion);
 
     public:
         /**
@@ -350,7 +353,8 @@ namespace Stroika::Foundation::Time {
          */
         constexpr Date (Date&& src) noexcept      = default;
         constexpr Date (const Date& src) noexcept = default;
-        explicit constexpr Date (JulianRepType julianRep, DataExchange::ValidationStrategy validationStrategy = DataExchange::ValidationStrategy::eAssertion);
+        explicit constexpr Date (JulianRepType                    julianRep,
+                                 DataExchange::ValidationStrategy validationStrategy = DataExchange::ValidationStrategy::eAssertion);
         constexpr Date (year y, month m, day d, DataExchange::ValidationStrategy validationStrategy = DataExchange::ValidationStrategy::eAssertion);
         constexpr Date (year_month_day ymd, DataExchange::ValidationStrategy validationStrategy = DataExchange::ValidationStrategy::eAssertion);
 
@@ -438,7 +442,8 @@ namespace Stroika::Foundation::Time {
         static optional<Date> ParseQuietly (const String& rep, const locale& l, const String& formatPattern);
 
     private:
-        static optional<Date> ParseQuietly_ (const wstring& rep, const time_get<wchar_t>& tmget, const String& formatPattern, size_t* consumedCharsInStringUpTo);
+        static optional<Date> ParseQuietly_ (const wstring& rep, const time_get<wchar_t>& tmget, const String& formatPattern,
+                                             size_t* consumedCharsInStringUpTo);
 
     private:
         static Date Parse_ (const String& rep, const locale& l, const Traversal::Iterable<String>& formatPatterns, size_t* consumedCharsInStringUpTo);
@@ -593,11 +598,8 @@ namespace Stroika::Foundation::Time {
             *this = Add (1);
             return *this;
         }
-        [[deprecated ("Since Stroika v3.0d1 - use.Add () - now Date immutable")]] Date operator++ (int)
-        {
-            return *this + 1;
-        }
-        [[deprecated ("Since Stroika v3.0d1, use As<year_month_day> ()")]] void mdy (month* m, day* d, year* y) const
+        [[deprecated ("Since Stroika v3.0d1 - use.Add () - now Date immutable")]] Date operator++ (int) { return *this + 1; }
+        [[deprecated ("Since Stroika v3.0d1, use As<year_month_day> ()")]] void        mdy (month* m, day* d, year* y) const
         {
             RequireNotNull (m);
             RequireNotNull (d);
@@ -655,7 +657,7 @@ namespace Stroika::Foundation::Time {
     int                       YearDifference (const Date& lhs, const Date& rhs);
     float                     YearDifferenceF (const Date& lhs, const Date& rhs);
 
-    String GetFormattedAge (const optional<Date>& birthDate, const optional<Date>& deathDate = {});                                 // returns ? if not a good src date
+    String GetFormattedAge (const optional<Date>& birthDate, const optional<Date>& deathDate = {}); // returns ? if not a good src date
     String GetFormattedAgeWithUnit (const optional<Date>& birthDate, const optional<Date>& deathDate = {}, bool abbrevUnit = true); // returns ? if not a good src date
 
 }
@@ -663,11 +665,9 @@ namespace Stroika::Foundation::Time {
 namespace Stroika::Foundation::Traversal::RangeTraits {
 
     template <>
-    struct DefaultOpenness<Time::Date> : ExplicitOpenness<Openness::eClosed, Openness::eClosed> {
-    };
+    struct DefaultOpenness<Time::Date> : ExplicitOpenness<Openness::eClosed, Openness::eClosed> {};
     template <>
-    struct DefaultDifferenceTypes<Time::Date> : ExplicitDifferenceTypes<chrono::days> {
-    };
+    struct DefaultDifferenceTypes<Time::Date> : ExplicitDifferenceTypes<chrono::days> {};
     template <>
     struct Default<Time::Date> : ExplicitOpennessAndDifferenceType<Time::Date> {
         static const Time::Date kLowerBound;

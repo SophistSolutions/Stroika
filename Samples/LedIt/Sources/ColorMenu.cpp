@@ -33,10 +33,7 @@ ColorMenu::ColorMenu ()
     //      MenuItem    "Other...",             kFontSizeOtherCmdID
 }
 
-COLORREF ColorMenu::GetColor (UINT id)
-{
-    return FontCmdToColor (id).GetOSRep ();
-}
+COLORREF ColorMenu::GetColor (UINT id) { return FontCmdToColor (id).GetOSRep (); }
 
 Color ColorMenu::FontCmdToColor (UINT cmd)
 {

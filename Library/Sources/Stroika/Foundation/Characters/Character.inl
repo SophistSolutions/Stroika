@@ -39,7 +39,8 @@ namespace Stroika::Foundation::Characters {
 
             if constexpr (kUseStdTraitsCompare_) {
                 using TRAITS_CHAR_T = conditional_t<sizeof (CHAR_T) == 4, char32_t, CHAR_T>;
-                int r               = std::char_traits<TRAITS_CHAR_T>::compare (reinterpret_cast<const TRAITS_CHAR_T*> (li), reinterpret_cast<const TRAITS_CHAR_T*> (ri), length);
+                int r               = std::char_traits<TRAITS_CHAR_T>::compare (reinterpret_cast<const TRAITS_CHAR_T*> (li),
+                                                                                reinterpret_cast<const TRAITS_CHAR_T*> (ri), length);
                 if (r != 0) [[likely]] {
                     return Common::CompareResultNormalizer (r);
                 }
@@ -133,24 +134,15 @@ namespace Stroika::Foundation::Characters {
         Require (IsASCII ());
         return static_cast<char> (fCharacterCode_);
     }
-    constexpr char32_t Character::GetCharacterCode () const noexcept
-    {
-        return fCharacterCode_;
-    }
-    constexpr Character::operator char32_t () const noexcept
-    {
-        return fCharacterCode_;
-    }
+    constexpr char32_t   Character::GetCharacterCode () const noexcept { return fCharacterCode_; }
+    constexpr Character::operator char32_t () const noexcept { return fCharacterCode_; }
     template <typename T>
     inline T Character::As () const noexcept
         requires (is_same_v<T, char32_t> or (sizeof (wchar_t) == sizeof (char32_t) and is_same_v<T, wchar_t>))
     {
         return GetCharacterCode ();
     }
-    constexpr bool Character::IsASCII () const noexcept
-    {
-        return 0x0 <= fCharacterCode_ and fCharacterCode_ <= 0x7f;
-    }
+    constexpr bool Character::IsASCII () const noexcept { return 0x0 <= fCharacterCode_ and fCharacterCode_ <= 0x7f; }
     template <Character_Compatible CHAR_T>
     constexpr bool Character::IsASCII (span<const CHAR_T> fromS) noexcept
     {
@@ -183,10 +175,7 @@ namespace Stroika::Foundation::Characters {
     {
         CheckASCII (Memory::ConstSpan (s));
     }
-    constexpr bool Character::IsLatin1 () const noexcept
-    {
-        return 0x0 <= fCharacterCode_ and fCharacterCode_ <= 0xff;
-    }
+    constexpr bool Character::IsLatin1 () const noexcept { return 0x0 <= fCharacterCode_ and fCharacterCode_ <= 0xff; }
     template <Character_CompatibleIsh CHAR_T>
     constexpr bool Character::IsLatin1 (span<const CHAR_T> fromS) noexcept
     {
@@ -428,7 +417,8 @@ namespace Stroika::Foundation::Characters {
         : fCompareOptions{co}
     {
     }
-    inline auto Character::ThreeWayComparer::operator() (Stroika::Foundation::Characters::Character lhs, Stroika::Foundation::Characters::Character rhs) const noexcept
+    inline auto Character::ThreeWayComparer::operator() (Stroika::Foundation::Characters::Character lhs,
+                                                         Stroika::Foundation::Characters::Character rhs) const noexcept
     {
         using namespace Stroika::Foundation::Characters;
         return Character::Compare (Memory::ConstSpan (span{&lhs, 1}), Memory::ConstSpan (span{&rhs, 1}), fCompareOptions);

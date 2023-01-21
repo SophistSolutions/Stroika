@@ -24,18 +24,9 @@ namespace Stroika::Foundation::Execution {
         Ensure (sThe.fRep_ != nullptr); // good but not great since no guarantee about race - that while used doesn't 'go null' in sThe DTOR
         return sThe;
     }
-    inline Logger::Priority Logger::GetMinLogLevel () const
-    {
-        return fMinLogLevel_;
-    }
-    inline void Logger::SetMinLogLevel (Priority minLogLevel)
-    {
-        fMinLogLevel_ = minLogLevel;
-    }
-    inline bool Logger::WouldLog (Priority logLevel) const
-    {
-        return logLevel >= fMinLogLevel_ and GetAppender () != nullptr;
-    }
+    inline Logger::Priority Logger::GetMinLogLevel () const { return fMinLogLevel_; }
+    inline void             Logger::SetMinLogLevel (Priority minLogLevel) { fMinLogLevel_ = minLogLevel; }
+    inline bool             Logger::WouldLog (Priority logLevel) const { return logLevel >= fMinLogLevel_ and GetAppender () != nullptr; }
 #if !qDefaultTracingOn
     inline void Logger::Log (Priority logLevel, const wchar_t* format, ...)
     {
@@ -55,17 +46,16 @@ namespace Stroika::Foundation::Configuration {
 #if !qCompilerAndStdLib_template_specialization_internalErrorWithSpecializationSignifier_Buggy
     template <>
 #endif
-    constexpr EnumNames<Execution::Logger::Priority> DefaultNames<Execution::Logger::Priority>::k{
-        EnumNames<Execution::Logger::Priority>::BasicArrayInitializer{{
-            {Execution::Logger::Priority::eDebug, L"Debug"},
-            {Execution::Logger::Priority::eInfo, L"Info"},
-            {Execution::Logger::Priority::eNotice, L"Notice"},
-            {Execution::Logger::Priority::eWarning, L"Warning"},
-            {Execution::Logger::Priority::eError, L"Error"},
-            {Execution::Logger::Priority::eCriticalError, L"CriticalError"},
-            {Execution::Logger::Priority::eAlertError, L"AlertError"},
-            {Execution::Logger::Priority::eEmergency, L"Emergency"},
-        }}};
+    constexpr EnumNames<Execution::Logger::Priority> DefaultNames<Execution::Logger::Priority>::k{EnumNames<Execution::Logger::Priority>::BasicArrayInitializer{{
+        {Execution::Logger::Priority::eDebug, L"Debug"},
+        {Execution::Logger::Priority::eInfo, L"Info"},
+        {Execution::Logger::Priority::eNotice, L"Notice"},
+        {Execution::Logger::Priority::eWarning, L"Warning"},
+        {Execution::Logger::Priority::eError, L"Error"},
+        {Execution::Logger::Priority::eCriticalError, L"CriticalError"},
+        {Execution::Logger::Priority::eAlertError, L"AlertError"},
+        {Execution::Logger::Priority::eEmergency, L"Emergency"},
+    }}};
 }
 
 #endif /*_Stroika_Foundation_Execution_Logger_inl_*/

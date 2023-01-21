@@ -57,8 +57,8 @@ namespace {
         namespace Private_ {
             void T1_system_error_ ()
             {
-                static const int                kErr2TestFor_            = make_error_code (errc::bad_address).value (); // any value from errc would do
-                static const Characters::String kErr2TestForExpectedMsg_ = L"bad address {errno: 14}"sv;                 // maybe not always right due to locales?
+                static const int kErr2TestFor_ = make_error_code (errc::bad_address).value ();           // any value from errc would do
+                static const Characters::String kErr2TestForExpectedMsg_ = L"bad address {errno: 14}"sv; // maybe not always right due to locales?
 
                 try {
                     ThrowPOSIXErrNo (kErr2TestFor_);

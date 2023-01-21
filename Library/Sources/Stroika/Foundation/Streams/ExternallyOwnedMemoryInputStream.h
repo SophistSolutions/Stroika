@@ -94,7 +94,8 @@ namespace Stroika::Foundation::Streams {
         static Ptr New (Execution::InternallySynchronized internallySynchronized, const ELEMENT_TYPE* start, const ELEMENT_TYPE* end);
         template <random_access_iterator ELEMENT_ITERATOR>
         static Ptr New (Execution::InternallySynchronized internallySynchronized, ELEMENT_ITERATOR start, ELEMENT_ITERATOR end)
-            requires is_same_v<typename ELEMENT_ITERATOR::value_type, ELEMENT_TYPE> or (is_same_v<ELEMENT_TYPE, byte> and is_same_v<typename ELEMENT_ITERATOR::value_type, char>);
+            requires is_same_v<typename ELEMENT_ITERATOR::value_type, ELEMENT_TYPE> or
+                     (is_same_v<ELEMENT_TYPE, byte> and is_same_v<typename ELEMENT_ITERATOR::value_type, char>);
         static Ptr New (const uint8_t* start, const uint8_t* end)
             requires is_same_v<ELEMENT_TYPE, byte>;
 
@@ -102,7 +103,8 @@ namespace Stroika::Foundation::Streams {
         class Rep_;
 
     private:
-        using InternalSyncRep_ = InternallySynchronizedInputStream<ELEMENT_TYPE, Streams::ExternallyOwnedMemoryInputStream<ELEMENT_TYPE>, typename ExternallyOwnedMemoryInputStream<ELEMENT_TYPE>::Rep_>;
+        using InternalSyncRep_ = InternallySynchronizedInputStream<ELEMENT_TYPE, Streams::ExternallyOwnedMemoryInputStream<ELEMENT_TYPE>,
+                                                                   typename ExternallyOwnedMemoryInputStream<ELEMENT_TYPE>::Rep_>;
     };
 
 }

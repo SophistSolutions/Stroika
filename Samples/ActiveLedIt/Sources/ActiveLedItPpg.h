@@ -23,7 +23,9 @@ public:
     ActiveLedItPropPage ();
 
     //{{AFX_DATA(ActiveLedItPropPage)
-    enum { IDD = IDD_PROPPAGE_ACTIVELEDIT };
+    enum {
+        IDD = IDD_PROPPAGE_ACTIVELEDIT
+    };
     // NOTE - ClassWizard will add data members here.
     //    DO NOT EDIT what you see in these blocks of generated code !
     //}}AFX_DATA

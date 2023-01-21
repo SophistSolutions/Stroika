@@ -51,15 +51,9 @@ namespace Stroika::Frameworks::Led {
         EnsureMember (inherited::GetOwner (), Partition);
         return *(dynamic_cast<Partition*> (inherited::GetOwner ()));
     }
-    inline Partition::PartitionMarker* Partition::PartitionMarker::GetPrevious () const
-    {
-        return fPrevious;
-    }
-    inline Partition::PartitionMarker* Partition::PartitionMarker::GetNext () const
-    {
-        return fNext;
-    }
-    inline void Partition::Invariant () const
+    inline Partition::PartitionMarker* Partition::PartitionMarker::GetPrevious () const { return fPrevious; }
+    inline Partition::PartitionMarker* Partition::PartitionMarker::GetNext () const { return fNext; }
+    inline void                        Partition::Invariant () const
     {
 #if qDebug and qHeavyDebugging
         Invariant_ ();
@@ -71,10 +65,7 @@ namespace Stroika::Frameworks::Led {
     @METHOD:        Partition::GetEnd
     @DESCRIPTION:   <p>Return the associated @'TextStore::GetEnd' ().</p>
     */
-    inline size_t Partition::GetEnd () const
-    {
-        return (fTextStore.GetEnd ());
-    }
+    inline size_t Partition::GetEnd () const { return (fTextStore.GetEnd ()); }
     /*
     @METHOD:        Partition::CopyOut
     @DESCRIPTION:   <p>Calls the associated @'TextStore::CopyOut' ().</p>
@@ -98,10 +89,7 @@ namespace Stroika::Frameworks::Led {
     @DESCRIPTION:   <p>Associate the given @'Partition::PartitionWatcher' with this Partition. Use
         @'Partition::RemovePartitionWatcher' to remove the callback / association.</p>
     */
-    inline void Partition::AddPartitionWatcher (PartitionWatcher* watcher)
-    {
-        fPartitionWatchers.push_back (watcher);
-    }
+    inline void Partition::AddPartitionWatcher (PartitionWatcher* watcher) { fPartitionWatchers.push_back (watcher); }
     /*
     @METHOD:        Partition::RemovePartitionWatcher
     @DESCRIPTION:   <p>Remove the given @'Partition::PartitionWatcher' from being associated with this @'Partition'.
@@ -151,11 +139,8 @@ namespace Stroika::Frameworks::Led {
     }
 
     //  class   PartitioningTextImager;
-    inline PartitioningTextImager::PartitionPtr PartitioningTextImager::GetPartition () const
-    {
-        return fPartition;
-    }
-    inline Partition::PartitionMarker* PartitioningTextImager::GetFirstPartitionMarker () const
+    inline PartitioningTextImager::PartitionPtr PartitioningTextImager::GetPartition () const { return fPartition; }
+    inline Partition::PartitionMarker*          PartitioningTextImager::GetFirstPartitionMarker () const
     {
         Require (fPartition.get () != nullptr); // perhaps you've forgotten to call SpecifyTextStore or SetPartition ()?
         return fPartition->GetFirstPartitionMarker ();
@@ -196,15 +181,15 @@ namespace Stroika::Frameworks::Led {
 
 #if qCacheTextMeasurementsForPM
     //  class   PartitioningTextImager::MeasureTextCache
-    inline void PartitioningTextImager::MeasureTextCache::ClearAll ()
-    {
-        fCache.clear ();
-    }
-    inline PartitioningTextImager::MeasureTextCache::CacheElt PartitioningTextImager::MeasureTextCache::LookupValue (PartitionMarker* pm, size_t rowStart, const function<CacheElt (PartitionMarker*, size_t)>& valueFetcher)
+    inline void PartitioningTextImager::MeasureTextCache::ClearAll () { fCache.clear (); }
+    inline PartitioningTextImager::MeasureTextCache::CacheElt
+    PartitioningTextImager::MeasureTextCache::LookupValue (PartitionMarker* pm, size_t rowStart,
+                                                           const function<CacheElt (PartitionMarker*, size_t)>& valueFetcher)
     {
         RequireNotNull (pm);
         using CacheElt = PartitioningTextImager::MeasureTextCache::CacheElt;
-        return fCache.LookupValue (CacheElt::COMPARE_ITEM (pm, rowStart), [valueFetcher] (const CacheElt::COMPARE_ITEM& c) { return valueFetcher (c.fPM, c.fRowStartingAt); });
+        return fCache.LookupValue (CacheElt::COMPARE_ITEM (pm, rowStart),
+                                   [valueFetcher] (const CacheElt::COMPARE_ITEM& c) { return valueFetcher (c.fPM, c.fRowStartingAt); });
     }
 
     //  class   PartitioningTextImager::MeasureTextCache::CacheElt

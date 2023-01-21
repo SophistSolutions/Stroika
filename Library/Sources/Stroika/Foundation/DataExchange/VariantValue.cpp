@@ -31,8 +31,7 @@ namespace {
 
     // simple mappings to make use of TIRep_<> private template
     template <typename T>
-    struct TN_ {
-    };
+    struct TN_ {};
     template <>
     struct TN_<bool> {
         static constexpr VariantValue::Type kTYPEENUM{VariantValue::eBoolean};
@@ -82,11 +81,8 @@ struct VariantValue::TIRep_ : VariantValue::IRep_, public Memory::UseBlockAlloca
         : fVal{forward<FWD> (v)}
     {
     }
-    virtual Type GetType () const override
-    {
-        return TN_<T>::kTYPEENUM;
-    }
-    T fVal;
+    virtual Type GetType () const override { return TN_<T>::kTYPEENUM; }
+    T            fVal;
 };
 
 /*
@@ -245,7 +241,7 @@ VariantValue::VariantValue (const boost::json::value& val)
 #endif
         } break;
         case json::kind::array: {
-            const auto&               a = val.as_array ();
+            const auto& a = val.as_array ();
             std::vector<VariantValue> r; // performance tweak, add in STL, avoiding virtual calls for each add, and then move to Stroika Seqeunce
             r.reserve (a.size ());
             for (const boost::json::value& i : a) {
@@ -254,7 +250,7 @@ VariantValue::VariantValue (const boost::json::value& val)
             *this = Containers::Concrete::Sequence_stdvector<VariantValue>{std::move (r)};
         } break;
         case json::kind::object: {
-            const auto&                                                                  o = val.as_object ();
+            const auto& o = val.as_object ();
             Containers::Concrete::Mapping_stdhashmap<String, VariantValue>::STDHASHMAP<> r; // performance tweak, add in STL, avoiding virtual calls for each add, and then move to Stroika mapping
             r.reserve (o.size ());
             for (const auto& i : o) {
@@ -320,10 +316,7 @@ bool VariantValue::empty () const
     }
 }
 
-String VariantValue::ToString () const
-{
-    return As<String> ();
-}
+String VariantValue::ToString () const { return As<String> (); }
 
 template <>
 bool VariantValue::As () const
@@ -349,7 +342,8 @@ bool VariantValue::As () const
         }
         default: {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-            DbgTrace (L"failed coerce-to-bool: type=%s, value=%s", Characters::ToString (fVal_->GetType ()).c_str (), Characters::ToString (*this).c_str ());
+            DbgTrace (L"failed coerce-to-bool: type=%s, value=%s", Characters::ToString (fVal_->GetType ()).c_str (),
+                      Characters::ToString (*this).c_str ());
 #endif
             Execution::Throw (DataExchange::BadFormatException{"Cannot coerce VariantValue to bool"sv});
         }
@@ -437,14 +431,13 @@ VariantValue VariantValue::Normalize () const
             return *this;
         case Type::eArray:
             // must recursively normalize all sub-elements
-            return VariantValue{
-                As<Sequence<VariantValue>> ().Map<VariantValue, Sequence<VariantValue>> (
-                    [] (const VariantValue& v) { return v.Normalize (); })};
+            return VariantValue{As<Sequence<VariantValue>> ().Map<VariantValue, Sequence<VariantValue>> (
+                [] (const VariantValue& v) { return v.Normalize (); })};
         case Type::eMap:
             // must recursively normalize all sub-elements, but also produce a sorted-map
-            return VariantValue{
-                As<Mapping<String, VariantValue>> ().Map<KVPT, Containers::SortedMapping<String, VariantValue>> (
-                    [] (const KVPT& kvp) { return KVPT{kvp.fKey, kvp.fValue.Normalize ()}; })};
+            return VariantValue{As<Mapping<String, VariantValue>> ().Map<KVPT, Containers::SortedMapping<String, VariantValue>> ([] (const KVPT& kvp) {
+                return KVPT{kvp.fKey, kvp.fValue.Normalize ()};
+            })};
         default:
             AssertNotReached ();
             return nullptr;
@@ -501,7 +494,8 @@ VariantValue::IntegerType_ VariantValue::AsInteger_ () const
         }
         default: {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-            DbgTrace (L"failed coerce-to-int: type=%s, value=%s", Characters::ToString (fVal_->GetType ()).c_str (), Characters::ToString (*this).c_str ());
+            DbgTrace (L"failed coerce-to-int: type=%s, value=%s", Characters::ToString (fVal_->GetType ()).c_str (),
+                      Characters::ToString (*this).c_str ());
 #endif
             Execution::Throw (DataExchange::BadFormatException{"Cannot coerce VariantValue to integer"sv});
         }
@@ -538,7 +532,8 @@ VariantValue::UnsignedIntegerType_ VariantValue::AsUnsignedInteger_ () const
         }
         default: {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-            DbgTrace (L"failed coerce-to-uint: type=%s, value=%s", Characters::ToString (fVal_->GetType ()).c_str (), Characters::ToString (*this).c_str ());
+            DbgTrace (L"failed coerce-to-uint: type=%s, value=%s", Characters::ToString (fVal_->GetType ()).c_str (),
+                      Characters::ToString (*this).c_str ());
 #endif
             Execution::Throw (DataExchange::BadFormatException{"Cannot coerce VariantValue to unsigned integer"sv});
         }
@@ -574,7 +569,8 @@ VariantValue::FloatType_ VariantValue::AsFloatType_ () const
         }
         default: {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-            DbgTrace (L"failed coerce-to-float: type=%s, value=%s", Characters::ToString (fVal_->GetType ()).c_str (), Characters::ToString (*this).c_str ());
+            DbgTrace (L"failed coerce-to-float: type=%s, value=%s", Characters::ToString (fVal_->GetType ()).c_str (),
+                      Characters::ToString (*this).c_str ());
 #endif
             Execution::Throw (DataExchange::BadFormatException{"Cannot coerce VariantValue to float"sv});
         }
@@ -605,7 +601,8 @@ Date VariantValue::As () const
         }
         default: {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-            DbgTrace (L"failed coerce-to-date: type=%s, value=%s", Characters::ToString (fVal_->GetType ()).c_str (), Characters::ToString (*this).c_str ());
+            DbgTrace (L"failed coerce-to-date: type=%s, value=%s", Characters::ToString (fVal_->GetType ()).c_str (),
+                      Characters::ToString (*this).c_str ());
 #endif
             Execution::Throw (DataExchange::BadFormatException{"Cannot coerce VariantValue to date"sv});
         }
@@ -636,7 +633,8 @@ DateTime VariantValue::As () const
         }
         default: {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-            DbgTrace (L"failed coerce-to-datetime: type=%s, value=%s", Characters::ToString (fVal_->GetType ()).c_str (), Characters::ToString (*this).c_str ());
+            DbgTrace (L"failed coerce-to-datetime: type=%s, value=%s", Characters::ToString (fVal_->GetType ()).c_str (),
+                      Characters::ToString (*this).c_str ());
 #endif
             Execution::Throw (DataExchange::BadFormatException{"Cannot coerce VariantValue to date-time"sv});
         }
@@ -833,7 +831,8 @@ map<wstring, VariantValue> VariantValue::As () const
         }
         default: {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-            DbgTrace (L"failed coerce-to-map<>: type=%s, value=%s", Characters::ToString (fVal_->GetType ()).c_str (), Characters::ToString (*this).c_str ());
+            DbgTrace (L"failed coerce-to-map<>: type=%s, value=%s", Characters::ToString (fVal_->GetType ()).c_str (),
+                      Characters::ToString (*this).c_str ());
 #endif
             Execution::Throw (DataExchange::BadFormatException{"Cannot coerce VariantValue to map"sv});
         }
@@ -855,7 +854,8 @@ Mapping<String, VariantValue> VariantValue::As () const
         }
         default: {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-            DbgTrace (L"failed coerce-to-Mapping<>: type=%s, value=%s", Characters::ToString (fVal_->GetType ()).c_str (), Characters::ToString (*this).c_str ());
+            DbgTrace (L"failed coerce-to-Mapping<>: type=%s, value=%s", Characters::ToString (fVal_->GetType ()).c_str (),
+                      Characters::ToString (*this).c_str ());
 #endif
             Execution::Throw (DataExchange::BadFormatException{"Cannot coerce VariantValue to map"sv});
         }
@@ -882,7 +882,8 @@ Sequence<VariantValue> VariantValue::As () const
         }
         default: {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-            DbgTrace (L"failed coerce-to-Sequence<>: type=%s, value=%s", Characters::ToString (fVal_->GetType ()).c_str (), Characters::ToString (*this).c_str ());
+            DbgTrace (L"failed coerce-to-Sequence<>: type=%s, value=%s", Characters::ToString (fVal_->GetType ()).c_str (),
+                      Characters::ToString (*this).c_str ());
 #endif
             Execution::Throw (DataExchange::BadFormatException{"Cannot coerce VariantValue to array"sv});
         }

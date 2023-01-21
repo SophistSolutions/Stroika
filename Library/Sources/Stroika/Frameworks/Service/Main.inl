@@ -76,14 +76,8 @@ namespace Stroika::Frameworks::Service {
         Execution::DeclareActivity           activity{&kForcedStoppingService_};
         GetServiceRep_ ()._ForcedStop (timeout);
     }
-    inline pid_t Main::GetServicePID () const
-    {
-        return GetServiceRep_ ()._GetServicePID ();
-    }
-    inline Main::State Main::GetState () const
-    {
-        return GetServiceRep_ ()._GetState ();
-    }
+    inline pid_t       Main::GetServicePID () const { return GetServiceRep_ ()._GetServicePID (); }
+    inline Main::State Main::GetState () const { return GetServiceRep_ ()._GetState (); }
 
 }
 

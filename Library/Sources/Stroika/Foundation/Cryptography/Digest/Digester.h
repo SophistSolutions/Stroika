@@ -96,7 +96,8 @@ namespace Stroika::Foundation::Cryptography::Digest {
     RETURN_TYPE ComputeDigest (span<const std::byte> from);
     template <typename ALGORITHM, typename RETURN_TYPE = typename Algorithm::DigesterDefaultTraitsForAlgorithm<ALGORITHM>::ReturnType>
     RETURN_TYPE ComputeDigest (const BLOB& from);
-    template <typename ALGORITHM, typename TRIVIALLY_COPYABLE_T, typename RETURN_TYPE = typename Algorithm::DigesterDefaultTraitsForAlgorithm<ALGORITHM>::ReturnType, enable_if_t<is_trivially_copyable_v<TRIVIALLY_COPYABLE_T>>* = nullptr>
+    template <typename ALGORITHM, typename TRIVIALLY_COPYABLE_T, typename RETURN_TYPE = typename Algorithm::DigesterDefaultTraitsForAlgorithm<ALGORITHM>::ReturnType,
+              enable_if_t<is_trivially_copyable_v<TRIVIALLY_COPYABLE_T>>* = nullptr>
     RETURN_TYPE ComputeDigest (const Traversal::Iterable<TRIVIALLY_COPYABLE_T>& from);
 
     /**

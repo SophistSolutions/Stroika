@@ -248,8 +248,9 @@ namespace {
                 int    lr = ::getloadavg (loadAve, NEltsOf (loadAve));
                 if (lr == 3) {
                     result.fLoadAverage = Info::LoadAverage (loadAve[0], loadAve[1], loadAve[2]);
-                    result.fRunQLength  = EstimateRunQFromLoadAveArray_ (Time::GetTickCount () - _GetCaptureContextTime ().value_or (0), loadAve);
-                    Memory::AccumulateIf<double> (&result.fRunQLength, Configuration::GetNumberOfLogicalCPUCores (), std::divides{}); // fRunQLength counts length normalized 0..1 with 1 menaing ALL CPU CORES
+                    result.fRunQLength = EstimateRunQFromLoadAveArray_ (Time::GetTickCount () - _GetCaptureContextTime ().value_or (0), loadAve);
+                    Memory::AccumulateIf<double> (&result.fRunQLength, Configuration::GetNumberOfLogicalCPUCores (),
+                                                  std::divides{}); // fRunQLength counts length normalized 0..1 with 1 menaing ALL CPU CORES
                 }
                 else {
                     DbgTrace ("getloadave failed - with result = %d", lr);
@@ -365,12 +366,13 @@ namespace {
 
             Info                      result;
             WinSysTimeCaptureContext_ newRawValueToStoreAsNextbaseline;
-            result.fTotalCPUUsage        = getCPUTime (&newRawValueToStoreAsNextbaseline);
+            result.fTotalCPUUsage = getCPUTime (&newRawValueToStoreAsNextbaseline);
             result.fTotalProcessCPUUsage = result.fTotalCPUUsage; // @todo fix - WMI - remove irq time etc from above? Or add into above if missing (See counter PRocessor/% Interrupt time) - not from System - but Processor - so new collector object
-            result.fTotalLogicalCores    = Configuration::GetNumberOfLogicalCPUCores ();
+            result.fTotalLogicalCores = Configuration::GetNumberOfLogicalCPUCores ();
 #if qUseWMICollectionSupport_
             _fContext.rwget ().rwref ()->fSystemWMICollector_.Collect ();
-            Memory::CopyToIf (&result.fRunQLength, _fContext.rwget ().rwref ()->fSystemWMICollector_.PeekCurrentValue (kInstanceName_, kProcessorQueueLength_));
+            Memory::CopyToIf (&result.fRunQLength,
+                              _fContext.rwget ().rwref ()->fSystemWMICollector_.PeekCurrentValue (kInstanceName_, kProcessorQueueLength_));
             // "if a computer has multiple processors, you need to divide this value by the number of processors servicing the workload"
             Memory::AccumulateIf<double> (&result.fRunQLength, Configuration::GetNumberOfLogicalCPUCores (), std::divides{}); // both normalized so '1' means all logical cores
 #endif
@@ -412,18 +414,16 @@ namespace {
         {
             Debug::TraceContextBumper ctx{"SystemPerformance::Instrument...CPU...CPUInstrumentRep_::Capture ()"};
             MeasurementSet            results;
-            results.fMeasurements.Add (Measurement{kCPUMeasurment_, Instruments::CPU::Instrument::kObjectVariantMapper.FromObject (Capture_Raw (&results.fMeasuredAt))});
+            results.fMeasurements.Add (Measurement{
+                kCPUMeasurment_, Instruments::CPU::Instrument::kObjectVariantMapper.FromObject (Capture_Raw (&results.fMeasuredAt))});
             return results;
         }
         nonvirtual Info Capture_Raw (Range<DurationSecondsType>* outMeasuredAt)
         {
             return Do_Capture_Raw<Info> ([this] () { return _InternalCapture (); }, outMeasuredAt);
         }
-        virtual unique_ptr<IRep> Clone () const override
-        {
-            return make_unique<CPUInstrumentRep_> (_fOptions, _fContext.load ());
-        }
-        nonvirtual Info _InternalCapture ()
+        virtual unique_ptr<IRep> Clone () const override { return make_unique<CPUInstrumentRep_> (_fOptions, _fContext.load ()); }
+        nonvirtual Info          _InternalCapture ()
         {
             AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
@@ -468,12 +468,11 @@ const ObjectVariantMapper Instruments::CPU::Instrument::kObjectVariantMapper = [
 }();
 
 Instruments::CPU::Instrument::Instrument (const Options& options)
-    : SystemPerformance::Instrument{
-          InstrumentNameType{"CPU"_k},
-          make_unique<CPUInstrumentRep_> (options),
-          {kCPUMeasurment_},
-          {KeyValuePair<type_index, MeasurementType>{typeid (Info), kCPUMeasurment_}},
-          kObjectVariantMapper}
+    : SystemPerformance::Instrument{InstrumentNameType{"CPU"_k},
+                                    make_unique<CPUInstrumentRep_> (options),
+                                    {kCPUMeasurment_},
+                                    {KeyValuePair<type_index, MeasurementType>{typeid (Info), kCPUMeasurment_}},
+                                    kObjectVariantMapper}
 {
 }
 

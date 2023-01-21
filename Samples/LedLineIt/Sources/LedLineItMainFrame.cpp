@@ -41,10 +41,7 @@ ON_WM_GETDLGCODE ()
 ON_WM_KEYDOWN ()
 END_MESSAGE_MAP ()
 
-UINT GotoEdit::OnGetDlgCode ()
-{
-    return CEdit::OnGetDlgCode () | DLGC_WANTALLKEYS;
-}
+UINT GotoEdit::OnGetDlgCode () { return CEdit::OnGetDlgCode () | DLGC_WANTALLKEYS; }
 
 void GotoEdit::OnKeyDown (UINT nChar, UINT nRepCnt, UINT nFlags)
 {
@@ -90,7 +87,8 @@ void StatusBar::TrackInGotoLineField ()
     // make sure plenty wide..
     r.right = max (r.right, r.left + 50);
     if (fGotoEdit.m_hWnd == 0) {
-        Verify (fGotoEdit.Create (WS_CLIPCHILDREN | WS_CLIPSIBLINGS | WS_CHILD | WS_VISIBLE | ES_NUMBER | ES_AUTOHSCROLL | ES_RIGHT, r, this, kMagicGotoWidgetID));
+        Verify (fGotoEdit.Create (WS_CLIPCHILDREN | WS_CLIPSIBLINGS | WS_CHILD | WS_VISIBLE | ES_NUMBER | ES_AUTOHSCROLL | ES_RIGHT, r,
+                                  this, kMagicGotoWidgetID));
     }
     fGotoEdit.SetFont (GetFont ());
     fGotoEdit.SetWindowText (GetPaneText (1));
@@ -116,10 +114,7 @@ void StatusBar::OnMagicEdited ()
     DISABLE_COMPILER_MSC_WARNING_END (4996)
 }
 
-void StatusBar::OnMagicLoseFocus ()
-{
-    Verify (fGotoEdit.DestroyWindow ());
-}
+void StatusBar::OnMagicLoseFocus () { Verify (fGotoEdit.DestroyWindow ()); }
 
 /*
  ********************************************************************************
@@ -139,15 +134,9 @@ ON_COMMAND (kCloseWindowCmdID, OnCloseWindowCommand)
 ON_COMMAND (kCloseAllWindowsCmdID, OnCloseAllWindowsCommand)
 END_MESSAGE_MAP ()
 
-bool LedLineItMainFrame::GetStatusBarShown () const
-{
-    return !!fStatusBar.IsWindowVisible ();
-}
+bool LedLineItMainFrame::GetStatusBarShown () const { return !!fStatusBar.IsWindowVisible (); }
 
-void LedLineItMainFrame::SetStatusBarShown (bool shown)
-{
-    fStatusBar.ShowWindow (shown ? SW_SHOWNORMAL : SW_HIDE);
-}
+void LedLineItMainFrame::SetStatusBarShown (bool shown) { fStatusBar.ShowWindow (shown ? SW_SHOWNORMAL : SW_HIDE); }
 
 void LedLineItMainFrame::TrackInGotoLineField ()
 {
@@ -163,9 +152,8 @@ int LedLineItMainFrame::OnCreate (LPCREATESTRUCT lpCreateStruct)
         return -1;
     }
 
-    Led_Size desiredSize = Led_Size (
-        Led_CvtScreenPixelsFromTWIPSV (TWIPS (1440 * 11)),
-        Led_CvtScreenPixelsFromTWIPSH (TWIPS (static_cast<long> (1440 * 8.5))));
+    Led_Size desiredSize =
+        Led_Size (Led_CvtScreenPixelsFromTWIPSV (TWIPS (1440 * 11)), Led_CvtScreenPixelsFromTWIPSH (TWIPS (static_cast<long> (1440 * 8.5))));
     Led_Rect newBounds = Led_Rect (lpCreateStruct->y, lpCreateStruct->x, desiredSize.v, desiredSize.h);
     newBounds          = EnsureRectOnScreen (newBounds);
     MoveWindow (CRect (AsRECT (newBounds)));
@@ -216,7 +204,8 @@ void LedLineItMainFrame::OnUpdateLineIndicator (CCmdUI* pCmdUI)
             Characters::CString::Copy (buf, Memory::NEltsOf (buf), _T ("N/A"));
         }
         else {
-            Characters::CString::Copy (buf, Memory::NEltsOf (buf), Characters::Format (L"%d", static_cast<int> (v->GetCurUserLine ())).AsSDKString ().c_str ());
+            Characters::CString::Copy (buf, Memory::NEltsOf (buf),
+                                       Characters::Format (L"%d", static_cast<int> (v->GetCurUserLine ())).AsSDKString ().c_str ());
         }
     }
     pCmdUI->SetText (buf);

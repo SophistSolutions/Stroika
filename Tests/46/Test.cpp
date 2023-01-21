@@ -54,7 +54,8 @@ namespace {
         {
             Debug::TraceContextBumper                      ctx1{"test-known-dir"};
             static const Containers::Set<filesystem::path> kFileNamesForDir_{L"foo.txt", L"bar.png", L"t3.txt", L"blag.nope"};
-            static const filesystem::path                  kTestSubDir_ = WellKnownLocations::GetTemporary () / ToPath (L"Regtest-write-files-" + Characters::ToString (Execution::GetCurrentProcessID ()));
+            static const filesystem::path                  kTestSubDir_ =
+                WellKnownLocations::GetTemporary () / ToPath (L"Regtest-write-files-" + Characters::ToString (Execution::GetCurrentProcessID ()));
             (void)filesystem::remove_all (kTestSubDir_);
             [[maybe_unused]] auto&& cleanup = Execution::Finally ([] () noexcept {
                 std::error_code ignored{};
@@ -67,9 +68,9 @@ namespace {
             //DbgTrace (L"DirectoryIterable (kTestSubDir_)=%s", Characters::ToString (DirectoryIterable (kTestSubDir_)).c_str ());
             VerifyTestResult (Containers::Set<filesystem::path>::EqualsComparer{}(kFileNamesForDir_, DirectoryIterable (kTestSubDir_)));
             {
-                Containers::Set<filesystem::path>     answers1;
-                Containers::Set<filesystem::path>     answers2;
-                DirectoryIterable                     tmp{kTestSubDir_};
+                Containers::Set<filesystem::path> answers1;
+                Containers::Set<filesystem::path> answers2;
+                DirectoryIterable                 tmp{kTestSubDir_};
                 Traversal::Iterator<filesystem::path> i2 = tmp.end (); // we had a bug with copying iterator - when refcnt != 1 - hangs - never advances... Windows only
                 for (Traversal::Iterator<filesystem::path> i = tmp.begin (); i != tmp.end (); ++i) {
                     answers1 += *i;

@@ -39,18 +39,9 @@ namespace Stroika::Foundation::Cryptography {
             static_assert (N >= 1, "N >= 1");
             return mkArrayFmt_ (Traversal::Iterator2Pointer (arr.begin ()), Traversal::Iterator2Pointer (arr.begin ()) + N);
         }
-        inline string Format_ (unsigned int n, const string*)
-        {
-            return mkFmt_ (n);
-        }
-        inline string Format_ (unsigned long n, const string*)
-        {
-            return mkFmt_ (n);
-        }
-        inline string Format_ (unsigned long long n, const string*)
-        {
-            return mkFmt_ (n);
-        }
+        inline string Format_ (unsigned int n, const string*) { return mkFmt_ (n); }
+        inline string Format_ (unsigned long n, const string*) { return mkFmt_ (n); }
+        inline string Format_ (unsigned long long n, const string*) { return mkFmt_ (n); }
         inline string Format_ (const Memory::BLOB& b, const string*)
         {
             return mkArrayFmt_ (reinterpret_cast<const uint8_t*> (b.begin ()), reinterpret_cast<const uint8_t*> (b.end ()));

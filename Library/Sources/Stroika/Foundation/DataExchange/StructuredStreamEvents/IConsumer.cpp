@@ -13,22 +13,12 @@ using namespace Stroika::Foundation::DataExchange::StructuredStreamEvents;
  ***************************** DataExchange::IConsumer **************************
  ********************************************************************************
  */
-void IConsumer::StartDocument ()
-{
-}
+void IConsumer::StartDocument () {}
 
-void IConsumer::EndDocument ()
-{
-}
+void IConsumer::EndDocument () {}
 
-void IConsumer::StartElement ([[maybe_unused]] const Name& name)
-{
-}
+void IConsumer::StartElement ([[maybe_unused]] const Name& name) {}
 
-void IConsumer::EndElement ([[maybe_unused]] const Name& name)
-{
-}
+void IConsumer::EndElement ([[maybe_unused]] const Name& name) {}
 
-void IConsumer::TextInsideElement ([[maybe_unused]] const String& text)
-{
-}
+void IConsumer::TextInsideElement ([[maybe_unused]] const String& text) {}

@@ -191,13 +191,16 @@ namespace Stroika::Foundation::Containers {
         MultiSet (const initializer_list<value_type>& src);
         template <typename EQUALS_COMPARER, enable_if_t<Common::IsEqualsComparer<EQUALS_COMPARER, T> ()>* = nullptr>
         MultiSet (EQUALS_COMPARER&& equalsComparer, const initializer_list<value_type>& src);
-        template <typename ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and not is_base_of_v<MultiSet<T, TRAITS>, decay_t<ITERABLE_OF_ADDABLE>>>* = nullptr>
+        template <typename ITERABLE_OF_ADDABLE,
+                  enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and not is_base_of_v<MultiSet<T, TRAITS>, decay_t<ITERABLE_OF_ADDABLE>>>* = nullptr>
         explicit MultiSet (ITERABLE_OF_ADDABLE&& src);
-        template <typename EQUALS_COMPARER, typename ITERABLE_OF_ADDABLE, enable_if_t<Common::IsEqualsComparer<EQUALS_COMPARER, T> () and Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>>* = nullptr>
+        template <typename EQUALS_COMPARER, typename ITERABLE_OF_ADDABLE,
+                  enable_if_t<Common::IsEqualsComparer<EQUALS_COMPARER, T> () and Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>>* = nullptr>
         MultiSet (EQUALS_COMPARER&& equalsComparer, ITERABLE_OF_ADDABLE&& src);
         template <typename ITERATOR_OF_ADDABLE, enable_if_t<Configuration::IsIterator_v<ITERATOR_OF_ADDABLE>>* = nullptr>
         MultiSet (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
-        template <typename EQUALS_COMPARER, typename ITERATOR_OF_ADDABLE, enable_if_t<Common::IsEqualsComparer<EQUALS_COMPARER, T> () and Configuration::IsIterator_v<ITERATOR_OF_ADDABLE>>* = nullptr>
+        template <typename EQUALS_COMPARER, typename ITERATOR_OF_ADDABLE,
+                  enable_if_t<Common::IsEqualsComparer<EQUALS_COMPARER, T> () and Configuration::IsIterator_v<ITERATOR_OF_ADDABLE>>* = nullptr>
         MultiSet (EQUALS_COMPARER&& equalsComparer, ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
 
     protected:
@@ -475,16 +478,16 @@ namespace Stroika::Foundation::Containers {
         _IRep () = default;
 
     public:
-        virtual ElementEqualityComparerType GetElementEqualsComparer () const                                                              = 0;
-        virtual _IRepSharedPtr              CloneEmpty () const                                                                            = 0;
-        virtual _IRepSharedPtr              CloneAndPatchIterator (Iterator<value_type>* i) const                                          = 0;
-        virtual bool                        Equals (const _IRep& rhs) const                                                                = 0;
-        virtual bool                        Contains (ArgByValueType<T> item) const                                                        = 0;
-        virtual void                        Add (ArgByValueType<T> item, CounterType count)                                                = 0;
-        virtual size_t                      RemoveIf (ArgByValueType<T> item, CounterType count)                                           = 0;
-        virtual void                        Remove (const Iterator<value_type>& i, Iterator<value_type>* nextI)                            = 0;
-        virtual void                        UpdateCount (const Iterator<value_type>& i, CounterType newCount, Iterator<value_type>* nextI) = 0;
-        virtual CounterType                 OccurrencesOf (ArgByValueType<T> item) const                                                   = 0;
+        virtual ElementEqualityComparerType GetElementEqualsComparer () const                                              = 0;
+        virtual _IRepSharedPtr              CloneEmpty () const                                                            = 0;
+        virtual _IRepSharedPtr              CloneAndPatchIterator (Iterator<value_type>* i) const                          = 0;
+        virtual bool                        Equals (const _IRep& rhs) const                                                = 0;
+        virtual bool                        Contains (ArgByValueType<T> item) const                                        = 0;
+        virtual void                        Add (ArgByValueType<T> item, CounterType count)                                = 0;
+        virtual size_t                      RemoveIf (ArgByValueType<T> item, CounterType count)                           = 0;
+        virtual void                        Remove (const Iterator<value_type>& i, Iterator<value_type>* nextI)            = 0;
+        virtual void        UpdateCount (const Iterator<value_type>& i, CounterType newCount, Iterator<value_type>* nextI) = 0;
+        virtual CounterType OccurrencesOf (ArgByValueType<T> item) const                                                   = 0;
         // Subtle point - shared rep argument to Elements() allows shared ref counting
         // without the cost of a clone or enable_shared_from_this
         virtual Iterable<T> Elements (const _IRepSharedPtr& rep) const = 0;

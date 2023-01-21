@@ -160,7 +160,8 @@ namespace Stroika::Foundation::IO::Network {
          *
          *  \note ***Cancelation Point***
          */
-        nonvirtual size_t ReceiveFrom (byte* intoStart, byte* intoEnd, int flag, SocketAddress* fromAddress, Time::DurationSecondsType timeout = Time::kInfinite) const;
+        nonvirtual size_t ReceiveFrom (byte* intoStart, byte* intoEnd, int flag, SocketAddress* fromAddress,
+                                       Time::DurationSecondsType timeout = Time::kInfinite) const;
 
     protected:
         /**
@@ -189,14 +190,14 @@ namespace Stroika::Foundation::IO::Network {
     public:
         virtual ~_IRep () = default;
 
-        virtual void    SendTo (const byte* start, const byte* end, const SocketAddress& sockAddr)                                            = 0;
-        virtual size_t  ReceiveFrom (byte* intoStart, byte* intoEnd, int flag, SocketAddress* fromAddress, Time::DurationSecondsType timeout) = 0;
-        virtual void    JoinMulticastGroup (const InternetAddress& iaddr, const InternetAddress& onInterface)                                 = 0;
-        virtual void    LeaveMulticastGroup (const InternetAddress& iaddr, const InternetAddress& onInterface)                                = 0;
-        virtual uint8_t GetMulticastTTL () const                                                                                              = 0;
-        virtual void    SetMulticastTTL (uint8_t ttl)                                                                                         = 0;
-        virtual bool    GetMulticastLoopMode () const                                                                                         = 0;
-        virtual void    SetMulticastLoopMode (bool loopMode)                                                                                  = 0;
+        virtual void SendTo (const byte* start, const byte* end, const SocketAddress& sockAddr) = 0;
+        virtual size_t ReceiveFrom (byte* intoStart, byte* intoEnd, int flag, SocketAddress* fromAddress, Time::DurationSecondsType timeout) = 0;
+        virtual void    JoinMulticastGroup (const InternetAddress& iaddr, const InternetAddress& onInterface)  = 0;
+        virtual void    LeaveMulticastGroup (const InternetAddress& iaddr, const InternetAddress& onInterface) = 0;
+        virtual uint8_t GetMulticastTTL () const                                                               = 0;
+        virtual void    SetMulticastTTL (uint8_t ttl)                                                          = 0;
+        virtual bool    GetMulticastLoopMode () const                                                          = 0;
+        virtual void    SetMulticastLoopMode (bool loopMode)                                                   = 0;
     };
 
 }
@@ -209,10 +210,7 @@ namespace Stroika::Foundation::Execution::WaitForIOReady_Support {
     template <>
     struct WaitForIOReady_Traits<IO::Network::ConnectionlessSocket::Ptr> {
         using HighLevelType = IO::Network::ConnectionlessSocket::Ptr;
-        static inline auto GetSDKPollable (const HighLevelType& t)
-        {
-            return t.GetNativeSocket ();
-        }
+        static inline auto GetSDKPollable (const HighLevelType& t) { return t.GetNativeSocket (); }
     };
 
 }

@@ -43,11 +43,8 @@ namespace {
 #endif
             interactor->GetExternalizer ()->ExternalizeBestFlavor (fSavedText, regionStart, regionEnd);
         }
-        virtual size_t GetLength () const override
-        {
-            return fTextLength;
-        }
-        virtual void InsertSelf (TextInteractor* interactor, size_t at, size_t nBytesToOverwrite) override
+        virtual size_t GetLength () const override { return fTextLength; }
+        virtual void   InsertSelf (TextInteractor* interactor, size_t at, size_t nBytesToOverwrite) override
         {
 #if !qFailToLookupFunctionNameWhenCompilingFunctionLocalClassMethodCompilerBug
             RequireNotNull (interactor);
@@ -63,10 +60,7 @@ namespace {
 
 namespace {
     // Only these chars count as whitespce for smart cut/n/paste
-    inline bool IsSmartSpace (Led_tChar c)
-    {
-        return (c == ' ' or c == '\t');
-    }
+    inline bool IsSmartSpace (Led_tChar c) { return (c == ' ' or c == '\t'); }
     inline bool IsShouldBeSepWithWhitespaceWordChar (Led_tChar c)
     {
         // iswalnum vectors to GetStringTypeW (CT_CTYPE1) and then checks for C1_ALPHA, which
@@ -98,8 +92,8 @@ namespace {
             SpellCheckEngine* sce = fTI.GetSpellCheckEngine ();
             if (sce != nullptr) {
                 Led_tChar charBuf[10 * 1024]; // buffer size doesn't matter much - but just has to be larger than the largest undef word we ever want to find...
-                bool      firstTry    = true;
-                size_t    startRegion = fTI.GetSelectionEnd ();
+                bool   firstTry    = true;
+                size_t startRegion = fTI.GetSelectionEnd ();
             SecondTry : {
                 // regardless of the startRegion - back up the search to the start of the interesected word. The only
                 // exception is if the size of our charBuf isn't big enough to go past the startRegion position (cuz
@@ -252,7 +246,8 @@ namespace {
  ************************* TextInteractor::DialogSupport ************************
  ********************************************************************************
  */
-void TextInteractor::DialogSupport::DisplayFindDialog (Led_tString* /*findText*/, const vector<Led_tString>& /*recentFindSuggestions*/, bool* /*wrapSearch*/, bool* /*wholeWordSearch*/, bool* /*caseSensative*/, bool* /*pressedOK*/)
+void TextInteractor::DialogSupport::DisplayFindDialog (Led_tString* /*findText*/, const vector<Led_tString>& /*recentFindSuggestions*/,
+                                                       bool* /*wrapSearch*/, bool* /*wholeWordSearch*/, bool* /*caseSensative*/, bool* /*pressedOK*/)
 {
     /*
      *  You may want to use code something like this in your OVERRIDE:
@@ -276,7 +271,9 @@ void TextInteractor::DialogSupport::DisplayFindDialog (Led_tString* /*findText*/
     Assert (false); // to use this - you must OVERRIDE this routine, and provide your own implementation, perhaps akin to the above.
 }
 
-TextInteractor::DialogSupport::ReplaceButtonPressed TextInteractor::DialogSupport::DisplayReplaceDialog (Led_tString* /*findText*/, const vector<Led_tString>& /*recentFindSuggestions*/, Led_tString* /*replaceText*/, bool* /*wrapSearch*/, bool* /*wholeWordSearch*/, bool* /*caseSensative*/)
+TextInteractor::DialogSupport::ReplaceButtonPressed
+TextInteractor::DialogSupport::DisplayReplaceDialog (Led_tString* /*findText*/, const vector<Led_tString>& /*recentFindSuggestions*/,
+                                                     Led_tString* /*replaceText*/, bool* /*wrapSearch*/, bool* /*wholeWordSearch*/, bool* /*caseSensative*/)
 {
     Assert (false); // to use this - you must OVERRIDE this routine, and provide your own implementation, perhaps akin to the above.
     return eReplaceButton_Cancel;
@@ -309,7 +306,8 @@ TextInteractor::UndoableContextHelper::UndoableContextHelper (TextInteractor& ti
     }
 }
 
-TextInteractor::UndoableContextHelper::UndoableContextHelper (TextInteractor& ti, const SDKString& cmdName, size_t regionAndSelStart, size_t regionAndSelEnd, bool allowSmartCNPExpansion)
+TextInteractor::UndoableContextHelper::UndoableContextHelper (TextInteractor& ti, const SDKString& cmdName, size_t regionAndSelStart,
+                                                              size_t regionAndSelEnd, bool allowSmartCNPExpansion)
     : fSimplePlainTextInsertOptimization (false)
     , fTextInteractor (ti)
     , fCmdName (cmdName)
@@ -326,7 +324,8 @@ TextInteractor::UndoableContextHelper::UndoableContextHelper (TextInteractor& ti
     }
 }
 
-TextInteractor::UndoableContextHelper::UndoableContextHelper (TextInteractor& ti, const SDKString& cmdName, size_t regionStart, size_t regionEnd, size_t selStart, size_t selEnd, bool allowSmartCNPExpansion)
+TextInteractor::UndoableContextHelper::UndoableContextHelper (TextInteractor& ti, const SDKString& cmdName, size_t regionStart,
+                                                              size_t regionEnd, size_t selStart, size_t selEnd, bool allowSmartCNPExpansion)
     : fSimplePlainTextInsertOptimization (false)
     , fTextInteractor (ti)
     , fCmdName (cmdName)
@@ -417,20 +416,11 @@ TextInteractor::PreReplaceInfo::~PreReplaceInfo ()
     }
 }
 
-TextInteractor::UpdateMode TextInteractor::PreReplaceInfo::GetUpdateMode () const
-{
-    return fUpdateMode;
-}
+TextInteractor::UpdateMode TextInteractor::PreReplaceInfo::GetUpdateMode () const { return fUpdateMode; }
 
-size_t TextInteractor::PreReplaceInfo::GetFrom () const
-{
-    return fFrom;
-}
+size_t TextInteractor::PreReplaceInfo::GetFrom () const { return fFrom; }
 
-size_t TextInteractor::PreReplaceInfo::GetTo () const
-{
-    return fTo;
-}
+size_t TextInteractor::PreReplaceInfo::GetTo () const { return fTo; }
 
 /*
  ********************************************************************************
@@ -674,13 +664,15 @@ void TextInteractor::OnUpdateUndoRedoCommand (CommandUpdater* enabler)
         if (enabler->GetCmdID () == kUndo_CmdID) {
             enabler->SetEnabled (GetCommandHandler ()->CanUndo ());
 
-            SDKString menuItemText = Characters::CString::Format (GetCommandNames ().fUndoFormatString.c_str (), GetCommandHandler ()->GetUndoCmdName ());
+            SDKString menuItemText =
+                Characters::CString::Format (GetCommandNames ().fUndoFormatString.c_str (), GetCommandHandler ()->GetUndoCmdName ());
             enabler->SetText (menuItemText.c_str ());
         }
         else if (enabler->GetCmdID () == kRedo_CmdID) {
             enabler->SetEnabled (GetCommandHandler ()->CanRedo ());
 
-            SDKString menuItemText = Characters::CString::Format (GetCommandNames ().fRedoFormatString.c_str (), GetCommandHandler ()->GetRedoCmdName ());
+            SDKString menuItemText =
+                Characters::CString::Format (GetCommandNames ().fRedoFormatString.c_str (), GetCommandHandler ()->GetRedoCmdName ());
             enabler->SetText (menuItemText.c_str ());
         }
     }
@@ -760,7 +752,8 @@ void TextInteractor::OnFindCommand ()
 {
     SearchParameters parameters = GetSearchParameters ();
     bool             pressedOK  = false;
-    GetDialogSupport ().DisplayFindDialog (&parameters.fMatchString, parameters.fRecentFindStrings, &parameters.fWrapSearch, &parameters.fWholeWordSearch, &parameters.fCaseSensativeSearch, &pressedOK);
+    GetDialogSupport ().DisplayFindDialog (&parameters.fMatchString, parameters.fRecentFindStrings, &parameters.fWrapSearch,
+                                           &parameters.fWholeWordSearch, &parameters.fCaseSensativeSearch, &pressedOK);
     parameters.fRecentFindStrings = MergeRecentFindStrings (parameters.fMatchString, parameters.fRecentFindStrings);
     SetSearchParameters (parameters);
     if (pressedOK) {
@@ -772,8 +765,10 @@ void TextInteractor::OnReplaceCommand ()
 {
     SearchParameters                    parameters  = GetSearchParameters ();
     ReplaceParameters                   rParameters = GetReplaceParameters ();
-    DialogSupport::ReplaceButtonPressed pressed     = GetDialogSupport ().DisplayReplaceDialog (&parameters.fMatchString, parameters.fRecentFindStrings, &rParameters.fReplaceWith, &parameters.fWrapSearch, &parameters.fWholeWordSearch, &parameters.fCaseSensativeSearch);
-    parameters.fRecentFindStrings                   = MergeRecentFindStrings (parameters.fMatchString, parameters.fRecentFindStrings);
+    DialogSupport::ReplaceButtonPressed pressed =
+        GetDialogSupport ().DisplayReplaceDialog (&parameters.fMatchString, parameters.fRecentFindStrings, &rParameters.fReplaceWith,
+                                                  &parameters.fWrapSearch, &parameters.fWholeWordSearch, &parameters.fCaseSensativeSearch);
+    parameters.fRecentFindStrings = MergeRecentFindStrings (parameters.fMatchString, parameters.fRecentFindStrings);
     SetSearchParameters (parameters);
     SetReplaceParameters (rParameters);
     switch (pressed) {
@@ -813,7 +808,8 @@ void TextInteractor::OnDoReplaceCommand (const SearchParameters& searchFor, cons
         InteractiveModeUpdater iuMode (*this);
         size_t                 replaceStart = whereTo;
         size_t                 replaceEnd   = whereTo + searchFor.fMatchString.length ();
-        UndoableContextHelper  undoContext (*this, GetCommandNames ().fReplaceCommandName, replaceStart, replaceEnd, GetSelectionStart (), GetSelectionEnd (), false);
+        UndoableContextHelper  undoContext (*this, GetCommandNames ().fReplaceCommandName, replaceStart, replaceEnd, GetSelectionStart (),
+                                            GetSelectionEnd (), false);
         {
             InteractiveReplace_ (undoContext.GetUndoRegionStart (), undoContext.GetUndoRegionEnd (), replaceWith.c_str (), replaceWith.length ());
             SetSelection (whereTo, whereTo + replaceWith.length ());
@@ -837,7 +833,8 @@ void TextInteractor::OnDoReplaceAllCommand (const SearchParameters& searchFor, c
         else {
             size_t                replaceStart = whereTo;
             size_t                replaceEnd   = whereTo + searchFor.fMatchString.length ();
-            UndoableContextHelper undoContext (*this, GetCommandNames ().fReplaceAllCommandName, replaceStart, replaceEnd, GetSelectionStart (), GetSelectionEnd (), false);
+            UndoableContextHelper undoContext (*this, GetCommandNames ().fReplaceAllCommandName, replaceStart, replaceEnd,
+                                               GetSelectionStart (), GetSelectionEnd (), false);
             {
                 InteractiveReplace_ (undoContext.GetUndoRegionStart (), undoContext.GetUndoRegionEnd (), replaceWith.c_str (), replaceWith.length ());
                 SetSelection (whereTo, whereTo + replaceWith.length ());
@@ -865,7 +862,8 @@ void TextInteractor::OnDoReplaceAllInSelectionCommand (const SearchParameters& s
         else {
             size_t                replaceStart = whereTo;
             size_t                replaceEnd   = whereTo + searchFor.fMatchString.length ();
-            UndoableContextHelper undoContext (*this, GetCommandNames ().fReplaceAllInSelectionCommandName, replaceStart, replaceEnd, GetSelectionStart (), GetSelectionEnd (), false);
+            UndoableContextHelper undoContext (*this, GetCommandNames ().fReplaceAllInSelectionCommandName, replaceStart, replaceEnd,
+                                               GetSelectionStart (), GetSelectionEnd (), false);
             {
                 InteractiveReplace_ (undoContext.GetUndoRegionStart (), undoContext.GetUndoRegionEnd (), replaceWith.c_str (), replaceWith.length ());
                 SetSelection (whereTo, whereTo + replaceWith.length ());
@@ -930,25 +928,13 @@ void TextInteractor::OnUpdateFindCommands (CommandUpdater* enabler)
     }
 }
 
-TextInteractor::SearchParameters TextInteractor::GetSearchParameters () const
-{
-    return sSearchParameters;
-}
+TextInteractor::SearchParameters TextInteractor::GetSearchParameters () const { return sSearchParameters; }
 
-void TextInteractor::SetSearchParameters (const SearchParameters& sp)
-{
-    sSearchParameters = sp;
-}
+void TextInteractor::SetSearchParameters (const SearchParameters& sp) { sSearchParameters = sp; }
 
-TextInteractor::ReplaceParameters TextInteractor::GetReplaceParameters () const
-{
-    return sReplaceParameters;
-}
+TextInteractor::ReplaceParameters TextInteractor::GetReplaceParameters () const { return sReplaceParameters; }
 
-void TextInteractor::SetReplaceParameters (const ReplaceParameters& rp)
-{
-    sReplaceParameters = rp;
-}
+void TextInteractor::SetReplaceParameters (const ReplaceParameters& rp) { sReplaceParameters = rp; }
 
 vector<Led_tString> TextInteractor::MergeRecentFindStrings (const Led_tString& s, const vector<Led_tString>& oldRecents)
 {
@@ -1211,10 +1197,7 @@ void TextInteractor::OptionallyExpandSelectionForSmartCutAndPasteModeDeletes (si
 @DESCRIPTION:   <p>See TextInteractor::GetSelectionShown. Typically this method isn't called directly by user code, but
     from within the class library wrappers (e.g. Led_MFC) on gain/lose focus events.</p>
 */
-void TextInteractor::SetSelectionShown (bool shown)
-{
-    SetSelectionShown (shown, eDefaultUpdate);
-}
+void TextInteractor::SetSelectionShown (bool shown) { SetSelectionShown (shown, eDefaultUpdate); }
 
 void TextInteractor::SetSelectionShown (bool shown, UpdateMode updateMode)
 {
@@ -1568,7 +1551,8 @@ void TextInteractor::WhileSimpleMouseTracking (Led_Point newMousePos, size_t dra
         }
     }
     else if (newMousePos.h > GetWindowRect ().right) {
-        SetHScrollPos (min (static_cast<CoordinateType> (GetHScrollPos () + increment * kHScrollIncrementFactor), static_cast<CoordinateType> (ComputeMaxHScrollPos ())));
+        SetHScrollPos (min (static_cast<CoordinateType> (GetHScrollPos () + increment * kHScrollIncrementFactor),
+                            static_cast<CoordinateType> (ComputeMaxHScrollPos ())));
     }
 
     size_t newSelStart = min (rhsPos, dragAnchor);
@@ -1824,8 +1808,7 @@ void TextInteractor::PostScrollHelper (PreScrollInfo preScrollInfo)
     size_t newStartOfWindow   = GetMarkerPositionOfStartOfWindow ();
     preScrollInfo.fUpdateMode = RealUpdateMode (preScrollInfo.fUpdateMode);
     if (preScrollInfo.fUpdateMode != eNoUpdate and
-        ((preScrollInfo.fOldWindowStart != newStartOfWindow) or
-         (preScrollInfo.fOldHScrollPos != GetHScrollPos ()))) {
+        ((preScrollInfo.fOldWindowStart != newStartOfWindow) or (preScrollInfo.fOldHScrollPos != GetHScrollPos ()))) {
 
         // Don't try this except if we only got vertical scrolling - at least for now...
         if (preScrollInfo.fTryTodoScrollbits and preScrollInfo.fOldHScrollPos == GetHScrollPos ()) {
@@ -2040,7 +2023,8 @@ void TextInteractor::PreReplace (size_t from, size_t to, size_t withWhatCharCoun
         }
         Assert (startPositionOfRowWhereReplaceBegins <= startPositionOfRowAfterReplaceEnds);
 
-        preReplaceInfo->fBoundingUpdateHeight = GetTextWindowBoundingRect (startPositionOfRowWhereReplaceBegins, startPositionOfRowAfterReplaceEnds).GetHeight ();
+        preReplaceInfo->fBoundingUpdateHeight =
+            GetTextWindowBoundingRect (startPositionOfRowWhereReplaceBegins, startPositionOfRowAfterReplaceEnds).GetHeight ();
 
         /*
          *  In case the above changes, we may be able to get away with only updating the stable
@@ -2064,7 +2048,8 @@ void TextInteractor::PreReplace (size_t from, size_t to, size_t withWhatCharCoun
          *  The marker is one past the end of the final row so any typing just after the end of the row
          *  gets included.
          */
-        GetTextStore ().AddMarker (&preReplaceInfo->fBoundingUpdateMarker, startPositionOfRowWhereReplaceBegins, (startPositionOfRowAfterReplaceEnds - startPositionOfRowWhereReplaceBegins) + 1, this);
+        GetTextStore ().AddMarker (&preReplaceInfo->fBoundingUpdateMarker, startPositionOfRowWhereReplaceBegins,
+                                   (startPositionOfRowAfterReplaceEnds - startPositionOfRowWhereReplaceBegins) + 1, this);
         preReplaceInfo->fTextInteractor = this; // assign after add, cuz this var serves as flag to indicate addMarker call done...
     }
     catch (NotFullyInitialized&) {
@@ -2097,10 +2082,8 @@ void TextInteractor::PostReplace (PreReplaceInfo& preReplaceInfo)
 
         size_t expandedFromMarkerPos = 0;
         size_t expandedToMarkerPos   = 0;
-        ExpandedFromAndToInPostReplace (from, newTo,
-                                        stableTypingRegionStart, stableTypingRegionEnd,
-                                        startPositionOfRowWhereReplaceBegins, startPositionOfRowAfterReplaceEnds,
-                                        &expandedFromMarkerPos, &expandedToMarkerPos);
+        ExpandedFromAndToInPostReplace (from, newTo, stableTypingRegionStart, stableTypingRegionEnd, startPositionOfRowWhereReplaceBegins,
+                                        startPositionOfRowAfterReplaceEnds, &expandedFromMarkerPos, &expandedToMarkerPos);
 
         Led_Rect windowRect               = GetWindowRect ();
         Led_Rect expandedFromToMarkerRect = GetTextWindowBoundingRect (expandedFromMarkerPos, expandedToMarkerPos);
@@ -2147,10 +2130,9 @@ void TextInteractor::AbortReplace (PreReplaceInfo& preReplaceInfo)
     }
 }
 
-void TextInteractor::ExpandedFromAndToInPostReplace (size_t from, size_t newTo,
-                                                     size_t stableTypingRegionStart, size_t stableTypingRegionEnd,
-                                                     size_t startPositionOfRowWhereReplaceBegins, size_t startPositionOfRowAfterReplaceEnds,
-                                                     size_t* expandedFrom, size_t* expandedTo)
+void TextInteractor::ExpandedFromAndToInPostReplace (size_t from, size_t newTo, size_t stableTypingRegionStart,
+                                                     size_t stableTypingRegionEnd, size_t startPositionOfRowWhereReplaceBegins,
+                                                     size_t startPositionOfRowAfterReplaceEnds, size_t* expandedFrom, size_t* expandedTo)
 {
     RequireNotNull (expandedFrom);
     RequireNotNull (expandedTo);
@@ -2219,8 +2201,7 @@ void TextInteractor::InteractiveReplace (const Led_tChar* withWhat, size_t withW
 @DESCRIPTION:
 */
 void TextInteractor::InteractiveReplace_ (size_t from, size_t to, const Led_tChar* withWhat, size_t withWhatCharCount,
-                                          bool updateCursorPosition, bool validateTextForCharsetConformance,
-                                          UpdateMode updateMode)
+                                          bool updateCursorPosition, bool validateTextForCharsetConformance, UpdateMode updateMode)
 {
 // Assert selection bounardaries valid Led_tChar boundaries
 #if qMultiByteCharacters
@@ -2272,10 +2253,7 @@ void TextInteractor::InteractiveReplace_ (size_t from, size_t to, const Led_tCha
         </p>The boolean return value must be true if any changes were made that could affect undo processing (i.e. that could affect
     what infomration must be saved for proper undo processing).</p>
 */
-bool TextInteractor::InteractiveReplaceEarlyPostReplaceHook (size_t /*withWhatCharCount*/)
-{
-    return false;
-}
+bool TextInteractor::InteractiveReplaceEarlyPostReplaceHook (size_t /*withWhatCharCount*/) { return false; }
 
 /*
 @METHOD:        TextInteractor::PreInteractiveUndoHelper
@@ -2289,7 +2267,8 @@ bool TextInteractor::InteractiveReplaceEarlyPostReplaceHook (size_t /*withWhatCh
         <p>We then preserve the ACTUAL selection at the time this was called in the resulting 'beforeRep' object.</p>
         <p>NB: new in Led 3.1a6 - we require that fCommandHandler != nullptr to call this.</p>
 */
-void TextInteractor::PreInteractiveUndoHelper (InteractiveReplaceCommand::SavedTextRep** beforeRep, size_t regionStart, size_t regionEnd, size_t selStart, size_t selEnd)
+void TextInteractor::PreInteractiveUndoHelper (InteractiveReplaceCommand::SavedTextRep** beforeRep, size_t regionStart, size_t regionEnd,
+                                               size_t selStart, size_t selEnd)
 {
     Require (regionStart <= regionEnd);
     Require (selStart <= selEnd);
@@ -2322,7 +2301,8 @@ void TextInteractor::PreInteractiveUndoHelper (InteractiveReplaceCommand::SavedT
             beforeRep argument given this function and an afterRep computed herein.</p>
                 <p>NB: As of Led 3.1a6 - we require that fCommandHandler != nullptr to call this.</p>
 */
-void TextInteractor::PostInteractiveUndoHelper (InteractiveReplaceCommand::SavedTextRep** beforeRep, size_t startOfInsert, size_t endOfInsert, const SDKString& cmdName)
+void TextInteractor::PostInteractiveUndoHelper (InteractiveReplaceCommand::SavedTextRep** beforeRep, size_t startOfInsert,
+                                                size_t endOfInsert, const SDKString& cmdName)
 {
     RequireNotNull (beforeRep);
     RequireNotNull (*beforeRep); // This shouldn't be called if there was a problem creating beforeRep (exception)
@@ -2346,7 +2326,8 @@ void TextInteractor::PostInteractiveUndoHelper (InteractiveReplaceCommand::Saved
 @DESCRIPTION:   <p>Utility function for optimized undo support - keeping smaller objects in the undo buffer, and trying re-use/tweek
             an existing one in the common case of multiple consecutive characters typed.</p>
 */
-void TextInteractor::PostInteractiveSimpleCharInsertUndoHelper (InteractiveReplaceCommand::SavedTextRep** beforeRep, size_t startOfInsert, size_t endOfInsert, const SDKString& cmdName)
+void TextInteractor::PostInteractiveSimpleCharInsertUndoHelper (InteractiveReplaceCommand::SavedTextRep** beforeRep, size_t startOfInsert,
+                                                                size_t endOfInsert, const SDKString& cmdName)
 {
     RequireNotNull (beforeRep);
     RequireNotNull (*beforeRep); // This shouldn't be called if there was a problem creating beforeRep (exception)
@@ -2378,8 +2359,7 @@ void TextInteractor::PostInteractiveSimpleCharInsertUndoHelper (InteractiveRepla
                 <p>NB: As of Led 3.1a6 - we require that fCommandHandler != nullptr to call this.</p>
 */
 void TextInteractor::PostInteractiveUndoPostHelper (InteractiveReplaceCommand::SavedTextRep** beforeRep,
-                                                    InteractiveReplaceCommand::SavedTextRep** afterRep,
-                                                    size_t startOfInsert, const SDKString& cmdName)
+                                                    InteractiveReplaceCommand::SavedTextRep** afterRep, size_t startOfInsert, const SDKString& cmdName)
 {
     RequireNotNull (beforeRep);
     RequireNotNull (afterRep);
@@ -2403,7 +2383,8 @@ void TextInteractor::PostInteractiveUndoPostHelper (InteractiveReplaceCommand::S
     }
 }
 
-InteractiveReplaceCommand::SavedTextRep* TextInteractor::InteractiveUndoHelperMakeTextRep (size_t regionStart, size_t regionEnd, size_t selStart, size_t selEnd)
+InteractiveReplaceCommand::SavedTextRep* TextInteractor::InteractiveUndoHelperMakeTextRep (size_t regionStart, size_t regionEnd,
+                                                                                           size_t selStart, size_t selEnd)
 {
     if (regionStart == regionEnd) {
         // optimization, cuz these are smaller
@@ -2473,8 +2454,8 @@ void TextInteractor::Refresh (const Marker* range, UpdateMode updateMode) const
 @ACCESS:        protected
 @DESCRIPTION:   <p>Helper routine for handling cursoring done by user.</p>
  */
-void TextInteractor::DoSingleCharCursorEdit (CursorMovementDirection direction, CursorMovementUnit movementUnit, CursorMovementAction action,
-                                             UpdateMode updateMode, bool scrollToSelection)
+void TextInteractor::DoSingleCharCursorEdit (CursorMovementDirection direction, CursorMovementUnit movementUnit,
+                                             CursorMovementAction action, UpdateMode updateMode, bool scrollToSelection)
 {
     IdleManager::NonIdleContext nonIdleContext;
 
@@ -2487,7 +2468,8 @@ void TextInteractor::DoSingleCharCursorEdit (CursorMovementDirection direction, 
 
     UpdateMode useUpdateMode = (updateMode == eImmediateUpdate) ? eDelayedUpdate : updateMode;
 
-    GoalColumnRecomputerControlContext skipRecompute (*this, action == eCursorMoving and movementUnit == eCursorByRow and (direction == eCursorBack or direction == eCursorForward));
+    GoalColumnRecomputerControlContext skipRecompute (*this, action == eCursorMoving and movementUnit == eCursorByRow and
+                                                                 (direction == eCursorBack or direction == eCursorForward));
 
     // In a couple of cases, we get burned by the ambiguity of location-specification at start and end
     // of row. This only matters when the users says navigate to start/end of row, and we happen to already
@@ -2578,9 +2560,11 @@ SkipNavigation:
                         {
                             BreakInGroupedCommandsIfDifferentCommand (GetCommandNames ().fClearCommandName);
                             InteractiveModeUpdater iuMode (*this);
-                            UndoableContextHelper  undoContext (*this, GetCommandNames ().fClearCommandName, newStartSel, newEndSel, GetSelectionStart (), GetSelectionEnd (), true);
+                            UndoableContextHelper  undoContext (*this, GetCommandNames ().fClearCommandName, newStartSel, newEndSel,
+                                                                GetSelectionStart (), GetSelectionEnd (), true);
                             {
-                                InteractiveReplace_ (undoContext.GetUndoRegionStart (), undoContext.GetUndoRegionEnd (), LED_TCHAR_OF (""), 0, true, true, useUpdateMode);
+                                InteractiveReplace_ (undoContext.GetUndoRegionStart (), undoContext.GetUndoRegionEnd (), LED_TCHAR_OF (""),
+                                                     0, true, true, useUpdateMode);
                             }
                             undoContext.CommandComplete ();
                         }
@@ -2726,19 +2710,14 @@ void TextInteractor::OnClearCommand ()
                 @'TextInteractor::OnPasteCommand_After'
                 .</p>
  */
-bool TextInteractor::OnCopyCommand_Before ()
-{
-    return true;
-}
+bool TextInteractor::OnCopyCommand_Before () { return true; }
 
 /*
 @METHOD:        TextInteractor::OnCopyCommand_After
 @ACCESS:        protected
 @DESCRIPTION:   <p>See also @'TextInteractor::OnCopyCommand_Before'.</p>
  */
-void TextInteractor::OnCopyCommand_After ()
-{
-}
+void TextInteractor::OnCopyCommand_After () {}
 
 /*
 @METHOD:        TextInteractor::OnCopyCommand_CopyFlavors
@@ -2751,10 +2730,7 @@ void TextInteractor::OnCopyCommand_CopyFlavors ()
     ExternalizeFlavors (writer);
 }
 
-bool TextInteractor::ShouldEnablePasteCommand () const
-{
-    return Led_ClipboardObjectAcquire::FormatAvailable_TEXT ();
-}
+bool TextInteractor::ShouldEnablePasteCommand () const { return Led_ClipboardObjectAcquire::FormatAvailable_TEXT (); }
 
 /*
 @METHOD:        TextInteractor::OnPasteCommand_Before
@@ -2768,19 +2744,14 @@ bool TextInteractor::ShouldEnablePasteCommand () const
                 @'TextInteractor::OnCopyCommand_After'
                 .</p>
  */
-bool TextInteractor::OnPasteCommand_Before ()
-{
-    return true;
-}
+bool TextInteractor::OnPasteCommand_Before () { return true; }
 
 /*
 @METHOD:        TextInteractor::OnPasteCommand_After
 @ACCESS:        protected
 @DESCRIPTION:   <p>See also @'TextInteractor::OnPasteCommand_Before'.</p>
  */
-void TextInteractor::OnPasteCommand_After ()
-{
-}
+void TextInteractor::OnPasteCommand_After () {}
 
 /*
 @METHOD:        TextInteractor::OnPasteCommand_PasteBestFlavor
@@ -2864,18 +2835,14 @@ bool TextInteractor::PasteLooksLikeSmartCNP (SmartCNPInfo* scnpInfo) const
 @DESCRIPTION:   <p>Command to implement the "Select All" UI. Trivial implementation, but nearly all UI's want it, so why
             write it each time?</p>
 */
-void TextInteractor::OnSelectAllCommand ()
-{
-    SetSelection (0, GetLength ());
-}
+void TextInteractor::OnSelectAllCommand () { SetSelection (0, GetLength ()); }
 
 bool TextInteractor::CanAcceptFlavor (Led_ClipFormat clipFormat) const
 {
     return (kTEXTClipFormat == clipFormat or kFILEClipFormat == clipFormat);
 }
 
-void TextInteractor::InternalizeBestFlavor (ReaderFlavorPackage& flavorPackage,
-                                            bool updateCursorPosition, bool autoScroll, UpdateMode updateMode)
+void TextInteractor::InternalizeBestFlavor (ReaderFlavorPackage& flavorPackage, bool updateCursorPosition, bool autoScroll, UpdateMode updateMode)
 {
     size_t start = GetSelectionStart ();
     size_t end   = GetSelectionEnd ();
@@ -2920,8 +2887,8 @@ void TextInteractor::InternalizeBestFlavor (ReaderFlavorPackage& flavorPackage,
 @METHOD:        TextInteractor::InternalizeFlavor_Specific
 @DESCRIPTION:   <p></p>
  */
-void TextInteractor::InternalizeFlavor_Specific (ReaderFlavorPackage& flavorPackage, Led_ClipFormat format,
-                                                 bool updateCursorPosition, bool autoScroll, UpdateMode updateMode)
+void TextInteractor::InternalizeFlavor_Specific (ReaderFlavorPackage& flavorPackage, Led_ClipFormat format, bool updateCursorPosition,
+                                                 bool autoScroll, UpdateMode updateMode)
 {
     size_t start = GetSelectionStart ();
     size_t end   = GetSelectionEnd ();
@@ -2987,9 +2954,7 @@ shared_ptr<FlavorPackageInternalizer> TextInteractor::MakeDefaultInternalizer ()
 @METHOD:        TextInteractor::HookInternalizerChanged
 @DESCRIPTION:   <p>Called by @'TextInteractor::SetInternalizer' whenever there is a new internalizer specified.</p>
 */
-void TextInteractor::HookInternalizerChanged ()
-{
-}
+void TextInteractor::HookInternalizerChanged () {}
 
 /*
 @METHOD:        TextInteractor::ExternalizeFlavors
@@ -3026,9 +2991,7 @@ shared_ptr<FlavorPackageExternalizer> TextInteractor::MakeDefaultExternalizer ()
 @METHOD:        TextInteractor::HookExternalizerChanged
 @DESCRIPTION:   <p>Called by @'TextInteractor::SetExternalizer' whenever there is a new externalizer specified.</p>
 */
-void TextInteractor::HookExternalizerChanged ()
-{
-}
+void TextInteractor::HookExternalizerChanged () {}
 
 /*
 @METHOD:        TextInteractor::OnBadUserInput
@@ -3075,10 +3038,7 @@ void TextInteractor::SetScrollBarType (VHSelect vh, ScrollBarType scrollBarType)
 @DESCRIPTION:   <p>Mark the contents of the scrollbars as invalid. Someone, sometime later soon will call
     @'TextInteractor::UpdateScrollBars' to fix them up again.</p>
 */
-void TextInteractor::InvalidateScrollBarParameters ()
-{
-    InvalidateScrollBarParameters_ ();
-}
+void TextInteractor::InvalidateScrollBarParameters () { InvalidateScrollBarParameters_ (); }
 
 /*
 @METHOD:        TextInteractor::UpdateScrollBars
@@ -3087,10 +3047,7 @@ void TextInteractor::InvalidateScrollBarParameters ()
     This is usually taken care of in any class library wrapper code, such as @'Led_MFC_Helper<MFC_BASE_CLASS,BASE_INTERACTOR>'
     or @'Led_Win32_Helper<BASE_INTERACTOR>'.</p>
 */
-void TextInteractor::UpdateScrollBars ()
-{
-    UpdateScrollBars_ ();
-}
+void TextInteractor::UpdateScrollBars () { UpdateScrollBars_ (); }
 
 /*
 @METHOD:        TextInteractor::SetCaretShown
@@ -3239,7 +3196,8 @@ void TextInteractor::InvalidateCaretState ()
             particular key sequences (e.g. LedLineIt! overrides this to map shift-tab when there is a selection
             to an indent command rather than an insertion of text).</p>
  */
-void TextInteractor::OnTypedNormalCharacter (Led_tChar theChar, bool /*optionPressed*/, bool /*shiftPressed*/, bool /*commandPressed*/, bool controlPressed, bool /*altKeyPressed*/)
+void TextInteractor::OnTypedNormalCharacter (Led_tChar theChar, bool /*optionPressed*/, bool /*shiftPressed*/, bool /*commandPressed*/,
+                                             bool      controlPressed, bool /*altKeyPressed*/)
 {
     IdleManager::NonIdleContext nonIdleContext;
 
@@ -3253,8 +3211,7 @@ void TextInteractor::OnTypedNormalCharacter (Led_tChar theChar, bool /*optionPre
 
     if (GetSuppressTypedControlCharacters ()) {
         bool controlChar = Character (theChar).IsControl ();
-        if (controlChar &&
-            (theChar == '\r' || theChar == '\n' || theChar == ' ' || theChar == '\t' || theChar == '\b')) {
+        if (controlChar && (theChar == '\r' || theChar == '\n' || theChar == ' ' || theChar == '\t' || theChar == '\b')) {
             controlChar = false;
         }
         if (controlChar) {
@@ -3344,8 +3301,8 @@ bool TextInteractor::DelaySomeForScrollBarClick ()
 {
     const Time::DurationSecondsType kDelayAfterFirstTicks = 0.20f; // maybe should use ::GetDblClickTime()???
     const Time::DurationSecondsType kDelayAfterOtherTicks = 0.02f; // This delay is so on really fast computers, text doesn't scroll too quickly
-    const int                       kTimesForFirstClick   = 2;
-    const Time::DurationSecondsType kLongTime             = 1.0f; // any click after this time deemed we start again with first-tick
+    const int                       kTimesForFirstClick = 2;
+    const Time::DurationSecondsType kLongTime           = 1.0f; // any click after this time deemed we start again with first-tick
     static short                    sTimesThruBeforeReset;
 
     Foundation::Time::DurationSecondsType now = Time::GetTickCount ();

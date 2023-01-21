@@ -72,14 +72,8 @@ namespace {
         }
         AutoWinHINTERNET_ ()                         = delete;
         AutoWinHINTERNET_ (const AutoWinHINTERNET_&) = delete;
-        ~AutoWinHINTERNET_ ()
-        {
-            Verify (::WinHttpCloseHandle (fHandle));
-        }
-        operator HINTERNET ()
-        {
-            return fHandle;
-        }
+        ~AutoWinHINTERNET_ () { Verify (::WinHttpCloseHandle (fHandle)); }
+                                            operator HINTERNET () { return fHandle; }
         nonvirtual const AutoWinHINTERNET_& operator= (const AutoWinHINTERNET_&) = delete;
     };
 }
@@ -99,10 +93,7 @@ public:
     nonvirtual Rep_& operator= (const Rep_&) = delete;
 
 public:
-    virtual Options GetOptions () const override
-    {
-        return fOptions_;
-    }
+    virtual Options             GetOptions () const override { return fOptions_; }
     virtual DurationSecondsType GetTimeout () const override;
     virtual void                SetTimeout (DurationSecondsType timeout) override;
     virtual URI                 GetSchemeAndAuthority () const override;
@@ -160,10 +151,7 @@ Connection_WinHTTP::Rep_::~Rep_ ()
     fSessionHandle_.reset ();
 }
 
-DurationSecondsType Connection_WinHTTP::Rep_::GetTimeout () const
-{
-    return fTimeout_;
-}
+DurationSecondsType Connection_WinHTTP::Rep_::GetTimeout () const { return fTimeout_; }
 
 void Connection_WinHTTP::Rep_::SetTimeout (DurationSecondsType timeout)
 {
@@ -181,10 +169,7 @@ void Connection_WinHTTP::Rep_::SetAuthorityRelativeURL_ (const URI& url)
     }
 }
 
-URI Connection_WinHTTP::Rep_::GetSchemeAndAuthority () const
-{
-    return fURL_.GetSchemeAndAuthority ();
-}
+URI Connection_WinHTTP::Rep_::GetSchemeAndAuthority () const { return fURL_.GetSchemeAndAuthority (); }
 
 void Connection_WinHTTP::Rep_::SetSchemeAndAuthority (const URI& schemeAndAuthority)
 {
@@ -209,7 +194,8 @@ void Connection_WinHTTP::Rep_::Close ()
 Response Connection_WinHTTP::Rep_::Send (const Request& request)
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"Connection_WinHTTP::Rep_::Send", L"request=%s", Characters::ToString (request).c_str ())};
+    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"Connection_WinHTTP::Rep_::Send", L"request=%s",
+                                                                                 Characters::ToString (request).c_str ())};
 #endif
     Request useRequest = request;
 
@@ -272,18 +258,16 @@ Response Connection_WinHTTP::Rep_::Send (const Request& request)
 
     bool useSecureHTTP = fURL_.GetScheme () and fURL_.GetScheme ()->IsSecure ();
 
-    AutoWinHINTERNET_ hRequest (
-        ::WinHttpOpenRequest (*fConnectionHandle_, useRequest.fMethod.c_str (), fURL_.GetAuthorityRelativeResource ().c_str (),
-                              nullptr, WINHTTP_NO_REFERER,
-                              WINHTTP_DEFAULT_ACCEPT_TYPES,
-                              useSecureHTTP ? WINHTTP_FLAG_SECURE : 0));
+    AutoWinHINTERNET_ hRequest (::WinHttpOpenRequest (*fConnectionHandle_, useRequest.fMethod.c_str (),
+                                                      fURL_.GetAuthorityRelativeResource ().c_str (), nullptr, WINHTTP_NO_REFERER,
+                                                      WINHTTP_DEFAULT_ACCEPT_TYPES, useSecureHTTP ? WINHTTP_FLAG_SECURE : 0));
 
     // See https://stroika.atlassian.net/browse/STK-442 - we pre-set to avoid double try on failure, but
     // we cannot IF we want to know if SSL connect failed (until I figure out how)
     constexpr bool kDefault_FailConnectionIfSSLCertificateInvalid{true};
     if (not fOptions_.fReturnSSLInfo and not fOptions_.fFailConnectionIfSSLCertificateInvalid.value_or (kDefault_FailConnectionIfSSLCertificateInvalid)) {
-        DWORD dwOptions =
-            SECURITY_FLAG_IGNORE_CERT_CN_INVALID | SECURITY_FLAG_IGNORE_CERT_DATE_INVALID | SECURITY_FLAG_IGNORE_UNKNOWN_CA | SECURITY_FLAG_IGNORE_CERT_WRONG_USAGE;
+        DWORD dwOptions = SECURITY_FLAG_IGNORE_CERT_CN_INVALID | SECURITY_FLAG_IGNORE_CERT_DATE_INVALID | SECURITY_FLAG_IGNORE_UNKNOWN_CA |
+                          SECURITY_FLAG_IGNORE_CERT_WRONG_USAGE;
         Verify (::WinHttpSetOption (hRequest, WINHTTP_OPTION_SECURITY_FLAGS, &dwOptions, sizeof (dwOptions)));
     }
     if (not fOptions_.fSupportSessionCookies) {
@@ -306,9 +290,10 @@ RetryWithNoCERTCheck:
     //
     // See https://stroika.atlassian.net/browse/STK-442
     //
-    if (fOptions_.fReturnSSLInfo and not fOptions_.fFailConnectionIfSSLCertificateInvalid.value_or (kDefault_FailConnectionIfSSLCertificateInvalid) and sslExceptionProblem) {
-        DWORD dwOptions =
-            SECURITY_FLAG_IGNORE_CERT_CN_INVALID | SECURITY_FLAG_IGNORE_CERT_DATE_INVALID | SECURITY_FLAG_IGNORE_UNKNOWN_CA | SECURITY_FLAG_IGNORE_CERT_WRONG_USAGE;
+    if (fOptions_.fReturnSSLInfo and
+        not fOptions_.fFailConnectionIfSSLCertificateInvalid.value_or (kDefault_FailConnectionIfSSLCertificateInvalid) and sslExceptionProblem) {
+        DWORD dwOptions = SECURITY_FLAG_IGNORE_CERT_CN_INVALID | SECURITY_FLAG_IGNORE_CERT_DATE_INVALID | SECURITY_FLAG_IGNORE_UNKNOWN_CA |
+                          SECURITY_FLAG_IGNORE_CERT_WRONG_USAGE;
         Verify (::WinHttpSetOption (hRequest, WINHTTP_OPTION_SECURITY_FLAGS, &dwOptions, sizeof (dwOptions)));
     }
 
@@ -317,12 +302,10 @@ RetryWithAuth:
         if (useRequest.fData.size () > numeric_limits<DWORD>::max ()) {
             Throw (Execution::Exception{"Too large a message to send using WinHTTP"sv});
         }
-        ThrowIfZeroGetLastError (::WinHttpSendRequest (
-            hRequest,
-            useHeaderStrBuf.c_str (), static_cast<DWORD> (-1),
-            useRequest.fData.empty () ? nullptr : const_cast<byte*> (useRequest.fData.begin ()), static_cast<DWORD> (useRequest.fData.size ()),
-            static_cast<DWORD> (useRequest.fData.size ()),
-            NULL));
+        ThrowIfZeroGetLastError (::WinHttpSendRequest (hRequest, useHeaderStrBuf.c_str (), static_cast<DWORD> (-1),
+                                                       useRequest.fData.empty () ? nullptr : const_cast<byte*> (useRequest.fData.begin ()),
+                                                       static_cast<DWORD> (useRequest.fData.size ()),
+                                                       static_cast<DWORD> (useRequest.fData.size ()), NULL));
 
         // this must be called before the 'body' goes out of scope!
         ThrowIfZeroGetLastError (::WinHttpReceiveResponse (hRequest, nullptr));
@@ -383,15 +366,16 @@ RetryWithAuth:
     // don't throw here - record the bad status in the response. The reason is we often wish to read the whole body of the response.
     // It can contain an explanation of the error (such as soap fault) more detailed than the status line response
     {
-        wstring statusStr  = Extract_WinHttpHeader_ (hRequest, WINHTTP_QUERY_STATUS_CODE, WINHTTP_HEADER_NAME_BY_INDEX, WINHTTP_NO_HEADER_INDEX);
+        wstring statusStr = Extract_WinHttpHeader_ (hRequest, WINHTTP_QUERY_STATUS_CODE, WINHTTP_HEADER_NAME_BY_INDEX, WINHTTP_NO_HEADER_INDEX);
         wstring statusText = Extract_WinHttpHeader_ (hRequest, WINHTTP_QUERY_STATUS_TEXT, WINHTTP_HEADER_NAME_BY_INDEX, WINHTTP_NO_HEADER_INDEX);
-        status             = static_cast<HTTP::Status> (_wtoi (statusStr.c_str ()));
+        status = static_cast<HTTP::Status> (_wtoi (statusStr.c_str ()));
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
         DbgTrace (_T ("Status = %d"), status);
 #endif
     }
 
-    if (status == 401 and not got401 and fOptions_.fAuthentication and fOptions_.fAuthentication->GetOptions () == Connection::Options::Authentication::Options::eRespondToWWWAuthenticate) {
+    if (status == 401 and not got401 and fOptions_.fAuthentication and
+        fOptions_.fAuthentication->GetOptions () == Connection::Options::Authentication::Options::eRespondToWWWAuthenticate) {
         got401 = true;
         DWORD dwSupportedSchemes{};
         DWORD dwFirstScheme{};
@@ -416,7 +400,8 @@ RetryWithAuth:
             DWORD dwSelectedScheme = chooseAuthScheme (dwSupportedSchemes);
             if (dwSelectedScheme != 0) {
                 auto nameAndPassword = *fOptions_.fAuthentication->GetUsernameAndPassword (); // if eRespondToWWWAuthenticate we must have username/password (Options CTOR requirement)
-                Verify (::WinHttpSetCredentials (hRequest, dwTarget, dwSelectedScheme, nameAndPassword.first.AsSDKString ().c_str (), nameAndPassword.second.AsSDKString ().c_str (), nullptr));
+                Verify (::WinHttpSetCredentials (hRequest, dwTarget, dwSelectedScheme, nameAndPassword.first.AsSDKString ().c_str (),
+                                                 nameAndPassword.second.AsSDKString ().c_str (), nullptr));
                 goto RetryWithAuth;
             }
         }
@@ -433,27 +418,27 @@ RetryWithAuth:
         DWORD                    dwCertInfoSize = sizeof (certInfo);
         certInfo.dwKeySize                      = sizeof (certInfo);
         ThrowIfZeroGetLastError (::WinHttpQueryOption (hRequest, WINHTTP_OPTION_SECURITY_CERTIFICATE_STRUCT, &certInfo, &dwCertInfoSize));
-        [[maybe_unused]] auto&& cleanup = Execution::Finally (
-            [certInfo] () noexcept {
-                if (certInfo.lpszSubjectInfo != nullptr) {
-                    ::LocalFree (certInfo.lpszSubjectInfo);
-                }
-                if (certInfo.lpszIssuerInfo != nullptr) {
-                    ::LocalFree (certInfo.lpszIssuerInfo);
-                }
-                if (certInfo.lpszEncryptionAlgName != nullptr) {
-                    ::LocalFree (certInfo.lpszEncryptionAlgName);
-                }
-                if (certInfo.lpszProtocolName != nullptr) {
-                    ::LocalFree (certInfo.lpszProtocolName);
-                }
-                if (certInfo.lpszSignatureAlgName != nullptr) {
-                    ::LocalFree (certInfo.lpszSignatureAlgName);
-                }
-            });
+        [[maybe_unused]] auto&& cleanup = Execution::Finally ([certInfo] () noexcept {
+            if (certInfo.lpszSubjectInfo != nullptr) {
+                ::LocalFree (certInfo.lpszSubjectInfo);
+            }
+            if (certInfo.lpszIssuerInfo != nullptr) {
+                ::LocalFree (certInfo.lpszIssuerInfo);
+            }
+            if (certInfo.lpszEncryptionAlgName != nullptr) {
+                ::LocalFree (certInfo.lpszEncryptionAlgName);
+            }
+            if (certInfo.lpszProtocolName != nullptr) {
+                ::LocalFree (certInfo.lpszProtocolName);
+            }
+            if (certInfo.lpszSignatureAlgName != nullptr) {
+                ::LocalFree (certInfo.lpszSignatureAlgName);
+            }
+        });
 
         Response::SSLResultInfo resultSSLInfo;
-        resultSSLInfo.fValidationStatus = sslExceptionProblem ? Response::SSLResultInfo::ValidationStatus::eSSLFailure : Response::SSLResultInfo::ValidationStatus::eSSLOK;
+        resultSSLInfo.fValidationStatus =
+            sslExceptionProblem ? Response::SSLResultInfo::ValidationStatus::eSSLFailure : Response::SSLResultInfo::ValidationStatus::eSSLOK;
         if (certInfo.lpszSubjectInfo != nullptr) {
             wstring subject                  = certInfo.lpszSubjectInfo;
             resultSSLInfo.fSubjectCommonName = subject;
@@ -531,7 +516,8 @@ void Connection_WinHTTP::Rep_::AssureHasSessionHandle_ (const String& userAgent)
         fSessionHandle_.reset ();
     }
     if (fSessionHandle_ == nullptr) {
-        fSessionHandle_           = make_shared<AutoWinHINTERNET_> (::WinHttpOpen (userAgent.As<wstring> ().c_str (), WINHTTP_ACCESS_TYPE_NO_PROXY, WINHTTP_NO_PROXY_NAME, WINHTTP_NO_PROXY_BYPASS, 0));
+        fSessionHandle_ = make_shared<AutoWinHINTERNET_> (::WinHttpOpen (userAgent.As<wstring> ().c_str (), WINHTTP_ACCESS_TYPE_NO_PROXY,
+                                                                         WINHTTP_NO_PROXY_NAME, WINHTTP_NO_PROXY_BYPASS, 0));
         fSessionHandle_UserAgent_ = userAgent;
         if (fOptions_.fMaxAutomaticRedirects == 0) {
             DWORD dwOptions = WINHTTP_OPTION_REDIRECT_POLICY_NEVER;
@@ -554,7 +540,8 @@ void Connection_WinHTTP::Rep_::AssureHasConnectionHandle_ ()
             Execution::Throw (Execution::RuntimeErrorException{"Cannot connect without a host"sv});
         }
         // NOT SURE - for IPv6 address - if we want to pass encoded value here?
-        fConnectionHandle_ = make_shared<AutoWinHINTERNET_> (::WinHttpConnect (*fSessionHandle_, fURL_.GetAuthority ()->GetHost ()->AsEncoded ().c_str (), fURL_.GetPortValue (), 0));
+        fConnectionHandle_ = make_shared<AutoWinHINTERNET_> (
+            ::WinHttpConnect (*fSessionHandle_, fURL_.GetAuthority ()->GetHost ()->AsEncoded ().c_str (), fURL_.GetPortValue (), 0));
     }
 }
 #endif
@@ -565,8 +552,5 @@ void Connection_WinHTTP::Rep_::AssureHasConnectionHandle_ ()
  ********************** Transfer::Connection_WinHTTP ****************************
  ********************************************************************************
  */
-Connection::Ptr Connection_WinHTTP::New (const Options& options)
-{
-    return Connection::Ptr{make_shared<Rep_> (options)};
-}
+Connection::Ptr Connection_WinHTTP::New (const Options& options) { return Connection::Ptr{make_shared<Rep_> (options)}; }
 #endif

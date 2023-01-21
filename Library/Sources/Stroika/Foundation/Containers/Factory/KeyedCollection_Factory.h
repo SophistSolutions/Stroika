@@ -33,10 +33,12 @@ namespace Stroika::Foundation::Containers::Factory {
     template <typename T, typename KEY_TYPE, typename TRAITS, typename KEY_EXTRACTOR, typename KEY_EQUALS_COMPARER = equal_to<KEY_TYPE>>
     class KeyedCollection_Factory {
     public:
-        static_assert (not is_reference_v<T> and not is_reference_v<KEY_TYPE> and not is_reference_v<KEY_EXTRACTOR> and not is_reference_v<KEY_EQUALS_COMPARER>, "typically if this fails its because a (possibly indirect) caller forgot to use forward<TTT>(), or remove_cvref_t");
+        static_assert (not is_reference_v<T> and not is_reference_v<KEY_TYPE> and not is_reference_v<KEY_EXTRACTOR> and not is_reference_v<KEY_EQUALS_COMPARER>,
+                       "typically if this fails its because a (possibly indirect) caller forgot to use forward<TTT>(), or remove_cvref_t");
 
     private:
-        static inline atomic<KeyedCollection<T, KEY_TYPE, TRAITS> (*) (const KEY_EXTRACTOR& keyExtractor, const KEY_EQUALS_COMPARER& keyComparer)> sFactory_{nullptr};
+        static inline atomic<KeyedCollection<T, KEY_TYPE, TRAITS> (*) (const KEY_EXTRACTOR& keyExtractor, const KEY_EQUALS_COMPARER& keyComparer)> sFactory_{
+            nullptr};
 
     public:
         KeyedCollection_Factory (const KEY_EXTRACTOR& keyExtractor, const KEY_EQUALS_COMPARER& keyComparer);
@@ -51,7 +53,8 @@ namespace Stroika::Foundation::Containers::Factory {
         /**
          *  Register a replacement creator/factory for the given KeyedCollection<KEY_TYPE, VALUE_TYPE,TRAITS>. Note this is a global change.
          */
-        static void Register (KeyedCollection<T, KEY_TYPE, TRAITS> (*factory) (const KEY_EXTRACTOR& keyExtractor, const KEY_EQUALS_COMPARER& keyComparer) = nullptr);
+        static void Register (KeyedCollection<T, KEY_TYPE, TRAITS> (*factory) (const KEY_EXTRACTOR&       keyExtractor,
+                                                                               const KEY_EQUALS_COMPARER& keyComparer) = nullptr);
 
     private:
         [[no_unique_address]] const KEY_EXTRACTOR       fKeyExtractorType_;

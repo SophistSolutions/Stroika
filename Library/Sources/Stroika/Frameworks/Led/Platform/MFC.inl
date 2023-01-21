@@ -15,45 +15,30 @@ namespace Stroika::Frameworks::Led::Platform {
     @DESCRIPTION:   Convert a @'Led_Point' to an MFC CPoint.
         <p>See also @'AsLedPoint', @'AsCRect', @'AsLedRect'.
     */
-    inline CPoint AsCPoint (Led_Point p)
-    {
-        return CPoint (p.h, p.v);
-    }
+    inline CPoint AsCPoint (Led_Point p) { return CPoint (p.h, p.v); }
     /*
     @METHOD:        AsLedPoint
     @DESCRIPTION:   Convert an MFC CPoint to a @'Led_Point'.
         <p>See also @'AsCPoint', @'AsCRect', @'AsLedRect'.
     */
-    inline Led_Point AsLedPoint (CPoint p)
-    {
-        return Led_Point (p.y, p.x);
-    }
+    inline Led_Point AsLedPoint (CPoint p) { return Led_Point (p.y, p.x); }
     /*
     @METHOD:        AsCRect
     @DESCRIPTION:   Convert a Led_Rect to an MFC CRect.
         <p>See also @'AsCPoint', @'AsLedPoint', @'AsLedRect'.
     */
-    inline CRect AsCRect (Led_Rect r)
-    {
-        return CRect (r.left, r.top, r.right, r.bottom);
-    }
+    inline CRect AsCRect (Led_Rect r) { return CRect (r.left, r.top, r.right, r.bottom); }
     /*
     @METHOD:        AsLedRect
     @DESCRIPTION:   Convert an MFC CRect to a Led_Rect.
         <p>See also @'AsCPoint', @'AsLedPoint', @'AsCRect'.
     */
-    inline Led_Rect AsLedRect (CRect r)
-    {
-        return Led_Rect (r.top, r.left, r.Height (), r.Width ());
-    }
+    inline Led_Rect AsLedRect (CRect r) { return Led_Rect (r.top, r.left, r.Height (), r.Width ()); }
     /*
     @METHOD:        AsCSize
     @DESCRIPTION:   Convert a Led_Size to an MFC CSize.
     */
-    inline CSize AsCSize (Led_Size s)
-    {
-        return CSize (s.h, s.v);
-    }
+    inline CSize AsCSize (Led_Size s) { return CSize (s.h, s.v); }
 
     //  class   Led_MFC_CDCFromTablet
     inline Led_MFC_CDCFromTablet::Led_MFC_CDCFromTablet (Tablet* t)
@@ -64,14 +49,8 @@ namespace Stroika::Frameworks::Led::Platform {
         fCDC.m_hAttribDC = t->m_hAttribDC;
         fCDC.m_bPrinting = t->m_bPrinting;
     }
-    inline Led_MFC_CDCFromTablet::~Led_MFC_CDCFromTablet ()
-    {
-        fCDC.Detach ();
-    }
-    inline Led_MFC_CDCFromTablet::operator CDC* ()
-    {
-        return &fCDC;
-    }
+    inline Led_MFC_CDCFromTablet::~Led_MFC_CDCFromTablet () { fCDC.Detach (); }
+    inline Led_MFC_CDCFromTablet::operator CDC* () { return &fCDC; }
 
     //  class   Led_MFC_TabletFromCDC
     inline Led_MFC_TabletFromCDC::Led_MFC_TabletFromCDC (CDC* pDC)
@@ -82,18 +61,9 @@ namespace Stroika::Frameworks::Led::Platform {
         fTablet.m_hAttribDC = pDC->m_hAttribDC;
         fTablet.m_bPrinting = pDC->m_bPrinting;
     }
-    inline Led_MFC_TabletFromCDC::~Led_MFC_TabletFromCDC ()
-    {
-        fTablet.Detach ();
-    }
-    inline Led_MFC_TabletFromCDC::operator Tablet* ()
-    {
-        return &fTablet;
-    }
-    inline Tablet* Led_MFC_TabletFromCDC::operator->()
-    {
-        return &fTablet;
-    }
+    inline Led_MFC_TabletFromCDC::~Led_MFC_TabletFromCDC () { fTablet.Detach (); }
+    inline Led_MFC_TabletFromCDC::operator Tablet* () { return &fTablet; }
+    inline Tablet* Led_MFC_TabletFromCDC::operator->() { return &fTablet; }
 
     template <typename MFC_BASE_CLASS, typename BASE_INTERACTOR>
     inline Led_MFC_Helper<MFC_BASE_CLASS, BASE_INTERACTOR>::Led_MFC_Helper ()
@@ -140,8 +110,7 @@ namespace Stroika::Frameworks::Led::Platform {
     @DESCRIPTION:   Hook the Win32 SDK WM_SETCURSOR message to handle set the cursor to an I-Beam, as appropriate. When over
         draggable text, instead use a standard arrow cursor.
     */
-    BOOL
-    Led_MFC_Helper<MFC_BASE_CLASS, BASE_INTERACTOR>::OnSetCursor (CWnd* pWnd, UINT nHitTest, UINT message)
+    BOOL Led_MFC_Helper<MFC_BASE_CLASS, BASE_INTERACTOR>::OnSetCursor (CWnd* pWnd, UINT nHitTest, UINT message)
     {
         return this->OnSetCursor_Msg (pWnd->GetSafeHwnd (), nHitTest, message);
     }
@@ -172,8 +141,7 @@ namespace Stroika::Frameworks::Led::Platform {
                 except that it works with MFC windows and MFC's CWnd message maps etc.
                 </p>
     */
-    BOOL
-    Led_MFC_Helper<MFC_BASE_CLASS, BASE_INTERACTOR>::ReplaceWindow (HWND hWnd)
+    BOOL Led_MFC_Helper<MFC_BASE_CLASS, BASE_INTERACTOR>::ReplaceWindow (HWND hWnd)
     {
         CWnd* parent     = MFC_BASE_CLASS::FromHandle (hWnd)->GetParent ();
         HWND  hwndParent = parent->GetSafeHwnd ();
@@ -198,10 +166,9 @@ namespace Stroika::Frameworks::Led::Platform {
         // Delete the edit widget window.
         ::DestroyWindow (hwndEdit);
 
-        return MFC_BASE_CLASS::CreateEx (exStyle, NULL, NULL, dwStyle | WS_CHILD,
-                                         wp.rcNormalPosition.left, wp.rcNormalPosition.top,
-                                         wp.rcNormalPosition.right - wp.rcNormalPosition.left, wp.rcNormalPosition.bottom - wp.rcNormalPosition.top,
-                                         parent->GetSafeHwnd (), (HMENU)id, NULL);
+        return MFC_BASE_CLASS::CreateEx (exStyle, NULL, NULL, dwStyle | WS_CHILD, wp.rcNormalPosition.left, wp.rcNormalPosition.top,
+                                         wp.rcNormalPosition.right - wp.rcNormalPosition.left,
+                                         wp.rcNormalPosition.bottom - wp.rcNormalPosition.top, parent->GetSafeHwnd (), (HMENU)id, NULL);
     }
     template <typename MFC_BASE_CLASS, typename BASE_INTERACTOR>
     /*
@@ -212,8 +179,7 @@ namespace Stroika::Frameworks::Led::Platform {
             <p>I provide two overloads of this routine. The one that returns  a Led_Rect returns the Led WindowRect. And the one
         that takes an LPRECT parameter returns the Win32 SDK WindowRect.
     */
-    inline Led_Rect
-    Led_MFC_Helper<MFC_BASE_CLASS, BASE_INTERACTOR>::GetWindowRect () const
+    inline Led_Rect Led_MFC_Helper<MFC_BASE_CLASS, BASE_INTERACTOR>::GetWindowRect () const
     {
         return TextImager::GetWindowRect ();
     }
@@ -361,45 +327,21 @@ namespace Stroika::Frameworks::Led::Platform {
         using TheBaseClass = MFC_BASE_CLASS;
         DISABLE_COMPILER_MSC_WARNING_START (4407) // Not sure this is safe to ignore but I think it is due to qMFCRequiresCWndLeftmostBaseClass
         static const AFX_MSGMAP_ENTRY _messageEntries[] = {
-            ON_WM_CREATE ()
-                ON_WM_CHAR ()
-                    ON_WM_TIMER ()
-                        ON_WM_KEYDOWN ()
-                            ON_WM_PAINT ()
-                                ON_WM_MOUSEMOVE ()
-                                    ON_WM_LBUTTONDOWN ()
-                                        ON_WM_SETCURSOR ()
-                                            ON_WM_GETDLGCODE ()
-                                                ON_WM_LBUTTONUP ()
-                                                    ON_WM_LBUTTONDBLCLK ()
-                                                        ON_WM_SETFOCUS ()
-                                                            ON_WM_KILLFOCUS ()
-                                                                ON_WM_SIZE ()
-                                                                    ON_WM_ERASEBKGND ()
-                                                                        ON_WM_VSCROLL ()
-                                                                            ON_WM_HSCROLL ()
-                                                                                ON_WM_MOUSEWHEEL ()
-                                                                                    ON_WM_ENABLE ()
-                                                                                        ON_MESSAGE (WM_UNICHAR, &OnUniChar)
-                                                                                            ON_MESSAGE (WM_IME_CHAR, &OnIMEChar)
-                                                                                                ON_MESSAGE (WM_IME_COMPOSITION, &OnIME_COMPOSITION)
-                                                                                                    ON_MESSAGE (WM_IME_ENDCOMPOSITION, &OnIME_ENDCOMPOSITION)
-                                                                                                        LED_MFC_HANDLE_COMMAND_M (BASE_INTERACTOR::kUndo_CmdID)
-                                                                                                            LED_MFC_HANDLE_COMMAND_M (BASE_INTERACTOR::kRedo_CmdID)
-                                                                                                                LED_MFC_HANDLE_COMMAND_M (BASE_INTERACTOR::kSelectAll_CmdID)
-                                                                                                                    LED_MFC_HANDLE_COMMAND_M (BASE_INTERACTOR::kSelectWord_CmdID)
-                                                                                                                        LED_MFC_HANDLE_COMMAND_M (BASE_INTERACTOR::kSelectTextRow_CmdID)
-                                                                                                                            LED_MFC_HANDLE_COMMAND_M (BASE_INTERACTOR::kSelectParagraph_CmdID)
-                                                                                                                                LED_MFC_HANDLE_COMMAND_M (BASE_INTERACTOR::kCut_CmdID)
-                                                                                                                                    LED_MFC_HANDLE_COMMAND_M (BASE_INTERACTOR::kCopy_CmdID)
-                                                                                                                                        LED_MFC_HANDLE_COMMAND_M (BASE_INTERACTOR::kPaste_CmdID)
-                                                                                                                                            LED_MFC_HANDLE_COMMAND_M (BASE_INTERACTOR::kClear_CmdID)
-                                                                                                                                                LED_MFC_HANDLE_COMMAND_M (BASE_INTERACTOR::kFind_CmdID)
-                                                                                                                                                    LED_MFC_HANDLE_COMMAND_M (BASE_INTERACTOR::kFindAgain_CmdID)
-                                                                                                                                                        LED_MFC_HANDLE_COMMAND_M (BASE_INTERACTOR::kEnterFindString_CmdID)
-                                                                                                                                                            LED_MFC_HANDLE_COMMAND_M (BASE_INTERACTOR::kReplace_CmdID)
-                                                                                                                                                                LED_MFC_HANDLE_COMMAND_M (BASE_INTERACTOR::kReplaceAgain_CmdID)
-                                                                                                                                                                    LED_MFC_HANDLE_COMMAND_M (BASE_INTERACTOR::kSpellCheck_CmdID){0, 0, 0, 0, AfxSig_end, (AFX_PMSG)0}};
+            ON_WM_CREATE () ON_WM_CHAR () ON_WM_TIMER () ON_WM_KEYDOWN () ON_WM_PAINT () ON_WM_MOUSEMOVE () ON_WM_LBUTTONDOWN ()
+                ON_WM_SETCURSOR () ON_WM_GETDLGCODE () ON_WM_LBUTTONUP () ON_WM_LBUTTONDBLCLK () ON_WM_SETFOCUS () ON_WM_KILLFOCUS ()
+                    ON_WM_SIZE () ON_WM_ERASEBKGND () ON_WM_VSCROLL () ON_WM_HSCROLL () ON_WM_MOUSEWHEEL () ON_WM_ENABLE () ON_MESSAGE (
+                        WM_UNICHAR, &OnUniChar) ON_MESSAGE (WM_IME_CHAR, &OnIMEChar) ON_MESSAGE (WM_IME_COMPOSITION, &OnIME_COMPOSITION)
+                        ON_MESSAGE (WM_IME_ENDCOMPOSITION, &OnIME_ENDCOMPOSITION) LED_MFC_HANDLE_COMMAND_M (BASE_INTERACTOR::kUndo_CmdID)
+                            LED_MFC_HANDLE_COMMAND_M (BASE_INTERACTOR::kRedo_CmdID) LED_MFC_HANDLE_COMMAND_M (BASE_INTERACTOR::kSelectAll_CmdID)
+                                LED_MFC_HANDLE_COMMAND_M (BASE_INTERACTOR::kSelectWord_CmdID) LED_MFC_HANDLE_COMMAND_M (
+                                    BASE_INTERACTOR::kSelectTextRow_CmdID) LED_MFC_HANDLE_COMMAND_M (BASE_INTERACTOR::kSelectParagraph_CmdID)
+                                    LED_MFC_HANDLE_COMMAND_M (BASE_INTERACTOR::kCut_CmdID) LED_MFC_HANDLE_COMMAND_M (BASE_INTERACTOR::kCopy_CmdID)
+                                        LED_MFC_HANDLE_COMMAND_M (BASE_INTERACTOR::kPaste_CmdID) LED_MFC_HANDLE_COMMAND_M (BASE_INTERACTOR::kClear_CmdID)
+                                            LED_MFC_HANDLE_COMMAND_M (BASE_INTERACTOR::kFind_CmdID) LED_MFC_HANDLE_COMMAND_M (BASE_INTERACTOR::kFindAgain_CmdID)
+                                                LED_MFC_HANDLE_COMMAND_M (BASE_INTERACTOR::kEnterFindString_CmdID)
+                                                    LED_MFC_HANDLE_COMMAND_M (BASE_INTERACTOR::kReplace_CmdID)
+                                                        LED_MFC_HANDLE_COMMAND_M (BASE_INTERACTOR::kReplaceAgain_CmdID) LED_MFC_HANDLE_COMMAND_M (
+                                                            BASE_INTERACTOR::kSpellCheck_CmdID){0, 0, 0, 0, AfxSig_end, (AFX_PMSG)0}};
         DISABLE_COMPILER_MSC_WARNING_END (4407)
         static const AFX_MSGMAP messageMap = {&TheBaseClass::GetThisMessageMap, &_messageEntries[0]};
         return &messageMap;
@@ -659,29 +601,24 @@ namespace Stroika::Frameworks::Led::Platform {
         using TheBaseClass = BASECLASS;
         DISABLE_COMPILER_MSC_WARNING_START (4407) // Not sure this is safe to ignore but I think it is due to qMFCRequiresCWndLeftmostBaseClass
         static const AFX_MSGMAP_ENTRY _messageEntries[] = {
-            ON_MESSAGE (WM_SETTEXT, &OnMFCSDKMessageDispatcher<WM_SETTEXT>)
-                ON_MESSAGE (WM_GETTEXT, &OnMFCSDKMessageDispatcher<WM_GETTEXT>)
-                    ON_MESSAGE (WM_GETTEXTLENGTH, &OnMFCSDKMessageDispatcher<WM_GETTEXTLENGTH>)
-                        ON_MESSAGE (EM_GETSEL, &OnMFCSDKMessageDispatcher<EM_GETSEL>)
-                            ON_MESSAGE (EM_SETREADONLY, &OnMFCSDKMessageDispatcher<EM_SETREADONLY>)
-                                ON_MESSAGE (EM_GETFIRSTVISIBLELINE, &OnMFCSDKMessageDispatcher<EM_GETFIRSTVISIBLELINE>)
-                                    ON_MESSAGE (EM_LINEINDEX, &OnMFCSDKMessageDispatcher<EM_LINEINDEX>)
-                                        ON_MESSAGE (EM_GETLINECOUNT, &OnMFCSDKMessageDispatcher<EM_GETLINECOUNT>)
-                                            ON_MESSAGE (EM_CANUNDO, &OnMFCSDKMessageDispatcher<EM_CANUNDO>)
-                                                ON_MESSAGE (EM_UNDO, &OnMFCSDKMessageDispatcher<EM_UNDO>)
-                                                    ON_MESSAGE (EM_EMPTYUNDOBUFFER, &OnMFCSDKMessageDispatcher<EM_EMPTYUNDOBUFFER>)
-                                                        ON_MESSAGE (WM_CLEAR, &OnMFCSDKMessageDispatcher<WM_CLEAR>)
-                                                            ON_MESSAGE (WM_CUT, &OnMFCSDKMessageDispatcher<WM_CUT>)
-                                                                ON_MESSAGE (WM_COPY, &OnMFCSDKMessageDispatcher<WM_COPY>)
-                                                                    ON_MESSAGE (WM_PASTE, &OnMFCSDKMessageDispatcher<WM_PASTE>)
-                                                                        ON_MESSAGE (EM_LINEFROMCHAR, &OnMFCSDKMessageDispatcher<EM_LINEFROMCHAR>)
-                                                                            ON_MESSAGE (EM_LINELENGTH, &OnMFCSDKMessageDispatcher<EM_LINELENGTH>)
-                                                                                ON_MESSAGE (EM_LINESCROLL, &OnMFCSDKMessageDispatcher<EM_LINESCROLL>)
-                                                                                    ON_MESSAGE (EM_REPLACESEL, &OnMFCSDKMessageDispatcher<EM_REPLACESEL>)
-                                                                                        ON_MESSAGE (EM_SETSEL, &OnMFCSDKMessageDispatcher<EM_SETSEL>)
-                                                                                            ON_MESSAGE (EM_SCROLLCARET, &OnMFCSDKMessageDispatcher<EM_SCROLLCARET>)
-                                                                                                ON_MESSAGE (WM_GETFONT, &OnMFCSDKMessageDispatcher<WM_GETFONT>)
-                                                                                                    ON_MESSAGE (WM_SETFONT, &OnMFCSDKMessageDispatcher<WM_SETFONT>){0, 0, 0, 0, AfxSig_end, (AFX_PMSG)0}};
+            ON_MESSAGE (WM_SETTEXT, &OnMFCSDKMessageDispatcher<WM_SETTEXT>) ON_MESSAGE (WM_GETTEXT, &OnMFCSDKMessageDispatcher<WM_GETTEXT>)
+                ON_MESSAGE (WM_GETTEXTLENGTH, &OnMFCSDKMessageDispatcher<WM_GETTEXTLENGTH>) ON_MESSAGE (
+                    EM_GETSEL, &OnMFCSDKMessageDispatcher<EM_GETSEL>) ON_MESSAGE (EM_SETREADONLY, &OnMFCSDKMessageDispatcher<EM_SETREADONLY>)
+                    ON_MESSAGE (EM_GETFIRSTVISIBLELINE, &OnMFCSDKMessageDispatcher<EM_GETFIRSTVISIBLELINE>) ON_MESSAGE (
+                        EM_LINEINDEX, &OnMFCSDKMessageDispatcher<EM_LINEINDEX>) ON_MESSAGE (EM_GETLINECOUNT, &OnMFCSDKMessageDispatcher<EM_GETLINECOUNT>)
+                        ON_MESSAGE (EM_CANUNDO, &OnMFCSDKMessageDispatcher<EM_CANUNDO>) ON_MESSAGE (EM_UNDO, &OnMFCSDKMessageDispatcher<EM_UNDO>)
+                            ON_MESSAGE (EM_EMPTYUNDOBUFFER, &OnMFCSDKMessageDispatcher<EM_EMPTYUNDOBUFFER>)
+                                ON_MESSAGE (WM_CLEAR, &OnMFCSDKMessageDispatcher<WM_CLEAR>) ON_MESSAGE (WM_CUT, &OnMFCSDKMessageDispatcher<WM_CUT>)
+                                    ON_MESSAGE (WM_COPY, &OnMFCSDKMessageDispatcher<WM_COPY>) ON_MESSAGE (WM_PASTE, &OnMFCSDKMessageDispatcher<WM_PASTE>)
+                                        ON_MESSAGE (EM_LINEFROMCHAR, &OnMFCSDKMessageDispatcher<EM_LINEFROMCHAR>)
+                                            ON_MESSAGE (EM_LINELENGTH, &OnMFCSDKMessageDispatcher<EM_LINELENGTH>)
+                                                ON_MESSAGE (EM_LINESCROLL, &OnMFCSDKMessageDispatcher<EM_LINESCROLL>)
+                                                    ON_MESSAGE (EM_REPLACESEL, &OnMFCSDKMessageDispatcher<EM_REPLACESEL>)
+                                                        ON_MESSAGE (EM_SETSEL, &OnMFCSDKMessageDispatcher<EM_SETSEL>)
+                                                            ON_MESSAGE (EM_SCROLLCARET, &OnMFCSDKMessageDispatcher<EM_SCROLLCARET>)
+                                                                ON_MESSAGE (WM_GETFONT, &OnMFCSDKMessageDispatcher<WM_GETFONT>)
+                                                                    ON_MESSAGE (WM_SETFONT, &OnMFCSDKMessageDispatcher<WM_SETFONT>){
+                                                                        0, 0, 0, 0, AfxSig_end, (AFX_PMSG)0}};
         DISABLE_COMPILER_MSC_WARNING_END (4407)
         static const AFX_MSGMAP messageMap = {&TheBaseClass::GetThisMessageMap, &_messageEntries[0]};
         return &messageMap;
@@ -726,8 +663,7 @@ namespace Stroika::Frameworks::Led::Platform {
     @METHOD:        Led_MFC_DragAndDropWindow<BASECLASS>::SetCommandNames
     @DESCRIPTION:   See @'Led_MFC_DragAndDropWindow<BASECLASS>::GetCommandNames'.
     */
-    inline void
-    Led_MFC_DragAndDropWindow<BASECLASS>::SetCommandNames (const typename Led_MFC_DragAndDropWindow<BASECLASS>::CommandNames& cmdNames)
+    inline void Led_MFC_DragAndDropWindow<BASECLASS>::SetCommandNames (const typename Led_MFC_DragAndDropWindow<BASECLASS>::CommandNames& cmdNames)
     {
         sCommandNames = cmdNames;
     }
@@ -800,8 +736,9 @@ namespace Stroika::Frameworks::Led::Platform {
             Region selectionRegion;
             this->GetSelectionWindowRegion (&selectionRegion, this->GetSelectionStart (), this->GetSelectionEnd ());
 
-            Foundation::Time::DurationSecondsType startDragSelectAt = Foundation::Time::GetTickCount (); // Grab it after the ExternalizeFlavors call in case thats slow (SPR#1498).
-            ::DROPEFFECT                          dropResult        = DROPEFFECT_COPY;
+            Foundation::Time::DurationSecondsType startDragSelectAt =
+                Foundation::Time::GetTickCount (); // Grab it after the ExternalizeFlavors call in case thats slow (SPR#1498).
+            ::DROPEFFECT dropResult = DROPEFFECT_COPY;
             if (not(this->GetStyle () & ES_READONLY)) {
                 // Assure we don't change read-only text.
                 dropResult |= DROPEFFECT_MOVE;
@@ -835,13 +772,12 @@ namespace Stroika::Frameworks::Led::Platform {
                      */
                     TextInteractor::InteractiveModeUpdater iuMode{*this};
                     AssertNotNull (sCurrentDragInfo);
-                    TextInteractor::UndoableContextHelper undoContext (*this,
-                                                                       sCurrentDragInfo->fWeRecievedDrop ? SDKString{} : GetCommandNames ().fDragCommandName,
-                                                                       sCurrentDragInfo->fOrigSelection.GetStart (),
-                                                                       sCurrentDragInfo->fOrigSelection.GetEnd (),
-                                                                       true);
+                    TextInteractor::UndoableContextHelper undoContext (
+                        *this, sCurrentDragInfo->fWeRecievedDrop ? SDKString{} : GetCommandNames ().fDragCommandName,
+                        sCurrentDragInfo->fOrigSelection.GetStart (), sCurrentDragInfo->fOrigSelection.GetEnd (), true);
                     {
-                        TextInteractor::InteractiveReplace_ (undoContext.GetUndoRegionStart (), undoContext.GetUndoRegionEnd (), LED_TCHAR_OF (""), 0, false, false, eDefaultUpdate);
+                        TextInteractor::InteractiveReplace_ (undoContext.GetUndoRegionStart (), undoContext.GetUndoRegionEnd (),
+                                                             LED_TCHAR_OF (""), 0, false, false, eDefaultUpdate);
                     }
                     undoContext.CommandComplete (sCurrentDragInfo->fOrigSelection.GetEnd ());
                 } break;
@@ -936,7 +872,8 @@ namespace Stroika::Frameworks::Led::Platform {
             size_t newPos = this->GetCharAtClickLocation (AsLedPoint (point));
 
             // Disalow dragging selection ontop of itself...
-            if (sCurrentDragInfo != NULL and sCurrentDragInfo->fLedMFCView == this and (newPos >= sCurrentDragInfo->fOurDragStart and newPos <= sCurrentDragInfo->fOurDragEnd)) {
+            if (sCurrentDragInfo != NULL and sCurrentDragInfo->fLedMFCView == this and
+                (newPos >= sCurrentDragInfo->fOurDragStart and newPos <= sCurrentDragInfo->fOurDragEnd)) {
                 this->SetSelection (sCurrentDragInfo->fOurDragStart, sCurrentDragInfo->fOurDragEnd);
                 this->Update ();
                 fPrevDropEffect = DROPEFFECT_NONE;
@@ -1016,14 +953,15 @@ namespace Stroika::Frameworks::Led::Platform {
         this->BreakInGroupedCommands ();
 
         TextInteractor::InteractiveModeUpdater iuMode (*this);
-        size_t                                 ucSelStart = (sCurrentDragInfo != NULL and sCurrentDragInfo->fLedMFCView == this) ? sCurrentDragInfo->fOrigSelection.GetStart () : this->GetSelectionStart ();
-        size_t                                 ucSelEnd   = (sCurrentDragInfo != NULL and sCurrentDragInfo->fLedMFCView == this) ? sCurrentDragInfo->fOrigSelection.GetEnd () : this->GetSelectionEnd ();
-        TextInteractor::UndoableContextHelper  undoContext (
-            *this,
-            (sCurrentDragInfo != NULL and sCurrentDragInfo->fLedMFCView == this) ? GetCommandNames ().fDragNDropCommandName : GetCommandNames ().fDropCommandName,
-            this->GetSelectionStart (), this->GetSelectionEnd (),
-            ucSelStart, ucSelEnd,
-            false);
+        size_t ucSelStart = (sCurrentDragInfo != NULL and sCurrentDragInfo->fLedMFCView == this) ? sCurrentDragInfo->fOrigSelection.GetStart ()
+                                                                                                 : this->GetSelectionStart ();
+        size_t ucSelEnd = (sCurrentDragInfo != NULL and sCurrentDragInfo->fLedMFCView == this) ? sCurrentDragInfo->fOrigSelection.GetEnd ()
+                                                                                               : this->GetSelectionEnd ();
+        TextInteractor::UndoableContextHelper undoContext (*this,
+                                                           (sCurrentDragInfo != NULL and sCurrentDragInfo->fLedMFCView == this)
+                                                               ? GetCommandNames ().fDragNDropCommandName
+                                                               : GetCommandNames ().fDropCommandName,
+                                                           this->GetSelectionStart (), this->GetSelectionEnd (), ucSelStart, ucSelEnd, false);
         {
             try {
                 this->InternalizeBestFlavor (flavors);
@@ -1138,9 +1076,7 @@ namespace Stroika::Frameworks::Led::Platform {
         using ThisClass    = Led_MFC_DragAndDropWindow<BASECLASS>;
         using TheBaseClass = BASECLASS;
         DISABLE_COMPILER_MSC_WARNING_START (4407) // Not sure this is safe to ignore but I think it is due to qMFCRequiresCWndLeftmostBaseClass
-        static const AFX_MSGMAP_ENTRY _messageEntries[] = {
-            ON_WM_CREATE ()
-                ON_WM_TIMER (){0, 0, 0, 0, AfxSig_end, (AFX_PMSG)0}};
+        static const AFX_MSGMAP_ENTRY _messageEntries[] = {ON_WM_CREATE () ON_WM_TIMER (){0, 0, 0, 0, AfxSig_end, (AFX_PMSG)0}};
         DISABLE_COMPILER_MSC_WARNING_END (4407)
         static const AFX_MSGMAP messageMap = {&TheBaseClass::GetThisMessageMap, &_messageEntries[0]};
         return &messageMap;
@@ -1167,8 +1103,7 @@ namespace Stroika::Frameworks::Led::Platform {
     @DESCRIPTION:   <p>Return the print margins. These are used by @'Led_MFC_CViewHelper<BASECLASS>::CalculatePrintingRect'.
                 See also @'Led_MFC_CViewHelper<BASECLASS>::SetPrintMargins'.
     */
-    TWIPS_Rect
-    Led_MFC_CViewHelper<BASECLASS>::GetPrintMargins () const
+    TWIPS_Rect Led_MFC_CViewHelper<BASECLASS>::GetPrintMargins () const
     {
         return fPrintMargins;
     }
@@ -1177,8 +1112,7 @@ namespace Stroika::Frameworks::Led::Platform {
     @METHOD:        Led_MFC_CViewHelper<BASECLASS>::SetPrintMargins
     @DESCRIPTION:   <p>See also @'Led_MFC_CViewHelper<BASECLASS>::GetPrintMargins'.
     */
-    void
-    Led_MFC_CViewHelper<BASECLASS>::SetPrintMargins (const TWIPS_Rect& printMargins)
+    void Led_MFC_CViewHelper<BASECLASS>::SetPrintMargins (const TWIPS_Rect& printMargins)
     {
         fPrintMargins = printMargins;
     }
@@ -1188,8 +1122,7 @@ namespace Stroika::Frameworks::Led::Platform {
     @DESCRIPTION:   Hook the MFC OnPreparePrinting () method to handle printing in the standard MFC fasion.
             Don't call this directly.
     */
-    BOOL
-    Led_MFC_CViewHelper<BASECLASS>::OnPreparePrinting (CPrintInfo* pInfo)
+    BOOL Led_MFC_CViewHelper<BASECLASS>::OnPreparePrinting (CPrintInfo* pInfo)
     {
         // default preparation
         return this->DoPreparePrinting (pInfo);
@@ -1201,8 +1134,7 @@ namespace Stroika::Frameworks::Led::Platform {
         Also, keep track of some internals we will use later in printing, and setup SetForceAllRowsShowing
         so when we print the last page, we can see lots of nice whatspace at the end. Don't call this directly.
     */
-    void
-    Led_MFC_CViewHelper<BASECLASS>::OnBeginPrinting (CDC* pDC, CPrintInfo* pInfo)
+    void Led_MFC_CViewHelper<BASECLASS>::OnBeginPrinting (CDC* pDC, CPrintInfo* pInfo)
     {
         // THIS CODE IS KINDOF HACKISH - SHOULD HAVE A PAGENATE STAGE/FUNCTION!!! TO FILL THIS ARRAY!!!
         Assert (fPrintInfo == NULL);
@@ -1218,9 +1150,9 @@ namespace Stroika::Frameworks::Led::Platform {
         // That doesn't have todo with scrolling? Just DrawFromSize_tOffset? Maybe - into rect.
         // Make the MRTI::Draw() vector to that?
         ASSERT_VALID (pDC);
-        Led_MFC_TabletFromCDC                    tablet (pDC);
+        Led_MFC_TabletFromCDC tablet (pDC);
         typename BASECLASS::TemporarilyUseTablet tmpUseTablet{*this, tablet, BASECLASS::TemporarilyUseTablet::eDontDoTextMetricsChangedCall};
-        CRect                                    boundsRect = CRect (0, 0, 0, 0);
+        CRect boundsRect = CRect (0, 0, 0, 0);
         Verify (pDC->GetClipBox (&boundsRect) != ERROR);
         this->Draw (AsLedRect (boundsRect), true);
     }
@@ -1302,8 +1234,7 @@ namespace Stroika::Frameworks::Led::Platform {
             <p>See also @'Led_MFC_CViewHelper<BASECLASS>::GetPrintMargins' to specify the margins that are used by this
         routine by default.</p>
     */
-    Led_Rect
-    Led_MFC_CViewHelper<BASECLASS>::CalculatePrintingRect (CDC* pDC) const
+    Led_Rect Led_MFC_CViewHelper<BASECLASS>::CalculatePrintingRect (CDC* pDC) const
     {
         RequireNotNull (pDC);
         /*
@@ -1313,8 +1244,7 @@ namespace Stroika::Frameworks::Led::Platform {
         pDC->DPtoLP (&winRect);
         Led_Rect useRect    = AsLedRect (winRect);
         Led_Rect marginRect = Led_MFC_TabletFromCDC (pDC)->CvtFromTWIPS (fPrintMargins);
-        useRect             = Led_Rect (useRect.GetTop () + marginRect.GetTop (),
-                                        useRect.GetLeft () + marginRect.GetLeft (),
+        useRect             = Led_Rect (useRect.GetTop () + marginRect.GetTop (), useRect.GetLeft () + marginRect.GetLeft (),
                                         useRect.GetHeight () - (marginRect.GetTop () + marginRect.GetBottom ()),
                                         useRect.GetWidth () - (marginRect.GetLeft () + marginRect.GetRight ()));
         return useRect;
@@ -1331,8 +1261,7 @@ namespace Stroika::Frameworks::Led::Platform {
     @METHOD:        Led_MFC_CViewHelper<BASECLASS>::UpdateScrollBars
     @DESCRIPTION:   Avoid errors updating sbars while printing.
     */
-    void
-    Led_MFC_CViewHelper<BASECLASS>::UpdateScrollBars ()
+    void Led_MFC_CViewHelper<BASECLASS>::UpdateScrollBars ()
     {
         if (fPrintInfo != nullptr) {
             return; // ignore while in print mode...
@@ -1345,8 +1274,7 @@ namespace Stroika::Frameworks::Led::Platform {
     @DESCRIPTION:   Hook the MFC DeleteContents () routine, and simulate the user having deleted all the text in the
         buffer.
     */
-    void
-    Led_MFC_CViewHelper<BASECLASS>::DeleteContents ()
+    void Led_MFC_CViewHelper<BASECLASS>::DeleteContents ()
     {
         ASSERT_VALID (this);
         AssertNotNull (this->m_hWnd);
@@ -1468,8 +1396,7 @@ namespace Stroika::Frameworks::Led::Platform {
     @METHOD:        Led_MFC_CViewHelper<BASECLASS>::OnDraw
     @DESCRIPTION:   Hook the MFC OnDraw () method to invoke the Led drawing mechanism, and redisplay the window.
     */
-    void
-    Led_MFC_CViewHelper<BASECLASS>::OnDraw (CDC* pDC)
+    void Led_MFC_CViewHelper<BASECLASS>::OnDraw (CDC* pDC)
     {
         ASSERT_VALID (pDC);
 
@@ -1545,12 +1472,8 @@ namespace Stroika::Frameworks::Led::Platform {
         using ThisClass    = Led_MFC_CViewHelper<BASECLASS>;
         using TheBaseClass = BASECLASS;
         DISABLE_COMPILER_MSC_WARNING_START (4407) // Not sure this is safe to ignore but I think it is due to qMFCRequiresCWndLeftmostBaseClass
-        static const AFX_MSGMAP_ENTRY _messageEntries[] = {
-            ON_WM_PAINT ()
-                ON_WM_LBUTTONDOWN ()
-                    ON_WM_CREATE ()
-                        ON_WM_VSCROLL ()
-                            ON_WM_HSCROLL (){0, 0, 0, 0, AfxSig_end, (AFX_PMSG)0}};
+        static const AFX_MSGMAP_ENTRY _messageEntries[] = {ON_WM_PAINT () ON_WM_LBUTTONDOWN () ON_WM_CREATE () ON_WM_VSCROLL ()
+                                                               ON_WM_HSCROLL (){0, 0, 0, 0, AfxSig_end, (AFX_PMSG)0}};
         DISABLE_COMPILER_MSC_WARNING_END (4407)
         static const AFX_MSGMAP messageMap = {&TheBaseClass::GetThisMessageMap, &_messageEntries[0]};
         return &messageMap;
@@ -1562,8 +1485,7 @@ namespace Stroika::Frameworks::Led::Platform {
     @METHOD:        Led_MFC_ExceptionHandlerHelper<BASECLASS>::HandleException
     @DESCRIPTION:   Override this to provide different exception handling. By default, this calls @'Led_BeepNotify'.
     */
-    void
-    Led_MFC_ExceptionHandlerHelper<BASECLASS>::HandleException () const
+    void Led_MFC_ExceptionHandlerHelper<BASECLASS>::HandleException () const
     {
         Led_BeepNotify ();
     }
@@ -1661,14 +1583,8 @@ namespace Stroika::Frameworks::Led::Platform {
         using ThisClass    = Led_MFC_ExceptionHandlerHelper<BASECLASS>;
         using TheBaseClass = BASECLASS;
         DISABLE_COMPILER_MSC_WARNING_START (4407) // Not sure this is safe to ignore but I think it is due to qMFCRequiresCWndLeftmostBaseClass
-        static const AFX_MSGMAP_ENTRY _messageEntries[] = {
-            ON_WM_CHAR ()
-                ON_MESSAGE (WM_IME_CHAR, &OnIMEChar)
-                    ON_WM_KEYDOWN ()
-                        ON_MESSAGE (WM_PASTE, &OnMsgPaste)
-                            ON_WM_LBUTTONDOWN ()
-                                ON_WM_LBUTTONUP ()
-                                    ON_WM_LBUTTONDBLCLK (){0, 0, 0, 0, AfxSig_end, (AFX_PMSG)0}};
+        static const AFX_MSGMAP_ENTRY _messageEntries[] = {ON_WM_CHAR () ON_MESSAGE (WM_IME_CHAR, &OnIMEChar) ON_WM_KEYDOWN () ON_MESSAGE (
+            WM_PASTE, &OnMsgPaste) ON_WM_LBUTTONDOWN () ON_WM_LBUTTONUP () ON_WM_LBUTTONDBLCLK (){0, 0, 0, 0, AfxSig_end, (AFX_PMSG)0}};
         DISABLE_COMPILER_MSC_WARNING_END (4407)
         static const AFX_MSGMAP messageMap = {&TheBaseClass::GetThisMessageMap, &_messageEntries[0]};
         return &messageMap;
@@ -1750,10 +1666,7 @@ namespace Stroika::Frameworks::Led::Platform {
     {
         RequireNotNull (fCmdUI);
     }
-    inline Led_MFC_TmpCmdUpdater::operator Led_MFC_TmpCmdUpdater* ()
-    {
-        return this;
-    }
+    inline Led_MFC_TmpCmdUpdater::operator Led_MFC_TmpCmdUpdater* () { return this; }
     inline Led_MFC_TmpCmdUpdater::operator CCmdUI* ()
     {
         EnsureNotNull (fCmdUI);

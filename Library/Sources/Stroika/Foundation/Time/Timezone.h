@@ -237,7 +237,8 @@ namespace Stroika::Foundation::Time {
             uint32_t a;
         };
     }
-    static_assert (sizeof (Timezone) <= sizeof (_HACK_2_TEST_4_static_assert_), "Timezone can/should be packed as much as practical since we could use a single uint16_ probably"); // make sure full struct as small as possible
+    static_assert (sizeof (Timezone) <= sizeof (_HACK_2_TEST_4_static_assert_),
+                   "Timezone can/should be packed as much as practical since we could use a single uint16_ probably"); // make sure full struct as small as possible
 
 }
 

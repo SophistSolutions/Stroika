@@ -252,16 +252,13 @@ namespace Stroika::Foundation::Characters {
          */
         template <typename CHAR_T>
         static String FromUTF8 (span<CHAR_T> from)
-            requires (
-                is_same_v<remove_cv_t<CHAR_T>, char8_t> or is_same_v<remove_cv_t<CHAR_T>, char>);
+            requires (is_same_v<remove_cv_t<CHAR_T>, char8_t> or is_same_v<remove_cv_t<CHAR_T>, char>);
         template <typename CHAR_T>
         static String FromUTF8 (basic_string<CHAR_T> from)
-            requires (
-                is_same_v<remove_cv_t<CHAR_T>, char8_t> or is_same_v<remove_cv_t<CHAR_T>, char>);
+            requires (is_same_v<remove_cv_t<CHAR_T>, char8_t> or is_same_v<remove_cv_t<CHAR_T>, char>);
         template <typename CHAR_T>
         static String FromUTF8 (const CHAR_T* from)
-            requires (
-                is_same_v<remove_cv_t<CHAR_T>, char8_t> or is_same_v<remove_cv_t<CHAR_T>, char>);
+            requires (is_same_v<remove_cv_t<CHAR_T>, char8_t> or is_same_v<remove_cv_t<CHAR_T>, char>);
 
     public:
         /**
@@ -1135,10 +1132,12 @@ namespace Stroika::Foundation::Characters {
          *  this reasonably likely to change in future versions.
          */
         struct PeekSpanData {
-            enum StorageCodePointType { eAscii,
-                                        eChar8,
-                                        eChar16,
-                                        eChar32 };
+            enum StorageCodePointType {
+                eAscii,
+                eChar8,
+                eChar16,
+                eChar32
+            };
 
             StorageCodePointType fInCP;
             union {
@@ -1357,7 +1356,8 @@ namespace Stroika::Foundation::Characters {
         {
             return FromLatin1 (span{start, end});
         }
-        [[deprecated ("Since Stroika v3.0d1, use span{} constructor for this")]] static String FromNarrowString (const char* from, const char* to, const locale& l)
+        [[deprecated ("Since Stroika v3.0d1, use span{} constructor for this")]] static String FromNarrowString (const char* from,
+                                                                                                                 const char* to, const locale& l)
         {
             return FromNarrowString (span{from, to}, l);
         }
@@ -1370,8 +1370,9 @@ namespace Stroika::Foundation::Characters {
             : String{span<const CHAR_T>{from, to}}
         {
         }
-        [[deprecated ("Since Stroika v3.0d1 - use As<wstring> ().c_str () or other c_str() overload (*UNSAFE TO USE*)")]] nonvirtual const wchar_t* c_str () const noexcept;
-        [[deprecated ("Since Stroika v3.0 - use span{} overloads")]] inline static String                                                           FromSDKString (const SDKChar* from, const SDKChar* to)
+        [[deprecated ("Since Stroika v3.0d1 - use As<wstring> ().c_str () or other c_str() overload (*UNSAFE TO USE*)")]] nonvirtual const wchar_t*
+        c_str () const noexcept;
+        [[deprecated ("Since Stroika v3.0 - use span{} overloads")]] inline static String FromSDKString (const SDKChar* from, const SDKChar* to)
         {
             return FromSDKString (span{from, to});
         }
@@ -1384,7 +1385,8 @@ namespace Stroika::Foundation::Characters {
             return FromUTF8 (span{from, to});
         }
         template <typename T = string>
-        [[deprecated ("Since Stroika v3.0d1 - use Character::AsAsciiQuietly")]] static bool AsASCIIQuietly (const wchar_t* fromStart, const wchar_t* fromEnd, T* into)
+        [[deprecated ("Since Stroika v3.0d1 - use Character::AsAsciiQuietly")]] static bool AsASCIIQuietly (const wchar_t* fromStart,
+                                                                                                            const wchar_t* fromEnd, T* into)
         {
             return Character::AsASCIIQuietly (span<const wchar_t>{fromStart, fromEnd}, into);
         }
@@ -1435,9 +1437,8 @@ namespace Stroika::Foundation::Characters {
      *  \note   Important design note - String reps are IMMUTABLE. Changes to string like +=, create new string reps (so costly).
      *          Use StringBuilder for that purpose in performance sensative code.
      */
-    class String::_IRep
-        : public Iterable<Character>::_IRep,
-          public Traversal::IterableBase::enable_shared_from_this_PtrImplementationTemplate<String::_IRep> {
+    class String::_IRep : public Iterable<Character>::_IRep,
+                          public Traversal::IterableBase::enable_shared_from_this_PtrImplementationTemplate<String::_IRep> {
     protected:
         using _IterableRepSharedPtr = String::_IterableRepSharedPtr;
 

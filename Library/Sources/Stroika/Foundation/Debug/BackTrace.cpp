@@ -107,7 +107,10 @@ wstring Debug::BackTrace::Capture ([[maybe_unused]] const BackTrace::Options& op
         }
         return symStr;
     };
-    [[maybe_unused]] auto&& cleanup = Execution::Finally ([syms] () noexcept { if (syms != nullptr) ::free (syms); });
+    [[maybe_unused]] auto&& cleanup = Execution::Finally ([syms] () noexcept {
+        if (syms != nullptr)
+            ::free (syms);
+    });
     wstring                 out;
     if (useSkipFrames != 0 and nptrs != 0) {
         out += wstring{L"..."} + Characters::GetEOL<wchar_t> ();

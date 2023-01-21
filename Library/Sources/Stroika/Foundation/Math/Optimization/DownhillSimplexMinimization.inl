@@ -69,17 +69,10 @@ namespace Stroika::Foundation::Math::Optimization::DownhillSimplexMinimization {
 
         // Translated by hand from https://github.com/fchollet/nelder-mead/blob/master/nelder_mead.py - LGP 2017-02-20
         template <typename FLOAT_TYPE>
-        Results<FLOAT_TYPE> nelder_mead_by_fchollet (
-            const TargetFunction<FLOAT_TYPE>&        f,
-            const LinearAlgebra::Vector<FLOAT_TYPE>& x_start,
-            FLOAT_TYPE                               step            = 0.1,
-            FLOAT_TYPE                               no_improve_thr  = 10e-6,
-            unsigned int                             no_improv_break = 10,
-            unsigned int                             max_iter        = 0,
-            FLOAT_TYPE                               alpha           = 1,
-            FLOAT_TYPE                               gamma           = 2,
-            FLOAT_TYPE                               rho             = -0.5,
-            FLOAT_TYPE                               sigma           = 0.5)
+        Results<FLOAT_TYPE> nelder_mead_by_fchollet (const TargetFunction<FLOAT_TYPE>& f, const LinearAlgebra::Vector<FLOAT_TYPE>& x_start,
+                                                     FLOAT_TYPE step = 0.1, FLOAT_TYPE no_improve_thr = 10e-6,
+                                                     unsigned int no_improv_break = 10, unsigned int max_iter = 0, FLOAT_TYPE alpha = 1,
+                                                     FLOAT_TYPE gamma = 2, FLOAT_TYPE rho = -0.5, FLOAT_TYPE sigma = 0.5)
         {
             // init
             size_t       dim       = x_start.GetDimension ();
@@ -196,17 +189,19 @@ namespace Stroika::Foundation::Math::Optimization::DownhillSimplexMinimization {
         };
     }
     template <typename FLOAT_TYPE>
-    Results<FLOAT_TYPE> Run (const TargetFunction<FLOAT_TYPE>& function2Minimize, const Sequence<FLOAT_TYPE>& initialValues, const Options<FLOAT_TYPE>& options)
+    Results<FLOAT_TYPE> Run (const TargetFunction<FLOAT_TYPE>& function2Minimize, const Sequence<FLOAT_TYPE>& initialValues,
+                             const Options<FLOAT_TYPE>& options)
     {
 #if Stroika_Foundation_Math_Optimization_DownhillSimplexMinimization_USE_NOISY_TRACE_IN_THIS_MODULE_
-        Debug::TraceContextBumper ctx{L"Optimization::DownhillSimplexMinimization::Run", L"initialValues=%s, options=%s", Characters::ToString (initialValues).c_str (), Characters::ToString (options).c_str ()};
+        Debug::TraceContextBumper ctx{L"Optimization::DownhillSimplexMinimization::Run", L"initialValues=%s, options=%s",
+                                      Characters::ToString (initialValues).c_str (), Characters::ToString (options).c_str ()};
 #endif
         Results<FLOAT_TYPE> results{};
         FLOAT_TYPE          step            = 0.1;
         FLOAT_TYPE          no_improve_thr  = options.fNoImprovementThreshold.value_or (10e-6);
         unsigned int        no_improv_break = 10;
         unsigned int        max_iter        = options.fMaxIterations.value_or (0);
-        results                             = PRIVATE_::nelder_mead_by_fchollet<FLOAT_TYPE> (function2Minimize, initialValues, step, no_improve_thr, no_improv_break, max_iter);
+        results = PRIVATE_::nelder_mead_by_fchollet<FLOAT_TYPE> (function2Minimize, initialValues, step, no_improve_thr, no_improv_break, max_iter);
 #if Stroika_Foundation_Math_Optimization_DownhillSimplexMinimization_USE_NOISY_TRACE_IN_THIS_MODULE_
         DbgTrace (L"returns: %s", Characters::ToString (results).c_str ());
 #endif

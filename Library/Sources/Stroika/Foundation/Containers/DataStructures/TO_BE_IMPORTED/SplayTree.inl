@@ -633,16 +633,19 @@ size_t SplayTree<KEY, VALUE, TRAITS>::CalcHeight (size_t* totalHeight) const
 
 const size_t kAlwaysWeights[] = {10000};
 template <typename KEY, typename VALUE, typename TRAITS>
-std::vector<size_t> SplayTree<KEY, VALUE, TRAITS>::sAlwaysSplayDistribution (kAlwaysWeights, kAlwaysWeights + sizeof (kAlwaysWeights) / sizeof (kAlwaysWeights[0]));
+std::vector<size_t> SplayTree<KEY, VALUE, TRAITS>::sAlwaysSplayDistribution (kAlwaysWeights, kAlwaysWeights + sizeof (kAlwaysWeights) /
+                                                                                                                  sizeof (kAlwaysWeights[0]));
 
 const size_t kUniformWeights[] = {10, 50, 50, 100, 175, 350, 675};
 template <typename KEY, typename VALUE, typename TRAITS>
-std::vector<size_t> SplayTree<KEY, VALUE, TRAITS>::sUniformDistribution (kUniformWeights, kUniformWeights + sizeof (kUniformWeights) / sizeof (kUniformWeights[0]));
+std::vector<size_t> SplayTree<KEY, VALUE, TRAITS>::sUniformDistribution (kUniformWeights, kUniformWeights + sizeof (kUniformWeights) /
+                                                                                                                sizeof (kUniformWeights[0]));
 
 //const size_t kNormalWeights[] ={0, 0, 100, 100, 250, 250, 250, 250, 250, 250, 250};   //30.1401/30.0162/21.5254
 const size_t kNormalWeights[] = {1, 3, 10, 12, 12, 12, 12, 12, 17, 17, 43};
 template <typename KEY, typename VALUE, typename TRAITS>
-std::vector<size_t> SplayTree<KEY, VALUE, TRAITS>::sNormalDistribution (kNormalWeights, kNormalWeights + sizeof (kNormalWeights) / sizeof (kNormalWeights[0]));
+std::vector<size_t> SplayTree<KEY, VALUE, TRAITS>::sNormalDistribution (kNormalWeights,
+                                                                        kNormalWeights + sizeof (kNormalWeights) / sizeof (kNormalWeights[0]));
 
 //const size_t kZifpWeights[] = {0, 5, 15, 30, 30, 60, 60, 125, 125, 250, 250};
 const size_t kZifpWeights[] = {1, 1, 11, 30, 30, 60, 66, 62, 174, 261, 278, 278, 278, 278};

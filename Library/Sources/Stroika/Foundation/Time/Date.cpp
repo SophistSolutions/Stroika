@@ -72,7 +72,8 @@ optional<Date> Date::LocaleFreeParseQuietly_kMonthDayYearFormat_ (const wstring&
         if ((1 <= m and m <= 12) and (1 <= d and d <= 31) and (year > 0)) {
             try {
                 // above check is NEARLY good enuf but not quite, so we need to try/catch here to do this quietly. BUT - should really do more to avoid first exception
-                return Date{Year{year}, month{static_cast<unsigned int> (m)}, day{static_cast<unsigned int> (d)}, DataExchange::ValidationStrategy::eThrow};
+                return Date{Year{year}, month{static_cast<unsigned int> (m)}, day{static_cast<unsigned int> (d)},
+                            DataExchange::ValidationStrategy::eThrow};
             }
             catch (...) {
                 return nullopt;
@@ -97,7 +98,8 @@ optional<Date> Date::ParseQuietly_ (const wstring& rep, const time_get<wchar_t>&
     wistringstream               iss{rep};
     istreambuf_iterator<wchar_t> itbegin{iss}; // beginning of iss
     istreambuf_iterator<wchar_t> itend;        // end-of-stream
-    istreambuf_iterator<wchar_t> i = tmget.get (itbegin, itend, iss, errState, &when, formatPattern_CStr, formatPattern_CStr + formatPattern_SV.size ());
+    istreambuf_iterator<wchar_t> i =
+        tmget.get (itbegin, itend, iss, errState, &when, formatPattern_CStr, formatPattern_CStr + formatPattern_SV.size ());
     if ((errState & ios::badbit) or (errState & ios::failbit)) [[unlikely]] {
         return nullopt;
     }
@@ -152,15 +154,9 @@ String Date::Format (NonStandardPrintFormat pf) const
     return String{};
 }
 
-String Date::Format (const locale& l) const
-{
-    return Format (l, kLocaleStandardFormat);
-}
+String Date::Format (const locale& l) const { return Format (l, kLocaleStandardFormat); }
 
-String Date::Format (const String& formatPattern) const
-{
-    return Format (locale{}, formatPattern);
-}
+String Date::Format (const String& formatPattern) const { return Format (locale{}, formatPattern); }
 
 String Date::Format (const locale& l, const String& formatPattern) const
 {
@@ -176,11 +172,10 @@ String Date::Format (const locale& l, const String& formatPattern) const
 
 Date Date::AsDate_ (const ::tm& when)
 {
-    return Date{
-        Year{when.tm_year + kTM_Year_RelativeToYear_},
-        MonthOfYear{static_cast<unsigned int> (when.tm_mon + 1), DataExchange::ValidationStrategy::eThrow},
-        DayOfMonth{static_cast<unsigned int> (when.tm_mday), DataExchange::ValidationStrategy::eThrow},
-        DataExchange::ValidationStrategy::eThrow};
+    return Date{Year{when.tm_year + kTM_Year_RelativeToYear_},
+                MonthOfYear{static_cast<unsigned int> (when.tm_mon + 1), DataExchange::ValidationStrategy::eThrow},
+                DayOfMonth{static_cast<unsigned int> (when.tm_mday), DataExchange::ValidationStrategy::eThrow},
+                DataExchange::ValidationStrategy::eThrow};
 }
 
 [[nodiscard]] Date Date::Add (days dayCount) const
@@ -189,10 +184,7 @@ Date Date::AsDate_ (const ::tm& when)
     return Date{chrono::sys_days{fRep_} + dayCount, DataExchange::ValidationStrategy::eThrow};
 }
 
-days Date::Since () const
-{
-    return Since (DateTime::GetToday (), this->As<year_month_day> ());
-}
+days Date::Since () const { return Since (DateTime::GetToday (), this->As<year_month_day> ()); }
 
 weekday Date::GetDayOfWeek () const
 {
@@ -214,16 +206,7 @@ weekday Date::GetDayOfWeek () const
     static constexpr unsigned int kDayOfWeekOffsetPerMonth_[12] = {
         3,
         0, // february special - add one for leap year
-        3,
-        2,
-        3,
-        2,
-        3,
-        3,
-        2,
-        3,
-        2,
-        3,
+        3, 2, 3, 2, 3, 3, 2, 3, 2, 3,
     };
     unsigned int targetDayOfWeek = weekdayOfJan1;
     for (unsigned int i = 0; i < month0; ++i) {
@@ -240,10 +223,7 @@ weekday Date::GetDayOfWeek () const
 }
 
 #if qCompilerAndStdLib_linkerLosesInlinesSoCannotBeSeenByDebugger_Buggy && qDebug
-String Date::ToString () const
-{
-    return Format ();
-}
+String Date::ToString () const { return Format (); }
 #endif
 
 /*
@@ -327,9 +307,9 @@ String Time::GetFormattedAgeWithUnit (const optional<Date>& birthDate, const opt
     if (birthDate.has_value ()) {
         int yearDiff = deathDate.has_value () ? YearDifference (*deathDate, *birthDate) : YearDifference (DateTime::GetToday (), *birthDate);
         if (yearDiff >= 0 and yearDiff < 2) {
-            float   yearDiffF = deathDate.has_value () ? YearDifferenceF (*deathDate, *birthDate) : YearDifferenceF (DateTime::GetToday (), *birthDate);
-            int     months    = int (yearDiffF * 12.0f + 0.4999f);
-            wstring unitBase  = abbrevUnit ? L"mo" : L"month";
+            float yearDiffF = deathDate.has_value () ? YearDifferenceF (*deathDate, *birthDate) : YearDifferenceF (DateTime::GetToday (), *birthDate);
+            int     months   = int (yearDiffF * 12.0f + 0.4999f);
+            wstring unitBase = abbrevUnit ? L"mo" : L"month";
             return Format (L"%d %s", months, Linguistics::MessageUtiltiesManager::Get ()->PluralizeNoun (unitBase, months).c_str ());
         }
         else {

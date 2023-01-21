@@ -43,7 +43,8 @@ namespace Stroika::Foundation::Streams::iostream {
      *
      */
     ofstream& OpenOutputFileStream (ofstream* ofStream, const filesystem::path& fileName, ios_base::openmode _Mode = ios_base::trunc | ios_base::binary);
-    ofstream& OpenOutputFileStream (ofstream& tmpOfStream, const filesystem::path& fileName, ios_base::openmode _Mode = ios_base::trunc | ios_base::binary);
+    ofstream& OpenOutputFileStream (ofstream& tmpOfStream, const filesystem::path& fileName,
+                                    ios_base::openmode _Mode = ios_base::trunc | ios_base::binary);
 
 }
 

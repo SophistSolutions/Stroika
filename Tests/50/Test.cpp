@@ -47,7 +47,10 @@ namespace {
             catch (...) {
                 // suppress macos warn here - just not such locale installed
 #if !qPlatform_MacOS
-                Stroika::TestHarness::WarnTestIssue (Characters::Format (L"test_locale_time_get_date_order_no_order_Buggy skipped - usually because of missing locale %s", localeName.As<wstring> ().c_str ()).c_str ());
+                Stroika::TestHarness::WarnTestIssue (
+                    Characters::Format (L"test_locale_time_get_date_order_no_order_Buggy skipped - usually because of missing locale %s",
+                                        localeName.As<wstring> ().c_str ())
+                        .c_str ());
 #endif
             }
         };
@@ -77,7 +80,8 @@ namespace {
                 localetimeputPCTX_CHECK_StdCPctxTraits1 (locale{"en_US"}, StdCPctxTraits::kLocaleENUS_Write4DigitYear);
             }
             catch (...) {
-                Stroika::TestHarness::WarnTestIssue (L"localetimeputPCTX_CHECK_StdCPctxTraits skipped - usually because of en_US missing locale");
+                Stroika::TestHarness::WarnTestIssue (
+                    L"localetimeputPCTX_CHECK_StdCPctxTraits skipped - usually because of en_US missing locale");
             }
             try {
                 localetimeputPCTX_CHECK_StdCPctxTraits1 (locale{"en_US.utf8"}, StdCPctxTraits::kLocaleENUS_Write4DigitYear);
@@ -85,7 +89,8 @@ namespace {
             catch (...) {
                 // suppress macos warn here - just not such locale installed
 #if !qPlatform_MacOS
-                Stroika::TestHarness::WarnTestIssue (L"localetimeputPCTX_CHECK_StdCPctxTraits skipped - usually because of en_US.utf8 missing locale");
+                Stroika::TestHarness::WarnTestIssue (
+                    L"localetimeputPCTX_CHECK_StdCPctxTraits skipped - usually because of en_US.utf8 missing locale");
 #endif
             }
         };
@@ -176,10 +181,10 @@ namespace {
         auto tmget_dot_get_locale_date_order_buggy_test_ = [] () {
             TraceContextBumper ctx{"tmget_dot_get_locale_date_order_buggy_test_"};
             try {
-                std::locale                  l{"en_US.utf8"}; // originally tested with locale {} - which defaulted to C-locale
-                const time_get<wchar_t>&     tmget = use_facet<time_get<wchar_t>> (l);
-                ios::iostate                 state = ios::goodbit;
-                wistringstream               iss{L"03/07/21 16:18:47"}; // qCompilerAndStdLib_locale_time_get_reverses_month_day_with_2digit_year_Buggy ONLY triggered if YEAR 2-digits - 4-digit year fine
+                std::locale              l{"en_US.utf8"}; // originally tested with locale {} - which defaulted to C-locale
+                const time_get<wchar_t>& tmget = use_facet<time_get<wchar_t>> (l);
+                ios::iostate             state = ios::goodbit;
+                wistringstream iss{L"03/07/21 16:18:47"}; // qCompilerAndStdLib_locale_time_get_reverses_month_day_with_2digit_year_Buggy ONLY triggered if YEAR 2-digits - 4-digit year fine
                 constexpr tm                 kTargetTM_MDY_{47, 18, 16, 7, 2};
                 constexpr tm                 kTargetTM_DMY_{47, 18, 16, 3, 6};
                 istreambuf_iterator<wchar_t> itbegin{iss}; // beginning of iss
@@ -187,7 +192,7 @@ namespace {
                 tm                           resultTM{};
                 VerifyTestResultWarning (tmget.date_order () == time_base::mdy or qCompilerAndStdLib_locale_time_get_date_order_no_order_Buggy);
                 static const wstring  kFmt_ = String{DateTime::kShortLocaleFormatPattern}.As<wstring> ();
-                [[maybe_unused]] auto i     = tmget.get (itbegin, itend, iss, state, &resultTM, kFmt_.data (), kFmt_.data () + kFmt_.length ());
+                [[maybe_unused]] auto i = tmget.get (itbegin, itend, iss, state, &resultTM, kFmt_.data (), kFmt_.data () + kFmt_.length ());
                 if ((state & ios::badbit) or (state & ios::failbit)) {
 #if !_LIBCPP_VERSION
                     // Known that _LIBCPP_VERSION (clang libc++) treats this as an error and quite reasonable - so only warn for other cases so I can add exclusions here
@@ -199,7 +204,8 @@ namespace {
                     VerifyTestResult (resultTM.tm_min == kTargetTM_MDY_.tm_min);   // ..
                     VerifyTestResult (resultTM.tm_hour == kTargetTM_MDY_.tm_hour); // ..
                     // libstdc++ returns 21, and visual studio 121 - clang libc++ -1879 - all reasonable - DONT CHECK THIS - undefined for 2-digit year -- LGP 2021-03-08
-                    if (tmget.date_order () == time_base::mdy or (qCompilerAndStdLib_locale_time_get_date_order_no_order_Buggy and tmget.date_order () == time_base::no_order)) {
+                    if (tmget.date_order () == time_base::mdy or
+                        (qCompilerAndStdLib_locale_time_get_date_order_no_order_Buggy and tmget.date_order () == time_base::no_order)) {
 #if qCompilerAndStdLib_locale_time_get_reverses_month_day_with_2digit_year_Buggy
                         VerifyTestResult (resultTM.tm_mday == kTargetTM_DMY_.tm_mday); // sadly wrong values
                         VerifyTestResult (resultTM.tm_mon == kTargetTM_DMY_.tm_mon);
@@ -216,7 +222,8 @@ namespace {
             }
             catch (...) {
 #if !qPlatform_MacOS
-                Stroika::TestHarness::WarnTestIssue (L"tmget_dot_get_locale_date_order_buggy_test_ skipped - usually because of missing locale");
+                Stroika::TestHarness::WarnTestIssue (
+                    L"tmget_dot_get_locale_date_order_buggy_test_ skipped - usually because of missing locale");
 #endif
             }
         };
@@ -443,7 +450,8 @@ namespace {
         {
             Date d = Date (Year{1903}, April, DayOfMonth{5});
             VerifyTestResult (d.Format (locale{}) == L"4/5/1903" or d.Format (locale{}) == L"04/05/1903" or d.Format (locale{}) == L"04/05/03");
-            VerifyTestResult (d.Format (Date::eCurrentLocale_WithZerosStripped) == L"4/5/1903" or d.Format (Date::eCurrentLocale_WithZerosStripped) == L"4/5/03");
+            VerifyTestResult (d.Format (Date::eCurrentLocale_WithZerosStripped) == L"4/5/1903" or
+                              d.Format (Date::eCurrentLocale_WithZerosStripped) == L"4/5/03");
         }
         {
             Date d = Date{Date::JulianRepType{2455213}};
@@ -477,7 +485,8 @@ namespace {
             DbgTrace (L"DateTime::Now()=%s", Characters::ToString (DateTime::Now ()).c_str ());
             DbgTrace (L"DateTime::Now().AsUTC ()=%s", Characters::ToString (DateTime::Now ().AsUTC ()).c_str ());
             DbgTrace (L"DateTime::Now().AsLocalTime ()=%s", Characters::ToString (DateTime::Now ().AsLocalTime ()).c_str ());
-            DbgTrace (L"Timezone::kLocalTime.GetBiasFromUTC (fDate_, TimeOfDay{0})=%d", Timezone::kLocalTime.GetBiasFromUTC (DateTime::Now ().GetDate (), TimeOfDay{0}));
+            DbgTrace (L"Timezone::kLocalTime.GetBiasFromUTC (fDate_, TimeOfDay{0})=%d",
+                      Timezone::kLocalTime.GetBiasFromUTC (DateTime::Now ().GetDate (), TimeOfDay{0}));
             {
                 DateTime regTest{time_t (1598992961)};
                 VerifyTestResult (regTest.GetTimezone () == Timezone::kUTC);
@@ -485,7 +494,8 @@ namespace {
                 VerifyTestResult ((regTest.GetTimeOfDay () == TimeOfDay{20, 42, 41}));
                 if (Timezone::kLocalTime.GetBiasFromUTC (regTest.GetDate (), *regTest.GetTimeOfDay ()) == -4 * 60 * 60) {
                     DbgTrace ("Eastern US timezone");
-                    VerifyTestResult ((regTest.AsLocalTime () == DateTime{Date{Year{2020}, September, DayOfMonth{1}}, TimeOfDay{20 - 4, 42, 41}, Timezone::kLocalTime}));
+                    VerifyTestResult ((regTest.AsLocalTime () ==
+                                       DateTime{Date{Year{2020}, September, DayOfMonth{1}}, TimeOfDay{20 - 4, 42, 41}, Timezone::kLocalTime}));
                 }
                 else {
                     DbgTrace ("other timezone: offset=%d", Timezone::kLocalTime.GetBiasFromUTC (regTest.GetDate (), *regTest.GetTimeOfDay ()));
@@ -496,7 +506,7 @@ namespace {
             DateTime d = DateTime::kMin;
             VerifyTestResult (d < DateTime::Now ());
             VerifyTestResult (DateTime::Now () > d);
-            d = DateTime{d.GetDate (), d.GetTimeOfDay (), Timezone::kUTC};                     // so that compare works - cuz we don't know timezone we'll run test with...
+            d = DateTime{d.GetDate (), d.GetTimeOfDay (), Timezone::kUTC}; // so that compare works - cuz we don't know timezone we'll run test with...
             VerifyTestResult (d.Format (DateTime::kISO8601Format) == L"1752-09-14T00:00:00Z"); // xml cuz otherwise we get confusion over locale - COULD use hardwired US locale at some point?
             TestRoundTripFormatThenParseNoChange_ (d);
         }
@@ -595,13 +605,18 @@ namespace {
             };
 
             // Parse eRFC1123
-            VerifyTestResult (DateTime::Parse (L"Wed, 09 Jun 2021 10:18:14 GMT", DateTime::kRFC1123Format) == (DateTime{Date{Time::Year{2021}, June, DayOfMonth{9}}, TimeOfDay{10, 18, 14}, Timezone::kUTC}));
+            VerifyTestResult (DateTime::Parse (L"Wed, 09 Jun 2021 10:18:14 GMT", DateTime::kRFC1123Format) ==
+                              (DateTime{Date{Time::Year{2021}, June, DayOfMonth{9}}, TimeOfDay{10, 18, 14}, Timezone::kUTC}));
             // from https://www.feedvalidator.org/docs/error/InvalidRFC2822Date.html
-            VerifyTestResult (DateTime::Parse (L"Wed, 02 Oct 2002 08:00:00 EST", DateTime::kRFC1123Format) == (DateTime{Date{Time::Year{2002}, October, DayOfMonth{2}}, TimeOfDay{8, 0, 0}, Timezone (-5 * 60)}));
-            VerifyTestResult (DateTime::Parse (L"Wed, 02 Oct 2002 13:00:00 GMT", DateTime::kRFC1123Format) == (DateTime{Date{Time::Year{2002}, October, DayOfMonth{2}}, TimeOfDay{8, 0, 0}, Timezone (-5 * 60)}));
-            VerifyTestResult (DateTime::Parse (L"Wed, 02 Oct 2002 15:00:00 +0200", DateTime::kRFC1123Format) == (DateTime{Date{Time::Year{2002}, October, DayOfMonth{2}}, TimeOfDay{8, 0, 0}, Timezone (-5 * 60)}));
+            VerifyTestResult (DateTime::Parse (L"Wed, 02 Oct 2002 08:00:00 EST", DateTime::kRFC1123Format) ==
+                              (DateTime{Date{Time::Year{2002}, October, DayOfMonth{2}}, TimeOfDay{8, 0, 0}, Timezone (-5 * 60)}));
+            VerifyTestResult (DateTime::Parse (L"Wed, 02 Oct 2002 13:00:00 GMT", DateTime::kRFC1123Format) ==
+                              (DateTime{Date{Time::Year{2002}, October, DayOfMonth{2}}, TimeOfDay{8, 0, 0}, Timezone (-5 * 60)}));
+            VerifyTestResult (DateTime::Parse (L"Wed, 02 Oct 2002 15:00:00 +0200", DateTime::kRFC1123Format) ==
+                              (DateTime{Date{Time::Year{2002}, October, DayOfMonth{2}}, TimeOfDay{8, 0, 0}, Timezone (-5 * 60)}));
 
-            VerifyTestResult (DateTime::Parse (L"Tue, 6 Nov 2018 06:25:51 -0800 (PST)", DateTime::kRFC1123Format) == (DateTime{Date{Time::Year{2018}, November, DayOfMonth{6}}, TimeOfDay{6, 25, 51}, Timezone (-8 * 60)}));
+            VerifyTestResult (DateTime::Parse (L"Tue, 6 Nov 2018 06:25:51 -0800 (PST)", DateTime::kRFC1123Format) ==
+                              (DateTime{Date{Time::Year{2018}, November, DayOfMonth{6}}, TimeOfDay{6, 25, 51}, Timezone (-8 * 60)}));
 
             roundTripD (DateTime{Date{Time::Year{2021}, June, DayOfMonth{9}}, TimeOfDay{10, 18, 14}, Timezone::kUTC});
 
@@ -725,8 +740,7 @@ namespace {
     {
         TraceContextBumper ctx{"Test_6_DateTimeStructTM_"};
         {
-            struct tm x {
-            };
+            struct tm x {};
             x.tm_hour    = 3;
             x.tm_min     = 30;
             x.tm_year    = 80;
@@ -911,7 +925,7 @@ namespace {
          *  @see https://stroika.atlassian.net/browse/STK-634
          */
         {
-            DateTime                        n     = DateTime{Date{Year{2011}, December, DayOfMonth{30}}, TimeOfDay::Parse (L"1 pm", locale::classic ()), Timezone::kLocalTime};
+            DateTime n = DateTime{Date{Year{2011}, December, DayOfMonth{30}}, TimeOfDay::Parse (L"1 pm", locale::classic ()), Timezone::kLocalTime};
             [[maybe_unused]] optional<bool> isDst = n.IsDaylightSavingsTime ();
             DateTime                        n2    = n.AddDays (180);
             // This verify was wrong. Consider a system on GMT! Besides that - its still not reliable because DST doesnt end 180 days exactly apart.
@@ -1051,7 +1065,8 @@ namespace {
     {
         TraceContextBumper ctx{"Test_14_timepoint_"};
         // @see https://stroika.atlassian.net/browse/STK-619 - VerifyTestResult (Time::DurationSeconds2time_point (Time::GetTickCount () + Time::kInfinite) == time_point<chrono::steady_clock>::max ());
-        VerifyTestResult (Time::DurationSeconds2time_point (Time::GetTickCount () + Time::kInfinite) > chrono::steady_clock::now () + chrono::seconds (10000));
+        VerifyTestResult (Time::DurationSeconds2time_point (Time::GetTickCount () + Time::kInfinite) >
+                          chrono::steady_clock::now () + chrono::seconds (10000));
     }
 }
 

@@ -67,7 +67,8 @@ namespace Stroika::Foundation::Containers {
      *  using SparseDataHyperRectangleN = SparseDataHyperRectangle<T, size_t REPEATED N TIMES>
      */
     template <typename T, size_t N>
-    using SparseDataHyperRectangleN = typename Private_DataHyperRectangle_::template NTemplate<T, SparseDataHyperRectangle>::template Helper_<make_index_sequence<N>>::CombinedType;
+    using SparseDataHyperRectangleN =
+        typename Private_DataHyperRectangle_::template NTemplate<T, SparseDataHyperRectangle>::template Helper_<make_index_sequence<N>>::CombinedType;
 
 }
 

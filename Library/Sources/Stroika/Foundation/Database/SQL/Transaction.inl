@@ -65,13 +65,14 @@ namespace Stroika::Foundation::Database::SQL {
 }
 namespace Stroika::Foundation::Configuration {
     template <>
-    constexpr EnumNames<Stroika::Foundation::Database::SQL::Transaction::IRep::Disposition> DefaultNames<Stroika::Foundation::Database::SQL::Transaction::IRep::Disposition>::k{
-        EnumNames<Stroika::Foundation::Database::SQL::Transaction::IRep::Disposition>::BasicArrayInitializer{{
-            {Stroika::Foundation::Database::SQL::Transaction::IRep::Disposition::eNone, L"None"},
-            {Stroika::Foundation::Database::SQL::Transaction::IRep::Disposition::eRolledBack, L"Rolled-Back"},
-            {Stroika::Foundation::Database::SQL::Transaction::IRep::Disposition::eCompleted, L"Completed"},
-            {Stroika::Foundation::Database::SQL::Transaction::IRep::Disposition::eFailed, L"Failed"},
-        }}};
+    constexpr EnumNames<Stroika::Foundation::Database::SQL::Transaction::IRep::Disposition>
+        DefaultNames<Stroika::Foundation::Database::SQL::Transaction::IRep::Disposition>::k{
+            EnumNames<Stroika::Foundation::Database::SQL::Transaction::IRep::Disposition>::BasicArrayInitializer{{
+                {Stroika::Foundation::Database::SQL::Transaction::IRep::Disposition::eNone, L"None"},
+                {Stroika::Foundation::Database::SQL::Transaction::IRep::Disposition::eRolledBack, L"Rolled-Back"},
+                {Stroika::Foundation::Database::SQL::Transaction::IRep::Disposition::eCompleted, L"Completed"},
+                {Stroika::Foundation::Database::SQL::Transaction::IRep::Disposition::eFailed, L"Failed"},
+            }}};
 }
 
 #endif /*_Stroika_Foundation_Database_SQL_Transaction_inl_*/

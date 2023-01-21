@@ -20,8 +20,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     /**
      */
     template <typename T>
-    class Set_LinkedList<T>::IImplRepBase_ : public Set<T>::_IRep {
-    };
+    class Set_LinkedList<T>::IImplRepBase_ : public Set<T>::_IRep {};
 
     /**
      */
@@ -101,7 +100,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             RequireNotNull (i);
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
             auto                                                  result = Iterable<value_type>::template MakeSmartPtr<Rep_> (*this);
-            auto&                                                 mir    = Debug::UncheckedDynamicCast<const IteratorRep_&> (i->ConstGetRep ());
+            auto& mir = Debug::UncheckedDynamicCast<const IteratorRep_&> (i->ConstGetRep ());
             result->fData_.MoveIteratorHereAfterClone (&mir.fIterator, &fData_);
             i->Refresh (); // reflect updated rep
             return result;
@@ -114,8 +113,9 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual bool Lookup (ArgByValueType<value_type> item, optional<value_type>* oResult, Iterator<value_type>* iResult) const override
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext  readLock{fData_};
-            typename DataStructureImplType_::UnderlyingIteratorRep l       = fData_.Find ([this, item] (ArgByValueType<value_type> i) { return fEqualsComparer_ (i, item); });
-            bool                                                   notDone = l != nullptr;
+            typename DataStructureImplType_::UnderlyingIteratorRep l =
+                fData_.Find ([this, item] (ArgByValueType<value_type> i) { return fEqualsComparer_ (i, item); });
+            bool notDone = l != nullptr;
             if (oResult != nullptr and notDone) {
                 *oResult = l->fItem;
             }
@@ -150,8 +150,8 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual void Remove (const Iterator<value_type>& i, Iterator<value_type>* nextI) override
         {
             Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fData_};
-            auto&                                                  mir  = Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ());
-            auto                                                   next = mir.fIterator.GetUnderlyingIteratorRep ()->fNext;
+            auto& mir  = Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ());
+            auto  next = mir.fIterator.GetUnderlyingIteratorRep ()->fNext;
             fData_.RemoveAt (mir.fIterator);
             fChangeCounts_.PerformedChange ();
             if (nextI != nullptr) {
@@ -184,7 +184,9 @@ namespace Stroika::Foundation::Containers::Concrete {
     inline Set_LinkedList<T>::Set_LinkedList (EQUALS_COMPARER&& equalsComparer)
         : inherited{inherited::template MakeSmartPtr<Rep_<remove_cvref_t<EQUALS_COMPARER>>> (forward<EQUALS_COMPARER> (equalsComparer))}
     {
-        static_assert (Common::IsEqualsComparer<EQUALS_COMPARER> (), "Set_LinkedList constructor with EQUALS_COMPARER - comparer not valid EqualsComparer- see ComparisonRelationDeclaration<Common::ComparisonRelationType::eEquals, function<bool(T, T)>");
+        static_assert (Common::IsEqualsComparer<EQUALS_COMPARER> (),
+                       "Set_LinkedList constructor with EQUALS_COMPARER - comparer not valid EqualsComparer- see "
+                       "ComparisonRelationDeclaration<Common::ComparisonRelationType::eEquals, function<bool(T, T)>");
         AssertRepValidType_ ();
     }
     template <typename T>

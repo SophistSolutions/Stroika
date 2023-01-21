@@ -17,7 +17,8 @@ namespace Stroika::Foundation::IO::Network {
      *************************************** URI ************************************
      ********************************************************************************
      */
-    inline URI::URI (const optional<SchemeType>& scheme, const optional<Authority>& authority, const String& path, const optional<String>& query, const optional<String>& fragment)
+    inline URI::URI (const optional<SchemeType>& scheme, const optional<Authority>& authority, const String& path,
+                     const optional<String>& query, const optional<String>& fragment)
         : fScheme_{scheme}
         , fAuthority_{authority}
         , fPath_{path}
@@ -94,10 +95,7 @@ namespace Stroika::Foundation::IO::Network {
         CheckValidPathForAuthority_ (fAuthority_, path);
         fPath_ = path;
     }
-    inline URI URI::GetSchemeAndAuthority () const
-    {
-        return URI{GetScheme (), GetAuthority ()};
-    }
+    inline URI URI::GetSchemeAndAuthority () const { return URI{GetScheme (), GetAuthority ()}; }
     template <typename RETURN_TYPE>
     RETURN_TYPE URI::GetAuthorityRelativeResource () const
         requires (is_same_v<RETURN_TYPE, String> or is_same_v<RETURN_TYPE, string> or is_same_v<RETURN_TYPE, URI>)
@@ -105,7 +103,7 @@ namespace Stroika::Foundation::IO::Network {
         Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
         if constexpr (is_same_v<RETURN_TYPE, String>) {
             static constexpr UniformResourceIdentification::PCTEncodeOptions kPathEncodeOptions_{false, false, false, false, true};
-            Characters::StringBuilder                                        result = UniformResourceIdentification::PCTEncode2String (fPath_, kPathEncodeOptions_);
+            Characters::StringBuilder result = UniformResourceIdentification::PCTEncode2String (fPath_, kPathEncodeOptions_);
             if (fQuery_) {
                 static constexpr UniformResourceIdentification::PCTEncodeOptions kQueryEncodeOptions_{false, false, false, true};
                 result += "?"sv + UniformResourceIdentification::PCTEncode2String (*fQuery_, kQueryEncodeOptions_);
@@ -176,14 +174,8 @@ namespace Stroika::Foundation::IO::Network {
         Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
         fFragment_ = fragment;
     }
-    inline strong_ordering URI::operator<=> (const URI& rhs) const
-    {
-        return URI::TWC_ (*this, rhs);
-    }
-    inline bool URI::operator== (const URI& rhs) const
-    {
-        return URI::TWC_ (*this, rhs) == 0;
-    }
+    inline strong_ordering URI::operator<=> (const URI& rhs) const { return URI::TWC_ (*this, rhs); }
+    inline bool URI::operator== (const URI& rhs) const { return URI::TWC_ (*this, rhs) == 0; }
     template <typename T>
     inline T URI::As () const
         requires (is_same_v<T, String> or is_same_v<T, string>)

@@ -39,28 +39,12 @@ namespace {
         }
     }
 
-    inline bool IsASCIISpace_ (Led_tChar c)
-    {
-        return isascii (c) and isspace (c);
-    }
+    inline bool IsASCIISpace_ (Led_tChar c) { return isascii (c) and isspace (c); }
 
     constexpr pair<string_view, string_view> kColorNameTable_[] = {
-        {"black", "000000"},
-        {"silver", "C0C0C0"},
-        {"gray", "808080"},
-        {"white", "FFFFFF"},
-        {"maroon", "800000"},
-        {"red", "FF0000"},
-        {"purple", "800080"},
-        {"fuchsia", "FF00FF"},
-        {"green", "008000"},
-        {"lime", "00FF00"},
-        {"olive", "808000"},
-        {"yellow", "FFFF00"},
-        {"navy", "000080"},
-        {"blue", "0000FF"},
-        {"teal", "008080"},
-        {"aqua", "00FFFF"},
+        {"black", "000000"},  {"silver", "C0C0C0"},  {"gray", "808080"},  {"white", "FFFFFF"}, {"maroon", "800000"}, {"red", "FF0000"},
+        {"purple", "800080"}, {"fuchsia", "FF00FF"}, {"green", "008000"}, {"lime", "00FF00"},  {"olive", "808000"},  {"yellow", "FFFF00"},
+        {"navy", "000080"},   {"blue", "0000FF"},    {"teal", "008080"},  {"aqua", "00FFFF"},
     };
 
     inline char NumToHexChar_ (unsigned i)
@@ -101,7 +85,7 @@ namespace {
             unsigned short red   = HexCharToNum_ (colorStr[0]) * 16 + HexCharToNum_ (colorStr[1]);
             unsigned short green = HexCharToNum_ (colorStr[2]) * 16 + HexCharToNum_ (colorStr[3]);
             unsigned short blue  = HexCharToNum_ (colorStr[4]) * 16 + HexCharToNum_ (colorStr[5]);
-            *color               = Color (red == 255 ? 0xffff : red << 8, green == 255 ? 0xffff : green << 8, blue == 255 ? 0xffff : blue << 8);
+            *color = Color (red == 255 ? 0xffff : red << 8, green == 255 ? 0xffff : green << 8, blue == 255 ? 0xffff : blue << 8);
             return true;
         }
         return false;
@@ -564,12 +548,8 @@ Again:
                 char   tagBuf[1024];
                 bool   isStartTag = true;
                 ExtractHTMLTagIntoTagNameBuf (tmp.c_str (), tmp.length (), tagBuf, sizeof (tagBuf), &isStartTag);
-                if (isStartTag and
-                        ::strcmp (tagBuf, "html") == 0 or
-                    ::strcmp (tagBuf, "!doctype") == 0 or
-                    ::strcmp (tagBuf, "title") == 0 or
-                    ::strcmp (tagBuf, "head") == 0 or
-                    ::strcmp (tagBuf, "body") == 0) {
+                if (isStartTag and ::strcmp (tagBuf, "html") == 0 or ::strcmp (tagBuf, "!doctype") == 0 or
+                    ::strcmp (tagBuf, "title") == 0 or ::strcmp (tagBuf, "head") == 0 or ::strcmp (tagBuf, "body") == 0) {
                     return true;
                 }
                 return false;
@@ -607,7 +587,7 @@ const vector<StyledTextIOReader_HTML::EntityRefMapEntry>& StyledTextIOReader_HTM
     static ELTV sResult;
     if (sFirstTime) {
         sFirstTime = false;
-        sResult    = ELTV{HTMLInfo::sDefaultEntityRefMapTable, HTMLInfo::sDefaultEntityRefMapTable + HTMLInfo::kDefaultEntityRefMapTable_Count};
+        sResult = ELTV{HTMLInfo::sDefaultEntityRefMapTable, HTMLInfo::sDefaultEntityRefMapTable + HTMLInfo::kDefaultEntityRefMapTable_Count};
     }
     return sResult;
 }
@@ -1077,11 +1057,9 @@ IncrementalFontSpecification StyledTextIOReader_HTML::ExtractFontSpecFromCSSStyl
         f.SetFontName (String::FromNarrowSDKString (itemValue).AsSDKString ());
     }
     if (ParseCSSTagArgOut (fullCSSString, "font-size", &itemValue)) {
-        if (itemValue.length () >= 3 and
-            Led_CasedStringsEqual (itemValue.substr (itemValue.length () - 2, 2), "pt"sv)) {
+        if (itemValue.length () >= 3 and Led_CasedStringsEqual (itemValue.substr (itemValue.length () - 2, 2), "pt"sv)) {
             int sizeVal = 0;
-            if (ParseStringToInt_ (itemValue.substr (0, itemValue.length () - 2), &sizeVal) and
-                sizeVal >= 2 and sizeVal <= 128) {
+            if (ParseStringToInt_ (itemValue.substr (0, itemValue.length () - 2), &sizeVal) and sizeVal >= 2 and sizeVal <= 128) {
                 f.SetPointSize (static_cast<uint8_t> (sizeVal)); // cast OK cuz sizeVal in range
             }
         }
@@ -1096,8 +1074,7 @@ IncrementalFontSpecification StyledTextIOReader_HTML::ExtractFontSpecFromCSSStyl
     }
     if (ParseCSSTagArgOut (fullCSSString, "font-weight", &itemValue)) {
         int bv = 0;
-        if (Led_CasedStringsEqual (itemValue, "bold"sv) or
-            Led_CasedStringsEqual (itemValue, "bolder"sv) or
+        if (Led_CasedStringsEqual (itemValue, "bold"sv) or Led_CasedStringsEqual (itemValue, "bolder"sv) or
             (itemValue.length () > 0 and isdigit (itemValue[0]) and ParseStringToInt_ (itemValue, &bv) and bv >= 400)) {
             f.SetStyle_Bold (true);
         }
@@ -1156,8 +1133,8 @@ void StyledTextIOReader_HTML::HandleHTMLThingyTag_a (bool start, const char* tex
             if (EmbeddedObjectCreatorRegistry::Get ().Lookup (StandardURLStyleMarker::kEmbeddingTag, &assoc)) {
                 AssertNotNull (assoc.fReadFromMemory);
 #if qWideCharacters
-                CodePageConverter         cpc (kCodePage_ANSI);
-                size_t                    outCharCnt = cpc.MapFromUNICODE_QuickComputeOutBufSize (fHiddenTextAccumulation.c_str (), fHiddenTextAccumulation.length ());
+                CodePageConverter cpc (kCodePage_ANSI);
+                size_t outCharCnt = cpc.MapFromUNICODE_QuickComputeOutBufSize (fHiddenTextAccumulation.c_str (), fHiddenTextAccumulation.length ());
                 Memory::StackBuffer<char> buf{Memory::eUninitialized, outCharCnt};
                 cpc.MapFromUNICODE (fHiddenTextAccumulation.c_str (), fHiddenTextAccumulation.length (), buf.data (), &outCharCnt);
                 buf[outCharCnt] = '\0';
@@ -1165,7 +1142,8 @@ void StyledTextIOReader_HTML::HandleHTMLThingyTag_a (bool start, const char* tex
 #else
                 Led_URLD urld = Led_URLD{tagValue.c_str (), fHiddenTextAccumulation.c_str ()};
 #endif
-                GetSinkStream ().AppendEmbedding ((assoc.fReadFromMemory) (StandardURLStyleMarker::kEmbeddingTag, urld.PeekAtURLD (), urld.GetURLDLength ()));
+                GetSinkStream ().AppendEmbedding (
+                    (assoc.fReadFromMemory) (StandardURLStyleMarker::kEmbeddingTag, urld.PeekAtURLD (), urld.GetURLDLength ()));
             }
         }
         fCurAHRefStart          = size_t (-1);
@@ -1797,10 +1775,7 @@ void StyledTextIOReader_HTML::HandleHTMLThingyTagUnknown ([[maybe_unused]] bool 
 #endif
 }
 
-void StyledTextIOReader_HTML::EmitForcedLineBreak ()
-{
-    EmitText (LED_TCHAR_OF ("\n"), 1, true);
-}
+void StyledTextIOReader_HTML::EmitForcedLineBreak () { EmitText (LED_TCHAR_OF ("\n"), 1, true); }
 
 void StyledTextIOReader_HTML::BasicFontStackOperation (bool start)
 {
@@ -2003,10 +1978,7 @@ void StyledTextIOReader_HTML::SetHTMLFontSize (int to)
  ********************************************************************************
  */
 
-size_t StyledTextIOWriter_HTML::WriterContext::GetCurSrcOffset () const
-{
-    return GetSrcStream ().current_offset ();
-}
+size_t StyledTextIOWriter_HTML::WriterContext::GetCurSrcOffset () const { return GetSrcStream ().current_offset (); }
 
 SimpleEmbeddedObjectStyleMarker* StyledTextIOWriter_HTML::WriterContext::GetCurSimpleEmbeddedObjectStyleMarker () const
 {
@@ -2036,9 +2008,7 @@ StyledTextIOWriter_HTML::StyledTextIOWriter_HTML (SrcStream* srcStream, SinkStre
 {
 }
 
-StyledTextIOWriter_HTML::~StyledTextIOWriter_HTML ()
-{
-}
+StyledTextIOWriter_HTML::~StyledTextIOWriter_HTML () {}
 
 /*
 @METHOD:        StyledTextIOReader_HTML::GetEntityRefMapTable
@@ -2057,11 +2027,8 @@ const vector<StyledTextIOWriter_HTML::EntityRefMapEntry>& StyledTextIOWriter_HTM
         for (size_t i = 0; i < HTMLInfo::kDefaultEntityRefMapTable_Count; ++i) {
 #if !qWriteOutMostHTMLEntitiesByName
             // Then skip all but a handfull of very important ones...
-            if (
-                HTMLInfo::sDefaultEntityRefMapTable[i].fEntityRefName != "amp" and
-                HTMLInfo::sDefaultEntityRefMapTable[i].fEntityRefName != "gt" and
-                HTMLInfo::sDefaultEntityRefMapTable[i].fEntityRefName != "lt" and
-                HTMLInfo::sDefaultEntityRefMapTable[i].fEntityRefName != "quot"
+            if (HTMLInfo::sDefaultEntityRefMapTable[i].fEntityRefName != "amp" and HTMLInfo::sDefaultEntityRefMapTable[i].fEntityRefName != "gt" and
+                HTMLInfo::sDefaultEntityRefMapTable[i].fEntityRefName != "lt" and HTMLInfo::sDefaultEntityRefMapTable[i].fEntityRefName != "quot"
 
             ) {
                 continue;
@@ -2488,7 +2455,9 @@ static inline string PrintColorString (Color color)
 void StyledTextIOWriter_HTML::EmitBodyFontInfoChange (WriterContext& writerContext, const FontSpecification& newOne, bool skipDoingOpenTags)
 {
     // Close off old
-    bool fontTagChanged = newOne.GetFontName () != writerContext.fLastEmittedISR.GetFontName () or newOne.GetPointSize () != writerContext.fLastEmittedISR.GetPointSize () or newOne.GetTextColor () != writerContext.fLastEmittedISR.GetTextColor ();
+    bool fontTagChanged = newOne.GetFontName () != writerContext.fLastEmittedISR.GetFontName () or
+                          newOne.GetPointSize () != writerContext.fLastEmittedISR.GetPointSize () or
+                          newOne.GetTextColor () != writerContext.fLastEmittedISR.GetTextColor ();
     if (fontTagChanged and IsTagOnStack (writerContext, "span")) {
         WriteCloseTag (writerContext, "span");
     }
@@ -2516,7 +2485,8 @@ void StyledTextIOWriter_HTML::EmitBodyFontInfoChange (WriterContext& writerConte
     // Open new tags
     if (skipDoingOpenTags) {
         // Set to a BLANK record - cuz we aren't actually emitting any open-tags - so make sure gets done later after the new <p> tag
-        writerContext.fLastEmittedISR = StandardStyledTextImager::InfoSummaryRecord (IncrementalFontSpecification (), fStyleRunSummary[writerContext.fIthStyleRun].fLength);
+        writerContext.fLastEmittedISR =
+            StandardStyledTextImager::InfoSummaryRecord (IncrementalFontSpecification (), fStyleRunSummary[writerContext.fIthStyleRun].fLength);
     }
     else {
         if (not IsTagOnStack (writerContext, "span")) {
@@ -2530,8 +2500,8 @@ void StyledTextIOWriter_HTML::EmitBodyFontInfoChange (WriterContext& writerConte
 #if 1
                           cssInfo
 #else
-                          "face=\"" + SDKString2NarrowSDK (newOne.GetFontName ()) +
-                              "\" size=\"" + Led_NumberToDigitChar (HTMLInfo::RealFontSizeToHTMLFontSize (newOne.GetPointSize ())) +
+                          "face=\"" + SDKString2NarrowSDK (newOne.GetFontName ()) + "\" size=\"" +
+                              Led_NumberToDigitChar (HTMLInfo::RealFontSizeToHTMLFontSize (newOne.GetPointSize ())) +
                               "\" color=" + PrintColorString (newOne.GetTextColor ())
 #endif
             );
@@ -2571,7 +2541,7 @@ void StyledTextIOWriter_HTML::AssureStyleRunSummaryBuilt (WriterContext& writerC
 {
     if (fStyleRunSummary.empty ()) {
         size_t totalTextLength = writerContext.GetSrcStream ().GetTotalTextLength ();
-        fStyleRunSummary       = vector<StandardStyledTextImager::InfoSummaryRecord> (writerContext.GetSrcStream ().GetStyleInfo (0, totalTextLength));
+        fStyleRunSummary = vector<StandardStyledTextImager::InfoSummaryRecord> (writerContext.GetSrcStream ().GetStyleInfo (0, totalTextLength));
     }
 }
 

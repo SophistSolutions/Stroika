@@ -165,10 +165,7 @@ namespace Stroika::Foundation::Execution::WaitForIOReady_Support {
     template <>
     struct WaitForIOReady_Traits<IO::Network::ConnectionOrientedMasterSocket::Ptr> {
         using HighLevelType = IO::Network::ConnectionOrientedMasterSocket::Ptr;
-        static inline auto GetSDKPollable (const HighLevelType& t)
-        {
-            return t.GetNativeSocket ();
-        }
+        static inline auto GetSDKPollable (const HighLevelType& t) { return t.GetNativeSocket (); }
     };
 
 }

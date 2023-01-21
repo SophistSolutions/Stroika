@@ -125,15 +125,11 @@ private:
     CTabRulerItem   m_pTabItems[MAX_TAB_STOPS];
     CSize           m_sizePaper;
     CRect           m_rectMargin;
-    int             PrintWidth ()
-    {
-        return m_sizePaper.cx - m_rectMargin.left -
-               m_rectMargin.right;
-    }
-    int m_nTabs;
-    int m_logx;
-    int m_nLinePos;
-    int m_nScroll; // in pixels
+    int             PrintWidth () { return m_sizePaper.cx - m_rectMargin.left - m_rectMargin.right; }
+    int             m_nTabs;
+    int             m_logx;
+    int             m_nLinePos;
+    int             m_nScroll; // in pixels
 
     CPen   penFocusLine;
     CPen   penBtnHighLight;
@@ -198,9 +194,6 @@ private:
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-inline int RulerBar::RulerItem::GetHorzPosPix ()
-{
-    return m_pRuler->XTwipsToRuler (m_nXPosTwips);
-}
+inline int RulerBar::RulerItem::GetHorzPosPix () { return m_pRuler->XTwipsToRuler (m_nXPosTwips); }
 
 #endif /*__RulerToolbar_h__*/

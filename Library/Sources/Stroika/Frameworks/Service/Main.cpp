@@ -92,7 +92,8 @@ Main::CommandArgs::CommandArgs (const Sequence<String>& args)
         for (const auto& i : kPairs_) {
             if (Execution::MatchesCommandLineArgument (si, i.first)) {
                 if (found) {
-                    Execution::Throw (Execution::InvalidCommandLineArgument{L"Only one major command-line option can be specified at a time"});
+                    Execution::Throw (
+                        Execution::InvalidCommandLineArgument{L"Only one major command-line option can be specified at a time"});
                 }
                 found           = true;
                 fMajorOperation = i.second;
@@ -109,20 +110,14 @@ Main::CommandArgs::CommandArgs (const Sequence<String>& args)
  ******************* Service::Main::IApplicationRep *****************************
  ********************************************************************************
  */
-bool Main::IApplicationRep::HandleCommandLineArgument (const String& /*s*/)
-{
-    return false;
-}
+bool Main::IApplicationRep::HandleCommandLineArgument (const String& /*s*/) { return false; }
 
 void Main::IApplicationRep::OnReReadConfigurationRequest ()
 {
     //  fMustReReadConfig = true;
 }
 
-String Main::IApplicationRep::GetServiceStatusMessage () const
-{
-    return String{};
-}
+String Main::IApplicationRep::GetServiceStatusMessage () const { return String{}; }
 
 /*
  ********************************************************************************
@@ -158,10 +153,7 @@ Main::Main (const shared_ptr<IApplicationRep>& rep, const shared_ptr<IServiceInt
     serviceIntegrationRep->_Attach (rep);
 }
 
-Main::~Main ()
-{
-    fServiceRep_->_Attach (nullptr);
-}
+Main::~Main () { fServiceRep_->_Attach (nullptr); }
 
 void Main::Run (const CommandArgs& args, const Streams::OutputStream<Characters::Character>::Ptr& out)
 {
@@ -313,20 +305,11 @@ void Main::ReReadConfiguration ()
 #endif
 }
 
-void Main::Pause ()
-{
-    AssertNotImplemented ();
-}
+void Main::Pause () { AssertNotImplemented (); }
 
-void Main::Continue ()
-{
-    AssertNotImplemented ();
-}
+void Main::Continue () { AssertNotImplemented (); }
 
-Main::ServiceDescription Main::GetServiceDescription () const
-{
-    return GetAppRep_ ().GetServiceDescription ();
-}
+Main::ServiceDescription Main::GetServiceDescription () const { return GetAppRep_ ().GetServiceDescription (); }
 
 void Main::Restart (Time::DurationSecondsType timeout)
 {
@@ -357,25 +340,16 @@ Main::LoggerServiceWrapper::LoggerServiceWrapper (const shared_ptr<Main::IServic
     RequireNotNull (delegateTo);
 }
 
-void Main::LoggerServiceWrapper::_Attach (const shared_ptr<IApplicationRep>& appRep)
-{
-    fDelegateTo_->_Attach (appRep);
-}
+void Main::LoggerServiceWrapper::_Attach (const shared_ptr<IApplicationRep>& appRep) { fDelegateTo_->_Attach (appRep); }
 
-shared_ptr<Main::IApplicationRep> Main::LoggerServiceWrapper::_GetAttachedAppRep () const
-{
-    return fDelegateTo_->_GetAttachedAppRep ();
-}
+shared_ptr<Main::IApplicationRep> Main::LoggerServiceWrapper::_GetAttachedAppRep () const { return fDelegateTo_->_GetAttachedAppRep (); }
 
 Set<Main::ServiceIntegrationFeatures> Main::LoggerServiceWrapper::_GetSupportedFeatures () const
 {
     return fDelegateTo_->_GetSupportedFeatures ();
 }
 
-Main::State Main::LoggerServiceWrapper::_GetState () const
-{
-    return fDelegateTo_->_GetState ();
-}
+Main::State Main::LoggerServiceWrapper::_GetState () const { return fDelegateTo_->_GetState (); }
 
 void Main::LoggerServiceWrapper::_Install ()
 {
@@ -431,25 +405,13 @@ void Main::LoggerServiceWrapper::_RunDirectly (const optional<Time::Duration>& r
     Logger::sThe.Log (Logger::eNotice, L"Service stopped normally");
 }
 
-void Main::LoggerServiceWrapper::_Start (Time::DurationSecondsType timeout)
-{
-    fDelegateTo_->_Start (timeout);
-}
+void Main::LoggerServiceWrapper::_Start (Time::DurationSecondsType timeout) { fDelegateTo_->_Start (timeout); }
 
-void Main::LoggerServiceWrapper::_Stop (Time::DurationSecondsType timeout)
-{
-    fDelegateTo_->_Stop (timeout);
-}
+void Main::LoggerServiceWrapper::_Stop (Time::DurationSecondsType timeout) { fDelegateTo_->_Stop (timeout); }
 
-void Main::LoggerServiceWrapper::_ForcedStop (Time::DurationSecondsType timeout)
-{
-    fDelegateTo_->_ForcedStop (timeout);
-}
+void Main::LoggerServiceWrapper::_ForcedStop (Time::DurationSecondsType timeout) { fDelegateTo_->_ForcedStop (timeout); }
 
-pid_t Main::LoggerServiceWrapper::_GetServicePID () const
-{
-    return fDelegateTo_->_GetServicePID ();
-}
+pid_t Main::LoggerServiceWrapper::_GetServicePID () const { return fDelegateTo_->_GetServicePID (); }
 
 #if qPlatform_POSIX
 /*
@@ -479,8 +441,7 @@ void Main::BasicUNIXServiceImpl::_Attach (const shared_ptr<IApplicationRep>& app
     Debug::TraceContextBumper traceCtx{"Stroika::Frameworks::Service::Main::BasicUNIXServiceImpl::_Attach"};
 #endif
     Execution::Thread::SuppressInterruptionInContext suppressInterruption; // this must run to completion - it only blocks waiting for subsidiary thread to finish
-    Require ((appRep == nullptr and fAppRep_.load () != nullptr) or
-             (fAppRep_.load () == nullptr and fAppRep_.load () != appRep));
+    Require ((appRep == nullptr and fAppRep_.load () != nullptr) or (fAppRep_.load () == nullptr and fAppRep_.load () != appRep));
     Thread::Ptr p = fRunThread_.load ();
     if (p != nullptr) {
         p.AbortAndWaitForDone ();
@@ -489,10 +450,7 @@ void Main::BasicUNIXServiceImpl::_Attach (const shared_ptr<IApplicationRep>& app
     fAppRep_ = appRep;
 }
 
-shared_ptr<Main::IApplicationRep> Main::BasicUNIXServiceImpl::_GetAttachedAppRep () const
-{
-    return fAppRep_;
-}
+shared_ptr<Main::IApplicationRep> Main::BasicUNIXServiceImpl::_GetAttachedAppRep () const { return fAppRep_; }
 
 Set<Main::ServiceIntegrationFeatures> Main::BasicUNIXServiceImpl::_GetSupportedFeatures () const
 {
@@ -519,15 +477,9 @@ Main::State Main::BasicUNIXServiceImpl::_GetState () const
     return State::eStopped;
 }
 
-void Main::BasicUNIXServiceImpl::_Install ()
-{
-    Execution::Throw (Execution::OperationNotSupportedException{"Install"sv});
-}
+void Main::BasicUNIXServiceImpl::_Install () { Execution::Throw (Execution::OperationNotSupportedException{"Install"sv}); }
 
-void Main::BasicUNIXServiceImpl::_UnInstall ()
-{
-    Execution::Throw (Execution::OperationNotSupportedException{"UnInstall"sv});
-}
+void Main::BasicUNIXServiceImpl::_UnInstall () { Execution::Throw (Execution::OperationNotSupportedException{"UnInstall"sv}); }
 
 void Main::BasicUNIXServiceImpl::_RunAsService ()
 {
@@ -539,34 +491,30 @@ void Main::BasicUNIXServiceImpl::_RunAsService ()
     shared_ptr<IApplicationRep> appRep = fAppRep_;
     RequireNotNull (appRep);
 
-    [[maybe_unused]] auto&& cleanupSigHanders = Execution::Finally (
-        [this] () noexcept {
-            Thread::SuppressInterruptionInContext suppressThreadInterupts;
-            SetupSignalHanlders_ (false);
-        });
+    [[maybe_unused]] auto&& cleanupSigHanders = Execution::Finally ([this] () noexcept {
+        Thread::SuppressInterruptionInContext suppressThreadInterupts;
+        SetupSignalHanlders_ (false);
+    });
     SetupSignalHanlders_ (true);
 
     RequireNotNull (appRep); // must call Attach_ first
-    fRunThread_.store (Execution::Thread::New (
-        [appRep] () {
-            appRep->MainLoop ([] () {});
-        },
-        Execution::Thread::eAutoStart, kServiceRunThreadName_));
-    [[maybe_unused]] auto&& cleanup = Execution::Finally (
-        [this] () noexcept {
-            Thread::SuppressInterruptionInContext suppressThreadInterupts;
-            (void)::unlink (_GetPIDFileName ().c_str ());
-        });
+    fRunThread_.store (Execution::Thread::New ([appRep] () { appRep->MainLoop ([] () {}); }, Execution::Thread::eAutoStart, kServiceRunThreadName_));
+    [[maybe_unused]] auto&& cleanup = Execution::Finally ([this] () noexcept {
+        Thread::SuppressInterruptionInContext suppressThreadInterupts;
+        (void)::unlink (_GetPIDFileName ().c_str ());
+    });
     {
         ofstream out;
         Streams::iostream::OpenOutputFileStream (&out, _GetPIDFileName ());
         out << Execution::GetCurrentProcessID () << endl;
     }
     if (_GetServicePID () <= 0) {
-        Execution::Throw (Execution::Exception{Characters::Format (L"Unable to create process ID tracking file %s", IO::FileSystem::FromPath (_GetPIDFileName ()).c_str ())});
+        Execution::Throw (Execution::Exception{
+            Characters::Format (L"Unable to create process ID tracking file %s", IO::FileSystem::FromPath (_GetPIDFileName ()).c_str ())});
     }
     if (_GetServicePID () != Execution::GetCurrentProcessID ()) {
-        Execution::Throw (Execution::Exception{Characters::Format (L"Unable to create process ID tracking file %s (race?)", IO::FileSystem::FromPath (_GetPIDFileName ()).c_str ())});
+        Execution::Throw (Execution::Exception{Characters::Format (L"Unable to create process ID tracking file %s (race?)",
+                                                                   IO::FileSystem::FromPath (_GetPIDFileName ()).c_str ())});
     }
     fRunThread_.load ().Join ();
 }
@@ -575,19 +523,16 @@ void Main::BasicUNIXServiceImpl::_RunDirectly (const optional<Time::Duration>& r
 {
     shared_ptr<IApplicationRep> appRep = fAppRep_;
     RequireNotNull (appRep); // must call Attach_ first
-    fRunThread_.store (Execution::Thread::New (
-        [appRep] () {
-            appRep->MainLoop ([] () {});
-        },
-        Execution::Thread::eAutoStart, kServiceRunThreadName_));
+    fRunThread_.store (Execution::Thread::New ([appRep] () { appRep->MainLoop ([] () {}); }, Execution::Thread::eAutoStart, kServiceRunThreadName_));
     Thread::Ptr        t = fRunThread_.load ();
     Thread::CleanupPtr stopper{Thread::CleanupPtr::eAbortBeforeWaiting}; // another thread to stop the mainloop after runFor
     if (runFor) {
-        stopper = Execution::Thread::New ([&t, &runFor] () {
-            Execution::Sleep (*runFor);
-            t.Abort ();
-        },
-                                          Execution::Thread::eAutoStart);
+        stopper = Execution::Thread::New (
+            [&t, &runFor] () {
+                Execution::Sleep (*runFor);
+                t.Abort ();
+            },
+            Execution::Thread::eAutoStart);
     }
     t.Join ();
 }
@@ -688,7 +633,8 @@ void Main::BasicUNIXServiceImpl::SetupSignalHanlders_ (bool install)
 
 filesystem::path Main::BasicUNIXServiceImpl::_GetPIDFileName () const
 {
-    return IO::FileSystem::WellKnownLocations::GetRuntimeVariableData () / IO::FileSystem::ToPath (fAppRep_.load ()->GetServiceDescription ().fRegistrationName + L".pid"sv);
+    return IO::FileSystem::WellKnownLocations::GetRuntimeVariableData () /
+           IO::FileSystem::ToPath (fAppRep_.load ()->GetServiceDescription ().fRegistrationName + L".pid"sv);
 }
 
 void Main::BasicUNIXServiceImpl::_CleanupDeadService ()
@@ -701,7 +647,8 @@ void Main::BasicUNIXServiceImpl::_CleanupDeadService ()
 void Main::BasicUNIXServiceImpl::SignalHandler_ (SignalID signum)
 {
     // NOTE - this is only safe due to the use of SignalHandlerRegistry::SafeSignalsManager
-    Debug::TraceContextBumper traceCtx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"Stroika::Frameworks::Service::Main::BasicUNIXServiceImpl::SignalHandler_", L"signal = %s", Execution::SignalToName (signum).c_str ())};
+    Debug::TraceContextBumper traceCtx{Stroika_Foundation_Debug_OptionalizeTraceArgs (
+        L"Stroika::Frameworks::Service::Main::BasicUNIXServiceImpl::SignalHandler_", L"signal = %s", Execution::SignalToName (signum).c_str ())};
     // VERY PRIMITIVE IMPL FOR NOW -- LGP 2011-09-24
     switch (signum) {
         case SIGINT:
@@ -735,15 +682,11 @@ Main::WindowsService::WindowsService ()
 
 void Main::WindowsService::_Attach (const shared_ptr<IApplicationRep>& appRep)
 {
-    Require ((appRep == nullptr and fAppRep_ != nullptr) or
-             (fAppRep_ == nullptr and fAppRep_ != appRep));
+    Require ((appRep == nullptr and fAppRep_ != nullptr) or (fAppRep_ == nullptr and fAppRep_ != appRep));
     fAppRep_ = appRep;
 }
 
-shared_ptr<Main::IApplicationRep> Main::WindowsService::_GetAttachedAppRep () const
-{
-    return fAppRep_;
-}
+shared_ptr<Main::IApplicationRep> Main::WindowsService::_GetAttachedAppRep () const { return fAppRep_; }
 
 Set<Main::ServiceIntegrationFeatures> Main::WindowsService::_GetSupportedFeatures () const
 {
@@ -759,24 +702,23 @@ Main::State Main::WindowsService::_GetState () const
     const DWORD               kServiceMgrAccessPrivs = SERVICE_QUERY_STATUS;
     SC_HANDLE                 hSCM                   = ::OpenSCManager (NULL, NULL, kServiceMgrAccessPrivs);
     Execution::Platform::Windows::ThrowIfZeroGetLastError (hSCM);
-    [[maybe_unused]] auto&& cleanup1 = Execution::Finally (
-        [hSCM] () noexcept {
-            AssertNotNull (hSCM);
-            ::CloseServiceHandle (hSCM);
-        });
-    SC_HANDLE hService = ::OpenService (hSCM, GetSvcName_ ().c_str (), kServiceMgrAccessPrivs);
+    [[maybe_unused]] auto&& cleanup1 = Execution::Finally ([hSCM] () noexcept {
+        AssertNotNull (hSCM);
+        ::CloseServiceHandle (hSCM);
+    });
+    SC_HANDLE               hService = ::OpenService (hSCM, GetSvcName_ ().c_str (), kServiceMgrAccessPrivs);
     Execution::Platform::Windows::ThrowIfZeroGetLastError (hService);
-    [[maybe_unused]] auto&& cleanup2 = Execution::Finally (
-        [hService] () noexcept {
-            AssertNotNull (hService);
-            ::CloseServiceHandle (hService);
-        });
+    [[maybe_unused]] auto&& cleanup2 = Execution::Finally ([hService] () noexcept {
+        AssertNotNull (hService);
+        ::CloseServiceHandle (hService);
+    });
 
     const bool kUseQueryServiceStatusEx_ = false;
     if (kUseQueryServiceStatusEx_) {
         SERVICE_STATUS_PROCESS serviceProcess{};
         DWORD                  ignored = 0;
-        Execution::Platform::Windows::ThrowIfZeroGetLastError (::QueryServiceStatusEx (hService, SC_STATUS_PROCESS_INFO, reinterpret_cast<LPBYTE> (&serviceProcess), sizeof (serviceProcess), &ignored));
+        Execution::Platform::Windows::ThrowIfZeroGetLastError (::QueryServiceStatusEx (
+            hService, SC_STATUS_PROCESS_INFO, reinterpret_cast<LPBYTE> (&serviceProcess), sizeof (serviceProcess), &ignored));
         switch (serviceProcess.dwCurrentState) {
             case SERVICE_RUNNING:
                 return Main::State::eRunning;
@@ -802,21 +744,18 @@ void Main::WindowsService::_Install ()
     Debug::TraceContextBumper traceCtx{"Stroika::Frameworks::Service::Main::WindowsService::_Install"};
 
     const DWORD kServiceMgrAccessPrivs = SC_MANAGER_CREATE_SERVICE;
-    String      cmdLineForRunSvc       = L"\""sv + IO::FileSystem::FromPath (Execution::GetEXEPath ()) + L"\" --"sv + CommandNames::kRunAsService;
-    SC_HANDLE   hSCM                   = ::OpenSCManager (NULL, NULL, kServiceMgrAccessPrivs);
+    String      cmdLineForRunSvc = L"\""sv + IO::FileSystem::FromPath (Execution::GetEXEPath ()) + L"\" --"sv + CommandNames::kRunAsService;
+    SC_HANDLE   hSCM             = ::OpenSCManager (NULL, NULL, kServiceMgrAccessPrivs);
     Execution::Platform::Windows::ThrowIfZeroGetLastError (hSCM);
-    [[maybe_unused]] auto&& cleanup = Execution::Finally (
-        [hSCM] () noexcept {
-            AssertNotNull (hSCM);
-            ::CloseServiceHandle (hSCM);
-        });
+    [[maybe_unused]] auto&& cleanup = Execution::Finally ([hSCM] () noexcept {
+        AssertNotNull (hSCM);
+        ::CloseServiceHandle (hSCM);
+    });
 
     DbgTrace (L"registering with command-line: '%s', serviceName: '%s'", cmdLineForRunSvc.c_str (), GetSvcName_ ().c_str ());
-    SC_HANDLE hService = ::CreateService (
-        hSCM, GetSvcName_ ().c_str (), fAppRep_->GetServiceDescription ().fPrettyName.AsSDKString ().c_str (),
-        kServiceMgrAccessPrivs, SERVICE_WIN32_OWN_PROCESS,
-        SERVICE_DEMAND_START, SERVICE_ERROR_NORMAL,
-        cmdLineForRunSvc.AsSDKString ().c_str (), NULL, NULL, _T("RPCSS\0"), NULL, NULL);
+    SC_HANDLE hService = ::CreateService (hSCM, GetSvcName_ ().c_str (), fAppRep_->GetServiceDescription ().fPrettyName.AsSDKString ().c_str (),
+                                          kServiceMgrAccessPrivs, SERVICE_WIN32_OWN_PROCESS, SERVICE_DEMAND_START, SERVICE_ERROR_NORMAL,
+                                          cmdLineForRunSvc.AsSDKString ().c_str (), NULL, NULL, _T("RPCSS\0"), NULL, NULL);
     Execution::Platform::Windows::ThrowIfZeroGetLastError (hService);
 }
 
@@ -827,19 +766,17 @@ void Main::WindowsService::_UnInstall ()
     const DWORD kServiceMgrAccessPrivs = SERVICE_STOP | DELETE;
     SC_HANDLE   hSCM                   = ::OpenSCManager (NULL, NULL, kServiceMgrAccessPrivs);
     Execution::Platform::Windows::ThrowIfZeroGetLastError (hSCM);
-    [[maybe_unused]] auto&& cleanup1 = Execution::Finally (
-        [hSCM] () noexcept {
-            AssertNotNull (hSCM);
-            ::CloseServiceHandle (hSCM);
-        });
+    [[maybe_unused]] auto&& cleanup1 = Execution::Finally ([hSCM] () noexcept {
+        AssertNotNull (hSCM);
+        ::CloseServiceHandle (hSCM);
+    });
 
     SC_HANDLE hService = ::OpenService (hSCM, GetSvcName_ ().c_str (), kServiceMgrAccessPrivs);
     Execution::Platform::Windows::ThrowIfZeroGetLastError (hService);
-    [[maybe_unused]] auto&& cleanup2 = Execution::Finally (
-        [hService] () noexcept {
-            AssertNotNull (hService);
-            ::CloseServiceHandle (hService);
-        });
+    [[maybe_unused]] auto&& cleanup2 = Execution::Finally ([hService] () noexcept {
+        AssertNotNull (hService);
+        ::CloseServiceHandle (hService);
+    });
 
     {
         SERVICE_STATUS status;
@@ -862,9 +799,7 @@ void Main::WindowsService::_RunAsService ()
 
     // MSFT docs unclear on lifetime requirements on these args but for now assume data copied...
     SDKString           svcName = GetSvcName_ ();
-    SERVICE_TABLE_ENTRY st[]    = {
-        {const_cast<TCHAR*> (svcName.c_str ()), StaticServiceMain_},
-        {nullptr, nullptr}};
+    SERVICE_TABLE_ENTRY st[]    = {{const_cast<TCHAR*> (svcName.c_str ()), StaticServiceMain_}, {nullptr, nullptr}};
     if (::StartServiceCtrlDispatcher (st) == FALSE) {
         fServiceStatus_.dwWin32ExitCode = ::GetLastError ();
         if (fServiceStatus_.dwWin32ExitCode == ERROR_FAILED_SERVICE_CONTROLLER_CONNECT) {
@@ -877,18 +812,15 @@ void Main::WindowsService::_RunAsService ()
 void Main::WindowsService::_RunDirectly (const optional<Time::Duration>& runFor)
 {
     shared_ptr<IApplicationRep> appRep = fAppRep_;
-    fRunThread_                        = Execution::Thread::New (
-        [appRep] () {
-            appRep->MainLoop ([] () {});
-        },
-        Execution::Thread::eAutoStart, kServiceRunThreadName_);
+    fRunThread_ = Execution::Thread::New ([appRep] () { appRep->MainLoop ([] () {}); }, Execution::Thread::eAutoStart, kServiceRunThreadName_);
     Thread::CleanupPtr stopper{Thread::CleanupPtr::eAbortBeforeWaiting}; // another thread to stop the mainloop after runFor
     if (runFor) {
-        stopper = Execution::Thread::New ([&] () {
-            Execution::Sleep (*runFor);
-            fRunThread_.Abort ();
-        },
-                                          Execution::Thread::eAutoStart);
+        stopper = Execution::Thread::New (
+            [&] () {
+                Execution::Sleep (*runFor);
+                fRunThread_.Abort ();
+            },
+            Execution::Thread::eAutoStart);
     }
     fRunThread_.Join ();
 }
@@ -901,18 +833,16 @@ void Main::WindowsService::_Start (Time::DurationSecondsType timeout)
     const DWORD kServiceMgrAccessPrivs = SERVICE_START;
     SC_HANDLE   hSCM                   = ::OpenSCManager (NULL, NULL, kServiceMgrAccessPrivs);
     Execution::Platform::Windows::ThrowIfZeroGetLastError (hSCM);
-    [[maybe_unused]] auto&& cleanup1 = Execution::Finally (
-        [hSCM] () noexcept {
-            AssertNotNull (hSCM);
-            ::CloseServiceHandle (hSCM);
-        });
-    SC_HANDLE hService = ::OpenService (hSCM, GetSvcName_ ().c_str (), kServiceMgrAccessPrivs);
+    [[maybe_unused]] auto&& cleanup1 = Execution::Finally ([hSCM] () noexcept {
+        AssertNotNull (hSCM);
+        ::CloseServiceHandle (hSCM);
+    });
+    SC_HANDLE               hService = ::OpenService (hSCM, GetSvcName_ ().c_str (), kServiceMgrAccessPrivs);
     Execution::Platform::Windows::ThrowIfZeroGetLastError (hService);
-    [[maybe_unused]] auto&& cleanup2 = Execution::Finally (
-        [hService] () noexcept {
-            AssertNotNull (hService);
-            ::CloseServiceHandle (hService);
-        });
+    [[maybe_unused]] auto&& cleanup2 = Execution::Finally ([hService] () noexcept {
+        AssertNotNull (hService);
+        ::CloseServiceHandle (hService);
+    });
 
     DWORD    dwNumServiceArgs    = 0;
     LPCTSTR* lpServiceArgVectors = nullptr;
@@ -926,19 +856,17 @@ void Main::WindowsService::_Stop ([[maybe_unused]] Time::DurationSecondsType tim
     const DWORD               kServiceMgrAccessPrivs = SERVICE_STOP;
     SC_HANDLE                 hSCM                   = ::OpenSCManager (NULL, NULL, kServiceMgrAccessPrivs);
     Execution::Platform::Windows::ThrowIfZeroGetLastError (hSCM);
-    [[maybe_unused]] auto&& cleanup1 = Execution::Finally (
-        [hSCM] () noexcept {
-            AssertNotNull (hSCM);
-            ::CloseServiceHandle (hSCM);
-        });
+    [[maybe_unused]] auto&& cleanup1 = Execution::Finally ([hSCM] () noexcept {
+        AssertNotNull (hSCM);
+        ::CloseServiceHandle (hSCM);
+    });
 
     SC_HANDLE hService = ::OpenService (hSCM, GetSvcName_ ().c_str (), kServiceMgrAccessPrivs);
     Execution::Platform::Windows::ThrowIfZeroGetLastError (hService);
-    [[maybe_unused]] auto&& cleanup2 = Execution::Finally (
-        [hService] () noexcept {
-            AssertNotNull (hService);
-            ::CloseServiceHandle (hService);
-        });
+    [[maybe_unused]] auto&& cleanup2 = Execution::Finally ([hService] () noexcept {
+        AssertNotNull (hService);
+        ::CloseServiceHandle (hService);
+    });
 
     {
         SERVICE_STATUS status;
@@ -951,32 +879,28 @@ void Main::WindowsService::_Stop ([[maybe_unused]] Time::DurationSecondsType tim
     }
 }
 
-void Main::WindowsService::_ForcedStop ([[maybe_unused]] Time::DurationSecondsType timeout)
-{
-    AssertNotImplemented ();
-}
+void Main::WindowsService::_ForcedStop ([[maybe_unused]] Time::DurationSecondsType timeout) { AssertNotImplemented (); }
 
 pid_t Main::WindowsService::_GetServicePID () const
 {
     const DWORD kServiceMgrAccessPrivs = SERVICE_QUERY_STATUS;
     SC_HANDLE   hSCM                   = ::OpenSCManager (NULL, NULL, kServiceMgrAccessPrivs);
     Execution::Platform::Windows::ThrowIfZeroGetLastError (hSCM);
-    [[maybe_unused]] auto&& cleanup1 = Execution::Finally (
-        [hSCM] () noexcept {
-            AssertNotNull (hSCM);
-            ::CloseServiceHandle (hSCM);
-        });
-    SC_HANDLE hService = ::OpenService (hSCM, GetSvcName_ ().c_str (), kServiceMgrAccessPrivs);
+    [[maybe_unused]] auto&& cleanup1 = Execution::Finally ([hSCM] () noexcept {
+        AssertNotNull (hSCM);
+        ::CloseServiceHandle (hSCM);
+    });
+    SC_HANDLE               hService = ::OpenService (hSCM, GetSvcName_ ().c_str (), kServiceMgrAccessPrivs);
     Execution::Platform::Windows::ThrowIfZeroGetLastError (hService);
-    [[maybe_unused]] auto&& cleanup2 = Execution::Finally (
-        [hService] () noexcept {
-            AssertNotNull (hService);
-            ::CloseServiceHandle (hService);
-        });
+    [[maybe_unused]] auto&& cleanup2 = Execution::Finally ([hService] () noexcept {
+        AssertNotNull (hService);
+        ::CloseServiceHandle (hService);
+    });
 
     SERVICE_STATUS_PROCESS serviceProcess{};
     DWORD                  ignored = 0;
-    Execution::Platform::Windows::ThrowIfZeroGetLastError (::QueryServiceStatusEx (hService, SC_STATUS_PROCESS_INFO, reinterpret_cast<LPBYTE> (&serviceProcess), sizeof (serviceProcess), &ignored));
+    Execution::Platform::Windows::ThrowIfZeroGetLastError (
+        ::QueryServiceStatusEx (hService, SC_STATUS_PROCESS_INFO, reinterpret_cast<LPBYTE> (&serviceProcess), sizeof (serviceProcess), &ignored));
     return serviceProcess.dwProcessId;
 }
 
@@ -992,19 +916,17 @@ bool Main::WindowsService::IsInstalled_ () const noexcept
     const DWORD               kServiceMgrAccessPrivs = SERVICE_QUERY_CONFIG;
     SC_HANDLE                 hSCM                   = ::OpenSCManager (NULL, NULL, kServiceMgrAccessPrivs);
     Execution::Platform::Windows::ThrowIfZeroGetLastError (hSCM);
-    [[maybe_unused]] auto&& cleanup1 = Execution::Finally (
-        [hSCM] () noexcept {
-            AssertNotNull (hSCM);
-            ::CloseServiceHandle (hSCM);
-        });
+    [[maybe_unused]] auto&& cleanup1 = Execution::Finally ([hSCM] () noexcept {
+        AssertNotNull (hSCM);
+        ::CloseServiceHandle (hSCM);
+    });
 
     SC_HANDLE hService = ::OpenService (hSCM, GetSvcName_ ().c_str (), kServiceMgrAccessPrivs);
     Execution::Platform::Windows::ThrowIfZeroGetLastError (hService);
-    [[maybe_unused]] auto&& cleanup2 = Execution::Finally (
-        [hService] () noexcept {
-            AssertNotNull (hService);
-            ::CloseServiceHandle (hService);
-        });
+    [[maybe_unused]] auto&& cleanup2 = Execution::Finally ([hService] () noexcept {
+        AssertNotNull (hService);
+        ::CloseServiceHandle (hService);
+    });
     return hService != NULL;
 }
 
@@ -1037,11 +959,7 @@ void Main::WindowsService::ServiceMain_ ([[maybe_unused]] DWORD dwArgc, [[maybe_
     // When the Run function returns, the service has stopped.
     // about like this - FIX - KEEP SOMETHING SIMIALR
     shared_ptr<IApplicationRep> appRep = fAppRep_;
-    fRunThread_                        = Execution::Thread::New (
-        [appRep] () {
-            appRep->MainLoop ([] () {});
-        },
-        Execution::Thread::eAutoStart, kServiceRunThreadName_);
+    fRunThread_ = Execution::Thread::New ([appRep] () { appRep->MainLoop ([] () {}); }, Execution::Thread::eAutoStart, kServiceRunThreadName_);
     //Logger::sThe.Log (Logger::eInfo, L"in ServiceMain_ about to set SERVICE_RUNNING");
     SetServiceStatus_ (SERVICE_RUNNING);
 

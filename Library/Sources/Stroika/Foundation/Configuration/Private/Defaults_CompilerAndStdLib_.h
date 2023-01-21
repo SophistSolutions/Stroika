@@ -79,10 +79,12 @@
 // see
 //      clang++-3.8 -dM -E - < /dev/null
 #if (__clang_major__ < 11) || (__clang_major__ == 11 && (__clang_minor__ < 0))
-#define _STROIKA_CONFIGURATION_WARNING_ "Warning: Stroika v3 (older clang versions supported by Stroika v2.1) does not support versions prior to APPLE clang++ 11 (XCode 11)"
+#define _STROIKA_CONFIGURATION_WARNING_                                                                                                    \
+    "Warning: Stroika v3 (older clang versions supported by Stroika v2.1) does not support versions prior to APPLE clang++ 11 (XCode 11)"
 #endif
 #if (__clang_major__ > 14) || (__clang_major__ == 14 && (__clang_minor__ > 0))
-#define _STROIKA_CONFIGURATION_WARNING_ "Info: Stroika untested with this version of clang++ (APPLE) - USING PREVIOUS COMPILER VERSION BUG DEFINES"
+#define _STROIKA_CONFIGURATION_WARNING_                                                                                                    \
+    "Info: Stroika untested with this version of clang++ (APPLE) - USING PREVIOUS COMPILER VERSION BUG DEFINES"
 #define CompilerAndStdLib_AssumeBuggyIfNewerCheck_(X) 1
 #endif
 #else
@@ -90,10 +92,13 @@
 // see
 //      clang++-3.8 -dM -E - < /dev/null
 #if (__clang_major__ < 6) || (__clang_major__ == 6 && (__clang_minor__ < 0))
-#define _STROIKA_CONFIGURATION_WARNING_ "Warning: Stroika v2.1 does not support versions prior to clang++ 6 (non-apple); note that Stroika v2.0 supports clang3.9, clang4, and clang5"
+#define _STROIKA_CONFIGURATION_WARNING_                                                                                                    \
+    "Warning: Stroika v2.1 does not support versions prior to clang++ 6 (non-apple); note that Stroika v2.0 supports clang3.9, clang4, "   \
+    "and clang5"
 #endif
 #if (__clang_major__ > 14) || (__clang_major__ == 14 && (__clang_minor__ > 0))
-#define _STROIKA_CONFIGURATION_WARNING_ "Info: Stroika untested with this version of clang++ - (>14.0) USING PREVIOUS COMPILER VERSION BUG DEFINES"
+#define _STROIKA_CONFIGURATION_WARNING_                                                                                                    \
+    "Info: Stroika untested with this version of clang++ - (>14.0) USING PREVIOUS COMPILER VERSION BUG DEFINES"
 #define CompilerAndStdLib_AssumeBuggyIfNewerCheck_(X) 1
 #endif
 #endif
@@ -101,7 +106,8 @@
 #elif defined(__GNUC__)
 
 #if __GNUC__ < 11
-#define _STROIKA_CONFIGURATION_WARNING_ "Warning: Stroika v3 does not support versions prior to GCC 11 (v2.1 supports g++7 and later, v2.0 supports g++5 and g++6 and g++-7)"
+#define _STROIKA_CONFIGURATION_WARNING_                                                                                                    \
+    "Warning: Stroika v3 does not support versions prior to GCC 11 (v2.1 supports g++7 and later, v2.0 supports g++5 and g++6 and g++-7)"
 #endif
 #if __GNUC__ > 12 || (__GNUC__ == 12 && (__GNUC_MINOR__ > 1))
 #define _STROIKA_CONFIGURATION_WARNING_ "Info: Stroika untested with this version of GCC - USING PREVIOUS COMPILER VERSION BUG DEFINES"
@@ -164,18 +170,23 @@
 
 // We COULD look at _MSC_FULL_VER but changes too often and too rarely makes a difference: just assume all bug defines the same for a given _MSC_VER
 #if _MSC_VER < 1916
-#define _STROIKA_CONFIGURATION_WARNING_ "Warning: Stroika does not support versions prior to Microsoft Visual Studio.net 2019 (use Stroika v2.1 or earlier)"
+#define _STROIKA_CONFIGURATION_WARNING_                                                                                                    \
+    "Warning: Stroika does not support versions prior to Microsoft Visual Studio.net 2019 (use Stroika v2.1 or earlier)"
 #elif _MSC_VER <= _MSC_VER_2k19_16Pt4_
 #elif _MSC_VER <= _MSC_VER_2k19_16Pt10_
 #elif _MSC_VER <= _MSC_VER_2k22_17Pt4_
 #else
-#define _STROIKA_CONFIGURATION_WARNING_ "Warning: This version of Stroika is untested with this release (> 17.4) of Microsoft Visual Studio.net / Visual C++ - USING PREVIOUS COMPILER VERSION BUG DEFINES"
+#define _STROIKA_CONFIGURATION_WARNING_                                                                                                    \
+    "Warning: This version of Stroika is untested with this release (> 17.4) of Microsoft Visual Studio.net / Visual C++ - USING "         \
+    "PREVIOUS COMPILER VERSION BUG DEFINES"
 #define CompilerAndStdLib_AssumeBuggyIfNewerCheck_(X) 1
 #endif
 
 #else
 
-#define _STROIKA_CONFIGURATION_WARNING_ "Warning: Stroika does recognize the compiler being used. It may work, but you may need to update some of the other defines for what features are supported by your compiler."
+#define _STROIKA_CONFIGURATION_WARNING_                                                                                                    \
+    "Warning: Stroika does recognize the compiler being used. It may work, but you may need to update some of the other defines for what " \
+    "features are supported by your compiler."
 
 #endif
 
@@ -274,7 +285,8 @@ foo.cpp:
 #if defined(_MSC_VER)
 // first broken in _MSC_VER_2k22_17Pt3_
 // Verified still broken in _MSC_VER_2k22_17Pt4_
-#define qCompilerAndStdLib_sanitizer_annotate_contiguous_container_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER_2k22_17Pt3_ <= _MSC_VER && _MSC_VER <= _MSC_VER_2k22_17Pt4_)
+#define qCompilerAndStdLib_sanitizer_annotate_contiguous_container_Buggy                                                                   \
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER_2k22_17Pt3_ <= _MSC_VER && _MSC_VER <= _MSC_VER_2k22_17Pt4_)
 #else
 #define qCompilerAndStdLib_sanitizer_annotate_contiguous_container_Buggy 0
 #endif
@@ -294,7 +306,8 @@ C:\Sandbox\Stroika\DevRoot\Library\Sources\Stroika\Foundation\Execution\Throw.in
 
 #if defined(_MSC_VER)
 // first broken in _MSC_VER_2k22_17Pt4_
-#define qCompilerAndStdLib_ArgumentDependentLookupInTemplateExpansionTooAggressiveNowBroken_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER_2k22_17Pt4_ <= _MSC_VER && _MSC_VER <= _MSC_VER_2k22_17Pt4_)
+#define qCompilerAndStdLib_ArgumentDependentLookupInTemplateExpansionTooAggressiveNowBroken_Buggy                                          \
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER_2k22_17Pt4_ <= _MSC_VER && _MSC_VER <= _MSC_VER_2k22_17Pt4_)
 #else
 #define qCompilerAndStdLib_ArgumentDependentLookupInTemplateExpansionTooAggressiveNowBroken_Buggy 0
 #endif
@@ -310,7 +323,8 @@ C:\Sandbox\Stroika\DevRoot\Library\Sources\Stroika\Foundation\Execution\Throw.in
 #ifndef qCompilerAndStdLib_static_inline_order_of_construction_Buggy
 #if defined(_MSC_VER)
 // first broken in _MSC_VER_2k22_17Pt4_
-#define qCompilerAndStdLib_ArgumentDependentLookupInTemplateExpansionTooAggressiveNowBroken_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER_2k22_17Pt4_ <= _MSC_VER && _MSC_VER <= _MSC_VER_2k22_17Pt4_)
+#define qCompilerAndStdLib_ArgumentDependentLookupInTemplateExpansionTooAggressiveNowBroken_Buggy                                          \
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER_2k22_17Pt4_ <= _MSC_VER && _MSC_VER <= _MSC_VER_2k22_17Pt4_)
 #else
 #define qCompilerAndStdLib_ArgumentDependentLookupInTemplateExpansionTooAggressiveNowBroken_Buggy 0
 #endif
@@ -328,7 +342,8 @@ C:\Sandbox\Stroika\DevRoot\Library\Sources\Stroika\Foundation\Execution\Throw.in
 // verified broken in _MSC_VER_2k22_17Pt2_
 // verified broken in _MSC_VER_2k22_17Pt3_
 // verified broken in _MSC_VER_2k22_17Pt4_
-#define qCompilerAndStdLib_maybe_unused_b4_auto_in_for_loop_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER_2k19_16Pt8_ <= _MSC_VER && _MSC_VER <= _MSC_VER_2k22_17Pt4_)
+#define qCompilerAndStdLib_maybe_unused_b4_auto_in_for_loop_Buggy                                                                          \
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER_2k19_16Pt8_ <= _MSC_VER && _MSC_VER <= _MSC_VER_2k22_17Pt4_)
 #else
 #define qCompilerAndStdLib_maybe_unused_b4_auto_in_for_loop_Buggy 0
 #endif
@@ -399,7 +414,8 @@ SUMMARY: AddressSanitizer: stack-use-after-scope C:\Program Files\Microsoft Visu
 
 #if defined(_MSC_VER)
 // first broken in _MSC_VER_2k22_17Pt3_
-#define qCompilerAndStdLib_sanitizer_annotate_contiguous_container_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER_2k22_17Pt3_ <= _MSC_VER && _MSC_VER <= _MSC_VER_2k22_17Pt3_)
+#define qCompilerAndStdLib_sanitizer_annotate_contiguous_container_Buggy                                                                   \
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER_2k22_17Pt3_ <= _MSC_VER && _MSC_VER <= _MSC_VER_2k22_17Pt3_)
 #else
 #define qCompilerAndStdLib_sanitizer_annotate_contiguous_container_Buggy 0
 #endif
@@ -433,7 +449,8 @@ SUMMARY: AddressSanitizer: stack-use-after-scope C:\Program Files\Microsoft Visu
 // verified still broken in _MSC_VER_2k22_17Pt2_
 // verified still broken in _MSC_VER_2k22_17Pt3_
 // verified still broken in _MSC_VER_2k22_17Pt4_
-#define qCompilerAndStdLib_relaxedEnumClassInitializationRules_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k22_17Pt4_)
+#define qCompilerAndStdLib_relaxedEnumClassInitializationRules_Buggy                                                                       \
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k22_17Pt4_)
 #else
 #define qCompilerAndStdLib_relaxedEnumClassInitializationRules_Buggy 0
 #endif
@@ -455,7 +472,8 @@ SUMMARY: AddressSanitizer: stack-use-after-scope C:\Program Files\Microsoft Visu
 #if defined(_MSC_VER)
 // first found broken in _MSC_VER_2k19_16Pt5_
 // APPEARS FIXED? _MSC_VER_2k19_16Pt6_
-#define qCompilerAndStdLib_operatorCompareWithOperatorBoolConvertAutoGen_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k19_16Pt5_)
+#define qCompilerAndStdLib_operatorCompareWithOperatorBoolConvertAutoGen_Buggy                                                             \
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k19_16Pt5_)
 #else
 #define qCompilerAndStdLib_operatorCompareWithOperatorBoolConvertAutoGen_Buggy 0
 #endif
@@ -483,7 +501,10 @@ C :\Sandbox\Stroika\DevRoot\Tests\50\Test.cpp : 750
 // And then RE-BROKEN in _MSC_VER_2k22_17Pt2_
 // APPEARS still BROKEN in _MSC_VER_2k22_17Pt3_
 // APPEARS still BROKEN in _MSC_VER_2k22_17Pt4_
-#define qCompilerAndStdLib_ReleaseBld32Codegen_DateRangeInitializerDateOperator_Buggy (CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((_MSC_VER_2k19_16Pt6_ <= _MSC_VER && _MSC_VER <= _MSC_VER_2k19_16Pt10_) || (_MSC_VER_2k22_17Pt2_ <= _MSC_VER && _MSC_VER <= _MSC_VER_2k22_17Pt4_)) && !qDebug && defined (_M_IX86))
+#define qCompilerAndStdLib_ReleaseBld32Codegen_DateRangeInitializerDateOperator_Buggy                                                      \
+    (CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((_MSC_VER_2k19_16Pt6_ <= _MSC_VER && _MSC_VER <= _MSC_VER_2k19_16Pt10_) ||                \
+                                                 (_MSC_VER_2k22_17Pt2_ <= _MSC_VER && _MSC_VER <= _MSC_VER_2k22_17Pt4_)) &&                \
+     !qDebug && defined (_M_IX86))
 #else
 #define qCompilerAndStdLib_ReleaseBld32Codegen_DateRangeInitializerDateOperator_Buggy 0
 #endif
@@ -529,7 +550,8 @@ READ of size 6 at 0x0110ed9d thread T0
 #if defined(_MSC_VER)
 // first/only found broken in _MSC_VER_2k22_17Pt3_
 // Appears FIXED in _MSC_VER_2k22_17Pt4_
-#define qCompilerAndStdLib_Debug32Codegen_make_pair_string_Buggy (CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((_MSC_VER == _MSC_VER_2k22_17Pt3_)) && qDebug && defined (_M_IX86))
+#define qCompilerAndStdLib_Debug32Codegen_make_pair_string_Buggy                                                                           \
+    (CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((_MSC_VER == _MSC_VER_2k22_17Pt3_)) && qDebug && defined (_M_IX86))
 #else
 #define qCompilerAndStdLib_Debug32Codegen_make_pair_string_Buggy 0
 #endif
@@ -545,7 +567,8 @@ READ of size 6 at 0x0110ed9d thread T0
 #if defined(_MSC_VER)
 // first/only found broken in _MSC_VER_2k22_17Pt3_
 // Appears FIXED in _MSC_VER_2k22_17Pt4_
-#define qCompilerAndStdLib_Debug32_asan_Poison_Buggy (CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((_MSC_VER == _MSC_VER_2k22_17Pt3_)) && qDebug && defined (_M_IX86))
+#define qCompilerAndStdLib_Debug32_asan_Poison_Buggy                                                                                       \
+    (CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((_MSC_VER == _MSC_VER_2k22_17Pt3_)) && qDebug && defined (_M_IX86))
 #else
 #define qCompilerAndStdLib_Debug32_asan_Poison_Buggy 0
 #endif
@@ -568,10 +591,12 @@ make[4]: *** [/Sandbox/Stroika-Dev//ScriptsLib/SharedBuildRules-Default.mk:30: /
 
 #if defined(__clang__) && defined(__APPLE__)
 // first noticed broken in apply clang 14
-#define qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 14))
+#define qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy                                               \
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 14))
 #elif defined(__clang__) && !defined(__APPLE__)
 // first noticed broken in apply clang 14
-#define qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 14))
+#define qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy                                               \
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 14))
 #endif
 
 #endif
@@ -630,7 +655,8 @@ in enable_if_t's, but may not need this anymore
 #if defined(_MSC_VER)
 // BROKEN in _MSC_VER_2k22_17Pt0_
 // Appears to work fine now _MSC_VER_2k22_17Pt1_
-#define qCompilerAndStdLib_template_enableIf_Addable_UseBroken_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k22_17Pt0_)
+#define qCompilerAndStdLib_template_enableIf_Addable_UseBroken_Buggy                                                                       \
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k22_17Pt0_)
 #elif defined(__clang__) && defined(__APPLE__)
 #define qCompilerAndStdLib_template_enableIf_Addable_UseBroken_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 13))
 #elif defined(__clang__) && !defined(__APPLE__)
@@ -819,7 +845,8 @@ INTERNAL COMPILER ERROR in 'C:\Program Files (x86)\Microsoft Visual Studio\2019\
 #if defined(_MSC_VER)
 // First broken in _MSC_VER_2k19_16Pt8_
 // APPEARS FIXED IN _MSC_VER_2k19_16Pt10_
-#define qCompilerAndStdLib_const_extern_declare_then_const_define_namespace_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER == _MSC_VER_2k19_16Pt8_)
+#define qCompilerAndStdLib_const_extern_declare_then_const_define_namespace_Buggy                                                          \
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER == _MSC_VER_2k19_16Pt8_)
 #else
 #define qCompilerAndStdLib_const_extern_declare_then_const_define_namespace_Buggy 0
 #endif
@@ -848,7 +875,8 @@ C:\Sandbox\Stroika\DevRoot\Samples\ActiveLedIt\Sources\Toolbar.cpp(885): note: N
 // still broken in _MSC_VER_2k22_17Pt2_
 // still broken in _MSC_VER_2k22_17Pt3_
 // still broken in _MSC_VER_2k22_17Pt4_
-#define qCompilerAndStdLib_altComPtrCvt2ComQIPtrRequiresExtraCast_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER_2k19_16Pt8_ <= _MSC_VER && _MSC_VER <= _MSC_VER_2k22_17Pt4_)
+#define qCompilerAndStdLib_altComPtrCvt2ComQIPtrRequiresExtraCast_Buggy                                                                    \
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER_2k19_16Pt8_ <= _MSC_VER && _MSC_VER <= _MSC_VER_2k22_17Pt4_)
 #else
 #define qCompilerAndStdLib_altComPtrCvt2ComQIPtrRequiresExtraCast_Buggy 0
 #endif
@@ -919,7 +947,8 @@ READ of size 6 at 0x0110ed9d thread T0
 
 #if defined(_MSC_VER)
 // first/only found broken in _MSC_VER_2k22_17Pt3_
-#define qCompilerAndStdLib_Debug32Codegen_make_pair_string_Buggy (CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((_MSC_VER == _MSC_VER_2k22_17Pt3_)) && qDebug && defined (_M_IX86))
+#define qCompilerAndStdLib_Debug32Codegen_make_pair_string_Buggy                                                                           \
+    (CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((_MSC_VER == _MSC_VER_2k22_17Pt3_)) && qDebug && defined (_M_IX86))
 #else
 #define qCompilerAndStdLib_Debug32Codegen_make_pair_string_Buggy 0
 #endif
@@ -932,7 +961,8 @@ READ of size 6 at 0x0110ed9d thread T0
 #ifndef qCompilerAndStdLib_Debug32_asan_Poison_Buggy
 #if defined(_MSC_VER)
 // first/only found broken in _MSC_VER_2k22_17Pt3_
-#define qCompilerAndStdLib_Debug32_asan_Poison_Buggy (CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((_MSC_VER == _MSC_VER_2k22_17Pt3_)) && qDebug && defined (_M_IX86))
+#define qCompilerAndStdLib_Debug32_asan_Poison_Buggy                                                                                       \
+    (CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((_MSC_VER == _MSC_VER_2k22_17Pt3_)) && qDebug && defined (_M_IX86))
 #else
 #define qCompilerAndStdLib_Debug32_asan_Poison_Buggy 0
 #endif
@@ -994,10 +1024,12 @@ InternetMediaType.cpp:180:68: note:   couldn't deduce template parameter 'T_THRE
 
 #if defined(__clang__) && defined(__APPLE__)
 // First noticed in clang++-14
-#define qCompilerAndStdLib_template_requresDefNeededonSpecializations_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 14))
+#define qCompilerAndStdLib_template_requresDefNeededonSpecializations_Buggy                                                                \
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 14))
 #elif defined(__clang__) && !defined(__APPLE__)
 // First noticed in clang++-14
-#define qCompilerAndStdLib_template_requresDefNeededonSpecializations_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 14))
+#define qCompilerAndStdLib_template_requresDefNeededonSpecializations_Buggy                                                                \
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 14))
 #else
 #define qCompilerAndStdLib_template_requresDefNeededonSpecializations_Buggy 0
 #endif
@@ -1035,13 +1067,16 @@ Writer.h:55:49: note: defined here
 
 #if defined(__GNUC__) && !defined(__clang__)
 // First noticed in g++-11
-#define qCompilerAndStdLib_DefaultMemberInitializerNeededEnclosingForDefaultFunArg_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ <= 12)
+#define qCompilerAndStdLib_DefaultMemberInitializerNeededEnclosingForDefaultFunArg_Buggy                                                   \
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ <= 12)
 #elif defined(__clang__) && defined(__APPLE__)
 // First noticed in clang++-14
-#define qCompilerAndStdLib_DefaultMemberInitializerNeededEnclosingForDefaultFunArg_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 14))
+#define qCompilerAndStdLib_DefaultMemberInitializerNeededEnclosingForDefaultFunArg_Buggy                                                   \
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 14))
 #elif defined(__clang__) && !defined(__APPLE__)
 // First noticed in clang++-14
-#define qCompilerAndStdLib_DefaultMemberInitializerNeededEnclosingForDefaultFunArg_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 14))
+#define qCompilerAndStdLib_DefaultMemberInitializerNeededEnclosingForDefaultFunArg_Buggy                                                   \
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 14))
 #else
 #define qCompilerAndStdLib_DefaultMemberInitializerNeededEnclosingForDefaultFunArg_Buggy 0
 #endif
@@ -1112,7 +1147,8 @@ Response.h:373:30: error: no match for ‘operator==’ (operand types are ‘un
 // still broken in _MSC_VER_2k22_17Pt2_
 // still broken in _MSC_VER_2k22_17Pt3_
 // still broken in _MSC_VER_2k22_17Pt4_
-#define qCompilerAndStdLib_template_template_call_SequentialEquals_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k22_17Pt4_)
+#define qCompilerAndStdLib_template_template_call_SequentialEquals_Buggy                                                                   \
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k22_17Pt4_)
 #else
 #define qCompilerAndStdLib_template_template_call_SequentialEquals_Buggy 0
 #endif
@@ -1179,7 +1215,8 @@ From:    https://en.cppreference.com/w/cpp/locale/time_get/date_order
 // Appears still BROKEN in XCODE 12
 // Appears still BROKEN in XCODE 13
 // Appears FIXED in XCODE 14 (tested on M1)
-#define qCompiler_LimitLengthBeforeMainCrash_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((11 <= __clang_major__) && (__clang_major__ <= 13))
+#define qCompiler_LimitLengthBeforeMainCrash_Buggy                                                                                         \
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((11 <= __clang_major__) && (__clang_major__ <= 13))
 #else
 #define qCompiler_LimitLengthBeforeMainCrash_Buggy 0
 #endif
@@ -1643,7 +1680,8 @@ int main ()
 // Newly broken in _MSC_VER_2k22_17Pt2_ - wonder if that means this is my bug not vs2k22/clang?
 // broken in _MSC_VER_2k22_17Pt3_
 // Appears FIXED in _MSC_VER_2k22_17Pt4_
-#define qCompilerAndStdLib_deduce_template_arguments_CTOR_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((_MSC_VER_2k22_17Pt2_ <= _MSC_VER and _MSC_VER <= _MSC_VER_2k22_17Pt3_))
+#define qCompilerAndStdLib_deduce_template_arguments_CTOR_Buggy                                                                            \
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((_MSC_VER_2k22_17Pt2_ <= _MSC_VER and _MSC_VER <= _MSC_VER_2k22_17Pt3_))
 #else
 #define qCompilerAndStdLib_deduce_template_arguments_CTOR_Buggy 0
 #endif
@@ -1663,9 +1701,11 @@ In file included from ./../Characters/../Containers/Concrete/Sequence_stdvector.
 #if defined(__clang__) && defined(__APPLE__)
 // Appears broken on XCode 12
 // BUt fixed in XCode 13
-#define qCompilerAndStdLib_template_default_arguments_then_paramPack_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 13))
+#define qCompilerAndStdLib_template_default_arguments_then_paramPack_Buggy                                                                 \
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 13))
 #elif defined(__clang__) && !defined(__APPLE__)
-#define qCompilerAndStdLib_template_default_arguments_then_paramPack_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 10))
+#define qCompilerAndStdLib_template_default_arguments_then_paramPack_Buggy                                                                 \
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 10))
 #else
 #define qCompilerAndStdLib_template_default_arguments_then_paramPack_Buggy 0
 #endif
@@ -1750,7 +1790,8 @@ error C2975: '_Test': invalid template argument for 'std::conditional', expected
 // verified still broken in _MSC_VER_2k22_17Pt2_
 // verified still broken in _MSC_VER_2k22_17Pt3_
 // verified still broken in _MSC_VER_2k22_17Pt4_
-#define qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k22_17Pt4_)
+#define qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy                                                                       \
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k22_17Pt4_)
 #else
 #define qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy 0
 #endif
@@ -1799,14 +1840,16 @@ Test.cpp:173:31: error: template template argument has different template parame
 // VERIFIED BROKEN on XCode 12.0
 // VERIFIED BROKEN on XCode 13.0
 // VERIFIED BROKEN on XCode 14
-#define qCompilerAndStdLib_template_template_argument_as_different_template_paramters_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 14))
+#define qCompilerAndStdLib_template_template_argument_as_different_template_paramters_Buggy                                                \
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 14))
 #elif defined(__clang__) && !defined(__APPLE__)
 // verified still broken in clang++-10
 // verified still broken in clang++-11
 // verified still broken in clang++-12
 // verified still broken in clang++-13
 // verified still broken in clang++-14
-#define qCompilerAndStdLib_template_template_argument_as_different_template_paramters_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 14))
+#define qCompilerAndStdLib_template_template_argument_as_different_template_paramters_Buggy                                                \
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 14))
 #else
 #define qCompilerAndStdLib_template_template_argument_as_different_template_paramters_Buggy 0
 #endif
@@ -1928,7 +1971,8 @@ ces\stroika\foundation\debug\assertions.cpp' and 'c:\sandbox\stroika\devroot\sam
 // Verified still broken in _MSC_VER_2k22_17Pt2_
 // Verified still broken in _MSC_VER_2k22_17Pt3_
 // Verified still broken in _MSC_VER_2k22_17Pt4_
-#define qCompilerAndStdLib_Winerror_map_doesnt_map_timeout_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k22_17Pt4_)
+#define qCompilerAndStdLib_Winerror_map_doesnt_map_timeout_Buggy                                                                           \
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k22_17Pt4_)
 #else
 #define qCompilerAndStdLib_Winerror_map_doesnt_map_timeout_Buggy 0
 #endif
@@ -2087,7 +2131,8 @@ SUMMARY: AddressSanitizer: access-violation (<unknown module>)
 // still buggy in _MSC_VER_2k22_17Pt2_
 // still buggy in _MSC_VER_2k22_17Pt3_
 // still buggy in _MSC_VER_2k22_17Pt4_
-#define qCompiler_Sanitizer_ASAN_With_OpenSSL3_LoadLegacyProvider_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k22_17Pt4_)
+#define qCompiler_Sanitizer_ASAN_With_OpenSSL3_LoadLegacyProvider_Buggy                                                                    \
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k22_17Pt4_)
 #elif defined(__GNUC__) && !defined(__clang__)
 // VERIFIED BROKEN IN GCC 11
 // appears fixed in GCC 12
@@ -2188,7 +2233,8 @@ FAILED: RegressionTestFailure; tmp == L"Sun 05 Apr 1903 12:01:41 AM";;C:\Sandbox
 // verified broken in _MSC_VER_2k22_17Pt2_
 // verified broken in _MSC_VER_2k22_17Pt3_
 // verified broken in _MSC_VER_2k22_17Pt4_
-#define qCompilerAndStdLib_locale_pctC_returns_numbers_not_alphanames_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k22_17Pt4_)
+#define qCompilerAndStdLib_locale_pctC_returns_numbers_not_alphanames_Buggy                                                                \
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k22_17Pt4_)
 #else
 #define qCompilerAndStdLib_locale_pctC_returns_numbers_not_alphanames_Buggy 0
 #endif
@@ -2208,7 +2254,8 @@ FAILED: RegressionTestFailure; f1 < f2 or f2 < f1;;C:\Sandbox\Stroika\DevRoot\Te
 // still broken in _MSC_VER_2k22_17Pt2_
 // still broken in _MSC_VER_2k22_17Pt3_
 // still broken in _MSC_VER_2k22_17Pt4_
-#define qCompilerAndStdLib_SpaceshipOperator_x86_Optimizer_Sometimes_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER_2k22_17Pt0_ <= _MSC_VER and _MSC_VER <= _MSC_VER_2k22_17Pt4_)
+#define qCompilerAndStdLib_SpaceshipOperator_x86_Optimizer_Sometimes_Buggy                                                                 \
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER_2k22_17Pt0_ <= _MSC_VER and _MSC_VER <= _MSC_VER_2k22_17Pt4_)
 #else
 #define qCompilerAndStdLib_SpaceshipOperator_x86_Optimizer_Sometimes_Buggy 0
 #endif
@@ -2265,7 +2312,8 @@ FAILED: RegressionTestFailure; f1 < f2 or f2 < f1;;C:\Sandbox\Stroika\DevRoot\Te
 // verified still broken in _MSC_VER_2k22_17Pt2_
 // verified still broken in _MSC_VER_2k22_17Pt3_
 // verified still broken in _MSC_VER_2k22_17Pt4_
-#define qCompilerAndStdLib_locale_time_get_reverses_month_day_with_2digit_year_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k22_17Pt4_)
+#define qCompilerAndStdLib_locale_time_get_reverses_month_day_with_2digit_year_Buggy                                                       \
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k22_17Pt4_)
 #else
 #define qCompilerAndStdLib_locale_time_get_reverses_month_day_with_2digit_year_Buggy 0
 #endif
@@ -2310,7 +2358,8 @@ stHarness/SimpleClass.cpp ...
 #if defined(_MSC_VER)
 // first noticed broken in _MSC_VER_2k19_16Pt8_
 // APPEARS FIXED IN _MSC_VER_2k19_16Pt10_
-#define qCompilerAndStdLib_default_constructor_initialization_issueWithExplicit_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k19_16Pt8_)
+#define qCompilerAndStdLib_default_constructor_initialization_issueWithExplicit_Buggy                                                      \
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k19_16Pt8_)
 #else
 #define qCompilerAndStdLib_default_constructor_initialization_issueWithExplicit_Buggy 0
 #endif
@@ -2408,7 +2457,8 @@ stHarness/SimpleClass.cpp ...
 // still broken in _MSC_VER_2k22_17Pt0_
 // Microsoft appears to be ignorning this, so just assume broken in _MSC_VER_2k22_17Pt1_
 // still broken in _MSC_VER_2k22_17Pt2_
-#define qCompilerAndStdLib_linkerLosesInlinesSoCannotBeSeenByDebugger_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k22_17Pt2_)
+#define qCompilerAndStdLib_linkerLosesInlinesSoCannotBeSeenByDebugger_Buggy                                                                \
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k22_17Pt2_)
 #else
 #define qCompilerAndStdLib_linkerLosesInlinesSoCannotBeSeenByDebugger_Buggy 0
 #endif
@@ -2527,23 +2577,16 @@ stHarness/SimpleClass.cpp ...
 // and that fails with 'astyle' which breaks up a-b tokens. Need quotes to work with astyle
 // and no way I can find to concatenate strings that works with _Pragma
 //  --LGP 2014-01-05
-#define DISABLE_COMPILER_GCC_WARNING_START(WARNING_TO_DISABLE) \
-    _Pragma ("GCC diagnostic push")                            \
-        _Pragma (WARNING_TO_DISABLE)
-#define DISABLE_COMPILER_GCC_WARNING_END(WARNING_TO_DISABLE) \
-    _Pragma ("GCC diagnostic pop")
+#define DISABLE_COMPILER_GCC_WARNING_START(WARNING_TO_DISABLE) _Pragma ("GCC diagnostic push") _Pragma (WARNING_TO_DISABLE)
+#define DISABLE_COMPILER_GCC_WARNING_END(WARNING_TO_DISABLE) _Pragma ("GCC diagnostic pop")
 #else
 #define DISABLE_COMPILER_GCC_WARNING_START(WARNING_TO_DISABLE)
 #define DISABLE_COMPILER_GCC_WARNING_END(WARNING_TO_DISABLE)
 #endif
 
 #if qSilenceAnnoyingCompilerWarnings && defined(_MSC_VER)
-#define DISABLE_COMPILER_MSC_WARNING_START(WARNING_TO_DISABLE) \
-    __pragma (warning (push))                                  \
-        __pragma (warning (disable                             \
-                           : WARNING_TO_DISABLE))
-#define DISABLE_COMPILER_MSC_WARNING_END(WARNING_TO_DISABLE) \
-    __pragma (warning (pop))
+#define DISABLE_COMPILER_MSC_WARNING_START(WARNING_TO_DISABLE) __pragma (warning (push)) __pragma (warning (disable : WARNING_TO_DISABLE))
+#define DISABLE_COMPILER_MSC_WARNING_END(WARNING_TO_DISABLE) __pragma (warning (pop))
 #else
 #define DISABLE_COMPILER_MSC_WARNING_START(WARNING_TO_DISABLE)
 #define DISABLE_COMPILER_MSC_WARNING_END(WARNING_TO_DISABLE)
@@ -2554,11 +2597,8 @@ stHarness/SimpleClass.cpp ...
 // and that fails with 'astyle' which breaks up a-b tokens. Need quotes to work with astyle
 // and no way I can find to concatenate strings that works with _Pragma
 //  --LGP 2014-01-05
-#define DISABLE_COMPILER_CLANG_WARNING_START(WARNING_TO_DISABLE) \
-    _Pragma ("clang diagnostic push")                            \
-        _Pragma (WARNING_TO_DISABLE)
-#define DISABLE_COMPILER_CLANG_WARNING_END(WARNING_TO_DISABLE) \
-    _Pragma ("clang diagnostic pop")
+#define DISABLE_COMPILER_CLANG_WARNING_START(WARNING_TO_DISABLE) _Pragma ("clang diagnostic push") _Pragma (WARNING_TO_DISABLE)
+#define DISABLE_COMPILER_CLANG_WARNING_END(WARNING_TO_DISABLE) _Pragma ("clang diagnostic pop")
 #else
 #define DISABLE_COMPILER_CLANG_WARNING_START(WARNING_TO_DISABLE)
 #define DISABLE_COMPILER_CLANG_WARNING_END(WARNING_TO_DISABLE)
@@ -2609,8 +2649,7 @@ stHarness/SimpleClass.cpp ...
  *       _DeprecatedFile_ ("DEPRECATED in v2.0a32 - use IO::FileSystem::DirectoryIterator");
  */
 #if !defined(_DeprecatedFile_)
-#define _DeprecatedFile_(MESSAGE) \
-    _Stroika_Foundation_Configuration_Private_DO_PRAGMA_ (message ("WARNING: Deprecated File: " MESSAGE))
+#define _DeprecatedFile_(MESSAGE) _Stroika_Foundation_Configuration_Private_DO_PRAGMA_ (message ("WARNING: Deprecated File: " MESSAGE))
 #endif
 
 /*

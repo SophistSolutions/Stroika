@@ -24,8 +24,7 @@ namespace Stroika::Foundation::Containers::Concrete {
      ********************************************************************************
      */
     template <typename T>
-    class SortedSet_stdset<T>::IImplRepBase_ : public SortedSet<T>::_IRep {
-    };
+    class SortedSet_stdset<T>::IImplRepBase_ : public SortedSet<T>::_IRep {};
 
     /*
      ********************************************************************************
@@ -89,7 +88,9 @@ namespace Stroika::Foundation::Containers::Concrete {
         {
             // if doing a find by 'equals-to' - we already have this indexed
             auto found = fData_.find (v);
-            Ensure ((found == fData_.end () and this->_Find_equal_to_default_implementation (v) == Iterator<value_type>{nullptr}) or (found == Debug::UncheckedDynamicCast<const IteratorRep_&> (this->_Find_equal_to_default_implementation (v).ConstGetRep ()).fIterator.GetUnderlyingIteratorRep ()));
+            Ensure ((found == fData_.end () and this->_Find_equal_to_default_implementation (v) == Iterator<value_type>{nullptr}) or
+                    (found == Debug::UncheckedDynamicCast<const IteratorRep_&> (this->_Find_equal_to_default_implementation (v).ConstGetRep ())
+                                  .fIterator.GetUnderlyingIteratorRep ()));
             return Iterator<value_type>{Iterator<value_type>::template MakeSmartPtr<IteratorRep_> (&fData_, &fChangeCounts_, found)};
         }
 
@@ -110,7 +111,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             RequireNotNull (i);
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
             auto                                                  result = Iterable<value_type>::template MakeSmartPtr<Rep_> (*this);
-            auto&                                                 mir    = Debug::UncheckedDynamicCast<const IteratorRep_&> (i->ConstGetRep ());
+            auto& mir = Debug::UncheckedDynamicCast<const IteratorRep_&> (i->ConstGetRep ());
             result->fData_.MoveIteratorHereAfterClone (&mir.fIterator, &fData_);
             i->Refresh (); // reflect updated rep
             return result;
@@ -155,7 +156,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         {
             Require (not i.Done ());
             Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fData_};
-            auto&                                                  mir = Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ());
+            auto& mir = Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ());
             Assert (mir.fIterator.GetReferredToData () == &fData_);
             auto nextIResult = fData_.erase (mir.fIterator.GetUnderlyingIteratorRep ());
             fChangeCounts_.PerformedChange ();
@@ -218,7 +219,8 @@ namespace Stroika::Foundation::Containers::Concrete {
         AssertRepValidType_ ();
     }
     template <typename T>
-    template <typename INORDER_COMPARER, typename ITERABLE_OF_ADDABLE, enable_if_t<Common::IsStrictInOrderComparer<INORDER_COMPARER, T> () and Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>>*>
+    template <typename INORDER_COMPARER, typename ITERABLE_OF_ADDABLE,
+              enable_if_t<Common::IsStrictInOrderComparer<INORDER_COMPARER, T> () and Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>>*>
     inline SortedSet_stdset<T>::SortedSet_stdset (INORDER_COMPARER&& inOrderComparer, ITERABLE_OF_ADDABLE&& src)
         : SortedSet_stdset (forward<INORDER_COMPARER> (inOrderComparer))
     {
@@ -236,7 +238,8 @@ namespace Stroika::Foundation::Containers::Concrete {
         AssertRepValidType_ ();
     }
     template <typename T>
-    template <typename INORDER_COMPARER, typename ITERATOR_OF_ADDABLE, enable_if_t<Common::IsStrictInOrderComparer<INORDER_COMPARER, T> () and Configuration::IsIterator_v<ITERATOR_OF_ADDABLE>>*>
+    template <typename INORDER_COMPARER, typename ITERATOR_OF_ADDABLE,
+              enable_if_t<Common::IsStrictInOrderComparer<INORDER_COMPARER, T> () and Configuration::IsIterator_v<ITERATOR_OF_ADDABLE>>*>
     inline SortedSet_stdset<T>::SortedSet_stdset (INORDER_COMPARER&& inOrderComparer, ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
         : SortedSet_stdset (forward<INORDER_COMPARER> (inOrderComparer))
     {

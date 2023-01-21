@@ -170,9 +170,9 @@ void Execution::Private_::SystemErrorExceptionPrivate_::TranslateException_ (err
 #if qCompilerAndStdLib_Winerror_map_doesnt_map_timeout_Buggy
     if (errCode.category () == system_category ()) {
         switch (errCode.value ()) {
-            case WAIT_TIMEOUT:                  // errc::timed_out
-            case ERROR_INTERNET_TIMEOUT:        // ""
-                                                // NOT a good idea becuase then code saying if (errCode==errc::timed_out) will still fail --- Throw (TimeOutException (errCode));
+            case WAIT_TIMEOUT:           // errc::timed_out
+            case ERROR_INTERNET_TIMEOUT: // ""
+                // NOT a good idea becuase then code saying if (errCode==errc::timed_out) will still fail --- Throw (TimeOutException (errCode));
                 Throw (TimeOutException::kThe); // sad to have to lose the original error, but kind of useful so if test against errc::timeout works
         }
     }
@@ -186,7 +186,7 @@ void Execution::Private_::SystemErrorExceptionPrivate_::TranslateException_ (err
             case ERROR_OUTOFMEMORY:       // ""
             case WAIT_TIMEOUT:            // errc::timed_out
             case ERROR_INTERNET_TIMEOUT:  // ""
-                AssertNotReached ();      // should have been caught above in if (ec == errc::... checks) - so thats not working - maybe need to add this switch or debug
+                AssertNotReached (); // should have been caught above in if (ec == errc::... checks) - so thats not working - maybe need to add this switch or debug
                 break;
         }
     }

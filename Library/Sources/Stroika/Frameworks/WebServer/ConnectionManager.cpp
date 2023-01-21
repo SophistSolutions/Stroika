@@ -45,7 +45,8 @@ namespace {
         }
         return interceptors;
     }
-    InterceptorChain mkInterceptorChain_ (const Router& router, const Sequence<Interceptor>& earlyInterceptors, const Sequence<Interceptor>& beforeInterceptors, const Sequence<Interceptor>& afterInterceptors)
+    InterceptorChain mkInterceptorChain_ (const Router& router, const Sequence<Interceptor>& earlyInterceptors,
+                                          const Sequence<Interceptor>& beforeInterceptors, const Sequence<Interceptor>& afterInterceptors)
     {
         Sequence<Interceptor> interceptors;
         interceptors += earlyInterceptors;
@@ -71,26 +72,29 @@ namespace {
     {
         using Options = ConnectionManager::Options;
         constexpr unsigned int kMinThreadCnt_{1u}; // one enough now that we support separate thread doing epoll/select and one read when data avail
-        return Math::AtLeast (kMinThreadCnt_, options.fMaxConcurrentlyHandledConnections.value_or (options.fMaxConnections.value_or (Options::kDefault_MaxConnections) / 10));
+        return Math::AtLeast (kMinThreadCnt_, options.fMaxConcurrentlyHandledConnections.value_or (
+                                                  options.fMaxConnections.value_or (Options::kDefault_MaxConnections) / 10));
     }
     inline unsigned int ComputeConnectionBacklog_ (const ConnectionManager::Options& options)
     {
         using Options = ConnectionManager::Options;
         constexpr unsigned int kMinDefaultTCPBacklog_{3u};
-        return options.fTCPBacklog.value_or (Math::AtLeast (kMinDefaultTCPBacklog_, options.fMaxConnections.value_or (Options::kDefault_MaxConnections) * 3 / 4));
+        return options.fTCPBacklog.value_or (
+            Math::AtLeast (kMinDefaultTCPBacklog_, options.fMaxConnections.value_or (Options::kDefault_MaxConnections) * 3 / 4));
     }
     ConnectionManager::Options FillInDefaults_ (const ConnectionManager::Options& o)
     {
         using Options = ConnectionManager::Options;
         Options result{o};
-        result.fCORS                              = Memory::NullCoalesce (result.fCORS, Options::kDefault_CORS ());
-        result.fMaxConnections                    = Memory::NullCoalesce (result.fMaxConnections, Options::kDefault_MaxConnections);
+        result.fCORS           = Memory::NullCoalesce (result.fCORS, Options::kDefault_CORS ());
+        result.fMaxConnections = Memory::NullCoalesce (result.fMaxConnections, Options::kDefault_MaxConnections);
         result.fMaxConcurrentlyHandledConnections = Memory::NullCoalesce (result.fMaxConcurrentlyHandledConnections, ComputeThreadPoolSize_ (result));
-        result.fBindFlags                         = Memory::NullCoalesce (result.fBindFlags, Options::kDefault_BindFlags);
-        result.fDefaultResponseHeaders            = Memory::NullCoalesce (result.fDefaultResponseHeaders, Options::kDefault_Headers);
-        result.fAutoComputeETagResponse           = Memory::NullCoalesce (result.fAutoComputeETagResponse, Options::kDefault_AutoComputeETagResponse);
-        result.fAutomaticTCPDisconnectOnClose     = Memory::NullCoalesce (result.fAutomaticTCPDisconnectOnClose, Options::kDefault_AutomaticTCPDisconnectOnClose);
-        result.fLinger                            = Memory::NullCoalesce (result.fLinger, Options::kDefault_Linger); // for now this is special and can be null/optional
+        result.fBindFlags               = Memory::NullCoalesce (result.fBindFlags, Options::kDefault_BindFlags);
+        result.fDefaultResponseHeaders  = Memory::NullCoalesce (result.fDefaultResponseHeaders, Options::kDefault_Headers);
+        result.fAutoComputeETagResponse = Memory::NullCoalesce (result.fAutoComputeETagResponse, Options::kDefault_AutoComputeETagResponse);
+        result.fAutomaticTCPDisconnectOnClose =
+            Memory::NullCoalesce (result.fAutomaticTCPDisconnectOnClose, Options::kDefault_AutomaticTCPDisconnectOnClose);
+        result.fLinger = Memory::NullCoalesce (result.fLinger, Options::kDefault_Linger); // for now this is special and can be null/optional
         // result.fThreadPoolName; can remain nullopt
         result.fTCPBacklog = Memory::NullCoalesce (result.fTCPBacklog, ComputeConnectionBacklog_ (result));
 
@@ -121,58 +125,61 @@ namespace {
 }
 
 ConnectionManager::ConnectionManager (const Traversal::Iterable<SocketAddress>& bindAddresses, const Sequence<Route>& routes, const Options& options)
-    : options{
-          [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> const Options& {
-              const ConnectionManager* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &ConnectionManager::options);
-              return thisObj->fEffectiveOptions_;
+    : options{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> const Options& {
+        const ConnectionManager* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &ConnectionManager::options);
+        return thisObj->fEffectiveOptions_;
+    }}
+    , defaultErrorHandler{
+          [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> optional<Interceptor> {
+              const ConnectionManager* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &ConnectionManager::defaultErrorHandler);
+              return thisObj->fDefaultErrorHandler_;
+          },
+          [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, const auto& defaultErrorHandler) {
+              ConnectionManager* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &ConnectionManager::defaultErrorHandler);
+              if (thisObj->fDefaultErrorHandler_ != defaultErrorHandler) {
+                  thisObj->ReplaceInEarlyInterceptor_ (thisObj->fDefaultErrorHandler_.load (), defaultErrorHandler);
+                  thisObj->fDefaultErrorHandler_ = defaultErrorHandler;
+              }
           }}
-    , defaultErrorHandler{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> optional<Interceptor> {
-                              const ConnectionManager* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &ConnectionManager::defaultErrorHandler);
-                              return thisObj->fDefaultErrorHandler_;
-                          },
-                          [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, const auto& defaultErrorHandler) {
-                              ConnectionManager* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &ConnectionManager::defaultErrorHandler);
-                              if (thisObj->fDefaultErrorHandler_ != defaultErrorHandler) {
-                                  thisObj->ReplaceInEarlyInterceptor_ (thisObj->fDefaultErrorHandler_.load (), defaultErrorHandler);
-                                  thisObj->fDefaultErrorHandler_ = defaultErrorHandler;
-                              }
-                          }}
-    , earlyInterceptors{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> Sequence<Interceptor> {
-                            const ConnectionManager* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &ConnectionManager::earlyInterceptors);
-                            return thisObj->fEarlyInterceptors_;
-                        },
-                        [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, const auto& earlyInterceptors) {
-                            ConnectionManager* thisObj   = qStroika_Foundation_Common_Property_OuterObjPtr (property, &ConnectionManager::earlyInterceptors);
-                            thisObj->fEarlyInterceptors_ = earlyInterceptors;
-                            thisObj->FixupInterceptorChain_ ();
-                        }}
-    , beforeInterceptors{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> Sequence<Interceptor> {
-                             const ConnectionManager* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &ConnectionManager::beforeInterceptors);
-                             return thisObj->fBeforeInterceptors_;
-                         },
-                         [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, const auto& beforeInterceptors) {
-                             ConnectionManager* thisObj    = qStroika_Foundation_Common_Property_OuterObjPtr (property, &ConnectionManager::beforeInterceptors);
-                             thisObj->fBeforeInterceptors_ = beforeInterceptors;
-                             thisObj->FixupInterceptorChain_ ();
-                         }}
-    , afterInterceptors{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> Sequence<Interceptor> {
-                            const ConnectionManager* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &ConnectionManager::afterInterceptors);
-                            return thisObj->fAfterInterceptors_;
-                        },
-                        [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, const auto& afterInterceptors_) {
-                            ConnectionManager* thisObj   = qStroika_Foundation_Common_Property_OuterObjPtr (property, &ConnectionManager::afterInterceptors);
-                            thisObj->fAfterInterceptors_ = afterInterceptors_;
-                            thisObj->FixupInterceptorChain_ ();
-                        }}
+    , earlyInterceptors{
+          [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> Sequence<Interceptor> {
+              const ConnectionManager* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &ConnectionManager::earlyInterceptors);
+              return thisObj->fEarlyInterceptors_;
+          },
+          [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, const auto& earlyInterceptors) {
+              ConnectionManager* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &ConnectionManager::earlyInterceptors);
+              thisObj->fEarlyInterceptors_ = earlyInterceptors;
+              thisObj->FixupInterceptorChain_ ();
+          }}
+    , beforeInterceptors{
+          [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> Sequence<Interceptor> {
+              const ConnectionManager* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &ConnectionManager::beforeInterceptors);
+              return thisObj->fBeforeInterceptors_;
+          },
+          [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, const auto& beforeInterceptors) {
+              ConnectionManager* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &ConnectionManager::beforeInterceptors);
+              thisObj->fBeforeInterceptors_ = beforeInterceptors;
+              thisObj->FixupInterceptorChain_ ();
+          }}
+    , afterInterceptors{
+          [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> Sequence<Interceptor> {
+              const ConnectionManager* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &ConnectionManager::afterInterceptors);
+              return thisObj->fAfterInterceptors_;
+          },
+          [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, const auto& afterInterceptors_) {
+              ConnectionManager* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &ConnectionManager::afterInterceptors);
+              thisObj->fAfterInterceptors_ = afterInterceptors_;
+              thisObj->FixupInterceptorChain_ ();
+          }}
     , pConnections{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> Collection<shared_ptr<Connection>> {
         const ConnectionManager* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &ConnectionManager::pConnections);
-        scoped_lock              critSec{thisObj->fActiveConnections_}; // Any place SWAPPING between active and inactive, hold this lock so both lists reamain consistent
+        scoped_lock critSec{thisObj->fActiveConnections_}; // Any place SWAPPING between active and inactive, hold this lock so both lists reamain consistent
         Ensure (Set<shared_ptr<Connection>>{thisObj->fActiveConnections_.load ()}.Intersection (thisObj->GetInactiveConnections_ ()).empty ());
         return thisObj->GetInactiveConnections_ () + thisObj->fActiveConnections_.load ();
     }}
     , pActiveConnections{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> Collection<shared_ptr<Connection>> {
         const ConnectionManager* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &ConnectionManager::pActiveConnections);
-        scoped_lock              critSec{thisObj->fActiveConnections_}; // Any place SWAPPING between active and inactive, hold this lock so both lists reamain consistent
+        scoped_lock critSec{thisObj->fActiveConnections_}; // Any place SWAPPING between active and inactive, hold this lock so both lists reamain consistent
         return thisObj->fActiveConnections_.load ();
     }}
     , fEffectiveOptions_{FillInDefaults_ (options)}
@@ -183,8 +190,10 @@ ConnectionManager::ConnectionManager (const Traversal::Iterable<SocketAddress>& 
     , fRouter_{routes, *fEffectiveOptions_.fCORS}
     , fInterceptorChain_{mkInterceptorChain_ (fRouter_, fEarlyInterceptors_, fBeforeInterceptors_, fAfterInterceptors_)}
     , fActiveConnectionThreads_{*fEffectiveOptions_.fMaxConcurrentlyHandledConnections, fEffectiveOptions_.fThreadPoolName}
-    , fWaitForReadyConnectionThread_{Execution::Thread::CleanupPtr::eAbortBeforeWaiting, Thread::New ([this] () { WaitForReadyConnectionLoop_ (); }, "WebServer-ConnectionMgr-Wait4IOReady"_k)}
-    , fListener_{bindAddresses, *fEffectiveOptions_.fBindFlags, [this] (const ConnectionOrientedStreamSocket::Ptr& s) { onConnect_ (s); }, *fEffectiveOptions_.fTCPBacklog}
+    , fWaitForReadyConnectionThread_{Execution::Thread::CleanupPtr::eAbortBeforeWaiting,
+                                     Thread::New ([this] () { WaitForReadyConnectionLoop_ (); }, "WebServer-ConnectionMgr-Wait4IOReady"_k)}
+    , fListener_{bindAddresses, *fEffectiveOptions_.fBindFlags, [this] (const ConnectionOrientedStreamSocket::Ptr& s) { onConnect_ (s); },
+                 *fEffectiveOptions_.fTCPBacklog}
 {
     // validate fDefaultResponseHeaders contains no bad/inappropriate headers (like Content-Length), probably CORS headers worth a warning as well
     // just a bunch of sanity checks for things you really DONT want to set here for any reason I can think of
@@ -200,30 +209,32 @@ ConnectionManager::ConnectionManager (const Traversal::Iterable<SocketAddress>& 
         WeakAssert (fEffectiveOptions_.fDefaultResponseHeaders->setCookie ().cookieDetails ().empty ());
     }
 
-    DbgTrace (L"Constructing WebServer::ConnectionManager (%p), with threadpoolSize=%d, backlog=%d", this, fActiveConnectionThreads_.GetPoolSize (), ComputeConnectionBacklog_ (options));
+    DbgTrace (L"Constructing WebServer::ConnectionManager (%p), with threadpoolSize=%d, backlog=%d", this,
+              fActiveConnectionThreads_.GetPoolSize (), ComputeConnectionBacklog_ (options));
     fWaitForReadyConnectionThread_.Start (); // start here instead of autostart so a guaranteed initialized before thead main starts - see https://stroika.atlassian.net/browse/STK-706
 }
 
 #if qDefaultTracingOn
-ConnectionManager::~ConnectionManager ()
-{
-    DbgTrace (L"Starting destructor for WebServer::ConnectionManager (%p)", this);
-}
+ConnectionManager::~ConnectionManager () { DbgTrace (L"Starting destructor for WebServer::ConnectionManager (%p)", this); }
 #endif
 
 void ConnectionManager::onConnect_ (const ConnectionOrientedStreamSocket::Ptr& s)
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"ConnectionManager::onConnect_", L"s=%s", Characters::ToString (s).c_str ())};
+    Debug::TraceContextBumper ctx{
+        Stroika_Foundation_Debug_OptionalizeTraceArgs (L"ConnectionManager::onConnect_", L"s=%s", Characters::ToString (s).c_str ())};
 #endif
     s.SetAutomaticTCPDisconnectOnClose (*fEffectiveOptions_.fAutomaticTCPDisconnectOnClose);
     s.SetLinger (fEffectiveOptions_.fLinger); // 'missing' has meaning (feature disabled) for socket, so allow setting that too - doesn't mean don't pass on/use-default
-    shared_ptr<Connection> conn = make_shared<Connection> (s, fInterceptorChain_, *fEffectiveOptions_.fDefaultResponseHeaders, fEffectiveOptions_.fDefaultGETResponseHeaders, *fEffectiveOptions_.fAutoComputeETagResponse);
+    shared_ptr<Connection> conn = make_shared<Connection> (s, fInterceptorChain_, *fEffectiveOptions_.fDefaultResponseHeaders,
+                                                           fEffectiveOptions_.fDefaultGETResponseHeaders, *fEffectiveOptions_.fAutoComputeETagResponse);
     fInactiveSockSetPoller_.Add (conn);
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     {
         scoped_lock critSec{fActiveConnections_}; // Any place SWAPPING between active and inactive, hold this lock so both lists reamain consistent
-        DbgTrace (L"In onConnect_ (after adding connection %s): fActiveConnections_=%s, inactiveOpenConnections_=%s", Characters::ToString (conn).c_str (), Characters::ToString (fActiveConnections_.load ()).c_str (), Characters::ToString (GetInactiveConnections_ ()).c_str ());
+        DbgTrace (L"In onConnect_ (after adding connection %s): fActiveConnections_=%s, inactiveOpenConnections_=%s",
+                  Characters::ToString (conn).c_str (), Characters::ToString (fActiveConnections_.load ()).c_str (),
+                  Characters::ToString (GetInactiveConnections_ ()).c_str ());
     }
 #endif
 }
@@ -242,14 +253,17 @@ void ConnectionManager::WaitForReadyConnectionLoop_ ()
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
             {
                 scoped_lock critSec{fActiveConnections_}; // Any place SWAPPING between active and inactive, hold this lock so both lists reamain consistent
-                DbgTrace (L"At top of WaitForReadyConnectionLoop_: fActiveConnections_=%s, inactiveOpenConnections_=%s", Characters::ToString (fActiveConnections_.cget ().cref ()).c_str (), Characters::ToString (GetInactiveConnections_ ()).c_str ());
+                DbgTrace (L"At top of WaitForReadyConnectionLoop_: fActiveConnections_=%s, inactiveOpenConnections_=%s",
+                          Characters::ToString (fActiveConnections_.cget ().cref ()).c_str (),
+                          Characters::ToString (GetInactiveConnections_ ()).c_str ());
             }
 #endif
             for (shared_ptr<Connection> readyConnection : fInactiveSockSetPoller_.WaitQuietly ()) {
 
                 auto handleActivatedConnection = [this, readyConnection] () mutable {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"ConnectionManager::...processConnectionLoop")};
+                    Debug::TraceContextBumper ctx{
+                        Stroika_Foundation_Debug_OptionalizeTraceArgs (L"ConnectionManager::...processConnectionLoop")};
 #endif
 
                     /*
@@ -283,7 +297,11 @@ void ConnectionManager::WaitForReadyConnectionLoop_ ()
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                     {
                         scoped_lock critSec{fActiveConnections_}; // Any place SWAPPING between active and inactive, hold this lock so both lists reamain consistent
-                        DbgTrace (L"at end of read&process task (keepAlive=%s) for connection %s: fActiveConnections_=%s, inactiveOpenConnections_=%s", Characters::ToString (keepAlive).c_str (), Characters::ToString (readyConnection).c_str (), Characters::ToString (fActiveConnections_.cget ().cref ()).c_str (), Characters::ToString (GetInactiveConnections_ ()).c_str ());
+                        DbgTrace (L"at end of read&process task (keepAlive=%s) for connection %s: fActiveConnections_=%s, "
+                                  L"inactiveOpenConnections_=%s",
+                                  Characters::ToString (keepAlive).c_str (), Characters::ToString (readyConnection).c_str (),
+                                  Characters::ToString (fActiveConnections_.cget ().cref ()).c_str (),
+                                  Characters::ToString (GetInactiveConnections_ ()).c_str ());
                     }
 #endif
                 };
@@ -345,10 +363,7 @@ void ConnectionManager::ReplaceInEarlyInterceptor_ (const optional<Interceptor>&
     FixupInterceptorChain_ ();
 }
 
-void ConnectionManager::AbortConnection (const shared_ptr<Connection>& /*conn*/)
-{
-    AssertNotImplemented ();
-}
+void ConnectionManager::AbortConnection (const shared_ptr<Connection>& /*conn*/) { AssertNotImplemented (); }
 
 void ConnectionManager::AddInterceptor (const Interceptor& i, InterceptorAddRelativeTo relativeTo)
 {

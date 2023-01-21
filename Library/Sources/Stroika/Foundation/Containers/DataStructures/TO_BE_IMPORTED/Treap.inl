@@ -514,9 +514,7 @@ size_t Treap<KEY, VALUE, TRAITS>::CalcNodeHeight (Node* n, size_t height, size_t
         return height;
     }
 
-    size_t newHeight = std::max (
-        CalcNodeHeight (n->fLeft, height + 1, totalHeight),
-        CalcNodeHeight (n->fRight, height + 1, totalHeight));
+    size_t newHeight = std::max (CalcNodeHeight (n->fLeft, height + 1, totalHeight), CalcNodeHeight (n->fRight, height + 1, totalHeight));
 
     return newHeight;
 }

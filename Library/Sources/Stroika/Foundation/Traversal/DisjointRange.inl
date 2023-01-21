@@ -219,21 +219,23 @@ namespace Stroika::Foundation::Traversal {
                 };
 
                 auto findStartI = [this, &rStart] () -> Iterator<RangeType> {
-                    return fSubRanges_.Find ([&rStart] (const RangeType& r) -> bool { return r.GetLowerBound () >= rStart or r.Contains (rStart); });
+                    return fSubRanges_.Find (
+                        [&rStart] (const RangeType& r) -> bool { return r.GetLowerBound () >= rStart or r.Contains (rStart); });
                 };
 
                 Iterator<RangeType> startI = findStartI ();
                 bool                extendedRange{false};
                 if (startI == fSubRanges_.end ()) {
                     if (sNoisyDebugTrace_) {
-                        DbgTrace ("Appending subrange cuz this is past the rest: %f/%f",
-                                  static_cast<double> (r.GetLowerBound ()), static_cast<double> (r.GetUpperBound ()));
+                        DbgTrace ("Appending subrange cuz this is past the rest: %f/%f", static_cast<double> (r.GetLowerBound ()),
+                                  static_cast<double> (r.GetUpperBound ()));
                     }
                     // cuz this means no ranges to the right containing rStart
                     //
                     // when appending, we can sometimes extend the last item
                     value_type          prevVal = RangeType::TraitsType::GetPrevious (rStart);
-                    Iterator<RangeType> i       = fSubRanges_.Find ([prevVal] (const RangeType& r) -> bool { return r.GetUpperBound () == prevVal; });
+                    Iterator<RangeType> i =
+                        fSubRanges_.Find ([prevVal] (const RangeType& r) -> bool { return r.GetUpperBound () == prevVal; });
                     if (i) {
                         Assert (i->GetUpperBound () == prevVal);
                         RangeType newValue{i->GetLowerBound (), rStart};
@@ -247,8 +249,7 @@ namespace Stroika::Foundation::Traversal {
                 else if (r.Intersects (*startI)) {
                     RangeType newValue{min (rStart, startI->GetLowerBound ()), startI->GetUpperBound ()};
                     if (sNoisyDebugTrace_) {
-                        DbgTrace ("Updating subrange element %d from %f/%f to %f/%f",
-                                  fSubRanges_.IndexOf (startI),
+                        DbgTrace ("Updating subrange element %d from %f/%f to %f/%f", fSubRanges_.IndexOf (startI),
                                   static_cast<double> (startI->GetLowerBound ()), static_cast<double> (startI->GetUpperBound ()),
                                   static_cast<double> (newValue.GetLowerBound ()), static_cast<double> (newValue.GetUpperBound ()));
                     }
@@ -259,8 +260,7 @@ namespace Stroika::Foundation::Traversal {
                 }
                 else {
                     if (sNoisyDebugTrace_) {
-                        DbgTrace ("Inserting subrange element %d before %f/%f of %f/%f",
-                                  fSubRanges_.IndexOf (startI),
+                        DbgTrace ("Inserting subrange element %d before %f/%f of %f/%f", fSubRanges_.IndexOf (startI),
                                   static_cast<double> (startI->GetLowerBound ()), static_cast<double> (startI->GetUpperBound ()),
                                   static_cast<double> (r.GetLowerBound ()), static_cast<double> (r.GetUpperBound ()));
                     }
@@ -272,7 +272,8 @@ namespace Stroika::Foundation::Traversal {
                 /*
                  *  Next adjust RHS of rhs-most element.
                  */
-                Iterator<RangeType> endI = prevOfIterator (fSubRanges_.Find (startI, [rEnd] (const RangeType& r) -> bool { return rEnd < r.GetLowerBound (); }));
+                Iterator<RangeType> endI =
+                    prevOfIterator (fSubRanges_.Find (startI, [rEnd] (const RangeType& r) -> bool { return rEnd < r.GetLowerBound (); }));
                 if (endI == fSubRanges_.end ()) {
                     endI = prevOfIterator (fSubRanges_.end ());
                 }
@@ -281,8 +282,7 @@ namespace Stroika::Foundation::Traversal {
                     RangeType newValue{endI->GetLowerBound (), max (rEnd, endI->GetUpperBound ())};
                     if (newValue != *endI) {
                         if (sNoisyDebugTrace_) {
-                            DbgTrace ("Updating RHS of subrange element %d from %f/%f to %f/%f",
-                                      fSubRanges_.IndexOf (endI),
+                            DbgTrace ("Updating RHS of subrange element %d from %f/%f to %f/%f", fSubRanges_.IndexOf (endI),
                                       static_cast<double> (endI->GetLowerBound ()), static_cast<double> (endI->GetUpperBound ()),
                                       static_cast<double> (newValue.GetLowerBound ()), static_cast<double> (newValue.GetUpperBound ()));
                         }
@@ -292,8 +292,8 @@ namespace Stroika::Foundation::Traversal {
                 }
                 else {
                     if (sNoisyDebugTrace_) {
-                        DbgTrace ("Appending RHS subrange element %f/%f",
-                                  static_cast<double> (r.GetLowerBound ()), static_cast<double> (r.GetUpperBound ()));
+                        DbgTrace ("Appending RHS subrange element %f/%f", static_cast<double> (r.GetLowerBound ()),
+                                  static_cast<double> (r.GetUpperBound ()));
                     }
                     fSubRanges_.Append (r);
                 }
@@ -302,7 +302,8 @@ namespace Stroika::Foundation::Traversal {
 
                 // hack cuz endI invalidated - REALLY must rewrite this algorithm given new rules for iterator patching / invalidation!!!
                 {
-                    endI = prevOfIterator (fSubRanges_.Find (startI, [rEnd] (const RangeType& r) -> bool { return rEnd < r.GetLowerBound (); }));
+                    endI =
+                        prevOfIterator (fSubRanges_.Find (startI, [rEnd] (const RangeType& r) -> bool { return rEnd < r.GetLowerBound (); }));
                     if (endI == fSubRanges_.end ()) {
                         endI = prevOfIterator (fSubRanges_.end ());
                     }
@@ -315,8 +316,7 @@ namespace Stroika::Foundation::Traversal {
                     for (auto i = startI; i != endI and i != fSubRanges_.end ();) {
                         if (i != startI and i != endI) {
                             if (sNoisyDebugTrace_) {
-                                DbgTrace ("Removing redundant subrange element %d from %f/%f to %f/%f",
-                                          fSubRanges_.IndexOf (i),
+                                DbgTrace ("Removing redundant subrange element %d from %f/%f to %f/%f", fSubRanges_.IndexOf (i),
                                           static_cast<double> (i->GetLowerBound ()), static_cast<double> (i->GetUpperBound ()));
                             }
                             i = fSubRanges_.erase (i);

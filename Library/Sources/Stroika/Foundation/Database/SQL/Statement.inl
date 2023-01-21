@@ -84,7 +84,8 @@ namespace Stroika::Foundation::Database::SQL {
         Reset ();
         return GetAllRemainingRows (restrictToColumn1, restrictToColumn2);
     }
-    inline Sequence<tuple<VariantValue, VariantValue, VariantValue>> Statement::GetAllRows (size_t restrictToColumn1, size_t restrictToColumn2, size_t restrictToColumn3)
+    inline Sequence<tuple<VariantValue, VariantValue, VariantValue>> Statement::GetAllRows (size_t restrictToColumn1,
+                                                                                            size_t restrictToColumn2, size_t restrictToColumn3)
     {
         AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
         Reset ();

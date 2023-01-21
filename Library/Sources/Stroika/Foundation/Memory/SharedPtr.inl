@@ -133,14 +133,8 @@ namespace Stroika::Foundation::Memory {
                 swap (fPtr_, rhs.fPtr_);
                 swap (fCountHolder_, rhs.fCountHolder_);
             }
-            inline T* GetPtr () const noexcept
-            {
-                return fPtr_;
-            }
-            inline void SetPtr (T* p) noexcept
-            {
-                fPtr_ = p;
-            }
+            inline T*                                GetPtr () const noexcept { return fPtr_; }
+            inline void                              SetPtr (T* p) noexcept { fPtr_ = p; }
             inline SharedPtrBase::ReferenceCountType CurrentRefCount () const noexcept
             {
                 return fCountHolder_ == nullptr ? 0 : fCountHolder_->fCount.load ();
@@ -255,7 +249,8 @@ namespace Stroika::Foundation::Memory {
     }
     template <typename T>
     template <typename T2>
-    inline typename SharedPtr<T>::Envelope_ SharedPtr<T>::mkEnvelope_ (T2* from, enable_if_t<is_convertible_v<T2*, Private_::ReferenceCounterContainerType_*>>*)
+    inline typename SharedPtr<T>::Envelope_
+    SharedPtr<T>::mkEnvelope_ (T2* from, enable_if_t<is_convertible_v<T2*, Private_::ReferenceCounterContainerType_*>>*)
     {
         if (from == nullptr) {
             return Envelope_{nullptr, nullptr};
@@ -266,7 +261,8 @@ namespace Stroika::Foundation::Memory {
     }
     template <typename T>
     template <typename T2>
-    typename SharedPtr<T>::Envelope_ SharedPtr<T>::mkEnvelope_ (T2* from, enable_if_t<!is_convertible_v<T2*, Private_::ReferenceCounterContainerType_*>>*)
+    typename SharedPtr<T>::Envelope_ SharedPtr<T>::mkEnvelope_ (T2* from,
+                                                                enable_if_t<!is_convertible_v<T2*, Private_::ReferenceCounterContainerType_*>>*)
     {
         return Envelope_{from, from == nullptr ? nullptr : ManuallyBlockAllocated<Private_::ReferenceCounterContainerType_>::New ()};
     }

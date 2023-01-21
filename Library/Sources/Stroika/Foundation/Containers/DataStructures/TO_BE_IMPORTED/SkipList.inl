@@ -399,8 +399,7 @@ void SkipList<KEY, VALUE, TRAITS>::ListAll () const
         std::cout << n->fEntry.GetValue () << " (" << n->fNext.size () << "), ";
         n = n->fNext[0];
     }
-    std::cout << std::endl
-              << std::flush;
+    std::cout << std::endl << std::flush;
 }
 
 template <typename KEY, typename VALUE, typename TRAITS>

@@ -29,12 +29,12 @@ const Led_ClipFormat Led::kLedPrivateClipFormat = 'LedP';
 const Led_ClipFormat Led::kRTFClipFormat        = 'RTF ';
 const Led_ClipFormat Led::kHTMLClipFormat       = 'HTML';
 #elif qPlatform_Windows
-const TCHAR                                kLedPrivateClipTypeName[]                   = _T ("Led Rich Text Format");
-const Led_ClipFormat                       Led::kLedPrivateClipFormat                  = static_cast<Led_ClipFormat> (::RegisterClipboardFormat (kLedPrivateClipTypeName));
-const TCHAR                                kRTFClipTypeName[]                          = _T ("Rich Text Format");
-const Led_ClipFormat                       Led::kRTFClipFormat                         = static_cast<Led_ClipFormat> (::RegisterClipboardFormat (kRTFClipTypeName));
-const TCHAR                                kHTMLClipTypeName[]                         = _T ("HTML"); /// MAYBE A BAD NAME - SEE IF ANY WINDOWS STANDARD NAME???
-const Led_ClipFormat                       Led::kHTMLClipFormat                        = static_cast<Led_ClipFormat> (::RegisterClipboardFormat (kHTMLClipTypeName));
+const TCHAR          kLedPrivateClipTypeName[]  = _T ("Led Rich Text Format");
+const Led_ClipFormat Led::kLedPrivateClipFormat = static_cast<Led_ClipFormat> (::RegisterClipboardFormat (kLedPrivateClipTypeName));
+const TCHAR          kRTFClipTypeName[]         = _T ("Rich Text Format");
+const Led_ClipFormat Led::kRTFClipFormat        = static_cast<Led_ClipFormat> (::RegisterClipboardFormat (kRTFClipTypeName));
+const TCHAR          kHTMLClipTypeName[]        = _T ("HTML"); /// MAYBE A BAD NAME - SEE IF ANY WINDOWS STANDARD NAME???
+const Led_ClipFormat Led::kHTMLClipFormat       = static_cast<Led_ClipFormat> (::RegisterClipboardFormat (kHTMLClipTypeName));
 #elif qStroika_FeatureSupported_XWindows
 // Toolkit-specific code (e.g. Led_Gtk<>) must reset these to good values. Cannot be constants
 // and cannot be filled in here, cuz we require a DISPLAY object to register the contants on.
@@ -101,9 +101,7 @@ void StandardStyledTextInteractor::HookGainedNewTextStore ()
     HookGainedNewTextStore_ ();
 }
 
-void StandardStyledTextInteractor::HookGainedNewTextStore_ ()
-{
-}
+void StandardStyledTextInteractor::HookGainedNewTextStore_ () {}
 
 /*
 @METHOD:        StandardStyledTextInteractor::SetDefaultFont
@@ -401,10 +399,7 @@ void StandardStyledTextInteractor::SetSelection_ ([[maybe_unused]] size_t start,
     in order to implement the usual semantics of a font / style menu.</p>
         <p>See @'StandardStyledTextInteractor::SetEmptySelectionStyle'.</p>
 */
-FontSpecification StandardStyledTextInteractor::GetEmptySelectionStyle () const
-{
-    return fEmptySelectionStyle;
-}
+FontSpecification StandardStyledTextInteractor::GetEmptySelectionStyle () const { return fEmptySelectionStyle; }
 
 /*
 @METHOD:        StandardStyledTextInteractor::SetEmptySelectionStyle_OVLD
@@ -495,7 +490,8 @@ vector<SimpleEmbeddedObjectStyleMarker*> StandardStyledTextInteractor::CollectAl
     return result.fResult;
 }
 
-InteractiveReplaceCommand::SavedTextRep* StandardStyledTextInteractor::InteractiveUndoHelperMakeTextRep (size_t regionStart, size_t regionEnd, size_t selStart, size_t selEnd)
+InteractiveReplaceCommand::SavedTextRep* StandardStyledTextInteractor::InteractiveUndoHelperMakeTextRep (size_t regionStart, size_t regionEnd,
+                                                                                                         size_t selStart, size_t selEnd)
 {
     if (regionStart == regionEnd) {
         // optimization, cuz these are smaller
@@ -512,10 +508,8 @@ InteractiveReplaceCommand::SavedTextRep* StandardStyledTextInteractor::Interacti
  ********************************************************************************
  */
 using StandardStyledTextIOSinkStream = StandardStyledTextInteractor::StandardStyledTextIOSinkStream;
-StandardStyledTextIOSinkStream::StandardStyledTextIOSinkStream (
-    TextStore*                                        textStore,
-    const StandardStyledTextImager::StyleDatabasePtr& textStyleDatabase,
-    size_t                                            insertionStart)
+StandardStyledTextIOSinkStream::StandardStyledTextIOSinkStream (TextStore* textStore, const StandardStyledTextImager::StyleDatabasePtr& textStyleDatabase,
+                                                                size_t insertionStart)
     : inherited ()
     , fSavedContexts ()
     , fTextStore (textStore)
@@ -539,10 +533,7 @@ StandardStyledTextIOSinkStream::~StandardStyledTextIOSinkStream ()
     }
 }
 
-size_t StandardStyledTextIOSinkStream::current_offset () const
-{
-    return (fInsertionStart - fOriginalStart);
-}
+size_t StandardStyledTextIOSinkStream::current_offset () const { return (fInsertionStart - fOriginalStart); }
 
 void StandardStyledTextIOSinkStream::AppendText (const Led_tChar* text, size_t nTChars, const FontSpecification* fontSpec)
 {
@@ -582,10 +573,7 @@ void StandardStyledTextIOSinkStream::ApplyStyle (size_t from, size_t to, const v
     fStyleRunDatabase->SetStyleInfo (fOriginalStart + from, to - from, styleRuns);
 }
 
-FontSpecification StandardStyledTextIOSinkStream::GetDefaultFontSpec () const
-{
-    return TextImager::GetStaticDefaultFont ();
-}
+FontSpecification StandardStyledTextIOSinkStream::GetDefaultFontSpec () const { return TextImager::GetStaticDefaultFont (); }
 
 void StandardStyledTextIOSinkStream::InsertEmbeddingForExistingSentinal (SimpleEmbeddedObjectStyleMarker* embedding, size_t at)
 {
@@ -651,9 +639,7 @@ void StandardStyledTextIOSinkStream::Flush ()
     Ensure (fSavedStyleInfo.size () == 0);
 }
 
-void StandardStyledTextIOSinkStream::PushContext (TextStore*                                        ts,
-                                                  const StandardStyledTextImager::StyleDatabasePtr& textStyleDatabase,
-                                                  size_t                                            insertionStart)
+void StandardStyledTextIOSinkStream::PushContext (TextStore* ts, const StandardStyledTextImager::StyleDatabasePtr& textStyleDatabase, size_t insertionStart)
 {
     Require (GetCachedTextSize () == 0); // must flush before setting/popping context
 
@@ -686,10 +672,8 @@ void StandardStyledTextIOSinkStream::PopContext ()
  ********************************************************************************
  */
 using StandardStyledTextIOSrcStream = StandardStyledTextInteractor::StandardStyledTextIOSrcStream;
-StandardStyledTextIOSrcStream::StandardStyledTextIOSrcStream (
-    TextStore*                                        textStore,
-    const StandardStyledTextImager::StyleDatabasePtr& textStyleDatabase,
-    size_t selectionStart, size_t selectionEnd)
+StandardStyledTextIOSrcStream::StandardStyledTextIOSrcStream (TextStore* textStore, const StandardStyledTextImager::StyleDatabasePtr& textStyleDatabase,
+                                                              size_t selectionStart, size_t selectionEnd)
     : inherited ()
     , fTextStore (textStore)
     , fStyleRunDatabase (textStyleDatabase)
@@ -730,10 +714,7 @@ size_t StandardStyledTextIOSrcStream::readNTChars (Led_tChar* intoBuf, size_t ma
     return (bytesToRead);
 }
 
-size_t StandardStyledTextIOSrcStream::current_offset () const
-{
-    return (fCurOffset - fSelStart);
-}
+size_t StandardStyledTextIOSrcStream::current_offset () const { return (fCurOffset - fSelStart); }
 
 void StandardStyledTextIOSrcStream::seek_to (size_t to)
 {
@@ -779,10 +760,7 @@ vector<SimpleEmbeddedObjectStyleMarker*> StandardStyledTextIOSrcStream::CollectA
     return result.fResult;
 }
 
-StandardStyledTextIOSrcStream::Table* StandardStyledTextIOSrcStream::GetTableAt (size_t /*at*/) const
-{
-    return nullptr;
-}
+StandardStyledTextIOSrcStream::Table* StandardStyledTextIOSrcStream::GetTableAt (size_t /*at*/) const { return nullptr; }
 
 void StandardStyledTextIOSrcStream::SummarizeFontAndColorTable (set<SDKString>* fontNames, set<Color>* colorsUsed) const
 {
@@ -804,10 +782,7 @@ void StandardStyledTextIOSrcStream::SummarizeFontAndColorTable (set<SDKString>* 
     }
 }
 
-size_t StandardStyledTextIOSrcStream::GetEmbeddingMarkerPosOffset () const
-{
-    return (fSelStart);
-}
+size_t StandardStyledTextIOSrcStream::GetEmbeddingMarkerPosOffset () const { return (fSelStart); }
 
 /*
  ********************************************************************************
@@ -827,8 +802,7 @@ void StyledTextFlavorPackageInternalizer::InternalizeFlavor_FILEGuessFormatsFrom
 #elif qPlatform_Windows || qStroika_FeatureSupported_XWindows
     const Characters::SDKChar* fileName,
 #endif
-    Led_ClipFormat* suggestedClipFormat,
-    CodePage*       suggestedCodePage)
+    Led_ClipFormat* suggestedClipFormat, CodePage* suggestedCodePage)
 {
     inherited::InternalizeFlavor_FILEGuessFormatsFromName (fileName, suggestedClipFormat, suggestedCodePage);
 
@@ -858,10 +832,8 @@ void StyledTextFlavorPackageInternalizer::InternalizeFlavor_FILEGuessFormatsFrom
 #endif
 }
 
-void StyledTextFlavorPackageInternalizer::InternalizeFlavor_FILEGuessFormatsFromStartOfData (
-    Led_ClipFormat* suggestedClipFormat,
-    CodePage*       suggestedCodePage,
-    const byte* fileStart, const byte* fileEnd)
+void StyledTextFlavorPackageInternalizer::InternalizeFlavor_FILEGuessFormatsFromStartOfData (Led_ClipFormat* suggestedClipFormat, CodePage* suggestedCodePage,
+                                                                                             const byte* fileStart, const byte* fileEnd)
 {
     inherited::InternalizeFlavor_FILEGuessFormatsFromStartOfData (suggestedClipFormat, suggestedCodePage, fileStart, fileEnd);
     if (suggestedClipFormat != nullptr) {
@@ -898,8 +870,7 @@ void StyledTextFlavorPackageInternalizer::InternalizeFlavor_FILEGuessFormatsFrom
     }
 }
 
-bool StyledTextFlavorPackageInternalizer::InternalizeBestFlavor (ReaderFlavorPackage& flavorPackage,
-                                                                 size_t from, size_t to)
+bool StyledTextFlavorPackageInternalizer::InternalizeBestFlavor (ReaderFlavorPackage& flavorPackage, size_t from, size_t to)
 {
     Require (from <= GetTextStore ().GetEnd ());
     Require (to <= GetTextStore ().GetEnd ());
@@ -960,7 +931,7 @@ bool StyledTextFlavorPackageInternalizer::InternalizeFlavor_STYLAndTEXT (ReaderF
             Assert (newSel.GetStart () >= pasteStart + 1);
             size_t pasteEndXXX = newSel.GetStart () - 1;
             Assert (pasteEndXXX >= pasteStart);
-            StScrpRec*                styleRecords = reinterpret_cast<StScrpRec*> (static_cast<char*> (buf));
+            StScrpRec* styleRecords = reinterpret_cast<StScrpRec*> (static_cast<char*> (buf));
             vector<InfoSummaryRecord> ledStyleInfo = StandardStyledTextImager::Convert (styleRecords->scrpStyleTab, styleRecords->scrpNStyles);
             fStyleDatabase->SetStyleInfo (pasteStart, pasteEndXXX - pasteStart, ledStyleInfo);
         }
@@ -1213,7 +1184,8 @@ void StyledTextFlavorPackageExternalizer::ExternalizeFlavor_RTF (WriterFlavorPac
     flavorPackage.AddFlavorData (kRTFClipFormat, sink.GetLength (), sink.PeekAtData ());
 }
 
-void StyledTextFlavorPackageExternalizer::ExternalizeFlavor_SingleSelectedEmbedding (WriterFlavorPackage& flavorPackage, SimpleEmbeddedObjectStyleMarker* embedding)
+void StyledTextFlavorPackageExternalizer::ExternalizeFlavor_SingleSelectedEmbedding (WriterFlavorPackage&             flavorPackage,
+                                                                                     SimpleEmbeddedObjectStyleMarker* embedding)
 {
     RequireNotNull (embedding);
     embedding->ExternalizeFlavors (flavorPackage);
@@ -1225,7 +1197,8 @@ void StyledTextFlavorPackageExternalizer::ExternalizeFlavor_SingleSelectedEmbedd
     @'StandardStyledTextInteractor::StyledTextFlavorPackageExternalizer' can use a dynamicly typed
     SinkStream. So - for example - the internalize methods include paragraph info.</p>
 */
-StandardStyledTextInteractor::StandardStyledTextIOSrcStream* StyledTextFlavorPackageExternalizer::mkStandardStyledTextIOSrcStream (size_t selectionStart, size_t selectionEnd)
+StandardStyledTextInteractor::StandardStyledTextIOSrcStream*
+StyledTextFlavorPackageExternalizer::mkStandardStyledTextIOSrcStream (size_t selectionStart, size_t selectionEnd)
 {
     return new StandardStyledTextIOSrcStream (PeekAtTextStore (), fStyleDatabase, selectionStart, selectionEnd);
 }
@@ -1243,10 +1216,7 @@ EmptySelStyleTextRep::EmptySelStyleTextRep (StandardStyledTextInteractor* intera
 {
 }
 
-size_t EmptySelStyleTextRep::GetLength () const
-{
-    return 0;
-}
+size_t EmptySelStyleTextRep::GetLength () const { return 0; }
 
 void EmptySelStyleTextRep::InsertSelf (TextInteractor* interactor, size_t at, size_t nBytesToOverwrite)
 {

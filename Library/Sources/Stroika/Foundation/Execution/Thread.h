@@ -249,7 +249,9 @@ namespace Stroika::Foundation::Execution {
         /**
          * optional flag for constructing new threads
          */
-        enum AutoStartFlag { eAutoStart };
+        enum AutoStartFlag {
+            eAutoStart
+        };
 
         /**
          *  Configuration::DefaultNames<> is defined for this enumeration.
@@ -929,10 +931,12 @@ namespace Stroika::Foundation::Execution {
          *          t.WaitForDone ();
          *      \endcode
          */
-        Ptr New (const function<void ()>& fun2CallOnce, const optional<Characters::String>& name = nullopt, const optional<Configuration>& configuration = nullopt);
+        Ptr New (const function<void ()>& fun2CallOnce, const optional<Characters::String>& name = nullopt,
+                 const optional<Configuration>& configuration = nullopt);
         Ptr New (const function<void ()>& fun2CallOnce, const Characters::String& name, const optional<Configuration>& configuration = nullopt);
         Ptr New (const function<void ()>& fun2CallOnce, const optional<Configuration>& configuration);
-        Ptr New (const function<void ()>& fun2CallOnce, AutoStartFlag, const optional<Characters::String>& name = nullopt, const optional<Configuration>& configuration = nullopt);
+        Ptr New (const function<void ()>& fun2CallOnce, AutoStartFlag, const optional<Characters::String>& name = nullopt,
+                 const optional<Configuration>& configuration = nullopt);
         Ptr New (const function<void ()>& fun2CallOnce, AutoStartFlag, const optional<Configuration>& configuration);
 
         /**

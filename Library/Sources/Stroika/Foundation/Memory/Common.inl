@@ -91,7 +91,8 @@ namespace Stroika::Foundation::Memory {
                  * "If the expressions P and Q point to, respectively, elements x[i] and x[j] of 
                  * the same array object x, the expression P - Q has the value i - j; otherwise, the behavior is undefined."]
                  */
-                return size_t (&(OffsetOfRequiringDefaultConstructibleObjectType_<T1, T2>::sObj_.*member)) - size_t (&OffsetOfRequiringDefaultConstructibleObjectType_<T1, T2>::sObj_);
+                return size_t (&(OffsetOfRequiringDefaultConstructibleObjectType_<T1, T2>::sObj_.*member)) -
+                       size_t (&OffsetOfRequiringDefaultConstructibleObjectType_<T1, T2>::sObj_);
             }
         };
     }
@@ -121,8 +122,8 @@ namespace Stroika::Foundation::Memory {
         // Still not totally legal for non-std-layout classes, but seems to work, and I haven't found a better way
         //      --LGP 2021-05-27
         alignas (OWNING_OBJECT) std::byte buf[sizeof (OWNING_OBJECT)]{};
-        const OWNING_OBJECT&              o      = *reinterpret_cast<const OWNING_OBJECT*> (&buf);
-        auto                              result = size_t (reinterpret_cast<const char*> (&(o.*member)) - reinterpret_cast<const char*> (&o));
+        const OWNING_OBJECT&              o = *reinterpret_cast<const OWNING_OBJECT*> (&buf);
+        auto result                         = size_t (reinterpret_cast<const char*> (&(o.*member)) - reinterpret_cast<const char*> (&o));
 #endif
         // Avoid #include - Ensure (result <= sizeof (OWNING_OBJECT));
         return result;

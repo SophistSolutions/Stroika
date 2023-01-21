@@ -84,7 +84,8 @@ struct Logger::Rep_ : enable_shared_from_this<Logger::Rep_> {
         if (not lastMsgsLocked->empty ()) {
             Time::Duration suppressDuplicatesThreshold = fSuppressDuplicatesThreshold_.cget ()->value_or (0s);
             for (auto i = lastMsgsLocked->begin (); i != lastMsgsLocked->end ();) {
-                bool writeThisOne = forceEvenIfNotOutOfDate or i->fValue.fLastSentAt + suppressDuplicatesThreshold.As<DurationSecondsType> () < Time::GetTickCount ();
+                bool writeThisOne = forceEvenIfNotOutOfDate or
+                                    i->fValue.fLastSentAt + suppressDuplicatesThreshold.As<DurationSecondsType> () < Time::GetTickCount ();
                 if (writeThisOne) {
                     switch (i->fValue.fRepeatCount_) {
                         case 0:
@@ -93,7 +94,8 @@ struct Logger::Rep_ : enable_shared_from_this<Logger::Rep_> {
                             tmp->Log (i->fKey.first, i->fKey.second);
                             break;
                         default:
-                            tmp->Log (i->fKey.first, Characters::Format (L"[%d duplicates suppressed]: %s", i->fValue.fRepeatCount_ - 1, i->fKey.second.As<wstring> ().c_str ()));
+                            tmp->Log (i->fKey.first, Characters::Format (L"[%d duplicates suppressed]: %s", i->fValue.fRepeatCount_ - 1,
+                                                                         i->fKey.second.As<wstring> ().c_str ()));
                             break;
                     }
                     lastMsgsLocked->Remove (i, &i);
@@ -163,7 +165,7 @@ struct Logger::Rep_ : enable_shared_from_this<Logger::Rep_> {
                         Debug::TraceContextBumper ctx1{"Logger::Rep_::UpdateBookkeepingThread_... internal thread/2"};
                         while (true) {
                             AssertNotNull (useRepInThread);
-                            auto                     p   = useRepInThread->fOutMsgQ_.RemoveHead ();
+                            auto p = useRepInThread->fOutMsgQ_.RemoveHead ();
                             shared_ptr<IAppenderRep> tmp = useRepInThread->fAppender_; // avoid races and critical sections (between check and invoke)
                             if (tmp != nullptr) {
                                 tmp->Log (p.first, p.second);
@@ -311,7 +313,8 @@ optional<Time::Duration> Logger::GetSuppressDuplicates () const
 
 void Logger::SetSuppressDuplicates (const optional<Duration>& suppressDuplicatesThreshold)
 {
-    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"Logger::SetSuppressDuplicates", L"suppressDuplicatesThreshold=%s", Characters::ToString (suppressDuplicatesThreshold).c_str ())};
+    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (
+        L"Logger::SetSuppressDuplicates", L"suppressDuplicatesThreshold=%s", Characters::ToString (suppressDuplicatesThreshold).c_str ())};
     Require (not suppressDuplicatesThreshold.has_value () or *suppressDuplicatesThreshold > 0.0s);
     RequireNotNull (fRep_); // not destroyed
     [[maybe_unused]] auto&& critSec = lock_guard{fRep_->fSuppressDuplicatesThreshold_};
@@ -348,9 +351,11 @@ void Logger::LogIfNew (Priority logLevel, const Time::Duration& suppressionTimeW
     va_start (argsList, format);
     String msg = Characters::FormatV (format, argsList);
     va_end (argsList);
-    DbgTrace (L"Logger::LogIfNew (%s, %s, \"%s\")", Characters::ToString (logLevel).c_str (), Characters::ToString (suppressionTimeWindow).c_str (), msg.c_str ());
+    DbgTrace (L"Logger::LogIfNew (%s, %s, \"%s\")", Characters::ToString (logLevel).c_str (),
+              Characters::ToString (suppressionTimeWindow).c_str (), msg.c_str ());
     if (WouldLog (logLevel)) {
-        if (fRep_->fMsgSentMaybeSuppressed_.LookupValue (pair<Priority, String>{logLevel, msg}, CacheType::Ago (suppressionTimeWindow.As<DurationSecondsType> ()), false)) {
+        if (fRep_->fMsgSentMaybeSuppressed_.LookupValue (pair<Priority, String>{logLevel, msg},
+                                                         CacheType::Ago (suppressionTimeWindow.As<DurationSecondsType> ()), false)) {
             DbgTrace (L"...suppressed by fMsgSentMaybeSuppressed_->Lookup ()");
         }
         else {
@@ -393,10 +398,7 @@ Logger::SysLogAppender::SysLogAppender (const String& applicationName, int facil
     ::openlog (fApplicationName_.c_str (), 0, facility);
 }
 
-Logger::SysLogAppender::~SysLogAppender ()
-{
-    ::closelog ();
-}
+Logger::SysLogAppender::~SysLogAppender () { ::closelog (); }
 
 void Logger::SysLogAppender::Log (Priority logLevel, const String& message)
 {
@@ -450,7 +452,8 @@ public:
     void Log (Priority logLevel, const String& message)
     {
         //@todo tmphack - write date and write logLevel??? and use TextStream API that does \r or \r\n as appropriate
-        fWriter_.rwget ()->Write (Characters::Format (L"[%5s][%16s] %s\n", Configuration::DefaultNames<Logger::Priority>{}.GetName (logLevel), Time::DateTime::Now ().Format ().c_str (), message.As<wstring> ().c_str ()));
+        fWriter_.rwget ()->Write (Characters::Format (L"[%5s][%16s] %s\n", Configuration::DefaultNames<Logger::Priority>{}.GetName (logLevel),
+                                                      Time::DateTime::Now ().Format ().c_str (), message.As<wstring> ().c_str ()));
     }
 
 private:
@@ -467,10 +470,7 @@ Logger::StreamAppender::StreamAppender (const Streams::OutputStream<Characters::
 {
 }
 
-void Logger::StreamAppender::Log (Priority logLevel, const String& message)
-{
-    fRep_->Log (logLevel, message);
-}
+void Logger::StreamAppender::Log (Priority logLevel, const String& message) { fRep_->Log (logLevel, message); }
 
 /*
  ********************************************************************************
@@ -485,10 +485,7 @@ public:
         : fOut_ (StreamAppender (FileOutputStream::New (fileName, truncateOnOpen ? FileOutputStream::eStartFromStart : FileOutputStream::eAppend)))
     {
     }
-    void Log (Priority logLevel, const String& message)
-    {
-        fOut_.Log (logLevel, message);
-    }
+    void Log (Priority logLevel, const String& message) { fOut_.Log (logLevel, message); }
 
 private:
     StreamAppender fOut_; // no need to synchronize since our Logger::StreamAppender class is internally synchronized
@@ -499,10 +496,7 @@ Logger::FileAppender::FileAppender (const filesystem::path& fileName, bool trunc
 {
 }
 
-void Logger::FileAppender::Log (Priority logLevel, const String& message)
-{
-    fRep_->Log (logLevel, message);
-}
+void Logger::FileAppender::Log (Priority logLevel, const String& message) { fRep_->Log (logLevel, message); }
 
 #if qPlatform_Windows
 /*
@@ -555,16 +549,7 @@ void Logger::WindowsEventLogAppender::Log (Priority logLevel, const String& mess
     [[maybe_unused]] auto&&    cleanup = Execution::Finally ([hEventSource] () { Verify (::DeregisterEventSource (hEventSource)); });
     SDKString                  tmp     = message.AsSDKString ();
     const Characters::SDKChar* msg     = tmp.c_str ();
-    Verify (::ReportEvent (
-        hEventSource,
-        eventType,
-        eventCategoryID,
-        kEventID,
-        NULL,
-        (WORD)1,
-        0,
-        &msg,
-        NULL));
+    Verify (::ReportEvent (hEventSource, eventType, eventCategoryID, kEventID, NULL, (WORD)1, 0, &msg, NULL));
 }
 #endif
 

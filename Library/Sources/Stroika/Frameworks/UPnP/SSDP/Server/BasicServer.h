@@ -49,7 +49,8 @@ namespace Stroika::Frameworks::UPnP::SSDP::Server {
          *  see IO::Network::GetPrimaryInternetAddress () - when the server broadcasts it
          */
         BasicServer (const BasicServer&) = delete;
-        BasicServer (const Device& d, const DeviceDescription& dd, const FrequencyInfo& fi = FrequencyInfo{}, IO::Network::InternetProtocol::IP::IPVersionSupport ipVersion = IO::Network::InternetProtocol::IP::IPVersionSupport::eDEFAULT);
+        BasicServer (const Device& d, const DeviceDescription& dd, const FrequencyInfo& fi = FrequencyInfo{},
+                     IO::Network::InternetProtocol::IP::IPVersionSupport ipVersion = IO::Network::InternetProtocol::IP::IPVersionSupport::eDEFAULT);
         const BasicServer& operator= (const BasicServer&) = delete;
 
     private:

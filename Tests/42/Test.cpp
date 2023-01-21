@@ -28,7 +28,7 @@ using namespace Stroika::Foundation::Execution;
 
 // must be tested before main, so cannot call directly below
 namespace {
-    int        TestAtomicInitializedCoorectly_ ();
+    int TestAtomicInitializedCoorectly_ ();
     static int sIgnoredTestValue_ = TestAtomicInitializedCoorectly_ (); // if using static constructors, this will be called before sAtomicBoolNotInitializedTilAfterStaticInitizers_
 
     atomic<bool> sAtomicBoolNotInitializedTilAfterStaticInitizers_{true}; // for calls before start of or after end of main ()
@@ -124,10 +124,7 @@ namespace {
             {
                 unsigned int cnt = 0;
                 {
-                    [[maybe_unused]] auto&& c = Finally (
-                        [&cnt] () noexcept {
-                            cnt--;
-                        });
+                    [[maybe_unused]] auto&& c = Finally ([&cnt] () noexcept { cnt--; });
                     ++cnt;
                 }
                 VerifyTestResult (cnt == 0);
@@ -142,10 +139,7 @@ namespace {
             namespace T1_ {
                 static const String                    x{L"3"};
                 const Common::ConstantProperty<String> kX = [] () { return x; };
-                void                                   DoIt ()
-                {
-                    const String a = kX;
-                }
+                void                                   DoIt () { const String a = kX; }
             }
             namespace T2_ {
                 const Common::ConstantProperty<String> kX = [] () { return L"6"; };
@@ -159,10 +153,7 @@ namespace {
                 // @todo get constexpr working - see docs for Common::ConstantProperty
                 //constexpr Common::ConstantProperty<int> kX = [] () { return 3; };
                 const Common::ConstantProperty<int> kX = [] () { return 3; };
-                void                                DoIt ()
-                {
-                    const int a [[maybe_unused]] = kX;
-                }
+                void                                DoIt () { const int a [[maybe_unused]] = kX; }
             }
             namespace T4_ {
                 const Common::ConstantProperty<int> kX = [] () { return 4; };
@@ -195,26 +186,22 @@ namespace {
             };
             struct ModuleGetterSetter_Implementation_MyData_ {
                 ModuleGetterSetter_Implementation_MyData_ ()
-                    : fOptionsFile_{
-                          L"MyModule",
-                          [] () -> ObjectVariantMapper {
-                              ObjectVariantMapper mapper;
-                              mapper.AddClass<MyData_> (initializer_list<ObjectVariantMapper::StructFieldInfo>{
-                                  {L"Enabled", StructFieldMetaInfo{&MyData_::fEnabled}},
-                                  {L"Last-Synchronized-At", StructFieldMetaInfo{&MyData_::fLastSynchronizedAt}},
-                              });
-                              return mapper;
-                          }(),
-                          OptionsFile::kDefaultUpgrader, OptionsFile::mkFilenameMapper (L"Put-Your-App-Name-Here")}
+                    : fOptionsFile_{L"MyModule",
+                                    [] () -> ObjectVariantMapper {
+                                        ObjectVariantMapper mapper;
+                                        mapper.AddClass<MyData_> (initializer_list<ObjectVariantMapper::StructFieldInfo>{
+                                            {L"Enabled", StructFieldMetaInfo{&MyData_::fEnabled}},
+                                            {L"Last-Synchronized-At", StructFieldMetaInfo{&MyData_::fLastSynchronizedAt}},
+                                        });
+                                        return mapper;
+                                    }(),
+                                    OptionsFile::kDefaultUpgrader, OptionsFile::mkFilenameMapper (L"Put-Your-App-Name-Here")}
                     , fActualCurrentConfigData_{fOptionsFile_.Read<MyData_> (MyData_{})}
                 {
                     Set (fActualCurrentConfigData_); // assure derived data (and changed fields etc) up to date
                 }
-                MyData_ Get () const
-                {
-                    return fActualCurrentConfigData_;
-                }
-                void Set (const MyData_& v)
+                MyData_ Get () const { return fActualCurrentConfigData_; }
+                void    Set (const MyData_& v)
                 {
                     fActualCurrentConfigData_ = v;
                     fOptionsFile_.Write (v);
@@ -238,11 +225,24 @@ namespace {
             }
             void TestUse2_ ()
             {
-                sModuleConfiguration_.Update ([] (MyData_ data) { MyData_ result = data; if (result.fLastSynchronizedAt.has_value () and *result.fLastSynchronizedAt + kMinTime_ > DateTime::Now ()) { result.fLastSynchronizedAt = DateTime::Now (); } return result; });
+                sModuleConfiguration_.Update ([] (MyData_ data) {
+                    MyData_ result = data;
+                    if (result.fLastSynchronizedAt.has_value () and *result.fLastSynchronizedAt + kMinTime_ > DateTime::Now ()) {
+                        result.fLastSynchronizedAt = DateTime::Now ();
+                    }
+                    return result;
+                });
             }
             void TestUse3_ ()
             {
-                if (sModuleConfiguration_.Update ([] (const MyData_& data) -> optional<MyData_> {  if (data.fLastSynchronizedAt.has_value () and *data.fLastSynchronizedAt + kMinTime_ > DateTime::Now ()) { MyData_ result = data; result.fLastSynchronizedAt = DateTime::Now (); return result; } return {}; })) {
+                if (sModuleConfiguration_.Update ([] (const MyData_& data) -> optional<MyData_> {
+                        if (data.fLastSynchronizedAt.has_value () and *data.fLastSynchronizedAt + kMinTime_ > DateTime::Now ()) {
+                            MyData_ result             = data;
+                            result.fLastSynchronizedAt = DateTime::Now ();
+                            return result;
+                        }
+                        return {};
+                    })) {
                     // e.g. trigger someone to wakeup and used changes?
                 }
             }

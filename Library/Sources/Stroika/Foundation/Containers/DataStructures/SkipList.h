@@ -36,9 +36,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
                             ADT::eDefaultPolicy >
 
                                  */
-    template <typename KEY,
-              typename VALUE,
-              typename TRAITS>
+    template <typename KEY, typename VALUE, typename TRAITS>
     class SkipList : public Debug::AssertExternallySynchronizedMutex {
     public:
         using KeyType   = KEY;

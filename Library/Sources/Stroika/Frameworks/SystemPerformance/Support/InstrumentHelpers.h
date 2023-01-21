@@ -70,7 +70,8 @@ namespace Stroika::Frameworks::SystemPerformance::Support {
             INFO_TYPE rawMeasurement = internalCapture ();
             if (outMeasuredAt != nullptr) {
                 using Traversal::Openness;
-                *outMeasuredAt = Range<DurationSecondsType> (before, _GetCaptureContextTime ().value_or (Time::GetTickCount ()), Openness::eClosed, Openness::eClosed);
+                *outMeasuredAt = Range<DurationSecondsType> (before, _GetCaptureContextTime ().value_or (Time::GetTickCount ()),
+                                                             Openness::eClosed, Openness::eClosed);
             }
             return rawMeasurement;
         }

@@ -101,7 +101,8 @@ Sequence<tuple<VariantValue, VariantValue>> Statement::GetAllRemainingRows (size
     return result;
 }
 
-Sequence<tuple<VariantValue, VariantValue, VariantValue>> Statement::GetAllRemainingRows (size_t restrictToColumn1, size_t restrictToColumn2, size_t restrictToColumn3)
+Sequence<tuple<VariantValue, VariantValue, VariantValue>> Statement::GetAllRemainingRows (size_t restrictToColumn1,
+                                                                                          size_t restrictToColumn2, size_t restrictToColumn3)
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     TraceContextBumper ctx{"SQL::Statement::GetAllRemainingRows"};
@@ -166,7 +167,8 @@ void Statement::Execute (const Traversal::Iterable<ParameterDescription>& parame
 void Statement::Execute (const Traversal::Iterable<Common::KeyValuePair<String, VariantValue>>& parameters)
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"SQL::Statement::Execute", L"parameters=%s", Characters::ToString (parameters).c_str ())};
+    TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"SQL::Statement::Execute", L"parameters=%s",
+                                                                          Characters::ToString (parameters).c_str ())};
 #endif
     AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
     Reset ();

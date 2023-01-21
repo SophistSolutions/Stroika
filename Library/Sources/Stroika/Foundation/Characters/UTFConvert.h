@@ -230,9 +230,9 @@ namespace Stroika::Foundation::Characters {
             requires (not is_const_v<TRG_T>);
         template <typename TO, typename FROM>
         nonvirtual TO Convert (const FROM& from) const
-            requires (
-                (is_same_v<TO, string> or is_same_v<TO, wstring> or is_same_v<TO, u8string> or is_same_v<TO, u16string> or is_same_v<TO, u32string>) and
-                (is_same_v<FROM, string> or is_same_v<FROM, wstring> or is_same_v<FROM, u8string> or is_same_v<FROM, u16string> or is_same_v<FROM, u32string>));
+            requires ((is_same_v<TO, string> or is_same_v<TO, wstring> or is_same_v<TO, u8string> or is_same_v<TO, u16string> or is_same_v<TO, u32string>) and
+                      (is_same_v<FROM, string> or is_same_v<FROM, wstring> or is_same_v<FROM, u8string> or is_same_v<FROM, u16string> or
+                       is_same_v<FROM, u32string>));
 
     public:
         /**
@@ -387,7 +387,8 @@ namespace Stroika::Foundation::Characters {
      *  but in a form more easily used/consumed by a the TextReader code.
      */
     template <typename OUTPUT_CHAR_T>
-    using UTFCodeConverter = function<UTFConverter::ConversionResult (span<const std::byte> source, span<OUTPUT_CHAR_T> targetBuffer, mbstate_t* state)>;
+    using UTFCodeConverter =
+        function<UTFConverter::ConversionResult (span<const std::byte> source, span<OUTPUT_CHAR_T> targetBuffer, mbstate_t* state)>;
 
 }
 

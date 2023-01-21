@@ -265,7 +265,7 @@ namespace Stroika::Foundation::Memory {
             // Only if we changed if using inplace buffer, or if was and is using ramBuffer, and eltCount changed do we need to do anything
             if (oldInPlaceBuffer != newInPlaceBuffer or (not newInPlaceBuffer)) {
                 bool  memoryAllocationNeeded = not newInPlaceBuffer;
-                byte* newPtr                 = memoryAllocationNeeded ? Allocate_ (SizeInBytes_ (useNewCapacity)) : std::begin (fInlinePreallocatedBuffer_);
+                byte* newPtr = memoryAllocationNeeded ? Allocate_ (SizeInBytes_ (useNewCapacity)) : std::begin (fInlinePreallocatedBuffer_);
 
                 // Initialize new memory from old
                 Assert (this->begin () != reinterpret_cast<T*> (newPtr));

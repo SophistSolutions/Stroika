@@ -28,22 +28,10 @@ namespace Stroika::Foundation::Cryptography::OpenSSL {
         fDigester_ = src.fDigester_;
         return *this;
     }
-    inline DigestAlgorithm::operator const EVP_MD* () const
-    {
-        return fDigester_;
-    }
-    inline auto DigestAlgorithm::operator<=> (const DigestAlgorithm& rhs) const
-    {
-        return fDigester_ <=> rhs.fDigester_;
-    }
-    inline bool DigestAlgorithm::operator== (const DigestAlgorithm& rhs) const
-    {
-        return fDigester_ == rhs.fDigester_;
-    }
-    inline String DigestAlgorithm::ToString () const
-    {
-        return String{::EVP_MD_name (fDigester_)};
-    }
+    inline DigestAlgorithm::operator const EVP_MD* () const { return fDigester_; }
+    inline auto DigestAlgorithm::operator<=> (const DigestAlgorithm& rhs) const { return fDigester_ <=> rhs.fDigester_; }
+    inline bool DigestAlgorithm::operator== (const DigestAlgorithm& rhs) const { return fDigester_ == rhs.fDigester_; }
+    inline String                DigestAlgorithm::ToString () const { return String{::EVP_MD_name (fDigester_)}; }
 #endif
 
 }

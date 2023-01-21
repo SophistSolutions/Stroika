@@ -52,16 +52,20 @@ namespace Stroika::Foundation::Characters {
             if constexpr (is_base_of_v<String, decay_t<USTRING>>) {
                 return s.GetData (mostlyIgnoredBuf);
             }
-            else if constexpr (is_same_v<decay_t<USTRING>, const char32_t*> or (sizeof (wchar_t) == sizeof (Character) and is_same_v<decay_t<USTRING>, const wchar_t*>)) {
+            else if constexpr (is_same_v<decay_t<USTRING>, const char32_t*> or
+                               (sizeof (wchar_t) == sizeof (Character) and is_same_v<decay_t<USTRING>, const wchar_t*>)) {
                 return span{reinterpret_cast<const Character*> (s), CString::Length (s)};
             }
-            else if constexpr (is_same_v<decay_t<USTRING>, u32string> or (sizeof (wchar_t) == sizeof (Character) and is_same_v<decay_t<USTRING>, wstring>)) {
+            else if constexpr (is_same_v<decay_t<USTRING>, u32string> or
+                               (sizeof (wchar_t) == sizeof (Character) and is_same_v<decay_t<USTRING>, wstring>)) {
                 return span{reinterpret_cast<const Character*> (s.c_str ()), s.length ()};
             }
-            else if constexpr (is_same_v<decay_t<USTRING>, u32string_view> or (sizeof (wchar_t) == sizeof (Character) and is_same_v<decay_t<USTRING>, wstring_view>)) {
+            else if constexpr (is_same_v<decay_t<USTRING>, u32string_view> or
+                               (sizeof (wchar_t) == sizeof (Character) and is_same_v<decay_t<USTRING>, wstring_view>)) {
                 return span{reinterpret_cast<const Character*> (s.data ()), s.length ()};
             }
-            else if constexpr (is_same_v<decay_t<USTRING>, const char8_t*> or is_same_v<decay_t<USTRING>, const char16_t*> or is_same_v<decay_t<USTRING>, const wchar_t*>) {
+            else if constexpr (is_same_v<decay_t<USTRING>, const char8_t*> or is_same_v<decay_t<USTRING>, const char16_t*> or
+                               is_same_v<decay_t<USTRING>, const wchar_t*>) {
                 span spn{s, CString::Length (s)};
                 mostlyIgnoredBuf->resize_uninitialized (UTFConverter::ComputeTargetBufferSize<Character> (spn));
 #if qCompilerAndStdLib_spanOfContainer_Buggy
@@ -79,7 +83,8 @@ namespace Stroika::Foundation::Characters {
                 return UTFConverter::kThe.ConvertSpan (spn, span{*mostlyIgnoredBuf});
 #endif
             }
-            else if constexpr (is_same_v<decay_t<USTRING>, u8string_view> or is_same_v<decay_t<USTRING>, u16string_view> or is_same_v<decay_t<USTRING>, wstring_view>) {
+            else if constexpr (is_same_v<decay_t<USTRING>, u8string_view> or is_same_v<decay_t<USTRING>, u16string_view> or
+                               is_same_v<decay_t<USTRING>, wstring_view>) {
                 span spn{s.data (), s.size ()};
                 mostlyIgnoredBuf->resize_uninitialized (UTFConverter::ComputeTargetBufferSize<Character> (spn));
 #if qCompilerAndStdLib_spanOfContainer_Buggy
@@ -303,8 +308,7 @@ namespace Stroika::Foundation::Characters {
     }
     template <typename CHAR_T>
     inline String String::FromUTF8 (span<CHAR_T> s)
-        requires (
-            is_same_v<remove_cv_t<CHAR_T>, char8_t> or is_same_v<remove_cv_t<CHAR_T>, char>)
+        requires (is_same_v<remove_cv_t<CHAR_T>, char8_t> or is_same_v<remove_cv_t<CHAR_T>, char>)
     {
         if (Character::IsASCII (s)) {
             return mk_ (span<const char>{reinterpret_cast<const char*> (s.data ()), s.size ()});
@@ -353,10 +357,7 @@ namespace Stroika::Foundation::Characters {
         return String{move (w)};
 #endif
     }
-    inline String String::FromSDKString (const SDKString& from)
-    {
-        return FromSDKString (span{from.c_str (), from.length ()});
-    }
+    inline String String::FromSDKString (const SDKString& from) { return FromSDKString (span{from.c_str (), from.length ()}); }
     inline String String::FromNarrowSDKString (const char* from)
     {
         RequireNotNull (from);
@@ -369,10 +370,7 @@ namespace Stroika::Foundation::Characters {
         NarrowStringToWide (s.data (), s.data () + s.size (), GetDefaultSDKCodePage (), &tmp);
         return String{tmp};
     }
-    inline String String::FromNarrowSDKString (const string& from)
-    {
-        return FromNarrowSDKString (span{from.c_str (), from.length ()});
-    }
+    inline String String::FromNarrowSDKString (const string& from) { return FromNarrowSDKString (span{from.c_str (), from.length ()}); }
     template <typename T>
     String String::Concatenate (T&& rhs) const
         requires (is_convertible_v<T, String>)
@@ -392,10 +390,7 @@ namespace Stroika::Foundation::Characters {
         return mk_ (span{buf});
 #endif
     }
-    inline void String::_AssertRepValidType () const
-    {
-        EnsureMember (&_SafeReadRepAccessor{this}._ConstGetRep (), String::_IRep);
-    }
+    inline void String::_AssertRepValidType () const { EnsureMember (&_SafeReadRepAccessor{this}._ConstGetRep (), String::_IRep); }
     template <Character_Compatible CHAR_T>
     inline span<CHAR_T> String::CopyTo (span<CHAR_T> s) const
         requires (not is_const_v<CHAR_T>)
@@ -422,10 +417,7 @@ namespace Stroika::Foundation::Characters {
             }
         }
     }
-    inline size_t String::size () const noexcept
-    {
-        return _SafeReadRepAccessor{this}._ConstGetRep ().size ();
-    }
+    inline size_t String::size () const noexcept { return _SafeReadRepAccessor{this}._ConstGetRep ().size (); }
     inline size_t String::SubString_adjust_ (unsigned int from, [[maybe_unused]] size_t myLength) const
     {
         return static_cast<size_t> (from);
@@ -497,28 +489,17 @@ namespace Stroika::Foundation::Characters {
         size_t useLength = (t - f);
         return SubString_ (accessor, myLength, f, f + useLength);
     }
-    inline String String::RemoveAt (size_t charAt) const
-    {
-        return RemoveAt (charAt, charAt + 1);
-    }
-    inline String String::RemoveAt (pair<size_t, size_t> fromTo) const
-    {
-        return RemoveAt (fromTo.first, fromTo.second);
-    }
-    inline bool String::empty () const noexcept
+    inline String String::RemoveAt (size_t charAt) const { return RemoveAt (charAt, charAt + 1); }
+    inline String String::RemoveAt (pair<size_t, size_t> fromTo) const { return RemoveAt (fromTo.first, fromTo.second); }
+    inline bool   String::empty () const noexcept
     {
         _SafeReadRepAccessor accessor{this};
         return accessor._ConstGetRep ().size () == 0;
     }
-    inline void String::clear ()
-    {
-        *this = String{};
-    }
+    inline void String::clear () { *this = String{}; }
     namespace Private_ {
         // match index starts with 1 (and requres match.size () >=2)
-        inline void ExtractMatches_ ([[maybe_unused]] const wsmatch& base_match, [[maybe_unused]] size_t currentUnpackIndex)
-        {
-        }
+        inline void ExtractMatches_ ([[maybe_unused]] const wsmatch& base_match, [[maybe_unused]] size_t currentUnpackIndex) {}
         template <typename... OPTIONAL_STRINGS>
         void ExtractMatches_ (const wsmatch& base_match, size_t currentUnpackIndex, optional<String>* subMatchI, OPTIONAL_STRINGS&&... remainingSubmatches)
         {
@@ -542,44 +523,26 @@ namespace Stroika::Foundation::Characters {
         }
         return false;
     }
-    inline optional<size_t> String::Find (Character c, CompareOptions co) const
-    {
-        return Find (c, 0, co);
-    }
-    inline optional<size_t> String::Find (const String& subString, CompareOptions co) const
-    {
-        return Find (subString, 0, co);
-    }
+    inline optional<size_t> String::Find (Character c, CompareOptions co) const { return Find (c, 0, co); }
+    inline optional<size_t> String::Find (const String& subString, CompareOptions co) const { return Find (subString, 0, co); }
     inline Traversal::Iterator<Character> String::Find (const function<bool (Character item)>& that) const
     {
         return inherited::Find (that);
     }
-    inline bool String::Contains (Character c, CompareOptions co) const
-    {
-        return static_cast<bool> (Find (c, co));
-    }
-    inline bool String::Contains (const String& subString, CompareOptions co) const
-    {
-        return static_cast<bool> (Find (subString, co));
-    }
+    inline bool   String::Contains (Character c, CompareOptions co) const { return static_cast<bool> (Find (c, co)); }
+    inline bool   String::Contains (const String& subString, CompareOptions co) const { return static_cast<bool> (Find (subString, co)); }
     inline String String::Replace (pair<size_t, size_t> fromTo, const String& replacement) const
     {
         return Replace (fromTo.first, fromTo.second, replacement);
     }
-    inline String String::InsertAt (Character c, size_t at) const
-    {
-        return InsertAt (span<const Character>{&c, 1}, at);
-    }
+    inline String String::InsertAt (Character c, size_t at) const { return InsertAt (span<const Character>{&c, 1}, at); }
     inline String String::InsertAt (const String& s, size_t at) const
     {
         Memory::StackBuffer<Character> ignored1;
         return InsertAt (s.GetData (&ignored1), at);
     }
-    inline String String::InsertAt (span<Character> s, size_t at) const
-    {
-        return InsertAt (Memory::ConstSpan (s), at);
-    }
-    inline void String::Append (span<const Character> s)
+    inline String String::InsertAt (span<Character> s, size_t at) const { return InsertAt (Memory::ConstSpan (s), at); }
+    inline void   String::Append (span<const Character> s)
     {
         if (not s.empty ()) {
             Memory::StackBuffer<char32_t> ignored1;
@@ -614,24 +577,15 @@ namespace Stroika::Foundation::Characters {
 #endif
         }
     }
-    inline void String::Append (Character c)
-    {
-        Append (&c, &c + 1);
-    }
+    inline void String::Append (Character c) { Append (&c, &c + 1); }
     inline void String::Append (const String& s)
     {
         Memory::StackBuffer<wchar_t> ignored1;
         auto                         rhsSpan = s.GetData (&ignored1);
         Append (rhsSpan.data (), rhsSpan.data () + rhsSpan.size ());
     }
-    inline void String::Append (const wchar_t* s)
-    {
-        Append (s, s + ::wcslen (s));
-    }
-    inline void String::Append (const Character* from, const Character* to)
-    {
-        Append (span{from, to});
-    }
+    inline void    String::Append (const wchar_t* s) { Append (s, s + ::wcslen (s)); }
+    inline void    String::Append (const Character* from, const Character* to) { Append (span{from, to}); }
     inline String& String::operator+= (Character appendage)
     {
         Append (appendage);
@@ -1011,10 +965,7 @@ namespace Stroika::Foundation::Characters {
         RequireNotNull (possiblyUsedBuffer);
         return GetData (GetPeekSpanData<CHAR_TYPE> (), possiblyUsedBuffer);
     }
-    inline size_t String::length () const noexcept
-    {
-        return size ();
-    }
+    inline size_t                              String::length () const noexcept { return size (); }
     inline tuple<const wchar_t*, wstring_view> String::c_str (Memory::StackBuffer<wchar_t>* possibleBackingStore) const
     {
         // @todo FIRST check if default impl already returns c_str () and just use it if we can. ONLY if that fails, do we
@@ -1027,22 +978,10 @@ namespace Stroika::Foundation::Characters {
         (*possibleBackingStore)[tmp.length ()] = '\0'; // assure NUL-terminated
         return make_tuple (possibleBackingStore->begin (), wstring_view{possibleBackingStore->begin (), tmp.length ()});
     }
-    inline size_t String::find (Character c, size_t startAt) const
-    {
-        return Find (c, startAt, CompareOptions::eWithCase).value_or (npos);
-    }
-    inline size_t String::rfind (Character c) const
-    {
-        return RFind (c).value_or (npos);
-    }
-    inline void String::push_back (wchar_t c)
-    {
-        Append (Character (c));
-    }
-    inline void String::push_back (Character c)
-    {
-        Append (c);
-    }
+    inline size_t String::find (Character c, size_t startAt) const { return Find (c, startAt, CompareOptions::eWithCase).value_or (npos); }
+    inline size_t String::rfind (Character c) const { return RFind (c).value_or (npos); }
+    inline void   String::push_back (wchar_t c) { Append (Character (c)); }
+    inline void   String::push_back (Character c) { Append (c); }
     inline String String::substr (size_t from, size_t count) const
     {
         _SafeReadRepAccessor accessor{this};
@@ -1055,52 +994,22 @@ namespace Stroika::Foundation::Characters {
         size_t to = (count == npos) ? thisLen : (from + min (thisLen, count));
         return SubString_ (accessor, thisLen, from, to);
     }
-    inline strong_ordering String::operator<=> (const String& rhs) const
-    {
-        return ThreeWayComparer{}(*this, rhs);
-    }
-    inline strong_ordering String::operator<=> (const wchar_t* rhs) const
-    {
-        return ThreeWayComparer{}(*this, rhs);
-    }
-    inline strong_ordering String::operator<=> (const wstring& rhs) const
-    {
-        return ThreeWayComparer{}(*this, rhs);
-    }
-    inline strong_ordering String::operator<=> (const wstring_view& rhs) const
-    {
-        return ThreeWayComparer{}(*this, rhs);
-    }
-    inline bool String::operator== (const String& rhs) const
-    {
-        return EqualsComparer{}(*this, rhs);
-    }
-    inline bool String::operator== (const wchar_t* rhs) const
-    {
-        return EqualsComparer{}(*this, rhs);
-    }
-    inline bool String::operator== (const wstring& rhs) const
-    {
-        return EqualsComparer{}(*this, rhs);
-    }
-    inline bool String::operator== (const wstring_view& rhs) const
-    {
-        return EqualsComparer{}(*this, rhs);
-    }
+    inline strong_ordering String::operator<=> (const String& rhs) const { return ThreeWayComparer{}(*this, rhs); }
+    inline strong_ordering String::operator<=> (const wchar_t* rhs) const { return ThreeWayComparer{}(*this, rhs); }
+    inline strong_ordering String::operator<=> (const wstring& rhs) const { return ThreeWayComparer{}(*this, rhs); }
+    inline strong_ordering String::operator<=> (const wstring_view& rhs) const { return ThreeWayComparer{}(*this, rhs); }
+    inline bool String::operator== (const String& rhs) const { return EqualsComparer{}(*this, rhs); }
+    inline bool String::operator== (const wchar_t* rhs) const { return EqualsComparer{}(*this, rhs); }
+    inline bool String::operator== (const wstring& rhs) const { return EqualsComparer{}(*this, rhs); }
+    inline bool String::operator== (const wstring_view& rhs) const { return EqualsComparer{}(*this, rhs); }
 
     /*
      ********************************************************************************
      ******************************** operator"" _k *********************************
      ********************************************************************************
      */
-    inline String operator"" _k (const char* s, size_t len)
-    {
-        return String::FromStringConstant (span<const char>{s, len});
-    }
-    inline String operator"" _k (const wchar_t* s, size_t len)
-    {
-        return String::FromStringConstant (span<const wchar_t>{s, len});
-    }
+    inline String operator"" _k (const char* s, size_t len) { return String::FromStringConstant (span<const char>{s, len}); }
+    inline String operator"" _k (const wchar_t* s, size_t len) { return String::FromStringConstant (span<const wchar_t>{s, len}); }
 
     /*
      ********************************************************************************
@@ -1139,7 +1048,8 @@ namespace Stroika::Foundation::Characters {
         // same frame where we do optimizations
         Memory::StackBuffer<Character> ignore1;
         Memory::StackBuffer<Character> ignore2;
-        return Character::Compare (Private_::AsSpanOfCharacters_ (forward<LT> (lhs), &ignore1), Private_::AsSpanOfCharacters_ (forward<RT> (rhs), &ignore2), fCompareOptions) == 0;
+        return Character::Compare (Private_::AsSpanOfCharacters_ (forward<LT> (lhs), &ignore1),
+                                   Private_::AsSpanOfCharacters_ (forward<RT> (rhs), &ignore2), fCompareOptions) == 0;
     }
     template <ConvertibleToString LT, ConvertibleToString RT>
     inline bool String::EqualsComparer::operator() (LT&& lhs, RT&& rhs) const
@@ -1188,7 +1098,8 @@ namespace Stroika::Foundation::Characters {
         // same frame where we do optimizations
         Memory::StackBuffer<Character> ignore1;
         Memory::StackBuffer<Character> ignore2;
-        return Character::Compare (Private_::AsSpanOfCharacters_ (forward<LT> (lhs), &ignore1), Private_::AsSpanOfCharacters_ (forward<RT> (rhs), &ignore2), fCompareOptions);
+        return Character::Compare (Private_::AsSpanOfCharacters_ (forward<LT> (lhs), &ignore1),
+                                   Private_::AsSpanOfCharacters_ (forward<RT> (rhs), &ignore2), fCompareOptions);
     }
     template <ConvertibleToString LT, ConvertibleToString RT>
     inline strong_ordering String::ThreeWayComparer::operator() (LT&& lhs, RT&& rhs) const
@@ -1254,7 +1165,8 @@ namespace Stroika::Foundation::Traversal {
      *  String.inl to avoid #include problems (that includes this anyhow, and this cannot include that because that includes this)
      */
     template <typename T>
-    inline Characters::String Iterable<T>::Join (const function<Characters::String (const T&)>& convertToT, const function<Characters::String (const Characters::String&, const Characters::String&)>& combine) const
+    inline Characters::String Iterable<T>::Join (const function<Characters::String (const T&)>& convertToT,
+                                                 const function<Characters::String (const Characters::String&, const Characters::String&)>& combine) const
     {
         return Join<Characters::String> (convertToT, combine);
     }
@@ -1272,7 +1184,8 @@ namespace Stroika::Foundation::Traversal {
     inline Characters::String Iterable<T>::Join (const Characters::String& separator) const
     {
         //return Join ([] (const auto& i) { return Characters::ToString (i); });    @todo figure out trick to be able to use Characters::ToString () here...
-        return Join ([] (const auto& i) { return i.ToString (); }, [=] (const Characters::String& l, const Characters::String& r) { return l + separator + r; });
+        return Join ([] (const auto& i) { return i.ToString (); },
+                     [=] (const Characters::String& l, const Characters::String& r) { return l + separator + r; });
     }
     template <typename T>
     inline Characters::String Iterable<T>::Join () const
@@ -1287,22 +1200,24 @@ namespace Stroika::Foundation::Characters {
         return String{span{str, len}};
     }
     class [[deprecated ("Since Stroika v3.0 - just use String::FromStringConstant")]] String_Constant : public String{
-        public :
-            template <size_t SIZE>
-            explicit String_Constant (const wchar_t (&cString)[SIZE]) : String{String::FromStringConstant (std::basic_string_view<wchar_t>{cString, SIZE - 1})} {}
+        public : template <size_t SIZE>
+        explicit String_Constant (const wchar_t (&cString)[SIZE]) :
+            String{String::FromStringConstant (std::basic_string_view<wchar_t>{cString, SIZE - 1})} {}
 
-        String_Constant (const wchar_t* start, const wchar_t* end) : String{String::FromStringConstant (std::basic_string_view<wchar_t>{start, static_cast<size_t> (end - start)})} {}
+        String_Constant (const wchar_t* start, const wchar_t* end) :
+            String{String::FromStringConstant (std::basic_string_view<wchar_t>{start, static_cast<size_t> (end - start)})} {}
 
         String_Constant (const std::basic_string_view<wchar_t>& str) : String{String::FromStringConstant (str)} {}
     };
 }
 namespace Stroika::Foundation::Characters::Concrete {
     class [[deprecated ("Since Stroika v3.0 - just use String::FromStringConstant")]] String_ExternalMemoryOwnership_ApplicationLifetime : public String{
-        public :
-            template <size_t SIZE>
-            explicit String_ExternalMemoryOwnership_ApplicationLifetime (const wchar_t (&cString)[SIZE - 1]) : String{String::FromStringConstant (basic_string_view<wchar_t>{cString, SIZE})} {}
+        public : template <size_t SIZE>
+        explicit String_ExternalMemoryOwnership_ApplicationLifetime (const wchar_t (&cString)[SIZE - 1]) :
+            String{String::FromStringConstant (basic_string_view<wchar_t>{cString, SIZE})} {}
 
-        String_ExternalMemoryOwnership_ApplicationLifetime (const wchar_t* start, const wchar_t* end) : String{String::FromStringConstant (basic_string_view<wchar_t>{start, static_cast<size_t> (end - start)})} {}
+        String_ExternalMemoryOwnership_ApplicationLifetime (const wchar_t* start, const wchar_t* end) :
+            String{String::FromStringConstant (basic_string_view<wchar_t>{start, static_cast<size_t> (end - start)})} {}
 
         String_ExternalMemoryOwnership_ApplicationLifetime (const basic_string_view<wchar_t>& str) : String{String::FromStringConstant (str)} {}
     };

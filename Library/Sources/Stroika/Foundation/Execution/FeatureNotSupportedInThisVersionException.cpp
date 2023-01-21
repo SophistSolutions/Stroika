@@ -17,7 +17,8 @@ using namespace Stroika::Foundation::Execution;
  ********************************************************************************
  */
 FeatureNotSupportedInThisVersionException::FeatureNotSupportedInThisVersionException (const wstring& feature)
-    : Execution::RuntimeErrorException<> (Characters::CString::Format (L"%s is not supported in this version of HealthFrame: see the documentation (F1) on features in this version", feature.c_str ()))
+    : Execution::RuntimeErrorException<> (Characters::CString::Format (
+          L"%s is not supported in this version of HealthFrame: see the documentation (F1) on features in this version", feature.c_str ()))
     , fFeature{feature}
 {
 }

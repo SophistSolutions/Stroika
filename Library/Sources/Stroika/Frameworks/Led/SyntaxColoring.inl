@@ -27,7 +27,8 @@ namespace Stroika::Frameworks::Led {
      ******************** TableDrivenKeywordSyntaxAnalyzer::KeywordTable ************
      ********************************************************************************
      */
-    inline TableDrivenKeywordSyntaxAnalyzer::KeywordTable::KeywordTable (const Led_tChar* keyWords[], size_t nKeywords, int (*cmpFunction) (const Led_tChar*, const Led_tChar*, size_t))
+    inline TableDrivenKeywordSyntaxAnalyzer::KeywordTable::KeywordTable (const Led_tChar* keyWords[], size_t nKeywords,
+                                                                         int (*cmpFunction) (const Led_tChar*, const Led_tChar*, size_t))
         : fKeywords (keyWords)
         , fNKeywords (nKeywords)
         , fMaxKeywordLength ()
@@ -40,10 +41,7 @@ namespace Stroika::Frameworks::Led {
         }
         fMaxKeywordLength = u;
     }
-    inline size_t TableDrivenKeywordSyntaxAnalyzer::KeywordTable::MaxKeywordLength () const
-    {
-        return fMaxKeywordLength;
-    }
+    inline size_t TableDrivenKeywordSyntaxAnalyzer::KeywordTable::MaxKeywordLength () const { return fMaxKeywordLength; }
     inline size_t TableDrivenKeywordSyntaxAnalyzer::KeywordTable::KeywordLength (const Led_tChar* t, size_t nTChars) const
     {
         for (size_t i = 0; i < fNKeywords; ++i) {

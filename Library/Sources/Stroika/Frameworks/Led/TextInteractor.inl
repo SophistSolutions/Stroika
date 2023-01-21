@@ -70,7 +70,9 @@ namespace Stroika::Frameworks::Led {
         fMap.insert (MAP_TYPE::value_type (externalCommandNumber, internalCommandNumber));
     }
     template <typename TARGET_COMMAND_NUMBER>
-    inline void CommandNumberMapping<TARGET_COMMAND_NUMBER>::AddRangeAssociation (TARGET_COMMAND_NUMBER externalRangeStart, TARGET_COMMAND_NUMBER externalRangeEnd, CommandNumber internalRangeStart, CommandNumber internalRangeEnd)
+    inline void CommandNumberMapping<TARGET_COMMAND_NUMBER>::AddRangeAssociation (TARGET_COMMAND_NUMBER externalRangeStart,
+                                                                                  TARGET_COMMAND_NUMBER externalRangeEnd,
+                                                                                  CommandNumber internalRangeStart, CommandNumber internalRangeEnd)
     {
         Require (int (externalRangeEnd - externalRangeStart) == int (internalRangeEnd - internalRangeStart)); // ranges same length.
 
@@ -130,23 +132,11 @@ namespace Stroika::Frameworks::Led {
         , fText ()
     {
     }
-    inline SimpleCommandUpdater::CommandNumber SimpleCommandUpdater::GetCmdID () const
-    {
-        return fCommandNumber;
-    }
-    inline bool SimpleCommandUpdater::GetEnabled () const
-    {
-        return fEnabled;
-    }
-    inline void SimpleCommandUpdater::SetEnabled (bool enabled)
-    {
-        fEnabled = enabled;
-    }
-    inline void SimpleCommandUpdater::SetChecked (bool checked)
-    {
-        fChecked = checked;
-    }
-    inline void SimpleCommandUpdater::SetText (const SDKChar* text)
+    inline SimpleCommandUpdater::CommandNumber SimpleCommandUpdater::GetCmdID () const { return fCommandNumber; }
+    inline bool                                SimpleCommandUpdater::GetEnabled () const { return fEnabled; }
+    inline void                                SimpleCommandUpdater::SetEnabled (bool enabled) { fEnabled = enabled; }
+    inline void                                SimpleCommandUpdater::SetChecked (bool checked) { fChecked = checked; }
+    inline void                                SimpleCommandUpdater::SetText (const SDKChar* text)
     {
         RequireNotNull (text);
         fText = text;
@@ -168,10 +158,7 @@ namespace Stroika::Frameworks::Led {
             Assert (ti.GetInteractiveUpdateMode () == newMode);
         }
     }
-    inline TextInteractor::InteractiveModeUpdater::~InteractiveModeUpdater ()
-    {
-        fTextInteractor.SetInteractiveUpdateMode (fSavedMode);
-    }
+    inline TextInteractor::InteractiveModeUpdater::~InteractiveModeUpdater () { fTextInteractor.SetInteractiveUpdateMode (fSavedMode); }
 
     //  class   TextInteractor::SmartCNPInfo
     inline TextInteractor::SmartCNPInfo::SmartCNPInfo ()
@@ -186,18 +173,12 @@ namespace Stroika::Frameworks::Led {
     @DESCRIPTION:   <p>TextInteractor's have associated an optional @'CommandHandler', used for maintaining UNDO
         information. This can return nullptr, if no CommandHandler is currently associated (meaning no Undo is avialable).</p>
     */
-    inline CommandHandler* TextInteractor::GetCommandHandler () const
-    {
-        return fCommandHandler;
-    }
+    inline CommandHandler* TextInteractor::GetCommandHandler () const { return fCommandHandler; }
     /*
     @METHOD:        TextInteractor::SetCommandHandler
     @DESCRIPTION:   <p>See @'TextInteractor::GetCommandHandler'.</p>
     */
-    inline void TextInteractor::SetCommandHandler (CommandHandler* commandHandler)
-    {
-        fCommandHandler = commandHandler;
-    }
+    inline void TextInteractor::SetCommandHandler (CommandHandler* commandHandler) { fCommandHandler = commandHandler; }
     /*
     @METHOD:        TextInteractor::BreakInGroupedCommands
     @DESCRIPTION:   <p>Trivial helper - delegates to @'CommandHandler::BreakInGroupedCommands' if
@@ -238,10 +219,7 @@ namespace Stroika::Frameworks::Led {
     @METHOD:        TextInteractor::SetDialogSupport
     @DESCRIPTION:   <p></p>
     */
-    inline void TextInteractor::SetDialogSupport (DialogSupport* ds)
-    {
-        sDialogSupport = ds;
-    }
+    inline void TextInteractor::SetDialogSupport (DialogSupport* ds) { sDialogSupport = ds; }
     /*
     @METHOD:        TextInteractor::GetCommandNames
     @DESCRIPTION:   <p>Returns command name for each of the user-visible commands produced by this module.
@@ -252,27 +230,18 @@ namespace Stroika::Frameworks::Led {
                 without having to change Led itself.</p>
             <p>See also @'TextInteractor::CommandNames'.</p>
     */
-    inline const TextInteractor::CommandNames& TextInteractor::GetCommandNames ()
-    {
-        return sCommandNames;
-    }
+    inline const TextInteractor::CommandNames& TextInteractor::GetCommandNames () { return sCommandNames; }
     /*
     @METHOD:        TextInteractor::SetCommandNames
     @DESCRIPTION:   <p>See @'TextInteractor::GetCommandNames'.</p>
     */
-    inline void TextInteractor::SetCommandNames (const TextInteractor::CommandNames& cmdNames)
-    {
-        sCommandNames = cmdNames;
-    }
+    inline void TextInteractor::SetCommandNames (const TextInteractor::CommandNames& cmdNames) { sCommandNames = cmdNames; }
     /*
     @METHOD:        TextInteractor::GetSpellCheckEngine
     @DESCRIPTION:   <p>Return a pointer to the current @'SpellCheckEngine' if there is one. It CAN BE nullptr - meaning
                 that spellchecking is disabled. See @'TextInteractor::SetSpellCheckEngine'.</p>
     */
-    inline SpellCheckEngine* TextInteractor::GetSpellCheckEngine () const
-    {
-        return fSpellCheckEngine;
-    }
+    inline SpellCheckEngine* TextInteractor::GetSpellCheckEngine () const { return fSpellCheckEngine; }
     /*
     @METHOD:        TextInteractor::SetSpellCheckEngine
     @DESCRIPTION:   <p>This is typically called by an application or document to associate a spellcheck engine with the
@@ -282,10 +251,7 @@ namespace Stroika::Frameworks::Led {
                 spellchecking command funcitonality. Be sure to set this property to nullptr before destruction.</p>
                     <p>See @'TextInteractor::GetSpellCheckEngine'.</p>
     */
-    inline void TextInteractor::SetSpellCheckEngine (SpellCheckEngine* spellCheckEngine)
-    {
-        fSpellCheckEngine = spellCheckEngine;
-    }
+    inline void TextInteractor::SetSpellCheckEngine (SpellCheckEngine* spellCheckEngine) { fSpellCheckEngine = spellCheckEngine; }
     /*
     @METHOD:        TextInteractor::GetDefaultUpdateMode
     @DESCRIPTION:   <p>TextInteractor's have an associated default UpdateMode. This is the update mode which is
@@ -319,28 +285,19 @@ namespace Stroika::Frameworks::Led {
                 @'TextInteractor::OptionallyExpandSelectionForSmartCutAndPasteModeDeletes' for the implementation of
                 smart cut and paste.</p>
     */
-    inline bool TextInteractor::GetSmartCutAndPasteMode () const
-    {
-        return fSmartCutAndPasteMode;
-    }
+    inline bool TextInteractor::GetSmartCutAndPasteMode () const { return fSmartCutAndPasteMode; }
     /*
     @METHOD:        TextInteractor::SetSmartCutAndPasteMode
     @DESCRIPTION:   <p>Set the 'smart cut and paste' mode. See TextInteractor::GetSmartCutAndPasteMode for more details.</p>
     */
-    inline void TextInteractor::SetSmartCutAndPasteMode (bool smartCutAndPasteMode)
-    {
-        fSmartCutAndPasteMode = smartCutAndPasteMode;
-    }
+    inline void TextInteractor::SetSmartCutAndPasteMode (bool smartCutAndPasteMode) { fSmartCutAndPasteMode = smartCutAndPasteMode; }
     /*
     @METHOD:        TextInteractor::GetCurClickCount
     @DESCRIPTION:   <p>Used to keep track of the number of clicks the user has done very recently. Used for determining
                 double and triple clicks. If the user clicks, and then clicks a long time later - it wont be considered
                 a double click - and so this value will remain one.</p>
     */
-    inline unsigned TextInteractor::GetCurClickCount () const
-    {
-        return fClickCount;
-    }
+    inline unsigned TextInteractor::GetCurClickCount () const { return fClickCount; }
     /*
     @METHOD:        TextInteractor::SetCurClickCount
     @DESCRIPTION:   <p>See also @'TextInteractor::GetCurClickCount' (). This is seldom called directly - except perhaps to RESET
@@ -386,20 +343,14 @@ namespace Stroika::Frameworks::Led {
                 want to call it as well, if profiling yields a hot-spot in your code, in a calculation of something that need not
                 be done if the screen has already been marked as invalid.</p>
     */
-    inline bool TextInteractor::IsWholeWindowInvalid () const
-    {
-        return fWholeWindowInvalid;
-    }
+    inline bool TextInteractor::IsWholeWindowInvalid () const { return fWholeWindowInvalid; }
     /*
     @METHOD:        TextInteractor::NoteWholeWindowIsInvalid
     @DESCRIPTION:   <p>See @'TextInteractor::IsWholeWindowInvalid'. This method marks the screen as
                 already having been invalidated. Called internally by Led. Only call this with extreme
                 caution. Should very rarely be appropriate, outside of class library wrappers.</p>
     */
-    inline void TextInteractor::NoteWholeWindowIsInvalid ()
-    {
-        fWholeWindowInvalid = true;
-    }
+    inline void TextInteractor::NoteWholeWindowIsInvalid () { fWholeWindowInvalid = true; }
     /*
     @METHOD:        TextInteractor::NoteWindowPartiallyUpdated
     @DESCRIPTION:   <p>See @'TextInteractor::IsWholeWindowInvalid'. This method marks the screen as having been
@@ -407,10 +358,7 @@ namespace Stroika::Frameworks::Led {
                     <p>Called internally by Led. Only call this with extreme caution. Should very rarely be
                 appropriate, outside of class library wrappers.</p>
     */
-    inline void TextInteractor::NoteWindowPartiallyUpdated ()
-    {
-        fWholeWindowInvalid = false;
-    }
+    inline void TextInteractor::NoteWindowPartiallyUpdated () { fWholeWindowInvalid = false; }
     /*
     @METHOD:        TextInteractor::Refresh
     @DESCRIPTION:   <p>Invalidate the entire window rectangle (@'TextImager::GetWindowRect') in a
@@ -494,10 +442,7 @@ namespace Stroika::Frameworks::Led {
     @METHOD:        TextInteractor::GetUseSecondaryHilight
     @DESCRIPTION:   <p>See @'TextInteractor::SetUseSecondaryHilight'.</p>
     */
-    inline bool TextInteractor::GetUseSecondaryHilight () const
-    {
-        return fUseSecondaryHilight;
-    }
+    inline bool TextInteractor::GetUseSecondaryHilight () const { return fUseSecondaryHilight; }
     /*
     @METHOD:        TextInteractor::SetUseSecondaryHilight
     @DESCRIPTION:   <p>If this is set true (false by default) then when a window is deactivated, it will draw
@@ -511,18 +456,12 @@ namespace Stroika::Frameworks::Led {
             fUseSecondaryHilight = useSecondaryHilight;
         }
     }
-    inline bool TextInteractor::GetUseBitmapScrollingOptimization () const
-    {
-        return fUseBitmapScrollingOptimization;
-    }
+    inline bool TextInteractor::GetUseBitmapScrollingOptimization () const { return fUseBitmapScrollingOptimization; }
     inline void TextInteractor::SetUseBitmapScrollingOptimization (bool useBitmapScrollingOptimization)
     {
         fUseBitmapScrollingOptimization = useBitmapScrollingOptimization;
     }
-    inline bool TextInteractor::GetSuppressTypedControlCharacters () const
-    {
-        return fSuppressTypedControlCharacters;
-    }
+    inline bool TextInteractor::GetSuppressTypedControlCharacters () const { return fSuppressTypedControlCharacters; }
     inline void TextInteractor::SetSuppressTypedControlCharacters (bool suppressTypedControlCharacters)
     {
         fSuppressTypedControlCharacters = suppressTypedControlCharacters;
@@ -531,18 +470,12 @@ namespace Stroika::Frameworks::Led {
     @METHOD:        TextInteractor::GetInteractiveUpdateMode
     @DESCRIPTION:   <p>See also @'TextInteractor::CheckIfCurrentUpdateIsInteractive'.
     */
-    inline TextInteractor::InteractiveUpdadeMode TextInteractor::GetInteractiveUpdateMode () const
-    {
-        return fInteractiveUpdadeMode;
-    }
+    inline TextInteractor::InteractiveUpdadeMode TextInteractor::GetInteractiveUpdateMode () const { return fInteractiveUpdadeMode; }
     /*
     @METHOD:        TextInteractor::SetInteractiveUpdateMode
     @DESCRIPTION:   <p>See also @'TextInteractor::CheckIfCurrentUpdateIsInteractive'.
     */
-    inline void TextInteractor::SetInteractiveUpdateMode (InteractiveUpdadeMode interactive)
-    {
-        fInteractiveUpdadeMode = interactive;
-    }
+    inline void TextInteractor::SetInteractiveUpdateMode (InteractiveUpdadeMode interactive) { fInteractiveUpdadeMode = interactive; }
     /*
     @METHOD:        TextInteractor::CheckIfCurrentUpdateIsInteractive
     @DESCRIPTION:   <p>See also @'TextInteractor::InteractiveUpdadeMode' and @'TextInteractor::SetInteractiveUpdateMode' ().
@@ -556,10 +489,7 @@ namespace Stroika::Frameworks::Led {
     @METHOD:        TextInteractor::GetInternalizer
     @DESCRIPTION:
     */
-    inline shared_ptr<FlavorPackageInternalizer> TextInteractor::GetInternalizer () const
-    {
-        return fInternalizer;
-    }
+    inline shared_ptr<FlavorPackageInternalizer> TextInteractor::GetInternalizer () const { return fInternalizer; }
     /*
     @METHOD:        TextInteractor::SetInternalizer
     @DESCRIPTION:   <p>Calls @'TextInteractor::HookInternalizerChanged' whenever the internalizer changes. Can be a nullptr externalizer.</p>
@@ -573,10 +503,7 @@ namespace Stroika::Frameworks::Led {
     @METHOD:        TextInteractor::GetExternalizer
     @DESCRIPTION:
     */
-    inline shared_ptr<FlavorPackageExternalizer> TextInteractor::GetExternalizer () const
-    {
-        return fExternalizer;
-    }
+    inline shared_ptr<FlavorPackageExternalizer> TextInteractor::GetExternalizer () const { return fExternalizer; }
     /*
     @METHOD:        TextInteractor::SetExternalizer
     @DESCRIPTION:   <p>Calls @'TextInteractor::HookExternalizerChanged' whenever the externalizer changes. Can be a nullptr externalizer.</p>
@@ -586,14 +513,8 @@ namespace Stroika::Frameworks::Led {
         fExternalizer = e;
         HookExternalizerChanged ();
     }
-    inline void TextInteractor::InvalidateScrollBarParameters_ ()
-    {
-        fScrollBarParamsValid = false;
-    }
-    inline void TextInteractor::UpdateScrollBars_ ()
-    {
-        fScrollBarParamsValid = true;
-    }
+    inline void TextInteractor::InvalidateScrollBarParameters_ () { fScrollBarParamsValid = false; }
+    inline void TextInteractor::UpdateScrollBars_ () { fScrollBarParamsValid = true; }
     /*
     @METHOD:        TextInteractor::GetCaretShown
     @DESCRIPTION:   <p>Flag to control whether or not blinking caret is shown for this editor.
@@ -602,10 +523,7 @@ namespace Stroika::Frameworks::Led {
                 </p>
                     <p>See also @'TextInteractor::GetCaretShownSituation' and @'TextInteractor::SetCaretShown'.</p>
     */
-    inline bool TextInteractor::GetCaretShown () const
-    {
-        return (fCaretShown);
-    }
+    inline bool TextInteractor::GetCaretShown () const { return (fCaretShown); }
     /*
     @METHOD:        TextInteractor::GetCaretShownAfterPos
     @DESCRIPTION:   <p>Given an empty selection, it seems pretty obvious where to place
@@ -633,23 +551,14 @@ namespace Stroika::Frameworks::Led {
                 character to use - the one before or after the given marker POS. The side of the charater is the opposite
                 of this value.</p>
         */
-    inline bool TextInteractor::GetCaretShownAfterPos () const
-    {
-        return (fCaretShownAfterPos);
-    }
+    inline bool TextInteractor::GetCaretShownAfterPos () const { return (fCaretShownAfterPos); }
     /*
     @METHOD:        TextInteractor::GetScrollBarType
     @DESCRIPTION:
                     <p>See also 'TextInteractor::SetScrollBarType'</p>
     */
-    inline TextInteractor::ScrollBarType TextInteractor::GetScrollBarType (VHSelect vh) const
-    {
-        return fScrollBarType[vh];
-    }
-    inline void TextInteractor::SetScrollBarType_ (VHSelect vh, ScrollBarType scrollBarType)
-    {
-        fScrollBarType[vh] = scrollBarType;
-    }
+    inline TextInteractor::ScrollBarType TextInteractor::GetScrollBarType (VHSelect vh) const { return fScrollBarType[vh]; }
+    inline void TextInteractor::SetScrollBarType_ (VHSelect vh, ScrollBarType scrollBarType) { fScrollBarType[vh] = scrollBarType; }
     inline void TextInteractor::UpdateIfNoKeysPending ()
     {
         if (QueryInputKeyStrokesPending ()) {
@@ -683,18 +592,12 @@ namespace Stroika::Frameworks::Led {
                 can be slightly different - especially in light of smart-cut-and-paste. It is the area that is being changed,
                 based on the users original selection.</p>
     */
-    inline size_t TextInteractor::UndoableContextHelper::GetUndoRegionStart () const
-    {
-        return fSelStart;
-    }
+    inline size_t TextInteractor::UndoableContextHelper::GetUndoRegionStart () const { return fSelStart; }
     /*
     @METHOD:        TextInteractor::UndoableContextHelper::GetUndoRegionEnd
     @DESCRIPTION:   <p>@'See @'TextInteractor::UndoableContextHelper::GetUndoRegionStart'</p>
     */
-    inline size_t TextInteractor::UndoableContextHelper::GetUndoRegionEnd () const
-    {
-        return fSelEnd;
-    }
+    inline size_t TextInteractor::UndoableContextHelper::GetUndoRegionEnd () const { return fSelEnd; }
     /*
     @METHOD:        TextInteractor::UndoableContextHelper::GetSimplePlainTextInsertOptimization
     @DESCRIPTION:   <p>@'See @'TextInteractor::UndoableContextHelper::SetSimplePlainTextInsertOptimization'</p>
@@ -723,10 +626,7 @@ namespace Stroika::Frameworks::Led {
     {
         fTextInteractor.SetDefaultUpdateMode (tmpUpdateMode);
     }
-    inline TextInteractor::TemporarilySetUpdateMode::~TemporarilySetUpdateMode ()
-    {
-        fTextInteractor.SetDefaultUpdateMode (fOldValue);
-    }
+    inline TextInteractor::TemporarilySetUpdateMode::~TemporarilySetUpdateMode () { fTextInteractor.SetDefaultUpdateMode (fOldValue); }
 
 }
 

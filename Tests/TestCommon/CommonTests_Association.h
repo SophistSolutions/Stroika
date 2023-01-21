@@ -180,11 +180,13 @@ namespace CommonTests {
                     testingSchema.ApplyToContainerExtraTest (m2);
                     testingSchema.ApplyToContainerExtraTest (m3);
                     //VerifyTestResult (m == m3);
-                    VerifyTestResult ((typename Association<key_type, mapped_type>::template EqualsComparer<ValueEqualsCompareFunctionType>{testingSchema.fValueEqualsComparer}(m, m3)));
+                    VerifyTestResult ((typename Association<key_type, mapped_type>::template EqualsComparer<ValueEqualsCompareFunctionType>{
+                        testingSchema.fValueEqualsComparer}(m, m3)));
                     //VerifyTestResult (not (m != m3));
 
                     //VerifyTestResult (m != m2);
-                    VerifyTestResult ((not typename Association<key_type, mapped_type>::template EqualsComparer<ValueEqualsCompareFunctionType>{testingSchema.fValueEqualsComparer}(m, m2)));
+                    VerifyTestResult ((not typename Association<key_type, mapped_type>::template EqualsComparer<ValueEqualsCompareFunctionType>{
+                        testingSchema.fValueEqualsComparer}(m, m2)));
                     //VerifyTestResult (not (m == m2));
                 }
             }
@@ -361,7 +363,8 @@ namespace CommonTests {
         template <typename DEFAULT_TESTING_SCHEMA>
         void SimpleAssociationTest_All_ (const DEFAULT_TESTING_SCHEMA& testingSchema)
         {
-            Debug::TraceContextBumper ctx{L"CommonTests::AssociationTests::SimpleAssociationTest_AllTestsWhichDontRequireComparer_For_Type_"};
+            Debug::TraceContextBumper ctx{
+                L"CommonTests::AssociationTests::SimpleAssociationTest_AllTestsWhichDontRequireComparer_For_Type_"};
             Private_::Test1_BasicConstruction::DoAllTests_ (testingSchema);
             Private_::Test2_AddRemove::DoAllTests_ (testingSchema);
             Private_::Test_3_Iteration::DoAllTests_ (testingSchema);
@@ -375,7 +378,8 @@ namespace CommonTests {
         template <typename DEFAULT_TESTING_SCHEMA>
         void SimpleAssociationTest_WithDefaultEqCompaerer_ (const DEFAULT_TESTING_SCHEMA& testingSchema)
         {
-            Debug::TraceContextBumper ctx{L"CommonTests::AssociationTests::SimpleAssociationTest_AllTestsWhichDontRequireComparer_For_Type_"};
+            Debug::TraceContextBumper ctx{
+                L"CommonTests::AssociationTests::SimpleAssociationTest_AllTestsWhichDontRequireComparer_For_Type_"};
             Private_::Test5_ToFromSTLMap::DoAllTests_ (testingSchema);
 
             // @todo FIX - RetainAll has no good reason to require operator < etc to work o it but current impl does - LGP 2018-04-14

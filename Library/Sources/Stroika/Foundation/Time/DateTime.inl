@@ -46,20 +46,11 @@ namespace Stroika::Foundation::Time {
         , fTimeOfDay_{timeOfDay}
     {
     }
-    inline constexpr DateTime DateTime::kMin{Date::kMin, optional<TimeOfDay>{TimeOfDay::kMin}, Timezone::kUnknown};
-    inline constexpr DateTime DateTime::kMax{Date::kMax, optional<TimeOfDay>{TimeOfDay::kMax}, Timezone::kUnknown};
-    inline constexpr Date     DateTime::GetDate () const noexcept
-    {
-        return fDate_;
-    }
-    inline constexpr optional<TimeOfDay> DateTime::GetTimeOfDay () const noexcept
-    {
-        return fTimeOfDay_;
-    }
-    inline DateTime DateTime::Parse (const String& rep, const locale& l)
-    {
-        return Parse (rep, l, kDefaultParseFormats);
-    }
+    inline constexpr DateTime            DateTime::kMin{Date::kMin, optional<TimeOfDay>{TimeOfDay::kMin}, Timezone::kUnknown};
+    inline constexpr DateTime            DateTime::kMax{Date::kMax, optional<TimeOfDay>{TimeOfDay::kMax}, Timezone::kUnknown};
+    inline constexpr Date                DateTime::GetDate () const noexcept { return fDate_; }
+    inline constexpr optional<TimeOfDay> DateTime::GetTimeOfDay () const noexcept { return fTimeOfDay_; }
+    inline DateTime           DateTime::Parse (const String& rep, const locale& l) { return Parse (rep, l, kDefaultParseFormats); }
     inline optional<DateTime> DateTime::ParseQuietly (const String& rep, const String& formatPattern, size_t* consumedCharacters)
     {
         return ParseQuietly (rep, locale{}, formatPattern, consumedCharacters);
@@ -76,22 +67,10 @@ namespace Stroika::Foundation::Time {
     {
         return fDate_;
     }
-    inline Date DateTime::GetToday () noexcept
-    {
-        return Now ().GetDate ();
-    }
-    inline constexpr optional<Timezone> DateTime::GetTimezone () const noexcept
-    {
-        return fTimezone_;
-    }
-    inline strong_ordering DateTime::operator<=> (const DateTime& rhs) const
-    {
-        return ThreeWayComparer{}(*this, rhs);
-    }
-    inline bool DateTime::operator== (const DateTime& rhs) const
-    {
-        return ThreeWayComparer{}(*this, rhs) == 0;
-    }
+    inline Date                         DateTime::GetToday () noexcept { return Now ().GetDate (); }
+    inline constexpr optional<Timezone> DateTime::GetTimezone () const noexcept { return fTimezone_; }
+    inline strong_ordering DateTime::operator<=> (const DateTime& rhs) const { return ThreeWayComparer{}(*this, rhs); }
+    inline bool DateTime::operator== (const DateTime& rhs) const { return ThreeWayComparer{}(*this, rhs) == 0; }
 
     /*
      ********************************************************************************
@@ -119,7 +98,8 @@ namespace Stroika::Foundation::Configuration {
 #endif
     constexpr EnumNames<Stroika::Foundation::Time::DateTime::NonStandardPrintFormat> DefaultNames<Stroika::Foundation::Time::DateTime::NonStandardPrintFormat>::k{
         EnumNames<Stroika::Foundation::Time::DateTime::NonStandardPrintFormat>::BasicArrayInitializer{{
-            {Stroika::Foundation::Time::DateTime::NonStandardPrintFormat::eCurrentLocale_WithZerosStripped, L"Current-Locale-With-Zeros-Stripped"},
+            {Stroika::Foundation::Time::DateTime::NonStandardPrintFormat::eCurrentLocale_WithZerosStripped,
+             L"Current-Locale-With-Zeros-Stripped"},
         }}};
 }
 

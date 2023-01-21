@@ -29,10 +29,7 @@ MultiRowTextImager::MultiRowTextImager ()
 {
 }
 
-MultiRowTextImager::~MultiRowTextImager ()
-{
-    Assert (fTopLinePartitionMarkerInWindow == nullptr);
-}
+MultiRowTextImager::~MultiRowTextImager () { Assert (fTopLinePartitionMarkerInWindow == nullptr); }
 
 void MultiRowTextImager::HookLosingTextStore ()
 {
@@ -40,10 +37,7 @@ void MultiRowTextImager::HookLosingTextStore ()
     HookLosingTextStore_ ();
 }
 
-void MultiRowTextImager::HookLosingTextStore_ ()
-{
-    SetPartition (PartitionPtr ());
-}
+void MultiRowTextImager::HookLosingTextStore_ () { SetPartition (PartitionPtr ()); }
 
 void MultiRowTextImager::HookGainedNewTextStore ()
 {
@@ -137,10 +131,9 @@ size_t MultiRowTextImager::CountRowDifference (RowReference lhs, RowReference rh
     PartitionMarker* rhsPM          = rhs.GetPartitionMarker ();
     size_t           lhsMarkerStart = lhsPM->GetStart ();
     size_t           rhsMarkerStart = rhsPM->GetStart ();
-    bool             leftSmaller    = ((lhsMarkerStart < rhsMarkerStart) or
-                        ((lhsMarkerStart == rhsMarkerStart) and lhs.GetSubRow () <= rhs.GetSubRow ()));
-    RowReference     firstRowRef    = leftSmaller ? lhs : rhs;
-    RowReference     lastRowRef     = leftSmaller ? rhs : lhs;
+    bool leftSmaller = ((lhsMarkerStart < rhsMarkerStart) or ((lhsMarkerStart == rhsMarkerStart) and lhs.GetSubRow () <= rhs.GetSubRow ()));
+    RowReference firstRowRef = leftSmaller ? lhs : rhs;
+    RowReference lastRowRef  = leftSmaller ? rhs : lhs;
 
     size_t rowsGoneBy = 0;
     for (RowReference cur = firstRowRef; cur != lastRowRef; ++rowsGoneBy) {
@@ -172,10 +165,9 @@ size_t MultiRowTextImager::CountRowDifferenceLimited (RowReference lhs, RowRefer
     PartitionMarker* rhsPM          = rhs.GetPartitionMarker ();
     size_t           lhsMarkerStart = lhsPM->GetStart ();
     size_t           rhsMarkerStart = rhsPM->GetStart ();
-    bool             leftSmaller    = ((lhsMarkerStart < rhsMarkerStart) or
-                        ((lhsMarkerStart == rhsMarkerStart) and lhs.GetSubRow () <= rhs.GetSubRow ()));
-    RowReference     firstRowRef    = leftSmaller ? lhs : rhs;
-    RowReference     lastRowRef     = leftSmaller ? rhs : lhs;
+    bool leftSmaller = ((lhsMarkerStart < rhsMarkerStart) or ((lhsMarkerStart == rhsMarkerStart) and lhs.GetSubRow () <= rhs.GetSubRow ()));
+    RowReference firstRowRef = leftSmaller ? lhs : rhs;
+    RowReference lastRowRef  = leftSmaller ? rhs : lhs;
 
     size_t rowsGoneBy = 0;
     for (RowReference cur = firstRowRef; cur != lastRowRef; ++rowsGoneBy) {
@@ -194,10 +186,7 @@ size_t MultiRowTextImager::GetTopRowInWindow () const
     return (GetRowNumber (GetTopRowReferenceInWindow ()));
 }
 
-size_t MultiRowTextImager::GetTotalRowsInWindow () const
-{
-    return GetTotalRowsInWindow_ ();
-}
+size_t MultiRowTextImager::GetTotalRowsInWindow () const { return GetTotalRowsInWindow_ (); }
 
 size_t MultiRowTextImager::GetLastRowInWindow () const
 {
@@ -219,33 +208,21 @@ void MultiRowTextImager::SetTopRowInWindow (size_t newTopRow)
     // as well check we have our definitions straight...
 }
 
-void MultiRowTextImager::AssureWholeWindowUsedIfNeeded ()
-{
-    SetTopRowInWindow (GetTopRowReferenceInWindow ());
-}
+void MultiRowTextImager::AssureWholeWindowUsedIfNeeded () { SetTopRowInWindow (GetTopRowReferenceInWindow ()); }
 
 /*
     @METHOD:        MultiRowTextImager::GetMarkerPositionOfStartOfWindow
     @DESCRIPTION:   <p>Efficient implementation of @'TextImager::GetMarkerPositionOfStartOfWindow'</p>
     */
-size_t MultiRowTextImager::GetMarkerPositionOfStartOfWindow () const
-{
-    return (GetStartOfRow (GetTopRowReferenceInWindow ()));
-}
+size_t MultiRowTextImager::GetMarkerPositionOfStartOfWindow () const { return (GetStartOfRow (GetTopRowReferenceInWindow ())); }
 
 /*
     @METHOD:        MultiRowTextImager::GetMarkerPositionOfEndOfWindow
     @DESCRIPTION:   <p>Efficient implementation of @'TextImager::GetMarkerPositionOfEndOfWindow'</p>
     */
-size_t MultiRowTextImager::GetMarkerPositionOfEndOfWindow () const
-{
-    return GetEndOfRow (GetLastRowReferenceInWindow ());
-}
+size_t MultiRowTextImager::GetMarkerPositionOfEndOfWindow () const { return GetEndOfRow (GetLastRowReferenceInWindow ()); }
 
-size_t MultiRowTextImager::GetMarkerPositionOfStartOfLastRowOfWindow () const
-{
-    return GetStartOfRow (GetLastRowReferenceInWindow ());
-}
+size_t MultiRowTextImager::GetMarkerPositionOfStartOfLastRowOfWindow () const { return GetStartOfRow (GetLastRowReferenceInWindow ()); }
 
 ptrdiff_t MultiRowTextImager::CalculateRowDeltaFromCharDeltaFromTopOfWindow (long deltaChars) const
 {
@@ -291,8 +268,7 @@ void MultiRowTextImager::ScrollSoShowing (size_t markerPos, size_t andTryToShowM
             */
     size_t startOfWindow = GetMarkerPositionOfStartOfWindow ();
     size_t endOfWindow   = GetMarkerPositionOfEndOfWindow ();
-    if (markerPos >= startOfWindow and markerPos < endOfWindow and
-        andTryToShowMarkerPos >= startOfWindow and andTryToShowMarkerPos < endOfWindow) {
+    if (markerPos >= startOfWindow and markerPos < endOfWindow and andTryToShowMarkerPos >= startOfWindow and andTryToShowMarkerPos < endOfWindow) {
         ScrollSoShowingHHelper (markerPos, andTryToShowMarkerPos);
         return; // nothing (vertical) changed...
     }
@@ -475,10 +451,8 @@ void MultiRowTextImager::Draw (const Led_Rect& subsetToDraw, bool printing)
             }
             maxSubRow        = rowsLeftInWindow - 1 + startSubRow;
             size_t rowsDrawn = 0;
-            DrawPartitionElement (pm, startSubRow, maxSubRow, tablet,
-                                  (GetImageUsingOffscreenBitmaps () and not printing) ? &thisIsOurNewOST : nullptr,
-                                  printing, subsetToDraw,
-                                  &rowsLeftToDrawRect, &rowsDrawn);
+            DrawPartitionElement (pm, startSubRow, maxSubRow, tablet, (GetImageUsingOffscreenBitmaps () and not printing) ? &thisIsOurNewOST : nullptr,
+                                  printing, subsetToDraw, &rowsLeftToDrawRect, &rowsDrawn);
             Assert (rowsLeftInWindow >= rowsDrawn);
             rowsLeftInWindow -= rowsDrawn;
         }
@@ -500,10 +474,8 @@ void MultiRowTextImager::Draw (const Led_Rect& subsetToDraw, bool printing)
             // IN OTHER WORDS, CHANGE A COUPLE <= to < - LGP 970315
 
             // QUICKIE INTERSECT TEST
-            if (
-                (
-                    (eraser.top >= subsetToDraw.top and eraser.top <= subsetToDraw.bottom) or
-                    (eraser.bottom >= subsetToDraw.top and eraser.bottom <= subsetToDraw.bottom)) and
+            if (((eraser.top >= subsetToDraw.top and eraser.top <= subsetToDraw.bottom) or
+                 (eraser.bottom >= subsetToDraw.top and eraser.bottom <= subsetToDraw.bottom)) and
                 (eraser.GetHeight () > 0 and eraser.GetWidth () > 0)) {
                 if (GetImageUsingOffscreenBitmaps () and not printing) {
                     tablet = thisIsOurNewOST.PrepareRect (eraser);
@@ -553,7 +525,8 @@ void MultiRowTextImager::Draw (const Led_Rect& subsetToDraw, bool printing)
     @METHOD:        MultiRowTextImager::DrawPartitionElement
     @DESCRIPTION:   <p></p>
     */
-void MultiRowTextImager::DrawPartitionElement (PartitionMarker* pm, size_t startSubRow, size_t maxSubRow, Tablet* tablet, OffscreenTablet* offscreenTablet, bool printing, const Led_Rect& subsetToDraw, Led_Rect* remainingDrawArea, size_t* rowsDrawn)
+void MultiRowTextImager::DrawPartitionElement (PartitionMarker* pm, size_t startSubRow, size_t maxSubRow, Tablet* tablet, OffscreenTablet* offscreenTablet,
+                                               bool printing, const Led_Rect& subsetToDraw, Led_Rect* remainingDrawArea, size_t* rowsDrawn)
 {
     RequireNotNull (pm);
     RequireNotNull (remainingDrawArea);
@@ -580,9 +553,7 @@ void MultiRowTextImager::DrawPartitionElement (PartitionMarker* pm, size_t start
         Led_Rect currentRowRect     = *remainingDrawArea;
         currentRowRect.bottom       = currentRowRect.top + pmCacheInfo.GetRowHeight (subRow);
         DistanceType interlineSpace = (subRow == pmCacheInfo.GetLastRow ()) ? pmCacheInfo.GetInterLineSpace () : 0;
-        if (
-            (currentRowRect.bottom + CoordinateType (interlineSpace) > subsetToDraw.top) and
-            (currentRowRect.top < subsetToDraw.bottom)) {
+        if ((currentRowRect.bottom + CoordinateType (interlineSpace) > subsetToDraw.top) and (currentRowRect.top < subsetToDraw.bottom)) {
 
             /*
                     *  patch start/end/len to take into account rows...
@@ -668,8 +639,7 @@ Led_Rect MultiRowTextImager::GetCharLocation (size_t afterPosition) const
 Led_Rect MultiRowTextImager::GetCharWindowLocation (size_t afterPosition) const
 {
     Led_Point windowOrigin = GetWindowRect ().GetOrigin () - Led_Point (0, GetHScrollPos ());
-    return (windowOrigin +
-            GetCharLocationRowRelative (afterPosition, GetTopRowReferenceInWindow (), GetTotalRowsInWindow_ ()));
+    return (windowOrigin + GetCharLocationRowRelative (afterPosition, GetTopRowReferenceInWindow (), GetTotalRowsInWindow_ ()));
 }
 
 size_t MultiRowTextImager::GetCharAtLocation (const Led_Point& where) const
@@ -680,9 +650,7 @@ size_t MultiRowTextImager::GetCharAtLocation (const Led_Point& where) const
 size_t MultiRowTextImager::GetCharAtWindowLocation (const Led_Point& where) const
 {
     Led_Point windowOrigin = GetWindowRect ().GetOrigin () - Led_Point (0, GetHScrollPos ());
-    return (GetCharAtLocationRowRelative (where - windowOrigin,
-                                          GetTopRowReferenceInWindow (),
-                                          GetTotalRowsInWindow_ ()));
+    return (GetCharAtLocationRowRelative (where - windowOrigin, GetTopRowReferenceInWindow (), GetTotalRowsInWindow_ ()));
 }
 
 size_t MultiRowTextImager::GetStartOfRow (size_t rowNumber) const
@@ -837,8 +805,8 @@ DistanceType MultiRowTextImager::GetRowRelativeBaselineOfRowContainingPosition (
     return MeasureSegmentBaseLine (startOfRow, endOfRow);
 }
 
-void MultiRowTextImager::GetStableTypingRegionContaingMarkerRange (size_t fromMarkerPos, size_t toMarkerPos,
-                                                                   size_t* expandedFromMarkerPos, size_t* expandedToMarkerPos) const
+void MultiRowTextImager::GetStableTypingRegionContaingMarkerRange (size_t fromMarkerPos, size_t toMarkerPos, size_t* expandedFromMarkerPos,
+                                                                   size_t* expandedToMarkerPos) const
 {
     AssertNotNull (expandedFromMarkerPos);
     AssertNotNull (expandedToMarkerPos);
@@ -1262,8 +1230,7 @@ DistanceType MultiRowTextImager::CalculateInterLineSpace (const PartitionMarker*
     */
 bool MultiRowTextImager::ContainsMappedDisplayCharacters (const Led_tChar* text, size_t nTChars) const
 {
-    return ContainsMappedDisplayCharacters_HelperForChar (text, nTChars, '\n') or
-           inherited::ContainsMappedDisplayCharacters (text, nTChars);
+    return ContainsMappedDisplayCharacters_HelperForChar (text, nTChars, '\n') or inherited::ContainsMappedDisplayCharacters (text, nTChars);
 }
 
 /*
@@ -1285,10 +1252,7 @@ size_t MultiRowTextImager::RemoveMappedDisplayCharacters (Led_tChar* copyText, s
         ******************* MultiRowTextImager::PartitionElementCacheInfo **************
         ********************************************************************************
         */
-void MultiRowTextImager::PartitionElementCacheInfo::Clear ()
-{
-    fRep = make_shared<Rep> ();
-}
+void MultiRowTextImager::PartitionElementCacheInfo::Clear () { fRep = make_shared<Rep> (); }
 
 void MultiRowTextImager::PartitionElementCacheInfo::IncrementRowCountAndFixCacheBuffers (size_t newStart, DistanceType newRowsHeight)
 {
@@ -1403,10 +1367,7 @@ MultiRowTextImager::PartitionElementCacheInfo MultiRowTextImager::PMInfoCacheMgr
     return i->second;
 }
 
-void MultiRowTextImager::PMInfoCacheMgr::ClearCache ()
-{
-    fPMCache.clear ();
-}
+void MultiRowTextImager::PMInfoCacheMgr::ClearCache () { fPMCache.clear (); }
 
 void MultiRowTextImager::PMInfoCacheMgr::AboutToSplit (PartitionMarker* pm, size_t /*at*/, void** infoRecord) const noexcept
 {

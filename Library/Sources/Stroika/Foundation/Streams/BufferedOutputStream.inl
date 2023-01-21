@@ -74,10 +74,7 @@ namespace Stroika::Foundation ::Streams {
             fRealOut_.Close ();
             Assert (fRealOut_ == nullptr);
         }
-        virtual bool IsOpenWrite () const override
-        {
-            return fRealOut_ != nullptr;
-        }
+        virtual bool           IsOpenWrite () const override { return fRealOut_ != nullptr; }
         virtual SeekOffsetType GetWriteOffset () const override
         {
             RequireNotReached ();
@@ -178,7 +175,8 @@ namespace Stroika::Foundation ::Streams {
         return make_shared<Rep_> (realOut);
     }
     template <typename ELEMENT_TYPE>
-    inline auto BufferedOutputStream<ELEMENT_TYPE>::New (Execution::InternallySynchronized internallySynchronized, const typename OutputStream<ELEMENT_TYPE>::Ptr& realOut) -> Ptr
+    inline auto BufferedOutputStream<ELEMENT_TYPE>::New (Execution::InternallySynchronized               internallySynchronized,
+                                                         const typename OutputStream<ELEMENT_TYPE>::Ptr& realOut) -> Ptr
     {
         switch (internallySynchronized) {
             case Execution::eInternallySynchronized:

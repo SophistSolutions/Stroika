@@ -30,8 +30,7 @@ uid_t Platform::POSIX::UserName2UID (const String& name)
     }
     StackBuffer<char> buf{Memory::eUninitialized, bufsize};
 
-    struct passwd pwd {
-    };
+    struct passwd  pwd {};
     struct passwd* result = nullptr;
     int            err    = ::getpwnam_r (name.AsNarrowSDKString ().c_str (), &pwd, buf.data (), bufsize, &result);
     if (err < 0) [[unlikely]] {
@@ -56,8 +55,7 @@ String Platform::POSIX::uid_t2UserName (uid_t uid)
     }
     StackBuffer<char> buf{Memory::eUninitialized, bufsize};
 
-    struct passwd pwd {
-    };
+    struct passwd  pwd {};
     struct passwd* result = nullptr;
     int            err    = ::getpwuid_r (uid, &pwd, buf.data (), bufsize, &result);
     if (err < 0) {
@@ -74,17 +72,11 @@ String Platform::POSIX::uid_t2UserName (uid_t uid)
  ****************************** Platform::POSIX::GetUID *************************
  ********************************************************************************
  */
-uid_t Platform::POSIX::GetUID ()
-{
-    return ::getuid ();
-}
+uid_t Platform::POSIX::GetUID () { return ::getuid (); }
 
 /*
  ********************************************************************************
  ********************* Platform::POSIX::GetEffectiveUID *************************
  ********************************************************************************
  */
-uid_t Platform::POSIX::GetEffectiveUID ()
-{
-    return ::geteuid ();
-}
+uid_t Platform::POSIX::GetEffectiveUID () { return ::geteuid (); }

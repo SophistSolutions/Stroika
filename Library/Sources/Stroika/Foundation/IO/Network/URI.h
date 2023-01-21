@@ -115,7 +115,8 @@ namespace Stroika::Foundation::IO::Network {
          *        on GCC. THIS compiles fine, but then later bits of code that use it fail to compile (g++ 9 at least).
          */
         URI () = default;
-        URI (const optional<SchemeType>& scheme, const optional<Authority>& authority, const String& path = String{}, const optional<String>& query = nullopt, const optional<String>& fragment = nullopt);
+        URI (const optional<SchemeType>& scheme, const optional<Authority>& authority, const String& path = String{},
+             const optional<String>& query = nullopt, const optional<String>& fragment = nullopt);
         //URI (const string& encodedURI);
         template <Characters::ConvertibleToString STRISH_TYPE>
         URI (STRISH_TYPE&& encodedURI);
@@ -363,11 +364,11 @@ namespace Stroika::Foundation::IO::Network {
         static void CheckValidPathForAuthority_ (const optional<Authority>& authority, const String& path);
 
     private:
-        optional<SchemeType>                                           fScheme_;    // aka protocol
-        optional<Authority>                                            fAuthority_; // aka host+port+username
-        String                                                         fPath_;      // Can be empty string, but documented as always 'present' even as empty so model that way
-        optional<String>                                               fQuery_;     // ditto
-        optional<String>                                               fFragment_;  // ditto
+        optional<SchemeType> fScheme_;    // aka protocol
+        optional<Authority>  fAuthority_; // aka host+port+username
+        String               fPath_;      // Can be empty string, but documented as always 'present' even as empty so model that way
+        optional<String>     fQuery_;     // ditto
+        optional<String>     fFragment_;  // ditto
         [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
     };
 

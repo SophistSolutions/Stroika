@@ -260,7 +260,9 @@ namespace Stroika::Foundation::Cache {
         using TraitsType = TRAITS;
 
     public:
-        static_assert (Common::IsStrictInOrderComparer<typename TraitsType::InOrderComparerType> (), "TraitsType::InOrderComparerType - comparer not valid IsStrictInOrderComparer- see ComparisonRelationDeclaration<Common::ComparisonRelationType::eStrictInOrder, function<bool(T, T)>");
+        static_assert (Common::IsStrictInOrderComparer<typename TraitsType::InOrderComparerType> (),
+                       "TraitsType::InOrderComparerType - comparer not valid IsStrictInOrderComparer- see "
+                       "ComparisonRelationDeclaration<Common::ComparisonRelationType::eStrictInOrder, function<bool(T, T)>");
 
     public:
         using LookupMarksDataAsRefreshed = TimedCacheSupport::LookupMarksDataAsRefreshed;
@@ -340,7 +342,10 @@ namespace Stroika::Foundation::Cache {
          *
          *  \note   This function may update the TimedCache (which is why it is non-const).
          */
-        nonvirtual VALUE LookupValue (typename Configuration::ArgByValueType<KEY> key, const function<VALUE (typename Configuration::ArgByValueType<KEY>)>& cacheFiller, LookupMarksDataAsRefreshed successfulLookupRefreshesAcceesFlag = LookupMarksDataAsRefreshed::eDontTreatFoundThroughLookupAsRefreshed, PurgeSpoiledDataFlagType purgeSpoiledData = PurgeSpoiledDataFlagType::eAutomaticallyPurgeSpoiledData);
+        nonvirtual VALUE LookupValue (typename Configuration::ArgByValueType<KEY>                          key,
+                                      const function<VALUE (typename Configuration::ArgByValueType<KEY>)>& cacheFiller,
+                                      LookupMarksDataAsRefreshed successfulLookupRefreshesAcceesFlag = LookupMarksDataAsRefreshed::eDontTreatFoundThroughLookupAsRefreshed,
+                                      PurgeSpoiledDataFlagType purgeSpoiledData = PurgeSpoiledDataFlagType::eAutomaticallyPurgeSpoiledData);
 
     public:
         /**
@@ -350,8 +355,10 @@ namespace Stroika::Foundation::Cache {
          *  to automatically be purged as it becomes irrelevant (@see PurgeSpoiledData). But for performance sake,
          *  callers may call Add (..., eDontAutomaticallyPurgeSpoiledData)
          */
-        nonvirtual void Add (typename Configuration::ArgByValueType<KEY> key, typename Configuration::ArgByValueType<VALUE> result, PurgeSpoiledDataFlagType purgeSpoiledData = PurgeSpoiledDataFlagType::eAutomaticallyPurgeSpoiledData);
-        nonvirtual void Add (typename Configuration::ArgByValueType<KEY> key, typename Configuration::ArgByValueType<VALUE> result, Time::Duration freshAsOf);
+        nonvirtual void Add (typename Configuration::ArgByValueType<KEY> key, typename Configuration::ArgByValueType<VALUE> result,
+                             PurgeSpoiledDataFlagType purgeSpoiledData = PurgeSpoiledDataFlagType::eAutomaticallyPurgeSpoiledData);
+        nonvirtual void Add (typename Configuration::ArgByValueType<KEY> key, typename Configuration::ArgByValueType<VALUE> result,
+                             Time::Duration freshAsOf);
 
     public:
         /**

@@ -105,10 +105,7 @@ Exception::Exception (Status status, const String& reason)
 {
 }
 
-String Exception::GetReason () const
-{
-    return mkReason_ (fStatus_, fReason_);
-}
+String Exception::GetReason () const { return mkReason_ (fStatus_, fReason_); }
 
 String Exception::GetStandardTextForStatus (Status s, bool forceAlwaysFound)
 {

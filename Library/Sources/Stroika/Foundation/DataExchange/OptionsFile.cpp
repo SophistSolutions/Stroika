@@ -60,19 +60,28 @@ String OptionsFile::LoggerMessage::FormatMessage () const
         case Msg::eFailedToReadFile:
             return Characters::Format (L"Failed to read file: %s%s.", Characters::ToString (NullCoalesce (fFileName)).c_str (), details.c_str ());
         case Msg::eFailedToParseReadFile:
-            return Characters::Format (L"Error analyzing configuration file %s - using defaults%s.", Characters::ToString (NullCoalesce (fFileName)).c_str (), details.c_str ());
+            return Characters::Format (L"Error analyzing configuration file %s - using defaults%s.",
+                                       Characters::ToString (NullCoalesce (fFileName)).c_str (), details.c_str ());
         case Msg::eFailedToParseReadFileBadFormat:
-            return Characters::Format (L"Error analyzing configuration file (because bad format) %s - using defaults%s.", Characters::ToString (NullCoalesce (fFileName)).c_str (), details.c_str ());
+            return Characters::Format (L"Error analyzing configuration file (because bad format) %s - using defaults%s.",
+                                       Characters::ToString (NullCoalesce (fFileName)).c_str (), details.c_str ());
         case Msg::eFailedToCompareReadFile:
-            return Characters::Format (L"Failed to compare configuration file: %s%s.", Characters::ToString (NullCoalesce (fFileName)).c_str (), details.c_str ());
+            return Characters::Format (L"Failed to compare configuration file: %s%s.",
+                                       Characters::ToString (NullCoalesce (fFileName)).c_str (), details.c_str ());
         case Msg::eWritingConfigFile_SoDefaultsEditable:
-            return Characters::Format (L"Writing configuration file %s because not found (and so defaults are more easily seen and editable)%s.", Characters::ToString (NullCoalesce (fFileName)).c_str (), details.c_str ());
+            return Characters::Format (
+                L"Writing configuration file %s because not found (and so defaults are more easily seen and editable)%s.",
+                Characters::ToString (NullCoalesce (fFileName)).c_str (), details.c_str ());
         case Msg::eWritingConfigFile_BecauseUpgraded:
-            return Characters::Format (L"Writing configuration file %s in a new location because the software has been upgraded%s.", Characters::ToString (NullCoalesce (fFileName)).c_str (), details.c_str ());
+            return Characters::Format (L"Writing configuration file %s in a new location because the software has been upgraded%s.",
+                                       Characters::ToString (NullCoalesce (fFileName)).c_str (), details.c_str ());
         case Msg::eWritingConfigFile_BecauseSomethingChanged:
-            return Characters::Format (L"Writing configuration file %s because something changed (e.g. a default, or field added/removed)%s.", Characters::ToString (NullCoalesce (fFileName)).c_str (), details.c_str ());
+            return Characters::Format (
+                L"Writing configuration file %s because something changed (e.g. a default, or field added/removed)%s.",
+                Characters::ToString (NullCoalesce (fFileName)).c_str (), details.c_str ());
         case Msg::eFailedToWriteInUseValues:
-            return Characters::Format (L"Failed to write default (in use) values to file: %s%s.", Characters::ToString (NullCoalesce (fFileName)).c_str (), details.c_str ());
+            return Characters::Format (L"Failed to write default (in use) values to file: %s%s.",
+                                       Characters::ToString (NullCoalesce (fFileName)).c_str (), details.c_str ());
         default:
             RequireNotReached ();
             return String{};
@@ -84,43 +93,42 @@ String OptionsFile::LoggerMessage::FormatMessage () const
  ************************** DataExchange::OptionsFile ***************************
  ********************************************************************************
  */
-const OptionsFile::ModuleDataUpgraderType OptionsFile::kDefaultUpgrader = [] (const optional<Configuration::Version>& /*version*/, const VariantValue& rawVariantValue) -> VariantValue {
-    return rawVariantValue;
+const OptionsFile::ModuleDataUpgraderType OptionsFile::kDefaultUpgrader =
+    [] (const optional<Configuration::Version>& /*version*/, const VariantValue& rawVariantValue) -> VariantValue { return rawVariantValue; };
+
+const OptionsFile::LoggerType OptionsFile::kDefaultLogger = [] (const LoggerMessage& message) {
+    using Execution::Logger;
+    Logger::Priority priority = Logger::eError;
+    using Msg                 = OptionsFile::LoggerMessage::Msg;
+    switch (message.fMsg) {
+        case Msg::eFailedToReadFile:
+            priority = Logger::eWarning; // could be just because new system, no file
+            break;
+        case Msg::eWritingConfigFile_SoDefaultsEditable:
+        case Msg::eWritingConfigFile_BecauseUpgraded:
+        case Msg::eWritingConfigFile_BecauseSomethingChanged:
+            priority = Logger::eInfo;
+            break;
+
+        case Msg::eFailedToParseReadFile:
+        case Msg::eFailedToParseReadFileBadFormat:
+            // Most likely very bad - as critical configuration data will be lost, and overwritten with 'defaults'
+            priority = Logger::eCriticalError;
+            break;
+    }
+    Logger::sThe.Log (priority, L"%s", message.FormatMessage ().c_str ());
 };
-
-const OptionsFile::LoggerType OptionsFile::kDefaultLogger =
-    [] (const LoggerMessage& message) {
-        using Execution::Logger;
-        Logger::Priority priority = Logger::eError;
-        using Msg                 = OptionsFile::LoggerMessage::Msg;
-        switch (message.fMsg) {
-            case Msg::eFailedToReadFile:
-                priority = Logger::eWarning; // could be just because new system, no file
-                break;
-            case Msg::eWritingConfigFile_SoDefaultsEditable:
-            case Msg::eWritingConfigFile_BecauseUpgraded:
-            case Msg::eWritingConfigFile_BecauseSomethingChanged:
-                priority = Logger::eInfo;
-                break;
-
-            case Msg::eFailedToParseReadFile:
-            case Msg::eFailedToParseReadFileBadFormat:
-                // Most likely very bad - as critical configuration data will be lost, and overwritten with 'defaults'
-                priority = Logger::eCriticalError;
-                break;
-        }
-        Logger::sThe.Log (priority, L"%s", message.FormatMessage ().c_str ());
-    };
 
 OptionsFile::ModuleNameToFileNameMapperType OptionsFile::mkFilenameMapper (const String& appName)
 {
-    return
-        [appName] (const String& moduleName, const String& fileSuffix) -> filesystem::path {
-            return IO::FileSystem::WellKnownLocations::GetApplicationData () / IO::FileSystem::ToPath (appName) / IO::FileSystem::ToPath (moduleName + fileSuffix);
-        };
+    return [appName] (const String& moduleName, const String& fileSuffix) -> filesystem::path {
+        return IO::FileSystem::WellKnownLocations::GetApplicationData () / IO::FileSystem::ToPath (appName) /
+               IO::FileSystem::ToPath (moduleName + fileSuffix);
+    };
 }
 
-const OptionsFile::ModuleNameToFileVersionMapperType OptionsFile::kDefaultModuleNameToFileVersionMapper = [] ([[maybe_unused]] const String& /*moduleName*/) -> optional<Configuration::Version> {
+const OptionsFile::ModuleNameToFileVersionMapperType OptionsFile::kDefaultModuleNameToFileVersionMapper =
+    [] ([[maybe_unused]] const String& /*moduleName*/) -> optional<Configuration::Version> {
     return optional<Configuration::Version> (); // default to don't know
 };
 
@@ -128,44 +136,27 @@ const OptionsFile::ModuleNameToFileVersionMapperType OptionsFile::kDefaultModule
 const Variant::Reader OptionsFile::kDefaultReader = Variant::JSON::Reader{};
 const Variant::Writer OptionsFile::kDefaultWriter = Variant::JSON::Writer{};
 
-OptionsFile::OptionsFile (
-    const String&                     modName,
-    const ObjectVariantMapper&        mapper,
-    ModuleDataUpgraderType            moduleUpgrader,
-    ModuleNameToFileNameMapperType    moduleNameToFileNameMapper,
-    ModuleNameToFileVersionMapperType moduleNameToReadFileVersion,
-    LoggerType                        logger,
-    Variant::Reader                   reader,
-    Variant::Writer                   writer)
-    : OptionsFile{modName, mapper, moduleUpgrader, moduleNameToFileNameMapper, moduleNameToFileNameMapper, moduleNameToReadFileVersion, logger, reader, writer, reader.GetDefaultFileSuffix ()}
+OptionsFile::OptionsFile (const String& modName, const ObjectVariantMapper& mapper, ModuleDataUpgraderType moduleUpgrader,
+                          ModuleNameToFileNameMapperType moduleNameToFileNameMapper, ModuleNameToFileVersionMapperType moduleNameToReadFileVersion,
+                          LoggerType logger, Variant::Reader reader, Variant::Writer writer)
+    : OptionsFile{modName, mapper, moduleUpgrader, moduleNameToFileNameMapper,    moduleNameToFileNameMapper, moduleNameToReadFileVersion,
+                  logger,  reader, writer,         reader.GetDefaultFileSuffix ()}
 {
 }
 
-OptionsFile::OptionsFile (
-    const String&                     modName,
-    const ObjectVariantMapper&        mapper,
-    ModuleDataUpgraderType            moduleUpgrader,
-    ModuleNameToFileNameMapperType    moduleNameToReadFileNameMapper,
-    ModuleNameToFileNameMapperType    moduleNameToWriteFileNameMapper,
-    ModuleNameToFileVersionMapperType moduleNameToReadFileVersion,
-    LoggerType                        logger,
-    Variant::Reader                   reader,
-    Variant::Writer                   writer)
-    : OptionsFile{modName, mapper, moduleUpgrader, moduleNameToReadFileNameMapper, moduleNameToWriteFileNameMapper, moduleNameToReadFileVersion, logger, reader, writer, reader.GetDefaultFileSuffix ()}
+OptionsFile::OptionsFile (const String& modName, const ObjectVariantMapper& mapper, ModuleDataUpgraderType moduleUpgrader,
+                          ModuleNameToFileNameMapperType moduleNameToReadFileNameMapper, ModuleNameToFileNameMapperType moduleNameToWriteFileNameMapper,
+                          ModuleNameToFileVersionMapperType moduleNameToReadFileVersion, LoggerType logger, Variant::Reader reader, Variant::Writer writer)
+    : OptionsFile{
+          modName, mapper, moduleUpgrader, moduleNameToReadFileNameMapper, moduleNameToWriteFileNameMapper, moduleNameToReadFileVersion,
+          logger,  reader, writer,         reader.GetDefaultFileSuffix ()}
 {
 }
 
-OptionsFile::OptionsFile (
-    const String&                     modName,
-    const ObjectVariantMapper&        mapper,
-    ModuleDataUpgraderType            moduleUpgrader,
-    ModuleNameToFileNameMapperType    moduleNameToReadFileNameMapper,
-    ModuleNameToFileNameMapperType    moduleNameToWriteFileNameMapper,
-    ModuleNameToFileVersionMapperType moduleNameToReadFileVersion,
-    LoggerType                        logger,
-    Variant::Reader                   reader,
-    Variant::Writer                   writer,
-    const String&                     fileSuffix)
+OptionsFile::OptionsFile (const String& modName, const ObjectVariantMapper& mapper, ModuleDataUpgraderType moduleUpgrader,
+                          ModuleNameToFileNameMapperType moduleNameToReadFileNameMapper, ModuleNameToFileNameMapperType moduleNameToWriteFileNameMapper,
+                          ModuleNameToFileVersionMapperType moduleNameToReadFileVersion, LoggerType logger, Variant::Reader reader,
+                          Variant::Writer writer, const String& fileSuffix)
     : fModuleName_{modName}
     , fMapper_{mapper}
     , fModuleDataUpgrader_{moduleUpgrader}
@@ -181,13 +172,15 @@ OptionsFile::OptionsFile (
 
 BLOB OptionsFile::ReadRaw () const
 {
-    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"OptionsFile::ReadRaw", L"readfilename=%s", Characters::ToString (GetReadFilePath_ ()).c_str ())};
+    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"OptionsFile::ReadRaw", L"readfilename=%s",
+                                                                                 Characters::ToString (GetReadFilePath_ ()).c_str ())};
     return IO::FileSystem::FileInputStream::New (GetReadFilePath_ ()).ReadAll ();
 }
 
 void OptionsFile::WriteRaw (const BLOB& blob)
 {
-    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"OptionsFile::WriteRaw", L"writefilename=%s", Characters::ToString (GetWriteFilePath_ ()).c_str ())};
+    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"OptionsFile::WriteRaw", L"writefilename=%s",
+                                                                                 Characters::ToString (GetWriteFilePath_ ()).c_str ())};
     if (GetReadFilePath_ () == GetWriteFilePath_ ()) {
         try {
             if (ReadRaw () == blob) {
@@ -243,12 +236,6 @@ void OptionsFile::Write (const VariantValue& optionsObject)
     WriteRaw (tmp.As<BLOB> ());
 }
 
-filesystem::path OptionsFile::GetReadFilePath_ () const
-{
-    return fModuleNameToReadFileNameMapper_ (fModuleName_, fFileSuffix_);
-}
+filesystem::path OptionsFile::GetReadFilePath_ () const { return fModuleNameToReadFileNameMapper_ (fModuleName_, fFileSuffix_); }
 
-filesystem::path OptionsFile::GetWriteFilePath_ () const
-{
-    return fModuleNameToWriteFileNameMapper_ (fModuleName_, fFileSuffix_);
-}
+filesystem::path OptionsFile::GetWriteFilePath_ () const { return fModuleNameToWriteFileNameMapper_ (fModuleName_, fFileSuffix_); }

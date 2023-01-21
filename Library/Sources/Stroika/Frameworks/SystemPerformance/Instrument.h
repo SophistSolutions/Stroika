@@ -100,7 +100,8 @@ namespace Stroika::Frameworks::SystemPerformance {
         Instrument () = delete;
         Instrument (Instrument&& src) noexcept;
         Instrument (const Instrument& src);
-        Instrument (InstrumentNameType instrumentName, unique_ptr<IRep>&& capturer, const Set<MeasurementType>& capturedMeasurements, const Mapping<type_index, MeasurementType>& typeToMeasurementTypeMap, const DataExchange::ObjectVariantMapper& objectVariantMapper);
+        Instrument (InstrumentNameType instrumentName, unique_ptr<IRep>&& capturer, const Set<MeasurementType>& capturedMeasurements,
+                    const Mapping<type_index, MeasurementType>& typeToMeasurementTypeMap, const DataExchange::ObjectVariantMapper& objectVariantMapper);
 
     public:
         nonvirtual Instrument& operator= (Instrument&& rhs) noexcept;
@@ -180,10 +181,7 @@ namespace Stroika::Frameworks::SystemPerformance {
     public:
         /**
          */
-        nonvirtual strong_ordering operator<=> (const Instrument& rhs) const
-        {
-            return fInstrumentName_ <=> rhs.fInstrumentName_;
-        }
+        nonvirtual strong_ordering operator<=> (const Instrument& rhs) const { return fInstrumentName_ <=> rhs.fInstrumentName_; }
 
     private:
         InstrumentNameType                                             fInstrumentName_;

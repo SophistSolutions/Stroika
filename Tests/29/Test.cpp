@@ -141,10 +141,7 @@ namespace {
         using COMPARE_SimpleClass = equal_to<SimpleClass>;
         struct COMPARE_SimpleClassWithoutComparisonOperators {
             using value_type = SimpleClassWithoutComparisonOperators;
-            bool operator() (value_type v1, value_type v2) const
-            {
-                return v1.GetValue () == v2.GetValue ();
-            }
+            bool operator() (value_type v1, value_type v2) const { return v1.GetValue () == v2.GetValue (); }
         };
 
         Tests_All_For_Type_<Stack<size_t>, COMPARE_SIZET> ();

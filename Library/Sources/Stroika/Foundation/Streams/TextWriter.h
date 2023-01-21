@@ -118,7 +118,8 @@ namespace Stroika::Foundation::Streams {
         static shared_ptr<OutputStream<Characters::Character>::_IRep> mk_ (const OutputStream<byte>::Ptr& src, Format format);
 
     private:
-        using InternalSyncRep_ = Streams::InternallySynchronizedOutputStream<Characters::Character, TextWriter, OutputStream<Characters::Character>::_IRep>;
+        using InternalSyncRep_ =
+            Streams::InternallySynchronizedOutputStream<Characters::Character, TextWriter, OutputStream<Characters::Character>::_IRep>;
     };
 
     /**

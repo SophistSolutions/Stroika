@@ -106,11 +106,11 @@ namespace Stroika::Foundation::Execution {
      *      @see IgnoreExceptionsExceptThreadAbortForCall
      *      @see IgnoreExceptionsExceptThreadInterruptForCall
      */
-#define IgnoreExceptionsForCall(theCode) \
-    try {                                \
-        theCode;                         \
-    }                                    \
-    catch (...) {                        \
+#define IgnoreExceptionsForCall(theCode)                                                                                                   \
+    try {                                                                                                                                  \
+        theCode;                                                                                                                           \
+    }                                                                                                                                      \
+    catch (...) {                                                                                                                          \
     }
 
     /**
@@ -119,14 +119,14 @@ namespace Stroika::Foundation::Execution {
      *      @see IgnoreExceptionsForCall
      *      @see IgnoreExceptionsExceptThreadInterruptForCall
      */
-#define IgnoreExceptionsExceptThreadAbortForCall(theCode)                   \
-    try {                                                                   \
-        theCode;                                                            \
-    }                                                                       \
-    catch (const Stroika::Foundation::Execution::Thread::AbortException&) { \
-        Execution::ReThrow ();                                              \
-    }                                                                       \
-    catch (...) {                                                           \
+#define IgnoreExceptionsExceptThreadAbortForCall(theCode)                                                                                  \
+    try {                                                                                                                                  \
+        theCode;                                                                                                                           \
+    }                                                                                                                                      \
+    catch (const Stroika::Foundation::Execution::Thread::AbortException&) {                                                                \
+        Execution::ReThrow ();                                                                                                             \
+    }                                                                                                                                      \
+    catch (...) {                                                                                                                          \
     }
 
     /**
@@ -135,14 +135,14 @@ namespace Stroika::Foundation::Execution {
      *      @see IgnoreExceptionsForCall
      *      @see IgnoreExceptionsExceptThreadAbortForCall
      */
-#define IgnoreExceptionsExceptThreadInterruptForCall(theCode)                   \
-    try {                                                                       \
-        theCode;                                                                \
-    }                                                                           \
-    catch (const Stroika::Foundation::Execution::Thread::InterruptException&) { \
-        Execution::ReThrow ();                                                  \
-    }                                                                           \
-    catch (...) {                                                               \
+#define IgnoreExceptionsExceptThreadInterruptForCall(theCode)                                                                              \
+    try {                                                                                                                                  \
+        theCode;                                                                                                                           \
+    }                                                                                                                                      \
+    catch (const Stroika::Foundation::Execution::Thread::InterruptException&) {                                                            \
+        Execution::ReThrow ();                                                                                                             \
+    }                                                                                                                                      \
+    catch (...) {                                                                                                                          \
     }
 
 }

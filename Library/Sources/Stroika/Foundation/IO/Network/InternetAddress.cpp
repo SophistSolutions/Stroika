@@ -38,10 +38,9 @@ namespace {
     int inet_pton (int af, const char* src, void* dst)
     {
         IO::Network::Platform::Windows::WinSock::AssureStarted ();
-        struct sockaddr_storage ss {
-        };
-        int     size = sizeof (ss);
-        wchar_t src_copy[INET6_ADDRSTRLEN + 1]; // stupid non-const API
+        struct sockaddr_storage ss {};
+        int                     size = sizeof (ss);
+        wchar_t                 src_copy[INET6_ADDRSTRLEN + 1]; // stupid non-const API
         {
             const char* si = src;
             for (; *si != '\0'; ++si) {
@@ -67,8 +66,7 @@ namespace {
     const char* inet_ntop (int af, const void* src, char* dst, socklen_t size)
     {
         IO::Network::Platform::Windows::WinSock::AssureStarted ();
-        struct sockaddr_storage ss {
-        };
+        struct sockaddr_storage ss {};
         ss.ss_family = af;
         switch (af) {
             case AF_INET:
@@ -192,7 +190,7 @@ namespace Stroika::Foundation::IO::Network {
             case AddressFamily::V4: {
                 char        buf[INET_ADDRSTRLEN];
                 const char* result = ::inet_ntop (AF_INET, &fV4_, buf, sizeof (buf));
-                Assert (result != nullptr);             // no need to throw, because according to list of errors in http://man7.org/linux/man-pages/man3/inet_ntop.3.html cannot be error
+                Assert (result != nullptr); // no need to throw, because according to list of errors in http://man7.org/linux/man-pages/man3/inet_ntop.3.html cannot be error
                 Assert (::strlen (buf) < sizeof (buf)); // docs don't say explicitly, but assuming it nul-terminates
                 Assert (result == buf);
                 return String{result};
@@ -224,22 +222,10 @@ bool InternetAddress::IsLocalhostAddress () const
             return octets[0] == 0x7f and octets[1] == 0x0 and octets[2] == 0x0;
         } break;
         case AddressFamily::V6: {
-            return fV6_.s6_addr[0] == 0 and
-                   fV6_.s6_addr[1] == 0 and
-                   fV6_.s6_addr[2] == 0 and
-                   fV6_.s6_addr[3] == 0 and
-                   fV6_.s6_addr[4] == 0 and
-                   fV6_.s6_addr[5] == 0 and
-                   fV6_.s6_addr[6] == 0 and
-                   fV6_.s6_addr[7] == 0 and
-                   fV6_.s6_addr[8] == 0 and
-                   fV6_.s6_addr[9] == 0 and
-                   fV6_.s6_addr[10] == 0 and
-                   fV6_.s6_addr[11] == 0 and
-                   fV6_.s6_addr[12] == 0 and
-                   fV6_.s6_addr[13] == 0 and
-                   fV6_.s6_addr[14] == 0 and
-                   fV6_.s6_addr[15] == 1;
+            return fV6_.s6_addr[0] == 0 and fV6_.s6_addr[1] == 0 and fV6_.s6_addr[2] == 0 and fV6_.s6_addr[3] == 0 and
+                   fV6_.s6_addr[4] == 0 and fV6_.s6_addr[5] == 0 and fV6_.s6_addr[6] == 0 and fV6_.s6_addr[7] == 0 and
+                   fV6_.s6_addr[8] == 0 and fV6_.s6_addr[9] == 0 and fV6_.s6_addr[10] == 0 and fV6_.s6_addr[11] == 0 and
+                   fV6_.s6_addr[12] == 0 and fV6_.s6_addr[13] == 0 and fV6_.s6_addr[14] == 0 and fV6_.s6_addr[15] == 1;
         } break;
     }
     AssertNotReached ();
@@ -257,10 +243,8 @@ bool InternetAddress::IsLinkLocalAddress () const
             return kMinLinkLocal_ <= *this and *this <= kMaxLinkLocal_;
         } break;
         case AddressFamily::V6: {
-            return fV6_.s6_addr[0] == 0xfe and fV6_.s6_addr[1] == 0x80 and
-                   fV6_.s6_addr[2] == 0x0 and fV6_.s6_addr[3] == 0x0 and
-                   fV6_.s6_addr[4] == 0x0 and fV6_.s6_addr[5] == 0x0 and
-                   fV6_.s6_addr[6] == 0x0 and fV6_.s6_addr[7] == 0x0;
+            return fV6_.s6_addr[0] == 0xfe and fV6_.s6_addr[1] == 0x80 and fV6_.s6_addr[2] == 0x0 and fV6_.s6_addr[3] == 0x0 and
+                   fV6_.s6_addr[4] == 0x0 and fV6_.s6_addr[5] == 0x0 and fV6_.s6_addr[6] == 0x0 and fV6_.s6_addr[7] == 0x0;
         } break;
     }
     AssertNotReached ();

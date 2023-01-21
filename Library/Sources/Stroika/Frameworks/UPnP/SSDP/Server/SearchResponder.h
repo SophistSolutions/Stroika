@@ -39,7 +39,8 @@ namespace Stroika::Frameworks::UPnP::SSDP::Server {
     public:
         /**
          */
-        SearchResponder (const Iterable<Advertisement>& advertisements, IO::Network::InternetProtocol::IP::IPVersionSupport ipVersion = IO::Network::InternetProtocol::IP::IPVersionSupport::eDEFAULT);
+        SearchResponder (const Iterable<Advertisement>& advertisements,
+                         IO::Network::InternetProtocol::IP::IPVersionSupport ipVersion = IO::Network::InternetProtocol::IP::IPVersionSupport::eDEFAULT);
         SearchResponder (const SearchResponder&) = delete;
 
     public:

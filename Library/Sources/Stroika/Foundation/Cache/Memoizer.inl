@@ -28,11 +28,7 @@ namespace Stroika::Foundation::Cache {
     RESULT Memoizer<RESULT, CACHE, ARGS...>::operator() (ARGS... args)
     {
         // Lookup the value in the cache, and if that fails, call fFunction_ (and add that to the cache)
-        return fCache_.LookupValue (
-            make_tuple (args...),
-            [&] (const tuple<ARGS...>& t) {
-                return apply (fFunction_, t);
-            });
+        return fCache_.LookupValue (make_tuple (args...), [&] (const tuple<ARGS...>& t) { return apply (fFunction_, t); });
     }
 
 }

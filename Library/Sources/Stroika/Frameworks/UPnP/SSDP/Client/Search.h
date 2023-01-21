@@ -43,9 +43,13 @@ namespace Stroika::Frameworks::UPnP::SSDP::Client {
          * see @see Start () for possible values for initialSearch and autoRetryInterval
          */
         Search (IO::Network::InternetProtocol::IP::IPVersionSupport ipVersion = IO::Network::InternetProtocol::IP::IPVersionSupport::eDEFAULT);
-        Search (const function<void (const SSDP::Advertisement& d)>& callOnFinds, IO::Network::InternetProtocol::IP::IPVersionSupport ipVersion = IO::Network::InternetProtocol::IP::IPVersionSupport::eDEFAULT);
-        Search (const function<void (const SSDP::Advertisement& d)>& callOnFinds, const String& initialSearch, IO::Network::InternetProtocol::IP::IPVersionSupport ipVersion = IO::Network::InternetProtocol::IP::IPVersionSupport::eDEFAULT);
-        Search (const function<void (const SSDP::Advertisement& d)>& callOnFinds, const String& initialSearch, const optional<Time::Duration>& autoRetryInterval, IO::Network::InternetProtocol::IP::IPVersionSupport ipVersion = IO::Network::InternetProtocol::IP::IPVersionSupport::eDEFAULT);
+        Search (const function<void (const SSDP::Advertisement& d)>& callOnFinds,
+                IO::Network::InternetProtocol::IP::IPVersionSupport ipVersion = IO::Network::InternetProtocol::IP::IPVersionSupport::eDEFAULT);
+        Search (const function<void (const SSDP::Advertisement& d)>& callOnFinds, const String& initialSearch,
+                IO::Network::InternetProtocol::IP::IPVersionSupport ipVersion = IO::Network::InternetProtocol::IP::IPVersionSupport::eDEFAULT);
+        Search (const function<void (const SSDP::Advertisement& d)>& callOnFinds, const String& initialSearch,
+                const optional<Time::Duration>& autoRetryInterval,
+                IO::Network::InternetProtocol::IP::IPVersionSupport ipVersion = IO::Network::InternetProtocol::IP::IPVersionSupport::eDEFAULT);
         Search (Search&&)      = default;
         Search (const Search&) = delete;
 

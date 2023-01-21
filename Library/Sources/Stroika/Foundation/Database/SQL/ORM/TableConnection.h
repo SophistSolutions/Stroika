@@ -77,11 +77,13 @@ namespace Stroika::Foundation::Database::SQL::ORM {
         /**
          * Optionally passed to TableConnection for the purpose of logging
          */
-        enum Operation { eStartingRead,
-                         eCompletedRead,
-                         eStartingWrite,
-                         eCompletedWrite,
-                         eNotifyError };
+        enum Operation {
+            eStartingRead,
+            eCompletedRead,
+            eStartingWrite,
+            eCompletedWrite,
+            eNotifyError
+        };
 
     public:
         /**
@@ -92,7 +94,8 @@ namespace Stroika::Foundation::Database::SQL::ORM {
 
     public:
         TableConnection () = delete;
-        TableConnection (const Connection::Ptr& conn, const Schema::Table& tableSchema, const ObjectVariantMapper& objectVariantMapper, const OpertionCallbackPtr& operationCallback = nullptr);
+        TableConnection (const Connection::Ptr& conn, const Schema::Table& tableSchema, const ObjectVariantMapper& objectVariantMapper,
+                         const OpertionCallbackPtr& operationCallback = nullptr);
         TableConnection (const TableConnection& src);
 
     public:
@@ -128,7 +131,10 @@ namespace Stroika::Foundation::Database::SQL::ORM {
 
     public:
         [[deprecated ("Since Stroika 2.1.5, use Get ()")]] nonvirtual optional<T> GetByID (const VariantValue& id) { return Get (id); }
-        [[deprecated ("Since Stroika 2.1.5, use Get ()")]] nonvirtual optional<T> GetByID (const typename TRAITS::IDType& id) { return Get (id); }
+        [[deprecated ("Since Stroika 2.1.5, use Get ()")]] nonvirtual optional<T> GetByID (const typename TRAITS::IDType& id)
+        {
+            return Get (id);
+        }
 
     public:
         /**
@@ -173,7 +179,10 @@ namespace Stroika::Foundation::Database::SQL::ORM {
 
     public:
         [[deprecated ("Since Stroika 2.1.5, use Delete ()")]] nonvirtual void DeleteByID (const VariantValue& id) { Delete (id); }
-        [[deprecated ("Since Stroika 2.1.5, use Delete ()")]] nonvirtual void DeleteByID (const typename TRAITS::IDType& id) { Delete (id); }
+        [[deprecated ("Since Stroika 2.1.5, use Delete ()")]] nonvirtual void DeleteByID (const typename TRAITS::IDType& id)
+        {
+            Delete (id);
+        }
 
     private:
         Connection::Ptr                                                fConnection_;

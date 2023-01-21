@@ -115,7 +115,8 @@ namespace Stroika::Foundation::Characters {
             return t.ToString ();
         }
         template <typename T>
-        String ToString_ (const T& t, enable_if_t<Configuration::IsIterable_v<T> and not has_ToStringMethod_v<T> and not is_convertible_v<T, String>>* = 0)
+        String ToString_ (const T& t,
+                          enable_if_t<Configuration::IsIterable_v<T> and not has_ToStringMethod_v<T> and not is_convertible_v<T, String>>* = 0)
         {
             StringBuilder sb;
             sb << "[";

@@ -74,10 +74,7 @@ LedItMainFrame::LedItMainFrame ()
     fFormatBar = new FormatToolbar (*this);
 }
 
-LedItMainFrame::~LedItMainFrame ()
-{
-    delete fFormatBar;
-}
+LedItMainFrame::~LedItMainFrame () { delete fFormatBar; }
 
 int LedItMainFrame::OnCreate (LPCREATESTRUCT lpCreateStruct)
 {
@@ -85,12 +82,11 @@ int LedItMainFrame::OnCreate (LPCREATESTRUCT lpCreateStruct)
         return -1;
     }
 
-    Led_Size desiredSize = Led_Size (
-        Led_CvtScreenPixelsFromTWIPSV (TWIPS (1440 * 11)),
-        //Led_CvtScreenPixelsFromTWIPSH (TWIPS (1440 * 8.5))
-        Led_CvtScreenPixelsFromTWIPSH (TWIPS (static_cast<long> (1440 * 7.5))));
-    Led_Rect newBounds = Led_Rect (lpCreateStruct->y, lpCreateStruct->x, desiredSize.v, desiredSize.h);
-    newBounds          = EnsureRectOnScreen (newBounds);
+    Led_Size desiredSize = Led_Size (Led_CvtScreenPixelsFromTWIPSV (TWIPS (1440 * 11)),
+                                     //Led_CvtScreenPixelsFromTWIPSH (TWIPS (1440 * 8.5))
+                                     Led_CvtScreenPixelsFromTWIPSH (TWIPS (static_cast<long> (1440 * 7.5))));
+    Led_Rect newBounds   = Led_Rect (lpCreateStruct->y, lpCreateStruct->x, desiredSize.v, desiredSize.h);
+    newBounds            = EnsureRectOnScreen (newBounds);
     MoveWindow (CRect (AsRECT (newBounds)));
 
     CMenu* menuBar = GetMenu ();
@@ -150,10 +146,7 @@ void LedItMainFrame::OnClose ()
     inherited::OnClose ();
 }
 
-BOOL LedItMainFrame::PreCreateWindow (CREATESTRUCT& cs)
-{
-    return inherited::PreCreateWindow (cs);
-}
+BOOL LedItMainFrame::PreCreateWindow (CREATESTRUCT& cs) { return inherited::PreCreateWindow (cs); }
 
 IncrementalFontSpecification LedItMainFrame::GetCurFont () const
 {
@@ -259,13 +252,7 @@ void LedItMainFrame::OnInitMenuPopup (CMenu* pPopupMenu, UINT nIndex, BOOL bSysM
 }
 
 #ifdef _DEBUG
-void LedItMainFrame::AssertValid () const
-{
-    inherited::AssertValid ();
-}
+void LedItMainFrame::AssertValid () const { inherited::AssertValid (); }
 
-void LedItMainFrame::Dump (CDumpContext& dc) const
-{
-    inherited::Dump (dc);
-}
+void LedItMainFrame::Dump (CDumpContext& dc) const { inherited::Dump (dc); }
 #endif //_DEBUG

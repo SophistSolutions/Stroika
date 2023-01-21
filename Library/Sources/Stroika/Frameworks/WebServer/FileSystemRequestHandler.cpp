@@ -38,11 +38,8 @@ namespace {
         Sequence<String>                              fDefaultIndexFileNames;
         vector<pair<RegularExpression, CacheControl>> fCacheControlSettings;
 
-        FSRouterRep_ (
-            const filesystem::path&                                          filesystemRoot,
-            const optional<String>&                                          urlPrefix2Strip,
-            const Sequence<String>&                                          defaultIndexFileNames,
-            const optional<Sequence<pair<RegularExpression, CacheControl>>>& cacheControlSettings)
+        FSRouterRep_ (const filesystem::path& filesystemRoot, const optional<String>& urlPrefix2Strip, const Sequence<String>& defaultIndexFileNames,
+                      const optional<Sequence<pair<RegularExpression, CacheControl>>>& cacheControlSettings)
             : fFSRoot_{filesystem::canonical (filesystemRoot)}
             , fURLPrefix2Strip{urlPrefix2Strip}
             , fDefaultIndexFileNames{defaultIndexFileNames}
@@ -67,7 +64,9 @@ namespace {
             String           urlHostRelPath{ExtractURLHostRelPath_ (m)};
             filesystem::path fn{fFSRoot_ / filesystem::path{urlHostRelPath.As<wstring> ()}};
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-            Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"{}...FileSystemRequestHandler...HandleMessage", L"relURL=%s, serving fn=%s", Characters::ToString (m->request ().url ().GetAuthorityRelativeResource ()).c_str (), Characters::ToString (fn).c_str ())};
+            Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (
+                L"{}...FileSystemRequestHandler...HandleMessage", L"relURL=%s, serving fn=%s",
+                Characters::ToString (m->request ().url ().GetAuthorityRelativeResource ()).c_str (), Characters::ToString (fn).c_str ())};
 #endif
             try {
                 Response&              response = m->rwResponse ();
@@ -129,6 +128,7 @@ namespace {
  ********************************************************************************
  */
 FileSystemRequestHandler::FileSystemRequestHandler (const filesystem::path& filesystemRoot, const Options& options)
-    : RequestHandler{[rep = make_shared<FSRouterRep_> (filesystemRoot, options.fURLPrefix2Strip, Memory::NullCoalesce (options.fDefaultIndexFileNames), options.fCacheControlSettings)] (Message* m) -> void { rep->HandleMessage (m); }}
+    : RequestHandler{[rep = make_shared<FSRouterRep_> (filesystemRoot, options.fURLPrefix2Strip, Memory::NullCoalesce (options.fDefaultIndexFileNames),
+                                                       options.fCacheControlSettings)] (Message* m) -> void { rep->HandleMessage (m); }}
 {
 }

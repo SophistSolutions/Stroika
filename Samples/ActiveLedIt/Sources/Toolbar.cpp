@@ -80,14 +80,8 @@ namespace {
                 return E_FAIL;
             }
         }
-        static void init (VARIANT* p)
-        {
-            p->vt = VT_EMPTY;
-        }
-        static void destroy (VARIANT* p)
-        {
-            ::VariantClear (p);
-        }
+        static void init (VARIANT* p) { p->vt = VT_EMPTY; }
+        static void destroy (VARIANT* p) { ::VariantClear (p); }
     };
 }
 
@@ -141,20 +135,14 @@ ActiveLedIt_IconButtonToolbarElement::ActiveLedIt_IconButtonToolbarElement ()
 {
 }
 
-ActiveLedIt_IconButtonToolbarElement::~ActiveLedIt_IconButtonToolbarElement ()
-{
-}
+ActiveLedIt_IconButtonToolbarElement::~ActiveLedIt_IconButtonToolbarElement () {}
 
-HRESULT ActiveLedIt_IconButtonToolbarElement::FinalConstruct ()
-{
-    return S_OK;
-}
+HRESULT ActiveLedIt_IconButtonToolbarElement::FinalConstruct () { return S_OK; }
 
-void ActiveLedIt_IconButtonToolbarElement::FinalRelease ()
-{
-}
+void ActiveLedIt_IconButtonToolbarElement::FinalRelease () {}
 
-LRESULT ActiveLedIt_IconButtonToolbarElement::OnLButtonDown ([[maybe_unused]] UINT uMsg, [[maybe_unused]] WPARAM wParam, [[maybe_unused]] LPARAM lParam, BOOL& bHandled)
+LRESULT ActiveLedIt_IconButtonToolbarElement::OnLButtonDown ([[maybe_unused]] UINT uMsg, [[maybe_unused]] WPARAM wParam,
+                                                             [[maybe_unused]] LPARAM lParam, BOOL& bHandled)
 {
     bHandled = true;
     try {
@@ -194,7 +182,8 @@ LRESULT ActiveLedIt_IconButtonToolbarElement::OnLButtonDown ([[maybe_unused]] UI
                                 RECT wr;
                                 GetWindowRect (&wr);
                                 DoEnableDisableChecksEtcsOnMenu (oal, mH);
-                                int cmdNum = ::TrackPopupMenu (mH, TPM_LEFTALIGN | TPM_RIGHTBUTTON | TPM_RETURNCMD, wr.left, wr.bottom, 0, m_hWnd, NULL);
+                                int cmdNum =
+                                    ::TrackPopupMenu (mH, TPM_LEFTALIGN | TPM_RIGHTBUTTON | TPM_RETURNCMD, wr.left, wr.bottom, 0, m_hWnd, NULL);
                                 if (cmdNum != 0) {
                                     wstring cmdName = CmdNum2Name (cmdNum);
                                     if (cmdName.length () != 0) {
@@ -225,7 +214,8 @@ LRESULT ActiveLedIt_IconButtonToolbarElement::OnLButtonDown ([[maybe_unused]] UI
     }
 }
 
-LRESULT ActiveLedIt_IconButtonToolbarElement::OnLButtonUp ([[maybe_unused]] UINT uMsg, [[maybe_unused]] WPARAM wParam, [[maybe_unused]] LPARAM lParam, BOOL& bHandled)
+LRESULT ActiveLedIt_IconButtonToolbarElement::OnLButtonUp ([[maybe_unused]] UINT uMsg, [[maybe_unused]] WPARAM wParam,
+                                                           [[maybe_unused]] LPARAM lParam, BOOL& bHandled)
 {
     /*
      *  Pushing on a button causes it to grab the focus (cannot figure out how to stop this - but its not SO bad).
@@ -588,20 +578,14 @@ ActiveLedIt_ComboBoxToolbarElement::ActiveLedIt_ComboBoxToolbarElement ()
 {
 }
 
-ActiveLedIt_ComboBoxToolbarElement::~ActiveLedIt_ComboBoxToolbarElement ()
-{
-}
+ActiveLedIt_ComboBoxToolbarElement::~ActiveLedIt_ComboBoxToolbarElement () {}
 
-HRESULT ActiveLedIt_ComboBoxToolbarElement::FinalConstruct ()
-{
-    return S_OK;
-}
+HRESULT ActiveLedIt_ComboBoxToolbarElement::FinalConstruct () { return S_OK; }
 
-void ActiveLedIt_ComboBoxToolbarElement::FinalRelease ()
-{
-}
+void ActiveLedIt_ComboBoxToolbarElement::FinalRelease () {}
 
-LRESULT ActiveLedIt_ComboBoxToolbarElement::OnCBDropDown ([[maybe_unused]] USHORT uMsg, [[maybe_unused]] USHORT wParam, [[maybe_unused]] HWND ctlHandle, BOOL& bHandled)
+LRESULT ActiveLedIt_ComboBoxToolbarElement::OnCBDropDown ([[maybe_unused]] USHORT uMsg, [[maybe_unused]] USHORT wParam,
+                                                          [[maybe_unused]] HWND ctlHandle, BOOL& bHandled)
 {
     fDropDownActive = true;
     LRESULT lr      = DefWindowProc ();
@@ -609,7 +593,8 @@ LRESULT ActiveLedIt_ComboBoxToolbarElement::OnCBDropDown ([[maybe_unused]] USHOR
     return lr;
 }
 
-LRESULT ActiveLedIt_ComboBoxToolbarElement::OnCBCloseUp ([[maybe_unused]] USHORT uMsg, [[maybe_unused]] USHORT wParam, [[maybe_unused]] HWND ctlHandle, BOOL& bHandled)
+LRESULT ActiveLedIt_ComboBoxToolbarElement::OnCBCloseUp ([[maybe_unused]] USHORT uMsg, [[maybe_unused]] USHORT wParam,
+                                                         [[maybe_unused]] HWND ctlHandle, BOOL& bHandled)
 {
     fDropDownActive = false;
     /*
@@ -631,7 +616,8 @@ LRESULT ActiveLedIt_ComboBoxToolbarElement::OnCBCloseUp ([[maybe_unused]] USHORT
     return lr;
 }
 
-LRESULT ActiveLedIt_ComboBoxToolbarElement::OnCBSelChange ([[maybe_unused]] USHORT uMsg, [[maybe_unused]] USHORT wParam, [[maybe_unused]] HWND ctlHandle, BOOL& bHandled)
+LRESULT ActiveLedIt_ComboBoxToolbarElement::OnCBSelChange ([[maybe_unused]] USHORT uMsg, [[maybe_unused]] USHORT wParam,
+                                                           [[maybe_unused]] HWND ctlHandle, BOOL& bHandled)
 {
     bHandled   = true;
     LRESULT lr = DefWindowProc ();
@@ -898,7 +884,7 @@ void ActiveLedIt_ComboBoxToolbarElement::UpdatePopupObj ()
                 const DistanceType kMaxMax     = 200; // don't make any wider than this - even if really long text...
                 maxItemWidth                   = min (maxItemWidth, kMaxMax);
                 const DistanceType kWhiteSluff = 6;
-                fPreferredWidth                = 2 * ::GetSystemMetrics (SM_CXEDGE) + ::GetSystemMetrics (SM_CXVSCROLL) + maxItemWidth + kWhiteSluff;
+                fPreferredWidth = 2 * ::GetSystemMetrics (SM_CXEDGE) + ::GetSystemMetrics (SM_CXVSCROLL) + maxItemWidth + kWhiteSluff;
             }
             catch (...) {
                 ::SelectObject (hdc, oldFont);
@@ -927,18 +913,11 @@ ActiveLedIt_SeparatorToolbarElement::ActiveLedIt_SeparatorToolbarElement ()
 {
 }
 
-ActiveLedIt_SeparatorToolbarElement::~ActiveLedIt_SeparatorToolbarElement ()
-{
-}
+ActiveLedIt_SeparatorToolbarElement::~ActiveLedIt_SeparatorToolbarElement () {}
 
-HRESULT ActiveLedIt_SeparatorToolbarElement::FinalConstruct ()
-{
-    return S_OK;
-}
+HRESULT ActiveLedIt_SeparatorToolbarElement::FinalConstruct () { return S_OK; }
 
-void ActiveLedIt_SeparatorToolbarElement::FinalRelease ()
-{
-}
+void ActiveLedIt_SeparatorToolbarElement::FinalRelease () {}
 
 STDMETHODIMP ActiveLedIt_SeparatorToolbarElement::get_PreferredHeight (UINT* pVal)
 {
@@ -1050,9 +1029,7 @@ ActiveLedIt_Toolbar::ActiveLedIt_Toolbar ()
 {
 }
 
-ActiveLedIt_Toolbar::~ActiveLedIt_Toolbar ()
-{
-}
+ActiveLedIt_Toolbar::~ActiveLedIt_Toolbar () {}
 
 LRESULT ActiveLedIt_Toolbar::OnCommand ([[maybe_unused]] UINT uMsg, WPARAM wParam, [[maybe_unused]] LPARAM lParam, BOOL& bHandled)
 {
@@ -1108,8 +1085,7 @@ void ActiveLedIt_Toolbar::DoLayout ()
 #if 1
     Led_Rect clientBounds = Led_Rect (0, 0, fBounds.GetHeight (), fBounds.GetWidth ());
 #else
-    Led_Rect clientBounds = Led_Rect (0, 0,
-                                      max (static_cast<CoordinateType> (fBounds.GetHeight ()) - 2 * ::GetSystemMetrics (SM_CYEDGE), 0),
+    Led_Rect clientBounds = Led_Rect (0, 0, max (static_cast<CoordinateType> (fBounds.GetHeight ()) - 2 * ::GetSystemMetrics (SM_CYEDGE), 0),
                                       max (static_cast<CoordinateType> (fBounds.GetHeight ()) - 2 * ::GetSystemMetrics (SM_CXEDGE), 0));
 #endif
 
@@ -1152,10 +1128,7 @@ HRESULT ActiveLedIt_Toolbar::FinalConstruct ()
     return S_OK;
 }
 
-void ActiveLedIt_Toolbar::FinalRelease ()
-{
-    IdleManager::Get ().RemoveEnterIdler (this);
-}
+void ActiveLedIt_Toolbar::FinalRelease () { IdleManager::Get ().RemoveEnterIdler (this); }
 
 void ActiveLedIt_Toolbar::OnEnterIdle ()
 {
@@ -1434,16 +1407,12 @@ ActiveLedIt_ToolbarList::~ActiveLedIt_ToolbarList ()
     }
 }
 
-HRESULT ActiveLedIt_ToolbarList::FinalConstruct ()
-{
-    return S_OK;
-}
+HRESULT ActiveLedIt_ToolbarList::FinalConstruct () { return S_OK; }
 
-void ActiveLedIt_ToolbarList::FinalRelease ()
-{
-}
+void ActiveLedIt_ToolbarList::FinalRelease () {}
 
-LRESULT ActiveLedIt_ToolbarList::OnPaint ([[maybe_unused]] UINT uMsg, [[maybe_unused]] WPARAM wParam, [[maybe_unused]] LPARAM lParam, [[maybe_unused]] BOOL& bHandled)
+LRESULT ActiveLedIt_ToolbarList::OnPaint ([[maybe_unused]] UINT uMsg, [[maybe_unused]] WPARAM wParam, [[maybe_unused]] LPARAM lParam,
+                                          [[maybe_unused]] BOOL& bHandled)
 {
     PAINTSTRUCT ps;
     HDC         hdc = ::BeginPaint (m_hWnd, &ps);
@@ -1683,9 +1652,9 @@ STDMETHODIMP ActiveLedIt_ToolbarList::SetRectangle (int X, int Y, UINT width, UI
 
 void ActiveLedIt_ToolbarList::DoLayout ()
 {
-    Led_Rect clientBounds = Led_Rect (0, 0,
-                                      max (static_cast<CoordinateType> (fBounds.GetHeight ()) - 2 * ::GetSystemMetrics (SM_CYEDGE), CoordinateType (0)),
-                                      max (static_cast<CoordinateType> (fBounds.GetWidth ()) - 2 * ::GetSystemMetrics (SM_CXEDGE), CoordinateType (0)));
+    Led_Rect clientBounds =
+        Led_Rect (0, 0, max (static_cast<CoordinateType> (fBounds.GetHeight ()) - 2 * ::GetSystemMetrics (SM_CYEDGE), CoordinateType (0)),
+                  max (static_cast<CoordinateType> (fBounds.GetWidth ()) - 2 * ::GetSystemMetrics (SM_CXEDGE), CoordinateType (0)));
     if (m_hWnd != NULL) { // probbaly not really needed anymore - now that I subtract out the SM_CXYEDGE - but what the heck... Just in case...
         RECT cr;
         ::GetClientRect (m_hWnd, &cr);
@@ -1703,7 +1672,8 @@ void ActiveLedIt_ToolbarList::DoLayout ()
             UINT height = 0;
             ThrowIfErrorHRESULT (tb->get_PreferredHeight (&height));
             itemBoundsCursor.bottom = itemBoundsCursor.top + height;
-            ThrowIfErrorHRESULT (tb->SetRectangle (itemBoundsCursor.left, itemBoundsCursor.top, itemBoundsCursor.GetWidth (), itemBoundsCursor.GetHeight ()));
+            ThrowIfErrorHRESULT (
+                tb->SetRectangle (itemBoundsCursor.left, itemBoundsCursor.top, itemBoundsCursor.GetWidth (), itemBoundsCursor.GetHeight ()));
             itemBoundsCursor.top = itemBoundsCursor.bottom;
         }
     }

@@ -63,10 +63,7 @@ namespace Stroika::Frameworks::Led {
     @DESCRIPTION:   <p>Returns where (in TextStore marker coordinates - not relative to the sinkstream) where the next character
                 will be inserted. See also @'StandardStyledTextInteractor::StandardStyledTextIOSinkStream::SetInsertionStart'</p>
     */
-    inline size_t StandardStyledTextInteractor::StandardStyledTextIOSinkStream::GetInsertionStart () const
-    {
-        return fInsertionStart;
-    }
+    inline size_t StandardStyledTextInteractor::StandardStyledTextIOSinkStream::GetInsertionStart () const { return fInsertionStart; }
     /*
     @METHOD:        StandardStyledTextInteractor::StandardStyledTextIOSinkStream::SetInsertionStart
     @DESCRIPTION:   <p>See also @'StandardStyledTextInteractor::StandardStyledTextIOSinkStream::GetInsertionStart'</p>
@@ -75,32 +72,17 @@ namespace Stroika::Frameworks::Led {
     {
         fInsertionStart = insertionStart;
     }
-    inline size_t StandardStyledTextInteractor::StandardStyledTextIOSinkStream::GetOriginalStart () const
-    {
-        return fOriginalStart;
-    }
-    inline size_t StandardStyledTextInteractor::StandardStyledTextIOSinkStream::GetCachedTextSize () const
-    {
-        return fCachedText.size ();
-    }
+    inline size_t StandardStyledTextInteractor::StandardStyledTextIOSinkStream::GetOriginalStart () const { return fOriginalStart; }
+    inline size_t StandardStyledTextInteractor::StandardStyledTextIOSinkStream::GetCachedTextSize () const { return fCachedText.size (); }
     inline const vector<Led_tChar>& StandardStyledTextInteractor::StandardStyledTextIOSinkStream::GetCachedText () const
     {
         return fCachedText;
     }
 
     //  class   StandardStyledTextInteractor::StandardStyledTextIOSrcStream
-    inline size_t StandardStyledTextInteractor::StandardStyledTextIOSrcStream::GetCurOffset () const
-    {
-        return fCurOffset;
-    }
-    inline size_t StandardStyledTextInteractor::StandardStyledTextIOSrcStream::GetSelStart () const
-    {
-        return fSelStart;
-    }
-    inline size_t StandardStyledTextInteractor::StandardStyledTextIOSrcStream::GetSelEnd () const
-    {
-        return fSelEnd;
-    }
+    inline size_t StandardStyledTextInteractor::StandardStyledTextIOSrcStream::GetCurOffset () const { return fCurOffset; }
+    inline size_t StandardStyledTextInteractor::StandardStyledTextIOSrcStream::GetSelStart () const { return fSelStart; }
+    inline size_t StandardStyledTextInteractor::StandardStyledTextIOSrcStream::GetSelEnd () const { return fSelEnd; }
 
 }
 

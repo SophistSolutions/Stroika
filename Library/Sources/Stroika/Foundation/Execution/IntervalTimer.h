@@ -76,7 +76,8 @@ namespace Stroika::Foundation::Execution {
         };
 
     public:
-        using RegisteredTaskCollection = Containers::KeyedCollection<RegisteredTask, TimerCallback, Containers::KeyedCollection_DefaultTraits<RegisteredTask, Execution::Function<void (void)>, Key_Extractor_>>;
+        using RegisteredTaskCollection =
+            Containers::KeyedCollection<RegisteredTask, TimerCallback, Containers::KeyedCollection_DefaultTraits<RegisteredTask, Execution::Function<void (void)>, Key_Extractor_>>;
     };
 
     /**
@@ -133,7 +134,8 @@ namespace Stroika::Foundation::Execution {
          *  \req repeatInterval >= 0
          *  \req hysteresis == nullopt or hysteresis >= 0
          */
-        nonvirtual void AddRepeating (const TimerCallback& intervalTimer, const Time::Duration& repeatInterval, const optional<Time::Duration>& hysteresis = nullopt);
+        nonvirtual void AddRepeating (const TimerCallback& intervalTimer, const Time::Duration& repeatInterval,
+                                      const optional<Time::Duration>& hysteresis = nullopt);
 
     public:
         /**
@@ -190,7 +192,8 @@ namespace Stroika::Foundation::Execution {
         virtual void AddOneShot (const TimerCallback& intervalTimer, const Time::Duration& when) = 0;
 
     public:
-        virtual void AddRepeating (const TimerCallback& intervalTimer, const Time::Duration& repeatInterval, const optional<Time::Duration>& hysteresis) = 0;
+        virtual void AddRepeating (const TimerCallback& intervalTimer, const Time::Duration& repeatInterval,
+                                   const optional<Time::Duration>& hysteresis) = 0;
 
     public:
         virtual void RemoveRepeating (const TimerCallback& intervalTimer) noexcept = 0;
@@ -210,7 +213,8 @@ namespace Stroika::Foundation::Execution {
         virtual void AddOneShot (const TimerCallback& intervalTimer, const Time::Duration& when) override;
 
     public:
-        virtual void AddRepeating (const TimerCallback& intervalTimer, const Time::Duration& repeatInterval, const optional<Time::Duration>& hysteresis) override;
+        virtual void AddRepeating (const TimerCallback& intervalTimer, const Time::Duration& repeatInterval,
+                                   const optional<Time::Duration>& hysteresis) override;
 
     public:
         virtual void RemoveRepeating (const TimerCallback& intervalTimer) noexcept override;
@@ -279,9 +283,12 @@ namespace Stroika::Foundation::Execution {
         Adder () = delete;
         Adder (Adder&& src) noexcept;
         Adder (const Function<void (void)>& f, const Time::Duration& repeatInterval, const optional<Time::Duration>& hysteresis = nullopt);
-        Adder (const Function<void (void)>& f, const Time::Duration& repeatInterval, RunImmediatelyFlag runImmediately, const optional<Time::Duration>& hysteresis = nullopt);
-        Adder (IntervalTimer::Manager& manager, const Function<void (void)>& f, const Time::Duration& repeatInterval, const optional<Time::Duration>& hysteresis = nullopt);
-        Adder (IntervalTimer::Manager& manager, const Function<void (void)>& f, const Time::Duration& repeatInterval, RunImmediatelyFlag runImmediately, const optional<Time::Duration>& hysteresis = nullopt);
+        Adder (const Function<void (void)>& f, const Time::Duration& repeatInterval, RunImmediatelyFlag runImmediately,
+               const optional<Time::Duration>& hysteresis = nullopt);
+        Adder (IntervalTimer::Manager& manager, const Function<void (void)>& f, const Time::Duration& repeatInterval,
+               const optional<Time::Duration>& hysteresis = nullopt);
+        Adder (IntervalTimer::Manager& manager, const Function<void (void)>& f, const Time::Duration& repeatInterval,
+               RunImmediatelyFlag runImmediately, const optional<Time::Duration>& hysteresis = nullopt);
 
     public:
         ~Adder ();

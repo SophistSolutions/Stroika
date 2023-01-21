@@ -31,41 +31,26 @@ namespace Stroika::Frameworks::Led {
     @METHOD:        Command::Do
     @DESCRIPTION:   <p>Perform the actual commands action.</p>
     */
-    inline void Command::Do (TextInteractor& /*interactor*/)
-    {
-        fDone = true;
-    }
+    inline void Command::Do (TextInteractor& /*interactor*/) { fDone = true; }
     /*
     @METHOD:        Command::UnDo
     @DESCRIPTION:   <p>Undo an already done command.</p>
     */
-    inline void Command::UnDo (TextInteractor& /*interactor*/)
-    {
-        fDone = false;
-    }
+    inline void Command::UnDo (TextInteractor& /*interactor*/) { fDone = false; }
     /*
     @METHOD:        Command::ReDo
     @DESCRIPTION:   <p>Redo a command which has been done (or perhaps redone), and more recently undone.</p>
     */
-    inline void Command::ReDo (TextInteractor& /*interactor*/)
-    {
-        fDone = true;
-    }
+    inline void Command::ReDo (TextInteractor& /*interactor*/) { fDone = true; }
     /*
     @METHOD:        Command::GetDone
     @DESCRIPTION:   <p>The done, and redone states are considered identical. This returns true if the command has either
         been done, or redone (not most recently undone).</p>
     */
-    inline bool Command::GetDone () const
-    {
-        return fDone;
-    }
+    inline bool Command::GetDone () const { return fDone; }
 
     //  class   SnoopingCommandHandler;
-    inline CommandHandler* SnoopingCommandHandler::GetRealHandler () const
-    {
-        return fRealHandler;
-    }
+    inline CommandHandler* SnoopingCommandHandler::GetRealHandler () const { return fRealHandler; }
 
     //  class   MultiLevelUndoCommandHandler;
     /*
@@ -77,10 +62,7 @@ namespace Stroika::Frameworks::Led {
             <p>See @'MultiLevelUndoCommandHandler::SetMaxUnDoLevels'</p>
 
     */
-    inline size_t MultiLevelUndoCommandHandler::GetMaxUnDoLevels ()
-    {
-        return fMaxUndoLevels;
-    }
+    inline size_t MultiLevelUndoCommandHandler::GetMaxUnDoLevels () { return fMaxUndoLevels; }
 
     //  class   InteractiveReplaceCommand::SavedTextRep
     inline InteractiveReplaceCommand::SavedTextRep::SavedTextRep (size_t selStart, size_t selEnd)
@@ -88,9 +70,7 @@ namespace Stroika::Frameworks::Led {
         , fSelEnd (selEnd)
     {
     }
-    inline InteractiveReplaceCommand::SavedTextRep::~SavedTextRep ()
-    {
-    }
+    inline InteractiveReplaceCommand::SavedTextRep::~SavedTextRep () {}
 
 }
 

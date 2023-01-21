@@ -34,10 +34,7 @@ namespace Stroika::Foundation::Common {
     {
         forward<CONSTRUCTOR_CALL> (ctorCall) ();
     }
-    inline ObjectForSideEffects::~ObjectForSideEffects ()
-    {
-        fDestructor_ ();
-    }
+    inline ObjectForSideEffects::~ObjectForSideEffects () { fDestructor_ (); }
 
 }
 

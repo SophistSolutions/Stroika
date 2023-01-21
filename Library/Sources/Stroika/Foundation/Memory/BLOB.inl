@@ -94,7 +94,8 @@ namespace Stroika::Foundation::Memory {
     }
     template <typename CONTAINER_OF_BYTE>
     inline BLOB::BLOB (const CONTAINER_OF_BYTE& data)
-        requires Configuration::IsIterable_v<CONTAINER_OF_BYTE> and (is_convertible_v<typename CONTAINER_OF_BYTE::value_type, byte> or is_convertible_v<typename CONTAINER_OF_BYTE::value_type, uint8_t>)
+        requires Configuration::IsIterable_v<CONTAINER_OF_BYTE> and (is_convertible_v<typename CONTAINER_OF_BYTE::value_type, byte> or
+                                                                     is_convertible_v<typename CONTAINER_OF_BYTE::value_type, uint8_t>)
         : BLOB{as_bytes (span{data.data (), data.size ()})}
     {
     }
@@ -150,14 +151,8 @@ namespace Stroika::Foundation::Memory {
         RequireNotNull (b);
         return Hex (b, b + ::strlen (b));
     }
-    inline BLOB BLOB::Hex (const string& s)
-    {
-        return Hex (s.c_str ());
-    }
-    inline BLOB BLOB::Hex (const string_view& s)
-    {
-        return Hex (s.data (), s.data () + s.length ());
-    }
+    inline BLOB BLOB::Hex (const string& s) { return Hex (s.c_str ()); }
+    inline BLOB BLOB::Hex (const string_view& s) { return Hex (s.data (), s.data () + s.length ()); }
     template <typename T, enable_if_t<is_trivially_copyable_v<T>>*>
     inline BLOB BLOB::Raw (const T* s, const T* e)
     {
@@ -219,7 +214,7 @@ namespace Stroika::Foundation::Memory {
         RequireNotNull (into);
         Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
         auto                                                  s = fRep_->GetBounds ();
-        *into                                                   = span<const uint8_t>{reinterpret_cast<const uint8_t*> (s.data ()), s.size ()};
+        *into = span<const uint8_t>{reinterpret_cast<const uint8_t*> (s.data ()), s.size ()};
     }
     template <>
     inline vector<byte> BLOB::As () const
@@ -324,7 +319,7 @@ namespace Stroika::Foundation::Memory {
         RequireNotNull (into);
         Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
         span<const byte>                                      s = fRep_->GetBounds ();
-        *into                                                   = make_pair (reinterpret_cast<const uint8_t*> (s.data ()), reinterpret_cast<const uint8_t*> (s.data () + s.size ()));
+        *into = make_pair (reinterpret_cast<const uint8_t*> (s.data ()), reinterpret_cast<const uint8_t*> (s.data () + s.size ()));
     }
     template <typename T>
     inline void BLOB::As (T* into) const
@@ -376,10 +371,7 @@ namespace Stroika::Foundation::Memory {
         Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
         return GetSize ();
     }
-    inline strong_ordering BLOB::operator<=> (const BLOB& rhs) const
-    {
-        return TWC_ (*this, rhs);
-    }
+    inline strong_ordering BLOB::operator<=> (const BLOB& rhs) const { return TWC_ (*this, rhs); }
     inline bool BLOB::operator== (const BLOB& rhs) const
     {
         Debug::AssertExternallySynchronizedMutex::ReadContext readLockL{fThisAssertExternallySynchronized_}; // this pattern of double locking might risk a deadlock for real locks, but these locks are fake to assure externally locked

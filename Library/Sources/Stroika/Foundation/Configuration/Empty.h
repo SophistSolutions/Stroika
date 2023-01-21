@@ -17,8 +17,7 @@ namespace Stroika::Foundation::Configuration {
     /**
      *  Believe it or not, this is often useful in template metaprogramming.
      */
-    struct Empty {
-    };
+    struct Empty {};
 
 }
 

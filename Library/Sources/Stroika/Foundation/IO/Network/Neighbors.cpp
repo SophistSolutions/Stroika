@@ -39,7 +39,8 @@ namespace {
     Collection<Neighbor> ArpDashA_ (bool includePurgedEntries, bool omitAllFFHardwareAddresses)
     {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-        Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"{}ArpDashA_", L"includePurgedEntries=%s", Characters::ToString (includePurgedEntries).c_str ())};
+        Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"{}ArpDashA_", L"includePurgedEntries=%s",
+                                                                                     Characters::ToString (includePurgedEntries).c_str ())};
 #endif
 #if qPlatform_Windows
         SystemInterfacesMgr sysInterfacesMgr;
@@ -132,7 +133,8 @@ namespace {
     Collection<Neighbor> ProcNetArp_ (bool includePurgedEntries)
     {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-        Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"{}ProcNetArp_", L"includePurgedEntries=%s", Characters::ToString (includePurgedEntries).c_str ())};
+        Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"{}ProcNetArp_", L"includePurgedEntries=%s",
+                                                                                     Characters::ToString (includePurgedEntries).c_str ())};
 #endif
         Collection<Neighbor> result;
         using Characters::String2Int;
@@ -232,7 +234,8 @@ public:
     Collection<NeighborsMonitor::Neighbor> GetNeighbors_ (Options::Strategy s) const
     {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-        Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"NeighborsMonitor::Rep_::GetNeighbors_", L"s=%s", Characters::ToString ((int)s).c_str ())};
+        Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"NeighborsMonitor::Rep_::GetNeighbors_", L"s=%s",
+                                                                                     Characters::ToString ((int)s).c_str ())};
 #endif
         switch (s) {
             case Options::Strategy::eArpProgram:
@@ -255,7 +258,4 @@ NeighborsMonitor::NeighborsMonitor (const Options& options)
 {
 }
 
-Collection<NeighborsMonitor::Neighbor> NeighborsMonitor::GetNeighbors () const
-{
-    return fRep_->GetNeighbors ();
-}
+Collection<NeighborsMonitor::Neighbor> NeighborsMonitor::GetNeighbors () const { return fRep_->GetNeighbors (); }

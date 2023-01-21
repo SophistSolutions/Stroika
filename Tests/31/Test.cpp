@@ -82,7 +82,8 @@ namespace {
                         Memory::StackBuffer<char> relBuf{0};
                         int                       relEncodedSize = ATL::Base64EncodeGetRequiredLength (static_cast<int> (totalSize));
                         relBuf.GrowToSize (relEncodedSize);
-                        VerifyTestResult (ATL::Base64Encode (reinterpret_cast<const BYTE*> (Containers::Start (b)), static_cast<int> (totalSize), relBuf.data (), &relEncodedSize));
+                        VerifyTestResult (ATL::Base64Encode (reinterpret_cast<const BYTE*> (Containers::Start (b)),
+                                                             static_cast<int> (totalSize), relBuf.data (), &relEncodedSize));
                         relBuf[relEncodedSize] = '\0';
                         if (lb == LineBreak::eCRLF_LB) {
                             return (static_cast<const char*> (relBuf));
@@ -113,8 +114,10 @@ namespace {
                 inline void VERIFY_ATL_ENCODEBASE64_ ([[maybe_unused]] const vector<byte>& bytes)
                 {
 #if qPlatform_Windows && qHasFeature_ATLMFC
-                    VerifyTestResult (Encoding::Algorithm::EncodeBase64 (ExternallyOwnedMemoryInputStream<byte>::New (begin (bytes), end (bytes)), LineBreak::eCRLF_LB) == EncodeBase64_ATL_ (bytes, LineBreak::eCRLF_LB));
-                    VerifyTestResult (Encoding::Algorithm::EncodeBase64 (ExternallyOwnedMemoryInputStream<byte>::New (begin (bytes), end (bytes)), LineBreak::eLF_LB) == EncodeBase64_ATL_ (bytes, LineBreak::eLF_LB));
+                    VerifyTestResult (Encoding::Algorithm::EncodeBase64 (ExternallyOwnedMemoryInputStream<byte>::New (begin (bytes), end (bytes)),
+                                                                         LineBreak::eCRLF_LB) == EncodeBase64_ATL_ (bytes, LineBreak::eCRLF_LB));
+                    VerifyTestResult (Encoding::Algorithm::EncodeBase64 (ExternallyOwnedMemoryInputStream<byte>::New (begin (bytes), end (bytes)),
+                                                                         LineBreak::eLF_LB) == EncodeBase64_ATL_ (bytes, LineBreak::eLF_LB));
 #endif
                 }
                 inline void VERIFY_ATL_DECODE_ ()
@@ -128,14 +131,16 @@ namespace {
             namespace {
                 void VERIFY_ENCODE_DECODE_BASE64_IDEMPOTENT_ (const vector<byte>& bytes)
                 {
-                    VerifyTestResult (Encoding::Algorithm::DecodeBase64 (Encoding::Algorithm::EncodeBase64 (ExternallyOwnedMemoryInputStream<byte>::New (begin (bytes), end (bytes)))) == bytes);
+                    VerifyTestResult (Encoding::Algorithm::DecodeBase64 (Encoding::Algorithm::EncodeBase64 (
+                                          ExternallyOwnedMemoryInputStream<byte>::New (begin (bytes), end (bytes)))) == bytes);
                 }
             }
 
             namespace {
                 void DO_ONE_REGTEST_BASE64_ (const string& base64EncodedString, const vector<byte>& originalUnEncodedBytes)
                 {
-                    VerifyTestResult (Encoding::Algorithm::EncodeBase64 (ExternallyOwnedMemoryInputStream<byte>::New (begin (originalUnEncodedBytes), end (originalUnEncodedBytes))) == base64EncodedString);
+                    VerifyTestResult (Encoding::Algorithm::EncodeBase64 (ExternallyOwnedMemoryInputStream<byte>::New (
+                                          begin (originalUnEncodedBytes), end (originalUnEncodedBytes))) == base64EncodedString);
                     VerifyTestResult (Encoding::Algorithm::DecodeBase64 (base64EncodedString) == originalUnEncodedBytes);
                     VERIFY_ATL_ENCODEBASE64_ (originalUnEncodedBytes);
                     VERIFY_ENCODE_DECODE_BASE64_IDEMPOTENT_ (originalUnEncodedBytes);
@@ -147,34 +152,36 @@ namespace {
             Debug::TraceContextBumper ctx{"Base64Test::DoRegressionTests_"};
 
             {
-                const char kSrc[] =
-                    "This is a good test\r\n"
-                    "We eat wiggly worms.\r\n"
-                    "\r\n"
-                    "That is a very good thing.****^^^#$#AS\r\n";
-                const char kEncodedVal[] = "VGhpcyBpcyBhIGdvb2QgdGVzdA0KV2UgZWF0IHdpZ2dseSB3b3Jtcy4NCg0KVGhhdCBpcyBhIHZl\r\ncnkgZ29vZCB0aGluZy4qKioqXl5eIyQjQVMNCg==";
+                const char kSrc[]        = "This is a good test\r\n"
+                                           "We eat wiggly worms.\r\n"
+                                           "\r\n"
+                                           "That is a very good thing.****^^^#$#AS\r\n";
+                const char kEncodedVal[] = "VGhpcyBpcyBhIGdvb2QgdGVzdA0KV2UgZWF0IHdpZ2dseSB3b3Jtcy4NCg0KVGhhdCBpcyBhIHZl\r\ncnkgZ29vZCB0aGl"
+                                           "uZy4qKioqXl5eIyQjQVMNCg==";
                 PRIVATE_::DO_ONE_REGTEST_BASE64_ (kEncodedVal, vector<byte> ((const byte*)kSrc, (const byte*)kSrc + ::strlen (kSrc)));
             }
 
             {
                 const char kSrc[] =
                     "{\\rtf1 \\ansi {\\fonttbl {\\f0 \\fnil \\fcharset163 Times New Roman;}}{\\colortbl \\red0\\green0\\blue0;}\r\n"
-                    "{\\*\\listtable{\\list \\listtemplateid12382 {\\listlevel \\levelnfc23 \\leveljc0 \\levelfollow0 \\levelstartat1 \\levelindent0 {\\leveltext \\levelnfc23 \\leveltemplateid17421 \\'01\\u8226  ?;}\\f0 \\fi-360 \\li720 \\jclisttab \\tx720 }\\listid292 }}\r\n"
+                    "{\\*\\listtable{\\list \\listtemplateid12382 {\\listlevel \\levelnfc23 \\leveljc0 \\levelfollow0 \\levelstartat1 "
+                    "\\levelindent0 {\\leveltext \\levelnfc23 \\leveltemplateid17421 \\'01\\u8226  ?;}\\f0 \\fi-360 \\li720 \\jclisttab "
+                    "\\tx720 }\\listid292 }}\r\n"
                     "{\\*\\listoverridetable{\\listoverride \\listid292 \\listoverridecount0 \\ls1 }}\r\n"
-                    "{\\*\\generator Sophist Solutions, Inc. Led RTF IO Engine - 3.1b2x;}\\pard \\plain \\f0 \\fs24 \\cf0 Had hay fever today. Not terrible, but several times. And I think a bit yesterda\r\n"
+                    "{\\*\\generator Sophist Solutions, Inc. Led RTF IO Engine - 3.1b2x;}\\pard \\plain \\f0 \\fs24 \\cf0 Had hay fever "
+                    "today. Not terrible, but several times. And I think a bit yesterda\r\n"
                     "y.}";
-                const char kEncodedVal[] =
-                    "e1xydGYxIFxhbnNpIHtcZm9udHRibCB7XGYwIFxmbmlsIFxmY2hhcnNldDE2MyBUaW1lcyBOZXcg\r\n"
-                    "Um9tYW47fX17XGNvbG9ydGJsIFxyZWQwXGdyZWVuMFxibHVlMDt9DQp7XCpcbGlzdHRhYmxle1xs\r\n"
-                    "aXN0IFxsaXN0dGVtcGxhdGVpZDEyMzgyIHtcbGlzdGxldmVsIFxsZXZlbG5mYzIzIFxsZXZlbGpj\r\n"
-                    "MCBcbGV2ZWxmb2xsb3cwIFxsZXZlbHN0YXJ0YXQxIFxsZXZlbGluZGVudDAge1xsZXZlbHRleHQg\r\n"
-                    "XGxldmVsbmZjMjMgXGxldmVsdGVtcGxhdGVpZDE3NDIxIFwnMDFcdTgyMjYgID87fVxmMCBcZmkt\r\n"
-                    "MzYwIFxsaTcyMCBcamNsaXN0dGFiIFx0eDcyMCB9XGxpc3RpZDI5MiB9fQ0Ke1wqXGxpc3RvdmVy\r\n"
-                    "cmlkZXRhYmxle1xsaXN0b3ZlcnJpZGUgXGxpc3RpZDI5MiBcbGlzdG92ZXJyaWRlY291bnQwIFxs\r\n"
-                    "czEgfX0NCntcKlxnZW5lcmF0b3IgU29waGlzdCBTb2x1dGlvbnMsIEluYy4gTGVkIFJURiBJTyBF\r\n"
-                    "bmdpbmUgLSAzLjFiMng7fVxwYXJkIFxwbGFpbiBcZjAgXGZzMjQgXGNmMCBIYWQgaGF5IGZldmVy\r\n"
-                    "IHRvZGF5LiBOb3QgdGVycmlibGUsIGJ1dCBzZXZlcmFsIHRpbWVzLiBBbmQgSSB0aGluayBhIGJp\r\n"
-                    "dCB5ZXN0ZXJkYQ0KeS59";
+                const char kEncodedVal[] = "e1xydGYxIFxhbnNpIHtcZm9udHRibCB7XGYwIFxmbmlsIFxmY2hhcnNldDE2MyBUaW1lcyBOZXcg\r\n"
+                                           "Um9tYW47fX17XGNvbG9ydGJsIFxyZWQwXGdyZWVuMFxibHVlMDt9DQp7XCpcbGlzdHRhYmxle1xs\r\n"
+                                           "aXN0IFxsaXN0dGVtcGxhdGVpZDEyMzgyIHtcbGlzdGxldmVsIFxsZXZlbG5mYzIzIFxsZXZlbGpj\r\n"
+                                           "MCBcbGV2ZWxmb2xsb3cwIFxsZXZlbHN0YXJ0YXQxIFxsZXZlbGluZGVudDAge1xsZXZlbHRleHQg\r\n"
+                                           "XGxldmVsbmZjMjMgXGxldmVsdGVtcGxhdGVpZDE3NDIxIFwnMDFcdTgyMjYgID87fVxmMCBcZmkt\r\n"
+                                           "MzYwIFxsaTcyMCBcamNsaXN0dGFiIFx0eDcyMCB9XGxpc3RpZDI5MiB9fQ0Ke1wqXGxpc3RvdmVy\r\n"
+                                           "cmlkZXRhYmxle1xsaXN0b3ZlcnJpZGUgXGxpc3RpZDI5MiBcbGlzdG92ZXJyaWRlY291bnQwIFxs\r\n"
+                                           "czEgfX0NCntcKlxnZW5lcmF0b3IgU29waGlzdCBTb2x1dGlvbnMsIEluYy4gTGVkIFJURiBJTyBF\r\n"
+                                           "bmdpbmUgLSAzLjFiMng7fVxwYXJkIFxwbGFpbiBcZjAgXGZzMjQgXGNmMCBIYWQgaGF5IGZldmVy\r\n"
+                                           "IHRvZGF5LiBOb3QgdGVycmlibGUsIGJ1dCBzZXZlcmFsIHRpbWVzLiBBbmQgSSB0aGluayBhIGJp\r\n"
+                                           "dCB5ZXN0ZXJkYQ0KeS59";
                 PRIVATE_::DO_ONE_REGTEST_BASE64_ (kEncodedVal, vector<byte> ((const byte*)kSrc, (const byte*)kSrc + ::strlen (kSrc)));
             }
 
@@ -199,10 +206,11 @@ namespace {
             {
                 const char kSrc[]        = "This is a very good test of a very good test";
                 const char kEncodedVal[] = "08c8888b86d6300ade93a10095a9083a";
-                VerifyTestResult (Format<string> (Digest::ComputeDigest<Digest::Algorithm::MD5> ((const byte*)kSrc, (const byte*)kSrc + ::strlen (kSrc))) == kEncodedVal);
+                VerifyTestResult (Format<string> (Digest::ComputeDigest<Digest::Algorithm::MD5> (
+                                      (const byte*)kSrc, (const byte*)kSrc + ::strlen (kSrc))) == kEncodedVal);
             }
             {
-                int    tmp       = 3;
+                int tmp = 3;
                 string digestStr = Format<string> (Digest::ComputeDigest<Digest::Algorithm::MD5> (Streams::iostream::SerializeItemToBLOB (tmp)));
                 VerifyTestResult (digestStr == "eccbc87e4b5ce2fe28308fd9f2a7baf3");
             }
@@ -230,11 +238,16 @@ namespace {
 
                 VerifyTestResult ((Hash<String, DefaultHashDigester, DefaultHashDigester::ReturnType>{}(L"x") == Hash<String>{}(L"x")));
                 struct altStringSerializer {
-                    auto operator() (String s) { return s.empty () ? Memory::BLOB{} : Memory::BLOB{(const byte*)s.c_str (), (const byte*)s.c_str () + 1}; };
+                    auto operator() (String s)
+                    {
+                        return s.empty () ? Memory::BLOB{} : Memory::BLOB{(const byte*)s.c_str (), (const byte*)s.c_str () + 1};
+                    };
                 };
                 //constexpr auto altStringSerializer = [] (const String& s) { return s.empty () ? Memory::BLOB{} : Memory::BLOB ((const byte*)s.c_str (), (const byte*)s.c_str () + 1); };
-                VerifyTestResult ((Hash<String, DefaultHashDigester, DefaultHashDigester::ReturnType, altStringSerializer>{}(L"xxx") != Hash<String>{}(L"xxx")));
-                VerifyTestResult ((Hash<String, DefaultHashDigester, DefaultHashDigester::ReturnType, altStringSerializer>{}(L"x1") == Hash<String, DefaultHashDigester, DefaultHashDigester::ReturnType, altStringSerializer>{}(L"x2")));
+                VerifyTestResult ((Hash<String, DefaultHashDigester, DefaultHashDigester::ReturnType, altStringSerializer>{}(L"xxx") !=
+                                   Hash<String>{}(L"xxx")));
+                VerifyTestResult ((Hash<String, DefaultHashDigester, DefaultHashDigester::ReturnType, altStringSerializer>{}(L"x1") ==
+                                   Hash<String, DefaultHashDigester, DefaultHashDigester::ReturnType, altStringSerializer>{}(L"x2")));
             }
             {
                 auto ec1{make_error_code (std::errc::already_connected)};
@@ -267,11 +280,11 @@ namespace {
                 auto                          digesterWithDefaultResult  = Digester<Digest::Algorithm::SuperFastHash>{};
                 auto                          digesterWithResult_uint8_t = Digester<Digest::Algorithm::SuperFastHash, uint8_t>{};
                 auto                          digesterWithResult_GUID_t  = Digester<Digest::Algorithm::SuperFastHash, Common::GUID>{};
-                Memory::BLOB                  value2Hash                 = DefaultSerializer<InternetAddress>{}(InternetAddress{L"192.168.244.33"});
-                auto                          h1                         = digesterWithDefaultResult (value2Hash);
-                uint8_t                       h2                         = digesterWithResult_uint8_t (value2Hash);
-                std::array<byte, 40>          h3                         = ComputeDigest<Digest::Algorithm::SuperFastHash, std::array<byte, 40>> (value2Hash);
-                [[maybe_unused]] Common::GUID h4                         = digesterWithResult_GUID_t (value2Hash);
+                Memory::BLOB                  value2Hash = DefaultSerializer<InternetAddress>{}(InternetAddress{L"192.168.244.33"});
+                auto                          h1         = digesterWithDefaultResult (value2Hash);
+                uint8_t                       h2         = digesterWithResult_uint8_t (value2Hash);
+                std::array<byte, 40>          h3 = ComputeDigest<Digest::Algorithm::SuperFastHash, std::array<byte, 40>> (value2Hash);
+                [[maybe_unused]] Common::GUID h4 = digesterWithResult_GUID_t (value2Hash);
 
                 /*
                  *  NOTE - basically ALL these tests vary on a number of parameters
@@ -304,13 +317,13 @@ namespace {
             }
             {
                 using namespace IO::Network;
-                auto                 hasherWithDefaultResult  = Hash<InternetAddress, Digester<Digest::Algorithm::SuperFastHash>>{};
-                auto                 hasherWithResult_uint8_t = Hash<InternetAddress, Digester<Digest::Algorithm::SuperFastHash>, uint8_t>{};
-                auto                 value2Hash               = InternetAddress{L"192.168.244.33"};
-                auto                 h1                       = hasherWithDefaultResult (value2Hash);
-                uint8_t              h2                       = hasherWithResult_uint8_t (value2Hash);
-                auto                 hasherWithResult_array40 = Hash<InternetAddress, Digester<Digest::Algorithm::SuperFastHash>, std::array<byte, 40>>{};
-                std::array<byte, 40> h3                       = hasherWithResult_array40 (value2Hash);
+                auto    hasherWithDefaultResult  = Hash<InternetAddress, Digester<Digest::Algorithm::SuperFastHash>>{};
+                auto    hasherWithResult_uint8_t = Hash<InternetAddress, Digester<Digest::Algorithm::SuperFastHash>, uint8_t>{};
+                auto    value2Hash               = InternetAddress{L"192.168.244.33"};
+                auto    h1                       = hasherWithDefaultResult (value2Hash);
+                uint8_t h2                       = hasherWithResult_uint8_t (value2Hash);
+                auto hasherWithResult_array40 = Hash<InternetAddress, Digester<Digest::Algorithm::SuperFastHash>, std::array<byte, 40>>{};
+                std::array<byte, 40> h3       = hasherWithResult_array40 (value2Hash);
                 // Not important/promised these values will remain constant, but if serialize and hash dont change, they will, and those are unlikely to change
                 // so if these fail, either something relevant changed or bug...
                 VerifyTestResult (h1 == 808390013);
@@ -403,8 +416,10 @@ namespace {
                 using namespace Characters; // fails due to qCompilerAndStdLib_SpaceshipAutoGenForOpEqualsForCommonGUID_Buggy
                 VerifyTestResult (Cryptography::Format<String> (Hash<string, USE_DIGESTER_>{}("x")) == L"9dd4e461268c8034f5c8564e155c67a6");
                 VerifyTestResult (Cryptography::Format<string> (Hash<string, USE_DIGESTER_>{}("x")) == "9dd4e461268c8034f5c8564e155c67a6");
-                VerifyTestResult ((Common::GUID{Hash<string, USE_DIGESTER_>{}("x")} == Common::GUID{L"61e4d49d-8c26-3480-f5c8-564e155c67a6"}));
-                VerifyTestResult ((Hash<string, USE_DIGESTER_, Common::GUID>{}("x") == Common::GUID{L"61e4d49d-8c26-3480-f5c8-564e155c67a6"}));
+                VerifyTestResult (
+                    (Common::GUID{Hash<string, USE_DIGESTER_>{}("x")} == Common::GUID{L"61e4d49d-8c26-3480-f5c8-564e155c67a6"}));
+                VerifyTestResult (
+                    (Hash<string, USE_DIGESTER_, Common::GUID>{}("x") == Common::GUID{L"61e4d49d-8c26-3480-f5c8-564e155c67a6"}));
             }
         }
     }
@@ -422,7 +437,7 @@ namespace {
             // @todo -- RETHINK IF RESULTS SB SAME REGARDLESS OF ENDIAN - NOT CONSISTENT!!!! --LGP 2015-08-26 -- AIX
             using USE_DIGESTER_ = Digester<Algorithm::SuperFastHash>;
             {
-                VerifyTestResult ((Cryptography::Digest::Hash<int, USE_DIGESTER_>{}(ToLE_ (1)) == 3282063817u));     // value before 2.1b10 was 422304363
+                VerifyTestResult ((Cryptography::Digest::Hash<int, USE_DIGESTER_>{}(ToLE_ (1)) == 3282063817u)); // value before 2.1b10 was 422304363
                 VerifyTestResult ((Cryptography::Digest::Hash<int, USE_DIGESTER_>{}(ToLE_ (93993)) == 2783293987u)); // value before 2.1b10 was 2489559407
             }
             {
@@ -446,22 +461,38 @@ namespace {
         {
 #if qHasFeature_OpenSSL
             Debug::TraceContextBumper ctx{"EnumerateOpenSSLAlgorithmsInContexts_::DoRegressionTests_"};
-            Set<String>               defaultContextAvailableCipherAlgorithms = Set<String>{OpenSSL::LibraryContext::sDefault.pAvailableCipherAlgorithms ().Map<String> ([] (auto i) { return i.pName (); })};
-            Set<String>               defaultContextStandardCipherAlgorithms  = Set<String>{OpenSSL::LibraryContext::sDefault.pStandardCipherAlgorithms ().Map<String> ([] (auto i) { return i.pName (); })};
-            Set<String>               defaultContextAvailableDigestAlgorithms = Set<String>{OpenSSL::LibraryContext::sDefault.pAvailableDigestAlgorithms ().Map<String> ([] (auto i) { return i.pName (); })};
-            Set<String>               defaultContextStandardDigestAlgorithms  = Set<String>{OpenSSL::LibraryContext::sDefault.pStandardDigestAlgorithms ().Map<String> ([] (auto i) { return i.pName (); })};
+            Set<String>               defaultContextAvailableCipherAlgorithms =
+                Set<String>{OpenSSL::LibraryContext::sDefault.pAvailableCipherAlgorithms ().Map<String> ([] (auto i) { return i.pName (); })};
+            Set<String> defaultContextStandardCipherAlgorithms =
+                Set<String>{OpenSSL::LibraryContext::sDefault.pStandardCipherAlgorithms ().Map<String> ([] (auto i) { return i.pName (); })};
+            Set<String> defaultContextAvailableDigestAlgorithms =
+                Set<String>{OpenSSL::LibraryContext::sDefault.pAvailableDigestAlgorithms ().Map<String> ([] (auto i) { return i.pName (); })};
+            Set<String> defaultContextStandardDigestAlgorithms =
+                Set<String>{OpenSSL::LibraryContext::sDefault.pStandardDigestAlgorithms ().Map<String> ([] (auto i) { return i.pName (); })};
 
-            DbgTrace (L"defaultContextAvailableCipherAlgorithms = #%d %s", defaultContextAvailableCipherAlgorithms.size (), Characters::ToString (defaultContextAvailableCipherAlgorithms).c_str ());
-            DbgTrace (L"defaultContextStandardCipherAlgorithms = #%d %s", defaultContextStandardCipherAlgorithms.size (), Characters::ToString (defaultContextStandardCipherAlgorithms).c_str ());
-            DbgTrace (L"defaultContextAvailableDigestAlgorithms = #%d %s", defaultContextAvailableDigestAlgorithms.size (), Characters::ToString (defaultContextAvailableDigestAlgorithms).c_str ());
-            DbgTrace (L"defaultContextStandardDigestAlgorithms = #%d %s", defaultContextStandardDigestAlgorithms.size (), Characters::ToString (defaultContextStandardDigestAlgorithms).c_str ());
+            DbgTrace (L"defaultContextAvailableCipherAlgorithms = #%d %s", defaultContextAvailableCipherAlgorithms.size (),
+                      Characters::ToString (defaultContextAvailableCipherAlgorithms).c_str ());
+            DbgTrace (L"defaultContextStandardCipherAlgorithms = #%d %s", defaultContextStandardCipherAlgorithms.size (),
+                      Characters::ToString (defaultContextStandardCipherAlgorithms).c_str ());
+            DbgTrace (L"defaultContextAvailableDigestAlgorithms = #%d %s", defaultContextAvailableDigestAlgorithms.size (),
+                      Characters::ToString (defaultContextAvailableDigestAlgorithms).c_str ());
+            DbgTrace (L"defaultContextStandardDigestAlgorithms = #%d %s", defaultContextStandardDigestAlgorithms.size (),
+                      Characters::ToString (defaultContextStandardDigestAlgorithms).c_str ());
 
             // worth noting if these fail
             if (not defaultContextAvailableCipherAlgorithms.ContainsAny (defaultContextStandardCipherAlgorithms)) {
-                Stroika::TestHarness::WarnTestIssue (Characters::Format (L"defaultContextAvailableCipherAlgorithms missing standard algoritmhs: %s", Characters::ToString (defaultContextStandardCipherAlgorithms - defaultContextAvailableCipherAlgorithms).c_str ()).c_str ());
+                Stroika::TestHarness::WarnTestIssue (
+                    Characters::Format (
+                        L"defaultContextAvailableCipherAlgorithms missing standard algoritmhs: %s",
+                        Characters::ToString (defaultContextStandardCipherAlgorithms - defaultContextAvailableCipherAlgorithms).c_str ())
+                        .c_str ());
             }
             if (not defaultContextAvailableDigestAlgorithms.ContainsAny (defaultContextStandardDigestAlgorithms)) {
-                Stroika::TestHarness::WarnTestIssue (Characters::Format (L"defaultContextAvailableDigestAlgorithms missing standard algoritmhs: %s", Characters::ToString (defaultContextStandardDigestAlgorithms - defaultContextAvailableDigestAlgorithms).c_str ()).c_str ());
+                Stroika::TestHarness::WarnTestIssue (
+                    Characters::Format (
+                        L"defaultContextAvailableDigestAlgorithms missing standard algoritmhs: %s",
+                        Characters::ToString (defaultContextStandardDigestAlgorithms - defaultContextAvailableDigestAlgorithms).c_str ())
+                        .c_str ());
             }
             // for openssl v3 could also check with legacy provider loaded...
 #endif
@@ -484,7 +515,8 @@ namespace {
 
             auto roundTripTester_ = [] (const OpenSSLCryptoParams& cryptoParams, BLOB src) -> void {
                 BLOB encodedData = OpenSSLInputStream::New (cryptoParams, Direction::eEncrypt, src.As<Streams::InputStream<byte>::Ptr> ()).ReadAll ();
-                BLOB decodedData = OpenSSLInputStream::New (cryptoParams, Direction::eDecrypt, encodedData.As<Streams::InputStream<byte>::Ptr> ()).ReadAll ();
+                BLOB decodedData =
+                    OpenSSLInputStream::New (cryptoParams, Direction::eDecrypt, encodedData.As<Streams::InputStream<byte>::Ptr> ()).ReadAll ();
                 VerifyTestResult (src == decodedData);
             };
 
@@ -501,10 +533,8 @@ namespace {
             const char kSrc4_[] = "0123456789";
 
             static const BLOB kTestMessages_[] = {
-                BLOB::Raw (kSrc1_, Memory::NEltsOf (kSrc1_) - 1),
-                BLOB::Raw (kSrc2_, Memory::NEltsOf (kSrc2_) - 1),
-                BLOB::Raw (kSrc3_, Memory::NEltsOf (kSrc3_) - 1),
-                BLOB::Raw (kSrc4_, Memory::NEltsOf (kSrc4_) - 1)};
+                BLOB::Raw (kSrc1_, Memory::NEltsOf (kSrc1_) - 1), BLOB::Raw (kSrc2_, Memory::NEltsOf (kSrc2_) - 1),
+                BLOB::Raw (kSrc3_, Memory::NEltsOf (kSrc3_) - 1), BLOB::Raw (kSrc4_, Memory::NEltsOf (kSrc4_) - 1)};
 
             Set<String> providers2Try{OpenSSL::LibraryContext::kDefaultProvider};
             if constexpr (OPENSSL_VERSION_NUMBER >= 0x30000000L) {
@@ -525,16 +555,19 @@ namespace {
                 }
                 catch (...) {
                     if (provider == L"legacy") {
-                        DbgTrace (L"Skipping provider=%s, due to exception: %s", provider.c_str (), Characters::ToString (current_exception ()).c_str ());
+                        DbgTrace (L"Skipping provider=%s, due to exception: %s", provider.c_str (),
+                                  Characters::ToString (current_exception ()).c_str ());
                     }
                     else {
-                        Stroika::TestHarness::WarnTestIssue (Characters::Format (L"Skipping provider=%s, due to exception: %s", provider.c_str (), Characters::ToString (current_exception ()).c_str ()).c_str ());
+                        Stroika::TestHarness::WarnTestIssue (Characters::Format (L"Skipping provider=%s, due to exception: %s", provider.c_str (),
+                                                                                 Characters::ToString (current_exception ()).c_str ())
+                                                                 .c_str ());
                     }
                     continue;
                 }
-                unsigned int                  nCipherTests{};
-                unsigned int                  nFailures{};
-                MultiSet<String>              failingCiphers;
+                unsigned int     nCipherTests{};
+                unsigned int     nFailures{};
+                MultiSet<String> failingCiphers;
                 [[maybe_unused]] const size_t totalDigestAlgorithms = OpenSSL::LibraryContext::sDefault.pAvailableDigestAlgorithms ().size ();
                 for (CipherAlgorithm ci : OpenSSL::LibraryContext::sDefault.pAvailableCipherAlgorithms ()) {
                     for (DigestAlgorithm di : OpenSSL::LibraryContext::sDefault.pAvailableDigestAlgorithms ()) {
@@ -545,7 +578,8 @@ namespace {
                                 ++nCipherTests;
                                 try {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                                    Debug::TraceContextBumper ctx{L"roundtriptesting", L"ci=%s, di=%s", Characters::ToString (ci).c_str (), Characters::ToString (di).c_str ()};
+                                    Debug::TraceContextBumper ctx{L"roundtriptesting", L"ci=%s, di=%s", Characters::ToString (ci).c_str (),
+                                                                  Characters::ToString (di).c_str ()};
 #endif
                                     OpenSSLCryptoParams cryptoParams{ci, OpenSSL::EVP_BytesToKey{ci, di, passphrase}};
                                     roundTripTester_ (cryptoParams, inputMessage);
@@ -553,18 +587,24 @@ namespace {
                                 catch (...) {
                                     nFailures++;
                                     failingCiphers.Add (Characters::ToString (ci));
-                                    DbgTrace (L"For Test (%s, %s): Ignorning exception: %s", Characters::ToString (ci).c_str (), Characters::ToString (di).c_str (), Characters::ToString (current_exception ()).c_str ());
+                                    DbgTrace (L"For Test (%s, %s): Ignorning exception: %s", Characters::ToString (ci).c_str (),
+                                              Characters::ToString (di).c_str (), Characters::ToString (current_exception ()).c_str ());
                                 }
                             }
                         }
                         if (nFailsForThisCipherDigestCombo != 0 and nFailsForThisCipherDigestCombo != NEltsOf (kPassphrases_) * NEltsOf (kTestMessages_)) {
                             // maybe this cipher/digest combo fails only on some inputs
-                            Stroika::TestHarness::WarnTestIssue (Characters::Format (L"Cipher %s, Digest %s failed %d times (not %d)", Characters::ToString (ci).c_str (), Characters::ToString (di).c_str (), nFailsForThisCipherDigestCombo, NEltsOf (kPassphrases_) * NEltsOf (kTestMessages_)).c_str ());
+                            Stroika::TestHarness::WarnTestIssue (
+                                Characters::Format (L"Cipher %s, Digest %s failed %d times (not %d)", Characters::ToString (ci).c_str (),
+                                                    Characters::ToString (di).c_str (), nFailsForThisCipherDigestCombo,
+                                                    NEltsOf (kPassphrases_) * NEltsOf (kTestMessages_))
+                                    .c_str ());
                         }
                     }
                 }
                 if (nFailures != 0) {
-                    Set<String>              allCiphers{OpenSSL::LibraryContext::sDefault.pAvailableCipherAlgorithms ().Map<String> ([] (auto i) { return i.pName (); })};
+                    Set<String> allCiphers{
+                        OpenSSL::LibraryContext::sDefault.pAvailableCipherAlgorithms ().Map<String> ([] (auto i) { return i.pName (); })};
                     Set<String>              passingCiphers              = allCiphers - failingCiphers.Elements ();
                     static const Set<String> kLastSeenAllFailingCiphers_ = {
                         L"AES-128-OCB",
@@ -600,19 +640,21 @@ namespace {
                     };
                     if (kLastSeenAllFailingCiphers_ != Set<String>{failingCiphers.Elements ()}) {
                         Stroika::TestHarness::WarnTestIssue (
-                            Characters::Format (
-                                L"For provider=%s, nCipherTests=%d, nFailures=%d, new-failures=%s, remove-failures=%s, failingCiphers=%s, passing-ciphrs=%s",
-                                provider.c_str (),
-                                nCipherTests, nFailures,
-                                Characters::ToString (Set<String>{failingCiphers.Elements ()} - kLastSeenAllFailingCiphers_).c_str (),
-                                Characters::ToString (kLastSeenAllFailingCiphers_ - failingCiphers.Elements ()).c_str (),
-                                Characters::ToString (failingCiphers).c_str (),
-                                Characters::ToString (passingCiphers).c_str ())
+                            Characters::Format (L"For provider=%s, nCipherTests=%d, nFailures=%d, new-failures=%s, remove-failures=%s, "
+                                                L"failingCiphers=%s, passing-ciphrs=%s",
+                                                provider.c_str (), nCipherTests, nFailures,
+                                                Characters::ToString (Set<String>{failingCiphers.Elements ()} - kLastSeenAllFailingCiphers_).c_str (),
+                                                Characters::ToString (kLastSeenAllFailingCiphers_ - failingCiphers.Elements ()).c_str (),
+                                                Characters::ToString (failingCiphers).c_str (), Characters::ToString (passingCiphers).c_str ())
                                 .c_str ());
                     }
-                    static const Set<String> kStandardCipherAlgorithmNames{OpenSSL::LibraryContext::sDefault.pStandardCipherAlgorithms ().Map<String> ([] (auto i) { return i.pName (); })};
+                    static const Set<String> kStandardCipherAlgorithmNames{
+                        OpenSSL::LibraryContext::sDefault.pStandardCipherAlgorithms ().Map<String> ([] (auto i) { return i.pName (); })};
                     if (failingCiphers.Elements () ^ kStandardCipherAlgorithmNames) {
-                        Stroika::TestHarness::WarnTestIssue (Characters::Format (L"For provider=%s, some standard ciphers failed: %s", provider.c_str (), Characters::ToString (failingCiphers.Elements () ^ kStandardCipherAlgorithmNames).c_str ()).c_str ());
+                        Stroika::TestHarness::WarnTestIssue (
+                            Characters::Format (L"For provider=%s, some standard ciphers failed: %s", provider.c_str (),
+                                                Characters::ToString (failingCiphers.Elements () ^ kStandardCipherAlgorithmNames).c_str ())
+                                .c_str ());
                     }
                 }
             }
@@ -641,7 +683,8 @@ namespace {
                 DbgTrace (L"dk=%s; expected=%s", Characters::ToString (dk).c_str (), Characters::ToString (expected).c_str ());
                 VerifyTestResult (dk == expected);
             };
-            auto checkWithSalt = [] (CipherAlgorithm cipherAlgorithm, DigestAlgorithm digestAlgorithm, const String& password, const BLOB& salt, const DerivedKey& expected) {
+            auto checkWithSalt = [] (CipherAlgorithm cipherAlgorithm, DigestAlgorithm digestAlgorithm, const String& password,
+                                     const BLOB& salt, const DerivedKey& expected) {
                 unsigned int nRounds = 1; // command-line tool uses this
                 DerivedKey   dk      = OpenSSL::EVP_BytesToKey{cipherAlgorithm, digestAlgorithm, password, nRounds, salt};
                 DbgTrace (L"dk=%s; expected=%s", Characters::ToString (dk).c_str (), Characters::ToString (expected).c_str ());
@@ -650,28 +693,34 @@ namespace {
 
             // openssl rc4 -P -k mypass -md md5 -nosalt
             //      key=A029D0DF84EB5549C641E04A9EF389E5
-            checkNoSalt (OpenSSL::CipherAlgorithms::kRC4, OpenSSL::DigestAlgorithms::kMD5, L"mypass", DerivedKey{BLOB::Hex ("A029D0DF84EB5549C641E04A9EF389E5"), BLOB{}});
+            checkNoSalt (OpenSSL::CipherAlgorithms::kRC4, OpenSSL::DigestAlgorithms::kMD5, L"mypass",
+                         DerivedKey{BLOB::Hex ("A029D0DF84EB5549C641E04A9EF389E5"), BLOB{}});
 
             // openssl rc4 -P -k mypass  -md md5 -S 0102030405060708
             //  salt=0102030405060708
             //  key=56BDFF04895C5D16F5E3F68737000092
-            checkWithSalt (OpenSSL::CipherAlgorithms::kRC4, OpenSSL::DigestAlgorithms::kMD5, L"mypass", BLOB::Hex ("0102030405060708"), DerivedKey{BLOB::Hex ("56BDFF04895C5D16F5E3F68737000092"), BLOB{}});
+            checkWithSalt (OpenSSL::CipherAlgorithms::kRC4, OpenSSL::DigestAlgorithms::kMD5, L"mypass", BLOB::Hex ("0102030405060708"),
+                           DerivedKey{BLOB::Hex ("56BDFF04895C5D16F5E3F68737000092"), BLOB{}});
 
             // openssl blowfish -P -k mypass -md sha1 -nosalt
             //      key=E727D1464AE12436E899A726DA5B2F11
             //      iv =D8381B26923E0415
-            checkNoSalt (OpenSSL::CipherAlgorithms::kBlowfish, OpenSSL::DigestAlgorithms::kSHA1, L"mypass", DerivedKey{BLOB::Hex ("E727D1464AE12436E899A726DA5B2F11"), BLOB::Hex ("D8381B26923E0415")});
+            checkNoSalt (OpenSSL::CipherAlgorithms::kBlowfish, OpenSSL::DigestAlgorithms::kSHA1, L"mypass",
+                         DerivedKey{BLOB::Hex ("E727D1464AE12436E899A726DA5B2F11"), BLOB::Hex ("D8381B26923E0415")});
 
             // openssl aes-256-cbc -P -k mypass -md md5 -nosalt
             //      key=A029D0DF84EB5549C641E04A9EF389E5A10CE9C4682486F8622F2F18E7291367
             //      iv =541F477059FAEFD57328A0B0D22F2A20
-            checkNoSalt (OpenSSL::CipherAlgorithms::kAES_256_CBC, OpenSSL::DigestAlgorithms::kMD5, L"mypass", DerivedKey{BLOB::Hex ("A029D0DF84EB5549C641E04A9EF389E5A10CE9C4682486F8622F2F18E7291367"), BLOB::Hex ("541F477059FAEFD57328A0B0D22F2A20")});
+            checkNoSalt (OpenSSL::CipherAlgorithms::kAES_256_CBC, OpenSSL::DigestAlgorithms::kMD5, L"mypass",
+                         DerivedKey{BLOB::Hex ("A029D0DF84EB5549C641E04A9EF389E5A10CE9C4682486F8622F2F18E7291367"),
+                                    BLOB::Hex ("541F477059FAEFD57328A0B0D22F2A20")});
 
             // openssl aes-128-ofb -P -k mypass -md sha1 -S 1122334455667788
             //      salt=1122334455667788
             //      key=36237DC4B90DD237329731E85EE5BB5A
             //      iv =35F1A763D974A002DB1721B8F25498E6
-            checkWithSalt (OpenSSL::CipherAlgorithms::kAES_128_OFB, OpenSSL::DigestAlgorithms::kSHA1, L"mypass", BLOB::Hex ("1122334455667788"), DerivedKey{BLOB::Hex ("36237DC4B90DD237329731E85EE5BB5A"), BLOB::Hex ("35F1A763D974A002DB1721B8F25498E6")});
+            checkWithSalt (OpenSSL::CipherAlgorithms::kAES_128_OFB, OpenSSL::DigestAlgorithms::kSHA1, L"mypass", BLOB::Hex ("1122334455667788"),
+                           DerivedKey{BLOB::Hex ("36237DC4B90DD237329731E85EE5BB5A"), BLOB::Hex ("35F1A763D974A002DB1721B8F25498E6")});
 #endif
         }
     }
@@ -691,14 +740,19 @@ namespace {
             using Memory::BLOB;
             using namespace Stroika::Foundation::Cryptography::Encoding;
 
-            auto checkNoSalt = [] (CipherAlgorithm cipherAlgorithm, DigestAlgorithm digestAlgorithm, const String& password, const BLOB& src, const BLOB& expected) {
+            auto checkNoSalt = [] (CipherAlgorithm cipherAlgorithm, DigestAlgorithm digestAlgorithm, const String& password,
+                                   const BLOB& src, const BLOB& expected) {
                 if (OpenSSL::LibraryContext::sDefault.pAvailableCipherAlgorithms ().Contains (cipherAlgorithm)) {
-                    unsigned int        nRounds = 1; // command-line tool uses this
+                    unsigned int nRounds = 1; // command-line tool uses this
                     OpenSSLCryptoParams cryptoParams{cipherAlgorithm, OpenSSL::EVP_BytesToKey{cipherAlgorithm, digestAlgorithm, password, nRounds}};
                     DbgTrace (L"dk=%s", Characters::ToString (OpenSSL::EVP_BytesToKey{cipherAlgorithm, digestAlgorithm, password, nRounds}).c_str ());
-                    BLOB encodedData = OpenSSLInputStream::New (cryptoParams, Direction::eEncrypt, src.As<Streams::InputStream<byte>::Ptr> ()).ReadAll ();
-                    BLOB decodedData = OpenSSLInputStream::New (cryptoParams, Direction::eDecrypt, encodedData.As<Streams::InputStream<byte>::Ptr> ()).ReadAll ();
-                    DbgTrace (L"src=%s; encodedData=%s; expected=%s; decodedData=%s", Characters::ToString (src).c_str (), Characters::ToString (encodedData).c_str (), Characters::ToString (expected).c_str (), Characters::ToString (decodedData).c_str ());
+                    BLOB encodedData =
+                        OpenSSLInputStream::New (cryptoParams, Direction::eEncrypt, src.As<Streams::InputStream<byte>::Ptr> ()).ReadAll ();
+                    BLOB decodedData =
+                        OpenSSLInputStream::New (cryptoParams, Direction::eDecrypt, encodedData.As<Streams::InputStream<byte>::Ptr> ()).ReadAll ();
+                    DbgTrace (L"src=%s; encodedData=%s; expected=%s; decodedData=%s", Characters::ToString (src).c_str (),
+                              Characters::ToString (encodedData).c_str (), Characters::ToString (expected).c_str (),
+                              Characters::ToString (decodedData).c_str ());
                     VerifyTestResult (encodedData == expected);
                     VerifyTestResult (src == decodedData);
                 }
@@ -716,7 +770,9 @@ namespace {
             //  echo apples and pears| openssl rc4 -md md5 -e -k abc -nosalt | od -t x1 --width=64
             //      0000000 4a 94 99 ac 55 f7 a2 8b 1b ca 75 62 f6 9a cf de 41 9d
             //
-            checkNoSalt (OpenSSL::CipherAlgorithms::kRC4, OpenSSL::DigestAlgorithms::kMD5, L"abc", BLOB::Hex ("61 70 70 6c 65 73 20 61 6e 64 20 70 65 61 72 73 0d 0a"), BLOB::Hex ("4a 94 99 ac 55 f7 a2 8b 1b ca 75 62 f6 9a cf de 41 9d"));
+            checkNoSalt (OpenSSL::CipherAlgorithms::kRC4, OpenSSL::DigestAlgorithms::kMD5, L"abc",
+                         BLOB::Hex ("61 70 70 6c 65 73 20 61 6e 64 20 70 65 61 72 73 0d 0a"),
+                         BLOB::Hex ("4a 94 99 ac 55 f7 a2 8b 1b ca 75 62 f6 9a cf de 41 9d"));
 
             //  echo hi mom| od -t x1 --width=64
             //      0000000 68 69 20 6d 6f 6d 0d 0a
@@ -724,13 +780,15 @@ namespace {
             //      hi mom
             //  echo hi mom| openssl bf -md md5 -k aaa -nosalt | od -t x1 --width=64
             //      0000000 29 14 4a db 4e ce 20 45 09 56 e8 13 65 2f e8 d6
-            checkNoSalt (OpenSSL::CipherAlgorithms::kBlowfish, OpenSSL::DigestAlgorithms::kMD5, L"aaa", BLOB::Hex ("68 69 20 6d 6f 6d 0d 0a"), BLOB::Hex ("29 14 4a db 4e ce 20 45 09 56 e8 13 65 2f e8 d6"sv));
+            checkNoSalt (OpenSSL::CipherAlgorithms::kBlowfish, OpenSSL::DigestAlgorithms::kMD5, L"aaa",
+                         BLOB::Hex ("68 69 20 6d 6f 6d 0d 0a"), BLOB::Hex ("29 14 4a db 4e ce 20 45 09 56 e8 13 65 2f e8 d6"sv));
 
             //  echo hi mom| od -t x1 --width=64
             //      0000000 68 69 20 6d 6f 6d 0d 0a
             //   echo hi mom| openssl aes-128-cbc -md md5 -k aaa -nosalt | od -t x1 --width=64
             //      0000000 6b 95 c9 eb 68 5e c3 7f 4f e4 86 99 55 1d 05 53
-            checkNoSalt (OpenSSL::CipherAlgorithms::kAES_128_CBC, OpenSSL::DigestAlgorithms::kMD5, L"aaa", BLOB::Hex ("68 69 20 6d 6f 6d 0d 0a"sv), BLOB::Hex ("6b 95 c9 eb 68 5e c3 7f 4f e4 86 99 55 1d 05 53"));
+            checkNoSalt (OpenSSL::CipherAlgorithms::kAES_128_CBC, OpenSSL::DigestAlgorithms::kMD5, L"aaa",
+                         BLOB::Hex ("68 69 20 6d 6f 6d 0d 0a"sv), BLOB::Hex ("6b 95 c9 eb 68 5e c3 7f 4f e4 86 99 55 1d 05 53"));
 #endif
         }
     }
@@ -753,10 +811,15 @@ namespace {
                  *      echo -n "This is a very good test of a very good test" | openssl enc -k password -e -aes-256-cbc -nosalt | od -t x1 --width=100
                  *          0000000 62 d2 eb f6 ee 92 4f 7f 1d 5e 70 d0 dc 90 cc 3a b2 37 f5 d6 2c e4 42 d9 34 50 5b 6c fc 89 5b da c9 ab 29 5b ef d2 87 b6 07 0f df 55 f5 43 21 7b 0c cc 4a 2f d6 d8 25 d7 73 ed a9 1c 48 15 96 cd
                  */
-                const Memory::BLOB srcText   = Memory::BLOB::Hex ("2d 6e 20 22 54 68 69 73 20 69 73 20 61 20 76 65 72 79 20 67 6f 6f 64 20 74 65 73 74 20 6f 66 20 61 20 76 65 72 79 20 67 6f 6f 64 20 74 65 73 74 22 20 0d 0a");
-                const Memory::BLOB encResult = Memory::BLOB::Hex ("62 d2 eb f6 ee 92 4f 7f 1d 5e 70 d0 dc 90 cc 3a b2 37 f5 d6 2c e4 42 d9 34 50 5b 6c fc 89 5b da c9 ab 29 5b ef d2 87 b6 07 0f df 55 f5 43 21 7b 0c cc 4a 2f d6 d8 25 d7 73 ed a9 1c 48 15 96 cd");
+                const Memory::BLOB srcText =
+                    Memory::BLOB::Hex ("2d 6e 20 22 54 68 69 73 20 69 73 20 61 20 76 65 72 79 20 67 6f 6f 64 20 74 65 73 74 20 6f 66 20 61 "
+                                       "20 76 65 72 79 20 67 6f 6f 64 20 74 65 73 74 22 20 0d 0a");
+                const Memory::BLOB encResult =
+                    Memory::BLOB::Hex ("62 d2 eb f6 ee 92 4f 7f 1d 5e 70 d0 dc 90 cc 3a b2 37 f5 d6 2c e4 42 d9 34 50 5b 6c fc 89 5b da c9 "
+                                       "ab 29 5b ef d2 87 b6 07 0f df 55 f5 43 21 7b 0c cc 4a 2f d6 d8 25 d7 73 ed a9 1c 48 15 96 cd");
 #if qHasFeature_OpenSSL
-                const OpenSSL::DerivedKey kDerivedKey = OpenSSL::EVP_BytesToKey{OpenSSL::CipherAlgorithms::kAES_256_CBC (), OpenSSL::DigestAlgorithms::kMD5, "password"};
+                const OpenSSL::DerivedKey kDerivedKey =
+                    OpenSSL::EVP_BytesToKey{OpenSSL::CipherAlgorithms::kAES_256_CBC (), OpenSSL::DigestAlgorithms::kMD5, "password"};
                 // HORRIBLE MESS OF AN API! -
                 // @todo - FIX
                 VerifyTestResult (EncodeAES (kDerivedKey, srcText, AESOptions::e256_CBC) == encResult);

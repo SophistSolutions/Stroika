@@ -47,14 +47,18 @@ namespace Stroika::Frameworks::UPnP::SSDP::Client {
      */
     class Listener {
     public:
-        enum AutoStart { eAutoStart };
+        enum AutoStart {
+            eAutoStart
+        };
 
     public:
         /**
          */
         Listener (IO::Network::InternetProtocol::IP::IPVersionSupport ipVersion = IO::Network::InternetProtocol::IP::IPVersionSupport::eDEFAULT);
-        Listener (const function<void (const SSDP::Advertisement& d)>& callOnFinds, IO::Network::InternetProtocol::IP::IPVersionSupport ipVersion = IO::Network::InternetProtocol::IP::IPVersionSupport::eDEFAULT);
-        Listener (const function<void (const SSDP::Advertisement& d)>& callOnFinds, IO::Network::InternetProtocol::IP::IPVersionSupport ipVersion, AutoStart);
+        Listener (const function<void (const SSDP::Advertisement& d)>& callOnFinds,
+                  IO::Network::InternetProtocol::IP::IPVersionSupport ipVersion = IO::Network::InternetProtocol::IP::IPVersionSupport::eDEFAULT);
+        Listener (const function<void (const SSDP::Advertisement& d)>& callOnFinds,
+                  IO::Network::InternetProtocol::IP::IPVersionSupport  ipVersion, AutoStart);
         Listener (const function<void (const SSDP::Advertisement& d)>& callOnFinds, AutoStart);
         Listener (Listener&&)      = default;
         Listener (const Listener&) = delete;

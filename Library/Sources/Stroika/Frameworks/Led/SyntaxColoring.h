@@ -40,8 +40,9 @@ namespace Stroika::Frameworks::Led {
     */
     class SyntaxAnalyzer {
     public:
-        virtual void AdjustLookBackRange (TextStore* ts, size_t* lookBackStart, size_t* lookBackTo) const                                                                               = 0;
-        virtual void AddMarkers (TextStore* ts, TextInteractor* interactor, MarkerOwner* owner, size_t lookBackStart, size_t lookBackTo, vector<Marker*>* appendNewMarkersToList) const = 0;
+        virtual void AdjustLookBackRange (TextStore* ts, size_t* lookBackStart, size_t* lookBackTo) const = 0;
+        virtual void AddMarkers (TextStore* ts, TextInteractor* interactor, MarkerOwner* owner, size_t lookBackStart, size_t lookBackTo,
+                                 vector<Marker*>* appendNewMarkersToList) const                           = 0;
     };
 
     /*
@@ -53,7 +54,8 @@ namespace Stroika::Frameworks::Led {
     class TrivialRGBSyntaxAnalyzer : public SyntaxAnalyzer {
     public:
         virtual void AdjustLookBackRange (TextStore* ts, size_t* lookBackStart, size_t* lookBackTo) const override;
-        virtual void AddMarkers (TextStore* ts, TextInteractor* interactor, MarkerOwner* owner, size_t lookBackStart, size_t lookBackTo, vector<Marker*>* appendNewMarkersToList) const override;
+        virtual void AddMarkers (TextStore* ts, TextInteractor* interactor, MarkerOwner* owner, size_t lookBackStart, size_t lookBackTo,
+                                 vector<Marker*>* appendNewMarkersToList) const override;
     };
 
     /*
@@ -95,7 +97,8 @@ namespace Stroika::Frameworks::Led {
 
     public:
         virtual void AdjustLookBackRange (TextStore* ts, size_t* lookBackStart, size_t* lookBackTo) const override;
-        virtual void AddMarkers (TextStore* ts, TextInteractor* interactor, MarkerOwner* owner, size_t lookBackStart, size_t lookBackTo, vector<Marker*>* appendNewMarkersToList) const override;
+        virtual void AddMarkers (TextStore* ts, TextInteractor* interactor, MarkerOwner* owner, size_t lookBackStart, size_t lookBackTo,
+                                 vector<Marker*>* appendNewMarkersToList) const override;
 
     private:
         KeywordTable fKeywordTable;
@@ -215,7 +218,8 @@ namespace Stroika::Frameworks::Led {
     @DESCRIPTION:   <p>This is used internally by the syntax coloring code, and is exposed only in case you want to write your own
                 Syntax Analyzer code. This simply takes a @'Color' object and uses that to color the given text.</p>
     */
-    class SyntaxColoringMarkerOwner::ColoredStyleMarker : public SimpleStyleMarkerByFontSpec<>, public Foundation::Memory::UseBlockAllocationIfAppropriate<ColoredStyleMarker> {
+    class SyntaxColoringMarkerOwner::ColoredStyleMarker : public SimpleStyleMarkerByFontSpec<>,
+                                                          public Foundation::Memory::UseBlockAllocationIfAppropriate<ColoredStyleMarker> {
     private:
         using inherited = SimpleStyleMarkerByFontSpec<>;
 

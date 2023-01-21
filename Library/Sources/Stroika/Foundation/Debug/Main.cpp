@@ -24,7 +24,4 @@ namespace {
  ************************ Debug::AppearsDuringMainLifetime **********************
  ********************************************************************************
  */
-bool Debug::AppearsDuringMainLifetime ()
-{
-    return not sKnownBadBeforeMainOrAfterMain_;
-}
+bool Debug::AppearsDuringMainLifetime () { return not sKnownBadBeforeMainOrAfterMain_; }

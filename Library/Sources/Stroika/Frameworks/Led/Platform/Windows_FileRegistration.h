@@ -28,13 +28,16 @@ namespace Stroika::Frameworks::Led::Platform {
         nonvirtual SDKString GetAssociatedOpenCommand () const;
 
     public:
-        nonvirtual void SetAssociatedProgIDAndOpenCommand (const SDKString& progID, const SDKString& progIDPrettyName, const SDKString& defaultIcon, const SDKString& editCommandLine, const SDKString& openCommandLine);
+        nonvirtual void SetAssociatedProgIDAndOpenCommand (const SDKString& progID, const SDKString& progIDPrettyName, const SDKString& defaultIcon,
+                                                           const SDKString& editCommandLine, const SDKString& openCommandLine);
 
     private:
         struct KeyHolder {
             HKEY fKey;
             KeyHolder (HKEY hk);
-            enum CreateIfNotThereFlag { eCreateIfNotThere };
+            enum CreateIfNotThereFlag {
+                eCreateIfNotThere
+            };
             KeyHolder (HKEY baseKey, LPCTSTR lpSubKey);
             KeyHolder (HKEY baseKey, LPCTSTR lpSubKey, CreateIfNotThereFlag createIfNotThereFlag);
             ~KeyHolder ();
@@ -49,19 +52,10 @@ namespace Stroika::Frameworks::Led::Platform {
 #if qPlatform_Windows
     class Win32UIFileAssociationInfo {
     public:
-        Win32UIFileAssociationInfo (
-            const SDKString& fileSuffix,
-            const SDKString& fileProgID,
-            const SDKString& fileProgIDPrettyName,
-            const SDKString& defaultIcon,
-            const SDKString& shellEditNOpenCommandLine);
-        Win32UIFileAssociationInfo (
-            const SDKString& fileSuffix,
-            const SDKString& fileProgID,
-            const SDKString& fileProgIDPrettyName,
-            const SDKString& defaultIcon,
-            const SDKString& shellEditCommandLine,
-            const SDKString& shellOpenCommandLine);
+        Win32UIFileAssociationInfo (const SDKString& fileSuffix, const SDKString& fileProgID, const SDKString& fileProgIDPrettyName,
+                                    const SDKString& defaultIcon, const SDKString& shellEditNOpenCommandLine);
+        Win32UIFileAssociationInfo (const SDKString& fileSuffix, const SDKString& fileProgID, const SDKString& fileProgIDPrettyName,
+                                    const SDKString& defaultIcon, const SDKString& shellEditCommandLine, const SDKString& shellOpenCommandLine);
 
     public:
         SDKString fFileSuffix;

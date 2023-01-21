@@ -67,7 +67,11 @@ namespace Stroika::Frameworks::NetworkMonitor::Ping {
          *
          *      This does NOT include the IP header, nor the ICMP Header
          */
-        static inline constexpr Traversal::Range<size_t> kAllowedICMPPayloadSizeRange{0, numeric_limits<uint16_t>::max () - (sizeof (IO::Network::InternetProtocol::ICMP::V4::PacketHeader) + sizeof (IO::Network::InternetProtocol::IP::V4::PacketHeader)), Traversal::Openness::eClosed, Traversal::Openness::eClosed};
+        static inline constexpr Traversal::Range<size_t> kAllowedICMPPayloadSizeRange{
+            0,
+            numeric_limits<uint16_t>::max () -
+                (sizeof (IO::Network::InternetProtocol::ICMP::V4::PacketHeader) + sizeof (IO::Network::InternetProtocol::IP::V4::PacketHeader)),
+            Traversal::Openness::eClosed, Traversal::Openness::eClosed};
 
         /**
          *  \not including ICMP nor IP header overhead.

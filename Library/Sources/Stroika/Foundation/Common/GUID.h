@@ -49,10 +49,8 @@ namespace Stroika::Foundation::Common {
 #endif
         GUID (const string& src);
         GUID (const Memory::BLOB& src);
-        GUID (const array<std::byte, 16>& src)
-        noexcept;
-        GUID (const array<uint8_t, 16>& src)
-        noexcept;
+        GUID (const array<std::byte, 16>& src) noexcept;
+        GUID (const array<uint8_t, 16>& src) noexcept;
         GUID (const Characters::String& src);
 
     public:
@@ -110,8 +108,8 @@ namespace Stroika::Foundation::Common {
          */
         template <typename T>
         nonvirtual T As () const
-            requires (
-                is_same_v<T, Characters::String> or is_same_v<T, std::string> or is_same_v<T, Memory::BLOB> or is_same_v<T, array<std::byte, 16>> or is_same_v<T, array<uint8_t, 16>>);
+            requires (is_same_v<T, Characters::String> or is_same_v<T, std::string> or is_same_v<T, Memory::BLOB> or
+                      is_same_v<T, array<std::byte, 16>> or is_same_v<T, array<uint8_t, 16>>);
 
     public:
         /**

@@ -99,7 +99,8 @@ namespace Stroika::Foundation ::Streams {
         static Ptr _mkPtr (const shared_ptr<Rep_>& s);
 
     private:
-        using InternalSyncRep_ = InternallySynchronizedInputOutputStream<ELEMENT_TYPE, Streams::MemoryStream<ELEMENT_TYPE>, typename MemoryStream<ELEMENT_TYPE>::Rep_>;
+        using InternalSyncRep_ =
+            InternallySynchronizedInputOutputStream<ELEMENT_TYPE, Streams::MemoryStream<ELEMENT_TYPE>, typename MemoryStream<ELEMENT_TYPE>::Rep_>;
     };
 
     /**

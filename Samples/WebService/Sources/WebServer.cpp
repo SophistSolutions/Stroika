@@ -145,8 +145,9 @@ public:
         , fConnectionMgr_{SocketAddresses (InternetAddresses_Any (), portNumber), kRoutes_, ConnectionManager::Options{.fDefaultResponseHeaders = kDefaultResponseHeaders_}}
     {
         // @todo - move this to some framework-specific regtests...
-        using VariantValue         = DataExchange::VariantValue;
-        Sequence<VariantValue> tmp = OrderParamValues (Iterable<String>{"page", "xxx"}, PickoutParamValuesFromURL (URI{"http://www.sophist.com?page=5"}));
+        using VariantValue = DataExchange::VariantValue;
+        Sequence<VariantValue> tmp =
+            OrderParamValues (Iterable<String>{"page", "xxx"}, PickoutParamValuesFromURL (URI{"http://www.sophist.com?page=5"}));
         Assert (tmp.size () == 2);
         Assert (tmp[0].ConvertTo (VariantValue::eInteger) == 5);
         Assert (tmp[1] == nullptr);
@@ -154,16 +155,15 @@ public:
     // Can declare arguments as Request*,Response*
     static void DefaultPage_ (Request*, Response* response)
     {
-        WriteDocsPage (
-            response,
-            Sequence<WebServiceMethodDescription>{
-                kVariables_,
-                kPlus_,
-                kMinus,
-                kTimes,
-                kDivide,
-            },
-            DocsOptions{"Stroika Sample WebService - Web Methods"_k, "Note - curl lines all in bash quoting syntax"_k});
+        WriteDocsPage (response,
+                       Sequence<WebServiceMethodDescription>{
+                           kVariables_,
+                           kPlus_,
+                           kMinus,
+                           kTimes,
+                           kDivide,
+                       },
+                       DocsOptions{"Stroika Sample WebService - Web Methods"_k, "Note - curl lines all in bash quoting syntax"_k});
     }
     static void SetAppState_ (Message* message)
     {
@@ -181,13 +181,12 @@ const WebServiceMethodDescription WebServer::Rep_::kVariables_{
     Set<String>{HTTP::Methods::kGet, HTTP::Methods::kPost, HTTP::Methods::kDelete},
     InternetMediaTypes::kJSON,
     {},
-    Sequence<String>{
-        "curl http://localhost:8080/variables -v --output -",
-        "curl http://localhost:8080/variables/x -v --output -",
-        "curl  -X POST http://localhost:8080/variables/x -v --output -",
-        "curl -H \"Content-Type: application/json\" -X POST -d '{\"value\": 3}' http://localhost:8080/variables/x --output -",
-        "curl -H \"Content-Type: text/plain\" -X POST -d 3 http://localhost:8080/variables/x --output -"},
-    Sequence<String>{"@todo - this is a rough draft (but functional). It could use alot of cleanup and review to see WHICH way I recommend using, and just provide the recommended ways in samples"},
+    Sequence<String>{"curl http://localhost:8080/variables -v --output -", "curl http://localhost:8080/variables/x -v --output -",
+                     "curl  -X POST http://localhost:8080/variables/x -v --output -",
+                     "curl -H \"Content-Type: application/json\" -X POST -d '{\"value\": 3}' http://localhost:8080/variables/x --output -",
+                     "curl -H \"Content-Type: text/plain\" -X POST -d 3 http://localhost:8080/variables/x --output -"},
+    Sequence<String>{"@todo - this is a rough draft (but functional). It could use alot of cleanup and review to see WHICH way I recommend "
+                     "using, and just provide the recommended ways in samples"},
 };
 
 const WebServiceMethodDescription WebServer::Rep_::kPlus_{
@@ -216,8 +215,10 @@ const WebServiceMethodDescription WebServer::Rep_::kTimes{
     InternetMediaTypes::kJSON,
     {},
     Sequence<String>{
-        "curl -H \"Content-Type: application/json\" -X POST -d '{\"arg1\":\"2 + 4i\", \"arg2\": 3.2 }' http://localhost:8080/times --output -",
-        "curl -H \"Content-Type: application/json\" -X POST -d '{\"arg1\":\"2 + i\", \"arg2\": \"2 - i\" }' http://localhost:8080/times --output -",
+        "curl -H \"Content-Type: application/json\" -X POST -d '{\"arg1\":\"2 + 4i\", \"arg2\": 3.2 }' http://localhost:8080/times "
+        "--output -",
+        "curl -H \"Content-Type: application/json\" -X POST -d '{\"arg1\":\"2 + i\", \"arg2\": \"2 - i\" }' http://localhost:8080/times "
+        "--output -",
     },
     Sequence<String>{"multiply the two argument numbers"},
 };
@@ -227,7 +228,8 @@ const WebServiceMethodDescription WebServer::Rep_::kDivide{
     InternetMediaTypes::kJSON,
     {},
     Sequence<String>{
-        "curl -H \"Content-Type: application/json\" -X POST -d '{\"arg1\":\"2 + i\", \"arg2\": 0 }' http://localhost:8080/divide --output -",
+        "curl -H \"Content-Type: application/json\" -X POST -d '{\"arg1\":\"2 + i\", \"arg2\": 0 }' http://localhost:8080/divide --output "
+        "-",
     },
     Sequence<String>{"divide the two argument numbers"},
 };

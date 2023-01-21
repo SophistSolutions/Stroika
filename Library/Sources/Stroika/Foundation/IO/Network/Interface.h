@@ -154,8 +154,8 @@ namespace Stroika::Foundation::IO::Network {
                 eDisconnecting,      // WLAN_INTERFACE_STATE::wlan_interface_state_disconnecting,
                 eDisconnected,       // WLAN_INTERFACE_STATE::wlan_interface_state_disconnected,
                 eAssociating,        // WLAN_INTERFACE_STATE::wlan_interface_state_associating  - Attempting to associate with a network
-                eDiscovering,        // WLAN_INTERFACE_STATE::wlan_interface_state_discovering  - Auto configuration is discovering settings for the network
-                eAuthenticating,     // WLAN_INTERFACE_STATE::wlan_interface_state_authenticating
+                eDiscovering, // WLAN_INTERFACE_STATE::wlan_interface_state_discovering  - Auto configuration is discovering settings for the network
+                eAuthenticating, // WLAN_INTERFACE_STATE::wlan_interface_state_authenticating
                 eUnknown,
 
                 Stroika_Define_Enum_Bounds (eNotReady, eUnknown)
@@ -167,12 +167,12 @@ namespace Stroika::Foundation::IO::Network {
              *  \note   Configuration::DefaultNames<> supported
              */
             enum class ConnectionMode {
-                eProfile,          // _WLAN_CONNECTION_MODE::wlan_connection_mode_profile- A profile is used to make the connection
+                eProfile, // _WLAN_CONNECTION_MODE::wlan_connection_mode_profile- A profile is used to make the connection
                 eTemporaryProfile, // _WLAN_CONNECTION_MODE::wlan_connection_mode_temporary_profile - A temporary profile is used to make the connection
-                eDiscoverSecrure,  // _WLAN_CONNECTION_MODE::wlan_connection_mode_discovery_secure - Secure discovery is used to make the connection
+                eDiscoverSecrure, // _WLAN_CONNECTION_MODE::wlan_connection_mode_discovery_secure - Secure discovery is used to make the connection
                 eDiscoverInsecure, // _WLAN_CONNECTION_MODE::wlan_connection_mode_discovery_unsecure,
-                eAuto,             // _WLAN_CONNECTION_MODE::wlan_connection_mode_auto - connection initiated by wireless service automatically using a persistent profile
-                eInvalid,          // _WLAN_CONNECTION_MODE::wlan_connection_mode_invalid
+                eAuto, // _WLAN_CONNECTION_MODE::wlan_connection_mode_auto - connection initiated by wireless service automatically using a persistent profile
+                eInvalid, // _WLAN_CONNECTION_MODE::wlan_connection_mode_invalid
                 eUnknown,
 
                 Stroika_Define_Enum_Bounds (eProfile, eUnknown)
@@ -229,7 +229,7 @@ namespace Stroika::Foundation::IO::Network {
             optional<double> fSignalQuality;
 
             optional<bool> fSecurityEnabled; // any wireless security enabled (versus open)  // NOT SURE HOW DIFFERS FROM _DOT11_AUTH_ALGORITHM::DOT11_AUTH_ALGO_80211_OPEN
-            optional<bool> f8021XEnabled;    // 802.1X
+            optional<bool> f8021XEnabled; // 802.1X
 
             /**
              *

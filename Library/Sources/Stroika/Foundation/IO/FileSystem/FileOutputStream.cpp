@@ -59,11 +59,13 @@ public:
         , fFlushFlag{flushFlag}
         , fFileName_{fileName}
     {
-        auto            activity = LazyEvalActivity ([&] () -> String { return Characters::Format (L"opening %s for write access", Characters::ToString (fFileName_).c_str ()); });
+        auto activity = LazyEvalActivity (
+            [&] () -> String { return Characters::Format (L"opening %s for write access", Characters::ToString (fFileName_).c_str ()); });
         DeclareActivity currentActivity{&activity};
 #if qPlatform_Windows
         int     appendFlag2Or = appendFlag == eStartFromStart ? _O_TRUNC : _O_APPEND;
-        errno_t e             = ::_wsopen_s (&fFD_, fileName.generic_wstring ().c_str (), _O_WRONLY | _O_CREAT | _O_BINARY | appendFlag2Or, _SH_DENYNO, _S_IREAD | _S_IWRITE);
+        errno_t e = ::_wsopen_s (&fFD_, fileName.generic_wstring ().c_str (), _O_WRONLY | _O_CREAT | _O_BINARY | appendFlag2Or, _SH_DENYNO,
+                                 _S_IREAD | _S_IWRITE);
         if (e != 0) {
             FileSystem::Exception::ThrowPOSIXErrNo (e, fileName);
         }
@@ -73,7 +75,8 @@ public:
 #else
         int          appendFlag2Or = appendFlag == eStartFromStart ? O_TRUNC : O_APPEND;
         const mode_t kCreateMode_  = S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH;
-        FileSystem::Exception::ThrowPOSIXErrNoIfNegative (fFD_ = ::open (fileName.generic_string ().c_str (), O_WRONLY | O_CREAT | appendFlag2Or, kCreateMode_), fileName);
+        FileSystem::Exception::ThrowPOSIXErrNoIfNegative (
+            fFD_ = ::open (fileName.generic_string ().c_str (), O_WRONLY | O_CREAT | appendFlag2Or, kCreateMode_), fileName);
 #endif
     }
     Rep_ (FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy, SeekableFlag seekableFlag, FlushFlag flushFlag)
@@ -95,11 +98,8 @@ public:
         }
     }
     nonvirtual Rep_& operator= (const Rep_&) = delete;
-    virtual bool     IsSeekable () const override
-    {
-        return fSeekable_;
-    }
-    virtual void CloseWrite () override
+    virtual bool     IsSeekable () const override { return fSeekable_; }
+    virtual void     CloseWrite () override
     {
         Require (IsOpenWrite ());
         if (fAdoptFDPolicy_ == AdoptFDPolicy::eCloseOnDestruction) {
@@ -111,10 +111,7 @@ public:
         }
         fFD_ = -1;
     }
-    virtual bool IsOpenWrite () const override
-    {
-        return fFD_ >= 0;
-    }
+    virtual bool IsOpenWrite () const override { return fFD_ >= 0; }
     virtual void Write (const byte* start, const byte* end) override
     {
         Require (start != nullptr or start == end);
@@ -122,9 +119,10 @@ public:
 
         if (start != end) {
             AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
-            auto                                            activity = LazyEvalActivity ([&] () -> String { return Characters::Format (L"writing to %s", Characters::ToString (fFileName_).c_str ()); });
-            DeclareActivity                                 currentActivity{&activity};
-            const byte*                                     i = start;
+            auto                                            activity = LazyEvalActivity (
+                [&] () -> String { return Characters::Format (L"writing to %s", Characters::ToString (fFileName_).c_str ()); });
+            DeclareActivity currentActivity{&activity};
+            const byte*     i = start;
             while (i < end) {
 #if qPlatform_Windows
                 int n = ThrowPOSIXErrNoIfNegative (_write (fFD_, i, Math::PinToMaxForType<unsigned int> (end - i)));
@@ -141,8 +139,9 @@ public:
         // normally nothing todo - write 'writes thru' (except if fFlushFlag)
         if (fFlushFlag == FlushFlag::eToDisk) {
             AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
-            auto                                            activity = LazyEvalActivity ([&] () -> String { return Characters::Format (L"flushing data to %s", Characters::ToString (fFileName_).c_str ()); });
-            DeclareActivity                                 currentActivity{&activity};
+            auto                                            activity = LazyEvalActivity (
+                [&] () -> String { return Characters::Format (L"flushing data to %s", Characters::ToString (fFileName_).c_str ()); });
+            DeclareActivity currentActivity{&activity};
 #if qPlatform_POSIX
             ThrowPOSIXErrNoIfNegative (::fsync (fFD_));
 #elif qPlatform_Windows
@@ -241,7 +240,8 @@ auto FileOutputStream::New (Execution::InternallySynchronized internallySynchron
     }
 }
 
-auto FileOutputStream::New (Execution::InternallySynchronized internallySynchronized, const filesystem::path& fileName, AppendFlag appendFlag, FlushFlag flushFlag) -> Ptr
+auto FileOutputStream::New (Execution::InternallySynchronized internallySynchronized, const filesystem::path& fileName,
+                            AppendFlag appendFlag, FlushFlag flushFlag) -> Ptr
 {
     switch (internallySynchronized) {
         case Execution::eInternallySynchronized:
@@ -254,7 +254,8 @@ auto FileOutputStream::New (Execution::InternallySynchronized internallySynchron
     }
 }
 
-auto FileOutputStream::New (Execution::InternallySynchronized internallySynchronized, FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy, SeekableFlag seekableFlag, FlushFlag flushFlag) -> Ptr
+auto FileOutputStream::New (Execution::InternallySynchronized internallySynchronized, FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy,
+                            SeekableFlag seekableFlag, FlushFlag flushFlag) -> Ptr
 {
     switch (internallySynchronized) {
         case Execution::eInternallySynchronized:

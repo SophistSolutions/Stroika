@@ -86,10 +86,7 @@ span<const byte> BLOB::BasicRep_::GetBounds () const
  ************************** Memory::BLOB::ZeroRep_ ******************************
  ********************************************************************************
  */
-span<const byte> BLOB::ZeroRep_::GetBounds () const
-{
-    return span<const byte>{};
-}
+span<const byte> BLOB::ZeroRep_::GetBounds () const { return span<const byte>{}; }
 
 /*
  ********************************************************************************
@@ -103,10 +100,7 @@ BLOB::AdoptRep_::AdoptRep_ (const byte* start, const byte* end)
     Require (start <= end);
 }
 
-BLOB::AdoptRep_::~AdoptRep_ ()
-{
-    delete[] fStart;
-}
+BLOB::AdoptRep_::~AdoptRep_ () { delete[] fStart; }
 
 span<const byte> BLOB::AdoptRep_::GetBounds () const
 {
@@ -186,19 +180,13 @@ namespace {
                 , fEnd{b.end ()}
             {
             }
-            virtual bool IsSeekable () const override
-            {
-                return true;
-            }
+            virtual bool IsSeekable () const override { return true; }
             virtual void CloseRead () override
             {
                 Require (IsOpenRead ());
                 fIsOpenForRead_ = false;
             }
-            virtual bool IsOpenRead () const override
-            {
-                return fIsOpenForRead_;
-            }
+            virtual bool   IsOpenRead () const override { return fIsOpenForRead_; }
             virtual size_t Read (byte* intoStart, byte* intoEnd) override
             {
                 RequireNotNull (intoStart);

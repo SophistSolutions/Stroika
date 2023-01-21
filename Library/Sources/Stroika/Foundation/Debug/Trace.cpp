@@ -134,7 +134,8 @@ namespace {
                 *i = '_';
             }
         }
-        return IO::FileSystem::WellKnownLocations::GetTemporary () / CString::Format (SDKSTR ("TraceLog_%s_PID#%d-%s.txt"), mfname.c_str (), (int)Execution::GetCurrentProcessID (), nowstr.c_str ());
+        return IO::FileSystem::WellKnownLocations::GetTemporary () /
+               CString::Format (SDKSTR ("TraceLog_%s_PID#%d-%s.txt"), mfname.c_str (), (int)Execution::GetCurrentProcessID (), nowstr.c_str ());
     }
 }
 #endif
@@ -360,7 +361,8 @@ Emitter::TraceLastBufferedWriteTokenType Emitter::DoEmitMessage_ (size_t bufferL
         Verify (::snprintf (buf, Memory::NEltsOf (buf), "[%s][%08.3f]\t", threadIDInfo.second.c_str (), static_cast<double> (curRelativeTime)) > 0);
         if (threadIDInfo.first) {
             char buf2[1024]; // intentionally un-initialized
-            Verify (snprintf (buf2, Memory::NEltsOf (buf2), "(NEW THREAD, index=%s Real Thread ID=%s)\t", threadIDInfo.second.c_str (), Thread::FormatThreadID_A (threadID).c_str ()) > 0);
+            Verify (snprintf (buf2, Memory::NEltsOf (buf2), "(NEW THREAD, index=%s Real Thread ID=%s)\t", threadIDInfo.second.c_str (),
+                              Thread::FormatThreadID_A (threadID).c_str ()) > 0);
 #if __STDC_WANT_SECURE_LIB__
             (void)::strcat_s (buf, buf2);
 #else
@@ -515,10 +517,7 @@ void Emitter::DoEmit_ (const wchar_t* p, const wchar_t* e) noexcept
  ************************ Debug::GetDbgTraceThreadName_A ************************
  ********************************************************************************
  */
-string Debug::GetDbgTraceThreadName_A (thread::id threadID)
-{
-    return mkThreadLabelForThreadID_ (threadID).second;
-}
+string Debug::GetDbgTraceThreadName_A (thread::id threadID) { return mkThreadLabelForThreadID_ (threadID).second; }
 
 /*
  ********************************************************************************
@@ -546,7 +545,8 @@ TraceContextBumper::TraceContextBumper (const wchar_t* contextName, const wchar_
     try {
         va_list argsList;
         va_start (argsList, extraFmt);
-        fLastWriteToken_ = Emitter::Get ().EmitTraceMessage (3 + ::wcslen (GetEOL<wchar_t> ()), L"<%s (%s)> {", contextName, Characters::CString::FormatV (extraFmt, argsList).c_str ());
+        fLastWriteToken_ = Emitter::Get ().EmitTraceMessage (3 + ::wcslen (GetEOL<wchar_t> ()), L"<%s (%s)> {", contextName,
+                                                             Characters::CString::FormatV (extraFmt, argsList).c_str ());
         va_end (argsList);
         size_t len = min (Memory::NEltsOf (fSavedContextName_) - 1, char_traits<wchar_t>::length (contextName));
         char_traits<wchar_t>::copy (fSavedContextName_, contextName, len);
@@ -566,20 +566,11 @@ TraceContextBumper::TraceContextBumper (const char* contextName) noexcept
 {
 }
 
-unsigned int TraceContextBumper::GetCount ()
-{
-    return tTraceContextDepth_;
-}
+unsigned int TraceContextBumper::GetCount () { return tTraceContextDepth_; }
 
-void TraceContextBumper::IncCount_ () noexcept
-{
-    ++tTraceContextDepth_;
-}
+void TraceContextBumper::IncCount_ () noexcept { ++tTraceContextDepth_; }
 
-void TraceContextBumper::DecrCount_ () noexcept
-{
-    --tTraceContextDepth_;
-}
+void TraceContextBumper::DecrCount_ () noexcept { --tTraceContextDepth_; }
 
 TraceContextBumper::~TraceContextBumper ()
 {

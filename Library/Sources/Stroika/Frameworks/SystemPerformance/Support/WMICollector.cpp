@@ -76,7 +76,11 @@ void WMICollector::PerInstanceData_::AddCounter (const String& counterName)
 {
     Require (not fCounters_.ContainsKey (counterName));
     PDH_HCOUNTER newCounter = nullptr;
-    PDH_STATUS   x          = ::PdhAddCounter (fQuery_, Characters::Format (L"\\%s(%s)\\%s", fObjectName_.As<wstring> ().c_str (), fInstance_.As<wstring> ().c_str (), counterName.As<wstring> ().c_str ()).c_str (), NULL, &newCounter);
+    PDH_STATUS   x          = ::PdhAddCounter (fQuery_,
+                                               Characters::Format (L"\\%s(%s)\\%s", fObjectName_.As<wstring> ().c_str (),
+                                                                   fInstance_.As<wstring> ().c_str (), counterName.As<wstring> ().c_str ())
+                                                   .c_str (),
+                                               NULL, &newCounter);
     if (x != 0) {
         [[maybe_unused]] bool isPDH_CSTATUS_NO_OBJECT  = (x == PDH_CSTATUS_NO_OBJECT);
         [[maybe_unused]] bool isPDH_CSTATUS_NO_COUNTER = (x == PDH_CSTATUS_NO_COUNTER);
@@ -217,13 +221,15 @@ Set<String> WMICollector::GetAvailableInstaces ()
     DWORD dwCounterListSize  = 0;
     DWORD dwInstanceListSize = 0;
 
-    PDH_STATUS pdhStatus = ::PdhEnumObjectItems (nullptr, nullptr, fObjectName_.c_str (), nullptr, &dwCounterListSize, nullptr, &dwInstanceListSize, PERF_DETAIL_WIZARD, 0);
+    PDH_STATUS pdhStatus = ::PdhEnumObjectItems (nullptr, nullptr, fObjectName_.c_str (), nullptr, &dwCounterListSize, nullptr,
+                                                 &dwInstanceListSize, PERF_DETAIL_WIZARD, 0);
     Assert (pdhStatus == PDH_MORE_DATA);
 
     StackBuffer<Characters::SDKChar> counterBuf{dwCounterListSize + 2};
     StackBuffer<Characters::SDKChar> instanceBuf{dwInstanceListSize + 2};
 
-    pdhStatus = ::PdhEnumObjectItems (nullptr, nullptr, fObjectName_.c_str (), counterBuf.begin (), &dwCounterListSize, instanceBuf.begin (), &dwInstanceListSize, PERF_DETAIL_WIZARD, 0);
+    pdhStatus = ::PdhEnumObjectItems (nullptr, nullptr, fObjectName_.c_str (), counterBuf.begin (), &dwCounterListSize,
+                                      instanceBuf.begin (), &dwInstanceListSize, PERF_DETAIL_WIZARD, 0);
     if (pdhStatus != 0) {
         Execution::Throw (Exception{Characters::Format (L"PdhEnumObjectItems: %d", pdhStatus)});
     }
@@ -244,13 +250,15 @@ Set<String> WMICollector::GetAvailableCounters ()
     DWORD dwCounterListSize  = 0;
     DWORD dwInstanceListSize = 0;
 
-    PDH_STATUS pdhStatus = ::PdhEnumObjectItems (NULL, NULL, fObjectName_.c_str (), nullptr, &dwCounterListSize, nullptr, &dwInstanceListSize, PERF_DETAIL_WIZARD, 0);
+    PDH_STATUS pdhStatus = ::PdhEnumObjectItems (NULL, NULL, fObjectName_.c_str (), nullptr, &dwCounterListSize, nullptr,
+                                                 &dwInstanceListSize, PERF_DETAIL_WIZARD, 0);
     Assert (pdhStatus == PDH_MORE_DATA);
 
     StackBuffer<Characters::SDKChar> counterBuf{dwCounterListSize + 2};
     StackBuffer<Characters::SDKChar> instanceBuf{dwInstanceListSize + 2};
 
-    pdhStatus = ::PdhEnumObjectItems (NULL, NULL, fObjectName_.c_str (), counterBuf.begin (), &dwCounterListSize, instanceBuf.begin (), &dwInstanceListSize, PERF_DETAIL_WIZARD, 0);
+    pdhStatus = ::PdhEnumObjectItems (NULL, NULL, fObjectName_.c_str (), counterBuf.begin (), &dwCounterListSize, instanceBuf.begin (),
+                                      &dwInstanceListSize, PERF_DETAIL_WIZARD, 0);
     if (pdhStatus != 0) {
         Execution::Throw (Exception{Characters::Format (L"PdhEnumObjectItems: %d", pdhStatus)});
     }
@@ -364,9 +372,8 @@ void WMICollector::AddCounter_ (const String& counterName)
 #endif
     //RENEABLKE WHEN WE HAVE RECURSIVE DEBUG LOCK - AssertExternallySynchronizedMutex::WriteContext declareContext { *this };
     Require (not fCounterNames_.Contains (counterName));
-    fInstanceData_.Apply ([this, counterName] (KeyValuePair<String, std::shared_ptr<PerInstanceData_>> i) {
-        i.fValue->AddCounter (counterName);
-    });
+    fInstanceData_.Apply (
+        [this, counterName] (KeyValuePair<String, std::shared_ptr<PerInstanceData_>> i) { i.fValue->AddCounter (counterName); });
     fCounterNames_.Add (counterName);
 }
 

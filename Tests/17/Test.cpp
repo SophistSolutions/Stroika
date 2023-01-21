@@ -120,15 +120,18 @@ namespace {
             {
                 using Characters::String;
                 const auto kReference1a_ = Mapping<String, String>{{KeyValuePair<String, String>{L"Content-Length", L"3"}}};
-                const auto kReference1b_ = Mapping<String, String>{{KeyValuePair<String, String>{L"Content-Length", L"3"}, KeyValuePair<String, String>{L"xx", L"3"}}};
+                const auto kReference1b_ =
+                    Mapping<String, String>{{KeyValuePair<String, String>{L"Content-Length", L"3"}, KeyValuePair<String, String>{L"xx", L"3"}}};
                 const auto kReference1c_ = Mapping<String, String>{KeyValuePair<String, String>{L"Content-Length", L"3"}};
                 const auto kReference2a_ = Mapping<String, String>{{pair<String, String>{L"Content-Length", L"3"}}};
-                const auto kReference2b_ = Mapping<String, String>{{pair<String, String>{L"Content-Length", L"3"}, pair<String, String>{L"xx", L"3"}}};
-                const auto kReference2c_ = Mapping<String, String>{pair<String, String>{L"Content-Length", L"3"}, pair<String, String>{L"xx", L"3"}};
+                const auto kReference2b_ =
+                    Mapping<String, String>{{pair<String, String>{L"Content-Length", L"3"}, pair<String, String>{L"xx", L"3"}}};
+                const auto kReference2c_ =
+                    Mapping<String, String>{pair<String, String>{L"Content-Length", L"3"}, pair<String, String>{L"xx", L"3"}};
                 const auto kReference3a_ = Mapping<String, String>{{{L"Content-Length", L"3"}}};
                 VerifyTestResult (kReference3a_.size () == 1);
                 using Characters::operator""_k;
-                const auto        kReference3b_ = Mapping<String, String>{{{L"Content-Length"_k, L"3"_k}, {L"x"_k, L"3"_k}}}; // need _k on some compilers to avoid error due to invoke explicit String/2 (g++10) - not sure if bug or not but easy to avoid ambiguity
+                const auto kReference3b_ = Mapping<String, String>{{{L"Content-Length"_k, L"3"_k}, {L"x"_k, L"3"_k}}}; // need _k on some compilers to avoid error due to invoke explicit String/2 (g++10) - not sure if bug or not but easy to avoid ambiguity
                 VerifyTestResult (kReference3b_.size () == 2);
                 const auto kReference3c_ = Mapping<String, String>{{L"Content-Length", L"3"}, {L"x", L"3"}};
                 VerifyTestResult (kReference3c_.size () == 2);
@@ -142,7 +145,8 @@ namespace {
         void DoAll ()
         {
             Mapping<int, int> m{{1, 3}, {2, 4}, {3, 5}, {4, 5}, {5, 7}};
-            VerifyTestResult ((m.Where ([] (const KeyValuePair<int, int>& value) { return Math::IsPrime (value.fKey); }) == Mapping<int, int>{{2, 4}, {3, 5}, {5, 7}}));
+            VerifyTestResult ((m.Where ([] (const KeyValuePair<int, int>& value) { return Math::IsPrime (value.fKey); }) ==
+                               Mapping<int, int>{{2, 4}, {3, 5}, {5, 7}}));
             VerifyTestResult ((m.Where ([] (int key) { return Math::IsPrime (key); }) == Mapping<int, int>{{2, 4}, {3, 5}, {5, 7}}));
         }
     }
@@ -163,7 +167,8 @@ namespace {
         void DoAll ()
         {
             // https://stroika.atlassian.net/browse/STK-541
-            Mapping<int, int> m{KeyValuePair<int, int>{1, 3}, KeyValuePair<int, int>{2, 4}, KeyValuePair<int, int>{3, 5}, KeyValuePair<int, int>{4, 5}, KeyValuePair<int, int>{5, 7}};
+            Mapping<int, int> m{KeyValuePair<int, int>{1, 3}, KeyValuePair<int, int>{2, 4}, KeyValuePair<int, int>{3, 5},
+                                KeyValuePair<int, int>{4, 5}, KeyValuePair<int, int>{5, 7}};
             Mapping<int, int> mm{move (m)};
             // SEE https://stroika.atlassian.net/browse/STK-541  - this call to clear is ILLEGAL - after m has been moved from
             //m.clear ();
@@ -207,45 +212,53 @@ namespace {
 namespace {
     void DoRegressionTests_ ()
     {
-        struct MySimpleClassWithoutComparisonOperators_ComparerWithEquals_ : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eEquals> {
+        struct MySimpleClassWithoutComparisonOperators_ComparerWithEquals_
+            : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eEquals> {
             using value_type = SimpleClassWithoutComparisonOperators;
-            bool operator() (const value_type& v1, const value_type& v2) const
-            {
-                return v1.GetValue () == v2.GetValue ();
-            }
+            bool operator() (const value_type& v1, const value_type& v2) const { return v1.GetValue () == v2.GetValue (); }
         };
 
         DoTestForConcreteContainer_<Mapping<size_t, size_t>> ();
         DoTestForConcreteContainer_<Mapping<SimpleClass, SimpleClass>> ();
         DoTestForConcreteContainer_<Mapping<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators>> (
-            [] () { return Mapping<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators> (MySimpleClassWithoutComparisonOperators_ComparerWithEquals_{}); },
+            [] () {
+                return Mapping<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators> (
+                    MySimpleClassWithoutComparisonOperators_ComparerWithEquals_{});
+            },
             MySimpleClassWithoutComparisonOperators_ComparerWithEquals_{});
 
         DoTestForConcreteContainer_<Mapping_Array<size_t, size_t>> ();
         DoTestForConcreteContainer_<Mapping_Array<SimpleClass, SimpleClass>> ();
         DoTestForConcreteContainer_<Mapping_Array<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators>> (
-            [] () { return Mapping_Array<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators> (MySimpleClassWithoutComparisonOperators_ComparerWithEquals_{}); },
+            [] () {
+                return Mapping_Array<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators> (
+                    MySimpleClassWithoutComparisonOperators_ComparerWithEquals_{});
+            },
             MySimpleClassWithoutComparisonOperators_ComparerWithEquals_{});
 
         DoTestForConcreteContainer_<Mapping_LinkedList<size_t, size_t>> ();
         DoTestForConcreteContainer_<Mapping_LinkedList<SimpleClass, SimpleClass>> ();
         // DoTestForConcreteContainer_AllTestsWhichDontRequireComparer_For_Type_<Mapping_LinkedList<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators_MappingTRAITS>> ();
         DoTestForConcreteContainer_<Mapping_LinkedList<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators>> (
-            [] () { return Mapping_LinkedList<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators> (MySimpleClassWithoutComparisonOperators_ComparerWithEquals_{}); },
+            [] () {
+                return Mapping_LinkedList<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators> (
+                    MySimpleClassWithoutComparisonOperators_ComparerWithEquals_{});
+            },
             MySimpleClassWithoutComparisonOperators_ComparerWithEquals_{});
 
         DoTestForConcreteContainer_<Mapping_stdmap<size_t, size_t>> ();
         DoTestForConcreteContainer_<Mapping_stdmap<SimpleClass, SimpleClass>> ();
         {
-            struct MySimpleClassWithoutComparisonOperators_ComparerWithLess_ : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eStrictInOrder> {
+            struct MySimpleClassWithoutComparisonOperators_ComparerWithLess_
+                : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eStrictInOrder> {
                 using value_type = SimpleClassWithoutComparisonOperators;
-                bool operator() (const value_type& v1, const value_type& v2) const
-                {
-                    return v1.GetValue () < v2.GetValue ();
-                }
+                bool operator() (const value_type& v1, const value_type& v2) const { return v1.GetValue () < v2.GetValue (); }
             };
             DoTestForConcreteContainer_<Mapping_stdmap<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators>> (
-                [] () { return Mapping_stdmap<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators> (MySimpleClassWithoutComparisonOperators_ComparerWithLess_{}); },
+                [] () {
+                    return Mapping_stdmap<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators> (
+                        MySimpleClassWithoutComparisonOperators_ComparerWithLess_{});
+                },
                 //Common::mkEqualsComparerAdapter (MySimpleClassWithoutComparisonOperators_ComparerWithLess_{})
                 MySimpleClassWithoutComparisonOperators_ComparerWithEquals_{});
         }
@@ -267,8 +280,7 @@ namespace {
             }
             {
                 static_assert (Cryptography::Digest::IsHashFunction<std::hash<size_t>, size_t>);
-                Mapping_stdhashmap<size_t, size_t> fred{
-                    std::hash<size_t>{}, std::equal_to<size_t>{}};
+                Mapping_stdhashmap<size_t, size_t> fred{std::hash<size_t>{}, std::equal_to<size_t>{}};
                 VerifyTestResult ((fred == Mapping_stdhashmap<size_t, size_t>{}));
             }
             {

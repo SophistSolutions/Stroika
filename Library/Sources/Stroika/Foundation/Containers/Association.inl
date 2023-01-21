@@ -33,7 +33,8 @@ namespace Stroika::Foundation::Containers {
     template <typename KEY_EQUALS_COMPARER, enable_if_t<Common::IsEqualsComparer<KEY_EQUALS_COMPARER, KEY_TYPE> ()>*>
     inline Association<KEY_TYPE, MAPPED_VALUE_TYPE>::Association (KEY_EQUALS_COMPARER&& keyEqualsComparer)
         // @todo see https://stroika.atlassian.net/browse/STK-933 for why this decay_t is needed - unclear why!
-        : inherited{Factory::Association_Factory<KEY_TYPE, MAPPED_VALUE_TYPE, decay_t<KEY_EQUALS_COMPARER>>{forward<KEY_EQUALS_COMPARER> (keyEqualsComparer)}()}
+        : inherited{Factory::Association_Factory<KEY_TYPE, MAPPED_VALUE_TYPE, decay_t<KEY_EQUALS_COMPARER>>{
+              forward<KEY_EQUALS_COMPARER> (keyEqualsComparer)}()}
     {
         _AssertRepValidType ();
     }
@@ -46,14 +47,16 @@ namespace Stroika::Foundation::Containers {
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     template <typename KEY_EQUALS_COMPARER, enable_if_t<Common::IsEqualsComparer<KEY_EQUALS_COMPARER, KEY_TYPE> ()>*>
-    inline Association<KEY_TYPE, MAPPED_VALUE_TYPE>::Association (KEY_EQUALS_COMPARER&& keyEqualsComparer, const initializer_list<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src)
+    inline Association<KEY_TYPE, MAPPED_VALUE_TYPE>::Association (KEY_EQUALS_COMPARER&& keyEqualsComparer,
+                                                                  const initializer_list<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src)
         : Association{forward<KEY_EQUALS_COMPARER> (keyEqualsComparer)}
     {
         AddAll (src);
         _AssertRepValidType ();
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-    template <typename ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and not is_base_of_v<Association<KEY_TYPE, MAPPED_VALUE_TYPE>, decay_t<ITERABLE_OF_ADDABLE>>>*>
+    template <typename ITERABLE_OF_ADDABLE,
+              enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and not is_base_of_v<Association<KEY_TYPE, MAPPED_VALUE_TYPE>, decay_t<ITERABLE_OF_ADDABLE>>>*>
     inline Association<KEY_TYPE, MAPPED_VALUE_TYPE>::Association (ITERABLE_OF_ADDABLE&& src)
         : Association{}
     {
@@ -62,7 +65,8 @@ namespace Stroika::Foundation::Containers {
         _AssertRepValidType ();
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-    template <typename KEY_EQUALS_COMPARER, typename ITERABLE_OF_ADDABLE, enable_if_t<Common::IsEqualsComparer<KEY_EQUALS_COMPARER, KEY_TYPE> () and Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>>*>
+    template <typename KEY_EQUALS_COMPARER, typename ITERABLE_OF_ADDABLE,
+              enable_if_t<Common::IsEqualsComparer<KEY_EQUALS_COMPARER, KEY_TYPE> () and Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>>*>
     inline Association<KEY_TYPE, MAPPED_VALUE_TYPE>::Association (KEY_EQUALS_COMPARER&& keyEqualsComparer, ITERABLE_OF_ADDABLE&& src)
         : Association{forward<KEY_EQUALS_COMPARER> (keyEqualsComparer)}
     {
@@ -80,7 +84,8 @@ namespace Stroika::Foundation::Containers {
         _AssertRepValidType ();
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-    template <typename KEY_EQUALS_COMPARER, typename ITERATOR_OF_ADDABLE, enable_if_t<Common::IsEqualsComparer<KEY_EQUALS_COMPARER, KEY_TYPE> () and Configuration::IsIterator_v<ITERATOR_OF_ADDABLE>>*>
+    template <typename KEY_EQUALS_COMPARER, typename ITERATOR_OF_ADDABLE,
+              enable_if_t<Common::IsEqualsComparer<KEY_EQUALS_COMPARER, KEY_TYPE> () and Configuration::IsIterator_v<ITERATOR_OF_ADDABLE>>*>
     Association<KEY_TYPE, MAPPED_VALUE_TYPE>::Association (KEY_EQUALS_COMPARER&& keyEqualsComparer, ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
         : Association{forward<KEY_EQUALS_COMPARER> (keyEqualsComparer)}
     {
@@ -123,7 +128,8 @@ namespace Stroika::Foundation::Containers {
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     template <typename THROW_IF_MISSING>
-    inline MAPPED_VALUE_TYPE Association<KEY_TYPE, MAPPED_VALUE_TYPE>::LookupOneChecked (ArgByValueType<key_type> key, const THROW_IF_MISSING& throwIfMissing) const
+    inline MAPPED_VALUE_TYPE Association<KEY_TYPE, MAPPED_VALUE_TYPE>::LookupOneChecked (ArgByValueType<key_type> key,
+                                                                                         const THROW_IF_MISSING&  throwIfMissing) const
     {
         auto tmp = Lookup (key);
         if (auto i = tmp.begin ()) [[likely]] {
@@ -132,7 +138,8 @@ namespace Stroika::Foundation::Containers {
         Execution::Throw (throwIfMissing);
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-    inline MAPPED_VALUE_TYPE Association<KEY_TYPE, MAPPED_VALUE_TYPE>::LookupOneValue (ArgByValueType<key_type> key, ArgByValueType<mapped_type> defaultValue) const
+    inline MAPPED_VALUE_TYPE Association<KEY_TYPE, MAPPED_VALUE_TYPE>::LookupOneValue (ArgByValueType<key_type>    key,
+                                                                                       ArgByValueType<mapped_type> defaultValue) const
     {
         auto tmp = Lookup (key);
         if (auto i = tmp.begin ()) [[likely]] {
@@ -157,7 +164,8 @@ namespace Stroika::Foundation::Containers {
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     template <typename VALUE_EQUALS_COMPARER>
-    inline bool Association<KEY_TYPE, MAPPED_VALUE_TYPE>::ContainsMappedValue (ArgByValueType<mapped_type> v, const VALUE_EQUALS_COMPARER& valueEqualsComparer) const
+    inline bool Association<KEY_TYPE, MAPPED_VALUE_TYPE>::ContainsMappedValue (ArgByValueType<mapped_type>  v,
+                                                                               const VALUE_EQUALS_COMPARER& valueEqualsComparer) const
     {
         return this->Find ([&valueEqualsComparer, &v] (const auto& t) { return valueEqualsComparer (t.fValue, v); }) != nullptr;
     }
@@ -224,7 +232,8 @@ namespace Stroika::Foundation::Containers {
     size_t Association<KEY_TYPE, MAPPED_VALUE_TYPE>::RemoveAll (const ITERABLE_OF_KEY_OR_ADDABLE& items)
     {
         using ITEM_T = ExtractValueType_t<ITERABLE_OF_KEY_OR_ADDABLE>;
-        static_assert (is_convertible_v<ITEM_T, key_type> or is_convertible_v<ITEM_T, pair<key_type, mapped_type>> or is_convertible_v<ITEM_T, Common::KeyValuePair<key_type, mapped_type>>);
+        static_assert (is_convertible_v<ITEM_T, key_type> or is_convertible_v<ITEM_T, pair<key_type, mapped_type>> or
+                       is_convertible_v<ITEM_T, Common::KeyValuePair<key_type, mapped_type>>);
         if (this == &items) { // avoid modifying container while iterating over it
             size_t result = this->size ();
             RemoveAll ();
@@ -239,7 +248,8 @@ namespace Stroika::Foundation::Containers {
     inline size_t Association<KEY_TYPE, MAPPED_VALUE_TYPE>::RemoveAll (ITERATOR_OF_KEY_OR_ADDABLE start, ITERATOR_OF_KEY_OR_ADDABLE end)
     {
         using ITEM_T = ExtractValueType_t<ITERATOR_OF_KEY_OR_ADDABLE>;
-        static_assert (is_convertible_v<ITEM_T, key_type> or is_convertible_v<ITEM_T, pair<key_type, mapped_type>> or is_convertible_v<ITEM_T, Common::KeyValuePair<key_type, mapped_type>>);
+        static_assert (is_convertible_v<ITEM_T, key_type> or is_convertible_v<ITEM_T, pair<key_type, mapped_type>> or
+                       is_convertible_v<ITEM_T, Common::KeyValuePair<key_type, mapped_type>>);
         size_t cnt{};
         for (auto i = start; i != end; ++i) {
             if constexpr (is_convertible_v<ITEM_T, key_type>) {
@@ -280,7 +290,8 @@ namespace Stroika::Foundation::Containers {
         return nRemoved;
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-    inline void Association<KEY_TYPE, MAPPED_VALUE_TYPE>::Update (const Iterator<value_type>& i, ArgByValueType<mapped_type> newValue, Iterator<value_type>* nextI)
+    inline void Association<KEY_TYPE, MAPPED_VALUE_TYPE>::Update (const Iterator<value_type>& i, ArgByValueType<mapped_type> newValue,
+                                                                  Iterator<value_type>* nextI)
     {
         Require (not i.Done ());
         auto [writerRep, patchedIterator] = _GetWritableRepAndPatchAssociatedIterator (i);
@@ -318,7 +329,8 @@ namespace Stroika::Foundation::Containers {
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     auto Association<KEY_TYPE, MAPPED_VALUE_TYPE>::Where (const function<bool (ArgByValueType<key_type>)>& includeIfTrue) const -> ArchetypeContainerType
     {
-        return inherited::Where ([=] (const ArgByValueType<KeyValuePair<key_type, mapped_type>>& kvp) { return includeIfTrue (kvp.fKey); }, ArchetypeContainerType{});
+        return inherited::Where ([=] (const ArgByValueType<KeyValuePair<key_type, mapped_type>>& kvp) { return includeIfTrue (kvp.fKey); },
+                                 ArchetypeContainerType{});
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     auto Association<KEY_TYPE, MAPPED_VALUE_TYPE>::Where (const function<bool (ArgByValueType<value_type>)>& includeIfTrue) const -> ArchetypeContainerType
@@ -345,7 +357,8 @@ namespace Stroika::Foundation::Containers {
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     template <typename CONTAINER_OF_Key_T>
-    CONTAINER_OF_Key_T Association<KEY_TYPE, MAPPED_VALUE_TYPE>::As_ ([[maybe_unused]] enable_if_t<is_convertible_v<typename CONTAINER_OF_Key_T::value_type, pair<KEY_TYPE, MAPPED_VALUE_TYPE>>, int> usesInsertPair) const
+    CONTAINER_OF_Key_T Association<KEY_TYPE, MAPPED_VALUE_TYPE>::As_ (
+        [[maybe_unused]] enable_if_t<is_convertible_v<typename CONTAINER_OF_Key_T::value_type, pair<KEY_TYPE, MAPPED_VALUE_TYPE>>, int> usesInsertPair) const
     {
         CONTAINER_OF_Key_T result;
         for (const auto& i : *this) {
@@ -356,7 +369,8 @@ namespace Stroika::Foundation::Containers {
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     template <typename CONTAINER_OF_Key_T>
-    CONTAINER_OF_Key_T Association<KEY_TYPE, MAPPED_VALUE_TYPE>::As_ (enable_if_t<!is_convertible_v<typename CONTAINER_OF_Key_T::value_type, pair<KEY_TYPE, MAPPED_VALUE_TYPE>>, int>) const
+    CONTAINER_OF_Key_T Association<KEY_TYPE, MAPPED_VALUE_TYPE>::As_ (
+        enable_if_t<!is_convertible_v<typename CONTAINER_OF_Key_T::value_type, pair<KEY_TYPE, MAPPED_VALUE_TYPE>>, int>) const
     {
         CONTAINER_OF_Key_T result;
         for (const auto& i : *this) {
@@ -366,7 +380,10 @@ namespace Stroika::Foundation::Containers {
         return result;
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-    inline void Association<KEY_TYPE, MAPPED_VALUE_TYPE>::Accumulate (ArgByValueType<key_type> key, ArgByValueType<mapped_type> newValue, const function<mapped_type (ArgByValueType<mapped_type>, ArgByValueType<mapped_type>)>& f, mapped_type initialValue)
+    inline void
+    Association<KEY_TYPE, MAPPED_VALUE_TYPE>::Accumulate (ArgByValueType<key_type> key, ArgByValueType<mapped_type> newValue,
+                                                          const function<mapped_type (ArgByValueType<mapped_type>, ArgByValueType<mapped_type>)>& f,
+                                                          mapped_type initialValue)
     {
         Add (key, f (LookupValue (key, initialValue), newValue));
     }
@@ -410,15 +427,15 @@ namespace Stroika::Foundation::Containers {
         return *this;
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-    auto Association<KEY_TYPE, MAPPED_VALUE_TYPE>::_GetWritableRepAndPatchAssociatedIterator (const Iterator<value_type>& i) -> tuple<_IRep*, Iterator<value_type>>
+    auto Association<KEY_TYPE, MAPPED_VALUE_TYPE>::_GetWritableRepAndPatchAssociatedIterator (const Iterator<value_type>& i)
+        -> tuple<_IRep*, Iterator<value_type>>
     {
         Require (not i.Done ());
         using element_type                   = typename inherited::_SharedByValueRepType::element_type;
         Iterator<value_type> patchedIterator = i;
-        element_type*        writableRep     = this->_fRep.rwget (
-            [&] (const element_type& prevRepPtr) -> typename inherited::_SharedByValueRepType::shared_ptr_type {
-                return Debug::UncheckedDynamicCast<const _IRep&> (prevRepPtr).CloneAndPatchIterator (&patchedIterator);
-            });
+        element_type* writableRep = this->_fRep.rwget ([&] (const element_type& prevRepPtr) -> typename inherited::_SharedByValueRepType::shared_ptr_type {
+            return Debug::UncheckedDynamicCast<const _IRep&> (prevRepPtr).CloneAndPatchIterator (&patchedIterator);
+        });
         AssertNotNull (writableRep);
         return make_tuple (Debug::UncheckedDynamicCast<_IRep*> (writableRep), move (patchedIterator));
     }
@@ -485,7 +502,8 @@ namespace Stroika::Foundation::Containers {
     {
         struct MyIterable_ : Iterable<MAPPED_VALUE_TYPE> {
             using MyAssociation_ = Association<KEY_TYPE, MAPPED_VALUE_TYPE>;
-            struct MyIterableRep_ : Traversal::IterableFromIterator<MAPPED_VALUE_TYPE>::_Rep, public Memory::UseBlockAllocationIfAppropriate<MyIterableRep_> {
+            struct MyIterableRep_ : Traversal::IterableFromIterator<MAPPED_VALUE_TYPE>::_Rep,
+                                    public Memory::UseBlockAllocationIfAppropriate<MyIterableRep_> {
                 using _IterableRepSharedPtr = typename Iterable<MAPPED_VALUE_TYPE>::_IterableRepSharedPtr;
                 MyAssociation_ fAssociation_;
                 MyIterableRep_ (const MyAssociation_& map)
@@ -579,11 +597,9 @@ namespace Stroika::Foundation::Containers {
         // OK, we failed the quick test, but the associations might still be 'equal' - just in a funny order
         // note this is extremely expensive. We should find a better algorithm...
         auto keyEqualsComparer = lhs.GetKeyEqualsComparer (); // arbitrarily select left side key equals comparer
-        return lhs.MultiSetEquals (
-            rhs,
-            Common::DeclareEqualsComparer ([&] (const value_type& lhs, const value_type& rhs) {
-                return keyEqualsComparer (lhs.fKey, rhs.fKey) and fValueEqualsComparer (lhs.fKey, rhs.fKey);
-            }));
+        return lhs.MultiSetEquals (rhs, Common::DeclareEqualsComparer ([&] (const value_type& lhs, const value_type& rhs) {
+                                       return keyEqualsComparer (lhs.fKey, rhs.fKey) and fValueEqualsComparer (lhs.fKey, rhs.fKey);
+                                   }));
     }
 
 }

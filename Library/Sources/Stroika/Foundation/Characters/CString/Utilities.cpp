@@ -228,15 +228,9 @@ namespace {
     }
 }
 
-string Characters::CString::StripTrailingCharIfAny (const string& s, char c)
-{
-    return StripTrailingCharIfAny_HLPR_ (s, c);
-}
+string Characters::CString::StripTrailingCharIfAny (const string& s, char c) { return StripTrailingCharIfAny_HLPR_ (s, c); }
 
-wstring Characters::CString::StripTrailingCharIfAny (const wstring& s, wchar_t c)
-{
-    return StripTrailingCharIfAny_HLPR_ (s, c);
-}
+wstring Characters::CString::StripTrailingCharIfAny (const wstring& s, wchar_t c) { return StripTrailingCharIfAny_HLPR_ (s, c); }
 
 /*
  ********************************************************************************

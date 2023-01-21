@@ -49,7 +49,8 @@ namespace Stroika::Foundation::DataExchange {
      *  the above floating point near-edge adjustment.
      */
     template <typename RANGE_TYPE>
-    typename RANGE_TYPE::ElementType CheckedConverter_ValueInRange (typename RANGE_TYPE::ElementType val, const RANGE_TYPE& range = RANGE_TYPE::FullRange ());
+    typename RANGE_TYPE::ElementType CheckedConverter_ValueInRange (typename RANGE_TYPE::ElementType val,
+                                                                    const RANGE_TYPE&                range = RANGE_TYPE::FullRange ());
 
 }
 

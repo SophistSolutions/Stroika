@@ -58,13 +58,7 @@ struct TreapTraits : TreeTraits::Traits<KEYVALUE, COMP, POLICY> {
     static const size_t kOptimizeOnFindChance = OPTFINDCHANCE;
 };
 
-template <typename KEY,
-          typename VALUE,
-          typename TRAITS = TreapTraits<
-              KeyValue<KEY, VALUE>,
-              TreeTraits::DefaultComp<KEY>,
-              TreeTraits::eInvalidRemoveThrowException,
-              kDefaultOptimizeFinds>>
+template <typename KEY, typename VALUE, typename TRAITS = TreapTraits<KeyValue<KEY, VALUE>, TreeTraits::DefaultComp<KEY>, TreeTraits::eInvalidRemoveThrowException, kDefaultOptimizeFinds>>
 class Treap {
 public:
     typedef KEY   KeyType;

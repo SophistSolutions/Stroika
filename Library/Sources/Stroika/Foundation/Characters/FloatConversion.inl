@@ -76,15 +76,9 @@ namespace Stroika::Foundation::Characters::FloatConversion {
         : ToStringOptions{ToStringOptions{b1, b2}, forward<ARGS> (args)...}
     {
     }
-    inline optional<unsigned int> ToStringOptions::GetPrecision () const
-    {
-        return fPrecision_;
-    }
-    inline optional<bool> ToStringOptions::GetTrimTrailingZeros () const
-    {
-        return fTrimTrailingZeros_;
-    }
-    inline locale ToStringOptions::GetUseLocale () const
+    inline optional<unsigned int> ToStringOptions::GetPrecision () const { return fPrecision_; }
+    inline optional<bool>         ToStringOptions::GetTrimTrailingZeros () const { return fTrimTrailingZeros_; }
+    inline locale                 ToStringOptions::GetUseLocale () const
     {
         if (fUseCurrentLocale_) {
             return locale{};
@@ -102,14 +96,8 @@ namespace Stroika::Foundation::Characters::FloatConversion {
         }
         return GetUseLocale () == locale::classic ();
     }
-    inline optional<FloatFormatType> ToStringOptions::GetFloatFormat () const
-    {
-        return fFloatFormat_;
-    }
-    inline optional<ios_base::fmtflags> ToStringOptions::GetIOSFmtFlags () const
-    {
-        return fFmtFlags_;
-    }
+    inline optional<FloatFormatType>    ToStringOptions::GetFloatFormat () const { return fFloatFormat_; }
+    inline optional<ios_base::fmtflags> ToStringOptions::GetIOSFmtFlags () const { return fFmtFlags_; }
 
     namespace Private_ {
         // In CPP file
@@ -305,7 +293,10 @@ namespace Stroika::Foundation::Characters::FloatConversion {
                     return formatBufferStart;
                 };
                 char format[100]; // intentionally uninitialized, cuz filled in with mkFmtWithPrecisionArg_
-                resultStrLen = ::snprintf (buf.data (), buf.size (), mkFmtWithPrecisionArg_ (std::begin (format), std::end (format), is_same_v<FLOAT_TYPE, long double> ? 'L' : '\0'), (int)precision, f);
+                resultStrLen =
+                    ::snprintf (buf.data (), buf.size (),
+                                mkFmtWithPrecisionArg_ (std::begin (format), std::end (format), is_same_v<FLOAT_TYPE, long double> ? 'L' : '\0'),
+                                (int)precision, f);
             }
             else {
                 // THIS #if test should NOT be needed but g++ 9 didn't properly respect if constexpr (link errors)
@@ -352,7 +343,8 @@ namespace Stroika::Foundation::Characters::FloatConversion {
                         useFloatField = ios_base::fixed;
                         break;
                     case FloatFormatType::eAutomatic: {
-                        bool useScientificNotation = abs (f) >= pow (10, usePrecision / 2) or (f != 0 and abs (f) < pow (10, -static_cast<int> (usePrecision) / 2)); // scientific preserves more precision - but non-scientific looks better
+                        bool useScientificNotation = abs (f) >= pow (10, usePrecision / 2) or
+                                                     (f != 0 and abs (f) < pow (10, -static_cast<int> (usePrecision) / 2)); // scientific preserves more precision - but non-scientific looks better
                         if (useScientificNotation) {
                             useFloatField = ios_base::scientific;
                         }
@@ -371,9 +363,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
 
             s << f;
 
-            return options.GetUsingLocaleClassic ()
-                       ? String{s.str ()}
-                       : String::FromNarrowString (s.str (), options.GetUseLocale ());
+            return options.GetUsingLocaleClassic () ? String{s.str ()} : String::FromNarrowString (s.str (), options.GetUseLocale ());
         }
     }
 
@@ -381,10 +371,10 @@ namespace Stroika::Foundation::Characters::FloatConversion {
         template <typename FLOAT_TYPE>
         String ToString_String_Implementation_ (FLOAT_TYPE f, const ToStringOptions& options)
         {
-            auto result =
-                (options.GetUsingLocaleClassic () and not options.GetIOSFmtFlags () and not options.GetFloatFormat ())
-                    ? Private_::ToString_OptimizedForCLocaleAndNoStreamFlags_ (f, options.GetPrecision ().value_or (ToStringOptions::kDefaultPrecision.fPrecision))
-                    : Private_::ToString_GeneralCase_ (f, options);
+            auto result = (options.GetUsingLocaleClassic () and not options.GetIOSFmtFlags () and not options.GetFloatFormat ())
+                              ? Private_::ToString_OptimizedForCLocaleAndNoStreamFlags_ (
+                                    f, options.GetPrecision ().value_or (ToStringOptions::kDefaultPrecision.fPrecision))
+                              : Private_::ToString_GeneralCase_ (f, options);
             if (options.GetTrimTrailingZeros ().value_or (ToStringOptions::kDefaultTrimTrailingZeros)) {
                 TrimTrailingZeros_ (&result);
             }
@@ -680,7 +670,8 @@ namespace Stroika::Foundation::Characters::FloatConversion {
                 String legacyRemainer;
                 Ensure (Math::NearlyEquals (Private_::ToFloat_Legacy_<T> (String{s}, &legacyRemainer), result));
 #endif
-                *remainder = s.begin () + UTFConverter::kThe.ConvertOffset<CHAR_T> (span{reinterpret_cast<const char8_t*> (b), reinterpret_cast<const char8_t*> (e)}, ptr - b);
+                *remainder = s.begin () + UTFConverter::kThe.ConvertOffset<CHAR_T> (
+                                              span{reinterpret_cast<const char8_t*> (b), reinterpret_cast<const char8_t*> (e)}, ptr - b);
                 Assert (*remainder <= s.end ());
                 // todo fix so can do this - Assert ((legacyRemainer == String{*remainder, s.end ()}));
                 return result;
@@ -693,7 +684,9 @@ namespace Stroika::Foundation::Characters::FloatConversion {
         requires (ConvertibleToString<STRINGISH_ARG> or is_convertible_v<STRINGISH_ARG, std::string>)
     {
         using DecayedStringishArg = remove_cvref_t<STRINGISH_ARG>;
-        if constexpr (is_same_v<DecayedStringishArg, const char*> or is_same_v<DecayedStringishArg, const char8_t*> or is_same_v<DecayedStringishArg, const char16_t*> or is_same_v<DecayedStringishArg, const char32_t*> or is_same_v<DecayedStringishArg, const wchar_t*>) {
+        if constexpr (is_same_v<DecayedStringishArg, const char*> or is_same_v<DecayedStringishArg, const char8_t*> or
+                      is_same_v<DecayedStringishArg, const char16_t*> or is_same_v<DecayedStringishArg, const char32_t*> or
+                      is_same_v<DecayedStringishArg, const wchar_t*>) {
             return ToFloat<T> (span{s, CString::Length (s)});
         }
         else if constexpr (is_same_v<DecayedStringishArg, String>) {
@@ -747,8 +740,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
                 auto e         = asciiS.end ();
                 if (remainder != nullptr) [[unlikely]] {
                     // in remainder mode we skip leading whitespace
-                    while (b != e and iswspace (*b))
-                        [[unlikely]] {
+                    while (b != e and iswspace (*b)) [[unlikely]] {
                         ++b;
                     }
                 }

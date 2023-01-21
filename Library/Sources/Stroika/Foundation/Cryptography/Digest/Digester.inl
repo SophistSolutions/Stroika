@@ -104,7 +104,8 @@ namespace Stroika::Foundation::Cryptography::Digest {
     {
         // copy to inline stack buffer, and that can be passed as array to other overloads
         Memory::StackBuffer<TRIVIALLY_COPYABLE_T> buf{from.begin (), from.end ()};
-        return Digest::ComputeDigest<ALGORITHM, RETURN_TYPE> (reinterpret_cast<const std::byte*> (buf.begin ()), reinterpret_cast<const std::byte*> (buf.end ()));
+        return Digest::ComputeDigest<ALGORITHM, RETURN_TYPE> (reinterpret_cast<const std::byte*> (buf.begin ()),
+                                                              reinterpret_cast<const std::byte*> (buf.end ()));
     }
 
     /*
@@ -152,7 +153,8 @@ namespace Stroika::Foundation::Cryptography::Digest {
     {
         // copy to inline stack buffer, and that can be passed as array to other overloads
         Memory::StackBuffer<TRIVIALLY_COPYABLE_T> buf{from.begin (), from.end ()};
-        return ComputeDigest<ALGORITHM, RETURN_TYPE> (reinterpret_cast<const std::byte*> (buf.begin ()), reinterpret_cast<const std::byte*> (buf.end ()));
+        return ComputeDigest<ALGORITHM, RETURN_TYPE> (reinterpret_cast<const std::byte*> (buf.begin ()),
+                                                      reinterpret_cast<const std::byte*> (buf.end ()));
     }
 
 }

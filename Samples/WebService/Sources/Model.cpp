@@ -66,7 +66,7 @@ const ObjectVariantMapper StroikaSample::WebServices::Model::kMapper = [] () {
             // Trick: parse one number, and then accumulate second number (if any)
             // Works with a few minor rewrites
             String remainingNumber2Parse = vv.As<String> ();
-            remainingNumber2Parse        = remainingNumber2Parse.ReplaceAll (" "_k, String{}); // strip spaces - not needed and cause 2 + 4i to not parse (where 2+4i would) with simple trick we use (parse numbers and accum)
+            remainingNumber2Parse = remainingNumber2Parse.ReplaceAll (" "_k, String{}); // strip spaces - not needed and cause 2 + 4i to not parse (where 2+4i would) with simple trick we use (parse numbers and accum)
             Number accum{};
             for (unsigned int cnt = 0; cnt < 2 and not remainingNumber2Parse.empty (); ++cnt) {
                 // special case rewrite bare 'i' as '1i' with +/- cases

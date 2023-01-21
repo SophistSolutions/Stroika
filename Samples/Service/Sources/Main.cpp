@@ -90,31 +90,45 @@ namespace {
         }
         cerr << "Usage: " << m.GetServiceDescription ().fRegistrationName.AsNarrowSDKString () << " [options] where options can be :\n ";
         if (m.GetServiceIntegrationFeatures ().Contains (Main::ServiceIntegrationFeatures::eInstall)) {
-            cerr << "\t--" << String{Main::CommandNames::kInstall}.AsNarrowSDKString () << "               /* Install service (only when debugging - should use real installer like WIX) */" << endl;
-            cerr << "\t--" << String{Main::CommandNames::kUnInstall}.AsNarrowSDKString () << "             /* UnInstall service (only when debugging - should use real installer like WIX) */" << endl;
+            cerr << "\t--" << String{Main::CommandNames::kInstall}.AsNarrowSDKString ()
+                 << "               /* Install service (only when debugging - should use real installer like WIX) */" << endl;
+            cerr << "\t--" << String{Main::CommandNames::kUnInstall}.AsNarrowSDKString ()
+                 << "             /* UnInstall service (only when debugging - should use real installer like WIX) */" << endl;
         }
-        cerr << "\t--" << String{Main::CommandNames::kRunAsService}.AsNarrowSDKString () << "        /* Run this process as a service (doesn't exit until the serivce is done ...) */" << endl;
-        cerr << "\t--" << String{Main::CommandNames::kRunDirectly}.AsNarrowSDKString () << "          /* Run this process as a directly (doesn't exit until the serivce is done or ARGUMENT TIMEOUT seconds elapsed ...) but not using service infrastructure */" << endl;
-        cerr << "\t--" << String{Main::CommandNames::kStart}.AsNarrowSDKString () << "                 /* Service/Control Function: Start the service */" << endl;
-        cerr << "\t--" << String{Main::CommandNames::kStop}.AsNarrowSDKString () << "                  /* Service/Control Function: Stop the service */" << endl;
-        cerr << "\t--" << String{Main::CommandNames::kForcedStop}.AsNarrowSDKString () << "            /* Service/Control Function: Forced stop the service (after trying to normally stop) */" << endl;
-        cerr << "\t--" << String{Main::CommandNames::kRestart}.AsNarrowSDKString () << "               /* Service/Control Function: Stop and then re-start the service (ok if already stopped) */" << endl;
-        cerr << "\t--" << String{Main::CommandNames::kForcedRestart}.AsNarrowSDKString () << "         /* Service/Control Function: Stop (force if needed) and then re-start the service (ok if already stopped) */" << endl;
+        cerr << "\t--" << String{Main::CommandNames::kRunAsService}.AsNarrowSDKString ()
+             << "        /* Run this process as a service (doesn't exit until the serivce is done ...) */" << endl;
+        cerr << "\t--" << String{Main::CommandNames::kRunDirectly}.AsNarrowSDKString () << "          /* Run this process as a directly (doesn't exit until the serivce is done or ARGUMENT TIMEOUT seconds elapsed ...) but not using service infrastructure */"
+             << endl;
+        cerr << "\t--" << String{Main::CommandNames::kStart}.AsNarrowSDKString ()
+             << "                 /* Service/Control Function: Start the service */" << endl;
+        cerr << "\t--" << String{Main::CommandNames::kStop}.AsNarrowSDKString ()
+             << "                  /* Service/Control Function: Stop the service */" << endl;
+        cerr << "\t--" << String{Main::CommandNames::kForcedStop}.AsNarrowSDKString ()
+             << "            /* Service/Control Function: Forced stop the service (after trying to normally stop) */" << endl;
+        cerr << "\t--" << String{Main::CommandNames::kRestart}.AsNarrowSDKString ()
+             << "               /* Service/Control Function: Stop and then re-start the service (ok if already stopped) */" << endl;
+        cerr << "\t--" << String{Main::CommandNames::kForcedRestart}.AsNarrowSDKString ()
+             << "         /* Service/Control Function: Stop (force if needed) and then re-start the service (ok if already stopped) */" << endl;
         cerr << "\t--" << String{Main::CommandNames::kReloadConfiguration}.AsNarrowSDKString () << "  /* Reload service configuration */" << endl;
-        cerr << "\t--" << String{Main::CommandNames::kPause}.AsNarrowSDKString () << "                 /* Service/Control Function: Pause the service */" << endl;
-        cerr << "\t--" << String{Main::CommandNames::kContinue}.AsNarrowSDKString () << "              /* Service/Control Function: Continue the paused service */" << endl;
+        cerr << "\t--" << String{Main::CommandNames::kPause}.AsNarrowSDKString ()
+             << "                 /* Service/Control Function: Pause the service */" << endl;
+        cerr << "\t--" << String{Main::CommandNames::kContinue}.AsNarrowSDKString ()
+             << "              /* Service/Control Function: Continue the paused service */" << endl;
         cerr << "\t--Status                /* Service/Control Function: Print status of running service */ " << endl;
         cerr << "\t--Version               /* print this application version */ " << endl;
         cerr << "\t--help                  /* Print this help. */ " << endl;
         cerr << endl
-             << "\tExtra unrecognized parameters for start/restart, and forcedrestart operations will be passed along to the actual service process" << endl;
+             << "\tExtra unrecognized parameters for start/restart, and forcedrestart operations will be passed along to the actual "
+                "service process"
+             << endl;
         cerr << endl;
     }
 }
 
 int main (int argc, const char* argv[])
 {
-    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"main", L"argv=%s", Characters::ToString (vector<const char*>{argv, argv + argc}).c_str ())};
+    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (
+        L"main", L"argv=%s", Characters::ToString (vector<const char*>{argv, argv + argc}).c_str ())};
 
 #if qStroika_Foundation_Exection_Thread_SupportThreadStatistics
     [[maybe_unused]] auto&& cleanupReport = Execution::Finally ([] () {
@@ -194,7 +208,8 @@ int main (int argc, const char* argv[])
             return EXIT_SUCCESS;
         }
         else if (Execution::MatchesCommandLineArgument (args, "version")) {
-            cout << m.GetServiceDescription ().fPrettyName.AsNarrowSDKString () << ": " << Characters::ToString (AppVersion::kVersion).AsNarrowSDKString () << endl;
+            cout << m.GetServiceDescription ().fPrettyName.AsNarrowSDKString () << ": "
+                 << Characters::ToString (AppVersion::kVersion).AsNarrowSDKString () << endl;
             return EXIT_SUCCESS;
         }
         else {

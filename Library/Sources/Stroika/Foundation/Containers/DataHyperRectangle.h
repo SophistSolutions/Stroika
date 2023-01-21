@@ -112,10 +112,7 @@ namespace Stroika::Foundation::Containers {
         struct TemporarySliceReference_ {
             const DataHyperRectangle<T, INDEXES...>& fCube;
             tuple<REST_OF_INDEXES...>                fSliceIdxes;
-            T                                        operator[] (INDEX i) const
-            {
-                return fCube.GetAt (i, forward<REST_OF_INDEXES> (fSliceIdxes)...);
-            }
+            T operator[] (INDEX i) const { return fCube.GetAt (i, forward<REST_OF_INDEXES> (fSliceIdxes)...); }
         };
 
     public:
@@ -204,7 +201,8 @@ namespace Stroika::Foundation::Containers {
      *  using DataHyperRectangleN = DataHyperRectangle<T, size_t N REPEATED TIMES>
      */
     template <typename T, size_t N>
-    using DataHyperRectangleN = typename Private_DataHyperRectangle_::template NTemplate<T, DataHyperRectangle>::template Helper_<make_index_sequence<N>>::CombinedType;
+    using DataHyperRectangleN =
+        typename Private_DataHyperRectangle_::template NTemplate<T, DataHyperRectangle>::template Helper_<make_index_sequence<N>>::CombinedType;
 
 }
 

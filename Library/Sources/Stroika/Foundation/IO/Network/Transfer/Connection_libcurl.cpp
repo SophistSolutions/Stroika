@@ -41,9 +41,7 @@ namespace {
     {
         static once_flag sOnceFlag_;
         call_once (sOnceFlag_, [] () {
-            atexit ([] () {
-                ::curl_global_cleanup ();
-            });
+            atexit ([] () { ::curl_global_cleanup (); });
             /*
              *  @todo review CURL_GLOBAL_SSL
              *
@@ -61,10 +59,7 @@ namespace {
 namespace {
     class LibCurl_error_category_ : public error_category {
     public:
-        virtual const char* name () const noexcept override
-        {
-            return "LibCurl error";
-        }
+        virtual const char*     name () const noexcept override { return "LibCurl error"; }
         virtual error_condition default_error_condition ([[maybe_unused]] int ev) const noexcept override
         {
             switch (ev) {
@@ -84,10 +79,7 @@ namespace {
             //}
             return error_condition{errc::bad_message}; // no idea what to return here
         }
-        virtual string message (int ccode) const override
-        {
-            return ::curl_easy_strerror (static_cast<CURLcode> (ccode));
-        }
+        virtual string message (int ccode) const override { return ::curl_easy_strerror (static_cast<CURLcode> (ccode)); }
     };
 }
 
@@ -96,10 +88,7 @@ namespace {
  ************************ Transfer::LibCurl_error_category **********************
  ********************************************************************************
  */
-const std::error_category& Transfer::LibCurl_error_category () noexcept
-{
-    return Common::Immortalize<LibCurl_error_category_> ();
-}
+const std::error_category& Transfer::LibCurl_error_category () noexcept { return Common::Immortalize<LibCurl_error_category_> (); }
 #endif
 
 #if qHasFeature_LibCurl
@@ -120,10 +109,7 @@ public:
     nonvirtual Rep_& operator= (const Rep_&) = delete;
 
 public:
-    virtual Options GetOptions () const override
-    {
-        return fOptions_;
-    }
+    virtual Options             GetOptions () const override { return fOptions_; }
     virtual DurationSecondsType GetTimeout () const override;
     virtual void                SetTimeout (DurationSecondsType timeout) override;
     virtual URI                 GetSchemeAndAuthority () const override;
@@ -191,10 +177,7 @@ void Connection_LibCurl::Rep_::SetTimeout (DurationSecondsType timeout)
     ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_CONNECTTIMEOUT_MS, static_cast<int> (timeout * 1000)));
 }
 
-URI Connection_LibCurl::Rep_::GetSchemeAndAuthority () const
-{
-    return fURL_.GetSchemeAndAuthority ();
-}
+URI Connection_LibCurl::Rep_::GetSchemeAndAuthority () const { return fURL_.GetSchemeAndAuthority (); }
 
 void Connection_LibCurl::Rep_::SetSchemeAndAuthority (const URI& schemeAndAuthority)
 {
@@ -320,8 +303,7 @@ Response Connection_LibCurl::Rep_::Send (const Request& request)
     Mapping<String, String> overrideHeaders = useRequest.fOverrideHeaders;
     if (fOptions_.fAssumeLowestCommonDenominatorHTTPServer) {
         static const Mapping<String, String> kSilenceTheseHeaders_{
-            {pair<String, String>{"Expect"sv, {}},
-             pair<String, String>{"Transfer-Encoding"sv, {}}}};
+            {pair<String, String>{"Expect"sv, {}}, pair<String, String>{"Transfer-Encoding"sv, {}}}};
         overrideHeaders = kSilenceTheseHeaders_ + overrideHeaders;
     }
     if (fOptions_.fAuthentication and fOptions_.fAuthentication->GetOptions () == Connection::Options::Authentication::Options::eProactivelySendAuthentication) {
@@ -330,8 +312,10 @@ Response Connection_LibCurl::Rep_::Send (const Request& request)
     {
         constexpr bool kDefault_FailConnectionIfSSLCertificateInvalid{false};
         // ignore error if compiled without ssl
-        (void)::curl_easy_setopt (fCurlHandle_, CURLOPT_SSL_VERIFYPEER, fOptions_.fFailConnectionIfSSLCertificateInvalid.value_or (kDefault_FailConnectionIfSSLCertificateInvalid) ? 1L : 0L);
-        (void)::curl_easy_setopt (fCurlHandle_, CURLOPT_SSL_VERIFYHOST, fOptions_.fFailConnectionIfSSLCertificateInvalid.value_or (kDefault_FailConnectionIfSSLCertificateInvalid) ? 2L : 0L);
+        (void)::curl_easy_setopt (fCurlHandle_, CURLOPT_SSL_VERIFYPEER,
+                                  fOptions_.fFailConnectionIfSSLCertificateInvalid.value_or (kDefault_FailConnectionIfSSLCertificateInvalid) ? 1L : 0L);
+        (void)::curl_easy_setopt (fCurlHandle_, CURLOPT_SSL_VERIFYHOST,
+                                  fOptions_.fFailConnectionIfSSLCertificateInvalid.value_or (kDefault_FailConnectionIfSSLCertificateInvalid) ? 2L : 0L);
     }
 
     if (useRequest.fMethod == HTTP::Methods::kGet) {
@@ -367,7 +351,7 @@ Response Connection_LibCurl::Rep_::Send (const Request& request)
 
     if (fOptions_.fAuthentication and fOptions_.fAuthentication->GetOptions () == Connection::Options::Authentication::Options::eRespondToWWWAuthenticate) {
         ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_HTTPAUTH, (long)CURLAUTH_ANY)); // tell libcurl we can use "any" auth, which lets the lib pick one, but it also costs one extra round-trip and possibly sending of all the PUT data twice!
-        auto nameAndPassword = *fOptions_.fAuthentication->GetUsernameAndPassword ();           // if eRespondToWWWAuthenticate we must have username/password (Options CTOR requirement)
+        auto nameAndPassword = *fOptions_.fAuthentication->GetUsernameAndPassword (); // if eRespondToWWWAuthenticate we must have username/password (Options CTOR requirement)
         ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_USERNAME, nameAndPassword.first.AsUTF8 ().c_str ()));
         ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_PASSWORD, nameAndPassword.second.AsUTF8 ().c_str ()));
     }
@@ -469,8 +453,5 @@ void Connection_LibCurl::Rep_::MakeHandleIfNeeded_ ()
  ********************** Transfer::Connection_LibCurl ****************************
  ********************************************************************************
  */
-Connection::Ptr Connection_LibCurl::New (const Options& options)
-{
-    return Connection::Ptr{make_shared<Rep_> (options)};
-}
+Connection::Ptr Connection_LibCurl::New (const Options& options) { return Connection::Ptr{make_shared<Rep_> (options)}; }
 #endif

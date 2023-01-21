@@ -39,7 +39,7 @@ namespace Stroika::Foundation::Database::SQL::ORM {
     /**
      */
     struct TableProvisioner {
-        String                                                                                                                        fTableName;
+        String fTableName;
         function<void (SQL::Connection::Ptr, optional<Configuration::Version> existingVersion, Configuration::Version targetVersion)> fProvisioner;
     };
 

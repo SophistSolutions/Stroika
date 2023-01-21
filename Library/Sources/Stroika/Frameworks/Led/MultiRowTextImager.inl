@@ -113,19 +113,13 @@ namespace Stroika::Frameworks::Led {
         MultiRowTextImager::FillCache (), and specified indirectly via calls (from inside FillCache)
         to MultiRowTextImager::MultiRowPartitionMarker::IncrementRowCountAndFixCacheBuffers ().</p>
     */
-    inline size_t MultiRowTextImager::PartitionElementCacheInfo::PeekRowCount () const
-    {
-        return (fRep->fRowCountCache);
-    }
+    inline size_t MultiRowTextImager::PartitionElementCacheInfo::PeekRowCount () const { return (fRep->fRowCountCache); }
     /*
     @METHOD:        MultiRowTextImager::PartitionElementCacheInfo::GetLastRow
     @DESCRIPTION:   <p>Return the last valid row index (may invoke FillCache if cached result not
         already available).</p>
     */
-    inline size_t MultiRowTextImager::PartitionElementCacheInfo::GetLastRow () const
-    {
-        return GetRowCount () - 1;
-    }
+    inline size_t MultiRowTextImager::PartitionElementCacheInfo::GetLastRow () const { return GetRowCount () - 1; }
     /*
     @METHOD:        MultiRowTextImager::PartitionElementCacheInfo::PeekAtRowHeight
     @DESCRIPTION:   <p>Return the height - (in whatever unit the GDI is using, but typically pixels) of the given row.
@@ -265,14 +259,8 @@ namespace Stroika::Frameworks::Led {
         fSubRow          = rhs.fSubRow;
         return (*this);
     }
-    inline MultiRowTextImager::PartitionMarker* MultiRowTextImager::RowReference::GetPartitionMarker () const
-    {
-        return (fPartitionMarker);
-    }
-    inline size_t MultiRowTextImager::RowReference::GetSubRow () const
-    {
-        return (fSubRow);
-    }
+    inline MultiRowTextImager::PartitionMarker* MultiRowTextImager::RowReference::GetPartitionMarker () const { return (fPartitionMarker); }
+    inline size_t                               MultiRowTextImager::RowReference::GetSubRow () const { return (fSubRow); }
     inline bool MultiRowTextImager::RowReference::operator== (MultiRowTextImager::RowReference rhs) const
     {
         return this->GetPartitionMarker () == rhs.GetPartitionMarker () and this->GetSubRow () == rhs.GetSubRow ();
@@ -372,10 +360,7 @@ namespace Stroika::Frameworks::Led {
     @DESCRIPTION:   <p>Gets the length of the given row (in @'Led_tChar's).</p>
             <p>See also  @'MultiRowTextImager::GetStartOfRow' and @'MultiRowTextImager::GetEndOfRow'.</p>
     */
-    inline size_t MultiRowTextImager::GetRowLength (RowReference row) const
-    {
-        return (GetEndOfRow (row) - GetStartOfRow (row));
-    }
+    inline size_t MultiRowTextImager::GetRowLength (RowReference row) const { return (GetEndOfRow (row) - GetStartOfRow (row)); }
     /*
     @METHOD:        MultiRowTextImager::GetLastRowReferenceInWindow
     @DESCRIPTION:   <p>Returns the last row-reference in the window (end of window).</p>

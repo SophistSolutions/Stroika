@@ -63,20 +63,17 @@ namespace {
         }
         InOutStrmCommon_ (const InOutStrmCommon_&)            = delete;
         InOutStrmCommon_& operator= (const InOutStrmCommon_&) = delete;
-        virtual ~InOutStrmCommon_ ()
-        {
-            ::EVP_CIPHER_CTX_free (fCTX_);
-        }
-        static constexpr size_t _GetMinOutBufSize (size_t n)
-        {
-            return n + EVP_MAX_BLOCK_LENGTH;
-        }
+        virtual ~InOutStrmCommon_ () { ::EVP_CIPHER_CTX_free (fCTX_); }
+        static constexpr size_t _GetMinOutBufSize (size_t n) { return n + EVP_MAX_BLOCK_LENGTH; }
         // return nBytes in outBuf, throws on error
         size_t _runOnce (const byte* data2ProcessStart, const byte* data2ProcessEnd, byte* outBufStart, [[maybe_unused]] byte* outBufEnd)
         {
-            Require (outBufStart <= outBufEnd and static_cast<size_t> (outBufEnd - outBufStart) >= _GetMinOutBufSize (data2ProcessEnd - data2ProcessStart)); // always need out buf big enuf for inbuf
+            Require (outBufStart <= outBufEnd and static_cast<size_t> (outBufEnd - outBufStart) >=
+                                                      _GetMinOutBufSize (data2ProcessEnd - data2ProcessStart)); // always need out buf big enuf for inbuf
             int outLen = 0;
-            Cryptography::OpenSSL::Exception::ThrowLastErrorIfFailed (::EVP_CipherUpdate (fCTX_, reinterpret_cast<unsigned char*> (outBufStart), &outLen, reinterpret_cast<const unsigned char*> (data2ProcessStart), static_cast<int> (data2ProcessEnd - data2ProcessStart)));
+            Cryptography::OpenSSL::Exception::ThrowLastErrorIfFailed (::EVP_CipherUpdate (
+                fCTX_, reinterpret_cast<unsigned char*> (outBufStart), &outLen, reinterpret_cast<const unsigned char*> (data2ProcessStart),
+                static_cast<int> (data2ProcessEnd - data2ProcessStart)));
             Ensure (outLen >= 0);
             Ensure (outLen <= (outBufEnd - outBufStart));
             return size_t (outLen);
@@ -90,7 +87,8 @@ namespace {
                 return 0; // not an error - just zero more bytes
             }
             int outLen = 0;
-            Cryptography::OpenSSL::Exception::ThrowLastErrorIfFailed (::EVP_CipherFinal_ex (fCTX_, reinterpret_cast<unsigned char*> (outBufStart), &outLen));
+            Cryptography::OpenSSL::Exception::ThrowLastErrorIfFailed (
+                ::EVP_CipherFinal_ex (fCTX_, reinterpret_cast<unsigned char*> (outBufStart), &outLen));
             fFinalCalled_ = true;
             Ensure (outLen >= 0);
             Ensure (outLen <= (outBufEnd - outBufStart));
@@ -111,10 +109,7 @@ public:
         , fRealIn_{realIn}
     {
     }
-    virtual bool IsSeekable () const override
-    {
-        return false;
-    }
+    virtual bool IsSeekable () const override { return false; }
     virtual void CloseRead () override
     {
         Require (IsOpenRead ());
@@ -122,10 +117,7 @@ public:
         Assert (fRealIn_ == nullptr);
         Ensure (not IsOpenRead ());
     }
-    virtual bool IsOpenRead () const override
-    {
-        return fRealIn_ != nullptr;
-    }
+    virtual bool           IsOpenRead () const override { return fRealIn_ != nullptr; }
     virtual SeekOffsetType GetReadOffset () const override
     {
         RequireNotReached ();
@@ -248,10 +240,7 @@ public:
             // not great to do in DTOR, because we must drop exceptions on the floor!
         }
     }
-    virtual bool IsSeekable () const override
-    {
-        return false;
-    }
+    virtual bool IsSeekable () const override { return false; }
     virtual void CloseWrite () override
     {
         Require (IsOpenWrite ());
@@ -259,10 +248,7 @@ public:
         Assert (fRealOut_ == nullptr);
         Ensure (not IsOpenWrite ());
     }
-    virtual bool IsOpenWrite () const override
-    {
-        return fRealOut_ != nullptr;
-    }
+    virtual bool           IsOpenWrite () const override { return fRealOut_ != nullptr; }
     virtual SeekOffsetType GetWriteOffset () const override
     {
         RequireNotReached ();
@@ -307,7 +293,8 @@ private:
  ********************************************************************************
  */
 namespace {
-    void ApplySettings2CTX_ (EVP_CIPHER_CTX* ctx, const EVP_CIPHER* cipher, Direction d, bool nopad, bool useArgumentKeyLength, const Memory::BLOB& key, const Memory::BLOB& initialIV)
+    void ApplySettings2CTX_ (EVP_CIPHER_CTX* ctx, const EVP_CIPHER* cipher, Direction d, bool nopad, bool useArgumentKeyLength,
+                             const Memory::BLOB& key, const Memory::BLOB& initialIV)
     {
         RequireNotNull (ctx);
         RequireNotNull (cipher);
@@ -334,7 +321,8 @@ namespace {
         if (not initialIV.empty ()) {
             (void)::memcpy (useIV.begin (), initialIV.begin (), min (ivLen, initialIV.size ()));
         }
-        Cryptography::OpenSSL::Exception::ThrowLastErrorIfFailed (::EVP_CipherInit_ex (ctx, nullptr, NULL, reinterpret_cast<unsigned char*> (useKey.begin ()), reinterpret_cast<unsigned char*> (useIV.begin ()), enc));
+        Cryptography::OpenSSL::Exception::ThrowLastErrorIfFailed (::EVP_CipherInit_ex (
+            ctx, nullptr, NULL, reinterpret_cast<unsigned char*> (useKey.begin ()), reinterpret_cast<unsigned char*> (useIV.begin ()), enc));
     }
 }
 
@@ -343,7 +331,8 @@ OpenSSLCryptoParams::OpenSSLCryptoParams (CipherAlgorithm alg, const BLOB& key, 
     using namespace OpenSSL;
     bool nopad                = false;
     bool useArgumentKeyLength = false;
-    if (alg == CipherAlgorithms::kRC2_CBC () or alg == CipherAlgorithms::kRC2_ECB () or alg == CipherAlgorithms::kRC2_CFB () or alg == CipherAlgorithms::kRC2_OFB () or alg == CipherAlgorithms::kRC4 ()) {
+    if (alg == CipherAlgorithms::kRC2_CBC () or alg == CipherAlgorithms::kRC2_ECB () or alg == CipherAlgorithms::kRC2_CFB () or
+        alg == CipherAlgorithms::kRC2_OFB () or alg == CipherAlgorithms::kRC4 ()) {
         useArgumentKeyLength = true;
     }
     fInitializer = [=] (::EVP_CIPHER_CTX* ctx, Direction d) {
@@ -366,7 +355,8 @@ auto OpenSSLInputStream::New (const OpenSSLCryptoParams& cryptoParams, Direction
     return _mkPtr (make_shared<Rep_> (cryptoParams, direction, realIn));
 }
 
-auto OpenSSLInputStream::New (Execution::InternallySynchronized internallySynchronized, const OpenSSLCryptoParams& cryptoParams, Direction direction, const InputStream<byte>::Ptr& realIn) -> Ptr
+auto OpenSSLInputStream::New (Execution::InternallySynchronized internallySynchronized, const OpenSSLCryptoParams& cryptoParams,
+                              Direction direction, const InputStream<byte>::Ptr& realIn) -> Ptr
 {
     switch (internallySynchronized) {
         case Execution::eInternallySynchronized:
@@ -389,7 +379,8 @@ auto OpenSSLOutputStream::New (const OpenSSLCryptoParams& cryptoParams, Directio
     return _mkPtr (make_shared<Rep_> (cryptoParams, direction, realOut));
 }
 
-auto OpenSSLOutputStream::New (Execution::InternallySynchronized internallySynchronized, const OpenSSLCryptoParams& cryptoParams, Direction direction, const OutputStream<byte>::Ptr& realOut) -> Ptr
+auto OpenSSLOutputStream::New (Execution::InternallySynchronized internallySynchronized, const OpenSSLCryptoParams& cryptoParams,
+                               Direction direction, const OutputStream<byte>::Ptr& realOut) -> Ptr
 {
     switch (internallySynchronized) {
         case Execution::eInternallySynchronized:

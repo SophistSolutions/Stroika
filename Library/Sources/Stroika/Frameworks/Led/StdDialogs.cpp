@@ -43,11 +43,8 @@ namespace {
         return ((*theMenuData)->mHandle);
     }
 #endif
-    SDKString FormatINTAsString (int t)
-    {
-        return Characters::CString::Format (Led_SDK_TCHAROF ("%d"), t);
-    }
-    bool ParseStringToINT (const SDKString& s, int* t)
+    SDKString FormatINTAsString (int t) { return Characters::CString::Format (Led_SDK_TCHAROF ("%d"), t); }
+    bool      ParseStringToINT (const SDKString& s, int* t)
     {
 #if 1
         // get rid of this function - COULD do better API - but this is fine for how we currently use it...
@@ -77,11 +74,8 @@ namespace {
 #endif
     }
     // Later revise these so they take into account UNITS - like CM, or IN, or TWIPS, or pt, etc...
-    SDKString FormatTWIPSAsString (TWIPS t)
-    {
-        return FormatINTAsString (t);
-    }
-    bool ParseStringToTWIPS (const SDKString& s, TWIPS* t)
+    SDKString FormatTWIPSAsString (TWIPS t) { return FormatINTAsString (t); }
+    bool      ParseStringToTWIPS (const SDKString& s, TWIPS* t)
     {
         int  i = 0;
         bool r = ParseStringToINT (s, &i);
@@ -123,9 +117,7 @@ StdColorPopupHelper::StdColorPopupHelper (bool allowNone)
         }
     }
 }
-StdColorPopupHelper::~StdColorPopupHelper ()
-{
-}
+StdColorPopupHelper::~StdColorPopupHelper () {}
 
 bool StdColorPopupHelper::GetSelectedColor (Color* c) const
 {
@@ -389,12 +381,10 @@ LedDialogWidget::~LedDialogWidget ()
 @METHOD:        LedDialogWidget::OnBadUserInput
 @DESCRIPTION:   <p>Override @'TextInteractor::OnBadUserInputn' - to just beep - not throw (cuz a throw messes up dialogs).</p>
 */
-void LedDialogWidget::OnBadUserInput ()
-{
-    Led_BeepNotify ();
-}
+void LedDialogWidget::OnBadUserInput () { Led_BeepNotify (); }
 
-void LedDialogWidget::OnTypedNormalCharacter (Led_tChar theChar, bool optionPressed, bool shiftPressed, bool commandPressed, bool controlPressed, bool altKeyPressed)
+void LedDialogWidget::OnTypedNormalCharacter (Led_tChar theChar, bool optionPressed, bool shiftPressed, bool commandPressed,
+                                              bool controlPressed, bool altKeyPressed)
 {
     CommandNumber c = CharToCommand (theChar);
     if (c == 0) {
@@ -631,10 +621,7 @@ LedComboBoxWidget::MyTextWidget::MyTextWidget ()
     SpecifyTextStore (&fTextStore);
 }
 
-LedComboBoxWidget::MyTextWidget::~MyTextWidget ()
-{
-    SpecifyTextStore (NULL);
-}
+LedComboBoxWidget::MyTextWidget::~MyTextWidget () { SpecifyTextStore (NULL); }
 
 #if qPlatform_Windows
 LRESULT LedComboBoxWidget::MyTextWidget::WndProc (UINT message, WPARAM wParam, LPARAM lParam)
@@ -682,10 +669,7 @@ LedComboBoxWidget::LedComboBoxWidget ()
     fTextWidget.fComboBox        = this;
 }
 
-LedComboBoxWidget::~LedComboBoxWidget ()
-{
-    delete fUseWidgetFont;
-}
+LedComboBoxWidget::~LedComboBoxWidget () { delete fUseWidgetFont; }
 
 #if qPlatform_Windows
 bool LedComboBoxWidget::ReplaceWindow (HWND hWnd)
@@ -726,10 +710,8 @@ bool LedComboBoxWidget::ReplaceWindow (HWND hWnd)
     ::DestroyWindow (hWnd);
 
     DISABLE_COMPILER_MSC_WARNING_START (4312)
-    Create (exStyle, NULL, NULL, dwStyle | WS_TABSTOP | WS_CHILD,
-            wp.rcNormalPosition.left, wp.rcNormalPosition.top,
-            wp.rcNormalPosition.right - wp.rcNormalPosition.left, wp.rcNormalPosition.bottom - wp.rcNormalPosition.top,
-            parent, (HMENU)id, NULL);
+    Create (exStyle, NULL, NULL, dwStyle | WS_TABSTOP | WS_CHILD, wp.rcNormalPosition.left, wp.rcNormalPosition.top,
+            wp.rcNormalPosition.right - wp.rcNormalPosition.left, wp.rcNormalPosition.bottom - wp.rcNormalPosition.top, parent, (HMENU)id, NULL);
     DISABLE_COMPILER_MSC_WARNING_END (4312)
 
     /*
@@ -740,15 +722,9 @@ bool LedComboBoxWidget::ReplaceWindow (HWND hWnd)
 }
 #endif
 
-Led_tString LedComboBoxWidget::GetText () const
-{
-    return fTextWidget.GetText ();
-}
+Led_tString LedComboBoxWidget::GetText () const { return fTextWidget.GetText (); }
 
-void LedComboBoxWidget::SetText (const Led_tString& t)
-{
-    fTextWidget.SetText (t);
-}
+void LedComboBoxWidget::SetText (const Led_tString& t) { fTextWidget.SetText (t); }
 
 void LedComboBoxWidget::SetPopupItems (const vector<Led_tString>& pi)
 {
@@ -828,8 +804,10 @@ LRESULT LedComboBoxWidget::OnCreate_Msg (WPARAM wParam, LPARAM lParam)
         DISABLE_COMPILER_MSC_WARNING_END (4312)
 
         // Next - create the POPUP BUTTON
-        fPopupButton.SubclassWindow (::CreateWindowEx (0, _T("BUTTON"), _T (""), WS_CHILD | WS_VISIBLE | BS_BITMAP, 0, 0, 0, 0, GetHWND (), NULL, NULL, NULL));
-        fPopupButton.SendMessage (BM_SETIMAGE, static_cast<WPARAM> (IMAGE_BITMAP), reinterpret_cast<LPARAM> (static_cast<HBITMAP> (fPopupButton.fDropDownArrow)));
+        fPopupButton.SubclassWindow (
+            ::CreateWindowEx (0, _T("BUTTON"), _T (""), WS_CHILD | WS_VISIBLE | BS_BITMAP, 0, 0, 0, 0, GetHWND (), NULL, NULL, NULL));
+        fPopupButton.SendMessage (BM_SETIMAGE, static_cast<WPARAM> (IMAGE_BITMAP),
+                                  reinterpret_cast<LPARAM> (static_cast<HBITMAP> (fPopupButton.fDropDownArrow)));
 
         // Next - create the POPUP Listbox (hidden initially)
         {
@@ -837,15 +815,15 @@ LRESULT LedComboBoxWidget::OnCreate_Msg (WPARAM wParam, LPARAM lParam)
             // Try creating a UNICODE popup window - even if we aren't building a UNICODE app. This is OK - since this window isn't
             // handled directly through MFC (which doesn't support UNICODE windows in non-UNICODE apps, but just through
             // Led's code directly - which does support this - LGP 2003-12-29
-            HWND uniWnd = ::CreateWindowExW (WS_EX_TOPMOST, L"ListBox", NULL, WS_POPUP | LBS_NOTIFY | WS_BORDER | WS_TABSTOP,
-                                             0, 0, 0, 0,
+            HWND uniWnd = ::CreateWindowExW (WS_EX_TOPMOST, L"ListBox", NULL, WS_POPUP | LBS_NOTIFY | WS_BORDER | WS_TABSTOP, 0, 0, 0, 0,
                                              GetHWND (), NULL, NULL, NULL);
             if (uniWnd != NULL) {
                 fComboListBoxPopup.SubclassWindow (uniWnd);
                 goto alreadyCreated;
             }
 #endif
-            fComboListBoxPopup.SubclassWindow (::CreateWindowEx (WS_EX_TOPMOST, _T("ListBox"), NULL, WS_POPUP | LBS_NOTIFY | WS_BORDER | WS_TABSTOP, 0, 0, 0, 0, GetHWND (), NULL, NULL, NULL));
+            fComboListBoxPopup.SubclassWindow (::CreateWindowEx (WS_EX_TOPMOST, _T("ListBox"), NULL, WS_POPUP | LBS_NOTIFY | WS_BORDER | WS_TABSTOP,
+                                                                 0, 0, 0, 0, GetHWND (), NULL, NULL, NULL));
 #if !qTargetPlatformSDKUseswchar_t
         alreadyCreated:;
 #endif
@@ -867,15 +845,10 @@ LRESULT LedComboBoxWidget::OnSize_Msg (WPARAM wParam, LPARAM lParam)
     }
 
     // Shrink it slightly to make room for the popup control
-    Verify (::MoveWindow (fTextWidget.GetHWND (),
-                          clientRect.left, clientRect.top,
-                          clientRect.GetWidth () - kPopupIconWidth, clientRect.GetHeight (),
-                          true));
+    Verify (::MoveWindow (fTextWidget.GetHWND (), clientRect.left, clientRect.top, clientRect.GetWidth () - kPopupIconWidth,
+                          clientRect.GetHeight (), true));
     // Next - the POPUP BUTTON
-    Verify (::MoveWindow (fPopupButton.GetHWND (),
-                          clientRect.right - kPopupIconWidth, clientRect.top,
-                          kPopupIconWidth, clientRect.GetHeight (),
-                          true));
+    Verify (::MoveWindow (fPopupButton.GetHWND (), clientRect.right - kPopupIconWidth, clientRect.top, kPopupIconWidth, clientRect.GetHeight (), true));
     return inherited::WndProc (WM_SIZE, wParam, lParam);
 }
 #endif
@@ -920,8 +893,7 @@ void LedComboBoxWidget::ShowPopup ()
         (void)::memset (&wp, 0, sizeof (wp));
         wp.length = sizeof (wp);
         Verify (::GetWindowPlacement (GetHWND (), &wp));
-        Verify (::MoveWindow (fComboListBoxPopup.GetHWND (),
-                              wp.rcNormalPosition.left + zero.x, wp.rcNormalPosition.bottom + zero.y,
+        Verify (::MoveWindow (fComboListBoxPopup.GetHWND (), wp.rcNormalPosition.left + zero.x, wp.rcNormalPosition.bottom + zero.y,
                               clientRect.GetWidth (), prefHeight, false));
     }
 
@@ -946,10 +918,7 @@ void LedComboBoxWidget::HidePopup ()
     fComboListBoxPopup.SetWindowVisible (false);
 }
 
-bool LedComboBoxWidget::PopupShown () const
-{
-    return fComboListBoxPopup.IsWindowShown ();
-}
+bool LedComboBoxWidget::PopupShown () const { return fComboListBoxPopup.IsWindowShown (); }
 
 void LedComboBoxWidget::TogglePopupShown ()
 {
@@ -1006,10 +975,7 @@ Led_StdDialogHelper::~Led_StdDialogHelper ()
 #endif
 }
 
-bool Led_StdDialogHelper::GetWasOK () const
-{
-    return fWasOK;
-}
+bool Led_StdDialogHelper::GetWasOK () const { return fWasOK; }
 
 bool Led_StdDialogHelper::DoModal ()
 {
@@ -1036,7 +1002,8 @@ bool Led_StdDialogHelper::DoModal ()
 #if qNO_INT_PTR_DefinedCompilerBug
     using INT_PTR = int;
 #endif
-    [[maybe_unused]] INT_PTR x = ::DialogBoxParam (fHINSTANCE, fResID, fParentWnd, reinterpret_cast<DLGPROC> (StaticDialogProc), reinterpret_cast<LPARAM> (this));
+    [[maybe_unused]] INT_PTR x =
+        ::DialogBoxParam (fHINSTANCE, fResID, fParentWnd, reinterpret_cast<DLGPROC> (StaticDialogProc), reinterpret_cast<LPARAM> (this));
     if (oldFocusWnd != NULL) {
         ::SetFocus (oldFocusWnd);
     }
@@ -1075,9 +1042,7 @@ void Led_StdDialogHelper::ReplaceAllTokens (SDKString* m, const SDKString& token
     *m = String::FromSDKString (*m).ReplaceAll (String::FromSDKString (token), String::FromSDKString (with)).AsSDKString ();
 }
 
-void Led_StdDialogHelper::PreDoModalHook ()
-{
-}
+void Led_StdDialogHelper::PreDoModalHook () {}
 
 #if qStroika_FeatureSupported_XWindows && qUseGTKForLedStandardDialogs
 GtkWidget* Led_StdDialogHelper::MakeWindow ()
@@ -1327,10 +1292,7 @@ void Led_StdDialogHelper::SetFocusedItem (DialogItemID itemID)
 #endif
 
 #if qPlatform_MacOS
-DialogPtr Led_StdDialogHelper::GetDialogPtr () const
-{
-    return fDialogPtr;
-}
+DialogPtr Led_StdDialogHelper::GetDialogPtr () const { return fDialogPtr; }
 
 void Led_StdDialogHelper::SetDialogPtr (DialogPtr d)
 {
@@ -1351,15 +1313,9 @@ void Led_StdDialogHelper::SetHWND (HWND hWnd)
     }
 }
 
-HWND Led_StdDialogHelper::GetHWND () const
-{
-    return fHWnd;
-}
+HWND Led_StdDialogHelper::GetHWND () const { return fHWnd; }
 #elif qStroika_FeatureSupported_XWindows && qUseGTKForLedStandardDialogs
-GtkWidget* Led_StdDialogHelper::GetWindow () const
-{
-    return fWindow;
-}
+GtkWidget* Led_StdDialogHelper::GetWindow () const { return fWindow; }
 
 void Led_StdDialogHelper::SetWindow (GtkWidget* w)
 {
@@ -1373,23 +1329,11 @@ void Led_StdDialogHelper::SetWindow (GtkWidget* w)
         }
     }
 }
-GtkWidget* Led_StdDialogHelper::GetOKButton () const
-{
-    return fOKButton;
-}
-void Led_StdDialogHelper::SetOKButton (GtkWidget* okButton)
-{
-    fOKButton = okButton;
-}
+GtkWidget* Led_StdDialogHelper::GetOKButton () const { return fOKButton; }
+void       Led_StdDialogHelper::SetOKButton (GtkWidget* okButton) { fOKButton = okButton; }
 
-GtkWidget* Led_StdDialogHelper::GetCancelButton () const
-{
-    return fWindow;
-}
-void Led_StdDialogHelper::SetCancelButton (GtkWidget* cancelButton)
-{
-    fCancelButton = cancelButton;
-}
+GtkWidget* Led_StdDialogHelper::GetCancelButton () const { return fWindow; }
+void       Led_StdDialogHelper::SetCancelButton (GtkWidget* cancelButton) { fCancelButton = cancelButton; }
 #endif
 
 void Led_StdDialogHelper::OnOK ()
@@ -1491,10 +1435,7 @@ Led_StdDialogHelper_AboutBox::Led_StdDialogHelper_AboutBox (GtkWindow* parentWin
 #endif
 
 #if qPlatform_MacOS
-void Led_StdDialogHelper_AboutBox::PreDoModalHook ()
-{
-    inherited::PreDoModalHook ();
-}
+void Led_StdDialogHelper_AboutBox::PreDoModalHook () { inherited::PreDoModalHook (); }
 
 void Led_StdDialogHelper_AboutBox::SimpleLayoutHelper (short pictHeight, short pictWidth, Led_Rect infoField, Led_Rect webPageField, const SDKString versionStr)
 {
@@ -1562,10 +1503,7 @@ void Led_StdDialogHelper_AboutBox::SimpleLayoutHelper (short pictHeight, short p
 #endif
 
 #if qStroika_FeatureSupported_XWindows && qUseGTKForLedStandardDialogs
-GtkWidget* Led_StdDialogHelper_AboutBox::MakeWindow ()
-{
-    return gtk_window_new (GTK_WINDOW_TOPLEVEL);
-}
+GtkWidget* Led_StdDialogHelper_AboutBox::MakeWindow () { return gtk_window_new (GTK_WINDOW_TOPLEVEL); }
 #endif
 
 #if qPlatform_MacOS
@@ -1619,15 +1557,9 @@ BOOL Led_StdDialogHelper_AboutBox::DialogProc (UINT message, WPARAM wParam, LPAR
 }
 #endif
 
-void Led_StdDialogHelper_AboutBox::OnClickInInfoField ()
-{
-    OnOK ();
-}
+void Led_StdDialogHelper_AboutBox::OnClickInInfoField () { OnOK (); }
 
-void Led_StdDialogHelper_AboutBox::OnClickInLedWebPageField ()
-{
-    OnOK ();
-}
+void Led_StdDialogHelper_AboutBox::OnClickInLedWebPageField () { OnOK (); }
 
 #if qSupportStdFindDlg
 /*
@@ -2121,10 +2053,7 @@ StdFontPickBox::StdFontPickBox (GtkWindow* modalParentWindow, const FontSpecific
 {
 }
 
-GtkWidget* StdFontPickBox::MakeWindow ()
-{
-    return gtk_font_selection_dialog_new ("Select font");
-}
+GtkWidget* StdFontPickBox::MakeWindow () { return gtk_font_selection_dialog_new ("Select font"); }
 
 void StdFontPickBox::PreDoModalHook ()
 {
@@ -2224,10 +2153,7 @@ UINT_PTR CALLBACK StdColorPickBox::ColorPickerINITPROC (HWND hWnd, UINT message,
 #endif
 
 #if qUseGTKForLedStandardDialogs && qStroika_FeatureSupported_XWindows
-GtkWidget* StdColorPickBox::MakeWindow ()
-{
-    return gtk_color_selection_dialog_new ("Select color");
-}
+GtkWidget* StdColorPickBox::MakeWindow () { return gtk_color_selection_dialog_new ("Select color"); }
 
 void StdColorPickBox::PreDoModalHook ()
 {
@@ -2248,8 +2174,7 @@ void StdColorPickBox::OnOK ()
     gdouble colors[4];
     gtk_color_selection_get_color (GTK_COLOR_SELECTION (GTK_COLOR_SELECTION_DIALOG (GetWindow ())->colorsel), colors);
     using CV = Color::ColorValue;
-    fColor   = Color (static_cast<CV> (colors[0] * Color::kColorValueMax),
-                      static_cast<CV> (colors[1] * Color::kColorValueMax),
+    fColor   = Color (static_cast<CV> (colors[0] * Color::kColorValueMax), static_cast<CV> (colors[1] * Color::kColorValueMax),
                       static_cast<CV> (colors[2] * Color::kColorValueMax));
 }
 #endif
@@ -2269,10 +2194,7 @@ StdFilePickBox::StdFilePickBox (GtkWindow* modalParentWindow, const SDKString& t
 {
 }
 
-GtkWidget* StdFilePickBox::MakeWindow ()
-{
-    return gtk_file_selection_new (fTitle.c_str ());
-}
+GtkWidget* StdFilePickBox::MakeWindow () { return gtk_file_selection_new (fTitle.c_str ()); }
 
 void StdFilePickBox::PreDoModalHook ()
 {
@@ -2303,10 +2225,7 @@ void StdFilePickBox::OnOK ()
     }
 }
 
-SDKString StdFilePickBox::GetFileName () const
-{
-    return fFileName;
-}
+SDKString StdFilePickBox::GetFileName () const { return fFileName; }
 #endif
 
 #if qSupportUpdateWin32FileAssocDlg
@@ -2316,7 +2235,8 @@ SDKString StdFilePickBox::GetFileName () const
  ********************************************************************************
  */
 
-Led_StdDialogHelper_UpdateWin32FileAssocsDialog::Led_StdDialogHelper_UpdateWin32FileAssocsDialog (HINSTANCE hInstance, HWND parentWnd, const Characters::SDKChar* resID)
+Led_StdDialogHelper_UpdateWin32FileAssocsDialog::Led_StdDialogHelper_UpdateWin32FileAssocsDialog (HINSTANCE hInstance, HWND parentWnd,
+                                                                                                  const Characters::SDKChar* resID)
     : inherited (hInstance, resID, parentWnd)
     , fAppName ()
     , fTypeList ()
@@ -2335,7 +2255,8 @@ void Led_StdDialogHelper_UpdateWin32FileAssocsDialog::PreDoModalHook ()
     ReplaceAllTokens (&m, Led_SDK_TCHAROF ("%1"), fTypeList);
     (void)::SetDlgItemText (GetHWND (), kLedStdDlg_UpdateWin32FileAssocsDialog_Msg, m.c_str ());
 
-    (void)::GetDlgItemText (GetHWND (), kLedStdDlg_UpdateWin32FileAssocsDialog_KeepCheckingCheckboxMsg, messageText, static_cast<int> (Memory::NEltsOf (messageText)));
+    (void)::GetDlgItemText (GetHWND (), kLedStdDlg_UpdateWin32FileAssocsDialog_KeepCheckingCheckboxMsg, messageText,
+                            static_cast<int> (Memory::NEltsOf (messageText)));
     m = messageText;
     ReplaceAllTokens (&m, Led_SDK_TCHAROF ("%0"), fAppName);
     ReplaceAllTokens (&m, Led_SDK_TCHAROF ("%1"), fTypeList);
@@ -2381,7 +2302,8 @@ Led_StdDialogHelper_ParagraphIndentsDialog::Led_StdDialogHelper_ParagraphIndents
 {
 }
 #elif qPlatform_Windows
-Led_StdDialogHelper_ParagraphIndentsDialog::Led_StdDialogHelper_ParagraphIndentsDialog (HINSTANCE hInstance, HWND parentWnd, const Characters::SDKChar* resID)
+Led_StdDialogHelper_ParagraphIndentsDialog::Led_StdDialogHelper_ParagraphIndentsDialog (HINSTANCE hInstance, HWND parentWnd,
+                                                                                        const Characters::SDKChar* resID)
     : inherited (hInstance, resID, parentWnd)
     , fLeftMargin_Valid (false)
     , fLeftMargin_Orig (TWIPS{0})
@@ -2396,7 +2318,8 @@ Led_StdDialogHelper_ParagraphIndentsDialog::Led_StdDialogHelper_ParagraphIndents
 }
 #endif
 
-void Led_StdDialogHelper_ParagraphIndentsDialog::InitValues (TWIPS leftMargin, bool leftMarginValid, TWIPS rightMargin, bool rightMarginValid, TWIPS firstIndent, bool firstIndentValid)
+void Led_StdDialogHelper_ParagraphIndentsDialog::InitValues (TWIPS leftMargin, bool leftMarginValid, TWIPS rightMargin,
+                                                             bool rightMarginValid, TWIPS firstIndent, bool firstIndentValid)
 {
     fLeftMargin_Valid   = leftMarginValid;
     fLeftMargin_Orig    = leftMargin;
@@ -2473,7 +2396,8 @@ Led_StdDialogHelper_ParagraphSpacingDialog::Led_StdDialogHelper_ParagraphSpacing
 {
 }
 #elif qPlatform_Windows
-Led_StdDialogHelper_ParagraphSpacingDialog::Led_StdDialogHelper_ParagraphSpacingDialog (HINSTANCE hInstance, HWND parentWnd, const Characters::SDKChar* resID)
+Led_StdDialogHelper_ParagraphSpacingDialog::Led_StdDialogHelper_ParagraphSpacingDialog (HINSTANCE hInstance, HWND parentWnd,
+                                                                                        const Characters::SDKChar* resID)
     : inherited (hInstance, resID, parentWnd)
     , fSpaceBefore_Valid (false)
     , fSpaceBefore_Orig (TWIPS{0})
@@ -2488,7 +2412,8 @@ Led_StdDialogHelper_ParagraphSpacingDialog::Led_StdDialogHelper_ParagraphSpacing
 }
 #endif
 
-void Led_StdDialogHelper_ParagraphSpacingDialog::InitValues (TWIPS spaceBefore, bool spaceBeforeValid, TWIPS spaceAfter, bool spaceAfterValid, LineSpacing lineSpacing, bool lineSpacingValid)
+void Led_StdDialogHelper_ParagraphSpacingDialog::InitValues (TWIPS spaceBefore, bool spaceBeforeValid, TWIPS spaceAfter,
+                                                             bool spaceAfterValid, LineSpacing lineSpacing, bool lineSpacingValid)
 {
     fSpaceBefore_Valid  = spaceBeforeValid;
     fSpaceBefore_Orig   = spaceBefore;
@@ -2541,7 +2466,8 @@ void Led_StdDialogHelper_ParagraphSpacingDialog::PreDoModalHook ()
 #elif qPlatform_Windows
         Verify (::SendMessage (popup, CB_SETCURSEL, fLineSpacing_Orig.fRule, 0) != CB_ERR);
 #endif
-        if (fLineSpacing_Orig.fRule == LineSpacing::eAtLeastTWIPSSpacing or fLineSpacing_Orig.fRule == LineSpacing::eExactTWIPSSpacing or fLineSpacing_Orig.fRule == LineSpacing::eExactLinesSpacing) {
+        if (fLineSpacing_Orig.fRule == LineSpacing::eAtLeastTWIPSSpacing or fLineSpacing_Orig.fRule == LineSpacing::eExactTWIPSSpacing or
+            fLineSpacing_Orig.fRule == LineSpacing::eExactLinesSpacing) {
             SetItemText (kParagraphSpacing_Dialog_LineSpaceArgFieldID, FormatTWIPSAsString (TWIPS (fLineSpacing_Orig.fArg)));
         }
     }
@@ -2674,7 +2600,8 @@ Led_StdDialogHelper_UnknownEmbeddingInfoDialog::Led_StdDialogHelper_UnknownEmbed
 {
 }
 #elif qPlatform_Windows
-Led_StdDialogHelper_UnknownEmbeddingInfoDialog::Led_StdDialogHelper_UnknownEmbeddingInfoDialog (HINSTANCE hInstance, HWND parentWnd, const Characters::SDKChar* resID)
+Led_StdDialogHelper_UnknownEmbeddingInfoDialog::Led_StdDialogHelper_UnknownEmbeddingInfoDialog (HINSTANCE hInstance, HWND parentWnd,
+                                                                                                const Characters::SDKChar* resID)
     : inherited (hInstance, resID, parentWnd)
     , fEmbeddingTypeName ()
 {
@@ -2737,7 +2664,8 @@ Led_StdDialogHelper_URLXEmbeddingInfoDialog::Led_StdDialogHelper_URLXEmbeddingIn
 {
 }
 #elif qPlatform_Windows
-Led_StdDialogHelper_URLXEmbeddingInfoDialog::Led_StdDialogHelper_URLXEmbeddingInfoDialog (HINSTANCE hInstance, HWND parentWnd, const Characters::SDKChar* resID)
+Led_StdDialogHelper_URLXEmbeddingInfoDialog::Led_StdDialogHelper_URLXEmbeddingInfoDialog (HINSTANCE hInstance, HWND parentWnd,
+                                                                                          const Characters::SDKChar* resID)
     : inherited (hInstance, resID, parentWnd)
     , fEmbeddingTypeName ()
     , fTitleText ()
@@ -2860,7 +2788,8 @@ Led_StdDialogHelper_AddURLXEmbeddingInfoDialog::Led_StdDialogHelper_AddURLXEmbed
 {
 }
 #elif qPlatform_Windows
-Led_StdDialogHelper_AddURLXEmbeddingInfoDialog::Led_StdDialogHelper_AddURLXEmbeddingInfoDialog (HINSTANCE hInstance, HWND parentWnd, const Characters::SDKChar* resID)
+Led_StdDialogHelper_AddURLXEmbeddingInfoDialog::Led_StdDialogHelper_AddURLXEmbeddingInfoDialog (HINSTANCE hInstance, HWND parentWnd,
+                                                                                                const Characters::SDKChar* resID)
     : inherited (hInstance, resID, parentWnd)
     , fTitleText ()
     , fURLText ()
@@ -3007,11 +2936,7 @@ void Led_StdDialogHelper_AddNewTableDialog::OnOK ()
     int r = 0;
     int c = 0;
     if (ParseStringToINT (GetItemText (kLedStdDlg_AddNewTableBox_RowCount), &r) and
-        ParseStringToINT (GetItemText (kLedStdDlg_AddNewTableBox_ColCount), &c) and
-        r > 0 and
-        c > 0 and
-        r <= 100 and
-        c <= 25) {
+        ParseStringToINT (GetItemText (kLedStdDlg_AddNewTableBox_ColCount), &c) and r > 0 and c > 0 and r <= 100 and c <= 25) {
         fRows    = r;
         fColumns = c;
         inherited::OnOK ();
@@ -3037,7 +2962,8 @@ Led_StdDialogHelper_EditTablePropertiesDialog::Led_StdDialogHelper_EditTableProp
 {
 }
 #elif qPlatform_Windows
-Led_StdDialogHelper_EditTablePropertiesDialog::Led_StdDialogHelper_EditTablePropertiesDialog (HINSTANCE hInstance, HWND parentWnd, const Characters::SDKChar* resID)
+Led_StdDialogHelper_EditTablePropertiesDialog::Led_StdDialogHelper_EditTablePropertiesDialog (HINSTANCE hInstance, HWND parentWnd,
+                                                                                              const Characters::SDKChar* resID)
     : inherited (hInstance, resID, parentWnd)
     , fInfo ()
     , fBorderColorPopup (false)
@@ -3143,36 +3069,26 @@ void Led_StdDialogHelper_EditTablePropertiesDialog::OnOK ()
     Info result    = fInfo;
     bool dataValid = true;
 
-    dataValid = dataValid and
-                ParseStringToTWIPS (GetItemText (kLedStdDlg_EditTablePropertiesBox_BorderWidth), &result.fTableBorderWidth) and
-                result.fTableBorderWidth >= 0 and
-                result.fTableBorderWidth <= 1440;
+    dataValid = dataValid and ParseStringToTWIPS (GetItemText (kLedStdDlg_EditTablePropertiesBox_BorderWidth), &result.fTableBorderWidth) and
+                result.fTableBorderWidth >= 0 and result.fTableBorderWidth <= 1440;
 
-    dataValid = dataValid and
-                ParseStringToTWIPS (GetItemText (kLedStdDlg_EditTablePropertiesBox_CellMarginTop), &result.fDefaultCellMargins.top) and
-                result.fDefaultCellMargins.top >= 0 and
-                result.fDefaultCellMargins.top <= 2 * 1440;
+    dataValid = dataValid and ParseStringToTWIPS (GetItemText (kLedStdDlg_EditTablePropertiesBox_CellMarginTop), &result.fDefaultCellMargins.top) and
+                result.fDefaultCellMargins.top >= 0 and result.fDefaultCellMargins.top <= 2 * 1440;
     dataValid = dataValid and
                 ParseStringToTWIPS (GetItemText (kLedStdDlg_EditTablePropertiesBox_CellMarginLeft), &result.fDefaultCellMargins.left) and
-                result.fDefaultCellMargins.left >= 0 and
-                result.fDefaultCellMargins.left <= 2 * 1440;
+                result.fDefaultCellMargins.left >= 0 and result.fDefaultCellMargins.left <= 2 * 1440;
     dataValid = dataValid and
                 ParseStringToTWIPS (GetItemText (kLedStdDlg_EditTablePropertiesBox_CellMarginBottom), &result.fDefaultCellMargins.bottom) and
-                result.fDefaultCellMargins.bottom >= 0 and
-                result.fDefaultCellMargins.bottom <= 2 * 1440;
+                result.fDefaultCellMargins.bottom >= 0 and result.fDefaultCellMargins.bottom <= 2 * 1440;
     dataValid = dataValid and
                 ParseStringToTWIPS (GetItemText (kLedStdDlg_EditTablePropertiesBox_CellMarginRight), &result.fDefaultCellMargins.right) and
-                result.fDefaultCellMargins.right >= 0 and
-                result.fDefaultCellMargins.right <= 2 * 1440;
+                result.fDefaultCellMargins.right >= 0 and result.fDefaultCellMargins.right <= 2 * 1440;
 
-    dataValid = dataValid and
-                ParseStringToTWIPS (GetItemText (kLedStdDlg_EditTablePropertiesBox_DefaultCellSpacing), &result.fCellSpacing) and
-                result.fCellSpacing >= 0 and
-                result.fCellSpacing <= 2 * 1440;
+    dataValid = dataValid and ParseStringToTWIPS (GetItemText (kLedStdDlg_EditTablePropertiesBox_DefaultCellSpacing), &result.fCellSpacing) and
+                result.fCellSpacing >= 0 and result.fCellSpacing <= 2 * 1440;
 
     result.fCellWidth_Common = ParseStringToTWIPS (GetItemText (kLedStdDlg_EditTablePropertiesBox_ColumnWidth), &result.fCellWidth) and
-                               result.fCellWidth >= 50 and
-                               result.fCellWidth <= 8 * 1440;
+                               result.fCellWidth >= 50 and result.fCellWidth <= 8 * 1440;
 
     result.fCellBackgroundColor_Common = fCellBackgroundColorPopup.GetSelectedColor (&result.fCellBackgroundColor);
     (void)fBorderColorPopup.GetSelectedColor (&result.fTableBorderColor);
@@ -3201,7 +3117,8 @@ Led_StdDialogHelper_SpellCheckDialog::Led_StdDialogHelper_SpellCheckDialog (Spel
 {
 }
 #elif qPlatform_Windows
-Led_StdDialogHelper_SpellCheckDialog::Led_StdDialogHelper_SpellCheckDialog (SpellCheckDialogCallback& callback, HINSTANCE hInstance, HWND parentWnd, const Characters::SDKChar* resID)
+Led_StdDialogHelper_SpellCheckDialog::Led_StdDialogHelper_SpellCheckDialog (SpellCheckDialogCallback& callback, HINSTANCE hInstance,
+                                                                            HWND parentWnd, const Characters::SDKChar* resID)
     : inherited (hInstance, resID, parentWnd)
     , fCallback (callback)
     , fCurrentMisspellInfo (NULL)
@@ -3222,10 +3139,7 @@ Led_StdDialogHelper_SpellCheckDialog::Led_StdDialogHelper_SpellCheckDialog (Spel
 }
 #endif
 
-Led_StdDialogHelper_SpellCheckDialog::~Led_StdDialogHelper_SpellCheckDialog ()
-{
-    delete fCurrentMisspellInfo;
-}
+Led_StdDialogHelper_SpellCheckDialog::~Led_StdDialogHelper_SpellCheckDialog () { delete fCurrentMisspellInfo; }
 
 #if qPlatform_MacOS
 bool Led_StdDialogHelper_SpellCheckDialog::HandleCommandClick (int itemNum)
@@ -3466,15 +3380,9 @@ void Led_StdDialogHelper_SpellCheckDialog::OnLookupOnWebButton ()
     fCallback.LookupOnWeb (undefinedWordText);
 }
 
-void Led_StdDialogHelper_SpellCheckDialog::OnOptionsDialogButton ()
-{
-    fCallback.OptionsDialog ();
-}
+void Led_StdDialogHelper_SpellCheckDialog::OnOptionsDialogButton () { fCallback.OptionsDialog (); }
 
-void Led_StdDialogHelper_SpellCheckDialog::OnCloseButton ()
-{
-    OnCancel ();
-}
+void Led_StdDialogHelper_SpellCheckDialog::OnCloseButton () { OnCancel (); }
 
 void Led_StdDialogHelper_SpellCheckDialog::OnSuggestionListChangeSelection ()
 {
@@ -3503,10 +3411,7 @@ void Led_StdDialogHelper_SpellCheckDialog::OnSuggestionListChangeSelection ()
     }
 }
 
-void Led_StdDialogHelper_SpellCheckDialog::OnSuggestionListDoubleClick ()
-{
-    OnChangeButton ();
-}
+void Led_StdDialogHelper_SpellCheckDialog::OnSuggestionListDoubleClick () { OnChangeButton (); }
 
 void Led_StdDialogHelper_SpellCheckDialog::DoFindNextCall ()
 {
@@ -3534,9 +3439,7 @@ void Led_StdDialogHelper_SpellCheckDialog::DoFindNextCall ()
             changeText = fCurrentMisspellInfo->fSuggestions[0];
 #if qPlatform_Windows
             for (auto i = fCurrentMisspellInfo->fSuggestions.begin (); i != fCurrentMisspellInfo->fSuggestions.end (); ++i) {
-                ::SendMessage (GetDlgItem (GetHWND (), kLedStdDlg_SpellCheckBox_SuggestedList),
-                               LB_ADDSTRING,
-                               0,
+                ::SendMessage (GetDlgItem (GetHWND (), kLedStdDlg_SpellCheckBox_SuggestedList), LB_ADDSTRING, 0,
                                reinterpret_cast<LPARAM> (Led_tString2SDKString (*i).c_str ()));
             }
 #endif

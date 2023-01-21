@@ -93,7 +93,8 @@ namespace Stroika::Foundation::Execution {
         /**
          *  Used internally for assertions that the synchronized object is used safely. If you mean to use differently, specialize
          */
-        static constexpr bool kIsRecursiveReadMutex = is_same_v<MUTEX, recursive_mutex> or is_same_v<MUTEX, recursive_timed_mutex> or is_same_v<MUTEX, shared_timed_mutex> or is_same_v<MUTEX, shared_mutex>;
+        static constexpr bool kIsRecursiveReadMutex = is_same_v<MUTEX, recursive_mutex> or is_same_v<MUTEX, recursive_timed_mutex> or
+                                                      is_same_v<MUTEX, shared_timed_mutex> or is_same_v<MUTEX, shared_mutex>;
 
         /**
          *  Used internally for assertions that the synchronized object is used safely. If you mean to use differently, specialize
@@ -107,12 +108,12 @@ namespace Stroika::Foundation::Execution {
 
         /**
          */
-        static constexpr bool kSupportsTimedLocks = is_same_v<MUTEX, shared_timed_mutex> or is_same_v<MUTEX, recursive_timed_mutex> or is_same_v<MUTEX, timed_mutex>;
+        static constexpr bool kSupportsTimedLocks =
+            is_same_v<MUTEX, shared_timed_mutex> or is_same_v<MUTEX, recursive_timed_mutex> or is_same_v<MUTEX, timed_mutex>;
 
         /**
          */
-        static constexpr bool kSupportSharedLocks =
-            is_same_v<MUTEX, shared_timed_mutex> or is_same_v<MUTEX, shared_mutex>;
+        static constexpr bool kSupportSharedLocks = is_same_v<MUTEX, shared_timed_mutex> or is_same_v<MUTEX, shared_mutex>;
 
         /**
          */
@@ -237,8 +238,7 @@ namespace Stroika::Foundation::Execution {
      *          (but these are ONLY defined if TRAITS::kIsRecursiveReadMutex)
      */
     template <typename T, typename TRAITS = Synchronized_Traits<>>
-    class Synchronized
-        : public conditional_t<TRAITS::kDbgTraceLockUnlockIfNameSet, Private_::DbgTraceNameObj_, Configuration::Empty> {
+    class Synchronized : public conditional_t<TRAITS::kDbgTraceLockUnlockIfNameSet, Private_::DbgTraceNameObj_, Configuration::Empty> {
     public:
         using element_type = T;
 
@@ -526,9 +526,13 @@ namespace Stroika::Foundation::Execution {
          *      \endcode
          */
         template <typename TEST_TYPE = TRAITS, enable_if_t<TEST_TYPE::kSupportSharedLocks>* = nullptr>
-        nonvirtual bool UpgradeLockNonAtomicallyQuietly (ReadableReference* lockBeingUpgraded, const function<void (WritableReference&&)>& doWithWriteLock, const chrono::duration<Time::DurationSecondsType>& timeout = chrono::duration<Time::DurationSecondsType>{Time::kInfinite});
+        nonvirtual bool UpgradeLockNonAtomicallyQuietly (
+            ReadableReference* lockBeingUpgraded, const function<void (WritableReference&&)>& doWithWriteLock,
+            const chrono::duration<Time::DurationSecondsType>& timeout = chrono::duration<Time::DurationSecondsType>{Time::kInfinite});
         template <typename TEST_TYPE = TRAITS, enable_if_t<TEST_TYPE::kSupportSharedLocks>* = nullptr>
-        nonvirtual bool UpgradeLockNonAtomicallyQuietly (ReadableReference* lockBeingUpgraded, const function<bool (WritableReference&&, bool interveningWriteLock)>& doWithWriteLock, const chrono::duration<Time::DurationSecondsType>& timeout = chrono::duration<Time::DurationSecondsType>{Time::kInfinite});
+        nonvirtual bool UpgradeLockNonAtomicallyQuietly (
+            ReadableReference* lockBeingUpgraded, const function<bool (WritableReference&&, bool interveningWriteLock)>& doWithWriteLock,
+            const chrono::duration<Time::DurationSecondsType>& timeout = chrono::duration<Time::DurationSecondsType>{Time::kInfinite});
 
     public:
         /**
@@ -557,9 +561,13 @@ namespace Stroika::Foundation::Execution {
          *      \endcode
          */
         template <typename TEST_TYPE = TRAITS, enable_if_t<TEST_TYPE::kSupportSharedLocks>* = nullptr>
-        nonvirtual void UpgradeLockNonAtomically (ReadableReference* lockBeingUpgraded, const function<void (WritableReference&&)>& doWithWriteLock, const chrono::duration<Time::DurationSecondsType>& timeout = chrono::duration<Time::DurationSecondsType>{Time::kInfinite});
+        nonvirtual void
+        UpgradeLockNonAtomically (ReadableReference* lockBeingUpgraded, const function<void (WritableReference&&)>& doWithWriteLock,
+                                  const chrono::duration<Time::DurationSecondsType>& timeout = chrono::duration<Time::DurationSecondsType>{Time::kInfinite});
         template <typename TEST_TYPE = TRAITS, enable_if_t<TEST_TYPE::kSupportSharedLocks>* = nullptr>
-        nonvirtual void UpgradeLockNonAtomically (ReadableReference* lockBeingUpgraded, const function<bool (WritableReference&&, bool interveningWriteLock)>& doWithWriteLock, const chrono::duration<Time::DurationSecondsType>& timeout = chrono::duration<Time::DurationSecondsType>{Time::kInfinite});
+        nonvirtual void UpgradeLockNonAtomically (
+            ReadableReference* lockBeingUpgraded, const function<bool (WritableReference&&, bool interveningWriteLock)>& doWithWriteLock,
+            const chrono::duration<Time::DurationSecondsType>& timeout = chrono::duration<Time::DurationSecondsType>{Time::kInfinite});
 
     private:
         nonvirtual void NoteLockStateChanged_ (const wchar_t* m) const noexcept;
@@ -764,7 +772,8 @@ namespace Stroika::Foundation::Execution {
      * onto the lock for extended periods ;-).
      */
     template <typename T>
-    using QuickSynchronized = conditional_t<kSpinLock_IsFasterThan_mutex, Synchronized<T, Synchronized_Traits<SpinLock>>, Synchronized<T, Synchronized_Traits<mutex>>>;
+    using QuickSynchronized =
+        conditional_t<kSpinLock_IsFasterThan_mutex, Synchronized<T, Synchronized_Traits<SpinLock>>, Synchronized<T, Synchronized_Traits<mutex>>>;
 
     /**
      */

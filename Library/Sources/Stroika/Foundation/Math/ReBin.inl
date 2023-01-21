@@ -62,7 +62,8 @@ namespace Stroika::Foundation::Math::ReBin {
         return Range<X_TYPE>{s, s + kDelta_, Traversal::Openness::eClosed, Traversal::Openness::eOpen};
     }
     template <typename X_TYPE, typename VALUE_TYPE>
-    auto BasicDataDescriptor<X_TYPE, VALUE_TYPE>::GetIntersectingBuckets (const Traversal::Range<XType>& xrange) const -> Containers::Set<BucketIndexType>
+    auto BasicDataDescriptor<X_TYPE, VALUE_TYPE>::GetIntersectingBuckets (const Traversal::Range<XType>& xrange) const
+        -> Containers::Set<BucketIndexType>
     {
         using Traversal::DiscreteRange;
         if (xrange.GetUpperBound () < fXStart_) {
@@ -81,8 +82,10 @@ namespace Stroika::Foundation::Math::ReBin {
         bucketLowerBound = (bucketLowerBound < 0) ? 0 : bucketLowerBound;
         bucketUpperBound = (bucketUpperBound < 0) ? 0 : bucketUpperBound;
 
-        BucketIndexType bucketLB = Math::PinInRange<BucketIndexType> (static_cast<BucketIndexType> (floor (bucketLowerBound)), 0, GetBucketCount () - 1);
-        BucketIndexType bucketUB = Math::PinInRange<BucketIndexType> (static_cast<BucketIndexType> (ceil (bucketUpperBound)), bucketLB, GetBucketCount () - 1);
+        BucketIndexType bucketLB =
+            Math::PinInRange<BucketIndexType> (static_cast<BucketIndexType> (floor (bucketLowerBound)), 0, GetBucketCount () - 1);
+        BucketIndexType bucketUB =
+            Math::PinInRange<BucketIndexType> (static_cast<BucketIndexType> (ceil (bucketUpperBound)), bucketLB, GetBucketCount () - 1);
 
         return Containers::Set<BucketIndexType> (DiscreteRange<BucketIndexType> (bucketLB, bucketUB).Elements ());
     }
@@ -165,9 +168,7 @@ namespace Stroika::Foundation::Math::ReBin {
      ********************************************************************************
      */
     template <typename SRC_DATA_DESCRIPTOR, typename TRG_DATA_DESCRIPTOR>
-    void ReBin (
-        const SRC_DATA_DESCRIPTOR& srcData,
-        TRG_DATA_DESCRIPTOR*       trgData)
+    void ReBin (const SRC_DATA_DESCRIPTOR& srcData, TRG_DATA_DESCRIPTOR* trgData)
     {
         RequireNotNull (trgData);
 
@@ -222,17 +223,16 @@ namespace Stroika::Foundation::Math::ReBin {
                     *  the degree of overlap.
                     */
                 for (const auto& targetBucket : trgData->GetIntersectingBuckets (curSrcBucketX)) {
-                    Range<typename SRC_DATA_DESCRIPTOR::XType> trgBucketIntersectRange = trgData->GetBucketRange (targetBucket).Intersection (curSrcBucketX);
-                    auto                                       trgBucketXWidth         = trgBucketIntersectRange.GetDistanceSpanned ();
+                    Range<typename SRC_DATA_DESCRIPTOR::XType> trgBucketIntersectRange =
+                        trgData->GetBucketRange (targetBucket).Intersection (curSrcBucketX);
+                    auto trgBucketXWidth = trgBucketIntersectRange.GetDistanceSpanned ();
                     trgData->AccumulateValue (targetBucket, thisSrcBucketValue * (trgBucketXWidth / curSrcBucketXWidth));
                 }
             }
         }
     }
     template <typename SRC_BUCKET_TYPE, typename TRG_BUCKET_TYPE, typename X_OFFSET_TYPE>
-    void ReBin (
-        const SRC_BUCKET_TYPE* srcStart, const SRC_BUCKET_TYPE* srcEnd,
-        TRG_BUCKET_TYPE* trgStart, TRG_BUCKET_TYPE* trgEnd)
+    void ReBin (const SRC_BUCKET_TYPE* srcStart, const SRC_BUCKET_TYPE* srcEnd, TRG_BUCKET_TYPE* trgStart, TRG_BUCKET_TYPE* trgEnd)
     {
         using SRC_DATA_DESCRIPTOR = BasicDataDescriptor<X_OFFSET_TYPE, SRC_BUCKET_TYPE>;
         using TRG_DATA_DESCRIPTOR = UpdatableDataDescriptor<X_OFFSET_TYPE, TRG_BUCKET_TYPE>;

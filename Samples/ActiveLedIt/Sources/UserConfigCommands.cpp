@@ -150,14 +150,8 @@ namespace {
                 return E_FAIL;
             }
         }
-        static void init (VARIANT* p)
-        {
-            p->vt = VT_EMPTY;
-        }
-        static void destroy (VARIANT* p)
-        {
-            ::VariantClear (p);
-        }
+        static void init (VARIANT* p) { p->vt = VT_EMPTY; }
+        static void destroy (VARIANT* p) { ::VariantClear (p); }
     };
 }
 
@@ -264,9 +258,7 @@ ActiveLedIt_CurrentEventArguments::ActiveLedIt_CurrentEventArguments ()
 {
 }
 
-ActiveLedIt_CurrentEventArguments::~ActiveLedIt_CurrentEventArguments ()
-{
-}
+ActiveLedIt_CurrentEventArguments::~ActiveLedIt_CurrentEventArguments () {}
 
 STDMETHODIMP ActiveLedIt_CurrentEventArguments::get_InternalCommandName (BSTR* pVal)
 {
@@ -352,14 +344,9 @@ STDMETHODIMP ActiveLedIt_CurrentEventArguments::put_Name (BSTR val)
     return S_OK;
 }
 
-HRESULT ActiveLedIt_CurrentEventArguments::FinalConstruct ()
-{
-    return S_OK;
-}
+HRESULT ActiveLedIt_CurrentEventArguments::FinalConstruct () { return S_OK; }
 
-void ActiveLedIt_CurrentEventArguments::FinalRelease ()
-{
-}
+void ActiveLedIt_CurrentEventArguments::FinalRelease () {}
 
 /*
  ********************************************************************************
@@ -371,9 +358,7 @@ AL_CommandListHelper::AL_CommandListHelper ()
 {
 }
 
-AL_CommandListHelper::~AL_CommandListHelper ()
-{
-}
+AL_CommandListHelper::~AL_CommandListHelper () {}
 
 STDMETHODIMP AL_CommandListHelper::GeneratePopupMenu (IDispatch* acceleratorTable, HMENU* val)
 {
@@ -507,13 +492,9 @@ void AL_CommandListHelper::AppendBuiltinCmds (const BuiltinCmdSpec* cmdSpecsStar
  *************************** AL_UserCommandListHelper ***************************
  ********************************************************************************
  */
-AL_UserCommandListHelper::AL_UserCommandListHelper ()
-{
-}
+AL_UserCommandListHelper::AL_UserCommandListHelper () {}
 
-AL_UserCommandListHelper::~AL_UserCommandListHelper ()
-{
-}
+AL_UserCommandListHelper::~AL_UserCommandListHelper () {}
 
 STDMETHODIMP AL_UserCommandListHelper::Insert (IDispatch* newElt, UINT afterElt)
 {
@@ -551,23 +532,13 @@ STDMETHODIMP AL_UserCommandListHelper::Clear ()
  ***************************** ActiveLedIt_UserCommand **************************
  ********************************************************************************
  */
-ActiveLedIt_UserCommand::ActiveLedIt_UserCommand ()
-{
-    fCommandNumber = UserCommandNameNumberRegistry::Get ().Enter (fInternalName);
-}
+ActiveLedIt_UserCommand::ActiveLedIt_UserCommand () { fCommandNumber = UserCommandNameNumberRegistry::Get ().Enter (fInternalName); }
 
-ActiveLedIt_UserCommand::~ActiveLedIt_UserCommand ()
-{
-}
+ActiveLedIt_UserCommand::~ActiveLedIt_UserCommand () {}
 
-HRESULT ActiveLedIt_UserCommand::FinalConstruct ()
-{
-    return S_OK;
-}
+HRESULT ActiveLedIt_UserCommand::FinalConstruct () { return S_OK; }
 
-void ActiveLedIt_UserCommand::FinalRelease ()
-{
-}
+void ActiveLedIt_UserCommand::FinalRelease () {}
 
 STDMETHODIMP ActiveLedIt_UserCommand::put_Name (BSTR val)
 {
@@ -606,14 +577,9 @@ ActiveLedIt_AcceleratorElement::ActiveLedIt_AcceleratorElement ()
 {
 }
 
-HRESULT ActiveLedIt_AcceleratorElement::FinalConstruct ()
-{
-    return S_OK;
-}
+HRESULT ActiveLedIt_AcceleratorElement::FinalConstruct () { return S_OK; }
 
-void ActiveLedIt_AcceleratorElement::FinalRelease ()
-{
-}
+void ActiveLedIt_AcceleratorElement::FinalRelease () {}
 
 STDMETHODIMP ActiveLedIt_AcceleratorElement::get_CommandInternalName (BSTR* pVal)
 {
@@ -697,18 +663,11 @@ ActiveLedIt_AcceleratorTable::ActiveLedIt_AcceleratorTable ()
 {
 }
 
-ActiveLedIt_AcceleratorTable::~ActiveLedIt_AcceleratorTable ()
-{
-}
+ActiveLedIt_AcceleratorTable::~ActiveLedIt_AcceleratorTable () {}
 
-HRESULT ActiveLedIt_AcceleratorTable::FinalConstruct ()
-{
-    return S_OK;
-}
+HRESULT ActiveLedIt_AcceleratorTable::FinalConstruct () { return S_OK; }
 
-void ActiveLedIt_AcceleratorTable::FinalRelease ()
-{
-}
+void ActiveLedIt_AcceleratorTable::FinalRelease () {}
 
 void ActiveLedIt_AcceleratorTable::AppendACCEL (const char* internalCmdName, AcceleratorModifierFlag modifierFlag, WORD key)
 {
@@ -896,71 +855,41 @@ STDMETHODIMP ActiveLedIt_AcceleratorTable::GenerateWin32AcceleratorTable (HACCEL
  ************************* ActiveLedIt_StaticCommandList ************************
  ********************************************************************************
  */
-ActiveLedIt_StaticCommandList::ActiveLedIt_StaticCommandList ()
-{
-}
+ActiveLedIt_StaticCommandList::ActiveLedIt_StaticCommandList () {}
 
-ActiveLedIt_StaticCommandList::~ActiveLedIt_StaticCommandList ()
-{
-}
+ActiveLedIt_StaticCommandList::~ActiveLedIt_StaticCommandList () {}
 
-void ActiveLedIt_StaticCommandList::Append (IDispatch* p)
-{
-    fOwnedItems.push_back (p);
-}
+void ActiveLedIt_StaticCommandList::Append (IDispatch* p) { fOwnedItems.push_back (p); }
 
-HRESULT ActiveLedIt_StaticCommandList::FinalConstruct ()
-{
-    return S_OK;
-}
+HRESULT ActiveLedIt_StaticCommandList::FinalConstruct () { return S_OK; }
 
-void ActiveLedIt_StaticCommandList::FinalRelease ()
-{
-}
+void ActiveLedIt_StaticCommandList::FinalRelease () {}
 
 /*
  ********************************************************************************
  *************************** ActiveLedIt_UserCommandList ************************
  ********************************************************************************
  */
-ActiveLedIt_UserCommandList::ActiveLedIt_UserCommandList ()
-{
-}
+ActiveLedIt_UserCommandList::ActiveLedIt_UserCommandList () {}
 
-ActiveLedIt_UserCommandList::~ActiveLedIt_UserCommandList ()
-{
-}
+ActiveLedIt_UserCommandList::~ActiveLedIt_UserCommandList () {}
 
-HRESULT ActiveLedIt_UserCommandList::FinalConstruct ()
-{
-    return S_OK;
-}
+HRESULT ActiveLedIt_UserCommandList::FinalConstruct () { return S_OK; }
 
-void ActiveLedIt_UserCommandList::FinalRelease ()
-{
-}
+void ActiveLedIt_UserCommandList::FinalRelease () {}
 
 /*
  ********************************************************************************
  *************************** ActiveLedIt_MenuItemPopup **************************
  ********************************************************************************
  */
-ActiveLedIt_MenuItemPopup::ActiveLedIt_MenuItemPopup ()
-{
-}
+ActiveLedIt_MenuItemPopup::ActiveLedIt_MenuItemPopup () {}
 
-ActiveLedIt_MenuItemPopup::~ActiveLedIt_MenuItemPopup ()
-{
-}
+ActiveLedIt_MenuItemPopup::~ActiveLedIt_MenuItemPopup () {}
 
-HRESULT ActiveLedIt_MenuItemPopup::FinalConstruct ()
-{
-    return S_OK;
-}
+HRESULT ActiveLedIt_MenuItemPopup::FinalConstruct () { return S_OK; }
 
-void ActiveLedIt_MenuItemPopup::FinalRelease ()
-{
-}
+void ActiveLedIt_MenuItemPopup::FinalRelease () {}
 
 STDMETHODIMP ActiveLedIt_MenuItemPopup::Insert (IDispatch* newElt, UINT afterElt)
 {
@@ -1016,9 +945,7 @@ AL_CommandHelper::AL_CommandHelper ()
 {
 }
 
-AL_CommandHelper::~AL_CommandHelper ()
-{
-}
+AL_CommandHelper::~AL_CommandHelper () {}
 
 STDMETHODIMP AL_CommandHelper::get_Name (BSTR* pVal)
 {
@@ -1113,7 +1040,8 @@ STDMETHODIMP AL_CommandHelper::AppendSelfToMenu (HMENU menu, IDispatch* accelera
                 }
             }
         }
-        ::AppendMenu (menu, fCommandNumber == 0 ? MF_SEPARATOR : MF_STRING, fCommandNumber, String::FromSDKString ((fCommandNumber == 0 ? L"" : L"&") + fName + suffix).AsSDKString ().c_str ());
+        ::AppendMenu (menu, fCommandNumber == 0 ? MF_SEPARATOR : MF_STRING, fCommandNumber,
+                      String::FromSDKString ((fCommandNumber == 0 ? L"" : L"&") + fName + suffix).AsSDKString ().c_str ());
         return S_OK;
     }
     CATCH_AND_HANDLE_EXCEPTIONS_IN_HRESULT_FUNCTION ()
@@ -1124,13 +1052,9 @@ STDMETHODIMP AL_CommandHelper::AppendSelfToMenu (HMENU menu, IDispatch* accelera
  ******************************* AL_UserCommandHelper ***************************
  ********************************************************************************
  */
-AL_UserCommandHelper::AL_UserCommandHelper ()
-{
-}
+AL_UserCommandHelper::AL_UserCommandHelper () {}
 
-AL_UserCommandHelper::~AL_UserCommandHelper ()
-{
-}
+AL_UserCommandHelper::~AL_UserCommandHelper () {}
 
 STDMETHODIMP AL_UserCommandHelper::put_Name (BSTR val)
 {
@@ -1161,13 +1085,9 @@ STDMETHODIMP AL_UserCommandHelper::put_InternalName (BSTR val)
  **************************** ActiveLedIt_BuiltinCommand ************************
  ********************************************************************************
  */
-ActiveLedIt_BuiltinCommand::ActiveLedIt_BuiltinCommand ()
-{
-}
+ActiveLedIt_BuiltinCommand::ActiveLedIt_BuiltinCommand () {}
 
-ActiveLedIt_BuiltinCommand::~ActiveLedIt_BuiltinCommand ()
-{
-}
+ActiveLedIt_BuiltinCommand::~ActiveLedIt_BuiltinCommand () {}
 
 ActiveLedIt_BuiltinCommand* ActiveLedIt_BuiltinCommand::mk (const BuiltinCmdSpec& cmdSpec)
 {
@@ -1194,24 +1114,16 @@ ActiveLedIt_BuiltinCommand* ActiveLedIt_BuiltinCommand::mk (const BuiltinCmdSpec
     }
 }
 
-HRESULT ActiveLedIt_BuiltinCommand::FinalConstruct ()
-{
-    return S_OK;
-}
+HRESULT ActiveLedIt_BuiltinCommand::FinalConstruct () { return S_OK; }
 
-void ActiveLedIt_BuiltinCommand::FinalRelease ()
-{
-}
+void ActiveLedIt_BuiltinCommand::FinalRelease () {}
 
 /*
  ********************************************************************************
  ********************************** mkFontNameCMDName ***************************
  ********************************************************************************
  */
-string mkFontNameCMDName (const SDKString& fontName)
-{
-    return kFontNameCMDPrefix + String::FromSDKString (fontName).AsNarrowSDKString ();
-}
+string mkFontNameCMDName (const SDKString& fontName) { return kFontNameCMDPrefix + String::FromSDKString (fontName).AsNarrowSDKString (); }
 
 /*
  ********************************************************************************
@@ -1258,7 +1170,8 @@ UINT CmdObjOrName2Num (const VARIANT& cmdObjOrName)
             }
         }
 
-        if (lookForCmdName.length () > kFontNameCMDPrefix.length () and lookForCmdName.substr (0, kFontNameCMDPrefix.length ()) == String::FromNarrowSDKString (kFontNameCMDPrefix)) {
+        if (lookForCmdName.length () > kFontNameCMDPrefix.length () and
+            lookForCmdName.substr (0, kFontNameCMDPrefix.length ()) == String::FromNarrowSDKString (kFontNameCMDPrefix)) {
             const vector<SDKString>& fontNames = GetUsableFontNames ();
             Assert (fontNames.size () <= kLastFontNameCmd - kBaseFontNameCmd + 1);
             for (UINT i = 0; i < fontNames.size (); ++i) {

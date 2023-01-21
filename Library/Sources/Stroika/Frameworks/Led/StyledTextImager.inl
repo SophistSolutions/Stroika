@@ -49,28 +49,29 @@ namespace Stroika::Frameworks::Led {
     }
     template <class BASECLASS>
     void SimpleStyleMarkerByFontSpec<BASECLASS>::DrawSegment (const StyledTextImager* imager, const RunElement& runElement, Tablet* tablet,
-                                                              size_t from, size_t to, const TextLayoutBlock& text, const Led_Rect& drawInto, const Led_Rect& /*invalidRect*/,
-                                                              CoordinateType useBaseLine, DistanceType* pixelsDrawn)
+                                                              size_t from, size_t to, const TextLayoutBlock& text, const Led_Rect& drawInto,
+                                                              const Led_Rect& /*invalidRect*/, CoordinateType useBaseLine, DistanceType* pixelsDrawn)
     {
         RequireNotNull (imager);
         imager->DrawSegment_ (tablet, MakeFontSpec (imager, runElement), from, to, text, drawInto, useBaseLine, pixelsDrawn);
     }
     template <class BASECLASS>
-    void SimpleStyleMarkerByFontSpec<BASECLASS>::MeasureSegmentWidth (const StyledTextImager* imager, const RunElement& runElement, size_t from, size_t to,
-                                                                      const Led_tChar* text,
-                                                                      DistanceType*    distanceResults) const
+    void SimpleStyleMarkerByFontSpec<BASECLASS>::MeasureSegmentWidth (const StyledTextImager* imager, const RunElement& runElement, size_t from,
+                                                                      size_t to, const Led_tChar* text, DistanceType* distanceResults) const
     {
         RequireNotNull (imager);
         imager->MeasureSegmentWidth_ (this->MakeFontSpec (imager, runElement), from, to, text, distanceResults);
     }
     template <class BASECLASS>
-    DistanceType SimpleStyleMarkerByFontSpec<BASECLASS>::MeasureSegmentHeight (const StyledTextImager* imager, const RunElement& runElement, size_t from, size_t to) const
+    DistanceType SimpleStyleMarkerByFontSpec<BASECLASS>::MeasureSegmentHeight (const StyledTextImager* imager, const RunElement& runElement,
+                                                                               size_t from, size_t to) const
     {
         RequireNotNull (imager);
         return (imager->MeasureSegmentHeight_ (this->MakeFontSpec (imager, runElement), from, to));
     }
     template <class BASECLASS>
-    DistanceType SimpleStyleMarkerByFontSpec<BASECLASS>::MeasureSegmentBaseLine (const StyledTextImager* imager, const RunElement& runElement, size_t from, size_t to) const
+    DistanceType SimpleStyleMarkerByFontSpec<BASECLASS>::MeasureSegmentBaseLine (const StyledTextImager* imager,
+                                                                                 const RunElement& runElement, size_t from, size_t to) const
     {
         RequireNotNull (imager);
         return (imager->MeasureSegmentBaseLine_ (this->MakeFontSpec (imager, runElement), from, to));
@@ -118,8 +119,8 @@ namespace Stroika::Frameworks::Led {
     }
     template <class BASECLASS>
     void SimpleStyleMarkerWithExtraDraw<BASECLASS>::DrawSegment (const StyledTextImager* imager, const RunElement& runElement, Tablet* tablet,
-                                                                 size_t from, size_t to, const TextLayoutBlock& text, const Led_Rect& drawInto, const Led_Rect& invalidRect,
-                                                                 CoordinateType useBaseLine, DistanceType* pixelsDrawn)
+                                                                 size_t from, size_t to, const TextLayoutBlock& text, const Led_Rect& drawInto,
+                                                                 const Led_Rect& invalidRect, CoordinateType useBaseLine, DistanceType* pixelsDrawn)
     {
         RequireNotNull (imager);
         AssertNotNull (pixelsDrawn); // if allowed to pass nullptr - I must pass my  own value so I can pass along to DrawExtra - see if anyone does this - LGP 2000-07-08
@@ -134,9 +135,8 @@ namespace Stroika::Frameworks::Led {
         DrawExtra (imager, re, tablet, from, to, text, drawInto, useBaseLine, *pixelsDrawn);
     }
     template <class BASECLASS>
-    void SimpleStyleMarkerWithExtraDraw<BASECLASS>::MeasureSegmentWidth (const StyledTextImager* imager, const RunElement& runElement, size_t from, size_t to,
-                                                                         const Led_tChar* text,
-                                                                         DistanceType*    distanceResults) const
+    void SimpleStyleMarkerWithExtraDraw<BASECLASS>::MeasureSegmentWidth (const StyledTextImager* imager, const RunElement& runElement, size_t from,
+                                                                         size_t to, const Led_tChar* text, DistanceType* distanceResults) const
     {
         RequireNotNull (imager);
         RunElement re = MungeRunElement (runElement);
@@ -148,7 +148,8 @@ namespace Stroika::Frameworks::Led {
         }
     }
     template <class BASECLASS>
-    DistanceType SimpleStyleMarkerWithExtraDraw<BASECLASS>::MeasureSegmentHeight (const StyledTextImager* imager, const RunElement& runElement, size_t from, size_t to) const
+    DistanceType SimpleStyleMarkerWithExtraDraw<BASECLASS>::MeasureSegmentHeight (const StyledTextImager* imager,
+                                                                                  const RunElement& runElement, size_t from, size_t to) const
     {
         RequireNotNull (imager);
         RunElement re = MungeRunElement (runElement);
@@ -160,7 +161,8 @@ namespace Stroika::Frameworks::Led {
         }
     }
     template <class BASECLASS>
-    DistanceType SimpleStyleMarkerWithExtraDraw<BASECLASS>::MeasureSegmentBaseLine (const StyledTextImager* imager, const RunElement& runElement, size_t from, size_t to) const
+    DistanceType SimpleStyleMarkerWithExtraDraw<BASECLASS>::MeasureSegmentBaseLine (const StyledTextImager* imager,
+                                                                                    const RunElement& runElement, size_t from, size_t to) const
     {
         RequireNotNull (imager);
         RunElement re = MungeRunElement (runElement);
@@ -179,9 +181,9 @@ namespace Stroika::Frameworks::Led {
     {
     }
     template <typename BASECLASS>
-    void SimpleStyleMarkerWithLightUnderline<BASECLASS>::DrawExtra (const StyledTextImager* /*imager*/, const RunElement& /*runElement*/, Tablet* tablet,
-                                                                    size_t /*from*/, size_t /*to*/, const TextLayoutBlock& /*text*/, const Led_Rect& drawInto,
-                                                                    CoordinateType useBaseLine, DistanceType pixelsDrawn)
+    void SimpleStyleMarkerWithLightUnderline<BASECLASS>::DrawExtra (const StyledTextImager* /*imager*/, const RunElement& /*runElement*/,
+                                                                    Tablet* tablet, size_t /*from*/, size_t /*to*/, const TextLayoutBlock& /*text*/,
+                                                                    const Led_Rect& drawInto, CoordinateType useBaseLine, DistanceType pixelsDrawn)
     {
         Color lightColor = Color::kWhite / 2 + GetUnderlineBaseColor () / 2; // (white - baseColor)/2 + baseColor, but careful to avoid int overflow...
 #if qPlatform_Windows

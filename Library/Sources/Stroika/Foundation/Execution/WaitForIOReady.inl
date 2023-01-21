@@ -20,7 +20,8 @@ namespace Stroika::Foundation::Execution {
      ********************************************************************************
      */
     template <typename T, typename TRAITS>
-    inline WaitForIOReady<T, TRAITS>::WaitForIOReady (const Traversal::Iterable<pair<T, TypeOfMonitorSet>>& fds, optional<pair<SDKPollableType, TypeOfMonitorSet>> pollable2Wakeup)
+    inline WaitForIOReady<T, TRAITS>::WaitForIOReady (const Traversal::Iterable<pair<T, TypeOfMonitorSet>>& fds,
+                                                      optional<pair<SDKPollableType, TypeOfMonitorSet>>     pollable2Wakeup)
         // Containers::Collection{} to force CLONE/FREEZE of data, since elsewise it chould change without this class knowing (iterables not necessarily COW)
         : fPollData_{Containers::Collection<pair<T, TypeOfMonitorSet>>{fds}}
         , fPollable2Wakeup_{pollable2Wakeup}
@@ -28,7 +29,8 @@ namespace Stroika::Foundation::Execution {
         //DbgTrace (L"WaitForIOReady::CTOR (%s, %s)", Characters::ToString (fds).c_str (), Characters::ToString (pollable2Wakeup).c_str ());
     }
     template <typename T, typename TRAITS>
-    WaitForIOReady<T, TRAITS>::WaitForIOReady (const Traversal::Iterable<T>& fds, const TypeOfMonitorSet& flags, optional<pair<SDKPollableType, TypeOfMonitorSet>> pollable2Wakeup)
+    WaitForIOReady<T, TRAITS>::WaitForIOReady (const Traversal::Iterable<T>& fds, const TypeOfMonitorSet& flags,
+                                               optional<pair<SDKPollableType, TypeOfMonitorSet>> pollable2Wakeup)
         : WaitForIOReady{fds.template Map<pair<T, TypeOfMonitorSet>> ([&] (const T& t) { return make_pair (t, flags); }), pollable2Wakeup}
     {
     }
@@ -116,13 +118,14 @@ namespace Stroika::Foundation::Configuration {
 #if !qCompilerAndStdLib_template_specialization_internalErrorWithSpecializationSignifier_Buggy
     template <>
 #endif
-    constexpr EnumNames<Execution::WaitForIOReady_Support::WaitForIOReady_Base::TypeOfMonitor> DefaultNames<Execution::WaitForIOReady_Support::WaitForIOReady_Base::TypeOfMonitor>::k{
-        EnumNames<Execution::WaitForIOReady_Support::WaitForIOReady_Base::TypeOfMonitor>::BasicArrayInitializer{{
-            {Execution::WaitForIOReady_Support::WaitForIOReady_Base::TypeOfMonitor::eRead, L"Read"},
-            {Execution::WaitForIOReady_Support::WaitForIOReady_Base::TypeOfMonitor::eWrite, L"Write"},
-            {Execution::WaitForIOReady_Support::WaitForIOReady_Base::TypeOfMonitor::eError, L"Error"},
-            {Execution::WaitForIOReady_Support::WaitForIOReady_Base::TypeOfMonitor::eHUP, L"HUP"},
-        }}};
+    constexpr EnumNames<Execution::WaitForIOReady_Support::WaitForIOReady_Base::TypeOfMonitor>
+        DefaultNames<Execution::WaitForIOReady_Support::WaitForIOReady_Base::TypeOfMonitor>::k{
+            EnumNames<Execution::WaitForIOReady_Support::WaitForIOReady_Base::TypeOfMonitor>::BasicArrayInitializer{{
+                {Execution::WaitForIOReady_Support::WaitForIOReady_Base::TypeOfMonitor::eRead, L"Read"},
+                {Execution::WaitForIOReady_Support::WaitForIOReady_Base::TypeOfMonitor::eWrite, L"Write"},
+                {Execution::WaitForIOReady_Support::WaitForIOReady_Base::TypeOfMonitor::eError, L"Error"},
+                {Execution::WaitForIOReady_Support::WaitForIOReady_Base::TypeOfMonitor::eHUP, L"HUP"},
+            }}};
 }
 
 #endif /*_Stroika_Foundation_Execution_WaitForIOReady_inl_*/

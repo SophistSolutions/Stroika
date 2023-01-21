@@ -71,7 +71,9 @@ namespace {
         virtual optional<Response> OnBeforeFetch (EvalContext* context, const URI& schemeAndAuthority, Request* request) noexcept override
         {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-            Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"IO::Network::Transfer ... {}::DefaultCacheRep_::OnBeforeFetch", L"schemeAndAuthority=%s", Characters::ToString (schemeAndAuthority).c_str ())};
+            Debug::TraceContextBumper ctx{
+                Stroika_Foundation_Debug_OptionalizeTraceArgs (L"IO::Network::Transfer ... {}::DefaultCacheRep_::OnBeforeFetch",
+                                                               L"schemeAndAuthority=%s", Characters::ToString (schemeAndAuthority).c_str ())};
 #endif
             if (request->fMethod == HTTP::Methods::kGet) {
                 try {
@@ -101,7 +103,8 @@ namespace {
                         bool canCheckModifiedSince = o->fLastModified.has_value ();
                         if (canCheckModifiedSince) {
                             context->fCachedElement = *o;
-                            request->fOverrideHeaders.Add (HTTP::HeaderName::kIfModifiedSince, "\""sv + o->fLastModified->Format (DateTime::kRFC1123Format) + "\""sv);
+                            request->fOverrideHeaders.Add (HTTP::HeaderName::kIfModifiedSince,
+                                                           "\""sv + o->fLastModified->Format (DateTime::kRFC1123Format) + "\""sv);
                         }
                     }
                 }
@@ -116,7 +119,8 @@ namespace {
         virtual void OnAfterFetch (const EvalContext& context, Response* response) noexcept override
         {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-            Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"DefaultCacheRep_::OnAfterFetch", L"context.fFullURI=%s", Characters::ToString (context.fFullURI).c_str ())};
+            Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"DefaultCacheRep_::OnAfterFetch", L"context.fFullURI=%s",
+                                                                                         Characters::ToString (context.fFullURI).c_str ())};
 #endif
             RequireNotNull (response);
             switch (response->GetStatus ()) {
@@ -165,15 +169,9 @@ namespace {
             }
         }
 
-        virtual void ClearCache () override
-        {
-            fCache_.clear ();
-        }
+        virtual void ClearCache () override { fCache_.clear (); }
 
-        virtual optional<Element> Lookup (const URI& url) const override
-        {
-            return fCache_.Lookup (url);
-        }
+        virtual optional<Element> Lookup (const URI& url) const override { return fCache_.Lookup (url); }
 
         DefaultOptions fOptions_;
 
@@ -236,7 +234,8 @@ Transfer::Cache::Element::Element (const Response& response)
             static const String kMaxAgeEquals_{"max-age="sv};
             for (const String& cci : *fCacheControl) {
                 if (cci.StartsWith (kMaxAgeEquals_)) {
-                    fExpiresDueToMaxAge = DateTime::Now () + Duration{Characters::FloatConversion::ToFloat (cci.SubString (kMaxAgeEquals_.size ()))};
+                    fExpiresDueToMaxAge =
+                        DateTime::Now () + Duration{Characters::FloatConversion::ToFloat (cci.SubString (kMaxAgeEquals_.size ()))};
                 }
             }
         }
@@ -264,7 +263,9 @@ Mapping<String, String> Transfer::Cache::Element::GetCombinedHeaders () const
         result.Add (HTTP::HeaderName::kLastModified, fLastModified->Format (DateTime::kRFC1123Format));
     }
     if (fCacheControl) {
-        function<String (const String& lhs, const String& rhs)> a = [] (const String& lhs, const String& rhs) -> String { return lhs.empty () ? rhs : (lhs + ","sv + rhs); };
+        function<String (const String& lhs, const String& rhs)> a = [] (const String& lhs, const String& rhs) -> String {
+            return lhs.empty () ? rhs : (lhs + ","sv + rhs);
+        };
         result.Add (HTTP::HeaderName::kCacheControl, fCacheControl->Reduce (a).value_or (String{}));
     }
     if (fContentType) {
@@ -318,11 +319,5 @@ String Transfer::Cache::Element::ToString () const
  **************************** Transfer::Cache ***********************************
  ********************************************************************************
  */
-Transfer::Cache::Ptr Transfer::Cache::CreateDefault ()
-{
-    return CreateDefault (DefaultOptions{});
-}
-Transfer::Cache::Ptr Transfer::Cache::CreateDefault (const DefaultOptions& options)
-{
-    return Ptr{make_shared<DefaultCacheRep_> (options)};
-}
+Transfer::Cache::Ptr Transfer::Cache::CreateDefault () { return CreateDefault (DefaultOptions{}); }
+Transfer::Cache::Ptr Transfer::Cache::CreateDefault (const DefaultOptions& options) { return Ptr{make_shared<DefaultCacheRep_> (options)}; }

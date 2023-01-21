@@ -73,7 +73,9 @@ namespace Stroika::Frameworks::WebServer {
          */
         Connection ()                  = delete;
         Connection (const Connection&) = delete;
-        explicit Connection (const ConnectionOrientedStreamSocket::Ptr& s, const InterceptorChain& interceptorChain = InterceptorChain{}, const Headers& defaultResponseHeaders = {}, const optional<Headers>& defaultGETResponseHeaders = nullopt, const optional<bool> autoComputeETagResponse = nullopt);
+        explicit Connection (const ConnectionOrientedStreamSocket::Ptr& s, const InterceptorChain& interceptorChain = InterceptorChain{},
+                             const Headers& defaultResponseHeaders = {}, const optional<Headers>& defaultGETResponseHeaders = nullopt,
+                             const optional<bool> autoComputeETagResponse = nullopt);
 
     public:
         ~Connection ();
@@ -143,15 +145,18 @@ namespace Stroika::Frameworks::WebServer {
 
     private:
         struct MyMessage_ : Message {
-            MyMessage_ (const ConnectionOrientedStreamSocket::Ptr& socket, const Streams::InputOutputStream<byte>::Ptr& socketStream, const Headers& defaultResponseHeaders, const optional<bool> autoComputeETagResponse);
+            MyMessage_ (const ConnectionOrientedStreamSocket::Ptr& socket, const Streams::InputOutputStream<byte>::Ptr& socketStream,
+                        const Headers& defaultResponseHeaders, const optional<bool> autoComputeETagResponse);
 
             // Only valid until the end of a successful ReadHeaders
             HTTP::MessageStartTextInputStreamBinaryAdapter::Ptr fMsgHeaderInTextStream;
 
             // If result bad, throw exception
-            enum ReadHeadersResult { eIncompleteButMoreMayBeAvailable,
-                                     eIncompleteDeadEnd,
-                                     eCompleteGood };
+            enum ReadHeadersResult {
+                eIncompleteButMoreMayBeAvailable,
+                eIncompleteDeadEnd,
+                eCompleteGood
+            };
             nonvirtual ReadHeadersResult ReadHeaders (
 #if qStroika_Framework_WebServer_Connection_DetailedMessagingLog
                 const function<void (const String&)>& logMsg

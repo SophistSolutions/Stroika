@@ -140,7 +140,9 @@ namespace Stroika::Frameworks::Led {
         LedDialogWidget ();
 
     protected:
-        enum TS_SET_OUTSIDE_BWA { eTS_SET_OUTSIDE_BWA }; /// FILL IN RIGHT LED_CONFIG BWA DEFINE FOR THIS CRAPOLA
+        enum TS_SET_OUTSIDE_BWA {
+            eTS_SET_OUTSIDE_BWA
+        }; /// FILL IN RIGHT LED_CONFIG BWA DEFINE FOR THIS CRAPOLA
         LedDialogWidget (TS_SET_OUTSIDE_BWA);
 
     public:
@@ -150,7 +152,8 @@ namespace Stroika::Frameworks::Led {
         virtual void OnBadUserInput () override;
 
     public:
-        virtual void OnTypedNormalCharacter (Led_tChar theChar, bool /*optionPressed*/, bool /*shiftPressed*/, bool /*commandPressed*/, bool controlPressed, bool /*altKeyPressed*/) override;
+        virtual void OnTypedNormalCharacter (Led_tChar theChar, bool /*optionPressed*/, bool /*shiftPressed*/, bool /*commandPressed*/,
+                                             bool      controlPressed, bool /*altKeyPressed*/) override;
 
     protected:
         virtual CommandNumber CharToCommand (Led_tChar theChar) const;
@@ -310,10 +313,7 @@ namespace Stroika::Frameworks::Led {
 
     public:
 #if qPlatform_MacOS
-        nonvirtual int GetResID () const
-        {
-            return fResID;
-        }
+        nonvirtual int GetResID () const { return fResID; }
 #endif
 
     private:
@@ -641,11 +641,13 @@ namespace Stroika::Frameworks::Led {
         bool                fCaseSensativeSearch;
 
     public:
-        enum ButtonPressed { eCancel,
-                             eFind,
-                             eReplace,
-                             eReplaceAll,
-                             eReplaceAllInSelection };
+        enum ButtonPressed {
+            eCancel,
+            eFind,
+            eReplace,
+            eReplaceAll,
+            eReplaceAllInSelection
+        };
         ButtonPressed fPressed;
 
     protected:
@@ -708,7 +710,8 @@ namespace Stroika::Frameworks::Led {
 #endif
 
 #ifndef qSupportStdColorPickBox
-#define qSupportStdColorPickBox (qPlatform_MacOS || qPlatform_Windows || (qUseGTKForLedStandardDialogs && qStroika_FeatureSupported_XWindows))
+#define qSupportStdColorPickBox                                                                                                            \
+    (qPlatform_MacOS || qPlatform_Windows || (qUseGTKForLedStandardDialogs && qStroika_FeatureSupported_XWindows))
 #endif
 
 #if qSupportStdColorPickBox && defined(__cplusplus)
@@ -822,7 +825,8 @@ namespace Stroika::Frameworks::Led {
         using inherited = Led_StdDialogHelper;
 
     public:
-        Led_StdDialogHelper_UpdateWin32FileAssocsDialog (HINSTANCE hInstance, HWND parentWnd, const SDKChar* resID = MAKEINTRESOURCE (kLedStdDlg_UpdateWin32FileAssocsDialogID));
+        Led_StdDialogHelper_UpdateWin32FileAssocsDialog (HINSTANCE hInstance, HWND parentWnd,
+                                                         const SDKChar* resID = MAKEINTRESOURCE (kLedStdDlg_UpdateWin32FileAssocsDialogID));
 
     public:
         SDKString fAppName;
@@ -862,7 +866,8 @@ namespace Stroika::Frameworks::Led {
 #if qPlatform_MacOS
         Led_StdDialogHelper_ParagraphIndentsDialog (int resID = kLedStdDlg_ParagraphIndentsID);
 #elif qPlatform_Windows
-        Led_StdDialogHelper_ParagraphIndentsDialog (HINSTANCE hInstance, HWND parentWnd, const SDKChar* resID = MAKEINTRESOURCE (kLedStdDlg_ParagraphIndentsID));
+        Led_StdDialogHelper_ParagraphIndentsDialog (HINSTANCE hInstance, HWND parentWnd,
+                                                    const SDKChar* resID = MAKEINTRESOURCE (kLedStdDlg_ParagraphIndentsID));
 #endif
 
     public:
@@ -917,11 +922,13 @@ namespace Stroika::Frameworks::Led {
 #if qPlatform_MacOS
         Led_StdDialogHelper_ParagraphSpacingDialog (int resID = kLedStdDlg_ParagraphSpacingID);
 #elif qPlatform_Windows
-        Led_StdDialogHelper_ParagraphSpacingDialog (HINSTANCE hInstance, HWND parentWnd, const SDKChar* resID = MAKEINTRESOURCE (kLedStdDlg_ParagraphSpacingID));
+        Led_StdDialogHelper_ParagraphSpacingDialog (HINSTANCE hInstance, HWND parentWnd,
+                                                    const SDKChar* resID = MAKEINTRESOURCE (kLedStdDlg_ParagraphSpacingID));
 #endif
 
     public:
-        virtual void InitValues (TWIPS spaceBefore, bool spaceBeforeValid, TWIPS spaceAfter, bool spaceAfterValid, LineSpacing lineSpacing, bool lineSpacingValid);
+        virtual void InitValues (TWIPS spaceBefore, bool spaceBeforeValid, TWIPS spaceAfter, bool spaceAfterValid, LineSpacing lineSpacing,
+                                 bool lineSpacingValid);
 
     protected:
         virtual void PreDoModalHook () override;
@@ -1004,7 +1011,8 @@ namespace Stroika::Frameworks::Led {
 #if qPlatform_MacOS
         Led_StdDialogHelper_UnknownEmbeddingInfoDialog (int resID = kLedStdDlg_UnknownEmbeddingInfoBoxID);
 #elif qPlatform_Windows
-        Led_StdDialogHelper_UnknownEmbeddingInfoDialog (HINSTANCE hInstance, HWND parentWnd, const SDKChar* resID = MAKEINTRESOURCE (kLedStdDlg_UnknownEmbeddingInfoBoxID));
+        Led_StdDialogHelper_UnknownEmbeddingInfoDialog (HINSTANCE hInstance, HWND parentWnd,
+                                                        const SDKChar* resID = MAKEINTRESOURCE (kLedStdDlg_UnknownEmbeddingInfoBoxID));
 #elif qStroika_FeatureSupported_XWindows && qUseGTKForLedStandardDialogs
         Led_StdDialogHelper_UnknownEmbeddingInfoDialog (GtkWindow* parentWindow);
 #endif
@@ -1041,7 +1049,8 @@ namespace Stroika::Frameworks::Led {
 #if qPlatform_MacOS
         Led_StdDialogHelper_URLXEmbeddingInfoDialog (int resID = kLedStdDlg_URLXEmbeddingInfoBoxID);
 #elif qPlatform_Windows
-        Led_StdDialogHelper_URLXEmbeddingInfoDialog (HINSTANCE hInstance, HWND parentWnd, const SDKChar* resID = MAKEINTRESOURCE (kLedStdDlg_URLXEmbeddingInfoBoxID));
+        Led_StdDialogHelper_URLXEmbeddingInfoDialog (HINSTANCE hInstance, HWND parentWnd,
+                                                     const SDKChar* resID = MAKEINTRESOURCE (kLedStdDlg_URLXEmbeddingInfoBoxID));
 #elif qStroika_FeatureSupported_XWindows && qUseGTKForLedStandardDialogs
         Led_StdDialogHelper_URLXEmbeddingInfoDialog (GtkWindow* parentWindow);
 #endif
@@ -1082,7 +1091,8 @@ namespace Stroika::Frameworks::Led {
 #if qPlatform_MacOS
         Led_StdDialogHelper_AddURLXEmbeddingInfoDialog (int resID = kLedStdDlg_AddURLXEmbeddingInfoBoxID);
 #elif qPlatform_Windows
-        Led_StdDialogHelper_AddURLXEmbeddingInfoDialog (HINSTANCE hInstance, HWND parentWnd, const SDKChar* resID = MAKEINTRESOURCE (kLedStdDlg_AddURLXEmbeddingInfoBoxID));
+        Led_StdDialogHelper_AddURLXEmbeddingInfoDialog (HINSTANCE hInstance, HWND parentWnd,
+                                                        const SDKChar* resID = MAKEINTRESOURCE (kLedStdDlg_AddURLXEmbeddingInfoBoxID));
 #elif qStroika_FeatureSupported_XWindows && qUseGTKForLedStandardDialogs
         Led_StdDialogHelper_AddURLXEmbeddingInfoDialog (GtkWindow* parentWindow);
 #endif
@@ -1187,7 +1197,8 @@ namespace Stroika::Frameworks::Led {
 #if qPlatform_MacOS
         Led_StdDialogHelper_EditTablePropertiesDialog (int resID = kLedStdDlg_EditTablePropertiesBoxID);
 #elif qPlatform_Windows
-        Led_StdDialogHelper_EditTablePropertiesDialog (HINSTANCE hInstance, HWND parentWnd, const SDKChar* resID = MAKEINTRESOURCE (kLedStdDlg_EditTablePropertiesBoxID));
+        Led_StdDialogHelper_EditTablePropertiesDialog (HINSTANCE hInstance, HWND parentWnd,
+                                                       const SDKChar* resID = MAKEINTRESOURCE (kLedStdDlg_EditTablePropertiesBoxID));
 #elif qStroika_FeatureSupported_XWindows && qUseGTKForLedStandardDialogs
         Led_StdDialogHelper_EditTablePropertiesDialog (GtkWindow* parentWindow);
 #endif
@@ -1311,7 +1322,8 @@ namespace Stroika::Frameworks::Led {
 #if qPlatform_MacOS
         Led_StdDialogHelper_SpellCheckDialog (SpellCheckDialogCallback& callback, int resID = kLedStdDlg_SpellCheckBoxID);
 #elif qPlatform_Windows
-        Led_StdDialogHelper_SpellCheckDialog (SpellCheckDialogCallback& callback, HINSTANCE hInstance, HWND parentWnd, const SDKChar* resID = MAKEINTRESOURCE (kLedStdDlg_SpellCheckBoxID));
+        Led_StdDialogHelper_SpellCheckDialog (SpellCheckDialogCallback& callback, HINSTANCE hInstance, HWND parentWnd,
+                                              const SDKChar* resID = MAKEINTRESOURCE (kLedStdDlg_SpellCheckBoxID));
 #elif qStroika_FeatureSupported_XWindows && qUseGTKForLedStandardDialogs
         Led_StdDialogHelper_SpellCheckDialog (SpellCheckDialogCallback& callback, GtkWindow* parentWindow);
 #endif

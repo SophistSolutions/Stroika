@@ -72,8 +72,7 @@ public:
     void Start ()
     {
         static const String kThreadName_ = "SSDP Listener"sv;
-        fThread_                         = Execution::Thread::New (
-            [this] () { DoRun_ (); }, Execution::Thread::eAutoStart, kThreadName_);
+        fThread_                         = Execution::Thread::New ([this] () { DoRun_ (); }, Execution::Thread::eAutoStart, kThreadName_);
     }
     void Stop ()
     {
@@ -94,7 +93,8 @@ public:
                     size_t        nBytesRead = s.ReceiveFrom (std::begin (buf), std::end (buf), 0, &from);
                     Assert (nBytesRead <= Memory::NEltsOf (buf));
                     using namespace Streams;
-                    ParsePacketAndNotifyCallbacks_ (TextReader::New (ExternallyOwnedMemoryInputStream<byte>::New (std::begin (buf), std::begin (buf) + nBytesRead)));
+                    ParsePacketAndNotifyCallbacks_ (
+                        TextReader::New (ExternallyOwnedMemoryInputStream<byte>::New (std::begin (buf), std::begin (buf) + nBytesRead)));
                 }
                 catch (const Execution::Thread::AbortException&) {
                     Execution::ReThrow ();
@@ -143,7 +143,10 @@ public:
                         d.fLocation = IO::Network::URI{value};
                     }
                     catch (...) {
-                        DbgTrace (L"A notification without a valid location probably won't be useful, so we could allow the exception to propagate and the notification to be ignored. However, we don't throw when the location is missing altogether. So for now, treat as missing: e=%s", Characters::ToString (current_exception ()).c_str ());
+                        DbgTrace (L"A notification without a valid location probably won't be useful, so we could allow the exception to "
+                                  L"propagate and the notification to be ignored. However, we don't throw when the location is missing "
+                                  L"altogether. So for now, treat as missing: e=%s",
+                                  Characters::ToString (current_exception ()).c_str ());
                     }
                 }
                 else if (kLabelComparer_ (label, "NT"sv) == 0) {
@@ -210,22 +213,13 @@ Listener::Listener (const function<void (const SSDP::Advertisement& d)>& callOnF
     Start ();
 }
 
-Listener::~Listener ()
-{
-    IgnoreExceptionsForCall (fRep_->Stop ());
-}
+Listener::~Listener () { IgnoreExceptionsForCall (fRep_->Stop ()); }
 
 void Listener::AddOnFoundCallback (const function<void (const SSDP::Advertisement& d)>& callOnFinds)
 {
     fRep_->AddOnFoundCallback (callOnFinds);
 }
 
-void Listener::Start ()
-{
-    fRep_->Start ();
-}
+void Listener::Start () { fRep_->Start (); }
 
-void Listener::Stop ()
-{
-    fRep_->Stop ();
-}
+void Listener::Stop () { fRep_->Stop (); }

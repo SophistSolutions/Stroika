@@ -25,7 +25,9 @@ public:
     TextChunk (const Led_tChar* copyFrom, size_t bytesToCopy);
 
 public:
-    enum { kTextChunkSize = (4096 - sizeof (size_t) - 8) / sizeof (Led_tChar) }; // good guess as to how big we can allocate and still have stdlib allocator
+    enum {
+        kTextChunkSize = (4096 - sizeof (size_t) - 8) / sizeof (Led_tChar)
+    }; // good guess as to how big we can allocate and still have stdlib allocator
     // not waste any space for rounding up
 
     /*
@@ -53,15 +55,9 @@ inline ChunkedArrayTextStore::TextChunk::TextChunk (const Led_tChar* copyFrom, s
     AssertNotNull (copyFrom);
     (void)::memcpy (fData, copyFrom, bytesToCopy * sizeof (Led_tChar));
 }
-inline size_t ChunkedArrayTextStore::TextChunk::GetLength () const noexcept
-{
-    return (fTotalTcharsUsed);
-}
-inline size_t ChunkedArrayTextStore::TextChunk::GetBytesCanAccommodate () const noexcept
-{
-    return (kTextChunkSize - fTotalTcharsUsed);
-}
-inline void ChunkedArrayTextStore::TextChunk::CopyOut (size_t from, size_t count, Led_tChar* buffer) const noexcept
+inline size_t ChunkedArrayTextStore::TextChunk::GetLength () const noexcept { return (fTotalTcharsUsed); }
+inline size_t ChunkedArrayTextStore::TextChunk::GetBytesCanAccommodate () const noexcept { return (kTextChunkSize - fTotalTcharsUsed); }
+inline void   ChunkedArrayTextStore::TextChunk::CopyOut (size_t from, size_t count, Led_tChar* buffer) const noexcept
 {
     AssertNotNull (buffer);
     Assert (from + count <= fTotalTcharsUsed);
@@ -252,24 +248,15 @@ static inline size_t GetMarkerStart_ (Marker* m)
     Ensure (OurStuff (m)->fStart == m->GetStart ());
     return OurStuff (m)->fStart;
 }
-static inline void SetMarkerStart_ (Marker* m, size_t s)
-{
-    OurStuff (m)->fStart = s;
-}
+static inline void   SetMarkerStart_ (Marker* m, size_t s) { OurStuff (m)->fStart = s; }
 static inline size_t GetMarkerLength_ (Marker* m)
 {
     RequireNotNull (m);
     Ensure (OurStuff (m)->fLength == m->GetLength ());
     return OurStuff (m)->fLength;
 }
-static inline void SetMarkerLength_ (Marker* m, size_t s)
-{
-    OurStuff (m)->fLength = s;
-}
-static inline void SetMarkerOwner_ (Marker* m, MarkerOwner* o)
-{
-    OurStuff (m)->fOwner = o;
-}
+static inline void SetMarkerLength_ (Marker* m, size_t s) { OurStuff (m)->fLength = s; }
+static inline void SetMarkerOwner_ (Marker* m, MarkerOwner* o) { OurStuff (m)->fOwner = o; }
 
 static inline bool QUICK_Overlap (ChunkedArrayMarkerHook* h, size_t from, size_t to)
 {
@@ -349,14 +336,8 @@ struct ChunkedArrayTextStore::CollectLookupCacheElt {
         size_t fTo;
     };
 
-    nonvirtual void Clear ()
-    {
-        fFrom = static_cast<size_t> (-1);
-    }
-    static bool Equal (const CollectLookupCacheElt& lhs, const COMPARE_ITEM& rhs)
-    {
-        return lhs.fFrom == rhs.fFrom and lhs.fTo == rhs.fTo;
-    }
+    nonvirtual void Clear () { fFrom = static_cast<size_t> (-1); }
+    static bool Equal (const CollectLookupCacheElt& lhs, const COMPARE_ITEM& rhs) { return lhs.fFrom == rhs.fFrom and lhs.fTo == rhs.fTo; }
 };
 #endif
 
@@ -377,8 +358,7 @@ public:
         , fTotalHackMarkersPresent{0}
         , fPeakTotalMarkersPresent{0}
         , fPeakHackMarkersPresent{0}
-        , fTotalHackMarkersAlloced{
-              0}
+        , fTotalHackMarkersAlloced{0}
 #endif
     {
         Assert (fRootMarker.fTextStoreHook == NULL);
@@ -436,21 +416,16 @@ public:
 #if qUseLRUCacheForRecentlyLookedUpMarkers
 public:
     using CollectLookupCacheElt = ChunkedArrayTextStore::CollectLookupCacheElt;
-    using CACHE_TYPE            = Foundation::Cache::LRUCache<CollectLookupCacheElt, Cache::LRUCacheDefaultTraits<CollectLookupCacheElt, CollectLookupCacheElt::COMPARE_ITEM>>;
+    using CACHE_TYPE =
+        Foundation::Cache::LRUCache<CollectLookupCacheElt, Cache::LRUCacheDefaultTraits<CollectLookupCacheElt, CollectLookupCacheElt::COMPARE_ITEM>>;
 
 public:
-    nonvirtual void ClearCache ()
-    {
-        fCache.ClearCache ();
-    }
+    nonvirtual void                   ClearCache () { fCache.ClearCache (); }
     nonvirtual CollectLookupCacheElt* LookupElement (const CollectLookupCacheElt::COMPARE_ITEM& item)
     {
         return fCache.LookupElement (item);
     }
-    nonvirtual CollectLookupCacheElt* AddNew (const CollectLookupCacheElt::COMPARE_ITEM& item)
-    {
-        return fCache.AddNew (item);
-    }
+    nonvirtual CollectLookupCacheElt* AddNew (const CollectLookupCacheElt::COMPARE_ITEM& item) { return fCache.AddNew (item); }
 
 private:
     CACHE_TYPE fCache;
@@ -592,10 +567,7 @@ inline ChunkedArrayMarkerOwnerHook* GetAMOH (ChunkedArrayMarkerHook* moh)
     RequireNotNull (moh);
     return GetAMOH (moh->fOwner);
 }
-inline ChunkedArrayMarkerOwnerHook* GetAMOH (Marker* m)
-{
-    return GetAMOH (OurStuff (m));
-}
+inline ChunkedArrayMarkerOwnerHook* GetAMOH (Marker* m) { return GetAMOH (OurStuff (m)); }
 
 /*
  ********************************************************************************
@@ -646,10 +618,7 @@ ChunkedArrayTextStore::~ChunkedArrayTextStore ()
 @METHOD:        ChunkedArrayTextStore::ConstructNewTextStore
 @DESCRIPTION:   <p>See @'TextStore::ConstructNewTextStore' ().</p>
 */
-TextStore* ChunkedArrayTextStore::ConstructNewTextStore () const
-{
-    return new ChunkedArrayTextStore ();
-}
+TextStore* ChunkedArrayTextStore::ConstructNewTextStore () const { return new ChunkedArrayTextStore (); }
 
 void ChunkedArrayTextStore::AddMarkerOwner (MarkerOwner* owner)
 {
@@ -682,9 +651,9 @@ void ChunkedArrayTextStore::RemoveMarkerOwner (MarkerOwner* owner)
                                                     // bug and not a Led-bug per-se. Check that all your markers have been
                                                     // removed!
                                                     //
-                                                    // Look just below at 'markersWhichShouldHaveBeenDeleted' to see just what markers are left.
-                                                    //
-                                                    // See Led's FAQ#27 - http://www.sophists.com/Led/LedClassLib/ClassLibDocs/Recipes.html#27
+            // Look just below at 'markersWhichShouldHaveBeenDeleted' to see just what markers are left.
+            //
+            // See Led's FAQ#27 - http://www.sophists.com/Led/LedClassLib/ClassLibDocs/Recipes.html#27
         if constexpr (qDebug) {
             if (camoh->fTotalMarkersPresent != 0) {
                 vector<Marker*>  markersWhichShouldHaveBeenDeleted;
@@ -876,8 +845,7 @@ void ChunkedArrayTextStore::InsertAfter_ (const Led_tChar* what, size_t howMany,
 
             for (; bytesToGo != 0;) {
                 ++chunkIdx.fChunk;
-                if (chunkIdx.fChunk <= fTextChunks.size () - 1 and
-                    fTextChunks[chunkIdx.fChunk]->GetBytesCanAccommodate () >= bytesToGo) {
+                if (chunkIdx.fChunk <= fTextChunks.size () - 1 and fTextChunks[chunkIdx.fChunk]->GetBytesCanAccommodate () >= bytesToGo) {
                     // Yippie - we're done. Just prepend here, and lets go...
                     t = fTextChunks[chunkIdx.fChunk];
                     t->InsertAfter (&what[bytesXfered], bytesToGo, 0);
@@ -1354,7 +1322,8 @@ Marker* ChunkedArrayTextStore::AddHackMarkerHelper_ (Marker* insideMarker, size_
 #if qKeepChunkedArrayStatistics
         ++GetAMOH (insideMarker)->fTotalHackMarkersAlloced;
         ++GetAMOH (insideMarker)->fTotalHackMarkersPresent;
-        GetAMOH (insideMarker)->fPeakHackMarkersPresent = max (GetAMOH (insideMarker)->fPeakHackMarkersPresent, GetAMOH (insideMarker)->fTotalHackMarkersPresent);
+        GetAMOH (insideMarker)->fPeakHackMarkersPresent =
+            max (GetAMOH (insideMarker)->fPeakHackMarkersPresent, GetAMOH (insideMarker)->fTotalHackMarkersPresent);
 #endif
     }
     catch (...) {

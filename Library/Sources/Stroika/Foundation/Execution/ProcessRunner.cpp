@@ -92,8 +92,7 @@ namespace {
             result = getdtablesize ();
         }
         else if constexpr (kUseGetRLimit_) {
-            struct rlimit fds {
-            };
+            struct rlimit fds {};
             if (::getrlimit (RLIMIT_NOFILE, &fds) == 0) {
                 return fds.rlim_cur;
             }
@@ -148,10 +147,7 @@ namespace {
         {
         }
         AutoHANDLE_ (const AutoHANDLE_&) = delete;
-        ~AutoHANDLE_ ()
-        {
-            Close ();
-        }
+        ~AutoHANDLE_ () { Close (); }
         AutoHANDLE_& operator= (const AutoHANDLE_& rhs)
         {
             if (this != &rhs) {
@@ -160,15 +156,9 @@ namespace {
             }
             return *this;
         }
-        operator HANDLE () const
-        {
-            return fHandle;
-        }
-        HANDLE* operator& ()
-        {
-            return &fHandle;
-        }
-        void Close ()
+                operator HANDLE () const { return fHandle; }
+        HANDLE* operator& () { return &fHandle; }
+        void    Close ()
         {
             if (fHandle != INVALID_HANDLE_VALUE) {
                 Verify (::CloseHandle (fHandle));
@@ -233,7 +223,8 @@ namespace {
  ********************************************************************************
  */
 #if qPlatform_POSIX
-ProcessRunner::Exception::Exception (const String& cmdLine, const String& errorMessage, const optional<String>& stderrSubset, const optional<uint8_t>& wExitStatus, const optional<uint8_t>& wTermSig, const optional<uint8_t>& wStopSig)
+ProcessRunner::Exception::Exception (const String& cmdLine, const String& errorMessage, const optional<String>& stderrSubset,
+                                     const optional<uint8_t>& wExitStatus, const optional<uint8_t>& wTermSig, const optional<uint8_t>& wStopSig)
     : inherited{mkMsg_ (cmdLine, errorMessage, stderrSubset, wExitStatus, wTermSig, wStopSig)}
     , fCmdLine_{cmdLine}
     , fErrorMessage_{errorMessage}
@@ -252,7 +243,8 @@ ProcessRunner::Exception::Exception (const String& cmdLine, const String& errorM
 }
 #endif
 #if qPlatform_POSIX
-String ProcessRunner::Exception::mkMsg_ (const String& cmdLine, const String& errorMessage, const optional<String>& stderrSubset, const optional<uint8_t>& wExitStatus, const optional<uint8_t>& wTermSig, const optional<uint8_t>& wStopSig)
+String ProcessRunner::Exception::mkMsg_ (const String& cmdLine, const String& errorMessage, const optional<String>& stderrSubset,
+                                         const optional<uint8_t>& wExitStatus, const optional<uint8_t>& wTermSig, const optional<uint8_t>& wStopSig)
 {
     Characters::StringBuilder sb;
     sb += errorMessage;
@@ -284,7 +276,8 @@ String ProcessRunner::Exception::mkMsg_ (const String& cmdLine, const String& er
     return sb.str ();
 }
 #elif qPlatform_Windows
-String ProcessRunner::Exception::mkMsg_ (const String& cmdLine, const String& errorMessage, const optional<String>& stderrSubset, const optional<DWORD>& err)
+String ProcessRunner::Exception::mkMsg_ (const String& cmdLine, const String& errorMessage, const optional<String>& stderrSubset,
+                                         const optional<DWORD>& err)
 {
     Characters::StringBuilder sb;
     sb += errorMessage;
@@ -391,7 +384,8 @@ void ProcessRunner::BackgroundProcess::Terminate ()
  ************************** Execution::ProcessRunner ****************************
  ********************************************************************************
  */
-ProcessRunner::ProcessRunner (const String& commandLine, const Streams::InputStream<byte>::Ptr& in, const Streams::OutputStream<byte>::Ptr& out, const Streams::OutputStream<byte>::Ptr& error)
+ProcessRunner::ProcessRunner (const String& commandLine, const Streams::InputStream<byte>::Ptr& in,
+                              const Streams::OutputStream<byte>::Ptr& out, const Streams::OutputStream<byte>::Ptr& error)
     : fCommandLine_{commandLine}
     , fExecutable_{}
     , fStdIn_{in}
@@ -400,7 +394,8 @@ ProcessRunner::ProcessRunner (const String& commandLine, const Streams::InputStr
 {
 }
 
-ProcessRunner::ProcessRunner (const filesystem::path& executable, const Containers::Sequence<String>& args, const Streams::InputStream<byte>::Ptr& in, const Streams::OutputStream<byte>::Ptr& out, const Streams::OutputStream<byte>::Ptr& error)
+ProcessRunner::ProcessRunner (const filesystem::path& executable, const Containers::Sequence<String>& args, const Streams::InputStream<byte>::Ptr& in,
+                              const Streams::OutputStream<byte>::Ptr& out, const Streams::OutputStream<byte>::Ptr& error)
     : fExecutable_{executable}
     , fArgs_{args}
     , fStdIn_{in}
@@ -502,13 +497,14 @@ void ProcessRunner::Run (optional<ProcessResultType>* processResult, ProgressMon
         else {
             Synchronized<optional<ProcessResultType>> pr;
             [[maybe_unused]] auto&&                   cleanup = Finally ([&] () noexcept { *processResult = pr.load (); });
-            Thread::Ptr                               t       = Thread::New (CreateRunnable_ (&pr, nullptr, progress), Thread::eAutoStart, "ProcessRunner thread"_k);
+            Thread::Ptr t = Thread::New (CreateRunnable_ (&pr, nullptr, progress), Thread::eAutoStart, "ProcessRunner thread"_k);
             t.Join (timeout);
         }
     }
 }
 
-Characters::String ProcessRunner::Run (const Characters::String& cmdStdInValue, optional<ProcessResultType>* processResult, ProgressMonitor::Updater progress, Time::DurationSecondsType timeout)
+Characters::String ProcessRunner::Run (const Characters::String& cmdStdInValue, optional<ProcessResultType>* processResult,
+                                       ProgressMonitor::Updater progress, Time::DurationSecondsType timeout)
 {
     AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
     Streams::InputStream<byte>::Ptr                 oldStdIn  = GetStdIn ();
@@ -548,24 +544,21 @@ ProcessRunner::BackgroundProcess ProcessRunner::RunInBackground (ProgressMonitor
 {
     TraceContextBumper ctx{"ProcessRunner::RunInBackground"};
     BackgroundProcess  result;
-    result.fRep_->fProcessRunner = Thread::New (CreateRunnable_ (&result.fRep_->fResult, nullptr, progress), Thread::eAutoStart, "ProcessRunner background thread"sv);
+    result.fRep_->fProcessRunner =
+        Thread::New (CreateRunnable_ (&result.fRep_->fResult, nullptr, progress), Thread::eAutoStart, "ProcessRunner background thread"sv);
     return result;
 }
 
 #if qPlatform_POSIX
 namespace {
-    void Process_Runner_POSIX_ (
-        Synchronized<optional<ProcessRunner::ProcessResultType>>* processResult,
-        Synchronized<optional<pid_t>>*                            runningPID,
-        ProgressMonitor::Updater                                  progress,
-        const String&                                             cmdLine,
-        const SDKChar*                                            currentDir,
-        const Streams::InputStream<byte>::Ptr&                    in,
-        const Streams::OutputStream<byte>::Ptr&                   out,
-        const Streams::OutputStream<byte>::Ptr&                   err,
-        const String&                                             effectiveCmdLine)
+    void Process_Runner_POSIX_ (Synchronized<optional<ProcessRunner::ProcessResultType>>* processResult,
+                                Synchronized<optional<pid_t>>* runningPID, ProgressMonitor::Updater progress, const String& cmdLine,
+                                const SDKChar* currentDir, const Streams::InputStream<byte>::Ptr& in, const Streams::OutputStream<byte>::Ptr& out,
+                                const Streams::OutputStream<byte>::Ptr& err, const String& effectiveCmdLine)
     {
-        TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"{}::Process_Runner_POSIX_", L"...,cmdLine='%s',currentDir=%s,...", cmdLine.As<wstring> ().c_str (), currentDir == nullptr ? L"nullptr" : String::FromSDKString (currentDir).LimitLength (50, false).c_str ())};
+        TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (
+            L"{}::Process_Runner_POSIX_", L"...,cmdLine='%s',currentDir=%s,...", cmdLine.As<wstring> ().c_str (),
+            currentDir == nullptr ? L"nullptr" : String::FromSDKString (currentDir).LimitLength (50, false).c_str ())};
 
         // track the last few bytes of stderr to include in possible exception messages
         char   trailingStderrBuf[256];
@@ -644,7 +637,9 @@ namespace {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                 DbgTrace ("failed to access execpath so throwing: exepath='%s'", thisEXEPath_cstr);
 #endif
-                auto            activity = LazyEvalActivity ([&] () -> String { return Characters::Format (L"executing %s", Characters::ToString (commandLine.empty () ? cmdLine : commandLine[0]).c_str ()); });
+                auto            activity = LazyEvalActivity ([&] () -> String {
+                    return Characters::Format (L"executing %s", Characters::ToString (commandLine.empty () ? cmdLine : commandLine[0]).c_str ());
+                });
                 DeclareActivity currentActivity{&activity};
                 ThrowPOSIXErrNo (e);
             }
@@ -758,7 +753,8 @@ namespace {
             ThrowPOSIXErrNoIfNegative (::fcntl (useSTDERR, F_SETFL, fcntl (useSTDERR, F_GETFL, 0) | O_NONBLOCK));
 
             // Throw if any errors except EINTR (which is ignored) or EAGAIN (would block)
-            auto readALittleFromProcess = [&] (int fd, const Streams::OutputStream<byte>::Ptr& stream, bool write2StdErrCache, bool* eof = nullptr, bool* maybeMoreData = nullptr) {
+            auto readALittleFromProcess = [&] (int fd, const Streams::OutputStream<byte>::Ptr& stream, bool write2StdErrCache,
+                                               bool* eof = nullptr, bool* maybeMoreData = nullptr) {
                 uint8_t buf[10 * 1024];
                 int     nBytesRead = 0; // int cuz we must allow for errno = EAGAIN error result = -1,
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
@@ -842,15 +838,14 @@ namespace {
                                 // read stuff from stdout, stderr while pushing to stdin, so that we don't get the PIPE buf too full
                                 readSoNotBlocking (useSTDOUT, out, false);
                                 readSoNotBlocking (useSTDERR, err, true);
-                                int bytesWritten = ThrowPOSIXErrNoIfNegative (
-                                    Handle_ErrNoResultInterruption ([useSTDIN, i, e] () {
-                                        int tmp = ::write (useSTDIN, i, e - i);
-                                        // NOTE: https://linux.die.net/man/2/write appears to indicate on pipe full, write could return 0, or < 0 with errno = EAGAIN, or EWOULDBLOCK
-                                        if (tmp < 0 and (errno == EAGAIN or errno == EWOULDBLOCK)) {
-                                            tmp = 0;
-                                        }
-                                        return tmp;
-                                    }));
+                                int bytesWritten = ThrowPOSIXErrNoIfNegative (Handle_ErrNoResultInterruption ([useSTDIN, i, e] () {
+                                    int tmp = ::write (useSTDIN, i, e - i);
+                                    // NOTE: https://linux.die.net/man/2/write appears to indicate on pipe full, write could return 0, or < 0 with errno = EAGAIN, or EWOULDBLOCK
+                                    if (tmp < 0 and (errno == EAGAIN or errno == EWOULDBLOCK)) {
+                                        tmp = 0;
+                                    }
+                                    return tmp;
+                                }));
                                 Assert (bytesWritten >= 0);
                                 Assert (bytesWritten <= (e - i));
                                 i += bytesWritten;
@@ -882,15 +877,18 @@ namespace {
             int status = 0;
             int flags  = 0; // FOR NOW - HACK - but really must handle sig-interruptions...
                             //  Wait for child
-            int result = Execution::Handle_ErrNoResultInterruption ([childPID, &status, flags] () -> int { return ::waitpid (childPID, &status, flags); });
+            int result = Execution::Handle_ErrNoResultInterruption (
+                [childPID, &status, flags] () -> int { return ::waitpid (childPID, &status, flags); });
             // throw / warn if result other than child exited normally
             if (processResult != nullptr) {
                 // not sure what it means if result != childPID??? - I think cannot happen cuz we pass in childPID, less result=-1
-                processResult->store (ProcessRunner::ProcessResultType{WIFEXITED (status) ? WEXITSTATUS (status) : optional<int> (), WIFSIGNALED (status) ? WTERMSIG (status) : optional<int> ()});
+                processResult->store (ProcessRunner::ProcessResultType{WIFEXITED (status) ? WEXITSTATUS (status) : optional<int> (),
+                                                                       WIFSIGNALED (status) ? WTERMSIG (status) : optional<int> ()});
             }
             else if (result != childPID or not WIFEXITED (status) or WEXITSTATUS (status) != 0) {
                 // @todo fix this message
-                DbgTrace ("childPID=%d, result=%d, status=%d, WIFEXITED=%d, WEXITSTATUS=%d, WIFSIGNALED=%d", childPID, result, status, WIFEXITED (status), WEXITSTATUS (status), WIFSIGNALED (status));
+                DbgTrace ("childPID=%d, result=%d, status=%d, WIFEXITED=%d, WEXITSTATUS=%d, WIFSIGNALED=%d", childPID, result, status,
+                          WIFEXITED (status), WEXITSTATUS (status), WIFSIGNALED (status));
                 if (processResult == nullptr) {
                     StringBuilder stderrMsg;
                     if (trailingStderrBufNWritten > Memory::NEltsOf (trailingStderrBuf)) {
@@ -898,13 +896,10 @@ namespace {
                         stderrMsg += String::FromLatin1 (Memory::ConstSpan (span{trailingStderrBufNextByte2WriteAt, end (trailingStderrBuf)}));
                     }
                     stderrMsg += String::FromLatin1 (Memory::ConstSpan (span{begin (trailingStderrBuf), trailingStderrBufNextByte2WriteAt}));
-                    Throw (ProcessRunner::Exception{
-                        effectiveCmdLine,
-                        "Spawned program"sv,
-                        stderrMsg.str (),
-                        WIFEXITED (status) ? WEXITSTATUS (status) : optional<uint8_t>{},
-                        WIFSIGNALED (status) ? WTERMSIG (status) : optional<uint8_t>{},
-                        WIFSTOPPED (status) ? WSTOPSIG (status) : optional<uint8_t>{}});
+                    Throw (ProcessRunner::Exception{effectiveCmdLine, "Spawned program"sv, stderrMsg.str (),
+                                                    WIFEXITED (status) ? WEXITSTATUS (status) : optional<uint8_t>{},
+                                                    WIFSIGNALED (status) ? WTERMSIG (status) : optional<uint8_t>{},
+                                                    WIFSTOPPED (status) ? WSTOPSIG (status) : optional<uint8_t>{}});
                 }
             }
         }
@@ -914,18 +909,14 @@ namespace {
 
 #if qPlatform_Windows
 namespace {
-    void Process_Runner_Windows_ (
-        Synchronized<optional<ProcessRunner::ProcessResultType>>* processResult,
-        Synchronized<optional<pid_t>>*                            runningPID,
-        ProgressMonitor::Updater                                  progress,
-        const String&                                             cmdLine,
-        const SDKChar*                                            currentDir,
-        const Streams::InputStream<byte>::Ptr&                    in,
-        const Streams::OutputStream<byte>::Ptr&                   out,
-        const Streams::OutputStream<byte>::Ptr&                   err,
-        const String&                                             effectiveCmdLine)
+    void Process_Runner_Windows_ (Synchronized<optional<ProcessRunner::ProcessResultType>>* processResult, Synchronized<optional<pid_t>>* runningPID,
+                                  ProgressMonitor::Updater progress, const String& cmdLine, const SDKChar* currentDir,
+                                  const Streams::InputStream<byte>::Ptr& in, const Streams::OutputStream<byte>::Ptr& out,
+                                  const Streams::OutputStream<byte>::Ptr& err, const String& effectiveCmdLine)
     {
-        TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"{}::Process_Runner_Windows_", L"...,cmdLine='%s',currentDir=%s,...", cmdLine.As<wstring> ().c_str (), currentDir == nullptr ? L"nullptr" : String::FromSDKString (currentDir).LimitLength (50, false).c_str ())};
+        TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (
+            L"{}::Process_Runner_Windows_", L"...,cmdLine='%s',currentDir=%s,...", cmdLine.As<wstring> ().c_str (),
+            currentDir == nullptr ? L"nullptr" : String::FromSDKString (currentDir).LimitLength (50, false).c_str ())};
 
         /*
          *  o   Build directory into which we can copy the JAR file plugin,
@@ -976,7 +967,8 @@ namespace {
                 bool  bInheritHandles = true;
                 TCHAR cmdLineBuf[32768]; // crazy MSFT definition! - why this should need to be non-const!
                 Characters::CString::Copy (cmdLineBuf, Memory::NEltsOf (cmdLineBuf), cmdLine.AsSDKString ().c_str ());
-                Execution::Platform::Windows::ThrowIfZeroGetLastError (::CreateProcess (nullptr, cmdLineBuf, nullptr, nullptr, bInheritHandles, createProcFlags, nullptr, currentDir, &startInfo, &processInfo));
+                Execution::Platform::Windows::ThrowIfZeroGetLastError (::CreateProcess (
+                    nullptr, cmdLineBuf, nullptr, nullptr, bInheritHandles, createProcFlags, nullptr, currentDir, &startInfo, &processInfo));
             }
 
             if (runningPID != nullptr) {
@@ -1010,11 +1002,9 @@ namespace {
                 // and we may need to timeout
                 while (
 #if qUsePeekNamedPipe_
-                    ::PeekNamedPipe (p, nullptr, nullptr, nullptr, &nBytesAvail, nullptr) and
-                    nBytesAvail != 0 and
+                    ::PeekNamedPipe (p, nullptr, nullptr, nullptr, &nBytesAvail, nullptr) and nBytesAvail != 0 and
 #endif
-                    ::ReadFile (p, buf, sizeof (buf), &nBytesRead, nullptr) and
-                    nBytesRead > 0) {
+                    ::ReadFile (p, buf, sizeof (buf), &nBytesRead, nullptr) and nBytesRead > 0) {
                     if (o != nullptr) {
                         o.Write (buf, buf + nBytesRead);
                     }
@@ -1061,9 +1051,7 @@ namespace {
                                     // documentation about what WriteFile () returns in this case... So there maybe other errors
                                     // that are innocuous that may cause is to prematurely terminate our 'RunExternalProcess'.
                                     //      -- LGP 2009-05-07
-                                    if (lastErr != ERROR_SUCCESS and
-                                        lastErr != ERROR_NO_MORE_FILES and
-                                        lastErr != ERROR_PIPE_BUSY and
+                                    if (lastErr != ERROR_SUCCESS and lastErr != ERROR_NO_MORE_FILES and lastErr != ERROR_PIPE_BUSY and
                                         lastErr != ERROR_NO_DATA) {
                                         DbgTrace ("in RunExternalProcess_ - throwing %d while fill in stdin", lastErr);
                                         Execution::ThrowSystemErrNo (lastErr);
@@ -1119,7 +1107,8 @@ namespace {
                     // Also - its not exactly a busy-wait. Its just a wait between reading stuff to avoid buffers filling. If the
                     // process actually finishes, it will change state and the wait should return immediately.
                     double remainingTimeout = (timesWaited <= 5) ? 0.1 : 0.5;
-                    DWORD  waitResult       = ::WaitForMultipleObjects (static_cast<DWORD> (Memory::NEltsOf (events)), events, false, static_cast<int> (remainingTimeout * 1000));
+                    DWORD  waitResult       = ::WaitForMultipleObjects (static_cast<DWORD> (Memory::NEltsOf (events)), events, false,
+                                                                        static_cast<int> (remainingTimeout * 1000));
                     ++timesWaited;
 
                     readAnyAvailableAndCopy2StreamWithoutBlocking (useSTDOUT, out);
@@ -1186,7 +1175,8 @@ namespace {
 }
 #endif
 
-function<void ()> ProcessRunner::CreateRunnable_ (Synchronized<optional<ProcessResultType>>* processResult, Synchronized<optional<pid_t>>* runningPID, ProgressMonitor::Updater progress)
+function<void ()> ProcessRunner::CreateRunnable_ (Synchronized<optional<ProcessResultType>>* processResult,
+                                                  Synchronized<optional<pid_t>>* runningPID, ProgressMonitor::Updater progress)
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"ProcessRunner::CreateRunnable_")};
@@ -1238,7 +1228,9 @@ pid_t Execution::DetachedProcessRunner (const String& commandLine)
 
 pid_t Execution::DetachedProcessRunner (const filesystem::path& executable, const Containers::Sequence<String>& args)
 {
-    TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"Execution::DetachedProcessRunner", L"executable=%s, args=%s", Characters::ToString (executable).c_str (), Characters::ToString (args).c_str ())};
+    TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"Execution::DetachedProcessRunner", L"executable=%s, args=%s",
+                                                                          Characters::ToString (executable).c_str (),
+                                                                          Characters::ToString (args).c_str ())};
 
     // @todo Consider rewriting below launch code so more in common with ::Run / CreateRunnable code in ProcessRunner
 
@@ -1340,11 +1332,10 @@ pid_t Execution::DetachedProcessRunner (const filesystem::path& executable, cons
     PROCESS_INFORMATION processInfo{};
     processInfo.hProcess            = INVALID_HANDLE_VALUE;
     processInfo.hThread             = INVALID_HANDLE_VALUE;
-    [[maybe_unused]] auto&& cleanup = Finally (
-        [&processInfo] () noexcept {
-            SAFE_HANDLE_CLOSER_ (&processInfo.hProcess);
-            SAFE_HANDLE_CLOSER_ (&processInfo.hThread);
-        });
+    [[maybe_unused]] auto&& cleanup = Finally ([&processInfo] () noexcept {
+        SAFE_HANDLE_CLOSER_ (&processInfo.hProcess);
+        SAFE_HANDLE_CLOSER_ (&processInfo.hThread);
+    });
 
     STARTUPINFO startInfo{};
     startInfo.cb         = sizeof (startInfo);
@@ -1368,8 +1359,8 @@ pid_t Execution::DetachedProcessRunner (const filesystem::path& executable, cons
             }
             Characters::CString::Cat (cmdLineBuf, Memory::NEltsOf (cmdLineBuf), i.AsSDKString ().c_str ());
         }
-        Execution::Platform::Windows::ThrowIfZeroGetLastError (
-            ::CreateProcess (executable.c_str (), cmdLineBuf, nullptr, nullptr, bInheritHandles, createProcFlags, nullptr, nullptr, &startInfo, &processInfo));
+        Execution::Platform::Windows::ThrowIfZeroGetLastError (::CreateProcess (executable.c_str (), cmdLineBuf, nullptr, nullptr, bInheritHandles,
+                                                                                createProcFlags, nullptr, nullptr, &startInfo, &processInfo));
         Verify (::CloseHandle (processInfo.hProcess)); // We can recover the process handle from the process id if needed
         Verify (::CloseHandle (processInfo.hThread));
     }

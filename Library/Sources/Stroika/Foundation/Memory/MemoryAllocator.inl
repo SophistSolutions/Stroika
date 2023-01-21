@@ -17,12 +17,14 @@ namespace Stroika::Foundation::Memory {
      ********************************************************************************
      */
     template <typename T, typename BASE_ALLOCATOR>
-    inline typename STLAllocator<T, BASE_ALLOCATOR>::pointer STLAllocator<T, BASE_ALLOCATOR>::address (typename STLAllocator<T, BASE_ALLOCATOR>::reference _Val) const noexcept
+    inline typename STLAllocator<T, BASE_ALLOCATOR>::pointer
+    STLAllocator<T, BASE_ALLOCATOR>::address (typename STLAllocator<T, BASE_ALLOCATOR>::reference _Val) const noexcept
     {
         return &_Val;
     }
     template <typename T, typename BASE_ALLOCATOR>
-    inline typename STLAllocator<T, BASE_ALLOCATOR>::const_pointer STLAllocator<T, BASE_ALLOCATOR>::address (typename STLAllocator<T, BASE_ALLOCATOR>::const_reference _Val) const noexcept
+    inline typename STLAllocator<T, BASE_ALLOCATOR>::const_pointer
+    STLAllocator<T, BASE_ALLOCATOR>::address (typename STLAllocator<T, BASE_ALLOCATOR>::const_reference _Val) const noexcept
     {
         return (&_Val);
     }

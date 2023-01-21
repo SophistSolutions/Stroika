@@ -30,10 +30,7 @@ namespace Stroika::Foundation::Streams {
      *********************************** TextWriter *********************************
      ********************************************************************************
      */
-    inline auto TextWriter::New (const OutputStream<Characters::Character>::Ptr& src) -> Ptr
-    {
-        return src;
-    }
+    inline auto TextWriter::New (const OutputStream<Characters::Character>::Ptr& src) -> Ptr { return src; }
 
 }
 

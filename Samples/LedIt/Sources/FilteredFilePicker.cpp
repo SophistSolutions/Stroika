@@ -42,9 +42,7 @@ namespace {
 #if qUseNavServices
     inline NavTypeListHandle CreateNavTypeList (UInt16 inNumTypes, const OSType* inSFTypeList)
     {
-        NavTypeListHandle list = (NavTypeListHandle)::NewHandleClear (
-            (sizeof (NavTypeList) - sizeof (OSType)) +
-            (inNumTypes * sizeof (OSType)));
+        NavTypeListHandle list = (NavTypeListHandle)::NewHandleClear ((sizeof (NavTypeList) - sizeof (OSType)) + (inNumTypes * sizeof (OSType)));
         Execution::ThrowIfNull (list);
         (*list)->componentSignature = kNavGenericSignature;
         (*list)->osTypeCount        = inNumTypes;
@@ -755,13 +753,7 @@ namespace {
                 case ctrlItem + btnCtrl:
                 case ctrlItem + chkCtrl:
                 case ctrlItem + radCtrl:
-                    item->handle = (Handle)NewControl ((DialogPtr)dialog,
-                                                       &item->bounds,
-                                                       (StringPtr)item->data,
-                                                       true,
-                                                       0, 0, 1,
-                                                       item->type & 0x03,
-                                                       0);
+                    item->handle = (Handle)NewControl ((DialogPtr)dialog, &item->bounds, (StringPtr)item->data, true, 0, 0, 1, item->type & 0x03, 0);
                     break;
 
                 case ctrlItem + resCtrl: {
@@ -790,9 +782,7 @@ namespace {
             item      = (DialogItem*)((char*)item + data_size + sizeof (DialogItem));
         }
 
-        err = PtrAndHand ((**append_item_list).items,
-                          (Handle)dlg_item_list,
-                          GetHandleSize ((Handle)append_item_list));
+        err = PtrAndHand ((**append_item_list).items, (Handle)dlg_item_list, GetHandleSize ((Handle)append_item_list));
         (**dlg_item_list).max_index += new_items;
         HUnlock ((Handle)append_item_list);
         ReleaseResource ((Handle)append_item_list);

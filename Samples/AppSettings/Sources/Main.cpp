@@ -115,7 +115,7 @@ namespace {
 
 namespace {
     ModuleGetterSetter<OptionsData_, OptionsData_Storage_IMPL_> sModuleConfiguration_;
-    WaitableEvent                                               sWaitableEvent_; // some thread could be waiting on this, and perform some reactive task when the module settings change
+    WaitableEvent sWaitableEvent_; // some thread could be waiting on this, and perform some reactive task when the module settings change
 
     void TestUse1_ ()
     {
@@ -147,7 +147,14 @@ namespace {
         // Use Update () to atomically update data
         // Use the return value to tell if a real change was made (so you can invoke some sort of notication/action)
         static const Duration kMinTime_ = 2min;
-        if (sModuleConfiguration_.Update ([] (const OptionsData_& data) -> optional<OptionsData_> {  if (data.fLastSynchronizedAt && *data.fLastSynchronizedAt + kMinTime_ > DateTime::Now ()) { OptionsData_ result = data; result.fLastSynchronizedAt = DateTime::Now (); return result; } return {}; })) {
+        if (sModuleConfiguration_.Update ([] (const OptionsData_& data) -> optional<OptionsData_> {
+                if (data.fLastSynchronizedAt && *data.fLastSynchronizedAt + kMinTime_ > DateTime::Now ()) {
+                    OptionsData_ result        = data;
+                    result.fLastSynchronizedAt = DateTime::Now ();
+                    return result;
+                }
+                return {};
+            })) {
             sWaitableEvent_.Set (); // e.g. trigger someone to wakeup and used changes? - no global lock held here...
         }
     }
@@ -155,7 +162,8 @@ namespace {
 
 int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
 {
-    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"main", L"argv=%s", Characters::ToString (vector<const char*>{argv, argv + argc}).c_str ())};
+    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (
+        L"main", L"argv=%s", Characters::ToString (vector<const char*>{argv, argv + argc}).c_str ())};
     TestUse1_ ();
     TestUse2_ ();
     TestUse3_ ();

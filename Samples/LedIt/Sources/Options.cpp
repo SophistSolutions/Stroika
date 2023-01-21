@@ -48,59 +48,52 @@ namespace {
 
     struct Options_Storage_IMPL_ {
         Options_Storage_IMPL_ ()
-            : fOptionsFile_{
-                  L"AppSettings"sv,
-                  [] () -> ObjectVariantMapper {
-                      ObjectVariantMapper mapper;
+            : fOptionsFile_{L"AppSettings"sv,
+                            [] () -> ObjectVariantMapper {
+                                ObjectVariantMapper mapper;
 
-                      // really should use String, no longer Led_tString, but for now... (note this only works as is for wchar_t Led_tString
-                      mapper.Add<Led_tString> (
-                          [] (const ObjectVariantMapper& /*mapper*/, const Led_tString* obj) -> VariantValue {
-                              return String{*obj};
-                          },
-                          [] (const ObjectVariantMapper& /*mapper*/, const VariantValue& d, Led_tString* intoObj) -> void {
-                              *intoObj = d.As<String> ().As<Led_tString> ();
-                          });
-                      mapper.AddCommonType<vector<Led_tString>> ();
-                      mapper.AddCommonType<Memory::BLOB> ();
+                                // really should use String, no longer Led_tString, but for now... (note this only works as is for wchar_t Led_tString
+                                mapper.Add<Led_tString> ([] (const ObjectVariantMapper& /*mapper*/,
+                                                             const Led_tString* obj) -> VariantValue { return String{*obj}; },
+                                                         [] (const ObjectVariantMapper& /*mapper*/, const VariantValue& d,
+                                                             Led_tString* intoObj) -> void { *intoObj = d.As<String> ().As<Led_tString> (); });
+                                mapper.AddCommonType<vector<Led_tString>> ();
+                                mapper.AddCommonType<Memory::BLOB> ();
 
-                      mapper.AddClass<SearchParameters> (initializer_list<ObjectVariantMapper::StructFieldInfo>{
-                          {L"MatchString", StructFieldMetaInfo{&SearchParameters::fMatchString}},
-                          {L"WrapSearch", StructFieldMetaInfo{&SearchParameters::fWrapSearch}},
-                          {L"WholeWordSearch", StructFieldMetaInfo{&SearchParameters::fWholeWordSearch}},
-                          {L"CaseSensativeSearch", StructFieldMetaInfo{&SearchParameters::fCaseSensativeSearch}},
-                          {L"RecentMatchStrings", StructFieldMetaInfo{&SearchParameters::fRecentFindStrings}},
-                      });
+                                mapper.AddClass<SearchParameters> (initializer_list<ObjectVariantMapper::StructFieldInfo>{
+                                    {L"MatchString", StructFieldMetaInfo{&SearchParameters::fMatchString}},
+                                    {L"WrapSearch", StructFieldMetaInfo{&SearchParameters::fWrapSearch}},
+                                    {L"WholeWordSearch", StructFieldMetaInfo{&SearchParameters::fWholeWordSearch}},
+                                    {L"CaseSensativeSearch", StructFieldMetaInfo{&SearchParameters::fCaseSensativeSearch}},
+                                    {L"RecentMatchStrings", StructFieldMetaInfo{&SearchParameters::fRecentFindStrings}},
+                                });
 
-                      mapper.AddClass<Options_> (initializer_list<ObjectVariantMapper::StructFieldInfo> {
-                          {L"DockBarState", StructFieldMetaInfo{&Options_::fDockBarState}},
-                              {L"Search-Parameters", StructFieldMetaInfo{&Options_::fSearchParameters}},
-                              {L"SmartCutAndPaste", StructFieldMetaInfo{&Options_::fSmartCutAndPaste}},
-                              {L"WrapToWindow", StructFieldMetaInfo{&Options_::fWrapToWindow}},
-                              {L"ShowHiddenText", StructFieldMetaInfo{&Options_::fShowHiddenText}},
-                              {L"ShowParagraphGlyphs", StructFieldMetaInfo{&Options_::fShowParagraphGlyphs}},
-                              {L"ShowTabGlyphs", StructFieldMetaInfo{&Options_::fShowTabGlyphs}},
-                              {L"ShowSpaceGlyphs", StructFieldMetaInfo{&Options_::fShowSpaceGlyphs}},
+                                mapper.AddClass<Options_> (initializer_list<ObjectVariantMapper::StructFieldInfo> {
+                                    {L"DockBarState", StructFieldMetaInfo{&Options_::fDockBarState}},
+                                        {L"Search-Parameters", StructFieldMetaInfo{&Options_::fSearchParameters}},
+                                        {L"SmartCutAndPaste", StructFieldMetaInfo{&Options_::fSmartCutAndPaste}},
+                                        {L"WrapToWindow", StructFieldMetaInfo{&Options_::fWrapToWindow}},
+                                        {L"ShowHiddenText", StructFieldMetaInfo{&Options_::fShowHiddenText}},
+                                        {L"ShowParagraphGlyphs", StructFieldMetaInfo{&Options_::fShowParagraphGlyphs}},
+                                        {L"ShowTabGlyphs", StructFieldMetaInfo{&Options_::fShowTabGlyphs}},
+                                        {L"ShowSpaceGlyphs", StructFieldMetaInfo{&Options_::fShowSpaceGlyphs}},
 #if qPlatform_Windows
-                              {L"CheckFileAssocAtStartup", StructFieldMetaInfo{&Options_::fCheckFileAssocAtStartup}},
-                              {L"DefaultNewDocFont", StructFieldMetaInfo{&Options_::fDefaultNewDocFont}},
+                                        {L"CheckFileAssocAtStartup", StructFieldMetaInfo{&Options_::fCheckFileAssocAtStartup}},
+                                        {L"DefaultNewDocFont", StructFieldMetaInfo{&Options_::fDefaultNewDocFont}},
 #endif
-                      });
-                      return mapper;
-                  }(),
+                                });
+                                return mapper;
+                            }(),
 
-                  OptionsFile::kDefaultUpgrader,
+                            OptionsFile::kDefaultUpgrader,
 
-                  OptionsFile::mkFilenameMapper (L"LedIt"sv)}
+                            OptionsFile::mkFilenameMapper (L"LedIt"sv)}
             , fActualCurrentConfigData_{fOptionsFile_.Read<Options_> (Options_{})}
         {
             Set (fActualCurrentConfigData_); // assure derived data (and changed fields etc) up to date
         }
-        Options_ Get () const
-        {
-            return fActualCurrentConfigData_;
-        }
-        void Set (const Options_& v)
+        Options_ Get () const { return fActualCurrentConfigData_; }
+        void     Set (const Options_& v)
         {
             fActualCurrentConfigData_ = v;
             fOptionsFile_.Write (v);
@@ -119,14 +112,14 @@ namespace {
  *********************************** Options ************************************
  ********************************************************************************
  */
-SearchParameters Options::GetSearchParameters () const
-{
-    return sOptions_.Get ().fSearchParameters;
-}
+SearchParameters Options::GetSearchParameters () const { return sOptions_.Get ().fSearchParameters; }
 
 void Options::SetSearchParameters (const SearchParameters& searchParameters)
 {
-    sOptions_.Update ([=] (Options_ d) { d.fSearchParameters = searchParameters; return d; });
+    sOptions_.Update ([=] (Options_ d) {
+        d.fSearchParameters = searchParameters;
+        return d;
+    });
 }
 
 #if qPlatform_Windows
@@ -161,80 +154,83 @@ void Options::SetDocBarState (const CDockState& dockState)
     byte* p = new byte[nSize];
     file.SeekToBegin ();
     file.Read (p, nSize);
-    sOptions_.Update ([=] (Options_ d) { d.fDockBarState = BLOB{p, p+nSize}; return d; });
+    sOptions_.Update ([=] (Options_ d) {
+        d.fDockBarState = BLOB{p, p + nSize};
+        return d;
+    });
     delete[] p;
 }
 #endif
 
-bool Options::GetSmartCutAndPaste () const
-{
-    return sOptions_.Get ().fSmartCutAndPaste;
-}
+bool Options::GetSmartCutAndPaste () const { return sOptions_.Get ().fSmartCutAndPaste; }
 
 void Options::SetSmartCutAndPaste (bool smartCutAndPaste)
 {
-    sOptions_.Update ([=] (Options_ d) { d.fSmartCutAndPaste = smartCutAndPaste; return d; });
+    sOptions_.Update ([=] (Options_ d) {
+        d.fSmartCutAndPaste = smartCutAndPaste;
+        return d;
+    });
 }
 
-bool Options::GetWrapToWindow () const
-{
-    return sOptions_.Get ().fWrapToWindow;
-}
+bool Options::GetWrapToWindow () const { return sOptions_.Get ().fWrapToWindow; }
 
 void Options::SetWrapToWindow (bool wrapToWindow)
 {
-    sOptions_.Update ([=] (Options_ d) { d.fWrapToWindow = wrapToWindow; return d; });
+    sOptions_.Update ([=] (Options_ d) {
+        d.fWrapToWindow = wrapToWindow;
+        return d;
+    });
 }
 
-bool Options::GetShowHiddenText () const
-{
-    return sOptions_.Get ().fShowHiddenText;
-}
+bool Options::GetShowHiddenText () const { return sOptions_.Get ().fShowHiddenText; }
 
 void Options::SetShowHiddenText (bool showHiddenText)
 {
-    sOptions_.Update ([=] (Options_ d) { d.fShowHiddenText = showHiddenText; return d; });
+    sOptions_.Update ([=] (Options_ d) {
+        d.fShowHiddenText = showHiddenText;
+        return d;
+    });
 }
 
-bool Options::GetShowParagraphGlyphs () const
-{
-    return sOptions_.Get ().fShowParagraphGlyphs;
-}
+bool Options::GetShowParagraphGlyphs () const { return sOptions_.Get ().fShowParagraphGlyphs; }
 
 void Options::SetShowParagraphGlyphs (bool showParagraphGlyphs)
 {
-    sOptions_.Update ([=] (Options_ d) { d.fShowParagraphGlyphs = showParagraphGlyphs; return d; });
+    sOptions_.Update ([=] (Options_ d) {
+        d.fShowParagraphGlyphs = showParagraphGlyphs;
+        return d;
+    });
 }
 
-bool Options::GetShowTabGlyphs () const
-{
-    return sOptions_.Get ().fShowTabGlyphs;
-}
+bool Options::GetShowTabGlyphs () const { return sOptions_.Get ().fShowTabGlyphs; }
 
 void Options::SetShowTabGlyphs (bool showTabGlyphs)
 {
-    sOptions_.Update ([=] (Options_ d) { d.fShowTabGlyphs = showTabGlyphs; return d; });
+    sOptions_.Update ([=] (Options_ d) {
+        d.fShowTabGlyphs = showTabGlyphs;
+        return d;
+    });
 }
 
-bool Options::GetShowSpaceGlyphs () const
-{
-    return sOptions_.Get ().fShowSpaceGlyphs;
-}
+bool Options::GetShowSpaceGlyphs () const { return sOptions_.Get ().fShowSpaceGlyphs; }
 
 void Options::SetShowSpaceGlyphs (bool showSpaceGlyphs)
 {
-    sOptions_.Update ([=] (Options_ d) { d.fShowSpaceGlyphs = showSpaceGlyphs; return d; });
+    sOptions_.Update ([=] (Options_ d) {
+        d.fShowSpaceGlyphs = showSpaceGlyphs;
+        return d;
+    });
 }
 
 #if qPlatform_Windows
-bool Options::GetCheckFileAssocsAtStartup () const
-{
-    return sOptions_.Get ().fCheckFileAssocAtStartup;
-}
+bool Options::GetCheckFileAssocsAtStartup () const { return sOptions_.Get ().fCheckFileAssocAtStartup; }
 
 void Options::SetCheckFileAssocsAtStartup (bool checkFileAssocsAtStartup)
 {
-    sOptions_.Update ([=] (Options_ d) { d.fCheckFileAssocAtStartup = checkFileAssocsAtStartup; return d; });
+    sOptions_.Update ([=] (Options_ d) {
+        d.fCheckFileAssocAtStartup = checkFileAssocsAtStartup;
+        return d;
+    });
 }
 #endif
 
@@ -256,6 +252,9 @@ FontSpecification Options::GetDefaultNewDocFont () const
 void Options::SetDefaultNewDocFont ([[maybe_unused]] const FontSpecification& defaultNewDocFont)
 {
 #if qPlatform_Windows
-    sOptions_.Update ([&] (Options_ d) { d.fDefaultNewDocFont = BLOB::Raw (defaultNewDocFont.GetOSRep ()); return d; });
+    sOptions_.Update ([&] (Options_ d) {
+        d.fDefaultNewDocFont = BLOB::Raw (defaultNewDocFont.GetOSRep ());
+        return d;
+    });
 #endif
 }

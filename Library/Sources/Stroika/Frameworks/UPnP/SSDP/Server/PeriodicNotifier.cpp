@@ -32,7 +32,8 @@ using namespace Stroika::Frameworks::UPnP::SSDP::Server;
  ******************************** PeriodicNotifier ******************************
  ********************************************************************************
  */
-PeriodicNotifier::PeriodicNotifier (const Iterable<Advertisement>& advertisements, const FrequencyInfo& fi, IO::Network::InternetProtocol::IP::IPVersionSupport ipVersion)
+PeriodicNotifier::PeriodicNotifier (const Iterable<Advertisement>& advertisements, const FrequencyInfo& fi,
+                                    IO::Network::InternetProtocol::IP::IPVersionSupport ipVersion)
 {
     if constexpr (qDebug) {
         advertisements.Apply ([] ([[maybe_unused]] const auto& a) { Require (not a.fTarget.empty ()); });
@@ -92,5 +93,6 @@ PeriodicNotifier::PeriodicNotifier (const Iterable<Advertisement>& advertisement
             DbgTrace (L"Ignoring inability to send SSDP notify packets: %s (try again later)", Characters::ToString (current_exception ()).c_str ());
         }
     };
-    fIntervalTimerAdder_ = make_unique<Execution::IntervalTimer::Adder> (callback, Time::Duration{fi.fRepeatInterval}, Execution::IntervalTimer::Adder::eRunImmediately);
+    fIntervalTimerAdder_ = make_unique<Execution::IntervalTimer::Adder> (callback, Time::Duration{fi.fRepeatInterval},
+                                                                         Execution::IntervalTimer::Adder::eRunImmediately);
 }

@@ -30,9 +30,7 @@ namespace Stroika::Frameworks::Led {
     @DESCRIPTION:   <p>This method is called by a TextStore when text is being updated for all registered MarkerOwners
         (see @'TextStore::AddMarkerOwner'). You can throw an exception to prevent text from being updated.</p>
     */
-    inline void MarkerOwner::AboutToUpdateText (const UpdateInfo& /*updateInfo*/)
-    {
-    }
+    inline void MarkerOwner::AboutToUpdateText (const UpdateInfo& /*updateInfo*/) {}
     /*
     @METHOD:        MarkerOwner::EarlyDidUpdateText
     @DESCRIPTION:   <p>This method is called by a @'TextStore' <em>just</em>after a text update has taken place (and before the <em>DidUpdateText</em> calls take place).
@@ -40,18 +38,14 @@ namespace Stroika::Frameworks::Led {
         in some rare cases - you can tell if your getting a callback between your AboutToUpdate() call and your DidUpdateText () call - so you can
         tell if the text is truely updated yet.</p>
     */
-    inline void MarkerOwner::EarlyDidUpdateText (const UpdateInfo& /*updateInfo*/) noexcept
-    {
-    }
+    inline void MarkerOwner::EarlyDidUpdateText (const UpdateInfo& /*updateInfo*/) noexcept {}
     /*
     @METHOD:        MarkerOwner::DidUpdateText
     @DESCRIPTION:   <p>This method is called by a @'TextStore' after a text update has taken place. You can use this to update
         some appropriate data structures based on the change. NB: an exception <em>cannot</em> be raised by this method, or
         any overrides of it.</p>
     */
-    inline void MarkerOwner::DidUpdateText (const UpdateInfo& /*updateInfo*/) noexcept
-    {
-    }
+    inline void MarkerOwner::DidUpdateText (const UpdateInfo& /*updateInfo*/) noexcept {}
 
     /*
     @METHOD:        Marker::AboutToUpdateText
@@ -59,9 +53,7 @@ namespace Stroika::Frameworks::Led {
         if you want todo something special when the text marked by this particular marker is changed. You can throw
         from this method to prevent the update from actually taking place.</p>
     */
-    inline void Marker::AboutToUpdateText (const UpdateInfo& /*updateInfo*/)
-    {
-    }
+    inline void Marker::AboutToUpdateText (const UpdateInfo& /*updateInfo*/) {}
     /*
     @METHOD:        Marker::DidUpdateText
     @DESCRIPTION:   <p>Notification callback which is called by a @'TextStore' after the text is updated. You override this
@@ -69,9 +61,7 @@ namespace Stroika::Frameworks::Led {
         from this routine. Use @'Marker::AboutToUpdateText' to preflight, and assure any DidUpdateText method calls will
         work without a hitch.</p>
     */
-    inline void Marker::DidUpdateText (const UpdateInfo& /*updateInfo*/) noexcept
-    {
-    }
+    inline void Marker::DidUpdateText (const UpdateInfo& /*updateInfo*/) noexcept {}
     /*
     @METHOD:        Marker::GetStart
     @DESCRIPTION:   <p>Returns the marker position of the start (lhs) of the marker.</p>
@@ -129,7 +119,8 @@ namespace Stroika::Frameworks::Led {
     }
 
     //  class   MarkerOwner::UpdateInfo;
-    inline MarkerOwner::UpdateInfo::UpdateInfo (size_t from, size_t to, const Led_tChar* withWhat, size_t withWhatCharCount, bool textModified, bool realContentUpdate)
+    inline MarkerOwner::UpdateInfo::UpdateInfo (size_t from, size_t to, const Led_tChar* withWhat, size_t withWhatCharCount,
+                                                bool textModified, bool realContentUpdate)
         : fReplaceFrom{from}
         , fReplaceTo{to}
         , fTextInserted{withWhat}
@@ -138,10 +129,7 @@ namespace Stroika::Frameworks::Led {
         , fRealContentUpdate{realContentUpdate}
     {
     }
-    inline size_t MarkerOwner::UpdateInfo::GetResultingRHS () const
-    {
-        return fTextModified ? (fReplaceFrom + fTextLength) : fReplaceTo;
-    }
+    inline size_t MarkerOwner::UpdateInfo::GetResultingRHS () const { return fTextModified ? (fReplaceFrom + fTextLength) : fReplaceTo; }
 
     //  class   MarkerMortuary<MARKER>;
     template <typename MARKER>
@@ -174,7 +162,8 @@ namespace Stroika::Frameworks::Led {
                 RequireNotNull (static_cast<Marker*> (fMarkersToBeDeleted[0])->GetOwner ()->PeekAtTextStore ());
                 RequireNotNull (static_cast<Marker*> (m)->GetOwner ());
                 RequireNotNull (static_cast<Marker*> (m)->GetOwner ()->PeekAtTextStore ());
-                Require (static_cast<Marker*> (fMarkersToBeDeleted[0])->GetOwner ()->PeekAtTextStore () == static_cast<Marker*> (m)->GetOwner ()->PeekAtTextStore ());
+                Require (static_cast<Marker*> (fMarkersToBeDeleted[0])->GetOwner ()->PeekAtTextStore () ==
+                         static_cast<Marker*> (m)->GetOwner ()->PeekAtTextStore ());
             }
         }
 
@@ -215,7 +204,7 @@ namespace Stroika::Frameworks::Led {
 
             // NB: No exceptions can happen in any of this - all these deletes allocate no memory (LGP 950415)
             MARKER* const* markersToBeDeleted_ = &fMarkersToBeDeleted.front ();
-            Marker* const* markersToBeDeleted  = (Marker* const*)markersToBeDeleted_; // need cast - but safe - cuz array of MARKER* and looking for Marker* - safe cuz const array!
+            Marker* const* markersToBeDeleted = (Marker* const*)markersToBeDeleted_; // need cast - but safe - cuz array of MARKER* and looking for Marker* - safe cuz const array!
 
 #if qCompilerAndStdLib_ArgumentDependentLookupInTemplateExpansionTooAggressiveNowBroken_Buggy
             TextStore_RemoveMarkers (textStore, markersToBeDeleted, fMarkersToBeDeleted.size ());
@@ -279,22 +268,10 @@ namespace Stroika::Frameworks::Led {
     }
 
     //  class   TempMarker
-    inline size_t TempMarker::GetStart () const
-    {
-        return fMarker.GetStart ();
-    }
-    inline size_t TempMarker::GetEnd () const
-    {
-        return fMarker.GetEnd ();
-    }
-    inline size_t TempMarker::GetLength () const
-    {
-        return fMarker.GetLength ();
-    }
-    inline void TempMarker::GetLocation (size_t* start, size_t* end) const
-    {
-        fMarker.GetRange (start, end);
-    }
+    inline size_t TempMarker::GetStart () const { return fMarker.GetStart (); }
+    inline size_t TempMarker::GetEnd () const { return fMarker.GetEnd (); }
+    inline size_t TempMarker::GetLength () const { return fMarker.GetLength (); }
+    inline void   TempMarker::GetLocation (size_t* start, size_t* end) const { fMarker.GetRange (start, end); }
 
     //  class   TemporaryMarkerSlideDown<MARKER>
     template <typename MARKER>

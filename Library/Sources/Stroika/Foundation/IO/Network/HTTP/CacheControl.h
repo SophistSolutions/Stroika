@@ -193,18 +193,21 @@ namespace Stroika::Foundation::IO::Network::HTTP {
          *          auto cc = CacheControl{.fCacheability=CacheControl::eNoCache};             // Cache-Control: no-cache
          *      \endcode
          */
-        [[deprecated ("Since v2.1.11 - deprecated - probably use CacheControl{.fCacheability=CacheControl::ePublic, .fMaxAge=3600}")]] static const CacheControl kMustRevalidatePublic;
+        [[deprecated ("Since v2.1.11 - deprecated - probably use CacheControl{.fCacheability=CacheControl::ePublic, "
+                      ".fMaxAge=3600}")]] static const CacheControl kMustRevalidatePublic;
 
     public:
         /**
          *  \brief this means you CAN cache the value, but should revalidate each time before use (so etags can be used etc) - but it should not be re-used from user to user
          */
-        [[deprecated ("Since v2.1.11 - deprecated - probably use CacheControl{.fCacheability=CacheControl::ePrivate, .fMaxAge=3600}")]] static const CacheControl kMustRevalidatePrivate;
+        [[deprecated ("Since v2.1.11 - deprecated - probably use CacheControl{.fCacheability=CacheControl::ePrivate, "
+                      ".fMaxAge=3600}")]] static const CacheControl kMustRevalidatePrivate;
     };
     template <>
     Characters::String CacheControl::As () const;
 
-    inline constexpr const CacheControl CacheControl::kImmutable{.fCacheability = CacheControl::ePublic, .fMaxAge = CacheControl::kMaximumAgeValue, .fImmutable = true};
+    inline constexpr const CacheControl CacheControl::kImmutable{
+        .fCacheability = CacheControl::ePublic, .fMaxAge = CacheControl::kMaximumAgeValue, .fImmutable = true};
     inline constexpr const CacheControl CacheControl::kDisableCaching{.fCacheability = CacheControl::eNoStore};
     inline constexpr const CacheControl CacheControl::kMustRevalidatePublic{.fCacheability = CacheControl::eNoCache};
     inline constexpr const CacheControl CacheControl::kMustRevalidatePrivate{.fCacheability = CacheControl::ePrivate, .fMustRevalidate = true};

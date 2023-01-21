@@ -177,33 +177,14 @@ namespace {
     {
         RequireNotNull (volumes);
         static const Set<String> kRealDiskFS{
-            "ext2"sv,
-            "ext3"sv,
-            "ext4"sv,
-            "xfs"sv,
-            "jfs2"sv,
+            "ext2"sv, "ext3"sv, "ext4"sv, "xfs"sv, "jfs2"sv,
         };
         static const Set<String> kSysFSList_{
-            "autofs"sv,
-            "binfmt_misc"sv,
-            "cgroup"sv,
-            "configfs"sv,
-            "debugfs"sv,
-            "devpts"sv,
-            "devtmpfs"sv,
-            "fusectl"sv,
-            "fuse.gvfsd-fuse"sv,
-            "hugetlbfs"sv,
-            "mqueue"sv,
+            "autofs"sv,   "binfmt_misc"sv, "cgroup"sv,          "configfs"sv,   "debugfs"sv,   "devpts"sv,
+            "devtmpfs"sv, "fusectl"sv,     "fuse.gvfsd-fuse"sv, "hugetlbfs"sv,  "mqueue"sv,
             "nfsd"sv, // not nfs filesystem, but special config fs - http://linux.die.net/man/7/nfsd
-            "pstore"sv,
-            "proc"sv,
-            "rpc_pipefs"sv,
-            "securityfs"sv,
-            "selinuxfs"sv,
-            "sunrpc"sv,
-            "sysfs"sv,
-            "usbfs"sv,
+            "pstore"sv,   "proc"sv,        "rpc_pipefs"sv,      "securityfs"sv, "selinuxfs"sv, "sunrpc"sv,
+            "sysfs"sv,    "usbfs"sv,
         };
         static const Set<String> kNetworkFS_{
             "nfs"sv,
@@ -302,7 +283,9 @@ namespace {
             Mapping<MountedFilesystemNameType, MountedFilesystemInfoType> result;
             for (const IO::FileSystem::MountedFilesystemType& mi : IO::FileSystem::GetMountedFilesystems ()) {
                 MountedFilesystemInfoType vi;
-                String                    deviceName = (not mi.fDevicePaths.has_value () or mi.fDevicePaths->empty ()) ? String{} : IO::FileSystem::FromPath (mi.fDevicePaths->Nth (0));
+                String                    deviceName = (not mi.fDevicePaths.has_value () or mi.fDevicePaths->empty ())
+                                                           ? String{}
+                                                           : IO::FileSystem::FromPath (mi.fDevicePaths->Nth (0));
                 if (not deviceName.empty ()) {
                     vi.fDeviceOrVolumeName = deviceName;
                 }
@@ -317,8 +300,7 @@ namespace {
         static void UpdateVolumeInfo_statvfs_ (const filesystem::path& mountedOnName, MountedFilesystemInfoType* v)
         {
             RequireNotNull (v);
-            struct statvfs sbuf {
-            };
+            struct statvfs sbuf {};
             if (::statvfs (mountedOnName.c_str (), &sbuf) == 0) {
                 uint64_t diskSize        = sbuf.f_bsize * sbuf.f_blocks;
                 v->fSizeInBytes          = diskSize;
@@ -349,8 +331,7 @@ namespace {
                             }
                             dev_t useDevT;
                             {
-                                struct stat sbuf {
-                                };
+                                struct stat sbuf {};
                                 if (::stat (vi.fDeviceOrVolumeName->AsNarrowSDKString ().c_str (), &sbuf) == 0) {
                                     useDevT = sbuf.st_rdev;
                                 }
@@ -573,7 +554,8 @@ namespace {
             // Note - /procfs files always unseekable
             for (const Sequence<String>& line : reader.ReadMatrix (FileInputStream::New (kProcMemInfoFileName_, FileInputStream::eNotSeekable))) {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                DbgTrace (L"***in Instruments::Filesystem::ReadProcFS_diskstats_ linesize=%d, line[0]=%s", line.size (), line.empty () ? L"" : line[0].c_str ());
+                DbgTrace (L"***in Instruments::Filesystem::ReadProcFS_diskstats_ linesize=%d, line[0]=%s", line.size (),
+                          line.empty () ? L"" : line[0].c_str ());
 #endif
                 //
                 // https://www.kernel.org/doc/Documentation/ABI/testing/procfs-diskstats
@@ -603,7 +585,8 @@ namespace {
                     if (kAlsoReadQLen_) {
                         optional<filesystem::path> sysBlockInfoPath = GetSysBlockDirPathForDevice_ (devName);
                         if (sysBlockInfoPath) {
-                            for (const Sequence<String>& ll : reader.ReadMatrix (FileInputStream::New (*sysBlockInfoPath / "stat", FileInputStream::eNotSeekable))) {
+                            for (const Sequence<String>& ll :
+                                 reader.ReadMatrix (FileInputStream::New (*sysBlockInfoPath / "stat", FileInputStream::eNotSeekable))) {
                                 if (ll.size () >= 11) {
                                     weightedTimeInQSeconds = FloatConversion::ToFloat (ll[11 - 1]) / 1000.0; // we record in seconds, but the value in file in milliseconds
                                     break;
@@ -611,12 +594,11 @@ namespace {
                             }
                         }
                     }
-                    result.Add (
-                        makedev (String2Int<unsigned int> (majorDevNumber), String2Int<unsigned int> (minorDevNumber)),
-                        PerfStats_{
-                            FloatConversion::ToFloat (sectorsRead), FloatConversion::ToFloat (timeSpentReadingMS) / 1000, FloatConversion::ToFloat (readsCompleted),
-                            FloatConversion::ToFloat (sectorsWritten), FloatConversion::ToFloat (timeSpentWritingMS) / 1000, FloatConversion::ToFloat (writesCompleted),
-                            NullCoalesce (weightedTimeInQSeconds)});
+                    result.Add (makedev (String2Int<unsigned int> (majorDevNumber), String2Int<unsigned int> (minorDevNumber)),
+                                PerfStats_{FloatConversion::ToFloat (sectorsRead), FloatConversion::ToFloat (timeSpentReadingMS) / 1000,
+                                           FloatConversion::ToFloat (readsCompleted), FloatConversion::ToFloat (sectorsWritten),
+                                           FloatConversion::ToFloat (timeSpentWritingMS) / 1000, FloatConversion::ToFloat (writesCompleted),
+                                           NullCoalesce (weightedTimeInQSeconds)});
                 }
             }
             return result;
@@ -631,14 +613,15 @@ namespace {
     struct _Context : SystemPerformance::Support::Context {
 #if qUseWMICollectionSupport_
         // for collecting IO statistics
-        WMICollector fLogicalDiskWMICollector_{
-            "LogicalDisk"sv, {}, { kDiskReadBytesPerSec_,
-                                   kDiskWriteBytesPerSec_,
-                                   kDiskReadsPerSec_,
-                                   kDiskWritesPerSec_,
-                                   (kUseDiskPercentReadTime_ElseAveQLen_ToComputeQLen_ ? kPctDiskReadTime_ : kAveDiskReadQLen_),
-                                   (kUseDiskPercentReadTime_ElseAveQLen_ToComputeQLen_ ? kPctDiskWriteTime_ : kAveDiskWriteQLen_),
-                                   kPctIdleTime_ }};
+        WMICollector fLogicalDiskWMICollector_{"LogicalDisk"sv,
+                                               {},
+                                               { kDiskReadBytesPerSec_,
+                                                 kDiskWriteBytesPerSec_,
+                                                 kDiskReadsPerSec_,
+                                                 kDiskWritesPerSec_,
+                                                 (kUseDiskPercentReadTime_ElseAveQLen_ToComputeQLen_ ? kPctDiskReadTime_ : kAveDiskReadQLen_),
+                                                 (kUseDiskPercentReadTime_ElseAveQLen_ToComputeQLen_ ? kPctDiskWriteTime_ : kAveDiskWriteQLen_),
+                                                 kPctIdleTime_ }};
 #endif
     };
 
@@ -713,10 +696,11 @@ namespace {
                     ULARGE_INTEGER         freeBytesAvailable{};
                     ULARGE_INTEGER         totalNumberOfBytes{};
                     ULARGE_INTEGER         totalNumberOfFreeBytes{};
-                    [[maybe_unused]] DWORD ignored = ::GetDiskFreeSpaceEx (mfinfo.fMountedOn.c_str (), &freeBytesAvailable, &totalNumberOfBytes, &totalNumberOfFreeBytes);
-                    v.fSizeInBytes                 = totalNumberOfBytes.QuadPart;
-                    v.fUsedSizeInBytes             = *v.fSizeInBytes - freeBytesAvailable.QuadPart;
-                    v.fAvailableSizeInBytes        = *v.fSizeInBytes - *v.fUsedSizeInBytes;
+                    [[maybe_unused]] DWORD ignored =
+                        ::GetDiskFreeSpaceEx (mfinfo.fMountedOn.c_str (), &freeBytesAvailable, &totalNumberOfBytes, &totalNumberOfFreeBytes);
+                    v.fSizeInBytes          = totalNumberOfBytes.QuadPart;
+                    v.fUsedSizeInBytes      = *v.fSizeInBytes - freeBytesAvailable.QuadPart;
+                    v.fAvailableSizeInBytes = *v.fSizeInBytes - *v.fUsedSizeInBytes;
 #if qUseWMICollectionSupport_
                     auto safePctInUse2QL_ = [] (double pctInUse) {
                         // %InUse = QL / (1 + QL)
@@ -725,7 +709,8 @@ namespace {
                         return pctInUse / (1 - pctInUse);
                     };
                     if (_fOptions.fIOStatistics) {
-                        String wmiInstanceName = IO::FileSystem::FromPath (mfinfo.fMountedOn).RTrim ([] (Characters::Character c) { return c == '\\'; });
+                        String wmiInstanceName =
+                            IO::FileSystem::FromPath (mfinfo.fMountedOn).RTrim ([] (Characters::Character c) { return c == '\\'; });
                         contextPtr->fLogicalDiskWMICollector_.AddInstancesIf (wmiInstanceName);
 
                         IOStatsType readStats;
@@ -883,7 +868,8 @@ namespace {
         virtual MeasurementSet Capture () override
         {
             MeasurementSet results;
-            Measurement    m{kMountedVolumeUsage_, Instruments::Filesystem::Instrument::kObjectVariantMapper.FromObject (Capture_Raw (&results.fMeasuredAt))};
+            Measurement    m{kMountedVolumeUsage_,
+                          Instruments::Filesystem::Instrument::kObjectVariantMapper.FromObject (Capture_Raw (&results.fMeasuredAt))};
             results.fMeasurements.Add (m);
             return results;
         }
@@ -891,11 +877,8 @@ namespace {
         {
             return Do_Capture_Raw<Info> ([this] () { return _InternalCapture (); }, outMeasuredAt);
         }
-        virtual unique_ptr<IRep> Clone () const override
-        {
-            return make_unique<FilesystemInstrumentRep_> (_fOptions, _fContext.load ());
-        }
-        nonvirtual Info _InternalCapture ()
+        virtual unique_ptr<IRep> Clone () const override { return make_unique<FilesystemInstrumentRep_> (_fOptions, _fContext.load ()); }
+        nonvirtual Info          _InternalCapture ()
         {
             AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
             Debug::TraceContextBumper                       ctx{"Instruments::Filesystem _InternalCapture"};
@@ -910,7 +893,9 @@ namespace {
             return result;
         }
         // rarely used - see fEstimateFilesystemStatsFromDiskStatsIfHelpful in filesystem options
-        static Mapping<MountedFilesystemNameType, MountedFilesystemInfoType> ApplyDiskStatsToMissingFileSystemStats_ (const Mapping<DynamicDiskIDType, DiskInfoType>& disks, const Mapping<MountedFilesystemNameType, MountedFilesystemInfoType>& fileSystems)
+        static Mapping<MountedFilesystemNameType, MountedFilesystemInfoType>
+        ApplyDiskStatsToMissingFileSystemStats_ (const Mapping<DynamicDiskIDType, DiskInfoType>&                      disks,
+                                                 const Mapping<MountedFilesystemNameType, MountedFilesystemInfoType>& fileSystems)
         {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
             Debug::TraceContextBumper ctx{"Instruments::Filesystem ... ApplyDiskStatsToMissingFileSystemStats_"};
@@ -1052,12 +1037,11 @@ const ObjectVariantMapper Instruments::Filesystem::Instrument::kObjectVariantMap
 }();
 
 Instruments::Filesystem::Instrument::Instrument (const Options& options)
-    : SystemPerformance::Instrument{
-          InstrumentNameType{"Filesystem"sv},
-          make_unique<FilesystemInstrumentRep_> (options),
-          {kMountedVolumeUsage_},
-          {KeyValuePair<type_index, MeasurementType>{typeid (Info), kMountedVolumeUsage_}},
-          Instrument::kObjectVariantMapper}
+    : SystemPerformance::Instrument{InstrumentNameType{"Filesystem"sv},
+                                    make_unique<FilesystemInstrumentRep_> (options),
+                                    {kMountedVolumeUsage_},
+                                    {KeyValuePair<type_index, MeasurementType>{typeid (Info), kMountedVolumeUsage_}},
+                                    Instrument::kObjectVariantMapper}
 {
 }
 

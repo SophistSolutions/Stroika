@@ -27,7 +27,8 @@ namespace Stroika::Frameworks::WebServer {
         : Route{IO::Network::HTTP::MethodsRegEx::kGet, pathMatch, handler}
     {
     }
-    inline Route::Route (const function<bool (const String& method, const String& hostRelPath, const Request& request)>& requestMatcher, const RequestHandler& handler)
+    inline Route::Route (const function<bool (const String& method, const String& hostRelPath, const Request& request)>& requestMatcher,
+                         const RequestHandler&                                                                           handler)
         : fRequestMatch_{requestMatcher}
         , fHandler_{handler}
     {

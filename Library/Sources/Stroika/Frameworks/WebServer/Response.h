@@ -73,7 +73,8 @@ namespace Stroika::Frameworks::WebServer {
         Response ()                = delete;
         Response (const Response&) = delete;
         Response (Response&& src);
-        Response (const IO::Network::Socket::Ptr& s, const Streams::OutputStream<byte>::Ptr& outStream, const optional<HTTP::Headers>& initialHeaders = nullopt);
+        Response (const IO::Network::Socket::Ptr& s, const Streams::OutputStream<byte>::Ptr& outStream,
+                  const optional<HTTP::Headers>& initialHeaders = nullopt);
 
     public:
         // Reponse must be completed (OK to Abort ()) before being destroyed

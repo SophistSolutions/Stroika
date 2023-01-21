@@ -20,7 +20,8 @@ namespace Stroika::Foundation::Streams {
     template <typename ELEMENT_TYPE>
     class LoggingInputOutputStream<ELEMENT_TYPE>::Rep_ final : public InputOutputStream<ELEMENT_TYPE>::_IRep {
     public:
-        Rep_ (const typename InputOutputStream<ELEMENT_TYPE>::Ptr& realStream, const typename OutputStream<ELEMENT_TYPE>::Ptr& logInput, const typename OutputStream<ELEMENT_TYPE>::Ptr& logOutput)
+        Rep_ (const typename InputOutputStream<ELEMENT_TYPE>::Ptr& realStream, const typename OutputStream<ELEMENT_TYPE>::Ptr& logInput,
+              const typename OutputStream<ELEMENT_TYPE>::Ptr& logOutput)
             : InputOutputStream<ELEMENT_TYPE>::_IRep{}
             , fRealStream_{realStream}
             , fLogInput_{logInput}
@@ -31,10 +32,7 @@ namespace Stroika::Foundation::Streams {
 
         // Stream<ELEMENT_TYPE>::_IRep
     public:
-        virtual bool IsSeekable () const override
-        {
-            return fRealStream_.IsSeekable ();
-        }
+        virtual bool IsSeekable () const override { return fRealStream_.IsSeekable (); }
 
         // InputStream::_IRep
     public:
@@ -43,14 +41,8 @@ namespace Stroika::Foundation::Streams {
             fRealStream_.CloseRead ();
             fLogInput_.Close ();
         }
-        virtual bool IsOpenRead () const override
-        {
-            return fRealStream_.IsOpenRead ();
-        }
-        virtual SeekOffsetType GetReadOffset () const override
-        {
-            return fRealStream_.GetReadOffset ();
-        }
+        virtual bool           IsOpenRead () const override { return fRealStream_.IsOpenRead (); }
+        virtual SeekOffsetType GetReadOffset () const override { return fRealStream_.GetReadOffset (); }
         virtual SeekOffsetType SeekRead (Whence whence, SignedSeekOffsetType offset) override
         {
             SeekOffsetType result = fRealStream_.SeekRead (whence, offset);
@@ -103,7 +95,7 @@ namespace Stroika::Foundation::Streams {
             Require (IsOpenWrite ());
             Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
             SeekOffsetType                                         o1 = fRealStream_.SeekWrite (whence, offset);
-            [[maybe_unused]] SeekOffsetType                        o2 = fLogOutput_.Seek (whence, offset); // @todo - not sure if/how mcuh to see - since not totally in sync
+            [[maybe_unused]] SeekOffsetType o2 = fLogOutput_.Seek (whence, offset); // @todo - not sure if/how mcuh to see - since not totally in sync
             return o1;
         }
         virtual void Flush () override
@@ -136,12 +128,17 @@ namespace Stroika::Foundation::Streams {
      ********************************************************************************
      */
     template <typename ELEMENT_TYPE>
-    typename LoggingInputOutputStream<ELEMENT_TYPE>::Ptr LoggingInputOutputStream<ELEMENT_TYPE>::New (const typename InputOutputStream<ELEMENT_TYPE>::Ptr& realStream, const typename OutputStream<ELEMENT_TYPE>::Ptr& logInput, const typename OutputStream<ELEMENT_TYPE>::Ptr& logOutput)
+    typename LoggingInputOutputStream<ELEMENT_TYPE>::Ptr
+    LoggingInputOutputStream<ELEMENT_TYPE>::New (const typename InputOutputStream<ELEMENT_TYPE>::Ptr& realStream,
+                                                 const typename OutputStream<ELEMENT_TYPE>::Ptr&      logInput,
+                                                 const typename OutputStream<ELEMENT_TYPE>::Ptr&      logOutput)
     {
         return _mkPtr (make_shared<Rep_> (realStream, logInput, logOutput));
     }
     template <typename ELEMENT_TYPE>
-    typename LoggingInputOutputStream<ELEMENT_TYPE>::Ptr LoggingInputOutputStream<ELEMENT_TYPE>::New (Execution::InternallySynchronized internallySynchronized, const typename InputOutputStream<ELEMENT_TYPE>::Ptr& realStream, const typename OutputStream<ELEMENT_TYPE>::Ptr& logInput, const typename OutputStream<ELEMENT_TYPE>::Ptr& logOutput)
+    typename LoggingInputOutputStream<ELEMENT_TYPE>::Ptr LoggingInputOutputStream<ELEMENT_TYPE>::New (
+        Execution::InternallySynchronized internallySynchronized, const typename InputOutputStream<ELEMENT_TYPE>::Ptr& realStream,
+        const typename OutputStream<ELEMENT_TYPE>::Ptr& logInput, const typename OutputStream<ELEMENT_TYPE>::Ptr& logOutput)
     {
         switch (internallySynchronized) {
             case Execution::eInternallySynchronized:

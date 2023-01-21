@@ -210,9 +210,8 @@ TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer<Characters::String>
 template <>
 TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer<VariantValue> ()
 {
-    FromObjectMapperType<VariantValue> fromObjectMapper = [] (const ObjectVariantMapper&, const VariantValue* fromObjOfTypeT) -> VariantValue {
-        return *fromObjOfTypeT;
-    };
+    FromObjectMapperType<VariantValue> fromObjectMapper = [] (const ObjectVariantMapper&,
+                                                              const VariantValue* fromObjOfTypeT) -> VariantValue { return *fromObjOfTypeT; };
     ToObjectMapperType<VariantValue> toObjectMapper = [] (const ObjectVariantMapper&, const VariantValue& d, VariantValue* intoObjOfTypeT) -> void {
         *reinterpret_cast<VariantValue*> (intoObjOfTypeT) = d;
     };
@@ -234,10 +233,12 @@ TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer<Time::Duration> ()
 template <>
 TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer<Time::TimeOfDay> ()
 {
-    FromObjectMapperType<Time::TimeOfDay> fromObjectMapper = [] ([[maybe_unused]] const ObjectVariantMapper&, const Time::TimeOfDay* fromObjOfTypeT) -> VariantValue {
+    FromObjectMapperType<Time::TimeOfDay> fromObjectMapper = [] ([[maybe_unused]] const ObjectVariantMapper&,
+                                                                 const Time::TimeOfDay* fromObjOfTypeT) -> VariantValue {
         return VariantValue{fromObjOfTypeT->GetAsSecondsCount ()};
     };
-    ToObjectMapperType<Time::TimeOfDay> toObjectMapper = [] ([[maybe_unused]] const ObjectVariantMapper&, const VariantValue& d, Time::TimeOfDay* intoObjOfTypeT) -> void {
+    ToObjectMapperType<Time::TimeOfDay> toObjectMapper = [] ([[maybe_unused]] const ObjectVariantMapper&, const VariantValue& d,
+                                                             Time::TimeOfDay* intoObjOfTypeT) -> void {
         *reinterpret_cast<TimeOfDay*> (intoObjOfTypeT) = TimeOfDay{d.As<uint32_t> ()};
     };
     return TypeMappingDetails{typeid (TimeOfDay), fromObjectMapper, toObjectMapper};
@@ -246,7 +247,7 @@ TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer<Time::TimeOfDay> ()
 template <>
 TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer<Containers::Mapping<Characters::String, Characters::String>> ()
 {
-    using ACTUAL_ELEMENT_TYPE                                  = Mapping<String, String>;
+    using ACTUAL_ELEMENT_TYPE = Mapping<String, String>;
     FromObjectMapperType<ACTUAL_ELEMENT_TYPE> fromObjectMapper = [] (const ObjectVariantMapper&, const ACTUAL_ELEMENT_TYPE* fromObjOfTypeT) -> VariantValue {
         Mapping<String, VariantValue> m;
         for (const auto& i : *fromObjOfTypeT) {
@@ -256,7 +257,8 @@ TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer<Containers::Mapping
         }
         return VariantValue{m};
     };
-    ToObjectMapperType<ACTUAL_ELEMENT_TYPE> toObjectMapper = [] (const ObjectVariantMapper&, const VariantValue& d, ACTUAL_ELEMENT_TYPE* intoObjOfTypeT) -> void {
+    ToObjectMapperType<ACTUAL_ELEMENT_TYPE> toObjectMapper = [] (const ObjectVariantMapper&, const VariantValue& d,
+                                                                 ACTUAL_ELEMENT_TYPE* intoObjOfTypeT) -> void {
         Mapping<String, VariantValue> m = d.As<Mapping<String, VariantValue>> ();
         intoObjOfTypeT->clear ();
         for (const auto& i : m) {
@@ -271,11 +273,11 @@ TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer<Containers::Mapping
 template <>
 TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer<Containers::Mapping<Characters::String, VariantValue>> ()
 {
-    using ACTUAL_ELEMENT_TYPE                                  = Mapping<String, VariantValue>;
-    FromObjectMapperType<ACTUAL_ELEMENT_TYPE> fromObjectMapper = [] (const ObjectVariantMapper&, const ACTUAL_ELEMENT_TYPE* fromObjOfTypeT) -> VariantValue {
-        return VariantValue{*fromObjOfTypeT};
-    };
-    ToObjectMapperType<ACTUAL_ELEMENT_TYPE> toObjectMapper = [] (const ObjectVariantMapper&, const VariantValue& d, ACTUAL_ELEMENT_TYPE* intoObjOfTypeT) -> void {
+    using ACTUAL_ELEMENT_TYPE = Mapping<String, VariantValue>;
+    FromObjectMapperType<ACTUAL_ELEMENT_TYPE> fromObjectMapper =
+        [] (const ObjectVariantMapper&, const ACTUAL_ELEMENT_TYPE* fromObjOfTypeT) -> VariantValue { return VariantValue{*fromObjOfTypeT}; };
+    ToObjectMapperType<ACTUAL_ELEMENT_TYPE> toObjectMapper = [] (const ObjectVariantMapper&, const VariantValue& d,
+                                                                 ACTUAL_ELEMENT_TYPE* intoObjOfTypeT) -> void {
         *intoObjOfTypeT = d.As<Mapping<String, VariantValue>> ();
     };
     return TypeMappingDetails{typeid (ACTUAL_ELEMENT_TYPE), fromObjectMapper, toObjectMapper};
@@ -450,10 +452,7 @@ ObjectVariantMapper::ObjectVariantMapper ()
 {
 }
 
-void ObjectVariantMapper::Add (const TypeMappingDetails& s)
-{
-    fTypeMappingRegistry_.Add (s);
-}
+void ObjectVariantMapper::Add (const TypeMappingDetails& s) { fTypeMappingRegistry_.Add (s); }
 
 void ObjectVariantMapper::Add (const Traversal::Iterable<TypeMappingDetails>& s)
 {
@@ -465,15 +464,9 @@ void ObjectVariantMapper::Add (const TypesRegistry& s)
     s.GetMappers ().Apply ([this] (const TypeMappingDetails& arg) { Add (arg); });
 }
 
-void ObjectVariantMapper::Add (const ObjectVariantMapper& s)
-{
-    Add (s.fTypeMappingRegistry_);
-}
+void ObjectVariantMapper::Add (const ObjectVariantMapper& s) { Add (s.fTypeMappingRegistry_); }
 
-void ObjectVariantMapper::ResetToDefaultTypeRegistry ()
-{
-    fTypeMappingRegistry_ = GetDefaultTypeMappers_ ();
-}
+void ObjectVariantMapper::ResetToDefaultTypeRegistry () { fTypeMappingRegistry_ = GetDefaultTypeMappers_ (); }
 
 ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::Lookup_ (const type_index& forTypeInfo) const
 {
@@ -526,7 +519,7 @@ String ObjectVariantMapper::ToString () const
 template <>
 ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ (const optional<IO::Network::CIDR>*)
 {
-    using T                                            = IO::Network::CIDR;
+    using T = IO::Network::CIDR;
     FromObjectMapperType<optional<T>> fromObjectMapper = [] (const ObjectVariantMapper& mapper, const optional<T>* fromObjOfTypeT) -> VariantValue {
         RequireNotNull (fromObjOfTypeT);
         if (fromObjOfTypeT->has_value ()) {

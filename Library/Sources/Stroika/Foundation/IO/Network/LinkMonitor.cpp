@@ -78,8 +78,8 @@ static const char* flags (int sd, const char* name)
     assert (r == 0);
 
     int l = 0;
-#define FLAG(b)              \
-    if (ifreq.ifr_flags & b) \
+#define FLAG(b)                                                                                                                            \
+    if (ifreq.ifr_flags & b)                                                                                                               \
     l += snprintf (buf + l, sizeof (buf) - l, #b " ")
     FLAG (IFF_UP);
     FLAG (IFF_BROADCAST);
@@ -158,8 +158,7 @@ InternetAddress Network::GetPrimaryInternetAddress ()
     return InternetAddress{};
 #elif qPlatform_POSIX
     auto getFlags = [] (int sd, const char* name) -> int {
-        struct ::ifreq ifreq {
-        };
+        struct ::ifreq ifreq {};
         Characters::CString::Copy (ifreq.ifr_name, NEltsOf (ifreq.ifr_name), name);
         int r = ::ioctl (sd, SIOCGIFFLAGS, (char*)&ifreq);
         // Since this is used only to filter the list of addresses, if we get an error, don't throw but
@@ -173,8 +172,7 @@ InternetAddress Network::GetPrimaryInternetAddress ()
     };
 
     struct ::ifreq  ifreqs[32]{};
-    struct ::ifconf ifconf {
-    };
+    struct ::ifconf ifconf {};
     ifconf.ifc_req = ifreqs;
     ifconf.ifc_len = sizeof (ifreqs);
 
@@ -206,10 +204,8 @@ String Network::GetPrimaryNetworkDeviceMacAddress ()
 #endif
     [[maybe_unused]] auto printMacAddr = [] (const uint8_t macaddrBytes[6]) -> String {
         char buf[100]{};
-        (void)std::snprintf (buf, sizeof (buf), "%02x:%02x:%02x:%02x:%02x:%02x",
-                             macaddrBytes[0], macaddrBytes[1],
-                             macaddrBytes[2], macaddrBytes[3],
-                             macaddrBytes[4], macaddrBytes[5]);
+        (void)std::snprintf (buf, sizeof (buf), "%02x:%02x:%02x:%02x:%02x:%02x", macaddrBytes[0], macaddrBytes[1], macaddrBytes[2],
+                             macaddrBytes[3], macaddrBytes[4], macaddrBytes[5]);
         return String{buf};
     };
 #if qPlatform_Linux
@@ -225,8 +221,7 @@ String Network::GetPrimaryNetworkDeviceMacAddress ()
 
         const struct ifreq* const end = ifc.ifc_req + (ifc.ifc_len / sizeof (struct ifreq));
         for (const ifreq* it = ifc.ifc_req; it != end; ++it) {
-            struct ifreq ifr {
-            };
+            struct ifreq ifr {};
             Characters::CString::Copy (ifr.ifr_name, NEltsOf (ifr.ifr_name), it->ifr_name);
             if (::ioctl (s.GetNativeSocket (), SIOCGIFFLAGS, &ifr) == 0) {
                 if (!(ifr.ifr_flags & IFF_LOOPBACK)) { // don't count loopback
@@ -286,9 +281,7 @@ struct LinkMonitor::Rep_ {
         if (Address != NULL) {
             char ipAddrBuf[1024];
             (void)snprintf (ipAddrBuf, NEltsOf (ipAddrBuf), "%d.%d.%d.%d", Address->Address.Ipv4.sin_addr.s_net,
-                            Address->Address.Ipv4.sin_addr.s_host,
-                            Address->Address.Ipv4.sin_addr.s_lh,
-                            Address->Address.Ipv4.sin_addr.s_impno);
+                            Address->Address.Ipv4.sin_addr.s_host, Address->Address.Ipv4.sin_addr.s_lh, Address->Address.Ipv4.sin_addr.s_impno);
             LinkChange lc = (NotificationType == MibDeleteInstance) ? LinkChange::eRemoved : LinkChange::eAdded;
             rep->SendNotifies (lc, String{}, String{ipAddrBuf});
         }
@@ -303,7 +296,8 @@ struct LinkMonitor::Rep_ {
             fMonitorThread_ = Execution::Thread::New ([this] () {
                 // for now - only handle adds, but removes SB easy too...
 
-                ConnectionlessSocket::Ptr sock = ConnectionlessSocket::New (static_cast<SocketAddress::FamilyType> (PF_NETLINK), Socket::RAW, NETLINK_ROUTE);
+                ConnectionlessSocket::Ptr sock =
+                    ConnectionlessSocket::New (static_cast<SocketAddress::FamilyType> (PF_NETLINK), Socket::RAW, NETLINK_ROUTE);
 
                 {
                     sockaddr_nl addr{};
@@ -330,13 +324,14 @@ struct LinkMonitor::Rep_ {
                             while (rtl and RTA_OK (rth, rtl)) {
                                 if (rth->rta_type == IFA_LOCAL) {
                                     DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated\""); // macro uses 'register' - htons not deprecated
-                                    uint32_t ipaddr = htonl (*((uint32_t*)RTA_DATA (rth)));                             //NB no '::' cuz some systems use macro
-                                    DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated\"");   // macro uses 'register' - htons not deprecated
+                                    uint32_t ipaddr = htonl (*((uint32_t*)RTA_DATA (rth))); //NB no '::' cuz some systems use macro
+                                    DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated\""); // macro uses 'register' - htons not deprecated
                                     char name[IFNAMSIZ];
                                     ::if_indextoname (ifa->ifa_index, name);
                                     {
                                         char ipAddrBuf[1024];
-                                        ::snprintf (ipAddrBuf, NEltsOf (ipAddrBuf), "%d.%d.%d.%d", (ipaddr >> 24) & 0xff, (ipaddr >> 16) & 0xff, (ipaddr >> 8) & 0xff, ipaddr & 0xff);
+                                        ::snprintf (ipAddrBuf, NEltsOf (ipAddrBuf), "%d.%d.%d.%d", (ipaddr >> 24) & 0xff,
+                                                    (ipaddr >> 16) & 0xff, (ipaddr >> 8) & 0xff, ipaddr & 0xff);
                                         SendNotifies (LinkChange::eAdded, String::FromNarrowSDKString (name), String{ipAddrBuf});
                                     }
                                 }
@@ -391,12 +386,6 @@ LinkMonitor::LinkMonitor ()
 {
 }
 
-void LinkMonitor::AddCallback (const Callback& callback)
-{
-    fRep_->AddCallback (callback);
-}
+void LinkMonitor::AddCallback (const Callback& callback) { fRep_->AddCallback (callback); }
 
-void LinkMonitor::RemoveCallback (const Callback& callback)
-{
-    fRep_->RemoveCallback (callback);
-}
+void LinkMonitor::RemoveCallback (const Callback& callback) { fRep_->RemoveCallback (callback); }

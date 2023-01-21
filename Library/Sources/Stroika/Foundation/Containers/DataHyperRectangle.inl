@@ -76,7 +76,8 @@ namespace Stroika::Foundation::Containers {
     }
     template <typename T, typename... INDEXES>
     template <typename ELEMENT_EQUALS_COMPARER>
-    inline bool DataHyperRectangle<T, INDEXES...>::EqualsComparer<ELEMENT_EQUALS_COMPARER>::operator() (const DataHyperRectangle& lhs, const DataHyperRectangle& rhs) const
+    inline bool DataHyperRectangle<T, INDEXES...>::EqualsComparer<ELEMENT_EQUALS_COMPARER>::operator() (const DataHyperRectangle& lhs,
+                                                                                                        const DataHyperRectangle& rhs) const
     {
         return lhs.SequenceEquals (rhs, fElementComparer_);
     }

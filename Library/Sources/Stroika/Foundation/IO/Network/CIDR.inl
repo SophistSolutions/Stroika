@@ -20,16 +20,11 @@ namespace Stroika::Foundation::IO::Network {
     inline CIDR::CIDR (const InternetAddress& internetAddress, optional<unsigned int> significantBits)
         : CIDR{internetAddress, significantBits.value_or (static_cast<unsigned int> (*internetAddress.GetAddressSize () * 8))}
     {
-        Require (internetAddress.GetAddressFamily () == InternetAddress::AddressFamily::V4 or internetAddress.GetAddressFamily () == InternetAddress::AddressFamily::V6);
+        Require (internetAddress.GetAddressFamily () == InternetAddress::AddressFamily::V4 or
+                 internetAddress.GetAddressFamily () == InternetAddress::AddressFamily::V6);
     }
-    inline InternetAddress CIDR::GetBaseInternetAddress () const
-    {
-        return fBaseAddress_;
-    }
-    inline unsigned int CIDR::GetNumberOfSignificantBits () const
-    {
-        return fSignificantBits_;
-    }
+    inline InternetAddress CIDR::GetBaseInternetAddress () const { return fBaseAddress_; }
+    inline unsigned int    CIDR::GetNumberOfSignificantBits () const { return fSignificantBits_; }
     inline strong_ordering CIDR::operator<=> (const CIDR& rhs) const
     {
         /*
@@ -50,7 +45,8 @@ namespace Stroika::Foundation::IO::Network {
     }
     inline bool CIDR::operator== (const CIDR& rhs) const
     {
-        return fSignificantBits_ == rhs.fSignificantBits_ and fBaseAddress_.KeepSignifcantBits (fSignificantBits_) == rhs.fBaseAddress_.KeepSignifcantBits (fSignificantBits_);
+        return fSignificantBits_ == rhs.fSignificantBits_ and
+               fBaseAddress_.KeepSignifcantBits (fSignificantBits_) == rhs.fBaseAddress_.KeepSignifcantBits (fSignificantBits_);
     }
 
 }

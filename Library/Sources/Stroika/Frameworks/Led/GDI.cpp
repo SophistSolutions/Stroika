@@ -69,10 +69,7 @@ using namespace Stroika::Frameworks::Led;
 #endif
 
 #if qPlatform_Windows
-inline bool operator== (PALETTEENTRY lhs, COLORREF rhs)
-{
-    return RGB (lhs.peRed, lhs.peGreen, lhs.peBlue) == rhs;
-}
+inline bool operator== (PALETTEENTRY lhs, COLORREF rhs) { return RGB (lhs.peRed, lhs.peGreen, lhs.peBlue) == rhs; }
 #endif
 
 #if !qHaveWindowsDIBDefined
@@ -90,8 +87,7 @@ const bool kRunning32BitGDI = ((::GetVersion () & 0x80000000) == 0); // I BELIEV
 #endif
 
 #if qPlatform_MacOS
-inline QDErr SafeNewGWorld (GWorldPtr* offscreenGWorld, short pixelDepth, const Rect* boundsRect,
-                            CTabHandle cTable, GDHandle aGDevice, GWorldFlags flags)
+inline QDErr SafeNewGWorld (GWorldPtr* offscreenGWorld, short pixelDepth, const Rect* boundsRect, CTabHandle cTable, GDHandle aGDevice, GWorldFlags flags)
 {
     // NewGWorld seems to crash with 7.5.3 when we are low on memory in our app heap.
     // So just treat this as a failure result from NewGWorld, and avoid the crash.
@@ -104,8 +100,7 @@ inline QDErr SafeNewGWorld (GWorldPtr* offscreenGWorld, short pixelDepth, const 
     }
     return ::NewGWorld (offscreenGWorld, pixelDepth, boundsRect, cTable, aGDevice, flags);
 }
-inline GWorldFlags SafeUpdateGWorld (GWorldPtr* offscreenGWorld, short pixelDepth,
-                                     const Rect* boundsRect, CTabHandle cTable,
+inline GWorldFlags SafeUpdateGWorld (GWorldPtr* offscreenGWorld, short pixelDepth, const Rect* boundsRect, CTabHandle cTable,
                                      GDHandle aGDevice, GWorldFlags flags)
 {
     // UpdateGWorld seems to crash with 7.5.3 when we are low on memory in our app heap.
@@ -172,16 +167,24 @@ struct UniscribeDLL {
         , fScriptStringCPtoX (nullptr)
     {
         if (fDLL != nullptr) {
-            fScriptItemize                = (HRESULT (WINAPI*) (const WCHAR*, int, int, const SCRIPT_CONTROL*, const SCRIPT_STATE*, SCRIPT_ITEM*, int*)) (::GetProcAddress (fDLL, "ScriptItemize"));
-            fScriptShape                  = (HRESULT (WINAPI*) (HDC, SCRIPT_CACHE*, const WCHAR*, int, int, SCRIPT_ANALYSIS*, WORD*, WORD*, SCRIPT_VISATTR*, int*)) (::GetProcAddress (fDLL, "ScriptShape"));
-            fScriptPlace                  = (HRESULT (WINAPI*) (HDC, SCRIPT_CACHE*, const WORD*, int, const SCRIPT_VISATTR*, SCRIPT_ANALYSIS*, int*, GOFFSET*, ABC*)) (::GetProcAddress (fDLL, "ScriptPlace"));
-            fScriptStringAnalyse          = (HRESULT (WINAPI*) (HDC, const void*, int, int, int, DWORD, int, SCRIPT_CONTROL*, SCRIPT_STATE*, const int*, SCRIPT_TABDEF*, const BYTE*, SCRIPT_STRING_ANALYSIS*)) (::GetProcAddress (fDLL, "ScriptStringAnalyse"));
-            fScriptStringOut              = (HRESULT (WINAPI*) (SCRIPT_STRING_ANALYSIS, int, int, UINT, const RECT*, int, int, BOOL)) (::GetProcAddress (fDLL, "ScriptStringOut"));
-            fScriptStringFree             = (HRESULT (WINAPI*) (SCRIPT_STRING_ANALYSIS*)) (::GetProcAddress (fDLL, "ScriptStringFree"));
-            fScriptStringGetLogicalWidths = (HRESULT (WINAPI*) (SCRIPT_STRING_ANALYSIS, int*)) (::GetProcAddress (fDLL, "ScriptStringGetLogicalWidths"));
-            fScriptString_pcOutChars      = (const int*(WINAPI*)(SCRIPT_STRING_ANALYSIS)) (::GetProcAddress (fDLL, "ScriptString_pcOutChars"));
-            fScriptString_pSize           = (const SIZE*(WINAPI*)(SCRIPT_STRING_ANALYSIS)) (::GetProcAddress (fDLL, "ScriptString_pSize"));
-            fScriptStringCPtoX            = (HRESULT (WINAPI*) (SCRIPT_STRING_ANALYSIS, int, BOOL, int*)) (::GetProcAddress (fDLL, "ScriptStringCPtoX"));
+            fScriptItemize = (HRESULT (WINAPI*) (const WCHAR*, int, int, const SCRIPT_CONTROL*, const SCRIPT_STATE*, SCRIPT_ITEM*, int*)) (
+                ::GetProcAddress (fDLL, "ScriptItemize"));
+            fScriptShape = (HRESULT (WINAPI*) (HDC, SCRIPT_CACHE*, const WCHAR*, int, int, SCRIPT_ANALYSIS*, WORD*, WORD*, SCRIPT_VISATTR*,
+                                               int*)) (::GetProcAddress (fDLL, "ScriptShape"));
+            fScriptPlace = (HRESULT (WINAPI*) (HDC, SCRIPT_CACHE*, const WORD*, int, const SCRIPT_VISATTR*, SCRIPT_ANALYSIS*, int*,
+                                               GOFFSET*, ABC*)) (::GetProcAddress (fDLL, "ScriptPlace"));
+            fScriptStringAnalyse =
+                (HRESULT (WINAPI*) (HDC, const void*, int, int, int, DWORD, int, SCRIPT_CONTROL*, SCRIPT_STATE*, const int*, SCRIPT_TABDEF*,
+                                    const BYTE*, SCRIPT_STRING_ANALYSIS*)) (::GetProcAddress (fDLL, "ScriptStringAnalyse"));
+            fScriptStringOut = (HRESULT (WINAPI*) (SCRIPT_STRING_ANALYSIS, int, int, UINT, const RECT*, int, int, BOOL)) (
+                ::GetProcAddress (fDLL, "ScriptStringOut"));
+            fScriptStringFree = (HRESULT (WINAPI*) (SCRIPT_STRING_ANALYSIS*)) (::GetProcAddress (fDLL, "ScriptStringFree"));
+            fScriptStringGetLogicalWidths =
+                (HRESULT (WINAPI*) (SCRIPT_STRING_ANALYSIS, int*)) (::GetProcAddress (fDLL, "ScriptStringGetLogicalWidths"));
+            fScriptString_pcOutChars = (const int*(WINAPI*)(SCRIPT_STRING_ANALYSIS)) (::GetProcAddress (fDLL, "ScriptString_pcOutChars"));
+            fScriptString_pSize      = (const SIZE*(WINAPI*)(SCRIPT_STRING_ANALYSIS)) (::GetProcAddress (fDLL, "ScriptString_pSize"));
+            fScriptStringCPtoX =
+                (HRESULT (WINAPI*) (SCRIPT_STRING_ANALYSIS, int, BOOL, int*)) (::GetProcAddress (fDLL, "ScriptStringCPtoX"));
         }
     }
     ~UniscribeDLL ()
@@ -191,12 +194,10 @@ struct UniscribeDLL {
         }
     }
 
-    nonvirtual bool IsAvail () const
-    {
-        return fDLL != nullptr;
-    }
+    nonvirtual bool IsAvail () const { return fDLL != nullptr; }
 
-    HRESULT WINAPI ScriptItemize (const WCHAR* pwcInChars, int cInChars, int cMaxItems, const SCRIPT_CONTROL* psControl, const SCRIPT_STATE* psState, SCRIPT_ITEM* pItems, int* pcItems)
+    HRESULT WINAPI ScriptItemize (const WCHAR* pwcInChars, int cInChars, int cMaxItems, const SCRIPT_CONTROL* psControl,
+                                  const SCRIPT_STATE* psState, SCRIPT_ITEM* pItems, int* pcItems)
     {
         if (fScriptItemize == nullptr) {
             return E_FAIL;
@@ -204,7 +205,8 @@ struct UniscribeDLL {
         return (*fScriptItemize) (pwcInChars, cInChars, cMaxItems, psControl, psState, pItems, pcItems);
     }
 
-    HRESULT WINAPI ScriptShape (HDC hdc, SCRIPT_CACHE* psc, const WCHAR* pwcChars, int cChars, int cMaxGlyphs, SCRIPT_ANALYSIS* psa, WORD* pwOutGlyphs, WORD* pwLogClust, SCRIPT_VISATTR* psva, int* pcGlyphs)
+    HRESULT WINAPI ScriptShape (HDC hdc, SCRIPT_CACHE* psc, const WCHAR* pwcChars, int cChars, int cMaxGlyphs, SCRIPT_ANALYSIS* psa,
+                                WORD* pwOutGlyphs, WORD* pwLogClust, SCRIPT_VISATTR* psva, int* pcGlyphs)
     {
         if (fScriptShape == nullptr) {
             return E_FAIL;
@@ -212,7 +214,8 @@ struct UniscribeDLL {
         return (*fScriptShape) (hdc, psc, pwcChars, cChars, cMaxGlyphs, psa, pwOutGlyphs, pwLogClust, psva, pcGlyphs);
     }
 
-    HRESULT WINAPI ScriptPlace (HDC hdc, SCRIPT_CACHE* psc, const WORD* pwGlyphs, int cGlyphs, const SCRIPT_VISATTR* psva, SCRIPT_ANALYSIS* psa, int* piAdvance, GOFFSET* pGoffset, ABC* pABC)
+    HRESULT WINAPI ScriptPlace (HDC hdc, SCRIPT_CACHE* psc, const WORD* pwGlyphs, int cGlyphs, const SCRIPT_VISATTR* psva,
+                                SCRIPT_ANALYSIS* psa, int* piAdvance, GOFFSET* pGoffset, ABC* pABC)
     {
         if (fScriptPlace == nullptr) {
             return E_FAIL;
@@ -220,7 +223,9 @@ struct UniscribeDLL {
         return (*fScriptPlace) (hdc, psc, pwGlyphs, cGlyphs, psva, psa, piAdvance, pGoffset, pABC);
     }
 
-    HRESULT WINAPI ScriptStringAnalyse (HDC hdc, const void* pString, int cString, int cGlyphs, int iCharset, DWORD dwFlags, int iReqWidth, SCRIPT_CONTROL* psControl, SCRIPT_STATE* psState, const int* piDx, SCRIPT_TABDEF* pTabdef, const BYTE* pbInClass, SCRIPT_STRING_ANALYSIS* pssa)
+    HRESULT WINAPI ScriptStringAnalyse (HDC hdc, const void* pString, int cString, int cGlyphs, int iCharset, DWORD dwFlags, int iReqWidth,
+                                        SCRIPT_CONTROL* psControl, SCRIPT_STATE* psState, const int* piDx, SCRIPT_TABDEF* pTabdef,
+                                        const BYTE* pbInClass, SCRIPT_STRING_ANALYSIS* pssa)
     {
         if (fScriptStringAnalyse == nullptr) {
             return E_FAIL;
@@ -328,7 +333,8 @@ namespace {
         /*  Calculate the number of colors in the color table based on
          *  the number of bits per pixel for the DIB.
          */
-        unsigned short bitCount = IS_WIN30_DIB (dib) ? Led_ByteSwapFromWindows (hdr.biBitCount) : Led_ByteSwapFromWindows (((const BITMAPCOREHEADER*)dib)->bcBitCount);
+        unsigned short bitCount = IS_WIN30_DIB (dib) ? Led_ByteSwapFromWindows (hdr.biBitCount)
+                                                     : Led_ByteSwapFromWindows (((const BITMAPCOREHEADER*)dib)->bcBitCount);
 
         /* return number of colors based on bits per pixel */
         switch (bitCount) {
@@ -366,7 +372,8 @@ namespace {
         }
     }
 
-    void CreateStandardColorTable (RGBQUAD colorTable[256], COLORREF c1 = RGB (0, 0, 0), COLORREF c2 = RGB (0, 0, 0), COLORREF c3 = RGB (0, 0, 0), COLORREF c4 = RGB (0, 0, 0))
+    void CreateStandardColorTable (RGBQUAD colorTable[256], COLORREF c1 = RGB (0, 0, 0), COLORREF c2 = RGB (0, 0, 0),
+                                   COLORREF c3 = RGB (0, 0, 0), COLORREF c4 = RGB (0, 0, 0))
     {
         /*
          *  Cannot use ::GetStockObject (DEFAULT_PALETTE) - because - believe it or not - it returns a 20-entry pallete.
@@ -664,54 +671,19 @@ const Color Color::kAqua      = Color::kCyan;    // same according to that table
  */
 #if qPlatform_MacOS
 const Pattern Pen::kWhitePattern = {
-    0x00,
-    0x00,
-    0x00,
-    0x00,
-    0x00,
-    0x00,
-    0x00,
-    0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 };
 const Pattern Pen::kLightGrayPattern = {
-    0x88,
-    0x22,
-    0x88,
-    0x22,
-    0x88,
-    0x22,
-    0x88,
-    0x22,
+    0x88, 0x22, 0x88, 0x22, 0x88, 0x22, 0x88, 0x22,
 };
 const Pattern Pen::kGrayPattern = {
-    0xaa,
-    0x55,
-    0xaa,
-    0x55,
-    0xaa,
-    0x55,
-    0xaa,
-    0x55,
+    0xaa, 0x55, 0xaa, 0x55, 0xaa, 0x55, 0xaa, 0x55,
 };
 const Pattern Pen::kDarkGrayPattern = {
-    0x77,
-    0xdd,
-    0x77,
-    0xdd,
-    0x77,
-    0xdd,
-    0x77,
-    0xdd,
+    0x77, 0xdd, 0x77, 0xdd, 0x77, 0xdd, 0x77, 0xdd,
 };
 const Pattern Pen::kBlackPattern = {
-    0xff,
-    0xff,
-    0xff,
-    0xff,
-    0xff,
-    0xff,
-    0xff,
-    0xff,
+    0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
 };
 #endif
 
@@ -842,20 +814,17 @@ IncrementalFontSpecification Led::Intersection (const IncrementalFontSpecificati
 
     // Style Info
     {
-        if (not lhs.GetStyle_Bold_Valid () or not rhs.GetStyle_Bold_Valid () or
-            lhs.GetStyle_Bold () != rhs.GetStyle_Bold ()) {
+        if (not lhs.GetStyle_Bold_Valid () or not rhs.GetStyle_Bold_Valid () or lhs.GetStyle_Bold () != rhs.GetStyle_Bold ()) {
             result.InvalidateStyle_Bold ();
         }
     }
     {
-        if (not lhs.GetStyle_Italic_Valid () or not rhs.GetStyle_Italic_Valid () or
-            lhs.GetStyle_Italic () != rhs.GetStyle_Italic ()) {
+        if (not lhs.GetStyle_Italic_Valid () or not rhs.GetStyle_Italic_Valid () or lhs.GetStyle_Italic () != rhs.GetStyle_Italic ()) {
             result.InvalidateStyle_Italic ();
         }
     }
     {
-        if (not lhs.GetStyle_Underline_Valid () or not rhs.GetStyle_Underline_Valid () or
-            lhs.GetStyle_Underline () != rhs.GetStyle_Underline ()) {
+        if (not lhs.GetStyle_Underline_Valid () or not rhs.GetStyle_Underline_Valid () or lhs.GetStyle_Underline () != rhs.GetStyle_Underline ()) {
             result.InvalidateStyle_Underline ();
         }
     }
@@ -867,33 +836,28 @@ IncrementalFontSpecification Led::Intersection (const IncrementalFontSpecificati
     }
 #if qPlatform_MacOS
     {
-        if (not lhs.GetStyle_Outline_Valid () or not rhs.GetStyle_Outline_Valid () or
-            lhs.GetStyle_Outline () != rhs.GetStyle_Outline ()) {
+        if (not lhs.GetStyle_Outline_Valid () or not rhs.GetStyle_Outline_Valid () or lhs.GetStyle_Outline () != rhs.GetStyle_Outline ()) {
             result.InvalidateStyle_Outline ();
         }
     }
     {
-        if (not lhs.GetStyle_Shadow_Valid () or not rhs.GetStyle_Shadow_Valid () or
-            lhs.GetStyle_Shadow () != rhs.GetStyle_Shadow ()) {
+        if (not lhs.GetStyle_Shadow_Valid () or not rhs.GetStyle_Shadow_Valid () or lhs.GetStyle_Shadow () != rhs.GetStyle_Shadow ()) {
             result.InvalidateStyle_Shadow ();
         }
     }
     {
-        if (not lhs.GetStyle_Condensed_Valid () or not rhs.GetStyle_Condensed_Valid () or
-            lhs.GetStyle_Condensed () != rhs.GetStyle_Condensed ()) {
+        if (not lhs.GetStyle_Condensed_Valid () or not rhs.GetStyle_Condensed_Valid () or lhs.GetStyle_Condensed () != rhs.GetStyle_Condensed ()) {
             result.InvalidateStyle_Condensed ();
         }
     }
     {
-        if (not lhs.GetStyle_Extended_Valid () or not rhs.GetStyle_Extended_Valid () or
-            lhs.GetStyle_Extended () != rhs.GetStyle_Extended ()) {
+        if (not lhs.GetStyle_Extended_Valid () or not rhs.GetStyle_Extended_Valid () or lhs.GetStyle_Extended () != rhs.GetStyle_Extended ()) {
             result.InvalidateStyle_Extended ();
         }
     }
 #elif qPlatform_Windows
     {
-        if (not lhs.GetStyle_Strikeout_Valid () or not rhs.GetStyle_Strikeout_Valid () or
-            lhs.GetStyle_Strikeout () != rhs.GetStyle_Strikeout ()) {
+        if (not lhs.GetStyle_Strikeout_Valid () or not rhs.GetStyle_Strikeout_Valid () or lhs.GetStyle_Strikeout () != rhs.GetStyle_Strikeout ()) {
             result.InvalidateStyle_Strikeout ();
         }
     }
@@ -901,8 +865,7 @@ IncrementalFontSpecification Led::Intersection (const IncrementalFontSpecificati
 
     // Font Color Info
     {
-        if (not lhs.GetTextColor_Valid () or not rhs.GetTextColor_Valid () or
-            lhs.GetTextColor () != rhs.GetTextColor ()) {
+        if (not lhs.GetTextColor_Valid () or not rhs.GetTextColor_Valid () or lhs.GetTextColor () != rhs.GetTextColor ()) {
             result.InvalidateTextColor ();
         }
     }
@@ -917,8 +880,7 @@ IncrementalFontSpecification Led::Intersection (const IncrementalFontSpecificati
             (lhs.GetPointSizeIncrement_Valid () and lhs.GetPointSizeIncrement () != rhs.GetPointSizeIncrement ())) {
             needsInval = true;
         }
-        if (lhs.GetPointSize_Valid () != rhs.GetPointSize_Valid () or
-            (lhs.GetPointSize_Valid () and lhs.GetPointSize () != rhs.GetPointSize ())) {
+        if (lhs.GetPointSize_Valid () != rhs.GetPointSize_Valid () or (lhs.GetPointSize_Valid () and lhs.GetPointSize () != rhs.GetPointSize ())) {
             needsInval = true;
         }
         if (needsInval) {
@@ -941,7 +903,8 @@ public:
     ~RecolorHelper ();
 
 public:
-    static RecolorHelper* CheckCacheAndReconstructIfNeeded (RecolorHelper* _THIS_, HDC baseHDC, Led_Size size, Color hilightBackColor, Color hilightForeColor, Color oldBackColor, Color oldForeColor);
+    static RecolorHelper* CheckCacheAndReconstructIfNeeded (RecolorHelper* _THIS_, HDC baseHDC, Led_Size size, Color hilightBackColor,
+                                                            Color hilightForeColor, Color oldBackColor, Color oldForeColor);
 
 public:
     nonvirtual void DoRecolor (const Led_Rect& hilightArea);
@@ -983,29 +946,17 @@ private:
 COLORREF Tablet::RecolorHelper::MapColor (COLORREF c) const
 {
     float fIntrp;
-    fIntrp   = (float)(255 - GetRValue (c)) / 256.0f;
-    BYTE red = static_cast<BYTE> (
-        GetRValue (fHilightBackColor) +
-        fIntrp * GetRValue (fHilightForeColor) -
-        fIntrp * GetRValue (fHilightBackColor));
+    fIntrp = (float)(255 - GetRValue (c)) / 256.0f;
+    BYTE red = static_cast<BYTE> (GetRValue (fHilightBackColor) + fIntrp * GetRValue (fHilightForeColor) - fIntrp * GetRValue (fHilightBackColor));
 
-    fIntrp     = (float)(255 - GetGValue (c)) / 256.0f;
-    BYTE green = static_cast<BYTE> (
-        GetGValue (fHilightBackColor) +
-        fIntrp * GetGValue (fHilightForeColor) -
-        fIntrp * GetGValue (fHilightBackColor));
+    fIntrp = (float)(255 - GetGValue (c)) / 256.0f;
+    BYTE green = static_cast<BYTE> (GetGValue (fHilightBackColor) + fIntrp * GetGValue (fHilightForeColor) - fIntrp * GetGValue (fHilightBackColor));
 
-    fIntrp    = (float)(255 - GetBValue (c)) / 256.0f;
-    BYTE blue = static_cast<BYTE> (
-        GetBValue (fHilightBackColor) +
-        fIntrp * GetBValue (fHilightForeColor) -
-        fIntrp * GetBValue (fHilightBackColor));
+    fIntrp = (float)(255 - GetBValue (c)) / 256.0f;
+    BYTE blue = static_cast<BYTE> (GetBValue (fHilightBackColor) + fIntrp * GetBValue (fHilightForeColor) - fIntrp * GetBValue (fHilightBackColor));
     return RGB (red, green, blue);
 }
-inline COLORREF Tablet::RecolorHelper::MapColor (RGBQUAD c) const
-{
-    return MapColor (RGB (c.rgbRed, c.rgbGreen, c.rgbBlue));
-}
+inline COLORREF Tablet::RecolorHelper::MapColor (RGBQUAD c) const { return MapColor (RGB (c.rgbRed, c.rgbGreen, c.rgbBlue)); }
 
 Tablet::RecolorHelper::RecolorHelper (HDC baseHDC, Led_Size size, Color hilightBackColor, Color hilightForeColor, Color oldBackColor, Color oldForeColor)
     : fDibData (nullptr)
@@ -1041,16 +992,12 @@ Tablet::RecolorHelper::~RecolorHelper ()
     }
 }
 
-Tablet::RecolorHelper* Tablet::RecolorHelper::CheckCacheAndReconstructIfNeeded (RecolorHelper* _THIS_, HDC baseHDC, Led_Size size, Color hilightBackColor, Color hilightForeColor, Color oldBackColor, Color oldForeColor)
+Tablet::RecolorHelper* Tablet::RecolorHelper::CheckCacheAndReconstructIfNeeded (RecolorHelper* _THIS_, HDC baseHDC, Led_Size size, Color hilightBackColor,
+                                                                                Color hilightForeColor, Color oldBackColor, Color oldForeColor)
 {
-    if (_THIS_ == nullptr or
-        size.h > _THIS_->fSize.h or
-        size.v > _THIS_->fSize.v or
-        baseHDC != _THIS_->fBaseDC or
-        hilightBackColor.GetOSRep () != _THIS_->fHilightBackColor or
-        hilightForeColor.GetOSRep () != _THIS_->fHilightForeColor or
-        oldBackColor.GetOSRep () != _THIS_->fOldBackColor or
-        oldForeColor.GetOSRep () != _THIS_->fOldForeColor) {
+    if (_THIS_ == nullptr or size.h > _THIS_->fSize.h or size.v > _THIS_->fSize.v or baseHDC != _THIS_->fBaseDC or
+        hilightBackColor.GetOSRep () != _THIS_->fHilightBackColor or hilightForeColor.GetOSRep () != _THIS_->fHilightForeColor or
+        oldBackColor.GetOSRep () != _THIS_->fOldBackColor or oldForeColor.GetOSRep () != _THIS_->fOldForeColor) {
         Led_Size areaSize = size;
         if (_THIS_ != nullptr) {
             areaSize.v = max (size.v, _THIS_->fSize.v);
@@ -1118,8 +1065,8 @@ void Tablet::RecolorHelper::DoRecolor_SimpleDSTINVERT (const Led_Rect& hilightAr
     // Does proper inverse video, but seems to ignore the TextColor/BkColor/Pen/Brush colors.
     // Really should fix this to behave like Mac - replacing the background color with the text hilight color.
     // See SPR#1271
-    ::BitBlt (fBaseDC, hilightArea.left, hilightArea.top, hilightArea.GetWidth (), hilightArea.GetHeight (),
-              fBaseDC, hilightArea.left, hilightArea.top, DSTINVERT);
+    ::BitBlt (fBaseDC, hilightArea.left, hilightArea.top, hilightArea.GetWidth (), hilightArea.GetHeight (), fBaseDC, hilightArea.left,
+              hilightArea.top, DSTINVERT);
 }
 
 void Tablet::RecolorHelper::DoRecolor_SimplePATINVERT (const Led_Rect& hilightArea)
@@ -1130,8 +1077,8 @@ void Tablet::RecolorHelper::DoRecolor_SimplePATINVERT (const Led_Rect& hilightAr
     HGDIOBJ oldPen   = ::SelectObject (fBaseDC, ::GetStockObject (NULL_PEN));
     Brush   backgroundBrush (useColor.GetOSRep ());
     HGDIOBJ oldBrush = ::SelectObject (fBaseDC, backgroundBrush);
-    ::BitBlt (fBaseDC, hilightArea.left, hilightArea.top, hilightArea.GetWidth (), hilightArea.GetHeight (),
-              fBaseDC, hilightArea.left, hilightArea.top, PATINVERT);
+    ::BitBlt (fBaseDC, hilightArea.left, hilightArea.top, hilightArea.GetWidth (), hilightArea.GetHeight (), fBaseDC, hilightArea.left,
+              hilightArea.top, PATINVERT);
     (void)::SelectObject (fBaseDC, oldPen);
     (void)::SelectObject (fBaseDC, oldBrush);
 }
@@ -1144,8 +1091,7 @@ void Tablet::RecolorHelper::DoRecolor_CopyTo8BitManualMungePixAndBack (const Led
     // LGP - 2003-03-12
 
     // Copy the REAL image into our 8-bit DIBSECTION
-    ::BitBlt (fHMemDC, 0, 0, hilightArea.GetWidth (), hilightArea.GetHeight (),
-              fBaseDC, hilightArea.left, hilightArea.top, SRCCOPY);
+    ::BitBlt (fHMemDC, 0, 0, hilightArea.GetWidth (), hilightArea.GetHeight (), fBaseDC, hilightArea.left, hilightArea.top, SRCCOPY);
 
     /*
      *
@@ -1175,8 +1121,7 @@ void Tablet::RecolorHelper::DoRecolor_CopyTo8BitManualMungePixAndBack (const Led
     }
 
     // Copy them back
-    ::BitBlt (fBaseDC, hilightArea.left, hilightArea.top, hilightArea.GetWidth (), hilightArea.GetHeight (),
-              fHMemDC, 0, 0, SRCCOPY);
+    ::BitBlt (fBaseDC, hilightArea.left, hilightArea.top, hilightArea.GetWidth (), hilightArea.GetHeight (), fHMemDC, 0, 0, SRCCOPY);
 }
 #endif
 
@@ -1261,20 +1206,14 @@ Tablet::~Tablet ()
 @DESCRIPTION:   <p>Utility routine to convert from TWIPS to logical coordinates (usually pixels).</p>
     <p>See also @'Tablet::CvtFromTWIPSV', @'Tablet::CvtFromTWIPSH', @'Tablet::CvtToTWIPSV', @'Tablet::CvtToTWIPSH'.</p>
 */
-Led_Point Tablet::CvtFromTWIPS (TWIPS_Point from) const
-{
-    return Led_Point{CvtFromTWIPSV (from.v), CvtFromTWIPSH (from.h)};
-}
+Led_Point Tablet::CvtFromTWIPS (TWIPS_Point from) const { return Led_Point{CvtFromTWIPSV (from.v), CvtFromTWIPSH (from.h)}; }
 
 /*
 @METHOD:        Tablet::CvtToTWIPS
 @DESCRIPTION:   <p>Utility routine to convert from logical coordinates (usually pixels) to TWIPS.</p>
     <p>See also @'Tablet::CvtFromTWIPSV', @'Tablet::CvtFromTWIPSH', @'Tablet::CvtToTWIPSV', @'Tablet::CvtToTWIPSH'.</p>
 */
-TWIPS_Point Tablet::CvtToTWIPS (Led_Point from) const
-{
-    return TWIPS_Point{CvtToTWIPSV (from.v), CvtToTWIPSH (from.h)};
-}
+TWIPS_Point Tablet::CvtToTWIPS (Led_Point from) const { return TWIPS_Point{CvtToTWIPSV (from.v), CvtToTWIPSH (from.h)}; }
 
 /*
 @METHOD:        Tablet::CvtFromTWIPS
@@ -1355,10 +1294,8 @@ void Tablet::ScrollBitsAndInvalRevealed (const Led_Rect& windowRect, CoordinateT
         ::XGetGCValues (fDisplay, fGC, kSavedAttrs, &prevValues);
         ::XSetClipMask (fDisplay, fGC, None);
         ::XSetGraphicsExposures (fDisplay, fGC, true);
-        ::XCopyArea (fDisplay, fDrawable, fDrawable, fGC,
-                     srcMoveRect.GetLeft (), srcMoveRect.GetTop (),
-                     srcMoveRect.GetWidth (), srcMoveRect.GetHeight (),
-                     srcMoveRect.GetLeft (), srcMoveRect.top + scrollVBy);
+        ::XCopyArea (fDisplay, fDrawable, fDrawable, fGC, srcMoveRect.GetLeft (), srcMoveRect.GetTop (), srcMoveRect.GetWidth (),
+                     srcMoveRect.GetHeight (), srcMoveRect.GetLeft (), srcMoveRect.top + scrollVBy);
         ::XChangeGC (fDisplay, fGC, kSavedAttrs, &prevValues);
 
 /*
@@ -1378,8 +1315,8 @@ void Tablet::ScrollBitsAndInvalRevealed (const Led_Rect& windowRect, CoordinateT
         event.xexpose.count = 0;
         Verify (::XSendEvent (fDisplay, fDrawable, false, ExposureMask, &event) != 0);
 #else
-        ::XClearArea (fDisplay, fDrawable, (int)exposedRect.GetLeft (), (int)exposedRect.GetTop (),
-                      (unsigned int)exposedRect.GetWidth (), (unsigned int)exposedRect.GetHeight (), true);
+        ::XClearArea (fDisplay, fDrawable, (int)exposedRect.GetLeft (), (int)exposedRect.GetTop (), (unsigned int)exposedRect.GetWidth (),
+                      (unsigned int)exposedRect.GetHeight (), true);
 #endif
     }
 #else
@@ -1437,8 +1374,7 @@ void Tablet::FrameRectangle (const Led_Rect& r, Color c, DistanceType borderWidt
                 <p>Note that the resulting measured text must come out in non-descreasing order (there can be zero
             character widths, but never negative).</p>
 */
-void Tablet::MeasureText (const FontMetrics& precomputedFontMetrics,
-                          const Led_tChar* text, size_t nTChars, DistanceType* charLocations)
+void Tablet::MeasureText (const FontMetrics& precomputedFontMetrics, const Led_tChar* text, size_t nTChars, DistanceType* charLocations)
 {
     RequireNotNull (text);
     RequireNotNull (charLocations);
@@ -1534,7 +1470,8 @@ void Tablet::MeasureText (const FontMetrics& precomputedFontMetrics,
                 SCRIPT_STRING_ANALYSIS ssa;
                 memset (&ssa, 0, sizeof (ssa));
 
-                Verify (sUniscribeDLL.ScriptStringAnalyse (m_hAttribDC, &text[i], charsThisTime, 0, -1, SSA_GLYPHS | SSA_FALLBACK, -1, &scriptControl, &scriptState, nullptr, nullptr, nullptr, &ssa) == S_OK);
+                Verify (sUniscribeDLL.ScriptStringAnalyse (m_hAttribDC, &text[i], charsThisTime, 0, -1, SSA_GLYPHS | SSA_FALLBACK, -1,
+                                                           &scriptControl, &scriptState, nullptr, nullptr, nullptr, &ssa) == S_OK);
 
 #if qTryScriptToCPX
                 for (size_t j = 0; j < charsThisTime; ++j) {
@@ -1635,9 +1572,8 @@ void Tablet::MeasureText (const FontMetrics& precomputedFontMetrics,
             take care of any contextual shaping required (glyph selection based on context - as with Arabic).</p>
 */
 void Tablet::TabbedTextOut ([[maybe_unused]] const FontMetrics& precomputedFontMetrics, const Led_tChar* text, size_t nBytes,
-                            [[maybe_unused]] TextDirection direction,
-                            Led_Point outputAt, CoordinateType hTabOrigin, const TabStopList& tabStopList,
-                            DistanceType* amountDrawn, CoordinateType hScrollOffset)
+                            [[maybe_unused]] TextDirection direction, Led_Point outputAt, CoordinateType hTabOrigin,
+                            const TabStopList& tabStopList, DistanceType* amountDrawn, CoordinateType hScrollOffset)
 {
 #if qPlatform_MacOS
     SetPort ();
@@ -1710,11 +1646,13 @@ void Tablet::TabbedTextOut ([[maybe_unused]] const FontMetrics& precomputedFontM
                     {
                         SCRIPT_STRING_ANALYSIS ssa;
                         memset (&ssa, 0, sizeof (ssa));
-                        if (not SUCCEEDED (sUniscribeDLL.ScriptStringAnalyse (m_hDC, thisChunkPtr, thisChunkLen, 0, -1, SSA_GLYPHS | SSA_FALLBACK, -1, &scriptControl, &scriptState, nullptr, nullptr, nullptr, &ssa))) {
+                        if (not SUCCEEDED (sUniscribeDLL.ScriptStringAnalyse (m_hDC, thisChunkPtr, thisChunkLen, 0, -1, SSA_GLYPHS | SSA_FALLBACK,
+                                                                              -1, &scriptControl, &scriptState, nullptr, nullptr, nullptr, &ssa))) {
                             goto UniscribeFailure; // Can happen - for example - during ColeControl::DrawMetaFile ()
                             // call - see SPR#1447 - fallback on older draw code...
                         }
-                        Verify (sUniscribeDLL.ScriptStringOut (ssa, outputAt.h + int (widthSoFar) - hScrollOffset, outputAt.v, 0, nullptr, 0, 0, false) == S_OK);
+                        Verify (sUniscribeDLL.ScriptStringOut (ssa, outputAt.h + int (widthSoFar) - hScrollOffset, outputAt.v, 0, nullptr,
+                                                               0, 0, false) == S_OK);
                         const SIZE* sizep = sUniscribeDLL.ScriptString_pSize (ssa);
                         AssertNotNull (sizep);
                         widthSoFar += sizep->cx;
@@ -1751,7 +1689,8 @@ void Tablet::TabbedTextOut ([[maybe_unused]] const FontMetrics& precomputedFontM
 #endif
 
         if (direction == eLeftToRight) {
-            Win32_TextOut (m_hDC, static_cast<int> (outputAt.h + widthSoFar - hScrollOffset), static_cast<int> (outputAt.v), textCursor, static_cast<int> (nextTabAt - textCursor));
+            Win32_TextOut (m_hDC, static_cast<int> (outputAt.h + widthSoFar - hScrollOffset), static_cast<int> (outputAt.v), textCursor,
+                           static_cast<int> (nextTabAt - textCursor));
 
             // Geez! There must be SOME API within Win32 to give me this info (like SetTextAlign (UPDATE_CP))
             // without recomputing it. But there doesn't appear to be. So we must recompute!
@@ -1780,7 +1719,8 @@ void Tablet::TabbedTextOut ([[maybe_unused]] const FontMetrics& precomputedFontM
                 gcpResult.lpGlyphs = glyphs.data ();
                 gcpResult.nGlyphs = static_cast<UINT> (len);
                 if (::GetCharacterPlacementW (m_hDC, textCursor, static_cast<int> (len), 0, &gcpResult, GCP_GLYPHSHAPE | GCP_LIGATE) != 0) {
-                    Verify (::ExtTextOutW (m_hDC, outputAt.h + widthSoFar - hScrollOffset, outputAt.v, ETO_GLYPH_INDEX, nullptr, gcpResult.lpGlyphs, gcpResult.nGlyphs, nullptr));
+                    Verify (::ExtTextOutW (m_hDC, outputAt.h + widthSoFar - hScrollOffset, outputAt.v, ETO_GLYPH_INDEX, nullptr,
+                                           gcpResult.lpGlyphs, gcpResult.nGlyphs, nullptr));
                     goto Succeeded_But_Need_To_Adjust_Width;
                 }
             }
@@ -1791,7 +1731,8 @@ void Tablet::TabbedTextOut ([[maybe_unused]] const FontMetrics& precomputedFontM
                 size_t len = nextTabAt - textCursor;
                 Memory::StackBuffer<wchar_t> glyphs{len};
                 if (Win9x_Workaround_GetCharPlacementFunction (m_hDC, textCursor, len, glyphs.data ()) != 0) {
-                    Verify (::ExtTextOutW (m_hDC, outputAt.h + widthSoFar - hScrollOffset, outputAt.v, ETO_GLYPH_INDEX, nullptr, glyphs.data (), static_cast<UINT> (len), nullptr));
+                    Verify (::ExtTextOutW (m_hDC, outputAt.h + widthSoFar - hScrollOffset, outputAt.v, ETO_GLYPH_INDEX, nullptr,
+                                           glyphs.data (), static_cast<UINT> (len), nullptr));
                     goto Succeeded_But_Need_To_Adjust_Width;
                 }
             }
@@ -1802,9 +1743,11 @@ void Tablet::TabbedTextOut ([[maybe_unused]] const FontMetrics& precomputedFontM
                 // Fallback - if the above fails...
                 // Displays the text in the right order, but doesn't do contextual shaping (tested on WinXP and WinME) - LGP 2002-12-10
 #if qWideCharacters
-                Verify (::ExtTextOutW (m_hDC, outputAt.h + widthSoFar - hScrollOffset, outputAt.v, 0, nullptr, textCursor, static_cast<UINT> (len), nullptr));
+                Verify (::ExtTextOutW (m_hDC, outputAt.h + widthSoFar - hScrollOffset, outputAt.v, 0, nullptr, textCursor,
+                                       static_cast<UINT> (len), nullptr));
 #else
-                Verify (::ExtTextOutA (m_hDC, outputAt.h + widthSoFar - hScrollOffset, outputAt.v, 0, nullptr, textCursor, static_cast<UINT> (len), nullptr));
+                Verify (::ExtTextOutA (m_hDC, outputAt.h + widthSoFar - hScrollOffset, outputAt.v, 0, nullptr, textCursor,
+                                       static_cast<UINT> (len), nullptr));
 #endif
             }
 
@@ -1958,7 +1901,8 @@ void Tablet::EraseBackground_SolidHelper (const Led_Rect& eraseRect, const Color
             ::XSetForeground (fDisplay, fGC, fgColorDef.pixel);
         }
         Led_Rect adjustedEraseRect = eraseRect - fDrawableOrigin;
-        ::XFillRectangle (fDisplay, fDrawable, fGC, adjustedEraseRect.GetLeft (), adjustedEraseRect.GetTop (), adjustedEraseRect.GetWidth (), adjustedEraseRect.GetHeight ());
+        ::XFillRectangle (fDisplay, fDrawable, fGC, adjustedEraseRect.GetLeft (), adjustedEraseRect.GetTop (),
+                          adjustedEraseRect.GetWidth (), adjustedEraseRect.GetHeight ());
         ::XChangeGC (fDisplay, fGC, kSavedAttrs, &prevValues);
 #endif
     }
@@ -1975,7 +1919,8 @@ void Tablet::EraseBackground_SolidHelper (const Led_Rect& eraseRect, const Color
             the background color to while, and the hilight colors the reverse of this (fore=black/back=white), this code will revert
             to the old algorithm, and run much faster.</p>
 */
-void Tablet::HilightArea_SolidHelper (const Led_Rect& hilightArea, [[maybe_unused]] Color hilightBackColor, [[maybe_unused]] Color hilightForeColor, Color oldBackColor, [[maybe_unused]] Color oldForeColor)
+void Tablet::HilightArea_SolidHelper (const Led_Rect& hilightArea, [[maybe_unused]] Color hilightBackColor,
+                                      [[maybe_unused]] Color hilightForeColor, Color oldBackColor, [[maybe_unused]] Color oldForeColor)
 {
     if (not hilightArea.IsEmpty ()) {
 #if qPlatform_MacOS
@@ -1989,27 +1934,25 @@ void Tablet::HilightArea_SolidHelper (const Led_Rect& hilightArea, [[maybe_unuse
         /*
          *  SPR#1271 - major reworking using DIB sections etc, to get much better display of hilighted text.
          */
-        if (hilightBackColor.GetOSRep () == Color::kBlack.GetOSRep () and
-            hilightForeColor.GetOSRep () == Color::kWhite.GetOSRep () and
-            oldBackColor.GetOSRep () == Color::kWhite.GetOSRep () and
-            oldForeColor.GetOSRep () == Color::kBlack.GetOSRep ()) {
+        if (hilightBackColor.GetOSRep () == Color::kBlack.GetOSRep () and hilightForeColor.GetOSRep () == Color::kWhite.GetOSRep () and
+            oldBackColor.GetOSRep () == Color::kWhite.GetOSRep () and oldForeColor.GetOSRep () == Color::kBlack.GetOSRep ()) {
             // This is much faster (on some/most hardware) than the RecolorHelper algorithms. For this special case of of B&W fore/back/hilight
             // colors - this code is MUCH faster as well. So - for people for whom the default algorithm is too slow - they can just specify
             // these colors for hilight and back/fore-color, and they'll get the faster hilight.
             // See SPR#1271
-            BitBlt (hilightArea.left, hilightArea.top, hilightArea.GetWidth (), hilightArea.GetHeight (),
-                    this, hilightArea.left, hilightArea.top, DSTINVERT);
+            BitBlt (hilightArea.left, hilightArea.top, hilightArea.GetWidth (), hilightArea.GetHeight (), this, hilightArea.left,
+                    hilightArea.top, DSTINVERT);
         }
         else {
 #if 1
-            fRecolorHelper = RecolorHelper::CheckCacheAndReconstructIfNeeded (fRecolorHelper,
-                                                                              m_hDC, Led_Size (hilightArea.GetHeight (), hilightArea.GetWidth ()),
+            fRecolorHelper = RecolorHelper::CheckCacheAndReconstructIfNeeded (fRecolorHelper, m_hDC,
+                                                                              Led_Size (hilightArea.GetHeight (), hilightArea.GetWidth ()),
                                                                               hilightBackColor, hilightForeColor, oldBackColor, oldForeColor);
             fRecolorHelper->DoRecolor (hilightArea);
 #else
             static RecolorHelper* recolorHelper = nullptr;
-            recolorHelper = RecolorHelper::CheckCacheAndReconstructIfNeeded (recolorHelper,
-                                                                             m_hDC, Led_Size (hilightArea.GetHeight (), hilightArea.GetWidth ()),
+            recolorHelper = RecolorHelper::CheckCacheAndReconstructIfNeeded (recolorHelper, m_hDC,
+                                                                             Led_Size (hilightArea.GetHeight (), hilightArea.GetWidth ()),
                                                                              hilightBackColor, hilightForeColor, oldBackColor, oldForeColor);
             recolorHelper->DoRecolor (hilightArea);
 #endif
@@ -2029,7 +1972,8 @@ void Tablet::HilightArea_SolidHelper (const Led_Rect& hilightArea, [[maybe_unuse
         ::XSetBackground (fDisplay, fGC, whiteP);
         ::XSetForeground (fDisplay, fGC, blackP);
         Led_Rect adjustedRect = hilightArea - fDrawableOrigin;
-        ::XFillRectangle (fDisplay, fDrawable, fGC, adjustedRect.GetLeft (), adjustedRect.GetTop (), adjustedRect.GetWidth (), adjustedRect.GetHeight ());
+        ::XFillRectangle (fDisplay, fDrawable, fGC, adjustedRect.GetLeft (), adjustedRect.GetTop (), adjustedRect.GetWidth (),
+                          adjustedRect.GetHeight ());
         ::XChangeGC (fDisplay, fGC, kSavedAttrs, &prevValues);
 #endif
     }
@@ -2042,7 +1986,8 @@ void Tablet::HilightArea_SolidHelper (const Led_Rect& hilightArea, [[maybe_unuse
                 <p>Note the backColor and foreColor are advisory - and maybe ignored if the GDI better supports (or the
             platform UI conventionally calls for) inverting the text via a simple XOR.</p>
 */
-void Tablet::HilightArea_SolidHelper (const Region& hilightArea, [[maybe_unused]] Color hilightBackColor, [[maybe_unused]] Color hilightForeColor, [[maybe_unused]] Color oldBackColor, [[maybe_unused]] Color oldForeColor)
+void Tablet::HilightArea_SolidHelper (const Region& hilightArea, [[maybe_unused]] Color hilightBackColor, [[maybe_unused]] Color hilightForeColor,
+                                      [[maybe_unused]] Color oldBackColor, [[maybe_unused]] Color oldForeColor)
 {
     if (not hilightArea.IsEmpty ()) {
 #if qPlatform_MacOS
@@ -2171,7 +2116,8 @@ void Tablet::SetFont (const FontSpecification& fontSpec)
             string bestMatchingName = BestMatchFont (fontSpec, vFontList);
 #if qDebugFontDetails
             if (nameMatchFailure) {
-                fprintf (stderr, "Couldn't find fontName '%s'- using BestMatchSpec = '%s'\r\n", fontSpec.GetFontNameSpecifier ().c_str (), bestMatchingName.c_str ());
+                fprintf (stderr, "Couldn't find fontName '%s'- using BestMatchSpec = '%s'\r\n", fontSpec.GetFontNameSpecifier ().c_str (),
+                         bestMatchingName.c_str ());
             }
 #endif
             useFontName = bestMatchingName;
@@ -2189,10 +2135,7 @@ void Tablet::SetFont (const FontSpecification& fontSpec)
     ::XSetFont (fDisplay, fGC, fCachedFontInfo->fid);
 }
 
-void Tablet::SetDrawableOrigin (const Led_Point& origin)
-{
-    fDrawableOrigin = origin;
-}
+void Tablet::SetDrawableOrigin (const Led_Point& origin) { fDrawableOrigin = origin; }
 #endif
 
 #if qStroika_FeatureSupported_XWindows
@@ -2251,10 +2194,7 @@ SDKString Tablet::BestMatchFont (const FontSpecification& fsp, const vector<SDKS
     return bestAnswer;
 }
 
-int Tablet::IgnoreXErrorHandler (Display* /*display*/, XErrorEvent* /*error*/)
-{
-    return 0;
-}
+int Tablet::IgnoreXErrorHandler (Display* /*display*/, XErrorEvent* /*error*/) { return 0; }
 
 void Tablet::ParseFontName (const SDKString& fontName, SDKString* familyName, SDKString* fontSize, SDKString* fontWeight, SDKString* fontSlant)
 {
@@ -2452,8 +2392,7 @@ Tablet* OffscreenTablet::PrepareRect (const Led_Rect& currentRowRect, DistanceTy
 #else
         Led_Size curOffscreenGWorldSize = AsLedSize (GetRectSize ((*fOffscreenGWorld->portPixMap)->bounds));
 #endif
-        if ((fOffscreenRect.GetSize () == curOffscreenGWorldSize) or
-            SafeUpdateGWorld (&fOffscreenGWorld, 0, &bounds, nullptr, nullptr, 0) >= 0) {
+        if ((fOffscreenRect.GetSize () == curOffscreenGWorldSize) or SafeUpdateGWorld (&fOffscreenGWorld, 0, &bounds, nullptr, nullptr, 0) >= 0) {
             AssertNotNull (::GetGWorldPixMap (fOffscreenGWorld));
             if (::LockPixels (::GetGWorldPixMap (fOffscreenGWorld))) {
                 // UpdateGWorld () can change grafPortPTR!
@@ -2480,8 +2419,7 @@ Tablet* OffscreenTablet::PrepareRect (const Led_Rect& currentRowRect, DistanceTy
         fOffscreenRect = currentRowRect;
         fOffscreenRect.bottom += extraToAddToBottomOfRect;
         // See if we need to re-allocate the bitmap
-        if (fMemoryBitmap == nullptr or
-            (fOffscreenRect.GetSize () != fMemoryBitmap.GetImageSize ())) {
+        if (fMemoryBitmap == nullptr or (fOffscreenRect.GetSize () != fMemoryBitmap.GetImageSize ())) {
             // deselect our new memory bitmap before changing its size - not sure needed, but lets be paranoid -
             // this is Windows after all ... LGP 960513
             if (fOldBitmapInDC != nullptr) {
@@ -2543,8 +2481,7 @@ Tablet* OffscreenTablet::PrepareRect (const Led_Rect& currentRowRect, DistanceTy
                 depth = winAttrs.depth;
             }
         }
-        fPixmap = ::XCreatePixmap (fOrigTablet->fDisplay, fOrigTablet->fDrawable,
-                                   fOffscreenRect.GetWidth (), fOffscreenRect.GetHeight (), depth);
+        fPixmap = ::XCreatePixmap (fOrigTablet->fDisplay, fOrigTablet->fDrawable, fOffscreenRect.GetWidth (), fOffscreenRect.GetHeight (), depth);
         Assert (fPixmap != 0);
         try {
             fOffscreenTablet = new OT (fOrigTablet->fDisplay, fPixmap);
@@ -2582,7 +2519,8 @@ void OffscreenTablet::BlastBitmapToOrigTablet ()
 #if TARGET_CARBON
         {
             Rect tmp;
-            ::CopyBits (::GetPortBitMapForCopyBits (tabletGrafPort), ::GetPortBitMapForCopyBits (fOrigPort), ::GetPortBounds (tabletGrafPort, &tmp), &bounds, srcCopy, nullptr);
+            ::CopyBits (::GetPortBitMapForCopyBits (tabletGrafPort), ::GetPortBitMapForCopyBits (fOrigPort),
+                        ::GetPortBounds (tabletGrafPort, &tmp), &bounds, srcCopy, nullptr);
         }
 #else
         ::CopyBits (&tabletGrafPort->portBits, &((GrafPtr)fOrigPort)->portBits, &tabletGrafPort->portRect, &bounds, srcCopy, nullptr);
@@ -2594,10 +2532,8 @@ void OffscreenTablet::BlastBitmapToOrigTablet ()
                           fOffscreenTablet, fOffscreenRect.left, fOffscreenRect.top, SRCCOPY);
 #elif qStroika_FeatureSupported_XWindows
         Assert (fPixmap != 0);
-        ::XCopyArea (fOrigTablet->fDisplay, fOffscreenTablet->fDrawable, fOrigTablet->fDrawable, fOrigTablet->fGC,
-                     0, 0,
-                     fOffscreenRect.GetWidth (), fOffscreenRect.GetHeight (),
-                     (int)fOffscreenRect.GetLeft (), (int)fOffscreenRect.GetTop ());
+        ::XCopyArea (fOrigTablet->fDisplay, fOffscreenTablet->fDrawable, fOrigTablet->fDrawable, fOrigTablet->fGC, 0, 0,
+                     fOffscreenRect.GetWidth (), fOffscreenRect.GetHeight (), (int)fOffscreenRect.GetLeft (), (int)fOffscreenRect.GetTop ());
 #endif
     }
 }
@@ -2875,9 +2811,7 @@ const void* Led::Led_GetDIBBitsPointer (const Led_DIB* dib)
 {
     RequireNotNull (dib);
     const BITMAPINFOHEADER& hdr = dib->bmiHeader;
-    return reinterpret_cast<const char*> (dib) +
-           Led_ByteSwapFromWindows (hdr.biSize) +
-           Led_GetDIBPalletByteCount (dib);
+    return reinterpret_cast<const char*> (dib) + Led_ByteSwapFromWindows (hdr.biSize) + Led_GetDIBPalletByteCount (dib);
 }
 
 #if qPlatform_Windows
@@ -2911,7 +2845,9 @@ Led_DIB* Led::Led_DIBFromHBITMAP (HDC hDC, HBITMAP hbm)
         DISABLE_COMPILER_MSC_WARNING_END (6386)
     }
 
-    [[maybe_unused]] int nScanLinesCopied = ::GetDIBits (hDC, hbm, 0, dibResult->bmiHeader.biHeight, reinterpret_cast<char*> (dibResult) + Led_GetDIBPalletByteCount (dibResult) + sizeof (BITMAPINFOHEADER), dibResult, DIB_RGB_COLORS);
+    [[maybe_unused]] int nScanLinesCopied =
+        ::GetDIBits (hDC, hbm, 0, dibResult->bmiHeader.biHeight,
+                     reinterpret_cast<char*> (dibResult) + Led_GetDIBPalletByteCount (dibResult) + sizeof (BITMAPINFOHEADER), dibResult, DIB_RGB_COLORS);
     Assert (nScanLinesCopied == dibResult->bmiHeader.biHeight);
     return dibResult;
 }
@@ -3136,7 +3072,7 @@ wstring IME::GetCompositionResultStringW (HWND hWnd)
         HIMC hImc = 0;
         if ((hImc = fImmGetContext (hWnd)) != 0) {
             wchar_t curIMEString[2048];
-            LONG    nChars = fImmGetCompositionStringW (hImc, GCS_RESULTSTR, curIMEString, static_cast<DWORD> (Memory::NEltsOf (curIMEString)));
+            LONG nChars = fImmGetCompositionStringW (hImc, GCS_RESULTSTR, curIMEString, static_cast<DWORD> (Memory::NEltsOf (curIMEString)));
 
             nChars /= sizeof (wchar_t); // why???? LGP 991214
             if (nChars >= 0 and static_cast<size_t> (nChars) < Memory::NEltsOf (curIMEString)) {
@@ -3200,12 +3136,8 @@ void Led::Led_CenterWindowInParent (HWND w)
 // contents of a TrueType font file
 
 // Macros to swap from Big Endian to Little Endian
-#define SWAPWORD(x) MAKEWORD ( \
-    HIBYTE (x),                \
-    LOBYTE (x))
-#define SWAPLONG(x) MAKELONG ( \
-    SWAPWORD (HIWORD (x)),     \
-    SWAPWORD (LOWORD (x)))
+#define SWAPWORD(x) MAKEWORD (HIBYTE (x), LOBYTE (x))
+#define SWAPLONG(x) MAKELONG (SWAPWORD (HIWORD (x)), SWAPWORD (LOWORD (x)))
 
 struct CMAP4 {            // From the TrueType Spec. revision 1.66
     USHORT format;        // Format number is set to 4.
@@ -3244,11 +3176,7 @@ struct CMAPENCODING {
 };
 
 // Macro to pack a TrueType table name into a DWORD
-#define MAKETABLENAME(ch1, ch2, ch3, ch4) ( \
-    (((DWORD)(ch4)) << 24) |                \
-    (((DWORD)(ch3)) << 16) |                \
-    (((DWORD)(ch2)) << 8) |                 \
-    ((DWORD)(ch1)))
+#define MAKETABLENAME(ch1, ch2, ch3, ch4) ((((DWORD)(ch4)) << 24) | (((DWORD)(ch3)) << 16) | (((DWORD)(ch2)) << 8) | ((DWORD)(ch1)))
 
 /* public functions */
 static USHORT GetTTUnicodeGlyphIndex (HDC hdc, USHORT ch);
@@ -3265,24 +3193,21 @@ static USHORT* GetEndCountArray (LPBYTE pBuff)
 static USHORT* GetStartCountArray (LPBYTE pBuff)
 {
     DWORD segCount = ((LPCMAP4)pBuff)->segCountX2 / 2;
-    return (USHORT*)(pBuff +
-                     8 * sizeof (USHORT) +        // 7 header + 1 reserved USHORT
-                     segCount * sizeof (USHORT)); // Per TT spec
+    return (USHORT*)(pBuff + 8 * sizeof (USHORT) + // 7 header + 1 reserved USHORT
+                     segCount * sizeof (USHORT));  // Per TT spec
 }
 
 static USHORT* GetIdDeltaArray (LPBYTE pBuff)
 {
     DWORD segCount = ((LPCMAP4)pBuff)->segCountX2 / 2;
-    return (USHORT*)(pBuff +
-                     8 * sizeof (USHORT) +            // 7 header + 1 reserved USHORT
+    return (USHORT*)(pBuff + 8 * sizeof (USHORT) +    // 7 header + 1 reserved USHORT
                      segCount * 2 * sizeof (USHORT)); // Per TT spec
 }
 
 static USHORT* GetIdRangeOffsetArray (LPBYTE pBuff)
 {
     DWORD segCount = ((LPCMAP4)pBuff)->segCountX2 / 2;
-    return (USHORT*)(pBuff +
-                     8 * sizeof (USHORT) +            // 7 header + 1 reserved USHORT
+    return (USHORT*)(pBuff + 8 * sizeof (USHORT) +    // 7 header + 1 reserved USHORT
                      segCount * 3 * sizeof (USHORT)); // Per TT spec
 }
 
@@ -3290,12 +3215,8 @@ static void SwapArrays (LPCMAP4 pFormat4)
 {
     DWORD   segCount = pFormat4->segCountX2 / 2; // Per TT Spec
     DWORD   i;
-    USHORT *pGlyphId,
-        *pEndOfBuffer,
-        *pstartCount    = GetStartCountArray ((LPBYTE)pFormat4),
-        *pidDelta       = GetIdDeltaArray ((LPBYTE)pFormat4),
-        *pidRangeOffset = GetIdRangeOffsetArray ((LPBYTE)pFormat4),
-        *pendCount      = GetEndCountArray ((LPBYTE)pFormat4);
+    USHORT *pGlyphId, *pEndOfBuffer, *pstartCount = GetStartCountArray ((LPBYTE)pFormat4), *pidDelta = GetIdDeltaArray ((LPBYTE)pFormat4),
+                                     *pidRangeOffset = GetIdRangeOffsetArray ((LPBYTE)pFormat4), *pendCount = GetEndCountArray ((LPBYTE)pFormat4);
 
     // Swap the array elements for Intel.
     for (i = 0; i < segCount; ++i) {
@@ -3313,10 +3234,7 @@ static void SwapArrays (LPCMAP4 pFormat4)
     }
 } /* end of function SwapArrays */
 
-static BOOL GetFontEncoding (
-    HDC           hdc,
-    CMAPENCODING* pEncoding,
-    int           iEncoding)
+static BOOL GetFontEncoding (HDC hdc, CMAPENCODING* pEncoding, int iEncoding)
 /*
     Note for this function to work correctly, structures must
     have byte alignment.
@@ -3326,12 +3244,7 @@ static BOOL GetFontEncoding (
     BOOL  fSuccess = TRUE;
 
     // Get the structure data from the TrueType font
-    dwResult = GetFontData (
-        hdc,
-        dwCmapName,
-        CMAPHEADERSIZE + ENCODINGSIZE * iEncoding,
-        pEncoding,
-        sizeof (CMAPENCODING));
+    dwResult = GetFontData (hdc, dwCmapName, CMAPHEADERSIZE + ENCODINGSIZE * iEncoding, pEncoding, sizeof (CMAPENCODING));
     fSuccess = (dwResult == sizeof (CMAPENCODING));
 
     // swap the Platform Id for Intel
@@ -3347,10 +3260,7 @@ static BOOL GetFontEncoding (
 
 } /* end of function GetFontEncoding */
 
-static BOOL GetFontFormat4Header (
-    HDC     hdc,
-    LPCMAP4 pFormat4,
-    DWORD   dwOffset)
+static BOOL GetFontFormat4Header (HDC hdc, LPCMAP4 pFormat4, DWORD dwOffset)
 /*
     Note for this function to work correctly, structures must
     have byte alignment.
@@ -3366,12 +3276,7 @@ static BOOL GetFontFormat4Header (
 
     for (i = 0; i < 7; ++i) {
         // Get the field from the subtable
-        dwResult = GetFontData (
-            hdc,
-            dwCmapName,
-            dwOffset + sizeof (USHORT) * i,
-            pField,
-            sizeof (USHORT));
+        dwResult = GetFontData (hdc, dwCmapName, dwOffset + sizeof (USHORT) * i, pField, sizeof (USHORT));
 
         // swap it to make it right for Intel.
         *pField = SWAPWORD (*pField);
@@ -3385,26 +3290,22 @@ static BOOL GetFontFormat4Header (
 
 } /* end of function GetFontFormat4Header */
 
-static BOOL GetFontFormat4Subtable (
-    HDC     hdc,              // DC with TrueType font
-    LPCMAP4 pFormat4Subtable, // destination buffer
-    DWORD   dwOffset          // Offset within font
+static BOOL GetFontFormat4Subtable (HDC     hdc,              // DC with TrueType font
+                                    LPCMAP4 pFormat4Subtable, // destination buffer
+                                    DWORD   dwOffset          // Offset within font
 )
 {
     DWORD  dwResult;
     USHORT length;
 
     // Retrieve the header values in swapped order
-    if (!GetFontFormat4Header (hdc,
-                               pFormat4Subtable,
-                               dwOffset)) {
+    if (!GetFontFormat4Header (hdc, pFormat4Subtable, dwOffset)) {
         return FALSE;
     }
 
     // Get the rest of the table
     length   = pFormat4Subtable->length - (7 * sizeof (USHORT));
-    dwResult = GetFontData (hdc,
-                            dwCmapName,
+    dwResult = GetFontData (hdc, dwCmapName,
                             dwOffset + 7 * sizeof (USHORT),   // pos of arrays
                             (LPBYTE)pFormat4Subtable->Arrays, // destination
                             length);
@@ -3420,11 +3321,10 @@ static BOOL GetFontFormat4Subtable (
     return TRUE;
 }
 
-static BOOL GetTTUnicodeCoverage (
-    HDC     hdc,      // DC with TT font
-    LPCMAP4 pBuffer,  // Properly allocated buffer
-    DWORD   cbSize,   // Size of properly allocated buffer
-    DWORD*  pcbNeeded // size of buffer needed
+static BOOL GetTTUnicodeCoverage (HDC     hdc,      // DC with TT font
+                                  LPCMAP4 pBuffer,  // Properly allocated buffer
+                                  DWORD   cbSize,   // Size of properly allocated buffer
+                                  DWORD*  pcbNeeded // size of buffer needed
 )
 /*
     if cbSize is to small or zero, or if pBuffer is nullptr the function
@@ -3481,8 +3381,7 @@ static BOOL GetTTUnicodeCoverage (
         // Code could infer from the coverage whether 3-0 fonts are
         // Unicode or not by examining the segments for placement within
         // the Private Use Area Subrange.
-        if (Encoding.PlatformId == 3 &&
-            (Encoding.EncodingId == 1 || Encoding.EncodingId == 0)) {
+        if (Encoding.PlatformId == 3 && (Encoding.EncodingId == 1 || Encoding.EncodingId == 0)) {
             iUnicode = i; // Set the index to the Unicode encoding
         }
     }
@@ -3535,18 +3434,15 @@ static BOOL GetTTUnicodeCoverage (
     }
 
     // Copy the retrieved table into the buffer
-    CopyMemory (pBuffer,
-                pFormat4Subtable,
-                pFormat4Subtable->length);
+    CopyMemory (pBuffer, pFormat4Subtable, pFormat4Subtable->length);
 
     free (pFormat4Subtable);
     return TRUE;
 } /* end of function GetTTUnicodeCoverage */
 
-static BOOL FindFormat4Segment (
-    LPCMAP4 pTable, // a valid Format4 subtable buffer
-    USHORT  ch,     // Unicode character to search for
-    USHORT* piSeg   // out: index of segment containing ch
+static BOOL FindFormat4Segment (LPCMAP4 pTable, // a valid Format4 subtable buffer
+                                USHORT  ch,     // Unicode character to search for
+                                USHORT* piSeg   // out: index of segment containing ch
 )
 /*
     if the Unicode character ch is not contained in one of the
@@ -3557,8 +3453,7 @@ static BOOL FindFormat4Segment (
     TRUE.
 */
 {
-    USHORT i,
-        segCount        = pTable->segCountX2 / 2;
+    USHORT  i, segCount = pTable->segCountX2 / 2;
     USHORT* pendCount   = GetEndCountArray ((LPBYTE)pTable);
     USHORT* pstartCount = GetStartCountArray ((LPBYTE)pTable);
 
@@ -3579,9 +3474,8 @@ static BOOL FindFormat4Segment (
     return TRUE;
 } /* end of function FindFormat4Segment */
 
-static USHORT GetTTUnicodeGlyphIndex (
-    HDC    hdc, // DC with a TrueType font selected
-    USHORT ch   // Unicode character to convert to Index
+static USHORT GetTTUnicodeGlyphIndex (HDC    hdc, // DC with a TrueType font selected
+                                      USHORT ch   // Unicode character to convert to Index
 )
 /*
     When the TrueType font contains a glyph for ch, the
@@ -3629,10 +3523,7 @@ static USHORT GetTTUnicodeGlyphIndex (
         // otherwise, use the glyph id array to get the index
         USHORT idResult; //Intermediate id calc.
 
-        idResult = *(
-            idRangeOffset[iSegment] / 2 +
-            (ch - startCount[iSegment]) +
-            &idRangeOffset[iSegment]); // indexing equation from TT spec
+        idResult = *(idRangeOffset[iSegment] / 2 + (ch - startCount[iSegment]) + &idRangeOffset[iSegment]); // indexing equation from TT spec
         if (idResult)
             // Per TT spec, nonzero means there is a glyph
             GlyphIndex = (idDelta[iSegment] + idResult) % 65536;

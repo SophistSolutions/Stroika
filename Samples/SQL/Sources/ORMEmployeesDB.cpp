@@ -166,7 +166,8 @@ namespace {
                     case 1: {
                         String name = kNames_[namesDistr (generator)];
                         DbgTrace (L"Adding employee %s", name.c_str ());
-                        employeeTableConnection->AddNew (Employee{nullopt, name, ageDistr (generator), kAddresses[addressesDistr (generator)], salaryDistr (generator), true});
+                        employeeTableConnection->AddNew (Employee{nullopt, name, ageDistr (generator),
+                                                                  kAddresses[addressesDistr (generator)], salaryDistr (generator), true});
                     } break;
                     case 2: {
                         // Look somebody up, and fire them
@@ -197,13 +198,14 @@ namespace {
     void PeriodicallyWriteChecksForEmployeesTable_ (Connection::Ptr conn)
     {
         TraceContextBumper ctx{"{}::PeriodicallyWriteChecksForEmployeesTable_"};
-        auto               employeeTableConnection = make_unique<SQL::ORM::TableConnection<Employee>> (conn, kEmployeesTableSchema_, kDBObjectMapper_);
-        auto               paycheckTableConnection = make_unique<SQL::ORM::TableConnection<Paycheck>> (conn, kPaychecksTableSchema_, kDBObjectMapper_);
+        auto employeeTableConnection = make_unique<SQL::ORM::TableConnection<Employee>> (conn, kEmployeesTableSchema_, kDBObjectMapper_);
+        auto paycheckTableConnection = make_unique<SQL::ORM::TableConnection<Paycheck>> (conn, kPaychecksTableSchema_, kDBObjectMapper_);
         while (true) {
             try {
                 for (const auto& employee : employeeTableConnection->GetAll ()) {
                     Assert (employee.ID != nullopt);
-                    DbgTrace (L"Writing paycheck for employee #%d (%s) amount %f", *employee.ID, employee.fName.As<wstring> ().c_str (), employee.fSalary);
+                    DbgTrace (L"Writing paycheck for employee #%d (%s) amount %f", *employee.ID, employee.fName.As<wstring> ().c_str (),
+                              employee.fSalary);
                     paycheckTableConnection->AddNew (Paycheck{nullopt, *employee.ID, employee.fSalary / 12, DateTime::Now ().GetDate ()});
                 }
             }
@@ -225,15 +227,15 @@ void Stroika::Samples::SQL::ORMEmployeesDB (const std::function<Connection::Ptr 
 
     // setup DB schema (on either connection) before running access threads
     constexpr Configuration::Version kCurrentVersion_ = Configuration::Version{1, 0, Configuration::VersionStage::Alpha, 0};
-    ORM::ProvisionForVersion (conn1,
-                              kCurrentVersion_,
-                              Traversal::Iterable<ORM::Schema::Table>{kEmployeesTableSchema_, kPaychecksTableSchema_});
+    ORM::ProvisionForVersion (conn1, kCurrentVersion_, Traversal::Iterable<ORM::Schema::Table>{kEmployeesTableSchema_, kPaychecksTableSchema_});
 
     /*
      *  Create threads for each of our activities.
      *  When the waitable even times out, the threads will automatically be 'canceled' as they go out of scope.
      */
-    Thread::CleanupPtr updateEmpDBThread{Thread::CleanupPtr::eAbortBeforeWaiting, Thread::New ([=] () { PeriodicallyUpdateEmployeesTable_ (conn1); }, Thread::eAutoStart, "Update Employee Table"sv)};
-    Thread::CleanupPtr writeChecks{Thread::CleanupPtr::eAbortBeforeWaiting, Thread::New ([=] () { PeriodicallyWriteChecksForEmployeesTable_ (conn2); }, Thread::eAutoStart, "Write Checks"sv)};
+    Thread::CleanupPtr updateEmpDBThread{Thread::CleanupPtr::eAbortBeforeWaiting,
+                                         Thread::New ([=] () { PeriodicallyUpdateEmployeesTable_ (conn1); }, Thread::eAutoStart, "Update Employee Table"sv)};
+    Thread::CleanupPtr writeChecks{Thread::CleanupPtr::eAbortBeforeWaiting,
+                                   Thread::New ([=] () { PeriodicallyWriteChecksForEmployeesTable_ (conn2); }, Thread::eAutoStart, "Write Checks"sv)};
     Execution::WaitableEvent{}.WaitQuietly (15s);
 }

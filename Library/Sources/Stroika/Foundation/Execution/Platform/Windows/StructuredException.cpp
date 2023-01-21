@@ -30,10 +30,7 @@ using namespace Stroika::Foundation::Execution::Platform::Windows;
 namespace {
     class StructuredException_error_category_ : public error_category {
     public:
-        virtual const char* name () const noexcept override
-        {
-            return "Windows Structured Exception error";
-        }
+        virtual const char*     name () const noexcept override { return "Windows Structured Exception error"; }
         virtual error_condition default_error_condition ([[maybe_unused]] int ev) const noexcept override
         {
             // @todo - not sure how todo this - except by defining new conditions

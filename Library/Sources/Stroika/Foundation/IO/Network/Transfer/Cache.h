@@ -172,8 +172,7 @@ namespace Stroika::Foundation::IO::Network::Transfer {
 
     /**
      */
-    struct Cache::Ptr : shared_ptr<Cache::Rep> {
-    };
+    struct Cache::Ptr : shared_ptr<Cache::Rep> {};
 }
 
 /*

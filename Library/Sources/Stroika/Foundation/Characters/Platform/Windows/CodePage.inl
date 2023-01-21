@@ -34,11 +34,13 @@ namespace Stroika::Foundation::Characters::Platform::Windows {
             int guessNewSterlLen = max<int> (wsLen, 2 * 64 - 10); // for ascii, wsLen enuf. For most string, they will fit in 64 chars (apx)
             // in these cases, we solve in one pass/one call to OS/charmapper
             intoResult->resize (guessNewSterlLen); // maybe over-allocates a bit but will pare back
-            int nCharsWritten = ::WideCharToMultiByte (codePage, 0, wsStart, wsLen, Containers::Start (*intoResult), guessNewSterlLen, nullptr, nullptr);
+            int nCharsWritten =
+                ::WideCharToMultiByte (codePage, 0, wsStart, wsLen, Containers::Start (*intoResult), guessNewSterlLen, nullptr, nullptr);
             if ((nCharsWritten == 0) and (::GetLastError () == ERROR_INSUFFICIENT_BUFFER)) {
                 guessNewSterlLen = ::WideCharToMultiByte (codePage, 0, wsStart, static_cast<int> (wsLen), nullptr, 0, nullptr, nullptr);
                 intoResult->resize (guessNewSterlLen);
-                nCharsWritten = ::WideCharToMultiByte (codePage, 0, wsStart, wsLen, Containers::Start (*intoResult), guessNewSterlLen, nullptr, nullptr);
+                nCharsWritten =
+                    ::WideCharToMultiByte (codePage, 0, wsStart, wsLen, Containers::Start (*intoResult), guessNewSterlLen, nullptr, nullptr);
             }
             Assert (nCharsWritten != 0);
             Verify (nCharsWritten != 0);

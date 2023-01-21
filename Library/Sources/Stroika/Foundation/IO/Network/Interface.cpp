@@ -85,11 +85,8 @@ namespace {
     {
         Require (macaddrBytesEnd - macaddrBytes == 6);
         char buf[100]{};
-        (void)snprintf (buf, sizeof (buf),
-                        "%02x:%02x:%02x:%02x:%02x:%02x",
-                        macaddrBytes[0], macaddrBytes[1],
-                        macaddrBytes[2], macaddrBytes[3],
-                        macaddrBytes[4], macaddrBytes[5]);
+        (void)snprintf (buf, sizeof (buf), "%02x:%02x:%02x:%02x:%02x:%02x", macaddrBytes[0], macaddrBytes[1], macaddrBytes[2],
+                        macaddrBytes[3], macaddrBytes[4], macaddrBytes[5]);
         return String{buf};
     };
 }
@@ -198,8 +195,8 @@ namespace {
     {
         Interface newInterface            = prevInterfaceObject2Update.value_or (Interface{});
         newInterface.fInternalInterfaceID = String::FromSDKString (i->ifr_name);
-        newInterface.fFriendlyName        = newInterface.fInternalInterfaceID; // not great - maybe find better name - but this will do for now...
-        auto getFlags                     = [] (int sd, const char* name) {
+        newInterface.fFriendlyName = newInterface.fInternalInterfaceID; // not great - maybe find better name - but this will do for now...
+        auto getFlags              = [] (int sd, const char* name) {
             ifreq ifreq{};
             Characters::CString::Copy (ifreq.ifr_name, NEltsOf (ifreq.ifr_name), name);
             int r = ::ioctl (sd, SIOCGIFFLAGS, (char*)&ifreq);
@@ -236,7 +233,8 @@ namespace {
         {
             ifreq tmp = *i;
             if (::ioctl (sd, SIOCGIFHWADDR, &tmp) == 0 and tmp.ifr_hwaddr.sa_family == ARPHRD_ETHER) {
-                newInterface.fHardwareAddress = PrintMacAddr_ (reinterpret_cast<const uint8_t*> (tmp.ifr_hwaddr.sa_data), reinterpret_cast<const uint8_t*> (tmp.ifr_hwaddr.sa_data) + 6);
+                newInterface.fHardwareAddress = PrintMacAddr_ (reinterpret_cast<const uint8_t*> (tmp.ifr_hwaddr.sa_data),
+                                                               reinterpret_cast<const uint8_t*> (tmp.ifr_hwaddr.sa_data) + 6);
             }
         }
 #endif
@@ -286,13 +284,12 @@ namespace {
                  */
                 // Note - /procfs files always unseekable
                 for (const Sequence<String>& line : reader.ReadMatrix (FileInputStream::New (kFileName_, FileInputStream::eNotSeekable))) {
-                    if (line.size () >= 3 and
-                        line[0] == String::FromNarrowSDKString (name) and
-                        line[1] == L"00000000") {
+                    if (line.size () >= 3 and line[0] == String::FromNarrowSDKString (name) and line[1] == L"00000000") {
                         //
                         int tmp[4]{};
                         swscanf (line[2].c_str (), L"%02x%02x%02x%02x", &tmp[3], &tmp[2], &tmp[1], &tmp[0]);
-                        return InternetAddress{static_cast<byte> (tmp[0]), static_cast<byte> (tmp[1]), static_cast<byte> (tmp[2]), static_cast<byte> (tmp[3])};
+                        return InternetAddress{static_cast<byte> (tmp[0]), static_cast<byte> (tmp[1]), static_cast<byte> (tmp[2]),
+                                               static_cast<byte> (tmp[3])};
                     }
                 }
 #elif qPlatform_MacOS
@@ -458,7 +455,8 @@ namespace {
         [[maybe_unused]] int r = ::ioctl (sd, SIOCGIFCONF, (char*)&ifconf);
         Assert (r == 0);
 
-        for (const ifreq* i = std::begin (ifreqs); reinterpret_cast<const char*> (i) - reinterpret_cast<const char*> (std::begin (ifreqs)) < ifconf.ifc_len;) {
+        for (const ifreq* i = std::begin (ifreqs);
+             reinterpret_cast<const char*> (i) - reinterpret_cast<const char*> (std::begin (ifreqs)) < ifconf.ifc_len;) {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
             DbgTrace ("interface: ifr_name=%s; ifr_addr.sa_family = %d", i->ifr_name, i->ifr_addr.sa_family);
 #endif
@@ -504,11 +502,18 @@ namespace {
             : fDLL{::LoadLibrary (_T ("wlanapi.dll"))}
         {
             Execution::ThrowIfNull (fDLL);
-            fWlanOpenHandle     = (DWORD (WINAPI*) (_In_ DWORD dwClientVersion, _Reserved_ PVOID pReserved, _Out_ PDWORD pdwNegotiatedVersion, _Out_ PHANDLE phClientHandle)) (::GetProcAddress (fDLL, "WlanOpenHandle"));
-            fWlanCloseHandle    = (DWORD (WINAPI*) (_In_ HANDLE hClientHandle, _Reserved_ PVOID pReserved)) (::GetProcAddress (fDLL, "WlanCloseHandle"));
-            fWlanFreeMemory     = (DWORD (WINAPI*) (_In_ PVOID pMemory)) (::GetProcAddress (fDLL, "WlanFreeMemory"));
-            fWlanEnumInterfaces = (DWORD (WINAPI*) (_In_ HANDLE hClientHandle, _Reserved_ PVOID pReserved, _Outptr_ PWLAN_INTERFACE_INFO_LIST * ppInterfaceList)) (::GetProcAddress (fDLL, "WlanEnumInterfaces"));
-            fWlanQueryInterface = (DWORD (WINAPI*) (_In_ HANDLE hClientHandle, _In_ CONST GUID * pInterfaceGuid, _In_ WLAN_INTF_OPCODE OpCode, _Reserved_ PVOID pReserved, _Out_ PDWORD pdwDataSize, _Outptr_result_bytebuffer_ (*pdwDataSize) PVOID * ppData, _Out_opt_ PWLAN_OPCODE_VALUE_TYPE pWlanOpcodeValueType)) (::GetProcAddress (fDLL, "WlanQueryInterface"));
+            fWlanOpenHandle = (DWORD (WINAPI*) (_In_ DWORD dwClientVersion, _Reserved_ PVOID pReserved, _Out_ PDWORD pdwNegotiatedVersion,
+                                                _Out_ PHANDLE phClientHandle)) (::GetProcAddress (fDLL, "WlanOpenHandle"));
+            fWlanCloseHandle =
+                (DWORD (WINAPI*) (_In_ HANDLE hClientHandle, _Reserved_ PVOID pReserved)) (::GetProcAddress (fDLL, "WlanCloseHandle"));
+            fWlanFreeMemory = (DWORD (WINAPI*) (_In_ PVOID pMemory)) (::GetProcAddress (fDLL, "WlanFreeMemory"));
+            fWlanEnumInterfaces =
+                (DWORD (WINAPI*) (_In_ HANDLE hClientHandle, _Reserved_ PVOID pReserved,
+                                  _Outptr_ PWLAN_INTERFACE_INFO_LIST * ppInterfaceList)) (::GetProcAddress (fDLL, "WlanEnumInterfaces"));
+            fWlanQueryInterface =
+                (DWORD (WINAPI*) (_In_ HANDLE hClientHandle, _In_ CONST GUID * pInterfaceGuid, _In_ WLAN_INTF_OPCODE OpCode,
+                                  _Reserved_ PVOID pReserved, _Out_ PDWORD pdwDataSize, _Outptr_result_bytebuffer_ (*pdwDataSize) PVOID * ppData,
+                                  _Out_opt_ PWLAN_OPCODE_VALUE_TYPE pWlanOpcodeValueType)) (::GetProcAddress (fDLL, "WlanQueryInterface"));
         }
         WLANAPI_ (const WLANAPI_&) = delete;
         ~WLANAPI_ ()
@@ -527,7 +532,8 @@ namespace {
         DWORD (WINAPI* fWlanEnumInterfaces)
         (_In_ HANDLE hClientHandle, _Reserved_ PVOID pReserved, _Outptr_ PWLAN_INTERFACE_INFO_LIST* ppInterfaceList) = nullptr;
         DWORD (WINAPI* fWlanQueryInterface)
-        (_In_ HANDLE hClientHandle, _In_ CONST GUID* pInterfaceGuid, _In_ WLAN_INTF_OPCODE OpCode, _Reserved_ PVOID pReserved, _Out_ PDWORD pdwDataSize, _Outptr_result_bytebuffer_ (*pdwDataSize) PVOID* ppData, _Out_opt_ PWLAN_OPCODE_VALUE_TYPE pWlanOpcodeValueType) = nullptr;
+        (_In_ HANDLE hClientHandle, _In_ CONST GUID* pInterfaceGuid, _In_ WLAN_INTF_OPCODE OpCode, _Reserved_ PVOID pReserved, _Out_ PDWORD pdwDataSize,
+         _Outptr_result_bytebuffer_ (*pdwDataSize) PVOID* ppData, _Out_opt_ PWLAN_OPCODE_VALUE_TYPE pWlanOpcodeValueType) = nullptr;
     };
     struct WirelessInfoPlus_ : Interface::WirelessInfo {
         // extra info so can be patched into Interface
@@ -549,11 +555,19 @@ namespace {
                 DWORD dwCurVersion = 0;
                 Execution::Platform::Windows::ThrowIfNotERROR_SUCCESS (sWlanAPI_->fWlanOpenHandle (2, NULL, &dwCurVersion, &hClient));
             }
-            [[maybe_unused]] auto&& cleanup1 = Execution::Finally ([&] () noexcept { if (hClient !=nullptr) {sWlanAPI_->fWlanCloseHandle (hClient, nullptr);} });
+            [[maybe_unused]] auto&& cleanup1 = Execution::Finally ([&] () noexcept {
+                if (hClient != nullptr) {
+                    sWlanAPI_->fWlanCloseHandle (hClient, nullptr);
+                }
+            });
 
             PWLAN_INTERFACE_INFO_LIST pIfList = nullptr;
             Execution::Platform::Windows::ThrowIfNotERROR_SUCCESS (sWlanAPI_->fWlanEnumInterfaces (hClient, nullptr, &pIfList));
-            [[maybe_unused]] auto&& cleanup2 = Execution::Finally ([&] () noexcept { if (pIfList !=nullptr) {sWlanAPI_->fWlanFreeMemory (pIfList);} });
+            [[maybe_unused]] auto&& cleanup2 = Execution::Finally ([&] () noexcept {
+                if (pIfList != nullptr) {
+                    sWlanAPI_->fWlanFreeMemory (pIfList);
+                }
+            });
 
             //
             // makes more sense for pConnectionInfo to be scoped inside loop, but the example docs in:
@@ -565,7 +579,11 @@ namespace {
             // any my intuitions wrong.
             //
             PWLAN_CONNECTION_ATTRIBUTES pConnectInfo{};
-            [[maybe_unused]] auto&&     cleanup3 = Execution::Finally ([&] () noexcept { if (pConnectInfo != nullptr) {sWlanAPI_->fWlanFreeMemory (pConnectInfo);} });
+            [[maybe_unused]] auto&&     cleanup3 = Execution::Finally ([&] () noexcept {
+                if (pConnectInfo != nullptr) {
+                    sWlanAPI_->fWlanFreeMemory (pConnectInfo);
+                }
+            });
 
             for (DWORD i = 0; i < pIfList->dwNumberOfItems; ++i) {
                 PWLAN_INTERFACE_INFO pIfInfo = (WLAN_INTERFACE_INFO*)&pIfList->InterfaceInfo[i];
@@ -605,8 +623,8 @@ namespace {
                         DWORD                  connectInfoSize = sizeof (WLAN_CONNECTION_ATTRIBUTES);
                         WLAN_OPCODE_VALUE_TYPE opCode          = wlan_opcode_value_type_invalid;
                         Execution::Platform::Windows::ThrowIfNotERROR_SUCCESS (
-                            sWlanAPI_->fWlanQueryInterface (hClient, &pIfInfo->InterfaceGuid, wlan_intf_opcode_current_connection,
-                                                            nullptr, &connectInfoSize, (PVOID*)&pConnectInfo, &opCode));
+                            sWlanAPI_->fWlanQueryInterface (hClient, &pIfInfo->InterfaceGuid, wlan_intf_opcode_current_connection, nullptr,
+                                                            &connectInfoSize, (PVOID*)&pConnectInfo, &opCode));
                     }
 
                     if (pConnectInfo->isState != pIfInfo->isState) {
@@ -637,7 +655,9 @@ namespace {
 
                     //Association Attributes for this connection
                     if (pConnectInfo->wlanAssociationAttributes.dot11Ssid.uSSIDLength != 0) {
-                        wInfo.fSSID = String::FromNarrowSDKString (span{reinterpret_cast<const char*> (pConnectInfo->wlanAssociationAttributes.dot11Ssid.ucSSID), pConnectInfo->wlanAssociationAttributes.dot11Ssid.uSSIDLength});
+                        wInfo.fSSID = String::FromNarrowSDKString (
+                            span{reinterpret_cast<const char*> (pConnectInfo->wlanAssociationAttributes.dot11Ssid.ucSSID),
+                                 pConnectInfo->wlanAssociationAttributes.dot11Ssid.uSSIDLength});
                     }
 
                     auto mapBSSType = [] (DOT11_BSS_TYPE s) -> WirelessInfo::BSSType {
@@ -655,7 +675,8 @@ namespace {
                     };
                     wInfo.fBSSType = mapBSSType (pConnectInfo->wlanAssociationAttributes.dot11BssType);
 
-                    wInfo.fMACAddress = PrintMacAddr_ (std::begin (pConnectInfo->wlanAssociationAttributes.dot11Bssid), std::end (pConnectInfo->wlanAssociationAttributes.dot11Bssid));
+                    wInfo.fMACAddress = PrintMacAddr_ (std::begin (pConnectInfo->wlanAssociationAttributes.dot11Bssid),
+                                                       std::end (pConnectInfo->wlanAssociationAttributes.dot11Bssid));
 
                     auto mapPhysicalConnectionType = [] (DOT11_PHY_TYPE s) -> WirelessInfo::PhysicalConnectionType {
                         switch (s) {
@@ -818,7 +839,8 @@ namespace {
                 }
                 switch (currAddresses->OperStatus) {
                     case IfOperStatusUp:
-                        newInterface.fStatus = Memory::NullCoalesce (newInterface.fStatus) + Set<Interface::Status> ({Interface::Status::eConnected, Interface::Status::eRunning});
+                        newInterface.fStatus = Memory::NullCoalesce (newInterface.fStatus) +
+                                               Set<Interface::Status> ({Interface::Status::eConnected, Interface::Status::eRunning});
                         break;
                     case IfOperStatusDown:
                         newInterface.fStatus = Memory::NullCoalesce (newInterface.fStatus); // keep any existing status values, but don't leave unknown
@@ -836,7 +858,8 @@ namespace {
                 for (PIP_ADAPTER_UNICAST_ADDRESS pu = currAddresses->FirstUnicastAddress; pu != nullptr; pu = pu->Next) {
                     SocketAddress sa{pu->Address};
                     if (sa.IsInternetAddress ()) {
-                        newInterface.fBindings.fAddressRanges.Add (pu->OnLinkPrefixLength == 255 ? sa.GetInternetAddress () : CIDR{sa.GetInternetAddress (), pu->OnLinkPrefixLength});
+                        newInterface.fBindings.fAddressRanges.Add (
+                            pu->OnLinkPrefixLength == 255 ? sa.GetInternetAddress () : CIDR{sa.GetInternetAddress (), pu->OnLinkPrefixLength});
                         newInterface.fBindings.fAddresses.Add (sa.GetInternetAddress ());
                     }
                 }
@@ -888,7 +911,7 @@ namespace {
                         newInterface.fWirelessInfo = *owinfo;
                         WeakAssert (not newInterface.fTransmitSpeedBaud.has_value () or newInterface.fTransmitSpeedBaud == owinfo->fTransmitSpeedBaud);
                         WeakAssert (not newInterface.fReceiveLinkSpeedBaud.has_value () or newInterface.fReceiveLinkSpeedBaud == owinfo->fReceiveLinkSpeedBaud);
-                        newInterface.fTransmitSpeedBaud    = Memory::NullCoalesce (newInterface.fTransmitSpeedBaud, owinfo->fTransmitSpeedBaud);
+                        newInterface.fTransmitSpeedBaud = Memory::NullCoalesce (newInterface.fTransmitSpeedBaud, owinfo->fTransmitSpeedBaud);
                         newInterface.fReceiveLinkSpeedBaud = Memory::NullCoalesce (newInterface.fReceiveLinkSpeedBaud, owinfo->fReceiveLinkSpeedBaud);
                     }
                     else {

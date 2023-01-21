@@ -133,7 +133,8 @@ bool Execution::MatchesCommandLineArgument (const String& actualArg, const Strin
 
 bool Execution::MatchesCommandLineArgument (const Iterable<String>& argList, const String& matchesArgPattern)
 {
-    return static_cast<bool> (argList.Find ([matchesArgPattern] (String i) -> bool { return Execution::MatchesCommandLineArgument (i, matchesArgPattern); }));
+    return static_cast<bool> (
+        argList.Find ([matchesArgPattern] (String i) -> bool { return Execution::MatchesCommandLineArgument (i, matchesArgPattern); }));
 }
 
 optional<String> Execution::MatchesCommandLineArgumentWithValue ([[maybe_unused]] const String& actualArg, [[maybe_unused]] const String& matchesArgPattern)
@@ -146,7 +147,8 @@ optional<String> Execution::MatchesCommandLineArgumentWithValue ([[maybe_unused]
 
 optional<String> Execution::MatchesCommandLineArgumentWithValue (const Iterable<String>& argList, const String& matchesArgPattern)
 {
-    auto i = argList.Find ([matchesArgPattern] (const String& i) -> bool { return Execution::MatchesCommandLineArgument (i, matchesArgPattern); });
+    auto i =
+        argList.Find ([matchesArgPattern] (const String& i) -> bool { return Execution::MatchesCommandLineArgument (i, matchesArgPattern); });
     if (i != argList.end ()) {
         ++i;
         if (i == argList.end ()) [[unlikely]] {

@@ -133,9 +133,7 @@ public:
         AddAssociation (kIncreaseIndentCmd, LedItView::kIncreaseIndent_CmdID);
         AddAssociation (kDecreaseIndentCmd, LedItView::kDecreaseIndent_CmdID);
 
-        AddRangeAssociation (
-            kBaseFontNameCmd, kLastFontNameCmd,
-            LedItView::kFontMenuFirst_CmdID, LedItView::kFontMenuLast_CmdID);
+        AddRangeAssociation (kBaseFontNameCmd, kLastFontNameCmd, LedItView::kFontMenuFirst_CmdID, LedItView::kFontMenuLast_CmdID);
 
         AddAssociation (kFontStylePlainCmd, LedItView::kFontStylePlain_CmdID);
         AddAssociation (kFontStyleBoldCmd, LedItView::kFontStyleBold_CmdID);
@@ -167,9 +165,8 @@ public:
 #endif
 
         //              AddAssociation (kPropertiesForSelectionCmd,     LedItView::kSelectedEmbeddingProperties_CmdID);
-        AddRangeAssociation (
-            kFirstSelectedEmbeddingCmd, kLastSelectedEmbeddingCmd,
-            LedItView::kFirstSelectedEmbedding_CmdID, LedItView::kLastSelectedEmbedding_CmdID);
+        AddRangeAssociation (kFirstSelectedEmbeddingCmd, kLastSelectedEmbeddingCmd, LedItView::kFirstSelectedEmbedding_CmdID,
+                             LedItView::kLastSelectedEmbedding_CmdID);
 
         AddAssociation (kHideSelectionCmd, LedItView::kHideSelection_CmdID);
         AddAssociation (kUnHideSelectionCmd, LedItView::kUnHideSelection_CmdID);
@@ -207,7 +204,8 @@ public:
 //  TextInteractor::DialogSupport
 #if qSupportStdFindDlg
 public:
-    virtual void DisplayFindDialog (Led_tString* findText, const vector<Led_tString>& recentFindSuggestions, bool* wrapSearch, bool* wholeWordSearch, bool* caseSensative, bool* pressedOK) override
+    virtual void DisplayFindDialog (Led_tString* findText, const vector<Led_tString>& recentFindSuggestions, bool* wrapSearch,
+                                    bool* wholeWordSearch, bool* caseSensative, bool* pressedOK) override
     {
 #if qPlatform_MacOS
         Led_StdDialogHelper_FindDialog findDialog;
@@ -234,7 +232,8 @@ public:
 #endif
 #if qSupportStdReplaceDlg
 public:
-    virtual ReplaceButtonPressed DisplayReplaceDialog (Led_tString* findText, const vector<Led_tString>& recentFindSuggestions, Led_tString* replaceText, bool* wrapSearch, bool* wholeWordSearch, bool* caseSensative) override
+    virtual ReplaceButtonPressed DisplayReplaceDialog (Led_tString* findText, const vector<Led_tString>& recentFindSuggestions,
+                                                       Led_tString* replaceText, bool* wrapSearch, bool* wholeWordSearch, bool* caseSensative) override
     {
 #if qPlatform_MacOS
         Led_StdDialogHelper_ReplaceDialog replaceDialog;
@@ -340,7 +339,8 @@ public:
     }
 #endif
 #if qSupportParagraphSpacingDlg
-    virtual bool PickNewParagraphLineSpacing (TWIPS* spaceBefore, bool* spaceBeforeValid, TWIPS* spaceAfter, bool* spaceAfterValid, LineSpacing* lineSpacing, bool* lineSpacingValid) override
+    virtual bool PickNewParagraphLineSpacing (TWIPS* spaceBefore, bool* spaceBeforeValid, TWIPS* spaceAfter, bool* spaceAfterValid,
+                                              LineSpacing* lineSpacing, bool* lineSpacingValid) override
     {
 #if qPlatform_MacOS
         Led_StdDialogHelper_ParagraphSpacingDialog dlg;
@@ -370,7 +370,8 @@ public:
     }
 #endif
 #if qSupportParagraphIndentsDlg
-    virtual bool PickNewParagraphMarginsAndFirstIndent (TWIPS* leftMargin, bool* leftMarginValid, TWIPS* rightMargin, bool* rightMarginValid, TWIPS* firstIndent, bool* firstIndentValid) override
+    virtual bool PickNewParagraphMarginsAndFirstIndent (TWIPS* leftMargin, bool* leftMarginValid, TWIPS* rightMargin,
+                                                        bool* rightMarginValid, TWIPS* firstIndent, bool* firstIndentValid) override
     {
 #if qPlatform_MacOS
         Led_StdDialogHelper_ParagraphIndentsDialog dlg;
@@ -596,7 +597,8 @@ LedItView::LedItView (
 #endif
 #if qPlatform_Windows
     // SHOULD be supported on other platforms, but only Win32 for now...
-    SetDefaultWindowMargins (TWIPS_Rect (kLedItViewTopMargin, kLedItViewLHSMargin, kLedItViewBottomMargin - kLedItViewTopMargin, kLedItViewRHSMargin - kLedItViewLHSMargin));
+    SetDefaultWindowMargins (TWIPS_Rect (kLedItViewTopMargin, kLedItViewLHSMargin, kLedItViewBottomMargin - kLedItViewTopMargin,
+                                         kLedItViewRHSMargin - kLedItViewLHSMargin));
 #endif
 }
 
@@ -796,15 +798,9 @@ void LedItView::OnShowHideGlyphCommand (CommandNumber cmdNum)
     Options{}.SetShowSpaceGlyphs (GetShowSpaceGlyphs ());
 }
 
-LedItView::SearchParameters LedItView::GetSearchParameters () const
-{
-    return Options{}.GetSearchParameters ();
-}
+LedItView::SearchParameters LedItView::GetSearchParameters () const { return Options{}.GetSearchParameters (); }
 
-void LedItView::SetSearchParameters (const SearchParameters& sp)
-{
-    Options{}.SetSearchParameters (sp);
-}
+void LedItView::SetSearchParameters (const SearchParameters& sp) { Options{}.SetSearchParameters (sp); }
 
 void LedItView::SetShowHiddenText (bool showHiddenText)
 {
@@ -913,17 +909,11 @@ void LedItView::OnSize (UINT nType, int cx, int cy)
     }
 }
 
-void LedItView::OnCancelEditSrvr ()
-{
-    GetDocument ().OnDeactivateUI (FALSE);
-}
+void LedItView::OnCancelEditSrvr () { GetDocument ().OnDeactivateUI (FALSE); }
 #endif
 
 #if qPlatform_Windows
-LedItControlItem* LedItView::GetSoleSelectedOLEEmbedding () const
-{
-    return dynamic_cast<LedItControlItem*> (GetSoleSelectedEmbedding ());
-}
+LedItControlItem* LedItView::GetSoleSelectedOLEEmbedding () const { return dynamic_cast<LedItControlItem*> (GetSoleSelectedEmbedding ()); }
 
 void LedItView::OnBarReturn (NMHDR*, LRESULT*)
 {
@@ -933,15 +923,9 @@ void LedItView::OnBarReturn (NMHDR*, LRESULT*)
 }
 
 #ifdef _DEBUG
-void LedItView::AssertValid () const
-{
-    inherited::AssertValid ();
-}
+void LedItView::AssertValid () const { inherited::AssertValid (); }
 
-void LedItView::Dump (CDumpContext& dc) const
-{
-    inherited::Dump (dc);
-}
+void LedItView::Dump (CDumpContext& dc) const { inherited::Dump (dc); }
 
 LedItDocument& LedItView::GetDocument () const // non-debug version is inline
 {

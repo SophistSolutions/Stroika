@@ -18,8 +18,5 @@ using namespace Stroika::Foundation::DataExchange;
  */
 Characters::String StructFieldMetaInfo::ToString () const
 {
-    return "{"_k +
-           "fOffset: " + Characters::ToString (fOffset) + ", "sv +
-           "fTypeInfo: " + Characters::ToString (fTypeInfo) +
-           "}";
+    return "{"_k + "fOffset: " + Characters::ToString (fOffset) + ", "sv + "fTypeInfo: " + Characters::ToString (fTypeInfo) + "}";
 }

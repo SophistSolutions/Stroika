@@ -33,8 +33,7 @@ protected:
     }
 };
 #else
-struct LedLineItMFCBaseClass : public Led_MFC_X<SimpleTextInteractor> {
-};
+struct LedLineItMFCBaseClass : public Led_MFC_X<SimpleTextInteractor> {};
 #endif
 
 class LedLineItDocument;
@@ -82,7 +81,8 @@ private:
     mutable DistanceType fCachedLayoutWidth;
 
 public:
-    virtual void OnTypedNormalCharacter (Led_tChar theChar, bool optionPressed, bool shiftPressed, bool commandPressed, bool controlPressed, bool altKeyPressed) override;
+    virtual void OnTypedNormalCharacter (Led_tChar theChar, bool optionPressed, bool shiftPressed, bool commandPressed, bool controlPressed,
+                                         bool altKeyPressed) override;
 
 protected:
     virtual const TabStopList& GetTabStopList (size_t /*containingPos*/) const override;
@@ -168,10 +168,7 @@ public:
  ********************************************************************************
  */
 #if !qDebug
-inline LedLineItDocument& LedLineItView::GetDocument () const
-{
-    return *(LedLineItDocument*)m_pDocument;
-}
+inline LedLineItDocument& LedLineItView::GetDocument () const { return *(LedLineItDocument*)m_pDocument; }
 #endif
 
 #endif /*__LedLineItView_h__*/

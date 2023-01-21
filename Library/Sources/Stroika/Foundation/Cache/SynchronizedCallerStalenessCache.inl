@@ -45,7 +45,8 @@ namespace Stroika::Foundation::Cache {
     }
     template <typename KEY, typename VALUE, typename TIME_TRAITS>
     template <typename K1, enable_if_t<IsKeyedCache<K1>>*>
-    inline void SynchronizedCallerStalenessCache<KEY, VALUE, TIME_TRAITS>::Add (Configuration::ArgByValueType<K1> k, Configuration::ArgByValueType<VALUE> v, AddReplaceMode addReplaceMode)
+    inline void SynchronizedCallerStalenessCache<KEY, VALUE, TIME_TRAITS>::Add (Configuration::ArgByValueType<K1> k,
+                                                                                Configuration::ArgByValueType<VALUE> v, AddReplaceMode addReplaceMode)
     {
         [[maybe_unused]] auto&& lock = lock_guard{fMutex_};
         inherited::Add (k, v, addReplaceMode);
@@ -59,7 +60,8 @@ namespace Stroika::Foundation::Cache {
     }
     template <typename KEY, typename VALUE, typename TIME_TRAITS>
     template <typename K1, enable_if_t<IsKeyedCache<K1>>*>
-    inline optional<VALUE> SynchronizedCallerStalenessCache<KEY, VALUE, TIME_TRAITS>::Lookup (Configuration::ArgByValueType<K1> k, TimeStampType staleIfOlderThan) const
+    inline optional<VALUE> SynchronizedCallerStalenessCache<KEY, VALUE, TIME_TRAITS>::Lookup (Configuration::ArgByValueType<K1> k,
+                                                                                              TimeStampType staleIfOlderThan) const
     {
         [[maybe_unused]] auto&& lock = lock_guard{fMutex_};
         return inherited::Lookup (k, staleIfOlderThan);
@@ -73,7 +75,8 @@ namespace Stroika::Foundation::Cache {
     }
     template <typename KEY, typename VALUE, typename TIME_TRAITS>
     template <typename F, typename K1, enable_if_t<IsKeyedCache<K1> and is_invocable_r_v<VALUE, F, K1>>*>
-    inline VALUE SynchronizedCallerStalenessCache<KEY, VALUE, TIME_TRAITS>::LookupValue (Configuration::ArgByValueType<K1> k, TimeStampType staleIfOlderThan, F&& cacheFiller)
+    inline VALUE SynchronizedCallerStalenessCache<KEY, VALUE, TIME_TRAITS>::LookupValue (Configuration::ArgByValueType<K1> k,
+                                                                                         TimeStampType staleIfOlderThan, F&& cacheFiller)
     {
         /*
          *  The main reason for this class, is this logic: unlocking the shared lock and then fetching the new value (with a write lock).
@@ -102,7 +105,8 @@ namespace Stroika::Foundation::Cache {
     }
     template <typename KEY, typename VALUE, typename TIME_TRAITS>
     template <typename K1, enable_if_t<IsKeyedCache<K1>>*>
-    inline VALUE SynchronizedCallerStalenessCache<KEY, VALUE, TIME_TRAITS>::LookupValue (Configuration::ArgByValueType<K1> k, TimeStampType staleIfOlderThan, const VALUE& defaultValue) const
+    inline VALUE SynchronizedCallerStalenessCache<KEY, VALUE, TIME_TRAITS>::LookupValue (Configuration::ArgByValueType<K1> k,
+                                                                                         TimeStampType staleIfOlderThan, const VALUE& defaultValue) const
     {
         [[maybe_unused]] auto&& lock = shared_lock{fMutex_}; // ignore fHoldWriteLockDuringCacheFill since this is always fast; shared cuz doesn't update cache
         return inherited::LookupValue (k, staleIfOlderThan, defaultValue);

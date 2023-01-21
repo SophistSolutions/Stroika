@@ -345,8 +345,7 @@ namespace Stroika::Frameworks::Led {
         I couldn't figure out how to declare it in a way that made MSVC60 happy. So I settled for this.</p>
     */
     template <typename DATA>
-    struct DiscontiguousRun : vector<DiscontiguousRunElement<DATA>> {
-    };
+    struct DiscontiguousRun : vector<DiscontiguousRunElement<DATA>> {};
 
     /*
         *  Character set support.
@@ -460,7 +459,7 @@ namespace Stroika::Frameworks::Led {
         void* fLockedData;
     };
 
-    void                                  Led_BeepNotify ();
+    void Led_BeepNotify ();
     Foundation::Time::DurationSecondsType Led_GetDoubleClickTime (); // time-interval which defines how quick we consider two consecutive clicks a dbl-click
 
 #if qStroika_FeatureSupported_XWindows
@@ -609,7 +608,8 @@ namespace Stroika::Frameworks::Led {
 
         // Use this for more low level extensions of the DDE support...
         static DWORD             sDDEMLInstance; //  The DDEML instance identifier.
-        static HDDEDATA CALLBACK SimpleDdeCallBack (UINT /*type*/, UINT /*fmt*/, HCONV /*hconv*/, HSZ /*hsz1*/, HSZ /*hsz2*/, HDDEDATA /*hData*/, DWORD /*dwData1*/, DWORD /*dwData2*/);
+        static HDDEDATA CALLBACK SimpleDdeCallBack (UINT /*type*/, UINT /*fmt*/, HCONV /*hconv*/, HSZ /*hsz1*/, HSZ /*hsz2*/,
+                                                    HDDEDATA /*hData*/, DWORD /*dwData1*/, DWORD /*dwData2*/);
         static const char*       SkipToNextArgument (const char* pFormat);
         static HSZ               ClientArguments (const char* pFormat, ...);
         static char*             ExtractArgument (HSZ hszArgs, int iArg);

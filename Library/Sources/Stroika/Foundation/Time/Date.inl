@@ -13,8 +13,7 @@
 namespace Stroika::Foundation::Time {
 
     enum class [[deprecated ("Since Stroika v3.0d1, unused and use std::chrono")]] DayOfYear : uint16_t{
-        eFirstDayOfYear = 1,
-        eLastDayOfYear  = 366,
+        eFirstDayOfYear = 1, eLastDayOfYear = 366,
 
         Stroika_Define_Enum_Bounds (eFirstDayOfYear, eLastDayOfYear)};
 
@@ -130,14 +129,8 @@ namespace Stroika::Foundation::Time {
      ********************************* IsLeapYear ***********************************
      ********************************************************************************
      */
-    [[deprecated ("Since Stroika v3.0d1, use year{}.is_leap ()")]] inline bool IsLeapYear (Year y)
-    {
-        return y.is_leap ();
-    }
-    [[deprecated ("Since Stroika v3.0d1, use year{}.is_leap ()")]] inline bool IsLeapYear (int y)
-    {
-        return Year{y}.is_leap ();
-    }
+    [[deprecated ("Since Stroika v3.0d1, use year{}.is_leap ()")]] inline bool IsLeapYear (Year y) { return y.is_leap (); }
+    [[deprecated ("Since Stroika v3.0d1, use year{}.is_leap ()")]] inline bool IsLeapYear (int y) { return Year{y}.is_leap (); }
 
     /*
      ********************************************************************************
@@ -250,15 +243,9 @@ namespace Stroika::Foundation::Time {
         tm.tm_mday = static_cast<unsigned int> (GetDayOfMonth ());
         return tm;
     }
-    inline constexpr Date::JulianRepType Date::GetJulianRep () const
-    {
-        return ToJulianRep (fRep_);
-    }
-    inline constexpr year Date::GetYear () const
-    {
-        return fRep_.year ();
-    }
-    inline constexpr month Date::GetMonth () const
+    inline constexpr Date::JulianRepType Date::GetJulianRep () const { return ToJulianRep (fRep_); }
+    inline constexpr year                Date::GetYear () const { return fRep_.year (); }
+    inline constexpr month               Date::GetMonth () const
     {
         Ensure (January <= fRep_.month () and fRep_.month () <= December);
         return fRep_.month ();
@@ -268,10 +255,7 @@ namespace Stroika::Foundation::Time {
         Ensure (1d <= fRep_.day () and fRep_.day () <= 31d);
         return fRep_.day ();
     }
-    inline Date Date::Parse (const String& rep, const locale& l)
-    {
-        return Date::Parse_ (rep, l, kDefaultParseFormats, nullptr);
-    }
+    inline Date Date::Parse (const String& rep, const locale& l) { return Date::Parse_ (rep, l, kDefaultParseFormats, nullptr); }
     inline Date Date::Parse (const String& rep, const locale& l, const Traversal::Iterable<String>& formatPatterns)
     {
         return Date::Parse_ (rep, l, formatPatterns, nullptr);
@@ -357,46 +341,22 @@ namespace Stroika::Foundation::Time {
         return ParseQuietly_ (rep.As<wstring> (), use_facet<time_get<wchar_t>> (l), formatPattern, nullptr);
     }
 #if not(qCompilerAndStdLib_linkerLosesInlinesSoCannotBeSeenByDebugger_Buggy && qDebug)
-    inline String Date::ToString () const
-    {
-        return Format ();
-    }
+    inline String Date::ToString () const { return Format (); }
 #endif
-    [[nodiscard]] inline Date Date::Add (int dayCount) const
-    {
-        return Add (days{dayCount});
-    }
-    inline Date Date::operator+ (int daysOffset) const
-    {
-        return this->Add (daysOffset);
-    }
-    inline Date Date::operator+ (days daysOffset) const
-    {
-        return this->Add (daysOffset);
-    }
-    inline days Date::Since (Date dStart, Date dEnd)
+    [[nodiscard]] inline Date Date::Add (int dayCount) const { return Add (days{dayCount}); }
+    inline Date Date::operator+ (int daysOffset) const { return this->Add (daysOffset); }
+    inline Date Date::operator+ (days daysOffset) const { return this->Add (daysOffset); }
+    inline days       Date::Since (Date dStart, Date dEnd)
     {
         if (dStart < dEnd) {
             return dEnd - dStart;
         }
         return days{0};
     }
-    inline auto Date::Difference (const Date& rhs) const -> days
-    {
-        return chrono::sys_days{fRep_} - chrono::sys_days{rhs.fRep_};
-    }
-    inline auto Date::operator- (const Date& rhs) const -> days
-    {
-        return Difference (rhs);
-    }
-    inline Date Date::operator- (days daysOffset) const
-    {
-        return Add (-daysOffset);
-    }
-    inline Date Date::operator- (int daysOffset) const
-    {
-        return Add (-daysOffset);
-    }
+    inline auto Date::Difference (const Date& rhs) const -> days { return chrono::sys_days{fRep_} - chrono::sys_days{rhs.fRep_}; }
+    inline auto Date::operator- (const Date& rhs) const -> days { return Difference (rhs); }
+    inline Date Date::operator- (days daysOffset) const { return Add (-daysOffset); }
+    inline Date Date::    operator- (int daysOffset) const { return Add (-daysOffset); }
     inline constexpr Date Date::kMin{Date::kMinJulianRep};
     inline constexpr Date Date::kMax{Date::kMaxJulianRep};
 
@@ -408,7 +368,8 @@ namespace Stroika::Foundation::Configuration {
 #endif
     constexpr EnumNames<Stroika::Foundation::Time::Date::NonStandardPrintFormat> DefaultNames<Stroika::Foundation::Time::Date::NonStandardPrintFormat>::k{
         EnumNames<Stroika::Foundation::Time::Date::NonStandardPrintFormat>::BasicArrayInitializer{{
-            {Stroika::Foundation::Time::Date::NonStandardPrintFormat::eCurrentLocale_WithZerosStripped, L"Current-Locale-With-Zeros-Stripped"},
+            {Stroika::Foundation::Time::Date::NonStandardPrintFormat::eCurrentLocale_WithZerosStripped,
+             L"Current-Locale-With-Zeros-Stripped"},
         }}};
 
 }
@@ -419,14 +380,8 @@ namespace Stroika::Foundation::Traversal::RangeTraits {
     inline constexpr Time::Date Default<Time::Date>::kUpperBound{Time::Date::kMax};
 
     /// need getNext/GetPrev here excelt if causes constexpr issues
-    inline Time::Date Default<Time::Date>::GetNext (Time::Date n)
-    {
-        return n + 1;
-    }
-    inline Time::Date Default<Time::Date>::GetPrevious (Time::Date n)
-    {
-        return n - 1;
-    }
+    inline Time::Date Default<Time::Date>::GetNext (Time::Date n) { return n + 1; }
+    inline Time::Date Default<Time::Date>::GetPrevious (Time::Date n) { return n - 1; }
 
 };
 

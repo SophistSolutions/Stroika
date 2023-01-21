@@ -49,13 +49,17 @@ namespace {
     };
     void Usage_ ()
     {
-        cerr << "Usage: ArchiveUtility (--help | -h) | (--no-fail-on-missing-library) | ((--list | --create | --extract |--update) ARCHIVENAME [--outputDirectory D] [FILES])" << endl;
+        cerr << "Usage: ArchiveUtility (--help | -h) | (--no-fail-on-missing-library) | ((--list | --create | --extract |--update) "
+                "ARCHIVENAME [--outputDirectory D] [FILES])"
+             << endl;
         cerr << "    --help prints this help" << endl;
         cerr << "    -h prints this help" << endl;
         cerr << "    --no-fail-on-missing-library just warns when we fail because of missing library" << endl;
         cerr << "    --list prints all the files in the argument archive" << endl;
         cerr << "    --create creates the argument ARHCIVE and adds the argument FILES to it" << endl;
-        cerr << "    --extract extracts all the files from the argument ARHCIVE and to the output directory specified by --ouptutDirectory (defaulting to .)" << endl;
+        cerr << "    --extract extracts all the files from the argument ARHCIVE and to the output directory specified by --ouptutDirectory "
+                "(defaulting to .)"
+             << endl;
         cerr << "    --update adds to the argument ARHCIVE and adds the argument FILES to it" << endl;
         cerr << "    ARCHIVENAME can be the single character - to designate stdin" << endl; // NYI
     }
@@ -158,7 +162,8 @@ namespace {
 
 int main (int argc, const char* argv[])
 {
-    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"main", L"argv=%s", Characters::ToString (vector<const char*>{argv, argv + argc}).c_str ())};
+    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (
+        L"main", L"argv=%s", Characters::ToString (vector<const char*>{argv, argv + argc}).c_str ())};
     if (optional<Options_> o = ParseOptions_ (argc, argv)) {
         try {
             switch (o->fOperation) {

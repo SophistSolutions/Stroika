@@ -109,8 +109,10 @@ namespace Stroika::Foundation::Cache {
          *  Note cannot move easily because this contains internal pointers (fCachedElts_First_): still declare move CTOR, but its not
          *  noexcept because its really copying...
          */
-        LRUCache (size_t maxCacheSize = 1, const KeyEqualsCompareFunctionType& keyEqualsComparer = {}, size_t hashTableSize = 1, KEY_HASH_FUNCTION hashFunction = KEY_HASH_FUNCTION{});
-        LRUCache (pair<KEY, VALUE> ignored, size_t maxCacheSize = 1, const KeyEqualsCompareFunctionType& keyEqualsComparer = {}, size_t hashTableSize = 1, KEY_HASH_FUNCTION hashFunction = KEY_HASH_FUNCTION{});
+        LRUCache (size_t maxCacheSize = 1, const KeyEqualsCompareFunctionType& keyEqualsComparer = {}, size_t hashTableSize = 1,
+                  KEY_HASH_FUNCTION hashFunction = KEY_HASH_FUNCTION{});
+        LRUCache (pair<KEY, VALUE> ignored, size_t maxCacheSize = 1, const KeyEqualsCompareFunctionType& keyEqualsComparer = {},
+                  size_t hashTableSize = 1, KEY_HASH_FUNCTION hashFunction = KEY_HASH_FUNCTION{});
         LRUCache (size_t maxCacheSize, size_t hashTableSize, KEY_HASH_FUNCTION hashFunction = hash<KEY>{});
         LRUCache (pair<KEY, VALUE> ignored, size_t maxCacheSize, size_t hashTableSize, KEY_HASH_FUNCTION hashFunction = hash<KEY>{});
 #if qCompilerAndStdLib_MoveCTORDelete_N4285_Buggy
@@ -213,7 +215,8 @@ namespace Stroika::Foundation::Cache {
          *          To negatively cache, be sure you use an optional<X> for the VALUE type, and then you can wrap
          *          the LookupValue function with try/catch and on failure, cache nullopt.
          */
-        nonvirtual VALUE LookupValue (typename Configuration::ArgByValueType<KEY> key, const function<VALUE (typename Configuration::ArgByValueType<KEY>)>& valueFetcher);
+        nonvirtual VALUE LookupValue (typename Configuration::ArgByValueType<KEY>                          key,
+                                      const function<VALUE (typename Configuration::ArgByValueType<KEY>)>& valueFetcher);
 
     public:
         /**
@@ -279,7 +282,7 @@ namespace Stroika::Foundation::Cache {
          */
         nonvirtual void ShuffleToHead_ (size_t chainIdx, CacheElement_* b);
 
-        static constexpr size_t                                                  kPreallocatedHashtableSize_ = 5; // size where no memory allocation overhead for lrucache
+        static constexpr size_t kPreallocatedHashtableSize_ = 5; // size where no memory allocation overhead for lrucache
         Memory::InlineBuffer<vector<CacheElement_>, kPreallocatedHashtableSize_> fCachedElts_BUF_{};
         Memory::InlineBuffer<CacheElement_*, kPreallocatedHashtableSize_>        fCachedElts_First_{};
         Memory::InlineBuffer<CacheElement_*, kPreallocatedHashtableSize_>        fCachedElts_Last_{};

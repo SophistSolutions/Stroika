@@ -80,17 +80,13 @@ namespace Stroika::Frameworks::Led {
         nonvirtual const MARKERINFO& GetInfo (size_t charAfterPos) const;
         nonvirtual MarkerVector      GetInfoMarkers (size_t charAfterPos, size_t nTCharsFollowing) const;
         nonvirtual vector<pair<MARKERINFO, size_t>> GetInfo (size_t charAfterPos, size_t nTCharsFollowing) const;
-        virtual void                                SetInfo (size_t charAfterPos, size_t nTCharsFollowing, const INCREMENTALMARKERINFO& infoForMarkers);
-        virtual void                                SetInfos (size_t charAfterPos, const vector<pair<INCREMENTALMARKERINFO, size_t>>& infoForMarkers);
-        nonvirtual void                             SetInfos2 (size_t charAfterPos, const vector<pair<MARKERINFO, size_t>>& infoForMarkers);
+        virtual void    SetInfo (size_t charAfterPos, size_t nTCharsFollowing, const INCREMENTALMARKERINFO& infoForMarkers);
+        virtual void    SetInfos (size_t charAfterPos, const vector<pair<INCREMENTALMARKERINFO, size_t>>& infoForMarkers);
+        nonvirtual void SetInfos2 (size_t charAfterPos, const vector<pair<MARKERINFO, size_t>>& infoForMarkers);
 
     protected:
-        nonvirtual void SetInfoInnerLoop (
-            size_t                       from,
-            size_t                       to,
-            const INCREMENTALMARKERINFO& infoForMarkers,
-            const UpdateInfo&            allMarkersUpdateInfo,
-            TextStore::SimpleUpdater**   updater);
+        nonvirtual void SetInfoInnerLoop (size_t from, size_t to, const INCREMENTALMARKERINFO& infoForMarkers,
+                                          const UpdateInfo& allMarkersUpdateInfo, TextStore::SimpleUpdater** updater);
 
     protected:
         virtual void    ConstrainSetInfoArgs (size_t* charAfterPos, size_t* nTCharsFollowing);
@@ -118,7 +114,7 @@ namespace Stroika::Frameworks::Led {
     private:
         mutable bool fNeedExtraUpdateCheck; // flag so we can tell if someone queries our state after an 'AboutToUpdateText' but BEFORE we've gotten our 'DidUpdateText'
         mutable bool fEarlyDidUpdateCalled; // See docs for @'MarkerCover<MARKER,MARKERINFO,INCREMENTALMARKERINFO>::HandleCallBeforeDidUpdateComplete'
-        UpdateInfo   fNeedExtraUpdateCheck_UpdateInfo;
+        UpdateInfo fNeedExtraUpdateCheck_UpdateInfo;
 
     protected:
         class NonEmptyOnes : public MarkersOfATypeMarkerSink2Vector<MARKER> {

@@ -123,10 +123,7 @@ namespace Stroika::Frameworks::Led {
     {
         return fDefaultTabWidth == rhs.fDefaultTabWidth and fTabStops == rhs.fTabStops;
     }
-    inline void TextImager::SetWindowRect_ (const Led_Rect& windowRect)
-    {
-        fWindowRect = windowRect;
-    }
+    inline void TextImager::SetWindowRect_ (const Led_Rect& windowRect) { fWindowRect = windowRect; }
     /*
     @METHOD:        TextImager::GetForceAllRowsShowing
     @DESCRIPTION:   <p>Return the ForceAllRowsShowing flag. If this flag is true, then the TextImager
@@ -137,10 +134,7 @@ namespace Stroika::Frameworks::Led {
                 like printing where it makes sense).</p>
                     <p>Call @'TextImager::SetForceAllRowsShowing' () to set the value.</p>
     */
-    inline bool TextImager::GetForceAllRowsShowing () const
-    {
-        return fForceAllRowsShowing;
-    }
+    inline bool TextImager::GetForceAllRowsShowing () const { return fForceAllRowsShowing; }
     /*
     @METHOD:        TextImager::SetForceAllRowsShowing
     @DESCRIPTION:   <p>See @'TextImager::GetForceAllRowsShowing'.</p>
@@ -163,10 +157,7 @@ namespace Stroika::Frameworks::Led {
                     <p>This value defaults to true (temporarily defaulting to @'qUseOffscreenBitmapsToReduceFlicker).</p>
                     <p>See @'TextImager::SetImageUsingOffscreenBitmaps'.</p>
     */
-    inline bool TextImager::GetImageUsingOffscreenBitmaps () const
-    {
-        return fImageUsingOffscreenBitmaps;
-    }
+    inline bool TextImager::GetImageUsingOffscreenBitmaps () const { return fImageUsingOffscreenBitmaps; }
     /*
     @METHOD:        TextImager::SetImageUsingOffscreenBitmaps
     @DESCRIPTION:   <p>See @'TextImager::GetForceAllRowsShowing'.</p>
@@ -184,30 +175,18 @@ namespace Stroika::Frameworks::Led {
                 no horizontal scrolling has taken place. Call @'TextImager::SetHScrollPos ()' to set where you have
                 horizontally scrolled to.</p>
     */
-    inline CoordinateType TextImager::GetHScrollPos () const
-    {
-        return (fHScrollPos);
-    }
-    inline void TextImager::SetHScrollPos_ (CoordinateType hScrollPos)
-    {
-        fHScrollPos = hScrollPos;
-    }
+    inline CoordinateType TextImager::GetHScrollPos () const { return (fHScrollPos); }
+    inline void           TextImager::SetHScrollPos_ (CoordinateType hScrollPos) { fHScrollPos = hScrollPos; }
     /*
     @METHOD:        TextImager::GetSelectionGoalColumn
     @DESCRIPTION:   <p></p>
     */
-    inline TWIPS TextImager::GetSelectionGoalColumn () const
-    {
-        return (fSelectionGoalColumn);
-    }
+    inline TWIPS TextImager::GetSelectionGoalColumn () const { return (fSelectionGoalColumn); }
     /*
     @METHOD:        TextImager::SetSelectionGoalColumn
     @DESCRIPTION:   <p></p>
     */
-    inline void TextImager::SetSelectionGoalColumn (TWIPS selectionGoalColumn)
-    {
-        fSelectionGoalColumn = selectionGoalColumn;
-    }
+    inline void TextImager::SetSelectionGoalColumn (TWIPS selectionGoalColumn) { fSelectionGoalColumn = selectionGoalColumn; }
     inline void TextImager::InvalidateScrollBarParameters ()
     {
         // typically you would OVERRIDE this to update your scrollbar position, and perhaps
@@ -225,10 +204,7 @@ namespace Stroika::Frameworks::Led {
                 in case someone prefers the more standard windows style.</p>
                     <p>See also @'TextImager::SetUseSelectEOLBOLRowHilightStyle'.</p>
     */
-    inline bool TextImager::GetUseSelectEOLBOLRowHilightStyle () const
-    {
-        return fUseEOLBOLRowHilightStyle;
-    }
+    inline bool TextImager::GetUseSelectEOLBOLRowHilightStyle () const { return fUseEOLBOLRowHilightStyle; }
     /*
     @METHOD:        TextImager::SetUseSelectEOLBOLRowHilightStyle
     @DESCRIPTION:   <p>See also @'TextImager::GetUseSelectEOLBOLRowHilightStyle'.</p>
@@ -237,10 +213,7 @@ namespace Stroika::Frameworks::Led {
     {
         fUseEOLBOLRowHilightStyle = useEOLBOLRowHilightStyle;
     }
-    inline bool TextImager::GetSelectionShown () const
-    {
-        return (fSelectionShown);
-    }
+    inline bool TextImager::GetSelectionShown () const { return (fSelectionShown); }
     /*
     @METHOD:        TextImager::GetWindowRect
     @DESCRIPTION:   <p>Returns the WindowRect associated with this TextImager. The WindowRect is essentially two things. Its
@@ -251,28 +224,19 @@ namespace Stroika::Frameworks::Led {
                 editor view takes up the entire window.</p>
                     <p>See @'TextImager' for more information about Windows/Scrolling. See also @'TextImager::SetWindowRect'.</p>
     */
-    inline Led_Rect TextImager::GetWindowRect () const
-    {
-        return (fWindowRect);
-    }
+    inline Led_Rect TextImager::GetWindowRect () const { return (fWindowRect); }
     /*
     @METHOD:        TextImager::GetDefaultFont
     @DESCRIPTION:   <p>Returns the default font used to image new text. The exact meaning and use of this
         default font will depend some on the particular TextImager subclass you are using.</p>
     */
-    inline FontSpecification TextImager::GetDefaultFont () const
-    {
-        return (fDefaultFont);
-    }
+    inline FontSpecification TextImager::GetDefaultFont () const { return (fDefaultFont); }
     /*
     @METHOD:        TextImager::GetRowLength
     @DESCRIPTION:   <p>Returns the number of tChars within the given row (by row index). This method's use is discouraged
                 when word-wrapping is present, because it forces word-wrapping up to the given row # in the buffer.</p>
     */
-    inline size_t TextImager::GetRowLength (size_t rowNumber) const
-    {
-        return (GetEndOfRow (rowNumber) - GetStartOfRow (rowNumber));
-    }
+    inline size_t TextImager::GetRowLength (size_t rowNumber) const { return (GetEndOfRow (rowNumber) - GetStartOfRow (rowNumber)); }
     /*
     @METHOD:        TextImager::GetDefaultTextColor
     @DESCRIPTION:   <p>Returns the value of the given indexed color attribute. These colors values default to nullptr,
@@ -410,10 +374,7 @@ namespace Stroika::Frameworks::Led {
         }
 #endif
     }
-    inline FontMetrics TextImager::FontCacheInfoUpdater::GetMetrics () const
-    {
-        return fImager->fCachedFontInfo;
-    }
+    inline FontMetrics TextImager::FontCacheInfoUpdater::GetMetrics () const { return fImager->fCachedFontInfo; }
 
     //  class   TrivialImager<TEXTSTORE,IMAGER>
     template <typename TEXTSTORE, typename IMAGER>
@@ -479,8 +440,7 @@ namespace Stroika::Frameworks::Led {
                 (@'qCannotSafelyCallLotsOfComplexVirtMethodCallsInsideCTORDTOR')- its generally best to be THE final
                 CTOR.</p>
     */
-    void
-    TrivialImager<TEXTSTORE, IMAGER>::SnagAttributesFromTablet ()
+    void TrivialImager<TEXTSTORE, IMAGER>::SnagAttributesFromTablet ()
     {
 #if qPlatform_MacOS
 // Should probably do something similar?
@@ -501,8 +461,7 @@ namespace Stroika::Frameworks::Led {
     @METHOD:        TrivialImager<TEXTSTORE,IMAGER>::GetBackgroundColor
     @DESCRIPTION:   <p>See also @'TrivialImager<TEXTSTORE,IMAGER>::SetBackgroundColor'.</p>
     */
-    inline Color
-    TrivialImager<TEXTSTORE, IMAGER>::GetBackgroundColor () const
+    inline Color TrivialImager<TEXTSTORE, IMAGER>::GetBackgroundColor () const
     {
         return this->GetEffectiveDefaultTextColor (TextImager::eDefaultBackgroundColor);
     }
@@ -513,8 +472,7 @@ namespace Stroika::Frameworks::Led {
                     <p>See also @'TrivialImager<TEXTSTORE,IMAGER>::SetBackgroundTransparent',
                 @'TrivialImager<TEXTSTORE,IMAGER>::GetBackgroundColor'.</p>
     */
-    inline void
-    TrivialImager<TEXTSTORE, IMAGER>::SetBackgroundColor (Color c)
+    inline void TrivialImager<TEXTSTORE, IMAGER>::SetBackgroundColor (Color c)
     {
         this->SetDefaultTextColor (TextImager::eDefaultBackgroundColor, c);
     }
@@ -523,8 +481,7 @@ namespace Stroika::Frameworks::Led {
     @METHOD:        TrivialImager<TEXTSTORE,IMAGER>::GetBackgroundTransparent
     @DESCRIPTION:   <p>See also @'TrivialImager<TEXTSTORE,IMAGER>::SetBackgroundTransparent'.</p>
     */
-    inline bool
-    TrivialImager<TEXTSTORE, IMAGER>::GetBackgroundTransparent () const
+    inline bool TrivialImager<TEXTSTORE, IMAGER>::GetBackgroundTransparent () const
     {
         return fBackgroundTransparent;
     }
@@ -539,8 +496,7 @@ namespace Stroika::Frameworks::Led {
                     <p>See also @'TrivialImager<TEXTSTORE,IMAGER>::GetBackgroundTransparent',
                 @'TrivialImager<TEXTSTORE,IMAGER>::SetBackgroundColor'.</p>
     */
-    inline void
-    TrivialImager<TEXTSTORE, IMAGER>::SetBackgroundTransparent (bool transparent)
+    inline void TrivialImager<TEXTSTORE, IMAGER>::SetBackgroundTransparent (bool transparent)
     {
         fBackgroundTransparent = transparent;
     }

@@ -48,7 +48,7 @@ namespace {
     void DoTestForConcreteContainer_ (FACTORY factory, VALUE_EQUALS_COMPARER_TYPE valueEqualsComparer)
     {
         using namespace CommonTests::AssociationTests;
-        auto testSchema                      = DEFAULT_TESTING_SCHEMA<CONCRETE_CONTAINER, FACTORY, VALUE_EQUALS_COMPARER_TYPE>{factory, valueEqualsComparer};
+        auto testSchema = DEFAULT_TESTING_SCHEMA<CONCRETE_CONTAINER, FACTORY, VALUE_EQUALS_COMPARER_TYPE>{factory, valueEqualsComparer};
         testSchema.ApplyToContainerExtraTest = [] (const typename CONCRETE_CONTAINER::ArchetypeContainerType& m) {
             // verify in sorted order
             using value_type = typename CONCRETE_CONTAINER::value_type;
@@ -79,31 +79,33 @@ namespace {
 namespace {
     void DoRegressionTests_ ()
     {
-        struct MySimpleClassWithoutComparisonOperators_ComparerWithEquals_ : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eEquals> {
+        struct MySimpleClassWithoutComparisonOperators_ComparerWithEquals_
+            : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eEquals> {
             using value_type = SimpleClassWithoutComparisonOperators;
-            bool operator() (const value_type& v1, const value_type& v2) const
-            {
-                return v1.GetValue () == v2.GetValue ();
-            }
+            bool operator() (const value_type& v1, const value_type& v2) const { return v1.GetValue () == v2.GetValue (); }
         };
-        struct MySimpleClassWithoutComparisonOperators_ComparerWithLess_ : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eStrictInOrder> {
+        struct MySimpleClassWithoutComparisonOperators_ComparerWithLess_
+            : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eStrictInOrder> {
             using value_type = SimpleClassWithoutComparisonOperators;
-            bool operator() (const value_type& v1, const value_type& v2) const
-            {
-                return v1.GetValue () < v2.GetValue ();
-            }
+            bool operator() (const value_type& v1, const value_type& v2) const { return v1.GetValue () < v2.GetValue (); }
         };
 
         DoTestForConcreteContainer_<SortedAssociation<size_t, size_t>> ();
         DoTestForConcreteContainer_<SortedAssociation<SimpleClass, SimpleClass>> ();
         DoTestForConcreteContainer_<SortedAssociation<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators>> (
-            [] () { return SortedAssociation<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators> (MySimpleClassWithoutComparisonOperators_ComparerWithLess_{}); },
+            [] () {
+                return SortedAssociation<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators> (
+                    MySimpleClassWithoutComparisonOperators_ComparerWithLess_{});
+            },
             MySimpleClassWithoutComparisonOperators_ComparerWithEquals_{});
 
         DoTestForConcreteContainer_<SortedAssociation_stdmultimap<size_t, size_t>> ();
         DoTestForConcreteContainer_<SortedAssociation_stdmultimap<SimpleClass, SimpleClass>> ();
         DoTestForConcreteContainer_<SortedAssociation_stdmultimap<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators>> (
-            [] () { return SortedAssociation_stdmultimap<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators> (MySimpleClassWithoutComparisonOperators_ComparerWithLess_{}); },
+            [] () {
+                return SortedAssociation_stdmultimap<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators> (
+                    MySimpleClassWithoutComparisonOperators_ComparerWithLess_{});
+            },
             MySimpleClassWithoutComparisonOperators_ComparerWithEquals_{});
 
         Test3_ConvertAssociation2SortedAssociation::TestAll ();

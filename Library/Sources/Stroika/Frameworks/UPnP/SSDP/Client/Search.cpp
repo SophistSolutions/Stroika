@@ -64,7 +64,8 @@ public:
         if (fThread_ != nullptr) {
             fThread_.AbortAndWaitForDone ();
         }
-        fThread_ = Execution::Thread::New ([this, serviceType, autoRetryInterval] () { DoRun_ (serviceType, autoRetryInterval); }, Execution::Thread::eAutoStart, "SSDP Searcher"sv);
+        fThread_ = Execution::Thread::New ([this, serviceType, autoRetryInterval] () { DoRun_ (serviceType, autoRetryInterval); },
+                                           Execution::Thread::eAutoStart, "SSDP Searcher"sv);
     }
     void Stop ()
     {
@@ -91,7 +92,7 @@ public:
             Debug::TraceContextBumper ctx{"Sending M-SEARCH"};
 #endif
             SocketAddress useSocketAddress = s.GetAddressFamily () == SocketAddress::INET ? SSDP::V4::kSocketAddress : SSDP::V6::kSocketAddress;
-            string        request;
+            string request;
             {
                 /*
                  *  From http://www.upnp.org/specs/arch/UPnP-arch-DeviceArchitecture-v1.0-20080424.pdf:
@@ -125,7 +126,8 @@ public:
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
             DbgTrace ("DETAILS: %s", request.c_str ());
 #endif
-            s.SendTo (reinterpret_cast<const byte*> (request.c_str ()), reinterpret_cast<const byte*> (request.c_str () + request.length ()), useSocketAddress);
+            s.SendTo (reinterpret_cast<const byte*> (request.c_str ()),
+                      reinterpret_cast<const byte*> (request.c_str () + request.length ()), useSocketAddress);
         }
 
         // only stopped by thread abort (which we PROBALY SHOULD FIX - ONLY SEARCH FOR CONFIRABLE TIMEOUT???)
@@ -138,7 +140,8 @@ public:
                     size_t        nBytesRead = s.ReceiveFrom (std::begin (buf), std::end (buf), 0, &from);
                     Assert (nBytesRead <= Memory::NEltsOf (buf));
                     using namespace Streams;
-                    ReadPacketAndNotifyCallbacks_ (TextReader::New (ExternallyOwnedMemoryInputStream<byte>::New (std::begin (buf), std::begin (buf) + nBytesRead)));
+                    ReadPacketAndNotifyCallbacks_ (
+                        TextReader::New (ExternallyOwnedMemoryInputStream<byte>::New (std::begin (buf), std::begin (buf) + nBytesRead)));
                 }
                 catch (const Execution::Thread::AbortException&) {
                     Execution::ReThrow ();
@@ -229,22 +232,21 @@ Search::Search (const function<void (const SSDP::Advertisement& d)>& callOnFinds
     AddOnFoundCallback (callOnFinds);
 }
 
-Search::Search (const function<void (const SSDP::Advertisement& d)>& callOnFinds, const String& initialSearch, IO::Network::InternetProtocol::IP::IPVersionSupport ipVersion)
+Search::Search (const function<void (const SSDP::Advertisement& d)>& callOnFinds, const String& initialSearch,
+                IO::Network::InternetProtocol::IP::IPVersionSupport ipVersion)
     : Search{callOnFinds, ipVersion}
 {
     Start (initialSearch);
 }
 
-Search::Search (const function<void (const SSDP::Advertisement& d)>& callOnFinds, const String& initialSearch, const optional<Time::Duration>& autoRetryInterval, IO::Network::InternetProtocol::IP::IPVersionSupport ipVersion)
+Search::Search (const function<void (const SSDP::Advertisement& d)>& callOnFinds, const String& initialSearch,
+                const optional<Time::Duration>& autoRetryInterval, IO::Network::InternetProtocol::IP::IPVersionSupport ipVersion)
     : Search{callOnFinds, ipVersion}
 {
     Start (initialSearch, autoRetryInterval);
 }
 
-Search::~Search ()
-{
-    IgnoreExceptionsForCall (fRep_->Stop ());
-}
+Search::~Search () { IgnoreExceptionsForCall (fRep_->Stop ()); }
 
 void Search::AddOnFoundCallback (const function<void (const SSDP::Advertisement& d)>& callOnFinds)
 {
@@ -256,7 +258,4 @@ void Search::Start (const String& serviceType, const optional<Time::Duration>& a
     fRep_->Start (serviceType, autoRetryInterval);
 }
 
-void Search::Stop ()
-{
-    fRep_->Stop ();
-}
+void Search::Stop () { fRep_->Stop (); }

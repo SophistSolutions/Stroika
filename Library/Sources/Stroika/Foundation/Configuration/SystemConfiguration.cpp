@@ -559,17 +559,18 @@ SystemConfiguration::OperatingSystem Configuration::GetSystemConfiguration_Actua
             DbgTrace ("Failure running uname");
         }
         try {
-            DataExchange::Variant::INI::Profile p = DataExchange::Variant::INI::Reader{}.ReadProfile (IO::FileSystem::FileInputStream::New ("/etc/os-release"sv));
-            tmp.fShortPrettyName                  = p.fUnnamedSection.fProperties.LookupValue ("NAME"sv);
-            tmp.fPrettyNameWithMajorVersion       = p.fUnnamedSection.fProperties.LookupValue ("PRETTY_NAME"sv);
-            tmp.fMajorMinorVersionString          = p.fUnnamedSection.fProperties.LookupValue ("VERSION_ID"sv);
+            DataExchange::Variant::INI::Profile p =
+                DataExchange::Variant::INI::Reader{}.ReadProfile (IO::FileSystem::FileInputStream::New ("/etc/os-release"sv));
+            tmp.fShortPrettyName            = p.fUnnamedSection.fProperties.LookupValue ("NAME"sv);
+            tmp.fPrettyNameWithMajorVersion = p.fUnnamedSection.fProperties.LookupValue ("PRETTY_NAME"sv);
+            tmp.fMajorMinorVersionString    = p.fUnnamedSection.fProperties.LookupValue ("VERSION_ID"sv);
         }
         catch (...) {
             DbgTrace (L"Failure reading /etc/os-release: %s", Characters::ToString (current_exception ()).c_str ());
         }
         if (tmp.fShortPrettyName.empty ()) {
             try {
-                String n                        = Streams::TextReader::New (IO::FileSystem::FileInputStream::New ("/etc/centos-release"sv)).ReadAll ().Trim ();
+                String n = Streams::TextReader::New (IO::FileSystem::FileInputStream::New ("/etc/centos-release"sv)).ReadAll ().Trim ();
                 tmp.fShortPrettyName            = "Centos"sv;
                 tmp.fPrettyNameWithMajorVersion = n;
                 Sequence<String> tokens         = n.Tokenize ();
@@ -583,7 +584,7 @@ SystemConfiguration::OperatingSystem Configuration::GetSystemConfiguration_Actua
         }
         if (tmp.fShortPrettyName.empty ()) {
             try {
-                String n                        = Streams::TextReader::New (IO::FileSystem::FileInputStream::New ("/etc/redhat-release"sv)).ReadAll ().Trim ();
+                String n = Streams::TextReader::New (IO::FileSystem::FileInputStream::New ("/etc/redhat-release"sv)).ReadAll ().Trim ();
                 tmp.fShortPrettyName            = "RedHat"sv;
                 tmp.fPrettyNameWithMajorVersion = n;
                 Sequence<String> tokens         = n.Tokenize ();
@@ -634,8 +635,7 @@ SystemConfiguration::OperatingSystem Configuration::GetSystemConfiguration_Actua
         // No good way I can find to tell...
         if (not tmp.fPreferedInstallerTechnology.has_value ()) {
             auto nameEqComparer = String::EqualsComparer{CompareOptions::eCaseInsensitive};
-            if (nameEqComparer (tmp.fShortPrettyName, "Centos"sv) or
-                nameEqComparer (tmp.fShortPrettyName, "RedHat"sv)) {
+            if (nameEqComparer (tmp.fShortPrettyName, "Centos"sv) or nameEqComparer (tmp.fShortPrettyName, "RedHat"sv)) {
                 tmp.fPreferedInstallerTechnology = SystemConfiguration::OperatingSystem::InstallerTechnology::eRPM;
             }
             else if (nameEqComparer (tmp.fShortPrettyName, "Ubuntu"sv)) {
@@ -764,7 +764,8 @@ SystemConfiguration::OperatingSystem Configuration::GetSystemConfiguration_Actua
             //and GetProcAddress to get a pointer to the function if available.
             typedef BOOL (WINAPI * LPFN_ISWOW64PROCESS) (HANDLE, PBOOL);
             DISABLE_COMPILER_MSC_WARNING_START (6387) // ignore check for null GetModuleHandle - if that fails - we have bigger problems and a crash sounds imminent
-            LPFN_ISWOW64PROCESS isWow64Process = (LPFN_ISWOW64PROCESS)::GetProcAddress (::GetModuleHandle (TEXT ("kernel32")), "IsWow64Process");
+            LPFN_ISWOW64PROCESS isWow64Process =
+                (LPFN_ISWOW64PROCESS)::GetProcAddress (::GetModuleHandle (TEXT ("kernel32")), "IsWow64Process");
             DISABLE_COMPILER_MSC_WARNING_END (6387)
             if (nullptr != isWow64Process) {
                 BOOL isWOW64 = false;
@@ -897,10 +898,8 @@ SystemConfiguration::ComputerNames Configuration::GetSystemConfiguration_Compute
  */
 unsigned int Configuration::GetNumberOfLogicalCPUCores (const chrono::duration<double>& allowedStaleness)
 {
-    [[maybe_unused]] static auto computeViaStdThreadHardwareConcurrency = [] () {
-        return std::thread::hardware_concurrency ();
-    };
-    [[maybe_unused]] static auto computeViaGetSystemConfiguration_CPU = [] () {
+    [[maybe_unused]] static auto computeViaStdThreadHardwareConcurrency = [] () { return std::thread::hardware_concurrency (); };
+    [[maybe_unused]] static auto computeViaGetSystemConfiguration_CPU   = [] () {
         return Configuration::GetSystemConfiguration_CPU ().GetNumberOfLogicalCores ();
     };
 #if qDebug
@@ -931,11 +930,10 @@ unsigned int Configuration::GetNumberOfLogicalCPUCores (const chrono::duration<d
  */
 SystemConfiguration Configuration::GetSystemConfiguration ()
 {
-    return SystemConfiguration{
-        GetSystemConfiguration_BootInformation (),
-        GetSystemConfiguration_CPU (),
-        GetSystemConfiguration_Memory (),
-        GetSystemConfiguration_ActualOperatingSystem (),
-        GetSystemConfiguration_ApparentOperatingSystem (),
-        GetSystemConfiguration_ComputerNames ()};
+    return SystemConfiguration{GetSystemConfiguration_BootInformation (),
+                               GetSystemConfiguration_CPU (),
+                               GetSystemConfiguration_Memory (),
+                               GetSystemConfiguration_ActualOperatingSystem (),
+                               GetSystemConfiguration_ApparentOperatingSystem (),
+                               GetSystemConfiguration_ComputerNames ()};
 }

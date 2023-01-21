@@ -116,7 +116,8 @@ namespace Stroika::Foundation::Cryptography::Encoding {
         /**
          */
         static Ptr New (const OpenSSLCryptoParams& cryptoParams, Direction direction, const Streams::InputStream<std::byte>::Ptr& realIn);
-        static Ptr New (Execution::InternallySynchronized internallySynchronized, const OpenSSLCryptoParams& cryptoParams, Direction direction, const Streams::InputStream<std::byte>::Ptr& realIn);
+        static Ptr New (Execution::InternallySynchronized internallySynchronized, const OpenSSLCryptoParams& cryptoParams,
+                        Direction direction, const Streams::InputStream<std::byte>::Ptr& realIn);
 
     private:
         class Rep_;
@@ -153,7 +154,8 @@ namespace Stroika::Foundation::Cryptography::Encoding {
         /**
          */
         static Ptr New (const OpenSSLCryptoParams& cryptoParams, Direction direction, const Streams::OutputStream<std::byte>::Ptr& realOut);
-        static Ptr New (Execution::InternallySynchronized internallySynchronized, const OpenSSLCryptoParams& cryptoParams, Direction direction, const Streams::OutputStream<std::byte>::Ptr& realOut);
+        static Ptr New (Execution::InternallySynchronized internallySynchronized, const OpenSSLCryptoParams& cryptoParams,
+                        Direction direction, const Streams::OutputStream<std::byte>::Ptr& realOut);
 
     private:
         class Rep_;

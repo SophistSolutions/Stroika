@@ -17,7 +17,8 @@ namespace Stroika::Foundation::DataExchange {
      ******************************** InternetMediaType *****************************
      ********************************************************************************
      */
-    inline InternetMediaType::InternetMediaType (AtomType type, AtomType subType, optional<AtomType> suffix, const Containers::Mapping<String, String>& parameters)
+    inline InternetMediaType::InternetMediaType (AtomType type, AtomType subType, optional<AtomType> suffix,
+                                                 const Containers::Mapping<String, String>& parameters)
         : fType_{type}
         , fSubType_{subType}
         , fSuffix_{suffix}
@@ -35,8 +36,10 @@ namespace Stroika::Foundation::DataExchange {
         : InternetMediaType{static_cast<AtomType> (type), static_cast<AtomType> (subType), parameters}
     {
     }
-    inline InternetMediaType::InternetMediaType (const String& type, const String& subType, const optional<String>& suffix, const Containers::Mapping<String, String>& parameters)
-        : InternetMediaType{static_cast<AtomType> (type), static_cast<AtomType> (subType), suffix == nullopt ? nullopt : optional<AtomType>{static_cast<AtomType> (*suffix)}, parameters}
+    inline InternetMediaType::InternetMediaType (const String& type, const String& subType, const optional<String>& suffix,
+                                                 const Containers::Mapping<String, String>& parameters)
+        : InternetMediaType{static_cast<AtomType> (type), static_cast<AtomType> (subType),
+                            suffix == nullopt ? nullopt : optional<AtomType>{static_cast<AtomType> (*suffix)}, parameters}
     {
     }
     inline bool InternetMediaType::empty () const
@@ -83,23 +86,14 @@ namespace Stroika::Foundation::DataExchange {
     {
         return fSuffix_ ? optional<String>{fSuffix_->GetPrintName ()} : nullopt;
     }
-    inline Containers::Mapping<String, String> InternetMediaType::GetParameters () const
-    {
-        return fParameters_;
-    }
+    inline Containers::Mapping<String, String> InternetMediaType::GetParameters () const { return fParameters_; }
     template <>
     inline wstring InternetMediaType::As () const
     {
         return As<String> ().As<wstring> ();
     }
-    inline strong_ordering InternetMediaType::operator<=> (const InternetMediaType& rhs) const
-    {
-        return THREEWAYCOMPARE_ (rhs);
-    }
-    inline bool InternetMediaType::operator== (const InternetMediaType& rhs) const
-    {
-        return THREEWAYCOMPARE_ (rhs) == 0;
-    }
+    inline strong_ordering InternetMediaType::operator<=> (const InternetMediaType& rhs) const { return THREEWAYCOMPARE_ (rhs); }
+    inline bool InternetMediaType::operator== (const InternetMediaType& rhs) const { return THREEWAYCOMPARE_ (rhs) == 0; }
 
 }
 #endif /*_Stroika_Foundation_DataExchange_InternetMediaType_inl_*/

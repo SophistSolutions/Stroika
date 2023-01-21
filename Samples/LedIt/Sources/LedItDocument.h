@@ -70,8 +70,7 @@ public:
 
 public:
     virtual Boolean ObeyCommand (CommandT inCommand, void* ioParam) override;
-    virtual void    FindCommandStatus (CommandT inCommand, Boolean& outEnabled, Boolean& outUsesMark,
-                                       UInt16& outMark, Str255 outName) override;
+    virtual void FindCommandStatus (CommandT inCommand, Boolean& outEnabled, Boolean& outUsesMark, UInt16& outMark, Str255 outName) override;
 
     nonvirtual void OnSaveACopyAsCommand ();
 
@@ -193,30 +192,12 @@ SDKString ExtractFileSuffix (const SDKString& from);
  ********************************************************************************
  */
 #if qPlatform_Windows
-inline LedItServerItem* LedItDocument::GetEmbeddedItem ()
-{
-    return (LedItServerItem*)COleServerDoc::GetEmbeddedItem ();
-}
+inline LedItServerItem* LedItDocument::GetEmbeddedItem () { return (LedItServerItem*)COleServerDoc::GetEmbeddedItem (); }
 #endif
-inline TextStore& LedItDocument::GetTextStore ()
-{
-    return fTextStore;
-}
-inline StandardStyledTextImager::StyleDatabasePtr& LedItDocument::GetStyleDatabase ()
-{
-    return fStyleDatabase;
-}
-inline WordProcessor::ParagraphDatabasePtr& LedItDocument::GetParagraphDatabase ()
-{
-    return fParagraphDatabase;
-}
-inline WordProcessor::HidableTextDatabasePtr& LedItDocument::GetHidableTextDatabase ()
-{
-    return fHidableTextDatabase;
-}
-inline CommandHandler& LedItDocument::GetCommandHandler ()
-{
-    return fCommandHandler;
-}
+inline TextStore&                                  LedItDocument::GetTextStore () { return fTextStore; }
+inline StandardStyledTextImager::StyleDatabasePtr& LedItDocument::GetStyleDatabase () { return fStyleDatabase; }
+inline WordProcessor::ParagraphDatabasePtr&        LedItDocument::GetParagraphDatabase () { return fParagraphDatabase; }
+inline WordProcessor::HidableTextDatabasePtr&      LedItDocument::GetHidableTextDatabase () { return fHidableTextDatabase; }
+inline CommandHandler&                             LedItDocument::GetCommandHandler () { return fCommandHandler; }
 
 #endif /*__LedItDocument_h__*/

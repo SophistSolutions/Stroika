@@ -82,9 +82,11 @@ namespace Stroika::Foundation::Cryptography::OpenSSL {
      */
     struct WinCryptDeriveKey : DerivedKey {
         WinCryptDeriveKey (size_t keyLen, DigestAlgorithm digestAlgorithm, const BLOB& passwd);
-        enum Provider { Base,
-                        Enhanced,
-                        Strong };
+        enum Provider {
+            Base,
+            Enhanced,
+            Strong
+        };
         WinCryptDeriveKey (Provider provider, CipherAlgorithm cipherAlgorithm, DigestAlgorithm digestAlgorithm, const BLOB& passwd);
     };
 
@@ -102,10 +104,12 @@ namespace Stroika::Foundation::Cryptography::OpenSSL {
          *  it easier to get the same results as it). But RFC 2898 suggests an iteration count of at least 1000.
          */
         template <typename PASSWORD_TYPE>
-        EVP_BytesToKey (CipherAlgorithm cipherAlgorithm, DigestAlgorithm digestAlgorithm, const PASSWORD_TYPE& passwd, unsigned int nRounds = 1, const optional<BLOB>& salt = nullopt);
+        EVP_BytesToKey (CipherAlgorithm cipherAlgorithm, DigestAlgorithm digestAlgorithm, const PASSWORD_TYPE& passwd,
+                        unsigned int nRounds = 1, const optional<BLOB>& salt = nullopt);
     };
     template <>
-    EVP_BytesToKey::EVP_BytesToKey (CipherAlgorithm cipherAlgorithm, DigestAlgorithm digestAlgorithm, const BLOB& passwd, unsigned int nRounds, const optional<BLOB>& salt);
+    EVP_BytesToKey::EVP_BytesToKey (CipherAlgorithm cipherAlgorithm, DigestAlgorithm digestAlgorithm, const BLOB& passwd,
+                                    unsigned int nRounds, const optional<BLOB>& salt);
 
     /**
      *  PKCS5_PBKDF2_HMAC CAN be object sliced. Its a simple construction wrapper on a DerivedKey. PKCS5_PBKDF1
@@ -123,12 +127,15 @@ namespace Stroika::Foundation::Cryptography::OpenSSL {
          *  The passwd argument can be any type which is (unambiguously) convertible to String, string, or BLOB.
          */
         template <typename PASSWORD_TYPE>
-        PKCS5_PBKDF2_HMAC (size_t keyLen, size_t ivLen, DigestAlgorithm digestAlgorithm, const PASSWORD_TYPE& passwd, unsigned int nRounds = 1000, const optional<BLOB>& salt = nullopt);
+        PKCS5_PBKDF2_HMAC (size_t keyLen, size_t ivLen, DigestAlgorithm digestAlgorithm, const PASSWORD_TYPE& passwd,
+                           unsigned int nRounds = 1000, const optional<BLOB>& salt = nullopt);
         template <typename PASSWORD_TYPE, typename CIPHER_ALGORITHM_TYPE>
-        PKCS5_PBKDF2_HMAC (CIPHER_ALGORITHM_TYPE cipherAlgorithm, DigestAlgorithm digestAlgorithm, const PASSWORD_TYPE& passwd, unsigned int nRounds = 1000, const optional<BLOB>& salt = nullopt);
+        PKCS5_PBKDF2_HMAC (CIPHER_ALGORITHM_TYPE cipherAlgorithm, DigestAlgorithm digestAlgorithm, const PASSWORD_TYPE& passwd,
+                           unsigned int nRounds = 1000, const optional<BLOB>& salt = nullopt);
     };
     template <>
-    PKCS5_PBKDF2_HMAC::PKCS5_PBKDF2_HMAC (size_t keyLen, size_t ivLen, DigestAlgorithm digestAlgorithm, const BLOB& passwd, unsigned int nRounds, const optional<BLOB>& salt);
+    PKCS5_PBKDF2_HMAC::PKCS5_PBKDF2_HMAC (size_t keyLen, size_t ivLen, DigestAlgorithm digestAlgorithm, const BLOB& passwd,
+                                          unsigned int nRounds, const optional<BLOB>& salt);
 
     /**
      *  PKCS5_PBKDF2_HMAC_SHA1 be object sliced. Its a simple construction wrapper on a DerivedKey. PKCS5_PBKDF2_HMAC_SHA1
@@ -140,9 +147,11 @@ namespace Stroika::Foundation::Cryptography::OpenSSL {
      */
     struct PKCS5_PBKDF2_HMAC_SHA1 : PKCS5_PBKDF2_HMAC {
         template <typename PASSWORD_TYPE>
-        PKCS5_PBKDF2_HMAC_SHA1 (size_t keyLen, size_t ivLen, const PASSWORD_TYPE& passwd, unsigned int nRounds = 1000, const optional<BLOB>& salt = nullopt);
+        PKCS5_PBKDF2_HMAC_SHA1 (size_t keyLen, size_t ivLen, const PASSWORD_TYPE& passwd, unsigned int nRounds = 1000,
+                                const optional<BLOB>& salt = nullopt);
         template <typename PASSWORD_TYPE, typename CIPHER_ALGORITHM_TYPE>
-        PKCS5_PBKDF2_HMAC_SHA1 (CIPHER_ALGORITHM_TYPE cipherAlgorithm, const PASSWORD_TYPE& passwd, unsigned int nRounds = 1000, const optional<BLOB>& salt = nullopt);
+        PKCS5_PBKDF2_HMAC_SHA1 (CIPHER_ALGORITHM_TYPE cipherAlgorithm, const PASSWORD_TYPE& passwd, unsigned int nRounds = 1000,
+                                const optional<BLOB>& salt = nullopt);
     };
 #endif
 }

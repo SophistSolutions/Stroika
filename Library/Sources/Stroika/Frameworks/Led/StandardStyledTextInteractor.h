@@ -160,7 +160,8 @@ namespace Stroika::Frameworks::Led {
         nonvirtual vector<SimpleEmbeddedObjectStyleMarker*> CollectAllEmbeddingMarkersInRange (size_t from, size_t to) const;
 
     protected:
-        virtual InteractiveReplaceCommand::SavedTextRep* InteractiveUndoHelperMakeTextRep (size_t regionStart, size_t regionEnd, size_t selStart, size_t selEnd) override;
+        virtual InteractiveReplaceCommand::SavedTextRep* InteractiveUndoHelperMakeTextRep (size_t regionStart, size_t regionEnd,
+                                                                                           size_t selStart, size_t selEnd) override;
 
     public:
         class EmptySelStyleTextRep;
@@ -195,17 +196,16 @@ namespace Stroika::Frameworks::Led {
         using inherited = StyledTextIO::StyledTextIOReader::SinkStream;
 
     public:
-        StandardStyledTextIOSinkStream (TextStore*                                        textStore,
-                                        const StandardStyledTextImager::StyleDatabasePtr& textStyleDatabase,
-                                        size_t                                            insertionStart = 0);
+        StandardStyledTextIOSinkStream (TextStore* textStore, const StandardStyledTextImager::StyleDatabasePtr& textStyleDatabase,
+                                        size_t insertionStart = 0);
         ~StandardStyledTextIOSinkStream ();
 
     public:
         // if fontSpec is nullptr, use default. Probably later we will return and update the fontspec with
         // ApplyStyle
-        virtual size_t            current_offset () const override;
-        virtual void              AppendText (const Led_tChar* text, size_t nTChars, const FontSpecification* fontSpec) override;
-        virtual void              ApplyStyle (size_t from, size_t to, const vector<StandardStyledTextImager::InfoSummaryRecord>& styleRuns) override;
+        virtual size_t current_offset () const override;
+        virtual void   AppendText (const Led_tChar* text, size_t nTChars, const FontSpecification* fontSpec) override;
+        virtual void   ApplyStyle (size_t from, size_t to, const vector<StandardStyledTextImager::InfoSummaryRecord>& styleRuns) override;
         virtual FontSpecification GetDefaultFontSpec () const override;
         virtual void              InsertEmbeddingForExistingSentinal (SimpleEmbeddedObjectStyleMarker* embedding, size_t at) override;
         virtual void              AppendEmbedding (SimpleEmbeddedObjectStyleMarker* embedding) override;
@@ -227,9 +227,7 @@ namespace Stroika::Frameworks::Led {
         nonvirtual StandardStyledTextImager::StyleDatabasePtr GetStyleDatabase () const;
 
     protected:
-        nonvirtual void PushContext (TextStore*                                        ts,
-                                     const StandardStyledTextImager::StyleDatabasePtr& textStyleDatabase,
-                                     size_t                                            insertionStart);
+        nonvirtual void PushContext (TextStore* ts, const StandardStyledTextImager::StyleDatabasePtr& textStyleDatabase, size_t insertionStart);
         nonvirtual void PopContext ();
 
     private:
@@ -262,8 +260,7 @@ namespace Stroika::Frameworks::Led {
         using inherited = StyledTextIO::StyledTextIOWriter::SrcStream;
 
     public:
-        StandardStyledTextIOSrcStream (TextStore*                                        textStore,
-                                       const StandardStyledTextImager::StyleDatabasePtr& textStyleDatabase,
+        StandardStyledTextIOSrcStream (TextStore* textStore, const StandardStyledTextImager::StyleDatabasePtr& textStyleDatabase,
                                        size_t selectionStart = 0, size_t selectionEnd = kBadIndex);
         StandardStyledTextIOSrcStream (StandardStyledTextImager* textImager, size_t selectionStart = 0, size_t selectionEnd = kBadIndex);
 
@@ -275,8 +272,8 @@ namespace Stroika::Frameworks::Led {
         virtual vector<InfoSummaryRecord>                GetStyleInfo (size_t from, size_t len) const override;
         virtual vector<SimpleEmbeddedObjectStyleMarker*> CollectAllEmbeddingMarkersInRange (size_t from, size_t to) const override;
         virtual Table*                                   GetTableAt (size_t at) const override;
-        virtual void                                     SummarizeFontAndColorTable (set<SDKString>* fontNames, set<Color>* colorsUsed) const override;
-        virtual size_t                                   GetEmbeddingMarkerPosOffset () const override;
+        virtual void   SummarizeFontAndColorTable (set<SDKString>* fontNames, set<Color>* colorsUsed) const override;
+        virtual size_t GetEmbeddingMarkerPosOffset () const override;
 
     public:
         nonvirtual size_t GetCurOffset () const;
@@ -304,8 +301,7 @@ namespace Stroika::Frameworks::Led {
         StyledTextFlavorPackageInternalizer (TextStore& ts, const StandardStyledTextImager::StyleDatabasePtr& styleDatabase);
 
     public:
-        virtual bool InternalizeBestFlavor (ReaderFlavorPackage& flavorPackage,
-                                            size_t from, size_t to) override;
+        virtual bool InternalizeBestFlavor (ReaderFlavorPackage& flavorPackage, size_t from, size_t to) override;
 
     public:
         virtual void InternalizeFlavor_FILEGuessFormatsFromName (
@@ -314,12 +310,9 @@ namespace Stroika::Frameworks::Led {
 #elif qPlatform_Windows || qStroika_FeatureSupported_XWindows
             const SDKChar* fileName,
 #endif
-            Led_ClipFormat* suggestedClipFormat,
-            CodePage*       suggestedCodePage) override;
-        virtual void InternalizeFlavor_FILEGuessFormatsFromStartOfData (
-            Led_ClipFormat* suggestedClipFormat,
-            CodePage*       suggestedCodePage,
-            const byte* fileStart, const byte* fileEnd) override;
+            Led_ClipFormat* suggestedClipFormat, CodePage* suggestedCodePage) override;
+        virtual void InternalizeFlavor_FILEGuessFormatsFromStartOfData (Led_ClipFormat* suggestedClipFormat, CodePage* suggestedCodePage,
+                                                                        const byte* fileStart, const byte* fileEnd) override;
 
     public:
 #if qPlatform_MacOS

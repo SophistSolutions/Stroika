@@ -24,15 +24,9 @@ using Characters::SDKChar;
 @DESCRIPTION:   <p>Returns the name associated with a command. This is used for UI purposes in constructing the
     text of the Undo command name.</p>
 */
-const SDKChar* Command::GetName () const
-{
-    return Led_SDK_TCHAROF ("");
-}
+const SDKChar* Command::GetName () const { return Led_SDK_TCHAROF (""); }
 
-bool Command::UpdateSimpleTextInsert (size_t /*insertAt*/, Led_tChar /*c*/)
-{
-    return false;
-}
+bool Command::UpdateSimpleTextInsert (size_t /*insertAt*/, Led_tChar /*c*/) { return false; }
 
 /*
  ********************************************************************************
@@ -96,13 +90,9 @@ bool SingleUndoCommandHandler::PostUpdateSimpleTextInsert (size_t insertAt, Led_
     return false;
 }
 
-void SingleUndoCommandHandler::BreakInGroupedCommands ()
-{
-}
+void SingleUndoCommandHandler::BreakInGroupedCommands () {}
 
-void SingleUndoCommandHandler::BreakInGroupedCommandsIfDifferentCommand (const SDKString& /*cmdName*/)
-{
-}
+void SingleUndoCommandHandler::BreakInGroupedCommandsIfDifferentCommand (const SDKString& /*cmdName*/) {}
 
 void SingleUndoCommandHandler::DoUndo (TextInteractor& interactor)
 {
@@ -159,20 +149,11 @@ void SingleUndoCommandHandler::Commit ()
     fLastCmd = nullptr;
 }
 
-bool SingleUndoCommandHandler::CanUndo ()
-{
-    return fLastCmd != nullptr and GetDone ();
-}
+bool SingleUndoCommandHandler::CanUndo () { return fLastCmd != nullptr and GetDone (); }
 
-bool SingleUndoCommandHandler::CanRedo ()
-{
-    return fLastCmd != nullptr and not GetDone ();
-}
+bool SingleUndoCommandHandler::CanRedo () { return fLastCmd != nullptr and not GetDone (); }
 
-bool SingleUndoCommandHandler::GetDone () const
-{
-    return (fLastCmd != nullptr and fLastCmd->GetDone ());
-}
+bool SingleUndoCommandHandler::GetDone () const { return (fLastCmd != nullptr and fLastCmd->GetDone ()); }
 
 const SDKChar* SingleUndoCommandHandler::GetUndoCmdName ()
 {
@@ -416,15 +397,9 @@ void MultiLevelUndoCommandHandler::Commit ()
     fCommandGroupCount = 0;
 }
 
-bool MultiLevelUndoCommandHandler::CanUndo ()
-{
-    return (fCommandGroupCount > fUndoneGroupCount);
-}
+bool MultiLevelUndoCommandHandler::CanUndo () { return (fCommandGroupCount > fUndoneGroupCount); }
 
-bool MultiLevelUndoCommandHandler::CanRedo ()
-{
-    return (fUndoneGroupCount > 0);
-}
+bool MultiLevelUndoCommandHandler::CanRedo () { return (fUndoneGroupCount > 0); }
 
 const SDKChar* MultiLevelUndoCommandHandler::GetUndoCmdName ()
 {
@@ -679,8 +654,7 @@ const SDKChar* SnoopingCommandHandler::GetRedoCmdName ()
     For the length overwritten - we use the size from the SavedTextRep itself. This CTOR also takes a command name to be saved with the
     command (not used intenrally - but saved as an attribute so menu handling code can report what is to be UNDONE).</p>
 */
-InteractiveReplaceCommand::InteractiveReplaceCommand (SavedTextRep* beforeRegion,
-                                                      SavedTextRep* afterRegion, size_t at, const SDKString& cmdName)
+InteractiveReplaceCommand::InteractiveReplaceCommand (SavedTextRep* beforeRegion, SavedTextRep* afterRegion, size_t at, const SDKString& cmdName)
     : inherited (true)
     , fBeforeRegion (beforeRegion)
     , fAfterRegion (afterRegion)
@@ -735,10 +709,7 @@ bool InteractiveReplaceCommand::UpdateSimpleTextInsert (size_t insertAt, Led_tCh
     return false;
 }
 
-const SDKChar* InteractiveReplaceCommand::GetName () const
-{
-    return fCmdName.c_str ();
-}
+const SDKChar* InteractiveReplaceCommand::GetName () const { return fCmdName.c_str (); }
 
 /*
  ********************************************************************************
@@ -767,15 +738,9 @@ InteractiveReplaceCommand::PlainTextRep::PlainTextRep (size_t selStart, size_t s
     }
 }
 
-InteractiveReplaceCommand::PlainTextRep::~PlainTextRep ()
-{
-    delete[] fText;
-}
+InteractiveReplaceCommand::PlainTextRep::~PlainTextRep () { delete[] fText; }
 
-size_t InteractiveReplaceCommand::PlainTextRep::GetLength () const
-{
-    return fTextLength;
-}
+size_t InteractiveReplaceCommand::PlainTextRep::GetLength () const { return fTextLength; }
 
 void InteractiveReplaceCommand::PlainTextRep::InsertSelf (TextInteractor* interactor, size_t at, size_t nBytesToOverwrite)
 {

@@ -72,7 +72,7 @@ namespace Stroika::Foundation::Common {
     /**
      * @see qStroika_Foundation_Common_Property_EmbedThisInProperties
      */
-#define qStroika_Foundation_Common_Property_OuterObjPtr(property, propertyPtrToMember) \
+#define qStroika_Foundation_Common_Property_OuterObjPtr(property, propertyPtrToMember)                                                     \
     Memory::GetObjectOwningField (property, propertyPtrToMember)
 #endif
 
@@ -578,9 +578,9 @@ namespace Stroika::Foundation::Common {
 
     private:
         const function<T ()> fOneTimeGetter_;
-        mutable optional<T>  fCachedValue_; // @todo Could use array of bytes and manually construct/destruct - more work, but saves a few bytes
-        mutable once_flag    fValueInitialized_;
-        const T&             Getter_ () const;
+        mutable optional<T> fCachedValue_; // @todo Could use array of bytes and manually construct/destruct - more work, but saves a few bytes
+        mutable once_flag fValueInitialized_;
+        const T&          Getter_ () const;
     };
 
     /**
@@ -689,7 +689,8 @@ namespace Stroika::Foundation::Common {
          *  this gets handed the original base value (stored), but then each handler gets a crack at overriding the 
          *  value.
          */
-        using PropertyReadEventHandler = std::function<PropertyReadEventHandlerArgAndReturnValue_ (const PropertyReadEventHandlerArgAndReturnValue_&)>;
+        using PropertyReadEventHandler =
+            std::function<PropertyReadEventHandlerArgAndReturnValue_ (const PropertyReadEventHandlerArgAndReturnValue_&)>;
 
     public:
         /**

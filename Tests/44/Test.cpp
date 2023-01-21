@@ -106,14 +106,12 @@ namespace {
                 IO::Network::HTTP::Headers h;
                 h.contentLength        = 3;
                 h.cacheControl         = CacheControl{CacheControl::eNoCache};
-                const auto kReference_ = Mapping<String, String>{{L"Cache-Control", L"no-cache"},
-                                                                 {L"Content-Length", L"3"}};
+                const auto kReference_ = Mapping<String, String>{{L"Cache-Control", L"no-cache"}, {L"Content-Length", L"3"}};
                 VerifyTestResult ((h.As<Mapping<String, String>> () == kReference_));
             }
             {
-                const auto                 kReference_ = Mapping<String, String>{{L"Cache-Control", L"no-cache"},
-                                                                                 {L"blah-blah", L"unknown-header"},
-                                                                                 {L"Content-Length", L"3"}};
+                const auto kReference_ =
+                    Mapping<String, String>{{L"Cache-Control", L"no-cache"}, {L"blah-blah", L"unknown-header"}, {L"Content-Length", L"3"}};
                 IO::Network::HTTP::Headers h{kReference_};
                 VerifyTestResult (h.contentLength () == 3);
                 VerifyTestResult (h.cacheControl () == CacheControl{CacheControl::eNoCache});

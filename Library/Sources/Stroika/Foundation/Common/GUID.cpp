@@ -34,19 +34,13 @@ Common::GUID::GUID (const string& src)
 {
     // Allow on parsing EITHER {} delimited, or not
     DISABLE_COMPILER_MSC_WARNING_START (4996) // MSVC SILLY WARNING ABOUT USING swscanf_s
-    int nchars = -1;
-    int nfields =
-        ::sscanf (src.c_str (), "{" G32 "-" G16 "-" G16 "-" G8 G8 "-" G8 G8 G8 G8 G8 G8 "}%n",
-                  &Data1, &Data2, &Data3,
-                  &Data4[0], &Data4[1], &Data4[2], &Data4[3], &Data4[4], &Data4[5], &Data4[6], &Data4[7],
-                  &nchars);
+    int nchars  = -1;
+    int nfields = ::sscanf (src.c_str (), "{" G32 "-" G16 "-" G16 "-" G8 G8 "-" G8 G8 G8 G8 G8 G8 "}%n", &Data1, &Data2, &Data3, &Data4[0],
+                            &Data4[1], &Data4[2], &Data4[3], &Data4[4], &Data4[5], &Data4[6], &Data4[7], &nchars);
     if (nfields != 11 || nchars != 38) {
-        nchars = -1;
-        nfields =
-            ::sscanf (src.c_str (), G32 "-" G16 "-" G16 "-" G8 G8 "-" G8 G8 G8 G8 G8 G8 "%n",
-                      &Data1, &Data2, &Data3,
-                      &Data4[0], &Data4[1], &Data4[2], &Data4[3], &Data4[4], &Data4[5], &Data4[6], &Data4[7],
-                      &nchars);
+        nchars  = -1;
+        nfields = ::sscanf (src.c_str (), G32 "-" G16 "-" G16 "-" G8 G8 "-" G8 G8 G8 G8 G8 G8 "%n", &Data1, &Data2, &Data3, &Data4[0],
+                            &Data4[1], &Data4[2], &Data4[3], &Data4[4], &Data4[5], &Data4[6], &Data4[7], &nchars);
     }
     DISABLE_COMPILER_MSC_WARNING_END (4996) // MSVC SILLY WARNING ABOUT USING swscanf_s
     if (nfields != 11 and nchars != 36) {
@@ -69,9 +63,8 @@ Common::GUID::GUID (const Characters::String& src)
 
 Characters::String Common::GUID::ToString () const
 {
-    return Characters::Format (L"%08x-%04x-%04x-%02x%02x-%02x%02x%02x%02x%02x%02x",
-                               Data1, Data2, Data3,
-                               Data4[0], Data4[1], Data4[2], Data4[3], Data4[4], Data4[5], Data4[6], Data4[7]);
+    return Characters::Format (L"%08x-%04x-%04x-%02x%02x-%02x%02x%02x%02x%02x%02x", Data1, Data2, Data3, Data4[0], Data4[1], Data4[2],
+                               Data4[3], Data4[4], Data4[5], Data4[6], Data4[7]);
 }
 
 Common::GUID::operator Memory::BLOB () const
@@ -95,8 +88,8 @@ Common::GUID Common::GUID::GenerateNew () noexcept
 template <>
 Memory::BLOB Common::GUID::As () const
 #if qCompilerAndStdLib_template_requresDefNeededonSpecializations_Buggy
-    requires (
-        is_same_v<Memory::BLOB, Characters::String> or is_same_v<Memory::BLOB, std::string> or is_same_v<Memory::BLOB, Memory::BLOB> or is_same_v<Memory::BLOB, array<std::byte, 16>> or is_same_v<Memory::BLOB, array<uint8_t, 16>>)
+    requires (is_same_v<Memory::BLOB, Characters::String> or is_same_v<Memory::BLOB, std::string> or is_same_v<Memory::BLOB, Memory::BLOB> or
+              is_same_v<Memory::BLOB, array<std::byte, 16>> or is_same_v<Memory::BLOB, array<uint8_t, 16>>)
 #endif
 {
     return Memory::BLOB{begin (), end ()};

@@ -97,8 +97,7 @@ namespace {
 
             bool operator== (const SharedContactsConfig_& rhs) const
             {
-                return fEnabled == rhs.fEnabled and
-                       fLastSynchronizedAt == rhs.fLastSynchronizedAt and
+                return fEnabled == rhs.fEnabled and fLastSynchronizedAt == rhs.fLastSynchronizedAt and
                        fThisPHRsIDToSharedContactID == rhs.fThisPHRsIDToSharedContactID and
                        fThisPHRsIDToSharedContactID2 == rhs.fThisPHRsIDToSharedContactID2;
             }
@@ -121,7 +120,8 @@ namespace {
         tmp.fEnabled = newEnabled;
         tmp.fThisPHRsIDToSharedContactID.Add (L"A", L"B");
         tmp.fThisPHRsIDToSharedContactID2.Add (L"A", L"B");
-        tmp.fLastSynchronizedAt = DateTime{Time::Date{Time::Year{1998}, Time::April, Time::day{11}}, Time::TimeOfDay::Parse (L"3pm", locale::classic ())};
+        tmp.fLastSynchronizedAt =
+            DateTime{Time::Date{Time::Year{1998}, Time::April, Time::day{11}}, Time::TimeOfDay::Parse (L"3pm", locale::classic ())};
 
         VariantValue v = mapper.FromObject (tmp);
 
@@ -132,13 +132,15 @@ namespace {
         Variant::JSON::Writer{}.Write (v, tmpStream);
 
         if (kWrite2FileAsWell_) {
-            IO::FileSystem::FileOutputStream::Ptr tmpFileStream = IO::FileSystem::FileOutputStream::New (IO::FileSystem::WellKnownLocations::GetTemporary () / "t.txt");
+            IO::FileSystem::FileOutputStream::Ptr tmpFileStream =
+                IO::FileSystem::FileOutputStream::New (IO::FileSystem::WellKnownLocations::GetTemporary () / "t.txt");
             Variant::JSON::Writer{}.Write (v, tmpFileStream);
         }
 
         if (kWrite2FileAsWell_) {
-            IO::FileSystem::FileInputStream::Ptr tmpFileStream = IO::FileSystem::FileInputStream::New (IO::FileSystem::WellKnownLocations::GetTemporary () / "t.txt");
-            SharedContactsConfig_                tmp2          = mapper.ToObject<SharedContactsConfig_> (Variant::JSON::Reader{}.Read (tmpFileStream));
+            IO::FileSystem::FileInputStream::Ptr tmpFileStream =
+                IO::FileSystem::FileInputStream::New (IO::FileSystem::WellKnownLocations::GetTemporary () / "t.txt");
+            SharedContactsConfig_ tmp2 = mapper.ToObject<SharedContactsConfig_> (Variant::JSON::Reader{}.Read (tmpFileStream));
         }
 
         // THEN deserialized, and mapped back to C++ object form
@@ -169,10 +171,7 @@ namespace {
 
             bool operator== (const SharedContactsConfig_& rhs) const
             {
-                return fInt1 == rhs.fInt1 and
-                       fInt2 == rhs.fInt2 and
-                       fInt3 == rhs.fInt3 and
-                       fInt4 == rhs.fInt4;
+                return fInt1 == rhs.fInt1 and fInt2 == rhs.fInt2 and fInt3 == rhs.fInt3 and fInt4 == rhs.fInt4;
             }
         };
 
@@ -203,7 +202,8 @@ namespace {
         if (kWrite2FileAsWell_) {
             filesystem::path fileName = IO::FileSystem::WellKnownLocations::GetTemporary () / "t.txt"sv;
             Variant::JSON::Writer{}.Write (v, IO::FileSystem::FileOutputStream::New (fileName));
-            [[maybe_unused]] SharedContactsConfig_ tmp2 = mapper.ToObject<SharedContactsConfig_> (Variant::JSON::Reader{}.Read (IO::FileSystem::FileInputStream::New (fileName)));
+            [[maybe_unused]] SharedContactsConfig_ tmp2 =
+                mapper.ToObject<SharedContactsConfig_> (Variant::JSON::Reader{}.Read (IO::FileSystem::FileInputStream::New (fileName)));
         }
 
         // THEN deserialized, and mapped back to C++ object form
@@ -259,7 +259,8 @@ namespace {
         if (kWrite2FileAsWell_) {
             filesystem::path fileName = IO::FileSystem::WellKnownLocations::GetTemporary () / "4.txt"sv;
             Variant::JSON::Writer{}.Write (v, IO::FileSystem::FileOutputStream::New (fileName));
-            [[maybe_unused]] SharedContactsConfig_ tmp2 = mapper.ToObject<SharedContactsConfig_> (Variant::JSON::Reader{}.Read (IO::FileSystem::FileInputStream::New (fileName)));
+            [[maybe_unused]] SharedContactsConfig_ tmp2 =
+                mapper.ToObject<SharedContactsConfig_> (Variant::JSON::Reader{}.Read (IO::FileSystem::FileInputStream::New (fileName)));
         }
 
         // THEN deserialized, and mapped back to C++ object form
@@ -288,14 +289,8 @@ namespace {
             Stroika_Define_Enum_Bounds (a, h)
         };
         const Configuration::EnumNames<Fred> Fred_NAMES = {
-            {Fred::a, L"a"},
-            {Fred::b, L"b"},
-            {Fred::c, L"c"},
-            {Fred::d, L"d"},
-            {Fred::e, L"e"},
-            {Fred::f, L"f"},
-            {Fred::g, L"g"},
-            {Fred::h, L"h"},
+            {Fred::a, L"a"}, {Fred::b, L"b"}, {Fred::c, L"c"}, {Fred::d, L"d"},
+            {Fred::e, L"e"}, {Fred::f, L"f"}, {Fred::g, L"g"}, {Fred::h, L"h"},
         };
         struct SharedContactsConfig_ {
             Fred fEnum1;
@@ -305,10 +300,7 @@ namespace {
             {
             }
 
-            bool operator== (const SharedContactsConfig_& rhs) const
-            {
-                return fEnum1 == rhs.fEnum1;
-            }
+            bool operator== (const SharedContactsConfig_& rhs) const { return fEnum1 == rhs.fEnum1; }
         };
 
         {
@@ -332,7 +324,8 @@ namespace {
             if (kWrite2FileAsWell_) {
                 filesystem::path fileName = IO::FileSystem::WellKnownLocations::GetTemporary () / "5.txt"sv;
                 Variant::JSON::Writer{}.Write (v, IO::FileSystem::FileOutputStream::New (fileName));
-                [[maybe_unused]] SharedContactsConfig_ tmp2 = mapper.ToObject<SharedContactsConfig_> (Variant::JSON::Reader{}.Read (IO::FileSystem::FileInputStream::New (fileName)));
+                [[maybe_unused]] SharedContactsConfig_ tmp2 =
+                    mapper.ToObject<SharedContactsConfig_> (Variant::JSON::Reader{}.Read (IO::FileSystem::FileInputStream::New (fileName)));
             }
 
             // THEN deserialized, and mapped back to C++ object form
@@ -361,7 +354,8 @@ namespace {
             if (kWrite2FileAsWell_) {
                 filesystem::path fileName = IO::FileSystem::WellKnownLocations::GetTemporary () / "5.txt"sv;
                 Variant::JSON::Writer{}.Write (v, IO::FileSystem::FileOutputStream::New (fileName));
-                [[maybe_unused]] SharedContactsConfig_ tmp2 = mapper.ToObject<SharedContactsConfig_> (Variant::JSON::Reader{}.Read (IO::FileSystem::FileInputStream::New (fileName)));
+                [[maybe_unused]] SharedContactsConfig_ tmp2 =
+                    mapper.ToObject<SharedContactsConfig_> (Variant::JSON::Reader{}.Read (IO::FileSystem::FileInputStream::New (fileName)));
             }
 
             // THEN deserialized, and mapped back to C++ object form
@@ -404,8 +398,8 @@ namespace {
         });
 
         SharedContactsConfig_ tmp;
-        tmp.fDate1      = Date{Time::Year{2001}, Time::February, Time::day{12}};
-        tmp.fDateTime1  = DateTime{Date{Time::Year{2001}, Time::February, Time::day{12}}, Time::TimeOfDay::Parse (L"3pm", locale::classic ())};
+        tmp.fDate1 = Date{Time::Year{2001}, Time::February, Time::day{12}};
+        tmp.fDateTime1 = DateTime{Date{Time::Year{2001}, Time::February, Time::day{12}}, Time::TimeOfDay::Parse (L"3pm", locale::classic ())};
         tmp.fTimeOfDay1 = tmp.fDateTime1->GetTimeOfDay ();
         Assert (tmp.fTimeOfDay1.has_value ());
         tmp.fTimeOfDay1 = TimeOfDay{tmp.fTimeOfDay1->GetAsSecondsCount () + 60};
@@ -420,7 +414,8 @@ namespace {
         if (kWrite2FileAsWell_) {
             filesystem::path fileName = IO::FileSystem::WellKnownLocations::GetTemporary () / "6.txt"sv;
             Variant::JSON::Writer{}.Write (v, IO::FileSystem::FileOutputStream::New (fileName));
-            [[maybe_unused]] SharedContactsConfig_ tmp2 = mapper.ToObject<SharedContactsConfig_> (Variant::JSON::Reader{}.Read (IO::FileSystem::FileInputStream::New (fileName)));
+            [[maybe_unused]] SharedContactsConfig_ tmp2 =
+                mapper.ToObject<SharedContactsConfig_> (Variant::JSON::Reader{}.Read (IO::FileSystem::FileInputStream::New (fileName)));
         }
 
         // THEN deserialized, and mapped back to C++ object form
@@ -460,7 +455,8 @@ namespace {
         if (kWrite2FileAsWell_) {
             filesystem::path fileName = IO::FileSystem::WellKnownLocations::GetTemporary () / "7.txt"sv;
             Variant::JSON::Writer{}.Write (v, IO::FileSystem::FileOutputStream::New (fileName));
-            [[maybe_unused]] SharedContactsConfig_ tmp2 = mapper.ToObject<SharedContactsConfig_> (Variant::JSON::Reader{}.Read (IO::FileSystem::FileInputStream::New (fileName)));
+            [[maybe_unused]] SharedContactsConfig_ tmp2 =
+                mapper.ToObject<SharedContactsConfig_> (Variant::JSON::Reader{}.Read (IO::FileSystem::FileInputStream::New (fileName)));
         }
 
         // THEN deserialized, and mapped back to C++ object form
@@ -498,14 +494,8 @@ namespace {
                 if (memcmp (fBasicArray1, rhs.fBasicArray1, sizeof (fBasicArray1)) != 0) {
                     return false;
                 }
-                return fInt1 == rhs.fInt1 and
-                       fInt2 == rhs.fInt2 and
-                       fMapping1 == rhs.fMapping1 and
-                       fSequence1 == rhs.fSequence1 and
-                       fSet1_ == rhs.fSet1_ and
-                       fVector1_ == rhs.fVector1_ and
-                       fPair1_ == rhs.fPair1_ and
-                       fTuple2_ == rhs.fTuple2_;
+                return fInt1 == rhs.fInt1 and fInt2 == rhs.fInt2 and fMapping1 == rhs.fMapping1 and fSequence1 == rhs.fSequence1 and
+                       fSet1_ == rhs.fSet1_ and fVector1_ == rhs.fVector1_ and fPair1_ == rhs.fPair1_ and fTuple2_ == rhs.fTuple2_;
             }
         };
 
@@ -551,7 +541,8 @@ namespace {
         if (kWrite2FileAsWell_) {
             filesystem::path fileName = IO::FileSystem::WellKnownLocations::GetTemporary () / "8.txt"sv;
             Variant::JSON::Writer{}.Write (v, IO::FileSystem::FileOutputStream::New (fileName));
-            [[maybe_unused]] SharedContactsConfig_ tmp2 = mapper.ToObject<SharedContactsConfig_> (Variant::JSON::Reader{}.Read (IO::FileSystem::FileInputStream::New (fileName)));
+            [[maybe_unused]] SharedContactsConfig_ tmp2 =
+                mapper.ToObject<SharedContactsConfig_> (Variant::JSON::Reader{}.Read (IO::FileSystem::FileInputStream::New (fileName)));
         }
 
         // THEN deserialized, and mapped back to C++ object form
@@ -568,18 +559,12 @@ namespace {
 
         struct BaseObj_ {
             int  fVV1{};
-            bool operator== (const BaseObj_& rhs) const
-            {
-                return fVV1 == rhs.fVV1;
-            }
+            bool operator== (const BaseObj_& rhs) const { return fVV1 == rhs.fVV1; }
         };
 
         struct Derived_ : BaseObj_ {
             int  fVV2{};
-            bool operator== (const Derived_& rhs) const
-            {
-                return BaseObj_::operator== (rhs) and fVV2 == rhs.fVV2;
-            }
+            bool operator== (const Derived_& rhs) const { return BaseObj_::operator== (rhs) and fVV2 == rhs.fVV2; }
         };
 
         ObjectVariantMapper mapper;
@@ -633,14 +618,8 @@ namespace {
                 if (memcmp (fBasicArray1, rhs.fBasicArray1, sizeof (fBasicArray1)) != 0) {
                     return false;
                 }
-                return fInt1 == rhs.fInt1 and
-                       fInt2 == rhs.fInt2 and
-                       fMapping1 == rhs.fMapping1 and
-                       fSequence1 == rhs.fSequence1 and
-                       fSet1_ == rhs.fSet1_ and
-                       fVector1_ == rhs.fVector1_ and
-                       fURL1_ == rhs.fURL1_ and
-                       fURL2_ == rhs.fURL2_;
+                return fInt1 == rhs.fInt1 and fInt2 == rhs.fInt2 and fMapping1 == rhs.fMapping1 and fSequence1 == rhs.fSequence1 and
+                       fSet1_ == rhs.fSet1_ and fVector1_ == rhs.fVector1_ and fURL1_ == rhs.fURL1_ and fURL2_ == rhs.fURL2_;
             }
         };
 
@@ -683,7 +662,8 @@ namespace {
         if (kWrite2FileAsWell_) {
             filesystem::path fileName = IO::FileSystem::WellKnownLocations::GetTemporary () / "10.txt"sv;
             Variant::JSON::Writer{}.Write (v, IO::FileSystem::FileOutputStream::New (fileName));
-            [[maybe_unused]] SharedContactsConfig_ tmp2 = mapper.ToObject<SharedContactsConfig_> (Variant::JSON::Reader{}.Read (IO::FileSystem::FileInputStream::New (fileName)));
+            [[maybe_unused]] SharedContactsConfig_ tmp2 =
+                mapper.ToObject<SharedContactsConfig_> (Variant::JSON::Reader{}.Read (IO::FileSystem::FileInputStream::New (fileName)));
         }
 
         // THEN deserialized, and mapped back to C++ object form
@@ -778,10 +758,7 @@ namespace {
             {
             }
 
-            bool operator== (const SharedContactsConfig_& rhs) const
-            {
-                return fEnum1 == rhs.fEnum1;
-            }
+            bool operator== (const SharedContactsConfig_& rhs) const { return fEnum1 == rhs.fEnum1; }
         };
 
         {
@@ -805,7 +782,8 @@ namespace {
             if (kWrite2FileAsWell_) {
                 filesystem::path fileName = IO::FileSystem::WellKnownLocations::GetTemporary () / "12.txt"sv;
                 Variant::JSON::Writer{}.Write (v, IO::FileSystem::FileOutputStream::New (fileName));
-                [[maybe_unused]] SharedContactsConfig_ tmp2 = mapper.ToObject<SharedContactsConfig_> (Variant::JSON::Reader{}.Read (IO::FileSystem::FileInputStream::New (fileName)));
+                [[maybe_unused]] SharedContactsConfig_ tmp2 =
+                    mapper.ToObject<SharedContactsConfig_> (Variant::JSON::Reader{}.Read (IO::FileSystem::FileInputStream::New (fileName)));
             }
 
             // THEN deserialized, and mapped back to C++ object form
@@ -836,10 +814,7 @@ namespace {
                 IO::Network::InternetAddress    ia;
                 optional<IO::Network::CIDR>     cidr;
                 DataExchange::InternetMediaType mediaType;
-                bool                            operator== (const T& rhs) const
-                {
-                    return ia == rhs.ia and cidr == rhs.cidr and mediaType == rhs.mediaType;
-                }
+                bool operator== (const T& rhs) const { return ia == rhs.ia and cidr == rhs.cidr and mediaType == rhs.mediaType; }
             };
             mapper.AddCommonType<IO::Network::CIDR> ();
             mapper.AddCommonType<optional<IO::Network::CIDR>> ();

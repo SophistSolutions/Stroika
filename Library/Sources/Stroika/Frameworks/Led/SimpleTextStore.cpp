@@ -34,10 +34,7 @@ public:
     MarkerOwner* fOwner;
     bool         fIsPreRemoved;
 };
-MarkerOwner* SimpleTextStoreMarkerHook::GetOwner () const
-{
-    return fOwner;
-}
+MarkerOwner* SimpleTextStoreMarkerHook::GetOwner () const { return fOwner; }
 
 size_t SimpleTextStoreMarkerHook::GetStart () const
 {
@@ -112,10 +109,7 @@ SimpleTextStore::~SimpleTextStore ()
 @METHOD:        SimpleTextStore::ConstructNewTextStore
 @DESCRIPTION:   <p>See @'TextStore::ConstructNewTextStore' ().</p>
 */
-TextStore* SimpleTextStore::ConstructNewTextStore () const
-{
-    return new SimpleTextStore ();
-}
+TextStore* SimpleTextStore::ConstructNewTextStore () const { return new SimpleTextStore (); }
 
 void SimpleTextStore::CopyOut (size_t from, size_t count, Led_tChar* buffer) const noexcept
 {
@@ -244,9 +238,9 @@ void SimpleTextStore::AddMarker (Marker* marker, size_t lhs, size_t length, Mark
     Require (owner->PeekAtTextStore () == this);
 #endif
     Require (owner == this or IndexOf (GetMarkerOwners (), owner) != kBadIndex); // new Led 2.3 requirement - not strictly required internally yet - but it will be - LGP 980416
-    Require (IndexOf (fMarkers, marker) == kBadIndex);                           // better not be there!
-    Require (lhs < 0x80000000);                                                  // not real test, just sanity check
-    Require (length < 0x80000000);                                               // not real test, just sanity check
+    Require (IndexOf (fMarkers, marker) == kBadIndex); // better not be there!
+    Require (lhs < 0x80000000);                        // not real test, just sanity check
+    Require (length < 0x80000000);                     // not real test, just sanity check
     Invariant ();
     Assert (marker->fTextStoreHook == nullptr);
     marker->fTextStoreHook = new SimpleTextStoreMarkerHook ();

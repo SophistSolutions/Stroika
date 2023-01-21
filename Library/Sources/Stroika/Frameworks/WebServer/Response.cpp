@@ -71,78 +71,75 @@ Response::Response (Response&& src)
 
 Response::Response (const IO::Network::Socket::Ptr& s, const Streams::OutputStream<byte>::Ptr& outStream, const optional<HTTP::Headers>& initialHeaders)
     : inherited{initialHeaders}
-    , autoComputeETag{
-          [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) {
-              const Response*                                thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Response::autoComputeETag);
-              AssertExternallySynchronizedMutex::ReadContext declareContext{*thisObj};
-              return thisObj->fETagDigester_.has_value ();
-          },
-          [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, const bool newAutoComputeETag) {
-              Response*                                       thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Response::autoComputeETag);
-              AssertExternallySynchronizedMutex::WriteContext declareContext{*thisObj};
-              Require (thisObj->state () == State::ePreparingHeaders);
-              Assert (thisObj->fBodyBytes_.empty ());
-              if (newAutoComputeETag) {
-                  thisObj->fETagDigester_ = ETagDigester_{};
-              }
-              else {
-                  thisObj->fETagDigester_ = nullopt;
-              }
-          }}
+    , autoComputeETag{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) {
+                          const Response* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Response::autoComputeETag);
+                          AssertExternallySynchronizedMutex::ReadContext declareContext{*thisObj};
+                          return thisObj->fETagDigester_.has_value ();
+                      },
+                      [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, const bool newAutoComputeETag) {
+                          Response* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Response::autoComputeETag);
+                          AssertExternallySynchronizedMutex::WriteContext declareContext{*thisObj};
+                          Require (thisObj->state () == State::ePreparingHeaders);
+                          Assert (thisObj->fBodyBytes_.empty ());
+                          if (newAutoComputeETag) {
+                              thisObj->fETagDigester_ = ETagDigester_{};
+                          }
+                          else {
+                              thisObj->fETagDigester_ = nullopt;
+                          }
+                      }}
     , autoComputeContentLength{
           [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) {
-              const Response*                                thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Response::autoComputeContentLength);
+              const Response* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Response::autoComputeContentLength);
               AssertExternallySynchronizedMutex::ReadContext declareContext{*thisObj};
               return thisObj->fAutoComputeContentLength_;
           },
           [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, const bool newAutoComputeValue) {
-              Response*                                       thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Response::autoComputeContentLength);
+              Response* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Response::autoComputeContentLength);
               AssertExternallySynchronizedMutex::WriteContext declareContext{*thisObj};
               Require (thisObj->state () == State::ePreparingHeaders);
               thisObj->fAutoComputeContentLength_ = newAutoComputeValue;
           }}
-    , codePage{
-          [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) {
-              const Response*                                thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Response::codePage);
-              AssertExternallySynchronizedMutex::ReadContext declareContext{*thisObj};
-              return thisObj->fCodePage_;
-          },
-          [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, const auto& newCodePage) {
-              Response*                                       thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Response::codePage);
-              AssertExternallySynchronizedMutex::WriteContext declareContext{*thisObj};
-              Require (thisObj->headersCanBeSet ());
-              Require (thisObj->fBodyBytes_.empty ());
-              bool diff           = thisObj->fCodePage_ != newCodePage;
-              thisObj->fCodePage_ = newCodePage;
-              if (diff) {
-                  if (auto ct = thisObj->headers ().contentType ()) {
-                      thisObj->rwHeaders ().contentType = thisObj->AdjustContentTypeForCodePageIfNeeded_ (*ct);
-                  }
-              }
-          }}
-    , state{
-          [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) {
-              const Response*                                thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Response::state);
-              AssertExternallySynchronizedMutex::ReadContext declareContext{*thisObj};
-              return thisObj->fState_;
-          }}
+    , codePage{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) {
+                   const Response* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Response::codePage);
+                   AssertExternallySynchronizedMutex::ReadContext declareContext{*thisObj};
+                   return thisObj->fCodePage_;
+               },
+               [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, const auto& newCodePage) {
+                   Response* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Response::codePage);
+                   AssertExternallySynchronizedMutex::WriteContext declareContext{*thisObj};
+                   Require (thisObj->headersCanBeSet ());
+                   Require (thisObj->fBodyBytes_.empty ());
+                   bool diff           = thisObj->fCodePage_ != newCodePage;
+                   thisObj->fCodePage_ = newCodePage;
+                   if (diff) {
+                       if (auto ct = thisObj->headers ().contentType ()) {
+                           thisObj->rwHeaders ().contentType = thisObj->AdjustContentTypeForCodePageIfNeeded_ (*ct);
+                       }
+                   }
+               }}
+    , state{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) {
+        const Response* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Response::state);
+        AssertExternallySynchronizedMutex::ReadContext declareContext{*thisObj};
+        return thisObj->fState_;
+    }}
     , headersCanBeSet{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) {
-        const Response*                                thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Response::headersCanBeSet);
+        const Response* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Response::headersCanBeSet);
         AssertExternallySynchronizedMutex::ReadContext declareContext{*thisObj};
         return thisObj->fState_ == State::ePreparingHeaders;
     }}
     , responseStatusSent{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) {
-        const Response*                                thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Response::responseStatusSent);
+        const Response* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Response::responseStatusSent);
         AssertExternallySynchronizedMutex::ReadContext declareContext{*thisObj};
         return thisObj->fState_ != State::ePreparingHeaders and thisObj->fState_ != State::ePreparingBodyBeforeHeadersSent;
     }}
     , responseCompleted{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) {
-        const Response*                                thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Response::responseCompleted);
+        const Response* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Response::responseCompleted);
         AssertExternallySynchronizedMutex::ReadContext declareContext{*thisObj};
         return thisObj->fState_ == State::eCompleted;
     }}
     , responseAborted{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) {
-        const Response*                                thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Response::responseAborted);
+        const Response* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Response::responseAborted);
         AssertExternallySynchronizedMutex::ReadContext declareContext{*thisObj};
         return thisObj->fAborted_;
     }}
@@ -152,85 +149,78 @@ Response::Response (const IO::Network::Socket::Ptr& s, const Streams::OutputStre
 {
     if constexpr (qDebug) {
         DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wunused-lambda-capture\""); // sadly no way to [[maybe_unused]] on captures
-        this->status.rwPropertyChangedHandlers ().push_front (
-            [this] ([[maybe_unused]] const auto& propertyChangedEvent) {
-                Require (not this->responseStatusSent ());
-                return PropertyChangedEventResultType::eContinueProcessing;
-            });
-        this->statusAndOverrideReason.rwPropertyChangedHandlers ().push_front (
-            [this] ([[maybe_unused]] const auto& propertyChangedEvent) {
-                Require (not this->responseStatusSent ());
-                return PropertyChangedEventResultType::eContinueProcessing;
-            });
-        this->rwHeaders.rwPropertyReadHandlers ().push_front (
-            [this] (HTTP::Headers* h) {
-                Require (this->headersCanBeSet ());
-                return h;
-            });
-        this->rwHeaders.rwPropertyChangedHandlers ().push_front (
-            [this] ([[maybe_unused]] const auto& propertyChangedEvent) {
-                Require (this->headersCanBeSet ());
-                return PropertyChangedEventResultType::eContinueProcessing;
-            });
+        this->status.rwPropertyChangedHandlers ().push_front ([this] ([[maybe_unused]] const auto& propertyChangedEvent) {
+            Require (not this->responseStatusSent ());
+            return PropertyChangedEventResultType::eContinueProcessing;
+        });
+        this->statusAndOverrideReason.rwPropertyChangedHandlers ().push_front ([this] ([[maybe_unused]] const auto& propertyChangedEvent) {
+            Require (not this->responseStatusSent ());
+            return PropertyChangedEventResultType::eContinueProcessing;
+        });
+        this->rwHeaders.rwPropertyReadHandlers ().push_front ([this] (HTTP::Headers* h) {
+            Require (this->headersCanBeSet ());
+            return h;
+        });
+        this->rwHeaders.rwPropertyChangedHandlers ().push_front ([this] ([[maybe_unused]] const auto& propertyChangedEvent) {
+            Require (this->headersCanBeSet ());
+            return PropertyChangedEventResultType::eContinueProcessing;
+        });
         DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wunused-lambda-capture\"");
     }
-    this->contentType.rwPropertyChangedHandlers ().push_front (
-        [this] ([[maybe_unused]] const auto& propertyChangedEvent) {
-            Require (this->headersCanBeSet ());
-            this->rwHeaders ().contentType = propertyChangedEvent.fNewValue ? AdjustContentTypeForCodePageIfNeeded_ (*propertyChangedEvent.fNewValue) : optional<InternetMediaType>{};
-            return PropertyChangedEventResultType::eSilentlyCutOffProcessing;
-        });
-    this->rwHeaders ().transferEncoding.rwPropertyChangedHandlers ().push_front (
-        [this] ([[maybe_unused]] const auto& propertyChangedEvent) {
-            AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
-            // react to a change in the transferCoding setting by updating our flags (cache) - and updating the contentLength header properly
-            Require (this->headersCanBeSet ());
-            // @todo fix - not 100% right cuz another property could cut off? Maybe always call all? - or need better control over ordering
-            fInChunkedModeCache_ = propertyChangedEvent.fNewValue and propertyChangedEvent.fNewValue->Contains (HTTP::TransferEncoding::eChunked);
-            // note - no need to reset contentLength header itself, just assure its auto-computed (so it will returned as null)
-            fAutoComputeContentLength_ = true;
-            return PropertyChangedEventResultType::eContinueProcessing;
-        });
+    this->contentType.rwPropertyChangedHandlers ().push_front ([this] ([[maybe_unused]] const auto& propertyChangedEvent) {
+        Require (this->headersCanBeSet ());
+        this->rwHeaders ().contentType = propertyChangedEvent.fNewValue ? AdjustContentTypeForCodePageIfNeeded_ (*propertyChangedEvent.fNewValue)
+                                                                        : optional<InternetMediaType>{};
+        return PropertyChangedEventResultType::eSilentlyCutOffProcessing;
+    });
+    this->rwHeaders ().transferEncoding.rwPropertyChangedHandlers ().push_front ([this] ([[maybe_unused]] const auto& propertyChangedEvent) {
+        AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
+        // react to a change in the transferCoding setting by updating our flags (cache) - and updating the contentLength header properly
+        Require (this->headersCanBeSet ());
+        // @todo fix - not 100% right cuz another property could cut off? Maybe always call all? - or need better control over ordering
+        fInChunkedModeCache_ = propertyChangedEvent.fNewValue and propertyChangedEvent.fNewValue->Contains (HTTP::TransferEncoding::eChunked);
+        // note - no need to reset contentLength header itself, just assure its auto-computed (so it will returned as null)
+        fAutoComputeContentLength_ = true;
+        return PropertyChangedEventResultType::eContinueProcessing;
+    });
     // auto-compute the content-length if fAutoComputeContentLength_ is true
-    this->rwHeaders ().contentLength.rwPropertyReadHandlers ().push_front (
-        [this] (const auto& baseValue) -> optional<uint64_t> {
-            if (this->fAutoComputeContentLength_) {
-                return this->InChunkedMode_ () ? optional<uint64_t>{} : fBodyBytes_.size ();
-            }
-            return baseValue;
-        });
-    this->rwHeaders ().contentLength.rwPropertyChangedHandlers ().push_front (
-        [this] ([[maybe_unused]] const auto& propertyChangedEvent) {
-            Require (this->headersCanBeSet ());
-            AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
-            // if someone explicitly sets the content-Length, then stop auto-computing contentLength
-            this->autoComputeContentLength = false;
-            return PropertyChangedEventResultType::eContinueProcessing;
-        });
+    this->rwHeaders ().contentLength.rwPropertyReadHandlers ().push_front ([this] (const auto& baseValue) -> optional<uint64_t> {
+        if (this->fAutoComputeContentLength_) {
+            return this->InChunkedMode_ () ? optional<uint64_t>{} : fBodyBytes_.size ();
+        }
+        return baseValue;
+    });
+    this->rwHeaders ().contentLength.rwPropertyChangedHandlers ().push_front ([this] ([[maybe_unused]] const auto& propertyChangedEvent) {
+        Require (this->headersCanBeSet ());
+        AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
+        // if someone explicitly sets the content-Length, then stop auto-computing contentLength
+        this->autoComputeContentLength = false;
+        return PropertyChangedEventResultType::eContinueProcessing;
+    });
     // auto-compute the etag if autoComputeETag (fETagDigester_.has_value()) is true
-    this->rwHeaders ().ETag.rwPropertyReadHandlers ().push_front (
-        [this] (const auto& baseETagValue) -> optional<HTTP::ETag> {
-            // return the current tag 'so far' (if we are auto-computing)
-            if (fETagDigester_) {
-                auto copy = *fETagDigester_; // copy cuz this could get called multiple times and Complete only allowed to be called once
-                return HTTP::ETag{copy.Complete ()};
-            }
-            return baseETagValue; // if we are not auto-computing
-        });
-    this->rwHeaders ().ETag.rwPropertyChangedHandlers ().push_front (
-        [this] ([[maybe_unused]] const auto& propertyChangedEvent) {
-            Require (this->headersCanBeSet ());
-            AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
-            // if someone explicitly sets the etag, then stop auto-computing it
-            this->autoComputeETag = false;
-            return PropertyChangedEventResultType::eContinueProcessing;
-        });
-    fInChunkedModeCache_ = this->headers ().transferEncoding () and this->headers ().transferEncoding ()->Contains (HTTP::TransferEncoding::eChunked); // can be set by initial headers (in CTOR)
+    this->rwHeaders ().ETag.rwPropertyReadHandlers ().push_front ([this] (const auto& baseETagValue) -> optional<HTTP::ETag> {
+        // return the current tag 'so far' (if we are auto-computing)
+        if (fETagDigester_) {
+            auto copy = *fETagDigester_; // copy cuz this could get called multiple times and Complete only allowed to be called once
+            return HTTP::ETag{copy.Complete ()};
+        }
+        return baseETagValue; // if we are not auto-computing
+    });
+    this->rwHeaders ().ETag.rwPropertyChangedHandlers ().push_front ([this] ([[maybe_unused]] const auto& propertyChangedEvent) {
+        Require (this->headersCanBeSet ());
+        AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
+        // if someone explicitly sets the etag, then stop auto-computing it
+        this->autoComputeETag = false;
+        return PropertyChangedEventResultType::eContinueProcessing;
+    });
+    fInChunkedModeCache_ = this->headers ().transferEncoding () and
+                           this->headers ().transferEncoding ()->Contains (HTTP::TransferEncoding::eChunked); // can be set by initial headers (in CTOR)
 }
 
 bool Response::InChunkedMode_ () const
 {
-    Ensure (fInChunkedModeCache_ == (this->headers ().transferEncoding () and this->headers ().transferEncoding ()->Contains (HTTP::TransferEncoding::eChunked)));
+    Ensure (fInChunkedModeCache_ ==
+            (this->headers ().transferEncoding () and this->headers ().transferEncoding ()->Contains (HTTP::TransferEncoding::eChunked)));
     return fInChunkedModeCache_;
 }
 
@@ -257,12 +247,13 @@ void Response::Flush ()
     // @todo See https://stroika.atlassian.net/browse/STK-758 - zip compression support
     if (fState_ == State::ePreparingHeaders or fState_ == State::ePreparingBodyBeforeHeadersSent) {
         {
-            auto     curStatusInfo = this->statusAndOverrideReason ();
-            Status   curStatus     = get<0> (curStatusInfo);
-            String   statusMsg     = Memory::NullCoalesce (get<1> (curStatusInfo), IO::Network::HTTP::Exception::GetStandardTextForStatus (curStatus, true));
-            wstring  version       = L"1.1";
-            wstring  tmp           = Characters::CString::Format (L"HTTP/%s %d %s\r\n", version.c_str (), curStatus, statusMsg.c_str ());
-            u8string utf8          = String{tmp}.AsUTF8 ();
+            auto   curStatusInfo = this->statusAndOverrideReason ();
+            Status curStatus     = get<0> (curStatusInfo);
+            String statusMsg =
+                Memory::NullCoalesce (get<1> (curStatusInfo), IO::Network::HTTP::Exception::GetStandardTextForStatus (curStatus, true));
+            wstring  version = L"1.1";
+            wstring  tmp     = Characters::CString::Format (L"HTTP/%s %d %s\r\n", version.c_str (), curStatus, statusMsg.c_str ());
+            u8string utf8    = String{tmp}.AsUTF8 ();
             fUseOutStream_.Write (reinterpret_cast<const byte*> (Containers::Start (utf8)), reinterpret_cast<const byte*> (Containers::End (utf8)));
         }
         {
@@ -304,7 +295,8 @@ bool Response::End ()
         try {
             if (InChunkedMode_ ()) {
                 constexpr string_view kEndChunk_ = "0\r\n\r\n";
-                fUseOutStream_.Write (reinterpret_cast<const byte*> (Containers::Start (kEndChunk_)), reinterpret_cast<const byte*> (Containers::End (kEndChunk_)));
+                fUseOutStream_.Write (reinterpret_cast<const byte*> (Containers::Start (kEndChunk_)),
+                                      reinterpret_cast<const byte*> (Containers::End (kEndChunk_)));
             }
             Flush ();
             fState_ = State::eCompleted;

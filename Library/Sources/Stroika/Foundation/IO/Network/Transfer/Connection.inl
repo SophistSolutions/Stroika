@@ -28,11 +28,8 @@ namespace Stroika::Foundation::IO::Network::Transfer {
         , fUsernamePassword_{pair<String, String>{username, password}}
     {
     }
-    inline Connection::Options::Authentication::Options Connection::Options::Authentication::GetOptions () const
-    {
-        return fOptions_;
-    }
-    inline optional<pair<String, String>> Connection::Options::Authentication::GetUsernameAndPassword () const
+    inline Connection::Options::Authentication::Options Connection::Options::Authentication::GetOptions () const { return fOptions_; }
+    inline optional<pair<String, String>>               Connection::Options::Authentication::GetUsernameAndPassword () const
     {
         return fUsernamePassword_;
     }
@@ -47,11 +44,8 @@ namespace Stroika::Foundation::IO::Network::Transfer {
     {
         RequireNotNull (rep);
     }
-    inline Connection::Options Connection::Ptr::GetOptions () const
-    {
-        return fRep_->GetOptions ();
-    }
-    inline URI Connection::Ptr::GetSchemeAndAuthority () const
+    inline Connection::Options Connection::Ptr::GetOptions () const { return fRep_->GetOptions (); }
+    inline URI                 Connection::Ptr::GetSchemeAndAuthority () const
     {
         Ensure (fRep_->GetSchemeAndAuthority ().GetSchemeAndAuthority () == fRep_->GetSchemeAndAuthority ());
         return fRep_->GetSchemeAndAuthority ();
@@ -61,28 +55,16 @@ namespace Stroika::Foundation::IO::Network::Transfer {
         Require (url.GetSchemeAndAuthority () == url);
         fRep_->SetSchemeAndAuthority (url);
     }
-    inline void Connection::Ptr::Close ()
-    {
-        fRep_->Close ();
-    }
-    inline DurationSecondsType Connection::Ptr::GetTimeout () const
-    {
-        return fRep_->GetTimeout ();
-    }
-    inline void Connection::Ptr::SetTimeout (DurationSecondsType timeout)
-    {
-        fRep_->SetTimeout (timeout);
-    }
+    inline void                Connection::Ptr::Close () { fRep_->Close (); }
+    inline DurationSecondsType Connection::Ptr::GetTimeout () const { return fRep_->GetTimeout (); }
+    inline void                Connection::Ptr::SetTimeout (DurationSecondsType timeout) { fRep_->SetTimeout (timeout); }
 
     /*
      ********************************************************************************
      ********************************** Connection **********************************
      ********************************************************************************
      */
-    inline Connection::Ptr Connection::New ()
-    {
-        return New ({});
-    }
+    inline Connection::Ptr Connection::New () { return New ({}); }
 
 }
 
@@ -96,11 +78,14 @@ namespace Stroika::Foundation::Configuration {
 #if !qCompilerAndStdLib_template_specialization_internalErrorWithSpecializationSignifier_Buggy
     template <>
 #endif
-    constexpr EnumNames<Foundation::IO::Network::Transfer::Connection::Options::Authentication::Options> DefaultNames<Foundation::IO::Network::Transfer::Connection::Options::Authentication::Options>::k{
-        EnumNames<Foundation::IO::Network::Transfer::Connection::Options::Authentication::Options>::BasicArrayInitializer{{
-            {Foundation::IO::Network::Transfer::Connection::Options::Authentication::Options::eProactivelySendAuthentication, L"Proactively-Send-Authenitcation"},
-            {Foundation::IO::Network::Transfer::Connection::Options::Authentication::Options::eRespondToWWWAuthenticate, L"Respond-To-WWW-Authenticate"},
-        }}};
+    constexpr EnumNames<Foundation::IO::Network::Transfer::Connection::Options::Authentication::Options>
+        DefaultNames<Foundation::IO::Network::Transfer::Connection::Options::Authentication::Options>::k{
+            EnumNames<Foundation::IO::Network::Transfer::Connection::Options::Authentication::Options>::BasicArrayInitializer{{
+                {Foundation::IO::Network::Transfer::Connection::Options::Authentication::Options::eProactivelySendAuthentication,
+                 L"Proactively-Send-Authenitcation"},
+                {Foundation::IO::Network::Transfer::Connection::Options::Authentication::Options::eRespondToWWWAuthenticate,
+                 L"Respond-To-WWW-Authenticate"},
+            }}};
 
 }
 

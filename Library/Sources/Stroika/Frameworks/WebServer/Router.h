@@ -81,7 +81,8 @@ namespace Stroika::Frameworks::WebServer {
          */
         Route (const RegularExpression& verbMatch, const RegularExpression& pathMatch, const RequestHandler& handler);
         Route (const RegularExpression& pathMatch, const RequestHandler& handler);
-        Route (const function<bool (const String& method, const String& hostRelPath, const Request& request)>& requestMatcher, const RequestHandler& handler);
+        Route (const function<bool (const String& method, const String& hostRelPath, const Request& request)>& requestMatcher,
+               const RequestHandler&                                                                           handler);
 
     public:
         /**
@@ -92,7 +93,8 @@ namespace Stroika::Frameworks::WebServer {
          * We interpret routes as matching against a relative path from the root
          */
         nonvirtual bool Matches (const Request& request, Sequence<String>* pathRegExpMatches = nullptr) const;
-        nonvirtual bool Matches (const String& method, const String& hostRelPath, const Request& request, Sequence<String>* pathRegExpMatches = nullptr) const;
+        nonvirtual bool Matches (const String& method, const String& hostRelPath, const Request& request,
+                                 Sequence<String>* pathRegExpMatches = nullptr) const;
 
     private:
         optional<pair<RegularExpression, RegularExpression>>                                               fVerbAndPathMatch_;

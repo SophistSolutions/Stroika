@@ -24,14 +24,11 @@ namespace {
         using T1        = CommonTests::KeyedCollectionTests::Test1_Basics_::T1;
         using T1_Traits = CommonTests::KeyedCollectionTests::Test1_Basics_::T1_Traits;
         CommonTests::KeyedCollectionTests::SimpleKeyedCollectionTest_TestBasics (
-            [] () { return SortedKeyedCollection<T1, int>{[] (T1 e) { return e.key; }}; },
-            [] (auto) {});
+            [] () { return SortedKeyedCollection<T1, int>{[] (T1 e) { return e.key; }}; }, [] (auto) {});
         CommonTests::KeyedCollectionTests::SimpleKeyedCollectionTest_TestBasics (
-            [] () { return SortedKeyedCollection<T1, int, T1_Traits>{[] (T1 e) { return e.key; }}; },
-            [] (auto) {});
+            [] () { return SortedKeyedCollection<T1, int, T1_Traits>{[] (T1 e) { return e.key; }}; }, [] (auto) {});
         CommonTests::KeyedCollectionTests::SimpleKeyedCollectionTest_TestBasics (
-            [] () { return SortedKeyedCollection<T1, int, T1_Traits>{}; },
-            [] (auto) {});
+            [] () { return SortedKeyedCollection<T1, int, T1_Traits>{}; }, [] (auto) {});
 
         VerifyTestResult (SimpleClass::GetTotalLiveCount () == 0 and SimpleClassWithoutComparisonOperators::GetTotalLiveCount () == 0); // simple portable leak check
     }

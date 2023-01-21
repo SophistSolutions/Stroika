@@ -40,30 +40,14 @@ namespace Stroika::Foundation::Configuration {
                                                   : // aka little PDP
                    Endian::eBigWord;
 #else
-#if (defined(__BYTE_ORDER) && __BYTE_ORDER == __BIG_ENDIAN) ||             \
-    (defined(__BYTE_ORDER__) && __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__) || \
-    defined(__BIG_ENDIAN__) ||                                             \
-    defined(__ARMEB__) ||                                                  \
-    defined(__THUMBEB__) ||                                                \
-    defined(__AARCH64EB__) ||                                              \
-    defined(_MIBSEB) ||                                                    \
-    defined(__MIBSEB) ||                                                   \
-    defined(__MIBSEB__)
+#if (defined(__BYTE_ORDER) && __BYTE_ORDER == __BIG_ENDIAN) || (defined(__BYTE_ORDER__) && __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__) ||      \
+    defined(__BIG_ENDIAN__) || defined(__ARMEB__) || defined(__THUMBEB__) || defined(__AARCH64EB__) || defined(_MIBSEB) ||                 \
+    defined(__MIBSEB) || defined(__MIBSEB__)
         return Endian::eBigByte;
 #endif
-#if (defined(__BYTE_ORDER) && __BYTE_ORDER == __LITTLE_ENDIAN) ||             \
-    (defined(__BYTE_ORDER__) && __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__) || \
-    defined(__LITTLE_ENDIAN__) ||                                             \
-    defined(__ARMEL__) ||                                                     \
-    defined(__THUMBEL__) ||                                                   \
-    defined(__AARCH64EL__) ||                                                 \
-    defined(_MIPSEL) ||                                                       \
-    defined(__MIPSEL) ||                                                      \
-    defined(__MIPSEL__) ||                                                    \
-    defined(_M_IX86) ||                                                       \
-    defined(_M_X64) ||                                                        \
-    defined(_M_IA64) ||                                                       \
-    defined(_M_ARM)
+#if (defined(__BYTE_ORDER) && __BYTE_ORDER == __LITTLE_ENDIAN) || (defined(__BYTE_ORDER__) && __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__) || \
+    defined(__LITTLE_ENDIAN__) || defined(__ARMEL__) || defined(__THUMBEL__) || defined(__AARCH64EL__) || defined(_MIPSEL) ||               \
+    defined(__MIPSEL) || defined(__MIPSEL__) || defined(_M_IX86) || defined(_M_X64) || defined(_M_IA64) || defined(_M_ARM)
         return Endian::eLittle;
 #endif
 #endif

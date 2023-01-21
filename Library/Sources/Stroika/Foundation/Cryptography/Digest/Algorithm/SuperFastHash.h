@@ -28,8 +28,7 @@ namespace Stroika::Foundation::Cryptography::Digest::Algorithm {
     /**
      *  Algorithm 'type tag' indicating this particular algorithm.
      */
-    struct SuperFastHash {
-    };
+    struct SuperFastHash {};
 
     /**
      *  Traits for the SuperFastHash algorithm.

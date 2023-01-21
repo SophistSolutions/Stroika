@@ -94,7 +94,8 @@ namespace Stroika::Foundation::Traversal {
          *  Use this template to ensure you enable_shared_from_this, for the right type of SharedPtr you've built Stroika with.
          */
         template <typename SHARED_T>
-        using enable_shared_from_this_PtrImplementationTemplate = conditional_t<kIterableUsesStroikaSharedPtr, Memory::enable_shared_from_this<SHARED_T>, std::enable_shared_from_this<SHARED_T>>;
+        using enable_shared_from_this_PtrImplementationTemplate =
+            conditional_t<kIterableUsesStroikaSharedPtr, Memory::enable_shared_from_this<SHARED_T>, std::enable_shared_from_this<SHARED_T>>;
     };
 
     /**
@@ -399,9 +400,11 @@ namespace Stroika::Foundation::Traversal {
          *                NOTE ALSO - that 'trick' assumes T has a valid less<T>, which it may not!
          *
          */
-        template <typename LHS_CONTAINER_TYPE, typename RHS_CONTAINER_TYPE, typename EQUALS_COMPARER = equal_to<T>, enable_if_t<Configuration::IsIterable_v<RHS_CONTAINER_TYPE> and Common::IsEqualsComparer<EQUALS_COMPARER> ()>* = nullptr>
+        template <typename LHS_CONTAINER_TYPE, typename RHS_CONTAINER_TYPE, typename EQUALS_COMPARER = equal_to<T>,
+                  enable_if_t<Configuration::IsIterable_v<RHS_CONTAINER_TYPE> and Common::IsEqualsComparer<EQUALS_COMPARER> ()>* = nullptr>
         static bool SetEquals (const LHS_CONTAINER_TYPE& lhs, const RHS_CONTAINER_TYPE& rhs, EQUALS_COMPARER&& equalsComparer = EQUALS_COMPARER{});
-        template <typename RHS_CONTAINER_TYPE = initializer_list<T>, typename EQUALS_COMPARER = equal_to<T>, enable_if_t<Configuration::IsIterable_v<RHS_CONTAINER_TYPE> and Common::IsEqualsComparer<EQUALS_COMPARER> ()>* = nullptr>
+        template <typename RHS_CONTAINER_TYPE = initializer_list<T>, typename EQUALS_COMPARER = equal_to<T>,
+                  enable_if_t<Configuration::IsIterable_v<RHS_CONTAINER_TYPE> and Common::IsEqualsComparer<EQUALS_COMPARER> ()>* = nullptr>
         nonvirtual bool SetEquals (const RHS_CONTAINER_TYPE& rhs, EQUALS_COMPARER&& equalsComparer = EQUALS_COMPARER{}) const;
 
     public:
@@ -413,9 +416,11 @@ namespace Stroika::Foundation::Traversal {
          *  \em Performance:
          *      This algorithm is O(N^^3)
          */
-        template <typename LHS_CONTAINER_TYPE, typename RHS_CONTAINER_TYPE, typename EQUALS_COMPARER = equal_to<T>, enable_if_t<Configuration::IsIterable_v<RHS_CONTAINER_TYPE> and Common::IsEqualsComparer<EQUALS_COMPARER> ()>* = nullptr>
+        template <typename LHS_CONTAINER_TYPE, typename RHS_CONTAINER_TYPE, typename EQUALS_COMPARER = equal_to<T>,
+                  enable_if_t<Configuration::IsIterable_v<RHS_CONTAINER_TYPE> and Common::IsEqualsComparer<EQUALS_COMPARER> ()>* = nullptr>
         static bool MultiSetEquals (const LHS_CONTAINER_TYPE& lhs, const RHS_CONTAINER_TYPE& rhs, EQUALS_COMPARER&& equalsComparer = EQUALS_COMPARER{});
-        template <typename RHS_CONTAINER_TYPE = initializer_list<T>, typename EQUALS_COMPARER = equal_to<T>, enable_if_t<Configuration::IsIterable_v<RHS_CONTAINER_TYPE> and Common::IsEqualsComparer<EQUALS_COMPARER> ()>* = nullptr>
+        template <typename RHS_CONTAINER_TYPE = initializer_list<T>, typename EQUALS_COMPARER = equal_to<T>,
+                  enable_if_t<Configuration::IsIterable_v<RHS_CONTAINER_TYPE> and Common::IsEqualsComparer<EQUALS_COMPARER> ()>* = nullptr>
         nonvirtual bool MultiSetEquals (const RHS_CONTAINER_TYPE& rhs, EQUALS_COMPARER&& equalsComparer = EQUALS_COMPARER{}) const;
 
     public:
@@ -433,10 +438,14 @@ namespace Stroika::Foundation::Traversal {
          *  @todo We DO want the check IsEqualsComparer() on these templates, but I've had trouble getting it to compile, and will be changing
          *        that to the new C++20 style soon anyhow... LGP 2020-05-03
          */
-        template <typename LHS_CONTAINER_TYPE, typename RHS_CONTAINER_TYPE, typename EQUALS_COMPARER = equal_to<T>, enable_if_t<Configuration::IsIterable_v<RHS_CONTAINER_TYPE> /*and Common::IsEqualsComparer<EQUALS_COMPARER> ()*/>* = nullptr>
-        static bool SequentialEquals (const LHS_CONTAINER_TYPE& lhs, const RHS_CONTAINER_TYPE& rhs, EQUALS_COMPARER&& equalsComparer = EQUALS_COMPARER{}, bool useIterableSize = false);
-        template <typename RHS_CONTAINER_TYPE = initializer_list<T>, typename EQUALS_COMPARER = equal_to<T>, enable_if_t<Configuration::IsIterable_v<RHS_CONTAINER_TYPE> and Common::IsEqualsComparer<EQUALS_COMPARER> ()>* = nullptr>
-        nonvirtual bool SequentialEquals (const RHS_CONTAINER_TYPE& rhs, EQUALS_COMPARER&& equalsComparer = EQUALS_COMPARER{}, bool useIterableSize = false) const;
+        template <typename LHS_CONTAINER_TYPE, typename RHS_CONTAINER_TYPE, typename EQUALS_COMPARER = equal_to<T>,
+                  enable_if_t<Configuration::IsIterable_v<RHS_CONTAINER_TYPE> /*and Common::IsEqualsComparer<EQUALS_COMPARER> ()*/>* = nullptr>
+        static bool SequentialEquals (const LHS_CONTAINER_TYPE& lhs, const RHS_CONTAINER_TYPE& rhs,
+                                      EQUALS_COMPARER&& equalsComparer = EQUALS_COMPARER{}, bool useIterableSize = false);
+        template <typename RHS_CONTAINER_TYPE = initializer_list<T>, typename EQUALS_COMPARER = equal_to<T>,
+                  enable_if_t<Configuration::IsIterable_v<RHS_CONTAINER_TYPE> and Common::IsEqualsComparer<EQUALS_COMPARER> ()>* = nullptr>
+        nonvirtual bool SequentialEquals (const RHS_CONTAINER_TYPE& rhs, EQUALS_COMPARER&& equalsComparer = EQUALS_COMPARER{},
+                                          bool useIterableSize = false) const;
 
     public:
         template <typename T_EQUALS_COMPARER = equal_to<T>>
@@ -678,7 +687,8 @@ namespace Stroika::Foundation::Traversal {
         template <typename EQUALS_COMPARER = equal_to<T>>
         nonvirtual Iterable<T> Distinct (EQUALS_COMPARER&& equalsComparer = EQUALS_COMPARER{}) const;
         template <typename RESULT, typename EQUALS_COMPARER = equal_to<RESULT>>
-        nonvirtual Iterable<RESULT> Distinct (const function<RESULT (ArgByValueType<T>)>& extractElt, EQUALS_COMPARER&& equalsComparer = EQUALS_COMPARER{}) const;
+        nonvirtual Iterable<RESULT> Distinct (const function<RESULT (ArgByValueType<T>)>& extractElt,
+                                              EQUALS_COMPARER&&                           equalsComparer = EQUALS_COMPARER{}) const;
 
     public:
         /**
@@ -798,7 +808,8 @@ namespace Stroika::Foundation::Traversal {
          *  @see @Reduce, but if value is missing, returns defaultValue arg or {}
          */
         template <typename RESULT_TYPE = T>
-        nonvirtual RESULT_TYPE ReduceValue (const function<RESULT_TYPE (ArgByValueType<T>, ArgByValueType<T>)>& op, ArgByValueType<RESULT_TYPE> defaultValue = {}) const;
+        nonvirtual RESULT_TYPE ReduceValue (const function<RESULT_TYPE (ArgByValueType<T>, ArgByValueType<T>)>& op,
+                                            ArgByValueType<RESULT_TYPE>                                         defaultValue = {}) const;
 
     public:
         /**
@@ -825,7 +836,8 @@ namespace Stroika::Foundation::Traversal {
          */
         template <typename RESULT>
         nonvirtual RESULT Join (const function<RESULT (const T&)>& convertToT, const function<RESULT (const RESULT&, const RESULT&)>& combine) const;
-        nonvirtual Characters::String Join (const function<Characters::String (const T&)>& convertToT, const function<Characters::String (const Characters::String&, const Characters::String&)>& combine) const;
+        nonvirtual Characters::String Join (const function<Characters::String (const T&)>& convertToT,
+                                            const function<Characters::String (const Characters::String&, const Characters::String&)>& combine) const;
         nonvirtual Characters::String Join (const function<Characters::String (const T&)>& convertToT, const Characters::String& separator) const;
         nonvirtual Characters::String Join (const function<Characters::String (const T&)>& convertToT) const;
         nonvirtual Characters::String Join (const Characters::String& separator) const;
@@ -1239,12 +1251,14 @@ namespace Stroika::Foundation::Traversal {
             return Map<RESULT> (extract);
         }
         template <typename RESULT_TYPE = T>
-        [[deprecated ("Since Stroika 2.1.10, use Reduce instead of Accumulate")]] optional<RESULT_TYPE> Accumulate (const function<RESULT_TYPE (ArgByValueType<T>, ArgByValueType<T>)>& op) const
+        [[deprecated ("Since Stroika 2.1.10, use Reduce instead of Accumulate")]] optional<RESULT_TYPE>
+        Accumulate (const function<RESULT_TYPE (ArgByValueType<T>, ArgByValueType<T>)>& op) const
         {
             return Reduce<RESULT_TYPE> (op);
         }
         template <typename RESULT_TYPE = T>
-        [[deprecated ("Since Stroika 2.1.10, use ReduceValue instead of AccumulateValue")]] RESULT_TYPE AccumulateValue (const function<RESULT_TYPE (ArgByValueType<T>, ArgByValueType<T>)>& op, ArgByValueType<RESULT_TYPE> defaultValue = {}) const
+        [[deprecated ("Since Stroika 2.1.10, use ReduceValue instead of AccumulateValue")]] RESULT_TYPE
+        AccumulateValue (const function<RESULT_TYPE (ArgByValueType<T>, ArgByValueType<T>)>& op, ArgByValueType<RESULT_TYPE> defaultValue = {}) const
         {
             return ReduceValue<RESULT_TYPE> (op, defaultValue);
         }
@@ -1264,15 +1278,10 @@ namespace Stroika::Foundation::Traversal {
     private:
 #if (__cplusplus < kStrokia_Foundation_Configuration_cplusplus_20) || qCompilerAndStdLib_lambdas_in_unevaluatedContext_Buggy
         struct Rep_Cloner_ {
-            auto operator() (const _IRep& t) const -> PtrImplementationTemplate<_IRep>
-            {
-                return Iterable<T>::Clone_ (t);
-            }
+            auto operator() (const _IRep& t) const -> PtrImplementationTemplate<_IRep> { return Iterable<T>::Clone_ (t); }
         };
 #else
-        using Rep_Cloner_ = decltype ([] (const _IRep& t) -> PtrImplementationTemplate<_IRep> {
-            return Iterable<T>::Clone_ (t);
-        });
+        using Rep_Cloner_ = decltype ([] (const _IRep& t) -> PtrImplementationTemplate<_IRep> { return Iterable<T>::Clone_ (t); });
 #endif
 
     private:
@@ -1376,7 +1385,7 @@ namespace Stroika::Foundation::Traversal {
         REP_SUB_TYPE* fRepReference_;
 #if qDebug
         [[no_unique_address]] Debug::AssertExternallySynchronizedMutex::WriteContext fAssertWriteLock_;
-        Iterable<T>*                                                                 fIterableEnvelope_; // mostly saved for assertions, but also for _UpdateRep- when we lose that - we can ifdef qDebug this field (as we do for read accessor)
+        Iterable<T>* fIterableEnvelope_; // mostly saved for assertions, but also for _UpdateRep- when we lose that - we can ifdef qDebug this field (as we do for read accessor)
 #endif
     };
 

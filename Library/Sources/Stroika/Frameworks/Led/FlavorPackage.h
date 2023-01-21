@@ -76,38 +76,27 @@ namespace Stroika::Frameworks::Led {
         virtual TextStore* PeekAtTextStore () const override;
 
     public:
-        virtual bool    InternalizeBestFlavor (ReaderFlavorPackage& flavorPackage,
-                                               size_t from, size_t to);
-        nonvirtual bool InternalizeFlavor_TEXT (ReaderFlavorPackage& flavorPackage,
-                                                size_t from, size_t to);
-        virtual bool    InternalizeFlavor_FILE (ReaderFlavorPackage& flavorPackage,
-                                                size_t from, size_t to);
+        virtual bool    InternalizeBestFlavor (ReaderFlavorPackage& flavorPackage, size_t from, size_t to);
+        nonvirtual bool InternalizeFlavor_TEXT (ReaderFlavorPackage& flavorPackage, size_t from, size_t to);
+        virtual bool    InternalizeFlavor_FILE (ReaderFlavorPackage& flavorPackage, size_t from, size_t to);
         virtual bool    InternalizeFlavor_FILEData (
 #if qPlatform_MacOS
             const FSSpec* fileName,
 #elif qPlatform_Windows || qStroika_FeatureSupported_XWindows
             const SDKChar* fileName,
 #endif
-            Led_ClipFormat* suggestedClipFormat,
-            CodePage*       suggestedCodePage,
-            size_t from, size_t to);
+            Led_ClipFormat* suggestedClipFormat, CodePage* suggestedCodePage, size_t from, size_t to);
         virtual void InternalizeFlavor_FILEGuessFormatsFromName (
 #if qPlatform_MacOS
             const FSSpec* fileName,
 #elif qPlatform_Windows || qStroika_FeatureSupported_XWindows
             const SDKChar* fileName,
 #endif
-            Led_ClipFormat* suggestedClipFormat,
-            CodePage*       suggestedCodePage);
-        virtual void InternalizeFlavor_FILEGuessFormatsFromStartOfData (
-            Led_ClipFormat* suggestedClipFormat,
-            CodePage*       suggestedCodePage,
-            const byte* fileStart, const byte* fileEnd);
-        virtual bool InternalizeFlavor_FILEDataRawBytes (
-            Led_ClipFormat* suggestedClipFormat,
-            CodePage*       suggestedCodePage,
-            size_t from, size_t to,
-            const void* rawBytes, size_t nRawBytes);
+            Led_ClipFormat* suggestedClipFormat, CodePage* suggestedCodePage);
+        virtual void InternalizeFlavor_FILEGuessFormatsFromStartOfData (Led_ClipFormat* suggestedClipFormat, CodePage* suggestedCodePage,
+                                                                        const byte* fileStart, const byte* fileEnd);
+        virtual bool InternalizeFlavor_FILEDataRawBytes (Led_ClipFormat* suggestedClipFormat, CodePage* suggestedCodePage, size_t from,
+                                                         size_t to, const void* rawBytes, size_t nRawBytes);
 
     private:
         TextStore& fTextStore;

@@ -123,8 +123,9 @@ namespace {
 
         switch (provider) {
             case WinCryptDeriveKey::Provider::Base: {
-                if (
-                    cipherAlgorithm == CipherAlgorithms::kRC2_CBC () or cipherAlgorithm == CipherAlgorithms::kRC2_CFB () or cipherAlgorithm == CipherAlgorithms::kRC2_ECB () or cipherAlgorithm == CipherAlgorithms::kRC2_OFB () or cipherAlgorithm == CipherAlgorithms::kRC4 ()) {
+                if (cipherAlgorithm == CipherAlgorithms::kRC2_CBC () or cipherAlgorithm == CipherAlgorithms::kRC2_CFB () or
+                    cipherAlgorithm == CipherAlgorithms::kRC2_ECB () or cipherAlgorithm == CipherAlgorithms::kRC2_OFB () or
+                    cipherAlgorithm == CipherAlgorithms::kRC4 ()) {
                     return 40 / 8;
                 }
 #if 0
@@ -134,8 +135,9 @@ namespace {
 #endif
             } break;
             case WinCryptDeriveKey::Provider::Enhanced: {
-                if (
-                    cipherAlgorithm == CipherAlgorithms::kRC2_CBC () or cipherAlgorithm == CipherAlgorithms::kRC2_CFB () or cipherAlgorithm == CipherAlgorithms::kRC2_ECB () or cipherAlgorithm == CipherAlgorithms::kRC2_OFB () or cipherAlgorithm == CipherAlgorithms::kRC4 ()) {
+                if (cipherAlgorithm == CipherAlgorithms::kRC2_CBC () or cipherAlgorithm == CipherAlgorithms::kRC2_CFB () or
+                    cipherAlgorithm == CipherAlgorithms::kRC2_ECB () or cipherAlgorithm == CipherAlgorithms::kRC2_OFB () or
+                    cipherAlgorithm == CipherAlgorithms::kRC4 ()) {
                     return 128 / 8;
                 }
             } break;
@@ -162,7 +164,8 @@ WinCryptDeriveKey::WinCryptDeriveKey (Provider provider, CipherAlgorithm cipherA
  ********************************************************************************
  */
 namespace {
-    pair<BLOB, BLOB> mkEVP_BytesToKey_ (CipherAlgorithm cipherAlgorithm, DigestAlgorithm digestAlgorithm, const BLOB& passwd, unsigned int nRounds, const optional<BLOB>& salt)
+    pair<BLOB, BLOB> mkEVP_BytesToKey_ (CipherAlgorithm cipherAlgorithm, DigestAlgorithm digestAlgorithm, const BLOB& passwd,
+                                        unsigned int nRounds, const optional<BLOB>& salt)
     {
         Require (nRounds >= 1);
         StackBuffer<byte> useKey{Memory::eUninitialized, cipherAlgorithm.KeyLength ()};
@@ -171,15 +174,10 @@ namespace {
             // Could truncate and fill to adapt to different sized salt...
             Execution::Throw (Execution::Exception{"only 8-byte salt with EVP_BytesToKey"sv});
         }
-        int i = ::EVP_BytesToKey (
-            cipherAlgorithm,
-            digestAlgorithm,
-            reinterpret_cast<const unsigned char*> (salt ? NullCoalesce (salt).begin () : nullptr),
-            reinterpret_cast<const unsigned char*> (passwd.begin ()),
-            static_cast<int> (passwd.size ()),
-            nRounds,
-            reinterpret_cast<unsigned char*> (useKey.begin ()),
-            reinterpret_cast<unsigned char*> (useIV.begin ()));
+        int i = ::EVP_BytesToKey (cipherAlgorithm, digestAlgorithm,
+                                  reinterpret_cast<const unsigned char*> (salt ? NullCoalesce (salt).begin () : nullptr),
+                                  reinterpret_cast<const unsigned char*> (passwd.begin ()), static_cast<int> (passwd.size ()), nRounds,
+                                  reinterpret_cast<unsigned char*> (useKey.begin ()), reinterpret_cast<unsigned char*> (useIV.begin ()));
         Assert (i >= 0);
         if (i == 0) {
             Cryptography::OpenSSL::Exception::ThrowLastError ();
@@ -189,7 +187,8 @@ namespace {
     }
 }
 template <>
-EVP_BytesToKey::EVP_BytesToKey (CipherAlgorithm cipherAlgorithm, DigestAlgorithm digestAlgorithm, const BLOB& passwd, unsigned int nRounds, const optional<BLOB>& salt)
+EVP_BytesToKey::EVP_BytesToKey (CipherAlgorithm cipherAlgorithm, DigestAlgorithm digestAlgorithm, const BLOB& passwd, unsigned int nRounds,
+                                const optional<BLOB>& salt)
     : DerivedKey{mkEVP_BytesToKey_ (cipherAlgorithm, digestAlgorithm, passwd, nRounds, salt)}
 {
 }
@@ -200,19 +199,15 @@ EVP_BytesToKey::EVP_BytesToKey (CipherAlgorithm cipherAlgorithm, DigestAlgorithm
  ********************************************************************************
  */
 namespace {
-    pair<BLOB, BLOB> mkPKCS5_PBKDF2_HMAC_ (size_t keyLen, size_t ivLen, DigestAlgorithm digestAlgorithm, const BLOB& passwd, unsigned int nRounds, const optional<BLOB>& salt)
+    pair<BLOB, BLOB> mkPKCS5_PBKDF2_HMAC_ (size_t keyLen, size_t ivLen, DigestAlgorithm digestAlgorithm, const BLOB& passwd,
+                                           unsigned int nRounds, const optional<BLOB>& salt)
     {
         StackBuffer<byte> outBuf{Memory::eUninitialized, keyLen + ivLen};
         Assert (keyLen + ivLen < size_t (numeric_limits<int>::max ())); // for static cast below
-        int a = ::PKCS5_PBKDF2_HMAC (
-            reinterpret_cast<const char*> (passwd.begin ()),
-            static_cast<int> (passwd.length ()),
-            reinterpret_cast<const unsigned char*> (salt ? salt->begin () : nullptr),
-            static_cast<int> (salt ? salt->size () : 0),
-            nRounds,
-            digestAlgorithm,
-            static_cast<int> (keyLen + ivLen),
-            reinterpret_cast<unsigned char*> (outBuf.begin ()));
+        int a = ::PKCS5_PBKDF2_HMAC (reinterpret_cast<const char*> (passwd.begin ()), static_cast<int> (passwd.length ()),
+                                     reinterpret_cast<const unsigned char*> (salt ? salt->begin () : nullptr),
+                                     static_cast<int> (salt ? salt->size () : 0), nRounds, digestAlgorithm,
+                                     static_cast<int> (keyLen + ivLen), reinterpret_cast<unsigned char*> (outBuf.begin ()));
         if (a == 0) [[unlikely]] {
             Execution::Throw (Execution::Exception{"PKCS5_PBKDF2_HMAC error"sv});
         }
@@ -221,7 +216,8 @@ namespace {
     }
 }
 template <>
-PKCS5_PBKDF2_HMAC::PKCS5_PBKDF2_HMAC (size_t keyLen, size_t ivLen, DigestAlgorithm digestAlgorithm, const BLOB& passwd, unsigned int nRounds, const optional<BLOB>& salt)
+PKCS5_PBKDF2_HMAC::PKCS5_PBKDF2_HMAC (size_t keyLen, size_t ivLen, DigestAlgorithm digestAlgorithm, const BLOB& passwd,
+                                      unsigned int nRounds, const optional<BLOB>& salt)
     : DerivedKey{mkPKCS5_PBKDF2_HMAC_ (keyLen, ivLen, digestAlgorithm, passwd, nRounds, salt)}
 {
 }

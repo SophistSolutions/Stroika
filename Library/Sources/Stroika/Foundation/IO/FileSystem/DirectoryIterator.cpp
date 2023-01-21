@@ -76,13 +76,15 @@ public:
                 FileSystem::Exception::ThrowPOSIXErrNo (errno, path (dir.As<wstring> ()));
             }
         }
-        if (fCur_ != nullptr and fCur_->d_name[0] == '.' and (CString::Equals (fCur_->d_name, SDKSTR (".")) or CString::Equals (fCur_->d_name, SDKSTR ("..")))) {
+        if (fCur_ != nullptr and fCur_->d_name[0] == '.' and
+            (CString::Equals (fCur_->d_name, SDKSTR (".")) or CString::Equals (fCur_->d_name, SDKSTR ("..")))) {
             optional<filesystem::path> tmphack;
             More (&tmphack, true);
         }
 #elif qPlatform_Windows
         fHandle_ = ::FindFirstFile ((dir + L"\\*").AsSDKString ().c_str (), &fFindFileData_);
-        while (fHandle_ != INVALID_HANDLE_VALUE and (CString::Equals (fFindFileData_.cFileName, SDKSTR (".")) or CString::Equals (fFindFileData_.cFileName, SDKSTR ("..")))) {
+        while (fHandle_ != INVALID_HANDLE_VALUE and
+               (CString::Equals (fFindFileData_.cFileName, SDKSTR (".")) or CString::Equals (fFindFileData_.cFileName, SDKSTR ("..")))) {
             optional<filesystem::path> tmphack;
             More (&tmphack, true);
         }
@@ -156,7 +158,8 @@ public:
                     ThrowPOSIXErrNo ();
                 }
             }
-            if (fCur_ != nullptr and fCur_->d_name[0] == '.' and (CString::Equals (fCur_->d_name, SDKSTR (".")) or CString::Equals (fCur_->d_name, SDKSTR ("..")))) {
+            if (fCur_ != nullptr and fCur_->d_name[0] == '.' and
+                (CString::Equals (fCur_->d_name, SDKSTR (".")) or CString::Equals (fCur_->d_name, SDKSTR ("..")))) {
                 goto Again;
             }
         }
@@ -172,7 +175,8 @@ public:
                 ::FindClose (fHandle_);
                 fHandle_ = INVALID_HANDLE_VALUE;
             }
-            if (fHandle_ != INVALID_HANDLE_VALUE and (CString::Equals (fFindFileData_.cFileName, SDKSTR (".")) or CString::Equals (fFindFileData_.cFileName, SDKSTR ("..")))) {
+            if (fHandle_ != INVALID_HANDLE_VALUE and
+                (CString::Equals (fFindFileData_.cFileName, SDKSTR (".")) or CString::Equals (fFindFileData_.cFileName, SDKSTR ("..")))) {
                 goto Again;
             }
         }
@@ -188,7 +192,8 @@ public:
         RequireMember (rhs, Rep_);
         const Rep_& rrhs = *Debug::UncheckedDynamicCast<const Rep_*> (rhs);
 #if qPlatform_POSIX
-        return fDirName_ == rrhs.fDirName_ and fIteratorReturnType_ == rrhs.fIteratorReturnType_ and ((fCur_ == rrhs.fCur_ and fCur_ == nullptr) or (rrhs.fCur_ != nullptr and fCur_->d_ino == rrhs.fCur_->d_ino));
+        return fDirName_ == rrhs.fDirName_ and fIteratorReturnType_ == rrhs.fIteratorReturnType_ and
+               ((fCur_ == rrhs.fCur_ and fCur_ == nullptr) or (rrhs.fCur_ != nullptr and fCur_->d_ino == rrhs.fCur_->d_ino));
 #elif qPlatform_Windows
         return fHandle_ == rrhs.fHandle_;
 #endif
@@ -232,7 +237,8 @@ public:
          */
         return RepSmartPtr (MakeSmartPtr<Rep_> (fDirName_, fCur_ == nullptr ? optional<ino_t>{} : fCur_->d_ino, fIteratorReturnType_));
 #elif qPlatform_Windows
-        return RepSmartPtr (MakeSmartPtr<Rep_> (fDirName_, fHandle_ == INVALID_HANDLE_VALUE ? optional<String>{} : String::FromSDKString (fFindFileData_.cFileName), fIteratorReturnType_));
+        return RepSmartPtr (MakeSmartPtr<Rep_> (
+            fDirName_, fHandle_ == INVALID_HANDLE_VALUE ? optional<String>{} : String::FromSDKString (fFindFileData_.cFileName), fIteratorReturnType_));
 #endif
     }
 

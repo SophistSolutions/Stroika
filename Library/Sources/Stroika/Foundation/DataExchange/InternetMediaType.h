@@ -69,9 +69,11 @@ namespace Stroika::Foundation::DataExchange {
         InternetMediaType (const InternetMediaType&) = default;
         explicit InternetMediaType (const String& ct);
         explicit InternetMediaType (AtomType type, AtomType subType, const Containers::Mapping<String, String>& parameters = {});
-        explicit InternetMediaType (AtomType type, AtomType subType, optional<AtomType> suffix, const Containers::Mapping<String, String>& parameters = {});
+        explicit InternetMediaType (AtomType type, AtomType subType, optional<AtomType> suffix,
+                                    const Containers::Mapping<String, String>& parameters = {});
         explicit InternetMediaType (const String& type, const String& subType, const Containers::Mapping<String, String>& parameters = {});
-        explicit InternetMediaType (const String& type, const String& subType, const optional<String>& suffix, const Containers::Mapping<String, String>& parameters = {});
+        explicit InternetMediaType (const String& type, const String& subType, const optional<String>& suffix,
+                                    const Containers::Mapping<String, String>& parameters = {});
 
     public:
         /**

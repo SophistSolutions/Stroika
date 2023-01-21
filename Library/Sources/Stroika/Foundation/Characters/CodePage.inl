@@ -58,17 +58,18 @@ namespace Stroika::Foundation::Characters {
             targetExhausted, /* insuff. room in target for conversion */
             sourceIllegal    /* source sequence is illegal/malformed */
         };
-        enum [[deprecated ("Since Stroika v3.0d1, use class UTFConverter")]] ConversionFlags{
-            strictConversion = 0,
-            lenientConversion};
+        enum [[deprecated ("Since Stroika v3.0d1, use class UTFConverter")]] ConversionFlags{strictConversion = 0, lenientConversion};
 
         /**
          */
-        [[deprecated ("Since Stroika v3.0d1, could support, but not clearly any reason")]] bool IsLegalUTF8Sequence (const char* source, const char* sourceEnd);
-        [[deprecated ("Since Stroika v3.0d1, could support, but not clearly any reason")]] bool IsLegalUTF8Sequence (const char8_t* source, const char8_t* sourceEnd);
+        [[deprecated ("Since Stroika v3.0d1, could support, but not clearly any reason")]] bool IsLegalUTF8Sequence (const char* source,
+                                                                                                                     const char* sourceEnd);
+        [[deprecated ("Since Stroika v3.0d1, could support, but not clearly any reason")]] bool IsLegalUTF8Sequence (const char8_t* source,
+                                                                                                                     const char8_t* sourceEnd);
 
         template <typename FROM, typename TO>
-        [[deprecated ("Since Stroika v3.0d1, use class UTFConverter")]] inline size_t QuickComputeConversionOutputBufferSize (const FROM* sourceStart, const FROM* sourceEnd)
+        [[deprecated ("Since Stroika v3.0d1, use class UTFConverter")]] inline size_t
+        QuickComputeConversionOutputBufferSize (const FROM* sourceStart, const FROM* sourceEnd)
         {
             return UTFConverter::ComputeTargetBufferSize<TO> (span<const FROM>{sourceStart, sourceEnd});
         }
@@ -76,7 +77,8 @@ namespace Stroika::Foundation::Characters {
         DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
         DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
         template <typename FROM, typename TO>
-        [[deprecated ("Since Stroika v3.0d1, use class UTFConverter::kThe")]] ConversionResult ConvertQuietly (const FROM** sourceStart, const FROM* sourceEnd, TO** targetStart, TO* targetEnd, ConversionFlags flags)
+        [[deprecated ("Since Stroika v3.0d1, use class UTFConverter::kThe")]] ConversionResult
+        ConvertQuietly (const FROM** sourceStart, const FROM* sourceEnd, TO** targetStart, TO* targetEnd, ConversionFlags flags)
         {
             auto r = UTFConverter::kThe.ConvertQuietly (span{*sourceStart, sourceEnd}, span{*targetStart, targetEnd});
             *sourceStart += get<1> (r);
@@ -94,7 +96,8 @@ namespace Stroika::Foundation::Characters {
             }
         }
         template <typename FROM, typename TO>
-        [[deprecated ("Since Stroika v3.0d1, use class UTFConverter::kThe")]] inline void Convert (const FROM** sourceStart, const FROM* sourceEnd, TO** targetStart, TO* targetEnd, ConversionFlags /*flags*/)
+        [[deprecated ("Since Stroika v3.0d1, use class UTFConverter::kThe")]] inline void
+        Convert (const FROM** sourceStart, const FROM* sourceEnd, TO** targetStart, TO* targetEnd, ConversionFlags /*flags*/)
         {
             RequireNotNull (sourceStart);
             RequireNotNull (targetStart);
@@ -125,14 +128,8 @@ namespace Stroika::Foundation::Characters {
     {
         Require (h == eHandleBOM);
     }
-    inline bool CodePageConverter::GetHandleBOM () const
-    {
-        return fHandleBOM;
-    }
-    inline void CodePageConverter::SetHandleBOM (bool handleBOM)
-    {
-        fHandleBOM = handleBOM;
-    }
+    inline bool   CodePageConverter::GetHandleBOM () const { return fHandleBOM; }
+    inline void   CodePageConverter::SetHandleBOM (bool handleBOM) { fHandleBOM = handleBOM; }
     inline size_t CodePageConverter::MapToUNICODE_QuickComputeOutBufSize (const char* /*inMBChars*/, size_t inMBCharCnt) const
     {
         size_t resultSize = inMBCharCnt;
@@ -140,7 +137,8 @@ namespace Stroika::Foundation::Characters {
     }
     inline void CodePageConverter::MapToUNICODE (const char* inMBChars, size_t inMBCharCnt, wchar_t* outChars, size_t* outCharCnt) const
     {
-        static_assert ((sizeof (wchar_t) == sizeof (char16_t)) or (sizeof (wchar_t) == sizeof (char32_t)), "(sizeof (wchar_t) == sizeof (char16_t)) or (sizeof (wchar_t) == sizeof (char32_t))");
+        static_assert ((sizeof (wchar_t) == sizeof (char16_t)) or (sizeof (wchar_t) == sizeof (char32_t)),
+                       "(sizeof (wchar_t) == sizeof (char16_t)) or (sizeof (wchar_t) == sizeof (char32_t))");
         if constexpr (sizeof (wchar_t) == sizeof (char16_t)) {
             MapToUNICODE (inMBChars, inMBCharCnt, reinterpret_cast<char16_t*> (outChars), outCharCnt);
         }
@@ -150,7 +148,8 @@ namespace Stroika::Foundation::Characters {
     }
     inline void CodePageConverter::MapFromUNICODE (const wchar_t* inChars, size_t inCharCnt, char* outChars, size_t* outCharCnt) const
     {
-        static_assert ((sizeof (wchar_t) == sizeof (char16_t)) or (sizeof (wchar_t) == sizeof (char32_t)), "(sizeof (wchar_t) == sizeof (char16_t)) or (sizeof (wchar_t) == sizeof (char32_t))");
+        static_assert ((sizeof (wchar_t) == sizeof (char16_t)) or (sizeof (wchar_t) == sizeof (char32_t)),
+                       "(sizeof (wchar_t) == sizeof (char16_t)) or (sizeof (wchar_t) == sizeof (char32_t))");
         if constexpr (sizeof (wchar_t) == sizeof (char16_t)) {
             MapFromUNICODE (reinterpret_cast<const char16_t*> (inChars), inCharCnt, outChars, outCharCnt);
         }
@@ -164,21 +163,15 @@ namespace Stroika::Foundation::Characters {
      ************ CodePageConverter::CodePageNotSupportedException ******************
      ********************************************************************************
      */
-    inline CodePage CodePageConverter::CodePageNotSupportedException::GetCodePage () const
-    {
-        return fCodePage_;
-    }
+    inline CodePage CodePageConverter::CodePageNotSupportedException::GetCodePage () const { return fCodePage_; }
 
     /*
      ********************************************************************************
      ****************************** CodePagesInstalled ******************************
      ********************************************************************************
      */
-    inline vector<CodePage> CodePagesInstalled::GetAll ()
-    {
-        return fCodePages_;
-    }
-    inline bool CodePagesInstalled::IsCodePageAvailable (CodePage cp)
+    inline vector<CodePage> CodePagesInstalled::GetAll () { return fCodePages_; }
+    inline bool             CodePagesInstalled::IsCodePageAvailable (CodePage cp)
     {
         return (find (fCodePages_.begin (), fCodePages_.end (), cp) == fCodePages_.end ());
     }
@@ -226,19 +219,13 @@ namespace Stroika::Foundation::Characters {
         return string{s.begin (), s.end ()};
         DISABLE_COMPILER_MSC_WARNING_END (4244)
     }
-    inline string WideStringToUTF8 (const wstring& ws)
-    {
-        return WideStringToNarrow (ws, kCodePage_UTF8);
-    }
-    inline void UTF8StringToWide (const char* s, wstring* intoStr)
+    inline string WideStringToUTF8 (const wstring& ws) { return WideStringToNarrow (ws, kCodePage_UTF8); }
+    inline void   UTF8StringToWide (const char* s, wstring* intoStr)
     {
         RequireNotNull (s);
         NarrowStringToWide (s, s + ::strlen (s), kCodePage_UTF8, intoStr);
     }
-    inline void UTF8StringToWide (const string& s, wstring* intoStr)
-    {
-        NarrowStringToWide (s, kCodePage_UTF8, intoStr);
-    }
+    inline void    UTF8StringToWide (const string& s, wstring* intoStr) { NarrowStringToWide (s, kCodePage_UTF8, intoStr); }
     inline wstring UTF8StringToWide (const char* s)
     {
         RequireNotNull (s);
@@ -246,10 +233,7 @@ namespace Stroika::Foundation::Characters {
         NarrowStringToWide (s, s + ::strlen (s), kCodePage_UTF8, &result);
         return result;
     }
-    inline wstring UTF8StringToWide (const string& s)
-    {
-        return NarrowStringToWide (s, kCodePage_UTF8);
-    }
+    inline wstring UTF8StringToWide (const string& s) { return NarrowStringToWide (s, kCodePage_UTF8); }
 
 }
 

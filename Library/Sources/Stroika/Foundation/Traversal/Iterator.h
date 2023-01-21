@@ -257,7 +257,8 @@ namespace Stroika::Foundation::Traversal {
     template <typename T, typename ITERATOR_TRAITS = DefaultIteratorTraits<forward_iterator_tag, T>>
     class Iterator : public IteratorBase {
     public:
-        static_assert (is_constructible_v<optional<T>, T>, "Must be able to create optional<T> to use Iterator, because Iterator uses this internally");
+        static_assert (is_constructible_v<optional<T>, T>,
+                       "Must be able to create optional<T> to use Iterator, because Iterator uses this internally");
 
     public:
         /**

@@ -23,7 +23,8 @@ namespace Stroika::Frameworks::WebServer {
     {
     }
     inline RequestHandler::RequestHandler (const function<void (Message*)>& f)
-        : function<void (Message*, const Containers::Sequence<Characters::String>&)>{[=] (Message* m, const Containers::Sequence<Characters::String>&) { f (m); }}
+        : function<void (Message*, const Containers::Sequence<Characters::String>&)>{
+              [=] (Message* m, const Containers::Sequence<Characters::String>&) { f (m); }}
     {
     }
     template <typename _Fx, enable_if_t<is_convertible_v<_Fx, function<void (Message*)>>>*>
@@ -56,7 +57,10 @@ namespace Stroika::Frameworks::WebServer {
     }
     template <class _Fx, enable_if_t<is_convertible_v<_Fx, function<void (Request*, Response*)>>>*>
     RequestHandler::RequestHandler (_Fx _Func, void*)
-        : RequestHandler ([_Func] (Message* message) { RequireNotNull (message); _Func (&message->rwRequest (), &message->rwResponse ()); })
+        : RequestHandler ([_Func] (Message* message) {
+            RequireNotNull (message);
+            _Func (&message->rwRequest (), &message->rwResponse ());
+        })
     {
     }
 

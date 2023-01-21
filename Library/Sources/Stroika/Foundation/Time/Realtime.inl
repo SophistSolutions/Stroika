@@ -106,8 +106,8 @@ namespace Stroika::Foundation::Time {
 #else
         DurationSecondsType dMin{};
         DurationSecondsType dMax = duration_cast<duration<DurationSecondsType>> (Duration::max ()).count ();
-        dMax                     = numeric_limits<int32_t>::max (); // not cuz really needed logically, but because getting this to not overflow is complex, and this gives us a LONG time (about 80 years)
-        DurationSecondsType dv   = t + Private_::GetClockTickountOffset_<Clock> ();
+        dMax = numeric_limits<int32_t>::max (); // not cuz really needed logically, but because getting this to not overflow is complex, and this gives us a LONG time (about 80 years)
+        DurationSecondsType dv = t + Private_::GetClockTickountOffset_<Clock> ();
         if (dv <= dMin) {
             return time_point<Clock, Duration> (duration_cast<Duration> (chrono::duration<DurationSecondsType>{dMin}));
         }

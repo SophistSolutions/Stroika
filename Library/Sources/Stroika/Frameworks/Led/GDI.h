@@ -326,8 +326,10 @@ namespace Stroika::Frameworks::Led {
         // regardless of Mac or Windows, we use the same size ColorValue so we can write
         // portable code more easily...
         using ColorValue = unsigned short;
-        enum { kColorValueMin = 0,
-               kColorValueMax = USHRT_MAX };
+        enum {
+            kColorValueMin = 0,
+            kColorValueMax = USHRT_MAX
+        };
 
     public:
         constexpr Color (const Color&) = default;
@@ -447,11 +449,13 @@ namespace Stroika::Frameworks::Led {
         etc which keep track of this information, and even show the styles in the UI. They just aren't reflected
         in how the text is drawn yet. That should come in the next major Led release.</p>
     */
-    enum Justification { eLeftJustify,
-                         eRightJustify,
-                         eCenterJustify,
-                         eFullyJustify,
-                         eDefaultForScriptJustify };
+    enum Justification {
+        eLeftJustify,
+        eRightJustify,
+        eCenterJustify,
+        eFullyJustify,
+        eDefaultForScriptJustify
+    };
 
     /**
      *  There are two defined text directions:
@@ -542,10 +546,7 @@ namespace Stroika::Frameworks::Led {
             FontNameSpecifier ();
             FontNameSpecifier (const SDKChar* from);
             SDKChar fName[LF_FACESIZE];
-            bool    operator== (const FontNameSpecifier& rhs) const
-            {
-                return ::_tcscmp (fName, rhs.fName) == 0;
-            }
+            bool    operator== (const FontNameSpecifier& rhs) const { return ::_tcscmp (fName, rhs.fName) == 0; }
         };
 #elif qStroika_FeatureSupported_XWindows
         using FontNameSpecifier = SDKString;
@@ -573,9 +574,11 @@ namespace Stroika::Frameworks::Led {
         nonvirtual bool GetStyle_Underline () const;
         nonvirtual void SetStyle_Underline (bool isUnderline);
 
-        enum SubOrSuperScript { eSubscript,
-                                eSuperscript,
-                                eNoSubOrSuperscript };
+        enum SubOrSuperScript {
+            eSubscript,
+            eSuperscript,
+            eNoSubOrSuperscript
+        };
         nonvirtual SubOrSuperScript GetStyle_SubOrSuperScript () const;
         nonvirtual void             SetStyle_SubOrSuperScript (SubOrSuperScript subOrSuperScript);
 
@@ -618,7 +621,7 @@ namespace Stroika::Frameworks::Led {
         nonvirtual void    SetOSRep (LOGFONT logFont);
         nonvirtual void    LightSetOSRep (LOGFONT logFont);
 #elif qStroika_FeatureSupported_XWindows
-        static string     mkOSRep (const string& foundry, const string& family, const string& weight, const string& slant, const string& pointSize);
+        static string mkOSRep (const string& foundry, const string& family, const string& weight, const string& slant, const string& pointSize);
         nonvirtual string GetOSRep () const;
         nonvirtual void   SetFromOSRep (const string& osRep);
 #endif
@@ -1008,8 +1011,10 @@ namespace Stroika::Frameworks::Led {
 #if qPlatform_MacOS
         Tablet (GrafPtr gp);
 #elif qPlatform_Windows
-        enum OwnDCControl { eOwnsDC,
-                            eDoesntOwnDC };
+        enum OwnDCControl {
+            eOwnsDC,
+            eDoesntOwnDC
+        };
 
         Tablet (HDC hdc = nullptr, OwnDCControl ownsDC = eOwnsDC);
 #elif qStroika_FeatureSupported_XWindows
@@ -1078,7 +1083,9 @@ namespace Stroika::Frameworks::Led {
 
     private:
         map<string, XFontStruct*> fFontCache;
-        enum { kMaxFontCacheSize = 5 };
+        enum {
+            kMaxFontCacheSize = 5
+        };
 
     public:
         nonvirtual void SetDrawableOrigin (const Led_Point& origin);
@@ -1116,12 +1123,10 @@ namespace Stroika::Frameworks::Led {
 #endif
 
     public:
-        nonvirtual void MeasureText (const FontMetrics& precomputedFontMetrics,
-                                     const Led_tChar* text, size_t nTChars, DistanceType* charLocations);
+        nonvirtual void MeasureText (const FontMetrics& precomputedFontMetrics, const Led_tChar* text, size_t nTChars, DistanceType* charLocations);
         nonvirtual void TabbedTextOut (const FontMetrics& precomputedFontMetrics, const Led_tChar* text, size_t nBytes,
-                                       TextDirection direction,
-                                       Led_Point outputAt, CoordinateType hTabOrigin, const TabStopList& tabStopList,
-                                       DistanceType* amountDrawn, CoordinateType hScrollOffset);
+                                       TextDirection direction, Led_Point outputAt, CoordinateType hTabOrigin,
+                                       const TabStopList& tabStopList, DistanceType* amountDrawn, CoordinateType hScrollOffset);
 
     public:
         nonvirtual void SetBackColor (const Color& backColor);
@@ -1129,8 +1134,10 @@ namespace Stroika::Frameworks::Led {
 
     public:
         nonvirtual void EraseBackground_SolidHelper (const Led_Rect& eraseRect, const Color& eraseColor);
-        nonvirtual void HilightArea_SolidHelper (const Led_Rect& hilightArea, Color hilightBackColor, Color hilightForeColor, Color oldBackColor, Color oldForeColor);
-        nonvirtual void HilightArea_SolidHelper (const Region& hilightArea, Color hilightBackColor, Color hilightForeColor, Color oldBackColor, Color oldForeColor);
+        nonvirtual void HilightArea_SolidHelper (const Led_Rect& hilightArea, Color hilightBackColor, Color hilightForeColor,
+                                                 Color oldBackColor, Color oldForeColor);
+        nonvirtual void HilightArea_SolidHelper (const Region& hilightArea, Color hilightBackColor, Color hilightForeColor,
+                                                 Color oldBackColor, Color oldForeColor);
 
 #if qPlatform_Windows
     private:

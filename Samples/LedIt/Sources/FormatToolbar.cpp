@@ -120,15 +120,9 @@ void FormatToolbar::OnFontSizeDropDown ()
     m_comboFontSize.SetTwipSize (nSize);
 }
 
-void FormatToolbar::OnComboCloseUp ()
-{
-    NotifyOwner (NM_RETURN);
-}
+void FormatToolbar::OnComboCloseUp () { NotifyOwner (NM_RETURN); }
 
-void FormatToolbar::OnComboSetFocus ()
-{
-    NotifyOwner (NM_SETFOCUS);
-}
+void FormatToolbar::OnComboSetFocus () { NotifyOwner (NM_SETFOCUS); }
 
 void FormatToolbar::OnFontNameKillFocus ()
 {
@@ -197,9 +191,7 @@ int FormatToolbar::OnCreate (LPCREATESTRUCT lpCreateStruct)
         return -1;
 
     CRect rect (0, 0, (3 * LF_FACESIZE * m_szBaseUnits.cx) / 2, 200);
-    if (!m_comboFontName.Create (WS_TABSTOP | WS_VISIBLE | WS_TABSTOP |
-                                     WS_VSCROLL | CBS_DROPDOWN | CBS_SORT | CBS_AUTOHSCROLL | CBS_HASSTRINGS |
-                                     CBS_OWNERDRAWFIXED,
+    if (!m_comboFontName.Create (WS_TABSTOP | WS_VISIBLE | WS_TABSTOP | WS_VSCROLL | CBS_DROPDOWN | CBS_SORT | CBS_AUTOHSCROLL | CBS_HASSTRINGS | CBS_OWNERDRAWFIXED,
                                  rect, this, IDC_FONTNAME)) {
         TRACE0 ("Failed to create fontname combo-box\n");
         return -1;
@@ -207,9 +199,7 @@ int FormatToolbar::OnCreate (LPCREATESTRUCT lpCreateStruct)
     m_comboFontName.LimitText (LF_FACESIZE);
 
     rect.SetRect (0, 0, 10 * m_szBaseUnits.cx, 200);
-    if (!m_comboFontSize.Create (WS_TABSTOP | WS_VISIBLE | WS_TABSTOP |
-                                     WS_VSCROLL | CBS_DROPDOWN,
-                                 rect, this, IDC_FONTSIZE)) {
+    if (!m_comboFontSize.Create (WS_TABSTOP | WS_VISIBLE | WS_TABSTOP | WS_VSCROLL | CBS_DROPDOWN, rect, this, IDC_FONTSIZE)) {
         TRACE0 ("Failed to create fontsize combo-box\n");
         return -1;
     }
@@ -222,15 +212,8 @@ int FormatToolbar::OnCreate (LPCREATESTRUCT lpCreateStruct)
         ID_SEPARATOR, // font name combo box
         ID_SEPARATOR,
         ID_SEPARATOR, // font size combo box
-        ID_SEPARATOR,
-        kFontStyleBoldCmd,
-        kFontStyleItalicCmd,
-        kFontStyleUnderlineCmd,
-        ID_CHAR_COLOR,
-        ID_SEPARATOR,
-        kJustifyLeftCmd,
-        kJustifyCenterCmd,
-        kJustifyRightCmd,
+        ID_SEPARATOR, kFontStyleBoldCmd, kFontStyleItalicCmd, kFontStyleUnderlineCmd, ID_CHAR_COLOR,
+        ID_SEPARATOR, kJustifyLeftCmd,   kJustifyCenterCmd,   kJustifyRightCmd,
     };
 
     if (!LoadBitmap (IDB_FORMATBAR) || !SetButtons (format, sizeof (format) / sizeof (UINT))) {
@@ -260,16 +243,12 @@ void FormatToolbar::PositionCombos ()
     m_comboFontName.GetWindowRect (&rect);
     SetButtonInfo (0, IDC_FONTNAME, TBBS_SEPARATOR, rect.Width ());
     GetItemRect (0, &rect); // FontName ComboBox
-    m_comboFontName.SetWindowPos (NULL, rect.left,
-                                  ((rect.Height () - nHeight) / 2) + rect.top, 0, 0,
-                                  SWP_NOZORDER | SWP_NOSIZE | SWP_NOACTIVATE);
+    m_comboFontName.SetWindowPos (NULL, rect.left, ((rect.Height () - nHeight) / 2) + rect.top, 0, 0, SWP_NOZORDER | SWP_NOSIZE | SWP_NOACTIVATE);
 
     m_comboFontSize.GetWindowRect (&rect);
     SetButtonInfo (2, IDC_FONTSIZE, TBBS_SEPARATOR, rect.Width ());
     GetItemRect (2, &rect); // FontSize ComboBox
-    m_comboFontSize.SetWindowPos (NULL, rect.left,
-                                  ((rect.Height () - nHeight) / 2) + rect.top, 0, 0,
-                                  SWP_NOZORDER | SWP_NOSIZE | SWP_NOACTIVATE);
+    m_comboFontSize.SetWindowPos (NULL, rect.left, ((rect.Height () - nHeight) / 2) + rect.top, 0, 0, SWP_NOZORDER | SWP_NOSIZE | SWP_NOACTIVATE);
 }
 
 void FormatToolbar::NotifyOwner (UINT nCode)
@@ -294,10 +273,7 @@ const int BMH = 15;
 BEGIN_MESSAGE_MAP (FontComboBox, LocalComboBox)
 END_MESSAGE_MAP ()
 
-FontComboBox::FontComboBox ()
-{
-    VERIFY (m_bmFontType.LoadBitmap (IDB_FONTTYPE));
-}
+FontComboBox::FontComboBox () { VERIFY (m_bmFontType.LoadBitmap (IDB_FONTTYPE)); }
 
 void FontComboBox::EnumFontFamiliesEx ()
 {
@@ -423,10 +399,7 @@ void FontComboBox::MatchFont (LPCTSTR lpszName)
  */
 using SizeComboBox = FormatToolbar::SizeComboBox;
 
-SizeComboBox::SizeComboBox ()
-{
-    m_nTwipsLast = 0;
-}
+SizeComboBox::SizeComboBox () { m_nTwipsLast = 0; }
 
 void SizeComboBox::EnumFontSizes (CDC& dc, LPCTSTR pFontName)
 {
@@ -495,15 +468,12 @@ int SizeComboBox::GetTwipSize ()
 
 BOOL CALLBACK AFX_EXPORT SizeComboBox::EnumSizeCallBack (LOGFONT FAR* /*lplf*/, LPNEWTEXTMETRIC lpntm, int FontType, LPVOID lpv)
 {
-    static int nFontSizes[] =
-        {8, 9, 10, 11, 12, 14, 16, 18, 20, 22, 24, 26, 28, 36, 48, 72};
+    static int nFontSizes[] = {8, 9, 10, 11, 12, 14, 16, 18, 20, 22, 24, 26, 28, 36, 48, 72};
 
     SizeComboBox* pThis = (SizeComboBox*)lpv;
     ASSERT (pThis != NULL);
     TCHAR buf[10];
-    if (
-        (FontType & TRUETYPE_FONTTYPE) ||
-        !((FontType & TRUETYPE_FONTTYPE) || (FontType & RASTER_FONTTYPE))) { // if truetype or vector font
+    if ((FontType & TRUETYPE_FONTTYPE) || !((FontType & TRUETYPE_FONTTYPE) || (FontType & RASTER_FONTTYPE))) { // if truetype or vector font
         // this occurs when there is a truetype and nontruetype version of a font
         if (pThis->GetCount () != 0)
             pThis->ResetContent ();
@@ -606,8 +576,7 @@ BOOL LocalComboBox::PreTranslateMessage (MSG* pMsg)
                 return TRUE;
             case VK_UP:
             case VK_DOWN:
-                if ((GetKeyState (VK_MENU) >= 0) && (GetKeyState (VK_CONTROL) >= 0) &&
-                    !GetDroppedState ()) {
+                if ((GetKeyState (VK_MENU) >= 0) && (GetKeyState (VK_CONTROL) >= 0) && !GetDroppedState ()) {
                     ShowDropDown ();
                     return TRUE;
                 }

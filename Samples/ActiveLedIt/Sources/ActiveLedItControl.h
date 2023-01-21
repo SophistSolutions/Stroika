@@ -32,9 +32,7 @@ enum Led_FileFormat {
     eDefaultFormat = eRTFFormat,
 };
 
-class COMBased_SpellCheckEngine : public SpellCheckEngine,
-                                  private SpellCheckEngine::UDInterface,
-                                  private TextBreaks {
+class COMBased_SpellCheckEngine : public SpellCheckEngine, private SpellCheckEngine::UDInterface, private TextBreaks {
 private:
     using inherited = SpellCheckEngine;
 
@@ -109,8 +107,7 @@ public:
     virtual void  AddFrameLevelUI () override;
     virtual void  RemoveFrameLevelUI () override;
     virtual BOOL  OnSetObjectRects (LPCRECT lprcPosRect, LPCRECT lprcClipRect) override;
-    virtual BOOL  OnGetNaturalExtent (DWORD /* dwAspect */, LONG /* lindex */,
-                                      DVTARGETDEVICE* /* ptd */, HDC /* hicTargetDev */,
+    virtual BOOL  OnGetNaturalExtent (DWORD /* dwAspect */, LONG /* lindex */, DVTARGETDEVICE* /* ptd */, HDC /* hicTargetDev */,
                                       DVEXTENTINFO* /* pExtentInfo */, LPSIZEL /* psizel */
                                       ) override;
 
@@ -380,7 +377,8 @@ public:
     // Replace dialog
 public:
     afx_msg void OLE_LaunchReplaceDialog ();
-    afx_msg long OLE_FindReplace (long searchFrom, const VARIANT& findText, const VARIANT& replaceText, BOOL wrapSearch, BOOL wholeWordSearch, BOOL caseSensativeSearch);
+    afx_msg long OLE_FindReplace (long searchFrom, const VARIANT& findText, const VARIANT& replaceText, BOOL wrapSearch,
+                                  BOOL wholeWordSearch, BOOL caseSensativeSearch);
 
     // Printing support
 public:

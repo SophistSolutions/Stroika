@@ -67,7 +67,8 @@ namespace {
                         InitialSetup_ (fDB_);
                     }
                     catch (...) {
-                        DbgTrace (L"Error %s experiment DB: %s: %s", L"opening", Characters::ToString (testDBFile).c_str (), Characters::ToString (current_exception ()).c_str ());
+                        DbgTrace (L"Error %s experiment DB: %s: %s", L"opening", Characters::ToString (testDBFile).c_str (),
+                                  Characters::ToString (current_exception ()).c_str ());
                         Execution::ReThrow ();
                     }
                 }
@@ -86,19 +87,22 @@ namespace {
                         Execution::ReThrow ();
                     }
                 }
-                DB (const DB&)                               = delete;
-                nonvirtual DB&         operator= (const DB&) = delete;
-                nonvirtual ScanIDType_ ScanPersistenceAdd (const DateTime& ScanStart, const DateTime& ScanEnd, const optional<String>& ScanLabel, ScanKindType_ scanKind, const optional<SpectrumType_>& rawSpectrum)
+                DB (const DB&)                       = delete;
+                nonvirtual DB& operator= (const DB&) = delete;
+                nonvirtual ScanIDType_ ScanPersistenceAdd (const DateTime& ScanStart, const DateTime& ScanEnd, const optional<String>& ScanLabel,
+                                                           ScanKindType_ scanKind, const optional<SpectrumType_>& rawSpectrum)
                 {
                     // @todo write rawSpectrum isntead o fhardwired string...
                     constexpr bool kUseBind_ = true;
                     if (kUseBind_) {
-                        Statement s{fDB_, L"insert into Scans (StartAt, EndAt, ScanTypeIDRef, RawScanData, ScanLabel) Values (:StartAt, :EndAt, :ScanTypeIDRef, :RawScanData, :ScanLabel);"};
+                        Statement s{fDB_, L"insert into Scans (StartAt, EndAt, ScanTypeIDRef, RawScanData, ScanLabel) Values (:StartAt, "
+                                          L":EndAt, :ScanTypeIDRef, :RawScanData, :ScanLabel);"};
                         s.Bind (L":StartAt", ScanStart.AsUTC ().Format (DateTime::kISO8601Format));
                         s.Bind (L":EndAt", ScanEnd.AsUTC ().Format (DateTime::kISO8601Format));
                         s.Bind (L":ScanTypeIDRef", (int)scanKind);
                         if (rawSpectrum) {
-                            s.Bind (L":RawScanData", VariantValue{L"SomeLongASCIIStringS\r\r\n\t'omeLongASCIIStringSomeLongASCIIStringSomeLongASCIIString"});
+                            s.Bind (L":RawScanData",
+                                    VariantValue{L"SomeLongASCIIStringS\r\r\n\t'omeLongASCIIStringSomeLongASCIIStringSomeLongASCIIString"});
                         }
                         if (ScanLabel) {
                             s.Bind (L":ScanLabel", VariantValue{*ScanLabel});
@@ -114,7 +118,8 @@ namespace {
                             sb += L"'" + ScanEnd.AsUTC ().Format (DateTime::kISO8601Format) + L"',";
                             sb += Characters::Format (L"%d", scanKind) + L",";
                             if (rawSpectrum) {
-                                sb += L"'" + Database::SQL::Utils::QuoteStringForDB (L"SomeLongASCIIStringS\r\r\n\t'omeLongASCIIStringSomeLongASCIIStringSomeLongASCIIString") + L"',";
+                                sb += L"'" + Database::SQL::Utils::QuoteStringForDB (L"SomeLongASCIIStringS\r\r\n\t'omeLongASCIIStringSomeLongASCIIStringSomeLongASCIIString") +
+                                      L"',";
                             }
                             else {
                                 sb += L"NULL,";
@@ -172,72 +177,72 @@ namespace {
                     TraceContextBumper               ctx{"ScanDB_::DB::InitialSetup_"};
                     bool                             created          = false;
                     constexpr Configuration::Version kCurrentVersion_ = Configuration::Version{1, 0, Configuration::VersionStage::Alpha, 0};
-                    SQL::ORM::ProvisionForVersion (db,
-                                                   kCurrentVersion_,
-                                                   initializer_list<SQL::ORM::TableProvisioner>{
-                                                       {L"ScanTypes"sv,
-                                                        [&created] (SQL::Connection::Ptr c, optional<Configuration::Version> v, [[maybe_unused]] Configuration::Version targetDBVersion) -> void {
-                                                            // for now no upgrade support
-                                                            if (not v) {
-                                                                created = true;
-                                                                c.Exec (L"create table 'ScanTypes' "
-                                                                        L"("
-                                                                        L"ScanTypeId tinyint Primary Key,"
-                                                                        L"TypeName varchar(255) not null"
-                                                                        L");");
-                                                                c.Exec (Characters::Format (L"insert into ScanTypes (ScanTypeId, TypeName) select %d, 'Reference';", ScanKindType_::Reference));
-                                                                c.Exec (Characters::Format (L"insert into ScanTypes (ScanTypeId, TypeName) select %d, 'Sample';", ScanKindType_::Sample));
-                                                                c.Exec (Characters::Format (L"insert into ScanTypes (ScanTypeId, TypeName) select %d, 'Background';", ScanKindType_::Background));
-                                                            }
-                                                        }},
-                                                       {L"Scans"sv,
-                                                        [&created] (SQL::Connection::Ptr c, optional<Configuration::Version> v, [[maybe_unused]] Configuration::Version targetDBVersion) -> void {
-                                                            // for now no upgrade support
-                                                            if (not v) {
-                                                                created = true;
-                                                                c.Exec (
-                                                                    L"create table 'Scans'"
-                                                                    L"("
-                                                                    L"ScanId integer Primary Key AUTOINCREMENT,"
-                                                                    L"StartAt Datetime not null,"
-                                                                    L"EndAt Datetime not null,"
-                                                                    L"ScanTypeIDRef tinyint not null,"
-                                                                    L"ScanLabel varchar,"
-                                                                    L"Foreign key (ScanTypeIDRef) References ScanTypes (ScanTypeId)"
-                                                                    L");");
-                                                                c.Exec (L"Alter table Scans add column RawScanData BLOB;");
-                                                            }
-                                                        }},
-                                                       {L"ScanSet"sv,
-                                                        [&created] (SQL::Connection::Ptr c, optional<Configuration::Version> v, [[maybe_unused]] Configuration::Version targetDBVersion) -> void {
-                                                            // for now no upgrade support
-                                                            if (not v) {
-                                                                created = true;
-                                                                c.Exec (
-                                                                    L"Create table ScanSet"
-                                                                    L"("
-                                                                    L"ScanSetID bigint,"
-                                                                    L"ScanIDRef integer,"
-                                                                    L"Foreign key (ScanIdRef) References Scans(ScanId)"
-                                                                    L");");
-                                                                c.Exec (L"Alter table Scans add column DependsOnScanSetIdRef bigint references ScanSet(ScanSetID);");
-                                                            }
-                                                        }},
-                                                       {L"AuxData"sv,
-                                                        [&created] (SQL::Connection::Ptr c, optional<Configuration::Version> v, [[maybe_unused]] Configuration::Version targetDBVersion) -> void {
-                                                            // for now no upgrade support
-                                                            if (not v) {
-                                                                created = true;
-                                                                c.Exec (
-                                                                    L"Create table AuxData"
-                                                                    L"("
-                                                                    L"ScanSetIDRef bigint Primary Key,"
-                                                                    L"Results varchar,"
-                                                                    L"Foreign key (ScanSetIDRef) References ScanSet(ScanSetID)"
-                                                                    L");");
-                                                            }
-                                                        }},
-                                                   });
+                    SQL::ORM::ProvisionForVersion (
+                        db, kCurrentVersion_,
+                        initializer_list<SQL::ORM::TableProvisioner>{
+                            {L"ScanTypes"sv,
+                             [&created] (SQL::Connection::Ptr c, optional<Configuration::Version> v, [[maybe_unused]] Configuration::Version targetDBVersion) -> void {
+                                 // for now no upgrade support
+                                 if (not v) {
+                                     created = true;
+                                     c.Exec (L"create table 'ScanTypes' "
+                                             L"("
+                                             L"ScanTypeId tinyint Primary Key,"
+                                             L"TypeName varchar(255) not null"
+                                             L");");
+                                     c.Exec (Characters::Format (L"insert into ScanTypes (ScanTypeId, TypeName) select %d, 'Reference';",
+                                                                 ScanKindType_::Reference));
+                                     c.Exec (Characters::Format (L"insert into ScanTypes (ScanTypeId, TypeName) select %d, 'Sample';",
+                                                                 ScanKindType_::Sample));
+                                     c.Exec (Characters::Format (L"insert into ScanTypes (ScanTypeId, TypeName) select %d, 'Background';",
+                                                                 ScanKindType_::Background));
+                                 }
+                             }},
+                            {L"Scans"sv,
+                             [&created] (SQL::Connection::Ptr c, optional<Configuration::Version> v, [[maybe_unused]] Configuration::Version targetDBVersion) -> void {
+                                 // for now no upgrade support
+                                 if (not v) {
+                                     created = true;
+                                     c.Exec (L"create table 'Scans'"
+                                             L"("
+                                             L"ScanId integer Primary Key AUTOINCREMENT,"
+                                             L"StartAt Datetime not null,"
+                                             L"EndAt Datetime not null,"
+                                             L"ScanTypeIDRef tinyint not null,"
+                                             L"ScanLabel varchar,"
+                                             L"Foreign key (ScanTypeIDRef) References ScanTypes (ScanTypeId)"
+                                             L");");
+                                     c.Exec (L"Alter table Scans add column RawScanData BLOB;");
+                                 }
+                             }},
+                            {L"ScanSet"sv,
+                             [&created] (SQL::Connection::Ptr c, optional<Configuration::Version> v, [[maybe_unused]] Configuration::Version targetDBVersion) -> void {
+                                 // for now no upgrade support
+                                 if (not v) {
+                                     created = true;
+                                     c.Exec (L"Create table ScanSet"
+                                             L"("
+                                             L"ScanSetID bigint,"
+                                             L"ScanIDRef integer,"
+                                             L"Foreign key (ScanIdRef) References Scans(ScanId)"
+                                             L");");
+                                     c.Exec (L"Alter table Scans add column DependsOnScanSetIdRef bigint references ScanSet(ScanSetID);");
+                                 }
+                             }},
+                            {L"AuxData"sv,
+                             [&created] (SQL::Connection::Ptr c, optional<Configuration::Version> v, [[maybe_unused]] Configuration::Version targetDBVersion) -> void {
+                                 // for now no upgrade support
+                                 if (not v) {
+                                     created = true;
+                                     c.Exec (L"Create table AuxData"
+                                             L"("
+                                             L"ScanSetIDRef bigint Primary Key,"
+                                             L"Results varchar,"
+                                             L"Foreign key (ScanSetIDRef) References ScanSet(ScanSetID)"
+                                             L");");
+                                 }
+                             }},
+                        });
                     if (created) {
                         DbgTrace (L"Initialized new experiment DB: %s", Characters::ToString (db).c_str ());
                     }
@@ -267,13 +272,14 @@ namespace {
                 SpectrumType_      spectrum;
                 const unsigned int kNRecordsAddedPerTestCall = 100;
                 for (int i = 0; i < kNRecordsAddedPerTestCall; ++i) {
-                    DateTime    scanStartTime = kScanStartTime4Reference_ - 100ms;
-                    DateTime    scanEndTime   = kScanStartTime4Reference_;
-                    ScanIDType_ sid           = db.ScanPersistenceAdd (scanStartTime, scanEndTime, String{L"Hi Mom"}, ScanKindType_::Reference, spectrum);
+                    DateTime scanStartTime = kScanStartTime4Reference_ - 100ms;
+                    DateTime scanEndTime   = kScanStartTime4Reference_;
+                    ScanIDType_ sid = db.ScanPersistenceAdd (scanStartTime, scanEndTime, String{L"Hi Mom"}, ScanKindType_::Reference, spectrum);
                     Verify (sid == *db.GetLastScan (ScanKindType_::Reference));
                     Verify (sid == nTimesRanBefore * kNRecordsAddedPerTestCall + i + 1);
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                    DbgTrace ("ScanPersistenceAdd returned id=%d, and laserScan reported=%d", (int)sid, (int)db.GetLastScan (ScanKindType_::Reference).Value (-1));
+                    DbgTrace ("ScanPersistenceAdd returned id=%d, and laserScan reported=%d", (int)sid,
+                              (int)db.GetLastScan (ScanKindType_::Reference).Value (-1));
 #endif
                 }
             };
@@ -307,38 +313,36 @@ namespace {
                 auto conn            = Connection::New (o);
                 VerifyTestResult (Math::NearlyEquals (conn.pBusyTimeout ().As<double> (), 1.0));
                 constexpr Configuration::Version kCurrentVersion_ = Configuration::Version{1, 0, Configuration::VersionStage::Alpha, 0};
-                SQL::ORM::ProvisionForVersion (conn,
-                                               kCurrentVersion_,
-                                               initializer_list<SQL::ORM::TableProvisioner>{
-                                                   {L"EMPLOYEES"sv,
-                                                    [] (SQL::Connection::Ptr c, optional<Configuration::Version> v, [[maybe_unused]] Configuration::Version targetDBVersion) -> void {
-                                                        // for now no upgrade support
-                                                        if (not v) {
-                                                            c.Exec (
-                                                                L"CREATE TABLE EMPLOYEES("
-                                                                L"ID INTEGER PRIMARY KEY AUTOINCREMENT,"
-                                                                L"NAME           TEXT    NOT NULL,"
-                                                                L"AGE            INT     NOT NULL,"
-                                                                L"ADDRESS        CHAR(50),"
-                                                                L"SALARY         REAL,"
-                                                                L"STILL_EMPLOYED INT"
-                                                                L");");
-                                                        }
-                                                    }},
-                                                   {L"PAYCHECKS"sv,
-                                                    [] (SQL::Connection::Ptr c, optional<Configuration::Version> v, [[maybe_unused]] Configuration::Version targetDBVersion) -> void {
-                                                        // for now no upgrade support
-                                                        if (not v) {
-                                                            c.Exec (
-                                                                L"CREATE TABLE PAYCHECKS("
-                                                                L"ID INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
-                                                                L"EMPLOYEEREF INT NOT NULL,"
-                                                                L"AMOUNT REAL,"
-                                                                L"DATE TEXT"
-                                                                L");");
-                                                        }
-                                                    }},
-                                               });
+                SQL::ORM::ProvisionForVersion (
+                    conn, kCurrentVersion_,
+                    initializer_list<SQL::ORM::TableProvisioner>{
+                        {L"EMPLOYEES"sv,
+                         [] (SQL::Connection::Ptr c, optional<Configuration::Version> v, [[maybe_unused]] Configuration::Version targetDBVersion) -> void {
+                             // for now no upgrade support
+                             if (not v) {
+                                 c.Exec (L"CREATE TABLE EMPLOYEES("
+                                         L"ID INTEGER PRIMARY KEY AUTOINCREMENT,"
+                                         L"NAME           TEXT    NOT NULL,"
+                                         L"AGE            INT     NOT NULL,"
+                                         L"ADDRESS        CHAR(50),"
+                                         L"SALARY         REAL,"
+                                         L"STILL_EMPLOYED INT"
+                                         L");");
+                             }
+                         }},
+                        {L"PAYCHECKS"sv,
+                         [] (SQL::Connection::Ptr c, optional<Configuration::Version> v, [[maybe_unused]] Configuration::Version targetDBVersion) -> void {
+                             // for now no upgrade support
+                             if (not v) {
+                                 c.Exec (L"CREATE TABLE PAYCHECKS("
+                                         L"ID INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
+                                         L"EMPLOYEEREF INT NOT NULL,"
+                                         L"AMOUNT REAL,"
+                                         L"DATE TEXT"
+                                         L");");
+                             }
+                         }},
+                    });
                 return conn;
             }
 
@@ -346,7 +350,8 @@ namespace {
             {
                 TraceContextBumper ctx{"RegressionTest2_sqlite_EmployeesDB_with_threads_::PeriodicallyUpdateEmployeesTable_"};
 
-                Statement addEmployeeStatement{conn, L"INSERT INTO EMPLOYEES (NAME,AGE,ADDRESS,SALARY,STILL_EMPLOYED) values (:NAME, :AGE, :ADDRESS, :SALARY, :STILL_EMPLOYED);"};
+                Statement addEmployeeStatement{conn, L"INSERT INTO EMPLOYEES (NAME,AGE,ADDRESS,SALARY,STILL_EMPLOYED) values (:NAME, :AGE, "
+                                                     L":ADDRESS, :SALARY, :STILL_EMPLOYED);"};
 
                 // Add Initial Employees
                 addEmployeeStatement.Execute (initializer_list<Statement::ParameterDescription>{
@@ -438,15 +443,15 @@ namespace {
                                     uniform_int_distribution<int>     empDistr{0, static_cast<int> (activeEmps.size () - 1)};
                                     tuple<VariantValue, VariantValue> killMe = activeEmps[empDistr (generator)];
                                     DbgTrace (L"Firing employee: %d, %s", get<0> (killMe).As<int> (), get<1> (killMe).As<String> ().c_str ());
-                                    fireEmployee.Execute (initializer_list<Statement::ParameterDescription>{
-                                        {L":ID", get<0> (killMe).As<int> ()}});
+                                    fireEmployee.Execute (initializer_list<Statement::ParameterDescription>{{L":ID", get<0> (killMe).As<int> ()}});
                                 }
                             } break;
                         }
                     }
                     catch (...) {
                         // no need to check for ThreadAbort excepton, since Sleep is a cancelation point
-                        DbgTrace (L"Exception processing SQL - this should generally not happen: %s", Characters::ToString (current_exception ()).c_str ());
+                        DbgTrace (L"Exception processing SQL - this should generally not happen: %s",
+                                  Characters::ToString (current_exception ()).c_str ());
                     }
 
                     Sleep (1s); // **cancelation point**
@@ -456,7 +461,8 @@ namespace {
             void PeriodicallyWriteChecksForEmployeesTable_ (Connection::Ptr conn)
             {
                 TraceContextBumper ctx{"RegressionTest2_sqlite_EmployeesDB_with_threads_::PeriodicallyWriteChecksForEmployeesTable_"};
-                Statement          addPaycheckStatement{conn, L"INSERT INTO PAYCHECKS (EMPLOYEEREF,AMOUNT,DATE) values (:EMPLOYEEREF, :AMOUNT, :DATE);"};
+                Statement          addPaycheckStatement{conn,
+                                               L"INSERT INTO PAYCHECKS (EMPLOYEEREF,AMOUNT,DATE) values (:EMPLOYEEREF, :AMOUNT, :DATE);"};
                 Statement          getAllActiveEmployees{conn, L"Select ID,NAME,SALARY from EMPLOYEES where STILL_EMPLOYED=1;"};
 
                 while (true) {
@@ -475,7 +481,8 @@ namespace {
                     }
                     catch (...) {
                         // no need to check for ThreadAbort excepton, since Sleep is a cancelation point
-                        DbgTrace (L"Exception processing SQL - this should generally not happen: %s", Characters::ToString (current_exception ()).c_str ());
+                        DbgTrace (L"Exception processing SQL - this should generally not happen: %s",
+                                  Characters::ToString (current_exception ()).c_str ());
                     }
                     Sleep (2s); // **cancelation point**
                 }
@@ -490,8 +497,12 @@ namespace {
                  */
                 Connection::Ptr    conn1 = SetupDB_ (options); // serialize construction of connections so no race creating/setting up DB
                 Connection::Ptr    conn2 = SetupDB_ (options);
-                Thread::CleanupPtr updateEmpDBThread{Thread::CleanupPtr::eAbortBeforeWaiting, Thread::New ([=] () { PeriodicallyUpdateEmployeesTable_ (conn1); }, Thread::eAutoStart, L"Update Employee Table")};
-                Thread::CleanupPtr writeChecks{Thread::CleanupPtr::eAbortBeforeWaiting, Thread::New ([=] () { PeriodicallyWriteChecksForEmployeesTable_ (conn2); }, Thread::eAutoStart, L"Write Checks")};
+                Thread::CleanupPtr updateEmpDBThread{
+                    Thread::CleanupPtr::eAbortBeforeWaiting,
+                    Thread::New ([=] () { PeriodicallyUpdateEmployeesTable_ (conn1); }, Thread::eAutoStart, L"Update Employee Table")};
+                Thread::CleanupPtr writeChecks{
+                    Thread::CleanupPtr::eAbortBeforeWaiting,
+                    Thread::New ([=] () { PeriodicallyWriteChecksForEmployeesTable_ (conn2); }, Thread::eAutoStart, L"Write Checks")};
                 Execution::WaitableEvent{}.WaitQuietly (15s);
             }
 
@@ -637,8 +648,7 @@ namespace {
                 auto conn            = Connection::New (o);
                 VerifyTestResult (Math::NearlyEquals (conn.pBusyTimeout ().As<double> (), 1.0));
                 constexpr Configuration::Version kCurrentVersion_ = Configuration::Version{1, 0, Configuration::VersionStage::Alpha, 0};
-                SQL::ORM::ProvisionForVersion (conn,
-                                               kCurrentVersion_,
+                SQL::ORM::ProvisionForVersion (conn, kCurrentVersion_,
                                                Traversal::Iterable<SQL::ORM::Schema::Table>{kEmployeesTableSchema_, kPaychecksTableSchema_});
                 return conn;
             }
@@ -682,7 +692,8 @@ namespace {
                             case 1: {
                                 String name = kNames_[namesDistr (generator)];
                                 DbgTrace (L"Adding employee %s", name.c_str ());
-                                employeeTableConnection->AddNew (Employee{nullopt, name, ageDistr (generator), kAddresses[addressesDistr (generator)], salaryDistr (generator), true});
+                                employeeTableConnection->AddNew (Employee{nullopt, name, ageDistr (generator),
+                                                                          kAddresses[addressesDistr (generator)], salaryDistr (generator), true});
                             } break;
                             case 2: {
                                 // Look somebody up, and fire them
@@ -700,7 +711,8 @@ namespace {
                     }
                     catch (...) {
                         // no need to check for ThreadAbort excepton, since Sleep is a cancelation point
-                        DbgTrace (L"Exception processing SQL - this should generally not happen: %s", Characters::ToString (current_exception ()).c_str ());
+                        DbgTrace (L"Exception processing SQL - this should generally not happen: %s",
+                                  Characters::ToString (current_exception ()).c_str ());
                     }
 
                     Sleep (1s); // **cancelation point**
@@ -712,9 +724,10 @@ namespace {
              */
             void PeriodicallyWriteChecksForEmployeesTable_ (Connection::Ptr conn)
             {
-                TraceContextBumper ctx{"RegressionTest3_sqlite_EmployeesDB_with_ORM_and_threads_::PeriodicallyWriteChecksForEmployeesTable_"};
-                auto               employeeTableConnection = make_unique<SQL::ORM::TableConnection<Employee>> (conn, kEmployeesTableSchema_, kDBObjectMapper_);
-                auto               paycheckTableConnection = make_unique<SQL::ORM::TableConnection<Paycheck>> (conn, kPaychecksTableSchema_, kDBObjectMapper_);
+                TraceContextBumper ctx{
+                    "RegressionTest3_sqlite_EmployeesDB_with_ORM_and_threads_::PeriodicallyWriteChecksForEmployeesTable_"};
+                auto employeeTableConnection = make_unique<SQL::ORM::TableConnection<Employee>> (conn, kEmployeesTableSchema_, kDBObjectMapper_);
+                auto paycheckTableConnection = make_unique<SQL::ORM::TableConnection<Paycheck>> (conn, kPaychecksTableSchema_, kDBObjectMapper_);
                 while (true) {
                     try {
                         for (auto employee : employeeTableConnection->GetAll ()) {
@@ -725,7 +738,8 @@ namespace {
                     }
                     catch (...) {
                         // no need to check for ThreadAbort excepton, since Sleep is a cancelation point
-                        DbgTrace (L"Exception processing SQL - this should generally not happen: %s", Characters::ToString (current_exception ()).c_str ());
+                        DbgTrace (L"Exception processing SQL - this should generally not happen: %s",
+                                  Characters::ToString (current_exception ()).c_str ());
                     }
                     Sleep (2s); // **cancelation point**
                 }
@@ -740,8 +754,12 @@ namespace {
                  */
                 Connection::Ptr    conn1 = SetupDB_ (options); // serialize construction of connections so no race creating/setting up DB
                 Connection::Ptr    conn2 = SetupDB_ (options);
-                Thread::CleanupPtr updateEmpDBThread{Thread::CleanupPtr::eAbortBeforeWaiting, Thread::New ([=] () { PeriodicallyUpdateEmployeesTable_ (conn1); }, Thread::eAutoStart, L"Update Employee Table")};
-                Thread::CleanupPtr writeChecks{Thread::CleanupPtr::eAbortBeforeWaiting, Thread::New ([=] () { PeriodicallyWriteChecksForEmployeesTable_ (conn2); }, Thread::eAutoStart, L"Write Checks")};
+                Thread::CleanupPtr updateEmpDBThread{
+                    Thread::CleanupPtr::eAbortBeforeWaiting,
+                    Thread::New ([=] () { PeriodicallyUpdateEmployeesTable_ (conn1); }, Thread::eAutoStart, L"Update Employee Table")};
+                Thread::CleanupPtr writeChecks{
+                    Thread::CleanupPtr::eAbortBeforeWaiting,
+                    Thread::New ([=] () { PeriodicallyWriteChecksForEmployeesTable_ (conn2); }, Thread::eAutoStart, L"Write Checks")};
                 Execution::WaitableEvent{}.WaitQuietly (15s);
             }
         }

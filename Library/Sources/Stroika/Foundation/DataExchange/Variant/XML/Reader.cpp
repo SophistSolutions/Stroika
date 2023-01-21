@@ -29,15 +29,9 @@ public:
     }
 
 public:
-    virtual _SharedPtrIRep Clone () const override
-    {
-        return make_shared<Rep_> (fSerializationConfiguration_);
-    }
-    virtual String GetDefaultFileSuffix () const override
-    {
-        return ".xml"sv;
-    }
-    virtual VariantValue Read (const Streams::InputStream<byte>::Ptr& in) override
+    virtual _SharedPtrIRep Clone () const override { return make_shared<Rep_> (fSerializationConfiguration_); }
+    virtual String         GetDefaultFileSuffix () const override { return ".xml"sv; }
+    virtual VariantValue   Read (const Streams::InputStream<byte>::Ptr& in) override
     {
         // not sure about this - we may want to led xerces read raw binary bytes!!
         return Read (Streams::TextReader::New (in));
@@ -56,14 +50,8 @@ public:
         return VariantValue{};
 #endif
     }
-    nonvirtual SerializationConfiguration GetConfiguration () const
-    {
-        return fSerializationConfiguration_;
-    }
-    nonvirtual void SetConfiguration (const SerializationConfiguration& config)
-    {
-        fSerializationConfiguration_ = config;
-    }
+    nonvirtual SerializationConfiguration GetConfiguration () const { return fSerializationConfiguration_; }
+    nonvirtual void SetConfiguration (const SerializationConfiguration& config) { fSerializationConfiguration_ = config; }
 
 private:
     SerializationConfiguration fSerializationConfiguration_;
@@ -91,12 +79,6 @@ const Variant::XML::Reader::Rep_& Variant::XML::Reader::GetRep_ () const
     return reinterpret_cast<const Rep_&> (inherited::_GetRep ());
 }
 
-SerializationConfiguration Variant::XML::Reader::GetConfiguration () const
-{
-    return GetRep_ ().GetConfiguration ();
-}
+SerializationConfiguration Variant::XML::Reader::GetConfiguration () const { return GetRep_ ().GetConfiguration (); }
 
-void Variant::XML::Reader::SetConfiguration (const SerializationConfiguration& config)
-{
-    GetRep_ ().SetConfiguration (config);
-}
+void Variant::XML::Reader::SetConfiguration (const SerializationConfiguration& config) { GetRep_ ().SetConfiguration (config); }

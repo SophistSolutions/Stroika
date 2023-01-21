@@ -102,9 +102,7 @@ void Stroika::Samples::SQL::ComputerNetworksModel (const std::function<Connectio
     Connection::Ptr conn = connectionFactory ();
 
     constexpr Configuration::Version kCurrentVersion_ = Configuration::Version{1, 0, Configuration::VersionStage::Alpha, 0};
-    ORM::ProvisionForVersion (conn,
-                              kCurrentVersion_,
-                              Traversal::Iterable<ORM::Schema::Table>{kDeviceTableSchema_});
+    ORM::ProvisionForVersion (conn, kCurrentVersion_, Traversal::Iterable<ORM::Schema::Table>{kDeviceTableSchema_});
 
     using Model::Device;
     auto addDevice = [&] (const Device& d) {
@@ -113,14 +111,15 @@ void Stroika::Samples::SQL::ComputerNetworksModel (const std::function<Connectio
     };
     auto getAllDevices = [&] () -> Sequence<Device> {
         Statement getAllDevicesStatement = conn.mkStatement (StandardSQLStatements{kDeviceTableSchema_}.GetAllElements ());
-        return getAllDevicesStatement.GetAllRows ().Map<Device> ([] (const Statement::Row& r) {
-                                                       return Device::kMapper.ToObject<Device> (VariantValue{kDeviceTableSchema_.MapFromDB (r)});
-                                                   })
+        return getAllDevicesStatement.GetAllRows ()
+            .Map<Device> (
+                [] (const Statement::Row& r) { return Device::kMapper.ToObject<Device> (VariantValue{kDeviceTableSchema_.MapFromDB (r)}); })
             .As<Sequence<Device>> ();
     };
     auto removeDevice = [&] (const GUID& id) {
         Statement deleteDeviceStatement = conn.mkStatement (StandardSQLStatements{kDeviceTableSchema_}.DeleteByID ());
-        deleteDeviceStatement.Execute (initializer_list<Common::KeyValuePair<String, VariantValue>>{{kDeviceTableSchema_.GetIDField ()->fName, VariantValue{static_cast<Memory::BLOB> (id)}}});
+        deleteDeviceStatement.Execute (initializer_list<Common::KeyValuePair<String, VariantValue>>{
+            {kDeviceTableSchema_.GetIDField ()->fName, VariantValue{static_cast<Memory::BLOB> (id)}}});
     };
 
     const Device kDevice1_ = Device{GUID::GenerateNew (), Set<int>{33}, "myLaptop"sv, Set<String>{"ff:33:aa:da:ff:33"}};

@@ -99,10 +99,7 @@ void Partition::FinalConstruct ()
     Assert (fPartitionMarkerLast == pm);
 }
 
-TextStore* Partition::PeekAtTextStore () const
-{
-    return &fTextStore;
-}
+TextStore* Partition::PeekAtTextStore () const { return &fTextStore; }
 
 /*
         @METHOD:        Partition::GetPartitionMarkerContainingPosition
@@ -359,10 +356,7 @@ PartitioningTextImager::PartitioningTextImager ()
 {
 }
 
-PartitioningTextImager::~PartitioningTextImager ()
-{
-    Require (fPartition.get () == nullptr);
-}
+PartitioningTextImager::~PartitioningTextImager () { Require (fPartition.get () == nullptr); }
 
 /*
 @METHOD:        PartitioningTextImager::SetPartition
@@ -485,7 +479,7 @@ DistanceType PartitioningTextImager::CalcSegmentSize_REFERENCE (size_t from, siz
         size_t                            rowLen = rowEnd - startOfRow;
         Memory::StackBuffer<DistanceType> distanceVector{Memory::eUninitialized, rowLen};
         CalcSegmentSize_FillIn (startOfRow, rowEnd, distanceVector.data ());
-        Assert (to > startOfRow);                                                                 // but from could be == startOfRow, so must be careful of that...
+        Assert (to > startOfRow); // but from could be == startOfRow, so must be careful of that...
         Assert (to - startOfRow - 1 < (GetEndOfRowContainingPosition (startOfRow) - startOfRow)); // now buffer overflows!
         DistanceType result = distanceVector[to - startOfRow - 1];
         if (from != startOfRow) {
@@ -515,7 +509,7 @@ DistanceType PartitioningTextImager::CalcSegmentSize_CACHING (size_t from, size_
     size_t startOfRow = GetStartOfRowContainingPosition (from);
     Require (GetEndOfRowContainingPosition (startOfRow) >= to); //  WE REQUIRE from/to be contained within a single row!!!
 
-    MeasureTextCache::CacheElt ce                = fMeasureTextCache->LookupValue (pm, startOfRow, [this] (PartitionMarker* pm, size_t startOfRow) {
+    MeasureTextCache::CacheElt ce = fMeasureTextCache->LookupValue (pm, startOfRow, [this] (PartitionMarker* pm, size_t startOfRow) {
         MeasureTextCache::CacheElt newCE{MeasureTextCache::CacheElt::COMPARE_ITEM (pm, startOfRow)};
         size_t                     rowEnd = GetEndOfRowContainingPosition (startOfRow);
         size_t                     rowLen = rowEnd - startOfRow;
@@ -525,7 +519,7 @@ DistanceType PartitioningTextImager::CalcSegmentSize_CACHING (size_t from, size_
     });
     const DistanceType*        measurementsCache = ce.fMeasurementsCache.data ();
 
-    Assert (to > startOfRow);                                                                 // but from could be == startOfRow, so must be careful of that...
+    Assert (to > startOfRow); // but from could be == startOfRow, so must be careful of that...
     Assert (to - startOfRow - 1 < (GetEndOfRowContainingPosition (startOfRow) - startOfRow)); // now buffer overflows!
     DistanceType result = measurementsCache[to - startOfRow - 1];
     if (from != startOfRow) {
@@ -595,8 +589,7 @@ void PartitioningTextImager::GetRowRelativeCharLoc (size_t charLoc, DistanceType
         const ScriptRunElt& se        = *i;
         size_t              runLength = se.fRealEnd - se.fRealStart;
         // See if we are STRICTLY inside the run, or maybe at the last character of the last run
-        if ((se.fRealStart <= rowRelCharLoc) and
-            ((rowRelCharLoc < se.fRealEnd) or ((rowRelCharLoc == se.fRealEnd) and (i + 1 == runs.end ())))) {
+        if ((se.fRealStart <= rowRelCharLoc) and ((rowRelCharLoc < se.fRealEnd) or ((rowRelCharLoc == se.fRealEnd) and (i + 1 == runs.end ())))) {
             size_t absoluteSegStart = rowStart + se.fRealStart;
             size_t subSegLen        = rowRelCharLoc - se.fRealStart;
             Assert (subSegLen <= runLength);
@@ -752,8 +745,9 @@ size_t PartitioningTextImager::ResetTabStops (size_t from, const Led_tChar* text
     for (size_t i = startSoFar; i < startSoFar + nTChars; i++) {
         if (text[i] == '\t') {
             DistanceType widthSoFar = (i == 0 ? 0 : charLocations[i - 1]);
-            tabAdjust               = widthAtStart + GetTabStopList (from).ComputeTabStopAfterPosition (Tablet_Acquirer (this), widthSoFar - widthAtStart) - charLocations[i];
-            lastTabIndex            = i;
+            tabAdjust = widthAtStart + GetTabStopList (from).ComputeTabStopAfterPosition (Tablet_Acquirer (this), widthSoFar - widthAtStart) -
+                        charLocations[i];
+            lastTabIndex = i;
         }
         charLocations[i] += tabAdjust;
     }
@@ -817,10 +811,7 @@ void PartitioningTextImager::MeasureTextCache::DidCoalece (void* infoRecord) con
     fCache.clear ([pm] (const CacheElt::COMPARE_ITEM& c) { return pm == c.fPM; });
 }
 
-TextStore* PartitioningTextImager::MeasureTextCache::PeekAtTextStore () const
-{
-    return fPartition->PeekAtTextStore ();
-}
+TextStore* PartitioningTextImager::MeasureTextCache::PeekAtTextStore () const { return fPartition->PeekAtTextStore (); }
 
 void PartitioningTextImager::MeasureTextCache::EarlyDidUpdateText (const UpdateInfo& updateInfo) noexcept
 {
@@ -846,7 +837,8 @@ void PartitioningTextImager::MeasureTextCache::EarlyDidUpdateText (const UpdateI
      * iterate over all markers in the range updated, and for each one - see if they intersect with
      * any of the cache elements.
      */
-    for (PartitionMarker* pm = fPartition->GetPartitionMarkerContainingPosition (FindPreviousCharacter (updateInfo.fReplaceFrom)); pm != nullptr; pm = pm->GetNext ()) {
+    for (PartitionMarker* pm = fPartition->GetPartitionMarkerContainingPosition (FindPreviousCharacter (updateInfo.fReplaceFrom));
+         pm != nullptr; pm   = pm->GetNext ()) {
         if (pm->GetStart () > updateInfo.GetResultingRHS ()) {
             break;
         }

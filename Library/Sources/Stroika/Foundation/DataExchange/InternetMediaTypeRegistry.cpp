@@ -56,27 +56,13 @@ struct InternetMediaTypeRegistry::FrontendRep_ : InternetMediaTypeRegistry::IFro
     // Baked in predefined initial user-overrides.
     // These are adjustable by API, serve the purpose of providing a default on systems with no MIME content database -- LGP 2020-07-27
     static const inline Mapping<InternetMediaType, OverrideRecord> kDefaults_{initializer_list<KeyValuePair<InternetMediaType, OverrideRecord>>{
-        {InternetMediaTypes::kText_PLAIN, OverrideRecord{nullopt,
-                                                         Containers::Set<String>{".txt"sv},
-                                                         ".txt"sv}},
-        {InternetMediaTypes::kCSS, OverrideRecord{nullopt,
-                                                  Containers::Set<String>{".css"sv},
-                                                  ".css"sv}},
-        {InternetMediaTypes::kHTML, OverrideRecord{nullopt,
-                                                   Containers::Set<String>{".htm"sv, ".html"sv},
-                                                   ".htm"sv}},
-        {InternetMediaTypes::kJavascript, OverrideRecord{nullopt,
-                                                         Containers::Set<String>{".js"sv},
-                                                         ".js"sv}},
-        {InternetMediaTypes::kJSON, OverrideRecord{nullopt,
-                                                   Containers::Set<String>{".json"sv},
-                                                   ".json"sv}},
-        {InternetMediaTypes::kPNG, OverrideRecord{nullopt,
-                                                  Containers::Set<String>{".png"sv},
-                                                  ".png"sv}},
-        {InternetMediaTypes::kXML, OverrideRecord{nullopt,
-                                                  Containers::Set<String>{".xml"sv},
-                                                  ".xml"sv}},
+        {InternetMediaTypes::kText_PLAIN, OverrideRecord{nullopt, Containers::Set<String>{".txt"sv}, ".txt"sv}},
+        {InternetMediaTypes::kCSS, OverrideRecord{nullopt, Containers::Set<String>{".css"sv}, ".css"sv}},
+        {InternetMediaTypes::kHTML, OverrideRecord{nullopt, Containers::Set<String>{".htm"sv, ".html"sv}, ".htm"sv}},
+        {InternetMediaTypes::kJavascript, OverrideRecord{nullopt, Containers::Set<String>{".js"sv}, ".js"sv}},
+        {InternetMediaTypes::kJSON, OverrideRecord{nullopt, Containers::Set<String>{".json"sv}, ".json"sv}},
+        {InternetMediaTypes::kPNG, OverrideRecord{nullopt, Containers::Set<String>{".png"sv}, ".png"sv}},
+        {InternetMediaTypes::kXML, OverrideRecord{nullopt, Containers::Set<String>{".xml"sv}, ".xml"sv}},
     }};
 
     // OVERRIDE values (take precedence over backend) and any other data we need to keep locked (syncrhonized)
@@ -144,7 +130,11 @@ struct InternetMediaTypeRegistry::FrontendRep_ : InternetMediaTypeRegistry::IFro
             result += lockedData->fOverrides.Keys ();
         }
         else {
-            lockedData->fOverrides.Keys ().Apply ([&] (const InternetMediaType& i) { if (i.GetType<AtomType> () == majorType) {result += i; } });
+            lockedData->fOverrides.Keys ().Apply ([&] (const InternetMediaType& i) {
+                if (i.GetType<AtomType> () == majorType) {
+                    result += i;
+                }
+            });
         }
         return result;
     }
@@ -223,15 +213,9 @@ namespace {
     }
 }
 
-InternetMediaTypeRegistry InternetMediaTypeRegistry::Get ()
-{
-    return sThe_ ().load ();
-}
+InternetMediaTypeRegistry InternetMediaTypeRegistry::Get () { return sThe_ ().load (); }
 
-void InternetMediaTypeRegistry::Set (const InternetMediaTypeRegistry& r)
-{
-    sThe_ ().store (r);
-}
+void InternetMediaTypeRegistry::Set (const InternetMediaTypeRegistry& r) { sThe_ ().store (r); }
 
 auto InternetMediaTypeRegistry::GetOverrides () const -> Mapping<InternetMediaType, OverrideRecord>
 {
@@ -297,14 +281,16 @@ auto InternetMediaTypeRegistry::EtcMimeTypesDefaultBackend () -> shared_ptr<IBac
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
             Debug::TraceContextBumper ctx{L"InternetMediaTypeRegistry::{}::EtcMimeTypesRep_::CTOR"};
 #endif
-            for (Sequence<String> line : DataExchange::Variant::CharacterDelimitedLines::Reader{{' ', '\t'}}.ReadMatrix (IO::FileSystem::FileInputStream::New ("/etc/mime.types"sv))) {
+            for (Sequence<String> line : DataExchange::Variant::CharacterDelimitedLines::Reader{{' ', '\t'}}.ReadMatrix (
+                     IO::FileSystem::FileInputStream::New ("/etc/mime.types"sv))) {
                 if (line.length () >= 2 and not line[0].StartsWith ("#"_k)) {
                     InternetMediaType ct;
                     try {
                         ct = InternetMediaType{line[0]};
                     }
                     catch (...) {
-                        DbgTrace ("Ignoring exception looking parsing potential media type entry (%s): %s", Characters::ToString (line[0]).c_str (), Characters::ToString (current_exception ()).c_str ());
+                        DbgTrace ("Ignoring exception looking parsing potential media type entry (%s): %s",
+                                  Characters::ToString (line[0]).c_str (), Characters::ToString (current_exception ()).c_str ());
                     }
                     // a line starts with a content type, but then contains any number of file suffixes (without the leading .)
                     Containers::Set<FileSuffixType> fileSuffixes;
@@ -321,7 +307,8 @@ auto InternetMediaTypeRegistry::EtcMimeTypesDefaultBackend () -> shared_ptr<IBac
             // Because on raspberrypi/debian, this comes out with a crazy default for text\plain -- LGP 2020-07-27
             fMediaType2PreferredSuffixMap_.Add (InternetMediaTypes::kText_PLAIN, ".txt"sv);
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-            DbgTrace (L"succeeded with %d fSuffix2MediaTypeMap entries, and %d fMediaType2PreferredSuffixMap entries", fSuffix2MediaTypeMap_.size (), fMediaType2PreferredSuffixMap_.size ());
+            DbgTrace (L"succeeded with %d fSuffix2MediaTypeMap entries, and %d fMediaType2PreferredSuffixMap entries",
+                      fSuffix2MediaTypeMap_.size (), fMediaType2PreferredSuffixMap_.size ());
 #endif
         }
         virtual Containers::Set<InternetMediaType> GetMediaTypes (optional<InternetMediaType::AtomType> majorType) const override
@@ -396,9 +383,11 @@ auto InternetMediaTypeRegistry::UsrSharedDefaultBackend () -> shared_ptr<IBacken
             // @todo consider using globs2 file support, but little point since they seem to be written in priority order
             auto loadGlobsFromFile = [&] (const filesystem::path& fn) {
                 if (filesystem::exists (fn)) {
-                    Debug::TraceContextBumper ctx1{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"UsrShareMIMERep_::CTOR::loadGlobsFromFile", L"exists=true,fn=%s", Characters::ToString (fn).c_str ())};
+                    Debug::TraceContextBumper ctx1{Stroika_Foundation_Debug_OptionalizeTraceArgs (
+                        L"UsrShareMIMERep_::CTOR::loadGlobsFromFile", L"exists=true,fn=%s", Characters::ToString (fn).c_str ())};
                     try {
-                        for (Sequence<String> line : DataExchange::Variant::CharacterDelimitedLines::Reader{{':'}}.ReadMatrix (IO::FileSystem::FileInputStream::New (fn))) {
+                        for (Sequence<String> line :
+                             DataExchange::Variant::CharacterDelimitedLines::Reader{{':'}}.ReadMatrix (IO::FileSystem::FileInputStream::New (fn))) {
                             if (line.length () == 2) {
                                 String glob = line[1];
                                 if (glob.StartsWith ('*')) {
@@ -410,7 +399,8 @@ auto InternetMediaTypeRegistry::UsrSharedDefaultBackend () -> shared_ptr<IBacken
                                     imt = InternetMediaType{line[0]};
                                 }
                                 catch (...) {
-                                    DbgTrace ("Ignoring exception looking parsing potential media type entry (%s): %s", Characters::ToString (line[0]).c_str (), Characters::ToString (current_exception ()).c_str ());
+                                    DbgTrace ("Ignoring exception looking parsing potential media type entry (%s): %s",
+                                              Characters::ToString (line[0]).c_str (), Characters::ToString (current_exception ()).c_str ());
                                 }
                                 fSuffix2MediaTypeMap_.Add (glob, imt, AddReplaceMode::eAddIfMissing);
                                 fMediaType2PreferredSuffixMap_.Add (imt, glob, AddReplaceMode::eAddIfMissing);
@@ -436,13 +426,15 @@ auto InternetMediaTypeRegistry::UsrSharedDefaultBackend () -> shared_ptr<IBacken
             }
 
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-            DbgTrace (L"succeeded with %d fSuffix2MediaTypeMap_ entries, and %d fMediaType2PreferredSuffixMap entries", fSuffix2MediaTypeMap_.size (), fMediaType2PreferredSuffixMap_.size ());
+            DbgTrace (L"succeeded with %d fSuffix2MediaTypeMap_ entries, and %d fMediaType2PreferredSuffixMap entries",
+                      fSuffix2MediaTypeMap_.size (), fMediaType2PreferredSuffixMap_.size ());
 #endif
         }
         virtual Containers::Set<InternetMediaType> GetMediaTypes (optional<InternetMediaType::AtomType> majorType) const override
         {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-            Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"UsrShareMIMERep_::GetMediaTypes", L"majorType=%s", Characters::ToString (fn).c_str ())};
+            Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"UsrShareMIMERep_::GetMediaTypes", L"majorType=%s",
+                                                                                         Characters::ToString (fn).c_str ())};
 #endif
             Containers::Set<InternetMediaType> results;
             for (const auto& imt : fMediaType2PreferredSuffixMap_.Keys ()) {
@@ -520,7 +512,8 @@ auto InternetMediaTypeRegistry::UsrSharedDefaultBackend () -> shared_ptr<IBacken
                 filesystem::path mimeRoot{"/usr/share/mime/"};
                 myHander_        handler;
                 // @todo validate ct.GetType () to make sure not a ../../ ATTACK
-                DataExchange::XML::SAXParse (IO::FileSystem::FileInputStream::New (mimeRoot / IO::FileSystem::ToPath (ct.GetType () + "/"_k + ct.GetSubType () + ".xml"_k)), handler);
+                DataExchange::XML::SAXParse (
+                    IO::FileSystem::FileInputStream::New (mimeRoot / IO::FileSystem::ToPath (ct.GetType () + "/"_k + ct.GetSubType () + ".xml"_k)), handler);
                 if (handler.fResult) {
                     fMediaType2PrettyNameCache.rwget ()->Add (ct, *handler.fResult);
                     return *handler.fResult;
@@ -553,10 +546,7 @@ auto InternetMediaTypeRegistry::BakedInDefaultBackend () -> shared_ptr<IBackendR
         {
             return Containers::Set<String>{};
         }
-        virtual optional<String> GetAssociatedPrettyName (const InternetMediaType& /*ct*/) const override
-        {
-            return nullopt;
-        }
+        virtual optional<String>            GetAssociatedPrettyName (const InternetMediaType& /*ct*/) const override { return nullopt; }
         virtual optional<InternetMediaType> GetAssociatedContentType ([[maybe_unused]] const FileSuffixType& fileSuffix) const override
         {
             Require (fileSuffix[0] == '.');
@@ -587,10 +577,14 @@ auto InternetMediaTypeRegistry::WindowsRegistryDefaultBackend () -> shared_ptr<I
     Debug::TraceContextBumper ctx{"InternetMediaTypeRegistry::WindowsRegistryDefaultBackend"};
     struct WinRep_ : IBackendRep {
         // underlying windows code fast so use small cache sizes
-        mutable Cache::SynchronizedLRUCache<FileSuffixType, optional<String>, equal_to<FileSuffixType>, hash<FileSuffixType>>                         fFileSuffix2PrettyNameCache_{25, 7};
-        mutable Cache::SynchronizedLRUCache<FileSuffixType, optional<InternetMediaType>, equal_to<FileSuffixType>, hash<FileSuffixType>>              fSuffix2MediaTypeCache_{25, 7};
-        mutable Cache::SynchronizedLRUCache<InternetMediaType, optional<FileSuffixType>, equal_to<InternetMediaType>, hash<InternetMediaType>>        fContentType2FileSuffixCache_{25, 7};
-        mutable Cache::SynchronizedLRUCache<InternetMediaType, Containers::Set<FileSuffixType>, equal_to<InternetMediaType>, hash<InternetMediaType>> fContentType2FileSuffixesCache_{25, 7};
+        mutable Cache::SynchronizedLRUCache<FileSuffixType, optional<String>, equal_to<FileSuffixType>, hash<FileSuffixType>> fFileSuffix2PrettyNameCache_{
+            25, 7};
+        mutable Cache::SynchronizedLRUCache<FileSuffixType, optional<InternetMediaType>, equal_to<FileSuffixType>, hash<FileSuffixType>> fSuffix2MediaTypeCache_{
+            25, 7};
+        mutable Cache::SynchronizedLRUCache<InternetMediaType, optional<FileSuffixType>, equal_to<InternetMediaType>, hash<InternetMediaType>> fContentType2FileSuffixCache_{
+            25, 7};
+        mutable Cache::SynchronizedLRUCache<InternetMediaType, Containers::Set<FileSuffixType>, equal_to<InternetMediaType>, hash<InternetMediaType>> fContentType2FileSuffixesCache_{
+            25, 7};
 
         virtual Containers::Set<InternetMediaType> GetMediaTypes (optional<InternetMediaType::AtomType> majorType) const override
         {
@@ -612,7 +606,8 @@ auto InternetMediaTypeRegistry::WindowsRegistryDefaultBackend () -> shared_ptr<I
                         }
                         catch (...) {
                             // ignore bad format - such as .sqlproj has Content-Type "string" which my read of the RFC says is illegal
-                            DbgTrace (L"Ignoring exception looking parsing registry key (%s): %s", Characters::ToString (o).c_str (), Characters::ToString (current_exception ()).c_str ());
+                            DbgTrace (L"Ignoring exception looking parsing registry key (%s): %s", Characters::ToString (o).c_str (),
+                                      Characters::ToString (current_exception ()).c_str ());
                             continue;
                         }
                         if (majorType) {
@@ -629,7 +624,8 @@ auto InternetMediaTypeRegistry::WindowsRegistryDefaultBackend () -> shared_ptr<I
         virtual optional<FileSuffixType> GetPreferredAssociatedFileSuffix (const InternetMediaType& ct) const override
         {
             return fContentType2FileSuffixCache_.LookupValue (ct, [] (const InternetMediaType& ct) -> optional<FileSuffixType> {
-                if (auto fs = Configuration::Platform::Windows::RegistryKey{HKEY_CLASSES_ROOT}.Lookup (Characters::Format (L"MIME\\Database\\Content Type\\%s\\Extension", ct.As<String> ().c_str ()))) {
+                if (auto fs = Configuration::Platform::Windows::RegistryKey{HKEY_CLASSES_ROOT}.Lookup (
+                        Characters::Format (L"MIME\\Database\\Content Type\\%s\\Extension", ct.As<String> ().c_str ()))) {
                     return fs.As<String> ();
                 }
                 return nullopt;
@@ -652,7 +648,8 @@ auto InternetMediaTypeRegistry::WindowsRegistryDefaultBackend () -> shared_ptr<I
                             }
                             catch (...) {
                                 // ignore bad format - such as .sqlproj has Content-Type "string" which my read of the RFC says is illegal
-                                DbgTrace (L"Ignoring exception looking parsing registry key (%s): %s", Characters::ToString (o).c_str (), Characters::ToString (current_exception ()).c_str ());
+                                DbgTrace (L"Ignoring exception looking parsing registry key (%s): %s", Characters::ToString (o).c_str (),
+                                          Characters::ToString (current_exception ()).c_str ());
                                 continue;
                             }
                             if (ct.GetType () == imt.GetType () and ct.GetSubType () == imt.GetSubType ()) {
@@ -669,7 +666,8 @@ auto InternetMediaTypeRegistry::WindowsRegistryDefaultBackend () -> shared_ptr<I
             if (optional<FileSuffixType> fileSuffix = GetPreferredAssociatedFileSuffix (ct)) {
                 return fFileSuffix2PrettyNameCache_.LookupValue (*fileSuffix, [] (const String& suffix) -> optional<String> {
                     if (auto fileTypeID = Configuration::Platform::Windows::RegistryKey{HKEY_CLASSES_ROOT}.Lookup (suffix + "\\"_k)) {
-                        if (auto prettyName = Configuration::Platform::Windows::RegistryKey{HKEY_CLASSES_ROOT}.Lookup (fileTypeID.As<String> () + "\\"_k)) {
+                        if (auto prettyName =
+                                Configuration::Platform::Windows::RegistryKey{HKEY_CLASSES_ROOT}.Lookup (fileTypeID.As<String> () + "\\"_k)) {
                             return prettyName.As<String> ();
                         }
                     }

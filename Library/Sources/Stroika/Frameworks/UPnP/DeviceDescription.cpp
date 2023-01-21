@@ -300,7 +300,8 @@ DeviceDescription UPnP::DeSerialize (const Memory::BLOB& b)
     DbgTrace (L"xml data: %s", Streams::TextReader::New (b).ReadAll ().c_str ());
 #endif
     {
-        ObjectReader::IConsumerDelegateToContext ctx{kTypesRegistry_, make_shared<ObjectReader::ReadDownToReader> (kTypesRegistry_.MakeContextReader (&deviceDescription), Name{"device"sv})};
+        ObjectReader::IConsumerDelegateToContext ctx{
+            kTypesRegistry_, make_shared<ObjectReader::ReadDownToReader> (kTypesRegistry_.MakeContextReader (&deviceDescription), Name{"device"sv})};
         XML::SAXParse (b, ctx);
     }
 #if USE_NOISY_TRACE_IN_THIS_MODULE_

@@ -84,7 +84,8 @@ struct IntervalTimer::Manager::DefaultRep ::Rep_ {
     // this is where a priorityq would be better
     DurationSecondsType GetNextWakeupTime_ ()
     {
-        DurationSecondsType funResult = fData_.cget ()->Map<DurationSecondsType> ([] (const RegisteredTask& i) { return i.fCallNextAt; }).MinValue (kInfinite);
+        DurationSecondsType funResult =
+            fData_.cget ()->Map<DurationSecondsType> ([] (const RegisteredTask& i) { return i.fCallNextAt; }).MinValue (kInfinite);
 #if qDebug
         auto dataLock = fData_.cget ();
         // note: usually (not dataLock->empty ()), but it can be empty temporarily as we are shutting down this process
@@ -144,10 +145,7 @@ struct IntervalTimer::Manager::DefaultRep ::Rep_ {
             if (lk.cref () == nullptr) {
                 using namespace Execution;
                 lk.store (make_shared<Thread::CleanupPtr> (Thread::CleanupPtr::eAbortBeforeWaiting,
-                                                           Thread::New ([this] () {
-                                                               RunnerLoop_ ();
-                                                           },
-                                                                        Thread::eAutoStart, "Default-Interval-Timer"sv)));
+                                                           Thread::New ([this] () { RunnerLoop_ (); }, Thread::eAutoStart, "Default-Interval-Timer"sv)));
             }
             else {
                 fDataChanged_.Set (); // if there was and still is a thread, it maybe sleeping too long, so wake it up
@@ -167,7 +165,8 @@ void IntervalTimer::Manager::DefaultRep::AddOneShot (const TimerCallback& interv
     fHiddenRep_->AddOneShot (intervalTimer, when);
 }
 
-void IntervalTimer::Manager::DefaultRep::AddRepeating (const TimerCallback& intervalTimer, const Time::Duration& repeatInterval, const optional<Time::Duration>& hysteresis)
+void IntervalTimer::Manager::DefaultRep::AddRepeating (const TimerCallback& intervalTimer, const Time::Duration& repeatInterval,
+                                                       const optional<Time::Duration>& hysteresis)
 {
     AssertNotNull (fHiddenRep_);
     fHiddenRep_->AddRepeating (intervalTimer, repeatInterval, hysteresis);
@@ -211,7 +210,8 @@ IntervalTimer::Manager::Activator::~Activator ()
  ***************************** IntervalTimer::Adder *****************************
  ********************************************************************************
  */
-IntervalTimer::Adder::Adder (IntervalTimer::Manager& manager, const Function<void (void)>& f, const Time::Duration& repeatInterval, RunImmediatelyFlag runImmediately, const optional<Time::Duration>& hysteresis)
+IntervalTimer::Adder::Adder (IntervalTimer::Manager& manager, const Function<void (void)>& f, const Time::Duration& repeatInterval,
+                             RunImmediatelyFlag runImmediately, const optional<Time::Duration>& hysteresis)
     : fRepeatInterval_{repeatInterval}
     , fHysteresis_{hysteresis}
     , fManager_{&manager}

@@ -34,7 +34,8 @@ namespace {
             }
             {
                 const char              kData[] = "1";
-                MemoryStream<byte>::Ptr s       = MemoryStream<byte>::New (reinterpret_cast<const byte*> (std::begin (kData)), reinterpret_cast<const byte*> (std::end (kData)));
+                MemoryStream<byte>::Ptr s       = MemoryStream<byte>::New (reinterpret_cast<const byte*> (std::begin (kData)),
+                                                                           reinterpret_cast<const byte*> (std::end (kData)));
                 VerifyTestResult (s != nullptr);
                 VerifyTestResult (s.IsSeekable ());
                 byte result[100] = {byte{0}};
@@ -44,10 +45,7 @@ namespace {
             }
         }
 
-        void Tests_ ()
-        {
-            TestBasicConstruction_ ();
-        }
+        void Tests_ () { TestBasicConstruction_ (); }
     }
 }
 
@@ -74,10 +72,7 @@ namespace {
             }
         }
 
-        void Tests_ ()
-        {
-            TestBasicConstruction_ ();
-        }
+        void Tests_ () { TestBasicConstruction_ (); }
     }
 }
 
@@ -115,14 +110,12 @@ namespace {
                 Verify (s.Read (std::begin (bArr), std::end (bArr)) == sizeof (kData_));
                 VerifyTestResult (s.GetReadOffset () == sizeof (kData_));
                 VerifyTestResult (s.GetWriteOffset () == sizeof (kData_));
-                VerifyTestResult (Memory::BLOB (std::begin (bArr), std::begin (bArr) + s.GetReadOffset ()) == Memory::BLOB (std::begin (kData_), std::end (kData_)));
+                VerifyTestResult (Memory::BLOB (std::begin (bArr), std::begin (bArr) + s.GetReadOffset ()) ==
+                                  Memory::BLOB (std::begin (kData_), std::end (kData_)));
             }
         }
 
-        void Tests_ ()
-        {
-            TestBasicConstruction_ ();
-        }
+        void Tests_ () { TestBasicConstruction_ (); }
     }
 }
 
@@ -140,10 +133,7 @@ namespace {
             }
         }
 
-        void Tests_ ()
-        {
-            T1_ ();
-        }
+        void Tests_ () { T1_ (); }
     }
 }
 
@@ -175,10 +165,7 @@ namespace {
             }
         }
 
-        void Tests_ ()
-        {
-            Private_::T1_ ();
-        }
+        void Tests_ () { Private_::T1_ (); }
     }
 }
 
@@ -199,10 +186,7 @@ namespace {
             }
         }
 
-        void Tests_ ()
-        {
-            T1_ ();
-        }
+        void Tests_ () { T1_ (); }
     }
 }
 
@@ -220,10 +204,7 @@ namespace {
             }
         }
 
-        void Tests_ ()
-        {
-            T1_ ();
-        }
+        void Tests_ () { T1_ (); }
     }
 }
 
@@ -237,28 +218,27 @@ namespace {
                 unsigned                              sum{};
                 static constexpr unsigned int         kStartWith{1};
                 static constexpr unsigned int         kUpToInclusive_{1000};
-                Thread::Ptr                           consumer = Thread::New ([&] () {
-                    while (auto o = pipe.Read ()) {
-                        sum += *o;
-                    }
-                },
-                                                    Thread::eAutoStart);
-                Thread::Ptr                           producer = Thread::New ([&] () {
-                    for (unsigned int i = kStartWith; i <= kUpToInclusive_; ++i) {
-                        pipe.Write (i);
-                    };
-                    pipe.CloseWrite (); // critical or consumer hangs on final read
-                },
-                                                    Thread::eAutoStart);
+                Thread::Ptr                           consumer = Thread::New (
+                    [&] () {
+                        while (auto o = pipe.Read ()) {
+                            sum += *o;
+                        }
+                    },
+                    Thread::eAutoStart);
+                Thread::Ptr producer = Thread::New (
+                    [&] () {
+                        for (unsigned int i = kStartWith; i <= kUpToInclusive_; ++i) {
+                            pipe.Write (i);
+                        };
+                        pipe.CloseWrite (); // critical or consumer hangs on final read
+                    },
+                    Thread::eAutoStart);
                 Thread::WaitForDone ({consumer, producer});
                 Assert (sum == (1 + kUpToInclusive_) * (kUpToInclusive_ - 1 + 1) / 2); // not a race
             }
         }
 
-        void Tests_ ()
-        {
-            Private_::T1_ ();
-        }
+        void Tests_ () { Private_::T1_ (); }
     }
 }
 
@@ -279,10 +259,7 @@ namespace {
             }
         }
 
-        void Tests_ ()
-        {
-            Private_::T1_ ();
-        }
+        void Tests_ () { Private_::T1_ (); }
     }
 }
 

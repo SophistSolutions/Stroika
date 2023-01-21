@@ -52,20 +52,15 @@ namespace {
             using T1        = CommonTests::KeyedCollectionTests::Test1_Basics_::T1;
             using T1_Traits = CommonTests::KeyedCollectionTests::Test1_Basics_::T1_Traits;
             CommonTests::KeyedCollectionTests::SimpleKeyedCollectionTest_TestBasics (
-                [] () { return KeyedCollection<T1, int>{[] (T1 e) { return e.key; }}; },
-                [] (auto) {});
+                [] () { return KeyedCollection<T1, int>{[] (T1 e) { return e.key; }}; }, [] (auto) {});
             CommonTests::KeyedCollectionTests::SimpleKeyedCollectionTest_TestBasics (
-                [] () { return KeyedCollection<T1, int, T1_Traits>{[] (T1 e) { return e.key; }}; },
-                [] (auto) {});
+                [] () { return KeyedCollection<T1, int, T1_Traits>{[] (T1 e) { return e.key; }}; }, [] (auto) {});
+            CommonTests::KeyedCollectionTests::SimpleKeyedCollectionTest_TestBasics ([] () { return KeyedCollection<T1, int, T1_Traits>{}; },
+                                                                                     [] (auto) {});
             CommonTests::KeyedCollectionTests::SimpleKeyedCollectionTest_TestBasics (
-                [] () { return KeyedCollection<T1, int, T1_Traits>{}; },
-                [] (auto) {});
+                [] () { return Concrete::KeyedCollection_LinkedList<T1, int>{[] (T1 e) { return e.key; }}; }, [] (auto) {});
             CommonTests::KeyedCollectionTests::SimpleKeyedCollectionTest_TestBasics (
-                [] () { return Concrete::KeyedCollection_LinkedList<T1, int>{[] (T1 e) { return e.key; }}; },
-                [] (auto) {});
-            CommonTests::KeyedCollectionTests::SimpleKeyedCollectionTest_TestBasics (
-                [] () { return Concrete::KeyedCollection_stdset<T1, int>{[] (T1 e) { return e.key; }}; },
-                [] (auto) {});
+                [] () { return Concrete::KeyedCollection_stdset<T1, int>{[] (T1 e) { return e.key; }}; }, [] (auto) {});
         }
         Test_KeyedCollectionTypeIndexUsesStdSet_::RunAll ();
 

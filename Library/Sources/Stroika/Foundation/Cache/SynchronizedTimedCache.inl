@@ -24,7 +24,7 @@ namespace Stroika::Foundation::Cache {
         : inherited{}
     {
         [[maybe_unused]] auto&& srcLock = shared_lock{src.fMutex_}; // shared locks intrinsically recursive - not needed here but good to assure no locks in between
-        [[maybe_unused]] auto&& lock    = lock_guard{fMutex_};
+        [[maybe_unused]] auto&& lock = lock_guard{fMutex_};
         inherited::SetMinimumAllowedFreshness (src.GetMinimumAllowedFreshness ());
         for (const auto& ci : src.Elements ()) {
             inherited::Add (ci.fKey, ci.fValue, ci.fFreshness);
@@ -49,19 +49,25 @@ namespace Stroika::Foundation::Cache {
         return inherited::Elements ();
     }
     template <typename KEY, typename VALUE, typename TRAITS>
-    inline optional<VALUE> SynchronizedTimedCache<KEY, VALUE, TRAITS>::Lookup (typename Configuration::ArgByValueType<KEY> key, Time::DurationSecondsType* lastRefreshedAt) const
+    inline optional<VALUE> SynchronizedTimedCache<KEY, VALUE, TRAITS>::Lookup (typename Configuration::ArgByValueType<KEY> key,
+                                                                               Time::DurationSecondsType* lastRefreshedAt) const
     {
         [[maybe_unused]] auto&& lock = shared_lock{fMutex_};
         return inherited::Lookup (key);
     }
     template <typename KEY, typename VALUE, typename TRAITS>
-    inline auto SynchronizedTimedCache<KEY, VALUE, TRAITS>::Lookup (typename Configuration::ArgByValueType<KEY> key, LookupMarksDataAsRefreshed successfulLookupRefreshesAcceesFlag) -> optional<VALUE>
+    inline auto SynchronizedTimedCache<KEY, VALUE, TRAITS>::Lookup (typename Configuration::ArgByValueType<KEY> key,
+                                                                    LookupMarksDataAsRefreshed successfulLookupRefreshesAcceesFlag)
+        -> optional<VALUE>
     {
         [[maybe_unused]] auto&& lock = lock_guard{fMutex_};
         return inherited::Lookup (key);
     }
     template <typename KEY, typename VALUE, typename TRAITS>
-    inline auto SynchronizedTimedCache<KEY, VALUE, TRAITS>::LookupValue (typename Configuration::ArgByValueType<KEY> key, const function<VALUE (typename Configuration::ArgByValueType<KEY>)>& cacheFiller, LookupMarksDataAsRefreshed successfulLookupRefreshesAcceesFlag, PurgeSpoiledDataFlagType purgeSpoiledData) -> VALUE
+    inline auto SynchronizedTimedCache<KEY, VALUE, TRAITS>::LookupValue (typename Configuration::ArgByValueType<KEY> key,
+                                                                         const function<VALUE (typename Configuration::ArgByValueType<KEY>)>& cacheFiller,
+                                                                         LookupMarksDataAsRefreshed successfulLookupRefreshesAcceesFlag,
+                                                                         PurgeSpoiledDataFlagType   purgeSpoiledData) -> VALUE
     {
         /*
          *  The main reason for this class (as opposed to Syncrhonized<TimedCache>), is this logic: unlocking the shared 
@@ -90,7 +96,9 @@ namespace Stroika::Foundation::Cache {
         }
     }
     template <typename KEY, typename VALUE, typename TRAITS>
-    inline void SynchronizedTimedCache<KEY, VALUE, TRAITS>::Add (typename Configuration::ArgByValueType<KEY> key, typename Configuration::ArgByValueType<VALUE> result, TimedCacheSupport::PurgeSpoiledDataFlagType purgeSpoiledData)
+    inline void SynchronizedTimedCache<KEY, VALUE, TRAITS>::Add (typename Configuration::ArgByValueType<KEY>   key,
+                                                                 typename Configuration::ArgByValueType<VALUE> result,
+                                                                 TimedCacheSupport::PurgeSpoiledDataFlagType   purgeSpoiledData)
     {
         [[maybe_unused]] auto&& lock = lock_guard{fMutex_};
         // NOTE - COULD handle purgeSpoiledData directly here, and use two lock_guards, so other callers get a chance before purge loop
@@ -98,7 +106,8 @@ namespace Stroika::Foundation::Cache {
         inherited::Add (key, result, purgeSpoiledData);
     }
     template <typename KEY, typename VALUE, typename TRAITS>
-    inline void SynchronizedTimedCache<KEY, VALUE, TRAITS>::Add (typename Configuration::ArgByValueType<KEY> key, typename Configuration::ArgByValueType<VALUE> result, Time::Duration freshAsOf)
+    inline void SynchronizedTimedCache<KEY, VALUE, TRAITS>::Add (typename Configuration::ArgByValueType<KEY> key,
+                                                                 typename Configuration::ArgByValueType<VALUE> result, Time::Duration freshAsOf)
     {
         [[maybe_unused]] auto&& lock = lock_guard{fMutex_};
         inherited::Add (key, result, freshAsOf);

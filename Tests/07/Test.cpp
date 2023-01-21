@@ -29,7 +29,8 @@ using namespace Stroika::Foundation::Containers::LockFreeDataStructures;
 //#define USE_NOISY_TRACE_IN_THIS_MODULE_ 1
 
 namespace {
-    double sTimeMultiplier_ = (qDebug ? 0.2 : 1) * ((Debug::IsRunningUnderValgrind () or Debug::kBuiltWithAddressSanitizer or Debug::kBuiltWithThreadSanitizer) ? .1 : 1.0);
+    double sTimeMultiplier_ =
+        (qDebug ? 0.2 : 1) * ((Debug::IsRunningUnderValgrind () or Debug::kBuiltWithAddressSanitizer or Debug::kBuiltWithThreadSanitizer) ? .1 : 1.0);
 }
 
 namespace {
@@ -412,10 +413,7 @@ namespace {
 }
 
 namespace {
-    void DoRegressionTests_ ()
-    {
-        forward_list_tests_::test_all ();
-    }
+    void DoRegressionTests_ () { forward_list_tests_::test_all (); }
 }
 
 int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])

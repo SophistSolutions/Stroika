@@ -40,18 +40,23 @@ namespace Stroika::Foundation::Traversal {
     DisjointDiscreteRange<T, RANGE_TYPE>::DisjointDiscreteRange (const CONTAINER_OF_DISCRETERANGE_OF_T& from)
         : DisjointDiscreteRange{from.begin (), from.end ()}
     {
-        static_assert (is_convertible_v<Configuration::ExtractValueType_t<CONTAINER_OF_DISCRETERANGE_OF_T>, RangeType> or is_convertible_v<Configuration::ExtractValueType_t<CONTAINER_OF_DISCRETERANGE_OF_T>, value_type>);
+        static_assert (is_convertible_v<Configuration::ExtractValueType_t<CONTAINER_OF_DISCRETERANGE_OF_T>, RangeType> or
+                       is_convertible_v<Configuration::ExtractValueType_t<CONTAINER_OF_DISCRETERANGE_OF_T>, value_type>);
     }
     template <typename T, typename RANGE_TYPE>
     template <typename COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T>
-    DisjointDiscreteRange<T, RANGE_TYPE>::DisjointDiscreteRange (COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T start, COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T end, enable_if_t<is_convertible_v<Configuration::ExtractValueType_t<COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T>, RangeType>, int>*)
+    DisjointDiscreteRange<T, RANGE_TYPE>::DisjointDiscreteRange (
+        COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T start, COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T end,
+        enable_if_t<is_convertible_v<Configuration::ExtractValueType_t<COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T>, RangeType>, int>*)
         : inherited{start, end}
     {
         static_assert (is_convertible_v<Configuration::ExtractValueType_t<COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T>, RangeType>);
     }
     template <typename T, typename RANGE_TYPE>
     template <typename COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T>
-    DisjointDiscreteRange<T, RANGE_TYPE>::DisjointDiscreteRange (COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T start, COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T end, enable_if_t<is_convertible_v<Configuration::ExtractValueType_t<COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T>, value_type>, int>*)
+    DisjointDiscreteRange<T, RANGE_TYPE>::DisjointDiscreteRange (
+        COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T start, COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T end,
+        enable_if_t<is_convertible_v<Configuration::ExtractValueType_t<COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T>, value_type>, int>*)
     {
         static_assert (is_convertible_v<Configuration::ExtractValueType_t<COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T>, value_type>);
         static_assert (Configuration::IsIterator_v<COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T>);
@@ -239,7 +244,8 @@ namespace Stroika::Foundation::Traversal {
         return this->empty () ? optional<value_type>{} : FindLastThat (testF, FindHints (this->GetBounds ().GetUpperBound (), false));
     }
     template <typename T, typename RANGE_TYPE>
-    auto DisjointDiscreteRange<T, RANGE_TYPE>::FindLastThat (const function<bool (value_type)>& testF, const FindHints& hints) const -> optional<value_type>
+    auto DisjointDiscreteRange<T, RANGE_TYPE>::FindLastThat (const function<bool (value_type)>& testF, const FindHints& hints) const
+        -> optional<value_type>
     {
         Require (this->Contains (hints.fSeedPosition));
         optional<value_type> o = ScanFindAny_ (testF, hints.fSeedPosition, hints.fForwardFirst);
@@ -264,7 +270,9 @@ namespace Stroika::Foundation::Traversal {
         }
     }
     template <typename T, typename RANGE_TYPE>
-    auto DisjointDiscreteRange<T, RANGE_TYPE>::ScanTil_ (const function<bool (value_type)>& testF, const function<optional<value_type> (value_type)>& iterNext, value_type seedPosition) const -> optional<value_type>
+    auto DisjointDiscreteRange<T, RANGE_TYPE>::ScanTil_ (const function<bool (value_type)>& testF,
+                                                         const function<optional<value_type> (value_type)>& iterNext, value_type seedPosition) const
+        -> optional<value_type>
     {
         value_type i{seedPosition};
         while (not testF (i)) {
@@ -280,7 +288,8 @@ namespace Stroika::Foundation::Traversal {
         return i;
     }
     template <typename T, typename RANGE_TYPE>
-    auto DisjointDiscreteRange<T, RANGE_TYPE>::ScanFindAny_ (const function<bool (value_type)>& testF, value_type seedPosition, bool forwardFirst) const -> optional<value_type>
+    auto DisjointDiscreteRange<T, RANGE_TYPE>::ScanFindAny_ (const function<bool (value_type)>& testF, value_type seedPosition, bool forwardFirst) const
+        -> optional<value_type>
     {
         /*
          *  First we must find a value/position where testF is true. It could be forward or backward from our start hint.

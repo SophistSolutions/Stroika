@@ -76,9 +76,11 @@ using namespace Stroika::Frameworks::Led;
 #endif
 
 #if qTryToUseUNISCRIBEForTextRuns
-enum InitialUNISCRIBEDir { eLTRChar,
-                           eRTLChar,
-                           eNeutralChar };
+enum InitialUNISCRIBEDir {
+    eLTRChar,
+    eRTLChar,
+    eNeutralChar
+};
 static InitialUNISCRIBEDir myGetInitialUNISCRIBEDir (wchar_t c);
 #endif
 
@@ -160,10 +162,7 @@ namespace {
     }
 
     struct DoRunIt {
-        DoRunIt ()
-        {
-            WriteMemoizedUniscribeDirProc (GetInitialUNISCRIBEDir, "GetInitialUNISCRIBEDir", "myGetInitialUNISCRIBEDir");
-        }
+        DoRunIt () { WriteMemoizedUniscribeDirProc (GetInitialUNISCRIBEDir, "GetInitialUNISCRIBEDir", "myGetInitialUNISCRIBEDir"); }
     } gRunIt;
 };
 #endif
@@ -194,7 +193,8 @@ namespace {
             , fScriptLayout (nullptr)
         {
             if (fDLL != nullptr) {
-                fScriptItemize = (HRESULT (WINAPI*) (const WCHAR*, int, int, const SCRIPT_CONTROL*, const SCRIPT_STATE*, SCRIPT_ITEM*, int*)) (::GetProcAddress (fDLL, "ScriptItemize"));
+                fScriptItemize = (HRESULT (WINAPI*) (const WCHAR*, int, int, const SCRIPT_CONTROL*, const SCRIPT_STATE*, SCRIPT_ITEM*,
+                                                     int*)) (::GetProcAddress (fDLL, "ScriptItemize"));
                 fScriptLayout  = (HRESULT (WINAPI*) (int, const BYTE*, int*, int*)) (::GetProcAddress (fDLL, "ScriptLayout"));
             }
         }
@@ -206,12 +206,10 @@ namespace {
             }
         }
 
-        nonvirtual bool IsAvail () const
-        {
-            return fDLL != nullptr;
-        }
+        nonvirtual bool IsAvail () const { return fDLL != nullptr; }
 
-        HRESULT WINAPI ScriptItemize (const WCHAR* pwcInChars, int cInChars, int cMaxItems, const SCRIPT_CONTROL* psControl, const SCRIPT_STATE* psState, SCRIPT_ITEM* pItems, int* pcItems)
+        HRESULT WINAPI ScriptItemize (const WCHAR* pwcInChars, int cInChars, int cMaxItems, const SCRIPT_CONTROL* psControl,
+                                      const SCRIPT_STATE* psState, SCRIPT_ITEM* pItems, int* pcItems)
         {
             if (fScriptItemize == nullptr) {
                 return E_FAIL;
@@ -487,7 +485,8 @@ void TextLayoutBlock_Basic::Construct (const Led_tChar* realText, const Led_tCha
 #if qTestUNISCRIBEResultsEqualFriBidi
     (void)Construct_UNISCRIBE (initialDirection);
     Memory::StackBuffer<Led_tChar> savedVirtualText{fTextLength};
-    copy (static_cast<const Led_tChar*> (fVirtualText), static_cast<const Led_tChar*> (fVirtualText) + fTextLength, static_cast<Led_tChar*> (savedVirtualText));
+    copy (static_cast<const Led_tChar*> (fVirtualText), static_cast<const Led_tChar*> (fVirtualText) + fTextLength,
+          static_cast<Led_tChar*> (savedVirtualText));
     vector<ScriptRunElt> savedScriptRuns = fScriptRuns;
     fScriptRuns                          = vector<ScriptRunElt> ();
     Construct_FriBidi (initialDirection);
@@ -534,7 +533,8 @@ void TextLayoutBlock_Basic::Construct (const Led_tChar* realText, const Led_tCha
             for (size_t j = se.fVirtualStart; j < se.fVirtualEnd; ++j) {
                 reverseBuf[runLen - 1 - (j - se.fVirtualStart)] = fVirtualText[j];
             }
-            copy (static_cast<Led_tChar*> (reverseBuf), static_cast<Led_tChar*> (reverseBuf) + runLen, static_cast<Led_tChar*> (fVirtualText) + se.fVirtualStart);
+            copy (static_cast<Led_tChar*> (reverseBuf), static_cast<Led_tChar*> (reverseBuf) + runLen,
+                  static_cast<Led_tChar*> (fVirtualText) + se.fVirtualStart);
         }
     }
 
@@ -576,7 +576,8 @@ bool TextLayoutBlock_Basic::Construct_UNISCRIBE (const TextDirection* initialDir
                 scriptState.uBidiLevel = 1;
             }
         }
-        Verify (sUniscribeDLL.ScriptItemize (static_cast<const Led_tChar*> (fRealText), fTextLength, fTextLength + 1, &scriptControl, &scriptState, scriptItems, &nScriptItems) == S_OK);
+        Verify (sUniscribeDLL.ScriptItemize (static_cast<const Led_tChar*> (fRealText), fTextLength, fTextLength + 1, &scriptControl,
+                                             &scriptState, scriptItems, &nScriptItems) == S_OK);
         Assert (nScriptItems >= 1);
 
         Memory::StackBuffer<BYTE> bidiLevels{nScriptItems};
@@ -666,8 +667,7 @@ bool TextLayoutBlock_Basic::Construct_UNISCRIBE (const TextDirection* initialDir
                     }
                     ScriptRunElt& lastElt = fScriptRuns.back ();
 
-                    if (lastElt.fDirection == s.fDirection and
-                        (lastElt.fRealEnd == s.fRealStart or lastElt.fRealStart == s.fRealEnd) and
+                    if (lastElt.fDirection == s.fDirection and (lastElt.fRealEnd == s.fRealStart or lastElt.fRealStart == s.fRealEnd) and
                         (lastElt.fVirtualEnd == s.fVirtualStart or lastElt.fVirtualStart == s.fVirtualEnd)) {
                         lastElt.fRealStart    = min (lastElt.fRealStart, s.fRealStart);
                         lastElt.fRealEnd      = max (lastElt.fRealEnd, s.fRealEnd);
@@ -724,13 +724,10 @@ void TextLayoutBlock_Basic::Construct_FriBidi (const TextDirection* initialDirec
     Memory::StackBuffer<FriBidiChar> vText{fTextLength + 1}; // fribidi_log2vis NUL-terminates the string
     copy (static_cast<Led_tChar*> (fRealText), fRealText + fTextLength, static_cast<FriBidiChar*> (srcText));
     Memory::StackBuffer<FriBidiStrIndex> posLtoVList{fTextLength};
-    Memory::StackBuffer<FriBidiLevel>    bidiLevels{fTextLength * 2}; // no docs on size - but looking at code it appears it can be up to this big...
+    Memory::StackBuffer<FriBidiLevel> bidiLevels{fTextLength * 2}; // no docs on size - but looking at code it appears it can be up to this big...
     // LGP 2002-12-04
 
-    bool result = ::fribidi_log2vis (srcText, fTextLength, &baseDir,
-                                     vText,
-                                     posLtoVList, nullptr,
-                                     bidiLevels);
+    bool result = ::fribidi_log2vis (srcText, fTextLength, &baseDir, vText, posLtoVList, nullptr, bidiLevels);
     Assert (result);
 
     {
@@ -821,10 +818,7 @@ void TextLayoutBlock_Basic::PeekAtVirtualText_ (const Led_tChar** startText, con
     *endText   = fVirtualText.data () + fTextLength;
 }
 
-vector<TextLayoutBlock::ScriptRunElt> TextLayoutBlock_Basic::GetScriptRuns () const
-{
-    return fScriptRuns;
-}
+vector<TextLayoutBlock::ScriptRunElt> TextLayoutBlock_Basic::GetScriptRuns () const { return fScriptRuns; }
 
 /*
  ********************************************************************************
@@ -976,10 +970,7 @@ void TextLayoutBlock_VirtualSubset::PeekAtVirtualText_ (const Led_tChar** startT
     *endText = *startText + (fEnd - fStart);
 }
 
-vector<TextLayoutBlock::ScriptRunElt> TextLayoutBlock_VirtualSubset::GetScriptRuns () const
-{
-    return fScriptRuns;
-}
+vector<TextLayoutBlock::ScriptRunElt> TextLayoutBlock_VirtualSubset::GetScriptRuns () const { return fScriptRuns; }
 
 #if qTryToUseUNISCRIBEForTextRuns
 /*

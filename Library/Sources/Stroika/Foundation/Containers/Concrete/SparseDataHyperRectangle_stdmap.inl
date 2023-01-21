@@ -25,7 +25,8 @@ namespace Stroika::Foundation::Containers::Concrete {
      ********************************************************************************
      */
     template <typename T, typename... INDEXES>
-    class SparseDataHyperRectangle_stdmap<T, INDEXES...>::Rep_ : public DataHyperRectangle<T, INDEXES...>::_IRep, public Memory::UseBlockAllocationIfAppropriate<Rep_> {
+    class SparseDataHyperRectangle_stdmap<T, INDEXES...>::Rep_ : public DataHyperRectangle<T, INDEXES...>::_IRep,
+                                                                 public Memory::UseBlockAllocationIfAppropriate<Rep_> {
     private:
         using inherited = typename DataHyperRectangle<T, INDEXES...>::_IRep;
 
@@ -64,23 +65,19 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual void Apply (const function<void (ArgByValueType<value_type> item)>& doToElement) const override
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
-            fData_.Apply (
-                [&] (const pair<tuple<INDEXES...>, T>& item) {
-                    doToElement (tuple_cat (tuple<T>{item.second}, item.first));
-                });
+            fData_.Apply ([&] (const pair<tuple<INDEXES...>, T>& item) { doToElement (tuple_cat (tuple<T>{item.second}, item.first)); });
         }
         virtual Iterator<tuple<T, INDEXES...>> Find (const function<bool (ArgByValueType<value_type> item)>& that) const override
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
             using RESULT_TYPE = Iterator<tuple<T, INDEXES...>>;
             auto iLink        = const_cast<DataStructureImplType_&> (fData_).Find (
-                [&] (const pair<tuple<INDEXES...>, T>& item) {
-                    return that (tuple_cat (tuple<T>{item.second}, item.first));
-                });
+                [&] (const pair<tuple<INDEXES...>, T>& item) { return that (tuple_cat (tuple<T>{item.second}, item.first)); });
             if (iLink == fData_.end ()) {
                 return RESULT_TYPE::GetEmptyIterator ();
             }
-            Traversal::IteratorBase::PtrImplementationTemplate<IteratorRep_> resultRep = Iterator<T>::template MakeSmartPtr<IteratorRep_> (&fData_, &fChangeCounts_);
+            Traversal::IteratorBase::PtrImplementationTemplate<IteratorRep_> resultRep =
+                Iterator<T>::template MakeSmartPtr<IteratorRep_> (&fData_, &fChangeCounts_);
             resultRep->fIterator.SetUnderlyingIteratorRep (iLink);
             return RESULT_TYPE{move (resultRep)};
         }
@@ -129,7 +126,9 @@ namespace Stroika::Foundation::Containers::Concrete {
     private:
         // @todo see why we cannot just use Private::IterorImplHelper version of this!!!
         template <typename PATCHABLE_CONTAINER, typename PATCHABLE_CONTAINER_ITERATOR = typename PATCHABLE_CONTAINER::ForwardIterator>
-        class MyIteratorImplHelper_ : public Iterator<tuple<T, INDEXES...>>::IRep, public Memory::UseBlockAllocationIfAppropriate<MyIteratorImplHelper_<PATCHABLE_CONTAINER, PATCHABLE_CONTAINER_ITERATOR>> {
+        class MyIteratorImplHelper_
+            : public Iterator<tuple<T, INDEXES...>>::IRep,
+              public Memory::UseBlockAllocationIfAppropriate<MyIteratorImplHelper_<PATCHABLE_CONTAINER, PATCHABLE_CONTAINER_ITERATOR>> {
         private:
             using inherited = typename Iterator<tuple<T, INDEXES...>>::IRep;
 
@@ -139,7 +138,8 @@ namespace Stroika::Foundation::Containers::Concrete {
         public:
             MyIteratorImplHelper_ ()                             = delete;
             MyIteratorImplHelper_ (const MyIteratorImplHelper_&) = default;
-            explicit MyIteratorImplHelper_ (const PATCHABLE_CONTAINER* data, [[maybe_unused]] const Private::ContainerDebugChangeCounts_* changeCounter = nullptr)
+            explicit MyIteratorImplHelper_ (const PATCHABLE_CONTAINER*                                   data,
+                                            [[maybe_unused]] const Private::ContainerDebugChangeCounts_* changeCounter = nullptr)
                 : fIterator{data}
             {
                 RequireNotNull (data);
@@ -213,7 +213,8 @@ namespace Stroika::Foundation::Containers::Concrete {
         AssertRepValidType_ ();
     }
     template <typename T, typename... INDEXES>
-    inline SparseDataHyperRectangle_stdmap<T, INDEXES...>& SparseDataHyperRectangle_stdmap<T, INDEXES...>::operator= (const SparseDataHyperRectangle_stdmap<T, INDEXES...>& rhs)
+    inline SparseDataHyperRectangle_stdmap<T, INDEXES...>&
+    SparseDataHyperRectangle_stdmap<T, INDEXES...>::operator= (const SparseDataHyperRectangle_stdmap<T, INDEXES...>& rhs)
     {
         AssertRepValidType_ ();
         inherited::operator= (static_cast<const inherited&> (rhs));

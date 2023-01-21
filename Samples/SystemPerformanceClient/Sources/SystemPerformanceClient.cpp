@@ -131,8 +131,7 @@ namespace {
             Instruments::Process::Instrument fProcessInstrument;
 
             MyCapturer_ ()
-                : fProcessInstrument{
-                      Instruments::Process::Options{.fRestrictToPIDs = Set<pid_t>{Execution::GetCurrentProcessID ()}}}
+                : fProcessInstrument{Instruments::Process::Options{.fRestrictToPIDs = Set<pid_t>{Execution::GetCurrentProcessID ()}}}
             {
                 AddCaptureSet (CaptureSet{30s, {fCPUInstrument, fProcessInstrument}});
             }
@@ -155,8 +154,8 @@ namespace {
         unsigned int              pass{};
         cout << "Printing most recent measurements (in loop):" << endl;
         while (Time::GetTickCount () < doneAt) {
-            auto     measurements = capturer.pMostRecentMeasurements (); // capture results on a regular cadence with MyCapturer, and just report the latest stats
-            DateTime now          = DateTime::Now ();
+            auto measurements = capturer.pMostRecentMeasurements (); // capture results on a regular cadence with MyCapturer, and just report the latest stats
+            DateTime now = DateTime::Now ();
 
             optional<double> runQLength;
             optional<double> totalCPUUsage;
@@ -187,7 +186,8 @@ namespace {
             cout << "\tPass: " << pass << endl;
             cout << "\t\tSys: " << endl;
             cout << "\t\t\tRun-Q Length:                 " << Characters::ToString (runQLength).AsNarrowSDKString () << endl;
-            cout << "\t\t\tTotal CPU Usage:              " << Characters::ToString (totalCPUUsage).AsNarrowSDKString () << " (" << Characters::ToString (totalCPURatio * 100.0).AsNarrowSDKString () << "% of computer)" << endl;
+            cout << "\t\t\tTotal CPU Usage:              " << Characters::ToString (totalCPUUsage).AsNarrowSDKString () << " ("
+                 << Characters::ToString (totalCPURatio * 100.0).AsNarrowSDKString () << "% of computer)" << endl;
             cout << "\t\tThis Process: " << endl;
             cout << "\t\t\tUptime:                       " << Characters::ToString (thisProcUptime).AsNarrowSDKString () << endl;
             cout << "\t\t\tAverage CPU Time Used:        " << Characters::ToString (thisProcAverageCPUTimeUsed).AsNarrowSDKString () << endl;
@@ -201,7 +201,8 @@ namespace {
 
 int main (int argc, const char* argv[])
 {
-    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"main", L"argv=%s", Characters::ToString (vector<const char*> (argv, argv + argc)).c_str ())};
+    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (
+        L"main", L"argv=%s", Characters::ToString (vector<const char*> (argv, argv + argc)).c_str ())};
 #if qPlatform_POSIX
     Execution::SignalHandlerRegistry::Get ().SetSignalHandlers (SIGPIPE, Execution::SignalHandlerRegistry::kIGNORED);
 #endif

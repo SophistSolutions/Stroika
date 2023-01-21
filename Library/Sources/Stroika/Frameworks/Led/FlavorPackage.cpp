@@ -44,10 +44,7 @@ using namespace Stroika::Frameworks::Led;
  ********************************************************************************
  */
 
-TextStore* FlavorPackageExternalizer::PeekAtTextStore () const
-{
-    return &fTextStore;
-}
+TextStore* FlavorPackageExternalizer::PeekAtTextStore () const { return &fTextStore; }
 
 /*
 @METHOD:        FlavorPackageExternalizer::ExternalizeFlavors
@@ -120,10 +117,7 @@ void FlavorPackageExternalizer::ExternalizeFlavor_TEXT (WriterFlavorPackage& fla
  *************************** FlavorPackageInternalizer **************************
  ********************************************************************************
  */
-TextStore* FlavorPackageInternalizer::PeekAtTextStore () const
-{
-    return &fTextStore;
-}
+TextStore* FlavorPackageInternalizer::PeekAtTextStore () const { return &fTextStore; }
 
 bool FlavorPackageInternalizer::InternalizeBestFlavor (ReaderFlavorPackage& flavorPackage, size_t from, size_t to)
 {
@@ -139,8 +133,8 @@ bool FlavorPackageInternalizer::InternalizeBestFlavor (ReaderFlavorPackage& flav
 bool FlavorPackageInternalizer::InternalizeFlavor_TEXT (ReaderFlavorPackage& flavorPackage, size_t from, size_t to)
 {
     if (flavorPackage.GetFlavorAvailable_TEXT ()) {
-        size_t                    length     = flavorPackage.GetFlavorSize (kTEXTClipFormat);
-        Led_ClipFormat            textFormat = kTEXTClipFormat;
+        size_t         length     = flavorPackage.GetFlavorSize (kTEXTClipFormat);
+        Led_ClipFormat textFormat = kTEXTClipFormat;
         Memory::StackBuffer<char> buf{length * sizeof (Led_tChar)}; // data read from flavor package is just an array of bytes (not Led_tChar)
         // but allocate enuf space for converting TO UNICODE - in case of
         // qWorkAroundWin95BrokenUNICODESupport workaround below - we may
@@ -216,9 +210,7 @@ bool FlavorPackageInternalizer::InternalizeFlavor_FILEData (
 #elif qPlatform_Windows || qStroika_FeatureSupported_XWindows
     const Characters::SDKChar* fileName,
 #endif
-    Led_ClipFormat* suggestedClipFormat,
-    CodePage*       suggestedCodePage,
-    size_t from, size_t to)
+    Led_ClipFormat* suggestedClipFormat, CodePage* suggestedCodePage, size_t from, size_t to)
 {
     Memory::BLOB b       = IO::FileSystem::FileInputStream::New (filesystem::path (fileName)).ReadAll ();
     const byte*  fileBuf = b.begin ();
@@ -242,8 +234,7 @@ void FlavorPackageInternalizer::InternalizeFlavor_FILEGuessFormatsFromName (
 #elif qPlatform_Windows || qStroika_FeatureSupported_XWindows
     const Characters::SDKChar* fileName,
 #endif
-    Led_ClipFormat*            suggestedClipFormat,
-    [[maybe_unused]] CodePage* suggestedCodePage)
+    Led_ClipFormat* suggestedClipFormat, [[maybe_unused]] CodePage* suggestedCodePage)
 {
 #if qPlatform_MacOS
 // Should add code here to grab file-type from OS. If called from XXX - then thats already done, but in case
@@ -262,10 +253,8 @@ void FlavorPackageInternalizer::InternalizeFlavor_FILEGuessFormatsFromName (
 #endif
 }
 
-void FlavorPackageInternalizer::InternalizeFlavor_FILEGuessFormatsFromStartOfData (
-    Led_ClipFormat* suggestedClipFormat,
-    CodePage* /*suggestedCodePage*/,
-    const byte* /*fileStart*/, const byte* /*fileEnd*/
+void FlavorPackageInternalizer::InternalizeFlavor_FILEGuessFormatsFromStartOfData (Led_ClipFormat* suggestedClipFormat, CodePage* /*suggestedCodePage*/,
+                                                                                   const byte* /*fileStart*/, const byte* /*fileEnd*/
 )
 {
     if (suggestedClipFormat != nullptr) {
@@ -277,11 +266,8 @@ void FlavorPackageInternalizer::InternalizeFlavor_FILEGuessFormatsFromStartOfDat
     }
 }
 
-bool FlavorPackageInternalizer::InternalizeFlavor_FILEDataRawBytes (
-    Led_ClipFormat* suggestedClipFormat,
-    CodePage*       suggestedCodePage,
-    size_t from, size_t to,
-    const void* rawBytes, size_t nRawBytes)
+bool FlavorPackageInternalizer::InternalizeFlavor_FILEDataRawBytes (Led_ClipFormat* suggestedClipFormat, CodePage* suggestedCodePage,
+                                                                    size_t from, size_t to, const void* rawBytes, size_t nRawBytes)
 {
     /*
      *  If suggesedFormat UNKNOWN - treat as text.
@@ -307,12 +293,13 @@ bool FlavorPackageInternalizer::InternalizeFlavor_FILEDataRawBytes (
      *  prefered code page - so just do the read/replace here...
      */
 #if qWideCharacters
-    CodePage useCodePage = (suggestedCodePage == nullptr or *suggestedCodePage == kCodePage_INVALID) ? CodePagesGuesser ().Guess (rawBytes, nRawBytes) : *suggestedCodePage;
+    CodePage useCodePage = (suggestedCodePage == nullptr or *suggestedCodePage == kCodePage_INVALID) ? CodePagesGuesser ().Guess (rawBytes, nRawBytes)
+                                                                                                     : *suggestedCodePage;
     if (suggestedCodePage != nullptr) {
         *suggestedCodePage = useCodePage;
     }
-    CodePageConverter              cpc        = CodePageConverter{useCodePage, CodePageConverter::eHandleBOM};
-    size_t                         outCharCnt = cpc.MapToUNICODE_QuickComputeOutBufSize (reinterpret_cast<const char*> (rawBytes), nRawBytes + 1);
+    CodePageConverter cpc        = CodePageConverter{useCodePage, CodePageConverter::eHandleBOM};
+    size_t            outCharCnt = cpc.MapToUNICODE_QuickComputeOutBufSize (reinterpret_cast<const char*> (rawBytes), nRawBytes + 1);
     Memory::StackBuffer<Led_tChar> fileData2{outCharCnt};
     cpc.MapToUNICODE (reinterpret_cast<const char*> (rawBytes), nRawBytes, static_cast<wchar_t*> (fileData2), &outCharCnt);
     size_t charsRead = outCharCnt;
@@ -428,7 +415,8 @@ void WriterClipboardFlavorPackage::AddFlavorData (Led_ClipFormat clipFormat, siz
         ThrowIfErrorHRESULT (MAKE_HRESULT (SEVERITY_ERROR, FACILITY_WIN32, err));
     }
 #elif qStroika_FeatureSupported_XWindows
-    ReaderClipboardFlavorPackage::sPrivateClipData.insert (map<Led_ClipFormat, vector<char>>::value_type (clipFormat, vector<char> (reinterpret_cast<const char*> (buf), reinterpret_cast<const char*> (buf) + bufSize)));
+    ReaderClipboardFlavorPackage::sPrivateClipData.insert (map<Led_ClipFormat, vector<char>>::value_type (
+        clipFormat, vector<char> (reinterpret_cast<const char*> (buf), reinterpret_cast<const char*> (buf) + bufSize)));
 #endif
 }
 
@@ -453,9 +441,7 @@ ReadWriteMemBufferPackage::ReadWriteMemBufferPackage ()
     fPackages.reserve (1);
 }
 
-ReadWriteMemBufferPackage::~ReadWriteMemBufferPackage ()
-{
-}
+ReadWriteMemBufferPackage::~ReadWriteMemBufferPackage () {}
 
 bool ReadWriteMemBufferPackage::GetFlavorAvailable (Led_ClipFormat clipFormat) const
 {

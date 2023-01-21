@@ -197,17 +197,14 @@ TextImager::TextImager ()
     , fSelectionShown{false}
     , fWindowRect{Led_Rect{0, 0, 0, 0}}
     , fHiliteMarker{nullptr}
-    , fWeAllocedHiliteMarker{false}
-    //,  fDefaultColorIndex{},
+    , fWeAllocedHiliteMarker{false} //,  fDefaultColorIndex{},
     , fCachedFontSpec{}
     , fCachedFontInfo{}
     ,
 #if qPlatform_Windows
-    fCachedFont{
-        nullptr}
+    fCachedFont{nullptr}
 #else
-    fCachedFontValid{
-        false}
+    fCachedFontValid{false}
 #endif
 {
     for (Color** i = &fDefaultColorIndex[0]; i < &fDefaultColorIndex[eMaxDefaultColorIndex]; ++i) {
@@ -253,10 +250,7 @@ void TextImager::SpecifyTextStore (TextStore* useTextStore)
     }
 }
 
-void TextImager::HookLosingTextStore ()
-{
-    HookLosingTextStore_ ();
-}
+void TextImager::HookLosingTextStore () { HookLosingTextStore_ (); }
 
 void TextImager::HookLosingTextStore_ ()
 {
@@ -271,10 +265,7 @@ void TextImager::HookLosingTextStore_ ()
     }
 }
 
-void TextImager::HookGainedNewTextStore ()
-{
-    HookGainedNewTextStore_ ();
-}
+void TextImager::HookGainedNewTextStore () { HookGainedNewTextStore_ (); }
 
 void TextImager::HookGainedNewTextStore_ ()
 {
@@ -292,10 +283,7 @@ void TextImager::HookGainedNewTextStore_ ()
             The default implementation calls @'TextImager::InvalidateAllCaches'.
             </p>
 */
-void TextImager::PurgeUnneededMemory ()
-{
-    InvalidateAllCaches ();
-}
+void TextImager::PurgeUnneededMemory () { InvalidateAllCaches (); }
 
 /*
 @METHOD:        TextImager::InvalidateAllCaches
@@ -326,10 +314,7 @@ void TextImager::InvalidateAllCaches ()
             use @'StandardStyledTextInteractor::InteractiveSetFont'.
             </p>
 */
-void TextImager::SetDefaultFont (const IncrementalFontSpecification& defaultFont)
-{
-    SetDefaultFont_ (defaultFont);
-}
+void TextImager::SetDefaultFont (const IncrementalFontSpecification& defaultFont) { SetDefaultFont_ (defaultFont); }
 
 void TextImager::SetDefaultFont_ (const IncrementalFontSpecification& defaultFont)
 {
@@ -426,16 +411,14 @@ static int FAR PASCAL EnumFontCallback (const LOGFONT* lplf, const TEXTMETRIC* /
     {
         switch (potentialResult.fDesiredCharset) {
             case SHIFTJIS_CHARSET: {
-                if (
-                    potentialResult.fBestFont.lfFaceName == SDKString{Led_SDK_TCHAROF ("MS P Gothic")} or
+                if (potentialResult.fBestFont.lfFaceName == SDKString{Led_SDK_TCHAROF ("MS P Gothic")} or
                     potentialResult.fBestFont.lfFaceName == SDKString{Led_SDK_TCHAROF ("MS Gothic")} or
                     potentialResult.fBestFont.lfFaceName == SDKString{Led_SDK_TCHAROF ("MS PGothic")}) {
                     potentialResult.fIsFavoriteForCharset = true;
                 }
             } break;
             case CHINESEBIG5_CHARSET: {
-                if (
-                    potentialResult.fBestFont.lfFaceName == SDKString{Led_SDK_TCHAROF ("MS HEI")} or
+                if (potentialResult.fBestFont.lfFaceName == SDKString{Led_SDK_TCHAROF ("MS HEI")} or
                     potentialResult.fBestFont.lfFaceName == SDKString{Led_SDK_TCHAROF ("MingLiU")}) {
                     potentialResult.fIsFavoriteForCharset = true;
                 }
@@ -509,7 +492,8 @@ FontSpecification TextImager::GetStaticDefaultFont (BYTE charSet)
             HFONT xxx = HFONT (::GetStockObject (ANSI_VAR_FONT));
             Verify (::GetObject (xxx, sizeof theANSILogFont, &theANSILogFont));
         }
-        fooo.SetPointSize (min (max (FontSpecification (theANSILogFont).GetPointSize (), static_cast<unsigned short> (8)), static_cast<unsigned short> (14)));
+        fooo.SetPointSize (min (max (FontSpecification (theANSILogFont).GetPointSize (), static_cast<unsigned short> (8)),
+                                static_cast<unsigned short> (14)));
     }
 
     defaultFont.MergeIn (fooo);
@@ -532,15 +516,9 @@ FontSpecification TextImager::GetStaticDefaultFont (BYTE charSet)
             the selection's current font.
             </p>
 */
-FontSpecification TextImager::GetDefaultSelectionFont () const
-{
-    return GetDefaultFont ();
-}
+FontSpecification TextImager::GetDefaultSelectionFont () const { return GetDefaultFont (); }
 
-void TextImager::SetSelectionShown (bool shown)
-{
-    fSelectionShown = shown;
-}
+void TextImager::SetSelectionShown (bool shown) { fSelectionShown = shown; }
 
 /*
 @METHOD:        TextImager::GetTabStopList
@@ -561,10 +539,7 @@ const TextImager::TabStopList& TextImager::GetTabStopList (size_t /*containingPo
 @METHOD:        TextImager::SetWindowRect
 @DESCRIPTION:   <p>See also @'TextImager::GetWindowRect'.
 */
-void TextImager::SetWindowRect (const Led_Rect& windowRect)
-{
-    SetWindowRect_ (windowRect);
-}
+void TextImager::SetWindowRect (const Led_Rect& windowRect) { SetWindowRect_ (windowRect); }
 
 /*
 @METHOD:        TextImager::ScrollSoShowingHHelper
@@ -656,10 +631,7 @@ void TextImager::SetHScrollPos (CoordinateType hScrollPos)
             (@'WordProcessor::ComputeMaxHScrollPos').
             </p>
 */
-DistanceType TextImager::ComputeMaxHScrollPos () const
-{
-    return 0;
-}
+DistanceType TextImager::ComputeMaxHScrollPos () const { return 0; }
 
 /*
 @METHOD:        TextImager::CalculateLongestRowInWindowPixelWidth
@@ -692,10 +664,7 @@ DistanceType TextImager::CalculateLongestRowInWindowPixelWidth () const
     invalidate any information the @'TextImager' has cached. This is called automaticly, internal to Led, by anything
     Led knows about which would change the metrics.</p>
 */
-void TextImager::TabletChangedMetrics ()
-{
-    InvalidateAllCaches ();
-}
+void TextImager::TabletChangedMetrics () { InvalidateAllCaches (); }
 
 void TextImager::SetSelection (size_t start, size_t end)
 {
@@ -1431,7 +1400,9 @@ void TextImager::EraseBackground (Tablet* tablet, const Led_Rect& subsetToDraw, 
 void TextImager::HilightArea (Tablet* tablet, Led_Rect hiliteArea)
 {
     RequireNotNull (tablet);
-    tablet->HilightArea_SolidHelper (hiliteArea, GetEffectiveDefaultTextColor (eDefaultSelectedTextBackgroundColor), GetEffectiveDefaultTextColor (eDefaultSelectedTextColor), GetEffectiveDefaultTextColor (eDefaultBackgroundColor), GetEffectiveDefaultTextColor (eDefaultTextColor));
+    tablet->HilightArea_SolidHelper (hiliteArea, GetEffectiveDefaultTextColor (eDefaultSelectedTextBackgroundColor),
+                                     GetEffectiveDefaultTextColor (eDefaultSelectedTextColor),
+                                     GetEffectiveDefaultTextColor (eDefaultBackgroundColor), GetEffectiveDefaultTextColor (eDefaultTextColor));
 }
 
 /*
@@ -1444,7 +1415,9 @@ void TextImager::HilightArea (Tablet* tablet, Led_Rect hiliteArea)
 void TextImager::HilightArea (Tablet* tablet, const Region& hiliteArea)
 {
     RequireNotNull (tablet);
-    tablet->HilightArea_SolidHelper (hiliteArea, GetEffectiveDefaultTextColor (eDefaultSelectedTextBackgroundColor), GetEffectiveDefaultTextColor (eDefaultSelectedTextColor), GetEffectiveDefaultTextColor (eDefaultBackgroundColor), GetEffectiveDefaultTextColor (eDefaultTextColor));
+    tablet->HilightArea_SolidHelper (hiliteArea, GetEffectiveDefaultTextColor (eDefaultSelectedTextBackgroundColor),
+                                     GetEffectiveDefaultTextColor (eDefaultSelectedTextColor),
+                                     GetEffectiveDefaultTextColor (eDefaultBackgroundColor), GetEffectiveDefaultTextColor (eDefaultTextColor));
 }
 
 /*
@@ -1458,8 +1431,8 @@ void TextImager::HilightArea (Tablet* tablet, const Region& hiliteArea)
                 <p>Note, only the invalidRect subset of currentRowRect need be drawn, though the rest CAN be.</p>
                 <p>Renamed to @'TextImager::DrawRowSegments' from MutliRowTextImager::DrawRowSegments for Led 3.1a3 release.</p>
 */
-void TextImager::DrawRow (Tablet* tablet, const Led_Rect& currentRowRect, const Led_Rect& invalidRowRect,
-                          const TextLayoutBlock& text, size_t rowStart, size_t rowEnd, bool printing)
+void TextImager::DrawRow (Tablet* tablet, const Led_Rect& currentRowRect, const Led_Rect& invalidRowRect, const TextLayoutBlock& text,
+                          size_t rowStart, size_t rowEnd, bool printing)
 {
     RequireNotNull (tablet);
     Require (rowEnd == GetEndOfRowContainingPosition (rowStart)); // passed in for performance reasons - so not computed multiple times
@@ -1570,7 +1543,8 @@ void TextImager::DrawRowHilight (Tablet* tablet, [[maybe_unused]] const Led_Rect
             paragraphs (as in LECs LVEJ side-by-side mode).</p>
                 <p>Renamed to @'TextImager::DrawInterLineSpace' from MutliRowTextImager::DrawInterLineSpace for Led 3.1a3 release.</p>
 */
-void TextImager::DrawInterLineSpace (DistanceType interlineSpace, Tablet* tablet, CoordinateType vPosOfTopOfInterlineSpace, bool segmentHilighted, bool printing)
+void TextImager::DrawInterLineSpace (DistanceType interlineSpace, Tablet* tablet, CoordinateType vPosOfTopOfInterlineSpace,
+                                     bool segmentHilighted, bool printing)
 {
     // This code not been checked/tested since I rewrote the erasing code etc.. Maybe wrong - probably wrong? No matter, anybody
     // ever using interline space would probably OVERRIDE this anyhow..
@@ -1603,10 +1577,7 @@ void TextImager::DrawInterLineSpace (DistanceType interlineSpace, Tablet* tablet
         <p>If you OVERRIDE this - you may find it handy to call @'TextImager::ContainsMappedDisplayCharacters_HelperForChar'
     to do most of the work.</p>
 */
-bool TextImager::ContainsMappedDisplayCharacters (const Led_tChar* /*text*/, size_t /*nTChars*/) const
-{
-    return false;
-}
+bool TextImager::ContainsMappedDisplayCharacters (const Led_tChar* /*text*/, size_t /*nTChars*/) const { return false; }
 
 /*
 @METHOD:        TextImager::ReplaceMappedDisplayCharacters
@@ -1716,7 +1687,8 @@ size_t TextImager::RemoveMappedDisplayCharacters_HelperForChar (Led_tChar* copyT
     Just specify the special character you are looking to remove.</p>
         <p>See also @'TextImager::ContainsMappedDisplayCharacters'.</p>
 */
-void TextImager::PatchWidthRemoveMappedDisplayCharacters_HelperForChar (const Led_tChar* srcText, DistanceType* distanceResults, size_t nTChars, Led_tChar charToRemove)
+void TextImager::PatchWidthRemoveMappedDisplayCharacters_HelperForChar (const Led_tChar* srcText, DistanceType* distanceResults,
+                                                                        size_t nTChars, Led_tChar charToRemove)
 {
     // Each of these kSoftLineBreakChar will be mapped to ZERO-WIDTH. So walk text (and distanceResults) and when
     // I see a softlinebreak - zero its size, and subtrace from start point total amount of zero-ed softlinebreaks.
@@ -1746,9 +1718,8 @@ void TextImager::PatchWidthRemoveMappedDisplayCharacters_HelperForChar (const Le
             (ie filled in if non-nullptr)</p>
                 <p>See also @'TextImager::DrawSegment_'.</p>
 */
-void TextImager::DrawSegment (Tablet* tablet,
-                              size_t from, size_t to, const TextLayoutBlock& text, const Led_Rect& drawInto, const Led_Rect& /*invalidRect*/,
-                              CoordinateType useBaseLine, DistanceType* pixelsDrawn)
+void TextImager::DrawSegment (Tablet* tablet, size_t from, size_t to, const TextLayoutBlock& text, const Led_Rect& drawInto,
+                              const Led_Rect& /*invalidRect*/, CoordinateType useBaseLine, DistanceType* pixelsDrawn)
 {
     DrawSegment_ (tablet, GetDefaultFont (), from, to, text, drawInto, useBaseLine, pixelsDrawn);
 }
@@ -1762,9 +1733,8 @@ void TextImager::DrawSegment (Tablet* tablet,
             text in 'text' argument need not match the REAL text in the TextStore buffer.
         <p>See also @'TextImager::MeasureSegmentWidth_'.</p>
 */
-void TextImager::DrawSegment_ (Tablet* tablet, const FontSpecification& fontSpec,
-                               size_t from, size_t to, const TextLayoutBlock& text, const Led_Rect& drawInto,
-                               CoordinateType useBaseLine, DistanceType* pixelsDrawn) const
+void TextImager::DrawSegment_ (Tablet* tablet, const FontSpecification& fontSpec, size_t from, size_t to, const TextLayoutBlock& text,
+                               const Led_Rect& drawInto, CoordinateType useBaseLine, DistanceType* pixelsDrawn) const
 {
     RequireNotNull (tablet);
     Assert (from <= to);
@@ -1850,7 +1820,8 @@ void TextImager::DrawSegment_ (Tablet* tablet, const FontSpecification& fontSpec
          *  Actually draw the text.
          */
         DistanceType amountDrawn = 0;
-        tablet->TabbedTextOut (fCachedFontInfo, drawText, drawTextLen, se.fDirection, outputAt, GetWindowRect ().left, GetTabStopList (from), &amountDrawn, GetHScrollPos ());
+        tablet->TabbedTextOut (fCachedFontInfo, drawText, drawTextLen, se.fDirection, outputAt, GetWindowRect ().left,
+                               GetTabStopList (from), &amountDrawn, GetHScrollPos ());
         outputAt.h += amountDrawn;
         if (pixelsDrawn != nullptr) {
             *pixelsDrawn += amountDrawn;
@@ -1858,8 +1829,7 @@ void TextImager::DrawSegment_ (Tablet* tablet, const FontSpecification& fontSpec
     }
 }
 
-void TextImager::MeasureSegmentWidth (size_t from, size_t to, const Led_tChar* text,
-                                      DistanceType* distanceResults) const
+void TextImager::MeasureSegmentWidth (size_t from, size_t to, const Led_tChar* text, DistanceType* distanceResults) const
 {
     MeasureSegmentWidth_ (GetDefaultFont (), from, to, text, distanceResults);
 }
@@ -1871,9 +1841,7 @@ void TextImager::MeasureSegmentWidth (size_t from, size_t to, const Led_tChar* t
             requirement that the 'text' argument refer to the same text as that stored in the TextStore object.
         <p>See also @'TextImager::DrawSegment_'.</p>
 */
-void TextImager::MeasureSegmentWidth_ (const FontSpecification& fontSpec, size_t from, size_t to,
-                                       const Led_tChar* text,
-                                       DistanceType*    distanceResults) const
+void TextImager::MeasureSegmentWidth_ (const FontSpecification& fontSpec, size_t from, size_t to, const Led_tChar* text, DistanceType* distanceResults) const
 {
     Require (to > from);
 

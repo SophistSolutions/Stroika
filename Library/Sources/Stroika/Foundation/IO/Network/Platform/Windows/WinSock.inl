@@ -23,10 +23,7 @@ namespace Stroika::Foundation::IO::Network::Platform::Windows {
         Require (not sStarted_);
         sStarted_ = true;
     }
-    inline bool WinSock::IsStarted ()
-    {
-        return sStarted_;
-    }
+    inline bool WinSock::IsStarted () { return sStarted_; }
     inline void WinSock::AssureStarted ()
     {
         if (not sStarted_) {

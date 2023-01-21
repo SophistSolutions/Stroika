@@ -347,7 +347,8 @@ size_t ThreadPool::GetPendingTasksCount () const
 void ThreadPool::WaitForTasksDoneUntil (const Iterable<TaskType>& tasks, Time::DurationSecondsType timeoutAt) const
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"ThreadPool::WaitForTasksDoneUntil", L"*this=%s, tasks=%s, timeoutAt=%f", ToString ().c_str (), ToString (tasks).c_str (), timeoutAt)};
+    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (
+        L"ThreadPool::WaitForTasksDoneUntil", L"*this=%s, tasks=%s, timeoutAt=%f", ToString ().c_str (), ToString (tasks).c_str (), timeoutAt)};
 #endif
     Thread::CheckForInterruption ();
     for (const auto& task : tasks) {
@@ -360,7 +361,8 @@ void ThreadPool::WaitForTasksDoneUntil (const Iterable<TaskType>& tasks, Time::D
 void ThreadPool::WaitForTasksDoneUntil (Time::DurationSecondsType timeoutAt) const
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"ThreadPool::WaitForTasksDoneUntil", L"*this=%s, timeoutAt=%f", ToString ().c_str (), timeoutAt)};
+    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"ThreadPool::WaitForTasksDoneUntil",
+                                                                                 L"*this=%s, timeoutAt=%f", ToString ().c_str (), timeoutAt)};
 #endif
     Thread::CheckForInterruption ();
     // @todo - use waitableevent - this is a horribly implementation
@@ -373,10 +375,10 @@ void ThreadPool::WaitForTasksDoneUntil (Time::DurationSecondsType timeoutAt) con
 void ThreadPool::Abort_ () noexcept
 {
     Thread::SuppressInterruptionInContext suppressCtx; // must cleanly shut down each of our subthreads - even if our thread is aborting... don't be half-way aborted
-    Debug::TraceContextBumper             ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"ThreadPool::Abort_", L"*this=%s", ToString ().c_str ())};
+    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"ThreadPool::Abort_", L"*this=%s", ToString ().c_str ())};
     Stroika_Foundation_Debug_ValgrindDisableHelgrind (fAborted_); // Valgrind warns updated with no lock, but my design (see below) - and since using std::atomic, will be published to other threads
-    fAborted_ = true;                                             // No race, because fAborted never 'unset'
-                                                                  // no need to set fTasksMaybeAdded_, since aborting each thread should be sufficient
+    fAborted_ = true; // No race, because fAborted never 'unset'
+                      // no need to set fTasksMaybeAdded_, since aborting each thread should be sufficient
     {
         // Clear the task Q and then abort each thread
         [[maybe_unused]] auto&& critSec = lock_guard{fCriticalSection_};
@@ -391,7 +393,8 @@ void ThreadPool::AbortAndWaitForDone_ () noexcept
 {
     Thread::SuppressInterruptionInContext suppressCtx; // cuz we must shutdown owned threads
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"ThreadPool::AbortAndWaitForDone_", L"*this=%s, timeoutAt=%f", ToString ().c_str (), timeoutAt)};
+    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"ThreadPool::AbortAndWaitForDone_",
+                                                                                 L"*this=%s, timeoutAt=%f", ToString ().c_str (), timeoutAt)};
 #endif
     try {
         Abort_ (); // to get the rest of the threadpool abort stuff triggered - flag saying aborting
@@ -440,7 +443,9 @@ void ThreadPool::WaitForNextTask_ (TaskType* result)
             if (not fPendingTasks_.empty ()) {
                 *result = fPendingTasks_.front ();
                 fPendingTasks_.pop_front ();
-                DbgTrace ("ThreadPool::WaitForNextTask_ () pulled a new task from 'pending-tasks' to run on this thread, leaving pending-task-list-size = %d", fPendingTasks_.size ());
+                DbgTrace ("ThreadPool::WaitForNextTask_ () pulled a new task from 'pending-tasks' to run on this thread, leaving "
+                          "pending-task-list-size = %d",
+                          fPendingTasks_.size ());
                 return;
             }
         }
@@ -455,7 +460,7 @@ void ThreadPool::WaitForNextTask_ (TaskType* result)
 ThreadPool::TPInfo_ ThreadPool::mkThread_ ()
 {
     shared_ptr<MyRunnable_> r{make_shared<ThreadPool::MyRunnable_> (*this)};
-    String                  entryName = Characters::Format (L"TPE #%d", fNextThreadEntryNumber_++); // make name so short cuz unix only shows first 15 chars - http://man7.org/linux/man-pages/man3/pthread_setname_np.3.html
+    String entryName = Characters::Format (L"TPE #%d", fNextThreadEntryNumber_++); // make name so short cuz unix only shows first 15 chars - http://man7.org/linux/man-pages/man3/pthread_setname_np.3.html
     entryName += " {" + fThreadPoolName_.value_or (L"anonymous-thread-pool") + "}";
     Thread::Ptr t = Thread::New ([r] () { r->Run (); }, Thread::eAutoStart, entryName); // race condition for updating this number, but who cares - its purely cosmetic...
     return TPInfo_{t, r};

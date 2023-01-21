@@ -39,7 +39,8 @@ namespace {
 }
 
 namespace {
-    constexpr bool kRequireImbueToUseFacet_ = false; // example uses it, and code inside windows tmget seems to reference it, but no logic for this, and no clear docs (and works same either way apparently)
+    constexpr bool kRequireImbueToUseFacet_ =
+        false; // example uses it, and code inside windows tmget seems to reference it, but no logic for this, and no clear docs (and works same either way apparently)
 }
 
 /*
@@ -93,10 +94,7 @@ namespace {
 }
 
 namespace {
-    inline constexpr uint32_t GetSecondCount_ (const optional<TimeOfDay>& tod)
-    {
-        return tod.has_value () ? tod->GetAsSecondsCount () : 0;
-    }
+    inline constexpr uint32_t GetSecondCount_ (const optional<TimeOfDay>& tod) { return tod.has_value () ? tod->GetAsSecondsCount () : 0; }
 }
 
 namespace {
@@ -167,14 +165,16 @@ DateTime::DateTime (time_t unixEpochTime) noexcept
 #else
     (void)::gmtime_r (&unixEpochTime, &tmTime);
 #endif
-    fDate_      = Date{Year (tmTime.tm_year + kTM_Year_RelativeToYear_), MonthOfYear (tmTime.tm_mon + 1), DayOfMonth (tmTime.tm_mday), DataExchange::ValidationStrategy::eThrow};
+    fDate_ = Date{Year (tmTime.tm_year + kTM_Year_RelativeToYear_), MonthOfYear (tmTime.tm_mon + 1), DayOfMonth (tmTime.tm_mday),
+                  DataExchange::ValidationStrategy::eThrow};
     fTimeOfDay_ = TimeOfDay{static_cast<unsigned> (tmTime.tm_hour), static_cast<unsigned> (tmTime.tm_min), static_cast<unsigned> (tmTime.tm_sec)};
 }
 
 DateTime::DateTime (const ::tm& tmTime, const optional<Timezone>& tz) noexcept
     : fTimezone_{tz}
     , fDate_{Year (tmTime.tm_year + kTM_Year_RelativeToYear_), MonthOfYear (tmTime.tm_mon + 1), DayOfMonth (tmTime.tm_mday)}
-    , fTimeOfDay_{TimeOfDay{static_cast<unsigned> (tmTime.tm_hour), static_cast<unsigned> (tmTime.tm_min), static_cast<unsigned> (tmTime.tm_sec), DataExchange::ValidationStrategy::eThrow}}
+    , fTimeOfDay_{TimeOfDay{static_cast<unsigned> (tmTime.tm_hour), static_cast<unsigned> (tmTime.tm_min),
+                            static_cast<unsigned> (tmTime.tm_sec), DataExchange::ValidationStrategy::eThrow}}
 {
 }
 
@@ -195,8 +195,10 @@ DateTime::DateTime (const ::timespec& tmTime, const optional<Timezone>& tz) noex
 #else
     ::tm* tmTimeData = ::gmtime (&unixTime); // not threadsafe
 #endif
-    fDate_      = Date{Year (tmTimeData->tm_year + kTM_Year_RelativeToYear_), MonthOfYear (tmTimeData->tm_mon + 1), DayOfMonth (tmTimeData->tm_mday), DataExchange::ValidationStrategy::eThrow};
-    fTimeOfDay_ = TimeOfDay{static_cast<unsigned> (tmTimeData->tm_hour), static_cast<unsigned> (tmTimeData->tm_min), static_cast<unsigned> (tmTimeData->tm_sec), DataExchange::ValidationStrategy::eThrow};
+    fDate_      = Date{Year (tmTimeData->tm_year + kTM_Year_RelativeToYear_), MonthOfYear (tmTimeData->tm_mon + 1),
+                  DayOfMonth (tmTimeData->tm_mday), DataExchange::ValidationStrategy::eThrow};
+    fTimeOfDay_ = TimeOfDay{static_cast<unsigned> (tmTimeData->tm_hour), static_cast<unsigned> (tmTimeData->tm_min),
+                            static_cast<unsigned> (tmTimeData->tm_sec), DataExchange::ValidationStrategy::eThrow};
 }
 
 #if qPlatform_POSIX
@@ -207,8 +209,10 @@ DateTime::DateTime (const timeval& tmTime, const optional<Timezone>& tz) noexcep
     time_t unixTime = tmTime.tv_sec; // IGNORE tv_usec FOR NOW because we currently don't support fractional seconds in DateTime
     tm     tmTimeData{};
     (void)::gmtime_r (&unixTime, &tmTimeData);
-    fDate_      = Date{Year (tmTimeData.tm_year + kTM_Year_RelativeToYear_), MonthOfYear (tmTimeData.tm_mon + 1), DayOfMonth (tmTimeData.tm_mday), DataExchange::ValidationStrategy::eThrow};
-    fTimeOfDay_ = TimeOfDay{static_cast<unsigned> (tmTimeData.tm_hour), static_cast<unsigned> (tmTimeData.tm_min), static_cast<unsigned> (tmTimeData.tm_sec), DataExchange::ValidationStrategy::eThrow};
+    fDate_      = Date{Year (tmTimeData.tm_year + kTM_Year_RelativeToYear_), MonthOfYear (tmTimeData.tm_mon + 1),
+                  DayOfMonth (tmTimeData.tm_mday), DataExchange::ValidationStrategy::eThrow};
+    fTimeOfDay_ = TimeOfDay{static_cast<unsigned> (tmTimeData.tm_hour), static_cast<unsigned> (tmTimeData.tm_min),
+                            static_cast<unsigned> (tmTimeData.tm_sec), DataExchange::ValidationStrategy::eThrow};
 }
 #endif
 
@@ -247,7 +251,8 @@ DateTime DateTime::Parse (const String& rep, const locale& l, const String& form
         Execution::Throw (FormatException::kThe);
     }
     size_t nCharsConsumed;
-    if (auto o = ParseQuietly_ (rep.As<wstring> (), use_facet<time_get<wchar_t>> (l), formatPattern, &nCharsConsumed); o and nCharsConsumed == rep.size ()) {
+    if (auto o = ParseQuietly_ (rep.As<wstring> (), use_facet<time_get<wchar_t>> (l), formatPattern, &nCharsConsumed);
+        o and nCharsConsumed == rep.size ()) {
         return *o;
     }
     Execution::Throw (FormatException::kThe);
@@ -269,10 +274,7 @@ DateTime DateTime::Parse (const String& rep, const locale& l, const Traversal::I
     Execution::Throw (FormatException::kThe);
 }
 
-DateTime DateTime::Parse (const String& rep, const String& formatPattern)
-{
-    return Parse (rep, locale{}, formatPattern);
-}
+DateTime DateTime::Parse (const String& rep, const String& formatPattern) { return Parse (rep, locale{}, formatPattern); }
 
 optional<DateTime> DateTime::ParseQuietly (const String& rep, LocaleIndependentFormat format, size_t* consumedCharacters)
 {
@@ -322,7 +324,8 @@ optional<DateTime> DateTime::ParseQuietly (const String& rep, LocaleIndependentF
                         return nullopt;
                     }
                     numCharsConsumed += ncc; // @todo fix - this is count of wchar_t not necessilarly full 'char32_t' characters
-                    t = TimeOfDay{static_cast<unsigned> (hour), static_cast<unsigned> (minute), static_cast<unsigned> (second), DataExchange::ValidationStrategy::eThrow};
+                    t = TimeOfDay{static_cast<unsigned> (hour), static_cast<unsigned> (minute), static_cast<unsigned> (second),
+                                  DataExchange::ValidationStrategy::eThrow};
                 }
             }
             // see about timezone (aka time-offset)
@@ -453,7 +456,8 @@ optional<DateTime> DateTime::ParseQuietly (const String& rep, LocaleIndependentF
                 numCharsConsumed += ncc;
             }
 
-            constexpr wchar_t kMonths_[12][4] = {L"Jan", L"Feb", L"Mar", L"Apr", L"May", L"Jun", L"Jul", L"Aug", L"Sep", L"Oct", L"Nov", L"Dec"};
+            constexpr wchar_t kMonths_[12][4] = {L"Jan", L"Feb", L"Mar", L"Apr", L"May", L"Jun",
+                                                 L"Jul", L"Aug", L"Sep", L"Oct", L"Nov", L"Dec"};
             for (size_t i = 0; i < NEltsOf (kMonths_); ++i) {
                 if (::wcscmp (monthStr, kMonths_[i]) == 0) {
                     month = static_cast<int> (i + 1); // one-based numbering
@@ -466,45 +470,20 @@ optional<DateTime> DateTime::ParseQuietly (const String& rep, LocaleIndependentF
             Date                d = Date{Year (year), MonthOfYear (month), DayOfMonth (day), DataExchange::ValidationStrategy::eThrow};
             optional<TimeOfDay> t;
             if (nItems >= 5) {
-                t = TimeOfDay{static_cast<unsigned> (hour), static_cast<unsigned> (minute), static_cast<unsigned> (second), DataExchange::ValidationStrategy::eThrow};
+                t = TimeOfDay{static_cast<unsigned> (hour), static_cast<unsigned> (minute), static_cast<unsigned> (second),
+                              DataExchange::ValidationStrategy::eThrow};
             }
             optional<Timezone>                       tz;
             constexpr pair<const wchar_t*, Timezone> kNamedTimezones_[]{
-                {L"Z", Timezone::kUTC},
-                {L"UT", Timezone::kUTC},
-                {L"GMT", Timezone::kUTC},
-                {L"EST", Timezone{-5 * 60}},
-                {L"EDT", Timezone{-4 * 60}},
-                {L"CST", Timezone{-6 * 60}},
-                {L"CDT", Timezone{-5 * 60}},
-                {L"MST", Timezone{-7 * 60}},
-                {L"MDT", Timezone{-6 * 60}},
-                {L"PST", Timezone{-8 * 60}},
-                {L"PDT", Timezone{-7 * 60}},
-                {L"A", Timezone{-1 * 60}},
-                {L"B", Timezone{-2 * 60}},
-                {L"C", Timezone{-3 * 60}},
-                {L"D", Timezone{-4 * 60}},
-                {L"E", Timezone{-5 * 60}},
-                {L"F", Timezone{-6 * 60}},
-                {L"G", Timezone{-7 * 60}},
-                {L"H", Timezone{-8 * 60}},
-                {L"I", Timezone{-9 * 60}},
-                {L"K", Timezone{-10 * 60}},
-                {L"L", Timezone{-11 * 60}},
-                {L"M", Timezone{-12 * 60}},
-                {L"N", Timezone{1 * 60}},
-                {L"O", Timezone{2 * 60}},
-                {L"P", Timezone{3 * 60}},
-                {L"Q", Timezone{4 * 60}},
-                {L"R", Timezone{5 * 60}},
-                {L"S", Timezone{6 * 60}},
-                {L"T", Timezone{7 * 60}},
-                {L"U", Timezone{8 * 60}},
-                {L"V", Timezone{9 * 60}},
-                {L"W", Timezone{10 * 60}},
-                {L"X", Timezone{11 * 60}},
-                {L"Y", Timezone{12 * 60}},
+                {L"Z", Timezone::kUTC},      {L"UT", Timezone::kUTC},     {L"GMT", Timezone::kUTC},    {L"EST", Timezone{-5 * 60}},
+                {L"EDT", Timezone{-4 * 60}}, {L"CST", Timezone{-6 * 60}}, {L"CDT", Timezone{-5 * 60}}, {L"MST", Timezone{-7 * 60}},
+                {L"MDT", Timezone{-6 * 60}}, {L"PST", Timezone{-8 * 60}}, {L"PDT", Timezone{-7 * 60}}, {L"A", Timezone{-1 * 60}},
+                {L"B", Timezone{-2 * 60}},   {L"C", Timezone{-3 * 60}},   {L"D", Timezone{-4 * 60}},   {L"E", Timezone{-5 * 60}},
+                {L"F", Timezone{-6 * 60}},   {L"G", Timezone{-7 * 60}},   {L"H", Timezone{-8 * 60}},   {L"I", Timezone{-9 * 60}},
+                {L"K", Timezone{-10 * 60}},  {L"L", Timezone{-11 * 60}},  {L"M", Timezone{-12 * 60}},  {L"N", Timezone{1 * 60}},
+                {L"O", Timezone{2 * 60}},    {L"P", Timezone{3 * 60}},    {L"Q", Timezone{4 * 60}},    {L"R", Timezone{5 * 60}},
+                {L"S", Timezone{6 * 60}},    {L"T", Timezone{7 * 60}},    {L"U", Timezone{8 * 60}},    {L"V", Timezone{9 * 60}},
+                {L"W", Timezone{10 * 60}},   {L"X", Timezone{11 * 60}},   {L"Y", Timezone{12 * 60}},
             };
             for (size_t i = 0; i < NEltsOf (kNamedTimezones_); ++i) {
                 if (::wcscmp (tzStr, kNamedTimezones_[i].first) == 0) {
@@ -539,7 +518,8 @@ optional<DateTime> DateTime::ParseQuietly_ (const wstring& rep, const time_get<w
         wstring                      formatPatternWS = formatPattern.As<wstring> ();
         wistringstream               iss{rep};
         istreambuf_iterator<wchar_t> itbegin{iss}; // beginning of iss
-        istreambuf_iterator<wchar_t> i = tmget.get (itbegin, istreambuf_iterator<wchar_t>{}, iss, errState, &when, formatPatternWS.c_str (), formatPatternWS.c_str () + formatPatternWS.length ());
+        istreambuf_iterator<wchar_t> i = tmget.get (itbegin, istreambuf_iterator<wchar_t>{}, iss, errState, &when, formatPatternWS.c_str (),
+                                                    formatPatternWS.c_str () + formatPatternWS.length ());
         if (errState & ios::eofbit) {
             nCharsConsumed = rep.size ();
         }
@@ -598,7 +578,9 @@ DateTime DateTime::AsUTC () const
             return *this;
         }
         else {
-            DateTime tmp = fTimezone_.has_value () ? AddSeconds (-fTimezone_->GetBiasFromUTC (fDate_, Memory::NullCoalesce (fTimeOfDay_, TimeOfDay{0}))) : *this;
+            DateTime tmp = fTimezone_.has_value ()
+                               ? AddSeconds (-fTimezone_->GetBiasFromUTC (fDate_, Memory::NullCoalesce (fTimeOfDay_, TimeOfDay{0})))
+                               : *this;
             return DateTime{tmp.GetDate (), tmp.GetTimeOfDay (), Timezone::kUTC};
         }
     };
@@ -612,7 +594,8 @@ DateTime DateTime::AsTimezone (Timezone tz) const
         return *this;
     }
     else {
-        DateTime tmp = fTimezone_.has_value () ? AddSeconds (-fTimezone_->GetBiasFromUTC (fDate_, Memory::NullCoalesce (fTimeOfDay_, TimeOfDay{0}))) : *this;
+        DateTime tmp =
+            fTimezone_.has_value () ? AddSeconds (-fTimezone_->GetBiasFromUTC (fDate_, Memory::NullCoalesce (fTimeOfDay_, TimeOfDay{0}))) : *this;
         return DateTime{tmp.GetDate (), tmp.GetTimeOfDay (), tz};
     }
 }
@@ -722,7 +705,8 @@ String DateTime::Format (NonStandardPrintFormat pf) const
                 size_t startAt = 0;
                 while (auto o = mungedData.Find (kZero2StripPattern_, startAt)) {
                     // Look for preceding / and all digits to end of string
-                    if (o->first != 0 and mungedData[o->first - 1] == '/' and mungedData.SubString (o->second).All ([] (Character c) { return c.IsDigit (); })) {
+                    if (o->first != 0 and mungedData[o->first - 1] == '/' and
+                        mungedData.SubString (o->second).All ([] (Character c) { return c.IsDigit (); })) {
                         // skip this case
                         startAt = o->second; // but don't encounter it again
                     }
@@ -753,10 +737,7 @@ String DateTime::Format (const locale& l) const
     }
 }
 
-String DateTime::Format (const String& formatPattern) const
-{
-    return Format (locale{}, formatPattern);
-}
+String DateTime::Format (const String& formatPattern) const { return Format (locale{}, formatPattern); }
 
 String DateTime::Format (const locale& l, const String& formatPattern) const
 {
@@ -893,15 +874,9 @@ namespace Stroika::Foundation::Time {
     }
 }
 
-DateTime DateTime::Add (const Duration& d) const
-{
-    return AddSeconds (d.As<int64_t> ());
-}
+DateTime DateTime::Add (const Duration& d) const { return AddSeconds (d.As<int64_t> ()); }
 
-DateTime DateTime::AddDays (int days) const
-{
-    return DateTime{GetDate ().Add (days), GetTimeOfDay (), GetTimezone ()};
-}
+DateTime DateTime::AddDays (int days) const { return DateTime{GetDate ().Add (days), GetTimeOfDay (), GetTimezone ()}; }
 
 DateTime DateTime::AddSeconds (int64_t seconds) const
 {
@@ -937,8 +912,9 @@ DateTime DateTime::AddSeconds (int64_t seconds) const
 Duration DateTime::Difference (const DateTime& rhs) const
 {
     if (GetTimezone () == rhs.GetTimezone ()) {
-        int64_t             dayDiff         = static_cast<int64_t> (GetDate ().GetJulianRep ()) - static_cast<int64_t> (rhs.GetDate ().GetJulianRep ());
-        DurationSecondsType intraDaySecDiff = static_cast<DurationSecondsType> (GetSecondCount_ (GetTimeOfDay ())) - static_cast<DurationSecondsType> (GetSecondCount_ (rhs.GetTimeOfDay ()));
+        int64_t dayDiff = static_cast<int64_t> (GetDate ().GetJulianRep ()) - static_cast<int64_t> (rhs.GetDate ().GetJulianRep ());
+        DurationSecondsType intraDaySecDiff = static_cast<DurationSecondsType> (GetSecondCount_ (GetTimeOfDay ())) -
+                                              static_cast<DurationSecondsType> (GetSecondCount_ (rhs.GetTimeOfDay ()));
         return Duration{DurationSecondsType (kSecondsPerDay_ * dayDiff) + intraDaySecDiff};
     }
     else {
@@ -1016,14 +992,12 @@ Duration Time::operator- (const DateTime& lhs, const DateTime& rhs)
  ************************** Math::NearlyEquals **********************************
  ********************************************************************************
  */
-bool Math::NearlyEquals (Time::DateTime l, Time::DateTime r)
-{
-    return NearlyEquals (l, r, static_cast<Time::DurationSecondsType> (1.0));
-}
+bool Math::NearlyEquals (Time::DateTime l, Time::DateTime r) { return NearlyEquals (l, r, static_cast<Time::DurationSecondsType> (1.0)); }
 
 bool Math::NearlyEquals (Time::DateTime l, Time::DateTime r, Time::DurationSecondsType epsilon)
 {
-    return l == r or Math::NearlyEquals (static_cast<DurationSecondsType> (l.As<time_t> ()), static_cast<DurationSecondsType> (r.As<time_t> ()), epsilon);
+    return l == r or
+           Math::NearlyEquals (static_cast<DurationSecondsType> (l.As<time_t> ()), static_cast<DurationSecondsType> (r.As<time_t> ()), epsilon);
 }
 
 bool Math::NearlyEquals (Time::DateTime l, Time::DateTime r, const Time::Duration& epsilon)

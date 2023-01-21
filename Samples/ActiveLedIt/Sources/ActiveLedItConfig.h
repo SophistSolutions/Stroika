@@ -140,12 +140,11 @@ inline unsigned long mkActiveLedItVersion_ (unsigned int majorMinor, unsigned in
     Require (versStage <= 256);
     Require (subStage <= 256);
     Require (nonDemoFlag <= 256);
-    return (static_cast<unsigned long> (majorMinor) << 24) |
-           (static_cast<unsigned long> (versStage) << 16) |
-           (static_cast<unsigned long> (subStage) << 8) |
-           (static_cast<unsigned long> (nonDemoFlag) << 0);
+    return (static_cast<unsigned long> (majorMinor) << 24) | (static_cast<unsigned long> (versStage) << 16) |
+           (static_cast<unsigned long> (subStage) << 8) | (static_cast<unsigned long> (nonDemoFlag) << 0);
 }
-const unsigned long kActiveLedItDWORDVersion = mkActiveLedItVersion_ (qLed_Version_MajorMinor, qLed_Version_Stage, qLed_Version_SubStage, 1 + qMagicVersionExtra);
+const unsigned long kActiveLedItDWORDVersion =
+    mkActiveLedItVersion_ (qLed_Version_MajorMinor, qLed_Version_Stage, qLed_Version_SubStage, 1 + qMagicVersionExtra);
 #endif
 
 #if defined(__cplusplus)

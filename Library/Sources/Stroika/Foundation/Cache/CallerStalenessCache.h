@@ -182,7 +182,8 @@ namespace Stroika::Foundation::Cache {
         template <typename K1 = KEY, enable_if_t<not IsKeyedCache<K1>>* = nullptr>
         nonvirtual void Add (Configuration::ArgByValueType<VALUE> v);
         template <typename K1 = KEY, enable_if_t<IsKeyedCache<K1>>* = nullptr>
-        nonvirtual void Add (Configuration::ArgByValueType<K1> k, Configuration::ArgByValueType<VALUE> v, AddReplaceMode addReplaceMode = AddReplaceMode::eAddReplaces);
+        nonvirtual void Add (Configuration::ArgByValueType<K1> k, Configuration::ArgByValueType<VALUE> v,
+                             AddReplaceMode addReplaceMode = AddReplaceMode::eAddReplaces);
 
     public:
         /**

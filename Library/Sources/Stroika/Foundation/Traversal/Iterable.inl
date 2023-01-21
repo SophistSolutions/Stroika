@@ -250,7 +250,8 @@ namespace Stroika::Foundation::Traversal {
     {
         using DECAYED_CONTAINER = decay_t<CONTAINER_OF_T>;
         // Most containers are safe to use copy-by-value, except not initializer_list<> - not sure how to check for that generically...
-        using USE_CONTAINER_TYPE                             = conditional_t<is_copy_constructible_v<DECAYED_CONTAINER> and not is_same_v<DECAYED_CONTAINER, initializer_list<T>>, DECAYED_CONTAINER, vector<T>>;
+        using USE_CONTAINER_TYPE =
+            conditional_t<is_copy_constructible_v<DECAYED_CONTAINER> and not is_same_v<DECAYED_CONTAINER, initializer_list<T>>, DECAYED_CONTAINER, vector<T>>;
         shared_ptr<USE_CONTAINER_TYPE> sharedCopyOfContainer = make_shared<USE_CONTAINER_TYPE> (forward<CONTAINER_OF_T> (from));
         auto                           currentI              = sharedCopyOfContainer->begin ();
         function<optional<T> ()>       getNext               = [sharedCopyOfContainer, currentI] () mutable -> optional<T> {
@@ -288,12 +289,11 @@ namespace Stroika::Foundation::Traversal {
     bool Iterable<T>::Contains (ArgByValueType<T> element, EQUALS_COMPARER&& equalsComparer) const
     {
         // grab iterator to first matching item, and contains if not at end; this is faster than using iterators
-        return static_cast<bool> (this->Find ([&element, &equalsComparer] (T i) -> bool {
-            return equalsComparer (i, element);
-        }));
+        return static_cast<bool> (this->Find ([&element, &equalsComparer] (T i) -> bool { return equalsComparer (i, element); }));
     }
     template <typename T>
-    template <typename LHS_CONTAINER_TYPE, typename RHS_CONTAINER_TYPE, typename EQUALS_COMPARER, enable_if_t<Configuration::IsIterable_v<RHS_CONTAINER_TYPE> and Common::IsEqualsComparer<EQUALS_COMPARER> ()>*>
+    template <typename LHS_CONTAINER_TYPE, typename RHS_CONTAINER_TYPE, typename EQUALS_COMPARER,
+              enable_if_t<Configuration::IsIterable_v<RHS_CONTAINER_TYPE> and Common::IsEqualsComparer<EQUALS_COMPARER> ()>*>
     bool Iterable<T>::SetEquals (const LHS_CONTAINER_TYPE& lhs, const RHS_CONTAINER_TYPE& rhs, EQUALS_COMPARER&& equalsComparer)
     {
         // @todo OPTIMIZATION - check if contexpr EQUALS_COMPARE == equal_to and if less<> defined - and if so - construct a std::set<> to lookup/compare (do on shorter side)
@@ -328,13 +328,15 @@ namespace Stroika::Foundation::Traversal {
         return true;
     }
     template <typename T>
-    template <typename RHS_CONTAINER_TYPE, typename EQUALS_COMPARER, enable_if_t<Configuration::IsIterable_v<RHS_CONTAINER_TYPE> and Common::IsEqualsComparer<EQUALS_COMPARER> ()>*>
+    template <typename RHS_CONTAINER_TYPE, typename EQUALS_COMPARER,
+              enable_if_t<Configuration::IsIterable_v<RHS_CONTAINER_TYPE> and Common::IsEqualsComparer<EQUALS_COMPARER> ()>*>
     inline bool Iterable<T>::SetEquals (const RHS_CONTAINER_TYPE& rhs, EQUALS_COMPARER&& equalsComparer) const
     {
         return SetEquals (*this, rhs, forward<EQUALS_COMPARER> (equalsComparer));
     }
     template <typename T>
-    template <typename LHS_CONTAINER_TYPE, typename RHS_CONTAINER_TYPE, typename EQUALS_COMPARER, enable_if_t<Configuration::IsIterable_v<RHS_CONTAINER_TYPE> and Common::IsEqualsComparer<EQUALS_COMPARER> ()>*>
+    template <typename LHS_CONTAINER_TYPE, typename RHS_CONTAINER_TYPE, typename EQUALS_COMPARER,
+              enable_if_t<Configuration::IsIterable_v<RHS_CONTAINER_TYPE> and Common::IsEqualsComparer<EQUALS_COMPARER> ()>*>
     bool Iterable<T>::MultiSetEquals (const LHS_CONTAINER_TYPE& lhs, const RHS_CONTAINER_TYPE& rhs, EQUALS_COMPARER&& equalsComparer)
     {
         auto tallyOf = [&equalsComparer] (const auto& c, Configuration::ArgByValueType<T> item) -> size_t {
@@ -363,13 +365,15 @@ namespace Stroika::Foundation::Traversal {
         return true;
     }
     template <typename T>
-    template <typename RHS_CONTAINER_TYPE, typename EQUALS_COMPARER, enable_if_t<Configuration::IsIterable_v<RHS_CONTAINER_TYPE> and Common::IsEqualsComparer<EQUALS_COMPARER> ()>*>
+    template <typename RHS_CONTAINER_TYPE, typename EQUALS_COMPARER,
+              enable_if_t<Configuration::IsIterable_v<RHS_CONTAINER_TYPE> and Common::IsEqualsComparer<EQUALS_COMPARER> ()>*>
     inline bool Iterable<T>::MultiSetEquals (const RHS_CONTAINER_TYPE& rhs, EQUALS_COMPARER&& equalsComparer) const
     {
         return MultiSetEquals (*this, rhs, equalsComparer);
     }
     template <typename T>
-    template <typename LHS_CONTAINER_TYPE, typename RHS_CONTAINER_TYPE, typename EQUALS_COMPARER, enable_if_t<Configuration::IsIterable_v<RHS_CONTAINER_TYPE> /* and Common::IsEqualsComparer<EQUALS_COMPARER> ()*/>*>
+    template <typename LHS_CONTAINER_TYPE, typename RHS_CONTAINER_TYPE, typename EQUALS_COMPARER,
+              enable_if_t<Configuration::IsIterable_v<RHS_CONTAINER_TYPE> /* and Common::IsEqualsComparer<EQUALS_COMPARER> ()*/>*>
     bool Iterable<T>::SequentialEquals (const LHS_CONTAINER_TYPE& lhs, const RHS_CONTAINER_TYPE& rhs, EQUALS_COMPARER&& equalsComparer, bool useIterableSize)
     {
         if (useIterableSize) {
@@ -410,7 +414,8 @@ namespace Stroika::Foundation::Traversal {
         }
     }
     template <typename T>
-    template <typename RHS_CONTAINER_TYPE, typename EQUALS_COMPARER, enable_if_t<Configuration::IsIterable_v<RHS_CONTAINER_TYPE> and Common::IsEqualsComparer<EQUALS_COMPARER> ()>*>
+    template <typename RHS_CONTAINER_TYPE, typename EQUALS_COMPARER,
+              enable_if_t<Configuration::IsIterable_v<RHS_CONTAINER_TYPE> and Common::IsEqualsComparer<EQUALS_COMPARER> ()>*>
     inline bool Iterable<T>::SequentialEquals (const RHS_CONTAINER_TYPE& rhs, EQUALS_COMPARER&& equalsComparer, bool useIterableSize) const
     {
         return SequentialEquals (*this, rhs, forward<EQUALS_COMPARER> (equalsComparer), useIterableSize);
@@ -423,7 +428,8 @@ namespace Stroika::Foundation::Traversal {
         auto sharedContext = make_shared<Iterable<T>> (*this);
         // If we have many iterator copies, each needs to copy their 'base iterator' (this is their 'index' into the container)
         // Both the 'sharedContext' and the perIteratorContextBaseIterator' get stored into the lambda closure so they get appropriately copied as you copy iterators
-        function<optional<T> ()> getNext = [sharedContext, perIteratorContextBaseIterator = sharedContext->MakeIterator (), includeIfTrue] () mutable -> optional<T> {
+        function<optional<T> ()> getNext = [sharedContext, perIteratorContextBaseIterator = sharedContext->MakeIterator (),
+                                            includeIfTrue] () mutable -> optional<T> {
             while (perIteratorContextBaseIterator and not includeIfTrue (*perIteratorContextBaseIterator)) {
                 ++perIteratorContextBaseIterator;
             }
@@ -521,7 +527,8 @@ namespace Stroika::Foundation::Traversal {
         auto sharedContext = make_shared<Iterable<T>> (*this);
         // If we have many iterator copies, each needs to copy their 'base iterator' (this is their 'index' into the container)
         // Both the 'sharedContext' and the perIteratorContextBaseIterator' get stored into the lambda closure so they get appropriately copied as you copy iterators
-        function<optional<RESULT> ()> getNext = [sharedContext, perIteratorContextBaseIterator = sharedContext->MakeIterator (), extract] () mutable -> optional<RESULT> {
+        function<optional<RESULT> ()> getNext = [sharedContext, perIteratorContextBaseIterator = sharedContext->MakeIterator (),
+                                                 extract] () mutable -> optional<RESULT> {
             if (perIteratorContextBaseIterator) {
                 RESULT result = extract (*perIteratorContextBaseIterator);
                 ++perIteratorContextBaseIterator;
@@ -540,7 +547,8 @@ namespace Stroika::Foundation::Traversal {
         auto sharedContext = make_shared<Iterable<T>> (*this);
         // If we have many iterator copies, each needs to copy their 'base iterator' (this is their 'index' into the container)
         // Both the 'sharedContext' and the perIteratorContextBaseIterator' get stored into the lambda closure so they get appropriately copied as you copy iterators
-        function<optional<RESULT> ()> getNext = [sharedContext, perIteratorContextBaseIterator = sharedContext->MakeIterator (), extract] () mutable -> optional<RESULT> {
+        function<optional<RESULT> ()> getNext = [sharedContext, perIteratorContextBaseIterator = sharedContext->MakeIterator (),
+                                                 extract] () mutable -> optional<RESULT> {
             // tricky. The funtion we are defining returns nullopt as a sentinal to signal end of iteration. The function we are GIVEN returns nullopt
             // to signal skip this item. So adjust accordingly
             while (perIteratorContextBaseIterator) {
@@ -611,7 +619,8 @@ namespace Stroika::Foundation::Traversal {
         // If we have many iterator copies, each needs to copy their 'base iterator' (this is their 'index' into the container)
         // Both the 'sharedContext' and the perIteratorContextBaseIterator' get stored into the lambda closure so they get appropriately copied as you copy iterators
         // perIteratorContextNItemsToSkip also must be cloned per iterator instance
-        function<optional<T> ()> getNext = [sharedContext, perIteratorContextBaseIterator = sharedContext->MakeIterator (), perIteratorContextNItemsToSkip = nItems] () mutable -> optional<T> {
+        function<optional<T> ()> getNext = [sharedContext, perIteratorContextBaseIterator = sharedContext->MakeIterator (),
+                                            perIteratorContextNItemsToSkip = nItems] () mutable -> optional<T> {
             while (perIteratorContextBaseIterator and perIteratorContextNItemsToSkip > 0) {
                 --perIteratorContextNItemsToSkip;
                 ++perIteratorContextBaseIterator;
@@ -633,7 +642,8 @@ namespace Stroika::Foundation::Traversal {
         // If we have many iterator copies, each needs to copy their 'base iterator' (this is their 'index' into the container)
         // Both the 'sharedContext' and the perIteratorContextBaseIterator' get stored into the lambda closure so they get appropriately copied as you copy iterators
         // perIteratorContextNItemsToTake also must be cloned per iterator instance
-        function<optional<T> ()> getNext = [sharedContext, perIteratorContextBaseIterator = sharedContext->MakeIterator (), perIteratorContextNItemsToTake = nItems] () mutable -> optional<T> {
+        function<optional<T> ()> getNext = [sharedContext, perIteratorContextBaseIterator = sharedContext->MakeIterator (),
+                                            perIteratorContextNItemsToTake = nItems] () mutable -> optional<T> {
             if (perIteratorContextNItemsToTake == 0) {
                 return nullopt;
             }
@@ -656,7 +666,9 @@ namespace Stroika::Foundation::Traversal {
         // Both the 'sharedContext' and the perIteratorContextBaseIterator' get stored into the lambda closure so they get appropriately copied as you copy iterators
         // perIteratorContextNItemsToSkip also must be cloned per iterator instance
         // perIteratorContextNItemsToTake also must be cloned per iterator instance
-        function<optional<T> ()> getNext = [sharedContext, perIteratorContextBaseIterator = sharedContext->MakeIterator (), perIteratorContextNItemsToSkip = from, perIteratorContextNItemsToTake = to - from] () mutable -> optional<T> {
+        function<optional<T> ()> getNext = [sharedContext, perIteratorContextBaseIterator = sharedContext->MakeIterator (),
+                                            perIteratorContextNItemsToSkip = from,
+                                            perIteratorContextNItemsToTake = to - from] () mutable -> optional<T> {
             while (perIteratorContextBaseIterator and perIteratorContextNItemsToSkip > 0) {
                 --perIteratorContextNItemsToSkip;
                 ++perIteratorContextBaseIterator;
@@ -786,10 +798,8 @@ namespace Stroika::Foundation::Traversal {
         constexpr bool kUseIterableRepIteration_ = true; // same semantics, but maybe faster cuz avoids Stroika iterator extra virtual calls overhead
         if (kUseIterableRepIteration_) {
             optional<RESULT_T> result; // actual result captured in sife-effect of lambda
-            auto               f = [&that, &result] (ArgByValueType<T> i) {
-                return (result = that (i)).has_value ();
-            };
-            Iterator<T> t = this->_fRep->Find (f);
+            auto               f = [&that, &result] (ArgByValueType<T> i) { return (result = that (i)).has_value (); };
+            Iterator<T>        t = this->_fRep->Find (f);
             return t ? result : optional<RESULT_T>{};
         }
         else {
@@ -893,7 +903,8 @@ namespace Stroika::Foundation::Traversal {
     }
     template <typename T>
     template <typename RESULT_TYPE>
-    inline RESULT_TYPE Iterable<T>::ReduceValue (const function<RESULT_TYPE (ArgByValueType<T>, ArgByValueType<T>)>& op, ArgByValueType<RESULT_TYPE> defaultValue) const
+    inline RESULT_TYPE Iterable<T>::ReduceValue (const function<RESULT_TYPE (ArgByValueType<T>, ArgByValueType<T>)>& op,
+                                                 ArgByValueType<RESULT_TYPE>                                         defaultValue) const
     {
         return Reduce<RESULT_TYPE> (op).value_or (defaultValue);
     }
@@ -1011,7 +1022,10 @@ namespace Stroika::Foundation::Traversal {
     inline size_t Iterable<T>::Count (const function<bool (ArgByValueType<T>)>& includeIfTrue) const
     {
         size_t cnt{};
-        Apply ([&] (ArgByValueType<T> a) { if (includeIfTrue (a)) ++cnt; });
+        Apply ([&] (ArgByValueType<T> a) {
+            if (includeIfTrue (a))
+                ++cnt;
+        });
         Ensure (cnt == Where (includeIfTrue).size ());
         return cnt;
     }
@@ -1118,7 +1132,8 @@ namespace Stroika::Foundation::Traversal {
      */
     template <typename T>
     template <typename T_EQUALS_COMPARER>
-    constexpr Iterable<T>::SequentialEqualsComparer<T_EQUALS_COMPARER>::SequentialEqualsComparer (const T_EQUALS_COMPARER& elementEqualsComparer, bool useIterableSize)
+    constexpr Iterable<T>::SequentialEqualsComparer<T_EQUALS_COMPARER>::SequentialEqualsComparer (const T_EQUALS_COMPARER& elementEqualsComparer,
+                                                                                                  bool useIterableSize)
         : fElementComparer{elementEqualsComparer}
         , fUseIterableSize{useIterableSize}
     {

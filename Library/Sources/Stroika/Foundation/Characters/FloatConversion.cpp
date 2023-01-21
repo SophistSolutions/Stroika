@@ -104,7 +104,8 @@ namespace {
                     useFloatField = ios_base::fixed;
                     break;
                 case FloatConversion::FloatFormatType::eAutomatic: {
-                    bool useScientificNotation = abs (f) >= pow (10, usePrecision / 2) or (f != 0 and abs (f) < pow (10, -static_cast<int> (usePrecision) / 2)); // scientific preserves more precision - but non-scientific looks better
+                    bool useScientificNotation = abs (f) >= pow (10, usePrecision / 2) or
+                                                 (f != 0 and abs (f) < pow (10, -static_cast<int> (usePrecision) / 2)); // scientific preserves more precision - but non-scientific looks better
                     if (useScientificNotation) {
                         useFloatField = ios_base::scientific;
                     }
@@ -123,9 +124,7 @@ namespace {
 
         s << f;
 
-        String tmp = options.GetUsingLocaleClassic ()
-                         ? String{s.str ()}
-                         : String::FromNarrowString (s.str (), options.GetUseLocale ());
+        String tmp = options.GetUsingLocaleClassic () ? String{s.str ()} : String::FromNarrowString (s.str (), options.GetUseLocale ());
         if (options.GetTrimTrailingZeros ().value_or (FloatConversion::ToStringOptions::kDefaultTrimTrailingZeros)) {
             Characters::FloatConversion::Private_::TrimTrailingZeros_ (&tmp);
         }

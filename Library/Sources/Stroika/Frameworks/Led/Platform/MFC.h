@@ -412,8 +412,10 @@ namespace Stroika::Frameworks::Led::Platform {
     private:
         nonvirtual void StartDragAutoscrollTimer ();
         nonvirtual void StopDragAutoscrollTimer ();
-        enum { eAutoscrolling4DragTimerEventID = 435 }; // Magic#
-        UINT_PTR fDragAutoScrollTimerID;                // zero means no timer
+        enum {
+            eAutoscrolling4DragTimerEventID = 435
+        };                               // Magic#
+        UINT_PTR fDragAutoScrollTimerID; // zero means no timer
 
     private:
         struct LedStartDragAndDropContext {
@@ -537,7 +539,8 @@ namespace Stroika::Frameworks::Led::Platform {
         for Led 2.2. In Led 2.2, Led_MFC was the SOLE class provided to integrated Led with MFC. Now there is a whole suite of
         individually selectable templates to provide that interfacing.</p>
     */
-    using Led_MFC = Led_MFC_CViewHelper<Led_MFC_DragAndDropWindow<Led_MFC_OptionalWin32SDKMessageMimicHelper<Led_MFC_MimicMFCAPIHelper<Led_MFC_Helper<CView, TextInteractor>>>>>;
+    using Led_MFC =
+        Led_MFC_CViewHelper<Led_MFC_DragAndDropWindow<Led_MFC_OptionalWin32SDKMessageMimicHelper<Led_MFC_MimicMFCAPIHelper<Led_MFC_Helper<CView, TextInteractor>>>>>;
 
     /*
     @CLASS:         Led_MFC_COleControlHelper<BASECLASS>
@@ -727,30 +730,29 @@ namespace Stroika::Frameworks::Led::Platform {
     @CLASS:         LED_MFC_HANDLE_COMMAND
     @DESCRIPTION:   <p>Trivial helper for building MFC message maps.</p>
     */
-#define LED_MFC_HANDLE_COMMAND(A)                             \
-    ON_COMMAND_RANGE (A, A, &ThisClass::OnPerformCommand_MSG) \
+#define LED_MFC_HANDLE_COMMAND(A)                                                                                                          \
+    ON_COMMAND_RANGE (A, A, &ThisClass::OnPerformCommand_MSG)                                                                              \
     ON_UPDATE_COMMAND_UI (A, &ThisClass::OnUpdateCommand_MSG)
 
 /*
     @CLASS:         LED_MFC_HANDLE_COMMAND_RANGE
     @DESCRIPTION:   <p>Trivial helper for building MFC message maps.</p>
     */
-#define LED_MFC_HANDLE_COMMAND_RANGE(A, B)                    \
-    ON_COMMAND_RANGE (A, B, &ThisClass::OnPerformCommand_MSG) \
+#define LED_MFC_HANDLE_COMMAND_RANGE(A, B)                                                                                                 \
+    ON_COMMAND_RANGE (A, B, &ThisClass::OnPerformCommand_MSG)                                                                              \
     ON_UPDATE_COMMAND_UI_RANGE (A, B, &ThisClass::OnUpdateCommand_MSG)
 
 /*
     @CLASS:         LED_MFC_HANDLE_COMMAND_M
     @DESCRIPTION:   <p></p>
     */
-#define LED_MFC_HANDLE_COMMAND_M(A) \
-    LED_MFC_HANDLE_COMMAND (MFC_CommandNumberMapping::Get ().ReverseLookup (A))
+#define LED_MFC_HANDLE_COMMAND_M(A) LED_MFC_HANDLE_COMMAND (MFC_CommandNumberMapping::Get ().ReverseLookup (A))
 
 /*
     @CLASS:         LED_MFC_HANDLE_COMMAND_RANGE_M
     @DESCRIPTION:   <p></p>
     */
-#define LED_MFC_HANDLE_COMMAND_RANGE_M(A, B) \
+#define LED_MFC_HANDLE_COMMAND_RANGE_M(A, B)                                                                                               \
     LED_MFC_HANDLE_COMMAND_RANGE (MFC_CommandNumberMapping::Get ().ReverseLookup (A), MFC_CommandNumberMapping::Get ().ReverseLookup (B))
 }
 

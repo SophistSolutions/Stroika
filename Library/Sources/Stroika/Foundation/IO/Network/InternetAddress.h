@@ -189,7 +189,8 @@ namespace Stroika::Foundation::IO::Network {
         constexpr InternetAddress (const in6_addr& i);
         constexpr InternetAddress (array<uint8_t, 16> octets, AddressFamily af = AddressFamily::V6);
         constexpr InternetAddress (array<byte, 16> octets, AddressFamily af = AddressFamily::V6);
-        template <typename ITERABLE_OF_UINT8OrByte, enable_if_t<Configuration::IsIterableOfT_v<ITERABLE_OF_UINT8OrByte, byte> or Configuration::IsIterableOfT_v<ITERABLE_OF_UINT8OrByte, uint8_t>>* = nullptr>
+        template <typename ITERABLE_OF_UINT8OrByte,
+                  enable_if_t<Configuration::IsIterableOfT_v<ITERABLE_OF_UINT8OrByte, byte> or Configuration::IsIterableOfT_v<ITERABLE_OF_UINT8OrByte, uint8_t>>* = nullptr>
         InternetAddress (ITERABLE_OF_UINT8OrByte octets, AddressFamily af);
 
     public:
@@ -410,12 +411,14 @@ namespace Stroika::Foundation::IO::Network {
     /**
      *  Return kAddrAny - both the IPv4 and IPv6 variants (depending on ipSupport argument) - which defaults to both.
      */
-    Traversal::Iterable<InternetAddress> InternetAddresses_Any (InternetProtocol::IP::IPVersionSupport ipSupport = InternetProtocol::IP::IPVersionSupport::eDEFAULT);
+    Traversal::Iterable<InternetAddress>
+    InternetAddresses_Any (InternetProtocol::IP::IPVersionSupport ipSupport = InternetProtocol::IP::IPVersionSupport::eDEFAULT);
 
     /**
      *  Return kLocalhost - both the IPv4 and IPv6 variants (depending on ipSupport argument) - which defaults to both.
      */
-    Traversal::Iterable<InternetAddress> InternetAddresses_Localhost (InternetProtocol::IP::IPVersionSupport ipSupport = InternetProtocol::IP::IPVersionSupport::eDEFAULT);
+    Traversal::Iterable<InternetAddress>
+    InternetAddresses_Localhost (InternetProtocol::IP::IPVersionSupport ipSupport = InternetProtocol::IP::IPVersionSupport::eDEFAULT);
 
 }
 
@@ -435,11 +438,9 @@ namespace Stroika::Foundation::DataExchange {
 namespace Stroika::Foundation::Traversal::RangeTraits {
 
     template <>
-    struct DefaultOpenness<IO::Network::InternetAddress> : ExplicitOpenness<Openness::eClosed, Openness::eClosed> {
-    };
+    struct DefaultOpenness<IO::Network::InternetAddress> : ExplicitOpenness<Openness::eClosed, Openness::eClosed> {};
     template <>
-    struct DefaultDifferenceTypes<IO::Network::InternetAddress> : ExplicitDifferenceTypes<int, unsigned int> {
-    };
+    struct DefaultDifferenceTypes<IO::Network::InternetAddress> : ExplicitDifferenceTypes<int, unsigned int> {};
     template <>
     struct Default<IO::Network::InternetAddress> : ExplicitOpennessAndDifferenceType<IO::Network::InternetAddress> {
         using InternetAddress = IO::Network::InternetAddress;
@@ -450,7 +451,8 @@ namespace Stroika::Foundation::Traversal::RangeTraits {
         static InternetAddress GetNext (InternetAddress n);
         static InternetAddress GetPrevious (InternetAddress n);
 
-        static constexpr auto Difference (Configuration::ArgByValueType<value_type> lhs, Configuration::ArgByValueType<value_type> rhs) -> SignedDifferenceType;
+        static constexpr auto Difference (Configuration::ArgByValueType<value_type> lhs, Configuration::ArgByValueType<value_type> rhs)
+            -> SignedDifferenceType;
     };
 
 }

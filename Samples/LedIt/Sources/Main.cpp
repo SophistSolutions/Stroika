@@ -102,18 +102,9 @@ inline size_t DoGetPtrSize (void* p)
  */
 #include "pool_alloc.h"
 extern "C" {
-void* __sys_alloc (std::size_t n)
-{
-    return DoSysAlloc (n);
-}
-void __sys_free (void* p)
-{
-    DoSysFree (p);
-}
-std::size_t __sys_pointer_size (void* p)
-{
-    return ::DoGetPtrSize (p);
-}
+void*       __sys_alloc (std::size_t n) { return DoSysAlloc (n); }
+void        __sys_free (void* p) { DoSysFree (p); }
+std::size_t __sys_pointer_size (void* p) { return ::DoGetPtrSize (p); }
 }
 #endif
 
@@ -134,7 +125,8 @@ static int MyXErrorHandler (Display* display, XErrorEvent* error)
         if (gdk_error_warnings) {
             char buf[64];
             XGetErrorText (display, error->error_code, buf, 63);
-            g_error ("%s\n  serial %ld error_code %d request_code %d minor_code %d\n", buf, error->serial, error->error_code, error->request_code, error->minor_code);
+            g_error ("%s\n  serial %ld error_code %d request_code %d minor_code %d\n", buf, error->serial, error->error_code,
+                     error->request_code, error->minor_code);
         }
         gdk_error_code = error->error_code;
     }

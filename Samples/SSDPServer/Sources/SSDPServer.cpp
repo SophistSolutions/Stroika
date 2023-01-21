@@ -42,16 +42,13 @@ namespace {
                 Execution::Thread::Ptr runConnectionOnAnotherThread = Execution::Thread::New ([acceptedSocketConnection, dd] () {
                     // If the URLs are served locally, you may want to update the URL based on
                     // IO::Network::GetPrimaryInternetAddress ()
-                    Connection conn{acceptedSocketConnection,
-                                    Sequence<Interceptor>{
-                                        Interceptor{
-                                            [=] (Message* m) {
-                                                RequireNotNull (m);
-                                                Response& response           = m->rwResponse ();
-                                                response.rwHeaders ().server = "stroika-ssdp-server-demo"sv;
-                                                response.contentType         = DataExchange::InternetMediaTypes::kXML;
-                                                response.write (Stroika::Frameworks::UPnP::Serialize (dd));
-                                            }}}};
+                    Connection conn{acceptedSocketConnection, Sequence<Interceptor>{Interceptor{[=] (Message* m) {
+                                        RequireNotNull (m);
+                                        Response& response           = m->rwResponse ();
+                                        response.rwHeaders ().server = "stroika-ssdp-server-demo"sv;
+                                        response.contentType         = DataExchange::InternetMediaTypes::kXML;
+                                        response.write (Stroika::Frameworks::UPnP::Serialize (dd));
+                                    }}}};
                     conn.remainingConnectionLimits = HTTP::KeepAlive{0, 0}; // disable keep-alives
                     conn.ReadAndProcessMessage ();
                 });
@@ -67,7 +64,8 @@ namespace {
 
 int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
 {
-    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"main", L"argv=%s", Characters::ToString (vector<const char*>{argv, argv + argc}).c_str ())};
+    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (
+        L"main", L"argv=%s", Characters::ToString (vector<const char*>{argv, argv + argc}).c_str ())};
 #if qPlatform_POSIX
     Execution::SignalHandlerRegistry::Get ().SetSignalHandlers (SIGPIPE, Execution::SignalHandlerRegistry::kIGNORED);
 #endif

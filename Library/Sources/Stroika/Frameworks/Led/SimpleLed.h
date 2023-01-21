@@ -84,7 +84,9 @@ namespace Stroika::Frameworks::Led {
 #endif
 
     private:
-        enum { kMaxUndoLevels = 5 };
+        enum {
+            kMaxUndoLevels = 5
+        };
         ChunkedArrayTextStore        fTextStore;
         MultiLevelUndoCommandHandler fCommandHandler;
 
@@ -143,7 +145,9 @@ namespace Stroika::Frameworks::Led {
 #endif
 
     private:
-        enum { kMaxUndoLevels = 5 };
+        enum {
+            kMaxUndoLevels = 5
+        };
         ChunkedArrayTextStore        fTextStore;
         MultiLevelUndoCommandHandler fCommandHandler;
 

@@ -33,7 +33,9 @@ namespace Stroika::Frameworks::Led {
         LineBasedPartition (TextStore& textStore);
 
     protected:
-        enum SpecialHackToDisableInit { eSpecialHackToDisableInit };
+        enum SpecialHackToDisableInit {
+            eSpecialHackToDisableInit
+        };
         LineBasedPartition (TextStore& textStore, SpecialHackToDisableInit hack);
         virtual void FinalConstruct () override;
 

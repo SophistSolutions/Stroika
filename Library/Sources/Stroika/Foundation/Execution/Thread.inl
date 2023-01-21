@@ -88,8 +88,8 @@ namespace Stroika::Foundation::Execution {
         function<void ()> fRunnable_;
         // We use a global variable (thread local) to store the abort flag. But we must access it from ANOTHER thread typically - using
         // a pointer. This is that pointer - so another thread can terminate/abort this thread.
-        InterruptFlagType_*              fTLSInterruptFlag_{};   // regular interrupt, abort interrupt, or none
-        mutable mutex                    fAccessSTDThreadMutex_; // rarely needed but to avoid small race as we shutdown thread, while we join in one thread and call GetNativeThread() in another
+        InterruptFlagType_* fTLSInterruptFlag_{}; // regular interrupt, abort interrupt, or none
+        mutable mutex fAccessSTDThreadMutex_; // rarely needed but to avoid small race as we shutdown thread, while we join in one thread and call GetNativeThread() in another
         thread                           fThread_;
         atomic<Status>                   fStatus_{Status::eNotYetRunning};
         WaitableEvent                    fRefCountBumpedEvent_;
@@ -111,19 +111,14 @@ namespace Stroika::Foundation::Execution {
      *********************************** Thread::Rep_ *******************************
      ********************************************************************************
      */
-    inline void Thread::Ptr::Rep_::Start ()
-    {
-        fOK2StartEvent_.Set ();
-    }
+    inline void Thread::Ptr::Rep_::Start () { fOK2StartEvent_.Set (); }
 
     /*
      ********************************************************************************
      ******************************** Thread::Ptr ***********************************
      ********************************************************************************
      */
-    inline Thread::Ptr::Ptr (nullptr_t)
-    {
-    }
+    inline Thread::Ptr::Ptr (nullptr_t) {}
     inline Thread::Ptr::Ptr (const shared_ptr<Rep_>& rep)
         : fRep_{rep}
     {
@@ -223,7 +218,7 @@ namespace Stroika::Foundation::Execution {
     inline bool Thread::Ptr::ThrowInterruptExceptionInsideUserAPC (optional<bool> throwInterruptExceptionInsideUserAPC)
     {
         Debug::AssertExternallySynchronizedMutex::WriteContext critSec1{fThisAssertExternallySynchronized_};
-        bool                                                   result = fRep_ == nullptr ? false : fRep_->fThrowInterruptExceptionInsideUserAPC_;
+        bool result = fRep_ == nullptr ? false : fRep_->fThrowInterruptExceptionInsideUserAPC_;
         if (throwInterruptExceptionInsideUserAPC) {
             RequireNotNull (fRep_);
             fRep_->fThrowInterruptExceptionInsideUserAPC_ = throwInterruptExceptionInsideUserAPC.value ();
@@ -239,10 +234,7 @@ namespace Stroika::Foundation::Execution {
         }
         return GetStatus_ ();
     }
-    inline void Thread::Ptr::Join (Time::DurationSecondsType timeout) const
-    {
-        JoinUntil (timeout + Time::GetTickCount ());
-    }
+    inline void Thread::Ptr::Join (Time::DurationSecondsType timeout) const { JoinUntil (timeout + Time::GetTickCount ()); }
     inline void Thread::Ptr::JoinUntil (Time::DurationSecondsType timeoutAt) const
     {
         Debug::AssertExternallySynchronizedMutex::ReadContext declareReadContext{fThisAssertExternallySynchronized_};
@@ -296,7 +288,8 @@ namespace Stroika::Foundation::Execution {
         ptr.Start ();
         return ptr;
     }
-    inline Thread::Ptr Thread::New (const function<void ()>& fun2CallOnce, AutoStartFlag, const optional<Characters::String>& name, const optional<Configuration>& configuration)
+    inline Thread::Ptr Thread::New (const function<void ()>& fun2CallOnce, AutoStartFlag, const optional<Characters::String>& name,
+                                    const optional<Configuration>& configuration)
     {
         Ptr ptr = New (fun2CallOnce, name, configuration);
         ptr.Start ();
@@ -320,10 +313,7 @@ namespace Stroika::Foundation::Execution {
      ************************ Thread::GetCurrentThreadID ****************************
      ********************************************************************************
      */
-    inline Thread::IDType Thread::GetCurrentThreadID () noexcept
-    {
-        return this_thread::get_id ();
-    }
+    inline Thread::IDType Thread::GetCurrentThreadID () noexcept { return this_thread::get_id (); }
 
     /*
      ********************************************************************************
@@ -346,25 +336,23 @@ namespace Stroika::Foundation::Configuration {
 #if !qCompilerAndStdLib_template_specialization_internalErrorWithSpecializationSignifier_Buggy
     template <>
 #endif
-    constexpr EnumNames<Execution::Thread::Status> DefaultNames<Execution::Thread::Status>::k{
-        EnumNames<Execution::Thread::Status>::BasicArrayInitializer{{
-            {Execution::Thread::Status::eNull, L"Null"},
-            {Execution::Thread::Status::eNotYetRunning, L"Not-Yet-Running"},
-            {Execution::Thread::Status::eRunning, L"Running"},
-            {Execution::Thread::Status::eAborting, L"Aborting"},
-            {Execution::Thread::Status::eCompleted, L"Completed"},
-        }}};
+    constexpr EnumNames<Execution::Thread::Status> DefaultNames<Execution::Thread::Status>::k{EnumNames<Execution::Thread::Status>::BasicArrayInitializer{{
+        {Execution::Thread::Status::eNull, L"Null"},
+        {Execution::Thread::Status::eNotYetRunning, L"Not-Yet-Running"},
+        {Execution::Thread::Status::eRunning, L"Running"},
+        {Execution::Thread::Status::eAborting, L"Aborting"},
+        {Execution::Thread::Status::eCompleted, L"Completed"},
+    }}};
 #if !qCompilerAndStdLib_template_specialization_internalErrorWithSpecializationSignifier_Buggy
     template <>
 #endif
-    constexpr EnumNames<Execution::Thread::Priority> DefaultNames<Execution::Thread::Priority>::k{
-        EnumNames<Execution::Thread::Priority>::BasicArrayInitializer{{
-            {Execution::Thread::Priority::eLowest, L"Lowest"},
-            {Execution::Thread::Priority::eBelowNormal, L"Below-Normal"},
-            {Execution::Thread::Priority::eNormal, L"Normal"},
-            {Execution::Thread::Priority::eAboveNormal, L"Above-Normal"},
-            {Execution::Thread::Priority::eHighest, L"Highest"},
-        }}};
+    constexpr EnumNames<Execution::Thread::Priority> DefaultNames<Execution::Thread::Priority>::k{EnumNames<Execution::Thread::Priority>::BasicArrayInitializer{{
+        {Execution::Thread::Priority::eLowest, L"Lowest"},
+        {Execution::Thread::Priority::eBelowNormal, L"Below-Normal"},
+        {Execution::Thread::Priority::eNormal, L"Normal"},
+        {Execution::Thread::Priority::eAboveNormal, L"Above-Normal"},
+        {Execution::Thread::Priority::eHighest, L"Highest"},
+    }}};
 }
 
 #endif /*_Stroika_Foundation_Execution_Thread_inl_*/

@@ -82,7 +82,8 @@ namespace Stroika::Foundation::Math::Optimization::DownhillSimplexMinimization {
      *      \endcode
      */
     template <typename FLOAT_TYPE>
-    Results<FLOAT_TYPE> Run (const TargetFunction<FLOAT_TYPE>& function2Minimize, const Sequence<FLOAT_TYPE>& initialValues, const Options<FLOAT_TYPE>& options = Options<FLOAT_TYPE>{});
+    Results<FLOAT_TYPE> Run (const TargetFunction<FLOAT_TYPE>& function2Minimize, const Sequence<FLOAT_TYPE>& initialValues,
+                             const Options<FLOAT_TYPE>& options = Options<FLOAT_TYPE>{});
 
 }
 

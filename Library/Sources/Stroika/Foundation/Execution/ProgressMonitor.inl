@@ -85,7 +85,8 @@ namespace Stroika::Foundation::Execution {
     {
         fFromProg_ = Math::PinToSpecialPoint (fFromProg_, parentTask.fFromProg_);
         fToProg_   = Math::PinToSpecialPoint (fToProg_, parentTask.fToProg_);
-        Require ((0.0f <= parentTask.fFromProg_) and (parentTask.fFromProg_ <= fFromProg_) and (fFromProg_ < fToProg_) and (fToProg_ <= parentTask.fToProg_) and (parentTask.fToProg_ <= 1.0f));
+        Require ((0.0f <= parentTask.fFromProg_) and (parentTask.fFromProg_ <= fFromProg_) and (fFromProg_ < fToProg_) and
+                 (fToProg_ <= parentTask.fToProg_) and (parentTask.fToProg_ <= 1.0f));
     }
     inline void ProgressMonitor::Updater::SetProgress (ProgressRangeType p)
     {

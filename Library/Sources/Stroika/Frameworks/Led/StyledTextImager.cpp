@@ -31,10 +31,7 @@ using StyleMarkerSummarySink = StyledTextImager::StyleMarkerSummarySink;
     easily either markers that take precedence over, or are always superseded by the
     standard style markers. And this returns eBaselinePriority - ZERO - by default.</p>
  */
-int StyleMarker::GetPriority () const
-{
-    return eBaselinePriority;
-}
+int StyleMarker::GetPriority () const { return eBaselinePriority; }
 
 /*
  ********************************************************************************
@@ -302,10 +299,8 @@ vector<RunElement> StyledTextImager::SummarizeStyleMarkers (size_t from, size_t 
             what @'StyledTextImager::StyleMarker' are present in the text. This breakup is done by
             @'StyledTextImager::SummarizeStyleMarkers'.</p>
 */
-void StyledTextImager::DrawSegment (Tablet* tablet,
-                                    size_t from, size_t to, const TextLayoutBlock& text,
-                                    const Led_Rect& drawInto, const Led_Rect& invalidRect,
-                                    CoordinateType useBaseLine, DistanceType* pixelsDrawn)
+void StyledTextImager::DrawSegment (Tablet* tablet, size_t from, size_t to, const TextLayoutBlock& text, const Led_Rect& drawInto,
+                                    const Led_Rect& invalidRect, CoordinateType useBaseLine, DistanceType* pixelsDrawn)
 {
     /*
      *  Note that SummarizeStyleMarkers assures 'outputSummary' comes out in VIRTUAL order.
@@ -369,11 +364,13 @@ void StyledTextImager::DrawSegment (Tablet* tablet,
             tmpDrawInto.right = drawInto.right + GetHScrollPos ();
             if (tmpDrawInto.left < tmpDrawInto.right) {
                 if (re.fMarker == nullptr) {
-                    DrawSegment_ (tablet, GetDefaultFont (), reFrom, reTo, TextLayoutBlock_VirtualSubset (text, indexIntoText_VISUAL, indexIntoText_VISUAL + reLength),
-                                  tmpDrawInto, useBaseLine, &pixelsDrawnHere);
+                    DrawSegment_ (tablet, GetDefaultFont (), reFrom, reTo,
+                                  TextLayoutBlock_VirtualSubset (text, indexIntoText_VISUAL, indexIntoText_VISUAL + reLength), tmpDrawInto,
+                                  useBaseLine, &pixelsDrawnHere);
                 }
                 else {
-                    re.fMarker->DrawSegment (this, re, tablet, reFrom, reTo, TextLayoutBlock_VirtualSubset (text, indexIntoText_VISUAL, indexIntoText_VISUAL + reLength),
+                    re.fMarker->DrawSegment (this, re, tablet, reFrom, reTo,
+                                             TextLayoutBlock_VirtualSubset (text, indexIntoText_VISUAL, indexIntoText_VISUAL + reLength),
                                              tmpDrawInto, invalidRect, useBaseLine, &pixelsDrawnHere);
                 }
             }
@@ -386,8 +383,7 @@ void StyledTextImager::DrawSegment (Tablet* tablet,
     }
 }
 
-void StyledTextImager::MeasureSegmentWidth (size_t from, size_t to, const Led_tChar* text,
-                                            DistanceType* distanceResults) const
+void StyledTextImager::MeasureSegmentWidth (size_t from, size_t to, const Led_tChar* text, DistanceType* distanceResults) const
 {
     // See SPR#1293 - may want to pass in TextLayoutBlock here - instead of just plain text...
     vector<RunElement> outputSummary = SummarizeStyleMarkers (from, to);
@@ -499,9 +495,7 @@ DistanceType StyledTextImager::MeasureSegmentBaseLine (size_t from, size_t to) c
 }
 
 #if qDebug
-void StyledTextImager::Invariant_ () const
-{
-}
+void StyledTextImager::Invariant_ () const {}
 #endif
 
 /*
@@ -509,7 +503,4 @@ void StyledTextImager::Invariant_ () const
  ************************** TrivialFontSpecStyleMarker **************************
  ********************************************************************************
  */
-int TrivialFontSpecStyleMarker::GetPriority () const
-{
-    return eBaselinePriority + 1;
-}
+int TrivialFontSpecStyleMarker::GetPriority () const { return eBaselinePriority + 1; }

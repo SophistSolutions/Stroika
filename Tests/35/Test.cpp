@@ -60,22 +60,21 @@ namespace {
             bool               fEnabled = false;
             optional<DateTime> fLastSynchronizedAt;
         };
-        OptionsFile of{
-            L"MyModule",
-            [] () -> ObjectVariantMapper {
-                ObjectVariantMapper mapper;
-                mapper.AddClass<MyData_> (initializer_list<ObjectVariantMapper::StructFieldInfo>{
-                    {L"Enabled", StructFieldMetaInfo{&MyData_::fEnabled}},
-                    {L"Last-Synchronized-At", StructFieldMetaInfo{&MyData_::fLastSynchronizedAt}},
-                });
-                return mapper;
-            }(),
-            OptionsFile::kDefaultUpgrader,
-            [] (const String& moduleName, const String& fileSuffix) -> filesystem::path {
-                return IO::FileSystem::WellKnownLocations::GetTemporary () / IO::FileSystem::ToPath (moduleName + fileSuffix);
-            }};
-        MyData_ m = of.Read<MyData_> (MyData_{}); // will return default values if file not present
-        of.Write (m);                             // test writing
+        OptionsFile of{L"MyModule",
+                       [] () -> ObjectVariantMapper {
+                           ObjectVariantMapper mapper;
+                           mapper.AddClass<MyData_> (initializer_list<ObjectVariantMapper::StructFieldInfo>{
+                               {L"Enabled", StructFieldMetaInfo{&MyData_::fEnabled}},
+                               {L"Last-Synchronized-At", StructFieldMetaInfo{&MyData_::fLastSynchronizedAt}},
+                           });
+                           return mapper;
+                       }(),
+                       OptionsFile::kDefaultUpgrader,
+                       [] (const String& moduleName, const String& fileSuffix) -> filesystem::path {
+                           return IO::FileSystem::WellKnownLocations::GetTemporary () / IO::FileSystem::ToPath (moduleName + fileSuffix);
+                       }};
+        MyData_     m = of.Read<MyData_> (MyData_{}); // will return default values if file not present
+        of.Write (m);                                 // test writing
     }
 }
 
@@ -86,30 +85,26 @@ namespace {
     };
     struct ModuleGetterSetter_Implementation_MyData_ {
         ModuleGetterSetter_Implementation_MyData_ ()
-            : fOptionsFile_{
-                  L"MyModule",
-                  [] () -> ObjectVariantMapper {
-                      ObjectVariantMapper mapper;
-                      mapper.AddClass<MyData_> (initializer_list<ObjectVariantMapper::StructFieldInfo>{
-                          {L"Enabled", StructFieldMetaInfo{&MyData_::fEnabled}},
-                          {L"Last-Synchronized-At", StructFieldMetaInfo{&MyData_::fLastSynchronizedAt}},
-                      });
-                      return mapper;
-                  }(),
-                  OptionsFile::kDefaultUpgrader,
-                  [] (const String& moduleName, const String& fileSuffix) -> filesystem::path {
-                      // for regression tests write to /tmp
-                      return IO::FileSystem::WellKnownLocations::GetTemporary () / IO::FileSystem::ToPath (moduleName + fileSuffix);
-                  }}
+            : fOptionsFile_{L"MyModule",
+                            [] () -> ObjectVariantMapper {
+                                ObjectVariantMapper mapper;
+                                mapper.AddClass<MyData_> (initializer_list<ObjectVariantMapper::StructFieldInfo>{
+                                    {L"Enabled", StructFieldMetaInfo{&MyData_::fEnabled}},
+                                    {L"Last-Synchronized-At", StructFieldMetaInfo{&MyData_::fLastSynchronizedAt}},
+                                });
+                                return mapper;
+                            }(),
+                            OptionsFile::kDefaultUpgrader,
+                            [] (const String& moduleName, const String& fileSuffix) -> filesystem::path {
+                                // for regression tests write to /tmp
+                                return IO::FileSystem::WellKnownLocations::GetTemporary () / IO::FileSystem::ToPath (moduleName + fileSuffix);
+                            }}
             , fActualCurrentConfigData_{fOptionsFile_.Read<MyData_> (MyData_{})}
         {
             Set (fActualCurrentConfigData_); // assure derived data (and changed fields etc) up to date
         }
-        MyData_ Get () const
-        {
-            return fActualCurrentConfigData_;
-        }
-        void Set (const MyData_& v)
+        MyData_ Get () const { return fActualCurrentConfigData_; }
+        void    Set (const MyData_& v)
         {
             fActualCurrentConfigData_ = v;
             fOptionsFile_.Write (v);
@@ -153,7 +148,8 @@ namespace {
                 VerifyTestResult (ct0.GetSuffix () == nullopt);
 
                 InternetMediaType ct1{L"text/plain;charset=ascii"};
-                VerifyTestResult ((ct1.GetParameters () == Containers::Mapping{Common::KeyValuePair<String, String>{L"charset", L"ascii"}}));
+                VerifyTestResult (
+                    (ct1.GetParameters () == Containers::Mapping{Common::KeyValuePair<String, String>{L"charset", L"ascii"}}));
                 VerifyTestResult (ct1.GetSuffix () == nullopt);
 
                 InternetMediaType ct2{L"text/plain; charset = ascii"};
@@ -187,23 +183,30 @@ namespace {
                 auto dumpCT = [] (const String& label, InternetMediaType i) {
                     [[maybe_unused]] InternetMediaTypeRegistry r = InternetMediaTypeRegistry::Get ();
                     DbgTrace (L"SUFFIX(%s)=%s", label.As<wstring> ().c_str (), Characters::ToString (r.GetPreferredAssociatedFileSuffix (i)).c_str ());
-                    DbgTrace (L"ASSOCFILESUFFIXES(%s)=%s", label.As<wstring> ().c_str (), Characters::ToString (r.GetAssociatedFileSuffixes (i)).c_str ());
-                    DbgTrace (L"GetAssociatedPrettyName(%s)=%s", label.As<wstring> ().c_str (), Characters::ToString (r.GetAssociatedPrettyName (i)).c_str ());
+                    DbgTrace (L"ASSOCFILESUFFIXES(%s)=%s", label.As<wstring> ().c_str (),
+                              Characters::ToString (r.GetAssociatedFileSuffixes (i)).c_str ());
+                    DbgTrace (L"GetAssociatedPrettyName(%s)=%s", label.As<wstring> ().c_str (),
+                              Characters::ToString (r.GetAssociatedPrettyName (i)).c_str ());
                 };
                 auto checkCT = [] (InternetMediaType i, const Set<String>& possibleFileSuffixes) {
                     [[maybe_unused]] InternetMediaTypeRegistry r = InternetMediaTypeRegistry::Get ();
                     using namespace Characters;
                     if (not possibleFileSuffixes.Contains (r.GetPreferredAssociatedFileSuffix (i).value_or (L""))) {
-                        Stroika::TestHarness::WarnTestIssue (
-                            Format (L"File suffix mismatch for %s: got %s, expected %s", ToString (i).c_str (), ToString (r.GetPreferredAssociatedFileSuffix (i)).c_str (), ToString (possibleFileSuffixes).c_str ()).c_str ());
+                        Stroika::TestHarness::WarnTestIssue (Format (L"File suffix mismatch for %s: got %s, expected %s", ToString (i).c_str (),
+                                                                     ToString (r.GetPreferredAssociatedFileSuffix (i)).c_str (),
+                                                                     ToString (possibleFileSuffixes).c_str ())
+                                                                 .c_str ());
                     }
                     if (not possibleFileSuffixes.Any ([&] (String suffix) -> bool { return r.GetAssociatedContentType (suffix) == i; })) {
-                        Stroika::TestHarness::WarnTestIssue (
-                            Format (L"GetAssociatedContentType for fileSuffixes %s (expected %s, got %s)",
-                                    ToString (possibleFileSuffixes).c_str (),
-                                    ToString (i).c_str (),
-                                    ToString (possibleFileSuffixes.Map<InternetMediaType> ([&] (String suffix) { return r.GetAssociatedContentType (suffix); }).As<Set<InternetMediaType>> ()).c_str ())
-                                .c_str ());
+                        Stroika::TestHarness::WarnTestIssue (Format (L"GetAssociatedContentType for fileSuffixes %s (expected %s, got %s)",
+                                                                     ToString (possibleFileSuffixes).c_str (), ToString (i).c_str (),
+                                                                     ToString (possibleFileSuffixes
+                                                                                   .Map<InternetMediaType> ([&] (String suffix) {
+                                                                                       return r.GetAssociatedContentType (suffix);
+                                                                                   })
+                                                                                   .As<Set<InternetMediaType>> ())
+                                                                         .c_str ())
+                                                                 .c_str ());
                     }
                 };
                 dumpCT (L"PLAINTEXT", InternetMediaTypes::kText_PLAIN);

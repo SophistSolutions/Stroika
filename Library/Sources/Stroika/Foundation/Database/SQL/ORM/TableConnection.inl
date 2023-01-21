@@ -18,7 +18,8 @@ namespace Stroika::Foundation::Database::SQL::ORM {
      ********************************************************************************
      */
     template <typename T, typename TRAITS>
-    TableConnection<T, TRAITS>::TableConnection (const Connection::Ptr& conn, const Schema::Table& tableSchema, const ObjectVariantMapper& objectVariantMapper, const OpertionCallbackPtr& operationCallback)
+    TableConnection<T, TRAITS>::TableConnection (const Connection::Ptr& conn, const Schema::Table& tableSchema,
+                                                 const ObjectVariantMapper& objectVariantMapper, const OpertionCallbackPtr& operationCallback)
         : pConnection{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) {
             const TableConnection* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &TableConnection::pConnection);
             return thisObj->fConnection_;
@@ -93,9 +94,8 @@ namespace Stroika::Foundation::Database::SQL::ORM {
                 fGetAll_Statement_.Reset ();
             }
         });
-        return Sequence<T>{rows.template Map<T> ([this] (const Statement::Row& r) {
-            return fObjectVariantMapper_.ToObject<T> (VariantValue{fTableSchema_.MapFromDB (r)});
-        })};
+        return Sequence<T>{rows.template Map<T> (
+            [this] (const Statement::Row& r) { return fObjectVariantMapper_.ToObject<T> (VariantValue{fTableSchema_.MapFromDB (r)}); })};
     }
     template <typename T, typename TRAITS>
     Sequence<T> TableConnection<T, TRAITS>::GetAll (const function<optional<T> (const Statement::Row&, const exception_ptr&)>& onItemException)
@@ -139,7 +139,8 @@ namespace Stroika::Foundation::Database::SQL::ORM {
     void TableConnection<T, TRAITS>::AddOrUpdate (const T& v)
     {
         // @todo: this can and should be done much more efficiently
-        Mapping<String, VariantValue> dbV = fTableSchema_.MapToDB (fObjectVariantMapper_.FromObject (v).template As<Mapping<String, VariantValue>> ());
+        Mapping<String, VariantValue> dbV =
+            fTableSchema_.MapToDB (fObjectVariantMapper_.FromObject (v).template As<Mapping<String, VariantValue>> ());
         if (Get (dbV[fTableSchema_.GetIDField ()->fName])) {
             Update (v);
         }
@@ -190,7 +191,7 @@ namespace Stroika::Foundation::Database::SQL::ORM {
         Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
         using DataExchange::VariantValue;
         Mapping<String, VariantValue> objFields = fObjectVariantMapper_.FromObject (v).template As<Mapping<String, VariantValue>> ();
-        VariantValue                  idField   = *objFields.Lookup (Memory::ValueOf (fTableSchema_.GetIDField ()).GetVariantValueFieldName ());
+        VariantValue idField = *objFields.Lookup (Memory::ValueOf (fTableSchema_.GetIDField ()).GetVariantValueFieldName ());
         Delete (idField);
     }
     template <typename T, typename TRAITS>
@@ -219,13 +220,14 @@ namespace Stroika::Foundation::Database::SQL::ORM {
         DoExecute_ ([] (Statement& s) { s.Execute (); }, s, write);
     }
     template <typename T, typename TRAITS>
-    const typename TableConnection<T, TRAITS>::OpertionCallbackPtr TableConnection<T, TRAITS>::kDefaultTracingOpertionCallback = [] (Operation op, const TableConnection* tableConn, const Statement* s) {
-        if (op == Operation::eStartingRead or op == Operation::eStartingWrite) {
-            if (s != nullptr) {
-                DbgTrace (L"SQL: %s", s->GetSQL (Statement::WhichSQLFlag::eExpanded).c_str ());
+    const typename TableConnection<T, TRAITS>::OpertionCallbackPtr TableConnection<T, TRAITS>::kDefaultTracingOpertionCallback =
+        [] (Operation op, const TableConnection* tableConn, const Statement* s) {
+            if (op == Operation::eStartingRead or op == Operation::eStartingWrite) {
+                if (s != nullptr) {
+                    DbgTrace (L"SQL: %s", s->GetSQL (Statement::WhichSQLFlag::eExpanded).c_str ());
+                }
             }
-        }
-    };
+        };
 
 }
 

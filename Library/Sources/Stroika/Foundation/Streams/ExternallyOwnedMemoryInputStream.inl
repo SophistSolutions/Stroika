@@ -38,19 +38,13 @@ namespace Stroika::Foundation::Streams {
         bool fIsOpenForRead_{true};
 
     protected:
-        virtual bool IsSeekable () const override
-        {
-            return true;
-        }
+        virtual bool IsSeekable () const override { return true; }
         virtual void CloseRead () override
         {
             Require (IsOpenRead ());
             fIsOpenForRead_ = false;
         }
-        virtual bool IsOpenRead () const override
-        {
-            return fIsOpenForRead_;
-        }
+        virtual bool   IsOpenRead () const override { return fIsOpenForRead_; }
         virtual size_t Read (ELEMENT_TYPE* intoStart, ELEMENT_TYPE* intoEnd) override
         {
             RequireNotNull (intoStart);
@@ -145,14 +139,17 @@ namespace Stroika::Foundation::Streams {
         // note, because its not LEGAL to dereference end (and visual studio checks) - even though we dont REALLY dereference and use value -
         // just compute start and add end-start
         if constexpr (is_same_v<ELEMENT_TYPE, byte> and is_same_v<typename ELEMENT_ITERATOR::value_type, char>) {
-            return New (reinterpret_cast<const byte*> (Traversal::Iterator2Pointer (start)), reinterpret_cast<const byte*> (Traversal::Iterator2Pointer (start) + (end - start)));
+            return New (reinterpret_cast<const byte*> (Traversal::Iterator2Pointer (start)),
+                        reinterpret_cast<const byte*> (Traversal::Iterator2Pointer (start) + (end - start)));
         }
         else {
-            return New (static_cast<const ELEMENT_TYPE*> (Traversal::Iterator2Pointer (start)), static_cast<const ELEMENT_TYPE*> (Traversal::Iterator2Pointer (start) + (end - start)));
+            return New (static_cast<const ELEMENT_TYPE*> (Traversal::Iterator2Pointer (start)),
+                        static_cast<const ELEMENT_TYPE*> (Traversal::Iterator2Pointer (start) + (end - start)));
         }
     }
     template <typename ELEMENT_TYPE>
-    inline auto ExternallyOwnedMemoryInputStream<ELEMENT_TYPE>::New (Execution::InternallySynchronized internallySynchronized, const ELEMENT_TYPE* start, const ELEMENT_TYPE* end) -> Ptr
+    inline auto ExternallyOwnedMemoryInputStream<ELEMENT_TYPE>::New (Execution::InternallySynchronized internallySynchronized,
+                                                                     const ELEMENT_TYPE* start, const ELEMENT_TYPE* end) -> Ptr
     {
         switch (internallySynchronized) {
             case Execution::eInternallySynchronized:
@@ -166,7 +163,8 @@ namespace Stroika::Foundation::Streams {
     }
     template <typename ELEMENT_TYPE>
     template <random_access_iterator ELEMENT_ITERATOR>
-    inline auto ExternallyOwnedMemoryInputStream<ELEMENT_TYPE>::New (Execution::InternallySynchronized internallySynchronized, ELEMENT_ITERATOR start, ELEMENT_ITERATOR end) -> Ptr
+    inline auto ExternallyOwnedMemoryInputStream<ELEMENT_TYPE>::New (Execution::InternallySynchronized internallySynchronized,
+                                                                     ELEMENT_ITERATOR start, ELEMENT_ITERATOR end) -> Ptr
         requires is_same_v<typename ELEMENT_ITERATOR::value_type, ELEMENT_TYPE> or
                  (is_same_v<ELEMENT_TYPE, byte> and is_same_v<typename ELEMENT_ITERATOR::value_type, char>)
     {

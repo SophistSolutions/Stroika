@@ -37,7 +37,8 @@ namespace Stroika::Foundation::IO::Network::Transfer {
         /**
          */
         struct Options {
-            Options (const optional<unsigned int>& maxConnections = nullopt, const function<Connection::Ptr ()>& connectionFactory = (Connection::Ptr (*) ()) & Connection::New);
+            Options (const optional<unsigned int>&       maxConnections    = nullopt,
+                     const function<Connection::Ptr ()>& connectionFactory = (Connection::Ptr (*) ()) & Connection::New);
 
             /**
              *  Default options for each connection
@@ -77,7 +78,9 @@ namespace Stroika::Foundation::IO::Network::Transfer {
          */
         nonvirtual Connection::Ptr New (URI hint = {});
         nonvirtual Connection::Ptr New (const Time::Duration& timeout, URI hint = {});
-        enum AllocateGloballyIfTimeout { eAllocateGloballyIfTimeout };
+        enum AllocateGloballyIfTimeout {
+            eAllocateGloballyIfTimeout
+        };
         nonvirtual Connection::Ptr New (AllocateGloballyIfTimeout, const Time::Duration& timeout, URI hint = {});
 
     private:

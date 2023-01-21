@@ -46,71 +46,69 @@ Request::Request (Request&& src)
 }
 
 Request::Request ()
-    : httpVersion{
-          [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> String {
-              const Request*                                 thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Request::httpVersion);
-              AssertExternallySynchronizedMutex::ReadContext declareContext{*thisObj};
-              return thisObj->fHTTPVersion_;
-          },
-          [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, const auto& versionOrVersionLabel) {
-              Request*                                        thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Request::httpVersion);
-              AssertExternallySynchronizedMutex::WriteContext declareContext{*thisObj};
-              static const String                             kLabeled_10_{"HTTP/1.0"sv};
-              static const String                             kLabeled_11_{"HTTP/1.1"sv};
-              auto                                            versionStringComparer = String::EqualsComparer{Characters::CompareOptions::eCaseInsensitive};
-              if (versionOrVersionLabel == kLabeled_11_ or versionOrVersionLabel == IO::Network::HTTP::Versions::kOnePointOne or versionStringComparer (versionOrVersionLabel, kLabeled_11_)) {
-                  thisObj->fHTTPVersion_ = IO::Network::HTTP::Versions::kOnePointOne;
-              }
-              else if (versionOrVersionLabel == kLabeled_10_ or versionOrVersionLabel == IO::Network::HTTP::Versions::kOnePointZero or versionStringComparer (versionOrVersionLabel, kLabeled_10_)) {
-                  thisObj->fHTTPVersion_ = IO::Network::HTTP::Versions::kOnePointZero;
-              }
-              else if (versionOrVersionLabel.StartsWith ("HTTP/"sv, Characters::CompareOptions::eCaseInsensitive)) {
-                  thisObj->fHTTPVersion_ = versionOrVersionLabel.SubString (5);
-              }
-              else {
-                  thisObj->fHTTPVersion_ = versionOrVersionLabel;
-              }
-          }}
-    , httpMethod{
-          [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) {
-              const Request*                                 thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Request::httpMethod);
-              AssertExternallySynchronizedMutex::ReadContext declareContext{*thisObj};
-              return thisObj->fMethod_;
-          },
-          [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, const auto& method) {
-              Request*                                        thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Request::httpMethod);
-              AssertExternallySynchronizedMutex::WriteContext declareContext{*thisObj};
-              thisObj->fMethod_ = method;
-          }}
-    , url{
-          [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) {
-              const Request*                                 thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Request::url);
+    : httpVersion{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> String {
+                      const Request* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Request::httpVersion);
+                      AssertExternallySynchronizedMutex::ReadContext declareContext{*thisObj};
+                      return thisObj->fHTTPVersion_;
+                  },
+                  [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, const auto& versionOrVersionLabel) {
+                      Request* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Request::httpVersion);
+                      AssertExternallySynchronizedMutex::WriteContext declareContext{*thisObj};
+                      static const String                             kLabeled_10_{"HTTP/1.0"sv};
+                      static const String                             kLabeled_11_{"HTTP/1.1"sv};
+                      auto versionStringComparer = String::EqualsComparer{Characters::CompareOptions::eCaseInsensitive};
+                      if (versionOrVersionLabel == kLabeled_11_ or versionOrVersionLabel == IO::Network::HTTP::Versions::kOnePointOne or
+                          versionStringComparer (versionOrVersionLabel, kLabeled_11_)) {
+                          thisObj->fHTTPVersion_ = IO::Network::HTTP::Versions::kOnePointOne;
+                      }
+                      else if (versionOrVersionLabel == kLabeled_10_ or versionOrVersionLabel == IO::Network::HTTP::Versions::kOnePointZero or
+                               versionStringComparer (versionOrVersionLabel, kLabeled_10_)) {
+                          thisObj->fHTTPVersion_ = IO::Network::HTTP::Versions::kOnePointZero;
+                      }
+                      else if (versionOrVersionLabel.StartsWith ("HTTP/"sv, Characters::CompareOptions::eCaseInsensitive)) {
+                          thisObj->fHTTPVersion_ = versionOrVersionLabel.SubString (5);
+                      }
+                      else {
+                          thisObj->fHTTPVersion_ = versionOrVersionLabel;
+                      }
+                  }}
+    , httpMethod{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) {
+                     const Request* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Request::httpMethod);
+                     AssertExternallySynchronizedMutex::ReadContext declareContext{*thisObj};
+                     return thisObj->fMethod_;
+                 },
+                 [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, const auto& method) {
+                     Request* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Request::httpMethod);
+                     AssertExternallySynchronizedMutex::WriteContext declareContext{*thisObj};
+                     thisObj->fMethod_ = method;
+                 }}
+    , url{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) {
+              const Request* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Request::url);
               AssertExternallySynchronizedMutex::ReadContext declareContext{*thisObj};
               return thisObj->fURL_;
           },
           [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, const auto& url) {
-              Request*                                        thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Request::url);
+              Request* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Request::url);
               AssertExternallySynchronizedMutex::WriteContext declareContext{*thisObj};
               thisObj->fURL_ = url;
           }}
-    , headers{
-          [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> const IO::Network::HTTP::Headers& {
-              const Request*                                 thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Request::headers);
-              AssertExternallySynchronizedMutex::ReadContext declareContext{*thisObj};
-              return thisObj->fHeaders_;
-          }}
+    , headers{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> const IO::Network::HTTP::Headers& {
+        const Request* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Request::headers);
+        AssertExternallySynchronizedMutex::ReadContext declareContext{*thisObj};
+        return thisObj->fHeaders_;
+    }}
     , rwHeaders{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> IO::Network::HTTP::Headers& {
-                    Request*                                        thisObj = const_cast<Request*> (qStroika_Foundation_Common_Property_OuterObjPtr (property, &Request::rwHeaders));
+                    Request* thisObj = const_cast<Request*> (qStroika_Foundation_Common_Property_OuterObjPtr (property, &Request::rwHeaders));
                     AssertExternallySynchronizedMutex::WriteContext declareContext{*thisObj}; // not shared_lock cuz rw
                     return thisObj->fHeaders_;
                 },
                 [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, const auto& newHeaders) {
-                    Request*                                        thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Request::rwHeaders);
+                    Request* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Request::rwHeaders);
                     AssertExternallySynchronizedMutex::WriteContext declareContext{*thisObj};
                     thisObj->fHeaders_ = newHeaders;
                 }}
     , contentType{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) {
-        const Request*                                 thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Request::contentType);
+        const Request* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Request::contentType);
         AssertExternallySynchronizedMutex::ReadContext declareContext{*thisObj};
         return thisObj->fHeaders_.contentType ();
     }}

@@ -21,8 +21,11 @@ BraceWrapping:
   BeforeElse: true
   IndentBraces: false
 BreakConstructorInitializersBeforeComma: true
-#ColumnLimit:     160
-ColumnLimit: 0
+ColumnLimit:     140
+#ColumnLimit: 0
+PenaltyExcessCharacter: 1
+AllowShortEnumsOnASingleLine: false
+
 Cpp11BracedListStyle: true
 FixNamespaceComments: false
 IndentWidth: 4

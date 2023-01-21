@@ -27,7 +27,9 @@ void ORM::ProvisionForVersion (SQL::Connection::Ptr conn, Configuration::Version
 {
     Collection<TableProvisioner> provisioners;
     for (const auto& ti : tables) {
-        provisioners += TableProvisioner{ti.fName, [=] (SQL::Connection::Ptr conn, optional<Configuration::Version> existingVersion, [[maybe_unused]] Configuration::Version targetDBVersion) -> void {
+        provisioners += TableProvisioner{ti.fName,
+                                         [=] (SQL::Connection::Ptr conn, optional<Configuration::Version> existingVersion,
+                                              [[maybe_unused]] Configuration::Version targetDBVersion) -> void {
                                              // properly upgrade - for now just create if doesn't exist
                                              if (!existingVersion) {
                                                  conn.Exec (Schema::StandardSQLStatements{ti}.CreateTable ());
@@ -38,8 +40,9 @@ void ORM::ProvisionForVersion (SQL::Connection::Ptr conn, Configuration::Version
 }
 void ORM::ProvisionForVersion (SQL::Connection::Ptr conn, Configuration::Version targetDBVersion, const Traversal::Iterable<TableProvisioner>& tables)
 {
-    TraceContextBumper ctx{L"ORM::ProvisionForVersion", Stroika_Foundation_Debug_OptionalizeTraceArgs (L"conn=%s", Characters::ToString (conn).c_str ())};
-    SQL::Statement     doesTableExist = conn.mkStatement (conn.GetEngineProperties ()->GetSQL (SQL::EngineProperties::NonStandardSQL::eDoesTableExist));
+    TraceContextBumper ctx{L"ORM::ProvisionForVersion",
+                           Stroika_Foundation_Debug_OptionalizeTraceArgs (L"conn=%s", Characters::ToString (conn).c_str ())};
+    SQL::Statement doesTableExist = conn.mkStatement (conn.GetEngineProperties ()->GetSQL (SQL::EngineProperties::NonStandardSQL::eDoesTableExist));
     for (const auto& ti : tables) {
         doesTableExist.Reset ();
         doesTableExist.Bind (SQL::EngineProperties::kDoesTableExistParameterName, ti.fTableName);

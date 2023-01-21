@@ -34,22 +34,13 @@ using Time::TimeOfDay;
  *********************** ObjectReaderIElementConsumer ***************************
  ********************************************************************************
  */
-shared_ptr<IElementConsumer> IElementConsumer::HandleChildStart ([[maybe_unused]] const Name& name)
-{
-    return nullptr;
-}
+shared_ptr<IElementConsumer> IElementConsumer::HandleChildStart ([[maybe_unused]] const Name& name) { return nullptr; }
 
-void IElementConsumer::HandleTextInside ([[maybe_unused]] const String& text)
-{
-}
+void IElementConsumer::HandleTextInside ([[maybe_unused]] const String& text) {}
 
-void IElementConsumer::Activated ([[maybe_unused]] Context& r)
-{
-}
+void IElementConsumer::Activated ([[maybe_unused]] Context& r) {}
 
-void IElementConsumer::Deactivating ()
-{
-}
+void IElementConsumer::Deactivating () {}
 
 /*
  ********************************************************************************
@@ -206,7 +197,8 @@ void IConsumerDelegateToContext::StartElement (const StructuredStreamEvents::Nam
     AssertNotNull (fContext.GetTop ());
 #if qStroika_Foundation_DataExchange_StructuredStreamEvents_SupportTracing
     if (fContext.fTraceThisReader) {
-        DbgTrace (L"%sCalling IConsumerDelegateToContext::HandleChildStart ('%s')...", fContext.TraceLeader_ ().c_str (), name.fLocalName.As<wstring> ().c_str ());
+        DbgTrace (L"%sCalling IConsumerDelegateToContext::HandleChildStart ('%s')...", fContext.TraceLeader_ ().c_str (),
+                  name.fLocalName.As<wstring> ().c_str ());
     }
 #endif
     shared_ptr<IElementConsumer> eltToPush = fContext.GetTop ()->HandleChildStart (name);
@@ -218,7 +210,8 @@ void IConsumerDelegateToContext::EndElement ([[maybe_unused]] const StructuredSt
     AssertNotNull (fContext.GetTop ());
 #if qStroika_Foundation_DataExchange_StructuredStreamEvents_SupportTracing
     if (fContext.fTraceThisReader) {
-        DbgTrace (L"%sCalling IConsumerDelegateToContext::EndElement ('%s')...", fContext.TraceLeader_ ().c_str (), name.fLocalName.As<wstring> ().c_str ());
+        DbgTrace (L"%sCalling IConsumerDelegateToContext::EndElement ('%s')...", fContext.TraceLeader_ ().c_str (),
+                  name.fLocalName.As<wstring> ().c_str ());
     }
 #endif
     fContext.Pop ();
@@ -228,7 +221,8 @@ void IConsumerDelegateToContext::TextInsideElement (const String& text)
     AssertNotNull (fContext.GetTop ());
 #if qStroika_Foundation_DataExchange_StructuredStreamEvents_SupportTracing
     if (fContext.fTraceThisReader) {
-        DbgTrace (L"%sCalling IConsumerDelegateToContext::TextInsideElement ('%s')...", fContext.TraceLeader_ ().c_str (), text.LimitLength (50).c_str ());
+        DbgTrace (L"%sCalling IConsumerDelegateToContext::TextInsideElement ('%s')...", fContext.TraceLeader_ ().c_str (),
+                  text.LimitLength (50).c_str ());
     }
 #endif
     fContext.GetTop ()->HandleTextInside (text);

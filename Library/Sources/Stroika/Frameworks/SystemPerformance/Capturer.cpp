@@ -21,19 +21,19 @@ using namespace Stroika::Frameworks::SystemPerformance;
  ********************************************************************************
  */
 Capturer::Capturer ()
-    : pMostRecentMeasurements{
-          [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> MeasurementSet {
-              const Capturer* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Capturer::pMostRecentMeasurements);
-              return thisObj->fCurrentMeasurementSet_.load ();
+    : pMostRecentMeasurements{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> MeasurementSet {
+        const Capturer* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Capturer::pMostRecentMeasurements);
+        return thisObj->fCurrentMeasurementSet_.load ();
+    }}
+    , pMeasurementsCallbacks{
+          [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> Collection<NewMeasurementsCallbackType> {
+              const Capturer* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Capturer::pMeasurementsCallbacks);
+              return thisObj->fCallbacks_.load ();
+          },
+          [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, const auto& callbacks) {
+              Capturer* thisObj    = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Capturer::pMeasurementsCallbacks);
+              thisObj->fCallbacks_ = callbacks;
           }}
-    , pMeasurementsCallbacks{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> Collection<NewMeasurementsCallbackType> {
-                                 const Capturer* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Capturer::pMeasurementsCallbacks);
-                                 return thisObj->fCallbacks_.load ();
-                             },
-                             [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, const auto& callbacks) {
-                                 Capturer* thisObj    = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Capturer::pMeasurementsCallbacks);
-                                 thisObj->fCallbacks_ = callbacks;
-                             }}
     , pCaptureSets{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> Collection<CaptureSet> {
                        const Capturer* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Capturer::pCaptureSets);
                        return thisObj->fCaptureSets_.load ();
@@ -52,15 +52,9 @@ Capturer::Capturer (const CaptureSet& cs)
     AddCaptureSet (cs);
 }
 
-void Capturer::AddMeasurementsCallback (const NewMeasurementsCallbackType& cb)
-{
-    fCallbacks_.rwget ()->Add (cb);
-}
+void Capturer::AddMeasurementsCallback (const NewMeasurementsCallbackType& cb) { fCallbacks_.rwget ()->Add (cb); }
 
-void Capturer::RemoveMeasurementsCallback (const NewMeasurementsCallbackType& cb)
-{
-    fCallbacks_.rwget ()->Remove (cb);
-}
+void Capturer::RemoveMeasurementsCallback (const NewMeasurementsCallbackType& cb) { fCallbacks_.rwget ()->Remove (cb); }
 
 void Capturer::AddCaptureSet (const CaptureSet& cs)
 {

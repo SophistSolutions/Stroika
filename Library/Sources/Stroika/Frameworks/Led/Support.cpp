@@ -52,15 +52,9 @@ using namespace Stroika::Frameworks;
 using namespace Stroika::Frameworks::Led;
 
 #if !qWideCharacters
-Led_tString Led::Led_WideString2tString (const wstring& s)
-{
-    return Wide2ACPString (s);
-}
+Led_tString Led::Led_WideString2tString (const wstring& s) { return Wide2ACPString (s); }
 
-wstring Led::Led_tString2WideString (const Led_tString& s)
-{
-    return ACP2WideString (s);
-}
+wstring Led::Led_tString2WideString (const Led_tString& s) { return ACP2WideString (s); }
 #endif
 
 #if qWideCharacters != qTargetPlatformSDKUseswchar_t
@@ -171,10 +165,7 @@ void Led::SyncronizeLedXTickCount (unsigned long xTickCount)
 @DESCRIPTION:   <p>X-Windows specific. See also @'SyncronizeLedXTickCount' and @'Time::GetTickCount'. Maps Time::GetTickCount ()
             result to the sort of time value you can stick into an XEvent record.</p>
 */
-unsigned long Led::LedTickCount2XTime (float ledTickCount)
-{
-    return static_cast<unsigned long> (ledTickCount * 1000.0f);
-}
+unsigned long Led::LedTickCount2XTime (float ledTickCount) { return static_cast<unsigned long> (ledTickCount * 1000.0f); }
 #endif
 
 /*
@@ -240,10 +231,7 @@ void Led::Led_ThrowOSErr (OSErr err)
     }
 }
 
-void (*Led::Led_Get_ThrowOSErrException_Handler ()) (OSErr err)
-{
-    return sLedThrowOSErrExceptionCallback;
-}
+void (*Led::Led_Get_ThrowOSErrException_Handler ()) (OSErr err) { return sLedThrowOSErrExceptionCallback; }
 
 void Led::Led_Set_ThrowOSErrException_Handler (void (*throwOSErrExceptionCallback) (OSErr err))
 {
@@ -377,10 +365,7 @@ VariantArrayPacker::~VariantArrayPacker ()
     ::SafeArrayUnaccessData (fSafeArrayVariant->parray);
 }
 
-void* VariantArrayPacker::PokeAtData () const
-{
-    return fPtr;
-}
+void* VariantArrayPacker::PokeAtData () const { return fPtr; }
 
 /*
  ********************************************************************************
@@ -408,10 +393,7 @@ VariantArrayUnpacker::~VariantArrayUnpacker ()
     ::SafeArrayUnaccessData (fSafeArray);
 }
 
-const void* VariantArrayUnpacker::PeekAtData () const
-{
-    return fPtr;
-}
+const void* VariantArrayUnpacker::PeekAtData () const { return fPtr; }
 
 VARTYPE VariantArrayUnpacker::GetArrayElementType () const
 {
@@ -574,7 +556,8 @@ void Led::DumpSupportedInterfaces (IUnknown* obj, const char* objectName, const 
                         DWORD dwType = 0;
                         TCHAR interfaceNameBuf[1024];
                         DWORD interfaceNameBufSize = sizeof (interfaceNameBuf);
-                        if (::RegQueryValueEx (iKey, _T(""), nullptr, &dwType, reinterpret_cast<LPBYTE> (interfaceNameBuf), &interfaceNameBufSize) == ERROR_SUCCESS) {
+                        if (::RegQueryValueEx (iKey, _T(""), nullptr, &dwType, reinterpret_cast<LPBYTE> (interfaceNameBuf),
+                                               &interfaceNameBufSize) == ERROR_SUCCESS) {
                             OutputDebugStringA (levelPrefix);
                             OutputDebugString (interfaceNameBuf);
                             OutputDebugStringA ("\n");
@@ -644,7 +627,7 @@ void Led::DumpObjectsInIterator (IEnumUnknown* iter, const char* iteratorName, c
 {
     {
         string label = iteratorName == nullptr ? string{} : Characters::CString::Format (" (named '%s')", iteratorName);
-        string msg   = Characters::CString::Format ("Dumping objects (and their interface names) for iterator%s at %p\n", label.c_str (), iter);
+        string msg = Characters::CString::Format ("Dumping objects (and their interface names) for iterator%s at %p\n", label.c_str (), iter);
         ::OutputDebugStringA (msg.c_str ());
         if (levelPrefix == nullptr) {
             levelPrefix = "\t";
@@ -740,30 +723,18 @@ size_t Led_URLD::GetTitleLength () const
     return 0;
 }
 
-char* Led_URLD::PeekAtURLD () const
-{
-    return (&const_cast<Led_URLD*> (this)->fData.front ());
-}
+char* Led_URLD::PeekAtURLD () const { return (&const_cast<Led_URLD*> (this)->fData.front ()); }
 
-char* Led_URLD::PeekAtURL () const
-{
-    return (&const_cast<Led_URLD*> (this)->fData.front ());
-}
+char* Led_URLD::PeekAtURL () const { return (&const_cast<Led_URLD*> (this)->fData.front ()); }
 
 char* Led_URLD::PeekAtTitle () const
 {
     return PeekAtURL () + GetURLLength () + 1; // skip URL and '\r'
 }
 
-string Led_URLD::GetTitle () const
-{
-    return string{PeekAtTitle (), GetTitleLength ()};
-}
+string Led_URLD::GetTitle () const { return string{PeekAtTitle (), GetTitleLength ()}; }
 
-string Led_URLD::GetURL () const
-{
-    return string{PeekAtURL (), GetURLLength ()};
-}
+string Led_URLD::GetURL () const { return string{PeekAtURL (), GetURLLength ()}; }
 
 /*
  ********************************************************************************
@@ -775,9 +746,7 @@ DWORD Led_URLManager::sDDEMLInstance = 0; //  The DDEML instance identifier.
 #endif
 Led_URLManager* Led_URLManager::sThe = nullptr;
 
-Led_URLManager::Led_URLManager ()
-{
-}
+Led_URLManager::Led_URLManager () {}
 
 Led_URLManager& Led_URLManager::Get ()
 {
@@ -954,7 +923,8 @@ void Led_URLManager::Open_ActiveX (const string& url)
 {
     Memory::StackBuffer<wchar_t> wideURLBuf{Memory::eUninitialized, url.length () + 1};
     {
-        int nWideChars         = ::MultiByteToWideChar (CP_ACP, 0, url.c_str (), static_cast<int> (url.length ()), wideURLBuf.data (), static_cast<int> (url.length ()));
+        int nWideChars         = ::MultiByteToWideChar (CP_ACP, 0, url.c_str (), static_cast<int> (url.length ()), wideURLBuf.data (),
+                                                        static_cast<int> (url.length ()));
         wideURLBuf[nWideChars] = '\0';
     }
     IUnknown* pUnk = nullptr; // implies we are an OLE-ignorant app. But I'm not sure what else I'm supposed to pass here!
@@ -1169,7 +1139,7 @@ void Led_URLManager::InitDDEHandler ()
 #if qPlatform_MacOS
 ProcessSerialNumber Led_URLManager::FindBrowser ()
 {
-    OSType              sig         = 'MOSS'; // currently we hardwire Netscape - but we could extend this list to include all known browsers...
+    OSType              sig = 'MOSS'; // currently we hardwire Netscape - but we could extend this list to include all known browsers...
     OSType              processType = 'APPL';
     ProcessSerialNumber psn;
     psn.highLongOfPSN = 0;
@@ -1191,7 +1161,8 @@ ProcessSerialNumber Led_URLManager::FindBrowser ()
 #endif
 
 #if qUseSpyglassDDESDIToOpenURLs
-HDDEDATA CALLBACK Led_URLManager::SimpleDdeCallBack (UINT /*type*/, UINT /*fmt*/, HCONV /*hconv*/, HSZ /*hsz1*/, HSZ /*hsz2*/, HDDEDATA /*hData*/, DWORD /*dwData1*/, DWORD /*dwData2*/)
+HDDEDATA CALLBACK Led_URLManager::SimpleDdeCallBack (UINT /*type*/, UINT /*fmt*/, HCONV /*hconv*/, HSZ /*hsz1*/, HSZ /*hsz2*/,
+                                                     HDDEDATA /*hData*/, DWORD /*dwData1*/, DWORD /*dwData2*/)
 {
     return 0;
 }
@@ -1562,8 +1533,7 @@ string Led::MakeSophistsAppNameVersionURL (const string& relURL, const string& a
     Require (relURL.length () > 0 and relURL[0] == '/');
     char fullVersionBuf[1024];
     (void)snprintf (fullVersionBuf, Memory::NEltsOf (fullVersionBuf), "%d", qLed_FullVersion);
-    string fullURL = "http://www.sophists.com" + relURL +
-                     "?AppName=" + appName +
+    string fullURL = "http://www.sophists.com" + relURL + "?AppName=" + appName +
 #if qPlatform_Windows
                      string{"&Platform=Windows"} +
 #elif qPlatform_MacOS
@@ -1571,10 +1541,8 @@ string Led::MakeSophistsAppNameVersionURL (const string& relURL, const string& a
 #elif qStroika_FeatureSupported_XWindows
                      string{"&Platform=XWindows"} +
 #endif
-                     "&MajorMinorVersion=" + qLed_MajorMinorVersionString +
-                     "&LedFullVersion=" + fullVersionBuf +
-                     "&ShortVersionString=" + qLed_ShortVersionString +
-                     extraArgs;
+                     "&MajorMinorVersion=" + qLed_MajorMinorVersionString + "&LedFullVersion=" + fullVersionBuf +
+                     "&ShortVersionString=" + qLed_ShortVersionString + extraArgs;
     return fullURL;
 }
 
@@ -1588,10 +1556,7 @@ bool Led::Led_CasedCharsEqual (char lhs, char rhs, bool ignoreCase)
     if (lhs == rhs) {
         return true;
     }
-    if (ignoreCase and
-        isascii (lhs) and isalpha (lhs) and
-        isascii (rhs) and isalpha (rhs) and
-        toupper (lhs) == toupper (rhs)) {
+    if (ignoreCase and isascii (lhs) and isalpha (lhs) and isascii (rhs) and isalpha (rhs) and toupper (lhs) == toupper (rhs)) {
         return true;
     }
     return false;

@@ -38,30 +38,12 @@ namespace Stroika::Foundation::Database::SQL {
         }
         return *this;
     }
-    inline Connection::IRep* Connection::Ptr::operator->() const noexcept
-    {
-        return _fRep.get ();
-    }
-    inline auto Connection::Ptr::operator== (const Ptr& rhs) const
-    {
-        return _fRep == rhs._fRep;
-    }
-    inline bool Connection::Ptr::operator== (nullptr_t) const noexcept
-    {
-        return _fRep.get () == nullptr;
-    }
-    inline shared_ptr<const EngineProperties> Connection::Ptr::GetEngineProperties () const
-    {
-        return _fRep->GetEngineProperties ();
-    }
-    inline void Connection::Ptr::Exec (const String& sql) const
-    {
-        _fRep->Exec (sql);
-    }
-    inline String Connection::Ptr::ToString () const
-    {
-        return Characters::Format (L"%p", _fRep.get ());
-    }
+    inline Connection::IRep* Connection::Ptr::operator->() const noexcept { return _fRep.get (); }
+    inline auto Connection::Ptr::operator== (const Ptr& rhs) const { return _fRep == rhs._fRep; }
+    inline bool Connection::Ptr::             operator== (nullptr_t) const noexcept { return _fRep.get () == nullptr; }
+    inline shared_ptr<const EngineProperties> Connection::Ptr::GetEngineProperties () const { return _fRep->GetEngineProperties (); }
+    inline void                               Connection::Ptr::Exec (const String& sql) const { _fRep->Exec (sql); }
+    inline String                             Connection::Ptr::ToString () const { return Characters::Format (L"%p", _fRep.get ()); }
 
 }
 

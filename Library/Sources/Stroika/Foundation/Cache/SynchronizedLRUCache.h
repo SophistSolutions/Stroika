@@ -54,7 +54,8 @@ namespace Stroika::Foundation::Cache {
         SynchronizedLRUCache (const SynchronizedLRUCache& src);
 
         //tmphack - really just for deduction guide - but cannot get working below
-        SynchronizedLRUCache (pair<KEY, VALUE> ignored, size_t maxCacheSize = 1, const KEY_EQUALS_COMPARER& keyEqualsComparer = {}, size_t hashTableSize = 1, KEY_HASH_FUNCTION hashFunction = KEY_HASH_FUNCTION{})
+        SynchronizedLRUCache (pair<KEY, VALUE> ignored, size_t maxCacheSize = 1, const KEY_EQUALS_COMPARER& keyEqualsComparer = {},
+                              size_t hashTableSize = 1, KEY_HASH_FUNCTION hashFunction = KEY_HASH_FUNCTION{})
             : inherited{maxCacheSize, keyEqualsComparer, hashTableSize, hashFunction}
         {
         }
@@ -138,7 +139,8 @@ namespace Stroika::Foundation::Cache {
         /**
          *  @see LRUCache::LookupValue ()
          */
-        nonvirtual VALUE LookupValue (typename Configuration::ArgByValueType<KEY> key, const function<VALUE (typename Configuration::ArgByValueType<KEY>)>& valueFetcher);
+        nonvirtual VALUE LookupValue (typename Configuration::ArgByValueType<KEY>                          key,
+                                      const function<VALUE (typename Configuration::ArgByValueType<KEY>)>& valueFetcher);
 
     public:
         /**

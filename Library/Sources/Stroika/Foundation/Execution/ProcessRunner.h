@@ -144,14 +144,18 @@ namespace Stroika::Foundation::Execution {
         ProcessRunner (const ProcessRunner&) = delete;
 
     public:
-        ProcessRunner (const String& commandLine, const Streams::InputStream<byte>::Ptr& in = nullptr, const Streams::OutputStream<byte>::Ptr& out = nullptr, const Streams::OutputStream<byte>::Ptr& error = nullptr);
-        ProcessRunner (const filesystem::path& executable, const Containers::Sequence<String>& args, const Streams::InputStream<byte>::Ptr& in = nullptr, const Streams::OutputStream<byte>::Ptr& out = nullptr, const Streams::OutputStream<byte>::Ptr& error = nullptr);
+        ProcessRunner (const String& commandLine, const Streams::InputStream<byte>::Ptr& in = nullptr,
+                       const Streams::OutputStream<byte>::Ptr& out = nullptr, const Streams::OutputStream<byte>::Ptr& error = nullptr);
+        ProcessRunner (const filesystem::path& executable, const Containers::Sequence<String>& args, const Streams::InputStream<byte>::Ptr& in = nullptr,
+                       const Streams::OutputStream<byte>::Ptr& out = nullptr, const Streams::OutputStream<byte>::Ptr& error = nullptr);
 #if !qTargetPlatformSDKUseswchar_t && 0
-        ProcessRunner (const SDKString& commandLine, const Streams::InputStream<byte>::Ptr& in = nullptr, const Streams::OutputStream<byte>::Ptr& out = nullptr, const Streams::OutputStream<byte>::Ptr& error = nullptr)
+        ProcessRunner (const SDKString& commandLine, const Streams::InputStream<byte>::Ptr& in = nullptr,
+                       const Streams::OutputStream<byte>::Ptr& out = nullptr, const Streams::OutputStream<byte>::Ptr& error = nullptr)
             : ProcessRunner (String::FromSDKString (commandLine), in, out, error)
         {
         }
-        ProcessRunner (const SDKString& executable, const Containers::Sequence<SDKString>& args, const Streams::InputStream<byte>::Ptr& in = nullptr, const Streams::OutputStream<byte>::Ptr& out = nullptr, const Streams::OutputStream<byte>::Ptr& error = nullptr)
+        ProcessRunner (const SDKString& executable, const Containers::Sequence<SDKString>& args, const Streams::InputStream<byte>::Ptr& in = nullptr,
+                       const Streams::OutputStream<byte>::Ptr& out = nullptr, const Streams::OutputStream<byte>::Ptr& error = nullptr)
             : ProcessRunner (String::FromSDKString (executable), args, in, out, error)
         {
         }
@@ -229,8 +233,10 @@ namespace Stroika::Foundation::Execution {
          *
          *  @see RunInBackground
          */
-        nonvirtual void Run (optional<ProcessResultType>* processResult = nullptr, ProgressMonitor::Updater progress = nullptr, Time::DurationSecondsType timeout = Time::kInfinite);
-        nonvirtual Characters::String Run (const Characters::String& cmdStdInValue, optional<ProcessResultType>* processResult = nullptr, ProgressMonitor::Updater progress = nullptr, Time::DurationSecondsType timeout = Time::kInfinite);
+        nonvirtual void Run (optional<ProcessResultType>* processResult = nullptr, ProgressMonitor::Updater progress = nullptr,
+                             Time::DurationSecondsType timeout = Time::kInfinite);
+        nonvirtual Characters::String Run (const Characters::String& cmdStdInValue, optional<ProcessResultType>* processResult = nullptr,
+                                           ProgressMonitor::Updater progress = nullptr, Time::DurationSecondsType timeout = Time::kInfinite);
 
     public:
         class BackgroundProcess;
@@ -253,7 +259,8 @@ namespace Stroika::Foundation::Execution {
          *
          *      \note not sure why this was ever public - so switched to private 2016-02-03 - Stk v2.0a126
          */
-        nonvirtual function<void ()> CreateRunnable_ (Synchronized<optional<ProcessResultType>>* processResult, Synchronized<optional<pid_t>>* runningPID, ProgressMonitor::Updater progress);
+        nonvirtual function<void ()> CreateRunnable_ (Synchronized<optional<ProcessResultType>>* processResult,
+                                                      Synchronized<optional<pid_t>>* runningPID, ProgressMonitor::Updater progress);
 
     private:
         nonvirtual String GetEffectiveCmdLine_ () const;
@@ -279,15 +286,19 @@ namespace Stroika::Foundation::Execution {
         /**
          */
 #if qPlatform_POSIX
-        Exception (const String& cmdLine, const String& errorMessage, const optional<String>& stderrSubset = {}, const optional<uint8_t>& wExitStatus = optional<uint8_t>{}, const optional<uint8_t>& wTermSig = optional<uint8_t>{}, const optional<uint8_t>& wStopSig = optional<uint8_t>{});
+        Exception (const String& cmdLine, const String& errorMessage, const optional<String>& stderrSubset = {},
+                   const optional<uint8_t>& wExitStatus = optional<uint8_t>{}, const optional<uint8_t>& wTermSig = optional<uint8_t>{},
+                   const optional<uint8_t>& wStopSig = optional<uint8_t>{});
 #elif qPlatform_Windows
-        Exception (const String& cmdLine, const String& errorMessage, const optional<String>& stderrSubset = {}, const optional<DWORD>& err = optional<DWORD>{});
+        Exception (const String& cmdLine, const String& errorMessage, const optional<String>& stderrSubset = {},
+                   const optional<DWORD>& err = optional<DWORD>{});
 #endif
     private:
 #if qPlatform_POSIX
-        static String mkMsg_ (const String& cmdLine, const String& errorMessage, const optional<String>& stderrSubset, const optional<uint8_t>& wExitStatus, const optional<uint8_t>& wTermSig, const optional<uint8_t>& wStopSig);
+        static String mkMsg_ (const String& cmdLine, const String& errorMessage, const optional<String>& stderrSubset,
+                              const optional<uint8_t>& wExitStatus, const optional<uint8_t>& wTermSig, const optional<uint8_t>& wStopSig);
 #elif qPlatform_Windows
-        static String   mkMsg_ (const String& cmdLine, const String& errorMessage, const optional<String>& stderrSubset, const optional<DWORD>& err);
+        static String mkMsg_ (const String& cmdLine, const String& errorMessage, const optional<String>& stderrSubset, const optional<DWORD>& err);
 #endif
     private:
         String fCmdLine_;

@@ -85,13 +85,9 @@ namespace {
             }
         }
         TCHAR* lpMsgBuf = nullptr;
-        if (not ::FormatMessage (FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
-                                 nullptr,
-                                 win32Err,
-                                 MAKELANGID (LANG_NEUTRAL, SUBLANG_DEFAULT), // Default language
-                                 reinterpret_cast<TCHAR*> (&lpMsgBuf),
-                                 0,
-                                 nullptr)) {
+        if (not ::FormatMessage (FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, nullptr,
+                                 win32Err, MAKELANGID (LANG_NEUTRAL, SUBLANG_DEFAULT), // Default language
+                                 reinterpret_cast<TCHAR*> (&lpMsgBuf), 0, nullptr)) {
             return CString::Format (SDKSTR ("Win32 error# %d"), static_cast<DWORD> (win32Err));
         }
         SDKString result = lpMsgBuf;
@@ -162,9 +158,11 @@ namespace {
      *  We treat these largely like ASSERTION errors, but then translate them into a THROW of an exception - since that is
      *  probably more often the right thing todo.
      */
-    void invalid_parameter_handler_ ([[maybe_unused]] const wchar_t* expression, [[maybe_unused]] const wchar_t* function, [[maybe_unused]] const wchar_t* file, [[maybe_unused]] unsigned int line, [[maybe_unused]] uintptr_t pReserved)
+    void invalid_parameter_handler_ ([[maybe_unused]] const wchar_t* expression, [[maybe_unused]] const wchar_t* function,
+                                     [[maybe_unused]] const wchar_t* file, [[maybe_unused]] unsigned int line, [[maybe_unused]] uintptr_t pReserved)
     {
-        TraceContextBumper trcCtx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"invalid_parameter_handler", L"Func='%s', expr='%s', file='%s', line=%d.", function, expression, file, line)};
+        TraceContextBumper trcCtx{Stroika_Foundation_Debug_OptionalizeTraceArgs (
+            L"invalid_parameter_handler", L"Func='%s', expr='%s', file='%s', line=%d.", function, expression, file, line)};
         Assert (false);
         Execution::ThrowSystemErrNo (ERROR_INVALID_PARAMETER);
     }

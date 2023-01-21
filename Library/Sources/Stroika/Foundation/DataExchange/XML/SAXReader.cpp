@@ -68,11 +68,11 @@
 #include <xercesc/util/XMLUni.hpp>
 #include <xercesc/validators/common/Grammar.hpp>
 #if qDebug
-#define Assert(c)                                                                                                         \
-    {                                                                                                                     \
-        if (!(c)) {                                                                                                       \
-            Stroika::Foundation::Debug::Private_::Assertion_Failure_Handler_ ("Assert", #c, __FILE__, __LINE__, nullptr); \
-        }                                                                                                                 \
+#define Assert(c)                                                                                                                          \
+    {                                                                                                                                      \
+        if (!(c)) {                                                                                                                        \
+            Stroika::Foundation::Debug::Private_::Assertion_Failure_Handler_ ("Assert", #c, __FILE__, __LINE__, nullptr);                  \
+        }                                                                                                                                  \
     }
 #else
 #define Assert(c)
@@ -141,8 +141,7 @@ namespace {
     public:
         MyXercesMemMgr_ ()
 #if qXMLDBTrackAllocs
-            : fAllocator{
-                  fBaseAllocator}
+            : fAllocator{fBaseAllocator}
 #endif
         {
         }
@@ -168,11 +167,8 @@ namespace {
 #endif
 
     public:
-        virtual MemoryManager* getExceptionMemoryManager () override
-        {
-            return this;
-        }
-        virtual void* allocate (XMLSize_t size) override
+        virtual MemoryManager* getExceptionMemoryManager () override { return this; }
+        virtual void*          allocate (XMLSize_t size) override
         {
             try {
 #if qXMLDBTrackAllocs
@@ -218,14 +214,13 @@ namespace {
 class MyErrorReproter_ : public XMLErrorReporter, public ErrorHandler {
     // XMLErrorReporter
 public:
-    virtual void error (
-        const unsigned int /*errCode*/, const XMLCh* const /*errDomain*/, const ErrTypes /*type*/, const XMLCh* const errorText, const XMLCh* const /*systemId*/, const XMLCh* const /*publicId*/, const XMLFileLoc lineNum, const XMLFileLoc colNum) override
+    virtual void error (const unsigned int /*errCode*/, const XMLCh* const /*errDomain*/, const ErrTypes /*type*/, const XMLCh* const errorText,
+                        const XMLCh* const /*systemId*/, const XMLCh* const /*publicId*/, const XMLFileLoc lineNum, const XMLFileLoc colNum) override
     {
-        Execution::Throw (BadFormatException{xercesString2String_ (errorText), static_cast<unsigned int> (lineNum), static_cast<unsigned int> (colNum), 0});
+        Execution::Throw (BadFormatException{xercesString2String_ (errorText), static_cast<unsigned int> (lineNum),
+                                             static_cast<unsigned int> (colNum), 0});
     }
-    virtual void resetErrors () override
-    {
-    }
+    virtual void resetErrors () override {}
 
     // ErrorHandler
 public:
@@ -235,11 +230,13 @@ public:
     }
     virtual void error (const SAXParseException& exc) override
     {
-        Execution::Throw (BadFormatException{xercesString2String_ (exc.getMessage ()), static_cast<unsigned int> (exc.getLineNumber ()), static_cast<unsigned int> (exc.getColumnNumber ()), 0});
+        Execution::Throw (BadFormatException{xercesString2String_ (exc.getMessage ()), static_cast<unsigned int> (exc.getLineNumber ()),
+                                             static_cast<unsigned int> (exc.getColumnNumber ()), 0});
     }
     virtual void fatalError (const SAXParseException& exc) override
     {
-        Execution::Throw (BadFormatException{xercesString2String_ (exc.getMessage ()), static_cast<unsigned int> (exc.getLineNumber ()), static_cast<unsigned int> (exc.getColumnNumber ()), 0});
+        Execution::Throw (BadFormatException{xercesString2String_ (exc.getMessage ()), static_cast<unsigned int> (exc.getLineNumber ()),
+                                             static_cast<unsigned int> (exc.getColumnNumber ()), 0});
     }
 };
 static MyErrorReproter_ sMyErrorReproter_;
@@ -332,16 +329,11 @@ namespace {
 
         UsingLibInterHelper ();
     };
-    UsingLibInterHelper::UsingLibInterHelper ()
-    {
-    }
+    UsingLibInterHelper::UsingLibInterHelper () {}
 }
 
 namespace {
-    inline void AssureXercesInitialized_ ()
-    {
-        static UsingLibInterHelper sUsingLibInterHelper_;
-    }
+    inline void AssureXercesInitialized_ () { static UsingLibInterHelper sUsingLibInterHelper_; }
 }
 #endif
 
@@ -367,18 +359,12 @@ namespace {
             }
 
         public:
-            virtual XMLFilePos curPos () const override
-            {
-                return fSource.GetOffset ();
-            }
-            virtual XMLSize_t readBytes (XMLByte* const toFill, const XMLSize_t maxToRead) override
+            virtual XMLFilePos curPos () const override { return fSource.GetOffset (); }
+            virtual XMLSize_t  readBytes (XMLByte* const toFill, const XMLSize_t maxToRead) override
             {
                 return fSource.Read (reinterpret_cast<byte*> (toFill), reinterpret_cast<byte*> (toFill) + maxToRead);
             }
-            virtual const XMLCh* getContentType () const override
-            {
-                return nullptr;
-            }
+            virtual const XMLCh* getContentType () const override { return nullptr; }
 
         protected:
             InputStream<byte>::Ptr fSource;
@@ -390,10 +376,7 @@ namespace {
             , fSource{in}
         {
         }
-        virtual BinInputStream* makeStream () const override
-        {
-            return new (getMemoryManager ()) StdIStream_InputStream{fSource};
-        }
+        virtual BinInputStream* makeStream () const override { return new (getMemoryManager ()) StdIStream_InputStream{fSource}; }
 
     protected:
         InputStream<byte>::Ptr fSource;
@@ -453,10 +436,7 @@ namespace {
             , fProgressCallback{progressCallback}
         {
         }
-        virtual BinInputStream* makeStream () const override
-        {
-            return new (getMemoryManager ()) ISWithProg{fSource, fProgressCallback};
-        }
+        virtual BinInputStream* makeStream () const override { return new (getMemoryManager ()) ISWithProg{fSource, fProgressCallback}; }
 
     private:
         ProgressMonitor::Updater fProgressCallback;
@@ -472,8 +452,7 @@ namespace {
 
 #if qHasFeature_Xerces
 namespace {
-    class SAX2PrintHandlers_
-        : public DefaultHandler {
+    class SAX2PrintHandlers_ : public DefaultHandler {
     private:
         StructuredStreamEvents::IConsumer& fCallback;
 
@@ -484,21 +463,16 @@ namespace {
         }
 
     public:
-        virtual void startDocument () override
-        {
-            fCallback.StartDocument ();
-        }
-        virtual void endDocument () override
-        {
-            fCallback.EndDocument ();
-        }
+        virtual void startDocument () override { fCallback.StartDocument (); }
+        virtual void endDocument () override { fCallback.EndDocument (); }
         virtual void startElement (const XMLCh* const uri, const XMLCh* const localName, const XMLCh* const /*qname*/, const Attributes& attributes) override
         {
             Require (uri != nullptr);
             Require (localName != nullptr);
             fCallback.StartElement (StructuredStreamEvents::Name (xercesString2String_ (uri), xercesString2String_ (localName)));
             for (XMLSize_t i = 0; i < attributes.getLength (); ++i) {
-                StructuredStreamEvents::Name attrName{xercesString2String_ (attributes.getURI (i)), xercesString2String_ (attributes.getLocalName (i)), StructuredStreamEvents::Name::eAttribute};
+                StructuredStreamEvents::Name attrName{xercesString2String_ (attributes.getURI (i)),
+                                                      xercesString2String_ (attributes.getLocalName (i)), StructuredStreamEvents::Name::eAttribute};
                 fCallback.StartElement (attrName);
                 fCallback.TextInsideElement (xercesString2String_ (attributes.getValue (i)));
                 fCallback.EndElement (attrName);
@@ -521,7 +495,8 @@ namespace {
 }
 #endif
 
-void XML::SAXParse ([[maybe_unused]] const Streams::InputStream<byte>::Ptr& in, [[maybe_unused]] StructuredStreamEvents::IConsumer& callback, [[maybe_unused]] Execution::ProgressMonitor::Updater progress)
+void XML::SAXParse ([[maybe_unused]] const Streams::InputStream<byte>::Ptr& in, [[maybe_unused]] StructuredStreamEvents::IConsumer& callback,
+                    [[maybe_unused]] Execution::ProgressMonitor::Updater progress)
 {
 #if qHasFeature_Xerces
     AssureXercesInitialized_ ();

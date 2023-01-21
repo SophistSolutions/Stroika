@@ -604,7 +604,7 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
         bool allowGenDelims        = false;
         bool allowPChar            = false; // sub-delims + ":" / "@"
         bool allowFragOrQueryChars = false; // pchar / "/" / "?"
-        bool allowPathCharacters   = false; // COMPLICATED - I THINK this means sub-delims + '/' (@ and : maybe sometimes allowed, but I think always safe to encode)
+        bool allowPathCharacters = false; // COMPLICATED - I THINK this means sub-delims + '/' (@ and : maybe sometimes allowed, but I think always safe to encode)
     };
     string PCTEncode (const string& s, const PCTEncodeOptions& options);
     string PCTEncode (const String& s, const PCTEncodeOptions& options);

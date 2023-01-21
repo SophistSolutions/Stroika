@@ -33,43 +33,42 @@ namespace {
     void SetupDB_ (Connection::Ptr conn)
     {
         constexpr Configuration::Version kCurrentVersion_ = Configuration::Version{1, 0, Configuration::VersionStage::Alpha, 0};
-        SQL::ORM::ProvisionForVersion (conn,
-                                       kCurrentVersion_,
-                                       initializer_list<SQL::ORM::TableProvisioner>{
-                                           {"EMPLOYEES"sv,
-                                            [] (SQL::Connection::Ptr c, optional<Configuration::Version> v, [[maybe_unused]] Configuration::Version targetDBVersion) -> void {
-                                                // for now no upgrade support
-                                                if (not v) {
-                                                    c.Exec (
-                                                        "CREATE TABLE EMPLOYEES("
-                                                        "ID INTEGER PRIMARY KEY AUTOINCREMENT,"
-                                                        "NAME           TEXT    NOT NULL,"
-                                                        "AGE            INT     NOT NULL,"
-                                                        "ADDRESS        CHAR(50),"
-                                                        "SALARY         REAL,"
-                                                        "STILL_EMPLOYED INT"
-                                                        ");");
-                                                }
-                                            }},
-                                           {"PAYCHECKS"sv,
-                                            [] (SQL::Connection::Ptr c, optional<Configuration::Version> v, [[maybe_unused]] Configuration::Version targetDBVersion) -> void {
-                                                // for now no upgrade support
-                                                if (not v) {
-                                                    c.Exec (
-                                                        "CREATE TABLE PAYCHECKS("
-                                                        "ID INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
-                                                        "EMPLOYEEREF INT NOT NULL,"
-                                                        "AMOUNT REAL,"
-                                                        "DATE TEXT"
-                                                        ");");
-                                                }
-                                            }},
-                                       });
+        SQL::ORM::ProvisionForVersion (
+            conn, kCurrentVersion_,
+            initializer_list<SQL::ORM::TableProvisioner>{
+                {"EMPLOYEES"sv,
+                 [] (SQL::Connection::Ptr c, optional<Configuration::Version> v, [[maybe_unused]] Configuration::Version targetDBVersion) -> void {
+                     // for now no upgrade support
+                     if (not v) {
+                         c.Exec ("CREATE TABLE EMPLOYEES("
+                                 "ID INTEGER PRIMARY KEY AUTOINCREMENT,"
+                                 "NAME           TEXT    NOT NULL,"
+                                 "AGE            INT     NOT NULL,"
+                                 "ADDRESS        CHAR(50),"
+                                 "SALARY         REAL,"
+                                 "STILL_EMPLOYED INT"
+                                 ");");
+                     }
+                 }},
+                {"PAYCHECKS"sv,
+                 [] (SQL::Connection::Ptr c, optional<Configuration::Version> v, [[maybe_unused]] Configuration::Version targetDBVersion) -> void {
+                     // for now no upgrade support
+                     if (not v) {
+                         c.Exec ("CREATE TABLE PAYCHECKS("
+                                 "ID INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
+                                 "EMPLOYEEREF INT NOT NULL,"
+                                 "AMOUNT REAL,"
+                                 "DATE TEXT"
+                                 ");");
+                     }
+                 }},
+            });
     }
 
     void PeriodicallyUpdateEmployeesTable_ (Connection::Ptr conn)
     {
-        Statement addEmployeeStatement = conn.mkStatement ("INSERT INTO EMPLOYEES (NAME,AGE,ADDRESS,SALARY,STILL_EMPLOYED) values (:NAME, :AGE, :ADDRESS, :SALARY, :STILL_EMPLOYED);");
+        Statement addEmployeeStatement = conn.mkStatement (
+            "INSERT INTO EMPLOYEES (NAME,AGE,ADDRESS,SALARY,STILL_EMPLOYED) values (:NAME, :AGE, :ADDRESS, :SALARY, :STILL_EMPLOYED);");
 
         // Add Initial Employees
         addEmployeeStatement.Execute (initializer_list<Statement::ParameterDescription>{
@@ -161,8 +160,7 @@ namespace {
                             uniform_int_distribution<int>     empDistr{0, static_cast<int> (activeEmps.size () - 1)};
                             tuple<VariantValue, VariantValue> killMe = activeEmps[empDistr (generator)];
                             DbgTrace (L"Firing employee: %d, %s", get<0> (killMe).As<int> (), get<1> (killMe).As<String> ().c_str ());
-                            fireEmployee.Execute (initializer_list<Statement::ParameterDescription>{
-                                {L":ID", get<0> (killMe).As<int> ()}});
+                            fireEmployee.Execute (initializer_list<Statement::ParameterDescription>{{L":ID", get<0> (killMe).As<int> ()}});
                         }
                     } break;
                 }
@@ -178,7 +176,7 @@ namespace {
 
     void PeriodicallyWriteChecksForEmployeesTable_ (Connection::Ptr conn)
     {
-        Statement addPaycheckStatement  = conn.mkStatement ("INSERT INTO PAYCHECKS (EMPLOYEEREF,AMOUNT,DATE) values (:EMPLOYEEREF, :AMOUNT, :DATE);"sv);
+        Statement addPaycheckStatement = conn.mkStatement ("INSERT INTO PAYCHECKS (EMPLOYEEREF,AMOUNT,DATE) values (:EMPLOYEEREF, :AMOUNT, :DATE);"sv);
         Statement getAllActiveEmployees = conn.mkStatement ("Select ID,NAME,SALARY from EMPLOYEES where STILL_EMPLOYED=1;"sv);
 
         while (true) {
@@ -213,7 +211,9 @@ void Stroika::Samples::SQL::ThreadTest (const function<Connection::Ptr ()>& conn
     SQL::Connection::Ptr conn1 = connectionFactory ();
     SQL::Connection::Ptr conn2 = connectionFactory ();
     SetupDB_ (conn1);
-    Thread::CleanupPtr updateEmpDBThread{Thread::CleanupPtr::eAbortBeforeWaiting, Thread::New ([=] () { PeriodicallyUpdateEmployeesTable_ (conn1); }, Thread::eAutoStart, "Update Employee Table"sv)};
-    Thread::CleanupPtr writeChecks{Thread::CleanupPtr::eAbortBeforeWaiting, Thread::New ([=] () { PeriodicallyWriteChecksForEmployeesTable_ (conn2); }, Thread::eAutoStart, "Write Checks"sv)};
+    Thread::CleanupPtr updateEmpDBThread{Thread::CleanupPtr::eAbortBeforeWaiting,
+                                         Thread::New ([=] () { PeriodicallyUpdateEmployeesTable_ (conn1); }, Thread::eAutoStart, "Update Employee Table"sv)};
+    Thread::CleanupPtr writeChecks{Thread::CleanupPtr::eAbortBeforeWaiting,
+                                   Thread::New ([=] () { PeriodicallyWriteChecksForEmployeesTable_ (conn2); }, Thread::eAutoStart, "Write Checks"sv)};
     Execution::WaitableEvent{}.WaitQuietly (15s);
 }

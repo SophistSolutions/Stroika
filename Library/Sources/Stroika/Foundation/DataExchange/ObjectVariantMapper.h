@@ -290,7 +290,8 @@ namespace Stroika::Foundation::DataExchange {
             TypeMappingDetails ()                              = delete;
             TypeMappingDetails (const TypeMappingDetails&)     = default;
             TypeMappingDetails (TypeMappingDetails&&) noexcept = default;
-            explicit TypeMappingDetails (const type_index& forTypeInfo, const FromGenericObjectMapperType& fromObjectMapper, const ToGenericObjectMapperType& toObjectMapper);
+            explicit TypeMappingDetails (const type_index& forTypeInfo, const FromGenericObjectMapperType& fromObjectMapper,
+                                         const ToGenericObjectMapperType& toObjectMapper);
             template <typename T, enable_if_t<not is_same_v<T, void>>* = nullptr>
             TypeMappingDetails (const type_index& forTypeInfo, const FromObjectMapperType<T>& fromObjectMapper, const ToObjectMapperType<T>& toObjectMapper);
             template <typename T, enable_if_t<not is_same_v<T, void>>* = nullptr>
@@ -682,7 +683,8 @@ namespace Stroika::Foundation::DataExchange {
          *  @todo migrate this to be part of MakeCommonSerializer probably, but for now like AddClass, but less checking and doesnt add - just creates/returns
          */
         template <typename T>
-        static TypeMappingDetails MakeClassSerializer (const Traversal::Iterable<StructFieldInfo>& fieldDescriptions, const optional<TypeMappingDetails>& extends = nullopt);
+        static TypeMappingDetails MakeClassSerializer (const Traversal::Iterable<StructFieldInfo>& fieldDescriptions,
+                                                       const optional<TypeMappingDetails>&         extends = nullopt);
 
     public:
         /**
@@ -708,7 +710,8 @@ namespace Stroika::Foundation::DataExchange {
         template <typename ENUM_TYPE>
         static TypeMappingDetails MakeCommonSerializer_NamedEnumerations (const Containers::Bijection<ENUM_TYPE, String>& nameMap);
         template <typename ENUM_TYPE>
-        static TypeMappingDetails MakeCommonSerializer_NamedEnumerations (const Configuration::EnumNames<ENUM_TYPE>& nameMap = Configuration::DefaultNames<ENUM_TYPE>::k);
+        static TypeMappingDetails
+        MakeCommonSerializer_NamedEnumerations (const Configuration::EnumNames<ENUM_TYPE>& nameMap = Configuration::DefaultNames<ENUM_TYPE>::k);
 
     public:
         /**
@@ -862,9 +865,13 @@ namespace Stroika::Foundation::DataExchange {
 
     private:
         template <typename CLASS>
-        static TypeMappingDetails MakeCommonSerializer_ForClassObject_ (const type_index& forTypeInfo, size_t n, const Traversal::Iterable<StructFieldInfo>& fields, const optional<TypeMappingDetails>& extends);
+        static TypeMappingDetails MakeCommonSerializer_ForClassObject_ (const type_index& forTypeInfo, size_t n,
+                                                                        const Traversal::Iterable<StructFieldInfo>& fields,
+                                                                        const optional<TypeMappingDetails>&         extends);
         template <typename CLASS>
-        nonvirtual TypeMappingDetails MakeCommonSerializer_ForClassObject_and_check_ (const type_index& forTypeInfo, size_t n, const Traversal::Iterable<StructFieldInfo>& fields, const optional<TypeMappingDetails>& extends) const;
+        nonvirtual TypeMappingDetails MakeCommonSerializer_ForClassObject_and_check_ (const type_index& forTypeInfo, size_t n,
+                                                                                      const Traversal::Iterable<StructFieldInfo>& fields,
+                                                                                      const optional<TypeMappingDetails>& extends) const;
 
     private:
         nonvirtual TypeMappingDetails Lookup_ (const type_index& forTypeInfo) const;
@@ -979,13 +986,16 @@ namespace Stroika::Foundation::DataExchange {
          *  \note   - the serializedFieldName parameter to the template (const wchar_t) overload of StructFieldInfo must be an array
          *          with application lifetime (that is static C++ constant). This is to make the common case slightly more efficient.
          */
-        StructFieldInfo (const String& serializedFieldName, const StructFieldMetaInfo& fieldMetaInfo, const optional<TypeMappingDetails>& overrideTypeMapper = nullopt, NullFieldHandling nullFields = NullFieldHandling::eInclude);
+        StructFieldInfo (const String& serializedFieldName, const StructFieldMetaInfo& fieldMetaInfo,
+                         const optional<TypeMappingDetails>& overrideTypeMapper = nullopt, NullFieldHandling nullFields = NullFieldHandling::eInclude);
         StructFieldInfo (const String& serializedFieldName, const StructFieldMetaInfo& fieldMetaInfo, NullFieldHandling nullFields);
         template <int SZ>
         StructFieldInfo (const wchar_t (&serializedFieldName)[SZ], const StructFieldMetaInfo& fieldMetaInfo, NullFieldHandling nullFields);
         template <int SZ>
-        StructFieldInfo (const wchar_t (&serializedFieldName)[SZ], const StructFieldMetaInfo& fieldMetaInfo, const optional<TypeMappingDetails>& overrideTypeMapper = nullopt, NullFieldHandling nullFields = NullFieldHandling::eInclude);
-        StructFieldInfo (const String& serializedFieldName, TypeMappingDetails overrideTypeMapper, NullFieldHandling nullFields = NullFieldHandling::eInclude);
+        StructFieldInfo (const wchar_t (&serializedFieldName)[SZ], const StructFieldMetaInfo& fieldMetaInfo,
+                         const optional<TypeMappingDetails>& overrideTypeMapper = nullopt, NullFieldHandling nullFields = NullFieldHandling::eInclude);
+        StructFieldInfo (const String& serializedFieldName, TypeMappingDetails overrideTypeMapper,
+                         NullFieldHandling nullFields = NullFieldHandling::eInclude);
     };
 
     template <>

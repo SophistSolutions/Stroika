@@ -42,49 +42,28 @@ namespace Stroika::Frameworks::Led {
     @DESCRIPTION:
         <p>Return the @'Justification' setting.</p>
     */
-    inline Justification WordProcessor::ParagraphInfo::GetJustification () const
-    {
-        return fJustification;
-    }
+    inline Justification WordProcessor::ParagraphInfo::GetJustification () const { return fJustification; }
     /*
     @METHOD:        WordProcessor::ParagraphInfo::SetJustification
     @DESCRIPTION:
         <p>Set the @'Justification' setting.</p>
     */
-    inline void WordProcessor::ParagraphInfo::SetJustification (Justification justification)
-    {
-        fJustification = justification;
-    }
+    inline void WordProcessor::ParagraphInfo::SetJustification (Justification justification) { fJustification = justification; }
     inline const WordProcessor::ParagraphInfo::StandardTabStopList& WordProcessor::ParagraphInfo::GetTabStopList () const
     {
         return fTabStops;
     }
-    inline void WordProcessor::ParagraphInfo::SetTabStopList (const StandardTabStopList& tabStops)
-    {
-        fTabStops = tabStops;
-    }
-    inline TWIPS WordProcessor::ParagraphInfo::GetLeftMargin () const
-    {
-        return fLeftMargin;
-    }
-    inline TWIPS WordProcessor::ParagraphInfo::GetRightMargin () const
-    {
-        return fRightMargin;
-    }
-    inline void WordProcessor::ParagraphInfo::SetMargins (TWIPS lhs, TWIPS rhs)
+    inline void  WordProcessor::ParagraphInfo::SetTabStopList (const StandardTabStopList& tabStops) { fTabStops = tabStops; }
+    inline TWIPS WordProcessor::ParagraphInfo::GetLeftMargin () const { return fLeftMargin; }
+    inline TWIPS WordProcessor::ParagraphInfo::GetRightMargin () const { return fRightMargin; }
+    inline void  WordProcessor::ParagraphInfo::SetMargins (TWIPS lhs, TWIPS rhs)
     {
         Require (lhs < rhs);
         fLeftMargin  = lhs;
         fRightMargin = rhs;
     }
-    inline TWIPS WordProcessor::ParagraphInfo::GetFirstIndent () const
-    {
-        return fFirstIndent;
-    }
-    inline void WordProcessor::ParagraphInfo::SetFirstIndent (TWIPS firstIndent)
-    {
-        fFirstIndent = firstIndent;
-    }
+    inline TWIPS WordProcessor::ParagraphInfo::GetFirstIndent () const { return fFirstIndent; }
+    inline void  WordProcessor::ParagraphInfo::SetFirstIndent (TWIPS firstIndent) { fFirstIndent = firstIndent; }
     /*
     @METHOD:        WordProcessor::ParagraphInfo::GetSpaceBefore
     @DESCRIPTION:
@@ -92,19 +71,13 @@ namespace Stroika::Frameworks::Led {
                 the paragraph - and defaults to zero. See the RTF \sb tag.</p>
                     <p>See also @'WordProcessor::ParagraphInfo::SetSpaceBefore'.</p>
     */
-    inline TWIPS WordProcessor::ParagraphInfo::GetSpaceBefore () const
-    {
-        return fSpaceBefore;
-    }
+    inline TWIPS WordProcessor::ParagraphInfo::GetSpaceBefore () const { return fSpaceBefore; }
     /*
     @METHOD:        WordProcessor::ParagraphInfo::SetSpaceBefore
     @DESCRIPTION:
             <p>See also @'WordProcessor::ParagraphInfo::GetSpaceBefore'.</p>
     */
-    inline void WordProcessor::ParagraphInfo::SetSpaceBefore (TWIPS sb)
-    {
-        fSpaceBefore = sb;
-    }
+    inline void WordProcessor::ParagraphInfo::SetSpaceBefore (TWIPS sb) { fSpaceBefore = sb; }
     /*
     @METHOD:        WordProcessor::ParagraphInfo::GetSpaceAfter
     @DESCRIPTION:
@@ -112,19 +85,13 @@ namespace Stroika::Frameworks::Led {
         the paragraph - and defaults to zero. See the RTF \sa tag.</p>
             <p>See also @'WordProcessor::ParagraphInfo::SetSpaceAfter'.</p>
     */
-    inline TWIPS WordProcessor::ParagraphInfo::GetSpaceAfter () const
-    {
-        return fSpaceAfter;
-    }
+    inline TWIPS WordProcessor::ParagraphInfo::GetSpaceAfter () const { return fSpaceAfter; }
     /*
     @METHOD:        WordProcessor::ParagraphInfo::SetSpaceAfter
     @DESCRIPTION:
             <p>See also @'WordProcessor::ParagraphInfo::GetSpaceAfter'.</p>
     */
-    inline void WordProcessor::ParagraphInfo::SetSpaceAfter (TWIPS sa)
-    {
-        fSpaceAfter = sa;
-    }
+    inline void WordProcessor::ParagraphInfo::SetSpaceAfter (TWIPS sa) { fSpaceAfter = sa; }
     /*
     @METHOD:        WordProcessor::ParagraphInfo::GetLineSpacing
     @DESCRIPTION:
@@ -140,57 +107,39 @@ namespace Stroika::Frameworks::Led {
             <p>See the RTF docs for \slN and \slmultN</p>
             <p>See also @'WordProcessor::ParagraphInfo::SetLineSpacing'.</p>
     */
-    inline LineSpacing WordProcessor::ParagraphInfo::GetLineSpacing () const
-    {
-        return fLineSpacing;
-    }
+    inline LineSpacing WordProcessor::ParagraphInfo::GetLineSpacing () const { return fLineSpacing; }
     /*
     @METHOD:        WordProcessor::ParagraphInfo::SetLineSpacing
     @DESCRIPTION:
             <p>See also @'WordProcessor::ParagraphInfo::GetLineSpacing'.</p>
     */
-    inline void WordProcessor::ParagraphInfo::SetLineSpacing (LineSpacing sl)
-    {
-        fLineSpacing = sl;
-    }
+    inline void WordProcessor::ParagraphInfo::SetLineSpacing (LineSpacing sl) { fLineSpacing = sl; }
     /*
     @METHOD:        WordProcessor::ParagraphInfo::GetListStyle
     @DESCRIPTION:
             <p>Retrieve the @'WordProcessor::ParagraphInfo::ListStyle' property associated with this paragraph
         (e.g. eListStyle_Bullet or eListStyle_None).</p>
     */
-    inline ListStyle WordProcessor::ParagraphInfo::GetListStyle () const
-    {
-        return fListStyle;
-    }
+    inline ListStyle WordProcessor::ParagraphInfo::GetListStyle () const { return fListStyle; }
     /*
     @METHOD:        WordProcessor::ParagraphInfo::SetListStyle
     @DESCRIPTION:
             <p>See also @'WordProcessor::ParagraphInfo::GetListStyle'.</p>
     */
-    inline void WordProcessor::ParagraphInfo::SetListStyle (ListStyle listStyle)
-    {
-        fListStyle = listStyle;
-    }
+    inline void WordProcessor::ParagraphInfo::SetListStyle (ListStyle listStyle) { fListStyle = listStyle; }
     /*
     @METHOD:        WordProcessor::ParagraphInfo::GetListIndentLevel
     @DESCRIPTION:
             <p>Retrieve the indent level for the given list. Only valid value if @'WordProcessor::ParagraphInfo::GetListStyle'
         is not eListStyle_None.</p>
     */
-    inline unsigned char WordProcessor::ParagraphInfo::GetListIndentLevel () const
-    {
-        return fListIndentLevel;
-    }
+    inline unsigned char WordProcessor::ParagraphInfo::GetListIndentLevel () const { return fListIndentLevel; }
     /*
     @METHOD:        WordProcessor::ParagraphInfo::SetListIndentLevel
     @DESCRIPTION:
             <p>See also @'WordProcessor::ParagraphInfo::GetListIndentLevel'.</p>
     */
-    inline void WordProcessor::ParagraphInfo::SetListIndentLevel (unsigned char indentLevel)
-    {
-        fListIndentLevel = indentLevel;
-    }
+    inline void WordProcessor::ParagraphInfo::SetListIndentLevel (unsigned char indentLevel) { fListIndentLevel = indentLevel; }
     inline void WordProcessor::ParagraphInfo::MergeIn (const IncrementalParagraphInfo& incParaInfo)
     {
         if (incParaInfo.GetJustification_Valid ()) {
@@ -224,15 +173,9 @@ namespace Stroika::Frameworks::Led {
     }
     inline bool WordProcessor::ParagraphInfo::operator== (const ParagraphInfo& rhs) const
     {
-        return fJustification == rhs.fJustification and
-               fTabStops == rhs.fTabStops and
-               fLeftMargin == rhs.fLeftMargin and
-               fRightMargin == rhs.fRightMargin and
-               fFirstIndent == rhs.fFirstIndent and
-               fSpaceBefore == rhs.fSpaceBefore and
-               fSpaceAfter == rhs.fSpaceAfter and
-               fLineSpacing == rhs.fLineSpacing and
-               fListStyle == rhs.fListStyle and
+        return fJustification == rhs.fJustification and fTabStops == rhs.fTabStops and fLeftMargin == rhs.fLeftMargin and
+               fRightMargin == rhs.fRightMargin and fFirstIndent == rhs.fFirstIndent and fSpaceBefore == rhs.fSpaceBefore and
+               fSpaceAfter == rhs.fSpaceAfter and fLineSpacing == rhs.fLineSpacing and fListStyle == rhs.fListStyle and
                fListIndentLevel == rhs.fListIndentLevel;
     }
 
@@ -276,14 +219,8 @@ namespace Stroika::Frameworks::Led {
         fJustificationValid = true;
         inherited::SetJustification (justification);
     }
-    inline bool WordProcessor::IncrementalParagraphInfo::GetJustification_Valid () const
-    {
-        return fJustificationValid;
-    }
-    inline void WordProcessor::IncrementalParagraphInfo::InvalidateJustification ()
-    {
-        fJustificationValid = false;
-    }
+    inline bool WordProcessor::IncrementalParagraphInfo::GetJustification_Valid () const { return fJustificationValid; }
+    inline void WordProcessor::IncrementalParagraphInfo::InvalidateJustification () { fJustificationValid = false; }
     inline const TextImager::StandardTabStopList& WordProcessor::IncrementalParagraphInfo::GetTabStopList () const
     {
         Require (fTabStopListValid);
@@ -294,14 +231,8 @@ namespace Stroika::Frameworks::Led {
         fTabStopListValid = true;
         inherited::SetTabStopList (tabStops);
     }
-    inline bool WordProcessor::IncrementalParagraphInfo::GetTabStopList_Valid () const
-    {
-        return fTabStopListValid;
-    }
-    inline void WordProcessor::IncrementalParagraphInfo::InvalidateTabStopList ()
-    {
-        fTabStopListValid = false;
-    }
+    inline bool  WordProcessor::IncrementalParagraphInfo::GetTabStopList_Valid () const { return fTabStopListValid; }
+    inline void  WordProcessor::IncrementalParagraphInfo::InvalidateTabStopList () { fTabStopListValid = false; }
     inline TWIPS WordProcessor::IncrementalParagraphInfo::GetLeftMargin () const
     {
         Require (fMarginsValid);
@@ -317,14 +248,8 @@ namespace Stroika::Frameworks::Led {
         fMarginsValid = true;
         inherited::SetMargins (lhs, rhs);
     }
-    inline bool WordProcessor::IncrementalParagraphInfo::GetMargins_Valid () const
-    {
-        return fMarginsValid;
-    }
-    inline void WordProcessor::IncrementalParagraphInfo::InvalidateMargins ()
-    {
-        fMarginsValid = false;
-    }
+    inline bool  WordProcessor::IncrementalParagraphInfo::GetMargins_Valid () const { return fMarginsValid; }
+    inline void  WordProcessor::IncrementalParagraphInfo::InvalidateMargins () { fMarginsValid = false; }
     inline TWIPS WordProcessor::IncrementalParagraphInfo::GetFirstIndent () const
     {
         Require (fFirstIndentValid);
@@ -335,14 +260,8 @@ namespace Stroika::Frameworks::Led {
         fFirstIndentValid = true;
         inherited::SetFirstIndent (firstIndent);
     }
-    inline bool WordProcessor::IncrementalParagraphInfo::GetFirstIndent_Valid () const
-    {
-        return fFirstIndentValid;
-    }
-    inline void WordProcessor::IncrementalParagraphInfo::InvalidateFirstIndent ()
-    {
-        fFirstIndentValid = false;
-    }
+    inline bool  WordProcessor::IncrementalParagraphInfo::GetFirstIndent_Valid () const { return fFirstIndentValid; }
+    inline void  WordProcessor::IncrementalParagraphInfo::InvalidateFirstIndent () { fFirstIndentValid = false; }
     inline TWIPS WordProcessor::IncrementalParagraphInfo::GetSpaceBefore () const
     {
         Require (fSpaceBeforeValid);
@@ -353,14 +272,8 @@ namespace Stroika::Frameworks::Led {
         fSpaceBeforeValid = true;
         inherited::SetSpaceBefore (sb);
     }
-    inline bool WordProcessor::IncrementalParagraphInfo::GetSpaceBefore_Valid () const
-    {
-        return fSpaceBeforeValid;
-    }
-    inline void WordProcessor::IncrementalParagraphInfo::InvalidateSpaceBefore ()
-    {
-        fSpaceBeforeValid = false;
-    }
+    inline bool  WordProcessor::IncrementalParagraphInfo::GetSpaceBefore_Valid () const { return fSpaceBeforeValid; }
+    inline void  WordProcessor::IncrementalParagraphInfo::InvalidateSpaceBefore () { fSpaceBeforeValid = false; }
     inline TWIPS WordProcessor::IncrementalParagraphInfo::GetSpaceAfter () const
     {
         Require (fSpaceAfterValid);
@@ -371,14 +284,8 @@ namespace Stroika::Frameworks::Led {
         fSpaceAfterValid = true;
         inherited::SetSpaceAfter (sa);
     }
-    inline bool WordProcessor::IncrementalParagraphInfo::GetSpaceAfter_Valid () const
-    {
-        return fSpaceAfterValid;
-    }
-    inline void WordProcessor::IncrementalParagraphInfo::InvalidateSpaceAfter ()
-    {
-        fSpaceAfterValid = false;
-    }
+    inline bool        WordProcessor::IncrementalParagraphInfo::GetSpaceAfter_Valid () const { return fSpaceAfterValid; }
+    inline void        WordProcessor::IncrementalParagraphInfo::InvalidateSpaceAfter () { fSpaceAfterValid = false; }
     inline LineSpacing WordProcessor::IncrementalParagraphInfo::GetLineSpacing () const
     {
         Require (fLineSpacingValid);
@@ -389,14 +296,8 @@ namespace Stroika::Frameworks::Led {
         fLineSpacingValid = true;
         inherited::SetLineSpacing (sl);
     }
-    inline bool WordProcessor::IncrementalParagraphInfo::GetLineSpacing_Valid () const
-    {
-        return fLineSpacingValid;
-    }
-    inline void WordProcessor::IncrementalParagraphInfo::InvalidateLineSpacing ()
-    {
-        fLineSpacingValid = false;
-    }
+    inline bool      WordProcessor::IncrementalParagraphInfo::GetLineSpacing_Valid () const { return fLineSpacingValid; }
+    inline void      WordProcessor::IncrementalParagraphInfo::InvalidateLineSpacing () { fLineSpacingValid = false; }
     inline ListStyle WordProcessor::IncrementalParagraphInfo::GetListStyle () const
     {
         Require (fListStyleValid);
@@ -407,14 +308,8 @@ namespace Stroika::Frameworks::Led {
         fListStyleValid = true;
         inherited::SetListStyle (listStyle);
     }
-    inline bool WordProcessor::IncrementalParagraphInfo::GetListStyle_Valid () const
-    {
-        return fListStyleValid;
-    }
-    inline void WordProcessor::IncrementalParagraphInfo::InvalidateListStyle ()
-    {
-        fListStyleValid = false;
-    }
+    inline bool          WordProcessor::IncrementalParagraphInfo::GetListStyle_Valid () const { return fListStyleValid; }
+    inline void          WordProcessor::IncrementalParagraphInfo::InvalidateListStyle () { fListStyleValid = false; }
     inline unsigned char WordProcessor::IncrementalParagraphInfo::GetListIndentLevel () const
     {
         Require (fListIndentLevelValid);
@@ -425,14 +320,8 @@ namespace Stroika::Frameworks::Led {
         fListIndentLevelValid = true;
         inherited::SetListIndentLevel (indentLevel);
     }
-    inline bool WordProcessor::IncrementalParagraphInfo::GetListIndentLevel_Valid () const
-    {
-        return fListIndentLevelValid;
-    }
-    inline void WordProcessor::IncrementalParagraphInfo::InvalidateListIndentLevel ()
-    {
-        fListIndentLevelValid = false;
-    }
+    inline bool WordProcessor::IncrementalParagraphInfo::GetListIndentLevel_Valid () const { return fListIndentLevelValid; }
+    inline void WordProcessor::IncrementalParagraphInfo::InvalidateListIndentLevel () { fListIndentLevelValid = false; }
     inline bool WordProcessor::IncrementalParagraphInfo::operator== (const IncrementalParagraphInfo& rhs) const
     {
         //Justification
@@ -528,14 +417,8 @@ namespace Stroika::Frameworks::Led {
         : fParagraphInfo (paragraphInfo)
     {
     }
-    inline const WordProcessor::ParagraphInfo& WordProcessor::ParagraphInfoMarker::GetInfo () const
-    {
-        return fParagraphInfo;
-    }
-    inline void WordProcessor::ParagraphInfoMarker::SetInfo (ParagraphInfo paragraphInfo)
-    {
-        fParagraphInfo = paragraphInfo;
-    }
+    inline const WordProcessor::ParagraphInfo& WordProcessor::ParagraphInfoMarker::GetInfo () const { return fParagraphInfo; }
+    inline void WordProcessor::ParagraphInfoMarker::SetInfo (ParagraphInfo paragraphInfo) { fParagraphInfo = paragraphInfo; }
 
     //  class   WordProcessor::ParagraphDatabaseRep
     inline WordProcessor::ParagraphDatabaseRep::PartitionPtr WordProcessor::ParagraphDatabaseRep::GetPartition () const
@@ -548,19 +431,13 @@ namespace Stroika::Frameworks::Led {
      ******************* WordProcessor::WordProcessorTextIOSinkStream ***************
      ********************************************************************************
      */
-    inline bool WordProcessor::WordProcessorTextIOSinkStream::GetOverwriteTableMode () const
-    {
-        return fOverwriteTableMode;
-    }
+    inline bool WordProcessor::WordProcessorTextIOSinkStream::GetOverwriteTableMode () const { return fOverwriteTableMode; }
     inline void WordProcessor::WordProcessorTextIOSinkStream::SetOverwriteTableMode (bool overwriteTableMode)
     {
         fOverwriteTableMode = overwriteTableMode;
     }
 #if !qNestedTablesSupported
-    inline bool WordProcessor::WordProcessorTextIOSinkStream::GetNoTablesAllowed () const
-    {
-        return fNoTablesAllowed;
-    }
+    inline bool WordProcessor::WordProcessorTextIOSinkStream::GetNoTablesAllowed () const { return fNoTablesAllowed; }
     inline void WordProcessor::WordProcessorTextIOSinkStream::SetNoTablesAllowed (bool noTablesAllowed)
     {
         fNoTablesAllowed = noTablesAllowed;
@@ -572,10 +449,7 @@ namespace Stroika::Frameworks::Led {
      ******************* WordProcessor::WordProcessorTextIOSrcStream ****************
      ********************************************************************************
      */
-    inline bool WordProcessor::WordProcessorTextIOSrcStream::GetUseTableSelection () const
-    {
-        return fUseTableSelection;
-    }
+    inline bool WordProcessor::WordProcessorTextIOSrcStream::GetUseTableSelection () const { return fUseTableSelection; }
     inline void WordProcessor::WordProcessorTextIOSrcStream::SetUseTableSelection (bool useTableSelection)
     {
         fUseTableSelection = useTableSelection;
@@ -594,51 +468,30 @@ namespace Stroika::Frameworks::Led {
                     <p>Note this defaults ON if in UNICODE mode (@'qWideCharacters') and is unavailable otherwise.</p>
                     <p>See also @'WordProcessor::SetSmartQuoteMode'</p>
     */
-    inline bool WordProcessor::GetSmartQuoteMode () const
-    {
-        return fSmartQuoteMode;
-    }
+    inline bool WordProcessor::GetSmartQuoteMode () const { return fSmartQuoteMode; }
     /*
     @METHOD:        WordProcessor::SetSmartQuoteMode
     @DESCRIPTION:   @see     @'WordProcessor::GetSmartQuoteMode'</p>
     */
-    inline void WordProcessor::SetSmartQuoteMode (bool smartQuoteMode)
-    {
-        fSmartQuoteMode = smartQuoteMode;
-    }
+    inline void WordProcessor::SetSmartQuoteMode (bool smartQuoteMode) { fSmartQuoteMode = smartQuoteMode; }
 #endif
-    inline WordProcessor::ParagraphDatabasePtr WordProcessor::GetParagraphDatabase () const
-    {
-        return fParagraphDatabase;
-    }
-    inline WordProcessor::HidableTextDatabasePtr WordProcessor::GetHidableTextDatabase () const
-    {
-        return fHidableTextDatabase;
-    }
+    inline WordProcessor::ParagraphDatabasePtr   WordProcessor::GetParagraphDatabase () const { return fParagraphDatabase; }
+    inline WordProcessor::HidableTextDatabasePtr WordProcessor::GetHidableTextDatabase () const { return fHidableTextDatabase; }
     /*
     @METHOD:        WordProcessor::GetShowParagraphGlyphs
     @DESCRIPTION:   <p>See @'WordProcessor::SetShowParagraphGlyphs'.</p>
     */
-    inline bool WordProcessor::GetShowParagraphGlyphs () const
-    {
-        return fShowParagraphGlyphs;
-    }
+    inline bool WordProcessor::GetShowParagraphGlyphs () const { return fShowParagraphGlyphs; }
     /*
     @METHOD:        WordProcessor::GetShowTabGlyphs
     @DESCRIPTION:   <p>See @'WordProcessor::SetShowTabGlyphs'.</p>
     */
-    inline bool WordProcessor::GetShowTabGlyphs () const
-    {
-        return fShowTabGlyphs;
-    }
+    inline bool WordProcessor::GetShowTabGlyphs () const { return fShowTabGlyphs; }
     /*
     @METHOD:        WordProcessor::GetShowSpaceGlyphs
     @DESCRIPTION:   <p>See @'WordProcessor::SetShowSpaceGlyphs'.</p>
     */
-    inline bool WordProcessor::GetShowSpaceGlyphs () const
-    {
-        return fShowSpaceGlyphs;
-    }
+    inline bool WordProcessor::GetShowSpaceGlyphs () const { return fShowSpaceGlyphs; }
     /*
     @METHOD:        WordProcessor::GetCommandNames
     @DESCRIPTION:   <p>Returns command name for each of the user-visible commands produced by this module.
@@ -649,18 +502,12 @@ namespace Stroika::Frameworks::Led {
                 without having to change Led itself.</p>
     *   @see    @'WordProcessor::CommandNames'.
     */
-    inline const WordProcessor::CommandNames& WordProcessor::GetCommandNames ()
-    {
-        return sCommandNames;
-    }
+    inline const WordProcessor::CommandNames& WordProcessor::GetCommandNames () { return sCommandNames; }
     /*
     @METHOD:        WordProcessor::SetCommandNames
     @DESCRIPTION:   <p>See @'WordProcessor::GetCommandNames'.</p>
     */
-    inline void WordProcessor::SetCommandNames (const WordProcessor::CommandNames& cmdNames)
-    {
-        sCommandNames = cmdNames;
-    }
+    inline void WordProcessor::SetCommandNames (const WordProcessor::CommandNames& cmdNames) { sCommandNames = cmdNames; }
     /*
     @METHOD:        TextInteractor::GetDialogSupport
     @DESCRIPTION:   <p></p>
@@ -677,10 +524,7 @@ namespace Stroika::Frameworks::Led {
     @METHOD:        WordProcessor::SetDialogSupport
     @DESCRIPTION:   <p></p>
     */
-    inline void WordProcessor::SetDialogSupport (DialogSupport* ds)
-    {
-        sDialogSupport = ds;
-    }
+    inline void                         WordProcessor::SetDialogSupport (DialogSupport* ds) { sDialogSupport = ds; }
     inline IncrementalFontSpecification WordProcessor::GetCurSelFontSpec () const
     {
         if (not fCachedCurSelFontSpecValid) {
@@ -704,45 +548,24 @@ namespace Stroika::Frameworks::Led {
      ************************ WordProcessor::Table::Cell ****************************
      ********************************************************************************
      */
-    inline WordProcessor::Table::CellMergeFlags WordProcessor::Table::Cell::GetCellMergeFlags () const
-    {
-        return fCellMergeFlags;
-    }
-    inline TWIPS WordProcessor::Table::Cell::GetCellXWidth () const
-    {
-        return fCellRep->fCellXWidth;
-    }
-    inline void WordProcessor::Table::Cell::SetCellXWidth (TWIPS width)
-    {
-        fCellRep->fCellXWidth = width;
-    }
-    inline Led_Rect WordProcessor::Table::Cell::GetCachedBoundsRect () const
-    {
-        return fCellRep->fCachedBoundsRect;
-    }
-    inline void WordProcessor::Table::Cell::SetCachedBoundsRect (Led_Rect r)
-    {
-        fCellRep->fCachedBoundsRect = r;
-    }
+    inline WordProcessor::Table::CellMergeFlags WordProcessor::Table::Cell::GetCellMergeFlags () const { return fCellMergeFlags; }
+    inline TWIPS                                WordProcessor::Table::Cell::GetCellXWidth () const { return fCellRep->fCellXWidth; }
+    inline void                                 WordProcessor::Table::Cell::SetCellXWidth (TWIPS width) { fCellRep->fCellXWidth = width; }
+    inline Led_Rect WordProcessor::Table::Cell::GetCachedBoundsRect () const { return fCellRep->fCachedBoundsRect; }
+    inline void     WordProcessor::Table::Cell::SetCachedBoundsRect (Led_Rect r) { fCellRep->fCachedBoundsRect = r; }
 
     /*
      ********************************************************************************
      ********** WordProcessor::WordProcessorFlavorPackageInternalizer ***************
      ********************************************************************************
      */
-    inline bool WordProcessor::WordProcessorFlavorPackageInternalizer::GetOverwriteTableMode () const
-    {
-        return fOverwriteTableMode;
-    }
+    inline bool WordProcessor::WordProcessorFlavorPackageInternalizer::GetOverwriteTableMode () const { return fOverwriteTableMode; }
     inline void WordProcessor::WordProcessorFlavorPackageInternalizer::SetOverwriteTableMode (bool overwriteTableMode)
     {
         fOverwriteTableMode = overwriteTableMode;
     }
 #if !qNestedTablesSupported
-    inline bool WordProcessor::WordProcessorFlavorPackageInternalizer::GetNoTablesAllowed () const
-    {
-        return fNoTablesAllowed;
-    }
+    inline bool WordProcessor::WordProcessorFlavorPackageInternalizer::GetNoTablesAllowed () const { return fNoTablesAllowed; }
     inline void WordProcessor::WordProcessorFlavorPackageInternalizer::SetNoTablesAllowed (bool noTablesAllowed)
     {
         fNoTablesAllowed = noTablesAllowed;
@@ -754,21 +577,15 @@ namespace Stroika::Frameworks::Led {
      ********** WordProcessor::WordProcessorFlavorPackageExternalizer ***************
      ********************************************************************************
      */
-    inline bool WordProcessor::WordProcessorFlavorPackageExternalizer::GetUseTableSelection () const
-    {
-        return fUseTableSelection;
-    }
+    inline bool WordProcessor::WordProcessorFlavorPackageExternalizer::GetUseTableSelection () const { return fUseTableSelection; }
     inline void WordProcessor::WordProcessorFlavorPackageExternalizer::SetUseTableSelection (bool useTableSelection)
     {
         fUseTableSelection = useTableSelection;
     }
 
     //class WordProcessor::Table
-    inline TWIPS WordProcessor::Table::GetCellSpacing () const
-    {
-        return fCellSpacing;
-    }
-    inline void WordProcessor::Table::SetCellSpacing (TWIPS cellSpacing)
+    inline TWIPS WordProcessor::Table::GetCellSpacing () const { return fCellSpacing; }
+    inline void  WordProcessor::Table::SetCellSpacing (TWIPS cellSpacing)
     {
         if (fCellSpacing != cellSpacing) {
             fCellSpacing = cellSpacing;
@@ -792,9 +609,7 @@ namespace Stroika::Frameworks::Led {
     }
     inline void WordProcessor::Table::SetDefaultCellMargins (TWIPS top, TWIPS left, TWIPS bottom, TWIPS right)
     {
-        if (top != fDefaultCellMargins.GetTop () or
-            left != fDefaultCellMargins.GetLeft () or
-            bottom != fDefaultCellMargins.GetBottom () or
+        if (top != fDefaultCellMargins.GetTop () or left != fDefaultCellMargins.GetLeft () or bottom != fDefaultCellMargins.GetBottom () or
             right != fDefaultCellMargins.GetRight ()) {
             fDefaultCellMargins.top    = top;
             fDefaultCellMargins.left   = left;
@@ -911,17 +726,14 @@ namespace Stroika::Frameworks::Led {
         *selStart = fIntraSelStart;
         *selEnd   = fIntraSelEnd;
     }
-    inline void WordProcessor::Table::SaveIntraCellContextInfo (
-        bool                     leftSideOfSelectionInteresting,
-        const FontSpecification& intraCellSelectionEmptySelFontSpecification)
+    inline void WordProcessor::Table::SaveIntraCellContextInfo (bool                     leftSideOfSelectionInteresting,
+                                                                const FontSpecification& intraCellSelectionEmptySelFontSpecification)
     {
         fSavedIntraCellInfoValid                          = true;
         fSavedLeftSideOfSelectionInteresting              = leftSideOfSelectionInteresting;
         fSavedIntraCellSelectionEmptySelFontSpecification = intraCellSelectionEmptySelFontSpecification;
     }
-    inline bool WordProcessor::Table::RestoreIntraCellContextInfo (
-        bool*              leftSideOfSelectionInteresting,
-        FontSpecification* intraCellSelectionEmptySelFontSpecification)
+    inline bool WordProcessor::Table::RestoreIntraCellContextInfo (bool* leftSideOfSelectionInteresting, FontSpecification* intraCellSelectionEmptySelFontSpecification)
     {
         RequireNotNull (leftSideOfSelectionInteresting);
         RequireNotNull (intraCellSelectionEmptySelFontSpecification);
@@ -934,10 +746,7 @@ namespace Stroika::Frameworks::Led {
             return false;
         }
     }
-    inline void WordProcessor::Table::InvalidateIntraCellContextInfo ()
-    {
-        fSavedIntraCellInfoValid = false;
-    }
+    inline void WordProcessor::Table::InvalidateIntraCellContextInfo () { fSavedIntraCellInfoValid = false; }
 
     /*
      ********************************************************************************
@@ -976,7 +785,8 @@ namespace Stroika::Frameworks::Led {
      *** WordProcessor::Table::EmbeddedTableWordProcessor::TemporarilyUseTablet *****
      ********************************************************************************
      */
-    inline WordProcessor::Table::EmbeddedTableWordProcessor::TemporarilyUseTablet::TemporarilyUseTablet (WordProcessor::Table::EmbeddedTableWordProcessor& editor, Tablet* t, DoTextMetricsChangedCall tmChanged)
+    inline WordProcessor::Table::EmbeddedTableWordProcessor::TemporarilyUseTablet::TemporarilyUseTablet (WordProcessor::Table::EmbeddedTableWordProcessor& editor,
+                                                                                                         Tablet* t, DoTextMetricsChangedCall tmChanged)
         : fEditor (editor)
         , fOldTablet (editor.fUpdateTablet)
         , fDoTextMetricsChangedCall (tmChanged)
@@ -1026,17 +836,16 @@ namespace Stroika::Frameworks::Led {
     {
         fOwningTable.fCurrentOwningWP = &forWordProcessor;
     }
-    inline WordProcessor::Table::TemporarilySetOwningWP::~TemporarilySetOwningWP ()
-    {
-        fOwningTable.fCurrentOwningWP = fSavedTableOwningWP;
-    }
+    inline WordProcessor::Table::TemporarilySetOwningWP::~TemporarilySetOwningWP () { fOwningTable.fCurrentOwningWP = fSavedTableOwningWP; }
 
     /*
      ********************************************************************************
      ******************* WordProcessor::Table::TemporarilyAllocateCellWP ************
      ********************************************************************************
      */
-    inline WordProcessor::Table::TemporarilyAllocateCellWP::TemporarilyAllocateCellWP (Table& forTable, WordProcessor& forWordProcessor, size_t forRow, size_t forColumn, const Led_Rect& cellWindowRect, bool captureChangesForUndo)
+    inline WordProcessor::Table::TemporarilyAllocateCellWP::TemporarilyAllocateCellWP (Table& forTable, WordProcessor& forWordProcessor,
+                                                                                       size_t forRow, size_t forColumn,
+                                                                                       const Led_Rect& cellWindowRect, bool captureChangesForUndo)
         : fOwningTable (forTable)
         , fCellEditor (forTable.ConstructEmbeddedTableWordProcessor (forWordProcessor, forRow, forColumn, cellWindowRect, captureChangesForUndo))
     {
@@ -1067,8 +876,10 @@ namespace Stroika::Frameworks::Led {
      *********** WordProcessor::Table::TemporarilyAllocateCellWithTablet ************
      ********************************************************************************
      */
-    inline WordProcessor::Table::TemporarilyAllocateCellWithTablet::TemporarilyAllocateCellWithTablet (WordProcessor::Table& forTable, size_t row, size_t column, bool captureChangesForUndo)
-        : fWP (forTable, *forTable.fCurrentOwningWP, row, column, forTable.TableCoordinates2Window (forTable.GetCellEditorBounds (row, column)), captureChangesForUndo)
+    inline WordProcessor::Table::TemporarilyAllocateCellWithTablet::TemporarilyAllocateCellWithTablet (WordProcessor::Table& forTable, size_t row,
+                                                                                                       size_t column, bool captureChangesForUndo)
+        : fWP (forTable, *forTable.fCurrentOwningWP, row, column,
+               forTable.TableCoordinates2Window (forTable.GetCellEditorBounds (row, column)), captureChangesForUndo)
         , fTablet (forTable.fCurrentOwningWP)
         , fTmpUseTablet (*fWP, fTablet, TemporarilyUseTablet::eDontDoTextMetricsChangedCall)
     {

@@ -117,8 +117,7 @@ namespace {
             // Apparently military time (e.g. 1300 hours - where colon missing) - is rejected as mal-formed.
             // Detect that - and try to interpret it appropriately.
             String newRep = rep;
-            if (newRep.length () == 4 and
-                newRep[0].IsDigit () and newRep[1].IsDigit () and newRep[2].IsDigit () and newRep[3].IsDigit ()) {
+            if (newRep.length () == 4 and newRep[0].IsDigit () and newRep[1].IsDigit () and newRep[2].IsDigit () and newRep[3].IsDigit ()) {
                 newRep = newRep.substr (0, 2) + ":"sv + newRep.substr (2, 2);
                 ThrowIfErrorHRESULT (::VarDateFromStr (Characters::Platform::Windows::SmartBSTR{newRep.c_str ()}, lcid, VAR_TIMEVALUEONLY, &d));
             }
@@ -179,7 +178,8 @@ TimeOfDay::TimeOfDay (uint32_t t, DataExchange::ValidationStrategy validationStr
 TimeOfDay TimeOfDay::Parse (const String& rep, const locale& l)
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"TimeOfDay::Parse", L"rep='%s', l='%s'", rep.c_str (), String::FromNarrowSDKString (l.name ()).c_str ())};
+    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"TimeOfDay::Parse", L"rep='%s', l='%s'", rep.c_str (),
+                                                                                 String::FromNarrowSDKString (l.name ()).c_str ())};
 #endif
     if (rep.empty ()) {
         Execution::Throw (FormatException::kThe);
@@ -194,7 +194,9 @@ TimeOfDay TimeOfDay::Parse (const String& rep, const locale& l)
 TimeOfDay TimeOfDay::Parse (const String& rep, const locale& l, const Traversal::Iterable<String>& formatPatterns)
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"TimeOfDay::Parse", L"rep='%s', l='%s', formatPatterns=%s", rep.c_str (), String::FromNarrowSDKString (l.name ()).c_str (), Characters::ToString (formatPatterns).c_str ())};
+    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"TimeOfDay::Parse", L"rep='%s', l='%s', formatPatterns=%s",
+                                                                                 rep.c_str (), String::FromNarrowSDKString (l.name ()).c_str (),
+                                                                                 Characters::ToString (formatPatterns).c_str ())};
 #endif
     if (rep.empty ()) {
         Execution::Throw (FormatException::kThe);
@@ -232,7 +234,8 @@ TimeOfDay TimeOfDay::Parse (const String& rep, const String& formatPattern)
 TimeOfDay TimeOfDay::Parse (const String& rep, const locale& l, const String& formatPattern)
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"TimeOfDay::Parse", L"rep='%s', l='%s'", rep.c_str (), String::FromNarrowSDKString (l.name ()).c_str ())};
+    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"TimeOfDay::Parse", L"rep='%s', l='%s'", rep.c_str (),
+                                                                                 String::FromNarrowSDKString (l.name ()).c_str ())};
 #endif
     if (rep.empty ()) {
         Execution::Throw (FormatException::kThe);
@@ -293,7 +296,9 @@ optional<TimeOfDay> TimeOfDay::ParseQuietly_ (const wstring& rep, const time_get
 #endif
     if ((errState & ios::badbit) or (errState & ios::failbit)) [[unlikely]] {
 #if qCompilerAndStdLib_locale_get_time_needsStrptime_sometimes_Buggy
-        errState = (::strptime (String{rep}.AsNarrowSDKString ().c_str (), formatPattern.AsNarrowSDKString ().c_str (), &when) == nullptr) ? ios::failbit : ios::goodbit;
+        errState = (::strptime (String{rep}.AsNarrowSDKString ().c_str (), formatPattern.AsNarrowSDKString ().c_str (), &when) == nullptr)
+                       ? ios::failbit
+                       : ios::goodbit;
 #endif
     }
     if ((errState & ios::badbit) or (errState & ios::failbit)) [[unlikely]] {
@@ -348,10 +353,7 @@ String TimeOfDay::Format (NonStandardPrintFormat pf) const
     }
 }
 
-String TimeOfDay::Format (const locale& l) const
-{
-    return Format (l, kLocaleStandardFormat);
-}
+String TimeOfDay::Format (const locale& l) const { return Format (l, kLocaleStandardFormat); }
 
 String TimeOfDay::Format (const String& formatPattern) const
 {
@@ -390,8 +392,5 @@ void TimeOfDay::ClearSecondsField ()
 }
 
 #if qCompilerAndStdLib_linkerLosesInlinesSoCannotBeSeenByDebugger_Buggy && qDebug
-String TimeOfDay::ToString () const
-{
-    return Format ();
-}
+String TimeOfDay::ToString () const { return Format (); }
 #endif

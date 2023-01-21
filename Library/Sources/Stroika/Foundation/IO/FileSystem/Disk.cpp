@@ -131,7 +131,8 @@ namespace {
                 if (::GetLastError () == ERROR_INSUFFICIENT_BUFFER) {
                     pbyBuffer    = (BYTE*)::malloc (ulRequiredSize);
                     ulBufferSize = ulRequiredSize;
-                    if (!::SetupDiGetDeviceRegistryProperty (hDeviceInfoSet, &deviceInfoData, SPDRP_HARDWAREID, &ulPropertyRegDataType, pbyBuffer, ulBufferSize, &ulRequiredSize)) {
+                    if (!::SetupDiGetDeviceRegistryProperty (hDeviceInfoSet, &deviceInfoData, SPDRP_HARDWAREID, &ulPropertyRegDataType,
+                                                             pbyBuffer, ulBufferSize, &ulRequiredSize)) {
                         // getting the hardware id failed
                         _ASSERT (FALSE);
                         ::SetupDiDestroyDeviceInfoList (hDeviceInfoSet);
@@ -161,7 +162,8 @@ namespace {
             SP_DEVICE_INTERFACE_DETAIL_DATA* pDeviceInterfaceDetailData      = NULL;
             ULONG                            ulDeviceInterfaceDetailDataSize = 0;
             ulRequiredSize                                                   = 0;
-            bOk                                                              = ::SetupDiGetDeviceInterfaceDetail (hDeviceInfoSet, &deviceInterfaceData, pDeviceInterfaceDetailData, ulDeviceInterfaceDetailDataSize, &ulRequiredSize, NULL);
+            bOk = ::SetupDiGetDeviceInterfaceDetail (hDeviceInfoSet, &deviceInterfaceData, pDeviceInterfaceDetailData,
+                                                     ulDeviceInterfaceDetailDataSize, &ulRequiredSize, NULL);
             if (!bOk) {
                 ulErrorCode = ::GetLastError ();
                 if (ulErrorCode == ERROR_INSUFFICIENT_BUFFER) {
@@ -171,8 +173,9 @@ namespace {
                     pDeviceInterfaceDetailData->cbSize = sizeof (SP_DEVICE_INTERFACE_DETAIL_DATA);
                     ulDeviceInterfaceDetailDataSize    = ulRequiredSize;
                     deviceInfoData.cbSize              = sizeof (SP_DEVINFO_DATA);
-                    bOk                                = ::SetupDiGetDeviceInterfaceDetail (hDeviceInfoSet, &deviceInterfaceData, pDeviceInterfaceDetailData, ulDeviceInterfaceDetailDataSize, &ulRequiredSize, &deviceInfoData);
-                    ulErrorCode                        = ::GetLastError ();
+                    bOk         = ::SetupDiGetDeviceInterfaceDetail (hDeviceInfoSet, &deviceInterfaceData, pDeviceInterfaceDetailData,
+                                                                     ulDeviceInterfaceDetailDataSize, &ulRequiredSize, &deviceInfoData);
+                    ulErrorCode = ::GetLastError ();
                 }
 
                 if (!bOk) {
@@ -230,14 +233,15 @@ KeyedCollection<DiskInfoType, filesystem::path> FileSystem::GetAvailableDisks ()
 #endif
 
     for (int i = 0; i < 64; ++i) {
-        HANDLE hHandle = ::CreateFileW (GetPhysNameForDriveNumber_ (i).c_str (), GENERIC_READ, FILE_SHARE_READ, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
+        HANDLE hHandle = ::CreateFileW (GetPhysNameForDriveNumber_ (i).c_str (), GENERIC_READ, FILE_SHARE_READ, nullptr, OPEN_EXISTING,
+                                        FILE_ATTRIBUTE_NORMAL, nullptr);
         if (hHandle == INVALID_HANDLE_VALUE) {
             break;
         }
         GET_LENGTH_INFORMATION li{};
         {
             DWORD dwBytesReturned{};
-            BOOL  bResult = ::DeviceIoControl (hHandle, IOCTL_DISK_GET_LENGTH_INFO, nullptr, 0, &li, sizeof (li), &dwBytesReturned, nullptr);
+            BOOL bResult = ::DeviceIoControl (hHandle, IOCTL_DISK_GET_LENGTH_INFO, nullptr, 0, &li, sizeof (li), &dwBytesReturned, nullptr);
             if (bResult == 0) {
                 DbgTrace (L"failed - DeviceIoControl - IOCTL_DISK_GET_LENGTH_INFO - ignored");
                 continue;
@@ -246,7 +250,8 @@ KeyedCollection<DiskInfoType, filesystem::path> FileSystem::GetAvailableDisks ()
         DISK_GEOMETRY driveInfo{};
         {
             DWORD dwBytesReturned{};
-            BOOL  bResult = ::DeviceIoControl (hHandle, IOCTL_DISK_GET_DRIVE_GEOMETRY, nullptr, 0, &driveInfo, sizeof (driveInfo), &dwBytesReturned, nullptr);
+            BOOL  bResult =
+                ::DeviceIoControl (hHandle, IOCTL_DISK_GET_DRIVE_GEOMETRY, nullptr, 0, &driveInfo, sizeof (driveInfo), &dwBytesReturned, nullptr);
             if (bResult == 0) {
                 DbgTrace (L"failed - DeviceIoControl - IOCTL_DISK_GET_DRIVE_GEOMETRY - ignored");
                 continue;

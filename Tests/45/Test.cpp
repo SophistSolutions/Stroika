@@ -167,9 +167,9 @@ namespace {
                     }
                     return BLOB{buf.begin (), buf.end ()};
                 }();
-                optional<Response>                    optResp;
+                optional<Response> optResp;
                 [[maybe_unused]] static constexpr int kMaxTryCount_{10}; // for some reason, this fails occasionally, due to network issues or overload of target machine
-                [[maybe_unused]] unsigned int         tryCount{1};
+                [[maybe_unused]] unsigned int tryCount{1};
 #if qHasFeature_LibCurl
             again:
 #endif
@@ -180,7 +180,8 @@ namespace {
                 catch (const system_error& lce) {
 #if qHasFeature_OpenSSL
                     if (lce.code () == error_code{CURLE_SEND_FAIL_REWIND, LibCurl_error_category ()}) {
-                        DbgTrace ("Warning - ignored failure since rewinding of the data stream failed' (status CURLE_SEND_FAIL_REWIND) - try again ssl link");
+                        DbgTrace ("Warning - ignored failure since rewinding of the data stream failed' (status CURLE_SEND_FAIL_REWIND) - "
+                                  "try again ssl link");
                         c.SetSchemeAndAuthority (URI{L"https://httpbin.org/"});
                         if (tryCount < kMaxTryCount_) {
                             tryCount++;
@@ -358,10 +359,7 @@ namespace {
                 // rarely, but sometimes, this returns text that doesn't contain the word google --LGP 2019-04-19
                 VerifyTestResultWarning (responseText.Contains (L"google", Characters::CompareOptions::eCaseInsensitive));
             }
-            void DoRegressionTests_ForConnectionFactory_ (Connection::Ptr (*factory) ())
-            {
-                Test_1_SimpleFetch_Google_C_ (factory ());
-            }
+            void DoRegressionTests_ForConnectionFactory_ (Connection::Ptr (*factory) ()) { Test_1_SimpleFetch_Google_C_ (factory ()); }
         }
         void DoTests_ ()
         {
@@ -496,7 +494,10 @@ namespace {
             }
             catch (...) {
                 // if transient issue, ignore
-                Stroika::TestHarness::WarnTestIssue (Characters::Format (L"badssl.com site failed with fFailConnectionIfSSLCertificateInvalid = false: %s", Characters::ToString (current_exception ()).c_str ()).c_str ());
+                Stroika::TestHarness::WarnTestIssue (
+                    Characters::Format (L"badssl.com site failed with fFailConnectionIfSSLCertificateInvalid = false: %s",
+                                        Characters::ToString (current_exception ()).c_str ())
+                        .c_str ());
             }
             try {
                 o.fFailConnectionIfSSLCertificateInvalid = false;
@@ -511,7 +512,10 @@ namespace {
             }
             catch (...) {
                 // if transient issue, ignore
-                Stroika::TestHarness::WarnTestIssue (Characters::Format (L"badssl.com site failed with fFailConnectionIfSSLCertificateInvalid = false: %s", Characters::ToString (current_exception ()).c_str ()).c_str ());
+                Stroika::TestHarness::WarnTestIssue (
+                    Characters::Format (L"badssl.com site failed with fFailConnectionIfSSLCertificateInvalid = false: %s",
+                                        Characters::ToString (current_exception ()).c_str ())
+                        .c_str ());
             }
 
             // BAD SSL SITE
@@ -544,7 +548,10 @@ namespace {
 #endif
                 }
                 catch (...) {
-                    Stroika::TestHarness::WarnTestIssue (Characters::Format (L"badssl.com site failed with fFailConnectionIfSSLCertificateInvalid = false: %s", Characters::ToString (current_exception ()).c_str ()).c_str ());
+                    Stroika::TestHarness::WarnTestIssue (
+                        Characters::Format (L"badssl.com site failed with fFailConnectionIfSSLCertificateInvalid = false: %s",
+                                            Characters::ToString (current_exception ()).c_str ())
+                            .c_str ());
                 }
             }
         }
@@ -558,7 +565,8 @@ namespace {
             {
                 Debug::TraceContextBumper ctx{"{}::...SimpleGetFetch_T1"};
 #if qCompilerAndStdLib_ASAN_initializerlist_scope_Buggy
-                static const auto kInitList_ = initializer_list<URI>{URI{L"http://httpbin.org/get"}, URI{L"http://www.google.com"}, URI{L"http://www.cnn.com"}};
+                static const auto kInitList_ =
+                    initializer_list<URI>{URI{L"http://httpbin.org/get"}, URI{L"http://www.google.com"}, URI{L"http://www.cnn.com"}};
 #endif
                 for (URI u :
 #if qCompilerAndStdLib_ASAN_initializerlist_scope_Buggy
@@ -574,8 +582,9 @@ namespace {
                         VerifyTestResult (r.GetData ().size () > 1);
                         Response r2           = c.GET (u);
                         bool     wasFromCache = r2.GetHeaders ().ContainsKey (Cache::DefaultOptions::kCachedResultHeaderDefault);
-                        VerifyTestResult (r.GetData () == r2.GetData () or not wasFromCache);                                                           // if not from cache, sources can give different answers
-                        DbgTrace (L"2nd lookup (%s) wasFromCache=%s", Characters::ToString (u).c_str (), Characters::ToString (wasFromCache).c_str ()); // cannot assert cuz some servers cachable, others not
+                        VerifyTestResult (r.GetData () == r2.GetData () or not wasFromCache); // if not from cache, sources can give different answers
+                        DbgTrace (L"2nd lookup (%s) wasFromCache=%s", Characters::ToString (u).c_str (),
+                                  Characters::ToString (wasFromCache).c_str ()); // cannot assert cuz some servers cachable, others not
                     }
                     catch (const IO::Network::HTTP::Exception& e) {
                         if (e.IsServerError ()) {
@@ -587,10 +596,7 @@ namespace {
                     }
                 }
             }
-            void DoRegressionTests_ForConnectionFactory_ (function<Connection::Ptr ()> factory)
-            {
-                SimpleGetFetch_T1 (factory ());
-            }
+            void DoRegressionTests_ForConnectionFactory_ (function<Connection::Ptr ()> factory) { SimpleGetFetch_T1 (factory ()); }
         }
         void DoTests_ ()
         {
@@ -629,7 +635,8 @@ namespace {
             {
                 Debug::TraceContextBumper ctx{"{}::...SimpleGetFetch_T1"};
 #if qCompilerAndStdLib_ASAN_initializerlist_scope_Buggy
-                static const auto kInitList_ = initializer_list<URI>{URI{L"http://httpbin.org/get"}, URI{L"http://www.google.com"}, URI{L"http://www.cnn.com"}};
+                static const auto kInitList_ =
+                    initializer_list<URI>{URI{L"http://httpbin.org/get"}, URI{L"http://www.google.com"}, URI{L"http://www.cnn.com"}};
 #endif
                 for (URI u :
 #if qCompilerAndStdLib_ASAN_initializerlist_scope_Buggy
@@ -644,8 +651,9 @@ namespace {
                     VerifyTestResult (r.GetData ().size () > 1);
                     Response r2           = c.GET (u);
                     bool     wasFromCache = r2.GetHeaders ().ContainsKey (Cache::DefaultOptions::kCachedResultHeaderDefault);
-                    VerifyTestResult (r.GetData () == r2.GetData () or not wasFromCache);                                                           // if not from cache, sources can give different answers
-                    DbgTrace (L"2nd lookup (%s) wasFromCache=%s", Characters::ToString (u).c_str (), Characters::ToString (wasFromCache).c_str ()); // cannot assert cuz some servers cachable, others not
+                    VerifyTestResult (r.GetData () == r2.GetData () or not wasFromCache); // if not from cache, sources can give different answers
+                    DbgTrace (L"2nd lookup (%s) wasFromCache=%s", Characters::ToString (u).c_str (),
+                              Characters::ToString (wasFromCache).c_str ()); // cannot assert cuz some servers cachable, others not
                 }
             }
             void DoRegressionTests_ForConnectionFactory_ (function<Connection::Ptr (const URI& uriHint)> factory)
@@ -666,27 +674,18 @@ namespace {
             Cache::Ptr cache                 = Cache::CreateDefault (cacheOptions);
 
             try {
-                ConnectionPool connectionPoolWithCache{
-                    ConnectionPool::Options{
-                        3,
-                        [&] () -> Connection::Ptr {
-                            Connection::Options connOpts = kDefaultTestOptions_;
-                            connOpts.fCache              = cache;
-                            return Connection::New (connOpts);
-                        }}};
+                ConnectionPool connectionPoolWithCache{ConnectionPool::Options{3, [&] () -> Connection::Ptr {
+                                                                                   Connection::Options connOpts = kDefaultTestOptions_;
+                                                                                   connOpts.fCache              = cache;
+                                                                                   return Connection::New (connOpts);
+                                                                               }}};
                 ConnectionPool connectionPoolWithoutCache{
-                    ConnectionPool::Options{
-                        3,
-                        [] () -> Connection::Ptr {
-                            return Connection::New (kDefaultTestOptions_);
-                        }}};
+                    ConnectionPool::Options{3, [] () -> Connection::Ptr { return Connection::New (kDefaultTestOptions_); }}};
 
-                DoRegressionTests_ForConnectionFactory_ ([&] (const URI& uriHint) -> Connection::Ptr {
-                    return connectionPoolWithoutCache.New (uriHint);
-                });
-                DoRegressionTests_ForConnectionFactory_ ([&] (const URI& uriHint) -> Connection::Ptr {
-                    return connectionPoolWithCache.New (uriHint);
-                });
+                DoRegressionTests_ForConnectionFactory_ (
+                    [&] (const URI& uriHint) -> Connection::Ptr { return connectionPoolWithoutCache.New (uriHint); });
+                DoRegressionTests_ForConnectionFactory_ (
+                    [&] (const URI& uriHint) -> Connection::Ptr { return connectionPoolWithCache.New (uriHint); });
             }
             catch (const IO::Network::HTTP::Exception& e) {
                 if (e.IsServerError ()) {

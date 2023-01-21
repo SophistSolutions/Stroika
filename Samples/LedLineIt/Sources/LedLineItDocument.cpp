@@ -33,9 +33,9 @@ using Stroika::Foundation::Memory::StackBuffer;
 // special exception handling just for MFC library implementation
 // copied here so I could clone MFC code as needed - not well understood - UGH!!! - LGP 951227
 #ifndef _AFX_OLD_EXCEPTIONS
-#define DELETE_EXCEPTION(e) \
-    do {                    \
-        e->Delete ();       \
+#define DELETE_EXCEPTION(e)                                                                                                                \
+    do {                                                                                                                                   \
+        e->Delete ();                                                                                                                      \
     } while (0)
 #else //!_AFX_OLD_EXCEPTIONS
 #define DELETE_EXCEPTION(e)
@@ -218,10 +218,7 @@ void LedLineItDocument::DidUpdateText (const UpdateInfo& updateInfo) noexcept
     }
 }
 
-TextStore* LedLineItDocument::PeekAtTextStore () const
-{
-    return &const_cast<LedLineItDocument*> (this)->fTextStore;
-}
+TextStore* LedLineItDocument::PeekAtTextStore () const { return &const_cast<LedLineItDocument*> (this)->fTextStore; }
 
 BOOL LedLineItDocument::OnNewDocument ()
 {
@@ -283,10 +280,7 @@ BOOL LedLineItDocument::DoSave (LPCTSTR lpszPathName, BOOL bReplace)
         if (!OnSaveDocument (newName)) {
             if (lpszPathName == NULL) {
                 // be sure to delete the file
-                TRY
-                {
-                    CFile::Remove (newName);
-                }
+                TRY { CFile::Remove (newName); }
                 CATCH_ALL (e)
                 {
                     TRACE0 ("Warning: failed to delete file after failed SaveAs.\n");
@@ -343,7 +337,9 @@ BOOL LedLineItDocument::OnOpenDocument (LPCTSTR lpszPathName)
         using inherited = FlavorPackageInternalizer;
 
     public:
-        enum { kMaxLineSize = 1024 };
+        enum {
+            kMaxLineSize = 1024
+        };
 
     public:
         MyFlavorPackageInternalizer (TextStore& ts)
@@ -354,10 +350,8 @@ BOOL LedLineItDocument::OnOpenDocument (LPCTSTR lpszPathName)
         }
 
     public:
-        virtual void InternalizeFlavor_FILEGuessFormatsFromStartOfData (
-            [[maybe_unused]] Led_ClipFormat* suggestedClipFormat,
-            CodePage*                        suggestedCodePage,
-            const byte* fileStart, const byte* fileEnd) override
+        virtual void InternalizeFlavor_FILEGuessFormatsFromStartOfData ([[maybe_unused]] Led_ClipFormat* suggestedClipFormat,
+                                                                        CodePage* suggestedCodePage, const byte* fileStart, const byte* fileEnd) override
         {
             size_t curLineSize = 0;
             size_t maxLineSize = 0;
@@ -378,17 +372,20 @@ BOOL LedLineItDocument::OnOpenDocument (LPCTSTR lpszPathName)
             }
 
             if (maxLineSize > kMaxLineSize) {
-                LineTooLongOnReadDialog dlg (Characters::CString::Format (Led_SDK_TCHAROF ("This file contains at least one very long line (approximately %d characters). This may reduce editor performance, and make viewing the file awkward. Long lines can optionally be automatically broken up if they exceed the 'Break at characer count' value below."), maxLineSize / 100 * 100), kMaxLineSize);
+                LineTooLongOnReadDialog dlg (
+                    Characters::CString::Format (
+                        Led_SDK_TCHAROF ("This file contains at least one very long line (approximately %d characters). This may reduce "
+                                         "editor performance, and make viewing the file awkward. Long lines can optionally be "
+                                         "automatically broken up if they exceed the 'Break at characer count' value below."),
+                        maxLineSize / 100 * 100),
+                    kMaxLineSize);
                 fBreakLongLines = (dlg.DoModal () == IDOK);
                 fBreakWidths    = dlg.fBreakCount;
             }
         }
 
-        virtual bool InternalizeFlavor_FILEDataRawBytes (
-            Led_ClipFormat* suggestedClipFormat,
-            CodePage*       suggestedCodePage,
-            size_t from, size_t to,
-            const void* rawBytes, size_t nRawBytes) override
+        virtual bool InternalizeFlavor_FILEDataRawBytes (Led_ClipFormat* suggestedClipFormat, CodePage* suggestedCodePage, size_t from,
+                                                         size_t to, const void* rawBytes, size_t nRawBytes) override
         {
             Led_ClipFormat cf = (suggestedClipFormat == NULL or *suggestedClipFormat == kBadClipFormat) ? kTEXTClipFormat : *suggestedClipFormat;
             Require (cf == kTEXTClipFormat);
@@ -397,12 +394,14 @@ BOOL LedLineItDocument::OnOpenDocument (LPCTSTR lpszPathName)
 
             if (fBreakLongLines) {
 #if qWideCharacters
-                CodePage useCodePage = (suggestedCodePage == NULL or *suggestedCodePage == kCodePage_INVALID) ? CodePagesGuesser ().Guess (rawBytes, nRawBytes) : *suggestedCodePage;
+                CodePage useCodePage = (suggestedCodePage == NULL or *suggestedCodePage == kCodePage_INVALID)
+                                           ? CodePagesGuesser ().Guess (rawBytes, nRawBytes)
+                                           : *suggestedCodePage;
                 if (suggestedCodePage != NULL) {
                     *suggestedCodePage = useCodePage;
                 }
-                CodePageConverter      cpc        = CodePageConverter{useCodePage, CodePageConverter::eHandleBOM};
-                size_t                 outCharCnt = cpc.MapToUNICODE_QuickComputeOutBufSize (reinterpret_cast<const char*> (rawBytes), nRawBytes + 1);
+                CodePageConverter cpc = CodePageConverter{useCodePage, CodePageConverter::eHandleBOM};
+                size_t outCharCnt     = cpc.MapToUNICODE_QuickComputeOutBufSize (reinterpret_cast<const char*> (rawBytes), nRawBytes + 1);
                 StackBuffer<Led_tChar> fileData2{Memory::eUninitialized, outCharCnt};
                 cpc.MapToUNICODE (reinterpret_cast<const char*> (rawBytes), nRawBytes, static_cast<wchar_t*> (fileData2), &outCharCnt);
                 size_t charsRead = outCharCnt;
@@ -582,10 +581,7 @@ void LedLineItDocument::OnFileSaveCopyAs ()
     m_bRemember = true;
 }
 
-void LedLineItDocument::DeleteContents ()
-{
-    fTextStore.Replace (fTextStore.GetStart (), fTextStore.GetEnd (), LED_TCHAR_OF (""), 0);
-}
+void LedLineItDocument::DeleteContents () { fTextStore.Replace (fTextStore.GetStart (), fTextStore.GetEnd (), LED_TCHAR_OF (""), 0); }
 
 bool LedLineItDocument::DoPromptSaveAsFileName (CString* fileName, CodePage* codePage)
 {

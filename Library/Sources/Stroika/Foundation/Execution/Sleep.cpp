@@ -25,10 +25,7 @@ void Execution::Sleep (Time::DurationSecondsType seconds2Wait)
     }
 }
 
-void Execution::Sleep (const Time::Duration& wait)
-{
-    Sleep (wait.As<Time::DurationSecondsType> ());
-}
+void Execution::Sleep (const Time::Duration& wait) { Sleep (wait.As<Time::DurationSecondsType> ()); }
 
 void Execution::Sleep (const Time::Duration& wait, Time::Duration* remainingInSleep)
 {

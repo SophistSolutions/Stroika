@@ -408,13 +408,13 @@ namespace Stroika::Foundation::IO::Network {
      */
     class Socket::_IRep {
     public:
-        virtual ~_IRep ()                                                                                                          = default;
-        virtual void                                 Shutdown (ShutdownTarget shutdownTarget)                                      = 0;
-        virtual void                                 Close ()                                                                      = 0;
-        virtual PlatformNativeHandle                 Detach ()                                                                     = 0;
-        virtual optional<IO::Network::SocketAddress> GetLocalAddress () const                                                      = 0;
-        virtual SocketAddress::FamilyType            GetAddressFamily () const                                                     = 0;
-        virtual PlatformNativeHandle                 GetNativeSocket () const                                                      = 0;
+        virtual ~_IRep ()                                                                     = default;
+        virtual void                                 Shutdown (ShutdownTarget shutdownTarget) = 0;
+        virtual void                                 Close ()                                 = 0;
+        virtual PlatformNativeHandle                 Detach ()                                = 0;
+        virtual optional<IO::Network::SocketAddress> GetLocalAddress () const                 = 0;
+        virtual SocketAddress::FamilyType            GetAddressFamily () const                = 0;
+        virtual PlatformNativeHandle                 GetNativeSocket () const                 = 0;
         virtual void                                 getsockopt (int level, int optname, void* optval, socklen_t* optvallen) const = 0;
         virtual void                                 setsockopt (int level, int optname, const void* optval, socklen_t optvallen)  = 0;
     };
@@ -443,10 +443,7 @@ namespace Stroika::Foundation::Execution::WaitForIOReady_Support {
     template <>
     struct WaitForIOReady_Traits<IO::Network::Socket::Ptr> {
         using HighLevelType = IO::Network::Socket::Ptr;
-        static inline auto GetSDKPollable (const HighLevelType& t)
-        {
-            return t.GetNativeSocket ();
-        }
+        static inline auto GetSDKPollable (const HighLevelType& t) { return t.GetNativeSocket (); }
     };
 
 }

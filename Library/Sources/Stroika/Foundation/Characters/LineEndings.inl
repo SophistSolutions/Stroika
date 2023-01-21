@@ -266,7 +266,8 @@ namespace Stroika::Foundation::Characters {
     {
         RequireNotNull (text);
         size_t origLen = text->length ();
-        size_t newLen  = NormalizeTextToNL (static_cast<const TCHAR*> (Containers::Start (*text)), origLen, static_cast<TCHAR*> (Containers::Start (*text)), origLen);
+        size_t newLen  = NormalizeTextToNL (static_cast<const TCHAR*> (Containers::Start (*text)), origLen,
+                                            static_cast<TCHAR*> (Containers::Start (*text)), origLen);
         Assert (newLen <= origLen);
         text->resize (newLen);
     }

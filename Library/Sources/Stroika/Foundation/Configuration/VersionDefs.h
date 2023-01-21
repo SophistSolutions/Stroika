@@ -85,12 +85,8 @@ namespace Stroika::Foundation::Configuration {
      *          #endif
      *      \endcode
      */
-#define Stroika_Make_FULL_VERSION(_Major_, _Minor_, _Stage_, _SubStage_, _FinalBuild_) \
-    ((_Major_ << 24) |                                                                 \
-     (_Minor_ << 16) |                                                                 \
-     (_Stage_ << 13) |                                                                 \
-     (_SubStage_ << 1) |                                                               \
-     (_FinalBuild_))
+#define Stroika_Make_FULL_VERSION(_Major_, _Minor_, _Stage_, _SubStage_, _FinalBuild_)                                                     \
+    ((_Major_ << 24) | (_Minor_ << 16) | (_Stage_ << 13) | (_SubStage_ << 1) | (_FinalBuild_))
 
 #if defined(__cplusplus)
 }

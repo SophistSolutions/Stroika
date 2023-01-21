@@ -133,7 +133,9 @@ using SystemPerformance::Support::WMICollector;
 #if qPlatform_Windows
 namespace {
     struct SetPrivilegeInContext_ {
-        enum IgnoreError { eIgnoreError };
+        enum IgnoreError {
+            eIgnoreError
+        };
         HANDLE    fToken_{INVALID_HANDLE_VALUE};
         SDKString fPrivilege_;
         SetPrivilegeInContext_ (LPCTSTR privilege)
@@ -187,7 +189,8 @@ namespace {
             if (not ::OpenThreadToken (::GetCurrentThread (), TOKEN_ADJUST_PRIVILEGES | TOKEN_QUERY, false, &fToken_)) {
                 if (::GetLastError () == ERROR_NO_TOKEN) {
                     Execution::Platform::Windows::ThrowIfZeroGetLastError (::ImpersonateSelf (SecurityImpersonation));
-                    Execution::Platform::Windows::ThrowIfZeroGetLastError (::OpenThreadToken (::GetCurrentThread (), TOKEN_ADJUST_PRIVILEGES | TOKEN_QUERY, FALSE, &fToken_));
+                    Execution::Platform::Windows::ThrowIfZeroGetLastError (
+                        ::OpenThreadToken (::GetCurrentThread (), TOKEN_ADJUST_PRIVILEGES | TOKEN_QUERY, FALSE, &fToken_));
                 }
                 else {
                     Execution::ThrowSystemErrNo ();
@@ -274,10 +277,7 @@ namespace {
         }
 
     public:
-        optional<unsigned int> CountThreads (pid_t pid) const
-        {
-            return fThreads_.OccurrencesOf (pid);
-        }
+        optional<unsigned int> CountThreads (pid_t pid) const { return fThreads_.OccurrencesOf (pid); }
     };
 }
 #endif
@@ -391,10 +391,11 @@ namespace {
              *  the lightweight process thread ids,  so we don't need to specially filter them out. However, I've not found
              *  this claim documented anywhere, so beware...
              */
-            for (const auto& p : filesystem::directory_iterator{"/proc", filesystem::directory_options{filesystem::directory_options::skip_permission_denied}}) {
+            for (const auto& p :
+                 filesystem::directory_iterator{"/proc", filesystem::directory_options{filesystem::directory_options::skip_permission_denied}}) {
                 const filesystem::path& dir               = p.path (); // full-path
                 String                  dirFileNameString = IO::FileSystem::FromPath (dir.filename ());
-                bool                    isAllNumeric      = not dirFileNameString.Find ([] (Character c) -> bool { return not c.IsDigit (); });
+                bool                    isAllNumeric = not dirFileNameString.Find ([] (Character c) -> bool { return not c.IsDigit (); });
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                 Debug::TraceContextBumper ctx{"...SystemPerformance::Instruments::Process::{}::ExtractFromProcFS_::reading /proc files"};
                 DbgTrace (L"isAllNumeric=%d, dir= %s, is_dir=%d", isAllNumeric, ToString (dir).c_str (), p.is_directory ());
@@ -416,18 +417,24 @@ namespace {
                         }
                     }
 
-                    bool grabStaticData = _fOptions.fCachePolicy == CachePolicy::eIncludeAllRequestedValues or not _fContext.cget ().cref ()->fStaticSuppressedAgain.Contains (pid);
+                    bool grabStaticData = _fOptions.fCachePolicy == CachePolicy::eIncludeAllRequestedValues or
+                                          not _fContext.cget ().cref ()->fStaticSuppressedAgain.Contains (pid);
 
                     ProcessType processDetails;
 
                     if (grabStaticData) {
                         processDetails.fEXEPath = OptionallyResolveShortcut_ (dir / kEXEFilename_);
                         if (processDetails.fEXEPath and IO::FileSystem::FromPath (*processDetails.fEXEPath).EndsWith (" (deleted)"sv)) {
-                            processDetails.fEXEPath = IO::FileSystem::ToPath (IO::FileSystem::FromPath (*processDetails.fEXEPath).SubString (0, -10));
+                            processDetails.fEXEPath =
+                                IO::FileSystem::ToPath (IO::FileSystem::FromPath (*processDetails.fEXEPath).SubString (0, -10));
                         }
 
-                        if (_fOptions.fProcessNameReadPolicy == Options::eAlways or (_fOptions.fProcessNameReadPolicy == Options::eOnlyIfEXENotRead and not processDetails.fEXEPath.has_value ())) {
-                            processDetails.fProcessName = OptionallyReadIfFileExists_<String> (dir / "comm"sv, [] (const Streams::InputStream<byte>::Ptr& in) { return TextReader::New (in).ReadAll ().Trim (); });
+                        if (_fOptions.fProcessNameReadPolicy == Options::eAlways or
+                            (_fOptions.fProcessNameReadPolicy == Options::eOnlyIfEXENotRead and not processDetails.fEXEPath.has_value ())) {
+                            processDetails.fProcessName =
+                                OptionallyReadIfFileExists_<String> (dir / "comm"sv, [] (const Streams::InputStream<byte>::Ptr& in) {
+                                    return TextReader::New (in).ReadAll ().Trim ();
+                                });
                         }
 
                         /*
@@ -512,8 +519,10 @@ namespace {
                         processDetails.fPrivateBytes = ReadPrivateBytes_ (dir / "smaps");
 
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                        DbgTrace (L"loaded processDetails.fProcessStartedAt=%s wuit stats.start_time = %lld", Characters::ToString (processDetails.fProcessStartedAt).c_str (), stats.start_time);
-                        DbgTrace (L"loaded processDetails.fTotalCPUTimeEverUsed=%f wuit stats.utime = %lld, stats.stime = %lld", (*processDetails.fTotalCPUTimeEverUsed), stats.utime, stats.stime);
+                        DbgTrace (L"loaded processDetails.fProcessStartedAt=%s wuit stats.start_time = %lld",
+                                  Characters::ToString (processDetails.fProcessStartedAt).c_str (), stats.start_time);
+                        DbgTrace (L"loaded processDetails.fTotalCPUTimeEverUsed=%f wuit stats.utime = %lld, stats.stime = %lld",
+                                  (*processDetails.fTotalCPUTimeEverUsed), stats.utime, stats.stime);
 #endif
                     }
                     catch (...) {
@@ -551,7 +560,8 @@ namespace {
                                         processDetails.fCombinedIOReadRate = (*processDetails.fCombinedIOReadBytes - *p->fCombinedIOReadBytes) / diffTime;
                                     }
                                     if (p->fCombinedIOWriteBytes) {
-                                        processDetails.fCombinedIOWriteRate = (*processDetails.fCombinedIOWriteBytes - *p->fCombinedIOWriteBytes) / diffTime;
+                                        processDetails.fCombinedIOWriteRate =
+                                            (*processDetails.fCombinedIOWriteBytes - *p->fCombinedIOWriteBytes) / diffTime;
                                     }
                                 }
                             }
@@ -562,7 +572,8 @@ namespace {
                     }
 
                     if (processDetails.fTotalCPUTimeEverUsed or processDetails.fCombinedIOReadBytes or processDetails.fCombinedIOWriteBytes) {
-                        newContextStats.Add (pid, PerfStats_{now, processDetails.fTotalCPUTimeEverUsed, processDetails.fCombinedIOReadBytes, processDetails.fCombinedIOWriteBytes});
+                        newContextStats.Add (pid, PerfStats_{now, processDetails.fTotalCPUTimeEverUsed, processDetails.fCombinedIOReadBytes,
+                                                             processDetails.fCombinedIOWriteBytes});
                     }
                     results.Add (pid, processDetails);
                 }
@@ -575,7 +586,8 @@ namespace {
             return results;
         }
         template <typename T>
-        static optional<T> OptionallyReadIfFileExists_ (const filesystem::path& fullPath, const function<T (const Streams::InputStream<byte>::Ptr&)>& reader)
+        static optional<T> OptionallyReadIfFileExists_ (const filesystem::path&                                     fullPath,
+                                                        const function<T (const Streams::InputStream<byte>::Ptr&)>& reader)
         {
             if (IO::FileSystem::Default ().Access (fullPath)) {
                 IgnoreExceptionsExceptThreadInterruptForCall (return reader (FileInputStream::New (fullPath, FileInputStream::eNotSeekable)));
@@ -638,7 +650,8 @@ namespace {
                 }
             };
             if (IO::FileSystem::Default ().Access (fullPath2CmdLineFile)) {
-                IgnoreExceptionsExceptThreadInterruptForCall (return ReadFileString_ (FileInputStream::New (fullPath2CmdLineFile, FileInputStream::eNotSeekable)));
+                IgnoreExceptionsExceptThreadInterruptForCall (
+                    return ReadFileString_ (FileInputStream::New (fullPath2CmdLineFile, FileInputStream::eNotSeekable)));
             }
             return nullopt;
         }
@@ -816,7 +829,8 @@ namespace {
         static StatFileInfo_ ReadStatFile_ (const filesystem::path& fullPath)
         {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-            Debug::TraceContextBumper ctx{L"Stroika::Frameworks::SystemPerformance::Instruments::Process::{}::ReadStatFile_", L"fullPath=%s", Characters::ToString (fullPath).c_str ()};
+            Debug::TraceContextBumper ctx{L"Stroika::Frameworks::SystemPerformance::Instruments::Process::{}::ReadStatFile_",
+                                          L"fullPath=%s", Characters::ToString (fullPath).c_str ()};
 #endif
             StatFileInfo_                   result{};
             Streams::InputStream<byte>::Ptr in = FileInputStream::New (fullPath, FileInputStream::eNotSeekable);
@@ -856,68 +870,68 @@ namespace {
             [[maybe_unused]] unsigned long      ignoredUnsignedLong{};
             [[maybe_unused]] unsigned long long ignoredUnsignedLongLong{};
             [[maybe_unused]] unsigned long int  ignored_unsigned_long{};
-            [[maybe_unused]] int                num = ::sscanf (
-                S,
+            [[maybe_unused]] int                num =
+                ::sscanf (S,
 
-                // (3 - char state)...
-                "%c "
+                          // (3 - char state)...
+                          "%c "
 
-                // (4 - 'int' - ppid,pgrp,session,tty_nr,tpgid)...
-                "%d %d %d %d %d "
+                          // (4 - 'int' - ppid,pgrp,session,tty_nr,tpgid)...
+                          "%d %d %d %d %d "
 
-                // (9 unsigned long  - flags,minflt,cminflt,majflt,cmajflt - NB: flags now unsigned int not unsigned long but unsigned long fits new and old)...
-                "%lu %lu %lu %lu %lu "
+                          // (9 unsigned long  - flags,minflt,cminflt,majflt,cmajflt - NB: flags now unsigned int not unsigned long but unsigned long fits new and old)...
+                          "%lu %lu %lu %lu %lu "
 
-                // (14 - unint but use ulonglong for safety - utime stime)...
-                "%llu %llu "
+                          // (14 - unint but use ulonglong for safety - utime stime)...
+                          "%llu %llu "
 
-                // (16 - unint but use ulonglong for safety- cutime cstime - docs say signed int but thats crazy--LGP2015-09-16)...
-                "%llu %llu "
+                          // (16 - unint but use ulonglong for safety- cutime cstime - docs say signed int but thats crazy--LGP2015-09-16)...
+                          "%llu %llu "
 
-                // (18 long priority, nice)...
-                "%ld %ld "
+                          // (18 long priority, nice)...
+                          "%ld %ld "
 
-                // (20  docs say long but thats nuts %ld   num_threads)...
-                "%d "
+                          // (20  docs say long but thats nuts %ld   num_threads)...
+                          "%d "
 
-                // (21  %ld - itrealvalue)...
-                "%d "
+                          // (21  %ld - itrealvalue)...
+                          "%d "
 
-                // (22 llu -   starttime %llu)...
-                "%llu "
+                          // (22 llu -   starttime %llu)...
+                          "%llu "
 
-                // (23 unsigned long by docs but use ull   vsize, rss)...
-                "%llu %llu ",
+                          // (23 unsigned long by docs but use ull   vsize, rss)...
+                          "%llu %llu ",
 
-                // (3 - char state)...
-                &result.state,
+                          // (3 - char state)...
+                          &result.state,
 
-                // (4 - 'int' - ppid,pgrp,session,tty_nr,tpgid)...
-                &result.ppid, &ignoredInt, &ignoredInt, &ignoredInt, &ignoredInt,
+                          // (4 - 'int' - ppid,pgrp,session,tty_nr,tpgid)...
+                          &result.ppid, &ignoredInt, &ignoredInt, &ignoredInt, &ignoredInt,
 
-                // (9 unsigned long - flags,minflt,cminflt,majflt,cmajflt - NB: flags now unsigned int not unsigned long but unsigned long fits new and old)...
-                &ignoredUnsignedLong, &result.minflt, &ignoredUnsignedLong, &result.majflt, &ignoredUnsignedLong,
+                          // (9 unsigned long - flags,minflt,cminflt,majflt,cmajflt - NB: flags now unsigned int not unsigned long but unsigned long fits new and old)...
+                          &ignoredUnsignedLong, &result.minflt, &ignoredUnsignedLong, &result.majflt, &ignoredUnsignedLong,
 
-                // (14 - unint but use ulonglong for safety - utime stime)...
-                &result.utime, &result.stime,
+                          // (14 - unint but use ulonglong for safety - utime stime)...
+                          &result.utime, &result.stime,
 
-                // (16 - unint but use ulonglong for safety- cutime cstime - docs say signed int but thats crazy--LGP2015-09-16)...
-                &ignoredUnsignedLongLong, &ignoredUnsignedLongLong,
+                          // (16 - unint but use ulonglong for safety- cutime cstime - docs say signed int but thats crazy--LGP2015-09-16)...
+                          &ignoredUnsignedLongLong, &ignoredUnsignedLongLong,
 
-                // (18 long priority, nice)
-                &ignoredLong, &ignoredLong,
+                          // (18 long priority, nice)
+                          &ignoredLong, &ignoredLong,
 
-                // (20  docs say long but thats nuts %ld   num_threads)
-                &result.nlwp,
+                          // (20  docs say long but thats nuts %ld   num_threads)
+                          &result.nlwp,
 
-                // (21  %ld - itrealvalue)
-                &ignoredInt,
+                          // (21  %ld - itrealvalue)
+                          &ignoredInt,
 
-                // (22 llu -   starttime %llu)...
-                &result.start_time,
+                          // (22 llu -   starttime %llu)...
+                          &result.start_time,
 
-                // (23 unsigned long by docs but use ull   vsize, rss)...
-                &result.vsize, &result.rss);
+                          // (23 unsigned long by docs but use ull   vsize, rss)...
+                          &result.vsize, &result.rss);
             DISABLE_COMPILER_MSC_WARNING_END (4996) // MSVC SILLY WARNING ABOUT USING swscanf_s
 
             Assert (num == 22); // if not probably throw away???
@@ -940,7 +954,8 @@ namespace {
         static optional<proc_io_data_> Readproc_io_data_ (const filesystem::path& fullPath)
         {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-            Debug::TraceContextBumper ctx{L"Stroika::Frameworks::SystemPerformance::Instruments::Process::{}::Readproc_io_data_", L"fullPath=%s", Characters::ToString (fullPath).c_str ()};
+            Debug::TraceContextBumper ctx{L"Stroika::Frameworks::SystemPerformance::Instruments::Process::{}::Readproc_io_data_",
+                                          L"fullPath=%s", Characters::ToString (fullPath).c_str ()};
 #endif
             if (not IO::FileSystem::Default ().Access (fullPath)) {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
@@ -975,7 +990,8 @@ namespace {
              *      1: 00000000:0050 00000000:0000 0A 00000000:00000000 00:00000000 00000000     0        0 6059 1 e466d720 300 0 0 2 -1
              */
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-            Debug::TraceContextBumper ctx{L"Stroika::Frameworks::SystemPerformance::Instruments::Process::{}::ReadTCPStats_", L"fullPath=%s", Characters::ToString (fullPath).c_str ()};
+            Debug::TraceContextBumper ctx{L"Stroika::Frameworks::SystemPerformance::Instruments::Process::{}::ReadTCPStats_",
+                                          L"fullPath=%s", Characters::ToString (fullPath).c_str ()};
 #endif
 
             if (not IO::FileSystem::Default ().Access (fullPath)) {
@@ -1013,7 +1029,8 @@ namespace {
         static optional<MemorySizeType> ReadPrivateBytes_ (const filesystem::path& fullPath)
         {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-            Debug::TraceContextBumper ctx{L"Stroika::Frameworks::SystemPerformance::Instruments::Process::{}::ReadPrivateBytes_", L"fullPath=%s", Characters::ToString (fullPath).c_str ()};
+            Debug::TraceContextBumper ctx{L"Stroika::Frameworks::SystemPerformance::Instruments::Process::{}::ReadPrivateBytes_",
+                                          L"fullPath=%s", Characters::ToString (fullPath).c_str ()};
 #endif
 
             if (not IO::FileSystem::Default ().Access (fullPath)) {
@@ -1051,7 +1068,8 @@ namespace {
         static proc_status_data_ Readproc_proc_status_data_ (const filesystem::path& fullPath)
         {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-            Debug::TraceContextBumper ctx{L"Stroika::Frameworks::SystemPerformance::Instruments::Process::{}::Readproc_proc_status_data_", L"fullPath=%s", Characters::ToString (fullPath).c_str ()};
+            Debug::TraceContextBumper ctx{L"Stroika::Frameworks::SystemPerformance::Instruments::Process::{}::Readproc_proc_status_data_",
+                                          L"fullPath=%s", Characters::ToString (fullPath).c_str ()};
 #endif
             proc_status_data_ result{};
             ifstream          r;
@@ -1141,7 +1159,7 @@ namespace {
                     sscanf (tmp.c_str (), "%d:%d:%d", &hours, &minutes, &seconds);
                     processDetails.fTotalCPUTimeEverUsed = hours * 60 * 60 + minutes * 60 + seconds;
                 }
-                processDetails.fResidentMemorySize       = Characters::String2Int<int> (l[4].Trim ()) * 1024; // RSS in /proc/xx/stat is * pagesize but this is *1024
+                processDetails.fResidentMemorySize = Characters::String2Int<int> (l[4].Trim ()) * 1024; // RSS in /proc/xx/stat is * pagesize but this is *1024
                 processDetails.fPrivateVirtualMemorySize = Characters::String2Int<int> (l[kVSZ_Idx_].Trim ()) * 1024;
                 processDetails.fUserName                 = l[kUser_Idx_].Trim ();
                 processDetails.fThreadCount              = Characters::String2Int<unsigned int> (l[kThreadCnt_Idx_].Trim ());
@@ -1187,7 +1205,10 @@ namespace {
     };
     PVOID GetPebAddress_ (HANDLE ProcessHandle)
     {
-        static LONG (WINAPI * NtQueryInformationProcess) (HANDLE ProcessHandle, ULONG ProcessInformationClass, PVOID ProcessInformation, ULONG ProcessInformationLength, PULONG ReturnLength) = (LONG (WINAPI*) (HANDLE, ULONG, PVOID, ULONG, PULONG))::GetProcAddress (::LoadLibraryA ("NTDLL.DLL"), "NtQueryInformationProcess");
+        static LONG (WINAPI * NtQueryInformationProcess) (HANDLE ProcessHandle, ULONG ProcessInformationClass, PVOID ProcessInformation,
+                                                          ULONG ProcessInformationLength, PULONG ReturnLength) =
+            (LONG (WINAPI*) (HANDLE, ULONG, PVOID, ULONG, PULONG))::GetProcAddress (::LoadLibraryA ("NTDLL.DLL"),
+                                                                                    "NtQueryInformationProcess");
         PROCESS_BASIC_INFORMATION pbi{};
         NtQueryInformationProcess (ProcessHandle, 0, &pbi, sizeof (pbi), NULL);
         return pbi.PebBaseAddress;
@@ -1220,12 +1241,14 @@ namespace {
     };
     struct _Context : ModuleCommonContext_ {
 #if qUseWMICollectionSupport_
-        WMICollector fProcessWMICollector_{"Process"sv, {WMICollector::kWildcardInstance}, { kProcessID_,
-                                                                                             kThreadCount_,
-                                                                                             kIOReadBytesPerSecond_,
-                                                                                             kIOWriteBytesPerSecond_,
-                                                                                             kPercentProcessorTime_,
-                                                                                             kElapsedTime_ }};
+        WMICollector fProcessWMICollector_{"Process"sv,
+                                           {WMICollector::kWildcardInstance},
+                                           { kProcessID_,
+                                             kThreadCount_,
+                                             kIOReadBytesPerSecond_,
+                                             kIOWriteBytesPerSecond_,
+                                             kPercentProcessorTime_,
+                                             kElapsedTime_ }};
 #endif
         Mapping<pid_t, PerfStats_> fMap;
     };
@@ -1259,11 +1282,11 @@ namespace {
             ProcessMapType         results;
 
 #if qUseWMICollectionSupport_
-            Mapping<String, double> threadCounts_ByPID          = processWMICollectorLock.rwref ().GetCurrentValues (kThreadCount_);
-            Mapping<String, double> ioReadBytesPerSecond_ByPID  = processWMICollectorLock.rwref ().GetCurrentValues (kIOReadBytesPerSecond_);
+            Mapping<String, double> threadCounts_ByPID         = processWMICollectorLock.rwref ().GetCurrentValues (kThreadCount_);
+            Mapping<String, double> ioReadBytesPerSecond_ByPID = processWMICollectorLock.rwref ().GetCurrentValues (kIOReadBytesPerSecond_);
             Mapping<String, double> ioWriteBytesPerSecond_ByPID = processWMICollectorLock.rwref ().GetCurrentValues (kIOWriteBytesPerSecond_);
-            Mapping<String, double> pctProcessorTime_ByPID      = processWMICollectorLock.rwref ().GetCurrentValues (kPercentProcessorTime_);
-            Mapping<String, double> processStartAt_ByPID        = processWMICollectorLock.rwref ().GetCurrentValues (kElapsedTime_);
+            Mapping<String, double> pctProcessorTime_ByPID = processWMICollectorLock.rwref ().GetCurrentValues (kPercentProcessorTime_);
+            Mapping<String, double> processStartAt_ByPID   = processWMICollectorLock.rwref ().GetCurrentValues (kElapsedTime_);
 #endif
 
             DurationSecondsType now{Time::GetTickCount ()};
@@ -1277,10 +1300,8 @@ namespace {
                 {
                 Again:
                     ULONG    returnLength{};
-                    NTSTATUS status = ::NtQuerySystemInformation (mSystemProcessInformation,
-                                                                  fBuf_.begin (),
-                                                                  static_cast<ULONG> (fBuf_.GetSize ()),
-                                                                  &returnLength);
+                    NTSTATUS status = ::NtQuerySystemInformation (mSystemProcessInformation, fBuf_.begin (),
+                                                                  static_cast<ULONG> (fBuf_.GetSize ()), &returnLength);
                     if (status == STATUS_BUFFER_TOO_SMALL or status == STATUS_INFO_LENGTH_MISMATCH) {
                         fBuf_.GrowToSize (returnLength);
                         goto Again;
@@ -1295,11 +1316,8 @@ namespace {
                 {
                     return reinterpret_cast<const SYSTEM_PROCESS_INFORMATION*> (fBuf_.begin ());
                 }
-                static bool IsValidPID_ (pid_t p)
-                {
-                    return static_cast<make_signed_t<pid_t>> (p) > 0;
-                }
-                Set<pid_t> GetAllProcessIDs_ () const
+                static bool IsValidPID_ (pid_t p) { return static_cast<make_signed_t<pid_t>> (p) > 0; }
+                Set<pid_t>  GetAllProcessIDs_ () const
                 {
                     const SYSTEM_PROCESS_INFORMATION* start = GetProcessInfo ();
                     const SYSTEM_PROCESS_INFORMATION* end   = start + fActualNumElts_;
@@ -1359,7 +1377,8 @@ namespace {
                     }
                 }
                 ProcessType processInfo;
-                bool        grabStaticData = _fOptions.fCachePolicy == CachePolicy::eIncludeAllRequestedValues or not _fContext.cget ().cref ()->fStaticSuppressedAgain.Contains (pid);
+                bool        grabStaticData = _fOptions.fCachePolicy == CachePolicy::eIncludeAllRequestedValues or
+                                      not _fContext.cget ().cref ()->fStaticSuppressedAgain.Contains (pid);
                 {
                     HANDLE hProcess = ::OpenProcess (PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, pid);
                     if (hProcess != nullptr) {
@@ -1370,8 +1389,10 @@ namespace {
                             optional<pid_t>            parentProcessID;
                             optional<String>           cmdLine;
                             optional<String>           userName;
-                            LookupProcessPath_ (pid, hProcess, &processName, &processEXEPath, &parentProcessID, _fOptions.fCaptureCommandLine ? &cmdLine : nullptr, &userName);
-                            if (_fOptions.fProcessNameReadPolicy == Options::eAlways or (_fOptions.fProcessNameReadPolicy == Options::eOnlyIfEXENotRead and not processEXEPath.has_value ())) {
+                            LookupProcessPath_ (pid, hProcess, &processName, &processEXEPath, &parentProcessID,
+                                                _fOptions.fCaptureCommandLine ? &cmdLine : nullptr, &userName);
+                            if (_fOptions.fProcessNameReadPolicy == Options::eAlways or
+                                (_fOptions.fProcessNameReadPolicy == Options::eOnlyIfEXENotRead and not processEXEPath.has_value ())) {
                                 Memory::CopyToIf (&processInfo.fProcessName, processName);
                             }
                             Memory::CopyToIf (&processInfo.fEXEPath, processEXEPath);
@@ -1410,7 +1431,8 @@ namespace {
 
                                     processInfo.fProcessStartedAt = DateTime{creationTime};
                                 }
-                                processInfo.fTotalCPUTimeEverUsed = convertFILETIME2DurationSeconds (kernelTime) + convertFILETIME2DurationSeconds (userTime);
+                                processInfo.fTotalCPUTimeEverUsed =
+                                    convertFILETIME2DurationSeconds (kernelTime) + convertFILETIME2DurationSeconds (userTime);
                             }
                             else {
                                 DbgTrace (L"error calling GetProcessTimes: %d", ::GetLastError ());
@@ -1462,7 +1484,8 @@ namespace {
                     }
                 }
 #endif
-                if (not processInfo.fCombinedIOReadRate.has_value () or not processInfo.fCombinedIOWriteRate.has_value () or not processInfo.fAverageCPUTimeUsed.has_value ()) {
+                if (not processInfo.fCombinedIOReadRate.has_value () or not processInfo.fCombinedIOWriteRate.has_value () or
+                    not processInfo.fAverageCPUTimeUsed.has_value ()) {
                     if (optional<PerfStats_> p = _fContext.load ()->fMap.Lookup (pid)) {
                         auto diffTime = now - p->fCapturedAt;
                         if (diffTime >= _fOptions.fMinimumAveragingInterval) {
@@ -1493,7 +1516,8 @@ namespace {
                 }
 
                 // So next time we can compute 'diffs'
-                newContextStats.Add (pid, PerfStats_{now, processInfo.fTotalCPUTimeEverUsed, processInfo.fCombinedIOReadBytes, processInfo.fCombinedIOWriteBytes});
+                newContextStats.Add (pid, PerfStats_{now, processInfo.fTotalCPUTimeEverUsed, processInfo.fCombinedIOReadBytes,
+                                                     processInfo.fCombinedIOWriteBytes});
 
                 results.Add (pid, processInfo);
             }
@@ -1524,7 +1548,8 @@ namespace {
             }
             return result;
         }
-        nonvirtual void LookupProcessPath_ (pid_t pid, HANDLE hProcess, optional<String>* processName, optional<filesystem::path>* processEXEPath, optional<pid_t>* parentProcessID, optional<String>* cmdLine, optional<String>* userName)
+        nonvirtual void LookupProcessPath_ (pid_t pid, HANDLE hProcess, optional<String>* processName, optional<filesystem::path>* processEXEPath,
+                                            optional<pid_t>* parentProcessID, optional<String>* cmdLine, optional<String>* userName)
         {
             RequireNotNull (hProcess);
             RequireNotNull (processEXEPath);
@@ -1553,8 +1578,11 @@ namespace {
                 }
             }
             {
-                const ULONG ProcessBasicInformation                                                                                                                                                   = 0;
-                static LONG (WINAPI * NtQueryInformationProcess) (HANDLE ProcessHandle, ULONG ProcessInformationClass, PVOID ProcessInformation, ULONG ProcessInformationLength, PULONG ReturnLength) = (LONG (WINAPI*) (HANDLE, ULONG, PVOID, ULONG, PULONG))::GetProcAddress (::LoadLibraryA ("NTDLL.DLL"), "NtQueryInformationProcess");
+                const ULONG ProcessBasicInformation = 0;
+                static LONG (WINAPI * NtQueryInformationProcess) (HANDLE ProcessHandle, ULONG ProcessInformationClass, PVOID ProcessInformation,
+                                                                  ULONG ProcessInformationLength, PULONG ReturnLength) =
+                    (LONG (WINAPI*) (HANDLE, ULONG, PVOID, ULONG, PULONG))::GetProcAddress (::LoadLibraryA ("NTDLL.DLL"),
+                                                                                            "NtQueryInformationProcess");
                 if (NtQueryInformationProcess) {
                     ULONG_PTR pbi[6];
                     ULONG     ulSize = 0;
@@ -1574,13 +1602,15 @@ namespace {
 #endif
                                 /* get the address of ProcessParameters */
                                 void* rtlUserProcParamsAddress{};
-                                if (not ::ReadProcessMemory (hProcess, (PCHAR)pebAddress + kUserProcParamsOffset_, &rtlUserProcParamsAddress, sizeof (PVOID), NULL)) {
+                                if (not ::ReadProcessMemory (hProcess, (PCHAR)pebAddress + kUserProcParamsOffset_,
+                                                             &rtlUserProcParamsAddress, sizeof (PVOID), NULL)) {
                                     goto SkipCmdLine_;
                                 }
                                 UNICODE_STRING commandLine;
 
                                 /* read the CommandLine UNICODE_STRING structure */
-                                if (not ::ReadProcessMemory (hProcess, (PCHAR)rtlUserProcParamsAddress + kCmdLineOffset_, &commandLine, sizeof (commandLine), NULL)) {
+                                if (not ::ReadProcessMemory (hProcess, (PCHAR)rtlUserProcParamsAddress + kCmdLineOffset_, &commandLine,
+                                                             sizeof (commandLine), NULL)) {
                                     goto SkipCmdLine_;
                                 }
                                 {
@@ -1606,10 +1636,9 @@ namespace {
                  */
                 HANDLE processToken = 0;
                 if (::OpenProcessToken (hProcess, TOKEN_QUERY, &processToken) != 0) {
-                    [[maybe_unused]] auto&& cleanup = Execution::Finally ([processToken] () noexcept {
-                        Verify (::CloseHandle (processToken));
-                    });
-                    DWORD                   nlen{};
+                    [[maybe_unused]] auto&& cleanup =
+                        Execution::Finally ([processToken] () noexcept { Verify (::CloseHandle (processToken)); });
+                    DWORD nlen{};
                     // no idea why needed, but TOKEN_USER buffer not big enuf empirically - LGP 2015-04-30
                     //      https://msdn.microsoft.com/en-us/library/windows/desktop/aa379626(v=vs.85).aspx
                     //          TokenUser
@@ -1655,7 +1684,8 @@ namespace {
         {
             Debug::TraceContextBumper ctx{"SystemPerformance::Instrument...Process...ProcessInstrumentRep_::Capture ()"};
             MeasurementSet            results;
-            Measurement               m{Instruments::Process::kProcessMapMeasurement, Process::Instrument::kObjectVariantMapper.FromObject (Capture_Raw (&results.fMeasuredAt))};
+            Measurement               m{Instruments::Process::kProcessMapMeasurement,
+                          Process::Instrument::kObjectVariantMapper.FromObject (Capture_Raw (&results.fMeasuredAt))};
             results.fMeasurements.Add (m);
             return results;
         }
@@ -1665,15 +1695,13 @@ namespace {
             Info rawMeasurement = _InternalCapture ();
             if (outMeasuredAt != nullptr) {
                 using Traversal::Openness;
-                *outMeasuredAt = Range<DurationSecondsType> (before, _GetCaptureContextTime ().value_or (Time::GetTickCount ()), Openness::eClosed, Openness::eClosed);
+                *outMeasuredAt = Range<DurationSecondsType> (before, _GetCaptureContextTime ().value_or (Time::GetTickCount ()),
+                                                             Openness::eClosed, Openness::eClosed);
             }
             return rawMeasurement;
         }
-        virtual unique_ptr<IRep> Clone () const override
-        {
-            return make_unique<ProcessInstrumentRep_> (_fOptions, _fContext.load ());
-        }
-        ProcessMapType _InternalCapture ()
+        virtual unique_ptr<IRep> Clone () const override { return make_unique<ProcessInstrumentRep_> (_fOptions, _fContext.load ()); }
+        ProcessMapType           _InternalCapture ()
         {
             AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
@@ -1742,12 +1770,11 @@ const ObjectVariantMapper Instruments::Process::Instrument::kObjectVariantMapper
 }();
 
 Instruments::Process::Instrument::Instrument (const Options& options)
-    : SystemPerformance::Instrument{
-          InstrumentNameType{"Process"sv},
-          make_unique<ProcessInstrumentRep_> (options),
-          {kProcessMapMeasurement},
-          {KeyValuePair<type_index, MeasurementType>{typeid (Info), kProcessMapMeasurement}},
-          kObjectVariantMapper}
+    : SystemPerformance::Instrument{InstrumentNameType{"Process"sv},
+                                    make_unique<ProcessInstrumentRep_> (options),
+                                    {kProcessMapMeasurement},
+                                    {KeyValuePair<type_index, MeasurementType>{typeid (Info), kProcessMapMeasurement}},
+                                    kObjectVariantMapper}
 {
 }
 

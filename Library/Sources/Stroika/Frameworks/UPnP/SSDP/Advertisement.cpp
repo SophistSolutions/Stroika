@@ -77,7 +77,8 @@ Memory::BLOB SSDP::Serialize (const String& headLine, SearchOrNotify searchOrNot
 
     //// SUPER ROUGH FIRST DRAFT
     textOut.Write (Characters::Format (L"%s\r\n", headLine.As<wstring> ().c_str ()));
-    textOut.Write (Characters::Format (L"Host: %s:%d\r\n", SSDP::V4::kSocketAddress.GetInternetAddress ().As<String> ().As<wstring> ().c_str (), SSDP::V4::kSocketAddress.GetPort ()));
+    textOut.Write (Characters::Format (L"Host: %s:%d\r\n", SSDP::V4::kSocketAddress.GetInternetAddress ().As<String> ().As<wstring> ().c_str (),
+                                       SSDP::V4::kSocketAddress.GetPort ()));
     textOut.Write (Characters::Format (L"Cache-Control: max-age=60\r\n")); // @todo fix
     textOut.Write (Characters::Format (L"Location: %s\r\n", ad.fLocation.As<String> ().As<wstring> ().c_str ()));
     if (ad.fAlive.has_value ()) {

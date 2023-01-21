@@ -39,43 +39,28 @@ struct Comparer<T*> {
 template <>
 struct Comparer<short> {
     typedef short VType;
-    static int    Compare (VType v1, VType v2)
-    {
-        return (v1 - v2);
-    }
+    static int    Compare (VType v1, VType v2) { return (v1 - v2); }
 };
 
 template <>
 struct Comparer<int> {
     typedef int VType;
-    static int  Compare (VType v1, VType v2)
-    {
-        return (v1 - v2);
-    }
+    static int  Compare (VType v1, VType v2) { return (v1 - v2); }
 };
 
 template <>
 struct Comparer<long> {
     typedef long VType;
-    static VType Compare (VType v1, VType v2)
-    {
-        return (v1 - v2);
-    }
+    static VType Compare (VType v1, VType v2) { return (v1 - v2); }
 };
 
 // strings
 template <>
 struct Comparer<char*> {
-    static int Compare (char* v1, char* v2)
-    {
-        return (strcmp (v1, v2));
-    }
+    static int Compare (char* v1, char* v2) { return (strcmp (v1, v2)); }
 };
 
 template <>
 struct Comparer<std::string> {
-    static int Compare (const std::string& v1, const std::string& v2)
-    {
-        return v1.compare (v2);
-    }
+    static int Compare (const std::string& v1, const std::string& v2) { return v1.compare (v2); }
 };

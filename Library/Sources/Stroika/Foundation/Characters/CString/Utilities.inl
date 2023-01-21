@@ -237,30 +237,18 @@ namespace Stroika::Foundation::Characters::CString {
      ********************************************************************************
      */
     namespace Private_ {
-        long long int          String2Int_ (const string& s);
-        long long int          String2Int_ (const char* s);
-        long long int          String2Int_ (const wchar_t* s);
-        long long int          String2Int_ (const wstring& s);
-        unsigned long long int String2UInt_ (const string& s);
-        unsigned long long int String2UInt_ (const char* s);
-        unsigned long long int String2UInt_ (const wchar_t* s);
-        unsigned long long int String2UInt_ (const wstring& s);
-        inline long long int   String2Int_ (const char* s)
-        {
-            return String2Int_ (string{s});
-        }
-        inline long long int String2Int_ (const wchar_t* s)
-        {
-            return String2Int_ (wstring (s));
-        }
-        inline unsigned long long int String2UInt_ (const char* s)
-        {
-            return String2UInt_ (string{s});
-        }
-        inline unsigned long long int String2UInt_ (const wchar_t* s)
-        {
-            return String2UInt_ (wstring{s});
-        }
+        long long int                 String2Int_ (const string& s);
+        long long int                 String2Int_ (const char* s);
+        long long int                 String2Int_ (const wchar_t* s);
+        long long int                 String2Int_ (const wstring& s);
+        unsigned long long int        String2UInt_ (const string& s);
+        unsigned long long int        String2UInt_ (const char* s);
+        unsigned long long int        String2UInt_ (const wchar_t* s);
+        unsigned long long int        String2UInt_ (const wstring& s);
+        inline long long int          String2Int_ (const char* s) { return String2Int_ (string{s}); }
+        inline long long int          String2Int_ (const wchar_t* s) { return String2Int_ (wstring (s)); }
+        inline unsigned long long int String2UInt_ (const char* s) { return String2UInt_ (string{s}); }
+        inline unsigned long long int String2UInt_ (const wchar_t* s) { return String2UInt_ (wstring{s}); }
         DISABLE_COMPILER_MSC_WARNING_START (4018)
         template <typename T, typename STRING_ARG>
         T String2IntOrUInt_ (STRING_ARG s)

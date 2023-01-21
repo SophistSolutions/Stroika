@@ -87,7 +87,8 @@ namespace Stroika::Foundation::Streams::iostream {
         class Rep_;
 
     private:
-        using InternalSyncRep_ = InternallySynchronizedOutputStream<ELEMENT_TYPE, OutputStreamFromStdOStream<ELEMENT_TYPE, TRAITS>, typename OutputStreamFromStdOStream<ELEMENT_TYPE, TRAITS>::Rep_>;
+        using InternalSyncRep_ = InternallySynchronizedOutputStream<ELEMENT_TYPE, OutputStreamFromStdOStream<ELEMENT_TYPE, TRAITS>,
+                                                                    typename OutputStreamFromStdOStream<ELEMENT_TYPE, TRAITS>::Rep_>;
     };
 
     /**

@@ -23,7 +23,9 @@ namespace Stroika::Foundation::Streams {
      ********************************************************************************
      */
     template <typename ELEMENT_TYPE>
-    optional<size_t> InputStream<ELEMENT_TYPE>::_IRep::_ReadNonBlocking_ReferenceImplementation_ForNonblockingUpstream (ElementType* intoStart, ElementType* intoEnd, size_t elementsRemaining)
+    optional<size_t> InputStream<ELEMENT_TYPE>::_IRep::_ReadNonBlocking_ReferenceImplementation_ForNonblockingUpstream (ElementType* intoStart,
+                                                                                                                        ElementType* intoEnd,
+                                                                                                                        size_t elementsRemaining)
     {
         Require ((intoStart == nullptr and intoEnd == nullptr) or (intoEnd - intoStart) >= 1);
         if (intoStart == nullptr) {

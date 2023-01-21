@@ -53,10 +53,7 @@ namespace Stroika::Foundation::Streams {
         }
         Rep_ (const Rep_&) = delete;
         Rep_ ()            = delete;
-        virtual bool IsSeekable () const override
-        {
-            return fRealIn_.IsSeekable ();
-        }
+        virtual bool IsSeekable () const override { return fRealIn_.IsSeekable (); }
         virtual void CloseRead () override
         {
             Require (IsOpenRead ());
@@ -64,10 +61,7 @@ namespace Stroika::Foundation::Streams {
             fRealIn_.Close ();
             Assert (fRealIn_ == nullptr);
         }
-        virtual bool IsOpenRead () const override
-        {
-            return fRealIn_ != nullptr;
-        }
+        virtual bool           IsOpenRead () const override { return fRealIn_ != nullptr; }
         virtual SeekOffsetType GetReadOffset () const override
         {
             RequireNotReached ();
@@ -181,7 +175,8 @@ namespace Stroika::Foundation::Streams {
      ********************************************************************************
      */
     template <typename ELEMENT_TYPE>
-    inline auto InputSubStream<ELEMENT_TYPE>::New (const typename InputStream<ELEMENT_TYPE>::Ptr& realIn, const optional<SeekOffsetType>& start, const Memory::optional<SeekOffsetType>& end) -> Ptr
+    inline auto InputSubStream<ELEMENT_TYPE>::New (const typename InputStream<ELEMENT_TYPE>::Ptr& realIn,
+                                                   const optional<SeekOffsetType>& start, const Memory::optional<SeekOffsetType>& end) -> Ptr
     {
         return InputStream<ELEMENT_TYPE>::_mkPtr (make_shared<Rep_> (realIn, start, end));
     }

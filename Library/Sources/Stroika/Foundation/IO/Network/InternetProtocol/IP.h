@@ -107,7 +107,8 @@ namespace Stroika::Foundation::IO::Network::InternetProtocol::IP {
         });
         using PacketHeader = conditional_t<Configuration::GetEndianness () == Configuration::Endian::eBig, iphdr_be_, iphdr_le_>;
 #endif
-        static_assert (sizeof (PacketHeader) == 20, "Check Stroika_Foundation_Configuration_STRUCT_PACKED, or builtin definition of iphdr: iphdr size wrong");
+        static_assert (sizeof (PacketHeader) == 20,
+                       "Check Stroika_Foundation_Configuration_STRUCT_PACKED, or builtin definition of iphdr: iphdr size wrong");
     }
 
     /**

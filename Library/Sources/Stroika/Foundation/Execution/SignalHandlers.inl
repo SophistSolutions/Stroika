@@ -37,14 +37,8 @@ namespace Stroika::Foundation::Execution {
         // that doesn't appear to work wtih std::function as of C++17 (reference?) -- DISABLE this Require()
         // Require (type == Type::eSafe); // otherwise use the overload taking a noexcept function
     }
-    inline SignalHandler::Type SignalHandler::GetType () const
-    {
-        return fType_;
-    }
-    inline void SignalHandler::operator() (SignalID i) const
-    {
-        fCall_ (i);
-    }
+    inline SignalHandler::Type SignalHandler::GetType () const { return fType_; }
+    inline void SignalHandler::operator() (SignalID i) const { fCall_ (i); }
 
 }
 

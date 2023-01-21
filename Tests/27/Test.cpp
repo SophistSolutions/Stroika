@@ -51,7 +51,8 @@ namespace {
 
     void DoRegressionTests_ ()
     {
-        struct MySimpleClassWithoutComparisonOperators_ComparerWithLess_ : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eStrictInOrder> {
+        struct MySimpleClassWithoutComparisonOperators_ComparerWithLess_
+            : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eStrictInOrder> {
             bool operator() (const SimpleClassWithoutComparisonOperators& lhs, const SimpleClassWithoutComparisonOperators& rhs) const
             {
                 return lhs.GetValue () < rhs.GetValue ();
@@ -61,17 +62,23 @@ namespace {
         {
             DoTestForConcreteContainer_<SortedMultiSet<size_t>> ();
             DoTestForConcreteContainer_<SortedMultiSet<SimpleClass>> ();
-            auto msFactory = [] () { return SortedMultiSet<SimpleClassWithoutComparisonOperators>{MySimpleClassWithoutComparisonOperators_ComparerWithLess_{}}; };
+            auto msFactory = [] () {
+                return SortedMultiSet<SimpleClassWithoutComparisonOperators>{MySimpleClassWithoutComparisonOperators_ComparerWithLess_{}};
+            };
             DoTestForConcreteContainer_<SortedMultiSet<SimpleClassWithoutComparisonOperators>> (
-                CommonTests::MultiSetTests::DEFAULT_TESTING_SCHEMA<SortedMultiSet<SimpleClassWithoutComparisonOperators>, MySimpleClassWithoutComparisonOperators_ComparerWithLess_, decltype (msFactory)> (msFactory));
+                CommonTests::MultiSetTests::DEFAULT_TESTING_SCHEMA<SortedMultiSet<SimpleClassWithoutComparisonOperators>, MySimpleClassWithoutComparisonOperators_ComparerWithLess_,
+                                                                   decltype (msFactory)> (msFactory));
         }
 
         {
             DoTestForConcreteContainer_<SortedMultiSet_stdmap<size_t>> ();
             DoTestForConcreteContainer_<SortedMultiSet_stdmap<SimpleClass>> ();
-            auto msFactory = [] () { return SortedMultiSet_stdmap<SimpleClassWithoutComparisonOperators>{MySimpleClassWithoutComparisonOperators_ComparerWithLess_{}}; };
+            auto msFactory = [] () {
+                return SortedMultiSet_stdmap<SimpleClassWithoutComparisonOperators>{MySimpleClassWithoutComparisonOperators_ComparerWithLess_{}};
+            };
             DoTestForConcreteContainer_<SortedMultiSet_stdmap<SimpleClassWithoutComparisonOperators>> (
-                CommonTests::MultiSetTests::DEFAULT_TESTING_SCHEMA<SortedMultiSet<SimpleClassWithoutComparisonOperators>, MySimpleClassWithoutComparisonOperators_ComparerWithLess_, decltype (msFactory)> (msFactory));
+                CommonTests::MultiSetTests::DEFAULT_TESTING_SCHEMA<SortedMultiSet<SimpleClassWithoutComparisonOperators>, MySimpleClassWithoutComparisonOperators_ComparerWithLess_,
+                                                                   decltype (msFactory)> (msFactory));
         }
 
         VerifyTestResult (SimpleClass::GetTotalLiveCount () == 0 and SimpleClassWithoutComparisonOperators::GetTotalLiveCount () == 0); // simple portable leak check

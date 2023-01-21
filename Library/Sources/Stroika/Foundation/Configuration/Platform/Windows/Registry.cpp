@@ -45,7 +45,8 @@ RegistryKey::RegistryKey (HKEY parentKey, const String& path, REGSAM samDesired)
 HKEY RegistryKey::OpenPath_ (HKEY parentKey, const String& path, REGSAM samDesired)
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    Debug::TraceContextBumper trcCtx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"{}::RegistryKey::OpenPath_", L"parentKey=%p, path='%s'", parentKey, path.c_str ())};
+    Debug::TraceContextBumper trcCtx{
+        Stroika_Foundation_Debug_OptionalizeTraceArgs (L"{}::RegistryKey::OpenPath_", L"parentKey=%p, path='%s'", parentKey, path.c_str ())};
 #endif
     Require (parentKey != nullptr);
     Require (parentKey != INVALID_HANDLE_VALUE);
@@ -71,7 +72,7 @@ namespace {
                     wstring strValue;
                     if (dwCountInBytes != 0) {
                         Assert (dwCountInBytes % sizeof (wchar_t) == 0); // @todo - we should bullet proof this code more but for now, assert if an issue
-                        size_t nChars = dwCountInBytes / 2 - 1;          // includes NUL-byte
+                        size_t nChars = dwCountInBytes / 2 - 1; // includes NUL-byte
                         strValue.resize (nChars);
                         ThrowIfNotERROR_SUCCESS (::RegQueryValueExW (key, path, nullptr, &dwType, (LPBYTE) & (*strValue.begin ()), &dwCountInBytes));
                         Assert (strValue[nChars] == '\0');
@@ -119,7 +120,7 @@ String RegistryKey::GetFullPathOfKey () const
     if (fKey_ != NULL) {
         Execution::DLLLoader dll{L"ntdll.dll"};
         using NtQueryKeyType = DWORD (__stdcall*) (HANDLE KeyHandle, int KeyInformationClass, PVOID KeyInformation, ULONG Length, PULONG ResultLength);
-        NtQueryKeyType func  = reinterpret_cast<NtQueryKeyType> (dll.GetProcAddress ("NtQueryKey"));
+        NtQueryKeyType func = reinterpret_cast<NtQueryKeyType> (dll.GetProcAddress ("NtQueryKey"));
         DWORD          size{0};
         DWORD          result = func (fKey_, 3, 0, 0, &size);
         if (result == STATUS_BUFFER_TOO_SMALL) {

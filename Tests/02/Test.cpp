@@ -268,11 +268,13 @@ namespace {
         VerifyTestResult (t3 == L"a");
         VerifyTestResult (t3 == String{L"a"});
         VerifyTestResult (t4 == L"a");
-#if (defined(__clang_major__) && !defined(__APPLE__) && (__clang_major__ >= 7)) || (defined(__clang_major__) && defined(__APPLE__) && (__clang_major__ >= 10))
+#if (defined(__clang_major__) && !defined(__APPLE__) && (__clang_major__ >= 7)) ||                                                         \
+    (defined(__clang_major__) && defined(__APPLE__) && (__clang_major__ >= 10))
         DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wself-assign-overloaded\""); // explicitly assigning value of variable of type 'Stroika::Foundation::Characters::String' to itself
 #endif
         t1 = t1;
-#if (defined(__clang_major__) && !defined(__APPLE__) && (__clang_major__ >= 7)) || (defined(__clang_major__) && defined(__APPLE__) && (__clang_major__ >= 10))
+#if (defined(__clang_major__) && !defined(__APPLE__) && (__clang_major__ >= 7)) ||                                                         \
+    (defined(__clang_major__) && defined(__APPLE__) && (__clang_major__ >= 10))
         DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wself-assign-overloaded\"");
 #endif
         VerifyTestResult (t1 == L"");
@@ -326,11 +328,13 @@ namespace {
 
         t5 = t1;
         t1 = t5;
-#if (defined(__clang_major__) && !defined(__APPLE__) && (__clang_major__ >= 7)) || (defined(__clang_major__) && defined(__APPLE__) && (__clang_major__ >= 10))
+#if (defined(__clang_major__) && !defined(__APPLE__) && (__clang_major__ >= 7)) ||                                                         \
+    (defined(__clang_major__) && defined(__APPLE__) && (__clang_major__ >= 10))
         DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wself-assign-overloaded\""); // explicitly assigning value of variable of type 'Stroika::Foundation::Characters::String' to itself
 #endif
         t1 = t1;
-#if (defined(__clang_major__) && !defined(__APPLE__) && (__clang_major__ >= 7)) || (defined(__clang_major__) && defined(__APPLE__) && (__clang_major__ >= 10))
+#if (defined(__clang_major__) && !defined(__APPLE__) && (__clang_major__ >= 7)) ||                                                         \
+    (defined(__clang_major__) && defined(__APPLE__) && (__clang_major__ >= 10))
         DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wself-assign-overloaded\"");
 #endif
         VerifyTestResult (t1 == L"");
@@ -680,10 +684,7 @@ namespace {
             VerifyTestResult (String{L"01-23-45-67-89"}.ReplaceAll (L"-", L"x") == L"01x23x45x67x89");
             VerifyTestResult (String{L"01-23-45-67-89"}.ReplaceAll (L"-", L"--") == L"01--23--45--67--89");
         }
-        void Test17_Replace_ ()
-        {
-            VerifyTestResult (String{u8"abc"}.Replace (1, 2, L"B") == L"aBc");
-        }
+        void Test17_Replace_ () { VerifyTestResult (String{u8"abc"}.Replace (1, 2, L"B") == L"aBc"); }
         void Test17_RegExpMatch_ ()
         {
             {
@@ -849,9 +850,9 @@ namespace {
     {
         Debug::TraceContextBumper ctx{L"Test19_ConstCharStar_"};
         VerifyTestResult (wcscmp (String (L"fred").c_str (), L"fred") == 0);
-        VerifyTestResult (wcscmp (String (L"0123456789abcde").c_str (), L"0123456789abcde") == 0);                                   // 15 chars
-        VerifyTestResult (wcscmp (String (L"0123456789abcdef").c_str (), L"0123456789abcdef") == 0);                                 // 16 chars
-        VerifyTestResult (wcscmp (String (L"0123456789abcdef0123456789abcde").c_str (), L"0123456789abcdef0123456789abcde") == 0);   // 31 chars
+        VerifyTestResult (wcscmp (String (L"0123456789abcde").c_str (), L"0123456789abcde") == 0);   // 15 chars
+        VerifyTestResult (wcscmp (String (L"0123456789abcdef").c_str (), L"0123456789abcdef") == 0); // 16 chars
+        VerifyTestResult (wcscmp (String (L"0123456789abcdef0123456789abcde").c_str (), L"0123456789abcdef0123456789abcde") == 0); // 31 chars
         VerifyTestResult (wcscmp (String (L"0123456789abcdef0123456789abcdef").c_str (), L"0123456789abcdef0123456789abcdef") == 0); // 32 chars
         {
             String tmp = L"333";
@@ -908,10 +909,12 @@ namespace {
         void Verify_FloatStringRoundtripNearlyEquals_ (FLOAT_TYPE l)
         {
             if constexpr (qCompilerAndStdLib_from_chars_and_tochars_FP_Precision_Buggy) {
-                VerifyTestResult (Math::NearlyEquals (l, Characters::FloatConversion::ToFloat<FLOAT_TYPE> (FloatConversion::ToString (l, FloatConversion::Precision{numeric_limits<FLOAT_TYPE>::digits10 + 2}))));
+                VerifyTestResult (Math::NearlyEquals (l, Characters::FloatConversion::ToFloat<FLOAT_TYPE> (FloatConversion::ToString (
+                                                             l, FloatConversion::Precision{numeric_limits<FLOAT_TYPE>::digits10 + 2}))));
             }
             else {
-                VerifyTestResult (Math::NearlyEquals (l, Characters::FloatConversion::ToFloat<FLOAT_TYPE> (FloatConversion::ToString (l, FloatConversion::Precision{numeric_limits<FLOAT_TYPE>::digits10 + 1}))));
+                VerifyTestResult (Math::NearlyEquals (l, Characters::FloatConversion::ToFloat<FLOAT_TYPE> (FloatConversion::ToString (
+                                                             l, FloatConversion::Precision{numeric_limits<FLOAT_TYPE>::digits10 + 1}))));
             }
         }
     }
@@ -1110,10 +1113,7 @@ namespace {
 
 namespace {
     namespace Test23_PRIVATE_ {
-        String Test23_help1_ (const wchar_t* format, va_list argsList)
-        {
-            return Characters::FormatV (format, argsList);
-        }
+        String Test23_help1_ (const wchar_t* format, va_list argsList) { return Characters::FormatV (format, argsList); }
         String Test23_help1_HELPER (const wchar_t* format, ...)
         {
             va_list argsList;
@@ -1208,9 +1208,7 @@ namespace {
     void Test28_ReplacementForStripTrailingCharIfAny_ ()
     {
         Debug::TraceContextBumper ctx{L"Test28_ReplacementForStripTrailingCharIfAny_"};
-        auto                      StripTrailingCharIfAny = [] (const String& s, const Character& c) -> String {
-            return s.EndsWith (c) ? s.SubString (0, -1) : s;
-        };
+        auto StripTrailingCharIfAny = [] (const String& s, const Character& c) -> String { return s.EndsWith (c) ? s.SubString (0, -1) : s; };
         VerifyTestResult (StripTrailingCharIfAny (L"xxx", '.') == L"xxx");
         VerifyTestResult (StripTrailingCharIfAny (L"xxx.", '.') == L"xxx");
         VerifyTestResult (StripTrailingCharIfAny (L"xxx..", '.') == L"xxx.");
@@ -1454,8 +1452,7 @@ namespace {
             VerifyTestResult (u8string{u8"phred"} == String::FromUTF8 (u8"phred").AsUTF8<u8string> ());
             VerifyTestResult (u8string{u8"שלום"} == String::FromUTF8 (u8"שלום").AsUTF8<u8string> ());
         }
-        {
-            // clang-format off
+        {// clang-format off
             // examples from https://en.wikipedia.org/wiki/UTF-8#Encoding
             {
                 char8_t dollarSign[] = u8"$";

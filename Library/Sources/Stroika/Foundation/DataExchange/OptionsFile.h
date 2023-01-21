@@ -147,36 +147,18 @@ namespace Stroika::Foundation::DataExchange {
     public:
         /**
          */
-        OptionsFile (
-            const String&                     modName,
-            const ObjectVariantMapper&        mapper,
-            ModuleDataUpgraderType            moduleUpgrader              = kDefaultUpgrader,
-            ModuleNameToFileNameMapperType    moduleNameToFileNameMapper  = mkFilenameMapper (L"Put-Your-App-Name-Here"),
-            ModuleNameToFileVersionMapperType moduleNameToReadFileVersion = kDefaultModuleNameToFileVersionMapper,
-            LoggerType                        logger                      = kDefaultLogger,
-            Variant::Reader                   reader                      = kDefaultReader,
-            Variant::Writer                   writer                      = kDefaultWriter);
-        OptionsFile (
-            const String&                     modName,
-            const ObjectVariantMapper&        mapper,
-            ModuleDataUpgraderType            moduleUpgrader,
-            ModuleNameToFileNameMapperType    moduleNameToReadFileNameMapper,
-            ModuleNameToFileNameMapperType    moduleNameToWriteFileNameMapper,
-            ModuleNameToFileVersionMapperType moduleNameToReadFileVersion = kDefaultModuleNameToFileVersionMapper,
-            LoggerType                        logger                      = kDefaultLogger,
-            Variant::Reader                   reader                      = kDefaultReader,
-            Variant::Writer                   writer                      = kDefaultWriter);
-        OptionsFile (
-            const String&                     modName,
-            const ObjectVariantMapper&        mapper,
-            ModuleDataUpgraderType            moduleUpgrader,
-            ModuleNameToFileNameMapperType    moduleNameToReadFileNameMapper,
-            ModuleNameToFileNameMapperType    moduleNameToWriteFileNameMapper,
-            ModuleNameToFileVersionMapperType moduleNameToReadFileVersion,
-            LoggerType                        logger,
-            Variant::Reader                   reader,
-            Variant::Writer                   writer,
-            const String&                     fileSuffix);
+        OptionsFile (const String& modName, const ObjectVariantMapper& mapper, ModuleDataUpgraderType moduleUpgrader = kDefaultUpgrader,
+                     ModuleNameToFileNameMapperType    moduleNameToFileNameMapper  = mkFilenameMapper (L"Put-Your-App-Name-Here"),
+                     ModuleNameToFileVersionMapperType moduleNameToReadFileVersion = kDefaultModuleNameToFileVersionMapper,
+                     LoggerType logger = kDefaultLogger, Variant::Reader reader = kDefaultReader, Variant::Writer writer = kDefaultWriter);
+        OptionsFile (const String& modName, const ObjectVariantMapper& mapper, ModuleDataUpgraderType moduleUpgrader,
+                     ModuleNameToFileNameMapperType moduleNameToReadFileNameMapper, ModuleNameToFileNameMapperType moduleNameToWriteFileNameMapper,
+                     ModuleNameToFileVersionMapperType moduleNameToReadFileVersion = kDefaultModuleNameToFileVersionMapper,
+                     LoggerType logger = kDefaultLogger, Variant::Reader reader = kDefaultReader, Variant::Writer writer = kDefaultWriter);
+        OptionsFile (const String& modName, const ObjectVariantMapper& mapper, ModuleDataUpgraderType moduleUpgrader,
+                     ModuleNameToFileNameMapperType moduleNameToReadFileNameMapper, ModuleNameToFileNameMapperType moduleNameToWriteFileNameMapper,
+                     ModuleNameToFileVersionMapperType moduleNameToReadFileVersion, LoggerType logger, Variant::Reader reader,
+                     Variant::Writer writer, const String& fileSuffix);
 
     public:
         /**

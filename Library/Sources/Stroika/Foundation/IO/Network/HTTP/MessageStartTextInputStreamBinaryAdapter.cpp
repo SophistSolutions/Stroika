@@ -46,7 +46,8 @@ public:
     bool AssureHeaderSectionAvailable ()
     {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-        Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"MessageStartTextInputStreamBinaryAdapter::AssureHeaderSectionAvailable")};
+        Debug::TraceContextBumper ctx{
+            Stroika_Foundation_Debug_OptionalizeTraceArgs (L"MessageStartTextInputStreamBinaryAdapter::AssureHeaderSectionAvailable")};
 #endif
         this->SeekRead (Whence::eFromStart, 0);
         Character c;
@@ -138,10 +139,7 @@ public:
     }
 
 protected:
-    virtual bool IsSeekable () const override
-    {
-        return true;
-    }
+    virtual bool IsSeekable () const override { return true; }
     virtual void CloseRead () override
     {
         Require (IsOpenRead ());
@@ -149,10 +147,7 @@ protected:
         fSource_.Close ();
         Assert (fSource_ == nullptr);
     }
-    virtual bool IsOpenRead () const override
-    {
-        return fSource_ != nullptr;
-    }
+    virtual bool   IsOpenRead () const override { return fSource_ != nullptr; }
     virtual size_t Read (Character* intoStart, Character* intoEnd) override
     {
         Require ((intoStart == intoEnd) or (intoStart != nullptr));
@@ -270,10 +265,10 @@ protected:
     }
 
 private:
-    InputStream<byte>::Ptr     fSource_;
-    Memory::InlineBuffer<byte> fAllDataReadBuf_;           // OK cuz typically this will be very small (1k) and not really grow...but it can if we must
-    size_t                     fOffset_;                   // text stream offset
-    size_t                     fBufferFilledUpValidBytes_; // nbytes of valid text in fAllDataReadBuf_
+    InputStream<byte>::Ptr fSource_;
+    Memory::InlineBuffer<byte> fAllDataReadBuf_; // OK cuz typically this will be very small (1k) and not really grow...but it can if we must
+    size_t fOffset_;                             // text stream offset
+    size_t fBufferFilledUpValidBytes_;           // nbytes of valid text in fAllDataReadBuf_
 };
 
 /*

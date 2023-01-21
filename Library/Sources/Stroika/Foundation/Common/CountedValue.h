@@ -48,19 +48,12 @@ namespace Stroika::Foundation::Common {
     public:
         /**
          */
-        template <typename VTEST                                  = VALUE_TYPE,
-                  enable_if_t<is_default_constructible_v<VTEST>>* = nullptr>
+        template <typename VTEST = VALUE_TYPE, enable_if_t<is_default_constructible_v<VTEST>>* = nullptr>
         constexpr CountedValue ();
         constexpr CountedValue (typename Configuration::ArgByValueType<ValueType> value, CounterType count = 1);
-        template <
-            typename VALUE2_TYPE,
-            typename COUNTER2_TYPE,
-            enable_if_t<is_convertible_v<VALUE2_TYPE, VALUE_TYPE> and is_convertible_v<COUNTER2_TYPE, COUNTER_TYPE>>* = nullptr>
+        template <typename VALUE2_TYPE, typename COUNTER2_TYPE, enable_if_t<is_convertible_v<VALUE2_TYPE, VALUE_TYPE> and is_convertible_v<COUNTER2_TYPE, COUNTER_TYPE>>* = nullptr>
         constexpr CountedValue (const pair<VALUE2_TYPE, COUNTER2_TYPE>& src);
-        template <
-            typename VALUE2_TYPE,
-            typename COUNTER2_TYPE,
-            enable_if_t<is_convertible_v<VALUE2_TYPE, VALUE_TYPE> and is_convertible_v<COUNTER2_TYPE, COUNTER_TYPE>>* = nullptr>
+        template <typename VALUE2_TYPE, typename COUNTER2_TYPE, enable_if_t<is_convertible_v<VALUE2_TYPE, VALUE_TYPE> and is_convertible_v<COUNTER2_TYPE, COUNTER_TYPE>>* = nullptr>
         constexpr CountedValue (const CountedValue<VALUE2_TYPE, COUNTER2_TYPE>& src);
 
     public:

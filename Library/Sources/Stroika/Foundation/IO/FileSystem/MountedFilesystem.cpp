@@ -51,10 +51,7 @@ namespace {
             : mfd{::open (fn.c_str (), O_RDONLY, 0)}
         {
         }
-        ~Watcher_Proc_Mounts_ ()
-        {
-            ::close (mfd);
-        }
+        ~Watcher_Proc_Mounts_ () { ::close (mfd); }
         bool IsNewAvail () const
         {
             // according to http://stackoverflow.com/questions/5070801/monitoring-mount-point-changes-via-proc-mounts
@@ -88,9 +85,9 @@ namespace {
     {
         // @todo - note - this only appears to capture 'fixed disks' - not network mounts, and and virtual mount points like /dev/
         KeyedCollection<MountedFilesystemType, filesystem::path> results{[] (const MountedFilesystemType& e) { return e.fMountedOn; }};
-        static mutex                                             sMutex_; // this API (getfsent) is NOT threadsafe, but we can at least make our use re-entrant
-        [[maybe_unused]] auto&&                                  critSec = lock_guard{sMutex_};
-        [[maybe_unused]] auto&&                                  cleanup = Execution::Finally ([&] () noexcept { ::endfsent (); });
+        static mutex            sMutex_; // this API (getfsent) is NOT threadsafe, but we can at least make our use re-entrant
+        [[maybe_unused]] auto&& critSec = lock_guard{sMutex_};
+        [[maybe_unused]] auto&& cleanup = Execution::Finally ([&] () noexcept { ::endfsent (); });
         while (fstab* fs = ::getfsent ()) {
             results += MountedFilesystemType{fs->fs_file, Containers::Set<filesystem::path>{fs->fs_spec}, String::FromNarrowSDKString (fs->fs_vfstype)};
         }
@@ -124,7 +121,8 @@ namespace {
         DataExchange::Variant::CharacterDelimitedLines::Reader   reader{{' ', '\t'}};
         for (Sequence<String> line : reader.ReadMatrix (readStream)) {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-            DbgTrace (L"in IO::FileSystem::{}::ReadMountInfo_MTabLikeFile_ linesize=%d, line[0]=%s", line.size (), line.empty () ? L"" : line[0].c_str ());
+            DbgTrace (L"in IO::FileSystem::{}::ReadMountInfo_MTabLikeFile_ linesize=%d, line[0]=%s", line.size (),
+                      line.empty () ? L"" : line[0].c_str ());
 #endif
             //
             // https://www.centos.org/docs/5/html/5.2/Deployment_Guide/s2-proc-mounts.html
@@ -138,12 +136,14 @@ namespace {
                 // procfs/mounts often contains symbolic links to device files
                 // e.g. /dev/disk/by-uuid/e1d70192-1bb0-461d-b89f-b054e45bfa00
                 if (devName.StartsWith (L"/")) {
-                    IgnoreExceptionsExceptThreadInterruptForCall (devName = IO::FileSystem::FromPath (filesystem::canonical (IO::FileSystem::ToPath (devName))));
+                    IgnoreExceptionsExceptThreadInterruptForCall (
+                        devName = IO::FileSystem::FromPath (filesystem::canonical (IO::FileSystem::ToPath (devName))));
                 }
                 filesystem::path    mountedAt = ToPath (line[1]);
                 String              fstype    = line[2];
                 static const String kNone_{L"none"sv};
-                results.Add (MountedFilesystemType{mountedAt, devName == kNone_ ? Set<filesystem::path>{} : Set<filesystem::path>{IO::FileSystem::ToPath (devName)}, fstype}); // special name none often used when there is no name
+                results.Add (MountedFilesystemType{
+                    mountedAt, devName == kNone_ ? Set<filesystem::path>{} : Set<filesystem::path>{IO::FileSystem::ToPath (devName)}, fstype}); // special name none often used when there is no name
             }
         }
         return results;
@@ -156,8 +156,9 @@ namespace {
         // Note - /procfs files always unseekable
         static const filesystem::path                                                            kUseFile2List_{"/proc/mounts"};
         static const Watcher_Proc_Mounts_                                                        sWatcher_{kUseFile2List_};
-        static Execution::Synchronized<KeyedCollection<MountedFilesystemType, filesystem::path>> sLastResult_{[] (const MountedFilesystemType& e) { return e.fMountedOn; }};
-        static bool                                                                              sFirstTime_{true};
+        static Execution::Synchronized<KeyedCollection<MountedFilesystemType, filesystem::path>> sLastResult_{
+            [] (const MountedFilesystemType& e) { return e.fMountedOn; }};
+        static bool sFirstTime_{true};
         if (sFirstTime_ or sWatcher_.IsNewAvail ()) {
             sLastResult_ = ReadMountInfo_MTabLikeFile_ (FileInputStream::New (kUseFile2List_, FileInputStream::eNotSeekable));
             sFirstTime_  = false;
@@ -190,8 +191,8 @@ namespace {
     optional<Set<DynamicDiskIDType_>> GetDisksForVolume_ (String volumeName)
     {
         wchar_t volPathsBuf[10 * 1024]; // intentionally uninitialized since we don't use it if GetVolumePathNamesForVolumeNameW () returns error, and its an OUT only parameter
-        DWORD   retLen = 0;
-        DWORD   x      = ::GetVolumePathNamesForVolumeNameW (volumeName.c_str (), volPathsBuf, static_cast<DWORD> (Memory::NEltsOf (volPathsBuf)), &retLen);
+        DWORD retLen = 0;
+        DWORD x = ::GetVolumePathNamesForVolumeNameW (volumeName.c_str (), volPathsBuf, static_cast<DWORD> (Memory::NEltsOf (volPathsBuf)), &retLen);
         if (x == 0) {
             return {}; // missing - no known - not empty - answer
         }
@@ -208,12 +209,14 @@ namespace {
              *  For reasons I don't understand (maybe a hit at http://superuser.com/questions/733687/give-regular-user-permission-to-access-physical-drive-on-windows)
              *  this only works with admin privilges
              */
-            HANDLE hHandle = ::CreateFileW (volumeName.c_str (), GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
+            HANDLE hHandle = ::CreateFileW (volumeName.c_str (), GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE, nullptr, OPEN_EXISTING,
+                                            FILE_ATTRIBUTE_NORMAL, nullptr);
             if (hHandle == INVALID_HANDLE_VALUE) {
                 return {};
             }
             DWORD dwBytesReturned = 0;
-            BOOL  bResult         = ::DeviceIoControl (hHandle, IOCTL_VOLUME_GET_VOLUME_DISK_EXTENTS, nullptr, 0, &volumeDiskExtents, sizeof (volumeDiskExtents), &dwBytesReturned, NULL);
+            BOOL  bResult         = ::DeviceIoControl (hHandle, IOCTL_VOLUME_GET_VOLUME_DISK_EXTENTS, nullptr, 0, &volumeDiskExtents,
+                                                       sizeof (volumeDiskExtents), &dwBytesReturned, NULL);
             ::CloseHandle (hHandle);
             if (not bResult) {
                 return {};
@@ -230,17 +233,23 @@ namespace {
     DISABLE_COMPILER_MSC_WARNING_START (6262) // stack usage OK
     Containers::KeyedCollection<MountedFilesystemType, filesystem::path> GetMountedFilesystems_Windows_ ()
     {
-        Containers::KeyedCollection<MountedFilesystemType, filesystem::path> results{[] (const MountedFilesystemType& e) { return e.fMountedOn; }};
-        TCHAR                                                                volumeNameBuf[1024]; // intentionally uninitialized since OUT parameter and not used unless FindFirstVolume success
+        Containers::KeyedCollection<MountedFilesystemType, filesystem::path> results{
+            [] (const MountedFilesystemType& e) { return e.fMountedOn; }};
+        TCHAR volumeNameBuf[1024]; // intentionally uninitialized since OUT parameter and not used unless FindFirstVolume success
 
         HANDLE                  hVol    = INVALID_HANDLE_VALUE;
-        [[maybe_unused]] auto&& cleanup = Execution::Finally ([&] () noexcept { if (hVol != INVALID_HANDLE_VALUE) { ::CloseHandle (hVol); } });
+        [[maybe_unused]] auto&& cleanup = Execution::Finally ([&] () noexcept {
+            if (hVol != INVALID_HANDLE_VALUE) {
+                ::CloseHandle (hVol);
+            }
+        });
 
         for (hVol = ::FindFirstVolume (volumeNameBuf, static_cast<DWORD> (Memory::NEltsOf (volumeNameBuf))); hVol != INVALID_HANDLE_VALUE;) {
             DWORD lpMaximumComponentLength;
             DWORD dwSysFlags;
             TCHAR fileSysNameBuf[1024];
-            if (::GetVolumeInformation (volumeNameBuf, nullptr, static_cast<DWORD> (Memory::NEltsOf (volumeNameBuf)), nullptr, &lpMaximumComponentLength, &dwSysFlags, fileSysNameBuf, static_cast<DWORD> (Memory::NEltsOf (fileSysNameBuf)))) {
+            if (::GetVolumeInformation (volumeNameBuf, nullptr, static_cast<DWORD> (Memory::NEltsOf (volumeNameBuf)), nullptr, &lpMaximumComponentLength,
+                                        &dwSysFlags, fileSysNameBuf, static_cast<DWORD> (Memory::NEltsOf (fileSysNameBuf)))) {
                 MountedFilesystemType v;
                 v.fFileSystemType = String::FromSDKString (fileSysNameBuf);
                 v.fVolumeID       = String::FromSDKString (volumeNameBuf);
@@ -248,7 +257,7 @@ namespace {
 
                 TCHAR volPathsBuf[10 * 1024]; // intentionally uninitialized
                 DWORD retLen = 0;
-                DWORD x      = ::GetVolumePathNamesForVolumeName (volumeNameBuf, volPathsBuf, static_cast<DWORD> (Memory::NEltsOf (volPathsBuf)), &retLen);
+                DWORD x = ::GetVolumePathNamesForVolumeName (volumeNameBuf, volPathsBuf, static_cast<DWORD> (Memory::NEltsOf (volPathsBuf)), &retLen);
                 if (x == 0) {
                     DbgTrace (SDKSTR ("Ignoring error getting paths (volume='%s')"), volumeNameBuf);
                 }

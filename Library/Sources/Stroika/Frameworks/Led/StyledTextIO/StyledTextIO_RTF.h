@@ -37,10 +37,18 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
     */
     class RTFIO {
     public:
-        enum { kRTFOpenGroupChar = '{' };
-        enum { kRTFCloseGroupChar = '}' };
-        enum { kRTFStartTagChar = '\\' };
-        enum { kRTFQuoteNextCharChar = '\\' };
+        enum {
+            kRTFOpenGroupChar = '{'
+        };
+        enum {
+            kRTFCloseGroupChar = '}'
+        };
+        enum {
+            kRTFStartTagChar = '\\'
+        };
+        enum {
+            kRTFQuoteNextCharChar = '\\'
+        };
 
 #if !qWideCharacters
     public:
@@ -218,7 +226,9 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
         };
 #if qUseMapForControlWordMap
     public:
-        enum { eMaxControlAtomNameLen = 31 };
+        enum {
+            eMaxControlAtomNameLen = 31
+        };
         struct ControlWordAtomName {
             ControlWordAtomName ()
             //:fName ()
@@ -296,22 +306,24 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
             FontTableEntry ();
 
         public:
-            enum FontFamily { eNil,
-                              eRoman,
-                              eSwiss,
-                              eModern,
-                              eScript,
-                              eDecor,
-                              eTech,
-                              eBidi };
+            enum FontFamily {
+                eNil,
+                eRoman,
+                eSwiss,
+                eModern,
+                eScript,
+                eDecor,
+                eTech,
+                eBidi
+            };
 
         public:
             SDKString  fFontName; //  font name
             int        fFNum;     //  font number
             FontFamily fFamily;   //  font family
-            uint8_t    fCharSet;  //  font charset (from https://msdn.microsoft.com/en-us/library/windows/desktop/dd145037(v=vs.85).aspx - this is a byte)
-            int        fPitch;    //  font pitch
-            int        fCodePage; //  font code page
+            uint8_t fCharSet; //  font charset (from https://msdn.microsoft.com/en-us/library/windows/desktop/dd145037(v=vs.85).aspx - this is a byte)
+            int fPitch;    //  font pitch
+            int fCodePage; //  font code page
         };
 
         /*
@@ -328,8 +340,8 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
             nonvirtual IncrementalFontSpecification GetFontSpec (int fontNumber);              // throws if not present
             nonvirtual const FontTableEntry*        LookupEntryByNumber (int fontNumber);      // return nullptr if not present
             nonvirtual const FontTableEntry*        LookupEntryByName (const SDKString& name); // return nullptr if not present
-            nonvirtual FontTableEntry               Add (const FontTableEntry& newEntry);      // ignores the fFNum, and supplies its own! - returns same entry but with revised fFNum
-            nonvirtual int                          FindSmallestUnusedFontNumber () const;
+            nonvirtual FontTableEntry Add (const FontTableEntry& newEntry); // ignores the fFNum, and supplies its own! - returns same entry but with revised fFNum
+            nonvirtual int FindSmallestUnusedFontNumber () const;
 
         public:
             vector<FontTableEntry> fEntries;
@@ -588,8 +600,8 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
         virtual RTFIO::FontTableEntry ReadInFontTablesEntry ();
         virtual void                  ReadInObjectSubGroupEntry (ReaderContext& readerContext, vector<char>* data, size_t* resultFoundAt);
         virtual void                  ReadObjData (vector<char>* data);
-        virtual void                  ConstructOLEEmebddingFromRTFInfo (ReaderContext& readerContext, TWIPS_Point size, size_t nBytes, const void* data);
-        virtual void                  ConstructLedEmebddingFromRTFInfo (ReaderContext& readerContext, size_t nBytes, const void* data);
+        virtual void ConstructOLEEmebddingFromRTFInfo (ReaderContext& readerContext, TWIPS_Point size, size_t nBytes, const void* data);
+        virtual void ConstructLedEmebddingFromRTFInfo (ReaderContext& readerContext, size_t nBytes, const void* data);
 
     protected:
         enum ImageFormat {
@@ -603,8 +615,8 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
             eBITMAP,                      // device dependent bitmap
             eDefaultImageFormat = eBITMAP //  according to RTF 1.5 spec - "The \wbitmap control word is optional. If no other picture type is specified, the picture is assumed to be a Windows bitmap"
         };
-        virtual void     ReadPictData (vector<char>* data);
-        virtual void     ReadTopLevelPictData (TWIPS_Point* shownSize, ImageFormat* imageFormat, TWIPS_Point* bmSize, vector<char>* objData);
+        virtual void ReadPictData (vector<char>* data);
+        virtual void ReadTopLevelPictData (TWIPS_Point* shownSize, ImageFormat* imageFormat, TWIPS_Point* bmSize, vector<char>* objData);
         virtual Led_DIB* ConstructDIBFromData (TWIPS_Point shownSize, ImageFormat imageFormat, TWIPS_Point bmSize, size_t nBytes, const void* data);
 #if qPlatform_Windows
         virtual Led_DIB* ConstructDIBFromEMFHelper (TWIPS_Point shownSize, TWIPS_Point bmSize, const HENHMETAFILE hMF);
@@ -915,9 +927,9 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
     private:
         struct RowInfo {
             RowInfo ();
-            TWIPS            f_trrh;
-            TWIPS            f_trleft;
-            TWIPS_Rect       fDefaultCellMargins; // Not REALLY a rect - just a handy way to store 4 values... and OK since its private - not part of API
+            TWIPS f_trrh;
+            TWIPS f_trleft;
+            TWIPS_Rect fDefaultCellMargins; // Not REALLY a rect - just a handy way to store 4 values... and OK since its private - not part of API
             TWIPS_Rect       fDefaultCellSpacing; // ''
             vector<CellInfo> fCellInfosForThisRow;
         };
@@ -985,7 +997,7 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
 
     public:
         nonvirtual const vector<pair<string, wchar_t>>& GetCharactersSavedByName () const;
-        nonvirtual void                                 SetCharactersSavedByName (const vector<pair<string, wchar_t>>& charactersSavedByName);
+        nonvirtual void SetCharactersSavedByName (const vector<pair<string, wchar_t>>& charactersSavedByName);
 
     private:
         vector<pair<string, wchar_t>> fCharactersSavedByName;
@@ -1098,10 +1110,7 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
 
 #if !qWideCharacters
     //  class   RTFIO::SingleByteCharsetToCharsetMappingTable
-    inline char RTFIO::SingleByteCharsetToCharsetMappingTable::Map (char inChar)
-    {
-        return (fMappingTable[(unsigned char)inChar]);
-    }
+    inline char RTFIO::SingleByteCharsetToCharsetMappingTable::Map (char inChar) { return (fMappingTable[(unsigned char)inChar]); }
 #endif
 
 //  class   RTFIO::StringNControlWordAtom
@@ -1125,10 +1134,7 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
     {
         return TWIPS (720); //  default to 1/2 inch - RTF spec default
     }
-    inline TWIPS RTFInfo::GetDefaultTabStop () const
-    {
-        return fDefaultTabStop;
-    }
+    inline TWIPS       RTFInfo::GetDefaultTabStop () const { return fDefaultTabStop; }
     inline TWIPS_Point RTFInfo::GetStaticDefaultPaperSize ()
     {
         // From RTFSpec 1.4
@@ -1163,20 +1169,11 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
     }
 
     //  class   StyledTextIOReader_RTF
-    inline Led_tChar StyledTextIOReader_RTF::GetDefaultUnsupportedCharacterChar () const
-    {
-        return fDefaultUnsupportedCharacterChar;
-    }
+    inline Led_tChar StyledTextIOReader_RTF::GetDefaultUnsupportedCharacterChar () const { return fDefaultUnsupportedCharacterChar; }
 
     //  class   StyledTextIOReader_RTF::ReaderContext
-    inline StyledTextIOReader_RTF& StyledTextIOReader_RTF::ReaderContext::GetReader () const
-    {
-        return fReader;
-    }
-    inline CodePage StyledTextIOReader_RTF::ReaderContext::GetCurrentInputCharSetEncoding () const
-    {
-        return fCurrentInputCharSetEncoding;
-    }
+    inline StyledTextIOReader_RTF& StyledTextIOReader_RTF::ReaderContext::GetReader () const { return fReader; }
+    inline CodePage StyledTextIOReader_RTF::ReaderContext::GetCurrentInputCharSetEncoding () const { return fCurrentInputCharSetEncoding; }
 #if !qWideCharacters
     inline CodePage StyledTextIOReader_RTF::ReaderContext::GetCurrentOutputCharSetEncoding () const
     {
@@ -1188,10 +1185,7 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
         EnsureNotNull (fCurrentDestination);
         return (*fCurrentDestination);
     }
-    inline void StyledTextIOReader_RTF::ReaderContext::SetDestination (Destination_* destination)
-    {
-        fCurrentDestination = destination;
-    }
+    inline void StyledTextIOReader_RTF::ReaderContext::SetDestination (Destination_* destination) { fCurrentDestination = destination; }
     inline StyledTextIOReader_RTF::ReaderContext::GroupContext* StyledTextIOReader_RTF::ReaderContext::GetCurrentGroupContext () const
     {
         return fCurrentGroup; // Can be nullptr
@@ -1206,12 +1200,8 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
     }
 
     //  class   StyledTextIOReader_RTF::ReaderContext::Destination_
-    inline StyledTextIOReader_RTF::ReaderContext::Destination_::Destination_ ()
-    {
-    }
-    inline StyledTextIOReader_RTF::ReaderContext::Destination_::~Destination_ ()
-    {
-    }
+    inline StyledTextIOReader_RTF::ReaderContext::Destination_::Destination_ () {}
+    inline StyledTextIOReader_RTF::ReaderContext::Destination_::~Destination_ () {}
     inline StyledTextIOReader_RTF::ReaderContext::Destination_::Context::Context ()
         : fFontSpec ()
         , fTabStops (TextImager::StandardTabStopList (RTFInfo::GetStaticDefaultTabStopWidth ()))
@@ -1238,19 +1228,13 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
     @DESCRIPTION:   <p>Get the font which is used for RTF \plain directives. This can be set
         via @'StyledTextIOReader_RTF::SetPlainFont'</p>
     */
-    inline FontSpecification StyledTextIOReader_RTF::GetPlainFont () const
-    {
-        return fPlainFont;
-    }
+    inline FontSpecification StyledTextIOReader_RTF::GetPlainFont () const { return fPlainFont; }
     /*
     @METHOD:        StyledTextIOReader_RTF::SetPlainFont
     @DESCRIPTION:   <p>Set the font which is used for RTF \plain directives. See
         @'StyledTextIOReader_RTF::GetPlainFont'</p>
     */
-    inline void StyledTextIOReader_RTF::SetPlainFont (const FontSpecification& fsp)
-    {
-        fPlainFont = fsp;
-    }
+    inline void StyledTextIOReader_RTF::SetPlainFont (const FontSpecification& fsp) { fPlainFont = fsp; }
     inline void StyledTextIOReader_RTF::CheckIfAboutToStartBody (ReaderContext& readerContext)
     {
         if (not readerContext.fStartedBodyYet) {
@@ -1305,29 +1289,17 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
         , fCharsToSkip (0)
     {
     }
-    inline StyledTextIOWriter_RTF& StyledTextIOWriter_RTF::WriterContext::GetWriter () const
-    {
-        return fWriter;
-    }
-    inline StyledTextIOWriter_RTF::SrcStream& StyledTextIOWriter_RTF::WriterContext::GetSrcStream () const
-    {
-        return fSrcStream;
-    }
+    inline StyledTextIOWriter_RTF&             StyledTextIOWriter_RTF::WriterContext::GetWriter () const { return fWriter; }
+    inline StyledTextIOWriter_RTF::SrcStream&  StyledTextIOWriter_RTF::WriterContext::GetSrcStream () const { return fSrcStream; }
     inline StyledTextIOWriter_RTF::SinkStream& StyledTextIOWriter_RTF::WriterContext::GetSinkStream () const
     {
         return fWriter.GetSinkStream ();
     }
 
     //  class   StyledTextIOWriter_RTF
-    inline CodePage StyledTextIOWriter_RTF::GetCurrentOutputCharSetEncoding () const
-    {
-        return fCurrentOutputCharSetEncoding;
-    }
+    inline CodePage StyledTextIOWriter_RTF::GetCurrentOutputCharSetEncoding () const { return fCurrentOutputCharSetEncoding; }
 #if !qWideCharacters
-    inline CodePage StyledTextIOWriter_RTF::GetCurrentInputCharSetEncoding () const
-    {
-        return fCurrentInputCharSetEncoding;
-    }
+    inline CodePage StyledTextIOWriter_RTF::GetCurrentInputCharSetEncoding () const { return fCurrentInputCharSetEncoding; }
 #endif
 
 }

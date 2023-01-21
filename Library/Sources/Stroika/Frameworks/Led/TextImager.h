@@ -168,8 +168,7 @@ namespace Stroika::Frameworks::Led {
             such uninitiualized variables/values, or to throw like this. My inclination is that throwing will be a more
             robust solution, since it will prevent an further use of a guessed value (and maybe prevent its being cached).</p>
         */
-        class NotFullyInitialized {
-        };
+        class NotFullyInitialized {};
 
     protected:
         /*
@@ -178,8 +177,7 @@ namespace Stroika::Frameworks::Led {
         @DESCRIPTION:   <p>Thrown by @'TextImager::AcquireTablet' when no tablet available. See that method docs
             for more details.</p>
         */
-        class NoTabletAvailable : public NotFullyInitialized {
-        };
+        class NoTabletAvailable : public NotFullyInitialized {};
 
     protected:
         /*
@@ -412,16 +410,20 @@ namespace Stroika::Frameworks::Led {
         virtual DistanceType CalculateLongestRowInWindowPixelWidth () const;
 
     public:
-        enum CursorMovementDirection { eCursorBack,
-                                       eCursorForward,
-                                       eCursorToStart,
-                                       eCursorToEnd };
-        enum CursorMovementUnit { eCursorByChar,
-                                  eCursorByWord,
-                                  eCursorByRow,
-                                  eCursorByLine,
-                                  eCursorByWindow,
-                                  eCursorByBuffer };
+        enum CursorMovementDirection {
+            eCursorBack,
+            eCursorForward,
+            eCursorToStart,
+            eCursorToEnd
+        };
+        enum CursorMovementUnit {
+            eCursorByChar,
+            eCursorByWord,
+            eCursorByRow,
+            eCursorByLine,
+            eCursorByWindow,
+            eCursorByBuffer
+        };
         virtual size_t ComputeRelativePosition (size_t fromPos, CursorMovementDirection direction, CursorMovementUnit movementUnit);
 
     public:
@@ -451,8 +453,8 @@ namespace Stroika::Frameworks::Led {
                     software about what areas of the text will need to be redrawn when
                     changes to localized regions of the text occur.</p>
         */
-        virtual void GetStableTypingRegionContaingMarkerRange (size_t fromMarkerPos, size_t toMarkerPos,
-                                                               size_t* expandedFromMarkerPos, size_t* expandedToMarkerPos) const = 0;
+        virtual void GetStableTypingRegionContaingMarkerRange (size_t fromMarkerPos, size_t toMarkerPos, size_t* expandedFromMarkerPos,
+                                                               size_t* expandedToMarkerPos) const = 0;
 
     public:
         nonvirtual Led_Rect GetTextWindowBoundingRect (size_t fromMarkerPos, size_t toMarkerPos) const;
@@ -461,7 +463,8 @@ namespace Stroika::Frameworks::Led {
         nonvirtual Led_Rect GetIntraRowTextWindowBoundingRect (size_t fromMarkerPos, size_t toMarkerPos) const;
 
     public:
-        virtual vector<Led_Rect> GetRowHilightRects (const TextLayoutBlock& text, size_t rowStart, size_t rowEnd, size_t hilightStart, size_t hilightEnd) const;
+        virtual vector<Led_Rect> GetRowHilightRects (const TextLayoutBlock& text, size_t rowStart, size_t rowEnd, size_t hilightStart,
+                                                     size_t hilightEnd) const;
 
         /*
             *      Utility routine to compute based on styleruns etc, all the fontinfo we can get
@@ -699,11 +702,13 @@ namespace Stroika::Frameworks::Led {
                             </table>
                         </p>
         */
-        enum DefaultColorIndex { eDefaultTextColor,
-                                 eDefaultBackgroundColor,
-                                 eDefaultSelectedTextColor,
-                                 eDefaultSelectedTextBackgroundColor,
-                                 eMaxDefaultColorIndex };
+        enum DefaultColorIndex {
+            eDefaultTextColor,
+            eDefaultBackgroundColor,
+            eDefaultSelectedTextColor,
+            eDefaultSelectedTextBackgroundColor,
+            eMaxDefaultColorIndex
+        };
         nonvirtual Color* GetDefaultTextColor (DefaultColorIndex dci) const;
         nonvirtual Color  GetEffectiveDefaultTextColor (DefaultColorIndex dci) const;
         nonvirtual void   ClearDefaultTextColor (DefaultColorIndex dci);
@@ -720,35 +725,36 @@ namespace Stroika::Frameworks::Led {
         virtual void HilightArea (Tablet* tablet, const Region& hiliteArea);
 
     protected:
-        virtual void DrawRow (Tablet* tablet, const Led_Rect& currentRowRect, const Led_Rect& invalidRowRect,
-                              const TextLayoutBlock& text, size_t rowStart, size_t rowEnd, bool printing);
+        virtual void DrawRow (Tablet* tablet, const Led_Rect& currentRowRect, const Led_Rect& invalidRowRect, const TextLayoutBlock& text,
+                              size_t rowStart, size_t rowEnd, bool printing);
         virtual void DrawRowSegments (Tablet* tablet, const Led_Rect& currentRowRect, const Led_Rect& invalidRowRect,
                                       const TextLayoutBlock& text, size_t rowStart, size_t rowEnd);
         virtual void DrawRowHilight (Tablet* tablet, const Led_Rect& currentRowRect, const Led_Rect& invalidRowRect,
                                      const TextLayoutBlock& text, size_t rowStart, size_t rowEnd);
-        virtual void DrawInterLineSpace (DistanceType interlineSpace, Tablet* tablet, CoordinateType vPosOfTopOfInterlineSpace, bool segmentHilighted, bool printing);
+        virtual void DrawInterLineSpace (DistanceType interlineSpace, Tablet* tablet, CoordinateType vPosOfTopOfInterlineSpace,
+                                         bool segmentHilighted, bool printing);
 
     protected:
         virtual bool   ContainsMappedDisplayCharacters (const Led_tChar* text, size_t nTChars) const;
         virtual void   ReplaceMappedDisplayCharacters (const Led_tChar* srcText, Led_tChar* copyText, size_t nTChars) const;
         virtual size_t RemoveMappedDisplayCharacters (Led_tChar* copyText, size_t nTChars) const;
-        virtual void   PatchWidthRemoveMappedDisplayCharacters (const Led_tChar* srcText, DistanceType* distanceResults, size_t nTChars) const;
+        virtual void PatchWidthRemoveMappedDisplayCharacters (const Led_tChar* srcText, DistanceType* distanceResults, size_t nTChars) const;
 
     protected:
-        static bool   ContainsMappedDisplayCharacters_HelperForChar (const Led_tChar* text, size_t nTChars, Led_tChar charToMap);
-        static void   ReplaceMappedDisplayCharacters_HelperForChar (Led_tChar* copyText, size_t nTChars, Led_tChar charToMap, Led_tChar charToMapTo);
+        static bool ContainsMappedDisplayCharacters_HelperForChar (const Led_tChar* text, size_t nTChars, Led_tChar charToMap);
+        static void ReplaceMappedDisplayCharacters_HelperForChar (Led_tChar* copyText, size_t nTChars, Led_tChar charToMap, Led_tChar charToMapTo);
         static size_t RemoveMappedDisplayCharacters_HelperForChar (Led_tChar* copyText, size_t nTChars, Led_tChar charToRemove);
-        static void   PatchWidthRemoveMappedDisplayCharacters_HelperForChar (const Led_tChar* srcText, DistanceType* distanceResults, size_t nTChars, Led_tChar charToRemove);
+        static void   PatchWidthRemoveMappedDisplayCharacters_HelperForChar (const Led_tChar* srcText, DistanceType* distanceResults,
+                                                                             size_t nTChars, Led_tChar charToRemove);
 
     protected:
-        virtual void DrawSegment (Tablet* tablet,
-                                  size_t from, size_t to, const TextLayoutBlock& text, const Led_Rect& drawInto, const Led_Rect& invalidRect,
-                                  CoordinateType useBaseLine, DistanceType* pixelsDrawn);
+        virtual void DrawSegment (Tablet* tablet, size_t from, size_t to, const TextLayoutBlock& text, const Led_Rect& drawInto,
+                                  const Led_Rect& invalidRect, CoordinateType useBaseLine, DistanceType* pixelsDrawn);
 
     public:
         // Note we REQUIRE that useBaseLine be contained within drawInto
-        nonvirtual void DrawSegment_ (Tablet* tablet, const FontSpecification& fontSpec,
-                                      size_t from, size_t to, const TextLayoutBlock& text, const Led_Rect& drawInto, CoordinateType useBaseLine, DistanceType* pixelsDrawn) const;
+        nonvirtual void DrawSegment_ (Tablet* tablet, const FontSpecification& fontSpec, size_t from, size_t to, const TextLayoutBlock& text,
+                                      const Led_Rect& drawInto, CoordinateType useBaseLine, DistanceType* pixelsDrawn) const;
 
     protected:
         // distanceResults must be an array of (to-from) elements - which is filled in with the widths
@@ -758,13 +764,11 @@ namespace Stroika::Frameworks::Led {
         // In general - textwidth of text from from to b (where b MUST be contained in from/to)
         // is distanceResults[b-from-1] - and of course ZERO if b == from
         //
-        virtual void MeasureSegmentWidth (size_t from, size_t to, const Led_tChar* text,
-                                          DistanceType* distanceResults) const;
+        virtual void MeasureSegmentWidth (size_t from, size_t to, const Led_tChar* text, DistanceType* distanceResults) const;
 
     public:
-        nonvirtual void MeasureSegmentWidth_ (const FontSpecification& fontSpec, size_t from, size_t to,
-                                              const Led_tChar* text,
-                                              DistanceType*    distanceResults) const;
+        nonvirtual void MeasureSegmentWidth_ (const FontSpecification& fontSpec, size_t from, size_t to, const Led_tChar* text,
+                                              DistanceType* distanceResults) const;
 
     protected:
         virtual DistanceType MeasureSegmentHeight (size_t from, size_t to) const;
@@ -880,10 +884,7 @@ namespace Stroika::Frameworks::Led {
             AssertNotNull (fTablet);
             return (fTablet);
         }
-        Tablet* operator->()
-        {
-            return fTablet;
-        }
+        Tablet* operator->() { return fTablet; }
         ~Tablet_Acquirer ()
         {
             AssertNotNull (fTextImager);

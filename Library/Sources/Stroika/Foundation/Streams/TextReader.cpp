@@ -45,10 +45,7 @@ protected:
         _fSource.Close ();
         Assert (_fSource == nullptr);
     }
-    virtual bool IsOpenRead () const override
-    {
-        return _fSource != nullptr;
-    }
+    virtual bool IsOpenRead () const override { return _fSource != nullptr; }
 
 // at least on windows, fCharCoverter with utf8 converter appeared to not mutate the mbState. Just reconverting
 // whole thing worked, so try that for now... Slow/inefficient, but at least it works
@@ -83,8 +80,8 @@ protected:
             Assert (endB <= reinterpret_cast<const char*> (end (inBuf)));
             const char* cursorB = firstB;
 #if qMaintainingMBShiftStateNotWorking_
-            mbstate_t                     mbState = mbstate_t{};
-            codecvt_utf8<wchar_t>::result r       = _fCharConverter.in (mbState, firstB, endB, cursorB, std::begin (outBuf), std::end (outBuf), outCursor);
+            mbstate_t mbState = mbstate_t{};
+            codecvt_utf8<wchar_t>::result r = _fCharConverter.in (mbState, firstB, endB, cursorB, std::begin (outBuf), std::end (outBuf), outCursor);
 #else
             codecvt_utf8<wchar_t>::result r = _fCharConverter.in (fMBState_, firstB, endB, cursorB, std::begin (outBuf), std::end (outBuf), outCursor);
 #endif
@@ -138,7 +135,7 @@ protected:
         //      o   decode and see if at least one character
         //      o   fall through to _ReadNonBlocking_ReferenceImplementation_ForNonblockingUpstream
         StackBuffer<byte> inBuf{Memory::eUninitialized, 10}; // enuf to get at least one charcter decoded (wag at number - but enuf for BOM+one char)
-        optional<size_t>  inBytes = _fSource.ReadNonBlocking (begin (inBuf), end (inBuf));
+        optional<size_t> inBytes = _fSource.ReadNonBlocking (begin (inBuf), end (inBuf));
         if (inBytes) {
             if (*inBytes == 0) {
                 return 0; // EOF - other than zero read bytes COULD mean unknown if EOF or not
@@ -152,9 +149,9 @@ protected:
 #else
             mbstate_t mbState = fMBState_;
 #endif
-            wchar_t                                        outChar;
-            wchar_t*                                       outCursor = &outChar;
-            [[maybe_unused]] codecvt_utf8<wchar_t>::result r         = _fCharConverter.in (mbState, firstB, endB, cursorB, &outChar, &outChar + 1, outCursor);
+            wchar_t  outChar;
+            wchar_t* outCursor = &outChar;
+            [[maybe_unused]] codecvt_utf8<wchar_t>::result r = _fCharConverter.in (mbState, firstB, endB, cursorB, &outChar, &outChar + 1, outCursor);
             // we could read one byte upstream, but not ENOUGH to get a full character output!
             if (outCursor != &outChar) {
                 return _ReadNonBlocking_ReferenceImplementation_ForNonblockingUpstream (intoStart, intoEnd, 1);
@@ -209,10 +206,7 @@ public:
     }
 
 protected:
-    virtual bool IsSeekable () const override
-    {
-        return true;
-    }
+    virtual bool   IsSeekable () const override { return true; }
     virtual size_t Read (Character* intoStart, Character* intoEnd) override
     {
         Require ((intoStart == intoEnd) or (intoStart != nullptr));
@@ -266,7 +260,7 @@ protected:
             // if argument buffer not big enough, read into a temporary buffer
             constexpr size_t kUseCacheSize_ = 8 * kMinCachedReadSize_;
             Character        buf[kUseCacheSize_]; // use wchar_t and cast to Character* so we get this array uninitialized
-            size_t           n = inherited::Read (reinterpret_cast<Character*> (std::begin (buf)), reinterpret_cast<Character*> (std::end (buf)));
+            size_t n = inherited::Read (reinterpret_cast<Character*> (std::begin (buf)), reinterpret_cast<Character*> (std::end (buf)));
             if (n != 0) {
                 if (origOffset + n > numeric_limits<size_t>::max ()) [[unlikely]] {
                     // size_t can be less bits than SeekOffsetType, in which case we cannot cahce all in RAM
@@ -342,7 +336,7 @@ private:
     }
 
 private:
-    bool                    fReadAheadAllowed_{false};
+    bool fReadAheadAllowed_{false};
     InlineBuffer<Character> fCache_; // Cache uses wchar_t instead of Character so can use resize_uninitialized () - requires is_trivially_constructible
 };
 
@@ -358,19 +352,13 @@ private:
     bool fIsOpen_{true};
 
 protected:
-    virtual bool IsSeekable () const override
-    {
-        return true;
-    }
+    virtual bool IsSeekable () const override { return true; }
     virtual void CloseRead () override
     {
         Require (IsOpenRead ());
         fIsOpen_ = false;
     }
-    virtual bool IsOpenRead () const override
-    {
-        return fIsOpen_;
-    }
+    virtual bool   IsOpenRead () const override { return fIsOpen_; }
     virtual size_t Read (Character* intoStart, Character* intoEnd) override
     {
         Require (intoEnd - intoStart >= 1);
@@ -484,10 +472,10 @@ protected:
     }
 
 private:
-    Traversal::Iterable<Character>                                 fSource_;
-    Traversal::Iterator<Character>                                 fSrcIter_;
-    size_t                                                         fOffset_{};
-    optional<Character>                                            fPrevCharCached_{}; // fPrevCharCached_/fPutBack_ speed hack to support IsAtEOF (), and Peek () more efficiently, little cost, big cost avoidance for seek
+    Traversal::Iterable<Character> fSource_;
+    Traversal::Iterator<Character> fSrcIter_;
+    size_t                         fOffset_{};
+    optional<Character> fPrevCharCached_{}; // fPrevCharCached_/fPutBack_ speed hack to support IsAtEOF (), and Peek () more efficiently, little cost, big cost avoidance for seek
     optional<Character>                                            fPutBack_{};
     [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
 };
@@ -532,9 +520,11 @@ auto TextReader::New (const InputStream<byte>::Ptr& src, const optional<Characte
     return p;
 }
 
-auto TextReader::New (const InputStream<byte>::Ptr& src, const codecvt<wchar_t, char, mbstate_t>& codeConverter, SeekableFlag seekable, ReadAhead readAhead) -> Ptr
+auto TextReader::New (const InputStream<byte>::Ptr& src, const codecvt<wchar_t, char, mbstate_t>& codeConverter, SeekableFlag seekable,
+                      ReadAhead readAhead) -> Ptr
 {
-    Ptr p = (seekable == SeekableFlag::eSeekable) ? Ptr{make_shared<CachingSeekableBinaryStreamRep_> (src, codeConverter, readAhead)} : Ptr{make_shared<UnseekableBinaryStreamRep_> (src, codeConverter)};
+    Ptr p = (seekable == SeekableFlag::eSeekable) ? Ptr{make_shared<CachingSeekableBinaryStreamRep_> (src, codeConverter, readAhead)}
+                                                  : Ptr{make_shared<UnseekableBinaryStreamRep_> (src, codeConverter)};
     Ensure (p.GetSeekability () == seekable);
     return p;
 }
@@ -576,7 +566,8 @@ auto TextReader::New (Execution::InternallySynchronized internallySynchronized, 
     }
 }
 
-auto TextReader::New (Execution::InternallySynchronized internallySynchronized, const InputStream<byte>::Ptr& src, SeekableFlag seekable, ReadAhead readAhead) -> Ptr
+auto TextReader::New (Execution::InternallySynchronized internallySynchronized, const InputStream<byte>::Ptr& src, SeekableFlag seekable,
+                      ReadAhead readAhead) -> Ptr
 {
     switch (internallySynchronized) {
         case Execution::eInternallySynchronized:
@@ -591,7 +582,8 @@ auto TextReader::New (Execution::InternallySynchronized internallySynchronized, 
     }
 }
 
-auto TextReader::New (Execution::InternallySynchronized internallySynchronized, const InputStream<byte>::Ptr& src, const optional<Characters::String>& charset, SeekableFlag seekable, ReadAhead readAhead) -> Ptr
+auto TextReader::New (Execution::InternallySynchronized internallySynchronized, const InputStream<byte>::Ptr& src,
+                      const optional<Characters::String>& charset, SeekableFlag seekable, ReadAhead readAhead) -> Ptr
 {
     switch (internallySynchronized) {
         case Execution::eInternallySynchronized:
@@ -606,7 +598,8 @@ auto TextReader::New (Execution::InternallySynchronized internallySynchronized, 
     }
 }
 
-auto TextReader::New (Execution::InternallySynchronized internallySynchronized, const InputStream<byte>::Ptr& src, const codecvt<wchar_t, char, mbstate_t>& codeConverter, SeekableFlag seekable, ReadAhead readAhead) -> Ptr
+auto TextReader::New (Execution::InternallySynchronized internallySynchronized, const InputStream<byte>::Ptr& src,
+                      const codecvt<wchar_t, char, mbstate_t>& codeConverter, SeekableFlag seekable, ReadAhead readAhead) -> Ptr
 {
     switch (internallySynchronized) {
         case Execution::eInternallySynchronized:

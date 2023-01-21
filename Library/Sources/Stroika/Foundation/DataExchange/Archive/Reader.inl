@@ -34,14 +34,8 @@ namespace Stroika::Foundation::DataExchange::Archive {
         EnsureNotNull (fRep_.get ());
         return *fRep_;
     }
-    inline Set<String> Reader::GetContainedFiles () const
-    {
-        return _GetRep ().GetContainedFiles ();
-    }
-    inline Memory::BLOB Reader::GetData (const String& fileName) const
-    {
-        return _GetRep ().GetData (fileName);
-    }
+    inline Set<String>  Reader::GetContainedFiles () const { return _GetRep ().GetContainedFiles (); }
+    inline Memory::BLOB Reader::GetData (const String& fileName) const { return _GetRep ().GetData (fileName); }
 
 }
 

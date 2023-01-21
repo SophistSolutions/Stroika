@@ -65,7 +65,8 @@ namespace Stroika::Foundation::Streams {
         class Rep_;
 
     private:
-        using InternalSyncRep_ = InternallySynchronizedOutputStream<ELEMENT_TYPE, Streams::BufferedOutputStream<ELEMENT_TYPE>, typename BufferedOutputStream<ELEMENT_TYPE>::Rep_>;
+        using InternalSyncRep_ =
+            InternallySynchronizedOutputStream<ELEMENT_TYPE, Streams::BufferedOutputStream<ELEMENT_TYPE>, typename BufferedOutputStream<ELEMENT_TYPE>::Rep_>;
     };
 
     /**

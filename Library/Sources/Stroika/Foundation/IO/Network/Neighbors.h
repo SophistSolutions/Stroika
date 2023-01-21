@@ -61,7 +61,7 @@ namespace Stroika::Foundation::IO::Network {
 #endif
             };
             optional<Containers::Set<Strategy>> fStategies;
-            optional<Time::Duration>            fMaxLatnecy; // if monitoring in the background (e.g. in a thread) this configures polling frequency but maybe ignored)
+            optional<Time::Duration> fMaxLatnecy; // if monitoring in the background (e.g. in a thread) this configures polling frequency but maybe ignored)
 
             // if true, assure results always up to date (as if by polling in the background)
             // If false, minimize resource usage, and just fetch data on GetNeighbors call

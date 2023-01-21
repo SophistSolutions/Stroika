@@ -21,17 +21,12 @@ using namespace Stroika::Foundation;
 //using   namespace   Stroika::Foundation::Containers;
 
 namespace {
-    static void Test1 ()
-    {
-    }
+    static void Test1 () {}
 }
 
 namespace {
 
-    void DoRegressionTests_ ()
-    {
-        Test1 ();
-    }
+    void DoRegressionTests_ () { Test1 (); }
 }
 
 int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])

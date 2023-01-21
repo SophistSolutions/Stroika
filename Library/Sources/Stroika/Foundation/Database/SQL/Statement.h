@@ -239,7 +239,8 @@ namespace Stroika::Foundation::Database::SQL {
         nonvirtual Sequence<Row> GetAllRemainingRows ();
         nonvirtual Sequence<VariantValue> GetAllRemainingRows (size_t restrictToColumn);
         nonvirtual Sequence<tuple<VariantValue, VariantValue>> GetAllRemainingRows (size_t restrictToColumn1, size_t restrictToColumn2);
-        nonvirtual Sequence<tuple<VariantValue, VariantValue, VariantValue>> GetAllRemainingRows (size_t restrictToColumn1, size_t restrictToColumn2, size_t restrictToColumn3);
+        nonvirtual Sequence<tuple<VariantValue, VariantValue, VariantValue>> GetAllRemainingRows (size_t restrictToColumn1, size_t restrictToColumn2,
+                                                                                                  size_t restrictToColumn3);
 
     public:
         /**
@@ -257,7 +258,8 @@ namespace Stroika::Foundation::Database::SQL {
         nonvirtual Sequence<Row> GetAllRows ();
         nonvirtual Sequence<VariantValue> GetAllRows (size_t restrictToColumn);
         nonvirtual Sequence<tuple<VariantValue, VariantValue>> GetAllRows (size_t restrictToColumn1, size_t restrictToColumn2);
-        nonvirtual Sequence<tuple<VariantValue, VariantValue, VariantValue>> GetAllRows (size_t restrictToColumn1, size_t restrictToColumn2, size_t restrictToColumn3);
+        nonvirtual Sequence<tuple<VariantValue, VariantValue, VariantValue>> GetAllRows (size_t restrictToColumn1, size_t restrictToColumn2,
+                                                                                         size_t restrictToColumn3);
 
     public:
         /**

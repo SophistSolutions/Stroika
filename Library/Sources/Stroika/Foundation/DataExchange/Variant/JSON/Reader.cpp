@@ -64,10 +64,7 @@ namespace {
             Require (not IsAtEOF ());
             Seek (Streams::Whence::eFromCurrent, 1);
         }
-        inline void BackupOne ()
-        {
-            Seek (Streams::Whence::eFromCurrent, -1);
-        }
+        inline void BackupOne () { Seek (Streams::Whence::eFromCurrent, -1); }
     };
 
     VariantValue Reader_value_ (MyBufferedStreamReader_& in);
@@ -237,9 +234,8 @@ namespace {
         }
         else {
             // if no - use unsigned since has wider range (if no -)
-            return (initialChar == kDash_)
-                       ? VariantValue{Characters::String2Int<long long int> (tmpData)}
-                       : VariantValue{Characters::String2Int<unsigned long long int> (tmpData)};
+            return (initialChar == kDash_) ? VariantValue{Characters::String2Int<long long int> (tmpData)}
+                                           : VariantValue{Characters::String2Int<unsigned long long int> (tmpData)};
         }
     }
 
@@ -280,7 +276,8 @@ namespace {
                         lf      = eColon;
                     }
                     else {
-                        static const auto kException_{BadFormatException{"JSON: Reading object, looking for a name, didn't find a close brace or open quote"sv}};
+                        static const auto kException_{
+                            BadFormatException{"JSON: Reading object, looking for a name, didn't find a close brace or open quote"sv}};
                         Execution::Throw (kException_);
                     }
                 } break;
@@ -374,29 +371,19 @@ namespace {
         switch (initialChar) {
             case 'f': {
                 Character buf[4];
-                if (in.ReadAll (begin (buf), end (buf)) == 4 and
-                    buf[0] == 'a' and
-                    buf[1] == 'l' and
-                    buf[2] == 's' and
-                    buf[3] == 'e') {
+                if (in.ReadAll (begin (buf), end (buf)) == 4 and buf[0] == 'a' and buf[1] == 'l' and buf[2] == 's' and buf[3] == 'e') {
                     return VariantValue{false};
                 }
             } break;
             case 't': {
                 Character buf[3];
-                if (in.ReadAll (begin (buf), end (buf)) == 3 and
-                    buf[0] == 'r' and
-                    buf[1] == 'u' and
-                    buf[2] == 'e') {
+                if (in.ReadAll (begin (buf), end (buf)) == 3 and buf[0] == 'r' and buf[1] == 'u' and buf[2] == 'e') {
                     return VariantValue{true};
                 }
             } break;
             case 'n': {
                 Character buf[3];
-                if (in.ReadAll (begin (buf), end (buf)) == 3 and
-                    buf[0] == 'u' and
-                    buf[1] == 'l' and
-                    buf[2] == 'l') {
+                if (in.ReadAll (begin (buf), end (buf)) == 3 and buf[0] == 'u' and buf[1] == 'l' and buf[2] == 'l') {
                     return VariantValue{};
                 }
             } break;

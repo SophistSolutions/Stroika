@@ -58,10 +58,7 @@ namespace Stroika::Foundation::Time {
         return static_cast<uint8_t> (n);
     }
 #if not(qCompilerAndStdLib_linkerLosesInlinesSoCannotBeSeenByDebugger_Buggy && qDebug)
-    inline String TimeOfDay::ToString () const
-    {
-        return Format ();
-    }
+    inline String TimeOfDay::ToString () const { return Format (); }
 #endif
 
 }

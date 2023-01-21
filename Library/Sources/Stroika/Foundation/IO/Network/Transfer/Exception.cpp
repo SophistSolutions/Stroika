@@ -22,7 +22,4 @@ Exception::Exception (const Response& response)
 {
 }
 
-Response Exception::GetResponse () const
-{
-    return fResponse_;
-}
+Response Exception::GetResponse () const { return fResponse_; }

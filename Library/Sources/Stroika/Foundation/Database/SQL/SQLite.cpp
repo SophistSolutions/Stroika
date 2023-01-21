@@ -219,13 +219,18 @@ struct Connection::Rep_ final : IRep {
                     Verify (::sqlite3_close (fDB_) == SQLITE_OK);
                     fDB_ = nullptr;
                 }
-                if ((e = ::sqlite3_open_v2 (uriArg.c_str (), &fDB_, SQLITE_OPEN_CREATE | flags, options.fVFS ? options.fVFS->AsNarrowSDKString ().c_str () : nullptr)) == SQLITE_OK) {
+                if ((e = ::sqlite3_open_v2 (uriArg.c_str (), &fDB_, SQLITE_OPEN_CREATE | flags,
+                                            options.fVFS ? options.fVFS->AsNarrowSDKString ().c_str () : nullptr)) == SQLITE_OK) {
                     fTmpHackCreated_ = true;
                 }
             }
         }
         if (e != SQLITE_OK) [[unlikely]] {
-            [[maybe_unused]] auto&& cleanup = Finally ([this] () noexcept { if (fDB_ != nullptr) { Verify (::sqlite3_close (fDB_) == SQLITE_OK); } });
+            [[maybe_unused]] auto&& cleanup = Finally ([this] () noexcept {
+                if (fDB_ != nullptr) {
+                    Verify (::sqlite3_close (fDB_) == SQLITE_OK);
+                }
+            });
             ThrowSQLiteError_ (e, fDB_);
         }
         if (options.fBusyTimeout) {
@@ -245,10 +250,7 @@ struct Connection::Rep_ final : IRep {
     virtual shared_ptr<const EngineProperties> GetEngineProperties () const override
     {
         struct MyEngineProperties_ final : EngineProperties {
-            virtual String GetEngineName () const override
-            {
-                return "SQLite"sv;
-            }
+            virtual String GetEngineName () const override { return "SQLite"sv; }
             virtual String GetSQL (NonStandardSQL n) const override
             {
                 switch (n) {
@@ -258,14 +260,8 @@ struct Connection::Rep_ final : IRep {
                 AssertNotReached ();
                 return String{};
             }
-            virtual bool RequireStatementResetAfterModifyingStatmentToCompleteTransaction () const override
-            {
-                return true;
-            }
-            virtual bool SupportsNestedTransactions () const override
-            {
-                return false;
-            }
+            virtual bool RequireStatementResetAfterModifyingStatmentToCompleteTransaction () const override { return true; }
+            virtual bool SupportsNestedTransactions () const override { return false; }
         };
         static const shared_ptr<const EngineProperties> kProps_ = make_shared<const MyEngineProperties_> ();
         return kProps_;
@@ -283,8 +279,8 @@ struct Connection::Rep_ final : IRep {
     virtual void Exec (const String& sql) override
     {
         Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
-        [[maybe_unused]] char*                                 db_err{}; // could use but its embedded in the fDB_ error string anyhow, and thats already peeked at by ThrowSQLiteErrorIfNotOK_ and it generates better exceptions (maps some to std c++ exceptions)
-        int                                                    e = ::sqlite3_exec (fDB_, sql.AsUTF8<string> ().c_str (), NULL, 0, &db_err);
+        [[maybe_unused]] char* db_err{}; // could use but its embedded in the fDB_ error string anyhow, and thats already peeked at by ThrowSQLiteErrorIfNotOK_ and it generates better exceptions (maps some to std c++ exceptions)
+        int e = ::sqlite3_exec (fDB_, sql.AsUTF8<string> ().c_str (), NULL, 0, &db_err);
         if (e != SQLITE_OK) [[unlikely]] {
             ThrowSQLiteErrorIfNotOK_ (e, fDB_);
         }
@@ -298,7 +294,7 @@ struct Connection::Rep_ final : IRep {
     {
         Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
         optional<int>                                         d;
-        auto                                                  callback = [] (void* lamdaArg, [[maybe_unused]] int argc, char** argv, [[maybe_unused]] char** azColName) {
+        auto callback = [] (void* lamdaArg, [[maybe_unused]] int argc, char** argv, [[maybe_unused]] char** azColName) {
             optional<int>* pd = reinterpret_cast<optional<int>*> (lamdaArg);
             AssertNotNull (pd);
             Assert (argc == 1);
@@ -396,28 +392,26 @@ struct Connection::Rep_ final : IRep {
  */
 SQL::SQLite::Connection::Ptr::Ptr (const shared_ptr<IRep>& src)
     : inherited{src}
-    , pBusyTimeout{
-          [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) {
-              const Ptr* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Ptr::pBusyTimeout);
-              RequireNotNull (thisObj->operator->());
-              return thisObj->operator->()->GetBusyTimeout ();
-          },
-          [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, auto timeout) {
-              Ptr* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Ptr::pBusyTimeout);
-              RequireNotNull (thisObj->operator->());
-              thisObj->operator->()->SetBusyTimeout (timeout);
-          }}
-    , pJournalMode{
-          [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) {
-              const Ptr* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Ptr::pJournalMode);
-              RequireNotNull (thisObj->operator->());
-              return thisObj->operator->()->GetJournalMode ();
-          },
-          [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, auto journalMode) {
-              Ptr* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Ptr::pJournalMode);
-              RequireNotNull (thisObj->operator->());
-              thisObj->operator->()->SetJournalMode (journalMode);
-          }}
+    , pBusyTimeout{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) {
+                       const Ptr* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Ptr::pBusyTimeout);
+                       RequireNotNull (thisObj->operator->());
+                       return thisObj->operator->()->GetBusyTimeout ();
+                   },
+                   [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, auto timeout) {
+                       Ptr* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Ptr::pBusyTimeout);
+                       RequireNotNull (thisObj->operator->());
+                       thisObj->operator->()->SetBusyTimeout (timeout);
+                   }}
+    , pJournalMode{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) {
+                       const Ptr* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Ptr::pJournalMode);
+                       RequireNotNull (thisObj->operator->());
+                       return thisObj->operator->()->GetJournalMode ();
+                   },
+                   [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, auto journalMode) {
+                       Ptr* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &Ptr::pJournalMode);
+                       RequireNotNull (thisObj->operator->());
+                       thisObj->operator->()->SetJournalMode (journalMode);
+                   }}
 {
 #if qStroikaFoundationDebugAssertExternallySynchronizedMutexEnabled
     if (src != nullptr) {
@@ -431,10 +425,7 @@ SQL::SQLite::Connection::Ptr::Ptr (const shared_ptr<IRep>& src)
  ************************** SQL::SQLite::Connection *****************************
  ********************************************************************************
  */
-auto SQL::SQLite::Connection::New (const Options& options) -> Ptr
-{
-    return Ptr{make_shared<Rep_> (options)};
-}
+auto SQL::SQLite::Connection::New (const Options& options) -> Ptr { return Ptr{make_shared<Rep_> (options)}; }
 
 /*
  ********************************************************************************
@@ -446,7 +437,8 @@ struct Statement::MyRep_ : IRep {
         : fConnectionPtr_{db}
     {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-        TraceContextBumper ctx{"SQLite::Statement::MyRep_::CTOR", Stroika_Foundation_Debug_OptionalizeTraceArgs (L "db=%p, query='%s'", db, query.c_str ())};
+        TraceContextBumper ctx{"SQLite::Statement::MyRep_::CTOR",
+                               Stroika_Foundation_Debug_OptionalizeTraceArgs (L "db=%p, query='%s'", db, query.c_str ())};
 #endif
         RequireNotNull (db);
         RequireNotNull (db->Peek ());
@@ -466,9 +458,12 @@ struct Statement::MyRep_ : IRep {
         unsigned int colCount = static_cast<unsigned int> (::sqlite3_column_count (fStatementObj_));
         for (unsigned int i = 0; i < colCount; ++i) {
             const char* colTypeUTF8 = ::sqlite3_column_decltype (fStatementObj_, i);
-            fColumns_.push_back (ColumnDescription{String::FromUTF8 (::sqlite3_column_name (fStatementObj_, i)), (colTypeUTF8 == nullptr) ? optional<String>{} : String::FromUTF8 (colTypeUTF8)});
+            fColumns_.push_back (ColumnDescription{String::FromUTF8 (::sqlite3_column_name (fStatementObj_, i)),
+                                                   (colTypeUTF8 == nullptr) ? optional<String>{} : String::FromUTF8 (colTypeUTF8)});
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-            DbgTrace (L"sqlite3_column_decltype(i) = %s", ::sqlite3_column_decltype (fStatementObj_, i) == nullptr ? L"{nullptr}" : String::FromUTF8 (::sqlite3_column_decltype (fStatementObj_, i)).c_str ());
+            DbgTrace (L"sqlite3_column_decltype(i) = %s", ::sqlite3_column_decltype (fStatementObj_, i) == nullptr
+                                                              ? L"{nullptr}"
+                                                              : String::FromUTF8 (::sqlite3_column_decltype (fStatementObj_, i)).c_str ());
 #endif
         }
 
@@ -539,7 +534,8 @@ struct Statement::MyRep_ : IRep {
             case VariantValue::eDateTime:
             case VariantValue::eString: {
                 string u = v.As<String> ().AsUTF8<string> ();
-                ThrowSQLiteErrorIfNotOK_ (::sqlite3_bind_text (fStatementObj_, parameterIndex + 1, u.c_str (), static_cast<int> (u.length ()), SQLITE_TRANSIENT), fConnectionPtr_->Peek ());
+                ThrowSQLiteErrorIfNotOK_ (::sqlite3_bind_text (fStatementObj_, parameterIndex + 1, u.c_str (), static_cast<int> (u.length ()), SQLITE_TRANSIENT),
+                                          fConnectionPtr_->Peek ());
             } break;
             case VariantValue::eBoolean:
             case VariantValue::eInteger:
@@ -550,7 +546,8 @@ struct Statement::MyRep_ : IRep {
                 break;
             case VariantValue::eBLOB: {
                 Memory::BLOB b = v.As<Memory::BLOB> ();
-                ThrowSQLiteErrorIfNotOK_ (::sqlite3_bind_blob64 (fStatementObj_, parameterIndex + 1, b.begin (), b.size (), SQLITE_TRANSIENT), fConnectionPtr_->Peek ());
+                ThrowSQLiteErrorIfNotOK_ (::sqlite3_bind_blob64 (fStatementObj_, parameterIndex + 1, b.begin (), b.size (), SQLITE_TRANSIENT),
+                                          fConnectionPtr_->Peek ());
             } break;
             case VariantValue::eNull:
                 ThrowSQLiteErrorIfNotOK_ (::sqlite3_bind_null (fStatementObj_, parameterIndex + 1), fConnectionPtr_->Peek ());
@@ -574,7 +571,8 @@ struct Statement::MyRep_ : IRep {
                 return;
             }
         }
-        DbgTrace (L"Statement::Bind: Parameter '%s' not found in list %s", parameterName.As<wstring> ().c_str (), Characters::ToString (fParameters_.Map<String> ([] (const auto& i) { return i.fName; })).c_str ());
+        DbgTrace (L"Statement::Bind: Parameter '%s' not found in list %s", parameterName.As<wstring> ().c_str (),
+                  Characters::ToString (fParameters_.Map<String> ([] (const auto& i) { return i.fName; })).c_str ());
         RequireNotReached (); // invalid paramter name provided
     }
     virtual void Reset () override

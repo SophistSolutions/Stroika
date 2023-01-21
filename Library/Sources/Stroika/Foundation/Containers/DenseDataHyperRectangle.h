@@ -63,7 +63,8 @@ namespace Stroika::Foundation::Containers {
      *  using DenseDataHyperRectangleN = DenseDataHyperRectangle<T, size_t REPEATED N TIMES>
      */
     template <typename T, size_t N>
-    using DenseDataHyperRectangleN = typename Private_DataHyperRectangle_::template NTemplate<T, DenseDataHyperRectangle>::template Helper_<make_index_sequence<N>>::CombinedType;
+    using DenseDataHyperRectangleN =
+        typename Private_DataHyperRectangle_::template NTemplate<T, DenseDataHyperRectangle>::template Helper_<make_index_sequence<N>>::CombinedType;
 
 }
 

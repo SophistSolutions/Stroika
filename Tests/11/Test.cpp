@@ -123,27 +123,40 @@ namespace {
         void DoAll ()
         {
             {
-                Association<int, int> m{KeyValuePair<int, int>{1, 3}, KeyValuePair<int, int>{2, 4}, KeyValuePair<int, int>{3, 5}, KeyValuePair<int, int>{4, 5}, KeyValuePair<int, int>{5, 7}};
-                VerifyTestResult ((m.Where ([] (const KeyValuePair<int, int>& value) { return Math::IsPrime (value.fKey); }) == Association<int, int>{KeyValuePair<int, int>{2, 4}, KeyValuePair<int, int>{3, 5}, KeyValuePair<int, int>{5, 7}}));
-                VerifyTestResult ((m.Where ([] (int key) { return Math::IsPrime (key); }) == Association<int, int>{KeyValuePair<int, int>{2, 4}, KeyValuePair<int, int>{3, 5}, KeyValuePair<int, int>{5, 7}}));
+                Association<int, int> m{KeyValuePair<int, int>{1, 3}, KeyValuePair<int, int>{2, 4}, KeyValuePair<int, int>{3, 5},
+                                        KeyValuePair<int, int>{4, 5}, KeyValuePair<int, int>{5, 7}};
+                VerifyTestResult ((m.Where ([] (const KeyValuePair<int, int>& value) {
+                    return Math::IsPrime (value.fKey);
+                }) == Association<int, int>{KeyValuePair<int, int>{2, 4}, KeyValuePair<int, int>{3, 5}, KeyValuePair<int, int>{5, 7}}));
+                VerifyTestResult ((m.Where ([] (int key) {
+                    return Math::IsPrime (key);
+                }) == Association<int, int>{KeyValuePair<int, int>{2, 4}, KeyValuePair<int, int>{3, 5}, KeyValuePair<int, int>{5, 7}}));
             }
             {
                 // same but letting system guess type of arg to association
                 Association<int, int> m{{1, 3}, {2, 4}, {3, 5}, {4, 5}, {5, 7}};
-                VerifyTestResult ((m.Where ([] (const KeyValuePair<int, int>& value) { return Math::IsPrime (value.fKey); }) == Association<int, int>{{2, 4}, {3, 5}, {5, 7}}));
-                VerifyTestResult ((m.Where ([] (int key) { return Math::IsPrime (key); }) == Association<int, int>{KeyValuePair<int, int>{2, 4}, KeyValuePair<int, int>{3, 5}, KeyValuePair<int, int>{5, 7}}));
+                VerifyTestResult ((m.Where ([] (const KeyValuePair<int, int>& value) { return Math::IsPrime (value.fKey); }) ==
+                                   Association<int, int>{{2, 4}, {3, 5}, {5, 7}}));
+                VerifyTestResult ((m.Where ([] (int key) {
+                    return Math::IsPrime (key);
+                }) == Association<int, int>{KeyValuePair<int, int>{2, 4}, KeyValuePair<int, int>{3, 5}, KeyValuePair<int, int>{5, 7}}));
             }
             {
                 // same but using pair<>
                 Association<int, int> m{pair<int, int>{1, 3}, pair<int, int>{2, 4}, pair<int, int>{3, 5}, pair<int, int>{4, 5}, pair<int, int>{5, 7}};
-                VerifyTestResult ((m.Where ([] (const KeyValuePair<int, int>& value) { return Math::IsPrime (value.fKey); }) == Association<int, int>{pair<int, int>{2, 4}, pair<int, int>{3, 5}, pair<int, int>{5, 7}}));
-                VerifyTestResult ((m.Where ([] (int key) { return Math::IsPrime (key); }) == Association<int, int>{pair<int, int>{2, 4}, pair<int, int>{3, 5}, pair<int, int>{5, 7}}));
+                VerifyTestResult ((m.Where ([] (const KeyValuePair<int, int>& value) { return Math::IsPrime (value.fKey); }) ==
+                                   Association<int, int>{pair<int, int>{2, 4}, pair<int, int>{3, 5}, pair<int, int>{5, 7}}));
+                VerifyTestResult ((m.Where ([] (int key) { return Math::IsPrime (key); }) ==
+                                   Association<int, int>{pair<int, int>{2, 4}, pair<int, int>{3, 5}, pair<int, int>{5, 7}}));
             }
             {
                 // simular but example has duplicates
-                Association<int, int> m{pair<int, int>{1, 3}, pair<int, int>{2, 3}, pair<int, int>{2, 4}, pair<int, int>{3, 5}, pair<int, int>{4, 5}, pair<int, int>{5, 7}};
-                VerifyTestResult ((m.Where ([] (const KeyValuePair<int, int>& value) { return Math::IsPrime (value.fKey); }) == Association<int, int>{pair<int, int>{2, 3}, pair<int, int>{2, 4}, pair<int, int>{3, 5}, pair<int, int>{5, 7}}));
-                VerifyTestResult ((m.Where ([] (int key) { return Math::IsPrime (key); }) == Association<int, int>{pair<int, int>{2, 3}, pair<int, int>{2, 4}, pair<int, int>{3, 5}, pair<int, int>{5, 7}}));
+                Association<int, int> m{pair<int, int>{1, 3}, pair<int, int>{2, 3}, pair<int, int>{2, 4},
+                                        pair<int, int>{3, 5}, pair<int, int>{4, 5}, pair<int, int>{5, 7}};
+                VerifyTestResult ((m.Where ([] (const KeyValuePair<int, int>& value) { return Math::IsPrime (value.fKey); }) ==
+                                   Association<int, int>{pair<int, int>{2, 3}, pair<int, int>{2, 4}, pair<int, int>{3, 5}, pair<int, int>{5, 7}}));
+                VerifyTestResult ((m.Where ([] (int key) { return Math::IsPrime (key); }) ==
+                                   Association<int, int>{pair<int, int>{2, 3}, pair<int, int>{2, 4}, pair<int, int>{3, 5}, pair<int, int>{5, 7}}));
             }
         }
     }
@@ -164,7 +177,8 @@ namespace {
         void DoAll ()
         {
             // https://stroika.atlassian.net/browse/STK-541
-            Association<int, int> m{KeyValuePair<int, int>{1, 3}, KeyValuePair<int, int>{2, 4}, KeyValuePair<int, int>{3, 5}, KeyValuePair<int, int>{4, 5}, KeyValuePair<int, int>{5, 7}};
+            Association<int, int> m{KeyValuePair<int, int>{1, 3}, KeyValuePair<int, int>{2, 4}, KeyValuePair<int, int>{3, 5},
+                                    KeyValuePair<int, int>{4, 5}, KeyValuePair<int, int>{5, 7}};
             Association<int, int> mm{move (m)};
             // SEE https://stroika.atlassian.net/browse/STK-541  - this call to clear is ILLEGAL - after m has been moved from
             //m.clear ();
@@ -214,45 +228,53 @@ namespace {
 namespace {
     void DoRegressionTests_ ()
     {
-        struct MySimpleClassWithoutComparisonOperators_ComparerWithEquals_ : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eEquals> {
+        struct MySimpleClassWithoutComparisonOperators_ComparerWithEquals_
+            : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eEquals> {
             using value_type = SimpleClassWithoutComparisonOperators;
-            bool operator() (const value_type& v1, const value_type& v2) const
-            {
-                return v1.GetValue () == v2.GetValue ();
-            }
+            bool operator() (const value_type& v1, const value_type& v2) const { return v1.GetValue () == v2.GetValue (); }
         };
 
         DoTestForConcreteContainer_<Association<size_t, size_t>> ();
         DoTestForConcreteContainer_<Association<SimpleClass, SimpleClass>> ();
         DoTestForConcreteContainer_<Association<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators>> (
-            [] () { return Association<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators> (MySimpleClassWithoutComparisonOperators_ComparerWithEquals_{}); },
+            [] () {
+                return Association<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators> (
+                    MySimpleClassWithoutComparisonOperators_ComparerWithEquals_{});
+            },
             MySimpleClassWithoutComparisonOperators_ComparerWithEquals_{});
 
         DoTestForConcreteContainer_<Association_Array<size_t, size_t>> ();
         DoTestForConcreteContainer_<Association_Array<SimpleClass, SimpleClass>> ();
         DoTestForConcreteContainer_<Association_Array<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators>> (
-            [] () { return Association_Array<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators> (MySimpleClassWithoutComparisonOperators_ComparerWithEquals_{}); },
+            [] () {
+                return Association_Array<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators> (
+                    MySimpleClassWithoutComparisonOperators_ComparerWithEquals_{});
+            },
             MySimpleClassWithoutComparisonOperators_ComparerWithEquals_{});
 
         DoTestForConcreteContainer_<Association_LinkedList<size_t, size_t>> ();
         DoTestForConcreteContainer_<Association_LinkedList<SimpleClass, SimpleClass>> ();
         // DoTestForConcreteContainer_AllTestsWhichDontRequireComparer_For_Type_<Association_LinkedList<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators_AssociationTRAITS>> ();
         DoTestForConcreteContainer_<Association_LinkedList<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators>> (
-            [] () { return Association_LinkedList<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators> (MySimpleClassWithoutComparisonOperators_ComparerWithEquals_{}); },
+            [] () {
+                return Association_LinkedList<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators> (
+                    MySimpleClassWithoutComparisonOperators_ComparerWithEquals_{});
+            },
             MySimpleClassWithoutComparisonOperators_ComparerWithEquals_{});
 
         DoTestForConcreteContainer_<Association_stdmultimap<size_t, size_t>> ();
         DoTestForConcreteContainer_<Association_stdmultimap<SimpleClass, SimpleClass>> ();
         {
-            struct MySimpleClassWithoutComparisonOperators_ComparerWithLess_ : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eStrictInOrder> {
+            struct MySimpleClassWithoutComparisonOperators_ComparerWithLess_
+                : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eStrictInOrder> {
                 using value_type = SimpleClassWithoutComparisonOperators;
-                bool operator() (const value_type& v1, const value_type& v2) const
-                {
-                    return v1.GetValue () < v2.GetValue ();
-                }
+                bool operator() (const value_type& v1, const value_type& v2) const { return v1.GetValue () < v2.GetValue (); }
             };
             DoTestForConcreteContainer_<Association_stdmultimap<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators>> (
-                [] () { return Association_stdmultimap<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators> (MySimpleClassWithoutComparisonOperators_ComparerWithLess_{}); },
+                [] () {
+                    return Association_stdmultimap<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators> (
+                        MySimpleClassWithoutComparisonOperators_ComparerWithLess_{});
+                },
                 //Common::mkEqualsComparerAdapter (MySimpleClassWithoutComparisonOperators_ComparerWithLess_{})
                 MySimpleClassWithoutComparisonOperators_ComparerWithEquals_{});
         }

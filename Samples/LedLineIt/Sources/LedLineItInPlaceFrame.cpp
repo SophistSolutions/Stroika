@@ -31,9 +31,7 @@ LedLineItInPlaceFrame::LedLineItInPlaceFrame ()
 {
 }
 
-LedLineItInPlaceFrame::~LedLineItInPlaceFrame ()
-{
-}
+LedLineItInPlaceFrame::~LedLineItInPlaceFrame () {}
 
 int LedLineItInPlaceFrame::OnCreate (LPCREATESTRUCT lpCreateStruct)
 {
@@ -71,8 +69,7 @@ BOOL LedLineItInPlaceFrame::OnCreateControlBars (CFrameWnd* pWndFrame, CFrameWnd
     }
 
     // TODO: Remove this if you don't want tool tips or a resizeable toolbar
-    m_wndToolBar.SetBarStyle (m_wndToolBar.GetBarStyle () |
-                              CBRS_TOOLTIPS | CBRS_FLYBY | CBRS_SIZE_DYNAMIC);
+    m_wndToolBar.SetBarStyle (m_wndToolBar.GetBarStyle () | CBRS_TOOLTIPS | CBRS_FLYBY | CBRS_SIZE_DYNAMIC);
 
     // TODO: Delete these three lines if you don't want the toolbar to
     //  be dockable
@@ -92,13 +89,7 @@ BOOL LedLineItInPlaceFrame::PreCreateWindow (CREATESTRUCT& cs)
 }
 
 #ifdef _DEBUG
-void LedLineItInPlaceFrame::AssertValid () const
-{
-    COleIPFrameWnd::AssertValid ();
-}
+void LedLineItInPlaceFrame::AssertValid () const { COleIPFrameWnd::AssertValid (); }
 
-void LedLineItInPlaceFrame::Dump (CDumpContext& dc) const
-{
-    COleIPFrameWnd::Dump (dc);
-}
+void LedLineItInPlaceFrame::Dump (CDumpContext& dc) const { COleIPFrameWnd::Dump (dc); }
 #endif //_DEBUG

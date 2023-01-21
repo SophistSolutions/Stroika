@@ -34,11 +34,13 @@ namespace {
             InternetAddress ia{cidrNotation.SubString (0, *i), addressFamily};
             unsigned int    nBits = Characters::String2Int<unsigned int> (cidrNotation.SubString (*i + 1));
             if (not ia.GetAddressSize ().has_value ()) [[unlikely]] {
-                static const Execution::RuntimeErrorException k_ = Execution::RuntimeErrorException{"CIDR format exception: cannot use CIDR notation with that type of internet address"sv};
+                static const Execution::RuntimeErrorException k_ =
+                    Execution::RuntimeErrorException{"CIDR format exception: cannot use CIDR notation with that type of internet address"sv};
                 Execution::Throw (k_);
             }
             if (*ia.GetAddressSize () * 8 < nBits) [[unlikely]] {
-                static const Execution::RuntimeErrorException k_ = Execution::RuntimeErrorException{"CIDR format exception: number of significant bits too large"sv};
+                static const Execution::RuntimeErrorException k_ =
+                    Execution::RuntimeErrorException{"CIDR format exception: number of significant bits too large"sv};
                 Execution::Throw (k_);
             }
             return CIDR{ia, nBits};

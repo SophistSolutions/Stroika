@@ -105,15 +105,13 @@ namespace {
 #endif
                 else if constexpr (sizeof (CHAR_T) == 2) {
                     // reinterpret_cast needed cuz of wchar_t case
-                    return PeekSpanData{
-                        PeekSpanData::StorageCodePointType::eChar16,
-                        {.fChar16 = span<const char16_t>{reinterpret_cast<const char16_t*> (_fData.data ()), _fData.size ()}}};
+                    return PeekSpanData{PeekSpanData::StorageCodePointType::eChar16,
+                                        {.fChar16 = span<const char16_t>{reinterpret_cast<const char16_t*> (_fData.data ()), _fData.size ()}}};
                 }
                 else if constexpr (sizeof (CHAR_T) == 4) {
                     // reinterpret_cast needed cuz of wchar_t case
-                    return PeekSpanData{
-                        PeekSpanData::StorageCodePointType::eChar32,
-                        {.fChar32 = span<const char32_t>{reinterpret_cast<const char32_t*> (_fData.data ()), _fData.size ()}}};
+                    return PeekSpanData{PeekSpanData::StorageCodePointType::eChar32,
+                                        {.fChar32 = span<const char32_t>{reinterpret_cast<const char32_t*> (_fData.data ()), _fData.size ()}}};
                 }
             }
 
@@ -128,8 +126,8 @@ namespace {
             {
                 struct MyIterRep_ final : Iterator<Character>::IRep, public Memory::UseBlockAllocationIfAppropriate<MyIterRep_> {
                     _SharedPtrIRep     fHoldRepToAssureDataNotDestroyed_; // bump reference count
-                    span<const CHAR_T> fData_;                            // clone span (not underlying data) pointing inside fHoldRepToAssureDataNotDestroyed
-                    size_t             fCurIdx_;                          // could replace with pointer??
+                    span<const CHAR_T> fData_;   // clone span (not underlying data) pointing inside fHoldRepToAssureDataNotDestroyed
+                    size_t             fCurIdx_; // could replace with pointer??
                     MyIterRep_ (const _SharedPtrIRep& r, size_t idx = 0)
                         : fHoldRepToAssureDataNotDestroyed_{r}
                         , fData_{Debug::UncheckedDynamicCast<Rep*> (r.get ())->_fData}
@@ -168,15 +166,9 @@ namespace {
                 _SharedPtrIRep sharedContainerRep = const_cast<_IRep*> (static_cast<const _IRep*> (this))->shared_from_this ();
                 return Iterator<Character>{Iterator<Character>::MakeSmartPtr<MyIterRep_> (sharedContainerRep)};
             }
-            virtual size_t size () const override
-            {
-                return _fData.size ();
-            }
-            virtual bool empty () const override
-            {
-                return _fData.empty ();
-            }
-            virtual void Apply (const function<void (Configuration::ArgByValueType<value_type> item)>& doToElement) const override
+            virtual size_t size () const override { return _fData.size (); }
+            virtual bool   empty () const override { return _fData.empty (); }
+            virtual void   Apply (const function<void (Configuration::ArgByValueType<value_type> item)>& doToElement) const override
             {
                 _Apply (doToElement);
             }
@@ -247,13 +239,16 @@ namespace {
                     Assert (cap >= kNElts1_);
                     switch (cap) {
                         case kNElts1_: {
-                            Memory::BlockAllocator<BufferedStringRepBlock_<kNElts1_>>{}.deallocate (reinterpret_cast<BufferedStringRepBlock_<kNElts1_>*> (const_cast<CHAR_T*> (this->_fData.data ())), 1);
+                            Memory::BlockAllocator<BufferedStringRepBlock_<kNElts1_>>{}.deallocate (
+                                reinterpret_cast<BufferedStringRepBlock_<kNElts1_>*> (const_cast<CHAR_T*> (this->_fData.data ())), 1);
                         } break;
                         case kNElts2_: {
-                            Memory::BlockAllocator<BufferedStringRepBlock_<kNElts2_>>{}.deallocate (reinterpret_cast<BufferedStringRepBlock_<kNElts2_>*> (const_cast<CHAR_T*> (this->_fData.data ())), 1);
+                            Memory::BlockAllocator<BufferedStringRepBlock_<kNElts2_>>{}.deallocate (
+                                reinterpret_cast<BufferedStringRepBlock_<kNElts2_>*> (const_cast<CHAR_T*> (this->_fData.data ())), 1);
                         } break;
                         case kNElts3_: {
-                            Memory::BlockAllocator<BufferedStringRepBlock_<kNElts3_>>{}.deallocate (reinterpret_cast<BufferedStringRepBlock_<kNElts3_>*> (const_cast<CHAR_T*> (this->_fData.data ())), 1);
+                            Memory::BlockAllocator<BufferedStringRepBlock_<kNElts3_>>{}.deallocate (
+                                reinterpret_cast<BufferedStringRepBlock_<kNElts3_>*> (const_cast<CHAR_T*> (this->_fData.data ())), 1);
                         } break;
                         default: {
                             delete[] this->_fData.data ();
@@ -360,10 +355,7 @@ namespace {
 
         private:
             // Compute from the base class span size to avoid storing capacity as data member
-            nonvirtual size_t capacity () const
-            {
-                return AdjustCapacity_ (this->_fData.size ());
-            }
+            nonvirtual size_t capacity () const { return AdjustCapacity_ (this->_fData.size ()); }
         };
     };
 
@@ -389,10 +381,7 @@ namespace {
             nonvirtual Rep& operator= (const Rep&) = delete;
 
         public:
-            virtual ~Rep () override
-            {
-                delete[] this->_fData.data ();
-            }
+            virtual ~Rep () override { delete[] this->_fData.data (); }
 
         private:
             static span<CHAR_T> mkBuf_ (size_t length)
@@ -453,7 +442,8 @@ namespace {
      */
     struct FixedCapacityInlineStorageString_ : StringRepHelperAllFitInSize_ {
         template <Character_IsUnicodeCodePointOrPlainChar CHAR_T, size_t CAPACITY>
-        struct Rep final : public StringRepHelperAllFitInSize_::Rep<CHAR_T>, public Memory::UseBlockAllocationIfAppropriate<Rep<CHAR_T, CAPACITY>> {
+        struct Rep final : public StringRepHelperAllFitInSize_::Rep<CHAR_T>,
+                           public Memory::UseBlockAllocationIfAppropriate<Rep<CHAR_T, CAPACITY>> {
         private:
             using inherited = StringRepHelperAllFitInSize_::Rep<CHAR_T>;
 
@@ -618,10 +608,7 @@ namespace {
 
             // String::_IRep overrides - delegate
         public:
-            virtual const wchar_t* c_str_peek () const noexcept override
-            {
-                return fCString_.c_str ();
-            }
+            virtual const wchar_t* c_str_peek () const noexcept override { return fCString_.c_str (); }
         };
     };
 }
@@ -643,10 +630,7 @@ namespace {
  ******* Characters::Private_::RegularExpression_GetCompiled ********************
  ********************************************************************************
  */
-const wregex& Characters::Private_::RegularExpression_GetCompiled (const RegularExpression& regExp)
-{
-    return regExp.GetCompiled ();
-}
+const wregex& Characters::Private_::RegularExpression_GetCompiled (const RegularExpression& regExp) { return regExp.GetCompiled (); }
 
 /*
  ********************************************************************************
@@ -693,9 +677,9 @@ String::String (const basic_string_view<wchar_t>& str)
 {
     Require (str.data ()[str.length ()] == 0); // Because Stroika strings provide the guarantee that they can be converted to c_str () - we require the input memory
                                                // for these const strings are also nul-terminated.
-                                               // DONT try to CORRECT this if found wrong, because whenever you use "stuff"sv - the string literal will always
-                                               // be nul-terminated.
-                                               // -- LGP 2019-01-29
+        // DONT try to CORRECT this if found wrong, because whenever you use "stuff"sv - the string literal will always
+        // be nul-terminated.
+        // -- LGP 2019-01-29
 }
 
 String String::FromStringConstant (span<const char> s)
@@ -710,7 +694,7 @@ String String::FromStringConstant (span<const wchar_t> s)
         Require (UTFConverter::AllFitsInTwoByteEncoding (s));
     }
     Require (*(s.data () + s.size ()) == '\0'); // crazy weird requirement, but done cuz "x"sv already does NUL-terminate and we can
-                                                // take advantage of that fact - re-using the NUL-terminator for our own c_str() implementation
+        // take advantage of that fact - re-using the NUL-terminator for our own c_str() implementation
     return String{MakeSmartPtr<StringConstant_::Rep<wchar_t>> (s)};
 }
 
@@ -726,7 +710,8 @@ String String::FromNarrowString (span<const char> s, const locale& l)
     wstring              resultWStr (externalSize, '\0');
     const char*          from_next;
     wchar_t*             to_next;
-    codecvt_base::result result = cvt.in (mbstate, s.data (), s.data () + s.size (), from_next, &resultWStr[0], &resultWStr[resultWStr.size ()], to_next);
+    codecvt_base::result result =
+        cvt.in (mbstate, s.data (), s.data () + s.size (), from_next, &resultWStr[0], &resultWStr[resultWStr.size ()], to_next);
     if (result != codecvt_base::ok) [[unlikely]] {
         static const auto kException_ = Execution::RuntimeErrorException{"Error converting locale multibyte string to UNICODE"sv};
         Execution::Throw (kException_);
@@ -817,7 +802,8 @@ auto String::mk_ (span<const char16_t> s) -> _SharedPtrIRep
     else {
         Memory::StackBuffer<char32_t> wideUnicodeBuf{Memory::eUninitialized, UTFConverter::ComputeTargetBufferSize<char32_t> (s)};
 #if qCompilerAndStdLib_spanOfContainer_Buggy
-        return mk_nocheck_justPickBufRep_ (Memory::ConstSpan (UTFConverter::kThe.ConvertSpan (s, span{wideUnicodeBuf.data (), wideUnicodeBuf.size ()})));
+        return mk_nocheck_justPickBufRep_ (
+            Memory::ConstSpan (UTFConverter::kThe.ConvertSpan (s, span{wideUnicodeBuf.data (), wideUnicodeBuf.size ()})));
 #else
         return mk_nocheck_justPickBufRep_ (Memory::ConstSpan (UTFConverter::kThe.ConvertSpan (s, span{wideUnicodeBuf})));
 #endif
@@ -858,7 +844,8 @@ auto String::mk_ (basic_string<char16_t>&& s) -> _SharedPtrIRep
     // copy the data if any surrogates
     Memory::StackBuffer<char32_t> wideUnicodeBuf{Memory::eUninitialized, UTFConverter::ComputeTargetBufferSize<char32_t> (span{s.data (), s.size ()})};
 #if qCompilerAndStdLib_spanOfContainer_Buggy
-    return mk_nocheck_justPickBufRep_ (Memory::ConstSpan (UTFConverter::kThe.ConvertSpan (span{s.data (), s.size ()}, span{wideUnicodeBuf.data (), wideUnicodeBuf.size ()})));
+    return mk_nocheck_justPickBufRep_ (
+        Memory::ConstSpan (UTFConverter::kThe.ConvertSpan (span{s.data (), s.size ()}, span{wideUnicodeBuf.data (), wideUnicodeBuf.size ()})));
 #else
     return mk_nocheck_justPickBufRep_ (Memory::ConstSpan (UTFConverter::kThe.ConvertSpan (span{s.data (), s.size ()}, span{wideUnicodeBuf})));
 #endif
@@ -878,9 +865,11 @@ auto String::mk_ (basic_string<wchar_t>&& s) -> _SharedPtrIRep
             return MakeSmartPtr<StdStringDelegator_::Rep<wchar_t>> (move (s));
         }
         // copy the data if any surrogates
-        Memory::StackBuffer<char32_t> wideUnicodeBuf{Memory::eUninitialized, UTFConverter::ComputeTargetBufferSize<char32_t> (span{s.data (), s.size ()})};
+        Memory::StackBuffer<char32_t> wideUnicodeBuf{Memory::eUninitialized,
+                                                     UTFConverter::ComputeTargetBufferSize<char32_t> (span{s.data (), s.size ()})};
 #if qCompilerAndStdLib_spanOfContainer_Buggy
-        return mk_nocheck_justPickBufRep_ (Memory::ConstSpan (UTFConverter::kThe.ConvertSpan (span{s.data (), s.size ()}, span{wideUnicodeBuf.data (), wideUnicodeBuf.size ()})));
+        return mk_nocheck_justPickBufRep_ (Memory::ConstSpan (
+            UTFConverter::kThe.ConvertSpan (span{s.data (), s.size ()}, span{wideUnicodeBuf.data (), wideUnicodeBuf.size ()})));
 #else
         return mk_nocheck_justPickBufRep_ (Memory::ConstSpan (UTFConverter::kThe.ConvertSpan (span{s.data (), s.size ()}, span{wideUnicodeBuf})));
 #endif
@@ -1340,11 +1329,7 @@ Containers::Sequence<String> String::Tokenize (const Containers::Set<Character>&
     /*
      *  @todo Inefficient impl, to encourage code saving. Do more efficently.
      */
-    return Tokenize (
-        [delimiters] (Character c) -> bool {
-            return delimiters.Contains (c);
-        },
-        trim);
+    return Tokenize ([delimiters] (Character c) -> bool { return delimiters.Contains (c); }, trim);
 }
 
 String String::SubString_ (const _SafeReadRepAccessor& thisAccessor, size_t thisLen, size_t from, size_t to) const
@@ -1582,8 +1567,8 @@ void String::AsNarrowString (const locale& l, string* into) const
     // http://en.cppreference.com/w/cpp/locale/codecvt/out
     mbstate_t mbstate{};
     into->resize (wstr.size () * cvt.max_length (), '\0');
-    const wchar_t*       from_next;
-    char*                to_next;
+    const wchar_t* from_next;
+    char*          to_next;
     codecvt_base::result result = cvt.out (mbstate, &wstr[0], &wstr[wstr.size ()], from_next, &(*into)[0], &(*into)[into->size ()], to_next);
     if (result != codecvt_base::ok) [[unlikely]] {
         static const auto kException_ = Execution::RuntimeErrorException{"Error converting locale multibyte string to UNICODE"sv};
@@ -1592,10 +1577,7 @@ void String::AsNarrowString (const locale& l, string* into) const
     into->resize (to_next - &(*into)[0]);
 }
 
-void String::erase (size_t from)
-{
-    *this = RemoveAt (from, size ());
-}
+void String::erase (size_t from) { *this = RemoveAt (from, size ()); }
 
 void String::erase (size_t from, size_t count)
 {
@@ -1605,7 +1587,7 @@ void String::erase (size_t from, size_t count)
     //
     // TODO: Double check STL definition - but I think they allow for count to be 'too much' - and silently trim to end...
     size_t max2Erase = static_cast<size_t> (max (static_cast<ptrdiff_t> (0), static_cast<ptrdiff_t> (size ()) - static_cast<ptrdiff_t> (from)));
-    *this            = RemoveAt (from, from + min (count, max2Erase));
+    *this = RemoveAt (from, from + min (count, max2Erase));
 }
 
 const wchar_t* String::c_str () const noexcept

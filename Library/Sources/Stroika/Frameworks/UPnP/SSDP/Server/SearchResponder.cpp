@@ -39,7 +39,8 @@ using namespace Stroika::Frameworks::UPnP::SSDP::Server;
 ********************************************************************************
 */
 namespace {
-    void ParsePacketAndRespond_ (Streams::InputStream<Character>::Ptr in, const Iterable<Advertisement>& advertisements, ConnectionlessSocket::Ptr useSocket, SocketAddress sendTo)
+    void ParsePacketAndRespond_ (Streams::InputStream<Character>::Ptr in, const Iterable<Advertisement>& advertisements,
+                                 ConnectionlessSocket::Ptr useSocket, SocketAddress sendTo)
     {
         String firstLine = in.ReadLine ().Trim ();
 
@@ -187,7 +188,8 @@ SearchResponder::SearchResponder (const Iterable<Advertisement>& advertisements,
                         size_t        nBytesRead = s.ReceiveFrom (begin (buf), end (buf), 0, &from);
                         Assert (nBytesRead <= Memory::NEltsOf (buf));
                         using namespace Streams;
-                        ParsePacketAndRespond_ (TextReader::New (ExternallyOwnedMemoryInputStream<byte>::New (begin (buf), begin (buf) + nBytesRead)), advertisements, s, from);
+                        ParsePacketAndRespond_ (TextReader::New (ExternallyOwnedMemoryInputStream<byte>::New (begin (buf), begin (buf) + nBytesRead)),
+                                                advertisements, s, from);
                     }
                 }
                 catch (const Execution::Thread::AbortException&) {

@@ -34,9 +34,7 @@ RulerItem::RulerItem (UINT nBitmapID)
     m_hbm        = NULL;
     m_hbmMask    = NULL;
     if (nBitmapID != 0) {
-        m_hbmMask = ::LoadBitmap (
-            AfxFindResourceHandle (MAKEINTRESOURCE (nBitmapID + 1), RT_BITMAP),
-            MAKEINTRESOURCE (nBitmapID + 1));
+        m_hbmMask = ::LoadBitmap (AfxFindResourceHandle (MAKEINTRESOURCE (nBitmapID + 1), RT_BITMAP), MAKEINTRESOURCE (nBitmapID + 1));
         ASSERT (m_hbmMask != NULL);
         VERIFY (LoadMaskedBitmap (MAKEINTRESOURCE (nBitmapID)));
         BITMAP bm;
@@ -137,12 +135,11 @@ void RulerItem::Invalidate ()
 CRect RulerItem::GetHitRectPix ()
 {
     int nx = GetHorzPosPix ();
-    return CRect (
-        CPoint (
-            (m_nAlignment == TA_CENTER) ? (nx - m_size.cx / 2) : (m_nAlignment == TA_LEFT) ? nx
-                                                                                           : nx - m_size.cx,
-            m_nYPosPix),
-        m_size);
+    return CRect (CPoint ((m_nAlignment == TA_CENTER) ? (nx - m_size.cx / 2)
+                          : (m_nAlignment == TA_LEFT) ? nx
+                                                      : nx - m_size.cx,
+                          m_nYPosPix),
+                  m_size);
 }
 
 void RulerItem::Draw (CDC& dc)
@@ -445,8 +442,7 @@ BOOL RulerBar::Create (CWnd* pParentWnd, DWORD dwStyle, UINT nID)
     // create the HWND
     CRect rect;
     rect.SetRectEmpty ();
-    LPCTSTR lpszClass = AfxRegisterWndClass (0, ::LoadCursor (NULL, IDC_ARROW),
-                                             (HBRUSH)(COLOR_BTNFACE + 1), NULL);
+    LPCTSTR lpszClass = AfxRegisterWndClass (0, ::LoadCursor (NULL, IDC_ARROW), (HBRUSH)(COLOR_BTNFACE + 1), NULL);
 
     if (!CWnd::Create (lpszClass, NULL, dwStyle, rect, pParentWnd, nID))
         return FALSE;
@@ -865,8 +861,7 @@ void RulerBar::OnWindowPosChanged (WINDOWPOS FAR* lpwndpos)
 LRESULT RulerBar::OnSizeParent (WPARAM wParam, LPARAM lParam)
 {
     BOOL bVis = GetStyle () & WS_VISIBLE;
-    if ((bVis && (m_nStateFlags & delayHide)) ||
-        (!bVis && (m_nStateFlags & delayShow))) {
+    if ((bVis && (m_nStateFlags & delayHide)) || (!bVis && (m_nStateFlags & delayShow))) {
         m_bDeferInProgress = TRUE;
     }
     return CControlBar::OnSizeParent (wParam, lParam);

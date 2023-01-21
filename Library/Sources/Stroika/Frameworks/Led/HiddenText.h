@@ -194,19 +194,14 @@ namespace Stroika::Frameworks::Led {
         virtual int GetPriority () const override;
 
     protected:
-        virtual void         DrawSegment (const StyledTextImager* imager, const RunElement& runElement, Tablet* tablet,
-                                          size_t from, size_t to, const TextLayoutBlock& text,
-                                          const Led_Rect& drawInto, const Led_Rect& /*invalidRect*/, CoordinateType useBaseLine,
-                                          DistanceType* pixelsDrawn) override;
-        virtual void         MeasureSegmentWidth (const StyledTextImager* imager, const RunElement& runElement,
-                                                  size_t from, size_t to,
-                                                  const Led_tChar* text,
-                                                  DistanceType*    distanceResults) const override;
-        virtual DistanceType MeasureSegmentHeight (const StyledTextImager* imager, const RunElement& runElement,
-                                                   size_t from, size_t to) const override;
+        virtual void DrawSegment (const StyledTextImager* imager, const RunElement& runElement, Tablet* tablet, size_t from, size_t to,
+                                  const TextLayoutBlock& text, const Led_Rect& drawInto, const Led_Rect& /*invalidRect*/,
+                                  CoordinateType useBaseLine, DistanceType* pixelsDrawn) override;
+        virtual void MeasureSegmentWidth (const StyledTextImager* imager, const RunElement& runElement, size_t from, size_t to,
+                                          const Led_tChar* text, DistanceType* distanceResults) const override;
+        virtual DistanceType MeasureSegmentHeight (const StyledTextImager* imager, const RunElement& runElement, size_t from, size_t to) const override;
 
-        virtual DistanceType MeasureSegmentBaseLine (const StyledTextImager* imager, const RunElement& runElement,
-                                                     size_t from, size_t to) const override;
+        virtual DistanceType MeasureSegmentBaseLine (const StyledTextImager* imager, const RunElement& runElement, size_t from, size_t to) const override;
     };
 
     /*
@@ -218,7 +213,9 @@ namespace Stroika::Frameworks::Led {
         some other helper file, and just USE the functionality here.</p>
             <p>See also @'HidableTextMarkerOwner::LightUnderlineHidableTextMarker'.</p>
     */
-    class HidableTextMarkerOwner::FontSpecHidableTextMarker : public HidableTextMarkerHelper<SimpleStyleMarkerByFontSpec<HidableTextMarkerOwner::HidableTextMarker>>, public Foundation::Memory::UseBlockAllocationIfAppropriate<FontSpecHidableTextMarker> {
+    class HidableTextMarkerOwner::FontSpecHidableTextMarker
+        : public HidableTextMarkerHelper<SimpleStyleMarkerByFontSpec<HidableTextMarkerOwner::HidableTextMarker>>,
+          public Foundation::Memory::UseBlockAllocationIfAppropriate<FontSpecHidableTextMarker> {
     private:
         using inherited = HidableTextMarkerHelper<SimpleStyleMarkerByFontSpec<HidableTextMarkerOwner::HidableTextMarker>>;
 
@@ -240,9 +237,13 @@ namespace Stroika::Frameworks::Led {
                 it works well with other embeddings and display markers, cuz it lets them
                 do their drawing, and simply adds the underline.</p>
     */
-    class HidableTextMarkerOwner::LightUnderlineHidableTextMarker : public HidableTextMarkerHelper<SimpleStyleMarkerWithLightUnderline<SimpleStyleMarkerByIncrementalFontSpec<SimpleStyleMarkerByIncrementalFontSpecStandardStyleMarkerHelper<SimpleStyleMarkerWithExtraDraw<HidableTextMarkerOwner::HidableTextMarker>>>>>, public Foundation::Memory::UseBlockAllocationIfAppropriate<LightUnderlineHidableTextMarker> {
+    class HidableTextMarkerOwner::LightUnderlineHidableTextMarker
+        : public HidableTextMarkerHelper<SimpleStyleMarkerWithLightUnderline<SimpleStyleMarkerByIncrementalFontSpec<
+              SimpleStyleMarkerByIncrementalFontSpecStandardStyleMarkerHelper<SimpleStyleMarkerWithExtraDraw<HidableTextMarkerOwner::HidableTextMarker>>>>>,
+          public Foundation::Memory::UseBlockAllocationIfAppropriate<LightUnderlineHidableTextMarker> {
     private:
-        using inherited = HidableTextMarkerHelper<SimpleStyleMarkerWithLightUnderline<SimpleStyleMarkerByIncrementalFontSpec<SimpleStyleMarkerByIncrementalFontSpecStandardStyleMarkerHelper<SimpleStyleMarkerWithExtraDraw<HidableTextMarkerOwner::HidableTextMarker>>>>>;
+        using inherited = HidableTextMarkerHelper<SimpleStyleMarkerWithLightUnderline<SimpleStyleMarkerByIncrementalFontSpec<
+            SimpleStyleMarkerByIncrementalFontSpecStandardStyleMarkerHelper<SimpleStyleMarkerWithExtraDraw<HidableTextMarkerOwner::HidableTextMarker>>>>>;
 
     public:
         LightUnderlineHidableTextMarker (const IncrementalFontSpecification& fsp = IncrementalFontSpecification ());

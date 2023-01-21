@@ -28,10 +28,7 @@ namespace Stroika::Frameworks::Led {
      **************************** ChunkedArrayTextStore *****************************
      ********************************************************************************
      */
-    inline size_t ChunkedArrayTextStore::GetLength () const noexcept
-    {
-        return fLength;
-    }
+    inline size_t                                ChunkedArrayTextStore::GetLength () const noexcept { return fLength; }
     inline ChunkedArrayTextStore::ChunkAndOffset ChunkedArrayTextStore::FindChunkIndex (size_t charPos) const
     {
         // No cache implemented yet - later check cache - and only call _ version if need be...

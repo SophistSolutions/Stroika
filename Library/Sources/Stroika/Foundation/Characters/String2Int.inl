@@ -83,7 +83,7 @@ namespace Stroika::Foundation::Characters {
                     return *b == '-' ? numeric_limits<T>::min () : numeric_limits<T>::max ();
                 }
                 // if error or trailing crap - return 0
-                T result = (ec == std::errc{} and ptr == e) ? r : 0;           // a weird default, but what the algorithm advertises and for its not sure there is better?
+                T result = (ec == std::errc{} and ptr == e) ? r : 0; // a weird default, but what the algorithm advertises and for its not sure there is better?
                 Ensure (result == Private_::String2IntOrUInt_<T> (String{s})); // test backward compat with old algorithm --LGP 2021-11-08
                 return result;
             }
@@ -99,7 +99,9 @@ namespace Stroika::Foundation::Characters {
     inline T String2Int (STRINGISH_ARG&& s)
     {
         using DecayedStringishArg = remove_cvref_t<STRINGISH_ARG>;
-        if constexpr (is_same_v<DecayedStringishArg, const char*> or is_same_v<DecayedStringishArg, const char8_t*> or is_same_v<DecayedStringishArg, const char16_t*> or is_same_v<DecayedStringishArg, const char32_t*> or is_same_v<DecayedStringishArg, const wchar_t*>) {
+        if constexpr (is_same_v<DecayedStringishArg, const char*> or is_same_v<DecayedStringishArg, const char8_t*> or
+                      is_same_v<DecayedStringishArg, const char16_t*> or is_same_v<DecayedStringishArg, const char32_t*> or
+                      is_same_v<DecayedStringishArg, const wchar_t*>) {
             return String2Int<T> (span{s, CString::Length (s)});
         }
         else if constexpr (is_same_v<DecayedStringishArg, String>) {

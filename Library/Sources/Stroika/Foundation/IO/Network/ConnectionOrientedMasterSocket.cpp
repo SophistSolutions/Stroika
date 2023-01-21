@@ -31,7 +31,8 @@ namespace {
             }
             virtual void Listen (unsigned int backlog) override
             {
-                Debug::TraceContextBumper                       ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"IO::Network::Socket::Listen", L"backlog=%s", Characters::ToString ((int)backlog).c_str ())};
+                Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"IO::Network::Socket::Listen", L"backlog=%s",
+                                                                                             Characters::ToString ((int)backlog).c_str ())};
                 AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
 #if qPlatform_POSIX
                 Handle_ErrNoResultInterruption ([this, &backlog] () -> int { return ::listen (fSD_, backlog); });
@@ -47,9 +48,11 @@ namespace {
                 sockaddr_storage                                peer{};
                 socklen_t                                       sz = sizeof (peer);
 #if qPlatform_POSIX
-                return ConnectionOrientedStreamSocket::Attach (Handle_ErrNoResultInterruption ([&] () -> int { return ::accept (fSD_, reinterpret_cast<sockaddr*> (&peer), &sz); }));
+                return ConnectionOrientedStreamSocket::Attach (
+                    Handle_ErrNoResultInterruption ([&] () -> int { return ::accept (fSD_, reinterpret_cast<sockaddr*> (&peer), &sz); }));
 #elif qPlatform_Windows
-                return ConnectionOrientedStreamSocket::Attach (ThrowWSASystemErrorIfSOCKET_ERROR (::accept (fSD_, reinterpret_cast<sockaddr*> (&peer), &sz)));
+                return ConnectionOrientedStreamSocket::Attach (
+                    ThrowWSASystemErrorIfSOCKET_ERROR (::accept (fSD_, reinterpret_cast<sockaddr*> (&peer), &sz)));
 #else
                 AssertNotImplemented ();
 #endif

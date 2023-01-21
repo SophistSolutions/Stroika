@@ -36,15 +36,11 @@ IMPLEMENT_DYNCREATE (ActiveLedItPropPage, COlePropertyPage)
 BEGIN_MESSAGE_MAP (ActiveLedItPropPage, COlePropertyPage)
 END_MESSAGE_MAP ()
 
-IMPLEMENT_OLECREATE_EX (ActiveLedItPropPage, "ACTIVELEDIT.ActiveLedItPropPage.1",
-                        0x9a013a77, 0xad34, 0x11d0, 0x8d, 0x9b, 0, 0xa0, 0xc9, 0x8, 0xc, 0x73)
+IMPLEMENT_OLECREATE_EX (ActiveLedItPropPage, "ACTIVELEDIT.ActiveLedItPropPage.1", 0x9a013a77, 0xad34, 0x11d0, 0x8d, 0x9b, 0, 0xa0, 0xc9, 0x8, 0xc, 0x73)
 
 ActiveLedItPropPage::ActiveLedItPropPage ()
     : COlePropertyPage (IDD, IDS_ACTIVELEDIT_PPG_CAPTION)
 {
 }
 
-void ActiveLedItPropPage::DoDataExchange (CDataExchange* pDX)
-{
-    DDP_PostProcessing (pDX);
-}
+void ActiveLedItPropPage::DoDataExchange (CDataExchange* pDX) { DDP_PostProcessing (pDX); }

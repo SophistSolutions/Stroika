@@ -58,21 +58,21 @@ namespace Stroika::Foundation::Debug {
      *          The VALUE (third) argument to CompileTimeFlagChecker_HEADER and CompileTimeFlagChecker_SOURCE must expand to zero or one, not
      *          a complex expression due to how the name macro name pasting works. UNDESIRABLE!.
      */
-#define CompileTimeFlagChecker_HEADER(NS_PREFIX, NAME, VALUE) \
+#define CompileTimeFlagChecker_HEADER(NS_PREFIX, NAME, VALUE)                                                                              \
     CompileTimeCheck_HEADER_INTERNAL_ (NS_PREFIX, CompileTimeChecker_##NAME, CompileTimeCheck_##NAME, VALUE)
-#define CompileTimeCheck_HEADER_INTERNAL_(NS_PREFIX, CHECKERNAME, NAME, VALUE)                                                      \
-    namespace NS_PREFIX {                                                                                                           \
-        extern Stroika::Foundation::Debug::CompileTimeFlagChecker::HiddenValueType NAME##_##VALUE;                                  \
-    }                                                                                                                               \
-    namespace {                                                                                                                     \
-        struct tester_##CHECKERNAME##_ {                                                                                            \
-            tester_##CHECKERNAME##_ ()                                                                                              \
-            {                                                                                                                       \
-                /* just reference given name that will be a link error if header references name not defined in CPP file */         \
-                [[maybe_unused]] Stroika::Foundation::Debug::CompileTimeFlagChecker::HiddenValueType a = NS_PREFIX::NAME##_##VALUE; \
-            };                                                                                                                      \
-        };                                                                                                                          \
-        tester_##CHECKERNAME##_ t_##CHECKERNAME##_;                                                                                 \
+#define CompileTimeCheck_HEADER_INTERNAL_(NS_PREFIX, CHECKERNAME, NAME, VALUE)                                                             \
+    namespace NS_PREFIX {                                                                                                                  \
+        extern Stroika::Foundation::Debug::CompileTimeFlagChecker::HiddenValueType NAME##_##VALUE;                                         \
+    }                                                                                                                                      \
+    namespace {                                                                                                                            \
+        struct tester_##CHECKERNAME##_ {                                                                                                   \
+            tester_##CHECKERNAME##_ ()                                                                                                     \
+            {                                                                                                                              \
+                /* just reference given name that will be a link error if header references name not defined in CPP file */                \
+                [[maybe_unused]] Stroika::Foundation::Debug::CompileTimeFlagChecker::HiddenValueType a = NS_PREFIX::NAME##_##VALUE;        \
+            };                                                                                                                             \
+        };                                                                                                                                 \
+        tester_##CHECKERNAME##_ t_##CHECKERNAME##_;                                                                                        \
     }
 
     /**
@@ -90,9 +90,8 @@ namespace Stroika::Foundation::Debug {
      *          The VALUE (third) argument to CompileTimeFlagChecker_HEADER and CompileTimeFlagChecker_SOURCE must expand to zero or one, not
      *          a complex expression due to how the name macro name pasting works. UNDESIRABLE!.
      */
-#define CompileTimeFlagChecker_SOURCE(NS_PREFIX, NAME, VALUE) \
-    CompileTimeCheck_SOURCE_PRIVATE_1_ (NS_PREFIX, CompileTimeCheck_##NAME, VALUE)
-#define CompileTimeCheck_SOURCE_PRIVATE_1_(NS_PREFIX, NAME, VALUE) \
+#define CompileTimeFlagChecker_SOURCE(NS_PREFIX, NAME, VALUE) CompileTimeCheck_SOURCE_PRIVATE_1_ (NS_PREFIX, CompileTimeCheck_##NAME, VALUE)
+#define CompileTimeCheck_SOURCE_PRIVATE_1_(NS_PREFIX, NAME, VALUE)                                                                         \
     Stroika::Foundation::Debug::CompileTimeFlagChecker::HiddenValueType NS_PREFIX::NAME##_##VALUE = 1;
 
 }

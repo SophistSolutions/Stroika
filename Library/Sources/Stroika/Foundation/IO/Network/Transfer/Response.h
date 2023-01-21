@@ -120,7 +120,8 @@ namespace Stroika::Foundation::IO::Network::Transfer {
     public:
         /**
          */
-        Response (const BLOB& data, HTTP::Status status, const Mapping<String, String>& headers, const optional<SSLResultInfo>& sslInfo = optional<SSLResultInfo> ());
+        Response (const BLOB& data, HTTP::Status status, const Mapping<String, String>& headers,
+                  const optional<SSLResultInfo>& sslInfo = optional<SSLResultInfo> ());
 
     public:
         /**
@@ -207,8 +208,8 @@ namespace Stroika::Foundation::IO::Network::Transfer {
         nonvirtual String ToString () const;
 
     private:
-        BLOB                                                      fData_;                  // usually empty, but provided for some methods like POST
-        mutable optional<InputStream<byte>::Ptr>                  fDataBinaryInputStream_; // store so subsequent calls to GetBinaryStream() returns same offset/pointer
+        BLOB fData_;                                                      // usually empty, but provided for some methods like POST
+        mutable optional<InputStream<byte>::Ptr> fDataBinaryInputStream_; // store so subsequent calls to GetBinaryStream() returns same offset/pointer
         mutable optional<InputStream<Characters::Character>::Ptr> fDataTextInputStream_;
         Mapping<String, String>                                   fHeaders_;
         HTTP::Status                                              fStatus_{};

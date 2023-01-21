@@ -16,8 +16,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     template <typename KEY, typename VALUE, typename TRAITS>
     SkipList<KEY, VALUE, TRAITS>::SkipList ()
-        : fLength{
-              0}
+        : fLength{0}
 #if qKeepADTStatistics
         , fCompares{0}
         , fRotations{0}
@@ -27,8 +26,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     }
     template <typename KEY, typename VALUE, typename TRAITS>
     SkipList<KEY, VALUE, TRAITS>::SkipList (const SkipList& s)
-        : fLength{
-              0}
+        : fLength{0}
 #if qKeepADTStatistics
         , fCompares{0}
         , fRotations{0}
@@ -467,8 +465,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
             cout << n->fEntry.GetValue () << " (" << n->fNext.size () << "), ";
             n = n->fNext[0];
         }
-        cout << endl
-             << flush;
+        cout << endl << flush;
     }
     template <typename KEY, typename VALUE, typename TRAITS>
     void SkipList<KEY, VALUE, TRAITS>::ValidateAll () const

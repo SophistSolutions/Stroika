@@ -173,14 +173,8 @@ inline OSType MapFormatToOSType (FileFormat fileFormat)
  */
 class Led_BusyCursor {
 public:
-    Led_BusyCursor ()
-    {
-        ::SetCursor (*::GetCursor (watchCursor));
-    }
-    ~Led_BusyCursor ()
-    {
-        ::InitCursor ();
-    }
+    Led_BusyCursor () { ::SetCursor (*::GetCursor (watchCursor)); }
+    ~Led_BusyCursor () { ::InitCursor (); }
 };
 #endif
 
@@ -188,9 +182,9 @@ public:
 // special exception handling just for MFC library implementation
 // copied here so I could clone MFC code as needed - not well understood - UGH!!! - LGP 951227
 #ifndef _AFX_OLD_EXCEPTIONS
-#define DELETE_EXCEPTION(e) \
-    do {                    \
-        e->Delete ();       \
+#define DELETE_EXCEPTION(e)                                                                                                                \
+    do {                                                                                                                                   \
+        e->Delete ();                                                                                                                      \
     } while (0)
 #else //!_AFX_OLD_EXCEPTIONS
 #define DELETE_EXCEPTION(e)
@@ -313,10 +307,7 @@ void LedItDocument::DidUpdateText (const UpdateInfo& updateInfo) noexcept
     }
 }
 
-TextStore* LedItDocument::PeekAtTextStore () const
-{
-    return &const_cast<LedItDocument*> (this)->fTextStore;
-}
+TextStore* LedItDocument::PeekAtTextStore () const { return &const_cast<LedItDocument*> (this)->fTextStore; }
 
 #if qStroika_FeatureSupported_XWindows
 void LedItDocument::LoadFromFile (const string& fileName, FileFormat fileFormat)
@@ -503,10 +494,7 @@ void LedItDocument::Save ()
 #endif
 
 #if qPlatform_MacOS
-const vector<LWindow*>& LedItDocument::GetDocumentWindows ()
-{
-    return LedItDocumentWindow::sWindowList;
-}
+const vector<LWindow*>& LedItDocument::GetDocumentWindows () { return LedItDocumentWindow::sWindowList; }
 
 void LedItDocument::DoSaveHelper ()
 {
@@ -564,9 +552,8 @@ void LedItDocument::DoSaveHelper ()
                             ::RemoveResource (Handle (macStyleHandle)); // remove old styl resource
                         }
 
-                        vector<StandardStyledTextImager::InfoSummaryRecord>
-                               ledStyleRuns = fStyleDatabase->GetStyleInfo (0, fTextStore.GetLength ());
-                        size_t nStyleRuns   = ledStyleRuns.size ();
+                        vector<StandardStyledTextImager::InfoSummaryRecord> ledStyleRuns = fStyleDatabase->GetStyleInfo (0, fTextStore.GetLength ());
+                        size_t nStyleRuns = ledStyleRuns.size ();
                         Assert (offsetof (StScrpRec, scrpStyleTab) == sizeof (short)); // thats why we add sizeof (short)
                         macStyleHandle = (StScrpHandle)::Led_DoNewHandle (sizeof (short) + nStyleRuns * sizeof (ScrpSTElement));
                         HLock (Handle (macStyleHandle));
@@ -679,7 +666,7 @@ void LedItDocument::OpenFile (const FSSpec& inFileSpec)
             mFile = NULL;
         }
         mIsSpecified = not(openedReadOnly or isStationary); // if we opened RO or stationary, then hitting save button should bring up save-dialog
-        mIsModified  = isStationary;                        // if we stationary, then closing should bring up save-dialog
+        mIsModified = isStationary;                         // if we stationary, then closing should bring up save-dialog
     }
     catch (...) {
         // if an error opening the file, then delete the file object - in case its left open...
@@ -690,10 +677,7 @@ void LedItDocument::OpenFile (const FSSpec& inFileSpec)
 }
 
 //  Return whether the Document is has changed since the last save
-Boolean LedItDocument::IsModified ()
-{
-    return mIsModified;
-}
+Boolean LedItDocument::IsModified () { return mIsModified; }
 
 //  Save Document in the specified file with the specified file type
 //
@@ -827,7 +811,10 @@ void LedItDocument::BuildDocWindow (const FSSpec* inFileSpec)
     // than just returning NULL. So try to avoid that situation.
     Led_CheckSomeLocalHeapRAMAvailable ();
 
-    mWindow = new LedItDocumentWindow (WIND_TextDoc, windAttr_Regular | windAttr_CloseBox | windAttr_TitleBar | windAttr_Resizable | windAttr_SizeBox | windAttr_Zoomable | windAttr_Enabled | windAttr_Targetable, this);
+    mWindow = new LedItDocumentWindow (WIND_TextDoc,
+                                       windAttr_Regular | windAttr_CloseBox | windAttr_TitleBar | windAttr_Resizable | windAttr_SizeBox |
+                                           windAttr_Zoomable | windAttr_Enabled | windAttr_Targetable,
+                                       this);
     mWindow->FinishCreate ();
 
     // By default window created with a silly size. Don't know how todo this well within
@@ -1038,8 +1025,7 @@ Boolean LedItDocument::ObeyCommand (CommandT inCommand, void* ioParam)
 }
 
 //  Pass back status of a (menu) command
-void LedItDocument::FindCommandStatus (CommandT inCommand, Boolean& outEnabled, Boolean& outUsesMark,
-                                       UInt16& outMark, Str255 outName)
+void LedItDocument::FindCommandStatus (CommandT inCommand, Boolean& outEnabled, Boolean& outUsesMark, UInt16& outMark, Str255 outName)
 {
     outUsesMark = false;
     switch (inCommand) {
@@ -1167,10 +1153,7 @@ BOOL LedItDocument::DoSave (LPCTSTR lpszPathName, BOOL bReplace)
         if (!OnSaveDocument (newName)) {
             if (lpszPathName == NULL) {
                 // be sure to delete the file
-                TRY
-                {
-                    CFile::Remove (newName);
-                }
+                TRY { CFile::Remove (newName); }
                 CATCH_ALL (e)
                 {
                     TRACE0 ("Warning: failed to delete file after failed SaveAs.\n");
@@ -1374,9 +1357,7 @@ BOOL LedItDocument::OnOpenDocument (LPCTSTR lpszPathName)
         }
     }
 
-    WordProcessor::WordProcessorFlavorPackageInternalizer internalizer (fTextStore, fStyleDatabase,
-                                                                        fParagraphDatabase,
-                                                                        fHidableTextDatabase);
+    WordProcessor::WordProcessorFlavorPackageInternalizer internalizer (fTextStore, fStyleDatabase, fParagraphDatabase, fHidableTextDatabase);
 
     Led_ClipFormat readFileFormat = kBadClipFormat; // defaults to GUESSING file format on READ (or based on file name)
 
@@ -1461,10 +1442,7 @@ void LedItDocument::OnFileSaveCopyAs ()
     fFileFormat = savedFileFormat;
 }
 
-void LedItDocument::DeleteContents ()
-{
-    fTextStore.Replace (fTextStore.GetStart (), fTextStore.GetEnd (), LED_TCHAR_OF (""), 0);
-}
+void LedItDocument::DeleteContents () { fTextStore.Replace (fTextStore.GetStart (), fTextStore.GetEnd (), LED_TCHAR_OF (""), 0); }
 
 bool LedItDocument::DoPromptSaveAsFileName (CString& fileName, FileFormat* fileFormat)
 {

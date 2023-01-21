@@ -123,14 +123,19 @@ namespace Stroika::Foundation::Cache {
         /**
          * @see TimedCache::LookupValue
          */
-        nonvirtual VALUE LookupValue (typename Configuration::ArgByValueType<KEY> key, const function<VALUE (typename Configuration::ArgByValueType<KEY>)>& cacheFiller, LookupMarksDataAsRefreshed successfulLookupRefreshesAcceesFlag = LookupMarksDataAsRefreshed::eDontTreatFoundThroughLookupAsRefreshed, PurgeSpoiledDataFlagType purgeSpoiledData = PurgeSpoiledDataFlagType::eAutomaticallyPurgeSpoiledData);
+        nonvirtual VALUE LookupValue (typename Configuration::ArgByValueType<KEY>                          key,
+                                      const function<VALUE (typename Configuration::ArgByValueType<KEY>)>& cacheFiller,
+                                      LookupMarksDataAsRefreshed successfulLookupRefreshesAcceesFlag = LookupMarksDataAsRefreshed::eDontTreatFoundThroughLookupAsRefreshed,
+                                      PurgeSpoiledDataFlagType purgeSpoiledData = PurgeSpoiledDataFlagType::eAutomaticallyPurgeSpoiledData);
 
     public:
         /**
          * @see TimedCache::Add
          */
-        nonvirtual void Add (typename Configuration::ArgByValueType<KEY> key, typename Configuration::ArgByValueType<VALUE> result, TimedCacheSupport::PurgeSpoiledDataFlagType purgeSpoiledData = PurgeSpoiledDataFlagType::eAutomaticallyPurgeSpoiledData);
-        nonvirtual void Add (typename Configuration::ArgByValueType<KEY> key, typename Configuration::ArgByValueType<VALUE> result, Time::Duration freshAsOf);
+        nonvirtual void Add (typename Configuration::ArgByValueType<KEY> key, typename Configuration::ArgByValueType<VALUE> result,
+                             TimedCacheSupport::PurgeSpoiledDataFlagType purgeSpoiledData = PurgeSpoiledDataFlagType::eAutomaticallyPurgeSpoiledData);
+        nonvirtual void Add (typename Configuration::ArgByValueType<KEY> key, typename Configuration::ArgByValueType<VALUE> result,
+                             Time::Duration freshAsOf);
 
     public:
         /**

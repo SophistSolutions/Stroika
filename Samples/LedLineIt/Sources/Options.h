@@ -44,12 +44,12 @@ public:
 
 #if qSupportSyntaxColoring
 public:
-    enum SyntaxColoringOption { eSyntaxColoringNone      = 1,
-                                eSyntaxColoringCPlusPlus = 2,
-                                eSyntaxColoringVB        = 3,
+    enum SyntaxColoringOption {
+        eSyntaxColoringNone      = 1,
+        eSyntaxColoringCPlusPlus = 2,
+        eSyntaxColoringVB        = 3,
 
-                                Stroika_Define_Enum_Bounds (eSyntaxColoringNone, eSyntaxColoringVB)
-
+        Stroika_Define_Enum_Bounds (eSyntaxColoringNone, eSyntaxColoringVB)
     };
     nonvirtual SyntaxColoringOption GetSyntaxColoringOption () const;
     nonvirtual void                 SetSyntaxColoringOption (SyntaxColoringOption syntaxColoringOption);

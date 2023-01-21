@@ -16,11 +16,8 @@ struct InterceptorChain::Rep_ : InterceptorChain::_IRep {
         : fInterceptors_{interceptors}
     {
     }
-    virtual Sequence<Interceptor> GetInterceptors () const override
-    {
-        return fInterceptors_;
-    }
-    virtual shared_ptr<_IRep> SetInterceptors (const Sequence<Interceptor>& interceptors) const override
+    virtual Sequence<Interceptor> GetInterceptors () const override { return fInterceptors_; }
+    virtual shared_ptr<_IRep>     SetInterceptors (const Sequence<Interceptor>& interceptors) const override
     {
         return make_shared<Rep_> (interceptors);
     }
@@ -58,16 +55,15 @@ InterceptorChain::InterceptorChain (const Sequence<Interceptor>& interceptors)
 }
 
 InterceptorChain::InterceptorChain (const shared_ptr<_IRep>& rep)
-    : interceptors{
-          [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> Sequence<Interceptor> {
-              const InterceptorChain* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &InterceptorChain::interceptors);
-              return thisObj->fRep_.cget ().load ()->GetInterceptors ();
-          },
-          [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, const Sequence<Interceptor>& interceptors) {
-              InterceptorChain* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &InterceptorChain::interceptors);
-              auto              rwLock  = thisObj->fRep_.rwget ();
-              rwLock.store (rwLock->get ()->SetInterceptors (interceptors));
-          }}
+    : interceptors{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> Sequence<Interceptor> {
+                       const InterceptorChain* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &InterceptorChain::interceptors);
+                       return thisObj->fRep_.cget ().load ()->GetInterceptors ();
+                   },
+                   [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, const Sequence<Interceptor>& interceptors) {
+                       InterceptorChain* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &InterceptorChain::interceptors);
+                       auto rwLock = thisObj->fRep_.rwget ();
+                       rwLock.store (rwLock->get ()->SetInterceptors (interceptors));
+                   }}
     , fRep_{rep}
 {
 }

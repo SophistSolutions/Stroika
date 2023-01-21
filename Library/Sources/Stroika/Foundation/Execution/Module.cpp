@@ -35,10 +35,7 @@ using namespace Stroika::Foundation::Execution;
  ***************************** Execution::GetEXEDir *****************************
  ********************************************************************************
  */
-filesystem::path Execution::GetEXEDir ()
-{
-    return GetEXEPath ().parent_path ();
-}
+filesystem::path Execution::GetEXEDir () { return GetEXEPath ().parent_path (); }
 
 /*
  ********************************************************************************

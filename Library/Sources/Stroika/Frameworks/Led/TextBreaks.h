@@ -116,6 +116,7 @@ namespace Stroika::Frameworks::Led {
 #endif
             eOtherCharacterClass //  e.g. some punctuation... (;)
         };
+
     protected:
         virtual CharacterClasses CharToCharacterClass (const Led_tChar* startOfText, size_t lengthOfText, const Led_tChar* charToExamine) const;
 

@@ -63,7 +63,8 @@ namespace Stroika::Foundation::IO::Network {
         AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
         _ref ().SendTo (start, end, sockAddr);
     }
-    inline size_t ConnectionlessSocket::Ptr::ReceiveFrom (byte* intoStart, byte* intoEnd, int flag, SocketAddress* fromAddress, Time::DurationSecondsType timeout) const
+    inline size_t ConnectionlessSocket::Ptr::ReceiveFrom (byte* intoStart, byte* intoEnd, int flag, SocketAddress* fromAddress,
+                                                          Time::DurationSecondsType timeout) const
     {
         AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
         return _ref ().ReceiveFrom (intoStart, intoEnd, flag, fromAddress, timeout);

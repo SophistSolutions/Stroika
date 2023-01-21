@@ -61,12 +61,9 @@ struct Connection::Rep_ final : IRep {
                 // See the docs on SQLConnect - the error handling needs to be VASTLY more complex. We need some mechanism to return
                 // warnings to the caller (to be ignored or whatever).
                 // And ONLY thorw exceptions on ERROR!
-                SQLRETURN return_value = ::SQLConnect (
-                    fConnectionHandle,
-                    reinterpret_cast<SQLTCHAR*> (const_cast<TCHAR*> (options.fDSN->AsSDKString ().c_str ())),
-                    SQL_NTS,
-                    nullptr, SQL_NTS,
-                    nullptr, SQL_NTS);
+                SQLRETURN return_value =
+                    ::SQLConnect (fConnectionHandle, reinterpret_cast<SQLTCHAR*> (const_cast<TCHAR*> (options.fDSN->AsSDKString ().c_str ())),
+                                  SQL_NTS, nullptr, SQL_NTS, nullptr, SQL_NTS);
                 if ((return_value != SQL_SUCCESS) && (return_value != SQL_SUCCESS_WITH_INFO)) {
                     // This logic for producing an error message completely sucks and is largely incorrect
                     String      errorString = "Error SQLConnect: "_k;
@@ -75,11 +72,8 @@ struct Connection::Rep_ final : IRep {
                     SQLSMALLINT messageLength;
                     SQLTCHAR    errorMessage[1024];
                     DISABLE_COMPILER_MSC_WARNING_START (4267)
-                    long errValue = ::SQLGetDiagRec (
-                        SQL_HANDLE_DBC, fConnectionHandle, 1,
-                        reinterpret_cast<SQLTCHAR*> (sqlState), &errorCode,
-                        reinterpret_cast<SQLTCHAR*> (errorMessage),
-                        Memory::NEltsOf (errorMessage), &messageLength);
+                    long errValue = ::SQLGetDiagRec (SQL_HANDLE_DBC, fConnectionHandle, 1, reinterpret_cast<SQLTCHAR*> (sqlState), &errorCode,
+                                                     reinterpret_cast<SQLTCHAR*> (errorMessage), Memory::NEltsOf (errorMessage), &messageLength);
                     DISABLE_COMPILER_MSC_WARNING_END (4267)
                     if (errValue == SQL_SUCCESS) {
                         // TCHAR isn't the same SQLTCHAR for 'ANSI' because for some crazy reason, they
@@ -133,14 +127,8 @@ struct Connection::Rep_ final : IRep {
                 AssertNotImplemented ();
                 return String{};
             }
-            virtual bool RequireStatementResetAfterModifyingStatmentToCompleteTransaction () const override
-            {
-                return false;
-            }
-            virtual bool SupportsNestedTransactions () const override
-            {
-                return false;
-            }
+            virtual bool RequireStatementResetAfterModifyingStatmentToCompleteTransaction () const override { return false; }
+            virtual bool SupportsNestedTransactions () const override { return false; }
         };
         return make_shared<const MyEngineProperties_> (); // dynamic info based on connection/dsn
     }
@@ -154,10 +142,7 @@ struct Connection::Rep_ final : IRep {
         Connection::Ptr conn = Connection::Ptr{dynamic_pointer_cast<Connection::IRep> (shared_from_this ())};
         return ODBC::Transaction{conn};
     }
-    virtual void Exec (const String& /*sql*/) override
-    {
-        AssertNotImplemented ();
-    }
+    virtual void Exec (const String& /*sql*/) override { AssertNotImplemented (); }
 };
 
 /*
@@ -197,7 +182,8 @@ struct Statement::MyRep_ : IRep {
         : fConnectionPtr_{db}
     {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-        TraceContextBumper ctx{"SQLite::Statement::MyRep_::CTOR", Stroika_Foundation_Debug_OptionalizeTraceArgs (L "db=%p, query='%s'", db, query.As<wstring> ().c_str ())};
+        TraceContextBumper ctx{"SQLite::Statement::MyRep_::CTOR",
+                               Stroika_Foundation_Debug_OptionalizeTraceArgs (L "db=%p, query='%s'", db, query.As<wstring> ().c_str ())};
 #endif
         RequireNotNull (db);
 #if qStroikaFoundationDebugAssertExternallySynchronizedMutexEnabled
@@ -207,10 +193,7 @@ struct Statement::MyRep_ : IRep {
         AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
         AssertNotImplemented ();
     }
-    ~MyRep_ ()
-    {
-        AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
-    }
+    ~MyRep_ () { AssertExternallySynchronizedMutex::WriteContext declareContext{*this}; }
     virtual String GetSQL ([[maybe_unused]] WhichSQLFlag whichSQL) const override
     {
         AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
@@ -259,7 +242,8 @@ struct Statement::MyRep_ : IRep {
                 return;
             }
         }
-        DbgTrace (L"Statement::Bind: Parameter '%s' not found in list %s", parameterName.As<wstring> ().c_str (), Characters::ToString (fParameters_.Map<String> ([] (const auto& i) { return i.fName; })).c_str ());
+        DbgTrace (L"Statement::Bind: Parameter '%s' not found in list %s", parameterName.As<wstring> ().c_str (),
+                  Characters::ToString (fParameters_.Map<String> ([] (const auto& i) { return i.fName; })).c_str ());
         RequireNotReached (); // invalid paramter name provided
     }
     virtual void Reset () override

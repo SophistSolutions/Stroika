@@ -61,63 +61,52 @@ namespace {
         const wstring      kNSTest = L"Test-NAMESPACE";
         //NYI
         //Schema    gSchema     =   Schema (kNSTest);
-        wstring newDocXML =
-            L"<PHRModel xmlns=\"" + wstring{kNSTest} + L"\">\n"
-                                                       L"      <BasicInformation id=\"id=101\">\n"
-                                                       L"              <ContactInfo>\n"
-                                                       L"                      <PersonName/>\n"
-                                                       L"                      <Locations>\n";
-        newDocXML +=
-            L"                          <Location id=\"id=102\">\n"
-            L"                                  <Name>Primary Residence</Name>\n"
-            L"                                  <Address/>\n"
-            L"                          </Location>\n";
-        newDocXML +=
-            L"                          <Location id=\"id=103\">\n"
-            L"                                  <Name>Residence2</Name>\n"
-            L"                                  <Address/>\n"
-            L"                          </Location>\n";
-        newDocXML +=
-            L"                  </Locations>\n"
-            L"          </ContactInfo>\n";
-        newDocXML +=
-            L"          <AdvanceDirectives id=\"id=104\"/>\n"
-            L"          <BirthInfo id=\"id=105\"/>\n";
-        newDocXML +=
-            L"  </BasicInformation>\n"
-            L"  <Calendar/>\n"
-            L"  <FamilyMembers/>\n"
-            L"  <ProviderOrganizations/>\n"
-            L"  <Providers/>\n"
-            L"  <Activities/>\n"
-            L"  <Allergies/>\n"
-            L"  <Attachments/>\n"
-            L"  <Communications/>\n"
-            L"  <Conditions/>\n"
-            L"  <Devices/>\n"
-            L"  <Expenses/>\n"
-            L"  <InsurancePolicies/>\n"
-            L"  <Journals/>\n"
-            L"  <JournalEntries/>\n"
-            L"  <Links/>\n"
-            L"  <Medications/>\n"
-            L"  <Tests/>\n"
-            L"  <Treatments/>\n"
-            L"  <Immunizations/>\n"
-            L"  <Visits/>\n"
-            L"  <PageCustomizations/>\n"
-            L"</PHRModel>\n";
+        wstring newDocXML = L"<PHRModel xmlns=\"" + wstring{kNSTest} +
+                            L"\">\n"
+                            L"      <BasicInformation id=\"id=101\">\n"
+                            L"              <ContactInfo>\n"
+                            L"                      <PersonName/>\n"
+                            L"                      <Locations>\n";
+        newDocXML += L"                          <Location id=\"id=102\">\n"
+                     L"                                  <Name>Primary Residence</Name>\n"
+                     L"                                  <Address/>\n"
+                     L"                          </Location>\n";
+        newDocXML += L"                          <Location id=\"id=103\">\n"
+                     L"                                  <Name>Residence2</Name>\n"
+                     L"                                  <Address/>\n"
+                     L"                          </Location>\n";
+        newDocXML += L"                  </Locations>\n"
+                     L"          </ContactInfo>\n";
+        newDocXML += L"          <AdvanceDirectives id=\"id=104\"/>\n"
+                     L"          <BirthInfo id=\"id=105\"/>\n";
+        newDocXML += L"  </BasicInformation>\n"
+                     L"  <Calendar/>\n"
+                     L"  <FamilyMembers/>\n"
+                     L"  <ProviderOrganizations/>\n"
+                     L"  <Providers/>\n"
+                     L"  <Activities/>\n"
+                     L"  <Allergies/>\n"
+                     L"  <Attachments/>\n"
+                     L"  <Communications/>\n"
+                     L"  <Conditions/>\n"
+                     L"  <Devices/>\n"
+                     L"  <Expenses/>\n"
+                     L"  <InsurancePolicies/>\n"
+                     L"  <Journals/>\n"
+                     L"  <JournalEntries/>\n"
+                     L"  <Links/>\n"
+                     L"  <Medications/>\n"
+                     L"  <Tests/>\n"
+                     L"  <Treatments/>\n"
+                     L"  <Immunizations/>\n"
+                     L"  <Visits/>\n"
+                     L"  <PageCustomizations/>\n"
+                     L"</PHRModel>\n";
 
         class MyCallback : public StructuredStreamEvents::IConsumer {
         public:
-            virtual void StartDocument () override
-            {
-                fEltDepthCount = 0;
-            }
-            virtual void EndDocument () override
-            {
-                VerifyTestResult (fEltDepthCount == 0);
-            }
+            virtual void StartDocument () override { fEltDepthCount = 0; }
+            virtual void EndDocument () override { VerifyTestResult (fEltDepthCount == 0); }
             virtual void StartElement (const StructuredStreamEvents::Name& name) override
             {
                 fEltDepthCount++;
@@ -153,24 +142,24 @@ namespace {
         };
         Memory::BLOB mkdata_ ()
         {
-            wstring newDocXML =
-                L"<Calendar xmlns=\"" + wstring (kNSTest) + L"\">\n"
-                                                            L"  <Appointment>\n"
-                                                            L"    <When>2005-06-01T13:00:00-05:00</When>"
-                                                            L"    <WithWhom>\n"
-                                                            L"            <FirstName>Jim</FirstName>"
-                                                            L"            <LastName>Smith</LastName>"
-                                                            L"            <MiddleName>Up</MiddleName>"
-                                                            L"    </WithWhom>\n"
-                                                            L"  </Appointment>\n"
-                                                            L"  <Appointment>\n"
-                                                            L"    <When>2005-08-01T13:00:00-05:00</When>"
-                                                            L"    <WithWhom>\n"
-                                                            L"            <FirstName>Fred</FirstName>"
-                                                            L"            <LastName>Down</LastName>"
-                                                            L"    </WithWhom>\n"
-                                                            L"  </Appointment>\n"
-                                                            L"</Calendar>\n";
+            wstring newDocXML = L"<Calendar xmlns=\"" + wstring (kNSTest) +
+                                L"\">\n"
+                                L"  <Appointment>\n"
+                                L"    <When>2005-06-01T13:00:00-05:00</When>"
+                                L"    <WithWhom>\n"
+                                L"            <FirstName>Jim</FirstName>"
+                                L"            <LastName>Smith</LastName>"
+                                L"            <MiddleName>Up</MiddleName>"
+                                L"    </WithWhom>\n"
+                                L"  </Appointment>\n"
+                                L"  <Appointment>\n"
+                                L"    <When>2005-08-01T13:00:00-05:00</When>"
+                                L"    <WithWhom>\n"
+                                L"            <FirstName>Fred</FirstName>"
+                                L"            <LastName>Down</LastName>"
+                                L"    </WithWhom>\n"
+                                L"  </Appointment>\n"
+                                L"</Calendar>\n";
             stringstream tmpStrm;
             WriteTextStream_ (newDocXML, tmpStrm);
             return InputStreamFromStdIStream<byte>::New (tmpStrm).ReadAll ();
@@ -202,27 +191,29 @@ namespace {
                 ObjectReader::IConsumerDelegateToContext ctx{
                     registry,
                     make_shared<ObjectReader::ReadDownToReader> (
-                        make_shared<ObjectReader::RepeatedElementReader<vector<Appointment_>>> (&calendar),
-                        Name{L"Appointment"})};
+                        make_shared<ObjectReader::RepeatedElementReader<vector<Appointment_>>> (&calendar), Name{L"Appointment"})};
                 XML::SAXParse (mkdata_ (), ctx);
                 VerifyTestResult (calendar.size () == 2);
                 VerifyTestResult (calendar[0].withWhom.firstName == L"Jim");
                 VerifyTestResult (calendar[0].withWhom.lastName == L"Smith");
                 VerifyTestResult (*calendar[0].withWhom.middleName == L"Up");
-                VerifyTestResult ((calendar[0].when and calendar[0].when->GetDate () == Time::Date{Time::Year (2005), Time::June, Time::DayOfMonth (1)}));
+                VerifyTestResult (
+                    (calendar[0].when and calendar[0].when->GetDate () == Time::Date{Time::Year (2005), Time::June, Time::DayOfMonth (1)}));
                 VerifyTestResult (calendar[1].withWhom.firstName == L"Fred");
                 VerifyTestResult (calendar[1].withWhom.lastName == L"Down");
             }
             // must figure out how to get below working
             {
                 vector<Appointment_>                     calendar;
-                ObjectReader::IConsumerDelegateToContext ctx{registry, make_shared<ObjectReader::ReadDownToReader> (registry.MakeContextReader (&calendar))};
+                ObjectReader::IConsumerDelegateToContext ctx{
+                    registry, make_shared<ObjectReader::ReadDownToReader> (registry.MakeContextReader (&calendar))};
                 XML::SAXParse (mkdata_ (), ctx);
                 VerifyTestResult (calendar.size () == 2);
                 VerifyTestResult (calendar[0].withWhom.firstName == L"Jim");
                 VerifyTestResult (calendar[0].withWhom.lastName == L"Smith");
                 VerifyTestResult (*calendar[0].withWhom.middleName == L"Up");
-                VerifyTestResult ((calendar[0].when and calendar[0].when->GetDate () == Time::Date{Time::Year (2005), Time::June, Time::DayOfMonth (1)}));
+                VerifyTestResult (
+                    (calendar[0].when and calendar[0].when->GetDate () == Time::Date{Time::Year (2005), Time::June, Time::DayOfMonth (1)}));
                 VerifyTestResult (calendar[1].withWhom.firstName == L"Fred");
                 VerifyTestResult (calendar[1].withWhom.lastName == L"Down");
             }
@@ -244,23 +235,22 @@ namespace {
         };
         Memory::BLOB mkdata_ ()
         {
-            wstring newDocXML =
-                L"<envelope1>\n"
-                L"  <envelope2>\n"
-                L"        <When>2005-06-01T13:00:00-05:00</When>"
-                L"        <WithWhom>\n"
-                L"                <FirstName>Jim</FirstName>"
-                L"                <LastName>Smith</LastName>"
-                L"        </WithWhom>\n"
-                L"  </envelope2>\n"
-                L"  <envelope2>\n"
-                L"        <When>2005-08-01T13:00:00-05:00</When>"
-                L"        <WithWhom>\n"
-                L"                <FirstName>Fred</FirstName>"
-                L"                <LastName>Down</LastName>"
-                L"        </WithWhom>\n"
-                L"  </envelope2>\n"
-                L"</envelope1>\n";
+            wstring newDocXML = L"<envelope1>\n"
+                                L"  <envelope2>\n"
+                                L"        <When>2005-06-01T13:00:00-05:00</When>"
+                                L"        <WithWhom>\n"
+                                L"                <FirstName>Jim</FirstName>"
+                                L"                <LastName>Smith</LastName>"
+                                L"        </WithWhom>\n"
+                                L"  </envelope2>\n"
+                                L"  <envelope2>\n"
+                                L"        <When>2005-08-01T13:00:00-05:00</When>"
+                                L"        <WithWhom>\n"
+                                L"                <FirstName>Fred</FirstName>"
+                                L"                <LastName>Down</LastName>"
+                                L"        </WithWhom>\n"
+                                L"  </envelope2>\n"
+                                L"</envelope1>\n";
             stringstream tmpStrm;
             WriteTextStream_ (newDocXML, tmpStrm);
             return InputStreamFromStdIStream<byte>::New (tmpStrm).ReadAll ();
@@ -278,10 +268,8 @@ namespace {
             vector<Person_> people;
             {
                 ObjectReader::IConsumerDelegateToContext ctx{
-                    registry,
-                    make_shared<ObjectReader::ReadDownToReader> (
-                        make_shared<ObjectReader::RepeatedElementReader<vector<Person_>>> (&people),
-                        Name (L"envelope2"), Name (L"WithWhom"))};
+                    registry, make_shared<ObjectReader::ReadDownToReader> (make_shared<ObjectReader::RepeatedElementReader<vector<Person_>>> (&people),
+                                                                           Name (L"envelope2"), Name (L"WithWhom"))};
                 XML::SAXParse (mkdata_ (), ctx);
 
                 VerifyTestResult (people.size () == 2);
@@ -295,7 +283,9 @@ namespace {
             {
                 ObjectReader::Registry newRegistry = registry;
                 newRegistry.AddCommonType<vector<Person_>> (Name (L"WithWhom"));
-                ObjectReader::IConsumerDelegateToContext ctx{newRegistry, make_shared<ObjectReader::ReadDownToReader> (newRegistry.MakeContextReader (&people2), Name (L"envelope2"))};
+                ObjectReader::IConsumerDelegateToContext ctx{
+                    newRegistry,
+                    make_shared<ObjectReader::ReadDownToReader> (newRegistry.MakeContextReader (&people2), Name (L"envelope2"))};
                 XML::SAXParse (mkdata_ (), ctx);
                 VerifyTestResult (people2 == people);
             }
@@ -304,7 +294,9 @@ namespace {
             {
                 ObjectReader::Registry newRegistry = registry;
                 newRegistry.AddCommonType<Sequence<Person_>> (Name (L"WithWhom"));
-                ObjectReader::IConsumerDelegateToContext ctx{newRegistry, make_shared<ObjectReader::ReadDownToReader> (newRegistry.MakeContextReader (&people3), Name (L"envelope2"))};
+                ObjectReader::IConsumerDelegateToContext ctx{
+                    newRegistry,
+                    make_shared<ObjectReader::ReadDownToReader> (newRegistry.MakeContextReader (&people3), Name (L"envelope2"))};
                 XML::SAXParse (mkdata_ (), ctx);
                 VerifyTestResult (people3.As<vector<Person_>> () == people);
             }
@@ -325,7 +317,9 @@ namespace {
         {
             wstring newDocXML =
                 L"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-                L"<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:soapenc=\"http://schemas.xmlsoap.org/soap/encoding/\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\r\n"
+                L"<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" "
+                L"xmlns:soapenc=\"http://schemas.xmlsoap.org/soap/encoding/\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" "
+                L"xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\r\n"
                 L"   <soapenv:Body>\n"
                 L"      <RetrievePropertiesResponse xmlns=\"urn:vim25\">\n"
                 L"         <returnval>\n"
@@ -374,10 +368,8 @@ namespace {
 
             vector<ObjectContent>                    objsContent;
             ObjectReader::IConsumerDelegateToContext ctx{
-                mapper,
-                make_shared<ObjectReader::ReadDownToReader> (
-                    make_shared<ObjectReader::RepeatedElementReader<vector<ObjectContent>>> (&objsContent),
-                    Name (L"RetrievePropertiesResponse"), Name (L"returnval"))};
+                mapper, make_shared<ObjectReader::ReadDownToReader> (make_shared<ObjectReader::RepeatedElementReader<vector<ObjectContent>>> (&objsContent),
+                                                                     Name (L"RetrievePropertiesResponse"), Name (L"returnval"))};
             XML::SAXParse (mkdata_ (), ctx);
 
             VerifyTestResult (objsContent.size () == 2);
@@ -397,11 +389,10 @@ namespace {
         };
         Memory::BLOB mkdata_ ()
         {
-            wstring newDocXML =
-                L"        <PERSON>\n"
-                L"                <FirstName>Jim</FirstName>"
-                L"                <LastName>Smith</LastName>"
-                L"        </PERSON>\n";
+            wstring newDocXML = L"        <PERSON>\n"
+                                L"                <FirstName>Jim</FirstName>"
+                                L"                <LastName>Smith</LastName>"
+                                L"        </PERSON>\n";
             ;
             stringstream tmpStrm;
             WriteTextStream_ (newDocXML, tmpStrm);
@@ -415,16 +406,13 @@ namespace {
                 {Name{L"FirstName"}, StructFieldMetaInfo{&Person_::firstName}},
                 {Name{L"LastName"}, StructFieldMetaInfo{&Person_::lastName}},
             });
-            Person_                                  p;
+            Person_ p;
             ObjectReader::IConsumerDelegateToContext tmp{mapper, make_shared<ObjectReader::ReadDownToReader> (mapper.MakeContextReader (&p))};
             XML::SAXParse (mkdata_ (), tmp);
             VerifyTestResult (p.firstName == L"Jim");
             VerifyTestResult (p.lastName == L"Smith");
         }
-        void DoTests ()
-        {
-            DoTest1 ();
-        }
+        void DoTests () { DoTest1 (); }
     }
 }
 
@@ -450,30 +438,29 @@ namespace {
         };
         Memory::BLOB mkdata_ ()
         {
-            wstring newDocXML =
-                L"<envelope1>\n"
-                L"        <person>\n"
-                L"                <FirstName>Jim</FirstName>"
-                L"                <LastName>Smith</LastName>"
-                L"                <Gender>Male</Gender>"
-                L"        </person>\n"
-                L"        <person>\n"
-                L"                <FirstName>Fred</FirstName>"
-                L"                <LastName>Down</LastName>"
-                L"        </person>\n"
-                L"        <address>\n"
-                L"                <city>Boston</city>"
-                L"                <state>MA</state>"
-                L"        </address>\n"
-                L"        <address>\n"
-                L"                <city>New York</city>"
-                L"                <state>NY</state>"
-                L"        </address>\n"
-                L"        <address>\n"
-                L"                <city>Albany</city>"
-                L"                <state>NY</state>"
-                L"        </address>\n"
-                L"</envelope1>\n";
+            wstring newDocXML = L"<envelope1>\n"
+                                L"        <person>\n"
+                                L"                <FirstName>Jim</FirstName>"
+                                L"                <LastName>Smith</LastName>"
+                                L"                <Gender>Male</Gender>"
+                                L"        </person>\n"
+                                L"        <person>\n"
+                                L"                <FirstName>Fred</FirstName>"
+                                L"                <LastName>Down</LastName>"
+                                L"        </person>\n"
+                                L"        <address>\n"
+                                L"                <city>Boston</city>"
+                                L"                <state>MA</state>"
+                                L"        </address>\n"
+                                L"        <address>\n"
+                                L"                <city>New York</city>"
+                                L"                <state>NY</state>"
+                                L"        </address>\n"
+                                L"        <address>\n"
+                                L"                <city>Albany</city>"
+                                L"                <state>NY</state>"
+                                L"        </address>\n"
+                                L"</envelope1>\n";
             stringstream tmpStrm;
             WriteTextStream_ (newDocXML, tmpStrm);
             return InputStreamFromStdIStream<byte>::New (tmpStrm).ReadAll ();
@@ -507,7 +494,8 @@ namespace {
 
             Data_ data;
             {
-                ObjectReader::IConsumerDelegateToContext ctx{registry, make_shared<ObjectReader::ReadDownToReader> (registry.MakeContextReader (&data))};
+                ObjectReader::IConsumerDelegateToContext ctx{registry,
+                                                             make_shared<ObjectReader::ReadDownToReader> (registry.MakeContextReader (&data))};
                 XML::SAXParse (mkdata_ (), ctx);
                 VerifyTestResult (data.people.size () == 2);
                 VerifyTestResult (data.people[0].firstName == L"Jim");
@@ -557,7 +545,19 @@ namespace {
         Memory::BLOB mkdata_ ()
         {
             wstring newDocXML =
-                L"<SOAP-ENV:Envelope xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:SOAP-ENC=\"http://schemas.xmlsoap.org/soap/encoding/\" xmlns:blk201505=\"http://tempuri.org/blk201505.xsd\" xmlns:blk201605=\"http://www.blockeng.com/Schemas/2016-05/BLKQCL/\" xmlns:blk2016052=\"http://www.blockeng.com/Schemas/2016-05/BLKQCL/SOAP-IConfiguration\" xmlns:blk2016053=\"http://www.blockeng.com/Schemas/2016-05/BLKQCL/SOAP-ILaserOperation\" xmlns:blk2016054=\"http://www.blockeng.com/Schemas/2016-05/BLKQCL/SOAP-IDeviceManagement\" xmlns:blk2016055=\"http://www.blockeng.com/Schemas/2016-05/BLKQCL/SOAP-IManufacturing\" xmlns:blk2016056=\"http://www.blockeng.com/Schemas/2016-05/BLKQCL/SOAP-ILowLevelHardwareAccess\" xmlns:blk2016057=\"http://www.blockeng.com/Schemas/2016-05/BLKQCL/SOAP-IBasicPersistence\" xmlns:blk2016058=\"http://www.blockeng.com/Schemas/2016-05/BLKQCL/SOAP-IScanPersistence\" xmlns:ns1=\"http://www.blockeng.com/Schemas/2015-05/BLKQCL-Common/\" xmlns:ns2=\"http://www.blockeng.com/Schemas/2016-05/BLKQCL-App/\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\n"
+                L"<SOAP-ENV:Envelope xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\" "
+                L"xmlns:SOAP-ENC=\"http://schemas.xmlsoap.org/soap/encoding/\" xmlns:blk201505=\"http://tempuri.org/blk201505.xsd\" "
+                L"xmlns:blk201605=\"http://www.blockeng.com/Schemas/2016-05/BLKQCL/\" "
+                L"xmlns:blk2016052=\"http://www.blockeng.com/Schemas/2016-05/BLKQCL/SOAP-IConfiguration\" "
+                L"xmlns:blk2016053=\"http://www.blockeng.com/Schemas/2016-05/BLKQCL/SOAP-ILaserOperation\" "
+                L"xmlns:blk2016054=\"http://www.blockeng.com/Schemas/2016-05/BLKQCL/SOAP-IDeviceManagement\" "
+                L"xmlns:blk2016055=\"http://www.blockeng.com/Schemas/2016-05/BLKQCL/SOAP-IManufacturing\" "
+                L"xmlns:blk2016056=\"http://www.blockeng.com/Schemas/2016-05/BLKQCL/SOAP-ILowLevelHardwareAccess\" "
+                L"xmlns:blk2016057=\"http://www.blockeng.com/Schemas/2016-05/BLKQCL/SOAP-IBasicPersistence\" "
+                L"xmlns:blk2016058=\"http://www.blockeng.com/Schemas/2016-05/BLKQCL/SOAP-IScanPersistence\" "
+                L"xmlns:ns1=\"http://www.blockeng.com/Schemas/2015-05/BLKQCL-Common/\" "
+                L"xmlns:ns2=\"http://www.blockeng.com/Schemas/2016-05/BLKQCL-App/\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" "
+                L"xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\n"
                 L"   <SOAP-ENV:Header>\n"
                 L"      <blk201505:timestamp>8557.8791092709998</blk201505:timestamp>\n"
                 L"   </SOAP-ENV:Header>\n"
@@ -608,8 +608,7 @@ namespace {
             {
                 using namespace ObjectReader;
                 DISABLE_COMPILER_MSC_WARNING_START (4573)
-                static const ReaderFromVoidStarFactory sEltReader_ =
-                    [] () -> ReaderFromVoidStarFactory {
+                static const ReaderFromVoidStarFactory sEltReader_ = [] () -> ReaderFromVoidStarFactory {
 #if qCompilerAndStdLib_using_in_template_invoke_other_template_Buggy
                     typedef KeyValuePair<TunerNumberType_, TARGET_TYPE> KVPType_;
 #else
@@ -660,7 +659,8 @@ namespace {
 
             SensorDataType_ data;
             {
-                ObjectReader::IConsumerDelegateToContext consumerCallback{registry, make_shared<ObjectReader::ReadDownToReader> (registry.MakeContextReader (&data), Name{L"Sensors"})};
+                ObjectReader::IConsumerDelegateToContext consumerCallback{
+                    registry, make_shared<ObjectReader::ReadDownToReader> (registry.MakeContextReader (&data), Name{L"Sensors"})};
                 //consumerCallback.fContext.fTraceThisReader = true;
                 XML::SAXParse (mkdata_ (), consumerCallback);
                 DbgTrace (L"LaserTemperatures=%s", Characters::ToString (data.LaserTemperatures).c_str ());
@@ -676,7 +676,8 @@ namespace {
                 VerifyTestResult (Math::NearlyEquals (*data.LaserCurrents.Lookup (TunerNumberType_::eT1), 0.86871794871794872));
                 VerifyTestResult ((data.MirrorTemperatures.Keys () == Set<TunerNumberType_>{TunerNumberType_::eT2}));
                 VerifyTestResult (Math::NearlyEquals (*data.MirrorTemperatures.Lookup (TunerNumberType_::eT2), 0.86115019791435543));
-                VerifyTestResult ((data.TECPowerConsumptionStats->TunerTECCurrent.Keys () == Set<TunerNumberType_>{TunerNumberType_::eT1, TunerNumberType_::eT2, TunerNumberType_::eT3, TunerNumberType_::eT4}));
+                VerifyTestResult ((data.TECPowerConsumptionStats->TunerTECCurrent.Keys () ==
+                                   Set<TunerNumberType_>{TunerNumberType_::eT1, TunerNumberType_::eT2, TunerNumberType_::eT3, TunerNumberType_::eT4}));
                 VerifyTestResult (Math::NearlyEquals (*data.ExternalTemperature1, 0.0));
             }
         }
@@ -703,7 +704,19 @@ namespace {
         Memory::BLOB mkdata_ ()
         {
             wstring newDocXML =
-                L"<SOAP-ENV:Envelope xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:SOAP-ENC=\"http://schemas.xmlsoap.org/soap/encoding/\" xmlns:blk201505=\"http://tempuri.org/blk201505.xsd\" xmlns:blk201605=\"http://www.blockeng.com/Schemas/2016-05/BLKQCL/\" xmlns:blk2016052=\"http://www.blockeng.com/Schemas/2016-05/BLKQCL/SOAP-IConfiguration\" xmlns:blk2016053=\"http://www.blockeng.com/Schemas/2016-05/BLKQCL/SOAP-ILaserOperation\" xmlns:blk2016054=\"http://www.blockeng.com/Schemas/2016-05/BLKQCL/SOAP-IDeviceManagement\" xmlns:blk2016055=\"http://www.blockeng.com/Schemas/2016-05/BLKQCL/SOAP-IManufacturing\" xmlns:blk2016056=\"http://www.blockeng.com/Schemas/2016-05/BLKQCL/SOAP-ILowLevelHardwareAccess\" xmlns:blk2016057=\"http://www.blockeng.com/Schemas/2016-05/BLKQCL/SOAP-IBasicPersistence\" xmlns:blk2016058=\"http://www.blockeng.com/Schemas/2016-05/BLKQCL/SOAP-IScanPersistence\" xmlns:ns1=\"http://www.blockeng.com/Schemas/2015-05/BLKQCL-Common/\" xmlns:ns2=\"http://www.blockeng.com/Schemas/2016-05/BLKQCL-App/\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\n"
+                L"<SOAP-ENV:Envelope xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\" "
+                L"xmlns:SOAP-ENC=\"http://schemas.xmlsoap.org/soap/encoding/\" xmlns:blk201505=\"http://tempuri.org/blk201505.xsd\" "
+                L"xmlns:blk201605=\"http://www.blockeng.com/Schemas/2016-05/BLKQCL/\" "
+                L"xmlns:blk2016052=\"http://www.blockeng.com/Schemas/2016-05/BLKQCL/SOAP-IConfiguration\" "
+                L"xmlns:blk2016053=\"http://www.blockeng.com/Schemas/2016-05/BLKQCL/SOAP-ILaserOperation\" "
+                L"xmlns:blk2016054=\"http://www.blockeng.com/Schemas/2016-05/BLKQCL/SOAP-IDeviceManagement\" "
+                L"xmlns:blk2016055=\"http://www.blockeng.com/Schemas/2016-05/BLKQCL/SOAP-IManufacturing\" "
+                L"xmlns:blk2016056=\"http://www.blockeng.com/Schemas/2016-05/BLKQCL/SOAP-ILowLevelHardwareAccess\" "
+                L"xmlns:blk2016057=\"http://www.blockeng.com/Schemas/2016-05/BLKQCL/SOAP-IBasicPersistence\" "
+                L"xmlns:blk2016058=\"http://www.blockeng.com/Schemas/2016-05/BLKQCL/SOAP-IScanPersistence\" "
+                L"xmlns:ns1=\"http://www.blockeng.com/Schemas/2015-05/BLKQCL-Common/\" "
+                L"xmlns:ns2=\"http://www.blockeng.com/Schemas/2016-05/BLKQCL-App/\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" "
+                L"xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\n"
                 L"   <SOAP-ENV:Header>\n"
                 L"      <blk201505:timestamp>8557.8791092709998</blk201505:timestamp>\n"
                 L"   </SOAP-ENV:Header>\n"
@@ -727,7 +740,9 @@ namespace {
                 // Example matching ANY sub-element
                 Set<AlarmType_> data;
                 {
-                    ObjectReader::IConsumerDelegateToContext consumerCallback{registry, make_shared<ObjectReader::ReadDownToReader> (registry.MakeContextReader (&data), Name{L"GetAlarmsResponse"}, Name{L"Alarm"})};
+                    ObjectReader::IConsumerDelegateToContext consumerCallback{
+                        registry, make_shared<ObjectReader::ReadDownToReader> (registry.MakeContextReader (&data),
+                                                                               Name{L"GetAlarmsResponse"}, Name{L"Alarm"})};
                     XML::SAXParse (mkdata_ (), consumerCallback);
                     DbgTrace (L"Alarms=%s", Characters::ToString (data).c_str ());
                 }
@@ -739,7 +754,8 @@ namespace {
                 // Example matching THE RIGHT sub-element
                 Set<AlarmType_> data;
                 {
-                    ObjectReader::IConsumerDelegateToContext consumerCallback{registry, make_shared<ObjectReader::ReadDownToReader> (registry.MakeContextReader (&data), Name{L"GetAlarmsResponse"}, kAlarmName_)};
+                    ObjectReader::IConsumerDelegateToContext consumerCallback{
+                        registry, make_shared<ObjectReader::ReadDownToReader> (registry.MakeContextReader (&data), Name{L"GetAlarmsResponse"}, kAlarmName_)};
                     XML::SAXParse (mkdata_ (), consumerCallback);
                     DbgTrace (L"Alarms=%s", Characters::ToString (data).c_str ());
                 }
@@ -751,7 +767,9 @@ namespace {
                 // Example matching THE WRONG sub-element
                 Set<AlarmType_> data;
                 {
-                    ObjectReader::IConsumerDelegateToContext consumerCallback{registry, make_shared<ObjectReader::ReadDownToReader> (registry.MakeContextReader (&data), Name{L"GetAlarmsResponse"}, kWrongAlarmName_)};
+                    ObjectReader::IConsumerDelegateToContext consumerCallback{
+                        registry, make_shared<ObjectReader::ReadDownToReader> (registry.MakeContextReader (&data),
+                                                                               Name{L"GetAlarmsResponse"}, kWrongAlarmName_)};
                     XML::SAXParse (mkdata_ (), consumerCallback);
                     DbgTrace (L"Alarms=%s", Characters::ToString (data).c_str ());
                 }
@@ -780,7 +798,19 @@ namespace {
         Memory::BLOB mkdata_ ()
         {
             wstring newDocXML =
-                L"<SOAP-ENV:Envelope xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:SOAP-ENC=\"http://schemas.xmlsoap.org/soap/encoding/\" xmlns:blk201505=\"http://tempuri.org/blk201505.xsd\" xmlns:blk201605=\"http://www.blockeng.com/Schemas/2016-05/BLKQCL/\" xmlns:blk2016052=\"http://www.blockeng.com/Schemas/2016-05/BLKQCL/SOAP-IConfiguration\" xmlns:blk2016053=\"http://www.blockeng.com/Schemas/2016-05/BLKQCL/SOAP-ILaserOperation\" xmlns:blk2016054=\"http://www.blockeng.com/Schemas/2016-05/BLKQCL/SOAP-IDeviceManagement\" xmlns:blk2016055=\"http://www.blockeng.com/Schemas/2016-05/BLKQCL/SOAP-IManufacturing\" xmlns:blk2016056=\"http://www.blockeng.com/Schemas/2016-05/BLKQCL/SOAP-ILowLevelHardwareAccess\" xmlns:blk2016057=\"http://www.blockeng.com/Schemas/2016-05/BLKQCL/SOAP-IBasicPersistence\" xmlns:blk2016058=\"http://www.blockeng.com/Schemas/2016-05/BLKQCL/SOAP-IScanPersistence\" xmlns:ns1=\"http://www.blockeng.com/Schemas/2015-05/BLKQCL-Common/\" xmlns:ns2=\"http://www.blockeng.com/Schemas/2016-05/BLKQCL-App/\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\n"
+                L"<SOAP-ENV:Envelope xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\" "
+                L"xmlns:SOAP-ENC=\"http://schemas.xmlsoap.org/soap/encoding/\" xmlns:blk201505=\"http://tempuri.org/blk201505.xsd\" "
+                L"xmlns:blk201605=\"http://www.blockeng.com/Schemas/2016-05/BLKQCL/\" "
+                L"xmlns:blk2016052=\"http://www.blockeng.com/Schemas/2016-05/BLKQCL/SOAP-IConfiguration\" "
+                L"xmlns:blk2016053=\"http://www.blockeng.com/Schemas/2016-05/BLKQCL/SOAP-ILaserOperation\" "
+                L"xmlns:blk2016054=\"http://www.blockeng.com/Schemas/2016-05/BLKQCL/SOAP-IDeviceManagement\" "
+                L"xmlns:blk2016055=\"http://www.blockeng.com/Schemas/2016-05/BLKQCL/SOAP-IManufacturing\" "
+                L"xmlns:blk2016056=\"http://www.blockeng.com/Schemas/2016-05/BLKQCL/SOAP-ILowLevelHardwareAccess\" "
+                L"xmlns:blk2016057=\"http://www.blockeng.com/Schemas/2016-05/BLKQCL/SOAP-IBasicPersistence\" "
+                L"xmlns:blk2016058=\"http://www.blockeng.com/Schemas/2016-05/BLKQCL/SOAP-IScanPersistence\" "
+                L"xmlns:ns1=\"http://www.blockeng.com/Schemas/2015-05/BLKQCL-Common/\" "
+                L"xmlns:ns2=\"http://www.blockeng.com/Schemas/2016-05/BLKQCL-App/\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" "
+                L"xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\n"
                 L"   <SOAP-ENV:Header>\n"
                 L"      <blk201505:timestamp>8557.8791092709998</blk201505:timestamp>\n"
                 L"   </SOAP-ENV:Header>\n"
@@ -799,7 +829,8 @@ namespace {
                 L"                              <blk201605:AuxData>\n"
                 L"                                      <blk201605:KeyValuePair Value=\"1000\" Key=\"Cell-Pressure\"/>\n"
                 L"                                      <blk201605:KeyValuePair Value=\"0\" Key=\"Cell-Temperature\"/>\n"
-                L"                                      <blk201605:KeyValuePair Value=\"B1E56F82-B217-40D3-A24D-FAC491EDCDE8\" Key=\"EngineId\"/>\n"
+                L"                                      <blk201605:KeyValuePair Value=\"B1E56F82-B217-40D3-A24D-FAC491EDCDE8\" "
+                L"Key=\"EngineId\"/>\n"
                 L"                              </blk201605:AuxData>\n"
                 L"                      </blk201605:Scan>\n"
                 L"              </blk201605:ScanPersistenceGetScanDetailsResponse>\n"
@@ -821,18 +852,16 @@ namespace {
                 {
                     using namespace ObjectReader;
                     DISABLE_COMPILER_MSC_WARNING_START (4573)
-                    static const ReaderFromVoidStarFactory sEltReader_ =
-                        [] () -> ReaderFromVoidStarFactory {
+                    static const ReaderFromVoidStarFactory sEltReader_ = [] () -> ReaderFromVoidStarFactory {
 #if qCompilerAndStdLib_using_in_template_invoke_other_template_Buggy
                         typedef SpectrumType_::value_type KVPType_;
 #else
                         using KVPType_ = SpectrumType_::value_type;
 #endif
-                        return Registry::MakeClassReader<KVPType_> (
-                            initializer_list<StructFieldInfo>{
-                                {Name{L"waveNumber", Name::eAttribute}, StructFieldMetaInfo{&KVPType_::fKey}},
-                                {Name{L"intensity", Name::eAttribute}, StructFieldMetaInfo{&KVPType_::fValue}},
-                            });
+                        return Registry::MakeClassReader<KVPType_> (initializer_list<StructFieldInfo>{
+                            {Name{L"waveNumber", Name::eAttribute}, StructFieldMetaInfo{&KVPType_::fKey}},
+                            {Name{L"intensity", Name::eAttribute}, StructFieldMetaInfo{&KVPType_::fValue}},
+                        });
                     }();
                     DISABLE_COMPILER_MSC_WARNING_END (4573)
                     return make_shared<RepeatedElementReader<SpectrumType_>> (fValuePtr_, sEltReader_);
@@ -851,19 +880,17 @@ namespace {
                 virtual shared_ptr<IElementConsumer> HandleChildStart ([[maybe_unused]] const Name& name) override
                 {
                     using namespace ObjectReader;
-                    static const ReaderFromVoidStarFactory sEltReader_ =
-                        [] () -> ReaderFromVoidStarFactory {
+                    static const ReaderFromVoidStarFactory sEltReader_ = [] () -> ReaderFromVoidStarFactory {
 #if qCompilerAndStdLib_using_in_template_invoke_other_template_Buggy
                         typedef KeyValuePair<String, String> KVPType_;
 #else
                         using KVPType_ = KeyValuePair<String, String>;
 #endif
 
-                        return Registry::MakeClassReader<KVPType_> (
-                            initializer_list<StructFieldInfo>{
-                                {Name{L"Key", Name::eAttribute}, StructFieldMetaInfo{&KVPType_::fKey}},
-                                {Name{L"Value", Name::eAttribute}, StructFieldMetaInfo{&KVPType_::fValue}},
-                            });
+                        return Registry::MakeClassReader<KVPType_> (initializer_list<StructFieldInfo>{
+                            {Name{L"Key", Name::eAttribute}, StructFieldMetaInfo{&KVPType_::fKey}},
+                            {Name{L"Value", Name::eAttribute}, StructFieldMetaInfo{&KVPType_::fValue}},
+                        });
                     }();
                     return make_shared<RepeatedElementReader<Mapping<String, String>>> (fValuePtr_, sEltReader_);
                 }
@@ -896,7 +923,9 @@ namespace {
             });
             PersistentScanDetailsType_ data;
             {
-                ObjectReader::IConsumerDelegateToContext consumerCallback{registry, make_shared<ObjectReader::ReadDownToReader> (registry.MakeContextReader (&data), Name{L"ScanPersistenceGetScanDetailsResponse"}, Name{L"Scan"})};
+                ObjectReader::IConsumerDelegateToContext consumerCallback{
+                    registry, make_shared<ObjectReader::ReadDownToReader> (registry.MakeContextReader (&data),
+                                                                           Name{L"ScanPersistenceGetScanDetailsResponse"}, Name{L"Scan"})};
                 //consumerCallback.fContext.fTraceThisReader = true;
                 XML::SAXParse (mkdata_ (), consumerCallback);
                 DbgTrace (L"ScanID=%s", Characters::ToString (data.ScanID).c_str ());
@@ -913,8 +942,11 @@ namespace {
                 VerifyTestResult (data.ScanStart == DateTime::Parse (L"2016-07-28T20:14:30Z", DateTime::kISO8601Format));
                 VerifyTestResult (data.ScanEnd == DateTime::Parse (L"2016-07-28T20:14:44Z", DateTime::kISO8601Format));
                 VerifyTestResult (not data.ScanLabel.has_value ());
-                VerifyTestResult ((data.RawSpectrum == Mapping<WaveNumberType_, IntensityType_>{pair<WaveNumberType_, IntensityType_>{901.5, 0}, pair<WaveNumberType_, IntensityType_>{902.5, 1}}));
-                VerifyTestResult ((data.AuxData == Mapping<String, String>{pair<String, String>{L"Cell-Pressure", L"1000"}, pair<String, String>{L"Cell-Temperature", L"0"}, pair<String, String>{L"EngineId", L"B1E56F82-B217-40D3-A24D-FAC491EDCDE8"}}));
+                VerifyTestResult ((data.RawSpectrum == Mapping<WaveNumberType_, IntensityType_>{pair<WaveNumberType_, IntensityType_>{901.5, 0},
+                                                                                                pair<WaveNumberType_, IntensityType_>{902.5, 1}}));
+                VerifyTestResult (
+                    (data.AuxData == Mapping<String, String>{pair<String, String>{L"Cell-Pressure", L"1000"}, pair<String, String>{L"Cell-Temperature", L"0"},
+                                                             pair<String, String>{L"EngineId", L"B1E56F82-B217-40D3-A24D-FAC491EDCDE8"}}));
             }
         }
     }
@@ -931,13 +963,12 @@ namespace {
             };
             Memory::BLOB mkdata_ ()
             {
-                wstring newDocXML =
-                    L"<Values>\n"
-                    //L"          <valueMissing></valueMissing>"
-                    L"            <valueExplicitGood>3.0</valueExplicitGood>"
-                    L"            <valueExplicitNAN1>NAN</valueExplicitNAN1>"
-                    L"            <valueExplicitNAN2>NAN</valueExplicitNAN2>"
-                    L"</Values>\n";
+                wstring newDocXML = L"<Values>\n"
+                                    //L"          <valueMissing></valueMissing>"
+                                    L"            <valueExplicitGood>3.0</valueExplicitGood>"
+                                    L"            <valueExplicitNAN1>NAN</valueExplicitNAN1>"
+                                    L"            <valueExplicitNAN2>NAN</valueExplicitNAN2>"
+                                    L"</Values>\n";
                 stringstream tmpStrm;
                 WriteTextStream_ (newDocXML, tmpStrm);
                 return InputStreamFromStdIStream<byte>::New (tmpStrm).ReadAll ();
@@ -958,7 +989,8 @@ namespace {
             {
                 Values_ values{};
                 values.valueMissing = 999;
-                ObjectReader::IConsumerDelegateToContext ctx{registry, make_shared<ObjectReader::ReadDownToReader> (registry.MakeContextReader (&values), Name{L"Values"})};
+                ObjectReader::IConsumerDelegateToContext ctx{
+                    registry, make_shared<ObjectReader::ReadDownToReader> (registry.MakeContextReader (&values), Name{L"Values"})};
                 XML::SAXParse (mkdata_ (), ctx);
                 VerifyTestResult (values.valueMissing == 999);
                 VerifyTestResult (Math::NearlyEquals (values.valueExplicitGood, 3.0));
@@ -1002,7 +1034,19 @@ namespace {
         Memory::BLOB mkdata_ ()
         {
             wstring newDocXML =
-                L"<SOAP-ENV:Envelope xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:SOAP-ENC=\"http://schemas.xmlsoap.org/soap/encoding/\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:ns1=\"http://www.blockeng.com/Schemas/2015-05/BLKQCL-Common/\" xmlns:ns2=\"http://www.blockeng.com/Schemas/2016-05/BLKQCL-App/\" xmlns:blk2017042=\"http://www.blockeng.com/Schemas/2017-04x/BLKQCL/SOAP-IConfiguration\" xmlns:blk2017043=\"http://www.blockeng.com/Schemas/2017-04x/BLKQCL/SOAP-ILaserOperation\" xmlns:blk2017044=\"http://www.blockeng.com/Schemas/2017-04x/BLKQCL/SOAP-IDeviceManagement\" xmlns:blk2017045=\"http://www.blockeng.com/Schemas/2017-04x/BLKQCL/SOAP-IManufacturing\" xmlns:blk2017046=\"http://www.blockeng.com/Schemas/2017-04x/BLKQCL/SOAP-ILowLevelHardwareAccess\" xmlns:blk2017047=\"http://www.blockeng.com/Schemas/2017-04x/BLKQCL/SOAP-IBasicPersistence\" xmlns:blk2017048=\"http://www.blockeng.com/Schemas/2017-04x/BLKQCL/SOAP-IScanPersistence\" xmlns:blk201704=\"http://www.blockeng.com/Schemas/2017-04x/BLKQCL/\" xmlns:blk201505=\"http://tempuri.org/blk201505.xsd\">\n"
+                L"<SOAP-ENV:Envelope xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\" "
+                L"xmlns:SOAP-ENC=\"http://schemas.xmlsoap.org/soap/encoding/\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" "
+                L"xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:ns1=\"http://www.blockeng.com/Schemas/2015-05/BLKQCL-Common/\" "
+                L"xmlns:ns2=\"http://www.blockeng.com/Schemas/2016-05/BLKQCL-App/\" "
+                L"xmlns:blk2017042=\"http://www.blockeng.com/Schemas/2017-04x/BLKQCL/SOAP-IConfiguration\" "
+                L"xmlns:blk2017043=\"http://www.blockeng.com/Schemas/2017-04x/BLKQCL/SOAP-ILaserOperation\" "
+                L"xmlns:blk2017044=\"http://www.blockeng.com/Schemas/2017-04x/BLKQCL/SOAP-IDeviceManagement\" "
+                L"xmlns:blk2017045=\"http://www.blockeng.com/Schemas/2017-04x/BLKQCL/SOAP-IManufacturing\" "
+                L"xmlns:blk2017046=\"http://www.blockeng.com/Schemas/2017-04x/BLKQCL/SOAP-ILowLevelHardwareAccess\" "
+                L"xmlns:blk2017047=\"http://www.blockeng.com/Schemas/2017-04x/BLKQCL/SOAP-IBasicPersistence\" "
+                L"xmlns:blk2017048=\"http://www.blockeng.com/Schemas/2017-04x/BLKQCL/SOAP-IScanPersistence\" "
+                L"xmlns:blk201704=\"http://www.blockeng.com/Schemas/2017-04x/BLKQCL/\" "
+                L"xmlns:blk201505=\"http://tempuri.org/blk201505.xsd\">\n"
                 L"   <SOAP-ENV:Header>\n"
                 L"      <blk201505:timestamp>465.104564455</blk201505:timestamp>\n"
                 L"   </SOAP-ENV:Header>\n"
@@ -1055,13 +1099,20 @@ namespace {
                     static Sequence<MixinEltTraits> mkMixinHelpers_ ()
                     {
                         using KVPType_ = KeyValuePair<TunerNumberType_, PerTunerFactorySettingsType_>;
-                        static const ReaderFromVoidStarFactory kTunerReader_ =
-                            Registry::MakeClassReader<KVPType_> (initializer_list<StructFieldInfo>{
-                                {Name{L"Tuner", Name::eAttribute}, StructFieldMetaInfo{&KVPType_::fKey}},
-                            });
+                        static const ReaderFromVoidStarFactory kTunerReader_ = Registry::MakeClassReader<KVPType_> (initializer_list<StructFieldInfo>{
+                            {Name{L"Tuner", Name::eAttribute}, StructFieldMetaInfo{&KVPType_::fKey}},
+                        });
                         Sequence<MixinEltTraits> tmp;
-                        tmp += MixinEltTraits{kTunerReader_, [] (const Name& name) { return name == Name{L"Tuner", Name::eAttribute}; }, [] (KVPType_* kvp) { return reinterpret_cast<byte*> (&kvp->fKey); }};
-                        tmp += MixinEltTraits{k_PerTunerFactorySettingsType_ReaderFactory_, [] (const Name& name) { return name != Name{L"Tuner", Name::eAttribute}; }, [] (KVPType_* kvp) { return reinterpret_cast<byte*> (&kvp->fValue); }};
+                        tmp += MixinEltTraits{kTunerReader_,
+                                              [] (const Name& name) {
+                                                  return name == Name{L"Tuner", Name::eAttribute};
+                                              },
+                                              [] (KVPType_* kvp) { return reinterpret_cast<byte*> (&kvp->fKey); }};
+                        tmp += MixinEltTraits{k_PerTunerFactorySettingsType_ReaderFactory_,
+                                              [] (const Name& name) {
+                                                  return name != Name{L"Tuner", Name::eAttribute};
+                                              },
+                                              [] (KVPType_* kvp) { return reinterpret_cast<byte*> (&kvp->fValue); }};
                         return tmp;
                     }
                     MyKVPReader_ (KeyValuePair<TunerNumberType_, PerTunerFactorySettingsType_>* v)
@@ -1073,7 +1124,8 @@ namespace {
                         return IElementConsumer::AsFactory<KeyValuePair<TunerNumberType_, PerTunerFactorySettingsType_>, MyKVPReader_> ();
                     }
                 };
-                return make_shared<RepeatedElementReader<Mapping<TunerNumberType_, PerTunerFactorySettingsType_>>> (fValuePtr_, MyKVPReader_::AsFactory ());
+                return make_shared<RepeatedElementReader<Mapping<TunerNumberType_, PerTunerFactorySettingsType_>>> (fValuePtr_,
+                                                                                                                    MyKVPReader_::AsFactory ());
             }
             static ObjectReader::ReaderFromVoidStarFactory AsFactory ()
             {
@@ -1100,7 +1152,9 @@ namespace {
 
             FactorySettingsType_ data;
             {
-                ObjectReader::IConsumerDelegateToContext consumerCallback{registry, make_shared<ObjectReader::ReadDownToReader> (registry.MakeContextReader (&data), Name{L"GetFactorySettingsResponse"})};
+                ObjectReader::IConsumerDelegateToContext consumerCallback{
+                    registry,
+                    make_shared<ObjectReader::ReadDownToReader> (registry.MakeContextReader (&data), Name{L"GetFactorySettingsResponse"})};
                 //consumerCallback.fContext.fTraceThisReader = true;
                 XML::SAXParse (mkdata_ (), consumerCallback);
                 DbgTrace (L"Tuners=%s", Characters::ToString (data.Tuners).c_str ());
@@ -1119,13 +1173,14 @@ namespace Stroika::Foundation::Configuration {
 #if !qCompilerAndStdLib_template_specialization_internalErrorWithSpecializationSignifier_Buggy
     template <>
 #endif
-    constexpr EnumNames<T11_SAXObjectReader_BLKQCL_GetFactorySettings_Tuners_::TunerNumberType_> DefaultNames<T11_SAXObjectReader_BLKQCL_GetFactorySettings_Tuners_::TunerNumberType_>::k{
-        EnumNames<T11_SAXObjectReader_BLKQCL_GetFactorySettings_Tuners_::TunerNumberType_>::BasicArrayInitializer{{
-            {T11_SAXObjectReader_BLKQCL_GetFactorySettings_Tuners_::TunerNumberType_::eT1, L"eT1"},
-            {T11_SAXObjectReader_BLKQCL_GetFactorySettings_Tuners_::TunerNumberType_::eT2, L"eT2"},
-            {T11_SAXObjectReader_BLKQCL_GetFactorySettings_Tuners_::TunerNumberType_::eT3, L"eT3"},
-            {T11_SAXObjectReader_BLKQCL_GetFactorySettings_Tuners_::TunerNumberType_::eT4, L"eT4"},
-        }}};
+    constexpr EnumNames<T11_SAXObjectReader_BLKQCL_GetFactorySettings_Tuners_::TunerNumberType_>
+        DefaultNames<T11_SAXObjectReader_BLKQCL_GetFactorySettings_Tuners_::TunerNumberType_>::k{
+            EnumNames<T11_SAXObjectReader_BLKQCL_GetFactorySettings_Tuners_::TunerNumberType_>::BasicArrayInitializer{{
+                {T11_SAXObjectReader_BLKQCL_GetFactorySettings_Tuners_::TunerNumberType_::eT1, L"eT1"},
+                {T11_SAXObjectReader_BLKQCL_GetFactorySettings_Tuners_::TunerNumberType_::eT2, L"eT2"},
+                {T11_SAXObjectReader_BLKQCL_GetFactorySettings_Tuners_::TunerNumberType_::eT3, L"eT3"},
+                {T11_SAXObjectReader_BLKQCL_GetFactorySettings_Tuners_::TunerNumberType_::eT4, L"eT4"},
+            }}};
     DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wunused-const-variable\"")
 }
 
@@ -1139,10 +1194,9 @@ namespace {
             };
             Memory::BLOB mkdata_ ()
             {
-                wstring newDocXML =
-                    L"<Values>\n"
-                    L"            <r LowerBound=\"3.0\" UpperBound=\"6.0\"/>"
-                    L"</Values>\n";
+                wstring newDocXML = L"<Values>\n"
+                                    L"            <r LowerBound=\"3.0\" UpperBound=\"6.0\"/>"
+                                    L"</Values>\n";
                 stringstream tmpStrm;
                 WriteTextStream_ (newDocXML, tmpStrm);
                 return InputStreamFromStdIStream<byte>::New (tmpStrm).ReadAll ();
@@ -1160,7 +1214,8 @@ namespace {
             });
             {
                 Values_                                  values{};
-                ObjectReader::IConsumerDelegateToContext ctx{registry, make_shared<ObjectReader::ReadDownToReader> (registry.MakeContextReader (&values), Name{L"Values"})};
+                ObjectReader::IConsumerDelegateToContext ctx{
+                    registry, make_shared<ObjectReader::ReadDownToReader> (registry.MakeContextReader (&values), Name{L"Values"})};
                 XML::SAXParse (mkdata_ (), ctx);
                 VerifyTestResult (Math::NearlyEquals (values.r.GetLowerBound (), 3.0));
                 VerifyTestResult (Math::NearlyEquals (values.r.GetUpperBound (), 6.0));
@@ -1187,19 +1242,18 @@ namespace {
         };
         Memory::BLOB mkdata_ ()
         {
-            wstring newDocXML =
-                L"<envelope1>\n"
-                L"        <person>\n"
-                L"                <FirstName>Jim</FirstName>"
-                L"                <LastName>Smith</LastName>"
-                L"                <Gender>Male</Gender>"
-                L"        </person>\n"
-                L"        <person>\n"
-                L"                <FirstName>Fred</FirstName>"
-                L"                <LastName>Down</LastName>"
-                L"                <Gender>Female</Gender>"
-                L"        </person>\n"
-                L"</envelope1>\n";
+            wstring newDocXML = L"<envelope1>\n"
+                                L"        <person>\n"
+                                L"                <FirstName>Jim</FirstName>"
+                                L"                <LastName>Smith</LastName>"
+                                L"                <Gender>Male</Gender>"
+                                L"        </person>\n"
+                                L"        <person>\n"
+                                L"                <FirstName>Fred</FirstName>"
+                                L"                <LastName>Down</LastName>"
+                                L"                <Gender>Female</Gender>"
+                                L"        </person>\n"
+                                L"</envelope1>\n";
             stringstream tmpStrm;
             WriteTextStream_ (newDocXML, tmpStrm);
             return InputStreamFromStdIStream<byte>::New (tmpStrm).ReadAll ();
@@ -1208,10 +1262,11 @@ namespace {
         {
             ObjectReader::Registry registry;
             registry.AddCommonType<String> ();
-            static const auto kGenderType_Reader_ = ObjectReader::Registry::MakeCommonReader_NamedEnumerations<GenderType_> (Containers::Bijection<GenderType_, String>{
-                pair<GenderType_, String>{GenderType_::Male, L"Male"},
-                pair<GenderType_, String>{GenderType_::Female, L"Female"},
-            });
+            static const auto kGenderType_Reader_ =
+                ObjectReader::Registry::MakeCommonReader_NamedEnumerations<GenderType_> (Containers::Bijection<GenderType_, String>{
+                    pair<GenderType_, String>{GenderType_::Male, L"Male"},
+                    pair<GenderType_, String>{GenderType_::Female, L"Female"},
+                });
             registry.AddCommonReader_Class<Person_> (initializer_list<ObjectReader::StructFieldInfo>{
                 {Name{L"FirstName"}, StructFieldMetaInfo{&Person_::firstName}},
                 {Name{L"LastName"}, StructFieldMetaInfo{&Person_::lastName}},
@@ -1225,7 +1280,8 @@ namespace {
 
             Data_ data;
             {
-                ObjectReader::IConsumerDelegateToContext ctx{registry, make_shared<ObjectReader::ReadDownToReader> (registry.MakeContextReader (&data))};
+                ObjectReader::IConsumerDelegateToContext ctx{registry,
+                                                             make_shared<ObjectReader::ReadDownToReader> (registry.MakeContextReader (&data))};
                 XML::SAXParse (mkdata_ (), ctx);
                 VerifyTestResult (data.people.size () == 2);
                 VerifyTestResult (data.people[0].firstName == L"Jim");
@@ -1257,19 +1313,18 @@ namespace T14_SAXObjectReader_CustomSimpleType_ {
     };
     Memory::BLOB mkdata_ ()
     {
-        wstring newDocXML =
-            L"<envelope1>\n"
-            L"        <person>\n"
-            L"                <FirstName>Jim</FirstName>"
-            L"                <LastName>Smith</LastName>"
-            L"                <Gender>Male</Gender>"
-            L"        </person>\n"
-            L"        <person>\n"
-            L"                <FirstName>Fred</FirstName>"
-            L"                <LastName>Down</LastName>"
-            L"                <Gender>Female</Gender>"
-            L"        </person>\n"
-            L"</envelope1>\n";
+        wstring newDocXML = L"<envelope1>\n"
+                            L"        <person>\n"
+                            L"                <FirstName>Jim</FirstName>"
+                            L"                <LastName>Smith</LastName>"
+                            L"                <Gender>Male</Gender>"
+                            L"        </person>\n"
+                            L"        <person>\n"
+                            L"                <FirstName>Fred</FirstName>"
+                            L"                <LastName>Down</LastName>"
+                            L"                <Gender>Female</Gender>"
+                            L"        </person>\n"
+                            L"</envelope1>\n";
         stringstream tmpStrm;
         WriteTextStream_ (newDocXML, tmpStrm);
         return InputStreamFromStdIStream<byte>::New (tmpStrm).ReadAll ();
@@ -1278,7 +1333,11 @@ namespace T14_SAXObjectReader_CustomSimpleType_ {
     {
         ObjectReader::Registry registry;
         registry.AddCommonType<String> ();
-        registry.AddCommonReader_Simple<GenderType_> ([] (String s) -> GenderType_ { GenderType_ result; result.fRep = s; return result; });
+        registry.AddCommonReader_Simple<GenderType_> ([] (String s) -> GenderType_ {
+            GenderType_ result;
+            result.fRep = s;
+            return result;
+        });
         registry.AddCommonReader_Class<Person_> (initializer_list<ObjectReader::StructFieldInfo>{
             {Name{L"FirstName"}, StructFieldMetaInfo{&Person_::firstName}},
             {Name{L"LastName"}, StructFieldMetaInfo{&Person_::lastName}},

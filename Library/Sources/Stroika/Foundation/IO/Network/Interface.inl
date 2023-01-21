@@ -21,10 +21,7 @@ namespace Stroika::Foundation::IO::Network {
      *  On unix, its the interface name, e.g. eth0, eth1, etc.
      *  On Windows, this is concept doesn't really exist.
      */
-    inline String Interface::GetInterfaceName () const
-    {
-        return fInternalInterfaceID;
-    }
+    inline String Interface::GetInterfaceName () const { return fInternalInterfaceID; }
 #endif
 
 }
@@ -109,15 +106,14 @@ namespace Stroika::Foundation::Configuration {
 #if !qCompilerAndStdLib_template_specialization_internalErrorWithSpecializationSignifier_Buggy
     template <>
 #endif
-    constexpr EnumNames<IO::Network::Interface::Type> DefaultNames<IO::Network::Interface::Type>::k{
-        EnumNames<IO::Network::Interface::Type>::BasicArrayInitializer{{
-            {IO::Network::Interface::Type::eLoopback, L"Loopback"},
-            {IO::Network::Interface::Type::eWiredEthernet, L"Wired-Ethernet"},
-            {IO::Network::Interface::Type::eWIFI, L"WIFI"},
-            {IO::Network::Interface::Type::eTunnel, L"Tunnel"},
-            {IO::Network::Interface::Type::eDeviceVirtualInternalNetwork, L"Device-Virtual-Internal-Network"},
-            {IO::Network::Interface::Type::eOther, L"Other"},
-        }}};
+    constexpr EnumNames<IO::Network::Interface::Type> DefaultNames<IO::Network::Interface::Type>::k{EnumNames<IO::Network::Interface::Type>::BasicArrayInitializer{{
+        {IO::Network::Interface::Type::eLoopback, L"Loopback"},
+        {IO::Network::Interface::Type::eWiredEthernet, L"Wired-Ethernet"},
+        {IO::Network::Interface::Type::eWIFI, L"WIFI"},
+        {IO::Network::Interface::Type::eTunnel, L"Tunnel"},
+        {IO::Network::Interface::Type::eDeviceVirtualInternalNetwork, L"Device-Virtual-Internal-Network"},
+        {IO::Network::Interface::Type::eOther, L"Other"},
+    }}};
 
 }
 

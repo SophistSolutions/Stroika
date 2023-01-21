@@ -184,10 +184,7 @@ Cookie Cookie::Parse (Streams::InputStream<Character>::Ptr src)
     return Cookie{key, value, attributes};
 }
 
-Cookie Cookie::Parse (const String& src)
-{
-    return Parse (TextReader::New (src));
-}
+Cookie Cookie::Parse (const String& src) { return Parse (TextReader::New (src)); }
 
 /*
  ********************************************************************************
@@ -195,24 +192,22 @@ Cookie Cookie::Parse (const String& src)
  ********************************************************************************
  */
 CookieList::CookieList ()
-    : cookies{
-          [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> Mapping<String, String> {
-              const CookieList* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &CookieList::cookies);
-              return thisObj->fCookieDetails_.As<Mapping<String, String>> ();
-          },
-          [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, const Mapping<String, String>& basicCookies) {
-              CookieList* thisObj      = qStroika_Foundation_Common_Property_OuterObjPtr (property, &CookieList::cookies);
-              thisObj->fCookieDetails_ = basicCookies.Map<Cookie> ([] (const auto& i) { return Cookie{i.fKey, i.fValue}; });
-          }}
-    , cookieDetails{
-          [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> Collection<Cookie> {
-              const CookieList* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &CookieList::cookieDetails);
-              return thisObj->fCookieDetails_;
-          },
-          [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, const Collection<Cookie>& cookies) {
-              CookieList* thisObj      = qStroika_Foundation_Common_Property_OuterObjPtr (property, &CookieList::cookieDetails);
-              thisObj->fCookieDetails_ = cookies;
-          }}
+    : cookies{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> Mapping<String, String> {
+                  const CookieList* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &CookieList::cookies);
+                  return thisObj->fCookieDetails_.As<Mapping<String, String>> ();
+              },
+              [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, const Mapping<String, String>& basicCookies) {
+                  CookieList* thisObj      = qStroika_Foundation_Common_Property_OuterObjPtr (property, &CookieList::cookies);
+                  thisObj->fCookieDetails_ = basicCookies.Map<Cookie> ([] (const auto& i) { return Cookie{i.fKey, i.fValue}; });
+              }}
+    , cookieDetails{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> Collection<Cookie> {
+                        const CookieList* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &CookieList::cookieDetails);
+                        return thisObj->fCookieDetails_;
+                    },
+                    [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] auto* property, const Collection<Cookie>& cookies) {
+                        CookieList* thisObj      = qStroika_Foundation_Common_Property_OuterObjPtr (property, &CookieList::cookieDetails);
+                        thisObj->fCookieDetails_ = cookies;
+                    }}
 {
 }
 

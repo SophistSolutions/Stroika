@@ -187,7 +187,8 @@ namespace Stroika::Foundation::Common {
     template <typename FUNCTOR>
     constexpr inline Common::ComparisonRelationDeclaration<ComparisonRelationType::eEquals, decay_t<FUNCTOR>> DeclareEqualsComparer (FUNCTOR&& f)
     {
-        static_assert (IsPotentiallyComparerRelation<decay_t<FUNCTOR>, typename Configuration::function_traits<decay_t<FUNCTOR>>::template arg<0>::type> ());
+        static_assert (
+            IsPotentiallyComparerRelation<decay_t<FUNCTOR>, typename Configuration::function_traits<decay_t<FUNCTOR>>::template arg<0>::type> ());
         return Common::ComparisonRelationDeclaration<ComparisonRelationType::eEquals, decay_t<FUNCTOR>>{std::forward<FUNCTOR> (f)};
     }
 
@@ -199,7 +200,8 @@ namespace Stroika::Foundation::Common {
     template <typename FUNCTOR>
     constexpr inline Common::ComparisonRelationDeclaration<ComparisonRelationType::eStrictInOrder, decay_t<FUNCTOR>> DeclareInOrderComparer (FUNCTOR&& f)
     {
-        static_assert (IsPotentiallyComparerRelation<decay_t<FUNCTOR>, typename Configuration::function_traits<decay_t<FUNCTOR>>::template arg<0>::type> ());
+        static_assert (
+            IsPotentiallyComparerRelation<decay_t<FUNCTOR>, typename Configuration::function_traits<decay_t<FUNCTOR>>::template arg<0>::type> ());
         return Common::ComparisonRelationDeclaration<ComparisonRelationType::eStrictInOrder, decay_t<FUNCTOR>>{std::forward<FUNCTOR> (f)};
     }
 

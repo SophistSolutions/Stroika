@@ -293,7 +293,8 @@ namespace Stroika::Foundation::Execution {
         nonvirtual void Log (Priority logLevel, const wchar_t* format, ...); // varargs logger
 
     public:
-        [[deprecated ("Since Stroika 2.1.3, use Logger::GetSupressDuplicates () or Options::fSuppressDuplicatesThreshold")]] void LogIfNew (Priority logLevel, const Time::Duration& suppressionTimeWindow, const wchar_t* format, ...);
+        [[deprecated ("Since Stroika 2.1.3, use Logger::GetSupressDuplicates () or Options::fSuppressDuplicatesThreshold")]] void
+        LogIfNew (Priority logLevel, const Time::Duration& suppressionTimeWindow, const wchar_t* format, ...);
 
     private:
         nonvirtual void Log_ (Priority logLevel, const String& msg);
@@ -302,8 +303,8 @@ namespace Stroika::Foundation::Execution {
         struct Rep_;
 
     private:
-        shared_ptr<Rep_> fRep_;                          // unsure if we want to use shared_ptr or unique_ptr but shared among threads so easiest that way
-        Priority         fMinLogLevel_{Priority::eInfo}; // Keep out of rep only so we can reference from inlines and put the Rep_ in the .cpp file for better hiding
+        shared_ptr<Rep_> fRep_; // unsure if we want to use shared_ptr or unique_ptr but shared among threads so easiest that way
+        Priority fMinLogLevel_{Priority::eInfo}; // Keep out of rep only so we can reference from inlines and put the Rep_ in the .cpp file for better hiding
     };
 
     /**

@@ -50,20 +50,14 @@ namespace Stroika::Foundation::Streams::iostream {
         }
 
     protected:
-        virtual bool IsSeekable () const override
-        {
-            return fSeekable_ == eSeekable;
-        }
+        virtual bool IsSeekable () const override { return fSeekable_ == eSeekable; }
         virtual void CloseRead () override
         {
             Require (IsOpenRead ());
             fOpen_ = false;
             Ensure (not IsOpenRead ());
         }
-        virtual bool IsOpenRead () const override
-        {
-            return fOpen_;
-        }
+        virtual bool   IsOpenRead () const override { return fOpen_; }
         virtual size_t Read (ELEMENT_TYPE* intoStart, ELEMENT_TYPE* intoEnd) override
         {
             RequireNotNull (intoStart);
@@ -148,7 +142,8 @@ namespace Stroika::Foundation::Streams::iostream {
         return make_shared<Rep_> (originalStream, seekable);
     }
     template <typename ELEMENT_TYPE, typename TRAITS>
-    inline auto InputStreamFromStdIStream<ELEMENT_TYPE, TRAITS>::New (Execution::InternallySynchronized internallySynchronized, IStreamType& originalStream) -> Ptr
+    inline auto InputStreamFromStdIStream<ELEMENT_TYPE, TRAITS>::New (Execution::InternallySynchronized internallySynchronized, IStreamType& originalStream)
+        -> Ptr
     {
         switch (internallySynchronized) {
             case Execution::eInternallySynchronized:
@@ -161,7 +156,8 @@ namespace Stroika::Foundation::Streams::iostream {
         }
     }
     template <typename ELEMENT_TYPE, typename TRAITS>
-    inline auto InputStreamFromStdIStream<ELEMENT_TYPE, TRAITS>::New (Execution::InternallySynchronized internallySynchronized, IStreamType& originalStream, SeekableFlag seekable) -> Ptr
+    inline auto InputStreamFromStdIStream<ELEMENT_TYPE, TRAITS>::New (Execution::InternallySynchronized internallySynchronized,
+                                                                      IStreamType& originalStream, SeekableFlag seekable) -> Ptr
     {
         switch (internallySynchronized) {
             case Execution::eInternallySynchronized:

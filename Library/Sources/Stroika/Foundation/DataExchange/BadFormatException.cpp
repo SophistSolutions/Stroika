@@ -42,14 +42,8 @@ namespace {
         }
         return result;
     }
-    inline String mkMessage_ ()
-    {
-        return "Badly formatted input"sv;
-    }
-    inline String mkMessage_ (const String& details)
-    {
-        return details.empty () ? mkMessage_ () : details;
-    }
+    inline String mkMessage_ () { return "Badly formatted input"sv; }
+    inline String mkMessage_ (const String& details) { return details.empty () ? mkMessage_ () : details; }
     String mkMessage_ (const optional<unsigned int>& lineNumber, const optional<unsigned int>& columnNumber, optional<uint64_t> fileOffset)
     {
         String msg           = mkMessage_ ();
@@ -59,7 +53,8 @@ namespace {
         }
         return msg;
     }
-    String mkMessage_ (const String& details, const optional<unsigned int>& lineNumber, const optional<unsigned int>& columnNumber, const optional<uint64_t>& fileOffset)
+    String mkMessage_ (const String& details, const optional<unsigned int>& lineNumber, const optional<unsigned int>& columnNumber,
+                       const optional<uint64_t>& fileOffset)
     {
         String msg           = mkMessage_ (details);
         String lineInfoExtra = mkMessage_OffsetInfo_ (lineNumber, columnNumber, fileOffset);
@@ -81,7 +76,8 @@ DataExchange::BadFormatException::BadFormatException (const String& details)
 {
 }
 
-DataExchange::BadFormatException::BadFormatException (const String& details, const optional<unsigned int>& lineNumber, const optional<unsigned int>& columnNumber, const optional<uint64_t>& fileOffset)
+DataExchange::BadFormatException::BadFormatException (const String& details, const optional<unsigned int>& lineNumber,
+                                                      const optional<unsigned int>& columnNumber, const optional<uint64_t>& fileOffset)
     : inherited{mkMessage_ (details, lineNumber, columnNumber, fileOffset)}
     , fLineNumber_{lineNumber}
     , fColumnNumber_{columnNumber}

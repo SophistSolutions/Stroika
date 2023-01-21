@@ -159,9 +159,9 @@ namespace Stroika::Frameworks::WebServer {
              */
             optional<unsigned int> fTCPBacklog;
 
-            static constexpr unsigned int                             kDefault_MaxConnections{25};
-            static constexpr Socket::BindFlags                        kDefault_BindFlags{};
-            static inline const Headers                               kDefault_Headers{Iterable<KeyValuePair<String, String>>{{IO::Network::HTTP::HeaderName::kServer, "Stroika/3.0"sv}}};
+            static constexpr unsigned int      kDefault_MaxConnections{25};
+            static constexpr Socket::BindFlags kDefault_BindFlags{};
+            static inline const Headers kDefault_Headers{Iterable<KeyValuePair<String, String>>{{IO::Network::HTTP::HeaderName::kServer, "Stroika/3.0"sv}}};
             static inline const Common::ConstantProperty<CORSOptions> kDefault_CORS{[] () { return kDefault_CORSOptions; }};
             static constexpr bool                                     kDefault_AutoComputeETagResponse{true};
             static constexpr Time::DurationSecondsType                kDefault_AutomaticTCPDisconnectOnClose{2.0};
@@ -296,17 +296,14 @@ namespace Stroika::Frameworks::WebServer {
         Execution::Synchronized<Sequence<Interceptor>>               fAfterInterceptors_;
         Execution::Synchronized<optional<Time::DurationSecondsType>> fAutomaticTCPDisconnectOnClose_;
         Router                                                       fRouter_;
-        InterceptorChain                                             fInterceptorChain_; // no need to synchonize cuz internally synchronized
+        InterceptorChain fInterceptorChain_; // no need to synchonize cuz internally synchronized
 
         // Active connections are those actively in the readheaders/readbody, dispatch/handle code
         Execution::Synchronized<Collection<shared_ptr<Connection>>> fActiveConnections_;
 
         struct MyWaitForIOReady_Traits_ {
             using HighLevelType = shared_ptr<Connection>;
-            static inline auto GetSDKPollable (const HighLevelType& t)
-            {
-                return t->socket ().GetNativeSocket ();
-            }
+            static inline auto GetSDKPollable (const HighLevelType& t) { return t->socket ().GetNativeSocket (); }
         };
         // No need to lock fInactiveSockSetPoller_ since its internally synchronized;
         Execution::UpdatableWaitForIOReady<shared_ptr<Connection>, MyWaitForIOReady_Traits_> fInactiveSockSetPoller_{};

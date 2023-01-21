@@ -23,8 +23,7 @@ namespace Stroika::Foundation::Containers::Concrete {
      ********************************************************************************
      */
     template <typename T>
-    class SortedCollection_LinkedList<T>::IImplRepBase_ : public SortedCollection<T>::_IRep {
-    };
+    class SortedCollection_LinkedList<T>::IImplRepBase_ : public SortedCollection<T>::_IRep {};
 
     /*
      ********************************************************************************
@@ -104,7 +103,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             RequireNotNull (i);
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
             auto                                                  result = Iterable<value_type>::template MakeSmartPtr<Rep_> (*this);
-            auto&                                                 mir    = Debug::UncheckedDynamicCast<const IteratorRep_&> (i->ConstGetRep ());
+            auto& mir = Debug::UncheckedDynamicCast<const IteratorRep_&> (i->ConstGetRep ());
             result->fData_.MoveIteratorHereAfterClone (&mir.fIterator, &fData_);
             i->Refresh (); // reflect updated rep
             return result;
@@ -214,7 +213,8 @@ namespace Stroika::Foundation::Containers::Concrete {
     inline SortedCollection_LinkedList<T>::SortedCollection_LinkedList (INORDER_COMPARER&& inorderComparer)
         : inherited{inherited::template MakeSmartPtr<Rep_<remove_cvref_t<INORDER_COMPARER>>> (inorderComparer)}
     {
-        static_assert (Common::IsStrictInOrderComparer<INORDER_COMPARER> (), "StrictInOrder comparer required with SortedCollection_LinkedList");
+        static_assert (Common::IsStrictInOrderComparer<INORDER_COMPARER> (),
+                       "StrictInOrder comparer required with SortedCollection_LinkedList");
         AssertRepValidType_ ();
     }
     template <typename T>
@@ -233,7 +233,8 @@ namespace Stroika::Foundation::Containers::Concrete {
         AssertRepValidType_ ();
     }
     template <typename T>
-    template <typename ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and not is_base_of_v<SortedCollection_LinkedList<T>, decay_t<ITERABLE_OF_ADDABLE>>>*>
+    template <typename ITERABLE_OF_ADDABLE,
+              enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and not is_base_of_v<SortedCollection_LinkedList<T>, decay_t<ITERABLE_OF_ADDABLE>>>*>
     inline SortedCollection_LinkedList<T>::SortedCollection_LinkedList (ITERABLE_OF_ADDABLE&& src)
         : SortedCollection_LinkedList{}
     {
@@ -242,7 +243,8 @@ namespace Stroika::Foundation::Containers::Concrete {
         AssertRepValidType_ ();
     }
     template <typename T>
-    template <typename INORDER_COMPARER, typename ITERABLE_OF_ADDABLE, enable_if_t<Common::IsStrictInOrderComparer<INORDER_COMPARER, T> () and Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>>*>
+    template <typename INORDER_COMPARER, typename ITERABLE_OF_ADDABLE,
+              enable_if_t<Common::IsStrictInOrderComparer<INORDER_COMPARER, T> () and Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>>*>
     inline SortedCollection_LinkedList<T>::SortedCollection_LinkedList (INORDER_COMPARER&& inOrderComparer, ITERABLE_OF_ADDABLE&& src)
         : SortedCollection_LinkedList{forward<INORDER_COMPARER> (inOrderComparer)}
     {
@@ -261,7 +263,8 @@ namespace Stroika::Foundation::Containers::Concrete {
     }
     template <typename T>
     template <typename INORDER_COMPARER, typename ITERATOR_OF_ADDABLE, enable_if_t<Common::IsStrictInOrderComparer<INORDER_COMPARER, T> ()>*>
-    inline SortedCollection_LinkedList<T>::SortedCollection_LinkedList (INORDER_COMPARER&& inOrderComparer, ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
+    inline SortedCollection_LinkedList<T>::SortedCollection_LinkedList (INORDER_COMPARER&& inOrderComparer, ITERATOR_OF_ADDABLE&& start,
+                                                                        ITERATOR_OF_ADDABLE&& end)
         : SortedCollection_LinkedList{forward<INORDER_COMPARER> (inOrderComparer)}
     {
         static_assert (IsAddable_v<ExtractValueType_t<ITERATOR_OF_ADDABLE>>);

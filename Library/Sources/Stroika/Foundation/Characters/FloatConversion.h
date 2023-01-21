@@ -47,8 +47,10 @@ namespace Stroika::Foundation::Characters::FloatConversion {
     constexpr TrimTrailingZerosType eTrimZeros     = TrimTrailingZerosType::eTrim;
     constexpr TrimTrailingZerosType eDontTrimZeros = TrimTrailingZerosType::eDontTrim;
 
-    enum class PredefinedLocale { eUseCLocale,
-                                  eUseCurrentLocale };
+    enum class PredefinedLocale {
+        eUseCLocale,
+        eUseCurrentLocale
+    };
 
     /**
      */

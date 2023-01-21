@@ -117,12 +117,12 @@ namespace Stroika::Foundation::IO::Network {
             case AF_INET: {
                 DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated\""); // macro uses 'register' - htons not deprecated
                 return ntohs (fSocketAddress_V4_.sin_port);                                         //NB no ':' cuz some systems use macro
-                DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated\"");   // macro uses 'register' - htons not deprecated
+                DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated\""); // macro uses 'register' - htons not deprecated
             }
             case AF_INET6: {
                 DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated\""); // macro uses 'register' - htons not deprecated
                 return ntohs (fSocketAddress_V6_.sin6_port);                                        //NB no ':' cuz some systems use macro
-                DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated\"");   // macro uses 'register' - htons not deprecated
+                DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated\""); // macro uses 'register' - htons not deprecated
             }
             default: {
                 AssertNotReached ();

@@ -278,7 +278,8 @@ namespace Stroika::Foundation::Execution {
          *          @todo we may want to come up with some way to capture / pass along extra info to handlers, like
          *          the thread which recieved the signal. But for now...
          */
-        nonvirtual void SetStandardCrashHandlerSignals (SignalHandler handler = SignalHandler{DefaultCrashSignalHandler, SignalHandler::Type::eDirect}, const Containers::Set<SignalID>& forSignals = GetStandardCrashSignals ());
+        nonvirtual void SetStandardCrashHandlerSignals (SignalHandler handler = SignalHandler{DefaultCrashSignalHandler, SignalHandler::Type::eDirect},
+                                                        const Containers::Set<SignalID>& forSignals = GetStandardCrashSignals ());
 
     private:
         RWSynchronized<Containers::Mapping<SignalID, Containers::Set<SignalHandler>>> fDirectHandlers_;

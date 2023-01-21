@@ -32,26 +32,12 @@ namespace Stroika::Foundation::Execution {
      *  locking to be present, but effectively all compiled (even constexpr) away.
      */
     struct NullMutex {
-        constexpr void lock () const
-        {
-        }
-        constexpr bool try_lock () const
-        {
-            return true;
-        }
-        constexpr void unlock () const
-        {
-        }
-        constexpr void lock_shared () const
-        {
-        }
-        constexpr bool try_lock_shared () const
-        {
-            return true;
-        }
-        constexpr void unlock_shared () const
-        {
-        }
+        constexpr void lock () const {}
+        constexpr bool try_lock () const { return true; }
+        constexpr void unlock () const {}
+        constexpr void lock_shared () const {}
+        constexpr bool try_lock_shared () const { return true; }
+        constexpr void unlock_shared () const {}
     };
 
 }

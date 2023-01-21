@@ -42,12 +42,11 @@ using namespace Stroika::Foundation::Memory;
  ********************************************************************************
  */
 DigestAlgorithm::DigestAlgorithm (const ::EVP_MD* digester)
-    : pName{
-          [qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> String {
-              const DigestAlgorithm* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &DigestAlgorithm::pName);
-              AssertNotNull (EVP_MD_name (thisObj->fDigester_));
-              return String{EVP_MD_name (thisObj->fDigester_)};
-          }}
+    : pName{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> String {
+        const DigestAlgorithm* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &DigestAlgorithm::pName);
+        AssertNotNull (EVP_MD_name (thisObj->fDigester_));
+        return String{EVP_MD_name (thisObj->fDigester_)};
+    }}
     , fDigester_{digester}
 {
     RequireNotNull (digester);

@@ -611,7 +611,8 @@ namespace Stroika::Foundation::Streams {
          *  The only 'hitch' is that the _IRep subtype using this must know the number of elements available, and pass that in.
          *  All that really matters is if this is 0 or 1, but best if you can pass in the actual value.
          */
-        nonvirtual optional<size_t> _ReadNonBlocking_ReferenceImplementation_ForNonblockingUpstream (ElementType* intoStart, ElementType* intoEnd, size_t elementsRemaining);
+        nonvirtual optional<size_t> _ReadNonBlocking_ReferenceImplementation_ForNonblockingUpstream (ElementType* intoStart, ElementType* intoEnd,
+                                                                                                     size_t elementsRemaining);
     };
 
 }

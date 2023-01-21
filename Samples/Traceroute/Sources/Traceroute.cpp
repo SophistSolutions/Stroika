@@ -29,7 +29,8 @@ using Containers::Sequence;
 
 int main (int argc, const char* argv[])
 {
-    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"main", L"argv=%s", Characters::ToString (vector<const char*>{argv, argv + argc}).c_str ())};
+    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (
+        L"main", L"argv=%s", Characters::ToString (vector<const char*>{argv, argv + argc}).c_str ())};
     String                    targetAddress;
     enum class MajorOp {
         ePing,
@@ -39,8 +40,8 @@ int main (int argc, const char* argv[])
     unsigned int          maxHops     = Ping::Options::kDefaultMaxHops;
     unsigned int          sampleCount = 3;
     static const Duration kInterSampleTime_{"PT.1S"};
-    size_t                packetSize = Ping::Options::kDefaultPayloadSize + sizeof (ICMP::V4::PacketHeader); // historically, the app ping has measured this including ICMP packet header, but not ip packet header size
-    auto                  usage      = [] (const optional<String>& extraArg = {}) {
+    size_t packetSize = Ping::Options::kDefaultPayloadSize + sizeof (ICMP::V4::PacketHeader); // historically, the app ping has measured this including ICMP packet header, but not ip packet header size
+    auto usage = [] (const optional<String>& extraArg = {}) {
         if (extraArg) {
             cerr << extraArg->AsNarrowSDKString () << endl;
         }
@@ -113,15 +114,17 @@ int main (int argc, const char* argv[])
                 options.fPacketPayloadSize = Ping::Options::kAllowedICMPPayloadSizeRange.Pin (packetSize - sizeof (ICMP::V4::PacketHeader));
                 options.fMaxHops           = maxHops;
                 //   options.fSampleInfo                   = Ping::Options::SampleInfo{kInterSampleTime_, sampleCount};
-                NetworkMonitor::Ping::SampleResults t = NetworkMonitor::Ping::Sample (addr, Ping::SampleOptions{kInterSampleTime_, sampleCount}, options);
+                NetworkMonitor::Ping::SampleResults t =
+                    NetworkMonitor::Ping::Sample (addr, Ping::SampleOptions{kInterSampleTime_, sampleCount}, options);
                 cout << "Ping to " << addr.ToString ().AsNarrowSDKString () << ": " << Characters::ToString (t).AsNarrowSDKString () << endl;
             } break;
             case MajorOp::eTraceroute: {
                 Traceroute::Options options{};
                 options.fPacketPayloadSize = Traceroute::Options::kAllowedICMPPayloadSizeRange.Pin (packetSize - sizeof (ICMP::V4::PacketHeader));
-                options.fMaxHops           = maxHops;
+                options.fMaxHops = maxHops;
 
-                cout << "Tracing Route to " << targetAddress.AsNarrowSDKString () << " [" << Characters::ToString (addr).AsNarrowSDKString () << "] over a maximum of " << maxHops << " hops." << endl;
+                cout << "Tracing Route to " << targetAddress.AsNarrowSDKString () << " ["
+                     << Characters::ToString (addr).AsNarrowSDKString () << "] over a maximum of " << maxHops << " hops." << endl;
                 cout << endl;
 
                 // quickie - weak attempt at formatting the output

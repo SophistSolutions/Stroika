@@ -83,7 +83,8 @@ namespace Stroika::Foundation::Streams {
         return nullopt;
     }
     template <typename ELEMENT_TYPE>
-    void StreamReader<ELEMENT_TYPE>::CacheBlock_::FillCacheWith (SeekOffsetType s, const InlineBufferElementType_* intoStart, const InlineBufferElementType_* intoEnd)
+    void StreamReader<ELEMENT_TYPE>::CacheBlock_::FillCacheWith (SeekOffsetType s, const InlineBufferElementType_* intoStart,
+                                                                 const InlineBufferElementType_* intoEnd)
     {
         // adjust so smarter to not make cache too big...
         size_t         oldCacheSize = fCacheWindowBuf_.GetSize ();
@@ -273,7 +274,8 @@ namespace Stroika::Foundation::Streams {
         // try not to overfill any one cache block, but if the amount being read will fit, append to the current cache block
         // dont start a new one
         size_t thisFillSize = intoEnd - intoStart;
-        if (fCacheBlocks_[fCacheBlockLastFilled_].GetEnd () != this->fOffset_ or fCacheBlocks_[fCacheBlockLastFilled_].GetSize () + thisFillSize > kMaxBufferedChunkSize_) {
+        if (fCacheBlocks_[fCacheBlockLastFilled_].GetEnd () != this->fOffset_ or
+            fCacheBlocks_[fCacheBlockLastFilled_].GetSize () + thisFillSize > kMaxBufferedChunkSize_) {
             ++fCacheBlockLastFilled_;
             if (fCacheBlockLastFilled_ >= Memory::NEltsOf (fCacheBlocks_)) {
                 fCacheBlockLastFilled_ = 0;

@@ -117,8 +117,11 @@ namespace {
             //const unsigned int kRepeatCount_ = 1;
             static const initializer_list<int>            kOrigValueInit_       = {1, 3, 4, 5, 6, 33, 12, 13};
             static const initializer_list<int>            kUpdateValueInit_     = {4, 5, 6, 33, 12, 34, 596, 13, 1, 3, 99, 33, 4, 5};
-            static const initializer_list<pair<int, int>> kOrigPairValueInit_   = {pair<int, int> (1, 3), pair<int, int> (4, 5), pair<int, int> (6, 33), pair<int, int> (12, 13)};
-            static const initializer_list<pair<int, int>> kUPairpdateValueInit_ = {pair<int, int> (4, 5), pair<int, int> (6, 33), pair<int, int> (12, 34), pair<int, int> (596, 13), pair<int, int> (1, 3), pair<int, int> (99, 35), pair<int, int> (4, 5)};
+            static const initializer_list<pair<int, int>> kOrigPairValueInit_   = {pair<int, int> (1, 3), pair<int, int> (4, 5),
+                                                                                   pair<int, int> (6, 33), pair<int, int> (12, 13)};
+            static const initializer_list<pair<int, int>> kUPairpdateValueInit_ = {
+                pair<int, int> (4, 5), pair<int, int> (6, 33),  pair<int, int> (12, 34), pair<int, int> (596, 13),
+                pair<int, int> (1, 3), pair<int, int> (99, 35), pair<int, int> (4, 5)};
             DoItOnce_<String> (L"123456789"_k, L"abcdedfghijkqlmopqrstuvwxyz", kRepeatCount_);
             DoItOnce_<Bijection<int, int>> (Bijection<int, int> (kOrigPairValueInit_), Bijection<int, int>{kUPairpdateValueInit_}, kRepeatCount_);
             DoItOnce_<Collection<int>> (Collection<int>{kOrigValueInit_}, Collection<int>{kUpdateValueInit_}, kRepeatCount_);
@@ -172,57 +175,45 @@ namespace {
             no_lock_ lock;
             //mutex lock;
 
-            DoItOnce_<Set<int>> (
-                &lock,
-                Set<int> (kOrigValueInit_),
-                kRepeatCount_,
-                [&lock] (Synchronized<Set<int>>* oneToKeepOverwriting) {
-                    for (int ii = 0; ii <= 100; ++ii) {
-                        //DbgTrace ("doing update loop %d", ii);
-                        if (Math::IsOdd (ii)) {
-                            lock_guard<decltype (lock)> critSec{lock};
-                            (*oneToKeepOverwriting) = Set<int>{kUpdateValueInit_};
-                        }
-                        else {
-                            lock_guard<decltype (lock)> critSec{lock};
-                            (*oneToKeepOverwriting) = Set<int>{kUpdateValueInit_};
-                        }
+            DoItOnce_<Set<int>> (&lock, Set<int> (kOrigValueInit_), kRepeatCount_, [&lock] (Synchronized<Set<int>>* oneToKeepOverwriting) {
+                for (int ii = 0; ii <= 100; ++ii) {
+                    //DbgTrace ("doing update loop %d", ii);
+                    if (Math::IsOdd (ii)) {
+                        lock_guard<decltype (lock)> critSec{lock};
+                        (*oneToKeepOverwriting) = Set<int>{kUpdateValueInit_};
                     }
-                });
+                    else {
+                        lock_guard<decltype (lock)> critSec{lock};
+                        (*oneToKeepOverwriting) = Set<int>{kUpdateValueInit_};
+                    }
+                }
+            });
 
-            DoItOnce_<Sequence<int>> (
-                &lock,
-                Sequence<int>{kOrigValueInit_},
-                kRepeatCount_,
-                [&lock] (Synchronized<Sequence<int>>* oneToKeepOverwriting) {
-                    for (int ii = 0; ii <= 100; ++ii) {
-                        if (Math::IsOdd (ii)) {
-                            lock_guard<decltype (lock)> critSec{lock};
-                            (*oneToKeepOverwriting) = Sequence<int>{kUpdateValueInit_};
-                        }
-                        else {
-                            lock_guard<decltype (lock)> critSec{lock};
-                            (*oneToKeepOverwriting) = Sequence<int>{kUpdateValueInit_};
-                        }
+            DoItOnce_<Sequence<int>> (&lock, Sequence<int>{kOrigValueInit_}, kRepeatCount_, [&lock] (Synchronized<Sequence<int>>* oneToKeepOverwriting) {
+                for (int ii = 0; ii <= 100; ++ii) {
+                    if (Math::IsOdd (ii)) {
+                        lock_guard<decltype (lock)> critSec{lock};
+                        (*oneToKeepOverwriting) = Sequence<int>{kUpdateValueInit_};
                     }
-                });
+                    else {
+                        lock_guard<decltype (lock)> critSec{lock};
+                        (*oneToKeepOverwriting) = Sequence<int>{kUpdateValueInit_};
+                    }
+                }
+            });
 
-            DoItOnce_<String> (
-                &lock,
-                L"123456789",
-                kRepeatCount_,
-                [&lock] (Synchronized<String>* oneToKeepOverwriting) {
-                    for (int ii = 0; ii <= 100; ++ii) {
-                        if (Math::IsOdd (ii)) {
-                            lock_guard<decltype (lock)> critSec{lock};
-                            (*oneToKeepOverwriting) = L"abc123"_k;
-                        }
-                        else {
-                            lock_guard<decltype (lock)> critSec{lock};
-                            (*oneToKeepOverwriting) = L"123abc"_k;
-                        }
+            DoItOnce_<String> (&lock, L"123456789", kRepeatCount_, [&lock] (Synchronized<String>* oneToKeepOverwriting) {
+                for (int ii = 0; ii <= 100; ++ii) {
+                    if (Math::IsOdd (ii)) {
+                        lock_guard<decltype (lock)> critSec{lock};
+                        (*oneToKeepOverwriting) = L"abc123"_k;
                     }
-                });
+                    else {
+                        lock_guard<decltype (lock)> critSec{lock};
+                        (*oneToKeepOverwriting) = L"123abc"_k;
+                    }
+                }
+            });
         }
     }
 }
@@ -421,7 +412,8 @@ namespace {
                     // Fails cuz no synchonization
                     DoInterlocktest_<intish_object1> ([] (intish_object1* i) { (i->fVal)++; }, [] (intish_object1* i) { (i->fVal)--; });
                 }
-                DoInterlocktest_<Synchronized<intish_object1>> ([] (Synchronized<intish_object1>* i) { (i->rwget ()->fVal)++; }, [] (Synchronized<intish_object1>* i) { (i->rwget ()->fVal)--; });
+                DoInterlocktest_<Synchronized<intish_object1>> ([] (Synchronized<intish_object1>* i) { (i->rwget ()->fVal)++; },
+                                                                [] (Synchronized<intish_object1>* i) { (i->rwget ()->fVal)--; });
             }
             void TestSynchronizedNotCopyable_ ()
             {
@@ -490,33 +482,30 @@ namespace {
             void TestBasics_ ()
             {
                 static constexpr size_t kIOverallRepeatCount_{(qDebug or qStroika_FeatureSupported_Valgrind) ? 50 : 1000}; // tweak count cuz too slow
-                Sequence<int>           tmp{Traversal::DiscreteRange<int>{1, 1000}};
-                Thread::Ptr             t1 = Thread::New (
-                    [&tmp] () {
-                        for (int i = 1; i < kIOverallRepeatCount_; ++i) {
-                            for (int j : tmp) {
-                                VerifyTestResult (1 <= j and j <= 1000);
-                            }
+                Sequence<int> tmp{Traversal::DiscreteRange<int>{1, 1000}};
+                Thread::Ptr   t1 = Thread::New ([&tmp] () {
+                    for (int i = 1; i < kIOverallRepeatCount_; ++i) {
+                        for (int j : tmp) {
+                            VerifyTestResult (1 <= j and j <= 1000);
                         }
-                    });
-                Thread::Ptr t2 = Thread::New (
-                    [&tmp] () {
-                        for (int i = 1; i < kIOverallRepeatCount_; ++i) {
-                            for (int j : tmp) {
-                                VerifyTestResult (1 <= j and j <= 1000);
-                            }
+                    }
+                });
+                Thread::Ptr   t2 = Thread::New ([&tmp] () {
+                    for (int i = 1; i < kIOverallRepeatCount_; ++i) {
+                        for (int j : tmp) {
+                            VerifyTestResult (1 <= j and j <= 1000);
                         }
-                    });
-                Thread::Ptr t3 = Thread::New (
-                    [&tmp] () {
-                        for (int i = 1; i < kIOverallRepeatCount_; ++i) {
-                            if (tmp.size () == 1000) {
-                                VerifyTestResult (tmp.IndexOf (6) == 5u);
-                                VerifyTestResult (*tmp.First () == 1);
-                                VerifyTestResult (*tmp.Last () == 1000);
-                            }
+                    }
+                });
+                Thread::Ptr   t3 = Thread::New ([&tmp] () {
+                    for (int i = 1; i < kIOverallRepeatCount_; ++i) {
+                        if (tmp.size () == 1000) {
+                            VerifyTestResult (tmp.IndexOf (6) == 5u);
+                            VerifyTestResult (*tmp.First () == 1);
+                            VerifyTestResult (*tmp.Last () == 1000);
                         }
-                    });
+                    }
+                });
                 Thread::Start ({t1, t2, t3});
                 Thread::WaitForDone ({t1, t2, t3});
             }
@@ -624,27 +613,32 @@ namespace {
             int64_t cnt{};
             {
                 Debug::TraceContextBumper ctx1{"TestBasics_<vector<int>>"};
-                Private_::TestBasics_<vector<int>> (
-                    [] (vector<int>* c, int i) { c->push_back (i); },
-                    [] (vector<int>* c, [[maybe_unused]] int i) { size_t n = c->size (); if (n != 0) c->erase (c->begin () + (n / 2)); },
-                    [] (const vector<int>* c) { (void)std::find (c->begin (), c->end (), 3); },
-                    [&cnt] (int v) { cnt += v; });
+                Private_::TestBasics_<vector<int>> ([] (vector<int>* c, int i) { c->push_back (i); },
+                                                    [] (vector<int>* c, [[maybe_unused]] int i) {
+                                                        size_t n = c->size ();
+                                                        if (n != 0)
+                                                            c->erase (c->begin () + (n / 2));
+                                                    },
+                                                    [] (const vector<int>* c) { (void)std::find (c->begin (), c->end (), 3); },
+                                                    [&cnt] (int v) { cnt += v; });
             }
             {
                 Debug::TraceContextBumper ctx1{"...TestBasics_<Sequence<int>>"};
                 Private_::TestBasics_<Sequence<int>> (
                     [] (Sequence<int>* c, int i) { c->Append (i); },
-                    [] (Sequence<int>* c, [[maybe_unused]] int i) { size_t n = c->size (); if (n != 0) c->Remove (n / 2); },
+                    [] (Sequence<int>* c, [[maybe_unused]] int i) {
+                        size_t n = c->size ();
+                        if (n != 0)
+                            c->Remove (n / 2);
+                    },
                     [] (const Sequence<int>* c) { [[maybe_unused]] size_t n = Memory::NullCoalesce (c->IndexOf (3)); },
                     [&cnt] (int v) { cnt += v; });
             }
             {
                 Debug::TraceContextBumper ctx1{"...TestBasics_<Set<int>>"};
-                Private_::TestBasics_<Set<int>> (
-                    [] (Set<int>* c, int i) { c->Add (i); },
-                    [] (Set<int>* c, int i) { c->RemoveIf (i); },
-                    [] (const Set<int>* c) { [[maybe_unused]] bool b = c->Contains (5); },
-                    [&cnt] (int v) { cnt += v; });
+                Private_::TestBasics_<Set<int>> ([] (Set<int>* c, int i) { c->Add (i); }, [] (Set<int>* c, int i) { c->RemoveIf (i); },
+                                                 [] (const Set<int>* c) { [[maybe_unused]] bool b = c->Contains (5); },
+                                                 [&cnt] (int v) { cnt += v; });
             }
             {
                 Debug::TraceContextBumper ctx1{"...TestBasics_<Mapping<int, Time::DateTime>>"};
@@ -661,8 +655,7 @@ namespace {
 namespace {
     namespace Test11_SynchronizedCaches_ {
         namespace Private_ {
-            static const size_t kIOverallRepeatCount_ = kVerySlow_ ? 10 : kSortaSlow_ ? 50
-                                                                                      : 1000;
+            static const size_t kIOverallRepeatCount_ = kVerySlow_ ? 10 : kSortaSlow_ ? 50 : 1000;
             void                SyncLRUCacheT1_ ()
             {
                 Debug::TraceContextBumper traceCtx{"{}SyncLRUCacheT1_..."};
@@ -713,7 +706,7 @@ namespace {
                 Debug::TraceContextBumper traceCtx{"{}SyncCallerStalenessCacheT1_..."};
                 using namespace Cache;
                 SynchronizedCallerStalenessCache<int, int> cache;
-                auto                                       mapValue = [&cache] (int value, optional<Time::DurationSecondsType> allowedStaleness = {}) -> int {
+                auto mapValue = [&cache] (int value, optional<Time::DurationSecondsType> allowedStaleness = {}) -> int {
                     return cache.LookupValue (value, cache.Ago (allowedStaleness.value_or (30)), [=] (int v) {
                         return v; // could be more expensive computation
                     });

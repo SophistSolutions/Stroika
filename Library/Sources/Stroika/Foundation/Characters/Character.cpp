@@ -39,6 +39,7 @@ void Characters::Private_::ThrowNotIsASCII_ ()
  */
 void Characters::Private_::ThrowNotIsLatin1_ ()
 {
-    static const auto kException_ = Execution::RuntimeErrorException{"Argument not valid Character_ISOLatin1 (UNICODE code point > U+00ff)"};
+    static const auto kException_ =
+        Execution::RuntimeErrorException{"Argument not valid Character_ISOLatin1 (UNICODE code point > U+00ff)"};
     Execution::Throw (kException_);
 }

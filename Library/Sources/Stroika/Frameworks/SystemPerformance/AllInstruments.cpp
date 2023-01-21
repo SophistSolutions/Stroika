@@ -31,11 +31,8 @@ Set<Instrument> SystemPerformance::GetAllInstruments ()
      *  Return a sorted set. Not strictly required, but looks better in some uses, and doesn't cost anything.
      */
     static Set<Instrument> kInstruments_ = SortedSet<Instrument>{
-        Instruments::CPU::Instrument{},
-        Instruments::Filesystem::Instrument{},
-        Instruments::Memory::Instrument{},
-        Instruments::Network::Instrument{},
-        Instruments::Process::Instrument{},
+        Instruments::CPU::Instrument{},     Instruments::Filesystem::Instrument{}, Instruments::Memory::Instrument{},
+        Instruments::Network::Instrument{}, Instruments::Process::Instrument{},
     };
     return kInstruments_;
 }

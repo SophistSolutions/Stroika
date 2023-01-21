@@ -37,10 +37,7 @@ namespace Stroika::Foundation::Streams {
             fRealIn_.Close ();
             Assert (fRealIn_ == nullptr);
         }
-        virtual bool IsOpenRead () const override
-        {
-            return fRealIn_ != nullptr;
-        }
+        virtual bool           IsOpenRead () const override { return fRealIn_ != nullptr; }
         virtual SeekOffsetType GetReadOffset () const override
         {
             Require (IsOpenRead ());
@@ -82,7 +79,8 @@ namespace Stroika::Foundation::Streams {
         return InputStream<ELEMENT_TYPE>::_mkPtr (make_shared<Rep_> (realIn));
     }
     template <typename ELEMENT_TYPE>
-    inline auto BufferedInputStream<ELEMENT_TYPE>::New (Execution::InternallySynchronized internallySynchronized, const typename InputStream<ELEMENT_TYPE>::Ptr& realIn) -> Ptr
+    inline auto BufferedInputStream<ELEMENT_TYPE>::New (Execution::InternallySynchronized              internallySynchronized,
+                                                        const typename InputStream<ELEMENT_TYPE>::Ptr& realIn) -> Ptr
     {
         switch (internallySynchronized) {
             case Execution::eInternallySynchronized:

@@ -66,7 +66,8 @@ namespace Stroika::Foundation::Containers::Concrete {
      *  using SparseDataHyperRectangle_stdmapN = SparseDataHyperRectangle_stdmap<T, size_t REPEATED N TIMES>
      */
     template <typename T, size_t N>
-    using SparseDataHyperRectangle_stdmapN = typename Private_DataHyperRectangle_::template NTemplate<T, SparseDataHyperRectangle_stdmap>::template Helper_<make_index_sequence<N>>::CombinedType;
+    using SparseDataHyperRectangle_stdmapN =
+        typename Private_DataHyperRectangle_::template NTemplate<T, SparseDataHyperRectangle_stdmap>::template Helper_<make_index_sequence<N>>::CombinedType;
 
 }
 

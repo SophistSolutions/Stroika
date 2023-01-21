@@ -25,39 +25,38 @@
 using namespace Stroika::Foundation;
 using namespace Stroika::Frameworks::Led;
 
-#define STD_EXCEPT_CATCHER(APP)               \
-    catch (CMemoryException * e)              \
-    {                                         \
-        (APP).HandleBadAllocException ();     \
-        e->Delete ();                         \
-    }                                         \
-    catch (CException * e)                    \
-    {                                         \
-        (APP).HandleMFCException (e);         \
-        e->Delete ();                         \
-    }                                         \
-    catch (bad_alloc)                         \
-    {                                         \
-        (APP).HandleBadAllocException ();     \
-    }                                         \
-    catch (const system_error&)               \
-    {                                         \
-        (APP).HandleUnknownException ();      \
-    }                                         \
-    catch (TextInteractor::BadUserInput&)     \
-    {                                         \
-        (APP).HandleBadUserInputException (); \
-    }                                         \
-    catch (...)                               \
-    {                                         \
-        (APP).HandleUnknownException ();      \
+#define STD_EXCEPT_CATCHER(APP)                                                                                                            \
+    catch (CMemoryException * e)                                                                                                           \
+    {                                                                                                                                      \
+        (APP).HandleBadAllocException ();                                                                                                  \
+        e->Delete ();                                                                                                                      \
+    }                                                                                                                                      \
+    catch (CException * e)                                                                                                                 \
+    {                                                                                                                                      \
+        (APP).HandleMFCException (e);                                                                                                      \
+        e->Delete ();                                                                                                                      \
+    }                                                                                                                                      \
+    catch (bad_alloc)                                                                                                                      \
+    {                                                                                                                                      \
+        (APP).HandleBadAllocException ();                                                                                                  \
+    }                                                                                                                                      \
+    catch (const system_error&)                                                                                                            \
+    {                                                                                                                                      \
+        (APP).HandleUnknownException ();                                                                                                   \
+    }                                                                                                                                      \
+    catch (TextInteractor::BadUserInput&)                                                                                                  \
+    {                                                                                                                                      \
+        (APP).HandleBadUserInputException ();                                                                                              \
+    }                                                                                                                                      \
+    catch (...)                                                                                                                            \
+    {                                                                                                                                      \
+        (APP).HandleUnknownException ();                                                                                                   \
     }
 
 class SimpleLedTemplate : public CMultiDocTemplate {
 public:
     SimpleLedTemplate (const char* daStr)
-        : CMultiDocTemplate (IDR_MAINFRAME, RUNTIME_CLASS (LedLineItDocument), RUNTIME_CLASS (LedLineItDocFrame),
-                             RUNTIME_CLASS (LedLineItView))
+        : CMultiDocTemplate (IDR_MAINFRAME, RUNTIME_CLASS (LedLineItDocument), RUNTIME_CLASS (LedLineItDocFrame), RUNTIME_CLASS (LedLineItView))
     {
         m_strDocStrings = daStr;
     }
@@ -408,19 +407,11 @@ BOOL LedLineItApplication::InitInstance ()
         MyRegistrationHelper fileAssocHelper;
         SDKString            txtDocIcon = Win32UIFileAssociationInfo::kNoChange;
         SDKString            batDocIcon = Win32UIFileAssociationInfo::kNoChange;
-        fileAssocHelper.Add (Win32UIFileAssociationInfo (
-            Led_SDK_TCHAROF (".txt"),
-            Led_SDK_TCHAROF ("txtfile"),
-            Led_SDK_TCHAROF ("Text Document"),
-            Win32UIFileAssociationInfo::kNoChange,
-            Led_SDK_TCHAROF ("$EXE$ \"%1\"")));
-        fileAssocHelper.Add (Win32UIFileAssociationInfo (
-            Led_SDK_TCHAROF (".bat"),
-            Led_SDK_TCHAROF ("batfile"),
-            Led_SDK_TCHAROF ("MS-DOS Batch File"),
-            Win32UIFileAssociationInfo::kNoChange,
-            Led_SDK_TCHAROF ("$EXE$ \"%1\""),
-            Win32UIFileAssociationInfo::kNoChange));
+        fileAssocHelper.Add (Win32UIFileAssociationInfo (Led_SDK_TCHAROF (".txt"), Led_SDK_TCHAROF ("txtfile"), Led_SDK_TCHAROF ("Text Document"),
+                                                         Win32UIFileAssociationInfo::kNoChange, Led_SDK_TCHAROF ("$EXE$ \"%1\"")));
+        fileAssocHelper.Add (Win32UIFileAssociationInfo (Led_SDK_TCHAROF (".bat"), Led_SDK_TCHAROF ("batfile"),
+                                                         Led_SDK_TCHAROF ("MS-DOS Batch File"), Win32UIFileAssociationInfo::kNoChange,
+                                                         Led_SDK_TCHAROF ("$EXE$ \"%1\""), Win32UIFileAssociationInfo::kNoChange));
         fileAssocHelper.DoIt ();
     }
 #endif
@@ -607,7 +598,8 @@ void LedLineItApplication::OnAppAbout ()
                 AssertNotNull (w);
                 RECT tmp;
                 ::GetWindowRect (w, &tmp);
-                ::MoveWindow (w, kButHSluff, kPictHeight - AsLedRect (tmp).GetHeight () - kButVSluff, AsLedRect (tmp).GetWidth (), AsLedRect (tmp).GetHeight (), false); // width/height we should presevere
+                ::MoveWindow (w, kButHSluff, kPictHeight - AsLedRect (tmp).GetHeight () - kButVSluff, AsLedRect (tmp).GetWidth (),
+                              AsLedRect (tmp).GetHeight (), false); // width/height we should presevere
             }
 
             ::SetWindowText (GetHWND (), _T ("About LedLineIt!"));
@@ -652,10 +644,7 @@ void LedLineItApplication::OnCheckForUpdatesWebPageCommand ()
     Led_URLManager::Get ().Open (MakeSophistsAppNameVersionURL ("/Led/CheckForUpdates.asp", kAppName));
 }
 
-void LedLineItApplication::OnGotoSophistsWebPageCommand ()
-{
-    Led_URLManager::Get ().Open (MakeSophistsAppNameVersionURL ("/", kAppName));
-}
+void LedLineItApplication::OnGotoSophistsWebPageCommand () { Led_URLManager::Get ().Open (MakeSophistsAppNameVersionURL ("/", kAppName)); }
 
 void LedLineItApplication::OnToggleAutoIndentOptionCommand ()
 {

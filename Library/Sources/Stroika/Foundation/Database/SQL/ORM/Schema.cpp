@@ -103,7 +103,8 @@ Mapping<String, VariantValue> ORM::Schema::CatchAllField::kDefaultMapper_Combine
 Mapping<String, VariantValue> ORM::Schema::Table::MapToDB (const Mapping<String, VariantValue>& fields) const
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    TraceContextBumper ctx{L"ORM::Schema::Table::MapToDB", Stroika_Foundation_Debug_OptionalizeTraceArgs (L"fields=%s", Characters::ToString (fields).c_str ())};
+    TraceContextBumper ctx{L"ORM::Schema::Table::MapToDB",
+                           Stroika_Foundation_Debug_OptionalizeTraceArgs (L"fields=%s", Characters::ToString (fields).c_str ())};
 #endif
     Mapping<String, VariantValue> resultFields;
     Set<String>                   usedFields; // must track outside of resultFields.Keys () cuz input key could differ from output
@@ -120,7 +121,8 @@ Mapping<String, VariantValue> ORM::Schema::Table::MapToDB (const Mapping<String,
                     resultFields.Add (fi.fName, oFieldVal->ConvertTo (*fi.fVariantValueType));
                 }
                 catch (...) {
-                    DbgTrace (L"IN ORM::Schema::Table::MapToDB for field %s: %s", fi.fName.As<wstring> ().c_str (), Characters::ToString (current_exception ()).c_str ());
+                    DbgTrace (L"IN ORM::Schema::Table::MapToDB for field %s: %s", fi.fName.As<wstring> ().c_str (),
+                              Characters::ToString (current_exception ()).c_str ());
                     throw; // dont call Execution::ReThrow () to avoid extra log entry - above enuf
                 }
             }
@@ -131,7 +133,8 @@ Mapping<String, VariantValue> ORM::Schema::Table::MapToDB (const Mapping<String,
         }
         else if (fi.fRequired) {
             // throw or assert?
-            DbgTrace (L"IN ORM::Schema::Table::MapToDB for field %s: field required, but not present in the argument list to Map function", fi.fName.As<wstring> ().c_str ());
+            DbgTrace (L"IN ORM::Schema::Table::MapToDB for field %s: field required, but not present in the argument list to Map function",
+                      fi.fName.As<wstring> ().c_str ());
             AssertNotReached ();
         }
     }
@@ -154,7 +157,8 @@ Mapping<String, VariantValue> ORM::Schema::Table::MapToDB (const Mapping<String,
 Mapping<String, VariantValue> ORM::Schema::Table::MapFromDB (const Mapping<String, VariantValue>& fields) const
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    TraceContextBumper ctx{L"ORM::Schema::Table::MapFromDB", Stroika_Foundation_Debug_OptionalizeTraceArgs (L"fields=%s", Characters::ToString (fields).c_str ())};
+    TraceContextBumper ctx{L"ORM::Schema::Table::MapFromDB",
+                           Stroika_Foundation_Debug_OptionalizeTraceArgs (L"fields=%s", Characters::ToString (fields).c_str ())};
 #endif
     Mapping<String, VariantValue> resultFields;
     for (const auto& fi : fNamedFields) {

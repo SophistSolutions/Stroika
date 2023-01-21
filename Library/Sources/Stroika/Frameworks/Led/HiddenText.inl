@@ -18,15 +18,9 @@ namespace Stroika::Frameworks::Led {
         ********************************************************************************
         */
     //  class   HidableTextMarkerOwner
-    inline shared_ptr<FlavorPackageInternalizer> HidableTextMarkerOwner::GetInternalizer () const
-    {
-        return fInternalizer;
-    }
-    inline shared_ptr<FlavorPackageExternalizer> HidableTextMarkerOwner::GetExternalizer () const
-    {
-        return fExternalizer;
-    }
-    inline void HidableTextMarkerOwner::Invariant () const
+    inline shared_ptr<FlavorPackageInternalizer> HidableTextMarkerOwner::GetInternalizer () const { return fInternalizer; }
+    inline shared_ptr<FlavorPackageExternalizer> HidableTextMarkerOwner::GetExternalizer () const { return fExternalizer; }
+    inline void                                  HidableTextMarkerOwner::Invariant () const
     {
 #if qDebug
         Invariant_ ();
@@ -60,10 +54,7 @@ namespace Stroika::Frameworks::Led {
         }
         Ensure (fShown);
     }
-    inline bool HidableTextMarkerOwner::HidableTextMarker::IsShown () const
-    {
-        return fShown;
-    }
+    inline bool HidableTextMarkerOwner::HidableTextMarker::IsShown () const { return fShown; }
 
     //  class   HidableTextMarkerHelper<BASECLASS>
     template <typename BASECLASS>
@@ -79,9 +70,8 @@ namespace Stroika::Frameworks::Led {
     }
     template <typename BASECLASS>
     void HidableTextMarkerHelper<BASECLASS>::DrawSegment (const StyledTextImager* imager, const RunElement& runElement, Tablet* tablet,
-                                                          size_t from, size_t to, const TextLayoutBlock& text,
-                                                          const Led_Rect& drawInto, const Led_Rect& invalidRect, CoordinateType useBaseLine,
-                                                          DistanceType* pixelsDrawn)
+                                                          size_t from, size_t to, const TextLayoutBlock& text, const Led_Rect& drawInto,
+                                                          const Led_Rect& invalidRect, CoordinateType useBaseLine, DistanceType* pixelsDrawn)
     {
         if (this->IsShown ()) {
             inherited::DrawSegment (imager, runElement, tablet, from, to, text, drawInto, invalidRect, useBaseLine, pixelsDrawn);
@@ -91,8 +81,8 @@ namespace Stroika::Frameworks::Led {
         }
     }
     template <typename BASECLASS>
-    void HidableTextMarkerHelper<BASECLASS>::MeasureSegmentWidth (const StyledTextImager* imager, const StyledTextImager::RunElement& runElement, size_t from, size_t to, const Led_tChar* text,
-                                                                  DistanceType* distanceResults) const
+    void HidableTextMarkerHelper<BASECLASS>::MeasureSegmentWidth (const StyledTextImager* imager, const StyledTextImager::RunElement& runElement,
+                                                                  size_t from, size_t to, const Led_tChar* text, DistanceType* distanceResults) const
     {
         if (this->IsShown ()) {
             inherited::MeasureSegmentWidth (imager, runElement, from, to, text, distanceResults);
@@ -105,7 +95,8 @@ namespace Stroika::Frameworks::Led {
         }
     }
     template <typename BASECLASS>
-    DistanceType HidableTextMarkerHelper<BASECLASS>::MeasureSegmentHeight (const StyledTextImager* imager, const StyledTextImager::RunElement& runElement, size_t from, size_t to) const
+    DistanceType HidableTextMarkerHelper<BASECLASS>::MeasureSegmentHeight (const StyledTextImager* imager,
+                                                                           const StyledTextImager::RunElement& runElement, size_t from, size_t to) const
     {
         if (this->IsShown ()) {
             return inherited::MeasureSegmentHeight (imager, runElement, from, to);
@@ -115,7 +106,8 @@ namespace Stroika::Frameworks::Led {
         }
     }
     template <typename BASECLASS>
-    DistanceType HidableTextMarkerHelper<BASECLASS>::MeasureSegmentBaseLine (const StyledTextImager* imager, const StyledTextImager::RunElement& runElement, size_t from, size_t to) const
+    DistanceType HidableTextMarkerHelper<BASECLASS>::MeasureSegmentBaseLine (const StyledTextImager* imager,
+                                                                             const StyledTextImager::RunElement& runElement, size_t from, size_t to) const
     {
         if (this->IsShown ()) {
             return inherited::MeasureSegmentBaseLine (imager, runElement, from, to);
@@ -133,10 +125,7 @@ namespace Stroika::Frameworks::Led {
     }
 
     //  class   UniformHidableTextMarkerOwner
-    inline bool UniformHidableTextMarkerOwner::IsHidden () const
-    {
-        return fHidden;
-    }
+    inline bool UniformHidableTextMarkerOwner::IsHidden () const { return fHidden; }
 
     //  class   ColoredUniformHidableTextMarkerOwner
     inline ColoredUniformHidableTextMarkerOwner::ColoredUniformHidableTextMarkerOwner (TextStore& textStore)
@@ -145,19 +134,13 @@ namespace Stroika::Frameworks::Led {
         , fColored{false}
     {
     }
-    inline Color ColoredUniformHidableTextMarkerOwner::GetColor () const
-    {
-        return fColor;
-    }
-    inline void ColoredUniformHidableTextMarkerOwner::SetColor (const Color& color)
+    inline Color ColoredUniformHidableTextMarkerOwner::GetColor () const { return fColor; }
+    inline void  ColoredUniformHidableTextMarkerOwner::SetColor (const Color& color)
     {
         fColor = color;
         FixupSubMarkers ();
     }
-    inline bool ColoredUniformHidableTextMarkerOwner::GetColored () const
-    {
-        return fColored;
-    }
+    inline bool ColoredUniformHidableTextMarkerOwner::GetColored () const { return fColored; }
     inline void ColoredUniformHidableTextMarkerOwner::SetColored (bool colored)
     {
         fColored = colored;

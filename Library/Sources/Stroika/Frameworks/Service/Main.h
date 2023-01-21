@@ -183,7 +183,8 @@ namespace Stroika::Frameworks::Service {
         /**
          * Note - besides the obvious, the Main () function also sets signal handlers to point to this objects signal handler.
          */
-        explicit Main (const shared_ptr<IApplicationRep>& appRep, const shared_ptr<IServiceIntegrationRep>& serviceIntegrationRep = mkDefaultServiceIntegrationRep ());
+        explicit Main (const shared_ptr<IApplicationRep>&        appRep,
+                       const shared_ptr<IServiceIntegrationRep>& serviceIntegrationRep = mkDefaultServiceIntegrationRep ());
         Main ()            = delete;
         Main (const Main&) = delete;
 
@@ -325,7 +326,8 @@ namespace Stroika::Frameworks::Service {
          *  This only fails if it couldn't (even forced) stop the service (ignoring timeout) or if
          *  it fails to restart the service.
          */
-        nonvirtual void ForcedRestart (Time::DurationSecondsType timeout = Time::kInfinite, Time::DurationSecondsType unforcedStopTimeout = Time::kInfinite);
+        nonvirtual void ForcedRestart (Time::DurationSecondsType timeout             = Time::kInfinite,
+                                       Time::DurationSecondsType unforcedStopTimeout = Time::kInfinite);
 
     public:
         /**

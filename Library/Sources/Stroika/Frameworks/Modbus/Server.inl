@@ -20,7 +20,8 @@ namespace Stroika::Frameworks::Modbus {
      ********************************************************************************
      */
     template <typename MODBUS_REGISTER_DESCRIPTOR, typename SRC_TYPE>
-    void SplitSrcAcrossOutputs (const SRC_TYPE& s, typename MODBUS_REGISTER_DESCRIPTOR::NameType baseRegister, Containers::Mapping<typename MODBUS_REGISTER_DESCRIPTOR::NameType, typename MODBUS_REGISTER_DESCRIPTOR::ValueType>* update)
+    void SplitSrcAcrossOutputs (const SRC_TYPE& s, typename MODBUS_REGISTER_DESCRIPTOR::NameType baseRegister,
+                                Containers::Mapping<typename MODBUS_REGISTER_DESCRIPTOR::NameType, typename MODBUS_REGISTER_DESCRIPTOR::ValueType>* update)
     {
         using VT                 = typename MODBUS_REGISTER_DESCRIPTOR::ValueType;
         constexpr size_t kNElts_ = sizeof (SRC_TYPE) / sizeof (VT);

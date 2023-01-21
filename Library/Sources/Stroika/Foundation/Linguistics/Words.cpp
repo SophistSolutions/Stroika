@@ -92,7 +92,4 @@ String Linguistics::UnCapitalizeFirstWord (const String& s)
  ********************************** IsAllCaps ***********************************
  ********************************************************************************
  */
-bool Linguistics::IsAllCaps (const String& s)
-{
-    return not s.empty () and s == s.ToUpperCase ();
-}
+bool Linguistics::IsAllCaps (const String& s) { return not s.empty () and s == s.ToUpperCase (); }

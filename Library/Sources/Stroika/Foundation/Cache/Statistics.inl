@@ -17,26 +17,16 @@ namespace Stroika::Foundation::Cache::Statistics {
      ***************************** Statistics::Stats_Basic **************************
      ********************************************************************************
      */
-    inline void Stats_Basic::IncrementHits ()
-    {
-        ++fCachedCollected_Hits;
-    }
-    inline void Stats_Basic::IncrementMisses ()
-    {
-        ++fCachedCollected_Misses;
-    }
+    inline void Stats_Basic::IncrementHits () { ++fCachedCollected_Hits; }
+    inline void Stats_Basic::IncrementMisses () { ++fCachedCollected_Misses; }
 
     /*
      ********************************************************************************
      ****************************** Statistics::Stats_Null **************************
      ********************************************************************************
      */
-    inline void Stats_Null::IncrementHits ()
-    {
-    }
-    inline void Stats_Null::IncrementMisses ()
-    {
-    }
+    inline void Stats_Null::IncrementHits () {}
+    inline void Stats_Null::IncrementMisses () {}
 
 }
 

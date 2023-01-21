@@ -62,7 +62,8 @@ public:
         , fSeekable_{seekable}
         , fFileName_{fileName}
     {
-        auto            activity = LazyEvalActivity ([&] () -> String { return Characters::Format (L"opening %s for read access", Characters::ToString (fFileName_).c_str ()); });
+        auto activity = LazyEvalActivity (
+            [&] () -> String { return Characters::Format (L"opening %s for read access", Characters::ToString (fFileName_).c_str ()); });
         DeclareActivity currentActivity{&activity};
 #if qPlatform_Windows
         errno_t e = ::_wsopen_s (&fFD_, fileName.c_str (), (O_RDONLY | O_BINARY), _SH_DENYNO, 0);
@@ -106,10 +107,7 @@ public:
     }
     nonvirtual Rep_& operator= (const Rep_&) = delete;
 
-    virtual bool IsSeekable () const override
-    {
-        return fSeekable_ == eSeekable;
-    }
+    virtual bool IsSeekable () const override { return fSeekable_ == eSeekable; }
     virtual void CloseRead () override
     {
         Require (IsOpenRead ());
@@ -122,10 +120,7 @@ public:
         }
         fFD_ = -1;
     }
-    virtual bool IsOpenRead () const override
-    {
-        return fFD_ >= 0;
-    }
+    virtual bool   IsOpenRead () const override { return fFD_ >= 0; }
     virtual size_t Read (byte* intoStart, byte* intoEnd) override
     {
         RequireNotNull (intoStart);
@@ -136,8 +131,9 @@ public:
         Debug::TraceContextBumper ctx{L"FileInputStream::Rep_::Read", L"nRequested: %llu", static_cast<unsigned long long> (nRequested)};
 #endif
         AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
-        auto                                            readingFromFileActivity = LazyEvalActivity ([&] () -> String { return Characters::Format (L"reading from %s", Characters::ToString (fFileName_).c_str ()); });
-        DeclareActivity                                 currentActivity{&readingFromFileActivity};
+        auto                                            readingFromFileActivity = LazyEvalActivity (
+            [&] () -> String { return Characters::Format (L"reading from %s", Characters::ToString (fFileName_).c_str ()); });
+        DeclareActivity currentActivity{&readingFromFileActivity};
 #if qPlatform_Windows
         return static_cast<size_t> (ThrowPOSIXErrNoIfNegative (::_read (fFD_, intoStart, Math::PinToMaxForType<unsigned int> (nRequested))));
 #else
@@ -270,7 +266,8 @@ auto FileInputStream::New (Execution::InternallySynchronized internallySynchroni
     }
 }
 
-auto FileInputStream::New (Execution::InternallySynchronized internallySynchronized, FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy, SeekableFlag seekable) -> Ptr
+auto FileInputStream::New (Execution::InternallySynchronized internallySynchronized, FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy,
+                           SeekableFlag seekable) -> Ptr
 {
     switch (internallySynchronized) {
         case Execution::eInternallySynchronized:
@@ -286,7 +283,8 @@ auto FileInputStream::New (Execution::InternallySynchronized internallySynchroni
 InputStream<byte>::Ptr FileInputStream::New (const filesystem::path& fileName, SeekableFlag seekable, BufferFlag bufferFlag)
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    Debug::TraceContextBumper ctx{L"FileInputStream::New", L"fileName: %s, seekable: %d, bufferFlag: %d", ToString (fileName).c_str (), seekable, bufferFlag};
+    Debug::TraceContextBumper ctx{L"FileInputStream::New", L"fileName: %s, seekable: %d, bufferFlag: %d", ToString (fileName).c_str (),
+                                  seekable, bufferFlag};
 #endif
     InputStream<byte>::Ptr in = FileInputStream::New (fileName, seekable);
     switch (bufferFlag) {

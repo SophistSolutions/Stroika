@@ -21,7 +21,8 @@ namespace Stroika::Foundation::Streams::iostream {
         stringstream out;
         out << elt;
         string tmp = out.str ();
-        return Memory::BLOB (vector<byte> (reinterpret_cast<const byte*> (Containers::Start (tmp)), reinterpret_cast<const byte*> (Containers::End (tmp))));
+        return Memory::BLOB (
+            vector<byte> (reinterpret_cast<const byte*> (Containers::Start (tmp)), reinterpret_cast<const byte*> (Containers::End (tmp))));
     }
 
 }

@@ -203,15 +203,19 @@ namespace {
                 readMemInfoLine (&slabReclaimable, kSReclaimableLabel_, line);
                 readMemInfoLine (&slab, kSlabLabel_, line);
             }
-            if (memTotal and updateResult->fPhysicalMemory.fFree and updateResult->fPhysicalMemory.fInactive and updateResult->fPhysicalMemory.fActive) {
-                updateResult->fPhysicalMemory.fOSReserved = *memTotal - *updateResult->fPhysicalMemory.fFree - *updateResult->fPhysicalMemory.fInactive - *updateResult->fPhysicalMemory.fActive;
+            if (memTotal and updateResult->fPhysicalMemory.fFree and updateResult->fPhysicalMemory.fInactive and
+                updateResult->fPhysicalMemory.fActive) {
+                updateResult->fPhysicalMemory.fOSReserved = *memTotal - *updateResult->fPhysicalMemory.fFree -
+                                                            *updateResult->fPhysicalMemory.fInactive - *updateResult->fPhysicalMemory.fActive;
             }
-            if (not updateResult->fPhysicalMemory.fAvailable.has_value () and updateResult->fPhysicalMemory.fFree and updateResult->fPhysicalMemory.fInactive) {
+            if (not updateResult->fPhysicalMemory.fAvailable.has_value () and updateResult->fPhysicalMemory.fFree and
+                updateResult->fPhysicalMemory.fInactive) {
                 if (not slabReclaimable.has_value ()) {
                     // wag
                     slabReclaimable = NullCoalesce (slab) / 2;
                 }
-                updateResult->fPhysicalMemory.fAvailable = *updateResult->fPhysicalMemory.fFree + *updateResult->fPhysicalMemory.fInactive + NullCoalesce (slabReclaimable);
+                updateResult->fPhysicalMemory.fAvailable =
+                    *updateResult->fPhysicalMemory.fFree + *updateResult->fPhysicalMemory.fInactive + NullCoalesce (slabReclaimable);
             }
         }
         nonvirtual void Read_ProcVMStat_ (Instruments::Memory::Info* updateResult)
@@ -239,7 +243,8 @@ namespace {
                     DataExchange::Variant::CharacterDelimitedLines::Reader reader{{' ', '\t'}};
                     for (const Sequence<String>& line : reader.ReadMatrix (FileInputStream::New (kProcVMStatFileName_, FileInputStream::eNotSeekable))) {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                        DbgTrace (L"***in Instruments::Memory::Info capture_ linesize=%d, line[0]=%s", line.size (), line.empty () ? L"" : line[0].c_str ());
+                        DbgTrace (L"***in Instruments::Memory::Info capture_ linesize=%d, line[0]=%s", line.size (),
+                                  line.empty () ? L"" : line[0].c_str ());
 #endif
                         static const String kpgfaultLabel_{"pgfault"sv};
                         static const String kpgpgoutLabel_{"pgpgout"sv};
@@ -259,7 +264,8 @@ namespace {
                 if (pgfault and updateResult->fPaging.fMajorPageFaultsSinceBoot) {
                     updateResult->fPaging.fMinorPageFaultsSinceBoot = *pgfault - *updateResult->fPaging.fMajorPageFaultsSinceBoot;
                 }
-                auto doAve_ = [this] (Time::DurationSecondsType savedVMPageStatsAt, Time::DurationSecondsType now, uint64_t* savedBaseline, optional<uint64_t> faultsSinceBoot, optional<double>* faultsPerSecond) {
+                auto doAve_ = [this] (Time::DurationSecondsType savedVMPageStatsAt, Time::DurationSecondsType now, uint64_t* savedBaseline,
+                                      optional<uint64_t> faultsSinceBoot, optional<double>* faultsPerSecond) {
                     if (faultsSinceBoot) {
                         if (savedVMPageStatsAt >= _fOptions.fMinimumAveragingInterval) {
                             *faultsPerSecond = (*faultsSinceBoot - *savedBaseline) / (now - savedVMPageStatsAt);
@@ -269,9 +275,12 @@ namespace {
                 };
                 auto ctxLock = scoped_lock{_fContext};
                 auto ctx     = _fContext.rwget ().rwref ();
-                doAve_ (ctx->fSaved_VMPageStats_At, now, &ctx->fSaved_MinorPageFaultsSinceBoot, updateResult->fPaging.fMinorPageFaultsSinceBoot, &updateResult->fPaging.fMinorPageFaultsPerSecond);
-                doAve_ (ctx->fSaved_VMPageStats_At, now, &ctx->fSaved_MajorPageFaultsSinceBoot, updateResult->fPaging.fMajorPageFaultsSinceBoot, &updateResult->fPaging.fMajorPageFaultsPerSecond);
-                doAve_ (ctx->fSaved_VMPageStats_At, now, &ctx->fSaved_PageOutsSinceBoot, updateResult->fPaging.fPageOutsSinceBoot, &updateResult->fPaging.fPageOutsPerSecond);
+                doAve_ (ctx->fSaved_VMPageStats_At, now, &ctx->fSaved_MinorPageFaultsSinceBoot,
+                        updateResult->fPaging.fMinorPageFaultsSinceBoot, &updateResult->fPaging.fMinorPageFaultsPerSecond);
+                doAve_ (ctx->fSaved_VMPageStats_At, now, &ctx->fSaved_MajorPageFaultsSinceBoot,
+                        updateResult->fPaging.fMajorPageFaultsSinceBoot, &updateResult->fPaging.fMajorPageFaultsPerSecond);
+                doAve_ (ctx->fSaved_VMPageStats_At, now, &ctx->fSaved_PageOutsSinceBoot, updateResult->fPaging.fPageOutsSinceBoot,
+                        &updateResult->fPaging.fPageOutsPerSecond);
                 ctx->fSaved_VMPageStats_At = now;
             }
         }
@@ -283,7 +292,10 @@ namespace {
 namespace {
     struct _Context : SystemPerformance::Support::Context {
 #if qUseWMICollectionSupport_
-        WMICollector fMemoryWMICollector_{"Memory"sv, {kInstanceName_}, {kCommittedBytes_, kCommitLimit_, kHardPageFaultsPerSec_, kPagesOutPerSec_, kFreeMem_, kHardwareReserved1_, kHardwareReserved2_}};
+        WMICollector fMemoryWMICollector_{"Memory"sv,
+                                          {kInstanceName_},
+                                          {kCommittedBytes_, kCommitLimit_, kHardPageFaultsPerSec_, kPagesOutPerSec_, kFreeMem_,
+                                           kHardwareReserved1_, kHardwareReserved2_}};
 #endif
     };
     struct InstrumentRep_Windows_ : InstrumentRepBase_<_Context> {
@@ -323,8 +335,8 @@ namespace {
             MEMORYSTATUSEX statex{};
             statex.dwLength = sizeof (statex);
             Verify (::GlobalMemoryStatusEx (&statex) != 0);
-            updateResult->fPhysicalMemory.fFree             = statex.ullAvailPhys; // overridden later, but a good first estimate if we don't use WMI
-            *totalRAM                                       = statex.ullTotalPhys;
+            updateResult->fPhysicalMemory.fFree = statex.ullAvailPhys; // overridden later, but a good first estimate if we don't use WMI
+            *totalRAM                           = statex.ullTotalPhys;
             updateResult->fVirtualMemory.fPagefileTotalSize = statex.ullTotalPageFile;
 
             /*
@@ -340,10 +352,14 @@ namespace {
             auto                 lock      = scoped_lock{_fContext};
             shared_ptr<_Context> rwContext = _fContext.rwget ().rwref ();
             rwContext->fMemoryWMICollector_.Collect ();
-            Memory::CopyToIf (&updateResult->fVirtualMemory.fCommittedBytes, rwContext->fMemoryWMICollector_.PeekCurrentValue (kInstanceName_, kCommittedBytes_));
-            Memory::CopyToIf (&updateResult->fVirtualMemory.fCommitLimit, rwContext->fMemoryWMICollector_.PeekCurrentValue (kInstanceName_, kCommitLimit_));
-            Memory::CopyToIf (&updateResult->fPaging.fMajorPageFaultsPerSecond, rwContext->fMemoryWMICollector_.PeekCurrentValue (kInstanceName_, kHardPageFaultsPerSec_));
-            Memory::CopyToIf (&updateResult->fPaging.fPageOutsPerSecond, rwContext->fMemoryWMICollector_.PeekCurrentValue (kInstanceName_, kPagesOutPerSec_));
+            Memory::CopyToIf (&updateResult->fVirtualMemory.fCommittedBytes,
+                              rwContext->fMemoryWMICollector_.PeekCurrentValue (kInstanceName_, kCommittedBytes_));
+            Memory::CopyToIf (&updateResult->fVirtualMemory.fCommitLimit,
+                              rwContext->fMemoryWMICollector_.PeekCurrentValue (kInstanceName_, kCommitLimit_));
+            Memory::CopyToIf (&updateResult->fPaging.fMajorPageFaultsPerSecond,
+                              rwContext->fMemoryWMICollector_.PeekCurrentValue (kInstanceName_, kHardPageFaultsPerSec_));
+            Memory::CopyToIf (&updateResult->fPaging.fPageOutsPerSecond,
+                              rwContext->fMemoryWMICollector_.PeekCurrentValue (kInstanceName_, kPagesOutPerSec_));
             Memory::CopyToIf (&updateResult->fPhysicalMemory.fFree, rwContext->fMemoryWMICollector_.PeekCurrentValue (kInstanceName_, kFreeMem_));
             if (optional<double> freeMem = rwContext->fMemoryWMICollector_.PeekCurrentValue (kInstanceName_, kFreeMem_)) {
                 if (updateResult->fPhysicalMemory.fActive) {
@@ -352,8 +368,10 @@ namespace {
                 }
             }
             updateResult->fPhysicalMemory.fOSReserved = nullopt;
-            Memory::AccumulateIf (&updateResult->fPhysicalMemory.fOSReserved, rwContext->fMemoryWMICollector_.PeekCurrentValue (kInstanceName_, kHardwareReserved1_));
-            Memory::AccumulateIf (&updateResult->fPhysicalMemory.fOSReserved, rwContext->fMemoryWMICollector_.PeekCurrentValue (kInstanceName_, kHardwareReserved2_));
+            Memory::AccumulateIf (&updateResult->fPhysicalMemory.fOSReserved,
+                                  rwContext->fMemoryWMICollector_.PeekCurrentValue (kInstanceName_, kHardwareReserved1_));
+            Memory::AccumulateIf (&updateResult->fPhysicalMemory.fOSReserved,
+                                  rwContext->fMemoryWMICollector_.PeekCurrentValue (kInstanceName_, kHardwareReserved2_));
             // fPhysicalMemory.fAvailable WAG TMPHACK - probably should add "hardware in use" memory + private WS of each process + shared memory "WS" - but not easy to compute...
             updateResult->fPhysicalMemory.fAvailable = updateResult->fPhysicalMemory.fFree + updateResult->fPhysicalMemory.fInactive;
         }
@@ -392,18 +410,16 @@ namespace {
         {
             Debug::TraceContextBumper ctx{"SystemPerformance::Instrument...Memory...MemoryInstrumentRep_::Capture ()"};
             MeasurementSet            results;
-            results.fMeasurements.Add (Measurement{kMemoryUsageMeasurement_, Instruments::Memory::Instrument::kObjectVariantMapper.FromObject (Capture_Raw (&results.fMeasuredAt))});
+            results.fMeasurements.Add (Measurement{
+                kMemoryUsageMeasurement_, Instruments::Memory::Instrument::kObjectVariantMapper.FromObject (Capture_Raw (&results.fMeasuredAt))});
             return results;
         }
         nonvirtual Info Capture_Raw (Range<DurationSecondsType>* outMeasuredAt)
         {
             return Do_Capture_Raw<Info> ([this] () { return _InternalCapture (); }, outMeasuredAt);
         }
-        virtual unique_ptr<IRep> Clone () const override
-        {
-            return make_unique<MemoryInstrumentRep_> (_fOptions, _fContext.load ());
-        }
-        nonvirtual Info _InternalCapture ()
+        virtual unique_ptr<IRep> Clone () const override { return make_unique<MemoryInstrumentRep_> (_fOptions, _fContext.load ()); }
+        nonvirtual Info          _InternalCapture ()
         {
             AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
@@ -414,9 +430,14 @@ namespace {
 #else
             Info result;
 #endif
-            Ensure (NullCoalesce (result.fPhysicalMemory.fActive) + NullCoalesce (result.fPhysicalMemory.fInactive) + NullCoalesce (result.fPhysicalMemory.fFree) + NullCoalesce (result.fPhysicalMemory.fOSReserved) <= GetSystemConfiguration_Memory ().fTotalPhysicalRAM);
-            if (result.fPhysicalMemory.fActive and result.fPhysicalMemory.fInactive and result.fPhysicalMemory.fFree and result.fPhysicalMemory.fOSReserved) {
-                Ensure (NullCoalesce (result.fPhysicalMemory.fActive) + NullCoalesce (result.fPhysicalMemory.fInactive) + NullCoalesce (result.fPhysicalMemory.fFree) + NullCoalesce (result.fPhysicalMemory.fOSReserved) == GetSystemConfiguration_Memory ().fTotalPhysicalRAM);
+            Ensure (NullCoalesce (result.fPhysicalMemory.fActive) + NullCoalesce (result.fPhysicalMemory.fInactive) +
+                        NullCoalesce (result.fPhysicalMemory.fFree) + NullCoalesce (result.fPhysicalMemory.fOSReserved) <=
+                    GetSystemConfiguration_Memory ().fTotalPhysicalRAM);
+            if (result.fPhysicalMemory.fActive and result.fPhysicalMemory.fInactive and result.fPhysicalMemory.fFree and
+                result.fPhysicalMemory.fOSReserved) {
+                Ensure (NullCoalesce (result.fPhysicalMemory.fActive) + NullCoalesce (result.fPhysicalMemory.fInactive) +
+                            NullCoalesce (result.fPhysicalMemory.fFree) + NullCoalesce (result.fPhysicalMemory.fOSReserved) ==
+                        GetSystemConfiguration_Memory ().fTotalPhysicalRAM);
             }
             return result;
         }
@@ -460,12 +481,11 @@ const ObjectVariantMapper Instruments::Memory::Instrument::kObjectVariantMapper 
 }();
 
 Instruments::Memory::Instrument::Instrument (const Options& options)
-    : SystemPerformance::Instrument{
-          InstrumentNameType{"Memory"sv},
-          make_unique<MemoryInstrumentRep_> (options),
-          {kMemoryUsageMeasurement_},
-          {KeyValuePair<type_index, MeasurementType>{typeid (Info), kMemoryUsageMeasurement_}},
-          kObjectVariantMapper}
+    : SystemPerformance::Instrument{InstrumentNameType{"Memory"sv},
+                                    make_unique<MemoryInstrumentRep_> (options),
+                                    {kMemoryUsageMeasurement_},
+                                    {KeyValuePair<type_index, MeasurementType>{typeid (Info), kMemoryUsageMeasurement_}},
+                                    kObjectVariantMapper}
 {
 }
 

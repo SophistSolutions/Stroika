@@ -424,9 +424,11 @@ namespace Stroika::Foundation::IO::Network::HTTP {
         nonvirtual bool operator== (const Headers& rhs) const;
 
     private:
-        enum class AddOrSet { eAdd,
-                              eSet,
-                              eRemove };
+        enum class AddOrSet {
+            eAdd,
+            eSet,
+            eRemove
+        };
         // UpdateBuiltin_ returns true iff headerName was a parsed/builtin type, and false for 'extra' headers: to find out # elts changed, use nChanges optional parameter
         nonvirtual bool UpdateBuiltin_ (AddOrSet flag, const String& headerName, const optional<String>& value, size_t* nRemoveals = nullptr);
         nonvirtual void SetExtras_ (const String& headerName, const optional<String>& value);
@@ -435,17 +437,17 @@ namespace Stroika::Foundation::IO::Network::HTTP {
         // Could have properties lookup once when loading and store here. Or could have
         // them dynamically lookup in fExtraHeaders_. Just put the ones here in special variables
         // that are very commonly checked for, so their check/update will be a bit quicker.
-        Collection<KeyValuePair<String, String>>                       fExtraHeaders_;
-        optional<CacheControl>                                         fCacheControl_;
-        optional<uint64_t>                                             fContentLength_; // must acccess through property to access extended property handlers (except root getter/setter)
-        optional<InternetMediaType>                                    fContentType_;
-        optional<CookieList>                                           fCookieList_; // store optional cuz often missing, and faster init
-        optional<Time::DateTime>                                       fDate_;
-        optional<HTTP::ETag>                                           fETag_; // must acccess through property to access extended property handlers (except root getter/setter)
-        optional<String>                                               fHost_;
-        optional<IfNoneMatch>                                          fIfNoneMatch_;
-        optional<CookieList>                                           fSetCookieList_;    // store optional cuz often missing, and faster init
-        optional<TransferEncodings>                                    fTransferEncoding_; // must acccess through property to access extended property handlers (except root getter/setter)
+        Collection<KeyValuePair<String, String>> fExtraHeaders_;
+        optional<CacheControl>                   fCacheControl_;
+        optional<uint64_t> fContentLength_; // must acccess through property to access extended property handlers (except root getter/setter)
+        optional<InternetMediaType> fContentType_;
+        optional<CookieList>        fCookieList_; // store optional cuz often missing, and faster init
+        optional<Time::DateTime>    fDate_;
+        optional<HTTP::ETag>  fETag_; // must acccess through property to access extended property handlers (except root getter/setter)
+        optional<String>      fHost_;
+        optional<IfNoneMatch> fIfNoneMatch_;
+        optional<CookieList>  fSetCookieList_; // store optional cuz often missing, and faster init
+        optional<TransferEncodings> fTransferEncoding_; // must acccess through property to access extended property handlers (except root getter/setter)
         optional<Containers::Set<String>>                              fVary_;
         [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
     };

@@ -37,8 +37,7 @@ using namespace Stroika::Foundation::Time;
 namespace {
     tm Date2TM_ (const Date& d, const optional<TimeOfDay>& tod)
     {
-        struct tm tm {
-        };
+        struct tm tm {};
         tm.tm_year                         = static_cast<int> (d.GetYear ()) - 1900;
         tm.tm_mon                          = static_cast<unsigned int> (d.GetMonth ()) - 1;
         tm.tm_mday                         = static_cast<unsigned int> (d.GetDayOfMonth ());
@@ -472,8 +471,7 @@ namespace {
          * COULD this be cached? It SHOULD be - but what about when the timezone changes? there maybe a better way to compute this using the
          * timezone global var???
          */
-        struct tm aTm {
-        };
+        struct tm aTm {};
         aTm.tm_year = 70;
         aTm.tm_mon  = 0; // Jan
         aTm.tm_mday = 1;
@@ -491,8 +489,5 @@ namespace {
         return result;
     }
 
-    time_t GetLocaltimeToGMTOffset_ (const DateTime& forTime)
-    {
-        return GetLocaltimeToGMTOffset_ (IsDaylightSavingsTime_ (forTime));
-    }
+    time_t GetLocaltimeToGMTOffset_ (const DateTime& forTime) { return GetLocaltimeToGMTOffset_ (IsDaylightSavingsTime_ (forTime)); }
 }

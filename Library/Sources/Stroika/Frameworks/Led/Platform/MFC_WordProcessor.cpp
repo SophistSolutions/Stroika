@@ -53,7 +53,7 @@ inline SIZE DPtoHIMETRIC (SIZE s)
 COleDocument* Led_MFC_ControlItem::DocContextDefiner::sDoc = NULL;
 
 // Note sure this is the right type????
-const Led_ClipFormat          Led_MFC_ControlItem::kClipFormat   = static_cast<Led_ClipFormat> (::RegisterClipboardFormat (_T("Object Descriptor")));
+const Led_ClipFormat Led_MFC_ControlItem::kClipFormat = static_cast<Led_ClipFormat> (::RegisterClipboardFormat (_T("Object Descriptor")));
 const Led_PrivateEmbeddingTag Led_MFC_ControlItem::kEmbeddingTag = "OLE2Embed";
 
 IMPLEMENT_SERIAL (Led_MFC_ControlItem, COleClientItem, 0)
@@ -64,15 +64,12 @@ Led_MFC_ControlItem::Led_MFC_ControlItem (COleDocument* pContainer)
 {
 }
 
-Led_MFC_ControlItem::~Led_MFC_ControlItem ()
-{
-}
+Led_MFC_ControlItem::~Led_MFC_ControlItem () {}
 
 SimpleEmbeddedObjectStyleMarker* Led_MFC_ControlItem::mkLed_MFC_ControlItemStyleMarker (const char* embeddingTag, const void* data, size_t len)
 {
-    Require (
-        memcmp (embeddingTag, kEmbeddingTag, sizeof (kEmbeddingTag)) == 0 or
-        memcmp (embeddingTag, RTFIO::RTFOLEEmbedding::kEmbeddingTag, sizeof (RTFIO::RTFOLEEmbedding::kEmbeddingTag)) == 0);
+    Require (memcmp (embeddingTag, kEmbeddingTag, sizeof (kEmbeddingTag)) == 0 or
+             memcmp (embeddingTag, RTFIO::RTFOLEEmbedding::kEmbeddingTag, sizeof (RTFIO::RTFOLEEmbedding::kEmbeddingTag)) == 0);
 
     RequireNotNull (DocContextDefiner::GetDoc ()); // See doc in header for class DocContextDefiner.
     // must declare one of these on call stack before calling this
@@ -116,11 +113,11 @@ struct MyOLEStream_input : OLESTREAM {
         theVTbl.Put = NULL;
     }
 };
-SimpleEmbeddedObjectStyleMarker* Led_MFC_ControlItem::mkLed_MFC_ControlItemStyleMarker_ (const char* embeddingTag, const void* data, size_t len, Led_MFC_ControlItem* builtItem)
+SimpleEmbeddedObjectStyleMarker* Led_MFC_ControlItem::mkLed_MFC_ControlItemStyleMarker_ (const char* embeddingTag, const void* data,
+                                                                                         size_t len, Led_MFC_ControlItem* builtItem)
 {
-    Require (
-        memcmp (embeddingTag, kEmbeddingTag, sizeof (kEmbeddingTag)) == 0 or
-        memcmp (embeddingTag, RTFIO::RTFOLEEmbedding::kEmbeddingTag, sizeof (RTFIO::RTFOLEEmbedding::kEmbeddingTag)) == 0);
+    Require (memcmp (embeddingTag, kEmbeddingTag, sizeof (kEmbeddingTag)) == 0 or
+             memcmp (embeddingTag, RTFIO::RTFOLEEmbedding::kEmbeddingTag, sizeof (RTFIO::RTFOLEEmbedding::kEmbeddingTag)) == 0);
     // Need todo try/catch eror handling...??? Or does caller delete embedding? On error? Decide!!!
     //&&&&&&&
     if (memcmp (embeddingTag, kEmbeddingTag, sizeof (kEmbeddingTag)) == 0) {
@@ -172,8 +169,7 @@ SimpleEmbeddedObjectStyleMarker* Led_MFC_ControlItem::mkLed_MFC_ControlItemStyle
              *  so we can RE-INVALIDATE it (here).
              */
             for (auto i = Led_MFC_ControlItem::DocContextDefiner::sWindowsWhichHadDisplaySuppressed.begin ();
-                 i != Led_MFC_ControlItem::DocContextDefiner::sWindowsWhichHadDisplaySuppressed.end ();
-                 ++i) {
+                 i != Led_MFC_ControlItem::DocContextDefiner::sWindowsWhichHadDisplaySuppressed.end (); ++i) {
                 Verify (::InvalidateRect (*i, NULL, true) != 0);
             }
             Led_MFC_ControlItem::DocContextDefiner::sWindowsWhichHadDisplaySuppressed.clear ();
@@ -336,9 +332,9 @@ void Led_MFC_ControlItem::OnDeactivateUI (BOOL bUndoable)
     }
 }
 
-void Led_MFC_ControlItem::DrawSegment (const StyledTextImager* imager, const RunElement& /*runElement*/, Tablet* tablet,
-                                       [[maybe_unused]] size_t from, [[maybe_unused]] size_t to, [[maybe_unused]] const TextLayoutBlock& text, const Led_Rect& drawInto, const Led_Rect& /*invalidRect*/,
-                                       CoordinateType useBaseLine, DistanceType* pixelsDrawn)
+void Led_MFC_ControlItem::DrawSegment (const StyledTextImager* imager, const RunElement& /*runElement*/, Tablet* tablet, [[maybe_unused]] size_t from,
+                                       [[maybe_unused]] size_t to, [[maybe_unused]] const TextLayoutBlock& text, const Led_Rect& drawInto,
+                                       const Led_Rect& /*invalidRect*/, CoordinateType useBaseLine, DistanceType* pixelsDrawn)
 {
     Require (to - from == 1);
     Require (text.PeekAtVirtualText ()[0] == kEmbeddingSentinalChar);
@@ -365,7 +361,8 @@ void Led_MFC_ControlItem::DrawSegment (const StyledTextImager* imager, const Run
     COleClientItem::Draw (Led_MFC_CDCFromTablet (tablet), CRect (AsRECT (innerBoundsRect)));
 }
 
-void Led_MFC_ControlItem::MeasureSegmentWidth ([[maybe_unused]] const StyledTextImager* imager, [[maybe_unused]] const RunElement& runElement, [[maybe_unused]] size_t from, [[maybe_unused]] size_t to,
+void Led_MFC_ControlItem::MeasureSegmentWidth ([[maybe_unused]] const StyledTextImager* imager, [[maybe_unused]] const RunElement& runElement,
+                                               [[maybe_unused]] size_t from, [[maybe_unused]] size_t to,
                                                [[maybe_unused]] const Led_tChar* text, DistanceType* distanceResults) const
 {
     Assert (from + 1 == to);
@@ -373,7 +370,8 @@ void Led_MFC_ControlItem::MeasureSegmentWidth ([[maybe_unused]] const StyledText
     distanceResults[0] = fSize.h + 2 * kDefaultEmbeddingMargin.h;
 }
 
-DistanceType Led_MFC_ControlItem::MeasureSegmentHeight (const StyledTextImager* /*imager*/, const RunElement& /*runElement*/, [[maybe_unused]] size_t from, [[maybe_unused]] size_t to) const
+DistanceType Led_MFC_ControlItem::MeasureSegmentHeight (const StyledTextImager* /*imager*/, const RunElement& /*runElement*/,
+                                                        [[maybe_unused]] size_t from, [[maybe_unused]] size_t to) const
 {
     Assert (from + 1 == to);
     return fSize.v + 2 * kDefaultEmbeddingMargin.v;
@@ -418,10 +416,7 @@ void Led_MFC_ControlItem::ExternalizeFlavors (WriterFlavorPackage& flavorPackage
     }
 }
 
-const char* Led_MFC_ControlItem::GetTag () const
-{
-    return kEmbeddingTag;
-}
+const char* Led_MFC_ControlItem::GetTag () const { return kEmbeddingTag; }
 
 void Led_MFC_ControlItem::Serialize (CArchive& ar)
 {
@@ -526,10 +521,7 @@ void Led_MFC_ControlItem::DoWriteToOLE1Stream (size_t* nBytes, byte** resultData
     ips->Release ();
 }
 
-Led_Size Led_MFC_ControlItem::GetSize ()
-{
-    return fSize;
-}
+Led_Size Led_MFC_ControlItem::GetSize () { return fSize; }
 
 bool Led_MFC_ControlItem::HandleOpen ()
 {

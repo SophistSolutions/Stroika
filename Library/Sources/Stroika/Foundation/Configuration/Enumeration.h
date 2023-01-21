@@ -114,11 +114,8 @@ namespace Stroika::Foundation::Configuration {
      *      write things like:
      *          for (auto i = X::eSTART; i != X::eEND; i = Inc (i));
      */
-#define Stroika_Define_Enum_Bounds(FIRST_ITEM, LAST_ITEM) \
-    eSTART = FIRST_ITEM,                                  \
-    eEND   = LAST_ITEM + 1,                               \
-    eLAST  = LAST_ITEM,                                   \
-    eCOUNT = eEND - eSTART,
+#define Stroika_Define_Enum_Bounds(FIRST_ITEM, LAST_ITEM)                                                                                  \
+    eSTART = FIRST_ITEM, eEND = LAST_ITEM + 1, eLAST = LAST_ITEM, eCOUNT = eEND - eSTART,
 
     /**
      */
@@ -145,8 +142,10 @@ namespace Stroika::Foundation::Configuration {
     template <typename ENUM_TYPE>
     class EnumNames {
     public:
-        static_assert (is_enum_v<decltype (ENUM_TYPE::eCOUNT)>, "Missing eCOUNT - typically Use Stroika_Define_Enum_Bounds inside the enum");
-        static_assert (is_enum_v<decltype (ENUM_TYPE::eSTART)>, "Missing eSTART - typically Use Stroika_Define_Enum_Bounds inside the enum");
+        static_assert (is_enum_v<decltype (ENUM_TYPE::eCOUNT)>,
+                       "Missing eCOUNT - typically Use Stroika_Define_Enum_Bounds inside the enum");
+        static_assert (is_enum_v<decltype (ENUM_TYPE::eSTART)>,
+                       "Missing eSTART - typically Use Stroika_Define_Enum_Bounds inside the enum");
         static_assert (is_enum_v<decltype (ENUM_TYPE::eEND)>, "Missing eEND - typically Use Stroika_Define_Enum_Bounds inside the enum");
 
     private:

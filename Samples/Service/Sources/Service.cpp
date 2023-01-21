@@ -44,12 +44,11 @@ namespace {
     struct SomeModuleALikeWebServer_ {
         // initialize that service//module here, including starting any threads
         SomeModuleALikeWebServer_ ()
-            : fSomeOtherTaskDoingRealWork_{Thread::CleanupPtr::eAbortBeforeWaiting,
-                                           Thread::New (
-                                               [] () {
-                                                   Execution::Sleep (24h); // wait 1 day ... simple test....
-                                               },
-                                               Thread::eAutoStart)}
+            : fSomeOtherTaskDoingRealWork_{Thread::CleanupPtr::eAbortBeforeWaiting, Thread::New (
+                                                                                        [] () {
+                                                                                            Execution::Sleep (24h); // wait 1 day ... simple test....
+                                                                                        },
+                                                                                        Thread::eAutoStart)}
         {
         }
         ~SomeModuleALikeWebServer_ () = default;
@@ -89,14 +88,13 @@ void SampleAppServiceRep::MainLoop (const std::function<void ()>& startedCB)
     startedCB (); // Notify service control mgr that the service has started
 
 #if qUseLogger
-    Logger::sThe.Log (Logger::eInfo, L"%s (version %s) service started successfully", kServiceDescription_.fPrettyName.As<wstring> ().c_str (), Characters::ToString (AppVersion::kVersion).As<wstring> ().c_str ());
+    Logger::sThe.Log (Logger::eInfo, L"%s (version %s) service started successfully", kServiceDescription_.fPrettyName.As<wstring> ().c_str (),
+                      Characters::ToString (AppVersion::kVersion).As<wstring> ().c_str ());
     successfullyStarted = true;
 
     // the final object delcared on the stack before we wait, so its the first run when we are handling the
     // thread aboort exception, and unwinding this call.
-    [[maybe_unused]] auto&& cleanup2 = Execution::Finally ([&] () {
-        Logger::sThe.Log (Logger::eInfo, L"Beginning service shutdown");
-    });
+    [[maybe_unused]] auto&& cleanup2 = Execution::Finally ([&] () { Logger::sThe.Log (Logger::eInfo, L"Beginning service shutdown"); });
 #endif
 
     /*
@@ -109,7 +107,4 @@ void SampleAppServiceRep::MainLoop (const std::function<void ()>& startedCB)
     AssertNotReached ();
 }
 
-Main::ServiceDescription SampleAppServiceRep::GetServiceDescription () const
-{
-    return kServiceDescription_;
-}
+Main::ServiceDescription SampleAppServiceRep::GetServiceDescription () const { return kServiceDescription_; }

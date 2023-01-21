@@ -75,7 +75,8 @@ using namespace Stroika::Frameworks::Led::StyledTextIO;
 #if qPlatform_MacOS
 static Handle sDeepShitCheeseBuf = NULL; // so no mem alerts don't crash...
 
-inline void DoStringyAlert (short alertID, const ConstStr255Param p0 = NULL, const ConstStr255Param p1 = NULL, const ConstStr255Param p2 = NULL, const ConstStr255Param p3 = NULL)
+inline void DoStringyAlert (short alertID, const ConstStr255Param p0 = NULL, const ConstStr255Param p1 = NULL,
+                            const ConstStr255Param p2 = NULL, const ConstStr255Param p3 = NULL)
 {
     if (sDeepShitCheeseBuf != NULL) {
         ::DisposeHandle (sDeepShitCheeseBuf);
@@ -103,62 +104,62 @@ const char kAppName[] = "LedIt";
 
 #if qPlatform_MacOS
 
-#define STANDARD_LEDITAPPLICATION_MACOS_CATCHERS()              \
-    catch (OSErr err)                                           \
-    {                                                           \
-        HandleMacOSException (err);                             \
-    }                                                           \
-    catch (bad_alloc)                                           \
-    {                                                           \
-        HandleBadAllocException ();                             \
-    }                                                           \
-    catch (TextInteractor::BadUserInput&)                       \
-    {                                                           \
-        HandleBadUserInputException ();                         \
-    }                                                           \
-    catch (const LException& err)                               \
-    {                                                           \
-        HandlePowerPlantException ((OSErr)err.GetErrorCode ()); \
-    }                                                           \
-    catch (ExceptionCode err)                                   \
-    {                                                           \
-        HandlePowerPlantException (err);                        \
-    }                                                           \
-    catch (...)                                                 \
-    {                                                           \
-        HandleUnknownException ();                              \
+#define STANDARD_LEDITAPPLICATION_MACOS_CATCHERS()                                                                                         \
+    catch (OSErr err)                                                                                                                      \
+    {                                                                                                                                      \
+        HandleMacOSException (err);                                                                                                        \
+    }                                                                                                                                      \
+    catch (bad_alloc)                                                                                                                      \
+    {                                                                                                                                      \
+        HandleBadAllocException ();                                                                                                        \
+    }                                                                                                                                      \
+    catch (TextInteractor::BadUserInput&)                                                                                                  \
+    {                                                                                                                                      \
+        HandleBadUserInputException ();                                                                                                    \
+    }                                                                                                                                      \
+    catch (const LException& err)                                                                                                          \
+    {                                                                                                                                      \
+        HandlePowerPlantException ((OSErr)err.GetErrorCode ());                                                                            \
+    }                                                                                                                                      \
+    catch (ExceptionCode err)                                                                                                              \
+    {                                                                                                                                      \
+        HandlePowerPlantException (err);                                                                                                   \
+    }                                                                                                                                      \
+    catch (...)                                                                                                                            \
+    {                                                                                                                                      \
+        HandleUnknownException ();                                                                                                         \
     }
 
 #endif
 
 #if qPlatform_Windows
 
-#define STD_EXCEPT_CATCHER(APP)               \
-    catch (CMemoryException * e)              \
-    {                                         \
-        (APP).HandleBadAllocException ();     \
-        e->Delete ();                         \
-    }                                         \
-    catch (CException * e)                    \
-    {                                         \
-        (APP).HandleMFCException (e);         \
-        e->Delete ();                         \
-    }                                         \
-    catch (bad_alloc)                         \
-    {                                         \
-        (APP).HandleBadAllocException ();     \
-    }                                         \
-    catch (HRESULT hr)                        \
-    {                                         \
-        (APP).HandleHRESULTException (hr);    \
-    }                                         \
-    catch (TextInteractor::BadUserInput&)     \
-    {                                         \
-        (APP).HandleBadUserInputException (); \
-    }                                         \
-    catch (...)                               \
-    {                                         \
-        (APP).HandleUnknownException ();      \
+#define STD_EXCEPT_CATCHER(APP)                                                                                                            \
+    catch (CMemoryException * e)                                                                                                           \
+    {                                                                                                                                      \
+        (APP).HandleBadAllocException ();                                                                                                  \
+        e->Delete ();                                                                                                                      \
+    }                                                                                                                                      \
+    catch (CException * e)                                                                                                                 \
+    {                                                                                                                                      \
+        (APP).HandleMFCException (e);                                                                                                      \
+        e->Delete ();                                                                                                                      \
+    }                                                                                                                                      \
+    catch (bad_alloc)                                                                                                                      \
+    {                                                                                                                                      \
+        (APP).HandleBadAllocException ();                                                                                                  \
+    }                                                                                                                                      \
+    catch (HRESULT hr)                                                                                                                     \
+    {                                                                                                                                      \
+        (APP).HandleHRESULTException (hr);                                                                                                 \
+    }                                                                                                                                      \
+    catch (TextInteractor::BadUserInput&)                                                                                                  \
+    {                                                                                                                                      \
+        (APP).HandleBadUserInputException ();                                                                                              \
+    }                                                                                                                                      \
+    catch (...)                                                                                                                            \
+    {                                                                                                                                      \
+        (APP).HandleUnknownException ();                                                                                                   \
     }
 
 #endif
@@ -306,7 +307,8 @@ public:
     virtual void RegisterShellFileTypes (BOOL bWin95) override;
 
 private:
-    nonvirtual void RegisterShellFileType (bool bWin95, CString strPathName, int iconIndexInFile, CString strFilterExt, CString strFileTypeId, CString strFileTypeName);
+    nonvirtual void RegisterShellFileType (bool bWin95, CString strPathName, int iconIndexInFile, CString strFilterExt,
+                                           CString strFileTypeId, CString strFileTypeName);
 
 public:
     virtual BOOL DoPromptFileName (CString& fileName, UINT nIDSTitle, DWORD lFlags, BOOL bOpenFileDialog, CDocTemplate* pTemplate) override;
@@ -335,7 +337,8 @@ static BOOL AFXAPI SetRegKey (LPCTSTR lpszKey, LPCTSTR lpszValue, LPCTSTR lpszVa
     else {
         HKEY hKey;
         if (::RegCreateKey (HKEY_CLASSES_ROOT, lpszKey, &hKey) == ERROR_SUCCESS) {
-            LONG lResult = ::RegSetValueEx (hKey, lpszValueName, 0, REG_SZ, (CONST BYTE*)lpszValue, static_cast<DWORD> (::_tcslen (lpszValue) + sizeof (TCHAR)));
+            LONG lResult = ::RegSetValueEx (hKey, lpszValueName, 0, REG_SZ, (CONST BYTE*)lpszValue,
+                                            static_cast<DWORD> (::_tcslen (lpszValue) + sizeof (TCHAR)));
             if (::RegCloseKey (hKey) == ERROR_SUCCESS && lResult == ERROR_SUCCESS) {
                 return TRUE;
             }
@@ -428,7 +431,8 @@ public:
             AssertNotNull (w);
             RECT tmp;
             ::GetWindowRect (w, &tmp);
-            ::MoveWindow (w, kButHSluff, kPictHeight - AsLedRect (tmp).GetHeight () - kButVSluff, AsLedRect (tmp).GetWidth (), AsLedRect (tmp).GetHeight (), false); // width/height we should presevere
+            ::MoveWindow (w, kButHSluff, kPictHeight - AsLedRect (tmp).GetHeight () - kButVSluff, AsLedRect (tmp).GetWidth (),
+                          AsLedRect (tmp).GetHeight (), false); // width/height we should presevere
         }
 
         ::SetWindowText (GetHWND (), _T ("About LedIt!"));
@@ -582,10 +586,7 @@ protected:
     }
 
 public:
-    nonvirtual FileFormat GetFileFormat () const
-    {
-        return fFileFormat;
-    }
+    nonvirtual FileFormat GetFileFormat () const { return fFileFormat; }
 
 private:
     FileFormat     fFileFormat;
@@ -671,8 +672,10 @@ LedItApplication::LedItApplication ()
 
 #if qPlatform_Windows
     // Support OLE embeddings (both created from clip, and from RTF-format files)
-    EmbeddedObjectCreatorRegistry::Get ().AddAssoc (LedItControlItem::kClipFormat, LedItControlItem::kEmbeddingTag, LedItControlItem::mkLedItControlItemStyleMarker, LedItControlItem::mkLedItControlItemStyleMarker);
-    EmbeddedObjectCreatorRegistry::Get ().AddAssoc (kBadClipFormat, RTFIO::RTFOLEEmbedding::kEmbeddingTag, LedItControlItem::mkLedItControlItemStyleMarker, LedItControlItem::mkLedItControlItemStyleMarker);
+    EmbeddedObjectCreatorRegistry::Get ().AddAssoc (LedItControlItem::kClipFormat, LedItControlItem::kEmbeddingTag,
+                                                    LedItControlItem::mkLedItControlItemStyleMarker, LedItControlItem::mkLedItControlItemStyleMarker);
+    EmbeddedObjectCreatorRegistry::Get ().AddAssoc (kBadClipFormat, RTFIO::RTFOLEEmbedding::kEmbeddingTag,
+                                                    LedItControlItem::mkLedItControlItemStyleMarker, LedItControlItem::mkLedItControlItemStyleMarker);
 #endif
 #endif
 
@@ -744,21 +747,22 @@ LedItApplication::LedItApplication ()
 
         gtk_table_attach (GTK_TABLE (table), fTextEditor->Get_GtkWidget (), 0, 1, 0, 1,
                           static_cast<GtkAttachOptions> (GTK_EXPAND | GTK_SHRINK | GTK_FILL),
-                          static_cast<GtkAttachOptions> (GTK_EXPAND | GTK_SHRINK | GTK_FILL),
-                          0, 0);
+                          static_cast<GtkAttachOptions> (GTK_EXPAND | GTK_SHRINK | GTK_FILL), 0, 0);
         gtk_widget_show (fTextEditor->Get_GtkWidget ());
 
 #if 1
         /* Add a vertical scrollbar to the text widget */
         GtkAdjustment* vAdj = fTextEditor->GetAdjustmentObject (TextInteractor::v);
         GtkWidget* vscrollbar = gtk_vscrollbar_new (vAdj);
-        gtk_table_attach (GTK_TABLE (table), vscrollbar, 1, 2, 0, 1, static_cast<GtkAttachOptions> (GTK_FILL), static_cast<GtkAttachOptions> (GTK_EXPAND | GTK_SHRINK | GTK_FILL), 0, 0);
+        gtk_table_attach (GTK_TABLE (table), vscrollbar, 1, 2, 0, 1, static_cast<GtkAttachOptions> (GTK_FILL),
+                          static_cast<GtkAttachOptions> (GTK_EXPAND | GTK_SHRINK | GTK_FILL), 0, 0);
         gtk_widget_show (vscrollbar);
 
         /* Add a horizontal scrollbar to the text widget */
         GtkAdjustment* hAdj = fTextEditor->GetAdjustmentObject (TextInteractor::h);
         GtkWidget* hscrollbar = gtk_hscrollbar_new (hAdj);
-        gtk_table_attach (GTK_TABLE (table), hscrollbar, 0, 1, 1, 2, static_cast<GtkAttachOptions> (GTK_EXPAND | GTK_SHRINK | GTK_FILL), static_cast<GtkAttachOptions> (GTK_FILL), 0, 0);
+        gtk_table_attach (GTK_TABLE (table), hscrollbar, 0, 1, 1, 2, static_cast<GtkAttachOptions> (GTK_EXPAND | GTK_SHRINK | GTK_FILL),
+                          static_cast<GtkAttachOptions> (GTK_FILL), 0, 0);
         gtk_widget_show (hscrollbar);
 #endif
         gtk_widget_show (fAppWindow);
@@ -863,7 +867,7 @@ void LedItApplication::MakeMenuBar ()
     bool aquaUI = false;
     {
         SInt32 gestaltResponse = 0;
-        aquaUI                 = (::Gestalt (gestaltMenuMgrAttr, &gestaltResponse) == noErr) and (gestaltResponse & gestaltMenuMgrAquaLayoutMask);
+        aquaUI = (::Gestalt (gestaltMenuMgrAttr, &gestaltResponse) == noErr) and (gestaltResponse & gestaltMenuMgrAquaLayoutMask);
     }
 
     // Add a special help menu item you launch our help file
@@ -1007,8 +1011,7 @@ Boolean LedItApplication::ObeyCommand (CommandT inCommand, void* ioParam)
 }
 
 //  Pass back status of a (menu) command
-void LedItApplication::FindCommandStatus (CommandT inCommand, Boolean& outEnabled, Boolean& outUsesMark,
-                                          UInt16& outMark, Str255 outName)
+void LedItApplication::FindCommandStatus (CommandT inCommand, Boolean& outEnabled, Boolean& outUsesMark, UInt16& outMark, Str255 outName)
 {
     if (inCommand >= kBaseWindowCmd and inCommand <= kLastWindowCmd) {
         size_t                  windowIdx = (inCommand - kBaseWindowCmd);
@@ -1177,10 +1180,7 @@ void LedItApplication::ChooseDocument ()
     }
 }
 
-void LedItApplication::ShowAboutBox ()
-{
-    DoAboutBox ();
-}
+void LedItApplication::ShowAboutBox () { DoAboutBox (); }
 #endif
 
 void LedItApplication::OnToggleSmartCutNPasteOptionCommand ()
@@ -1312,8 +1312,10 @@ BOOL LedItApplication::InitInstance ()
     EmbeddedObjectCreatorRegistry::Get ().AddStandardTypes ();
 
     // Support OLE embeddings (both created from clip, and from RTF-format files)
-    EmbeddedObjectCreatorRegistry::Get ().AddAssoc (LedItControlItem::kClipFormat, LedItControlItem::kEmbeddingTag, LedItControlItem::mkLedItControlItemStyleMarker, LedItControlItem::mkLedItControlItemStyleMarker);
-    EmbeddedObjectCreatorRegistry::Get ().AddAssoc (kBadClipFormat, RTFIO::RTFOLEEmbedding::kEmbeddingTag, LedItControlItem::mkLedItControlItemStyleMarker, LedItControlItem::mkLedItControlItemStyleMarker);
+    EmbeddedObjectCreatorRegistry::Get ().AddAssoc (LedItControlItem::kClipFormat, LedItControlItem::kEmbeddingTag,
+                                                    LedItControlItem::mkLedItControlItemStyleMarker, LedItControlItem::mkLedItControlItemStyleMarker);
+    EmbeddedObjectCreatorRegistry::Get ().AddAssoc (kBadClipFormat, RTFIO::RTFOLEEmbedding::kEmbeddingTag,
+                                                    LedItControlItem::mkLedItControlItemStyleMarker, LedItControlItem::mkLedItControlItemStyleMarker);
 
     // Parse command line for standard shell commands, DDE, file open
     CCommandLineInfo cmdInfo;
@@ -1383,7 +1385,8 @@ BOOL LedItApplication::InitInstance ()
         };
         MyRegistrationHelper fileAssocHelper;
         SDKString            rtfDocIcon = Characters::CString::Format (Led_SDK_TCHAROF ("$EXE$,%d"), -kLedItRTFDocumentIconID);
-        fileAssocHelper.Add (Win32UIFileAssociationInfo (Led_SDK_TCHAROF (".rtf"), Led_SDK_TCHAROF ("rtffile"), Led_SDK_TCHAROF ("Rich Text Document"), rtfDocIcon, Led_SDK_TCHAROF ("$EXE$ \"%1\"")));
+        fileAssocHelper.Add (Win32UIFileAssociationInfo (Led_SDK_TCHAROF (".rtf"), Led_SDK_TCHAROF ("rtffile"),
+                                                         Led_SDK_TCHAROF ("Rich Text Document"), rtfDocIcon, Led_SDK_TCHAROF ("$EXE$ \"%1\"")));
         fileAssocHelper.DoIt ();
     }
 #endif
@@ -1549,10 +1552,7 @@ void LedItApplication::AddDocTemplateForString (const char* tmplStr, bool connec
     }
 }
 
-void LedItApplication::OnAppAbout ()
-{
-    DoAboutBox ();
-}
+void LedItApplication::OnAppAbout () { DoAboutBox (); }
 
 void LedItApplication::OnToggleSmartCutNPasteOptionUpdateCommandUI (CCmdUI* pCmdUI)
 {
@@ -1814,9 +1814,7 @@ void LedItApplication::UpdateFrameWindowTitle ()
     gtk_window_set_title (GTK_WINDOW (fAppWindow), appTitle.c_str ());
 }
 
-void LedItApplication::AppCmdDispatcher (gpointer   callback_data,
-                                         guint      callback_action,
-                                         GtkWidget* widget)
+void LedItApplication::AppCmdDispatcher (gpointer callback_data, guint callback_action, GtkWidget* widget)
 {
     LedItApplication* THIS = reinterpret_cast<LedItApplication*> (callback_data);
     GtkWidget*        w    = THIS->fTextEditor->Get_GtkWidget ();
@@ -1928,10 +1926,7 @@ void LedItApplication::AppCmdOnInitMenu (GtkMenuItem* menuItem, gpointer callbac
     }
 }
 
-GtkWidget* LedItApplication::GetAppWindow () const
-{
-    return fAppWindow;
-}
+GtkWidget* LedItApplication::GetAppWindow () const { return fAppWindow; }
 
 /* This is the GtkItemFactoryEntry structure used to generate new menus.
    Item 1: The menu path. The letter after the underscore indicates an
@@ -2164,10 +2159,7 @@ GtkWidget* LedItApplication::get_main_menu (GtkWidget* window)
 #endif
 
 #if qPlatform_Windows
-const vector<SDKString>& LedItApplication::GetUsableFontNames ()
-{
-    return fInstalledFonts.GetUsableFontNames ();
-}
+const vector<SDKString>& LedItApplication::GetUsableFontNames () { return fInstalledFonts.GetUsableFontNames (); }
 
 void LedItApplication::FixupFontMenu (CMenu* fontMenu)
 {
@@ -2264,10 +2256,7 @@ void LedItDocManager::OnFileNew ()
     (void)pTemplate->OpenDocumentFile (NULL);
 }
 
-CDocument* LedItDocManager::OpenDocumentFile (LPCTSTR lpszFileName)
-{
-    return OpenDocumentFile (lpszFileName, eUnknownFormat);
-}
+CDocument* LedItDocManager::OpenDocumentFile (LPCTSTR lpszFileName) { return OpenDocumentFile (lpszFileName, eUnknownFormat); }
 
 inline SDKString GetLongPathName (const SDKString& pathName)
 {
@@ -2335,7 +2324,8 @@ void LedItDocManager::RegisterShellFileTypes (BOOL bWin95)
     RegisterShellFileType (bWin95, strPathName, 1, ".led", "LedIt.Document", "LedIt Document");
 }
 
-void LedItDocManager::RegisterShellFileType (bool bWin95, CString strPathName, int iconIndexInFile, CString strFilterExt, CString strFileTypeId, CString strFileTypeName)
+void LedItDocManager::RegisterShellFileType (bool bWin95, CString strPathName, int iconIndexInFile, CString strFilterExt,
+                                             CString strFileTypeId, CString strFileTypeName)
 {
     static const TCHAR szShellOpenFmt[]    = _T("%s\\shell\\open\\%s");
     static const TCHAR szShellPrintFmt[]   = _T("%s\\shell\\print\\%s");

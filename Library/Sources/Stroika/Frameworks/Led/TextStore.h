@@ -309,7 +309,7 @@ namespace Stroika::Frameworks::Led {
         @DESCRIPTION:   <p>Note - owner can be any valid MarkerOwner, or @'TextStore::kAnyMarkerOwner'.</p>
         */
         static const MarkerOwner* kAnyMarkerOwner;
-        virtual void              CollectAllMarkersInRangeInto (size_t from, size_t to, const MarkerOwner* owner, MarkerSink& output) const = 0;
+        virtual void CollectAllMarkersInRangeInto (size_t from, size_t to, const MarkerOwner* owner, MarkerSink& output) const = 0;
 
         // Related helpers
         //  _OrSurroundings () versions include markers which overlapped just barely on an edge
@@ -352,7 +352,7 @@ namespace Stroika::Frameworks::Led {
      *  the beggining or end of the buffer, they just return that end position.
      */
     public:
-        nonvirtual size_t FindNextCharacter (size_t afterPos) const;      // error to call in mid character - at end of buffer - we just return position after last character
+        nonvirtual size_t FindNextCharacter (size_t afterPos) const; // error to call in mid character - at end of buffer - we just return position after last character
         nonvirtual size_t FindPreviousCharacter (size_t beforePos) const; // error to call in mid character - at start of buffer, we just return 1
 
     public:
@@ -363,7 +363,8 @@ namespace Stroika::Frameworks::Led {
         mutable shared_ptr<TextBreaks> fTextBreaker;
 
     public:
-        nonvirtual void FindWordBreaks (size_t afterPosition, size_t* wordStartResult, size_t* wordEndResult, bool* wordReal, TextBreaks* useTextBreaker = nullptr);
+        nonvirtual void FindWordBreaks (size_t afterPosition, size_t* wordStartResult, size_t* wordEndResult, bool* wordReal,
+                                        TextBreaks* useTextBreaker = nullptr);
         nonvirtual void FindLineBreaks (size_t afterPosition, size_t* wordEndResult, bool* wordReal, TextBreaks* useTextBreaker = nullptr);
 
         /*
@@ -397,7 +398,9 @@ namespace Stroika::Frameworks::Led {
             bool        fCaseSensativeSearch;
         };
 
-        enum { eUseSearchParameters = kBadIndex };
+        enum {
+            eUseSearchParameters = kBadIndex
+        };
         // return kBadIndex if no match found - otherwise, return index of first char in match.
         // Start searching after markerPos searchFrom. if searchTo==eUseSearchParameters, then
         // either search to end of buffer (fWrapSearch==false), or wrap search (fWrapSearch==true).

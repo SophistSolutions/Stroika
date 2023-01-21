@@ -122,7 +122,8 @@ namespace Stroika::Foundation::Execution {
              *  \note Design Note: This could have returned a set of pointer to SDKPollableType which would in some sense be simpler and
              *                     clearer, but its easier to validate/assert the returned INDEXES are valid than the returned POINTERS are valid.
              */
-            static auto _WaitQuietlyUntil (const pair<SDKPollableType, TypeOfMonitorSet>* start, const pair<SDKPollableType, TypeOfMonitorSet>* end, Time::DurationSecondsType timeoutAt) -> Containers::Set<size_t>;
+            static auto _WaitQuietlyUntil (const pair<SDKPollableType, TypeOfMonitorSet>* start, const pair<SDKPollableType, TypeOfMonitorSet>* end,
+                                           Time::DurationSecondsType timeoutAt) -> Containers::Set<size_t>;
         };
 
         /**
@@ -163,10 +164,7 @@ namespace Stroika::Foundation::Execution {
              *  To use WaitForIOReady, the high level 'descriptor' objects used mustbe convertible to associated low level
              *  file descriptor objects to use with select/poll/etc...
              */
-            static inline WaitForIOReady_Support::SDKPollableType GetSDKPollable (const HighLevelType& t)
-            {
-                return t;
-            }
+            static inline WaitForIOReady_Support::SDKPollableType GetSDKPollable (const HighLevelType& t) { return t; }
         };
 
     }
@@ -225,9 +223,12 @@ namespace Stroika::Foundation::Execution {
          */
         WaitForIOReady (WaitForIOReady&&) noexcept = default;
         WaitForIOReady (const WaitForIOReady&)     = default;
-        WaitForIOReady (const Traversal::Iterable<pair<T, TypeOfMonitorSet>>& fds, optional<pair<SDKPollableType, TypeOfMonitorSet>> pollable2Wakeup = nullopt);
-        WaitForIOReady (const Traversal::Iterable<T>& fds, const TypeOfMonitorSet& flags = kDefaultTypeOfMonitor, optional<pair<SDKPollableType, TypeOfMonitorSet>> pollable2Wakeup = nullopt);
-        WaitForIOReady (T fd, const TypeOfMonitorSet& flags = kDefaultTypeOfMonitor, optional<pair<SDKPollableType, TypeOfMonitorSet>> pollable2Wakeup = nullopt);
+        WaitForIOReady (const Traversal::Iterable<pair<T, TypeOfMonitorSet>>& fds,
+                        optional<pair<SDKPollableType, TypeOfMonitorSet>>     pollable2Wakeup = nullopt);
+        WaitForIOReady (const Traversal::Iterable<T>& fds, const TypeOfMonitorSet& flags = kDefaultTypeOfMonitor,
+                        optional<pair<SDKPollableType, TypeOfMonitorSet>> pollable2Wakeup = nullopt);
+        WaitForIOReady (T fd, const TypeOfMonitorSet& flags = kDefaultTypeOfMonitor,
+                        optional<pair<SDKPollableType, TypeOfMonitorSet>> pollable2Wakeup = nullopt);
 
     public:
         ~WaitForIOReady () = default;

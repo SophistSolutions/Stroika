@@ -49,7 +49,4 @@ namespace {
     }
 }
 
-void Samples::Containers::Mapping::RunDemo ()
-{
-    SimplestMappingTest_ ();
-}
+void Samples::Containers::Mapping::RunDemo () { SimplestMappingTest_ (); }

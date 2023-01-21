@@ -63,10 +63,7 @@ HidableTextMarkerOwner::~HidableTextMarkerOwner ()
     Call @'HidableTextMarkerOwner::MakeRegionHidable' for that.</p>
         <p>See @'HidableTextMarkerOwner::ShowAll' to re-show them.</p>
 */
-void HidableTextMarkerOwner::HideAll ()
-{
-    HideAll (0, fTextStore.GetEnd () + 1);
-}
+void HidableTextMarkerOwner::HideAll () { HideAll (0, fTextStore.GetEnd () + 1); }
 
 void HidableTextMarkerOwner::HideAll (size_t from, size_t to)
 {
@@ -89,10 +86,7 @@ void HidableTextMarkerOwner::HideAll (size_t from, size_t to)
     It merely re-installs their context into the document so that it can be seen and edited.</p>
         <p>See also @'HidableTextMarkerOwner::HideAll'.</p>
 */
-void HidableTextMarkerOwner::ShowAll ()
-{
-    ShowAll (0, fTextStore.GetEnd () + 1);
-}
+void HidableTextMarkerOwner::ShowAll () { ShowAll (0, fTextStore.GetEnd () + 1); }
 
 void HidableTextMarkerOwner::ShowAll (size_t from, size_t to)
 {
@@ -137,9 +131,7 @@ void HidableTextMarkerOwner::MakeRegionHidable (size_t from, size_t to)
     MarkerList hidableTextMarkersInRange = CollectAllInRange (from, to);
 
     // short circuit some code as a performance tweek
-    if (hidableTextMarkersInRange.size () == 1 and
-        hidableTextMarkersInRange[0]->GetStart () <= from and
-        hidableTextMarkersInRange[0]->GetEnd () >= to) {
+    if (hidableTextMarkersInRange.size () == 1 and hidableTextMarkersInRange[0]->GetStart () <= from and hidableTextMarkersInRange[0]->GetEnd () >= to) {
         return;
     }
 
@@ -304,10 +296,7 @@ DiscontiguousRun<bool> HidableTextMarkerOwner::GetHidableRegions (size_t from, s
     return result;
 }
 
-DiscontiguousRun<bool> HidableTextMarkerOwner::GetHidableRegions () const
-{
-    return GetHidableRegions (0, fTextStore.GetEnd () + 1);
-}
+DiscontiguousRun<bool> HidableTextMarkerOwner::GetHidableRegions () const { return GetHidableRegions (0, fTextStore.GetEnd () + 1); }
 
 /*
 @METHOD:        HidableTextMarkerOwner::GetHidableRegionsContiguous
@@ -320,9 +309,7 @@ bool HidableTextMarkerOwner::GetHidableRegionsContiguous (size_t from, size_t to
     // Sloppy, inefficient implementation. Can be MUCH faster - since we just need to know if there are ANY in this region!
     DiscontiguousRun<bool> tmpHack = GetHidableRegions (from, to);
     if (tmpHack.size () == 1) {
-        return tmpHack[0].fData == hidden and
-               tmpHack[0].fOffsetFromPrev == 0 and
-               tmpHack[0].fElementLength >= to - from;
+        return tmpHack[0].fData == hidden and tmpHack[0].fOffsetFromPrev == 0 and tmpHack[0].fElementLength >= to - from;
     }
     else {
         if (hidden) {
@@ -424,10 +411,7 @@ HidableTextMarkerOwner::HidableTextMarker* HidableTextMarkerOwner::MakeHidableTe
     return new LightUnderlineHidableTextMarker ();
 }
 
-TextStore* HidableTextMarkerOwner::PeekAtTextStore () const
-{
-    return &fTextStore;
-}
+TextStore* HidableTextMarkerOwner::PeekAtTextStore () const { return &fTextStore; }
 
 void HidableTextMarkerOwner::AboutToUpdateText (const UpdateInfo& updateInfo)
 {

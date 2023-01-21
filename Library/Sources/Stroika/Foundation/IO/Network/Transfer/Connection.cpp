@@ -159,8 +159,8 @@ Response Connection::Ptr::Send (const Request& r)
     const LazyEvalActivity activity{[&] () {
         return "sending '"sv + r.fMethod + "' request to "sv + Characters::ToString (GetSchemeAndAuthority ().Combine (r.fAuthorityRelativeURL));
     }};
-    DeclareActivity        declaredActivity{GetOptions ().fDeclareActivities.value_or (kDeclareActivitiesFlag_Default_) ? &activity : nullptr};
-    Response               response = fRep_->Send (r);
+    DeclareActivity declaredActivity{GetOptions ().fDeclareActivities.value_or (kDeclareActivitiesFlag_Default_) ? &activity : nullptr};
+    Response        response = fRep_->Send (r);
     if (not response.GetSucceeded ()) [[unlikely]] {
         Throw (Exception{response});
     }
