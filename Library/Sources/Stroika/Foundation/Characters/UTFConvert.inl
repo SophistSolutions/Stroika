@@ -224,9 +224,12 @@ namespace Stroika::Foundation::Characters {
         return true;
     }
 
-    template <Character_Compatible CHAR_T>
+    template <Character_CompatibleIsh CHAR_T>
     constexpr bool UTFConverter::AllFitsInTwoByteEncoding (span<const CHAR_T> s) noexcept
     {
+        if constexpr (is_same_v<CHAR_T, Character_ASCII> or is_same_v<CHAR_T, Character_Latin1>) {
+            return true;
+        }
         // see https://en.wikipedia.org/wiki/UTF-16
         // @todo - THIS IS VERY WRONG - and MUCH MORE COMPLEX - but will only return false negatives so OK to start
 
@@ -237,6 +240,9 @@ namespace Stroika::Foundation::Characters {
                     return false;
                 }
             }
+        }
+        else if constexpr (is_same_v<remove_cv_t<CHAR_T>, Character_Latin1>) {
+            return true;
         }
         else {
             for (CHAR_T c : s) {

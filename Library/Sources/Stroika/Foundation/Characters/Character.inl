@@ -143,13 +143,20 @@ namespace Stroika::Foundation::Characters {
         return GetCharacterCode ();
     }
     constexpr bool Character::IsASCII () const noexcept { return 0x0 <= fCharacterCode_ and fCharacterCode_ <= 0x7f; }
-    template <Character_Compatible CHAR_T>
+    template <Character_CompatibleIsh CHAR_T>
     constexpr bool Character::IsASCII (span<const CHAR_T> fromS) noexcept
     {
         // note - tried to simplify with conditional_t but both sides evaluated
         if constexpr (is_same_v<remove_cv_t<CHAR_T>, Character>) {
             for (Character c : fromS) {
                 if (not c.IsASCII ()) [[unlikely]] {
+                    return false;
+                }
+            }
+        }
+        else if constexpr (is_same_v<remove_cv_t<CHAR_T>, Character_Latin1>) {
+            for (CHAR_T c : fromS) {
+                if (static_cast<uint8_t> (c) > 127) [[unlikely]] {
                     return false;
                 }
             }
@@ -211,6 +218,39 @@ namespace Stroika::Foundation::Characters {
     inline void Character::CheckLatin1 (span<CHAR_T> s)
     {
         CheckLatin1 (Memory::ConstSpan (s));
+    }
+    template <Character_CompatibleIsh CHAR_T>
+    constexpr auto Character::IsASCIIOrLatin1 (span<const CHAR_T> s) noexcept -> ASCIIOrLatin1Result
+    {
+        constexpr auto      eNone   = ASCIIOrLatin1Result::eNone;
+        constexpr auto      eLatin1 = ASCIIOrLatin1Result::eLatin1;
+        constexpr auto      eASCII  = ASCIIOrLatin1Result::eASCII;
+        ASCIIOrLatin1Result result{eASCII}; // all characters so far ascii
+        if constexpr (is_same_v<remove_cv_t<CHAR_T>, Character>) {
+            for (Character c : s) {
+                if (not c.IsLatin1 ()) [[unlikely]] {
+                    return eNone;
+                }
+                else if (result == eASCII and not c.IsASCII ()) [[unlikely]] {
+                    result = eLatin1;
+                }
+            }
+        }
+        else if constexpr (sizeof (CHAR_T) == 1) {
+            // any byte will fit (assumes 8-bit bytes)
+            return IsASCII (s) ? eASCII : eLatin1;
+        }
+        else {
+            for (CHAR_T c : s) {
+                if (static_cast<make_unsigned_t<CHAR_T>> (c) > 0xff) [[unlikely]] {
+                    return eNone;
+                }
+                else if (result == eASCII and static_cast<make_unsigned_t<CHAR_T>> (c) > 0x7f) [[unlikely]] {
+                    result = eLatin1;
+                }
+            }
+        }
+        return result;
     }
     constexpr bool Character::IsWhitespace () const noexcept
     {

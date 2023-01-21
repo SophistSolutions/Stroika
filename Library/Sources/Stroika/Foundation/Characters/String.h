@@ -1416,8 +1416,14 @@ namespace Stroika::Foundation::Characters {
         static _SharedPtrIRep mk_ (span<CHAR_T> s);
         template <Character_IsUnicodeCodePointOrPlainChar CHAR_T>
         static _SharedPtrIRep mk_ (basic_string<CHAR_T>&& s);
-        template <Character_CompatibleIsh CHAR_T>
-        static _SharedPtrIRep mk_nocheck_justPickBufRep_ (span<const CHAR_T> s);
+        template <typename CHAR_T>
+        static _SharedPtrIRep mk_nocheck_ (span<const CHAR_T> s)
+            requires (is_same_v<CHAR_T, Character_ASCII> or is_same_v<CHAR_T, Character_Latin1> or is_same_v<CHAR_T, char16_t> or
+                      is_same_v<CHAR_T, char32_t>);
+        template <typename CHAR_T>
+        static _SharedPtrIRep mk_nocheck_justPickBufRep_ (span<const CHAR_T> s)
+            requires (is_same_v<CHAR_T, Character_ASCII> or is_same_v<CHAR_T, Character_Latin1> or is_same_v<CHAR_T, char16_t> or
+                      is_same_v<CHAR_T, char32_t>);
 
     private:
         nonvirtual size_t SubString_adjust_ (unsigned int fromOrTo, size_t myLength) const;

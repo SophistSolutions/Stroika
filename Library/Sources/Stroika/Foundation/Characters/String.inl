@@ -34,18 +34,31 @@ namespace Stroika::Foundation::Characters {
                 return CString::Length (s);
             }
         }
-
-        template <Character_Compatible SRC_T, Character_Compatible TRG_T>
-        inline void CopyAsASCIICharacters_ (span<const SRC_T> src, span<TRG_T> trg)
+        template <Character_CompatibleIsh SRC_T>
+        inline void CopyAsASCIICharacters_ (span<const SRC_T> src, span<Character_ASCII> trg)
         {
             Require (trg.size () >= src.size ());
-            TRG_T* outI = trg.data ();
+            Character_ASCII* outI = trg.data ();
             for (auto ii = src.begin (); ii != src.end (); ++ii) {
                 if constexpr (is_same_v<SRC_T, Character>) {
                     *outI++ = ii->GetAsciiCode ();
                 }
                 else {
-                    *outI++ = static_cast<TRG_T> (*ii);
+                    *outI++ = static_cast<Character_ASCII> (*ii);
+                }
+            }
+        }
+        template <Character_CompatibleIsh SRC_T>
+        inline void CopyAsLatin1Characters_ (span<const SRC_T> src, span<Character_Latin1> trg)
+        {
+            Require (trg.size () >= src.size ());
+            Character_Latin1* outI = trg.data ();
+            for (auto ii = src.begin (); ii != src.end (); ++ii) {
+                if constexpr (is_same_v<SRC_T, Character>) {
+                    *outI++ = Character_Latin1{static_cast<unsigned char> (ii->GetCharacterCode ())};
+                }
+                else {
+                    *outI++ = Character_Latin1{static_cast<unsigned char> (*ii)};
                 }
             }
         }
@@ -121,53 +134,77 @@ namespace Stroika::Foundation::Characters {
     // Since we don't mix spans of single/2-3-4 byte chars in a single rep (would make char indexing too expensive)
     // just specialize 3 cases - ASCII (char), utf-16, and utf-32 (others - like char8_t, wchar_t mappeed appropriately)
     template <>
-    auto String::mk_ (span<const Character_ASCII> s) -> _SharedPtrIRep;
+    auto String::mk_nocheck_ (span<const Character_ASCII> s) -> _SharedPtrIRep;
     template <>
-    auto String::mk_ (span<const Character_Latin1> s) -> _SharedPtrIRep;
+    auto String::mk_nocheck_ (span<const Character_Latin1> s) -> _SharedPtrIRep;
     template <>
-    auto String::mk_ (span<const char16_t> s) -> _SharedPtrIRep;
+    auto String::mk_nocheck_ (span<const char16_t> s) -> _SharedPtrIRep;
     template <>
-    auto String::mk_ (span<const char32_t> s) -> _SharedPtrIRep;
+    auto String::mk_nocheck_ (span<const char32_t> s) -> _SharedPtrIRep;
     template <Character_CompatibleIsh CHAR_T>
-    auto String::mk_ (span<const CHAR_T> s) -> _SharedPtrIRep
+    inline auto String::mk_ (span<const CHAR_T> s) -> _SharedPtrIRep
     {
         if (s.empty ()) {
             return mkEmpty_ ();
         }
         if constexpr (sizeof (CHAR_T) == 1) {
-            // if we already have ascii, just copy into a buffer that can be used for now with the legacy API, and
-            // later specialized into something we construct a special rep for
-            Assert ((is_same_v<CHAR_T, char8_t>)); // cuz we specailized the span<const Character_ASCII> span<const Character_Latin1> cases
-            if (Character::IsASCII (s)) {
-                return mk_ (span<const char>{reinterpret_cast<const char*> (s.data ()), s.size ()});
+            if constexpr (is_same_v<CHAR_T, Character_ASCII>) {
+                Character::CheckASCII (s);
+                return mk_nocheck_ (s);
+            }
+            else if (Character::IsASCII (s)) {
+                return mk_nocheck_ (span<const Character_ASCII>{reinterpret_cast<const Character_ASCII*> (s.data ()), s.size ()});
+            }
+            else {
+                return mk_nocheck_ (span<const Character_Latin1>{reinterpret_cast<const Character_Latin1*> (s.data ()), s.size ()});
             }
         }
-        // tmphack - for now - check isascii - but soon encode even if not ascii
-        if (UTFConverter::AllFitsInSingleByteCharLatin1Encoding (s) and Character::IsASCII (s)) {
-            Assert (sizeof (CHAR_T) == 2 or sizeof (CHAR_T) == 4);
-            Memory::StackBuffer<char> buf{s.size ()};
+        Character::ASCIIOrLatin1Result flag = Character::IsASCIIOrLatin1 (s);
+        switch (flag) {
+            case Character::ASCIIOrLatin1Result::eASCII: {
+                // Copy to smaller buffer (e.g. utf16_t to char)
+                Memory::StackBuffer<Character_ASCII> buf{Memory::eUninitialized, s.size ()};
 #if qCompilerAndStdLib_spanOfContainer_Buggy
-            Private_::CopyAsASCIICharacters_ (s, span{buf.data (), buf.size ()});
-            return mk_ (span<const char>{buf.data (), buf.size ()});
+                Private_::CopyAsASCIICharacters_ (s, span{buf.data (), buf.size ()});
+                return mk_nocheck_ (span<const Character_ASCII>{buf.data (), buf.size ()});
 #else
-            Private_::CopyAsASCIICharacters_ (s, span{buf});
-            return mk_ (span<const char>{buf});                         // this case specialized
+                Private_::CopyAsASCIICharacters_ (s, span{buf});
+                return mk_nocheck_ (span<const Character_ASCII>{buf}); // MakeSmartPtr not mk_ to avoid Character::CheckASCII
+#endif
+            }
+            case Character::ASCIIOrLatin1Result::eLatin1: {
+                // Copy to smaller buffer (e.g. utf32_t to Character_Latin1)
+                Memory::StackBuffer<Character_Latin1> buf{Memory::eUninitialized, s.size ()};
+#if qCompilerAndStdLib_spanOfContainer_Buggy
+                Private_::CopyAsLatin1Characters_ (s, span{buf.data (), buf.size ()});
+                return mk_nocheck_ (span<const Character_ASCII>{buf.data (), buf.size ()});
+#else
+                Private_::CopyAsLatin1Characters_ (s, span{buf});
+                return mk_nocheck_ (span<const Character_Latin1>{buf}); // MakeSmartPtr not mk_ to avoid Character::CheckASCII
+#endif
+            }
+        }
+        if (UTFConverter::AllFitsInTwoByteEncoding (s)) {
+            // complex case - could be utf8 src, utf16, or utf32, so must transcode to char16_t
+            Memory::StackBuffer<char16_t> wideUnicodeBuf{Memory::eUninitialized, UTFConverter::ComputeTargetBufferSize<char16_t> (s)};
+#if qCompilerAndStdLib_spanOfContainer_Buggy
+            return mk_nocheck_ (Memory::ConstSpan (UTFConverter::kThe.ConvertSpan (s, span{wideUnicodeBuf.data (), wideUnicodeBuf.size ()})));
+#else
+            return mk_nocheck_ (Memory::ConstSpan (UTFConverter::kThe.ConvertSpan (s, span{wideUnicodeBuf})));
 #endif
         }
-        else if (UTFConverter::AllFitsInTwoByteEncoding (s)) {
-            Memory::StackBuffer<char16_t> buf{Memory::eUninitialized, UTFConverter::ComputeTargetBufferSize<char16_t> (s)};
-#if qCompilerAndStdLib_spanOfContainer_Buggy
-            return mk_ (UTFConverter::kThe.ConvertSpan (s, span{buf.data (), buf.size ()}));
-#else
-            return mk_ (UTFConverter::kThe.ConvertSpan (s, span{buf})); // this case specialized
-#endif
+        // So at this point - definitely converting to UTF-32
+        if constexpr (sizeof (CHAR_T) == 4) {
+            // Easy, just cast
+            return mk_nocheck_ (span<const char32_t>{reinterpret_cast<const char32_t*> (s.data ()), s.size ()});
         }
         else {
-            Memory::StackBuffer<char32_t> buf{Memory::eUninitialized, UTFConverter::ComputeTargetBufferSize<char32_t> (s)};
+            // converting utf8 or utf16 with surrogates to utf32
+            Memory::StackBuffer<char32_t> wideUnicodeBuf{Memory::eUninitialized, UTFConverter::ComputeTargetBufferSize<char32_t> (s)};
 #if qCompilerAndStdLib_spanOfContainer_Buggy
-            return mk_ (UTFConverter::kThe.ConvertSpan (s, span{buf.data (), buf.size ()}));
+            return mk_nocheck_ (Memory::ConstSpan (UTFConverter::kThe.ConvertSpan (s, span{wideUnicodeBuf.data (), wideUnicodeBuf.size ()})));
 #else
-            return mk_ (UTFConverter::kThe.ConvertSpan (s, span{buf})); // this case specialized
+            return mk_nocheck_ (Memory::ConstSpan (UTFConverter::kThe.ConvertSpan (s, span{wideUnicodeBuf})));
 #endif
         }
     }
@@ -792,7 +829,7 @@ namespace Stroika::Foundation::Characters {
             preferredSCP = StorageCodePointType::eSingleByteLatin1;
         }
         else if constexpr (is_same_v<remove_cv_t<CHAR_TYPE>, char8_t>) {
-            preferredSCP = StorageCodePointType::eAscii;    // not clear what's best in this case but probably doesn't matter
+            preferredSCP = StorageCodePointType::eAscii; // not clear what's best in this case but probably doesn't matter
         }
         else if constexpr (is_same_v<remove_cv_t<CHAR_TYPE>, char16_t>) {
             preferredSCP = StorageCodePointType::eChar16;
@@ -834,7 +871,7 @@ namespace Stroika::Foundation::Characters {
             }
         }
         else if constexpr (is_same_v<CHAR_TYPE, char8_t>) {
-            if (pds.fInCP == StorageCodePointType::eAscii) {    // single-byte-latin1 not legal char8_t format
+            if (pds.fInCP == StorageCodePointType::eAscii) { // single-byte-latin1 not legal char8_t format
                 return pds.fAscii;
             }
         }

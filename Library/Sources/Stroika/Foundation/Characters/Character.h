@@ -204,7 +204,7 @@ namespace Stroika::Foundation::Characters {
          *  \brief Return true iff the given character (or all in span) is (are) in the ascii range [0..0x7f]
          */
         constexpr bool IsASCII () const noexcept;
-        template <Character_Compatible CHAR_T>
+        template <Character_CompatibleIsh CHAR_T>
         static constexpr bool IsASCII (span<const CHAR_T> s) noexcept;
 
     public:
@@ -223,6 +223,24 @@ namespace Stroika::Foundation::Characters {
         constexpr bool IsLatin1 () const noexcept;
         template <Character_CompatibleIsh CHAR_T>
         static constexpr bool IsLatin1 (span<const CHAR_T> s) noexcept;
+
+    public:
+        /**
+         */
+        enum class ASCIIOrLatin1Result {
+            eNone,
+            eASCII,
+            eLatin1
+        };
+
+    public:
+        /**
+         *  Combines check for IsASCII and IsLatin1 in one call (performance). Returns flag indicating
+         *  most specific possible answer for the entire span. So if all characters ascii, thats returned.
+         *  If not, but all characters latin1, thats returned. Else returned none.
+         */
+        template <Character_CompatibleIsh CHAR_T>
+        static constexpr ASCIIOrLatin1Result IsASCIIOrLatin1 (span<const CHAR_T> s) noexcept;
 
     public:
         /**

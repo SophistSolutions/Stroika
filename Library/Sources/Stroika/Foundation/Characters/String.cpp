@@ -729,8 +729,9 @@ String::_SharedPtrIRep String::mkEmpty_ ()
     return s_;
 }
 
-template <Character_CompatibleIsh CHAR_T>
+template <typename CHAR_T>
 inline auto String::mk_nocheck_justPickBufRep_ (span<const CHAR_T> s) -> _SharedPtrIRep
+    requires (is_same_v<CHAR_T, Character_ASCII> or is_same_v<CHAR_T, Character_Latin1> or is_same_v<CHAR_T, char16_t> or is_same_v<CHAR_T, char32_t>)
 {
     constexpr size_t kBaseOfFixedBufSize_ = sizeof (StringRepHelperAllFitInSize_::Rep<CHAR_T>);
     static_assert (kBaseOfFixedBufSize_ < 64); // this code below assumes, so must re-tune if this ever fails
@@ -772,32 +773,55 @@ inline auto String::mk_nocheck_justPickBufRep_ (span<const CHAR_T> s) -> _Shared
 }
 
 template <>
-auto String::mk_ (span<const Character_ASCII> s) -> _SharedPtrIRep
+auto String::mk_nocheck_ (span<const Character_ASCII> s) -> _SharedPtrIRep
 {
-    Character::CheckASCII (s);
+    Require (Character::IsASCII (s));   // caller must check
     return mk_nocheck_justPickBufRep_ (s);
 }
-
 template <>
-auto String::mk_ (span<const Character_Latin1> s) -> _SharedPtrIRep
+auto String::mk_nocheck_ (span<const Character_Latin1> s) -> _SharedPtrIRep
+{
+    return mk_nocheck_justPickBufRep_ (s);
+}
+template <>
+auto String::mk_nocheck_ (span<const char16_t> s) -> _SharedPtrIRep
+{
+    return mk_nocheck_justPickBufRep_ (s);
+}
+template <>
+auto String::mk_nocheck_ (span<const char32_t> s) -> _SharedPtrIRep
 {
     return mk_nocheck_justPickBufRep_ (s);
 }
 
+#if 0
 template <>
 auto String::mk_ (span<const char16_t> s) -> _SharedPtrIRep
 {
-    if (Character::IsASCII (s)) {
-        // if we already have ascii, just copy into a buffer that can be used for now with the legacy API, and
-        // later specialized into something we construct a special rep for
-        Memory::StackBuffer<char> buf{Memory::eUninitialized, s.size ()};
+    Character::ASCIIOrLatin1Result flag = Character::IsASCIIOrLatin1 (s);
+    switch (flag) {
+        case Character::ASCIIOrLatin1Result::eASCII: {
+            // Copy to smaller buffer
+            Memory::StackBuffer<Character_ASCII> buf{Memory::eUninitialized, s.size ()};
 #if qCompilerAndStdLib_spanOfContainer_Buggy
-        Private_::CopyAsASCIICharacters_ (s, span{buf.data (), buf.size ()});
-        return mk_nocheck_justPickBufRep_ (span<const char>{buf.data (), buf.size ()});
+            Private_::CopyAsASCIICharacters_ (s, span{buf.data (), buf.size ()});
+            return mk_nocheck_justPickBufRep_ (span<const Character_ASCII>{buf.data (), buf.size ()});
 #else
-        Private_::CopyAsASCIICharacters_ (s, span{buf});
-        return mk_nocheck_justPickBufRep_ (span<const char>{buf}); // MakeSmartPtr not mk_ to avoid Character::CheckASCII
+            Private_::CopyAsASCIICharacters_ (s, span{buf});
+            return mk_nocheck_justPickBufRep_ (span<const Character_ASCII>{buf}); // MakeSmartPtr not mk_ to avoid Character::CheckASCII
 #endif
+        }
+        case Character::ASCIIOrLatin1Result::eLatin1: {
+            // Copy to smaller buffer
+            Memory::StackBuffer<Character_Latin1> buf{Memory::eUninitialized, s.size ()};
+#if qCompilerAndStdLib_spanOfContainer_Buggy
+            Private_::CopyAsLatin1Characters_ (s, span{buf.data (), buf.size ()});
+            return mk_nocheck_justPickBufRep_ (span<const Character_ASCII>{buf.data (), buf.size ()});
+#else
+            Private_::CopyAsLatin1Characters_ (s, span{buf});
+            return mk_nocheck_justPickBufRep_ (span<const Character_Latin1>{buf}); // MakeSmartPtr not mk_ to avoid Character::CheckASCII
+#endif
+        }
     }
     if (UTFConverter::AllFitsInTwoByteEncoding (s)) {
         return mk_nocheck_justPickBufRep_ (s);
@@ -830,6 +854,7 @@ auto String::mk_ (span<const char32_t> s) -> _SharedPtrIRep
     }
     return mk_nocheck_justPickBufRep_ (s);
 }
+#endif
 
 template <>
 auto String::mk_ (basic_string<char>&& s) -> _SharedPtrIRep

@@ -149,7 +149,7 @@ namespace Stroika::Foundation::Characters {
         /**
          *  Check if each character in the span fits in a 2-byte encoding (ie no characters surrogate pairs)
          */
-        template <Character_Compatible CHAR_T>
+        template <Character_CompatibleIsh CHAR_T>
         static constexpr bool AllFitsInTwoByteEncoding (span<const CHAR_T> s) noexcept;
 
     public:
