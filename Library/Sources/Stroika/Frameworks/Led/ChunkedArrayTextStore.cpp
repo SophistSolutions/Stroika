@@ -651,9 +651,9 @@ void ChunkedArrayTextStore::RemoveMarkerOwner (MarkerOwner* owner)
                                                     // bug and not a Led-bug per-se. Check that all your markers have been
                                                     // removed!
                                                     //
-            // Look just below at 'markersWhichShouldHaveBeenDeleted' to see just what markers are left.
-            //
-            // See Led's FAQ#27 - http://www.sophists.com/Led/LedClassLib/ClassLibDocs/Recipes.html#27
+        // Look just below at 'markersWhichShouldHaveBeenDeleted' to see just what markers are left.
+        //
+        // See Led's FAQ#27 - http://www.sophists.com/Led/LedClassLib/ClassLibDocs/Recipes.html#27
         if constexpr (qDebug) {
             if (camoh->fTotalMarkersPresent != 0) {
                 vector<Marker*>  markersWhichShouldHaveBeenDeleted;

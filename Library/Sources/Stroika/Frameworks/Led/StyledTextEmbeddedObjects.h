@@ -234,8 +234,8 @@ namespace Stroika::Frameworks::Led {
                                                       // objects, or an assert error.
                                                       // Reason for this design is we need access to some pict resource, but we don't want
                                                       // Led to depend on any such things (would make build/distr/name conflicts etc
-            // more complex). So in main, if you ever plan to use these, then load resource and assign
-            // to this member.
+        // more complex). So in main, if you ever plan to use these, then load resource and assign
+        // to this member.
 #endif
     public:
         virtual void DrawSegment (const StyledTextImager* imager, const RunElement& runElement, Tablet* tablet, size_t from, size_t to,
@@ -290,8 +290,8 @@ namespace Stroika::Frameworks::Led {
                                                      // objects, or an assert error.
                                                      // Reason for this design is we need access to some pict resource, but we don't want
                                                      // Led to depend on any such things (would make build/distr/name conflicts etc
-            // more complex). So in main, if you ever plan to use these, then load resource and assign
-            // to this member.
+        // more complex). So in main, if you ever plan to use these, then load resource and assign
+        // to this member.
 #endif
 
     public:
