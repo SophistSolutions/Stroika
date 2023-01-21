@@ -274,10 +274,12 @@ namespace Stroika::Foundation::Characters {
          *  From http://unicodebook.readthedocs.io/encodings.html
          *      "For example, ISO-8859-1 are the first 256 Unicode code points (U+0000-U+00FF)."
          */
-        const CHAR_T*                e = s.data () + s.size ();
-        Memory::StackBuffer<wchar_t> buf{Memory::eUninitialized, static_cast<size_t> (e - s.data ())};
+        using TREAT_AS_CHAR_T          = conditional_t<sizeof (CHAR_T) == 1, unsigned char, CHAR_T>; // don't treat U+d3 as negative
+        const TREAT_AS_CHAR_T*       b = reinterpret_cast<const TREAT_AS_CHAR_T*> (s.data ());
+        const TREAT_AS_CHAR_T*       e = b + s.size ();
+        Memory::StackBuffer<wchar_t> buf{Memory::eUninitialized, static_cast<size_t> (e - b)};
         wchar_t*                     pOut = buf.begin ();
-        for (const CHAR_T* i = s.data (); i != e; ++i, ++pOut) {
+        for (const TREAT_AS_CHAR_T* i = b; i != e; ++i, ++pOut) {
             if constexpr (sizeof (CHAR_T) > 1) {
                 if (*i >= 256) {
                     static const auto kException_ = out_of_range{"Error converting non-iso-latin-1 text to String"};

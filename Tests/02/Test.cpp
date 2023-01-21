@@ -1651,6 +1651,41 @@ namespace {
 }
 
 namespace {
+    void Test57_Latin1_Tests_ ()
+    {
+        /**
+         *  Be careful with signed/unsigned issues using Latin1 characters and string
+         *      A few random characters selected from https://en.wikipedia.org/wiki/Latin-1_Supplement
+         */
+        string plainAsciiTest     = "fred";
+        constexpr unsigned char kMicroSign     = static_cast<unsigned char> ('µ');
+        static_assert (kMicroSign == 0xb5);
+        constexpr unsigned char kCedilla = static_cast<unsigned char> ('¸');
+        static_assert (kCedilla == 0xb8);
+        constexpr unsigned char kInvertedQuestionMark = static_cast<unsigned char> ('¿');
+        static_assert (kInvertedQuestionMark == 0xbf);
+
+        string nonAsciiLatin1Test{{(char)kMicroSign, (char)kCedilla, (char)kInvertedQuestionMark}};
+        Assert (nonAsciiLatin1Test.length () == 3 and static_cast<unsigned char> (nonAsciiLatin1Test[1]) == kCedilla);
+        {
+            VerifyTestResult (String{plainAsciiTest} == String{plainAsciiTest});
+            try {
+                [[maybe_unused]] auto ignored = String{nonAsciiLatin1Test};
+                VerifyTestResult (false);
+            }
+            catch (...) {
+                // good
+            }
+            String latin1AsStr = String::FromLatin1 (nonAsciiLatin1Test);
+            VerifyTestResult (latin1AsStr.length () == nonAsciiLatin1Test.length ());
+            for (size_t i = 0; i < nonAsciiLatin1Test.length (); ++i) {
+                VerifyTestResult (latin1AsStr[i] == static_cast<unsigned char> (nonAsciiLatin1Test[i]));
+            }
+        }
+    }
+}
+
+namespace {
 
     void DoRegressionTests_ ()
     {
@@ -1701,6 +1736,7 @@ namespace {
         Test54_StringAs_ ();
         Test55_StringAscii_CTORs_ ();
         Test56_StdStringMoveCTORs_ ();
+        Test57_Latin1_Tests_ ();
     }
 }
 
