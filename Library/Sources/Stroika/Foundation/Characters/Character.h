@@ -108,15 +108,14 @@ namespace Stroika::Foundation::Characters {
      * 
      *  This refers to ASCII OR https://en.wikipedia.org/wiki/Latin-1_Supplement, so any UNICODE characater code point
      *  less than U+00FF.
-     * 
-     *  One nice thing about modern C++ for our purposes, is C++ offers so many 'distinct' 'unsigned byte' basic types, we can
-     *  just hijack one that won't be confused with a regular character (string) - thus the static_assert.
      */
-    //    using Character_Latin1 = uint8_t;
     struct Character_Latin1 {
-        uint8_t data;
+        uint8_t        data;
+        constexpr      operator uint8_t () const { return data; }
+        constexpr bool operator== (const Character_Latin1&) const  = default;
+        constexpr auto operator<=> (const Character_Latin1&) const = default;
     };
-    static_assert (sizeof (Character_Latin1) == 1);
+    static_assert (sizeof (Character_Latin1) == 1); // so can re_reinterpret_cast<> between Character_Latin1 and unsigned char/uint8_t;
     static_assert (not Character_Compatible<Character_Latin1>);
 
     /**

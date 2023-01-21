@@ -140,7 +140,8 @@ namespace Stroika::Foundation::Characters {
                 return mk_ (span<const char>{reinterpret_cast<const char*> (s.data ()), s.size ()});
             }
         }
-        if (UTFConverter::AllFitsInOneByteEncoding (s)) {
+        // tmphack - for now - check isascii - but soon encode even if not ascii
+        if (UTFConverter::AllFitsInSingleByteCharLatin1Encoding (s) and Character::IsASCII (s)) {
             Assert (sizeof (CHAR_T) == 2 or sizeof (CHAR_T) == 4);
             Memory::StackBuffer<char> buf{s.size ()};
 #if qCompilerAndStdLib_spanOfContainer_Buggy
@@ -418,8 +419,8 @@ namespace Stroika::Foundation::Characters {
             // OK, we need to UTF convert from the actual size we have to what the caller asked for
             switch (psd.fInCP) {
                 case PeekSpanData::StorageCodePointType::eAscii: // maybe could optimize this case too
-                case PeekSpanData::StorageCodePointType::eChar8:
-                    return UTFConverter::kThe.ConvertSpan (psd.fChar8, s);
+                case PeekSpanData::StorageCodePointType::eCharLatin8:
+                    return UTFConverter::kThe.ConvertSpan (psd.fCharLatin8, s);
                 case PeekSpanData::StorageCodePointType::eChar16:
                     return UTFConverter::kThe.ConvertSpan (psd.fChar16, s);
                 case PeekSpanData::StorageCodePointType::eChar32:
@@ -782,7 +783,7 @@ namespace Stroika::Foundation::Characters {
         using StorageCodePointType = PeekSpanData::StorageCodePointType;
         StorageCodePointType preferredSCP{};
         if constexpr (is_same_v<remove_cv_t<CHAR_TYPE>, char8_t>) {
-            preferredSCP = StorageCodePointType::eChar8;
+            preferredSCP = StorageCodePointType::eCharLatin8;
         }
         else if constexpr (is_same_v<remove_cv_t<CHAR_TYPE>, char16_t>) {
             preferredSCP = StorageCodePointType::eChar16;
@@ -819,8 +820,8 @@ namespace Stroika::Foundation::Characters {
             }
         }
         else if constexpr (is_same_v<CHAR_TYPE, char8_t>) {
-            if (pds.fInCP == StorageCodePointType::eAscii or pds.fInCP == StorageCodePointType::eChar8) {
-                return pds.fChar8;
+            if (pds.fInCP == StorageCodePointType::eAscii or pds.fInCP == StorageCodePointType::eCharLatin8) {
+                return pds.fCharLatin8;
             }
         }
         else if constexpr (is_same_v<CHAR_TYPE, char16_t>) {
@@ -896,8 +897,8 @@ namespace Stroika::Foundation::Characters {
         if constexpr (is_same_v<CHAR_TYPE, char8_t>) {
             switch (pds.fInCP) {
                 case StorageCodePointType::eAscii:
-                case StorageCodePointType::eChar8:
-                    return pds.fChar8;
+                case StorageCodePointType::eCharLatin8:
+                    return pds.fCharLatin8;
                 case StorageCodePointType::eChar16: {
                     possiblyUsedBuffer->resize_uninitialized (UTFConverter::ComputeTargetBufferSize<CHAR_TYPE> (pds.fChar16));
 #if qCompilerAndStdLib_spanOfContainer_Buggy
@@ -922,12 +923,12 @@ namespace Stroika::Foundation::Characters {
         else if constexpr (is_same_v<CHAR_TYPE, char16_t>) {
             switch (pds.fInCP) {
                 case StorageCodePointType::eAscii:
-                case StorageCodePointType::eChar8: {
-                    possiblyUsedBuffer->resize_uninitialized (UTFConverter::ComputeTargetBufferSize<CHAR_TYPE> (pds.fChar8));
+                case StorageCodePointType::eCharLatin8: {
+                    possiblyUsedBuffer->resize_uninitialized (UTFConverter::ComputeTargetBufferSize<CHAR_TYPE> (pds.fCharLatin8));
 #if qCompilerAndStdLib_spanOfContainer_Buggy
-                    return UTFConverter::kThe.ConvertSpan (pds.fChar8, span{possiblyUsedBuffer->data (), possiblyUsedBuffer->size ()});
+                    return UTFConverter::kThe.ConvertSpan (pds.fCharLatin8, span{possiblyUsedBuffer->data (), possiblyUsedBuffer->size ()});
 #else
-                    return UTFConverter::kThe.ConvertSpan (pds.fChar8, span{*possiblyUsedBuffer});
+                    return UTFConverter::kThe.ConvertSpan (pds.fCharLatin8, span{*possiblyUsedBuffer});
 #endif
                 }
                 case StorageCodePointType::eChar16:
@@ -948,12 +949,12 @@ namespace Stroika::Foundation::Characters {
         else if constexpr (is_same_v<CHAR_TYPE, char32_t>) {
             switch (pds.fInCP) {
                 case StorageCodePointType::eAscii:
-                case StorageCodePointType::eChar8: {
-                    possiblyUsedBuffer->resize_uninitialized (UTFConverter::ComputeTargetBufferSize<CHAR_TYPE> (pds.fChar8));
+                case StorageCodePointType::eCharLatin8: {
+                    possiblyUsedBuffer->resize_uninitialized (UTFConverter::ComputeTargetBufferSize<CHAR_TYPE> (pds.fCharLatin8));
 #if qCompilerAndStdLib_spanOfContainer_Buggy
-                    return UTFConverter::kThe.ConvertSpan (pds.fChar8, span{possiblyUsedBuffer->data (), possiblyUsedBuffer->size ()});
+                    return UTFConverter::kThe.ConvertSpan (pds.fCharLatin8, span{possiblyUsedBuffer->data (), possiblyUsedBuffer->size ()});
 #else
-                    return UTFConverter::kThe.ConvertSpan (pds.fChar8, span{*possiblyUsedBuffer});
+                    return UTFConverter::kThe.ConvertSpan (pds.fCharLatin8, span{*possiblyUsedBuffer});
 #endif
                 }
                 case StorageCodePointType::eChar16: {

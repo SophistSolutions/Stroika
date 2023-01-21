@@ -121,14 +121,6 @@ namespace Stroika::Foundation::Characters {
          *
          *  This will frequently (greatly) over-estimate the amount of space needed but it will always produce a sufficient answer without much computation.
          *
-         *  FROM and TO can be Character_Compatible
-         *      char
-         *      char8_t
-         *      char16_t
-         *      char32_t
-         *      wchar_t
-         *      Character
-         * 
          *  \note buffer size NOT in 'bytes' but in units of 'TO' - so char32_t, or char8_t, or whatever.
          * 
          *  \note future implementations might do more work to compute a sometimes smaller, less wasteful buffer size. Maybe
@@ -139,19 +131,19 @@ namespace Stroika::Foundation::Characters {
          *  @See Convert ()
          *  \Alias used to be called QuickComputeConversionOutputBufferSize
          */
-        template <Character_Compatible TO, Character_Compatible FROM>
+        template <Character_CompatibleIsh TO, Character_CompatibleIsh FROM>
         static constexpr size_t ComputeTargetBufferSize (span<const FROM> src)
             requires (not is_const_v<TO>);
-        template <Character_Compatible TO, Character_Compatible FROM>
+        template <Character_CompatibleIsh TO, Character_CompatibleIsh FROM>
         static constexpr size_t ComputeTargetBufferSize (span<FROM> src)
             requires (not is_const_v<TO>);
 
     public:
         /**
-         *  Check if each character in the span fits in a 1-byte encoding (ie is an ascii character)
+         *  Check if each character in the span fits in a 1-byte (standard UNICODE) encoding
          */
-        template <Character_Compatible CHAR_T>
-        static constexpr bool AllFitsInOneByteEncoding (span<const CHAR_T> s) noexcept;
+        template <Character_CompatibleIsh CHAR_T>
+        static constexpr bool AllFitsInSingleByteCharLatin1Encoding (span<const CHAR_T> s) noexcept;
 
     public:
         /**

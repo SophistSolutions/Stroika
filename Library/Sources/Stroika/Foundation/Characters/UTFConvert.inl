@@ -121,7 +121,7 @@ namespace Stroika::Foundation::Characters {
         return nullopt; // didn't end evenly at end of span, so something went wrong
     }
 
-    template <Character_Compatible TO, Character_Compatible FROM>
+    template <Character_CompatibleIsh TO, Character_CompatibleIsh FROM>
     constexpr size_t UTFConverter::ComputeTargetBufferSize (span<const FROM> src)
         requires (not is_const_v<TO>)
     {
@@ -170,7 +170,7 @@ namespace Stroika::Foundation::Characters {
                     // walk the characters, and see how much space each will use when encoded
                     size_t sz{};
                     for (char32_t c : src) {
-                        if (isascii (c)) {
+                        if (isascii (c)) { // maybe can be changed to IsLatin1?
                             ++sz;
                         }
                         else {
@@ -193,18 +193,21 @@ namespace Stroika::Foundation::Characters {
             return 0;
         }
     }
-    template <Character_Compatible TO, Character_Compatible FROM>
+    template <Character_CompatibleIsh TO, Character_CompatibleIsh FROM>
     constexpr size_t UTFConverter::ComputeTargetBufferSize (span<FROM> src)
         requires (not is_const_v<TO>)
     {
         return ComputeTargetBufferSize<TO> (Memory::ConstSpan (src));
     }
 
-    template <Character_Compatible CHAR_T>
-    constexpr bool UTFConverter::AllFitsInOneByteEncoding (span<const CHAR_T> s) noexcept
+    template <Character_CompatibleIsh CHAR_T>
+    constexpr bool UTFConverter::AllFitsInSingleByteCharLatin1Encoding (span<const CHAR_T> s) noexcept
     {
         // note - tried to simplify with conditional_t but both sides evaluated
-        if constexpr (is_same_v<remove_cv_t<CHAR_T>, Character>) {
+        if constexpr (is_same_v<remove_cv_t<CHAR_T>, Character_ASCII> or is_same_v<remove_cv_t<CHAR_T>, Character_Latin1>) {
+            return true;
+        }
+        else if constexpr (is_same_v<remove_cv_t<CHAR_T>, Character>) {
             for (Character c : s) {
                 if (not c.IsASCII ()) [[unlikely]] {
                     return false;

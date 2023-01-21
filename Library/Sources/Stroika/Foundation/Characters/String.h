@@ -1125,7 +1125,7 @@ namespace Stroika::Foundation::Characters {
          *  This API is guaranteed to support a span of at least one of these types (maybe more). The caller may
          *  specify the code-point type preferred.
          * 
-         *  \note eAscii is a subset of eChar8, so when the type eAscii is returned, EITHER fChar8 or fAscii maybe
+         *  \note eAscii is a subset of eCharLatin8, so when the type eAscii is returned, EITHER fCharLatin8 or fAscii maybe
          *        maybe used.
          * 
          *  This API is public, but best to avoid depending on internals of String API - like PeekSpanData - since
@@ -1134,7 +1134,7 @@ namespace Stroika::Foundation::Characters {
         struct PeekSpanData {
             enum StorageCodePointType {
                 eAscii,
-                eChar8,
+                eCharLatin8, // Character_ISOLatin1
                 eChar16,
                 eChar32
             };
@@ -1142,7 +1142,7 @@ namespace Stroika::Foundation::Characters {
             StorageCodePointType fInCP;
             union {
                 span<const char>     fAscii;
-                span<const char8_t>  fChar8;
+                span<const char8_t>  fCharLatin8;
                 span<const char16_t> fChar16;
                 span<const char32_t> fChar32;
             };

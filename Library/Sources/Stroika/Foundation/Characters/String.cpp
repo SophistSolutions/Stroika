@@ -98,7 +98,7 @@ namespace {
                     return PeekSpanData{PeekSpanData::StorageCodePointType::eAscii, {.fAscii = _fData}};
                 }
 #if 0
-                // todo replace fChar8 support with this
+                // todo replace fCharLatin8 support with this
                 else if constexpr (is_same_v<CHAR_T, uchar8_t>) {
                     return PeekSpanData{PeekSpanData::StorageCodePointType::eAscii, {.f = _fData}};
                 }
@@ -1606,7 +1606,7 @@ const wchar_t* String::c_str ()
             case PeekSpanData::eAscii:
                 _fRep = MakeSmartPtr<StringWithCStr_::Rep<char>> (originalRep, originalRepPDS);
                 break;
-            case PeekSpanData::eChar8:
+            case PeekSpanData::eCharLatin8:
                 _fRep = MakeSmartPtr<StringWithCStr_::Rep<char>> (originalRep, originalRepPDS);
                 break;
             case PeekSpanData::eChar16:
