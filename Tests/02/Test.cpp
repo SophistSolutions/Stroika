@@ -1657,7 +1657,7 @@ namespace {
          *  Be careful with signed/unsigned issues using Latin1 characters and string
          *      A few random characters selected from https://en.wikipedia.org/wiki/Latin-1_Supplement
          */
-        string plainAsciiTest     = "fred";
+        string                  plainAsciiTest = "fred";
         constexpr unsigned char kMicroSign     = static_cast<unsigned char> ('µ');
         static_assert (kMicroSign == 0xb5);
         constexpr unsigned char kCedilla = static_cast<unsigned char> ('¸');
