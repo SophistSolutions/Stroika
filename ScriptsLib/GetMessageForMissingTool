@@ -38,6 +38,8 @@ case `uname` in
 esac
 
 echo -n "Missing component $TOOL"
+
+# First Tool specific hints (overrides)
 if [ $TOOL == "libtool" ] ; then
 	if [ $DistroBasedOn == "Debian" ] ; then
 		echo -n ": try apt-get install -y libtool-bin" && echo && exit 0
@@ -55,6 +57,14 @@ elif [ $TOOL == "7za" ] ; then
 elif [ $TOOL == "tr" ] ; then
 	if [ $DistroBasedOn == "Debian" ] ; then
 		echo -n ": try apt-get install -y coreutils" && echo && exit 0
+	fi
+elif [ $TOOL == "clang-format" ] ; then
+	if [ $DistroBasedOn == "msys" ] ; then
+	echo -n ": export PATH=\"\$PATH:/c/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/Llvm/bin\" to ~/.bashrc" 
+	echo -n "or try pacman -S clang" && echo && exit 0
+	elif [ $DistroBasedOn == "cygwin" ] ; then
+	echo -n ": export PATH=\"\$PATH:/cygdrive/c/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/Llvm/bin\" to ~/.bashrc" 
+	echo -n "or try cygwin setup clang" && echo && exit 0
 	fi
 elif [ $TOOL == "unix2dos" ] ; then
 	if [ $DistroBasedOn == "Debian" ] ; then
@@ -83,6 +93,8 @@ elif [ $TOOL == "jq" ] ; then
 	echo -n ": try pacman -S mingw-w64-x86_64-jq; and maybe add export PATH=\"\$PATH:/mingw64/bin\" to ~/.bashrc" && echo && exit 0
 	fi
 fi
+
+# Generic instructions based on your 'OS'/build environment
 if [ $DistroBasedOn == "Darwin" ] ; then
 	echo -n ": try brew install $TOOL" && echo && exit 0
 elif [ $DistroBasedOn == "Debian" ] ; then

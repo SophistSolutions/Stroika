@@ -53,6 +53,7 @@ FORMATTER="${FORMATTER:-clang-format}"
 hash $FORMATTER 2> /dev/null
 if [ $? -ne 0 ]; then
    echo "Need missing formatter: $FORMATTER"
+   $BASEDIR/GetMessageForMissingTool $FORMATTER
    exit 1
 fi
 
