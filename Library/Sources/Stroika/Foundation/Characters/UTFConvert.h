@@ -214,10 +214,10 @@ namespace Stroika::Foundation::Characters {
         nonvirtual ConversionResult Convert (span<const char32_t> source, span<char16_t> target) const;
         nonvirtual ConversionResult Convert (span<const char8_t> source, span<char16_t> target, mbstate_t* multibyteConversionState) const;
         nonvirtual ConversionResult Convert (span<const char8_t> source, span<char32_t> target, mbstate_t* multibyteConversionState) const;
-        template <Character_Compatible SRC_T, Character_Compatible TRG_T>
+        template <Character_CompatibleIsh SRC_T, Character_CompatibleIsh TRG_T>
         nonvirtual ConversionResult Convert (span<const SRC_T> source, span<TRG_T> target) const
             requires (not is_const_v<TRG_T>);
-        template <Character_Compatible SRC_T, Character_Compatible TRG_T>
+        template <Character_CompatibleIsh SRC_T, Character_CompatibleIsh TRG_T>
         nonvirtual ConversionResult Convert (span<SRC_T> source, span<TRG_T> target) const
             requires (not is_const_v<TRG_T>);
         template <typename TO, typename FROM>
@@ -242,10 +242,10 @@ namespace Stroika::Foundation::Characters {
          *          return String{spanOfTargetBufferUsed};
          *      \endcode
          */
-        template <Character_Compatible SRC_T, Character_Compatible TRG_T>
+        template <Character_CompatibleIsh SRC_T, Character_CompatibleIsh TRG_T>
         nonvirtual span<TRG_T> ConvertSpan (span<const SRC_T> source, span<TRG_T> target) const
             requires (not is_const_v<TRG_T>);
-        template <Character_Compatible SRC_T, Character_Compatible TRG_T>
+        template <Character_CompatibleIsh SRC_T, Character_CompatibleIsh TRG_T>
         nonvirtual span<TRG_T> ConvertSpan (span<SRC_T> source, span<TRG_T> target) const
             requires (not is_const_v<TRG_T>);
 
@@ -306,7 +306,7 @@ namespace Stroika::Foundation::Characters {
          * 
          *  \note for 'char' - the characters are ASSUMED/REQUIRED to be ASCII
          */
-        template <Character_IsUnicodeCodePointOrPlainChar CHAR_T>
+        template <Character_IsUnicodeCodePointOrPlainCharOrLatin1Char CHAR_T>
         static constexpr optional<size_t> NextCharacter (span<const CHAR_T> s);
 
     public:
@@ -316,7 +316,7 @@ namespace Stroika::Foundation::Characters {
          * 
          *  \note for 'char' - the characters are ASSUMED/REQUIRED to be ASCII
          */
-        template <Character_IsUnicodeCodePointOrPlainChar CHAR_T>
+        template <Character_IsUnicodeCodePointOrPlainCharOrLatin1Char CHAR_T>
         static constexpr optional<size_t> ComputeCharacterLength (span<const CHAR_T> s);
 
     public:
@@ -336,7 +336,7 @@ namespace Stroika::Foundation::Characters {
 
     private:
         // need generic way to convert char to char8_t, and wchar_t to char16_t or char32_t
-        template <Character_Compatible FromT>
+        template <Character_CompatibleIsh FromT>
         static constexpr span<CompatibleT_<FromT>> ConvertCompatibleSpan_ (span<FromT> f);
 
     private:

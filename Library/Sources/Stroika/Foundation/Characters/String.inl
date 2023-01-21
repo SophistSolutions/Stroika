@@ -121,12 +121,14 @@ namespace Stroika::Foundation::Characters {
     // Since we don't mix spans of single/2-3-4 byte chars in a single rep (would make char indexing too expensive)
     // just specialize 3 cases - ASCII (char), utf-16, and utf-32 (others - like char8_t, wchar_t mappeed appropriately)
     template <>
-    auto String::mk_ (span<const char> s) -> _SharedPtrIRep;
+    auto String::mk_ (span<const Character_ASCII> s) -> _SharedPtrIRep;
+    template <>
+    auto String::mk_ (span<const Character_Latin1> s) -> _SharedPtrIRep;
     template <>
     auto String::mk_ (span<const char16_t> s) -> _SharedPtrIRep;
     template <>
     auto String::mk_ (span<const char32_t> s) -> _SharedPtrIRep;
-    template <Character_Compatible CHAR_T>
+    template <Character_CompatibleIsh CHAR_T>
     auto String::mk_ (span<const CHAR_T> s) -> _SharedPtrIRep
     {
         if (s.empty ()) {
@@ -135,7 +137,7 @@ namespace Stroika::Foundation::Characters {
         if constexpr (sizeof (CHAR_T) == 1) {
             // if we already have ascii, just copy into a buffer that can be used for now with the legacy API, and
             // later specialized into something we construct a special rep for
-            Assert ((is_same_v<CHAR_T, char8_t>)); // cuz we specailized the span<const char> case
+            Assert ((is_same_v<CHAR_T, char8_t>)); // cuz we specailized the span<const Character_ASCII> span<const Character_Latin1> cases
             if (Character::IsASCII (s)) {
                 return mk_ (span<const char>{reinterpret_cast<const char*> (s.data ()), s.size ()});
             }
@@ -272,35 +274,36 @@ namespace Stroika::Foundation::Characters {
     {
         return FromLatin1 (span{s.data (), s.size ()});
     }
-    template <Character_Compatible CHAR_T>
+    template <Character_CompatibleIsh CHAR_T>
     inline String String::FromLatin1 (const CHAR_T* cString)
     {
         RequireNotNull (cString);
-        return FromLatin1 (span{cString, CString::Length (cString)});
+        return FromLatin1 (span{cString, Private_::StrLen_ (cString)});
     }
-    template <Character_Compatible CHAR_T>
+    template <Character_CompatibleIsh CHAR_T>
     inline String String::FromLatin1 (span<const CHAR_T> s)
     {
-        // @todo redo using different rep
         /*
          *  From http://unicodebook.readthedocs.io/encodings.html
          *      "For example, ISO-8859-1 are the first 256 Unicode code points (U+0000-U+00FF)."
          */
-        using TREAT_AS_CHAR_T          = conditional_t<sizeof (CHAR_T) == 1, unsigned char, CHAR_T>; // don't treat U+d3 as negative
-        const TREAT_AS_CHAR_T*       b = reinterpret_cast<const TREAT_AS_CHAR_T*> (s.data ());
-        const TREAT_AS_CHAR_T*       e = b + s.size ();
-        Memory::StackBuffer<wchar_t> buf{Memory::eUninitialized, static_cast<size_t> (e - b)};
-        wchar_t*                     pOut = buf.begin ();
-        for (const TREAT_AS_CHAR_T* i = b; i != e; ++i, ++pOut) {
-            if constexpr (sizeof (CHAR_T) > 1) {
+        if constexpr (sizeof (CHAR_T) == 1) {
+            return mk_ (span<const Character_Latin1>{reinterpret_cast<const Character_Latin1*> (s.data ()), s.size ()});
+        }
+        else {
+            const CHAR_T*                         b = reinterpret_cast<const CHAR_T*> (s.data ());
+            const CHAR_T*                         e = b + s.size ();
+            Memory::StackBuffer<Character_Latin1> buf{Memory::eUninitialized, static_cast<size_t> (e - b)};
+            wchar_t*                              pOut = buf.begin ();
+            for (const CHAR_T* i = b; i != e; ++i, ++pOut) {
                 if (*i >= 256) {
                     static const auto kException_ = out_of_range{"Error converting non-iso-latin-1 text to String"};
                     Execution::Throw (kException_);
                 }
+                *pOut = *i;
             }
-            *pOut = *i;
+            return mk_ (span<const Character_Latin1>{buf.begin (), pOut});
         }
-        return String{span<const wchar_t>{buf.begin (), pOut}};
     }
     template <size_t SIZE>
     inline String String::FromStringConstant (const char (&cString)[SIZE])
@@ -419,8 +422,8 @@ namespace Stroika::Foundation::Characters {
             // OK, we need to UTF convert from the actual size we have to what the caller asked for
             switch (psd.fInCP) {
                 case PeekSpanData::StorageCodePointType::eAscii: // maybe could optimize this case too
-                case PeekSpanData::StorageCodePointType::eCharLatin8:
-                    return UTFConverter::kThe.ConvertSpan (psd.fCharLatin8, s);
+                case PeekSpanData::StorageCodePointType::eSingleByteLatin1:
+                    return UTFConverter::kThe.ConvertSpan (psd.fSingleByteLatin1, s);
                 case PeekSpanData::StorageCodePointType::eChar16:
                     return UTFConverter::kThe.ConvertSpan (psd.fChar16, s);
                 case PeekSpanData::StorageCodePointType::eChar32:
@@ -777,13 +780,19 @@ namespace Stroika::Foundation::Characters {
         auto                         thisSpan = GetData (&ignored1);
         return Character::AsASCIIQuietly (thisSpan, into);
     }
-    template <Character_Compatible CHAR_TYPE>
+    template <Character_CompatibleIsh CHAR_TYPE>
     inline String::PeekSpanData String::GetPeekSpanData () const
     {
         using StorageCodePointType = PeekSpanData::StorageCodePointType;
         StorageCodePointType preferredSCP{};
-        if constexpr (is_same_v<remove_cv_t<CHAR_TYPE>, char8_t>) {
-            preferredSCP = StorageCodePointType::eCharLatin8;
+        if constexpr (is_same_v<remove_cv_t<CHAR_TYPE>, Character_ASCII>) {
+            preferredSCP = StorageCodePointType::eAscii;
+        }
+        else if constexpr (is_same_v<remove_cv_t<CHAR_TYPE>, Character_Latin1>) {
+            preferredSCP = StorageCodePointType::eSingleByteLatin1;
+        }
+        else if constexpr (is_same_v<remove_cv_t<CHAR_TYPE>, char8_t>) {
+            preferredSCP = StorageCodePointType::eAscii;    // not clear what's best in this case but probably doesn't matter
         }
         else if constexpr (is_same_v<remove_cv_t<CHAR_TYPE>, char16_t>) {
             preferredSCP = StorageCodePointType::eChar16;
@@ -810,18 +819,23 @@ namespace Stroika::Foundation::Characters {
         }
         return _SafeReadRepAccessor{this}._ConstGetRep ().PeekData (preferredSCP);
     }
-    template <Character_Compatible CHAR_TYPE>
+    template <Character_CompatibleIsh CHAR_TYPE>
     inline optional<span<const CHAR_TYPE>> String::PeekData (const PeekSpanData& pds)
     {
         using StorageCodePointType = PeekSpanData::StorageCodePointType;
-        if constexpr (is_same_v<CHAR_TYPE, char>) {
+        if constexpr (is_same_v<CHAR_TYPE, Character_ASCII>) {
             if (pds.fInCP == StorageCodePointType::eAscii) {
                 return pds.fAscii;
             }
         }
+        else if constexpr (is_same_v<CHAR_TYPE, Character_Latin1>) {
+            if (pds.fInCP == StorageCodePointType::eSingleByteLatin1) {
+                return pds.fSingleByteLatin1;
+            }
+        }
         else if constexpr (is_same_v<CHAR_TYPE, char8_t>) {
-            if (pds.fInCP == StorageCodePointType::eAscii or pds.fInCP == StorageCodePointType::eCharLatin8) {
-                return pds.fCharLatin8;
+            if (pds.fInCP == StorageCodePointType::eAscii) {    // single-byte-latin1 not legal char8_t format
+                return pds.fAscii;
             }
         }
         else if constexpr (is_same_v<CHAR_TYPE, char16_t>) {
@@ -861,7 +875,7 @@ namespace Stroika::Foundation::Characters {
         }
         return nullopt; // can easily happen if you request a type that is not stored in the rep
     }
-    template <Character_Compatible CHAR_TYPE>
+    template <Character_CompatibleIsh CHAR_TYPE>
     inline optional<span<const CHAR_TYPE>> String::PeekData () const
     {
         return PeekData<CHAR_TYPE> (GetPeekSpanData<CHAR_TYPE> ());
@@ -897,8 +911,17 @@ namespace Stroika::Foundation::Characters {
         if constexpr (is_same_v<CHAR_TYPE, char8_t>) {
             switch (pds.fInCP) {
                 case StorageCodePointType::eAscii:
-                case StorageCodePointType::eCharLatin8:
-                    return pds.fCharLatin8;
+                    // ASCII chars are subset of char8_t so any span of ascii is legit span of char8_t
+                    return span{reinterpret_cast<const char8_t*> (pds.fAscii.data ()), pds.fAscii.size ()};
+                case StorageCodePointType::eSingleByteLatin1: {
+                    // Convert ISO-Latin to UTF8 requires a little work sadly
+                    possiblyUsedBuffer->resize_uninitialized (UTFConverter::ComputeTargetBufferSize<CHAR_TYPE> (pds.fSingleByteLatin1));
+#if qCompilerAndStdLib_spanOfContainer_Buggy
+                    return UTFConverter::kThe.ConvertSpan (pds.fSingleByteLatin1, span{possiblyUsedBuffer->data (), possiblyUsedBuffer->size ()});
+#else
+                    return UTFConverter::kThe.ConvertSpan (pds.fSingleByteLatin1, span{*possiblyUsedBuffer});
+#endif
+                }
                 case StorageCodePointType::eChar16: {
                     possiblyUsedBuffer->resize_uninitialized (UTFConverter::ComputeTargetBufferSize<CHAR_TYPE> (pds.fChar16));
 #if qCompilerAndStdLib_spanOfContainer_Buggy
@@ -923,12 +946,12 @@ namespace Stroika::Foundation::Characters {
         else if constexpr (is_same_v<CHAR_TYPE, char16_t>) {
             switch (pds.fInCP) {
                 case StorageCodePointType::eAscii:
-                case StorageCodePointType::eCharLatin8: {
-                    possiblyUsedBuffer->resize_uninitialized (UTFConverter::ComputeTargetBufferSize<CHAR_TYPE> (pds.fCharLatin8));
+                case StorageCodePointType::eSingleByteLatin1: {
+                    possiblyUsedBuffer->resize_uninitialized (UTFConverter::ComputeTargetBufferSize<CHAR_TYPE> (pds.fSingleByteLatin1));
 #if qCompilerAndStdLib_spanOfContainer_Buggy
-                    return UTFConverter::kThe.ConvertSpan (pds.fCharLatin8, span{possiblyUsedBuffer->data (), possiblyUsedBuffer->size ()});
+                    return UTFConverter::kThe.ConvertSpan (pds.fSingleByteLatin1, span{possiblyUsedBuffer->data (), possiblyUsedBuffer->size ()});
 #else
-                    return UTFConverter::kThe.ConvertSpan (pds.fCharLatin8, span{*possiblyUsedBuffer});
+                    return UTFConverter::kThe.ConvertSpan (pds.fSingleByteLatin1, span{*possiblyUsedBuffer});
 #endif
                 }
                 case StorageCodePointType::eChar16:
@@ -949,12 +972,12 @@ namespace Stroika::Foundation::Characters {
         else if constexpr (is_same_v<CHAR_TYPE, char32_t>) {
             switch (pds.fInCP) {
                 case StorageCodePointType::eAscii:
-                case StorageCodePointType::eCharLatin8: {
-                    possiblyUsedBuffer->resize_uninitialized (UTFConverter::ComputeTargetBufferSize<CHAR_TYPE> (pds.fCharLatin8));
+                case StorageCodePointType::eSingleByteLatin1: {
+                    possiblyUsedBuffer->resize_uninitialized (UTFConverter::ComputeTargetBufferSize<CHAR_TYPE> (pds.fSingleByteLatin1));
 #if qCompilerAndStdLib_spanOfContainer_Buggy
-                    return UTFConverter::kThe.ConvertSpan (pds.fCharLatin8, span{possiblyUsedBuffer->data (), possiblyUsedBuffer->size ()});
+                    return UTFConverter::kThe.ConvertSpan (pds.fSingleByteLatin1, span{possiblyUsedBuffer->data (), possiblyUsedBuffer->size ()});
 #else
-                    return UTFConverter::kThe.ConvertSpan (pds.fCharLatin8, span{*possiblyUsedBuffer});
+                    return UTFConverter::kThe.ConvertSpan (pds.fSingleByteLatin1, span{*possiblyUsedBuffer});
 #endif
                 }
                 case StorageCodePointType::eChar16: {

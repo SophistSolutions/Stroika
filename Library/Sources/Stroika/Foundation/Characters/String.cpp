@@ -52,7 +52,7 @@ namespace {
      *              StringRepHelperAllFitInSize_::Rep<char32_t> for anything else - this always works
      */
     struct StringRepHelperAllFitInSize_ : String {
-        template <Character_IsUnicodeCodePointOrPlainChar CHAR_T>
+        template <Character_IsUnicodeCodePointOrPlainCharOrLatin1Char CHAR_T>
         struct Rep : public _IRep {
         private:
             using inherited = _IRep;
@@ -94,15 +94,12 @@ namespace {
             }
             virtual PeekSpanData PeekData ([[maybe_unused]] optional<PeekSpanData::StorageCodePointType> preferred) const noexcept override
             {
-                if constexpr (is_same_v<CHAR_T, char>) {
+                if constexpr (is_same_v<CHAR_T, Character_ASCII>) {
                     return PeekSpanData{PeekSpanData::StorageCodePointType::eAscii, {.fAscii = _fData}};
                 }
-#if 0
-                // todo replace fCharLatin8 support with this
-                else if constexpr (is_same_v<CHAR_T, uchar8_t>) {
-                    return PeekSpanData{PeekSpanData::StorageCodePointType::eAscii, {.f = _fData}};
+                if constexpr (is_same_v<CHAR_T, Character_Latin1>) {
+                    return PeekSpanData{PeekSpanData::StorageCodePointType::eSingleByteLatin1, {.fSingleByteLatin1 = _fData}};
                 }
-#endif
                 else if constexpr (sizeof (CHAR_T) == 2) {
                     // reinterpret_cast needed cuz of wchar_t case
                     return PeekSpanData{PeekSpanData::StorageCodePointType::eChar16,
@@ -364,7 +361,7 @@ namespace {
      *  \note   This class may assure nul-terminated (kAddNullTerminator_), and so 'capacity' always at least one greater than length.
      */
     struct DynamicallyAllocatedString : StringRepHelperAllFitInSize_ {
-        template <Character_IsUnicodeCodePointOrPlainChar CHAR_T>
+        template <Character_IsUnicodeCodePointOrPlainCharOrLatin1Char CHAR_T>
         struct Rep final : public StringRepHelperAllFitInSize_::Rep<CHAR_T>, public Memory::UseBlockAllocationIfAppropriate<Rep<CHAR_T>> {
         private:
             using inherited = StringRepHelperAllFitInSize_::Rep<CHAR_T>;
@@ -441,7 +438,7 @@ namespace {
      *  for better memory allocation performance, and more importantly, better locality of data (more cpu cache friendly)
      */
     struct FixedCapacityInlineStorageString_ : StringRepHelperAllFitInSize_ {
-        template <Character_IsUnicodeCodePointOrPlainChar CHAR_T, size_t CAPACITY>
+        template <Character_IsUnicodeCodePointOrPlainCharOrLatin1Char CHAR_T, size_t CAPACITY>
         struct Rep final : public StringRepHelperAllFitInSize_::Rep<CHAR_T>,
                            public Memory::UseBlockAllocationIfAppropriate<Rep<CHAR_T, CAPACITY>> {
         private:
@@ -472,7 +469,7 @@ namespace {
                 copy (t1.begin (), t1.end (), fBuf_);
                 if (IncludesNullTerminator_ ()) {
                     Assert (t1.size () + 1 <= CAPACITY);
-                    fBuf_[t1.size ()] = '\0';
+                    fBuf_[t1.size ()] = CHAR_T{'\0'};
                 }
                 inherited::operator= (span<const CHAR_T>{fBuf_, t1.size ()});
             }
@@ -732,7 +729,7 @@ String::_SharedPtrIRep String::mkEmpty_ ()
     return s_;
 }
 
-template <Character_Compatible CHAR_T>
+template <Character_CompatibleIsh CHAR_T>
 inline auto String::mk_nocheck_justPickBufRep_ (span<const CHAR_T> s) -> _SharedPtrIRep
 {
     constexpr size_t kBaseOfFixedBufSize_ = sizeof (StringRepHelperAllFitInSize_::Rep<CHAR_T>);
@@ -775,9 +772,15 @@ inline auto String::mk_nocheck_justPickBufRep_ (span<const CHAR_T> s) -> _Shared
 }
 
 template <>
-auto String::mk_ (span<const char> s) -> _SharedPtrIRep
+auto String::mk_ (span<const Character_ASCII> s) -> _SharedPtrIRep
 {
     Character::CheckASCII (s);
+    return mk_nocheck_justPickBufRep_ (s);
+}
+
+template <>
+auto String::mk_ (span<const Character_Latin1> s) -> _SharedPtrIRep
+{
     return mk_nocheck_justPickBufRep_ (s);
 }
 
@@ -1606,7 +1609,7 @@ const wchar_t* String::c_str ()
             case PeekSpanData::eAscii:
                 _fRep = MakeSmartPtr<StringWithCStr_::Rep<char>> (originalRep, originalRepPDS);
                 break;
-            case PeekSpanData::eCharLatin8:
+            case PeekSpanData::eSingleByteLatin1:
                 _fRep = MakeSmartPtr<StringWithCStr_::Rep<char>> (originalRep, originalRepPDS);
                 break;
             case PeekSpanData::eChar16:

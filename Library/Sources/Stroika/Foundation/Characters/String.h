@@ -110,24 +110,24 @@ namespace Stroika::Foundation::Characters {
      *  \brief String is like std::u32string, except it is much easier to use, often much more space efficient, and more easily interoperates with other string types
      * 
      *  The Stroika String class is conceptually a sequence of (UNICODE) Characters, and so there is
-     *  no obvious way to map the Stroika String to a string. However, if you specify a codepage
-     *  for conversion, or are converting to/from SDKString/SDKChar, there is builtin support for that.
+     *  no obvious way to map the Stroika String to a std::string (in general). However, if you specify a codepage
+     *  for conversion, or are converting to/from SDKString/SDKChar, or u8string, etc, there is builtin support for that.
      *
      *  EOS Handling:
      *      The Stroika String class supports having embedded NUL-characters. It also supports
      *      easy construction from NUL-terminated character strings.
      * 
-     *      There is an API - c_str () - to return a NUL-terminated C-String.
+     *      There is an API - c_str () - to return a NUL-terminated wchar_t C-String (**SOMETIMES - AS OF v3 - TBD**).
      *
      *      About spans, and the \0 NUL-termination - generally do NOT include
      *      the NUL-character in your span! Stroika strings will allow this, and treat
      *      it as just another character, but its probably not what you meant.
      * 
      *  \note Narrow String handling
-     *      Becuase the characterset of strings of type 'char' is ambiguous, if you construct a String
-     *      with char (char* etc) - it is somehow required that the characters be ASCII. If using the FromConstantString () API
+     *      Becuase the character set of strings of type 'char' is ambiguous, if you construct a String
+     *      with char (char* etc) - it is somehow 'required' that the characters be ASCII. If using the FromConstantString () API
      *      , or operator"" _k, it is checked with Require () - so assertion failure. If you construct
-     *      with String::CTOR, it will generate a runtime exception (so more costly checking).
+     *      with String::CTOR, it will generate a runtime exception (so more costly runtime checking).
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      *
@@ -348,9 +348,9 @@ namespace Stroika::Foundation::Characters {
          *
          *  \note Alias From8bitASCII () or FromExtendedASCII ()
          */
-        template <Character_Compatible CHAR_T>
+        template <Character_CompatibleIsh CHAR_T>
         static String FromLatin1 (const CHAR_T* cString);
-        template <Character_Compatible CHAR_T>
+        template <Character_CompatibleIsh CHAR_T>
         static String FromLatin1 (span<const CHAR_T> s);
         template <Character_IsUnicodeCodePointOrPlainChar CHAR_T>
         static String FromLatin1 (const basic_string<CHAR_T>& s);
@@ -1125,7 +1125,7 @@ namespace Stroika::Foundation::Characters {
          *  This API is guaranteed to support a span of at least one of these types (maybe more). The caller may
          *  specify the code-point type preferred.
          * 
-         *  \note eAscii is a subset of eCharLatin8, so when the type eAscii is returned, EITHER fCharLatin8 or fAscii maybe
+         *  \note eAscii is a subset of eSingleByteLatin1, so when the type eAscii is returned, EITHER fSingleByteLatin1 or fAscii maybe
          *        maybe used.
          * 
          *  This API is public, but best to avoid depending on internals of String API - like PeekSpanData - since
@@ -1133,18 +1133,25 @@ namespace Stroika::Foundation::Characters {
          */
         struct PeekSpanData {
             enum StorageCodePointType {
+                /**
+                 *  ASCII is useful to track in storage (though same size as eSingleByteLatin1) - because requests
+                 *  to convert to UTF-8 are free - ASCII is legit UTF8 (not true for eSingleByteLatin1)
+                 */
                 eAscii,
-                eCharLatin8, // Character_ISOLatin1
+                /**
+                 *  Character_Latin1 - 8 bit representation of characters. But 256 of them - more than plain ascii.
+                 *  And cheap/easy to convert to UNICODE (since code points of wider characters exactly the same values).
+                 */
+                eSingleByteLatin1,
                 eChar16,
                 eChar32
             };
-
             StorageCodePointType fInCP;
             union {
-                span<const char>     fAscii;
-                span<const char8_t>  fCharLatin8;
-                span<const char16_t> fChar16;
-                span<const char32_t> fChar32;
+                span<const Character_ASCII>  fAscii;
+                span<const Character_Latin1> fSingleByteLatin1;
+                span<const char16_t>         fChar16;
+                span<const char32_t>         fChar32;
             };
         };
 
@@ -1162,21 +1169,19 @@ namespace Stroika::Foundation::Characters {
          *  This API is public, but best to avoid depending on internals of String API - like PeekSpanData - since
          *  this reasonably likely to change in future versions.
          */
-        template <Character_Compatible CHAR_TYPE = char>
+        template <Character_CompatibleIsh CHAR_TYPE = Character_ASCII>
         nonvirtual PeekSpanData GetPeekSpanData () const;
 
     public:
         /**
-         *  \brief return the constant character data inside the string in the form of a span or nullopt if not available
-         * 
-         *  \note CHAR_TYPE == char implies ASCII (so will return MISSING if data is not ascii)
+         *  \brief return the constant character data inside the string in the form of a span or nullopt if not available for that CHAR_TYPE
          * 
          *  This API is public, but best to avoid depending on internals of String API - like PeekSpanData - since
          *  this reasonably likely to change in future versions.
          */
-        template <Character_Compatible CHAR_TYPE>
+        template <Character_CompatibleIsh CHAR_TYPE>
         static optional<span<const CHAR_TYPE>> PeekData (const PeekSpanData& pds);
-        template <Character_Compatible CHAR_TYPE>
+        template <Character_CompatibleIsh CHAR_TYPE>
         nonvirtual optional<span<const CHAR_TYPE>> PeekData () const;
 
     public:
@@ -1188,6 +1193,10 @@ namespace Stroika::Foundation::Characters {
          * 
          *  BUT - it maybe a span of data stored into the argument possiblyUsedBuffer (which is why it must be provided - cannot be nullptr).
          *  If you want the freedom to not pass in this buffer, see the PeekData API.
+         * 
+         *  \note - CHAR_T must satisfy the concept Character_SafelyCompatible - SAFELY - because the string MIGHT contain characters not in any 
+         *          unsafe char class (like Character_ASCII or Character_Latin1), and so there might not be a way to do the conversion. Use 
+         *          PeekData () to do that - where it can return nullopt if no conversion possible.
          * 
          *  \par Example Usage
          *      \code
@@ -1399,7 +1408,7 @@ namespace Stroika::Foundation::Characters {
         /**
          * note here - for mk_(span<const char>) - calls Character::CheckASCII (), and other <char> guys delegate through that
          */
-        template <Character_Compatible CHAR_T>
+        template <Character_CompatibleIsh CHAR_T>
         static _SharedPtrIRep mk_ (span<const CHAR_T> s);
         template <Character_Compatible CHAR_T>
         static _SharedPtrIRep mk_ (Iterable<CHAR_T> it);
@@ -1407,7 +1416,7 @@ namespace Stroika::Foundation::Characters {
         static _SharedPtrIRep mk_ (span<CHAR_T> s);
         template <Character_IsUnicodeCodePointOrPlainChar CHAR_T>
         static _SharedPtrIRep mk_ (basic_string<CHAR_T>&& s);
-        template <Character_Compatible CHAR_T>
+        template <Character_CompatibleIsh CHAR_T>
         static _SharedPtrIRep mk_nocheck_justPickBufRep_ (span<const CHAR_T> s);
 
     private:

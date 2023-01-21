@@ -8,6 +8,7 @@
 
 #include <compare>
 #include <span>
+#include <type_traits>
 
 #include "../Common/Compare.h"
 #include "../Configuration/Enumeration.h"
@@ -65,6 +66,7 @@ namespace Stroika::Foundation::Characters {
      *      o   char16_t
      *      o   char32_t
      *      o   wchar_t
+     *      o   Character
      *  \note all these types are <= 4 bytes (size of char32_t)
      */
     template <typename T>
@@ -73,6 +75,7 @@ namespace Stroika::Foundation::Characters {
     static_assert (Character_SafelyCompatible<char16_t>);
     static_assert (Character_SafelyCompatible<char32_t>);
     static_assert (Character_SafelyCompatible<wchar_t>);
+    //static_assert (Character_SafelyCompatible<Character>); true but not defined yet.
 
     /**
      *  \brief Stroika's string/character classes treat 'char' as being an ASCII character
@@ -89,7 +92,8 @@ namespace Stroika::Foundation::Characters {
     static_assert (not Character_SafelyCompatible<Character_ASCII>);
 
     /**
-    * &&&& CONSIDER LOSING THIS AND REPLACING WITH Character_CompatibleIsh but CAREFULLY REVIEWING EACH CASE
+    * &&&& @todo CONSIDER LOSING THIS AND REPLACING WITH Character_CompatibleIsh but CAREFULLY REVIEWING EACH CASE
+    * &&& OR maybe merge wtih Character_SafelyCompatible. Muyst think through
     * 
      *  \brief Something that can be reasonably converted into a Unicode Character object (Character_SafelyCompatible<T> or T==char)
      * 
@@ -108,6 +112,8 @@ namespace Stroika::Foundation::Characters {
      * 
      *  This refers to ASCII OR https://en.wikipedia.org/wiki/Latin-1_Supplement, so any UNICODE characater code point
      *  less than U+00FF.
+     * 
+     *  \note Considered using Character_Latin1 = uint8_t; But this is better since less likely accidentally used.
      */
     struct Character_Latin1 {
         uint8_t        data;
@@ -115,11 +121,17 @@ namespace Stroika::Foundation::Characters {
         constexpr bool operator== (const Character_Latin1&) const  = default;
         constexpr auto operator<=> (const Character_Latin1&) const = default;
     };
+    static_assert (is_trivially_constructible_v<Character_Latin1>);
+    static_assert (is_trivially_destructible_v<Character_Latin1>);
     static_assert (sizeof (Character_Latin1) == 1); // so can re_reinterpret_cast<> between Character_Latin1 and unsigned char/uint8_t;
     static_assert (not Character_Compatible<Character_Latin1>);
 
+    template <typename T>
+    concept Character_IsUnicodeCodePointOrPlainCharOrLatin1Char =
+        Character_IsUnicodeCodePointOrPlainChar<T> or is_same_v<remove_cv_t<T>, Character_Latin1>;
+
     /**
-     *  \brief Character_CompatibleIsh extends Character_Compatible with  Character_Latin1
+     *  \brief Character_CompatibleIsh extends Character_Compatible with Character_Latin1
      * 
      *  \note Character_CompatibleIsh means any 'basic character type' - size <= 4 bytes, which
      *        could reasonably, in context (so with extra info), could be safely converted into

@@ -54,11 +54,11 @@ namespace Stroika::Foundation::Characters {
     }
     inline constexpr UTFConverter UTFConverter::kThe;
 
-    template <Character_IsUnicodeCodePointOrPlainChar CHAR_T>
+    template <Character_IsUnicodeCodePointOrPlainCharOrLatin1Char CHAR_T>
     constexpr optional<size_t> UTFConverter::NextCharacter (span<const CHAR_T> s)
     {
         // Logic based on table from https://en.wikipedia.org/wiki/UTF-8#Encoding
-        if (is_same_v<CHAR_T, char>) {
+        if constexpr (is_same_v<CHAR_T, Character_ASCII> or is_same_v<CHAR_T, Character_Latin1>) {
             return s.empty () ? optional<size_t>{} : 1;
         }
         else if constexpr (is_same_v<CHAR_T, char8_t>) {
@@ -106,7 +106,7 @@ namespace Stroika::Foundation::Characters {
         return nullopt;
     }
 
-    template <Character_IsUnicodeCodePointOrPlainChar CHAR_T>
+    template <Character_IsUnicodeCodePointOrPlainCharOrLatin1Char CHAR_T>
     constexpr optional<size_t> UTFConverter::ComputeCharacterLength (span<const CHAR_T> s)
     {
         size_t charCount{};
@@ -306,7 +306,7 @@ namespace Stroika::Foundation::Characters {
         ThrowIf_ (result.fStatus);
         return result; // slice
     }
-    template <Character_Compatible SRC_T, Character_Compatible TRG_T>
+    template <Character_CompatibleIsh SRC_T, Character_CompatibleIsh TRG_T>
     inline auto UTFConverter::Convert (span<const SRC_T> source, span<TRG_T> target) const -> ConversionResult
         requires (not is_const_v<TRG_T>)
     {
@@ -321,7 +321,7 @@ namespace Stroika::Foundation::Characters {
         return Convert (ConvertCompatibleSpan_ (source), ConvertCompatibleSpan_ (target));
     }
 
-    template <Character_Compatible SRC_T, Character_Compatible TRG_T>
+    template <Character_CompatibleIsh SRC_T, Character_CompatibleIsh TRG_T>
     inline auto UTFConverter::Convert (span<SRC_T> source, span<TRG_T> target) const -> ConversionResult
         requires (not is_const_v<TRG_T>)
     {
@@ -344,13 +344,13 @@ namespace Stroika::Foundation::Characters {
         }
     }
 
-    template <Character_Compatible SRC_T, Character_Compatible TRG_T>
+    template <Character_CompatibleIsh SRC_T, Character_CompatibleIsh TRG_T>
     inline span<TRG_T> UTFConverter::ConvertSpan (span<const SRC_T> source, span<TRG_T> target) const
         requires (not is_const_v<TRG_T>)
     {
         return span{target.data (), Convert (source, target).fTargetProduced};
     }
-    template <Character_Compatible SRC_T, Character_Compatible TRG_T>
+    template <Character_CompatibleIsh SRC_T, Character_CompatibleIsh TRG_T>
     inline span<TRG_T> UTFConverter::ConvertSpan (span<SRC_T> source, span<TRG_T> target) const
         requires (not is_const_v<TRG_T>)
     {
@@ -516,7 +516,7 @@ namespace Stroika::Foundation::Characters {
         return r.fTargetProduced;
     }
 
-    template <Character_Compatible FromT>
+    template <Character_CompatibleIsh FromT>
     constexpr auto UTFConverter::ConvertCompatibleSpan_ (span<FromT> f) -> span<CompatibleT_<FromT>>
     {
         return span{(CompatibleT_<FromT>*)f.data (), f.size ()};
