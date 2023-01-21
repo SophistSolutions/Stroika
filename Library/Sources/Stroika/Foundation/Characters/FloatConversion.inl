@@ -748,10 +748,9 @@ namespace Stroika::Foundation::Characters::FloatConversion {
                 if (remainder != nullptr) [[unlikely]] {
                     // in remainder mode we skip leading whitespace
                     while (b != e and iswspace (*b))
-                        [[unlikely]]
-                        {
-                            ++b;
-                        }
+                        [[unlikely]] {
+                        ++b;
+                    }
                 }
                 if (b != e and *b == '+') [[unlikely]] {
                     ++b; // "the plus sign is not recognized outside of the exponent (only the minus sign is permitted at the beginning)" from https://en.cppreference.com/w/cpp/utility/from_chars

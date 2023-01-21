@@ -230,14 +230,14 @@ namespace Stroika::Foundation::Containers::Concrete {
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     inline Mapping_stdhashmap<KEY_TYPE, MAPPED_VALUE_TYPE>::Mapping_stdhashmap ()
         requires (Mapping_stdhashmap_IsDefaultConstructible<KEY_TYPE>)
-    : Mapping_stdhashmap{std::hash<KEY_TYPE>{}, std::equal_to<KEY_TYPE>{}}
+        : Mapping_stdhashmap{std::hash<KEY_TYPE>{}, std::equal_to<KEY_TYPE>{}}
     {
         AssertRepValidType_ ();
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     inline Mapping_stdhashmap<KEY_TYPE, MAPPED_VALUE_TYPE>::Mapping_stdhashmap (STDHASHMAP<>&& src)
         requires (Mapping_stdhashmap_IsDefaultConstructible<KEY_TYPE>)
-    : inherited{inherited::template MakeSmartPtr<Rep_<typename STDHASHMAP<>::hasher, typename STDHASHMAP<>::key_equal>> (move (src))}
+        : inherited{inherited::template MakeSmartPtr<Rep_<typename STDHASHMAP<>::hasher, typename STDHASHMAP<>::key_equal>> (move (src))}
     {
         AssertRepValidType_ ();
     }
@@ -245,14 +245,14 @@ namespace Stroika::Foundation::Containers::Concrete {
     template <typename HASH, typename KEY_EQUALS_COMPARER>
     inline Mapping_stdhashmap<KEY_TYPE, MAPPED_VALUE_TYPE>::Mapping_stdhashmap (HASH&& hasher, KEY_EQUALS_COMPARER&& keyComparer)
         requires (Cryptography::Digest::IsHashFunction<HASH, KEY_TYPE> and Common::IsEqualsComparer<KEY_EQUALS_COMPARER, KEY_TYPE> ())
-    : inherited{inherited::template MakeSmartPtr<Rep_<remove_cvref_t<HASH>, remove_cvref_t<KEY_EQUALS_COMPARER>>> (forward<HASH> (hasher), forward<KEY_EQUALS_COMPARER> (keyComparer))}
+        : inherited{inherited::template MakeSmartPtr<Rep_<remove_cvref_t<HASH>, remove_cvref_t<KEY_EQUALS_COMPARER>>> (forward<HASH> (hasher), forward<KEY_EQUALS_COMPARER> (keyComparer))}
     {
         AssertRepValidType_ ();
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     inline Mapping_stdhashmap<KEY_TYPE, MAPPED_VALUE_TYPE>::Mapping_stdhashmap (const initializer_list<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src)
         requires (Mapping_stdhashmap_IsDefaultConstructible<KEY_TYPE>)
-    : Mapping_stdhashmap{}
+        : Mapping_stdhashmap{}
     {
         this->AddAll (src);
         AssertRepValidType_ ();
@@ -262,7 +262,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     inline Mapping_stdhashmap<KEY_TYPE, MAPPED_VALUE_TYPE>::Mapping_stdhashmap (HASH&& hasher, KEY_EQUALS_COMPARER&& keyComparer, const initializer_list<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src)
         requires (
             Cryptography::Digest::IsHashFunction<HASH, KEY_TYPE> and Common::IsEqualsComparer<KEY_EQUALS_COMPARER, KEY_TYPE> ())
-    : Mapping_stdhashmap{forward<HASH> (hasher), forward<KEY_EQUALS_COMPARER> (keyComparer)}
+        : Mapping_stdhashmap{forward<HASH> (hasher), forward<KEY_EQUALS_COMPARER> (keyComparer)}
     {
         this->AddAll (src);
         AssertRepValidType_ ();
@@ -273,7 +273,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     inline Mapping_stdhashmap<KEY_TYPE, MAPPED_VALUE_TYPE>::Mapping_stdhashmap (ITERABLE_OF_ADDABLE&& src)
         requires (
             Mapping_stdhashmap_IsDefaultConstructible<KEY_TYPE> and Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and not is_base_of_v<Mapping_stdhashmap<KEY_TYPE, MAPPED_VALUE_TYPE>, decay_t<ITERABLE_OF_ADDABLE>>)
-    : Mapping_stdhashmap{}
+        : Mapping_stdhashmap{}
     {
         static_assert (IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>);
         this->AddAll (forward<ITERABLE_OF_ADDABLE> (src));
@@ -288,7 +288,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             Cryptography::Digest::IsHashFunction<HASH, KEY_TYPE> and Common::IsEqualsComparer<KEY_EQUALS_COMPARER, KEY_TYPE> () and Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and not is_base_of_v<Mapping_stdhashmap<KEY_TYPE, MAPPED_VALUE_TYPE>, decay_t<ITERABLE_OF_ADDABLE>>
 
             )
-    : Mapping_stdhashmap{forward<HASH> (hasher), forward<KEY_EQUALS_COMPARER> (keyComparer)}
+        : Mapping_stdhashmap{forward<HASH> (hasher), forward<KEY_EQUALS_COMPARER> (keyComparer)}
     {
         static_assert (IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>);
         this->AddAll (forward<ITERABLE_OF_ADDABLE> (src));
@@ -301,7 +301,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     Mapping_stdhashmap<KEY_TYPE, MAPPED_VALUE_TYPE>::Mapping_stdhashmap (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
         requires (
             Mapping_stdhashmap_IsDefaultConstructible<KEY_TYPE> and Configuration::IsIterator_v<ITERATOR_OF_ADDABLE>)
-    : Mapping_stdhashmap{}
+        : Mapping_stdhashmap{}
     {
         static_assert (IsAddable_v<ExtractValueType_t<ITERATOR_OF_ADDABLE>>);
         this->AddAll (forward<ITERATOR_OF_ADDABLE> (start), forward<ITERATOR_OF_ADDABLE> (end));
@@ -312,7 +312,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     Mapping_stdhashmap<KEY_TYPE, MAPPED_VALUE_TYPE>::Mapping_stdhashmap (HASH&& hasher, KEY_EQUALS_COMPARER&& keyComparer, ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
         requires (
             Cryptography::Digest::IsHashFunction<HASH, KEY_TYPE> and Common::IsEqualsComparer<KEY_EQUALS_COMPARER, KEY_TYPE> () and Configuration::IsIterator_v<ITERATOR_OF_ADDABLE>)
-    : Mapping_stdhashmap{forward<HASH> (hasher), forward<KEY_EQUALS_COMPARER> (keyComparer)}
+        : Mapping_stdhashmap{forward<HASH> (hasher), forward<KEY_EQUALS_COMPARER> (keyComparer)}
     {
         static_assert (IsAddable_v<ExtractValueType_t<ITERATOR_OF_ADDABLE>>);
         this->AddAll (forward<ITERATOR_OF_ADDABLE> (start), forward<ITERATOR_OF_ADDABLE> (end));

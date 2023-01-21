@@ -305,23 +305,25 @@ namespace Stroika::Foundation::Characters {
     }
     template <Character_Compatible SRC_T, Character_Compatible TRG_T>
     inline auto UTFConverter::Convert (span<const SRC_T> source, span<TRG_T> target) const -> ConversionResult
-        requires (not is_const_v<TRG_T>) {
-            Require ((target.size () >= ComputeTargetBufferSize<TRG_T> (source)));
-            if constexpr (sizeof (SRC_T) == sizeof (TRG_T)) {
-                auto srcB = as_bytes (source);
-                if (srcB.size () != 0) {
-                    ::memcpy (target.data (), srcB.data (), srcB.size ());
-                }
-                return ConversionResult{source.size (), source.size ()}; // not a typo - target buffer allowed to be larger than what copied
+        requires (not is_const_v<TRG_T>)
+    {
+        Require ((target.size () >= ComputeTargetBufferSize<TRG_T> (source)));
+        if constexpr (sizeof (SRC_T) == sizeof (TRG_T)) {
+            auto srcB = as_bytes (source);
+            if (srcB.size () != 0) {
+                ::memcpy (target.data (), srcB.data (), srcB.size ());
             }
-            return Convert (ConvertCompatibleSpan_ (source), ConvertCompatibleSpan_ (target));
+            return ConversionResult{source.size (), source.size ()}; // not a typo - target buffer allowed to be larger than what copied
         }
+        return Convert (ConvertCompatibleSpan_ (source), ConvertCompatibleSpan_ (target));
+    }
 
     template <Character_Compatible SRC_T, Character_Compatible TRG_T>
     inline auto UTFConverter::Convert (span<SRC_T> source, span<TRG_T> target) const -> ConversionResult
-        requires (not is_const_v<TRG_T>) {
-            return Convert (Memory::ConstSpan (source), target);
-        }
+        requires (not is_const_v<TRG_T>)
+    {
+        return Convert (Memory::ConstSpan (source), target);
+    }
 
     template <typename TO, typename FROM>
     inline TO UTFConverter::Convert (const FROM& from) const
@@ -489,13 +491,14 @@ namespace Stroika::Foundation::Characters {
     }
     template <Character_Compatible SRC_T, Character_Compatible TRG_T>
     inline auto UTFConverter::ConvertQuietly (span<const SRC_T> source, span<TRG_T> target) const -> ConversionResultWithStatus
-        requires (not is_const_v<TRG_T>) {
-            if constexpr (sizeof (SRC_T) == sizeof (TRG_T)) {
-                copy (source, target, source.size ()); // pointless conversion, but if requested...
-                return source.size ();
-            }
-            return ConvertQuietly (ConvertCompatibleSpan_ (source), ConvertCompatibleSpan_ (target));
+        requires (not is_const_v<TRG_T>)
+    {
+        if constexpr (sizeof (SRC_T) == sizeof (TRG_T)) {
+            copy (source, target, source.size ()); // pointless conversion, but if requested...
+            return source.size ();
         }
+        return ConvertQuietly (ConvertCompatibleSpan_ (source), ConvertCompatibleSpan_ (target));
+    }
 
     template <Character_Compatible TRG_T, Character_Compatible SRC_T>
     size_t UTFConverter::ConvertOffset (span<const SRC_T> source, size_t srcIndex) const

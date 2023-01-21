@@ -64,7 +64,7 @@ namespace {
             Rep () = default;
             Rep (span<const CHAR_T> s)
                 requires (not is_same_v<CHAR_T, char8_t>) // char8 ironically involves 2-byte characters, cuz only ascii encoded as 1 byte
-            : _fData{s}
+                : _fData{s}
             {
                 if constexpr (is_same_v<CHAR_T, char> or is_same_v<CHAR_T, char8_t>) {
                     Require (Character::IsASCII (s));

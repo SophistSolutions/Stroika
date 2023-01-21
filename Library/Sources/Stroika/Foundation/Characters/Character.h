@@ -39,22 +39,23 @@ namespace Stroika::Foundation::Characters {
      */
     template <typename T>
     concept Character_IsBasicUnicodeCodePoint =
-        is_same_v < remove_cv_t<T>,
-    char8_t > or is_same_v<remove_cv_t<T>, char16_t> or is_same_v<remove_cv_t<T>, char32_t>;
+        is_same_v<remove_cv_t<T>,
+                  char8_t> or
+        is_same_v<remove_cv_t<T>, char16_t> or is_same_v<remove_cv_t<T>, char32_t>;
 
     /**
      *  \brief check if T is Character_IsBasicUnicodeCodePoint or wchar_t (any basic code-point class)
      */
     template <typename T>
-    concept Character_IsUnicodeCodePoint = Character_IsBasicUnicodeCodePoint<T> or is_same_v < remove_cv_t<T>,
-    wchar_t > ;
+    concept Character_IsUnicodeCodePoint = Character_IsBasicUnicodeCodePoint<T> or is_same_v<remove_cv_t<T>,
+                                                                                             wchar_t>;
 
     /**
      *  \brief check if T is char8_t, char16_t, char32_t (Character_IsBasicUnicodeCodePoint) or wchar_t
      */
     template <typename T>
-    concept Character_IsUnicodeCodePointOrPlainChar = Character_IsUnicodeCodePoint<T> or is_same_v < remove_cv_t<T>,
-    char > ;
+    concept Character_IsUnicodeCodePointOrPlainChar = Character_IsUnicodeCodePoint<T> or is_same_v<remove_cv_t<T>,
+                                                                                                   char>;
 
     /// @TODO LOSE OrPlainChar busines sand simplfiy below???? Only if we ASSERT 'char' implies ASCIII, and check that with assertions
     // so assert each char <= 127.
@@ -71,8 +72,8 @@ namespace Stroika::Foundation::Characters {
      *  \note all these types are <= 4 bytes (size of char32_t)
      */
     template <typename T>
-    concept Character_SafelyCompatible = Character_IsUnicodeCodePoint<T> or is_same_v < remove_cv_t<T>,
-    Character > ;
+    concept Character_SafelyCompatible = Character_IsUnicodeCodePoint<T> or is_same_v<remove_cv_t<T>,
+                                                                                      Character>;
     static_assert (Character_SafelyCompatible<char8_t>);
     static_assert (Character_SafelyCompatible<char16_t>);
     static_assert (Character_SafelyCompatible<char32_t>);
@@ -103,8 +104,8 @@ namespace Stroika::Foundation::Characters {
      *        on this point).
      */
     template <typename T>
-    concept Character_Compatible = Character_SafelyCompatible<T> or is_same_v < remove_cv_t<T>,
-    Character_ASCII > ;
+    concept Character_Compatible = Character_SafelyCompatible<T> or is_same_v<remove_cv_t<T>,
+                                                                              Character_ASCII>;
 
     /**
      *  Internally, several algorithms and data structures operate on this one-byte subset of UNICODE.
@@ -142,8 +143,8 @@ namespace Stroika::Foundation::Characters {
      *      o   Character_ISOLatin1
      */
     template <typename T>
-    concept Character_CompatibleIsh = Character_Compatible<T> or is_same_v < remove_cv_t<T>,
-    Character_ISOLatin1 > ;
+    concept Character_CompatibleIsh = Character_Compatible<T> or is_same_v<remove_cv_t<T>,
+                                                                           Character_ISOLatin1>;
     static_assert (Character_CompatibleIsh<char8_t>);
     static_assert (Character_CompatibleIsh<char16_t>);
     static_assert (Character_CompatibleIsh<char32_t>);

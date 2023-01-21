@@ -488,7 +488,7 @@ namespace {
             const InternetAddress kSomeIPV4LinkLocalAddr_{"169.254.0.1"};
             const InternetAddress kSomeIPV6LinkLocalAddr_{"fe80::44de:4247:5b76:ddc9"};
             const Tester          kTests_[] = {
-                         //  ADDR                                    localhost   linklocal   multicast   privateaddr
+                //  ADDR                                    localhost   linklocal   multicast   privateaddr
                 {V4::kAddrAny, false, false, false, false},
                 {V6::kAddrAny, false, false, false, false},
                 {V4::kLocalhost, true, false, false, false},
