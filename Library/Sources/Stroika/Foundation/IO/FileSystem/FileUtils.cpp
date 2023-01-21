@@ -119,7 +119,7 @@ void IO::FileSystem::SetFileAccessWideOpened (const filesystem::path& filePathNa
                                                            nullptr, nullptr,                             // don't change owner or group
                                                            pACL,                                         // DACL specified
                                                            nullptr);                                     // don't change SACL
-        // ignore error from this routine for now  - probably means either we don't have permissions or OS too old to support...
+    // ignore error from this routine for now  - probably means either we don't have permissions or OS too old to support...
 #elif qPlatform_POSIX
     ////TODO: Somewhat PRIMITIVE - TMPHACK
     if (filePathName.empty ()) [[unlikely]] {
