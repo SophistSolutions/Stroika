@@ -343,24 +343,20 @@ namespace Stroika::Foundation::Characters {
 
     public:
         /**
-         *  Create a String object from ISO-Latin-1 (https://en.wikipedia.org/wiki/ISO/IEC_8859-1)
+         *  Create a String object from UNICODE Latin-1 Supplement (https://en.wikipedia.org/wiki/Latin-1_Supplement)
          *
-         *  \note Though ISO-Latin-1 is is defined to only have 192 valid characters (source), UNICODE
-         *        is defined so that the first 256 code points match ISO-Latin-1.
+         *  This is roughly, but not exactly, the same as the ISO-Latin-1 single-byte characterset (https://en.wikipedia.org/wiki/ISO/IEC_8859-1)
          *
-         *        Because of this, This function allows ANY 8-bit characters at all - to be passed in, and those characters
-         *        will be mapped to UNICODE characters (of the same code point) in the resulting String.
-         * 
          *  \note if character code point >= 256, this will throw an exception - not defined for that range (only checked if sizeof (CHAR_T) > 1)
          *
-         *  \note Alias From8bitASCII () or FromExtendedASCII () or FromAnyCharset (), FromAnyCharacterSet ()
+         *  \note Alias From8bitASCII () or FromExtendedASCII ()
          */
         template <Character_Compatible CHAR_T>
-        static String FromISOLatin1 (const CHAR_T* cString);
+        static String FromLatin1 (const CHAR_T* cString);
         template <Character_Compatible CHAR_T>
-        static String FromISOLatin1 (span<const CHAR_T> s);
+        static String FromLatin1 (span<const CHAR_T> s);
         template <Character_IsUnicodeCodePointOrPlainChar CHAR_T>
-        static String FromISOLatin1 (const basic_string<CHAR_T>& s);
+        static String FromLatin1 (const basic_string<CHAR_T>& s);
 
     public:
         /**
@@ -1357,9 +1353,9 @@ namespace Stroika::Foundation::Characters {
         {
             return InsertAt (span{from, to}, at);
         }
-        [[deprecated ("Since Stroika v3.0d1, use span{} overload for this")]] static String FromISOLatin1 (const char* start, const char* end)
+        [[deprecated ("Since Stroika v3.0d1, use span{} overload for this")]] static String FromLatin1 (const char* start, const char* end)
         {
-            return FromISOLatin1 (span{start, end});
+            return FromLatin1 (span{start, end});
         }
         [[deprecated ("Since Stroika v3.0d1, use span{} constructor for this")]] static String FromNarrowString (const char* from, const char* to, const locale& l)
         {

@@ -251,18 +251,18 @@ namespace Stroika::Foundation::Characters {
         return FromNarrowString (span{from.c_str (), from.length ()}, l);
     }
     template <Character_IsUnicodeCodePointOrPlainChar CHAR_T>
-    inline String String::FromISOLatin1 (const basic_string<CHAR_T>& s)
+    inline String String::FromLatin1 (const basic_string<CHAR_T>& s)
     {
-        return FromISOLatin1 (span{s.data (), s.size ()});
+        return FromLatin1 (span{s.data (), s.size ()});
     }
     template <Character_Compatible CHAR_T>
-    inline String String::FromISOLatin1 (const CHAR_T* cString)
+    inline String String::FromLatin1 (const CHAR_T* cString)
     {
         RequireNotNull (cString);
-        return FromISOLatin1 (span{cString, CString::Length (cString)});
+        return FromLatin1 (span{cString, CString::Length (cString)});
     }
     template <Character_Compatible CHAR_T>
-    inline String String::FromISOLatin1 (span<const CHAR_T> s)
+    inline String String::FromLatin1 (span<const CHAR_T> s)
     {
         // @todo redo using different rep
         /*

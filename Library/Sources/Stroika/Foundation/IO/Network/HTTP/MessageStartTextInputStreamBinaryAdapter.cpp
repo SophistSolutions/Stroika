@@ -117,7 +117,7 @@ public:
             } break;
             case ToStringFormat::eAsString: {
                 sb += "'"sv;
-                for (Character c : String::FromISOLatin1 (span{reinterpret_cast<const char*> (begin (fAllDataReadBuf_)), fBufferFilledUpValidBytes_})) {
+                for (Character c : String::FromLatin1 (span{reinterpret_cast<const char*> (begin (fAllDataReadBuf_)), fBufferFilledUpValidBytes_})) {
                     switch (c.GetCharacterCode ()) {
                         case '\r':
                             sb += "\\r";
