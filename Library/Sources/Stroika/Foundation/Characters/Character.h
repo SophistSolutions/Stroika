@@ -63,13 +63,38 @@ namespace Stroika::Foundation::Characters {
     /**
      *  \brief char8_t, char16_t, char32_t, wchar_t, Character - something that can be always safely interpreted as a UNICODE Character.
      * 
+     *  Character_SafelyCompatible:
+     *      o   char8_t
+     *      o   char16_t
+     *      o   char32_t
+     *      o   wchar_t
      *  \note all these types are <= 4 bytes (size of char32_t)
      */
     template <typename T>
     concept Character_SafelyCompatible = Character_IsUnicodeCodePoint<T> or is_same_v < remove_cv_t<T>,
     Character > ;
+    static_assert (Character_SafelyCompatible<char8_t>);
+    static_assert (Character_SafelyCompatible<char16_t>);
+    static_assert (Character_SafelyCompatible<char32_t>);
+    static_assert (Character_SafelyCompatible<wchar_t>);
 
     /**
+     *  \brief Stroika's string/character classes treat 'char' as being an ASCII character
+     * 
+     *  This using declaration just documents that fact, without really enforcing anything.
+     *  Prior to Stroika v3, the Stroika String classes basically prohibited the use of char
+     *  because it was always UNCLEAR what characterset to interpret it as.
+     * 
+     *  But a safe (and quite useful) assumption, is just that it is ASCII. If you assume its
+     *  always ASCII, you can get alot done, and allow that case. So Stroika v3 does that,
+     *  with checks to enforce.
+     */
+    using Character_ASCII = char;
+    static_assert (not Character_SafelyCompatible<Character_ASCII>);
+
+    /**
+    * &&&& CONSIDER LOSING THIS AND REPLACING WITH Character_CompatibleIsh but CAREFULLY REVIEWING EACH CASE
+    * 
      *  \brief Something that can be reasonably converted into a Unicode Character object (Character_SafelyCompatible<T> or T==char)
      * 
      *  \note all these types are <= 4 bytes (size of char32_t)
@@ -79,7 +104,52 @@ namespace Stroika::Foundation::Characters {
      */
     template <typename T>
     concept Character_Compatible = Character_SafelyCompatible<T> or is_same_v < remove_cv_t<T>,
-    char > ;
+    Character_ASCII > ;
+
+    /**
+     *  Internally, several algorithms and data structures operate on this one-byte subset of UNICODE.
+     *  However, most Stroika public APIs don't expose this, because this is not any kind of standard for APIs.
+     *  APIs use char8_t, char16_t, char32_t, or char for ASCIICHAR.
+     * 
+     *  This refers to ASCII OR https://en.wikipedia.org/wiki/Latin-1_Supplement, so any UNICODE characater code point
+     *  less than U+00FF.
+     * 
+     *  One nice thing about modern C++ for our purposes, is C++ offers so many 'distinct' 'unsigned byte' basic types, we can
+     *  just hijack one that won't be confused with a regular character (string) - thus the static_assert.
+     */
+    //    using Character_ISOLatin1 = uint8_t;
+    struct Character_ISOLatin1 {
+        uint8_t data;
+    };
+    static_assert (sizeof (Character_ISOLatin1) == 1);
+    static_assert (not Character_Compatible<Character_ISOLatin1>);
+
+    //static_assert (sizeof (Character_ISOLatin1x) == 1);
+
+    /**
+     *  \brief Character_CompatibleIsh extends Character_Compatible with  Character_ISOLatin1
+     * 
+     *  \note Character_CompatibleIsh means any 'basic character type' - size <= 4 bytes, which
+     *        could reasonably, in context (so with extra info), could be safely converted into
+     *        a Character object.
+     * 
+     *  Character_CompatibleIsh
+     *      o   char8_t                 Character_SafelyCompatible
+     *      o   char16_t                ""
+     *      o   char32_t                ""
+     *      o   wchar_t                 ""
+     *      o   Character_ASCII (char)  must be ASCII
+     *      o   Character_ISOLatin1
+     */
+    template <typename T>
+    concept Character_CompatibleIsh = Character_Compatible<T> or is_same_v < remove_cv_t<T>,
+    Character_ISOLatin1 > ;
+    static_assert (Character_CompatibleIsh<char8_t>);
+    static_assert (Character_CompatibleIsh<char16_t>);
+    static_assert (Character_CompatibleIsh<char32_t>);
+    static_assert (Character_CompatibleIsh<wchar_t>);
+    static_assert (Character_CompatibleIsh<Character_ASCII>);
+    static_assert (Character_CompatibleIsh<Character_ISOLatin1>);
 
     /**
      *  \note <a href="Design Overview.md#Comparisons">Comparisons</a>:
@@ -145,6 +215,23 @@ namespace Stroika::Foundation::Characters {
 
     public:
         /**
+         *  \brief Return true iff the given character (or all in span) is (are) in the ascii/iso-latin range [0..0xff]
+         */
+        constexpr bool IsLatin1 () const noexcept;
+        template <Character_CompatibleIsh CHAR_T>
+        static constexpr bool IsLatin1 (span<const CHAR_T> s) noexcept;
+
+    public:
+        /**
+         *  \brief if not IsLatin1 (arg) throw RuntimeException...
+         */
+        template <Character_CompatibleIsh CHAR_T>
+        static void CheckLatin1 (span<const CHAR_T> s);
+        template <Character_CompatibleIsh CHAR_T>
+        static void CheckLatin1 (span<CHAR_T> s);
+
+    public:
+        /**
          * FROM https://en.cppreference.com/w/cpp/string/wide/iswspace:
          *      In the default (C) locale, the whitespace characters are the following:
          *          space (0x20, ' ')
@@ -196,6 +283,10 @@ namespace Stroika::Foundation::Characters {
 
     public:
         /**
+         *  According to https://en.cppreference.com/w/cpp/string/wide/iswcntrl
+         * 
+         *  ISO 30112 defines POSIX control characters as Unicode characters U+0000..U+001F, 
+         *  U+007F..U+009F, U+2028, and U+2029 (Unicode classes Cc, Zl, and Zp)
          */
         constexpr bool IsControl () const noexcept;
 

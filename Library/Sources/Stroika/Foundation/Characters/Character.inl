@@ -93,6 +93,7 @@ namespace Stroika::Foundation::Characters {
             return Common::CompareResultNormalizer (static_cast<ptrdiff_t> (lLen) - static_cast<ptrdiff_t> (rLen));
         }
         void ThrowNotIsASCII_ ();
+        void ThrowNotIsLatin1_ ();
         void ThrowSurrogatesOutOfRange_ ();
     }
 
@@ -181,6 +182,46 @@ namespace Stroika::Foundation::Characters {
     inline void Character::CheckASCII (span<CHAR_T> s)
     {
         CheckASCII (Memory::ConstSpan (s));
+    }
+    constexpr bool Character::IsLatin1 () const noexcept
+    {
+        return 0x0 <= fCharacterCode_ and fCharacterCode_ <= 0xff;
+    }
+    template <Character_CompatibleIsh CHAR_T>
+    constexpr bool Character::IsLatin1 (span<const CHAR_T> fromS) noexcept
+    {
+        // note - tried to simplify with conditional_t but both sides evaluated
+        if constexpr (is_same_v<remove_cv_t<CHAR_T>, Character>) {
+            for (Character c : fromS) {
+                if (not c.IsISOLatin1 ()) [[unlikely]] {
+                    return false;
+                }
+            }
+        }
+        else if constexpr (sizeof (CHAR_T) == 1) {
+            // any byte will fit (assumes 8-bit bytes)
+            return true;
+        }
+        else {
+            for (CHAR_T c : fromS) {
+                if (static_cast<make_unsigned_t<CHAR_T>> (c) > 0xff) [[unlikely]] {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+    template <Character_CompatibleIsh CHAR_T>
+    inline void Character::CheckLatin1 (span<const CHAR_T> s)
+    {
+        if (not IsLatin1 (s)) {
+            Private_::ThrowNotIsLatin1_ ();
+        }
+    }
+    template <Character_CompatibleIsh CHAR_T>
+    inline void Character::CheckLatin1 (span<CHAR_T> s)
+    {
+        CheckLatin1 (Memory::ConstSpan (s));
     }
     constexpr bool Character::IsWhitespace () const noexcept
     {
