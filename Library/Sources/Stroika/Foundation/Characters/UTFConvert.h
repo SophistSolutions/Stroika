@@ -209,39 +209,32 @@ namespace Stroika::Foundation::Characters {
         template <Character_CompatibleIsh SRC_T, Character_CompatibleIsh TRG_T>
         nonvirtual ConversionResult Convert (span<const SRC_T> source, span<TRG_T> target) const;
 
-#if 0
-        nonvirtual ConversionResult Convert (span<const char8_t> source, span<char16_t> target) const;
-        nonvirtual ConversionResult Convert (span<const char16_t> source, span<char8_t> target) const;
-        nonvirtual ConversionResult Convert (span<const char8_t> source, span<char32_t> target) const;
-        nonvirtual ConversionResult Convert (span<const char32_t> source, span<char8_t> target) const;
-        nonvirtual ConversionResult Convert (span<const char16_t> source, span<char32_t> target) const;
-        nonvirtual ConversionResult Convert (span<const char32_t> source, span<char16_t> target) const;
-#endif
+        template <Character_IsBasicUnicodeCodePoint CHAR_T>
+        nonvirtual ConversionResult Convert (span<const CHAR_T> source, span<Character_Latin1> target) const
+        {
+            // ALL these have Character_Latin1 as a strict subset so simply copy
+            Require (source.size () <= target.size ());
+            copy (source.begin (), source.end (), target.data ());
+            return ConversionResult{.fSourceConsumed = source.size (), .fTargetProduced = source.size ()};
+        }
+        template <Character_IsBasicUnicodeCodePoint CHAR_T>
+        nonvirtual ConversionResult Convert (span<const Character_Latin1> source, span<CHAR_T> target) const
+        {
+            // ALL these have Character_Latin1 as a strict subset so simply copy
+            Require (source.size () <= target.size ());
+            copy (source.begin (), source.end (), target.data ());
+            return ConversionResult{.fSourceConsumed = source.size (), .fTargetProduced = source.size ()};
+        }
+
 
         nonvirtual ConversionResult Convert (span<const char8_t> source, span<char16_t> target, mbstate_t* multibyteConversionState) const;
         nonvirtual ConversionResult Convert (span<const char8_t> source, span<char32_t> target, mbstate_t* multibyteConversionState) const;
-
-#if 0
-        template <Character_CompatibleIsh SRC_T, Character_CompatibleIsh TRG_T>
-        nonvirtual ConversionResult Convert (span<const SRC_T> source, span<TRG_T> target) const
-            requires (not is_const_v<TRG_T>);
-        template <Character_CompatibleIsh SRC_T, Character_CompatibleIsh TRG_T>
-        nonvirtual ConversionResult Convert (span<SRC_T> source, span<TRG_T> target) const
-            requires (not is_const_v<TRG_T>);
-#endif
 
         template <typename TO, typename FROM>
         nonvirtual TO Convert (const FROM& from) const
             requires ((is_same_v<TO, string> or is_same_v<TO, wstring> or is_same_v<TO, u8string> or is_same_v<TO, u16string> or is_same_v<TO, u32string>) and
                       (is_same_v<FROM, string> or is_same_v<FROM, wstring> or is_same_v<FROM, u8string> or is_same_v<FROM, u16string> or
                        is_same_v<FROM, u32string>));
-
-#if 0
-        template <Character_IsBasicUnicodeCodePoint CHAR_T>
-        nonvirtual ConversionResult Convert (span<const CHAR_T> source, span<Character_Latin1> target) const;
-        template <Character_IsBasicUnicodeCodePoint CHAR_T>
-        nonvirtual ConversionResult Convert (span<const Character_Latin1> source, span<CHAR_T> target) const;
-#endif
 
     public:
         /**
@@ -286,22 +279,14 @@ namespace Stroika::Foundation::Characters {
         };
 
     public:
-/**
-         *  \brief Convert UTF encoded (char8_t, char16_t, char32_t, char, wchar_t) characters to from each other
+        /**
+         *  \brief Convert UTF encoded (char8_t, char16_t, char32_t, char, wchar_t, Character_ASCII, Character_Latin1) characters to from each other without exceptions
          * 
          *  \see Convert () above for details. This only differs from Convert, in that it returns a result flag instead
          *       of throwing on errors.
          * 
          *  Source and target spans can be of any Character_Compatible character type (but source const and target non-const)
          */
-#if 0
-        nonvirtual ConversionResultWithStatus ConvertQuietly (span<const char8_t> source, span<char16_t> target) const;
-        nonvirtual ConversionResultWithStatus ConvertQuietly (span<const char16_t> source, span<char8_t> target) const;
-        nonvirtual ConversionResultWithStatus ConvertQuietly (span<const char8_t> source, span<char32_t> target) const;
-        nonvirtual ConversionResultWithStatus ConvertQuietly (span<const char32_t> source, span<char8_t> target) const;
-        nonvirtual ConversionResultWithStatus ConvertQuietly (span<const char16_t> source, span<char32_t> target) const;
-        nonvirtual ConversionResultWithStatus ConvertQuietly (span<const char32_t> source, span<char16_t> target) const;
-#endif
         template <Character_CompatibleIsh SRC_T, Character_CompatibleIsh TRG_T>
         nonvirtual ConversionResultWithStatus ConvertQuietly (span<const SRC_T> source, span<TRG_T> target) const
             requires (not is_const_v<TRG_T>);
@@ -369,6 +354,7 @@ namespace Stroika::Foundation::Characters {
         static ConversionResultWithStatus ConvertQuietly_Win32_ (span<const char8_t> source, span<char16_t> target);
         static ConversionResultWithStatus ConvertQuietly_Win32_ (span<const char16_t> source, span<char8_t> target);
 #endif
+
     private:
         static ConversionResultWithStatus ConvertQuietly_StroikaPortable_ (span<const char8_t> source, span<char16_t> target);
         static ConversionResultWithStatus ConvertQuietly_StroikaPortable_ (span<const char8_t> source, span<char32_t> target);
@@ -377,22 +363,6 @@ namespace Stroika::Foundation::Characters {
         static ConversionResultWithStatus ConvertQuietly_StroikaPortable_ (span<const char32_t> source, span<char8_t> target);
         static ConversionResultWithStatus ConvertQuietly_StroikaPortable_ (span<const char16_t> source, span<char8_t> target);
 
-        template <Character_IsBasicUnicodeCodePoint CHAR_T>
-        nonvirtual ConversionResult Convert (span<const CHAR_T> source, span<Character_Latin1> target) const
-        {
-            // ALL these have Character_Latin1 as a strict subset so simply copy
-            Require (source.size () <= target.size ());
-            copy (source.begin (), source.end (), target.data ());
-            return ConversionResult{.fSourceConsumed = source.size (), .fTargetProduced = source.size ()};
-        }
-        template <Character_IsBasicUnicodeCodePoint CHAR_T>
-        nonvirtual ConversionResult Convert (span<const Character_Latin1> source, span<CHAR_T> target) const
-        {
-            // ALL these have Character_Latin1 as a strict subset so simply copy
-            Require (source.size () <= target.size ());
-            copy (source.begin (), source.end (), target.data ());
-            return ConversionResult{.fSourceConsumed = source.size (), .fTargetProduced = source.size ()};
-        }
 
 #if __has_include("boost/locale/encoding_utf.hpp")
     private:

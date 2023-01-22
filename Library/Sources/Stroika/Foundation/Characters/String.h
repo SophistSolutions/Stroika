@@ -1420,17 +1420,17 @@ namespace Stroika::Foundation::Characters {
         static _SharedPtrIRep mk_ (span<CHAR_T> s);
         template <Character_IsUnicodeCodePointOrPlainChar CHAR_T>
         static _SharedPtrIRep mk_ (basic_string<CHAR_T>&& s);
-        #if qCompilerAndStdLib_template_requresDefNeededonSpecializations_Buggy
+#if qCompilerAndStdLib_template_requresDefNeededonSpecializations_Buggy
         static auto mk_nocheck_ (span<const Character_ASCII> s) -> _SharedPtrIRep;
         static auto mk_nocheck_ (span<const Character_Latin1> s) -> _SharedPtrIRep;
-      static   auto mk_nocheck_ (span<const char16_t> s) -> _SharedPtrIRep;
-     static    auto mk_nocheck_ (span<const char32_t> s) -> _SharedPtrIRep;
-        #else
+        static auto mk_nocheck_ (span<const char16_t> s) -> _SharedPtrIRep;
+        static auto mk_nocheck_ (span<const char32_t> s) -> _SharedPtrIRep;
+#else
         template <typename CHAR_T>
         static _SharedPtrIRep mk_nocheck_ (span<const CHAR_T> s)
             requires (is_same_v<CHAR_T, Character_ASCII> or is_same_v<CHAR_T, Character_Latin1> or is_same_v<CHAR_T, char16_t> or
                       is_same_v<CHAR_T, char32_t>);
-        #endif
+#endif
         template <typename CHAR_T>
         static _SharedPtrIRep mk_nocheck_justPickBufRep_ (span<const CHAR_T> s)
             requires (is_same_v<CHAR_T, Character_ASCII> or is_same_v<CHAR_T, Character_Latin1> or is_same_v<CHAR_T, char16_t> or

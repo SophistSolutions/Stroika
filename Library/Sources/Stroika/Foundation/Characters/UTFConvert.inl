@@ -461,9 +461,9 @@ namespace Stroika::Foundation::Characters {
     {
         Require ((target.size () >= ComputeTargetBufferSize<TRG_T> (source)));
         //if constexpr (is_same_v<decltype (this->ConvertToPrimitiveSpan_ (source)),decltype(this->ConvertToPrimitiveSpan_ (target))>) {
-        if constexpr (sizeof(SRC_T) == sizeof(TRG_T)) {
+        if constexpr (sizeof (SRC_T) == sizeof (TRG_T)) {
             copy (source.begin (), source.end (), target.data ());
-            return ConversionResultWithStatus{{.fSourceConsumed = source.size (), .fTargetProduced = source.size ()},  ConversionStatusFlag::ok};
+            return ConversionResultWithStatus{{.fSourceConsumed = source.size (), .fTargetProduced = source.size ()}, ConversionStatusFlag::ok};
         }
         else {
             switch (Private_::ValueOf_ (fUsingOptions.fPreferredImplementation)) {

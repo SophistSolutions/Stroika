@@ -1446,15 +1446,14 @@ namespace {
 }
 
 namespace {
-    void Test50a_UnicodeStringLiterals_() 
+    void Test50a_UnicodeStringLiterals_ ()
     {
         String a = L"45 \u00b5s";
-
 
         {
 
             Memory::StackBuffer<wchar_t> ignored1;
-            auto                         rhsSpan = a.GetData (&ignored1);       
+            auto                         rhsSpan = a.GetData (&ignored1);
             VerifyTestResult (rhsSpan.size () == 5);
             int aaa = 3;
         }
@@ -1462,8 +1461,7 @@ namespace {
         b += a;
         VerifyTestResult (a == b);
 
-
-       String aaaa = L"45 \u00b5s";
+        String aaaa = L"45 \u00b5s";
         VerifyTestResult (aaaa.size () == 5);
     }
 }
