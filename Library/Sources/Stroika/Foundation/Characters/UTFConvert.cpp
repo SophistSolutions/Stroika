@@ -772,9 +772,9 @@ namespace {
     inline auto ConvertQuietly_codeCvt_helper_ (span<const IN_T> source, const span<OUT_T> target, FUN2DO_REAL_WORK&& realWork) -> ConversionResultWithStatus
     {
         using namespace UTFConvert_codecvSupport_;
-        const IN_T*          sourceStart = reinterpret_cast<const IN_T*> (&*source.begin ());
+        const IN_T*          sourceStart = reinterpret_cast<const IN_T*> (source.data ());
         const IN_T*          sourceEnd   = sourceStart + source.size ();
-        OUT_T*               targetStart = reinterpret_cast<OUT_T*> (&*target.begin ());
+        OUT_T*               targetStart = reinterpret_cast<OUT_T*> (target.data ());
         OUT_T*               targetEnd   = targetStart + target.size ();
         ConversionStatusFlag r           = realWork (&sourceStart, sourceEnd, &targetStart, targetEnd);
         if (r == ConversionStatusFlag::ok) {
@@ -791,9 +791,9 @@ namespace {
                                                 FUN2DO_REAL_WORK&& realWork) -> ConversionResultWithStatus
     {
         using namespace UTFConvert_codecvSupport_;
-        const IN_T*          sourceStart = reinterpret_cast<const IN_T*> (&*source.begin ());
+        const IN_T*          sourceStart = reinterpret_cast<const IN_T*> (source.data ());
         const IN_T*          sourceEnd   = sourceStart + source.size ();
-        OUT_T*               targetStart = reinterpret_cast<OUT_T*> (&*target.begin ());
+        OUT_T*               targetStart = reinterpret_cast<OUT_T*> (target.data ());
         OUT_T*               targetEnd   = targetStart + target.size ();
         ConversionStatusFlag r           = realWork (multibyteConversionState, &sourceStart, sourceEnd, &targetStart, targetEnd);
         if (r == ConversionStatusFlag::ok) {

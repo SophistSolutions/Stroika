@@ -696,10 +696,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
         }
         else if constexpr (is_convertible_v<DecayedStringishArg, std::string>) {
             string ss = s;
-            if (ss.empty ()) {
-                return ToFloat<T> (span<const char8_t>{});
-            }
-            return ToFloat<T> (span{(const char*)&*ss.begin (), ss.size ()});
+            return ToFloat<T> (span{ss.data (), ss.size ()});
         }
         else {
             return ToFloat<T> (String{forward<STRINGISH_ARG> (s)});
