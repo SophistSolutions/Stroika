@@ -67,10 +67,10 @@ namespace {
             tmput.put (oss, oss, ' ', &when, begin (kPattern), begin (kPattern) + ::wcslen (kPattern));
             String tmpStringRep = oss.str ();
             if (expect4DigitYear) {
-                VerifyTestResult (tmpStringRep == L"7/3/2001" or tmpStringRep == L"07/03/2001");
+                VerifyTestResult (tmpStringRep == "7/3/2001" or tmpStringRep == "07/03/2001");
             }
             else {
-                VerifyTestResult (tmpStringRep == L"7/3/01" or tmpStringRep == L"07/03/01");
+                VerifyTestResult (tmpStringRep == "7/3/01" or tmpStringRep == "07/03/01");
             }
         };
         auto localetimeputPCTX_CHECK_StdCPctxTraits = [=] () {
@@ -245,7 +245,7 @@ namespace {
     {
         TestRoundTripFormatThenParseNoChange_ (startDateOrTime, locale{});
         TestRoundTripFormatThenParseNoChange_ (startDateOrTime, locale::classic ());
-        TestRoundTripFormatThenParseNoChange_ (startDateOrTime, Configuration::FindNamedLocale (L"en", L"us"));
+        TestRoundTripFormatThenParseNoChange_ (startDateOrTime, Configuration::FindNamedLocale ("en", "us"));
 
         // should add test like this...
         //VerifyTestResult (startDateOrTime == DATEORTIME::Parse (startDateOrTime.Format (DATEORTIME::PrintFormat::eCurrentLocale), DATEORTIME::PrintFormat::ParseFormat::eCurrentLocale));
@@ -328,50 +328,50 @@ namespace {
             TestRoundTripFormatThenParseNoChange_ (t2);
         }
         {
-            VerifyTestResult (TimeOfDay::Parse (L"3pm", locale::classic ()).GetAsSecondsCount () == 15 * 60 * 60);
-            VerifyTestResult (TimeOfDay::Parse (L"3PM", locale::classic ()).GetAsSecondsCount () == 15 * 60 * 60);
-            VerifyTestResult (TimeOfDay::Parse (L"3am", locale::classic ()).GetAsSecondsCount () == 3 * 60 * 60);
-            VerifyTestResult (TimeOfDay::Parse (L"3:00", locale::classic ()).GetAsSecondsCount () == 3 * 60 * 60);
-            VerifyTestResult (TimeOfDay::Parse (L"16:00", locale::classic ()).GetAsSecondsCount () == 16 * 60 * 60);
+            VerifyTestResult (TimeOfDay::Parse ("3pm", locale::classic ()).GetAsSecondsCount () == 15 * 60 * 60);
+            VerifyTestResult (TimeOfDay::Parse ("3PM", locale::classic ()).GetAsSecondsCount () == 15 * 60 * 60);
+            VerifyTestResult (TimeOfDay::Parse ("3am", locale::classic ()).GetAsSecondsCount () == 3 * 60 * 60);
+            VerifyTestResult (TimeOfDay::Parse ("3:00", locale::classic ()).GetAsSecondsCount () == 3 * 60 * 60);
+            VerifyTestResult (TimeOfDay::Parse ("16:00", locale::classic ()).GetAsSecondsCount () == 16 * 60 * 60);
         }
         {
             // Not sure these should ALWAYS work in any locale. Probably not. But any locale I'd test in??? Maybe... Good for starters anyhow...
             //      -- LGP 2011-10-08
-            VerifyTestResult (TimeOfDay::Parse (L"3pm").GetAsSecondsCount () == 15 * 60 * 60);
-            VerifyTestResult (TimeOfDay::Parse (L"3am").GetAsSecondsCount () == 3 * 60 * 60);
-            VerifyTestResult (TimeOfDay::Parse (L"3:00").GetAsSecondsCount () == 3 * 60 * 60);
-            VerifyTestResult (TimeOfDay::Parse (L"16:00").GetAsSecondsCount () == 16 * 60 * 60);
+            VerifyTestResult (TimeOfDay::Parse ("3pm").GetAsSecondsCount () == 15 * 60 * 60);
+            VerifyTestResult (TimeOfDay::Parse ("3am").GetAsSecondsCount () == 3 * 60 * 60);
+            VerifyTestResult (TimeOfDay::Parse ("3:00").GetAsSecondsCount () == 3 * 60 * 60);
+            VerifyTestResult (TimeOfDay::Parse ("16:00").GetAsSecondsCount () == 16 * 60 * 60);
         }
         {
             // set the global C++ locale (used by PrintFormat::eCurrentLocale) to US english, and verify things look right.
-            Configuration::ScopedUseLocale tmpLocale{Configuration::FindNamedLocale (L"en", L"us")};
+            Configuration::ScopedUseLocale tmpLocale{Configuration::FindNamedLocale ("en", "us")};
 #if qCompilerAndStdLib_locale_pctX_print_time_Buggy
             // NOTE - these values are wrong, but since using locale code, not easy to fix/workaround - but to note XCode locale stuff still
             // somewhat broken...
-            VerifyTestResult (TimeOfDay{101}.Format (locale{}) == L"00:01:41");
-            VerifyTestResult (TimeOfDay{60}.Format (TimeOfDay::eCurrentLocale_WithZerosStripped) == L"0:01");
-            VerifyTestResult (TimeOfDay{60 * 60 + 101}.Format (locale{}) == L"01:01:41");
-            VerifyTestResult (TimeOfDay{60 * 60 + 101}.Format (TimeOfDay::eCurrentLocale_WithZerosStripped) == L"1:01:41");
-            VerifyTestResult (TimeOfDay{60 * 60 + 60}.Format (TimeOfDay::eCurrentLocale_WithZerosStripped) == L"1:01");
+            VerifyTestResult (TimeOfDay{101}.Format (locale{}) == "00:01:41");
+            VerifyTestResult (TimeOfDay{60}.Format (TimeOfDay::eCurrentLocale_WithZerosStripped) == "0:01");
+            VerifyTestResult (TimeOfDay{60 * 60 + 101}.Format (locale{}) == "01:01:41");
+            VerifyTestResult (TimeOfDay{60 * 60 + 101}.Format (TimeOfDay::eCurrentLocale_WithZerosStripped) == "1:01:41");
+            VerifyTestResult (TimeOfDay{60 * 60 + 60}.Format (TimeOfDay::eCurrentLocale_WithZerosStripped) == "1:01");
 #else
-            VerifyTestResult (TimeOfDay{101}.Format (locale{}) == L"12:01:41 AM");
-            VerifyTestResult (TimeOfDay{60}.Format (TimeOfDay::eCurrentLocale_WithZerosStripped) == L"12:01 AM");
-            VerifyTestResult (TimeOfDay{60 * 60 + 101}.Format (locale{}) == L"1:01:41 AM" or TimeOfDay{60 * 60 + 101}.Format (locale{}) == L"01:01:41 AM");
-            VerifyTestResult (TimeOfDay{60 * 60 + 101}.Format (TimeOfDay::eCurrentLocale_WithZerosStripped) == L"1:01:41 AM");
-            VerifyTestResult (TimeOfDay{60 * 60 + 60}.Format (TimeOfDay::eCurrentLocale_WithZerosStripped) == L"1:01 AM");
+            VerifyTestResult (TimeOfDay{101}.Format (locale{}) == "12:01:41 AM");
+            VerifyTestResult (TimeOfDay{60}.Format (TimeOfDay::eCurrentLocale_WithZerosStripped) == "12:01 AM");
+            VerifyTestResult (TimeOfDay{60 * 60 + 101}.Format (locale{}) == "1:01:41 AM" or TimeOfDay{60 * 60 + 101}.Format (locale{}) == "01:01:41 AM");
+            VerifyTestResult (TimeOfDay{60 * 60 + 101}.Format (TimeOfDay::eCurrentLocale_WithZerosStripped) == "1:01:41 AM");
+            VerifyTestResult (TimeOfDay{60 * 60 + 60}.Format (TimeOfDay::eCurrentLocale_WithZerosStripped) == "1:01 AM");
 #endif
         }
         {
-            VerifyTestResult (TimeOfDay{101}.Format (locale{}) == L"00:01:41");
-            VerifyTestResult (TimeOfDay{60}.Format (locale{}) == L"00:01:00");
-            VerifyTestResult (TimeOfDay{60}.Format (TimeOfDay::eCurrentLocale_WithZerosStripped) == L"0:01");
-            VerifyTestResult (TimeOfDay{60 * 60 + 101}.Format (locale{}) == L"01:01:41");
-            VerifyTestResult (TimeOfDay{60 * 60 + 101}.Format (TimeOfDay::eCurrentLocale_WithZerosStripped) == L"1:01:41");
-            VerifyTestResult (TimeOfDay{60 * 60 + 60}.Format (locale{}) == L"01:01:00");
+            VerifyTestResult (TimeOfDay{101}.Format (locale{}) == "00:01:41");
+            VerifyTestResult (TimeOfDay{60}.Format (locale{}) == "00:01:00");
+            VerifyTestResult (TimeOfDay{60}.Format (TimeOfDay::eCurrentLocale_WithZerosStripped) == "0:01");
+            VerifyTestResult (TimeOfDay{60 * 60 + 101}.Format (locale{}) == "01:01:41");
+            VerifyTestResult (TimeOfDay{60 * 60 + 101}.Format (TimeOfDay::eCurrentLocale_WithZerosStripped) == "1:01:41");
+            VerifyTestResult (TimeOfDay{60 * 60 + 60}.Format (locale{}) == "01:01:00");
         }
         {
-            TimeOfDay threePM = TimeOfDay::Parse (L"3pm", locale::classic ());
-            VerifyTestResult (threePM.Format (locale::classic ()) == L"15:00:00"); // UGH!!!
+            TimeOfDay threePM = TimeOfDay::Parse ("3pm", locale::classic ());
+            VerifyTestResult (threePM.Format (locale::classic ()) == "15:00:00"); // UGH!!!
             TestRoundTripFormatThenParseNoChange_ (threePM);
         }
     }
@@ -389,20 +389,20 @@ namespace {
         {
             Date d{Year{1903}, April, DayOfMonth{4}};
             TestRoundTripFormatThenParseNoChange_ (d);
-            VerifyTestResult (d.Format (Date::kISO8601Format) == L"1903-04-04");
+            VerifyTestResult (d.Format (Date::kISO8601Format) == "1903-04-04");
             VERIFY_ROUNDTRIP_XML_ (d);
             d = d.Add (4);
             VERIFY_ROUNDTRIP_XML_ (d);
-            VerifyTestResult (d.Format (Date::kISO8601Format) == L"1903-04-08");
+            VerifyTestResult (d.Format (Date::kISO8601Format) == "1903-04-08");
             d = d.Add (-4);
             VERIFY_ROUNDTRIP_XML_ (d);
-            VerifyTestResult (d.Format (Date::kISO8601Format) == L"1903-04-04");
+            VerifyTestResult (d.Format (Date::kISO8601Format) == "1903-04-04");
             TestRoundTripFormatThenParseNoChange_ (d);
         }
         try {
-            Date d = Date::Parse (L"09/14/1752", Date::kMonthDayYearFormat);
+            Date d = Date::Parse ("09/14/1752", Date::kMonthDayYearFormat);
             VerifyTestResult (d == Date::kMin);
-            VerifyTestResult (d.Format (Date::kISO8601Format) == L"1752-09-14"); // xml cuz otherwise we get confusion over locale - COULD use hardwired US locale at some point?
+            VerifyTestResult (d.Format (Date::kISO8601Format) == "1752-09-14"); // xml cuz otherwise we get confusion over locale - COULD use hardwired US locale at some point?
             TestRoundTripFormatThenParseNoChange_ (d);
         }
         catch (...) {
@@ -418,12 +418,12 @@ namespace {
             Date d = Date::kMin;
             VerifyTestResult (d < DateTime::Now ().GetDate ());
             VerifyTestResult (not(DateTime::Now ().GetDate () < d));
-            VerifyTestResult (d.Format (Date::kISO8601Format) == L"1752-09-14"); // xml cuz otherwise we get confusion over locale - COULD use hardwired US locale at some point?
+            VerifyTestResult (d.Format (Date::kISO8601Format) == "1752-09-14"); // xml cuz otherwise we get confusion over locale - COULD use hardwired US locale at some point?
             TestRoundTripFormatThenParseNoChange_ (d);
         }
         try {
-            VerifyTestResult ((Date::Parse (L"11/3/2001", Date::kMonthDayYearFormat) == Date{Year (2001), Time::November, DayOfMonth (3)}));
-            VerifyTestResult (Date::Parse (L"11/3/2001", Date::kMonthDayYearFormat).Format (Date::kMonthDayYearFormat) == L"11/03/2001");
+            VerifyTestResult ((Date::Parse ("11/3/2001", Date::kMonthDayYearFormat) == Date{Year (2001), Time::November, DayOfMonth (3)}));
+            VerifyTestResult (Date::Parse ("11/3/2001", Date::kMonthDayYearFormat).Format (Date::kMonthDayYearFormat) == L"11/03/2001");
         }
         catch (...) {
             // See qCompilerAndStdLib_locale_time_get_PCTM_RequiresLeadingZero_Buggy if this is triggered
@@ -441,21 +441,21 @@ namespace {
         }
         {
             // set the global C++ locale (used by PrintFormat::eCurrentLocale) to US english, and verify things look right.
-            Configuration::ScopedUseLocale tmpLocale{Configuration::FindNamedLocale (L"en", L"us")};
+            Configuration::ScopedUseLocale tmpLocale{Configuration::FindNamedLocale ("en", "us")};
             Date                           d = Date{Year{1903}, April, DayOfMonth{5}};
             TestRoundTripFormatThenParseNoChange_ (d);
-            VerifyTestResult (d.Format (locale{}) == L"4/5/1903" or d.Format (locale{}) == L"04/05/1903");
-            VerifyTestResult (d.Format (Date::eCurrentLocale_WithZerosStripped) == L"4/5/1903");
+            VerifyTestResult (d.Format (locale{}) == "4/5/1903" or d.Format (locale{}) == "04/05/1903");
+            VerifyTestResult (d.Format (Date::eCurrentLocale_WithZerosStripped) == "4/5/1903");
         }
         {
             Date d = Date (Year{1903}, April, DayOfMonth{5});
-            VerifyTestResult (d.Format (locale{}) == L"4/5/1903" or d.Format (locale{}) == L"04/05/1903" or d.Format (locale{}) == L"04/05/03");
-            VerifyTestResult (d.Format (Date::eCurrentLocale_WithZerosStripped) == L"4/5/1903" or
-                              d.Format (Date::eCurrentLocale_WithZerosStripped) == L"4/5/03");
+            VerifyTestResult (d.Format (locale{}) == "4/5/1903" or d.Format (locale{}) == "04/05/1903" or d.Format (locale{}) == "04/05/03");
+            VerifyTestResult (d.Format (Date::eCurrentLocale_WithZerosStripped) == "4/5/1903" or
+                              d.Format (Date::eCurrentLocale_WithZerosStripped) == "4/5/03");
         }
         {
             Date d = Date{Date::JulianRepType{2455213}};
-            VerifyTestResult (d.Format () == L"1/16/10");
+            VerifyTestResult (d.Format () == "1/16/10");
         }
         {
             Date d = 1906y / May / 12d;
@@ -472,7 +472,7 @@ namespace {
         TraceContextBumper ctx{"Test_4_TestDateTime_"};
         {
             DateTime d = Date (Year{1903}, April, DayOfMonth{4});
-            VerifyTestResult (d.Format (DateTime::kISO8601Format) == L"1903-04-04");
+            VerifyTestResult (d.Format (DateTime::kISO8601Format) == "1903-04-04");
             TestRoundTripFormatThenParseNoChange_ (d);
         }
         {
@@ -507,25 +507,25 @@ namespace {
             VerifyTestResult (d < DateTime::Now ());
             VerifyTestResult (DateTime::Now () > d);
             d = DateTime{d.GetDate (), d.GetTimeOfDay (), Timezone::kUTC}; // so that compare works - cuz we don't know timezone we'll run test with...
-            VerifyTestResult (d.Format (DateTime::kISO8601Format) == L"1752-09-14T00:00:00Z"); // xml cuz otherwise we get confusion over locale - COULD use hardwired US locale at some point?
+            VerifyTestResult (d.Format (DateTime::kISO8601Format) == "1752-09-14T00:00:00Z"); // xml cuz otherwise we get confusion over locale - COULD use hardwired US locale at some point?
             TestRoundTripFormatThenParseNoChange_ (d);
         }
         //// TODO - FIX FOR PrintFormat::eCurrentLocale_WITHZEROESTRIPPED!!!!
         {
             // set the global C++ locale (used by PrintFormat::eCurrentLocale) to US english, and verify things look right.
-            Configuration::ScopedUseLocale tmpLocale{Configuration::FindNamedLocale (L"en", L"us")};
+            Configuration::ScopedUseLocale tmpLocale{Configuration::FindNamedLocale ("en", "us")};
             Date                           d = Date{Year{1903}, April, DayOfMonth{5}};
             DateTime                       dt{d, TimeOfDay{101}};
 
             {
                 String tmp = dt.Format (locale{});
 #if qCompilerAndStdLib_locale_pctC_returns_numbers_not_alphanames_Buggy
-                VerifyTestResult (tmp == L"4/5/1903 12:01:41 AM" or tmp == L"04/05/1903 12:01:41 AM");
+                VerifyTestResult (tmp == "4/5/1903 12:01:41 AM" or tmp == "04/05/1903 12:01:41 AM");
 #else
 #if qCompilerAndStdLib_locale_pctX_print_time_Buggy
-                VerifyTestResult (tmp == L"Sun Apr  5 00:01:41 1903");
+                VerifyTestResult (tmp == "Sun Apr  5 00:01:41 1903");
 #else
-                VerifyTestResult (tmp == L"Sun 05 Apr 1903 12:01:41 AM");
+                VerifyTestResult (tmp == "Sun 05 Apr 1903 12:01:41 AM");
 #endif
 #endif
             }
@@ -538,7 +538,7 @@ namespace {
             DateTime dt{d, TimeOfDay{101}};
             TestRoundTripFormatThenParseNoChange_ (dt);
             String tmp = dt.Format (locale{});
-            VerifyTestResult (tmp == L"Mon Apr  6 00:01:41 1903");
+            VerifyTestResult (tmp == "Mon Apr  6 00:01:41 1903");
             DateTime dt2{d, TimeOfDay{60}};
             TestRoundTripFormatThenParseNoChange_ (dt2);
             // want a variant that does this formatting!
@@ -813,7 +813,8 @@ namespace {
         }
         {
             const Duration kD = Duration{L"PT0.000045S"};
-            VerifyTestResult (kD.PrettyPrint () == L"45 µs");
+            //VerifyTestResult (kD.PrettyPrint () == L"45 µs");   // SAD - but L"45 µs" 'works' but doesn't provide the RIGHT string portably
+            VerifyTestResult (kD.PrettyPrint () == L"45 \u00b5s");
         }
         {
             // todo use constexpr
@@ -823,24 +824,24 @@ namespace {
         {
             // todo use constexpr
             const Duration kD = Duration{1.6e-6};
-            VerifyTestResult (kD.PrettyPrint () == L"1.6 µs");
+            VerifyTestResult (kD.PrettyPrint () == L"1.6 \u00b5s");
         }
         {
             // todo use constexpr
             const Duration kD{33us};
-            VerifyTestResult (kD.PrettyPrint () == L"33 µs");
+            VerifyTestResult (kD.PrettyPrint () == L"33 \u00b5s");
         }
         {
-            const Duration kD = Duration{L"PT0.000045S"};
-            VerifyTestResult (kD.PrettyPrint () == L"45 µs");
-            VerifyTestResult ((-kD).PrettyPrint () == L"-45 µs");
+            const Duration kD = Duration{"PT0.000045S"};
+            VerifyTestResult (kD.PrettyPrint () == L"45 \u00b5s");
+            VerifyTestResult ((-kD).PrettyPrint () == L"-45 \u00b5s");
             VerifyTestResult ((-kD).As<wstring> () == L"-PT0.000045S");
         }
-        VerifyTestResult (Duration{L"P30S"}.As<time_t> () == 30);
-        VerifyTestResult (Duration{L"PT30S"}.As<time_t> () == 30);
+        VerifyTestResult (Duration{"P30S"}.As<time_t> () == 30);
+        VerifyTestResult (Duration{"PT30S"}.As<time_t> () == 30);
         VerifyTestResult (Duration{60}.As<wstring> () == L"PT1M");
-        VerifyTestResult (Duration{L"-PT1H1S"}.As<time_t> () == -3601);
-        VerifyTestResult (-Duration{L"-PT1H1S"}.As<time_t> () == 3601);
+        VerifyTestResult (Duration{"-PT1H1S"}.As<time_t> () == -3601);
+        VerifyTestResult (-Duration{"-PT1H1S"}.As<time_t> () == 3601);
 
         {
             static const size_t K = Debug::IsRunningUnderValgrind () ? 100 : 1;
@@ -856,7 +857,7 @@ namespace {
         }
         VerifyTestResult (Duration::min () < Duration::max ());
         VerifyTestResult (Duration::min () != Duration::max ());
-        VerifyTestResult (Duration::min () < Duration{L"P30S"} and Duration{L"P30S"} < Duration::max ());
+        VerifyTestResult (Duration::min () < Duration{"P30S"} and Duration{"P30S"} < Duration::max ());
         {
             using Time::DurationSecondsType;
             Duration d = Duration{L"PT0.1S"};
@@ -865,19 +866,19 @@ namespace {
             VerifyTestResult (Math::NearlyEquals (d.As<DurationSecondsType> (), static_cast<DurationSecondsType> (.130)));
         }
         {
-            VerifyTestResult (Duration{L"PT1.4S"}.PrettyPrintAge () == L"now");
-            VerifyTestResult (Duration{L"-PT9M"}.PrettyPrintAge () == L"now");
-            VerifyTestResult (Duration{L"-PT20M"}.PrettyPrintAge () == L"20 minutes ago");
-            VerifyTestResult (Duration{L"PT20M"}.PrettyPrintAge () == L"20 minutes from now");
-            VerifyTestResult (Duration{L"PT4H"}.PrettyPrintAge () == L"4 hours from now");
-            VerifyTestResult (Duration{L"PT4.4H"}.PrettyPrintAge () == L"4 hours from now");
-            VerifyTestResult (Duration{L"P2Y"}.PrettyPrintAge () == L"2 years from now");
-            VerifyTestResult (Duration{L"P2.4Y"}.PrettyPrintAge () == L"2 years from now");
-            VerifyTestResult (Duration{L"P2.6Y"}.PrettyPrintAge () == L"3 years from now");
-            VerifyTestResult (Duration{L"-P1M"}.PrettyPrintAge () == L"1 month ago");
-            VerifyTestResult (Duration{L"-P2M"}.PrettyPrintAge () == L"2 months ago");
-            VerifyTestResult (Duration{L"-PT1Y"}.PrettyPrintAge () == L"1 year ago");
-            VerifyTestResult (Duration{L"-PT2Y"}.PrettyPrintAge () == L"2 years ago");
+            VerifyTestResult (Duration{"PT1.4S"}.PrettyPrintAge () == "now");
+            VerifyTestResult (Duration{"-PT9M"}.PrettyPrintAge () == "now");
+            VerifyTestResult (Duration{"-PT20M"}.PrettyPrintAge () == "20 minutes ago");
+            VerifyTestResult (Duration{"PT20M"}.PrettyPrintAge () == "20 minutes from now");
+            VerifyTestResult (Duration{"PT4H"}.PrettyPrintAge () == "4 hours from now");
+            VerifyTestResult (Duration{"PT4.4H"}.PrettyPrintAge () == "4 hours from now");
+            VerifyTestResult (Duration{"P2Y"}.PrettyPrintAge () == "2 years from now");
+            VerifyTestResult (Duration{"P2.4Y"}.PrettyPrintAge () == "2 years from now");
+            VerifyTestResult (Duration{"P2.6Y"}.PrettyPrintAge () == "3 years from now");
+            VerifyTestResult (Duration{"-P1M"}.PrettyPrintAge () == "1 month ago");
+            VerifyTestResult (Duration{"-P2M"}.PrettyPrintAge () == "2 months ago");
+            VerifyTestResult (Duration{"-PT1Y"}.PrettyPrintAge () == "1 year ago");
+            VerifyTestResult (Duration{"-PT2Y"}.PrettyPrintAge () == "2 years ago");
         }
     }
 }
@@ -890,7 +891,7 @@ namespace {
         {
             DateTime d = DateTime{Date{Year{1995}, June, DayOfMonth{4}}, TimeOfDay::Parse (L"3:00")};
             VerifyTestResult (d.As<time_t> () == 802234800); // source - http://www.onlineconversion.com/unix_time.htm
-            const Duration k30Days = Duration{L"P30D"};
+            const Duration k30Days = Duration{"P30D"};
             DateTime       d2      = d + k30Days;
             VerifyTestResult (d2.GetDate ().GetYear () == Year{1995});
             VerifyTestResult (d2.GetDate ().GetMonth () == July);
