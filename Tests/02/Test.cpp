@@ -48,6 +48,22 @@ using std::byte;
  */
 
 namespace {
+    namespace SampleUNICODE_ {
+
+        namespace RawConstants_ {
+
+            namespace Heb1_ {
+                // שלום
+                constexpr char8_t  k8_[]    = u8"\u1513\u1500\u1493\u1501";
+                constexpr char16_t k16_[]   = u"\u1513\u1500\u1493\u1501";
+                constexpr char32_t k32_[]   = U"\u1513\u1500\u1493\u1501";
+                constexpr wchar_t  kWide_[] = L"\u1513\u1500\u1493\u1501";
+            }
+        }
+    }
+}
+
+namespace {
     /*
      * Test of STATIC FILE SCOPE INITIALIZATION
      *
@@ -1516,7 +1532,7 @@ namespace {
         Debug::TraceContextBumper ctx{L"Test51_Utf16Conversions_"};
         {
             VerifyTestResult (u16string{u"phred"} == String{u16string{u"phred"}}.AsUTF16 ());
-            VerifyTestResult (u16string{u"שלום"} == String{u16string{u"שלום"}}.AsUTF16 ());
+            VerifyTestResult (u16string{u"שלום"} == String{u16string{u"שלום"}}.AsUTF16 ()); // @todo CORRECT but misleading since file encoding doesnt match these characters
         }
         {
             VerifyTestResult (u16string{u"phred"} == String{u"phred"}.AsUTF16 ());
@@ -1569,26 +1585,46 @@ namespace {
         {
             VerifyTestResult (u32string{U"phred"} == String{u32string{U"phred"}}.AsUTF32 ());
             VerifyTestResult (u32string{U"שלום"} == String{u32string{U"שלום"}}.AsUTF32 ());
+            //            VerifyTestResult (u32string{U"שלום"}.size () == 4);
+            //           VerifyTestResult (String{u32string{U"שלום"}}.size () == 4);
         }
         {
             VerifyTestResult (u32string{U"phred"} == String{U"phred"}.AsUTF32 ());
             VerifyTestResult (u32string{U"שלום"} == String{U"שלום"}.AsUTF32 ());
+            VerifyTestResult (String{U"שלום"} == String{u"שלום"});
+        }
+        {
+            using namespace SampleUNICODE_::RawConstants_;
+            VerifyTestResult (String{Heb1_::k8_}.size () == 4);
+            VerifyTestResult (String{Heb1_::k16_}.size () == 4);
+            VerifyTestResult (String{Heb1_::k32_}.size () == 4);
+            VerifyTestResult (String{Heb1_::kWide_}.size () == 4);
+            VerifyTestResult (String{Heb1_::k8_} == String{Heb1_::k16_} and String{Heb1_::k16_} == String{Heb1_::k32_} and
+                              String{Heb1_::k32_} == String{Heb1_::kWide_});
+            StringBuilder tmp;
+            tmp += Heb1_::k8_;
+            VerifyTestResult (tmp.length () == 4);
+            VerifyTestResult (tmp.str () == Heb1_::k8_);
+            VerifyTestResult (tmp.str () == Heb1_::kWide_);
+        }
+        {
+            StringBuilder tmp;
+            tmp.Append (u8"שלום");
+            //   VerifyTestResult (tmp.size () == 4);
+            VerifyTestResult (tmp.str () == u8"שלום");
         }
         {
             StringBuilder tmp;
             tmp += U"שלום";
-            Verify (tmp.str () == U"שלום");
-            // Verify (tmp.length () == 4);
+            VerifyTestResult (tmp.str () == U"שלום");
         }
         {
-            StringBuilder tmp;
-            tmp.Append (U"שלום");
-            Verify (tmp.str () == U"שלום");
-        }
-        {
-            StringBuilder tmp;
-            tmp += U"שלום";
-            Verify (tmp.str () == U"שלום");
+            const char16_t microChars16[] = u"\u00B5";
+            const char32_t microChars32[] = U"\U000000B5";
+            Assert (0x00B5 == microChars16[0]);
+            Assert (0x00B5 == microChars32[0]);
+            Assert (sizeof (microChars16) == 2 * 2);
+            Assert (sizeof (microChars32) == 2 * 4);
         }
     }
 }
