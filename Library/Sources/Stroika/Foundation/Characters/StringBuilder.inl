@@ -43,7 +43,7 @@ namespace Stroika::Foundation::Characters {
         Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySyncrhonized_};
         size_t                                                 spanSize = s.size ();
         if (spanSize != 0) {
-            if constexpr (is_same_v<CHAR_T, char>) {
+            if constexpr (is_same_v<CHAR_T, Character_ASCII>) {
                 Character::CheckASCII (s);
             }
             using BUFFER_ELT_TYPE = decltype (fData_)::value_type;
@@ -54,6 +54,8 @@ namespace Stroika::Foundation::Characters {
                 std::copy (copyFrom, copyFrom + spanSize, fData_.data () + i);
             }
             else {
+                // @todo  OPTIMZIATION OPPORTUNITY - if given an ascii span, can just do those chars one at a time...
+
                 Memory::StackBuffer<char32_t> buf{Memory::eUninitialized, UTFConverter::ComputeTargetBufferSize<char32_t> (s)};
 #if qCompilerAndStdLib_spanOfContainer_Buggy
                 Append (String{UTFConverter::kThe.ConvertSpan (s, span{buf.data (), buf.size ()})});

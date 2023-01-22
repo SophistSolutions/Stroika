@@ -74,6 +74,9 @@ namespace Stroika::Foundation::Characters {
          *      o   basic_string_view<unicode (or narrow ASCII) characters>
          *      o   String
          *      o   Character
+         * 
+         *  This function appends as IF the argument was converted to a UNICODE string, and then
+         *  appended.
          */
         template <Character_Compatible CHAR_T>
         nonvirtual void Append (span<const CHAR_T> s);
