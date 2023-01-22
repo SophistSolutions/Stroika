@@ -330,13 +330,15 @@ namespace Stroika::Foundation::Characters {
          *        \req Require (UTFConverter::AllFitsInTwoByteEncoding (s));
          */
         template <size_t SIZE>
-        static String FromStringConstant (const char (&cString)[SIZE]);
+        static String FromStringConstant (const Character_ASCII (&cString)[SIZE]);
         template <size_t SIZE>
         static String FromStringConstant (const wchar_t (&cString)[SIZE]);
-        static String FromStringConstant (const basic_string_view<char>& str);
+        static String FromStringConstant (const basic_string_view<Character_ASCII>& str);
         static String FromStringConstant (const basic_string_view<wchar_t>& str);
-        static String FromStringConstant (span<const char> s);
+        static String FromStringConstant (const basic_string_view<char32_t>& str);
+        static String FromStringConstant (span<const Character_ASCII> s);
         static String FromStringConstant (span<const wchar_t> s);
+        static String FromStringConstant (span<const char32_t> s);
 
     public:
         /**
@@ -1407,6 +1409,8 @@ namespace Stroika::Foundation::Characters {
     private:
         /**
          * note here - for mk_(span<const char>) - calls Character::CheckASCII (), and other <char> guys delegate through that
+         * And mk_(SPAN) also always COPIES data (a few of the mk_ overloads steal, but only if given && arg)
+         * FromStringConstant API also does stealing.
          */
         template <Character_CompatibleIsh CHAR_T>
         static _SharedPtrIRep mk_ (span<const CHAR_T> s);

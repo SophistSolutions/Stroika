@@ -142,56 +142,68 @@ namespace Stroika::Foundation::Characters {
     template <>
     auto String::mk_nocheck_ (span<const char32_t> s) -> _SharedPtrIRep;
     template <Character_CompatibleIsh CHAR_T>
-    inline auto String::mk_ (span<const CHAR_T> s) -> _SharedPtrIRep
+    auto String::mk_ (span<const CHAR_T> s) -> _SharedPtrIRep
     {
         if (s.empty ()) {
             return mkEmpty_ ();
         }
-        if constexpr (sizeof (CHAR_T) == 1) {
-            if constexpr (is_same_v<CHAR_T, Character_ASCII>) {
-                Character::CheckASCII (s);
-                return mk_nocheck_ (s);
-            }
-            else if (Character::IsASCII (s)) {
-                return mk_nocheck_ (span<const Character_ASCII>{reinterpret_cast<const Character_ASCII*> (s.data ()), s.size ()});
-            }
-            else {
-                return mk_nocheck_ (span<const Character_Latin1>{reinterpret_cast<const Character_Latin1*> (s.data ()), s.size ()});
-            }
+        if constexpr (is_same_v<CHAR_T, Character_ASCII>) {
+            Character::CheckASCII (s);
+            return mk_nocheck_ (s);
         }
-        Character::ASCIIOrLatin1Result flag = Character::IsASCIIOrLatin1 (s);
-        switch (flag) {
+        else if constexpr (is_same_v<CHAR_T, Character_Latin1>) {
+            Character::CheckLatin1 (s);
+            return mk_nocheck_ (s);
+        }
+        switch (Character::IsASCIIOrLatin1 (s)) {
             case Character::ASCIIOrLatin1Result::eASCII: {
-                // Copy to smaller buffer (e.g. utf16_t to char)
-                Memory::StackBuffer<Character_ASCII> buf{Memory::eUninitialized, s.size ()};
+                if constexpr (sizeof (CHAR_T) == 1) {
+                    return mk_nocheck_ (span<const Character_ASCII>{reinterpret_cast<const Character_ASCII*> (s.data ()), s.size ()});
+                }
+                else {
+                    // Copy to smaller buffer (e.g. utf16_t to char)
+                    Memory::StackBuffer<Character_ASCII> buf{Memory::eUninitialized, s.size ()};
 #if qCompilerAndStdLib_spanOfContainer_Buggy
-                Private_::CopyAsASCIICharacters_ (s, span{buf.data (), buf.size ()});
-                return mk_nocheck_ (span<const Character_ASCII>{buf.data (), buf.size ()});
+                    Private_::CopyAsASCIICharacters_ (s, span{buf.data (), buf.size ()});
+                    return mk_nocheck_ (span<const Character_ASCII>{buf.data (), buf.size ()});
 #else
-                Private_::CopyAsASCIICharacters_ (s, span{buf});
-                return mk_nocheck_ (span<const Character_ASCII>{buf}); // MakeSmartPtr not mk_ to avoid Character::CheckASCII
+                    Private_::CopyAsASCIICharacters_ (s, span{buf});
+                    return mk_nocheck_ (span<const Character_ASCII>{buf});
 #endif
+                }
             }
             case Character::ASCIIOrLatin1Result::eLatin1: {
-                // Copy to smaller buffer (e.g. utf32_t to Character_Latin1)
-                Memory::StackBuffer<Character_Latin1> buf{Memory::eUninitialized, s.size ()};
+                if constexpr (sizeof (CHAR_T) == 1) {
+                    return mk_nocheck_ (span<const Character_Latin1>{reinterpret_cast<const Character_Latin1*> (s.data ()), s.size ()});
+                }
+                else {
+                    // Copy to smaller buffer (e.g. utf32_t to Character_Latin1)
+                    Memory::StackBuffer<Character_Latin1> buf{Memory::eUninitialized, s.size ()};
 #if qCompilerAndStdLib_spanOfContainer_Buggy
-                Private_::CopyAsLatin1Characters_ (s, span{buf.data (), buf.size ()});
-                return mk_nocheck_ (span<const Character_ASCII>{buf.data (), buf.size ()});
+                    Private_::CopyAsLatin1Characters_ (s, span{buf.data (), buf.size ()});
+                    return mk_nocheck_ (span<const Character_ASCII>{buf.data (), buf.size ()});
 #else
-                Private_::CopyAsLatin1Characters_ (s, span{buf});
-                return mk_nocheck_ (span<const Character_Latin1>{buf}); // MakeSmartPtr not mk_ to avoid Character::CheckASCII
+                    Private_::CopyAsLatin1Characters_ (s, span{buf});
+                    return mk_nocheck_ (span<const Character_Latin1>{buf});
 #endif
+                }
             }
         }
+        // at this point, we know the text must be encoded as utf16 or utf32 (but source code still be single byte, like utf8)
         if (UTFConverter::AllFitsInTwoByteEncoding (s)) {
-            // complex case - could be utf8 src, utf16, or utf32, so must transcode to char16_t
-            Memory::StackBuffer<char16_t> wideUnicodeBuf{Memory::eUninitialized, UTFConverter::ComputeTargetBufferSize<char16_t> (s)};
+            if constexpr (sizeof (CHAR_T) == 2) {
+                // no transcode needed UTF16->UTF16
+                return mk_nocheck_ (span<const char16_t>{reinterpret_cast<const char16_t*> (s.data ()), s.size ()});
+            }
+            else {
+                // complex case - could be utf8 src, utf16, or utf32, so must transcode to char16_t
+                Memory::StackBuffer<char16_t> wideUnicodeBuf{Memory::eUninitialized, UTFConverter::ComputeTargetBufferSize<char16_t> (s)};
 #if qCompilerAndStdLib_spanOfContainer_Buggy
-            return mk_nocheck_ (Memory::ConstSpan (UTFConverter::kThe.ConvertSpan (s, span{wideUnicodeBuf.data (), wideUnicodeBuf.size ()})));
+                return mk_nocheck_ (Memory::ConstSpan (UTFConverter::kThe.ConvertSpan (s, span{wideUnicodeBuf.data (), wideUnicodeBuf.size ()})));
 #else
-            return mk_nocheck_ (Memory::ConstSpan (UTFConverter::kThe.ConvertSpan (s, span{wideUnicodeBuf})));
+                return mk_nocheck_ (Memory::ConstSpan (UTFConverter::kThe.ConvertSpan (s, span{wideUnicodeBuf})));
 #endif
+            }
         }
         // So at this point - definitely converting to UTF-32
         if constexpr (sizeof (CHAR_T) == 4) {
@@ -343,9 +355,9 @@ namespace Stroika::Foundation::Characters {
         }
     }
     template <size_t SIZE>
-    inline String String::FromStringConstant (const char (&cString)[SIZE])
+    inline String String::FromStringConstant (const Character_ASCII (&cString)[SIZE])
     {
-        return FromStringConstant (span<const char>{cString, SIZE - 1}); // -1 because a literal array SIZE includes the NUL-character at the end
+        return FromStringConstant (span<const Character_ASCII>{cString, SIZE - 1}); // -1 because a literal array SIZE includes the NUL-character at the end
     }
     template <size_t SIZE>
     inline String String::FromStringConstant (const wchar_t (&cString)[SIZE])
@@ -359,6 +371,10 @@ namespace Stroika::Foundation::Characters {
     inline String String::FromStringConstant (const basic_string_view<wchar_t>& str)
     {
         return FromStringConstant (span<const wchar_t>{str.data (), str.size ()});
+    }
+    inline String String::FromStringConstant (const basic_string_view<char32_t>& str)
+    {
+        return FromStringConstant (span<const char32_t>{str.data (), str.size ()});
     }
     template <typename CHAR_T>
     inline String String::FromUTF8 (span<CHAR_T> s)

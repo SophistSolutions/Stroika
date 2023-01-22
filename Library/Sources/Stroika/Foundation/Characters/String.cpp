@@ -467,11 +467,11 @@ namespace {
                 // g++-11, and other compilers, detected as vptr UB violation if we access first
                 Require (t1.size () <= CAPACITY);
                 copy (t1.begin (), t1.end (), fBuf_);
+                inherited::operator= (span<const CHAR_T>{fBuf_, t1.size ()});
                 if (IncludesNullTerminator_ ()) {
                     Assert (t1.size () + 1 <= CAPACITY);
                     fBuf_[t1.size ()] = CHAR_T{'\0'};
                 }
-                inherited::operator= (span<const CHAR_T>{fBuf_, t1.size ()});
             }
             Rep ()           = delete;
             Rep (const Rep&) = delete;
@@ -679,10 +679,10 @@ String::String (const basic_string_view<wchar_t>& str)
     // -- LGP 2019-01-29
 }
 
-String String::FromStringConstant (span<const char> s)
+String String::FromStringConstant (span<const Character_ASCII> s)
 {
     Require (Character::IsASCII (s));
-    return String{MakeSmartPtr<StringConstant_::Rep<char>> (s)};
+    return String{MakeSmartPtr<StringConstant_::Rep<Character_ASCII>> (s)};
 }
 
 String String::FromStringConstant (span<const wchar_t> s)
@@ -693,6 +693,13 @@ String String::FromStringConstant (span<const wchar_t> s)
     Require (*(s.data () + s.size ()) == '\0'); // crazy weird requirement, but done cuz "x"sv already does NUL-terminate and we can
         // take advantage of that fact - re-using the NUL-terminator for our own c_str() implementation
     return String{MakeSmartPtr<StringConstant_::Rep<wchar_t>> (s)};
+}
+
+String String::FromStringConstant (span<const char32_t> s)
+{
+    Require (*(s.data () + s.size ()) == '\0'); // crazy weird requirement, but done cuz "x"sv already does NUL-terminate and we can
+        // take advantage of that fact - re-using the NUL-terminator for our own c_str() implementation
+    return String{MakeSmartPtr<StringConstant_::Rep<char32_t>> (s)};
 }
 
 String String::FromNarrowString (span<const char> s, const locale& l)
