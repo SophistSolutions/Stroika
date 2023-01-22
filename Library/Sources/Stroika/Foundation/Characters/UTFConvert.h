@@ -164,20 +164,39 @@ namespace Stroika::Foundation::Characters {
 
     public:
         /**
-         *  \brief Convert UTFN -> UTFM (e.g. UTF8 to UTF32), throw on failure, return tuple of n source/target elements consumed/produced.
+         *  \brief Convert between UTF-N encoded (including the special case of Character_ASCII, and Character_Latin1) strings (e.g. UTF8 to UTF32), throw on failure, resulting span<>.
          * 
-         *  \req size of target span must be at least as large as specified by ComputeTargetBufferSize
+         *  Compared with the Convert () API, this loses information (number of source characters consumed). 
+         *  Not a general purpose API. But very frequently this is all you need, for the next stage, a new span, 
+         *  and for that case, this saves a little typing.
+         * 
+         *  NOTE - the returned span is ALWAYS (not necessarily propper) sub-span of its 'target' argument
+         *
+         *  \par Example Usage
+         *      \code
+         *          StackBuffer<wchar_t>      buf{Memory::eUninitialized, UTFConverter::ComputeTargetBufferSize<wchar_t> (src)};
+         *          span<wchar_t> spanOfTargetBufferUsed = UTFConverter::kThe.ConvertSpan (src, span{buf});
+         *          return String{spanOfTargetBufferUsed};
+         *      \endcode
+         */
+        template <Character_CompatibleIsh SRC_T, Character_CompatibleIsh TRG_T>
+        nonvirtual span<TRG_T> ConvertSpan (span<const SRC_T> source, span<TRG_T> target) const
+            requires (not is_const_v<TRG_T>);
+        template <Character_CompatibleIsh SRC_T, Character_CompatibleIsh TRG_T>
+        nonvirtual span<TRG_T> ConvertSpan (span<SRC_T> source, span<TRG_T> target) const
+            requires (not is_const_v<TRG_T>);
+
+    public:
+        /**
+         *  \brief Convert between UTF-N encoded strings (including the special case of Character_ASCII, and Character_Latin1) (e.g. UTF8 to UTF32), throw on failure
+         * 
+         *  For overloads taking a target span:
+         *      \req size of target span must be at least as large as specified by ComputeTargetBufferSize
          * 
          *  \note overload taking mbstate_t maybe used if converting a large stream in parts which don't necesarily fall on multibyte boundaries.
          * 
          *  Wrapper on ConvertQuietly, that throws when bad source data input, and asserts out when bad target size (insuffient for buffer).
          *
-         *  Convert these combinations:
-         *      o   char8_t
-         *      o   char16_t
-         *      o   char32_t
-         *  to/from each other/
-         * 
          *  Variations from char8_t are overloaded to optionally take a multibyteConversionState parameter.
          * 
          *  The types
@@ -197,13 +216,14 @@ namespace Stroika::Foundation::Characters {
          *
          *  @see ConvertQuietly for span overloads
          * 
-         *  String overloads are simple wrappers on the span code but with simpler to use arguments
-         * 
+         *  String overloads are simple wrappers on the span code but with simpler to use arguments:
          *  \par Example Usage
          *      \code
          *          wstring wide_fred = UTFConverter::kThe.Convert<wstring> (u8"fred");
-         *          u16string u16_fred = UTFConverter::kThe.Convert<u16string> (u32"fred");
+         *          u16string u16_fred = UTFConverter::kThe.Convert<u16string> (U"fred");
          *      \endcode
+         * 
+         *  @todo generalize/enhance mbstate_t* multibyteConversionState support
          */
         template <Character_CompatibleIsh SRC_T, Character_CompatibleIsh TRG_T>
         nonvirtual ConversionResult Convert (span<const SRC_T> source, span<TRG_T> target) const;
@@ -238,29 +258,6 @@ namespace Stroika::Foundation::Characters {
 
     public:
         /**
-         * \brief Same as Convert(span,span), except returns a span (slightly less info)
-         * 
-         *   So loses information (number of source characters consumed). Not a general purpose API. But very frequently
-         *   this is all you need, for the next stage, a new span, and for that case, this saves a little typing.
-         * 
-         *  NOTE - the returned span is ALWAYS (not necessarily propper) sub-span of its 'target' argument
-         *
-         *  \par Example Usage
-         *      \code
-         *          StackBuffer<wchar_t>      buf{Memory::eUninitialized, UTFConverter::ComputeTargetBufferSize<wchar_t> (src)};
-         *          span<wchar_t> spanOfTargetBufferUsed = UTFConverter::kThe.ConvertSpan (src, span{buf});
-         *          return String{spanOfTargetBufferUsed};
-         *      \endcode
-         */
-        template <Character_CompatibleIsh SRC_T, Character_CompatibleIsh TRG_T>
-        nonvirtual span<TRG_T> ConvertSpan (span<const SRC_T> source, span<TRG_T> target) const
-            requires (not is_const_v<TRG_T>);
-        template <Character_CompatibleIsh SRC_T, Character_CompatibleIsh TRG_T>
-        nonvirtual span<TRG_T> ConvertSpan (span<SRC_T> source, span<TRG_T> target) const
-            requires (not is_const_v<TRG_T>);
-
-    public:
-        /**
          *  \brief used for ConvertQuietly
          * 
          *  \note no need to have status code for 'targetExhausted' because we assert error in that case. DONT DO IT.
@@ -286,11 +283,12 @@ namespace Stroika::Foundation::Characters {
          *       of throwing on errors.
          * 
          *  Source and target spans can be of any Character_Compatible character type (but source const and target non-const)
+         * 
+         *  @todo generalize/enhance mbstate_t* multibyteConversionState support
          */
         template <Character_CompatibleIsh SRC_T, Character_CompatibleIsh TRG_T>
         nonvirtual ConversionResultWithStatus ConvertQuietly (span<const SRC_T> source, span<TRG_T> target) const
             requires (not is_const_v<TRG_T>);
-
         nonvirtual ConversionResultWithStatus ConvertQuietly (span<const char8_t> source, span<char16_t> target, mbstate_t* multibyteConversionState) const;
         nonvirtual ConversionResultWithStatus ConvertQuietly (span<const char8_t> source, span<char32_t> target, mbstate_t* multibyteConversionState) const;
 
