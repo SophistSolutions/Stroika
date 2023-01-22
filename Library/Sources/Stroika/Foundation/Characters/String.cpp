@@ -779,23 +779,31 @@ inline auto String::mk_nocheck_justPickBufRep_ (span<const CHAR_T> s) -> _Shared
     return MakeSmartPtr<DynamicallyAllocatedString::Rep<CHAR_T>> (s);
 }
 
+#if !qCompilerAndStdLib_template_requresDefNeededonSpecializations_Buggy
 template <>
+#endif
 auto String::mk_nocheck_ (span<const Character_ASCII> s) -> _SharedPtrIRep
 {
     Require (Character::IsASCII (s)); // caller must check
     return mk_nocheck_justPickBufRep_ (s);
 }
+#if !qCompilerAndStdLib_template_requresDefNeededonSpecializations_Buggy
 template <>
+#endif
 auto String::mk_nocheck_ (span<const Character_Latin1> s) -> _SharedPtrIRep
 {
     return mk_nocheck_justPickBufRep_ (s);
 }
+#if !qCompilerAndStdLib_template_requresDefNeededonSpecializations_Buggy
 template <>
+#endif
 auto String::mk_nocheck_ (span<const char16_t> s) -> _SharedPtrIRep
 {
     return mk_nocheck_justPickBufRep_ (s);
 }
+#if !qCompilerAndStdLib_template_requresDefNeededonSpecializations_Buggy
 template <>
+#endif
 auto String::mk_nocheck_ (span<const char32_t> s) -> _SharedPtrIRep
 {
     return mk_nocheck_justPickBufRep_ (s);
