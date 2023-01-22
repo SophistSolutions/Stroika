@@ -660,7 +660,7 @@ namespace Stroika::Foundation::Characters {
     inline void String::Append (const String& s)
     {
         Memory::StackBuffer<char32_t> ignored1;
-        auto                         rhsSpan = s.GetData (&ignored1);
+        auto                          rhsSpan = s.GetData (&ignored1);
         Append (rhsSpan);
     }
     inline void    String::Append (const wchar_t* s) { Append (s, s + ::wcslen (s)); }

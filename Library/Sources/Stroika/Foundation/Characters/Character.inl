@@ -18,7 +18,7 @@
 namespace Stroika::Foundation::Characters {
 
     namespace Private_ {
-        template <Character_Compatible CHAR_T>
+        template <Character_CompatibleIsh CHAR_T>
         constexpr strong_ordering Compare_CS_ (span<const CHAR_T> lhs, span<const CHAR_T> rhs)
         {
             size_t        lLen   = lhs.size ();
@@ -61,7 +61,7 @@ namespace Stroika::Foundation::Characters {
             }
             return Common::CompareResultNormalizer (static_cast<ptrdiff_t> (lLen) - static_cast<ptrdiff_t> (rLen));
         }
-        template <Character_Compatible CHAR_T>
+        template <Character_CompatibleIsh CHAR_T>
         constexpr strong_ordering Compare_CI_ (span<const CHAR_T> lhs, span<const CHAR_T> rhs)
         {
             size_t        lLen   = lhs.size ();
@@ -77,7 +77,8 @@ namespace Stroika::Foundation::Characters {
                     lc = li->ToLowerCase ();
                     rc = ri->ToLowerCase ();
                 }
-                else if constexpr (is_same_v<CHAR_T, char>) {
+                else if constexpr (is_same_v<CHAR_T, Character_ASCII>) {
+                    // @todo NOT SURE if this works for Character_Latin1...
                     // see https://en.cppreference.com/w/cpp/string/byte/tolower for rationale for this crazy casting
                     lc = static_cast<CHAR_T> (std::tolower (static_cast<unsigned char> (*li)));
                     rc = static_cast<CHAR_T> (std::tolower (static_cast<unsigned char> (*ri)));
@@ -375,7 +376,7 @@ namespace Stroika::Foundation::Characters {
     }
     template <typename RESULT_T, Character_Compatible CHAR_T>
     inline bool Character::AsASCIIQuietly (span<const CHAR_T> fromS, RESULT_T* into)
-        requires (is_same_v<RESULT_T, string> or is_same_v<RESULT_T, Memory::StackBuffer<char>>)
+        requires (is_same_v<RESULT_T, string> or is_same_v<RESULT_T, Memory::StackBuffer<Character_ASCII>>)
     {
         RequireNotNull (into);
         into->clear ();
@@ -402,7 +403,7 @@ namespace Stroika::Foundation::Characters {
         }
         return true;
     }
-    template <Character_Compatible CHAR_T>
+    template <Character_CompatibleIsh CHAR_T>
     constexpr strong_ordering Character::Compare (span<const CHAR_T> lhs, span<const CHAR_T> rhs, CompareOptions co) noexcept
     {
         Require (co == CompareOptions::eWithCase or co == CompareOptions::eCaseInsensitive);

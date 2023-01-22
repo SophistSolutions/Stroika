@@ -36,6 +36,39 @@ namespace Stroika::Foundation::Characters {
     };
 
     /**
+     *  \brief Stroika's string/character classes treat 'char' as being an ASCII character
+     * 
+     *  This using declaration just documents that fact, without really enforcing anything.
+     *  Prior to Stroika v3, the Stroika String classes basically prohibited the use of char
+     *  because it was always UNCLEAR what characterset to interpret it as.
+     * 
+     *  But a safe (and quite useful) assumption, is just that it is ASCII. If you assume its
+     *  always ASCII, you can simplify alot of pragmatic usage. So Stroika v3 does that,
+     *  with checks to enforce.
+     */
+    using Character_ASCII = char;
+
+    /**
+     *  Internally, several algorithms and data structures operate on this one-byte subset of UNICODE.
+     *  However, most Stroika public APIs don't expose this, because this is not any kind of standard for APIs.
+     *  APIs use char8_t, char16_t, char32_t, Character_ASCII (aka char).
+     * 
+     *  This refers to ASCII OR https://en.wikipedia.org/wiki/Latin-1_Supplement, so any UNICODE characater code point
+     *  less than U+00FF.
+     * 
+     *  \note Considered using Character_Latin1 = uint8_t; But this is better since less likely accidentally used.
+     */
+    struct Character_Latin1 {
+        uint8_t        data;
+        constexpr      operator uint8_t () const { return data; }
+        constexpr bool operator== (const Character_Latin1&) const  = default;
+        constexpr auto operator<=> (const Character_Latin1&) const = default;
+    };
+    static_assert (is_trivially_constructible_v<Character_Latin1>);
+    static_assert (is_trivially_destructible_v<Character_Latin1>);
+    static_assert (sizeof (Character_Latin1) == 1); // so can re_reinterpret_cast<> between Character_Latin1 and unsigned char/uint8_t;
+
+    /**
      *  \brief check if T is char8_t, char16_t, char32_t - one of the three possible unicode UTF code-point classes.
      */
     template <typename T>
@@ -49,13 +82,12 @@ namespace Stroika::Foundation::Characters {
     concept Character_IsUnicodeCodePoint = Character_IsBasicUnicodeCodePoint<T> or is_same_v<remove_cv_t<T>, wchar_t>;
 
     /**
+    * @todo REVIEW THIS 
      *  \brief check if T is char8_t, char16_t, char32_t (Character_IsBasicUnicodeCodePoint) or wchar_t
      */
     template <typename T>
-    concept Character_IsUnicodeCodePointOrPlainChar = Character_IsUnicodeCodePoint<T> or is_same_v<remove_cv_t<T>, char>;
+    concept Character_IsUnicodeCodePointOrPlainChar = Character_IsUnicodeCodePoint<T> or is_same_v<remove_cv_t<T>, Character_ASCII>;
 
-    /// @TODO LOSE OrPlainChar busines sand simplfiy below???? Only if we ASSERT 'char' implies ASCIII, and check that with assertions
-    // so assert each char <= 127.
     class Character;
 
     /**
@@ -75,21 +107,8 @@ namespace Stroika::Foundation::Characters {
     static_assert (Character_SafelyCompatible<char16_t>);
     static_assert (Character_SafelyCompatible<char32_t>);
     static_assert (Character_SafelyCompatible<wchar_t>);
-    //static_assert (Character_SafelyCompatible<Character>); true but not defined yet.
-
-    /**
-     *  \brief Stroika's string/character classes treat 'char' as being an ASCII character
-     * 
-     *  This using declaration just documents that fact, without really enforcing anything.
-     *  Prior to Stroika v3, the Stroika String classes basically prohibited the use of char
-     *  because it was always UNCLEAR what characterset to interpret it as.
-     * 
-     *  But a safe (and quite useful) assumption, is just that it is ASCII. If you assume its
-     *  always ASCII, you can get alot done, and allow that case. So Stroika v3 does that,
-     *  with checks to enforce.
-     */
-    using Character_ASCII = char;
     static_assert (not Character_SafelyCompatible<Character_ASCII>);
+    //static_assert (Character_SafelyCompatible<Character>); true but not defined yet.
 
     /**
     * &&&& @todo CONSIDER LOSING THIS AND REPLACING WITH Character_CompatibleIsh but CAREFULLY REVIEWING EACH CASE
@@ -104,26 +123,6 @@ namespace Stroika::Foundation::Characters {
      */
     template <typename T>
     concept Character_Compatible = Character_SafelyCompatible<T> or is_same_v<remove_cv_t<T>, Character_ASCII>;
-
-    /**
-     *  Internally, several algorithms and data structures operate on this one-byte subset of UNICODE.
-     *  However, most Stroika public APIs don't expose this, because this is not any kind of standard for APIs.
-     *  APIs use char8_t, char16_t, char32_t, or char for ASCIICHAR.
-     * 
-     *  This refers to ASCII OR https://en.wikipedia.org/wiki/Latin-1_Supplement, so any UNICODE characater code point
-     *  less than U+00FF.
-     * 
-     *  \note Considered using Character_Latin1 = uint8_t; But this is better since less likely accidentally used.
-     */
-    struct Character_Latin1 {
-        uint8_t        data;
-        constexpr      operator uint8_t () const { return data; }
-        constexpr bool operator== (const Character_Latin1&) const  = default;
-        constexpr auto operator<=> (const Character_Latin1&) const = default;
-    };
-    static_assert (is_trivially_constructible_v<Character_Latin1>);
-    static_assert (is_trivially_destructible_v<Character_Latin1>);
-    static_assert (sizeof (Character_Latin1) == 1); // so can re_reinterpret_cast<> between Character_Latin1 and unsigned char/uint8_t;
     static_assert (not Character_Compatible<Character_Latin1>);
 
     /**
@@ -180,7 +179,7 @@ namespace Stroika::Foundation::Characters {
         /**
          *  \req IsASCII()
          */
-        nonvirtual char GetAsciiCode () const noexcept;
+        nonvirtual Character_ASCII GetAsciiCode () const noexcept;
 
     public:
         /**
@@ -224,6 +223,14 @@ namespace Stroika::Foundation::Characters {
     public:
         /**
          *  \brief Return true iff the given character (or all in span) is (are) in the ascii/iso-latin range [0..0xff]
+         * 
+         *  This refers to ASCII OR https://en.wikipedia.org/wiki/Latin-1_Supplement, so any UNICODE characater code point
+         *  less than U+00FF.
+         * 
+         *  \note, for sizeof (CHAR_T) == 1, this just returns true.
+         * 
+         *  @see Character_Latin1
+         * 
          */
         constexpr bool IsLatin1 () const noexcept;
         template <Character_CompatibleIsh CHAR_T>
@@ -357,16 +364,15 @@ namespace Stroika::Foundation::Characters {
     public:
         /**
          * Convert String losslessly into a standard C++ type.
-         * Only specifically specialized variants are supported (right now just <string> supported).
          * If this source contains any invalid ASCII characters, this returns false, and otherwise true (with set into).
          * 
          *  Supported Types:
-         *      o   Memory::StackBuffer<char>
+         *      o   Memory::StackBuffer<Character_ASCII>
          *      o   string
          */
         template <typename RESULT_T = string, Character_Compatible CHAR_T>
         static bool AsASCIIQuietly (span<const CHAR_T> fromS, RESULT_T* into)
-            requires (is_same_v<RESULT_T, string> or is_same_v<RESULT_T, Memory::StackBuffer<char>>);
+            requires (is_same_v<RESULT_T, string> or is_same_v<RESULT_T, Memory::StackBuffer<Character_ASCII>>);
 
     public:
         /**
@@ -409,7 +415,7 @@ namespace Stroika::Foundation::Characters {
          *
          *  \todo   Consider if this should be somehow packaged with Character::ThreeWayComparer?
          */
-        template <Character_Compatible CHAR_T>
+        template <Character_CompatibleIsh CHAR_T>
         static constexpr strong_ordering Compare (span<const CHAR_T> lhs, span<const CHAR_T> rhs, CompareOptions co) noexcept;
 
     public:
