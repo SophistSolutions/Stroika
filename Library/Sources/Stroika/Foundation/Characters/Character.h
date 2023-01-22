@@ -238,6 +238,12 @@ namespace Stroika::Foundation::Characters {
          *  Combines check for IsASCII and IsLatin1 in one call (performance). Returns flag indicating
          *  most specific possible answer for the entire span. So if all characters ascii, thats returned.
          *  If not, but all characters latin1, thats returned. Else returned none.
+         * 
+         *  \note, if CHAR_T == Character_Latin1, then this will NEVER return none. Its equivilent to
+         *         IsASCII.
+         *         
+         *  \note, if CHAR_T == char8_t, then this will NEVER return Latin1. Its equivilent to
+         *         IsASCII.
          */
         template <Character_CompatibleIsh CHAR_T>
         static constexpr ASCIIOrLatin1Result IsASCIIOrLatin1 (span<const CHAR_T> s) noexcept;

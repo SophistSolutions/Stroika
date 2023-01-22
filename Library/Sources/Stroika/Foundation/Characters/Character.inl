@@ -238,7 +238,15 @@ namespace Stroika::Foundation::Characters {
         }
         else if constexpr (sizeof (CHAR_T) == 1) {
             // any byte will fit (assumes 8-bit bytes)
-            return IsASCII (s) ? eASCII : eLatin1;
+            if (IsASCII (s)) {
+                return eASCII;
+            }
+            if constexpr (is_same_v<CHAR_T, Character_Latin1>) {
+                return eLatin1;
+            }
+            else if constexpr (is_same_v<CHAR_T, char8_t>) {
+                return eNone;
+            }
         }
         else {
             for (CHAR_T c : s) {
