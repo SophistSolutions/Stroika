@@ -460,22 +460,29 @@ namespace Stroika::Foundation::Characters {
         requires (not is_const_v<TRG_T>)
     {
         Require ((target.size () >= ComputeTargetBufferSize<TRG_T> (source)));
-        switch (Private_::ValueOf_ (fUsingOptions.fPreferredImplementation)) {
-            case Options::Implementation::eStroikaPortable: {
-                return ConvertQuietly_StroikaPortable_ (ConvertToPrimitiveSpan_ (source), ConvertToPrimitiveSpan_ (target));
-            }
+        //if constexpr (is_same_v<decltype (this->ConvertToPrimitiveSpan_ (source)),decltype(this->ConvertToPrimitiveSpan_ (target))>) {
+        if constexpr (sizeof(SRC_T) == sizeof(TRG_T)) {
+            copy (source.begin (), source.end (), target.data ());
+            return ConversionResultWithStatus{{.fSourceConsumed = source.size (), .fTargetProduced = source.size ()},  ConversionStatusFlag::ok};
+        }
+        else {
+            switch (Private_::ValueOf_ (fUsingOptions.fPreferredImplementation)) {
+                case Options::Implementation::eStroikaPortable: {
+                    return this->ConvertQuietly_StroikaPortable_ (ConvertToPrimitiveSpan_ (source), ConvertToPrimitiveSpan_ (target));
+                }
 #if __has_include("boost/locale/encoding_utf.hpp")
-            case Options::Implementation::eBoost_Locale: {
-                if constexpr (is_same_v<SRC_T, char8_t> and is_same_v<TRG_T, char16_t>) {
-                    return ConvertQuietly_boost_locale_ (ConvertToPrimitiveSpan_ (source), ConvertToPrimitiveSpan_ (target));
+                case Options::Implementation::eBoost_Locale: {
+                    if constexpr (is_same_v<SRC_T, char8_t> and is_same_v<TRG_T, char16_t>) {
+                        return this->ConvertQuietly_boost_locale_ (ConvertToPrimitiveSpan_ (source), ConvertToPrimitiveSpan_ (target));
+                    }
+                }
+#endif
+                case Options::Implementation::eCodeCVT: {
+                    //tmphack disable  return ConvertQuietly_codeCvt_ (ConvertToPrimitiveSpan_ (source), ConvertToPrimitiveSpan_ (target));
                 }
             }
-#endif
-            case Options::Implementation::eCodeCVT: {
-                //tmphack disable  return ConvertQuietly_codeCvt_ (ConvertToPrimitiveSpan_ (source), ConvertToPrimitiveSpan_ (target));
-            }
+            return this->ConvertQuietly_StroikaPortable_ (this->ConvertToPrimitiveSpan_ (source), this->ConvertToPrimitiveSpan_ (target)); // default if preferred not available
         }
-        return ConvertQuietly_StroikaPortable_ (ConvertToPrimitiveSpan_ (source), ConvertToPrimitiveSpan_ (target)); // default if preferred not available
     }
 
     template <Character_Compatible TRG_T, Character_Compatible SRC_T>
