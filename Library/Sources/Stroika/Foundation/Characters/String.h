@@ -441,7 +441,9 @@ namespace Stroika::Foundation::Characters {
         nonvirtual void Append (const wchar_t* s);
         nonvirtual void Append (const wchar_t* from, const wchar_t* to);
         nonvirtual void Append (const Character* from, const Character* to);
-        nonvirtual void Append (span<const Character> s);
+        template <typename CHAR_T>
+        nonvirtual void Append (span<const CHAR_T> s)
+            requires (is_same_v<CHAR_T, Character> or is_same_v<CHAR_T, char32_t>);
 
     public:
         nonvirtual String& operator+= (Character appendage);

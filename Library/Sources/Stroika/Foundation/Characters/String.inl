@@ -614,7 +614,9 @@ namespace Stroika::Foundation::Characters {
         return InsertAt (s.GetData (&ignored1), at);
     }
     inline String String::InsertAt (span<Character> s, size_t at) const { return InsertAt (Memory::ConstSpan (s), at); }
-    inline void   String::Append (span<const Character> s)
+    template <typename CHAR_T>
+    inline void String::Append (span<const CHAR_T> s)
+        requires (is_same_v<CHAR_T, Character> or is_same_v<CHAR_T, char32_t>)
     {
         if (not s.empty ()) {
             Memory::StackBuffer<char32_t> ignored1;
@@ -623,7 +625,12 @@ namespace Stroika::Foundation::Characters {
             copy (thisSpan.begin (), thisSpan.end (), combinedBuf.data ());
             char32_t* write2Buf = combinedBuf.data () + thisSpan.size ();
             for (auto i : s) {
-                *write2Buf = i.As<char32_t> ();
+                if constexpr (is_same_v<CHAR_T, Character>) {
+                    *write2Buf = i.As<char32_t> ();
+                }
+                else {
+                    *write2Buf = i;
+                }
                 ++write2Buf;
             }
 #if qCompilerAndStdLib_spanOfContainer_Buggy
@@ -652,9 +659,9 @@ namespace Stroika::Foundation::Characters {
     inline void String::Append (Character c) { Append (&c, &c + 1); }
     inline void String::Append (const String& s)
     {
-        Memory::StackBuffer<wchar_t> ignored1;
+        Memory::StackBuffer<char32_t> ignored1;
         auto                         rhsSpan = s.GetData (&ignored1);
-        Append (rhsSpan.data (), rhsSpan.data () + rhsSpan.size ());
+        Append (rhsSpan);
     }
     inline void    String::Append (const wchar_t* s) { Append (s, s + ::wcslen (s)); }
     inline void    String::Append (const Character* from, const Character* to) { Append (span{from, to}); }
