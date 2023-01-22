@@ -301,20 +301,19 @@ namespace Stroika::Foundation::Characters {
         requires (not is_const_v<TRG_T>)
     {
         Require ((target.size () >= ComputeTargetBufferSize<TRG_T> (source)));
-        //if constexpr (is_same_v<decltype (this->ConvertToPrimitiveSpan_ (source)),decltype(this->ConvertToPrimitiveSpan_ (target))>) {
-        if constexpr (sizeof (SRC_T) == sizeof (TRG_T)) {
+        using PRIMITIVE_SRC_T = typename decltype (this->ConvertToPrimitiveSpan_ (source))::value_type;
+        using PRIMITIVE_TRG_T = typename decltype (this->ConvertToPrimitiveSpan_ (target))::value_type;
+        if constexpr (is_same_v<PRIMITIVE_SRC_T,PRIMITIVE_TRG_T>) {
             copy (source.begin (), source.end (), target.data ());
             return ConversionResultWithStatus{{.fSourceConsumed = source.size (), .fTargetProduced = source.size ()}, ConversionStatusFlag::ok};
         }
         else if constexpr (is_same_v<SRC_T,Character_Latin1>) {
-            // ALL these have Character_Latin1 as a strict subset so simply copy
-            Require (source.size () <= target.size ());
+         // ALL TRG_T (but maybe ASCII?) have Character_Latin1 as a strict subset so simply copy
             copy (source.begin (), source.end (), target.data ());
              return ConversionResultWithStatus{{.fSourceConsumed = source.size (), .fTargetProduced = source.size ()}, ConversionStatusFlag::ok};
        }
         else if constexpr (is_same_v<TRG_T,Character_Latin1>) {
-         // ALL these have Character_Latin1 as a strict subset so simply copy
-            Require (source.size () <= target.size ());
+         // ALL TRG_T (but maybe ASCII?) have Character_Latin1 as a strict subset so simply copy
             copy (source.begin (), source.end (), target.data ());
             return ConversionResultWithStatus{{.fSourceConsumed = source.size (), .fTargetProduced = source.size ()}, ConversionStatusFlag::ok};
          }
