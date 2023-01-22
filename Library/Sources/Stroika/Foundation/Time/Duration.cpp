@@ -43,9 +43,15 @@ Duration::FormatException::FormatException ()
  *********************************** Duration ***********************************
  ********************************************************************************
  */
+namespace {
+    // sigh - not sure why so hard still -- LGP 2023-01-22 ;-)
+    constexpr wstring_view kMS_ = L"\u00b5s"sv;       // u8"µs"sv
+    static_assert (kMS_.size () == 2 && kMS_[0] == 0x00B5 and kMS_[1] == 's');
+    //static_assert (sizeof (u8"µ") == 3 and u8"µ"[0] == 0xC2 and u8"µ"[1] == 0xB5); // be sure above encoding working, since appantly not well standardized (file has UTF8 BOM)
+}
 const Duration::PrettyPrintInfo Duration::kDefaultPrettyPrintInfo = {{
-    "year"sv,    "years"sv,  "month"sv,   "months"sv, "week"sv, "weeks"sv, "day"sv, "days"sv, "hour"sv, "hours"sv, "minute"sv,
-    "minutes"sv, "second"sv, "seconds"sv, "ms"sv,     "ms"sv,   U"µs"sv,   U"µs"sv, "ns"sv,   "ns"sv,   "ps"sv,    "ps"sv,
+    "year"sv,    "years"sv,  "month"sv,   "months"sv, "week"sv, "weeks"sv, "day"sv,  "days"sv, "hour"sv, "hours"sv, "minute"sv,
+    "minutes"sv, "second"sv, "seconds"sv, "ms"sv,     "ms"sv,   kMS_,      kMS_,    "ns"sv,   "ns"sv,   "ps"sv,    "ps"sv,
 }};
 
 const Duration::AgePrettyPrintInfo Duration::kDefaultAgePrettyPrintInfo = {
