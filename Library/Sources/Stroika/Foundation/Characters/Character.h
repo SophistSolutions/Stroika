@@ -126,6 +126,11 @@ namespace Stroika::Foundation::Characters {
     static_assert (sizeof (Character_Latin1) == 1); // so can re_reinterpret_cast<> between Character_Latin1 and unsigned char/uint8_t;
     static_assert (not Character_Compatible<Character_Latin1>);
 
+    /**
+     */
+    template <typename T>
+    concept Character_IsBasicOrLatin1UnicodeCodePoint = Character_IsBasicUnicodeCodePoint<T> or is_same_v<remove_cv_t<T>, Character_Latin1>;
+
     template <typename T>
     concept Character_IsUnicodeCodePointOrPlainCharOrLatin1Char =
         Character_IsUnicodeCodePointOrPlainChar<T> or is_same_v<remove_cv_t<T>, Character_Latin1>;
