@@ -331,8 +331,8 @@ namespace Stroika::Foundation::Characters {
         }
     }
     template <Character_CompatibleIsh SRC_T, Character_CompatibleIsh TRG_T>
-    inline auto UTFConverter::ConvertQuietly (span<const SRC_T> source, span<TRG_T> target,
-                                                                        mbstate_t* multibyteConversionState) const->ConversionResultWithStatus
+    inline auto UTFConverter::ConvertQuietly (span<const SRC_T> source, span<TRG_T> target, mbstate_t* multibyteConversionState) const
+        -> ConversionResultWithStatus
         requires (is_same_v<SRC_T, char8_t> and (is_same_v<TRG_T, char16_t> or is_same_v<TRG_T, char32_t>))
     {
         Require ((target.size () >= ComputeTargetBufferSize<TRG_T> (source)));
