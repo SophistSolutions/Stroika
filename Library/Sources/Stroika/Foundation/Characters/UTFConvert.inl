@@ -201,30 +201,6 @@ namespace Stroika::Foundation::Characters {
     }
 
     template <Character_CompatibleIsh CHAR_T>
-    constexpr bool UTFConverter::AllFitsInSingleByteCharLatin1Encoding (span<const CHAR_T> s) noexcept
-    {
-        // note - tried to simplify with conditional_t but both sides evaluated
-        if constexpr (is_same_v<remove_cv_t<CHAR_T>, Character_ASCII> or is_same_v<remove_cv_t<CHAR_T>, Character_Latin1>) {
-            return true;
-        }
-        else if constexpr (is_same_v<remove_cv_t<CHAR_T>, Character>) {
-            for (Character c : s) {
-                if (not c.IsASCII ()) [[unlikely]] {
-                    return false;
-                }
-            }
-        }
-        else {
-            for (CHAR_T c : s) {
-                if (static_cast<make_unsigned_t<CHAR_T>> (c) > 127) [[unlikely]] {
-                    return false;
-                }
-            }
-        }
-        return true;
-    }
-
-    template <Character_CompatibleIsh CHAR_T>
     constexpr bool UTFConverter::AllFitsInTwoByteEncoding (span<const CHAR_T> s) noexcept
     {
         if constexpr (is_same_v<CHAR_T, Character_ASCII> or is_same_v<CHAR_T, Character_Latin1>) {
@@ -267,6 +243,15 @@ namespace Stroika::Foundation::Characters {
     {
         return Convert (Memory::ConstSpan (source), target);
     }
+    template <Character_CompatibleIsh SRC_T, Character_CompatibleIsh TRG_T>
+    inline auto UTFConverter::Convert (span<const char8_t> source, span<char16_t> target, mbstate_t* multibyteConversionState) const -> ConversionResult
+        requires (is_same_v<SRC_T, char8_t> and (is_same_v<TRG_T, char16_t> or is_same_v<TRG_T, char32_t>))
+    {
+        Require ((target.size () >= ComputeTargetBufferSize<char16_t> (source)));
+        auto result = ConvertQuietly (source, target, multibyteConversionState);
+        ThrowIf_ (result.fStatus);
+        return result; // slice
+    }
     template <typename TO, typename FROM>
     inline TO UTFConverter::Convert (const FROM& from) const
         requires ((is_same_v<TO, string> or is_same_v<TO, wstring> or is_same_v<TO, u8string> or is_same_v<TO, u16string> or is_same_v<TO, u32string>) and
@@ -303,20 +288,20 @@ namespace Stroika::Foundation::Characters {
         Require ((target.size () >= ComputeTargetBufferSize<TRG_T> (source)));
         using PRIMITIVE_SRC_T = typename decltype (this->ConvertToPrimitiveSpan_ (source))::value_type;
         using PRIMITIVE_TRG_T = typename decltype (this->ConvertToPrimitiveSpan_ (target))::value_type;
-        if constexpr (is_same_v<PRIMITIVE_SRC_T,PRIMITIVE_TRG_T>) {
+        if constexpr (is_same_v<PRIMITIVE_SRC_T, PRIMITIVE_TRG_T>) {
             copy (source.begin (), source.end (), target.data ());
             return ConversionResultWithStatus{{.fSourceConsumed = source.size (), .fTargetProduced = source.size ()}, ConversionStatusFlag::ok};
         }
-        else if constexpr (is_same_v<SRC_T,Character_Latin1>) {
-         // ALL TRG_T (but maybe ASCII?) have Character_Latin1 as a strict subset so simply copy
-            copy (source.begin (), source.end (), target.data ());
-             return ConversionResultWithStatus{{.fSourceConsumed = source.size (), .fTargetProduced = source.size ()}, ConversionStatusFlag::ok};
-       }
-        else if constexpr (is_same_v<TRG_T,Character_Latin1>) {
-         // ALL TRG_T (but maybe ASCII?) have Character_Latin1 as a strict subset so simply copy
+        else if constexpr (is_same_v<SRC_T, Character_Latin1>) {
+            // ALL TRG_T (but maybe ASCII?) have Character_Latin1 as a strict subset so simply copy
             copy (source.begin (), source.end (), target.data ());
             return ConversionResultWithStatus{{.fSourceConsumed = source.size (), .fTargetProduced = source.size ()}, ConversionStatusFlag::ok};
-         }
+        }
+        else if constexpr (is_same_v<TRG_T, Character_Latin1>) {
+            // ALL TRG_T (but maybe ASCII?) have Character_Latin1 as a strict subset so simply copy
+            copy (source.begin (), source.end (), target.data ());
+            return ConversionResultWithStatus{{.fSourceConsumed = source.size (), .fTargetProduced = source.size ()}, ConversionStatusFlag::ok};
+        }
         else {
             switch (Private_::ValueOf_ (fUsingOptions.fPreferredImplementation)) {
                 case Options::Implementation::eStroikaPortable: {
@@ -345,22 +330,12 @@ namespace Stroika::Foundation::Characters {
             return ConvertQuietly_StroikaPortable_ (ConvertToPrimitiveSpan_ (source), ConvertToPrimitiveSpan_ (target)); // default if preferred not available
         }
     }
-    inline auto UTFConverter::ConvertQuietly (span<const char8_t> source, span<char16_t> target, mbstate_t* multibyteConversionState) const -> ConversionResultWithStatus
+    template <Character_CompatibleIsh SRC_T, Character_CompatibleIsh TRG_T>
+    inline auto UTFConverter::ConvertQuietly (span<const SRC_T> source, span<TRG_T> target,
+                                                                        mbstate_t* multibyteConversionState) const->ConversionResultWithStatus
+        requires (is_same_v<SRC_T, char8_t> and (is_same_v<TRG_T, char16_t> or is_same_v<TRG_T, char32_t>))
     {
-        Require ((target.size () >= ComputeTargetBufferSize<char16_t> (source)));
-        RequireNotNull (multibyteConversionState);
-        switch (Private_::ValueOf_ (fUsingOptions.fPreferredImplementation)) {
-            case Options::Implementation::eCodeCVT: {
-                return ConvertQuietly_codeCvt_ (source, target, multibyteConversionState);
-            }
-            default: {
-                return ConvertQuietly_StroikaPortable_ (source, target); // default if preferred not available
-            }
-        }
-    }
-    inline auto UTFConverter::ConvertQuietly (span<const char8_t> source, span<char32_t> target, mbstate_t* multibyteConversionState) const -> ConversionResultWithStatus
-    {
-        Require ((target.size () >= ComputeTargetBufferSize<char32_t> (source)));
+        Require ((target.size () >= ComputeTargetBufferSize<TRG_T> (source)));
         RequireNotNull (multibyteConversionState);
         switch (Private_::ValueOf_ (fUsingOptions.fPreferredImplementation)) {
             case Options::Implementation::eCodeCVT: {
@@ -384,6 +359,7 @@ namespace Stroika::Foundation::Characters {
         ConversionResult           r = Convert (fakeSrc, span{fakeOut});
         return r.fTargetProduced;
     }
+
     template <Character_CompatibleIsh FromT>
     constexpr auto UTFConverter::ConvertToPrimitiveSpan_ (span<FromT> f) -> span<CompatibleT_<FromT>>
     {
@@ -422,6 +398,7 @@ namespace Stroika::Foundation::Characters {
         }
     }
 #endif
+
     inline void UTFConverter::ThrowIf_ (ConversionStatusFlag cr)
     {
         switch (cr) {
@@ -431,6 +408,7 @@ namespace Stroika::Foundation::Characters {
                 Throw_ (cr);
         }
     }
+
 #if __has_include("boost/locale/encoding_utf.hpp")
     inline auto UTFConverter::ConvertQuietly_boost_locale_ (span<const char8_t> source, const span<char16_t> target) -> ConversionResultWithStatus
     {
@@ -455,8 +433,6 @@ namespace Stroika::Foundation::Characters {
             }
        }
 
-
-
         // do something more like this loop/inserter stuff
         std::basic_string<CharOut> result;
                 result.reserve(end-begin);
@@ -475,7 +451,6 @@ namespace Stroika::Foundation::Characters {
                 }
                 return result;
 #endif
-
         //tmphack to test
         return ConversionResultWithStatus{{0, 0}, ConversionStatusFlag::ok};
     }

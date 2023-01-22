@@ -117,7 +117,7 @@ namespace Stroika::Foundation::Characters {
 
     public:
         /*
-         *  Quickly compute the buffer size needed for a call to Convert
+         *  Quickly compute the buffer size needed for a call to Convert (or ConvertSpan)
          *
          *  This will frequently (greatly) over-estimate the amount of space needed but it will always produce a sufficient answer without much computation.
          *
@@ -140,37 +140,20 @@ namespace Stroika::Foundation::Characters {
 
     public:
         /**
-         *  Check if each character in the span fits in a 1-byte (standard UNICODE) encoding
-         */
-        template <Character_CompatibleIsh CHAR_T>
-        static constexpr bool AllFitsInSingleByteCharLatin1Encoding (span<const CHAR_T> s) noexcept;
-
-    public:
-        /**
-         *  Check if each character in the span fits in a 2-byte encoding (ie no characters surrogate pairs)
+         *  Check if each character in the span fits in a 2-byte encoding (ie no UTF-16 surrogate pairs)
          */
         template <Character_CompatibleIsh CHAR_T>
         static constexpr bool AllFitsInTwoByteEncoding (span<const CHAR_T> s) noexcept;
 
     public:
         /**
-         *  Result of Convert() call - saying how much of the source was consumed, and how many units of the target were produced.
-         *  units depend on the call, char8_ts, or char16_ts, or char32_ts.
-         */
-        struct ConversionResult {
-            size_t fSourceConsumed{};
-            size_t fTargetProduced{};
-        };
-
-    public:
-        /**
-         *  \brief Convert between UTF-N encoded (including the special case of Character_ASCII, and Character_Latin1) strings (e.g. UTF8 to UTF32), throw on failure, resulting span<>.
+         *  \brief Convert between UTF-N encoded (including the special case of Character_ASCII, and Character_Latin1) character spans (e.g. UTF8 to UTF32), throw on failure, resulting span<>.
          * 
          *  Compared with the Convert () API, this loses information (number of source characters consumed). 
          *  Not a general purpose API. But very frequently this is all you need, for the next stage, a new span, 
          *  and for that case, this saves a little typing.
          * 
-         *  NOTE - the returned span is ALWAYS (not necessarily propper) sub-span of its 'target' argument
+         *  NOTE - the returned span is ALWAYS (not necessarily proper) sub-span of its 'target' argument
          *
          *  \par Example Usage
          *      \code
@@ -188,7 +171,17 @@ namespace Stroika::Foundation::Characters {
 
     public:
         /**
-         *  \brief Convert between UTF-N encoded strings (including the special case of Character_ASCII, and Character_Latin1) (e.g. UTF8 to UTF32), throw on failure
+         *  Result of Convert() call - saying how much of the source was consumed, and how many units of the target were produced.
+         *  units depend on the call, char8_ts, or char16_ts, or char32_ts.
+         */
+        struct ConversionResult {
+            size_t fSourceConsumed{};
+            size_t fTargetProduced{};
+        };
+
+    public:
+        /**
+         *  \brief Convert between UTF-N encoded strings/spans (including the special case of Character_ASCII, and Character_Latin1) (e.g. UTF8 to UTF32), throw on failure
          * 
          *  For overloads taking a target span:
          *      \req size of target span must be at least as large as specified by ComputeTargetBufferSize
@@ -229,29 +222,9 @@ namespace Stroika::Foundation::Characters {
         nonvirtual ConversionResult Convert (span<const SRC_T> source, span<TRG_T> target) const;
         template <Character_CompatibleIsh SRC_T, Character_CompatibleIsh TRG_T>
         nonvirtual ConversionResult Convert (span<SRC_T> source, span<TRG_T> target) const;
-
-#if 0
-        template <Character_IsBasicUnicodeCodePoint CHAR_T>
-        nonvirtual ConversionResult Convert (span<const CHAR_T> source, span<Character_Latin1> target) const
-        {
-            // ALL these have Character_Latin1 as a strict subset so simply copy
-            Require (source.size () <= target.size ());
-            copy (source.begin (), source.end (), target.data ());
-            return ConversionResult{.fSourceConsumed = source.size (), .fTargetProduced = source.size ()};
-        }
-        template <Character_IsBasicUnicodeCodePoint CHAR_T>
-        nonvirtual ConversionResult Convert (span<const Character_Latin1> source, span<CHAR_T> target) const
-        {
-            // ALL these have Character_Latin1 as a strict subset so simply copy
-            Require (source.size () <= target.size ());
-            copy (source.begin (), source.end (), target.data ());
-            return ConversionResult{.fSourceConsumed = source.size (), .fTargetProduced = source.size ()};
-        }
-        #endif
-
-        nonvirtual ConversionResult Convert (span<const char8_t> source, span<char16_t> target, mbstate_t* multibyteConversionState) const;
-        nonvirtual ConversionResult Convert (span<const char8_t> source, span<char32_t> target, mbstate_t* multibyteConversionState) const;
-
+        template <Character_CompatibleIsh SRC_T, Character_CompatibleIsh TRG_T>
+        nonvirtual ConversionResult Convert (span<const char8_t> source, span<char16_t> target, mbstate_t* multibyteConversionState) const
+            requires (is_same_v<SRC_T, char8_t> and (is_same_v<TRG_T, char16_t> or is_same_v<TRG_T, char32_t>));
         template <typename TO, typename FROM>
         nonvirtual TO Convert (const FROM& from) const
             requires ((is_same_v<TO, string> or is_same_v<TO, wstring> or is_same_v<TO, u8string> or is_same_v<TO, u16string> or is_same_v<TO, u32string>) and
@@ -279,7 +252,7 @@ namespace Stroika::Foundation::Characters {
 
     public:
         /**
-         *  \brief Convert UTF encoded (char8_t, char16_t, char32_t, char, wchar_t, Character_ASCII, Character_Latin1) characters to from each other without exceptions
+         *  \brief Convert UTF encoded (char8_t, char16_t, char32_t, char, wchar_t, Character_ASCII, Character_Latin1) characters to from each other without format exceptions (still may raise memory exceptions if not enuf space)
          * 
          *  \see Convert () above for details. This only differs from Convert, in that it returns a result flag instead
          *       of throwing on errors.
@@ -291,8 +264,9 @@ namespace Stroika::Foundation::Characters {
         template <Character_CompatibleIsh SRC_T, Character_CompatibleIsh TRG_T>
         nonvirtual ConversionResultWithStatus ConvertQuietly (span<const SRC_T> source, span<TRG_T> target) const
             requires (not is_const_v<TRG_T>);
-        nonvirtual ConversionResultWithStatus ConvertQuietly (span<const char8_t> source, span<char16_t> target, mbstate_t* multibyteConversionState) const;
-        nonvirtual ConversionResultWithStatus ConvertQuietly (span<const char8_t> source, span<char32_t> target, mbstate_t* multibyteConversionState) const;
+        template <Character_CompatibleIsh SRC_T, Character_CompatibleIsh TRG_T>
+        nonvirtual ConversionResultWithStatus ConvertQuietly (span<const SRC_T> source, span<TRG_T> target, mbstate_t* multibyteConversionState) const
+            requires (is_same_v<SRC_T, char8_t> and (is_same_v<TRG_T, char16_t> or is_same_v<TRG_T, char32_t>));
 
     public:
         /**
