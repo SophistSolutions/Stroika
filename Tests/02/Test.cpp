@@ -1446,6 +1446,29 @@ namespace {
 }
 
 namespace {
+    void Test50a_UnicodeStringLiterals_() 
+    {
+        String a = L"45 \u00b5s";
+
+
+        {
+
+            Memory::StackBuffer<wchar_t> ignored1;
+            auto                         rhsSpan = a.GetData (&ignored1);       
+            VerifyTestResult (rhsSpan.size () == 5);
+            int aaa = 3;
+        }
+        String b;
+        b += a;
+        VerifyTestResult (a == b);
+
+
+       String aaaa = L"45 \u00b5s";
+        VerifyTestResult (aaaa.size () == 5);
+    }
+}
+
+namespace {
     void Test50_Utf8Conversions_ ()
     {
         Debug::TraceContextBumper ctx{L"Test50_Utf8Conversions_"};
@@ -1770,6 +1793,7 @@ namespace {
         Test47_SubString_ ();
         Test48_ToString_ ();
         Test49_SetOfStringCTORIssue_ ();
+        Test50a_UnicodeStringLiterals_ ();
         Test50_Utf8Conversions_ ();
         Test51_Utf16Conversions_ ();
         Test52_Utf32Conversions_ ();
