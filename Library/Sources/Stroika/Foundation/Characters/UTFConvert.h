@@ -230,6 +230,7 @@ namespace Stroika::Foundation::Characters {
         template <Character_CompatibleIsh SRC_T, Character_CompatibleIsh TRG_T>
         nonvirtual ConversionResult Convert (span<SRC_T> source, span<TRG_T> target) const;
 
+#if 0
         template <Character_IsBasicUnicodeCodePoint CHAR_T>
         nonvirtual ConversionResult Convert (span<const CHAR_T> source, span<Character_Latin1> target) const
         {
@@ -246,6 +247,7 @@ namespace Stroika::Foundation::Characters {
             copy (source.begin (), source.end (), target.data ());
             return ConversionResult{.fSourceConsumed = source.size (), .fTargetProduced = source.size ()};
         }
+        #endif
 
         nonvirtual ConversionResult Convert (span<const char8_t> source, span<char16_t> target, mbstate_t* multibyteConversionState) const;
         nonvirtual ConversionResult Convert (span<const char8_t> source, span<char32_t> target, mbstate_t* multibyteConversionState) const;
