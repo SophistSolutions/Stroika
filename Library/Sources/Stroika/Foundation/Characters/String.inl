@@ -183,7 +183,7 @@ namespace Stroika::Foundation::Characters {
                     Memory::StackBuffer<Character_Latin1> buf{Memory::eUninitialized, s.size ()};
 #if qCompilerAndStdLib_spanOfContainer_Buggy
                     Private_::CopyAsLatin1Characters_ (s, span{buf.data (), buf.size ()});
-                    return mk_nocheck_ (span<const Character_ASCII>{buf.data (), buf.size ()});
+                    return mk_nocheck_ (span<const Character_Latin1>{buf.data (), buf.size ()});
 #else
                     Private_::CopyAsLatin1Characters_ (s, span{buf});
                     return mk_nocheck_ (span<const Character_Latin1>{buf});
