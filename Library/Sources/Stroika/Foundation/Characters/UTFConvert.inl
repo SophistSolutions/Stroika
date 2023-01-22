@@ -46,7 +46,7 @@ namespace Stroika::Foundation::Characters {
     {
         if (fUsingOptions.fPreferredImplementation == nullopt) {
 #if qPlatform_Windows
-            fUsingOptions.fPreferredImplementation = Options::Implementation::eWin32Wide2FromMultibyte;
+            fUsingOptions.fPreferredImplementation = Options::Implementation::eWindowsAPIWide2FromMultibyte;
 #else
             fUsingOptions.fPreferredImplementation = Options::Implementation::eStroikaPortable;
 #endif
@@ -253,6 +253,7 @@ namespace Stroika::Foundation::Characters {
         }
         return true;
     }
+
     template <Character_CompatibleIsh SRC_T, Character_CompatibleIsh TRG_T>
     inline auto UTFConverter::Convert (span<const SRC_T> source, span<TRG_T> target) const -> ConversionResult
     {
@@ -261,33 +262,11 @@ namespace Stroika::Foundation::Characters {
         ThrowIf_ (result.fStatus);
         return result; // slice
     }
-#if 0
-    template <Character_CompatibleIsh SRC_T, Character_CompatibleIsh TRG_T>
-    inline auto UTFConverter::Convert (span<const SRC_T> source, span<TRG_T> target) const -> ConversionResult
-        requires (not is_const_v<TRG_T>)
-    {
-        Require ((target.size () >= ComputeTargetBufferSize<TRG_T> (source)));
-        if constexpr (sizeof (SRC_T) == sizeof (TRG_T)) {
-            auto srcB = as_bytes (source);
-            if (srcB.size () != 0) {
-                ::memcpy (target.data (), srcB.data (), srcB.size ());
-            }
-            return ConversionResult{source.size (), source.size ()}; // not a typo - target buffer allowed to be larger than what copied
-        }
-        return Convert (ConvertCompatibleSpan_ (source), ConvertCompatibleSpan_ (target));
-    }
-#endif
-
-#if 0
-
     template <Character_CompatibleIsh SRC_T, Character_CompatibleIsh TRG_T>
     inline auto UTFConverter::Convert (span<SRC_T> source, span<TRG_T> target) const -> ConversionResult
-        requires (not is_const_v<TRG_T>)
     {
         return Convert (Memory::ConstSpan (source), target);
     }
-#endif
-
     template <typename TO, typename FROM>
     inline TO UTFConverter::Convert (const FROM& from) const
         requires ((is_same_v<TO, string> or is_same_v<TO, wstring> or is_same_v<TO, u8string> or is_same_v<TO, u16string> or is_same_v<TO, u32string>) and
@@ -317,116 +296,6 @@ namespace Stroika::Foundation::Characters {
         return ConvertSpan (Memory::ConstSpan (source), target);
     }
 
-#if 0
-    inline auto UTFConverter::ConvertQuietly (span<const char8_t> source, span<char16_t> target) const -> ConversionResultWithStatus
-    {
-        Require ((target.size () >= ComputeTargetBufferSize<char16_t> (source)));
-        switch (Private_::ValueOf_ (fUsingOptions.fPreferredImplementation)) {
-#if qPlatform_Windows
-            case Options::Implementation::eWin32Wide2FromMultibyte: {
-                return ConvertQuietly_Win32_ (source, target);
-            }
-#endif
-#if __has_include("boost/locale/encoding_utf.hpp")
-            case Options::Implementation::eBoost_Locale: {
-                return ConvertQuietly_boost_locale_ (source, target);
-            }
-#endif
-            case Options::Implementation::eStroikaPortable: {
-                return ConvertQuietly_StroikaPortable_ (source, target);
-            }
-            case Options::Implementation::eCodeCVT: {
-                return ConvertQuietly_codeCvt_ (source, target, nullptr);
-            }
-            default: {
-                return ConvertQuietly_StroikaPortable_ (source, target); // default if preferred not available
-            }
-        }
-    }
-    inline auto UTFConverter::ConvertQuietly (span<const char16_t> source, span<char8_t> target) const -> ConversionResultWithStatus
-    {
-        Require ((target.size () >= ComputeTargetBufferSize<char8_t> (source)));
-        switch (Private_::ValueOf_ (fUsingOptions.fPreferredImplementation)) {
-#if qPlatform_Windows
-            case Options::Implementation::eWin32Wide2FromMultibyte: {
-                return ConvertQuietly_Win32_ (source, target);
-            }
-#endif
-            case Options::Implementation::eStroikaPortable: {
-                return ConvertQuietly_StroikaPortable_ (source, target);
-            }
-            case Options::Implementation::eCodeCVT: {
-                return ConvertQuietly_codeCvt_ (source, target);
-            }
-            default: {
-                return ConvertQuietly_StroikaPortable_ (source, target); // default if preferred not available
-            }
-        }
-    }
-    inline auto UTFConverter::ConvertQuietly (span<const char8_t> source, span<char32_t> target) const -> ConversionResultWithStatus
-    {
-        Require ((target.size () >= ComputeTargetBufferSize<char32_t> (source)));
-        switch (Private_::ValueOf_ (fUsingOptions.fPreferredImplementation)) {
-            case Options::Implementation::eStroikaPortable: {
-                return ConvertQuietly_StroikaPortable_ (source, target);
-            }
-            case Options::Implementation::eCodeCVT: {
-                return ConvertQuietly_codeCvt_ (source, target, nullptr);
-            }
-            default: {
-                return ConvertQuietly_StroikaPortable_ (source, target); // default if preferred not available
-            }
-        }
-    }
-    inline auto UTFConverter::ConvertQuietly (span<const char32_t> source, span<char8_t> target) const -> ConversionResultWithStatus
-    {
-        Require ((target.size () >= ComputeTargetBufferSize<char8_t> (source)));
-        switch (Private_::ValueOf_ (fUsingOptions.fPreferredImplementation)) {
-            case Options::Implementation::eStroikaPortable: {
-                return ConvertQuietly_StroikaPortable_ (source, target);
-            }
-            case Options::Implementation::eCodeCVT: {
-                return ConvertQuietly_codeCvt_ (source, target);
-            }
-            default: {
-                return ConvertQuietly_StroikaPortable_ (source, target); // default if preferred not available
-            }
-        }
-    }
-    inline auto UTFConverter::ConvertQuietly (span<const char16_t> source, span<char32_t> target) const -> ConversionResultWithStatus
-    {
-        Require ((target.size () >= ComputeTargetBufferSize<char32_t> (source)));
-        switch (Private_::ValueOf_ (fUsingOptions.fPreferredImplementation)) {
-            case Options::Implementation::eStroikaPortable: {
-                return ConvertQuietly_StroikaPortable_ (source, target);
-            }
-#if 0
-            case Options::Implementation::eCodeCVT: {
-                return ConvertQuietly_codeCvt_ (source, target, nullptr);
-            }
-#endif
-            default: {
-                return ConvertQuietly_StroikaPortable_ (source, target); // default if preferred not available
-            }
-        }
-    }
-    inline auto UTFConverter::ConvertQuietly (span<const char32_t> source, span<char16_t> target) const -> ConversionResultWithStatus
-    {
-        Require ((target.size () >= ComputeTargetBufferSize<char16_t> (source)));
-        switch (Private_::ValueOf_ (fUsingOptions.fPreferredImplementation)) {
-            case Options::Implementation::eStroikaPortable: {
-                return ConvertQuietly_StroikaPortable_ (source, target);
-            }
-#if 0
-            case Options::Implementation::eCodeCVT: {
-                return ConvertQuietly_codeCvt_ (source, target);
-            }
-#endif
-            default: {
-                return ConvertQuietly_StroikaPortable_ (source, target); // default if preferred not available
-            }
-        }
-    }
     inline auto UTFConverter::ConvertQuietly (span<const char8_t> source, span<char16_t> target, mbstate_t* multibyteConversionState) const -> ConversionResultWithStatus
     {
         Require ((target.size () >= ComputeTargetBufferSize<char16_t> (source)));
@@ -453,8 +322,6 @@ namespace Stroika::Foundation::Characters {
             }
         }
     }
-#endif
-
     template <Character_CompatibleIsh SRC_T, Character_CompatibleIsh TRG_T>
     inline auto UTFConverter::ConvertQuietly (span<const SRC_T> source, span<TRG_T> target) const -> ConversionResultWithStatus
         requires (not is_const_v<TRG_T>)
@@ -468,20 +335,29 @@ namespace Stroika::Foundation::Characters {
         else {
             switch (Private_::ValueOf_ (fUsingOptions.fPreferredImplementation)) {
                 case Options::Implementation::eStroikaPortable: {
-                    return this->ConvertQuietly_StroikaPortable_ (ConvertToPrimitiveSpan_ (source), ConvertToPrimitiveSpan_ (target));
+                    return ConvertQuietly_StroikaPortable_ (ConvertToPrimitiveSpan_ (source), ConvertToPrimitiveSpan_ (target));
                 }
+#if qPlatform_Windows
+                case Options::Implementation::eWindowsAPIWide2FromMultibyte: {
+                    if constexpr ((sizeof (SRC_T) == 1 and sizeof (TRG_T) == 2) or (sizeof (SRC_T) == 2 and sizeof (TRG_T) == 1)) {
+                        return ConvertQuietly_Win32_ (ConvertToPrimitiveSpan_ (source), ConvertToPrimitiveSpan_ (target));
+                    }
+                }
+#endif
 #if __has_include("boost/locale/encoding_utf.hpp")
                 case Options::Implementation::eBoost_Locale: {
                     if constexpr (is_same_v<SRC_T, char8_t> and is_same_v<TRG_T, char16_t>) {
-                        return this->ConvertQuietly_boost_locale_ (ConvertToPrimitiveSpan_ (source), ConvertToPrimitiveSpan_ (target));
+                        return ConvertQuietly_boost_locale_ (ConvertToPrimitiveSpan_ (source), ConvertToPrimitiveSpan_ (target));
                     }
                 }
 #endif
                 case Options::Implementation::eCodeCVT: {
-                    //tmphack disable  return ConvertQuietly_codeCvt_ (ConvertToPrimitiveSpan_ (source), ConvertToPrimitiveSpan_ (target));
+                    if constexpr ((is_same_v<SRC_T, char16_t> and is_same_v<SRC_T, char32_t>)and is_same_v<TRG_T, char8_t>) {
+                        return ConvertQuietly_codeCvt_ (source, target, nullptr);
+                    }
                 }
             }
-            return this->ConvertQuietly_StroikaPortable_ (this->ConvertToPrimitiveSpan_ (source), this->ConvertToPrimitiveSpan_ (target)); // default if preferred not available
+            return ConvertQuietly_StroikaPortable_ (ConvertToPrimitiveSpan_ (source), ConvertToPrimitiveSpan_ (target)); // default if preferred not available
         }
     }
 

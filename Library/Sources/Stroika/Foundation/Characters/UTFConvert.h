@@ -87,7 +87,7 @@ namespace Stroika::Foundation::Characters {
 
 #if qPlatform_Windows
                 // Seems fastest for windows
-                eWin32Wide2FromMultibyte,
+                eWindowsAPIWide2FromMultibyte,
 #endif
 
                 // Deprecated by stdc++, and windows implementation appears quite slow, but only one supporting mbstate_t
@@ -204,10 +204,11 @@ namespace Stroika::Foundation::Characters {
          *          wstring wide_fred = UTFConverter::kThe.Convert<wstring> (u8"fred");
          *          u16string u16_fred = UTFConverter::kThe.Convert<u16string> (u32"fred");
          *      \endcode
-         *
          */
         template <Character_CompatibleIsh SRC_T, Character_CompatibleIsh TRG_T>
         nonvirtual ConversionResult Convert (span<const SRC_T> source, span<TRG_T> target) const;
+        template <Character_CompatibleIsh SRC_T, Character_CompatibleIsh TRG_T>
+        nonvirtual ConversionResult Convert (span<SRC_T> source, span<TRG_T> target) const;
 
         template <Character_IsBasicUnicodeCodePoint CHAR_T>
         nonvirtual ConversionResult Convert (span<const CHAR_T> source, span<Character_Latin1> target) const
@@ -225,7 +226,6 @@ namespace Stroika::Foundation::Characters {
             copy (source.begin (), source.end (), target.data ());
             return ConversionResult{.fSourceConsumed = source.size (), .fTargetProduced = source.size ()};
         }
-
 
         nonvirtual ConversionResult Convert (span<const char8_t> source, span<char16_t> target, mbstate_t* multibyteConversionState) const;
         nonvirtual ConversionResult Convert (span<const char8_t> source, span<char32_t> target, mbstate_t* multibyteConversionState) const;
@@ -362,7 +362,6 @@ namespace Stroika::Foundation::Characters {
         static ConversionResultWithStatus ConvertQuietly_StroikaPortable_ (span<const char32_t> source, span<char16_t> target);
         static ConversionResultWithStatus ConvertQuietly_StroikaPortable_ (span<const char32_t> source, span<char8_t> target);
         static ConversionResultWithStatus ConvertQuietly_StroikaPortable_ (span<const char16_t> source, span<char8_t> target);
-
 
 #if __has_include("boost/locale/encoding_utf.hpp")
     private:
