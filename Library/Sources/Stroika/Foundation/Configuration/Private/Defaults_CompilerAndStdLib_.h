@@ -1039,7 +1039,12 @@ In file included from ../Characters/StringBuilder.h:273,
    */
 #ifndef qCompilerAndStdLib_template_Requires_templateDeclarationMatchesOutOfLine_Buggy
 
-#if defined(__GNUC__) && !defined(__clang__)
+#if defined(_MSC_VER)
+// NOTE - not always buggy on MSFT - depends on chosen syntax, but the one I think most likely right doesnt work on vis studio so blame them
+// still buggy in _MSC_VER_2k22_17Pt4_
+#define qCompilerAndStdLib_template_Requires_templateDeclarationMatchesOutOfLine_Buggy                                                     \
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k22_17Pt4_)
+#elif defined(__GNUC__) && !defined(__clang__)
 // VERIFIED BROKEN IN GCC 12
 #define qCompilerAndStdLib_template_Requires_templateDeclarationMatchesOutOfLine_Buggy                                                     \
     CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ <= 12)
