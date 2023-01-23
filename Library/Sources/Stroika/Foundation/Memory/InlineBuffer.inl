@@ -236,7 +236,13 @@ namespace Stroika::Foundation::Memory {
     template <typename T, size_t BUF_SIZE>
     constexpr size_t InlineBuffer<T, BUF_SIZE>::capacity () const noexcept
     {
-        return UsingInlinePreallocatedBuffer_ () ? BUF_SIZE : fCapacityOfFreeStoreAllocation_; // @see class Design Note
+        // @see class Design Note
+        if (UsingInlinePreallocatedBuffer_ ()) [[likely]] {
+            return BUF_SIZE;
+        }
+        else {
+            return fCapacityOfFreeStoreAllocation_;
+        }
     }
     template <typename T, size_t BUF_SIZE>
     inline void InlineBuffer<T, BUF_SIZE>::reserve (size_t newCapacity, bool atLeast)
