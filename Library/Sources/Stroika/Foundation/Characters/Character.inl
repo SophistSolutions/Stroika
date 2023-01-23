@@ -18,7 +18,7 @@
 namespace Stroika::Foundation::Characters {
 
     namespace Private_ {
-        template <Character_CompatibleIsh CHAR_T>
+        template <Character_ConvertibleToUNICODE CHAR_T>
         constexpr strong_ordering Compare_CS_ (span<const CHAR_T> lhs, span<const CHAR_T> rhs)
         {
             size_t        lLen   = lhs.size ();
@@ -61,7 +61,7 @@ namespace Stroika::Foundation::Characters {
             }
             return Common::CompareResultNormalizer (static_cast<ptrdiff_t> (lLen) - static_cast<ptrdiff_t> (rLen));
         }
-        template <Character_CompatibleIsh CHAR_T>
+        template <Character_ConvertibleToUNICODE CHAR_T>
         constexpr strong_ordering Compare_CI_ (span<const CHAR_T> lhs, span<const CHAR_T> rhs)
         {
             size_t        lLen   = lhs.size ();
@@ -144,7 +144,7 @@ namespace Stroika::Foundation::Characters {
         return GetCharacterCode ();
     }
     constexpr bool Character::IsASCII () const noexcept { return 0x0 <= fCharacterCode_ and fCharacterCode_ <= 0x7f; }
-    template <Character_CompatibleIsh CHAR_T>
+    template <Character_ConvertibleToUNICODE CHAR_T>
     constexpr bool Character::IsASCII (span<const CHAR_T> fromS) noexcept
     {
         // note - tried to simplify with conditional_t but both sides evaluated
@@ -184,7 +184,7 @@ namespace Stroika::Foundation::Characters {
         CheckASCII (Memory::ConstSpan (s));
     }
     constexpr bool Character::IsLatin1 () const noexcept { return 0x0 <= fCharacterCode_ and fCharacterCode_ <= 0xff; }
-    template <Character_CompatibleIsh CHAR_T>
+    template <Character_ConvertibleToUNICODE CHAR_T>
     constexpr bool Character::IsLatin1 (span<const CHAR_T> fromS) noexcept
     {
         // note - tried to simplify with conditional_t but both sides evaluated
@@ -208,19 +208,19 @@ namespace Stroika::Foundation::Characters {
         }
         return true;
     }
-    template <Character_CompatibleIsh CHAR_T>
+    template <Character_ConvertibleToUNICODE CHAR_T>
     inline void Character::CheckLatin1 (span<const CHAR_T> s)
     {
         if (not IsLatin1 (s)) {
             Private_::ThrowNotIsLatin1_ ();
         }
     }
-    template <Character_CompatibleIsh CHAR_T>
+    template <Character_ConvertibleToUNICODE CHAR_T>
     inline void Character::CheckLatin1 (span<CHAR_T> s)
     {
         CheckLatin1 (Memory::ConstSpan (s));
     }
-    template <Character_CompatibleIsh CHAR_T>
+    template <Character_ConvertibleToUNICODE CHAR_T>
     constexpr auto Character::IsASCIIOrLatin1 (span<const CHAR_T> s) noexcept -> ASCIIOrLatin1Result
     {
         constexpr auto      eNone   = ASCIIOrLatin1Result::eNone;
@@ -403,7 +403,7 @@ namespace Stroika::Foundation::Characters {
         }
         return true;
     }
-    template <Character_CompatibleIsh CHAR_T>
+    template <Character_ConvertibleToUNICODE CHAR_T>
     constexpr strong_ordering Character::Compare (span<const CHAR_T> lhs, span<const CHAR_T> rhs, CompareOptions co) noexcept
     {
         Require (co == CompareOptions::eWithCase or co == CompareOptions::eCaseInsensitive);

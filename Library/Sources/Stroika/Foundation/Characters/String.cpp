@@ -52,7 +52,7 @@ namespace {
      *              StringRepHelperAllFitInSize_::Rep<char32_t> for anything else - this always works
      */
     struct StringRepHelperAllFitInSize_ : String {
-        template <Character_IsUnicodeCodePointOrPlainCharOrLatin1Char CHAR_T>
+        template <Character_ConvertibleToUNICODE CHAR_T>
         struct Rep : public _IRep {
         private:
             using inherited = _IRep;
@@ -361,7 +361,7 @@ namespace {
      *  \note   This class may assure nul-terminated (kAddNullTerminator_), and so 'capacity' always at least one greater than length.
      */
     struct DynamicallyAllocatedString : StringRepHelperAllFitInSize_ {
-        template <Character_IsUnicodeCodePointOrPlainCharOrLatin1Char CHAR_T>
+        template <Character_ConvertibleToUNICODE CHAR_T>
         struct Rep final : public StringRepHelperAllFitInSize_::Rep<CHAR_T>, public Memory::UseBlockAllocationIfAppropriate<Rep<CHAR_T>> {
         private:
             using inherited = StringRepHelperAllFitInSize_::Rep<CHAR_T>;
@@ -438,7 +438,7 @@ namespace {
      *  for better memory allocation performance, and more importantly, better locality of data (more cpu cache friendly)
      */
     struct FixedCapacityInlineStorageString_ : StringRepHelperAllFitInSize_ {
-        template <Character_IsUnicodeCodePointOrPlainCharOrLatin1Char CHAR_T, size_t CAPACITY>
+        template <Character_ConvertibleToUNICODE CHAR_T, size_t CAPACITY>
         struct Rep final : public StringRepHelperAllFitInSize_::Rep<CHAR_T>,
                            public Memory::UseBlockAllocationIfAppropriate<Rep<CHAR_T, CAPACITY>> {
         private:

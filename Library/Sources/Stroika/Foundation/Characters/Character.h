@@ -93,8 +93,17 @@ namespace Stroika::Foundation::Characters {
     concept Character_IsUnicodeCodePoint = Character_IsBasicUnicodeCodePoint<T> or is_same_v<remove_cv_t<T>, wchar_t>;
 
     /**
-    * @todo REVIEW THIS 
-     *  \brief check if T is char8_t, char16_t, char32_t (Character_IsBasicUnicodeCodePoint) or wchar_t
+     *  \brief check if T is char8_t, char16_t, char32_t, wchar_t, or Character_ASCII (char)
+     *
+     * @todo REVIEW THIS do we need this; used in many places, mostly float conversion logic. COULD POSSIBLE extend
+     *       that logic to include Character_Latin1 and then switch to another (more inclusive) concept
+     *
+     *  Character_IsUnicodeCodePointOrPlainChar:
+     *      o   char8_t             Character_IsBasicUnicodeCodePoint
+     *      o   char16_t            ""
+     *      o   char32_t            ""
+     *      o   wchar_t             added Character_IsUnicodeCodePoint
+     *      o   Character_ASCII     added here
      */
     template <typename T>
     concept Character_IsUnicodeCodePointOrPlainChar = Character_IsUnicodeCodePoint<T> or is_same_v<remove_cv_t<T>, Character_ASCII>;
@@ -102,14 +111,14 @@ namespace Stroika::Foundation::Characters {
     class Character;
 
     /**
-     *  \brief char8_t, char16_t, char32_t, wchar_t, Character - something where an array of these can be unambiguously converted to/from UNICODE string.
+     *  \brief characterish type where UNICODE string can be converted into array of these
      * 
-     *  Character_SafelyCompatible:
+     *  Character_ConvertibleFromUNICODE:
      *      o   char8_t         Character_IsBasicUnicodeCodePoint
      *      o   char16_t        ""
      *      o   char32_t        ""
      *      o   wchar_t         Character_IsUnicodeCodePoint
-     *      o   Character       added in Character_SafelyCompatible
+     *      o   Character       added in Character_ConvertibleFromUNICODE
      *  \note all these types are <= 4 bytes (size of char32_t)
      * 
      *  \note - Character_ASCII and Character_Latin1 are NOT included here becuase - though these strings
@@ -117,20 +126,20 @@ namespace Stroika::Foundation::Characters {
      *          not all UNICODE strings are ascii).
      */
     template <typename T>
-    concept Character_SafelyCompatible = Character_IsUnicodeCodePoint<T> or is_same_v<remove_cv_t<T>, Character>;
-    static_assert (Character_SafelyCompatible<char8_t>);
-    static_assert (Character_SafelyCompatible<char16_t>);
-    static_assert (Character_SafelyCompatible<char32_t>);
-    static_assert (Character_SafelyCompatible<wchar_t>);
-    //static_assert (Character_SafelyCompatible<Character>); true but not defined yet, so cannot assert here
-    static_assert (not Character_SafelyCompatible<Character_ASCII>);
-    static_assert (not Character_SafelyCompatible<Character_Latin1>);
+    concept Character_ConvertibleFromUNICODE = Character_IsUnicodeCodePoint<T> or is_same_v<remove_cv_t<T>, Character>;
+    static_assert (Character_ConvertibleFromUNICODE<char8_t>);
+    static_assert (Character_ConvertibleFromUNICODE<char16_t>);
+    static_assert (Character_ConvertibleFromUNICODE<char32_t>);
+    static_assert (Character_ConvertibleFromUNICODE<wchar_t>);
+    //static_assert (Character_ConvertibleFromUNICODE<Character>); true but not defined yet, so cannot assert here
+    static_assert (not Character_ConvertibleFromUNICODE<Character_ASCII>);
+    static_assert (not Character_ConvertibleFromUNICODE<Character_Latin1>);
 
     /**
-    * &&&& @todo CONSIDER LOSING THIS AND REPLACING WITH Character_CompatibleIsh but CAREFULLY REVIEWING EACH CASE
-    * &&& OR maybe merge wtih Character_SafelyCompatible. Muyst think through
+    * &&&& @todo CONSIDER LOSING THIS AND REPLACING WITH Character_ConvertibleToUNICODE but CAREFULLY REVIEWING EACH CASE
+    * &&& OR maybe merge wtih Character_ConvertibleFromUNICODE. Muyst think through
     * 
-     *  \brief Something that can be reasonably converted into a Unicode Character object (Character_SafelyCompatible<T> or T==char)
+     *  \brief Something that can be reasonably converted into a Unicode Character object (Character_ConvertibleFromUNICODE<T> or T==char)
      * 
      *  \note all these types are <= 4 bytes (size of char32_t)
      * 
@@ -138,52 +147,36 @@ namespace Stroika::Foundation::Characters {
      *        on this point).
      */
     template <typename T>
-    concept Character_Compatible = Character_SafelyCompatible<T> or is_same_v<remove_cv_t<T>, Character_ASCII>;
+    concept Character_Compatible = Character_ConvertibleFromUNICODE<T> or is_same_v<remove_cv_t<T>, Character_ASCII>;
     static_assert (not Character_Compatible<Character_Latin1>);
 
-#if 0
     /**
-    * @todo consider if we need this concept
-     */
-    template <typename T>
-    concept Character_IsBasicOrLatin1UnicodeCodePoint = Character_IsBasicUnicodeCodePoint<T> or is_same_v<remove_cv_t<T>, Character_Latin1>;
-#endif
-
-    /**
-    * && @todo maybe rename this Character_SafelyConvertibleToUNICODE
-    *   // like Character_SafelyCompatible but only one directional...
-    *   /// NO cuz of wehtehr we include Character - see Character_CompatibleIsh - maybe that should be renamed Character_SafelyConvertibleToUNICODE
-     */
-    template <typename T>
-    concept Character_IsUnicodeCodePointOrPlainCharOrLatin1Char =
-        Character_IsUnicodeCodePointOrPlainChar<T> or is_same_v<remove_cv_t<T>, Character_Latin1>;
-
-    /**
-    * 
-    * &&& @todo see Character_IsUnicodeCodePointOrPlainCharOrLatin1Char - maybe rename/refactor
-    * 
-     *  \brief Character_CompatibleIsh extends Character_Compatible with Character_Latin1
+     *  \brief Character_ConvertibleToUNICODE is any character type where array of them unambiguously convertible to UNICODE string
+     *
+     *  Character_ConvertibleToUNICODE:
+     *      o   char8_t             Character_ConvertibleFromUNICODE
+     *      o   char16_t            ""
+     *      o   char32_t            ""
+     *      o   wchar_t             ""
+     *      o   Character           ""
+     *      o   Character_ASCII     added
+     *      o   Character_Latin1    added
      * 
-     *  \note Character_CompatibleIsh means any 'basic character type' - size <= 4 bytes, which
+     *  \note Character_ConvertibleToUNICODE means any 'basic character type' - size <= 4 bytes, which
      *        could reasonably, in context (so with extra info), could be safely converted into
      *        a Character object.
      * 
-     *  Character_CompatibleIsh
-     *      o   char8_t                 Character_SafelyCompatible
-     *      o   char16_t                ""
-     *      o   char32_t                ""
-     *      o   wchar_t                 ""
-     *      o   Character_ASCII (char)  must be ASCII
-     *      o   Character_Latin1
      */
     template <typename T>
-    concept Character_CompatibleIsh = Character_Compatible<T> or is_same_v<remove_cv_t<T>, Character_Latin1>;
-    static_assert (Character_CompatibleIsh<char8_t>);
-    static_assert (Character_CompatibleIsh<char16_t>);
-    static_assert (Character_CompatibleIsh<char32_t>);
-    static_assert (Character_CompatibleIsh<wchar_t>);
-    static_assert (Character_CompatibleIsh<Character_ASCII>);
-    static_assert (Character_CompatibleIsh<Character_Latin1>);
+    concept Character_ConvertibleToUNICODE =
+        Character_ConvertibleFromUNICODE<T> or is_same_v<remove_cv_t<T>, Character_ASCII> or is_same_v<remove_cv_t<T>, Character_Latin1>;
+    static_assert (Character_ConvertibleToUNICODE<char8_t>);
+    static_assert (Character_ConvertibleToUNICODE<char16_t>);
+    static_assert (Character_ConvertibleToUNICODE<char32_t>);
+    static_assert (Character_ConvertibleToUNICODE<wchar_t>);
+    //static_assert (Character_ConvertibleToUNICODE<Character>); true but not defined yet, so cannot assert here
+    static_assert (Character_ConvertibleToUNICODE<Character_ASCII>);
+    static_assert (Character_ConvertibleToUNICODE<Character_Latin1>);
 
     /**
      *  \note <a href="Design Overview.md#Comparisons">Comparisons</a>:
@@ -235,7 +228,7 @@ namespace Stroika::Foundation::Characters {
          *  \brief Return true iff the given character (or all in span) is (are) in the ascii range [0..0x7f]
          */
         constexpr bool IsASCII () const noexcept;
-        template <Character_CompatibleIsh CHAR_T>
+        template <Character_ConvertibleToUNICODE CHAR_T>
         static constexpr bool IsASCII (span<const CHAR_T> s) noexcept;
 
     public:
@@ -260,7 +253,7 @@ namespace Stroika::Foundation::Characters {
          * 
          */
         constexpr bool IsLatin1 () const noexcept;
-        template <Character_CompatibleIsh CHAR_T>
+        template <Character_ConvertibleToUNICODE CHAR_T>
         static constexpr bool IsLatin1 (span<const CHAR_T> s) noexcept;
 
     public:
@@ -284,16 +277,16 @@ namespace Stroika::Foundation::Characters {
          *  \note, if CHAR_T == char8_t, then this will NEVER return Latin1. Its equivilent to
          *         IsASCII.
          */
-        template <Character_CompatibleIsh CHAR_T>
+        template <Character_ConvertibleToUNICODE CHAR_T>
         static constexpr ASCIIOrLatin1Result IsASCIIOrLatin1 (span<const CHAR_T> s) noexcept;
 
     public:
         /**
          *  \brief if not IsLatin1 (arg) throw RuntimeException...
          */
-        template <Character_CompatibleIsh CHAR_T>
+        template <Character_ConvertibleToUNICODE CHAR_T>
         static void CheckLatin1 (span<const CHAR_T> s);
-        template <Character_CompatibleIsh CHAR_T>
+        template <Character_ConvertibleToUNICODE CHAR_T>
         static void CheckLatin1 (span<CHAR_T> s);
 
     public:
@@ -442,7 +435,7 @@ namespace Stroika::Foundation::Characters {
          *
          *  \todo   Consider if this should be somehow packaged with Character::ThreeWayComparer?
          */
-        template <Character_CompatibleIsh CHAR_T>
+        template <Character_ConvertibleToUNICODE CHAR_T>
         static constexpr strong_ordering Compare (span<const CHAR_T> lhs, span<const CHAR_T> rhs, CompareOptions co) noexcept;
 
     public:
