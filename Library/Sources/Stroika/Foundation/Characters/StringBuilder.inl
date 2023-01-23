@@ -37,6 +37,7 @@ namespace Stroika::Foundation::Characters {
         Append (rhs);
         return *this;
     }
+
     template <Character_Compatible CHAR_T>
     inline void StringBuilder::Append (span<const CHAR_T> s)
     {
@@ -108,6 +109,7 @@ namespace Stroika::Foundation::Characters {
         fData_.resize_uninitialized (len + 1);
         fData_[len] = c.GetCharacterCode ();
     }
+
     template <typename APPEND_ARG_T>
     inline StringBuilder& StringBuilder::operator+= (APPEND_ARG_T&& a)
     //requires (requires (APPEND_ARG_T a) { Append (a); })
@@ -115,6 +117,7 @@ namespace Stroika::Foundation::Characters {
         Append (forward<APPEND_ARG_T> (a));
         return *this;
     }
+
     template <typename APPEND_ARG_T>
     inline StringBuilder& StringBuilder::operator<< (APPEND_ARG_T&& a)
     //requires (requires (APPEND_ARG_T a) { Append (a); })
@@ -123,39 +126,46 @@ namespace Stroika::Foundation::Characters {
         return *this;
     }
 
-    inline void   StringBuilder::push_back (Character c) { Append (c); }
+    inline void StringBuilder::push_back (Character c) { Append (c); }
+
     inline size_t StringBuilder::size () const noexcept
     {
         Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fAssertExternallySyncrhonized_};
         return fData_.size ();
     }
+
     inline bool StringBuilder::empty () const noexcept
     {
         Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fAssertExternallySyncrhonized_};
         return fData_.size () == 0;
     }
+
     inline Character StringBuilder::GetAt (size_t index) const noexcept
     {
         Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fAssertExternallySyncrhonized_};
         Require (index < fData_.size ());
         return fData_[index];
     }
+
     inline void StringBuilder::SetAt (Character item, size_t index) noexcept
     {
         Require (index < fData_.size ());
         Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySyncrhonized_};
         fData_[index] = item.GetCharacterCode ();
     }
+
     inline void StringBuilder::clear () noexcept
     {
         Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySyncrhonized_};
         fData_.resize (0);
     }
+
     inline String StringBuilder::str () const
     {
         Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fAssertExternallySyncrhonized_};
         return String{Memory::ConstSpan (span{fData_.data (), fData_.size ()})};
     }
+
     template <>
     inline void StringBuilder::As (String* into) const
     {
@@ -181,15 +191,21 @@ namespace Stroika::Foundation::Characters {
         // @todo could do more efficiently
         return str ().As<wstring> ();
     }
+
     inline StringBuilder::operator String () const { return As<String> (); }
+
     inline StringBuilder::operator wstring () const { return As<wstring> (); }
-    inline size_t         StringBuilder::length () const noexcept { return size (); }
-    inline size_t         StringBuilder::capacity () const noexcept { return fData_.capacity (); }
-    inline void           StringBuilder::reserve (size_t newCapacity)
+
+    inline size_t StringBuilder::length () const noexcept { return size (); }
+
+    inline size_t StringBuilder::capacity () const noexcept { return fData_.capacity (); }
+
+    inline void StringBuilder::reserve (size_t newCapacity)
     {
         Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySyncrhonized_};
         fData_.reserve (newCapacity);
     }
+
     template <Character_Compatible CHAR_T>
     span<const CHAR_T> StringBuilder::GetData (Memory::StackBuffer<CHAR_T>* probablyIgnoredBuf) const
         requires (not is_const_v<CHAR_T>)
