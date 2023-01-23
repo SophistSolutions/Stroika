@@ -626,7 +626,7 @@ namespace Stroika::Foundation::Characters {
             char32_t* write2Buf = combinedBuf.data () + thisSpan.size ();
             for (auto i : s) {
                 if constexpr (is_same_v<CHAR_T, Character>) {
-                    *write2Buf = i.As<char32_t> ();
+                    *write2Buf = i.template As<char32_t> ();
                 }
                 else {
                     *write2Buf = i;
