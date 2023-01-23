@@ -197,7 +197,7 @@ namespace Stroika::Foundation::Characters {
         String (span<CHAR_T> s);
         template <Character_IsUnicodeCodePointOrPlainChar CHAR_T>
         String (const basic_string<CHAR_T>& s);
-        template <Character_ConvertibleFromUNICODE CHAR_T>
+        template <Character_UNICODECanAlwaysConvertTo CHAR_T>
         String (const Iterable<CHAR_T>& src);
         explicit String (const Character& c);
         String (const basic_string_view<char>& str);
@@ -350,9 +350,9 @@ namespace Stroika::Foundation::Characters {
          *
          *  \note Alias From8bitASCII () or FromExtendedASCII ()
          */
-        template <Character_ConvertibleToUNICODE CHAR_T>
+        template <Character_UNICODECanUnambiguouslyConvertFrom CHAR_T>
         static String FromLatin1 (const CHAR_T* cString);
-        template <Character_ConvertibleToUNICODE CHAR_T>
+        template <Character_UNICODECanUnambiguouslyConvertFrom CHAR_T>
         static String FromLatin1 (span<const CHAR_T> s);
         template <Character_IsUnicodeCodePointOrPlainChar CHAR_T>
         static String FromLatin1 (const basic_string<CHAR_T>& s);
@@ -1173,7 +1173,7 @@ namespace Stroika::Foundation::Characters {
          *  This API is public, but best to avoid depending on internals of String API - like PeekSpanData - since
          *  this reasonably likely to change in future versions.
          */
-        template <Character_ConvertibleToUNICODE CHAR_TYPE = Character_ASCII>
+        template <Character_UNICODECanUnambiguouslyConvertFrom CHAR_TYPE = Character_ASCII>
         nonvirtual PeekSpanData GetPeekSpanData () const;
 
     public:
@@ -1183,9 +1183,9 @@ namespace Stroika::Foundation::Characters {
          *  This API is public, but best to avoid depending on internals of String API - like PeekSpanData - since
          *  this reasonably likely to change in future versions.
          */
-        template <Character_ConvertibleToUNICODE CHAR_TYPE>
+        template <Character_UNICODECanUnambiguouslyConvertFrom CHAR_TYPE>
         static optional<span<const CHAR_TYPE>> PeekData (const PeekSpanData& pds);
-        template <Character_ConvertibleToUNICODE CHAR_TYPE>
+        template <Character_UNICODECanUnambiguouslyConvertFrom CHAR_TYPE>
         nonvirtual optional<span<const CHAR_TYPE>> PeekData () const;
 
     public:
@@ -1198,7 +1198,7 @@ namespace Stroika::Foundation::Characters {
          *  BUT - it maybe a span of data stored into the argument possiblyUsedBuffer (which is why it must be provided - cannot be nullptr).
          *  If you want the freedom to not pass in this buffer, see the PeekData API.
          * 
-         *  \note - CHAR_T must satisfy the concept Character_ConvertibleFromUNICODE - SAFELY - because the string MIGHT contain characters not in any 
+         *  \note - CHAR_T must satisfy the concept Character_UNICODECanAlwaysConvertTo - SAFELY - because the string MIGHT contain characters not in any 
          *          unsafe char class (like Character_ASCII or Character_Latin1), and so there might not be a way to do the conversion. Use 
          *          PeekData () to do that - where it can return nullopt if no conversion possible.
          * 
@@ -1213,9 +1213,9 @@ namespace Stroika::Foundation::Characters {
          *        just add a Memory::StackBuffer<T> b; and pass &b to GetData(); And the return span is not the same as pair<> but
          *        easily convertible.
          */
-        template <Character_ConvertibleFromUNICODE CHAR_TYPE>
+        template <Character_UNICODECanAlwaysConvertTo CHAR_TYPE>
         static span<const CHAR_TYPE> GetData (const PeekSpanData& pds, Memory::StackBuffer<CHAR_TYPE>* possiblyUsedBuffer);
-        template <Character_ConvertibleFromUNICODE CHAR_TYPE>
+        template <Character_UNICODECanAlwaysConvertTo CHAR_TYPE>
         nonvirtual span<const CHAR_TYPE> GetData (Memory::StackBuffer<CHAR_TYPE>* possiblyUsedBuffer) const;
 
     public:
@@ -1378,7 +1378,7 @@ namespace Stroika::Foundation::Characters {
         {
             return FromNarrowSDKString (span{from, to});
         }
-        template <Character_ConvertibleFromUNICODE CHAR_T>
+        template <Character_UNICODECanAlwaysConvertTo CHAR_T>
         [[deprecated ("Since Stroika v3.0d1, use span{} constructor for this")]] String (const CHAR_T* from, const CHAR_T* to)
             : String{span<const CHAR_T>{from, to}}
         {
@@ -1414,7 +1414,7 @@ namespace Stroika::Foundation::Characters {
          * And mk_(SPAN) also always COPIES data (a few of the mk_ overloads steal, but only if given && arg)
          * FromStringConstant API also does stealing.
          */
-        template <Character_ConvertibleToUNICODE CHAR_T>
+        template <Character_UNICODECanUnambiguouslyConvertFrom CHAR_T>
         static _SharedPtrIRep mk_ (span<const CHAR_T> s);
         template <Character_Compatible CHAR_T>
         static _SharedPtrIRep mk_ (Iterable<CHAR_T> it);

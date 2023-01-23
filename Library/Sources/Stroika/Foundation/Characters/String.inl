@@ -24,7 +24,7 @@ namespace Stroika::Foundation::Characters {
      ********************************************************************************
      */
     namespace Private_ {
-        template <Character_ConvertibleToUNICODE CHAR_T>
+        template <Character_UNICODECanUnambiguouslyConvertFrom CHAR_T>
         static size_t StrLen_ (const CHAR_T* s)
         {
             if constexpr (is_same_v<CHAR_T, Character_Latin1>) {
@@ -34,7 +34,7 @@ namespace Stroika::Foundation::Characters {
                 return CString::Length (s);
             }
         }
-        template <Character_ConvertibleToUNICODE SRC_T>
+        template <Character_UNICODECanUnambiguouslyConvertFrom SRC_T>
         inline void CopyAsASCIICharacters_ (span<const SRC_T> src, span<Character_ASCII> trg)
         {
             Require (trg.size () >= src.size ());
@@ -48,7 +48,7 @@ namespace Stroika::Foundation::Characters {
                 }
             }
         }
-        template <Character_ConvertibleToUNICODE SRC_T>
+        template <Character_UNICODECanUnambiguouslyConvertFrom SRC_T>
         inline void CopyAsLatin1Characters_ (span<const SRC_T> src, span<Character_Latin1> trg)
         {
             Require (trg.size () >= src.size ());
@@ -143,7 +143,7 @@ namespace Stroika::Foundation::Characters {
     template <>
     auto String::mk_nocheck_ (span<const char32_t> s) -> _SharedPtrIRep;
 #endif
-    template <Character_ConvertibleToUNICODE CHAR_T>
+    template <Character_UNICODECanUnambiguouslyConvertFrom CHAR_T>
     auto String::mk_ (span<const CHAR_T> s) -> _SharedPtrIRep
     {
         if (s.empty ()) {
@@ -297,7 +297,7 @@ namespace Stroika::Foundation::Characters {
         : inherited{mk_ (span<const CHAR_T>{s.data (), s.size ()})}
     {
     }
-    template <Character_ConvertibleFromUNICODE CHAR_T>
+    template <Character_UNICODECanAlwaysConvertTo CHAR_T>
     inline String::String (const Iterable<CHAR_T>& src)
         : inherited{mk_ (src)}
     {
@@ -325,13 +325,13 @@ namespace Stroika::Foundation::Characters {
     {
         return FromLatin1 (span{s.data (), s.size ()});
     }
-    template <Character_ConvertibleToUNICODE CHAR_T>
+    template <Character_UNICODECanUnambiguouslyConvertFrom CHAR_T>
     inline String String::FromLatin1 (const CHAR_T* cString)
     {
         RequireNotNull (cString);
         return FromLatin1 (span{cString, Private_::StrLen_ (cString)});
     }
-    template <Character_ConvertibleToUNICODE CHAR_T>
+    template <Character_UNICODECanUnambiguouslyConvertFrom CHAR_T>
     inline String String::FromLatin1 (span<const CHAR_T> s)
     {
         /*
@@ -842,7 +842,7 @@ namespace Stroika::Foundation::Characters {
         auto                         thisSpan = GetData (&ignored1);
         return Character::AsASCIIQuietly (thisSpan, into);
     }
-    template <Character_ConvertibleToUNICODE CHAR_TYPE>
+    template <Character_UNICODECanUnambiguouslyConvertFrom CHAR_TYPE>
     inline String::PeekSpanData String::GetPeekSpanData () const
     {
         using StorageCodePointType = PeekSpanData::StorageCodePointType;
@@ -881,7 +881,7 @@ namespace Stroika::Foundation::Characters {
         }
         return _SafeReadRepAccessor{this}._ConstGetRep ().PeekData (preferredSCP);
     }
-    template <Character_ConvertibleToUNICODE CHAR_TYPE>
+    template <Character_UNICODECanUnambiguouslyConvertFrom CHAR_TYPE>
     inline optional<span<const CHAR_TYPE>> String::PeekData (const PeekSpanData& pds)
     {
         using StorageCodePointType = PeekSpanData::StorageCodePointType;
@@ -931,12 +931,12 @@ namespace Stroika::Foundation::Characters {
         }
         return nullopt; // can easily happen if you request a type that is not stored in the rep
     }
-    template <Character_ConvertibleToUNICODE CHAR_TYPE>
+    template <Character_UNICODECanUnambiguouslyConvertFrom CHAR_TYPE>
     inline optional<span<const CHAR_TYPE>> String::PeekData () const
     {
         return PeekData<CHAR_TYPE> (GetPeekSpanData<CHAR_TYPE> ());
     }
-    template <Character_ConvertibleFromUNICODE CHAR_TYPE>
+    template <Character_UNICODECanAlwaysConvertTo CHAR_TYPE>
     span<const CHAR_TYPE> String::GetData (const PeekSpanData& pds, Memory::StackBuffer<CHAR_TYPE>* possiblyUsedBuffer)
     {
         RequireNotNull (possiblyUsedBuffer);
@@ -1043,7 +1043,7 @@ namespace Stroika::Foundation::Characters {
             }
         }
     }
-    template <Character_ConvertibleFromUNICODE CHAR_TYPE>
+    template <Character_UNICODECanAlwaysConvertTo CHAR_TYPE>
     inline span<const CHAR_TYPE> String::GetData (Memory::StackBuffer<CHAR_TYPE>* possiblyUsedBuffer) const
     {
         RequireNotNull (possiblyUsedBuffer);

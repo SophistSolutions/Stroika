@@ -54,7 +54,7 @@ namespace Stroika::Foundation::Characters {
     }
     inline constexpr UTFConverter UTFConverter::kThe;
 
-    template <Character_ConvertibleToUNICODE CHAR_T>
+    template <Character_UNICODECanUnambiguouslyConvertFrom CHAR_T>
     constexpr optional<size_t> UTFConverter::NextCharacter (span<const CHAR_T> s)
     {
         // Logic based on table from https://en.wikipedia.org/wiki/UTF-8#Encoding
@@ -106,7 +106,7 @@ namespace Stroika::Foundation::Characters {
         return nullopt;
     }
 
-    template <Character_ConvertibleToUNICODE CHAR_T>
+    template <Character_UNICODECanUnambiguouslyConvertFrom CHAR_T>
     constexpr optional<size_t> UTFConverter::ComputeCharacterLength (span<const CHAR_T> s)
     {
         size_t charCount{};
@@ -121,7 +121,7 @@ namespace Stroika::Foundation::Characters {
         return nullopt; // didn't end evenly at end of span, so something went wrong
     }
 
-    template <Character_ConvertibleToUNICODE TO, Character_ConvertibleToUNICODE FROM>
+    template <Character_UNICODECanUnambiguouslyConvertFrom TO, Character_UNICODECanUnambiguouslyConvertFrom FROM>
     constexpr size_t UTFConverter::ComputeTargetBufferSize (span<const FROM> src)
         requires (not is_const_v<TO>)
     {
@@ -193,14 +193,14 @@ namespace Stroika::Foundation::Characters {
             return 0;
         }
     }
-    template <Character_ConvertibleToUNICODE TO, Character_ConvertibleToUNICODE FROM>
+    template <Character_UNICODECanUnambiguouslyConvertFrom TO, Character_UNICODECanUnambiguouslyConvertFrom FROM>
     constexpr size_t UTFConverter::ComputeTargetBufferSize (span<FROM> src)
         requires (not is_const_v<TO>)
     {
         return ComputeTargetBufferSize<TO> (Memory::ConstSpan (src));
     }
 
-    template <Character_ConvertibleToUNICODE CHAR_T>
+    template <Character_UNICODECanUnambiguouslyConvertFrom CHAR_T>
     constexpr bool UTFConverter::AllFitsInTwoByteEncoding (span<const CHAR_T> s) noexcept
     {
         if constexpr (is_same_v<CHAR_T, Character_ASCII> or is_same_v<CHAR_T, Character_Latin1>) {
@@ -230,7 +230,7 @@ namespace Stroika::Foundation::Characters {
         return true;
     }
 
-    template <Character_ConvertibleToUNICODE SRC_T, Character_ConvertibleToUNICODE TRG_T>
+    template <Character_UNICODECanUnambiguouslyConvertFrom SRC_T, Character_UNICODECanUnambiguouslyConvertFrom TRG_T>
     inline auto UTFConverter::Convert (span<const SRC_T> source, span<TRG_T> target) const -> ConversionResult
     {
         Require ((target.size () >= ComputeTargetBufferSize<TRG_T> (source)));
@@ -238,12 +238,12 @@ namespace Stroika::Foundation::Characters {
         ThrowIf_ (result.fStatus);
         return result; // slice
     }
-    template <Character_ConvertibleToUNICODE SRC_T, Character_ConvertibleToUNICODE TRG_T>
+    template <Character_UNICODECanUnambiguouslyConvertFrom SRC_T, Character_UNICODECanUnambiguouslyConvertFrom TRG_T>
     inline auto UTFConverter::Convert (span<SRC_T> source, span<TRG_T> target) const -> ConversionResult
     {
         return Convert (Memory::ConstSpan (source), target);
     }
-    template <Character_ConvertibleToUNICODE SRC_T, Character_ConvertibleToUNICODE TRG_T>
+    template <Character_UNICODECanUnambiguouslyConvertFrom SRC_T, Character_UNICODECanUnambiguouslyConvertFrom TRG_T>
     inline auto UTFConverter::Convert (span<const char8_t> source, span<char16_t> target, mbstate_t* multibyteConversionState) const -> ConversionResult
         requires (is_same_v<SRC_T, char8_t> and (is_same_v<TRG_T, char16_t> or is_same_v<TRG_T, char32_t>))
     {
@@ -268,20 +268,20 @@ namespace Stroika::Foundation::Characters {
         }
     }
 
-    template <Character_ConvertibleToUNICODE SRC_T, Character_ConvertibleToUNICODE TRG_T>
+    template <Character_UNICODECanUnambiguouslyConvertFrom SRC_T, Character_UNICODECanUnambiguouslyConvertFrom TRG_T>
     inline span<TRG_T> UTFConverter::ConvertSpan (span<const SRC_T> source, span<TRG_T> target) const
         requires (not is_const_v<TRG_T>)
     {
         return span{target.data (), Convert (source, target).fTargetProduced};
     }
-    template <Character_ConvertibleToUNICODE SRC_T, Character_ConvertibleToUNICODE TRG_T>
+    template <Character_UNICODECanUnambiguouslyConvertFrom SRC_T, Character_UNICODECanUnambiguouslyConvertFrom TRG_T>
     inline span<TRG_T> UTFConverter::ConvertSpan (span<SRC_T> source, span<TRG_T> target) const
         requires (not is_const_v<TRG_T>)
     {
         return ConvertSpan (Memory::ConstSpan (source), target);
     }
 
-    template <Character_ConvertibleToUNICODE SRC_T, Character_ConvertibleToUNICODE TRG_T>
+    template <Character_UNICODECanUnambiguouslyConvertFrom SRC_T, Character_UNICODECanUnambiguouslyConvertFrom TRG_T>
     inline auto UTFConverter::ConvertQuietly (span<const SRC_T> source, span<TRG_T> target) const -> ConversionResultWithStatus
         requires (not is_const_v<TRG_T>)
     {
@@ -330,7 +330,7 @@ namespace Stroika::Foundation::Characters {
             return ConvertQuietly_StroikaPortable_ (ConvertToPrimitiveSpan_ (source), ConvertToPrimitiveSpan_ (target)); // default if preferred not available
         }
     }
-    template <Character_ConvertibleToUNICODE SRC_T, Character_ConvertibleToUNICODE TRG_T>
+    template <Character_UNICODECanUnambiguouslyConvertFrom SRC_T, Character_UNICODECanUnambiguouslyConvertFrom TRG_T>
     inline auto UTFConverter::ConvertQuietly (span<const SRC_T> source, span<TRG_T> target, mbstate_t* multibyteConversionState) const
         -> ConversionResultWithStatus
         requires (is_same_v<SRC_T, char8_t> and (is_same_v<TRG_T, char16_t> or is_same_v<TRG_T, char32_t>))
@@ -360,7 +360,7 @@ namespace Stroika::Foundation::Characters {
         return r.fTargetProduced;
     }
 
-    template <Character_ConvertibleToUNICODE FromT>
+    template <Character_UNICODECanUnambiguouslyConvertFrom FromT>
     constexpr auto UTFConverter::ConvertToPrimitiveSpan_ (span<FromT> f) -> span<CompatibleT_<FromT>>
     {
         return span{(CompatibleT_<FromT>*)f.data (), f.size ()};
