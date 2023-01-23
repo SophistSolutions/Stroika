@@ -94,22 +94,16 @@ namespace Stroika::Foundation::Characters {
     public:
         /**
          *  Alias for Append
-         * 
-         *      @todo fix the requires statement - not sure how todo this
          */
-        template <typename APPEND_ARG_T>
+        template <ConvertibleToString APPEND_ARG_T>
         nonvirtual StringBuilder& operator+= (APPEND_ARG_T&& a);
-        //requires (requires (APPEND_ARG_T a) { Append (a); })
 
     public:
         /**
          *  Alias for Append
-         * 
-         *      @todo fix the requires statement - not sure how todo this
          */
-        template <typename APPEND_ARG_T>
+        template <ConvertibleToString APPEND_ARG_T>
         nonvirtual StringBuilder& operator<< (APPEND_ARG_T&& a);
-        //requires (requires (APPEND_ARG_T a) { Append (a); })
 
     public:
         /**
