@@ -1048,6 +1048,10 @@ In file included from ../Characters/StringBuilder.h:273,
 // VERIFIED BROKEN IN GCC 12
 #define qCompilerAndStdLib_template_Requires_templateDeclarationMatchesOutOfLine_Buggy                                                     \
     CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ <= 12)
+#elif defined(__clang__)
+// Noticed fixed in clang++14, and broken in 12, so guess broken still in 13
+#define qCompilerAndStdLib_template_Requires_templateDeclarationMatchesOutOfLine_Buggy                                                     \
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 13))
 #else
 #define qCompilerAndStdLib_template_Requires_templateDeclarationMatchesOutOfLine_Buggy 0
 #endif
