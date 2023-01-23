@@ -126,7 +126,7 @@ namespace Stroika::Foundation::Characters {
     template <typename OPTIONS>
     template <typename APPEND_ARG_T>
     inline auto StringBuilder<OPTIONS>::operator+= (APPEND_ARG_T&& a)
-        -> StringBuilder& requires (requires (StringBuilder<OPTIONS>& s, APPEND_ARG_T&& a) { s.Append (forward<APPEND_ARG_T> (a)); }) {
+        -> StringBuilder& requires (requires (StringBuilder& s, APPEND_ARG_T&& a) { s.Append (forward<APPEND_ARG_T> (a)); }) {
                               Append (forward<APPEND_ARG_T> (a));
                               return *this;
                           }
@@ -134,7 +134,7 @@ namespace Stroika::Foundation::Characters {
     template <typename OPTIONS>
     template <typename APPEND_ARG_T>
     inline auto StringBuilder<OPTIONS>::operator<< (APPEND_ARG_T&& a)
-        -> StringBuilder& requires (requires (StringBuilder<OPTIONS>& s, APPEND_ARG_T&& a) { s.Append (forward<APPEND_ARG_T> (a)); }) {
+        -> StringBuilder& requires (requires (StringBuilder& s, APPEND_ARG_T&& a) { s.Append (forward<APPEND_ARG_T> (a)); }) {
                               Append (forward<APPEND_ARG_T> (a));
                               return *this;
                           }
@@ -199,7 +199,7 @@ namespace Stroika::Foundation::Characters {
             return str ();
         }
         if constexpr (is_same_v<RESULT_T, wstring>) {
-            return str ().template As<wstring> ();
+            return str ().template  As<wstring> ();
         }
     }
     template <typename OPTIONS>

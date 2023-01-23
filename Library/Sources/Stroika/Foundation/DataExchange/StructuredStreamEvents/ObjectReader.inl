@@ -785,7 +785,7 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
             {
                 RequireNotNull (intoVal);
             }
-            Characters::StringBuilder            fBuf_{};
+            Characters::StringBuilder<>          fBuf_{};
             ENUM_TYPE*                           fValue_{};
             virtual shared_ptr<IElementConsumer> HandleChildStart (const Name& name) override { ThrowUnRecognizedStartElt (name); }
             virtual void                         HandleTextInside (const String& text) override { fBuf_ += text; }

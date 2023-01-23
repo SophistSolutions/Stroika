@@ -112,8 +112,8 @@ namespace Stroika::Foundation::Characters {
          *  Alias for Append
          */
         template <typename APPEND_ARG_T>
-        nonvirtual StringBuilder& operator+= (APPEND_ARG_T&& a)
-            requires (requires (StringBuilder<OPTIONS>& s, APPEND_ARG_T&& a) { s.Append (forward<APPEND_ARG_T> (a)); })
+        nonvirtual auto operator+= (APPEND_ARG_T&& a) -> StringBuilder&
+            requires (requires (StringBuilder& s, APPEND_ARG_T&& a) { s.Append (forward<APPEND_ARG_T> (a)); })
 #if qCompilerAndStdLib_template_Requires_templateDeclarationMatchesOutOfLine_Buggy
         {
             Append (forward<APPEND_ARG_T> (a));
@@ -128,8 +128,8 @@ namespace Stroika::Foundation::Characters {
          *  Alias for Append
          */
         template <typename APPEND_ARG_T>
-        nonvirtual StringBuilder& operator<< (APPEND_ARG_T&& a)
-            requires (requires (StringBuilder<OPTIONS>& s, APPEND_ARG_T&& a) { s.Append (forward<APPEND_ARG_T> (a)); })
+        nonvirtual auto operator<< (APPEND_ARG_T&& a) -> StringBuilder&
+            requires (requires (StringBuilder& s, APPEND_ARG_T&& a) { s.Append (forward<APPEND_ARG_T> (a)); })
 #if qCompilerAndStdLib_template_Requires_templateDeclarationMatchesOutOfLine_Buggy
         {
             Append (forward<APPEND_ARG_T> (a));
