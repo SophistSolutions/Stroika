@@ -1051,7 +1051,7 @@ In file included from ../Characters/StringBuilder.h:273,
 #elif defined(__clang__) && defined(__APPLE__)
 // Noticed broken in crapple-clang++14
 #define qCompilerAndStdLib_template_Requires_templateDeclarationMatchesOutOfLine_Buggy                                                     \
-    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 13))
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 14))
 #elif defined(__clang__) && !defined(__APPLE__)
 // Noticed fixed in clang++14, and broken in 12, so guess broken still in 13
 #define qCompilerAndStdLib_template_Requires_templateDeclarationMatchesOutOfLine_Buggy                                                     \
