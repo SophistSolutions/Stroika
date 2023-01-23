@@ -199,7 +199,7 @@ namespace Stroika::Foundation::Characters {
             return str ();
         }
         if constexpr (is_same_v<RESULT_T, wstring>) {
-            return str ().As<wstring> ();
+            return str ().template As<wstring> ();
         }
     }
     template <typename OPTIONS>
