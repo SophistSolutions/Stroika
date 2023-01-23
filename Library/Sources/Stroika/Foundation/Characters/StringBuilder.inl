@@ -110,19 +110,23 @@ namespace Stroika::Foundation::Characters {
         fData_[len] = c.GetCharacterCode ();
     }
 
-    template <ConvertibleToString APPEND_ARG_T>
+    #if !qCompilerAndStdLib_template_Requires_templateDeclarationMatchesOutOfLine_Buggy
+    template <typename APPEND_ARG_T>
     inline StringBuilder& StringBuilder::operator+= (APPEND_ARG_T&& a)
+        requires (requires (StringBuilder& s, APPEND_ARG_T&& a) { s.Append (forward<APPEND_ARG_T> (a)); })
     {
         Append (forward<APPEND_ARG_T> (a));
         return *this;
     }
 
-    template <ConvertibleToString APPEND_ARG_T>
+    template <typename APPEND_ARG_T>
     inline StringBuilder& StringBuilder::operator<< (APPEND_ARG_T&& a)
+        requires (requires (StringBuilder& s, APPEND_ARG_T&& a) { s.Append (forward<APPEND_ARG_T> (a)); })
     {
         Append (forward<APPEND_ARG_T> (a));
         return *this;
     }
+    #endif
 
     inline void StringBuilder::push_back (Character c) { Append (c); }
 

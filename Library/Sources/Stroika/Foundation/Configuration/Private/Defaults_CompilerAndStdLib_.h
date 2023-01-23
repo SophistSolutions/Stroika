@@ -1020,6 +1020,37 @@ InternetMediaType.cpp:180:68: note:   couldn't deduce template parameter 'T_THRE
 
 #endif
 
+
+
+/*
+../Characters/StringBuilder.inl:114:27: error: no declaration matches ‘Stroika::Foundation::Characters::StringBuilder& Stroika::Foundation::Characters::StringBuilder::operator+=(APPEND_ARG_T&&) requires requires(Stroika::Foundation::Characters::StringBuilder& s, APPEND_ARG_T&& a) {s->Stroika::Foundation::Characters::StringBuilder::Append()((forward<APPEND_ARG_T>)(a));}’
+  114 |     inline StringBuilder& StringBuilder::operator+= (APPEND_ARG_T&& a)
+      |                           ^~~~~~~~~~~~~
+In file included from CodePage.cpp:13:
+../Characters/StringBuilder.h:99:35: note: candidate is: ‘template<class APPEND_ARG_T> Stroika::Foundation::Characters::StringBuilder& Stroika::Foundation::Characters::StringBuilder::operator+=(APPEND_ARG_T&&) requires requires(Stroika::Foundation::Characters::StringBuilder& s, APPEND_ARG_T&& a) {s->Stroika::Foundation::Characters::StringBuilder::Append()((forward<APPEND_ARG_T>)(a));}’
+   99 |         nonvirtual StringBuilder& operator+= (APPEND_ARG_T&& a)
+      |                                   ^~~~~~~~
+../Characters/StringBuilder.h:47:11: note: ‘class Stroika::Foundation::Characters::StringBuilder’ defined here
+   47 |     class StringBuilder {
+      |           ^~~~~~~~~~~~~
+In file included from ../Characters/StringBuilder.h:273,
+                 from CodePage.cpp:13:
+../Characters/StringBuilder.inl:122:27: error: no declaration matches ‘Stroika::Foundation::Characters::StringBuilder& Stroika::Foundation::Characters::StringBuilder::operator<<(APPEND_ARG_T&&) requires requires(Stroika::Foundation::Characters::StringBuilder& s, APPEND_ARG_T&& a) {s->Stroika::Foundation::Characters::StringBuilder::Append()((forward<APPEND_ARG_T>)(a));}’
+  122 |     inline StringBuilder& StringBuilder::operator<< (APPEND_ARG_T&& a)
+   
+   */
+#ifndef qCompilerAndStdLib_template_Requires_templateDeclarationMatchesOutOfLine_Buggy
+
+#if defined(__GNUC__) && !defined(__clang__)
+// VERIFIED BROKEN IN GCC 12
+#define qCompilerAndStdLib_template_Requires_templateDeclarationMatchesOutOfLine_Buggy                                                     \
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ <= 12)
+#else
+#define qCompilerAndStdLib_template_Requires_templateDeclarationMatchesOutOfLine_Buggy 0
+#endif
+
+#endif
+
 #ifndef qCompilerAndStdLib_template_requresDefNeededonSpecializations_Buggy
 
 #if defined(__clang__) && defined(__APPLE__)

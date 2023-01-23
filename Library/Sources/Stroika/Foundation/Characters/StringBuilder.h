@@ -95,15 +95,31 @@ namespace Stroika::Foundation::Characters {
         /**
          *  Alias for Append
          */
-        template <ConvertibleToString APPEND_ARG_T>
-        nonvirtual StringBuilder& operator+= (APPEND_ARG_T&& a);
+        template <typename APPEND_ARG_T>
+        nonvirtual StringBuilder& operator+= (APPEND_ARG_T&& a)
+            requires (requires (StringBuilder& s, APPEND_ARG_T&& a) { s.Append (forward<APPEND_ARG_T> (a)); })
+#if qCompilerAndStdLib_template_Requires_templateDeclarationMatchesOutOfLine_Buggy
+        {
+            Append (forward<APPEND_ARG_T> (a));
+            return *this;
+        }
+#endif
+        ;
 
     public:
         /**
          *  Alias for Append
          */
-        template <ConvertibleToString APPEND_ARG_T>
-        nonvirtual StringBuilder& operator<< (APPEND_ARG_T&& a);
+        template <typename APPEND_ARG_T>
+        nonvirtual StringBuilder& operator<< (APPEND_ARG_T&& a)
+            requires (requires (StringBuilder& s, APPEND_ARG_T&& a) { s.Append (forward<APPEND_ARG_T> (a)); })
+#if qCompilerAndStdLib_template_Requires_templateDeclarationMatchesOutOfLine_Buggy
+        {
+            Append (forward<APPEND_ARG_T> (a));
+            return *this;
+        }
+#endif
+        ;
 
     public:
         /**
