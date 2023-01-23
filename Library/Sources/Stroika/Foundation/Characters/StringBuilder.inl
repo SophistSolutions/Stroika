@@ -24,13 +24,19 @@ namespace Stroika::Foundation::Characters {
      ***************************** Implementation Details ***************************
      ********************************************************************************
      */
-    inline StringBuilder::StringBuilder (const String& initialValue) { Append (initialValue); }
-    template <Character_Compatible CHAR_T>
-    inline StringBuilder::StringBuilder (span<const CHAR_T> initialValue)
+    template <typename OPTIONS>
+    inline StringBuilder<OPTIONS>::StringBuilder (const String& initialValue)
     {
         Append (initialValue);
     }
-    inline StringBuilder& StringBuilder::operator= (const String& rhs)
+    template <typename OPTIONS>
+    template <Character_Compatible CHAR_T>
+    inline StringBuilder<OPTIONS>::StringBuilder (span<const CHAR_T> initialValue)
+    {
+        Append (initialValue);
+    }
+    template <typename OPTIONS>
+    inline auto StringBuilder<OPTIONS>::operator= (const String& rhs) -> StringBuilder&
     {
         Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySyncrhonized_};
         clear ();
@@ -38,8 +44,9 @@ namespace Stroika::Foundation::Characters {
         return *this;
     }
 
+    template <typename OPTIONS>
     template <Character_Compatible CHAR_T>
-    inline void StringBuilder::Append (span<const CHAR_T> s)
+    inline void StringBuilder<OPTIONS>::Append (span<const CHAR_T> s)
     {
         Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySyncrhonized_};
         size_t                                                 spanSize = s.size ();
@@ -47,11 +54,10 @@ namespace Stroika::Foundation::Characters {
             if constexpr (is_same_v<CHAR_T, Character_ASCII>) {
                 Character::CheckASCII (s);
             }
-            using BUFFER_ELT_TYPE = decltype (fData_)::value_type;
-            if constexpr (sizeof (CHAR_T) == sizeof (BUFFER_ELT_TYPE)) {
+            if constexpr (sizeof (CHAR_T) == sizeof (BufferElementType)) {
                 size_t i = fData_.size ();
                 fData_.GrowToSize_uninitialized (i + spanSize);
-                const BUFFER_ELT_TYPE* copyFrom = reinterpret_cast<const BUFFER_ELT_TYPE*> (s.data ());
+                const BufferElementType* copyFrom = reinterpret_cast<const BufferElementType*> (s.data ());
                 std::copy (copyFrom, copyFrom + spanSize, fData_.data () + i);
             }
             else {
@@ -66,18 +72,21 @@ namespace Stroika::Foundation::Characters {
             }
         }
     }
+    template <typename OPTIONS>
     template <Character_Compatible CHAR_T>
-    inline void StringBuilder::Append (span<CHAR_T> s)
+    inline void StringBuilder<OPTIONS>::Append (span<CHAR_T> s)
     {
         Append (Memory::ConstSpan (s));
     }
+    template <typename OPTIONS>
     template <Character_Compatible CHAR_T>
-    inline void StringBuilder::Append (const CHAR_T* s)
+    inline void StringBuilder<OPTIONS>::Append (const CHAR_T* s)
     {
         Append (span{s, CString::Length (s)});
     }
+    template <typename OPTIONS>
     template <Character_IsUnicodeCodePointOrPlainChar CHAR_T>
-    inline void StringBuilder::Append (const basic_string<CHAR_T>& s)
+    inline void StringBuilder<OPTIONS>::Append (const basic_string<CHAR_T>& s)
     {
 #if qCompilerAndStdLib_spanOfContainer_Buggy
         Append (span{s.data (), s.size ()});
@@ -85,8 +94,9 @@ namespace Stroika::Foundation::Characters {
         Append (span{s});
 #endif
     }
+    template <typename OPTIONS>
     template <Character_IsUnicodeCodePointOrPlainChar CHAR_T>
-    inline void StringBuilder::Append (const basic_string_view<CHAR_T>& s)
+    inline void StringBuilder<OPTIONS>::Append (const basic_string_view<CHAR_T>& s)
     {
 #if qCompilerAndStdLib_spanOfContainer_Buggy
         Append (span{s.data (), s.size ()});
@@ -94,7 +104,8 @@ namespace Stroika::Foundation::Characters {
         Append (span{s});
 #endif
     }
-    inline void StringBuilder::Append (const String& s)
+    template <typename OPTIONS>
+    inline void StringBuilder<OPTIONS>::Append (const String& s)
     {
         Memory::StackBuffer<char32_t> ignored;
         span                          p = s.GetData<char32_t> (&ignored);
@@ -102,7 +113,8 @@ namespace Stroika::Foundation::Characters {
             Append (p);
         }
     }
-    inline void StringBuilder::Append (Character c)
+    template <typename OPTIONS>
+    inline void StringBuilder<OPTIONS>::Append (Character c)
     {
         Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySyncrhonized_};
         size_t                                                 len = fData_.size ();
@@ -111,109 +123,139 @@ namespace Stroika::Foundation::Characters {
     }
 
 #if !qCompilerAndStdLib_template_Requires_templateDeclarationMatchesOutOfLine_Buggy
+    template <typename OPTIONS>
     template <typename APPEND_ARG_T>
-    inline StringBuilder& StringBuilder::operator+= (APPEND_ARG_T&& a)
-        requires (requires (StringBuilder& s, APPEND_ARG_T&& a) { s.Append (forward<APPEND_ARG_T> (a)); })
-    {
-        Append (forward<APPEND_ARG_T> (a));
-        return *this;
-    }
+    inline auto StringBuilder<OPTIONS>::operator+= (APPEND_ARG_T&& a)
+        -> StringBuilder& requires (requires (StringBuilder<OPTIONS>& s, APPEND_ARG_T&& a) { s.Append (forward<APPEND_ARG_T> (a)); }) {
+                              Append (forward<APPEND_ARG_T> (a));
+                              return *this;
+                          }
 
+    template <typename OPTIONS>
     template <typename APPEND_ARG_T>
-    inline StringBuilder& StringBuilder::operator<< (APPEND_ARG_T&& a)
-        requires (requires (StringBuilder& s, APPEND_ARG_T&& a) { s.Append (forward<APPEND_ARG_T> (a)); })
-    {
-        Append (forward<APPEND_ARG_T> (a));
-        return *this;
-    }
+    inline auto StringBuilder<OPTIONS>::operator<< (APPEND_ARG_T&& a)
+        -> StringBuilder& requires (requires (StringBuilder<OPTIONS>& s, APPEND_ARG_T&& a) { s.Append (forward<APPEND_ARG_T> (a)); }) {
+                              Append (forward<APPEND_ARG_T> (a));
+                              return *this;
+                          }
 #endif
 
-    inline void StringBuilder::push_back (Character c) { Append (c); }
+    template <typename OPTIONS>
+    inline void StringBuilder<OPTIONS>::push_back (Character c)
+    {
+        Append (c);
+    }
 
-    inline size_t StringBuilder::size () const noexcept
+    template <typename OPTIONS>
+    inline size_t StringBuilder<OPTIONS>::size () const noexcept
     {
         Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fAssertExternallySyncrhonized_};
         return fData_.size ();
     }
 
-    inline bool StringBuilder::empty () const noexcept
+    template <typename OPTIONS>
+    inline bool StringBuilder<OPTIONS>::empty () const noexcept
     {
         Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fAssertExternallySyncrhonized_};
         return fData_.size () == 0;
     }
 
-    inline Character StringBuilder::GetAt (size_t index) const noexcept
+    template <typename OPTIONS>
+    inline Character StringBuilder<OPTIONS>::GetAt (size_t index) const noexcept
     {
         Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fAssertExternallySyncrhonized_};
         Require (index < fData_.size ());
         return fData_[index];
     }
 
-    inline void StringBuilder::SetAt (Character item, size_t index) noexcept
+    template <typename OPTIONS>
+    inline void StringBuilder<OPTIONS>::SetAt (Character item, size_t index) noexcept
     {
         Require (index < fData_.size ());
         Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySyncrhonized_};
         fData_[index] = item.GetCharacterCode ();
     }
 
-    inline void StringBuilder::clear () noexcept
+    template <typename OPTIONS>
+    inline void StringBuilder<OPTIONS>::clear () noexcept
     {
         Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySyncrhonized_};
         fData_.resize (0);
     }
 
-    inline String StringBuilder::str () const
+    template <typename OPTIONS>
+    inline String StringBuilder<OPTIONS>::str () const
     {
         Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fAssertExternallySyncrhonized_};
         return String{Memory::ConstSpan (span{fData_.data (), fData_.size ()})};
     }
 
-    template <>
-    inline void StringBuilder::As (String* into) const
+    template <typename OPTIONS>
+    template <typename RESULT_T>
+    inline RESULT_T StringBuilder<OPTIONS>::As () const
+        requires (is_same_v<RESULT_T, String> or is_same_v<RESULT_T, wstring>)
+    {
+        if constexpr (is_same_v<RESULT_T, String>) {
+            return str ();
+        }
+        if constexpr (is_same_v<RESULT_T, wstring>) {
+            return str ().As<wstring> ();
+        }
+    }
+    template <typename OPTIONS>
+    template <typename RESULT_T>
+    inline void StringBuilder<OPTIONS>::As (RESULT_T* into) const
+        requires (is_same_v<RESULT_T, String> or is_same_v<RESULT_T, wstring>)
     {
         RequireNotNull (into);
         // @todo could do more efficiently
         *into = str ();
+        if constexpr (is_same_v<RESULT_T, String>) {
+            *into = str ();
+        }
+        if constexpr (is_same_v<RESULT_T, wstring>) {
+            *into = str ().As<wstring> ();
+        }
     }
-    template <>
-    inline String StringBuilder::As () const
+
+    template <typename OPTIONS>
+    inline StringBuilder<OPTIONS>::operator String () const
     {
-        return str ();
+        return As<String> ();
     }
-    template <>
-    inline void StringBuilder::As (wstring* into) const
+
+    template <typename OPTIONS>
+    inline StringBuilder<OPTIONS>::operator wstring () const
     {
-        RequireNotNull (into);
-        // @todo could do more efficiently
-        *into = str ().As<wstring> ();
+        return As<wstring> ();
     }
-    template <>
-    inline wstring StringBuilder::As () const
+
+    template <typename OPTIONS>
+    inline size_t StringBuilder<OPTIONS>::length () const noexcept
     {
-        // @todo could do more efficiently
-        return str ().As<wstring> ();
+        return size ();
     }
 
-    inline StringBuilder::operator String () const { return As<String> (); }
+    template <typename OPTIONS>
+    inline size_t StringBuilder<OPTIONS>::capacity () const noexcept
+    {
+        return fData_.capacity ();
+    }
 
-    inline StringBuilder::operator wstring () const { return As<wstring> (); }
-
-    inline size_t StringBuilder::length () const noexcept { return size (); }
-
-    inline size_t StringBuilder::capacity () const noexcept { return fData_.capacity (); }
-
-    inline void StringBuilder::reserve (size_t newCapacity)
+    template <typename OPTIONS>
+    inline void StringBuilder<OPTIONS>::reserve (size_t newCapacity)
     {
         Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySyncrhonized_};
         fData_.reserve (newCapacity);
     }
 
+    template <typename OPTIONS>
     template <Character_Compatible CHAR_T>
-    span<const CHAR_T> StringBuilder::GetData (Memory::StackBuffer<CHAR_T>* probablyIgnoredBuf) const
+    span<const CHAR_T> StringBuilder<OPTIONS>::GetData (Memory::StackBuffer<CHAR_T>* probablyIgnoredBuf) const
         requires (not is_const_v<CHAR_T>)
     {
         RequireNotNull (probablyIgnoredBuf); // required param even if not used
-        if constexpr (sizeof (CHAR_T) == sizeof (char32_t)) {
+        if constexpr (sizeof (CHAR_T) == sizeof (BufferElementType)) {
             return span{reinterpret_cast<const CHAR_T*> (fData_.data ()), fData_.size ()};
         }
         else {

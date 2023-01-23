@@ -488,7 +488,7 @@ auto InternetMediaTypeRegistry::UsrSharedDefaultBackend () -> shared_ptr<IBacken
                 struct myHander_ : StructuredStreamEvents::IConsumer {
                     optional<String> fResult;
                     bool             onContentElt{false};
-                    StringBuilder    fAccum;
+                    StringBuilder<>  fAccum;
                     virtual void     StartElement (const StructuredStreamEvents::Name& name) override
                     {
                         if (name == StructuredStreamEvents::Name{"content"_k} and not fResult.has_value ()) {

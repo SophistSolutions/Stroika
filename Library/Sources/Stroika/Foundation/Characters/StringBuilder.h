@@ -28,14 +28,23 @@
  *      @todo   Add InsertAt() methods - like from String class (before I deprecate them).
  *              https://stroika.atlassian.net/browse/STK-34
  *
- *      @todo   Consider adding operator==, and or other String methods - esp so can compare as a value
- *              with String. Or maybe add As<> method, and force compare As<String> ()?
- *
  *      @todo   Think about how to add support for STL manipulator/inserters like endl;
  *
  */
 
 namespace Stroika::Foundation::Characters {
+
+    /**
+     *  \brief rarely used - defaults generally fine
+     * 
+     *  @todo initially only support BUF_CHAR_T = char32_t. But gradually support more.
+     *  Maybe easy to support all at once.
+     */
+    template <Character_UNICODECanAlwaysConvertTo BUF_CHAR_T = char32_t, size_t INLINE_BUF_SIZE = 128>
+    struct StringBuilder_Options {
+        static constexpr size_t kInlineBufferSize = INLINE_BUF_SIZE;
+        using BufferElementType                   = BUF_CHAR_T;
+    };
 
     /**
      *  @see String
@@ -44,11 +53,18 @@ namespace Stroika::Foundation::Characters {
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      */
+    template <typename OPTIONS = StringBuilder_Options<>>
     class StringBuilder {
     public:
         /**
          */
         using value_type = Character;
+
+    public:
+        static constexpr size_t kInlineBufferSize = OPTIONS::kInlineBufferSize;
+
+    public:
+        using BufferElementType = typename OPTIONS::BufferElementType;
 
     public:
         /**
@@ -97,7 +113,7 @@ namespace Stroika::Foundation::Characters {
          */
         template <typename APPEND_ARG_T>
         nonvirtual StringBuilder& operator+= (APPEND_ARG_T&& a)
-            requires (requires (StringBuilder& s, APPEND_ARG_T&& a) { s.Append (forward<APPEND_ARG_T> (a)); })
+            requires (requires (StringBuilder<OPTIONS>& s, APPEND_ARG_T&& a) { s.Append (forward<APPEND_ARG_T> (a)); })
 #if qCompilerAndStdLib_template_Requires_templateDeclarationMatchesOutOfLine_Buggy
         {
             Append (forward<APPEND_ARG_T> (a));
@@ -113,7 +129,7 @@ namespace Stroika::Foundation::Characters {
          */
         template <typename APPEND_ARG_T>
         nonvirtual StringBuilder& operator<< (APPEND_ARG_T&& a)
-            requires (requires (StringBuilder& s, APPEND_ARG_T&& a) { s.Append (forward<APPEND_ARG_T> (a)); })
+            requires (requires (StringBuilder<OPTIONS>& s, APPEND_ARG_T&& a) { s.Append (forward<APPEND_ARG_T> (a)); })
 #if qCompilerAndStdLib_template_Requires_templateDeclarationMatchesOutOfLine_Buggy
         {
             Append (forward<APPEND_ARG_T> (a));
@@ -156,10 +172,12 @@ namespace Stroika::Foundation::Characters {
          *      o   String or
          *      o   wstring
          */
-        template <typename T>
-        nonvirtual T As () const;
-        template <typename T>
-        nonvirtual void As (T* into) const;
+        template <typename RESULT_T>
+        nonvirtual RESULT_T As () const
+            requires (is_same_v<RESULT_T, String> or is_same_v<RESULT_T, wstring>);
+        template <typename RESULT_T>
+        nonvirtual void As (RESULT_T* into) const
+            requires (is_same_v<RESULT_T, String> or is_same_v<RESULT_T, wstring>);
 
     public:
         /*
@@ -276,9 +294,8 @@ namespace Stroika::Foundation::Characters {
         // Using smaller may provide better processor cache friendliness
         // and frequently its enuf. And when not, could be much more
         // @todo maybe expose this parameter in StringBuilder TEMPLATE
-        mutable Memory::InlineBuffer<char32_t, 128> fData_{0}; // not nul-terminated
+        mutable Memory::InlineBuffer<BufferElementType, kInlineBufferSize> fData_{0}; // not nul-terminated
     };
-
 }
 
 /*

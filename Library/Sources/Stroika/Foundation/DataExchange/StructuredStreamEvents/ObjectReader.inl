@@ -48,8 +48,8 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
         static ReaderFromVoidStarFactory AsFactory () { return IElementConsumer::AsFactory<T, SimpleReader_> (); }
 
     private:
-        Characters::StringBuilder fBuf_{};
-        T*                        fValue_{};
+        Characters::StringBuilder<> fBuf_{};
+        T*                          fValue_{};
     };
     template <>
     void Registry::SimpleReader_<String>::Deactivating ();
@@ -736,12 +736,12 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
         struct myReader_ : public IElementConsumer {
             Containers::Bijection<ENUM_TYPE, String> fNameMap;
             myReader_ (const Containers::Bijection<ENUM_TYPE, String>& nameMap, ENUM_TYPE* intoVal)
-                : fNameMap (nameMap)
-                , fValue_ (intoVal)
+                : fNameMap{nameMap}
+                , fValue_{intoVal}
             {
                 RequireNotNull (intoVal);
             }
-            Characters::StringBuilder            fBuf_{};
+            Characters::StringBuilder<>          fBuf_{};
             ENUM_TYPE*                           fValue_{};
             virtual shared_ptr<IElementConsumer> HandleChildStart (const Name& name) override { ThrowUnRecognizedStartElt (name); }
             virtual void                         HandleTextInside (const String& text) override { fBuf_ += text; }
@@ -781,7 +781,7 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
         using namespace Characters;
         struct myReader_ : public IElementConsumer {
             myReader_ (ENUM_TYPE* intoVal)
-                : fValue_ (intoVal)
+                : fValue_{intoVal}
             {
                 RequireNotNull (intoVal);
             }
@@ -817,12 +817,12 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
         struct myReader_ : public IElementConsumer {
             function<T (String)> fString2TMapper_;
             myReader_ (const function<T (String)>& converterFromString2T, T* intoVal)
-                : fString2TMapper_ (converterFromString2T)
-                , fValue_ (intoVal)
+                : fString2TMapper_{converterFromString2T}
+                , fValue_{intoVal}
             {
                 RequireNotNull (intoVal);
             }
-            Characters::StringBuilder            fBuf_{};
+            Characters::StringBuilder<>          fBuf_{};
             T*                                   fValue_{};
             virtual shared_ptr<IElementConsumer> HandleChildStart (const Name& name) override { ThrowUnRecognizedStartElt (name); }
             virtual void                         HandleTextInside (const String& text) override { fBuf_ += text; }
