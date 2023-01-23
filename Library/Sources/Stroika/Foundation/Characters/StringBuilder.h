@@ -103,8 +103,9 @@ namespace Stroika::Foundation::Characters {
             Append (forward<APPEND_ARG_T> (a));
             return *this;
         }
-#endif
+#else
         ;
+#endif
 
     public:
         /**
@@ -118,8 +119,9 @@ namespace Stroika::Foundation::Characters {
             Append (forward<APPEND_ARG_T> (a));
             return *this;
         }
-#endif
+#else
         ;
+#endif
 
     public:
         /**
