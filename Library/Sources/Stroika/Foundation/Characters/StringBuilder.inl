@@ -214,7 +214,7 @@ namespace Stroika::Foundation::Characters {
             *into = str ();
         }
         if constexpr (is_same_v<RESULT_T, wstring>) {
-            *into = str ().As<wstring> ();
+            *into = str ().template As<wstring> ();
         }
     }
 
