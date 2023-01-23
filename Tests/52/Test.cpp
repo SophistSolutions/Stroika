@@ -1474,7 +1474,9 @@ namespace {
         Tester (
             L"wstringstream versus StringBuilder",
             [] () { Test_StreamBuilderStringBuildingWithExtract_<wstringstream> ([] (const wstringstream& w) { return w.str (); }); }, L"wstringstream",
-            [] () { Test_StreamBuilderStringBuildingWithExtract_<StringBuilder<>> ([] (const StringBuilder<>& w) { return w.As<String> (); }); },
+            [] () {
+                Test_StreamBuilderStringBuildingWithExtract_<StringBuilder<>> ([] (const StringBuilder<>& w) { return w.As<String> (); });
+            },
             L"StringBuilder", 220000, .23, &failedTests);
         Tester (L"Simple c_str() test", Test_String_cstr_call_<wstring>, L"wstring", Test_String_cstr_call_<String>, L"Charactes::String",
                 51000, 1.3, &failedTests);
