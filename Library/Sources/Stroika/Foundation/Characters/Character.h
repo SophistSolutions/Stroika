@@ -70,6 +70,11 @@ namespace Stroika::Foundation::Characters {
 
     /**
      *  \brief check if T is char8_t, char16_t, char32_t - one of the three possible unicode UTF code-point classes.
+     *
+     *  Character_IsBasicUnicodeCodePoint:
+     *      o   char8_t
+     *      o   char16_t
+     *      o   char32_t
      */
     template <typename T>
     concept Character_IsBasicUnicodeCodePoint =
@@ -77,6 +82,12 @@ namespace Stroika::Foundation::Characters {
 
     /**
      *  \brief check if T is Character_IsBasicUnicodeCodePoint or wchar_t (any basic code-point class)
+     *
+     *  Character_IsUnicodeCodePoint:
+     *      o   char8_t     Character_IsBasicUnicodeCodePoint
+     *      o   char16_t    ""
+     *      o   char32_t    ""
+     *      o   wchar_t     added here
      */
     template <typename T>
     concept Character_IsUnicodeCodePoint = Character_IsBasicUnicodeCodePoint<T> or is_same_v<remove_cv_t<T>, wchar_t>;
@@ -91,15 +102,19 @@ namespace Stroika::Foundation::Characters {
     class Character;
 
     /**
-     *  \brief char8_t, char16_t, char32_t, wchar_t, Character - something that can be always safely interpreted as a UNICODE Character.
+     *  \brief char8_t, char16_t, char32_t, wchar_t, Character - something where an array of these can be unambiguously converted to/from UNICODE string.
      * 
      *  Character_SafelyCompatible:
-     *      o   char8_t
-     *      o   char16_t
-     *      o   char32_t
-     *      o   wchar_t
-     *      o   Character
+     *      o   char8_t         Character_IsBasicUnicodeCodePoint
+     *      o   char16_t        ""
+     *      o   char32_t        ""
+     *      o   wchar_t         Character_IsUnicodeCodePoint
+     *      o   Character       added in Character_SafelyCompatible
      *  \note all these types are <= 4 bytes (size of char32_t)
+     * 
+     *  \note - Character_ASCII and Character_Latin1 are NOT included here becuase - though these strings
+     *          can be unambiguously converted to UNICODE, the REVERSE is not true (since for example
+     *          not all UNICODE strings are ascii).
      */
     template <typename T>
     concept Character_SafelyCompatible = Character_IsUnicodeCodePoint<T> or is_same_v<remove_cv_t<T>, Character>;
@@ -107,8 +122,9 @@ namespace Stroika::Foundation::Characters {
     static_assert (Character_SafelyCompatible<char16_t>);
     static_assert (Character_SafelyCompatible<char32_t>);
     static_assert (Character_SafelyCompatible<wchar_t>);
+    //static_assert (Character_SafelyCompatible<Character>); true but not defined yet, so cannot assert here
     static_assert (not Character_SafelyCompatible<Character_ASCII>);
-    //static_assert (Character_SafelyCompatible<Character>); true but not defined yet.
+    static_assert (not Character_SafelyCompatible<Character_Latin1>);
 
     /**
     * &&&& @todo CONSIDER LOSING THIS AND REPLACING WITH Character_CompatibleIsh but CAREFULLY REVIEWING EACH CASE
@@ -125,16 +141,27 @@ namespace Stroika::Foundation::Characters {
     concept Character_Compatible = Character_SafelyCompatible<T> or is_same_v<remove_cv_t<T>, Character_ASCII>;
     static_assert (not Character_Compatible<Character_Latin1>);
 
+#if 0
     /**
+    * @todo consider if we need this concept
      */
     template <typename T>
     concept Character_IsBasicOrLatin1UnicodeCodePoint = Character_IsBasicUnicodeCodePoint<T> or is_same_v<remove_cv_t<T>, Character_Latin1>;
+#endif
 
+    /**
+    * && @todo maybe rename this Character_SafelyConvertibleToUNICODE
+    *   // like Character_SafelyCompatible but only one directional...
+    *   /// NO cuz of wehtehr we include Character - see Character_CompatibleIsh - maybe that should be renamed Character_SafelyConvertibleToUNICODE
+     */
     template <typename T>
     concept Character_IsUnicodeCodePointOrPlainCharOrLatin1Char =
         Character_IsUnicodeCodePointOrPlainChar<T> or is_same_v<remove_cv_t<T>, Character_Latin1>;
 
     /**
+    * 
+    * &&& @todo see Character_IsUnicodeCodePointOrPlainCharOrLatin1Char - maybe rename/refactor
+    * 
      *  \brief Character_CompatibleIsh extends Character_Compatible with Character_Latin1
      * 
      *  \note Character_CompatibleIsh means any 'basic character type' - size <= 4 bytes, which
