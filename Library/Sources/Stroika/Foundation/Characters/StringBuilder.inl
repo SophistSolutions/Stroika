@@ -134,6 +134,7 @@ namespace Stroika::Foundation::Characters {
                     size_t byteLen = fData_.size ();
                     fData_.resize_uninitialized (byteLen + 1);
                     fData_[byteLen] = c.GetAsciiCode ();
+                    return;
                 }
             }
             else {
@@ -141,9 +142,9 @@ namespace Stroika::Foundation::Characters {
                     size_t byteLen = fData_.size ();
                     fData_.resize_uninitialized (byteLen + 1);
                     fData_[byteLen] = c;
+                    return;
                 }
             }
-            return;
         }
         this->Append (span{&c, 1});
     }
