@@ -1448,24 +1448,36 @@ namespace {
 namespace {
     void Test50a_UnicodeStringLiterals_ ()
     {
-        // Argument must be "45 µs"
-        auto test45mus = [] (const String& a) {
-            {
-                Memory::StackBuffer<wchar_t> ignored1;
-                auto                         rhsSpan = a.GetData (&ignored1);
-                VerifyTestResult (rhsSpan.size () == 5);
-            }
-            String b;
-            b += a;
-            VerifyTestResult (a == b);
-            VerifyTestResult (a.size () == 5);
-            VerifyTestResult (a[3] == 0x00b5);
-            VerifyTestResult (a[4] == 's');
-        };
-        test45mus (String{L"45 \u00b5s"});
-        test45mus (String{u"45 \u00b5s"});
-        test45mus (String{U"45 \u00b5s"});
-        test45mus (String{u8"45 \u00b5s"});
+        {
+            const char16_t microChars16[] = u"\u00B5";
+            const char32_t microChars32[] = U"\U000000B5";
+            VerifyTestResult (0x00B5 == microChars16[0]);
+            VerifyTestResult (0x00B5 == microChars32[0]);
+            VerifyTestResult (sizeof (microChars16) == 2 * 2);
+            VerifyTestResult (sizeof (microChars32) == 2 * 4);
+            VerifyTestResult (String{microChars16}.size () == 1);
+            VerifyTestResult (String{microChars32}.size () == 1);
+        }
+        {
+            // Argument must be "45 µs"
+            auto test45mus = [] (const String& a) {
+                {
+                    Memory::StackBuffer<wchar_t> ignored1;
+                    auto                         rhsSpan = a.GetData (&ignored1);
+                    VerifyTestResult (rhsSpan.size () == 5);
+                }
+                String b;
+                b += a;
+                VerifyTestResult (a == b);
+                VerifyTestResult (a.size () == 5);
+                VerifyTestResult (a[3] == 0x00b5);
+                VerifyTestResult (a[4] == 's');
+            };
+            test45mus (String{L"45 \u00b5s"});
+            test45mus (String{u"45 \u00b5s"});
+            test45mus (String{U"45 \u00b5s"});
+            test45mus (String{u8"45 \u00b5s"}); // sadly u8"µ" doesn't work everywhere cuz using file BOM apparently not standardized, and using u8 apparantly has no impact on charset interpretation of successive source bytes
+        }
     }
 }
 
@@ -1641,14 +1653,6 @@ namespace {
             StringBuilder tmp;
             tmp += U"שלום";
             VerifyTestResult (tmp.str () == U"שלום");
-        }
-        {
-            const char16_t microChars16[] = u"\u00B5";
-            const char32_t microChars32[] = U"\U000000B5";
-            VerifyTestResult (0x00B5 == microChars16[0]);
-            VerifyTestResult (0x00B5 == microChars32[0]);
-            VerifyTestResult (sizeof (microChars16) == 2 * 2);
-            VerifyTestResult (sizeof (microChars32) == 2 * 4);
         }
     }
 }
