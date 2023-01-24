@@ -297,7 +297,7 @@ namespace Stroika::Foundation::Characters {
         // Using smaller may provide better processor cache friendliness
         // and frequently its enuf. And when not, could be much more
         // @todo maybe expose this parameter in StringBuilder TEMPLATE
-        mutable Memory::InlineBuffer<BufferElementType, kInlineBufferSize> fData_{0}; // not nul-terminated
+        mutable Memory::InlineBuffer<BufferElementType, kInlineBufferSize> fData_{}; // not nul-terminated
     };
 }
 
