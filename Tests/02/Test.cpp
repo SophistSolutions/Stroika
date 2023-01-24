@@ -1448,21 +1448,24 @@ namespace {
 namespace {
     void Test50a_UnicodeStringLiterals_ ()
     {
-        String a = L"45 \u00b5s";
-
-        {
-
-            Memory::StackBuffer<wchar_t> ignored1;
-            auto                         rhsSpan = a.GetData (&ignored1);
-            VerifyTestResult (rhsSpan.size () == 5);
-            int aaa = 3;
-        }
-        String b;
-        b += a;
-        VerifyTestResult (a == b);
-
-        String aaaa = L"45 \u00b5s";
-        VerifyTestResult (aaaa.size () == 5);
+        // Argument must be "45 µs"
+        auto test45mus = [] (const String& a) {
+            {
+                Memory::StackBuffer<wchar_t> ignored1;
+                auto                         rhsSpan = a.GetData (&ignored1);
+                VerifyTestResult (rhsSpan.size () == 5);
+            }
+            String b;
+            b += a;
+            VerifyTestResult (a == b);
+            VerifyTestResult (a.size () == 5);
+            VerifyTestResult (a[3] == 0x00b5);
+            VerifyTestResult (a[4] == 's');
+        };
+        test45mus (String{L"45 \u00b5s"});
+        test45mus (String{u"45 \u00b5s"});
+        test45mus (String{U"45 \u00b5s"});
+        test45mus (String{u8"45 \u00b5s"});
     }
 }
 
