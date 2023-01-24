@@ -259,6 +259,10 @@ namespace Stroika::Foundation::Characters {
          * 
          *  Source and target spans can be of any Character_Compatible character type (but source const and target non-const)
          * 
+         *  \note, if given illegal UTF-8, or illegal ascii (Character_ASCII) source input, the function should (perhaps peramterized)
+         *         detect the error and return ConversionStatusFlag::sourceIllegal (depending on Options::fStrictMode).
+         *         // @todo RECONSIDER fStrictMode!!!
+         * 
          *  @todo generalize/enhance mbstate_t* multibyteConversionState support
          */
         template <Character_UNICODECanUnambiguouslyConvertFrom SRC_T, Character_UNICODECanUnambiguouslyConvertFrom TRG_T>
@@ -282,8 +286,6 @@ namespace Stroika::Foundation::Characters {
     public:
         /**
          *  Given a span, return the number of bytes in the character, or return nullopt if the span of characters is invalid or incomplete
-         * 
-         *  \note for 'char' - the characters are ASSUMED/REQUIRED to be ASCII
          */
         template <Character_UNICODECanUnambiguouslyConvertFrom CHAR_T>
         static constexpr optional<size_t> NextCharacter (span<const CHAR_T> s);
