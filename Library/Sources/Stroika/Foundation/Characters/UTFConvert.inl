@@ -223,7 +223,7 @@ namespace Stroika::Foundation::Characters {
         else if constexpr (is_same_v<remove_cv_t<CHAR_T>, char8_t>) {
             const char8_t* b = s.data ();
             const char8_t* e = b + s.size ();
-            for (const char8_t* i = b; i < e; ) {
+            for (const char8_t* i = b; i < e;) {
                 auto n = NextCharacter (span<const char8_t>{i, e});
                 if (not n.has_value () or n > 2) [[unlikely]] {
                     return false;
