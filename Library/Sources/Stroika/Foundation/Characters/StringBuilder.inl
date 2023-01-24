@@ -54,20 +54,19 @@ namespace Stroika::Foundation::Characters {
             if constexpr (is_same_v<CHAR_T, Character_ASCII>) {
                 Character::CheckASCII (s);
             }
-            if constexpr (sizeof (CHAR_T) == sizeof (BufferElementType)) {
+            if constexpr (is_same_v<CHAR_T, BufferElementType>) {
                 size_t i = fData_.size ();
                 fData_.GrowToSize_uninitialized (i + spanSize);
                 const BufferElementType* copyFrom = reinterpret_cast<const BufferElementType*> (s.data ());
                 std::copy (copyFrom, copyFrom + spanSize, fData_.data () + i);
             }
             else {
-                // @todo  OPTIMZIATION OPPORTUNITY - if given an ascii span, can just do those chars one at a time...
-
-                Memory::StackBuffer<char32_t> buf{Memory::eUninitialized, UTFConverter::ComputeTargetBufferSize<char32_t> (s)};
+                // @todo  OPTIMIZATION OPPORTUNITY - if given an ascii span, can just do those chars one at a time...
+                Memory::StackBuffer<BufferElementType> buf{Memory::eUninitialized, UTFConverter::ComputeTargetBufferSize<BufferElementType> (s)};
 #if qCompilerAndStdLib_spanOfContainer_Buggy
-                Append (String{UTFConverter::kThe.ConvertSpan (s, span{buf.data (), buf.size ()})});
+                Append (UTFConverter::kThe.ConvertSpan (s, span{buf.data (), buf.size ()}));
 #else
-                Append (String{UTFConverter::kThe.ConvertSpan (s, span{buf})});
+                Append (UTFConverter::kThe.ConvertSpan (s, span{buf}));
 #endif
             }
         }
@@ -107,8 +106,8 @@ namespace Stroika::Foundation::Characters {
     template <typename OPTIONS>
     inline void StringBuilder<OPTIONS>::Append (const String& s)
     {
-        Memory::StackBuffer<char32_t> ignored;
-        span                          p = s.GetData<char32_t> (&ignored);
+        Memory::StackBuffer<BufferElementType> ignored; // could use char8_t maybe here - optimizing for ASCII case or BufferElementType
+        span                                   p = s.GetData (&ignored);
         if (not p.empty ()) {
             Append (p);
         }
@@ -117,9 +116,14 @@ namespace Stroika::Foundation::Characters {
     inline void StringBuilder<OPTIONS>::Append (Character c)
     {
         Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySyncrhonized_};
-        size_t                                                 len = fData_.size ();
-        fData_.resize_uninitialized (len + 1);
-        fData_[len] = c.GetCharacterCode ();
+        if constexpr (is_same_v<BufferElementType, char32_t>) {
+            size_t len = fData_.size ();
+            fData_.resize_uninitialized (len + 1);
+            fData_[len] = c.GetCharacterCode ();
+        }
+        else {
+            this->Append (span{&c, 1});
+        }
     }
 
 #if !qCompilerAndStdLib_template_Requires_templateDeclarationMatchesOutOfLine_Buggy
@@ -150,7 +154,13 @@ namespace Stroika::Foundation::Characters {
     inline size_t StringBuilder<OPTIONS>::size () const noexcept
     {
         Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fAssertExternallySyncrhonized_};
-        return fData_.size ();
+        if constexpr (is_same_v<BufferElementType, char32_t>) {
+            return fData_.size ();
+        }
+        else {
+            // @todo fix for mutli-code-point case
+            return fData_.size ();
+        }
     }
 
     template <typename OPTIONS>
@@ -164,16 +174,29 @@ namespace Stroika::Foundation::Characters {
     inline Character StringBuilder<OPTIONS>::GetAt (size_t index) const noexcept
     {
         Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fAssertExternallySyncrhonized_};
-        Require (index < fData_.size ());
-        return fData_[index];
+        if constexpr (is_same_v<BufferElementType, char32_t>) {
+            Require (index < fData_.size ());
+            // @todo fix for mutli-code-point case
+            return fData_[index];
+        }
+        else {
+            AssertNotImplemented ();
+            return 0;
+        }
     }
 
     template <typename OPTIONS>
     inline void StringBuilder<OPTIONS>::SetAt (Character item, size_t index) noexcept
     {
-        Require (index < fData_.size ());
         Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySyncrhonized_};
-        fData_[index] = item.GetCharacterCode ();
+        if constexpr (is_same_v<BufferElementType, char32_t>) {
+            Require (index < fData_.size ());
+            // @todo fix for mutli-code-point case
+            fData_[index] = item.GetCharacterCode ();
+        }
+        else {
+            AssertNotImplemented ();
+        }
     }
 
     template <typename OPTIONS>
@@ -236,18 +259,22 @@ namespace Stroika::Foundation::Characters {
         return size ();
     }
 
+#if 0
     template <typename OPTIONS>
     inline size_t StringBuilder<OPTIONS>::capacity () const noexcept
     {
+        // @todo fix API NAME/DESIGN for mutli-code-point case
         return fData_.capacity ();
     }
 
     template <typename OPTIONS>
     inline void StringBuilder<OPTIONS>::reserve (size_t newCapacity)
     {
+        // @todo fix API NAME/DESIGN for mutli-code-point case
         Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySyncrhonized_};
         fData_.reserve (newCapacity);
     }
+#endif
 
     template <typename OPTIONS>
     template <Character_Compatible CHAR_T>

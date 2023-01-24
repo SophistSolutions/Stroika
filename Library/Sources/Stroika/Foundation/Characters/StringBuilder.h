@@ -245,6 +245,7 @@ namespace Stroika::Foundation::Characters {
         nonvirtual span<const CHAR_T> GetData (Memory::StackBuffer<CHAR_T>* probablyIgnoredBuf) const
             requires (not is_const_v<CHAR_T>);
 
+#if 0
     public:
         /**
          *  Returns the amount of space reserved - before memory allocation will be needed to grow. 
@@ -261,6 +262,7 @@ namespace Stroika::Foundation::Characters {
          *  @see capacity
          */
         nonvirtual void reserve (size_t newCapacity);
+#endif
 
     public:
         [[deprecated ("DESUPPORTED Since v3.0d1, so we can change internal buffer rep")]] const wchar_t* begin ();
