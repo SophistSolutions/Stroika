@@ -144,6 +144,7 @@ namespace {
             Execution::Throw (kException_);
         }
         // accumulate chars, and check for close-quote
+        //StringBuilder<StringBuilder_Options<char8_t, 64>> result;
         StringBuilder result;
         while (true) {
             if (in.IsAtEOF ()) [[unlikely]] {
