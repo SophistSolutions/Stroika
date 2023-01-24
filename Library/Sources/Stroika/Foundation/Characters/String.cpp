@@ -744,6 +744,14 @@ template <typename CHAR_T>
 inline auto String::mk_nocheck_justPickBufRep_ (span<const CHAR_T> s) -> _SharedPtrIRep
     requires (is_same_v<CHAR_T, Character_ASCII> or is_same_v<CHAR_T, Character_Latin1> or is_same_v<CHAR_T, char16_t> or is_same_v<CHAR_T, char32_t>)
 {
+    // No check means needed checking done before, so these assertions just help enforce that
+    if constexpr (is_same_v<CHAR_T, Character_ASCII>) {
+        Require (Character::IsASCII (s)); // avoid later assertion error
+    }
+    else if constexpr (sizeof (CHAR_T) == 2) {
+        Require (UTFConverter::AllFitsInTwoByteEncoding (s)); // avoid later assertion error
+    }
+
     constexpr size_t kBaseOfFixedBufSize_ = sizeof (StringRepHelperAllFitInSize_::Rep<CHAR_T>);
     static_assert (kBaseOfFixedBufSize_ < 64); // this code below assumes, so must re-tune if this ever fails
 
