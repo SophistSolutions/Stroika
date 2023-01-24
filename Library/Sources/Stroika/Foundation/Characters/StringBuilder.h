@@ -65,6 +65,7 @@ namespace Stroika::Foundation::Characters {
 
     public:
         using BufferElementType = typename OPTIONS::BufferElementType;
+        static_assert (Character_UNICODECanAlwaysConvertTo<BufferElementType>);
 
     public:
         /**
@@ -105,7 +106,8 @@ namespace Stroika::Foundation::Characters {
         template <Character_IsUnicodeCodePointOrPlainChar CHAR_T>
         nonvirtual void Append (const basic_string_view<CHAR_T>& s);
         nonvirtual void Append (const String& s);
-        nonvirtual void Append (Character c);
+        template <Character_UNICODECanUnambiguouslyConvertFrom CHAR_T>
+        nonvirtual void Append (CHAR_T c);
 
     public:
         /**
@@ -125,8 +127,8 @@ namespace Stroika::Foundation::Characters {
 
         public :
             /**
-         *  Alias for Append
-         */
+             *  Alias for Append
+             */
             template <typename APPEND_ARG_T>
             nonvirtual auto
             operator<< (APPEND_ARG_T&& a)

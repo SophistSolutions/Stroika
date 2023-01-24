@@ -113,17 +113,39 @@ namespace Stroika::Foundation::Characters {
         }
     }
     template <typename OPTIONS>
-    inline void StringBuilder<OPTIONS>::Append (Character c)
+    template <Character_UNICODECanUnambiguouslyConvertFrom CHAR_T>
+    inline void StringBuilder<OPTIONS>::Append (CHAR_T c)
     {
         Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySyncrhonized_};
         if constexpr (is_same_v<BufferElementType, char32_t>) {
             size_t len = fData_.size ();
             fData_.resize_uninitialized (len + 1);
-            fData_[len] = c.GetCharacterCode ();
+            if constexpr (is_same_v<CHAR_T, Character>) {
+                fData_[len] = c.GetCharacterCode ();
+            }
+            else {
+                fData_[len] = c;
+            }
+            return;
         }
-        else {
-            this->Append (span{&c, 1});
+        else if constexpr (is_same_v<BufferElementType, char8_t>) {
+            if constexpr (is_same_v<CHAR_T, Character>) {
+                if (c.IsASCII ()) [[likely]] {
+                    size_t byteLen = fData_.size ();
+                    fData_.resize_uninitialized (byteLen + 1);
+                    fData_[byteLen] = c.GetAsciiCode ();
+                }
+            }
+            else {
+                if (isascii (c)) [[likely]] {
+                    size_t byteLen = fData_.size ();
+                    fData_.resize_uninitialized (byteLen + 1);
+                    fData_[byteLen] = c;
+                }
+            }
+            return;
         }
+        this->Append (span{&c, 1});
     }
 
 #if !qCompilerAndStdLib_template_Requires_templateDeclarationMatchesOutOfLine_Buggy
@@ -154,12 +176,12 @@ namespace Stroika::Foundation::Characters {
     inline size_t StringBuilder<OPTIONS>::size () const noexcept
     {
         Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fAssertExternallySyncrhonized_};
-        if constexpr (is_same_v<BufferElementType, char32_t>) {
+        if constexpr (sizeof (BufferElementType) == 4) {
             return fData_.size ();
         }
         else {
-            // @todo fix for mutli-code-point case
-            return fData_.size ();
+            return UTFConverter::kThe.ComputeCharacterLength (fData_);
+            //return UTFConverter::kThe.ComputeCharacterLength (span{fData_.data (), fData_.size ()});
         }
     }
 
