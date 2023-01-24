@@ -1645,10 +1645,10 @@ namespace {
         {
             const char16_t microChars16[] = u"\u00B5";
             const char32_t microChars32[] = U"\U000000B5";
-            Assert (0x00B5 == microChars16[0]);
-            Assert (0x00B5 == microChars32[0]);
-            Assert (sizeof (microChars16) == 2 * 2);
-            Assert (sizeof (microChars32) == 2 * 4);
+            VerifyTestResult (0x00B5 == microChars16[0]);
+            VerifyTestResult (0x00B5 == microChars32[0]);
+            VerifyTestResult (sizeof (microChars16) == 2 * 2);
+            VerifyTestResult (sizeof (microChars32) == 2 * 4);
         }
     }
 }
