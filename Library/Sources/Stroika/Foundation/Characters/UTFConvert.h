@@ -285,7 +285,12 @@ namespace Stroika::Foundation::Characters {
 
     public:
         /**
-         *  Given a span, return the number of bytes in the character, or return nullopt if the span of characters is invalid or incomplete
+         *  Given a span, return the number of code-point units in the (full UNICODE) character, or return nullopt if the span of characters is invalid or incomplete
+         * 
+         *  if argument span empty, or insufficient to complete a character, this returns nullopt.
+         * 
+         *  For example, if CHAR_T == char32_t, or Character, this returns 1.
+         *  If CHAR_T is Character_ASCII, this returns 1.
          */
         template <Character_UNICODECanUnambiguouslyConvertFrom CHAR_T>
         static constexpr optional<size_t> NextCharacter (span<const CHAR_T> s);
