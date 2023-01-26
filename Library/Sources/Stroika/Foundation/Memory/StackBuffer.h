@@ -36,7 +36,7 @@ namespace Stroika::Foundation::Memory {
     }
 
     /**
-     *  \brief Store variable sized array on the stack (\see also InlineBuffer<T,BUF_SIZE>)
+     *  \brief Store variable sized (BUF_SIZE elements) array on the stack (\see also InlineBuffer<T,BUF_SIZE>), and on heap if it grows if needed
      * 
      *  Typically, StackBuffer<> combines the performance of using a stack buffer (inline array on stack) to store arrays with
      *  the safety and flexability of using the free store (malloc).
