@@ -357,6 +357,7 @@ namespace Stroika::Foundation::Memory {
             }
             fLiveData_[s] = e;
         }
+        Invariant ();
     }
     template <typename T, size_t BUF_SIZE>
     inline void InlineBuffer<T, BUF_SIZE>::clear () noexcept
