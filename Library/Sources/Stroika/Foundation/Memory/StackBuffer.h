@@ -286,6 +286,7 @@ namespace Stroika::Foundation::Memory {
         }
 
     private:
+        // generally unneeded optimization, but allows quick check of sz against just BUF_SIZE in most cases
         constexpr bool HasEnoughCapacity_ (size_t sz) const
         {
             // Computing capacity - while simple and quick, is much slower than this check which

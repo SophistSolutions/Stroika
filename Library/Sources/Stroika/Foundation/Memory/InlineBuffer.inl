@@ -58,7 +58,9 @@ namespace Stroika::Foundation::Memory {
     {
         static_assert (is_convertible_v<Configuration::ExtractValueType_t<ITERATOR_OF_T>, T>);
         auto sz = static_cast<size_t> (distance (start, end));
-        reserve (sz, true); // reserve not resize() so we can do uninitialized_copy (avoid constructing empty objects to be assigned over)
+        if (not this->HasEnoughCapacity_ (sz)) [[unlikely]] {
+            reserve (sz, true); // reserve not resize() so we can do uninitialized_copy (avoid constructing empty objects to be assigned over)
+        }
         uninitialized_copy (start, end, this->begin ());
         fSize_ = sz;
         Invariant ();
@@ -85,7 +87,7 @@ namespace Stroika::Foundation::Memory {
         if (src.UsingInlinePreallocatedBuffer_ ()) {
             // then little to be saved from a move, and technically we really cannot do much, except that we can 'move' the data elements
             // This 'moving' is done via make_move_iterator () - rather that magically makes the uninitialized_copy really move instead of copying
-            reserve (src.capacity ());
+            Assert (capacity () == src.capacity ());
             size_t sz = src.size ();
             uninitialized_copy (std::make_move_iterator (src.begin ()), std::make_move_iterator (src.begin () + sz), this->begin ());
             fSize_ = sz;
@@ -121,7 +123,9 @@ namespace Stroika::Foundation::Memory {
         // @todo this simple implementation could be more efficient
         DestroyElts_ (this->begin (), this->end ());
         fSize_ = 0;
-        reserve (rhs.size ());
+        if (not this->HasEnoughCapacity_ (rhs.size ())) [[unlikely]] {
+            reserve (rhs.size ());
+        }
         uninitialized_copy (rhs.begin (), rhs.end (), this->begin ());
         Invariant ();
         return *this;
@@ -134,7 +138,9 @@ namespace Stroika::Foundation::Memory {
             // @todo this simple implementation could be more efficient
             DestroyElts_ (this->begin (), this->end ());
             fSize_ = 0;
-            reserve (rhs.size ());
+            if (not this->HasEnoughCapacity_ (rhs.size ())) [[unlikely]] {
+                reserve (rhs.size ());
+            }
             uninitialized_copy (rhs.begin (), rhs.end (), this->begin ());
             fSize_ = rhs.size ();
             Invariant ();
@@ -245,7 +251,7 @@ namespace Stroika::Foundation::Memory {
         }
     }
     template <typename T, size_t BUF_SIZE>
-    inline void InlineBuffer<T, BUF_SIZE>::reserve (size_t newCapacity, bool atLeast)
+    void InlineBuffer<T, BUF_SIZE>::reserve (size_t newCapacity, bool atLeast)
     {
         Require (atLeast or newCapacity >= size ());
         size_t useNewCapacity = newCapacity;
@@ -330,11 +336,16 @@ namespace Stroika::Foundation::Memory {
         return at (i);
     }
     template <typename T, size_t BUF_SIZE>
-    inline void InlineBuffer<T, BUF_SIZE>::push_back (Configuration::ArgByValueType<T> e)
+    inline  void InlineBuffer<T, BUF_SIZE>::push_back (Configuration::ArgByValueType<T> e)
     {
         size_t s = size ();
         if (this->HasEnoughCapacity_ (s + 1)) [[likely]] {
-            uninitialized_copy (&e, &e + 1, this->end ());
+            if constexpr (is_trivially_copyable_v<T>) {
+                fLiveData_[s] = e;
+            }
+            else {
+                uninitialized_copy (&e, &e + 1, this->end ());
+            }
             ++this->fSize_;
         }
         else {

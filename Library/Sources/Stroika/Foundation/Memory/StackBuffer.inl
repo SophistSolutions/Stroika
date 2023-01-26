@@ -58,7 +58,9 @@ namespace Stroika::Foundation::Memory {
     {
         static_assert (is_convertible_v<Configuration::ExtractValueType_t<ITERATOR_OF_T>, T>);
         auto sz = static_cast<size_t> (distance (start, end));
-        reserve (sz); // reserve not resize() so we can do uninitialized_copy (avoid constructing empty objects to be assigned over)
+        if (not this->HasEnoughCapacity_ (sz)) [[unlikely]] {
+            reserve (sz); // reserve not resize() so we can do uninitialized_copy (avoid constructing empty objects to be assigned over)
+        }
 #if qCompilerAndStdLib_uninitialized_copy_n_Warning_Buggy
         Configuration::uninitialized_copy_MSFT_BWA (start, end, this->begin ());
 #else
@@ -172,7 +174,7 @@ namespace Stroika::Foundation::Memory {
         }
     }
     template <typename T, size_t BUF_SIZE>
-    inline void StackBuffer<T, BUF_SIZE>::reserve (size_t newCapacity, bool atLeast)
+    void StackBuffer<T, BUF_SIZE>::reserve (size_t newCapacity, bool atLeast)
     {
         Require (atLeast or newCapacity >= size ());
         size_t useNewCapacity = newCapacity;
@@ -260,11 +262,16 @@ namespace Stroika::Foundation::Memory {
     {
         size_t s = size ();
         if (this->HasEnoughCapacity_ (s + 1)) [[likely]] {
+            if constexpr (is_trivially_copyable_v<T>) {
+                fLiveData_[s] = e;
+            }
+            else {
 #if qCompilerAndStdLib_uninitialized_copy_n_Warning_Buggy
-            Configuration::uninitialized_copy_MSFT_BWA (&e, &e + 1, this->end ());
+                Configuration::uninitialized_copy_MSFT_BWA (&e, &e + 1, this->end ());
 #else
-            uninitialized_copy (&e, &e + 1, this->end ());
+                uninitialized_copy (&e, &e + 1, this->end ());
 #endif
+            }
             ++this->fSize_;
         }
         else {
