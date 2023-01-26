@@ -114,7 +114,13 @@ namespace Stroika::Foundation::Characters {
     }
     template <typename OPTIONS>
     template <Character_UNICODECanUnambiguouslyConvertFrom CHAR_T>
-    inline void StringBuilder<OPTIONS>::Append (CHAR_T c)
+    inline
+#if defined(_MSC_VER)
+        // Makes significant differnce in JSON parser runtime with vs2k 17.4.3
+        __forceinline
+#endif
+        void
+        StringBuilder<OPTIONS>::Append (CHAR_T c)
     {
         Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySyncrhonized_};
         if constexpr (is_same_v<BufferElementType, char32_t>) {
