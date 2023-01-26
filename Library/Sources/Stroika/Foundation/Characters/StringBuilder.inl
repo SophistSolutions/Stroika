@@ -119,7 +119,7 @@ namespace Stroika::Foundation::Characters {
         Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySyncrhonized_};
         if constexpr (is_same_v<BufferElementType, char32_t>) {
 #if 0
-            // cleaner, but empirically on windows jsonparse regtest - slower
+            // @todo retest: cleaner, but empirically on windows jsonparse regtest - slower -- LGP 2023-01-26
             if constexpr (is_same_v<CHAR_T, Character>) {
                 fData_.push_back (c.GetCharacterCode ());
             }
