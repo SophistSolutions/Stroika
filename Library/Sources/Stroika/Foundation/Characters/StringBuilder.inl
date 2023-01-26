@@ -118,6 +118,15 @@ namespace Stroika::Foundation::Characters {
     {
         Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySyncrhonized_};
         if constexpr (is_same_v<BufferElementType, char32_t>) {
+#if 0
+            // cleaner, but empirically on windows jsonparse regtest - slower
+            if constexpr (is_same_v<CHAR_T, Character>) {
+                fData_.push_back (c.GetCharacterCode ());
+            }
+            else {
+                fData_.push_back (c);
+            }
+#else
             size_t len = fData_.size ();
             fData_.resize_uninitialized (len + 1);
             if constexpr (is_same_v<CHAR_T, Character>) {
@@ -126,26 +135,24 @@ namespace Stroika::Foundation::Characters {
             else {
                 fData_[len] = c;
             }
-            return;
+#endif
+            return; // handled
         }
         else if constexpr (is_same_v<BufferElementType, char8_t>) {
             if constexpr (is_same_v<CHAR_T, Character>) {
                 if (c.IsASCII ()) [[likely]] {
-                    size_t byteLen = fData_.size ();
-                    fData_.resize_uninitialized (byteLen + 1);
-                    fData_[byteLen] = c.GetAsciiCode ();
-                    return;
+                    fData_.push_back (c.GetAsciiCode ());
+                    return; // handled
                 }
             }
             else {
                 if (isascii (c)) [[likely]] {
-                    size_t byteLen = fData_.size ();
-                    fData_.resize_uninitialized (byteLen + 1);
-                    fData_[byteLen] = c;
-                    return;
+                    fData_.push_back (static_cast<Character_ASCII> (c));
+                    return; // handled
                 }
             }
         }
+        // fall thru - handle
         this->Append (span{&c, 1});
     }
 
