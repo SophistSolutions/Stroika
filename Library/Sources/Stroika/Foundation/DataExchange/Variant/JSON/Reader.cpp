@@ -143,9 +143,10 @@ namespace {
             static const auto kException_{BadFormatException{"JSON: Expected quoted string"sv}};
             Execution::Throw (kException_);
         }
-        // accumulate chars, and check for close-quote
-        //StringBuilder<StringBuilder_Options<char8_t, 64>> result;
-        StringBuilder result;
+        /*
+         * accumulate chars, and check for close-quote
+         */
+        StringBuilder<StringBuilder_Options<char8_t, 64>> result; // StringBuilder_Options: text often ascii, empirically a bit faster with on windows on jsonparser regtest
         while (true) {
             if (in.IsAtEOF ()) [[unlikely]] {
                 static const auto kException_{BadFormatException{"JSON: Unexpected EOF reading string (looking for close quote)"sv}};
