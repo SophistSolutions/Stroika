@@ -178,14 +178,14 @@ namespace Stroika::Foundation::Memory {
             Stroika_Foundation_Debug_Valgrind_ANNOTATE_HAPPENS_BEFORE (&sHeadLink_);
             p = sHeadLink_.exchange (Private_::kLockedSentinal_, memory_order_acq_rel);
             Stroika_Foundation_Debug_Valgrind_ANNOTATE_HAPPENS_AFTER (&sHeadLink_);
-            if (p == Private_::kLockedSentinal_) {
+            if (p == Private_::kLockedSentinal_) [[unlikely]] {
                 // we stored and retrieved a sentinal. So no lock. Try again!
                 this_thread::yield (); // nb: until Stroika v2.0a209, this called Execution::Yield (), making this a cancelation point.
                 goto again;
             }
         }
         // if we got here, p contains the real head, and have a pseudo lock
-        if (p == nullptr) {
+        if (p == nullptr) [[unlikely]] {
             p = GetMem_Util_ ();
         }
         void* result = p;
@@ -210,7 +210,7 @@ namespace Stroika::Foundation::Memory {
          * To implement linked list of BlockAllocated(T)'s before they are
          * actually alloced, re-use the begining of this as a link pointer.
          */
-        if (sHeadLink_ == nullptr) {
+        if (sHeadLink_ == nullptr) [[unlikely]] {
             sHeadLink_ = GetMem_Util_ ();
         }
         void* result = sHeadLink_;
@@ -239,7 +239,7 @@ namespace Stroika::Foundation::Memory {
             Stroika_Foundation_Debug_Valgrind_ANNOTATE_HAPPENS_BEFORE (&sHeadLink_);
             prevHead = sHeadLink_.exchange (Private_::kLockedSentinal_, memory_order_acq_rel);
             Stroika_Foundation_Debug_Valgrind_ANNOTATE_HAPPENS_AFTER (&sHeadLink_);
-            if (prevHead == Private_::kLockedSentinal_) {
+            if (prevHead == Private_::kLockedSentinal_) [[unlikely]] {
                 // we stored and retrieved a sentinal. So no lock. Try again!
                 this_thread::yield (); // nb: until Stroika v2.0a209, this called Execution::Yield (), making this a cancelation point.
                 goto again;
@@ -430,7 +430,7 @@ namespace Stroika::Foundation::Memory {
         Require (n == 1);
         using Private_::BlockAllocationPool_;
 #if qAllowBlockAllocation
-        if (p != nullptr) {
+        if (p != nullptr) [[likely]] {
             BlockAllocationPool_<AdjustSizeForPool_ ()>::Deallocate (p);
         }
 #else
