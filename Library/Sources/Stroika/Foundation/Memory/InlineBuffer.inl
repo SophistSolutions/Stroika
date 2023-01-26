@@ -336,7 +336,7 @@ namespace Stroika::Foundation::Memory {
         return at (i);
     }
     template <typename T, size_t BUF_SIZE>
-    inline  void InlineBuffer<T, BUF_SIZE>::push_back (Configuration::ArgByValueType<T> e)
+    inline void InlineBuffer<T, BUF_SIZE>::push_back (Configuration::ArgByValueType<T> e)
     {
         size_t s = size ();
         if (this->HasEnoughCapacity_ (s + 1)) [[likely]] {
