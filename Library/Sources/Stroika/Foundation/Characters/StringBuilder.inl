@@ -124,24 +124,12 @@ namespace Stroika::Foundation::Characters {
     {
         Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySyncrhonized_};
         if constexpr (is_same_v<BufferElementType, char32_t>) {
-#if 0
-            // @todo retest: cleaner, but empirically on windows jsonparse regtest - slower -- LGP 2023-01-26
             if constexpr (is_same_v<CHAR_T, Character>) {
                 fData_.push_back (c.GetCharacterCode ());
             }
             else {
                 fData_.push_back (c);
             }
-#else
-            size_t len = fData_.size ();
-            fData_.resize_uninitialized (len + 1);
-            if constexpr (is_same_v<CHAR_T, Character>) {
-                fData_[len] = c.GetCharacterCode ();
-            }
-            else {
-                fData_[len] = c;
-            }
-#endif
             return; // handled
         }
         else if constexpr (is_same_v<BufferElementType, char8_t>) {
