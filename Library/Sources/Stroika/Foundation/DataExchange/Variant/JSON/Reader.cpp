@@ -504,15 +504,14 @@ public:
 #endif
         using namespace Streams;
         using namespace boost::json;
-        // @todo tweak/performance celanup
-        // for now thing - readall returns bytes, which can be cast to a string-view...
+        // @todo consider rewrite using boost 'sax' json parser (i think it exists)
         auto bytes = in.ReadAll ();
         try {
             auto pr = parse (boost::json::string_view{reinterpret_cast<const char*> (bytes.data ()), bytes.size ()});
-            return DataExchange::VariantValue{pr};
+            return DataExchange::VariantValue{pr};  // Transform boost objects to Stroika objects
         }
         catch (...) {
-            Execution::Throw (DataExchange::BadFormatException{});
+            Execution::Throw (DataExchange::BadFormatException{Characters::ToString (current_exception ())});
         }
     }
     virtual VariantValue Read (const Streams::InputStream<Characters::Character>::Ptr& in) override
@@ -525,10 +524,10 @@ public:
         using namespace boost::json;
         try {
             auto pr = parse (in.ReadAll ().AsUTF8<std::string> ());
-            return DataExchange::VariantValue{pr};
+            return DataExchange::VariantValue{pr}; // Transform boost objects to Stroika objects
         }
         catch (...) {
-            Execution::Throw (DataExchange::BadFormatException{});
+            Execution::Throw (DataExchange::BadFormatException{Characters::ToString (current_exception ())});
         }
     }
 };
