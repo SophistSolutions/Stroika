@@ -305,7 +305,7 @@ namespace Stroika::Foundation::Characters {
         using PRIMITIVE_TRG_T = typename decltype (this->ConvertToPrimitiveSpan_ (target))::value_type;
         if constexpr (is_same_v<PRIMITIVE_SRC_T, PRIMITIVE_TRG_T>) {
             if (source.size_bytes () != 0) {
-                std::memcpy (target.data (), source.data (), source.size_bytes ());
+                std::memcpy (reinterpret_cast<void*> (target.data ()), reinterpret_cast<const void*> (source.data ()), source.size_bytes ());
             }
             // copy (source.begin (), source.end (), reinterpret_cast < PRIMITIVE_SRC_T*> (target.data ()));   // cast so coping Character => char32_t works, for example
             return ConversionResultWithStatus{{.fSourceConsumed = source.size (), .fTargetProduced = source.size ()}, ConversionStatusFlag::ok};
