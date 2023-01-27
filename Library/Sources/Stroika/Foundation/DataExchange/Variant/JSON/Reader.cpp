@@ -540,6 +540,9 @@ inline auto Variant::JSON::Reader::mk_ (const ReaderOptions& options) -> shared_
             return make_shared<NativeRep_> ();
 #if __has_include("boost/json.hpp")
         case ReaderOptions::Algorithm::eBoost:
+            if (options.fCanReadPastEndOfJSONObjectInStream == false) {
+                return make_shared<NativeRep_> ();
+            }
             return make_shared<BoostRep_> ();
 #endif
         default:
