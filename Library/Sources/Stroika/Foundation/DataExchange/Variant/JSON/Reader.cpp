@@ -508,7 +508,7 @@ public:
         auto bytes = in.ReadAll ();
         try {
             auto pr = parse (boost::json::string_view{reinterpret_cast<const char*> (bytes.data ()), bytes.size ()});
-            return DataExchange::VariantValue{pr};  // Transform boost objects to Stroika objects
+            return DataExchange::VariantValue{pr}; // Transform boost objects to Stroika objects
         }
         catch (...) {
             Execution::Throw (DataExchange::BadFormatException{Characters::ToString (current_exception ())});
