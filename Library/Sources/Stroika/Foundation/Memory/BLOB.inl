@@ -366,7 +366,12 @@ namespace Stroika::Foundation::Memory {
         Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
         return GetSize ();
     }
-    inline size_t BLOB::size () const
+    inline const byte* BLOB::data () const
+    {
+        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
+        return begin ();
+    }
+    inline size_t      BLOB::size () const
     {
         Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
         return GetSize ();

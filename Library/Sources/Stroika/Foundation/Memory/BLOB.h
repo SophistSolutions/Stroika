@@ -321,6 +321,12 @@ namespace Stroika::Foundation::Memory {
 
     public:
         /**
+         * @todo cleanup and switch to spans!!
+         */
+        nonvirtual const byte* data () const;
+
+    public:
+        /**
          *  Trivial alias for @see GetSize()
          */
         nonvirtual size_t size () const;
