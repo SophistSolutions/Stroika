@@ -505,8 +505,15 @@ public:
         using namespace Streams;
         using namespace boost::json;
         // @todo tweak/performance celanup
-        auto            pr = parse (in.ReadAll ().As<std::string> ());
-        return DataExchange::VariantValue{pr};
+        // for now thing - readall returns bytes, which can be cast to a string-view...
+        auto bytes = in.ReadAll ();
+        try {
+            auto pr = parse (boost::json::string_view{reinterpret_cast<const char*> (bytes.data ()), bytes.size ()});
+            return DataExchange::VariantValue{pr};
+        }
+        catch (...) {
+            Execution::Throw (DataExchange::BadFormatException{});
+        }
     }
     virtual VariantValue Read (const Streams::InputStream<Characters::Character>::Ptr& in) override
     {
@@ -516,15 +523,18 @@ public:
         Require (in.IsSeekable ());
         using namespace Streams;
         using namespace boost::json;
-        // @todo tweak/performance celanup/errtest
-        std::error_code ec;
-        auto            pr = parse (in.ReadAll ().AsUTF8<std::string> ());
-        return DataExchange::VariantValue{pr};
+        try {
+            auto pr = parse (in.ReadAll ().AsUTF8<std::string> ());
+            return DataExchange::VariantValue{pr};
+        }
+        catch (...) {
+            Execution::Throw (DataExchange::BadFormatException{});
+        }
     }
 };
 #endif
 
-inline auto Variant::JSON::Reader::mk_ (const ReaderOptions& options) -> shared_ptr<_IRep> 
+inline auto Variant::JSON::Reader::mk_ (const ReaderOptions& options) -> shared_ptr<_IRep>
 {
     switch (options.fPreferredAlgorithm.value_or (ReaderOptions::Algorithm::eDefault)) {
         case ReaderOptions::Algorithm::eStroikaNative:

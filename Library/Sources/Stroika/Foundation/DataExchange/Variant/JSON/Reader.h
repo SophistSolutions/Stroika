@@ -47,7 +47,6 @@ namespace Stroika::Foundation::DataExchange::Variant::JSON {
         };
 
         optional<Algorithm> fPreferredAlgorithm;
-
     };
 
     /**
