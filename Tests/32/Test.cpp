@@ -903,12 +903,12 @@ namespace Test_05_ParseRegressionTest_3_ {
         Debug::TraceContextBumper ctx{L"Test_05_ParseRegressionTest_3_::DoAll_"};
         {
             const char   kJSONExample_[] = "{"
-                                            "    \"T1\" : \"\","
-                                            "    \"T2\" : null,"
-                                            "    \"T3\" : {"
-                                            "        \"DefaultBackupDirectory\" : true,"
-                                            "        \"PrintName\" : \"{Default Backup Directory}\""
-                                            "    }"
+                                           "    \"T1\" : \"\","
+                                           "    \"T2\" : null,"
+                                           "    \"T3\" : {"
+                                           "        \"DefaultBackupDirectory\" : true,"
+                                           "        \"PrintName\" : \"{Default Backup Directory}\""
+                                           "    }"
                                            "}";
             VariantValue v = DataExchange::Variant::JSON::Reader{}.Read (Streams::ExternallyOwnedMemoryInputStream<byte>::New (
                 reinterpret_cast<const byte*> (std::begin (kJSONExample_)),
