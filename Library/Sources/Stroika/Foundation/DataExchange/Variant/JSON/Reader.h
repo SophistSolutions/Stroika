@@ -29,6 +29,28 @@
 namespace Stroika::Foundation::DataExchange::Variant::JSON {
 
     /**
+     */
+    struct ReaderOptions {
+        enum Algorithm {
+            eStroikaNative,
+#if __has_include("boost/json.hpp")
+            eBoost,
+#endif
+
+#if __has_include("boost/json.hpp")
+            eDefault = eBoost,
+            Stroika_Define_Enum_Bounds (eStroikaNative, eBoost)
+#else
+            eDefault = eStroikaNative,
+            Stroika_Define_Enum_Bounds (eStroikaNative, eStroikaNative)
+#endif
+        };
+
+        optional<Algorithm> fPreferredAlgorithm;
+
+    };
+
+    /**
      *  \note   Our definition of the JSON format comes from:
      *          http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf
      *
@@ -55,11 +77,15 @@ namespace Stroika::Foundation::DataExchange::Variant::JSON {
     private:
         using inherited = Variant::Reader;
 
-    private:
-        class Rep_;
-
     public:
-        Reader ();
+        Reader (const ReaderOptions& options = {});
+
+    private:
+        class NativeRep_;
+#if __has_include("boost/json.hpp")
+        class BoostRep_;
+#endif
+        static shared_ptr<_IRep> mk_ (const ReaderOptions& options);
     };
 
 }

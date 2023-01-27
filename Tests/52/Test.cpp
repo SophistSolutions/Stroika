@@ -1306,11 +1306,20 @@ namespace {
             }
         }
 #endif
+        void DoStroikaJSONParse_forcedNative_ (const string& p, unsigned int nTimes)
+        {
+            using namespace DataExchange;
+            using namespace Streams;
+            Variant::JSON::Reader reader{Variant::JSON::ReaderOptions{.fPreferredAlgorithm = Variant::JSON::ReaderOptions::eStroikaNative}};
+            for (unsigned int tryNum = 0; tryNum < nTimes; ++tryNum) {
+                VariantValue output{reader.Read (ExternallyOwnedMemoryInputStream<byte>::New (begin (p), end (p)))};
+            }
+        }
         void DoStroikaJSONParse_ (const string& p, unsigned int nTimes)
         {
             using namespace DataExchange;
             using namespace Streams;
-            Variant::JSON::Reader reader;
+            Variant::JSON::Reader reader{Variant::JSON::ReaderOptions{}};
             for (unsigned int tryNum = 0; tryNum < nTimes; ++tryNum) {
                 VariantValue output{reader.Read (ExternallyOwnedMemoryInputStream<byte>::New (begin (p), end (p)))};
             }
@@ -1350,20 +1359,22 @@ namespace {
             using filesystem::path;
             unsigned int nTimes = max<unsigned int> (1u, static_cast<unsigned int> (sTimeMultiplier_));
 
-            using TEST_FUN_TYPE = function<void (const string&, unsigned int)>;
-            static const auto kTestCases_ =
-                vector<tuple<TEST_FUN_TYPE, string>>{{make_tuple (DoStroikaJSONParse_, "stroika-json-parser")
+            using TEST_FUN_TYPE           = function<void (const string&, unsigned int)>;
+            static const auto kTestCases_ = vector<tuple<TEST_FUN_TYPE, string>>{
+                {
+                    make_tuple (DoStroikaJSONParse_forcedNative_, "stroika-json-native-parser"), 
+                    make_tuple (DoStroikaJSONParse_, "stroika-json-parser")
 #if __has_include("AltJSONImpls2BenchMark/nlohmann/json.hpp")
-                                                          ,
-                                                      make_tuple (DoStroikaJSONParse_nlohmann_json, "nlohmann_json-parser")
+                                                                                                  ,
+                    make_tuple (DoStroikaJSONParse_nlohmann_json, "nlohmann_json-parser")
 #endif
 #if __has_include("boost/json.hpp")
-                                                          ,
-                                                      make_tuple (DoStroikaJSONParse_boost_json, "boost_json-parser")
+                     ,
+                    make_tuple (DoStroikaJSONParse_boost_json, "boost_json-parser")
 #endif
 #if __has_include("boost/json.hpp")
-                                                          ,
-                                                      make_tuple (DoStroikaJSONParse_boost_json2Stk, "boost_json-vv-parser")
+                     ,
+                    make_tuple (DoStroikaJSONParse_boost_json2Stk, "boost_json-vv-parser")
 #endif
                 }};
             path jsonTestRoot = path{"."} / "52" / "JSONTestData";
@@ -1417,10 +1428,11 @@ namespace {
             if (not filesystem::exists (jsonTestRoot)) {
                 jsonTestRoot = path{".."} / path{".."} / path{".."} / "52" / "JSONTestData";
             }
-
+            
+            DoJSONParse_ (jsonTestRoot / "large-dict.json", 5, DoStroikaJSONParse_forcedNative_, "stroika-native-json");
             DoJSONParse_ (jsonTestRoot / "large-dict.json", 5, DoStroikaJSONParse_nlohmann_json, "nlohmann");
             DoJSONParse_ (jsonTestRoot / "large-dict.json", 5, DoStroikaJSONParse_boost_json, "boost_json");
-            DoJSONParse_ (jsonTestRoot / "large-dict.json", 5, DoStroikaJSONParse_, "stroika-native-json");
+            DoJSONParse_ (jsonTestRoot / "large-dict.json", 5, DoStroikaJSONParse_, "stroika-default-json");
             DoJSONParse_ (jsonTestRoot / "large-dict.json", 5, DoStroikaJSONParse_boost_json2Stk, "stroika-via-boost-json");
             return;
         }

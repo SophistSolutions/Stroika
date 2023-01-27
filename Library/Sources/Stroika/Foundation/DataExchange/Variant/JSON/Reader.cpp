@@ -5,6 +5,10 @@
 
 #include <optional>
 
+#if __has_include("boost/json.hpp")
+#include <boost/json.hpp>
+#endif
+
 #include "../../../Characters/FloatConversion.h"
 #include "../../../Characters/Format.h"
 #include "../../../Characters/String2Int.h"
@@ -455,11 +459,11 @@ namespace {
  ************************* Variant::JSON::Reader ********************************
  ********************************************************************************
  */
-class Variant::JSON::Reader::Rep_ : public Variant::Reader::_IRep {
+class Variant::JSON::Reader::NativeRep_ : public Variant::Reader::_IRep {
 public:
     virtual _SharedPtrIRep Clone () const override
     {
-        return make_shared<Rep_> (); // no instance data
+        return make_shared<NativeRep_> (); // no instance data
     }
     virtual String GetDefaultFileSuffix () const override
     {
@@ -474,14 +478,68 @@ public:
     virtual VariantValue Read (const Streams::InputStream<Characters::Character>::Ptr& in) override
     {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-        Debug::TraceContextBumper ctx{"DataExchange::JSON::Reader::Rep_::Read"};
+        Debug::TraceContextBumper ctx{"DataExchange::JSON::Reader::NativeRep_::Read"};
 #endif
         Require (in.IsSeekable ());
         MyBufferedStreamReader_ reader{in};
         return Reader_value_ (reader);
     }
 };
-Variant::JSON::Reader::Reader ()
-    : inherited{make_shared<Rep_> ()}
+#if __has_include("boost/json.hpp")
+class Variant::JSON::Reader::BoostRep_ : public Variant::Reader::_IRep {
+public:
+    virtual _SharedPtrIRep Clone () const override
+    {
+        return make_shared<BoostRep_> (); // no instance data
+    }
+    virtual String GetDefaultFileSuffix () const override
+    {
+        static const String kResult_ = ".json"sv;
+        return kResult_;
+    }
+    virtual VariantValue Read (const Streams::InputStream<byte>::Ptr& in) override
+    {
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+        Debug::TraceContextBumper ctx{"DataExchange::JSON::Reader::BoostRep_::Read"};
+#endif
+        using namespace Streams;
+        using namespace boost::json;
+        // @todo tweak/performance celanup
+        auto            pr = parse (in.ReadAll ().As<std::string> ());
+        return DataExchange::VariantValue{pr};
+    }
+    virtual VariantValue Read (const Streams::InputStream<Characters::Character>::Ptr& in) override
+    {
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+        Debug::TraceContextBumper ctx{"DataExchange::JSON::Reader::BoostRep_::Read"};
+#endif
+        Require (in.IsSeekable ());
+        using namespace Streams;
+        using namespace boost::json;
+        // @todo tweak/performance celanup/errtest
+        std::error_code ec;
+        auto            pr = parse (in.ReadAll ().AsUTF8<std::string> ());
+        return DataExchange::VariantValue{pr};
+    }
+};
+#endif
+
+inline auto Variant::JSON::Reader::mk_ (const ReaderOptions& options) -> shared_ptr<_IRep> 
+{
+    switch (options.fPreferredAlgorithm.value_or (ReaderOptions::Algorithm::eDefault)) {
+        case ReaderOptions::Algorithm::eStroikaNative:
+            return make_shared<NativeRep_> ();
+#if __has_include("boost/json.hpp")
+        case ReaderOptions::Algorithm::eBoost:
+            return make_shared<BoostRep_> ();
+#endif
+        default:
+            AssertNotReached ();
+            return nullptr;
+    }
+}
+
+Variant::JSON::Reader::Reader (const ReaderOptions& options)
+    : inherited{mk_ (options)}
 {
 }
