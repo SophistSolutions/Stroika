@@ -503,12 +503,34 @@ public:
         Debug::TraceContextBumper ctx{"DataExchange::JSON::Reader::BoostRep_::Read"};
 #endif
         using namespace Streams;
-        using namespace boost::json;
+        using namespace boost;
+        bool inSeekable = in.IsSeekable ();
         // @todo consider rewrite using boost 'sax' json parser (i think it exists)
-        auto bytes = in.ReadAll ();
         try {
-            auto pr = parse (boost::json::string_view{reinterpret_cast<const char*> (bytes.data ()), bytes.size ()});
-            return DataExchange::VariantValue{pr}; // Transform boost objects to Stroika objects
+            json::stream_parser p;
+            byte                buf[8 * 1024];
+            const size_t        targetChunkSize = inSeekable ? Memory::NEltsOf (buf) : 1;
+            size_t              actualChunkSize;
+            while ((actualChunkSize = in.Read (begin (buf), begin (buf) + targetChunkSize)) != 0) {
+                boost::json::error_code ec;
+                size_t                  nParsed = p.write_some (reinterpret_cast<const char*> (begin (buf)), actualChunkSize, ec);
+                Assert (nParsed <= actualChunkSize);
+                if (nParsed < actualChunkSize) {
+                    in.Seek (Whence::eFromCurrent, static_cast<SignedSeekOffsetType> (nParsed) - static_cast<SignedSeekOffsetType> (actualChunkSize));
+                    break;
+                }
+                if (p.done ()) {
+                    break; // good parse
+                }
+                else if (ec) {
+                    Execution::Throw (DataExchange::BadFormatException{String::FromNarrowSDKString (ec.what ())});
+                }
+            }
+            if (not p.done ()) {
+                p.finish (); // in case wrote text like '3' to buffer, ambiguous if done
+            }
+            Assert (p.done ());
+            return DataExchange::VariantValue{p.release ()}; // Transform boost objects to Stroika objects
         }
         catch (...) {
             Execution::Throw (DataExchange::BadFormatException{Characters::ToString (current_exception ())});
@@ -521,14 +543,7 @@ public:
 #endif
         Require (in.IsSeekable ());
         using namespace Streams;
-        using namespace boost::json;
-        try {
-            auto pr = parse (in.ReadAll ().AsUTF8<std::string> ());
-            return DataExchange::VariantValue{pr}; // Transform boost objects to Stroika objects
-        }
-        catch (...) {
-            Execution::Throw (DataExchange::BadFormatException{Characters::ToString (current_exception ())});
-        }
+        return Read (_ToByteReader (in));
     }
 };
 #endif
