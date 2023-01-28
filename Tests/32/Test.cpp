@@ -1183,7 +1183,7 @@ namespace {
             void ReadJSON_ (const Streams::InputStream<byte>::Ptr& in)
             {
                 using namespace DataExchange::Variant::JSON;
-                VerifyTestResult (kTestVariant_ == Reader{ReaderOptions{.fCanReadPastEndOfJSONObjectInStream = false}}.Read (in));
+                VerifyTestResult (kTestVariant_ == Reader{}.Read (in));
             }
         }
         void DoAll ()
