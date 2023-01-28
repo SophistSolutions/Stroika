@@ -9,6 +9,8 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
+#include "../../Streams/MemoryStream.h"
+
 namespace Stroika::Foundation::DataExchange::Variant {
 
     /*
@@ -62,6 +64,13 @@ namespace Stroika::Foundation::DataExchange::Variant {
         return *fRep_.cget ();
     }
     inline Streams::InputStream<std::byte>::Ptr Reader::_ToByteReader (const Streams::InputStream<std::byte>::Ptr& in) { return in; }
+    inline Streams::InputStream<std::byte>::Ptr Reader::_ToByteReader (const Streams::InputStream<Characters::Character>::Ptr& in)
+    {
+        // quick hack but in adequate (assuming we can read to EOF, which is not true) in general so this is bad
+        auto s = in.ReadAll ().AsUTF8<string> ();
+        return Streams::MemoryStream<std::byte>::New (reinterpret_cast<const std::byte*> (s.data ()),
+                                                      reinterpret_cast<const std::byte*> (s.data ()) + s.size ());
+    }
     inline Streams::InputStream<std::byte>::Ptr Reader::_ToByteReader (const Memory::BLOB& in)
     {
         return in.As<Streams::InputStream<std::byte>::Ptr> ();

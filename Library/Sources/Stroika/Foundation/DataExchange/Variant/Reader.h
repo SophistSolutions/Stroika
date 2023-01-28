@@ -77,6 +77,7 @@ namespace Stroika::Foundation::DataExchange::Variant {
          * \brief simple helper so subclasses can more easily provide varied Read overloads
          */
         static Streams::InputStream<std::byte>::Ptr _ToByteReader (const Streams::InputStream<std::byte>::Ptr& in);
+        static Streams::InputStream<std::byte>::Ptr _ToByteReader (const Streams::InputStream<Characters::Character>::Ptr& in);
         static Streams::InputStream<std::byte>::Ptr _ToByteReader (const Memory::BLOB& in);
         static Streams::InputStream<std::byte>::Ptr _ToByteReader (istream& in);
 
