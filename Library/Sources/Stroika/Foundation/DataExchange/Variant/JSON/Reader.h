@@ -47,9 +47,6 @@ namespace Stroika::Foundation::DataExchange::Variant::JSON {
         };
 
         optional<Algorithm> fPreferredAlgorithm;
-
-        // This is frequently OK, but in some situations (like reading from a stream with multiple objects) - its tragically bad.
-        optional<bool> fCanReadPastEndOfJSONObjectInStream;
     };
 
     /**
