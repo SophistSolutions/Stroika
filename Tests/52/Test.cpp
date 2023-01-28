@@ -1361,20 +1361,18 @@ namespace {
 
             using TEST_FUN_TYPE           = function<void (const string&, unsigned int)>;
             static const auto kTestCases_ = vector<tuple<TEST_FUN_TYPE, string>>{
-                {
-                    make_tuple (DoStroikaJSONParse_forcedNative_, "stroika-json-native-parser"), 
-                    make_tuple (DoStroikaJSONParse_, "stroika-json-parser")
+                {make_tuple (DoStroikaJSONParse_forcedNative_, "stroika-json-native-parser"), make_tuple (DoStroikaJSONParse_, "stroika-json-parser")
 #if __has_include("AltJSONImpls2BenchMark/nlohmann/json.hpp")
                                                                                                   ,
-                    make_tuple (DoStroikaJSONParse_nlohmann_json, "nlohmann_json-parser")
+                 make_tuple (DoStroikaJSONParse_nlohmann_json, "nlohmann_json-parser")
 #endif
 #if __has_include("boost/json.hpp")
                      ,
-                    make_tuple (DoStroikaJSONParse_boost_json, "boost_json-parser")
+                 make_tuple (DoStroikaJSONParse_boost_json, "boost_json-parser")
 #endif
 #if __has_include("boost/json.hpp")
                      ,
-                    make_tuple (DoStroikaJSONParse_boost_json2Stk, "boost_json-vv-parser")
+                 make_tuple (DoStroikaJSONParse_boost_json2Stk, "boost_json-vv-parser")
 #endif
                 }};
             path jsonTestRoot = path{"."} / "52" / "JSONTestData";
