@@ -12,8 +12,6 @@
 
 namespace Stroika::Foundation::Streams {
 
-   
-
 }
 
 #endif /*_Stroika_Foundation_Streams_TextToByteReader_inl_*/

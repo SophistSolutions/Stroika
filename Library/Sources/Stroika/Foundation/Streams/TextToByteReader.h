@@ -23,26 +23,28 @@ namespace Stroika::Foundation::Streams {
 
     using Characters::Character;
 
-
+    /**
+     *  \brief Stream wrapper that takes an InputStream<Character> and transforms it into an
+     *         InputStream<byte> (like TextWriter does, but pull rather than push based).
+     * 
+     *  Draft implementation.
+     * 
+     * DOC CONNECTION TO TextWriter and maybe share output/format flags?
+     */
     class TextToByteReader : public InputStream<std::byte> {
     public:
-        TextToByteReader ()            = delete;
+        TextToByteReader ()                        = delete;
         TextToByteReader (const TextToByteReader&) = delete;
 
     public:
         using Ptr = InputStream<std::byte>::Ptr;
 
-   
-
     public:
-       
         static Ptr New (InputStream<Character>::Ptr srcStream);
 
-
-  
+    private:
+        class Rep_;
     };
-
-
 
 }
 
