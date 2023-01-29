@@ -27,7 +27,7 @@ namespace Stroika::Foundation::Streams {
      *  \brief Stream wrapper that takes an InputStream<Character> and transforms it into an
      *         InputStream<byte> (like TextWriter does, but pull rather than push based).
      * 
-     *  Draft implementation.
+     *  Draft implementation (not very performant, but doesnt seem used much and easy to tweak)
      * 
      * DOC CONNECTION TO TextWriter and maybe share output/format flags?
      */
