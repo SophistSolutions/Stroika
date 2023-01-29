@@ -21,6 +21,7 @@
 #include "../Math/Common.h"
 #include "../Memory/BlockAllocated.h"
 #include "../Memory/Common.h"
+#include "../Memory/Span.h"
 #include "../Memory/StackBuffer.h"
 
 #include "RegularExpression.h"

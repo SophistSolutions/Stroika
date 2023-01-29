@@ -14,6 +14,7 @@
 #include <type_traits>
 
 #include "../Debug/Assertions.h"
+#include "../Memory/Span.h"
 
 namespace Stroika::Foundation::Characters {
 

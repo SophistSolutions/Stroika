@@ -14,6 +14,7 @@
 
 #include "../Containers/Common.h"
 #include "../Memory/Optional.h"
+#include "../Memory/Span.h"
 #include "../Memory/StackBuffer.h"
 
 #include "CString/Utilities.h"

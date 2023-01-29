@@ -2118,6 +2118,9 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\TextToByteReader.h">
       <Filter>Sources\Streams</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\Span.h">
+      <Filter>Sources\Memory</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\StackBuffer.inl">
@@ -3479,6 +3482,9 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Streams\TextToByteReader.inl">
       <Filter>Sources\Streams</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Memory\Span.inl">
+      <Filter>Sources\Memory</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

@@ -15,6 +15,7 @@
 
 #include "../Debug/Assertions.h"
 #include "../Memory/Bits.h"
+#include "../Memory/Span.h"
 #include "../Memory/StackBuffer.h"
 
 namespace Stroika::Foundation::Characters {

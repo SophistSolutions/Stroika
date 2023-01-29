@@ -13,6 +13,7 @@
 
 #include "../Debug/Assertions.h"
 #include "../Execution/Throw.h"
+#include "../Memory/Span.h"
 
 #include "CString/Utilities.h"
 

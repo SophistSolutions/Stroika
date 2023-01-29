@@ -31,6 +31,7 @@
 #include "../IO/FileSystem/FileSystem.h"
 #include "../IO/FileSystem/FileUtils.h"
 #include "../IO/FileSystem/PathName.h"
+#include "../Memory/Span.h"
 #include "../Memory/StackBuffer.h"
 #include "../Streams/MemoryStream.h"
 #include "../Streams/TextReader.h"
