@@ -825,6 +825,9 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\Character.cpp">
       <Filter>Sources\Characters</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\TextToByteReader.cpp">
+      <Filter>Sources\Streams</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.h">
@@ -2111,6 +2114,9 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\HashBase.h">
       <Filter>Sources\Cryptography\Digest</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\TextToByteReader.h">
+      <Filter>Sources\Streams</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -3470,6 +3476,9 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\HashBase.inl">
       <Filter>Sources\Cryptography\Digest</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Streams\TextToByteReader.inl">
+      <Filter>Sources\Streams</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

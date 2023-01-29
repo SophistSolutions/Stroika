@@ -29,6 +29,7 @@ Objs	=	\
 	$(ObjDir)MemoryStream${OBJ_SUFFIX}\
 	$(ObjDir)SharedMemoryStream${OBJ_SUFFIX}\
 	$(ObjDir)TextReader${OBJ_SUFFIX}\
+	$(ObjDir)TextToByteReader${OBJ_SUFFIX}\
 	$(ObjDir)TextWriter${OBJ_SUFFIX}\
 
 all:	$(Objs)  $(SubDirs)
