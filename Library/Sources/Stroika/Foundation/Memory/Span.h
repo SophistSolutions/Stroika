@@ -27,11 +27,22 @@ namespace Stroika::Foundation::Memory {
     template <class T, size_t EXTENT>
     constexpr std::span<const T, EXTENT> ConstSpan (std::span<T, EXTENT> s);
 
+    /**
+     * \brief return true iff intersection of the two spans is non-empty
+     * 
+     *  The only known use for this is assertions in CopySpanData that the spans don't overlap (memcpy vs memmove)
+     */
+    template <typename T1, typename T2, size_t E1, size_t E2>
+    constexpr bool Intersects (std::span<T1, E1> lhs, std::span<T2, E2> rhs);
+
     /*
      *  \brief Span-flavored memcpy/std::copy (copies from, to)
      *
-     *  like std::copy, except copies the data the spans point to/reference. Target span maybe larger,
+     *  like std::copy, except copies the data the spans point to/reference. Target span maybe larger than src,
      *  but must (require) be no smaller than src span.
+     * 
+     *  \req src.size () <= target.size ()
+     *  \req not Intersects (src, target) - so non-overlapping
      *  
      *  Returns the subset of the target span filled (so a subspan of target).
      */
@@ -45,11 +56,12 @@ namespace Stroika::Foundation::Memory {
      *
      *  Same as CopySpanData, except does 'static cast' on data being copied
      * 
+     *  \req not Intersects (src, target) - so non-overlapping
      *  \req sizeof (FROM_T) == sizeof (TO_T)       ; for now - consider losing this requirement someday if convenient/need
      */
     template <typename FROM_T, typename TO_T>
     constexpr std::span<TO_T> CopySpanData_StaticCast (span<const FROM_T> src, span<TO_T> target)
-       requires (sizeof (FROM_T) == sizeof (TO_T));
+        requires (sizeof (FROM_T) == sizeof (TO_T));
     template <typename FROM_T, typename TO_T>
     constexpr std::span<TO_T> CopySpanData_StaticCast (span<FROM_T> src, span<TO_T> target)
         requires (sizeof (FROM_T) == sizeof (TO_T));

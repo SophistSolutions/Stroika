@@ -26,6 +26,37 @@ namespace Stroika::Foundation::Memory {
 
     /*
      ********************************************************************************
+     ***************************** Memory::Intersects *******************************
+     ********************************************************************************
+     */
+    template <typename T1, typename T2, size_t E1, size_t E2>
+    constexpr bool Intersects (std::span<T1, E1> lhs, std::span<T2, E2> rhs)
+    {
+        // See Range<T, TRAITS>::Intersects for explanation - avoid direct call here to avoid include file refrence
+        auto lhsStart = as_bytes (lhs).data ();
+        auto rhsStart = as_bytes (rhs).data ();
+        auto lhsEnd   = lhsStart + lhs.size_bytes ();
+        auto rhsEnd   = rhsStart + rhs.size_bytes ();
+        if (rhsEnd < lhsStart) {
+            return false;
+        }
+        if (rhsStart > lhsEnd) {
+            return false;
+        }
+        if (lhs.empty () or rhs.empty ()) {
+            return false;
+        }
+        if (rhsEnd == lhsStart) {
+            return true;
+        }
+        if (rhsStart == lhsEnd) {
+            return true;
+        }
+        return true;
+    }
+
+    /*
+     ********************************************************************************
      *************************** Memory::CopySpanData *******************************
      ********************************************************************************
      */
@@ -33,6 +64,7 @@ namespace Stroika::Foundation::Memory {
     constexpr std::span<T> CopySpanData (span<const T> src, span<T> target)
     {
         Require (src.size () <= target.size ());
+        Require (not Intersects (src, target));
         std::copy (src.begin (), src.end (), target.data ());
         return target.subspan (0, src.size ());
     }
@@ -42,7 +74,6 @@ namespace Stroika::Foundation::Memory {
         return CopySpanData (ConstSpan (src), target);
     }
 
-    
     /*
      ********************************************************************************
      *********************** Memory::CopySpanData_StaticCast ************************
@@ -53,6 +84,7 @@ namespace Stroika::Foundation::Memory {
         requires (sizeof (FROM_T) == sizeof (TO_T))
     {
         Require (src.size () <= target.size ());
+        Require (not Intersects (src, target));
         TO_T* tb = target.data ();
         for (const auto& i : src) {
             *tb++ = static_cast<TO_T> (i);
