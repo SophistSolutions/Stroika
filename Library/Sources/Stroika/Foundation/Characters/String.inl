@@ -470,9 +470,7 @@ namespace Stroika::Foundation::Characters {
     {
         PeekSpanData psd = GetPeekSpanData<CHAR_T> ();
         if (auto p = PeekData<CHAR_T> (psd)) {
-            Require (s.size_bytes () >= p->size_bytes ());
-            (void)::memcpy (s.data (), p->data (), p->size_bytes ());
-            return span<CHAR_T>{s.data (), p->size ()};
+            return Memory::CopySpanData (*p, s);
         }
         else {
             // OK, we need to UTF convert from the actual size we have to what the caller asked for
