@@ -621,11 +621,11 @@ namespace Stroika::Foundation::Characters {
             Memory::StackBuffer<char32_t> ignored1;
             span<const char32_t>          thisSpan = this->GetData (&ignored1);
             Memory::StackBuffer<char32_t> combinedBuf{Memory::eUninitialized, thisSpan.size () + s.size ()};
-            #if qCompilerAndStdLib_spanOfContainer_Buggy
+#if qCompilerAndStdLib_spanOfContainer_Buggy
             Memory::CopySpanData (thisSpan, span{combinedBuf.data (), combinedBuf.size ()});
-            #else
+#else
             Memory::CopySpanData (thisSpan, span{combinedBuf});
-            #endif
+#endif
             char32_t* write2Buf = combinedBuf.data () + thisSpan.size ();
             for (auto i : s) {
                 if constexpr (is_same_v<CHAR_T, Character>) {
