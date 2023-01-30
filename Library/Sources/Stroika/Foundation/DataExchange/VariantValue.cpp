@@ -75,7 +75,7 @@ namespace {
 }
 
 template <typename T>
-struct VariantValue::TIRep_ : VariantValue::IRep_, public Memory::UseBlockAllocationIfAppropriate<TIRep_<T>> {
+struct VariantValue::TIRep_ final : VariantValue::IRep_, public Memory::UseBlockAllocationIfAppropriate<TIRep_<T>> {
     template <typename FWD>
     inline TIRep_ (FWD&& v)
         : fVal{forward<FWD> (v)}
@@ -247,7 +247,7 @@ namespace {
                 std::vector<VariantValue> r; // performance tweak, add in STL, avoiding virtual calls for each add, and then move to Stroika Seqeunce
                 r.reserve (a.size ());
                 for (const boost::json::value& i : a) {
-                    r.emplace_back (VariantValue{i});
+                    r.emplace_back (mk_ (i));
                 }
                 return VariantValue{Containers::Concrete::Sequence_stdvector<VariantValue>{std::move (r)}};
             } break;
@@ -258,9 +258,9 @@ namespace {
                 for (const auto& i : o) {
 #if qCompilerAndStdLib_spanOfContainer_Buggy
                     auto keyStr = i.key ();
-                    r.insert ({String::FromUTF8 (span{keyStr.data (), keyStr.size ()}), VariantValue{i.value ()}});
+                    r.insert ({String::FromUTF8 (span{keyStr.data (), keyStr.size ()}), mk_ (i.value ())});
 #else
-                    r.insert ({String::FromUTF8 (span{i.key ()}), VariantValue{i.value ()}});
+                    r.insert ({String::FromUTF8 (span{i.key ()}), mk_ (i.value ())});
 #endif
                 }
                 return VariantValue{Containers::Concrete::Mapping_stdhashmap<String, VariantValue>{std::move (r)}};

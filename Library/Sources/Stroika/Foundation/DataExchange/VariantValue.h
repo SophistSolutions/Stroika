@@ -41,7 +41,7 @@ namespace Stroika::Foundation::DataExchange {
     /**
      *  \def kVariantValueUsesStroikaSharedPtr_
      *      If true, use Stroika's SharedPtr<> in place of std::shared_ptr<>. This is an
-     *      internal implementaiton detail, and may go away as an option.
+     *      internal implementation detail, and may go away as an option.
      *
      *      This defaults to @see Memory::kSharedPtr_IsFasterThan_shared_ptr
      */
