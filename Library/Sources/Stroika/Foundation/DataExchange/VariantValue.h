@@ -236,16 +236,16 @@ namespace Stroika::Foundation::DataExchange {
         explicit VariantValue (Sequence<VariantValue>&& val);
         explicit VariantValue (const Sequence<VariantValue>& val);
         explicit VariantValue (const Traversal::Iterable<VariantValue>& val);
-        VariantValue (const VariantValue& src) = default;
-        VariantValue (VariantValue&& src) noexcept;
+        VariantValue (const VariantValue& src)     = default;
+        VariantValue (VariantValue&& src) noexcept = default;
         template <typename T>
-        VariantValue (const optional<T>& val);
+        VariantValue (const optional<T>& val)
+            requires (is_convertible_v<T, VariantValue>);
 #if __has_include("boost/json/value.hpp")
         VariantValue (const boost::json::value& val);
 #endif
 
     private:
-        //VariantValue (const string& val) = delete;
         VariantValue (const char* val) = delete;
 
     public:
@@ -256,11 +256,9 @@ namespace Stroika::Foundation::DataExchange {
          */
         nonvirtual VariantValue& operator= (VariantValue&& rhs) noexcept = default;
         nonvirtual VariantValue& operator= (const VariantValue& rhs)     = default;
-        nonvirtual VariantValue& operator= (const map<wstring, VariantValue>& val);
-        nonvirtual VariantValue& operator= (const Mapping<String, VariantValue>& val);
-        nonvirtual VariantValue& operator= (const vector<VariantValue>& val);
-        nonvirtual VariantValue& operator= (const Sequence<VariantValue>& val);
-        nonvirtual VariantValue& operator= (const Traversal::Iterable<VariantValue>& val);
+        template <typename T>
+        nonvirtual VariantValue& operator= (T&& val)
+            requires (requires (T x) { VariantValue{x}; });
 
     public:
         /**

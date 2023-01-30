@@ -54,38 +54,17 @@ namespace Stroika::Foundation::DataExchange {
         : VariantValue{String{forward<STRINGISH_T> (val)}}
     {
     }
-    inline VariantValue::VariantValue (VariantValue&& src) noexcept
-        : fVal_{move (src.fVal_)}
-    {
-    }
     template <typename T>
     inline VariantValue::VariantValue (const optional<T>& val)
+        requires (is_convertible_v<T, VariantValue>)
         : VariantValue{val.has_value () ? VariantValue{*val} : VariantValue{}}
     {
     }
-    inline VariantValue& VariantValue::operator= (const map<wstring, VariantValue>& val)
+    template <typename T>
+    inline VariantValue& VariantValue::operator= (T&& val)
+        requires (requires (T x) { VariantValue{x}; })
     {
-        *this = VariantValue{val};
-        return *this;
-    }
-    inline VariantValue& VariantValue::operator= (const Mapping<String, VariantValue>& val)
-    {
-        *this = VariantValue{val};
-        return *this;
-    }
-    inline VariantValue& VariantValue::operator= (const vector<VariantValue>& val)
-    {
-        *this = VariantValue{val};
-        return *this;
-    }
-    inline VariantValue& VariantValue::operator= (const Sequence<VariantValue>& val)
-    {
-        *this = VariantValue{val};
-        return *this;
-    }
-    inline VariantValue& VariantValue::operator= (const Traversal::Iterable<VariantValue>& val)
-    {
-        *this = VariantValue{val};
+        *this = VariantValue{forward<T> (val)};
         return *this;
     }
     inline VariantValue::Type VariantValue::GetType () const

@@ -214,58 +214,66 @@ VariantValue::VariantValue (const Traversal::Iterable<VariantValue>& val)
 }
 
 #if __has_include("boost/json/value.hpp")
-VariantValue::VariantValue (const boost::json::value& val)
-{
-    using namespace boost;
-    switch (val.kind ()) {
-        case json::kind::null:
-            break;
-        case json::kind::bool_:
-            *this = val.as_bool ();
-            break;
-        case json::kind::double_:
-            *this = val.as_double ();
-            break;
-        case json::kind::int64:
-            *this = val.as_int64 ();
-            break;
-        case json::kind::uint64:
-            *this = val.as_uint64 ();
-            break;
-        case json::kind::string: {
-            const json::string& bs = val.as_string (); // boost::json::string documents it represents a string as a series of UTF-8 characters
+namespace {
+    inline auto mk_ (const boost::json::value& val) -> VariantValue
+    {
+        using namespace boost;
+        switch (val.kind ()) {
+            case json::kind::null:
+                return VariantValue{};
+                break;
+            case json::kind::bool_:
+                return val.as_bool ();
+                break;
+            case json::kind::double_:
+                return val.as_double ();
+                break;
+            case json::kind::int64:
+                return val.as_int64 ();
+                break;
+            case json::kind::uint64:
+                return val.as_uint64 ();
+                break;
+            case json::kind::string: {
+                const json::string& bs = val.as_string (); // boost::json::string documents it represents a string as a series of UTF-8 characters
 #if qCompilerAndStdLib_spanOfContainer_Buggy
-            *this = String::FromUTF8 (span{bs.data (), bs.size ()});
+                return String::FromUTF8 (span{bs.data (), bs.size ()});
 #else
-            *this = String::FromUTF8 (span{bs});
+                return String::FromUTF8 (span{bs});
 #endif
-        } break;
-        case json::kind::array: {
-            const auto& a = val.as_array ();
-            std::vector<VariantValue> r; // performance tweak, add in STL, avoiding virtual calls for each add, and then move to Stroika Seqeunce
-            r.reserve (a.size ());
-            for (const boost::json::value& i : a) {
-                r.push_back (VariantValue{i});
-            }
-            *this = Containers::Concrete::Sequence_stdvector<VariantValue>{std::move (r)};
-        } break;
-        case json::kind::object: {
-            const auto& o = val.as_object ();
-            Containers::Concrete::Mapping_stdhashmap<String, VariantValue>::STDHASHMAP<> r; // performance tweak, add in STL, avoiding virtual calls for each add, and then move to Stroika mapping
-            r.reserve (o.size ());
-            for (const auto& i : o) {
+            } break;
+            case json::kind::array: {
+                const auto& a = val.as_array ();
+                std::vector<VariantValue> r; // performance tweak, add in STL, avoiding virtual calls for each add, and then move to Stroika Seqeunce
+                r.reserve (a.size ());
+                for (const boost::json::value& i : a) {
+                    r.emplace_back (VariantValue{i});
+                }
+                return VariantValue{Containers::Concrete::Sequence_stdvector<VariantValue>{std::move (r)}};
+            } break;
+            case json::kind::object: {
+                const auto& o = val.as_object ();
+                Containers::Concrete::Mapping_stdhashmap<String, VariantValue>::STDHASHMAP<> r; // performance tweak, add in STL, avoiding virtual calls for each add, and then move to Stroika mapping
+                r.reserve (o.size ());
+                for (const auto& i : o) {
 #if qCompilerAndStdLib_spanOfContainer_Buggy
-                auto keyStr = i.key ();
-                r.insert ({String::FromUTF8 (span{keyStr.data (), keyStr.size ()}), VariantValue{i.value ()}});
+                    auto keyStr = i.key ();
+                    r.insert ({String::FromUTF8 (span{keyStr.data (), keyStr.size ()}), VariantValue{i.value ()}});
 #else
-                r.insert ({String::FromUTF8 (span{i.key ()}), VariantValue{i.value ()}});
+                    r.insert ({String::FromUTF8 (span{i.key ()}), VariantValue{i.value ()}});
 #endif
-            }
-            *this = Containers::Concrete::Mapping_stdhashmap<String, VariantValue>{std::move (r)};
-        } break;
-        default:
-            AssertNotReached ();
+                }
+                return VariantValue{Containers::Concrete::Mapping_stdhashmap<String, VariantValue>{std::move (r)}};
+            } break;
+            default:
+                AssertNotReached ();
+                return VariantValue{};
+        }
     }
+}
+VariantValue::VariantValue (const boost::json::value& val)
+    : VariantValue{mk_ (val)}
+{
 }
 #endif
 
