@@ -60,7 +60,7 @@ namespace Stroika::Foundation::Characters {
 #if qCompilerAndStdLib_spanOfContainer_Buggy
                 Memory::CopySpanData_StaticCast (s, span{fData_.data (), fData_.size ()}.subspan (i));
 #else
-                Memory::CopySpanData_StaticCast (s, span{fData_}.subspan (i));
+                Memory::CopySpanData_StaticCast (s, span<CHAR_T>{fData_}.subspan (i));
 #endif
             }
             else {
