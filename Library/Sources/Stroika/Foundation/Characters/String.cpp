@@ -305,12 +305,12 @@ namespace {
                 size_t       len = t1.size ();
                 span<CHAR_T> buf = mkBuf_ (len); // note buf span is over capacity, not size
                 Assert (buf.size () >= len);
-                copy (t1.begin (), t1.end (), buf.data ());
+                auto result = Memory::CopySpanData (t1, buf);
                 if constexpr (kAddNullTerminator_) {
                     Assert (len + 1 <= buf.size ());
                     *(buf.data () + len) = '\0';
                 }
-                return buf.subspan (0, len); // return span of just characters, even if we have extra NUL-byte (outside span)
+                return result; // return span of just characters, even if we have extra NUL-byte (outside span)
             }
 
         public:
@@ -399,12 +399,12 @@ namespace {
                 size_t       len = t1.size ();
                 span<CHAR_T> buf = mkBuf_ (len); // note buf span is over capacity, not size
                 Assert (buf.size () >= len);
-                copy (t1.begin (), t1.end (), buf.data ());
+                auto result = Memory::CopySpanData (t1, buf);
                 if constexpr (kAddNullTerminator_) {
                     Assert (len + 1 <= buf.size ());
                     *(buf.data () + len) = '\0';
                 }
-                return buf.subspan (0, len); // return span of just characters, even if we have extra NUL-byte (outside span)
+                return result; // return span of just characters, even if we have extra NUL-byte (outside span)
             }
 
         public:
@@ -471,8 +471,7 @@ namespace {
                 // til after base class construction. SHOULDNT really matter (since uninitialized data), but on
                 // g++-11, and other compilers, detected as vptr UB violation if we access first
                 Require (t1.size () <= CAPACITY);
-                copy (t1.begin (), t1.end (), fBuf_);
-                inherited::operator= (span<const CHAR_T>{fBuf_, t1.size ()});
+                inherited::operator= (Memory::CopySpanData (t1, span<CHAR_T>{fBuf_}));
                 if (IncludesNullTerminator_ ()) {
                     Assert (t1.size () + 1 <= CAPACITY);
                     fBuf_[t1.size ()] = CHAR_T{'\0'};
@@ -920,15 +919,12 @@ String String::RemoveAt (size_t from, size_t to) const
         Memory::StackBuffer<char32_t> ignored1;
         span                          d = GetData (&ignored1);
         Memory::StackBuffer<char32_t> buf{Memory::eUninitialized, d.size () - (to - from)};
+        span<char32_t>                bufSpan{buf.data (), buf.size ()};
         span                          s1 = d.subspan (0, from);
         span                          s2 = d.subspan (to);
-        copy (s1.begin (), s1.end (), buf.data ());
-        copy (s2.begin (), s2.end (), buf.data () + s1.size ());
-#if qCompilerAndStdLib_spanOfContainer_Buggy
-        return String{mk_ (span{buf.data (), buf.size ()})};
-#else
-        return String{mk_ (span{buf})};
-#endif
+        Memory::CopySpanData (s1, bufSpan);
+        Memory::CopySpanData (s2, bufSpan.subspan (s1.size ()));
+        return String{mk_ (bufSpan)};
     }
 }
 

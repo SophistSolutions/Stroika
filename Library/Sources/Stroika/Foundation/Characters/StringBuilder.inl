@@ -57,8 +57,7 @@ namespace Stroika::Foundation::Characters {
             if constexpr (is_same_v<CHAR_T, BufferElementType>) {
                 size_t i = fData_.size ();
                 fData_.GrowToSize_uninitialized (i + spanSize);
-                const BufferElementType* copyFrom = reinterpret_cast<const BufferElementType*> (s.data ());
-                std::copy (copyFrom, copyFrom + spanSize, fData_.data () + i);
+                Memory::CopySpanData_StaticCast (s, span{fData_}.subspan (i));
             }
             else {
                 // @todo  OPTIMIZATION OPPORTUNITY - if given an ascii span, can just do those chars one at a time...

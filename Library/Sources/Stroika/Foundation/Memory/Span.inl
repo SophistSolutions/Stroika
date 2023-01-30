@@ -9,7 +9,7 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include <cstring>
+#include "../Debug/Assertions.h"
 
 namespace Stroika::Foundation::Memory {
 
@@ -81,7 +81,6 @@ namespace Stroika::Foundation::Memory {
      */
     template <typename FROM_T, typename TO_T>
     constexpr std::span<TO_T> CopySpanData_StaticCast (span<const FROM_T> src, span<TO_T> target)
-        requires (sizeof (FROM_T) == sizeof (TO_T))
     {
         Require (src.size () <= target.size ());
         Require (not Intersects (src, target));
@@ -93,7 +92,6 @@ namespace Stroika::Foundation::Memory {
     }
     template <typename FROM_T, typename TO_T>
     constexpr std::span<TO_T> CopySpanData_StaticCast (span<FROM_T> src, span<TO_T> target)
-        requires (sizeof (FROM_T) == sizeof (TO_T))
     {
         return CopySpanData_StaticCast (ConstSpan (src), target);
     }

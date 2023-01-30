@@ -6,7 +6,6 @@
 
 #include "../StroikaPreComp.h"
 
-#include <memory>
 #include <span>
 
 #include "../Configuration/Common.h"
@@ -54,17 +53,19 @@ namespace Stroika::Foundation::Memory {
     /*
      *  \brief Span-flavored memcpy/std::copy (copies from, to), but with cast (like CopySpanData but with cast)
      *
-     *  Same as CopySpanData, except does 'static cast' on data being copied
+     *  Same as CopySpanData, except does 'static cast' on data being copied.
+     * 
+     *  \returns the subspan of the target which was just filled in.
+     * 
+     *  \note sizeof (FROM_T) may differ from sizeof (TO_T). So this can be used to downshift char16_t data
+     *        to plain ASCII (Character_ASCII) so long as the caller assures the source data is truely ascii first.
      * 
      *  \req not Intersects (src, target) - so non-overlapping
-     *  \req sizeof (FROM_T) == sizeof (TO_T)       ; for now - consider losing this requirement someday if convenient/need
      */
     template <typename FROM_T, typename TO_T>
-    constexpr std::span<TO_T> CopySpanData_StaticCast (span<const FROM_T> src, span<TO_T> target)
-        requires (sizeof (FROM_T) == sizeof (TO_T));
+    constexpr std::span<TO_T> CopySpanData_StaticCast (span<const FROM_T> src, span<TO_T> target);
     template <typename FROM_T, typename TO_T>
-    constexpr std::span<TO_T> CopySpanData_StaticCast (span<FROM_T> src, span<TO_T> target)
-        requires (sizeof (FROM_T) == sizeof (TO_T));
+    constexpr std::span<TO_T> CopySpanData_StaticCast (span<FROM_T> src, span<TO_T> target);
 
 }
 

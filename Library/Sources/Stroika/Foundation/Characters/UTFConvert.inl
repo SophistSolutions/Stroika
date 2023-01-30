@@ -310,12 +310,12 @@ namespace Stroika::Foundation::Characters {
         }
         else if constexpr (is_same_v<SRC_T, Character_Latin1>) {
             // ALL TRG_T (but maybe ASCII?) have Character_Latin1 as a strict subset so simply copy
-            copy (source.begin (), source.end (), target.data ());
+            Memory::CopySpanData_StaticCast (source, target);
             return ConversionResultWithStatus{{.fSourceConsumed = source.size (), .fTargetProduced = source.size ()}, ConversionStatusFlag::ok};
         }
         else if constexpr (is_same_v<TRG_T, Character_Latin1>) {
             // ALL TRG_T (but maybe ASCII?) have Character_Latin1 as a strict subset so simply copy
-            copy (source.begin (), source.end (), target.data ());
+            Memory::CopySpanData_StaticCast (source, target);
             return ConversionResultWithStatus{{.fSourceConsumed = source.size (), .fTargetProduced = source.size ()}, ConversionStatusFlag::ok};
         }
         else {
@@ -433,7 +433,7 @@ namespace Stroika::Foundation::Characters {
         }
         basic_string<char8_t> src = basic_string<char8_t>{source.data (), source.size ()};
         u16string             r   = boost::locale::conv::utf_to_utf<char16_t> (src.c_str ());
-        copy (r.begin (), r.end (), target.begin ());
+        Memory::CopySpanData (span<char16_t>{r}, target);
         return ConversionResultWithStatus{{source.size (), r.size ()}, ConversionStatusFlag::ok};
 #if 0
          utf::code_point c;

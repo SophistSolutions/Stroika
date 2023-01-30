@@ -37,7 +37,6 @@ namespace Stroika::Foundation::Characters {
     /**
      *  \brief rarely used - defaults generally fine
      * 
-     *  @todo initially only support BUF_CHAR_T = char32_t. But gradually support more.
      *  Maybe easy to support all at once.
      */
     template <Character_UNICODECanAlwaysConvertTo BUF_CHAR_T = char32_t, size_t INLINE_BUF_SIZE = 128>

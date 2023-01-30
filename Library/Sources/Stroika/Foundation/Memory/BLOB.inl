@@ -28,7 +28,7 @@ namespace Stroika::Foundation::Memory {
         BasicRep_ (span<const byte> s)
             : fData{Memory::eUninitialized, s.size ()}
         {
-            copy (s.begin (), s.end (), fData.begin ());
+            Memory::CopySpanData (s, span{fData});
         }
 
         BasicRep_ (const initializer_list<pair<const byte*, const byte*>>& startEndPairs);
