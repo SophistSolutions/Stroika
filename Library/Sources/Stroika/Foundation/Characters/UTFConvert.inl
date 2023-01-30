@@ -433,7 +433,11 @@ namespace Stroika::Foundation::Characters {
         }
         basic_string<char8_t> src = basic_string<char8_t>{source.data (), source.size ()};
         u16string             r   = boost::locale::conv::utf_to_utf<char16_t> (src.c_str ());
+        #if qCompilerAndStdLib_spanOfContainer_Buggy
+        Memory::CopySpanData (span<char16_t>{r.data (), r.size ()}, target);
+        #else
         Memory::CopySpanData (span<char16_t>{r}, target);
+        #endif
         return ConversionResultWithStatus{{source.size (), r.size ()}, ConversionStatusFlag::ok};
 #if 0
          utf::code_point c;

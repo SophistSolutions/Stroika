@@ -28,7 +28,11 @@ namespace Stroika::Foundation::Memory {
         BasicRep_ (span<const byte> s)
             : fData{Memory::eUninitialized, s.size ()}
         {
+            #if qCompilerAndStdLib_spanOfContainer_Buggy
+            Memory::CopySpanData (s, span{fData.data (), fData.size ()});
+            #else
             Memory::CopySpanData (s, span{fData});
+            #endif
         }
 
         BasicRep_ (const initializer_list<pair<const byte*, const byte*>>& startEndPairs);

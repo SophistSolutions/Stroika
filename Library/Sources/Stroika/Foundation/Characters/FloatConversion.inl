@@ -411,7 +411,11 @@ namespace Stroika::Foundation::Characters::FloatConversion {
             // we must copy to a temporary buffer (not super costly, especially since this isn't the main
             // approach tried typically)
             Memory::StackBuffer<CHAR_T> srcBufWithNul{Memory::eUninitialized, srcSpan.size () + 1};
+            #if qCompilerAndStdLib_spanOfContainer_Buggy
+            Memory::CopySpanData (srcSpan, span{srcBufWithNul.data (), srcBufWithNul.size ()});
+            #else
             Memory::CopySpanData (srcSpan, span{srcBufWithNul});
+            #endif
             srcBufWithNul[srcSpan.size ()] = '\0';
             const CHAR_T* si               = srcBufWithNul.begin ();
             const CHAR_T* ei               = srcBufWithNul.end () - 1; // buf nul-terminated, but dont treat the NUL as part of our length
