@@ -621,7 +621,7 @@ namespace Stroika::Foundation::Characters {
             Memory::StackBuffer<char32_t> ignored1;
             span<const char32_t>          thisSpan = this->GetData (&ignored1);
             Memory::StackBuffer<char32_t> combinedBuf{Memory::eUninitialized, thisSpan.size () + s.size ()};
-            copy (thisSpan.begin (), thisSpan.end (), combinedBuf.data ());
+            Memory::CopySpanData (thisSpan, span{combinedBuf});
             char32_t* write2Buf = combinedBuf.data () + thisSpan.size ();
             for (auto i : s) {
                 if constexpr (is_same_v<CHAR_T, Character>) {
@@ -646,13 +646,14 @@ namespace Stroika::Foundation::Characters {
             Memory::StackBuffer<wchar_t> ignored1;
             span<const wchar_t>          thisSpan = this->GetData (&ignored1);
             Memory::StackBuffer<wchar_t> buf{Memory::eUninitialized, thisSpan.size () + (to - from)};
-            copy (thisSpan.begin (), thisSpan.end (), buf.data ());
-            copy (from, to, buf.data () + thisSpan.size ());
 #if qCompilerAndStdLib_spanOfContainer_Buggy
-            *this = mk_ (span{buf.data (), buf.size ()});
+            span<wchar_t> bufSpan{buf.data (), buf.size ()};
 #else
-            *this = mk_ (span{buf});
+            span<wchar_t> bufSpan{buf};
 #endif
+            Memory::CopySpanData (thisSpan, bufSpan);
+            Memory::CopySpanData (span{from, to}, bufSpan.subspan (thisSpan.size ()));
+            *this = mk_ (bufSpan);
         }
     }
     inline void String::Append (Character c) { Append (&c, &c + 1); }
@@ -1227,13 +1228,14 @@ namespace Stroika::Foundation::Characters {
             Memory::StackBuffer<Character> ignored2;
             span<const Character>          rSpan = Private_::AsSpanOfCharacters_ (forward<RHS_T> (rhs), &ignored2);
             Memory::StackBuffer<Character> buf{Memory::eUninitialized, lSpan.size () + rSpan.size ()};
-            copy (lSpan.begin (), lSpan.end (), buf.data ());
-            copy (rSpan.begin (), rSpan.end (), buf.data () + lSpan.size ());
 #if qCompilerAndStdLib_spanOfContainer_Buggy
-            return String{span{buf.data (), buf.size ()}};
+            span bufSpan{buf.data (), buf.size ()};
 #else
-            return String{span{buf}};
+            span bufSpan{buf};
 #endif
+            Memory::CopySpanData (lSpan, bufSpan);
+            Memory::CopySpanData (rSpan, bufSpan.subspan (lSpan.size ()));
+            return String{bufSpan};
         }
         else {
             return String{forward<LHS_T> (lhs)}.Concatenate (forward<RHS_T> (rhs));

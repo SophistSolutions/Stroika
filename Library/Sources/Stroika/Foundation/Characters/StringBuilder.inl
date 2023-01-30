@@ -57,7 +57,11 @@ namespace Stroika::Foundation::Characters {
             if constexpr (is_same_v<CHAR_T, BufferElementType>) {
                 size_t i = fData_.size ();
                 fData_.GrowToSize_uninitialized (i + spanSize);
+#if qCompilerAndStdLib_spanOfContainer_Buggy
+                Memory::CopySpanData_StaticCast (s, span{fData_.data (), fData_.size ()}.subspan (i));
+#else
                 Memory::CopySpanData_StaticCast (s, span{fData_}.subspan (i));
+#endif
             }
             else {
                 // @todo  OPTIMIZATION OPPORTUNITY - if given an ascii span, can just do those chars one at a time...
