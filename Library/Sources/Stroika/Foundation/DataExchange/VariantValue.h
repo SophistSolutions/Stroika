@@ -250,9 +250,7 @@ namespace Stroika::Foundation::DataExchange {
 
     public:
         /**
-         *  Besides the obvious overloads of operator=, we also overload to take the explicit CTOR
-         *  parameters here, so at least you can easily assign to a VariantValue with those types
-         *  even if you cannot easily CONSTRUCT with those types.
+         *  Assign anything to a VariantValue you can construct a VariantValue with.
          */
         nonvirtual VariantValue& operator= (VariantValue&& rhs) noexcept = default;
         nonvirtual VariantValue& operator= (const VariantValue& rhs)     = default;
