@@ -45,7 +45,7 @@ namespace Stroika::Foundation::Traversal {
     {
     }
     template <typename T, typename NEW_ITERATOR_REP_TYPE, typename CONTEXT_FOR_EACH_ITERATOR>
-    Iterator<T> IterableFromIterator<T, NEW_ITERATOR_REP_TYPE, CONTEXT_FOR_EACH_ITERATOR>::_Rep::MakeIterator () const
+    Iterator<T> IterableFromIterator<T, NEW_ITERATOR_REP_TYPE, CONTEXT_FOR_EACH_ITERATOR>::_Rep::MakeIterator ([[maybe_unused]] const _IterableRepSharedPtr& thisSharedPtr) const
     {
         if constexpr (is_same_v<NEW_ITERATOR_REP_TYPE, void>) {
             return nullptr;
@@ -63,15 +63,13 @@ namespace Stroika::Foundation::Traversal {
     size_t IterableFromIterator<T, NEW_ITERATOR_REP_TYPE, CONTEXT_FOR_EACH_ITERATOR>::_Rep::size () const
     {
         size_t n = 0;
-        for (auto i = this->MakeIterator (); not i.Done (); ++i) {
-            n++;
-        }
+        this->_Apply ([&n] (const T&) { ++n; });
         return n;
     }
     template <typename T, typename NEW_ITERATOR_REP_TYPE, typename CONTEXT_FOR_EACH_ITERATOR>
     bool IterableFromIterator<T, NEW_ITERATOR_REP_TYPE, CONTEXT_FOR_EACH_ITERATOR>::_Rep::empty () const
     {
-        for (auto i = this->MakeIterator (); not i.Done (); ++i) {
+        for (auto i = this->MakeIterator (nullptr); not i.Done (); ++i) {
             return false;
         }
         return true;
@@ -82,16 +80,17 @@ namespace Stroika::Foundation::Traversal {
         this->_Apply (doToElement);
     }
     template <typename T, typename NEW_ITERATOR_REP_TYPE, typename CONTEXT_FOR_EACH_ITERATOR>
-    auto IterableFromIterator<T, NEW_ITERATOR_REP_TYPE, CONTEXT_FOR_EACH_ITERATOR>::_Rep::Find (const function<bool (ArgByValueType<value_type> item)>& that) const
-        -> Iterator<value_type>
+    auto IterableFromIterator<T, NEW_ITERATOR_REP_TYPE, CONTEXT_FOR_EACH_ITERATOR>::_Rep::Find (
+        const _IterableRepSharedPtr& thisSharedPtr, const function<bool (ArgByValueType<value_type> item)>& that) const -> Iterator<value_type>
     {
-        return this->_Find (that);
+        return this->_Find (thisSharedPtr, that);
     }
     template <typename T, typename NEW_ITERATOR_REP_TYPE, typename CONTEXT_FOR_EACH_ITERATOR>
-    auto IterableFromIterator<T, NEW_ITERATOR_REP_TYPE, CONTEXT_FOR_EACH_ITERATOR>::_Rep::Find_equal_to (const ArgByValueType<value_type>& v) const
+    auto IterableFromIterator<T, NEW_ITERATOR_REP_TYPE, CONTEXT_FOR_EACH_ITERATOR>::_Rep::Find_equal_to (const _IterableRepSharedPtr& thisSharedPtr,
+                                                                                                         const ArgByValueType<value_type>& v) const
         -> Iterator<value_type>
     {
-        return this->_Find_equal_to_default_implementation (v);
+        return this->_Find_equal_to_default_implementation (thisSharedPtr, v);
     }
 
     /*
@@ -117,7 +116,7 @@ namespace Stroika::Foundation::Traversal {
                     : fOriginalIterator{originalIterator}
                 {
                 }
-                virtual Iterator<T> MakeIterator () const override
+                virtual Iterator<T> MakeIterator ([[maybe_unused]] const _IterableRepSharedPtr& thisSharedPtr) const override
                 {
 #if qDebug
                     return fIteratorTracker_.MakeDelegatedIterator (fOriginalIterator);

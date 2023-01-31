@@ -90,7 +90,7 @@ namespace {
             // String::_IRep OVERRIDES
             virtual Character GetAt (size_t index) const noexcept override
             {
-                Require (index < size ());
+                Require (index < _fData.size ());
                 // NOTE - this is safe because we never construct this type with surrogates
                 return Character{static_cast<char32_t> (_fData[index])};
             }
@@ -121,33 +121,31 @@ namespace {
                 AssertNotReached (); // Since String reps now immutable, this should never be called
                 return nullptr;
             }
-            virtual Traversal::Iterator<value_type> MakeIterator () const override
+            virtual Traversal::Iterator<value_type> MakeIterator (const _IterableRepSharedPtr& thisSharedPtr) const override
             {
                 struct MyIterRep_ final : Iterator<Character>::IRep, public Memory::UseBlockAllocationIfAppropriate<MyIterRep_> {
-                    _SharedPtrIRep     fHoldRepToAssureDataNotDestroyed_; // bump reference count
+                    _IterableRepSharedPtr fHoldRepToAssureDataNotDestroyed_; // bump reference count (CAN BE NULL)
                     span<const CHAR_T> fData_;   // clone span (not underlying data) pointing inside fHoldRepToAssureDataNotDestroyed
-                    size_t             fCurIdx_; // could replace with pointer??
-                    MyIterRep_ (const _SharedPtrIRep& r, size_t idx = 0)
-                        : fHoldRepToAssureDataNotDestroyed_{r}
-                        , fData_{Debug::UncheckedDynamicCast<Rep*> (r.get ())->_fData}
-                        , fCurIdx_{idx}
+                    size_t                fIdx_{0};
+                    MyIterRep_ (const _IterableRepSharedPtr& savedRefToKeepDataAlive, span<const CHAR_T> data)
+                        : fHoldRepToAssureDataNotDestroyed_{savedRefToKeepDataAlive}
+                        , fData_{data}
                     {
-                        Assert (r->size () == fData_.size ());
                     }
                     virtual Iterator<Character>::RepSmartPtr Clone () const override
                     {
-                        return Iterator<Character>::MakeSmartPtr<MyIterRep_> (fHoldRepToAssureDataNotDestroyed_, fCurIdx_);
+                        return Iterator<Character>::MakeSmartPtr<MyIterRep_> (fHoldRepToAssureDataNotDestroyed_, fData_.subspan (fIdx_));
                     }
                     virtual void More (optional<Character>* result, bool advance) override
                     {
                         RequireNotNull (result);
                         if (advance) [[likely]] {
-                            Require (fCurIdx_ <= fData_.size ());
-                            ++fCurIdx_;
+                            Require (fIdx_ < fData_.size ());
+                            ++fIdx_;
                         }
-                        if (fCurIdx_ < fData_.size ()) [[likely]] {
+                        if (fIdx_ < fData_.size ()) [[likely]] {
                             // NOTE - this is safe because we never construct this type with surrogates
-                            *result = Character{static_cast<char32_t> (fData_[fCurIdx_])};
+                            *result = Character{static_cast<char32_t> (fData_[fIdx_])};
                         }
                         else {
                             *result = nullopt;
@@ -160,11 +158,10 @@ namespace {
                         const MyIterRep_* rrhs = Debug::UncheckedDynamicCast<const MyIterRep_*> (rhs);
                         AssertNotNull (rrhs);
                         Require (fHoldRepToAssureDataNotDestroyed_ == rrhs->fHoldRepToAssureDataNotDestroyed_); // from same string object
-                        return fCurIdx_ == rrhs->fCurIdx_;
+                        return fData_.data () == rrhs->fData_.data () and fIdx_ == rrhs->fIdx_;
                     }
                 };
-                _SharedPtrIRep sharedContainerRep = const_cast<_IRep*> (static_cast<const _IRep*> (this))->shared_from_this ();
-                return Iterator<Character>{Iterator<Character>::MakeSmartPtr<MyIterRep_> (sharedContainerRep)};
+                return Iterator<Character>{Iterator<Character>::MakeSmartPtr<MyIterRep_> (thisSharedPtr, this->_fData)};
             }
             virtual size_t size () const override { return _fData.size (); }
             virtual bool   empty () const override { return _fData.empty (); }
@@ -172,14 +169,16 @@ namespace {
             {
                 _Apply (doToElement);
             }
-            virtual Traversal::Iterator<value_type> Find (const function<bool (Configuration::ArgByValueType<value_type> item)>& that) const override
+            virtual Traversal::Iterator<value_type> Find (const _IterableRepSharedPtr& thisSharedPtr,
+                                                          const function<bool (Configuration::ArgByValueType<value_type> item)>& that) const override
             {
-                return _Find (that);
+                return _Find (thisSharedPtr, that);
             }
-            virtual Traversal::Iterator<value_type> Find_equal_to (const Configuration::ArgByValueType<value_type>& v) const override
+            virtual Traversal::Iterator<value_type> Find_equal_to (const _IterableRepSharedPtr&                     thisSharedPtr,
+                                                                   const Configuration::ArgByValueType<value_type>& v) const override
             {
                 // @todo this is fine, but can be more efficient, so consider rewriting explicitly (avoid extra virt call)
-                return this->_Find_equal_to_default_implementation (v);
+                return this->_Find_equal_to_default_implementation (thisSharedPtr, v);
             }
         };
     };
@@ -412,7 +411,7 @@ namespace {
             virtual const wchar_t* c_str_peek () const noexcept override
             {
                 if constexpr (kAddNullTerminator_) {
-                    Assert (*(this->_fData.data () + this->size ()) == '\0'); // dont index into buf cuz we cheat and go one past end on purpose
+                    Assert (*(this->_fData.data () + this->_fData.size ()) == '\0'); // dont index into buf cuz we cheat and go one past end on purpose
                     return reinterpret_cast<const wchar_t*> (this->_fData.data ());
                 }
                 else {
@@ -488,7 +487,7 @@ namespace {
             virtual const wchar_t* c_str_peek () const noexcept override
             {
                 if (IncludesNullTerminator_ ()) {
-                    Assert (*(this->_fData.data () + this->size ()) == '\0'); // dont index into buf cuz we cheat and go one past end on purpose
+                    Assert (*(this->_fData.data () + this->_fData.size ()) == '\0'); // dont index into buf cuz we cheat and go one past end on purpose
                     return reinterpret_cast<const wchar_t*> (this->_fData.data ());
                 }
                 else {
@@ -760,16 +759,18 @@ inline auto String::mk_nocheck_justPickBufRep_ (span<const CHAR_T> s) -> _Shared
     static constexpr size_t kNElts3_ = (128 - kBaseOfFixedBufSize_) / sizeof (CHAR_T);
 
     // These checks are NOT important, just for documentation/reference
+    #if 1
     if constexpr (qPlatform_Windows and sizeof (CHAR_T) == 1 and sizeof (void*) == 4) {
-        static_assert (kNElts1_ == 44);
-        static_assert (kNElts2_ == 76);
-        static_assert (kNElts3_ == 108);
+        static_assert (kNElts1_ == 44+8);
+        static_assert (kNElts2_ == 76 + 8);
+        static_assert (kNElts3_ == 108 + 8);
     }
     if constexpr (qPlatform_Windows and sizeof (CHAR_T) == 1 and sizeof (void*) == 8) {
-        static_assert (kNElts1_ == 24);
-        static_assert (kNElts2_ == 56);
-        static_assert (kNElts3_ == 88);
+        static_assert (kNElts1_ == 24 + 16);
+        static_assert (kNElts2_ == 56 + 16);
+        static_assert (kNElts3_ == 88 + 16);
     }
+    #endif
 
     static_assert (kNElts1_ >= 6);        // crazy otherwise
     static_assert (kNElts2_ >= kNElts1_); // ""
@@ -1588,9 +1589,10 @@ const wchar_t* String::c_str () const noexcept
 const wchar_t* String::c_str ()
 {
     // Rarely used mechanism, of replacing the underlying rep, for the iterable, as needed
-    const wchar_t* result = (wchar_t*)_SafeReadRepAccessor{this}._ConstGetRep ().c_str_peek ();
+    _SafeReadRepAccessor accessor{this};
+    const wchar_t*       result = (wchar_t*)accessor._ConstGetRep ().c_str_peek ();
     if (result == nullptr) {
-        _SharedPtrIRep originalRep    = dynamic_pointer_cast<_IRep> (_fRep.cget_ptr ());
+        _SharedPtrIRep originalRep    = dynamic_pointer_cast<_IRep> (accessor._ConstGetRepSharedPtr ());
         PeekSpanData   originalRepPDS = originalRep->PeekData (nullopt);
         switch (originalRepPDS.fInCP) {
             case PeekSpanData::eAscii:

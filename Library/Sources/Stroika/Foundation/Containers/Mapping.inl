@@ -242,9 +242,9 @@ namespace Stroika::Foundation::Containers {
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     inline void Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::RemoveAll ()
     {
-        _SafeReadRepAccessor<_IRep> tmp{this}; // important to use READ not WRITE accessor, because write accessor would have already cloned the data
-        if (not tmp._ConstGetRep ().empty ()) {
-            this->_fRep = tmp._ConstGetRep ().CloneEmpty ();
+        _SafeReadRepAccessor<_IRep> accessor{this}; // important to use READ not WRITE accessor, because write accessor would have already cloned the data
+        if (not accessor._ConstGetRep ().empty ()) {
+            this->_fRep = accessor._ConstGetRep ().CloneEmpty ();
         }
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
@@ -494,7 +494,7 @@ namespace Stroika::Foundation::Containers {
                     : fMapping_{map}
                 {
                 }
-                virtual Iterator<KEY_TYPE> MakeIterator () const override
+                virtual Iterator<KEY_TYPE> MakeIterator ([[maybe_unused]] const _IterableRepSharedPtr& thisSharedPtr) const override
                 {
                     auto myContext = make_shared<Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>> (fMapping_.MakeIterator ());
                     auto getNext   = [myContext] () -> optional<KEY_TYPE> {
@@ -535,7 +535,7 @@ namespace Stroika::Foundation::Containers {
                     : fMapping_{map}
                 {
                 }
-                virtual Iterator<MAPPED_VALUE_TYPE> MakeIterator () const override
+                virtual Iterator<MAPPED_VALUE_TYPE> MakeIterator ([[maybe_unused]] const _IterableRepSharedPtr& thisSharedPtr) const override
                 {
                     auto myContext = make_shared<Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>> (fMapping_.MakeIterator ());
                     auto getNext   = [myContext] () -> optional<MAPPED_VALUE_TYPE> {
@@ -598,7 +598,7 @@ namespace Stroika::Foundation::Containers {
          *  They need not be in the same order to compare equals. Still - they often are, and if they are, this algorithm is faster.
          *  If they miss, we need to fall back to a slower strategy.
          */
-        auto li                = lhsR._ConstGetRep ().MakeIterator ();
+        auto li                = lhsR._ConstGetRep ().MakeIterator (nullptr);
         auto ri                = rhs.MakeIterator ();
         auto keyEqualsComparer = lhs.GetKeyEqualsComparer (); // arbitrarily select left side key equals comparer
         while (not li.Done ()) {

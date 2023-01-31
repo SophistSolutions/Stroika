@@ -469,7 +469,7 @@ namespace Stroika::Foundation::Containers {
                     : fAssociation_{map}
                 {
                 }
-                virtual Iterator<KEY_TYPE> MakeIterator () const override
+                virtual Iterator<KEY_TYPE> MakeIterator ([[maybe_unused]]const _IterableRepSharedPtr& thisSharedPtr) const override
                 {
                     auto myContext = make_shared<Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>> (fAssociation_.MakeIterator ());
                     auto getNext   = [myContext] () -> optional<KEY_TYPE> {
@@ -510,7 +510,7 @@ namespace Stroika::Foundation::Containers {
                     : fAssociation_{map}
                 {
                 }
-                virtual Iterator<MAPPED_VALUE_TYPE> MakeIterator () const override
+                virtual Iterator<MAPPED_VALUE_TYPE> MakeIterator ([[maybe_unused]]const _IterableRepSharedPtr& thisSharedPtr) const override
                 {
                     auto myContext = make_shared<Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>> (fAssociation_.MakeIterator ());
                     auto getNext   = [myContext] () -> optional<MAPPED_VALUE_TYPE> {
@@ -574,7 +574,7 @@ namespace Stroika::Foundation::Containers {
          *  If they miss, we need to fall back to a slower strategy.
          */
         auto quickEqualsTest = [&] () -> bool {
-            auto li                = lhsR._ConstGetRep ().MakeIterator ();
+            auto li                = lhsR._ConstGetRep ().MakeIterator (nullptr);
             auto ri                = rhs.MakeIterator ();
             auto keyEqualsComparer = lhs.GetKeyEqualsComparer (); // arbitrarily select left side key equals comparer
             while (not li.Done ()) {

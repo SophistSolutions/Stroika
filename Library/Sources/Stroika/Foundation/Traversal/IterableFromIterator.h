@@ -47,7 +47,7 @@ namespace Stroika::Foundation::Traversal {
      *                      : fOriginalIterator{originalIterator}
      *                  {
      *                  }
-     *                  virtual Iterator<T>     MakeIterator () const override
+     *                  virtual Iterator<T>     MakeIterator (const _IterableRepSharedPtr& thisSharedPtr) const override
      *                  {
      *                      return fOriginalIterator;
      *                  }
@@ -83,6 +83,9 @@ namespace Stroika::Foundation::Traversal {
             using _ContextObjectType = conditional_t<is_same_v<CONTEXT_FOR_EACH_ITERATOR, void>, Configuration::Empty, CONTEXT_FOR_EACH_ITERATOR>;
 
         protected:
+            using _IterableRepSharedPtr = typename Iterable<T>::_IterableRepSharedPtr;
+
+        protected:
             [[no_unique_address]] _ContextObjectType _fContextForEachIterator;
 
 #if qDebug
@@ -111,12 +114,13 @@ namespace Stroika::Foundation::Traversal {
             _Rep (const _ContextObjectType& contextForEachIterator);
 
         public:
-            virtual Iterator<T>          MakeIterator () const override;
+            virtual Iterator<T>          MakeIterator (const _IterableRepSharedPtr& thisSharedPtr) const override;
             virtual size_t               size () const override;
             virtual bool                 empty () const override;
             virtual void                 Apply (const function<void (ArgByValueType<value_type> item)>& doToElement) const override;
-            virtual Iterator<value_type> Find (const function<bool (ArgByValueType<value_type> item)>& that) const override;
-            virtual Iterator<value_type> Find_equal_to (const ArgByValueType<value_type>& v) const override;
+            virtual Iterator<value_type> Find (const _IterableRepSharedPtr&                            thisSharedPtr,
+                                               const function<bool (ArgByValueType<value_type> item)>& that) const override;
+            virtual Iterator<value_type> Find_equal_to (const _IterableRepSharedPtr& thisSharedPtr, const ArgByValueType<value_type>& v) const override;
         };
     };
 

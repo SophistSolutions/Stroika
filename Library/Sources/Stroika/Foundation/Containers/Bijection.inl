@@ -463,7 +463,7 @@ namespace Stroika::Foundation::Containers {
                     : fBijection_{b}
                 {
                 }
-                virtual Iterator<DOMAIN_TYPE> MakeIterator () const override
+                virtual Iterator<DOMAIN_TYPE> MakeIterator ([[maybe_unused]] const _IterableRepSharedPtr& thisSharedPtr) const override
                 {
                     // If we have many iterator copies, we need ONE copy of this sharedContext (they all share a reference to the same container)
                     auto sharedContext = make_shared<MyBijection_> (fBijection_);
@@ -506,7 +506,7 @@ namespace Stroika::Foundation::Containers {
                     : fBijection_{b}
                 {
                 }
-                virtual Iterator<RANGE_TYPE> MakeIterator () const override
+                virtual Iterator<RANGE_TYPE> MakeIterator ([[maybe_unused]] const _IterableRepSharedPtr& thisSharedPtr) const override
                 {
                     // If we have many iterator copies, we need ONE copy of this sharedContext (they all share a reference to the same container)
                     auto sharedContext = make_shared<MyBijection_> (fBijection_);
@@ -549,7 +549,7 @@ namespace Stroika::Foundation::Containers {
         }
         // Since both sides are the same size, we can iterate over one, and make sure the key/values in the first
         // are present, and with the same Bijection in the second.
-        for (auto i = this->MakeIterator (); not i.Done (); ++i) {
+        for (auto i = this->MakeIterator (nullptr); not i.Done (); ++i) {
             optional<RangeType> tmp;
             if (not rhs.Lookup (i->first, &tmp) or not GetRangeEqualsComparer () (*tmp, i->second)) {
                 return false;

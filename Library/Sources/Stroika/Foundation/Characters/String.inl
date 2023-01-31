@@ -488,7 +488,11 @@ namespace Stroika::Foundation::Characters {
             }
         }
     }
-    inline size_t String::size () const noexcept { return _SafeReadRepAccessor{this}._ConstGetRep ().size (); }
+    inline size_t String::size () const noexcept
+    {
+        _SafeReadRepAccessor accessor{this};
+        return accessor._ConstGetRep ().size ();
+    }
     inline size_t String::SubString_adjust_ (unsigned int from, [[maybe_unused]] size_t myLength) const
     {
         return static_cast<size_t> (from);

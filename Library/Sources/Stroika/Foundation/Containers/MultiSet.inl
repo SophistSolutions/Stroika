@@ -113,7 +113,7 @@ namespace Stroika::Foundation::Containers {
             virtual size_t size () const override
             {
                 size_t n = 0;
-                for (Iterator<CountedValue<T>> i = this->_fContextForEachIterator.fMultiSet->MakeIterator (); not i.Done (); ++i) {
+                for (Iterator<CountedValue<T>> i = this->_fContextForEachIterator.fMultiSet->MakeIterator (nullptr); not i.Done (); ++i) {
                     n += i->fCount;
                 }
                 return n;
@@ -126,7 +126,7 @@ namespace Stroika::Foundation::Containers {
         };
         _ElementsIterableHelper (const typename Iterable<CountedValue<T>>::_IterableRepSharedPtr& iterateOverMultiSet)
             : Iterable<T>{Iterable<T>::template MakeSmartPtr<MyIterableRep_> (
-                  ElementsIteratorHelperContext_ (iterateOverMultiSet, iterateOverMultiSet->MakeIterator ()))}
+                  ElementsIteratorHelperContext_{iterateOverMultiSet, iterateOverMultiSet->MakeIterator (nullptr)})}
         {
         }
     };
@@ -189,20 +189,18 @@ namespace Stroika::Foundation::Containers {
         using MyDataBLOB_    = UniqueElementsIteratorHelperContext_;
         struct MyIterableRep_ : Traversal::IterableFromIterator<T, MyIteratorRep_, MyDataBLOB_>::_Rep,
                                 public Memory::UseBlockAllocationIfAppropriate<MyIterableRep_> {
-            using inherited = typename Traversal::IterableFromIterator<T, MyIteratorRep_, MyDataBLOB_>::_Rep;
+            using inherited             = typename Traversal::IterableFromIterator<T, MyIteratorRep_, MyDataBLOB_>::_Rep;
+            using _IterableRepSharedPtr = typename Iterable<T>::_IterableRepSharedPtr;
             MyIterableRep_ (const UniqueElementsIteratorHelperContext_& context)
                 : inherited{context}
             {
             }
-            virtual size_t size () const override { return this->_fContextForEachIterator.fMultiSet->size (); }
-            virtual bool   empty () const override { return this->_fContextForEachIterator.fMultiSet->empty (); }
-            virtual typename Iterable<T>::_IterableRepSharedPtr Clone () const override
-            {
-                return Iterable<T>::template MakeSmartPtr<MyIterableRep_> (*this);
-            }
+            virtual size_t                size () const override { return this->_fContextForEachIterator.fMultiSet->size (); }
+            virtual bool                  empty () const override { return this->_fContextForEachIterator.fMultiSet->empty (); }
+            virtual _IterableRepSharedPtr Clone () const override { return Iterable<T>::template MakeSmartPtr<MyIterableRep_> (*this); }
         };
         _UniqueElementsHelper (const typename Iterable<CountedValue<T>>::_IterableRepSharedPtr& tally)
-            : Iterable<T>{Iterable<T>::template MakeSmartPtr<MyIterableRep_> (UniqueElementsIteratorHelperContext_{tally, tally->MakeIterator ()})}
+            : Iterable<T>{Iterable<T>::template MakeSmartPtr<MyIterableRep_> (UniqueElementsIteratorHelperContext_{tally, tally->MakeIterator (nullptr)})}
         {
         }
     };
@@ -221,7 +219,7 @@ namespace Stroika::Foundation::Containers {
         if (this->size () != rhs.size ()) {
             return false;
         }
-        for (auto i = this->MakeIterator (); not i.Done (); ++i) {
+        for (auto i = this->MakeIterator (nullptr); not i.Done (); ++i) {
             if (i->fCount != rhs.OccurrencesOf (i->fValue)) {
                 return false;
             }

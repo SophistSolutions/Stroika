@@ -54,7 +54,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
             return Iterable<T>::template MakeSmartPtr<Rep_> (*this);
         }
-        virtual Iterator<T> MakeIterator () const override
+        virtual Iterator<T> MakeIterator ([[maybe_unused]] const _IterableRepSharedPtr& thisSharedPtr) const override
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
             return Iterator<value_type>{Iterator<value_type>::template MakeSmartPtr<IteratorRep_> (&fData_, &fChangeCounts_)};
@@ -74,7 +74,8 @@ namespace Stroika::Foundation::Containers::Concrete {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
             fData_.Apply (doToElement);
         }
-        virtual Iterator<value_type> Find (const function<bool (ArgByValueType<value_type> item)>& that) const override
+        virtual Iterator<value_type> Find ([[maybe_unused]] const _IterableRepSharedPtr&           thisSharedPtr,
+                                           const function<bool (ArgByValueType<value_type> item)>& that) const override
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
             size_t                                                i = fData_.Find (that);
@@ -83,9 +84,9 @@ namespace Stroika::Foundation::Containers::Concrete {
             }
             return Iterator<value_type>{Iterator<value_type>::template MakeSmartPtr<IteratorRep_> (&fData_, &fChangeCounts_, i)};
         }
-        virtual Iterator<value_type> Find_equal_to (const ArgByValueType<value_type>& v) const override
+        virtual Iterator<value_type> Find_equal_to (const _IterableRepSharedPtr& thisSharedPtr, const ArgByValueType<value_type>& v) const override
         {
-            return this->_Find_equal_to_default_implementation (v);
+            return this->_Find_equal_to_default_implementation (thisSharedPtr, v);
         }
 
         // Sequence<T>::_IRep overrides
@@ -102,8 +103,8 @@ namespace Stroika::Foundation::Containers::Concrete {
         }
         virtual value_type GetAt (size_t i) const override
         {
-            Require (not empty ());
-            Require (i == _kSentinalLastItemIndex or i < size ());
+            Require (fData_.size () != 0);
+            Require (i == _kSentinalLastItemIndex or i < fData_.size ());
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
             if (i == _kSentinalLastItemIndex) {
                 i = fData_.size () - 1;
@@ -112,7 +113,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         }
         virtual void SetAt (size_t i, ArgByValueType<value_type> item) override
         {
-            Require (i < size ());
+            Require (i < fData_.size ());
             Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fData_};
             fData_.SetAt (i, item);
             fChangeCounts_.PerformedChange ();
@@ -153,7 +154,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         }
         virtual void Insert (size_t at, const value_type* from, const value_type* to) override
         {
-            Require (at == _kSentinalLastItemIndex or at <= size ());
+            Require (at == _kSentinalLastItemIndex or at <= fData_.size ());
             Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fData_};
             if (at == _kSentinalLastItemIndex) {
                 at = fData_.size ();

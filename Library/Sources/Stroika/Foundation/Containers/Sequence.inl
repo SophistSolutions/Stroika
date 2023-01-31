@@ -162,9 +162,9 @@ namespace Stroika::Foundation::Containers {
     template <typename T>
     inline void Sequence<T>::RemoveAll ()
     {
-        _SafeReadRepAccessor<_IRep> tmp{this}; // important to use READ not WRITE accessor, because write accessor would have already cloned the data
-        if (not tmp._ConstGetRep ().empty ()) {
-            this->_fRep = tmp._ConstGetRep ().CloneEmpty ();
+        _SafeReadRepAccessor<_IRep> accessor{this}; // important to use READ not WRITE accessor, because write accessor would have already cloned the data
+        if (not accessor._ConstGetRep ().empty ()) {
+            this->_fRep = accessor._ConstGetRep ().CloneEmpty ();
         }
     }
     template <typename T>

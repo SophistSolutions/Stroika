@@ -89,7 +89,7 @@ namespace Stroika::Foundation::Traversal {
             {
             }
             virtual _IterableRepSharedPtr Clone () const override { return Iterable<T>::template MakeSmartPtr<MyRep_> (*this); }
-            virtual Iterator<T>           MakeIterator () const override
+            virtual Iterator<T>           MakeIterator ([[maybe_unused]] const _IterableRepSharedPtr& thisSharedPtr) const override
             {
                 if (fForcedEnd) {
                     return Iterator<T>{Iterator<T>::template MakeSmartPtr<DiscreteRange::MyIteratorRep_> ()};
@@ -122,13 +122,13 @@ namespace Stroika::Foundation::Traversal {
             {
                 this->_Apply (doToElement);
             }
-            virtual Iterator<T> Find (const function<bool (ArgByValueType<value_type> item)>& that) const override
+            virtual Iterator<T> Find (const _IterableRepSharedPtr& thisSharedPtr, const function<bool (ArgByValueType<value_type> item)>& that) const override
             {
-                return this->_Find (that);
+                return this->_Find (thisSharedPtr, that);
             }
-            virtual Iterator<value_type> Find_equal_to (const ArgByValueType<value_type>& v) const override
+            virtual Iterator<value_type> Find_equal_to (const _IterableRepSharedPtr& thisSharedPtr, const ArgByValueType<value_type>& v) const override
             {
-                return this->_Find_equal_to_default_implementation (v);
+                return this->_Find_equal_to_default_implementation (thisSharedPtr, v);
             }
         };
         MyIterable_ ()

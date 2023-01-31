@@ -406,7 +406,7 @@ namespace Stroika::Foundation::Containers {
                     : fBaseCollection_{map}
                 {
                 }
-                virtual Iterator<KEY_TYPE> MakeIterator () const override
+                virtual Iterator<KEY_TYPE> MakeIterator ([[maybe_unused]] const _IterableRepSharedPtr& thisSharedPtr) const override
                 {
                     auto myContext    = make_shared<Iterator<T>> (fBaseCollection_.MakeIterator ());
                     auto keyExtractor = fBaseCollection_.GetKeyExtractor ();

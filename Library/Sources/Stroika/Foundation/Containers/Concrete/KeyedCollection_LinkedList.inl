@@ -52,7 +52,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
             return Iterable<value_type>::template MakeSmartPtr<Rep_> (*this);
         }
-        virtual Iterator<value_type> MakeIterator () const override
+        virtual Iterator<value_type> MakeIterator (const _IterableRepSharedPtr& thisSharedPtr) const override
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
             return Iterator<value_type>{Iterator<value_type>::template MakeSmartPtr<IteratorRep_> (&fData_, &fChangeCounts_)};
@@ -72,7 +72,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
             fData_.Apply (doToElement);
         }
-        virtual Iterator<value_type> Find (const function<bool (ArgByValueType<value_type> item)>& that) const override
+        virtual Iterator<value_type> Find (const _IterableRepSharedPtr& thisSharedPtr, const function<bool (ArgByValueType<value_type> item)>& that) const override
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
             if (auto iLink = fData_.Find (that)) {
@@ -80,9 +80,9 @@ namespace Stroika::Foundation::Containers::Concrete {
             }
             return nullptr;
         }
-        virtual Iterator<value_type> Find_equal_to (const ArgByValueType<value_type>& v) const override
+        virtual Iterator<value_type> Find_equal_to (const _IterableRepSharedPtr& thisSharedPtr, const ArgByValueType<value_type>& v) const override
         {
-            return this->_Find_equal_to_default_implementation (v);
+            return this->_Find_equal_to_default_implementation (thisSharedPtr, v);
         }
 
         // KeyedCollection<T, KEY_TYPE, TRAITS>::_IRep overrides
@@ -120,7 +120,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual bool Lookup (ArgByValueType<KeyType> key, optional<value_type>* item) const override
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
-            if (auto i = this->Find ([this, &key] (ArgByValueType<T> item) { return fKeyComparer_ (fKeyExtractor_ (item), key); })) {
+            if (auto i = this->Find (nullptr, [this, &key] (ArgByValueType<T> item) { return fKeyComparer_ (fKeyExtractor_ (item), key); })) {
                 if (item != nullptr) {
                     *item = *i;
                 }
@@ -132,7 +132,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         {
             Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fData_};
             KEY_TYPE                                               key{fKeyExtractor_ (item)};
-            if (auto i = this->Find ([this, &key] (ArgByValueType<T> item) { return fKeyComparer_ (fKeyExtractor_ (item), key); })) {
+            if (auto i = this->Find (nullptr, [this, &key] (ArgByValueType<T> item) { return fKeyComparer_ (fKeyExtractor_ (item), key); })) {
                 auto& mir = Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ());
                 fData_.SetAt (mir.fIterator, item);
                 fChangeCounts_.PerformedChange ();
@@ -161,7 +161,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual bool RemoveIf (ArgByValueType<KEY_TYPE> key) override
         {
             Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fData_};
-            if (auto i = this->Find ([this, &key] (ArgByValueType<T> item) { return fKeyComparer_ (fKeyExtractor_ (item), key); })) {
+            if (auto i = this->Find (nullptr, [this, &key] (ArgByValueType<T> item) { return fKeyComparer_ (fKeyExtractor_ (item), key); })) {
                 Remove (i, nullptr);
                 return true;
             }

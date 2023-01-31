@@ -211,7 +211,7 @@ namespace Stroika::Foundation::Traversal {
     template <typename T, typename RANGE_TYPE>
     auto DisjointDiscreteRange<T, RANGE_TYPE>::Find (const function<bool (value_type)>& that) const -> optional<value_type>
     {
-        return this->empty () ? optional<value_type> () : Find (that, FindHints (this->GetBounds ().GetLowerBound (), true));
+        return this->empty () ? optional<value_type>{} : Find (that, FindHints (this->GetBounds ().GetLowerBound (), true));
     }
     template <typename T, typename RANGE_TYPE>
     auto DisjointDiscreteRange<T, RANGE_TYPE>::Find (const function<bool (value_type)>& that, const FindHints& hints) const -> optional<value_type>

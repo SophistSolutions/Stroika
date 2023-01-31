@@ -46,7 +46,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
             return Iterable<tuple<T, INDEXES...>>::template MakeSmartPtr<Rep_> (*this);
         }
-        virtual Iterator<tuple<T, INDEXES...>> MakeIterator () const override
+        virtual Iterator<tuple<T, INDEXES...>> MakeIterator (const _IterableRepSharedPtr& thisSharedPtr) const override
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
 /// NYI
@@ -74,7 +74,8 @@ namespace Stroika::Foundation::Containers::Concrete {
             fData_.Apply (doToElement);
 #endif
         }
-        virtual Iterator<tuple<T, INDEXES...>> Find ([[maybe_unused]] const function<bool (ArgByValueType<value_type> item)>& doToElement) const override
+        virtual Iterator<tuple<T, INDEXES...>> Find (const _IterableRepSharedPtr& thisSharedPtr,
+                                                     [[maybe_unused]] const function<bool (ArgByValueType<value_type> item)>& doToElement) const override
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
             using RESULT_TYPE = Iterator<tuple<T, INDEXES...>>;
@@ -93,9 +94,10 @@ namespace Stroika::Foundation::Containers::Concrete {
             return RESULT_TYPE (move (resultRep));
 #endif
         }
-        virtual Iterator<value_type> Find_equal_to ([[maybe_unused]] const ArgByValueType<value_type>& v) const override
+        virtual Iterator<value_type> Find_equal_to (const _IterableRepSharedPtr&                       thisSharedPtr,
+                                                    [[maybe_unused]] const ArgByValueType<value_type>& v) const override
         {
-            return this->_Find_equal_to_default_implementation (v);
+            return this->_Find_equal_to_default_implementation (thisSharedPtr, v);
         }
 
         // DataHyperRectangle<T, INDEXES...>::_IRep overrides

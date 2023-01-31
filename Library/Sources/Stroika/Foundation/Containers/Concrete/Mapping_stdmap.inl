@@ -63,7 +63,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
             return Iterable<value_type>::template MakeSmartPtr<Rep_> (*this);
         }
-        virtual Iterator<value_type> MakeIterator () const override
+        virtual Iterator<value_type> MakeIterator ([[maybe_unused]] const _IterableRepSharedPtr& thisSharedPtr) const override
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
             return Iterator<value_type>{Iterator<value_type>::template MakeSmartPtr<IteratorRep_> (&fData_, &fChangeCounts_)};
@@ -85,15 +85,15 @@ namespace Stroika::Foundation::Containers::Concrete {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
             fData_.Apply (doToElement);
         }
-        virtual Iterator<value_type> Find (const function<bool (ArgByValueType<value_type> item)>& that) const override
+        virtual Iterator<value_type> Find (const _IterableRepSharedPtr& thisSharedPtr, const function<bool (ArgByValueType<value_type> item)>& that) const override
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
-            return this->_Find (that);
+            return this->_Find (thisSharedPtr, that);
         }
-        virtual Iterator<value_type> Find_equal_to (const ArgByValueType<value_type>& v) const override
+        virtual Iterator<value_type> Find_equal_to (const _IterableRepSharedPtr& thisSharedPtr, const ArgByValueType<value_type>& v) const override
         {
             // std::map indexes on key, not full value_type (though maybe we could use that as a hint to start a search?)
-            return this->_Find_equal_to_default_implementation (v);
+            return this->_Find_equal_to_default_implementation (thisSharedPtr, v);
         }
 
         // Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::_IRep overrides

@@ -55,16 +55,16 @@ namespace Stroika::Foundation::Traversal {
     inline void Iterable<T>::_IRep::_Apply (const function<void (ArgByValueType<T> item)>& doToElement) const
     {
         RequireNotNull (doToElement);
-        for (Iterator<T> i = MakeIterator (); i != Iterable<T>::end (); ++i) {
+        for (Iterator<T> i = MakeIterator (nullptr); i != Iterable<T>::end (); ++i) {
             doToElement (*i);
         }
     }
     template <typename T>
     template <typename THAT_FUNCTION, enable_if_t<Configuration::IsTPredicate<T, THAT_FUNCTION> ()>*>
-    inline Iterator<T> Iterable<T>::_IRep::_Find (THAT_FUNCTION&& that) const
+    inline Iterator<T> Iterable<T>::_IRep::_Find (const _IterableRepSharedPtr& thisSharedPtr, THAT_FUNCTION&& that) const
     {
         RequireNotNull (that);
-        for (Iterator<T> i = MakeIterator (); i != end (); ++i) {
+        for (Iterator<T> i = MakeIterator (thisSharedPtr); i != end (); ++i) {
             if (that (*i)) {
                 return i;
             }
@@ -72,14 +72,15 @@ namespace Stroika::Foundation::Traversal {
         return end ();
     }
     template <typename T>
-    auto Iterable<T>::_IRep::_Find_equal_to_default_implementation ([[maybe_unused]] const ArgByValueType<value_type>& v) const -> Iterator<value_type>
+    auto Iterable<T>::_IRep::_Find_equal_to_default_implementation (const _IterableRepSharedPtr& thisSharedPtr,
+                                                                    [[maybe_unused]] const ArgByValueType<value_type>& v) const -> Iterator<value_type>
     {
         if constexpr (Configuration::HasUsableEqualToOptimization<T> ()) {
             /*
              *  This is the default implementation. It is only ever compiled if there is a valid equal_to<> around, and
              *  that valid equal_to<> is stateless (verified by Configuration::HasUsableEqualToOptimization).
              */
-            for (Iterator<T> i = MakeIterator (); i != end (); ++i) {
+            for (Iterator<T> i = MakeIterator (thisSharedPtr); i != end (); ++i) {
                 if (equal_to<T>{}(v, *i)) {
                     return i;
                 }
@@ -101,9 +102,9 @@ namespace Stroika::Foundation::Traversal {
     template <typename REP_SUB_TYPE>
     inline Iterable<T>::_SafeReadRepAccessor<REP_SUB_TYPE>::_SafeReadRepAccessor (const Iterable<T>* it) noexcept
         : fConstRef_{static_cast<const REP_SUB_TYPE*> (it->_fRep.cget ())}
+        , fIterableEnvelope_{it}
 #if qDebug
         , fAssertReadLock_{*it}
-        , fIterableEnvelope_{it}
 #endif
     {
         RequireNotNull (it);
@@ -113,9 +114,9 @@ namespace Stroika::Foundation::Traversal {
     template <typename REP_SUB_TYPE>
     inline Iterable<T>::_SafeReadRepAccessor<REP_SUB_TYPE>::_SafeReadRepAccessor (const _SafeReadRepAccessor& src) noexcept
         : fConstRef_{src.fConstRef_}
+        , fIterableEnvelope_{src.fIterableEnvelope_}
 #if qDebug
         , fAssertReadLock_{src.fIterableEnvelope_}
-        , fIterableEnvelope_{src.fIterableEnvelope_}
 #endif
     {
         RequireNotNull (fConstRef_);
@@ -125,9 +126,9 @@ namespace Stroika::Foundation::Traversal {
     template <typename REP_SUB_TYPE>
     inline Iterable<T>::_SafeReadRepAccessor<REP_SUB_TYPE>::_SafeReadRepAccessor (_SafeReadRepAccessor&& src) noexcept
         : fConstRef_{src.fConstRef_}
+        , fIterableEnvelope_{src.fIterableEnvelope_}
 #if qDebug
         , fAssertReadLock_{move (src.fAssertReadLock_)}
-        , fIterableEnvelope_{src.fIterableEnvelope_}
 #endif
     {
         RequireNotNull (fConstRef_);
@@ -138,10 +139,10 @@ namespace Stroika::Foundation::Traversal {
     template <typename REP_SUB_TYPE>
     inline auto Iterable<T>::_SafeReadRepAccessor<REP_SUB_TYPE>::operator= (const _SafeReadRepAccessor& rhs) noexcept -> _SafeReadRepAccessor&
     {
-        fConstRef_ = rhs.fConstRef_;
-#if qDebug
-        this->fAssertReadLock_   = rhs.fAssertReadLock_;
+        fConstRef_               = rhs.fConstRef_;
         this->fIterableEnvelope_ = rhs.fIterableEnvelope_;
+#if qDebug
+        this->fAssertReadLock_ = rhs.fAssertReadLock_;
 #endif
         return *this;
     }
@@ -151,6 +152,12 @@ namespace Stroika::Foundation::Traversal {
     {
         EnsureMember (fConstRef_, REP_SUB_TYPE);
         return *fConstRef_;
+    }
+    template <typename T>
+    template <typename REP_SUB_TYPE>
+    inline auto Iterable<T>::_SafeReadRepAccessor<REP_SUB_TYPE>::_ConstGetRepSharedPtr () const noexcept -> _IterableRepSharedPtr
+    {
+        return this->fIterableEnvelope_->_fRep.cget_ptr ();
     }
 
     /*
@@ -272,17 +279,20 @@ namespace Stroika::Foundation::Traversal {
     template <typename T>
     inline Iterator<T> Iterable<T>::MakeIterator () const
     {
-        return _SafeReadRepAccessor<>{this}._ConstGetRep ().MakeIterator ();
+        _SafeReadRepAccessor<> accessor{this};
+        return accessor._ConstGetRep ().MakeIterator (accessor._ConstGetRepSharedPtr ());
     }
     template <typename T>
     inline size_t Iterable<T>::size () const
     {
-        return _SafeReadRepAccessor<>{this}._ConstGetRep ().size ();
+        _SafeReadRepAccessor<> accessor{this};
+        return accessor._ConstGetRep ().size ();
     }
     template <typename T>
     inline bool Iterable<T>::empty () const
     {
-        return _SafeReadRepAccessor<>{this}._ConstGetRep ().empty ();
+        _SafeReadRepAccessor<> accessor{this};
+        return accessor._ConstGetRep ().empty ();
     }
     template <typename T>
     template <typename EQUALS_COMPARER>
@@ -797,9 +807,10 @@ namespace Stroika::Foundation::Traversal {
         RequireNotNull (that);
         constexpr bool kUseIterableRepIteration_ = true; // same semantics, but maybe faster cuz avoids Stroika iterator extra virtual calls overhead
         if (kUseIterableRepIteration_) {
-            optional<RESULT_T> result; // actual result captured in sife-effect of lambda
-            auto               f = [&that, &result] (ArgByValueType<T> i) { return (result = that (i)).has_value (); };
-            Iterator<T>        t = this->_fRep->Find (f);
+            optional<RESULT_T>          result; // actual result captured in sife-effect of lambda
+            auto                        f = [&that, &result] (ArgByValueType<T> i) { return (result = that (i)).has_value (); };
+            _SafeReadRepAccessor<_IRep> accessor{this};
+            Iterator<T>                 t = accessor._ConstGetRep ().Find (accessor._ConstGetRepSharedPtr (), f);
             return t ? result : optional<RESULT_T>{};
         }
         else {
@@ -1048,7 +1059,8 @@ namespace Stroika::Foundation::Traversal {
     inline void Iterable<T>::Apply (const function<void (ArgByValueType<T> item)>& doToElement) const
     {
         RequireNotNull (doToElement);
-        _SafeReadRepAccessor<>{this}._ConstGetRep ().Apply (doToElement);
+        _SafeReadRepAccessor<> accessor{this};
+        accessor._ConstGetRep ().Apply (doToElement);
     }
     template <typename T>
     template <typename THAT_FUNCTION, enable_if_t<Configuration::IsTPredicate<T, THAT_FUNCTION> ()>*>
@@ -1056,7 +1068,8 @@ namespace Stroika::Foundation::Traversal {
     {
         // NB: This transforms perfectly forwarded 'THAT_FUNCTION' and converts it to std::function<> - preventing further inlining at this point -
         // just so it can be done
-        return _SafeReadRepAccessor<>{this}._ConstGetRep ().Find (that);
+        _SafeReadRepAccessor<> accessor{this};
+        return accessor._ConstGetRep ().Find (accessor._ConstGetRepSharedPtr (), that);
     }
     template <typename T>
     template <typename EQUALS_COMPARER, enable_if_t<Common::IsPotentiallyComparerRelation<EQUALS_COMPARER, T> ()>*>
@@ -1064,7 +1077,8 @@ namespace Stroika::Foundation::Traversal {
     {
         if constexpr (is_same_v<remove_cvref_t<EQUALS_COMPARER>, equal_to<T>> and Configuration::HasUsableEqualToOptimization<T> ()) {
             // This CAN be much faster than the default implementation for this special (but common) case (often a tree structure will have been maintained making this find faster)
-            return _SafeReadRepAccessor<>{this}._ConstGetRep ().Find_equal_to (v);
+            _SafeReadRepAccessor<> accessor{this};
+            return accessor._ConstGetRep ().Find_equal_to (accessor._ConstGetRepSharedPtr (), v);
         }
         else {
             return Find ([v, equalsComparer] (Configuration::ArgByValueType<T> arg) { return equalsComparer (v, arg); });

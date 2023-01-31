@@ -1465,8 +1465,7 @@ namespace Stroika::Foundation::Characters {
      *  \note   Important design note - String reps are IMMUTABLE. Changes to string like +=, create new string reps (so costly).
      *          Use StringBuilder for that purpose in performance sensative code.
      */
-    class String::_IRep : public Iterable<Character>::_IRep,
-                          public Traversal::IterableBase::enable_shared_from_this_PtrImplementationTemplate<String::_IRep> {
+    class String::_IRep : public Iterable<Character>::_IRep {
     protected:
         using _IterableRepSharedPtr = String::_IterableRepSharedPtr;
 

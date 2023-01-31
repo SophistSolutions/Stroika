@@ -47,7 +47,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
             return Iterable<tuple<T, INDEXES...>>::template MakeSmartPtr<Rep_> (*this);
         }
-        virtual Iterator<tuple<T, INDEXES...>> MakeIterator () const override
+        virtual Iterator<tuple<T, INDEXES...>> MakeIterator (const _IterableRepSharedPtr& thisSharedPtr) const override
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
             return Iterator<value_type>{Iterator<value_type>::template MakeSmartPtr<IteratorRep_> (&fData_, &fChangeCounts_)};
@@ -67,7 +67,8 @@ namespace Stroika::Foundation::Containers::Concrete {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
             fData_.Apply ([&] (const pair<tuple<INDEXES...>, T>& item) { doToElement (tuple_cat (tuple<T>{item.second}, item.first)); });
         }
-        virtual Iterator<tuple<T, INDEXES...>> Find (const function<bool (ArgByValueType<value_type> item)>& that) const override
+        virtual Iterator<tuple<T, INDEXES...>> Find (const _IterableRepSharedPtr&                            thisSharedPtr,
+                                                     const function<bool (ArgByValueType<value_type> item)>& that) const override
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
             using RESULT_TYPE = Iterator<tuple<T, INDEXES...>>;
@@ -81,9 +82,9 @@ namespace Stroika::Foundation::Containers::Concrete {
             resultRep->fIterator.SetUnderlyingIteratorRep (iLink);
             return RESULT_TYPE{move (resultRep)};
         }
-        virtual Iterator<tuple<T, INDEXES...>> Find_equal_to (const ArgByValueType<value_type>& v) const override
+        virtual Iterator<tuple<T, INDEXES...>> Find_equal_to (const _IterableRepSharedPtr& thisSharedPtr, const ArgByValueType<value_type>& v) const override
         {
-            return this->_Find_equal_to_default_implementation (v);
+            return this->_Find_equal_to_default_implementation (thisSharedPtr, v);
         }
 
         // DataHyperRectangle<T, INDEXES...>::_IRep overrides

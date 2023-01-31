@@ -1343,12 +1343,16 @@ namespace Stroika::Foundation::Traversal {
     public:
         nonvirtual const REP_SUB_TYPE& _ConstGetRep () const noexcept;
 
+    public:
+        // @todo probably change to some sort of more const type returned
+        nonvirtual _IterableRepSharedPtr _ConstGetRepSharedPtr () const noexcept;
+
     private:
         const REP_SUB_TYPE* fConstRef_;
+        const Iterable<T>*  fIterableEnvelope_;
 
 #if qDebug
         Debug::AssertExternallySynchronizedMutex::ReadContext fAssertReadLock_;
-        const Iterable<T>*                                    fIterableEnvelope_;
 #endif
     };
 
@@ -1401,7 +1405,7 @@ namespace Stroika::Foundation::Traversal {
     };
     template <typename T>
     struct Add_FindByEqualTo_PureVirtualDeclaration<T, true> {
-        virtual Iterator<T> Find_equal_to ([[maybe_unused]] const ArgByValueType<T>& v) const = 0;
+        virtual Iterator<T> Find_equal_to (const _IterableRepSharedPtr& thisSharedPtr, [[maybe_unused]] const ArgByValueType<T>& v) const = 0;
     };
     /**
      * @see Add_FindByEqualTo_PureVirtualDeclaration
@@ -1413,7 +1417,7 @@ namespace Stroika::Foundation::Traversal {
     };
     template <typename T, typename IMPL>
     struct Add_FindByEqualTo_Override<T, true, IMPL> {
-        virtual Iterator<T> Find_equal_to (const ArgByValueType<T>& v) const override
+        virtual Iterator<T> Find_equal_to (const _IterableRepSharedPtr& thisSharedPtr, const ArgByValueType<T>& v) const override
         {
             return IMPL{}(v);
         }
@@ -1427,6 +1431,30 @@ namespace Stroika::Foundation::Traversal {
      *
      *  Abstract class used in subclasses which extend the idea of Iterable.
      *  Most abstract Containers in Stroika subclass of Iterable<T>.
+     * 
+     *  \note Design Note: shared_from_this/enable_shared_from_this vs explicit
+     *        const _IterableRepSharedPtr& thisSharedPtr arguments to most functions.
+     * 
+     *        Some of these methods - most notably MakeIterator () - create objects which must
+     *        reference the underlying Iterable after the iterator returns. That means it needs
+     *        to somehow 'increment the reference count'. This isn't done in the API, but all the backend
+     *        implementations must do it somehow. They do it - before Stroika v3 - by using enable_shared_from_this.
+     * 
+     *        Doing that increase the size of each rep instance (by the size of a weak_ptr - DOUBLE CHECK THIS? - which is basically
+     *        sizeof (void*) - I think. Not huge, but significant (in particular for string objects).
+     * 
+     *        The alternative, is to just pass in the shared_ptr<> on the MakeIterator() calls. This doesn't cost much extra (passing ptr on stack
+     *        as extra argument). And it is compensatated by avoiding the shared_from_this call (probably a loss over all) - but compoensated
+     *        by avoiding the storage of the weak_ptr (to be tested - but hopefully a win).
+     * 
+     *        Sadly - the default implementation of most Iterable<>::IRep methods vectors to MakeIterator, so those methods likewise need to
+     *        pass in the shared_ptr - even if unused (maybe making this not a winner - will test). Except WHY - since they don't actually
+     *        hang onto the Iterator result (so dont really need to extend its life). Because of this, the calls to the IRep::MakeIterator () allow
+     *        the shared_ptr to be a nullptr, meaning just dont need to bump the reference count.
+     * 
+     *        So, the rule is - if the caller calls something that returns an iterator, but the iterator is examined and not
+     *        RETURNED by the caller which could have saved the shared_ptr and already has it 'locked'/'incremented' so it cannot
+     *        change, then it can pass nullptr to such routines.
      */
     template <typename T>
     class Iterable<T>::_IRep {
@@ -1443,11 +1471,11 @@ namespace Stroika::Foundation::Traversal {
         virtual _IterableRepSharedPtr Clone () const = 0;
         /*
          */
-        virtual Iterator<value_type> MakeIterator () const                                                    = 0;
+        virtual Iterator<value_type> MakeIterator (const _IterableRepSharedPtr& thisSharedPtr) const          = 0;
         virtual size_t               size () const                                                            = 0;
         virtual bool                 empty () const                                                           = 0;
         virtual void                 Apply (const function<void (ArgByValueType<T> item)>& doToElement) const = 0;
-        virtual Iterator<value_type> Find (const function<bool (ArgByValueType<T> item)>& that) const         = 0;
+        virtual Iterator<value_type> Find (const _IterableRepSharedPtr& thisSharedPtr, const function<bool (ArgByValueType<T> item)>& that) const = 0;
         /**
          *  Find_equal_to is Not LOGICALLY needed, as you can manually iterate (just use Find()). 
          * But this CAN be much faster (and commonly is) - and is used very heavily by iterables, so
@@ -1458,13 +1486,13 @@ namespace Stroika::Foundation::Traversal {
          * The COST of having this is that ALL Iterable<T>::_IRep MUST provide this implementation
          * As in:
          * 
-                virtual Iterator<value_type> Find_equal_to (const ArgByValueType<value_type>& v) const override
+                virtual Iterator<value_type> Find_equal_to (const _IterableRepSharedPtr& thisSharedPtr, const ArgByValueType<value_type>& v) const override
                 {
-                    return this->_Find_equal_to_default_implementation (v);
+                    return this->_Find_equal_to_default_implementation (thisSharedPtr, v);
                 }
-         * and obviously imopelmetantiosn that can provide a faster implemetnation will do so.
+         * and obviously implementations that can provide a faster implemetnation will do so.
          */
-        virtual Iterator<value_type> Find_equal_to (const ArgByValueType<T>& v) const = 0;
+        virtual Iterator<value_type> Find_equal_to (const _IterableRepSharedPtr& thisSharedPtr, const ArgByValueType<T>& v) const = 0;
 
     protected:
         /*
@@ -1474,11 +1502,12 @@ namespace Stroika::Foundation::Traversal {
         nonvirtual bool _IsEmpty () const;
         nonvirtual void _Apply (const function<void (ArgByValueType<value_type> item)>& doToElement) const;
         template <typename THAT_FUNCTION, enable_if_t<Configuration::IsTPredicate<T, THAT_FUNCTION> ()>* = nullptr>
-        nonvirtual Iterator<value_type> _Find (THAT_FUNCTION&& that) const;
+        nonvirtual Iterator<value_type> _Find (const _IterableRepSharedPtr& thisSharedPtr, THAT_FUNCTION&& that) const;
         /**
          *  Default implementation for Find_equal_to function.
          */
-        nonvirtual Iterator<value_type> _Find_equal_to_default_implementation (const ArgByValueType<value_type>& v) const;
+        nonvirtual Iterator<value_type> _Find_equal_to_default_implementation (const _IterableRepSharedPtr&      thisSharedPtr,
+                                                                               const ArgByValueType<value_type>& v) const;
     };
 
     /**
