@@ -46,7 +46,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
             return Iterable<tuple<T, INDEXES...>>::template MakeSmartPtr<Rep_> (*this);
         }
-        virtual Iterator<tuple<T, INDEXES...>> MakeIterator (const _IterableRepSharedPtr& thisSharedPtr) const override
+        virtual Iterator<tuple<T, INDEXES...>> MakeIterator ([[maybe_unused]] const _IterableRepSharedPtr& thisSharedPtr) const override
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
 /// NYI
@@ -74,7 +74,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             fData_.Apply (doToElement);
 #endif
         }
-        virtual Iterator<tuple<T, INDEXES...>> Find (const _IterableRepSharedPtr& thisSharedPtr,
+        virtual Iterator<tuple<T, INDEXES...>> Find ([[maybe_unused]] const _IterableRepSharedPtr& thisSharedPtr,
                                                      [[maybe_unused]] const function<bool (ArgByValueType<value_type> item)>& doToElement) const override
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};

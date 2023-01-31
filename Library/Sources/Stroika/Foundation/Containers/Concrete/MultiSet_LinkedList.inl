@@ -69,7 +69,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
             return fData_.empty ();
         }
-        virtual Iterator<value_type> MakeIterator (const _IterableRepSharedPtr& thisSharedPtr) const override
+        virtual Iterator<value_type> MakeIterator ([[maybe_unused]] const _IterableRepSharedPtr& thisSharedPtr) const override
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
             return Iterator<value_type>{Iterator<value_type>::template MakeSmartPtr<IteratorRep_> (&fData_, &fChangeCounts_)};
@@ -79,7 +79,8 @@ namespace Stroika::Foundation::Containers::Concrete {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
             fData_.Apply (doToElement);
         }
-        virtual Iterator<value_type> Find (const _IterableRepSharedPtr& thisSharedPtr, const function<bool (ArgByValueType<value_type> item)>& that) const override
+        virtual Iterator<value_type> Find ([[maybe_unused]] const _IterableRepSharedPtr&           thisSharedPtr,
+                                           const function<bool (ArgByValueType<value_type> item)>& that) const override
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
             if (auto iLink = fData_.Find (that)) {

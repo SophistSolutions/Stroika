@@ -1426,11 +1426,12 @@ namespace {
             if (not filesystem::exists (jsonTestRoot)) {
                 jsonTestRoot = path{".."} / path{".."} / path{".."} / "52" / "JSONTestData";
             }
-            
+
+            // WEIRD/CONFUSING - TIMES APPEAR TO DEPEND (ALOT ON WINDOWS) on order of calls!!! SO CAREFUL COMPARING
+            DoJSONParse_ (jsonTestRoot / "large-dict.json", 5, DoStroikaJSONParse_, "stroika-default-json");
             DoJSONParse_ (jsonTestRoot / "large-dict.json", 5, DoStroikaJSONParse_forcedNative_, "stroika-native-json");
             DoJSONParse_ (jsonTestRoot / "large-dict.json", 5, DoStroikaJSONParse_nlohmann_json, "nlohmann");
             DoJSONParse_ (jsonTestRoot / "large-dict.json", 5, DoStroikaJSONParse_boost_json, "boost_json");
-            DoJSONParse_ (jsonTestRoot / "large-dict.json", 5, DoStroikaJSONParse_, "stroika-default-json");
             DoJSONParse_ (jsonTestRoot / "large-dict.json", 5, DoStroikaJSONParse_boost_json2Stk, "stroika-via-boost-json");
             return;
         }

@@ -125,7 +125,7 @@ namespace {
             {
                 struct MyIterRep_ final : Iterator<Character>::IRep, public Memory::UseBlockAllocationIfAppropriate<MyIterRep_> {
                     _IterableRepSharedPtr fHoldRepToAssureDataNotDestroyed_; // bump reference count (CAN BE NULL)
-                    span<const CHAR_T> fData_;   // clone span (not underlying data) pointing inside fHoldRepToAssureDataNotDestroyed
+                    span<const CHAR_T>    fData_; // clone span (not underlying data) pointing inside fHoldRepToAssureDataNotDestroyed
                     size_t                fIdx_{0};
                     MyIterRep_ (const _IterableRepSharedPtr& savedRefToKeepDataAlive, span<const CHAR_T> data)
                         : fHoldRepToAssureDataNotDestroyed_{savedRefToKeepDataAlive}
@@ -751,34 +751,55 @@ inline auto String::mk_nocheck_justPickBufRep_ (span<const CHAR_T> s) -> _Shared
         Require (UTFConverter::AllFitsInTwoByteEncoding (s)); // avoid later assertion error
     }
 
+    /**
+     *  We want to TARGET using block-allocator of 64 bytes. This works well for typical (x86) machine
+     *  caches, and divides up nicely, and leaves enuf room for a decent number of characters typically.
+     * 
+     *  So compute/guestimate a few sizes, and add static_asserts to check where we can. Often if these fail
+     *  you can just get rid/or fix them. Not truely counted on, just trying ot generate vaguely reasonable
+     *  number of characters to use.
+     */
     constexpr size_t kBaseOfFixedBufSize_ = sizeof (StringRepHelperAllFitInSize_::Rep<CHAR_T>);
     static_assert (kBaseOfFixedBufSize_ < 64); // this code below assumes, so must re-tune if this ever fails
-
-    static constexpr size_t kNElts1_ = (64 - kBaseOfFixedBufSize_) / sizeof (CHAR_T);
-    static constexpr size_t kNElts2_ = (96 - kBaseOfFixedBufSize_) / sizeof (CHAR_T);
-    static constexpr size_t kNElts3_ = (128 - kBaseOfFixedBufSize_) / sizeof (CHAR_T);
+    if constexpr (qPlatform_Windows) {
+        static_assert (kBaseOfFixedBufSize_ == 3 * sizeof (void*));
+        if constexpr (sizeof (void*) == 4) {
+            static_assert (kBaseOfFixedBufSize_ == 12);
+        }
+        else if constexpr (sizeof (void*) == 8) {
+            static_assert (kBaseOfFixedBufSize_ == 24);
+        }
+    }
+    constexpr size_t kOverheadSizeForMakeShared_ = qPlatform_Windows ? (sizeof (void*) == 4 ? 12 : 16) : sizeof (unsigned long) * 2;
+#if qPlatform_Windows
+    static_assert (kOverheadSizeForMakeShared_ == sizeof (_Ref_count_base)); // not critically counted on, just to debug/fix sizes
+#endif
+    static constexpr size_t kNElts1_ = (64 - kBaseOfFixedBufSize_ - kOverheadSizeForMakeShared_) / sizeof (CHAR_T);
+    static constexpr size_t kNElts2_ = (96 - kBaseOfFixedBufSize_ - kOverheadSizeForMakeShared_) / sizeof (CHAR_T);
+    static constexpr size_t kNElts3_ = (128 - kBaseOfFixedBufSize_ - kOverheadSizeForMakeShared_) / sizeof (CHAR_T);
 
     // These checks are NOT important, just for documentation/reference
-    #if 1
-    if constexpr (qPlatform_Windows and sizeof (CHAR_T) == 1 and sizeof (void*) == 4) {
-        static_assert (kNElts1_ == 44+8);
-        static_assert (kNElts2_ == 76 + 8);
-        static_assert (kNElts3_ == 108 + 8);
+    if constexpr (qPlatform_Windows and sizeof (CHAR_T) == 1) {
+        if constexpr (sizeof (void*) == 4) {
+            static_assert (kNElts1_ == 40);
+            static_assert (kNElts2_ == 72);
+            static_assert (kNElts3_ == 104);
+        }
+        if constexpr (sizeof (void*) == 8) {
+            static_assert (kNElts1_ == 24);
+            static_assert (kNElts2_ == 56);
+            static_assert (kNElts3_ == 88);
+        }
     }
-    if constexpr (qPlatform_Windows and sizeof (CHAR_T) == 1 and sizeof (void*) == 8) {
-        static_assert (kNElts1_ == 24 + 16);
-        static_assert (kNElts2_ == 56 + 16);
-        static_assert (kNElts3_ == 88 + 16);
-    }
-    #endif
 
     static_assert (kNElts1_ >= 6);        // crazy otherwise
     static_assert (kNElts2_ >= kNElts1_); // ""
     static_assert (kNElts3_ >= kNElts2_); // ""
 
-    static_assert (sizeof (FixedCapacityInlineStorageString_::Rep<CHAR_T, kNElts1_>) == 64);  // not quite guaranteed but close
-    static_assert (sizeof (FixedCapacityInlineStorageString_::Rep<CHAR_T, kNElts2_>) == 96);  // ""
-    static_assert (sizeof (FixedCapacityInlineStorageString_::Rep<CHAR_T, kNElts3_>) == 128); // ""
+    static_assert (sizeof (FixedCapacityInlineStorageString_::Rep<CHAR_T, kNElts1_>) == 64 - kOverheadSizeForMakeShared_); // not quite guaranteed but close
+    static_assert (sizeof (FixedCapacityInlineStorageString_::Rep<CHAR_T, kNElts2_>) == 96 - kOverheadSizeForMakeShared_);  // ""
+    static_assert (sizeof (FixedCapacityInlineStorageString_::Rep<CHAR_T, kNElts3_>) == 128 - kOverheadSizeForMakeShared_); // ""
+
     size_t sz = s.size ();
     if (sz <= kNElts1_) {
         return MakeSmartPtr<FixedCapacityInlineStorageString_::Rep<CHAR_T, kNElts1_>> (s);
