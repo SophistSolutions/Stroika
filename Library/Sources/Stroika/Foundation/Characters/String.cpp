@@ -792,9 +792,9 @@ inline auto String::mk_nocheck_justPickBufRep_ (span<const CHAR_T> s) -> _Shared
         }
     }
 
-    static_assert (kNElts1_ >= 6);          // crazy otherwise
-    static_assert (kNElts2_ > kNElts1_);    // ""
-    static_assert (kNElts3_ > kNElts2_);    // ""
+    static_assert (kNElts1_ >= 6);       // crazy otherwise
+    static_assert (kNElts2_ > kNElts1_); // ""
+    static_assert (kNElts3_ > kNElts2_); // ""
 
     static_assert (sizeof (FixedCapacityInlineStorageString_::Rep<CHAR_T, kNElts1_>) == 64 - kOverheadSizeForMakeShared_);  // not quite guaranteed but close
     static_assert (sizeof (FixedCapacityInlineStorageString_::Rep<CHAR_T, kNElts2_>) == 96 - kOverheadSizeForMakeShared_);  // ""
