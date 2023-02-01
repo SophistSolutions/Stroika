@@ -232,7 +232,7 @@ sub	DoHelp_
 		print("	    --valgrind { enable|disable|default }           /* Enables/disable valgrind-specific runtime code (so far only needed for clean helgrind use) */\n");
 		print("	    --GLIBCXX_DEBUG { enable|disable|default }      /* Enables/Disables GLIBCXX_DEBUG (G++-specific) */\n");
 		print("	    --MACOSX_DEPLOYMENT_TARGET { #|default|none }   /* set MACOSX_DEPLOYMENT_TARGET (mac os min version) (macosx target specific) */\n");
-		print("	    --cppstd-version {FLAG}                         /* Sets can be c++17, or c++2a */\n");
+		print("	    --cppstd-version {FLAG}                         /* Sets can be c++20, c++2a, c++2b, c++23 */\n");
 		print("	    --stdlib {LIB}                                  /* libc++ (clang lib), libstdc++ (gcc and often clang) */\n");
 		print("	    --ActivePerl {use|no}                           /* Enables/disables use of ActivePerl (Windows Only) - JUST USED TO BUILD OPENSSL for Windows*/\n");
 		print("	    --LibCurl {build-only|use|use-system|no}        /* Enables/disables use of LibCurl for this configuration [default TBD]*/\n");
@@ -1314,7 +1314,10 @@ sub	ParseCommandLine_Remaining_
 			if ($var eq "c++14" ) {
 				print "Warning: c++14 not supported by Stroika v2.1 or later\n";
 			}
-			if ($var ne "c++17" && $var ne "c++2a" && $var ne "c++20" && $var ne "c++2b" && $var ne "c++23") {
+			if ($var eq "c++17" ) {
+				print "Warning: c++17 not supported by Stroika v3 or later\n";
+			}
+			if ($var ne "c++2a" && $var ne "c++20" && $var ne "c++2b" && $var ne "c++23") {
 				print "Warning: unrecognized arg to --cppstd-version\n";
 			}
 			$CPPSTD_VERSION_FLAG = "--std=" . $var;
@@ -2354,9 +2357,8 @@ PostProcessOptions_ ();
 sub ValidateConfigurationAndEmitNeededWarnings_
 {
 	if (("$^O" eq "darwin") and IsClangPlusPlus_($COMPILER_DRIVER_CPlusPlus)) {
-		if (GetClangVersion_ ($COMPILER_DRIVER_CPlusPlus) < 13) {
-			## maybe need xcode 14
-			print "CONFIGURATION-WARNING: Stroika v3 requires clang 13 (xcode 13) or later needed (compiler-driver: $COMPILER_DRIVER_CPlusPlus).\n";
+		if (GetClangVersion_ ($COMPILER_DRIVER_CPlusPlus) < 14) {
+			print "CONFIGURATION-WARNING: Stroika v3 requires clang 14 (xcode 14) or later needed (compiler-driver: $COMPILER_DRIVER_CPlusPlus).\n";
 		}
 	}
 	if (!("$^O" eq "darwin") and IsClangPlusPlus_($COMPILER_DRIVER_CPlusPlus)) {

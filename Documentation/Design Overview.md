@@ -301,9 +301,7 @@ But sometimes you want to have a compare functor that takes parameters (e.g. str
 
 Stroika types follow the convention of providing a ThreeWayComparer function object and an EqualsComparer object for type T, as static members of that type T If-and-only-if the comparitors can be parameterized. These are **not** available (as nested members) if they cannot be parameterized.
 
-But in either case (whether parameterizable or not) they are supported with operator <=> and operator== (assuming C++20 or later) or the equivilent in C++17 and earlier.
-
-One subtlety that does occasionally need to be accomodated (especailly pre-C++20) is telling a less comparer from an equals comparer, etc in overloads. This is done with Common::ComparisonRelationType and Common::ComparisonRelationDeclaration.
+One subtlety that does occasionally need to be accomodated is telling a less comparer from an equals comparer, etc in overloads. This is done with Common::ComparisonRelationType and Common::ComparisonRelationDeclaration.
 
 #### Definition of comparison
 
@@ -392,17 +390,6 @@ All the various operators should just work with no effort, on both C++ 17, and w
 
 ##### Using possibly explicit comparison functor
 
-To support the C++20 compare_three_way function object (compatibly with C++17), it intoduces its own copy of this in the 'Common' namespace, along with:
-
-```C++
-  Common::strong_ordering   (alias for std::strong_ordering)
-  Common::kLess             (alias for std::strong_ordering::less)
-  Common::kEqual            (alias for std::strong_ordering::equal)
-  Common::kGreater          (alias for std::strong_ordering::greater)
-```
-
-For code which assumes C++20 or later, just use the appropriate C++20 types/values/classes, with no need for the C++17-compatability helpers.
-
 Then to make use of these explicit function compare objects (the most common case) where the comparison function is not parameterized:
 
 ```C++
@@ -416,7 +403,7 @@ or
 
 ```C++
 auto compareFunc = Common::compare_three_way<T,T>{};
-if (compareFunc(t1, t2) == Common::kLess) {
+if (compareFunc(t1, t2) == std::strong_ordering::less) {
   ...
 }
 ```
@@ -449,8 +436,6 @@ For the more complicated case of passing in explicit parameters, you use the nes
 - Working with builtin types (e.g. int)
 - Working with STL types, and 3rd-party libraries
 - Seamlessly fit with user code
-- Works with C++17, and the newer operator<=> () code interoperably
-- when we abandon C++17 support, easy to deprecate 'Common:' wrappers on C++20 comparison code, and simplify.
 
 Note that we choose to use non-member operator overloads for these comparison functions (in C++17) because putting them in the namespace where the class is defined provides the same convenience of use (name lookup) as member functions, but allows for cases like C \&lt; O where C is some time convertible to O, and O is the class we are adding operator\&lt; support for.
 

@@ -87,7 +87,7 @@ It takes a while to build all of Stroika (10-20 minutes per configuration), so a
 This mostly conists of the standard UNIX build tools.
 
 Roughly:
-- c++ compiler supporting C++17 or later
+- c++ compiler supporting C++20 or later
 - bash (sh)
 - make (gnu make), patch, perl, pkg-config, realpath, sed, tar, tr, wget, unzip
 - 7za, cmake (optionally - for building some optional components)
@@ -263,7 +263,7 @@ The reason this is so important, is that it allows an external build system like
 
 - `./ScriptsLib/GetConfigurationParameter Release CXXFLAGS`
 
-  -flto --std=c++17 -O3 -I/mnt/c/Sandbox/Stroika/DevRoot/Builds/Release/ThirdPartyComponents/include/ -I/mnt/c/Sandbox/Stroika/DevRoot/Library/Sources/ -I/mnt/c/Sandbox/Stroika/DevRoot/IntermediateFiles/Release/ -Wall -Wno-switch -Wno-sign-compare -Wno-unused-variable -Wno-unused-value -Wno-strict-aliasing -Wno-comment -Wno-unused-function -Wno-unused-but-set-variable -Wno-unused-local-typedefs -g
+  -flto --std=c++20 -O3 -I/mnt/c/Sandbox/Stroika/DevRoot/Builds/Release/ThirdPartyComponents/include/ -I/mnt/c/Sandbox/Stroika/DevRoot/Library/Sources/ -I/mnt/c/Sandbox/Stroika/DevRoot/IntermediateFiles/Release/ -Wall -Wno-switch -Wno-sign-compare -Wno-unused-variable -Wno-unused-value -Wno-strict-aliasing -Wno-comment -Wno-unused-function -Wno-unused-but-set-variable -Wno-unused-local-typedefs -g
 
 - defining sample configurations
   ~~~bash
@@ -280,8 +280,8 @@ The reason this is so important, is that it allows an external build system like
   ./configure DefaultConfiguration --assertions enable --trace2file enable
 
   ./configure my-gcc-5.3.0-release --compiler-driver ~/gcc-5.3.0/bin/x86_64-unknown-linux-gnu-gcc --apply-default-release-flags --only-if-has-compiler --trace2file enable
-  ./configure my-gcc-6.1.0-debug-c++17 --compiler-driver ~/gcc-6.1.0/bin/x86_64-pc-linux-gnu-gcc --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version-flag --std=c++17
-  ./configure my-gcc-6.1.0-release-c++17 --compiler-driver ~/gcc-6.1.0/bin/x86_64-pc-linux-gnu-gcc --apply-default-release-flags --only-if-has-compiler --cppstd-version-flag --std=c++17
+  ./configure my-gcc-6.1.0-debug-c++20 --compiler-driver ~/gcc-6.1.0/bin/x86_64-pc-linux-gnu-gcc --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version-flag --std=c++20
+  ./configure my-gcc-6.1.0-release-c++20 --compiler-driver ~/gcc-6.1.0/bin/x86_64-pc-linux-gnu-gcc --apply-default-release-flags --only-if-has-compiler --cppstd-version-flag --std=c++20
 
   #
   #LTO not working for my private builds of clang- no matter
@@ -298,13 +298,13 @@ The reason this is so important, is that it allows an external build system like
   # maybe add these directly to config
   # NB: muse use noblockalloc for gcc-debug-threadsanitize because we need to annoate and thats NYI - so sanitizer knows about free
   #NB: no-sanitize=vptr cuz seems broken ??? - not sure --LGP 2016-07-19
-  ./configure gcc-debug-sanitize --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version-flag --std=c++17 --sanitize address,undefined --no-sanitize vptr
-  ./configure gcc-debug-threadsanitize --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version-flag --std=c++17 --block-allocation disable --extra-compiler-args -fsanitize=thread --extra-linker-args -fsanitize=thread
+  ./configure gcc-debug-sanitize --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version-flag --std=c++20 --sanitize address,undefined --no-sanitize vptr
+  ./configure gcc-debug-threadsanitize --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version-flag --std=c++20 --block-allocation disable --extra-compiler-args -fsanitize=thread --extra-linker-args -fsanitize=thread
 
   #
   ###Builds with a few specail flags to make valgrind work better
-  ./configure VALGRIND_LatestGCC_Dbg_SSLPurify --compiler-driver ~/gcc-6.1.0/bin/x86_64-pc-linux-gnu-gcc --cppstd-version-flag --std=c++17 --only-if-has-compiler --valgrind enable --openssl use --openssl-extraargs purify --apply-default-debug-flags --trace2file enable
-  ./configure VALGRIND_LatestGCC_Release_SSLPurify_NoBlockAlloc --compiler-driver ~/gcc-6.1.0/bin/x86_64-pc-linux-gnu-gcc --cppstd-version-flag --std=c++17 --only-if-has-compiler --valgrind enable --openssl use --openssl-extraargs purify  --apply-default-release-flags --trace2file disable --block-allocation disable
+  ./configure VALGRIND_LatestGCC_Dbg_SSLPurify --compiler-driver ~/gcc-6.1.0/bin/x86_64-pc-linux-gnu-gcc --cppstd-version-flag --std=c++20 --only-if-has-compiler --valgrind enable --openssl use --openssl-extraargs purify --apply-default-debug-flags --trace2file enable
+  ./configure VALGRIND_LatestGCC_Release_SSLPurify_NoBlockAlloc --compiler-driver ~/gcc-6.1.0/bin/x86_64-pc-linux-gnu-gcc --cppstd-version-flag --std=c++20 --only-if-has-compiler --valgrind enable --openssl use --openssl-extraargs purify  --apply-default-release-flags --trace2file disable --block-allocation disable
 
   #
   ./configure raspberrypi-gcc-5 --apply-default-debug-flags --only-if-has-compiler --trace2file enable --compiler-driver 'arm-linux-gnueabihf-g++-5' --cross-compiling true

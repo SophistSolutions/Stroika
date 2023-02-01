@@ -9,7 +9,7 @@ RUN apt-get -qq install -y locales && locale-gen en_US en_US.UTF-8
 # Just to echo information in regression test output
 RUN apt-get -qq install -y lsb-release
 
-#install the latest (C++20 compat) g++ compilers (and c++17 ones for compat with stroika 2.1 builds)
+#install the latest (C++20 compat) g++ compilers
 RUN apt-get -qq install -y g++-11 g++-12
 
 # For reasons which elude me, installing libc++-N removes all the other

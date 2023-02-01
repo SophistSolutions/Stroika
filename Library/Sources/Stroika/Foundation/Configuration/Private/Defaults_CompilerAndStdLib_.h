@@ -78,9 +78,9 @@
 // Must check CLANG first, since CLANG also defines GCC
 // see
 //      clang++-3.8 -dM -E - < /dev/null
-#if (__clang_major__ < 11) || (__clang_major__ == 11 && (__clang_minor__ < 0))
+#if (__clang_major__ < 14) || (__clang_major__ == 14 && (__clang_minor__ < 0))
 #define _STROIKA_CONFIGURATION_WARNING_                                                                                                    \
-    "Warning: Stroika v3 (older clang versions supported by Stroika v2.1) does not support versions prior to APPLE clang++ 11 (XCode 11)"
+    "Warning: Stroika v3 (older clang versions supported by Stroika v2.1) does not support versions prior to APPLE clang++ 14 (XCode 14)"
 #endif
 #if (__clang_major__ > 14) || (__clang_major__ == 14 && (__clang_minor__ > 0))
 #define _STROIKA_CONFIGURATION_WARNING_                                                                                                    \
@@ -195,8 +195,8 @@
  *  version 10 missing new chrono code (and more?)
  */
 #if defined(_LIBCPP_VERSION)
-#if _LIBCPP_VERSION < 11000
-#error "Stroika v3 requires a more c++-20 compliant version of std-c++ library than libc++10 (missing new chrono code for example); try newer libc++, older version of Stroika (e.g. 2.1), or libstdc++"
+#if _LIBCPP_VERSION < 14000
+#error "Stroika v3 requires a more c++-20 compliant version of std-c++ library than libc++14 (missing new chrono/span code for example); try newer libc++, older version of Stroika (e.g. 2.1), or libstdc++"
 #endif
 #endif
 
@@ -657,8 +657,6 @@ in enable_if_t's, but may not need this anymore
 // Appears to work fine now _MSC_VER_2k22_17Pt1_
 #define qCompilerAndStdLib_template_enableIf_Addable_UseBroken_Buggy                                                                       \
     CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k22_17Pt0_)
-#elif defined(__clang__) && defined(__APPLE__)
-#define qCompilerAndStdLib_template_enableIf_Addable_UseBroken_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 13))
 #elif defined(__clang__) && !defined(__APPLE__)
 // broken in clang++-13
 // appears fixed in clang++14
@@ -692,10 +690,6 @@ make[3]: *** [/Sandbox/Str
 // Broken in _MSC_VER_2k22_17Pt0_
 // Verified fixed in _MSC_VER_2k22_17Pt1_
 #define qCompilerAndStdLib_MoveCTORDelete_N4285_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k22_17Pt0_)
-#elif defined(__clang__) && defined(__APPLE__)
-#define qCompilerAndStdLib_MoveCTORDelete_N4285_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 12))
-#elif defined(__clang__) && !defined(__APPLE__)
-#define qCompilerAndStdLib_MoveCTORDelete_N4285_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 8))
 #else
 #define qCompilerAndStdLib_MoveCTORDelete_N4285_Buggy 0
 #endif
@@ -1249,21 +1243,6 @@ From:    https://en.cppreference.com/w/cpp/locale/time_get/date_order
 #endif
 #endif
 
-// Debug builds - only fails running samples - not tests - crashes
-// ./Builds/Debug/Samples-SystemPerformanceClient/SystemPerformanceClient - MacOS Only
-#ifndef qCompiler_LimitLengthBeforeMainCrash_Buggy
-
-#if defined(__clang__) && defined(__APPLE__)
-// Appears still BROKEN in XCODE 12
-// Appears still BROKEN in XCODE 13
-// Appears FIXED in XCODE 14 (tested on M1)
-#define qCompiler_LimitLengthBeforeMainCrash_Buggy                                                                                         \
-    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((11 <= __clang_major__) && (__clang_major__ <= 13))
-#else
-#define qCompiler_LimitLengthBeforeMainCrash_Buggy 0
-#endif
-
-#endif
 
 #ifndef qCompiler_vswprintf_on_elispisStr_Buggy
 
@@ -1607,10 +1586,7 @@ In file included from ../Characters/String.h:18,
   */
 #ifndef qCompilerAndStdLib_lambdas_in_unevaluatedContext_Buggy
 
-#if defined(__clang__) && defined(__APPLE__)
-// WAG?
-#define qCompilerAndStdLib_lambdas_in_unevaluatedContext_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 13))
-#elif defined(__clang__) && !defined(__APPLE__)
+#if defined(__clang__) && !defined(__APPLE__)
 // First noted in C++20 mode on clang++-12
 // https://en.cppreference.com/w/cpp/20 says maybe fixed in clang++13 or 14
 // appears fixed in clang++-13
@@ -1740,12 +1716,7 @@ In file included from ./../Characters/../Containers/Concrete/Sequence_stdvector.
 */
 #ifndef qCompilerAndStdLib_template_default_arguments_then_paramPack_Buggy
 
-#if defined(__clang__) && defined(__APPLE__)
-// Appears broken on XCode 12
-// BUt fixed in XCode 13
-#define qCompilerAndStdLib_template_default_arguments_then_paramPack_Buggy                                                                 \
-    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 13))
-#elif defined(__clang__) && !defined(__APPLE__)
+#if defined(__clang__) && !defined(__APPLE__)
 #define qCompilerAndStdLib_template_default_arguments_then_paramPack_Buggy                                                                 \
     CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 10))
 #else
@@ -1855,9 +1826,6 @@ make
 #ifndef qCompilerAndStdLib_clangWithLibStdCPPStringConstexpr_Buggy
 
 #if defined(__clang__) && !defined(__APPLE__) && defined(_GLIBCXX_RELEASE)
-// still broken in clang++-11
-// still broken in clang++-12
-// still broken in clang++-13
 // still broken in clang++-14
 #define qCompilerAndStdLib_clangWithLibStdCPPStringConstexpr_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 14))
 #else
@@ -1878,9 +1846,6 @@ Test.cpp:173:31: error: template template argument has different template parame
 #ifndef qCompilerAndStdLib_template_template_argument_as_different_template_paramters_Buggy
 
 #if defined(__clang__) && defined(__APPLE__)
-// VERIFIED BROKEN on XCode 11.0
-// VERIFIED BROKEN on XCode 12.0
-// VERIFIED BROKEN on XCode 13.0
 // VERIFIED BROKEN on XCode 14
 #define qCompilerAndStdLib_template_template_argument_as_different_template_paramters_Buggy                                                \
     CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 14))
@@ -1915,9 +1880,6 @@ FAILED: RegressionTestFailure; replaced == L"abcdef";;Test.cpp: 753
 #ifndef qCompilerAndStdLib_regexp_Compile_bracket_set_Star_Buggy
 
 #if defined(_LIBCPP_VERSION)
-// Broken in _LIBCPP_VERSION  11000
-// Broken in _LIBCPP_VERSION  12000
-// Broken in _LIBCPP_VERSION  13000
 // Broken in _LIBCPP_VERSION  14000
 #define qCompilerAndStdLib_regexp_Compile_bracket_set_Star_Buggy (CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_LIBCPP_VERSION <= 14000))
 #else
@@ -2217,9 +2179,6 @@ TRIED alignas to fix on the array but no luck
 #if !defined(qMacUBSanitizerifreqAlignmentIssue_Buggy)
 
 #if defined(__clang__) && defined(__APPLE__)
-// see on XCOde 11
-// reproduced on XCode 12
-// reproduced on XCode 13
 // reproduced on XCode 14
 #define qMacUBSanitizerifreqAlignmentIssue_Buggy ((11 <= __clang_major__) && (__clang_major__ <= 14))
 #else
@@ -2233,9 +2192,6 @@ TRIED alignas to fix on the array but no luck
 #ifndef qCompilerAndStdLib_locale_pctX_print_time_Buggy
 
 #if defined(__clang__) && defined(__APPLE__)
-// First Noted BROKEN on XCode 11.0
-// Still BROKEN on XCode 12.0
-// Still BROKEN on XCode 13.0
 // Still BROKEN on XCode 14
 #define qCompilerAndStdLib_locale_pctX_print_time_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 14))
 #else
@@ -2513,10 +2469,6 @@ stHarness/SimpleClass.cpp ...
 #ifndef qCompilerAndStdLib_quick_exit_Buggy
 
 #if defined(__clang__) && defined(__APPLE__)
-// Still broken XCode 10 - beta
-// VERIFIED STILL BROKEN on XCode 11.0
-// VERIFIED STILL BROKEN on XCode 12.0
-// VERIFIED STILL BROKEN on XCode 13.0
 // VERIFIED STILL BROKEN on XCode 14
 #define qCompilerAndStdLib_quick_exit_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 14))
 #else

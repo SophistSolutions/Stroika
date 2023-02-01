@@ -2,10 +2,20 @@
 
 ## Major Release Versions
 
+- v3\* - requires C++20 or later; actively evolving
 - v2.1\* - requires C++17 or later; stable, and in maintainance
 - v2.0\* - requires C++14 or later; stable, and in maintainance
 
 ## Branches</h3>
+
+- v3-Release
+
+  Roughly once per week (to once per-month) - a release is merged from the v3-Dev branch. When we do a release
+  we run and record all the regression tests, including performance tests. Nearly every time we do a release, all regression tests pass fully (or mostly - sometimes exceptions).
+
+- v3-Dev
+
+  The development branch may not be stable, and represents work in progress.
 
 - v2.1-Release
 
