@@ -65,7 +65,9 @@ namespace Stroika::Foundation::Memory {
     {
         Require (src.size () <= target.size ());
         Require (not Intersects (src, target));
+        DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wstringop-overflow=\"");
         std::copy (src.begin (), src.end (), target.data ());
+        DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wstringop-overflow=\"");
         return target.subspan (0, src.size ());
     }
     template <typename T>
