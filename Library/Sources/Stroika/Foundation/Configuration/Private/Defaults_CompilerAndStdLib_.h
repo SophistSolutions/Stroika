@@ -1243,7 +1243,6 @@ From:    https://en.cppreference.com/w/cpp/locale/time_get/date_order
 #endif
 #endif
 
-
 #ifndef qCompiler_vswprintf_on_elispisStr_Buggy
 
 #if defined(__clang__) && defined(__APPLE__)
