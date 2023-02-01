@@ -626,9 +626,7 @@ namespace Stroika::Foundation::Containers {
      *  the Mapping<T> container API.
      */
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-    class Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::_IRep
-        : public Iterable<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>::_IRep,
-          public Traversal::IterableBase::enable_shared_from_this_PtrImplementationTemplate<typename Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::_IRep> {
+    class Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::_IRep : public Iterable<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>::_IRep {
     private:
         using inherited = typename Iterable<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>::_IRep;
 
@@ -639,14 +637,15 @@ namespace Stroika::Foundation::Containers {
         virtual ~_IRep () = default;
 
     protected:
-        using _IRepSharedPtr = typename Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::_IRepSharedPtr;
+        using _IRepSharedPtr        = typename Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::_IRepSharedPtr;
+        using _IterableRepSharedPtr = typename inherited::_IterableRepSharedPtr;
 
     public:
-        virtual KeyEqualsCompareFunctionType GetKeyEqualsComparer () const                         = 0;
-        virtual _IRepSharedPtr               CloneEmpty () const                                   = 0;
-        virtual _IRepSharedPtr               CloneAndPatchIterator (Iterator<value_type>* i) const = 0;
-        virtual Iterable<key_type>           Keys () const                                         = 0;
-        virtual Iterable<mapped_type>        MappedValues () const                                 = 0;
+        virtual KeyEqualsCompareFunctionType GetKeyEqualsComparer () const                                   = 0;
+        virtual _IRepSharedPtr               CloneEmpty () const                                             = 0;
+        virtual _IRepSharedPtr               CloneAndPatchIterator (Iterator<value_type>* i) const           = 0;
+        virtual Iterable<key_type>           Keys (const _IterableRepSharedPtr& thisSharedPtr) const         = 0;
+        virtual Iterable<mapped_type>        MappedValues (const _IterableRepSharedPtr& thisSharedPtr) const = 0;
         // always clear/set item, and ensure return value == item->IsValidItem());
         // 'item' arg CAN be nullptr
         virtual bool Lookup (ArgByValueType<KEY_TYPE> key, optional<mapped_type>* item) const = 0;
@@ -658,8 +657,8 @@ namespace Stroika::Foundation::Containers {
         virtual void Update (const Iterator<value_type>& i, ArgByValueType<mapped_type> newValue, Iterator<value_type>* nextI) = 0;
 
     protected:
-        nonvirtual Iterable<key_type> _Keys_Reference_Implementation () const;
-        nonvirtual Iterable<mapped_type> _Values_Reference_Implementation () const;
+        nonvirtual Iterable<key_type> _Keys_Reference_Implementation (const _IterableRepSharedPtr& thisSharedPtr) const;
+        nonvirtual Iterable<mapped_type> _Values_Reference_Implementation (const _IterableRepSharedPtr& thisSharedPtr) const;
     };
 
     /**
