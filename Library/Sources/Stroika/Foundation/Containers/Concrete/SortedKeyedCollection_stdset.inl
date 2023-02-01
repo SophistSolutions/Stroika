@@ -100,7 +100,8 @@ namespace Stroika::Foundation::Containers::Concrete {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
             return this->_Find (thisSharedPtr, that);
         }
-        virtual Iterator<value_type> Find_equal_to ([[maybe_unused]]const _IterableRepSharedPtr& thisSharedPtr, const ArgByValueType<value_type>& v) const override
+        virtual Iterator<value_type> Find_equal_to ([[maybe_unused]] const _IterableRepSharedPtr& thisSharedPtr,
+                                                    const ArgByValueType<value_type>&             v) const override
         {
             // if doing a find by 'equals-to' - we already have this indexed
             auto found = fData_.find (v);
