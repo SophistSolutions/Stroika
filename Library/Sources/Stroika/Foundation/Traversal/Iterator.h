@@ -45,10 +45,6 @@
  *              has any negative impacts on performacnce/size etc (test win/gcc). Really more an issue
  *              for SharedByValue<> template.
  *
- *      @todo   CONSIDER using enabled_shared_from_this on ireps? Document why we chose to or not to
- *              (maybe test space). From preliminary testing (VC++2012) - it appears to just make things
- *              bigger, not smaller. Must test other compilers too, and maybe disassemble.
- *
  *      @todo   Speed tweeks
  *
  *              The Major Design limitaiton of this approach to iterators is that it requires a non-inlinable
