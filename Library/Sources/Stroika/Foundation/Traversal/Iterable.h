@@ -94,7 +94,7 @@ namespace Stroika::Foundation::Traversal {
          *  Use this template to ensure you enable_shared_from_this, for the right type of SharedPtr you've built Stroika with.
          */
         template <typename SHARED_T>
-        
+
         using enable_shared_from_this_PtrImplementationTemplate [[deprecated ("Since Stroika v3.0d1")]] =
             conditional_t<kIterableUsesStroikaSharedPtr, Memory::enable_shared_from_this<SHARED_T>, std::enable_shared_from_this<SHARED_T>>;
     };

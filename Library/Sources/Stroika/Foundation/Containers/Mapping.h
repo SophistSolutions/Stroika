@@ -216,6 +216,9 @@ namespace Stroika::Foundation::Containers {
          *          It is equivilent to copying the underlying Mapping and 'projecting' the
          *          key fields (so the result will be sorted in a SortedMapping).
          *
+         *          This means that Keys() is detached from the original Mapping (should that change)
+         *          and its lifetime may extend past the lifetime of the original mapping.
+         *
          *  \em Design Note:
          *      The analagous method in C#.net - Dictionary<TKey, TValue>.KeyCollection
          *      (http://msdn.microsoft.com/en-us/library/yt2fy5zk(v=vs.110).aspx) returns a live reference
@@ -242,6 +245,9 @@ namespace Stroika::Foundation::Containers {
          *
          *          It is equivilent to copying the underlying collection and 'projecting' the
          *          value fields.
+         *
+         *          This means that Keys() is detached from the original Mapping (should that change)
+         *          and its lifetime may extend past the lifetime of the original mapping.
          *
          *  \em Design Note:
          *      The analagous method in C#.net - Dictionary<TKey, TValue>.ValueCollection

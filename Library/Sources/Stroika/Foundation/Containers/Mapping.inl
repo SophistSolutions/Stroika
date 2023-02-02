@@ -487,6 +487,7 @@ namespace Stroika::Foundation::Containers {
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     Iterable<KEY_TYPE> Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::_IRep::_Keys_Reference_Implementation (const _IterableRepSharedPtr& thisSharedPtr) const
     {
+        RequireNotNull (thisSharedPtr);
         using RecCntBumperType = _IterableRepSharedPtr;
         struct MyIterable_ : Iterable<KEY_TYPE> {
             using MyMapping_ = Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>;
@@ -498,7 +499,6 @@ namespace Stroika::Foundation::Containers {
                     : fMapping_{mapRep}
                     , fSavedSharedPtrForRefCntBump_{thisSharedPtr}
                 {
-                    Require (fMapping_ != nullptr); // but thisSharedPtr can be null
                 }
                 virtual Iterator<KEY_TYPE> MakeIterator ([[maybe_unused]] const _IterableRepSharedPtr& thisSharedPtr) const override
                 {
@@ -531,6 +531,7 @@ namespace Stroika::Foundation::Containers {
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     Iterable<MAPPED_VALUE_TYPE> Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::_IRep::_Values_Reference_Implementation (const _IterableRepSharedPtr& thisSharedPtr) const
     {
+        RequireNotNull (thisSharedPtr);
         using RecCntBumperType = _IterableRepSharedPtr;
         struct MyIterable_ : Iterable<MAPPED_VALUE_TYPE> {
             using MyMapping_ = Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>;
