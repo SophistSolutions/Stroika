@@ -85,6 +85,8 @@ namespace Stroika::Foundation::Memory {
 
     /**
      *  \brief if type T has block allocation, then use block allocation for the 'shared part' of T as well.
+     * 
+     *  \note this is helpful for shared_ptr (performance), but not for unique_ptr<>.
      */
     template <typename T, typename... ARGS_TYPE>
     auto MakeSharedPtr (ARGS_TYPE&&... args) -> shared_ptr<T>;

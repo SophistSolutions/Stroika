@@ -55,7 +55,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual Iterator<value_type> MakeIterator ([[maybe_unused]] const _IterableRepSharedPtr& thisSharedPtr) const override
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
-            return Iterator<value_type>{Iterator<value_type>::template MakeSmartPtr<IteratorRep_> (&fData_, &fChangeCounts_)};
+            return Iterator<value_type>{make_unique<IteratorRep_> (&fData_, &fChangeCounts_)};
         }
         virtual size_t size () const override
         {
@@ -128,7 +128,7 @@ namespace Stroika::Foundation::Containers::Concrete {
                 *oResult = *i;
             }
             if (iResult != nullptr and notDone) {
-                *iResult = Iterator<value_type>{Iterator<value_type>::template MakeSmartPtr<IteratorRep_> (&fData_, &fChangeCounts_, i)};
+                *iResult = Iterator<value_type>{make_unique<IteratorRep_> (&fData_, &fChangeCounts_, i)};
             }
             return notDone;
         }
@@ -159,7 +159,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             auto nextIR = fData_.erase (mir.fIterator.GetUnderlyingIteratorRep ());
             fChangeCounts_.PerformedChange ();
             if (nextI != nullptr) {
-                *nextI = Iterator<value_type>{Iterator<value_type>::template MakeSmartPtr<IteratorRep_> (&fData_, &fChangeCounts_, nextIR)};
+                *nextI = Iterator<value_type>{make_unique<IteratorRep_> (&fData_, &fChangeCounts_, nextIR)};
             }
         }
 

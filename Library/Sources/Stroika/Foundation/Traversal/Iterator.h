@@ -94,6 +94,7 @@ namespace Stroika::Foundation::Traversal {
 
     public:
         template <typename SHARED_T, typename... ARGS_TYPE>
+        [[deprecated ("Since Stroika v3.0d1 - make_unique directly")]] 
         static unique_ptr<SHARED_T> MakeSmartPtr (ARGS_TYPE&&... args);
     };
 
