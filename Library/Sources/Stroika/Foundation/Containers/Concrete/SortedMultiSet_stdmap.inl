@@ -202,15 +202,15 @@ namespace Stroika::Foundation::Containers::Concrete {
             }
             return i->second;
         }
-        virtual Iterable<T> Elements (const _MultiSetRepSharedPtr& rep) const override
+        virtual Iterable<T> Elements (const _MultiSetRepSharedPtr& thisSharedPtr) const override
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
-            return this->_Elements_Reference_Implementation (rep);
+            return this->_Elements_Reference_Implementation (thisSharedPtr);
         }
-        virtual Iterable<T> UniqueElements (const _MultiSetRepSharedPtr& rep) const override
+        virtual Iterable<T> UniqueElements (const _MultiSetRepSharedPtr& thisSharedPtr) const override
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
-            return this->_UniqueElements_Reference_Implementation (rep);
+            return this->_UniqueElements_Reference_Implementation (thisSharedPtr);
         }
 
         // SortedMultiSet<T,TRAITS>::_IRep overrides

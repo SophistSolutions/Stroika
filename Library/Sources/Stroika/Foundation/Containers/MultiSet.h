@@ -488,10 +488,10 @@ namespace Stroika::Foundation::Containers {
         virtual CounterType OccurrencesOf (ArgByValueType<T> item) const                                                   = 0;
         // Subtle point - shared rep argument to Elements() allows shared ref counting
         // without the cost of a clone or enable_shared_from_this
-        virtual Iterable<T> Elements (const _IRepSharedPtr& rep) const = 0;
+        virtual Iterable<T> Elements (const _IRepSharedPtr& thisSharedPtr) const = 0;
         // Subtle point - shared rep argument to Elements() allows shared ref counting
         // without the cost of a clone or enable_shared_from_this
-        virtual Iterable<T> UniqueElements (const _IRepSharedPtr& rep) const = 0;
+        virtual Iterable<T> UniqueElements (const _IRepSharedPtr& thisSharedPtr) const = 0;
 
         /*
      *  Reference Implementations (often not used except for ensure's, but can be used for
@@ -502,8 +502,8 @@ namespace Stroika::Foundation::Containers {
      */
     protected:
         nonvirtual bool _Equals_Reference_Implementation (const _IRep& rhs) const;
-        nonvirtual Iterable<T> _Elements_Reference_Implementation (const _IRepSharedPtr& rep) const;
-        nonvirtual Iterable<T> _UniqueElements_Reference_Implementation (const _IRepSharedPtr& rep) const;
+        nonvirtual Iterable<T> _Elements_Reference_Implementation (const _IRepSharedPtr& thisSharedPtr) const;
+        nonvirtual Iterable<T> _UniqueElements_Reference_Implementation (const _IRepSharedPtr& thisSharedPtr) const;
 
     private:
         struct ElementsIteratorHelperContext_;
