@@ -394,7 +394,7 @@ namespace Stroika::Foundation::Containers {
     template <typename CONTAINER_PAIR_RANGE_DOMAIN>
     inline CONTAINER_PAIR_RANGE_DOMAIN Bijection<DOMAIN_TYPE, RANGE_TYPE>::As () const
     {
-        return CONTAINER_PAIR_RANGE_DOMAIN (this->begin (), this->end ());
+        return CONTAINER_PAIR_RANGE_DOMAIN{this->begin (), this->end ()};
     }
     template <typename DOMAIN_TYPE, typename RANGE_TYPE>
     inline void Bijection<DOMAIN_TYPE, RANGE_TYPE>::clear ()
@@ -458,7 +458,6 @@ namespace Stroika::Foundation::Containers {
     {
         using RecCntBumperType = _IterableRepSharedPtr;
         struct MyIterable_ : Iterable<DOMAIN_TYPE> {
-            using MyBijection_ = Bijection<DOMAIN_TYPE, RANGE_TYPE>;
             struct MyIterableRep_ : Traversal::IterableFromIterator<DOMAIN_TYPE>::_Rep, public Memory::UseBlockAllocationIfAppropriate<MyIterableRep_> {
                 using _IterableRepSharedPtr = typename Iterable<DOMAIN_TYPE>::_IterableRepSharedPtr;
                 const Bijection::_IRep* fBijection_;
@@ -490,11 +489,11 @@ namespace Stroika::Foundation::Containers {
                 }
                 virtual _IterableRepSharedPtr Clone () const override
                 {
-                    return Iterable<DOMAIN_TYPE>::template MakeSmartPtr<MyIterableRep_> (*this);
+                    return make_unique<MyIterableRep_> (*this);
                 }
             };
             MyIterable_ (const Bijection::_IRep* b, const RecCntBumperType& thisSharedPtr)
-                : Iterable<DOMAIN_TYPE>{Iterable<DOMAIN_TYPE>::template MakeSmartPtr<MyIterableRep_> (b, thisSharedPtr)}
+                : Iterable<DOMAIN_TYPE>{make_unique<MyIterableRep_> (b, thisSharedPtr)}
             {
             }
         };
@@ -505,8 +504,7 @@ namespace Stroika::Foundation::Containers {
     {
         using RecCntBumperType = _IterableRepSharedPtr;
         struct MyIterable_ : Iterable<RANGE_TYPE> {
-            using MyBijection_ = Bijection<DOMAIN_TYPE, RANGE_TYPE>;
-            struct MyIterableRep_ : Traversal::IterableFromIterator<RANGE_TYPE>::_Rep, public Memory::UseBlockAllocationIfAppropriate<MyIterableRep_> {
+             struct MyIterableRep_ : Traversal::IterableFromIterator<RANGE_TYPE>::_Rep, public Memory::UseBlockAllocationIfAppropriate<MyIterableRep_> {
                 using _IterableRepSharedPtr = typename Iterable<RANGE_TYPE>::_IterableRepSharedPtr;
                 const Bijection::_IRep* fBijection_;
                 RecCntBumperType        fSavedSharedPtrForRefCntBump_;
@@ -537,11 +535,11 @@ namespace Stroika::Foundation::Containers {
                 }
                 virtual _IterableRepSharedPtr Clone () const override
                 {
-                    return Iterable<RANGE_TYPE>::template MakeSmartPtr<MyIterableRep_> (*this);
+                    return make_unique<MyIterableRep_> (*this);
                 }
             };
             MyIterable_ (const Bijection::_IRep* b, const RecCntBumperType& thisSharedPtr)
-                : Iterable<RANGE_TYPE>{Iterable<RANGE_TYPE>::template MakeSmartPtr<MyIterableRep_> (b, thisSharedPtr)}
+                : Iterable<RANGE_TYPE>{make_unique<MyIterableRep_> (b, thisSharedPtr)}
             {
             }
         };
