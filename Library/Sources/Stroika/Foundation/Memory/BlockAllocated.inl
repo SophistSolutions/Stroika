@@ -69,7 +69,6 @@ namespace Stroika::Foundation::Memory {
         }
     }
 
-
     /*
      ********************************************************************************
      ******************* BlockAllocationUseGlobalAllocatorHelper<T> *****************

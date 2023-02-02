@@ -47,7 +47,7 @@ namespace Stroika::Foundation::Traversal {
      */
     template <typename T, typename EXTRA_DATA>
     DelegatedIterator<T, EXTRA_DATA>::DelegatedIterator (const Iterator<T>& delegateTo, const EXTRA_DATA& extraData)
-        : Iterator<T> (Iterator<T>::template MakeSmartPtr<Rep> (delegateTo, extraData))
+        : Iterator<T> (make_unique<Rep> (delegateTo, extraData))
     {
     }
 

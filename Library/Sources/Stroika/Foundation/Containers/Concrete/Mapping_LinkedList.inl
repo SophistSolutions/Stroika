@@ -195,8 +195,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             auto dataStructureIterator                    = Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ()).fIterator;
             fData_.PeekAt (dataStructureIterator)->fValue = newValue;
             if (nextI != nullptr) {
-                *nextI = Iterator<value_type>{make_unique<IteratorRep_> (
-                    &fData_, &fChangeCounts_, dataStructureIterator.GetUnderlyingIteratorRep ())};
+                *nextI = Iterator<value_type>{make_unique<IteratorRep_> (&fData_, &fChangeCounts_, dataStructureIterator.GetUnderlyingIteratorRep ())};
             }
         }
 
