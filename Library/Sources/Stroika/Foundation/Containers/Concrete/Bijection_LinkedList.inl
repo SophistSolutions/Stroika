@@ -129,15 +129,15 @@ namespace Stroika::Foundation::Containers::Concrete {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
             return RangeEqualsCompareFunctionType{fRangeEqualsComparer_};
         }
-        virtual Iterable<DOMAIN_TYPE> Preimage () const override
+        virtual Iterable<DOMAIN_TYPE> Preimage (const _IterableRepSharedPtr& thisSharedPtr) const override
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
-            return this->_PreImage_Reference_Implementation ();
+            return this->_PreImage_Reference_Implementation (thisSharedPtr);
         }
-        virtual Iterable<RANGE_TYPE> Image () const override
+        virtual Iterable<RANGE_TYPE> Image (const _IterableRepSharedPtr& thisSharedPtr) const override
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
-            return this->_Image_Reference_Implementation ();
+            return this->_Image_Reference_Implementation (thisSharedPtr);
         }
         virtual bool Lookup (ArgByValueType<DOMAIN_TYPE> key, optional<RANGE_TYPE>* item) const override
         {

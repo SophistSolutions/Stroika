@@ -143,12 +143,14 @@ namespace Stroika::Foundation::Containers {
     template <typename DOMAIN_TYPE, typename RANGE_TYPE>
     inline Iterable<DOMAIN_TYPE> Bijection<DOMAIN_TYPE, RANGE_TYPE>::Preimage () const
     {
-        return _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().Preimage ();
+        _SafeReadRepAccessor<_IRep> accessor{this};
+        return accessor._ConstGetRep ().Preimage (accessor._ConstGetRepSharedPtr ());
     }
     template <typename DOMAIN_TYPE, typename RANGE_TYPE>
     inline Iterable<RANGE_TYPE> Bijection<DOMAIN_TYPE, RANGE_TYPE>::Image () const
     {
-        return _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().Image ();
+        _SafeReadRepAccessor<_IRep> accessor{this};
+        return accessor._ConstGetRep ().Image (accessor._ConstGetRepSharedPtr ());
     }
     template <typename DOMAIN_TYPE, typename RANGE_TYPE>
     inline bool Bijection<DOMAIN_TYPE, RANGE_TYPE>::Lookup (ArgByValueType<DomainType> key, RangeType* item) const
@@ -452,24 +454,29 @@ namespace Stroika::Foundation::Containers {
      ********************************************************************************
      */
     template <typename DOMAIN_TYPE, typename RANGE_TYPE>
-    Iterable<DOMAIN_TYPE> Bijection<DOMAIN_TYPE, RANGE_TYPE>::_IRep::_PreImage_Reference_Implementation () const
+    Iterable<DOMAIN_TYPE> Bijection<DOMAIN_TYPE, RANGE_TYPE>::_IRep::_PreImage_Reference_Implementation (const _IterableRepSharedPtr& thisSharedPtr) const
     {
+        using RecCntBumperType = _IterableRepSharedPtr;
         struct MyIterable_ : Iterable<DOMAIN_TYPE> {
             using MyBijection_ = Bijection<DOMAIN_TYPE, RANGE_TYPE>;
             struct MyIterableRep_ : Traversal::IterableFromIterator<DOMAIN_TYPE>::_Rep, public Memory::UseBlockAllocationIfAppropriate<MyIterableRep_> {
                 using _IterableRepSharedPtr = typename Iterable<DOMAIN_TYPE>::_IterableRepSharedPtr;
-                Bijection fBijection_;
-                MyIterableRep_ (const Bijection& b)
+                const Bijection::_IRep* fBijection_;
+                RecCntBumperType        fSavedSharedPtrForRefCntBump_;
+                MyIterableRep_ (const Bijection::_IRep* b, const RecCntBumperType& thisSharedPtr)
                     : fBijection_{b}
+                    , fSavedSharedPtrForRefCntBump_{thisSharedPtr}
                 {
+                    Require (fBijection_ != nullptr); // but thisSharedPtr can be null
                 }
                 virtual Iterator<DOMAIN_TYPE> MakeIterator ([[maybe_unused]] const _IterableRepSharedPtr& thisSharedPtr) const override
                 {
                     // If we have many iterator copies, we need ONE copy of this sharedContext (they all share a reference to the same container)
-                    auto sharedContext = make_shared<MyBijection_> (fBijection_);
+                    auto sharedContext = make_tuple (fBijection_, fSavedSharedPtrForRefCntBump_);
                     // If we have many iterator copies, each needs to copy their 'base iterator' (this is their 'index' into the container)
                     // Both the 'sharedContext' and the perIteratorContextBaseIterator' get stored into the lambda closure so they get appropriately copied as you copy iterators
-                    auto getNext = [sharedContext, perIteratorContextBaseIterator = sharedContext->MakeIterator ()] () mutable -> optional<DOMAIN_TYPE> {
+                    auto getNext = [sharedContext, perIteratorContextBaseIterator =
+                                                       get<0> (sharedContext)->MakeIterator (get<1> (sharedContext))] () mutable -> optional<DOMAIN_TYPE> {
                         if (perIteratorContextBaseIterator.Done ()) {
                             return nullopt;
                         }
@@ -486,33 +493,37 @@ namespace Stroika::Foundation::Containers {
                     return Iterable<DOMAIN_TYPE>::template MakeSmartPtr<MyIterableRep_> (*this);
                 }
             };
-            MyIterable_ (const MyBijection_& b)
-                : Iterable<DOMAIN_TYPE>{Iterable<DOMAIN_TYPE>::template MakeSmartPtr<MyIterableRep_> (b)}
+            MyIterable_ (const Bijection::_IRep* b, const RecCntBumperType& thisSharedPtr)
+                : Iterable<DOMAIN_TYPE>{Iterable<DOMAIN_TYPE>::template MakeSmartPtr<MyIterableRep_> (b, thisSharedPtr)}
             {
             }
         };
-        auto rep = const_cast<_IRep*> (this)->shared_from_this ();
-        return MyIterable_{Bijection<DOMAIN_TYPE, RANGE_TYPE>{rep}};
+        return MyIterable_{this, thisSharedPtr};
     }
     template <typename DOMAIN_TYPE, typename RANGE_TYPE>
-    Iterable<RANGE_TYPE> Bijection<DOMAIN_TYPE, RANGE_TYPE>::_IRep::_Image_Reference_Implementation () const
+    Iterable<RANGE_TYPE> Bijection<DOMAIN_TYPE, RANGE_TYPE>::_IRep::_Image_Reference_Implementation (const _IterableRepSharedPtr& thisSharedPtr) const
     {
+        using RecCntBumperType = _IterableRepSharedPtr;
         struct MyIterable_ : Iterable<RANGE_TYPE> {
             using MyBijection_ = Bijection<DOMAIN_TYPE, RANGE_TYPE>;
             struct MyIterableRep_ : Traversal::IterableFromIterator<RANGE_TYPE>::_Rep, public Memory::UseBlockAllocationIfAppropriate<MyIterableRep_> {
                 using _IterableRepSharedPtr = typename Iterable<RANGE_TYPE>::_IterableRepSharedPtr;
-                MyBijection_ fBijection_;
-                MyIterableRep_ (const MyBijection_& b)
+                const Bijection::_IRep* fBijection_;
+                RecCntBumperType        fSavedSharedPtrForRefCntBump_;
+                MyIterableRep_ (const Bijection::_IRep* b, const RecCntBumperType& thisSharedPtr)
                     : fBijection_{b}
+                    , fSavedSharedPtrForRefCntBump_{thisSharedPtr}
                 {
+                    Require (fBijection_ != nullptr); // but thisSharedPtr can be null
                 }
                 virtual Iterator<RANGE_TYPE> MakeIterator ([[maybe_unused]] const _IterableRepSharedPtr& thisSharedPtr) const override
                 {
                     // If we have many iterator copies, we need ONE copy of this sharedContext (they all share a reference to the same container)
-                    auto sharedContext = make_shared<MyBijection_> (fBijection_);
+                    auto sharedContext = make_tuple (fBijection_, fSavedSharedPtrForRefCntBump_);
                     // If we have many iterator copies, each needs to copy their 'base iterator' (this is their 'index' into the container)
                     // Both the 'sharedContext' and the perIteratorContextBaseIterator' get stored into the lambda closure so they get appropriately copied as you copy iterators
-                    auto getNext = [sharedContext, perIteratorContextBaseIterator = sharedContext->MakeIterator ()] () mutable -> optional<RANGE_TYPE> {
+                    auto getNext = [sharedContext, perIteratorContextBaseIterator =
+                                                       get<0> (sharedContext)->MakeIterator (get<1> (sharedContext))] () mutable -> optional<RANGE_TYPE> {
                         if (perIteratorContextBaseIterator.Done ()) {
                             return nullopt;
                         }
@@ -529,13 +540,12 @@ namespace Stroika::Foundation::Containers {
                     return Iterable<RANGE_TYPE>::template MakeSmartPtr<MyIterableRep_> (*this);
                 }
             };
-            MyIterable_ (const MyBijection_& b)
-                : Iterable<RANGE_TYPE>{Iterable<RANGE_TYPE>::template MakeSmartPtr<MyIterableRep_> (b)}
+            MyIterable_ (const Bijection::_IRep* b, const RecCntBumperType& thisSharedPtr)
+                : Iterable<RANGE_TYPE>{Iterable<RANGE_TYPE>::template MakeSmartPtr<MyIterableRep_> (b, thisSharedPtr)}
             {
             }
         };
-        auto rep = const_cast<_IRep*> (this)->shared_from_this ();
-        return MyIterable_{Bijection<DOMAIN_TYPE, RANGE_TYPE>{rep}};
+        return MyIterable_{this, thisSharedPtr};
     }
     template <typename DOMAIN_TYPE, typename RANGE_TYPE>
     bool Bijection<DOMAIN_TYPE, RANGE_TYPE>::_IRep::_Equals_Reference_Implementation (const _IRep& rhs) const
