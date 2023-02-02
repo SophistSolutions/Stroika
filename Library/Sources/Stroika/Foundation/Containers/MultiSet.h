@@ -462,8 +462,7 @@ namespace Stroika::Foundation::Containers {
     /**
      */
     template <typename T, typename TRAITS>
-    class MultiSet<T, TRAITS>::_IRep
-        : public Iterable<CountedValue<T>>::_IRep{
+    class MultiSet<T, TRAITS>::_IRep : public Iterable<CountedValue<T>>::_IRep {
     private:
         using inherited = typename Iterable<CountedValue<T>>::_IRep;
 
@@ -494,7 +493,7 @@ namespace Stroika::Foundation::Containers {
         // without the cost of a clone or enable_shared_from_this
         virtual Iterable<T> UniqueElements (const _IRepSharedPtr& rep) const = 0;
 
-    /*
+        /*
      *  Reference Implementations (often not used except for ensure's, but can be used for
      *  quickie backends).
      *

@@ -364,13 +364,15 @@ namespace Stroika::Foundation::Containers {
     inline Iterable<T> MultiSet<T, TRAITS>::Elements () const
     {
         _SafeReadRepAccessor<_IRep> accessor{this};
-        return accessor._ConstGetRep ().Elements (accessor._ConstGetRepSharedPtr ());
+        //tmphack cast
+        return accessor._ConstGetRep ().Elements (dynamic_pointer_cast<_IRep> (accessor._ConstGetRepSharedPtr ()));
     }
     template <typename T, typename TRAITS>
     inline Iterable<T> MultiSet<T, TRAITS>::UniqueElements () const
     {
+        //tmphack cast
         _SafeReadRepAccessor<_IRep> accessor{this};
-        return accessor._ConstGetRep ().UniqueElements (accessor._ConstGetRepSharedPtr ());
+        return accessor._ConstGetRep ().UniqueElements (dynamic_pointer_cast<_IRep> (accessor._ConstGetRepSharedPtr ()));
     }
     template <typename T, typename TRAITS>
     Iterable<CountedValue<T>> MultiSet<T, TRAITS>::Top () const
