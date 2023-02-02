@@ -67,13 +67,13 @@ namespace Stroika::Foundation::Containers {
         _AssertRepValidType ();
     }
     template <typename T>
-    inline Set<T>::Set (const _IRepSharedPtr& src) noexcept
+    inline Set<T>::Set (const shared_ptr<_IRep>& src) noexcept
         : inherited{src}
     {
         _AssertRepValidType ();
     }
     template <typename T>
-    inline Set<T>::Set (_IRepSharedPtr&& src) noexcept
+    inline Set<T>::Set (shared_ptr<_IRep>&& src) noexcept
         : inherited{(RequireNotNull (src), move (src))}
     {
         _AssertRepValidType ();

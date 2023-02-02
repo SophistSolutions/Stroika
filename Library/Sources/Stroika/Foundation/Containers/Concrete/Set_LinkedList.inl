@@ -45,12 +45,12 @@ namespace Stroika::Foundation::Containers::Concrete {
 
         // Iterable<T>::_IRep overrides
     public:
-        virtual _IterableRepSharedPtr Clone () const override
+        virtual shared_ptr<typename Iterable<T>::_IRep> Clone () const override
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
             return Memory::MakeSharedPtr<Rep_> (*this);
         }
-        virtual Iterator<value_type> MakeIterator ([[maybe_unused]] const _IterableRepSharedPtr& thisSharedPtr) const override
+        virtual Iterator<value_type> MakeIterator ([[maybe_unused]] const shared_ptr<typename Iterable<T>::_IRep>& thisSharedPtr) const override
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
             return Iterator<value_type>{make_unique<IteratorRep_> (&fData_, &fChangeCounts_)};
@@ -70,7 +70,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
             fData_.Apply (doToElement);
         }
-        virtual Iterator<value_type> Find ([[maybe_unused]] const _IterableRepSharedPtr&           thisSharedPtr,
+        virtual Iterator<value_type> Find ([[maybe_unused]] const shared_ptr<typename Iterable<T>::_IRep>& thisSharedPtr,
                                            const function<bool (ArgByValueType<value_type> item)>& that) const override
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
@@ -79,7 +79,8 @@ namespace Stroika::Foundation::Containers::Concrete {
             }
             return nullptr;
         }
-        virtual Iterator<value_type> Find_equal_to (const _IterableRepSharedPtr& thisSharedPtr, const ArgByValueType<value_type>& v) const override
+        virtual Iterator<value_type> Find_equal_to (const shared_ptr<typename Iterable<T>::_IRep>& thisSharedPtr,
+                                                    const ArgByValueType<value_type>&              v) const override
         {
             return this->_Find_equal_to_default_implementation (thisSharedPtr, v);
         }
@@ -91,12 +92,12 @@ namespace Stroika::Foundation::Containers::Concrete {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
             return ElementEqualityComparerType{fEqualsComparer_};
         }
-        virtual _SetRepSharedPtr CloneEmpty () const override
+        virtual shared_ptr <typename Set<T>::_IRep> CloneEmpty () const override
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
             return Memory::MakeSharedPtr<Rep_> (fEqualsComparer_); // copy comparers, but not data
         }
-        virtual _SetRepSharedPtr CloneAndPatchIterator (Iterator<value_type>* i) const override
+        virtual shared_ptr<typename Set<T>::_IRep> CloneAndPatchIterator (Iterator<value_type>* i) const override
         {
             RequireNotNull (i);
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};

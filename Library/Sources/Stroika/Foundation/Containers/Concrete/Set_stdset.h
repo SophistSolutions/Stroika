@@ -80,10 +80,6 @@ namespace Stroika::Foundation::Containers::Concrete {
         nonvirtual Set_stdset& operator= (Set_stdset&& rhs) noexcept = default;
         nonvirtual Set_stdset& operator= (const Set_stdset& rhs)     = default;
 
-    protected:
-        using _IterableRepSharedPtr = typename inherited::_IterableRepSharedPtr;
-        using _SetRepSharedPtr      = typename inherited::_IRepSharedPtr;
-
     private:
         class IImplRepBase_;
         template <typename INORDER_COMPARER>

@@ -102,9 +102,6 @@ namespace Stroika::Foundation::Containers {
     protected:
         class _IRep;
 
-    protected:
-        using _IRepSharedPtr = shared_ptr<_IRep>;
-
     public:
         /**
          *  Use this typedef in templates to recover the basic functional container pattern of concrete types.
@@ -185,8 +182,8 @@ namespace Stroika::Foundation::Containers {
         Set (EQUALS_COMPARER&& equalsComparer, ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
 
     protected:
-        explicit Set (_IRepSharedPtr&& rep) noexcept;
-        explicit Set (const _IRepSharedPtr& rep) noexcept;
+        explicit Set (shared_ptr<_IRep>&& rep) noexcept;
+        explicit Set (const shared_ptr<_IRep>& rep) noexcept;
 
     public:
         /**
@@ -501,13 +498,10 @@ namespace Stroika::Foundation::Containers {
     public:
         virtual ~_IRep () = default;
 
-    protected:
-        using _IRepSharedPtr = typename Set<T>::_IRepSharedPtr;
-
     public:
         virtual ElementEqualityComparerType GetElementEqualsComparer () const                              = 0;
-        virtual _IRepSharedPtr              CloneEmpty () const                                            = 0;
-        virtual _IRepSharedPtr              CloneAndPatchIterator (Iterator<value_type>* i) const          = 0;
+        virtual shared_ptr<_IRep>           CloneEmpty () const                                            = 0;
+        virtual shared_ptr<_IRep>           CloneAndPatchIterator (Iterator<value_type>* i) const          = 0;
         virtual bool                        Equals (const typename Iterable<value_type>::_IRep& rhs) const = 0;
         /**
          *  Return true iff item found.
