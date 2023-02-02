@@ -133,8 +133,8 @@ namespace Stroika::Foundation::Containers::Concrete {
         private:
             using inherited = typename Iterator<tuple<T, INDEXES...>>::IRep;
 
-       // public:
-       //     using RepSmartPtr = typename Iterator<tuple<T, INDEXES...>>::RepSmartPtr;
+            // public:
+            //     using RepSmartPtr = typename Iterator<tuple<T, INDEXES...>>::RepSmartPtr;
 
         public:
             MyIteratorImplHelper_ ()                             = delete;
