@@ -531,18 +531,21 @@ namespace Stroika::Foundation::Containers {
      *  the KeyedCollection<KEY_TYPE, T, TRAITS> container API.
      */
     template <typename T, typename KEY_TYPE, typename TRAITS>
-    class KeyedCollection<T, KEY_TYPE, TRAITS>::_IRep
-        : public Iterable<T>::_IRep,
-          public Traversal::IterableBase::enable_shared_from_this_PtrImplementationTemplate<typename KeyedCollection<T, KEY_TYPE, TRAITS>::_IRep> {
+    class KeyedCollection<T, KEY_TYPE, TRAITS>::_IRep : public Iterable<T>::_IRep {
+
+    private:
+        using inherited = typename Iterable<T>::_IRep;
+
     protected:
-        using _IRepSharedPtr = typename KeyedCollection<T, KEY_TYPE, TRAITS>::_IRepSharedPtr;
+        using _IRepSharedPtr        = typename KeyedCollection<T, KEY_TYPE, TRAITS>::_IRepSharedPtr;
+        using _IterableRepSharedPtr = typename inherited::_IterableRepSharedPtr;
 
     public:
-        virtual KeyExtractorType        GetKeyExtractor () const                              = 0;
-        virtual KeyEqualityComparerType GetKeyEqualityComparer () const                       = 0;
-        virtual _IRepSharedPtr          CloneEmpty () const                                   = 0;
-        virtual _IRepSharedPtr          CloneAndPatchIterator (Iterator<value_type>* i) const = 0;
-        virtual Iterable<KEY_TYPE>      Keys () const                                         = 0;
+        virtual KeyExtractorType        GetKeyExtractor () const                                = 0;
+        virtual KeyEqualityComparerType GetKeyEqualityComparer () const                         = 0;
+        virtual _IRepSharedPtr          CloneEmpty () const                                     = 0;
+        virtual _IRepSharedPtr          CloneAndPatchIterator (Iterator<value_type>* i) const   = 0;
+        virtual Iterable<KEY_TYPE>      Keys (const _IterableRepSharedPtr& thisSharedPtr) const = 0;
         // always clear/set item, and ensure return value == item->IsValidItem());
         // 'item' arg CAN be nullptr
         virtual bool Lookup (ArgByValueType<KeyType> key, optional<value_type>* item) const = 0;
@@ -553,7 +556,7 @@ namespace Stroika::Foundation::Containers {
         virtual bool RemoveIf (ArgByValueType<KEY_TYPE> key) = 0;
 
     protected:
-        nonvirtual Iterable<KEY_TYPE> _Keys_Reference_Implementation () const;
+        nonvirtual Iterable<KEY_TYPE> _Keys_Reference_Implementation (const _IterableRepSharedPtr& thisSharedPtr) const;
     };
 
     /**

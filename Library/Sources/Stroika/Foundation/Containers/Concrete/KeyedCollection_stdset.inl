@@ -141,10 +141,10 @@ namespace Stroika::Foundation::Containers::Concrete {
             i->Refresh (); // reflect updated rep
             return result;
         }
-        virtual Iterable<KEY_TYPE> Keys () const override
+        virtual Iterable<KEY_TYPE> Keys (const _IterableRepSharedPtr& thisSharedPtr) const override
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
-            return this->_Keys_Reference_Implementation ();
+            return this->_Keys_Reference_Implementation (thisSharedPtr);
         }
         virtual bool Lookup (ArgByValueType<KeyType> key, optional<value_type>* item) const override
         {

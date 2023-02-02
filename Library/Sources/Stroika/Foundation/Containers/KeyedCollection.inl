@@ -131,7 +131,8 @@ namespace Stroika::Foundation::Containers {
     template <typename T, typename KEY_TYPE, typename TRAITS>
     inline Iterable<KEY_TYPE> KeyedCollection<T, KEY_TYPE, TRAITS>::Keys () const
     {
-        return _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().Keys ();
+        _SafeReadRepAccessor<_IRep> accessors {this};
+        return accessors._ConstGetRep ().Keys (accessors._ConstGetRepSharedPtr());
     }
     template <typename T, typename KEY_TYPE, typename TRAITS>
     inline bool KeyedCollection<T, KEY_TYPE, TRAITS>::Contains (ArgByValueType<KEY_TYPE> key) const
@@ -395,21 +396,24 @@ namespace Stroika::Foundation::Containers {
      ********************************************************************************
      */
     template <typename T, typename KEY_TYPE, typename TRAITS>
-    Iterable<KEY_TYPE> KeyedCollection<T, KEY_TYPE, TRAITS>::_IRep::_Keys_Reference_Implementation () const
+    Iterable<KEY_TYPE> KeyedCollection<T, KEY_TYPE, TRAITS>::_IRep::_Keys_Reference_Implementation (const _IterableRepSharedPtr& thisSharedPtr) const
     {
+        using RecCntBumperType = _IterableRepSharedPtr;
         struct MyIterable_ : Iterable<KEY_TYPE> {
             using BaseCollectionType_ = KeyedCollection<T, KEY_TYPE, TRAITS>;
             struct MyIterableRep_ : Traversal::IterableFromIterator<KEY_TYPE>::_Rep, public Memory::UseBlockAllocationIfAppropriate<MyIterableRep_> {
                 using _IterableRepSharedPtr = typename Iterable<KEY_TYPE>::_IterableRepSharedPtr;
-                BaseCollectionType_ fBaseCollection_;
-                MyIterableRep_ (const BaseCollectionType_& map)
-                    : fBaseCollection_{map}
+                const BaseCollectionType_::_IRep* fBaseCollection_;
+                RecCntBumperType    fSavedSharedPtrForRefCntBump_;
+                MyIterableRep_ (const BaseCollectionType_::_IRep* m, const RecCntBumperType& thisSharedPtr)
+                    : fBaseCollection_{m}
+                    , fSavedSharedPtrForRefCntBump_{thisSharedPtr}
                 {
                 }
                 virtual Iterator<KEY_TYPE> MakeIterator ([[maybe_unused]] const _IterableRepSharedPtr& thisSharedPtr) const override
                 {
-                    auto myContext    = make_shared<Iterator<T>> (fBaseCollection_.MakeIterator ());
-                    auto keyExtractor = fBaseCollection_.GetKeyExtractor ();
+                    auto myContext    = make_shared<Iterator<T>> (fBaseCollection_->MakeIterator (fSavedSharedPtrForRefCntBump_));
+                    auto keyExtractor = fBaseCollection_->GetKeyExtractor ();
                     auto getNext      = [myContext, keyExtractor] () -> optional<KEY_TYPE> {
                         if (myContext->Done ()) {
                             return nullopt;
@@ -427,13 +431,12 @@ namespace Stroika::Foundation::Containers {
                     return Iterable<KEY_TYPE>::template MakeSmartPtr<MyIterableRep_> (*this);
                 }
             };
-            MyIterable_ (const BaseCollectionType_& m)
-                : Iterable<KEY_TYPE>{Iterable<KEY_TYPE>::template MakeSmartPtr<MyIterableRep_> (m)}
+            MyIterable_ (const BaseCollectionType_::_IRep* m, const RecCntBumperType& thisSharedPtr)
+                : Iterable<KEY_TYPE>{Iterable<KEY_TYPE>::template MakeSmartPtr<MyIterableRep_> (m, thisSharedPtr)}
             {
             }
         };
-        auto rep = const_cast<typename KeyedCollection<T, KEY_TYPE, TRAITS>::_IRep*> (this)->shared_from_this ();
-        return MyIterable_{KeyedCollection<T, KEY_TYPE, TRAITS>{rep}};
+        return MyIterable_{this, thisSharedPtr};
     }
 
     /*
