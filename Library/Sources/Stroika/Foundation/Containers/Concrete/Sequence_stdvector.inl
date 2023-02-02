@@ -49,7 +49,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual Iterator<value_type> MakeIterator ([[maybe_unused]] const _IterableRepSharedPtr& thisSharedPtr) const override
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
-            return Iterator<value_type>{Iterator<value_type>::template MakeSmartPtr<IteratorRep_> (&fData_, &fChangeCounts_)};
+            return Iterator<value_type>{make_unique<IteratorRep_> (&fData_, &fChangeCounts_)};
         }
         virtual size_t size () const override
         {
@@ -74,7 +74,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             if (iLink == fData_.end ()) {
                 return nullptr;
             }
-            return Iterator<value_type>{Iterator<value_type>::template MakeSmartPtr<IteratorRep_> (&fData_, &fChangeCounts_, iLink)};
+            return Iterator<value_type>{make_unique<IteratorRep_> (&fData_, &fChangeCounts_, iLink)};
         }
         virtual Iterator<value_type> Find_equal_to (const _IterableRepSharedPtr& thisSharedPtr, const ArgByValueType<value_type>& v) const override
         {
@@ -128,7 +128,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             auto newI = fData_.erase (mir.fIterator.GetUnderlyingIteratorRep ());
             fChangeCounts_.PerformedChange ();
             if (nextI != nullptr) {
-                *nextI = Iterator<value_type>{Iterator<value_type>::template MakeSmartPtr<IteratorRep_> (&fData_, &fChangeCounts_, newI)};
+                *nextI = Iterator<value_type>{make_unique<IteratorRep_> (&fData_, &fChangeCounts_, newI)};
             }
         }
         virtual void Update (const Iterator<value_type>& i, ArgByValueType<value_type> newValue, Iterator<value_type>* nextI) override
@@ -143,7 +143,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             *fData_.remove_constness (mir.fIterator.GetUnderlyingIteratorRep ()) = newValue;
             fChangeCounts_.PerformedChange ();
             if (nextI != nullptr) {
-                *nextI = Iterator<value_type>{Iterator<value_type>::template MakeSmartPtr<IteratorRep_> (&fData_, &fChangeCounts_, *savedUnderlyingIndex)};
+                *nextI = Iterator<value_type>{make_unique<IteratorRep_> (&fData_, &fChangeCounts_, *savedUnderlyingIndex)};
             }
             fData_.Invariant ();
         }

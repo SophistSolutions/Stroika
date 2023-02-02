@@ -235,10 +235,10 @@ public:
          *  This above didn't work on macos, so use the (actually simpler) approach of just opening the dir again, and scanning til we
          *  find the same inode. Not perfect (in case that is deleted) - but not sure there is a guaranteed way then.
          */
-        return MakeSmartPtr<Rep_> (fDirName_, fCur_ == nullptr ? optional<ino_t>{} : fCur_->d_ino, fIteratorReturnType_);
+        return make_unique<Rep_> (fDirName_, fCur_ == nullptr ? optional<ino_t>{} : fCur_->d_ino, fIteratorReturnType_);
 #elif qPlatform_Windows
-        return MakeSmartPtr<Rep_> (fDirName_, fHandle_ == INVALID_HANDLE_VALUE ? optional<String>{} : String::FromSDKString (fFindFileData_.cFileName),
-                                   fIteratorReturnType_);
+        return make_unique<Rep_> (fDirName_, fHandle_ == INVALID_HANDLE_VALUE ? optional<String>{} : String::FromSDKString (fFindFileData_.cFileName),
+                                  fIteratorReturnType_);
 #endif
     }
 
@@ -265,6 +265,6 @@ private:
  ********************************************************************************
  */
 DirectoryIterator::DirectoryIterator (const filesystem::path& directoryName, IteratorReturnType iteratorReturns)
-    : Iterator<filesystem::path>{MakeSmartPtr<Rep_> (FromPath (directoryName), iteratorReturns)}
+    : Iterator<filesystem::path>{make_unique<Rep_> (FromPath (directoryName), iteratorReturns)}
 {
 }

@@ -71,7 +71,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual Iterator<value_type> MakeIterator ([[maybe_unused]] const _IterableRepSharedPtr& thisSharedPtr) const override
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
-            return Iterator<value_type>{Iterator<value_type>::template MakeSmartPtr<IteratorRep_> (&fData_, &fChangeCounts_)};
+            return Iterator<value_type>{make_unique<IteratorRep_> (&fData_, &fChangeCounts_)};
         }
         virtual void Apply (const function<void (ArgByValueType<value_type> item)>& doToElement) const override
         {

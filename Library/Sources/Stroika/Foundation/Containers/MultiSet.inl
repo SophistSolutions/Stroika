@@ -81,11 +81,8 @@ namespace Stroika::Foundation::Containers {
                     }
                 }
             }
-            virtual unique_ptr<typename Iterator<T>::IRep> Clone () const override
-            {
-                return Iterator<T>::template MakeSmartPtr<Rep> (*this);
-            }
-            virtual bool Equals (const typename Iterator<T>::IRep* /*rhs*/) const override
+            virtual unique_ptr<typename Iterator<T>::IRep> Clone () const override { return make_unique<Rep> (*this); }
+            virtual bool                                   Equals (const typename Iterator<T>::IRep* /*rhs*/) const override
             {
                 AssertNotImplemented ();
                 return false;
@@ -169,11 +166,8 @@ namespace Stroika::Foundation::Containers {
                     *result = fContext.fMultiSetIterator->fValue;
                 }
             }
-            virtual unique_ptr<typename Iterator<T>::IRep> Clone () const override
-            {
-                return Iterator<T>::template MakeSmartPtr<Rep> (*this);
-            }
-            virtual bool Equals (const typename Iterator<T>::IRep* /*rhs*/) const override
+            virtual unique_ptr<typename Iterator<T>::IRep> Clone () const override { return make_unique<Rep> (*this); }
+            virtual bool                                   Equals (const typename Iterator<T>::IRep* /*rhs*/) const override
             {
                 AssertNotImplemented ();
                 return false;
@@ -203,10 +197,10 @@ namespace Stroika::Foundation::Containers {
             }
             virtual size_t                size () const override { return this->_fContextForEachIterator.fMultiSet->size (); }
             virtual bool                  empty () const override { return this->_fContextForEachIterator.fMultiSet->empty (); }
-            virtual _IterableRepSharedPtr Clone () const override { return Iterable<T>::template MakeSmartPtr<MyIterableRep_> (*this); }
+            virtual _IterableRepSharedPtr Clone () const override { return make_unique<MyIterableRep_> (*this); }
         };
         _UniqueElementsHelper (const typename Iterable<CountedValue<T>>::_IterableRepSharedPtr& tally)
-            : Iterable<T>{Iterable<T>::template MakeSmartPtr<MyIterableRep_> (UniqueElementsIteratorHelperContext_{tally, tally->MakeIterator (nullptr)})}
+            : Iterable<T>{make_unique<MyIterableRep_> (UniqueElementsIteratorHelperContext_{tally, tally->MakeIterator (nullptr)})}
         {
         }
     };

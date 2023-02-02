@@ -52,10 +52,9 @@ namespace Stroika::Foundation::Traversal {
         }
         else {
 #if qDebug
-            return fIteratorTracker_.MakeDelegatedIterator (
-                Iterator<T>{Iterator<T>::template MakeSmartPtr<NEW_ITERATOR_REP_TYPE> (_fContextForEachIterator)});
+            return fIteratorTracker_.MakeDelegatedIterator (Iterator<T>{make_unique<NEW_ITERATOR_REP_TYPE> (_fContextForEachIterator)});
 #else
-            return Iterator<T>{Iterator<T>::template MakeSmartPtr<NEW_ITERATOR_REP_TYPE> (_fContextForEachIterator)};
+            return Iterator<T>{make_unique<NEW_ITERATOR_REP_TYPE> (_fContextForEachIterator)};
 #endif
         }
     }

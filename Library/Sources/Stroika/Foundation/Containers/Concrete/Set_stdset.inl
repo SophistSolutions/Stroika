@@ -89,7 +89,7 @@ namespace Stroika::Foundation::Containers::Concrete {
                 (found == fData_.end () and this->_Find_equal_to_default_implementation (thisSharedPtr, v) == Iterator<value_type>{nullptr}) or
                 (found == Debug::UncheckedDynamicCast<const IteratorRep_&> (this->_Find_equal_to_default_implementation (thisSharedPtr, v).ConstGetRep ())
                               .fIterator.GetUnderlyingIteratorRep ()));
-            return Iterator<value_type>{Iterator<value_type>::template MakeSmartPtr<IteratorRep_> (&fData_, &fChangeCounts_, found)};
+            return Iterator<value_type>{make_unique<IteratorRep_> (&fData_, &fChangeCounts_, found)};
         }
 
         // Set<T>::_IRep overrides

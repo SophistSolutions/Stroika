@@ -134,7 +134,7 @@ namespace {
                     }
                     virtual unique_ptr<Iterator<Character>::IRep> Clone () const override
                     {
-                        return Iterator<Character>::MakeSmartPtr<MyIterRep_> (fHoldRepToAssureDataNotDestroyed_, fData_.subspan (fIdx_));
+                        return make_unique<MyIterRep_> (fHoldRepToAssureDataNotDestroyed_, fData_.subspan (fIdx_));
                     }
                     virtual void More (optional<Character>* result, bool advance) override
                     {
@@ -161,7 +161,7 @@ namespace {
                         return fData_.data () == rrhs->fData_.data () and fIdx_ == rrhs->fIdx_;
                     }
                 };
-                return Iterator<Character>{Iterator<Character>::MakeSmartPtr<MyIterRep_> (thisSharedPtr, this->_fData)};
+                return Iterator<Character>{make_unique<MyIterRep_> (thisSharedPtr, this->_fData)};
             }
             virtual size_t size () const override { return _fData.size (); }
             virtual bool   empty () const override { return _fData.empty (); }

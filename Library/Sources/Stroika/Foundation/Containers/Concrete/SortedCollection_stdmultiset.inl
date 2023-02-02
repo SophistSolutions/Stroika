@@ -59,7 +59,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual Iterator<value_type> MakeIterator ([[maybe_unused]] const _IterableRepSharedPtr& thisSharedPtr) const override
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
-            return Iterator<value_type>{Iterator<value_type>::template MakeSmartPtr<IteratorRep_> (&fData_, &fChangeCounts_)};
+            return Iterator<value_type>{make_unique<IteratorRep_> (&fData_, &fChangeCounts_)};
         }
         virtual size_t size () const override
         {
@@ -90,7 +90,7 @@ namespace Stroika::Foundation::Containers::Concrete {
                 (found == fData_.end () and this->_Find_equal_to_default_implementation (thisSharedPtr, v) == Iterator<value_type>{nullptr}) or
                 (found == Debug::UncheckedDynamicCast<const IteratorRep_&> (this->_Find_equal_to_default_implementation (thisSharedPtr, v).ConstGetRep ())
                               .fIterator.GetUnderlyingIteratorRep ()));
-            return Iterator<value_type>{Iterator<value_type>::template MakeSmartPtr<IteratorRep_> (&fData_, &fChangeCounts_, found)};
+            return Iterator<value_type>{make_unique<IteratorRep_> (&fData_, &fChangeCounts_, found)};
         }
 
         // Collection<T>::_IRep overrides
@@ -122,7 +122,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             fData_.insert (newValue);
             fChangeCounts_.PerformedChange ();
             if (nextI != nullptr) {
-                *nextI = Iterator<value_type>{Iterator<value_type>::template MakeSmartPtr<IteratorRep_> (&fData_, &fChangeCounts_, nextIR)};
+                *nextI = Iterator<value_type>{make_unique<IteratorRep_> (&fData_, &fChangeCounts_, nextIR)};
             }
         }
         virtual void Remove (const Iterator<value_type>& i, Iterator<value_type>* nextI) override
@@ -133,7 +133,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             auto nextIR = fData_.erase (mir.fIterator.GetUnderlyingIteratorRep ());
             fChangeCounts_.PerformedChange ();
             if (nextI != nullptr) {
-                *nextI = Iterator<value_type>{Iterator<value_type>::template MakeSmartPtr<IteratorRep_> (&fData_, &fChangeCounts_, nextIR)};
+                *nextI = Iterator<value_type>{make_unique<IteratorRep_> (&fData_, &fChangeCounts_, nextIR)};
             }
         }
 

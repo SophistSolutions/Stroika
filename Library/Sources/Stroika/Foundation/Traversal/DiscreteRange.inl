@@ -92,10 +92,10 @@ namespace Stroika::Foundation::Traversal {
             virtual Iterator<T>           MakeIterator ([[maybe_unused]] const _IterableRepSharedPtr& thisSharedPtr) const override
             {
                 if (fForcedEnd) {
-                    return Iterator<T>{Iterator<T>::template MakeSmartPtr<DiscreteRange::MyIteratorRep_> ()};
+                    return Iterator<T>{make_unique<DiscreteRange::MyIteratorRep_> ()};
                 }
                 else {
-                    return Iterator<T>{Iterator<T>::template MakeSmartPtr<DiscreteRange::MyIteratorRep_> (fStart, fEnd)};
+                    return Iterator<T>{make_unique<DiscreteRange::MyIteratorRep_> (fStart, fEnd)};
                 }
             }
             virtual size_t size () const override
@@ -226,7 +226,7 @@ namespace Stroika::Foundation::Traversal {
             return Iterator<T>::GetEmptyIterator ();
         }
         else {
-            return Iterator<T>{Iterator<T>::template MakeSmartPtr<MyIteratorRep_> (this->GetLowerBound (), this->GetUpperBound ())};
+            return Iterator<T>{make_unique<MyIteratorRep_> (this->GetLowerBound (), this->GetUpperBound ())};
         }
     }
     template <typename T, typename TRAITS>

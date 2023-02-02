@@ -22,7 +22,7 @@ namespace Stroika::Foundation::Traversal {
     template <typename T, typename EXTRA_DATA>
     auto DelegatedIterator<T, EXTRA_DATA>::Rep::Clone () const -> unique_ptr<IRep>
     {
-        return Iterator<T>::template MakeSmartPtr<Rep> (*this);
+        return make_unique<Rep> (*this);
     }
     template <typename T, typename EXTRA_DATA>
     void DelegatedIterator<T, EXTRA_DATA>::Rep::More (optional<T>* result, bool advance)
