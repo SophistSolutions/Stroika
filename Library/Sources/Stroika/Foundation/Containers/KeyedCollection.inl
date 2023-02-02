@@ -131,8 +131,8 @@ namespace Stroika::Foundation::Containers {
     template <typename T, typename KEY_TYPE, typename TRAITS>
     inline Iterable<KEY_TYPE> KeyedCollection<T, KEY_TYPE, TRAITS>::Keys () const
     {
-        _SafeReadRepAccessor<_IRep> accessors {this};
-        return accessors._ConstGetRep ().Keys (accessors._ConstGetRepSharedPtr());
+        _SafeReadRepAccessor<_IRep> accessors{this};
+        return accessors._ConstGetRep ().Keys (accessors._ConstGetRepSharedPtr ());
     }
     template <typename T, typename KEY_TYPE, typename TRAITS>
     inline bool KeyedCollection<T, KEY_TYPE, TRAITS>::Contains (ArgByValueType<KEY_TYPE> key) const
@@ -404,7 +404,7 @@ namespace Stroika::Foundation::Containers {
             struct MyIterableRep_ : Traversal::IterableFromIterator<KEY_TYPE>::_Rep, public Memory::UseBlockAllocationIfAppropriate<MyIterableRep_> {
                 using _IterableRepSharedPtr = typename Iterable<KEY_TYPE>::_IterableRepSharedPtr;
                 const BaseCollectionType_::_IRep* fBaseCollection_;
-                RecCntBumperType    fSavedSharedPtrForRefCntBump_;
+                RecCntBumperType                  fSavedSharedPtrForRefCntBump_;
                 MyIterableRep_ (const BaseCollectionType_::_IRep* m, const RecCntBumperType& thisSharedPtr)
                     : fBaseCollection_{m}
                     , fSavedSharedPtrForRefCntBump_{thisSharedPtr}
