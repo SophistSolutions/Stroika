@@ -71,12 +71,7 @@ namespace Stroika::Foundation::Containers {
             Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eStrictInOrder, function<bool (T, T)>>;
 
     protected:
-#if qCompilerAndStdLib_TemplateTemplateWithTypeAlias_Buggy
-        using _IRepSharedPtr =
-            conditional_t<Stroika::Foundation::Traversal::kIterableUsesStroikaSharedPtr, Stroika::Foundation::Memory::SharedPtr<_IRep>, shared_ptr<_IRep>>;
-#else
-        using _IRepSharedPtr = typename inherited::template PtrImplementationTemplate<_IRep>;
-#endif
+        using _IRepSharedPtr = shared_ptr<_IRep>;
 
     public:
         /**

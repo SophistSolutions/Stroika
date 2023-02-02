@@ -9,7 +9,6 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include <bitset>
 #include <execution>
 #include <set>
 
@@ -26,7 +25,7 @@ namespace Stroika::Foundation::Traversal {
      ********************************************************************************
      */
     template <typename SHARED_T, typename... ARGS_TYPE>
-    inline auto IterableBase::MakeSmartPtr (ARGS_TYPE&&... args) -> PtrImplementationTemplate<SHARED_T>
+    inline auto IterableBase::MakeSmartPtr (ARGS_TYPE&&... args) -> shared_ptr<SHARED_T>
     {
         if constexpr (kIterableUsesStroikaSharedPtr) {
             return Memory::MakeSharedPtr<SHARED_T> (forward<ARGS_TYPE> (args)...);

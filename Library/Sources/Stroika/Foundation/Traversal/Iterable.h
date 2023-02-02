@@ -83,11 +83,12 @@ namespace Stroika::Foundation::Traversal {
          *  up on Memory::SharedPtr for v3? Must performance test. Much simpler to avoid this template.
          */
         template <typename SHARED_T>
-        using PtrImplementationTemplate = conditional_t<kIterableUsesStroikaSharedPtr, Memory::SharedPtr<SHARED_T>, shared_ptr<SHARED_T>>;
+        using PtrImplementationTemplate [[deprecated ("Since Stroika v3.0d1 - use shared_ptr directly")]] =
+            conditional_t<kIterableUsesStroikaSharedPtr, Memory::SharedPtr<SHARED_T>, shared_ptr<SHARED_T>>;
 
     public:
         template <typename SHARED_T, typename... ARGS_TYPE>
-        static PtrImplementationTemplate<SHARED_T> MakeSmartPtr (ARGS_TYPE&&... args);
+        static shared_ptr<SHARED_T> MakeSmartPtr (ARGS_TYPE&&... args);
 
     public:
         /**
@@ -241,7 +242,7 @@ namespace Stroika::Foundation::Traversal {
          *  _IterableRepSharedPtr is logically shared_ptr<_IRep>. However, we may use alternative 'shared ptr' implementations,
          *  so use this type to assure compatability with the approppriate shared ptr implementation.
          */
-        using _IterableRepSharedPtr = PtrImplementationTemplate<_IRep>;
+        using _IterableRepSharedPtr = shared_ptr<_IRep>;
 
     protected:
         /**
@@ -1279,10 +1280,10 @@ namespace Stroika::Foundation::Traversal {
     private:
 #if (__cplusplus < kStrokia_Foundation_Configuration_cplusplus_20) || qCompilerAndStdLib_lambdas_in_unevaluatedContext_Buggy
         struct Rep_Cloner_ {
-            auto operator() (const _IRep& t) const -> PtrImplementationTemplate<_IRep> { return Iterable<T>::Clone_ (t); }
+            auto operator() (const _IRep& t) const -> shared_ptr<_IRep> { return Iterable<T>::Clone_ (t); }
         };
 #else
-        using Rep_Cloner_ = decltype ([] (const _IRep& t) -> PtrImplementationTemplate<_IRep> { return Iterable<T>::Clone_ (t); });
+        using Rep_Cloner_ = decltype ([] (const _IRep& t) -> shared_ptr<_IRep> { return Iterable<T>::Clone_ (t); });
 #endif
 
     private:

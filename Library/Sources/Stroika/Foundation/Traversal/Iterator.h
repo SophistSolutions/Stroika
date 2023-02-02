@@ -90,7 +90,7 @@ namespace Stroika::Foundation::Traversal {
     struct IteratorBase {
     public:
         template <typename SHARED_T>
-        using PtrImplementationTemplate [[deprecated ("Since Stroika v3.0d1 - use unique_ptr directly")]]= unique_ptr<SHARED_T>;
+        using PtrImplementationTemplate [[deprecated ("Since Stroika v3.0d1 - use unique_ptr directly")]] = unique_ptr<SHARED_T>;
 
     public:
         template <typename SHARED_T, typename... ARGS_TYPE>
