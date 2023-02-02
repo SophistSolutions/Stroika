@@ -133,8 +133,8 @@ namespace Stroika::Foundation::Containers::Concrete {
         private:
             using inherited = typename Iterator<tuple<T, INDEXES...>>::IRep;
 
-        public:
-            using RepSmartPtr = typename Iterator<tuple<T, INDEXES...>>::RepSmartPtr;
+       // public:
+       //     using RepSmartPtr = typename Iterator<tuple<T, INDEXES...>>::RepSmartPtr;
 
         public:
             MyIteratorImplHelper_ ()                             = delete;
@@ -152,7 +152,7 @@ namespace Stroika::Foundation::Containers::Concrete {
 
             // Iterator<tuple<T, INDEXES...>>::IRep
         public:
-            virtual RepSmartPtr Clone () const override
+            virtual unique_ptr<inherited> Clone () const override
             {
                 return Iterator<tuple<T, INDEXES...>>::template MakeSmartPtr<MyIteratorImplHelper_> (*this);
             }

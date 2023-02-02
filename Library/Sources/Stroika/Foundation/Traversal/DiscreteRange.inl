@@ -55,10 +55,10 @@ namespace Stroika::Foundation::Traversal {
             AssertNotImplemented ();
             return false;
         }
-        virtual typename inherited::RepSmartPtr Clone () const override
+        virtual unique_ptr<typename Iterator<T>::IRep> Clone () const override
         {
             unique_ptr<MyIteratorRep_> tmp = make_unique<MyIteratorRep_> (fCur, fEnd);
-            tmp->fAtEnd = fAtEnd;
+            tmp->fAtEnd                    = fAtEnd;
             return tmp;
         }
     };

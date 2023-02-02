@@ -286,7 +286,7 @@ namespace Stroika::Foundation::Traversal {
     public:
         /**
          */
-        using RepSmartPtr = unique_ptr<IRep>;
+        using RepSmartPtr [[deprecated ("Since Stroika v3.0d1 - just use unique_ptr<IRep> directly")]] = unique_ptr<IRep>;
 
     private:
         /*
@@ -310,8 +310,8 @@ namespace Stroika::Foundation::Traversal {
          * 
          *  \req RequireNotNull (rep.get ())
          */
-        Iterator (const RepSmartPtr& rep) noexcept;
-        Iterator (RepSmartPtr&& rep) noexcept;
+        Iterator (const unique_ptr<IRep>& rep) noexcept;
+        Iterator (unique_ptr<IRep>&& rep) noexcept;
         Iterator (Iterator&& src) noexcept;
         Iterator (const Iterator& src);
         constexpr Iterator (nullptr_t) noexcept;
@@ -596,7 +596,7 @@ namespace Stroika::Foundation::Traversal {
         optional<T>      fCurrentValue_;
 
     private:
-        static RepSmartPtr Clone_ (const IRep& rep);
+        static unique_ptr<IRep> Clone_ (const IRep& rep);
     };
 
     /**
@@ -632,14 +632,14 @@ namespace Stroika::Foundation::Traversal {
         virtual ~IRep () = default;
 
     public:
-        using RepSmartPtr = typename Iterator<T, ITERATOR_TRAITS>::RepSmartPtr;
+        using RepSmartPtr [[deprecated ("Since Stroika v3.0d1 - use unique_ptr<IRep> directly")]] = unique_ptr<IRep>;
 
     public:
         /**
          * Clone() makes a copy of the state of this iterator, which can separately be tracked with Equals ()
          * and/or More() to get values and move forward through the iteration.
          */
-        virtual RepSmartPtr Clone () const = 0;
+        virtual unique_ptr<IRep> Clone () const = 0;
         /**
          *  More () takes two required arguments - one an optional<T>* result, and the other a flag about whether or
          *  not to advance.

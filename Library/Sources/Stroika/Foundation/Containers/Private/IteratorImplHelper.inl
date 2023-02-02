@@ -93,8 +93,8 @@ namespace Stroika::Foundation::Containers::Private {
     }
 #endif
     template <typename T, typename DATASTRUCTURE_CONTAINER, typename DATASTRUCTURE_CONTAINER_ITERATOR, typename DATASTRUCTURE_CONTAINER_VALUE>
-    typename Iterator<T>::RepSmartPtr
-    IteratorImplHelper_<T, DATASTRUCTURE_CONTAINER, DATASTRUCTURE_CONTAINER_ITERATOR, DATASTRUCTURE_CONTAINER_VALUE>::Clone () const
+    auto IteratorImplHelper_<T, DATASTRUCTURE_CONTAINER, DATASTRUCTURE_CONTAINER_ITERATOR, DATASTRUCTURE_CONTAINER_VALUE>::Clone () const
+        -> unique_ptr<typename Iterator<T>::IRep>
     {
         ValidateChangeCount ();
         return Iterator<T>::template MakeSmartPtr<IteratorImplHelper_> (*this);

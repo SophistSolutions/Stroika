@@ -29,14 +29,14 @@ namespace Stroika::Foundation::Traversal {
     class DelegatedIterator : public Iterator<T> {
     public:
         struct Rep : Iterator<T>::IRep {
-            using RepSmartPtr = typename Iterator<T>::RepSmartPtr;
-            using IRep        = typename Iterator<T>::IRep;
+            //  using RepSmartPtr = typename Iterator<T>::RepSmartPtr;
+            using IRep = typename Iterator<T>::IRep;
             Iterator<T> fDelegateTo;
             EXTRA_DATA  fExtraData;
             Rep (const Iterator<T>& delegateTo, const EXTRA_DATA& extraData = EXTRA_DATA ());
-            virtual RepSmartPtr Clone () const override;
-            virtual void        More (optional<T>* result, bool advance) override;
-            virtual bool        Equals (const IRep* rhs) const override;
+            virtual unique_ptr<IRep> Clone () const override;
+            virtual void             More (optional<T>* result, bool advance) override;
+            virtual bool             Equals (const IRep* rhs) const override;
         };
         DelegatedIterator (const Iterator<T>& delegateTo, const EXTRA_DATA& extraData = EXTRA_DATA ());
     };
@@ -44,13 +44,13 @@ namespace Stroika::Foundation::Traversal {
     class DelegatedIterator<T, void> : public Iterator<T> {
     public:
         struct Rep : Iterator<T>::IRep {
-            using RepSmartPtr = typename Iterator<T>::RepSmartPtr;
-            using IRep        = typename Iterator<T>::IRep;
+            // using RepSmartPtr = typename Iterator<T>::RepSmartPtr;
+            using IRep = typename Iterator<T>::IRep;
             Iterator<T> fDelegateTo;
             Rep (const Iterator<T>& delegateTo);
-            virtual RepSmartPtr Clone () const override;
-            virtual void        More (optional<T>* result, bool advance) override;
-            virtual bool        Equals (const IRep* rhs) const override;
+            virtual unique_ptr<IRep> Clone () const override;
+            virtual void             More (optional<T>* result, bool advance) override;
+            virtual bool             Equals (const IRep* rhs) const override;
         };
     };
 

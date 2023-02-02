@@ -249,7 +249,8 @@ namespace Stroika::Foundation::Traversal {
          *  _IteratorRepSharedPtr is logically shared_ptr<Iterator<T>::_IRep>. However, we may use alternative 'shared ptr' implementations,
          *  so use this type to assure compatability with the approppriate shared ptr implementation.
          */
-        using _IteratorRepSharedPtr = typename Iterator<T>::RepSmartPtr;
+        //using _IteratorRepSharedPtr = typename Iterator<T>::RepSmartPtr;
+        using _IteratorRepSharedPtr = unique_ptr<typename Iterator<T>::IRep>;
 
     public:
         /**

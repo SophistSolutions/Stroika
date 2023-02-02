@@ -70,7 +70,7 @@ namespace Stroika::Foundation::Containers::Private {
         using inherited = typename Iterator<T>::IRep;
 
     public:
-        using RepSmartPtr                 = typename Iterator<T>::RepSmartPtr;
+        // using RepSmartPtr                 = typename Iterator<T>::RepSmartPtr;
         using DataStructureImplValueType_ = DATASTRUCTURE_CONTAINER_VALUE;
 
     public:
@@ -92,9 +92,9 @@ namespace Stroika::Foundation::Containers::Private {
 
         // Iterator<T>::IRep
     public:
-        virtual RepSmartPtr Clone () const override;
-        virtual void        More (optional<T>* result, bool advance) override;
-        virtual bool        Equals (const typename Iterator<T>::IRep* rhs) const override;
+        virtual unique_ptr<typename Iterator<T>::IRep> Clone () const override;
+        virtual void                                   More (optional<T>* result, bool advance) override;
+        virtual bool                                   Equals (const typename Iterator<T>::IRep* rhs) const override;
 #if qDebug
         /**
          */

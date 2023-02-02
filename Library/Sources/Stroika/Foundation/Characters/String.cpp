@@ -132,7 +132,7 @@ namespace {
                         , fData_{data}
                     {
                     }
-                    virtual Iterator<Character>::RepSmartPtr Clone () const override
+                    virtual unique_ptr<Iterator<Character>::IRep> Clone () const override
                     {
                         return Iterator<Character>::MakeSmartPtr<MyIterRep_> (fHoldRepToAssureDataNotDestroyed_, fData_.subspan (fIdx_));
                     }

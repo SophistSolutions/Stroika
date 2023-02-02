@@ -37,7 +37,7 @@ namespace Stroika::Foundation::Traversal {
      ********************************************************************************
      */
     template <typename T, typename ITERATOR_TRAITS>
-    inline Iterator<T, ITERATOR_TRAITS>::Iterator (const RepSmartPtr& rep) noexcept
+    inline Iterator<T, ITERATOR_TRAITS>::Iterator (const unique_ptr<IRep>& rep) noexcept
         : fRep_{rep}
     {
         RequireNotNull (fRep_);
@@ -45,7 +45,7 @@ namespace Stroika::Foundation::Traversal {
         this->Invariant (); // could do before and after but this is a good cost/benfit trade-off
     }
     template <typename T, typename ITERATOR_TRAITS>
-    inline Iterator<T, ITERATOR_TRAITS>::Iterator (RepSmartPtr&& rep) noexcept
+    inline Iterator<T, ITERATOR_TRAITS>::Iterator (unique_ptr<IRep>&& rep) noexcept
         : fRep_{move (rep)}
     {
         RequireNotNull (fRep_);
@@ -216,7 +216,7 @@ namespace Stroika::Foundation::Traversal {
         return lhsRep->Equals (rhsRep);
     }
     template <typename T, typename ITERATOR_TRAITS>
-    inline typename Iterator<T, ITERATOR_TRAITS>::RepSmartPtr Iterator<T, ITERATOR_TRAITS>::Clone_ (const typename Iterator<T, ITERATOR_TRAITS>::IRep& rep)
+    inline auto Iterator<T, ITERATOR_TRAITS>::Clone_ (const typename Iterator<T, ITERATOR_TRAITS>::IRep& rep) -> unique_ptr<IRep>
     {
         return rep.Clone ();
     }

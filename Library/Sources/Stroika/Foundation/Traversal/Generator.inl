@@ -44,10 +44,7 @@ namespace Stroika::Foundation::Traversal {
                 WeakAssert (not fCur_.has_value () or not rrhs.fCur_.has_value ());
                 return fCur_.has_value () == rrhs.fCur_.has_value ();
             }
-            virtual typename Iterator<T>::RepSmartPtr Clone () const override
-            {
-                return Iterator<T>::template MakeSmartPtr<GenItWrapper_> (*this);
-            }
+            virtual unique_ptr<IRep> Clone () const override { return Iterator<T>::template MakeSmartPtr<GenItWrapper_> (*this); }
         };
         return Iterator<T>{Iterator<T>::template MakeSmartPtr<GenItWrapper_> (getNext)};
     }

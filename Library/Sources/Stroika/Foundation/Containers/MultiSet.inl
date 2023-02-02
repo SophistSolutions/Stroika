@@ -81,8 +81,11 @@ namespace Stroika::Foundation::Containers {
                     }
                 }
             }
-            virtual typename Iterator<T>::RepSmartPtr Clone () const override { return Iterator<T>::template MakeSmartPtr<Rep> (*this); }
-            virtual bool                              Equals (const typename Iterator<T>::IRep* /*rhs*/) const override
+            virtual unique_ptr<typename Iterator<T>::IRep> Clone () const override
+            {
+                return Iterator<T>::template MakeSmartPtr<Rep> (*this);
+            }
+            virtual bool Equals (const typename Iterator<T>::IRep* /*rhs*/) const override
             {
                 AssertNotImplemented ();
                 return false;
@@ -166,8 +169,11 @@ namespace Stroika::Foundation::Containers {
                     *result = fContext.fMultiSetIterator->fValue;
                 }
             }
-            virtual typename Iterator<T>::RepSmartPtr Clone () const override { return Iterator<T>::template MakeSmartPtr<Rep> (*this); }
-            virtual bool                              Equals (const typename Iterator<T>::IRep* /*rhs*/) const override
+            virtual unique_ptr<typename Iterator<T>::IRep> Clone () const override
+            {
+                return Iterator<T>::template MakeSmartPtr<Rep> (*this);
+            }
+            virtual bool Equals (const typename Iterator<T>::IRep* /*rhs*/) const override
             {
                 AssertNotImplemented ();
                 return false;
