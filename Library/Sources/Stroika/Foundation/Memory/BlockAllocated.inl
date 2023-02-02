@@ -53,6 +53,25 @@ namespace Stroika::Foundation::Memory {
 
     /*
      ********************************************************************************
+     ********************************* MakeSharedPtr<T> *****************************
+     ********************************************************************************
+     */
+    template <typename T, typename... ARGS_TYPE>
+    inline auto MakeSharedPtr (ARGS_TYPE&&... args) -> shared_ptr<T>
+    {
+        if constexpr (UsesBlockAllocation<T> ()) {
+            // almost as good, but still does two allocs, above does one shared alloc of the block allocated controlblock+SHARED_T
+            //return shared_ptr<SHARED_T> (new SHARED_T (forward<ARGS_TYPE> (args)...));
+            return allocate_shared<T> (BlockAllocator<T>{}, forward<ARGS_TYPE> (args)...);
+        }
+        else {
+            return make_shared<T> (forward<ARGS_TYPE> (args)...);
+        }
+    }
+
+
+    /*
+     ********************************************************************************
      ******************* BlockAllocationUseGlobalAllocatorHelper<T> *****************
      ********************************************************************************
      */

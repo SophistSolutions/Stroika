@@ -84,6 +84,12 @@ namespace Stroika::Foundation::Memory {
     constexpr bool UsesBlockAllocation ();
 
     /**
+     *  \brief if type T has block allocation, then use block allocation for the 'shared part' of T as well.
+     */
+    template <typename T, typename... ARGS_TYPE>
+    auto MakeSharedPtr (ARGS_TYPE&&... args) -> shared_ptr<T>;
+
+    /**
      *  Use this to (roughly) undo the effect of BlockAllocationUseHelper<> or UseBlockAllocationIfAppropriate<> for a subclass.
      */
     template <typename T>

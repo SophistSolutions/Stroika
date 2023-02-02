@@ -245,7 +245,7 @@ namespace Stroika::Foundation::Traversal {
         using _IterableRepSharedPtr = shared_ptr<_IRep>;
 
     protected:
-        using _IteratorRepSharedPtr[[deprecated("Since Stroika v3.0d1 use unique_ptr<IRep> directly")]] = unique_ptr<typename Iterator<T>::IRep>;
+        using _IteratorRepSharedPtr [[deprecated ("Since Stroika v3.0d1 use unique_ptr<IRep> directly")]] = unique_ptr<typename Iterator<T>::IRep>;
 
     public:
         /**
