@@ -34,7 +34,7 @@ namespace Stroika::Foundation::Traversal {
         class IRep;
 
     public:
-        using RandomAccessIteratorRepSharedPtr = typename inherited::template PtrImplementationTemplate<IRep>;
+        using RandomAccessIteratorRepSharedPtr = unique_ptr<IRep>;
 
     public:
         /**

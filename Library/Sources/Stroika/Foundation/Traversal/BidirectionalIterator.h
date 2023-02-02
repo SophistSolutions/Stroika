@@ -34,7 +34,7 @@ namespace Stroika::Foundation::Traversal {
         class IRep;
 
     public:
-        using BidirectionalIteratorRepSharedPtr = typename inherited::template PtrImplementationTemplate<IRep>;
+        using BidirectionalIteratorRepSharedPtr = unique_ptr<IRep>;
 
     public:
         /**

@@ -89,18 +89,12 @@ namespace Stroika::Foundation::Traversal {
      */
     struct IteratorBase {
     public:
-        /**
-         *  Historically, PtrImplementationTemplate has used a variety of different packaging types, 
-         *  like SharedByValue, or shared_ptr, or SharedPtr.
-         * 
-         *  But for quite some time before Stroika v2.1b10, we've been using unique_ptr<> for the iterator rep.
-         */
         template <typename SHARED_T>
-        using PtrImplementationTemplate = unique_ptr<SHARED_T>;
+        using PtrImplementationTemplate [[deprecated ("Since Stroika v3.0d1 - use unique_ptr directly")]]= unique_ptr<SHARED_T>;
 
     public:
         template <typename SHARED_T, typename... ARGS_TYPE>
-        static PtrImplementationTemplate<SHARED_T> MakeSmartPtr (ARGS_TYPE&&... args);
+        static unique_ptr<SHARED_T> MakeSmartPtr (ARGS_TYPE&&... args);
     };
 
     /**
@@ -292,7 +286,7 @@ namespace Stroika::Foundation::Traversal {
     public:
         /**
          */
-        using RepSmartPtr = PtrImplementationTemplate<IRep>;
+        using RepSmartPtr = unique_ptr<IRep>;
 
     private:
         /*

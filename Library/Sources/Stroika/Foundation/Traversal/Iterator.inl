@@ -14,7 +14,7 @@ namespace Stroika::Foundation::Traversal {
      ********************************************************************************
      */
     template <typename SHARED_T, typename... ARGS_TYPE>
-    inline auto IteratorBase::MakeSmartPtr (ARGS_TYPE&&... args) -> PtrImplementationTemplate<SHARED_T>
+    inline auto IteratorBase::MakeSmartPtr (ARGS_TYPE&&... args) -> unique_ptr<SHARED_T>
     {
         return make_unique<SHARED_T> (forward<ARGS_TYPE> (args)...);
     }
