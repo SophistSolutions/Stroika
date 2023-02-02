@@ -516,9 +516,7 @@ namespace Stroika::Foundation::Containers {
                     };
                     return Traversal::CreateGeneratorIterator<KEY_TYPE> (getNext);
                 }
-                virtual _IterableRepSharedPtr Clone () const override
-                { return Memory::MakeSharedPtr<MyIterableRep_> (*this);
-                }
+                virtual _IterableRepSharedPtr Clone () const override { return Memory::MakeSharedPtr<MyIterableRep_> (*this); }
             };
             MyIterable_ (const MyMapping_::_IRep* mapRep, const RecCntBumperType& thisSharedPtr)
                 : Iterable<KEY_TYPE>{Memory::MakeSharedPtr<MyIterableRep_> (mapRep, thisSharedPtr)}
@@ -560,9 +558,7 @@ namespace Stroika::Foundation::Containers {
                     };
                     return Traversal::CreateGeneratorIterator<MAPPED_VALUE_TYPE> (getNext);
                 }
-                virtual _IterableRepSharedPtr Clone () const override
-                { return Memory::MakeSharedPtr<MyIterableRep_> (*this);
-                }
+                virtual _IterableRepSharedPtr Clone () const override { return Memory::MakeSharedPtr<MyIterableRep_> (*this); }
             };
             MyIterable_ (const MyMapping_::_IRep* mapRep, const RecCntBumperType& thisSharedPtr)
                 : Iterable<MAPPED_VALUE_TYPE>{Memory::MakeSharedPtr<MyIterableRep_> (mapRep, thisSharedPtr)}

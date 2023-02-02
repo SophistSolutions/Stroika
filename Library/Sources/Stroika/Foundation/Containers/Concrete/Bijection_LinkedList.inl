@@ -277,8 +277,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     inline Bijection_LinkedList<DOMAIN_TYPE, RANGE_TYPE>::Bijection_LinkedList (DataExchange::ValidationStrategy injectivityCheckPolicy,
                                                                                 DOMAIN_EQUALS_COMPARER&&         domainEqualsComparer,
                                                                                 RANGE_EQUALS_COMPARER&&          rangeEqualsComparer)
-        : inherited{Memory::MakeSharedPtr<Rep_<DOMAIN_EQUALS_COMPARER, RANGE_EQUALS_COMPARER>> (
-              injectivityCheckPolicy, domainEqualsComparer, rangeEqualsComparer)}
+        : inherited{Memory::MakeSharedPtr<Rep_<DOMAIN_EQUALS_COMPARER, RANGE_EQUALS_COMPARER>> (injectivityCheckPolicy, domainEqualsComparer, rangeEqualsComparer)}
     {
         AssertRepValidType_ ();
     }

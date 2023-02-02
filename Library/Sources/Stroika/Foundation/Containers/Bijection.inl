@@ -487,10 +487,7 @@ namespace Stroika::Foundation::Containers {
                     };
                     return Traversal::CreateGeneratorIterator<DOMAIN_TYPE> (getNext);
                 }
-                virtual _IterableRepSharedPtr Clone () const override
-                {
-                    return make_unique<MyIterableRep_> (*this);
-                }
+                virtual _IterableRepSharedPtr Clone () const override { return make_unique<MyIterableRep_> (*this); }
             };
             MyIterable_ (const Bijection::_IRep* b, const RecCntBumperType& thisSharedPtr)
                 : Iterable<DOMAIN_TYPE>{make_unique<MyIterableRep_> (b, thisSharedPtr)}
@@ -504,7 +501,7 @@ namespace Stroika::Foundation::Containers {
     {
         using RecCntBumperType = _IterableRepSharedPtr;
         struct MyIterable_ : Iterable<RANGE_TYPE> {
-             struct MyIterableRep_ : Traversal::IterableFromIterator<RANGE_TYPE>::_Rep, public Memory::UseBlockAllocationIfAppropriate<MyIterableRep_> {
+            struct MyIterableRep_ : Traversal::IterableFromIterator<RANGE_TYPE>::_Rep, public Memory::UseBlockAllocationIfAppropriate<MyIterableRep_> {
                 using _IterableRepSharedPtr = typename Iterable<RANGE_TYPE>::_IterableRepSharedPtr;
                 const Bijection::_IRep* fBijection_;
                 RecCntBumperType        fSavedSharedPtrForRefCntBump_;
@@ -533,10 +530,7 @@ namespace Stroika::Foundation::Containers {
                     };
                     return Traversal::CreateGeneratorIterator<RANGE_TYPE> (getNext);
                 }
-                virtual _IterableRepSharedPtr Clone () const override
-                {
-                    return make_unique<MyIterableRep_> (*this);
-                }
+                virtual _IterableRepSharedPtr Clone () const override { return make_unique<MyIterableRep_> (*this); }
             };
             MyIterable_ (const Bijection::_IRep* b, const RecCntBumperType& thisSharedPtr)
                 : Iterable<RANGE_TYPE>{make_unique<MyIterableRep_> (b, thisSharedPtr)}

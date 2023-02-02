@@ -64,7 +64,7 @@ namespace Stroika::Foundation::Containers {
         using value_type = typename inherited::value_type;
 
     protected:
-        using _IRepSharedPtr = typename inherited::template PtrImplementationTemplate<_IRep>;
+        using _IRepSharedPtr = shared_ptr<_IRep>;
 
     public:
         /**

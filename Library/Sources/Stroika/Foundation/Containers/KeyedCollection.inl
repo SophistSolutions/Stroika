@@ -426,9 +426,7 @@ namespace Stroika::Foundation::Containers {
                     };
                     return Traversal::CreateGeneratorIterator<KEY_TYPE> (getNext);
                 }
-                virtual _IterableRepSharedPtr Clone () const override
-                { return Memory::MakeSharedPtr<MyIterableRep_> (*this);
-                }
+                virtual _IterableRepSharedPtr Clone () const override { return Memory::MakeSharedPtr<MyIterableRep_> (*this); }
             };
             MyIterable_ (const BaseCollectionType_::_IRep* m, const RecCntBumperType& thisSharedPtr)
                 : Iterable<KEY_TYPE>{Memory::MakeSharedPtr<MyIterableRep_> (m, thisSharedPtr)}

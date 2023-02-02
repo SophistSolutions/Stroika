@@ -847,7 +847,7 @@ template <>
 auto String::mk_ (basic_string<char>&& s) -> _SharedPtrIRep
 {
     Character::CheckASCII (span{s.data (), s.size ()});
-    return Memory::Memory::MakeSharedPtr<StdStringDelegator_::Rep<char>> (move (s));
+    return Memory::MakeSharedPtr<StdStringDelegator_::Rep<char>> (move (s));
 }
 
 template <>
