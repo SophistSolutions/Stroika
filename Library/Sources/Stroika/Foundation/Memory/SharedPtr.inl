@@ -485,17 +485,6 @@ namespace Stroika::Foundation::Memory {
         T* ptr = static_cast<T*> (this);
         return (SharedPtr<T> (typename SharedPtr<T>::Envelope_ (ptr, this)));
     }
-
-    /*
-     ********************************************************************************
-     ************************* MakeSharedPtr<T, ...ARG_TYPES> ***********************
-     ********************************************************************************
-     */
-    template <typename T, typename... ARG_TYPES>
-    inline SharedPtr<T> MakeSharedPtr (ARG_TYPES&&... args)
-    {
-        return SharedPtr<T> (new T{forward<ARG_TYPES> (args)...});
-    }
 }
 
 namespace Stroika::Foundation::Execution {
