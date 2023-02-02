@@ -123,10 +123,10 @@ namespace Stroika::Foundation::Traversal {
                     return fOriginalIterator;
 #endif
                 }
-                virtual _IterableRepSharedPtr Clone () const override { return Iterable<T>::template MakeSmartPtr<Rep> (*this); }
+                virtual _IterableRepSharedPtr Clone () const override { return Memory::MakeSharedPtr<Rep> (*this); }
             };
             MyIterable_ (const Iterator<T>& originalIterator)
-                : Iterable<T>{Iterable<T>::template MakeSmartPtr<Rep> (originalIterator)}
+                : Iterable<T>{Memory::MakeSharedPtr<Rep> (originalIterator)}
             {
             }
         };

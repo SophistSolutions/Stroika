@@ -84,7 +84,7 @@ namespace Stroika::Foundation::Memory {
     constexpr bool UsesBlockAllocation ();
 
     /**
-     *  \brief if type T has block allocation, then use block allocation for the 'shared part' of T as well.
+     *  \brief same as make_shared, but if type T has block allocation, then use block allocation for the 'shared part' of T as well.
      * 
      *  \note this is helpful for shared_ptr (performance), but not for unique_ptr<>.
      */

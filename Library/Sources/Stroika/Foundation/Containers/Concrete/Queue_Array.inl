@@ -35,7 +35,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual _IterableRepSharedPtr Clone () const override
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
-            return Iterable<T>::template MakeSmartPtr<Rep_> (*this);
+            return Memory::MakeSharedPtr<Rep_> (*this);
         }
         virtual Iterator<value_type> MakeIterator ([[maybe_unused]] const _IterableRepSharedPtr& thisSharedPtr) const override
         {
@@ -74,7 +74,7 @@ namespace Stroika::Foundation::Containers::Concrete {
 
         // Queue<T>::_IRep overrides
     public:
-        virtual _QueueRepSharedPtr CloneEmpty () const override { return Iterable<T>::template MakeSmartPtr<Rep_> (); }
+        virtual _QueueRepSharedPtr CloneEmpty () const override { return Memory::MakeSharedPtr<Rep_> (); }
         virtual void               AddTail (ArgByValueType<value_type> item) override
         {
             Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fData_};
@@ -130,7 +130,7 @@ namespace Stroika::Foundation::Containers::Concrete {
      */
     template <typename T>
     inline Queue_Array<T>::Queue_Array ()
-        : inherited{inherited::template MakeSmartPtr<Rep_> ()}
+        : inherited{Memory::MakeSharedPtr<Rep_> ()}
     {
         AssertRepValidType_ ();
     }

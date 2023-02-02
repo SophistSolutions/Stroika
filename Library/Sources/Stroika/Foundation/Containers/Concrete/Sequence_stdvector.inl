@@ -44,7 +44,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual _IterableRepSharedPtr Clone () const override
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
-            return Iterable<value_type>::template MakeSmartPtr<Rep_> (*this);
+            return Memory::MakeSharedPtr<Rep_> (*this);
         }
         virtual Iterator<value_type> MakeIterator ([[maybe_unused]] const _IterableRepSharedPtr& thisSharedPtr) const override
         {
@@ -86,13 +86,13 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual _SequenceRepSharedPtr CloneEmpty () const override
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
-            return Iterable<value_type>::template MakeSmartPtr<Rep_> ();
+            return Memory::MakeSharedPtr<Rep_> ();
         }
         virtual _SequenceRepSharedPtr CloneAndPatchIterator (Iterator<value_type>* i) const override
         {
             RequireNotNull (i);
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
-            auto                                                  result = Iterable<value_type>::template MakeSmartPtr<Rep_> (*this);
+            auto                                                  result = Memory::MakeSharedPtr<Rep_> (*this);
             result->fData_.MoveIteratorHereAfterClone (&Debug::UncheckedDynamicCast<const IteratorRep_&> (i->ConstGetRep ()).fIterator, &fData_);
             i->Refresh (); // reflect updated rep
             return result;
@@ -185,7 +185,7 @@ namespace Stroika::Foundation::Containers::Concrete {
      */
     template <typename T>
     inline Sequence_stdvector<T>::Sequence_stdvector ()
-        : inherited{inherited::template MakeSmartPtr<Rep_> ()}
+        : inherited{Memory::MakeSharedPtr<Rep_> ()}
     {
         AssertRepValidType_ ();
     }
@@ -211,7 +211,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     }
     template <typename T>
     inline Sequence_stdvector<T>::Sequence_stdvector (std::vector<T>&& src)
-        : inherited{inherited::template MakeSmartPtr<Rep_> (move (src))}
+        : inherited{Memory::MakeSharedPtr<Rep_> (move (src))}
     {
         AssertRepValidType_ ();
     }

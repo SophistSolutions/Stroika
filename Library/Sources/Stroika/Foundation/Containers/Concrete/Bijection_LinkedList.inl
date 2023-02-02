@@ -61,7 +61,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual _IterableRepSharedPtr Clone () const override
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
-            return Iterable<value_type>::template MakeSmartPtr<Rep_> (*this);
+            return Memory::MakeSharedPtr<Rep_> (*this);
         }
         virtual Iterator<value_type> MakeIterator ([[maybe_unused]] const _IterableRepSharedPtr& thisSharedPtr) const override
         {
@@ -102,13 +102,13 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual _BijectionRepSharedPtr CloneEmpty () const override
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
-            return Iterable<value_type>::template MakeSmartPtr<Rep_> (fInjectivityViolationPolicy_, fDomainEqualsComparer_, fRangeEqualsComparer_);
+            return Memory::MakeSharedPtr<Rep_> (fInjectivityViolationPolicy_, fDomainEqualsComparer_, fRangeEqualsComparer_);
         }
         virtual _BijectionRepSharedPtr CloneAndPatchIterator (Iterator<value_type>* i) const override
         {
             RequireNotNull (i);
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
-            auto                                                  result = Iterable<value_type>::template MakeSmartPtr<Rep_> (*this);
+            auto                                                  result = Memory::MakeSharedPtr<Rep_> (*this);
             auto& mir = Debug::UncheckedDynamicCast<const IteratorRep_&> (i->ConstGetRep ());
             result->fData_.MoveIteratorHereAfterClone (&mir.fIterator, &fData_);
             i->Refresh (); // reflect updated rep
@@ -277,7 +277,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     inline Bijection_LinkedList<DOMAIN_TYPE, RANGE_TYPE>::Bijection_LinkedList (DataExchange::ValidationStrategy injectivityCheckPolicy,
                                                                                 DOMAIN_EQUALS_COMPARER&&         domainEqualsComparer,
                                                                                 RANGE_EQUALS_COMPARER&&          rangeEqualsComparer)
-        : inherited{inherited::template MakeSmartPtr<Rep_<DOMAIN_EQUALS_COMPARER, RANGE_EQUALS_COMPARER>> (
+        : inherited{Memory::MakeSharedPtr<Rep_<DOMAIN_EQUALS_COMPARER, RANGE_EQUALS_COMPARER>> (
               injectivityCheckPolicy, domainEqualsComparer, rangeEqualsComparer)}
     {
         AssertRepValidType_ ();

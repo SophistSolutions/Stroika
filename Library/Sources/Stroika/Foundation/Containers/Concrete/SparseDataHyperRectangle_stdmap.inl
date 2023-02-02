@@ -45,7 +45,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual _IterableRepSharedPtr Clone () const override
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
-            return Iterable<tuple<T, INDEXES...>>::template MakeSmartPtr<Rep_> (*this);
+            return Memory::MakeSharedPtr<Rep_> (*this);
         }
         virtual Iterator<tuple<T, INDEXES...>> MakeIterator ([[maybe_unused]] const _IterableRepSharedPtr& thisSharedPtr) const override
         {
@@ -91,7 +91,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual _DataHyperRectangleRepSharedPtr CloneEmpty () const override
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
-            return Iterable<tuple<T, INDEXES...>>::template MakeSmartPtr<Rep_> (fDefaultValue_); // keep default, but lose data
+            return Memory::MakeSharedPtr<Rep_> (fDefaultValue_); // keep default, but lose data
         }
         virtual T GetAt (INDEXES... indexes) const override
         {
@@ -199,7 +199,7 @@ namespace Stroika::Foundation::Containers::Concrete {
      */
     template <typename T, typename... INDEXES>
     SparseDataHyperRectangle_stdmap<T, INDEXES...>::SparseDataHyperRectangle_stdmap (Configuration::ArgByValueType<T> defaultItem)
-        : inherited{inherited::template MakeSmartPtr<Rep_> (defaultItem)}
+        : inherited{Memory::MakeSharedPtr<Rep_> (defaultItem)}
     {
         AssertRepValidType_ ();
     }

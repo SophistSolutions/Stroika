@@ -55,7 +55,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual _IterableRepSharedPtr Clone () const override
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
-            return Iterable<value_type>::template MakeSmartPtr<Rep_> (*this);
+            return Memory::MakeSharedPtr<Rep_> (*this);
         }
         virtual Iterator<value_type> MakeIterator ([[maybe_unused]] const _IterableRepSharedPtr& thisSharedPtr) const override
         {
@@ -106,13 +106,13 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual _SetSharedPtrIRep CloneEmpty () const override
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
-            return Iterable<value_type>::template MakeSmartPtr<Rep_> (fData_.key_comp ()); // keep comparer, but lose data in clone
+            return Memory::MakeSharedPtr<Rep_> (fData_.key_comp ()); // keep comparer, but lose data in clone
         }
         virtual _SetSharedPtrIRep CloneAndPatchIterator (Iterator<value_type>* i) const override
         {
             RequireNotNull (i);
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
-            auto                                                  result = Iterable<value_type>::template MakeSmartPtr<Rep_> (*this);
+            auto                                                  result = Memory::MakeSharedPtr<Rep_> (*this);
             auto& mir = Debug::UncheckedDynamicCast<const IteratorRep_&> (i->ConstGetRep ());
             result->fData_.MoveIteratorHereAfterClone (&mir.fIterator, &fData_);
             i->Refresh (); // reflect updated rep
@@ -198,7 +198,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     template <typename T>
     template <typename INORDER_COMPARER, enable_if_t<Common::IsStrictInOrderComparer<INORDER_COMPARER, T> ()>*>
     inline SortedSet_stdset<T>::SortedSet_stdset (INORDER_COMPARER&& inorderComparer)
-        : inherited{inherited::template MakeSmartPtr<Rep_<decay_t<INORDER_COMPARER>>> (forward<INORDER_COMPARER> (inorderComparer))}
+        : inherited{Memory::MakeSharedPtr<Rep_<decay_t<INORDER_COMPARER>>> (forward<INORDER_COMPARER> (inorderComparer))}
     {
         static_assert (Common::IsStrictInOrderComparer<INORDER_COMPARER, T> (), "StrictInOrder comparer required with SortedSet_stdset");
         AssertRepValidType_ ();

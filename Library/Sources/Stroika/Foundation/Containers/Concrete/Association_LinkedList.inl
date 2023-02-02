@@ -58,7 +58,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual _IterableRepSharedPtr Clone () const override
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
-            return Iterable<value_type>::template MakeSmartPtr<Rep_> (*this);
+            return Memory::MakeSharedPtr<Rep_> (*this);
         }
         virtual Iterator<value_type> MakeIterator ([[maybe_unused]] const _IterableRepSharedPtr& thisSharedPtr) const override
         {
@@ -104,12 +104,12 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual _AssociationRepSharedPtr CloneEmpty () const override
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
-            return Iterable<value_type>::template MakeSmartPtr<Rep_> (fKeyEqualsComparer_);
+            return Memory::MakeSharedPtr<Rep_> (fKeyEqualsComparer_);
         }
         virtual _AssociationRepSharedPtr CloneAndPatchIterator ([[maybe_unused]] Iterator<value_type>* i) const override
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
-            auto                                                  result = Iterable<value_type>::template MakeSmartPtr<Rep_> (*this);
+            auto                                                  result = Memory::MakeSharedPtr<Rep_> (*this);
             auto& mir = Debug::UncheckedDynamicCast<const IteratorRep_&> (i->ConstGetRep ());
             result->fData_.MoveIteratorHereAfterClone (&mir.fIterator, &fData_);
             i->Refresh (); // reflect updated rep
@@ -201,7 +201,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     template <typename KEY_EQUALS_COMPARER, enable_if_t<Common::IsEqualsComparer<KEY_EQUALS_COMPARER, KEY_TYPE> ()>*>
     inline Association_LinkedList<KEY_TYPE, MAPPED_VALUE_TYPE>::Association_LinkedList (KEY_EQUALS_COMPARER&& keyEqualsComparer)
-        : inherited{inherited::template MakeSmartPtr<Rep_<remove_cvref_t<KEY_EQUALS_COMPARER>>> (keyEqualsComparer)}
+        : inherited{Memory::MakeSharedPtr<Rep_<remove_cvref_t<KEY_EQUALS_COMPARER>>> (keyEqualsComparer)}
     {
         AssertRepValidType_ ();
     }

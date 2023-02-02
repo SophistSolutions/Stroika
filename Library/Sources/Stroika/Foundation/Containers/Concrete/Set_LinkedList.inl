@@ -48,7 +48,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual _IterableRepSharedPtr Clone () const override
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
-            return Iterable<T>::template MakeSmartPtr<Rep_> (*this);
+            return Memory::MakeSharedPtr<Rep_> (*this);
         }
         virtual Iterator<value_type> MakeIterator ([[maybe_unused]] const _IterableRepSharedPtr& thisSharedPtr) const override
         {
@@ -94,13 +94,13 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual _SetRepSharedPtr CloneEmpty () const override
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
-            return Iterable<T>::template MakeSmartPtr<Rep_> (fEqualsComparer_); // copy comparers, but not data
+            return Memory::MakeSharedPtr<Rep_> (fEqualsComparer_); // copy comparers, but not data
         }
         virtual _SetRepSharedPtr CloneAndPatchIterator (Iterator<value_type>* i) const override
         {
             RequireNotNull (i);
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
-            auto                                                  result = Iterable<value_type>::template MakeSmartPtr<Rep_> (*this);
+            auto                                                  result = Memory::MakeSharedPtr<Rep_> (*this);
             auto& mir = Debug::UncheckedDynamicCast<const IteratorRep_&> (i->ConstGetRep ());
             result->fData_.MoveIteratorHereAfterClone (&mir.fIterator, &fData_);
             i->Refresh (); // reflect updated rep
@@ -183,7 +183,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     template <typename T>
     template <typename EQUALS_COMPARER, enable_if_t<Common::IsEqualsComparer<EQUALS_COMPARER, T> ()>*>
     inline Set_LinkedList<T>::Set_LinkedList (EQUALS_COMPARER&& equalsComparer)
-        : inherited{inherited::template MakeSmartPtr<Rep_<remove_cvref_t<EQUALS_COMPARER>>> (forward<EQUALS_COMPARER> (equalsComparer))}
+        : inherited{Memory::MakeSharedPtr<Rep_<remove_cvref_t<EQUALS_COMPARER>>> (forward<EQUALS_COMPARER> (equalsComparer))}
     {
         static_assert (Common::IsEqualsComparer<EQUALS_COMPARER> (),
                        "Set_LinkedList constructor with EQUALS_COMPARER - comparer not valid EqualsComparer- see "

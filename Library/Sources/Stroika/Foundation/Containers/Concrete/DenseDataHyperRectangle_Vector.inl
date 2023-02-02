@@ -44,14 +44,14 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual _IterableRepSharedPtr Clone () const override
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
-            return Iterable<tuple<T, INDEXES...>>::template MakeSmartPtr<Rep_> (*this);
+            return Memory::MakeSharedPtr<Rep_> (*this);
         }
         virtual Iterator<tuple<T, INDEXES...>> MakeIterator ([[maybe_unused]] const _IterableRepSharedPtr& thisSharedPtr) const override
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
 /// NYI
 #if 0
-            return Iterator<value_type>{Iterator<value_type>::template MakeSmartPtr<IteratorRep_> (&fData_, &fChangeCounts_)};
+            return Iterator<value_type>{Memory::MakeSharedPtr<IteratorRep_> (&fData_, &fChangeCounts_)};
 #endif
             using RESULT_TYPE = Iterator<tuple<T, INDEXES...>>;
             return RESULT_TYPE::GetEmptyIterator ();
@@ -88,8 +88,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             if (iLink == fData_.end ()) {
                 return RESULT_TYPE::GetEmptyIterator ();
             }
-            Traversal::IteratorBase::PtrImplementationTemplate<IteratorRep_> resultRep =
-                Iterator<T>::template MakeSmartPtr<IteratorRep_> (&fData_, &fChangeCounts_);
+            Traversal::IteratorBase::PtrImplementationTemplate<IteratorRep_> resultRep = make_unique<IteratorRep_> (&fData_, &fChangeCounts_);
             resultRep->fIterator.SetCurrentLink (iLink);
             return RESULT_TYPE (move (resultRep));
 #endif
@@ -106,7 +105,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
             // @todo - fix so using differnt CTOR - with no data to remove
-            auto r = Iterable<tuple<T, INDEXES...>>::template MakeSmartPtr<Rep_> (*this);
+            auto r = Memory::MakeSharedPtr<Rep_> (*this);
             return r;
         }
         DISABLE_COMPILER_MSC_WARNING_START (4100)
@@ -142,7 +141,7 @@ namespace Stroika::Foundation::Containers::Concrete {
      */
     template <typename T, typename... INDEXES>
     DenseDataHyperRectangle_Vector<T, INDEXES...>::DenseDataHyperRectangle_Vector (INDEXES... dimensions)
-        : inherited{inherited::template MakeSmartPtr<Rep_> (forward<INDEXES> (dimensions)...)}
+        : inherited{Memory::MakeSharedPtr<Rep_> (forward<INDEXES> (dimensions)...)}
     {
         AssertRepValidType_ ();
     }

@@ -638,7 +638,7 @@ const wregex& Characters::Private_::RegularExpression_GetCompiled (const Regular
  ********************************************************************************
  */
 String::String (const basic_string_view<char>& str)
-    : String{MakeSmartPtr<StringConstant_::Rep<char>> (span{str.data (), str.size ()})}
+    : String{Memory::MakeSharedPtr<StringConstant_::Rep<char>> (span{str.data (), str.size ()})}
 {
     Require (Character::IsASCII (span{str.data (), str.size ()}));
 }
@@ -663,17 +663,17 @@ String::String (const basic_string_view<char8_t>& str)
 }
 
 String::String (const basic_string_view<char16_t>& str)
-    : String{MakeSmartPtr<StringConstant_::Rep<char16_t>> (span{str.data (), str.size ()})}
+    : String{Memory::MakeSharedPtr<StringConstant_::Rep<char16_t>> (span{str.data (), str.size ()})}
 {
 }
 
 String::String (const basic_string_view<char32_t>& str)
-    : String{MakeSmartPtr<StringConstant_::Rep<char32_t>> (span{str.data (), str.size ()})}
+    : String{Memory::MakeSharedPtr<StringConstant_::Rep<char32_t>> (span{str.data (), str.size ()})}
 {
 }
 
 String::String (const basic_string_view<wchar_t>& str)
-    : String{MakeSmartPtr<StringConstant_::Rep<wchar_t>> (span{str.data (), str.size ()})}
+    : String{Memory::MakeSharedPtr<StringConstant_::Rep<wchar_t>> (span{str.data (), str.size ()})}
 {
     Require (str.data ()[str.length ()] == 0); // Because Stroika strings provide the guarantee that they can be converted to c_str () - we require the input memory
                                                // for these const strings are also nul-terminated.
@@ -685,7 +685,7 @@ String::String (const basic_string_view<wchar_t>& str)
 String String::FromStringConstant (span<const Character_ASCII> s)
 {
     Require (Character::IsASCII (s));
-    return String{MakeSmartPtr<StringConstant_::Rep<Character_ASCII>> (s)};
+    return String{Memory::MakeSharedPtr<StringConstant_::Rep<Character_ASCII>> (s)};
 }
 
 String String::FromStringConstant (span<const wchar_t> s)
@@ -695,14 +695,14 @@ String String::FromStringConstant (span<const wchar_t> s)
     }
     Require (*(s.data () + s.size ()) == '\0'); // crazy weird requirement, but done cuz "x"sv already does NUL-terminate and we can
         // take advantage of that fact - re-using the NUL-terminator for our own c_str() implementation
-    return String{MakeSmartPtr<StringConstant_::Rep<wchar_t>> (s)};
+    return String{Memory::MakeSharedPtr<StringConstant_::Rep<wchar_t>> (s)};
 }
 
 String String::FromStringConstant (span<const char32_t> s)
 {
     Require (*(s.data () + s.size ()) == '\0'); // crazy weird requirement, but done cuz "x"sv already does NUL-terminate and we can
         // take advantage of that fact - re-using the NUL-terminator for our own c_str() implementation
-    return String{MakeSmartPtr<StringConstant_::Rep<char32_t>> (s)};
+    return String{Memory::MakeSharedPtr<StringConstant_::Rep<char32_t>> (s)};
 }
 
 String String::FromNarrowString (span<const char> s, const locale& l)
@@ -732,9 +732,9 @@ String::_SharedPtrIRep String::mkEmpty_ ()
     static constexpr wchar_t kEmptyCStr_[] = L"";
 // use StringConstant_ since nul-terminated, and for now works better with CSTR - and why allocate anything...
 #if qCompilerAndStdLib_spanOfContainer_Buggy
-    static const _SharedPtrIRep s_ = MakeSmartPtr<StringConstant_::Rep<wchar_t>> (span<const wchar_t>{&kEmptyCStr_[0], &kEmptyCStr_[0]});
+    static const _SharedPtrIRep s_ = Memory::MakeSharedPtr<StringConstant_::Rep<wchar_t>> (span<const wchar_t>{&kEmptyCStr_[0], &kEmptyCStr_[0]});
 #else
-    static const _SharedPtrIRep s_ = MakeSmartPtr<StringConstant_::Rep<wchar_t>> (span{std::begin (kEmptyCStr_), 0});
+    static const _SharedPtrIRep s_ = Memory::MakeSharedPtr<StringConstant_::Rep<wchar_t>> (span{std::begin (kEmptyCStr_), 0});
 #endif
     return s_;
 }
@@ -802,15 +802,15 @@ inline auto String::mk_nocheck_justPickBufRep_ (span<const CHAR_T> s) -> _Shared
 
     size_t sz = s.size ();
     if (sz <= kNElts1_) {
-        return MakeSmartPtr<FixedCapacityInlineStorageString_::Rep<CHAR_T, kNElts1_>> (s);
+        return Memory::MakeSharedPtr<FixedCapacityInlineStorageString_::Rep<CHAR_T, kNElts1_>> (s);
     }
     else if (sz <= kNElts2_) {
-        return MakeSmartPtr<FixedCapacityInlineStorageString_::Rep<CHAR_T, kNElts2_>> (s);
+        return Memory::MakeSharedPtr<FixedCapacityInlineStorageString_::Rep<CHAR_T, kNElts2_>> (s);
     }
     else if (sz <= kNElts3_) {
-        return MakeSmartPtr<FixedCapacityInlineStorageString_::Rep<CHAR_T, kNElts3_>> (s);
+        return Memory::MakeSharedPtr<FixedCapacityInlineStorageString_::Rep<CHAR_T, kNElts3_>> (s);
     }
-    return MakeSmartPtr<DynamicallyAllocatedString::Rep<CHAR_T>> (s);
+    return Memory::MakeSharedPtr<DynamicallyAllocatedString::Rep<CHAR_T>> (s);
 }
 
 #if !qCompilerAndStdLib_template_requresDefNeededonSpecializations_Buggy
@@ -847,14 +847,14 @@ template <>
 auto String::mk_ (basic_string<char>&& s) -> _SharedPtrIRep
 {
     Character::CheckASCII (span{s.data (), s.size ()});
-    return MakeSmartPtr<StdStringDelegator_::Rep<char>> (move (s));
+    return Memory::Memory::MakeSharedPtr<StdStringDelegator_::Rep<char>> (move (s));
 }
 
 template <>
 auto String::mk_ (basic_string<char16_t>&& s) -> _SharedPtrIRep
 {
     if (UTFConverter::AllFitsInTwoByteEncoding (Memory::ConstSpan (span{s.data (), s.size ()}))) {
-        return MakeSmartPtr<StdStringDelegator_::Rep<char16_t>> (move (s));
+        return Memory::MakeSharedPtr<StdStringDelegator_::Rep<char16_t>> (move (s));
     }
     // copy the data if any surrogates
     Memory::StackBuffer<char32_t> wideUnicodeBuf{Memory::eUninitialized, UTFConverter::ComputeTargetBufferSize<char32_t> (span{s.data (), s.size ()})};
@@ -869,7 +869,7 @@ auto String::mk_ (basic_string<char16_t>&& s) -> _SharedPtrIRep
 template <>
 auto String::mk_ (basic_string<char32_t>&& s) -> _SharedPtrIRep
 {
-    return MakeSmartPtr<StdStringDelegator_::Rep<char32_t>> (move (s));
+    return Memory::MakeSharedPtr<StdStringDelegator_::Rep<char32_t>> (move (s));
 }
 
 template <>
@@ -877,7 +877,7 @@ auto String::mk_ (basic_string<wchar_t>&& s) -> _SharedPtrIRep
 {
     if constexpr (sizeof (wchar_t) == 2) {
         if (UTFConverter::AllFitsInTwoByteEncoding (Memory::ConstSpan (span{s.data (), s.size ()}))) {
-            return MakeSmartPtr<StdStringDelegator_::Rep<wchar_t>> (move (s));
+            return Memory::MakeSharedPtr<StdStringDelegator_::Rep<wchar_t>> (move (s));
         }
         // copy the data if any surrogates
         Memory::StackBuffer<char32_t> wideUnicodeBuf{Memory::eUninitialized,
@@ -890,7 +890,7 @@ auto String::mk_ (basic_string<wchar_t>&& s) -> _SharedPtrIRep
 #endif
     }
     else {
-        return MakeSmartPtr<StdStringDelegator_::Rep<wchar_t>> (move (s));
+        return Memory::MakeSharedPtr<StdStringDelegator_::Rep<wchar_t>> (move (s));
     }
 }
 
@@ -1617,16 +1617,16 @@ const wchar_t* String::c_str ()
         PeekSpanData   originalRepPDS = originalRep->PeekData (nullopt);
         switch (originalRepPDS.fInCP) {
             case PeekSpanData::eAscii:
-                _fRep = MakeSmartPtr<StringWithCStr_::Rep<char>> (originalRep, originalRepPDS);
+                _fRep = Memory::MakeSharedPtr<StringWithCStr_::Rep<char>> (originalRep, originalRepPDS);
                 break;
             case PeekSpanData::eSingleByteLatin1:
-                _fRep = MakeSmartPtr<StringWithCStr_::Rep<char>> (originalRep, originalRepPDS);
+                _fRep = Memory::MakeSharedPtr<StringWithCStr_::Rep<char>> (originalRep, originalRepPDS);
                 break;
             case PeekSpanData::eChar16:
-                _fRep = MakeSmartPtr<StringWithCStr_::Rep<char16_t>> (originalRep, originalRepPDS);
+                _fRep = Memory::MakeSharedPtr<StringWithCStr_::Rep<char16_t>> (originalRep, originalRepPDS);
                 break;
             case PeekSpanData::eChar32:
-                _fRep = MakeSmartPtr<StringWithCStr_::Rep<char32_t>> (originalRep, originalRepPDS);
+                _fRep = Memory::MakeSharedPtr<StringWithCStr_::Rep<char32_t>> (originalRep, originalRepPDS);
                 break;
         }
         result = (wchar_t*)_SafeReadRepAccessor{this}._ConstGetRep ().c_str_peek ();
