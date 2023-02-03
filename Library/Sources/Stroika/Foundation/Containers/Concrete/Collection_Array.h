@@ -89,10 +89,6 @@ namespace Stroika::Foundation::Containers::Concrete {
          */
         nonvirtual void shrink_to_fit ();
 
-    protected:
-        using _IterableRepSharedPtr   = typename inherited::_IterableRepSharedPtr;
-        using _CollectionRepSharedPtr = typename inherited::_IRepSharedPtr;
-
     private:
         class Rep_;
 

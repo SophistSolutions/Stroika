@@ -70,10 +70,6 @@ namespace Stroika::Foundation::Containers::Concrete {
         nonvirtual SortedCollection_LinkedList& operator= (SortedCollection_LinkedList&& rhs) noexcept = default;
         nonvirtual SortedCollection_LinkedList& operator= (const SortedCollection_LinkedList& rhs)     = default;
 
-    protected:
-        using _IterableRepSharedPtr   = typename Iterable<T>::_IterableRepSharedPtr;
-        using _CollectionRepSharedPtr = typename Collection<T>::_IRepSharedPtr;
-
     private:
         class IImplRepBase_;
         template <typename INORDER_COMPARER>

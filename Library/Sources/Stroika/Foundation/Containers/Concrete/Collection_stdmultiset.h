@@ -70,10 +70,6 @@ namespace Stroika::Foundation::Containers::Concrete {
         nonvirtual Collection_stdmultiset& operator= (Collection_stdmultiset&& rhs) noexcept = default;
         nonvirtual Collection_stdmultiset& operator= (const Collection_stdmultiset& rhs)     = default;
 
-    protected:
-        using _IterableRepSharedPtr   = typename Iterable<T>::_IterableRepSharedPtr;
-        using _CollectionRepSharedPtr = typename Collection<T>::_IRepSharedPtr;
-
     private:
         class IImplRepBase_;
         template <typename INORDER_COMPARER>

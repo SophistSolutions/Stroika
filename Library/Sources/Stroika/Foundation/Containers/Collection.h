@@ -113,9 +113,6 @@ namespace Stroika::Foundation::Containers {
     protected:
         class _IRep;
 
-    protected:
-        using _IRepSharedPtr = shared_ptr<_IRep>;
-
     public:
         /**
          *  \brief check if the argument type can be passed as argument to the arity/1 overload of Add ()
@@ -162,8 +159,8 @@ namespace Stroika::Foundation::Containers {
         Collection (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
 
     protected:
-        explicit Collection (_IRepSharedPtr&& src) noexcept;
-        explicit Collection (const _IRepSharedPtr& src) noexcept;
+        explicit Collection (shared_ptr<_IRep>&& src) noexcept;
+        explicit Collection (const shared_ptr<_IRep>& src) noexcept;
 
     public:
         nonvirtual Collection& operator= (Collection&& rhs) noexcept = default;
@@ -364,11 +361,11 @@ namespace Stroika::Foundation::Containers {
         virtual ~_IRep () = default;
 
     public:
-        virtual _IRepSharedPtr CloneEmpty () const                                                                             = 0;
-        virtual _IRepSharedPtr CloneAndPatchIterator (Iterator<value_type>* i) const                                           = 0;
-        virtual void           Add (ArgByValueType<value_type> item)                                                           = 0;
-        virtual void           Update (const Iterator<value_type>& i, ArgByValueType<T> newValue, Iterator<value_type>* nextI) = 0;
-        virtual void           Remove (const Iterator<value_type>& i, Iterator<value_type>* nextI)                             = 0;
+        virtual shared_ptr<_IRep> CloneEmpty () const                                                                             = 0;
+        virtual shared_ptr<_IRep> CloneAndPatchIterator (Iterator<value_type>* i) const                                           = 0;
+        virtual void              Add (ArgByValueType<value_type> item)                                                           = 0;
+        virtual void              Update (const Iterator<value_type>& i, ArgByValueType<T> newValue, Iterator<value_type>* nextI) = 0;
+        virtual void              Remove (const Iterator<value_type>& i, Iterator<value_type>* nextI)                             = 0;
     };
 
     /**
