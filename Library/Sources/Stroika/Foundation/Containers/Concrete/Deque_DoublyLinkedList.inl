@@ -37,7 +37,7 @@ namespace Stroika::Foundation::Containers::Concrete {
 
         // Iterable<T>::_IRep overrides
     public:
-        virtual shared_ptr < typename Iterable<T>::_IRep> Clone () const override
+        virtual shared_ptr<typename Iterable<T>::_IRep> Clone () const override
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
             return Memory::MakeSharedPtr<Rep_> (*this);
@@ -63,7 +63,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             fData_.Apply (doToElement);
         }
         virtual Iterator<value_type> Find ([[maybe_unused]] const shared_ptr<typename Iterable<T>::_IRep>& thisSharedPtr,
-                                           const function<bool (ArgByValueType<value_type> item)>& that) const override
+                                           const function<bool (ArgByValueType<value_type> item)>&         that) const override
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
             if (auto iLink = fData_.Find (that)) {
@@ -79,8 +79,8 @@ namespace Stroika::Foundation::Containers::Concrete {
 
         // Queue<T>::_IRep overrides
     public:
-        virtual shared_ptr < typename Queue<T>::_IRep> CloneEmpty () const override { return Memory::MakeSharedPtr<Rep_> (); }
-        virtual void               AddTail (ArgByValueType<value_type> item) override
+        virtual shared_ptr<typename Queue<T>::_IRep> CloneEmpty () const override { return Memory::MakeSharedPtr<Rep_> (); }
+        virtual void                                 AddTail (ArgByValueType<value_type> item) override
         {
             Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fData_};
             fData_.Append (item);
