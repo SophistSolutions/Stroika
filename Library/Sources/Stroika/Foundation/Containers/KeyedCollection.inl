@@ -106,14 +106,14 @@ namespace Stroika::Foundation::Containers {
         _AssertRepValidType ();
     }
     template <typename T, typename KEY_TYPE, typename TRAITS>
-    inline KeyedCollection<T, KEY_TYPE, TRAITS>::KeyedCollection (const _IRepSharedPtr& rep) noexcept
+    inline KeyedCollection<T, KEY_TYPE, TRAITS>::KeyedCollection (const shared_ptr<_IRep>& rep) noexcept
         : inherited{rep}
     {
         RequireNotNull (rep);
         _AssertRepValidType ();
     }
     template <typename T, typename KEY_TYPE, typename TRAITS>
-    inline KeyedCollection<T, KEY_TYPE, TRAITS>::KeyedCollection (_IRepSharedPtr&& rep) noexcept
+    inline KeyedCollection<T, KEY_TYPE, TRAITS>::KeyedCollection (shared_ptr<_IRep>&& rep) noexcept
         : inherited{(RequireNotNull (rep), move (rep))}
     {
         _AssertRepValidType ();
@@ -396,9 +396,9 @@ namespace Stroika::Foundation::Containers {
      ********************************************************************************
      */
     template <typename T, typename KEY_TYPE, typename TRAITS>
-    Iterable<KEY_TYPE> KeyedCollection<T, KEY_TYPE, TRAITS>::_IRep::_Keys_Reference_Implementation (const _IterableRepSharedPtr& thisSharedPtr) const
+    Iterable<KEY_TYPE> KeyedCollection<T, KEY_TYPE, TRAITS>::_IRep::_Keys_Reference_Implementation (const shared_ptr<typename Iterable<T>::_IRep>& thisSharedPtr) const
     {
-        using RecCntBumperType = _IterableRepSharedPtr;
+        using RecCntBumperType = shared_ptr<typename Iterable<T>::_IRep>;
         struct MyIterable_ : Iterable<KEY_TYPE> {
             using BaseCollectionType_ = KeyedCollection<T, KEY_TYPE, TRAITS>;
             struct MyIterableRep_ : Traversal::IterableFromIterator<KEY_TYPE>::_Rep, public Memory::UseBlockAllocationIfAppropriate<MyIterableRep_> {

@@ -123,9 +123,6 @@ namespace Stroika::Foundation::Containers {
     protected:
         class _IRep;
 
-    protected:
-        using _IRepSharedPtr = shared_ptr<_IRep>;
-
     public:
         /**
          *  @see inherited::value_type
@@ -259,8 +256,8 @@ namespace Stroika::Foundation::Containers {
         KeyedCollection (KEY_EXTRACTOR&& keyExtractor, KEY_EQUALS_COMPARER&& keyComparer, ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
 
     protected:
-        explicit KeyedCollection (_IRepSharedPtr&& rep) noexcept;
-        explicit KeyedCollection (const _IRepSharedPtr& rep) noexcept;
+        explicit KeyedCollection (shared_ptr<_IRep>&& rep) noexcept;
+        explicit KeyedCollection (const shared_ptr<_IRep>& rep) noexcept;
 
     public:
         /**
@@ -531,16 +528,12 @@ namespace Stroika::Foundation::Containers {
     private:
         using inherited = typename Iterable<T>::_IRep;
 
-    protected:
-        using _IRepSharedPtr        = typename KeyedCollection<T, KEY_TYPE, TRAITS>::_IRepSharedPtr;
-        using _IterableRepSharedPtr = typename inherited::_IterableRepSharedPtr;
-
     public:
-        virtual KeyExtractorType        GetKeyExtractor () const                                = 0;
-        virtual KeyEqualityComparerType GetKeyEqualityComparer () const                         = 0;
-        virtual _IRepSharedPtr          CloneEmpty () const                                     = 0;
-        virtual _IRepSharedPtr          CloneAndPatchIterator (Iterator<value_type>* i) const   = 0;
-        virtual Iterable<KEY_TYPE>      Keys (const _IterableRepSharedPtr& thisSharedPtr) const = 0;
+        virtual KeyExtractorType        GetKeyExtractor () const                                                  = 0;
+        virtual KeyEqualityComparerType GetKeyEqualityComparer () const                                           = 0;
+        virtual shared_ptr<_IRep>       CloneEmpty () const                                                       = 0;
+        virtual shared_ptr<_IRep>       CloneAndPatchIterator (Iterator<value_type>* i) const                     = 0;
+        virtual Iterable<KEY_TYPE>      Keys (const shared_ptr<typename Iterable<T>::_IRep>& thisSharedPtr) const = 0;
         // always clear/set item, and ensure return value == item->IsValidItem());
         // 'item' arg CAN be nullptr
         virtual bool Lookup (ArgByValueType<KeyType> key, optional<value_type>* item) const = 0;
@@ -551,7 +544,7 @@ namespace Stroika::Foundation::Containers {
         virtual bool RemoveIf (ArgByValueType<KEY_TYPE> key) = 0;
 
     protected:
-        nonvirtual Iterable<KEY_TYPE> _Keys_Reference_Implementation (const _IterableRepSharedPtr& thisSharedPtr) const;
+        nonvirtual Iterable<KEY_TYPE> _Keys_Reference_Implementation (const shared_ptr<typename Iterable<T>::_IRep>& thisSharedPtr) const;
     };
 
     /**

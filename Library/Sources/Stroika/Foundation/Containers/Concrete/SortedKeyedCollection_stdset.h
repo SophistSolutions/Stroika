@@ -119,10 +119,6 @@ namespace Stroika::Foundation::Containers::Concrete {
         nonvirtual SortedKeyedCollection_stdset& operator= (SortedKeyedCollection_stdset&& rhs) noexcept = default;
         nonvirtual SortedKeyedCollection_stdset& operator= (const SortedKeyedCollection_stdset& rhs)     = default;
 
-    protected:
-        using _IterableRepSharedPtr        = typename inherited::_IterableRepSharedPtr;
-        using _KeyedCollectionRepSharedPtr = typename KeyedCollection<T, KEY_TYPE, TRAITS>::_IRepSharedPtr;
-
     private:
         class IImplRepBase_;
         template <typename KEY_EXTRACTOR, typename KEY_INORDER_COMPARER>

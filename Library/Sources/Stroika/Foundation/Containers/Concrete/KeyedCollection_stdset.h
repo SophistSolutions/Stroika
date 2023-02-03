@@ -123,10 +123,6 @@ namespace Stroika::Foundation::Containers::Concrete {
         nonvirtual KeyedCollection_stdset& operator= (KeyedCollection_stdset&& rhs) noexcept = default;
         nonvirtual KeyedCollection_stdset& operator= (const KeyedCollection_stdset& rhs)     = default;
 
-    protected:
-        using _IterableRepSharedPtr        = typename inherited::_IterableRepSharedPtr;
-        using _KeyedCollectionRepSharedPtr = typename inherited::_IRepSharedPtr;
-
     private:
         class IImplRepBase_;
         template <typename KEY_EXTRACTOR, typename KEY_INORDER_COMPARER>

@@ -70,12 +70,12 @@ namespace Stroika::Foundation::Containers::Concrete {
 
         // Iterable<T>::_IRep overrides
     public:
-        virtual _IterableRepSharedPtr Clone () const override
+        virtual shared_ptr < typename Iterable<T>::_IRep> Clone () const override
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
             return Memory::MakeSharedPtr<Rep_> (*this);
         }
-        virtual Iterator<value_type> MakeIterator ([[maybe_unused]] const _IterableRepSharedPtr& thisSharedPtr) const override
+        virtual Iterator<value_type> MakeIterator ([[maybe_unused]] const shared_ptr<typename Iterable<T>::_IRep>& thisSharedPtr) const override
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
             return Iterator<value_type>{make_unique<IteratorRep_> (&fData_, &fChangeCounts_)};
@@ -95,12 +95,13 @@ namespace Stroika::Foundation::Containers::Concrete {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
             fData_.Apply (doToElement);
         }
-        virtual Iterator<T> Find (const _IterableRepSharedPtr& thisSharedPtr, const function<bool (ArgByValueType<value_type> item)>& that) const override
+        virtual Iterator<T> Find (const shared_ptr<typename Iterable<T>::_IRep>&          thisSharedPtr,
+                                  const function<bool (ArgByValueType<value_type> item)>& that) const override
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
             return this->_Find (thisSharedPtr, that);
         }
-        virtual Iterator<value_type> Find_equal_to ([[maybe_unused]] const _IterableRepSharedPtr& thisSharedPtr,
+        virtual Iterator<value_type> Find_equal_to ([[maybe_unused]] const shared_ptr<typename Iterable<T>::_IRep>& thisSharedPtr,
                                                     const ArgByValueType<value_type>&             v) const override
         {
             // if doing a find by 'equals-to' - we already have this indexed
@@ -126,12 +127,12 @@ namespace Stroika::Foundation::Containers::Concrete {
             return KeyEqualityComparerType{
                 [keyComparer] (const KEY_TYPE& lhs, const KEY_TYPE& rhs) { return keyComparer (lhs, rhs) and keyComparer (rhs, lhs); }};
         }
-        virtual _KeyedCollectionRepSharedPtr CloneEmpty () const override
+        virtual shared_ptr<typename KeyedCollection<T, KEY_TYPE, TRAITS>::_IRep> CloneEmpty () const override
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
             return Memory::MakeSharedPtr<Rep_> (this->fKeyExtractor_, this->fKeyComparer_); // lose data but keep compare/extractor functions
         }
-        virtual _KeyedCollectionRepSharedPtr CloneAndPatchIterator (Iterator<value_type>* i) const override
+        virtual shared_ptr<typename KeyedCollection<T, KEY_TYPE, TRAITS>::_IRep> CloneAndPatchIterator (Iterator<value_type>* i) const override
         {
             RequireNotNull (i);
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
@@ -141,7 +142,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             i->Refresh (); // reflect updated rep
             return result;
         }
-        virtual Iterable<KEY_TYPE> Keys (const _IterableRepSharedPtr& thisSharedPtr) const override
+        virtual Iterable<KEY_TYPE> Keys (const shared_ptr<typename Iterable<T>::_IRep>& thisSharedPtr) const override
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
             return this->_Keys_Reference_Implementation (thisSharedPtr);

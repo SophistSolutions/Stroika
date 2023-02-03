@@ -88,10 +88,6 @@ namespace Stroika::Foundation::Containers::Concrete {
         nonvirtual KeyedCollection_LinkedList& operator= (KeyedCollection_LinkedList&& rhs) noexcept = default;
         nonvirtual KeyedCollection_LinkedList& operator= (const KeyedCollection_LinkedList& rhs)     = default;
 
-    protected:
-        using _IterableRepSharedPtr        = typename inherited::_IterableRepSharedPtr;
-        using _KeyedCollectionRepSharedPtr = typename inherited::_IRepSharedPtr;
-
     private:
         class IImplRep_;
         template <typename KEY_EXTRACTOR, typename KEY_EQUALS_COMPARER>
