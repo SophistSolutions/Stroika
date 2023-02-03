@@ -39,14 +39,14 @@ namespace Stroika::Foundation::Containers {
         _AssertRepValidType ();
     }
     template <typename T>
-    inline Queue<T>::Queue (const _IRepSharedPtr& rep) noexcept
+    inline Queue<T>::Queue (const shared_ptr<_IRep>& rep) noexcept
         : inherited{(RequireNotNull (rep), rep)}
     {
         _AssertRepValidType ();
         RequireNotNull (rep);
     }
     template <typename T>
-    inline Queue<T>::Queue (_IRepSharedPtr&& rep) noexcept
+    inline Queue<T>::Queue (shared_ptr<_IRep>&& rep) noexcept
         : inherited{(RequireNotNull (rep), move (rep))}
     {
         _AssertRepValidType ();

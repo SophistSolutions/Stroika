@@ -94,9 +94,6 @@ namespace Stroika::Foundation::Containers {
     protected:
         class _IRep;
 
-    protected:
-        using _IRepSharedPtr = shared_ptr<_IRep>;
-
     public:
         /**
          *  \brief check if the argument type can be passed as argument to the arity/1 overload of Add (Enqueue)
@@ -122,8 +119,8 @@ namespace Stroika::Foundation::Containers {
         Queue (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
 
     protected:
-        explicit Queue (_IRepSharedPtr&& rep) noexcept;
-        explicit Queue (const _IRepSharedPtr& rep) noexcept;
+        explicit Queue (shared_ptr<_IRep>&& rep) noexcept;
+        explicit Queue (const shared_ptr<_IRep>& rep) noexcept;
 
     public:
         /**
@@ -273,11 +270,8 @@ namespace Stroika::Foundation::Containers {
     public:
         virtual ~_IRep () = default;
 
-    protected:
-        using _IRepSharedPtr = typename Queue<T>::_IRepSharedPtr;
-
     public:
-        virtual _IRepSharedPtr       CloneEmpty () const                       = 0;
+        virtual shared_ptr < _IRep>   CloneEmpty () const                       = 0;
         virtual void                 AddTail (ArgByValueType<value_type> item) = 0;
         virtual value_type           RemoveHead ()                             = 0;
         virtual optional<value_type> RemoveHeadIf ()                           = 0;
