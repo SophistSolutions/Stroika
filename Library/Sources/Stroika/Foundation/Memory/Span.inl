@@ -60,14 +60,14 @@ namespace Stroika::Foundation::Memory {
      *************************** Memory::CopySpanData *******************************
      ********************************************************************************
      */
+    DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wstringop-overflow\"");
+    DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wstringop-overflow=\"");
     template <typename T>
     constexpr std::span<T> CopySpanData (span<const T> src, span<T> target)
     {
         Require (src.size () <= target.size ());
         Require (not Intersects (src, target));
-        DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wstringop-overflow=\"");
         std::copy (src.begin (), src.end (), target.data ());
-        DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wstringop-overflow=\"");
         return target.subspan (0, src.size ());
     }
     template <typename T>
@@ -75,6 +75,8 @@ namespace Stroika::Foundation::Memory {
     {
         return CopySpanData (ConstSpan (src), target);
     }
+    DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wstringop-overflow=\"");
+    DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wstringop-overflow\"");
 
     /*
      ********************************************************************************
