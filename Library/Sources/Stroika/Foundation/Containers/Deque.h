@@ -75,9 +75,6 @@ namespace Stroika::Foundation::Containers {
     protected:
         class _IRep;
 
-    protected:
-        using _IRepSharedPtr = shared_ptr<_IRep>;
-
     public:
         /**
          *  \note   <a href="ReadMe.md#Container Constructors">See general information about container constructors that applies here</a>
@@ -94,8 +91,8 @@ namespace Stroika::Foundation::Containers {
     protected:
         /**
          */
-        explicit Deque (_IRepSharedPtr&& src) noexcept;
-        explicit Deque (const _IRepSharedPtr& src) noexcept;
+        explicit Deque (shared_ptr<_IRep>&& src) noexcept;
+        explicit Deque (const shared_ptr<_IRep>& src) noexcept;
 
     public:
         /**

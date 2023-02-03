@@ -271,7 +271,7 @@ namespace Stroika::Foundation::Containers {
         virtual ~_IRep () = default;
 
     public:
-        virtual shared_ptr < _IRep>   CloneEmpty () const                       = 0;
+        virtual shared_ptr<_IRep>    CloneEmpty () const                       = 0;
         virtual void                 AddTail (ArgByValueType<value_type> item) = 0;
         virtual value_type           RemoveHead ()                             = 0;
         virtual optional<value_type> RemoveHeadIf ()                           = 0;

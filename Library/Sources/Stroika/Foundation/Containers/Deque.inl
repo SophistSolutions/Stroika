@@ -37,13 +37,13 @@ namespace Stroika::Foundation::Containers {
         _AssertRepValidType ();
     }
     template <typename T>
-    inline Deque<T>::Deque (const _IRepSharedPtr& src) noexcept
+    inline Deque<T>::Deque (const shared_ptr<_IRep>& src) noexcept
         : inherited{(RequireNotNull (src), src)}
     {
         _AssertRepValidType ();
     }
     template <typename T>
-    inline Deque<T>::Deque (_IRepSharedPtr&& src) noexcept
+    inline Deque<T>::Deque (shared_ptr<_IRep>&& src) noexcept
         : inherited{(RequireNotNull (src), move (src))}
     {
         _AssertRepValidType ();
