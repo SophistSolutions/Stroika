@@ -71,7 +71,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             fData_.Apply (doToElement);
         }
         virtual Iterator<value_type> Find ([[maybe_unused]] const shared_ptr<typename Iterable<T>::_IRep>& thisSharedPtr,
-                                           const function<bool (ArgByValueType<value_type> item)>& that) const override
+                                           const function<bool (ArgByValueType<value_type> item)>&         that) const override
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
             if (auto iLink = fData_.Find (that)) {
@@ -92,7 +92,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
             return ElementEqualityComparerType{fEqualsComparer_};
         }
-        virtual shared_ptr <typename Set<T>::_IRep> CloneEmpty () const override
+        virtual shared_ptr<typename Set<T>::_IRep> CloneEmpty () const override
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
             return Memory::MakeSharedPtr<Rep_> (fEqualsComparer_); // copy comparers, but not data
