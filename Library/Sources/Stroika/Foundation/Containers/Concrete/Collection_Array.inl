@@ -79,12 +79,12 @@ namespace Stroika::Foundation::Containers::Concrete {
 
         // Collection<T>::_IRep overrides
     public:
-        virtual shared_ptr<typename Collection<T>::_IRep<T>> CloneEmpty () const override
+        virtual shared_ptr<typename Collection<T>::_IRep> CloneEmpty () const override
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
             return Memory::MakeSharedPtr<Rep_> ();
         }
-        virtual shared_ptr<typename Collection<T>::_IRep<T>> CloneAndPatchIterator (Iterator<value_type>* i) const override
+        virtual shared_ptr<typename Collection<T>::_IRep> CloneAndPatchIterator (Iterator<value_type>* i) const override
         {
             RequireNotNull (i);
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
