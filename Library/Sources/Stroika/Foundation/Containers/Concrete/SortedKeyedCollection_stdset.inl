@@ -70,7 +70,7 @@ namespace Stroika::Foundation::Containers::Concrete {
 
         // Iterable<T>::_IRep overrides
     public:
-        virtual shared_ptr < typename Iterable<T>::_IRep> Clone () const override
+        virtual shared_ptr<typename Iterable<T>::_IRep> Clone () const override
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
             return Memory::MakeSharedPtr<Rep_> (*this);
@@ -102,7 +102,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             return this->_Find (thisSharedPtr, that);
         }
         virtual Iterator<value_type> Find_equal_to ([[maybe_unused]] const shared_ptr<typename Iterable<T>::_IRep>& thisSharedPtr,
-                                                    const ArgByValueType<value_type>&             v) const override
+                                                    const ArgByValueType<value_type>&                               v) const override
         {
             // if doing a find by 'equals-to' - we already have this indexed
             auto found = fData_.find (v);
@@ -127,7 +127,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             return KeyEqualityComparerType{
                 [keyComparer] (const KEY_TYPE& lhs, const KEY_TYPE& rhs) { return keyComparer (lhs, rhs) and keyComparer (rhs, lhs); }};
         }
-        virtual shared_ptr < typename KeyedCollection<T, KEY_TYPE, TRAITS>::_IRep> CloneEmpty () const override
+        virtual shared_ptr<typename KeyedCollection<T, KEY_TYPE, TRAITS>::_IRep> CloneEmpty () const override
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
             return Memory::MakeSharedPtr<Rep_> (this->fKeyExtractor_, this->fKeyComparer_); // keep extractor/comparer but lose data in clone

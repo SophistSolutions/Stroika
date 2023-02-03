@@ -73,7 +73,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             fData_.Apply (doToElement);
         }
         virtual Iterator<value_type> Find ([[maybe_unused]] const shared_ptr<typename Iterable<T>::_IRep>& thisSharedPtr,
-                                           const function<bool (ArgByValueType<value_type> item)>& that) const override
+                                           const function<bool (ArgByValueType<value_type> item)>&         that) const override
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
             if (auto iLink = fData_.Find (that)) {
