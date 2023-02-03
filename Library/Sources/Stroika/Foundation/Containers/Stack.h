@@ -112,8 +112,8 @@ namespace Stroika::Foundation::Containers {
         Stack (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
 
     protected:
-        explicit Stack (_IRepSharedPtr&& src) noexcept;
-        explicit Stack (const _IRepSharedPtr& src) noexcept;
+        explicit Stack (shared_ptr<_IRep>&& src) noexcept;
+        explicit Stack (const shared_ptr<_IRep>& src) noexcept;
 
     public:
         /**
@@ -210,14 +210,11 @@ namespace Stroika::Foundation::Containers {
     public:
         virtual ~_IRep () = default;
 
-    protected:
-        using _IRepSharedPtr = typename Stack<T>::_IRepSharedPtr;
-
     public:
-        virtual _IRepSharedPtr CloneEmpty () const                    = 0;
-        virtual void           Push (ArgByValueType<value_type> item) = 0;
-        virtual value_type     Pop ()                                 = 0;
-        virtual value_type     Top () const                           = 0;
+        virtual shared_ptr<_IRep> CloneEmpty () const                    = 0;
+        virtual void              Push (ArgByValueType<value_type> item) = 0;
+        virtual value_type        Pop ()                                 = 0;
+        virtual value_type        Top () const                           = 0;
     };
 
 }
