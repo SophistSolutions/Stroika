@@ -62,10 +62,6 @@ namespace Stroika::Foundation::Containers::Concrete {
         nonvirtual Sequence_LinkedList& operator= (Sequence_LinkedList&& rhs) noexcept = default;
         nonvirtual Sequence_LinkedList& operator= (const Sequence_LinkedList& rhs)     = default;
 
-    protected:
-        using _IterableRepSharedPtr = typename inherited::_IterableRepSharedPtr;
-        using _SequenceRepSharedPtr = typename inherited::_IRepSharedPtr;
-
     private:
         class Rep_;
 

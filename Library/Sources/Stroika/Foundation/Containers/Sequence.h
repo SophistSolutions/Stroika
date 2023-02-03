@@ -209,9 +209,6 @@ namespace Stroika::Foundation::Containers {
     protected:
         class _IRep;
 
-    protected:
-        using _IRepSharedPtr = shared_ptr<_IRep>;
-
     public:
         /**
          *  @see inherited::value_type
@@ -263,8 +260,8 @@ namespace Stroika::Foundation::Containers {
         Sequence (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
 
     protected:
-        explicit Sequence (_IRepSharedPtr&& rep) noexcept;
-        explicit Sequence (const _IRepSharedPtr& rep) noexcept;
+        explicit Sequence (shared_ptr<_IRep>&& rep) noexcept;
+        explicit Sequence (const shared_ptr<_IRep>& rep) noexcept;
 
     public:
         /**
@@ -662,12 +659,9 @@ namespace Stroika::Foundation::Containers {
     protected:
         static constexpr size_t _kSentinalLastItemIndex = numeric_limits<size_t>::max ();
 
-    protected:
-        using _IRepSharedPtr = typename Sequence<value_type>::_IRepSharedPtr;
-
     public:
-        virtual _IRepSharedPtr CloneEmpty () const                                   = 0;
-        virtual _IRepSharedPtr CloneAndPatchIterator (Iterator<value_type>* i) const = 0;
+        virtual shared_ptr<_IRep> CloneEmpty () const                                   = 0;
+        virtual shared_ptr<_IRep> CloneAndPatchIterator (Iterator<value_type>* i) const = 0;
         // 'i' argument to GetAt MAYBE kBadSequenceIndex - indictating last element
         virtual value_type GetAt (size_t i) const                                                                                   = 0;
         virtual void       SetAt (size_t i, ArgByValueType<value_type> item)                                                        = 0;

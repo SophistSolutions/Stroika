@@ -58,10 +58,6 @@ namespace Stroika::Foundation::Containers::Concrete {
         nonvirtual Sequence_DoublyLinkedList& operator= (Sequence_DoublyLinkedList&& rhs)      = default;
         nonvirtual Sequence_DoublyLinkedList& operator= (const Sequence_DoublyLinkedList& rhs) = default;
 
-    protected:
-        using _IterableRepSharedPtr = typename inherited::_IterableRepSharedPtr;
-        using _SequenceRepSharedPtr = typename inherited::_IRepSharedPtr;
-
     private:
         class Rep_;
 
