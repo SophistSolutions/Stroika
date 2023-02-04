@@ -133,9 +133,10 @@ namespace Stroika::Foundation::Traversal {
     }
     template <typename T>
     template <typename REP_SUB_TYPE>
-    inline auto Iterable<T>::_SafeReadRepAccessor<REP_SUB_TYPE>::_ConstGetRepSharedPtr () const noexcept -> _IterableRepSharedPtr
+    inline auto Iterable<T>::_SafeReadRepAccessor<REP_SUB_TYPE>::_ConstGetRepSharedPtr () const noexcept -> shared_ptr<REP_SUB_TYPE>
     {
-        return this->fIterableEnvelope_->_fRep.cget_ptr ();
+        // @todo fix to use Debug::some-safter-assert-checkign-dynamic-cast
+        return dynamic_pointer_cast<REP_SUB_TYPE> (this->fIterableEnvelope_->_fRep.cget_ptr ());
     }
 
     /*
