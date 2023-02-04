@@ -1334,7 +1334,7 @@ namespace Stroika::Foundation::Traversal {
 
     public:
         // @todo probably change to some sort of more const type returned
-        nonvirtual shared_ptr < REP_SUB_TYPE> _ConstGetRepSharedPtr () const noexcept;
+        nonvirtual shared_ptr<REP_SUB_TYPE> _ConstGetRepSharedPtr () const noexcept;
 
     private:
         const REP_SUB_TYPE* fConstRef_;

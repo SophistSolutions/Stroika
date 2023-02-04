@@ -81,10 +81,6 @@ namespace Stroika::Foundation::Containers::Concrete {
         nonvirtual SortedMapping_stdmap& operator= (SortedMapping_stdmap&& rhs) noexcept = default;
         nonvirtual SortedMapping_stdmap& operator= (const SortedMapping_stdmap& rhs)     = default;
 
-    protected:
-        using _IterableRepSharedPtr = typename inherited::_IterableRepSharedPtr;
-        using _MappingRepSharedPtr  = typename Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::_IRepSharedPtr;
-
     private:
         class IImplRepBase_;
         template <typename KEY_INORDER_COMPARER>

@@ -57,9 +57,6 @@ namespace Stroika::Foundation::Containers {
     protected:
         class _IRep;
 
-    protected:
-        using _IRepSharedPtr = shared_ptr<_IRep>;
-
     public:
         /**
          *  Use this typedef in templates to recover the basic functional container pattern of concrete types.
@@ -119,8 +116,8 @@ namespace Stroika::Foundation::Containers {
         SortedMapping (KEY_INORDER_COMPARER&& inorderComparer, ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
 
     protected:
-        explicit SortedMapping (_IRepSharedPtr&& src) noexcept;
-        explicit SortedMapping (const _IRepSharedPtr& src) noexcept;
+        explicit SortedMapping (shared_ptr<_IRep>&& src) noexcept;
+        explicit SortedMapping (const shared_ptr<_IRep>& src) noexcept;
 
     public:
         /**

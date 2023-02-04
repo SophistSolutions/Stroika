@@ -142,10 +142,6 @@ namespace Stroika::Foundation::Containers::Concrete {
         nonvirtual Mapping_stdhashmap& operator= (Mapping_stdhashmap&& rhs) noexcept = default;
         nonvirtual Mapping_stdhashmap& operator= (const Mapping_stdhashmap& rhs)     = default;
 
-    protected:
-        using _IterableRepSharedPtr = typename inherited::_IterableRepSharedPtr;
-        using _MappingRepSharedPtr  = typename inherited::_IRepSharedPtr;
-
     private:
         class IImplRepBase_;
         template <typename HASH, typename KEY_EQUALS_COMPARER>
