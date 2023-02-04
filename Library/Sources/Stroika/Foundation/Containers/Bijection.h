@@ -102,9 +102,6 @@ namespace Stroika::Foundation::Containers {
     protected:
         class _IRep;
 
-    protected:
-        using _IRepSharedPtr = shared_ptr<_IRep>;
-
     public:
         /**
          *  Use this typedef in templates to recover the basic functional container pattern of concrete types.
@@ -193,8 +190,8 @@ namespace Stroika::Foundation::Containers {
                    ITERATOR_OF_ADDABLE&& end);
 
     protected:
-        explicit Bijection (_IRepSharedPtr&& src) noexcept;
-        explicit Bijection (const _IRepSharedPtr& src) noexcept;
+        explicit Bijection (shared_ptr<_IRep>&& src) noexcept;
+        explicit Bijection (const shared_ptr<_IRep>& src) noexcept;
 
     public:
         /**
@@ -545,23 +542,19 @@ namespace Stroika::Foundation::Containers {
         using inherited = typename Iterable<value_type>::_IRep;
 
     protected:
-        using _IRepSharedPtr        = typename Bijection<DOMAIN_TYPE, RANGE_TYPE>::_IRepSharedPtr;
-        using _IterableRepSharedPtr = typename inherited::_IterableRepSharedPtr;
-
-    protected:
         _IRep () = default;
 
     public:
         virtual ~_IRep () = default;
 
     public:
-        virtual _IRepSharedPtr                  CloneEmpty () const                                         = 0;
-        virtual _IRepSharedPtr                  CloneAndPatchIterator (Iterator<value_type>* i) const       = 0;
-        virtual bool                            Equals (const _IRep& rhs) const                             = 0;
-        virtual DomainEqualsCompareFunctionType GetDomainEqualsComparer () const                            = 0;
-        virtual RangeEqualsCompareFunctionType  GetRangeEqualsComparer () const                             = 0;
-        virtual Iterable<DomainType>            Preimage (const _IterableRepSharedPtr& thisSharedPtr) const = 0;
-        virtual Iterable<RangeType>             Image (const _IterableRepSharedPtr& thisSharedPtr) const    = 0;
+        virtual shared_ptr<_IRep>               CloneEmpty () const                                     = 0;
+        virtual shared_ptr<_IRep>               CloneAndPatchIterator (Iterator<value_type>* i) const   = 0;
+        virtual bool                            Equals (const _IRep& rhs) const                         = 0;
+        virtual DomainEqualsCompareFunctionType GetDomainEqualsComparer () const                        = 0;
+        virtual RangeEqualsCompareFunctionType  GetRangeEqualsComparer () const                         = 0;
+        virtual Iterable<DomainType>            Preimage (const shared_ptr<_IRep>& thisSharedPtr) const = 0;
+        virtual Iterable<RangeType>             Image (const shared_ptr<_IRep>& thisSharedPtr) const    = 0;
         // always clear/set item, and ensure return value == item->IsValidItem());
         // 'item' arg CAN be nullptr
         virtual bool Lookup (ArgByValueType<DOMAIN_TYPE> key, optional<RangeType>* item) const        = 0;
@@ -582,8 +575,8 @@ namespace Stroika::Foundation::Containers {
         nonvirtual bool _Equals_Reference_Implementation (const _IRep& rhs) const;
 
     protected:
-        nonvirtual Iterable<DOMAIN_TYPE> _PreImage_Reference_Implementation (const _IterableRepSharedPtr& thisSharedPtr) const;
-        nonvirtual Iterable<RANGE_TYPE> _Image_Reference_Implementation (const _IterableRepSharedPtr& thisSharedPtr) const;
+        nonvirtual Iterable<DOMAIN_TYPE> _PreImage_Reference_Implementation (const shared_ptr<_IRep>& thisSharedPtr) const;
+        nonvirtual Iterable<RANGE_TYPE> _Image_Reference_Implementation (const shared_ptr<_IRep>& thisSharedPtr) const;
     };
 
 }
