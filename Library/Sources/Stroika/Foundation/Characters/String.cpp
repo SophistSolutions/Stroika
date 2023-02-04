@@ -1613,7 +1613,7 @@ const wchar_t* String::c_str ()
     _SafeReadRepAccessor accessor{this};
     const wchar_t*       result = (wchar_t*)accessor._ConstGetRep ().c_str_peek ();
     if (result == nullptr) {
-        _SharedPtrIRep originalRep    = dynamic_pointer_cast<_IRep> (accessor._ConstGetRepSharedPtr ());
+        _SharedPtrIRep originalRep    = accessor._ConstGetRepSharedPtr ();
         PeekSpanData   originalRepPDS = originalRep->PeekData (nullopt);
         switch (originalRepPDS.fInCP) {
             case PeekSpanData::eAscii:

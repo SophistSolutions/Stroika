@@ -144,13 +144,13 @@ namespace Stroika::Foundation::Containers {
     inline Iterable<DOMAIN_TYPE> Bijection<DOMAIN_TYPE, RANGE_TYPE>::Preimage () const
     {
         _SafeReadRepAccessor<_IRep> accessor{this};
-        return accessor._ConstGetRep ().Preimage (dynamic_pointer_cast<_IRep> (accessor._ConstGetRepSharedPtr ()));
+        return accessor._ConstGetRep ().Preimage (accessor._ConstGetRepSharedPtr ();
     }
     template <typename DOMAIN_TYPE, typename RANGE_TYPE>
     inline Iterable<RANGE_TYPE> Bijection<DOMAIN_TYPE, RANGE_TYPE>::Image () const
     {
         _SafeReadRepAccessor<_IRep> accessor{this};
-        return accessor._ConstGetRep ().Image (dynamic_pointer_cast<_IRep> (accessor._ConstGetRepSharedPtr ()));
+        return accessor._ConstGetRep ().Image (accessor._ConstGetRepSharedPtr ());
     }
     template <typename DOMAIN_TYPE, typename RANGE_TYPE>
     inline bool Bijection<DOMAIN_TYPE, RANGE_TYPE>::Lookup (ArgByValueType<DomainType> key, RangeType* item) const
@@ -261,7 +261,7 @@ namespace Stroika::Foundation::Containers {
     {
         // @todo - fix very primitive implementation - could use Generator instead?, generator avoids copy of data, and just copies includeIfTrue filter function
         _SafeReadRepAccessor<_IRep> lhs{this};
-        Bijection                   result = dynamic_pointer_cast<_IRep> (lhs._ConstGetRep ().CloneEmpty ());
+        Bijection                   result = lhs._ConstGetRep ().CloneEmpty ();
         for (const auto& i : *this) {
             if (domainValues.Contains (i.first, this->GetDomainEqualsComparer ())) {
                 result.Add (i);
@@ -274,7 +274,7 @@ namespace Stroika::Foundation::Containers {
     {
         // @todo - fix very primitive implementation - could use Generator instead?, generator avoids copy of data, and just copies includeIfTrue filter function
         _SafeReadRepAccessor<_IRep> lhs{this};
-        Bijection                   result = dynamic_pointer_cast<_IRep> (lhs._ConstGetRep ().CloneEmpty ());
+        Bijection                   result = lhs._ConstGetRep ().CloneEmpty ();
         for (const auto& i : *this) {
             if (rangeValues.Contains (i.second, this->GetRangeEqualsComparer ())) {
                 result.Add (i);
