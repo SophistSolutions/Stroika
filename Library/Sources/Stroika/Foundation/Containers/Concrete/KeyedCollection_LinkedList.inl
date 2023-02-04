@@ -114,7 +114,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             i->Refresh (); // reflect updated rep
             return result;
         }
-        virtual Iterable<KEY_TYPE> Keys (const shared_ptr<typename Iterable<T>::_IRep>& thisSharedPtr) const override
+        virtual Iterable<KEY_TYPE> Keys (const shared_ptr<typename KeyedCollection<T, KEY_TYPE, TRAITS>::_IRep>& thisSharedPtr) const override
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
             return this->_Keys_Reference_Implementation (thisSharedPtr);

@@ -396,7 +396,7 @@ namespace Stroika::Foundation::Containers {
      ********************************************************************************
      */
     template <typename T, typename KEY_TYPE, typename TRAITS>
-    Iterable<KEY_TYPE> KeyedCollection<T, KEY_TYPE, TRAITS>::_IRep::_Keys_Reference_Implementation (const shared_ptr<typename Iterable<T>::_IRep>& thisSharedPtr) const
+    Iterable<KEY_TYPE> KeyedCollection<T, KEY_TYPE, TRAITS>::_IRep::_Keys_Reference_Implementation (const shared_ptr<_IRep>& thisSharedPtr) const
     {
         using RecCntBumperType = shared_ptr<typename Iterable<T>::_IRep>;
         struct MyIterable_ : Iterable<KEY_TYPE> {
