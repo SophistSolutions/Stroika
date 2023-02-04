@@ -65,14 +65,14 @@ namespace Stroika::Foundation::Memory {
     {
         Require (src.size () <= target.size ());
         Require (not Intersects (src, target));
-        #if qCompilerAndStdLib_copy_warning_overflow_Buggy
+#if qCompilerAndStdLib_copy_warning_overflow_Buggy
         auto targetOutputIterator = target.begin ();
         for (const auto& elt : src) {
             *targetOutputIterator++ = elt;
         }
-        #else
+#else
         std::copy (src.begin (), src.end (), target.data ());
-        #endif
+#endif
         return target.subspan (0, src.size ());
     }
     template <typename T>

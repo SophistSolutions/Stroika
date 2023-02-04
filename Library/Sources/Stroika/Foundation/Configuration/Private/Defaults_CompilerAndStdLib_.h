@@ -1138,7 +1138,6 @@ Response.h:373:30: error: no match for ‘operator==’ (operand types are ‘un
 #endif
 #endif
 
-
 /*
 In function '__copy_m',
     inlined from '__copy_move_a2' at /usr/include/c++/11/bits/stl_algobase.h:495:30,
@@ -1161,7 +1160,7 @@ In function '__copy_m',
 #if defined(__GNUC__) && !defined(__clang__)
 // FIRST SEEEN BROKEN IN GCC 11
 // SEEEN BROKEN IN GCC 12
-#define qCompilerAndStdLib_copy_warning_overflow_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (11 <= __GNUC__ && __GNUC__ <= 12 )
+#define qCompilerAndStdLib_copy_warning_overflow_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (11 <= __GNUC__ && __GNUC__ <= 12)
 #else
 #define qCompilerAndStdLib_copy_warning_overflow_Buggy 0
 #endif
