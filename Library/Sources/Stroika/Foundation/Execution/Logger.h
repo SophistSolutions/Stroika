@@ -102,16 +102,10 @@ namespace Stroika::Foundation::Execution {
         static Logger sThe;
 
     public:
-        [[deprecated ("Since Stroika 2.1.1, use Logger::sThe directly")]] static Logger& Get ();
-
-    public:
         struct Options;
 
     public:
         struct Activator;
-
-    public:
-        [[deprecated ("Since Stroika 2.1.1, use Logger::Activator object")]] static void ShutdownSingleton ();
 
     public:
         Logger (const Logger&) = delete;
@@ -175,9 +169,6 @@ namespace Stroika::Foundation::Execution {
         static constexpr Priority eError         = Priority::eError;
         static constexpr Priority eAlertError    = Priority::eAlertError;
         static constexpr Priority eEmergency     = Priority::eEmergency;
-
-    public:
-        [[deprecated ("Since Stroika 2.1.1, use Logger::Activator object")]] nonvirtual void Shutdown ();
 
     private:
         nonvirtual void Shutdown_ ();
@@ -291,10 +282,6 @@ namespace Stroika::Foundation::Execution {
          *      \endcode
          */
         nonvirtual void Log (Priority logLevel, const wchar_t* format, ...); // varargs logger
-
-    public:
-        [[deprecated ("Since Stroika 2.1.3, use Logger::GetSupressDuplicates () or Options::fSuppressDuplicatesThreshold")]] void
-        LogIfNew (Priority logLevel, const Time::Duration& suppressionTimeWindow, const wchar_t* format, ...);
 
     private:
         nonvirtual void Log_ (Priority logLevel, const String& msg);

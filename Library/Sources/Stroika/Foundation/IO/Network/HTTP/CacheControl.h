@@ -183,21 +183,6 @@ namespace Stroika::Foundation::IO::Network::HTTP {
 
     public:
         /**
-         *  \brief this means you CAN cache the value, but should revalidate each time before use (so etags can be used etc)
-         * 
-         *  From https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cache-Control#requiring_revalidation:
-         *    no-cache and max-age=0, must-revalidate indicates same meaning
-         *
-         *  \par Example Usage (@see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cache-Control#requiring_revalidation)
-         *      \code
-         *          auto cc = CacheControl{.fCacheability=CacheControl::eNoCache};             // Cache-Control: no-cache
-         *      \endcode
-         */
-        [[deprecated ("Since v2.1.11 - deprecated - probably use CacheControl{.fCacheability=CacheControl::ePublic, "
-                      ".fMaxAge=3600}")]] static const CacheControl kMustRevalidatePublic;
-
-    public:
-        /**
          *  \brief this means you CAN cache the value, but should revalidate each time before use (so etags can be used etc) - but it should not be re-used from user to user
          */
         [[deprecated ("Since v2.1.11 - deprecated - probably use CacheControl{.fCacheability=CacheControl::ePrivate, "

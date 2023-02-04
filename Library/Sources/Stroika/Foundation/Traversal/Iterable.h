@@ -1191,30 +1191,6 @@ namespace Stroika::Foundation::Traversal {
          */
         nonvirtual size_t length () const;
 
-    public:
-        template <typename RESULT>
-        [[deprecated ("Since Stroika v2.1.10 - use Map instead of Select")]] Iterable<RESULT> Select (const function<RESULT (const T&)>& extract) const
-        {
-            return Map<RESULT> (extract);
-        }
-        template <typename RESULT>
-        [[deprecated ("Since Stroika v2.1.10 - use Map instead of Select")]] Iterable<RESULT> Select (const function<optional<RESULT> (const T&)>& extract) const
-        {
-            return Map<RESULT> (extract);
-        }
-        template <typename RESULT_TYPE = T>
-        [[deprecated ("Since Stroika 2.1.10, use Reduce instead of Accumulate")]] optional<RESULT_TYPE>
-        Accumulate (const function<RESULT_TYPE (ArgByValueType<T>, ArgByValueType<T>)>& op) const
-        {
-            return Reduce<RESULT_TYPE> (op);
-        }
-        template <typename RESULT_TYPE = T>
-        [[deprecated ("Since Stroika 2.1.10, use ReduceValue instead of AccumulateValue")]] RESULT_TYPE
-        AccumulateValue (const function<RESULT_TYPE (ArgByValueType<T>, ArgByValueType<T>)>& op, ArgByValueType<RESULT_TYPE> defaultValue = {}) const
-        {
-            return ReduceValue<RESULT_TYPE> (op, defaultValue);
-        }
-
     protected:
         /**
          *  @see Memory::SharedByValue_State

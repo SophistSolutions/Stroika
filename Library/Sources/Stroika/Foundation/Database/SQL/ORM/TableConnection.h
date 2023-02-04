@@ -130,13 +130,6 @@ namespace Stroika::Foundation::Database::SQL::ORM {
         nonvirtual optional<T> Get (const typename TRAITS::IDType& id);
 
     public:
-        [[deprecated ("Since Stroika 2.1.5, use Get ()")]] nonvirtual optional<T> GetByID (const VariantValue& id) { return Get (id); }
-        [[deprecated ("Since Stroika 2.1.5, use Get ()")]] nonvirtual optional<T> GetByID (const typename TRAITS::IDType& id)
-        {
-            return Get (id);
-        }
-
-    public:
         /**
          *  Get ALL the c++ objects in this table. This does a select * from table, and maps the various
          *  SQL parameters that come back to C++ objects.
@@ -176,13 +169,6 @@ namespace Stroika::Foundation::Database::SQL::ORM {
         nonvirtual void Delete (const VariantValue& id);
         nonvirtual void Delete (const typename TRAITS::IDType& id);
         nonvirtual void Delete (const T& v);
-
-    public:
-        [[deprecated ("Since Stroika 2.1.5, use Delete ()")]] nonvirtual void DeleteByID (const VariantValue& id) { Delete (id); }
-        [[deprecated ("Since Stroika 2.1.5, use Delete ()")]] nonvirtual void DeleteByID (const typename TRAITS::IDType& id)
-        {
-            Delete (id);
-        }
 
     private:
         Connection::Ptr                                                fConnection_;
