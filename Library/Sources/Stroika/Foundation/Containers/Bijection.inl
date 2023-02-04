@@ -144,7 +144,7 @@ namespace Stroika::Foundation::Containers {
     inline Iterable<DOMAIN_TYPE> Bijection<DOMAIN_TYPE, RANGE_TYPE>::Preimage () const
     {
         _SafeReadRepAccessor<_IRep> accessor{this};
-        return accessor._ConstGetRep ().Preimage (accessor._ConstGetRepSharedPtr ();
+        return accessor._ConstGetRep ().Preimage (accessor._ConstGetRepSharedPtr ());
     }
     template <typename DOMAIN_TYPE, typename RANGE_TYPE>
     inline Iterable<RANGE_TYPE> Bijection<DOMAIN_TYPE, RANGE_TYPE>::Image () const
