@@ -1138,6 +1138,35 @@ Response.h:373:30: error: no match for ‘operator==’ (operand types are ‘un
 #endif
 #endif
 
+
+/*
+In function '__copy_m',
+    inlined from '__copy_move_a2' at /usr/include/c++/11/bits/stl_algobase.h:495:30,
+    inlined from '__copy_move_a1' at /usr/include/c++/11/bits/stl_algobase.h:522:42,
+    inlined from '__copy_move_a' at /usr/include/c++/11/bits/stl_algobase.h:529:31,
+    inlined from 'copy' at /usr/include/c++/11/bits/stl_algobase.h:620:7,
+    inlined from 'CopySpanData' at /home/lewis/Sandbox/Stroika-Build-Dir-Ubuntu2204_x86_64/Library/Sources/Stroika/Foundation/Characters/../Characters/../Containers/../Traversal/../Memory/../Execution/../Debug/../Characters/../Memory/Span.inl:70:19,
+    inlined from 'CopySpanData' at ../../Library/Sources/Stroika/Foundation/Streams/../Characters/../Memory/Span.inl:76:29,
+    inlined from 'Read' at ../../Library/Sources/Stroika/Foundation/Streams/TextToByteReader.cpp:54:56:
+/usr/include/c++/11/bits/stl_algobase.h:431:30: warning: '__builtin_memmove' specified size 18446744073709551615 exceeds maximum object size 9223372036854775807 [-Wstringop-overflow=]
+  431 |             __builtin_memmove(__result, __first, sizeof(_Tp) * _Num);
+      |                              ^
+      Test 42: Foundation::Execution::Other:
+         Compiling Tests/42/Test.cpp ... 
+    DIDNT WORK
+    DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wstringop-overflow=\"");
+*/
+#ifndef qCompilerAndStdLib_copy_warning_overflow_Buggy
+
+#if defined(__GNUC__) && !defined(__clang__)
+// FIRST SEEEN BROKEN IN GCC 11
+// SEEEN BROKEN IN GCC 12
+#define qCompilerAndStdLib_copy_warning_overflow_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (11 <= __GNUC__ && __GNUC__ <= 12 )
+#else
+#define qCompilerAndStdLib_copy_warning_overflow_Buggy 0
+#endif
+#endif
+
 #ifndef qCompilerAndStdLib_GenericLambdaInsideGenericLambdaAssertCall_Buggy
 
 // Generates internal compiler error
