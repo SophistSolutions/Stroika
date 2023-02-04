@@ -20,6 +20,20 @@
 
 namespace Stroika::Foundation::Traversal {
 
+    constexpr bool kIterableUsesStroikaSharedPtr [[deprecated ("Since Stroika v3.0d1 - not used")]] = false;
+
+    struct [[deprecated ("Since Stroika v3.0d1")]] IterableBase {
+        template <typename SHARED_T>
+        using PtrImplementationTemplate [[deprecated ("Since Stroika v3.0d1 - use shared_ptr directly")]] = shared_ptr<SHARED_T>;
+        template <typename SHARED_T, typename... ARGS_TYPE>
+        [[deprecated ("Since Stroika v3.0d1 - use Memory::MakeSharedPtr directly")]] static shared_ptr<SHARED_T> MakeSmartPtr (ARGS_TYPE && ... args)
+        {
+            return Memory::MakeSharedPtr<SHARED_T> (forward<ARGS_TYPE> (args)...);
+        }
+        template <typename SHARED_T>
+        using enable_shared_from_this_PtrImplementationTemplate [[deprecated ("Since Stroika v3.0d1")]] = std::enable_shared_from_this<SHARED_T>;
+    };
+
     /*
      ********************************************************************************
      *************************** Iterable<T>::_IRep *********************************
@@ -205,9 +219,7 @@ namespace Stroika::Foundation::Traversal {
         : _fRep{(RequireNotNull (rep), move (rep))}
     {
         Require (_fRep.GetSharingState () != Memory::SharedByValue_State::eNull);
-        if constexpr (not kIterableUsesStroikaSharedPtr) {
-            Require (rep == nullptr); // after move (see https://en.cppreference.com/w/cpp/memory/shared_ptr/shared_ptr "After the construction, ... r is empty and its stored pointer is null"
-        }
+        Require (rep == nullptr); // after move (see https://en.cppreference.com/w/cpp/memory/shared_ptr/shared_ptr "After the construction, ... r is empty and its stored pointer is null"
     }
     template <typename T>
     template <typename CONTAINER_OF_T, enable_if_t<Configuration::IsIterable_v<CONTAINER_OF_T> and not is_base_of_v<Iterable<T>, decay_t<CONTAINER_OF_T>>>*>

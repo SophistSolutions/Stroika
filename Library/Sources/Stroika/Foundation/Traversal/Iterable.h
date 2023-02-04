@@ -8,7 +8,6 @@
 
 #include <compare>
 #include <functional>
-#include <shared_mutex> // @todo see if still needed - think not
 #include <vector>
 
 #include "../Common/Compare.h"
@@ -17,7 +16,6 @@
 #include "../Configuration/TypeHints.h"
 #include "../Debug/AssertExternallySynchronizedMutex.h"
 #include "../Memory/SharedByValue.h"
-#include "../Memory/SharedPtr.h"
 
 #include "Iterator.h"
 
@@ -65,31 +63,6 @@ namespace Stroika::Foundation::Characters {
 namespace Stroika::Foundation::Traversal {
 
     using Configuration::ArgByValueType;
-
-    /**
-     *  Stroika's Memory::SharedPtr<> appears to be a bit faster than the std::shared_ptr. Iterable
-     *  at one time, and on some systems.
-     *
-     *      This defaults to @see Memory::kSharedPtr_IsFasterThan_shared_ptr
-     */
-    constexpr bool kIterableUsesStroikaSharedPtr = Memory::kSharedPtr_IsFasterThan_shared_ptr;
-
-    /**
-     *  \@todo CONSIDER LOSING IterableBase too - no harm, but now no good (Since Stroika v3.0d1)
-     */
-    struct IterableBase {
-        template <typename SHARED_T>
-        using PtrImplementationTemplate [[deprecated ("Since Stroika v3.0d1 - use shared_ptr directly")]] =
-            conditional_t<kIterableUsesStroikaSharedPtr, Memory::SharedPtr<SHARED_T>, shared_ptr<SHARED_T>>;
-        template <typename SHARED_T, typename... ARGS_TYPE>
-        [[deprecated ("Since Stroika v3.0d1 - use Memory::MakeSharedPtr directly")]] static shared_ptr<SHARED_T> MakeSmartPtr (ARGS_TYPE&&... args)
-        {
-            return Memory::MakeSharedPtr<SHARED_T> (forward<ARGS_TYPE> (args)...);
-        }
-        template <typename SHARED_T>
-        using enable_shared_from_this_PtrImplementationTemplate [[deprecated ("Since Stroika v3.0d1")]] =
-            conditional_t<kIterableUsesStroikaSharedPtr, Memory::enable_shared_from_this<SHARED_T>, std::enable_shared_from_this<SHARED_T>>;
-    };
 
     /**
      *  \brief  Iterable<T> is a base class for containers which easily produce an Iterator<T>
@@ -215,7 +188,7 @@ namespace Stroika::Foundation::Traversal {
      *
      */
     template <typename T>
-    class Iterable : public IterableBase, protected Debug::AssertExternallySynchronizedMutex {
+    class Iterable : protected Debug::AssertExternallySynchronizedMutex {
     public:
         static_assert (is_copy_constructible_v<Iterator<T>>, "Must be able to create Iterator<T> to use Iterable<T>");
 
@@ -1287,6 +1260,17 @@ namespace Stroika::Foundation::Traversal {
          *  Rarely access in subclasses, but its occasionally needed, like in UpdatableIterator<T>
          */
         _SharedByValueRepType _fRep;
+
+    public:
+        template <typename SHARED_T>
+        using PtrImplementationTemplate [[deprecated ("Since Stroika v3.0d1 - use shared_ptr directly")]] = shared_ptr<SHARED_T>;
+        template <typename SHARED_T, typename... ARGS_TYPE>
+        [[deprecated ("Since Stroika v3.0d1 - use Memory::MakeSharedPtr directly")]] static shared_ptr<SHARED_T> MakeSmartPtr (ARGS_TYPE&&... args)
+        {
+            return Memory::MakeSharedPtr<SHARED_T> (forward<ARGS_TYPE> (args)...);
+        }
+        template <typename SHARED_T>
+        using enable_shared_from_this_PtrImplementationTemplate [[deprecated ("Since Stroika v3.0d1")]] = std::enable_shared_from_this<SHARED_T>;
 
     protected:
         using _IterableRepSharedPtr [[deprecated ("Since Stroika v3.0d1 use shared_ptr<_IRep> directly")]] = shared_ptr<_IRep>;
