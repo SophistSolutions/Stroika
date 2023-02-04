@@ -402,7 +402,6 @@ namespace Stroika::Foundation::Containers {
         struct MyIterable_ : Iterable<KEY_TYPE> {
             using BaseCollectionType_ = KeyedCollection<T, KEY_TYPE, TRAITS>;
             struct MyIterableRep_ : Traversal::IterableFromIterator<KEY_TYPE>::_Rep, public Memory::UseBlockAllocationIfAppropriate<MyIterableRep_> {
-                using _IterableRepSharedPtr = typename Iterable<KEY_TYPE>::_IterableRepSharedPtr;
                 const BaseCollectionType_::_IRep* fBaseCollection_;
                 RecCntBumperType                  fSavedSharedPtrForRefCntBump_;
                 MyIterableRep_ (const BaseCollectionType_::_IRep* m, const RecCntBumperType& thisSharedPtr)
@@ -410,7 +409,7 @@ namespace Stroika::Foundation::Containers {
                     , fSavedSharedPtrForRefCntBump_{thisSharedPtr}
                 {
                 }
-                virtual Iterator<KEY_TYPE> MakeIterator ([[maybe_unused]] const _IterableRepSharedPtr& thisSharedPtr) const override
+                virtual Iterator<KEY_TYPE> MakeIterator ([[maybe_unused]] const shared_ptr<typename Iterable<KEY_TYPE>::_IRep>& thisSharedPtr) const override
                 {
                     auto myContext    = make_shared<Iterator<T>> (fBaseCollection_->MakeIterator (fSavedSharedPtrForRefCntBump_));
                     auto keyExtractor = fBaseCollection_->GetKeyExtractor ();
@@ -426,7 +425,10 @@ namespace Stroika::Foundation::Containers {
                     };
                     return Traversal::CreateGeneratorIterator<KEY_TYPE> (getNext);
                 }
-                virtual _IterableRepSharedPtr Clone () const override { return Memory::MakeSharedPtr<MyIterableRep_> (*this); }
+                virtual shared_ptr<typename Iterable<KEY_TYPE>::_IRep> Clone () const override
+                {
+                    return Memory::MakeSharedPtr<MyIterableRep_> (*this);
+                }
             };
             MyIterable_ (const BaseCollectionType_::_IRep* m, const RecCntBumperType& thisSharedPtr)
                 : Iterable<KEY_TYPE>{Memory::MakeSharedPtr<MyIterableRep_> (m, thisSharedPtr)}

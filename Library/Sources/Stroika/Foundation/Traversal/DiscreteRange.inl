@@ -71,8 +71,7 @@ namespace Stroika::Foundation::Traversal {
     template <typename T, typename TRAITS>
     struct DiscreteRange<T, TRAITS>::MyIterable_ : Iterable<T> {
         struct MyRep_ : Iterable<T>::_IRep, public Memory::UseBlockAllocationIfAppropriate<MyRep_> {
-            using inherited             = typename Iterable<T>::_IRep;
-            using _IterableRepSharedPtr = typename Iterable<T>::_IterableRepSharedPtr;
+            using inherited = typename Iterable<T>::_IRep;
             T    fStart;
             T    fEnd;
             bool fForcedEnd;
@@ -88,8 +87,8 @@ namespace Stroika::Foundation::Traversal {
                 , fForcedEnd{false}
             {
             }
-            virtual _IterableRepSharedPtr Clone () const override { return Memory::MakeSharedPtr<MyRep_> (*this); }
-            virtual Iterator<T>           MakeIterator ([[maybe_unused]] const _IterableRepSharedPtr& thisSharedPtr) const override
+            virtual shared_ptr<typename Iterable<T>::_IRep> Clone () const override { return Memory::MakeSharedPtr<MyRep_> (*this); }
+            virtual Iterator<T> MakeIterator ([[maybe_unused]] const shared_ptr<typename Iterable<T>::_IRep>& thisSharedPtr) const override
             {
                 if (fForcedEnd) {
                     return Iterator<T>{make_unique<DiscreteRange::MyIteratorRep_> ()};
@@ -122,11 +121,13 @@ namespace Stroika::Foundation::Traversal {
             {
                 this->_Apply (doToElement);
             }
-            virtual Iterator<T> Find (const _IterableRepSharedPtr& thisSharedPtr, const function<bool (ArgByValueType<value_type> item)>& that) const override
+            virtual Iterator<T> Find (const shared_ptr<typename Iterable<T>::_IRep>&          thisSharedPtr,
+                                      const function<bool (ArgByValueType<value_type> item)>& that) const override
             {
                 return this->_Find (thisSharedPtr, that);
             }
-            virtual Iterator<value_type> Find_equal_to (const _IterableRepSharedPtr& thisSharedPtr, const ArgByValueType<value_type>& v) const override
+            virtual Iterator<value_type> Find_equal_to (const shared_ptr<typename Iterable<T>::_IRep>& thisSharedPtr,
+                                                        const ArgByValueType<value_type>&              v) const override
             {
                 return this->_Find_equal_to_default_implementation (thisSharedPtr, v);
             }

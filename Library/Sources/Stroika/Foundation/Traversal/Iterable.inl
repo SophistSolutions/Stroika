@@ -40,7 +40,7 @@ namespace Stroika::Foundation::Traversal {
     }
     template <typename T>
     template <typename THAT_FUNCTION, enable_if_t<Configuration::IsTPredicate<T, THAT_FUNCTION> ()>*>
-    inline Iterator<T> Iterable<T>::_IRep::_Find (const _IterableRepSharedPtr& thisSharedPtr, THAT_FUNCTION&& that) const
+    inline Iterator<T> Iterable<T>::_IRep::_Find (const shared_ptr<typename Iterable<T>::_IRep>& thisSharedPtr, THAT_FUNCTION&& that) const
     {
         RequireNotNull (that);
         for (Iterator<T> i = MakeIterator (thisSharedPtr); i != end (); ++i) {
@@ -51,7 +51,7 @@ namespace Stroika::Foundation::Traversal {
         return end ();
     }
     template <typename T>
-    auto Iterable<T>::_IRep::_Find_equal_to_default_implementation (const _IterableRepSharedPtr& thisSharedPtr,
+    auto Iterable<T>::_IRep::_Find_equal_to_default_implementation (const shared_ptr<typename Iterable<T>::_IRep>& thisSharedPtr,
                                                                     [[maybe_unused]] const ArgByValueType<value_type>& v) const -> Iterator<value_type>
     {
         if constexpr (Configuration::HasUsableEqualToOptimization<T> ()) {
@@ -195,13 +195,13 @@ namespace Stroika::Foundation::Traversal {
      ********************************************************************************
      */
     template <typename T>
-    inline Iterable<T>::Iterable (const _IterableRepSharedPtr& rep) noexcept
+    inline Iterable<T>::Iterable (const shared_ptr<typename Iterable<T>::_IRep>& rep) noexcept
         : _fRep{(RequireNotNull (rep), rep)}
     {
         Require (_fRep.GetSharingState () != Memory::SharedByValue_State::eNull);
     }
     template <typename T>
-    inline Iterable<T>::Iterable (_IterableRepSharedPtr&& rep) noexcept
+    inline Iterable<T>::Iterable (shared_ptr<typename Iterable<T>::_IRep>&& rep) noexcept
         : _fRep{(RequireNotNull (rep), move (rep))}
     {
         Require (_fRep.GetSharingState () != Memory::SharedByValue_State::eNull);
@@ -226,7 +226,7 @@ namespace Stroika::Foundation::Traversal {
         return not empty ();
     }
     template <typename T>
-    inline typename Iterable<T>::_IterableRepSharedPtr Iterable<T>::Clone_ (const _IRep& rep)
+    inline shared_ptr<typename Iterable<T>::_IRep> Iterable<T>::Clone_ (const _IRep& rep)
     {
         return rep.Clone ();
     }
