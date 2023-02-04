@@ -6,6 +6,8 @@
 
 #include "../StroikaPreComp.h"
 
+#include <memory>
+
 #include "Assertions.h"
 
 /**
@@ -47,7 +49,7 @@ namespace Stroika::Foundation::Debug {
      *  \see UncheckedDynamicCast and dynamic_pointer_cast
      */
     template <typename T, typename T1>
-    shared_ptr<T> UncheckedDynamicPointerCast (const shared_ptr<T1>& arg) noexcept;
+    std::shared_ptr<T> UncheckedDynamicPointerCast (const std::shared_ptr<T1>& arg) noexcept;
 
 }
 

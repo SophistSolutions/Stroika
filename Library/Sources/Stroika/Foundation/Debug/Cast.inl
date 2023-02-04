@@ -44,7 +44,7 @@ namespace Stroika::Foundation::Debug {
      ********************************************************************************
      */
     template <typename T, typename T1>
-    inline shared_ptr<T> UncheckedDynamicPointerCast (const shared_ptr<T1>& arg) noexcept
+    inline std::shared_ptr<T> UncheckedDynamicPointerCast (const std::shared_ptr<T1>& arg) noexcept
     {
         //Require (dynamic_pointer_cast<T> (arg) != nullptr);   -- checked redundantly in UncheckedDynamicCast
         if (const auto p = UncheckedDynamicCast<T*> (arg.get ())) {
