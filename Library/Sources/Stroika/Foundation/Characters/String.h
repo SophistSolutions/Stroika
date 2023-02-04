@@ -217,12 +217,6 @@ namespace Stroika::Foundation::Characters {
         class _IRep;
 
     protected:
-        using _IterableRepSharedPtr = Iterable<Character>::_IterableRepSharedPtr;
-
-    protected:
-        using _SharedPtrIRep = shared_ptr<_IRep>;
-
-    protected:
         /**
          */
         using _SafeReadRepAccessor = Iterable<Character>::_SafeReadRepAccessor<_IRep>;
@@ -232,8 +226,8 @@ namespace Stroika::Foundation::Characters {
          * \req rep MUST be not-null
          *  However, with move constructor, it maybe null on exit.
          */
-        String (const _SharedPtrIRep& rep) noexcept;
-        String (_SharedPtrIRep&& rep) noexcept;
+        String (const shared_ptr<_IRep>& rep) noexcept;
+        String (shared_ptr<_IRep>&& rep) noexcept;
 
     public:
         nonvirtual String& operator= (String&& rhs) noexcept      = default;
@@ -1406,7 +1400,7 @@ namespace Stroika::Foundation::Characters {
         [[deprecated ("Since Stroika v3.0d1 due to https://stroika.atlassian.net/browse/STK-965 - NOT IMPLEMENTED")]] nonvirtual const wchar_t* data () const;
 
     private:
-        static _SharedPtrIRep mkEmpty_ ();
+        static shared_ptr<_IRep> mkEmpty_ ();
 
     private:
         /**
@@ -1415,26 +1409,26 @@ namespace Stroika::Foundation::Characters {
          * FromStringConstant API also does stealing.
          */
         template <Character_UNICODECanUnambiguouslyConvertFrom CHAR_T>
-        static _SharedPtrIRep mk_ (span<const CHAR_T> s);
+        static shared_ptr<_IRep> mk_ (span<const CHAR_T> s);
         template <Character_Compatible CHAR_T>
-        static _SharedPtrIRep mk_ (Iterable<CHAR_T> it);
+        static shared_ptr<_IRep> mk_ (Iterable<CHAR_T> it);
         template <Character_Compatible CHAR_T>
-        static _SharedPtrIRep mk_ (span<CHAR_T> s);
+        static shared_ptr<_IRep> mk_ (span<CHAR_T> s);
         template <Character_IsUnicodeCodePointOrPlainChar CHAR_T>
-        static _SharedPtrIRep mk_ (basic_string<CHAR_T>&& s);
+        static shared_ptr<_IRep> mk_ (basic_string<CHAR_T>&& s);
 #if qCompilerAndStdLib_template_requresDefNeededonSpecializations_Buggy
-        static auto mk_nocheck_ (span<const Character_ASCII> s) -> _SharedPtrIRep;
-        static auto mk_nocheck_ (span<const Character_Latin1> s) -> _SharedPtrIRep;
-        static auto mk_nocheck_ (span<const char16_t> s) -> _SharedPtrIRep;
-        static auto mk_nocheck_ (span<const char32_t> s) -> _SharedPtrIRep;
+        static auto mk_nocheck_ (span<const Character_ASCII> s) -> shared_ptr<_IRep>;
+        static auto mk_nocheck_ (span<const Character_Latin1> s) -> shared_ptr<_IRep>;
+        static auto mk_nocheck_ (span<const char16_t> s) -> shared_ptr<_IRep>;
+        static auto mk_nocheck_ (span<const char32_t> s) -> shared_ptr<_IRep>;
 #else
         template <typename CHAR_T>
-        static _SharedPtrIRep mk_nocheck_ (span<const CHAR_T> s)
+        static shared_ptr<_IRep> mk_nocheck_ (span<const CHAR_T> s)
             requires (is_same_v<CHAR_T, Character_ASCII> or is_same_v<CHAR_T, Character_Latin1> or is_same_v<CHAR_T, char16_t> or
                       is_same_v<CHAR_T, char32_t>);
 #endif
         template <typename CHAR_T>
-        static _SharedPtrIRep mk_nocheck_justPickBufRep_ (span<const CHAR_T> s)
+        static shared_ptr<_IRep> mk_nocheck_justPickBufRep_ (span<const CHAR_T> s)
             requires (is_same_v<CHAR_T, Character_ASCII> or is_same_v<CHAR_T, Character_Latin1> or is_same_v<CHAR_T, char16_t> or
                       is_same_v<CHAR_T, char32_t>);
 
@@ -1466,12 +1460,6 @@ namespace Stroika::Foundation::Characters {
      *          Use StringBuilder for that purpose in performance sensative code.
      */
     class String::_IRep : public Iterable<Character>::_IRep {
-    protected:
-        using _IterableRepSharedPtr = String::_IterableRepSharedPtr;
-
-    protected:
-        using _SharedPtrIRep = String::_SharedPtrIRep;
-
     public:
         /**
          *  Return the ith character in the string.

@@ -116,18 +116,18 @@ namespace {
 
             // Overrides for Iterable<Character>
         public:
-            virtual _IterableRepSharedPtr Clone () const override
+            virtual shared_ptr < Iterable<Character>::_IRep> Clone () const override
             {
                 AssertNotReached (); // Since String reps now immutable, this should never be called
                 return nullptr;
             }
-            virtual Traversal::Iterator<value_type> MakeIterator (const _IterableRepSharedPtr& thisSharedPtr) const override
+            virtual Traversal::Iterator<value_type> MakeIterator (const shared_ptr<Iterable<Character>::_IRep>& thisSharedPtr) const override
             {
                 struct MyIterRep_ final : Iterator<Character>::IRep, public Memory::UseBlockAllocationIfAppropriate<MyIterRep_> {
-                    _IterableRepSharedPtr fHoldRepToAssureDataNotDestroyed_; // bump reference count (CAN BE NULL)
+                    shared_ptr<Iterable<Character>::_IRep> fHoldRepToAssureDataNotDestroyed_; // bump reference count (CAN BE NULL)
                     span<const CHAR_T>    fData_; // clone span (not underlying data) pointing inside fHoldRepToAssureDataNotDestroyed
                     size_t                fIdx_{0};
-                    MyIterRep_ (const _IterableRepSharedPtr& savedRefToKeepDataAlive, span<const CHAR_T> data)
+                    MyIterRep_ (const shared_ptr<Iterable<Character>::_IRep>& savedRefToKeepDataAlive, span<const CHAR_T> data)
                         : fHoldRepToAssureDataNotDestroyed_{savedRefToKeepDataAlive}
                         , fData_{data}
                     {
@@ -168,12 +168,12 @@ namespace {
             {
                 _Apply (doToElement);
             }
-            virtual Traversal::Iterator<value_type> Find (const _IterableRepSharedPtr& thisSharedPtr,
+            virtual Traversal::Iterator<value_type> Find (const shared_ptr<Iterable<Character>::_IRep>& thisSharedPtr,
                                                           const function<bool (Configuration::ArgByValueType<value_type> item)>& that) const override
             {
                 return _Find (thisSharedPtr, that);
             }
-            virtual Traversal::Iterator<value_type> Find_equal_to (const _IterableRepSharedPtr&                     thisSharedPtr,
+            virtual Traversal::Iterator<value_type> Find_equal_to (const shared_ptr<Iterable<Character>::_IRep>&    thisSharedPtr,
                                                                    const Configuration::ArgByValueType<value_type>& v) const override
             {
                 // @todo this is fine, but can be more efficient, so consider rewriting explicitly (avoid extra virt call)
@@ -590,12 +590,12 @@ namespace {
         private:
             using inherited = StringRepHelperAllFitInSize_::Rep<CHAR_T>;
 
-            _SharedPtrIRep fUnderlyingRep_;
+            shared_ptr<_IRep> fUnderlyingRep_;
             wstring        fCString_;
 
         public:
             // Caller MUST ASSURE generates right size of Rep based on size in underlyingRepPDS
-            Rep (const _SharedPtrIRep& underlyingRep, const PeekSpanData& underlyingRepPDS)
+            Rep (const shared_ptr<_IRep>& underlyingRep, const PeekSpanData& underlyingRepPDS)
                 : inherited{Memory::ValueOf (String::PeekData<CHAR_T> (underlyingRepPDS))}
                 , fUnderlyingRep_{underlyingRep}
                 , fCString_{}
@@ -726,20 +726,21 @@ String String::FromNarrowString (span<const char> s, const locale& l)
     return resultWStr;
 }
 
-String::_SharedPtrIRep String::mkEmpty_ ()
+shared_ptr<String::_IRep> String::mkEmpty_ ()
 {
     static constexpr wchar_t kEmptyCStr_[] = L"";
 // use StringConstant_ since nul-terminated, and for now works better with CSTR - and why allocate anything...
 #if qCompilerAndStdLib_spanOfContainer_Buggy
-    static const _SharedPtrIRep s_ = Memory::MakeSharedPtr<StringConstant_::Rep<wchar_t>> (span<const wchar_t>{&kEmptyCStr_[0], &kEmptyCStr_[0]});
+    static const shared_ptr<_IRep> s_ =
+        Memory::MakeSharedPtr<StringConstant_::Rep<wchar_t>> (span<const wchar_t>{&kEmptyCStr_[0], &kEmptyCStr_[0]});
 #else
-    static const _SharedPtrIRep s_ = Memory::MakeSharedPtr<StringConstant_::Rep<wchar_t>> (span{std::begin (kEmptyCStr_), 0});
+    static const shared_ptr<_IRep> s_ = Memory::MakeSharedPtr<StringConstant_::Rep<wchar_t>> (span{std::begin (kEmptyCStr_), 0});
 #endif
     return s_;
 }
 
 template <typename CHAR_T>
-inline auto String::mk_nocheck_justPickBufRep_ (span<const CHAR_T> s) -> _SharedPtrIRep
+inline auto String::mk_nocheck_justPickBufRep_ (span<const CHAR_T> s) -> shared_ptr<_IRep>
     requires (is_same_v<CHAR_T, Character_ASCII> or is_same_v<CHAR_T, Character_Latin1> or is_same_v<CHAR_T, char16_t> or is_same_v<CHAR_T, char32_t>)
 {
     // No check means needed checking done before, so these assertions just help enforce that
@@ -815,7 +816,7 @@ inline auto String::mk_nocheck_justPickBufRep_ (span<const CHAR_T> s) -> _Shared
 #if !qCompilerAndStdLib_template_requresDefNeededonSpecializations_Buggy
 template <>
 #endif
-auto String::mk_nocheck_ (span<const Character_ASCII> s) -> _SharedPtrIRep
+auto String::mk_nocheck_ (span<const Character_ASCII> s) -> shared_ptr<_IRep>
 {
     Require (Character::IsASCII (s)); // caller must check
     return mk_nocheck_justPickBufRep_ (s);
@@ -823,34 +824,34 @@ auto String::mk_nocheck_ (span<const Character_ASCII> s) -> _SharedPtrIRep
 #if !qCompilerAndStdLib_template_requresDefNeededonSpecializations_Buggy
 template <>
 #endif
-auto String::mk_nocheck_ (span<const Character_Latin1> s) -> _SharedPtrIRep
+auto String::mk_nocheck_ (span<const Character_Latin1> s) -> shared_ptr<_IRep>
 {
     return mk_nocheck_justPickBufRep_ (s);
 }
 #if !qCompilerAndStdLib_template_requresDefNeededonSpecializations_Buggy
 template <>
 #endif
-auto String::mk_nocheck_ (span<const char16_t> s) -> _SharedPtrIRep
+auto String::mk_nocheck_ (span<const char16_t> s) -> shared_ptr<_IRep>
 {
     return mk_nocheck_justPickBufRep_ (s);
 }
 #if !qCompilerAndStdLib_template_requresDefNeededonSpecializations_Buggy
 template <>
 #endif
-auto String::mk_nocheck_ (span<const char32_t> s) -> _SharedPtrIRep
+auto String::mk_nocheck_ (span<const char32_t> s) -> shared_ptr<_IRep>
 {
     return mk_nocheck_justPickBufRep_ (s);
 }
 
 template <>
-auto String::mk_ (basic_string<char>&& s) -> _SharedPtrIRep
+auto String::mk_ (basic_string<char>&& s) -> shared_ptr<_IRep>
 {
     Character::CheckASCII (span{s.data (), s.size ()});
     return Memory::MakeSharedPtr<StdStringDelegator_::Rep<char>> (move (s));
 }
 
 template <>
-auto String::mk_ (basic_string<char16_t>&& s) -> _SharedPtrIRep
+auto String::mk_ (basic_string<char16_t>&& s) -> shared_ptr<_IRep>
 {
     if (UTFConverter::AllFitsInTwoByteEncoding (Memory::ConstSpan (span{s.data (), s.size ()}))) {
         return Memory::MakeSharedPtr<StdStringDelegator_::Rep<char16_t>> (move (s));
@@ -866,13 +867,13 @@ auto String::mk_ (basic_string<char16_t>&& s) -> _SharedPtrIRep
 }
 
 template <>
-auto String::mk_ (basic_string<char32_t>&& s) -> _SharedPtrIRep
+auto String::mk_ (basic_string<char32_t>&& s) -> shared_ptr<_IRep>
 {
     return Memory::MakeSharedPtr<StdStringDelegator_::Rep<char32_t>> (move (s));
 }
 
 template <>
-auto String::mk_ (basic_string<wchar_t>&& s) -> _SharedPtrIRep
+auto String::mk_ (basic_string<wchar_t>&& s) -> shared_ptr<_IRep>
 {
     if constexpr (sizeof (wchar_t) == 2) {
         if (UTFConverter::AllFitsInTwoByteEncoding (Memory::ConstSpan (span{s.data (), s.size ()}))) {
@@ -1612,7 +1613,7 @@ const wchar_t* String::c_str ()
     _SafeReadRepAccessor accessor{this};
     const wchar_t*       result = (wchar_t*)accessor._ConstGetRep ().c_str_peek ();
     if (result == nullptr) {
-        _SharedPtrIRep originalRep    = accessor._ConstGetRepSharedPtr ();
+        shared_ptr<_IRep> originalRep    = accessor._ConstGetRepSharedPtr ();
         PeekSpanData   originalRepPDS = originalRep->PeekData (nullopt);
         switch (originalRepPDS.fInCP) {
             case PeekSpanData::eAscii:

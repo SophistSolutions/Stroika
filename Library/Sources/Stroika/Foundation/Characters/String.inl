@@ -136,16 +136,16 @@ namespace Stroika::Foundation::Characters {
     // just specialize 3 cases - ASCII (char), utf-16, and utf-32 (others - like char8_t, wchar_t mappeed appropriately)
 #if !qCompilerAndStdLib_template_requresDefNeededonSpecializations_Buggy
     template <>
-    auto String::mk_nocheck_ (span<const Character_ASCII> s) -> _SharedPtrIRep;
+    auto String::mk_nocheck_ (span<const Character_ASCII> s) -> shared_ptr<_IRep>;
     template <>
-    auto String::mk_nocheck_ (span<const Character_Latin1> s) -> _SharedPtrIRep;
+    auto String::mk_nocheck_ (span<const Character_Latin1> s) -> shared_ptr<_IRep>;
     template <>
-    auto String::mk_nocheck_ (span<const char16_t> s) -> _SharedPtrIRep;
+    auto String::mk_nocheck_ (span<const char16_t> s) -> shared_ptr<_IRep>;
     template <>
-    auto String::mk_nocheck_ (span<const char32_t> s) -> _SharedPtrIRep;
+    auto String::mk_nocheck_ (span<const char32_t> s) -> shared_ptr<_IRep>;
 #endif
     template <Character_UNICODECanUnambiguouslyConvertFrom CHAR_T>
-    auto String::mk_ (span<const CHAR_T> s) -> _SharedPtrIRep
+    auto String::mk_ (span<const CHAR_T> s) -> shared_ptr<_IRep>
     {
         if (s.empty ()) {
             return mkEmpty_ ();
@@ -224,13 +224,13 @@ namespace Stroika::Foundation::Characters {
         }
     }
     template <Character_Compatible CHAR_T>
-    auto String::mk_ (span<CHAR_T> s) -> _SharedPtrIRep
+    auto String::mk_ (span<CHAR_T> s) -> shared_ptr<_IRep>
     {
         // weird and unfortunate overload needed for non-const spans, not automatically promoted to const
         return mk_ (Memory::ConstSpan (s));
     }
     template <Character_Compatible CHAR_T>
-    auto String::mk_ (Iterable<CHAR_T> it) -> _SharedPtrIRep
+    auto String::mk_ (Iterable<CHAR_T> it) -> shared_ptr<_IRep>
     {
         // redo with small stackbuffer (character and dont do iterable<Characer> do Iterable<CHAR_T> where t is Characer_Compiabple)
         // then unoicode covert and use other mk_ existing overloads
@@ -246,25 +246,25 @@ namespace Stroika::Foundation::Characters {
         return mk_ (span{r.data (), r.size ()});
     }
     template <>
-    auto String::mk_ (basic_string<char>&& s) -> _SharedPtrIRep;
+    auto String::mk_ (basic_string<char>&& s) -> shared_ptr<_IRep>;
     template <>
-    auto String::mk_ (basic_string<char16_t>&& s) -> _SharedPtrIRep;
+    auto String::mk_ (basic_string<char16_t>&& s) -> shared_ptr<_IRep>;
     template <>
-    auto String::mk_ (basic_string<char32_t>&& s) -> _SharedPtrIRep;
+    auto String::mk_ (basic_string<char32_t>&& s) -> shared_ptr<_IRep>;
     template <>
-    auto String::mk_ (basic_string<wchar_t>&& s) -> _SharedPtrIRep;
+    auto String::mk_ (basic_string<wchar_t>&& s) -> shared_ptr<_IRep>;
     template <Character_IsUnicodeCodePointOrPlainChar CHAR_T>
-    inline auto String::mk_ (basic_string<CHAR_T>&& s) -> _SharedPtrIRep
+    inline auto String::mk_ (basic_string<CHAR_T>&& s) -> shared_ptr<_IRep>
     {
         // by default, except for maybe a few special cases, just copy the data - don't move
         return mk_ (span{s.begin (), s.size ()});
     }
-    inline String::String (const _SharedPtrIRep& rep) noexcept
+    inline String::String (const shared_ptr<_IRep>& rep) noexcept
         : inherited{rep}
     {
         _AssertRepValidType ();
     }
-    inline String::String (_SharedPtrIRep&& rep) noexcept
+    inline String::String (shared_ptr<_IRep>&& rep) noexcept
         : inherited{(RequireNotNull (rep), move (rep))}
     {
         _AssertRepValidType ();
