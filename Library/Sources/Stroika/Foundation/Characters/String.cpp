@@ -156,7 +156,6 @@ namespace {
                         RequireNotNull (rhs);
                         RequireMember (rhs, MyIterRep_);
                         const MyIterRep_* rrhs = Debug::UncheckedDynamicCast<const MyIterRep_*> (rhs);
-                        AssertNotNull (rrhs);
                         Require (fHoldRepToAssureDataNotDestroyed_ == rrhs->fHoldRepToAssureDataNotDestroyed_); // from same string object
                         return fData_.data () == rrhs->fData_.data () and fIdx_ == rrhs->fIdx_;
                     }

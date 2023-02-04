@@ -16,9 +16,11 @@
 namespace Stroika::Foundation::Debug {
 
     /**
-     *  \brief return the same value as dynamic_cast<T> would have, except instead of checking and throwing or returning null,
-     *         only check in DEBUG builds, and there ASSERT != null.
-     *
+     *  \brief return the same value as dynamic_cast<T> would have, except instead of checking nullptr,
+     *         only check in DEBUG builds, and there ASSERT != null (if original pointer not null)
+     * 
+     *  \req arg != nullptr
+
      *  Use where you would want to check Assert (dynamic_cast<const T*> (&ir) != nullptr) and then do static_cast<> instead;)
      * 
      *      AssertMember (&ir, IteratorRep_);
@@ -37,7 +39,12 @@ namespace Stroika::Foundation::Debug {
     T UncheckedDynamicCast (T1&& arg);
 
     /**
-     *  \brief see UncheckedDynamicCast and dynamic_pointer_cast
+     *  \brief Produce the same result as dynamic_pointer_cast if the successul case (non-null) - with better performance.
+     * 
+     *  \req arg != nullptr
+     *  \req dynamic_pointer_cast<T> (arg) != nullptr
+     * 
+     *  \see UncheckedDynamicCast and dynamic_pointer_cast
      */
     template <typename T, typename T1>
     shared_ptr<T> UncheckedDynamicPointerCast (shared_ptr<T1>&& arg);

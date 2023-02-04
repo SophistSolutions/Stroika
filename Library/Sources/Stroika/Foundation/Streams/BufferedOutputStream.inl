@@ -210,7 +210,7 @@ namespace Stroika::Foundation ::Streams {
     template <typename ELEMENT_TYPE>
     inline typename BufferedOutputStream<ELEMENT_TYPE>::_SharedIRep BufferedOutputStream<ELEMENT_TYPE>::Ptr::_GetSharedRep () const
     {
-        return dynamic_pointer_cast<Rep_> (inherited::_GetSharedRep ());
+        return Debug::UncheckedDynamicPointerCast<Rep_> (inherited::_GetSharedRep ());
     }
 
 }

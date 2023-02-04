@@ -134,12 +134,12 @@ struct Connection::Rep_ final : IRep {
     }
     virtual SQL::Statement mkStatement (const String& sql) override
     {
-        Connection::Ptr conn = Connection::Ptr{dynamic_pointer_cast<Connection::IRep> (shared_from_this ())};
+        Connection::Ptr conn = Connection::Ptr{Debug::UncheckedDynamicPointerCast<Connection::IRep> (shared_from_this ())};
         return ODBC::Statement{conn, sql};
     }
     virtual SQL::Transaction mkTransaction () override
     {
-        Connection::Ptr conn = Connection::Ptr{dynamic_pointer_cast<Connection::IRep> (shared_from_this ())};
+        Connection::Ptr conn = Connection::Ptr{Debug::UncheckedDynamicPointerCast<Connection::IRep> (shared_from_this ())};
         return ODBC::Transaction{conn};
     }
     virtual void Exec (const String& /*sql*/) override { AssertNotImplemented (); }

@@ -18,6 +18,9 @@ namespace Stroika::Foundation::Debug {
     inline T UncheckedDynamicCast (T1&& arg)
     {
         static_assert (is_reference_v<T> or is_pointer_v<T>);
+        if constexpr (is_pointer_v<T>) {
+            Require (arg != nullptr);
+        }
         if constexpr (qDebug) {
             DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wunused-local-typedefs\"");
             using DECAYED_T = conditional_t<is_reference_v<T>, decay_t<T>, remove_pointer_t<decay_t<T>>>; // remove_reference_t
@@ -43,8 +46,9 @@ namespace Stroika::Foundation::Debug {
     template <typename T, typename T1>
     inline shared_ptr<T> UncheckedDynamicPointerCast (shared_ptr<T1>&& arg)
     {
+        //Require (dynamic_pointer_cast<T> (arg) != nullptr);   -- checked redundantly in UncheckedDynamicCast
         if (const auto p = UncheckedDynamicCast<T*> (arg.get ())) {
-            return shared_ptr<T> (std::move (arg), p);
+            return shared_ptr<T>{std::move (arg), p};
         }
         return {};
     }

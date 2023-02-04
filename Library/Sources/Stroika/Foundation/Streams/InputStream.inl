@@ -12,6 +12,7 @@
 #include <mutex>
 
 #include "../Debug/Assertions.h"
+#include "../Debug/Cast.h"
 #include "../Memory/BLOB.h"
 #include "EOFException.h"
 
@@ -77,7 +78,7 @@ namespace Stroika::Foundation::Streams {
     template <typename ELEMENT_TYPE>
     inline auto InputStream<ELEMENT_TYPE>::Ptr::_GetSharedRep () const -> _SharedIRep
     {
-        return dynamic_pointer_cast<_IRep> (inherited::_GetSharedRep ());
+        return Debug::UncheckedDynamicPointerCast<_IRep> (inherited::_GetSharedRep ());
     }
     template <typename ELEMENT_TYPE>
     inline auto InputStream<ELEMENT_TYPE>::Ptr::_GetRepConstRef () const -> const _IRep&

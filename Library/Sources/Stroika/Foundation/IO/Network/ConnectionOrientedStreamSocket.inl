@@ -9,6 +9,9 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
+
+#include "../../Debug/Cast.h"
+
 namespace Stroika::Foundation::IO::Network {
 
     /*
@@ -86,7 +89,7 @@ namespace Stroika::Foundation::IO::Network {
     inline shared_ptr<ConnectionOrientedStreamSocket::_IRep> ConnectionOrientedStreamSocket::Ptr::_GetSharedRep () const
     {
         AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
-        return dynamic_pointer_cast<ConnectionOrientedStreamSocket::_IRep> (inherited::_GetSharedRep ());
+        return Debug::UncheckedDynamicPointerCast<ConnectionOrientedStreamSocket::_IRep> (inherited::_GetSharedRep ());
     }
     inline ConnectionOrientedStreamSocket::_IRep& ConnectionOrientedStreamSocket::Ptr::_ref () const
     {
