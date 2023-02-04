@@ -54,7 +54,7 @@ namespace Stroika::Foundation::Containers::Concrete {
 
         // Iterable<CountedValue<T>>::_IRep overrides
     public:
-        virtual shared_ptr < typename Iterable<CountedValue<T>>::_IRep> Clone () const override
+        virtual shared_ptr<typename Iterable<CountedValue<T>>::_IRep> Clone () const override
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
             return Memory::MakeSharedPtr<Rep_> (*this);
@@ -101,7 +101,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
             return ElementEqualityComparerType{fEqualsComparer_};
         }
-        virtual shared_ptr < typename MultiSet<T, TRAITS>::_IRep> CloneEmpty () const override
+        virtual shared_ptr<typename MultiSet<T, TRAITS>::_IRep> CloneEmpty () const override
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
             return Memory::MakeSharedPtr<Rep_> (fEqualsComparer_); // new rep with same comparer, but no data

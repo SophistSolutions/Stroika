@@ -31,10 +31,10 @@ namespace Stroika::Foundation::Containers {
             , fSaved2Return{saved2Return}
         {
         }
-        shared_ptr<_IRep>                           fMultiSet;
-        Iterator<value_type>                                 fMultiSetIterator;
-        size_t                                               fCountMoreTimesToGoBeforeAdvance;
-        optional<T>                                          fSaved2Return;
+        shared_ptr<_IRep>    fMultiSet;
+        Iterator<value_type> fMultiSetIterator;
+        size_t               fCountMoreTimesToGoBeforeAdvance;
+        optional<T>          fSaved2Return;
     };
 
     template <typename T, typename TRAITS>
@@ -139,7 +139,7 @@ namespace Stroika::Foundation::Containers {
         {
         }
         shared_ptr<_IRep>    fMultiSet;
-        Iterator<value_type>                                 fMultiSetIterator;
+        Iterator<value_type> fMultiSetIterator;
     };
 
     template <typename T, typename TRAITS>
@@ -189,13 +189,13 @@ namespace Stroika::Foundation::Containers {
         using MyDataBLOB_    = UniqueElementsIteratorHelperContext_;
         struct MyIterableRep_ : Traversal::IterableFromIterator<T, MyIteratorRep_, MyDataBLOB_>::_Rep,
                                 public Memory::UseBlockAllocationIfAppropriate<MyIterableRep_> {
-            using inherited             = typename Traversal::IterableFromIterator<T, MyIteratorRep_, MyDataBLOB_>::_Rep;
+            using inherited = typename Traversal::IterableFromIterator<T, MyIteratorRep_, MyDataBLOB_>::_Rep;
             MyIterableRep_ (const UniqueElementsIteratorHelperContext_& context)
                 : inherited{context}
             {
             }
-            virtual size_t                size () const override { return this->_fContextForEachIterator.fMultiSet->size (); }
-            virtual bool                  empty () const override { return this->_fContextForEachIterator.fMultiSet->empty (); }
+            virtual size_t size () const override { return this->_fContextForEachIterator.fMultiSet->size (); }
+            virtual bool   empty () const override { return this->_fContextForEachIterator.fMultiSet->empty (); }
             virtual shared_ptr<typename Iterable<T>::_IRep> Clone () const override { return make_unique<MyIterableRep_> (*this); }
         };
         _UniqueElementsHelper (const shared_ptr<_IRep>& tally)

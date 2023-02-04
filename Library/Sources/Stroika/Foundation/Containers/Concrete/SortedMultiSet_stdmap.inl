@@ -47,7 +47,7 @@ namespace Stroika::Foundation::Containers::Concrete {
 
         // Iterable<CountedValue<T>>::_IRep overrides
     public:
-        virtual shared_ptr < typename Iterable<CountedValue<T>>::_IRep> Clone () const override
+        virtual shared_ptr<typename Iterable<CountedValue<T>>::_IRep> Clone () const override
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
             return Memory::MakeSharedPtr<Rep_> (*this);
