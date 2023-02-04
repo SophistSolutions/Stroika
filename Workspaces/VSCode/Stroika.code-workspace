@@ -136,7 +136,9 @@
 			"barrier": "cpp",
 			"format": "cpp",
 			"latch": "cpp",
-			"execution": "cpp"
+			"execution": "cpp",
+			"stop_token": "cpp",
+			"syncstream": "cpp"
 		},
 		"git.ignoreLimitWarning": true,
 		"files.watcherExclude": {
