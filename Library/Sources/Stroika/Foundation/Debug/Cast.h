@@ -36,7 +36,7 @@ namespace Stroika::Foundation::Debug {
      *  \see https://stackoverflow.com/questions/28002/regular-cast-vs-static-cast-vs-dynamic-cast
      */
     template <typename T, typename T1>
-    T UncheckedDynamicCast (T1&& arg);
+    T UncheckedDynamicCast (T1&& arg) noexcept;
 
     /**
      *  \brief Produce the same result as dynamic_pointer_cast if the successul case (non-null) - with better performance.
@@ -47,7 +47,7 @@ namespace Stroika::Foundation::Debug {
      *  \see UncheckedDynamicCast and dynamic_pointer_cast
      */
     template <typename T, typename T1>
-    shared_ptr<T> UncheckedDynamicPointerCast (shared_ptr<T1>&& arg);
+    shared_ptr<T> UncheckedDynamicPointerCast (const shared_ptr<T1>& arg) noexcept;
 
 }
 

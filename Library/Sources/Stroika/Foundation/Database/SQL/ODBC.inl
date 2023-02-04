@@ -7,6 +7,8 @@
 #ifndef _Stroika_Foundation_Database_SQL_ODBC_inl_
 #define _Stroika_Foundation_Database_SQL_ODBC_inl_ 1
 
+#include "../../Debug/Cast.h"
+
 namespace Stroika::Foundation::Database::SQL::ODBC {
 
 #if qHasLibrary_ODBC
@@ -16,7 +18,7 @@ namespace Stroika::Foundation::Database::SQL::ODBC {
      ********************************************************************************
      */
     inline Connection::Ptr::Ptr (const Ptr& src)
-        : Ptr{dynamic_pointer_cast<IRep> (src._fRep)}
+        : Ptr{Debug::UncheckedDynamicPointerCast<IRep> (src._fRep)}
     {
     }
     inline Connection::Ptr& Connection::Ptr::operator= (const Ptr& src)
@@ -29,7 +31,10 @@ namespace Stroika::Foundation::Database::SQL::ODBC {
         inherited::operator= (move (src));
         return *this;
     }
-    inline Connection::IRep* Connection::Ptr::operator->() const noexcept { return dynamic_pointer_cast<IRep> (_fRep).get (); }
+    inline Connection::IRep* Connection::Ptr::operator->() const noexcept
+    {
+        return Debug::UncheckedDynamicPointerCast<IRep> (_fRep).get ();
+    }
 #endif
 
 }

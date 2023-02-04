@@ -7,6 +7,8 @@
 #ifndef _Stroika_Foundation_Database_SQL_SQLite_inl_
 #define _Stroika_Foundation_Database_SQL_SQLite_inl_ 1
 
+#include "../../Debug/Cast.h"
+
 namespace Stroika::Foundation::Database::SQL::SQLite {
 
 #if qHasFeature_sqlite
@@ -61,7 +63,7 @@ namespace Stroika::Foundation::Database::SQL::SQLite {
      ********************************************************************************
      */
     inline Connection::Ptr::Ptr (const Ptr& src)
-        : Ptr{dynamic_pointer_cast<IRep> (src._fRep)}
+        : Ptr{Debug::UncheckedDynamicPointerCast<IRep> (src._fRep)}
     {
     }
     inline Connection::Ptr& Connection::Ptr::operator= (const Ptr& src)
@@ -74,8 +76,10 @@ namespace Stroika::Foundation::Database::SQL::SQLite {
         inherited::operator= (move (src));
         return *this;
     }
-    inline Connection::IRep* Connection::Ptr::operator->() const noexcept { return dynamic_pointer_cast<IRep> (_fRep).get (); }
-    inline ::sqlite3*                         Connection::Ptr::Peek () const { return dynamic_pointer_cast<IRep> (_fRep)->Peek (); }
+    inline Connection::IRep* Connection::Ptr::operator->() const noexcept { 
+        return Debug::UncheckedDynamicPointerCast<IRep> (_fRep).get ();
+    }
+    inline ::sqlite3* Connection::Ptr::Peek () const { return Debug::UncheckedDynamicPointerCast<IRep> (_fRep)->Peek (); }
 #endif
 
 }

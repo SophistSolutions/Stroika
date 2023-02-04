@@ -15,7 +15,7 @@ namespace Stroika::Foundation::Debug {
      ********************************************************************************
      */
     template <typename T, typename T1>
-    inline T UncheckedDynamicCast (T1&& arg)
+    inline T UncheckedDynamicCast (T1&& arg) noexcept
     {
         static_assert (is_reference_v<T> or is_pointer_v<T>);
         if constexpr (is_pointer_v<T>) {
@@ -44,7 +44,7 @@ namespace Stroika::Foundation::Debug {
      ********************************************************************************
      */
     template <typename T, typename T1>
-    inline shared_ptr<T> UncheckedDynamicPointerCast (shared_ptr<T1>&& arg)
+    inline shared_ptr<T> UncheckedDynamicPointerCast (const shared_ptr<T1>& arg) noexcept
     {
         //Require (dynamic_pointer_cast<T> (arg) != nullptr);   -- checked redundantly in UncheckedDynamicCast
         if (const auto p = UncheckedDynamicCast<T*> (arg.get ())) {
