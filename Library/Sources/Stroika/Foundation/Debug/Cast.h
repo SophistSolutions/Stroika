@@ -36,6 +36,12 @@ namespace Stroika::Foundation::Debug {
     template <typename T, typename T1>
     T UncheckedDynamicCast (T1&& arg);
 
+    /**
+     *  \brief see UncheckedDynamicCast and dynamic_pointer_cast
+     */
+    template <typename T, typename T1>
+    shared_ptr<T> UncheckedDynamicPointerCast (shared_ptr<T1>&& arg);
+
 }
 
 /*

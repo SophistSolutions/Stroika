@@ -9,6 +9,11 @@
 
 namespace Stroika::Foundation::Debug {
 
+    /*
+     ********************************************************************************
+     **************************** Debug::UncheckedDynamicCast ***********************
+     ********************************************************************************
+     */
     template <typename T, typename T1>
     inline T UncheckedDynamicCast (T1&& arg)
     {
@@ -28,6 +33,20 @@ namespace Stroika::Foundation::Debug {
             }
         }
         return static_cast<T> (arg);
+    }
+
+    /*
+     ********************************************************************************
+     ************************* Debug::UncheckedDynamicPointerCast *******************
+     ********************************************************************************
+     */
+    template <typename T, typename T1>
+    inline shared_ptr<T> UncheckedDynamicPointerCast (shared_ptr<T1>&& arg)
+    {
+        if (const auto p = UncheckedDynamicCast<T> (arg.get ())) {
+            return shared_ptr<T> (std::move (arg), p);
+        }
+        return {};
     }
 
 }
