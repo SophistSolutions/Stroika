@@ -81,10 +81,6 @@ namespace Stroika::Foundation::Containers::Concrete {
         nonvirtual SortedAssociation_stdmultimap& operator= (SortedAssociation_stdmultimap&& rhs) noexcept = default;
         nonvirtual SortedAssociation_stdmultimap& operator= (const SortedAssociation_stdmultimap& rhs)     = default;
 
-    protected:
-        using _IterableRepSharedPtr    = typename inherited::_IterableRepSharedPtr;
-        using _AssociationRepSharedPtr = typename Association<KEY_TYPE, MAPPED_VALUE_TYPE>::_IRepSharedPtr;
-
     private:
         class IImplRepBase_;
         template <typename KEY_INORDER_COMPARER>

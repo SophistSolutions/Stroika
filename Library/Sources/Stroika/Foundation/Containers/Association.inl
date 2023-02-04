@@ -94,14 +94,14 @@ namespace Stroika::Foundation::Containers {
         _AssertRepValidType ();
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-    inline Association<KEY_TYPE, MAPPED_VALUE_TYPE>::Association (const _IRepSharedPtr& rep) noexcept
+    inline Association<KEY_TYPE, MAPPED_VALUE_TYPE>::Association (const shared_ptr<_IRep>& rep) noexcept
         : inherited{rep}
     {
         RequireNotNull (rep);
         _AssertRepValidType ();
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-    inline Association<KEY_TYPE, MAPPED_VALUE_TYPE>::Association (_IRepSharedPtr&& rep) noexcept
+    inline Association<KEY_TYPE, MAPPED_VALUE_TYPE>::Association (shared_ptr<_IRep>&& rep) noexcept
         : inherited{(RequireNotNull (rep), move (rep))}
     {
         _AssertRepValidType ();
@@ -460,13 +460,12 @@ namespace Stroika::Foundation::Containers {
      ********************************************************************************
      */
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-    Iterable<KEY_TYPE> Association<KEY_TYPE, MAPPED_VALUE_TYPE>::_IRep::_Keys_Reference_Implementation (const _IterableRepSharedPtr& thisSharedPtr) const
+    Iterable<KEY_TYPE> Association<KEY_TYPE, MAPPED_VALUE_TYPE>::_IRep::_Keys_Reference_Implementation (const shared_ptr<_IRep>& thisSharedPtr) const
     {
-        using RecCntBumperType = _IterableRepSharedPtr;
+        using RecCntBumperType = shared_ptr<_IRep>;
         struct MyIterable_ : Iterable<KEY_TYPE> {
             using MyAssociation_ = Association<KEY_TYPE, MAPPED_VALUE_TYPE>;
             struct MyIterableRep_ : Traversal::IterableFromIterator<KEY_TYPE>::_Rep, public Memory::UseBlockAllocationIfAppropriate<MyIterableRep_> {
-                using _IterableRepSharedPtr = typename Iterable<KEY_TYPE>::_IterableRepSharedPtr;
                 const MyAssociation_::_IRep* fAssociation_;
                 RecCntBumperType             fSavedSharedPtrForRefCntBump_;
                 MyIterableRep_ (const MyAssociation_::_IRep* assocRep, const RecCntBumperType& thisSharedPtr)
@@ -474,7 +473,7 @@ namespace Stroika::Foundation::Containers {
                     , fSavedSharedPtrForRefCntBump_{thisSharedPtr}
                 {
                 }
-                virtual Iterator<KEY_TYPE> MakeIterator ([[maybe_unused]] const _IterableRepSharedPtr& thisSharedPtr) const override
+                virtual Iterator<KEY_TYPE> MakeIterator ([[maybe_unused]] const shared_ptr<typename Iterable<KEY_TYPE>::_IRep>& thisSharedPtr) const override
                 {
                     auto myContext = make_shared<Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>> (
                         fAssociation_->MakeIterator (fSavedSharedPtrForRefCntBump_));
@@ -490,7 +489,10 @@ namespace Stroika::Foundation::Containers {
                     };
                     return Traversal::CreateGeneratorIterator<KEY_TYPE> (getNext);
                 }
-                virtual _IterableRepSharedPtr Clone () const override { return Memory::MakeSharedPtr<MyIterableRep_> (*this); }
+                virtual shared_ptr<typename Iterable<KEY_TYPE>::_IRep> Clone () const override
+                {
+                    return Memory::MakeSharedPtr<MyIterableRep_> (*this);
+                }
             };
             MyIterable_ (const MyAssociation_::_IRep* map, const RecCntBumperType& thisSharedPtr)
                 : Iterable<KEY_TYPE>{Memory::MakeSharedPtr<MyIterableRep_> (map, thisSharedPtr)}
@@ -500,14 +502,13 @@ namespace Stroika::Foundation::Containers {
         return MyIterable_{this, thisSharedPtr};
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-    Iterable<MAPPED_VALUE_TYPE> Association<KEY_TYPE, MAPPED_VALUE_TYPE>::_IRep::_Values_Reference_Implementation (const _IterableRepSharedPtr& thisSharedPtr) const
+    Iterable<MAPPED_VALUE_TYPE> Association<KEY_TYPE, MAPPED_VALUE_TYPE>::_IRep::_Values_Reference_Implementation (const shared_ptr<_IRep>& thisSharedPtr) const
     {
-        using RecCntBumperType = _IterableRepSharedPtr;
+        using RecCntBumperType = shared_ptr<_IRep>;
         struct MyIterable_ : Iterable<MAPPED_VALUE_TYPE> {
             using MyAssociation_ = Association<KEY_TYPE, MAPPED_VALUE_TYPE>;
             struct MyIterableRep_ : Traversal::IterableFromIterator<MAPPED_VALUE_TYPE>::_Rep,
                                     public Memory::UseBlockAllocationIfAppropriate<MyIterableRep_> {
-                using _IterableRepSharedPtr = typename Iterable<MAPPED_VALUE_TYPE>::_IterableRepSharedPtr;
                 const MyAssociation_::_IRep* fAssociation_;
                 RecCntBumperType             fSavedSharedPtrForRefCntBump_;
                 MyIterableRep_ (const MyAssociation_::_IRep* map, const RecCntBumperType& thisSharedPtr)
@@ -516,7 +517,8 @@ namespace Stroika::Foundation::Containers {
                 {
                     Require (fAssociation_ != nullptr); // but thisSharedPtr can be null
                 }
-                virtual Iterator<MAPPED_VALUE_TYPE> MakeIterator ([[maybe_unused]] const _IterableRepSharedPtr& thisSharedPtr) const override
+                virtual Iterator<MAPPED_VALUE_TYPE>
+                MakeIterator ([[maybe_unused]] const shared_ptr<typename Iterable<MAPPED_VALUE_TYPE>::_IRep>& thisSharedPtr) const override
                 {
                     auto myContext = make_shared<Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>> (
                         fAssociation_->MakeIterator (fSavedSharedPtrForRefCntBump_));
@@ -532,9 +534,11 @@ namespace Stroika::Foundation::Containers {
                     };
                     return Traversal::CreateGeneratorIterator<MAPPED_VALUE_TYPE> (getNext);
                 }
-                virtual _IterableRepSharedPtr Clone () const override { return Memory::MakeSharedPtr<MyIterableRep_> (*this); }
+                virtual shared_ptr<typename Iterable<MAPPED_VALUE_TYPE>::_IRep> Clone () const override
+                {
+                    return Memory::MakeSharedPtr<MyIterableRep_> (*this);
+                }
             };
-            // @todo debug if/why issue with using uninform initializaiton here - fails to compile on vs2k17 and gcc ASAN giving erorrs that maybe related???
             MyIterable_ (const MyAssociation_::_IRep* map, const RecCntBumperType& thisSharedPtr)
                 : Iterable<MAPPED_VALUE_TYPE>{Memory::MakeSharedPtr<MyIterableRep_> (map, thisSharedPtr)}
             {

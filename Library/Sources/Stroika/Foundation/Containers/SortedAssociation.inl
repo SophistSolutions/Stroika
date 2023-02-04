@@ -11,7 +11,7 @@ namespace Stroika::Foundation::Containers {
 
     /*
      ********************************************************************************
-     ************* SortedAssociation<KEY_TYPE, MAPPED_VALUE_TYPE> ***********************
+     ************* SortedAssociation<KEY_TYPE, MAPPED_VALUE_TYPE> *******************
      ********************************************************************************
      */
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
@@ -88,13 +88,13 @@ namespace Stroika::Foundation::Containers {
         _AssertRepValidType ();
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-    inline SortedAssociation<KEY_TYPE, MAPPED_VALUE_TYPE>::SortedAssociation (const _IRepSharedPtr& src) noexcept
+    inline SortedAssociation<KEY_TYPE, MAPPED_VALUE_TYPE>::SortedAssociation (const shared_ptr<_IRep>& src) noexcept
         : inherited{(RequireNotNull (src), src)}
     {
         _AssertRepValidType ();
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-    inline SortedAssociation<KEY_TYPE, MAPPED_VALUE_TYPE>::SortedAssociation (_IRepSharedPtr&& src) noexcept
+    inline SortedAssociation<KEY_TYPE, MAPPED_VALUE_TYPE>::SortedAssociation (shared_ptr<_IRep>&& src) noexcept
         : inherited{(RequireNotNull (src), move (src))}
     {
         _AssertRepValidType ();
