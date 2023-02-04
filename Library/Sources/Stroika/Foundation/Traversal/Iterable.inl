@@ -13,6 +13,7 @@
 #include <set>
 
 #include "../Debug/Assertions.h"
+#include "../Debug/Cast.h"
 #include "../Math/Statistics.h"
 
 #include "Generator.h"
@@ -135,8 +136,7 @@ namespace Stroika::Foundation::Traversal {
     template <typename REP_SUB_TYPE>
     inline auto Iterable<T>::_SafeReadRepAccessor<REP_SUB_TYPE>::_ConstGetRepSharedPtr () const noexcept -> shared_ptr<REP_SUB_TYPE>
     {
-        // @todo fix to use Debug::some-safter-assert-checkign-dynamic-cast
-        return dynamic_pointer_cast<REP_SUB_TYPE> (this->fIterableEnvelope_->_fRep.cget_ptr ());
+        return Debug::UncheckedDynamicPointerCast<REP_SUB_TYPE> (this->fIterableEnvelope_->_fRep.cget_ptr ());
     }
 
     /*

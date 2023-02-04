@@ -43,7 +43,7 @@ namespace Stroika::Foundation::Debug {
     template <typename T, typename T1>
     inline shared_ptr<T> UncheckedDynamicPointerCast (shared_ptr<T1>&& arg)
     {
-        if (const auto p = UncheckedDynamicCast<T> (arg.get ())) {
+        if (const auto p = UncheckedDynamicCast<T*> (arg.get ())) {
             return shared_ptr<T> (std::move (arg), p);
         }
         return {};
