@@ -116,7 +116,7 @@ namespace {
 
             // Overrides for Iterable<Character>
         public:
-            virtual shared_ptr < Iterable<Character>::_IRep> Clone () const override
+            virtual shared_ptr<Iterable<Character>::_IRep> Clone () const override
             {
                 AssertNotReached (); // Since String reps now immutable, this should never be called
                 return nullptr;
@@ -125,8 +125,8 @@ namespace {
             {
                 struct MyIterRep_ final : Iterator<Character>::IRep, public Memory::UseBlockAllocationIfAppropriate<MyIterRep_> {
                     shared_ptr<Iterable<Character>::_IRep> fHoldRepToAssureDataNotDestroyed_; // bump reference count (CAN BE NULL)
-                    span<const CHAR_T>    fData_; // clone span (not underlying data) pointing inside fHoldRepToAssureDataNotDestroyed
-                    size_t                fIdx_{0};
+                    span<const CHAR_T> fData_; // clone span (not underlying data) pointing inside fHoldRepToAssureDataNotDestroyed
+                    size_t             fIdx_{0};
                     MyIterRep_ (const shared_ptr<Iterable<Character>::_IRep>& savedRefToKeepDataAlive, span<const CHAR_T> data)
                         : fHoldRepToAssureDataNotDestroyed_{savedRefToKeepDataAlive}
                         , fData_{data}
@@ -591,7 +591,7 @@ namespace {
             using inherited = StringRepHelperAllFitInSize_::Rep<CHAR_T>;
 
             shared_ptr<_IRep> fUnderlyingRep_;
-            wstring        fCString_;
+            wstring           fCString_;
 
         public:
             // Caller MUST ASSURE generates right size of Rep based on size in underlyingRepPDS
@@ -1614,7 +1614,7 @@ const wchar_t* String::c_str ()
     const wchar_t*       result = (wchar_t*)accessor._ConstGetRep ().c_str_peek ();
     if (result == nullptr) {
         shared_ptr<_IRep> originalRep    = accessor._ConstGetRepSharedPtr ();
-        PeekSpanData   originalRepPDS = originalRep->PeekData (nullopt);
+        PeekSpanData      originalRepPDS = originalRep->PeekData (nullopt);
         switch (originalRepPDS.fInCP) {
             case PeekSpanData::eAscii:
                 _fRep = Memory::MakeSharedPtr<StringWithCStr_::Rep<char>> (originalRep, originalRepPDS);
