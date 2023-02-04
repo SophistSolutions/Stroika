@@ -70,9 +70,6 @@ namespace Stroika::Foundation::Containers {
         using ElementInOrderComparerType =
             Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eStrictInOrder, function<bool (T, T)>>;
 
-    protected:
-        using _IRepSharedPtr = shared_ptr<_IRep>;
-
     public:
         /**
          *  \brief check if the argument type can be passed as argument to the arity/1 overload of Add (Enqueue)
@@ -109,8 +106,8 @@ namespace Stroika::Foundation::Containers {
         SortedMultiSet (INORDER_COMPARER&& inorderComparer, ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
 
     protected:
-        explicit SortedMultiSet (_IRepSharedPtr&& src) noexcept;
-        explicit SortedMultiSet (const _IRepSharedPtr& src) noexcept;
+        explicit SortedMultiSet (shared_ptr<_IRep>&& src) noexcept;
+        explicit SortedMultiSet (const shared_ptr<_IRep>& src) noexcept;
 
     public:
         /**

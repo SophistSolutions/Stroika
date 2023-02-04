@@ -135,9 +135,6 @@ namespace Stroika::Foundation::Containers {
     protected:
         class _IRep;
 
-    protected:
-        using _IRepSharedPtr = shared_ptr<_IRep>;
-
     public:
         /**
          *  This is the type returned by GetElementEqualsComparer () and CAN be used as the argument to a MultiSet<> as EqualityComparer, but
@@ -204,8 +201,8 @@ namespace Stroika::Foundation::Containers {
         MultiSet (EQUALS_COMPARER&& equalsComparer, ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
 
     protected:
-        explicit MultiSet (_IRepSharedPtr&& rep) noexcept;
-        explicit MultiSet (const _IRepSharedPtr& rep) noexcept;
+        explicit MultiSet (shared_ptr<_IRep>&& rep) noexcept;
+        explicit MultiSet (const shared_ptr<_IRep>& rep) noexcept;
 
     public:
         nonvirtual MultiSet& operator= (MultiSet&& rhs) noexcept = default;
@@ -466,9 +463,6 @@ namespace Stroika::Foundation::Containers {
     private:
         using inherited = typename Iterable<CountedValue<T>>::_IRep;
 
-    protected:
-        using _IRepSharedPtr = typename MultiSet::_IRepSharedPtr;
-
     public:
         using CounterType = typename MultiSet::CounterType;
 
@@ -477,8 +471,8 @@ namespace Stroika::Foundation::Containers {
 
     public:
         virtual ElementEqualityComparerType GetElementEqualsComparer () const                                              = 0;
-        virtual _IRepSharedPtr              CloneEmpty () const                                                            = 0;
-        virtual _IRepSharedPtr              CloneAndPatchIterator (Iterator<value_type>* i) const                          = 0;
+        virtual shared_ptr<_IRep>           CloneEmpty () const                                                            = 0;
+        virtual shared_ptr<_IRep>           CloneAndPatchIterator (Iterator<value_type>* i) const                          = 0;
         virtual bool                        Equals (const _IRep& rhs) const                                                = 0;
         virtual bool                        Contains (ArgByValueType<T> item) const                                        = 0;
         virtual void                        Add (ArgByValueType<T> item, CounterType count)                                = 0;
@@ -488,10 +482,10 @@ namespace Stroika::Foundation::Containers {
         virtual CounterType OccurrencesOf (ArgByValueType<T> item) const                                                   = 0;
         // Subtle point - shared rep argument to Elements() allows shared ref counting
         // without the cost of a clone or enable_shared_from_this
-        virtual Iterable<T> Elements (const _IRepSharedPtr& thisSharedPtr) const = 0;
+        virtual Iterable<T> Elements (const shared_ptr<_IRep>& thisSharedPtr) const = 0;
         // Subtle point - shared rep argument to Elements() allows shared ref counting
         // without the cost of a clone or enable_shared_from_this
-        virtual Iterable<T> UniqueElements (const _IRepSharedPtr& thisSharedPtr) const = 0;
+        virtual Iterable<T> UniqueElements (const shared_ptr<_IRep>& thisSharedPtr) const = 0;
 
         /*
      *  Reference Implementations (often not used except for ensure's, but can be used for
@@ -502,8 +496,8 @@ namespace Stroika::Foundation::Containers {
      */
     protected:
         nonvirtual bool _Equals_Reference_Implementation (const _IRep& rhs) const;
-        nonvirtual Iterable<T> _Elements_Reference_Implementation (const _IRepSharedPtr& thisSharedPtr) const;
-        nonvirtual Iterable<T> _UniqueElements_Reference_Implementation (const _IRepSharedPtr& thisSharedPtr) const;
+        nonvirtual Iterable<T> _Elements_Reference_Implementation (const shared_ptr<_IRep>& thisSharedPtr) const;
+        nonvirtual Iterable<T> _UniqueElements_Reference_Implementation (const shared_ptr<_IRep>& thisSharedPtr) const;
 
     private:
         struct ElementsIteratorHelperContext_;

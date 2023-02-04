@@ -66,10 +66,6 @@ namespace Stroika::Foundation::Containers::Concrete {
         nonvirtual MultiSet_LinkedList& operator= (MultiSet_LinkedList&& rhs) noexcept = default;
         nonvirtual MultiSet_LinkedList& operator= (const MultiSet_LinkedList& rhs)     = default;
 
-    protected:
-        using _IterableRepSharedPtr = typename inherited::_IterableRepSharedPtr;
-        using _MultiSetRepSharedPtr = typename inherited::_IRepSharedPtr;
-
     private:
         class IImplRepBase_;
         template <typename EQUALS_COMPARER>

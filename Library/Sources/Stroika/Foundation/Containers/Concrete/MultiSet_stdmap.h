@@ -79,10 +79,6 @@ namespace Stroika::Foundation::Containers::Concrete {
         nonvirtual MultiSet_stdmap& operator= (MultiSet_stdmap&& rhs) noexcept = default;
         nonvirtual MultiSet_stdmap& operator= (const MultiSet_stdmap& rhs)     = default;
 
-    protected:
-        using _IterableRepSharedPtr = typename inherited::_IterableRepSharedPtr;
-        using _MultiSetRepSharedPtr = typename inherited::_IRepSharedPtr;
-
     private:
         class IImplRepBase_;
         template <typename INORDER_COMPARER>

@@ -94,10 +94,6 @@ namespace Stroika::Foundation::Containers::Concrete {
     public:
         nonvirtual void shrink_to_fit ();
 
-    protected:
-        using _IterableRepSharedPtr = typename inherited::_IterableRepSharedPtr;
-        using _MultiSetRepSharedPtr = typename inherited::_IRepSharedPtr;
-
     private:
         class IImplRepBase_;
         template <typename EQUALS_COMPARER>

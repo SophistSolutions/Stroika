@@ -23,7 +23,7 @@ namespace Stroika::Foundation::Containers {
      */
     template <typename T, typename TRAITS>
     struct MultiSet<T, TRAITS>::_IRep::ElementsIteratorHelperContext_ {
-        ElementsIteratorHelperContext_ (const typename Iterable<value_type>::_IterableRepSharedPtr& tally, const Iterator<value_type>& delegateTo,
+        ElementsIteratorHelperContext_ (const shared_ptr<_IRep>& tally, const Iterator<value_type>& delegateTo,
                                         size_t countMoreTimesToGoBeforeAdvance = 0, optional<T> saved2Return = optional<T>{})
             : fMultiSet{tally}
             , fMultiSetIterator{delegateTo}
@@ -31,7 +31,7 @@ namespace Stroika::Foundation::Containers {
             , fSaved2Return{saved2Return}
         {
         }
-        typename Iterable<value_type>::_IterableRepSharedPtr fMultiSet;
+        shared_ptr<_IRep>                           fMultiSet;
         Iterator<value_type>                                 fMultiSetIterator;
         size_t                                               fCountMoreTimesToGoBeforeAdvance;
         optional<T>                                          fSaved2Return;
@@ -119,12 +119,12 @@ namespace Stroika::Foundation::Containers {
                 return n;
             }
             virtual bool empty () const override { return this->_fContextForEachIterator.fMultiSet->empty (); }
-            virtual typename Iterable<T>::_IterableRepSharedPtr Clone () const override
+            virtual shared_ptr<typename Iterable<T>::_IRep> Clone () const override
             {
                 return Memory::MakeSharedPtr<MyIterableRep_> (*this);
             }
         };
-        _ElementsIterableHelper (const typename Iterable<CountedValue<T>>::_IterableRepSharedPtr& iterateOverMultiSet)
+        _ElementsIterableHelper (const shared_ptr<_IRep>& iterateOverMultiSet)
             : Iterable<T>{Memory::MakeSharedPtr<MyIterableRep_> (
                   ElementsIteratorHelperContext_{iterateOverMultiSet, iterateOverMultiSet->MakeIterator (nullptr)})}
         {
@@ -133,12 +133,12 @@ namespace Stroika::Foundation::Containers {
 
     template <typename T, typename TRAITS>
     struct MultiSet<T, TRAITS>::_IRep::UniqueElementsIteratorHelperContext_ {
-        UniqueElementsIteratorHelperContext_ (const typename Iterable<value_type>::_IterableRepSharedPtr& tally, const Iterator<value_type>& delegateTo)
+        UniqueElementsIteratorHelperContext_ (const shared_ptr<_IRep>& tally, const Iterator<value_type>& delegateTo)
             : fMultiSet{tally}
             , fMultiSetIterator{delegateTo}
         {
         }
-        typename Iterable<value_type>::_IterableRepSharedPtr fMultiSet;
+        shared_ptr<_IRep>    fMultiSet;
         Iterator<value_type>                                 fMultiSetIterator;
     };
 
@@ -173,7 +173,7 @@ namespace Stroika::Foundation::Containers {
                 return false;
             }
         };
-        UniqueElementsIteratorHelper_ (const typename Iterable<CountedValue<T>>::_IterableRepSharedPtr& tally)
+        UniqueElementsIteratorHelper_ (const shared_ptr<_IRep>& tally)
             : Iterator<T>{Memory::MakeSharedPtr<Rep> (UniqueElementsIteratorHelperContext_{tally, tally->MakeIterator (tally.get ())})}
         {
         }
@@ -190,16 +190,15 @@ namespace Stroika::Foundation::Containers {
         struct MyIterableRep_ : Traversal::IterableFromIterator<T, MyIteratorRep_, MyDataBLOB_>::_Rep,
                                 public Memory::UseBlockAllocationIfAppropriate<MyIterableRep_> {
             using inherited             = typename Traversal::IterableFromIterator<T, MyIteratorRep_, MyDataBLOB_>::_Rep;
-            using _IterableRepSharedPtr = typename Iterable<T>::_IterableRepSharedPtr;
             MyIterableRep_ (const UniqueElementsIteratorHelperContext_& context)
                 : inherited{context}
             {
             }
             virtual size_t                size () const override { return this->_fContextForEachIterator.fMultiSet->size (); }
             virtual bool                  empty () const override { return this->_fContextForEachIterator.fMultiSet->empty (); }
-            virtual _IterableRepSharedPtr Clone () const override { return make_unique<MyIterableRep_> (*this); }
+            virtual shared_ptr<typename Iterable<T>::_IRep> Clone () const override { return make_unique<MyIterableRep_> (*this); }
         };
-        _UniqueElementsHelper (const typename Iterable<CountedValue<T>>::_IterableRepSharedPtr& tally)
+        _UniqueElementsHelper (const shared_ptr<_IRep>& tally)
             : Iterable<T>{make_unique<MyIterableRep_> (UniqueElementsIteratorHelperContext_{tally, tally->MakeIterator (nullptr)})}
         {
         }
@@ -227,13 +226,13 @@ namespace Stroika::Foundation::Containers {
         return true;
     }
     template <typename T, typename TRAITS>
-    Iterable<T> MultiSet<T, TRAITS>::_IRep::_Elements_Reference_Implementation (const _IRepSharedPtr& thisSharedPtr) const
+    Iterable<T> MultiSet<T, TRAITS>::_IRep::_Elements_Reference_Implementation (const shared_ptr<_IRep>& thisSharedPtr) const
     {
         Require (thisSharedPtr.get () == this); // allows reference counting but without using enable_shared_from_this (so cheap!)
         return _ElementsIterableHelper{thisSharedPtr};
     }
     template <typename T, typename TRAITS>
-    Iterable<T> MultiSet<T, TRAITS>::_IRep::_UniqueElements_Reference_Implementation (const _IRepSharedPtr& thisSharedPtr) const
+    Iterable<T> MultiSet<T, TRAITS>::_IRep::_UniqueElements_Reference_Implementation (const shared_ptr<_IRep>& thisSharedPtr) const
     {
         Require (thisSharedPtr.get () == this); // allows reference counting but without using enable_shared_from_this (so cheap!)
         return _UniqueElementsHelper{thisSharedPtr};
@@ -280,13 +279,13 @@ namespace Stroika::Foundation::Containers {
         _AssertRepValidType ();
     }
     template <typename T, typename TRAITS>
-    inline MultiSet<T, TRAITS>::MultiSet (const _IRepSharedPtr& rep) noexcept
+    inline MultiSet<T, TRAITS>::MultiSet (const shared_ptr<_IRep>& rep) noexcept
         : inherited{(RequireNotNull (rep), rep)}
     {
         _AssertRepValidType ();
     }
     template <typename T, typename TRAITS>
-    inline MultiSet<T, TRAITS>::MultiSet (_IRepSharedPtr&& rep) noexcept
+    inline MultiSet<T, TRAITS>::MultiSet (shared_ptr<_IRep>&& rep) noexcept
         : inherited{(RequireNotNull (rep), move (rep))}
     {
         _AssertRepValidType ();
