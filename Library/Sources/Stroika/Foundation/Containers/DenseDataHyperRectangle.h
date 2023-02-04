@@ -36,9 +36,6 @@ namespace Stroika::Foundation::Containers {
     public:
         using value_type = typename inherited::value_type;
 
-    protected:
-        using _IRepSharedPtr = typename inherited::_IRepSharedPtr;
-
     public:
         /**
          *  Use this typedef in templates to recover the basic functional container pattern of concrete types.
@@ -52,8 +49,8 @@ namespace Stroika::Foundation::Containers {
         DenseDataHyperRectangle (const DenseDataHyperRectangle<T, INDEXES...>& src);
 
     protected:
-        explicit DenseDataHyperRectangle (const _IRepSharedPtr& src) noexcept;
-        explicit DenseDataHyperRectangle (_IRepSharedPtr&& src) noexcept;
+        explicit DenseDataHyperRectangle (const shared_ptr<typename inherited::_IRep>& src) noexcept;
+        explicit DenseDataHyperRectangle (shared_ptr<typename inherited::_IRep>&& src) noexcept;
 
     public:
         nonvirtual DenseDataHyperRectangle<T, INDEXES...>& operator= (const DenseDataHyperRectangle<T, INDEXES...>& rhs) = default;

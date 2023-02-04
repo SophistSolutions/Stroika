@@ -39,6 +39,12 @@ namespace Stroika::Foundation::Containers {
     /**
      *  \note   Aliases: Data-Cube, Date Cube, Hyper-Cube, Hypercube, Tensor, Matrix, Vector
      *
+     *  \note   @todo - CONSIDER THE POINT/UTILITY OF THIS IN LIGHT OF std::mdspan, and if still a point,
+     *          must integrate well with mdspan - maybe just a Stroika v3.1 issue since mdspan in C++23
+     * 
+     *          PROBABLY - it still makes sense to keep. I THINK mdspan<> is restricted to DENSE_HYPERRECTANGLES of data
+     *          Making this abstraction still potentially useful.
+     * 
      *  \note <a href="Design Overview.md#Comparisons">Comparisons</a>:
      *      o   operator== and operator!= are supported
      *  
@@ -63,9 +69,6 @@ namespace Stroika::Foundation::Containers {
     public:
         using value_type = typename inherited::value_type;
 
-    protected:
-        using _IRepSharedPtr = shared_ptr<_IRep>;
-
     public:
         /**
          *  Use this typedef in templates to recover the basic functional container pattern of concrete types.
@@ -87,8 +90,8 @@ namespace Stroika::Foundation::Containers {
         DataHyperRectangle (DataHyperRectangle<T, INDEXES...>&& src) noexcept;
 
     protected:
-        explicit DataHyperRectangle (const _IRepSharedPtr& src) noexcept;
-        explicit DataHyperRectangle (_IRepSharedPtr&& src) noexcept;
+        explicit DataHyperRectangle (const shared_ptr<_IRep>& src) noexcept;
+        explicit DataHyperRectangle (shared_ptr<_IRep>&& src) noexcept;
 
     public:
         /**
@@ -166,13 +169,10 @@ namespace Stroika::Foundation::Containers {
     public:
         virtual ~_IRep () = default;
 
-    protected:
-        using _IRepSharedPtr = typename DataHyperRectangle<T, INDEXES...>::_IRepSharedPtr;
-
     public:
-        virtual _IRepSharedPtr CloneEmpty () const                                            = 0;
-        virtual T              GetAt (INDEXES... indexes) const                               = 0;
-        virtual void           SetAt (INDEXES... indexes, Configuration::ArgByValueType<T> v) = 0;
+        virtual shared_ptr<_IRep> CloneEmpty () const                                            = 0;
+        virtual T                 GetAt (INDEXES... indexes) const                               = 0;
+        virtual void              SetAt (INDEXES... indexes, Configuration::ArgByValueType<T> v) = 0;
     };
 
     /**

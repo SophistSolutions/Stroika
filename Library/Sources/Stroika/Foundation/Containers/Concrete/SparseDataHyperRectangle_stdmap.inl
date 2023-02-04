@@ -42,12 +42,13 @@ namespace Stroika::Foundation::Containers::Concrete {
 
         // Iterable<tuple<T, INDEXES...>>::_IRep overrides
     public:
-        virtual _IterableRepSharedPtr Clone () const override
+        virtual shared_ptr<typename Iterable<tuple<T, INDEXES...>>::_IRep> Clone () const override
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
             return Memory::MakeSharedPtr<Rep_> (*this);
         }
-        virtual Iterator<tuple<T, INDEXES...>> MakeIterator ([[maybe_unused]] const _IterableRepSharedPtr& thisSharedPtr) const override
+        virtual Iterator<tuple<T, INDEXES...>>
+        MakeIterator ([[maybe_unused]] const shared_ptr<typename Iterable<tuple<T, INDEXES...>>::_IRep>& thisSharedPtr) const override
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
             return Iterator<value_type>{make_unique<IteratorRep_> (&fData_, &fChangeCounts_)};
@@ -67,7 +68,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
             fData_.Apply ([&] (const pair<tuple<INDEXES...>, T>& item) { doToElement (tuple_cat (tuple<T>{item.second}, item.first)); });
         }
-        virtual Iterator<tuple<T, INDEXES...>> Find ([[maybe_unused]] const _IterableRepSharedPtr&           thisSharedPtr,
+        virtual Iterator<tuple<T, INDEXES...>> Find ([[maybe_unused]] const shared_ptr<typename Iterable<tuple<T, INDEXES...>>::_IRep>& thisSharedPtr,
                                                      const function<bool (ArgByValueType<value_type> item)>& that) const override
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
@@ -81,14 +82,15 @@ namespace Stroika::Foundation::Containers::Concrete {
             resultRep->fIterator.SetUnderlyingIteratorRep (iLink);
             return RESULT_TYPE{move (resultRep)};
         }
-        virtual Iterator<tuple<T, INDEXES...>> Find_equal_to (const _IterableRepSharedPtr& thisSharedPtr, const ArgByValueType<value_type>& v) const override
+        virtual Iterator<tuple<T, INDEXES...>> Find_equal_to (const shared_ptr<typename Iterable<tuple<T, INDEXES...>>::_IRep>& thisSharedPtr,
+                                                              const ArgByValueType<value_type>& v) const override
         {
             return this->_Find_equal_to_default_implementation (thisSharedPtr, v);
         }
 
         // DataHyperRectangle<T, INDEXES...>::_IRep overrides
     public:
-        virtual _DataHyperRectangleRepSharedPtr CloneEmpty () const override
+        virtual shared_ptr<typename DataHyperRectangle<T, INDEXES...>::_IRep> CloneEmpty () const override
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
             return Memory::MakeSharedPtr<Rep_> (fDefaultValue_); // keep default, but lose data

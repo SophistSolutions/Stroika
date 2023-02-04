@@ -38,10 +38,6 @@ namespace Stroika::Foundation::Containers::Concrete {
     public:
         nonvirtual DenseDataHyperRectangle_Vector<T, INDEXES...>& operator= (const DenseDataHyperRectangle_Vector<T, INDEXES...>& rhs);
 
-    protected:
-        using _IterableRepSharedPtr           = typename inherited::_IterableRepSharedPtr;
-        using _DataHyperRectangleRepSharedPtr = typename inherited::_IRepSharedPtr;
-
     private:
         class Rep_;
 
