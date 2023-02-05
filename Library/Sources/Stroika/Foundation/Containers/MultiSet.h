@@ -359,8 +359,7 @@ namespace Stroika::Foundation::Containers {
          *          }
          *      \endcode
          *
-         *  UniqueElements () makes no guarantess about whether or not modifications to the underlying MultiSet<>
-         *  will appear in the UniqueElements() Iterable<T> (so no guarantee if live copy or when copy made).
+         *  UniqueElements () operates as if it copies the data from the original container, and will not reflect any subsequent changes.
          */
         nonvirtual Iterable<T> UniqueElements () const;
 
@@ -480,12 +479,6 @@ namespace Stroika::Foundation::Containers {
         virtual void                        Remove (const Iterator<value_type>& i, Iterator<value_type>* nextI)            = 0;
         virtual void        UpdateCount (const Iterator<value_type>& i, CounterType newCount, Iterator<value_type>* nextI) = 0;
         virtual CounterType OccurrencesOf (ArgByValueType<T> item) const                                                   = 0;
-        // Subtle point - shared rep argument to Elements() allows shared ref counting
-        // without the cost of a clone or enable_shared_from_this
-        virtual Iterable<T> Elements (const shared_ptr<_IRep>& thisSharedPtr) const = 0;
-        // Subtle point - shared rep argument to Elements() allows shared ref counting
-        // without the cost of a clone or enable_shared_from_this
-        virtual Iterable<T> UniqueElements (const shared_ptr<_IRep>& thisSharedPtr) const = 0;
 
         /*
      *  Reference Implementations (often not used except for ensure's, but can be used for
@@ -496,22 +489,6 @@ namespace Stroika::Foundation::Containers {
      */
     protected:
         nonvirtual bool _Equals_Reference_Implementation (const _IRep& rhs) const;
-        nonvirtual Iterable<T> _Elements_Reference_Implementation (const shared_ptr<_IRep>& thisSharedPtr) const;
-        nonvirtual Iterable<T> _UniqueElements_Reference_Implementation (const shared_ptr<_IRep>& thisSharedPtr) const;
-
-    private:
-        struct ElementsIteratorHelperContext_;
-        struct ElementsIteratorHelper_;
-
-    protected:
-        struct _ElementsIterableHelper;
-
-    private:
-        struct UniqueElementsIteratorHelperContext_;
-        struct UniqueElementsIteratorHelper_;
-
-    protected:
-        struct _UniqueElementsHelper;
     };
 
 }

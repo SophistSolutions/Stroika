@@ -206,16 +206,6 @@ namespace Stroika::Foundation::Containers::Concrete {
             }
             return i->second;
         }
-        virtual Iterable<T> Elements (const shared_ptr<typename MultiSet<T, TRAITS>::_IRep>& thisSharedPtr) const override
-        {
-            Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
-            return this->_Elements_Reference_Implementation (thisSharedPtr);
-        }
-        virtual Iterable<T> UniqueElements (const shared_ptr<typename MultiSet<T, TRAITS>::_IRep>& thisSharedPtr) const override
-        {
-            Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
-            return this->_UniqueElements_Reference_Implementation (thisSharedPtr);
-        }
 
     private:
         using DataStructureImplType_ = DataStructures::STLContainerWrapper<STDMAP<INORDER_COMPARER>>;

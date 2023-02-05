@@ -18,194 +18,6 @@ namespace Stroika::Foundation::Containers {
 
     /*
      ********************************************************************************
-     ********* MultiSet<T, TRAITS>::_IRep::ElementsIteratorHelperContext_ ***********
-     ********************************************************************************
-     */
-    template <typename T, typename TRAITS>
-    struct MultiSet<T, TRAITS>::_IRep::ElementsIteratorHelperContext_ {
-        ElementsIteratorHelperContext_ (const shared_ptr<_IRep>& tally, const Iterator<value_type>& delegateTo,
-                                        size_t countMoreTimesToGoBeforeAdvance = 0, optional<T> saved2Return = optional<T>{})
-            : fMultiSet{tally}
-            , fMultiSetIterator{delegateTo}
-            , fCountMoreTimesToGoBeforeAdvance{countMoreTimesToGoBeforeAdvance}
-            , fSaved2Return{saved2Return}
-        {
-        }
-        shared_ptr<_IRep>    fMultiSet;
-        Iterator<value_type> fMultiSetIterator;
-        size_t               fCountMoreTimesToGoBeforeAdvance;
-        optional<T>          fSaved2Return;
-    };
-
-    template <typename T, typename TRAITS>
-    struct MultiSet<T, TRAITS>::_IRep::ElementsIteratorHelper_ : public Iterator<T> {
-        struct Rep : public Iterator<T>::IRep, public Memory::UseBlockAllocationIfAppropriate<Rep> {
-            using inherited = typename Iterator<T>::IRep;
-            ElementsIteratorHelperContext_ fContext;
-            Rep (const ElementsIteratorHelperContext_& context)
-                : fContext{context}
-            {
-                if (not fContext.fMultiSetIterator.Done ()) {
-                    fContext.fSaved2Return = fContext.fMultiSetIterator->fValue;
-                    if (fContext.fSaved2Return.has_value ()) {
-                        fContext.fCountMoreTimesToGoBeforeAdvance = fContext.fMultiSetIterator->fCount - 1;
-                    }
-                }
-            }
-            virtual void More (optional<T>* result, bool advance) override
-            {
-                RequireNotNull (result);
-                if (fContext.fCountMoreTimesToGoBeforeAdvance > 0) {
-                    *result = fContext.fSaved2Return;
-                    if (advance) {
-                        fContext.fCountMoreTimesToGoBeforeAdvance--;
-                    }
-                }
-                else {
-                    bool done = fContext.fMultiSetIterator.Done ();
-                    if (not done and advance) {
-                        ++fContext.fMultiSetIterator;
-                        done = fContext.fMultiSetIterator.Done ();
-                    }
-                    if (done) {
-                        *result = nullopt;
-                    }
-                    else {
-                        *result = fContext.fMultiSetIterator->fValue;
-                    }
-                    if (advance) {
-                        fContext.fSaved2Return = *result;
-                        if (fContext.fSaved2Return.has_value ()) {
-                            fContext.fCountMoreTimesToGoBeforeAdvance = fContext.fMultiSetIterator->fCount - 1;
-                        }
-                    }
-                }
-            }
-            virtual unique_ptr<typename Iterator<T>::IRep> Clone () const override { return make_unique<Rep> (*this); }
-            virtual bool                                   Equals (const typename Iterator<T>::IRep* /*rhs*/) const override
-            {
-                AssertNotImplemented ();
-                return false;
-            }
-        };
-        ElementsIteratorHelper_ (const ElementsIteratorHelperContext_& context)
-            : Iterator<T>{Memory::MakeSharedPtr<Rep> (context)}
-        {
-        }
-    };
-
-    /**
-     *  Protected helper class to convert from an iterator of MultiSetEntries
-     *  to an iterator over individual items - repeating items the appropriate number of times
-     *  depending on its count.
-     */
-    template <typename T, typename TRAITS>
-    struct MultiSet<T, TRAITS>::_IRep::_ElementsIterableHelper : public Iterable<T> {
-        using MyIteratorRep_ = typename ElementsIteratorHelper_::Rep;
-        using MyDataBLOB_    = ElementsIteratorHelperContext_;
-        struct MyIterableRep_ : Traversal::IterableFromIterator<T, MyIteratorRep_, MyDataBLOB_>::_Rep,
-                                public Memory::UseBlockAllocationIfAppropriate<MyIterableRep_> {
-            using inherited = typename Traversal::IterableFromIterator<T, MyIteratorRep_, MyDataBLOB_>::_Rep;
-            MyIterableRep_ (const ElementsIteratorHelperContext_& context)
-                : inherited{context}
-            {
-            }
-            virtual size_t size () const override
-            {
-                size_t n = 0;
-                for (Iterator<CountedValue<T>> i = this->_fContextForEachIterator.fMultiSet->MakeIterator (nullptr); not i.Done (); ++i) {
-                    n += i->fCount;
-                }
-                return n;
-            }
-            virtual bool empty () const override { return this->_fContextForEachIterator.fMultiSet->empty (); }
-            virtual shared_ptr<typename Iterable<T>::_IRep> Clone () const override
-            {
-                return Memory::MakeSharedPtr<MyIterableRep_> (*this);
-            }
-        };
-        _ElementsIterableHelper (const shared_ptr<_IRep>& iterateOverMultiSet)
-            : Iterable<T>{Memory::MakeSharedPtr<MyIterableRep_> (
-                  ElementsIteratorHelperContext_{iterateOverMultiSet, iterateOverMultiSet->MakeIterator (nullptr)})}
-        {
-        }
-    };
-
-    template <typename T, typename TRAITS>
-    struct MultiSet<T, TRAITS>::_IRep::UniqueElementsIteratorHelperContext_ {
-        UniqueElementsIteratorHelperContext_ (const shared_ptr<_IRep>& tally, const Iterator<value_type>& delegateTo)
-            : fMultiSet{tally}
-            , fMultiSetIterator{delegateTo}
-        {
-        }
-        shared_ptr<_IRep>    fMultiSet;
-        Iterator<value_type> fMultiSetIterator;
-    };
-
-    template <typename T, typename TRAITS>
-    struct MultiSet<T, TRAITS>::_IRep::UniqueElementsIteratorHelper_ : public Iterator<T> {
-        struct Rep : public Iterator<T>::IRep, public Memory::UseBlockAllocationIfAppropriate<Rep> {
-            using inherited = typename Iterator<T>::IRep;
-            UniqueElementsIteratorHelperContext_ fContext;
-            Rep (const UniqueElementsIteratorHelperContext_& context)
-                : fContext{context}
-            {
-            }
-            virtual void More (optional<T>* result, bool advance) override
-            {
-                RequireNotNull (result);
-                bool done = fContext.fMultiSetIterator.Done ();
-                if (not done and advance) {
-                    ++fContext.fMultiSetIterator;
-                    done = fContext.fMultiSetIterator.Done ();
-                }
-                if (done) {
-                    *result = nullopt;
-                }
-                else {
-                    *result = fContext.fMultiSetIterator->fValue;
-                }
-            }
-            virtual unique_ptr<typename Iterator<T>::IRep> Clone () const override { return make_unique<Rep> (*this); }
-            virtual bool                                   Equals (const typename Iterator<T>::IRep* /*rhs*/) const override
-            {
-                AssertNotImplemented ();
-                return false;
-            }
-        };
-        UniqueElementsIteratorHelper_ (const shared_ptr<_IRep>& tally)
-            : Iterator<T>{Memory::MakeSharedPtr<Rep> (UniqueElementsIteratorHelperContext_{tally, tally->MakeIterator (tally.get ())})}
-        {
-        }
-    };
-
-    /**
-     *  Protected helper class to convert from an iterator of MultiSetEntries
-     *  to an iterator over unique individual items.
-     */
-    template <typename T, typename TRAITS>
-    struct MultiSet<T, TRAITS>::_IRep::_UniqueElementsHelper : public Iterable<T> {
-        using MyIteratorRep_ = typename UniqueElementsIteratorHelper_::Rep;
-        using MyDataBLOB_    = UniqueElementsIteratorHelperContext_;
-        struct MyIterableRep_ : Traversal::IterableFromIterator<T, MyIteratorRep_, MyDataBLOB_>::_Rep,
-                                public Memory::UseBlockAllocationIfAppropriate<MyIterableRep_> {
-            using inherited = typename Traversal::IterableFromIterator<T, MyIteratorRep_, MyDataBLOB_>::_Rep;
-            MyIterableRep_ (const UniqueElementsIteratorHelperContext_& context)
-                : inherited{context}
-            {
-            }
-            virtual size_t size () const override { return this->_fContextForEachIterator.fMultiSet->size (); }
-            virtual bool   empty () const override { return this->_fContextForEachIterator.fMultiSet->empty (); }
-            virtual shared_ptr<typename Iterable<T>::_IRep> Clone () const override { return make_unique<MyIterableRep_> (*this); }
-        };
-        _UniqueElementsHelper (const shared_ptr<_IRep>& tally)
-            : Iterable<T>{make_unique<MyIterableRep_> (UniqueElementsIteratorHelperContext_{tally, tally->MakeIterator (nullptr)})}
-        {
-        }
-    };
-
-    /*
-     ********************************************************************************
      ************************* MultiSet<T, TRAITS>::_IRep ***************************
      ********************************************************************************
      */
@@ -224,18 +36,6 @@ namespace Stroika::Foundation::Containers {
             }
         }
         return true;
-    }
-    template <typename T, typename TRAITS>
-    Iterable<T> MultiSet<T, TRAITS>::_IRep::_Elements_Reference_Implementation (const shared_ptr<_IRep>& thisSharedPtr) const
-    {
-        Require (thisSharedPtr.get () == this); // allows reference counting but without using enable_shared_from_this (so cheap!)
-        return _ElementsIterableHelper{thisSharedPtr};
-    }
-    template <typename T, typename TRAITS>
-    Iterable<T> MultiSet<T, TRAITS>::_IRep::_UniqueElements_Reference_Implementation (const shared_ptr<_IRep>& thisSharedPtr) const
-    {
-        Require (thisSharedPtr.get () == this); // allows reference counting but without using enable_shared_from_this (so cheap!)
-        return _UniqueElementsHelper{thisSharedPtr};
     }
 
     /*
@@ -362,16 +162,50 @@ namespace Stroika::Foundation::Containers {
     template <typename T, typename TRAITS>
     inline Iterable<T> MultiSet<T, TRAITS>::Elements () const
     {
-        _SafeReadRepAccessor<_IRep> accessor{this};
-        //tmphack cast
-        return accessor._ConstGetRep ().Elements (accessor._ConstGetRepSharedPtr ());
+        // Need explicit struct because we need to re-create the iterator on copies
+        // Not just simple map cuz must pause and 'create' new extra elements
+        struct Context_ {
+            MultiSet<T, TRAITS>       fOriginalMultiset;
+            Iterator<CountedValue<T>> fCurrentIteratorOverOrig;
+            size_t fIthAdvanceOfIterator{0}; // because not a random-accessor iterator so hard to compute without tracking
+            size_t fIthOfCurrentIterator{0};
+            Context_ (const Context_& rhs)
+                : fOriginalMultiset{rhs.fOriginalMultiset}
+                , fCurrentIteratorOverOrig{fOriginalMultiset.MakeIterator ()}
+                , fIthAdvanceOfIterator{rhs.fIthAdvanceOfIterator}
+                , fIthOfCurrentIterator{rhs.fIthOfCurrentIterator}
+            {
+                std::advance (fCurrentIteratorOverOrig, fIthAdvanceOfIterator);
+            }
+            Context_ (const MultiSet<T, TRAITS>& ms)
+                : fOriginalMultiset{ms}
+                , fCurrentIteratorOverOrig{fOriginalMultiset.MakeIterator ()}
+            {
+            }
+            Context_& operator= (Context_&) = delete; // could implement but I think no need
+        };
+        function<optional<T> ()> getNext = [context = Context_{*this}] () mutable -> optional<T> {
+            again:
+                if (context.fCurrentIteratorOverOrig) {
+                    if (context.fIthOfCurrentIterator < context.fCurrentIteratorOverOrig->fCount) {
+                        ++context.fIthOfCurrentIterator;
+                        return context.fCurrentIteratorOverOrig->fValue;
+                    }
+                    else {
+                        ++context.fCurrentIteratorOverOrig;
+                        ++context.fIthAdvanceOfIterator;
+                        context.fIthOfCurrentIterator = 0;
+                        goto again;
+                    }
+                }
+                return nullopt;
+        };
+        return Traversal::CreateGenerator (getNext);
     }
     template <typename T, typename TRAITS>
     inline Iterable<T> MultiSet<T, TRAITS>::UniqueElements () const
     {
-        //tmphack cast
-        _SafeReadRepAccessor<_IRep> accessor{this};
-        return accessor._ConstGetRep ().UniqueElements (accessor._ConstGetRepSharedPtr ());
+        return this->Map<T> ([] (const CountedValue<T>& cv) { return cv.fValue; });
     }
     template <typename T, typename TRAITS>
     Iterable<CountedValue<T>> MultiSet<T, TRAITS>::Top () const
