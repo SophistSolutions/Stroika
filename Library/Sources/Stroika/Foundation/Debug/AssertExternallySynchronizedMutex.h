@@ -69,7 +69,7 @@ namespace Stroika::Foundation::Debug {
 #endif
 
     /**
-     *  \brief      NOT a real mutex - just a debugging infrastructure support tool so in debug builds can be assured threadsafe
+     *  \brief NOT a real mutex - just a debugging infrastructure support tool so in debug builds can be assured threadsafe which is syntactically used like a mutex, for SIMILAR reasons in similar places
      *
      *  This class is a 'no op' in production builds, as a 'recursive mutex' for a class that needs
      *  no thread locking because its externally synchronized.
