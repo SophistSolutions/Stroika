@@ -223,6 +223,10 @@ namespace Stroika::Foundation::Containers {
          *
          *          It is equivilent to copying the underlying collection and 'projecting' the
          *          key fields.
+         * 
+         *          Note the returned Iterable is detached from the original, and doesn't see any changes
+         *          to it, and its lifetime is like a copy of a shared_ptr - lasts as long as the
+         *          reference.
          *
          *  \em Design Note:
          *      The analagous method in C#.net - Dictionary<TKey, TValue>.KeyCollection
@@ -250,6 +254,10 @@ namespace Stroika::Foundation::Containers {
          *
          *          It is equivilent to copying the underlying collection and 'projecting' the
          *          value fields.
+         * 
+         *          Note the returned Iterable is detached from the original, and doesn't see any changes
+         *          to it, and its lifetime is like a copy of a shared_ptr - lasts as long as the
+         *          reference.
          *
          *  \em Design Note:
          *      The analagous method in C#.net - Dictionary<TKey, TValue>.ValueCollection
@@ -593,11 +601,9 @@ namespace Stroika::Foundation::Containers {
         virtual ~_IRep () = default;
 
     public:
-        virtual KeyEqualsCompareFunctionType GetKeyEqualsComparer () const                               = 0;
-        virtual shared_ptr<_IRep>            CloneEmpty () const                                         = 0;
-        virtual shared_ptr<_IRep>            CloneAndPatchIterator (Iterator<value_type>* i) const       = 0;
-        virtual Iterable<key_type>           Keys (const shared_ptr<_IRep>& thisSharedPtr) const         = 0;
-        virtual Iterable<mapped_type>        MappedValues (const shared_ptr<_IRep>& thisSharedPtr) const = 0;
+        virtual KeyEqualsCompareFunctionType GetKeyEqualsComparer () const                         = 0;
+        virtual shared_ptr<_IRep>            CloneEmpty () const                                   = 0;
+        virtual shared_ptr<_IRep>            CloneAndPatchIterator (Iterator<value_type>* i) const = 0;
         // always clear/set item, and ensure return value == item->IsValidItem());
         // 'item' arg CAN be nullptr
         virtual Iterable<mapped_type> Lookup (ArgByValueType<KEY_TYPE> key) const                            = 0;
@@ -606,10 +612,6 @@ namespace Stroika::Foundation::Containers {
         // if nextI is non-null, its filled in with the next item in iteration order after i (has been removed)
         virtual void Remove (const Iterator<value_type>& i, Iterator<value_type>* nextI)                                       = 0;
         virtual void Update (const Iterator<value_type>& i, ArgByValueType<mapped_type> newValue, Iterator<value_type>* nextI) = 0;
-
-    protected:
-        nonvirtual Iterable<key_type> _Keys_Reference_Implementation (const shared_ptr<_IRep>& thisSharedPtr) const;
-        nonvirtual Iterable<mapped_type> _Values_Reference_Implementation (const shared_ptr<_IRep>& thisSharedPtr) const;
     };
 
     /**

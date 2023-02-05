@@ -218,8 +218,8 @@ Each container Archetype has its own set of arguments that make sense for its co
 - Construct from an underlying rep smart pointer. This is principally (exclusively?) used in constructing concrete container types.
   ~~~
   protected:
-      explicit CONTAINER (_IRepSharedPtr&& src) noexcept;
-      explicit CONTAINER (const _IRepSharedPtr& src) noexcept;
+      explicit CONTAINER (shared_ptr<_IRep>&& src) noexcept;
+      explicit CONTAINER (const shared_ptr<_IRep>& src) noexcept;
   ~~~
 
 - CONTAINERS can generally be move copied/assigned, just generically manipulating by the base class Iterable<> implementation - really just done by SharedByValue used in Iterable<>.
@@ -247,6 +247,12 @@ KeyedCollection (KEY_EQUALS_COMPARER&& keyComparer, CONTAINER_OF_ADDABLE&& src);
 - Stroika container iterators must have shorter lifetime than the container they are iterating over.
 
 - Stroika container iterators become invalidated when their underlying container has changed. In debug builds, use of an iterator (other than destroying it) results in an assertion failure. This is in SHARP CONTRAST to the (safe iterator patching) Stroika used todo before 2.1b14.
+
+## Note About Sub-Containers/Derived Parts Containers
+
+- Stroika containers can have subsets or projections taken of them, either through Iterable LINQ-like APIs, or
+  through methods like Mapping<>::Key(), or Multiset<>::Elements () etc. These become logically detatched from thier creator,
+  and can be hung into indefinitely, do not allow modifications, and do not see modifications of thier source container.
 
 ## Other Modules
   - [Adapters/](Adapters/ReadMe.md)

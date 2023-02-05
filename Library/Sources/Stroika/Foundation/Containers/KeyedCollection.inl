@@ -131,8 +131,7 @@ namespace Stroika::Foundation::Containers {
     template <typename T, typename KEY_TYPE, typename TRAITS>
     inline Iterable<KEY_TYPE> KeyedCollection<T, KEY_TYPE, TRAITS>::Keys () const
     {
-        _SafeReadRepAccessor<_IRep> accessors{this};
-        return accessors._ConstGetRep ().Keys (accessors._ConstGetRepSharedPtr ());
+        return this->Map<KEY_TYPE> ([keyExtractor = this->GetKeyExtractor ()] (const T& t) { return keyExtractor (t); });
     }
     template <typename T, typename KEY_TYPE, typename TRAITS>
     inline bool KeyedCollection<T, KEY_TYPE, TRAITS>::Contains (ArgByValueType<KEY_TYPE> key) const
@@ -388,54 +387,6 @@ namespace Stroika::Foundation::Containers {
         if constexpr (qDebug) {
             [[maybe_unused]] _SafeReadRepAccessor<_IRep> ignored{this};
         }
-    }
-
-    /*
-     ********************************************************************************
-     ****************** KeyedCollection<T, KEY_TYPE, TRAITS>::_IRep *****************
-     ********************************************************************************
-     */
-    template <typename T, typename KEY_TYPE, typename TRAITS>
-    Iterable<KEY_TYPE> KeyedCollection<T, KEY_TYPE, TRAITS>::_IRep::_Keys_Reference_Implementation (const shared_ptr<_IRep>& thisSharedPtr) const
-    {
-        using RecCntBumperType = shared_ptr<typename Iterable<T>::_IRep>;
-        struct MyIterable_ : Iterable<KEY_TYPE> {
-            using BaseCollectionType_ = KeyedCollection<T, KEY_TYPE, TRAITS>;
-            struct MyIterableRep_ : Traversal::IterableFromIterator<KEY_TYPE>::_Rep, public Memory::UseBlockAllocationIfAppropriate<MyIterableRep_> {
-                const BaseCollectionType_::_IRep* fBaseCollection_;
-                RecCntBumperType                  fSavedSharedPtrForRefCntBump_;
-                MyIterableRep_ (const BaseCollectionType_::_IRep* m, const RecCntBumperType& thisSharedPtr)
-                    : fBaseCollection_{m}
-                    , fSavedSharedPtrForRefCntBump_{thisSharedPtr}
-                {
-                }
-                virtual Iterator<KEY_TYPE> MakeIterator ([[maybe_unused]] const shared_ptr<typename Iterable<KEY_TYPE>::_IRep>& thisSharedPtr) const override
-                {
-                    auto myContext    = make_shared<Iterator<T>> (fBaseCollection_->MakeIterator (fSavedSharedPtrForRefCntBump_));
-                    auto keyExtractor = fBaseCollection_->GetKeyExtractor ();
-                    auto getNext      = [myContext, keyExtractor] () -> optional<KEY_TYPE> {
-                        if (myContext->Done ()) {
-                            return nullopt;
-                        }
-                        else {
-                            auto result = keyExtractor (**myContext);
-                            ++(*myContext);
-                            return result;
-                        }
-                    };
-                    return Traversal::CreateGeneratorIterator<KEY_TYPE> (getNext);
-                }
-                virtual shared_ptr<typename Iterable<KEY_TYPE>::_IRep> Clone () const override
-                {
-                    return Memory::MakeSharedPtr<MyIterableRep_> (*this);
-                }
-            };
-            MyIterable_ (const BaseCollectionType_::_IRep* m, const RecCntBumperType& thisSharedPtr)
-                : Iterable<KEY_TYPE>{Memory::MakeSharedPtr<MyIterableRep_> (m, thisSharedPtr)}
-            {
-            }
-        };
-        return MyIterable_{this, thisSharedPtr};
     }
 
     /*

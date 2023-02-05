@@ -217,6 +217,10 @@ namespace Stroika::Foundation::Containers {
          *  returned value is a copy of the keys (by value) - at least logically (implementations
          *  maybe smart enough to use lazy copying).
          *
+         *  Note the returned Iterable is detached from the original, and doesn't see any changes
+         *  to it, and its lifetime is like a copy of a shared_ptr - lasts as long as the
+         *  reference.
+         * 
          *  \em Design Note:
          *      The analagous method in C#.net - Dictionary<TKey, TValue>.KeyCollection
          *      (http://msdn.microsoft.com/en-us/library/yt2fy5zk(v=vs.110).aspx) returns a live reference
@@ -238,6 +242,10 @@ namespace Stroika::Foundation::Containers {
          *  Note this method may not return a collection which is sorted. Note also, the
          *  returned value is a copy of the rangle (by value) - at least logically (implementations
          *  maybe smart enough to use lazy copying).
+         *
+         *  Note the returned Iterable is detached from the original, and doesn't see any changes
+         *  to it, and its lifetime is like a copy of a shared_ptr - lasts as long as the
+         *  reference.
          *
          *  \em Design Note:
          *      The analagous method in C#.net - Dictionary<TKey, TValue>.KeyCollection
@@ -318,14 +326,14 @@ namespace Stroika::Foundation::Containers {
          * For each value in the source set, map it back using the bijection to the target set.
          *  \req that each element be present in the bijection
          */
-        nonvirtual Iterable<RangeType> Map (const Iterable<DomainType>& values) const;
+        nonvirtual Iterable<RangeType> MapToRange (const Iterable<DomainType>& values) const;
 
     public:
         /**
          * For each value in the source set, map it back using the bijection to the target set.
          *  \req that each element be present in the bijection
          */
-        nonvirtual Iterable<DomainType> InverseMap (const Iterable<RangeType>& values) const;
+        nonvirtual Iterable<DomainType> MapToDomain (const Iterable<RangeType>& values) const;
 
     public:
         /**
@@ -528,6 +536,17 @@ namespace Stroika::Foundation::Containers {
 
     protected:
         nonvirtual void _AssertRepValidType () const;
+
+    public:
+        nonvirtual [[deprecated ("String Stroika v3.0d1, Name deprecated - use MapToRange")]] Iterable<RangeType> Map (const Iterable<DomainType>& values) const
+        {
+            return MapToRange (values);
+        }
+        nonvirtual [[deprecated ("String Stroika v3.0d1, Name deprecated - use MapToRange")]] Iterable<DomainType>
+        InverseMap (const Iterable<RangeType>& values) const
+        {
+            return MapToDomain (values);
+        }
     };
 
     /**
@@ -548,13 +567,11 @@ namespace Stroika::Foundation::Containers {
         virtual ~_IRep () = default;
 
     public:
-        virtual shared_ptr<_IRep>               CloneEmpty () const                                     = 0;
-        virtual shared_ptr<_IRep>               CloneAndPatchIterator (Iterator<value_type>* i) const   = 0;
-        virtual bool                            Equals (const _IRep& rhs) const                         = 0;
-        virtual DomainEqualsCompareFunctionType GetDomainEqualsComparer () const                        = 0;
-        virtual RangeEqualsCompareFunctionType  GetRangeEqualsComparer () const                         = 0;
-        virtual Iterable<DomainType>            Preimage (const shared_ptr<_IRep>& thisSharedPtr) const = 0;
-        virtual Iterable<RangeType>             Image (const shared_ptr<_IRep>& thisSharedPtr) const    = 0;
+        virtual shared_ptr<_IRep>               CloneEmpty () const                                   = 0;
+        virtual shared_ptr<_IRep>               CloneAndPatchIterator (Iterator<value_type>* i) const = 0;
+        virtual bool                            Equals (const _IRep& rhs) const                       = 0;
+        virtual DomainEqualsCompareFunctionType GetDomainEqualsComparer () const                      = 0;
+        virtual RangeEqualsCompareFunctionType  GetRangeEqualsComparer () const                       = 0;
         // always clear/set item, and ensure return value == item->IsValidItem());
         // 'item' arg CAN be nullptr
         virtual bool Lookup (ArgByValueType<DOMAIN_TYPE> key, optional<RangeType>* item) const        = 0;
@@ -573,10 +590,6 @@ namespace Stroika::Foundation::Containers {
          */
     protected:
         nonvirtual bool _Equals_Reference_Implementation (const _IRep& rhs) const;
-
-    protected:
-        nonvirtual Iterable<DOMAIN_TYPE> _PreImage_Reference_Implementation (const shared_ptr<_IRep>& thisSharedPtr) const;
-        nonvirtual Iterable<RANGE_TYPE> _Image_Reference_Implementation (const shared_ptr<_IRep>& thisSharedPtr) const;
     };
 
 }

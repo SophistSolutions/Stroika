@@ -533,7 +533,6 @@ namespace Stroika::Foundation::Containers {
         virtual KeyEqualityComparerType GetKeyEqualityComparer () const                       = 0;
         virtual shared_ptr<_IRep>       CloneEmpty () const                                   = 0;
         virtual shared_ptr<_IRep>       CloneAndPatchIterator (Iterator<value_type>* i) const = 0;
-        virtual Iterable<KEY_TYPE>      Keys (const shared_ptr<_IRep>& thisSharedPtr) const   = 0;
         // always clear/set item, and ensure return value == item->IsValidItem());
         // 'item' arg CAN be nullptr
         virtual bool Lookup (ArgByValueType<KeyType> key, optional<value_type>* item) const = 0;
@@ -542,9 +541,6 @@ namespace Stroika::Foundation::Containers {
         virtual void Remove (const Iterator<value_type>& i, Iterator<value_type>* nextI) = 0;
         // returns true iff a change made, false if elt was not present
         virtual bool RemoveIf (ArgByValueType<KEY_TYPE> key) = 0;
-
-    protected:
-        nonvirtual Iterable<KEY_TYPE> _Keys_Reference_Implementation (const shared_ptr<_IRep>& thisSharedPtr) const;
     };
 
     /**

@@ -143,14 +143,16 @@ namespace Stroika::Foundation::Containers {
     template <typename DOMAIN_TYPE, typename RANGE_TYPE>
     inline Iterable<DOMAIN_TYPE> Bijection<DOMAIN_TYPE, RANGE_TYPE>::Preimage () const
     {
-        _SafeReadRepAccessor<_IRep> accessor{this};
-        return accessor._ConstGetRep ().Preimage (accessor._ConstGetRepSharedPtr ());
+        // need inherited temporarily til we remove deprecated Map function
+        //return this->template Map<DOMAIN_TYPE> ([] (const pair<DOMAIN_TYPE, RANGE_TYPE>& elt) { return elt.first; });
+        return this->inherited::Map<DOMAIN_TYPE> ([] (const pair<DOMAIN_TYPE, RANGE_TYPE>& elt) { return elt.first; });
     }
     template <typename DOMAIN_TYPE, typename RANGE_TYPE>
     inline Iterable<RANGE_TYPE> Bijection<DOMAIN_TYPE, RANGE_TYPE>::Image () const
     {
-        _SafeReadRepAccessor<_IRep> accessor{this};
-        return accessor._ConstGetRep ().Image (accessor._ConstGetRepSharedPtr ());
+        // need inherited temporarily til we remove deprecated Map function
+        //return this->Map<RANGE_TYPE> ([] (const pair<DOMAIN_TYPE, RANGE_TYPE>& elt) { return elt.second; });
+        return this->inherited::Map<RANGE_TYPE> ([] (const pair<DOMAIN_TYPE, RANGE_TYPE>& elt) { return elt.second; });
     }
     template <typename DOMAIN_TYPE, typename RANGE_TYPE>
     inline bool Bijection<DOMAIN_TYPE, RANGE_TYPE>::Lookup (ArgByValueType<DomainType> key, RangeType* item) const
@@ -231,7 +233,7 @@ namespace Stroika::Foundation::Containers {
         return r.has_value () ? *r : defaultValue;
     }
     template <typename DOMAIN_TYPE, typename RANGE_TYPE>
-    auto Bijection<DOMAIN_TYPE, RANGE_TYPE>::Map (const Iterable<DomainType>& values) const -> Iterable<RangeType>
+    auto Bijection<DOMAIN_TYPE, RANGE_TYPE>::MapToRange (const Iterable<DomainType>& values) const -> Iterable<RangeType>
     {
         vector<RANGE_TYPE> tmp;
         tmp.reserve (values.size ());
@@ -241,7 +243,7 @@ namespace Stroika::Foundation::Containers {
         return Iterable<RANGE_TYPE>{tmp};
     }
     template <typename DOMAIN_TYPE, typename RANGE_TYPE>
-    auto Bijection<DOMAIN_TYPE, RANGE_TYPE>::InverseMap (const Iterable<RangeType>& values) const -> Iterable<DomainType>
+    auto Bijection<DOMAIN_TYPE, RANGE_TYPE>::MapToDomain (const Iterable<RangeType>& values) const -> Iterable<DomainType>
     {
         vector<DOMAIN_TYPE> tmp;
         tmp.reserve (values.size ());
@@ -453,96 +455,6 @@ namespace Stroika::Foundation::Containers {
      ************** Bijection<DOMAIN_TYPE, RANGE_TYPE>::_IRep ***********************
      ********************************************************************************
      */
-    template <typename DOMAIN_TYPE, typename RANGE_TYPE>
-    Iterable<DOMAIN_TYPE> Bijection<DOMAIN_TYPE, RANGE_TYPE>::_IRep::_PreImage_Reference_Implementation (const shared_ptr<_IRep>& thisSharedPtr) const
-    {
-        using RecCntBumperType = shared_ptr<_IRep>;
-        struct MyIterable_ : Iterable<DOMAIN_TYPE> {
-            struct MyIterableRep_ : Traversal::IterableFromIterator<DOMAIN_TYPE>::_Rep, public Memory::UseBlockAllocationIfAppropriate<MyIterableRep_> {
-                const Bijection::_IRep* fBijection_;
-                RecCntBumperType        fSavedSharedPtrForRefCntBump_;
-                MyIterableRep_ (const Bijection::_IRep* b, const RecCntBumperType& thisSharedPtr)
-                    : fBijection_{b}
-                    , fSavedSharedPtrForRefCntBump_{thisSharedPtr}
-                {
-                    Require (fBijection_ != nullptr); // but thisSharedPtr can be null
-                }
-                virtual Iterator<DOMAIN_TYPE> MakeIterator ([[maybe_unused]] const shared_ptr<typename Iterable<DOMAIN_TYPE>::_IRep>& thisSharedPtr) const override
-                {
-                    // If we have many iterator copies, we need ONE copy of this sharedContext (they all share a reference to the same container)
-                    auto sharedContext = make_tuple (fBijection_, fSavedSharedPtrForRefCntBump_);
-                    // If we have many iterator copies, each needs to copy their 'base iterator' (this is their 'index' into the container)
-                    // Both the 'sharedContext' and the perIteratorContextBaseIterator' get stored into the lambda closure so they get appropriately copied as you copy iterators
-                    auto getNext = [sharedContext, perIteratorContextBaseIterator =
-                                                       get<0> (sharedContext)->MakeIterator (get<1> (sharedContext))] () mutable -> optional<DOMAIN_TYPE> {
-                        if (perIteratorContextBaseIterator.Done ()) {
-                            return nullopt;
-                        }
-                        else {
-                            auto result = perIteratorContextBaseIterator->first;
-                            ++perIteratorContextBaseIterator;
-                            return result;
-                        }
-                    };
-                    return Traversal::CreateGeneratorIterator<DOMAIN_TYPE> (getNext);
-                }
-                virtual shared_ptr<typename Iterable<DOMAIN_TYPE>::_IRep> Clone () const override
-                {
-                    return make_unique<MyIterableRep_> (*this);
-                }
-            };
-            MyIterable_ (const Bijection::_IRep* b, const RecCntBumperType& thisSharedPtr)
-                : Iterable<DOMAIN_TYPE>{make_unique<MyIterableRep_> (b, thisSharedPtr)}
-            {
-            }
-        };
-        return MyIterable_{this, thisSharedPtr};
-    }
-    template <typename DOMAIN_TYPE, typename RANGE_TYPE>
-    Iterable<RANGE_TYPE> Bijection<DOMAIN_TYPE, RANGE_TYPE>::_IRep::_Image_Reference_Implementation (const shared_ptr<_IRep>& thisSharedPtr) const
-    {
-        using RecCntBumperType = shared_ptr<_IRep>;
-        struct MyIterable_ : Iterable<RANGE_TYPE> {
-            struct MyIterableRep_ : Traversal::IterableFromIterator<RANGE_TYPE>::_Rep, public Memory::UseBlockAllocationIfAppropriate<MyIterableRep_> {
-                const Bijection::_IRep* fBijection_;
-                RecCntBumperType        fSavedSharedPtrForRefCntBump_;
-                MyIterableRep_ (const Bijection::_IRep* b, const RecCntBumperType& thisSharedPtr)
-                    : fBijection_{b}
-                    , fSavedSharedPtrForRefCntBump_{thisSharedPtr}
-                {
-                    Require (fBijection_ != nullptr); // but thisSharedPtr can be null
-                }
-                virtual Iterator<RANGE_TYPE> MakeIterator ([[maybe_unused]] const shared_ptr<typename Iterable<RANGE_TYPE>::_IRep>& thisSharedPtr) const override
-                {
-                    // If we have many iterator copies, we need ONE copy of this sharedContext (they all share a reference to the same container)
-                    auto sharedContext = make_tuple (fBijection_, fSavedSharedPtrForRefCntBump_);
-                    // If we have many iterator copies, each needs to copy their 'base iterator' (this is their 'index' into the container)
-                    // Both the 'sharedContext' and the perIteratorContextBaseIterator' get stored into the lambda closure so they get appropriately copied as you copy iterators
-                    auto getNext = [sharedContext, perIteratorContextBaseIterator =
-                                                       get<0> (sharedContext)->MakeIterator (get<1> (sharedContext))] () mutable -> optional<RANGE_TYPE> {
-                        if (perIteratorContextBaseIterator.Done ()) {
-                            return nullopt;
-                        }
-                        else {
-                            auto result = perIteratorContextBaseIterator->second;
-                            ++perIteratorContextBaseIterator;
-                            return result;
-                        }
-                    };
-                    return Traversal::CreateGeneratorIterator<RANGE_TYPE> (getNext);
-                }
-                virtual shared_ptr<typename Iterable<RANGE_TYPE>::_IRep> Clone () const override
-                {
-                    return make_unique<MyIterableRep_> (*this);
-                }
-            };
-            MyIterable_ (const Bijection::_IRep* b, const RecCntBumperType& thisSharedPtr)
-                : Iterable<RANGE_TYPE>{make_unique<MyIterableRep_> (b, thisSharedPtr)}
-            {
-            }
-        };
-        return MyIterable_{this, thisSharedPtr};
-    }
     template <typename DOMAIN_TYPE, typename RANGE_TYPE>
     bool Bijection<DOMAIN_TYPE, RANGE_TYPE>::_IRep::_Equals_Reference_Implementation (const _IRep& rhs) const
     {
