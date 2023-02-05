@@ -188,7 +188,7 @@ namespace Stroika::Foundation::Traversal {
      *
      */
     template <typename T>
-    class Iterable : protected Debug::AssertExternallySynchronizedMutex {
+    class Iterable /* : protected Debug::AssertExternallySynchronizedMutex*/ {
     public:
         static_assert (is_copy_constructible_v<Iterator<T>>, "Must be able to create Iterator<T> to use Iterable<T>");
 
@@ -1236,6 +1236,9 @@ namespace Stroika::Foundation::Traversal {
          *  Rarely access in subclasses, but its occasionally needed, like in UpdatableIterator<T>
          */
         _SharedByValueRepType _fRep;
+
+    protected:
+        Debug::AssertExternallySynchronizedMutex _fThisAssertExternallySynchronized;
 
     public:
         template <typename SHARED_T>

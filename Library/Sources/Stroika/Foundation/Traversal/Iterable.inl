@@ -98,7 +98,7 @@ namespace Stroika::Foundation::Traversal {
         : fConstRef_{static_cast<const REP_SUB_TYPE*> (it->_fRep.cget ())}
         , fIterableEnvelope_{it}
 #if qDebug
-        , fAssertReadLock_{*it}
+        , fAssertReadLock_{it->_fThisAssertExternallySynchronized}
 #endif
     {
         RequireNotNull (it);
@@ -164,7 +164,7 @@ namespace Stroika::Foundation::Traversal {
     inline Iterable<T>::_SafeReadWriteRepAccessor<REP_SUB_TYPE>::_SafeReadWriteRepAccessor (Iterable<T>* iterableEnvelope)
         : fRepReference_{static_cast<REP_SUB_TYPE*> (iterableEnvelope->_fRep.rwget ())}
 #if qDebug
-        , fAssertWriteLock_{*iterableEnvelope}
+        , fAssertWriteLock_{iterableEnvelope->_fThisAssertExternallySynchronized}
         , fIterableEnvelope_{iterableEnvelope}
 #endif
     {
