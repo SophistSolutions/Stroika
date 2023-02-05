@@ -641,11 +641,9 @@ namespace Stroika::Foundation::Containers {
         virtual ~_IRep () = default;
 
     public:
-        virtual KeyEqualsCompareFunctionType GetKeyEqualsComparer () const                               = 0;
-        virtual shared_ptr<_IRep>            CloneEmpty () const                                         = 0;
-        virtual shared_ptr<_IRep>            CloneAndPatchIterator (Iterator<value_type>* i) const       = 0;
-        virtual Iterable<key_type>           Keys (const shared_ptr<_IRep>& thisSharedPtr) const         = 0;
-        virtual Iterable<mapped_type>        MappedValues (const shared_ptr<_IRep>& thisSharedPtr) const = 0;
+        virtual KeyEqualsCompareFunctionType GetKeyEqualsComparer () const                         = 0;
+        virtual shared_ptr<_IRep>            CloneEmpty () const                                   = 0;
+        virtual shared_ptr<_IRep>            CloneAndPatchIterator (Iterator<value_type>* i) const = 0;
         // always clear/set item, and ensure return value == item->IsValidItem());
         // 'item' arg CAN be nullptr
         virtual bool Lookup (ArgByValueType<KEY_TYPE> key, optional<mapped_type>* item) const = 0;
@@ -655,10 +653,6 @@ namespace Stroika::Foundation::Containers {
         // if nextI is non-null, its filled in with the next item in iteration order after i (has been removed)
         virtual void Remove (const Iterator<value_type>& i, Iterator<value_type>* nextI)                                       = 0;
         virtual void Update (const Iterator<value_type>& i, ArgByValueType<mapped_type> newValue, Iterator<value_type>* nextI) = 0;
-
-    protected:
-        nonvirtual Iterable<key_type> _Keys_Reference_Implementation (const shared_ptr<_IRep>& thisSharedPtr) const;
-        nonvirtual Iterable<mapped_type> _Values_Reference_Implementation (const shared_ptr<_IRep>& thisSharedPtr) const;
     };
 
     /**

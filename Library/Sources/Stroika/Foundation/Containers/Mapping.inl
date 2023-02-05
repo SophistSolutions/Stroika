@@ -113,14 +113,12 @@ namespace Stroika::Foundation::Containers {
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     inline Iterable<KEY_TYPE> Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::Keys () const
     {
-        _SafeReadRepAccessor<_IRep> accessor{this};
-        return accessor._ConstGetRep ().Keys (accessor._ConstGetRepSharedPtr ());
+        return this->Map<KEY_TYPE> ([] (const KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>& kvp) { return kvp.fKey; });
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     inline Iterable<MAPPED_VALUE_TYPE> Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::MappedValues () const
     {
-        _SafeReadRepAccessor<_IRep> accessor{this};
-        return accessor._ConstGetRep ().MappedValues (accessor._ConstGetRepSharedPtr ());
+        return this->Map<MAPPED_VALUE_TYPE> ([] (const KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>& kvp) { return kvp.fValue; });
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     inline bool Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::Lookup (ArgByValueType<key_type> key, mapped_type* item) const
@@ -481,101 +479,7 @@ namespace Stroika::Foundation::Containers {
 
     /*
      ********************************************************************************
-     ****************** Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::_IRep *****************
-     ********************************************************************************
-     */
-    template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-    Iterable<KEY_TYPE> Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::_IRep::_Keys_Reference_Implementation (const shared_ptr<_IRep>& thisSharedPtr) const
-    {
-        RequireNotNull (thisSharedPtr);
-        using RecCntBumperType = shared_ptr<_IRep>;
-        struct MyIterable_ : Iterable<KEY_TYPE> {
-            using MyMapping_ = Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>;
-            struct MyIterableRep_ : Traversal::IterableFromIterator<KEY_TYPE>::_Rep, public Memory::UseBlockAllocationIfAppropriate<MyIterableRep_> {
-                const MyMapping_::_IRep* fMapping_;
-                RecCntBumperType         fSavedSharedPtrForRefCntBump_;
-                MyIterableRep_ (const MyMapping_::_IRep* mapRep, const RecCntBumperType& thisSharedPtr)
-                    : fMapping_{mapRep}
-                    , fSavedSharedPtrForRefCntBump_{thisSharedPtr}
-                {
-                }
-                virtual Iterator<KEY_TYPE> MakeIterator ([[maybe_unused]] const shared_ptr<typename Iterable<KEY_TYPE>::_IRep>& thisSharedPtr) const override
-                {
-                    auto myContext =
-                        make_shared<Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>> (fMapping_->MakeIterator (fSavedSharedPtrForRefCntBump_));
-                    auto getNext = [myContext] () -> optional<KEY_TYPE> {
-                        if (myContext->Done ()) {
-                            return nullopt;
-                        }
-                        else {
-                            auto result = (*myContext)->fKey;
-                            ++(*myContext);
-                            return result;
-                        }
-                    };
-                    return Traversal::CreateGeneratorIterator<KEY_TYPE> (getNext);
-                }
-                virtual shared_ptr<typename Iterable<KEY_TYPE>::_IRep> Clone () const override
-                {
-                    return Memory::MakeSharedPtr<MyIterableRep_> (*this);
-                }
-            };
-            MyIterable_ (const MyMapping_::_IRep* mapRep, const RecCntBumperType& thisSharedPtr)
-                : Iterable<KEY_TYPE>{Memory::MakeSharedPtr<MyIterableRep_> (mapRep, thisSharedPtr)}
-            {
-            }
-        };
-        return MyIterable_{this, thisSharedPtr};
-    }
-    template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-    Iterable<MAPPED_VALUE_TYPE> Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::_IRep::_Values_Reference_Implementation (const shared_ptr<_IRep>& thisSharedPtr) const
-    {
-        RequireNotNull (thisSharedPtr);
-        using RecCntBumperType = shared_ptr<_IRep>;
-        struct MyIterable_ : Iterable<MAPPED_VALUE_TYPE> {
-            using MyMapping_ = Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>;
-            struct MyIterableRep_ : Traversal::IterableFromIterator<MAPPED_VALUE_TYPE>::_Rep,
-                                    public Memory::UseBlockAllocationIfAppropriate<MyIterableRep_> {
-                const MyMapping_::_IRep* fMapping_;
-                RecCntBumperType         fSavedSharedPtrForRefCntBump_;
-                MyIterableRep_ (const MyMapping_::_IRep* mapRep, const RecCntBumperType& thisSharedPtr)
-                    : fMapping_{mapRep}
-                    , fSavedSharedPtrForRefCntBump_{thisSharedPtr}
-                {
-                }
-                virtual Iterator<MAPPED_VALUE_TYPE>
-                MakeIterator ([[maybe_unused]] const shared_ptr<typename Iterable<MAPPED_VALUE_TYPE>::_IRep>& thisSharedPtr) const override
-                {
-                    auto myContext =
-                        make_shared<Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>> (fMapping_->MakeIterator (fSavedSharedPtrForRefCntBump_));
-                    auto getNext = [myContext] () -> optional<MAPPED_VALUE_TYPE> {
-                        if (myContext->Done ()) {
-                            return nullopt;
-                        }
-                        else {
-                            auto result = (*myContext)->fValue;
-                            ++(*myContext);
-                            return result;
-                        }
-                    };
-                    return Traversal::CreateGeneratorIterator<MAPPED_VALUE_TYPE> (getNext);
-                }
-                virtual shared_ptr<typename Iterable<MAPPED_VALUE_TYPE>::_IRep> Clone () const override
-                {
-                    return Memory::MakeSharedPtr<MyIterableRep_> (*this);
-                }
-            };
-            MyIterable_ (const MyMapping_::_IRep* mapRep, const RecCntBumperType& thisSharedPtr)
-                : Iterable<MAPPED_VALUE_TYPE>{Memory::MakeSharedPtr<MyIterableRep_> (mapRep, thisSharedPtr)}
-            {
-            }
-        };
-        return MyIterable_{this, thisSharedPtr};
-    }
-
-    /*
-     ********************************************************************************
-     ********** Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::EqualsComparer ****************
+     ************ Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::EqualsComparer **************
      ********************************************************************************
      */
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>

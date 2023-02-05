@@ -120,16 +120,6 @@ namespace Stroika::Foundation::Containers::Concrete {
             i->Refresh (); // reflect updated rep
             return result;
         }
-        virtual Iterable<KEY_TYPE> Keys (const shared_ptr<typename Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::_IRep>& thisSharedPtr) const override
-        {
-            Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
-            return this->_Keys_Reference_Implementation (thisSharedPtr);
-        }
-        virtual Iterable<MAPPED_VALUE_TYPE> MappedValues (const shared_ptr<typename Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::_IRep>& thisSharedPtr) const override
-        {
-            Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
-            return this->_Values_Reference_Implementation (thisSharedPtr);
-        }
         virtual bool Lookup (ArgByValueType<KEY_TYPE> key, optional<MAPPED_VALUE_TYPE>* item) const override
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
