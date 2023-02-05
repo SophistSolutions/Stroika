@@ -194,7 +194,6 @@ namespace Stroika::Foundation::IO::Network::HTTP {
     inline constexpr const CacheControl CacheControl::kImmutable{
         .fCacheability = CacheControl::ePublic, .fMaxAge = CacheControl::kMaximumAgeValue, .fImmutable = true};
     inline constexpr const CacheControl CacheControl::kDisableCaching{.fCacheability = CacheControl::eNoStore};
-    inline constexpr const CacheControl CacheControl::kMustRevalidatePublic{.fCacheability = CacheControl::eNoCache};
     inline constexpr const CacheControl CacheControl::kMustRevalidatePrivate{.fCacheability = CacheControl::ePrivate, .fMustRevalidate = true};
 
 }

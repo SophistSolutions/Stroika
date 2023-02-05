@@ -19,11 +19,6 @@ namespace Stroika::Foundation::Execution {
      ********************************************************************************
      */
     inline Logger  Logger::sThe;
-    inline Logger& Logger::Get ()
-    {
-        Ensure (sThe.fRep_ != nullptr); // good but not great since no guarantee about race - that while used doesn't 'go null' in sThe DTOR
-        return sThe;
-    }
     inline Logger::Priority Logger::GetMinLogLevel () const { return fMinLogLevel_; }
     inline void             Logger::SetMinLogLevel (Priority minLogLevel) { fMinLogLevel_ = minLogLevel; }
     inline bool             Logger::WouldLog (Priority logLevel) const { return logLevel >= fMinLogLevel_ and GetAppender () != nullptr; }

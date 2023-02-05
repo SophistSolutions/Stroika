@@ -197,16 +197,6 @@ Logger::~Logger ()
 }
 #endif
 
-void Logger::ShutdownSingleton ()
-{
-    AssertNotReached (); // deprecated - use
-}
-
-void Logger::Shutdown ()
-{
-    AssertNotReached (); // deprecated - use
-}
-
 void Logger::Shutdown_ ()
 {
     Debug::TraceContextBumper ctx{"Logger::Shutdown"};
@@ -340,39 +330,6 @@ void Logger::Log (Priority logLevel, const wchar_t* format, ...)
     }
 }
 #endif
-
-void Logger::LogIfNew (Priority logLevel, const Time::Duration& suppressionTimeWindow, const wchar_t* format, ...)
-{
-    Require (suppressionTimeWindow > Duration{0});
-    RequireNotNull (fRep_);
-    using CacheType = decltype (fRep_->fMsgSentMaybeSuppressed_);
-    fRep_->fMaxWindow_.store (max (suppressionTimeWindow.As<DurationSecondsType> (), fRep_->fMaxWindow_.load ())); // doesn't need to be synchronized
-    va_list argsList;
-    va_start (argsList, format);
-    String msg = Characters::FormatV (format, argsList);
-    va_end (argsList);
-    DbgTrace (L"Logger::LogIfNew (%s, %s, \"%s\")", Characters::ToString (logLevel).c_str (),
-              Characters::ToString (suppressionTimeWindow).c_str (), msg.c_str ());
-    if (WouldLog (logLevel)) {
-        if (fRep_->fMsgSentMaybeSuppressed_.LookupValue (pair<Priority, String>{logLevel, msg},
-                                                         CacheType::Ago (suppressionTimeWindow.As<DurationSecondsType> ()), false)) {
-            DbgTrace (L"...suppressed by fMsgSentMaybeSuppressed_->Lookup ()");
-        }
-        else {
-            Log_ (logLevel, msg);
-            fRep_->fMsgSentMaybeSuppressed_.Add (pair<Priority, String>{logLevel, msg}, true);
-        }
-    }
-    else {
-        DbgTrace (L"...suppressed by WouldLog");
-    }
-    /*
-     *  Spend a modicum of effort, so that at least very old strings are purged. This limits how large a cache sMsgSentMaybeSuppressed_
-     *  can become.
-     */
-    constexpr double kCleanupFactor_{2.0};
-    fRep_->fMsgSentMaybeSuppressed_.ClearOlderThan (CacheType::Ago (fRep_->fMaxWindow_.load () * kCleanupFactor_));
-}
 
 #if qHas_Syslog
 /*

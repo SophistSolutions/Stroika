@@ -22,7 +22,8 @@ namespace Stroika::Foundation::Traversal {
 
     constexpr bool kIterableUsesStroikaSharedPtr [[deprecated ("Since Stroika v3.0d1 - not used")]] = false;
 
-    struct [[deprecated ("Since Stroika v3.0d1")]] IterableBase {
+    struct [[deprecated ("Since Stroika v3.0d1")]] IterableBase
+    {
         template <typename SHARED_T>
         using PtrImplementationTemplate [[deprecated ("Since Stroika v3.0d1 - use shared_ptr directly")]] = shared_ptr<SHARED_T>;
         template <typename SHARED_T, typename... ARGS_TYPE>
