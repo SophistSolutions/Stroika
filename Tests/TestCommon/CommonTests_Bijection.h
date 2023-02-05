@@ -21,13 +21,13 @@ namespace CommonTests {
 
         template <typename CONCRETE_CONTAINER>
         struct DefaultFactory {
-            CONCRETE_CONTAINER operator() () const { return CONCRETE_CONTAINER (); };
+            CONCRETE_CONTAINER operator() () const { return CONCRETE_CONTAINER{}; };
         };
 
         template <typename CONCRETE_CONTAINER, typename FACTORY = DefaultFactory<CONCRETE_CONTAINER>>
         struct DEFAULT_TESTING_SCHEMA {
             constexpr inline DEFAULT_TESTING_SCHEMA (FACTORY factory = {})
-                : Factory (factory)
+                : Factory{factory}
             {
             }
             using ConcreteContainerType = CONCRETE_CONTAINER;
