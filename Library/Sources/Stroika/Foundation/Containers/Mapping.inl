@@ -9,7 +9,7 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include <set>
+#include <set> // tmphack for sloppy RetainAll implementation
 
 #include "../Debug/Assertions.h"
 #include "../Debug/Cast.h"

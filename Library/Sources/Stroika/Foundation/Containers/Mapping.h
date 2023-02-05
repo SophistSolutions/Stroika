@@ -20,7 +20,7 @@
  *
  *  TODO:
  *      @todo   Support more backends
- *              Especially HashTable, RedBlackTree, and stlhashmap
+ *              Especially HashTable, RedBlackTree
  *
  *      @todo   Not sure where this note goes - but eventually add "Database-Based" implementation of mapping
  *              and/or extenral file. Maybe also map to DynamoDB, MongoDB, etc... (but not here under Mapping,
@@ -63,6 +63,7 @@ namespace Stroika::Foundation::Containers {
      *      o   @see Concrete::Mapping_Array<>
      *      o   @see Concrete::Mapping_LinkedList<>
      *      o   @see Concrete::Mapping_stdmap<>
+     *      o   @see Concrete::Mapping_stdhashmap<>
      *
      *  \em Factory:
      *      @see Concrete::Mapping_Factory<> to see default implementations.
