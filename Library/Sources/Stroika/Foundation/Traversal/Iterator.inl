@@ -8,18 +8,23 @@
 
 namespace Stroika::Foundation::Traversal {
 
-    /*
-     ********************************************************************************
-     ******************************** IteratorBase **********************************
-     ********************************************************************************
+    /**
      */
-    template <typename SHARED_T, typename... ARGS_TYPE>
-    inline auto IteratorBase::MakeSmartPtr (ARGS_TYPE&&... args) -> unique_ptr<SHARED_T>
+    struct [[deprecated ("Since Stroika v3.0d1")]] IteratorBase
     {
-        return make_unique<SHARED_T> (forward<ARGS_TYPE> (args)...);
-    }
+    public:
+        template <typename SHARED_T>
+        using PtrImplementationTemplate [[deprecated ("Since Stroika v3.0d1 - use unique_ptr directly")]] = unique_ptr<SHARED_T>;
 
-    /*
+    public:
+        template <typename SHARED_T, typename... ARGS_TYPE>
+        [[deprecated ("Since Stroika v3.0d1 - make_unique directly")]] static unique_ptr<SHARED_T> MakeSmartPtr (ARGS_TYPE && ... args)
+        {
+            return make_unique<SHARED_T> (forward<ARGS_TYPE> (args)...);
+        }
+    };
+
+        /*
      ********************************************************************************
      ********************** Iterator<T, ITERATOR_TRAITS>::IRep **********************
      ********************************************************************************

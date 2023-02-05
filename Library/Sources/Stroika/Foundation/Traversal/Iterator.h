@@ -86,18 +86,6 @@
 namespace Stroika::Foundation::Traversal {
 
     /**
-     */
-    struct IteratorBase {
-    public:
-        template <typename SHARED_T>
-        using PtrImplementationTemplate [[deprecated ("Since Stroika v3.0d1 - use unique_ptr directly")]] = unique_ptr<SHARED_T>;
-
-    public:
-        template <typename SHARED_T, typename... ARGS_TYPE>
-        [[deprecated ("Since Stroika v3.0d1 - make_unique directly")]] static unique_ptr<SHARED_T> MakeSmartPtr (ARGS_TYPE&&... args);
-    };
-
-    /**
      *  Identical type to std::iterator<> - but duplicated here because std::iterator<> was deprecated in C++17.
      *  We just need a handy way to capture all the defaults/properties for our iterator class.
      */
@@ -245,7 +233,7 @@ namespace Stroika::Foundation::Traversal {
      *          <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      */
     template <typename T, typename ITERATOR_TRAITS = DefaultIteratorTraits<forward_iterator_tag, T>>
-    class Iterator : public IteratorBase {
+    class Iterator {
     public:
         static_assert (is_constructible_v<optional<T>, T>,
                        "Must be able to create optional<T> to use Iterator, because Iterator uses this internally");
@@ -597,6 +585,15 @@ namespace Stroika::Foundation::Traversal {
 
     private:
         static unique_ptr<IRep> Clone_ (const IRep& rep);
+
+    public:
+        template <typename SHARED_T>
+        using PtrImplementationTemplate [[deprecated ("Since Stroika v3.0d1 - use unique_ptr directly")]] = unique_ptr<SHARED_T>;
+        template <typename SHARED_T, typename... ARGS_TYPE>
+        [[deprecated ("Since Stroika v3.0d1 - make_unique directly")]] static unique_ptr<SHARED_T> MakeSmartPtr (ARGS_TYPE&&... args)
+        {
+            return make_unique<SHARED_T> (forward<ARGS_TYPE> (args)...);
+        }
     };
 
     /**

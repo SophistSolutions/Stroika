@@ -18,7 +18,7 @@ namespace Stroika::Foundation::Execution {
      ********************************* Logger ***************************************
      ********************************************************************************
      */
-    inline Logger  Logger::sThe;
+    inline Logger           Logger::sThe;
     inline Logger::Priority Logger::GetMinLogLevel () const { return fMinLogLevel_; }
     inline void             Logger::SetMinLogLevel (Priority minLogLevel) { fMinLogLevel_ = minLogLevel; }
     inline bool             Logger::WouldLog (Priority logLevel) const { return logLevel >= fMinLogLevel_ and GetAppender () != nullptr; }
