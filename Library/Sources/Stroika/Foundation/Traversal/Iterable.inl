@@ -251,13 +251,11 @@ namespace Stroika::Foundation::Traversal {
         // Most containers are safe to use copy-by-value, except not initializer_list<> - not sure how to check for that generically...
         using USE_CONTAINER_TYPE =
             conditional_t<is_copy_constructible_v<DECAYED_CONTAINER> and not is_same_v<DECAYED_CONTAINER, initializer_list<T>>, DECAYED_CONTAINER, vector<T>>;
-        shared_ptr<USE_CONTAINER_TYPE> sharedCopyOfContainer = make_shared<USE_CONTAINER_TYPE> (forward<CONTAINER_OF_T> (from));
-        auto                           currentI              = sharedCopyOfContainer->begin ();
-        function<optional<T> ()>       getNext               = [sharedCopyOfContainer, currentI] () mutable -> optional<T> {
-            // Capture a SHARED reference to the container (so if this container is copied, we still refer to that same data
-            // And capture a by-value refrence to the iterator so if it gets updated and copied we are referring to that point in the original iterable
-            if (currentI != sharedCopyOfContainer->end ()) {
-                return *currentI++; // intentionally increment AFTER returning value
+        auto sharedCopyOfContainer = make_shared<USE_CONTAINER_TYPE> (forward<CONTAINER_OF_T> (from));
+        // shared copy so if/when getNext copied, the container itself isn't (so not invalidating any iterators)
+        function<optional<T> ()> getNext = [sharedCopyOfContainer, i = sharedCopyOfContainer->begin ()] () mutable -> optional<T> {
+            if (i != sharedCopyOfContainer->end ()) {
+                return *i++; // intentionally increment AFTER returning value
             }
             return nullopt;
         };
@@ -477,8 +475,7 @@ namespace Stroika::Foundation::Traversal {
                 }
             }
         }
-        size_t                   idx{0};
-        function<optional<T> ()> getNext = [container = move (tmp), idx] () mutable -> optional<T> {
+        function<optional<T> ()> getNext = [container = move (tmp), idx = size_t{0}] () mutable -> optional<T> {
             if (idx < container.size ()) {
                 return container[idx++];
             }
@@ -509,8 +506,7 @@ namespace Stroika::Foundation::Traversal {
                 }
             }
         }
-        size_t                        idx{0};
-        function<optional<RESULT> ()> getNext = [container = move (tmp), idx] () mutable -> optional<RESULT> {
+        function<optional<RESULT> ()> getNext = [container = move (tmp), idx = size_t{0}] () mutable -> optional<RESULT> {
             if (idx < container.size ()) {
                 return container[idx++];
             }
@@ -529,11 +525,10 @@ namespace Stroika::Foundation::Traversal {
         auto sharedContext = make_shared<Iterable<T>> (*this);
         // If we have many iterator copies, each needs to copy their 'base iterator' (this is their 'index' into the container)
         // Both the 'sharedContext' and the perIteratorContextBaseIterator' get stored into the lambda closure so they get appropriately copied as you copy iterators
-        function<optional<RESULT> ()> getNext = [sharedContext, perIteratorContextBaseIterator = sharedContext->MakeIterator (),
-                                                 extract] () mutable -> optional<RESULT> {
-            if (perIteratorContextBaseIterator) {
-                RESULT result = extract (*perIteratorContextBaseIterator);
-                ++perIteratorContextBaseIterator;
+        function<optional<RESULT> ()> getNext = [sharedContext, i = sharedContext->MakeIterator (), extract] () mutable -> optional<RESULT> {
+            if (i) {
+                RESULT result = extract (*i);
+                ++i;
                 return move (result);
             }
             return nullopt;
@@ -549,13 +544,12 @@ namespace Stroika::Foundation::Traversal {
         auto sharedContext = make_shared<Iterable<T>> (*this);
         // If we have many iterator copies, each needs to copy their 'base iterator' (this is their 'index' into the container)
         // Both the 'sharedContext' and the perIteratorContextBaseIterator' get stored into the lambda closure so they get appropriately copied as you copy iterators
-        function<optional<RESULT> ()> getNext = [sharedContext, perIteratorContextBaseIterator = sharedContext->MakeIterator (),
-                                                 extract] () mutable -> optional<RESULT> {
+        function<optional<RESULT> ()> getNext = [sharedContext, i = sharedContext->MakeIterator (), extract] () mutable -> optional<RESULT> {
             // tricky. The funtion we are defining returns nullopt as a sentinal to signal end of iteration. The function we are GIVEN returns nullopt
             // to signal skip this item. So adjust accordingly
-            while (perIteratorContextBaseIterator) {
-                optional<RESULT> t = extract (*perIteratorContextBaseIterator);
-                ++perIteratorContextBaseIterator;
+            while (i) {
+                optional<RESULT> t = extract (*i);
+                ++i;
                 if (t) {
                     return *t;
                 }
@@ -619,17 +613,17 @@ namespace Stroika::Foundation::Traversal {
         // If we have many iterator copies, we need ONE copy of this sharedContext (they all share a reference to the same Iterable)
         auto sharedContext = make_shared<Iterable<T>> (*this);
         // If we have many iterator copies, each needs to copy their 'base iterator' (this is their 'index' into the container)
-        // Both the 'sharedContext' and the perIteratorContextBaseIterator' get stored into the lambda closure so they get appropriately copied as you copy iterators
+        // Both the 'sharedContext' and the i' get stored into the lambda closure so they get appropriately copied as you copy iterators
         // perIteratorContextNItemsToSkip also must be cloned per iterator instance
-        function<optional<T> ()> getNext = [sharedContext, perIteratorContextBaseIterator = sharedContext->MakeIterator (),
+        function<optional<T> ()> getNext = [sharedContext, i = sharedContext->MakeIterator (),
                                             perIteratorContextNItemsToSkip = nItems] () mutable -> optional<T> {
-            while (perIteratorContextBaseIterator and perIteratorContextNItemsToSkip > 0) {
+            while (i and perIteratorContextNItemsToSkip > 0) {
                 --perIteratorContextNItemsToSkip;
-                ++perIteratorContextBaseIterator;
+                ++i;
             }
-            if (perIteratorContextBaseIterator) {
-                auto result = *perIteratorContextBaseIterator;
-                ++perIteratorContextBaseIterator;
+            if (i) {
+                auto result = *i;
+                ++i;
                 return move (result);
             }
             return nullopt;
@@ -642,17 +636,17 @@ namespace Stroika::Foundation::Traversal {
         // If we have many iterator copies, we need ONE copy of this sharedContext (they all share a reference to the same Iterable)
         auto sharedContext = make_shared<Iterable<T>> (*this);
         // If we have many iterator copies, each needs to copy their 'base iterator' (this is their 'index' into the container)
-        // Both the 'sharedContext' and the perIteratorContextBaseIterator' get stored into the lambda closure so they get appropriately copied as you copy iterators
+        // Both the 'sharedContext' and the i' get stored into the lambda closure so they get appropriately copied as you copy iterators
         // perIteratorContextNItemsToTake also must be cloned per iterator instance
-        function<optional<T> ()> getNext = [sharedContext, perIteratorContextBaseIterator = sharedContext->MakeIterator (),
+        function<optional<T> ()> getNext = [sharedContext, i = sharedContext->MakeIterator (),
                                             perIteratorContextNItemsToTake = nItems] () mutable -> optional<T> {
             if (perIteratorContextNItemsToTake == 0) {
                 return nullopt;
             }
             perIteratorContextNItemsToTake--;
-            if (perIteratorContextBaseIterator) {
-                auto result = *perIteratorContextBaseIterator;
-                ++perIteratorContextBaseIterator;
+            if (i) {
+                auto result = *i;
+                ++i;
                 return move (result);
             }
             return nullopt;
@@ -665,23 +659,22 @@ namespace Stroika::Foundation::Traversal {
         // If we have many iterator copies, we need ONE copy of this sharedContext (they all share a reference to the same Iterable)
         auto sharedContext = make_shared<Iterable<T>> (*this);
         // If we have many iterator copies, each needs to copy their 'base iterator' (this is their 'index' into the container)
-        // Both the 'sharedContext' and the perIteratorContextBaseIterator' get stored into the lambda closure so they get appropriately copied as you copy iterators
+        // Both the 'sharedContext' and the i' get stored into the lambda closure so they get appropriately copied as you copy iterators
         // perIteratorContextNItemsToSkip also must be cloned per iterator instance
         // perIteratorContextNItemsToTake also must be cloned per iterator instance
-        function<optional<T> ()> getNext = [sharedContext, perIteratorContextBaseIterator = sharedContext->MakeIterator (),
-                                            perIteratorContextNItemsToSkip = from,
+        function<optional<T> ()> getNext = [sharedContext, i = sharedContext->MakeIterator (), perIteratorContextNItemsToSkip = from,
                                             perIteratorContextNItemsToTake = to - from] () mutable -> optional<T> {
-            while (perIteratorContextBaseIterator and perIteratorContextNItemsToSkip > 0) {
+            while (i and perIteratorContextNItemsToSkip > 0) {
                 --perIteratorContextNItemsToSkip;
-                ++perIteratorContextBaseIterator;
+                ++i;
             }
             if (perIteratorContextNItemsToTake == 0) {
                 return nullopt;
             }
             perIteratorContextNItemsToTake--;
-            if (perIteratorContextBaseIterator) {
-                auto result = *perIteratorContextBaseIterator;
-                ++perIteratorContextBaseIterator;
+            if (i) {
+                auto result = *i;
+                ++i;
                 return move (result);
             }
             return nullopt;
@@ -757,8 +750,7 @@ namespace Stroika::Foundation::Traversal {
 #else
         stable_sort (tmp.begin (), tmp.end (), inorderComparer);
 #endif
-        size_t                   idx{0};
-        function<optional<T> ()> getNext = [tmp, idx] () mutable -> optional<T> {
+        function<optional<T> ()> getNext = [tmp, idx = size_t{0}] () mutable -> optional<T> {
             if (idx < tmp.size ()) {
                 return tmp[idx++];
             }
