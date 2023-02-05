@@ -205,7 +205,7 @@ namespace Stroika::Foundation::Containers {
     template <typename T, typename TRAITS>
     inline Iterable<T> MultiSet<T, TRAITS>::UniqueElements () const
     {
-        return this->Map<T> ([] (const CountedValue<T>& cv) { return cv.fValue; });
+        return this->template Map<T> ([] (const CountedValue<T>& cv) { return cv.fValue; });
     }
     template <typename T, typename TRAITS>
     Iterable<CountedValue<T>> MultiSet<T, TRAITS>::Top () const

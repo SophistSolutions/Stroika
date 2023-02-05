@@ -145,14 +145,14 @@ namespace Stroika::Foundation::Containers {
     {
         // need inherited temporarily til we remove deprecated Map function
         //return this->template Map<DOMAIN_TYPE> ([] (const pair<DOMAIN_TYPE, RANGE_TYPE>& elt) { return elt.first; });
-        return this->inherited::Map<DOMAIN_TYPE> ([] (const pair<DOMAIN_TYPE, RANGE_TYPE>& elt) { return elt.first; });
+        return this->inherited:: template Map<DOMAIN_TYPE> ([] (const pair<DOMAIN_TYPE, RANGE_TYPE>& elt) { return elt.first; });
     }
     template <typename DOMAIN_TYPE, typename RANGE_TYPE>
     inline Iterable<RANGE_TYPE> Bijection<DOMAIN_TYPE, RANGE_TYPE>::Image () const
     {
         // need inherited temporarily til we remove deprecated Map function
         //return this->Map<RANGE_TYPE> ([] (const pair<DOMAIN_TYPE, RANGE_TYPE>& elt) { return elt.second; });
-        return this->inherited::Map<RANGE_TYPE> ([] (const pair<DOMAIN_TYPE, RANGE_TYPE>& elt) { return elt.second; });
+        return this->inherited::template Map<RANGE_TYPE> ([] (const pair<DOMAIN_TYPE, RANGE_TYPE>& elt) { return elt.second; });
     }
     template <typename DOMAIN_TYPE, typename RANGE_TYPE>
     inline bool Bijection<DOMAIN_TYPE, RANGE_TYPE>::Lookup (ArgByValueType<DomainType> key, RangeType* item) const

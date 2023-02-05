@@ -131,7 +131,7 @@ namespace Stroika::Foundation::Containers {
     template <typename T, typename KEY_TYPE, typename TRAITS>
     inline Iterable<KEY_TYPE> KeyedCollection<T, KEY_TYPE, TRAITS>::Keys () const
     {
-        return this->Map<KEY_TYPE> ([keyExtractor = this->GetKeyExtractor ()] (const T& t) { return keyExtractor (t); });
+        return this->template Map<KEY_TYPE> ([keyExtractor = this->GetKeyExtractor ()] (const T& t) { return keyExtractor (t); });
     }
     template <typename T, typename KEY_TYPE, typename TRAITS>
     inline bool KeyedCollection<T, KEY_TYPE, TRAITS>::Contains (ArgByValueType<KEY_TYPE> key) const

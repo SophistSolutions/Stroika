@@ -114,12 +114,12 @@ namespace Stroika::Foundation::Containers {
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     inline Iterable<KEY_TYPE> Association<KEY_TYPE, MAPPED_VALUE_TYPE>::Keys () const
     {
-        return this->Map<KEY_TYPE> ([] (const KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>& kvp) { return kvp.fKey; });
+        return this->template Map<KEY_TYPE> ([] (const KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>& kvp) { return kvp.fKey; });
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     inline Iterable<MAPPED_VALUE_TYPE> Association<KEY_TYPE, MAPPED_VALUE_TYPE>::MappedValues () const
     {
-        return this->Map<MAPPED_VALUE_TYPE> ([] (const KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>& kvp) { return kvp.fValue; });
+        return this->template Map<MAPPED_VALUE_TYPE> ([] (const KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>& kvp) { return kvp.fValue; });
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     inline auto Association<KEY_TYPE, MAPPED_VALUE_TYPE>::Lookup (ArgByValueType<key_type> key) const -> Iterable<mapped_type>
