@@ -524,6 +524,9 @@ namespace Stroika::Foundation::Traversal {
          *        is because Find functions almost never have any data (that is being updated) so they should be safe
          *        in general, and safety errors should be caught by TSAN (or similar) and if they happen, can be easily
          *        avoided with a specific parameter.
+         * 
+         *        @todo CONSIDER IF THIS DEFAULT OF ePar makes sense. VERY questionable. May want paralellism on different level
+         *        and NOT want it here. May want vectorization. VERY unclear. Maybe just default to eSeq --LGP 2023-03-26
          *
          *  Note that this used to be called 'ContainsWith' - because it can act the same way (due to
          *  operator bool () method of Iterator<T>).

@@ -11,6 +11,7 @@
 #include "../../Common/Compare.h"
 #include "../../Configuration/Common.h"
 #include "../../Debug/AssertExternallySynchronizedMutex.h"
+#include "../../Execution/Common.h"
 
 #include "../Common.h"
 
@@ -197,7 +198,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
          *      Always: O(N)
          */
         template <typename FUNCTION>
-        nonvirtual void Apply (FUNCTION&& doToElement) const;
+        nonvirtual void Apply (FUNCTION&& doToElement, Execution::SequencePolicy seq = Execution::SequencePolicy::eDefault) const;
 
     public:
         /**
