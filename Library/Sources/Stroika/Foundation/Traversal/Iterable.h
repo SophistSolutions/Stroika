@@ -520,14 +520,6 @@ namespace Stroika::Foundation::Traversal {
          *        If you really care that the result is first, probably better to call Iterable<>::First (). Though
          *        it amounts to the same thing (setting SequencePolicy::eSeq) - its better documenting.
          * 
-         *        Also note - this function DEFAULTS to using a potentially unsafe execution order (ePar), but this
-         *        is because Find functions almost never have any data (that is being updated) so they should be safe
-         *        in general, and safety errors should be caught by TSAN (or similar) and if they happen, can be easily
-         *        avoided with a specific parameter.
-         * 
-         *        @todo CONSIDER IF THIS DEFAULT OF ePar makes sense. VERY questionable. May want paralellism on different level
-         *        and NOT want it here. May want vectorization. VERY unclear. Maybe just default to eSeq --LGP 2023-03-26
-         *
          *  Note that this used to be called 'ContainsWith' - because it can act the same way (due to
          *  operator bool () method of Iterator<T>).
          * 
@@ -562,16 +554,16 @@ namespace Stroika::Foundation::Traversal {
          *        IsEqualsComparer, just to simplify use, and because we cannot anticipate any real ambiguity or confusion resulting from this loose restriction.
          */
         template <typename THAT_FUNCTION, enable_if_t<Configuration::IsTPredicate<T, THAT_FUNCTION> ()>* = nullptr>
-        nonvirtual Iterator<T> Find (THAT_FUNCTION&& that, Execution::SequencePolicy seq = Execution::SequencePolicy::ePar) const;
+        nonvirtual Iterator<T> Find (THAT_FUNCTION&& that, Execution::SequencePolicy seq = Execution::SequencePolicy::eDefault) const;
         template <typename EQUALS_COMPARER, enable_if_t<Common::IsPotentiallyComparerRelation<EQUALS_COMPARER, T> ()>* = nullptr>
         nonvirtual Iterator<T> Find (Configuration::ArgByValueType<T> v, EQUALS_COMPARER&& equalsComparer = {},
-                                     Execution::SequencePolicy seq = Execution::SequencePolicy::ePar) const;
+                                     Execution::SequencePolicy seq = Execution::SequencePolicy::eDefault) const;
         template <typename THAT_FUNCTION, enable_if_t<Configuration::IsTPredicate<T, THAT_FUNCTION> ()>* = nullptr>
         nonvirtual Iterator<T> Find (const Iterator<T>& startAt, THAT_FUNCTION&& that,
-                                     Execution::SequencePolicy seq = Execution::SequencePolicy::ePar) const;
+                                     Execution::SequencePolicy seq = Execution::SequencePolicy::eDefault) const;
         template <typename EQUALS_COMPARER, enable_if_t<Common::IsPotentiallyComparerRelation<EQUALS_COMPARER, T> ()>* = nullptr>
         nonvirtual Iterator<T> Find (const Iterator<T>& startAt, Configuration::ArgByValueType<T> v, EQUALS_COMPARER&& equalsComparer = {},
-                                     Execution::SequencePolicy seq = Execution::SequencePolicy::ePar) const;
+                                     Execution::SequencePolicy seq = Execution::SequencePolicy::eDefault) const;
 
     public:
         /**
