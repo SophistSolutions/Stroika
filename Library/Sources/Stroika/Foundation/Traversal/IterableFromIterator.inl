@@ -59,39 +59,6 @@ namespace Stroika::Foundation::Traversal {
 #endif
         }
     }
-    template <typename T, typename NEW_ITERATOR_REP_TYPE, typename CONTEXT_FOR_EACH_ITERATOR>
-    size_t IterableFromIterator<T, NEW_ITERATOR_REP_TYPE, CONTEXT_FOR_EACH_ITERATOR>::_Rep::size () const
-    {
-        size_t n = 0;
-        this->_Apply ([&n] (const T&) { ++n; });
-        return n;
-    }
-    template <typename T, typename NEW_ITERATOR_REP_TYPE, typename CONTEXT_FOR_EACH_ITERATOR>
-    bool IterableFromIterator<T, NEW_ITERATOR_REP_TYPE, CONTEXT_FOR_EACH_ITERATOR>::_Rep::empty () const
-    {
-        for (auto i = this->MakeIterator (nullptr); not i.Done (); ++i) {
-            return false;
-        }
-        return true;
-    }
-    template <typename T, typename NEW_ITERATOR_REP_TYPE, typename CONTEXT_FOR_EACH_ITERATOR>
-    void IterableFromIterator<T, NEW_ITERATOR_REP_TYPE, CONTEXT_FOR_EACH_ITERATOR>::_Rep::Apply (const function<void (ArgByValueType<value_type> item)>& doToElement) const
-    {
-        this->_Apply (doToElement);
-    }
-    template <typename T, typename NEW_ITERATOR_REP_TYPE, typename CONTEXT_FOR_EACH_ITERATOR>
-    auto IterableFromIterator<T, NEW_ITERATOR_REP_TYPE, CONTEXT_FOR_EACH_ITERATOR>::_Rep::Find (
-        const shared_ptr<typename Iterable<T>::_IRep>& thisSharedPtr, const function<bool (ArgByValueType<value_type> item)>& that) const
-        -> Iterator<value_type>
-    {
-        return this->_Find (thisSharedPtr, that);
-    }
-    template <typename T, typename NEW_ITERATOR_REP_TYPE, typename CONTEXT_FOR_EACH_ITERATOR>
-    auto IterableFromIterator<T, NEW_ITERATOR_REP_TYPE, CONTEXT_FOR_EACH_ITERATOR>::_Rep::Find_equal_to (
-        const shared_ptr<typename Iterable<T>::_IRep>& thisSharedPtr, const ArgByValueType<value_type>& v) const -> Iterator<value_type>
-    {
-        return this->_Find_equal_to_default_implementation (thisSharedPtr, v);
-    }
 
     /*
      ********************************************************************************

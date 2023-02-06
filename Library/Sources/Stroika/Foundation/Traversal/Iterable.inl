@@ -41,12 +41,31 @@ namespace Stroika::Foundation::Traversal {
      ********************************************************************************
      */
     template <typename T>
-    inline bool Iterable<T>::_IRep::_IsEmpty () const
+    inline size_t Iterable<T>::_IRep::size () const
     {
-        return size () == 0;
+        /*
+         * Default slow/weak implementation.
+         */
+        size_t sz{};
+        if constexpr (true) {
+            this->Apply ([&sz] (const T&) { ++sz; });
+        }
+        else {
+            for (Iterator<T> i = MakeIterator (nullptr); i != Iterable<T>::end (); ++i, ++sz)
+                ;
+        }
+        return sz;
     }
     template <typename T>
-    inline void Iterable<T>::_IRep::_Apply (const function<void (ArgByValueType<T> item)>& doToElement) const
+    inline bool Iterable<T>::_IRep::empty () const
+    {
+        if (auto i = MakeIterator (nullptr)) {
+            return false;
+        }
+        return true;
+    }
+    template <typename T>
+    inline void Iterable<T>::_IRep::Apply (const function<void (ArgByValueType<T> item)>& doToElement) const
     {
         RequireNotNull (doToElement);
         for (Iterator<T> i = MakeIterator (nullptr); i != Iterable<T>::end (); ++i) {
@@ -54,8 +73,8 @@ namespace Stroika::Foundation::Traversal {
         }
     }
     template <typename T>
-    template <typename THAT_FUNCTION, enable_if_t<Configuration::IsTPredicate<T, THAT_FUNCTION> ()>*>
-    inline Iterator<T> Iterable<T>::_IRep::_Find (const shared_ptr<typename Iterable<T>::_IRep>& thisSharedPtr, THAT_FUNCTION&& that) const
+    inline auto Iterable<T>::_IRep::Find (const shared_ptr<_IRep>& thisSharedPtr, const function<bool (ArgByValueType<T> item)>& that) const
+        -> Iterator<value_type>
     {
         RequireNotNull (that);
         for (Iterator<T> i = MakeIterator (thisSharedPtr); i != end (); ++i) {
@@ -66,23 +85,29 @@ namespace Stroika::Foundation::Traversal {
         return end ();
     }
     template <typename T>
-    auto Iterable<T>::_IRep::_Find_equal_to_default_implementation (const shared_ptr<typename Iterable<T>::_IRep>& thisSharedPtr,
-                                                                    [[maybe_unused]] const ArgByValueType<value_type>& v) const -> Iterator<value_type>
+    inline auto Iterable<T>::_IRep::Find_equal_to (const shared_ptr<_IRep>& thisSharedPtr, const ArgByValueType<T>& v) const -> Iterator<value_type>
     {
         if constexpr (Configuration::HasUsableEqualToOptimization<T> ()) {
             /*
-             *  This is the default implementation. It is only ever compiled if there is a valid equal_to<> around, and
+             *  This is the default implementation. It is only ever if there is a valid equal_to<> around, and
              *  that valid equal_to<> is stateless (verified by Configuration::HasUsableEqualToOptimization).
              */
-            for (Iterator<T> i = MakeIterator (thisSharedPtr); i != end (); ++i) {
-                if (equal_to<T>{}(v, *i)) {
-                    return i;
-                }
+            if constexpr (false) {
+                // simpler but not sure if faster
+                // and DONT use at least temporarily cuz makes codesize bigger on Windows (only thing quick/easy to test)
+                return Find (thisSharedPtr, [&] (const T& rhs) { return equal_to<T>{}(v, rhs); });
             }
-            return end ();
+            else {
+                for (Iterator<T> i = MakeIterator (thisSharedPtr); i != end (); ++i) {
+                    if (equal_to<T>{}(v, *i)) {
+                        return i;
+                    }
+                }
+                return end ();
+            }
         }
         else {
-            RequireNotReached ();
+            RequireNotReached (); // cannot call if not HasUsableEqualToOptimization
             return end ();
         }
     }

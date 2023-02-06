@@ -88,11 +88,6 @@ namespace Stroika::Foundation::Containers::Concrete {
             }
             return nullptr;
         }
-        virtual Iterator<value_type> Find_equal_to (const shared_ptr<typename Iterable<CountedValue<T>>::_IRep>& thisSharedPtr,
-                                                    const ArgByValueType<value_type>&                            v) const override
-        {
-            return this->_Find_equal_to_default_implementation (thisSharedPtr, v);
-        }
 
         // MultiSet<T, TRAITS>::_IRep overrides
     public:

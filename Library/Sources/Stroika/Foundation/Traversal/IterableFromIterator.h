@@ -111,14 +111,7 @@ namespace Stroika::Foundation::Traversal {
             _Rep (const _ContextObjectType& contextForEachIterator);
 
         public:
-            virtual Iterator<T>          MakeIterator (const shared_ptr<typename Iterable<T>::_IRep>& thisSharedPtr) const override;
-            virtual size_t               size () const override;
-            virtual bool                 empty () const override;
-            virtual void                 Apply (const function<void (ArgByValueType<value_type> item)>& doToElement) const override;
-            virtual Iterator<value_type> Find (const shared_ptr<typename Iterable<T>::_IRep>&          thisSharedPtr,
-                                               const function<bool (ArgByValueType<value_type> item)>& that) const override;
-            virtual Iterator<value_type> Find_equal_to (const shared_ptr<typename Iterable<T>::_IRep>& thisSharedPtr,
-                                                        const ArgByValueType<value_type>&              v) const override;
+            virtual Iterator<T> MakeIterator (const shared_ptr<typename Iterable<T>::_IRep>& thisSharedPtr) const override;
         };
     };
 

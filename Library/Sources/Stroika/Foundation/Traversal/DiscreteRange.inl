@@ -117,20 +117,6 @@ namespace Stroika::Foundation::Traversal {
                     //return fStart == fEnd;
                 }
             }
-            virtual void Apply (const function<void (ArgByValueType<value_type> item)>& doToElement) const override
-            {
-                this->_Apply (doToElement);
-            }
-            virtual Iterator<T> Find (const shared_ptr<typename Iterable<T>::_IRep>&          thisSharedPtr,
-                                      const function<bool (ArgByValueType<value_type> item)>& that) const override
-            {
-                return this->_Find (thisSharedPtr, that);
-            }
-            virtual Iterator<value_type> Find_equal_to (const shared_ptr<typename Iterable<T>::_IRep>& thisSharedPtr,
-                                                        const ArgByValueType<value_type>&              v) const override
-            {
-                return this->_Find_equal_to_default_implementation (thisSharedPtr, v);
-            }
         };
         MyIterable_ ()
             : Iterable<T>{Memory::MakeSharedPtr<MyRep_> ()}

@@ -86,13 +86,7 @@ namespace Stroika::Foundation::Containers::Concrete {
                                            const function<bool (ArgByValueType<value_type> item)>& that) const override
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
-            return this->_Find (thisSharedPtr, that);
-        }
-        virtual Iterator<value_type> Find_equal_to (const shared_ptr<typename Iterable<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>::_IRep>& thisSharedPtr,
-                                                    const ArgByValueType<value_type>& v) const override
-        {
-            // sorted key by equals_to not full value_type, but maybe could use that as a hint to start search?
-            return this->_Find_equal_to_default_implementation (thisSharedPtr, v);
+            return this->inherited::Find (thisSharedPtr, that); // @todo rewrite to use fData
         }
 
         // Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::_IRep overrides

@@ -66,11 +66,6 @@ namespace Stroika::Foundation::Containers::Concrete {
             }
             return nullptr;
         }
-        virtual Iterator<value_type> Find_equal_to (const shared_ptr<typename Iterable<T>::_IRep>& thisSharedPtr,
-                                                    const ArgByValueType<value_type>&              v) const override
-        {
-            return this->_Find_equal_to_default_implementation (thisSharedPtr, v);
-        }
 
         // Queue<T>::_IRep overrides
     public:

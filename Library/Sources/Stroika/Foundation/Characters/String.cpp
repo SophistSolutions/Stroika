@@ -162,22 +162,12 @@ namespace {
                 };
                 return Iterator<Character>{make_unique<MyIterRep_> (thisSharedPtr, this->_fData)};
             }
-            virtual size_t size () const override { return _fData.size (); }
-            virtual bool   empty () const override { return _fData.empty (); }
-            virtual void   Apply (const function<void (Configuration::ArgByValueType<value_type> item)>& doToElement) const override
-            {
-                _Apply (doToElement);
-            }
+            virtual size_t                          size () const override { return _fData.size (); }
+            virtual bool                            empty () const override { return _fData.empty (); }
             virtual Traversal::Iterator<value_type> Find (const shared_ptr<Iterable<Character>::_IRep>& thisSharedPtr,
                                                           const function<bool (Configuration::ArgByValueType<value_type> item)>& that) const override
             {
-                return _Find (thisSharedPtr, that);
-            }
-            virtual Traversal::Iterator<value_type> Find_equal_to (const shared_ptr<Iterable<Character>::_IRep>&    thisSharedPtr,
-                                                                   const Configuration::ArgByValueType<value_type>& v) const override
-            {
-                // @todo this is fine, but can be more efficient, so consider rewriting explicitly (avoid extra virt call)
-                return this->_Find_equal_to_default_implementation (thisSharedPtr, v);
+                return inherited::Find (thisSharedPtr, that); // @todo rewrite to operatoe of fData_
             }
         };
     };

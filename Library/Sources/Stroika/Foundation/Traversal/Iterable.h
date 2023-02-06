@@ -1339,39 +1339,6 @@ namespace Stroika::Foundation::Traversal {
 #endif
     };
 
-#if 0
-    /**
-     *  AWKWARD attempt at templating / automating the inclusio of the Find_equal_to() methods
-     *      -- LGP 2021-11-22
-     */
-    template <typename T, bool HAS_EQUAL_TO>
-    struct Add_FindByEqualTo_PureVirtualDeclaration;
-    template <typename T>
-    struct Add_FindByEqualTo_PureVirtualDeclaration<T, false> {
-    };
-    template <typename T>
-    struct Add_FindByEqualTo_PureVirtualDeclaration<T, true> {
-        virtual Iterator<T> Find_equal_to (const shared_ptr<_IRep>& thisSharedPtr, [[maybe_unused]] const ArgByValueType<T>& v) const = 0;
-    };
-    /**
-     * @see Add_FindByEqualTo_PureVirtualDeclaration
-     */
-    template <typename T, bool HAS_EQUAL_TO, typename IMPL>
-    struct Add_FindByEqualTo_Override;
-    template <typename T, typename IMPL>
-    struct Add_FindByEqualTo_Override<T, false, IMPL> {
-    };
-    template <typename T, typename IMPL>
-    struct Add_FindByEqualTo_Override<T, true, IMPL> {
-        virtual Iterator<T> Find_equal_to (const shared_ptr<_IRep>& thisSharedPtr, const ArgByValueType<T>& v) const override
-        {
-            return IMPL{}(v);
-        }
-    };
-    then below...
-              //  : public Add_FindByEqualTo_PureVirtualDeclaration<T, Configuration::HasUsableEqualToOptimization<T> ()>
-#endif
-
     /**
      *  \brief  Implementation detail for iterator implementors.
      *
@@ -1411,57 +1378,61 @@ namespace Stroika::Foundation::Traversal {
         virtual ~_IRep () = default;
 
     public:
+        /**
+         */
         virtual shared_ptr<_IRep> Clone () const = 0;
-        /*
-         *  _IRep::MakeIterator takes a shared_ptr, whose get-value may be nullptr (only in case where the returned Iterator definitely is not hung onto) or .get == this
-         */
-        virtual Iterator<value_type> MakeIterator (const shared_ptr<_IRep>& thisSharedPtr) const              = 0;
 
-        /*
-         *  returns the number of elements in iterable. Equivilent to and defaults to MakeIterator, and counting number of iterations til the end.
+    public:
+        /**
+         *  _IRep::MakeIterator takes a shared_ptr, whose get-value may be nullptr (only in case where
+         *  the returned Iterator definitely is not hung onto) or .get == this
          */
-        virtual size_t               size () const                                                            = 0;
-        virtual bool                 empty () const                                                           = 0;
-        virtual void                 Apply (const function<void (ArgByValueType<T> item)>& doToElement) const = 0;
+        virtual Iterator<value_type> MakeIterator (const shared_ptr<_IRep>& thisSharedPtr) const = 0;
+
+    public:
+        /**
+         *  returns the number of elements in iterable. Equivilent to (and defaults to)
+         *  i = MakeIterator, followed by counting number of iterations til the end.
+         */
+        virtual size_t size () const;
+
+    public:
+        /**
+         *  returns the true if MakeIterator() returns an empty iterator.
+         */
+        virtual bool empty () const;
+
+    public:
+        /**
+         *  Apply the given doToElement function to every element of the Iterable (in some arbitrary order).
+         */
+        virtual void Apply (const function<void (ArgByValueType<T> item)>& doToElement) const;
+
+    public:
         /*
          *  \see _IRep::MakeIterator for rules about thisSharedPtr
+         *  Defaults to, and is equivilent to, walking the Iterable, and applyting 'that' function, and returning the first entry that
+         *  returns true, or empty iterator if none does.
          */
-        virtual Iterator<value_type> Find (const shared_ptr<_IRep>& thisSharedPtr, const function<bool (ArgByValueType<T> item)>& that) const = 0;
+        virtual Iterator<value_type> Find (const shared_ptr<_IRep>& thisSharedPtr, const function<bool (ArgByValueType<T> item)>& that) const;
 
+    public:
         /**
          *  Find_equal_to is Not LOGICALLY needed, as you can manually iterate (just use Find()). 
-         * But this CAN be much faster (and commonly is) - and is used very heavily by iterables, so
-         * its worth the singling out of this important special case.
+         *  But this CAN be much faster (and commonly is) - and is used very heavily by iterables, so
+         *  its worth the singling out of this important special case.
          * 
-        // @todo make this pure virtual once I've had a chance to subclass
-         *  Not 
-         * The COST of having this is that ALL Iterable<T>::_IRep MUST provide this implementation
-         * As in:
+         *  \req Configuration::HasUsableEqualToOptimization<T> (); would like to only define (with requires) but
+         *       cannot seem to do in C++20 - requires on virtual function
          * 
-                virtual Iterator<value_type> Find_equal_to (const shared_ptr<_IRep>& thisSharedPtr, const ArgByValueType<value_type>& v) const override
-                {
-                    return this->_Find_equal_to_default_implementation (thisSharedPtr, v);
-                }
-         * and obviously implementations that can provide a faster implemetnation will do so.
-         *
+         *  Default implemented as
+         *      \code
+         *          return Find (thisSharedPtr, [] (const T& lhs) { return equal_to<T>{}(lhs, v); });
+         *      \endcode
+         * 
          *  \see _IRep::MakeIterator for rules about thisSharedPtr
          */
-        virtual Iterator<value_type> Find_equal_to (const shared_ptr<_IRep>& thisSharedPtr, const ArgByValueType<T>& v) const = 0;
-
-    protected:
-        /*
-         * Helper functions to simplify implementation of above public APIs. These MAY or MAY NOT be used in
-         * actual subclasses.
-         */
-        nonvirtual bool _IsEmpty () const;
-        nonvirtual void _Apply (const function<void (ArgByValueType<value_type> item)>& doToElement) const;
-        template <typename THAT_FUNCTION, enable_if_t<Configuration::IsTPredicate<T, THAT_FUNCTION> ()>* = nullptr>
-        nonvirtual Iterator<value_type> _Find (const shared_ptr<_IRep>& thisSharedPtr, THAT_FUNCTION&& that) const;
-        /**
-         *  Default implementation for Find_equal_to function.
-         */
-        nonvirtual Iterator<value_type> _Find_equal_to_default_implementation (const shared_ptr<_IRep>&          thisSharedPtr,
-                                                                               const ArgByValueType<value_type>& v) const;
+        virtual Iterator<value_type> Find_equal_to (const shared_ptr<_IRep>& thisSharedPtr, const ArgByValueType<T>& v) const;
     };
 
     /**
