@@ -70,40 +70,40 @@ namespace Stroika::Foundation::Time {
             fRepType_ = eString_;
         }
     }
-    constexpr Duration::Duration (int duration)
-        : inherited{duration}
+    constexpr Duration::Duration (int durationInSeconds)
+        : inherited{durationInSeconds}
         , fRepType_{eNumeric_}
         , fNonStringRep_{}
     {
     }
-    constexpr Duration::Duration (long duration)
-        : inherited{duration}
+    constexpr Duration::Duration (long durationInSeconds)
+        : inherited{durationInSeconds}
         , fRepType_{eNumeric_}
         , fNonStringRep_{}
     {
     }
-    constexpr Duration::Duration (long long duration)
-        : inherited{static_cast<InternalNumericFormatType_> (duration)}
+    constexpr Duration::Duration (long long durationInSeconds)
+        : inherited{static_cast<InternalNumericFormatType_> (durationInSeconds)}
         , fRepType_{eNumeric_}
         , fNonStringRep_{}
     {
     }
-    constexpr Duration::Duration (float duration)
-        : inherited{duration}
-        , fRepType_{eNumeric_}
-        , fNonStringRep_{}
-    {
-        //Require (not isnan (duration)); // inf is allowed
-    }
-    constexpr Duration::Duration (double duration)
-        : inherited{duration}
+    constexpr Duration::Duration (float durationInSeconds)
+        : inherited{durationInSeconds}
         , fRepType_{eNumeric_}
         , fNonStringRep_{}
     {
         //Require (not isnan (duration)); // inf is allowed
     }
-    constexpr Duration::Duration (long double duration) noexcept
-        : inherited{static_cast<InternalNumericFormatType_> (duration)}
+    constexpr Duration::Duration (double durationInSeconds)
+        : inherited{durationInSeconds}
+        , fRepType_{eNumeric_}
+        , fNonStringRep_{}
+    {
+        //Require (not isnan (duration)); // inf is allowed
+    }
+    constexpr Duration::Duration (long double durationInSeconds) noexcept
+        : inherited{static_cast<InternalNumericFormatType_> (durationInSeconds)}
         , fRepType_{eNumeric_}
         , fNonStringRep_{}
     {
