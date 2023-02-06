@@ -21,11 +21,9 @@ namespace Stroika::Foundation::Cache {
     }
     template <typename KEY, typename VALUE, typename TRAITS>
     inline SynchronizedTimedCache<KEY, VALUE, TRAITS>::SynchronizedTimedCache (const SynchronizedTimedCache& src)
-        : inherited{}
+        : inherited{src.GetMinimumAllowedFreshness ()}
     {
         [[maybe_unused]] auto&& srcLock = shared_lock{src.fMutex_}; // shared locks intrinsically recursive - not needed here but good to assure no locks in between
-        [[maybe_unused]] auto&& lock = lock_guard{fMutex_};
-        inherited::SetMinimumAllowedFreshness (src.GetMinimumAllowedFreshness ());
         for (const auto& ci : src.Elements ()) {
             inherited::Add (ci.fKey, ci.fValue, ci.fFreshness);
         }
