@@ -153,7 +153,7 @@ namespace Stroika::Foundation::Cache {
                                               typename Configuration::ArgByValueType<VALUE> result, Time::Duration freshAsOf)
     {
         lock_guard critSec{fAssertExternallySyncrhonized_};
-        fMap_.insert (typename MyMapType_::value_type{key, MyResult_{result, freshAsOf}});
+        fMap_.insert (typename MyMapType_::value_type{key, MyResult_{result, freshAsOf.As<Time::DurationSecondsType> ()}});
     }
     template <typename KEY, typename VALUE, typename TRAITS>
     inline void TimedCache<KEY, VALUE, TRAITS>::Remove (typename Configuration::ArgByValueType<KEY> key)
