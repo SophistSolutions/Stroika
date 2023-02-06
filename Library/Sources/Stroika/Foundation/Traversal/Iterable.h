@@ -1413,12 +1413,21 @@ namespace Stroika::Foundation::Traversal {
     public:
         virtual shared_ptr<_IRep> Clone () const = 0;
         /*
+         *  _IRep::MakeIterator takes a shared_ptr, whose get-value may be nullptr (only in case where the returned Iterator definitely is not hung onto) or .get == this
          */
         virtual Iterator<value_type> MakeIterator (const shared_ptr<_IRep>& thisSharedPtr) const              = 0;
+
+        /*
+         *  returns the number of elements in iterable. Equivilent to and defaults to MakeIterator, and counting number of iterations til the end.
+         */
         virtual size_t               size () const                                                            = 0;
         virtual bool                 empty () const                                                           = 0;
         virtual void                 Apply (const function<void (ArgByValueType<T> item)>& doToElement) const = 0;
+        /*
+         *  \see _IRep::MakeIterator for rules about thisSharedPtr
+         */
         virtual Iterator<value_type> Find (const shared_ptr<_IRep>& thisSharedPtr, const function<bool (ArgByValueType<T> item)>& that) const = 0;
+
         /**
          *  Find_equal_to is Not LOGICALLY needed, as you can manually iterate (just use Find()). 
          * But this CAN be much faster (and commonly is) - and is used very heavily by iterables, so
@@ -1434,6 +1443,8 @@ namespace Stroika::Foundation::Traversal {
                     return this->_Find_equal_to_default_implementation (thisSharedPtr, v);
                 }
          * and obviously implementations that can provide a faster implemetnation will do so.
+         *
+         *  \see _IRep::MakeIterator for rules about thisSharedPtr
          */
         virtual Iterator<value_type> Find_equal_to (const shared_ptr<_IRep>& thisSharedPtr, const ArgByValueType<T>& v) const = 0;
 
