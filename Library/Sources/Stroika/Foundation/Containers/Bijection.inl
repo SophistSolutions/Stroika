@@ -145,7 +145,7 @@ namespace Stroika::Foundation::Containers {
     {
         // need inherited temporarily til we remove deprecated Map function
         //return this->template Map<DOMAIN_TYPE> ([] (const pair<DOMAIN_TYPE, RANGE_TYPE>& elt) { return elt.first; });
-        return this->inherited:: template Map<DOMAIN_TYPE> ([] (const pair<DOMAIN_TYPE, RANGE_TYPE>& elt) { return elt.first; });
+        return this->inherited::template Map<DOMAIN_TYPE> ([] (const pair<DOMAIN_TYPE, RANGE_TYPE>& elt) { return elt.first; });
     }
     template <typename DOMAIN_TYPE, typename RANGE_TYPE>
     inline Iterable<RANGE_TYPE> Bijection<DOMAIN_TYPE, RANGE_TYPE>::Image () const

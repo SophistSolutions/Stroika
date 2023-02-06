@@ -124,7 +124,7 @@ namespace {
     {
         static shared_ptr<ostream> out2File;
         if (not sShowOutput_ and out2File == nullptr) {
-            out2File.reset (new ofstream (kDefaultPerfOutFile_));
+            out2File.reset (new ofstream{kDefaultPerfOutFile_});
         }
         ostream& outTo = (sShowOutput_ ? cout : *out2File);
         return outTo;

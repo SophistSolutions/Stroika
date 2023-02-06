@@ -48,7 +48,7 @@ namespace Stroika::Foundation::Traversal {
          */
         size_t sz{};
         if constexpr (true) {
-            this->Apply ([&sz] (const T&) { ++sz; });
+            this->Apply ([&sz] (const T&) { ++sz; }, Execution::SequencePolicy::eDefault);
         }
         else {
             for (Iterator<T> i = MakeIterator (nullptr); i != Iterable<T>::end (); ++i, ++sz)
@@ -65,7 +65,7 @@ namespace Stroika::Foundation::Traversal {
         return true;
     }
     template <typename T>
-    inline void Iterable<T>::_IRep::Apply (const function<void (ArgByValueType<T> item)>& doToElement) const
+    inline void Iterable<T>::_IRep::Apply (const function<void (ArgByValueType<T> item)>& doToElement, [[maybe_unused]] Execution::SequencePolicy seq) const
     {
         RequireNotNull (doToElement);
         for (Iterator<T> i = MakeIterator (nullptr); i != Iterable<T>::end (); ++i) {
@@ -73,8 +73,8 @@ namespace Stroika::Foundation::Traversal {
         }
     }
     template <typename T>
-    inline auto Iterable<T>::_IRep::Find (const shared_ptr<_IRep>& thisSharedPtr, const function<bool (ArgByValueType<T> item)>& that) const
-        -> Iterator<value_type>
+    inline auto Iterable<T>::_IRep::Find (const shared_ptr<_IRep>& thisSharedPtr, const function<bool (ArgByValueType<T> item)>& that,
+                                          [[maybe_unused]] Execution::SequencePolicy seq) const -> Iterator<value_type>
     {
         RequireNotNull (that);
         for (Iterator<T> i = MakeIterator (thisSharedPtr); i != end (); ++i) {
@@ -85,7 +85,8 @@ namespace Stroika::Foundation::Traversal {
         return end ();
     }
     template <typename T>
-    inline auto Iterable<T>::_IRep::Find_equal_to (const shared_ptr<_IRep>& thisSharedPtr, const ArgByValueType<T>& v) const -> Iterator<value_type>
+    inline auto Iterable<T>::_IRep::Find_equal_to (const shared_ptr<_IRep>& thisSharedPtr, const ArgByValueType<T>& v,
+                                                   [[maybe_unused]] Execution::SequencePolicy seq) const -> Iterator<value_type>
     {
         if constexpr (Configuration::HasUsableEqualToOptimization<T> ()) {
             /*
@@ -766,12 +767,17 @@ namespace Stroika::Foundation::Traversal {
     }
     template <typename T>
     template <typename INORDER_COMPARER_TYPE>
-    Iterable<T> Iterable<T>::OrderBy (INORDER_COMPARER_TYPE&& inorderComparer) const
+    Iterable<T> Iterable<T>::OrderBy (INORDER_COMPARER_TYPE&& inorderComparer, [[maybe_unused]] Execution::SequencePolicy seq) const
     {
         // @todo https://stroika.atlassian.net/browse/STK-972 - optimize case where 'iterable' is already sortable
         vector<T> tmp{begin (), end ()}; // Somewhat simplistic implementation (always over copy and index so no need to worry about iterator refereincing inside container)
 #if __cpp_lib_execution >= 201603L
-        stable_sort (std::execution::par, tmp.begin (), tmp.end (), inorderComparer);
+        if (seq == Execution::SequencePolicy::eSeq) {
+            stable_sort (tmp.begin (), tmp.end (), inorderComparer);
+        }
+        else {
+            stable_sort (std::execution::par, tmp.begin (), tmp.end (), inorderComparer);
+        }
 #else
         stable_sort (tmp.begin (), tmp.end (), inorderComparer);
 #endif
@@ -819,7 +825,7 @@ namespace Stroika::Foundation::Traversal {
             optional<RESULT_T>          result; // actual result captured in sife-effect of lambda
             auto                        f = [&that, &result] (ArgByValueType<T> i) { return (result = that (i)).has_value (); };
             _SafeReadRepAccessor<_IRep> accessor{this};
-            Iterator<T>                 t = accessor._ConstGetRep ().Find (accessor._ConstGetRepSharedPtr (), f);
+            Iterator<T> t = accessor._ConstGetRep ().Find (accessor._ConstGetRepSharedPtr (), f, Execution::SequencePolicy::eSeq);
             return t ? result : optional<RESULT_T>{};
         }
         else {
@@ -1065,37 +1071,37 @@ namespace Stroika::Foundation::Traversal {
         return Iterator<T>::GetEmptyIterator ();
     }
     template <typename T>
-    inline void Iterable<T>::Apply (const function<void (ArgByValueType<T> item)>& doToElement) const
+    inline void Iterable<T>::Apply (const function<void (ArgByValueType<T> item)>& doToElement, Execution::SequencePolicy seq) const
     {
         RequireNotNull (doToElement);
         _SafeReadRepAccessor<> accessor{this};
-        accessor._ConstGetRep ().Apply (doToElement);
+        accessor._ConstGetRep ().Apply (doToElement, seq);
     }
     template <typename T>
     template <typename THAT_FUNCTION, enable_if_t<Configuration::IsTPredicate<T, THAT_FUNCTION> ()>*>
-    inline Iterator<T> Iterable<T>::Find (THAT_FUNCTION&& that) const
+    inline Iterator<T> Iterable<T>::Find (THAT_FUNCTION&& that, Execution::SequencePolicy seq) const
     {
         // NB: This transforms perfectly forwarded 'THAT_FUNCTION' and converts it to std::function<> - preventing further inlining at this point -
         // just so it can be done
         _SafeReadRepAccessor<> accessor{this};
-        return accessor._ConstGetRep ().Find (accessor._ConstGetRepSharedPtr (), that);
+        return accessor._ConstGetRep ().Find (accessor._ConstGetRepSharedPtr (), that, seq);
     }
     template <typename T>
     template <typename EQUALS_COMPARER, enable_if_t<Common::IsPotentiallyComparerRelation<EQUALS_COMPARER, T> ()>*>
-    inline Iterator<T> Iterable<T>::Find (Configuration::ArgByValueType<T> v, EQUALS_COMPARER&& equalsComparer) const
+    inline Iterator<T> Iterable<T>::Find (Configuration::ArgByValueType<T> v, EQUALS_COMPARER&& equalsComparer, Execution::SequencePolicy seq) const
     {
         if constexpr (is_same_v<remove_cvref_t<EQUALS_COMPARER>, equal_to<T>> and Configuration::HasUsableEqualToOptimization<T> ()) {
             // This CAN be much faster than the default implementation for this special (but common) case (often a tree structure will have been maintained making this find faster)
             _SafeReadRepAccessor<> accessor{this};
-            return accessor._ConstGetRep ().Find_equal_to (accessor._ConstGetRepSharedPtr (), v);
+            return accessor._ConstGetRep ().Find_equal_to (accessor._ConstGetRepSharedPtr (), v, seq);
         }
         else {
-            return Find ([v, equalsComparer] (Configuration::ArgByValueType<T> arg) { return equalsComparer (v, arg); });
+            return Find ([v, equalsComparer] (Configuration::ArgByValueType<T> arg) { return equalsComparer (v, arg); }, seq);
         }
     }
     template <typename T>
     template <typename THAT_FUNCTION, enable_if_t<Configuration::IsTPredicate<T, THAT_FUNCTION> ()>*>
-    inline Iterator<T> Iterable<T>::Find (const Iterator<T>& startAt, THAT_FUNCTION&& that) const
+    inline Iterator<T> Iterable<T>::Find (const Iterator<T>& startAt, THAT_FUNCTION&& that, [[maybe_unused]] Execution::SequencePolicy seq) const
     {
         for (Iterator<T> i = startAt; i != end (); ++i) {
             if (that (*i)) {
@@ -1106,7 +1112,8 @@ namespace Stroika::Foundation::Traversal {
     }
     template <typename T>
     template <typename EQUALS_COMPARER, enable_if_t<Common::IsPotentiallyComparerRelation<EQUALS_COMPARER, T> ()>*>
-    Iterator<T> Iterable<T>::Find (const Iterator<T>& startAt, Configuration::ArgByValueType<T> v, EQUALS_COMPARER&& equalsComparer) const
+    Iterator<T> Iterable<T>::Find (const Iterator<T>& startAt, Configuration::ArgByValueType<T> v, EQUALS_COMPARER&& equalsComparer,
+                                   [[maybe_unused]] Execution::SequencePolicy seq) const
     {
         for (Iterator<T> i = startAt; i != end (); ++i) {
             if (equalsComparer (v, *i)) {

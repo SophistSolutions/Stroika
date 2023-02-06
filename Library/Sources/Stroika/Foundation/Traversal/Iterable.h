@@ -188,7 +188,7 @@ namespace Stroika::Foundation::Traversal {
      *
      */
     template <typename T>
-    class Iterable /* : protected Debug::AssertExternallySynchronizedMutex*/ {
+    class Iterable {
     public:
         static_assert (is_copy_constructible_v<Iterator<T>>, "Must be able to create Iterator<T> to use Iterable<T>");
 
@@ -271,6 +271,10 @@ namespace Stroika::Foundation::Traversal {
          *
          * Create an iterator object which can be used to traverse the 'Iterable' - this object -
          * and visit each element.
+         * 
+         * \note LIFETIME NOTE:
+         *      Iterators created this way, become invalidated (generally detected in debug builds), and cannot be used
+         *      after the underlying Iterable is modified.
          */
         nonvirtual Iterator<T> MakeIterator () const;
 
@@ -481,12 +485,13 @@ namespace Stroika::Foundation::Traversal {
          *  \note   \em Thread-Safety   The argument function (lambda) may
          *              directly (or indirectly) access the Iterable<> being iterated over.
          */
-        nonvirtual void Apply (const function<void (ArgByValueType<T> item)>& doToElement) const;
+        nonvirtual void Apply (const function<void (ArgByValueType<T> item)>& doToElement,
+                               Execution::SequencePolicy                      seq = Execution::SequencePolicy::eDefault) const;
 
     public:
         /**
          *  \brief  Run the argument bool-returning function (or lambda) on each element of the
-         *          container, and return an iterator pointing at the first element found true.
+         *          container, and return an iterator pointing at the first element (depending on seq) found true.
          *          (or use First() to do same thing but return optional<>)
          *
          *  Take the given function argument, and call it for each element of the container. This is
@@ -504,6 +509,13 @@ namespace Stroika::Foundation::Traversal {
          *  end() to indicate no doToElement() functions returned true.
          *
          *  Also, note that this function does NOT change any elements of the Iterable.
+         * 
+         *  \note about seq - eSeq - then the item returned will be first in
+         *        iteration order. But if you pass in some other Execution::SequencePolicy 'seq', the algorithm
+         *        will return the 'first it finds'.
+         * 
+         *        If you really care that the result is first, probably better to call Iterable<>::First (). Though
+         *        it amounts to the same thing (setting SequencePolicy::eSeq) - its better documenting.
          *
          *  Note that this used to be called 'ContainsWith' - because it can act the same way (due to
          *  operator bool () method of Iterator<T>).
@@ -539,27 +551,30 @@ namespace Stroika::Foundation::Traversal {
          *        IsEqualsComparer, just to simplify use, and because we cannot anticipate any real ambiguity or confusion resulting from this loose restriction.
          */
         template <typename THAT_FUNCTION, enable_if_t<Configuration::IsTPredicate<T, THAT_FUNCTION> ()>* = nullptr>
-        nonvirtual Iterator<T> Find (THAT_FUNCTION&& that) const;
+        nonvirtual Iterator<T> Find (THAT_FUNCTION&& that, Execution::SequencePolicy seq = Execution::SequencePolicy::ePar) const;
         template <typename EQUALS_COMPARER, enable_if_t<Common::IsPotentiallyComparerRelation<EQUALS_COMPARER, T> ()>* = nullptr>
-        nonvirtual Iterator<T> Find (Configuration::ArgByValueType<T> v, EQUALS_COMPARER&& equalsComparer = {}) const;
+        nonvirtual Iterator<T> Find (Configuration::ArgByValueType<T> v, EQUALS_COMPARER&& equalsComparer = {},
+                                     Execution::SequencePolicy seq = Execution::SequencePolicy::ePar) const;
         template <typename THAT_FUNCTION, enable_if_t<Configuration::IsTPredicate<T, THAT_FUNCTION> ()>* = nullptr>
-        nonvirtual Iterator<T> Find (const Iterator<T>& startAt, THAT_FUNCTION&& that) const;
+        nonvirtual Iterator<T> Find (const Iterator<T>& startAt, THAT_FUNCTION&& that,
+                                     Execution::SequencePolicy seq = Execution::SequencePolicy::ePar) const;
         template <typename EQUALS_COMPARER, enable_if_t<Common::IsPotentiallyComparerRelation<EQUALS_COMPARER, T> ()>* = nullptr>
-        nonvirtual Iterator<T> Find (const Iterator<T>& startAt, Configuration::ArgByValueType<T> v, EQUALS_COMPARER&& equalsComparer = {}) const;
+        nonvirtual Iterator<T> Find (const Iterator<T>& startAt, Configuration::ArgByValueType<T> v, EQUALS_COMPARER&& equalsComparer = {},
+                                     Execution::SequencePolicy seq = Execution::SequencePolicy::ePar) const;
 
     public:
         /**
          *  As<CONTAINER_OF_T> () can be used to easily map an iterable to another container
          *  (for example STL container) which supports begin/end iterator constructor. This is
          *  really just a shorthand for
-         *      CONTAINER_OF_T (this->begin (), this->end ());
+         *      CONTAINER_OF_T{this->begin (), this->end ()};
          *
          *  Note - this also works with (nearly all) of the Stroika containers as well
          *  (e.g. Set<T> x; x.As<Sequence<T>> ());
          *
          *  \em Design Note:
          *      We chose NOT to include an overload taking iterators because there was no connection between
-         *      'this' and the used iterators, so you may as well just directly call CONTAINER_OF_T(it1, it2).
+         *      'this' and the used iterators, so you may as well just directly call CONTAINER_OF_T{it1, it2}.
          */
         template <typename CONTAINER_OF_T>
         nonvirtual CONTAINER_OF_T As () const;
@@ -900,6 +915,9 @@ namespace Stroika::Foundation::Traversal {
          *          VerifyTestResult (c.OrderBy ([](int lhs, int rhs) -> bool { return lhs < rhs; }).SequentialEquals ({ 3, 3, 5, 5, 9, 38 }));
          *      \endcode
          *
+         *  \note This defaults to using seq=Execution::SequencePolicy::ePar, parallel sort, so be careful if your compare function doesn't support this - pass in 
+         *        SequencePolicy::eSeq
+         *
          *  \note This performs a stable sort (preserving the relative order of items that compare equal).
          *        That maybe less performant than a regular (e.g. quicksort) but works better as a default, in most cases, as it allows combining multi-level sorts.
          *
@@ -911,7 +929,8 @@ namespace Stroika::Foundation::Traversal {
          *      @see https://msdn.microsoft.com/en-us/library/system.linq.enumerable.orderby(v=vs.110).aspx
          */
         template <typename INORDER_COMPARER_TYPE = less<T>>
-        nonvirtual Iterable<T> OrderBy (INORDER_COMPARER_TYPE&& inorderComparer = INORDER_COMPARER_TYPE{}) const;
+        nonvirtual Iterable<T> OrderBy (INORDER_COMPARER_TYPE&&   inorderComparer = INORDER_COMPARER_TYPE{},
+                                        Execution::SequencePolicy seq             = Execution::SequencePolicy::ePar) const;
 
     public:
         /**
@@ -1406,15 +1425,18 @@ namespace Stroika::Foundation::Traversal {
         /**
          *  Apply the given doToElement function to every element of the Iterable (in some arbitrary order).
          */
-        virtual void Apply (const function<void (ArgByValueType<T> item)>& doToElement) const;
+        virtual void Apply (const function<void (ArgByValueType<T> item)>& doToElement, Execution::SequencePolicy seq) const;
 
     public:
         /*
          *  \see _IRep::MakeIterator for rules about thisSharedPtr
-         *  Defaults to, and is equivilent to, walking the Iterable, and applyting 'that' function, and returning the first entry that
+         *  Defaults to, and is equivilent to, walking the Iterable, and applyting 'that' function, and returning the first (depending on seq) entry that
          *  returns true, or empty iterator if none does.
+         * 
+         *  \see _IRep::MakeIterator for rules about thisSharedPtr
          */
-        virtual Iterator<value_type> Find (const shared_ptr<_IRep>& thisSharedPtr, const function<bool (ArgByValueType<T> item)>& that) const;
+        virtual Iterator<value_type> Find (const shared_ptr<_IRep>& thisSharedPtr, const function<bool (ArgByValueType<T> item)>& that,
+                                           Execution::SequencePolicy seq) const;
 
     public:
         /**
@@ -1427,12 +1449,13 @@ namespace Stroika::Foundation::Traversal {
          * 
          *  Default implemented as
          *      \code
-         *          return Find (thisSharedPtr, [] (const T& lhs) { return equal_to<T>{}(lhs, v); });
+         *          return Find (thisSharedPtr, [] (const T& lhs) { return equal_to<T>{}(lhs, v); }, seq);
          *      \endcode
          * 
          *  \see _IRep::MakeIterator for rules about thisSharedPtr
          */
-        virtual Iterator<value_type> Find_equal_to (const shared_ptr<_IRep>& thisSharedPtr, const ArgByValueType<T>& v) const;
+        virtual Iterator<value_type> Find_equal_to (const shared_ptr<_IRep>& thisSharedPtr, const ArgByValueType<T>& v,
+                                                    Execution::SequencePolicy seq) const;
     };
 
     /**

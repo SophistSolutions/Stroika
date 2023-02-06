@@ -165,9 +165,10 @@ namespace {
             virtual size_t                          size () const override { return _fData.size (); }
             virtual bool                            empty () const override { return _fData.empty (); }
             virtual Traversal::Iterator<value_type> Find (const shared_ptr<Iterable<Character>::_IRep>& thisSharedPtr,
-                                                          const function<bool (Configuration::ArgByValueType<value_type> item)>& that) const override
+                                                          const function<bool (Configuration::ArgByValueType<value_type> item)>& that,
+                                                          [[maybe_unused]] Execution::SequencePolicy seq) const override
             {
-                return inherited::Find (thisSharedPtr, that); // @todo rewrite to operatoe of fData_
+                return inherited::Find (thisSharedPtr, that, seq); // @todo rewrite to operatoe of fData_
             }
         };
     };

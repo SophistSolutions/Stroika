@@ -381,19 +381,6 @@ namespace Stroika::Foundation::Traversal {
          */
         nonvirtual Iterator& operator++ ();
 
-        /**
-         *  \brief
-         *      postincrement
-         *
-         *      Advance iterator; support for range-based-for, and STL style iteration in general
-         *      (containers must also support begin, end).
-         *
-         *  This function is identical to @ref operator++();
-         *
-         *  @see operator++()
-         */
-        // nonvirtual Iterator& operator++ (int);
-
     public:
         /*
          *  \req operator++ can be called 'i' times (on a copy of this), and the result returned.

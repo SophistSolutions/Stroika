@@ -74,10 +74,10 @@ namespace Stroika::Foundation::Containers::Concrete {
             return Iterator<value_type>{make_unique<IteratorRep_> (&fData_, &fChangeCounts_)};
         }
         virtual Iterator<value_type> Find (const shared_ptr<typename Iterable<CountedValue<T>>::_IRep>& thisSharedPtr,
-                                           const function<bool (ArgByValueType<value_type> item)>&      that) const override
+                                           const function<bool (ArgByValueType<value_type> item)>& that, Execution::SequencePolicy seq) const override
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
-            return this->inherited::Find (thisSharedPtr, that); // @todo rewrite to use fData
+            return this->inherited::Find (thisSharedPtr, that, seq); // @todo rewrite to use fData
         }
 
         // MultiSet<T, TRAITS>::_IRep overrides

@@ -67,7 +67,8 @@ namespace Stroika::Foundation::Containers::Concrete {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
             return fData_.empty ();
         }
-        virtual void Apply ([[maybe_unused]] const function<void (ArgByValueType<value_type> item)>& doToElement) const override
+        virtual void Apply ([[maybe_unused]] const function<void (ArgByValueType<value_type> item)>& doToElement,
+                            [[maybe_unused]] Execution::SequencePolicy                               seq) const override
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
             AssertNotImplemented ();
@@ -76,7 +77,8 @@ namespace Stroika::Foundation::Containers::Concrete {
 #endif
         }
         virtual Iterator<tuple<T, INDEXES...>> Find ([[maybe_unused]] const shared_ptr<typename Iterable<tuple<T, INDEXES...>>::_IRep>& thisSharedPtr,
-                                                     [[maybe_unused]] const function<bool (ArgByValueType<value_type> item)>& doToElement) const override
+                                                     [[maybe_unused]] const function<bool (ArgByValueType<value_type> item)>& doToElement,
+                                                     [[maybe_unused]] Execution::SequencePolicy se) const override
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
             using RESULT_TYPE = Iterator<tuple<T, INDEXES...>>;
