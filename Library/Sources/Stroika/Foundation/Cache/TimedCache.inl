@@ -45,14 +45,14 @@ namespace Stroika::Foundation::Cache {
     auto TimedCache<KEY, VALUE, TRAITS>::Elements () const -> Traversal::Iterable<CacheElement>
     {
         vector<CacheElement> r;
-        r.reserve (fMap_.count ());
+        r.reserve (fMap_.size ());
         Time::DurationSecondsType lastAccessThreshold = Time::GetTickCount () - fMinimumAllowedFreshness_;
         for (const auto& i : fMap_) {
             if (i.second.fLastRefreshedAt >= lastAccessThreshold) {
                 r.push_back (CacheElement{i.first, i.second.fResult, i.second.fLastRefreshedAt});
             }
         }
-        return r;
+        return Traversal::Iterable<CacheElement>{move (r)};
     }
     template <typename KEY, typename VALUE, typename TRAITS>
     optional<VALUE> TimedCache<KEY, VALUE, TRAITS>::Lookup (typename Configuration::ArgByValueType<KEY> key, Time::DurationSecondsType* lastRefreshedAt) const

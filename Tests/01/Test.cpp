@@ -181,6 +181,7 @@ namespace {
                     VerifyTestResult (Memory::NullCoalesce (LookupDiskStats_Try1 (L"xx")).size == 33);
                     VerifyTestResult (LookupDiskStats_Try2 (L"xx").size == 33);
                     VerifyTestResult (LookupDiskStats_Try3 (L"xx").size == 33);
+                    auto n = sDiskUsageCache_.Elements ().size ();
                 }
             }
             namespace Example2_ {
