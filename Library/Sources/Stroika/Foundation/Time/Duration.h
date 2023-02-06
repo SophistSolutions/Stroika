@@ -146,12 +146,12 @@ namespace Stroika::Foundation::Time {
         Duration (const Duration& src);
         template <Characters::ConvertibleToString STRINGISH_T>
         explicit Duration (STRINGISH_T&& durationStr);
-        constexpr explicit Duration (int duration);
-        constexpr explicit Duration (long duration);
-        constexpr explicit Duration (long long duration);
-        constexpr explicit Duration (float duration);
-        constexpr explicit Duration (double duration);
-        constexpr explicit Duration (long double duration) noexcept;
+        constexpr  Duration (int duration);
+        constexpr  Duration (long duration);
+        constexpr  Duration (long long duration);
+        constexpr  Duration (float duration);
+        constexpr  Duration (double duration);
+        constexpr  Duration (long double duration) noexcept;
         template <typename DURATION_REP, typename DURATION_PERIOD>
         constexpr Duration (const chrono::duration<DURATION_REP, DURATION_PERIOD>& d);
 
