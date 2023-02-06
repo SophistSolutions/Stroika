@@ -93,10 +93,12 @@ namespace Stroika::Foundation::Traversal {
              *  This is the default implementation. It is only ever if there is a valid equal_to<> around, and
              *  that valid equal_to<> is stateless (verified by Configuration::HasUsableEqualToOptimization).
              */
-            if constexpr (false) {
-                // simpler but not sure if faster
-                // and DONT use at least temporarily cuz makes codesize bigger on Windows (only thing quick/easy to test)
-                return Find (thisSharedPtr, [&] (const T& rhs) { return equal_to<T>{}(v, rhs); });
+            if constexpr (true) {
+                // simpler but not sure if faster; better though cuz by default leverages seq, which will
+                // pretty often help. In 'size' testing, on windows, this was slightly larger, so
+                // not 100% sure this is the best default -- LGP 2023-02-06
+                return Find (
+                    thisSharedPtr, [&v] (const T& rhs) { return equal_to<T>{}(v, rhs); }, seq);
             }
             else {
                 for (Iterator<T> i = MakeIterator (thisSharedPtr); i != end (); ++i) {
