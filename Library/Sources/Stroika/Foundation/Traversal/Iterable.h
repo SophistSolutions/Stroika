@@ -471,6 +471,9 @@ namespace Stroika::Foundation::Traversal {
          *          DbgTrace ("cnt=%d", cnt);
          *      \endcode
          *
+         *  \note on 'seq' parameter, if you pass anything but (the default) eSeq value, be sure to check
+         *        function argument is threadsafe.
+         * 
          *  \note   Aliases:
          *      o   Apply could have logically been called ForEach, and is nearly identical to
          *          std::for_each (), except for not taking iterators as arguments, and not having
@@ -516,6 +519,11 @@ namespace Stroika::Foundation::Traversal {
          * 
          *        If you really care that the result is first, probably better to call Iterable<>::First (). Though
          *        it amounts to the same thing (setting SequencePolicy::eSeq) - its better documenting.
+         * 
+         *        Also note - this function DEFAULTS to using a potentially unsafe execution order (ePar), but this
+         *        is because Find functions almost never have any data (that is being updated) so they should be safe
+         *        in general, and safety errors should be caught by TSAN (or similar) and if they happen, can be easily
+         *        avoided with a specific parameter.
          *
          *  Note that this used to be called 'ContainsWith' - because it can act the same way (due to
          *  operator bool () method of Iterator<T>).
