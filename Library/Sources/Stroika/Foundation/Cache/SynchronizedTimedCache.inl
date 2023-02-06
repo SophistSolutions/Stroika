@@ -25,7 +25,7 @@ namespace Stroika::Foundation::Cache {
     {
         [[maybe_unused]] auto&& srcLock = shared_lock{src.fMutex_}; // shared locks intrinsically recursive - not needed here but good to assure no locks in between
         for (const auto& ci : src.Elements ()) {
-            inherited::Add (ci.fKey, ci.fValue, ci.fFreshness);
+            inherited::Add (ci.fKey, ci.fValue, ci.fLastRefreshedAt);
         }
     }
     template <typename KEY, typename VALUE, typename TRAITS>
