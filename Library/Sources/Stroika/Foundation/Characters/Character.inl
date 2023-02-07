@@ -11,6 +11,7 @@
  */
 #include <bit>
 #include <cwctype>
+#include <ranges>
 #include <type_traits>
 
 #include "../Debug/Assertions.h"
@@ -148,29 +149,18 @@ namespace Stroika::Foundation::Characters {
     template <Character_UNICODECanUnambiguouslyConvertFrom CHAR_T>
     constexpr bool Character::IsASCII (span<const CHAR_T> fromS) noexcept
     {
-        // note - tried to simplify with conditional_t but both sides evaluated
-        if constexpr (is_same_v<remove_cv_t<CHAR_T>, Character>) {
-            for (Character c : fromS) {
-                if (not c.IsASCII ()) [[unlikely]] {
-                    return false;
-                }
+        constexpr auto charComparer = [] () noexcept {
+            if constexpr (is_same_v<remove_cv_t<CHAR_T>, Character>) {
+                return [] (Character c) noexcept { return c.IsASCII (); };
             }
-        }
-        else if constexpr (is_same_v<remove_cv_t<CHAR_T>, Character_Latin1>) {
-            for (CHAR_T c : fromS) {
-                if (static_cast<uint8_t> (c) > 127) [[unlikely]] {
-                    return false;
-                }
+            else if constexpr (is_same_v<remove_cv_t<CHAR_T>, Character_Latin1>) {
+                return [] (Character_Latin1 c) noexcept { return static_cast<uint8_t> (c) <= 127; };
             }
-        }
-        else {
-            for (CHAR_T c : fromS) {
-                if (static_cast<make_unsigned_t<CHAR_T>> (c) > 127) [[unlikely]] {
-                    return false;
-                }
+            else {
+                return [] (CHAR_T c) noexcept { return static_cast<make_unsigned_t<CHAR_T>> (c) <= 127; };
             }
-        }
-        return true;
+        } ();
+        return ranges::all_of (fromS, charComparer);
     }
     template <Character_Compatible CHAR_T>
     inline void Character::CheckASCII (span<const CHAR_T> s)
