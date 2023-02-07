@@ -19,6 +19,8 @@
 
 namespace Stroika::Foundation::Characters {
 
+    [[deprecated ("Since v3.0d1 - use String{s}.AsNarrowSDKString ()")]] std::string WideStringToNarrowSDKString (std::wstring s) { return String{s}.AsNarrowSDKString (); }
+
     /*
      ********************************************************************************
      *************************** Characters::Private_ *******************************
