@@ -178,26 +178,21 @@ namespace Stroika::Foundation::Characters {
     template <Character_UNICODECanUnambiguouslyConvertFrom CHAR_T>
     constexpr bool Character::IsLatin1 (span<const CHAR_T> fromS) noexcept
     {
-        // note - tried to simplify with conditional_t but both sides evaluated
-        if constexpr (is_same_v<remove_cv_t<CHAR_T>, Character>) {
-            for (Character c : fromS) {
-                if (not c.IsLatin1 ()) [[unlikely]] {
-                    return false;
-                }
-            }
-        }
-        else if constexpr (sizeof (CHAR_T) == 1) {
+        if constexpr (sizeof (CHAR_T) == 1) {
             // any byte will fit (assumes 8-bit bytes)
             return true;
         }
         else {
-            for (CHAR_T c : fromS) {
-                if (static_cast<make_unsigned_t<CHAR_T>> (c) > 0xff) [[unlikely]] {
-                    return false;
+            constexpr auto charComparer = [] () noexcept {
+                if constexpr (is_same_v<remove_cv_t<CHAR_T>, Character>) {
+                    return [] (Character c) noexcept { return c.IsLatin1 (); };
                 }
-            }
+                else {
+                    return [] (CHAR_T c) noexcept { return static_cast<make_unsigned_t<CHAR_T>> (c) <= 0xff; };
+                }
+            }();
+            return ranges::all_of (fromS, charComparer);
         }
-        return true;
     }
     template <Character_UNICODECanUnambiguouslyConvertFrom CHAR_T>
     inline void Character::CheckLatin1 (span<const CHAR_T> s)
@@ -217,40 +212,39 @@ namespace Stroika::Foundation::Characters {
         constexpr auto      eNone   = ASCIIOrLatin1Result::eNone;
         constexpr auto      eLatin1 = ASCIIOrLatin1Result::eLatin1;
         constexpr auto      eASCII  = ASCIIOrLatin1Result::eASCII;
-        ASCIIOrLatin1Result result{eASCII}; // all characters so far ascii
-        if constexpr (is_same_v<remove_cv_t<CHAR_T>, Character>) {
-            for (Character c : s) {
-                if (not c.IsLatin1 ()) [[unlikely]] {
-                    return eNone;
-                }
-                else if (result == eASCII and not c.IsASCII ()) [[unlikely]] {
-                    result = eLatin1;
-                }
-            }
-        }
-        else if constexpr (sizeof (CHAR_T) == 1) {
-            // any byte will fit (assumes 8-bit bytes)
-            if (IsASCII (s)) [[likely]] {
-                return eASCII;
-            }
-            if constexpr (is_same_v<CHAR_T, Character_Latin1>) {
-                return eLatin1;
-            }
-            else if constexpr (is_same_v<CHAR_T, char8_t>) {
-                return eNone;
-            }
+        if constexpr (sizeof (CHAR_T) == 1) {
+            // then data must be ascii or latin1, since any byte is latin1
+            return IsASCII (s) ? eASCII : eLatin1;
         }
         else {
-            for (CHAR_T c : s) {
-                if (static_cast<make_unsigned_t<CHAR_T>> (c) > 0xff) [[unlikely]] {
-                    return eNone;
+            constexpr auto isASCII = [] () noexcept {
+                if constexpr (is_same_v<remove_cv_t<CHAR_T>, Character>) {
+                    return [] (Character c) noexcept { return c.IsASCII (); };
                 }
-                else if (result == eASCII and static_cast<make_unsigned_t<CHAR_T>> (c) > 0x7f) [[unlikely]] {
-                    result = eLatin1;
+                else {
+                    return [] (CHAR_T c) noexcept { return static_cast<make_unsigned_t<CHAR_T>> (c) <= 0x7f; };
                 }
+            }();
+            constexpr auto isLatin1= [] () noexcept {
+                if constexpr (is_same_v<remove_cv_t<CHAR_T>, Character>) {
+                    return [] (Character c) noexcept { return c.IsLatin1 (); };
+                }
+                else {
+                    return [] (CHAR_T c) noexcept { return static_cast<make_unsigned_t<CHAR_T>> (c) <= 0xff; };
+                }
+            }();
+            auto leadingASCIISpan = ranges::take_while_view (s, isASCII);
+            size_t leadingAsciiCharCnt = static_cast<size_t> (ranges::distance (leadingASCIISpan));
+            if (leadingAsciiCharCnt == s.size ()) [[likely]] {
+                return eASCII;
             }
+            span remainingInputSpan = s.subspan (leadingAsciiCharCnt);
+            auto remainingLatin1 = ranges::take_while_view (remainingInputSpan, isLatin1);
+            if (static_cast<size_t> (ranges::distance (remainingLatin1)) == remainingInputSpan.size ()) [[likely]] {
+                return eLatin1;
+            }
+            return eNone;
         }
-        return result;
     }
     constexpr bool Character::IsWhitespace () const noexcept
     {
@@ -353,12 +347,7 @@ namespace Stroika::Foundation::Characters {
         //
         // before Stroika v3.0d1 - we used to check iswupper first, but according to https://en.cppreference.com/w/cpp/string/wide/towlower
         // that appears unnecessary
-        //if (::iswupper (static_cast<wchar_t> (fCharacterCode_))) {
         return static_cast<wchar_t> (::towlower (static_cast<wchar_t> (fCharacterCode_)));
-        //}
-        //else {
-        //    return fCharacterCode_;
-        //}
     }
     inline Character Character::ToUpperCase () const noexcept
     {
