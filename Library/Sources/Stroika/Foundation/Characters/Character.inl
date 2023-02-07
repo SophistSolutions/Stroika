@@ -123,10 +123,10 @@ namespace Stroika::Foundation::Characters {
          */
         constexpr int      halfShift = 10; /* used for shifting by 10 bits */
         constexpr char32_t halfBase  = 0x0010000UL;
-        if (not IsSurrogatePair_Hi (hiSurrogate)) {
+        if (not IsSurrogatePair_Hi (hiSurrogate)) [[unlikely]] {
             Private_::ThrowSurrogatesOutOfRange_ ();
         }
-        if (not IsSurrogatePair_Lo (lowSurrogate)) {
+        if (not IsSurrogatePair_Lo (lowSurrogate)) [[unlikely]] {
             Private_::ThrowSurrogatesOutOfRange_ ();
         }
         fCharacterCode_ = ((hiSurrogate - UNI_SUR_HIGH_START) << halfShift) + (lowSurrogate - UNI_SUR_LOW_START) + halfBase;
@@ -175,7 +175,7 @@ namespace Stroika::Foundation::Characters {
     template <Character_Compatible CHAR_T>
     inline void Character::CheckASCII (span<const CHAR_T> s)
     {
-        if (not IsASCII (s)) {
+        if (not IsASCII (s)) [[unlikely]] {
             Private_::ThrowNotIsASCII_ ();
         }
     }
@@ -212,7 +212,7 @@ namespace Stroika::Foundation::Characters {
     template <Character_UNICODECanUnambiguouslyConvertFrom CHAR_T>
     inline void Character::CheckLatin1 (span<const CHAR_T> s)
     {
-        if (not IsLatin1 (s)) {
+        if (not IsLatin1 (s)) [[unlikely]] {
             Private_::ThrowNotIsLatin1_ ();
         }
     }
@@ -240,7 +240,7 @@ namespace Stroika::Foundation::Characters {
         }
         else if constexpr (sizeof (CHAR_T) == 1) {
             // any byte will fit (assumes 8-bit bytes)
-            if (IsASCII (s)) {
+            if (IsASCII (s)) [[likely]] {
                 return eASCII;
             }
             if constexpr (is_same_v<CHAR_T, Character_Latin1>) {
@@ -265,24 +265,24 @@ namespace Stroika::Foundation::Characters {
     constexpr bool Character::IsWhitespace () const noexcept
     {
         bool result = false;
-        if (0x09 <= fCharacterCode_ and fCharacterCode_ <= 0x0D) {
+        if (0x09 <= fCharacterCode_ and fCharacterCode_ <= 0x0D) [[unlikely]] {
             result = true;
         }
-        else if (fCharacterCode_ == 0x20) {
+        else if (fCharacterCode_ == 0x20) [[unlikely]] {
             result = true;
         }
-        else if (fCharacterCode_ >= 0x1680) {
+        else if (fCharacterCode_ >= 0x1680) [[unlikely]] {
             // rarely get chars this big, so shortcut all the detailed tests
-            if (fCharacterCode_ == 0x1680 or fCharacterCode_ == 0x180E) {
+            if (fCharacterCode_ == 0x1680 or fCharacterCode_ == 0x180E) [[unlikely]] {
                 result = true;
             }
-            else if (0x2000 <= fCharacterCode_ and fCharacterCode_ <= 0x2006) {
+            else if (0x2000 <= fCharacterCode_ and fCharacterCode_ <= 0x2006) [[unlikely]] {
                 result = true;
             }
-            else if (0x2008 <= fCharacterCode_ and fCharacterCode_ <= 0x200A) {
+            else if (0x2008 <= fCharacterCode_ and fCharacterCode_ <= 0x200A) [[unlikely]] {
                 result = true;
             }
-            else if (fCharacterCode_ == 0x2028 or fCharacterCode_ == 0x2029 or fCharacterCode_ == 0x205F or fCharacterCode_ == 0x3000) {
+            else if (fCharacterCode_ == 0x2028 or fCharacterCode_ == 0x2029 or fCharacterCode_ == 0x205F or fCharacterCode_ == 0x3000) [[unlikely]] {
                 result = true;
             }
         }
@@ -345,13 +345,13 @@ namespace Stroika::Foundation::Characters {
          *
          *  WAS:    return !!iswcntrl (static_cast<wchar_t> (fCharacterCode_));
          */
-        if (0 <= fCharacterCode_ and fCharacterCode_ <= 0x1f) {
+        if (0 <= fCharacterCode_ and fCharacterCode_ <= 0x1f) [[unlikely]] {
             return true;
         }
-        if (0x7f <= fCharacterCode_ and fCharacterCode_ <= 0x9f) {
+        if (0x7f <= fCharacterCode_ and fCharacterCode_ <= 0x9f) [[unlikely]] {
             return true;
         }
-        if (0x2028 == fCharacterCode_ or 0x2029 == fCharacterCode_) {
+        if (0x2028 == fCharacterCode_ or 0x2029 == fCharacterCode_) [[unlikely]] {
             return true;
         }
         return false;
