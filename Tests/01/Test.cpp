@@ -181,9 +181,9 @@ namespace {
                     VerifyTestResult (Memory::NullCoalesce (LookupDiskStats_Try1 (L"xx")).size == 33);
                     VerifyTestResult (LookupDiskStats_Try2 (L"xx").size == 33);
                     VerifyTestResult (LookupDiskStats_Try3 (L"xx").size == 33);
-                    [[maybe_unused]]auto n = sDiskUsageCache_.Elements ().size ();
+                    [[maybe_unused]] auto n = sDiskUsageCache_.Elements ().size ();
                     for (const auto& ci : sDiskUsageCache_.Elements ()) {
-                        sDiskUsageCache_. Add (ci.fKey, ci.fValue, ci.fLastRefreshedAt);
+                        sDiskUsageCache_.Add (ci.fKey, ci.fValue, ci.fLastRefreshedAt);
                     }
                 }
             }
