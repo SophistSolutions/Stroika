@@ -144,7 +144,11 @@ namespace Stroika::Foundation::Containers::DataStructures {
                 std::for_each (i, last, forward<FUNCTION> (doToElement));
                 break;
             default:
+#if __cpp_lib_execution >= 201603L
                 std::for_each (execution::par, i, last, forward<FUNCTION> (doToElement));
+#else
+                std::for_each (i, last, forward<FUNCTION> (doToElement));
+#endif
                 break;
         }
 #else
