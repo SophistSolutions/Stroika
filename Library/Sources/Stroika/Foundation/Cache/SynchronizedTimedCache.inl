@@ -64,8 +64,8 @@ namespace Stroika::Foundation::Cache {
     template <typename KEY, typename VALUE, typename TRAITS>
     inline auto SynchronizedTimedCache<KEY, VALUE, TRAITS>::LookupValue (typename Configuration::ArgByValueType<KEY> key,
                                                                          const function<VALUE (typename Configuration::ArgByValueType<KEY>)>& cacheFiller,
-                                                                         [[maybe_unused]]LookupMarksDataAsRefreshed successfulLookupRefreshesAcceesFlag,
-                                                                         PurgeSpoiledDataFlagType   purgeSpoiledData) -> VALUE
+                                                                         [[maybe_unused]] LookupMarksDataAsRefreshed successfulLookupRefreshesAcceesFlag,
+                                                                         PurgeSpoiledDataFlagType purgeSpoiledData) -> VALUE
     {
         /*
          *  The main reason for this class (as opposed to Syncrhonized<TimedCache>), is this logic: unlocking the shared 
