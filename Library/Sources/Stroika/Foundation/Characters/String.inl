@@ -388,10 +388,10 @@ namespace Stroika::Foundation::Characters {
     inline String String::FromUTF8 (span<CHAR_T> s)
         requires (is_same_v<remove_cv_t<CHAR_T>, char8_t> or is_same_v<remove_cv_t<CHAR_T>, char>)
     {
-        if (Character::IsASCII (s)) {
+        if (Character::IsASCII (s)) [[likely]] {
             return mk_ (span<const char>{reinterpret_cast<const char*> (s.data ()), s.size ()});
         }
-        if (UTFConverter::AllFitsInTwoByteEncoding (s)) {
+        else if (UTFConverter::AllFitsInTwoByteEncoding (s)) [[likely]] {
             Memory::StackBuffer<char16_t> buf{Memory::eUninitialized, UTFConverter::kThe.ComputeTargetBufferSize<char16_t> (s)};
 #if qCompilerAndStdLib_spanOfContainer_Buggy
             return String{UTFConverter::kThe.ConvertSpan (s, span{buf.data (), buf.size ()})};
