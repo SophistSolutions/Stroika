@@ -146,7 +146,7 @@ namespace Stroika::Foundation::Time {
         Duration (const Duration& src);
         template <Characters::ConvertibleToString STRINGISH_T>
         explicit Duration (STRINGISH_T&& durationStr);
-        constexpr  Duration (int durationInSeconds);
+        constexpr Duration (int durationInSeconds);
         constexpr Duration (long durationInSeconds);
         constexpr Duration (long long durationInSeconds);
         constexpr Duration (float durationInSeconds);
