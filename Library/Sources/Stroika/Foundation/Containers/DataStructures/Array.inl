@@ -136,26 +136,20 @@ namespace Stroika::Foundation::Containers::DataStructures {
     inline void Array<T>::Apply (FUNCTION&& doToElement, Execution::SequencePolicy seq) const
     {
         Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
-        const T*                                              i    = &fItems_[0];
-        const T*                                              last = &fItems_[fLength_];
-#if 1
+        const T*                                              start = &fItems_[0];
+        const T*                                              end   = &fItems_[fLength_];
         switch (seq) {
             case Execution::SequencePolicy::eSeq:
-                std::for_each (i, last, forward<FUNCTION> (doToElement));
+                std::for_each (start, end, forward<FUNCTION> (doToElement));
                 break;
             default:
 #if __cpp_lib_execution >= 201603L
-                std::for_each (execution::par, i, last, forward<FUNCTION> (doToElement));
+                std::for_each (execution::par, start, end, forward<FUNCTION> (doToElement));
 #else
-                std::for_each (i, last, forward<FUNCTION> (doToElement));
+                std::for_each (start, end, forward<FUNCTION> (doToElement));
 #endif
                 break;
         }
-#else
-        for (; i < last; ++i) {
-            doToElement (*i);
-        }
-#endif
     }
     template <typename T>
     template <typename FUNCTION>
