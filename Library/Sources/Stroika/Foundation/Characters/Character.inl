@@ -260,7 +260,7 @@ namespace Stroika::Foundation::Characters {
             auto i = s.begin ();
             for (; i != s.end () and isASCII (*i); ++i)
                 ;
-            size_t leadingAsciiCharCnt = static_cast<size_t> (i-s.begin ());
+            size_t leadingAsciiCharCnt = static_cast<size_t> (i - s.begin ());
             if (leadingAsciiCharCnt == s.size ()) [[likely]] {
                 return eASCII;
             }
@@ -288,7 +288,7 @@ namespace Stroika::Foundation::Characters {
             auto ii = remainingInputSpan.begin ();
             for (; ii != remainingInputSpan.end () and isLatin1 (*ii); ++ii)
                 ;
-            size_t remainingLatin1 = static_cast<size_t> (ii-remainingInputSpan.begin ());
+            size_t remainingLatin1 = static_cast<size_t> (ii - remainingInputSpan.begin ());
             if (remainingLatin1 == remainingInputSpan.size ()) [[likely]] {
                 return eLatin1;
             }
