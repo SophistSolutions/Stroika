@@ -178,11 +178,34 @@ namespace Stroika::Foundation::Characters {
     template <Character_UNICODECanUnambiguouslyConvertFrom CHAR_T>
     constexpr bool Character::IsLatin1 (span<const CHAR_T> fromS) noexcept
     {
-        if constexpr (sizeof (CHAR_T) == 1) {
-            // any byte will fit (assumes 8-bit bytes)
+        if constexpr (is_same_v<CHAR_T, Character_ASCII> or is_same_v<CHAR_T, Character_Latin1>) {
+            // then data must be ascii or latin1, since any byte is latin1
             return true;
         }
+        else if constexpr (is_same_v<CHAR_T, char8_t>) {
+            // For the special case of UTF-8, tricky to tell if its latin1 or not. Must iterate through the remaining
+            // two-byte pairs, and make sure they are 110xxxxx followed by 10xxxxxx where the xxx's get unpacked in to <= 0xff
+            if (fromS.size () % 2 == 0) {
+                for (auto i = fromS.begin (); i < fromS.end (); ++i) {
+                    char8_t c1 = *i++;
+                    char8_t c2 = *i;
+                    // Check letgit high order bits for first and second byte
+                    // and to check RANGE of values being latin1, means bit pattern only
+                    // 8 bits. Low order bits in second byte, so dont need to examine those.
+                    // Just make sure at most two bits set in upper (first) byte
+                    if ((c1 & 0b11100000) == 0b11000000 and ((c2 & 0b11000000) == 0b10000000 and (c1 & 0b00111111) <= 0b011)) [[likely]] {
+                        // OK
+                    }
+                    else {
+                        return false;
+                    }
+                }
+                return true;
+            }
+            return false;
+        }
         else {
+            static_assert (2 <= sizeof (CHAR_T) and sizeof (CHAR_T) <= 4);
             constexpr auto charComparer = [] () noexcept {
                 if constexpr (is_same_v<remove_cv_t<CHAR_T>, Character>) {
                     return [] (Character c) noexcept { return c.IsLatin1 (); };
@@ -225,6 +248,16 @@ namespace Stroika::Foundation::Characters {
                     return [] (CHAR_T c) noexcept { return static_cast<make_unsigned_t<CHAR_T>> (c) <= 0x7f; };
                 }
             }();
+            auto   leadingASCIISpan    = ranges::take_while_view (s, isASCII);
+            size_t leadingAsciiCharCnt = static_cast<size_t> (ranges::distance (leadingASCIISpan));
+            if (leadingAsciiCharCnt == s.size ()) [[likely]] {
+                return eASCII;
+            }
+            span remainingInputSpan = s.subspan (leadingAsciiCharCnt);
+            if constexpr (is_same_v<CHAR_T, char8_t>) {
+                // special case - we need different algorithm looking at pairs of entries, to see if IsLatin1 with utf8
+                return IsLatin1 (remainingInputSpan) ? eLatin1 : eNone;
+            }
             constexpr auto isLatin1 = [] () noexcept {
                 if constexpr (is_same_v<remove_cv_t<CHAR_T>, Character>) {
                     return [] (Character c) noexcept { return c.IsLatin1 (); };
@@ -233,34 +266,6 @@ namespace Stroika::Foundation::Characters {
                     return [] (CHAR_T c) noexcept { return static_cast<make_unsigned_t<CHAR_T>> (c) <= 0xff; };
                 }
             }();
-            auto   leadingASCIISpan    = ranges::take_while_view (s, isASCII);
-            size_t leadingAsciiCharCnt = static_cast<size_t> (ranges::distance (leadingASCIISpan));
-            if (leadingAsciiCharCnt == s.size ()) [[likely]] {
-                return eASCII;
-            }
-            span remainingInputSpan = s.subspan (leadingAsciiCharCnt);
-            if constexpr (is_same_v<CHAR_T, char8_t>) {
-                // For the special case of UTF-8, tricky to tell if its latin1 or not. Must iterate through the remaining
-                // two-byte pairs, and make sure they are 110xxxxx followed by 10xxxxxx where the xxx's get unpacked in to <= 0xff
-                if (remainingInputSpan.size () % 2 == 0) {
-                    for (auto i = remainingInputSpan.begin (); i < remainingInputSpan.end (); ++i) {
-                        char8_t c1 = *i++;
-                        char8_t c2 = *i;
-                        // Check letgit high order bits for first and second byte
-                        // and to check RANGE of values being latin1, means bit pattern only
-                        // 8 bits. Low order bits in second byte, so dont need to examine those.
-                        // Just make sure at most two bits set in upper (first) byte
-                        if ((c1 & 0b11100000) == 0b11000000 and ((c2 & 0b11000000) == 0b10000000 and (c1 & 0b00111111) <= 0b011)) [[likely]] {
-                            // OK
-                        }
-                        else {
-                            return eNone;
-                        }
-                    }
-                    return eLatin1;
-                }
-                return eNone;
-            }
             auto remainingLatin1 = ranges::take_while_view (remainingInputSpan, isLatin1);
             if (static_cast<size_t> (ranges::distance (remainingLatin1)) == remainingInputSpan.size ()) [[likely]] {
                 return eLatin1;

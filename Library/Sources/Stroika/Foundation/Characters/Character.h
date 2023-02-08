@@ -229,6 +229,10 @@ namespace Stroika::Foundation::Characters {
     public:
         /**
          *  \brief Return true iff the given character (or all in span) is (are) in the ascii range [0..0x7f]
+         * 
+         *  \note unlike other uses of CHAR_T in other methods in this class, even if CHAR_T=Character_ASCII
+         *        the code still loops and checks the range of characters. This is because Character_ASCII == char
+         *        and you need some way to check a bunch of 'char' elements and see if they are ascii.
          */
         constexpr bool IsASCII () const noexcept;
         template <Character_UNICODECanUnambiguouslyConvertFrom CHAR_T>
@@ -250,7 +254,10 @@ namespace Stroika::Foundation::Characters {
          *  This refers to ASCII OR https://en.wikipedia.org/wiki/Latin-1_Supplement, so any UNICODE characater code point
          *  less than U+00FF.
          * 
-         *  \note, for sizeof (CHAR_T) == 1, this just returns true.
+         *  \note this pays close attention to the CHAR_T, and checks differently (especially for
+         *        sizeof(CHAR_T)==1. If the type is Character_ASCII or Character_Latin1, there is nothing
+         *        to check, and so this just returns true. For CHAR_T==char8_t, we walk the sequence of characters
+         *        and verify carefully that the encoded characters all will fit in the ISO-Latin1 range (<= 256).
          * 
          *  @see Character_Latin1
          * 
@@ -261,6 +268,7 @@ namespace Stroika::Foundation::Characters {
 
     public:
         /**
+         *  \see IsASCIIOrLatin1
          */
         enum class ASCIIOrLatin1Result {
             eNone,
@@ -274,11 +282,9 @@ namespace Stroika::Foundation::Characters {
          *  most specific possible answer for the entire span. So if all characters ascii, thats returned.
          *  If not, but all characters latin1, thats returned. Else returned none.
          * 
-         *  \note, if CHAR_T == Character_Latin1, then this will NEVER return none. Its equivilent to
-         *         IsASCII.
-         *         
-         *  \note, if CHAR_T == char8_t, then this will NEVER return Latin1. Its equivilent to
-         *         IsASCII.
+         *  \note, if CHAR_T == Character_Latin1 or Character_ASCII, then this will NEVER return none. Its equivilent to
+         *         IsASCII. If CHAR_T==Character_ASCII. we do like IsASCII(): and actually check the bytes in the
+         *         ASCII change, despite the Character_ASCII designation (rationale in IsASCII).
          */
         template <Character_UNICODECanUnambiguouslyConvertFrom CHAR_T>
         static constexpr ASCIIOrLatin1Result IsASCIIOrLatin1 (span<const CHAR_T> s) noexcept;
