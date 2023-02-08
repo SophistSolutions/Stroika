@@ -1380,9 +1380,6 @@ STILL:
 #endif
 #endif
 
-
-
-
 #ifndef qCompilerAndStdLib_stdlib_compare_three_way_present_but_Buggy
 #if defined(_LIBCPP_VERSION)
 #if _LIBCPP_VERSION <= 14000
