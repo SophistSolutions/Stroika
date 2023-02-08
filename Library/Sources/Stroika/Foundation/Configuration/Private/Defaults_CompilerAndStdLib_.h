@@ -1366,6 +1366,19 @@ STILL:
 #endif
 #endif
 
+
+#ifndef qCompilerAndStdLib_stdlib_ranges_pretty_broken_Buggy
+#if defined(_LIBCPP_VERSION)
+// unclear yet if broken in _LIBCPP_VERSION but only docs suggest broken til 15
+#define qCompilerAndStdLib_stdlib_ranges_pretty_broken_Buggy (_LIBCPP_VERSION < 14000)
+#else
+#define qCompilerAndStdLib_stdlib_ranges_pretty_broken_Buggy 0
+#endif
+#endif
+
+
+
+
 #ifndef qCompilerAndStdLib_stdlib_compare_three_way_present_but_Buggy
 #if defined(_LIBCPP_VERSION)
 #if _LIBCPP_VERSION <= 14000

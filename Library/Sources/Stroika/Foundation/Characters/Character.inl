@@ -160,7 +160,11 @@ namespace Stroika::Foundation::Characters {
                 return [] (CHAR_T c) noexcept { return static_cast<make_unsigned_t<CHAR_T>> (c) <= 127; };
             }
         }();
+#if qCompilerAndStdLib_stdlib_ranges_pretty_broken_Buggy
+        return std::all_of (fromS.begin (), fromS.end (), charComparer);
+#else
         return ranges::all_of (fromS, charComparer);
+#endif
     }
     template <Character_Compatible CHAR_T>
     inline void Character::CheckASCII (span<const CHAR_T> s)
@@ -214,7 +218,11 @@ namespace Stroika::Foundation::Characters {
                     return [] (CHAR_T c) noexcept { return static_cast<make_unsigned_t<CHAR_T>> (c) <= 0xff; };
                 }
             }();
+#if qCompilerAndStdLib_stdlib_ranges_pretty_broken_Buggy
+            return std::all_of (fromS.begin (), fromS.end (), charComparer);
+#else
             return ranges::all_of (fromS, charComparer);
+#endif
         }
     }
     template <Character_UNICODECanUnambiguouslyConvertFrom CHAR_T>
@@ -248,11 +256,21 @@ namespace Stroika::Foundation::Characters {
                     return [] (CHAR_T c) noexcept { return static_cast<make_unsigned_t<CHAR_T>> (c) <= 0x7f; };
                 }
             }();
+#if qCompilerAndStdLib_stdlib_ranges_pretty_broken_Buggy
+            auto i = s.begin ();
+            for (; i != s.end () and isASCII (*i); ++i)
+                ;
+            size_t leadingAsciiCharCnt = static_cast<size_t> (i-s.begin ());
+            if (leadingAsciiCharCnt == s.size ()) [[likely]] {
+                return eASCII;
+            }
+#else
             auto   leadingASCIISpan    = ranges::take_while_view (s, isASCII);
             size_t leadingAsciiCharCnt = static_cast<size_t> (ranges::distance (leadingASCIISpan));
             if (leadingAsciiCharCnt == s.size ()) [[likely]] {
                 return eASCII;
             }
+#endif
             span remainingInputSpan = s.subspan (leadingAsciiCharCnt);
             if constexpr (is_same_v<CHAR_T, char8_t>) {
                 // special case - we need different algorithm looking at pairs of entries, to see if IsLatin1 with utf8
@@ -266,10 +284,20 @@ namespace Stroika::Foundation::Characters {
                     return [] (CHAR_T c) noexcept { return static_cast<make_unsigned_t<CHAR_T>> (c) <= 0xff; };
                 }
             }();
+#if qCompilerAndStdLib_stdlib_ranges_pretty_broken_Buggy
+            auto ii = remainingInputSpan.begin ();
+            for (; ii != remainingInputSpan.end () and isLatin1 (*ii); ++ii)
+                ;
+            size_t remainingLatin1 = static_cast<size_t> (ii-remainingInputSpan.begin ());
+            if (remainingLatin1 == remainingInputSpan.size ()) [[likely]] {
+                return eLatin1;
+            }
+#else
             auto remainingLatin1 = ranges::take_while_view (remainingInputSpan, isLatin1);
             if (static_cast<size_t> (ranges::distance (remainingLatin1)) == remainingInputSpan.size ()) [[likely]] {
                 return eLatin1;
             }
+#endif
             return eNone;
         }
     }
