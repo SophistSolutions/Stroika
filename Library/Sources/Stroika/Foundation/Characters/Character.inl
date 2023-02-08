@@ -11,7 +11,9 @@
  */
 #include <bit>
 #include <cwctype>
+#if !qCompilerAndStdLib_stdlib_ranges_pretty_broken_Buggy
 #include <ranges>
+#endif
 #include <type_traits>
 
 #include "../Debug/Assertions.h"
