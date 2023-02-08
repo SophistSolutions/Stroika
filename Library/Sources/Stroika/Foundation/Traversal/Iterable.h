@@ -41,8 +41,6 @@
  *      @todo   Document (which -not all) Linq-like functions only pull as needed from the
  *              original source, and which force a pull (like where doesn't but max does).
  *
- *      @todo   Add more 'linq' overloads, like groupBy taking different kinds of compare functions, and field selectors.
- *
  *      @todo   Consider having Linq-like functions do DELAYED EVALUATION, so the computation only
  *              happens when you iterate. Maybe to some degree this already happens, but could do
  *              more (as MSFT does).
@@ -68,17 +66,17 @@ namespace Stroika::Foundation::Traversal {
      *  \brief  Iterable<T> is a base class for containers which easily produce an Iterator<T>
      *          to traverse them.
      *
-     *  Iterable<T> is a base class for containers which easily produce an Iterator<T> to traverse them.
-     *
-     *  The Stroika iterators can be used either directly, or in the STL begin/end style - and this
-     *  class supports both styles of usage.
-     *
+     *  The Stroika iterators can be used either directly (similar to std::range), or in the STL begin/end style -
+     *  and this class supports both styles of usage.
+     * 
+     *  \todo https://stroika.atlassian.net/browse/STK-975 - work with std::range
+     * 
      *  Iterable<T> also supports read-only applicative operations on the contained data.
      *
      *  Iterable<T> is much like idea of 'abstract readonly container', but which only supports an
      *  exceedingly simplistic pattern of access.
      *
-     *  *Important Design Note*:
+     *  *Important Design Note* (lifetime of iterators):
      *      The Lifetime of Iterator<T> objects created by an Iterable<T> instance must always be less
      *      than the creating Iterable's lifetime.
      *
@@ -90,7 +88,7 @@ namespace Stroika::Foundation::Traversal {
      *      would make iterator objects significantly more expensive, and with little apparent value added.
      *      Similarly for weak_ptr<> references.
      *
-     *  *Important Design Note*:
+     *  *Important Design Note* (construct with rep, no setrep):
      *      We have no:
      *          nonvirtual  void    _SetRep (IterableRepSharedPtr rep);
      *
@@ -102,13 +100,14 @@ namespace Stroika::Foundation::Traversal {
      *      Note - instead - you can 'assign' (operator=) to replace the value (and dynamic type) of
      *      an Iterable<> (or subclass) instance.
      *
-     *  *Important Design Note*:
-     *      Iterable's - unlike all Stroika containers - do NOT necessarily implement 'copy on write' - COW. This is because the data can
-     *      come from arbitrary, programatic sources (like a sequence of uncomputed random numbers). If you wish to capture something
-     *      like an Iterable for later use, but don't want its value to change once you've captured it, consider using Collection<T> which is
-     *      almost the same, but will make a copy of the data, and not allow it to change without preserve COW semantics.
+     *  *Important Design Note* (copy on write/COW):
+     *      Iterable uses 'SharedByValue', so that subclasses of Iterable (especially containers) CAN implement
+     *      Copy-On-Write (COW). However, not ALL Iterables implement COW. In fact, not all Iterables are mutable!
      * 
-     *      @todo https://stroika.atlassian.net/browse/STK-799 - CLEAR UP THESE DOCS!!!!
+     *      Iterable's data can come from arbitrary, programatic sources (like a sequence of uncomputed random numbers).
+     *      If you wish to capture something like an Iterable for later use, but don't want its value to change once you've captured it,
+     *      consider using Collection<T> or Sequence<> which is almost the same, but will make a copy of the data, and not allow it to
+     *      change without preserve COW semantics.
      *
      *  *Design Note*:
      *      Why does Iterable<T> contain a size () method?
@@ -162,19 +161,13 @@ namespace Stroika::Foundation::Traversal {
      *      So we eventually decided to use the return optional and have a variant named XXXValue () that returns the plain T with a default - since
      *      we use that pattern in so many places.
      *
-     *  *Design Note*:
-     *      Rejected idea:
-     *          Add overload of Find() that takes Iterator<T> as arugument instead of T
-     *          so you can delete the item pointed to by T.
-     *
-     *          This was rejected because it can easily be done directly with iterators, and seems
-     *          a queeryly specific problem. I cannot see any patterns where one would want to do this.
-     *
      *  *Design Note* - Microsoft Linq:
      *      This API implements some of the Microsoft Linq API.
      *          https://msdn.microsoft.com/en-us/library/system.linq.enumerable_methods(v=vs.100).aspx
      *
      *      For example, we implement:
+     *          o   Map         **most important**
+     *          o   Reduce      **important - aka accumulate**
      *          o   Where
      *          o   Take
      *          o   Skip
@@ -455,7 +448,7 @@ namespace Stroika::Foundation::Traversal {
          *          (doToElement) (*i);
          *      }
          *
-         *  However, Apply () MAY perform the entire iteration atomicly (depending on the
+         *  However, Apply () MAY perform the entire iteration more quickly (depending on the
          *  kind of the container).
          *
          *  Apply () also MAY be much faster than normal iteration (some simple tests

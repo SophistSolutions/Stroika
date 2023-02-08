@@ -29,22 +29,6 @@
  *
  *              THIS IS BAD AND MUST BE REWRITEN - NOT WAHT WE WANT - TOO STRONG A PROMISE.
  *
- *      @todo   Consider adding a Refresh() method to iterator. Semantics would be
- *              to recheck the current item, and recheck the done state of the container.
- *
- *              Use case is with map/reduce. Consider one process doing the mapping, and
- *              another reading the output (if we have &param version of map). Then the
- *              reader could check if done, and wait a moment, and check again (wait? how that?)
- *
- *              The key is that with map reduce you have parallel mapping and processing the output.
- *              But if iterating over output, hard (not impossible) to know you are at the end (length).
- *
- *              Restartable iterators would be one way.
- *
- *      @todo   See if we can replace Rep_Cloner_ stuff with lambda[] inline in type declaration? See if that
- *              has any negative impacts on performacnce/size etc (test win/gcc). Really more an issue
- *              for SharedByValue<> template.
- *
  *      @todo   Speed tweeks
  *
  *              The Major Design limitaiton of this approach to iterators is that it requires a non-inlinable
@@ -102,6 +86,8 @@ namespace Stroika::Foundation::Traversal {
      *  \brief
      *      An Iterator<T> is a copyable object which allows traversing the contents of some container.
      *
+     *  \@todo EXPLAIN HOW THIS IS CONNECTED TO c++20 'range' and probably make this work with ranges!!!
+     * 
      *  An Iterator<T> is typically associated with some container (that is being iterated over)
      *  and which allows traversal from start to finish.
      *  (The iterator itself essentially provides a notion of *start* to *finish*).
@@ -118,8 +104,9 @@ namespace Stroika::Foundation::Traversal {
      *  has been modified (rule as in STL, but unlike most STLs, Stroika will automatically detect such
      *  illegal use in debug builds).
      *
-     *  Itererators CAN be used to MODIFY a container, but only by passing that iterator as an
-     *  argument to a container method (such as Remove). Such APIs will optionally return an updated iterator,
+     *  Itererators CAN be used to MODIFY a container, but not directly - only by passing that iterator as an
+     *  argument to a container method (such as Remove). Here the iterator cannot actually update the container
+     *  but acts as an marker/indicator of what element to update. Such APIs will optionally return an updated iterator,
      *  so that you can continue with iteration (if desired).
      * 
      *  \note PRIOR to Stroika 2.1b14 it was true that
@@ -186,7 +173,7 @@ namespace Stroika::Foundation::Traversal {
      *
      *  Interesting Design Notes:
      *
-     *      -   We considered a desgin for Current() - where it would dynamically
+     *      -   We considered a design for Current() - where it would dynamically
      *          grab the current value, as opposed to being defined to be frozen/copied
      *          at the time of iteration.
      *
@@ -196,26 +183,17 @@ namespace Stroika::Foundation::Traversal {
      *
      *          However, because I think its far more frequent that the copies are cheap, the
      *          user will want to look at each value, and the cost in terms of thread locking
-     *          and probabe virtual function calls, the current approach of freezing / copying
+     *          and probably virtual function calls, the current approach of freezing / copying
      *          on iteration seemed better.
      *
      *  \note   Design Note
      *          Until Stroika 2.1d6, Iterator<> used CopyOnWrite (COW) - SharedByValue, instead of unique_ptr.
      *
      *          SharedByValue costs a bit more when the iterators are never copied. But saves alot of cost when iterators
-     *          are copied (because of the machinery for tracking container iterators for 'safe iteration' patching mostly).
-     *
-     *          I never did adequate testing, so I'm not sure of this, but I think the situations where you copy iterators
-     *          are quite rare, and you can be careful to minimize them. And so this path - using unique_ptr - is probably better.
-     *          If in doubt, go back to 2.1d5/2.d6 and performance test!
-     *
-     *          But sadly somewhere between 2.1d5 and 2.1d22, I broke support for qStroika_Foundation_Traversal_Iterator_UseSharedByValue=1.
-     *          Not worth fixing, so I just removed the feature in 2.1d22.
+     *          are copied (cuz with unique_ptr they need to actually be cloned).
      *
      *          I DID run some simple tests to see how often we even use the Clone method. It turns out - quite rarely.
      *          And most can be eliminated by slightly better Move constructor support on the iterator class.
-     *
-     *          Created @todo https://stroika.atlassian.net/browse/STK-690 - Add / Improve MOVE constructor usage for Iterator class (now that copy always clones)
      *
      *  @see Iterable<T>
      *
