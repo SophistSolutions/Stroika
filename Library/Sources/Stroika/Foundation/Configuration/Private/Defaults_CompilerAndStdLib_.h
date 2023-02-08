@@ -1366,11 +1366,15 @@ STILL:
 #endif
 #endif
 
-
+/**
+ *      This is going to limit how much I can support ranges in Stroika v3.
+*/
 #ifndef qCompilerAndStdLib_stdlib_ranges_pretty_broken_Buggy
 #if defined(_LIBCPP_VERSION)
 // unclear yet if broken in _LIBCPP_VERSION but only docs suggest broken til 15
-#define qCompilerAndStdLib_stdlib_ranges_pretty_broken_Buggy (_LIBCPP_VERSION < 14000)
+#define qCompilerAndStdLib_stdlib_ranges_pretty_broken_Buggy (_LIBCPP_VERSION < 15000)
+#elif defined (__clang_major__) 
+#define qCompilerAndStdLib_stdlib_ranges_pretty_broken_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 14))
 #else
 #define qCompilerAndStdLib_stdlib_ranges_pretty_broken_Buggy 0
 #endif
