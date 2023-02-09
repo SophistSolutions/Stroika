@@ -94,8 +94,8 @@ namespace Stroika::Foundation::Traversal {
              *  that valid equal_to<> is stateless (verified by Configuration::HasUsableEqualToOptimization).
              */
             if constexpr (true) {
-                // simpler but not sure if faster; better though cuz by default leverages seq, which will
-                // pretty often help. In 'size' testing, on windows, this was slightly larger, so
+                // simpler but not sure if faster; better though cuz by default leverages seq, which might
+                // help. In 'size' testing, on windows, this was slightly larger, so
                 // not 100% sure this is the best default -- LGP 2023-02-06
                 return Find (
                     thisSharedPtr, [&v] (const T& rhs) { return equal_to<T>{}(v, rhs); }, seq);
