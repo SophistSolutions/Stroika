@@ -1021,18 +1021,18 @@ namespace {
                 {
                     auto checkJapaneseNumbers = [] () {
                         // From https://www.fluentin3months.com/japanese-numbers/
-                        const String          kNumber8a_ = L"\u306F\u3061";         //  はち
-                        const String          kNumber8b_ = L"\u516B";               //  八
-                        const String          kNumber8c_ = L"\u3084\u3063\u3064";   //  やっつ
-                        const String          kNumber8d_ = L"\u516B\u3064";         //  八つ
+                        const String kNumber8a_ = L"\u306F\u3061";       //  はち
+                        const String kNumber8b_ = L"\u516B";             //  八
+                        const String kNumber8c_ = L"\u3084\u3063\u3064"; //  やっつ
+                        const String kNumber8d_ = L"\u516B\u3064";       //  八つ
 
-                        [[maybe_unused]] auto xa         = FloatConversion::ToFloat<double> (kNumber8a_);
-                        [[maybe_unused]] auto xb         = FloatConversion::ToFloat<double> (kNumber8b_);
-                        [[maybe_unused]] auto xc         = FloatConversion::ToFloat<double> (kNumber8c_);
-                        [[maybe_unused]] auto xd         = FloatConversion::ToFloat<double> (kNumber8d_);
+                        [[maybe_unused]] auto xa = FloatConversion::ToFloat<double> (kNumber8a_);
+                        [[maybe_unused]] auto xb = FloatConversion::ToFloat<double> (kNumber8b_);
+                        [[maybe_unused]] auto xc = FloatConversion::ToFloat<double> (kNumber8c_);
+                        [[maybe_unused]] auto xd = FloatConversion::ToFloat<double> (kNumber8d_);
                         // https://www.intmath.com/blog/mathematics/unicode-characters-for-chinese-and-japanese-numbers-1482
-                        const String kNumber1_ = L"\u4e00"; //  	一
-                        const String kNumber2_ = L"\u4e8c"; //  	二
+                        const String          kNumber1_ = L"\u4e00"; //      一
+                        const String          kNumber2_ = L"\u4e8c"; //      二
                         [[maybe_unused]] auto x1        = FloatConversion::ToFloat<double> (kNumber1_);
                         [[maybe_unused]] auto x2        = FloatConversion::ToFloat<double> (kNumber2_);
 
