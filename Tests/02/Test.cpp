@@ -940,21 +940,21 @@ namespace {
         {
             VerifyTestResult (CString::String2Int<int> ("-3") == -3);
             VerifyTestResult (CString::String2Int<int> ("3") == 3);
-            VerifyTestResult (CString::String2Int<int> (wstring (L"3")) == 3);
+            VerifyTestResult (CString::String2Int<int> (wstring{L"3"}) == 3);
             VerifyTestResult (String2Int<int> (String{L"3"}) == 3);
         }
         {
             VerifyTestResult (CString::String2Int<int> ("") == 0);
             VerifyTestResult (String2Int<int> (L"") == 0);
-            VerifyTestResult (CString::String2Int<int> (wstring (L"")) == 0);
-            VerifyTestResult (String2Int<int> (String ()) == 0);
+            VerifyTestResult (CString::String2Int<int> (wstring{L""}) == 0);
+            VerifyTestResult (String2Int<int> (String{}) == 0);
             VerifyTestResult (CString::String2Int<int> ("     ") == 0);
         }
         {
             VerifyTestResult (CString::HexString2Int ("") == 0);
             VerifyTestResult (CString::HexString2Int (L"") == 0);
-            VerifyTestResult (CString::HexString2Int (wstring (L"")) == 0);
-            VerifyTestResult (HexString2Int (String ()) == 0);
+            VerifyTestResult (CString::HexString2Int (wstring{L""}) == 0);
+            VerifyTestResult (HexString2Int (String{}) == 0);
             VerifyTestResult (CString::HexString2Int ("     ") == 0);
         }
         {
@@ -1021,14 +1021,21 @@ namespace {
                 {
                     auto checkJapaneseNumbers = [] () {
                         // From https://www.fluentin3months.com/japanese-numbers/
-                        const String          kNumber8a_ = L"はち";
-                        const String          kNumber8b_ = L"八";
-                        const String          kNumber8c_ = L"やっつ";
-                        const String          kNumber8d_ = L"八つ";
+                        const String          kNumber8a_ = L"\u306F\u3061";         //  はち
+                        const String          kNumber8b_ = L"\u516B";               //  八
+                        const String          kNumber8c_ = L"\u3084\u3063\u3064";   //  やっつ
+                        const String          kNumber8d_ = L"\u516B\u3064";         //  八つ
+
                         [[maybe_unused]] auto xa         = FloatConversion::ToFloat<double> (kNumber8a_);
                         [[maybe_unused]] auto xb         = FloatConversion::ToFloat<double> (kNumber8b_);
                         [[maybe_unused]] auto xc         = FloatConversion::ToFloat<double> (kNumber8c_);
                         [[maybe_unused]] auto xd         = FloatConversion::ToFloat<double> (kNumber8d_);
+                        // https://www.intmath.com/blog/mathematics/unicode-characters-for-chinese-and-japanese-numbers-1482
+                        const String kNumber1_ = L"\u4e00"; //  	一
+                        const String kNumber2_ = L"\u4e8c"; //  	二
+                        [[maybe_unused]] auto x1        = FloatConversion::ToFloat<double> (kNumber1_);
+                        [[maybe_unused]] auto x2        = FloatConversion::ToFloat<double> (kNumber2_);
+
                         // This test is an ABJECT FAILURE - https://stroika.atlassian.net/browse/STK-747 but LOW PRIORITY
                     };
                     checkJapaneseNumbers ();
