@@ -67,6 +67,7 @@
   <ItemGroup>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Cache\Statistics.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\Character.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\CodeCvt.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\CodePage.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\CString\Utilities.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\FloatConversion.cpp" />
@@ -75,6 +76,7 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\RegularExpression.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\String.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\String2Int.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\TextConvert.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\ToString.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\UTFConvert.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Common\GUID.cpp" />
@@ -281,6 +283,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cache\SynchronizedTimedCache.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cache\TimedCache.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\Character.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\CodeCvt.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\CodePage.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\CString\Utilities.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\FloatConversion.h" />
@@ -294,6 +297,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\String.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\String2Int.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\StringBuilder.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\TextConvert.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\ToString.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\UTFConvert.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Common\Compare.h" />
@@ -717,6 +721,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\Cache\SynchronizedTimedCache.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Cache\TimedCache.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Characters\Character.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Characters\CodeCvt.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Characters\CodePage.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Characters\CString\Makefile" />
     <None Include="..\..\Sources\Stroika\Foundation\Characters\CString\ReadMe.md" />
@@ -733,6 +738,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\Characters\String.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Characters\String2Int.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Characters\StringBuilder.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Characters\TextConvert.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Characters\ToDo.md" />
     <None Include="..\..\Sources\Stroika\Foundation\Characters\ToString.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Characters\UTFConvert.inl" />

@@ -1,0 +1,12 @@
+/*
+ * Copyright(c) Sophist Solutions, Inc. 1990-2022.  All rights reserved
+ */
+#include "../StroikaPreComp.h"
+
+#include "../Execution/Exceptions.h"
+
+#include "TextConvert.h"
+
+using namespace Stroika;
+using namespace Stroika::Foundation;
+using namespace Stroika::Foundation::Characters;

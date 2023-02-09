@@ -828,6 +828,12 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\TextToByteReader.cpp">
       <Filter>Sources\Streams</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\TextConvert.cpp">
+      <Filter>Sources\Characters</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\CodeCvt.cpp">
+      <Filter>Sources\Characters</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.h">
@@ -2120,6 +2126,12 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\Span.h">
       <Filter>Sources\Memory</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\TextConvert.h">
+      <Filter>Sources\Characters</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\CodeCvt.h">
+      <Filter>Sources\Characters</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -3485,6 +3497,12 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\Span.inl">
       <Filter>Sources\Memory</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Characters\TextConvert.inl">
+      <Filter>Sources\Characters</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Characters\CodeCvt.inl">
+      <Filter>Sources\Characters</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
