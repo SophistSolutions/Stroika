@@ -79,19 +79,16 @@ namespace {
  ******************** Characters::Private_::mk_UNICODECodeCvt_ ******************
  ********************************************************************************
  */
-
 template <>
 shared_ptr<CodeCvt<char16_t>::IRep> Characters::Private_::mk_UNICODECodeCvt_<char16_t> ()
 {
     return Memory::MakeSharedPtr<CodeCvt_BasicUnicodeRep_CHAR_T<char16_t>> ();
 }
-
 template <>
 shared_ptr<CodeCvt<char32_t>::IRep> Characters::Private_::mk_UNICODECodeCvt_<char32_t> ()
 {
     return Memory::MakeSharedPtr<CodeCvt_BasicUnicodeRep_CHAR_T<char32_t>> ();
 }
-
 template <>
 shared_ptr<CodeCvt<wchar_t>::IRep> Characters::Private_::mk_UNICODECodeCvt_<wchar_t> (const locale& l)
 {
