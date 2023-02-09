@@ -22,34 +22,38 @@ namespace Stroika::Foundation::Characters {
     using namespace std;
 
     /*
-     *  Enhancements over std::codecvt
+     *  \brief CodeCvt unifies byte<-> unicode conversions, vaguely inspired by (and wraps) std::codecvt, as well as UTFConverter etc, to map between 'bytes' and a UNICODE code-point span
      * 
+     *  Enhancements over std::codecvt:
      *      o   You can subclass (provide your own codecvt implementation) and copy 'codecvt' objects.
      *          (unless I'm missing something, you can do one or the other with std::codecvt, but not both)
-     *      o   Simpler backend virtual API (probably using spans tbd), so easier to create your own compliant
-     *          CodeCvt object.
+     *      o   Simpler backend virtual API, so easier to create your own compliant CodeCvt object.
      *          o   Stroika leverages these two things in UTFConverter, using differnt library backends to do
      *              the code conversion, hopefully enuf faster to make up for the virtual call overhead this
      *              class introduces.
      *      o   Dont bother templating on MBSTATE, nor output byte type (std::covert supports all the useless
      *          ones but misses the most useful, at least for fileIO, binary IO)
+     *      o   lots of templated combinations dont make sense and dont work and there is no hint/validation
+     *          clarity about which you can use/make sense and which you cannot with std::codecvt. Hopefully
+     *          this class will make more sense.
+     *          It can be used to convert (abstract API) between ANY combination of 'target hidden in implementation'
+     *          and exposed CHAR_T characters (reading or writing). DEFAULT CTORS only provide the combinations
+     *          supported by stdc++ (and a little more). To get other combinations, you must use subclass.
      * 
      *  And: 
      *      o   All the existing codecvt objects can easily be wrapped in a CodeCvt
      *
-    // LIKE codecvt, but with only in/out methods (until I see need for rest)
-    // PROBABLY REDO API using SPANS (I HATE THIS API UPDATING REFERENCES TO PTRS)
-
-
-            requires (is_same_v<CHAR_T, char16_t> or is_same_v<CHAR_T, char32_t>)
-OR TBD - maybe include wchar_t?
-maybe include char8_t
-
+     *  Mostly, you can think of CodeCvt as an 'abstract class' in that only for some CHAR_T types
+     *  can it be instantiated direcly (the ones std c++ supports, char_16_t, char32_t, and wchar_t with locale).
+     * 
+     *  But it also can be thought of as a smart pointer class, to underlying 'reps' - which can make generic
+     *  the functionality in UTFConverter, and std::codecvt.
      */
-    template <Character_IsBasicUnicodeCodePoint CHAR_T>
+    template <Character_IsUnicodeCodePoint CHAR_T>
     class CodeCvt {
     public:
-        using MBState                   = std::mbstate_t;
+        using MBState = std::mbstate_t; // may need to enhance this MBState at this level of API to handle wchar_t locale stuff
+
         using result                    = codecvt_base::result; // codecvt results - sadly seem to be int, not enum - but 4
         static constexpr result ok      = codecvt_base::ok;
         static constexpr result partial = codecvt_base::partial;
@@ -61,49 +65,49 @@ maybe include char8_t
 
     public:
         /**
-        * 
-        * todo doc better WHCIH of these are created - whcih std::codecvt objects each creates
+         *  These default APIs are provided by std c++:
+         *      CodeCvt<char16_t>{}         -   std::codecvt<char16_t, char8_t, std::mbstate_t>
+         *      CodeCvt<char32_t>{}         -   std::codecvt<char32_t, char8_t, std::mbstate_t>
+         *      CodeCvt<wchar_t>{locale}    -   std::codecvt<wchar_t, char, std::mbstate_t>
+         * 
+         *  To get OTHER conversions, say between char16_t, and char32_t, you must use UTFConvert (NYI adapter for CodeCvt).
          */
-        // Default impl returns 'rep' which uses std::code_cvt<CHAR_T,char8_t,mbstate_t>
-        // Locale CTOR wraps codecvt fetched from that locale into a CodeCvt object
-        CodeCvt ();
-        CodeCvt (const locale& = locale{});
+        CodeCvt ()
+            requires (is_same_v<CHAR_T, char16_t> or is_same_v<CHAR_T, char32_t>);
+        CodeCvt (const locale& = locale{})
+            requires (is_same_v<CHAR_T, wchar_t>);
         CodeCvt (const shared_ptr<IRep>& rep);
 
     public:
         /**
-         * // convert bytes [_First1, _Last1) to [_First2, _Last2)
+         *  \brief like std::codecvt<>::in () - but with spans, and use ptr to be clear in/out
+         * 
+         *  convert bytes 'from' to characters 'to'. Spans on input, src and target buffers. spans on output 
+         *  are amount remaining to be used 'from' and amount actually filled into 'to'.
+         *  state is used to carry forward incomplete conversions from one call to the next.
          */
-        result in (MBState& _State, const byte* _First1, const byte* _Last1, const byte*& _Mid1, CHAR_T* _First2, CHAR_T* _Last2, CHAR_T*& _Mid2) const;
+        nonvirtual result in (MBState* state, span<const byte>* from, span<CHAR_T>* to) const;
 
+    public:
         /*
-    // convert [_First1, _Last1) to bytes [_First2, _Last2)
-    */
-        result out (MBState& _State, const CHAR_T* _First1, const CHAR_T* _Last1, const CHAR_T*& _Mid1, byte* _First2, byte* _Last2, byte*& _Mid2) const;
+         *  \brief like std::codecvt<>::out () - but with spans, and use ptr to be clear in/out
+         * 
+         *  convert characters 'from' to bytes 'to'. Spans on input, src and target buffers. spans on output 
+         *  are amount remaining to be used 'from' and amount actually filled into 'to'.
+         *  state is used to carry forward incomplete conversions from one call to the next.
+        */
+        nonvirtual result out (MBState* state, span<const CHAR_T>* from, span<byte>* to) const;
 
     private:
-        // same methods as codecvt roughly
         shared_ptr<IRep> fRep_;
     };
 
-#if 1
-    template <Character_IsBasicUnicodeCodePoint CHAR_T>
+    template <Character_IsUnicodeCodePoint CHAR_T>
     struct CodeCvt<CHAR_T>::IRep {
-        //   using result  = CodeCvt<char16_t>::result;
-        //    using MBState = CodeCvt<char16_t>::MBState;
-        virtual ~IRep () = default;
-
-        // same methods as codecvt
-        // / convert bytes [_First1, _Last1) to [_First2, _Last2)
-        virtual result in (MBState& _State, const byte* _First1, const byte* _Last1, const byte*& _Mid1, CHAR_T* _First2, CHAR_T* _Last2,
-                           CHAR_T*& _Mid2) const = 0;
-
-        // same methods as codecvt
-        // // convert [_First1, _Last1) to bytes [_First2, _Last2)
-        virtual result out (MBState& _State, const CHAR_T* _First1, const CHAR_T* _Last1, const CHAR_T*& _Mid1, byte* _First2, byte* _Last2,
-                            byte*& _Mid2) const = 0;
+        virtual ~IRep ()                                                                    = default;
+        virtual result in (MBState* state, span<const byte>* from, span<CHAR_T>* to) const  = 0;
+        virtual result out (MBState* state, span<const CHAR_T>* from, span<byte>* to) const = 0;
     };
-#endif
 
 }
 
