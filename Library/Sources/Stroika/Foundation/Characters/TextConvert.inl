@@ -87,12 +87,21 @@ namespace Stroika::Foundation::Characters {
      */
     constexpr optional<tuple<UnicodeExternalEncodings, size_t>> ReadByteOrderMark (span<const byte> d) noexcept
     {
+#if qCompilerAndStdLib_qualified_enum_using_Buggy
+        constexpr auto eUTF16Wide_BE = UnicodeExternalEncodings::eUTF16Wide_BE;
+        constexpr auto eUTF16Wide_LE=UnicodeExternalEncodings::eUTF16Wide_LE;
+        constexpr auto eUTF32Wide_BE=UnicodeExternalEncodings::eUTF32Wide_BE;
+        constexpr auto eUTF32Wide_LE=UnicodeExternalEncodings::eUTF32Wide_LE;
+        constexpr auto eUTF7=UnicodeExternalEncodings::eUTF7;
+        constexpr auto eUTF8=UnicodeExternalEncodings::eUTF8;
+#else
         using UnicodeExternalEncodings::eUTF16Wide_BE;
         using UnicodeExternalEncodings::eUTF16Wide_LE;
         using UnicodeExternalEncodings::eUTF32Wide_BE;
         using UnicodeExternalEncodings::eUTF32Wide_LE;
         using UnicodeExternalEncodings::eUTF7;
         using UnicodeExternalEncodings::eUTF8;
+#endif
         // UTF-8 unambiguous and most likely, so check it first
         if (d.size () >= SizeOfByteOrderMark (eUTF8) and std::memcmp (GetByteOrderMark<eUTF8> ().data (), d.data (), SizeOfByteOrderMark (eUTF8)) == 0) {
             return make_tuple (eUTF8, SizeOfByteOrderMark (eUTF8));
