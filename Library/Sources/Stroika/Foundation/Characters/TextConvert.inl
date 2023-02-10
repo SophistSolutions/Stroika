@@ -52,27 +52,27 @@ namespace Stroika::Foundation::Characters {
         switch (e) {
             case UnicodeExternalEncodings::eUTF7: {
                 // no idea where I found this, but its in old Stroika code
-                static constexpr byte r[] = {b (0x2b), b (0x2f), b (0x76), b (0x38), b (0x2d)};
+                 constexpr byte r[] = {b (0x2b), b (0x2f), b (0x76), b (0x38), b (0x2d)};
                 return span<const byte, SZ>{&r[0], sizeof (r)};
             }
             case UnicodeExternalEncodings::eUTF8: {
-                static constexpr byte r[] = {b (0xEF), b (0xBB), b (0xBF)};
+                 constexpr byte r[] = {b (0xEF), b (0xBB), b (0xBF)};
                 return span<const byte, SZ>{&r[0], sizeof (r)};
             }
             case UnicodeExternalEncodings::eUTF16Wide_BE: {
-                static constexpr byte r[] = { b (0xFE), b (0xFF) };
+                 constexpr byte r[] = { b (0xFE), b (0xFF) };
                 return span<const byte, SZ>{&r[0], sizeof (r)};
             }
             case UnicodeExternalEncodings::eUTF16Wide_LE: {
-                static constexpr byte r[] = {b (0xFF), b (0xFE)};
+                 constexpr byte r[] = {b (0xFF), b (0xFE)};
                 return span<const byte, SZ>{&r[0], sizeof (r)};
             }
             case UnicodeExternalEncodings::eUTF32Wide_BE: {
-                static constexpr byte r[] ={b (0xFE), b (0xFF), b (0x00)};
+                 constexpr byte r[] ={b (0xFE), b (0xFF), b (0x00)};
                 return span<const byte, SZ>{&r[0], sizeof (r)};
             }
             case UnicodeExternalEncodings::eUTF32Wide_LE: {
-                static constexpr byte r[] = { b (0xFF), b (0xFE), b (0x00) };
+                 constexpr byte r[] = { b (0xFF), b (0xFE), b (0x00) };
                 return span<const byte, SZ>{&r[0], sizeof (r)};
             }
             default:
