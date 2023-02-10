@@ -31,8 +31,8 @@ namespace {
     template <typename CHAR_T, typename STD_CODE_CVT_T = deletable_facet_<codecvt<CHAR_T, char8_t, std::mbstate_t>>>
     struct CodeCvt_BasicUnicodeRep_CHAR_T : CodeCvt<CHAR_T>::IRep {
         STD_CODE_CVT_T fCodeCvt_;
-        using result      = CodeCvt<CHAR_T>::result;
-        using MBState     = CodeCvt<CHAR_T>::MBState;
+        using result      = typename CodeCvt<CHAR_T>::result;
+        using MBState     = typename CodeCvt<CHAR_T>::MBState;
         using extern_type = typename STD_CODE_CVT_T::extern_type;
 
         CodeCvt_BasicUnicodeRep_CHAR_T ()
