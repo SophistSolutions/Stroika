@@ -792,9 +792,9 @@ namespace {
 namespace {
     namespace Test_BLOB_Versus_Vector_Byte_DETAILS {
         static constexpr byte kCArr_4k_[4 * 1024] = {
-            byte{0x1},
-            byte{0x2},
-            byte{0x3},
+            0x1_b,
+            0x2_b,
+            0x3_b,
         };
 
         template <typename BLOBISH_IMPL>

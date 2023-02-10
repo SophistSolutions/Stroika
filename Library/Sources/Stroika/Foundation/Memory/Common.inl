@@ -10,6 +10,8 @@
  ********************************************************************************
  */
 #include <cstring>
+#include "../Debug/Assertions.h"
+
 
 namespace Stroika::Foundation::Memory {
 
@@ -117,6 +119,19 @@ namespace Stroika::Foundation::Memory {
         // Avoid #include - Ensure (result <= sizeof (OWNING_OBJECT));
         return result;
     }
+
+
+    /*
+     ********************************************************************************
+     *************************** Memory::operator""_b *******************************
+     ********************************************************************************
+     */
+    constexpr std::byte operator""_b (unsigned long long b)
+    {
+        Require (b <= 0xff);
+        return static_cast<std::byte> (b);
+    }
+
 
 }
 #endif /*_Stroika_Foundation_Memory_Common_inl_*/

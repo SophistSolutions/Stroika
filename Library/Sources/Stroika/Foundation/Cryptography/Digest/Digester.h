@@ -71,7 +71,7 @@ namespace Stroika::Foundation::Cryptography::Digest {
      *          VerifyTestResult (h1 == 2512011991); // experimentally derived values but they shouldn't float (actually may depend on endiannesss?)
      *          VerifyTestResult (h2 == 215);
      *          std::array<byte, 40> h3 = ComputeDigest<Digest::Algorithm::SuperFastHash, std::array<byte, 40>> (value2Hash);
-     *          VerifyTestResult (h3[0] == std::byte{215} and h3[1] == std::byte{66} and h3[39] == std::byte{0});
+     *          VerifyTestResult (h3[0] == 215_b and h3[1] == 66_b and h3[39] == 0_b);
      *          if (Configuration::GetEndianness () == Configuration::Endian::eX86) {
      *              VerifyTestResult ((ComputeDigest<Digest::Algorithm::SuperFastHash, string>(value2Hash) == "0x2512011991"));
      *          }

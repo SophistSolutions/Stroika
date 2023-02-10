@@ -117,6 +117,15 @@ namespace Stroika::Foundation::Memory {
      */
     constexpr UninitializedConstructorFlag eUninitialized = UninitializedConstructorFlag::eUninitialized;
 
+    /**
+     *  \brief A utility for declaring constant bytes (byte literals).
+     * 
+     *  \req b <= 0xff
+     * 
+     *  \see https://stackoverflow.com/questions/75411756/how-do-i-declare-and-initialize-an-array-of-bytes-in-c
+     */
+    constexpr std::byte operator""_b (unsigned long long b);
+
 }
 
 /*

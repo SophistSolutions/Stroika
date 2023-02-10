@@ -232,9 +232,9 @@ namespace {
 
             using namespace Characters;
             {
-                VerifyTestResult ((Hash<String>{}(L"x") != Hash<String>{}(L"y"))); // practically this should never fail if not absolutely required
-                VerifyTestResult ((Hash<String>{L"somesalt"}(L"x") != Hash<String>{}(L"x")));
-                VerifyTestResult ((Hash<String>{L"somesalt"}(L"x") == Hash<String>{L"somesalt"}(L"x")));
+                VerifyTestResult ((Hash<String>{}("x") != Hash<String>{}("y"))); // practically this should never fail if not absolutely required
+                VerifyTestResult ((Hash<String>{"somesalt"}("x") != Hash<String>{}("x")));
+                VerifyTestResult ((Hash<String>{"somesalt"}("x") == Hash<String>{"somesalt"}(L"x")));
 
                 VerifyTestResult ((Hash<String, DefaultHashDigester, DefaultHashDigester::ReturnType>{}(L"x") == Hash<String>{}(L"x")));
                 struct altStringSerializer {
@@ -244,10 +244,10 @@ namespace {
                     };
                 };
                 //constexpr auto altStringSerializer = [] (const String& s) { return s.empty () ? Memory::BLOB{} : Memory::BLOB ((const byte*)s.c_str (), (const byte*)s.c_str () + 1); };
-                VerifyTestResult ((Hash<String, DefaultHashDigester, DefaultHashDigester::ReturnType, altStringSerializer>{}(L"xxx") !=
-                                   Hash<String>{}(L"xxx")));
-                VerifyTestResult ((Hash<String, DefaultHashDigester, DefaultHashDigester::ReturnType, altStringSerializer>{}(L"x1") ==
-                                   Hash<String, DefaultHashDigester, DefaultHashDigester::ReturnType, altStringSerializer>{}(L"x2")));
+                VerifyTestResult ((Hash<String, DefaultHashDigester, DefaultHashDigester::ReturnType, altStringSerializer>{}("xxx") !=
+                                   Hash<String>{}("xxx")));
+                VerifyTestResult ((Hash<String, DefaultHashDigester, DefaultHashDigester::ReturnType, altStringSerializer>{}("x1") ==
+                                   Hash<String, DefaultHashDigester, DefaultHashDigester::ReturnType, altStringSerializer>{}("x2")));
             }
             {
                 auto ec1{make_error_code (std::errc::already_connected)};
@@ -275,12 +275,13 @@ namespace {
             Debug::TraceContextBumper ctx{"DigestAltResults::DoRegressionTests_"};
             // Excercise uses of ConvertResult()
             {
+                using namespace Memory;
                 using namespace DataExchange;
                 using namespace IO::Network;
                 auto                          digesterWithDefaultResult  = Digester<Digest::Algorithm::SuperFastHash>{};
                 auto                          digesterWithResult_uint8_t = Digester<Digest::Algorithm::SuperFastHash, uint8_t>{};
                 auto                          digesterWithResult_GUID_t  = Digester<Digest::Algorithm::SuperFastHash, Common::GUID>{};
-                Memory::BLOB                  value2Hash = DefaultSerializer<InternetAddress>{}(InternetAddress{L"192.168.244.33"});
+                Memory::BLOB                  value2Hash = DefaultSerializer<InternetAddress>{}(InternetAddress{"192.168.244.33"});
                 auto                          h1         = digesterWithDefaultResult (value2Hash);
                 uint8_t                       h2         = digesterWithResult_uint8_t (value2Hash);
                 std::array<byte, 40>          h3 = ComputeDigest<Digest::Algorithm::SuperFastHash, std::array<byte, 40>> (value2Hash);
@@ -295,7 +296,7 @@ namespace {
                  */
                 VerifyTestResult (h1 == 808390013);
                 VerifyTestResult (h2 == 125);
-                VerifyTestResult (h3[0] == std::byte{0x7d} and h3[1] == std::byte{0x0d} and h3[39] == std::byte{0});
+                VerifyTestResult (h3[0] == 0x7d_b and h3[1] == 0x0d_b and h3[39] == 0_b);
                 VerifyTestResult ((Digester<Digest::Algorithm::SuperFastHash, string>{}(value2Hash) == "0x808390013"));
             }
 
@@ -305,7 +306,7 @@ namespace {
                 using namespace IO::Network;
                 auto         digesterWithDefaultResult  = Digester<Digest::Algorithm::MD5>{};
                 auto         digesterWithResult_uint8_t = Digester<Digest::Algorithm::MD5, uint8_t>{};
-                Memory::BLOB value2Hash                 = DefaultSerializer<InternetAddress>{}(InternetAddress{L"192.168.244.33"});
+                Memory::BLOB value2Hash                 = DefaultSerializer<InternetAddress>{}(InternetAddress{"192.168.244.33"});
                 auto         h1                         = digesterWithDefaultResult (value2Hash);
                 uint8_t      h2                         = digesterWithResult_uint8_t (value2Hash);
                 VerifyTestResult (h2 == h1[0]);
@@ -319,7 +320,7 @@ namespace {
                 using namespace IO::Network;
                 auto    hasherWithDefaultResult  = Hash<InternetAddress, Digester<Digest::Algorithm::SuperFastHash>>{};
                 auto    hasherWithResult_uint8_t = Hash<InternetAddress, Digester<Digest::Algorithm::SuperFastHash>, uint8_t>{};
-                auto    value2Hash               = InternetAddress{L"192.168.244.33"};
+                auto    value2Hash               = InternetAddress{"192.168.244.33"};
                 auto    h1                       = hasherWithDefaultResult (value2Hash);
                 uint8_t h2                       = hasherWithResult_uint8_t (value2Hash);
                 auto hasherWithResult_array40 = Hash<InternetAddress, Digester<Digest::Algorithm::SuperFastHash>, std::array<byte, 40>>{};
@@ -335,7 +336,7 @@ namespace {
                 Characters::String    s1 = L"abc";
                 [[maybe_unused]] auto r1 = Digest::ComputeDigest<Digest::Algorithm::MD5> (s1);
                 [[maybe_unused]] auto r2 = Digest::ComputeDigest<Digest::Algorithm::SuperFastHash> (s1);
-                [[maybe_unused]] auto r3 = Digest::ComputeDigest<Digest::Algorithm::SuperFastHash> (L"abc"_k);
+                [[maybe_unused]] auto r3 = Digest::ComputeDigest<Digest::Algorithm::SuperFastHash> ("abc"_k);
             }
         }
     }

@@ -1429,7 +1429,8 @@ namespace {
         VerifyTestResult (ToString (String{L"abc"}) == L"'abc'");
         VerifyTestResult (ToString (initializer_list<int>{3, 4, 5}) == L"[ 3, 4, 5 ]");
         {
-            constexpr byte kSample_[] = {byte{0x34}, byte{0x55}, byte{0x1f}};
+            using namespace Memory;
+            constexpr byte kSample_[] = {0x34_b, 0x55_b, 0x1f_b};
             Memory::BLOB   b{begin (kSample_), end (kSample_)};
             VerifyTestResult (b.ToString () == L"[3 bytes: 34551f]");
             VerifyTestResult (Characters::ToString (b) == L"[3 bytes: 34551f]");

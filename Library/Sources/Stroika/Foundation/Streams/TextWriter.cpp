@@ -33,7 +33,8 @@ public:
     UnSeekable_UTF8_Rep_ (const OutputStream<byte>::Ptr& src, bool useBOM)
         : _fSource{src}
     {
-        constexpr byte kBOM_[]{byte{0xEF}, byte{0xBB}, byte{0xBF}}; //  see http://en.wikipedia.org/wiki/Byte_order_mark
+        using namespace Memory;
+        constexpr byte kBOM_[]{0xEF_b, 0xBB_b, 0xBF_b}; //  see http://en.wikipedia.org/wiki/Byte_order_mark
         if (useBOM) {
             _fSource.Write (std::begin (kBOM_), std::end (kBOM_));
         }

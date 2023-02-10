@@ -299,11 +299,11 @@ namespace Stroika::Foundation::Memory {
 
 #if qDebug
     private:
-        static constexpr byte kGuard1_[8] = {
-            byte{0x45}, byte{0x23}, byte{0x12}, byte{0x56}, byte{0x99}, byte{0x76}, byte{0x12}, byte{0x55},
+        static constexpr byte kGuard1_[] = {
+            0x45_b, 0x23_b, 0x12_b, 0x56_b, 0x99_b, 0x76_b, 0x12_b, 0x55_b,
         };
-        static constexpr byte kGuard2_[8] = {
-            byte{0x15}, byte{0x32}, byte{0xa5}, byte{0x16}, byte{0x11}, byte{0x7a}, byte{0x90}, byte{0x10},
+        static constexpr byte kGuard2_[] = {
+            0x15_b, 0x32_b, 0xa5_b, 0x16_b, 0x11_b, 0x7a_b, 0x90_b, 0x10_b,
         };
 #endif
 

@@ -9,6 +9,7 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
+#include "../Memory/Common.h"
 
 namespace Stroika::Foundation::Characters {
 
@@ -19,35 +20,33 @@ namespace Stroika::Foundation::Characters {
      */
     constexpr span<const byte> GetByteOrderMark (UnicodeExternalEncodings e) noexcept
     {
-        // Values from https://en.wikipedia.org/wiki/Byte_order_mark
-
-        // NOTE - the combination of std::array and byte - rules with C++, are insanely inconvenient -LGP 2023-02-09
-        using b = byte;
+        // Values from https://en.wikipedia.org/wiki/Byte_order_mark (except utf7)
+        using namespace Memory;
         switch (e) {
             case UnicodeExternalEncodings::eUTF7: {
                 // no idea where I found this, but its in old Stroika code
-                constexpr byte r[] = {b (0x2b), b (0x2f), b (0x76), b (0x38), b (0x2d)};
+                constexpr byte r[] = {0x2b_b, 0x2f_b, 0x76_b, 0x38_b, 0x2d_b};
                 return span<const byte>{&r[0], sizeof (r)};
             }
             case UnicodeExternalEncodings::eUTF8: {
-                constexpr byte r[] = {b (0xEF), b (0xBB), b (0xBF)};
-                return span<const byte>{&r[0], sizeof (r)};
+                constexpr byte r[] = {0xEF_b, 0xBB_b, 0xBF_b};
+                return span<const byte>{r, sizeof (r)};
             }
             case UnicodeExternalEncodings::eUTF16Wide_BE: {
-                constexpr byte r[] = {b (0xFE), b (0xFF)};
-                return span<const byte>{&r[0], sizeof (r)};
+                constexpr byte r[] = {0xFE_b, 0xFF_b};
+                return span<const byte>{r, sizeof (r)};
             }
             case UnicodeExternalEncodings::eUTF16Wide_LE: {
-                constexpr byte r[] = {b (0xFF), b (0xFE)};
-                return span<const byte>{&r[0], sizeof (r)};
+                constexpr byte r[] = {0xFF_b, 0xFE_b};
+                return span<const byte>{r, sizeof (r)};
             }
             case UnicodeExternalEncodings::eUTF32Wide_BE: {
-                constexpr byte r[] = {b (0xFE), b (0xFF), b (0x00)};
-                return span<const byte>{&r[0], sizeof (r)};
+                constexpr byte r[] = {0xFE_b, 0xFF_b, 0x00_b};
+                return span<const byte>{r, sizeof (r)};
             }
             case UnicodeExternalEncodings::eUTF32Wide_LE: {
-                constexpr byte r[] = {b (0xFF), b (0xFE), b (0x00)};
-                return span<const byte>{&r[0], sizeof (r)};
+                constexpr byte r[] = {0xFF_b, 0xFE_b, 0x00_b};
+                return span<const byte>{r, sizeof (r)};
             }
             default:
                 AssertNotReached ();
