@@ -15,7 +15,7 @@ using namespace Stroika::Foundation::Characters;
 namespace {
     // crazy - from https://en.cppreference.com/w/cpp/locale/codecvt
     template <typename FACET>
-    struct deletable_facet_  : FACET {
+    struct deletable_facet_ : FACET {
         template <typename... Args>
         deletable_facet_ (Args&&... args)
             : FACET{forward<Args> (args)...}
@@ -34,7 +34,7 @@ namespace {
      */
     template <typename STD_CODE_CVT_T, typename CHAR_T = typename STD_CODE_CVT_T::intern_type>
     struct CodeCvt_WrapStdCodeCvt_CHAR_T : CodeCvt<CHAR_T>::IRep {
-        unique_ptr < STD_CODE_CVT_T> fCodeCvt_;
+        unique_ptr<STD_CODE_CVT_T> fCodeCvt_;
         using result      = typename CodeCvt<CHAR_T>::result;
         using MBState     = typename CodeCvt<CHAR_T>::MBState;
         using extern_type = typename STD_CODE_CVT_T::extern_type;
@@ -81,8 +81,8 @@ namespace {
 template <>
 shared_ptr<CodeCvt<char16_t>::IRep> Characters::Private_::mk_UNICODECodeCvt_<char16_t> ()
 {
-    using CODE_CVT = codecvt<char16_t, char8_t, std::mbstate_t>;
-    using D_CODE_CVT = deletable_facet_<CODE_CVT>;
+    using CODE_CVT              = codecvt<char16_t, char8_t, std::mbstate_t>;
+    using D_CODE_CVT            = deletable_facet_<CODE_CVT>;
     using BASIC_UNICODE_WRAPPER = CodeCvt_WrapStdCodeCvt_CHAR_T<D_CODE_CVT>;
     return Memory::MakeSharedPtr<BASIC_UNICODE_WRAPPER> (make_unique<D_CODE_CVT> ());
 }

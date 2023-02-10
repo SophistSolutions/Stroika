@@ -17,7 +17,7 @@
 
 /**
  *  \file
- *      Wrappers and extensions to the std::codecvt<> logic. Often when reading/writing files (or a series of bytes)
+ *      Wrappers and extensions to the CodeCvt/std::codecvt<> logic. Often when reading/writing files (or a series of bytes)
  *      you have no, or limited knowlege of the code page. This contains logic to help with that case.
  * 
  *  @todo - this will replace the (probably to be deprecated) CodePage module - at least much/most of it.
@@ -41,21 +41,29 @@ namespace Stroika::Foundation::Characters {
     };
 
     /**
+     *  returns the size - in bytes - of a byte order mark for the given unicode encoding.
      */
-    constexpr size_t SizeOfByteOrderMark (UnicodeExternalEncodings e);
+    constexpr size_t SizeOfByteOrderMark (UnicodeExternalEncodings e) noexcept;
+
+    /**
+     *  returns the size - in bytes - of a byte order mark for the given unicode encoding.
+     */
+    template <UnicodeExternalEncodings e>
+    constexpr span<const byte, SizeOfByteOrderMark (e)> GetByteOrderMark () noexcept;
 
     /**
      *  returns guessed encoding, and number of bytes consumed. If 'd' doesn't contain
      *  BOM (possible cuz not large enuf) - returns nullopt
      */
-    optional<tuple<UnicodeExternalEncodings, size_t>> ReadByteOrderMark (span<const byte> d);
+    constexpr optional<tuple<UnicodeExternalEncodings, size_t>> ReadByteOrderMark (span<const byte> d) noexcept;
 
     /**
      *  \req into.size () >= SizeOfByteOrderMark (e)
      * 
-     *  returns SizeOfByteOrderMark (e);
+     *  returns remaining span to write into (basically just into.subspan(SizeOfByteOrderMark (e))
+     *  so caller can continue writing
      */
-    size_t WriteByteOrderMark (UnicodeExternalEncodings e, span<byte> into);
+    span<byte> WriteByteOrderMark (UnicodeExternalEncodings e, span<byte> into);
 
     /**
      *  Construct codecvt<> object to allow converting of bytes into a UNICODE CHAR_T>, based on
