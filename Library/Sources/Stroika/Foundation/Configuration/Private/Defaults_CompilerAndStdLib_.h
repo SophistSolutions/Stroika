@@ -1119,8 +1119,6 @@ Writer.h:55:49: note: defined here
 
 #endif
 
-
-
 /*
 ./TextConvert.inl:90:15: error: using declaration requires a qualified name
         using UnicodeExternalEncodings;
@@ -1129,14 +1127,12 @@ Writer.h:55:49: note: defined here
 
 #if defined(__clang__) && !defined(__APPLE__)
 // First noticed in clang++-10
-#define qCompilerAndStdLib_qualified_enum_using_Buggy                                                   \
-    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 10))
+#define qCompilerAndStdLib_qualified_enum_using_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 10))
 #else
 #define qCompilerAndStdLib_qualified_enum_using_Buggy 0
 #endif
 
 #endif
-
 
 /*
 esponse.h: In member function ‘auto Stroika::Frameworks::WebServer::Response::UpdateHeader(FUNCTION&&)’:

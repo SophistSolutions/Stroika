@@ -41,15 +41,9 @@ namespace Stroika::Foundation::Characters {
     };
 
     /**
-     *  returns the size - in bytes - of a byte order mark for the given unicode encoding.
+     *  returns the byte order mark for the given unicode encoding.
      */
-    constexpr size_t SizeOfByteOrderMark (UnicodeExternalEncodings e) noexcept;
-
-    /**
-     *  returns the size - in bytes - of a byte order mark for the given unicode encoding.
-     */
-    template <UnicodeExternalEncodings e>
-    constexpr span<const byte, SizeOfByteOrderMark (e)> GetByteOrderMark () noexcept;
+    constexpr span<const byte> GetByteOrderMark (UnicodeExternalEncodings e) noexcept;
 
     /**
      *  returns guessed encoding, and number of bytes consumed. If 'd' doesn't contain
