@@ -64,6 +64,7 @@ namespace {
                 VerifyTestResult (s != nullptr);
                 VerifyTestResult (s.IsSeekable ());
 
+                using namespace Memory;
                 constexpr byte kData_[] = {3_b, 53_b, 43_b, 23_b, 3_b};
                 s.Write (std::begin (kData_), std::end (kData_));
                 Memory::BLOB b = s.As<Memory::BLOB> ();

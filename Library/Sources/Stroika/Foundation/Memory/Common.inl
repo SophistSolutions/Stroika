@@ -9,9 +9,8 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include <cstring>
 #include "../Debug/Assertions.h"
-
+#include <cstring>
 
 namespace Stroika::Foundation::Memory {
 
@@ -120,7 +119,6 @@ namespace Stroika::Foundation::Memory {
         return result;
     }
 
-
     /*
      ********************************************************************************
      *************************** Memory::operator""_b *******************************
@@ -131,7 +129,6 @@ namespace Stroika::Foundation::Memory {
         Require (b <= 0xff);
         return static_cast<std::byte> (b);
     }
-
 
 }
 #endif /*_Stroika_Foundation_Memory_Common_inl_*/
