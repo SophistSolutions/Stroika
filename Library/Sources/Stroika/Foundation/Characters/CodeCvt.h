@@ -59,6 +59,9 @@ namespace Stroika::Foundation::Characters {
     public:
         using MBState = std::mbstate_t; // may need to enhance this MBState at this level of API to handle wchar_t locale stuff
 
+        using intern_type = CHAR_T; // what codecvt calls the character type
+        using extern_type = byte;   // what codecvt calls the binary format
+
         using result                    = codecvt_base::result; // codecvt results - sadly seem to be int, not enum - but 4
         static constexpr result ok      = codecvt_base::ok;
         static constexpr result partial = codecvt_base::partial;
