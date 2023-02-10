@@ -47,7 +47,7 @@ namespace Stroika::Foundation::Characters {
         // Values from https://en.wikipedia.org/wiki/Byte_order_mark
 
         // NOTE - the combination of std::array and byte - rules with C++, are insanely inconvenient -LGP 2023-02-09
-        using b = byte;
+        using b             = byte;
         constexpr size_t SZ = SizeOfByteOrderMark (e);
         switch (e) {
             case UnicodeExternalEncodings::eUTF7: {
