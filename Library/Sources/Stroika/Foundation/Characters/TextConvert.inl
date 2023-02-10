@@ -22,7 +22,7 @@ namespace Stroika::Foundation::Characters {
         // Values from https://en.wikipedia.org/wiki/Byte_order_mark
 
         // NOTE - the combination of std::array and byte - rules with C++, are insanely inconvenient -LGP 2023-02-09
-        using b             = byte;
+        using b = byte;
         switch (e) {
             case UnicodeExternalEncodings::eUTF7: {
                 // no idea where I found this, but its in old Stroika code
@@ -53,7 +53,6 @@ namespace Stroika::Foundation::Characters {
                 AssertNotReached ();
         }
     }
-
 
     /*
      ********************************************************************************

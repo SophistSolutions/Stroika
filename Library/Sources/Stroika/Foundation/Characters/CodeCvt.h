@@ -40,8 +40,13 @@ namespace Stroika::Foundation::Characters {
      *          and exposed CHAR_T characters (reading or writing). DEFAULT CTORS only provide the combinations
      *          supported by stdc++ (and a little more). To get other combinations, you must use subclass.
      * 
+     *  Enhancements over UTFConverter:
+     *      o   Supports translating from/to locale encodings (e.g. SHIFT_JIS, or whatever).
+     *      o   (UTFConverter only supports UNICODE <-> UNICODE translations, even if in different
+     *          UNICODE encodings).
+     * 
      *  And: 
-     *      o   All the existing codecvt objects can easily be wrapped in a CodeCvt
+     *      o   All the existing codecvt objects (which map to/from UNICODE) can easily be wrapped in a CodeCvt
      *
      *  Mostly, you can think of CodeCvt as an 'abstract class' in that only for some CHAR_T types
      *  can it be instantiated direcly (the ones std c++ supports, char_16_t, char32_t, and wchar_t with locale).
