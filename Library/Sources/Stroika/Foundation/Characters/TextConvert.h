@@ -32,12 +32,12 @@ namespace Stroika::Foundation::Characters {
     enum class UnicodeExternalEncodings {
         eUTF7,
         eUTF8,
-        eUTF16Wide_BE,
-        eUTF16Wide_LE,
-        eUTF16Wide = std::endian::native == std::endian::big ? eUTF16Wide_BE : eUTF16Wide_LE,
-        eUTF32Wide_BE,
-        eUTF32Wide_LE,
-        eUTF32Wide = std::endian::native == std::endian::big ? eUTF32Wide_BE : eUTF32Wide_LE,
+        eUTF16_BE,
+        eUTF16_LE,
+        eUTF16 = std::endian::native == std::endian::big ? eUTF16_BE : eUTF16_LE,
+        eUTF32_BE,
+        eUTF32_LE,
+        eUTF32 = std::endian::native == std::endian::big ? eUTF32_BE : eUTF32_LE,
     };
 
     /**

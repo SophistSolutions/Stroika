@@ -185,9 +185,9 @@ namespace Stroika::Foundation::Streams {
         switch (e) {
             case Characters::UnicodeExternalEncodings::eUTF8:
                 return TextWriter::Ptr{make_shared<UnSeekable_UTFConverter_Rep_<char8_t>> (src)};
-            case Characters::UnicodeExternalEncodings::eUTF16Wide:
+            case Characters::UnicodeExternalEncodings::eUTF16:
                 return TextWriter::Ptr{make_shared<UnSeekable_UTFConverter_Rep_<char16_t>> (src)};
-            case Characters::UnicodeExternalEncodings::eUTF32Wide:
+            case Characters::UnicodeExternalEncodings::eUTF32:
                 return TextWriter::Ptr{make_shared<UnSeekable_UTFConverter_Rep_<char32_t>> (src)};
             default:
                 // but default to using the CodeCvt writer

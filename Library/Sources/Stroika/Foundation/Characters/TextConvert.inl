@@ -32,19 +32,19 @@ namespace Stroika::Foundation::Characters {
                 constexpr byte r[] = {0xEF_b, 0xBB_b, 0xBF_b};
                 return span<const byte>{r, sizeof (r)};
             }
-            case UnicodeExternalEncodings::eUTF16Wide_BE: {
+            case UnicodeExternalEncodings::eUTF16_BE: {
                 constexpr byte r[] = {0xFE_b, 0xFF_b};
                 return span<const byte>{r, sizeof (r)};
             }
-            case UnicodeExternalEncodings::eUTF16Wide_LE: {
+            case UnicodeExternalEncodings::eUTF16_LE: {
                 constexpr byte r[] = {0xFF_b, 0xFE_b};
                 return span<const byte>{r, sizeof (r)};
             }
-            case UnicodeExternalEncodings::eUTF32Wide_BE: {
+            case UnicodeExternalEncodings::eUTF32_BE: {
                 constexpr byte r[] = {0xFE_b, 0xFF_b, 0x00_b};
                 return span<const byte>{r, sizeof (r)};
             }
-            case UnicodeExternalEncodings::eUTF32Wide_LE: {
+            case UnicodeExternalEncodings::eUTF32_LE: {
                 constexpr byte r[] = {0xFF_b, 0xFE_b, 0x00_b};
                 return span<const byte>{r, sizeof (r)};
             }
@@ -71,17 +71,17 @@ namespace Stroika::Foundation::Characters {
             return r;
         }
         // next check UTF32 BOM, only because needed to do before char16 BOM, cuz they overlap
-        if (auto r = check1 (GetByteOrderMark (UnicodeExternalEncodings::eUTF32Wide_BE))) {
+        if (auto r = check1 (GetByteOrderMark (UnicodeExternalEncodings::eUTF32_BE))) {
             return r;
         }
-        if (auto r = check1 (GetByteOrderMark (UnicodeExternalEncodings::eUTF32Wide_LE))) {
+        if (auto r = check1 (GetByteOrderMark (UnicodeExternalEncodings::eUTF32_LE))) {
             return r;
         }
         // next check UTF16
-        if (auto r = check1 (GetByteOrderMark (UnicodeExternalEncodings::eUTF16Wide_BE))) {
+        if (auto r = check1 (GetByteOrderMark (UnicodeExternalEncodings::eUTF16_BE))) {
             return r;
         }
-        if (auto r = check1 (GetByteOrderMark (UnicodeExternalEncodings::eUTF16Wide_LE))) {
+        if (auto r = check1 (GetByteOrderMark (UnicodeExternalEncodings::eUTF16_LE))) {
             return r;
         }
         // finally UTF-7
