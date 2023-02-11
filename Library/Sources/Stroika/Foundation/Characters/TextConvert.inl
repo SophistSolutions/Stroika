@@ -104,6 +104,47 @@ namespace Stroika::Foundation::Characters {
         return into.subspan (bom.size ());
     }
 
+
+    
+    /*
+     ********************************************************************************
+     **************** Characters::ConstructCodeCvtToUnicode *************************
+     ********************************************************************************
+     */
+    template <typename CHAR_T>
+    CodeCvt<CHAR_T> ConstructCodeCvtToUnicode (UnicodeExternalEncodings useEncoding)
+    {
+        AssertNotReached ();
+        return *((CodeCvt<CHAR_T>*)nullptr); //tmphack
+    }
+    template <typename CHAR_T>
+    tuple<CodeCvt<CHAR_T>, size_t> ConstructCodeCvtToUnicode (span<const byte> from)
+    {
+       return make_tuple (ConstructCodeCvtToUnicode<CHAR_T> (UnicodeExternalEncodings::eUTF16), 1);   //tmphack
+    }
+    template <typename CHAR_T>
+    CodeCvt<CHAR_T> ConstructCodeCvtToUnicode ( const locale& l)
+    {
+       return ConstructCodeCvtToUnicode<CHAR_T> (UnicodeExternalEncodings::eUTF16); //tmphack
+    }
+
+    /**
+     *  Construct CodeCvt (codecvt<> like object) to allow converting of UNICODE CHAR_T to/from bytes, either taking argument UNICODE
+     *  encoding, or a locale (if not specified, the current locale).
+     */
+    template <Character_UNICODECanAlwaysConvertTo CHAR_T>
+    CodeCvt<CHAR_T> ConstructCodeCvtUnicodeToBytes (UnicodeExternalEncodings e)
+    {
+        AssertNotReached ();
+       return *(CodeCvt<CHAR_T>*)nullptr; //tmphack
+    }
+    template <Character_UNICODECanAlwaysConvertTo CHAR_T>
+    CodeCvt<CHAR_T> ConstructCodeCvtUnicodeToBytes (const locale& l)
+    {
+        AssertNotReached ();
+       return *(CodeCvt<CHAR_T>*)nullptr; //tmphack
+    }
+
 }
 
 #endif /*_Stroika_Foundation_Characters_TextConvert_inl_*/

@@ -73,7 +73,7 @@ namespace Stroika::Foundation::Characters {
     template <typename CHAR_T>
     tuple<CodeCvt<CHAR_T>, size_t> ConstructCodeCvtToUnicode (span<const byte> from);
     template <typename CHAR_T>
-    CodeCvt<CHAR_T> ConstructCodeCvtToUnicode (span<const byte> from, const locale& l);
+    CodeCvt<CHAR_T> ConstructCodeCvtToUnicode (const locale& l);
 
     /**
      *  Construct CodeCvt (codecvt<> like object) to allow converting of UNICODE CHAR_T to/from bytes, either taking argument UNICODE
