@@ -79,9 +79,9 @@ namespace Stroika::Foundation::Characters {
      *  Construct CodeCvt (codecvt<> like object) to allow converting of UNICODE CHAR_T to/from bytes, either taking argument UNICODE
      *  encoding, or a locale (if not specified, the current locale).
      */
-    template <typename CHAR_T>
+    template <Character_UNICODECanAlwaysConvertTo CHAR_T>
     CodeCvt<CHAR_T> ConstructCodeCvtUnicodeToBytes (UnicodeExternalEncodings e);
-    template <typename CHAR_T>
+    template <Character_UNICODECanAlwaysConvertTo CHAR_T>
     CodeCvt<CHAR_T> ConstructCodeCvtUnicodeToBytes (const locale& l = locale{});
 
 }
