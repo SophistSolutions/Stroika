@@ -363,7 +363,8 @@ namespace Stroika::Foundation::Characters {
 
     namespace Private_ {
         template <typename CHAR_T>
-         auto HandleShortTargetBuffer_ (const UTFConverter& utfcvt, auto from, auto to) {
+        auto HandleShortTargetBuffer_ (const UTFConverter& utfcvt, auto from, auto to)
+        {
             // one mismatch between the UTFConverter apis and ConvertQuietly, is ConvertQuietly REQUIRES
             // the data fit in targetbuf. Since there is no requirement to use up all the source text, just reduce source text size
             // to fit (and you can avoid this performance loss by using a larger output buffer)
