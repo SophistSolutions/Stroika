@@ -60,21 +60,29 @@ namespace Stroika::Foundation::Characters {
     span<byte> WriteByteOrderMark (UnicodeExternalEncodings e, span<byte> into);
 
     /**
-     *  Construct codecvt<> object to allow converting of bytes into a UNICODE CHAR_T>, based on
-     *  sampling the existing bytes, checking for BOM, and as a fallback, using the current locale.
-     *  Also returns number of bytes consumed 'from' - for BOM, if any.
+     *  Construct codecvt<> object to allow converting of bytes into a UNICODE CHAR_T
+     *
+     *  One overload takes a UnicodeExternalEncodings saying what kind of converter to produce.
+     *  One overload takes a locale, saying what kind of converter to produce.
+     *  One overload takes an initial/partial span of initial text (at least 10 bytes a good idea)
+     *  and the system will GUESS the format to use, and also return an indicate of how many (BOM) bytes
+     *  skipped in the input.
      */
     template <typename CHAR_T>
+    CodeCvt<CHAR_T> ConstructCodeCvtToUnicode (UnicodeExternalEncodings useEncoding);
+    template <typename CHAR_T>
     tuple<CodeCvt<CHAR_T>, size_t> ConstructCodeCvtToUnicode (span<const byte> from);
+    template <typename CHAR_T>
+    CodeCvt<CHAR_T> ConstructCodeCvtToUnicode (span<const byte> from, const locale& l);
 
     /**
-     *  Construct codecvt<> object to allow converting of UNICODE CHAR_T to bytes, either taking argument UNICODE
+     *  Construct CodeCvt (codecvt<> like object) to allow converting of UNICODE CHAR_T to/from bytes, either taking argument UNICODE
      *  encoding, or a locale (if not specified, the current locale).
      */
     template <typename CHAR_T>
-    tuple<CodeCvt<CHAR_T>, size_t> ConstructCodeCvtUnicodeToBytes (span<const CHAR_T> from, UnicodeExternalEncodings e);
+    CodeCvt<CHAR_T> ConstructCodeCvtUnicodeToBytes (UnicodeExternalEncodings e);
     template <typename CHAR_T>
-    tuple<CodeCvt<CHAR_T>, size_t> ConstructCodeCvtUnicodeToBytes (span<const CHAR_T> from, const locale& l = locale{});
+    CodeCvt<CHAR_T> ConstructCodeCvtUnicodeToBytes (const locale& l = locale{});
 
 }
 
