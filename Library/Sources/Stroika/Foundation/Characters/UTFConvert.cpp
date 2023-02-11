@@ -654,8 +654,9 @@ namespace {
             return cvt_stdcodecvt_results_ (rr);
             DISABLE_COMPILER_MSC_WARNING_END (4996);
         }
-        inline UTFConverter::ConversionStatusFlag ConvertUTF16toUTF8_codecvt_ (mbstate_t* multibyteConversionState, const char16_t** sourceStart,
-                                                                               const char16_t* sourceEnd, char8_t** targetStart, char8_t* targetEnd)
+        inline UTFConverter::ConversionStatusFlag ConvertUTF16toUTF8_codecvt_ ([[maybe_unused]] mbstate_t* multibyteConversionState,
+                                                                               const char16_t** sourceStart, const char16_t* sourceEnd,
+                                                                               char8_t** targetStart, char8_t* targetEnd)
         {
             DISABLE_COMPILER_MSC_WARNING_START (4996); // warning STL4020: std::codecvt<char16_t, char, mbstate_t> DEPRECATED
             // SIGH - DEPRECATED but ALSO more than twice as slow as my (lifted) implementation (not sure why - looks similar).
@@ -698,8 +699,9 @@ namespace {
             return cvt_stdcodecvt_results_ (rr);
             DISABLE_COMPILER_MSC_WARNING_END (4996);
         }
-        inline UTFConverter::ConversionStatusFlag ConvertUTF32toUTF8_codecvt_ (mbstate_t* multibyteConversionState, const char32_t** sourceStart,
-                                                                               const char32_t* sourceEnd, char8_t** targetStart, char8_t* targetEnd)
+        inline UTFConverter::ConversionStatusFlag ConvertUTF32toUTF8_codecvt_ ([[maybe_unused]] mbstate_t* multibyteConversionState,
+                                                                               const char32_t** sourceStart, const char32_t* sourceEnd,
+                                                                               char8_t** targetStart, char8_t* targetEnd)
         {
             DISABLE_COMPILER_MSC_WARNING_START (4996); // warning STL4020: std::codecvt<char16_t, char, mbstate_t> DEPRECATED
             // SIGH - DEPRECATED but ALSO more than twice as slow as my (lifted) implementation (not sure why - looks similar).
