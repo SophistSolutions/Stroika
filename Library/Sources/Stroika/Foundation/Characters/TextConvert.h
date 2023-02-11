@@ -44,6 +44,14 @@ namespace Stroika::Foundation::Characters {
     };
 
     /**
+     *  \flag used to indicate if ByteOrderMark should be included (in other Stroika modules).
+     */
+    enum class ByteOrderMark {
+        eInclude,
+        eDontInclude
+    };
+
+    /**
      *  returns the byte order mark for the given unicode encoding.
      */
     constexpr span<const byte> GetByteOrderMark (UnicodeExternalEncodings e) noexcept;

@@ -16,9 +16,7 @@ namespace Stroika::Foundation::Streams {
      ********************** TextWriter::UnSeekable_CodeCvt_Rep_ *********************
      ********************************************************************************
      */
-    class TextWriter::UnSeekable_CodeCvt_Rep_ : public OutputStream<Characters::Character>::_IRep {
-        using Character = Characters::Character;
-
+    class TextWriter::UnSeekable_CodeCvt_Rep_ : public OutputStream<Character>::_IRep {
     public:
         UnSeekable_CodeCvt_Rep_ (const OutputStream<byte>::Ptr& src, Characters::CodeCvt<Character>&& converter)
             : _fSource{src}
@@ -89,9 +87,7 @@ namespace Stroika::Foundation::Streams {
      ********************************************************************************
      */
     template <Characters ::Character_UNICODECanUnambiguouslyConvertFrom OUTPUT_CHAR_T>
-    class TextWriter::UnSeekable_UTFConverter_Rep_ : public OutputStream<Characters::Character>::_IRep {
-        using Character = Characters::Character;
-
+    class TextWriter::UnSeekable_UTFConverter_Rep_ : public OutputStream<Character>::_IRep {
     public:
         template <typename CONVERTER>
         UnSeekable_UTFConverter_Rep_ (const OutputStream<byte>::Ptr& src, CONVERTER&& converter)
@@ -157,11 +153,11 @@ namespace Stroika::Foundation::Streams {
      *********************************** TextWriter::Ptr ****************************
      ********************************************************************************
      */
-    inline TextWriter::Ptr::Ptr (const shared_ptr<OutputStream<Characters::Character>::_IRep>& from)
+    inline TextWriter::Ptr::Ptr (const shared_ptr<OutputStream<Character>::_IRep>& from)
         : inherited{from}
     {
     }
-    inline TextWriter::Ptr::Ptr (const OutputStream<Characters::Character>::Ptr& from)
+    inline TextWriter::Ptr::Ptr (const OutputStream<Character>::Ptr& from)
         : inherited{from}
     {
     }
@@ -171,14 +167,14 @@ namespace Stroika::Foundation::Streams {
      *********************************** TextWriter *********************************
      ********************************************************************************
      */
-    inline auto TextWriter::New (const OutputStream<Characters::Character>::Ptr& src) -> Ptr { return src; }
-    inline TextWriter::Ptr TextWriter::New (const OutputStream<byte>::Ptr& src, Characters::CodeCvt<Characters::Character>&& char2OutputConverter)
+    inline auto TextWriter::New (const OutputStream<Character>::Ptr& src) -> Ptr { return src; }
+    inline TextWriter::Ptr TextWriter::New (const OutputStream<byte>::Ptr& src, Characters::CodeCvt<Character>&& char2OutputConverter)
     {
         return TextWriter::Ptr{make_shared<UnSeekable_CodeCvt_Rep_> (src, move (char2OutputConverter))};
     }
-    inline TextWriter::Ptr TextWriter::New (const OutputStream<byte>::Ptr& src, Characters::UnicodeExternalEncodings e, bool includeBOM)
+    inline TextWriter::Ptr TextWriter::New (const OutputStream<byte>::Ptr& src, Characters::UnicodeExternalEncodings e, Characters::ByteOrderMark bom)
     {
-        if (includeBOM) {
+        if (bom == Characters::ByteOrderMark::eInclude) {
             src.Write (Characters::GetByteOrderMark (e));
         }
         // handle a few common cases more efficiently, without vectoring through CodeCvt<>
@@ -191,9 +187,40 @@ namespace Stroika::Foundation::Streams {
                 return TextWriter::Ptr{make_shared<UnSeekable_UTFConverter_Rep_<char32_t>> (src)};
             default:
                 // but default to using the CodeCvt writer
-                return New (src, Characters::ConstructCodeCvtUnicodeToBytes<Characters::Character> (e));
+                return New (src, Characters::ConstructCodeCvt<Character> (e));
         }
     }
+
+    /////////////// ***************** DEPRECATED BELOW /////////////////
+    DISABLE_COMPILER_MSC_WARNING_START (4996); // DEPRECATED
+    inline auto TextWriter::New (const OutputStream<byte>::Ptr& src, Format format) -> Ptr
+    {
+        using Characters::UnicodeExternalEncodings;
+        switch (format) {
+            case Format::eUTF8WithBOM:
+            case Format::eUTF8WithoutBOM:
+                return New (src, UnicodeExternalEncodings::eUTF8, format == Format::eUTF8WithBOM ? ByteOrderMark::eInclude : ByteOrderMark::eDontInclude);
+            case Format::eWCharTWithBOM:
+            case Format::eWCharTWithoutBOM:
+                return New (src, sizeof (wchar_t) == 2 ? UnicodeExternalEncodings::eUTF16 : UnicodeExternalEncodings::eUTF32,
+                            format == Format::eWCharTWithBOM ? ByteOrderMark::eInclude : ByteOrderMark::eDontInclude);
+            default:
+                RequireNotReached ();
+                return Ptr{};
+        }
+    }
+    inline auto TextWriter::New ([[maybe_unused]] Execution::InternallySynchronized internallySynchronized, const OutputStream<Character>::Ptr& src) -> Ptr
+    {
+        Assert (internallySynchronized == Execution::eNotKnownInternallySynchronized);
+        return src;
+    }
+    inline auto TextWriter::New ([[maybe_unused]] Execution::InternallySynchronized internallySynchronized,
+                                 const OutputStream<byte>::Ptr& src, Format format) -> Ptr
+    {
+        Assert (internallySynchronized == Execution::eNotKnownInternallySynchronized);
+        return TextWriter::New (src, format);
+    }
+    DISABLE_COMPILER_MSC_WARNING_END (4996); // DEPRECATED
 
 }
 

@@ -495,9 +495,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\TextReader.cpp">
       <Filter>Sources\Streams</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\TextWriter.cpp">
-      <Filter>Sources\Streams</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\FileInputStream.cpp">
       <Filter>Sources\IO\FileSystem</Filter>
     </ClCompile>

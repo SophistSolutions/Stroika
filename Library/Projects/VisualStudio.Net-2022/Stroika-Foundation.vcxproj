@@ -264,7 +264,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\SharedMemoryStream.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\TextReader.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\TextToByteReader.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\TextWriter.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Time\Date.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Time\DateTime.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Time\Duration.cpp" />

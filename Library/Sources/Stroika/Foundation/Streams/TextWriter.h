@@ -14,40 +14,13 @@
 
 /**
  *  \file
- *
- *  TODO:
- *      @todo   Sterl comments:
- *          class   TextOutputStreamBinaryAdapter : public TextOutputStream {
- *          public:
- *              enum    class   Format : uint8_t    {
- *                  eUTF8WithBOM        =   1,
- * ...
- *                  eWCharT             =   eWChar
- *
- *              CHANGE DEFAULT TO NOT WITH BOM..
- *              (I'm NOT SURE ABOUT THIS CHANGE)
- *              Probably REPLACE the 'Format' stuff with the same sort of parameters we passed to our older code converison code,
- *              either a locale, or a code page, and a separate overload with flags for BOM.
- *
- *      @todo   Extend format with eUTF16... and eUTF32, and note that wWCharT could be same as eUTF16/32 depending
- *              on system defaults.
- *
- *      @todo   Seekable case NYI
- *
- *      @todo   Seekable. Should this be seekable? Take CTOR param indicating if seekable? Maybe also conditional
- *              on if arg is seekable? (documentd, but unsure)
- *
- *                  Clarify behavior if src (CTOR ARG) stream is or is not seekable. And also what about if src is not
- *                  seeked to beginning for BOM? Clarify exact semantics!!!
- *
- *      @todo   Consider adding locale feature. if you use narrow string (char* or string) it uses associated
- *              locale. If none, use global locale? Could use codepage instead of locale, but propba
- *              best to have one notion and extract that codepage from the given (or global) locale.(ONLY FOR STREAM OF CHARCTETSD?? Maybe just in WRITER)
- *
- *      @todo   https://stroika.atlassian.net/browse/STK-611 - some cases of Execution::InternallySynchronized are AssertNotImplemented on TextReader and TextWriter
  */
 
 namespace Stroika::Foundation::Streams {
+
+    using Characters::ByteOrderMark;
+    using Characters::Character;
+    using Characters::UnicodeExternalEncodings;
 
     /**
      *  \brief Take some binary output stream, and make it look like an output stream of (UNICODE) characters.
@@ -55,7 +28,8 @@ namespace Stroika::Foundation::Streams {
      *  Obviously todo this, there may be some character set mapping/conversion needed. The object
      *  takes constructor arguments to decide how this will he handled.
      *
-     *  TextWriter is Seekable iff its constructed with a OutputStream<>::Ptr which is seekable.
+     *  TextWriter is not seekable. It's possible to implement, but complicated, and performance costly. Very unlikely
+     *  to ever be useful.
      *
      *  \note   This API was called TextOutputStreamAdapter
      *
@@ -64,33 +38,22 @@ namespace Stroika::Foundation::Streams {
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety-For-Envelope-Plus-Must-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-For-Envelope-Plus-Must-Externally-Synchronize-Letter</a>
      */
-    class TextWriter : public OutputStream<Characters::Character> {
+    class TextWriter : public OutputStream<Character> {
     public:
         TextWriter ()                  = delete;
         TextWriter (const TextWriter&) = delete;
-
-    public:
-        enum class Format : uint8_t {
-            eUTF8WithBOM    = 1,
-            eUTF8WithoutBOM = 2,
-            eUTF8           = eUTF8WithBOM,
-
-            eWCharTWithBOM    = 3,
-            eWCharTWithoutBOM = 4,
-            eWCharT           = eWCharTWithBOM,
-        };
 
     public:
         class Ptr;
 
     public:
         /**
-         * IF TextWriter given an OutStream<Bytes>, it maps the characters according to the given code page info (@todo improve so generic code page support).
+         * If TextWriter given an OutStream<Bytes>, it maps the characters according to the given code page info (@todo improve so generic code page support).
          * If handled an OutputStream<Character> - it just passes through characters.
          *
          *  \par Example Usage
          *      \code
-         *          Streams::TextWriter::Ptr         textOut = Streams::TextWriter::New (out, Streams::TextWriter::Format::eUTF8WithoutBOM);
+         *          Streams::TextWriter::Ptr         textOut = Streams::TextWriter::New (out, UnicodeExternalEncodings::eUTF8, ByteOrderMark::eInclude);
          *          textOut.Write (Characters::Format (L"%s\r\n", headLine.c_str ()));
          *          ...
          *      \endcode
@@ -101,14 +64,24 @@ namespace Stroika::Foundation::Streams {
          *          textOut.Write ("Hello World\n");
          *      \endcode
          */
-        static Ptr New (const OutputStream<byte>::Ptr& src, Format format = Format::eUTF8); // to be deprecated soon
-        static Ptr New (const OutputStream<byte>::Ptr& src, Characters::CodeCvt<Characters::Character>&& char2OutputConverter);
-        static Ptr New (const OutputStream<byte>::Ptr& src, Characters::UnicodeExternalEncodings e, bool includeBOM = true);
-        static Ptr New (const OutputStream<Characters::Character>::Ptr& src);
+        static Ptr New (const OutputStream<byte>::Ptr& src, Characters::CodeCvt<Character>&& char2OutputConverter);
+        static Ptr New (const OutputStream<byte>::Ptr& src, UnicodeExternalEncodings e = UnicodeExternalEncodings::eDefault,
+                        ByteOrderMark bom = ByteOrderMark::eInclude);
+        static Ptr New (const OutputStream<Character>::Ptr& src);
+
+    public:
+        DISABLE_COMPILER_MSC_WARNING_START (4996); // DEPRECATED
+        enum class [[deprecated ("Since Stroka v3.0d1, use UnicodeExternalEncodings overload")]] Format : uint8_t{
+            eUTF8WithBOM = 1,   eUTF8WithoutBOM = 2,   eUTF8 = eUTF8WithBOM,
+            eWCharTWithBOM = 3, eWCharTWithoutBOM = 4, eWCharT = eWCharTWithBOM,
+        };
+        [[deprecated ("Since Stroka v3.0d1, use UnicodeExternalEncodings overload")]] static Ptr New (const OutputStream<byte>::Ptr& src,
+                                                                                                      Format format); // to be deprecated soon
         [[deprecated ("Since Stroka v3.0d1, just wrap in InternallySynchronizedOutputStream direclty if needed")]] static Ptr
         New (Execution::InternallySynchronized internallySynchronized, const OutputStream<byte>::Ptr& src, Format format = Format::eUTF8);
         [[deprecated ("Since Stroka v3.0d1, just wrap in InternallySynchronizedOutputStream direclty if needed")]] static Ptr
-        New (Execution::InternallySynchronized internallySynchronized, const OutputStream<Characters::Character>::Ptr& src);
+        New (Execution::InternallySynchronized internallySynchronized, const OutputStream<Character>::Ptr& src);
+        DISABLE_COMPILER_MSC_WARNING_END (4996); // DEPRECATED
 
     public:
         /**
@@ -116,39 +89,25 @@ namespace Stroika::Foundation::Streams {
         nonvirtual TextWriter& operator= (const TextWriter&) = delete;
 
     private:
-        // LEGACY - probably lose these
-        class Seekable_UTF8_Rep_;
-        class Seekable_WCharT_Rep_;
-        class UnSeekable_UTF8_Rep_;
-        class UnSeekable_WCharT_Rep_;
-
-    private:
         class UnSeekable_CodeCvt_Rep_;
 
     private:
         template <Characters ::Character_UNICODECanUnambiguouslyConvertFrom OUTPUT_CHAR_T>
         class UnSeekable_UTFConverter_Rep_;
-
-    private:
-        static shared_ptr<OutputStream<Characters::Character>::_IRep> mk_ (const OutputStream<byte>::Ptr& src, Format format);
-
-    private:
-        using InternalSyncRep_ =
-            Streams::InternallySynchronizedOutputStream<Characters::Character, TextWriter, OutputStream<Characters::Character>::_IRep>;
     };
 
     /**
      *  Ptr is a copyable smart pointer to a TextWriter stream.
      */
-    class TextWriter::Ptr : public OutputStream<Characters::Character>::Ptr {
+    class TextWriter::Ptr : public OutputStream<Character>::Ptr {
     private:
-        using inherited = typename OutputStream<Characters::Character>::Ptr;
+        using inherited = typename OutputStream<Character>::Ptr;
 
     public:
         /**
          *  \par Example Usage
          *      \code
-         *          Streams::TextWriter::Ptr         textOut = Streams::TextWriter::New (out, Streams::TextWriter::Format::eUTF8WithoutBOM);
+         *          Streams::TextWriter::Ptr         textOut = Streams::TextWriter::New (out, UnicodeExternalEncodings::eUTF8, ByteOrderMark::eDoneInclude);
          *          textOut.Write (Characters::Format (L"%s\r\n", headLine.c_str ()));
          *          ...
          *      \endcode
@@ -161,10 +120,10 @@ namespace Stroika::Foundation::Streams {
          */
         Ptr ()                = default;
         Ptr (const Ptr& from) = default;
-        Ptr (const OutputStream<Characters::Character>::Ptr& from);
+        Ptr (const OutputStream<Character>::Ptr& from);
 
     protected:
-        Ptr (const shared_ptr<OutputStream<Characters::Character>::_IRep>& from);
+        Ptr (const shared_ptr<OutputStream<Character>::_IRep>& from);
 
     public:
         nonvirtual Ptr& operator= (const Ptr& rhs) = default;
