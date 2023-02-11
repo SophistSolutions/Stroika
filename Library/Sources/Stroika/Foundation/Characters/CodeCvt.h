@@ -39,6 +39,8 @@ namespace Stroika::Foundation::Characters {
      *          It can be used to convert (abstract API) between ANY combination of 'target hidden in implementation'
      *          and exposed CHAR_T characters (reading or writing). DEFAULT CTORS only provide the combinations
      *          supported by stdc++ (and a little more). To get other combinations, you must use subclass.
+     *      o   'equivilent' character types automatically supported (e.g wchar_t == char16 or char32, and
+     *          Character==char32_t).
      * 
      *  Enhancements over UTFConverter:
      *      o   Supports translating from/to locale encodings (e.g. SHIFT_JIS, or whatever).
@@ -54,7 +56,7 @@ namespace Stroika::Foundation::Characters {
      *  But it also can be thought of as a smart pointer class, to underlying 'reps' - which can make generic
      *  the functionality in UTFConverter, and std::codecvt.
      */
-    template <Character_IsUnicodeCodePoint CHAR_T>
+    template <Character_UNICODECanAlwaysConvertTo CHAR_T>
     class CodeCvt {
     public:
         using MBState = std::mbstate_t; // may need to enhance this MBState at this level of API to handle wchar_t locale stuff
@@ -136,7 +138,7 @@ namespace Stroika::Foundation::Characters {
         shared_ptr<IRep> fRep_;
     };
 
-    template <Character_IsUnicodeCodePoint CHAR_T>
+    template <Character_UNICODECanAlwaysConvertTo CHAR_T>
     struct CodeCvt<CHAR_T>::IRep {
         virtual ~IRep ()                                                                                 = default;
         virtual result Bytes2Characters (span<const byte>* from, span<CHAR_T>* to, MBState* state) const = 0;

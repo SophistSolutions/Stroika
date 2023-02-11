@@ -30,24 +30,24 @@ namespace Stroika::Foundation::Characters {
      ******************************* CodeCvt<CHAR_T> ********************************
      ********************************************************************************
      */
-    template <Character_IsUnicodeCodePoint CHAR_T>
+    template <Character_UNICODECanAlwaysConvertTo CHAR_T>
     inline CodeCvt<CHAR_T>::CodeCvt ()
         requires (is_same_v<CHAR_T, char16_t> or is_same_v<CHAR_T, char32_t>)
         : fRep_{Private_::mk_UNICODECodeCvt_<CHAR_T> ()}
     {
     }
-    template <Character_IsUnicodeCodePoint CHAR_T>
+    template <Character_UNICODECanAlwaysConvertTo CHAR_T>
     inline CodeCvt<CHAR_T>::CodeCvt (const locale& l)
         requires (is_same_v<CHAR_T, wchar_t>)
         : fRep_{Private_::mk_UNICODECodeCvt_<CHAR_T> (l)}
     {
     }
-    template <Character_IsUnicodeCodePoint CHAR_T>
+    template <Character_UNICODECanAlwaysConvertTo CHAR_T>
     inline CodeCvt<CHAR_T>::CodeCvt (const shared_ptr<IRep>& rep)
         : fRep_{(RequireNotNull (rep), rep)}
     {
     }
-    template <Character_IsUnicodeCodePoint CHAR_T>
+    template <Character_UNICODECanAlwaysConvertTo CHAR_T>
     inline auto CodeCvt<CHAR_T>::Bytes2Characters (span<const byte>* from, span<CHAR_T>* to, MBState* state) const -> result
     {
         AssertNotNull (fRep_);
@@ -56,7 +56,7 @@ namespace Stroika::Foundation::Characters {
         RequireNotNull (to);
         return fRep_->Bytes2Characters (from, to, state);
     }
-    template <Character_IsUnicodeCodePoint CHAR_T>
+    template <Character_UNICODECanAlwaysConvertTo CHAR_T>
     inline auto CodeCvt<CHAR_T>::Characters2Bytes (span<const CHAR_T>* from, span<byte>* to, MBState* state) const -> result
     {
         AssertNotNull (fRep_);
