@@ -36,11 +36,10 @@ namespace Stroika::Foundation::Characters {
      *  but docs in cppreference dont make that clear; anyhow still a mess).
      * 
      *  Available (plausible) implementations:
-     *      o   std C++ code_cvt        (deprecated, and on windows, slow, but DOES support mbstate_t)
+     *      o   std C++ code_cvt        (deprecated, and on windows, slow)
      *      o   Boost locale utf_to_utf (untested so not sure about this)
-     *      o   Windows API             (appears most performant, but doesn't support mbstate_t)
-     *      o   Stroika portable implementation, based on libutfxx (slow but portable, and works, NOT supporting mbstate_t)
-     *          @todo easy to adapt StroikaPortable impl to support mbstate_t - just save last few mbchars and replay
+     *      o   Windows API             (appears most performant)
+     *      o   Stroika portable implementation, based on libutfxx (slow but portable, and works)
      *      o   nemtrif/utfcpp (haven't tried yet)
      *      o   simdutf (allegedly fastest, but haven't tried yet)
      * 
@@ -54,6 +53,17 @@ namespace Stroika::Foundation::Characters {
      *  \note Byte Order Markers
      *      UTFConverter does NOT support byte order marks (BOM) - for that - see Streams::TextReader, and Streams::TextWriter
      *
+     *  \notes about mbstate_t
+     *      mbstate_t is used by the std::codecvt apis. And it is somewhat required there (docs not 100% clear, to me anyhow).
+     *      But it appears required, and since I want to support calling them, I have a couple choices:
+     *          >   reverse-engineer and find out how to fake (seems unreliably across implementations)
+     *          >   Just pass it along to some (lower level) apis, and generate tmp ones for higher level apis
+     *              where clearly not needed)
+     *      Went with the later approach. ConvertQuietly requires an mbstate parameter (and then generally ignores it). But
+     *      VERY little code ever calls that.
+     *      Convert code and ConvertQuietly inlined, so compiler can (easily?) see the mbstate is unused (by which Convert__XXX_ function
+     *      called, and hopefully optimize away its tiny cost to zero).
+     * 
      *  Web Pages/ Specs:
      *      o   https://en.wikipedia.org/wiki/UTF-8
      *      o   https://en.wikipedia.org/wiki/UTF-16
@@ -92,7 +102,7 @@ namespace Stroika::Foundation::Characters {
                 eWindowsAPIWide2FromMultibyte,
 #endif
 
-                // Deprecated by stdc++, and windows implementation appears quite slow, but only one supporting mbstate_t
+                // Deprecated by stdc++, and windows implementation appears quite slow
                 eCodeCVT,
 
                 // @todo LIBS TO LOOK AT
@@ -188,8 +198,6 @@ namespace Stroika::Foundation::Characters {
          *  For overloads taking a target span:
          *      \req size of target span must be at least as large as specified by ComputeTargetBufferSize
          * 
-         *  \note overload taking mbstate_t maybe used if converting a large stream in parts which don't necesarily fall on multibyte boundaries.
-         * 
          *  Wrapper on ConvertQuietly, that throws when bad source data input, and asserts out when bad target size (insuffient for buffer).
          *
          *  Variations from char8_t are overloaded to optionally take a multibyteConversionState parameter.
@@ -217,16 +225,11 @@ namespace Stroika::Foundation::Characters {
          *          wstring wide_fred = UTFConverter::kThe.Convert<wstring> (u8"fred");
          *          u16string u16_fred = UTFConverter::kThe.Convert<u16string> (U"fred");
          *      \endcode
-         * 
-         *  @todo generalize/enhance mbstate_t* multibyteConversionState support
          */
         template <Character_UNICODECanUnambiguouslyConvertFrom SRC_T, Character_UNICODECanUnambiguouslyConvertFrom TRG_T>
         nonvirtual ConversionResult Convert (span<const SRC_T> source, span<TRG_T> target) const;
         template <Character_UNICODECanUnambiguouslyConvertFrom SRC_T, Character_UNICODECanUnambiguouslyConvertFrom TRG_T>
         nonvirtual ConversionResult Convert (span<SRC_T> source, span<TRG_T> target) const;
-        template <Character_UNICODECanUnambiguouslyConvertFrom SRC_T, Character_UNICODECanUnambiguouslyConvertFrom TRG_T>
-        nonvirtual ConversionResult Convert (span<const char8_t> source, span<char16_t> target, mbstate_t* multibyteConversionState) const
-            requires (is_same_v<SRC_T, char8_t> and (is_same_v<TRG_T, char16_t> or is_same_v<TRG_T, char32_t>));
         template <typename TO, typename FROM>
         nonvirtual TO Convert (const FROM& from) const
             requires ((is_same_v<TO, string> or is_same_v<TO, wstring> or is_same_v<TO, u8string> or is_same_v<TO, u16string> or is_same_v<TO, u32string>) and
@@ -265,14 +268,12 @@ namespace Stroika::Foundation::Characters {
          *         detect the error and return ConversionStatusFlag::sourceIllegal (depending on Options::fStrictMode).
          *         // @todo RECONSIDER fStrictMode!!!
          * 
-         *  @todo generalize/enhance mbstate_t* multibyteConversionState support
+         *  \note multibyteConversionState is often ignored, but since some implementations may use it, it is required (to allow
+         *        interface as a whole to always work without knowing which implementations require it).
          */
         template <Character_UNICODECanUnambiguouslyConvertFrom SRC_T, Character_UNICODECanUnambiguouslyConvertFrom TRG_T>
-        nonvirtual ConversionResultWithStatus ConvertQuietly (span<const SRC_T> source, span<TRG_T> target) const
-            requires (not is_const_v<TRG_T>);
-        template <Character_UNICODECanUnambiguouslyConvertFrom SRC_T, Character_UNICODECanUnambiguouslyConvertFrom TRG_T>
         nonvirtual ConversionResultWithStatus ConvertQuietly (span<const SRC_T> source, span<TRG_T> target, mbstate_t* multibyteConversionState) const
-            requires (is_same_v<SRC_T, char8_t> and (is_same_v<TRG_T, char16_t> or is_same_v<TRG_T, char32_t>));
+            requires (not is_const_v<TRG_T>);
 
     public:
         /**
@@ -373,11 +374,10 @@ namespace Stroika::Foundation::Characters {
 #endif
 
     private:
-        // this API allows multibyteConversionState == nullptr, even though public APIs don't
         static ConversionResultWithStatus ConvertQuietly_codeCvt_ (span<const char8_t> source, span<char16_t> target, mbstate_t* multibyteConversionState);
         static ConversionResultWithStatus ConvertQuietly_codeCvt_ (span<const char8_t> source, span<char32_t> target, mbstate_t* multibyteConversionState);
-        static ConversionResultWithStatus ConvertQuietly_codeCvt_ (span<const char16_t> source, span<char8_t> target);
-        static ConversionResultWithStatus ConvertQuietly_codeCvt_ (span<const char32_t> source, span<char8_t> target);
+        static ConversionResultWithStatus ConvertQuietly_codeCvt_ (span<const char16_t> source, span<char8_t> target, mbstate_t* multibyteConversionState);
+        static ConversionResultWithStatus ConvertQuietly_codeCvt_ (span<const char32_t> source, span<char8_t> target, mbstate_t* multibyteConversionState);
 
     private:
         static void ThrowIf_ (ConversionStatusFlag cr);

@@ -654,8 +654,8 @@ namespace {
             return cvt_stdcodecvt_results_ (rr);
             DISABLE_COMPILER_MSC_WARNING_END (4996);
         }
-        inline UTFConverter::ConversionStatusFlag ConvertUTF16toUTF8_codecvt_ (const char16_t** sourceStart, const char16_t* sourceEnd,
-                                                                               char8_t** targetStart, char8_t* targetEnd)
+        inline UTFConverter::ConversionStatusFlag ConvertUTF16toUTF8_codecvt_ (mbstate_t* multibyteConversionState, const char16_t** sourceStart,
+                                                                               const char16_t* sourceEnd, char8_t** targetStart, char8_t* targetEnd)
         {
             DISABLE_COMPILER_MSC_WARNING_START (4996); // warning STL4020: std::codecvt<char16_t, char, mbstate_t> DEPRECATED
             // SIGH - DEPRECATED but ALSO more than twice as slow as my (lifted) implementation (not sure why - looks similar).
@@ -698,8 +698,8 @@ namespace {
             return cvt_stdcodecvt_results_ (rr);
             DISABLE_COMPILER_MSC_WARNING_END (4996);
         }
-        inline UTFConverter::ConversionStatusFlag ConvertUTF32toUTF8_codecvt_ (const char32_t** sourceStart, const char32_t* sourceEnd,
-                                                                               char8_t** targetStart, char8_t* targetEnd)
+        inline UTFConverter::ConversionStatusFlag ConvertUTF32toUTF8_codecvt_ (mbstate_t* multibyteConversionState, const char32_t** sourceStart,
+                                                                               const char32_t* sourceEnd, char8_t** targetStart, char8_t* targetEnd)
         {
             DISABLE_COMPILER_MSC_WARNING_START (4996); // warning STL4020: std::codecvt<char16_t, char, mbstate_t> DEPRECATED
             // SIGH - DEPRECATED but ALSO more than twice as slow as my (lifted) implementation (not sure why - looks similar).
@@ -769,27 +769,10 @@ auto UTFConverter::ConvertQuietly_StroikaPortable_ (span<const char16_t> source,
 
 namespace {
     template <typename IN_T, typename OUT_T, typename FUN2DO_REAL_WORK>
-    inline auto ConvertQuietly_codeCvt_helper_ (span<const IN_T> source, const span<OUT_T> target, FUN2DO_REAL_WORK&& realWork) -> ConversionResultWithStatus
-    {
-        using namespace UTFConvert_codecvSupport_;
-        const IN_T*          sourceStart = reinterpret_cast<const IN_T*> (source.data ());
-        const IN_T*          sourceEnd   = sourceStart + source.size ();
-        OUT_T*               targetStart = reinterpret_cast<OUT_T*> (target.data ());
-        OUT_T*               targetEnd   = targetStart + target.size ();
-        ConversionStatusFlag r           = realWork (&sourceStart, sourceEnd, &targetStart, targetEnd);
-        if (r == ConversionStatusFlag::ok) {
-            return ConversionResultWithStatus{{static_cast<size_t> (sourceStart - reinterpret_cast<const IN_T*> (source.data ())),
-                                               static_cast<size_t> (targetStart - reinterpret_cast<const OUT_T*> (target.data ()))},
-                                              ConversionStatusFlag::ok};
-        }
-        else {
-            return ConversionResultWithStatus{{0, 0}, r};
-        }
-    }
-    template <typename IN_T, typename OUT_T, typename FUN2DO_REAL_WORK>
     inline auto ConvertQuietly_codeCvt_helper_ (span<const IN_T> source, const span<OUT_T> target, mbstate_t* multibyteConversionState,
                                                 FUN2DO_REAL_WORK&& realWork) -> ConversionResultWithStatus
     {
+        RequireNotNull (multibyteConversionState);
         using namespace UTFConvert_codecvSupport_;
         const IN_T*          sourceStart = reinterpret_cast<const IN_T*> (source.data ());
         const IN_T*          sourceEnd   = sourceStart + source.size ();
@@ -810,17 +793,17 @@ auto UTFConverter::ConvertQuietly_codeCvt_ (span<const char8_t> source, span<cha
 {
     return ConvertQuietly_codeCvt_helper_ (source, target, multibyteConversionState, UTFConvert_codecvSupport_::ConvertUTF8toUTF16_codecvt_);
 }
-auto UTFConverter::ConvertQuietly_codeCvt_ (span<const char16_t> source, span<char8_t> target) -> ConversionResultWithStatus
+auto UTFConverter::ConvertQuietly_codeCvt_ (span<const char16_t> source, span<char8_t> target, mbstate_t* multibyteConversionState) -> ConversionResultWithStatus
 {
-    return ConvertQuietly_codeCvt_helper_ (source, target, UTFConvert_codecvSupport_::ConvertUTF16toUTF8_codecvt_);
+    return ConvertQuietly_codeCvt_helper_ (source, target, multibyteConversionState, UTFConvert_codecvSupport_::ConvertUTF16toUTF8_codecvt_);
 }
 auto UTFConverter::ConvertQuietly_codeCvt_ (span<const char8_t> source, span<char32_t> target, mbstate_t* multibyteConversionState) -> ConversionResultWithStatus
 {
     return ConvertQuietly_codeCvt_helper_ (source, target, multibyteConversionState, UTFConvert_codecvSupport_::ConvertUTF8toUTF32_codecvt_);
 }
-auto UTFConverter::ConvertQuietly_codeCvt_ (span<const char32_t> source, span<char8_t> target) -> ConversionResultWithStatus
+auto UTFConverter::ConvertQuietly_codeCvt_ (span<const char32_t> source, span<char8_t> target, mbstate_t* multibyteConversionState) -> ConversionResultWithStatus
 {
-    return ConvertQuietly_codeCvt_helper_ (source, target, UTFConvert_codecvSupport_::ConvertUTF32toUTF8_codecvt_);
+    return ConvertQuietly_codeCvt_helper_ (source, target, multibyteConversionState, UTFConvert_codecvSupport_::ConvertUTF32toUTF8_codecvt_);
 }
 
 void UTFConverter::Throw_ (ConversionStatusFlag cr)
