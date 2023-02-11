@@ -61,12 +61,7 @@ namespace Stroika::Foundation::IO::Network {
             } break;
         }
     }
-    inline bool SocketAddress::empty () const
-    {
-        return fSocketAddress_.sa_family == AF_UNSPEC;
-        //constexpr sockaddr kZero_ = { 0 };
-        //return ::memcmp (&fSocketAddress_, &kZero_, sizeof (kZero_)) == 0;
-    }
+    inline bool SocketAddress::empty () const { return fSocketAddress_.sa_family == AF_UNSPEC; }
     inline void SocketAddress::clear ()
     {
         fSocketAddress_ = sockaddr{};

@@ -49,12 +49,20 @@ namespace Stroika::Foundation::Memory {
     /**
      *  \brief - like std::memcmp() - except count is in units of T (not bytes) and this function is
      *           constexpr, and this function allows nullptr arguments (if count == 0).
-     *
+     * 
+     *  Pointer Overload: 
      *      \req  (count == 0 or lhs != nullptr);
      *      \req  (count == 0 or rhs != nullptr);
+     * 
+     *  Span Overload: 
+     *      \req  lhs.size () == rhs.size ()
      */
     template <typename T>
     constexpr int MemCmp (const T* lhs, const T* rhs, size_t count);
+    template <typename T>
+    constexpr int MemCmp (span<const T> lhs, span<const T> rhs);
+    template <typename T>
+    constexpr int MemCmp (span<T> lhs, span<T> rhs);
 
     /**
      *  \brief use Memory::OffsetOf(&CLASS::MEMBER) in place of offsetof(CLASS,MEMBER) to avoid compiler warnings, and cuz easier to 

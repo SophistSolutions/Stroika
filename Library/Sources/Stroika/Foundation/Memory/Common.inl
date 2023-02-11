@@ -9,8 +9,11 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include "../Debug/Assertions.h"
 #include <cstring>
+
+#include "../Debug/Assertions.h"
+
+#include "Span.h"
 
 namespace Stroika::Foundation::Memory {
 
@@ -62,6 +65,17 @@ namespace Stroika::Foundation::Memory {
     constexpr int MemCmp (const T* lhs, const T* rhs, size_t count)
     {
         return MemCmp (reinterpret_cast<const uint8_t*> (lhs), reinterpret_cast<const uint8_t*> (rhs), count * sizeof (T));
+    }
+    template <typename T>
+    constexpr int MemCmp (span<const T> lhs, span<const T> rhs)
+    {
+        Require (lhs.size () == rhs.size ());
+        return MemCmp (lhs.data (), rhs.data (), lhs.size ());
+    }
+    template <typename T>
+    constexpr int MemCmp (span<T> lhs, span<T> rhs)
+    {
+        return MemCmp (ConstSpan (lhs), ConstSpan (rhs));
     }
 
     namespace PRIVATE_ {
