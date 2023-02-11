@@ -50,6 +50,7 @@ namespace Stroika::Foundation::Characters {
             }
             default:
                 AssertNotReached ();
+                return span<const byte>{};
         }
     }
 
