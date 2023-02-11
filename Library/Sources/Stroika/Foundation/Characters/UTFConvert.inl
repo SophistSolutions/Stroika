@@ -361,10 +361,9 @@ namespace Stroika::Foundation::Characters {
         return span{(CompatibleT_<FromT>*)f.data (), f.size ()};
     }
 
-    template <Character_IsUnicodeCodePoint CHAR_T, Character_IsUnicodeCodePoint SERIALIZED_CHAR_T>
-    CodeCvt<CHAR_T> UTFConverter::AsCodeCvt ()
-    {
-        auto handleShortTargetBuffer = [] (const UTFConverter& utfcvt, auto from, auto to) {
+    namespace Private_ {
+        template <typename CHAR_T>
+         auto HandleShortTargetBuffer_ (const UTFConverter& utfcvt, auto from, auto to) {
             // one mismatch between the UTFConverter apis and ConvertQuietly, is ConvertQuietly REQUIRES
             // the data fit in targetbuf. Since there is no requirement to use up all the source text, just reduce source text size
             // to fit (and you can avoid this performance loss by using a larger output buffer)
@@ -378,7 +377,11 @@ namespace Stroika::Foundation::Characters {
             }
             return CodeCvt<CHAR_T>::ok;
         };
+    }
 
+    template <Character_IsUnicodeCodePoint CHAR_T, Character_IsUnicodeCodePoint SERIALIZED_CHAR_T>
+    CodeCvt<CHAR_T> UTFConverter::AsCodeCvt ()
+    {
         // @todo: nice to use public Memory::BlockAllocationUseHelper<Rep_>, Memory::MakeSharedPtr<Rep_> (*this);
         // but the #include creates deadly embrace not worth solving now --LGP 2023-02-11
         struct Rep_ : CodeCvt<CHAR_T>::IRep {
@@ -395,7 +398,7 @@ namespace Stroika::Foundation::Characters {
                 RequireNotNull (state);
                 RequireNotNull (from);
                 RequireNotNull (to);
-                if (auto preflightResult = handleShortTargetBuffer (fCodeConverter_, from, to) != CodeCvt<CHAR_T>::ok) {
+                if (auto preflightResult = Private_::HandleShortTargetBuffer_<CHAR_T> (fCodeConverter_, from, to) != CodeCvt<CHAR_T>::ok) {
                     return preflightResult; // HandleShortTargetBuffer_ patched from/to accordingly for the error
                 }
                 ConversionResultWithStatus r = fCodeConverter_.ConvertQuietly (*from, *to, state);
@@ -405,7 +408,7 @@ namespace Stroika::Foundation::Characters {
             }
             virtual result Characters2Bytes (span<const CHAR_T>* from, span<extern_type>* to, MBState* state) const override
             {
-                if (auto preflightResult = handleShortTargetBuffer (fCodeConverter_, from, to) != CodeCvt<CHAR_T>::ok) {
+                if (auto preflightResult = Private_::HandleShortTargetBuffer_<CHAR_T> (fCodeConverter_, from, to) != CodeCvt<CHAR_T>::ok) {
                     return preflightResult; // HandleShortTargetBuffer_ patched from/to accordingly for the error
                 }
                 ConversionResultWithStatus r = fCodeConverter_.ConvertQuietly (*from, *to, state);
