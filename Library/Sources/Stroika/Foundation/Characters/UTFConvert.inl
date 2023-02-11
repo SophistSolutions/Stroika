@@ -15,6 +15,7 @@
 
 #include "../Debug/Assertions.h"
 #include "../Memory/Bits.h"
+//#include "../Memory/BlockAllocated.h" // causes include embrace problems
 #include "../Memory/Span.h"
 #include "../Memory/StackBuffer.h"
 
@@ -380,6 +381,58 @@ namespace Stroika::Foundation::Characters {
     constexpr auto UTFConverter::ConvertToPrimitiveSpan_ (span<FromT> f) -> span<CompatibleT_<FromT>>
     {
         return span{(CompatibleT_<FromT>*)f.data (), f.size ()};
+    }
+
+    template <Character_IsUnicodeCodePoint CHAR_T, Character_IsUnicodeCodePoint SERIALIZED_CHAR_T>
+    CodeCvt<CHAR_T> UTFConverter::AsCodeCvt ()
+    {
+        // @todo handle NOCONV case - do we require not done, or just be quick and dirty (maybe diff rep for that)
+        // Probably dif rep - easy to support, and just check if sizeof in == size out
+
+        // , public Memory::BlockAllocationUseHelper<Rep_>
+        struct Rep_ : CodeCvt<CHAR_T>::IRep {
+            UTFConverter fCodeConverter_;
+            using result      = typename CodeCvt<CHAR_T>::result;
+            using MBState     = typename CodeCvt<CHAR_T>::MBState;
+            using extern_type = SERIALIZED_CHAR_T;
+            Rep_ (const UTFConverter& utfCodeCvt)
+                : fCodeConverter_{utfCodeCvt}
+            {
+            }
+            virtual result Bytes2Characters (MBState* state, span<const extern_type>* from, span<CHAR_T>* to) const override
+            {
+                // NOTE - COULD use overload of ConvertQuietly that takes MBState, but that has very limited support.
+                // Better todo the mbstate magic here! and use the regular api
+                // first cut - ignore state!
+                ConversionResultWithStatus r = fCodeConverter_.ConvertQuietly (*from, *to);
+                from                         = from->subspan (r.fSourceConsumed);  // point to remaining to use data - typically none
+                *to                          = to->subspan (0, r.fTargetProduced); // point ACTUAL copied data
+                return cvtR_ (r.fStatus);
+            }
+            virtual result Characters2Bytes (MBState* state, span<const CHAR_T>* from, span<extern_type>* to) const override
+            {
+                // NOTE - COULD use overload of ConvertQuietly that takes MBState, but that has very limited support.
+                // Better todo the mbstate magic here! and use the regular api
+                // first cut - ignore state!
+                ConversionResultWithStatus r = fCodeConverter_.ConvertQuietly (*from, *to);
+                from                         = from->subspan (r.fSourceConsumed);  // point to remaining to use data - typically none
+                *to                          = to->subspan (0, r.fTargetProduced); // point ACTUAL copied data
+                return cvtR_ (r.fStatus);
+            }
+            static result cvtR_ (ConversionStatusFlag status)
+            {
+                switch (status) {
+                    case ConversionStatusFlag::ok:
+                        return CodeCvt<CHAR_T>::ok;
+                    case ConversionStatusFlag::sourceExhausted:
+                        return CodeCvt<CHAR_T>::partial;
+                    case ConversionStatusFlag::sourceIllegal:
+                        return CodeCvt<CHAR_T>::error;
+                }
+            }
+        };
+        //return Memory::MakeSharedPtr<Rep_> (*this);
+        return make_shared<Rep_> (*this);
     }
 
 #if qPlatform_Windows

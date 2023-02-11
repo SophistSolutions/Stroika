@@ -14,6 +14,7 @@
 #endif
 
 #include "Character.h"
+#include "CodeCvt.h"
 
 /**
  *  \file
@@ -31,7 +32,8 @@ namespace Stroika::Foundation::Characters {
      * 
      *  This area of C++ is a confusingly broken cluster-fuck. Its pretty simple, and well defined. It's been standardized in C++
      *  as of C++11 (though poorly, but better poor than none). But then that standardized code was deprecated in C++17, and
-     *  I BELIEVE still not replaced functionlity as of C++23 (I've searched, but no luck).
+     *  I BELIEVE still not replaced functionlity as of C++23 (I've searched, but no luck). (MAYBE WRONG - just renamed char to char8_t
+     *  but docs in cppreference dont make that clear; anyhow still a mess).
      * 
      *  Available (plausible) implementations:
      *      o   std C++ code_cvt        (deprecated, and on windows, slow, but DOES support mbstate_t)
@@ -304,6 +306,27 @@ namespace Stroika::Foundation::Characters {
          */
         template <Character_UNICODECanUnambiguouslyConvertFrom CHAR_T>
         static constexpr optional<size_t> ComputeCharacterLength (span<const CHAR_T> s);
+
+    public:
+        /**
+         *  Wrap UTFConverter in a 'std::codecvt' compatible API format, so it can be
+         *  used in all the same places we wish to use std::codecvt. This typically is in
+         *  'streams' code, where the streams COULD be of UTF text, or could be of SJIS, or
+         *  some other non-unicode (locale) characterset.
+         * 
+         *  To provide a unform interface for those cases, this is helpful.
+         * 
+         *  \note Considered fitting this into As<T>() paradigm, but that does't work well here, because
+         *        we need to pass two template type parameters, the IN_CHAR_T and OUT_CHAR_T, and since
+         *        CodeCvt<> is only templated on one of these, its not clear how to specify both in a single
+         *        As<> call (naturally)
+         * 
+         *  \note - its vaguely potentially useful to use Charcter_ASCII or Character_Latin1 here, but
+         *        doing so forces thinking out the issues of bad data. Simpler to start disallowing, and
+         *        perhaps expand constraint to allow them in the future --LGP 2023-02-10
+         */
+        template <Character_IsUnicodeCodePoint CHAR_T, Character_IsUnicodeCodePoint SERIALIZED_CHAR_T>
+        nonvirtual CodeCvt<CHAR_T> AsCodeCvt ();
 
     public:
         /**
