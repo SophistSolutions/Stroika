@@ -130,7 +130,7 @@ namespace Stroika::Foundation::Characters {
     tuple<CodeCvt<CHAR_T>, size_t> ConstructCodeCvt (span<const byte> from)
     {
         if (optional<tuple<UnicodeExternalEncodings, size_t>> o = ReadByteOrderMark (from)) {
-            return make_tuple (ConstructCodeCvt<CHAR_T> (get<0> (*o), get<1> (*o));
+            return make_tuple (ConstructCodeCvt<CHAR_T> (get<0> (*o)), get<1> (*o));
         }
         else {
             return make_tuple (ConstructCodeCvt<CHAR_T> (UnicodeExternalEncodings::eDefault), 0);
