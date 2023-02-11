@@ -66,7 +66,7 @@ namespace Stroika::Foundation::Streams {
          */
         static Ptr New (const OutputStream<byte>::Ptr& src, Characters::CodeCvt<Character>&& char2OutputConverter);
         static Ptr New (const OutputStream<byte>::Ptr& src, UnicodeExternalEncodings e = UnicodeExternalEncodings::eDefault,
-                        ByteOrderMark bom = ByteOrderMark::eInclude);
+                        ByteOrderMark bom = ByteOrderMark::eDontInclude);
         static Ptr New (const OutputStream<Character>::Ptr& src);
 
     public:
