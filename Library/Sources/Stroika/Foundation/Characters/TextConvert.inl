@@ -104,8 +104,6 @@ namespace Stroika::Foundation::Characters {
         return into.subspan (bom.size ());
     }
 
-
-    
     /*
      ********************************************************************************
      **************** Characters::ConstructCodeCvtToUnicode *************************
@@ -120,12 +118,12 @@ namespace Stroika::Foundation::Characters {
     template <typename CHAR_T>
     tuple<CodeCvt<CHAR_T>, size_t> ConstructCodeCvtToUnicode (span<const byte> from)
     {
-       return make_tuple (ConstructCodeCvtToUnicode<CHAR_T> (UnicodeExternalEncodings::eUTF16), 1);   //tmphack
+        return make_tuple (ConstructCodeCvtToUnicode<CHAR_T> (UnicodeExternalEncodings::eUTF16), 1); //tmphack
     }
     template <typename CHAR_T>
-    CodeCvt<CHAR_T> ConstructCodeCvtToUnicode ( const locale& l)
+    CodeCvt<CHAR_T> ConstructCodeCvtToUnicode (const locale& l)
     {
-       return ConstructCodeCvtToUnicode<CHAR_T> (UnicodeExternalEncodings::eUTF16); //tmphack
+        return ConstructCodeCvtToUnicode<CHAR_T> (UnicodeExternalEncodings::eUTF16); //tmphack
     }
 
     /**
@@ -136,13 +134,13 @@ namespace Stroika::Foundation::Characters {
     CodeCvt<CHAR_T> ConstructCodeCvtUnicodeToBytes (UnicodeExternalEncodings e)
     {
         AssertNotReached ();
-       return *(CodeCvt<CHAR_T>*)nullptr; //tmphack
+        return *(CodeCvt<CHAR_T>*)nullptr; //tmphack
     }
     template <Character_UNICODECanAlwaysConvertTo CHAR_T>
     CodeCvt<CHAR_T> ConstructCodeCvtUnicodeToBytes (const locale& l)
     {
         AssertNotReached ();
-       return *(CodeCvt<CHAR_T>*)nullptr; //tmphack
+        return *(CodeCvt<CHAR_T>*)nullptr; //tmphack
     }
 
 }
