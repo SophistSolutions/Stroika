@@ -62,6 +62,20 @@ namespace Stroika::Foundation::Characters {
         using intern_type = CHAR_T; // what codecvt calls the character type
         using extern_type = byte;   // what codecvt calls the binary format
 
+    public:
+        /*
+         *  Notes about error results, and partial status/error code.
+         * 
+         *  Some codecvt implementations (namely the std c++ - so primarily locale - conversions may use the 
+         *  std::mbstate_t to store data from partial conversions. Some implementations (such as UTFConverter)
+         *  may not. This API is sadly general enuf to allow for either case (cuz not too hard to accomodate
+         *  in use, but unfortunate).
+         * 
+         *  Just understand, regardless of mbstate support, not all the input or output characters will
+         *  necessarily be processed. But each Bytes2Characters/Characters2Bytes call tells how
+         *  many of each were processed. And just track the MBState as you progress through your
+         *  input buffer, and you will be fine, regardless of the underlying implementation (whther it uses mbstate or not).
+         */
         using result                    = codecvt_base::result; // codecvt results - sadly seem to be int, not enum - but 4
         static constexpr result ok      = codecvt_base::ok;
         static constexpr result partial = codecvt_base::partial;
@@ -73,12 +87,12 @@ namespace Stroika::Foundation::Characters {
 
     public:
         /**
-         *  These default APIs are provided by std c++:
+         *  These default-constructor APIs are provided by std c++:
          *      CodeCvt<char16_t>{}         -   std::codecvt<char16_t, char8_t, std::mbstate_t>
          *      CodeCvt<char32_t>{}         -   std::codecvt<char32_t, char8_t, std::mbstate_t>
          *      CodeCvt<wchar_t>{locale}    -   std::codecvt<wchar_t, char, std::mbstate_t>
          * 
-         *  To get OTHER conversions, say between char16_t, and char32_t, you must use UTFConvert (NYI adapter for CodeCvt).
+         *  To get OTHER conversions, say between char16_t, and char32_t, you must use UTFConverter::AsCodeCvt ().
          */
         CodeCvt ()
             requires (is_same_v<CHAR_T, char16_t> or is_same_v<CHAR_T, char32_t>);
@@ -97,6 +111,8 @@ namespace Stroika::Foundation::Characters {
          *  \note we use the name 'Bytes' - because its suggestive of meaning, and in every case I'm aware of
          *        the target type will be char, or char8_t, or byte. But its certainly not guaranteed to be serialized
          *        to std::byte, and the codecvt API calls this extern_type
+         * 
+         *  \see the docs on 'error results, and partial status/error code' above
          */
         nonvirtual result Bytes2Characters (MBState* state, span<const byte>* from, span<CHAR_T>* to) const;
 
@@ -111,6 +127,8 @@ namespace Stroika::Foundation::Characters {
          *  \note we use the name 'Bytes' - because its suggestive of meaning, and in every case I'm aware of
          *        the target type will be char, or char8_t, or byte. But its certainly not guaranteed to be serialized
          *        to std::byte, and the codecvt API calls this extern_type
+         * 
+         *  \see the docs on 'error results, and partial status/error code' above
          */
         nonvirtual result Characters2Bytes (MBState* state, span<const CHAR_T>* from, span<byte>* to) const;
 
