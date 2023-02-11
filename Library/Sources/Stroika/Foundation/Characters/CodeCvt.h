@@ -76,11 +76,11 @@ namespace Stroika::Foundation::Characters {
          *  many of each were processed. And just track the MBState as you progress through your
          *  input buffer, and you will be fine, regardless of the underlying implementation (whther it uses mbstate or not).
          */
-        using result                    = codecvt_base::result; // codecvt results - sadly seem to be int, not enum - but 4
-        static constexpr result ok      = codecvt_base::ok;
-        static constexpr result partial = codecvt_base::partial;
-        static constexpr result error   = codecvt_base::error;
-        static constexpr result noconv  = codecvt_base::noconv;
+        using result                    = codecvt_base::result;  // codecvt results - sadly seem to be int, not enum - but 4
+        static constexpr result ok      = codecvt_base::ok;      // conversion succeeded
+        static constexpr result partial = codecvt_base::partial; // not all source converted because target buffer too small
+        static constexpr result error = codecvt_base::error; // some data maybe converted (see in/out params) - but typically doesn't matter - just throw
+        static constexpr result noconv = codecvt_base::noconv; // probably cannot happen with this class (TBD)
 
     public:
         struct IRep;
