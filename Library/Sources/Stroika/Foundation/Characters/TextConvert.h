@@ -82,12 +82,9 @@ namespace Stroika::Foundation::Characters {
      * 
      *  Note - when the guesses fail, this still returns a guess at CodeCvt<CHAR_T>.
      */
-    template <typename CHAR_T>
-    CodeCvt<CHAR_T> ConstructCodeCvt (UnicodeExternalEncodings useEncoding);
-    template <typename CHAR_T>
-    CodeCvt<CHAR_T> ConstructCodeCvt (const locale& l);
-    template <typename CHAR_T>
-    tuple<CodeCvt<CHAR_T>, size_t> ConstructCodeCvt (span<const byte> from);
+    CodeCvt<Character>                ConstructCodeCvt (UnicodeExternalEncodings useEncoding);
+    CodeCvt<Character>                ConstructCodeCvt (const locale& l);
+    tuple<CodeCvt<Character>, size_t> ConstructCodeCvt (span<const byte> from);
 
 }
 

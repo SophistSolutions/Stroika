@@ -110,31 +110,31 @@ namespace Stroika::Foundation::Characters {
      ************************ Characters::ConstructCodeCvt **************************
      ********************************************************************************
      */
-    template <typename CHAR_T>
-    CodeCvt<CHAR_T> ConstructCodeCvt (UnicodeExternalEncodings useEncoding)
+    inline CodeCvt<Character> ConstructCodeCvt (UnicodeExternalEncodings useEncoding)
     {
         AssertNotReached ();
-        return *((CodeCvt<CHAR_T>*)nullptr); //tmphack - mostly use UTFConverer::kThe.AsCodeCvt - maybe thats it?
+        return *((CodeCvt<Character>*)nullptr); //tmphack - mostly use UTFConverer::kThe.AsCodeCvt - maybe thats it?
     }
-    template <typename CHAR_T>
-    CodeCvt<CHAR_T> ConstructCodeCvt (const locale& l)
+    inline CodeCvt<Character> ConstructCodeCvt (const locale& l)
     {
-        if constexpr (is_same_v<CHAR_T, wchar_t>) {
+        return *((CodeCvt<Character>*)nullptr); //tmphack - mostly use UTFConverer::kThe.AsCodeCvt - maybe thats it?
+#if 0
+        if constexpr (is_same_v <CHAR_T, wchar_t>) {
             return CodeCvt<wchar_t>{l}; // provided by std-c++ library
         }
         else {
             // must chain conversions
             return ConstructCodeCvt<CHAR_T> (UnicodeExternalEncodings::eUTF16); //tmphack
         }
+#endif
     }
-    template <typename CHAR_T>
-    tuple<CodeCvt<CHAR_T>, size_t> ConstructCodeCvt (span<const byte> from)
+    inline tuple<CodeCvt<Character>, size_t> ConstructCodeCvt (span<const byte> from)
     {
         if (optional<tuple<UnicodeExternalEncodings, size_t>> o = ReadByteOrderMark (from)) {
-            return make_tuple (ConstructCodeCvt<CHAR_T> (get<0> (*o)), get<1> (*o));
+            return make_tuple (ConstructCodeCvt (get<0> (*o)), get<1> (*o));
         }
         else {
-            return make_tuple (ConstructCodeCvt<CHAR_T> (UnicodeExternalEncodings::eDefault), 0);
+            return make_tuple (ConstructCodeCvt (UnicodeExternalEncodings::eDefault), 0);
         }
     }
 
