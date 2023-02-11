@@ -43,7 +43,7 @@ namespace {
             : fCodeCvt_{move (codeCvt)}
         {
         }
-        virtual result Bytes2Characters (MBState* state, span<const byte>* from, span<CHAR_T>* to) const override
+        virtual result Bytes2Characters (span<const byte>* from, span<CHAR_T>* to, MBState* state) const override
         {
             const extern_type* _First1 = reinterpret_cast<const extern_type*> (from->data ());
             const extern_type* _Last1  = _First1 + from->size ();
@@ -56,7 +56,7 @@ namespace {
             *to                        = to->subspan (0, _Mid2 - _First2); // point ACTUAL copied data
             return r;
         }
-        virtual result Characters2Bytes (MBState* state, span<const CHAR_T>* from, span<byte>* to) const override
+        virtual result Characters2Bytes (span<const CHAR_T>* from, span<byte>* to, MBState* state) const override
         {
             const CHAR_T* _First1 = from->data ();
             const CHAR_T* _Last1  = _First1 + from->size ();

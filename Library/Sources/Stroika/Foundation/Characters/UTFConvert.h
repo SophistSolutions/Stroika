@@ -264,6 +264,8 @@ namespace Stroika::Foundation::Characters {
          * 
          *  Source and target spans can be of any Character_Compatible character type (but source const and target non-const)
          * 
+         *  \req target.size () >= ComputeTargetBufferSize<TRG_T> (source)
+         * 
          *  \note, if given illegal UTF-8, or illegal ascii (Character_ASCII) source input, the function should (perhaps peramterized)
          *         detect the error and return ConversionStatusFlag::sourceIllegal (depending on Options::fStrictMode).
          *         // @todo RECONSIDER fStrictMode!!!

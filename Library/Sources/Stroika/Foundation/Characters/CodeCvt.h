@@ -114,7 +114,7 @@ namespace Stroika::Foundation::Characters {
          * 
          *  \see the docs on 'error results, and partial status/error code' above
          */
-        nonvirtual result Bytes2Characters (MBState* state, span<const byte>* from, span<CHAR_T>* to) const;
+        nonvirtual result Bytes2Characters (span<const byte>* from, span<CHAR_T>* to, MBState* state) const;
 
     public:
         /*
@@ -130,7 +130,7 @@ namespace Stroika::Foundation::Characters {
          * 
          *  \see the docs on 'error results, and partial status/error code' above
          */
-        nonvirtual result Characters2Bytes (MBState* state, span<const CHAR_T>* from, span<byte>* to) const;
+        nonvirtual result Characters2Bytes (span<const CHAR_T>* from, span<byte>* to, MBState* state) const;
 
     private:
         shared_ptr<IRep> fRep_;
@@ -139,8 +139,8 @@ namespace Stroika::Foundation::Characters {
     template <Character_IsUnicodeCodePoint CHAR_T>
     struct CodeCvt<CHAR_T>::IRep {
         virtual ~IRep ()                                                                                 = default;
-        virtual result Bytes2Characters (MBState* state, span<const byte>* from, span<CHAR_T>* to) const = 0;
-        virtual result Characters2Bytes (MBState* state, span<const CHAR_T>* from, span<byte>* to) const = 0;
+        virtual result Bytes2Characters (span<const byte>* from, span<CHAR_T>* to, MBState* state) const = 0;
+        virtual result Characters2Bytes (span<const CHAR_T>* from, span<byte>* to, MBState* state) const = 0;
     };
 
 }

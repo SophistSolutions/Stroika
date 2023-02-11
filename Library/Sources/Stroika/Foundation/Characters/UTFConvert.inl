@@ -364,10 +364,23 @@ namespace Stroika::Foundation::Characters {
     template <Character_IsUnicodeCodePoint CHAR_T, Character_IsUnicodeCodePoint SERIALIZED_CHAR_T>
     CodeCvt<CHAR_T> UTFConverter::AsCodeCvt ()
     {
-        // @todo handle NOCONV case - do we require not done, or just be quick and dirty (maybe diff rep for that)
-        // Probably dif rep - easy to support, and just check if sizeof in == size out
+        auto handleShortTargetBuffer = [] (const UTFConverter& utfcvt, auto from, auto to) {
+            // one mismatch between the UTFConverter apis and ConvertQuietly, is ConvertQuietly REQUIRES
+            // the data fit in targetbuf. Since there is no requirement to use up all the source text, just reduce source text size
+            // to fit (and you can avoid this performance loss by using a larger output buffer)
+            while (size_t requiredTargetBufSize = utfcvt.ComputeTargetBufferSize (*from) > to->size ()) {
+                // could be smarter leveraging requiredTargetBufSize, but KISS for now
+                if (from->empty ()) {
+                    *to = decltype (*to){}; // say nothing output, but no change to input
+                    return CodeCvt<CHAR_T>::partial;
+                }
+                *from = from->front (from->size () - 1); // shorten input til it fits safely (could be much faster if off by alot if we estimate and divide etc)
+            }
+            return CodeCvt<CHAR_T>::ok;
+        };
 
-        // , public Memory::BlockAllocationUseHelper<Rep_>
+        // @todo: nice to use public Memory::BlockAllocationUseHelper<Rep_>, Memory::MakeSharedPtr<Rep_> (*this);
+        // but the #include creates deadly embrace not worth solving now --LGP 2023-02-11
         struct Rep_ : CodeCvt<CHAR_T>::IRep {
             UTFConverter fCodeConverter_;
             using result      = typename CodeCvt<CHAR_T>::result;
@@ -377,22 +390,25 @@ namespace Stroika::Foundation::Characters {
                 : fCodeConverter_{utfCodeCvt}
             {
             }
-            virtual result Bytes2Characters (MBState* state, span<const extern_type>* from, span<CHAR_T>* to) const override
+            virtual result Bytes2Characters (span<const extern_type>* from, span<CHAR_T>* to, MBState* state) const override
             {
-                // NOTE - COULD use overload of ConvertQuietly that takes MBState, but that has very limited support.
-                // Better todo the mbstate magic here! and use the regular api
-                // first cut - ignore state!
-                ConversionResultWithStatus r = fCodeConverter_.ConvertQuietly (*from, *to);
+                RequireNotNull (state);
+                RequireNotNull (from);
+                RequireNotNull (to);
+                if (auto preflightResult = handleShortTargetBuffer (fCodeConverter_, from, to) != CodeCvt<CHAR_T>::ok) {
+                    return preflightResult; // HandleShortTargetBuffer_ patched from/to accordingly for the error
+                }
+                ConversionResultWithStatus r = fCodeConverter_.ConvertQuietly (*from, *to, state);
                 from                         = from->subspan (r.fSourceConsumed);  // point to remaining to use data - typically none
                 *to                          = to->subspan (0, r.fTargetProduced); // point ACTUAL copied data
                 return cvtR_ (r.fStatus);
             }
-            virtual result Characters2Bytes (MBState* state, span<const CHAR_T>* from, span<extern_type>* to) const override
+            virtual result Characters2Bytes (span<const CHAR_T>* from, span<extern_type>* to, MBState* state) const override
             {
-                // NOTE - COULD use overload of ConvertQuietly that takes MBState, but that has very limited support.
-                // Better todo the mbstate magic here! and use the regular api
-                // first cut - ignore state!
-                ConversionResultWithStatus r = fCodeConverter_.ConvertQuietly (*from, *to);
+                if (auto preflightResult = handleShortTargetBuffer (fCodeConverter_, from, to) != CodeCvt<CHAR_T>::ok) {
+                    return preflightResult; // HandleShortTargetBuffer_ patched from/to accordingly for the error
+                }
+                ConversionResultWithStatus r = fCodeConverter_.ConvertQuietly (*from, *to, state);
                 from                         = from->subspan (r.fSourceConsumed);  // point to remaining to use data - typically none
                 *to                          = to->subspan (0, r.fTargetProduced); // point ACTUAL copied data
                 return cvtR_ (r.fStatus);
@@ -409,7 +425,6 @@ namespace Stroika::Foundation::Characters {
                 }
             }
         };
-        //return Memory::MakeSharedPtr<Rep_> (*this);
         return make_shared<Rep_> (*this);
     }
 
