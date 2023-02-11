@@ -247,7 +247,7 @@ auto TextWriter::New (Execution::InternallySynchronized internallySynchronized, 
 {
     switch (internallySynchronized) {
         case Execution::eInternallySynchronized:
-            AssertNotImplemented ();
+            AssertNotImplemented (); // simple todo - just wrap and syncrhonize
             //return InternalSyncRep_::New ();
             return src;
         case Execution::eNotKnownInternallySynchronized:
@@ -261,7 +261,7 @@ auto TextWriter::New (Execution::InternallySynchronized internallySynchronized, 
 {
     switch (internallySynchronized) {
         case Execution::eInternallySynchronized:
-            AssertNotImplemented ();
+            AssertNotImplemented (); // simple todo - just wrap and syncrhonize
             //return InternalSyncRep_::New ();
             return Ptr{mk_ (src, format)};
         case Execution::eNotKnownInternallySynchronized:

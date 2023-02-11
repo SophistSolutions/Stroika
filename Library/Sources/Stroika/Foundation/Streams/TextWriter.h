@@ -6,7 +6,10 @@
 
 #include "../StroikaPreComp.h"
 
-#include "InternallySynchronizedOutputStream.h"
+#include "../Characters/CodeCvt.h"
+#include "../Characters/TextConvert.h"
+
+#include "InternallySynchronizedOutputStream.h" // no need to include once we remove deprecated references to this
 #include "OutputStream.h"
 
 /**
@@ -98,10 +101,14 @@ namespace Stroika::Foundation::Streams {
          *          textOut.Write ("Hello World\n");
          *      \endcode
          */
-        static Ptr New (const OutputStream<byte>::Ptr& src, Format format = Format::eUTF8);
+        static Ptr New (const OutputStream<byte>::Ptr& src, Format format = Format::eUTF8); // to be deprecated soon
+        static Ptr New (const OutputStream<byte>::Ptr& src, Characters::CodeCvt<Characters::Character>&& char2OutputConverter);
+        static Ptr New (const OutputStream<byte>::Ptr& src, Characters::UnicodeExternalEncodings e, bool includeBOM = true);
         static Ptr New (const OutputStream<Characters::Character>::Ptr& src);
-        static Ptr New (Execution::InternallySynchronized internallySynchronized, const OutputStream<byte>::Ptr& src, Format format = Format::eUTF8);
-        static Ptr New (Execution::InternallySynchronized internallySynchronized, const OutputStream<Characters::Character>::Ptr& src);
+        [[deprecated ("Since Stroka v3.0d1, just wrap in InternallySynchronizedOutputStream direclty if needed")]] static Ptr
+        New (Execution::InternallySynchronized internallySynchronized, const OutputStream<byte>::Ptr& src, Format format = Format::eUTF8);
+        [[deprecated ("Since Stroka v3.0d1, just wrap in InternallySynchronizedOutputStream direclty if needed")]] static Ptr
+        New (Execution::InternallySynchronized internallySynchronized, const OutputStream<Characters::Character>::Ptr& src);
 
     public:
         /**
@@ -109,10 +116,18 @@ namespace Stroika::Foundation::Streams {
         nonvirtual TextWriter& operator= (const TextWriter&) = delete;
 
     private:
+        // LEGACY - probably lose these
         class Seekable_UTF8_Rep_;
         class Seekable_WCharT_Rep_;
         class UnSeekable_UTF8_Rep_;
         class UnSeekable_WCharT_Rep_;
+
+    private:
+        class UnSeekable_CodeCvt_Rep_;
+
+    private:
+        template <Characters ::Character_UNICODECanUnambiguouslyConvertFrom OUTPUT_CHAR_T>
+        class UnSeekable_UTFConverter_Rep_;
 
     private:
         static shared_ptr<OutputStream<Characters::Character>::_IRep> mk_ (const OutputStream<byte>::Ptr& src, Format format);
