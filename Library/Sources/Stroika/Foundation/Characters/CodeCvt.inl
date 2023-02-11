@@ -48,22 +48,22 @@ namespace Stroika::Foundation::Characters {
     {
     }
     template <Character_IsUnicodeCodePoint CHAR_T>
-    inline auto CodeCvt<CHAR_T>::in (MBState* state, span<const byte>* from, span<CHAR_T>* to) const -> result
+    inline auto CodeCvt<CHAR_T>::Bytes2Characters (MBState* state, span<const byte>* from, span<CHAR_T>* to) const -> result
     {
         AssertNotNull (fRep_);
         RequireNotNull (state);
         RequireNotNull (from);
         RequireNotNull (to);
-        return fRep_->in (state, from, to);
+        return fRep_->Bytes2Characters (state, from, to);
     }
     template <Character_IsUnicodeCodePoint CHAR_T>
-    inline auto CodeCvt<CHAR_T>::out (MBState* state, span<const CHAR_T>* from, span<byte>* to) const -> result
+    inline auto CodeCvt<CHAR_T>::Characters2Bytes (MBState* state, span<const CHAR_T>* from, span<byte>* to) const -> result
     {
         AssertNotNull (fRep_);
         RequireNotNull (state);
         RequireNotNull (from);
         RequireNotNull (to);
-        return fRep_->out (state, from, to);
+        return fRep_->Characters2Bytes (state, from, to);
     }
 
 }

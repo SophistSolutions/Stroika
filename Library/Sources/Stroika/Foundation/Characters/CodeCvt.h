@@ -88,23 +88,31 @@ namespace Stroika::Foundation::Characters {
 
     public:
         /**
-         *  \brief like std::codecvt<>::in () - but with spans, and use ptr to be clear in/out
+         *  \brief convert span byte parameters to characters (like std::codecvt<>::in () - but with spans, and use ptr to be clear in/out)
          * 
          *  convert bytes 'from' to characters 'to'. Spans on input, src and target buffers. spans on output 
          *  are amount remaining to be used 'from' and amount actually filled into 'to'.
          *  state is used to carry forward incomplete conversions from one call to the next.
+         * 
+         *  \note we use the name 'Bytes' - because its suggestive of meaning, and in every case I'm aware of
+         *        the target type will be char, or char8_t, or byte. But its certainly not guaranteed to be serialized
+         *        to std::byte, and the codecvt API calls this extern_type
          */
-        nonvirtual result in (MBState* state, span<const byte>* from, span<CHAR_T>* to) const;
+        nonvirtual result Bytes2Characters (MBState* state, span<const byte>* from, span<CHAR_T>* to) const;
 
     public:
         /*
-         *  \brief like std::codecvt<>::out () - but with spans, and use ptr to be clear in/out
+         *  \brief convert span characerter parameters to a span of bytes (like std::codecvt<>::out () - but with spans, and use ptr to be clear in/out)
          * 
          *  convert characters 'from' to bytes 'to'. Spans on input, src and target buffers. spans on output 
          *  are amount remaining to be used 'from' and amount actually filled into 'to'.
          *  state is used to carry forward incomplete conversions from one call to the next.
-        */
-        nonvirtual result out (MBState* state, span<const CHAR_T>* from, span<byte>* to) const;
+         * 
+         *  \note we use the name 'Bytes' - because its suggestive of meaning, and in every case I'm aware of
+         *        the target type will be char, or char8_t, or byte. But its certainly not guaranteed to be serialized
+         *        to std::byte, and the codecvt API calls this extern_type
+         */
+        nonvirtual result Characters2Bytes (MBState* state, span<const CHAR_T>* from, span<byte>* to) const;
 
     private:
         shared_ptr<IRep> fRep_;
@@ -112,9 +120,9 @@ namespace Stroika::Foundation::Characters {
 
     template <Character_IsUnicodeCodePoint CHAR_T>
     struct CodeCvt<CHAR_T>::IRep {
-        virtual ~IRep ()                                                                    = default;
-        virtual result in (MBState* state, span<const byte>* from, span<CHAR_T>* to) const  = 0;
-        virtual result out (MBState* state, span<const CHAR_T>* from, span<byte>* to) const = 0;
+        virtual ~IRep ()                                                                                 = default;
+        virtual result Bytes2Characters (MBState* state, span<const byte>* from, span<CHAR_T>* to) const = 0;
+        virtual result Characters2Bytes (MBState* state, span<const CHAR_T>* from, span<byte>* to) const = 0;
     };
 
 }
