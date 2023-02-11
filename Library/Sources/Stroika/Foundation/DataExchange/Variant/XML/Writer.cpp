@@ -153,12 +153,12 @@ public:
     {
         if (fDocumentElementName_.empty ()) {
             Require (v.GetType () == VariantValue::eMap);
-            PrettyPrint_ (v, TextWriter::New (out, TextWriter::Format::eUTF8WithoutBOM), 0);
+            PrettyPrint_ (v, TextWriter::New (out, UnicodeExternalEncodings::eUTF8, ByteOrderMark::eDontInclude), 0);
         }
         else {
             Containers::Mapping<String, VariantValue> v2;
             v2.Add (fDocumentElementName_, v);
-            PrettyPrint_ (VariantValue{v2}, TextWriter::New (out, TextWriter::Format::eUTF8WithoutBOM), 0);
+            PrettyPrint_ (VariantValue{v2}, TextWriter::New (out, UnicodeExternalEncodings::eUTF8, ByteOrderMark::eDontInclude), 0);
         }
     }
     virtual void Write (const VariantValue& v, const Streams::OutputStream<Character>::Ptr& out) override

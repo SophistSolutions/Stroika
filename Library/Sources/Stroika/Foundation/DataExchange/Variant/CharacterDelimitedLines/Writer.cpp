@@ -37,7 +37,7 @@ public:
     virtual String GetDefaultFileSuffix () const override { return ".txt"sv; }
     virtual void   Write (const VariantValue& v, const OutputStream<byte>::Ptr& out) override
     {
-        Write (v, TextWriter::New (out, TextWriter::Format::eUTF8WithoutBOM));
+        Write (v, TextWriter::New (out, UnicodeExternalEncodings::eUTF8, ByteOrderMark::eDontInclude));
     }
     virtual void Write (const VariantValue& v, const OutputStream<Character>::Ptr& out) override
     {

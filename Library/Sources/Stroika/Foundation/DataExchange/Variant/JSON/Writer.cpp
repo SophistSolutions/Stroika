@@ -251,7 +251,7 @@ public:
     virtual String GetDefaultFileSuffix () const override { return ".json"sv; }
     virtual void   Write (const VariantValue& v, const Streams::OutputStream<byte>::Ptr& out) override
     {
-        TextWriter::Ptr textOut = TextWriter::New (out, TextWriter::Format::eUTF8WithoutBOM);
+        TextWriter::Ptr textOut = TextWriter::New (out, UnicodeExternalEncodings::eUTF8, ByteOrderMark::eDontInclude);
         PrettyPrint_ (fOptions_, v, textOut, 0);
         if (fOptions_.fJSONPrettyPrint) {
             textOut.Write ("\n"sv); // a single elt not LF terminated, but the entire doc should be.
