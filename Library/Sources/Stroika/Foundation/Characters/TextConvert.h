@@ -28,6 +28,7 @@ namespace Stroika::Foundation::Characters {
     using namespace std;
 
     /**
+     *  \brief list of external UNICODE character encodings, for file IO (eDefault = eUTF8)
      */
     enum class UnicodeExternalEncodings {
         eUTF7,
@@ -38,6 +39,8 @@ namespace Stroika::Foundation::Characters {
         eUTF32_BE,
         eUTF32_LE,
         eUTF32 = std::endian::native == std::endian::big ? eUTF32_BE : eUTF32_LE,
+
+        eDefault = eUTF8,
     };
 
     /**
@@ -60,29 +63,23 @@ namespace Stroika::Foundation::Characters {
     span<byte> WriteByteOrderMark (UnicodeExternalEncodings e, span<byte> into);
 
     /**
-     *  Construct codecvt<> object to allow converting of bytes into a UNICODE CHAR_T
+     *  Construct CodeCvt (codecvt<> like object) to allow converting of UNICODE CHAR_T to/from bytes, either taking argument UNICODE
+     *  encoding, or a locale (if not specified, the current locale).
      *
      *  One overload takes a UnicodeExternalEncodings saying what kind of converter to produce.
      *  One overload takes a locale, saying what kind of converter to produce.
      *  One overload takes an initial/partial span of initial text (at least 10 bytes a good idea)
      *  and the system will GUESS the format to use, and also return an indicate of how many (BOM) bytes
      *  skipped in the input.
+     * 
+     *  Note - when the guesses fail, this still returns a guess at CodeCvt<CHAR_T>.
      */
     template <typename CHAR_T>
-    CodeCvt<CHAR_T> ConstructCodeCvtToUnicode (UnicodeExternalEncodings useEncoding);
+    CodeCvt<CHAR_T> ConstructCodeCvt (UnicodeExternalEncodings useEncoding);
     template <typename CHAR_T>
-    tuple<CodeCvt<CHAR_T>, size_t> ConstructCodeCvtToUnicode (span<const byte> from);
+    CodeCvt<CHAR_T> ConstructCodeCvt (const locale& l);
     template <typename CHAR_T>
-    CodeCvt<CHAR_T> ConstructCodeCvtToUnicode (const locale& l);
-
-    /**
-     *  Construct CodeCvt (codecvt<> like object) to allow converting of UNICODE CHAR_T to/from bytes, either taking argument UNICODE
-     *  encoding, or a locale (if not specified, the current locale).
-     */
-    template <Character_UNICODECanAlwaysConvertTo CHAR_T>
-    CodeCvt<CHAR_T> ConstructCodeCvtUnicodeToBytes (UnicodeExternalEncodings e);
-    template <Character_UNICODECanAlwaysConvertTo CHAR_T>
-    CodeCvt<CHAR_T> ConstructCodeCvtUnicodeToBytes (const locale& l = locale{});
+    tuple<CodeCvt<CHAR_T>, size_t> ConstructCodeCvt (span<const byte> from);
 
 }
 

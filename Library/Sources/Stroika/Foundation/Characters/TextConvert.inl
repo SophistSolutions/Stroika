@@ -106,41 +106,35 @@ namespace Stroika::Foundation::Characters {
 
     /*
      ********************************************************************************
-     **************** Characters::ConstructCodeCvtToUnicode *************************
+     ************************ Characters::ConstructCodeCvt **************************
      ********************************************************************************
      */
     template <typename CHAR_T>
-    CodeCvt<CHAR_T> ConstructCodeCvtToUnicode (UnicodeExternalEncodings useEncoding)
+    CodeCvt<CHAR_T> ConstructCodeCvt (UnicodeExternalEncodings useEncoding)
     {
         AssertNotReached ();
-        return *((CodeCvt<CHAR_T>*)nullptr); //tmphack
+        return *((CodeCvt<CHAR_T>*)nullptr); //tmphack - mostly use UTFConverer::kThe.AsCodeCvt - maybe thats it?
     }
     template <typename CHAR_T>
-    tuple<CodeCvt<CHAR_T>, size_t> ConstructCodeCvtToUnicode (span<const byte> from)
+    CodeCvt<CHAR_T> ConstructCodeCvt (const locale& l)
     {
-        return make_tuple (ConstructCodeCvtToUnicode<CHAR_T> (UnicodeExternalEncodings::eUTF16), 1); //tmphack
+        if constexpr (is_same_v<CHAR_T, wchar_t>) {
+            return CodeCvt<wchar_t>{l}; // provided by std-c++ library
+        }
+        else {
+            // must chain conversions
+            return ConstructCodeCvt<CHAR_T> (UnicodeExternalEncodings::eUTF16); //tmphack
+        }
     }
     template <typename CHAR_T>
-    CodeCvt<CHAR_T> ConstructCodeCvtToUnicode (const locale& l)
+    tuple<CodeCvt<CHAR_T>, size_t> ConstructCodeCvt (span<const byte> from)
     {
-        return ConstructCodeCvtToUnicode<CHAR_T> (UnicodeExternalEncodings::eUTF16); //tmphack
-    }
-
-    /**
-     *  Construct CodeCvt (codecvt<> like object) to allow converting of UNICODE CHAR_T to/from bytes, either taking argument UNICODE
-     *  encoding, or a locale (if not specified, the current locale).
-     */
-    template <Character_UNICODECanAlwaysConvertTo CHAR_T>
-    CodeCvt<CHAR_T> ConstructCodeCvtUnicodeToBytes (UnicodeExternalEncodings e)
-    {
-        AssertNotReached ();
-        return *(CodeCvt<CHAR_T>*)nullptr; //tmphack
-    }
-    template <Character_UNICODECanAlwaysConvertTo CHAR_T>
-    CodeCvt<CHAR_T> ConstructCodeCvtUnicodeToBytes (const locale& l)
-    {
-        AssertNotReached ();
-        return *(CodeCvt<CHAR_T>*)nullptr; //tmphack
+        if (optional<tuple<UnicodeExternalEncodings, size_t>> o = ReadByteOrderMark (from)) {
+            return make_tuple (ConstructCodeCvt<CHAR_T> (get<0> (*o), get<1> (*o));
+        }
+        else {
+            return make_tuple (ConstructCodeCvt<CHAR_T> (UnicodeExternalEncodings::eDefault), 0);
+        }
     }
 
 }
