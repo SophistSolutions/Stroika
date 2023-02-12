@@ -6,6 +6,7 @@
 
 #include "../StroikaPreComp.h"
 
+#include <bit>
 #include <locale>
 #include <optional>
 #include <span>
@@ -14,12 +15,28 @@
 
 /**
  *  \file
- *      Simple wrapper on std::codecvt, with a few enhancements
+ *      Simple wrapper on std::codecvt, abstracting commonalities between this and UTFConverter, to map characters <--> bytes
  */
 
 namespace Stroika::Foundation::Characters {
 
     using namespace std;
+
+    /**
+     *  \brief list of external UNICODE character encodings, for file IO (eDefault = eUTF8)
+     */
+    enum class UnicodeExternalEncodings {
+        eUTF7,
+        eUTF8,
+        eUTF16_BE,
+        eUTF16_LE,
+        eUTF16 = std::endian::native == std::endian::big ? eUTF16_BE : eUTF16_LE,
+        eUTF32_BE,
+        eUTF32_LE,
+        eUTF32 = std::endian::native == std::endian::big ? eUTF32_BE : eUTF32_LE,
+
+        eDefault = eUTF8,
+    };
 
     /*
      *  \brief CodeCvt unifies byte<-> unicode conversions, vaguely inspired by (and wraps) std::codecvt, as well as UTFConverter etc, to map between 'bytes' and a UNICODE code-point span
@@ -28,12 +45,12 @@ namespace Stroika::Foundation::Characters {
      *      o   You can subclass (provide your own codecvt implementation) and copy 'codecvt' objects.
      *          (unless I'm missing something, you can do one or the other with std::codecvt, but not both)
      *      o   Simpler backend virtual API, so easier to create your own compliant CodeCvt object.
-     *          o   Stroika leverages these two things in UTFConverter, using differnt library backends to do
+     *          o   Stroika leverages these two things in UTFConverter, using different library backends to do
      *              the code conversion, hopefully enuf faster to make up for the virtual call overhead this
      *              class introduces.
      *      o   Dont bother templating on MBSTATE, nor output byte type (std::covert supports all the useless
      *          ones but misses the most useful, at least for fileIO, binary IO)
-     *      o   lots of templated combinations dont make sense and dont work and there is no hint/validation
+     *      o   lots of templated combinations (codecvt) dont make sense and dont work and there is no hint/validation
      *          clarity about which you can use/make sense and which you cannot with std::codecvt. Hopefully
      *          this class will make more sense.
      *          It can be used to convert (abstract API) between ANY combination of 'target hidden in implementation'
@@ -53,11 +70,8 @@ namespace Stroika::Foundation::Characters {
      *  And: 
      *      o   All the existing codecvt objects (which map to/from UNICODE) can easily be wrapped in a CodeCvt
      *
-     *  Mostly, you can think of CodeCvt as an 'abstract class' in that only for some CHAR_T types
+     *  CodeCvt as smart Ptr class, and an 'abstract class' (IRep) in that only for some CHAR_T types
      *  can it be instantiated direcly (the ones std c++ supports, char_16_t, char32_t, and wchar_t with locale).
-     * 
-     *  But it also can be thought of as a smart pointer class, to underlying 'reps' - which can make generic
-     *  the functionality in UTFConverter, and std::codecvt.
      */
     template <Character_UNICODECanAlwaysConvertTo CHAR_T>
     class CodeCvt {
@@ -97,11 +111,16 @@ namespace Stroika::Foundation::Characters {
          *      CodeCvt<wchar_t>{locale}    -   std::codecvt<wchar_t, char, std::mbstate_t>
          * 
          *  To get OTHER conversions, say between char16_t, and char32_t, you must use UTFConverter::AsCodeCvt ().
+         *      CodeCvt<CHAR_T>{UnicodeExternalEncodings}               -   Uses UTFConverter, along with any needed byte swapping
+         *      CodeCvt<CHAR_T>{const CodeCvt<OTHER_CHAR_T> basedOn}    -   Use this to combine CodeCvt's (helpful for locale one)
          */
         CodeCvt ()
             requires (is_same_v<CHAR_T, char16_t> or is_same_v<CHAR_T, char32_t>);
         CodeCvt (const locale& = locale{})
             requires (is_same_v<CHAR_T, wchar_t>);
+        CodeCvt (UnicodeExternalEncodings e);
+        template <Character_UNICODECanAlwaysConvertTo OTHER_CHAR_T>
+        CodeCvt (const CodeCvt<OTHER_CHAR_T> basedOn);
         CodeCvt (const shared_ptr<IRep>& rep);
 
     public:
@@ -138,6 +157,10 @@ namespace Stroika::Foundation::Characters {
 
     private:
         shared_ptr<IRep> fRep_;
+
+    private:
+        template <typename SERIALIZED_CHAR_T>
+        struct UTFConvertRep_;
     };
 
     template <Character_UNICODECanAlwaysConvertTo CHAR_T>

@@ -177,7 +177,7 @@ namespace Stroika::Foundation::Streams {
         if (bom == Characters::ByteOrderMark::eInclude) {
             src.Write (Characters::GetByteOrderMark (e));
         }
-        // handle a few common cases more efficiently, without vectoring through CodeCvt<>
+        // handle a few common cases more efficiently, without vectoring through CodeCvt<> (which has an extra level of indirection)
         switch (e) {
             case Characters::UnicodeExternalEncodings::eUTF8:
                 return TextWriter::Ptr{make_shared<UnSeekable_UTFConverter_Rep_<char8_t>> (src)};

@@ -75,11 +75,11 @@ namespace {
 
 /*
  ********************************************************************************
- ******************** Characters::Private_::mk_UNICODECodeCvt_ ******************
+ ******************** Characters::Private_::mk_StdCodeCvtRep_ *******************
  ********************************************************************************
  */
 template <>
-shared_ptr<CodeCvt<char16_t>::IRep> Characters::Private_::mk_UNICODECodeCvt_<char16_t> ()
+shared_ptr<CodeCvt<char16_t>::IRep> Characters::Private_::mk_StdCodeCvtRep_<char16_t> ()
 {
     using CODE_CVT              = codecvt<char16_t, char8_t, std::mbstate_t>;
     using D_CODE_CVT            = deletable_facet_<CODE_CVT>;
@@ -87,7 +87,7 @@ shared_ptr<CodeCvt<char16_t>::IRep> Characters::Private_::mk_UNICODECodeCvt_<cha
     return Memory::MakeSharedPtr<BASIC_UNICODE_WRAPPER> (make_unique<D_CODE_CVT> ());
 }
 template <>
-shared_ptr<CodeCvt<char32_t>::IRep> Characters::Private_::mk_UNICODECodeCvt_<char32_t> ()
+shared_ptr<CodeCvt<char32_t>::IRep> Characters::Private_::mk_StdCodeCvtRep_<char32_t> ()
 {
     using CODE_CVT              = codecvt<char32_t, char8_t, std::mbstate_t>;
     using D_CODE_CVT            = deletable_facet_<CODE_CVT>;
@@ -95,7 +95,7 @@ shared_ptr<CodeCvt<char32_t>::IRep> Characters::Private_::mk_UNICODECodeCvt_<cha
     return Memory::MakeSharedPtr<BASIC_UNICODE_WRAPPER> (make_unique<D_CODE_CVT> ());
 }
 template <>
-shared_ptr<CodeCvt<wchar_t>::IRep> Characters::Private_::mk_UNICODECodeCvt_<wchar_t> (const locale& l)
+shared_ptr<CodeCvt<wchar_t>::IRep> Characters::Private_::mk_StdCodeCvtRep_<wchar_t> (const locale& l)
 {
     using CODE_CVT              = codecvt_byname<wchar_t, char, mbstate_t>;
     using D_CODE_CVT            = deletable_facet_<CODE_CVT>;

@@ -6,7 +6,6 @@
 
 #include "../StroikaPreComp.h"
 
-#include <bit>
 #include <optional>
 #include <span>
 
@@ -26,22 +25,6 @@
 namespace Stroika::Foundation::Characters {
 
     using namespace std;
-
-    /**
-     *  \brief list of external UNICODE character encodings, for file IO (eDefault = eUTF8)
-     */
-    enum class UnicodeExternalEncodings {
-        eUTF7,
-        eUTF8,
-        eUTF16_BE,
-        eUTF16_LE,
-        eUTF16 = std::endian::native == std::endian::big ? eUTF16_BE : eUTF16_LE,
-        eUTF32_BE,
-        eUTF32_LE,
-        eUTF32 = std::endian::native == std::endian::big ? eUTF32_BE : eUTF32_LE,
-
-        eDefault = eUTF8,
-    };
 
     /**
      *  \flag used to indicate if ByteOrderMark should be included (in other Stroika modules).
@@ -81,6 +64,10 @@ namespace Stroika::Foundation::Characters {
      *  skipped in the input.
      * 
      *  Note - when the guesses fail, this still returns a guess at CodeCvt<CHAR_T>.
+     * 
+     * 
+     * 
+     * &&& @todo PROBABLY LOSE THESE... - CodeCvt does fine by itself...
      */
     CodeCvt<Character>                ConstructCodeCvt (UnicodeExternalEncodings useEncoding);
     CodeCvt<Character>                ConstructCodeCvt (const locale& l);
