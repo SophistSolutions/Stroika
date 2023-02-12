@@ -6,6 +6,8 @@
 
 #include "../StroikaPreComp.h"
 
+#include <span>
+
 #include "../Configuration/Common.h"
 #include "../Configuration/Concepts.h"
 #include "../Configuration/TypeHints.h"
@@ -131,6 +133,8 @@ namespace Stroika::Foundation::Memory {
         InlineBuffer (InlineBuffer&& src);
         template <typename ITERATOR_OF_T, enable_if_t<Configuration::IsIterator_v<ITERATOR_OF_T>, char>* = nullptr>
         InlineBuffer (ITERATOR_OF_T start, ITERATOR_OF_T end);
+        template <SpanOfT<T> SPAN_T>
+        InlineBuffer (const SPAN_T& copyFrom);
         ~InlineBuffer ();
 
     public:

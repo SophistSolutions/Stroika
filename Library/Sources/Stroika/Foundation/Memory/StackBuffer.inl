@@ -70,6 +70,18 @@ namespace Stroika::Foundation::Memory {
         Invariant ();
     }
     template <typename T, size_t BUF_SIZE>
+    template <SpanOfT<T> SPAN_T>
+    inline StackBuffer<T, BUF_SIZE>::StackBuffer (SPAN_T copyFrom)
+        : StackBuffer{}
+    {
+        if (not this->HasEnoughCapacity_ (copyFrom.size ())) [[unlikely]] {
+            reserve (copyFrom.size (), true); // reserve not resize() so we can do uninitialized_copy (avoid constructing empty objects to be assigned over)
+        }
+        uninitialized_copy (copyFrom.begin (), copyFrom.end (), this->begin ());
+        fSize_ = copyFrom.size ();
+        Invariant ();
+    }
+    template <typename T, size_t BUF_SIZE>
     inline StackBuffer<T, BUF_SIZE>::~StackBuffer ()
     {
         Invariant ();

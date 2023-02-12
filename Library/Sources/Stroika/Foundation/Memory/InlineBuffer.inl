@@ -66,6 +66,18 @@ namespace Stroika::Foundation::Memory {
         Invariant ();
     }
     template <typename T, size_t BUF_SIZE>
+    template <SpanOfT<T> SPAN_T>
+    inline InlineBuffer<T, BUF_SIZE>::InlineBuffer (const SPAN_T& copyFrom)
+        : InlineBuffer{}
+    {
+        if (not this->HasEnoughCapacity_ (copyFrom.size ())) [[unlikely]] {
+            reserve (copyFrom.size (), true); // reserve not resize() so we can do uninitialized_copy (avoid constructing empty objects to be assigned over)
+        }
+        uninitialized_copy (copyFrom.begin (), copyFrom.end (), this->begin ());
+        fSize_ = copyFrom.size ();
+        Invariant ();
+    }
+    template <typename T, size_t BUF_SIZE>
     template <size_t FROM_BUF_SIZE>
     inline InlineBuffer<T, BUF_SIZE>::InlineBuffer (const InlineBuffer<T, FROM_BUF_SIZE>& src)
         : InlineBuffer{src.begin (), src.end ()}
