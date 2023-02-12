@@ -29,18 +29,16 @@ namespace Stroika::Foundation::Characters {
 
     template <Character_UNICODECanAlwaysConvertTo CHAR_T>
     template <typename SERIALIZED_CHAR_T>
-    struct CodeCvt<CHAR_T>::UTFConvertRep_ : CodeCvt<Character>::IRep {
-        UTFConverter fCodeConverter_;
-        using result                     = typename CodeCvt<Character>::result;
-        using MBState                    = typename CodeCvt<Character>::MBState;
+    struct CodeCvt<CHAR_T>::UTFConvertRep_ : CodeCvt<CHAR_T>::IRep {
+        using result                     = typename CodeCvt<CHAR_T>::result;
+        using MBState                    = typename CodeCvt<CHAR_T>::MBState;
         using ConversionResultWithStatus = UTFConverter::ConversionResultWithStatus;
         using ConversionStatusFlag       = UTFConverter::ConversionStatusFlag;
-
         UTFConvertRep_ (const UTFConverter& utfCodeCvt)
             : fCodeConverter_{utfCodeCvt}
         {
         }
-        virtual result Bytes2Characters (span<const byte>* from, span<Character>* to, MBState* state) const override
+        virtual result Bytes2Characters (span<const byte>* from, span<CHAR_T>* to, MBState* state) const override
         {
             RequireNotNull (state);
             RequireNotNull (from);
@@ -51,21 +49,21 @@ namespace Stroika::Foundation::Characters {
                                                          from->size () / sizeof (SERIALIZED_CHAR_T)};
             Assert (serializedFrom.size_bytes () <= from->size ()); // note - serializedFrom could be smaller than from in bytespan
 
-            auto handleShortTargetBuffer = [&] (span<const SERIALIZED_CHAR_T>* from, span<Character>* to) {
+            auto handleShortTargetBuffer = [&] (span<const SERIALIZED_CHAR_T>* from, span<CHAR_T>* to) {
                 // one mismatch between the UTFConverter apis and ConvertQuietly, is ConvertQuietly REQUIRES
                 // the data fit in targetbuf. Since there is no requirement to use up all the source text, just reduce source text size
                 // to fit (and you can avoid this performance loss by using a larger output buffer)
-                while (size_t requiredTargetBufSize = fCodeConverter_.ComputeTargetBufferSize<Character> (*from) > to->size ()) {
+                while (size_t requiredTargetBufSize = fCodeConverter_.ComputeTargetBufferSize<CHAR_T> (*from) > to->size ()) {
                     // could be smarter leveraging requiredTargetBufSize, but KISS for now
                     if (from->empty ()) {
-                        *to = span<Character>{}; // say nothing output, but no change to input
-                        return CodeCvt<Character>::partial;
+                        *to = span<CHAR_T>{}; // say nothing output, but no change to input
+                        return CodeCvt<CHAR_T>::partial;
                     }
                     *from = from->subspan (0, from->size () - 1); // shorten input til it fits safely (could be much faster if off by alot if we estimate and divide etc)
                 }
-                return CodeCvt<Character>::ok;
+                return CodeCvt<CHAR_T>::ok;
             };
-            if (auto preflightResult = handleShortTargetBuffer (&serializedFrom, to) != CodeCvt<Character>::ok) {
+            if (auto preflightResult = handleShortTargetBuffer (&serializedFrom, to) != CodeCvt<CHAR_T>::ok) {
                 return preflightResult; // HandleShortTargetBuffer_ patched from/to accordingly for the error
             }
             ConversionResultWithStatus r = fCodeConverter_.ConvertQuietly (serializedFrom, *to, state);
@@ -73,7 +71,7 @@ namespace Stroika::Foundation::Characters {
             *to   = to->subspan (0, r.fTargetProduced);                    // point ACTUAL copied data
             return cvtR_ (r.fStatus);
         }
-        virtual result Characters2Bytes (span<const Character>* from, span<byte>* to, MBState* state) const override
+        virtual result Characters2Bytes (span<const CHAR_T>* from, span<byte>* to, MBState* state) const override
         {
             RequireNotNull (state);
             RequireNotNull (from);
@@ -83,7 +81,7 @@ namespace Stroika::Foundation::Characters {
             span<SERIALIZED_CHAR_T> serializedTo{reinterpret_cast<SERIALIZED_CHAR_T*> (to->data ()), to->size () / sizeof (SERIALIZED_CHAR_T)};
             Assert (serializedTo.size_bytes () <= to->size ()); // note - serializedTo could be smaller than to in bytespan
 
-            auto handleShortTargetBuffer = [&] (span<const Character>* from, span<SERIALIZED_CHAR_T>* to) {
+            auto handleShortTargetBuffer = [&] (span<const CHAR_T>* from, span<SERIALIZED_CHAR_T>* to) {
                 // one mismatch between the UTFConverter apis and ConvertQuietly, is ConvertQuietly REQUIRES
                 // the data fit in targetbuf. Since there is no requirement to use up all the source text, just reduce source text size
                 // to fit (and you can avoid this performance loss by using a larger output buffer)
@@ -91,13 +89,13 @@ namespace Stroika::Foundation::Characters {
                     // could be smarter leveraging requiredTargetBufSize, but KISS for now
                     if (from->empty ()) {
                         *to = span<SERIALIZED_CHAR_T>{}; // say nothing output, but no change to input
-                        return CodeCvt<Character>::partial;
+                        return CodeCvt<CHAR_T>::partial;
                     }
                     *from = from->subspan (0, from->size () - 1); // shorten input til it fits safely (could be much faster if off by alot if we estimate and divide etc)
                 }
-                return CodeCvt<Character>::ok;
+                return CodeCvt<CHAR_T>::ok;
             };
-            if (auto preflightResult = handleShortTargetBuffer (from, &serializedTo) != CodeCvt<Character>::ok) {
+            if (auto preflightResult = handleShortTargetBuffer (from, &serializedTo) != CodeCvt<CHAR_T>::ok) {
                 return preflightResult; // HandleShortTargetBuffer_ patched from/to accordingly for the error
             }
             ConversionResultWithStatus r = fCodeConverter_.ConvertQuietly (*from, serializedTo, state);
@@ -109,16 +107,17 @@ namespace Stroika::Foundation::Characters {
         {
             switch (status) {
                 case ConversionStatusFlag::ok:
-                    return CodeCvt<Character>::ok;
+                    return CodeCvt<CHAR_T>::ok;
                 case ConversionStatusFlag::sourceExhausted:
-                    return CodeCvt<Character>::partial;
+                    return CodeCvt<CHAR_T>::partial;
                 case ConversionStatusFlag::sourceIllegal:
-                    return CodeCvt<Character>::error;
+                    return CodeCvt<CHAR_T>::error;
                 default:
                     AssertNotReached ();
-                    return CodeCvt<Character>::error;
+                    return CodeCvt<CHAR_T>::error;
             }
         }
+        UTFConverter fCodeConverter_;
     };
 
     /*
