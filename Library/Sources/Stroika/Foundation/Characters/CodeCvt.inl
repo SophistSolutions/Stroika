@@ -10,6 +10,8 @@
  ********************************************************************************
  */
 
+#include <bit>
+
 #include "UTFConvert.h"
 
 namespace Stroika::Foundation::Characters {
@@ -127,6 +129,59 @@ namespace Stroika::Foundation::Characters {
 
     /*
      ********************************************************************************
+     ***************** CodeCvt<CHAR_T>::UTFConvertSwappedRep_ ***********************
+     ********************************************************************************
+     */
+    template <Character_UNICODECanAlwaysConvertTo CHAR_T>
+    template <typename SERIALIZED_CHAR_T>
+    struct CodeCvt<CHAR_T>::UTFConvertSwappedRep_ : CodeCvt<CHAR_T>::UTFConvertRep_<SERIALIZED_CHAR_T> {
+        using result    = typename CodeCvt<CHAR_T>::result;
+        using MBState   = typename CodeCvt<CHAR_T>::MBState;
+        using inherited = UTFConvertRep_<SERIALIZED_CHAR_T>;
+
+        UTFConvertSwappedRep_ (const UTFConverter& utfCodeCvt)
+            : inherited{utfCodeCvt}
+        {
+        }
+        virtual result Bytes2Characters (span<const byte>* from, span<CHAR_T>* to, MBState* state) const override
+        {
+            RequireNotNull (state);
+            RequireNotNull (from);
+            RequireNotNull (to);
+            auto r = inherited::Bytes2Characters (from, to, state);
+            for (CHAR_T& i : *to) {
+                if constexpr (is_same_v<CHAR_T, Character>) {
+                    i = Character{byteswap (i.As<char32_t> ())};
+                }
+                else {
+                    i = byteswap (i);
+                }
+            }
+            return r;
+        }
+        virtual result Characters2Bytes (span<const CHAR_T>* from, span<byte>* to, MBState* state) const override
+        {
+            RequireNotNull (state);
+            RequireNotNull (from);
+            RequireNotNull (to);
+            Memory::StackBuffer<CHAR_T> buf{*from};
+            for (CHAR_T& i : buf) {
+                if constexpr (is_same_v<CHAR_T, Character>) {
+                    i = Character{byteswap (i.As<char32_t> ())};
+                }
+                else {
+                    i = byteswap (i);
+                }
+            }
+            auto useFrom = span<const CHAR_T>{buf.begin (), buf.size ()};
+            auto r       = Characters2Bytes (&useFrom, to, state);
+            *from        = from->subspan (0, useFrom.size ());
+            return r;
+        }
+    };
+
+    /*
+     ********************************************************************************
      *********************** CodeCvt<CHAR_T>::UTF2UTFRep_ ***************************
      ********************************************************************************
      */
@@ -236,14 +291,26 @@ namespace Stroika::Foundation::Characters {
             case UnicodeExternalEncodings::eUTF8:
                 fRep_ = make_shared<UTFConvertRep_<char8_t>> (UTFConverter::kThe);
                 break;
-            case UnicodeExternalEncodings::eUTF16:
-                fRep_ = make_shared<UTFConvertRep_<char16_t>> (UTFConverter::kThe);
+            case UnicodeExternalEncodings::eUTF16_BE:
+            case UnicodeExternalEncodings::eUTF16_LE:
+                if (e == UnicodeExternalEncodings::eUTF16) {
+                    fRep_ = make_shared<UTFConvertRep_<char16_t>> (UTFConverter::kThe);
+                }
+                else {
+                    fRep_ = make_shared<UTFConvertSwappedRep_<char16_t>> (UTFConverter::kThe);
+                }
                 break;
-            case UnicodeExternalEncodings::eUTF32:
-                fRep_ = make_shared<UTFConvertRep_<char32_t>> (UTFConverter::kThe);
+            case UnicodeExternalEncodings::eUTF32_BE:
+            case UnicodeExternalEncodings::eUTF32_LE:
+                if (e == UnicodeExternalEncodings::eUTF32) {
+                    fRep_ = make_shared<UTFConvertRep_<char32_t>> (UTFConverter::kThe);
+                }
+                else {
+                    fRep_ = make_shared<UTFConvertSwappedRep_<char32_t>> (UTFConverter::kThe);
+                }
                 break;
+
             // @todo UTF7 (maybe good enuf there to -- not ure - codecvt, or JIRA defer)
-            // @todo byte swappers
             default:
                 AssertNotImplemented ();
         }

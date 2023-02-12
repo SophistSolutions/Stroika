@@ -105,21 +105,6 @@ namespace Stroika::Foundation::Characters {
         return into.subspan (bom.size ());
     }
 
-    /*
-     ********************************************************************************
-     ************************ Characters::ConstructCodeCvt **************************
-     ********************************************************************************
-     */
-    inline tuple<CodeCvt<Character>, size_t> ConstructCodeCvt (span<const byte> from)
-    {
-        if (optional<tuple<UnicodeExternalEncodings, size_t>> o = ReadByteOrderMark (from)) {
-            return make_tuple (Characters::CodeCvt<Character> (get<0> (*o)), get<1> (*o));
-        }
-        else {
-            return make_tuple (Characters::CodeCvt<Character> (UnicodeExternalEncodings::eDefault), 0);
-        }
-    }
-
 }
 
 #endif /*_Stroika_Foundation_Characters_TextConvert_inl_*/

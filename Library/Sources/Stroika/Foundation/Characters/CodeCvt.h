@@ -168,6 +168,10 @@ namespace Stroika::Foundation::Characters {
         struct UTFConvertRep_;
 
     private:
+        template <typename SERIALIZED_CHAR_T>
+        struct UTFConvertSwappedRep_;
+
+    private:
         template <typename OTHER_CHAR_T>
         struct UTF2UTFRep_;
     };

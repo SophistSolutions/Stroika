@@ -9,11 +9,6 @@
 #include <optional>
 #include <span>
 
-#include "../Configuration/Endian.h"
-
-#include "CodeCvt.h"
-#include "UTFConvert.h"
-
 /**
  *  \file
  *      Wrappers and extensions to the CodeCvt/std::codecvt<> logic. Often when reading/writing files (or a series of bytes)
@@ -42,6 +37,17 @@ namespace Stroika::Foundation::Characters {
     /**
      *  returns guessed encoding, and number of bytes consumed. If 'd' doesn't contain
      *  BOM (possible cuz not large enuf) - returns nullopt
+     * 
+     *  \par Example Usage:
+     *      \code
+     *          span<const byte> from = argument;
+     *          if (optional<tuple<UnicodeExternalEncodings, size_t>> o = ReadByteOrderMark (from)) {
+     *              return make_tuple (Characters::CodeCvt<Character> (get<0> (*o)), get<1> (*o));
+     *          }
+     *          else {
+     *              return make_tuple (Characters::CodeCvt<Character> (UnicodeExternalEncodings::eDefault), 0);
+     *          }
+     *      \endcode
      */
     constexpr optional<tuple<UnicodeExternalEncodings, size_t>> ReadByteOrderMark (span<const byte> d) noexcept;
 
@@ -52,24 +58,6 @@ namespace Stroika::Foundation::Characters {
      *  so caller can continue writing
      */
     span<byte> WriteByteOrderMark (UnicodeExternalEncodings e, span<byte> into);
-
-    /**
-     *  Construct CodeCvt (codecvt<> like object) to allow converting of UNICODE CHAR_T to/from bytes, either taking argument UNICODE
-     *  encoding, or a locale (if not specified, the current locale).
-     *
-     *  One overload takes a UnicodeExternalEncodings saying what kind of converter to produce.
-     *  One overload takes a locale, saying what kind of converter to produce.
-     *  One overload takes an initial/partial span of initial text (at least 10 bytes a good idea)
-     *  and the system will GUESS the format to use, and also return an indicate of how many (BOM) bytes
-     *  skipped in the input.
-     * 
-     *  Note - when the guesses fail, this still returns a guess at CodeCvt<CHAR_T>.
-     * 
-     * 
-     * 
-     * &&& @todo PROBABLY LOSE THESE... - CodeCvt does fine by itself...
-     */
-    tuple<CodeCvt<Character>, size_t> ConstructCodeCvt (span<const byte> from);
 
 }
 
