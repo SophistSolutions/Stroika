@@ -47,7 +47,7 @@ namespace Stroika::Foundation::Memory {
      */
     template <typename SPAN_T, typename T>
     concept SpanOfT = is_convertible_v<remove_cvref_t<SPAN_T>, span<T>> or is_convertible_v<remove_cvref_t<SPAN_T>, span<const T>>;
-    static_assert (SpanOfT<span<int>, int> and SpanOfT<span<const int>, int> and SpanOfT<span<const int, 3>, int> and not  SpanOfT<span<int>, char>);
+    static_assert (SpanOfT<span<int>, int> and SpanOfT<span<const int>, int> and SpanOfT<span<const int, 3>, int> and not SpanOfT<span<int>, char>);
 
     /**
      * \brief return true iff intersection of the two spans is non-empty
