@@ -134,7 +134,7 @@ namespace Stroika::Foundation::Characters {
      */
     template <Character_UNICODECanAlwaysConvertTo CHAR_T>
     template <typename SERIALIZED_CHAR_T>
-    struct CodeCvt<CHAR_T>::UTFConvertSwappedRep_ : CodeCvt<CHAR_T>::UTFConvertRep_<SERIALIZED_CHAR_T> {
+    struct CodeCvt<CHAR_T>::UTFConvertSwappedRep_ : UTFConvertRep_<SERIALIZED_CHAR_T> {
         using result    = typename CodeCvt<CHAR_T>::result;
         using MBState   = typename CodeCvt<CHAR_T>::MBState;
         using inherited = UTFConvertRep_<SERIALIZED_CHAR_T>;
