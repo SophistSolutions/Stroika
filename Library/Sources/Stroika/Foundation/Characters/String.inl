@@ -286,15 +286,10 @@ namespace Stroika::Foundation::Characters {
         RequireNotNull (cString);
         _AssertRepValidType ();
     }
-    template <Character_Compatible CHAR_T>
-    inline String::String (span<const CHAR_T> s)
-        : inherited{mk_ (span<const CHAR_T>{s})}
-    {
-        _AssertRepValidType ();
-    }
-    template <Character_Compatible CHAR_T>
-    inline String::String (span<CHAR_T> s)
-        : inherited{mk_ (Memory::ConstSpan (s))}
+    template <Memory::IsSpanT SPAN_OF_CHAR_T>
+    inline String::String (SPAN_OF_CHAR_T s)
+        requires (Character_Compatible<typename SPAN_OF_CHAR_T::value_type>)
+        : inherited{mk_ (span<const typename SPAN_OF_CHAR_T::value_type>{s})}
     {
         _AssertRepValidType ();
     }
@@ -305,6 +300,7 @@ namespace Stroika::Foundation::Characters {
     }
     template <Character_UNICODECanAlwaysConvertTo CHAR_T>
     inline String::String (const Iterable<CHAR_T>& src)
+        requires (not Memory::IsSpanT<CHAR_T>)
         : inherited{mk_ (src)}
     {
     }
