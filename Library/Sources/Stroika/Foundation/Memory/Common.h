@@ -8,6 +8,9 @@
 
 #include <memory>
 #include <span>
+#if !qCompilerAndStdLib_stdlib_ranges_pretty_broken_Buggy
+#include <ranges>
+#endif
 
 #include "../Configuration/Common.h"
 
@@ -140,6 +143,15 @@ namespace Stroika::Foundation::Memory {
         template< class T >
         constexpr T byteswap( T n ) noexcept
         {
+ static_assert(std::has_unique_object_representations_v<T>, 
+                  "T may not have padding bits");
+    auto value_representation = std::bit_cast<std::array<std::byte, sizeof(T)>>(n);
+    #if qCompilerAndStdLib_stdlib_ranges_pretty_broken_Buggy
+    #else
+    std::ranges::views::reverse(value_representation);
+    #endif
+    return std::bit_cast<T>(value_representation);
+    #if 0
             if constexpr (sizeof (T) == 1) {
                 return n;
             }
@@ -162,6 +174,7 @@ namespace Stroika::Foundation::Memory {
                 std::swap (na[0], na[1]);
                 return n;
             }
+            #endif
         }
     #endif
 }
