@@ -134,6 +134,36 @@ namespace Stroika::Foundation::Memory {
      */
     constexpr std::byte operator""_b (unsigned long long b);
 
+    #if __cpp_lib_byteswap>= 202110L
+    using std::byteswap;
+    #else
+        template< class T >
+        constexpr T byteswap( T n ) noexcept
+        {
+            if constexpr (sizeof (T) == 1) {
+                return n;
+            }
+            else if constexpr (sizeof (T) == 2) {
+                 uint8_t* na = reinterpret_cast< uint8_t*> (&n);
+                std::swap (na[0], na[1]);
+                return n;
+            }
+            else if constexpr (sizeof (T) == 4) {
+                 uint16_t* na = reinterpret_cast< uint16_t*> (&n);
+                 na[0] = byteswap (na[0]);
+                 na[1] = byteswap (na[1]);
+                std::swap (na[0], na[1]);
+                return n;
+            }
+            else if constexpr (sizeof (T) == 8) {
+                 uint32_t* na = reinterpret_cast< uint32_t*> (&n);
+                 na[0] = byteswap (na[0]);
+                 na[1] = byteswap (na[1]);
+                std::swap (na[0], na[1]);
+                return n;
+            }
+        }
+    #endif
 }
 
 /*

@@ -151,10 +151,10 @@ namespace Stroika::Foundation::Characters {
             auto r = inherited::Bytes2Characters (from, to, state);
             for (CHAR_T& i : *to) {
                 if constexpr (is_same_v<CHAR_T, Character>) {
-                    i = Character{byteswap (i.template As<char32_t> ())};
+                    i = Character{Memory::byteswap (i.template As<char32_t> ())};
                 }
                 else {
-                    i = byteswap (i);
+                    i = Memory::byteswap (i);
                 }
             }
             return r;
@@ -167,10 +167,10 @@ namespace Stroika::Foundation::Characters {
             Memory::StackBuffer<CHAR_T> buf{*from};
             for (CHAR_T& i : buf) {
                 if constexpr (is_same_v<CHAR_T, Character>) {
-                    i = Character{byteswap (i.template As<char32_t> ())};
+                    i = Character{Memory::byteswap (i.template As<char32_t> ())};
                 }
                 else {
-                    i = byteswap (i);
+                    i = Memory::byteswap (i);
                 }
             }
             auto useFrom = span<const CHAR_T>{buf.begin (), buf.size ()};
