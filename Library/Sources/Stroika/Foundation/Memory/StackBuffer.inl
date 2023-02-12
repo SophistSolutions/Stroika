@@ -70,7 +70,7 @@ namespace Stroika::Foundation::Memory {
         Invariant ();
     }
     template <typename T, size_t BUF_SIZE>
-    template <SpanOfT<T> SPAN_T>
+    template <IsSpanOfT<T> SPAN_T>
     inline StackBuffer<T, BUF_SIZE>::StackBuffer (SPAN_T copyFrom)
         : StackBuffer{}
     {
