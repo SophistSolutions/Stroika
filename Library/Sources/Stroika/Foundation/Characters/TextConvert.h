@@ -69,8 +69,6 @@ namespace Stroika::Foundation::Characters {
      * 
      * &&& @todo PROBABLY LOSE THESE... - CodeCvt does fine by itself...
      */
-    CodeCvt<Character>                ConstructCodeCvt (UnicodeExternalEncodings useEncoding);
-    CodeCvt<Character>                ConstructCodeCvt (const locale& l);
     tuple<CodeCvt<Character>, size_t> ConstructCodeCvt (span<const byte> from);
 
 }

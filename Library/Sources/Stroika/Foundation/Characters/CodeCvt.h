@@ -116,14 +116,13 @@ namespace Stroika::Foundation::Characters {
          *      CodeCvt<char32_t>{}         -   std::codecvt<char32_t, char8_t, std::mbstate_t>
          *      CodeCvt<wchar_t>{locale}    -   std::codecvt<wchar_t, char, std::mbstate_t>
          * 
-         *  To get OTHER conversions, say between char16_t, and char32_t, you must use UTFConverter::AsCodeCvt ().
+         *  To get OTHER conversions, say between char16_t, and char32_t:
          *      CodeCvt<CHAR_T>{UnicodeExternalEncodings}               -   Uses UTFConverter, along with any needed byte swapping
          *      CodeCvt<CHAR_T>{const CodeCvt<OTHER_CHAR_T> basedOn}    -   Use this to combine CodeCvt's (helpful for locale one)
          */
         CodeCvt ()
             requires (is_same_v<CHAR_T, char16_t> or is_same_v<CHAR_T, char32_t>);
-        CodeCvt (const locale& = locale{})
-            requires (is_same_v<CHAR_T, wchar_t>);
+        CodeCvt (const locale& = locale{});
         CodeCvt (UnicodeExternalEncodings e);
         template <Character_UNICODECanAlwaysConvertTo OTHER_CHAR_T>
         CodeCvt (const CodeCvt<OTHER_CHAR_T>& basedOn);

@@ -110,28 +110,13 @@ namespace Stroika::Foundation::Characters {
      ************************ Characters::ConstructCodeCvt **************************
      ********************************************************************************
      */
-
-    inline CodeCvt<Character> ConstructCodeCvt (UnicodeExternalEncodings useEncoding) { return CodeCvt<Character>{useEncoding}; }
-    inline CodeCvt<Character> ConstructCodeCvt (const locale& l)
-    {
-        return *((CodeCvt<Character>*)nullptr); //tmphack - mostly use UTFConverer::kThe.AsCodeCvt - maybe thats it?
-#if 0
-        if constexpr (is_same_v <CHAR_T, wchar_t>) {
-            return CodeCvt<wchar_t>{l}; // provided by std-c++ library
-        }
-        else {
-            // must chain conversions
-            return ConstructCodeCvt<CHAR_T> (UnicodeExternalEncodings::eUTF16); //tmphack
-        }
-#endif
-    }
     inline tuple<CodeCvt<Character>, size_t> ConstructCodeCvt (span<const byte> from)
     {
         if (optional<tuple<UnicodeExternalEncodings, size_t>> o = ReadByteOrderMark (from)) {
-            return make_tuple (ConstructCodeCvt (get<0> (*o)), get<1> (*o));
+            return make_tuple (Characters::CodeCvt<Character> (get<0> (*o)), get<1> (*o));
         }
         else {
-            return make_tuple (ConstructCodeCvt (UnicodeExternalEncodings::eDefault), 0);
+            return make_tuple (Characters::CodeCvt<Character> (UnicodeExternalEncodings::eDefault), 0);
         }
     }
 

@@ -132,7 +132,7 @@ namespace Stroika::Foundation::Characters {
      */
     template <Character_UNICODECanAlwaysConvertTo CHAR_T>
     template <typename OTHER_CHAR_T>
-        struct CodeCvt<CHAR_T>::UTF2UTFRep_ : CodeCvt<CHAR_T>::IRep {
+    struct CodeCvt<CHAR_T>::UTF2UTFRep_ : CodeCvt<CHAR_T>::IRep {
         using result                     = typename CodeCvt<CHAR_T>::result;
         using MBState                    = typename CodeCvt<CHAR_T>::MBState;
         using ConversionResultWithStatus = UTFConverter::ConversionResultWithStatus;
@@ -140,7 +140,7 @@ namespace Stroika::Foundation::Characters {
         static_assert (sizeof (CHAR_T) != sizeof (OTHER_CHAR_T)); // use another rep for that case
         UTF2UTFRep_ (const CodeCvt<OTHER_CHAR_T>& origCodeCvt, const UTFConverter& secondStep)
             : fOrigCodeCvt_{origCodeCvt}
-            ,fCodeConverter_{secondStep}
+            , fCodeConverter_{secondStep}
         {
         }
         virtual result Bytes2Characters (span<const byte>* from, span<CHAR_T>* to, MBState* state) const override
@@ -151,10 +151,10 @@ namespace Stroika::Foundation::Characters {
 
             // @todo INADEQUATE - FIRST DRAFT
 
-            span<const byte> startFrom = *from;
+            span<const byte>                  startFrom = *from;
             Memory::StackBuffer<OTHER_CHAR_T> intermediateBuf{1024}; // wrong size
             span<const OTHER_CHAR_T>          intermediateSpan   = span<OTHER_CHAR_T>{intermediateBuf.data (), intermediateBuf.size ()};
-            result intermediateResult = fOrigCodeCvt_.Bytes2Characters (&startFrom, &intermediateSpan, state);
+            result                            intermediateResult = fOrigCodeCvt_.Bytes2Characters (&startFrom, &intermediateSpan, state);
             if (intermediateResult != ok) {
                 *from = startFrom;
                 *to   = span<CHAR_T>{}; // nothing
@@ -187,7 +187,7 @@ namespace Stroika::Foundation::Characters {
             Memory::StackBuffer<OTHER_CHAR_T> intermediateBuf{fCodeConverter_.ComputeTargetBufferSize<OTHER_CHAR_T> (*from)};
             span<OTHER_CHAR_T>                intermediateSpan =
                 fCodeConverter_.Convert (*from, span<OTHER_CHAR_T>{intermediateBuf.data (), intermediateBuf.size ()});
-            
+
             result r = fOrigCodeCvt_.Characters2Bytes (&intermediateBuf, to, state);
             if (r == CodeCvt<CHAR_T>::ok) {
                 // to has been updated
@@ -197,13 +197,12 @@ namespace Stroika::Foundation::Characters {
             }
             else {
                 AssertNotImplemented ();
-                 return CodeCvt<CHAR_T>::error;            
+                return CodeCvt<CHAR_T>::error;
             }
         }
         CodeCvt<OTHER_CHAR_T> fOrigCodeCvt_;
-        UTFConverter fCodeConverter_;
+        UTFConverter          fCodeConverter_;
     };
-
 
     /*
      ********************************************************************************
@@ -218,9 +217,16 @@ namespace Stroika::Foundation::Characters {
     }
     template <Character_UNICODECanAlwaysConvertTo CHAR_T>
     inline CodeCvt<CHAR_T>::CodeCvt (const locale& l)
-        requires (is_same_v<CHAR_T, wchar_t>)
-        : fRep_{Private_::mk_StdCodeCvtRep_<CHAR_T> (l)}
     {
+        if constexpr (is_same_v<CHAR_T, wchar_t>) {
+            fRep_ = Private_::mk_StdCodeCvtRep_<wchar_t> (l);
+        }
+        else if constexpr (sizeof (CHAR_T) == sizeof (wchar_t)) {
+            fRep_ = reinterpret_pointer_cast<IRep> (Private_::mk_StdCodeCvtRep_<wchar_t> (l));
+        }
+        else {
+            fRep_ = make_shared<UTF2UTFRep_<wchar_t>> (Private_::mk_StdCodeCvtRep_<wchar_t> (l));
+        }
     }
     template <Character_UNICODECanAlwaysConvertTo CHAR_T>
     inline CodeCvt<CHAR_T>::CodeCvt (UnicodeExternalEncodings e)
@@ -236,6 +242,8 @@ namespace Stroika::Foundation::Characters {
             case UnicodeExternalEncodings::eUTF32:
                 fRep_ = make_shared<UTFConvertRep_<char32_t>> (UTFConverter::kThe);
                 break;
+            // @todo UTF7 (maybe good enuf there to -- not ure - codecvt, or JIRA defer)
+            // @todo byte swappers
             default:
                 AssertNotImplemented ();
         }
