@@ -825,9 +825,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\TextToByteReader.cpp">
       <Filter>Sources\Streams</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\TextConvert.cpp">
-      <Filter>Sources\Characters</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\CodeCvt.cpp">
       <Filter>Sources\Characters</Filter>
     </ClCompile>
@@ -3480,9 +3477,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\Streams\StreamReader.inl">
       <Filter>Sources\Streams</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Characters\UTFConvert.inl">
-      <Filter>Sources\Characters</Filter>
-    </None>
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Mapping_stdhashmap.inl">
       <Filter>Sources\Containers\Concrete</Filter>
     </None>
@@ -3500,6 +3494,9 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Characters\CodeCvt.inl">
       <Filter>Sources\Characters</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Characters\UTFConvert.inl">
+      <Filter>Sources\Common</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

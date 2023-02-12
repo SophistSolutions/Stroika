@@ -27,7 +27,6 @@ Objs	=	\
 	$(ObjDir)RegularExpression${OBJ_SUFFIX}\
 	$(ObjDir)String${OBJ_SUFFIX}\
 	$(ObjDir)String2Int${OBJ_SUFFIX}\
-	$(ObjDir)TextConvert${OBJ_SUFFIX}\
 	$(ObjDir)ToString${OBJ_SUFFIX}\
 	$(ObjDir)UTFConvert${OBJ_SUFFIX}\
 
