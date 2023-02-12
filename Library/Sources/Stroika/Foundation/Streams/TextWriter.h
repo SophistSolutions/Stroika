@@ -71,6 +71,8 @@ namespace Stroika::Foundation::Streams {
 
     public:
         DISABLE_COMPILER_MSC_WARNING_START (4996); // DEPRECATED
+        DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
+        DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
         enum class [[deprecated ("Since Stroka v3.0d1, use UnicodeExternalEncodings overload")]] Format : uint8_t{
             eUTF8WithBOM = 1,   eUTF8WithoutBOM = 2,   eUTF8 = eUTF8WithBOM,
             eWCharTWithBOM = 3, eWCharTWithoutBOM = 4, eWCharT = eWCharTWithBOM,
@@ -82,6 +84,8 @@ namespace Stroika::Foundation::Streams {
         [[deprecated ("Since Stroka v3.0d1, just wrap in InternallySynchronizedOutputStream direclty if needed")]] static Ptr
         New (Execution::InternallySynchronized internallySynchronized, const OutputStream<Character>::Ptr& src);
         DISABLE_COMPILER_MSC_WARNING_END (4996); // DEPRECATED
+        DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
+        DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
 
     public:
         /**

@@ -68,7 +68,7 @@ namespace Stroika::Foundation::Characters {
                 }
                 return CodeCvt<CHAR_T>::ok;
             };
-            if (auto preflightResult = handleShortTargetBuffer (&serializedFrom, to) != CodeCvt<CHAR_T>::ok) {
+            if (auto preflightResult = handleShortTargetBuffer (&serializedFrom, to); preflightResult != CodeCvt<CHAR_T>::ok) {
                 return preflightResult; // HandleShortTargetBuffer_ patched from/to accordingly for the error
             }
             ConversionResultWithStatus r = fCodeConverter_.ConvertQuietly (serializedFrom, *to, state);
@@ -100,7 +100,7 @@ namespace Stroika::Foundation::Characters {
                 }
                 return CodeCvt<CHAR_T>::ok;
             };
-            if (auto preflightResult = handleShortTargetBuffer (from, &serializedTo) != CodeCvt<CHAR_T>::ok) {
+            if (auto preflightResult = handleShortTargetBuffer (from, &serializedTo); preflightResult != CodeCvt<CHAR_T>::ok) {
                 return preflightResult; // HandleShortTargetBuffer_ patched from/to accordingly for the error
             }
             ConversionResultWithStatus r = fCodeConverter_.ConvertQuietly (*from, serializedTo, state);
@@ -172,7 +172,7 @@ namespace Stroika::Foundation::Characters {
             else {
                 // world of hurt...
                 AssertNotImplemented ();
-                return 1;
+                return CodeCvt<CHAR_T>::error;
             }
         }
         virtual result Characters2Bytes (span<const CHAR_T>* from, span<byte>* to, MBState* state) const override
@@ -188,16 +188,16 @@ namespace Stroika::Foundation::Characters {
             span<OTHER_CHAR_T>                intermediateSpan =
                 fCodeConverter_.Convert (*from, span<OTHER_CHAR_T>{intermediateBuf.data (), intermediateBuf.size ()});
             
-            result = fOrigCodeCvt_.Characters2Bytes (&intermediateBuf, to, state);
-            if (result == CodeCvt<CHAR_T>::ok) {
+            result r = fOrigCodeCvt_.Characters2Bytes (&intermediateBuf, to, state);
+            if (r == CodeCvt<CHAR_T>::ok) {
                 // to has been updated
                 // must fix from - in this case, we appear to have used all of from
                 *from = span<const CHAR_T>{};
-                return result;
+                return r;
             }
             else {
                 AssertNotImplemented ();
-                return 1;                
+                 return CodeCvt<CHAR_T>::error;            
             }
         }
         CodeCvt<OTHER_CHAR_T> fOrigCodeCvt_;
