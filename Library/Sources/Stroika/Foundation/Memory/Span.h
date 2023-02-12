@@ -27,6 +27,13 @@ namespace Stroika::Foundation::Memory {
     constexpr std::span<const T, EXTENT> ConstSpan (std::span<T, EXTENT> s);
 
     /**
+    * @todo RESPOND TO See https://stackoverflow.com/questions/62688814/stdspanconst-t-as-parameter-in-function-template
+    * POINT THIS SOLUTION OUT
+     */
+    template <typename SPAN_T, typename T>
+    concept SpanOfT = is_same_v<remove_cvref_t<SPAN_T>, span<T>> or is_same_v<remove_cvref_t<SPAN_T>, span<const T>>;
+
+    /**
      * \brief return true iff intersection of the two spans is non-empty
      * 
      *  The only known use for this is assertions in CopySpanData that the spans don't overlap (memcpy vs memmove)
