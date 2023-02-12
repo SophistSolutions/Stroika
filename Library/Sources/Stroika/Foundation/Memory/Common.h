@@ -8,9 +8,6 @@
 
 #include <memory>
 #include <span>
-#if !qCompilerAndStdLib_stdlib_ranges_pretty_broken_Buggy
-#include <ranges>
-#endif
 
 #include "../Configuration/Common.h"
 
@@ -137,21 +134,38 @@ namespace Stroika::Foundation::Memory {
      */
     constexpr std::byte operator""_b (unsigned long long b);
 
-    #if __cpp_lib_byteswap>= 202110L
-    using std::byteswap;
+    // clang liblib on macos missing this in xcode 14
+    #if __cpp_lib_bit_cast >= 201806L
+    using std::bit_cast;
     #else
-        template< class T >
-        constexpr T byteswap( T n ) noexcept
-        {
- static_assert(std::has_unique_object_representations_v<T>, 
-                  "T may not have padding bits");
-    auto value_representation = std::bit_cast<std::array<std::byte, sizeof(T)>>(n);
-    #if qCompilerAndStdLib_stdlib_ranges_pretty_broken_Buggy
-    #else
-    std::ranges::views::reverse(value_representation);
+    template <class To, class From>
+    std::enable_if_t<sizeof (To) == sizeof (From) && std::is_trivially_copyable_v<From> && std::is_trivially_copyable_v<To>, To>
+    // constexpr support needs compiler magic
+    bit_cast (const From& src) noexcept
+    {
+        static_assert (std::is_trivially_constructible_v<To>, "This implementation additionally requires "
+                                                              "destination type to be trivially constructible");
+
+        To dst;
+        std::memcpy (&dst, &src, sizeof (To));
+        return dst;
+    }
     #endif
-    return std::bit_cast<T>(value_representation);
-    #if 0
+
+#if __cpp_lib_byteswap >= 202110L
+    using std::byteswap;
+#else
+    template <class T>
+    constexpr T byteswap (T n) noexcept
+    {
+        using std::byte;
+        static_assert (std::has_unique_object_representations_v<T>, "T may not have padding bits");
+        auto value_representation = std::bit_cast<array<byte, sizeof (T)>> (n);
+        for (size_t i = 0; i < value_representation.size ()/2; ++i) {
+            swap (value_representation[i], value_representation[value_representation.size () - i]);
+        }
+        return bit_cast<T> (value_representation);
+#if 0
             if constexpr (sizeof (T) == 1) {
                 return n;
             }
@@ -174,9 +188,9 @@ namespace Stroika::Foundation::Memory {
                 std::swap (na[0], na[1]);
                 return n;
             }
-            #endif
-        }
-    #endif
+#endif
+    }
+#endif
 }
 
 /*
