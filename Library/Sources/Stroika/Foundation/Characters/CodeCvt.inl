@@ -27,6 +27,11 @@ namespace Stroika::Foundation::Characters {
         shared_ptr<CodeCvt<wchar_t>::IRep> mk_StdCodeCvtRep_<wchar_t> (const locale& l);
     }
 
+    /*
+     ********************************************************************************
+     ******************** CodeCvt<CHAR_T>::UTFConvertRep_ ***************************
+     ********************************************************************************
+     */
     template <Character_UNICODECanAlwaysConvertTo CHAR_T>
     template <typename SERIALIZED_CHAR_T>
     struct CodeCvt<CHAR_T>::UTFConvertRep_ : CodeCvt<CHAR_T>::IRep {
@@ -122,6 +127,86 @@ namespace Stroika::Foundation::Characters {
 
     /*
      ********************************************************************************
+     *********************** CodeCvt<CHAR_T>::UTF2UTFRep_ ***************************
+     ********************************************************************************
+     */
+    template <Character_UNICODECanAlwaysConvertTo CHAR_T>
+    template <typename OTHER_CHAR_T>
+        struct CodeCvt<CHAR_T>::UTF2UTFRep_ : CodeCvt<CHAR_T>::IRep {
+        using result                     = typename CodeCvt<CHAR_T>::result;
+        using MBState                    = typename CodeCvt<CHAR_T>::MBState;
+        using ConversionResultWithStatus = UTFConverter::ConversionResultWithStatus;
+        using ConversionStatusFlag       = UTFConverter::ConversionStatusFlag;
+        static_assert (sizeof (CHAR_T) != sizeof (OTHER_CHAR_T)); // use another rep for that case
+        UTF2UTFRep_ (const CodeCvt<OTHER_CHAR_T>& origCodeCvt, const UTFConverter& secondStep)
+            : fOrigCodeCvt_{origCodeCvt}
+            ,fCodeConverter_{secondStep}
+        {
+        }
+        virtual result Bytes2Characters (span<const byte>* from, span<CHAR_T>* to, MBState* state) const override
+        {
+            RequireNotNull (state);
+            RequireNotNull (from);
+            RequireNotNull (to);
+
+            // @todo INADEQUATE - FIRST DRAFT
+
+            span<const byte> startFrom = *from;
+            Memory::StackBuffer<OTHER_CHAR_T> intermediateBuf{1024}; // wrong size
+            span<const OTHER_CHAR_T>          intermediateSpan   = span<OTHER_CHAR_T>{intermediateBuf.data (), intermediateBuf.size ()};
+            result intermediateResult = fOrigCodeCvt_.Bytes2Characters (&startFrom, &intermediateSpan, state);
+            if (intermediateResult != ok) {
+                *from = startFrom;
+                *to   = span<CHAR_T>{}; // nothing
+                return intermediateResult;
+            }
+            // OK - now use fCodeConverter_ to perform the last step
+
+            // @todo something like handleShortTargetBuffer - to handle that case - but trickier
+
+            if (fCodeConverter_.ComputeTargetBufferSize<CHAR_T> (intermediateBuf) <= to->size ()) {
+                // efficient, map directly
+                *to = fCodeConverter_.ConvertSpan (intermediateBuf, *to);
+                return ok;
+            }
+            else {
+                // world of hurt...
+                AssertNotImplemented ();
+                return 1;
+            }
+        }
+        virtual result Characters2Bytes (span<const CHAR_T>* from, span<byte>* to, MBState* state) const override
+        {
+            RequireNotNull (state);
+            RequireNotNull (from);
+            RequireNotNull (to);
+
+            // @todo INADEQUATE - FIRST DRAFT
+
+            // first translate to something usable by fOrigCodeCvt_
+            Memory::StackBuffer<OTHER_CHAR_T> intermediateBuf{fCodeConverter_.ComputeTargetBufferSize<OTHER_CHAR_T> (*from)};
+            span<OTHER_CHAR_T>                intermediateSpan =
+                fCodeConverter_.Convert (*from, span<OTHER_CHAR_T>{intermediateBuf.data (), intermediateBuf.size ()});
+            
+            result = fOrigCodeCvt_.Characters2Bytes (&intermediateBuf, to, state);
+            if (result == CodeCvt<CHAR_T>::ok) {
+                // to has been updated
+                // must fix from - in this case, we appear to have used all of from
+                *from = span<const CHAR_T>{};
+                return result;
+            }
+            else {
+                AssertNotImplemented ();
+                return 1;                
+            }
+        }
+        CodeCvt<OTHER_CHAR_T> fOrigCodeCvt_;
+        UTFConverter fCodeConverter_;
+    };
+
+
+    /*
+     ********************************************************************************
      ******************************* CodeCvt<CHAR_T> ********************************
      ********************************************************************************
      */
@@ -154,6 +239,12 @@ namespace Stroika::Foundation::Characters {
             default:
                 AssertNotImplemented ();
         }
+    }
+    template <Character_UNICODECanAlwaysConvertTo CHAR_T>
+    template <Character_UNICODECanAlwaysConvertTo OTHER_CHAR_T>
+    inline CodeCvt<CHAR_T>::CodeCvt (const CodeCvt<OTHER_CHAR_T>& basedOn)
+        : fRep_{make_shared<UTF2UTFRep_<OTHER_CHAR_T>> (basedOn)}
+    {
     }
     template <Character_UNICODECanAlwaysConvertTo CHAR_T>
     inline CodeCvt<CHAR_T>::CodeCvt (const shared_ptr<IRep>& rep)

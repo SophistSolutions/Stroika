@@ -72,6 +72,12 @@ namespace Stroika::Foundation::Characters {
      *
      *  CodeCvt as smart Ptr class, and an 'abstract class' (IRep) in that only for some CHAR_T types
      *  can it be instantiated direcly (the ones std c++ supports, char_16_t, char32_t, and wchar_t with locale).
+     * 
+     *  \note About Target Buffer Sizes:
+     *        Unlike UTFConverter, CodeCvt allows an undersized target buff (RECONSIDER IF GOOD IDEA).
+     *        That causes TONS of problem.
+     *        MUCH more complex code.
+     *        But upshot - dont do this - always give enuf target buffer, to at least avoid performance penalties
      */
     template <Character_UNICODECanAlwaysConvertTo CHAR_T>
     class CodeCvt {
@@ -120,7 +126,7 @@ namespace Stroika::Foundation::Characters {
             requires (is_same_v<CHAR_T, wchar_t>);
         CodeCvt (UnicodeExternalEncodings e);
         template <Character_UNICODECanAlwaysConvertTo OTHER_CHAR_T>
-        CodeCvt (const CodeCvt<OTHER_CHAR_T> basedOn);
+        CodeCvt (const CodeCvt<OTHER_CHAR_T>& basedOn);
         CodeCvt (const shared_ptr<IRep>& rep);
 
     public:
@@ -161,6 +167,10 @@ namespace Stroika::Foundation::Characters {
     private:
         template <typename SERIALIZED_CHAR_T>
         struct UTFConvertRep_;
+
+    private:
+        template <typename OTHER_CHAR_T>
+        struct UTF2UTFRep_;
     };
 
     template <Character_UNICODECanAlwaysConvertTo CHAR_T>
