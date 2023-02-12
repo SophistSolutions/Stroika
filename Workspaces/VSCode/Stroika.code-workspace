@@ -138,7 +138,8 @@
 			"latch": "cpp",
 			"execution": "cpp",
 			"stop_token": "cpp",
-			"syncstream": "cpp"
+			"syncstream": "cpp",
+			"version": "cpp"
 		},
 		"git.ignoreLimitWarning": true,
 		"files.watcherExclude": {
