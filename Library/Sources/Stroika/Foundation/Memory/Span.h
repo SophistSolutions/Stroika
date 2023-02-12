@@ -27,11 +27,27 @@ namespace Stroika::Foundation::Memory {
     constexpr std::span<const T, EXTENT> ConstSpan (std::span<T, EXTENT> s);
 
     /**
-    * @todo RESPOND TO See https://stackoverflow.com/questions/62688814/stdspanconst-t-as-parameter-in-function-template
-    * POINT THIS SOLUTION OUT
+     *  \brief use SpanOfT<T> as a concept declaration for parameters where you want a span, but accept either T or const T
+     * 
+     *  Sadly, if I declare a function
+     *      f (span<int>) {}
+     *  and try to call it with:
+     *      f (span<const int>{}) - that fails, whereas I think, considering the logic/intent, it probably should work.
+     * 
+     *  Anyhow, replacing the f declaration with the (almost as clear);
+     *      template <SpanOfT<int> SPAN_OF_T>
+     *      f (SPAN_OF_T) {}
+     * 
+     *  fixes the problem.
+     * 
+     *  \note Aliases:
+     *      SpanOfPossiblyConstT - but name just too long (though might be clearer).
+     * 
+     *  \see https://stackoverflow.com/questions/62688814/stdspanconst-t-as-parameter-in-function-template
      */
     template <typename SPAN_T, typename T>
-    concept SpanOfT = is_same_v<remove_cvref_t<SPAN_T>, span<T>> or is_same_v<remove_cvref_t<SPAN_T>, span<const T>>;
+    concept SpanOfT = is_convertible_v<remove_cvref_t<SPAN_T>, span<T>> or is_convertible_v<remove_cvref_t<SPAN_T>, span<const T>>;
+    static_assert (SpanOfT<span<int>, int> and SpanOfT<span<const int>, int> and SpanOfT<span<const int, 3>, int> and not  SpanOfT<span<int>, char>);
 
     /**
      * \brief return true iff intersection of the two spans is non-empty
