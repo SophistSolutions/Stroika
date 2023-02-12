@@ -41,6 +41,9 @@ namespace Stroika::Foundation::Characters {
      *          supported by stdc++ (and a little more). To get other combinations, you must use subclass.
      *      o   'equivilent' character types automatically supported (e.g wchar_t == char16 or char32, and
      *          Character==char32_t).
+     *      o   No explicit 'external_type' exposed. Just bytes go in and out vs (CHAR_T) UNICODE characters.
+     *          This erasure of the 'encoding' type from the CodeCvt<CHAR_T> allows it to be used generically
+     *          where its hidden in the 'rep' what kind of encoding is used.
      * 
      *  Enhancements over UTFConverter:
      *      o   Supports translating from/to locale encodings (e.g. SHIFT_JIS, or whatever).
@@ -62,7 +65,6 @@ namespace Stroika::Foundation::Characters {
         using MBState = std::mbstate_t; // may need to enhance this MBState at this level of API to handle wchar_t locale stuff
 
         using intern_type = CHAR_T; // what codecvt calls the character type
-        using extern_type = byte;   // what codecvt calls the binary format
 
     public:
         /*
