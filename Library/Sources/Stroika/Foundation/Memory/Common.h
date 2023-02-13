@@ -160,7 +160,7 @@ namespace Stroika::Foundation::Memory {
     {
         using std::byte;
         static_assert (std::has_unique_object_representations_v<T>, "T may not have padding bits");
-        auto value_representation = std::bit_cast<array<byte, sizeof (T)>> (n);
+        auto value_representation = bit_cast<array<byte, sizeof (T)>> (n);
         for (size_t i = 0; i < value_representation.size () / 2; ++i) {
             swap (value_representation[i], value_representation[value_representation.size () - i]);
         }
