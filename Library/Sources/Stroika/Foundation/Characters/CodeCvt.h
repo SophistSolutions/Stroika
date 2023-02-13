@@ -94,8 +94,6 @@ namespace Stroika::Foundation::Characters {
     template <Character_UNICODECanAlwaysConvertTo CHAR_T>
     class CodeCvt {
     public:
-        using MBState = std::mbstate_t; // may need to enhance this MBState at this level of API to handle wchar_t locale stuff
-
         using intern_type = CHAR_T; // what codecvt calls the character type
 
     public:
@@ -172,7 +170,7 @@ namespace Stroika::Foundation::Characters {
          * 
          *  \see the docs on 'error results, and partial status/error code' above
          */
-        nonvirtual result Bytes2Characters (span<const byte>* from, span<CHAR_T>* to, MBState* state) const;
+        nonvirtual result Bytes2Characters (span<const byte>* from, span<CHAR_T>* to, mbstate_t* state) const;
 
     public:
         /*
@@ -188,7 +186,7 @@ namespace Stroika::Foundation::Characters {
          * 
          *  \see the docs on 'error results, and partial status/error code' above
          */
-        nonvirtual result Characters2Bytes (span<const CHAR_T>* from, span<byte>* to, MBState* state) const;
+        nonvirtual result Characters2Bytes (span<const CHAR_T>* from, span<byte>* to, mbstate_t* state) const;
 
     private:
         shared_ptr<IRep> fRep_;
@@ -213,9 +211,9 @@ namespace Stroika::Foundation::Characters {
 
     template <Character_UNICODECanAlwaysConvertTo CHAR_T>
     struct CodeCvt<CHAR_T>::IRep {
-        virtual ~IRep ()                                                                                 = default;
-        virtual result Bytes2Characters (span<const byte>* from, span<CHAR_T>* to, MBState* state) const = 0;
-        virtual result Characters2Bytes (span<const CHAR_T>* from, span<byte>* to, MBState* state) const = 0;
+        virtual ~IRep ()                                                                                   = default;
+        virtual result Bytes2Characters (span<const byte>* from, span<CHAR_T>* to, mbstate_t* state) const = 0;
+        virtual result Characters2Bytes (span<const CHAR_T>* from, span<byte>* to, mbstate_t* state) const = 0;
     };
 
 }
