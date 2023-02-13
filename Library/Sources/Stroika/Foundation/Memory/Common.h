@@ -141,7 +141,7 @@ namespace Stroika::Foundation::Memory {
     using std::bit_cast;
 #else
     template <class To, class From>
-    std::enable_if_t<sizeof (To) == sizeof (From) && std::is_trivially_copyable_v<From> && std::is_trivially_copyable_v<To>, To> bit_cast (const From& src) noexcept
+    inline std::enable_if_t<sizeof (To) == sizeof (From) && std::is_trivially_copyable_v<From> && std::is_trivially_copyable_v<To>, To> bit_cast (const From& src) noexcept
     {
         static_assert (std::is_trivially_constructible_v<To>, "This implementation additionally requires "
                                                               "destination type to be trivially constructible");
@@ -158,7 +158,7 @@ namespace Stroika::Foundation::Memory {
     using std::byteswap;
 #else
     template <class T>
-    constexpr T byteswap (T n) noexcept
+    inline T byteswap (T n) noexcept
     {
         using std::byte;
         static_assert (std::has_unique_object_representations_v<T>, "T may not have padding bits");
