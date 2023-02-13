@@ -75,9 +75,9 @@ namespace Stroika::Foundation::Characters {
      *          where its hidden in the 'rep' what kind of encoding is used.
      * 
      *  Enhancements over UTFConverter:
-     *      o   Supports translating from/to locale encodings (e.g. SHIFT_JIS, or whatever).
-     *      o   (UTFConverter only supports UNICODE <-> UNICODE translations, even if in different
-     *          UNICODE encodings).
+     *      o   UTFConverter only supports UNICODE <-> UNICODE translations, even if in different
+     *          UNICODE encodings. This API supports UNICODE <-> any arbitrary output binary format.
+     *      o   So in particular, it supports translating between UNICODE characters and locale encodings (e.g. SHIFT_JIS, or whatever).
      * 
      *  And: 
      *      o   All the existing codecvt objects (which map to/from UNICODE) can easily be wrapped in a CodeCvt
