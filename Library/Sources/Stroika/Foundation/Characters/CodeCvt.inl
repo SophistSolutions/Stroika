@@ -17,16 +17,16 @@
 namespace Stroika::Foundation::Characters {
 
     namespace Private_ {
-        template <typename CHAR_T>
-        shared_ptr<typename CodeCvt<CHAR_T>::IRep> mk_StdCodeCvtRep_ ();
-        template <typename CHAR_T>
-        shared_ptr<typename CodeCvt<CHAR_T>::IRep> mk_StdCodeCvtRep_ (const locale& l);
-        template <>
-        shared_ptr<CodeCvt<char16_t>::IRep> mk_StdCodeCvtRep_<char16_t> ();
-        template <>
-        shared_ptr<CodeCvt<char32_t>::IRep> mk_StdCodeCvtRep_<char32_t> ();
-        template <>
-        shared_ptr<CodeCvt<wchar_t>::IRep> mk_StdCodeCvtRep_<wchar_t> (const locale& l);
+        // crazy - from https://en.cppreference.com/w/cpp/locale/codecvt
+        template <typename FACET>
+        struct deletable_facet_ : FACET {
+            template <typename... Args>
+            deletable_facet_ (Args&&... args)
+                : FACET{forward<Args> (args)...}
+            {
+            }
+            ~deletable_facet_ () {}
+        };
     }
 
     /*
@@ -260,6 +260,50 @@ namespace Stroika::Foundation::Characters {
     };
 
     /*
+     *  This is crazy complicated because codecvt goes out of its way to be hard to copy, hard to move, but with
+     *  a little care, can be made to work with unique_ptr.
+     */
+    template <Character_UNICODECanAlwaysConvertTo CHAR_T>
+    template <typename STD_CODE_CVT_T>
+    struct CodeCvt<CHAR_T>::CodeCvt_WrapStdCodeCvt_ : CodeCvt<CHAR_T>::IRep {
+        unique_ptr<STD_CODE_CVT_T> fCodeCvt_;
+        using result      = typename CodeCvt<CHAR_T>::result;
+        using MBState     = typename CodeCvt<CHAR_T>::MBState;
+        using extern_type = typename STD_CODE_CVT_T::extern_type;
+        static_assert (is_same_v<CHAR_T, typename STD_CODE_CVT_T::intern_type>);
+        CodeCvt_WrapStdCodeCvt_ (unique_ptr<STD_CODE_CVT_T>&& codeCvt)
+            : fCodeCvt_{move (codeCvt)}
+        {
+        }
+        virtual result Bytes2Characters (span<const byte>* from, span<CHAR_T>* to, MBState* state) const override
+        {
+            const extern_type* _First1 = reinterpret_cast<const extern_type*> (from->data ());
+            const extern_type* _Last1  = _First1 + from->size ();
+            const extern_type* _Mid1   = _First1; // DOUBLE CHECK SPEC - NOT SURE IF THIS IS USED ON INPUT
+            CHAR_T*            _First2 = to->data ();
+            CHAR_T*            _Last2  = _First2 + to->size ();
+            CHAR_T*            _Mid2   = _First2; // DOUBLE CHECK SPEC - NOT SURE IF THIS IS USED ON INPUT
+            auto               r       = fCodeCvt_->in (*state, _First1, _Last1, _Mid1, _First2, _Last2, _Mid2);
+            *from                      = from->subspan (_Mid1 - _First1);  // point to remaining to use data - typically none
+            *to                        = to->subspan (0, _Mid2 - _First2); // point ACTUAL copied data
+            return r;
+        }
+        virtual result Characters2Bytes (span<const CHAR_T>* from, span<byte>* to, MBState* state) const override
+        {
+            const CHAR_T* _First1 = from->data ();
+            const CHAR_T* _Last1  = _First1 + from->size ();
+            const CHAR_T* _Mid1   = _First1; // DOUBLE CHECK SPEC - NOT SURE IF THIS IS USED ON INPUT
+            extern_type*  _First2 = reinterpret_cast<extern_type*> (to->data ());
+            extern_type*  _Last2  = _First2 + to->size ();
+            extern_type*  _Mid2   = _First2; // DOUBLE CHECK SPEC - NOT SURE IF THIS IS USED ON INPUT
+            auto          r       = fCodeCvt_->out (*state, _First1, _Last1, _Mid1, _First2, _Last2, _Mid2);
+            *from                 = from->subspan (_Mid1 - _First1);  // point to remaining to use data - typically none
+            *to                   = to->subspan (0, _Mid2 - _First2); // point ACTUAL copied data
+            return r;
+        }
+    };
+
+    /*
      ********************************************************************************
      ******************************* CodeCvt<CHAR_T> ********************************
      ********************************************************************************
@@ -267,21 +311,28 @@ namespace Stroika::Foundation::Characters {
     template <Character_UNICODECanAlwaysConvertTo CHAR_T>
     inline CodeCvt<CHAR_T>::CodeCvt ()
         requires (is_same_v<CHAR_T, char16_t> or is_same_v<CHAR_T, char32_t>)
-        : fRep_{Private_::mk_StdCodeCvtRep_<CHAR_T> ()}
+        : CodeCvt<CHAR_T, codecvt<CHAR_T, char8_t, std::mbstate_t>>{}
     {
     }
     template <Character_UNICODECanAlwaysConvertTo CHAR_T>
     inline CodeCvt<CHAR_T>::CodeCvt (const locale& l)
     {
+        auto baseRep = make_shared<CodeCvt_WrapStdCodeCvt_<Private_::deletable_facet_<codecvt_byname<wchar_t, char, mbstate_t>>>> (l);
         if constexpr (is_same_v<CHAR_T, wchar_t>) {
-            fRep_ = Private_::mk_StdCodeCvtRep_<wchar_t> (l);
+            fRep_ = move (baseRep);
         }
         else if constexpr (sizeof (CHAR_T) == sizeof (wchar_t)) {
-            fRep_ = reinterpret_pointer_cast<IRep> (Private_::mk_StdCodeCvtRep_<wchar_t> (l));
+            fRep_ = reinterpret_pointer_cast<IRep> (baseRep);
         }
         else {
-            fRep_ = make_shared<UTF2UTFRep_<wchar_t>> (Private_::mk_StdCodeCvtRep_<wchar_t> (l));
+            fRep_ = make_shared<UTF2UTFRep_<wchar_t>> (baseRep);
         }
+    }
+    template <Character_UNICODECanAlwaysConvertTo CHAR_T>
+    template <IsStdCodeCVTT STD_CODECVT, typename... ARGS>
+    inline CodeCvt<CHAR_T>::CodeCvt (ARGS... args)
+        : fRep_{make_shared<CodeCvt_WrapStdCodeCvt_<Private_::deletable_facet_<STD_CODECVT>>> (forward<ARGS> (args)...)}
+    {
     }
     template <Character_UNICODECanAlwaysConvertTo CHAR_T>
     inline CodeCvt<CHAR_T>::CodeCvt (UnicodeExternalEncodings e)

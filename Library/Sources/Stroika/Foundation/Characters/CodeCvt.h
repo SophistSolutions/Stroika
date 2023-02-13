@@ -38,6 +38,18 @@ namespace Stroika::Foundation::Characters {
         eDefault = eUTF8,
     };
 
+    namespace Private_ {
+        template <class>
+        inline constexpr bool IsStdCodeCvt_ = false;
+        template <class _Elem, class _Byte, class _Statype>
+        inline constexpr bool IsStdCodeCvt_<std::codecvt<_Elem, _Byte, _Statype>> = true;
+    }
+    /**
+    *   @todo confused thy this is working with codecvt_by_name - think I need to change for that.
+     */
+    template <typename STD_CODECVT_T>
+    concept IsStdCodeCVTT = Private_::IsStdCodeCvt_<STD_CODECVT_T>;
+
     /*
      *  \brief CodeCvt unifies byte<-> unicode conversions, vaguely inspired by (and wraps) std::codecvt, as well as UTFConverter etc, to map between 'bytes' and a UNICODE code-point span
      * 
@@ -112,13 +124,32 @@ namespace Stroika::Foundation::Characters {
     public:
         /**
          *  These default-constructor APIs are provided by std c++:
+         *      (@todo CHANGE)
          *      CodeCvt<char16_t>{}         -   std::codecvt<char16_t, char8_t, std::mbstate_t>
          *      CodeCvt<char32_t>{}         -   std::codecvt<char32_t, char8_t, std::mbstate_t>
          *      CodeCvt<wchar_t>{locale}    -   std::codecvt<wchar_t, char, std::mbstate_t>
          * 
-         *  To get OTHER conversions, say between char16_t, and char32_t:
+         *   To use (wrap) existing std::codecvt<A,B,C> class:       **NEW**
+         *      Tricky, because classes not generally directly instantiatable, so instead specify CLASS as template param
+         *      and ARGS to CTOR.
+         *          CodeCvt<CHAR_T,std::codecvt<CHAR_T, BINARY_T, MBSTATE_T>> {args to that class}
+         *          Note works with subclasses of std::codecvt like std::codecvt_byname
+         * 
+         *  To get OTHER conversions, say between char16_t, and char32_t (combines/chains CodeCvt's):
          *      CodeCvt<CHAR_T>{UnicodeExternalEncodings}               -   Uses UTFConverter, along with any needed byte swapping
          *      CodeCvt<CHAR_T>{const CodeCvt<OTHER_CHAR_T> basedOn}    -   Use this to combine CodeCvt's (helpful for locale one)
+         * 
+         *  \par Example Usage:
+         *      \code
+         *          // codeCvt Between UTF16 Characters And UTF8BinaryFormat, best/fastest way
+         *          CodeCvt<char16_t> codeCvt1{};           
+         * 
+         *          // codeCvt Between UTF16 Characters And UTF8BinaryFormat using std::codecvt<char16_t, char8_t, std::mbstate_t>
+         *          CodeCvt<char16_t> codeCvt2 = CodeCvt<char16_t,std::codecvt<char16_t, char8_t, std::mbstate_t>>{};
+         * 
+         *          // codeCvt Between UTF16 Characters using codecvt_byname
+         *          CodeCvt<char16_t> codeCvt3 = CodeCvt<char16_t,std::codecvt_byname>>{locale{"en_US.UTF8"}};
+         *      \endcode
          */
         CodeCvt ()
             requires (is_same_v<CHAR_T, char16_t> or is_same_v<CHAR_T, char32_t>);
@@ -126,6 +157,8 @@ namespace Stroika::Foundation::Characters {
         CodeCvt (UnicodeExternalEncodings e);
         template <Character_UNICODECanAlwaysConvertTo OTHER_CHAR_T>
         CodeCvt (const CodeCvt<OTHER_CHAR_T>& basedOn);
+        template <IsStdCodeCVTT STD_CODECVT, typename... ARGS>
+        CodeCvt (ARGS... args);
         CodeCvt (const shared_ptr<IRep>& rep);
 
     public:
@@ -174,6 +207,11 @@ namespace Stroika::Foundation::Characters {
     private:
         template <typename OTHER_CHAR_T>
         struct UTF2UTFRep_;
+
+    private:
+        // requires CHAR_T = typename STD_CODE_CVT_T::intern_type
+        template <typename STD_CODE_CVT_T>
+        struct CodeCvt_WrapStdCodeCvt_;
     };
 
     template <Character_UNICODECanAlwaysConvertTo CHAR_T>
