@@ -311,7 +311,7 @@ namespace Stroika::Foundation::Characters {
     template <Character_UNICODECanAlwaysConvertTo CHAR_T>
     inline CodeCvt<CHAR_T>::CodeCvt ()
         requires (is_same_v<CHAR_T, char16_t> or is_same_v<CHAR_T, char32_t>)
-        : CodeCvt<CHAR_T, codecvt<CHAR_T, char8_t, std::mbstate_t>>{}
+        : CodeCvt<codecvt<CHAR_T, char8_t, std::mbstate_t>>{}
     {
     }
     template <Character_UNICODECanAlwaysConvertTo CHAR_T>

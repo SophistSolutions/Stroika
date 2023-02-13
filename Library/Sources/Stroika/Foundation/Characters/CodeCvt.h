@@ -51,15 +51,15 @@ namespace Stroika::Foundation::Characters {
     concept IsStdCodeCVTT = Private_::IsStdCodeCvt_<STD_CODECVT_T>;
 
     /*
-     *  \brief CodeCvt unifies byte<-> unicode conversions, vaguely inspired by (and wraps) std::codecvt, as well as UTFConverter etc, to map between 'bytes' and a UNICODE code-point span
+     *  \brief CodeCvt unifies byte<-> unicode conversions, vaguely inspired by (and wraps) std::codecvt, as well as UTFConverter etc, to map between span<bytes> and a span<UNICODE code-point>
      * 
      *  Enhancements over std::codecvt:
-     *      o   You can subclass (provide your own codecvt implementation) and copy 'codecvt' objects.
+     *      o   You can subclass Rep (provide your own CodeCvt implementation) and copy CodeCvt objects.
      *          (unless I'm missing something, you can do one or the other with std::codecvt, but not both)
      *      o   Simpler backend virtual API, so easier to create your own compliant CodeCvt object.
-     *          o   Stroika leverages these two things in UTFConverter, using different library backends to do
-     *              the code conversion, hopefully enuf faster to make up for the virtual call overhead this
-     *              class introduces.
+     *          o   CodeCvt leverages these two things via, UTFConverter (which uses different library backends to do
+     *              the UTF code conversion, hopefully enuf faster to make up for the virtual call overhead this
+     *              class introduces).
      *      o   Dont bother templating on MBSTATE, nor output byte type (std::covert supports all the useless
      *          ones but misses the most useful, at least for fileIO, binary IO)
      *      o   lots of templated combinations (codecvt) dont make sense and dont work and there is no hint/validation
@@ -68,7 +68,7 @@ namespace Stroika::Foundation::Characters {
      *          It can be used to convert (abstract API) between ANY combination of 'target hidden in implementation'
      *          and exposed CHAR_T characters (reading or writing). DEFAULT CTORS only provide the combinations
      *          supported by stdc++ (and a little more). To get other combinations, you must use subclass.
-     *      o   'equivilent' character types automatically supported (e.g wchar_t == char16 or char32, and
+     *      o   'equivilent' code-point types automatically supported (e.g wchar_t == char16 or char32, and
      *          Character==char32_t).
      *      o   No explicit 'external_type' exposed. Just bytes go in and out vs (CHAR_T) UNICODE characters.
      *          This erasure of the 'encoding' type from the CodeCvt<CHAR_T> allows it to be used generically
@@ -86,7 +86,7 @@ namespace Stroika::Foundation::Characters {
      *  can it be instantiated direcly (the ones std c++ supports, char_16_t, char32_t, and wchar_t with locale).
      * 
      *  \note About Target Buffer Sizes:
-     *        Unlike UTFConverter, CodeCvt allows an undersized target buff (RECONSIDER IF GOOD IDEA).
+     *        Unlike UTFConverter, CodeCvt allows an undersized target buff (@todo RECONSIDER IF GOOD IDEA).
      *        That causes TONS of problem.
      *        MUCH more complex code.
      *        But upshot - dont do this - always give enuf target buffer, to at least avoid performance penalties
