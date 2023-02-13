@@ -193,6 +193,8 @@ namespace Stroika::Foundation::Streams {
 
     /////////////// ***************** DEPRECATED BELOW /////////////////
     DISABLE_COMPILER_MSC_WARNING_START (4996); // DEPRECATED
+    DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
+    DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
     inline auto TextWriter::New (const OutputStream<byte>::Ptr& src, Format format) -> Ptr
     {
         using Characters::UnicodeExternalEncodings;
@@ -220,6 +222,8 @@ namespace Stroika::Foundation::Streams {
         Assert (internallySynchronized == Execution::eNotKnownInternallySynchronized);
         return TextWriter::New (src, format);
     }
+    DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
+    DISABLE_COMPILER_CLANG_WARNING_END("clang diagnostic ignored \"-Wdeprecated-declarations\"");
     DISABLE_COMPILER_MSC_WARNING_END (4996); // DEPRECATED
 
 }
