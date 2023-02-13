@@ -134,24 +134,28 @@ namespace Stroika::Foundation::Memory {
      */
     constexpr std::byte operator""_b (unsigned long long b);
 
-// clang liblib on macos missing this in xcode 14
+    /**
+     *  Workaround absence of bit_cast in MacOS XCode 14 (which we support with Stroika v3)
+     */
 #if __cpp_lib_bit_cast >= 201806L
     using std::bit_cast;
 #else
     template <class To, class From>
     std::enable_if_t<sizeof (To) == sizeof (From) && std::is_trivially_copyable_v<From> && std::is_trivially_copyable_v<To>, To>
-    // constexpr support needs compiler magic
     bit_cast (const From& src) noexcept
     {
         static_assert (std::is_trivially_constructible_v<To>, "This implementation additionally requires "
                                                               "destination type to be trivially constructible");
-
         To dst;
         std::memcpy (&dst, &src, sizeof (To));
         return dst;
     }
 #endif
 
+
+    /**
+     *  Workaround absence of byteswap gcc up to version 12, and clang (up to 14).
+     */ 
 #if __cpp_lib_byteswap >= 202110L
     using std::byteswap;
 #else
@@ -165,30 +169,6 @@ namespace Stroika::Foundation::Memory {
             swap (value_representation[i], value_representation[value_representation.size () - i]);
         }
         return bit_cast<T> (value_representation);
-#if 0
-            if constexpr (sizeof (T) == 1) {
-                return n;
-            }
-            else if constexpr (sizeof (T) == 2) {
-                 uint8_t* na = reinterpret_cast< uint8_t*> (&n);
-                std::swap (na[0], na[1]);
-                return n;
-            }
-            else if constexpr (sizeof (T) == 4) {
-                 uint16_t* na = reinterpret_cast< uint16_t*> (&n);
-                 na[0] = byteswap (na[0]);
-                 na[1] = byteswap (na[1]);
-                std::swap (na[0], na[1]);
-                return n;
-            }
-            else if constexpr (sizeof (T) == 8) {
-                 uint32_t* na = reinterpret_cast< uint32_t*> (&n);
-                 na[0] = byteswap (na[0]);
-                 na[1] = byteswap (na[1]);
-                std::swap (na[0], na[1]);
-                return n;
-            }
-#endif
     }
 #endif
 }
