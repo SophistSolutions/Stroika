@@ -123,13 +123,11 @@ namespace Stroika::Foundation::Characters {
 
     public:
         /**
-         *  These default-constructor APIs are provided by std c++:
-         *      (@todo CHANGE)
-         *      CodeCvt<char16_t>{}         -   std::codecvt<char16_t, char8_t, std::mbstate_t>
-         *      CodeCvt<char32_t>{}         -   std::codecvt<char32_t, char8_t, std::mbstate_t>
-         *      CodeCvt<wchar_t>{locale}    -   std::codecvt<wchar_t, char, std::mbstate_t>
+         *  Default CTOR:
+         *      Produces the fastest available CodeCvt(), between the templated UNICODE code-point
+         *      and UTF-8 (as the binary format).
          * 
-         *   To use (wrap) existing std::codecvt<A,B,C> class:       **NEW**
+         *   To use (wrap) existing std::codecvt<A,B,C> class:
          *      Tricky, because classes not generally directly instantiatable, so instead specify CLASS as template param
          *      and ARGS to CTOR.
          *          CodeCvt<CHAR_T,std::codecvt<CHAR_T, BINARY_T, MBSTATE_T>> {args to that class}
@@ -151,8 +149,7 @@ namespace Stroika::Foundation::Characters {
          *          CodeCvt<char16_t> codeCvt3 = CodeCvt<char16_t,std::codecvt_byname>>{locale{"en_US.UTF8"}};
          *      \endcode
          */
-        CodeCvt ()
-            requires (is_same_v<CHAR_T, char16_t> or is_same_v<CHAR_T, char32_t>);
+        CodeCvt ();
         CodeCvt (const locale& = locale{});
         CodeCvt (UnicodeExternalEncodings e);
         template <Character_UNICODECanAlwaysConvertTo OTHER_CHAR_T>
