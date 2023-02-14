@@ -172,7 +172,7 @@ namespace Stroika::Foundation::Characters {
                 }
             }
             auto useFrom = span<const CHAR_T>{buf.begin (), buf.size ()};
-            auto r       = Characters2Bytes (&useFrom, to, state);
+            auto r       = inherited::Characters2Bytes (&useFrom, to, state);
             *from        = from->subspan (0, useFrom.size ());
             return r;
         }
