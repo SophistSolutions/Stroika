@@ -47,12 +47,6 @@ protected:
     }
     virtual bool IsOpenRead () const override { return _fSource != nullptr; }
 
-// at least on windows, fCharCoverter with utf8 converter appeared to not mutate the mbState. Just reconverting
-// whole thing worked, so try that for now... Slow/inefficient, but at least it works
-// -- LGP 2017-06-10
-#ifndef qMaintainingMBShiftStateNotWorking_
-#define qMaintainingMBShiftStateNotWorking_ 1
-#endif
     virtual size_t Read (Character* intoStart, Character* intoEnd) override
     {
         Require ((intoStart == intoEnd) or (intoStart != nullptr));
@@ -79,17 +73,12 @@ protected:
             const char* endB   = firstB + inBytes;
             Assert (endB <= reinterpret_cast<const char*> (end (inBuf)));
             const char* cursorB = firstB;
-#if qMaintainingMBShiftStateNotWorking_
             mbstate_t mbState = mbstate_t{};
             codecvt_utf8<wchar_t>::result r = _fCharConverter.in (mbState, firstB, endB, cursorB, std::begin (outBuf), std::end (outBuf), outCursor);
-#else
-            codecvt_utf8<wchar_t>::result r = _fCharConverter.in (fMBState_, firstB, endB, cursorB, std::begin (outBuf), std::end (outBuf), outCursor);
-#endif
             Assert (std::begin (outBuf) <= outCursor and outCursor <= std::end (outBuf));
             switch (r) {
                 case codecvt_utf8<wchar_t>::partial: {
 // see if we can read more from binary source
-#if qMaintainingMBShiftStateNotWorking_
                     size_t prevInBufSize = inBuf.size ();
                     inBuf.GrowToSize_uninitialized (prevInBufSize + 1);
                     size_t thisReadNBytes = _fSource.Read (begin (inBuf) + prevInBufSize, end (inBuf));
@@ -98,13 +87,6 @@ protected:
                         inBytes += thisReadNBytes;
                         goto again;
                     }
-#else
-                    size_t thisReadNBytes = fSource_.Read (begin (inBuf), begin (inBuf) + 1);
-                    if (thisReadNBytes != 0) {
-                        inBytes = thisReadNBytes;
-                        goto again;
-                    }
-#endif
                 } break;
                 case codecvt_utf8<wchar_t>::error: {
                     Execution::Throw (Execution::RuntimeErrorException{"Error converting characters codepage"sv});
@@ -144,11 +126,7 @@ protected:
             const char* endB   = firstB + *inBytes;
             Assert (endB <= reinterpret_cast<const char*> (end (inBuf)));
             const char* cursorB = firstB;
-#if qMaintainingMBShiftStateNotWorking_
             mbstate_t mbState = mbstate_t{};
-#else
-            mbstate_t mbState = fMBState_;
-#endif
             wchar_t  outChar;
             wchar_t* outCursor = &outChar;
             [[maybe_unused]] codecvt_utf8<wchar_t>::result r = _fCharConverter.in (mbState, firstB, endB, cursorB, &outChar, &outChar + 1, outCursor);
@@ -178,9 +156,6 @@ protected:
 protected:
     InputStream<byte>::Ptr        _fSource;
     const MyWCharTConverterType_& _fCharConverter;
-#if !qMaintainingMBShiftStateNotWorking_
-    mbstate_t fMBState_{};
-#endif
     SeekOffsetType                                                 _fOffset{0};
     [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
 };
