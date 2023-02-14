@@ -536,6 +536,10 @@ auto TextReader::New (const Traversal::Iterable<Character>& src) -> Ptr
     return p;
 }
 
+/////////////// ***************** DEPRECATED BELOW /////////////////
+DISABLE_COMPILER_MSC_WARNING_START (4996); // DEPRECATED
+DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
+DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
 auto TextReader::New (Execution::InternallySynchronized internallySynchronized, const InputStream<Character>::Ptr& src) -> Ptr
 {
     switch (internallySynchronized) {
@@ -628,3 +632,6 @@ auto TextReader::New (Execution::InternallySynchronized internallySynchronized, 
             return New (src);
     }
 }
+DISABLE_COMPILER_MSC_WARNING_END (4996); // DEPRECATED
+DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
+DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"");

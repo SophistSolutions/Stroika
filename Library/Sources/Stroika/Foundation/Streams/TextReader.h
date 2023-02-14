@@ -126,18 +126,7 @@ namespace Stroika::Foundation::Streams {
                         SeekableFlag seekable = SeekableFlag::eSeekable, ReadAhead readAhead = eReadAheadAllowed);
         static Ptr New (const InputStream<Character>::Ptr& src);
         static Ptr New (const Traversal::Iterable<Character>& src);
-        static Ptr New (Execution::InternallySynchronized internallySynchronized, const Memory::BLOB& src,
-                        const optional<Characters::String>& charset = nullopt);
-        static Ptr New (Execution::InternallySynchronized internallySynchronized, const InputStream<byte>::Ptr& src,
-                        SeekableFlag seekable = SeekableFlag::eSeekable, ReadAhead readAhead = eReadAheadAllowed);
-        static Ptr New (Execution::InternallySynchronized internallySynchronized, const InputStream<byte>::Ptr& src,
-                        const optional<Characters::String>& charset, SeekableFlag seekable = SeekableFlag::eSeekable,
-                        ReadAhead readAhead = eReadAheadAllowed);
-        static Ptr New (Execution::InternallySynchronized internallySynchronized, const InputStream<byte>::Ptr& src,
-                        const codecvt<wchar_t, char, mbstate_t>& codeConverter, SeekableFlag seekable = SeekableFlag::eSeekable,
-                        ReadAhead readAhead = eReadAheadAllowed);
-        static Ptr New (Execution::InternallySynchronized internallySynchronized, const InputStream<Character>::Ptr& src);
-        static Ptr New (Execution::InternallySynchronized internallySynchronized, const Traversal::Iterable<Character>& src);
+
 
     private:
         class FromBinaryStreamBaseRep_;
@@ -148,6 +137,23 @@ namespace Stroika::Foundation::Streams {
 
     private:
         using InternalSyncRep_ = Streams::InternallySynchronizedInputStream<Character, TextReader, InputStream<Character>::_IRep>;
+
+    public:
+        [[deprecated ("Since Stroika v3.0d1 - just use InternallySynchronizedInputOutputStream directly ")]] static Ptr
+        New (Execution::InternallySynchronized internallySynchronized, const Memory::BLOB& src, const optional<Characters::String>& charset = nullopt);
+        [[deprecated ("Since Stroika v3.0d1 - just use InternallySynchronizedInputOutputStream directly ")]] static Ptr
+        New (Execution::InternallySynchronized internallySynchronized, const InputStream<byte>::Ptr& src,
+             SeekableFlag seekable = SeekableFlag::eSeekable, ReadAhead readAhead = eReadAheadAllowed);
+        [[deprecated ("Since Stroika v3.0d1 - just use InternallySynchronizedInputOutputStream directly ")]] static Ptr
+        New (Execution::InternallySynchronized internallySynchronized, const InputStream<byte>::Ptr& src, const optional<Characters::String>& charset,
+             SeekableFlag seekable = SeekableFlag::eSeekable, ReadAhead readAhead = eReadAheadAllowed);
+        [[deprecated ("Since Stroika v3.0d1 - just use InternallySynchronizedInputOutputStream directly ")]] static Ptr
+                   New (Execution::InternallySynchronized internallySynchronized, const InputStream<byte>::Ptr& src,
+                        const codecvt<wchar_t, char, mbstate_t>& codeConverter, SeekableFlag seekable = SeekableFlag::eSeekable,
+                        ReadAhead readAhead = eReadAheadAllowed);
+        static Ptr New (Execution::InternallySynchronized internallySynchronized, const InputStream<Character>::Ptr& src);
+        [[deprecated ("Since Stroika v3.0d1 - just use InternallySynchronizedInputOutputStream directly ")]] static Ptr
+        New (Execution::InternallySynchronized internallySynchronized, const Traversal::Iterable<Character>& src);
     };
 
     /**
