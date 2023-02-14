@@ -697,24 +697,25 @@ String String::FromStringConstant (span<const char32_t> s)
 
 String String::FromNarrowString (span<const char> s, const locale& l)
 {
+    // Note: this could use CodeCvt, but directly using std::codecvt in this case pretty simple, and
+    // more efficient this way --LGP 2023-02-14
+
     // See http://en.cppreference.com/w/cpp/locale/codecvt/~codecvt
     using Destructible_codecvt_byname = deletable_facet_<codecvt_byname<wchar_t, char, mbstate_t>>;
     Destructible_codecvt_byname cvt{l.name ()};
 
     // http://en.cppreference.com/w/cpp/locale/codecvt/in
-    mbstate_t            mbstate{};
-    size_t               externalSize = s.size ();
-    wstring              resultWStr (externalSize, '\0');
-    const char*          from_next;
-    wchar_t*             to_next;
-    codecvt_base::result result =
-        cvt.in (mbstate, s.data (), s.data () + s.size (), from_next, &resultWStr[0], &resultWStr[resultWStr.size ()], to_next);
+    mbstate_t                    mbstate{};
+    Memory::StackBuffer<wchar_t> targetBuf{s.size ()};
+    const char*                  from_next;
+    wchar_t*                     to_next;
+    codecvt_base::result         result =
+        cvt.in (mbstate, s.data (), s.data () + s.size (), from_next, targetBuf.data (), targetBuf.data () + targetBuf.size (), to_next);
     if (result != codecvt_base::ok) [[unlikely]] {
         static const auto kException_ = Execution::RuntimeErrorException{"Error converting locale multibyte string to UNICODE"sv};
         Execution::Throw (kException_);
     }
-    resultWStr.resize (to_next - &resultWStr[0]);
-    return resultWStr;
+    return String{span<const wchar_t>{targetBuf.data (), static_cast<size_t> (to_next - targetBuf.data ())}};
 }
 
 shared_ptr<String::_IRep> String::mkEmpty_ ()
@@ -1563,21 +1564,27 @@ String String::LimitLength (size_t maxLen, bool keepLeft, const String& ellipsis
 
 void String::AsNarrowString (const locale& l, string* into) const
 {
+    // Note: this could use CodeCvt, but directly using std::codecvt in this case pretty simple, and
+    // more efficient this way --LGP 2023-02-14
+
     // See http://en.cppreference.com/w/cpp/locale/codecvt/~codecvt
     using Destructible_codecvt_byname = deletable_facet_<codecvt_byname<wchar_t, char, mbstate_t>>;
     Destructible_codecvt_byname cvt{l.name ()};
-    wstring                     wstr = As<wstring> ();
+
+    Memory::StackBuffer<wchar_t> maybeIgnoreBuf1;
+    span<const wchar_t>          thisData = GetData (&maybeIgnoreBuf1);
     // http://en.cppreference.com/w/cpp/locale/codecvt/out
-    mbstate_t mbstate{};
-    into->resize (wstr.size () * cvt.max_length (), '\0');
+    mbstate_t      mbstate{};
     const wchar_t* from_next;
     char*          to_next;
-    codecvt_base::result result = cvt.out (mbstate, &wstr[0], &wstr[wstr.size ()], from_next, &(*into)[0], &(*into)[into->size ()], to_next);
+    into->resize (thisData.size () * 5); // not sure what size is always big enuf
+    codecvt_base::result result =
+        cvt.out (mbstate, thisData.data (), thisData.data () + thisData.size (), from_next, into->data (), into->data () + into->size (), to_next);
     if (result != codecvt_base::ok) [[unlikely]] {
         static const auto kException_ = Execution::RuntimeErrorException{"Error converting locale multibyte string to UNICODE"sv};
         Execution::Throw (kException_);
     }
-    into->resize (to_next - &(*into)[0]);
+    into->resize (to_next - into->data ());
 }
 
 void String::erase (size_t from) { *this = RemoveAt (from, size ()); }
