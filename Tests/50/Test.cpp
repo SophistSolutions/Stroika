@@ -569,6 +569,12 @@ namespace {
             }
         }
         {
+            const DateTime kProblemBaseDT_ = DateTime{Date{2023y / February / 18}, TimeOfDay{10, 35, 59}}.AsLocalTime ();
+            const DateTime kProblemDT_ = DateTime{Date{2023y / March / 2d}, TimeOfDay{10, 35, 59}}.AsLocalTime ();
+            Duration diff = kProblemDT_ - kProblemBaseDT_;
+            VerifyTestResult (diff == days{12});   // note not a leap year
+        }
+        {
             using Time::DurationSecondsType;
             DurationSecondsType now = Time::GetTickCount ();
 
