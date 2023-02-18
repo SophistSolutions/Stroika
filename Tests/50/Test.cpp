@@ -401,7 +401,7 @@ namespace {
         }
         try {
             Date d = Date::Parse ("09/14/1752", Date::kMonthDayYearFormat);
-            VerifyTestResult (d == Date::kMin);
+            VerifyTestResult (d == Date::kGregorianCalendarEpoch.fYMD);
             VerifyTestResult (d.Format (Date::kISO8601Format) == "1752-09-14"); // xml cuz otherwise we get confusion over locale - COULD use hardwired US locale at some point?
             TestRoundTripFormatThenParseNoChange_ (d);
         }
@@ -415,10 +415,24 @@ namespace {
             //TestRoundTripFormatThenParseNoChange_ (d);
         }
         {
-            Date d = Date::kMin;
+            Date d = Date::kGregorianCalendarEpoch.fYMD;
             VerifyTestResult (d < DateTime::Now ().GetDate ());
             VerifyTestResult (not(DateTime::Now ().GetDate () < d));
             VerifyTestResult (d.Format (Date::kISO8601Format) == "1752-09-14"); // xml cuz otherwise we get confusion over locale - COULD use hardwired US locale at some point?
+            TestRoundTripFormatThenParseNoChange_ (d);
+        }
+        {
+            Date d = Date{300y / January / 3};
+            VerifyTestResult (d < DateTime::Now ().GetDate ());
+            VerifyTestResult (not(DateTime::Now ().GetDate () < d));
+            VerifyTestResult (d.Format (Date::kISO8601Format) == "0300-01-03");
+            TestRoundTripFormatThenParseNoChange_ (d);
+        }
+        {
+            Date d = Date::kMin;
+            VerifyTestResult (d < DateTime::Now ().GetDate ());
+            VerifyTestResult (not(DateTime::Now ().GetDate () < d));
+            VerifyTestResult (d.Format (Date::kISO8601Format) == "-4712-01-01"); // xml cuz otherwise we get confusion over locale - COULD use hardwired US locale at some point?
             TestRoundTripFormatThenParseNoChange_ (d);
         }
         try {
@@ -448,14 +462,25 @@ namespace {
             VerifyTestResult (d.Format (Date::eCurrentLocale_WithZerosStripped) == "4/5/1903");
         }
         {
-            Date d = Date (Year{1903}, April, DayOfMonth{5});
+            Date d = Date (1903y, April, 5d);
             VerifyTestResult (d.Format (locale{}) == "4/5/1903" or d.Format (locale{}) == "04/05/1903" or d.Format (locale{}) == "04/05/03");
             VerifyTestResult (d.Format (Date::eCurrentLocale_WithZerosStripped) == "4/5/1903" or
                               d.Format (Date::eCurrentLocale_WithZerosStripped) == "4/5/03");
         }
         {
-            Date d = Date{Date::JulianRepType{2455213}};
+            Date d = Date{Date::JulianDayNumber{2455213}};
             VerifyTestResult (d.Format () == "1/16/10");
+        }
+        {
+            Date d = Date{2012y / May / 1d};
+            VerifyTestResult (d.GetJulianRep () == 2456049); //https://aa.usno.navy.mil/data/JulianDate
+        }
+        {
+            VerifyTestResult (Date::ToJulianRep (Date::FromJulianRep (0)) == 0);
+            for (int i = 0; i < 10 * 1000; ++i) {
+                // just a random sampling to assure reversible/consistent
+                VerifyTestResult (Date::ToJulianRep (Date::FromJulianRep (i * 300)) == i * 300u);
+            }
         }
         {
             Date d = 1906y / May / 12d;
@@ -503,11 +528,19 @@ namespace {
             }
         }
         {
-            DateTime d = DateTime::kMin;
+            DateTime d = {Date::kGregorianCalendarEpoch.fYMD, TimeOfDay{0}};
             VerifyTestResult (d < DateTime::Now ());
             VerifyTestResult (DateTime::Now () > d);
             d = DateTime{d.GetDate (), d.GetTimeOfDay (), Timezone::kUTC}; // so that compare works - cuz we don't know timezone we'll run test with...
             VerifyTestResult (d.Format (DateTime::kISO8601Format) == "1752-09-14T00:00:00Z"); // xml cuz otherwise we get confusion over locale - COULD use hardwired US locale at some point?
+            TestRoundTripFormatThenParseNoChange_ (d);
+        }
+        {
+            DateTime d = DateTime::kMin;
+            VerifyTestResult (d < DateTime::Now ());
+            VerifyTestResult (DateTime::Now () > d);
+            d = DateTime{d.GetDate (), d.GetTimeOfDay (), Timezone::kUTC}; // so that compare works - cuz we don't know timezone we'll run test with...
+            VerifyTestResult (d.Format (DateTime::kISO8601Format) == "-4712-01-01T00:00:00Z"); // xml cuz otherwise we get confusion over locale - COULD use hardwired US locale at some point?
             TestRoundTripFormatThenParseNoChange_ (d);
         }
         //// TODO - FIX FOR PrintFormat::eCurrentLocale_WITHZEROESTRIPPED!!!!
@@ -570,9 +603,9 @@ namespace {
         }
         {
             const DateTime kProblemBaseDT_ = DateTime{Date{2023y / February / 18}, TimeOfDay{10, 35, 59}}.AsLocalTime ();
-            const DateTime kProblemDT_ = DateTime{Date{2023y / March / 2d}, TimeOfDay{10, 35, 59}}.AsLocalTime ();
-            Duration diff = kProblemDT_ - kProblemBaseDT_;
-            VerifyTestResult (diff == days{12});   // note not a leap year
+            const DateTime kProblemDT_     = DateTime{Date{2023y / March / 2d}, TimeOfDay{10, 35, 59}}.AsLocalTime ();
+            Duration       diff            = kProblemDT_ - kProblemBaseDT_;
+            VerifyTestResult (diff == days{12}); // note not a leap year
         }
         {
             using Time::DurationSecondsType;

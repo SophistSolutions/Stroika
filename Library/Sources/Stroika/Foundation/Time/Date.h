@@ -29,9 +29,6 @@
  *      @todo   Could optimize the Format/Parse calls for case without locale to just hardwire implementaton
  *              using sprintf/scanf (as we had before 2.1b10); only performance optimization and unclear it would help
  *
- *      @todo   https://stroika.atlassian.net/browse/STK-668 - Date class should support the full Julian Date Range -
- *              not just Gregorian calendar
- *
  *      @todo   I'm not sure eCurrentLocale_WithZerosStripped is a good idea. Not sure if better
  *              to use separate format print arg or???
  *
@@ -154,6 +151,7 @@ namespace Stroika::Foundation::Time {
      *  \note - DayOfMonth was an enum in Stroika v2.1, so this is a significant change.
      * 
      *  \note DayOfMonth can be converted from/to unsigned int.
+     *  \note You can use the suffix 'd' intead of DayOfMonth{n}
      */
     struct DayOfMonth : day {
         /**
@@ -202,6 +200,8 @@ namespace Stroika::Foundation::Time {
      *  \note - Year was an enum in Stroika v2.1, so this is a significant change.
      * 
      *  \note Year can be converted from/to signed int.
+     * 
+     *  \note you can use the suffix y instead of Year{N} (assuming using namespace Foundation::Time).
      */
     struct Year : year {
         /**
@@ -210,8 +210,22 @@ namespace Stroika::Foundation::Time {
         constexpr Year (int y, DataExchange::ValidationStrategy validationStrategy = DataExchange::ValidationStrategy::eAssertion);
 
     public:
-        static constexpr year eFirstYear{1752};
-        static constexpr year eLastYear{SHRT_MAX - 1}; // @todo FIX - get from Date::kMax code - around 8090...
+        /**
+         *  \brief 4713 BC (no year zero)
+         * 
+         *      Was 1752 in Stroika v2.1
+         */
+        static constexpr year eFirstYear{-4712};
+
+    public:
+        /**
+         *  Reason for current max-date:
+         *      C:\Program Files (x86)\Windows Kits\10\Source\10.0.22000.0\ucrt\time\wcsftime.cpp
+         *      _VALIDATE_RETURN(timeptr->tm_year >= -1900 && timeptr->tm_year <= 8099, EINVAL, false);
+         *      -- LGP 2022-11-09
+         *  Was SHRT_MAX - 1 in Stroika v2.1
+         */
+        static constexpr year eLastYear{8099};
     };
 
     /**
@@ -243,7 +257,7 @@ namespace Stroika::Foundation::Time {
 
     /**
      * Description:
-     *      The Date class is based on SmallTalk-80, The Language & Its Implementation,
+     *      The Date class is (originally) based on SmallTalk-80, The Language & Its Implementation,
      *      page 108 (apx) - but changed to use gregorian instead of Julian calendar.
      *
      *  \note   This class integrates neatly with the C++20 chrono date support. You can easily
@@ -264,8 +278,20 @@ namespace Stroika::Foundation::Time {
      *              o   Builtin support for Julian calendar (again - maybe this is a difference not advantage?)
      *
      *  \note
-     *      o   Date represents a specific data since the start of the Gregorian (1752-09-14).
+     *      o   Date stores date's internally as Julian days, and so is valid for any date > January 1, −4713;
+     *          Also note sizeof (year_month_day) == sizeof (Date) == 4
      *
+     *  \par Miscelaneous references
+     *      o   According to https://en.wikipedia.org/wiki/Gregorian_calendar
+     *          Britain and the British Empire (including the eastern part of what is
+     *          now the United States) adopted the Gregorian calendar in 1752
+     *      o   https://aa.usno.navy.mil/data/JulianDate
+     *          Best Julian date calculator I found (bad but best)
+     *      o   Proleptic Gregorian Calendar
+     *          https://en.wikipedia.org/wiki/Gregorian_calendar#Proleptic_Gregorian_calendar
+     *      o   Julian Day Numer
+     *          https://en.wikipedia.org/wiki/Julian_day
+     * 
      *  Class Date knows about some obvious information:
      *      ->  there are seven days in a week, each day having a symbolic name and
      *          an index 1..7
@@ -291,51 +317,94 @@ namespace Stroika::Foundation::Time {
      */
     class Date {
     public:
-        using JulianRepType = uint32_t;
-
-    public:
-        using SignedJulianRepType = make_signed_t<JulianRepType>;
-
-    public:
-        /**
+        /*
+         *  This refers to Julian Day Number - JDN - https://en.wikipedia.org/wiki/Julian_day
+         * 
+         *  \note This was called JulianRepType in Stroika v2.1
          */
-        constexpr static JulianRepType ToJulianRep (month m, day d, year y,
-                                                    DataExchange::ValidationStrategy validationStrategy = DataExchange::ValidationStrategy::eAssertion);
-        constexpr static JulianRepType ToJulianRep (year_month_day ymd,
-                                                    DataExchange::ValidationStrategy validationStrategy = DataExchange::ValidationStrategy::eAssertion);
+        using JulianDayNumber = uint32_t;
 
     public:
         /**
+         *  Sometimes want a signed type to compute differences.
+         */
+        using SignedJulianDayNumber = make_signed_t<JulianDayNumber>;
+
+    public:
+        /**
+         *  Define a few 'reference' points, which define the correspondence between year/month/day in the gregorian(ish)
+         *  calendar with 
+         */
+        struct ReferencePoint {
+            year_month_day  fYMD;
+            JulianDayNumber fJulianRep;
+        };
+
+    public:
+        /**
+         *  Start of Julian Calendar (see https://docs.kde.org/trunk5/en/kstars/kstars/ai-julianday.html)
+         *  JD=0, is January 1, 4713 BC (or -4712 January 1, since there was no year '0').
+         */
+        static constexpr ReferencePoint kStartOfJulianCalendar{-4712y / January / 1, 0};
+
+    public:
+        /**
+         *  Start of UNIX time (see https://docs.kde.org/trunk5/en/kstars/kstars/ai-julianday.html, https://aa.usno.navy.mil/data/JulianDate)
+         */
+        static constexpr ReferencePoint KUNIXEpoch{1970y / January / 1, 2440588};
+
+    public:
+        /**
+         *  See https://en.wikipedia.org/wiki/Gregorian_calendar
+         *      September, 14d, 1752 (even this not sure of, but used this in Stroika v2.1)
+         * 
+         *      "Algorithm 199 from Communications of the ACM, Volume 6, No. 8,
+                 * (Aug. 1963), p. 444.  Gregorian calendar started on Sep. 14, 1752"
+         */
+        static constexpr ReferencePoint kGregorianCalendarEpoch{1752y / September / 14d, 2361222};
+
+    public:
+        /**
+         *  The Stroika Date class works with any date after this date (apx 4000 BC), but mostly
+         *  just very accurate post Gregorian Calendar era (1753 apx).
+         */
+        static constexpr ReferencePoint kMinDateReference = kStartOfJulianCalendar;
+        static_assert (kMinDateReference.fYMD.year () == Year::eFirstYear);
+
+    public:
+        /**
+         *  Very hard to figure out how todo this. But this algorithm appears correct at least for dates > Gregorian Calendar era.
+         * 
+         *  Also, web is littered with Julian date converters that are wrong, somewhat wrong, or very wrong (at least all disagreeing).
+         *  I used https://aa.usno.navy.mil/data/JulianDate as my reference/final arbiter/check (at least for dates past 1800).
+         */
+        constexpr static JulianDayNumber ToJulianRep (month m, day d, year y,
+                                                      DataExchange::ValidationStrategy validationStrategy = DataExchange::ValidationStrategy::eAssertion);
+        constexpr static JulianDayNumber
+        ToJulianRep (year_month_day ymd, DataExchange::ValidationStrategy validationStrategy = DataExchange::ValidationStrategy::eAssertion);
+
+    public:
+        /**
+         *  Compute the month/day/year associated with a given Julian day number. NOTE, this is only
+         *  really accurate (as of Stroika v3.0d1) for dates in the Gregorian Calendar epoch (roughly since 1753).
          */
         constexpr static year_month_day
-        FromJulianRep (JulianRepType j, DataExchange::ValidationStrategy validationStrategy = DataExchange::ValidationStrategy::eAssertion);
+        FromJulianRep (JulianDayNumber j, DataExchange::ValidationStrategy validationStrategy = DataExchange::ValidationStrategy::eAssertion);
 
     public:
         /**
-         *  kMinJulianRep = 2361222, aka Date::ToJulianRep (September, 14d, year{1752}) because that date
-         *  comes from code I lifted long ago (originally from NIHCL). Must research better, to maybe lift/adjust limits.
-         * 
-         *  According to https://en.wikipedia.org/wiki/Gregorian_calendar
-         *      Britain and the British Empire (including the eastern part of what is
-         *      now the United States) adopted the Gregorian calendar in 1752
-         * 
-         *  For whatever reason, the code I have assumes
-         *      Gregorian calendar started on Sep. 14, 1752
-         * 
          *  kMinJulianRep is defined (later) constexpr.
+         * 
+         *  \note In Stroika v2.1, 2361222, aka Date::ToJulianRep (September, 14d, year{1752})
+         *        but now its around 4000BC (see kMinDateReference)
          */
-        static const JulianRepType kMinJulianRep; // = Date::ToJulianRep (September, 14d, year{1752})
+        static const JulianDayNumber kMinJulianRep = kMinDateReference.fJulianRep;
 
     public:
         /**
-         *  Reason for current max-date:
-         *      C:\Program Files (x86)\Windows Kits\10\Source\10.0.22000.0\ucrt\time\wcsftime.cpp
-         *      _VALIDATE_RETURN(timeptr->tm_year >= -1900 && timeptr->tm_year <= 8099, EINVAL, false);
-         *      -- LGP 2022-11-09
-         * 
          *  kMaxJulianRep is defined (later) constexpr.
         */
-        static const JulianRepType kMaxJulianRep; // = Date::ToJulianRep (December, 31d, year{8099})
+        static const JulianDayNumber kMaxJulianRep; // = Date::ToJulianRep (December, 31d, Year::eLastYear)
 
     public:
         class FormatException;
@@ -353,7 +422,7 @@ namespace Stroika::Foundation::Time {
          */
         constexpr Date (Date&& src) noexcept      = default;
         constexpr Date (const Date& src) noexcept = default;
-        explicit constexpr Date (JulianRepType                    julianRep,
+        explicit constexpr Date (JulianDayNumber                  julianRep,
                                  DataExchange::ValidationStrategy validationStrategy = DataExchange::ValidationStrategy::eAssertion);
         constexpr Date (year y, month m, day d, DataExchange::ValidationStrategy validationStrategy = DataExchange::ValidationStrategy::eAssertion);
         constexpr Date (year_month_day ymd, DataExchange::ValidationStrategy validationStrategy = DataExchange::ValidationStrategy::eAssertion);
@@ -483,7 +552,7 @@ namespace Stroika::Foundation::Time {
     public:
         /**
          */
-        nonvirtual constexpr JulianRepType GetJulianRep () const;
+        nonvirtual constexpr JulianDayNumber GetJulianRep () const;
 
     public:
         /**
@@ -549,7 +618,7 @@ namespace Stroika::Foundation::Time {
         /**
          *  \brief Returns the difference (*this - rhs) between the two Date records;
          *
-         *  \note Before Stroika v3.0d1, this returend  SignedJulianRepType.
+         *  \note Before Stroika v3.0d1, this returend  SignedJulianDayNumber.
          */
         nonvirtual days Difference (const Date& rhs) const;
 
@@ -593,6 +662,8 @@ namespace Stroika::Foundation::Time {
         nonvirtual T As () const;
 
     public:
+        using JulianRepType [[deprecated ("Since Stroika v3.0d1 - use JulianDayNumber")]]             = JulianDayNumber;
+        using SignedJulianRepType [[deprecated ("Since Stroika v3.0d1 - use SignedJulianDayNumber")]] = SignedJulianDayNumber;
         [[deprecated ("Since Stroika v3.0d1 - use.Add () - now Date immutable")]] Date& operator++ ()
         {
             *this = Add (1);
@@ -608,13 +679,13 @@ namespace Stroika::Foundation::Time {
             *d = fRep_.day ();
             *y = fRep_.year ();
         }
-        [[deprecated ("Since Stroika v3.0d1 - use Add(days)")]] Date AddDays (SignedJulianRepType dayCount) const
+        [[deprecated ("Since Stroika v3.0d1 - use Add(days)")]] Date AddDays (SignedJulianDayNumber dayCount) const
         {
             return Add (chrono::days{dayCount});
         }
-        [[deprecated ("Since Stroika 3.0d1 - use Since")]] JulianRepType DaysSince () const
+        [[deprecated ("Since Stroika 3.0d1 - use Since")]] JulianDayNumber DaysSince () const
         {
-            return static_cast<JulianRepType> (Since ().count ());
+            return static_cast<JulianDayNumber> (Since ().count ());
         }
 
     private:
@@ -653,9 +724,9 @@ namespace Stroika::Foundation::Time {
         kISO8601Format,
     };
 
-    Date::SignedJulianRepType DayDifference (const Date& lhs, const Date& rhs);
-    int                       YearDifference (const Date& lhs, const Date& rhs);
-    float                     YearDifferenceF (const Date& lhs, const Date& rhs);
+    Date::SignedJulianDayNumber DayDifference (const Date& lhs, const Date& rhs);
+    int                         YearDifference (const Date& lhs, const Date& rhs);
+    float                       YearDifferenceF (const Date& lhs, const Date& rhs);
 
     String GetFormattedAge (const optional<Date>& birthDate, const optional<Date>& deathDate = {}); // returns ? if not a good src date
     String GetFormattedAgeWithUnit (const optional<Date>& birthDate, const optional<Date>& deathDate = {}, bool abbrevUnit = true); // returns ? if not a good src date

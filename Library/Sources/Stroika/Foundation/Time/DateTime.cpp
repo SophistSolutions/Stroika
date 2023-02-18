@@ -777,7 +777,7 @@ String DateTime::ToString () const
     return tmp;
 }
 
-Date::JulianRepType DateTime::DaysSince () const
+Date::JulianDayNumber DateTime::DaysSince () const
 {
     int r = DayDifference (GetToday (), As<Date> ());
     if (r < 0) {

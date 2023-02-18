@@ -421,7 +421,7 @@ namespace Stroika::Foundation::Time {
         /**
          *  Returns number of days since this point - relative to NOW. Never less than zero.
          */
-        nonvirtual Date::JulianRepType DaysSince () const;
+        nonvirtual Date::JulianDayNumber DaysSince () const;
 
     public:
         /**

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright(c) Sophist Solutions, Inc. 1990-2022.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Time_Date_inl_
@@ -137,47 +137,62 @@ namespace Stroika::Foundation::Time {
      *************************************** Date ***********************************
      ********************************************************************************
      */
-    constexpr inline Date::JulianRepType Date::ToJulianRep (month m, day d, year y, DataExchange::ValidationStrategy validationStrategy)
+    constexpr inline Date::JulianDayNumber Date::ToJulianRep (month m, day d, year y, DataExchange::ValidationStrategy validationStrategy)
     {
         if (validationStrategy == DataExchange::ValidationStrategy::eThrow) {
-            if (not m.ok () or not d.ok () or not y.ok () or y < 1752y or (y == 1752y and (m < September or (m == September and d < 14d)))) {
+            if (not m.ok () or not d.ok () or not y.ok () or y / m / d < kMinDateReference.fYMD) {
                 Execution::Throw (FormatException::kThe);
             }
         }
         Require (y.ok () and m.ok () and d.ok ());
-        Require (static_cast<int> (y) > 1752 or (static_cast<int> (y) == 1752 and (m > September or (m == September and d >= 14d))));
+        Require (y / m / d >= kMinDateReference.fYMD);
 
-        // Do arithmatic as integer representations, not 'datetime' reps that do funny things like wrap
-        // using m - months, etc..
-        unsigned int mm{m};
-        unsigned int dd{d};
-        int          yy{y};
+        // @todo https://stroika.atlassian.net/browse/STK-976 - improve precision of map to/from JulianDateRep
 
-        /*
-         * Convert Gregorian calendar date to the corresponding Julian day number
-         * j.  Algorithm 199 from Communications of the ACM, Volume 6, No. 8,
-         * (Aug. 1963), p. 444.  Gregorian calendar started on Sep. 14, 1752.
-         * This function not valid before that.
-         *
-         * (This code originally from NIHCL)
-         */
+        JulianDayNumber result = [&] () noexcept -> JulianDayNumber {
+            if (y / m / d >= kGregorianCalendarEpoch.fYMD) {
+                return static_cast<JulianDayNumber> ((chrono::sys_days{y / m / d} - chrono::sys_days{kGregorianCalendarEpoch.fYMD}).count ()) +
+                       kGregorianCalendarEpoch.fJulianRep;
+            }
+            return static_cast<JulianDayNumber> ((chrono::sys_days{y / m / d} - chrono::sys_days{kStartOfJulianCalendar.fYMD}).count ()) +
+                   kStartOfJulianCalendar.fJulianRep;
+        }();
 
-        if (mm > 2) {
-            mm = mm - 3;
+        if (not is_constant_evaluated ()) {
+            JulianDayNumber stroikav21Algorithm = [&] () noexcept -> JulianDayNumber {
+                // Do arithmatic as integer representations, not 'datetime' reps that do funny things like wrap
+                // using m - months, etc..
+                unsigned int mm{m};
+                unsigned int dd{d};
+                int          yy{y};
+                /*
+                 * Convert Gregorian calendar date to the corresponding Julian day number
+                 * j.  Algorithm 199 from Communications of the ACM, Volume 6, No. 8,
+                 * (Aug. 1963), p. 444.  Gregorian calendar started on Sep. 14, 1752.
+                 * This function not valid before that.
+                 *
+                 * (This code originally from NIHCL)
+                 */
+                if (mm > 2) {
+                    mm = mm - 3;
+                }
+                else {
+                    mm = mm + 9;
+                    --yy;
+                }
+                Date::JulianDayNumber c  = yy / 100;
+                Date::JulianDayNumber ya = yy - 100 * c;
+                return ((146097 * c) >> 2) + ((1461 * ya) >> 2) + (153 * mm + 2) / 5 + dd + 1721119;
+            }();
+            Assert (result == stroikav21Algorithm or (y / m / d < kGregorianCalendarEpoch.fYMD));
         }
-        else {
-            mm = mm + 9;
-            --yy;
-        }
-        Date::JulianRepType c        = yy / 100;
-        Date::JulianRepType ya       = yy - 100 * c;
-        return  ((146097 * c) >> 2) + ((1461 * ya) >> 2) + (153 * mm + 2) / 5 + dd + 1721119;
+        return result;
     }
-    constexpr auto Date::ToJulianRep (year_month_day ymd, DataExchange::ValidationStrategy validationStrategy) -> JulianRepType
+    constexpr auto Date::ToJulianRep (year_month_day ymd, DataExchange::ValidationStrategy validationStrategy) -> JulianDayNumber
     {
         return ToJulianRep (ymd.month (), ymd.day (), ymd.year (), validationStrategy);
     }
-    constexpr year_month_day Date::FromJulianRep (JulianRepType jr, DataExchange::ValidationStrategy validationStrategy)
+    constexpr year_month_day Date::FromJulianRep (JulianDayNumber jr, DataExchange::ValidationStrategy validationStrategy)
     {
         if (validationStrategy == DataExchange::ValidationStrategy::eThrow) {
             if (not(kMinJulianRep <= jr and jr <= kMaxJulianRep)) {
@@ -185,45 +200,60 @@ namespace Stroika::Foundation::Time {
             }
         }
         Require (kMinJulianRep <= jr and jr <= kMaxJulianRep);
-        /*
-         * Convert a Julian day number to its corresponding Gregorian calendar
-         * date.  Algorithm 199 from Communications of the ACM, Volume 6, No. 8,
-         * (Aug. 1963), p. 444.  Gregorian calendar started on Sep. 14, 1752.
-         * This function not valid before that.
-         *
-         * (This code originally from NIHCL)
-         */
-        JulianRepType m;
-        JulianRepType d;
-        JulianRepType y;
-        // A reference for this formula (not original I used) - can be found at:
-        //      http://aa.usno.navy.mil/faq/docs/JD_Formula.php
-        // at least close, and I could probably switch to that...
-        //
-        JulianRepType j = jr - 1721119;
-        y               = (((j << 2) - 1) / 146097);
-        j               = (j << 2) - 1 - 146097 * y;
-        d               = (j >> 2);
-        j               = ((d << 2) + 3) / 1461;
-        d               = ((d << 2) + 3 - 1461 * j);
-        d               = (d + 4) >> 2;
-        m               = (5 * d - 3) / 153;
-        d               = 5 * d - 3 - 153 * m;
-        d               = (d + 5) / 5;
-        y               = (100 * y + j);
-        if (m < 10) {
-            m += 3;
+
+        // @todo https://stroika.atlassian.net/browse/STK-976 - improve precision of map to/from JulianDateRep
+        year_month_day result = [&] () noexcept -> year_month_day {
+            if (jr >= kGregorianCalendarEpoch.fJulianRep) {
+                return chrono::sys_days{kGregorianCalendarEpoch.fYMD} + days{(jr - kGregorianCalendarEpoch.fJulianRep)};
+            }
+            return chrono::sys_days{kStartOfJulianCalendar.fYMD} + days{(jr - kStartOfJulianCalendar.fJulianRep)};
+        }();
+
+        if (not is_constant_evaluated ()) {
+            year_month_day legacyValue = [&] () {
+                /*
+                 * Convert a Julian day number to its corresponding Gregorian calendar
+                 * date.  Algorithm 199 from Communications of the ACM, Volume 6, No. 8,
+                 * (Aug. 1963), p. 444.  Gregorian calendar started on Sep. 14, 1752.
+                 * This function not valid before that.
+                 *
+                 * (This code originally from NIHCL)
+                 */
+                JulianDayNumber m;
+                JulianDayNumber d;
+                JulianDayNumber y;
+                // A reference for this formula (not original I used) - can be found at:
+                //      http://aa.usno.navy.mil/faq/docs/JD_Formula.php
+                // at least close, and I could probably switch to that...
+                //
+                JulianDayNumber j = jr - 1721119;
+                y                 = (((j << 2) - 1) / 146097);
+                j                 = (j << 2) - 1 - 146097 * y;
+                d                 = (j >> 2);
+                j                 = ((d << 2) + 3) / 1461;
+                d                 = ((d << 2) + 3 - 1461 * j);
+                d                 = (d + 4) >> 2;
+                m                 = (5 * d - 3) / 153;
+                d                 = 5 * d - 3 - 153 * m;
+                d                 = (d + 5) / 5;
+                y                 = (100 * y + j);
+                if (m < 10) {
+                    m += 3;
+                }
+                else {
+                    m -= 9;
+                    ++y;
+                }
+                return year_month_day{Year{static_cast<int> (y)}, MonthOfYear{m}, DayOfMonth{d}};
+            }();
+            Assert (result == legacyValue or jr < kGregorianCalendarEpoch.fJulianRep);
         }
-        else {
-            m -= 9;
-            ++y;
-        }
-        return year_month_day{Year{static_cast<int> (y)}, MonthOfYear{m}, DayOfMonth{d}};
+        return result;
     }
-    inline constexpr Date::JulianRepType Date::kMinJulianRep = Date::ToJulianRep (September, 14d, 1752y);
-    inline constexpr Date::JulianRepType Date::kMaxJulianRep = Date::ToJulianRep (December, 31d, 8099y);
-    static_assert (Date::kMinJulianRep == 2361222); // not important, but if that ever failed, would indicate serious bug or we changed definition
-    inline constexpr Date::Date (JulianRepType julianRep, DataExchange::ValidationStrategy validationStrategy)
+    inline constexpr Date::JulianDayNumber Date::kMaxJulianRep = Date::ToJulianRep (December, 31d, Year::eLastYear);
+    static_assert (Date::ToJulianRep (Date::kGregorianCalendarEpoch.fYMD) == Date::kGregorianCalendarEpoch.fJulianRep); // not important, but if that ever failed, would indicate serious bug or we changed definition
+
+    inline constexpr Date::Date (JulianDayNumber julianRep, DataExchange::ValidationStrategy validationStrategy)
         : fRep_{FromJulianRep (julianRep, validationStrategy)}
     {
     }
@@ -250,9 +280,9 @@ namespace Stroika::Foundation::Time {
         tm.tm_mday = static_cast<unsigned int> (GetDayOfMonth ());
         return tm;
     }
-    inline constexpr Date::JulianRepType Date::GetJulianRep () const { return ToJulianRep (fRep_); }
-    inline constexpr year                Date::GetYear () const { return fRep_.year (); }
-    inline constexpr month               Date::GetMonth () const
+    inline constexpr Date::JulianDayNumber Date::GetJulianRep () const { return ToJulianRep (fRep_); }
+    inline constexpr year                  Date::GetYear () const { return fRep_.year (); }
+    inline constexpr month                 Date::GetMonth () const
     {
         Ensure (January <= fRep_.month () and fRep_.month () <= December);
         return fRep_.month ();

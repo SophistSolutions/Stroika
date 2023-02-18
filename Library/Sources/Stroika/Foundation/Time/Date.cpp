@@ -156,7 +156,17 @@ String Date::Format (NonStandardPrintFormat pf) const
 
 String Date::Format (const locale& l) const { return Format (l, kLocaleStandardFormat); }
 
-String Date::Format (const String& formatPattern) const { return Format (locale{}, formatPattern); }
+String Date::Format (const String& formatPattern) const
+{
+    // some format's locale independent
+    if (formatPattern == kISO8601Format) {
+        return Characters::Format (L"%.4d-%.2d-%.2d", (int)(this->GetYear ()), (unsigned int)(this->GetMonth ()),
+                                   (unsigned int)(this->GetDayOfMonth ()));
+    }
+    else {
+        return Format (locale{}, formatPattern);
+    }
+}
 
 String Date::Format (const locale& l, const String& formatPattern) const
 {
@@ -231,11 +241,11 @@ String Date::ToString () const { return Format (); }
  *************************** Date::DayDifference ********************************
  ********************************************************************************
  */
-Date::SignedJulianRepType Time::DayDifference (const Date& lhs, const Date& rhs)
+Date::SignedJulianDayNumber Time::DayDifference (const Date& lhs, const Date& rhs)
 {
     // mostly right, but not complete correct edge cases with type/size stuff...
-    Date::JulianRepType l = lhs.GetJulianRep ();
-    Date::JulianRepType r = rhs.GetJulianRep ();
+    Date::JulianDayNumber l = lhs.GetJulianRep ();
+    Date::JulianDayNumber r = rhs.GetJulianRep ();
     if (l == r) {
         return 0;
     }
