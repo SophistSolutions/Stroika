@@ -53,15 +53,8 @@ namespace Stroika::Foundation::Characters {
      *      UTFConverter does NOT support byte order marks (BOM) - for that - see Streams::TextReader, and Streams::TextWriter
      *
      *  \notes about mbstate_t
-     *      mbstate_t is used by the std::codecvt apis. And it is somewhat required there (docs not 100% clear, to me anyhow).
-     *      But it appears required, and since I want to support calling them, I have a couple choices:
-     *          >   reverse-engineer and find out how to fake (seems unreliably across implementations)
-     *          >   Just pass it along to some (lower level) apis, and generate tmp ones for higher level apis
-     *              where clearly not needed)
-     *      Went with the later approach. ConvertQuietly requires an mbstate parameter (and then generally ignores it). But
-     *      VERY little code ever calls that.
-     *      Convert code and ConvertQuietly inlined, so compiler can (easily?) see the mbstate is unused (by which Convert__XXX_ function
-     *      called, and hopefully optimize away its tiny cost to zero).
+     *      mbstate_t is used by the std::codecvt apis and nothing else, and seems opaque and not any obvious use, so just
+     *      not used in this API, and faked when needed for codecvt.
      * 
      *  Web Pages/ Specs:
      *      o   https://en.wikipedia.org/wiki/UTF-8
@@ -277,7 +270,7 @@ namespace Stroika::Foundation::Characters {
          *        interface as a whole to always work without knowing which implementations require it).
          */
         template <Character_UNICODECanUnambiguouslyConvertFrom SRC_T, Character_UNICODECanUnambiguouslyConvertFrom TRG_T>
-        nonvirtual ConversionResultWithStatus ConvertQuietly (span<const SRC_T> source, span<TRG_T> target, mbstate_t* multibyteConversionState) const
+        nonvirtual ConversionResultWithStatus ConvertQuietly (span<const SRC_T> source, span<TRG_T> target) const
             requires (not is_const_v<TRG_T>);
 
     public:
@@ -358,10 +351,10 @@ namespace Stroika::Foundation::Characters {
 #endif
 
     private:
-        static ConversionResultWithStatus ConvertQuietly_codeCvt_ (span<const char8_t> source, span<char16_t> target, mbstate_t* multibyteConversionState);
-        static ConversionResultWithStatus ConvertQuietly_codeCvt_ (span<const char8_t> source, span<char32_t> target, mbstate_t* multibyteConversionState);
-        static ConversionResultWithStatus ConvertQuietly_codeCvt_ (span<const char16_t> source, span<char8_t> target, mbstate_t* multibyteConversionState);
-        static ConversionResultWithStatus ConvertQuietly_codeCvt_ (span<const char32_t> source, span<char8_t> target, mbstate_t* multibyteConversionState);
+        static ConversionResultWithStatus ConvertQuietly_codeCvt_ (span<const char8_t> source, span<char16_t> target);
+        static ConversionResultWithStatus ConvertQuietly_codeCvt_ (span<const char8_t> source, span<char32_t> target);
+        static ConversionResultWithStatus ConvertQuietly_codeCvt_ (span<const char16_t> source, span<char8_t> target);
+        static ConversionResultWithStatus ConvertQuietly_codeCvt_ (span<const char32_t> source, span<char8_t> target);
 
     private:
         static void ThrowIf_ (ConversionStatusFlag cr);
@@ -374,8 +367,7 @@ namespace Stroika::Foundation::Characters {
      *  but in a form more easily used/consumed by a the TextReader code.
      */
     template <typename OUTPUT_CHAR_T>
-    using UTFCodeConverter =
-        function<UTFConverter::ConversionResult (span<const std::byte> source, span<OUTPUT_CHAR_T> targetBuffer, mbstate_t* state)>;
+    using UTFCodeConverter = function<UTFConverter::ConversionResult (span<const std::byte> source, span<OUTPUT_CHAR_T> targetBuffer)>;
 
 }
 

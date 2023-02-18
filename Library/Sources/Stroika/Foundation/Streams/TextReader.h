@@ -127,7 +127,6 @@ namespace Stroika::Foundation::Streams {
         static Ptr New (const InputStream<Character>::Ptr& src);
         static Ptr New (const Traversal::Iterable<Character>& src);
 
-
     private:
         class FromBinaryStreamBaseRep_;
         class UnseekableBinaryStreamRep_;

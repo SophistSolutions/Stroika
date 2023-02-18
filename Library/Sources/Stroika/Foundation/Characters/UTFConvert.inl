@@ -270,8 +270,7 @@ namespace Stroika::Foundation::Characters {
     inline auto UTFConverter::Convert (span<const SRC_T> source, span<TRG_T> target) const -> ConversionResult
     {
         Require ((target.size () >= ComputeTargetBufferSize<TRG_T> (source)));
-        mbstate_t ignored{};
-        auto      result = ConvertQuietly (source, target, &ignored);
+        auto result = ConvertQuietly (source, target);
         ThrowIf_ (result.fStatus);
         return result; // slice - no need to return 'status' - we throw on any status but success
     }
@@ -310,12 +309,10 @@ namespace Stroika::Foundation::Characters {
     }
 
     template <Character_UNICODECanUnambiguouslyConvertFrom SRC_T, Character_UNICODECanUnambiguouslyConvertFrom TRG_T>
-    inline auto UTFConverter::ConvertQuietly (span<const SRC_T> source, span<TRG_T> target, mbstate_t* multibyteConversionState) const
-        -> ConversionResultWithStatus
+    inline auto UTFConverter::ConvertQuietly (span<const SRC_T> source, span<TRG_T> target) const -> ConversionResultWithStatus
         requires (not is_const_v<TRG_T>)
     {
         Require ((target.size () >= ComputeTargetBufferSize<TRG_T> (source)));
-        Require (multibyteConversionState != nullptr); // despite the fact its rarely used, to accomodate the cases where it can be
         using PRIMITIVE_SRC_T = typename decltype (this->ConvertToPrimitiveSpan_ (source))::value_type;
         using PRIMITIVE_TRG_T = typename decltype (this->ConvertToPrimitiveSpan_ (target))::value_type;
         if constexpr (is_same_v<PRIMITIVE_SRC_T, PRIMITIVE_TRG_T>) {
@@ -353,7 +350,7 @@ namespace Stroika::Foundation::Characters {
 #endif
                 case Options::Implementation::eCodeCVT: {
                     if constexpr ((is_same_v<SRC_T, char16_t> and is_same_v<SRC_T, char32_t>)and is_same_v<TRG_T, char8_t>) {
-                        return ConvertQuietly_codeCvt_ (source, target, multibyteConversionState);
+                        return ConvertQuietly_codeCvt_ (source, target);
                     }
                 }
             }

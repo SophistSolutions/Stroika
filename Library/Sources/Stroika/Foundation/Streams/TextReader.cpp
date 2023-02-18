@@ -73,12 +73,12 @@ protected:
             const char* endB   = firstB + inBytes;
             Assert (endB <= reinterpret_cast<const char*> (end (inBuf)));
             const char* cursorB = firstB;
-            mbstate_t mbState = mbstate_t{};
+            mbstate_t   mbState = mbstate_t{};
             codecvt_utf8<wchar_t>::result r = _fCharConverter.in (mbState, firstB, endB, cursorB, std::begin (outBuf), std::end (outBuf), outCursor);
             Assert (std::begin (outBuf) <= outCursor and outCursor <= std::end (outBuf));
             switch (r) {
                 case codecvt_utf8<wchar_t>::partial: {
-// see if we can read more from binary source
+                    // see if we can read more from binary source
                     size_t prevInBufSize = inBuf.size ();
                     inBuf.GrowToSize_uninitialized (prevInBufSize + 1);
                     size_t thisReadNBytes = _fSource.Read (begin (inBuf) + prevInBufSize, end (inBuf));
@@ -126,9 +126,9 @@ protected:
             const char* endB   = firstB + *inBytes;
             Assert (endB <= reinterpret_cast<const char*> (end (inBuf)));
             const char* cursorB = firstB;
-            mbstate_t mbState = mbstate_t{};
-            wchar_t  outChar;
-            wchar_t* outCursor = &outChar;
+            mbstate_t   mbState = mbstate_t{};
+            wchar_t     outChar;
+            wchar_t*    outCursor = &outChar;
             [[maybe_unused]] codecvt_utf8<wchar_t>::result r = _fCharConverter.in (mbState, firstB, endB, cursorB, &outChar, &outChar + 1, outCursor);
             // we could read one byte upstream, but not ENOUGH to get a full character output!
             if (outCursor != &outChar) {
@@ -154,8 +154,8 @@ protected:
     }
 
 protected:
-    InputStream<byte>::Ptr        _fSource;
-    const MyWCharTConverterType_& _fCharConverter;
+    InputStream<byte>::Ptr                                         _fSource;
+    const MyWCharTConverterType_&                                  _fCharConverter;
     SeekOffsetType                                                 _fOffset{0};
     [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
 };

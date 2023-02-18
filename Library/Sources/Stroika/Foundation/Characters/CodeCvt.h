@@ -62,6 +62,10 @@ namespace Stroika::Foundation::Characters {
      *              class introduces).
      *      o   Dont bother templating on MBSTATE, nor output byte type (std::covert supports all the useless
      *          ones but misses the most useful, at least for fileIO, binary IO)
+     *      o   Don't support mbstate_t. Its opaque, and a PITA. And redundant.
+     *          Bytes2Characters and Characters2Bytes update the spans to reflect what was used so the caller
+     *          can tell that the conversion was partial. And easier to have caller re-pass in unused
+     *          data than carrying around state (which doesnt work well with seekable Streams).
      *      o   lots of templated combinations (codecvt) dont make sense and dont work and there is no hint/validation
      *          clarity about which you can use/make sense and which you cannot with std::codecvt. Hopefully
      *          this class will make more sense.
@@ -162,7 +166,9 @@ namespace Stroika::Foundation::Characters {
          * 
          *  convert bytes 'from' to characters 'to'. Spans on input, src and target buffers. spans on output 
          *  are amount remaining to be used 'from' and amount actually filled into 'to'.
-         *  state is used to carry forward incomplete conversions from one call to the next.
+         *  
+         *  Source bytes must begin on a valid character boundary, and if they include at the end
+         *  incomplete charactrs, then not all the 'from' byte buffer will be used.
          * 
          *  \note we use the name 'Bytes' - because its suggestive of meaning, and in every case I'm aware of
          *        the target type will be char, or char8_t, or byte. But its certainly not guaranteed to be serialized
@@ -170,7 +176,7 @@ namespace Stroika::Foundation::Characters {
          * 
          *  \see the docs on 'error results, and partial status/error code' above
          */
-        nonvirtual result Bytes2Characters (span<const byte>* from, span<CHAR_T>* to, mbstate_t* state) const;
+        nonvirtual result Bytes2Characters (span<const byte>* from, span<CHAR_T>* to) const;
 
     public:
         /*
@@ -178,7 +184,10 @@ namespace Stroika::Foundation::Characters {
          * 
          *  convert characters 'from' to bytes 'to'. Spans on input, src and target buffers. spans on output 
          *  are amount remaining to be used 'from' and amount actually filled into 'to'.
-         *  state is used to carry forward incomplete conversions from one call to the next.
+         * 
+         *  No state is maintained between calls. If there isn't enough room in 'to' for all the characters
+         *  'from' wished to encode, then not all of from will be used. Thats how caller can tell. (well - as is - cannot tell maybe wasnt enuf space in to).
+         *  maybe WORTH returing partial flag?
          * 
          *  \note we use the name 'Bytes' - because its suggestive of meaning, and in every case I'm aware of
          *        the target type will be char, or char8_t, or byte. But its certainly not guaranteed to be serialized
@@ -186,7 +195,7 @@ namespace Stroika::Foundation::Characters {
          * 
          *  \see the docs on 'error results, and partial status/error code' above
          */
-        nonvirtual result Characters2Bytes (span<const CHAR_T>* from, span<byte>* to, mbstate_t* state) const;
+        nonvirtual result Characters2Bytes (span<const CHAR_T>* from, span<byte>* to) const;
 
     public:
         /*
@@ -221,11 +230,11 @@ namespace Stroika::Foundation::Characters {
 
     template <Character_UNICODECanAlwaysConvertTo CHAR_T>
     struct CodeCvt<CHAR_T>::IRep {
-        virtual ~IRep ()                                                                                   = default;
-        virtual result Bytes2Characters (span<const byte>* from, span<CHAR_T>* to, mbstate_t* state) const = 0;
-        virtual result Characters2Bytes (span<const CHAR_T>* from, span<byte>* to, mbstate_t* state) const = 0;
-        virtual size_t GetMinBytesPerCharacter () const                                                    = 0;
-        virtual size_t GetMaxBytesPerCharacter () const                                                    = 0;
+        virtual ~IRep ()                                                                 = default;
+        virtual result Bytes2Characters (span<const byte>* from, span<CHAR_T>* to) const = 0;
+        virtual result Characters2Bytes (span<const CHAR_T>* from, span<byte>* to) const = 0;
+        virtual size_t GetMinBytesPerCharacter () const                                  = 0;
+        virtual size_t GetMaxBytesPerCharacter () const                                  = 0;
     };
 
 }

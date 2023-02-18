@@ -54,7 +54,7 @@ namespace Stroika::Foundation::Streams {
             Memory::StackBuffer<std::byte> cvtBuf{size_t (end - start) * 5}; // excessive but start with that
             auto                           srcSpan = span<const Character>{start, end};
             auto                           trgSpan = span<byte>{cvtBuf.data (), cvtBuf.size ()};
-            switch (_fConverter.Characters2Bytes (&srcSpan, &trgSpan, &_fMBState_)) {
+            switch (_fConverter.Characters2Bytes (&srcSpan, &trgSpan)) {
                 case Characters::CodeCvt<Character>::ok:
                     _fSource.Write (trgSpan.data (), trgSpan.data () + trgSpan.size ());
                     break;
