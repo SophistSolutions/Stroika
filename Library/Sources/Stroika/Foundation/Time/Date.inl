@@ -146,6 +146,13 @@ namespace Stroika::Foundation::Time {
         }
         Require (y.ok () and m.ok () and d.ok ());
         Require (static_cast<int> (y) > 1752 or (static_cast<int> (y) == 1752 and (m > September or (m == September and d >= 14d))));
+
+        // Do arithmatic as integer representations, not 'datetime' reps that do funny things like wrap
+        // using m - months, etc..
+        unsigned int mm{m};
+        unsigned int dd{d};
+        int          yy{y};
+
         /*
          * Convert Gregorian calendar date to the corresponding Julian day number
          * j.  Algorithm 199 from Communications of the ACM, Volume 6, No. 8,
@@ -155,16 +162,16 @@ namespace Stroika::Foundation::Time {
          * (This code originally from NIHCL)
          */
 
-        if (static_cast<unsigned int> (m) > 2) {
-            m = m - months{3};
+        if (mm > 2) {
+            mm = mm - 3;
         }
         else {
-            m = m + months{9};
-            --y;
+            mm = mm + 9;
+            --yy;
         }
-        Date::JulianRepType c  = static_cast<int> (y) / 100;
-        Date::JulianRepType ya = static_cast<int> (y) - 100 * c;
-        return ((146097 * c) >> 2) + ((1461 * ya) >> 2) + (153 * static_cast<unsigned int> (m) + 2) / 5 + static_cast<unsigned int> (d) + 1721119;
+        Date::JulianRepType c        = yy / 100;
+        Date::JulianRepType ya       = yy - 100 * c;
+        return  ((146097 * c) >> 2) + ((1461 * ya) >> 2) + (153 * mm + 2) / 5 + dd + 1721119;
     }
     constexpr auto Date::ToJulianRep (year_month_day ymd, DataExchange::ValidationStrategy validationStrategy) -> JulianRepType
     {
