@@ -109,6 +109,11 @@ namespace Stroika::Foundation::Characters {
             *to                          = to->subspan (0, r.fTargetProduced * sizeof (SERIALIZED_CHAR_T)); // point ACTUAL copied data
             return cvtR_ (r.fStatus);
         }
+        virtual size_t GetMinBytesPerCharacter () const override { return sizeof (SERIALIZED_CHAR_T); }
+        virtual size_t GetMaxBytesPerCharacter () const override
+        {
+            return fCodeConverter_.ComputeTargetBufferSize<SERIALIZED_CHAR_T, CHAR_T> (1);
+        }
         static result cvtR_ (UTFConverter::ConversionStatusFlag status)
         {
             switch (status) {
@@ -252,6 +257,11 @@ namespace Stroika::Foundation::Characters {
                 return CodeCvt<CHAR_T>::error;
             }
         }
+        virtual size_t GetMinBytesPerCharacter () const override { return fOrigCodeCvt_.GetMinBytesPerCharacter (); }
+        virtual size_t GetMaxBytesPerCharacter () const override
+        {
+            return fCodeConverter_.ComputeTargetBufferSize<OTHER_CHAR_T> (fOrigCodeCvt_.GetMaxBytesPerCharacter ());
+        }
         CodeCvt<OTHER_CHAR_T> fOrigCodeCvt_;
         UTFConverter          fCodeConverter_;
     };
@@ -297,6 +307,8 @@ namespace Stroika::Foundation::Characters {
             *to                   = to->subspan (0, _Mid2 - _First2); // point ACTUAL copied data
             return r;
         }
+        virtual size_t GetMinBytesPerCharacter () const override { return 1; };
+        virtual size_t GetMaxBytesPerCharacter () const override { return fCodeCvt_->do_max_length (); };
     };
 
     /*
@@ -397,6 +409,16 @@ namespace Stroika::Foundation::Characters {
         RequireNotNull (from);
         RequireNotNull (to);
         return fRep_->Characters2Bytes (from, to, state);
+    }
+    template <Character_UNICODECanAlwaysConvertTo CHAR_T>
+    inline size_t CodeCvt<CHAR_T>::GetMinBytesPerCharacter () const
+    {
+        return fRep_->GetMinBytesPerCharacter ();
+    }
+    template <Character_UNICODECanAlwaysConvertTo CHAR_T>
+    inline size_t CodeCvt<CHAR_T>::GetMaxBytesPerCharacter () const
+    {
+        return fRep_->GetMaxBytesPerCharacter ();
     }
 
 }

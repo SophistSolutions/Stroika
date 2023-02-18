@@ -188,6 +188,16 @@ namespace Stroika::Foundation::Characters {
          */
         nonvirtual result Characters2Bytes (span<const CHAR_T>* from, span<byte>* to, mbstate_t* state) const;
 
+    public:
+        /*
+         */
+        nonvirtual size_t GetMinBytesPerCharacter () const;
+
+    public:
+        /*
+         */
+        nonvirtual size_t GetMaxBytesPerCharacter () const;
+
     private:
         shared_ptr<IRep> fRep_;
 
@@ -214,6 +224,8 @@ namespace Stroika::Foundation::Characters {
         virtual ~IRep ()                                                                                   = default;
         virtual result Bytes2Characters (span<const byte>* from, span<CHAR_T>* to, mbstate_t* state) const = 0;
         virtual result Characters2Bytes (span<const CHAR_T>* from, span<byte>* to, mbstate_t* state) const = 0;
+        virtual size_t GetMinBytesPerCharacter () const                                                    = 0;
+        virtual size_t GetMaxBytesPerCharacter () const                                                    = 0;
     };
 
 }

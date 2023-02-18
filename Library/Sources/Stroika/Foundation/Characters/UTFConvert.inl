@@ -128,6 +128,49 @@ namespace Stroika::Foundation::Characters {
     }
 
     template <Character_UNICODECanUnambiguouslyConvertFrom TO, Character_UNICODECanUnambiguouslyConvertFrom FROM>
+    constexpr size_t UTFConverter::ComputeTargetBufferSize (size_t srcSize)
+    {
+        if constexpr (sizeof (FROM) == sizeof (TO)) {
+            return srcSize; // not super useful to do this conversion, but given how if constexpr works/evaluates, its often important than this code compiles, even if it doesn't execute
+        }
+        if constexpr (sizeof (FROM) == 1) {
+            // worst case is each src byte is a character: for small buffers, not worth computing tighter limit but for larger, could
+            // plausibly avoid a malloc, and even without, more likely to avoid wasted RAM/fragmentation for larger allocations
+            return srcSize;
+        }
+        else if constexpr (sizeof (FROM) == 2) {
+            if constexpr (sizeof (TO) == 1) {
+                // From https://stackoverflow.com/questions/9533258/what-is-the-maximum-number-of-bytes-for-a-utf-8-encoded-character
+                // answer if translating only characters from UTF-16 to UTF-8: 4 bytes
+                // @todo fix this is really smaller... I think 3 - look at https://en.wikipedia.org/wiki/UTF-8 more closely
+
+                // also - for larger strings - MIGHT be worth a closer estimate?
+                return 4 * srcSize;
+            }
+            else {
+                Require (sizeof (TO) == 4);
+                return srcSize; // worst case is no surrogate pairs
+            }
+        }
+        else if constexpr (sizeof (FROM) == 4) {
+            if constexpr (sizeof (TO) == 1) {
+                // From https://stackoverflow.com/questions/9533258/what-is-the-maximum-number-of-bytes-for-a-utf-8-encoded-character
+                // the maximum number of bytes for a character in UTF-8 is ... 4 (really 4 safe now so use that - was 6 bytes)
+                return 4 * srcSize;
+            }
+            else if constexpr (sizeof (TO) == 2) {
+                return 2 * srcSize;
+            }
+            else {
+                return srcSize;
+            }
+        }
+        else {
+            AssertNotReached ();
+            return 0;
+        }
+    }
+    template <Character_UNICODECanUnambiguouslyConvertFrom TO, Character_UNICODECanUnambiguouslyConvertFrom FROM>
     constexpr size_t UTFConverter::ComputeTargetBufferSize (span<const FROM> src)
         requires (not is_const_v<TO>)
     {
@@ -137,67 +180,43 @@ namespace Stroika::Foundation::Characters {
         // its worth counting, but anything smaller will just end up in a fixed sized buffer, so the exact
         // count doesn't matter
         // @small performance todo!!!!
-        if constexpr (sizeof (FROM) == sizeof (TO)) {
-            return src.size (); // not super useful to do this conversion, but given how if constexpr works/evaluates, its often important than this code compiles, even if it doesn't execute
-        }
-        if constexpr (sizeof (FROM) == 1) {
-            // worst case is each src byte is a character: for small buffers, not worth computing tighter limit but for larger, could
-            // plausibly avoid a malloc, and even without, more likely to avoid wasted RAM/fragmentation for larger allocations
-            if constexpr (sizeof (TO) == 4) {
-                if (src.size () * sizeof (TO) > Memory::kStackBuffer_TargetInlineByteBufferSize) {
-                    if (auto i = ComputeCharacterLength (src)) {
-                        return *i;
+
+        // This code just checks cases where we peek at characters, then falls through to ComputeTargetBufferSize (size_t)
+        if constexpr (sizeof (FROM) != sizeof (TO)) {
+            if constexpr (sizeof (FROM) == 1) {
+                // worst case is each src byte is a character: for small buffers, not worth computing tighter limit but for larger, could
+                // plausibly avoid a malloc, and even without, more likely to avoid wasted RAM/fragmentation for larger allocations
+                if constexpr (sizeof (TO) == 4) {
+                    if (src.size () * sizeof (TO) > Memory::kStackBuffer_TargetInlineByteBufferSize) {
+                        if (auto i = ComputeCharacterLength (src)) {
+                            return *i;
+                        }
                     }
                 }
             }
-            return src.size ();
-        }
-        else if constexpr (sizeof (FROM) == 2) {
-            if constexpr (sizeof (TO) == 1) {
-                // From https://stackoverflow.com/questions/9533258/what-is-the-maximum-number-of-bytes-for-a-utf-8-encoded-character
-                // answer if translating only characters from UTF-16 to UTF-8: 4 bytes
-                // @todo fix this is really smaller... I think 3 - look at https://en.wikipedia.org/wiki/UTF-8 more closely
+            else if constexpr (sizeof (FROM) == 4) {
+                if constexpr (sizeof (TO) == 1) {
+                    // From https://stackoverflow.com/questions/9533258/what-is-the-maximum-number-of-bytes-for-a-utf-8-encoded-character
+                    // the maximum number of bytes for a character in UTF-8 is ... 4 (really 4 safe now so use that - was 6 bytes)
 
-                // also - for larger strings - MIGHT be worth a closer estimate?
-                return 4 * src.size ();
-            }
-            else {
-                Require (sizeof (TO) == 4);
-                return src.size (); // worst case is no surrogate pairs
-            }
-        }
-        else if constexpr (sizeof (FROM) == 4) {
-            if constexpr (sizeof (TO) == 1) {
-                // From https://stackoverflow.com/questions/9533258/what-is-the-maximum-number-of-bytes-for-a-utf-8-encoded-character
-                // the maximum number of bytes for a character in UTF-8 is ... 4 (really 4 safe now so use that - was 6 bytes)
-
-                // @todo this is probably worth walking the characters and doing a better estimate
-                if (src.size () * 4 > Memory::kStackBuffer_TargetInlineByteBufferSize) {
-                    // walk the characters, and see how much space each will use when encoded
-                    size_t sz{};
-                    for (auto c : src) {
-                        if (isascii (static_cast<char32_t> (c))) {
-                            ++sz;
+                    // @todo this is probably worth walking the characters and doing a better estimate
+                    if (src.size () * 4 > Memory::kStackBuffer_TargetInlineByteBufferSize) {
+                        // walk the characters, and see how much space each will use when encoded
+                        size_t sz{};
+                        for (auto c : src) {
+                            if (isascii (static_cast<char32_t> (c))) {
+                                ++sz;
+                            }
+                            else {
+                                sz += 4; // @todo look at cases/ranges - not too hard to do better than this - very frequently just two bytes
+                            }
                         }
-                        else {
-                            sz += 4; // @todo look at cases/ranges - not too hard to do better than this - very frequently just two bytes
-                        }
+                        return sz;
                     }
-                    return sz;
                 }
-                return 4 * src.size ();
-            }
-            else if constexpr (sizeof (TO) == 2) {
-                return 2 * src.size ();
-            }
-            else {
-                return src.size ();
             }
         }
-        else {
-            AssertNotReached ();
-            return 0;
-        }
+        return ComputeTargetBufferSize<TO,FROM> (src.size ());
     }
     template <Character_UNICODECanUnambiguouslyConvertFrom TO, Character_UNICODECanUnambiguouslyConvertFrom FROM>
     constexpr size_t UTFConverter::ComputeTargetBufferSize (span<FROM> src)

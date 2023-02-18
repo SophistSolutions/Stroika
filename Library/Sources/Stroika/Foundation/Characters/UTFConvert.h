@@ -138,6 +138,8 @@ namespace Stroika::Foundation::Characters {
          *        look at size, and if small just overestimate, but if input span is large, maybe worth the trouble and count
          *        multibyte characters?
          *
+         *  For the overload taking a size, and not the actual FROM span, this computes the upper bound size required.
+         * 
          *  @See ConvertQuietly ()
          *  @See Convert ()
          *  \Alias used to be called QuickComputeConversionOutputBufferSize
@@ -148,6 +150,8 @@ namespace Stroika::Foundation::Characters {
         template <Character_UNICODECanUnambiguouslyConvertFrom TO, Character_UNICODECanUnambiguouslyConvertFrom FROM>
         static constexpr size_t ComputeTargetBufferSize (span<FROM> src)
             requires (not is_const_v<TO>);
+        template <Character_UNICODECanUnambiguouslyConvertFrom TO, Character_UNICODECanUnambiguouslyConvertFrom FROM>
+        static constexpr size_t ComputeTargetBufferSize (size_t srcSize);
 
     public:
         /**
