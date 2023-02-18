@@ -680,7 +680,7 @@ namespace {
 
             const char*                                          sourceCursor = reinterpret_cast<const char*> (*sourceStart);
             char32_t*                                            outCursor    = *targetStart;
-            [[maybe_unused]] std::codecvt_utf8<char32_t>::result rr =
+            [[maybe_unused]] std::codecvt_utf8_utf16<char32_t>::result rr =
                 cvt.in (ignoredState, reinterpret_cast<const char*> (*sourceStart), reinterpret_cast<const char*> (sourceEnd), sourceCursor,
                         *targetStart, targetEnd, outCursor);
             *sourceStart = reinterpret_cast<const char8_t*> (sourceCursor);
@@ -699,7 +699,7 @@ namespace {
             mbstate_t                                                  ignoredState{};
             const char32_t*                                            sourceCursor = *sourceStart;
             char*                                                      outCursor    = reinterpret_cast<char*> (*targetStart);
-            [[maybe_unused]] std::codecvt_utf8_utf16<char32_t>::result rr =
+            [[maybe_unused]] std::codecvt_utf8<char32_t>::result rr =
                 cvt.out (ignoredState, *sourceStart, sourceEnd, sourceCursor, reinterpret_cast<char*> (*targetStart),
                          reinterpret_cast<char*> (targetEnd), outCursor);
             *sourceStart = reinterpret_cast<const char32_t*> (sourceCursor);
