@@ -216,7 +216,7 @@ namespace Stroika::Foundation::Characters {
                 }
             }
         }
-        return ComputeTargetBufferSize<TO,FROM> (src.size ());
+        return ComputeTargetBufferSize<TO, FROM> (src.size ());
     }
     template <Character_UNICODECanUnambiguouslyConvertFrom TO, Character_UNICODECanUnambiguouslyConvertFrom FROM>
     constexpr size_t UTFConverter::ComputeTargetBufferSize (span<FROM> src)
