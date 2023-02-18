@@ -120,6 +120,7 @@ namespace Stroika::Foundation::Streams {
         : fStrm_{underlyingReadFromStreamAdopted}
         , fOffset_{underlyingReadFromStreamAdopted.GetOffset ()}
     {
+        Require (underlyingReadFromStreamAdopted.IsSeekable ());
     }
     template <typename ELEMENT_TYPE>
     StreamReader<ELEMENT_TYPE>::~StreamReader ()

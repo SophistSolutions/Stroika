@@ -39,6 +39,8 @@ namespace Stroika::Foundation::Streams {
          *        through the input stream.
          * 
          *  \note At destruction, StreamReader automatically calls SyncrhonizeToUnderlyingStream
+         * 
+         *  \req underlyingReadFromStreamAdopted.Seekable ();
          */
         StreamReader (const typename InputStream<ElementType>::Ptr& underlyingReadFromStreamAdopted);
         StreamReader ()                    = delete;
