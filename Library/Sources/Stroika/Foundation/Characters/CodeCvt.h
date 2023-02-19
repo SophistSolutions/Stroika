@@ -63,12 +63,10 @@ namespace Stroika::Foundation::Characters {
      *              class introduces).
      *      o   Dont bother templating on MBSTATE, nor output byte type (std::covert supports all the useless
      *          ones but misses the most useful, at least for fileIO, binary IO)
+     *      o   Don't support 'partial' conversion. ALL 'srcSpan' data MUST be consumed/converted. If data incomplete
+     *          or partial, its an ERROR (treated as exception).
+     *          If there is insufficient space in the target buffer, this is an ASSERTION erorr - UNSUPPORTED.
      *      o   Don't support mbstate_t. Its opaque, and a PITA. And redundant.
-     *          Bytes2Characters and Characters2Bytes update the spans to reflect what was used so the caller
-     *          can tell that the conversion was partial. And easier to have caller re-pass in unused
-     *          data than carrying around state (which doesnt work well with seekable Streams).
-     *              << fix comment obsolet e- and now require 'from' always fully used, so change API to take value not reference!!!)
-     * 
      *      o   lots of templated combinations (codecvt) dont make sense and dont work and there is no hint/validation
      *          clarity about which you can use/make sense and which you cannot with std::codecvt. Hopefully
      *          this class will make more sense.
@@ -195,7 +193,7 @@ namespace Stroika::Foundation::Characters {
          * 
          *  \see the docs on 'error results, and partial status/error code' above
          */
-        nonvirtual result Bytes2Characters (span<const byte>* from, span<CHAR_T>* to) const;
+        nonvirtual result Bytes2Characters (span<const byte> from, span<CHAR_T>* to) const;
 
     public:
         /*
@@ -216,7 +214,7 @@ namespace Stroika::Foundation::Characters {
          * 
          *  \see the docs on 'error results, and partial status/error code' above
          */
-        nonvirtual result Characters2Bytes (span<const CHAR_T>* from, span<byte>* to) const;
+        nonvirtual result Characters2Bytes (span<const CHAR_T> from, span<byte>* to) const;
 
     public:
         /*
@@ -258,8 +256,8 @@ namespace Stroika::Foundation::Characters {
     template <Character_UNICODECanAlwaysConvertTo CHAR_T>
     struct CodeCvt<CHAR_T>::IRep {
         virtual ~IRep ()                                                                              = default;
-        virtual result Bytes2Characters (span<const byte>* from, span<CHAR_T>* to) const              = 0;
-        virtual result Characters2Bytes (span<const CHAR_T>* from, span<byte>* to) const              = 0;
+        virtual result Bytes2Characters (span<const byte> from, span<CHAR_T>* to) const               = 0;
+        virtual result Characters2Bytes (span<const CHAR_T> from, span<byte>* to) const               = 0;
         virtual size_t ComputeTargetCharacterBufferSize (variant<span<const byte>, size_t> src) const = 0;
         virtual size_t ComputeTargetByteBufferSize (variant<span<const CHAR_T>, size_t> src) const    = 0;
     };
