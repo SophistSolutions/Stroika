@@ -678,8 +678,8 @@ namespace {
             static const std::codecvt_utf8_utf16<char32_t> cvt;
             mbstate_t                                      ignoredState{};
 
-            const char*                                          sourceCursor = reinterpret_cast<const char*> (*sourceStart);
-            char32_t*                                            outCursor    = *targetStart;
+            const char*                                                sourceCursor = reinterpret_cast<const char*> (*sourceStart);
+            char32_t*                                                  outCursor    = *targetStart;
             [[maybe_unused]] std::codecvt_utf8_utf16<char32_t>::result rr =
                 cvt.in (ignoredState, reinterpret_cast<const char*> (*sourceStart), reinterpret_cast<const char*> (sourceEnd), sourceCursor,
                         *targetStart, targetEnd, outCursor);
@@ -695,10 +695,10 @@ namespace {
             // SIGH - DEPRECATED but ALSO more than twice as slow as my (lifted) implementation (not sure why - looks similar).
             //      --LGP 2022-12-17
             //  https://en.cppreference.com/w/cpp/locale/codecvt_utf8_utf16
-            static const std::codecvt_utf8<char32_t>                   cvt;
-            mbstate_t                                                  ignoredState{};
-            const char32_t*                                            sourceCursor = *sourceStart;
-            char*                                                      outCursor    = reinterpret_cast<char*> (*targetStart);
+            static const std::codecvt_utf8<char32_t>             cvt;
+            mbstate_t                                            ignoredState{};
+            const char32_t*                                      sourceCursor = *sourceStart;
+            char*                                                outCursor    = reinterpret_cast<char*> (*targetStart);
             [[maybe_unused]] std::codecvt_utf8<char32_t>::result rr =
                 cvt.out (ignoredState, *sourceStart, sourceEnd, sourceCursor, reinterpret_cast<char*> (*targetStart),
                          reinterpret_cast<char*> (targetEnd), outCursor);
