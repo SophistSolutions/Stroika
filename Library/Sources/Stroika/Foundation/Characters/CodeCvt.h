@@ -10,6 +10,7 @@
 #include <locale>
 #include <optional>
 #include <span>
+#include <variant>
 
 #include "Character.h"
 
@@ -220,8 +221,10 @@ namespace Stroika::Foundation::Characters {
     public:
         /*
          *  \note this may guess a size too large, but will always guess a size large enuf
+         *  In the case of the size_t overload, its obviously a worst-case guess
          */
         nonvirtual size_t ComputeTargetCharacterBufferSize (span<const byte> src) const;
+        nonvirtual size_t ComputeTargetCharacterBufferSize (size_t srcSize) const;
 
     public:
         /*
@@ -254,12 +257,11 @@ namespace Stroika::Foundation::Characters {
 
     template <Character_UNICODECanAlwaysConvertTo CHAR_T>
     struct CodeCvt<CHAR_T>::IRep {
-        virtual ~IRep ()                                                                 = default;
-        virtual result Bytes2Characters (span<const byte>* from, span<CHAR_T>* to) const = 0;
-        virtual result Characters2Bytes (span<const CHAR_T>* from, span<byte>* to) const = 0;
-        virtual size_t ComputeTargetCharacterBufferSize (span<const byte> src) const     = 0;
-        virtual size_t ComputeTargetByteBufferSize (span<const CHAR_T> src) const        = 0;
-        virtual size_t ComputeTargetByteBufferSize (size_t srcSize) const                = 0;
+        virtual ~IRep ()                                                                              = default;
+        virtual result Bytes2Characters (span<const byte>* from, span<CHAR_T>* to) const              = 0;
+        virtual result Characters2Bytes (span<const CHAR_T>* from, span<byte>* to) const              = 0;
+        virtual size_t ComputeTargetCharacterBufferSize (variant<span<const byte>, size_t> src) const = 0;
+        virtual size_t ComputeTargetByteBufferSize (variant<span<const CHAR_T>, size_t> src) const    = 0;
     };
 
 }

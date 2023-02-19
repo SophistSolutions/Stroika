@@ -116,17 +116,23 @@ namespace Stroika::Foundation::Characters {
             *to                          = to->subspan (0, r.fTargetProduced * sizeof (SERIALIZED_CHAR_T)); // point ACTUAL copied data
             return cvtR_ (r.fStatus);
         }
-        virtual size_t ComputeTargetCharacterBufferSize (span<const byte> src) const override
+        virtual size_t ComputeTargetCharacterBufferSize (variant<span<const byte>, size_t> src) const override
         {
-            return UTFConverter::ComputeTargetBufferSize<CHAR_T> (ReinterpretBytes_ (src));
+            if (const size_t* i = get_if<size_t> (&src)) {
+                return UTFConverter::ComputeTargetBufferSize<CHAR_T, SERIALIZED_CHAR_T> (*i);
+            }
+            else {
+                return UTFConverter::ComputeTargetBufferSize<CHAR_T> (ReinterpretBytes_ (get<span<const byte>> (src)));
+            }
         }
-        virtual size_t ComputeTargetByteBufferSize (span<const CHAR_T> src) const override
+        virtual size_t ComputeTargetByteBufferSize (variant<span<const CHAR_T>, size_t> src) const override
         {
-            return UTFConverter::ComputeTargetBufferSize<SERIALIZED_CHAR_T> (src);
-        }
-        virtual size_t ComputeTargetByteBufferSize (size_t srcSize) const override
-        {
-            return UTFConverter::ComputeTargetBufferSize<SERIALIZED_CHAR_T, SERIALIZED_CHAR_T> (srcSize);
+            if (const size_t* i = get_if<size_t> (&src)) {
+                return UTFConverter::ComputeTargetBufferSize<SERIALIZED_CHAR_T, CHAR_T> (*i);
+            }
+            else {
+                return UTFConverter::ComputeTargetBufferSize<SERIALIZED_CHAR_T> (get<span<const CHAR_T>> (src));
+            }
         }
         static result cvtR_ (UTFConverter::ConversionStatusFlag status)
         {
@@ -258,19 +264,28 @@ namespace Stroika::Foundation::Characters {
             // Then use fBytesVSIntermediateCvt_, no need to track anything in intermediateBuf, we require all used, no partials etc.
             return fBytesVSIntermediateCvt_.Characters2Bytes (&intermediateBuf, to);
         }
-        virtual size_t ComputeTargetCharacterBufferSize (span<const byte> src) const override
+        virtual size_t ComputeTargetCharacterBufferSize (variant<span<const byte>, size_t> src) const override
         {
-            fIntermediateVSFinalCHARCvt_.ComputeTargetBufferSize<CHAR_T, INTERMEDIATE_CHAR_T> (
-                fBytesVSIntermediateCvt_.ComputeTargetCharacterBufferSize (src));
+            // @todo fix wrong
+            if (const size_t* i = get_if<size_t> (&src)) {
+                return fBytesVSIntermediateCvt_.ComputeTargetByteBufferSize (
+                    fIntermediateVSFinalCHARCvt_.ComputeTargetBufferSize<INTERMEDIATE_CHAR_T, CHAR_T> (*i));
+            }
+            else {
+                fIntermediateVSFinalCHARCvt_.ComputeTargetBufferSize<CHAR_T, INTERMEDIATE_CHAR_T> (
+                    fBytesVSIntermediateCvt_.ComputeTargetCharacterBufferSize (src));
+            }
         }
-        virtual size_t ComputeTargetByteBufferSize (span<const CHAR_T> src) const override
+        virtual size_t ComputeTargetByteBufferSize (variant<span<const CHAR_T>, size_t> src) const override
         {
-            return fBytesVSIntermediateCvt_.ComputeTargetByteBufferSize (fIntermediateVSFinalCHARCvt_.ComputeTargetBufferSize<INTERMEDIATE_CHAR_T> (src));
-        }
-        virtual size_t ComputeTargetByteBufferSize (size_t srcSize) const override
-        {
-            return fBytesVSIntermediateCvt_.ComputeTargetByteBufferSize (
-                fIntermediateVSFinalCHARCvt_.ComputeTargetBufferSize<INTERMEDIATE_CHAR_T, CHAR_T> (srcSize));
+            if (const size_t* i = get_if<size_t> (&src)) {
+                return fBytesVSIntermediateCvt_.ComputeTargetByteBufferSize (
+                    fIntermediateVSFinalCHARCvt_.ComputeTargetBufferSize<INTERMEDIATE_CHAR_T, CHAR_T> (*i));
+            }
+            else {
+                return fBytesVSIntermediateCvt_.ComputeTargetByteBufferSize (
+                    fIntermediateVSFinalCHARCvt_.ComputeTargetBufferSize<INTERMEDIATE_CHAR_T> (get<span<const CHAR_T>> (src)));
+            }
         }
         CodeCvt<INTERMEDIATE_CHAR_T> fBytesVSIntermediateCvt_;
         UTFConverter                 fIntermediateVSFinalCHARCvt_;
@@ -321,18 +336,27 @@ namespace Stroika::Foundation::Characters {
             *to             = to->subspan (0, _Mid2 - _First2); // point ACTUAL copied data
             return r;
         }
-        virtual size_t ComputeTargetCharacterBufferSize (span<const byte> src) const override
+        virtual size_t ComputeTargetCharacterBufferSize (variant<span<const byte>, size_t> src) const override
         {
             // at most one character per byte, and std::codecvt doesn't appear to offer API to compute better
-            return src.size ();
+            if (const size_t* i = get_if<size_t> (&src)) {
+                return *i;
+            }
+            else {
+                return get<span<const byte>> (src).size ();
+            }
         }
-        virtual size_t ComputeTargetByteBufferSize (span<const CHAR_T> src) const override
+        virtual size_t ComputeTargetByteBufferSize (variant<span<const CHAR_T>, size_t> src) const override
         {
-            // std::codecvt doesn't appear to provide an API to compute needed buffer length (just the reverse -
-            // for a buffer length, how many bytes consumed).
-            return src.size () * fCodeCvt_->max_length ();
+            if (const size_t* i = get_if<size_t> (&src)) {
+                return (*i) * fCodeCvt_->max_length ();
+            }
+            else {
+                // std::codecvt doesn't appear to provide an API to compute needed buffer length (just the reverse -
+                // for a buffer length, how many bytes consumed).
+                return get<span<const CHAR_T>> (src).size () * fCodeCvt_->max_length ();
+            }
         }
-        virtual size_t ComputeTargetByteBufferSize (size_t srcSize) const override { return srcSize * fCodeCvt_->max_length (); }
     };
 
     /*
@@ -438,6 +462,11 @@ namespace Stroika::Foundation::Characters {
     inline size_t CodeCvt<CHAR_T>::ComputeTargetCharacterBufferSize (span<const byte> src) const
     {
         return fRep_->ComputeTargetCharacterBufferSize (src);
+    }
+    template <Character_UNICODECanAlwaysConvertTo CHAR_T>
+    inline size_t CodeCvt<CHAR_T>::ComputeTargetCharacterBufferSize (size_t srcSize) const
+    {
+        return fRep_->ComputeTargetCharacterBufferSize (srcSize);
     }
     template <Character_UNICODECanAlwaysConvertTo CHAR_T>
     inline size_t CodeCvt<CHAR_T>::ComputeTargetByteBufferSize (span<const CHAR_T> src) const
