@@ -58,11 +58,8 @@ namespace Stroika::Foundation::Streams {
                 case Characters::CodeCvt<Character>::ok:
                     _fSource.Write (trgSpan.data (), trgSpan.data () + trgSpan.size ());
                     break;
-                case Characters::CodeCvt<Character>::partial:
-                    AssertNotReached (); // arrange so this doesn't happen - thats what the big cvtBuf buffer is for!
                 case Characters::CodeCvt<Character>::error:
                     Execution::Throw (Execution::RuntimeErrorException{"Error converting characters to output format"sv});
-                case Characters::CodeCvt<Character>::noconv:
                 default:
                     AssertNotReached (); // arrange so this doesn't happen
             }

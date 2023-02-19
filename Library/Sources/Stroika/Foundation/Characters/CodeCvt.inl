@@ -44,14 +44,26 @@ namespace Stroika::Foundation::Characters {
             : fCodeConverter_{utfCodeCvt}
         {
         }
+        static span<const SERIALIZED_CHAR_T> ReinterpretBytes_ (span<const byte> s)
+        {
+            return span<const SERIALIZED_CHAR_T>{reinterpret_cast<const SERIALIZED_CHAR_T*> (s.data ()), s.size () / sizeof (SERIALIZED_CHAR_T)};
+        }
+        static span<SERIALIZED_CHAR_T> ReinterpretBytes_ (span<byte> s)
+        {
+            return span<SERIALIZED_CHAR_T>{reinterpret_cast<SERIALIZED_CHAR_T*> (s.data ()), s.size () / sizeof (SERIALIZED_CHAR_T)};
+        }
+        static span<byte> xxxReinterpretBytes_ (span<SERIALIZED_CHAR_T> s)
+        {
+            return span<const byte>{reinterpret_cast<byte*> (s.data ()), s.size () * sizeof (SERIALIZED_CHAR_T)};
+        }
         virtual result Bytes2Characters (span<const byte>* from, span<CHAR_T>* to) const override
         {
             RequireNotNull (from);
             RequireNotNull (to);
+            Require (to->size () >= ComputeTargetCharacterBufferSize (*from));
 
             // essentially 'cast' from bytes to from SERIALIZED_CHAR_T (could be char8_t, char16_t or whatever works with UTFConverter)
-            span<const SERIALIZED_CHAR_T> serializedFrom{reinterpret_cast<const SERIALIZED_CHAR_T*> (from->data ()),
-                                                         from->size () / sizeof (SERIALIZED_CHAR_T)};
+            span<const SERIALIZED_CHAR_T> serializedFrom = ReinterpretBytes_ (*from);
             Assert (serializedFrom.size_bytes () <= from->size ()); // note - serializedFrom could be smaller than from in bytespan
 
             auto handleShortTargetBuffer = [&] (span<const SERIALIZED_CHAR_T>* from, span<CHAR_T>* to) {
@@ -62,7 +74,8 @@ namespace Stroika::Foundation::Characters {
                     // could be smarter leveraging requiredTargetBufSize, but KISS for now
                     if (from->empty ()) {
                         *to = span<CHAR_T>{}; // say nothing output, but no change to input
-                        return CodeCvt<CHAR_T>::partial;
+                        AssertNotReached ();
+                        return CodeCvt<CHAR_T>::error;
                     }
                     *from = from->subspan (0, from->size () - 1); // shorten input til it fits safely (could be much faster if off by alot if we estimate and divide etc)
                 }
@@ -80,12 +93,11 @@ namespace Stroika::Foundation::Characters {
         {
             RequireNotNull (from);
             RequireNotNull (to);
+            Require (to->size () >= ComputeTargetByteBufferSize (*from));
 
             // essentially 'cast' from bytes to from SERIALIZED_CHAR_T (could be char8_t, char16_t or whatever works with UTFConverter)
-            span<SERIALIZED_CHAR_T> serializedTo{reinterpret_cast<SERIALIZED_CHAR_T*> (to->data ()), to->size () / sizeof (SERIALIZED_CHAR_T)};
-            Assert (serializedTo.size_bytes () <= to->size ()); // note - serializedTo could be smaller than to in bytespan
-
-            auto handleShortTargetBuffer = [&] (span<const CHAR_T>* from, span<SERIALIZED_CHAR_T>* to) {
+            span<SERIALIZED_CHAR_T> serializedTo            = ReinterpretBytes_ (*to);
+            auto                    handleShortTargetBuffer = [&] (span<const CHAR_T>* from, span<SERIALIZED_CHAR_T>* to) {
                 // one mismatch between the UTFConverter apis and ConvertQuietly, is ConvertQuietly REQUIRES
                 // the data fit in targetbuf. Since there is no requirement to use up all the source text, just reduce source text size
                 // to fit (and you can avoid this performance loss by using a larger output buffer)
@@ -93,7 +105,8 @@ namespace Stroika::Foundation::Characters {
                     // could be smarter leveraging requiredTargetBufSize, but KISS for now
                     if (from->empty ()) {
                         *to = span<SERIALIZED_CHAR_T>{}; // say nothing output, but no change to input
-                        return CodeCvt<CHAR_T>::partial;
+                        AssertNotReached ();
+                        return CodeCvt<CHAR_T>::error;
                     }
                     *from = from->subspan (0, from->size () - 1); // shorten input til it fits safely (could be much faster if off by alot if we estimate and divide etc)
                 }
@@ -107,10 +120,17 @@ namespace Stroika::Foundation::Characters {
             *to                          = to->subspan (0, r.fTargetProduced * sizeof (SERIALIZED_CHAR_T)); // point ACTUAL copied data
             return cvtR_ (r.fStatus);
         }
-        virtual size_t GetMinBytesPerCharacter () const override { return sizeof (SERIALIZED_CHAR_T); }
-        virtual size_t GetMaxBytesPerCharacter () const override
+        virtual size_t ComputeTargetCharacterBufferSize (span<const byte> src) const override
         {
-            return fCodeConverter_.ComputeTargetBufferSize<SERIALIZED_CHAR_T, CHAR_T> (1);
+            return UTFConverter::ComputeTargetBufferSize<CHAR_T> (ReinterpretBytes_ (src));
+        }
+        virtual size_t ComputeTargetByteBufferSize (span<const CHAR_T> src) const override
+        {
+            return UTFConverter::ComputeTargetBufferSize<SERIALIZED_CHAR_T> (src);
+        }
+        virtual size_t ComputeTargetByteBufferSize (size_t srcSize) const override
+        {
+            return UTFConverter::ComputeTargetBufferSize<SERIALIZED_CHAR_T, SERIALIZED_CHAR_T> (srcSize);
         }
         static result cvtR_ (UTFConverter::ConversionStatusFlag status)
         {
@@ -118,7 +138,8 @@ namespace Stroika::Foundation::Characters {
                 case ConversionStatusFlag::ok:
                     return CodeCvt<CHAR_T>::ok;
                 case ConversionStatusFlag::sourceExhausted:
-                    return CodeCvt<CHAR_T>::partial;
+                    AssertNotReached ();
+                    return CodeCvt<CHAR_T>::error;
                 case ConversionStatusFlag::sourceIllegal:
                     return CodeCvt<CHAR_T>::error;
                 default:
@@ -148,6 +169,7 @@ namespace Stroika::Foundation::Characters {
         {
             RequireNotNull (from);
             RequireNotNull (to);
+            Require (to->size () >= this->ComputeTargetCharacterBufferSize (*from));
             auto r = inherited::Bytes2Characters (from, to);
             for (CHAR_T& i : *to) {
                 if constexpr (is_same_v<CHAR_T, Character>) {
@@ -163,6 +185,7 @@ namespace Stroika::Foundation::Characters {
         {
             RequireNotNull (from);
             RequireNotNull (to);
+            Require (to->size () >= this->ComputeTargetByteBufferSize (*from));
             Memory::StackBuffer<CHAR_T> buf{*from};
             for (CHAR_T& i : buf) {
                 if constexpr (is_same_v<CHAR_T, Character>) {
@@ -185,79 +208,76 @@ namespace Stroika::Foundation::Characters {
      ********************************************************************************
      */
     template <Character_UNICODECanAlwaysConvertTo CHAR_T>
-    template <typename OTHER_CHAR_T>
+    template <typename INTERMEDIATE_CHAR_T>
     struct CodeCvt<CHAR_T>::UTF2UTFRep_ : CodeCvt<CHAR_T>::IRep {
         using result                     = typename CodeCvt<CHAR_T>::result;
         using ConversionResultWithStatus = UTFConverter::ConversionResultWithStatus;
         using ConversionStatusFlag       = UTFConverter::ConversionStatusFlag;
-        static_assert (sizeof (CHAR_T) != sizeof (OTHER_CHAR_T)); // use another rep for that case
-        UTF2UTFRep_ (const CodeCvt<OTHER_CHAR_T>& origCodeCvt, const UTFConverter& secondStep)
-            : fOrigCodeCvt_{origCodeCvt}
-            , fCodeConverter_{secondStep}
+        static_assert (sizeof (CHAR_T) != sizeof (INTERMEDIATE_CHAR_T)); // use another rep for that case
+        UTF2UTFRep_ (const CodeCvt<INTERMEDIATE_CHAR_T>& origCodeCvt, const UTFConverter& secondStep)
+            : fBytesVSIntermediateCvt_{origCodeCvt}
+            , fIntermediateVSFinalCHARCvt_{secondStep}
         {
         }
         virtual result Bytes2Characters (span<const byte>* from, span<CHAR_T>* to) const override
         {
             RequireNotNull (from);
             RequireNotNull (to);
+            Require (to->size () >= ComputeTargetCharacterBufferSize (*from));
 
-            // @todo INADEQUATE - FIRST DRAFT
+            /*
+             *  Big picture: fBytesVSIntermediateCvt_ goes bytes <--> INTERMEDIATE_CHAR_T, so we use it first.
+             */
 
-            span<const byte>                  startFrom = *from;
-            Memory::StackBuffer<OTHER_CHAR_T> intermediateBuf{1024}; // wrong size
-            span<const OTHER_CHAR_T>          intermediateSpan   = span<OTHER_CHAR_T>{intermediateBuf.data (), intermediateBuf.size ()};
-            result                            intermediateResult = fOrigCodeCvt_.Bytes2Characters (&startFrom, &intermediateSpan);
-            if (intermediateResult != ok) {
-                *from = startFrom;
-                *to   = span<CHAR_T>{}; // nothing
-                return intermediateResult;
+            // Because we KNOW everything will fit, we can allocate a temporary buffer for the intermediate state, and be done with
+            // it by the end of this routine (stay stateless)
+            Memory::StackBuffer<INTERMEDIATE_CHAR_T> intermediateBuf{fBytesVSIntermediateCvt_.ComputeTargetCharacterBufferSize (*from)};
+            span<INTERMEDIATE_CHAR_T>                intermediateSpan{intermediateBuf.data (), intermediateBuf.size ()};
+
+            if (auto err = fBytesVSIntermediateCvt_.Characters2Bytes (from, &intermediateBuf); err != ok) {
+                return err;
             }
-            // OK - now use fCodeConverter_ to perform the last step
 
-            // @todo something like handleShortTargetBuffer - to handle that case - but trickier
-
-            if (fCodeConverter_.ComputeTargetBufferSize<CHAR_T> (intermediateBuf) <= to->size ()) {
-                // efficient, map directly
-                *to = fCodeConverter_.ConvertSpan (intermediateBuf, *to);
-                return ok;
-            }
-            else {
-                // world of hurt...
-                AssertNotImplemented ();
-                return CodeCvt<CHAR_T>::error;
-            }
+            // then use fBytesVSIntermediateCvt_ to perform final mapping
+            *to = fBytesVSIntermediateCvt_.Convert (intermediateBuf, *to);
         }
         virtual result Characters2Bytes (span<const CHAR_T>* from, span<byte>* to) const override
         {
             RequireNotNull (from);
             RequireNotNull (to);
+            Require (to->size () >= ComputeTargetByteBufferSize (*from));
 
-            // @todo INADEQUATE - FIRST DRAFT
+            /*
+             *  Because we KNOW everything will fit, we can allocate a temporary buffer for the intermediate state, and be done with
+             *  it by the end of this routine (stay stateless)
+             */
+            Memory::StackBuffer<INTERMEDIATE_CHAR_T> intermediateBuf{fIntermediateVSFinalCHARCvt_.ComputeTargetBufferSize<INTERMEDIATE_CHAR_T> (*from)};
 
-            // first translate to something usable by fOrigCodeCvt_
-            Memory::StackBuffer<OTHER_CHAR_T> intermediateBuf{fCodeConverter_.ComputeTargetBufferSize<OTHER_CHAR_T> (*from)};
-            span<OTHER_CHAR_T>                intermediateSpan =
-                fCodeConverter_.Convert (*from, span<OTHER_CHAR_T>{intermediateBuf.data (), intermediateBuf.size ()});
+            /*
+             *  first translate to something usable by fBytesVSIntermediateCvt_
+             */
+            span<INTERMEDIATE_CHAR_T> intermediateSpan =
+                fIntermediateVSFinalCHARCvt_.Convert (*from, span<INTERMEDIATE_CHAR_T>{intermediateBuf.data (), intermediateBuf.size ()});
 
-            result r = fOrigCodeCvt_.Characters2Bytes (&intermediateBuf, to);
-            if (r == CodeCvt<CHAR_T>::ok) {
-                // to has been updated
-                // must fix from - in this case, we appear to have used all of from
-                *from = span<const CHAR_T>{};
-                return r;
-            }
-            else {
-                AssertNotImplemented ();
-                return CodeCvt<CHAR_T>::error;
-            }
+            // Then use fBytesVSIntermediateCvt_, no need to track anything in intermediateBuf, we require all used, no partials etc.
+            return fBytesVSIntermediateCvt_.Characters2Bytes (&intermediateBuf, to);
         }
-        virtual size_t GetMinBytesPerCharacter () const override { return fOrigCodeCvt_.GetMinBytesPerCharacter (); }
-        virtual size_t GetMaxBytesPerCharacter () const override
+        virtual size_t ComputeTargetCharacterBufferSize (span<const byte> src) const override
         {
-            return fCodeConverter_.ComputeTargetBufferSize<OTHER_CHAR_T> (fOrigCodeCvt_.GetMaxBytesPerCharacter ());
+            fIntermediateVSFinalCHARCvt_.ComputeTargetBufferSize<CHAR_T, INTERMEDIATE_CHAR_T> (
+                fBytesVSIntermediateCvt_.ComputeTargetCharacterBufferSize (src));
         }
-        CodeCvt<OTHER_CHAR_T> fOrigCodeCvt_;
-        UTFConverter          fCodeConverter_;
+        virtual size_t ComputeTargetByteBufferSize (span<const CHAR_T> src) const override
+        {
+            return fBytesVSIntermediateCvt_.ComputeTargetByteBufferSize (fIntermediateVSFinalCHARCvt_.ComputeTargetBufferSize<INTERMEDIATE_CHAR_T> (src));
+        }
+        virtual size_t ComputeTargetByteBufferSize (size_t srcSize) const override
+        {
+            return fBytesVSIntermediateCvt_.ComputeTargetByteBufferSize (
+                fIntermediateVSFinalCHARCvt_.ComputeTargetBufferSize<INTERMEDIATE_CHAR_T, CHAR_T> (srcSize));
+        }
+        CodeCvt<INTERMEDIATE_CHAR_T> fBytesVSIntermediateCvt_;
+        UTFConverter                 fIntermediateVSFinalCHARCvt_;
     };
 
     /*
@@ -277,6 +297,7 @@ namespace Stroika::Foundation::Characters {
         }
         virtual result Bytes2Characters (span<const byte>* from, span<CHAR_T>* to) const override
         {
+            Require (to->size () >= ComputeTargetCharacterBufferSize (*from));
             const extern_type* _First1 = reinterpret_cast<const extern_type*> (from->data ());
             const extern_type* _Last1  = _First1 + from->size ();
             const extern_type* _Mid1   = _First1; // DOUBLE CHECK SPEC - NOT SURE IF THIS IS USED ON INPUT
@@ -291,6 +312,7 @@ namespace Stroika::Foundation::Characters {
         }
         virtual result Characters2Bytes (span<const CHAR_T>* from, span<byte>* to) const override
         {
+            Require (to->size () >= ComputeTargetByteBufferSize (*from));
             const CHAR_T* _First1 = from->data ();
             const CHAR_T* _Last1  = _First1 + from->size ();
             const CHAR_T* _Mid1   = _First1; // DOUBLE CHECK SPEC - NOT SURE IF THIS IS USED ON INPUT
@@ -303,8 +325,18 @@ namespace Stroika::Foundation::Characters {
             *to             = to->subspan (0, _Mid2 - _First2); // point ACTUAL copied data
             return r;
         }
-        virtual size_t GetMinBytesPerCharacter () const override { return 1; };
-        virtual size_t GetMaxBytesPerCharacter () const override { return fCodeCvt_->do_max_length (); };
+        virtual size_t ComputeTargetCharacterBufferSize (span<const byte> src) const override
+        {
+            // at most one character per byte, and std::codecvt doesn't appear to offer API to compute better
+            return src.size ();
+        }
+        virtual size_t ComputeTargetByteBufferSize (span<const CHAR_T> src) const override
+        {
+            // std::codecvt doesn't appear to provide an API to compute needed buffer length (just the reverse -
+            // for a buffer length, how many bytes consumed).
+            return src.size () * fCodeCvt_->max_length ();
+        }
+        virtual size_t ComputeTargetByteBufferSize (size_t srcSize) const override { return srcSize * fCodeCvt_->max_length (); }
     };
 
     /*
@@ -378,9 +410,9 @@ namespace Stroika::Foundation::Characters {
         }
     }
     template <Character_UNICODECanAlwaysConvertTo CHAR_T>
-    template <Character_UNICODECanAlwaysConvertTo OTHER_CHAR_T>
-    inline CodeCvt<CHAR_T>::CodeCvt (const CodeCvt<OTHER_CHAR_T>& basedOn)
-        : fRep_{make_shared<UTF2UTFRep_<OTHER_CHAR_T>> (basedOn)}
+    template <Character_UNICODECanAlwaysConvertTo INTERMEDIATE_CHAR_T>
+    inline CodeCvt<CHAR_T>::CodeCvt (const CodeCvt<INTERMEDIATE_CHAR_T>& basedOn)
+        : fRep_{make_shared<UTF2UTFRep_<INTERMEDIATE_CHAR_T>> (basedOn)}
     {
     }
     template <Character_UNICODECanAlwaysConvertTo CHAR_T>
@@ -394,6 +426,7 @@ namespace Stroika::Foundation::Characters {
         AssertNotNull (fRep_);
         RequireNotNull (from);
         RequireNotNull (to);
+        Require (to->size () >= ComputeTargetCharacterBufferSize (*from));
         return fRep_->Bytes2Characters (from, to);
     }
     template <Character_UNICODECanAlwaysConvertTo CHAR_T>
@@ -402,17 +435,23 @@ namespace Stroika::Foundation::Characters {
         AssertNotNull (fRep_);
         RequireNotNull (from);
         RequireNotNull (to);
+        Require (to->size () >= ComputeTargetByteBufferSize (*from));
         return fRep_->Characters2Bytes (from, to);
     }
     template <Character_UNICODECanAlwaysConvertTo CHAR_T>
-    inline size_t CodeCvt<CHAR_T>::GetMinBytesPerCharacter () const
+    inline size_t CodeCvt<CHAR_T>::ComputeTargetCharacterBufferSize (span<const byte> src) const
     {
-        return fRep_->GetMinBytesPerCharacter ();
+        return fRep_->ComputeTargetCharacterBufferSize (src);
     }
     template <Character_UNICODECanAlwaysConvertTo CHAR_T>
-    inline size_t CodeCvt<CHAR_T>::GetMaxBytesPerCharacter () const
+    inline size_t CodeCvt<CHAR_T>::ComputeTargetByteBufferSize (span<const CHAR_T> src) const
     {
-        return fRep_->GetMaxBytesPerCharacter ();
+        return fRep_->ComputeTargetByteBufferSize (src);
+    }
+    template <Character_UNICODECanAlwaysConvertTo CHAR_T>
+    inline size_t CodeCvt<CHAR_T>::ComputeTargetByteBufferSize (size_t srcSize) const
+    {
+        return fRep_->ComputeTargetByteBufferSize (srcSize);
     }
 
 }

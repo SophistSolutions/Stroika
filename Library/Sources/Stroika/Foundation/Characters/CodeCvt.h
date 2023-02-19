@@ -45,7 +45,7 @@ namespace Stroika::Foundation::Characters {
         inline constexpr bool IsStdCodeCvt_<std::codecvt<_Elem, _Byte, _Statype>> = true;
     }
     /**
-    *   @todo confused thy this is working with codecvt_by_name - think I need to change for that.
+     *   @todo confused thy this is working with codecvt_by_name - think I need to change for that.
      */
     template <typename STD_CODECVT_T>
     concept IsStdCodeCVTT = Private_::IsStdCodeCvt_<STD_CODECVT_T>;
@@ -54,10 +54,10 @@ namespace Stroika::Foundation::Characters {
      *  \brief CodeCvt unifies byte<-> unicode conversions, vaguely inspired by (and wraps) std::codecvt, as well as UTFConverter etc, to map between span<bytes> and a span<UNICODE code-point>
      * 
      *  Enhancements over std::codecvt:
-     *      o   You can subclass Rep (provide your own CodeCvt implementation) and copy CodeCvt objects.
+     *      o   You can subclass Rep (to provide your own CodeCvt implementation) and copy CodeCvt objects.
      *          (unless I'm missing something, you can do one or the other with std::codecvt, but not both)
      *      o   Simpler backend virtual API, so easier to create your own compliant CodeCvt object.
-     *          o   CodeCvt leverages these two things via, UTFConverter (which uses different library backends to do
+     *          o   CodeCvt leverages these two things via UTFConverter (which uses different library backends to do
      *              the UTF code conversion, hopefully enuf faster to make up for the virtual call overhead this
      *              class introduces).
      *      o   Dont bother templating on MBSTATE, nor output byte type (std::covert supports all the useless
@@ -66,6 +66,8 @@ namespace Stroika::Foundation::Characters {
      *          Bytes2Characters and Characters2Bytes update the spans to reflect what was used so the caller
      *          can tell that the conversion was partial. And easier to have caller re-pass in unused
      *          data than carrying around state (which doesnt work well with seekable Streams).
+     *              << fix comment obsolet e- and now require 'from' always fully used, so change API to take value not reference!!!)
+     * 
      *      o   lots of templated combinations (codecvt) dont make sense and dont work and there is no hint/validation
      *          clarity about which you can use/make sense and which you cannot with std::codecvt. Hopefully
      *          this class will make more sense.
@@ -77,6 +79,13 @@ namespace Stroika::Foundation::Characters {
      *      o   No explicit 'external_type' exposed. Just bytes go in and out vs (CHAR_T) UNICODE characters.
      *          This erasure of the 'encoding' type from the CodeCvt<CHAR_T> allows it to be used generically
      *          where its hidden in the 'rep' what kind of encoding is used.
+     * 
+     *  Difference:
+     *      o   Maybe enhancement, maybe step back
+     *          Must call ComputeTargetCharacterBufferSize/ComputeTargetByteBufferSize and provide
+     *          an output buffer large enuf. This way, can NEVER get get partial conversion (which simplfies alot
+     *          within this API).
+     *      o   no 'noconv' error code.
      * 
      *  Enhancements over UTFConverter:
      *      o   UTFConverter only supports UNICODE <-> UNICODE translations, even if in different
@@ -113,12 +122,13 @@ namespace Stroika::Foundation::Characters {
          *  necessarily be processed. But each Bytes2Characters/Characters2Bytes call tells how
          *  many of each were processed. And just track the MBState as you progress through your
          *  input buffer, and you will be fine, regardless of the underlying implementation (whther it uses mbstate or not).
+         * 
+         *  LIKE codecvt_base::result enum, except strongly typed, and no 'noconv' and no partial'
          */
-        using result                    = codecvt_base::result;  // codecvt results - sadly seem to be int, not enum - but 4
-        static constexpr result ok      = codecvt_base::ok;      // conversion succeeded
-        static constexpr result partial = codecvt_base::partial; // not all source converted because target buffer too small
-        static constexpr result error = codecvt_base::error; // some data maybe converted (see in/out params) - but typically doesn't matter - just throw
-        static constexpr result noconv = codecvt_base::noconv; // probably cannot happen with this class (TBD)
+        enum result {
+            ok,
+            error // data mal-formed, bad code points etc...
+        };
 
     public:
         struct IRep;
@@ -154,8 +164,8 @@ namespace Stroika::Foundation::Characters {
         CodeCvt ();
         CodeCvt (const locale& = locale{});
         CodeCvt (UnicodeExternalEncodings e);
-        template <Character_UNICODECanAlwaysConvertTo OTHER_CHAR_T>
-        CodeCvt (const CodeCvt<OTHER_CHAR_T>& basedOn);
+        template <Character_UNICODECanAlwaysConvertTo INTERMEDIATE_CHAR_T>
+        CodeCvt (const CodeCvt<INTERMEDIATE_CHAR_T>& basedOn);
         template <IsStdCodeCVTT STD_CODECVT, typename... ARGS>
         CodeCvt (ARGS... args);
         CodeCvt (const shared_ptr<IRep>& rep);
@@ -164,7 +174,13 @@ namespace Stroika::Foundation::Characters {
         /**
          *  \brief convert span byte parameters to characters (like std::codecvt<>::in () - but with spans, and use ptr to be clear in/out)
          * 
-         *  convert bytes 'from' to characters 'to'. Spans on input, src and target buffers. spans on output 
+         *  convert bytes 'from' to characters 'to'. 
+         *
+         *  Spans on input bytes to be converted, and targetSpan buffer to be converted into. 
+         *
+         *  spans on output: from is remaining bytes to be used (so compliment of bytes used),
+         *  and target span is span of characters actually produced.
+         * 
          *  are amount remaining to be used 'from' and amount actually filled into 'to'.
          *  
          *  Source bytes must begin on a valid character boundary, and if they include at the end
@@ -173,6 +189,8 @@ namespace Stroika::Foundation::Characters {
          *  \note we use the name 'Bytes' - because its suggestive of meaning, and in every case I'm aware of
          *        the target type will be char, or char8_t, or byte. But its certainly not guaranteed to be serialized
          *        to std::byte, and the codecvt API calls this extern_type
+         * 
+         *  \req to->size () >= ComputeTargetCharacterBufferSize (*from) on input.
          * 
          *  \see the docs on 'error results, and partial status/error code' above
          */
@@ -193,19 +211,25 @@ namespace Stroika::Foundation::Characters {
          *        the target type will be char, or char8_t, or byte. But its certainly not guaranteed to be serialized
          *        to std::byte, and the codecvt API calls this extern_type
          * 
+         *  \req to->size () >= ComputeTargetByteBufferSize (*from) on input.
+         * 
          *  \see the docs on 'error results, and partial status/error code' above
          */
         nonvirtual result Characters2Bytes (span<const CHAR_T>* from, span<byte>* to) const;
 
     public:
         /*
+         *  \note this may guess a size too large, but will always guess a size large enuf
          */
-        nonvirtual size_t GetMinBytesPerCharacter () const;
+        nonvirtual size_t ComputeTargetCharacterBufferSize (span<const byte> src) const;
 
     public:
         /*
+         *  \note this may guess a size too large, but will always guess a size large enuf
+         *  In the case of the size_t overload, its obviously a worst-case guess
          */
-        nonvirtual size_t GetMaxBytesPerCharacter () const;
+        nonvirtual size_t ComputeTargetByteBufferSize (span<const CHAR_T> src) const;
+        nonvirtual size_t ComputeTargetByteBufferSize (size_t srcSize) const;
 
     private:
         shared_ptr<IRep> fRep_;
@@ -219,7 +243,7 @@ namespace Stroika::Foundation::Characters {
         struct UTFConvertSwappedRep_;
 
     private:
-        template <typename OTHER_CHAR_T>
+        template <typename INTERMEDIATE_CHAR_T>
         struct UTF2UTFRep_;
 
     private:
@@ -233,8 +257,9 @@ namespace Stroika::Foundation::Characters {
         virtual ~IRep ()                                                                 = default;
         virtual result Bytes2Characters (span<const byte>* from, span<CHAR_T>* to) const = 0;
         virtual result Characters2Bytes (span<const CHAR_T>* from, span<byte>* to) const = 0;
-        virtual size_t GetMinBytesPerCharacter () const                                  = 0;
-        virtual size_t GetMaxBytesPerCharacter () const                                  = 0;
+        virtual size_t ComputeTargetCharacterBufferSize (span<const byte> src) const     = 0;
+        virtual size_t ComputeTargetByteBufferSize (span<const CHAR_T> src) const        = 0;
+        virtual size_t ComputeTargetByteBufferSize (size_t srcSize) const                = 0;
     };
 
 }
