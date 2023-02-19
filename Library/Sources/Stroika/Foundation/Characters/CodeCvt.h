@@ -106,28 +106,7 @@ namespace Stroika::Foundation::Characters {
     template <Character_UNICODECanAlwaysConvertTo CHAR_T>
     class CodeCvt {
     public:
-        using intern_type = CHAR_T; // what codecvt calls the character type
-
-    public:
-        /*
-         *  Notes about error results, and partial status/error code.
-         * 
-         *  Some codecvt implementations (namely the std c++ - so primarily locale - conversions may use the 
-         *  std::mbstate_t to store data from partial conversions. Some implementations (such as UTFConverter)
-         *  may not. This API is sadly general enuf to allow for either case (cuz not too hard to accomodate
-         *  in use, but unfortunate).
-         * 
-         *  Just understand, regardless of mbstate support, not all the input or output characters will
-         *  necessarily be processed. But each Bytes2Characters/Characters2Bytes call tells how
-         *  many of each were processed. And just track the MBState as you progress through your
-         *  input buffer, and you will be fine, regardless of the underlying implementation (whther it uses mbstate or not).
-         * 
-         *  LIKE codecvt_base::result enum, except strongly typed, and no 'noconv' and no partial'
-         */
-        enum result {
-            ok,
-            error // data mal-formed, bad code points etc...
-        };
+        using intern_type = CHAR_T; // what codecvt calls the (internal/CHAR_T) character type
 
     public:
         struct IRep;
@@ -171,18 +150,19 @@ namespace Stroika::Foundation::Characters {
 
     public:
         /**
-         *  \brief convert span byte parameters to characters (like std::codecvt<>::in () - but with spans, and use ptr to be clear in/out)
+         *  \brief convert span byte (external serialized format) parameters to characters (like std::codecvt<>::in () - but with spans, and simpler api)
          * 
          *  convert bytes 'from' to characters 'to'. 
          *
-         *  Spans on input bytes to be converted, and targetSpan buffer to be converted into. 
+         *  Arguments:
+         *      o   span<byte> from - all of which will be converted or an exeception thrown (only if data corrupt/unconvertable).
+         *      o   span<CHAR_T> to - buffer to have data converted 'into', which MUST be large enuf (call ComputeTargetCharacterBufferSize)
          *
-         *  spans on output: from is remaining bytes to be used (so compliment of bytes used),
-         *  and target span is span of characters actually produced.
+         *  Returns:
+         *      subspan of 'to', with converted characters.
          * 
-         *  are amount remaining to be used 'from' and amount actually filled into 'to'.
-         *  
-         *  Source bytes must begin on a valid character boundary, and if they include at the end
+         * &&& REWRITE WHEN I FIX API
+         *  Source bytes must begin on a valid character boundary (unlike codecvt - no mbstate).
          *  incomplete charactrs, then not all the 'from' byte buffer will be used.
          * 
          *  \note we use the name 'Bytes' - because its suggestive of meaning, and in every case I'm aware of
@@ -193,7 +173,7 @@ namespace Stroika::Foundation::Characters {
          * 
          *  \see the docs on 'error results, and partial status/error code' above
          */
-        nonvirtual result Bytes2Characters (span<const byte> from, span<CHAR_T>* to) const;
+        nonvirtual span<CHAR_T> Bytes2Characters (span<const byte> from, span<CHAR_T> to) const;
 
     public:
         /*
@@ -214,7 +194,7 @@ namespace Stroika::Foundation::Characters {
          * 
          *  \see the docs on 'error results, and partial status/error code' above
          */
-        nonvirtual result Characters2Bytes (span<const CHAR_T> from, span<byte>* to) const;
+        nonvirtual span<byte> Characters2Bytes (span<const CHAR_T> from, span<byte> to) const;
 
     public:
         /*
@@ -256,8 +236,8 @@ namespace Stroika::Foundation::Characters {
     template <Character_UNICODECanAlwaysConvertTo CHAR_T>
     struct CodeCvt<CHAR_T>::IRep {
         virtual ~IRep ()                                                                              = default;
-        virtual result Bytes2Characters (span<const byte> from, span<CHAR_T>* to) const               = 0;
-        virtual result Characters2Bytes (span<const CHAR_T> from, span<byte>* to) const               = 0;
+        virtual void   Bytes2Characters (span<const byte> from, span<CHAR_T>* to) const               = 0;
+        virtual void   Characters2Bytes (span<const CHAR_T> from, span<byte>* to) const               = 0;
         virtual size_t ComputeTargetCharacterBufferSize (variant<span<const byte>, size_t> src) const = 0;
         virtual size_t ComputeTargetByteBufferSize (variant<span<const CHAR_T>, size_t> src) const    = 0;
     };

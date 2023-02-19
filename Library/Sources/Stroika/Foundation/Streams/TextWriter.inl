@@ -54,15 +54,8 @@ namespace Stroika::Foundation::Streams {
             Memory::StackBuffer<std::byte> cvtBuf{size_t (end - start) * 5}; // excessive but start with that
             auto                           srcSpan = span<const Character>{start, end};
             auto                           trgSpan = span<byte>{cvtBuf.data (), cvtBuf.size ()};
-            switch (_fConverter.Characters2Bytes (srcSpan, &trgSpan)) {
-                case Characters::CodeCvt<Character>::ok:
-                    _fSource.Write (trgSpan.data (), trgSpan.data () + trgSpan.size ());
-                    break;
-                case Characters::CodeCvt<Character>::error:
-                    Execution::Throw (Execution::RuntimeErrorException{"Error converting characters to output format"sv});
-                default:
-                    AssertNotReached (); // arrange so this doesn't happen
-            }
+            trgSpan                                = _fConverter.Characters2Bytes (srcSpan, trgSpan);
+            _fSource.Write (trgSpan.data (), trgSpan.data () + trgSpan.size ());
         }
         virtual void Flush () override
         {
