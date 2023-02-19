@@ -51,8 +51,8 @@ namespace Stroika::Foundation::Characters {
             span<const SERIALIZED_CHAR_T> serializedFrom = ReinterpretBytes_ (*from);
             Assert (serializedFrom.size_bytes () <= from->size ()); // note - serializedFrom could be smaller than from in bytespan
             ConversionResult r = fCodeConverter_.Convert (serializedFrom, *to);
-            *from              = from->subspan (r.fSourceConsumed);     // from updated to remaining data, if any
-            *to = to->subspan (0, r.fTargetProduced); // point ACTUAL copied data
+            *from              = from->subspan (r.fSourceConsumed);  // from updated to remaining data, if any
+            *to                = to->subspan (0, r.fTargetProduced); // point ACTUAL copied data
         }
         virtual void Characters2Bytes (span<const CHAR_T> from, span<byte>* to) const override
         {
@@ -60,13 +60,13 @@ namespace Stroika::Foundation::Characters {
             Require (to->size () >= ComputeTargetByteBufferSize (from));
             span<SERIALIZED_CHAR_T> serializedTo = ReinterpretBytes_ (*to);
             ConversionResult        r            = fCodeConverter_.Convert (from, serializedTo);
-            Require (r.fSourceConsumed == from.size ());                            // always use all input characters
-            *to = to->subspan (0, r.fTargetProduced * sizeof (SERIALIZED_CHAR_T));  // point ACTUAL copied data
+            Require (r.fSourceConsumed == from.size ());                           // always use all input characters
+            *to = to->subspan (0, r.fTargetProduced * sizeof (SERIALIZED_CHAR_T)); // point ACTUAL copied data
         }
         virtual size_t ComputeTargetCharacterBufferSize (variant<span<const byte>, size_t> src) const override
         {
             if (const size_t* i = get_if<size_t> (&src)) {
-                return UTFConverter::ComputeTargetBufferSize<CHAR_T, SERIALIZED_CHAR_T> (*i/sizeof (SERIALIZED_CHAR_T));
+                return UTFConverter::ComputeTargetBufferSize<CHAR_T, SERIALIZED_CHAR_T> (*i / sizeof (SERIALIZED_CHAR_T));
             }
             else {
                 return UTFConverter::ComputeTargetBufferSize<CHAR_T> (ReinterpretBytes_ (get<span<const byte>> (src)));
