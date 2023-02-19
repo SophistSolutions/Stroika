@@ -149,7 +149,6 @@ namespace Stroika::Foundation::Characters {
     template <Character_UNICODECanAlwaysConvertTo CHAR_T>
     template <typename INTERMEDIATE_CHAR_T>
     struct CodeCvt<CHAR_T>::UTF2UTFRep_ : CodeCvt<CHAR_T>::IRep {
-        using result                     = typename CodeCvt<CHAR_T>::result;
         using ConversionResultWithStatus = UTFConverter::ConversionResultWithStatus;
         using ConversionStatusFlag       = UTFConverter::ConversionStatusFlag;
         static_assert (sizeof (CHAR_T) != sizeof (INTERMEDIATE_CHAR_T)); // use another rep for that case
