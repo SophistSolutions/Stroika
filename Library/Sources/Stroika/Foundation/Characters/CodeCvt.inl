@@ -52,10 +52,6 @@ namespace Stroika::Foundation::Characters {
         {
             return span<SERIALIZED_CHAR_T>{reinterpret_cast<SERIALIZED_CHAR_T*> (s.data ()), s.size () / sizeof (SERIALIZED_CHAR_T)};
         }
-        static span<byte> xxxReinterpretBytes_ (span<SERIALIZED_CHAR_T> s)
-        {
-            return span<const byte>{reinterpret_cast<byte*> (s.data ()), s.size () * sizeof (SERIALIZED_CHAR_T)};
-        }
         virtual result Bytes2Characters (span<const byte>* from, span<CHAR_T>* to) const override
         {
             RequireNotNull (from);
