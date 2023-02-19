@@ -61,11 +61,13 @@ namespace Stroika::Foundation::Characters {
      *          o   CodeCvt leverages these two things via UTFConverter (which uses different library backends to do
      *              the UTF code conversion, hopefully enuf faster to make up for the virtual call overhead this
      *              class introduces).
-     *      o   Dont bother templating on MBSTATE, nor output byte type (std::covert supports all the useless
-     *          ones but misses the most useful, at least for fileIO, binary IO)
-     *      o   Don't support 'partial' conversion. ALL 'srcSpan' data MUST be consumed/converted. If data incomplete
-     *          or partial, its an ERROR (treated as exception).
+     *      o   Don't support 'partial' conversion.
      *          If there is insufficient space in the target buffer, this is an ASSERTION erorr - UNSUPPORTED.
+     *          ALL 'srcSpan' CHARACTER data MUST be consumed/converted; for byte data, we allow
+     *          only a single partial character at the end (so Bytes2Characters takes ptr to span and updates span
+     *          to reflect remaining bytes).
+     *      o   Dont bother templating output byte type (std::covert supports all the useless
+     *          ones but misses the most useful, at least for fileIO, binary IO)
      *      o   Don't support mbstate_t. Its opaque, and a PITA. And redundant.
      *      o   lots of templated combinations (codecvt) dont make sense and dont work and there is no hint/validation
      *          clarity about which you can use/make sense and which you cannot with std::codecvt. Hopefully
@@ -82,7 +84,7 @@ namespace Stroika::Foundation::Characters {
      *  Difference:
      *      o   Maybe enhancement, maybe step back
      *          Must call ComputeTargetCharacterBufferSize/ComputeTargetByteBufferSize and provide
-     *          an output buffer large enuf. This way, can NEVER get get partial conversion (which simplfies alot
+     *          an output buffer large enuf. This way, can NEVER get get partial conversion due to lack of output buffer space (which simplfies alot
      *          within this API).
      *      o   no 'noconv' error code.
      * 
@@ -96,12 +98,6 @@ namespace Stroika::Foundation::Characters {
      *
      *  CodeCvt as smart Ptr class, and an 'abstract class' (IRep) in that only for some CHAR_T types
      *  can it be instantiated direcly (the ones std c++ supports, char_16_t, char32_t, and wchar_t with locale).
-     * 
-     *  \note About Target Buffer Sizes:
-     *        Unlike UTFConverter, CodeCvt allows an undersized target buff (@todo RECONSIDER IF GOOD IDEA).
-     *        That causes TONS of problem.
-     *        MUCH more complex code.
-     *        But upshot - dont do this - always give enuf target buffer, to at least avoid performance penalties
      */
     template <Character_UNICODECanAlwaysConvertTo CHAR_T>
     class CodeCvt {
@@ -152,7 +148,7 @@ namespace Stroika::Foundation::Characters {
         /**
          *  \brief convert span byte (external serialized format) parameters to characters (like std::codecvt<>::in () - but with spans, and simpler api)
          * 
-         *  convert bytes 'from' to characters 'to'. 
+         *  Convert bytes 'from' to characters 'to'. 
          *
          *  Arguments:
          *      o   span<byte> from - all of which will be converted or an exeception thrown (only if data corrupt/unconvertable).
@@ -160,39 +156,45 @@ namespace Stroika::Foundation::Characters {
          *
          *  Returns:
          *      subspan of 'to', with converted characters.
+         *      Throws on failure.
          * 
-         * &&& REWRITE WHEN I FIX API
          *  Source bytes must begin on a valid character boundary (unlike codecvt - no mbstate).
-         *  incomplete charactrs, then not all the 'from' byte buffer will be used.
+         *  If the input buffer ends with any incomplete characters, *from will refer to those characters
+         *  on function completion.
+         * 
+         *  The caller typically will wish to save those, and resubmit their BytesToCharacter call
+         *  with a new buffer, starting with those (but there is no requirement to do so).
          * 
          *  \note we use the name 'Bytes' - because its suggestive of meaning, and in every case I'm aware of
          *        the target type will be char, or char8_t, or byte. But its certainly not guaranteed to be serialized
          *        to std::byte, and the codecvt API calls this extern_type
          * 
-         *  \req to->size () >= ComputeTargetCharacterBufferSize (*from) on input.
-         * 
-         *  \see the docs on 'error results, and partial status/error code' above
+         *  \req to.size () >= ComputeTargetCharacterBufferSize (*from) on input.
          */
-        nonvirtual span<CHAR_T> Bytes2Characters (span<const byte> from, span<CHAR_T> to) const;
+        nonvirtual span<CHAR_T> Bytes2Characters (span<const byte>* from, span<CHAR_T> to) const;
 
     public:
         /*
-         *  \brief convert span characerter parameters to a span of bytes (like std::codecvt<>::out () - but with spans, and use ptr to be clear in/out)
+         *  \brief convert span<character> parameter to a span of bytes (like std::codecvt<>::out () - but with spans, and otherwise simpler API)
          * 
-         *  convert characters 'from' to bytes 'to'. Spans on input, src and target buffers. spans on output 
-         *  are amount remaining to be used 'from' and amount actually filled into 'to'.
+         *  Convert characters 'from' to bytes 'to'. 
          * 
-         *  No state is maintained between calls. If there isn't enough room in 'to' for all the characters
-         *  'from' wished to encode, then not all of from will be used. Thats how caller can tell. (well - as is - cannot tell maybe wasnt enuf space in to).
-         *  maybe WORTH returing partial flag?
+         *  Arguments:
+         *      o   span<character> from - all of which will be converted or an exeception thrown (only if data corrupt/unconvertable).
+         *      o   span<byte> to - buffer to have data converted 'into', which MUST be large enuf (call ComputeTargetByteBufferSize)
+         *
+         *  Returns:
+         *      (sub)subspan of 'to', with characters converted to appropriate span of bytes.
+         *      Throws on failure.
          * 
-         *  \note we use the name 'Bytes' - because its suggestive of meaning, and in every case I'm aware of
+         *  No state is maintained. ALL the input is converted to all the output, on character
+         *  boundaries.
+         * 
+         *  \note we use the name 'Bytes' - because its suggestive of meaning, and in most cases
          *        the target type will be char, or char8_t, or byte. But its certainly not guaranteed to be serialized
          *        to std::byte, and the codecvt API calls this extern_type
          * 
-         *  \req to->size () >= ComputeTargetByteBufferSize (*from) on input.
-         * 
-         *  \see the docs on 'error results, and partial status/error code' above
+         *  \req to.size () >= ComputeTargetByteBufferSize (from) on input.
          */
         nonvirtual span<byte> Characters2Bytes (span<const CHAR_T> from, span<byte> to) const;
 
@@ -236,7 +238,7 @@ namespace Stroika::Foundation::Characters {
     template <Character_UNICODECanAlwaysConvertTo CHAR_T>
     struct CodeCvt<CHAR_T>::IRep {
         virtual ~IRep ()                                                                              = default;
-        virtual void   Bytes2Characters (span<const byte> from, span<CHAR_T>* to) const               = 0;
+        virtual void   Bytes2Characters (span<const byte>* from, span<CHAR_T>* to) const              = 0;
         virtual void   Characters2Bytes (span<const CHAR_T> from, span<byte>* to) const               = 0;
         virtual size_t ComputeTargetCharacterBufferSize (variant<span<const byte>, size_t> src) const = 0;
         virtual size_t ComputeTargetByteBufferSize (variant<span<const CHAR_T>, size_t> src) const    = 0;

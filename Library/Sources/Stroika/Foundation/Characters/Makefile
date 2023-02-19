@@ -20,6 +20,7 @@ vpath %cpp $(SrcDir)
 
 Objs	=	\
 	$(ObjDir)Character${OBJ_SUFFIX}\
+	$(ObjDir)CodeCvt${OBJ_SUFFIX}\
 	$(ObjDir)CodePage${OBJ_SUFFIX}\
 	$(ObjDir)FloatConversion${OBJ_SUFFIX}\
 	$(ObjDir)Format${OBJ_SUFFIX}\
