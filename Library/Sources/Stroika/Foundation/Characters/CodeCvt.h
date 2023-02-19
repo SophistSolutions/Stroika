@@ -55,7 +55,7 @@ namespace Stroika::Foundation::Characters {
      *  \brief CodeCvt unifies byte<-> unicode conversions, vaguely inspired by (and wraps) std::codecvt, as well as UTFConverter etc, to map between span<bytes> and a span<UNICODE code-point>
      * 
      *  Enhancements over std::codecvt:
-     *      o   You can subclass Rep (to provide your own CodeCvt implementation) and copy CodeCvt objects.
+     *      o   You can subclass IRep (to provide your own CodeCvt implementation) and copy CodeCvt objects.
      *          (unless I'm missing something, you can do one or the other with std::codecvt, but not both)
      *      o   Simpler backend virtual API, so easier to create your own compliant CodeCvt object.
      *          o   CodeCvt leverages these two things via UTFConverter (which uses different library backends to do
@@ -63,8 +63,8 @@ namespace Stroika::Foundation::Characters {
      *              class introduces).
      *      o   Don't support 'partial' conversion.
      *          If there is insufficient space in the target buffer, this is an ASSERTION erorr - UNSUPPORTED.
-     *          ALL 'srcSpan' CHARACTER data MUST be consumed/converted; for byte data, we allow
-     *          only a single partial character at the end (so Bytes2Characters takes ptr to span and updates span
+     *          ALL 'srcSpan' CHARACTER data MUST be consumed/converted (for byte data; we allow
+     *          only a single partial character at the end for Bytes2Characters takes ptr to span and updates span
      *          to reflect remaining bytes).
      *      o   Dont bother templating output byte type (std::covert supports all the useless
      *          ones but misses the most useful, at least for fileIO, binary IO)
@@ -82,7 +82,7 @@ namespace Stroika::Foundation::Characters {
      *          where its hidden in the 'rep' what kind of encoding is used.
      * 
      *  Difference:
-     *      o   Maybe enhancement, maybe step back
+     *      o   Maybe enhancement, maybe step back:
      *          Must call ComputeTargetCharacterBufferSize/ComputeTargetByteBufferSize and provide
      *          an output buffer large enuf. This way, can NEVER get get partial conversion due to lack of output buffer space (which simplfies alot
      *          within this API).
@@ -114,7 +114,7 @@ namespace Stroika::Foundation::Characters {
          *      and UTF-8 (as the binary format).
          * 
          *   To use (wrap) existing std::codecvt<A,B,C> class:
-         *      Tricky, because classes not generally directly instantiatable, so instead specify CLASS as template param
+         *      Quirky, because classes not generally directly instantiatable, so instead specify CLASS as template param
          *      and ARGS to CTOR.
          *          CodeCvt<CHAR_T,std::codecvt<CHAR_T, BINARY_T, MBSTATE_T>> {args to that class}
          *          Note works with subclasses of std::codecvt like std::codecvt_byname
@@ -151,12 +151,13 @@ namespace Stroika::Foundation::Characters {
          *  Convert bytes 'from' to characters 'to'. 
          *
          *  Arguments:
-         *      o   span<byte> from - all of which will be converted or an exeception thrown (only if data corrupt/unconvertable).
+         *      o   span<byte> from - initially all of which will be converted or an exeception thrown (only if data corrupt/unconvertable) (updated to point to bytes which form part of a single additional character)
          *      o   span<CHAR_T> to - buffer to have data converted 'into', which MUST be large enuf (call ComputeTargetCharacterBufferSize)
          *
          *  Returns:
          *      subspan of 'to', with converted characters.
          *      Throws on failure.
+         *      And '*from' updated to reflect any remaining bytes that are part of the next character.
          * 
          *  Source bytes must begin on a valid character boundary (unlike codecvt - no mbstate).
          *  If the input buffer ends with any incomplete characters, *from will refer to those characters
@@ -165,6 +166,9 @@ namespace Stroika::Foundation::Characters {
          *  The caller typically will wish to save those, and resubmit their BytesToCharacter call
          *  with a new buffer, starting with those (but there is no requirement to do so).
          * 
+         *  No state is maintained. ALL the input is converted expect possibly a few bytes at the end of the input
+         *  which consitute a partial character.
+         *
          *  \note we use the name 'Bytes' - because its suggestive of meaning, and in every case I'm aware of
          *        the target type will be char, or char8_t, or byte. But its certainly not guaranteed to be serialized
          *        to std::byte, and the codecvt API calls this extern_type
@@ -200,6 +204,8 @@ namespace Stroika::Foundation::Characters {
 
     public:
         /*
+         *  \brief Compute the size of 'to' span to use in call to Bytes2Characters
+         * 
          *  \note this may guess a size too large, but will always guess a size large enuf
          *  In the case of the size_t overload, its obviously a worst-case guess
          */
@@ -208,6 +214,8 @@ namespace Stroika::Foundation::Characters {
 
     public:
         /*
+         *  \brief Compute the size of 'to' span to use in call to Characters2Bytes
+         * 
          *  \note this may guess a size too large, but will always guess a size large enuf
          *  In the case of the size_t overload, its obviously a worst-case guess
          */

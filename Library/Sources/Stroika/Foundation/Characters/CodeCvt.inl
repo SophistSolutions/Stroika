@@ -44,41 +44,29 @@ namespace Stroika::Foundation::Characters {
             : fCodeConverter_{utfCodeCvt}
         {
         }
-        static span<const SERIALIZED_CHAR_T> ReinterpretBytes_ (span<const byte> s)
-        {
-            return span<const SERIALIZED_CHAR_T>{reinterpret_cast<const SERIALIZED_CHAR_T*> (s.data ()), s.size () / sizeof (SERIALIZED_CHAR_T)};
-        }
-        static span<SERIALIZED_CHAR_T> ReinterpretBytes_ (span<byte> s)
-        {
-            return span<SERIALIZED_CHAR_T>{reinterpret_cast<SERIALIZED_CHAR_T*> (s.data ()), s.size () / sizeof (SERIALIZED_CHAR_T)};
-        }
         virtual void Bytes2Characters (span<const byte>* from, span<CHAR_T>* to) const override
         {
             RequireNotNull (from);
             Require (to->size () >= ComputeTargetCharacterBufferSize (*from));
-
-            // essentially 'cast' from bytes to from SERIALIZED_CHAR_T (could be char8_t, char16_t or whatever works with UTFConverter)
             span<const SERIALIZED_CHAR_T> serializedFrom = ReinterpretBytes_ (*from);
             Assert (serializedFrom.size_bytes () <= from->size ()); // note - serializedFrom could be smaller than from in bytespan
             ConversionResult r = fCodeConverter_.Convert (serializedFrom, *to);
-            Require (r.fSourceConsumed == from->size ());
+            *from              = from->subspan (r.fSourceConsumed);     // from updated to remaining data, if any
             *to = to->subspan (0, r.fTargetProduced); // point ACTUAL copied data
         }
         virtual void Characters2Bytes (span<const CHAR_T> from, span<byte>* to) const override
         {
             RequireNotNull (to);
             Require (to->size () >= ComputeTargetByteBufferSize (from));
-
-            // essentially 'cast' from bytes to from SERIALIZED_CHAR_T (could be char8_t, char16_t or whatever works with UTFConverter)
             span<SERIALIZED_CHAR_T> serializedTo = ReinterpretBytes_ (*to);
-            ConversionResult        r            = fCodeConverter_.ConvertQuietly (from, serializedTo);
-            Require (r.fSourceConsumed == from.size ());
-            *to = to->subspan (0, r.fTargetProduced * sizeof (SERIALIZED_CHAR_T)); // point ACTUAL copied data
+            ConversionResult        r            = fCodeConverter_.Convert (from, serializedTo);
+            Require (r.fSourceConsumed == from.size ());                            // always use all input characters
+            *to = to->subspan (0, r.fTargetProduced * sizeof (SERIALIZED_CHAR_T));  // point ACTUAL copied data
         }
         virtual size_t ComputeTargetCharacterBufferSize (variant<span<const byte>, size_t> src) const override
         {
             if (const size_t* i = get_if<size_t> (&src)) {
-                return UTFConverter::ComputeTargetBufferSize<CHAR_T, SERIALIZED_CHAR_T> (*i);
+                return UTFConverter::ComputeTargetBufferSize<CHAR_T, SERIALIZED_CHAR_T> (*i/sizeof (SERIALIZED_CHAR_T));
             }
             else {
                 return UTFConverter::ComputeTargetBufferSize<CHAR_T> (ReinterpretBytes_ (get<span<const byte>> (src)));
@@ -92,6 +80,17 @@ namespace Stroika::Foundation::Characters {
             else {
                 return UTFConverter::ComputeTargetBufferSize<SERIALIZED_CHAR_T> (get<span<const CHAR_T>> (src)) * sizeof (SERIALIZED_CHAR_T);
             }
+        }
+        /*
+         *  essentially 'cast' from bytes to from SERIALIZED_CHAR_T (could be char8_t, char16_t or whatever works with UTFConverter)
+         */
+        static span<const SERIALIZED_CHAR_T> ReinterpretBytes_ (span<const byte> s)
+        {
+            return span<const SERIALIZED_CHAR_T>{reinterpret_cast<const SERIALIZED_CHAR_T*> (s.data ()), s.size () / sizeof (SERIALIZED_CHAR_T)};
+        }
+        static span<SERIALIZED_CHAR_T> ReinterpretBytes_ (span<byte> s)
+        {
+            return span<SERIALIZED_CHAR_T>{reinterpret_cast<SERIALIZED_CHAR_T*> (s.data ()), s.size () / sizeof (SERIALIZED_CHAR_T)};
         }
         UTFConverter fCodeConverter_;
     };
