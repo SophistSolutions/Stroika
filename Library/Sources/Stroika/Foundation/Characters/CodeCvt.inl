@@ -307,15 +307,8 @@ namespace Stroika::Foundation::Characters {
     template <Character_UNICODECanAlwaysConvertTo CHAR_T>
     inline CodeCvt<CHAR_T>::CodeCvt ()
     {
-        if constexpr (sizeof (CHAR_T) == 1) {
-            fRep_ = make_shared<UTFConvertRep_<char8_t>> (UTFConverter::kThe);
-        }
-        else if constexpr (sizeof (CHAR_T) == 2) {
-            fRep_ = make_shared<UTFConvertRep_<char16_t>> (UTFConverter::kThe);
-        }
-        else if constexpr (sizeof (CHAR_T) == 4) {
-            fRep_ = make_shared<UTFConvertRep_<char32_t>> (UTFConverter::kThe);
-        }
+        // default, is to serialize to UTF-8
+        fRep_ = make_shared<UTFConvertRep_<char8_t>> (UTFConverter::kThe);
     }
     template <Character_UNICODECanAlwaysConvertTo CHAR_T>
     inline CodeCvt<CHAR_T>::CodeCvt (const locale& l)

@@ -1769,23 +1769,23 @@ namespace {
         {
             CodeCvt<char16_t>         codeCvt1{};
             constexpr char16_t        someRandomText[] = u"hello mom";
-            Memory::StackBuffer<byte> buf{codeCvt1.ComputeTargetByteBufferSize (span{someRandomText})};
-            auto b = codeCvt1.Characters2Bytes (span{someRandomText} , span{buf});
+             span < const char16_t> someRandomTextSpan{someRandomText, Characters::CString::Length (someRandomText)};
+            Memory::StackBuffer<byte> buf{codeCvt1.ComputeTargetByteBufferSize (someRandomTextSpan)};
+            auto                       b = codeCvt1.Characters2Bytes (someRandomTextSpan, span{buf});
             VerifyTestResult (b.size () == 9 and b[0] == static_cast<byte> ('h'));
         }
-        #if 0
+#if 0
         {
             // codeCvt Between UTF16 Characters And UTF8BinaryFormat using std::codecvt<char16_t, char8_t, std::mbstate_t>
              CodeCvt<char16_t> codeCvt2 = CodeCvt<char16_t, std::codecvt<char16_t, char8_t, std::mbstate_t>>{};
         }
-        #endif
+#endif
 #if 0
         {
              CodeCvt<char16_t> codeCvt3 = CodeCvt < char16_t,
                                 std::codecvt_byname >> {locale{"en_US.UTF8"}};
         }
 #endif
-       
     }
 }
 namespace {
