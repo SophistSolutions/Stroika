@@ -44,6 +44,8 @@ namespace Stroika::Foundation::Characters {
         inline constexpr bool IsStdCodeCvt_ = false;
         template <class _Elem, class _Byte, class _Statype>
         inline constexpr bool IsStdCodeCvt_<std::codecvt<_Elem, _Byte, _Statype>> = true;
+        template <class _Elem, class _Byte, class _Statype>
+        inline constexpr bool IsStdCodeCvt_<std::codecvt_byname<_Elem, _Byte, _Statype>> = true;
     }
     /**
      *   @todo confused thy this is working with codecvt_by_name - think I need to change for that.
@@ -150,7 +152,8 @@ namespace Stroika::Foundation::Characters {
          *  explicitly with a static function, and that is what we do with mkFromStdCodeCvt.
          */
         template <IsStdCodeCVTT STD_CODECVT, typename... ARGS>
-        static CodeCvt mkFromStdCodeCvt (ARGS... args);
+        static CodeCvt mkFromStdCodeCvt (ARGS... args)
+            requires (is_same_v<CHAR_T, typename STD_CODECVT::intern_type>);
 
     public:
         /**

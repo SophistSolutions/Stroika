@@ -1774,20 +1774,25 @@ namespace {
             VerifyTestResult (b.size () == 9 and b[0] == static_cast<byte> ('h'));
         };
         {
+            // simple fast converter from char16_t characters <-> UTF-8
             CodeCvt<char16_t> codeCvt1{};
             codeCvtChar16Test (codeCvt1);
-        }
-        {
-            // codeCvt Between UTF16 Characters And UTF8 Binary Format using std::codecvt<char16_t, char8_t, std::mbstate_t>
+            // CodeCvt between char16_t characters <-> UTF-8 using std::codecvt<char16_t, char8_t, std::mbstate_t>
             CodeCvt<char16_t> codeCvt2 = CodeCvt<char16_t>::mkFromStdCodeCvt<std::codecvt<char16_t, char8_t, std::mbstate_t>> ();
             codeCvtChar16Test (codeCvt2);
-        }
+
+            // Now using codecvt_byname (locale converter)
+            CodeCvt<wchar_t> codeCvt3a =
+                CodeCvt<wchar_t>::mkFromStdCodeCvt<std::codecvt_byname<wchar_t, char8_t, std::mbstate_t>> ("en_US.UTF8");
 #if 0
-        {
-             CodeCvt<char16_t> codeCvt3 = CodeCvt < char16_t,
-                                std::codecvt_byname >> {locale{"en_US.UTF8"}};
-        }
+            // @todo get these working
+            CodeCvt<char32_t> codeCvt3b =
+                CodeCvt<wchar_t>::mkFromStdCodeCvt<std::codecvt_byname<wchar_t, char8_t, std::mbstate_t>> ("en_US.UTF8");
+            CodeCvt<char16_t> codeCvt3c =
+                CodeCvt<wchar_t>::mkFromStdCodeCvt<std::codecvt_byname<wchar_t, char8_t, std::mbstate_t>> ("en_US.UTF8");
+               codeCvtChar16Test (codeCvt3c);
 #endif
+        }
     }
 }
 namespace {

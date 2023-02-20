@@ -372,6 +372,7 @@ namespace Stroika::Foundation::Characters {
     template <Character_UNICODECanAlwaysConvertTo CHAR_T>
     template <IsStdCodeCVTT STD_CODECVT, typename... ARGS>
     inline CodeCvt<CHAR_T> CodeCvt<CHAR_T>::mkFromStdCodeCvt (ARGS... args)
+        requires (is_same_v<CHAR_T, typename STD_CODECVT::intern_type>)
     {
         auto u = make_unique<Private_::deletable_facet_<STD_CODECVT>> (forward<ARGS> (args)...);
         return CodeCvt<CHAR_T>{make_shared<CodeCvt_WrapStdCodeCvt_<Private_::deletable_facet_<STD_CODECVT>>> (move (u))};
