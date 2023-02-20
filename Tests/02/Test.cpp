@@ -1770,7 +1770,8 @@ namespace {
             CodeCvt<char16_t>         codeCvt1{};
             constexpr char16_t        someRandomText[] = u"hello mom";
             Memory::StackBuffer<byte> buf{codeCvt1.ComputeTargetByteBufferSize (span{someRandomText})};
-            codeCvt1.Characters2Bytes (span{someRandomText} , span{buf});
+            auto b = codeCvt1.Characters2Bytes (span{someRandomText} , span{buf});
+            VerifyTestResult (b.size () == 9 and b[0] == static_cast<byte> ('h'));
         }
         #if 0
         {
