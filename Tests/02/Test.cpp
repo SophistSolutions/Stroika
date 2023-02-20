@@ -1769,9 +1769,9 @@ namespace {
         {
             CodeCvt<char16_t>         codeCvt1{};
             constexpr char16_t        someRandomText[] = u"hello mom";
-             span < const char16_t> someRandomTextSpan{someRandomText, Characters::CString::Length (someRandomText)};
+            span<const char16_t>      someRandomTextSpan{someRandomText, Characters::CString::Length (someRandomText)};
             Memory::StackBuffer<byte> buf{codeCvt1.ComputeTargetByteBufferSize (someRandomTextSpan)};
-            auto                       b = codeCvt1.Characters2Bytes (someRandomTextSpan, span{buf});
+            auto                      b = codeCvt1.Characters2Bytes (someRandomTextSpan, span{buf});
             VerifyTestResult (b.size () == 9 and b[0] == static_cast<byte> ('h'));
         }
 #if 0
