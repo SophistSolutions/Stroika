@@ -1766,20 +1766,22 @@ namespace {
 namespace {
     void Test58_CodeCVT_ ()
     {
-        {
-            CodeCvt<char16_t>         codeCvt1{};
+        auto codeCvtChar16Test = [] (CodeCvt<char16_t> ccvt) {
             constexpr char16_t        someRandomText[] = u"hello mom";
             span<const char16_t>      someRandomTextSpan{someRandomText, Characters::CString::Length (someRandomText)};
-            Memory::StackBuffer<byte> buf{codeCvt1.ComputeTargetByteBufferSize (someRandomTextSpan)};
-            auto                      b = codeCvt1.Characters2Bytes (someRandomTextSpan, span{buf});
+            Memory::StackBuffer<byte> buf{ccvt.ComputeTargetByteBufferSize (someRandomTextSpan)};
+            auto                      b = ccvt.Characters2Bytes (someRandomTextSpan, span{buf});
             VerifyTestResult (b.size () == 9 and b[0] == static_cast<byte> ('h'));
-        }
-#if 0
+        };
         {
-            // codeCvt Between UTF16 Characters And UTF8BinaryFormat using std::codecvt<char16_t, char8_t, std::mbstate_t>
-             CodeCvt<char16_t> codeCvt2 = CodeCvt<char16_t, std::codecvt<char16_t, char8_t, std::mbstate_t>>{};
+            CodeCvt<char16_t> codeCvt1{};
+            codeCvtChar16Test (codeCvt1);
         }
-#endif
+        {
+            // codeCvt Between UTF16 Characters And UTF8 Binary Format using std::codecvt<char16_t, char8_t, std::mbstate_t>
+            CodeCvt<char16_t> codeCvt2 = CodeCvt<char16_t>::mkFromStdCodeCvt<std::codecvt<char16_t, char8_t, std::mbstate_t>> ();
+            codeCvtChar16Test (codeCvt2);
+        }
 #if 0
         {
              CodeCvt<char16_t> codeCvt3 = CodeCvt < char16_t,

@@ -241,13 +241,15 @@ namespace Stroika::Foundation::Characters {
             const extern_type* _First1 = reinterpret_cast<const extern_type*> (from->data ());
             const extern_type* _Last1  = _First1 + from->size ();
             const extern_type* _Mid1   = _First1; // DOUBLE CHECK SPEC - NOT SURE IF THIS IS USED ON INPUT
-            CHAR_T*            _First2 = to->data ();
-            CHAR_T*            _Last2  = _First2 + to->size ();
+            CHAR_T*            _First2 = to.data ();
+            CHAR_T*            _Last2  = _First2 + to.size ();
             CHAR_T*            _Mid2   = _First2; // DOUBLE CHECK SPEC - NOT SURE IF THIS IS USED ON INPUT
             mbstate_t          ignoredMBState{};
             auto               r = fCodeCvt_->in (ignoredMBState, _First1, _Last1, _Mid1, _First2, _Last2, _Mid2);
+
             if (r == STD_CODE_CVT_T::partial) {
-                from = from->subspan (_Mid2 - _First2); // reference remaining bytes, could be partial character at end of multibyte sequence
+                span<const byte> fred = from->subspan (static_cast<size_t> (_Mid2 - _First2)); // reference remaining bytes, could be partial character at end of multibyte sequence
+                *from = fred;
                 Assert (from->size () != 0);
             }
             else if (r != STD_CODE_CVT_T::ok) {
@@ -325,12 +327,6 @@ namespace Stroika::Foundation::Characters {
         }
     }
     template <Character_UNICODECanAlwaysConvertTo CHAR_T>
-    template <IsStdCodeCVTT STD_CODECVT, typename... ARGS>
-    inline CodeCvt<CHAR_T>::CodeCvt (ARGS... args)
-        : fRep_{make_shared<CodeCvt_WrapStdCodeCvt_<Private_::deletable_facet_<STD_CODECVT>>> (forward<ARGS> (args)...)}
-    {
-    }
-    template <Character_UNICODECanAlwaysConvertTo CHAR_T>
     inline CodeCvt<CHAR_T>::CodeCvt (UnicodeExternalEncodings e)
         : fRep_{}
     {
@@ -372,6 +368,13 @@ namespace Stroika::Foundation::Characters {
     inline CodeCvt<CHAR_T>::CodeCvt (const shared_ptr<IRep>& rep)
         : fRep_{(RequireNotNull (rep), rep)}
     {
+    }
+    template <Character_UNICODECanAlwaysConvertTo CHAR_T>
+    template <IsStdCodeCVTT STD_CODECVT, typename... ARGS>
+    inline CodeCvt<CHAR_T> CodeCvt<CHAR_T>::mkFromStdCodeCvt (ARGS... args)
+    {
+        auto u = make_unique<Private_::deletable_facet_<STD_CODECVT>> (forward<ARGS> (args)...);
+        return CodeCvt<CHAR_T>{make_shared<CodeCvt_WrapStdCodeCvt_<Private_::deletable_facet_<STD_CODECVT>>> (move (u))};
     }
     template <Character_UNICODECanAlwaysConvertTo CHAR_T>
     inline auto CodeCvt<CHAR_T>::Bytes2Characters (span<const byte>* from, span<CHAR_T> to) const -> span<CHAR_T>

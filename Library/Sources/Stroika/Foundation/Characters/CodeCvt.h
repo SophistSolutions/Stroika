@@ -129,7 +129,7 @@ namespace Stroika::Foundation::Characters {
          *          CodeCvt<char16_t> codeCvt1{};           
          * 
          *          // codeCvt Between UTF16 Characters And UTF8BinaryFormat using std::codecvt<char16_t, char8_t, std::mbstate_t>
-         *          CodeCvt<char16_t> codeCvt2 = CodeCvt<char16_t,std::codecvt<char16_t, char8_t, std::mbstate_t>>{};
+         *          CodeCvt<char16_t> codeCvt2 = CodeCvt<char16_t>::mkFromStdCodeCvt<std::codecvt<char16_t, char8_t, std::mbstate_t>> ();
          * 
          *          // codeCvt Between UTF16 Characters using codecvt_byname
          *          CodeCvt<char16_t> codeCvt3 = CodeCvt<char16_t,std::codecvt_byname>>{locale{"en_US.UTF8"}};
@@ -140,9 +140,17 @@ namespace Stroika::Foundation::Characters {
         CodeCvt (UnicodeExternalEncodings e);
         template <Character_UNICODECanAlwaysConvertTo INTERMEDIATE_CHAR_T>
         CodeCvt (const CodeCvt<INTERMEDIATE_CHAR_T>& basedOn);
-        template <IsStdCodeCVTT STD_CODECVT, typename... ARGS>
-        CodeCvt (ARGS... args);
         CodeCvt (const shared_ptr<IRep>& rep);
+
+    public:
+        /**
+         *  Note, though logically this should be a CodeCvt, since you cannot directly construct
+         *  the STD_CODECVT, it cannot be passed by argument to the constructor. And so their
+         *  appears now way to deduce or specify those constructor template arguments. But that can be done
+         *  explicitly with a static function, and that is what we do with mkFromStdCodeCvt.
+         */
+        template <IsStdCodeCVTT STD_CODECVT, typename... ARGS>
+        static CodeCvt mkFromStdCodeCvt (ARGS... args);
 
     public:
         /**
