@@ -228,7 +228,6 @@ namespace Stroika::Foundation::Characters {
     template <typename STD_CODE_CVT_T>
     struct CodeCvt<CHAR_T>::CodeCvt_WrapStdCodeCvt_ : CodeCvt<CHAR_T>::IRep {
         unique_ptr<STD_CODE_CVT_T> fCodeCvt_;
-        using result      = typename CodeCvt<CHAR_T>::result;
         using extern_type = typename STD_CODE_CVT_T::extern_type;
         static_assert (is_same_v<CHAR_T, typename STD_CODE_CVT_T::intern_type>);
         CodeCvt_WrapStdCodeCvt_ (unique_ptr<STD_CODE_CVT_T>&& codeCvt)
@@ -239,8 +238,8 @@ namespace Stroika::Foundation::Characters {
         {
             RequireNotNull (from);
             Require (to.size () >= ComputeTargetCharacterBufferSize (*from));
-            const extern_type* _First1 = reinterpret_cast<const extern_type*> (from.data ());
-            const extern_type* _Last1  = _First1 + from.size ();
+            const extern_type* _First1 = reinterpret_cast<const extern_type*> (from->data ());
+            const extern_type* _Last1  = _First1 + from->size ();
             const extern_type* _Mid1   = _First1; // DOUBLE CHECK SPEC - NOT SURE IF THIS IS USED ON INPUT
             CHAR_T*            _First2 = to->data ();
             CHAR_T*            _Last2  = _First2 + to->size ();
