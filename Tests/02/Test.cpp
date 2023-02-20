@@ -1781,9 +1781,25 @@ namespace {
             CodeCvt<char16_t> codeCvt2 = CodeCvt<char16_t>::mkFromStdCodeCvt<std::codecvt<char16_t, char8_t, std::mbstate_t>> ();
             codeCvtChar16Test (codeCvt2);
 
-            // Now using codecvt_byname (locale converter)
-            CodeCvt<wchar_t> codeCvt3a =
-                CodeCvt<wchar_t>::mkFromStdCodeCvt<std::codecvt_byname<wchar_t, char8_t, std::mbstate_t>> ("en_US.UTF8");
+            auto hasLocale = [] (const string& n) {
+                try {
+                    locale {n};
+                    return true;
+                }
+                catch (...) {
+                    return false;
+                }
+           };
+            if (hasLocale ("en_US.UTF8")) {
+                // Now using codecvt_byname (locale converter)
+                #if qCompilerAndStdLib_stdlib_codecvt_byname_char8_Buggy
+                CodeCvt<wchar_t> codeCvt3a =
+                    CodeCvt<wchar_t>::mkFromStdCodeCvt<std::codecvt_byname<wchar_t, char, std::mbstate_t>> ("en_US.UTF8");
+                #else
+                CodeCvt<wchar_t> codeCvt3a =
+                    CodeCvt<wchar_t>::mkFromStdCodeCvt<std::codecvt_byname<wchar_t, char8_t, std::mbstate_t>> ("en_US.UTF8");
+                #endif
+            }
 #if 0
             // @todo get these working
             CodeCvt<char32_t> codeCvt3b =
