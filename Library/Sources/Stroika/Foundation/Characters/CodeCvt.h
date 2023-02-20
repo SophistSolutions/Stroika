@@ -245,11 +245,11 @@ namespace Stroika::Foundation::Characters {
 
     template <Character_UNICODECanAlwaysConvertTo CHAR_T>
     struct CodeCvt<CHAR_T>::IRep {
-        virtual ~IRep ()                                                                              = default;
-        virtual void   Bytes2Characters (span<const byte>* from, span<CHAR_T>* to) const              = 0;
-        virtual void   Characters2Bytes (span<const CHAR_T> from, span<byte>* to) const               = 0;
-        virtual size_t ComputeTargetCharacterBufferSize (variant<span<const byte>, size_t> src) const = 0;
-        virtual size_t ComputeTargetByteBufferSize (variant<span<const CHAR_T>, size_t> src) const    = 0;
+        virtual ~IRep ()                                                                                    = default;
+        virtual span<CHAR_T> Bytes2Characters (span<const byte>* from, span<CHAR_T> to) const               = 0;
+        virtual span<byte>   Characters2Bytes (span<const CHAR_T> from, span<byte> to) const                = 0;
+        virtual size_t       ComputeTargetCharacterBufferSize (variant<span<const byte>, size_t> src) const = 0;
+        virtual size_t       ComputeTargetByteBufferSize (variant<span<const CHAR_T>, size_t> src) const    = 0;
     };
 
 }
