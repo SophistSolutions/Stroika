@@ -1383,21 +1383,17 @@ STILL:
 
 #ifndef qCompilerAndStdLib_stdlib_codecvt_byname_char8_Buggy
 #if defined(_LIBCPP_VERSION)
-#if _LIBCPP_VERSION <= 14000
-#if defined(__APPLE__)
-#define qCompilerAndStdLib_stdlib_codecvt_byname_char8_Buggy 1
-#else
-#define qCompilerAndStdLib_stdlib_codecvt_byname_char8_Buggy (_LIBCPP_VERSION < 13000)
-#endif
+#define qCompilerAndStdLib_stdlib_codecvt_byname_char8_Buggy (_LIBCPP_VERSION <= 14000)
+#elif defined(__GLIBCXX__)
+#define qCompilerAndStdLib_stdlib_codecvt_byname_char8_Buggy (__GLIBCXX__ <= 20220513)
 #else
 #define qCompilerAndStdLib_stdlib_codecvt_byname_char8_Buggy 0
-#endif
 #endif
 #endif
 
 /**
  *      This is going to limit how much I can support ranges in Stroika v3.
-*/
+ */
 #ifndef qCompilerAndStdLib_stdlib_ranges_pretty_broken_Buggy
 #if defined(_LIBCPP_VERSION)
 // unclear yet if broken in _LIBCPP_VERSION but only docs suggest broken til 15

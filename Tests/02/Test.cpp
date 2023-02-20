@@ -1769,8 +1769,8 @@ namespace {
         auto codeCvtChar16Test = [] (CodeCvt<char16_t> ccvt) {
             constexpr char16_t        someRandomText[] = u"hello mom";
             span<const char16_t>      someRandomTextSpan{someRandomText, Characters::CString::Length (someRandomText)};
-            Memory::StackBuffer<byte> buf{ccvt.ComputeTargetByteBufferSize (someRandomTextSpan)};
-            auto                      b = ccvt.Characters2Bytes (someRandomTextSpan, span{buf});
+            Memory::StackBuffer<byte> targetBuf{ccvt.ComputeTargetByteBufferSize (someRandomTextSpan)};
+            auto                      b = ccvt.Characters2Bytes (someRandomTextSpan, span{targetBuf});
             VerifyTestResult (b.size () == 9 and b[0] == static_cast<byte> ('h'));
         };
         {
