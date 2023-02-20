@@ -1,5 +1,5 @@
 [01]	Foundation::Caching
-[02]	Foundation::Characters::Strings
+[02]	Foundation::Characters
 [03]	Foundation::Common
 [04]	Foundation::Configuration
 [05]	Foundation::Containers::DataStructures::Array

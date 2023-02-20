@@ -136,7 +136,7 @@ namespace Stroika::Foundation::Characters {
          *      \endcode
          */
         CodeCvt ();
-        CodeCvt (const locale& = locale{});
+        CodeCvt (const locale& l);
         CodeCvt (UnicodeExternalEncodings e);
         template <Character_UNICODECanAlwaysConvertTo INTERMEDIATE_CHAR_T>
         CodeCvt (const CodeCvt<INTERMEDIATE_CHAR_T>& basedOn);

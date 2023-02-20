@@ -1,7 +1,7 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2022.  All rights reserved
  */
-//  TEST    Foundation::Characters::Strings
+//  TEST    Foundation::Characters
 #include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <cstdarg>
@@ -9,6 +9,7 @@
 #include <sstream>
 
 #include "Stroika/Foundation/Characters/CString/Utilities.h"
+#include "Stroika/Foundation/Characters/CodeCvt.h"
 #include "Stroika/Foundation/Characters/FloatConversion.h"
 #include "Stroika/Foundation/Characters/Format.h"
 #include "Stroika/Foundation/Characters/RegularExpression.h"
@@ -1763,6 +1764,30 @@ namespace {
 }
 
 namespace {
+    void Test58_CodeCVT_ ()
+    {
+        {
+            CodeCvt<char16_t>         codeCvt1{};
+            constexpr char16_t        someRandomText[] = u"hello mom";
+            Memory::StackBuffer<byte> buf{codeCvt1.ComputeTargetByteBufferSize (span{someRandomText})};
+            codeCvt1.Characters2Bytes (span{someRandomText} , span{buf});
+        }
+        #if 0
+        {
+            // codeCvt Between UTF16 Characters And UTF8BinaryFormat using std::codecvt<char16_t, char8_t, std::mbstate_t>
+             CodeCvt<char16_t> codeCvt2 = CodeCvt<char16_t, std::codecvt<char16_t, char8_t, std::mbstate_t>>{};
+        }
+        #endif
+#if 0
+        {
+             CodeCvt<char16_t> codeCvt3 = CodeCvt < char16_t,
+                                std::codecvt_byname >> {locale{"en_US.UTF8"}};
+        }
+#endif
+       
+    }
+}
+namespace {
 
     void DoRegressionTests_ ()
     {
@@ -1815,6 +1840,7 @@ namespace {
         Test55_StringAscii_CTORs_ ();
         Test56_StdStringMoveCTORs_ ();
         Test57_Latin1_Tests_ ();
+        Test58_CodeCVT_ ();
     }
 }
 
