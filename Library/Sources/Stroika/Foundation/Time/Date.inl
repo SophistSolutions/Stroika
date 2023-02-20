@@ -159,7 +159,7 @@ namespace Stroika::Foundation::Time {
         }();
 
         if (not is_constant_evaluated ()) {
-            JulianDayNumber stroikav21Algorithm = [&] () noexcept -> JulianDayNumber {
+            [[maybe_unused]] JulianDayNumber stroikav21Algorithm = [&] () noexcept -> JulianDayNumber {
                 // Do arithmatic as integer representations, not 'datetime' reps that do funny things like wrap
                 // using m - months, etc..
                 unsigned int mm{m};
@@ -210,7 +210,7 @@ namespace Stroika::Foundation::Time {
         }();
 
         if (not is_constant_evaluated ()) {
-            year_month_day legacyValue = [&] () {
+            [[maybe_unused]]year_month_day legacyValue = [&] () {
                 /*
                  * Convert a Julian day number to its corresponding Gregorian calendar
                  * date.  Algorithm 199 from Communications of the ACM, Volume 6, No. 8,
