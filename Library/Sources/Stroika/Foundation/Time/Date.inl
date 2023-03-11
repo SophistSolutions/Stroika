@@ -210,7 +210,7 @@ namespace Stroika::Foundation::Time {
         }();
 
         if (not is_constant_evaluated ()) {
-            [[maybe_unused]]year_month_day legacyValue = [&] () {
+            [[maybe_unused]] year_month_day legacyValue = [&] () {
                 /*
                  * Convert a Julian day number to its corresponding Gregorian calendar
                  * date.  Algorithm 199 from Communications of the ACM, Volume 6, No. 8,

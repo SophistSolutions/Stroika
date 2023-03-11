@@ -246,10 +246,8 @@ namespace Stroika::Foundation::Characters {
             CHAR_T*            _Mid2   = _First2; // DOUBLE CHECK SPEC - NOT SURE IF THIS IS USED ON INPUT
             mbstate_t          ignoredMBState{};
             auto               r = fCodeCvt_->in (ignoredMBState, _First1, _Last1, _Mid1, _First2, _Last2, _Mid2);
-
             if (r == STD_CODE_CVT_T::partial) {
-                span<const byte> fred = from->subspan (static_cast<size_t> (_Mid2 - _First2)); // reference remaining bytes, could be partial character at end of multibyte sequence
-                *from = fred;
+                *from = from->subspan (static_cast<size_t> (_Mid2 - _First2)); // reference remaining bytes, could be partial character at end of multibyte sequence
                 Assert (from->size () != 0);
             }
             else if (r != STD_CODE_CVT_T::ok) {
