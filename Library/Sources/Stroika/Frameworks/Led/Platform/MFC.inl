@@ -1033,11 +1033,11 @@ namespace Stroika::Frameworks::Led::Platform {
         size_t                                 ucSelStart = (sCurrentDragInfo != NULL and sCurrentDragInfo->fLedMFCView == this) ? sCurrentDragInfo->fOrigSelection.GetStart () : this->GetSelectionStart ();
         size_t                                 ucSelEnd   = (sCurrentDragInfo != NULL and sCurrentDragInfo->fLedMFCView == this) ? sCurrentDragInfo->fOrigSelection.GetEnd () : this->GetSelectionEnd ();
         TextInteractor::UndoableContextHelper  undoContext (
-             *this,
+            *this,
             (sCurrentDragInfo != NULL and sCurrentDragInfo->fLedMFCView == this) ? GetCommandNames ().fDragNDropCommandName : GetCommandNames ().fDropCommandName,
-             this->GetSelectionStart (), this->GetSelectionEnd (),
-             ucSelStart, ucSelEnd,
-             false);
+            this->GetSelectionStart (), this->GetSelectionEnd (),
+            ucSelStart, ucSelEnd,
+            false);
         {
             try {
                 this->InternalizeBestFlavor (flavors);

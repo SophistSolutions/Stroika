@@ -3178,7 +3178,7 @@ stHarness/SimpleClass.cpp ...
 #if defined(__clang__) || defined(__GNUC__)
 #define dont_inline __attribute__ ((noinline))
 #else
-#define dont_inline __declspec(noinline)
+#define dont_inline __declspec (noinline)
 #endif
 
 /*

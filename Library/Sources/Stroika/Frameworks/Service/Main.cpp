@@ -863,8 +863,8 @@ void Main::WindowsService::_RunAsService ()
     // MSFT docs unclear on lifetime requirements on these args but for now assume data copied...
     SDKString           svcName = GetSvcName_ ();
     SERVICE_TABLE_ENTRY st[]    = {
-           {const_cast<TCHAR*> (svcName.c_str ()), StaticServiceMain_},
-           {nullptr, nullptr}};
+        {const_cast<TCHAR*> (svcName.c_str ()), StaticServiceMain_},
+        {nullptr, nullptr}};
     if (::StartServiceCtrlDispatcher (st) == FALSE) {
         fServiceStatus_.dwWin32ExitCode = ::GetLastError ();
         if (fServiceStatus_.dwWin32ExitCode == ERROR_FAILED_SERVICE_CONTROLLER_CONNECT) {
