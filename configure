@@ -2514,7 +2514,9 @@ sub	WriteConfigFile_
 		}
 	}
 	print (OUT "    <qFeatureFlag_WinHTTP>$FEATUREFLAG_WinHTTP</qFeatureFlag_WinHTTP>\n");
-	print (OUT "    <qFeatureFlag_ATLMFC>$FEATUREFLAG_ATLMFC</qFeatureFlag_ATLMFC>\n");
+	if (defined $FEATUREFLAG_ATLMFC) {
+		print (OUT "    <qFeatureFlag_ATLMFC>$FEATUREFLAG_ATLMFC</qFeatureFlag_ATLMFC>\n");
+	}
 	print (OUT "    <qFeatureFlag_Xerces>$FEATUREFLAG_Xerces</qFeatureFlag_Xerces>\n");
 	print (OUT "    <qFeatureFlag_ZLib>$FEATUREFLAG_ZLib</qFeatureFlag_ZLib>\n");
 	print (OUT "    <qFeatureFlag_sqlite>$FEATUREFLAG_sqlite</qFeatureFlag_sqlite>\n");
