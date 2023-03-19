@@ -39,6 +39,13 @@ namespace Stroika::Foundation::IO::Network::HTTP {
         constexpr Status kRequestTimeout = 408;
         constexpr Status kConflict       = 408;
 
+        /**
+         *  \brief The 429 status code indicates that the user has sent too many requests in a given amount of time ("rate limiting").
+         * 
+         *  https://www.rfc-editor.org/rfc/rfc6585.html#section-4
+         */
+        constexpr Status kTooManyRequests       = 429;
+
         /*
          * This is principally for internal server exceptions.
          */
