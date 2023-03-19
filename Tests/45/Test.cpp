@@ -68,7 +68,7 @@ namespace {
                     VerifyTestResult (r.GetData ().size () > 1);
                 }
                 catch (const IO::Network::HTTP::Exception& e) {
-                    if (e.IsServerError ()) {
+                    if (e.IsServerError () or e.GetStatus () == IO::Network::HTTP::StatusCodes::kTooManyRequests) {
                         Stroika::TestHarness::WarnTestIssue (Characters::Format (L"Ignorning %s", Characters::ToString (e).c_str ()).c_str ());
                     }
                     else {
@@ -112,8 +112,8 @@ namespace {
                     Test_2_SimpleFetch_SSL_Google_C_ (factory ());
 #endif
                 }
-                catch (IO::Network::HTTP::Exception& e) {
-                    if (e.GetStatus () == IO::Network::HTTP::StatusCodes::kTooManyRequests) {
+                catch (const IO::Network::HTTP::Exception& e) {
+                    if (e.IsServerError () or e.GetStatus () == IO::Network::HTTP::StatusCodes::kTooManyRequests) {
                         Stroika::TestHarness::WarnTestIssue (Characters::Format (L"Ignorning %s", Characters::ToString (e).c_str ()).c_str ());
                     }
                     else {
@@ -309,7 +309,7 @@ namespace {
                     }
                 }
                 catch (const IO::Network::HTTP::Exception& e) {
-                    if (e.IsServerError ()) {
+                    if (e.IsServerError () or e.GetStatus () == IO::Network::HTTP::StatusCodes::kTooManyRequests) {
                         Stroika::TestHarness::WarnTestIssue (Characters::Format (L"Ignorning %s", Characters::ToString (e).c_str ()).c_str ());
                     }
                     else {
@@ -402,7 +402,7 @@ namespace {
                 DoRegressionTests_ForConnectionFactory_ ([] () -> Connection::Ptr { return Connection::New (kDefaultTestOptions_); });
             }
             catch (const IO::Network::HTTP::Exception& e) {
-                if (e.IsServerError ()) {
+                if (e.IsServerError () or e.GetStatus () == IO::Network::HTTP::StatusCodes::kTooManyRequests) {
                     Stroika::TestHarness::WarnTestIssue (Characters::Format (L"Ignorning %s", Characters::ToString (e).c_str ()).c_str ());
                 }
                 else {
@@ -449,7 +449,7 @@ namespace {
                 Private_::T1_get_ ();
             }
             catch (const IO::Network::HTTP::Exception& e) {
-                if (e.IsServerError ()) {
+                if (e.IsServerError () or e.GetStatus () == IO::Network::HTTP::StatusCodes::kTooManyRequests) {
                     Stroika::TestHarness::WarnTestIssue (Characters::Format (L"Ignorning %s", Characters::ToString (e).c_str ()).c_str ());
                 }
                 else {
@@ -613,7 +613,7 @@ namespace {
                         DbgTrace (L"2nd lookup (%s) wasFromCache=%s", Characters::ToString (u).c_str (), Characters::ToString (wasFromCache).c_str ()); // cannot assert cuz some servers cachable, others not
                     }
                     catch (const IO::Network::HTTP::Exception& e) {
-                        if (e.IsServerError ()) {
+                        if (e.IsServerError () or e.GetStatus () == IO::Network::HTTP::StatusCodes::kTooManyRequests) {
                             Stroika::TestHarness::WarnTestIssue (Characters::Format (L"Ignorning %s", Characters::ToString (e).c_str ()).c_str ());
                         }
                         else {
@@ -730,7 +730,7 @@ namespace {
                 });
             }
             catch (const IO::Network::HTTP::Exception& e) {
-                if (e.IsServerError ()) {
+                if (e.IsServerError () or e.GetStatus () == IO::Network::HTTP::StatusCodes::kTooManyRequests) {
                     Stroika::TestHarness::WarnTestIssue (Characters::Format (L"Ignorning %s", Characters::ToString (e).c_str ()).c_str ());
                 }
                 else {
