@@ -357,12 +357,10 @@ Response Connection_LibCurl::Rep_::Send (const Request& request)
         }
         ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_UPLOAD, fUploadData_.empty () ? 0 : 1));
         ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_INFILESIZE, fUploadData_.size ()));
-        //ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_PUT, 1));
     }
     else {
         ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_HTTPGET, 0));
         ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_POST, 0));
-        //ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_PUT, 0));
         ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_CUSTOMREQUEST, useRequest.fMethod.AsUTF8 ().c_str ()));
     }
 
