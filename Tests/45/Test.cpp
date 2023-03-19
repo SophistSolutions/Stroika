@@ -102,14 +102,24 @@ namespace {
             }
             void DoRegressionTests_ForConnectionFactory_ (Connection::Ptr (*factory) ())
             {
-                Test_1_SimpleFetch_Google_C_ (factory ());
+                try {
+                    Test_1_SimpleFetch_Google_C_ (factory ());
 #if qCompilerAndStdLib_arm_openssl_valgrind_Buggy
-                if (not Debug::IsRunningUnderValgrind ()) {
-                    Test_2_SimpleFetch_SSL_Google_C_ (factory ());
-                }
+                    if (not Debug::IsRunningUnderValgrind ()) {
+                        Test_2_SimpleFetch_SSL_Google_C_ (factory ());
+                    }
 #else
-                Test_2_SimpleFetch_SSL_Google_C_ (factory ());
+                    Test_2_SimpleFetch_SSL_Google_C_ (factory ());
 #endif
+                }
+                catch (IO::Network::HTTP::Exception& e) {
+                    if (e.GetStatus () == IO::Network::HTTP::StatusCodes::kTooManyRequests) {
+                        Stroika::TestHarness::WarnTestIssue (Characters::Format (L"Ignorning %s", Characters::ToString (e).c_str ()).c_str ());
+                    }
+                    else {
+                        Execution::ReThrow ();
+                    }
+                }
             }
         }
         void DoTests_ ()
