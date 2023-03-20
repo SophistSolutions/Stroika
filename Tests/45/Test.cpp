@@ -389,7 +389,17 @@ namespace {
             }
             void DoRegressionTests_ForConnectionFactory_ (Connection::Ptr (*factory) ())
             {
-                Test_1_SimpleFetch_Google_C_ (factory ());
+                try {
+                    Test_1_SimpleFetch_Google_C_ (factory ());
+                }
+                catch (const IO::Network::HTTP::Exception& e) {
+                    if (e.IsServerError () or e.GetStatus () == IO::Network::HTTP::StatusCodes::kTooManyRequests) {
+                        Stroika::TestHarness::WarnTestIssue (Characters::Format (L"Ignorning %s", Characters::ToString (e).c_str ()).c_str ());
+                    }
+                    else {
+                        Execution::ReThrow ();
+                    }
+                }
             }
         }
         void DoTests_ ()
@@ -400,14 +410,6 @@ namespace {
             using namespace Private_;
             try {
                 DoRegressionTests_ForConnectionFactory_ ([] () -> Connection::Ptr { return Connection::New (kDefaultTestOptions_); });
-            }
-            catch (const IO::Network::HTTP::Exception& e) {
-                if (e.IsServerError () or e.GetStatus () == IO::Network::HTTP::StatusCodes::kTooManyRequests) {
-                    Stroika::TestHarness::WarnTestIssue (Characters::Format (L"Ignorning %s", Characters::ToString (e).c_str ()).c_str ());
-                }
-                else {
-                    Execution::ReThrow ();
-                }
             }
             catch (const Execution::RequiredComponentMissingException&) {
 #if !qHasFeature_LibCurl && !qHasFeature_WinHTTP
