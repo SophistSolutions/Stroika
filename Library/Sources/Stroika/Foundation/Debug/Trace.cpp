@@ -170,7 +170,7 @@ void Debug::Private_::EmitFirstTime (Emitter& emitter)
     emitter.EmitTraceMessage (L"<debug-state {>");
     emitter.EmitTraceMessage (L"  Debug::kBuiltWithAddressSanitizer = %s", Characters::ToString (Debug::kBuiltWithAddressSanitizer).c_str ());
     emitter.EmitTraceMessage (L"  Debug::kBuiltWithThreadSanitizer = %s", Characters::ToString (Debug::kBuiltWithThreadSanitizer).c_str ());
-    emitter.EmitTraceMessage (L"  Debug::kBuiltWithUndefinedBehaviorSanitizer = %s", Characters::ToString (Debug::kBuiltWithUndefinedBehaviorSanitizer).c_str ());
+    emitter.EmitTraceMessage (L"  Debug::kBuiltWithUndefinedBehaviorSanitizer = %s(?)", Characters::ToString (Debug::kBuiltWithUndefinedBehaviorSanitizer).c_str ());  // warning maybe falsely reported as false on gcc
     emitter.EmitTraceMessage (L"  Debug::IsRunningUnderValgrind () = %s", Characters::ToString (Debug::IsRunningUnderValgrind ()).c_str ());
     emitter.EmitTraceMessage (L"</debug-state>");
 }

@@ -163,6 +163,8 @@ namespace Stroika::Foundation::Debug {
     /**
      *  \brief kBuiltWithUndefinedBehaviorSanitizer can be checked in compiled code to see if the undfined behavior sanitizer
      *         support is compiled into this executable
+     * 
+     *  \note WARNING: This incorrectly reports false on GCC builds, at least up to gcc 12, it appears.
      */
     constexpr bool kBuiltWithUndefinedBehaviorSanitizer = Stroika_Foundation_Debug_Sanitizer_HAS_UndefinedBehaviorSanitizer;
 
