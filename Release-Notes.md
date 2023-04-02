@@ -10,7 +10,7 @@ especially those they need to be aware of when upgrading.
 ### 2.1.13 {2023-04-02}
 
 #### TLDR
-- [STK-977](https://stroika.atlassian.net/browse/STK-977) - workaround for now CORS issue with PATCH
+- [STK-977](https://stroika.atlassian.net/browse/STK-977) - workaround for CORS issue with PATCH
 - Support Visual Studio.net 2022 17.5 release
 
 #### Change Details
