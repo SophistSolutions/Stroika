@@ -264,18 +264,20 @@ namespace Stroika::Foundation::Containers::DataStructures {
         Link_* victim = const_cast<Link_*> (i.fCurrent_);
 
         /*
-         *      At this point we need the fPrev pointer. But it may have been lost
-         *  in a patch. If it was, its value will be nullptr (NB: nullptr could also mean
-         *  fCurrent_ == fData->fHead_). If it is nullptr, recompute. Be careful if it
-         *  is still nullptr, that means update fHead_.
+         *      At this point we need the prev pointer (so so we can adjust its 'next'). 
+         *  Since the links go in one direction, we must start at the end, and find the item
+         *  pointing to the 'victim'.
          */
         Link_* prevLink = nullptr;
         if (this->fHead_ != victim) {
-            AssertNotNull (this->fHead_); // cuz there must be something to remove current
-            for (prevLink = this->fHead_; prevLink->fNext != victim; prevLink = prevLink->fNext) {
-                AssertNotNull (prevLink); // cuz that would mean victim not in LinkedList!!!
+            auto potentiallyPrevLink = this->fHead_;
+            AssertNotNull (potentiallyPrevLink); // cuz there must be something to remove current
+            for (; potentiallyPrevLink->fNext != victim; potentiallyPrevLink = potentiallyPrevLink->fNext) {
+                AssertNotNull (potentiallyPrevLink); // cuz that would mean victim not in LinkedList!!!
             }
+            prevLink = potentiallyPrevLink;
         }
+        Assert (prevLink == nullptr or prevLink->fNext == victim);
         if (prevLink == nullptr) {
             Assert (this->fHead_ == victim);
             this->fHead_ = victim->fNext;
