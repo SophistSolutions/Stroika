@@ -176,7 +176,7 @@ ConnectionManager::ConnectionManager (const Traversal::Iterable<SocketAddress>& 
                         }}
     , pConnections{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> Collection<shared_ptr<Connection>> {
         const ConnectionManager* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &ConnectionManager::pConnections);
-        scoped_lock              critSec{thisObj->fActiveConnections_}; // fActiveConnections_ lock used for inactive connections too
+        scoped_lock              critSec{thisObj->fActiveConnections_}; // fActiveConnections_ lock used for inactive connections too (only for exchanges between the two lists)
         Ensure (Set<shared_ptr<Connection>>{thisObj->fActiveConnections_.load ()}.Intersection (thisObj->GetInactiveConnections_ ()).empty ());
         return thisObj->GetInactiveConnections_ () + thisObj->fActiveConnections_.load ();
     }}
@@ -231,7 +231,7 @@ void ConnectionManager::onConnect_ (const ConnectionOrientedStreamSocket::Ptr& s
     fInactiveSockSetPoller_.Add (conn);
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     {
-        scoped_lock critSec{fActiveConnections_}; // fActiveConnections_ lock used for inactive connections too
+        scoped_lock critSec{fActiveConnections_}; // fActiveConnections_ lock used for inactive connections too (only for exchanges between the two lists)
         DbgTrace (L"In onConnect_ (after adding connection %s): fActiveConnections_=%s, inactiveOpenConnections_=%s", Characters::ToString (conn).c_str (), Characters::ToString (fActiveConnections_.load ()).c_str (), Characters::ToString (GetInactiveConnections_ ()).c_str ());
     }
 #endif
@@ -270,7 +270,7 @@ void ConnectionManager::WaitForReadyConnectionLoop_ ()
                      * Handle the Connection object, moving it to the appropriate list etc...
                      */
                     try {
-                        scoped_lock critSec{fActiveConnections_};
+                        scoped_lock critSec{fActiveConnections_};   // lock not strictly needed here, but used to assure consistency between the active/inactive lists
                         fActiveConnections_.rwget ().rwref ().Remove (readyConnection); // no matter what, remove from active connections
                         if (keepAlive) {
                             fInactiveSockSetPoller_.Add (readyConnection);
