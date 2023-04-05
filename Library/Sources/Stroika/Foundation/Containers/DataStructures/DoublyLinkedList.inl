@@ -357,7 +357,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         ForwardIterator next = i;
         ++next;
 
-        Link_* victim = const_cast<Link_*> (i.fCurrent_);
+        const Link_* victim = i.fCurrent_;
         AssertNotNull (victim); // cuz not done
         /*
          * Before:

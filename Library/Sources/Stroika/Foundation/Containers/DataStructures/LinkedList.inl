@@ -261,11 +261,11 @@ namespace Stroika::Foundation::Containers::DataStructures {
         ForwardIterator next = i;
         ++next;
 
-        Link_* victim = const_cast<Link_*> (i.fCurrent_);
+        const Link_* victim = i.fCurrent_;
 
         /*
          *      At this point we need the prev pointer (so so we can adjust its 'next'). 
-         *  Since the links go in one direction, we must start at the end, and find the item
+         *  Since the links go in one direction, we must start at the head, and find the item
          *  pointing to the 'victim'.
          */
         Link_* prevLink = nullptr;
@@ -279,11 +279,12 @@ namespace Stroika::Foundation::Containers::DataStructures {
         }
         Assert (prevLink == nullptr or prevLink->fNext == victim);
         if (prevLink == nullptr) {
-            Assert (this->fHead_ == victim);
+            Require (this->fHead_ == victim); // If this ever happened, it would mean the argument link to be removed from
+                                              // this list was not actually in this list! Caller erorr - serious bug (corruption?)
             this->fHead_ = victim->fNext;
         }
         else {
-            Assert (prevLink->fNext == victim);
+            Assert (prevLink->fNext == victim); // because of how we computed prevLink above, this must be true
             prevLink->fNext = victim->fNext;
         }
 
