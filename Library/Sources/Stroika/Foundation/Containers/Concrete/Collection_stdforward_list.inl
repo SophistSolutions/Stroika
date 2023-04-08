@@ -112,7 +112,14 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual void Remove (const Iterator<value_type>& i, Iterator<value_type>* nextI) override
         {
             scoped_lock<Debug::AssertExternallySynchronizedMutex> writeLock{fData_};
-            auto                                                  nextStdI = fData_.erase_after (Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ()).fIterator.GetUnderlyingIteratorRep ());
+            // Horrible API - must revisit/rethink. Maybe just a bad fit? But to erase an element from a forward_list,
+            // given a link to it, you must walk from the start of the list and find its prev pointer
+            typename STDFORWARDLIST::const_iterator victim = Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ()).fIterator.GetUnderlyingIteratorRep ();
+            typename STDFORWARDLIST::const_iterator prevI;
+            for (prevI = fData_.before_begin (); std::next (prevI) != victim; ++prevI)
+                ;
+            Assert (prevI != fData_.end ()); // must be able to find prevI (if
+            auto nextStdI = fData_.erase_after (prevI);
             fChangeCounts_.PerformedChange ();
             if (nextI != nullptr) {
                 *nextI = Iterator<value_type>{Iterator<value_type>::template MakeSmartPtr<IteratorRep_> (&fData_, &fChangeCounts_, nextStdI)};

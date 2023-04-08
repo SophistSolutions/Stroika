@@ -133,7 +133,7 @@ namespace {
         RunTests_<Collection_Array<SimpleClassWithoutComparisonOperators>> ();
 
         RunTests_<Collection_stdforward_list<size_t>> ();
-        // RunTestsWithEquals_<Collection_stdforward_list<size_t>, equal_to<size_t>> ();
+        RunTestsWithEquals_<Collection_stdforward_list<size_t>, equal_to<size_t>> ();
         RunTests_<Collection_stdforward_list<SimpleClass>> ();
         RunTests_<Collection_stdforward_list<SimpleClassWithoutComparisonOperators>> ();
 
