@@ -270,7 +270,7 @@ void ConnectionManager::WaitForReadyConnectionLoop_ ()
                      * Handle the Connection object, moving it to the appropriate list etc...
                      */
                     try {
-                        scoped_lock critSec{fActiveConnections_};   // lock not strictly needed here, but used to assure consistency between the active/inactive lists
+                        scoped_lock critSec{fActiveConnections_};                       // lock not strictly needed here, but used to assure consistency between the active/inactive lists
                         fActiveConnections_.rwget ().rwref ().Remove (readyConnection); // no matter what, remove from active connections
                         if (keepAlive) {
                             fInactiveSockSetPoller_.Add (readyConnection);
