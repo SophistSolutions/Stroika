@@ -69,7 +69,7 @@ namespace Stroika::Foundation::Containers {
     template <typename EQUALS_COMPARER>
     inline bool Collection<T>::Contains (ArgByValueType<value_type> item, const EQUALS_COMPARER& equalsComparer) const
     {
-        return this->Find (item, equalsComparer) != nullptr;
+        return this->Find (item, equalsComparer) != this->end ();
     }
     template <typename T>
     template <typename ITERATOR_OF_ADDABLE>
