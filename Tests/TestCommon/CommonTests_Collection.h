@@ -276,7 +276,7 @@ namespace CommonTests {
                         Assert (s.size () != 0);
                         size_t idx        = rand () % s.size ();
                         T      elt2Remove = s.Nth (idx);
-                        VerifyTestResult (shouldBePresent.contains (elt2Remove));
+                        VerifyTestResult (shouldBePresent.find (elt2Remove) != shouldBePresent.end ());
                         shouldBePresent.erase (shouldBePresent.find (elt2Remove)); // shouldBePresent.erase (elt2Remove);   confusingly, multiset erase removes all
                         s.Remove (elt2Remove);
                     }
