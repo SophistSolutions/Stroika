@@ -7,11 +7,13 @@ especially those they need to be aware of when upgrading.
 
 ## History
 
-### 2.1.13 {2023-04-02}
+### 2.1.13 {2023-04-10}
 
 #### TLDR
 - [STK-977](https://stroika.atlassian.net/browse/STK-977) - workaround for CORS issue with PATCH
 - Support Visual Studio.net 2022 17.5 release
+- Fix bug with Collection<>::Remove/RemoveAt, causing extremely rare crasher (patched iterator)
+  which caused webserver to crash every few days
 
 #### Change Details
 - Build System
@@ -28,6 +30,25 @@ especially those they need to be aware of when upgrading.
   - VS_16_11_24
 - Library
   - Foundation
+    - Characters
+      - changed ToString (shared_ptr<> and unique_ptr<>) to print address, not indirect to value
+    - Containers
+      - DataStructures
+        - Added a bunch of asertions that iterators match thier owning data object when opearting on data structures
+          in apis taking one of those iterators
+        - LinkedList
+          - minor tweak to LinkedList remove code - sb no semantic diff, just docs, and clearer
+      - Collection<T>
+        - fixed serious bug with framework webserver crashing rarely (every couple days) -
+          issue was _SafeReadWriteRepAccessor intead of _GetWritableRepAndPatchAssociatedIterator in Collection remove function
+
+          Besides this fix, also add more asserts to containers to detect better in the future
+
+        - fixed Collection::Contains - compare with this->end not nullptr
+      - Concreete
+        - Collection_stdforward_list:... RemoveAt
+            - fixed buggy Collection_stdforward_list:... RemoveAt, and re-enabled the   
+              RunTestsWithEquals_<Collection_stdforward_list<size_t>, equal_to<size_t>> () test
     - Debug
       - emit flags kBuiltWithThreadSanitizer kBuiltWithUndefinedBehaviorSanitizer in Trace startup output
     - IO::Network::HTTP
@@ -42,6 +63,8 @@ especially those they need to be aware of when upgrading.
 - RegressionTests and Sanitizers
   - workaround StatusCodes::kTooManyRequests error in regtests
     update regtest is e.IsServerErorr () - added or e.GetStatus () == IO::Network::HTTP::StatusCodes::kTooManyRequests
+  - fixed collection TestWithContainersEquals testing; and added TestLotsOfAddsAndRemovesByValue_ 
+    to mimic what we do with framework/webserver and connections - turns out didn't capture real issue
 
 #### Release-Validation
 - Compilers Tested/Supported
