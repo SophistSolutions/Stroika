@@ -198,6 +198,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     inline T* LinkedList<T>::PeekAt (const ForwardIterator& i)
     {
         lock_guard<const AssertExternallySynchronizedMutex> writeLock{*this};
+        Require (i.fData_ == this); // assure iterator not stale
         Require (not i.Done ());
         Invariant ();
         i.Invariant ();
@@ -208,6 +209,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     {
         lock_guard<const AssertExternallySynchronizedMutex> writeLock{*this};
         Require (not i.Done ());
+        Require (i.fData_ == this); // assure iterator not stale
         Invariant ();
         i.Invariant ();
         const_cast<Link_*> (i.fCurrent_)->fItem = newValue;
@@ -217,6 +219,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     void LinkedList<T>::AddBefore (const ForwardIterator& i, ArgByValueType<T> newValue)
     {
         lock_guard<const AssertExternallySynchronizedMutex> writeLock{*this};
+        Require (i.fData_ == this); // assure iterator not stale
         /*
          * NB: This code works fine, even if 'i' is Done ()
          */
@@ -246,6 +249,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     {
         lock_guard<const AssertExternallySynchronizedMutex> writeLock{*this};
         Require (not i.Done ());
+        Require (i.fData_ == this);  // assure iterator not stale
         AssertNotNull (i.fCurrent_); // since not done...
         i.Invariant ();
         const_cast<Link_*> (i.fCurrent_)->fNext = new Link_{newValue, i.fCurrent_->fNext};
@@ -254,6 +258,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     auto LinkedList<T>::RemoveAt (const ForwardIterator& i) -> ForwardIterator
     {
         lock_guard<const AssertExternallySynchronizedMutex> writeLock{*this};
+        Require (i.fData_ == this); // assure iterator not stale
         Require (not i.Done ());
         Invariant ();
         i.Invariant ();

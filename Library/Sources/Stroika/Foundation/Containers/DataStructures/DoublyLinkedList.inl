@@ -353,6 +353,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     {
         lock_guard<const AssertExternallySynchronizedMutex> writeLock{*this};
         Require (not i.Done ());
+        Require (i.fData_ == this); // assure iterator not stale
         this->Invariant ();
         ForwardIterator next = i;
         ++next;
@@ -409,6 +410,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     {
         lock_guard<const AssertExternallySynchronizedMutex> writeLock{*this};
         Require (not i.Done ());
+        Require (i.fData_ == this); // assure iterator not stale
         this->Invariant ();
         const_cast<Link_*> (i.fCurrent_)->fItem = newValue;
         this->Invariant ();
@@ -417,6 +419,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     void DoublyLinkedList<T>::AddBefore (const ForwardIterator& i, ArgByValueType<T> newValue)
     {
         lock_guard<const AssertExternallySynchronizedMutex> writeLock{*this};
+        Require (i.fData_ == this); // assure iterator not stale
         /*
          * NB: This code works fine, even if we are done!!!
          */
@@ -458,6 +461,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     inline void DoublyLinkedList<T>::AddAfter (const ForwardIterator& i, ArgByValueType<T> newValue)
     {
         lock_guard<const AssertExternallySynchronizedMutex> writeLock{*this};
+        Require (i.fData_ == this); // assure iterator not stale
         this->Invariant ();
         Require (not i.Done ());
         AssertNotNull (i.fCurrent_); // since not done...

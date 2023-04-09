@@ -392,6 +392,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     {
         lock_guard<const AssertExternallySynchronizedMutex> writeLock{*this};
         Require (not i.Done ());
+        Require (i.fData_ == this); // assure iterator not stale
         this->RemoveAt (i.CurrentIndex ());
     }
     template <typename T>
@@ -405,6 +406,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     inline void Array<T>::SetAt (const ForwardIterator& i, ArgByValueType<T> newValue)
     {
         lock_guard<const AssertExternallySynchronizedMutex> writeLock{*this};
+        Require (i.fData_ == this); // assure iterator not stale
         Require (not i.Done ());
         SetAt (i.CurrentIndex (), newValue);
     }
@@ -419,6 +421,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     inline void Array<T>::AddBefore (const ForwardIterator& i, ArgByValueType<T> newValue)
     {
         lock_guard<const AssertExternallySynchronizedMutex> writeLock{*this};
+        Require (i.fData_ == this); // assure iterator not stale
         // i CAN BE DONE OR NOT
         InsertAt (i.CurrentIndex (), newValue);
     }
@@ -426,6 +429,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     inline void Array<T>::AddBefore (const BackwardIterator& i, ArgByValueType<T> newValue)
     {
         lock_guard<const AssertExternallySynchronizedMutex> writeLock{*this};
+        Require (i.fData_ == this); // assure iterator not stale
         // i CAN BE DONE OR NOT
         InsertAt (i.CurrentIndex (), newValue);
     }
@@ -433,6 +437,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     inline void Array<T>::AddAfter (const ForwardIterator& i, ArgByValueType<T> newValue)
     {
         lock_guard<const AssertExternallySynchronizedMutex> writeLock{*this};
+        Require (i.fData_ == this); // assure iterator not stale
         Require (not i.Done ());
         InsertAt (i.CurrentIndex () + 1, newValue);
     }
