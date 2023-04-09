@@ -122,14 +122,16 @@ namespace Stroika::Foundation::Containers {
     {
         auto i = this->Find (item, equalsComparer);
         Require (i != this->end ()); // use remove-if if the item might not exist
-        _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().Remove (i, nullptr);
+        auto [writerRep, patchedIterator] = _GetWritableRepAndPatchAssociatedIterator (i);
+        writerRep->Remove (patchedIterator, nullptr);
     }
     template <typename T>
     template <typename EQUALS_COMPARER>
     inline bool Collection<T>::RemoveIf (ArgByValueType<value_type> item, const EQUALS_COMPARER& equalsComparer)
     {
         if (auto i = this->Find (item, equalsComparer)) {
-            _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().Remove (i, nullptr);
+            auto [writerRep, patchedIterator] = _GetWritableRepAndPatchAssociatedIterator (i);
+            writerRep->Remove (patchedIterator, nullptr);
             return true;
         }
         return false;
