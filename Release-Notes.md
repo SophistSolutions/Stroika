@@ -7,7 +7,7 @@ especially those they need to be aware of when upgrading.
 
 ## History
 
-### 2.1.13 {2023-04-10}
+### 2.1.13 {2023-04-14}
 
 #### TLDR
 - [STK-977](https://stroika.atlassian.net/browse/STK-977) - workaround for CORS issue with PATCH
