@@ -7,16 +7,109 @@ especially those they need to be aware of when upgrading.
 
 ## History
 
+### 2.1.13 {2023-04-14}
+
+#### TLDR
+- [STK-977](https://stroika.atlassian.net/browse/STK-977) - workaround for CORS issue with PATCH
+- Support Visual Studio.net 2022 17.5 release
+- Fix bug with Collection<>::Remove/RemoveAt, causing extremely rare crasher (patched iterator)
+  which caused webserver to crash every few days
+
+#### Change Details
+- Build System
+  - configure
+    - Added VSVARS_WindowsSdkDir, VSVARS_WindowsSDKVersion, VSVARS_VSINSTALLDIR, VSVARS_VCToolsInstallDir
+    to configuration (configure) on windows, and used VSVARS_VCToolsInstallDir to fix autodetect logic 
+    for FEATUREFLAG_ATLMFC to look for just the rihgt version of the compiler we are using - for  atlmfc
+    - dont emit FeatureFlag_ATLMFC on unix platforms (not windows)
+  - For windows docker containers: Upped visual studio installer verison to VS_17_5_2; upped MSYS_20230127;
+    and providered workaround to failed install of ATLMFC for vs2k22 17.5.x
+- Compiler and System Compatability
+  - VS_17_5_2 
+    - update bug defines for _MSC_VER_2k22_17Pt5_
+  - VS_16_11_24
+- Library
+  - Foundation
+    - Characters
+      - changed ToString (shared_ptr<> and unique_ptr<>) to print address, not indirect to value
+    - Containers
+      - DataStructures
+        - Added a bunch of asertions that iterators match thier owning data object when opearting on data structures
+          in apis taking one of those iterators
+        - LinkedList
+          - minor tweak to LinkedList remove code - sb no semantic diff, just docs, and clearer
+      - Collection<T>
+        - fixed serious bug with framework webserver crashing rarely (every couple days) -
+          issue was _SafeReadWriteRepAccessor intead of _GetWritableRepAndPatchAssociatedIterator in Collection remove function
+
+          Besides this fix, also add more asserts to containers to detect better in the future
+
+        - fixed Collection::Contains - compare with this->end not nullptr
+      - Concreete
+        - Collection_stdforward_list:... RemoveAt
+            - fixed buggy Collection_stdforward_list:... RemoveAt, and re-enabled the   
+              RunTestsWithEquals_<Collection_stdforward_list<size_t>, equal_to<size_t>> () test
+    - Debug
+      - emit flags kBuiltWithThreadSanitizer kBuiltWithUndefinedBehaviorSanitizer in Trace startup output
+    - IO::Network::HTTP
+      - new http status code kTooManyRequests
+  - Frameworks
+    - WebServer
+      - [STK-977](https://stroika.atlassian.net/browse/STK-977) - workaround for now CORS issue with PATCH (but leave JIRA ticket open for v3 to do a better job dynamically)
+- ThirdPartyComponents
+  - libcurl 7.88.1
+  - sqlite 3.41.1
+  - openssl 3.1.0
+- RegressionTests and Sanitizers
+  - workaround StatusCodes::kTooManyRequests error in regtests
+    update regtest is e.IsServerErorr () - added or e.GetStatus () == IO::Network::HTTP::StatusCodes::kTooManyRequests
+  - fixed collection TestWithContainersEquals testing; and added TestLotsOfAddsAndRemovesByValue_ 
+    to mimic what we do with framework/webserver and connections - turns out didn't capture real issue
+
+#### Release-Validation
+- Compilers Tested/Supported
+  - g++ { 8, 9, 10, 11, 12 }
+  - Clang++ { unix: 7, 8, 9, 10, 11, 12, 13, 14; XCode: 13, 14 }
+  - MSVC: { 15.9.50, 16.11.25, 17.5.2}
+- OS/Platforms Tested/Supported
+  - Windows
+    - Windows 10 version 22H2
+    - Windows 11 version 22H2
+    - mcr.microsoft.com/windows/servercore:ltsc2019 (build/run under docker)
+    - WSL v2
+  - MacOS
+    - 11.4 (Big Sur) - x86_64
+    - 13.0 (Ventura) - arm64/m1 chip
+  - Linux: { Ubuntu: [18.04, 20.04, 22.04], Raspbian(cross-compiled) }
+- Hardware Tested/Supported
+  - x86, x86_64, arm (linux/raspberrypi - cross-compiled), arm64 (macos/m1)
+- Sanitizers and Code Quality Validators
+  - [ASan](https://github.com/google/sanitizers/wiki/AddressSanitizer), [TSan](https://github.com/google/sanitizers/wiki/ThreadSanitizerCppManual), [UBSan](https://clang.llvm.org/docs/UndefinedBehaviorSanitizer.html)
+  - Valgrind (helgrind/memcheck)
+  - [CodeQL](https://codeql.github.com/)
+- Build Systems
+  - [GitHub Actions](https://github.com/SophistSolutions/Stroika/actions)
+  - Regression tests: [Correctness-Results](Tests/HistoricalRegressionTestResults/2.1), [Performance-Results](Tests/HistoricalPerformanceRegressionTestResults/2.1)
+- Known (minor) issues with regression test output
+  - raspberrypi
+    - 'badssl.com site failed with fFailConnectionIfSSLCertificateInvalid = false: SSL peer certificate or SSH remote key was not OK (havent investigated but seems minor)
+    - runs on raspberry pi with builds from newer gcc versions fails due to my inability to get the latest gcc lib installed on my raspberrypi
+    - tests don't run when built from Ubuntu 22.04 due to glibc version
+  - VS2k17
+    - zillions of warnings due to vs2k17 not properly supporting inline variables (hard to workaround with constexpr)
+  - VS2k22
+    - ASAN builds with MFC produce 'warning LNK4006: "void \* \_\_cdecl operator new...' ... reported to MSFT
+
+---
+
 ### 2.1.12 {2022-12-12}
 
 #### TLDR
-
 - Fixed subtle issue with CORS and HTTP Cache setting - https://blog.keul.it/chrome-cors-issue-due-to-cache/ - Vary: Origin
 - Tweaked QUICK_BUILD settings, so rebuild significantly faster on windows (when you rebuild third party components), and slower for full Stroika regressions tests since now sets QUICK_BUILD=0.
 - Fixed small issue with In ApplyConfiguration updating .vscode/c_cpp_properties.json
 
 #### Change Details
-
 - Build System
   - Tweaked windows support for QUICK_BUILD- build time time make CONFIGURATION=Debug third-party-components dropped from realtime 9m50s to 5m54s
   - Set QUICK_BUILD=0 on regression tests in RegressionTests script
@@ -75,7 +168,6 @@ especially those they need to be aware of when upgrading.
 ### 2.1.11 {2022-11-29}
 
 #### TLDR
-
 - Fixed Execution::Function (and std::function) ToString () support, and made Execution::Function
   resistent to issue with gcc 10 re-use of function target pointers, so operator== now works properly
   regardless
@@ -86,7 +178,6 @@ especially those they need to be aware of when upgrading.
   (fix was already in the v3 branch for a while)
 
 #### Change Details
-
 - Build System
   - RaspberryPi remote scripting host specification
     - added RASPBERRYPI_REMOTE_MACHINE support to ScriptsLib/RunRemoteRegressionTests
@@ -162,14 +253,12 @@ especially those they need to be aware of when upgrading.
 ### 2.1.10 {2022-11-21}
 
 #### TLDR
-
 - Deprecated Iterable\<T>::Select, and replaced with improved Iterable\<T>::Map
 - Deprecated Iterable\<T>::Accumulate, and replaced wtih Iterable\<T>::Reduce
 - Significant improvements to ObjectVariantMapper::AddClass (and AddSubClass, and TypeMapping/etc declarations/constructors) code - more flexible/easy to use, but not 100% backward compatible (but with feature likely VERY rarely used).
 - Fixed startup bug/regression in LedIt/LedLineIt sample apps
 
 #### Change Details
-
 - Compiler and System Compatability
   - docker use VS_17_4_1
 - Library
@@ -595,7 +684,7 @@ especially those they need to be aware of when upgrading.
   - qCompilerAndStdLib_Debug32Codegen_make_pair_string_Buggy workaround new vs 2k 17.3.1 bug on x86
   - qCompilerAndStdLib_Debug32_asan_Poison_Buggy bug define and workaround
 - RegressionTests and Sanitizers
-  - anopther  https://stroika.atlassian.net/browse/STK-774 helgrind workaround
+  - another  https://stroika.atlassian.net/browse/STK-774 helgrind workaround
 - Documentation
   - update readme docs
 - Library

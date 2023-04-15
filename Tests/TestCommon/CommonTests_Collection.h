@@ -170,30 +170,21 @@ namespace CommonTests {
         }
 
         namespace Test2_TestsWithComparer_ {
-            template <typename CONCRETE_CONTAINER, typename TEST_FUNCTION, typename EQUALS_COMPARER>
-            void On_Container_ (CONCRETE_CONTAINER& s, TEST_FUNCTION applyToContainer, EQUALS_COMPARER equals_comparer)
+            template <typename CONCRETE_CONTAINER, typename EQUALS_COMPARER>
+            void On_Container_ (CONCRETE_CONTAINER& s)
             {
                 size_t three = 3;
 
-                applyToContainer (s);
                 typename CONCRETE_CONTAINER::ArchetypeContainerType s1 (s);
-                applyToContainer (s1);
 
                 typename CONCRETE_CONTAINER::ArchetypeContainerType s2 = s1;
-                applyToContainer (s2);
 
                 s2.Add (three);
-                applyToContainer (s);
-                applyToContainer (s1);
-                applyToContainer (s2);
-
-                IteratorTests_ (s);
-                applyToContainer (s);
 
 #if qDebug
                 const size_t K = 200;
 #else
-                const size_t K = 500;
+                const size_t           K = 500;
 #endif
                 size_t i;
 
@@ -210,35 +201,78 @@ namespace CommonTests {
 
                 for (i = 1; i <= K; i++) {
                     s.Add (i);
-                    applyToContainer (s);
                 }
-                applyToContainer (s);
-                CollectionTimings_ (s);
-                applyToContainer (s);
-                VerifyTestResult (s.empty ());
+                VerifyTestResult (not s.empty ());
 
-#if qPrintTimings
-                Time t = GetCurrentTime ();
-                cout << tab << "testing Collection<size_t>..." << endl;
-#endif
-
+                VerifyTestResult (s.size () == K);
                 for (i = 1; i <= K; i++) {
                     s.Add (i);
                     VerifyTestResult (s.Contains (i));
-                    VerifyTestResult (s.size () == i);
+                    VerifyTestResult (s.size () == i + K);
                 }
-#if qPrintTimings
-                t = GetCurrentTime () - t;
-                cout << tab << "finished testing Collection<size_t>; time elapsed = " << t << endl;
-#endif
             }
 
-            template <typename CONCRETE_CONTAINER, typename TEST_FUNCTION, typename EQUALS_COMPARER>
-            void DoAllTests_ (TEST_FUNCTION applyToContainer, EQUALS_COMPARER equals_comparer)
+            /*
+             * React to sporadic failure with Collection_LinkedList<shared_ptr<Connection>>> objects - remove sometimes failing. NOT SURE if
+             * is bug with the container code, or threading somehow. VERY rare. But at least try to eliminate question of bug in this code itself.
+             * Issue manifests in WebServer (inside WTF app) - after running a couple days, remove of a Connection object in
+             * Collection_LinkedList<shared_ptr<Connection>> - fails with the RemoveAt in linked list not finding item wthat was previous
+             * found iwth Find (and definitely should eb there with add). COULD be a threading issue - but didnt look like it.
+             */
+            template <typename CONCRETE_CONTAINER, typename EQUALS_COMPARER>
+            void TestLotsOfAddsAndRemovesByValue_ ()
+            {
+                using T            = typename CONCRETE_CONTAINER::value_type;
+                auto createTestSet = [] () {
+                    vector<T>               v;
+                    static constexpr size_t kSize_ = 99;
+                    for (size_t i = 0; i < kSize_; ++i) {
+                        v.push_back (rand () % 100);
+                    }
+                    return v;
+                };
+                const auto         testSet = createTestSet ();
+                CONCRETE_CONTAINER s;
+
+                multiset<T> shouldBePresent; // double check we are doing this right
+
+                // For N times, keep randomly adding an item (from test set) or removing an item (from s)
+#if qDebug
+                constexpr unsigned int kTimesToRepeat_{1000};
+#else
+                constexpr unsigned int kTimesToRepeat_{10000};
+#endif
+                for (unsigned int testNum = 0; testNum < kTimesToRepeat_; ++testNum) {
+                    bool doingAdd =
+                        (s.size () < 1)
+                            ? true
+                            : (
+                                  (s.size () < 10) ? (rand () % 2 == 1) : (rand () % 3 == 1));
+                    if (doingAdd) {
+                        T elt2Add = testSet[rand () % testSet.size ()];
+                        s.Add (elt2Add);
+                        shouldBePresent.insert (elt2Add);
+                    }
+                    else {
+                        // pick a random elt from the collection
+                        Assert (s.size () != 0);
+                        size_t idx        = rand () % s.size ();
+                        T      elt2Remove = s.Nth (idx);
+                        VerifyTestResult (shouldBePresent.find (elt2Remove) != shouldBePresent.end ());
+                        shouldBePresent.erase (shouldBePresent.find (elt2Remove)); // shouldBePresent.erase (elt2Remove);   confusingly, multiset erase removes all
+                        s.Remove (elt2Remove);
+                    }
+                    VerifyTestResult (s.size () == shouldBePresent.size ());
+                }
+            }
+
+            template <typename CONCRETE_CONTAINER, typename EQUALS_COMPARER>
+            void DoAllTests_ ()
             {
                 Debug::TraceContextBumper ctx{L"CommonTests::CollectionTests::Test2_TestsWithComparer_"};
                 CONCRETE_CONTAINER        s;
-                On_Container_<CONCRETE_CONTAINER> (s, applyToContainer);
+                On_Container_<CONCRETE_CONTAINER, EQUALS_COMPARER> (s);
+                TestLotsOfAddsAndRemovesByValue_<CONCRETE_CONTAINER, EQUALS_COMPARER> ();
             }
         }
 
@@ -343,11 +377,11 @@ namespace CommonTests {
 
         /**
         */
-        template <typename USING_Collection_CONTAINER, typename CONCRETE_CONTAINER_FACTORY, typename TEST_FUNCTION, typename WITH_COMPARE_EQUALS>
-        void SimpleCollectionTest_TestsWhichRequireEquals (CONCRETE_CONTAINER_FACTORY factory, TEST_FUNCTION applyToContainer)
+        template <typename CONCRETE_CONTAINER, typename WITH_COMPARE_EQUALS>
+        void SimpleCollectionTest_TestsWhichRequireEquals ()
         {
             Debug::TraceContextBumper ctx{L"CommonTests::CollectionTests::SimpleCollectionTest_TestsWhichRequireEquals"};
-            Test2_TestsWithComparer_::DoAllTests_<USING_Collection_CONTAINER> (applyToContainer, WITH_COMPARE_EQUALS ());
+            Test2_TestsWithComparer_::DoAllTests_<CONCRETE_CONTAINER, WITH_COMPARE_EQUALS> ();
         }
     }
 }

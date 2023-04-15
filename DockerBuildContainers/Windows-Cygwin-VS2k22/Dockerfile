@@ -59,9 +59,13 @@ ARG VS_17_3_6=https://download.visualstudio.microsoft.com/download/pr/5c9aef4f-a
 ARG VS_17_4_0=https://download.visualstudio.microsoft.com/download/pr/de71f641-13a1-4991-92dc-ba1d44ac1605/714af6dd559604fd9e35463b18167bab1255ec5f171735cc9b2d7c3a37eee00f/vs_BuildTools.exe
 ARG VS_17_4_1=https://download.visualstudio.microsoft.com/download/pr/2160190b-bb01-4670-9492-34da461fa0c9/fabda7e422ada90c229262a4447c08933ec5bf66a9f38129cd19490eea2dd180/vs_BuildTools.exe
 ARG VS_17_4_2=https://download.visualstudio.microsoft.com/download/pr/f3f8db49-2cd0-43df-9ced-12dcb6b3954b/8f91b73ed92af58f25d4fe12e7963619af9e8b2997b9a83ec520fe3f52a40099/vs_BuildTools.exe
+ARG VS_17_4_5=https://download.visualstudio.microsoft.com/download/pr/23ed7a01-a363-4dd3-8efb-5bf5b2cd89fd/03938dc80912af7094e1f6a256b481c59822e548b3bf809cb2770c620c81d25d/vs_BuildTools.exe
+ARG VS_17_5_0=https://download.visualstudio.microsoft.com/download/pr/7441b53e-6bdf-4438-994f-b0c1874af85c/c82dd4350c6707906c71713f7c8d6134b6a6b82fa62ce97007dd883f0a1774c6/vs_BuildTools.exe
+ARG VS_17_5_1=https://download.visualstudio.microsoft.com/download/pr/07db0e25-01f0-4ac0-946d-e03196d2cc8b/c200c70c03378c5d45f16746a1ab6470bb9894f2492ef753aaeff2545c050e96/vs_BuildTools.exe
+ARG VS_17_5_2=https://download.visualstudio.microsoft.com/download/pr/3b6ddbf8-a147-4435-a494-52ca53c1322f/5b5fe89fa8b28b8f6623fbce6b8688c469759b24c1dada428c8e5227a83cbb57/vs_BuildTools.exe
 
 SHELL ["powershell"]
-RUN Invoke-WebRequest "$env:VS_17_4_2" \
+RUN Invoke-WebRequest "$env:VS_17_5_2" \
     -OutFile "$env:TEMP\vs_buildtools.exe" -UseBasicParsing
 
 SHELL ["cmd", "/S", "/C"]
@@ -70,11 +74,18 @@ RUN %TEMP%\vs_buildtools.exe \
     --includeRecommended \
     --add Microsoft.VisualStudio.Workload.VCTools \
     --add Microsoft.VisualStudio.Workload.UniversalBuildTools \
-    --add Microsoft.VisualStudio.Component.VC.ATLMFC \
-    --remove Microsoft.VisualStudio.Component.Windows10SDK.10240 \
+    --add Microsoft.VisualStudio.Component.VC.ATL \
+     --remove Microsoft.VisualStudio.Component.Windows10SDK.10240 \
     --remove Microsoft.VisualStudio.Component.Windows10SDK.10586 \
     --remove Microsoft.VisualStudio.Component.Windows10SDK.14393 \
     --remove Microsoft.VisualStudio.Component.Windows81SDK \
+    --quiet --wait --norestart --noUpdateInstaller \
+    || IF "%ERRORLEVEL%"=="3010" EXIT 0
+# Since Visual Studio.net 17.5.0, adding Microsoft.VisualStudio.Component.VC.ATLMFC above causes install to fail,
+# But adding here by itself is fine.
+RUN %TEMP%\vs_buildtools.exe \
+    --installPath "%ProgramFiles%\Microsoft Visual Studio\2022\BuildTools" \
+    --add Microsoft.VisualStudio.Component.VC.ATLMFC \
     --quiet --wait --norestart --noUpdateInstaller \
     || IF "%ERRORLEVEL%"=="3010" EXIT 0
 

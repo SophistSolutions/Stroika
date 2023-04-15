@@ -198,6 +198,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     inline T* LinkedList<T>::PeekAt (const ForwardIterator& i)
     {
         Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
+        Require (i.fData_ == this); // assure iterator not stale
         Require (not i.Done ());
         Invariant ();
         i.Invariant ();
@@ -208,6 +209,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     {
         Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
         Require (not i.Done ());
+        Require (i.fData_ == this); // assure iterator not stale
         Invariant ();
         i.Invariant ();
         const_cast<Link_*> (i.fCurrent_)->fItem = newValue;
@@ -217,6 +219,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     void LinkedList<T>::AddBefore (const ForwardIterator& i, ArgByValueType<T> newValue)
     {
         Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
+        Require (i.fData_ == this); // assure iterator not stale
         /*
          * NB: This code works fine, even if 'i' is Done ()
          */
@@ -246,6 +249,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     {
         Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
         Require (not i.Done ());
+        Require (i.fData_ == this);  // assure iterator not stale
         AssertNotNull (i.fCurrent_); // since not done...
         i.Invariant ();
         const_cast<Link_*> (i.fCurrent_)->fNext = new Link_{newValue, i.fCurrent_->fNext};
@@ -254,6 +258,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     auto LinkedList<T>::RemoveAt (const ForwardIterator& i) -> ForwardIterator
     {
         Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
+        Require (i.fData_ == this); // assure iterator not stale
         Require (not i.Done ());
         Invariant ();
         i.Invariant ();
@@ -261,27 +266,30 @@ namespace Stroika::Foundation::Containers::DataStructures {
         ForwardIterator next = i;
         ++next;
 
-        Link_* victim = const_cast<Link_*> (i.fCurrent_);
+        const Link_* victim = i.fCurrent_;
 
         /*
-         *      At this point we need the fPrev pointer. But it may have been lost
-         *  in a patch. If it was, its value will be nullptr (NB: nullptr could also mean
-         *  fCurrent_ == fData->fHead_). If it is nullptr, recompute. Be careful if it
-         *  is still nullptr, that means update fHead_.
+         *      At this point we need the prev pointer (so so we can adjust its 'next'). 
+         *  Since the links go in one direction, we must start at the head, and find the item
+         *  pointing to the 'victim'.
          */
         Link_* prevLink = nullptr;
         if (this->fHead_ != victim) {
-            AssertNotNull (this->fHead_); // cuz there must be something to remove current
-            for (prevLink = this->fHead_; prevLink->fNext != victim; prevLink = prevLink->fNext) {
-                AssertNotNull (prevLink); // cuz that would mean victim not in LinkedList!!!
+            auto potentiallyPrevLink = this->fHead_;
+            AssertNotNull (potentiallyPrevLink); // cuz there must be something to remove current
+            for (; potentiallyPrevLink->fNext != victim; potentiallyPrevLink = potentiallyPrevLink->fNext) {
+                AssertNotNull (potentiallyPrevLink); // cuz that would mean victim not in LinkedList!!!
             }
+            prevLink = potentiallyPrevLink;
         }
+        Assert (prevLink == nullptr or prevLink->fNext == victim);
         if (prevLink == nullptr) {
-            Assert (this->fHead_ == victim);
+            Require (this->fHead_ == victim); // If this ever happened, it would mean the argument link to be removed from
+                                              // this list was not actually in this list! Caller erorr - serious bug (corruption?)
             this->fHead_ = victim->fNext;
         }
         else {
-            Assert (prevLink->fNext == victim);
+            Assert (prevLink->fNext == victim); // because of how we computed prevLink above, this must be true
             prevLink->fNext = victim->fNext;
         }
 

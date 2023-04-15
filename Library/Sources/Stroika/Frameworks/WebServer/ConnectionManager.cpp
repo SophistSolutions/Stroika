@@ -173,13 +173,12 @@ ConnectionManager::ConnectionManager (const Traversal::Iterable<SocketAddress>& 
           }}
     , pConnections{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> Collection<shared_ptr<Connection>> {
         const ConnectionManager* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &ConnectionManager::pConnections);
-        scoped_lock critSec{thisObj->fActiveConnections_}; // Any place SWAPPING between active and inactive, hold this lock so both lists reamain consistent
+        scoped_lock              critSec{thisObj->fActiveConnections_}; // fActiveConnections_ lock used for inactive connections too (only for exchanges between the two lists)
         Ensure (Set<shared_ptr<Connection>>{thisObj->fActiveConnections_.load ()}.Intersection (thisObj->GetInactiveConnections_ ()).empty ());
         return thisObj->GetInactiveConnections_ () + thisObj->fActiveConnections_.load ();
     }}
     , pActiveConnections{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) -> Collection<shared_ptr<Connection>> {
         const ConnectionManager* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &ConnectionManager::pActiveConnections);
-        scoped_lock critSec{thisObj->fActiveConnections_}; // Any place SWAPPING between active and inactive, hold this lock so both lists reamain consistent
         return thisObj->fActiveConnections_.load ();
     }}
     , fEffectiveOptions_{FillInDefaults_ (options)}
@@ -231,10 +230,8 @@ void ConnectionManager::onConnect_ (const ConnectionOrientedStreamSocket::Ptr& s
     fInactiveSockSetPoller_.Add (conn);
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     {
-        scoped_lock critSec{fActiveConnections_}; // Any place SWAPPING between active and inactive, hold this lock so both lists reamain consistent
-        DbgTrace (L"In onConnect_ (after adding connection %s): fActiveConnections_=%s, inactiveOpenConnections_=%s",
-                  Characters::ToString (conn).c_str (), Characters::ToString (fActiveConnections_.load ()).c_str (),
-                  Characters::ToString (GetInactiveConnections_ ()).c_str ());
+        scoped_lock critSec{fActiveConnections_}; // fActiveConnections_ lock used for inactive connections too (only for exchanges between the two lists)
+        DbgTrace (L"In onConnect_ (after adding connection %s): fActiveConnections_=%s, inactiveOpenConnections_=%s", Characters::ToString (conn).c_str (), Characters::ToString (fActiveConnections_.load ()).c_str (), Characters::ToString (GetInactiveConnections_ ()).c_str ());
     }
 #endif
 }
@@ -274,12 +271,16 @@ void ConnectionManager::WaitForReadyConnectionLoop_ ()
                     /*
                      * Handle the Connection object, moving it to the appropriate list etc...
                      */
-                    {
-                        scoped_lock critSec{fActiveConnections_};
+                    try {
+                        scoped_lock critSec{fActiveConnections_};                       // lock not strictly needed here, but used to assure consistency between the active/inactive lists
                         fActiveConnections_.rwget ().rwref ().Remove (readyConnection); // no matter what, remove from active connections
                         if (keepAlive) {
                             fInactiveSockSetPoller_.Add (readyConnection);
                         }
+                    }
+                    catch (...) {
+                        AssertNotReached (); // these two lists need to be kept in sync, so really assume updating them cannot fail/break
+                        Execution::ReThrow ();
                     }
 
 // @todo lose this code after a bit of testing that never triggered - LGP 2021-03-02
@@ -306,10 +307,14 @@ void ConnectionManager::WaitForReadyConnectionLoop_ ()
 #endif
                 };
 
-                {
+                try {
                     scoped_lock critSec{fActiveConnections_}; // Any place SWAPPING between active and inactive, hold this lock so both lists reamain consistent
                     fInactiveSockSetPoller_.Remove (readyConnection);
                     fActiveConnections_.rwget ().rwref ().Add (readyConnection);
+                }
+                catch (...) {
+                    AssertNotReached (); // these two lists need to be kept in sync, so really assume updating them cannot fail/break
+                    Execution::ReThrow ();
                 }
                 fActiveConnectionThreads_.AddTask (handleActivatedConnection);
             }

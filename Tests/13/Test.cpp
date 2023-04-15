@@ -30,7 +30,6 @@ using Concrete::Collection_stdforward_list;
 using Concrete::Collection_stdmultiset;
 
 namespace {
-
     template <typename CONCRETE_CONTAINER, typename CONCRETE_CONTAINER_FACTORY>
     void RunTests_ (CONCRETE_CONTAINER_FACTORY factory)
     {
@@ -42,6 +41,15 @@ namespace {
     void RunTests_ ()
     {
         RunTests_<CONCRETE_CONTAINER> ([] () { return CONCRETE_CONTAINER{}; });
+    }
+}
+
+namespace {
+    template <typename CONCRETE_CONTAINER, typename EQUALS_COMPARER>
+    void RunTestsWithEquals_ ()
+    {
+        Debug::TraceContextBumper ctx{L"{}::RunTests_"};
+        CommonTests::CollectionTests::SimpleCollectionTest_TestsWhichRequireEquals<CONCRETE_CONTAINER, EQUALS_COMPARER> ();
     }
 }
 
@@ -106,22 +114,27 @@ namespace {
             }
         };
         RunTests_<Collection<size_t>> ();
+        RunTestsWithEquals_<Collection<size_t>, equal_to<size_t>> ();
         RunTests_<Collection<SimpleClass>> ();
         RunTests_<Collection<SimpleClassWithoutComparisonOperators>> ();
 
         RunTests_<Collection_LinkedList<size_t>> ();
+        RunTestsWithEquals_<Collection_LinkedList<size_t>, equal_to<size_t>> ();
         RunTests_<Collection_LinkedList<SimpleClass>> ();
         RunTests_<Collection_LinkedList<SimpleClassWithoutComparisonOperators>> ();
 
         RunTests_<Collection_Array<size_t>> ();
+        RunTestsWithEquals_<Collection_Array<size_t>, equal_to<size_t>> ();
         RunTests_<Collection_Array<SimpleClass>> ();
         RunTests_<Collection_Array<SimpleClassWithoutComparisonOperators>> ();
 
         RunTests_<Collection_stdforward_list<size_t>> ();
+        RunTestsWithEquals_<Collection_stdforward_list<size_t>, equal_to<size_t>> ();
         RunTests_<Collection_stdforward_list<SimpleClass>> ();
         RunTests_<Collection_stdforward_list<SimpleClassWithoutComparisonOperators>> ();
 
         RunTests_<Collection_stdmultiset<size_t>> ();
+        RunTestsWithEquals_<Collection_stdmultiset<size_t>, equal_to<size_t>> ();
         RunTests_<Collection_stdmultiset<SimpleClass>> ();
         RunTests_<Collection_stdmultiset<SimpleClassWithoutComparisonOperators>> ([] () {
             return Collection_stdmultiset<SimpleClassWithoutComparisonOperators> (MySimpleClassWithoutComparisonOperators_LESS_ ());

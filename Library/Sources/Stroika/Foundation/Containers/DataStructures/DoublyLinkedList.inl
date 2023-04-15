@@ -353,11 +353,12 @@ namespace Stroika::Foundation::Containers::DataStructures {
     {
         Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
         Require (not i.Done ());
+        Require (i.fData_ == this); // assure iterator not stale
         this->Invariant ();
         ForwardIterator next = i;
         ++next;
 
-        Link_* victim = const_cast<Link_*> (i.fCurrent_);
+        const Link_* victim = i.fCurrent_;
         AssertNotNull (victim); // cuz not done
         /*
          * Before:
@@ -409,6 +410,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     {
         Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
         Require (not i.Done ());
+        Require (i.fData_ == this); // assure iterator not stale
         this->Invariant ();
         const_cast<Link_*> (i.fCurrent_)->fItem = newValue;
         this->Invariant ();
@@ -417,6 +419,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     void DoublyLinkedList<T>::AddBefore (const ForwardIterator& i, ArgByValueType<T> newValue)
     {
         Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
+        Require (i.fData_ == this); // assure iterator not stale
         /*
          * NB: This code works fine, even if we are done!!!
          */
@@ -458,6 +461,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     inline void DoublyLinkedList<T>::AddAfter (const ForwardIterator& i, ArgByValueType<T> newValue)
     {
         Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
+        Require (i.fData_ == this); // assure iterator not stale
         this->Invariant ();
         Require (not i.Done ());
         AssertNotNull (i.fCurrent_); // since not done...
@@ -470,7 +474,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
          *      |        |      |        |
          */
         Link_* iteratorCurLink = const_cast<Link_*> (i.fCurrent_);
-        Link_* newLink         = new Link_ (newValue, iteratorCurLink, iteratorCurLink->fNext);
+        Link_* newLink         = new Link_{newValue, iteratorCurLink, iteratorCurLink->fNext};
         iteratorCurLink->fNext = newLink;
         if (newLink->fNext != nullptr) {
             newLink->fNext->fPrev = newLink;

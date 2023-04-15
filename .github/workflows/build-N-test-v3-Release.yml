@@ -196,6 +196,7 @@ jobs:
           path: |
             Builds/Stroika-Doxygen-Help.tar.gz
       - name: Archive Log Results
+        if: always()
         uses: actions/upload-artifact@v3
         with:
           name: Log Data (${{ matrix.displayTargetName }})
@@ -273,6 +274,7 @@ jobs:
         run: |
           df -h
       - name: Archive Log Results
+        if: always()
         uses: actions/upload-artifact@v3
         with:
           name: Log Results (${{ matrix.displayTargetName }})
@@ -406,6 +408,7 @@ jobs:
           docker cp buildContainer:Stroika/TRACE_LOGS $ARTIFACTS_DIR 2> /dev/null
           rm -rf $ARTIFACTS_DIR/{ThirdPartyComponents,Tests,*.lib}
       - name: Archive Log Results
+        if: always()
         uses: actions/upload-artifact@v3
         with:
           name: Log Results (${{ matrix.displayTargetName }})

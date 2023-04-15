@@ -953,12 +953,12 @@ namespace Stroika::Frameworks::Led::Platform {
         this->BreakInGroupedCommands ();
 
         TextInteractor::InteractiveModeUpdater iuMode (*this);
-        size_t ucSelStart = (sCurrentDragInfo != NULL and sCurrentDragInfo->fLedMFCView == this) ? sCurrentDragInfo->fOrigSelection.GetStart ()
+        size_t ucSelStart = (sCurrentDragInfo != nullptr and sCurrentDragInfo->fLedMFCView == this) ? sCurrentDragInfo->fOrigSelection.GetStart ()
                                                                                                  : this->GetSelectionStart ();
-        size_t ucSelEnd = (sCurrentDragInfo != NULL and sCurrentDragInfo->fLedMFCView == this) ? sCurrentDragInfo->fOrigSelection.GetEnd ()
+        size_t ucSelEnd = (sCurrentDragInfo != nullptr and sCurrentDragInfo->fLedMFCView == this) ? sCurrentDragInfo->fOrigSelection.GetEnd ()
                                                                                                : this->GetSelectionEnd ();
         TextInteractor::UndoableContextHelper undoContext (*this,
-                                                           (sCurrentDragInfo != NULL and sCurrentDragInfo->fLedMFCView == this)
+                                                           (sCurrentDragInfo != nullptr and sCurrentDragInfo->fLedMFCView == this)
                                                                ? GetCommandNames ().fDragNDropCommandName
                                                                : GetCommandNames ().fDropCommandName,
                                                            this->GetSelectionStart (), this->GetSelectionEnd (), ucSelStart, ucSelEnd, false);
@@ -987,7 +987,7 @@ namespace Stroika::Frameworks::Led::Platform {
         undoContext.CommandComplete ();
 
         // If WE INITED DRAG - don't do break here, do it in HandleDragSelect () so it can incorporate a DELETE TEXT on MOVE...
-        if (sCurrentDragInfo == NULL or sCurrentDragInfo->fLedMFCView != this) {
+        if (sCurrentDragInfo == nullptr or sCurrentDragInfo->fLedMFCView != this) {
             this->BreakInGroupedCommands ();
         }
 
@@ -1014,9 +1014,9 @@ namespace Stroika::Frameworks::Led::Platform {
         static CLIPFORMAT kObjectDescriptorFormatTag = (CLIPFORMAT)::RegisterClipboardFormat (_T("Object Descriptor"));
 
         HGLOBAL hObjDesc = pDataObject->GetGlobalData (kObjectDescriptorFormatTag);
-        if (hObjDesc == NULL) {
-            *pSize   = CSize (0, 0);
-            *pOffset = CSize (0, 0);
+        if (hObjDesc == nullptr) {
+            *pSize   = CSize{0, 0};
+            *pOffset = CSize {0, 0};
             return false;
         }
         else {
@@ -1089,13 +1089,13 @@ namespace Stroika::Frameworks::Led::Platform {
         ,
         // NB: CTOR for TWIPS_Rect is TOP/LEFT/HEIGHT/WIDTH, so we set height/width to zero to get same TLBR.
         fPrintMargins (TWIPS_Rect (TWIPS{1440}, TWIPS{1440}, TWIPS{0}, TWIPS{0}))
-        , fPrintInfo{NULL}
+        , fPrintInfo{nullptr}
     {
     }
     template <typename BASECLASS>
     Led_MFC_CViewHelper<BASECLASS>::~Led_MFC_CViewHelper ()
     {
-        Assert (fPrintInfo == NULL);
+        Assert (fPrintInfo == nullptr);
     }
     template <typename BASECLASS>
     /*
@@ -1137,7 +1137,7 @@ namespace Stroika::Frameworks::Led::Platform {
     void Led_MFC_CViewHelper<BASECLASS>::OnBeginPrinting (CDC* pDC, CPrintInfo* pInfo)
     {
         // THIS CODE IS KINDOF HACKISH - SHOULD HAVE A PAGENATE STAGE/FUNCTION!!! TO FILL THIS ARRAY!!!
-        Assert (fPrintInfo == NULL);
+        Assert (fPrintInfo == nullptr);
         BASECLASS::OnBeginPrinting (pDC, pInfo);
         fPrintInfo = new PrintInfo (*this, pDC, this->GetWindowRect (), this->GetMarkerPositionOfStartOfWindow (), this->GetForceAllRowsShowing ());
         this->SetForceAllRowsShowing (false);

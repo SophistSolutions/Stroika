@@ -69,7 +69,7 @@ namespace Stroika::Foundation::Containers {
     template <typename EQUALS_COMPARER>
     inline bool Collection<T>::Contains (ArgByValueType<value_type> item, EQUALS_COMPARER&& equalsComparer) const
     {
-        return this->Find (item, forward<EQUALS_COMPARER> (equalsComparer)) != nullptr;
+        return this->Find (item, forward<EQUALS_COMPARER> (equalsComparer)) != this->end ();
     }
     template <typename T>
     template <typename ITERATOR_OF_ADDABLE>
@@ -122,14 +122,16 @@ namespace Stroika::Foundation::Containers {
     {
         auto i = this->Find (item, forward<EQUALS_COMPARER> (equalsComparer));
         Require (i != this->end ()); // use remove-if if the item might not exist
-        _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().Remove (i, nullptr);
+        auto [writerRep, patchedIterator] = _GetWritableRepAndPatchAssociatedIterator (i);
+        writerRep->Remove (patchedIterator, nullptr);
     }
     template <typename T>
     template <typename EQUALS_COMPARER>
     inline bool Collection<T>::RemoveIf (ArgByValueType<value_type> item, EQUALS_COMPARER&& equalsComparer)
     {
         if (auto i = this->Find (item, forward<EQUALS_COMPARER> (equalsComparer))) {
-            _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().Remove (i, nullptr);
+            auto [writerRep, patchedIterator] = _GetWritableRepAndPatchAssociatedIterator (i);
+            writerRep->Remove (patchedIterator, nullptr);
             return true;
         }
         return false;

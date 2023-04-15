@@ -141,7 +141,14 @@ namespace Stroika::Foundation::Debug {
      *
      *  \note this is defined as a macro, since sometimes its very hard to use constexpr to disable bunchs of code
      *        BUT - use Debug::kBuiltWithUndefinedBehaviorSanitizer in preference to this where you can.
+     * 
+     *  \note sure this works with GCC - https://github.com/google/sanitizers/issues/765
      */
+#if !defined(Stroika_Foundation_Debug_Sanitizer_HAS_UndefinedBehaviorSanitizer)
+#if defined(__SANITIZE_UNDEFINED__)
+#define Stroika_Foundation_Debug_Sanitizer_HAS_UndefinedBehaviorSanitizer 1
+#endif
+#endif
 #if !defined(Stroika_Foundation_Debug_Sanitizer_HAS_UndefinedBehaviorSanitizer)
 #if defined(__has_feature)
     // not documented - https://clang.llvm.org/docs/UndefinedBehaviorSanitizer.html - not sure if ever works
@@ -156,6 +163,8 @@ namespace Stroika::Foundation::Debug {
     /**
      *  \brief kBuiltWithUndefinedBehaviorSanitizer can be checked in compiled code to see if the undfined behavior sanitizer
      *         support is compiled into this executable
+     * 
+     *  \note WARNING: This incorrectly reports false on GCC builds, at least up to gcc 12, it appears.
      */
     constexpr bool kBuiltWithUndefinedBehaviorSanitizer = Stroika_Foundation_Debug_Sanitizer_HAS_UndefinedBehaviorSanitizer;
 

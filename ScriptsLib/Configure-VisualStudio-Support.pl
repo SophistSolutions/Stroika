@@ -176,6 +176,7 @@ sub GetEnvironmentVariablesForConfiguration_
 		my $envVar = @splitLine[0];
 		my $envVarValue = @splitLine[1];
 		$result{$envVar} .= $envVarValue;
+		# print "GOT envVar=$envVar; val=" . $envVarValue . "\n";
 	}
 	#print "GOT (ACTIVECONFIG=$activeConfig) PATH=" . %result{"WindowsSdkVerBinPath"} . "\n";
 	#print "GOT (ACTIVECONFIG=$activeConfig) PATH=" . %result{"PATH"} . "\n";
@@ -223,6 +224,7 @@ sub GetAugmentedEnvironmentVariablesForConfiguration
 		my $exeDir = "$sdkPath/x64/";
 		$resEnv{"MIDL"} = toExternallyUsedPath_ ($exeDir . "midl");
 		$resEnv{"RC"} = toExternallyUsedPath_ ($exeDir . "rc");
+		$resEnv{"WindowsSdkVerBinPath"} = toExternallyUsedPath_ ($sdkPath);
 	}
 
 
@@ -273,6 +275,10 @@ sub GetAugmentedEnvironmentVariablesForConfiguration
 	#todo must so similar but be careful about how to treat colon in paths.
 	$resEnv{"TOOLS_PATH_ADDITIONS"} = $param_string;
 	#$resEnv{"TOOLS_PATH_ADDITIONS"} =`cygpath --unix --path \"$param_string\"`;
+
+	$resEnv{"VCToolsInstallDir"} = toExternallyUsedPath_(toCygPath_($resEnv{"VCToolsInstallDir"}));
+	$resEnv{"VSINSTALLDIR"} = toExternallyUsedPath_(toCygPath_($resEnv{"VSINSTALLDIR"}));
+	$resEnv{"WindowsSdkDir"} = toExternallyUsedPath_(toCygPath_($resEnv{"WindowsSdkDir"}));
 
 	return %resEnv;
 }

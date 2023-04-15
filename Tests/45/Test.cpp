@@ -68,7 +68,7 @@ namespace {
                     VerifyTestResult (r.GetData ().size () > 1);
                 }
                 catch (const IO::Network::HTTP::Exception& e) {
-                    if (e.IsServerError ()) {
+                    if (e.IsServerError () or e.GetStatus () == IO::Network::HTTP::StatusCodes::kTooManyRequests) {
                         Stroika::TestHarness::WarnTestIssue (Characters::Format (L"Ignorning %s", Characters::ToString (e).c_str ()).c_str ());
                     }
                     else {
@@ -101,8 +101,24 @@ namespace {
             }
             void DoRegressionTests_ForConnectionFactory_ (Connection::Ptr (*factory) ())
             {
-                Test_1_SimpleFetch_Google_C_ (factory ());
-                Test_2_SimpleFetch_SSL_Google_C_ (factory ());
+                try {
+                    Test_1_SimpleFetch_Google_C_ (factory ());
+#if qCompilerAndStdLib_arm_openssl_valgrind_Buggy
+                    if (not Debug::IsRunningUnderValgrind ()) {
+                        Test_2_SimpleFetch_SSL_Google_C_ (factory ());
+                    }
+#else
+                    Test_2_SimpleFetch_SSL_Google_C_ (factory ());
+#endif
+                }
+                catch (const IO::Network::HTTP::Exception& e) {
+                    if (e.IsServerError () or e.GetStatus () == IO::Network::HTTP::StatusCodes::kTooManyRequests) {
+                        Stroika::TestHarness::WarnTestIssue (Characters::Format (L"Ignorning %s", Characters::ToString (e).c_str ()).c_str ());
+                    }
+                    else {
+                        Execution::ReThrow ();
+                    }
+                }
             }
         }
         void DoTests_ ()
@@ -281,7 +297,7 @@ namespace {
                     }
                 }
                 catch (const IO::Network::HTTP::Exception& e) {
-                    if (e.IsServerError ()) {
+                    if (e.IsServerError () or e.GetStatus () == IO::Network::HTTP::StatusCodes::kTooManyRequests) {
                         Stroika::TestHarness::WarnTestIssue (Characters::Format (L"Ignorning %s", Characters::ToString (e).c_str ()).c_str ());
                     }
                     else {
@@ -359,7 +375,20 @@ namespace {
                 // rarely, but sometimes, this returns text that doesn't contain the word google --LGP 2019-04-19
                 VerifyTestResultWarning (responseText.Contains (L"google", Characters::CompareOptions::eCaseInsensitive));
             }
-            void DoRegressionTests_ForConnectionFactory_ (Connection::Ptr (*factory) ()) { Test_1_SimpleFetch_Google_C_ (factory ()); }
+            void DoRegressionTests_ForConnectionFactory_ (Connection::Ptr (*factory) ())
+            {
+                try {
+                    Test_1_SimpleFetch_Google_C_ (factory ());
+                }
+                catch (const IO::Network::HTTP::Exception& e) {
+                    if (e.IsServerError () or e.GetStatus () == IO::Network::HTTP::StatusCodes::kTooManyRequests) {
+                        Stroika::TestHarness::WarnTestIssue (Characters::Format (L"Ignorning %s", Characters::ToString (e).c_str ()).c_str ());
+                    }
+                    else {
+                        Execution::ReThrow ();
+                    }
+                }
+            }
         }
         void DoTests_ ()
         {
@@ -369,14 +398,6 @@ namespace {
             using namespace Private_;
             try {
                 DoRegressionTests_ForConnectionFactory_ ([] () -> Connection::Ptr { return Connection::New (kDefaultTestOptions_); });
-            }
-            catch (const IO::Network::HTTP::Exception& e) {
-                if (e.IsServerError ()) {
-                    Stroika::TestHarness::WarnTestIssue (Characters::Format (L"Ignorning %s", Characters::ToString (e).c_str ()).c_str ());
-                }
-                else {
-                    Execution::ReThrow ();
-                }
             }
             catch (const Execution::RequiredComponentMissingException&) {
 #if !qHasFeature_LibCurl && !qHasFeature_WinHTTP
@@ -418,7 +439,7 @@ namespace {
                 Private_::T1_get_ ();
             }
             catch (const IO::Network::HTTP::Exception& e) {
-                if (e.IsServerError ()) {
+                if (e.IsServerError () or e.GetStatus () == IO::Network::HTTP::StatusCodes::kTooManyRequests) {
                     Stroika::TestHarness::WarnTestIssue (Characters::Format (L"Ignorning %s", Characters::ToString (e).c_str ()).c_str ());
                 }
                 else {
@@ -587,7 +608,7 @@ namespace {
                                   Characters::ToString (wasFromCache).c_str ()); // cannot assert cuz some servers cachable, others not
                     }
                     catch (const IO::Network::HTTP::Exception& e) {
-                        if (e.IsServerError ()) {
+                        if (e.IsServerError () or e.GetStatus () == IO::Network::HTTP::StatusCodes::kTooManyRequests) {
                             Stroika::TestHarness::WarnTestIssue (Characters::Format (L"Ignorning %s", Characters::ToString (e).c_str ()).c_str ());
                         }
                         else {
@@ -688,7 +709,7 @@ namespace {
                     [&] (const URI& uriHint) -> Connection::Ptr { return connectionPoolWithCache.New (uriHint); });
             }
             catch (const IO::Network::HTTP::Exception& e) {
-                if (e.IsServerError ()) {
+                if (e.IsServerError () or e.GetStatus () == IO::Network::HTTP::StatusCodes::kTooManyRequests) {
                     Stroika::TestHarness::WarnTestIssue (Characters::Format (L"Ignorning %s", Characters::ToString (e).c_str ()).c_str ());
                 }
                 else {
