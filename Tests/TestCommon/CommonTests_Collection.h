@@ -243,11 +243,7 @@ namespace CommonTests {
                 constexpr unsigned int kTimesToRepeat_{10000};
 #endif
                 for (unsigned int testNum = 0; testNum < kTimesToRepeat_; ++testNum) {
-                    bool doingAdd =
-                        (s.size () < 1)
-                            ? true
-                            : (
-                                  (s.size () < 10) ? (rand () % 2 == 1) : (rand () % 3 == 1));
+                    bool doingAdd = (s.size () < 1) ? true : ((s.size () < 10) ? (rand () % 2 == 1) : (rand () % 3 == 1));
                     if (doingAdd) {
                         T elt2Add = testSet[rand () % testSet.size ()];
                         s.Add (elt2Add);

@@ -954,9 +954,9 @@ namespace Stroika::Frameworks::Led::Platform {
 
         TextInteractor::InteractiveModeUpdater iuMode (*this);
         size_t ucSelStart = (sCurrentDragInfo != nullptr and sCurrentDragInfo->fLedMFCView == this) ? sCurrentDragInfo->fOrigSelection.GetStart ()
-                                                                                                 : this->GetSelectionStart ();
+                                                                                                    : this->GetSelectionStart ();
         size_t ucSelEnd = (sCurrentDragInfo != nullptr and sCurrentDragInfo->fLedMFCView == this) ? sCurrentDragInfo->fOrigSelection.GetEnd ()
-                                                                                               : this->GetSelectionEnd ();
+                                                                                                  : this->GetSelectionEnd ();
         TextInteractor::UndoableContextHelper undoContext (*this,
                                                            (sCurrentDragInfo != nullptr and sCurrentDragInfo->fLedMFCView == this)
                                                                ? GetCommandNames ().fDragNDropCommandName
@@ -1016,7 +1016,7 @@ namespace Stroika::Frameworks::Led::Platform {
         HGLOBAL hObjDesc = pDataObject->GetGlobalData (kObjectDescriptorFormatTag);
         if (hObjDesc == nullptr) {
             *pSize   = CSize{0, 0};
-            *pOffset = CSize {0, 0};
+            *pOffset = CSize{0, 0};
             return false;
         }
         else {

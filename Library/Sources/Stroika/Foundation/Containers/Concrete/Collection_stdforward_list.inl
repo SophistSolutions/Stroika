@@ -109,7 +109,8 @@ namespace Stroika::Foundation::Containers::Concrete {
             Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fData_};
             // Horrible API - must revisit/rethink. Maybe just a bad fit? But to erase an element from a forward_list,
             // given a link to it, you must walk from the start of the list and find its prev pointer
-            typename STDFORWARDLIST::const_iterator victim = Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ()).fIterator.GetUnderlyingIteratorRep ();
+            typename STDFORWARDLIST::const_iterator victim =
+                Debug::UncheckedDynamicCast<const IteratorRep_&> (i.ConstGetRep ()).fIterator.GetUnderlyingIteratorRep ();
             typename STDFORWARDLIST::const_iterator prevI;
             for (prevI = fData_.before_begin (); std::next (prevI) != victim; ++prevI)
                 ;

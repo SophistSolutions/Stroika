@@ -179,7 +179,8 @@ struct Router::Rep_ : Interceptor::_IRep {
     nonvirtual optional<Set<String>> GetAllowedMethodsForRequest_ (const Request& request) const
     {
         String                   hostRelPath = ExtractHostRelPath_ (request.url);
-        static const Set<String> kMethods2Try_{HTTP::Methods::kGet, HTTP::Methods::kPut, HTTP::Methods::kOptions, HTTP::Methods::kDelete, HTTP::Methods::kPost, HTTP::Methods::kPatch};
+        static const Set<String> kMethods2Try_{HTTP::Methods::kGet,    HTTP::Methods::kPut,  HTTP::Methods::kOptions,
+                                               HTTP::Methods::kDelete, HTTP::Methods::kPost, HTTP::Methods::kPatch};
         Set<String>              methods;
         for (const String& method : kMethods2Try_) {
             for (const Route& r : fRoutes_) {
