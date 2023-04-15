@@ -296,13 +296,8 @@ C:\Sandbox\Stroika\DevRoot\Library\Sources\Stroika\Foundation\Execution\Throw.in
 
 #endif
 
-// I'm NOT sure if this is covering a Stroika bug, or if its a bug with vs2k17 compiler. It only breaks on vs2k17.
-// And I couldn't figure out what is promised by the language with a quick read of c++ spec, and search on stack overflow
-// The issue:
-// static inline obj = x;
-// static auto i = obj; // is that legal? In vs2k17 - for object with constructor etc - like string - it appears it may not be.
 //
-#ifndef qCompilerAndStdLib_static_inline_order_of_construction_Buggy
+#ifndef qCompilerAndStdLib_ArgumentDependentLookupInTemplateExpansionTooAggressiveNowBroken_Buggy
 #if defined(_MSC_VER)
 // first broken in _MSC_VER_2k22_17Pt4_
 #define qCompilerAndStdLib_ArgumentDependentLookupInTemplateExpansionTooAggressiveNowBroken_Buggy                                          \
@@ -1025,7 +1020,7 @@ In file included from ../Characters/StringBuilder.h:273,
 // NOTE - not always buggy on MSFT - depends on chosen syntax, but the one I think most likely right doesnt work on vis studio so blame them
 // still buggy in _MSC_VER_2k22_17Pt4_
 #define qCompilerAndStdLib_template_Requires_templateDeclarationMatchesOutOfLine_Buggy                                                     \
-    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k22_17Pt4_)
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k22_17Pt5_)
 #elif defined(__GNUC__) && !defined(__clang__)
 // VERIFIED BROKEN IN GCC 12
 #define qCompilerAndStdLib_template_Requires_templateDeclarationMatchesOutOfLine_Buggy                                                     \
