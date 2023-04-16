@@ -11,7 +11,7 @@
 #ifndef _Stroika_Foundation_Containers_Concrete_Set_Factory_inl_
 #define _Stroika_Foundation_Containers_Concrete_Set_Factory_inl_
 
-#include "../Concrete/Set_LinkedList.h"
+#include "../Concrete/Set_Array.h"
 #include "../Concrete/Set_stdset.h"
 
 namespace Stroika::Foundation::Containers::Factory {
@@ -57,12 +57,10 @@ namespace Stroika::Foundation::Containers::Factory {
         }
         else {
             /*
-             *  Note - though this is not an efficient implementation of Set<> for large sizes,
-             *  its probably the most efficient representation which adds no requirements to KEY_TYPE,
-             *  such as operator< (or a traits less) or a hash function. And its quite reasonable for
-             *  small Sets's - which are often the case.
+             *  Not good for large sets, due to lack of indexing/quick lookup. So issue with realloc not such a biggie
+             *  and probably better than linkedlist since better locality (and have to walk whole list anyhow to see if present).
              */
-            return Concrete::Set_LinkedList<T>{equalsComparer};
+            return Concrete::Set_Array<T>{equalsComparer};
         }
     }
 
