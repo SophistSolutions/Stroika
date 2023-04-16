@@ -58,6 +58,8 @@ namespace Stroika::Foundation::Containers::Factory {
         }
         else {
             if (hints.fOptimizeForLookupSpeedOverUpdateSpeed.value_or (true)) {
+                // questionable choice. For smaller sizes, probably faster, due to better locality.
+                // but adds can occionally be slow (realloc/O(N)) instead of O(1).
                 return Concrete::Collection_Array<T>{};
             }
             else {

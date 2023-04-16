@@ -12,9 +12,6 @@
  *  \file
  *
  *  \version    <a href="Code-Status.md#Beta">Beta</a>
- *
- *  TODO:
- *
  */
 
 namespace Stroika::Foundation::Containers::Concrete {

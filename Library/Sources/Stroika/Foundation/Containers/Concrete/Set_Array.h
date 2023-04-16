@@ -68,6 +68,37 @@ namespace Stroika::Foundation::Containers::Concrete {
         nonvirtual Set_Array& operator= (Set_Array&& rhs) noexcept = default;
         nonvirtual Set_Array& operator= (const Set_Array& rhs)     = default;
 
+    public:
+        /*
+         *  \brief Return the number of allocated vector/array elements.
+         * 
+         * This optional API allows pre-reserving space as an optimization.
+         * 
+         *  \note alias GetCapacity ();
+         */
+        nonvirtual size_t capacity () const;
+
+    public:
+        /**
+         * This optional API allows pre-reserving space as an optimization.
+         * 
+         *  \note Alias SetCapacity ();
+         * 
+         *  \note Note that this does not affect the semantics of the MultiSet.
+         * 
+         *  \req slotsAllocated >= size ()
+         */
+        nonvirtual void reserve (size_t slotsAlloced);
+
+    public:
+        /**
+         *  \brief  Reduce the space used to store the Set<T> contents.
+         *
+         *  This has no semantics, no observable behavior. But depending on the representation of
+         *  the concrete sequence, calling this may save memory.
+         */
+        nonvirtual void shrink_to_fit ();
+
     private:
         class IImplRepBase_;
         template <typename EQUALS_COMPARER>

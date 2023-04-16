@@ -17,10 +17,18 @@
 
 namespace Stroika::Foundation::Containers::Concrete {
 
-    /**
+    /*
+     ********************************************************************************
+     ********************* MultiSet_Array<T, TRAITS>::IImplRepBase_ *****************
+     ********************************************************************************
      */
     template <typename T>
-    class Set_Array<T>::IImplRepBase_ : public Set<T>::_IRep {};
+    class Set_Array<T>::IImplRepBase_ : public Set<T>::_IRep {
+    public:
+        virtual size_t capacity () const             = 0;
+        virtual void   reserve (size_t slotsAlloced) = 0;
+        virtual void   shrink_to_fit ()              = 0;
+    };
 
     /**
      */
@@ -158,6 +166,25 @@ namespace Stroika::Foundation::Containers::Concrete {
             }
         }
 
+        // Set_Array<T>::_IRep overrides
+    public:
+        virtual size_t capacity () const override
+        {
+            Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
+            return fData_.capacity ();
+        }
+        virtual void reserve (size_t slotsAlloced) override
+        {
+            Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fData_};
+            fData_.reserve (slotsAlloced);
+            fChangeCounts_.PerformedChange ();
+        }
+        virtual void shrink_to_fit () override
+        {
+            Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fData_};
+            fData_.shrink_to_fit ();
+        }
+
     private:
         using DataStructureImplType_ = DataStructures::Array<value_type>;
         using IteratorRep_           = typename Private::IteratorImplHelper_<value_type, DataStructureImplType_>;
@@ -238,6 +265,27 @@ namespace Stroika::Foundation::Containers::Concrete {
         static_assert (IsAddable_v<ExtractValueType_t<ITERATOR_OF_ADDABLE>>);
         this->AddAll (start, end);
         AssertRepValidType_ ();
+    }
+    template <typename T>
+    inline size_t Set_Array<T>::capacity () const
+    {
+        using _SafeReadRepAccessor = typename inherited::template _SafeReadRepAccessor<IImplRepBase_>;
+        _SafeReadRepAccessor accessor{this};
+        return accessor._ConstGetRep ().capacity ();
+    }
+    template <typename T>
+    inline void Set_Array<T>::reserve (size_t slotsAlloced)
+    {
+        using _SafeReadWriteRepAccessor = typename inherited::template _SafeReadWriteRepAccessor<IImplRepBase_>;
+        _SafeReadWriteRepAccessor accessor{this};
+        accessor._GetWriteableRep ().reserve (slotsAlloced);
+    }
+    template <typename T>
+    inline void Set_Array<T>::shrink_to_fit ()
+    {
+        using _SafeReadWriteRepAccessor = typename inherited::template _SafeReadWriteRepAccessor<IImplRepBase_>;
+        _SafeReadWriteRepAccessor accessor{this};
+        accessor._GetWriteableRep ().shrink_to_fit ();
     }
     template <typename T>
     inline void Set_Array<T>::AssertRepValidType_ () const

@@ -92,6 +92,12 @@ namespace Stroika::Foundation::Containers::Concrete {
         nonvirtual void reserve (size_t slotsAlloced);
 
     public:
+        /**
+         *  \brief  Reduce the space used to store the Multiset<T> contents.
+         *
+         *  This has no semantics, no observable behavior. But depending on the representation of
+         *  the concrete sequence, calling this may save memory.
+         */
         nonvirtual void shrink_to_fit ();
 
     private:
