@@ -135,7 +135,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             value_type                                             tmp{item, count};
             size_t                                                 index = Find_ (tmp);
             if (index == kNotFound_) {
-                fData_.InsertAt (fData_.size (), tmp);
+                fData_.push_back (tmp);
             }
             else {
                 tmp.fCount += count;

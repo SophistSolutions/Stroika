@@ -153,7 +153,7 @@ namespace Stroika::Foundation::Containers::Concrete {
                     return false;
                 }
             }
-            fData_.InsertAt (fData_.size (), value_type{key, newElt});
+            fData_.push_back (value_type{key, newElt});
             fChangeCounts_.PerformedChange ();
             return true;
         }
