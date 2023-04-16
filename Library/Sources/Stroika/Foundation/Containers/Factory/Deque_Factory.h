@@ -10,12 +10,6 @@
 
 /**
  *  \file
- *
- *  TODO:
- *      @todo   Extend this metaphor to have different kinds of factories, like mkDeque_Fastest,
- *              mkDeque_Smallest, mkDequeWithHash_Fastest etc...
- *              Possibly extend to policy objects, and have properties for this stuff?
- *
  */
 
 namespace Stroika::Foundation::Containers {
@@ -44,6 +38,20 @@ namespace Stroika::Foundation::Containers::Factory {
 
     public:
         /**
+         *  Hints can be used in factory constructor to guide the choice of the best container implementation/backend.
+         */
+        struct Hints {
+            /**
+             *  Set false if expected large deque.
+             */
+            optional<bool> fOptimizeForLookupSpeedOverUpdateSpeed;
+        };
+
+    public:
+        constexpr Deque_Factory (const Hints& hints = {});
+
+    public:
+        /**
          *  You can call this directly, but there is no need, as the Deque<T> CTOR does so automatically.
          */
         nonvirtual Deque<T> operator() () const;
@@ -53,6 +61,9 @@ namespace Stroika::Foundation::Containers::Factory {
          *  Register a replacement creator/factory for the given Deque<T>. Note this is a global change.
          */
         static void Register (Deque<T> (*factory) () = nullptr);
+
+    private:
+        const Hints fHints_;
 
     private:
         static Deque<T> Default_ ();

@@ -21,18 +21,19 @@ namespace Stroika::Foundation::Containers::Factory {
      ********************************************************************************
      */
     template <typename DOMAIN_TYPE, typename RANGE_TYPE, typename DOMAIN_EQUALS_COMPARER, typename RANGE_EQUALS_COMPARER>
-    inline Bijection_Factory<DOMAIN_TYPE, RANGE_TYPE, DOMAIN_EQUALS_COMPARER, RANGE_EQUALS_COMPARER>::Bijection_Factory (
-        const DOMAIN_EQUALS_COMPARER& domainEqualsComparer, const RANGE_EQUALS_COMPARER& rangeEqualsComparer)
-        : Bijection_Factory{DataExchange::ValidationStrategy::eAssertion, domainEqualsComparer, rangeEqualsComparer}
+    constexpr Bijection_Factory<DOMAIN_TYPE, RANGE_TYPE, DOMAIN_EQUALS_COMPARER, RANGE_EQUALS_COMPARER>::Bijection_Factory (
+        const DOMAIN_EQUALS_COMPARER& domainEqualsComparer, const RANGE_EQUALS_COMPARER& rangeEqualsComparer, const Hints& hints)
+        : Bijection_Factory{DataExchange::ValidationStrategy::eAssertion, domainEqualsComparer, rangeEqualsComparer, hints}
     {
     }
     template <typename DOMAIN_TYPE, typename RANGE_TYPE, typename DOMAIN_EQUALS_COMPARER, typename RANGE_EQUALS_COMPARER>
-    inline Bijection_Factory<DOMAIN_TYPE, RANGE_TYPE, DOMAIN_EQUALS_COMPARER, RANGE_EQUALS_COMPARER>::Bijection_Factory (
+    constexpr Bijection_Factory<DOMAIN_TYPE, RANGE_TYPE, DOMAIN_EQUALS_COMPARER, RANGE_EQUALS_COMPARER>::Bijection_Factory (
         DataExchange::ValidationStrategy injectivityCheckPolicy, const DOMAIN_EQUALS_COMPARER& domainEqualsComparer,
-        const RANGE_EQUALS_COMPARER& rangeEqualsComparer)
+        const RANGE_EQUALS_COMPARER& rangeEqualsComparer, const Hints& hints)
         : fInjectivityViolationPolicy_{injectivityCheckPolicy}
         , fDomainEqualsComparer_{domainEqualsComparer}
         , fRangeEqualsComparer_{rangeEqualsComparer}
+        , fHints_{hints}
     {
     }
     template <typename DOMAIN_TYPE, typename RANGE_TYPE, typename DOMAIN_EQUALS_COMPARER, typename RANGE_EQUALS_COMPARER>

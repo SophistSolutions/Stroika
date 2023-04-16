@@ -21,15 +21,20 @@ namespace Stroika::Foundation::Containers::Factory {
      ********************************************************************************
      */
     template <typename T>
+    constexpr Queue_Factory<T>::Queue_Factory (const Hints& hints)
+        : fHints_{hints}
+    {
+    }
+    template <typename T>
     inline Queue<T> Queue_Factory<T>::operator() () const
     {
         /*
-            *  Would have been more performant to just and assure always properly set, but to initialize
-            *  sFactory_ with a value other than nullptr requires waiting until after main() - so causes problems
-            *  with containers constructed before main.
-            *
-            *  This works more generally (and with hopefully modest enough performance impact).
-            */
+         *  Would have been more performant to just and assure always properly set, but to initialize
+         *  sFactory_ with a value other than nullptr requires waiting until after main() - so causes problems
+         *  with containers constructed before main.
+         *
+         *  This works more generally (and with hopefully modest enough performance impact).
+         */
         if (auto f = sFactory_.load ()) {
             return f ();
         }

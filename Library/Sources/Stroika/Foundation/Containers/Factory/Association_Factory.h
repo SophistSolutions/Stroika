@@ -11,14 +11,6 @@
 
 /**
  *  \file
- *
- *  TODO:
- *      @todo   Extend this metaphor to have different kinds of factories, like mkAssociation_Fastest,
- *              mkAssociation_Smallest, mkAssociationWithHash_Fastest etc...
- *              Possibly extend to policy objects, and have properties for this stuff?
- *
- *      @todo   Rethink use of TRAITS as argument to factory. Probably can only do the SFINAE stuff
- *              when TRAITS EQUALS the default.
  */
 
 namespace Stroika::Foundation::Containers {
@@ -50,7 +42,15 @@ namespace Stroika::Foundation::Containers::Factory {
         static_assert (Common::IsEqualsComparer<KEY_EQUALS_COMPARER> (), "Equals comparer required with Association_Factory");
 
     public:
-        Association_Factory (const KEY_EQUALS_COMPARER& equalsComparer = {});
+        /**
+         *  Hints can be used in factory constructor to guide the choice of the best container implementation/backend.
+         */
+        struct Hints {
+            optional<bool> fOptimizeForLookupSpeedOverUpdateSpeed;
+        };
+
+    public:
+        constexpr Association_Factory (const KEY_EQUALS_COMPARER& equalsComparer = {}, const Hints& hints = {});
 
     public:
         /**
@@ -66,9 +66,10 @@ namespace Stroika::Foundation::Containers::Factory {
 
     private:
         [[no_unique_address]] const KEY_EQUALS_COMPARER fKeyEqualsComparer_;
+        const Hints                                     fHints_;
 
     private:
-        static Association<KEY_TYPE, VALUE_TYPE> Default_ (const KEY_EQUALS_COMPARER&);
+        static Association<KEY_TYPE, VALUE_TYPE> Default_ (const KEY_EQUALS_COMPARER& keyEqualsComparer, const Hints& hints);
     };
 
 }

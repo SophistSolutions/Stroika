@@ -10,11 +10,6 @@
 
 /**
  *  \file
- *
- *  TODO:
- *      @todo   Extend this metaphor to have different kinds of factories, like mkStack_Fastest,
- *              mkStack_Smallest, mkStackWithHash_Fastest etc...
- *              Possibly extend to policy objects, and have properties for this stuff?
  */
 
 namespace Stroika::Foundation::Containers {
@@ -43,6 +38,15 @@ namespace Stroika::Foundation::Containers::Factory {
 
     public:
         /**
+         *  Hints can be used in factory constructor to guide the choice of the best container implementation/backend.
+         */
+        struct Hints {};
+
+    public:
+        constexpr Stack_Factory (const Hints& hints = {});
+
+    public:
+        /**
          *  You can call this directly, but there is no need, as the Stack<T> CTOR does so automatically.
          */
         nonvirtual Stack<T> operator() () const;
@@ -52,6 +56,9 @@ namespace Stroika::Foundation::Containers::Factory {
          *  Register a replacement creator/factory for the given Stack<T>. Note this is a global change.
          */
         static void Register (Stack<T> (*factory) () = nullptr);
+
+    private:
+        [[no_unique_address]] const Hints fHints_;
 
     private:
         static Stack<T> Default_ ();

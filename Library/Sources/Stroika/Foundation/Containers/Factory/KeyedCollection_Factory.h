@@ -11,8 +11,6 @@
 
 /**
  *  \file
- *
- *  TODO:
  */
 
 namespace Stroika::Foundation::Containers {
@@ -41,7 +39,17 @@ namespace Stroika::Foundation::Containers::Factory {
             nullptr};
 
     public:
-        KeyedCollection_Factory (const KEY_EXTRACTOR& keyExtractor, const KEY_EQUALS_COMPARER& keyComparer);
+        /**
+         *  Hints can be used in factory constructor to guide the choice of the best container implementation/backend.
+         */
+        struct Hints {
+            /**
+             */
+            optional<bool> fOptimizeForLookupSpeedOverUpdateSpeed;
+        };
+
+    public:
+        constexpr KeyedCollection_Factory (const KEY_EXTRACTOR& keyExtractor, const KEY_EQUALS_COMPARER& keyComparer, const Hints& = {});
 
     public:
         /**
@@ -59,6 +67,7 @@ namespace Stroika::Foundation::Containers::Factory {
     private:
         [[no_unique_address]] const KEY_EXTRACTOR       fKeyExtractorType_;
         [[no_unique_address]] const KEY_EQUALS_COMPARER fKeyEqualsComparer_;
+        [[no_unique_address]] const Hints               fHints_;
 
     private:
         static KeyedCollection<T, KEY_TYPE, TRAITS> Default_ (const KEY_EXTRACTOR& keyExtractor, const KEY_EQUALS_COMPARER& keyComparer);

@@ -21,8 +21,9 @@ namespace Stroika::Foundation::Containers::Factory {
      ********************************************************************************
      */
     template <typename T, typename INORDER_COMPARER>
-    inline SortedCollection_Factory<T, INORDER_COMPARER>::SortedCollection_Factory (const INORDER_COMPARER& inorderComparer)
+    constexpr SortedCollection_Factory<T, INORDER_COMPARER>::SortedCollection_Factory (const INORDER_COMPARER& inorderComparer, const Hints& hints)
         : fInorderComparer_{inorderComparer}
+        , fHints_{hints}
     {
     }
     template <typename T, typename INORDER_COMPARER>

@@ -11,14 +11,6 @@
 
 /**
  *  \file
- *
- *  TODO:
- *      @todo   Extend this metaphor to have different kinds of factories, like mkBijection_Fastest,
- *              mkBijection_Smallest, mkBijectionWithHash_Fastest etc...
- *              Possibly extend to policy objects, and have properties for this stuff?
- *
- *      @todo   Rethink use of TRAITS as argument to factory. Probably can only do the SFINAE stuff
- *              when TRAITS EQUALS the default.
  */
 
 namespace Stroika::Foundation::Containers {
@@ -51,9 +43,18 @@ namespace Stroika::Foundation::Containers::Factory {
         static_assert (Common::IsEqualsComparer<RANGE_EQUALS_COMPARER> (), "Range Equals comparer required with Bijection_Factory");
 
     public:
-        Bijection_Factory (DataExchange::ValidationStrategy injectivityCheckPolicy, const DOMAIN_EQUALS_COMPARER& domainEqualsComparer,
-                           const RANGE_EQUALS_COMPARER& rangeEqualsComparer);
-        Bijection_Factory (const DOMAIN_EQUALS_COMPARER& domainEqualsComparer, const RANGE_EQUALS_COMPARER& rangeEqualsComparer);
+        /**
+         *  Hints can be used in factory constructor to guide the choice of the best container implementation/backend.
+         */
+        struct Hints {
+            optional<bool> fOptimizeForLookupSpeedOverUpdateSpeed;
+        };
+
+    public:
+        constexpr Bijection_Factory (DataExchange::ValidationStrategy injectivityCheckPolicy, const DOMAIN_EQUALS_COMPARER& domainEqualsComparer,
+                                     const RANGE_EQUALS_COMPARER& rangeEqualsComparer, const Hints& hints = {});
+        constexpr Bijection_Factory (const DOMAIN_EQUALS_COMPARER& domainEqualsComparer, const RANGE_EQUALS_COMPARER& rangeEqualsComparer,
+                                     const Hints& hints = {});
 
     public:
         /**
@@ -72,6 +73,7 @@ namespace Stroika::Foundation::Containers::Factory {
         DataExchange::ValidationStrategy fInjectivityViolationPolicy_;
         const DOMAIN_EQUALS_COMPARER     fDomainEqualsComparer_;
         const RANGE_EQUALS_COMPARER      fRangeEqualsComparer_;
+        const Hints                      fHints_;
 
     private:
         static Bijection<DOMAIN_TYPE, RANGE_TYPE> Default_ (DataExchange::ValidationStrategy, const DOMAIN_EQUALS_COMPARER&, const RANGE_EQUALS_COMPARER&);

@@ -10,8 +10,6 @@
 
 /**
  *  \file
- *
- *  TODO:
  */
 
 namespace Stroika::Foundation::Containers {
@@ -36,6 +34,12 @@ namespace Stroika::Foundation::Containers::Factory {
 
     public:
         /**
+         *  Hints can be used in factory constructor to guide the choice of the best container implementation/backend.
+         */
+        struct Hints {};
+
+    public:
+        /**
          *  You can call this directly, but there is no need, as the DenseDataHyperRectangle<T, INDEXES...> CTOR does so automatically.
          */
         nonvirtual DenseDataHyperRectangle<T, INDEXES...> operator() (INDEXES... dimensions);
@@ -45,6 +49,9 @@ namespace Stroika::Foundation::Containers::Factory {
          *  Register a replacement creator/factory for the given DenseDataHyperRectangle<T, INDEXES...>. Note this is a global change.
          */
         static void Register (DenseDataHyperRectangle<T, INDEXES...> (*factory) (INDEXES...) = nullptr);
+
+    private:
+        [[no_unique_address]] const Hints fHints_;
 
     private:
         static DenseDataHyperRectangle<T, INDEXES...> Default_ (INDEXES... dimensions);

@@ -27,6 +27,11 @@ namespace Stroika::Foundation::Containers::Factory {
      ********************************************************************************
      */
     template <typename T, typename... INDEXES>
+    constexpr SparseDataHyperRectangle_Factory<T, INDEXES...>::SparseDataHyperRectangle_Factory (const Hints& hints)
+        : fHints_{hints}
+    {
+    }
+    template <typename T, typename... INDEXES>
     inline SparseDataHyperRectangle<T, INDEXES...> SparseDataHyperRectangle_Factory<T, INDEXES...>::operator() (Configuration::ArgByValueType<T> defaultItem)
     {
         /*

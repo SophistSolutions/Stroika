@@ -10,8 +10,6 @@
 
 /**
  *  \file
- *
- *  TODO:
  */
 
 namespace Stroika::Foundation::Containers {
@@ -36,6 +34,14 @@ namespace Stroika::Foundation::Containers::Factory {
 
     public:
         /**
+         */
+        struct Hints {};
+
+    public:
+        constexpr SparseDataHyperRectangle_Factory (const Hints& hints = {});
+
+    public:
+        /**
          *  You can call this directly, but there is no need, as the SparseDataHyperRectangle<T, INDEXES...> CTOR does so automatically.
          */
         nonvirtual SparseDataHyperRectangle<T, INDEXES...> operator() (Configuration::ArgByValueType<T> defaultItem = {});
@@ -45,6 +51,9 @@ namespace Stroika::Foundation::Containers::Factory {
          *  Register a replacement creator/factory for the given SparseDataHyperRectangle<T, INDEXES...>. Note this is a global change.
          */
         static void Register (SparseDataHyperRectangle<T, INDEXES...> (*factory) (Configuration::ArgByValueType<T> defaultItem) = nullptr);
+
+    private:
+        [[no_unique_address]] const Hints fHints_;
 
     private:
         static SparseDataHyperRectangle<T, INDEXES...> Default_ (Configuration::ArgByValueType<T> defaultItem);

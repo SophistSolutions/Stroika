@@ -10,13 +10,6 @@
 
 /**
  *  \file
- *
- *  TODO:
- *      @todo   Extend this metaphor to have different kinds of factories, like mkCollection_Fastest,
- *              mkCollection_Smallest, mkCollectionWithHash_Fastest etc...
- *              Possibly extend to policy objects, and have properties for this stuff?
- *              MAYBE????
- *
  */
 
 namespace Stroika::Foundation::Containers {
@@ -45,6 +38,17 @@ namespace Stroika::Foundation::Containers::Factory {
 
     public:
         /**
+         *  Hints can be used in factory constructor to guide the choice of the best container implementation/backend.
+         */
+        struct Hints {
+            optional<bool> fOptimizeForLookupSpeedOverUpdateSpeed;
+        };
+
+    public:
+        constexpr Collection_Factory (const Hints& hints = {});
+
+    public:
+        /**
          *  You can call this directly, but there is no need, as the Collection<T> CTOR does so automatically.
          */
         nonvirtual Collection<T> operator() () const;
@@ -56,7 +60,10 @@ namespace Stroika::Foundation::Containers::Factory {
         static void Register (Collection<T> (*factory) () = nullptr);
 
     private:
-        static Collection<T> Default_ ();
+        const Hints fHints_;
+
+    private:
+        static Collection<T> Default_ (const Hints& hints);
     };
 
 }

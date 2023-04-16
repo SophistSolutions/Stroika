@@ -10,13 +10,6 @@
 
 /**
  *  \file
- *
- *  TODO:
- *      @todo   MUST re-implement (clone MultiSet_stdmap<>) code to avoid deadly include empbrace so we
- *              have the option to use this in the factory. - like we do for Mapping_Factory
- *      @todo   Extend this metaphor to have different kinds of factories, like mkMultiSet_Fastest,
- *              mkMultiSet_Smallest, mkMultiSetWithHash_Fastest etc...
- *              Possibly extend to policy objects, and have properties for this stuff?
  */
 
 namespace Stroika::Foundation::Containers {
@@ -46,7 +39,15 @@ namespace Stroika::Foundation::Containers::Factory {
         static_assert (Common::IsEqualsComparer<EQUALS_COMPARER> (), "Equals comparer required with MultiSet_Factory");
 
     public:
-        MultiSet_Factory (const EQUALS_COMPARER& equalsComparer);
+        /**
+         *  Hints can be used in factory constructor to guide the choice of the best container implementation/backend.
+         */
+        struct Hints {
+            optional<bool> fOptimizeForLookupSpeedOverUpdateSpeed;
+        };
+
+    public:
+        constexpr MultiSet_Factory (const EQUALS_COMPARER& equalsComparer, const Hints& hints = {});
 
     public:
         /**
@@ -62,9 +63,10 @@ namespace Stroika::Foundation::Containers::Factory {
 
     private:
         [[no_unique_address]] const EQUALS_COMPARER fEqualsComparer_;
+        const Hints                                 fHints_;
 
     private:
-        static MultiSet<T, TRAITS> Default_ (const EQUALS_COMPARER&);
+        static MultiSet<T, TRAITS> Default_ (const EQUALS_COMPARER& equalsComparer, const Hints& hints);
     };
 }
 

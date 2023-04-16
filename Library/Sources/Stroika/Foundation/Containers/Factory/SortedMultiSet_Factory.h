@@ -10,11 +10,6 @@
 
 /**
  *  \file
- *
- *  TODO:
- *      @todo   Extend this metaphor to have different kinds of factories, like mkSortedMultiSet_Fastest,
- *              mkSortedMultiSet_Smallest, mkSortedMultiSetWithHash_Fastest etc...
- *              Possibly extend to policy objects, and have properties for this stuff?
  */
 
 namespace Stroika::Foundation::Containers {
@@ -43,7 +38,13 @@ namespace Stroika::Foundation::Containers::Factory {
         static_assert (Common::IsStrictInOrderComparer<INORDER_COMPARER> (), "StrictInOrder comparer required with SortedMultiSet");
 
     public:
-        SortedMultiSet_Factory (const INORDER_COMPARER& inorderComparer);
+        /**
+         *  Hints can be used in factory constructor to guide the choice of the best container implementation/backend.
+         */
+        struct Hints {};
+
+    public:
+        constexpr SortedMultiSet_Factory (const INORDER_COMPARER& inorderComparer, const Hints& hints = {});
 
     public:
         /**
@@ -59,6 +60,7 @@ namespace Stroika::Foundation::Containers::Factory {
 
     private:
         [[no_unique_address]] const INORDER_COMPARER fInOrderComparer_;
+        [[no_unique_address]] const Hints            fHints_;
 
     private:
         static SortedMultiSet<T, TRAITS> Default_ (const INORDER_COMPARER&);

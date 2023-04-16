@@ -10,12 +10,6 @@
 
 /**
  *  \file
- *
- *  TODO:
- *      @todo   Extend this metaphor to have different kinds of factories, like mkQueue_Fastest,
- *              mkQueue_Smallest, mkQueueWithHash_Fastest etc...
- *              Possibly extend to policy objects, and have properties for this stuff?
- *
  */
 
 namespace Stroika::Foundation::Containers {
@@ -44,6 +38,19 @@ namespace Stroika::Foundation::Containers::Factory {
 
     public:
         /**
+         *  Hints can be used in factory constructor to guide the choice of the best container implementation/backend.
+         */
+        struct Hints {
+            /**
+             */
+            optional<bool> fOptimizeForLookupSpeedOverUpdateSpeed;
+        };
+
+    public:
+        constexpr Queue_Factory (const Hints& hints = {});
+
+    public:
+        /**
          *  You can call this directly, but there is no need, as the Queue<T> CTOR does so automatically.
          */
         nonvirtual Queue<T> operator() () const;
@@ -53,6 +60,9 @@ namespace Stroika::Foundation::Containers::Factory {
          *  Register a replacement creator/factory for the given Queue<T>. Note this is a global change.
          */
         static void Register (Queue<T> (*factory) () = nullptr);
+
+    private:
+        const Hints fHints_;
 
     private:
         static Queue<T> Default_ ();

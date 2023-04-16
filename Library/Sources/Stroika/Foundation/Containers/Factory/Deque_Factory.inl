@@ -21,6 +21,11 @@ namespace Stroika::Foundation::Containers::Factory {
      ********************************************************************************
      */
     template <typename T>
+    constexpr Deque_Factory<T>::Deque_Factory (const Hints& hints)
+        : fHints_{hints}
+    {
+    }
+    template <typename T>
     inline Deque<T> Deque_Factory<T>::operator() () const
     {
         /*

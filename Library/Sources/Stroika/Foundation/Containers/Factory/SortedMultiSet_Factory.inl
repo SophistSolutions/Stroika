@@ -21,8 +21,9 @@ namespace Stroika::Foundation::Containers::Factory {
      ********************************************************************************
      */
     template <typename T, typename TRAITS, typename INORDER_COMPARER>
-    inline SortedMultiSet_Factory<T, TRAITS, INORDER_COMPARER>::SortedMultiSet_Factory (const INORDER_COMPARER& inOrderComparer)
+    constexpr SortedMultiSet_Factory<T, TRAITS, INORDER_COMPARER>::SortedMultiSet_Factory (const INORDER_COMPARER& inOrderComparer, const Hints& hints)
         : fInOrderComparer_{inOrderComparer}
+        , fHints_{hints}
     {
         static_assert (Common::IsStrictInOrderComparer<INORDER_COMPARER> (), "StrictInOrder comparer required with SortedMultiSet_Factory");
     }

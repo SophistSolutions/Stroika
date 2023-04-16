@@ -22,10 +22,11 @@ namespace Stroika::Foundation::Containers::Factory {
      ********************************************************************************
      */
     template <typename T, typename KEY_TYPE, typename TRAITS, typename KEY_EXTRACTOR, typename KEY_EQUALS_COMPARER>
-    inline KeyedCollection_Factory<T, KEY_TYPE, TRAITS, KEY_EXTRACTOR, KEY_EQUALS_COMPARER>::KeyedCollection_Factory (const KEY_EXTRACTOR& keyExtractor,
-                                                                                                                      const KEY_EQUALS_COMPARER& keyComparer)
+    constexpr KeyedCollection_Factory<T, KEY_TYPE, TRAITS, KEY_EXTRACTOR, KEY_EQUALS_COMPARER>::KeyedCollection_Factory (
+        const KEY_EXTRACTOR& keyExtractor, const KEY_EQUALS_COMPARER& keyComparer, const Hints& hints)
         : fKeyExtractorType_{keyExtractor}
         , fKeyEqualsComparer_{keyComparer}
+        , fHints_{hints}
     {
     }
     template <typename T, typename KEY_TYPE, typename TRAITS, typename KEY_EXTRACTOR, typename KEY_EQUALS_COMPARER>

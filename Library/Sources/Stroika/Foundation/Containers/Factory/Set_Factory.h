@@ -10,15 +10,6 @@
 
 /**
  *  \file
- *
- *  TODO:
- *      @todo   Extend this metaphor to have different kinds of factories, like mkSet_Fastest,
- *              mkSet_Smallest, mkSetWithHash_Fastest etc...
- *              Possibly extend to policy objects, and have properties for this stuff?
- *
- *      @todo   Rethink use of TRAITS as argument to factory. Probably can only do the SFINAE stuff
- *              when TRAITS EQUALS the default.
- *
  */
 
 namespace Stroika::Foundation::Containers {
@@ -47,7 +38,18 @@ namespace Stroika::Foundation::Containers::Factory {
         static_assert (Common::IsEqualsComparer<EQUALS_COMPARER> (), "Equals comparer required with Set_Factory");
 
     public:
-        Set_Factory (const EQUALS_COMPARER& equalsComparer);
+        /**
+         *  Hints can be used in factory constructor to guide the choice of the best container implementation/backend.
+         */
+        struct Hints {
+            /**
+             *  Set false if expected large set.
+             */
+            optional<bool> fOptimizeForLookupSpeedOverUpdateSpeed;
+        };
+
+    public:
+        constexpr Set_Factory (const EQUALS_COMPARER& equalsComparer, const Hints& hints = {});
 
     public:
         /**
@@ -63,6 +65,7 @@ namespace Stroika::Foundation::Containers::Factory {
 
     private:
         [[no_unique_address]] const EQUALS_COMPARER fEqualsComparer_;
+        [[no_unique_address]] const Hints           fHints_;
 
     private:
         static Set<T> Default_ (const EQUALS_COMPARER& equalsComparer);

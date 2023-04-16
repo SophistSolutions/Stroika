@@ -13,6 +13,7 @@
 #include "../../Memory/BlockAllocated.h"
 
 #include "../DataStructures/Array.h"
+#include "../Private/IteratorImplHelper.h"
 
 namespace Stroika::Foundation::Containers::Concrete {
 

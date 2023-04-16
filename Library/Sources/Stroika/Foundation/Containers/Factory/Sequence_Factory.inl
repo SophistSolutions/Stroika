@@ -21,6 +21,11 @@ namespace Stroika::Foundation::Containers::Factory {
      ********************************************************************************
      */
     template <typename T>
+    constexpr Sequence_Factory<T>::Sequence_Factory (const Hints& hints)
+        : fHints_{hints}
+    {
+    }
+    template <typename T>
     inline Sequence<T> Sequence_Factory<T>::operator() () const
     {
         /*
@@ -34,7 +39,7 @@ namespace Stroika::Foundation::Containers::Factory {
             return f ();
         }
         else {
-            return Default_ ();
+            return Default_ (fHints_);
         }
     }
     template <typename T>
@@ -43,7 +48,7 @@ namespace Stroika::Foundation::Containers::Factory {
         sFactory_ = factory;
     }
     template <typename T>
-    inline Sequence<T> Sequence_Factory<T>::Default_ ()
+    inline Sequence<T> Sequence_Factory<T>::Default_ ([[maybe_unused]] const Hints& hints)
     {
         // As of performance testing 2021-11-10 (very primitive) - Sequence_Array<> appears faster than Sequence_stdvector<> on Windows at least
         return Concrete::Sequence_Array<T>{};

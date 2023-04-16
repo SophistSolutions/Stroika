@@ -10,9 +10,6 @@
 
 /**
  *  \file
- *
- *  TODO:
- *
  */
 
 namespace Stroika::Foundation::Containers {
@@ -42,7 +39,13 @@ namespace Stroika::Foundation::Containers::Factory {
         static_assert (Common::IsStrictInOrderComparer<INORDER_COMPARER> (), "StrictInOrder comparer required with SortedCollection");
 
     public:
-        SortedCollection_Factory (const INORDER_COMPARER& inorderComparer);
+        /**
+         *  Hints can be used in factory constructor to guide the choice of the best container implementation/backend.
+         */
+        struct Hints {};
+
+    public:
+        constexpr SortedCollection_Factory (const INORDER_COMPARER& inorderComparer, const Hints& hints = {});
 
     public:
         /**
@@ -58,6 +61,7 @@ namespace Stroika::Foundation::Containers::Factory {
 
     private:
         [[no_unique_address]] const INORDER_COMPARER fInorderComparer_;
+        [[no_unique_address]] const Hints            fHints_;
 
     private:
         static SortedCollection<T> Default_ (const INORDER_COMPARER& inorderComparer);

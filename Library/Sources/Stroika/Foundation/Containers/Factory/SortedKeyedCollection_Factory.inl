@@ -21,10 +21,11 @@ namespace Stroika::Foundation::Containers::Factory {
      ********************************************************************************
      */
     template <typename T, typename KEY_TYPE, typename TRAITS, typename KEY_EXTRACTOR, typename KEY_INORDER_COMPARER>
-    inline SortedKeyedCollection_Factory<T, KEY_TYPE, TRAITS, KEY_EXTRACTOR, KEY_INORDER_COMPARER>::SortedKeyedCollection_Factory (
-        const KEY_EXTRACTOR& keyExtractor, const KEY_INORDER_COMPARER& keyComparer)
+    constexpr SortedKeyedCollection_Factory<T, KEY_TYPE, TRAITS, KEY_EXTRACTOR, KEY_INORDER_COMPARER>::SortedKeyedCollection_Factory (
+        const KEY_EXTRACTOR& keyExtractor, const KEY_INORDER_COMPARER& keyComparer, const Hints& hints)
         : fKeyExtractor_{keyExtractor}
         , fInOrderComparer_{keyComparer}
+        , fHints_{hints}
     {
     }
     template <typename T, typename KEY_TYPE, typename TRAITS, typename KEY_EXTRACTOR, typename KEY_INORDER_COMPARER>

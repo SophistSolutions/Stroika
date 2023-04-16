@@ -21,6 +21,11 @@ namespace Stroika::Foundation::Containers::Factory {
      ********************************************************************************
      */
     template <typename T>
+    constexpr Stack_Factory<T>::Stack_Factory (const Hints& hints)
+        : fHints_{hints}
+    {
+    }
+    template <typename T>
     inline Stack<T> Stack_Factory<T>::operator() () const
     {
         /*

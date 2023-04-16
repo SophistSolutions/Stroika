@@ -10,7 +10,6 @@
 
 /**
  *  \file
- *
  */
 
 namespace Stroika::Foundation::Containers {
@@ -39,7 +38,13 @@ namespace Stroika::Foundation::Containers::Factory {
         static_assert (Common::IsStrictInOrderComparer<INORDER_COMPARER> (), "StrictInOrder comparer required with SortedSet");
 
     public:
-        SortedSet_Factory (const INORDER_COMPARER& inorderComparer);
+        /**
+         *  Hints can be used in factory constructor to guide the choice of the best container implementation/backend.
+         */
+        struct Hints {};
+
+    public:
+        constexpr SortedSet_Factory (const INORDER_COMPARER& inorderComparer, const Hints& hints = {});
 
     public:
         /**
@@ -47,14 +52,15 @@ namespace Stroika::Foundation::Containers::Factory {
          */
         nonvirtual SortedSet<T> operator() () const;
 
-    private:
-        [[no_unique_address]] const INORDER_COMPARER fInorderComparer_;
-
     public:
         /**
          *  Register a replacement creator/factory for the given SortedSet<T,TRAITS>. Note this is a global change.
          */
         static void Register (SortedSet<T> (*factory) (const INORDER_COMPARER&) = nullptr);
+
+    private:
+        [[no_unique_address]] const INORDER_COMPARER fInorderComparer_;
+        [[no_unique_address]] const Hints            fHints_;
 
     private:
         static SortedSet<T> Default_ (const INORDER_COMPARER& inorderComparer);

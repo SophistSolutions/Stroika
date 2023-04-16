@@ -10,12 +10,6 @@
 
 /**
  *  \file
- *
- *  TODO:
- *      @todo   Extend this metaphor to have different kinds of factories, like mkSequence_Fastest,
- *              mkSequence_Smallest, mkSequenceWithHash_Fastest etc...
- *              Possibly extend to policy objects, and have properties for this stuff?
- *
  */
 
 namespace Stroika::Foundation::Containers {
@@ -44,6 +38,15 @@ namespace Stroika::Foundation::Containers::Factory {
 
     public:
         /**
+         *  Hints can be used in factory constructor to guide the choice of the best container implementation/backend.
+         */
+        struct Hints {};
+
+    public:
+        constexpr Sequence_Factory (const Hints& hints = {});
+
+    public:
+        /**
          *  You can call this directly, but there is no need, as the Sequence<T,TRAITS> CTOR does so automatically.
          */
         nonvirtual Sequence<T> operator() () const;
@@ -55,7 +58,10 @@ namespace Stroika::Foundation::Containers::Factory {
         static void Register (Sequence<T> (*factory) () = nullptr);
 
     private:
-        static Sequence<T> Default_ ();
+        [[no_unique_address]] const Hints fHints_;
+
+    private:
+        static Sequence<T> Default_ (const Hints& hints);
     };
 
 }

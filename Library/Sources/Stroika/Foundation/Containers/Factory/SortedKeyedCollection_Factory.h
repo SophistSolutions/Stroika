@@ -10,11 +10,6 @@
 
 /**
  *  \file
- *
- *  TODO:
- *      @todo   Extend this metaphor to have different kinds of factories, like mkSortedKeyedCollection_Fastest,
- *              mkSortedKeyedCollection_Smallest, mkSortedKeyedCollectionWithHash_Fastest etc...
- *              Possibly extend to policy objects, and have properties for this stuff?
  */
 
 namespace Stroika::Foundation::Containers {
@@ -37,7 +32,14 @@ namespace Stroika::Foundation::Containers::Factory {
                        "StrictInOrder comparer required with SortedKeyedCollection");
 
     public:
-        SortedKeyedCollection_Factory (const KEY_EXTRACTOR& keyExtractor = {}, const KEY_INORDER_COMPARER& keyComparer = {});
+        /**
+         *  Hints can be used in factory constructor to guide the choice of the best container implementation/backend.
+         */
+        struct Hints {};
+
+    public:
+        constexpr SortedKeyedCollection_Factory (const KEY_EXTRACTOR& keyExtractor = {}, const KEY_INORDER_COMPARER& keyComparer = {},
+                                                 const Hints& hints = {});
 
     public:
         /**
@@ -55,6 +57,7 @@ namespace Stroika::Foundation::Containers::Factory {
     private:
         [[no_unique_address]] const KEY_EXTRACTOR        fKeyExtractor_;
         [[no_unique_address]] const KEY_INORDER_COMPARER fInOrderComparer_;
+        [[no_unique_address]] const Hints                fHints_;
 
     private:
         static SortedKeyedCollection<T, KEY_TYPE, TRAITS> Default_ (const KEY_EXTRACTOR& keyExtractor, const KEY_INORDER_COMPARER& keyComparer);

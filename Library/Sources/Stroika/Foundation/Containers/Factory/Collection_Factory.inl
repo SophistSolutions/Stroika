@@ -11,6 +11,7 @@
 #ifndef _Stroika_Foundation_Containers_Concrete_Collection_Factory_inl_
 #define _Stroika_Foundation_Containers_Concrete_Collection_Factory_inl_
 
+#include "../Concrete/Collection_Array.h"
 #include "../Concrete/Collection_LinkedList.h"
 #include "../Concrete/Collection_stdmultiset.h"
 
@@ -21,6 +22,11 @@ namespace Stroika::Foundation::Containers::Factory {
      ****************************** Collection_Factory<T> ***************************
      ********************************************************************************
      */
+    template <typename T>
+    constexpr Collection_Factory<T>::Collection_Factory (const Hints& hints)
+        : fHints_{hints}
+    {
+    }
     template <typename T>
     inline Collection<T> Collection_Factory<T>::operator() () const
     {
@@ -35,7 +41,7 @@ namespace Stroika::Foundation::Containers::Factory {
             return f ();
         }
         else {
-            return Default_ ();
+            return Default_ (fHints_);
         }
     }
     template <typename T>
@@ -44,15 +50,20 @@ namespace Stroika::Foundation::Containers::Factory {
         sFactory_ = factory;
     }
     template <typename T>
-    inline Collection<T> Collection_Factory<T>::Default_ ()
+    inline Collection<T> Collection_Factory<T>::Default_ ([[maybe_unused]] const Hints& hints)
     {
         constexpr bool kUse_stdmultiset_IfPossible_ = false;
         if constexpr (Configuration::has_lt_v<T> and kUse_stdmultiset_IfPossible_) {
             return Concrete::Collection_stdmultiset<T>{};
         }
         else {
-            // This generally performs well, so long as you don't call 'size'
-            return Concrete::Collection_LinkedList<T>{};
+            if (hints.fOptimizeForLookupSpeedOverUpdateSpeed.value_or (true)) {
+                return Concrete::Collection_Array<T>{};
+            }
+            else {
+                // This generally performs well, so long as you don't call 'size'
+                return Concrete::Collection_LinkedList<T>{};
+            }
         }
     }
 
