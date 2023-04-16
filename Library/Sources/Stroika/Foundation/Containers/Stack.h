@@ -97,7 +97,9 @@ namespace Stroika::Foundation::Containers {
          *  @todo   MUST WORK OUT DETAILS OF SEMANTICS FOR ITERATOR ADD cuz naive interpreation of above
          *          rules would lead to having a copy reverse the stack (SEE FILE-TODO-NOTE)
          * 
-         *  \note When copying an Iterable<>, the order of items is REVERSED before pushing into the stack.
+         *  \note When copying an Iterable<> or range of iterators, the copy is done by repeatedly pushing
+         *        the arguments in the revsere order they are encountered, this preserving the 'iteration order'
+         *        of argument and copied stack.
          *
          *  \note   <a href="ReadMe.md#Container Constructors">See general information about container constructors that applies here</a>
          *

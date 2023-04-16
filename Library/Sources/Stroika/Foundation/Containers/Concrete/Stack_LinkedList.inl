@@ -78,7 +78,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual void                                 Push (ArgByValueType<value_type> item) override
         {
             Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fData_};
-            fData_.Append (item);
+            fData_.Prepend (item); // top of stack is first elt of linked list
             fChangeCounts_.PerformedChange ();
         }
         virtual value_type Pop () override

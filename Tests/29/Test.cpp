@@ -38,7 +38,7 @@ namespace {
     {
         s.Push (1);
         VerifyTestResult (s.size () == 1);
-        s.Push (1);
+        s.Push (2);
         VerifyTestResult (s.size () == 2);
         s.Pop ();
         VerifyTestResult (s.size () == 1);
@@ -105,13 +105,9 @@ namespace Test4_Equals {
         s.Push (2);
         VerifyTestResult (s.size () == 2);
         USING_STACK_CONTAINER s3 = s;
-        //VerifyTestResult (s == s3);
         VerifyTestResult (typename USING_STACK_CONTAINER::template EqualsComparer<EQUALS_COMPARER>{}(s, s3));
-        //VerifyTestResult (not (s != s3));
-
-        //VerifyTestResult (s != s2);
         VerifyTestResult (not typename USING_STACK_CONTAINER::template EqualsComparer<EQUALS_COMPARER>{}(s, s2));
-        //VerifyTestResult (not (s == s2));
+        VerifyTestResult (EQUALS_COMPARER{}(s.Pop (), 2));
     }
 }
 
