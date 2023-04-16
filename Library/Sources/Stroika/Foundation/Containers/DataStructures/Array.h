@@ -157,6 +157,13 @@ namespace Stroika::Foundation::Containers::DataStructures {
     public:
         /**
          *  \note Complexity:
+         *      Always: constant
+         */
+        nonvirtual bool empty () const;
+
+    public:
+        /**
+         *  \note Complexity:
          *      Worst Case: O(N)
          *      Typical Case: ?? for small changes often constant, but if enuf change of size O(N) growing. Less shrinking.
          */
@@ -171,6 +178,16 @@ namespace Stroika::Foundation::Containers::DataStructures {
          *      Typical: depends on i, and Capacity - if need to change capacity O(N), and if near start of array O(N), and if near end of the array (append) can be cheap
          */
         nonvirtual void InsertAt (size_t index, ArgByValueType<T> item);
+
+    public:
+        /**
+         *  \brief STL-ish alias for Insert (size(), item)
+         * 
+         *  \note Complexity:
+         *      Worst Case: O(N)
+         *      Typical: O(1)
+         */
+        nonvirtual void push_back (ArgByValueType<T> item);
 
     public:
         /**
@@ -202,6 +219,8 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     public:
         /**
+         *  Return index of first place in the array matching. If returned value == size() means not found.
+         * 
          *  \note Complexity:
          *      Worst Case: O(N)
          *      Typical: O(N), but can be less if systematically finding entries near start of array

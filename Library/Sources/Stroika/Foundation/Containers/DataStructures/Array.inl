@@ -83,6 +83,11 @@ namespace Stroika::Foundation::Containers::DataStructures {
         Invariant ();
     }
     template <typename T>
+    inline void Array<T>::push_back (ArgByValueType<T> item)
+    {
+        InsertAt (this->size (), item);
+    }
+    template <typename T>
     void Array<T>::RemoveAt (size_t index)
     {
         Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{*this};
@@ -379,6 +384,12 @@ namespace Stroika::Foundation::Containers::DataStructures {
     {
         Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
         return fLength_;
+    }
+    template <typename T>
+    inline bool Array<T>::empty () const
+    {
+        Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
+        return fLength_ == 0;
     }
     template <typename T>
     inline size_t Array<T>::capacity () const

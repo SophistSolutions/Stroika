@@ -9,6 +9,7 @@
 
 #include "Stroika/Foundation/Characters/ToString.h"
 #include "Stroika/Foundation/Containers/Collection.h"
+#include "Stroika/Foundation/Containers/Concrete/Set_Array.h"
 #include "Stroika/Foundation/Containers/Concrete/Set_LinkedList.h"
 #include "Stroika/Foundation/Containers/Concrete/Set_stdset.h"
 #include "Stroika/Foundation/Containers/Set.h"
@@ -23,6 +24,7 @@ using namespace Stroika;
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Containers;
 
+using Concrete::Set_Array;
 using Concrete::Set_LinkedList;
 using Concrete::Set_stdset;
 
@@ -128,6 +130,11 @@ namespace {
         DoTestForConcreteContainer_<Set_LinkedList<SimpleClass>> ();
         DoTestForConcreteContainer_<Set_LinkedList<SimpleClassWithoutComparisonOperators>> (
             [] () { return Set_LinkedList<SimpleClassWithoutComparisonOperators> (MySimpleClassWithoutComparisonOperators_EQUAL_TO_ ()); });
+
+        DoTestForConcreteContainer_<Set_Array<size_t>> ();
+        DoTestForConcreteContainer_<Set_Array<SimpleClass>> ();
+        DoTestForConcreteContainer_<Set_Array<SimpleClassWithoutComparisonOperators>> (
+            [] () { return Set_Array<SimpleClassWithoutComparisonOperators> (MySimpleClassWithoutComparisonOperators_EQUAL_TO_ ()); });
 
         DoTestForConcreteContainer_<Set_stdset<size_t>> ();
         DoTestForConcreteContainer_<Set_stdset<SimpleClass>> ();
