@@ -60,10 +60,7 @@ namespace Stroika::Foundation::Containers::Factory {
         static void Register (Collection<T> (*factory) () = nullptr);
 
     private:
-        const Hints fHints_;
-
-    private:
-        static Collection<T> Default_ (const Hints& hints);
+        function<Collection<T> ()> fFactory_;
     };
 
 }

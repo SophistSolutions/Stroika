@@ -14,13 +14,12 @@
  *  \file
  *
  *  \version    <a href="Code-Status.md#Beta">Beta</a>
- *
  */
 
 namespace Stroika::Foundation::Containers::Concrete {
 
     /**
-     *  \brief Collection_stdmultiset<T> is an stdmultiset-based concrete implementation of the Collection<T> container pattern.
+     *  \brief Collection_stdmultiset<T> is an std::multiset-based concrete implementation of the Collection<T> container pattern.
      *
      * \note Performance Notes:
      *      Collection_stdmultiset<T> is a good implementation of Collections, so long as you have an in-order comparison function to provide

@@ -24,49 +24,35 @@ namespace Stroika::Foundation::Containers::Factory {
      */
     template <typename T>
     constexpr Collection_Factory<T>::Collection_Factory (const Hints& hints)
-        : fHints_{hints}
     {
-    }
-    template <typename T>
-    inline Collection<T> Collection_Factory<T>::operator() () const
-    {
-        /*
-         *  Would have been more performant to just and assure always properly set, but to initialize
-         *  sFactory_ with a value other than nullptr requires waiting until after main() - so causes problems
-         *  with containers constructed before main.
-         *
-         *  This works more generally (and with hopefully modest enough performance impact).
-         */
         if (auto f = sFactory_.load ()) {
-            return f ();
+            this->fFactory_ = [=] () { return f (); };
         }
-        else {
-            return Default_ (fHints_);
-        }
-    }
-    template <typename T>
-    void Collection_Factory<T>::Register (Collection<T> (*factory) ())
-    {
-        sFactory_ = factory;
-    }
-    template <typename T>
-    inline Collection<T> Collection_Factory<T>::Default_ ([[maybe_unused]] const Hints& hints)
-    {
-        constexpr bool kUse_stdmultiset_IfPossible_ = false;
-        if constexpr (Configuration::has_lt_v<T> and kUse_stdmultiset_IfPossible_) {
-            return Concrete::Collection_stdmultiset<T>{};
+        if constexpr (Configuration::has_lt_v<T>) {
+            // faster adds/removes - same size - so better if possible to use (unless very small collections maybe)
+            this->fFactory_ = [] () { return Concrete::Collection_stdmultiset<T>{}; };
         }
         else {
             if (hints.fOptimizeForLookupSpeedOverUpdateSpeed.value_or (true)) {
                 // questionable choice. For smaller sizes, probably faster, due to better locality.
                 // but adds can occionally be slow (realloc/O(N)) instead of O(1).
-                return Concrete::Collection_Array<T>{};
+                this->fFactory_ = [] () { return Concrete::Collection_Array<T>{}; };
             }
             else {
                 // This generally performs well, so long as you don't call 'size'
-                return Concrete::Collection_LinkedList<T>{};
+                this->fFactory_ = [] () { return Concrete::Collection_LinkedList<T>{}; };
             }
         }
+    }
+    template <typename T>
+    inline Collection<T> Collection_Factory<T>::operator() () const
+    {
+        return this->fFactory_ ();
+    }
+    template <typename T>
+    void Collection_Factory<T>::Register (Collection<T> (*factory) ())
+    {
+        sFactory_ = factory;
     }
 
 }
