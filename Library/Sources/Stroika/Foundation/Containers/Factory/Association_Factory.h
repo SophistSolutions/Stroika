@@ -57,7 +57,7 @@ namespace Stroika::Foundation::Containers::Factory {
          *  Construct a factory for producing new associations. The default is to use whatever was registered with 
          *  Association_Factory::Register (), but a specific factory can easily be constructed with provided arguments.
          */
-        Association_Factory ();
+        constexpr Association_Factory ();
         constexpr Association_Factory (const Hints& hints);
         constexpr Association_Factory (const FactoryFunctionType& f);
         constexpr Association_Factory (const Association_Factory&) = default;
