@@ -99,11 +99,10 @@ namespace Stroika::Foundation::Containers::Factory {
 
     private:
         FactoryFunctionType        fFactory_;
-        static Association_Factory sDefaultFactory_;
+
+    private:
+        static  Association_Factory& AccessDefault_ ();    // function to assure magically constructed even if called before main
     };
-    template <typename KEY_TYPE, typename VALUE_TYPE, typename KEY_EQUALS_COMPARER>
-    inline Association_Factory<KEY_TYPE, VALUE_TYPE, KEY_EQUALS_COMPARER> Association_Factory<KEY_TYPE, VALUE_TYPE, KEY_EQUALS_COMPARER>::sDefaultFactory_{
-        Association_Factory<KEY_TYPE, VALUE_TYPE, KEY_EQUALS_COMPARER>::Hints{}};
 
 }
 

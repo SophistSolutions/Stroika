@@ -29,7 +29,7 @@ namespace Stroika::Foundation::Containers::Factory {
     }
     template <typename KEY_TYPE, typename VALUE_TYPE, typename KEY_EQUALS_COMPARER>
     constexpr Association_Factory<KEY_TYPE, VALUE_TYPE, KEY_EQUALS_COMPARER>::Association_Factory ()
-        : Association_Factory{sDefaultFactory_}
+        : Association_Factory{AccessDefault_ ()}
     {
     }
     template <typename KEY_TYPE, typename VALUE_TYPE, typename KEY_EQUALS_COMPARER>
@@ -60,7 +60,7 @@ namespace Stroika::Foundation::Containers::Factory {
     template <typename KEY_TYPE, typename VALUE_TYPE, typename KEY_EQUALS_COMPARER>
     inline auto Association_Factory<KEY_TYPE, VALUE_TYPE, KEY_EQUALS_COMPARER>::Default () -> const Association_Factory&
     {
-        return sDefaultFactory_;
+        return AccessDefault_ ();
     }
     template <typename KEY_TYPE, typename VALUE_TYPE, typename KEY_EQUALS_COMPARER>
     inline Association<KEY_TYPE, VALUE_TYPE>
@@ -71,8 +71,15 @@ namespace Stroika::Foundation::Containers::Factory {
     template <typename KEY_TYPE, typename VALUE_TYPE, typename KEY_EQUALS_COMPARER>
     inline void Association_Factory<KEY_TYPE, VALUE_TYPE, KEY_EQUALS_COMPARER>::Register (const optional<Association_Factory>& f)
     {
-        sDefaultFactory_ = f.has_value () ? *f : Association_Factory{Hints{}};
+        AccessDefault_ () = f.has_value () ? *f : Association_Factory{Hints{}};
     }
+    template <typename KEY_TYPE, typename VALUE_TYPE, typename KEY_EQUALS_COMPARER>
+    auto Association_Factory<KEY_TYPE, VALUE_TYPE, KEY_EQUALS_COMPARER>::AccessDefault_ () ->  Association_Factory&
+    {
+        static Association_Factory sDefault_{Hints{}};
+        return sDefault_;
+    }
+
 
 }
 
