@@ -39,7 +39,8 @@ namespace Stroika::Foundation::Containers::Factory {
         static_assert (Common::IsEqualsComparer<KEY_EQUALS_COMPARER> (), "Equals comparer required with Association_Factory");
 
     public:
-        /** 
+        /**
+         *  Function type to create an Association object.
          */
         using FactoryFunctionType = function<Association<KEY_TYPE, VALUE_TYPE> (const KEY_EQUALS_COMPARER& keyEqualsComparer)>;
 
@@ -54,12 +55,21 @@ namespace Stroika::Foundation::Containers::Factory {
     public:
         /**
          *  Construct a factory for producing new associations. The default is to use whatever was registered with 
-         *  Association_Factory::Register (), but a specific factory can easily be constructed with arguments.
+         *  Association_Factory::Register (), but a specific factory can easily be constructed with provided arguments.
          */
         Association_Factory ();
         constexpr Association_Factory (const Hints& hints);
         constexpr Association_Factory (const FactoryFunctionType& f);
         constexpr Association_Factory (const Association_Factory&) = default;
+
+    public:
+        /**
+         *  This can be called anytime, before main(), or after. BUT - beware, any calls to Register must
+         *  be externally syncrhonized, meaning effectively that they must happen before the creation of any
+         *  threads, to be safe. Also note, since this returns a const reference, any calls to Register() after
+         *  a call to Default, even if synchronized, is suspect.
+         */
+        static const Association_Factory& Default ();
 
     public:
         /**
@@ -78,14 +88,22 @@ namespace Stroika::Foundation::Containers::Factory {
          *          Association_Factory::Register();    // or use defaults
          *      \endcode
          *
-         *  \note   \em Thread-Safety   <a href='#Internally-Synchronized-Thread-Safety'>Internally-Synchronized-Thread-Safety</a>
+         *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
+         *          BUT - special note/restriction - must be called before any threads call Association_Factory::Association_Factory() OR
+         *          Association_Factory::Default(), which effectively means must be called at the start of main, but before creating any threads
+         *          which might use the factory).
+         * 
+         *  \NOTE this differs markedly from Stroika 2.1, where Register could be called anytime, and was internally synchronized.
          */
         static void Register (const optional<Association_Factory>& f = nullopt);
 
     private:
-        FactoryFunctionType                                   fFactory_;
-        static inline atomic<shared_ptr<Association_Factory>> sDefaultFactory_;
+        FactoryFunctionType        fFactory_;
+        static Association_Factory sDefaultFactory_;
     };
+    template <typename KEY_TYPE, typename VALUE_TYPE, typename KEY_EQUALS_COMPARER>
+    inline Association_Factory<KEY_TYPE, VALUE_TYPE, KEY_EQUALS_COMPARER> Association_Factory<KEY_TYPE, VALUE_TYPE, KEY_EQUALS_COMPARER>::sDefaultFactory_{
+        Association_Factory<KEY_TYPE, VALUE_TYPE, KEY_EQUALS_COMPARER>::Hints{}};
 
 }
 
