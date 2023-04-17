@@ -65,11 +65,7 @@ namespace Stroika::Foundation::Containers::Factory {
         static void Register (Association<KEY_TYPE, VALUE_TYPE> (*factory) (const KEY_EQUALS_COMPARER&) = nullptr);
 
     private:
-        [[no_unique_address]] const KEY_EQUALS_COMPARER fKeyEqualsComparer_;
-        const Hints                                     fHints_;
-
-    private:
-        static Association<KEY_TYPE, VALUE_TYPE> Default_ (const KEY_EQUALS_COMPARER& keyEqualsComparer, const Hints& hints);
+        function<Association<KEY_TYPE, VALUE_TYPE> ()> fFactory_;
     };
 
 }

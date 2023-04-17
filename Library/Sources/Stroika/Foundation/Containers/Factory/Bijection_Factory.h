@@ -70,13 +70,7 @@ namespace Stroika::Foundation::Containers::Factory {
                                                                              const RANGE_EQUALS_COMPARER&) = nullptr);
 
     private:
-        DataExchange::ValidationStrategy fInjectivityViolationPolicy_;
-        const DOMAIN_EQUALS_COMPARER     fDomainEqualsComparer_;
-        const RANGE_EQUALS_COMPARER      fRangeEqualsComparer_;
-        const Hints                      fHints_;
-
-    private:
-        static Bijection<DOMAIN_TYPE, RANGE_TYPE> Default_ (DataExchange::ValidationStrategy, const DOMAIN_EQUALS_COMPARER&, const RANGE_EQUALS_COMPARER&);
+        function<Bijection<DOMAIN_TYPE, RANGE_TYPE> ()> fFactory_;
 
     private:
         static inline atomic<Bijection<DOMAIN_TYPE, RANGE_TYPE> (*) (DataExchange::ValidationStrategy, const DOMAIN_EQUALS_COMPARER&, const RANGE_EQUALS_COMPARER&)> sFactory_{
