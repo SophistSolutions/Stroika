@@ -33,13 +33,22 @@ namespace Stroika::Foundation::Containers::Factory {
      */
     template <typename KEY_TYPE, typename VALUE_TYPE, typename KEY_EQUALS_COMPARER = equal_to<KEY_TYPE>>
     class Association_Factory {
-    private:
-        static inline atomic<Association<KEY_TYPE, VALUE_TYPE> (*) (const KEY_EQUALS_COMPARER&)> sFactory_{nullptr};
-
     public:
         static_assert (not is_reference_v<KEY_TYPE> and not is_reference_v<VALUE_TYPE> and not is_reference_v<KEY_EQUALS_COMPARER>,
                        "typically if this fails its because a (possibly indirect) caller forgot to use forward<TTT>(), or remove_cvref_t");
         static_assert (Common::IsEqualsComparer<KEY_EQUALS_COMPARER> (), "Equals comparer required with Association_Factory");
+#if 0
+        
+    public:
+        /** 
+         */
+        using BareFactoryFunctionType = Association<KEY_TYPE, VALUE_TYPE> (*) (const KEY_EQUALS_COMPARER& keyEqualsComparer);
+#endif
+
+    public:
+        /** 
+         */
+        using FactoryFunctionType = function<Association<KEY_TYPE, VALUE_TYPE> (const KEY_EQUALS_COMPARER& keyEqualsComparer)>;
 
     public:
         /**
@@ -50,22 +59,34 @@ namespace Stroika::Foundation::Containers::Factory {
         };
 
     public:
-        constexpr Association_Factory (const KEY_EQUALS_COMPARER& equalsComparer = {}, const Hints& hints = {});
+        constexpr Association_Factory (const Hints& hints = {});
+        constexpr Association_Factory (const FactoryFunctionType& f);
+        constexpr Association_Factory (const Association_Factory&) = default;
 
     public:
         /**
          *  You can call this directly, but there is no need, as the Association<T,TRAITS> CTOR does so automatically.
          */
-        nonvirtual Association<KEY_TYPE, VALUE_TYPE> operator() () const;
+        nonvirtual Association<KEY_TYPE, VALUE_TYPE> operator() (const KEY_EQUALS_COMPARER& keyEqualsComparer = {}) const;
 
     public:
         /**
-         *  Register a replacement creator/factory for the given Association<KEY_TYPE, VALUE_TYPE,TRAITS>. Note this is a global change.
+         *  Register a default global factory for Association objects (of the templated type/parameters).
+         *  No need to call, typically, as the default factory is generally fine.
+         * 
+         *  \par Example Usage
+         *      \code
+         *          Association_Factory::Register(Association_Factory{Association_Factory::Hints{.fOptimizeForLookupSpeedOverUpdateSpeed=true});
+         *          Association_Factory::Register();    // or use defaults
+         *      \endcode
+         *
+         *  \note   \em Thread-Safety   <a href='#Internally-Synchronized-Thread-Safety'>Internally-Synchronized-Thread-Safety</a>
          */
-        static void Register (Association<KEY_TYPE, VALUE_TYPE> (*factory) (const KEY_EQUALS_COMPARER&) = nullptr);
+        static void Register (optional<Association_Factory> f = nullopt);
 
     private:
-        function<Association<KEY_TYPE, VALUE_TYPE> ()> fFactory_;
+        FactoryFunctionType                                   fFactory_;
+        static inline atomic<shared_ptr<Association_Factory>> sDefaultFactory_;
     };
 
 }

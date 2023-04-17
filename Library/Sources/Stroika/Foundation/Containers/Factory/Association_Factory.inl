@@ -23,25 +23,26 @@ namespace Stroika::Foundation::Containers::Factory {
      ********************************************************************************
      */
     template <typename KEY_TYPE, typename VALUE_TYPE, typename KEY_EQUALS_COMPARER>
-    constexpr Association_Factory<KEY_TYPE, VALUE_TYPE, KEY_EQUALS_COMPARER>::Association_Factory (const KEY_EQUALS_COMPARER& keyEqualsComparer,
-                                                                                                   const Hints& hints)
+    constexpr Association_Factory<KEY_TYPE, VALUE_TYPE, KEY_EQUALS_COMPARER>::Association_Factory (const Hints& hints)
     {
-        if (auto f = sFactory_.load ()) {
-            this->fFactory_ = [f, keyEqualsComparer] () { return f (keyEqualsComparer); };
+        if (auto f = sDefaultFactory_.load ()) {
+            this->fFactory_ = [f] (const KEY_EQUALS_COMPARER& keyEqualsComparer) { return (*f) (keyEqualsComparer); };
         }
         else {
             if constexpr (is_same_v<KEY_EQUALS_COMPARER, equal_to<KEY_TYPE>> and Configuration::has_lt_v<KEY_TYPE>) {
-                this->fFactory_ = [] () {
+                this->fFactory_ = [] (const KEY_EQUALS_COMPARER&) {
                     return Concrete::Association_stdmultimap<KEY_TYPE, VALUE_TYPE>{}; // OK to omit comparer, because we have less-than defined and using default equal_to<>
                 };
             }
             else {
                 if (hints.fOptimizeForLookupSpeedOverUpdateSpeed.value_or (true)) {
                     // array has better memory cache locality properties so lookups probably faster
-                    this->fFactory_ = [keyEqualsComparer] () { return Concrete::Association_Array<KEY_TYPE, VALUE_TYPE>{keyEqualsComparer}; };
+                    this->fFactory_ = [] (const KEY_EQUALS_COMPARER& keyEqualsComparer) {
+                        return Concrete::Association_Array<KEY_TYPE, VALUE_TYPE>{keyEqualsComparer};
+                    };
                 }
                 else {
-                    this->fFactory_ = [keyEqualsComparer] () {
+                    this->fFactory_ = [] (const KEY_EQUALS_COMPARER& keyEqualsComparer) {
                         return Concrete::Association_LinkedList<KEY_TYPE, VALUE_TYPE>{keyEqualsComparer};
                     };
                 }
@@ -49,14 +50,20 @@ namespace Stroika::Foundation::Containers::Factory {
         }
     }
     template <typename KEY_TYPE, typename VALUE_TYPE, typename KEY_EQUALS_COMPARER>
-    inline Association<KEY_TYPE, VALUE_TYPE> Association_Factory<KEY_TYPE, VALUE_TYPE, KEY_EQUALS_COMPARER>::operator() () const
+    constexpr Association_Factory<KEY_TYPE, VALUE_TYPE, KEY_EQUALS_COMPARER>::Association_Factory (const FactoryFunctionType& f)
+        : fFactory_{f}
     {
-        return this->fFactory_ ();
     }
     template <typename KEY_TYPE, typename VALUE_TYPE, typename KEY_EQUALS_COMPARER>
-    void Association_Factory<KEY_TYPE, VALUE_TYPE, KEY_EQUALS_COMPARER>::Register (Association<KEY_TYPE, VALUE_TYPE> (*factory) (const KEY_EQUALS_COMPARER&))
+    inline Association<KEY_TYPE, VALUE_TYPE>
+    Association_Factory<KEY_TYPE, VALUE_TYPE, KEY_EQUALS_COMPARER>::operator() (const KEY_EQUALS_COMPARER& keyEqualsComparer) const
     {
-        sFactory_ = factory;
+        return this->fFactory_ (keyEqualsComparer);
+    }
+    template <typename KEY_TYPE, typename VALUE_TYPE, typename KEY_EQUALS_COMPARER>
+    void Association_Factory<KEY_TYPE, VALUE_TYPE, KEY_EQUALS_COMPARER>::Register (optional<Association_Factory> f)
+    {
+        sDefaultFactory_ = f.has_value () ? make_shared<Association_Factory> (*f) : nullptr;
     }
 
 }
