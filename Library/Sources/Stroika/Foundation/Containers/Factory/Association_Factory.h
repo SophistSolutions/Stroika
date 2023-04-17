@@ -37,13 +37,6 @@ namespace Stroika::Foundation::Containers::Factory {
         static_assert (not is_reference_v<KEY_TYPE> and not is_reference_v<VALUE_TYPE> and not is_reference_v<KEY_EQUALS_COMPARER>,
                        "typically if this fails its because a (possibly indirect) caller forgot to use forward<TTT>(), or remove_cvref_t");
         static_assert (Common::IsEqualsComparer<KEY_EQUALS_COMPARER> (), "Equals comparer required with Association_Factory");
-#if 0
-        
-    public:
-        /** 
-         */
-        using BareFactoryFunctionType = Association<KEY_TYPE, VALUE_TYPE> (*) (const KEY_EQUALS_COMPARER& keyEqualsComparer);
-#endif
 
     public:
         /** 
@@ -59,7 +52,12 @@ namespace Stroika::Foundation::Containers::Factory {
         };
 
     public:
-        constexpr Association_Factory (const Hints& hints = {});
+        /**
+         *  Construct a factory for producing new associations. The default is to use whatever was registered with 
+         *  Association_Factory::Register (), but a specific factory can easily be constructed with arguments.
+         */
+        Association_Factory ();
+        constexpr Association_Factory (const Hints& hints);
         constexpr Association_Factory (const FactoryFunctionType& f);
         constexpr Association_Factory (const Association_Factory&) = default;
 
@@ -82,7 +80,7 @@ namespace Stroika::Foundation::Containers::Factory {
          *
          *  \note   \em Thread-Safety   <a href='#Internally-Synchronized-Thread-Safety'>Internally-Synchronized-Thread-Safety</a>
          */
-        static void Register (optional<Association_Factory> f = nullopt);
+        static void Register (const optional<Association_Factory>& f = nullopt);
 
     private:
         FactoryFunctionType                                   fFactory_;

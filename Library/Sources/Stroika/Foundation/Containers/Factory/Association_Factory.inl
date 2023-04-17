@@ -19,39 +19,51 @@ namespace Stroika::Foundation::Containers::Factory {
 
     /*
      ********************************************************************************
-     ***** Association_Factory<KEY_TYPE, VALUE_TYPE, KEY_EQUALS_COMPARER> ***********
+     ******** Association_Factory<KEY_TYPE, VALUE_TYPE, KEY_EQUALS_COMPARER> ********
      ********************************************************************************
      */
     template <typename KEY_TYPE, typename VALUE_TYPE, typename KEY_EQUALS_COMPARER>
-    constexpr Association_Factory<KEY_TYPE, VALUE_TYPE, KEY_EQUALS_COMPARER>::Association_Factory (const Hints& hints)
+    constexpr Association_Factory<KEY_TYPE, VALUE_TYPE, KEY_EQUALS_COMPARER>::Association_Factory (const FactoryFunctionType& f)
+        : fFactory_{f}
     {
-        if (auto f = sDefaultFactory_.load ()) {
-            this->fFactory_ = [f] (const KEY_EQUALS_COMPARER& keyEqualsComparer) { return (*f) (keyEqualsComparer); };
-        }
-        else {
+    }
+    template <typename KEY_TYPE, typename VALUE_TYPE, typename KEY_EQUALS_COMPARER>
+    inline Association_Factory<KEY_TYPE, VALUE_TYPE, KEY_EQUALS_COMPARER>::Association_Factory ()
+        : Association_Factory{[] () {
+            if (auto f = sDefaultFactory_.load ()) [[likely]] {
+                return f->fFactory_;
+            }
+            else {
+                auto newFactory = Association_Factory{Hints{}};
+                Register (newFactory);
+                return newFactory.fFactory_;
+            }
+        }()}
+    {
+    }
+    template <typename KEY_TYPE, typename VALUE_TYPE, typename KEY_EQUALS_COMPARER>
+    constexpr Association_Factory<KEY_TYPE, VALUE_TYPE, KEY_EQUALS_COMPARER>::Association_Factory (const Hints& hints)
+        : Association_Factory{[hints] () -> FactoryFunctionType {
             if constexpr (is_same_v<KEY_EQUALS_COMPARER, equal_to<KEY_TYPE>> and Configuration::has_lt_v<KEY_TYPE>) {
-                this->fFactory_ = [] (const KEY_EQUALS_COMPARER&) {
+                // OK to ignore hints, cuz this is the best choice regardless of hints
+                return [] (const KEY_EQUALS_COMPARER&) {
                     return Concrete::Association_stdmultimap<KEY_TYPE, VALUE_TYPE>{}; // OK to omit comparer, because we have less-than defined and using default equal_to<>
                 };
             }
             else {
                 if (hints.fOptimizeForLookupSpeedOverUpdateSpeed.value_or (true)) {
                     // array has better memory cache locality properties so lookups probably faster
-                    this->fFactory_ = [] (const KEY_EQUALS_COMPARER& keyEqualsComparer) {
+                    return [] (const KEY_EQUALS_COMPARER& keyEqualsComparer) {
                         return Concrete::Association_Array<KEY_TYPE, VALUE_TYPE>{keyEqualsComparer};
                     };
                 }
                 else {
-                    this->fFactory_ = [] (const KEY_EQUALS_COMPARER& keyEqualsComparer) {
+                    return [] (const KEY_EQUALS_COMPARER& keyEqualsComparer) {
                         return Concrete::Association_LinkedList<KEY_TYPE, VALUE_TYPE>{keyEqualsComparer};
                     };
                 }
             }
-        }
-    }
-    template <typename KEY_TYPE, typename VALUE_TYPE, typename KEY_EQUALS_COMPARER>
-    constexpr Association_Factory<KEY_TYPE, VALUE_TYPE, KEY_EQUALS_COMPARER>::Association_Factory (const FactoryFunctionType& f)
-        : fFactory_{f}
+        }()}
     {
     }
     template <typename KEY_TYPE, typename VALUE_TYPE, typename KEY_EQUALS_COMPARER>
@@ -61,7 +73,7 @@ namespace Stroika::Foundation::Containers::Factory {
         return this->fFactory_ (keyEqualsComparer);
     }
     template <typename KEY_TYPE, typename VALUE_TYPE, typename KEY_EQUALS_COMPARER>
-    void Association_Factory<KEY_TYPE, VALUE_TYPE, KEY_EQUALS_COMPARER>::Register (optional<Association_Factory> f)
+    void Association_Factory<KEY_TYPE, VALUE_TYPE, KEY_EQUALS_COMPARER>::Register (const optional<Association_Factory>& f)
     {
         sDefaultFactory_ = f.has_value () ? make_shared<Association_Factory> (*f) : nullptr;
     }
