@@ -44,6 +44,19 @@ namespace Stroika::Foundation::Containers::Factory {
 
     public:
         /**
+         */
+        using ConstructedType = Bijection<DOMAIN_TYPE, RANGE_TYPE>;
+
+    public:
+        /**
+         *  Function type to create an Association object.
+         */
+        using FactoryFunctionType =
+            function<ConstructedType (DataExchange::ValidationStrategy injectivityCheckPolicy,
+                                      const DOMAIN_EQUALS_COMPARER& domainEqualsComparer, const RANGE_EQUALS_COMPARER& rangeEqualsComparer)>;
+
+    public:
+        /**
          *  Hints can be used in factory constructor to guide the choice of the best container implementation/backend.
          */
         struct Hints {
@@ -51,31 +64,62 @@ namespace Stroika::Foundation::Containers::Factory {
         };
 
     public:
-        constexpr Bijection_Factory (DataExchange::ValidationStrategy injectivityCheckPolicy, const DOMAIN_EQUALS_COMPARER& domainEqualsComparer,
-                                     const RANGE_EQUALS_COMPARER& rangeEqualsComparer, const Hints& hints = {});
-        constexpr Bijection_Factory (const DOMAIN_EQUALS_COMPARER& domainEqualsComparer, const RANGE_EQUALS_COMPARER& rangeEqualsComparer,
-                                     const Hints& hints = {});
+        /**
+         *  Construct a factory for producing new bijections. The default is to use whatever was registered with 
+         *  Bijection_Factory::Register (), but a specific factory can easily be constructed with provided arguments.
+         */
+        constexpr Bijection_Factory ();
+        constexpr Bijection_Factory (const Hints& hints);
+        constexpr Bijection_Factory (const FactoryFunctionType& f);
+        constexpr Bijection_Factory (const Bijection_Factory&) = default;
 
     public:
         /**
-         *  You can call this directly, but there is no need, as the Bijection<T,TRAITS> CTOR does so automatically.
+         *  This can be called anytime, before main(), or after. BUT - beware, any calls to Register must
+         *  be externally syncrhonized, meaning effectively that they must happen before the creation of any
+         *  threads, to be safe. Also note, since this returns a const reference, any calls to Register() after
+         *  a call to Default, even if synchronized, is suspect.
          */
-        nonvirtual Bijection<DOMAIN_TYPE, RANGE_TYPE> operator() () const;
+        static const Bijection_Factory& Default ();
 
     public:
         /**
-         *  Register a replacement creator/factory for the given Bijection<DOMAIN_TYPE, RANGE_TYPE,TRAITS>. Note this is a global change.
+         *  You can call this directly, but there is no need, as the Bijection<DOMAIN_TYPE, RANGE_TYPE> CTOR does so automatically.
          */
-        static void Register (Bijection<DOMAIN_TYPE, RANGE_TYPE> (*factory) (DataExchange::ValidationStrategy, const DOMAIN_EQUALS_COMPARER&,
-                                                                             const RANGE_EQUALS_COMPARER&) = nullptr);
+        nonvirtual ConstructedType operator() (const DOMAIN_EQUALS_COMPARER& domainEqualsComparer = {},
+                                               const RANGE_EQUALS_COMPARER&  rangeEqualsComparer  = {}) const;
+        nonvirtual ConstructedType operator() (DataExchange::ValidationStrategy injectivityCheckPolicy,
+                                               const DOMAIN_EQUALS_COMPARER&    domainEqualsComparer = {},
+                                               const RANGE_EQUALS_COMPARER&     rangeEqualsComparer  = {}) const;
+
+    public:
+        /**
+         *  Register a default global factory for Bijection objects (of the templated type/parameters).
+         *  No need to call, typically, as the default factory is generally fine.
+         * 
+         *  \par Example Usage
+         *      \code
+         *          Bijection_Factory::Register(Bijection_Factory{Bijection_Factory::Hints{.fOptimizeForLookupSpeedOverUpdateSpeed=true});
+         *          Bijection_Factory::Register();    // or use defaults
+         *      \endcode
+         *
+         *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
+         *          BUT - special note/restriction - must be called before any threads call Association_Factory::Bijection_Factory() OR
+         *          Bijection_Factory::Default(), which effectively means must be called at the start of main, but before creating any threads
+         *          which might use the factory).
+         * 
+         *  \NOTE this differs markedly from Stroika 2.1, where Register could be called anytime, and was internally synchronized.
+         */
+        static void Register (const optional<Bijection_Factory>& f = nullopt);
 
     private:
-        function<Bijection<DOMAIN_TYPE, RANGE_TYPE> ()> fFactory_;
+        FactoryFunctionType fFactory_;
 
     private:
-        static inline atomic<Bijection<DOMAIN_TYPE, RANGE_TYPE> (*) (DataExchange::ValidationStrategy, const DOMAIN_EQUALS_COMPARER&, const RANGE_EQUALS_COMPARER&)> sFactory_{
-            nullptr};
+        // function to assure magically constructed even if called before main
+        static Bijection_Factory& AccessDefault_ ();
     };
+
 }
 
 /*
