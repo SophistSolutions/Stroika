@@ -40,9 +40,14 @@ namespace Stroika::Foundation::Containers::Factory {
 
     public:
         /**
+         */
+        using ConstructedType = Association<KEY_TYPE, VALUE_TYPE>;
+
+    public:
+        /**
          *  Function type to create an Association object.
          */
-        using FactoryFunctionType = function<Association<KEY_TYPE, VALUE_TYPE> (const KEY_EQUALS_COMPARER& keyEqualsComparer)>;
+        using FactoryFunctionType = function<ConstructedType (const KEY_EQUALS_COMPARER& keyEqualsComparer)>;
 
     public:
         /**
@@ -75,7 +80,7 @@ namespace Stroika::Foundation::Containers::Factory {
         /**
          *  You can call this directly, but there is no need, as the Association<T,TRAITS> CTOR does so automatically.
          */
-        nonvirtual Association<KEY_TYPE, VALUE_TYPE> operator() (const KEY_EQUALS_COMPARER& keyEqualsComparer = {}) const;
+        nonvirtual ConstructedType operator() (const KEY_EQUALS_COMPARER& keyEqualsComparer = {}) const;
 
     public:
         /**
@@ -98,10 +103,11 @@ namespace Stroika::Foundation::Containers::Factory {
         static void Register (const optional<Association_Factory>& f = nullopt);
 
     private:
-        FactoryFunctionType        fFactory_;
+        FactoryFunctionType fFactory_;
 
     private:
-        static  Association_Factory& AccessDefault_ ();    // function to assure magically constructed even if called before main
+        // function to assure magically constructed even if called before main
+        static Association_Factory& AccessDefault_ ();
     };
 
 }
