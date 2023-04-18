@@ -1086,7 +1086,7 @@ namespace Stroika::Foundation::Characters {
          *          string a1    =  String{"hi mom"}.AsASCII ();    // OK
          *          string a2    =  String{u"שלום"}.AsASCII ();      // throws
          *      \endcode
-
+         * 
          *  \note - this is a (compatible) change of behavior: before Stroika v2.1d23, this would assert out on invalid ASCII.
          * 
          *  Supported Types:
