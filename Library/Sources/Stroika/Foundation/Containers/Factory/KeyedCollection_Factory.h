@@ -64,8 +64,6 @@ namespace Stroika::Foundation::Containers::Factory {
         constexpr KeyedCollection_Factory (const FactoryFunctionType& f);
         constexpr KeyedCollection_Factory (const KeyedCollection_Factory&) = default;
 
-        //constexpr KeyedCollection_Factory (const KEY_EXTRACTOR& keyExtractor, const KEY_EQUALS_COMPARER& keyComparer, const Hints& = {});
-
     public:
         /**
          *  This can be called anytime, before main(), or after. BUT - beware, any calls to Register must
@@ -98,6 +96,9 @@ namespace Stroika::Foundation::Containers::Factory {
          *          which might use the factory).
          * 
          *  \NOTE this differs markedly from Stroika 2.1, where Register could be called anytime, and was internally synchronized.
+         * 
+         *  \note If you wanted a dynamically chanegable factory (change after main), you could write one yourself with its own internal syncrhonization,
+         *        set the global one here, then perform the changes to its internal structure through another API.
          */
         static void Register (const optional<KeyedCollection_Factory>& f = nullopt);
 

@@ -93,6 +93,9 @@ namespace Stroika::Foundation::Containers::Factory {
          *          which might use the factory).
          * 
          *  \NOTE this differs markedly from Stroika 2.1, where Register could be called anytime, and was internally synchronized.
+         * 
+         *  \note If you wanted a dynamically chanegable factory (change after main), you could write one yourself with its own internal syncrhonization,
+         *        set the global one here, then perform the changes to its internal structure through another API.
          */
         static void Register (const optional<Collection_Factory>& f = nullopt);
 
