@@ -51,7 +51,6 @@ namespace Stroika::Foundation::Containers {
               enable_if_t<Common::IsEqualsComparer<DOMAIN_EQUALS_COMPARER, DOMAIN_TYPE> () and Common::IsEqualsComparer<RANGE_EQUALS_COMPARER, RANGE_TYPE> ()>*>
     inline Bijection<DOMAIN_TYPE, RANGE_TYPE>::Bijection (DataExchange::ValidationStrategy injectivityCheckPolicy,
                                                           DOMAIN_EQUALS_COMPARER&& domainEqualsComparer, RANGE_EQUALS_COMPARER&& rangeEqualsComparer)
-        // @todo see https://stroika.atlassian.net/browse/STK-933 for why this decay_t is needed - unclear why!
         : inherited{Factory::Bijection_Factory<DOMAIN_TYPE, RANGE_TYPE, decay_t<DOMAIN_EQUALS_COMPARER>, decay_t<RANGE_EQUALS_COMPARER>>::Default () (
               injectivityCheckPolicy, forward<DOMAIN_EQUALS_COMPARER> (domainEqualsComparer), forward<RANGE_EQUALS_COMPARER> (rangeEqualsComparer))}
     {

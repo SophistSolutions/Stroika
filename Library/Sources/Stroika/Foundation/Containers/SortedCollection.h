@@ -100,9 +100,6 @@ namespace Stroika::Foundation::Containers {
          * \req IsStrictInOrderComparer<INORDER_COMPARER> () - for constructors with inorderComparer parameter
          * 
          *  \note   <a href="ReadMe.md#Container Constructors">See general information about container constructors that applies here</a>
-         *  \note   https://stroika.atlassian.net/browse/STK-933 - const INORDER_COMPARER& inorderComparer overload to workaround funny
-         *          bug I don't understand. Seems INORDER_COMPARER&& overload of CTOR sb all that is needed, but had to add
-         *          another for code in SortedCollection<PrioritizedName>{kDefaultPrioritizedName_OrderByDefault_Less} to compile.
          */
         SortedCollection ();
         template <typename INORDER_COMPARER, enable_if_t<Common::IsStrictInOrderComparer<INORDER_COMPARER, T> ()>* = nullptr>
