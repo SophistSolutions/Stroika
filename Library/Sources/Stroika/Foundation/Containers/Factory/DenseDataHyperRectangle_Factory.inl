@@ -14,7 +14,6 @@
 #include "../Concrete/DenseDataHyperRectangle_Vector.h"
 
 namespace Stroika::Foundation::Containers {
-
     template <typename T, typename... INDEXES>
     class DenseDataHyperRectangle_Vector;
 }
@@ -27,31 +26,45 @@ namespace Stroika::Foundation::Containers::Factory {
      ********************************************************************************
      */
     template <typename T, typename... INDEXES>
-    inline DenseDataHyperRectangle<T, INDEXES...> DenseDataHyperRectangle_Factory<T, INDEXES...>::operator() (INDEXES... dimensions)
+    constexpr DenseDataHyperRectangle_Factory<T, INDEXES...>::DenseDataHyperRectangle_Factory (const FactoryFunctionType& f)
+        : fFactory_{f}
     {
-        /*
-         *  Would have been more performant to just and assure always properly set, but to initialize
-         *  sFactory_ with a value other than nullptr requires waiting until after main() - so causes problems
-         *  with containers constructed before main.
-         *
-         *  This works more generally (and with hopefully modest enough performance impact).
-         */
-        if (auto f = sFactory_.load ()) {
-            return f (forward<INDEXES> (dimensions)...);
-        }
-        else {
-            return Default_ (forward<INDEXES> (dimensions)...);
-        }
     }
     template <typename T, typename... INDEXES>
-    void DenseDataHyperRectangle_Factory<T, INDEXES...>::Register (DenseDataHyperRectangle<T, INDEXES...> (*factory) (INDEXES...))
+    constexpr DenseDataHyperRectangle_Factory<T, INDEXES...>::DenseDataHyperRectangle_Factory ()
+        : DenseDataHyperRectangle_Factory{AccessDefault_ ()}
     {
-        sFactory_ = factory;
     }
     template <typename T, typename... INDEXES>
-    inline DenseDataHyperRectangle<T, INDEXES...> DenseDataHyperRectangle_Factory<T, INDEXES...>::Default_ (INDEXES... dimensions)
+    constexpr DenseDataHyperRectangle_Factory<T, INDEXES...>::DenseDataHyperRectangle_Factory ([[maybe_unused]] const Hints& hints)
+        : DenseDataHyperRectangle_Factory{[hints] () -> FactoryFunctionType {
+            return [] (INDEXES... dimensions) {
+                return Concrete::DenseDataHyperRectangle_Vector<T, INDEXES...>{forward<INDEXES> (dimensions)...};
+            };
+        }()}
     {
-        return Concrete::DenseDataHyperRectangle_Vector<T, INDEXES...>{forward<INDEXES> (dimensions)...};
     }
+    template <typename T, typename... INDEXES>
+    inline auto DenseDataHyperRectangle_Factory<T, INDEXES...>::Default () -> const DenseDataHyperRectangle_Factory&
+    {
+        return AccessDefault_ ();
+    }
+    template <typename T, typename... INDEXES>
+    inline auto DenseDataHyperRectangle_Factory<T, INDEXES...>::operator() (INDEXES... dimensions) const -> ConstructedType
+    {
+        return this->fFactory_ (forward<INDEXES> (dimensions)...);
+    }
+    template <typename T, typename... INDEXES>
+    void DenseDataHyperRectangle_Factory<T, INDEXES...>::Register (const optional<DenseDataHyperRectangle_Factory>& f)
+    {
+        AccessDefault_ () = f.has_value () ? *f : DenseDataHyperRectangle_Factory{Hints{}};
+    }
+    template <typename T, typename... INDEXES>
+    inline auto DenseDataHyperRectangle_Factory<T, INDEXES...>::AccessDefault_ () -> DenseDataHyperRectangle_Factory&
+    {
+        static DenseDataHyperRectangle_Factory sDefault_{Hints{}};
+        return sDefault_;
+    }
+
 }
 #endif /* _Stroika_Foundation_Containers_Concrete_DenseDataHyperRectangle_Factory_inl_ */

@@ -34,28 +34,74 @@ namespace Stroika::Foundation::Containers::Factory {
 
     public:
         /**
+         */
+        using ConstructedType = DenseDataHyperRectangle<T, INDEXES...>;
+
+    public:
+        /**
+         *  Function type to create a ConstructedType object.
+         */
+        using FactoryFunctionType = function<ConstructedType (INDEXES... dimensions)>;
+
+    public:
+        /**
          *  Hints can be used in factory constructor to guide the choice of the best container implementation/backend.
          */
         struct Hints {};
 
     public:
         /**
-         *  You can call this directly, but there is no need, as the DenseDataHyperRectangle<T, INDEXES...> CTOR does so automatically.
+         *  Construct a factory for producing new Collections. The default is to use whatever was registered with 
+         *  Collection_Factory::Register (), but a specific factory can easily be constructed with provided arguments.
          */
-        nonvirtual DenseDataHyperRectangle<T, INDEXES...> operator() (INDEXES... dimensions);
+        constexpr DenseDataHyperRectangle_Factory ();
+        constexpr DenseDataHyperRectangle_Factory (const Hints& hints);
+        constexpr DenseDataHyperRectangle_Factory (const FactoryFunctionType& f);
+        constexpr DenseDataHyperRectangle_Factory (const DenseDataHyperRectangle_Factory&) = default;
 
     public:
         /**
-         *  Register a replacement creator/factory for the given DenseDataHyperRectangle<T, INDEXES...>. Note this is a global change.
+         *  This can be called anytime, before main(), or after. BUT - beware, any calls to Register must
+         *  be externally synchronized, meaning effectively that they must happen before the creation of any
+         *  threads, to be safe. Also note, since this returns a const reference, any calls to Register() after
+         *  a call to Default, even if synchronized, is suspect.
          */
-        static void Register (DenseDataHyperRectangle<T, INDEXES...> (*factory) (INDEXES...) = nullptr);
+        static const DenseDataHyperRectangle_Factory& Default ();
+
+    public:
+        /**
+         *  You can call this directly, but there is no need, as the Collection<T> CTOR does so automatically.
+         */
+        nonvirtual ConstructedType operator() (INDEXES... dimensions) const;
+
+    public:
+        /**
+         *  Register a default global factory for DenseDataHyperRectangle objects (of the templated type/parameters).
+         *  No need to call, typically, as the default factory is generally fine.
+         * 
+         *  \par Example Usage
+         *      \code
+         *          DenseDataHyperRectangle_Factory::Register(DenseDataHyperRectangle_Factory{DenseDataHyperRectangle_Factory::Hints{.fOptimizeForLookupSpeedOverUpdateSpeed=true});
+         *          DenseDataHyperRectangle_Factory::Register();    // or use defaults
+         *      \endcode
+         *
+         *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
+         *          BUT - special note/restriction - must be called before any threads call Association_Factory::DenseDataHyperRectangle_Factory() OR
+         *          DenseDataHyperRectangle_Factory::Default(), which effectively means must be called at the start of main, but before creating any threads
+         *          which might use the factory).
+         * 
+         *  \NOTE this differs markedly from Stroika 2.1, where Register could be called anytime, and was internally synchronized.
+         */
+        static void Register (const optional<DenseDataHyperRectangle_Factory>& f = nullopt);
 
     private:
-        [[no_unique_address]] const Hints fHints_;
+        FactoryFunctionType fFactory_;
 
     private:
-        static DenseDataHyperRectangle<T, INDEXES...> Default_ (INDEXES... dimensions);
+        // function to assure magically constructed even if called before main
+        static DenseDataHyperRectangle_Factory& AccessDefault_ ();
     };
+
 }
 
 /*

@@ -23,36 +23,56 @@ namespace Stroika::Foundation::Containers::Factory {
      ********************************************************************************
      */
     template <typename T>
-    constexpr Collection_Factory<T>::Collection_Factory (const Hints& hints)
+    constexpr Collection_Factory<T>::Collection_Factory (const FactoryFunctionType& f)
+        : fFactory_{f}
     {
-        if (auto f = sFactory_.load ()) {
-            this->fFactory_ = [=] () { return f (); };
-        }
-        if constexpr (Configuration::has_lt_v<T>) {
-            // faster adds/removes - same size - so better if possible to use (unless very small collections maybe)
-            this->fFactory_ = [] () { return Concrete::Collection_stdmultiset<T>{}; };
-        }
-        else {
-            if (hints.fOptimizeForLookupSpeedOverUpdateSpeed.value_or (true)) {
-                // questionable choice. For smaller sizes, probably faster, due to better locality.
-                // but adds can occionally be slow (realloc/O(N)) instead of O(1).
-                this->fFactory_ = [] () { return Concrete::Collection_Array<T>{}; };
-            }
-            else {
-                // This generally performs well, so long as you don't call 'size'
-                this->fFactory_ = [] () { return Concrete::Collection_LinkedList<T>{}; };
-            }
-        }
     }
     template <typename T>
-    inline Collection<T> Collection_Factory<T>::operator() () const
+    constexpr Collection_Factory<T>::Collection_Factory ()
+        : Collection_Factory{AccessDefault_ ()}
+    {
+    }
+    template <typename T>
+    constexpr Collection_Factory<T>::Collection_Factory ([[maybe_unused]] const Hints& hints)
+        : Collection_Factory{[hints] () -> FactoryFunctionType {
+            if constexpr (Configuration::has_lt_v<T>) {
+                // faster adds/removes - same size - so better if possible to use (unless very small collections maybe)
+                return [] () { return Concrete::Collection_stdmultiset<T>{}; };
+            }
+            else {
+                if (hints.fOptimizeForLookupSpeedOverUpdateSpeed.value_or (true)) {
+                    // questionable choice. For smaller sizes, probably faster, due to better locality.
+                    // but adds can occionally be slow (realloc/O(N)) instead of O(1).
+                    return [] () { return Concrete::Collection_Array<T>{}; };
+                }
+                else {
+                    // This generally performs well, so long as you don't call 'size'
+                    return [] () { return Concrete::Collection_LinkedList<T>{}; };
+                }
+            }
+        }()}
+    {
+    }
+    template <typename T>
+    inline auto Collection_Factory<T>::Default () -> const Collection_Factory&
+    {
+        return AccessDefault_ ();
+    }
+    template <typename T>
+    inline auto Collection_Factory<T>::operator() () const -> ConstructedType
     {
         return this->fFactory_ ();
     }
     template <typename T>
-    void Collection_Factory<T>::Register (Collection<T> (*factory) ())
+    void Collection_Factory<T>::Register (const optional<Collection_Factory>& f)
     {
-        sFactory_ = factory;
+        AccessDefault_ () = f.has_value () ? *f : Collection_Factory{Hints{}};
+    }
+    template <typename T>
+    inline auto Collection_Factory<T>::AccessDefault_ () -> Collection_Factory&
+    {
+        static Collection_Factory sDefault_{Hints{}};
+        return sDefault_;
     }
 
 }

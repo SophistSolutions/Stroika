@@ -21,7 +21,7 @@ namespace Stroika::Foundation::Containers {
 namespace Stroika::Foundation::Containers::Factory {
 
     /**
-     *  \brief   Singleton factory object - Used to create the default backend implementation of a Bijection<> container
+     *  \brief   Singleton factory object - Used to create the default backend implementation of a Bijection<> container; typically not used directly
      *
      *  Note - you can override the underlying factory dynamically by calling Bijection_Factory<T,TRAITS>::Register (), or
      *  replace it statically by template-specializing Bijection_Factory<T,TRAITS>::New () - though the later is trickier.
@@ -76,7 +76,7 @@ namespace Stroika::Foundation::Containers::Factory {
     public:
         /**
          *  This can be called anytime, before main(), or after. BUT - beware, any calls to Register must
-         *  be externally syncrhonized, meaning effectively that they must happen before the creation of any
+         *  be externally synchronized, meaning effectively that they must happen before the creation of any
          *  threads, to be safe. Also note, since this returns a const reference, any calls to Register() after
          *  a call to Default, even if synchronized, is suspect.
          */

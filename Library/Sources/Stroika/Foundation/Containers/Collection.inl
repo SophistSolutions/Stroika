@@ -23,7 +23,7 @@ namespace Stroika::Foundation::Containers {
      */
     template <typename T>
     inline Collection<T>::Collection ()
-        : inherited{Factory::Collection_Factory<value_type>{}()}
+        : inherited{Factory::Collection_Factory<value_type>::Default () ()}
     {
         _AssertRepValidType ();
     }
