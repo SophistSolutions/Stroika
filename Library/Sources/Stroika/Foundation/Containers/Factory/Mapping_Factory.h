@@ -21,10 +21,9 @@ namespace Stroika::Foundation::Containers {
 namespace Stroika::Foundation::Containers::Factory {
 
     /**
-     *  \brief   Singleton factory object - Used to create the default backend implementation of a Mapping<> container
+     *  \brief   Singleton factory object - Used to create the default backend implementation of a Mapping<> container; typically not called directly
      *
-     *  Note - you can override the underlying factory dynamically by calling Mapping_Factory<T,TRAITS>::Register (), or
-     *  replace it statically by template-specializing Mapping_Factory<T,TRAITS>::New () - though the later is trickier.
+     *  Note - you can override the underlying factory dynamically by calling Mapping_Factory<T,TRAITS>::Register ().
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      *
@@ -43,6 +42,17 @@ namespace Stroika::Foundation::Containers::Factory {
 
     public:
         /**
+         */
+        using ConstructedType = Mapping<KEY_TYPE, VALUE_TYPE>;
+
+    public:
+        /**
+         *  Function type to create an Mapping object.
+         */
+        using FactoryFunctionType = function<ConstructedType (const KEY_EQUALS_COMPARER& keyEqualsComparer)>;
+
+    public:
+        /**
          *  Hints can be used in factory constructor to guide the choice of the best container implementation/backend.
          */
         struct Hints {
@@ -50,26 +60,59 @@ namespace Stroika::Foundation::Containers::Factory {
         };
 
     public:
-        constexpr Mapping_Factory (const KEY_EQUALS_COMPARER& equalsComparer = {}, const Hints& hints = {});
+        /**
+         *  Construct a factory for producing new Mappings. The default is to use whatever was registered with 
+         *  Mapping_Factory::Register (), but a specific factory can easily be constructed with provided arguments.
+         */
+        constexpr Mapping_Factory ();
+        constexpr Mapping_Factory (const Hints& hints);
+        constexpr Mapping_Factory (const FactoryFunctionType& f);
+        constexpr Mapping_Factory (const Mapping_Factory&) = default;
 
     public:
         /**
-         *  You can call this directly, but there is no need, as the Mapping<T,TRAITS> CTOR does so automatically.
+         *  This can be called anytime, before main(), or after. BUT - beware, any calls to Register must
+         *  be externally synchronized, meaning effectively that they must happen before the creation of any
+         *  threads, to be safe. Also note, since this returns a const reference, any calls to Register() after
+         *  a call to Default, even if synchronized, is suspect.
          */
-        nonvirtual Mapping<KEY_TYPE, VALUE_TYPE> operator() () const;
+        static const Mapping_Factory& Default ();
 
     public:
         /**
-         *  Register a replacement creator/factory for the given Mapping<KEY_TYPE, VALUE_TYPE,TRAITS>. Note this is a global change.
+         *  You can call this directly, but there is no need, as the Mapping<T> CTOR does so automatically.
          */
-        static void Register (Mapping<KEY_TYPE, VALUE_TYPE> (*factory) (const KEY_EQUALS_COMPARER&) = nullptr);
+        nonvirtual ConstructedType operator() (const KEY_EQUALS_COMPARER& keyEqualsComparer) const;
+
+    public:
+        /**
+         *  Register a default global factory for Mapping objects (of the templated type/parameters).
+         *  No need to call, typically, as the default factory is generally fine.
+         * 
+         *  \par Example Usage
+         *      \code
+         *          Mapping_Factory::Register(Mapping_Factory{Mapping_Factory::Hints{.fOptimizeForLookupSpeedOverUpdateSpeed=true});
+         *          Mapping_Factory::Register();    // or use defaults
+         *      \endcode
+         *
+         *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
+         *          BUT - special note/restriction - must be called before any threads call Association_Factory::Mapping_Factory() OR
+         *          Mapping_Factory::Default(), which effectively means must be called at the start of main, but before creating any threads
+         *          which might use the factory).
+         * 
+         *  \NOTE this differs markedly from Stroika 2.1, where Register could be called anytime, and was internally synchronized.
+         * 
+         *  \note If you wanted a dynamically chanegable factory (change after main), you could write one yourself with its own internal syncrhonization,
+         *        set the global one here, then perform the changes to its internal structure through another API.
+         */
+        static void Register (const optional<Mapping_Factory>& f = nullopt);
 
     private:
-        [[no_unique_address]] const KEY_EQUALS_COMPARER fKeyEqualsComparer_;
-        const Hints                                     fHints_;
+        FactoryFunctionType fFactory_;
 
     private:
-        static Mapping<KEY_TYPE, VALUE_TYPE> Default_ (const KEY_EQUALS_COMPARER& keyEqualsComparer, const Hints& hints);
+        // function to assure magically constructed even if called before main
+        static Mapping_Factory& AccessDefault_ ();
     };
 
 }
