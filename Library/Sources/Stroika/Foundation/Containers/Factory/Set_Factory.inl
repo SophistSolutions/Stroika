@@ -22,46 +22,51 @@ namespace Stroika::Foundation::Containers::Factory {
      ********************************************************************************
      */
     template <typename T, typename EQUALS_COMPARER>
-    constexpr Set_Factory<T, EQUALS_COMPARER>::Set_Factory (const EQUALS_COMPARER& equalsComparer, const Hints& hints)
-        : fEqualsComparer_{equalsComparer}
-        , fHints_{hints}
+    constexpr Set_Factory<T, EQUALS_COMPARER>::Set_Factory (const FactoryFunctionType& f)
+        : fFactory_{f}
     {
     }
     template <typename T, typename EQUALS_COMPARER>
-    inline Set<T> Set_Factory<T, EQUALS_COMPARER>::operator() () const
+    constexpr Set_Factory<T, EQUALS_COMPARER>::Set_Factory ()
+        : Set_Factory{AccessDefault_ ()}
     {
-        /*
-         *  Would have been more performant to just and assure always properly set, but to initialize
-         *  sFactory_ with a value other than nullptr requires waiting until after main() - so causes problems
-         *  with containers constructed before main.
-         *
-         *  This works more generally (and with hopefully modest enough performance impact).
-         */
-        if (auto f = sFactory_.load ()) {
-            return f (fEqualsComparer_);
-        }
-        else {
-            return Default_ (fEqualsComparer_);
-        }
     }
     template <typename T, typename EQUALS_COMPARER>
-    inline void Set_Factory<T, EQUALS_COMPARER>::Register (Set<T> (*factory) (const EQUALS_COMPARER&))
+    constexpr Set_Factory<T, EQUALS_COMPARER>::Set_Factory ([[maybe_unused]] const Hints& hints)
+        : Set_Factory{[hints] () -> FactoryFunctionType {
+            if constexpr (is_same_v<EQUALS_COMPARER, equal_to<T>> and Configuration::has_lt_v<T>) {
+                return [] ([[maybe_unused]] const EQUALS_COMPARER& equalsComparer) { return Concrete::Set_stdset<T>{}; };
+            }
+            else {
+                /*
+                 *  Not good for large sets, due to lack of indexing/quick lookup. So issue with realloc not such a biggie
+                 *  and probably better than linkedlist since better locality (and have to walk whole list anyhow to see if present).
+                 */
+                return [] (const EQUALS_COMPARER& equalsComparer) { return Concrete::Set_Array<T>{equalsComparer}; };
+            }
+        }()}
     {
-        sFactory_ = factory;
     }
     template <typename T, typename EQUALS_COMPARER>
-    inline Set<T> Set_Factory<T, EQUALS_COMPARER>::Default_ ([[maybe_unused]] const EQUALS_COMPARER& equalsComparer)
+    inline auto Set_Factory<T, EQUALS_COMPARER>::Default () -> const Set_Factory&
     {
-        if constexpr (is_same_v<EQUALS_COMPARER, equal_to<T>> and Configuration::has_lt_v<T>) {
-            return Concrete::Set_stdset<T>{};
-        }
-        else {
-            /*
-             *  Not good for large sets, due to lack of indexing/quick lookup. So issue with realloc not such a biggie
-             *  and probably better than linkedlist since better locality (and have to walk whole list anyhow to see if present).
-             */
-            return Concrete::Set_Array<T>{equalsComparer};
-        }
+        return AccessDefault_ ();
+    }
+    template <typename T, typename EQUALS_COMPARER>
+    inline auto Set_Factory<T, EQUALS_COMPARER>::operator() (const EQUALS_COMPARER& equalsComparer) const -> ConstructedType
+    {
+        return this->fFactory_ (equalsComparer);
+    }
+    template <typename T, typename EQUALS_COMPARER>
+    void Set_Factory<T, EQUALS_COMPARER>::Register (const optional<Set_Factory>& f)
+    {
+        AccessDefault_ () = f.has_value () ? *f : Set_Factory{Hints{}};
+    }
+    template <typename T, typename EQUALS_COMPARER>
+    inline auto Set_Factory<T, EQUALS_COMPARER>::AccessDefault_ () -> Set_Factory&
+    {
+        static Set_Factory sDefault_{Hints{}};
+        return sDefault_;
     }
 
 }
