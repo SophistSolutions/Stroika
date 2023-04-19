@@ -143,7 +143,7 @@ namespace Stroika::Foundation::Debug {
     public:
         /**
          *  Explicit shared context object, so we can construct multiple AssertExternallySynchronizedMutex which all
-         *  share a common 'sharedContext' - representing that they ALL must be externally syncrhonized across all the cooperating objects
+         *  share a common 'sharedContext' - representing that they ALL must be externally synchronized across all the cooperating objects
          * 
          *  In most cases, just ignore this class.
          * 

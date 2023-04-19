@@ -231,7 +231,7 @@ namespace Stroika::Foundation::Memory {
 
         fSharedImpl_ = forward<COPIER> (copier) (*fSharedImpl_); // make a new shared_ptr (clone) and assign-overwriting.
 
-        // this assignment requires overwriting THIS object, so must be externally syncrhonized. ASSERT EXTERNALLY SYNCRHONIZED HERE
+        // this assignment requires overwriting THIS object, so must be externally synchronized. ASSERT EXTERNALLY SYNCRHONIZED HERE
         // so treat this as real assertion erorr -- LGP 2021-10-15
         Ensure (unique ());
     }

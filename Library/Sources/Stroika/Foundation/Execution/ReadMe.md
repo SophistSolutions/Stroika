@@ -39,7 +39,7 @@ Execution pattern classes (external process runner, exception handling support, 
 - [SilentException.h](SilentException.h)
 - [Sleep.h](Sleep.h)
 - [SpinLock.h](SpinLock.h)
-- [Synchronized.h](Synchronized.h) - very useful pattern - like java/c# syncrhonized/lock - wrap object with its lock
+- [Synchronized.h](Synchronized.h) - very useful pattern - like java/c# synchronized/lock - wrap object with its lock
 - [Thread.h](Thread.h) - very helpful wrapper on std::thread supporting cancelation
 - [ThreadPool.h](ThreadPool.h) - queue tasks and run them on a fixed size set of threads as the threads become ready
 - [TimedLockGuard.h](TimedLockGuard.h)

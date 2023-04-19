@@ -65,7 +65,7 @@ struct InternetMediaTypeRegistry::FrontendRep_ : InternetMediaTypeRegistry::IFro
         {InternetMediaTypes::kXML, OverrideRecord{nullopt, Containers::Set<String>{".xml"sv}, ".xml"sv}},
     }};
 
-    // OVERRIDE values (take precedence over backend) and any other data we need to keep locked (syncrhonized)
+    // OVERRIDE values (take precedence over backend) and any other data we need to keep locked (synchronized)
     struct Data_ {
         shared_ptr<IBackendRep> fBackendRep; // lazy construct on first call to usage (since that construction can be slow)
 

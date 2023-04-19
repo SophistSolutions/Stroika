@@ -258,7 +258,7 @@ namespace Stroika::Foundation::Execution {
          * 
          *  And plain copy constructor.
          * 
-         *  FOR NOW, avoid MOVE constructor (cuz syncrhonized is a combination of original data with lock, and not sure what moving
+         *  FOR NOW, avoid MOVE constructor (cuz synchronized is a combination of original data with lock, and not sure what moving
          *  the lock means).
          */
         template <typename... ARGUMENT_TYPES>

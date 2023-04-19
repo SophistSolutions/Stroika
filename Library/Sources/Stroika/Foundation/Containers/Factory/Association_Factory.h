@@ -70,7 +70,7 @@ namespace Stroika::Foundation::Containers::Factory {
     public:
         /**
          *  This can be called anytime, before main(), or after. BUT - beware, any calls to Register must
-         *  be externally syncrhonized, meaning effectively that they must happen before the creation of any
+         *  be externally synchronized, meaning effectively that they must happen before the creation of any
          *  threads, to be safe. Also note, since this returns a const reference, any calls to Register() after
          *  a call to Default, even if synchronized, is suspect.
          */
