@@ -21,37 +21,43 @@ namespace Stroika::Foundation::Containers::Factory {
      ********************************************************************************
      */
     template <typename T>
-    constexpr Deque_Factory<T>::Deque_Factory (const Hints& hints)
-        : fHints_{hints}
+    constexpr Deque_Factory<T>::Deque_Factory (const FactoryFunctionType& f)
+        : fFactory_{f}
     {
     }
     template <typename T>
-    inline Deque<T> Deque_Factory<T>::operator() () const
+    constexpr Deque_Factory<T>::Deque_Factory ()
+        : Deque_Factory{AccessDefault_ ()}
     {
-        /*
-         *  Would have been more performant to just and assure always properly set, but to initialize
-         *  sFactory_ with a value other than nullptr requires waiting until after main() - so causes problems
-         *  with containers constructed before main.
-         *
-         *  This works more generally (and with hopefully modest enough performance impact).
-         */
-        auto f = sFactory_.load ();
-        if (f == nullptr) {
-            return Default_ ();
-        }
-        else {
-            return f ();
-        }
     }
     template <typename T>
-    void Deque_Factory<T>::Register (Deque<T> (*factory) ())
+    constexpr Deque_Factory<T>::Deque_Factory ([[maybe_unused]] const Hints& hints)
+        : Deque_Factory{[hints] () -> FactoryFunctionType {
+            // @todo some alternatives
+            return [] () { return Concrete::Deque_DoublyLinkedList<T>{}; };
+        }()}
     {
-        sFactory_ = factory;
     }
     template <typename T>
-    inline Deque<T> Deque_Factory<T>::Default_ ()
+    inline auto Deque_Factory<T>::Default () -> const Deque_Factory&
     {
-        return Concrete::Deque_DoublyLinkedList<T>{};
+        return AccessDefault_ ();
+    }
+    template <typename T>
+    inline auto Deque_Factory<T>::operator() () const -> ConstructedType
+    {
+        return this->fFactory_ ();
+    }
+    template <typename T>
+    void Deque_Factory<T>::Register (const optional<Deque_Factory>& f)
+    {
+        AccessDefault_ () = f.has_value () ? *f : Deque_Factory{Hints{}};
+    }
+    template <typename T>
+    inline auto Deque_Factory<T>::AccessDefault_ () -> Deque_Factory&
+    {
+        static Deque_Factory sDefault_{Hints{}};
+        return sDefault_;
     }
 
 }

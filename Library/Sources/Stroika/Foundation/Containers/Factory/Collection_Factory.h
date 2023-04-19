@@ -22,16 +22,12 @@ namespace Stroika::Foundation::Containers::Factory {
     /**
      *  \brief   Singleton factory object - Used to create the default backend implementation of a Collection<> container; typically not called directly
      *
-     *  Note - you can override the underlying factory dynamically by calling Collection_Factory<T>::Register (), or
-     *  replace it statically by template-specializing Collection_Factory<T>::New () - though the later is trickier.
+     *  Note - you can override the underlying factory dynamically by calling Collection_Factory<T>::Register ().
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      */
     template <typename T>
     class Collection_Factory {
-    private:
-        static inline atomic<Collection<T> (*) ()> sFactory_{nullptr};
-
     public:
         static_assert (not is_reference_v<T>,
                        "typically if this fails its because a (possibly indirect) caller forgot to use forward<TTT>(), or remove_cvref_t");

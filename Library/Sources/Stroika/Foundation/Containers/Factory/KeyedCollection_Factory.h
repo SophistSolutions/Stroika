@@ -21,10 +21,9 @@ namespace Stroika::Foundation::Containers {
 namespace Stroika::Foundation::Containers::Factory {
 
     /**
-     *  \brief   Singleton factory object - Used to create the default backend implementation of a KeyedCollection<> container
+     *  \brief   Singleton factory object - Used to create the default backend implementation of a KeyedCollection<> container; typically not called directly
      *
-     *  Note - you can override the underlying factory dynamically by calling KeyedCollection_Factory<T,KEY_TYPE,TRAITS>::Register (), or
-     *  replace it statically by template-specializing KeyedCollection_Factory<T,TRAITS>::Default_ () - though the later is trickier.
+     *  Note - you can override the underlying factory dynamically by calling KeyedCollection_Factory<T,KEY_TYPE,TRAITS>::Register ().
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      */
@@ -34,9 +33,16 @@ namespace Stroika::Foundation::Containers::Factory {
         static_assert (not is_reference_v<T> and not is_reference_v<KEY_TYPE> and not is_reference_v<KEY_EXTRACTOR> and not is_reference_v<KEY_EQUALS_COMPARER>,
                        "typically if this fails its because a (possibly indirect) caller forgot to use forward<TTT>(), or remove_cvref_t");
 
-    private:
-        static inline atomic<KeyedCollection<T, KEY_TYPE, TRAITS> (*) (const KEY_EXTRACTOR& keyExtractor, const KEY_EQUALS_COMPARER& keyComparer)> sFactory_{
-            nullptr};
+    public:
+        /**
+         */
+        using ConstructedType = KeyedCollection<T, KEY_TYPE, TRAITS>;
+
+    public:
+        /**
+         *  Function type to create an Collection object.
+         */
+        using FactoryFunctionType = function<ConstructedType (const KEY_EXTRACTOR& keyExtractor, const KEY_EQUALS_COMPARER& keyComparer)>;
 
     public:
         /**
@@ -49,28 +55,58 @@ namespace Stroika::Foundation::Containers::Factory {
         };
 
     public:
-        constexpr KeyedCollection_Factory (const KEY_EXTRACTOR& keyExtractor, const KEY_EQUALS_COMPARER& keyComparer, const Hints& = {});
+        /**
+         *  Construct a factory for producing new KeyedCollection. The default is to use whatever was registered with 
+         *  Collection_Factory::Register (), but a specific factory can easily be constructed with provided arguments.
+         */
+        constexpr KeyedCollection_Factory ();
+        constexpr KeyedCollection_Factory (const Hints& hints);
+        constexpr KeyedCollection_Factory (const FactoryFunctionType& f);
+        constexpr KeyedCollection_Factory (const KeyedCollection_Factory&) = default;
+
+        //constexpr KeyedCollection_Factory (const KEY_EXTRACTOR& keyExtractor, const KEY_EQUALS_COMPARER& keyComparer, const Hints& = {});
+
+    public:
+        /**
+         *  This can be called anytime, before main(), or after. BUT - beware, any calls to Register must
+         *  be externally synchronized, meaning effectively that they must happen before the creation of any
+         *  threads, to be safe. Also note, since this returns a const reference, any calls to Register() after
+         *  a call to Default, even if synchronized, is suspect.
+         */
+        static const KeyedCollection_Factory& Default ();
 
     public:
         /**
          *  You can call this directly, but there is no need, as the KeyedCollection<T,TRAITS> CTOR does so automatically.
          */
-        nonvirtual KeyedCollection<T, KEY_TYPE, TRAITS> operator() () const;
+        nonvirtual ConstructedType operator() (const KEY_EXTRACTOR& keyExtractor, const KEY_EQUALS_COMPARER& keyComparer) const;
 
     public:
         /**
-         *  Register a replacement creator/factory for the given KeyedCollection<KEY_TYPE, VALUE_TYPE,TRAITS>. Note this is a global change.
+         *  Register a default global factory for KeyedCollection objects (of the templated type/parameters).
+         *  No need to call, typically, as the default factory is generally fine.
+         * 
+         *  \par Example Usage
+         *      \code
+         *          KeyedCollection_Factory::Register(KeyedCollection_Factory{KeyedCollection_Factory::Hints{.fOptimizeForLookupSpeedOverUpdateSpeed=true});
+         *          KeyedCollection_Factory::Register();    // or use defaults
+         *      \endcode
+         *
+         *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
+         *          BUT - special note/restriction - must be called before any threads call Association_Factory::KeyedCollection_Factory() OR
+         *          KeyedCollection_Factory::Default(), which effectively means must be called at the start of main, but before creating any threads
+         *          which might use the factory).
+         * 
+         *  \NOTE this differs markedly from Stroika 2.1, where Register could be called anytime, and was internally synchronized.
          */
-        static void Register (KeyedCollection<T, KEY_TYPE, TRAITS> (*factory) (const KEY_EXTRACTOR&       keyExtractor,
-                                                                               const KEY_EQUALS_COMPARER& keyComparer) = nullptr);
+        static void Register (const optional<KeyedCollection_Factory>& f = nullopt);
 
     private:
-        [[no_unique_address]] const KEY_EXTRACTOR       fKeyExtractorType_;
-        [[no_unique_address]] const KEY_EQUALS_COMPARER fKeyEqualsComparer_;
-        [[no_unique_address]] const Hints               fHints_;
+        FactoryFunctionType fFactory_;
 
     private:
-        static KeyedCollection<T, KEY_TYPE, TRAITS> Default_ (const KEY_EXTRACTOR& keyExtractor, const KEY_EQUALS_COMPARER& keyComparer);
+        // function to assure magically constructed even if called before main
+        static KeyedCollection_Factory& AccessDefault_ ();
     };
 
 }
