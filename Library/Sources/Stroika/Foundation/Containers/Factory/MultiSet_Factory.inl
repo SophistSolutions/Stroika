@@ -19,52 +19,57 @@ namespace Stroika::Foundation::Containers::Factory {
 
     /*
      ********************************************************************************
-     ************ MultiSet_Factory<T, TRAITS, EQUALS_COMPARER> **********************
+     **************** MultiSet_Factory<T, TRAITS, EQUALS_COMPARER> ******************
      ********************************************************************************
      */
     template <typename T, typename TRAITS, typename EQUALS_COMPARER>
-    constexpr MultiSet_Factory<T, TRAITS, EQUALS_COMPARER>::MultiSet_Factory (const EQUALS_COMPARER& equalsComparer, const Hints& hints)
-        : fEqualsComparer_{equalsComparer}
-        , fHints_{hints}
+    constexpr MultiSet_Factory<T, TRAITS, EQUALS_COMPARER>::MultiSet_Factory (const FactoryFunctionType& f)
+        : fFactory_{f}
     {
     }
     template <typename T, typename TRAITS, typename EQUALS_COMPARER>
-    inline MultiSet<T, TRAITS> MultiSet_Factory<T, TRAITS, EQUALS_COMPARER>::operator() () const
+    constexpr MultiSet_Factory<T, TRAITS, EQUALS_COMPARER>::MultiSet_Factory ()
+        : MultiSet_Factory{AccessDefault_ ()}
     {
-        /*
-         *  Would have been more performant to just and assure always properly set, but to initialize
-         *  sFactory_ with a value other than nullptr requires waiting until after main() - so causes problems
-         *  with containers constructed before main.
-         *
-         *  This works more generally (and with hopefully modest enough performance impact).
-         */
-        if (auto f = sFactory_.load ()) {
-            return f (fEqualsComparer_);
-        }
-        else {
-            return Default_ (fEqualsComparer_, fHints_);
-        }
     }
     template <typename T, typename TRAITS, typename EQUALS_COMPARER>
-    inline void MultiSet_Factory<T, TRAITS, EQUALS_COMPARER>::Register (MultiSet<T, TRAITS> (*factory) (const EQUALS_COMPARER&))
-    {
-        sFactory_ = factory;
-    }
-    template <typename T, typename TRAITS, typename EQUALS_COMPARER>
-    inline MultiSet<T, TRAITS> MultiSet_Factory<T, TRAITS, EQUALS_COMPARER>::Default_ (const EQUALS_COMPARER& equalsComparer, const Hints& hints)
-    {
-        if constexpr (is_same_v<EQUALS_COMPARER, equal_to<T>> and Configuration::has_lt_v<T>) {
-            return Concrete::MultiSet_stdmap<T, TRAITS>{};
-        }
-        else {
-            if (hints.fOptimizeForLookupSpeedOverUpdateSpeed.value_or (true)) {
-                // array has better memory locality properties so lookups faster
-                return Concrete::MultiSet_Array<T, TRAITS>{equalsComparer};
+    constexpr MultiSet_Factory<T, TRAITS, EQUALS_COMPARER>::MultiSet_Factory ([[maybe_unused]] const Hints& hints)
+        : MultiSet_Factory{[hints] () -> FactoryFunctionType {
+            if constexpr (is_same_v<EQUALS_COMPARER, equal_to<T>> and Configuration::has_lt_v<T>) {
+                return [] ([[maybe_unused]]const EQUALS_COMPARER& equalsComparer) { return Concrete::MultiSet_stdmap<T, TRAITS>{}; };
             }
             else {
-                return Concrete::MultiSet_LinkedList<T, TRAITS>{equalsComparer};
+                if (hints.fOptimizeForLookupSpeedOverUpdateSpeed.value_or (true)) {
+                    // array has better memory locality properties so lookups faster
+                    return [] (const EQUALS_COMPARER& equalsComparer) { return Concrete::MultiSet_Array<T, TRAITS>{equalsComparer}; };
+                }
+                else {
+                    return [] (const EQUALS_COMPARER& equalsComparer) { return Concrete::MultiSet_LinkedList<T, TRAITS>{equalsComparer}; };
+                }
             }
-        }
+        }()}
+    {
+    }
+    template <typename T, typename TRAITS, typename EQUALS_COMPARER>
+    inline auto MultiSet_Factory<T, TRAITS, EQUALS_COMPARER>::Default () -> const MultiSet_Factory&
+    {
+        return AccessDefault_ ();
+    }
+    template <typename T, typename TRAITS, typename EQUALS_COMPARER>
+    inline auto MultiSet_Factory<T, TRAITS, EQUALS_COMPARER>::operator() (const EQUALS_COMPARER& equalsComparer) const -> ConstructedType
+    {
+        return this->fFactory_ (equalsComparer);
+    }
+    template <typename T, typename TRAITS, typename EQUALS_COMPARER>
+    void MultiSet_Factory<T, TRAITS, EQUALS_COMPARER>::Register (const optional<MultiSet_Factory>& f)
+    {
+        AccessDefault_ () = f.has_value () ? *f : MultiSet_Factory{Hints{}};
+    }
+    template <typename T, typename TRAITS, typename EQUALS_COMPARER>
+    inline auto MultiSet_Factory<T, TRAITS, EQUALS_COMPARER>::AccessDefault_ () -> MultiSet_Factory&
+    {
+        static MultiSet_Factory sDefault_{Hints{}};
+        return sDefault_;
     }
 
 }

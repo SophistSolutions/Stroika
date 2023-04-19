@@ -21,36 +21,43 @@ namespace Stroika::Foundation::Containers::Factory {
      ********************************************************************************
      */
     template <typename T>
-    constexpr Queue_Factory<T>::Queue_Factory (const Hints& hints)
-        : fHints_{hints}
+    constexpr Queue_Factory<T>::Queue_Factory (const FactoryFunctionType& f)
+        : fFactory_{f}
     {
     }
     template <typename T>
-    inline Queue<T> Queue_Factory<T>::operator() () const
+    constexpr Queue_Factory<T>::Queue_Factory ()
+        : Queue_Factory{AccessDefault_ ()}
     {
-        /*
-         *  Would have been more performant to just and assure always properly set, but to initialize
-         *  sFactory_ with a value other than nullptr requires waiting until after main() - so causes problems
-         *  with containers constructed before main.
-         *
-         *  This works more generally (and with hopefully modest enough performance impact).
-         */
-        if (auto f = sFactory_.load ()) {
-            return f ();
-        }
-        else {
-            return Default_ ();
-        }
     }
     template <typename T>
-    inline void Queue_Factory<T>::Register (Queue<T> (*factory) ())
+    constexpr Queue_Factory<T>::Queue_Factory ([[maybe_unused]] const Hints& hints)
+        : Queue_Factory{[hints] () -> FactoryFunctionType {
+            // @todo could use array impl due to better locality
+            return [] () { return Concrete::Queue_DoublyLinkedList<T>{}; };
+        }()}
     {
-        sFactory_ = factory;
     }
     template <typename T>
-    inline Queue<T> Queue_Factory<T>::Default_ ()
+    inline auto Queue_Factory<T>::Default () -> const Queue_Factory&
     {
-        return Concrete::Queue_DoublyLinkedList<T>{};
+        return AccessDefault_ ();
+    }
+    template <typename T>
+    inline auto Queue_Factory<T>::operator() () const -> ConstructedType
+    {
+        return this->fFactory_ ();
+    }
+    template <typename T>
+    void Queue_Factory<T>::Register (const optional<Queue_Factory>& f)
+    {
+        AccessDefault_ () = f.has_value () ? *f : Queue_Factory{Hints{}};
+    }
+    template <typename T>
+    inline auto Queue_Factory<T>::AccessDefault_ () -> Queue_Factory&
+    {
+        static Queue_Factory sDefault_{Hints{}};
+        return sDefault_;
     }
 
 }

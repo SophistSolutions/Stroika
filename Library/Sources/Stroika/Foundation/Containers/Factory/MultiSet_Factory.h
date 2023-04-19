@@ -13,7 +13,6 @@
  */
 
 namespace Stroika::Foundation::Containers {
-
     template <typename T, typename TRAITS>
     class MultiSet;
 }
@@ -21,22 +20,29 @@ namespace Stroika::Foundation::Containers {
 namespace Stroika::Foundation::Containers::Factory {
 
     /**
-    *  \brief   Singleton factory object - Used to create the default backend implementation of a MultiSet<> container
-    *
-    *  Note - you can override the underlying factory dynamically by calling MultiSet_Factory<T,TRAITS>::Register (), or
-    *  replace it statically by template-specializing MultiSet_Factory<T,TRAITS>::New () - though the later is trickier.
-    *
-    *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
-    */
+     *  \brief   Singleton factory object - Used to create the default backend implementation of a MultiSet<> container; typically not called directly
+     *
+     *  Note - you can override the underlying factory dynamically by calling MultiSet_Factory<T,TRAITS>::Register ().
+     *
+     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
+     */
     template <typename T, typename TRAITS, typename EQUALS_COMPARER = equal_to<T>>
     class MultiSet_Factory {
-    private:
-        static inline atomic<MultiSet<T, TRAITS> (*) (const EQUALS_COMPARER&)> sFactory_{nullptr};
-
     public:
         static_assert (not is_reference_v<T> and not is_reference_v<EQUALS_COMPARER>,
                        "typically if this fails its because a (possibly indirect) caller forgot to use forward<>(), or remove_cvref_t");
         static_assert (Common::IsEqualsComparer<EQUALS_COMPARER> (), "Equals comparer required with MultiSet_Factory");
+
+    public:
+        /**
+         */
+        using ConstructedType = MultiSet<T, TRAITS>;
+
+    public:
+        /**
+         *  Function type to create an Collection object.
+         */
+        using FactoryFunctionType = function<ConstructedType (const EQUALS_COMPARER& equalsComparer)>;
 
     public:
         /**
@@ -47,27 +53,61 @@ namespace Stroika::Foundation::Containers::Factory {
         };
 
     public:
-        constexpr MultiSet_Factory (const EQUALS_COMPARER& equalsComparer, const Hints& hints = {});
+        /**
+         *  Construct a factory for producing new MultiSets. The default is to use whatever was registered with 
+         *  Collection_Factory::Register (), but a specific factory can easily be constructed with provided arguments.
+         */
+        constexpr MultiSet_Factory ();
+        constexpr MultiSet_Factory (const Hints& hints);
+        constexpr MultiSet_Factory (const FactoryFunctionType& f);
+        constexpr MultiSet_Factory (const MultiSet_Factory&) = default;
+
+    public:
+        /**
+         *  This can be called anytime, before main(), or after. BUT - beware, any calls to Register must
+         *  be externally synchronized, meaning effectively that they must happen before the creation of any
+         *  threads, to be safe. Also note, since this returns a const reference, any calls to Register() after
+         *  a call to Default, even if synchronized, is suspect.
+         */
+        static const MultiSet_Factory& Default ();
 
     public:
         /**
          *  You can call this directly, but there is no need, as the MultiSet<T,TRAITS> CTOR does so automatically.
          */
-        nonvirtual MultiSet<T, TRAITS> operator() () const;
+        nonvirtual ConstructedType operator() (const EQUALS_COMPARER& equalsComparer = {}) const;
 
     public:
         /**
-         *  Register a replacement creator/factory for the given MultiSet<T,TRAITS>. Note this is a global change.
+         *  Register a default global factory for MultiSet objects (of the templated type/parameters).
+         *  No need to call, typically, as the default factory is generally fine.
+         * 
+         *  \par Example Usage
+         *      \code
+         *          MultiSet_Factory::Register(MultiSet_Factory{MultiSet_Factory::Hints{.fOptimizeForLookupSpeedOverUpdateSpeed=true});
+         *          MultiSet_Factory::Register();    // or use defaults
+         *      \endcode
+         *
+         *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
+         *          BUT - special note/restriction - must be called before any threads call Association_Factory::MultiSet_Factory() OR
+         *          MultiSet_Factory::Default(), which effectively means must be called at the start of main, but before creating any threads
+         *          which might use the factory).
+         * 
+         *  \NOTE this differs markedly from Stroika 2.1, where Register could be called anytime, and was internally synchronized.
+         * 
+         *  \note If you wanted a dynamically chanegable factory (change after main), you could write one yourself with its own internal syncrhonization,
+         *        set the global one here, then perform the changes to its internal structure through another API.
          */
-        static void Register (MultiSet<T, TRAITS> (*factory) (const EQUALS_COMPARER&) = nullptr);
+        static void Register (const optional<MultiSet_Factory>& f = nullopt);
 
     private:
-        [[no_unique_address]] const EQUALS_COMPARER fEqualsComparer_;
-        const Hints                                 fHints_;
+        FactoryFunctionType fFactory_;
 
     private:
-        static MultiSet<T, TRAITS> Default_ (const EQUALS_COMPARER& equalsComparer, const Hints& hints);
+        // function to assure magically constructed even if called before main
+        static MultiSet_Factory& AccessDefault_ ();
     };
+
 }
 
 /*
