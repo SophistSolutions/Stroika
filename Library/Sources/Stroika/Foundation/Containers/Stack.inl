@@ -20,7 +20,7 @@ namespace Stroika::Foundation::Containers {
      */
     template <typename T>
     inline Stack<T>::Stack ()
-        : inherited{Factory::Stack_Factory<T>{}()}
+        : inherited{Factory::Stack_Factory<T>::Default () ()}
     {
         _AssertRepValidType ();
     }

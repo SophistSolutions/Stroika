@@ -61,7 +61,7 @@ namespace Stroika::Foundation::Containers::Factory {
 
     public:
         /**
-         *  Construct a factory for producing new Mappings. The default is to use whatever was registered with 
+         *  Construct a factory for producing new ConstructedType ivhects. The default is to use whatever was registered with 
          *  Mapping_Factory::Register (), but a specific factory can easily be constructed with provided arguments.
          */
         constexpr Mapping_Factory ();

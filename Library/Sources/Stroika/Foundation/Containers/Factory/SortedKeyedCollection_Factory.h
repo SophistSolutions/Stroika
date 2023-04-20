@@ -6,8 +6,6 @@
 
 #include "../../StroikaPreComp.h"
 
-#include <atomic>
-
 /**
  *  \file
  */
@@ -54,7 +52,7 @@ namespace Stroika::Foundation::Containers::Factory {
 
     public:
         /**
-         *  Construct a factory for producing new SortedKeyedCollections. The default is to use whatever was registered with 
+         *  Construct a factory for producing new ConstructedType objects. The default is to use whatever was registered with 
          *  SortedKeyedCollection_Factory::Register (), but a specific factory can easily be constructed with provided arguments.
          */
         constexpr SortedKeyedCollection_Factory ();

@@ -27,36 +27,45 @@ namespace Stroika::Foundation::Containers::Factory {
      ********************************************************************************
      */
     template <typename T, typename... INDEXES>
-    constexpr SparseDataHyperRectangle_Factory<T, INDEXES...>::SparseDataHyperRectangle_Factory (const Hints& hints)
-        : fHints_{hints}
+    constexpr SparseDataHyperRectangle_Factory<T, INDEXES...>::SparseDataHyperRectangle_Factory (const FactoryFunctionType& f)
+        : fFactory_{f}
     {
     }
     template <typename T, typename... INDEXES>
-    inline SparseDataHyperRectangle<T, INDEXES...> SparseDataHyperRectangle_Factory<T, INDEXES...>::operator() (Configuration::ArgByValueType<T> defaultItem)
+    constexpr SparseDataHyperRectangle_Factory<T, INDEXES...>::SparseDataHyperRectangle_Factory ()
+        : SparseDataHyperRectangle_Factory{AccessDefault_ ()}
     {
-        /*
-            *  Would have been more performant to just and assure always properly set, but to initialize
-            *  sFactory_ with a value other than nullptr requires waiting until after main() - so causes problems
-            *  with containers constructed before main.
-            *
-            *  This works more generally (and with hopefully modest enough performance impact).
-            */
-        if (auto f = sFactory_.load ()) {
-            return f (defaultItem);
-        }
-        else {
-            return Default_ (defaultItem);
-        }
     }
     template <typename T, typename... INDEXES>
-    void SparseDataHyperRectangle_Factory<T, INDEXES...>::Register (SparseDataHyperRectangle<T, INDEXES...> (*factory) (Configuration::ArgByValueType<T>))
+    constexpr SparseDataHyperRectangle_Factory<T, INDEXES...>::SparseDataHyperRectangle_Factory ([[maybe_unused]] const Hints& hints)
+        : SparseDataHyperRectangle_Factory{[hints] () -> FactoryFunctionType {
+            return [] (Configuration::ArgByValueType<T> defaultItem) {
+                return Concrete::SparseDataHyperRectangle_stdmap<T, INDEXES...>{defaultItem};
+            };
+        }()}
     {
-        sFactory_ = factory;
     }
     template <typename T, typename... INDEXES>
-    inline SparseDataHyperRectangle<T, INDEXES...> SparseDataHyperRectangle_Factory<T, INDEXES...>::Default_ (Configuration::ArgByValueType<T> defaultItem)
+    inline auto SparseDataHyperRectangle_Factory<T, INDEXES...>::Default () -> const SparseDataHyperRectangle_Factory&
     {
-        return Concrete::SparseDataHyperRectangle_stdmap<T, INDEXES...>{defaultItem};
+        return AccessDefault_ ();
     }
+    template <typename T, typename... INDEXES>
+    inline auto SparseDataHyperRectangle_Factory<T, INDEXES...>::operator() (Configuration::ArgByValueType<T> defaultItem) const -> ConstructedType
+    {
+        return this->fFactory_ (defaultItem);
+    }
+    template <typename T, typename... INDEXES>
+    void SparseDataHyperRectangle_Factory<T, INDEXES...>::Register (const optional<SparseDataHyperRectangle_Factory>& f)
+    {
+        AccessDefault_ () = f.has_value () ? *f : SparseDataHyperRectangle_Factory{Hints{}};
+    }
+    template <typename T, typename... INDEXES>
+    inline auto SparseDataHyperRectangle_Factory<T, INDEXES...>::AccessDefault_ () -> SparseDataHyperRectangle_Factory&
+    {
+        static SparseDataHyperRectangle_Factory sDefault_{Hints{}};
+        return sDefault_;
+    }
+
 }
 #endif /* _Stroika_Foundation_Containers_Concrete_SparseDataHyperRectangle_Factory_inl_ */

@@ -23,7 +23,7 @@ namespace Stroika::Foundation::Containers {
     template <typename T>
     template <typename INORDER_COMPARER, enable_if_t<Common::IsStrictInOrderComparer<INORDER_COMPARER, T> ()>*>
     inline SortedSet<T>::SortedSet (INORDER_COMPARER&& inorderComparer)
-        : inherited{Factory::SortedSet_Factory<T, decay_t<INORDER_COMPARER>> (forward<INORDER_COMPARER> (inorderComparer)) ()}
+        : inherited{Factory::SortedSet_Factory<T, decay_t<INORDER_COMPARER>>::Default () (forward<INORDER_COMPARER> (inorderComparer))}
     {
         static_assert (Common::IsStrictInOrderComparer<INORDER_COMPARER> (), "StrictInOrder comparer required with SortedSet");
         _AssertRepValidType ();

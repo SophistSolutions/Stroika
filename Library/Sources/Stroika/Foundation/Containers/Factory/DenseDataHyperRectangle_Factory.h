@@ -49,8 +49,8 @@ namespace Stroika::Foundation::Containers::Factory {
 
     public:
         /**
-         *  Construct a factory for producing new Collections. The default is to use whatever was registered with 
-         *  Collection_Factory::Register (), but a specific factory can easily be constructed with provided arguments.
+         *  Construct a factory for producing new ConstructedType objects. The default is to use whatever was registered with 
+         *  DenseDataHyperRectangle_Factory::Register (), but a specific factory can easily be constructed with provided arguments.
          */
         constexpr DenseDataHyperRectangle_Factory ();
         constexpr DenseDataHyperRectangle_Factory (const Hints& hints);

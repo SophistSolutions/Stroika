@@ -21,36 +21,40 @@ namespace Stroika::Foundation::Containers::Factory {
      ********************************************************************************
      */
     template <typename T>
-    constexpr Stack_Factory<T>::Stack_Factory (const Hints& hints)
-        : fHints_{hints}
+    constexpr Stack_Factory<T>::Stack_Factory (const FactoryFunctionType& f)
+        : fFactory_{f}
     {
     }
     template <typename T>
-    inline Stack<T> Stack_Factory<T>::operator() () const
+    constexpr Stack_Factory<T>::Stack_Factory ()
+        : Stack_Factory{AccessDefault_ ()}
     {
-        /*
-         *  Would have been more performant to just and assure always properly set, but to initialize
-         *  sFactory_ with a value other than nullptr requires waiting until after main() - so causes problems
-         *  with containers constructed before main.
-         *
-         *  This works more generally (and with hopefully modest enough performance impact).
-         */
-        if (auto f = sFactory_.load ()) {
-            return f ();
-        }
-        else {
-            return Default_ ();
-        }
     }
     template <typename T>
-    inline void Stack_Factory<T>::Register (Stack<T> (*factory) ())
+    constexpr Stack_Factory<T>::Stack_Factory ([[maybe_unused]] const Hints& hints)
+        : Stack_Factory{[hints] () -> FactoryFunctionType { return [] () { return Concrete::Stack_LinkedList<T>{}; }; }()}
     {
-        sFactory_ = factory;
     }
     template <typename T>
-    inline Stack<T> Stack_Factory<T>::Default_ ()
+    inline auto Stack_Factory<T>::Default () -> const Stack_Factory&
     {
-        return Concrete::Stack_LinkedList<T>{};
+        return AccessDefault_ ();
+    }
+    template <typename T>
+    inline auto Stack_Factory<T>::operator() () const -> ConstructedType
+    {
+        return this->fFactory_ ();
+    }
+    template <typename T>
+    void Stack_Factory<T>::Register (const optional<Stack_Factory>& f)
+    {
+        AccessDefault_ () = f.has_value () ? *f : Stack_Factory{Hints{}};
+    }
+    template <typename T>
+    inline auto Stack_Factory<T>::AccessDefault_ () -> Stack_Factory&
+    {
+        static Stack_Factory sDefault_{Hints{}};
+        return sDefault_;
     }
 
 }

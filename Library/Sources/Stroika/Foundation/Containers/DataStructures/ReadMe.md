@@ -6,8 +6,9 @@ Overview
 
 	They
 		-	are not threadsafe (externally synchronized)
-		-	are not update during iteration safe (except as with STL)
 		-	they are not organized around the Stroika Container abstractions/access patterns
+		-	they are primarily building blocks used in Stroika's concrete container library,
+			though they can be used directly if someone wishes to
 
 	They are named based on the underlying data structure, not access pattern.
 

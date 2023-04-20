@@ -6,8 +6,6 @@
 
 #include "../../StroikaPreComp.h"
 
-#include <atomic>
-
 /**
  *  \file
  */
@@ -20,7 +18,7 @@ namespace Stroika::Foundation::Containers {
 namespace Stroika::Foundation::Containers::Factory {
 
     /**
-     *  \brief   Singleton factory object - Used to create the default backend implementation of a SortedSet<> container
+     *  \brief   Singleton factory object - Used to create the default backend implementation of a SortedSet<> container; typically not called directly
      *
      *  Note - you can override the underlying factory dynamically by calling SortedSet_Factory<T,INORDER_COMPARER>::Register ().
      *
@@ -28,13 +26,22 @@ namespace Stroika::Foundation::Containers::Factory {
      */
     template <typename T, typename INORDER_COMPARER = less<T>>
     class SortedSet_Factory {
-    private:
-        static inline atomic<SortedSet<T> (*) (const INORDER_COMPARER&)> sFactory_{nullptr};
-
     public:
         static_assert (not is_reference_v<T> and not is_reference_v<INORDER_COMPARER>,
                        "typically if this fails its because a (possibly indirect) caller forgot to use forward<TTT>(), or remove_cvref_t");
         static_assert (Common::IsStrictInOrderComparer<INORDER_COMPARER> (), "StrictInOrder comparer required with SortedSet");
+
+    public:
+        /**
+         *  The type of object produced by the factory.
+         */
+        using ConstructedType = SortedSet<T>;
+
+    public:
+        /**
+         *  Function type to create an ConstructedType object.
+         */
+        using FactoryFunctionType = function<ConstructedType (const INORDER_COMPARER& inorderComparer)>;
 
     public:
         /**
@@ -43,26 +50,59 @@ namespace Stroika::Foundation::Containers::Factory {
         struct Hints {};
 
     public:
-        constexpr SortedSet_Factory (const INORDER_COMPARER& inorderComparer, const Hints& hints = {});
+        /**
+         *  Construct a factory for producing new ConstructedType objects. The default is to use whatever was registered with 
+         *  SortedSet_Factory::Register (), but a specific factory can easily be constructed with provided arguments.
+         */
+        constexpr SortedSet_Factory ();
+        constexpr SortedSet_Factory (const Hints& hints);
+        constexpr SortedSet_Factory (const FactoryFunctionType& f);
+        constexpr SortedSet_Factory (const SortedSet_Factory&) = default;
+
+    public:
+        /**
+         *  This can be called anytime, before main(), or after. BUT - beware, any calls to Register must
+         *  be externally synchronized, meaning effectively that they must happen before the creation of any
+         *  threads, to be safe. Also note, since this returns a const reference, any calls to Register() after
+         *  a call to Default, even if synchronized, is suspect.
+         */
+        static const SortedSet_Factory& Default ();
 
     public:
         /**
          *  You can call this directly, but there is no need, as the SortedSet<T,TRAITS> CTOR does so automatically.
          */
-        nonvirtual SortedSet<T> operator() () const;
+        nonvirtual ConstructedType operator() (const INORDER_COMPARER& inorderComparer = {}) const;
 
     public:
         /**
-         *  Register a replacement creator/factory for the given SortedSet<T,TRAITS>. Note this is a global change.
+         *  Register a default global factory for ConstructedType objects (of the templated type/parameters).
+         *  No need to call, typically, as the default factory is generally fine.
+         * 
+         *  \par Example Usage
+         *      \code
+         *          SortedSet_Factory::Register(SortedSet_Factory{SortedSet_Factory::Hints{.fOptimizeForLookupSpeedOverUpdateSpeed=true});
+         *          SortedSet_Factory::Register();    // or use defaults
+         *      \endcode
+         *
+         *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
+         *          BUT - special note/restriction - must be called before any threads call Association_Factory::SortedSet_Factory() OR
+         *          SortedSet_Factory::Default(), which effectively means must be called at the start of main, but before creating any threads
+         *          which might use the factory).
+         * 
+         *  \NOTE this differs markedly from Stroika 2.1, where Register could be called anytime, and was internally synchronized.
+         * 
+         *  \note If you wanted a dynamically chanegable factory (change after main), you could write one yourself with its own internal syncrhonization,
+         *        set the global one here, then perform the changes to its internal structure through another API.
          */
-        static void Register (SortedSet<T> (*factory) (const INORDER_COMPARER&) = nullptr);
+        static void Register (const optional<SortedSet_Factory>& f = nullopt);
 
     private:
-        [[no_unique_address]] const INORDER_COMPARER fInorderComparer_;
-        [[no_unique_address]] const Hints            fHints_;
+        FactoryFunctionType fFactory_;
 
     private:
-        static SortedSet<T> Default_ (const INORDER_COMPARER& inorderComparer);
+        // function to assure magically constructed even if called before main
+        static SortedSet_Factory& AccessDefault_ ();
     };
 
 }

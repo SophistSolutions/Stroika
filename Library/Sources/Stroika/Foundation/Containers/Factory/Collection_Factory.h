@@ -52,7 +52,7 @@ namespace Stroika::Foundation::Containers::Factory {
 
     public:
         /**
-         *  Construct a factory for producing new Collections. The default is to use whatever was registered with 
+         *  Construct a factory for producing new ConstructedType objects. The default is to use whatever was registered with 
          *  Collection_Factory::Register (), but a specific factory can easily be constructed with provided arguments.
          */
         constexpr Collection_Factory ();
@@ -77,7 +77,7 @@ namespace Stroika::Foundation::Containers::Factory {
 
     public:
         /**
-         *  Register a default global factory for Collection objects (of the templated type/parameters).
+         *  Register a default global factory for ConstructedType objects (of the templated type/parameters).
          *  No need to call, typically, as the default factory is generally fine.
          * 
          *  \par Example Usage

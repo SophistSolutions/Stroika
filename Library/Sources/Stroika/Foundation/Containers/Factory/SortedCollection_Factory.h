@@ -52,7 +52,7 @@ namespace Stroika::Foundation::Containers::Factory {
 
     public:
         /**
-         *  Construct a factory for producing new SortedCollection<T>s. The default is to use whatever was registered with 
+         *  Construct a factory for producing new ConstructedType objects. The default is to use whatever was registered with 
          *  SortedCollection_Factory::Register (), but a specific factory can easily be constructed with provided arguments.
          */
         constexpr SortedCollection_Factory ();

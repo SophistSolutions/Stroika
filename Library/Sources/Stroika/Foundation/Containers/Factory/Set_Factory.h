@@ -51,7 +51,7 @@ namespace Stroika::Foundation::Containers::Factory {
 
     public:
         /**
-         *  Construct a factory for producing new Sets. The default is to use whatever was registered with 
+         *  Construct a factory for producing new ConstructedType objects. The default is to use whatever was registered with 
          *  Set_Factory::Register (), but a specific factory can easily be constructed with provided arguments.
          */
         constexpr Set_Factory ();
