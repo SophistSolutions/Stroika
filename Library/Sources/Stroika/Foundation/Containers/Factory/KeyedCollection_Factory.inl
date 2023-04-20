@@ -11,7 +11,7 @@
 #ifndef _Stroika_Foundation_Containers_Concrete_KeyedCollection_Factory_inl_
 #define _Stroika_Foundation_Containers_Concrete_KeyedCollection_Factory_inl_
 
-#include "../Concrete/KeyedCollection_LinkedList.h"
+#include "../Concrete/KeyedCollection_Array.h"
 #include "../Concrete/KeyedCollection_stdset.h"
 
 namespace Stroika::Foundation::Containers::Factory {
@@ -45,11 +45,11 @@ namespace Stroika::Foundation::Containers::Factory {
                  *  efficeint representation which adds no requirements to KEY_TYPE, such as operator< (or a traits less) or
                  *  a hash function. And its quite reasonable for small KeyedCollection's - which are often the case.
                  *
-                 *  Calls may use an explicit initializer of KeyedCollection_xxx<> to get better performance for large sized
-                 *  maps.
+                 *  Note, array CAN be slower than LinkedList as the size grows (array faster when small due to better locality).
+                 *  But the whole thing bogs down no matter what, when larger, cuz you really need some indexed data structure like a tree.
                  */
                 return [] (const KEY_EXTRACTOR& keyExtractor, const KEY_EQUALS_COMPARER& keyComparer) {
-                    return Concrete::KeyedCollection_LinkedList<T, KEY_TYPE, TRAITS>{keyExtractor, keyComparer};
+                    return Concrete::KeyedCollection_Array<T, KEY_TYPE, TRAITS>{keyExtractor, keyComparer};
                 };
             }
         }()}

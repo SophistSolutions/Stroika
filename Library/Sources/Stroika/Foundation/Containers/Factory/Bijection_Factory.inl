@@ -34,6 +34,7 @@ namespace Stroika::Foundation::Containers::Factory {
     constexpr Bijection_Factory<DOMAIN_TYPE, RANGE_TYPE, DOMAIN_EQUALS_COMPARER, RANGE_EQUALS_COMPARER>::Bijection_Factory ([[maybe_unused]] const Hints& hints)
         : Bijection_Factory{[hints] () -> FactoryFunctionType {
             // @todo add more backends, and pay attention to hints
+            // especially easy to add Bijection_Array, and probably strictly better - since add needs to effectively walk whole list to see if new or update.
             return [] (DataExchange::ValidationStrategy injectivityCheckPolicy, const DOMAIN_EQUALS_COMPARER& domainEqualsComparer,
                        const RANGE_EQUALS_COMPARER& rangeEqualsComparer) {
                 return Concrete::Bijection_LinkedList<DOMAIN_TYPE, RANGE_TYPE>{injectivityCheckPolicy, domainEqualsComparer, rangeEqualsComparer};

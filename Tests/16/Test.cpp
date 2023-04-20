@@ -9,6 +9,7 @@
 #include <sstream>
 #include <typeindex>
 
+#include "Stroika/Foundation/Containers/Concrete/KeyedCollection_Array.h"
 #include "Stroika/Foundation/Containers/Concrete/KeyedCollection_LinkedList.h"
 #include "Stroika/Foundation/Containers/Concrete/KeyedCollection_stdset.h"
 #include "Stroika/Foundation/Containers/KeyedCollection.h"
@@ -57,6 +58,8 @@ namespace {
                 [] () { return KeyedCollection<T1, int, T1_Traits>{[] (T1 e) { return e.key; }}; }, [] (auto) {});
             CommonTests::KeyedCollectionTests::SimpleKeyedCollectionTest_TestBasics ([] () { return KeyedCollection<T1, int, T1_Traits>{}; },
                                                                                      [] (auto) {});
+            CommonTests::KeyedCollectionTests::SimpleKeyedCollectionTest_TestBasics (
+                [] () { return Concrete::KeyedCollection_Array<T1, int>{[] (T1 e) { return e.key; }}; }, [] (auto) {});
             CommonTests::KeyedCollectionTests::SimpleKeyedCollectionTest_TestBasics (
                 [] () { return Concrete::KeyedCollection_LinkedList<T1, int>{[] (T1 e) { return e.key; }}; }, [] (auto) {});
             CommonTests::KeyedCollectionTests::SimpleKeyedCollectionTest_TestBasics (

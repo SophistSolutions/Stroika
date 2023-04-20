@@ -2130,6 +2130,9 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Set_Array.h">
       <Filter>Sources\Containers\Concrete</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\KeyedCollection_Array.h">
+      <Filter>Sources\Containers\Concrete</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\StackBuffer.inl">
@@ -3506,6 +3509,9 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Factory\ReadMe.md">
       <Filter>Sources\Containers\Factory</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\KeyedCollection_Array.inl">
+      <Filter>Sources\Containers\Concrete</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
