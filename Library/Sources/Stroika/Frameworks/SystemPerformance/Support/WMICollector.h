@@ -39,7 +39,7 @@
  *
  *      @todo   Consider if we should support multiple objects at a time.
  *
- *      @todo   Consider use of Atom manager for tokens - as would be more efficeint than strings.
+ *      @todo   Consider use of Atom manager for tokens - as would be more efficient than strings.
  *              Would be a good place to expierment with private 'scoped' context for atom values.
  *
  *      @todo   Consider implementation based on COM calls, since Sterl believes those maybe

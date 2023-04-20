@@ -406,7 +406,7 @@ optional<String> Headers::LookupOne (const String& name) const
         return fVary_ ? String::Join (*fVary_) : optional<String>{};
     }
     else {
-        // should switch to new non-existent class Assocation here - and use that...more efficeint -
+        // should switch to new non-existent class Assocation here - and use that...more efficient -
         if (auto ri = fExtraHeaders_.Find ([&] (const auto& i) { return kHeaderNameEqualsComparer (name, i.fKey); })) {
             return ri->fValue;
         }
@@ -434,7 +434,7 @@ Collection<String> Headers::LookupAll (const String& name) const
     }
     else {
         Collection<String> result;
-        // should switch to new non-existent class Assocation here - and use that...more efficeint -
+        // should switch to new non-existent class Assocation here - and use that...more efficient -
         if (auto ri = fExtraHeaders_.Find ([&] (const auto& i) { return kHeaderNameEqualsComparer (name, i.fKey); })) {
             result += ri->fValue;
         }

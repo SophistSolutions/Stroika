@@ -64,7 +64,7 @@ namespace Stroika::Foundation::Traversal {
      *      \endcode
      *
      *      Note _Rep is an abstract class, and you MUST provide your own Clone () method, and often will
-     *  want to override to provide a more efficeint empty () and size () implementation.
+     *  want to override to provide a more efficient empty () and size () implementation.
      *
      *  @see MakeIterableFromIterator
      *

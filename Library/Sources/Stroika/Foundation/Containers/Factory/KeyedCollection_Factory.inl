@@ -42,7 +42,7 @@ namespace Stroika::Foundation::Containers::Factory {
             else {
                 /*
                  *  Note - though this is not an efficient implementation of KeyedCollection<> for large sizes, its probably the most
-                 *  efficeint representation which adds no requirements to KEY_TYPE, such as operator< (or a traits less) or
+                 *  efficient representation which adds no requirements to KEY_TYPE, such as operator< (or a traits less) or
                  *  a hash function. And its quite reasonable for small KeyedCollection's - which are often the case.
                  *
                  *  Note, array CAN be slower than LinkedList as the size grows (array faster when small due to better locality).

@@ -1573,7 +1573,7 @@ void TextImager::DrawInterLineSpace (DistanceType interlineSpace, Tablet* tablet
     and @'TextImager::RemoveMappedDisplayCharacters' () methods to get called.</p>
         <p>Note also that this function takes an array of characters as a performance optimization (so it doesn't need to
     be called too many times, and to avoid copying buffers when nothing need be done). It could have been more logically
-    (though less efficeintly) implemented as bool IsMappedDisplayCharacter (Led_tChar).</p>
+    (though less efficiently) implemented as bool IsMappedDisplayCharacter (Led_tChar).</p>
         <p>If you OVERRIDE this - you may find it handy to call @'TextImager::ContainsMappedDisplayCharacters_HelperForChar'
     to do most of the work.</p>
 */

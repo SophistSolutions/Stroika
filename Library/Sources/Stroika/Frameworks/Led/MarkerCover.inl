@@ -87,7 +87,7 @@ namespace Stroika::Frameworks::Led {
         /*
          *  Walk through all the markers in existence (in this range), and throw away all
          *  but our standard style markers.
-         *  This is an inefficeint approach. It would be far
+         *  This is an inefficient approach. It would be far
          *  faster to keep a linked, or doubly linked list of all these guys.
          *  But this approach saves a bit of memory, and til we see this as a problem, lets just
          *  live with it.

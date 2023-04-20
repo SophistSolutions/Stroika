@@ -129,7 +129,7 @@ namespace Stroika::Foundation::Containers {
      *      specification. Stroustrup like class param with somehow defaulting
      *      to op==????
      *
-     *  ->  Add SetLength() method. Make sure it is optimally efficeint, but try
+     *  ->  Add SetLength() method. Make sure it is optimally efficient, but try
      *      to avoid introducing a virtual function. Probably overload, and 1 arg
      *      version will use T default CTOR. If done nonvirtually with templates
      *      then we only require no arg CTOR when this function called - GOOD.

@@ -13,7 +13,7 @@ using namespace Stroika::Frameworks;
 using namespace Stroika::Frameworks::Led;
 
 // Debug later why this doesn't work. Actually - I think I'm still going to do a lot more
-// on the invarients with hackmarkers, so I can more efficeintly add and remove them!
+// on the invarients with hackmarkers, so I can more efficiently add and remove them!
 // This should be fine as-is for the 1.0 release however - LGP950527
 #if qDebug
 //#define   qHeavyMarkerDebugging       1

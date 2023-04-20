@@ -2117,7 +2117,7 @@ especially those they need to be aware of when upgrading.
     - SharedByValue
       - added new AssureNOrFewerReferences and GetAndMaybeCopySavingOriginal member functions
       - revised/new rwget (); and deprecated CONST overload of get (use cget)
-      - SharedByValue_CopyByDefault more efficeint for common case of shared_ptr - use make_shared
+      - SharedByValue_CopyByDefault more efficient for common case of shared_ptr - use make_shared
       - lots of cleanups to SharedByValue, including performance improvements. SOMEWHAT risky - losing SharedByValue_CopySharedPtrExternallySynchronized abstraction
     - changed timing threshold on new shared_ptr performance regtest (with make_shared); but more importantly, now switched kSharedPtr_IsFasterThan_shared_ptr to always false - so we really don't need SharedPtr anymore (though may keep around for a little bit)
     - BlockAllocation

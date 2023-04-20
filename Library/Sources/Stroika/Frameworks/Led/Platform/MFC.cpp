@@ -112,7 +112,7 @@ bool Led_MFCReaderDAndDFlavorPackage::GetFlavorAvailable (Led_ClipFormat clipFor
 
 size_t Led_MFCReaderDAndDFlavorPackage::GetFlavorSize (Led_ClipFormat clipFormat) const
 {
-    // is there some more efficeint way todo this? - LGP 960410
+    // is there some more efficient way todo this? - LGP 960410
     HGLOBAL hObj = fDataObject->GetGlobalData (clipFormat);
     if (hObj == NULL) {
         // Some D&D sources - e.g. "Character Map" application on WinXP - return NULL for GetGlobalData()

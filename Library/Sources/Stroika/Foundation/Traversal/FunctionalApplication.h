@@ -46,7 +46,7 @@
  *
  *      @todo   DOCUMENT/think through the design choice if Map, and Filter etc - MUST return
  *              items IN-ORDER. By allowing them to return stuff out of order, they CAN
- *              by implemented much more efficeintly. Probaly have two functions - Map and Map_UO
+ *              by implemented much more efficiently. Probaly have two functions - Map and Map_UO
  *              where they do the same thing but Map_UO is not necessarily ordreed.
  *
  *      @todo   NOTE that DirectPushMapEngine is bad, and we want a pull-based one ASAP.

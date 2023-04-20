@@ -228,7 +228,7 @@ public:
          *
          *  Between the 'telldir' before each read, and re-seek approaches, the former adds overhead even when not cloning
          *  iterators, and the later only when you use the feature. Moreover, the seek-to-start and keep looking
-         *  for telldir() approach probably works out efficeintly, as the most likely time to Clone () an iterator is
+         *  for telldir() approach probably works out efficiently, as the most likely time to Clone () an iterator is
          *  when it is 'at start' anyhow (DirectoryIterable). So we'll start with that...
          *          -- LGP 2014-07-10
          *

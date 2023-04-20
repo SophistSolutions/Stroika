@@ -110,7 +110,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
     namespace Private_ {
         inline void TrimTrailingZeros_ (String* strResult)
         {
-            // @todo THIS could be more efficeint. We should KNOW case of the 'e' and maybe able to tell/avoid looking based on args to String2Float
+            // @todo THIS could be more efficient. We should KNOW case of the 'e' and maybe able to tell/avoid looking based on args to String2Float
             RequireNotNull (strResult);
             // strip trailing zeros - except for the last first one after the decimal point.
             // And don't do if ends with exponential notation e+40 shouldnt get shortned to e+4!

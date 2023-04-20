@@ -169,7 +169,7 @@ Memory::BLOB InputStream<byte>::Ptr::ReadAll (size_t upTo) const
         else {
             // @todo???
             //      could also maintain linked list - std::list<> - of BLOBs, and then construct BLOB from
-            //      list of BLOBs - that would be quite efficeint too - maybe more
+            //      list of BLOBs - that would be quite efficient too - maybe more
             Containers::Support::ReserveTweaks::GetScaledUpCapacity4AddN (r, n, 32 * 1024); // grow exponentially, so not too many reallocs
             Assert (n <= nEltsLeft);
             nEltsLeft -= n;

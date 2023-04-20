@@ -179,7 +179,7 @@ namespace Stroika::Foundation::Execution {
      *          changes.
      *
      *          Alternatively, users may interrupt Execution::WaitForIOReady portably using 
-     *          Thread::Interrupt () (which is what Stroika generally did until v2.1a5) - but this is less efficeint, and generates
+     *          Thread::Interrupt () (which is what Stroika generally did until v2.1a5) - but this is less efficient, and generates
      *          lots of log noise (dbgtrace). Also, interreupt means if there were real answers mixed with 
      *          non-nanswer we would miss the real ansers and this way captures them too)
      *

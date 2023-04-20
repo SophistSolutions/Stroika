@@ -294,7 +294,7 @@ namespace Stroika::Foundation::Traversal {
          *  |                                        F                                 |
          */
         // note: GetLowerBound () and GetUpperBound () do assert !empty (), so must access fBegin/fEnd directly
-        // since probably more efficeint to check past end cases before checking empty cases
+        // since probably more efficient to check past end cases before checking empty cases
         if (rhs.fEnd_ < fBegin_) {
             Assert (oldCode (rhs) == false);
             return false; // the entirety of rhs is strictly BEFORE lhs (see case A)
