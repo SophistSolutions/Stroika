@@ -11,9 +11,7 @@
 #include "Association.h"
 
 /**
- *
  *  \version    <a href="Code-Status.md#Beta">Beta</a>
- *
  */
 
 namespace Stroika::Foundation::Containers {

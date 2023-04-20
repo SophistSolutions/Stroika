@@ -21,37 +21,42 @@ namespace Stroika::Foundation::Containers::Factory {
      ********************************************************************************
      */
     template <typename T, typename INORDER_COMPARER>
-    constexpr SortedCollection_Factory<T, INORDER_COMPARER>::SortedCollection_Factory (const INORDER_COMPARER& inorderComparer, const Hints& hints)
-        : fInorderComparer_{inorderComparer}
-        , fHints_{hints}
+    constexpr SortedCollection_Factory<T, INORDER_COMPARER>::SortedCollection_Factory (const FactoryFunctionType& f)
+        : fFactory_{f}
     {
     }
     template <typename T, typename INORDER_COMPARER>
-    inline SortedCollection<T> SortedCollection_Factory<T, INORDER_COMPARER>::operator() () const
+    constexpr SortedCollection_Factory<T, INORDER_COMPARER>::SortedCollection_Factory ()
+        : SortedCollection_Factory{AccessDefault_ ()}
     {
-        /*
-         *  Would have been more performant to just and assure always properly set, but to initialize
-         *  sFactory_ with a value other than nullptr requires waiting until after main() - so causes problems
-         *  with containers constructed before main.
-         *
-         *  This works more generally (and with hopefully modest enough performance impact).
-         */
-        if (auto f = sFactory_.load ()) {
-            return f (fInorderComparer_);
-        }
-        else {
-            return Default_ (fInorderComparer_);
-        }
     }
     template <typename T, typename INORDER_COMPARER>
-    void SortedCollection_Factory<T, INORDER_COMPARER>::Register (SortedCollection<T> (*factory) (const INORDER_COMPARER&))
+    constexpr SortedCollection_Factory<T, INORDER_COMPARER>::SortedCollection_Factory ([[maybe_unused]] const Hints& hints)
+        : SortedCollection_Factory{[hints] () -> FactoryFunctionType {
+            return [] (const INORDER_COMPARER& inorderComparer) { return Concrete::SortedCollection_stdmultiset<T>{inorderComparer}; };
+        }()}
     {
-        sFactory_ = factory;
     }
     template <typename T, typename INORDER_COMPARER>
-    inline SortedCollection<T> SortedCollection_Factory<T, INORDER_COMPARER>::Default_ (const INORDER_COMPARER& inorderComparer)
+    inline auto SortedCollection_Factory<T, INORDER_COMPARER>::Default () -> const SortedCollection_Factory&
     {
-        return Concrete::SortedCollection_stdmultiset<T>{inorderComparer};
+        return AccessDefault_ ();
+    }
+    template <typename T, typename INORDER_COMPARER>
+    inline auto SortedCollection_Factory<T, INORDER_COMPARER>::operator() (const INORDER_COMPARER& inorderComparer) const -> ConstructedType
+    {
+        return this->fFactory_ (inorderComparer);
+    }
+    template <typename T, typename INORDER_COMPARER>
+    void SortedCollection_Factory<T, INORDER_COMPARER>::Register (const optional<SortedCollection_Factory>& f)
+    {
+        AccessDefault_ () = f.has_value () ? *f : SortedCollection_Factory{Hints{}};
+    }
+    template <typename T, typename INORDER_COMPARER>
+    inline auto SortedCollection_Factory<T, INORDER_COMPARER>::AccessDefault_ () -> SortedCollection_Factory&
+    {
+        static SortedCollection_Factory sDefault_{Hints{}};
+        return sDefault_;
     }
 
 }

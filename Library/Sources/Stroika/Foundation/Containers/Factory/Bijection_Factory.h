@@ -6,7 +6,6 @@
 
 #include "../../StroikaPreComp.h"
 
-#include <atomic>
 #include <type_traits>
 
 /**

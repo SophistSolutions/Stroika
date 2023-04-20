@@ -6,8 +6,6 @@
 
 #include "../../StroikaPreComp.h"
 
-#include <atomic>
-
 /**
  *  \file
  */
@@ -22,8 +20,7 @@ namespace Stroika::Foundation::Containers::Factory {
     /**
      *  \brief   Singleton factory object - Used to create the default backend implementation of a Sequence<> container; typically not called directly
      *
-     *  Note - you can override the underlying factory dynamically by calling Sequence_Factory<T,TRAITS>::Register (), or
-     *  replace it statically by template-specializing Sequence_Factory<T,TRAITS>::New () - though the later is trickier.
+     *  Note - you can override the underlying factory dynamically by calling Sequence_Factory<T,TRAITS>::Register ().
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      */

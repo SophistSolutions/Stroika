@@ -21,41 +21,46 @@ namespace Stroika::Foundation::Containers::Factory {
      ********************************************************************************
      */
     template <typename KEY_TYPE, typename VALUE_TYPE, typename KEY_INORDER_COMPARER>
-    constexpr SortedAssociation_Factory<KEY_TYPE, VALUE_TYPE, KEY_INORDER_COMPARER>::SortedAssociation_Factory (const KEY_INORDER_COMPARER& keyInOrderComparer,
-                                                                                                                const Hints& hints)
-        : fInOrderComparer_{keyInOrderComparer}
-        , fHints_{hints}
+    constexpr SortedAssociation_Factory<KEY_TYPE, VALUE_TYPE, KEY_INORDER_COMPARER>::SortedAssociation_Factory (const FactoryFunctionType& f)
+        : fFactory_{f}
     {
     }
     template <typename KEY_TYPE, typename VALUE_TYPE, typename KEY_INORDER_COMPARER>
-    inline SortedAssociation<KEY_TYPE, VALUE_TYPE> SortedAssociation_Factory<KEY_TYPE, VALUE_TYPE, KEY_INORDER_COMPARER>::operator() () const
+    constexpr SortedAssociation_Factory<KEY_TYPE, VALUE_TYPE, KEY_INORDER_COMPARER>::SortedAssociation_Factory ()
+        : SortedAssociation_Factory{AccessDefault_ ()}
     {
-        /*
-         *  Would have been more performant to just and assure always properly set, but to initialize
-         *  sFactory_ with a value other than nullptr requires waiting until after main() - so causes problems
-         *  with containers constructed before main.
-         *
-         *  This works more generally (and with hopefully modest enough performance impact).
-         */
-        if (auto f = sFactory_.load ()) {
-            return f (fInOrderComparer_);
-        }
-        else {
-            return Default_ (fInOrderComparer_);
-        }
     }
     template <typename KEY_TYPE, typename VALUE_TYPE, typename KEY_INORDER_COMPARER>
-    void SortedAssociation_Factory<KEY_TYPE, VALUE_TYPE, KEY_INORDER_COMPARER>::Register (SortedAssociation<KEY_TYPE, VALUE_TYPE> (*factory) (const KEY_INORDER_COMPARER&))
+    constexpr SortedAssociation_Factory<KEY_TYPE, VALUE_TYPE, KEY_INORDER_COMPARER>::SortedAssociation_Factory ([[maybe_unused]] const Hints& hints)
+        : SortedAssociation_Factory{[hints] () -> FactoryFunctionType {
+            return [] (const KEY_INORDER_COMPARER& keyInOrderComparer) {
+                return Concrete::SortedAssociation_stdmultimap<KEY_TYPE, VALUE_TYPE>{keyInOrderComparer};
+            };
+        }()}
     {
-        sFactory_ = factory;
     }
     template <typename KEY_TYPE, typename VALUE_TYPE, typename KEY_INORDER_COMPARER>
-    inline SortedAssociation<KEY_TYPE, VALUE_TYPE>
-    SortedAssociation_Factory<KEY_TYPE, VALUE_TYPE, KEY_INORDER_COMPARER>::Default_ (const KEY_INORDER_COMPARER& inOrderComparer)
+    inline auto SortedAssociation_Factory<KEY_TYPE, VALUE_TYPE, KEY_INORDER_COMPARER>::Default () -> const SortedAssociation_Factory&
     {
-        return Concrete::SortedAssociation_stdmultimap<KEY_TYPE, VALUE_TYPE>{inOrderComparer};
+        return AccessDefault_ ();
     }
-
+    template <typename KEY_TYPE, typename VALUE_TYPE, typename KEY_INORDER_COMPARER>
+    inline auto SortedAssociation_Factory<KEY_TYPE, VALUE_TYPE, KEY_INORDER_COMPARER>::operator() (const KEY_INORDER_COMPARER& keyInOrderComparer) const
+        -> ConstructedType
+    {
+        return this->fFactory_ (keyInOrderComparer);
+    }
+    template <typename KEY_TYPE, typename VALUE_TYPE, typename KEY_INORDER_COMPARER>
+    void SortedAssociation_Factory<KEY_TYPE, VALUE_TYPE, KEY_INORDER_COMPARER>::Register (const optional<SortedAssociation_Factory>& f)
+    {
+        AccessDefault_ () = f.has_value () ? *f : SortedAssociation_Factory{Hints{}};
+    }
+    template <typename KEY_TYPE, typename VALUE_TYPE, typename KEY_INORDER_COMPARER>
+    inline auto SortedAssociation_Factory<KEY_TYPE, VALUE_TYPE, KEY_INORDER_COMPARER>::AccessDefault_ () -> SortedAssociation_Factory&
+    {
+        static SortedAssociation_Factory sDefault_{Hints{}};
+        return sDefault_;
+    }
 }
 
 #endif /* _Stroika_Foundation_Containers_Concrete_SortedAssociation_Factory_inl_ */

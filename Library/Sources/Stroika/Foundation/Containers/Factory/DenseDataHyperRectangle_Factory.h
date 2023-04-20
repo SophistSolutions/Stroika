@@ -6,8 +6,6 @@
 
 #include "../../StroikaPreComp.h"
 
-#include <atomic>
-
 /**
  *  \file
  */

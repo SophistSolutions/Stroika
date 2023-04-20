@@ -6,8 +6,6 @@
 
 #include "../../StroikaPreComp.h"
 
-#include <atomic>
-
 /**
  *  \file
  */
@@ -48,8 +46,7 @@ namespace Stroika::Foundation::Containers::Factory {
         /**
          *  Hints can be used in factory constructor to guide the choice of the best container implementation/backend.
          */
-        struct Hints {
-        };
+        struct Hints {};
 
     public:
         /**
