@@ -32,7 +32,7 @@ namespace Stroika::Foundation::Containers::Factory {
     }
     template <typename T>
     constexpr Sequence_Factory<T>::Sequence_Factory ([[maybe_unused]] const Hints& hints)
-        : Sequence_Factory{[hints] () -> FactoryFunctionType {
+        : Sequence_Factory{[] () -> FactoryFunctionType {
             // Sequence_Array not always the best. Linked list can perform better for some uses,
             // but not clear how best to characterize them in hints --LGP 2023-04-19
             return [] () { return Concrete::Sequence_Array<T>{}; };
