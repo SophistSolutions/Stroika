@@ -1,5 +1,5 @@
 /*
- * Copyright(c) Sophist Solutions, Inc. 1990-2016.  All rights reserved
+ * Copyright(c) Sophist Solutions, Inc. 1990-2022.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Containers_SortedKeyedCollection_inl_
 #define _Stroika_Foundation_Containers_SortedKeyedCollection_inl_
@@ -27,8 +27,8 @@ namespace Stroika::Foundation::Containers {
     template <typename KEY_EXTRACTOR, typename KEY_INORDER_COMPARER,
               enable_if_t<Common::IsStrictInOrderComparer<KEY_INORDER_COMPARER, KEY_TYPE> () and KeyedCollection_IsKeyExctractor<T, KEY_TYPE, KEY_EXTRACTOR> ()>*>
     SortedKeyedCollection<T, KEY_TYPE, TRAITS>::SortedKeyedCollection (KEY_EXTRACTOR&& keyExtractor, KEY_INORDER_COMPARER&& keyComparer)
-        : inherited (Factory::SortedKeyedCollection_Factory<T, KEY_TYPE, TRAITS, KEY_EXTRACTOR, decay_t<KEY_INORDER_COMPARER>>{
-              forward<KEY_EXTRACTOR> (keyExtractor), forward<KEY_INORDER_COMPARER> (keyComparer)}())
+        : inherited (Factory::SortedKeyedCollection_Factory<T, KEY_TYPE, TRAITS, KEY_EXTRACTOR, decay_t<KEY_INORDER_COMPARER>>::Default () (
+              forward<KEY_EXTRACTOR> (keyExtractor), forward<KEY_INORDER_COMPARER> (keyComparer)))
     {
         _AssertRepValidType ();
     }

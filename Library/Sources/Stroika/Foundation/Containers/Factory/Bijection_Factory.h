@@ -42,12 +42,13 @@ namespace Stroika::Foundation::Containers::Factory {
 
     public:
         /**
+         *  The type of object produced by the factory.
          */
         using ConstructedType = Bijection<DOMAIN_TYPE, RANGE_TYPE>;
 
     public:
         /**
-         *  Function type to create an Association object.
+         *  Function type to create an ConstructedType object.
          */
         using FactoryFunctionType =
             function<ConstructedType (DataExchange::ValidationStrategy injectivityCheckPolicy,

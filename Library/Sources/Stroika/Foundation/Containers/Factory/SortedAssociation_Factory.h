@@ -33,12 +33,13 @@ namespace Stroika::Foundation::Containers::Factory {
 
     public:
         /**
+         *  The type of object produced by the factory.
          */
         using ConstructedType = SortedAssociation<KEY_TYPE, VALUE_TYPE>;
 
     public:
         /**
-         *  Function type to create an SortedAssociation object.
+         *  Function type to create an ConstructedType object.
          */
         using FactoryFunctionType = function<ConstructedType (const KEY_INORDER_COMPARER& keyInOrderComparer)>;
 
@@ -69,7 +70,7 @@ namespace Stroika::Foundation::Containers::Factory {
 
     public:
         /**
-         *  You can call this directly, but there is no need, as the Association<T,TRAITS> CTOR does so automatically.
+         *  You can call this directly, but there is no need, as the SortedAssociation<> CTOR does so automatically.
          */
         nonvirtual ConstructedType operator() (const KEY_INORDER_COMPARER& keyInOrderComparer = {}) const;
 

@@ -19,12 +19,15 @@ namespace Stroika::Foundation::Containers {
 
 namespace Stroika::Foundation::Containers::Factory {
 
+    /**
+     *  \brief   Singleton factory object - Used to create the default backend implementation of a Collection<> container; typically not called directly
+     *
+     *  Note - you can override the underlying factory dynamically by calling SortedKeyedCollection_Factory<T>::Register ().
+     *
+     *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
+     */
     template <typename T, typename KEY_TYPE, typename TRAITS, typename KEY_EXTRACTOR, typename KEY_INORDER_COMPARER = less<KEY_TYPE>>
     class SortedKeyedCollection_Factory {
-    private:
-        static inline atomic<SortedKeyedCollection<T, KEY_TYPE, TRAITS> (*) (const KEY_EXTRACTOR& keyExtractor, const KEY_INORDER_COMPARER& keyComparer)> sFactory_{
-            nullptr};
-
     public:
         static_assert (not is_reference_v<T> and not is_reference_v<KEY_TYPE> and not is_reference_v<KEY_EXTRACTOR> and not is_reference_v<KEY_INORDER_COMPARER>,
                        "typically if this fails its because a (possibly indirect) caller forgot to use forward<TTT>(), or remove_cvref_t");
@@ -33,34 +36,76 @@ namespace Stroika::Foundation::Containers::Factory {
 
     public:
         /**
+         *  The type of object produced by the factory.
+         */
+        using ConstructedType = SortedKeyedCollection<T, KEY_TYPE, TRAITS>;
+
+    public:
+        /**
+         *  Function type to create an ConstructedType object.
+         */
+        using FactoryFunctionType = function<ConstructedType (const KEY_EXTRACTOR& keyExtractor, const KEY_INORDER_COMPARER& keyComparer)>;
+
+    public:
+        /**
          *  Hints can be used in factory constructor to guide the choice of the best container implementation/backend.
          */
         struct Hints {};
 
     public:
-        constexpr SortedKeyedCollection_Factory (const KEY_EXTRACTOR& keyExtractor = {}, const KEY_INORDER_COMPARER& keyComparer = {},
-                                                 const Hints& hints = {});
+        /**
+         *  Construct a factory for producing new SortedKeyedCollections. The default is to use whatever was registered with 
+         *  SortedKeyedCollection_Factory::Register (), but a specific factory can easily be constructed with provided arguments.
+         */
+        constexpr SortedKeyedCollection_Factory ();
+        constexpr SortedKeyedCollection_Factory (const Hints& hints);
+        constexpr SortedKeyedCollection_Factory (const FactoryFunctionType& f);
+        constexpr SortedKeyedCollection_Factory (const SortedKeyedCollection_Factory&) = default;
 
     public:
         /**
-         *  You can call this directly, but there is no need, as the Mapping<T,TRAITS> CTOR does so automatically.
+         *  This can be called anytime, before main(), or after. BUT - beware, any calls to Register must
+         *  be externally synchronized, meaning effectively that they must happen before the creation of any
+         *  threads, to be safe. Also note, since this returns a const reference, any calls to Register() after
+         *  a call to Default, even if synchronized, is suspect.
          */
-        nonvirtual SortedKeyedCollection<T, KEY_TYPE, TRAITS> operator() () const;
+        static const SortedKeyedCollection_Factory& Default ();
 
     public:
         /**
-         *  Register a replacement creator/factory for the given Mapping<KEY_TYPE, VALUE_TYPE,TRAITS>. Note this is a global change.
+         *  You can call this directly, but there is no need, as the SortedKeyedCollection<> CTOR does so automatically.
          */
-        static void Register (SortedKeyedCollection<T, KEY_TYPE, TRAITS> (*factory) (const KEY_EXTRACTOR&        keyExtractor,
-                                                                                     const KEY_INORDER_COMPARER& keyComparer) = nullptr);
+        nonvirtual ConstructedType operator() (const KEY_EXTRACTOR& keyExtractor = {}, const KEY_INORDER_COMPARER& keyComparer = {}) const;
+
+    public:
+        /**
+         *  Register a default global factory for Collection objects (of the templated type/parameters).
+         *  No need to call, typically, as the default factory is generally fine.
+         * 
+         *  \par Example Usage
+         *      \code
+         *          SortedKeyedCollection_Factory::Register(SortedKeyedCollection_Factory{SortedKeyedCollection_Factory::Hints{.fOptimizeForLookupSpeedOverUpdateSpeed=true});
+         *          SortedKeyedCollection_Factory::Register();    // or use defaults
+         *      \endcode
+         *
+         *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
+         *          BUT - special note/restriction - must be called before any threads call Association_Factory::SortedKeyedCollection_Factory() OR
+         *          SortedKeyedCollection_Factory::Default(), which effectively means must be called at the start of main, but before creating any threads
+         *          which might use the factory).
+         * 
+         *  \NOTE this differs markedly from Stroika 2.1, where Register could be called anytime, and was internally synchronized.
+         * 
+         *  \note If you wanted a dynamically chanegable factory (change after main), you could write one yourself with its own internal syncrhonization,
+         *        set the global one here, then perform the changes to its internal structure through another API.
+         */
+        static void Register (const optional<SortedKeyedCollection_Factory>& f = nullopt);
 
     private:
-        [[no_unique_address]] const KEY_EXTRACTOR        fKeyExtractor_;
-        [[no_unique_address]] const KEY_INORDER_COMPARER fInOrderComparer_;
-        [[no_unique_address]] const Hints                fHints_;
+        FactoryFunctionType fFactory_;
 
     private:
-        static SortedKeyedCollection<T, KEY_TYPE, TRAITS> Default_ (const KEY_EXTRACTOR& keyExtractor, const KEY_INORDER_COMPARER& keyComparer);
+        // function to assure magically constructed even if called before main
+        static SortedKeyedCollection_Factory& AccessDefault_ ();
     };
 
 }

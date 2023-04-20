@@ -32,12 +32,13 @@ namespace Stroika::Foundation::Containers::Factory {
 
     public:
         /**
+         *  The type of object produced by the factory.
          */
         using ConstructedType = Collection<T>;
 
     public:
         /**
-         *  Function type to create an Collection object.
+         *  Function type to create an ConstructedType object.
          */
         using FactoryFunctionType = function<ConstructedType ()>;
 

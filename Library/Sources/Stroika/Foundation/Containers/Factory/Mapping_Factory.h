@@ -41,6 +41,7 @@ namespace Stroika::Foundation::Containers::Factory {
 
     public:
         /**
+         *  The type of object produced by the factory.
          */
         using ConstructedType = Mapping<KEY_TYPE, VALUE_TYPE>;
 

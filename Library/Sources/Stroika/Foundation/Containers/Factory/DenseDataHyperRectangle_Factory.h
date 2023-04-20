@@ -31,6 +31,7 @@ namespace Stroika::Foundation::Containers::Factory {
 
     public:
         /**
+         *  The type of object produced by the factory.
          */
         using ConstructedType = DenseDataHyperRectangle<T, INDEXES...>;
 

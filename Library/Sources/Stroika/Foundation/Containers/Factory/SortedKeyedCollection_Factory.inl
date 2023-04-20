@@ -21,43 +21,47 @@ namespace Stroika::Foundation::Containers::Factory {
      ********************************************************************************
      */
     template <typename T, typename KEY_TYPE, typename TRAITS, typename KEY_EXTRACTOR, typename KEY_INORDER_COMPARER>
-    constexpr SortedKeyedCollection_Factory<T, KEY_TYPE, TRAITS, KEY_EXTRACTOR, KEY_INORDER_COMPARER>::SortedKeyedCollection_Factory (
-        const KEY_EXTRACTOR& keyExtractor, const KEY_INORDER_COMPARER& keyComparer, const Hints& hints)
-        : fKeyExtractor_{keyExtractor}
-        , fInOrderComparer_{keyComparer}
-        , fHints_{hints}
+    constexpr SortedKeyedCollection_Factory<T, KEY_TYPE, TRAITS, KEY_EXTRACTOR, KEY_INORDER_COMPARER>::SortedKeyedCollection_Factory (const FactoryFunctionType& f)
+        : fFactory_{f}
     {
     }
     template <typename T, typename KEY_TYPE, typename TRAITS, typename KEY_EXTRACTOR, typename KEY_INORDER_COMPARER>
-    inline SortedKeyedCollection<T, KEY_TYPE, TRAITS>
-    SortedKeyedCollection_Factory<T, KEY_TYPE, TRAITS, KEY_EXTRACTOR, KEY_INORDER_COMPARER>::operator() () const
+    constexpr SortedKeyedCollection_Factory<T, KEY_TYPE, TRAITS, KEY_EXTRACTOR, KEY_INORDER_COMPARER>::SortedKeyedCollection_Factory ()
+        : SortedKeyedCollection_Factory{AccessDefault_ ()}
     {
-        /*
-         *  Would have been more performant to just and assure always properly set, but to initialize
-         *  sFactory_ with a value other than nullptr requires waiting until after main() - so causes problems
-         *  with containers constructed before main.
-         *
-         *  This works more generally (and with hopefully modest enough performance impact).
-         */
-        if (auto f = sFactory_.load ()) {
-            return f (fKeyExtractor_, fInOrderComparer_);
-        }
-        else {
-            return Default_ (fKeyExtractor_, fInOrderComparer_);
-        }
     }
     template <typename T, typename KEY_TYPE, typename TRAITS, typename KEY_EXTRACTOR, typename KEY_INORDER_COMPARER>
-    void SortedKeyedCollection_Factory<T, KEY_TYPE, TRAITS, KEY_EXTRACTOR, KEY_INORDER_COMPARER>::Register (
-        SortedKeyedCollection<T, KEY_TYPE, TRAITS> (*factory) (const KEY_EXTRACTOR& keyExtractor, const KEY_INORDER_COMPARER& keyComparer))
+    constexpr SortedKeyedCollection_Factory<T, KEY_TYPE, TRAITS, KEY_EXTRACTOR, KEY_INORDER_COMPARER>::SortedKeyedCollection_Factory ([[maybe_unused]] const Hints& hints)
+        : SortedKeyedCollection_Factory{[hints] () -> FactoryFunctionType {
+            return [] (const KEY_EXTRACTOR& keyExtractor, const KEY_INORDER_COMPARER& keyComparer) {
+                return Concrete::SortedKeyedCollection_stdset<T, KEY_TYPE, TRAITS>{keyExtractor, keyComparer};
+            };
+        }()}
     {
-        sFactory_ = factory;
     }
     template <typename T, typename KEY_TYPE, typename TRAITS, typename KEY_EXTRACTOR, typename KEY_INORDER_COMPARER>
-    inline SortedKeyedCollection<T, KEY_TYPE, TRAITS>
-    SortedKeyedCollection_Factory<T, KEY_TYPE, TRAITS, KEY_EXTRACTOR, KEY_INORDER_COMPARER>::Default_ (const KEY_EXTRACTOR& keyExtractor,
-                                                                                                       const KEY_INORDER_COMPARER& keyComparer)
+    inline auto SortedKeyedCollection_Factory<T, KEY_TYPE, TRAITS, KEY_EXTRACTOR, KEY_INORDER_COMPARER>::Default ()
+        -> const SortedKeyedCollection_Factory&
     {
-        return Concrete::SortedKeyedCollection_stdset<T, KEY_TYPE, TRAITS>{keyExtractor, keyComparer};
+        return AccessDefault_ ();
+    }
+    template <typename T, typename KEY_TYPE, typename TRAITS, typename KEY_EXTRACTOR, typename KEY_INORDER_COMPARER>
+    inline auto SortedKeyedCollection_Factory<T, KEY_TYPE, TRAITS, KEY_EXTRACTOR, KEY_INORDER_COMPARER>::operator() (
+        const KEY_EXTRACTOR& keyExtractor, const KEY_INORDER_COMPARER& keyComparer) const -> ConstructedType
+    {
+        return this->fFactory_ (keyExtractor, keyComparer);
+    }
+    template <typename T, typename KEY_TYPE, typename TRAITS, typename KEY_EXTRACTOR, typename KEY_INORDER_COMPARER>
+    void SortedKeyedCollection_Factory<T, KEY_TYPE, TRAITS, KEY_EXTRACTOR, KEY_INORDER_COMPARER>::Register (const optional<SortedKeyedCollection_Factory>& f)
+    {
+        AccessDefault_ () = f.has_value () ? *f : SortedKeyedCollection_Factory{Hints{}};
+    }
+    template <typename T, typename KEY_TYPE, typename TRAITS, typename KEY_EXTRACTOR, typename KEY_INORDER_COMPARER>
+    inline auto SortedKeyedCollection_Factory<T, KEY_TYPE, TRAITS, KEY_EXTRACTOR, KEY_INORDER_COMPARER>::AccessDefault_ ()
+        -> SortedKeyedCollection_Factory&
+    {
+        static SortedKeyedCollection_Factory sDefault_{Hints{}};
+        return sDefault_;
     }
 
 }

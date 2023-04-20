@@ -1,5 +1,5 @@
 /*
- * Copyright(c) Sophist Solutions, Inc. 1990-2016.  All rights reserved
+ * Copyright(c) Sophist Solutions, Inc. 1990-2022.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Cache_SynchronizedLRUCache_h_
 #define _Stroika_Foundation_Cache_SynchronizedLRUCache_h_ 1

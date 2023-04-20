@@ -34,12 +34,13 @@ namespace Stroika::Foundation::Containers::Factory {
 
     public:
         /**
+         *  The type of object produced by the factory.
          */
         using ConstructedType = KeyedCollection<T, KEY_TYPE, TRAITS>;
 
     public:
         /**
-         *  Function type to create an Collection object.
+         *  Function type to create an ConstructedType object.
          */
         using FactoryFunctionType = function<ConstructedType (const KEY_EXTRACTOR& keyExtractor, const KEY_EQUALS_COMPARER& keyComparer)>;
 
