@@ -16,8 +16,8 @@ Sequence<int> x = Concrete::Sequence_DoublyLinkedList<int>{};
 or change All sequeunce default constructors by replacing the factory
 
 ~~~
- Sequence_Factory<int>::Register([](){return Concrete::Sequence_DoubleLinkedList<int> ();});
- Sequence<int> x;  // now this is using Sequence_DoubleLinkedList<int>
+ Sequence_Factory<int>::Register([](){return Concrete::Sequence_DoublyLinkedList<int> ();});
+ Sequence<int> x;  // now this is using Sequence_DoublyLinkedList<int>
 ~~~
 
 
