@@ -83,8 +83,8 @@ namespace Stroika::Foundation::Containers::Concrete {
                                            [[maybe_unused]] Execution::SequencePolicy                      seq) const override
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
-            if (auto iLink = fData_.Find (that)) {
-                return Iterator<value_type>{make_unique<IteratorRep_> (&fData_, &fChangeCounts_, iLink)};
+            if (optional<size_t> i = fData_.Find (that)) {
+                return Iterator<value_type>{make_unique<IteratorRep_> (&fData_, &fChangeCounts_, *i)};
             }
             return nullptr;
         }
@@ -118,17 +118,17 @@ namespace Stroika::Foundation::Containers::Concrete {
         }
         virtual bool Lookup (ArgByValueType<value_type> item, optional<value_type>* oResult, Iterator<value_type>* iResult) const override
         {
-            Debug::AssertExternallySynchronizedMutex::ReadContext  readLock{fData_};
-            typename DataStructureImplType_::UnderlyingIteratorRep l =
-                fData_.Find ([this, item] (ArgByValueType<value_type> i) { return fEqualsComparer_ (i, item); });
-            bool notDone = l != fData_.size ();
-            if (oResult != nullptr and notDone) {
-                *oResult = fData_[l];
+            Debug::AssertExternallySynchronizedMutex::ReadContext readLock{fData_};
+            if (optional<size_t> l = fData_.Find ([this, item] (ArgByValueType<value_type> i) { return fEqualsComparer_ (i, item); })) {
+                if (oResult != nullptr) {
+                    *oResult = fData_[*l];
+                }
+                if (iResult != nullptr) {
+                    *iResult = Iterator<value_type>{make_unique<IteratorRep_> (&fData_, &fChangeCounts_, *l)};
+                }
+                return true;
             }
-            if (iResult != nullptr and notDone) {
-                *iResult = Iterator<value_type>{make_unique<IteratorRep_> (&fData_, &fChangeCounts_, l)};
-            }
-            return notDone;
+            return false;
         }
         virtual void Add (ArgByValueType<value_type> item) override
         {

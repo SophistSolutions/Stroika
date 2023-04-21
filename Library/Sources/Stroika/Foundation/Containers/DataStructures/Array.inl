@@ -158,7 +158,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     }
     template <typename T>
     template <typename FUNCTION>
-    inline size_t Array<T>::Find (FUNCTION&& doToElement) const
+    inline optional<size_t> Array<T>::Find (FUNCTION&& doToElement) const
     {
         Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
         const T*                                              start = &fItems_[0];
@@ -169,7 +169,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
                 return i - start;
             }
         }
-        return last - start;
+        return nullopt;
     }
     template <typename T>
     void Array<T>::reserve (size_t slotsAlloced)

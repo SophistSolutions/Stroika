@@ -19,10 +19,10 @@
  *
  *  Description:
  *
- *      Array<T> is a backend implementation. It is not intended to be directly
+ *      Array<T> is simple data structure implementation. It is not intended to be directly
  *  used by programmers, except in implementing concrete container reps.
  *
- *      Array<T> is a template which provides a dynamic array class. Elements
+ *      Array<T> is a template which provides a dynamic array class (very similar to std::vector). Elements
  *  of type T can be assigned, and accessed much like a normal array, except
  *  that when debug is on, accesses are range-checked.
  *
@@ -38,7 +38,7 @@
  *
  *  Notes:
  *
- *  C++/StandardC arrays and segmented architectures:
+ *  C++/StandardC arrays and segmented architectures: ((@todo DOCS OBSOLETE))
  *
  *      Our iterators use address arithmatic since that is faster than
  *  array indexing, but that requires care in the presence of patching,
@@ -74,6 +74,8 @@
  *              different impls...
  *
  *      @todo   Replace Contains() with Lookup () - as we did for LinkedList<T>
+ *              (IN FACT, Find (function) overload basically same thing - maybe have two find overloads - with function and comparer
+ *              but easily confusable, and redundant, but maybe useful for performance?)
  *
  *      @todo   Add RVALUE-REF (MOVE) stuff.
  *
@@ -198,6 +200,8 @@ namespace Stroika::Foundation::Containers::DataStructures {
         nonvirtual void RemoveAt (size_t index);
 
     public:
+        /**
+         */
         nonvirtual void RemoveAll ();
 
     public:
@@ -219,14 +223,17 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     public:
         /**
-         *  Return index of first place in the array matching. If returned value == size() means not found.
+         *  Return index of first place in the array matching, or nullopt if not found
          * 
          *  \note Complexity:
          *      Worst Case: O(N)
          *      Typical: O(N), but can be less if systematically finding entries near start of array
+         * 
+         *  \note in Stroika v2.1, this returned value == size() means not found, but now uses optional to make clearer
+         *        and more similar to LinkedList find ...
          */
         template <typename FUNCTION>
-        nonvirtual size_t Find (FUNCTION&& doToElement) const;
+        nonvirtual optional<size_t> Find (FUNCTION&& doToElement) const;
 
     public:
         /*

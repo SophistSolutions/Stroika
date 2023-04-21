@@ -79,11 +79,10 @@ namespace Stroika::Foundation::Containers::Concrete {
                                            [[maybe_unused]] Execution::SequencePolicy                      seq) const override
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
-            size_t                                                i = fData_.Find (that);
-            if (i == fData_.size ()) {
-                return nullptr;
+            if (optional<size_t> i = fData_.Find (that)) {
+                return Iterator<value_type>{make_unique<IteratorRep_> (&fData_, &fChangeCounts_, *i)};
             }
-            return Iterator<value_type>{make_unique<IteratorRep_> (&fData_, &fChangeCounts_, i)};
+            return nullptr;
         }
 
         // Sequence<T>::_IRep overrides

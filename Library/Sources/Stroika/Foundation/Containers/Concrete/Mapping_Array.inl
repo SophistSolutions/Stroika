@@ -91,11 +91,10 @@ namespace Stroika::Foundation::Containers::Concrete {
               const function<bool (ArgByValueType<value_type> item)>& that, [[maybe_unused]] Execution::SequencePolicy seq) const override
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
-            size_t                                                i = fData_.Find (that);
-            if (i == fData_.size ()) {
-                return nullptr;
+            if (optional<size_t> i = fData_.Find (that)) {
+                return Iterator<value_type>{make_unique<IteratorRep_> (&fData_, &fChangeCounts_, *i)};
             }
-            return Iterator<value_type>{make_unique<IteratorRep_> (&fData_, &fChangeCounts_, i)};
+            return nullptr;
         }
 
         // Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::_IRep overrides
