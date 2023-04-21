@@ -32,6 +32,7 @@ namespace Stroika::Foundation::Containers::Factory {
         : MultiSet_Factory{AccessDefault_ ()}
     {
     }
+    DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wunused-lambda-capture\"");
     template <typename T, typename TRAITS, typename EQUALS_COMPARER>
     constexpr MultiSet_Factory<T, TRAITS, EQUALS_COMPARER>::MultiSet_Factory ([[maybe_unused]] const Hints& hints)
         : MultiSet_Factory{[hints] () -> FactoryFunctionType {
@@ -50,6 +51,7 @@ namespace Stroika::Foundation::Containers::Factory {
         }()}
     {
     }
+    DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wunused-lambda-capture\"");
     template <typename T, typename TRAITS, typename EQUALS_COMPARER>
     inline auto MultiSet_Factory<T, TRAITS, EQUALS_COMPARER>::Default () -> const MultiSet_Factory&
     {

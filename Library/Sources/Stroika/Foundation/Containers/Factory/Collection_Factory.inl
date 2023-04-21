@@ -32,6 +32,7 @@ namespace Stroika::Foundation::Containers::Factory {
         : Collection_Factory{AccessDefault_ ()}
     {
     }
+    DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wunused-lambda-capture\"");
     template <typename T>
     constexpr Collection_Factory<T>::Collection_Factory ([[maybe_unused]] const Hints& hints)
         : Collection_Factory{[hints] () -> FactoryFunctionType {
@@ -53,6 +54,7 @@ namespace Stroika::Foundation::Containers::Factory {
         }()}
     {
     }
+    DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wunused-lambda-capture\"");
     template <typename T>
     inline auto Collection_Factory<T>::Default () -> const Collection_Factory&
     {

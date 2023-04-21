@@ -37,7 +37,7 @@ namespace Stroika::Foundation::Containers::Factory {
     }
     template <typename T, typename... INDEXES>
     constexpr DenseDataHyperRectangle_Factory<T, INDEXES...>::DenseDataHyperRectangle_Factory ([[maybe_unused]] const Hints& hints)
-        : DenseDataHyperRectangle_Factory{[hints] () -> FactoryFunctionType {
+        : DenseDataHyperRectangle_Factory{[] () -> FactoryFunctionType {
             return [] (INDEXES... dimensions) {
                 return Concrete::DenseDataHyperRectangle_Vector<T, INDEXES...>{forward<INDEXES> (dimensions)...};
             };

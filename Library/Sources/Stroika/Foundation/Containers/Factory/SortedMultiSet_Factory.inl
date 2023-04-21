@@ -32,7 +32,7 @@ namespace Stroika::Foundation::Containers::Factory {
     }
     template <typename T, typename TRAITS, typename INORDER_COMPARER>
     constexpr SortedMultiSet_Factory<T, TRAITS, INORDER_COMPARER>::SortedMultiSet_Factory ([[maybe_unused]] const Hints& hints)
-        : SortedMultiSet_Factory{[hints] () -> FactoryFunctionType {
+        : SortedMultiSet_Factory{[] () -> FactoryFunctionType {
             return [] (const INORDER_COMPARER& inOrderComparer) { return Concrete::SortedMultiSet_stdmap<T, TRAITS>{inOrderComparer}; };
         }()}
     {

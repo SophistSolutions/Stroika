@@ -32,7 +32,7 @@ namespace Stroika::Foundation::Containers::Factory {
     }
     template <typename T>
     constexpr Deque_Factory<T>::Deque_Factory ([[maybe_unused]] const Hints& hints)
-        : Deque_Factory{[hints] () -> FactoryFunctionType {
+        : Deque_Factory{[] () -> FactoryFunctionType {
             // @todo some alternatives
             return [] () { return Concrete::Deque_DoublyLinkedList<T>{}; };
         }()}

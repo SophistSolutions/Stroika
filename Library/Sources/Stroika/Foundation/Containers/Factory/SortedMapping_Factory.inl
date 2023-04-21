@@ -32,7 +32,7 @@ namespace Stroika::Foundation::Containers::Factory {
     }
     template <typename KEY_TYPE, typename VALUE_TYPE, typename KEY_INORDER_COMPARER>
     constexpr SortedMapping_Factory<KEY_TYPE, VALUE_TYPE, KEY_INORDER_COMPARER>::SortedMapping_Factory ([[maybe_unused]] const Hints& hints)
-        : SortedMapping_Factory{[hints] () -> FactoryFunctionType {
+        : SortedMapping_Factory{[] () -> FactoryFunctionType {
             return [] (const KEY_INORDER_COMPARER& inOrderComparer) {
                 return Concrete::SortedMapping_stdmap<KEY_TYPE, VALUE_TYPE>{inOrderComparer};
             };

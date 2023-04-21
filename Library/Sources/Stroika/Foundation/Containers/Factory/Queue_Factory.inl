@@ -32,7 +32,7 @@ namespace Stroika::Foundation::Containers::Factory {
     }
     template <typename T>
     constexpr Queue_Factory<T>::Queue_Factory ([[maybe_unused]] const Hints& hints)
-        : Queue_Factory{[hints] () -> FactoryFunctionType {
+        : Queue_Factory{[] () -> FactoryFunctionType {
             // @todo could use array impl due to better locality
             return [] () { return Concrete::Queue_DoublyLinkedList<T>{}; };
         }()}

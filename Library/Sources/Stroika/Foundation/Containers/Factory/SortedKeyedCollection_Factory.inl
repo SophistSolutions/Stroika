@@ -32,7 +32,7 @@ namespace Stroika::Foundation::Containers::Factory {
     }
     template <typename T, typename KEY_TYPE, typename TRAITS, typename KEY_EXTRACTOR, typename KEY_INORDER_COMPARER>
     constexpr SortedKeyedCollection_Factory<T, KEY_TYPE, TRAITS, KEY_EXTRACTOR, KEY_INORDER_COMPARER>::SortedKeyedCollection_Factory ([[maybe_unused]] const Hints& hints)
-        : SortedKeyedCollection_Factory{[hints] () -> FactoryFunctionType {
+        : SortedKeyedCollection_Factory{[] () -> FactoryFunctionType {
             return [] (const KEY_EXTRACTOR& keyExtractor, const KEY_INORDER_COMPARER& keyComparer) {
                 return Concrete::SortedKeyedCollection_stdset<T, KEY_TYPE, TRAITS>{keyExtractor, keyComparer};
             };

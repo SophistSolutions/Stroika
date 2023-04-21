@@ -38,7 +38,7 @@ namespace Stroika::Foundation::Containers::Factory {
     }
     template <typename T, typename... INDEXES>
     constexpr SparseDataHyperRectangle_Factory<T, INDEXES...>::SparseDataHyperRectangle_Factory ([[maybe_unused]] const Hints& hints)
-        : SparseDataHyperRectangle_Factory{[hints] () -> FactoryFunctionType {
+        : SparseDataHyperRectangle_Factory{[] () -> FactoryFunctionType {
             return [] (Configuration::ArgByValueType<T> defaultItem) {
                 return Concrete::SparseDataHyperRectangle_stdmap<T, INDEXES...>{defaultItem};
             };

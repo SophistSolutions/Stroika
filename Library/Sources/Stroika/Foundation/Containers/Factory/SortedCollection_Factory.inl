@@ -32,7 +32,7 @@ namespace Stroika::Foundation::Containers::Factory {
     }
     template <typename T, typename INORDER_COMPARER>
     constexpr SortedCollection_Factory<T, INORDER_COMPARER>::SortedCollection_Factory ([[maybe_unused]] const Hints& hints)
-        : SortedCollection_Factory{[hints] () -> FactoryFunctionType {
+        : SortedCollection_Factory{[] () -> FactoryFunctionType {
             return [] (const INORDER_COMPARER& inorderComparer) { return Concrete::SortedCollection_stdmultiset<T>{inorderComparer}; };
         }()}
     {

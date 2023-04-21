@@ -32,7 +32,7 @@ namespace Stroika::Foundation::Containers::Factory {
     }
     template <typename KEY_TYPE, typename VALUE_TYPE, typename KEY_INORDER_COMPARER>
     constexpr SortedAssociation_Factory<KEY_TYPE, VALUE_TYPE, KEY_INORDER_COMPARER>::SortedAssociation_Factory ([[maybe_unused]] const Hints& hints)
-        : SortedAssociation_Factory{[hints] () -> FactoryFunctionType {
+        : SortedAssociation_Factory{[] () -> FactoryFunctionType {
             return [] (const KEY_INORDER_COMPARER& keyInOrderComparer) {
                 return Concrete::SortedAssociation_stdmultimap<KEY_TYPE, VALUE_TYPE>{keyInOrderComparer};
             };

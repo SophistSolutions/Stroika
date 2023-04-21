@@ -32,7 +32,7 @@ namespace Stroika::Foundation::Containers::Factory {
     }
     template <typename DOMAIN_TYPE, typename RANGE_TYPE, typename DOMAIN_EQUALS_COMPARER, typename RANGE_EQUALS_COMPARER>
     constexpr Bijection_Factory<DOMAIN_TYPE, RANGE_TYPE, DOMAIN_EQUALS_COMPARER, RANGE_EQUALS_COMPARER>::Bijection_Factory ([[maybe_unused]] const Hints& hints)
-        : Bijection_Factory{[hints] () -> FactoryFunctionType {
+        : Bijection_Factory{[] () -> FactoryFunctionType {
             // @todo add more backends, and pay attention to hints
             // especially easy to add Bijection_Array, and probably strictly better - since add needs to effectively walk whole list to see if new or update.
             return [] (DataExchange::ValidationStrategy injectivityCheckPolicy, const DOMAIN_EQUALS_COMPARER& domainEqualsComparer,

@@ -32,6 +32,7 @@ namespace Stroika::Foundation::Containers::Factory {
         : Association_Factory{AccessDefault_ ()}
     {
     }
+    DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wunused-lambda-capture\"");
     template <typename KEY_TYPE, typename VALUE_TYPE, typename KEY_EQUALS_COMPARER>
     constexpr Association_Factory<KEY_TYPE, VALUE_TYPE, KEY_EQUALS_COMPARER>::Association_Factory (const Hints& hints)
         : Association_Factory{[hints] () -> FactoryFunctionType {
@@ -57,6 +58,7 @@ namespace Stroika::Foundation::Containers::Factory {
         }()}
     {
     }
+    DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wunused-lambda-capture\"");
     template <typename KEY_TYPE, typename VALUE_TYPE, typename KEY_EQUALS_COMPARER>
     inline auto Association_Factory<KEY_TYPE, VALUE_TYPE, KEY_EQUALS_COMPARER>::Default () -> const Association_Factory&
     {
