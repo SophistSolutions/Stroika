@@ -32,7 +32,7 @@ namespace Stroika::Foundation::Containers::Factory {
     }
     template <typename T>
     constexpr Stack_Factory<T>::Stack_Factory ([[maybe_unused]] const Hints& hints)
-        : Stack_Factory{[hints] () -> FactoryFunctionType { return [] () { return Concrete::Stack_LinkedList<T>{}; }; }()}
+        : Stack_Factory{[] () -> FactoryFunctionType { return [] () { return Concrete::Stack_LinkedList<T>{}; }; }()}
     {
     }
     template <typename T>
