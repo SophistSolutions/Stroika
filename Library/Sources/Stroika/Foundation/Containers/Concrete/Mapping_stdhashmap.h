@@ -22,10 +22,6 @@
 
 namespace Stroika::Foundation::Containers::Concrete {
 
-    template <typename KEY_TYPE>
-    concept Mapping_stdhashmap_IsDefaultConstructible = Cryptography::Digest::IsHashFunction<std::hash<KEY_TYPE>, KEY_TYPE> and
-                                                        Common::IsEqualsComparer<std::equal_to<KEY_TYPE>, KEY_TYPE> ();
-
     /**
      *  \brief   Mapping_stdhashmap<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS> is an std::map-based concrete implementation of the Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, typename TRAITS::MappingTraitsType> container pattern.
      *
@@ -78,7 +74,8 @@ namespace Stroika::Foundation::Containers::Concrete {
          *       and added Mapping_stdhashmap (STDHASHMAP<>&& src)
          */
         Mapping_stdhashmap ()
-            requires (Mapping_stdhashmap_IsDefaultConstructible<KEY_TYPE>);
+            requires (Cryptography::Digest::IsHashFunction<std::hash<KEY_TYPE>, KEY_TYPE> and
+                      Common::IsEqualsComparer<std::equal_to<KEY_TYPE>, KEY_TYPE> ());
         Mapping_stdhashmap (STDHASHMAP<>&& src)
             requires (is_default_constructible_v<Mapping_stdhashmap>);
         template <typename HASH, typename KEY_EQUALS_COMPARER>
@@ -87,14 +84,14 @@ namespace Stroika::Foundation::Containers::Concrete {
         Mapping_stdhashmap (Mapping_stdhashmap&& src) noexcept      = default;
         Mapping_stdhashmap (const Mapping_stdhashmap& src) noexcept = default;
         Mapping_stdhashmap (const initializer_list<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src)
-            requires (Mapping_stdhashmap_IsDefaultConstructible<KEY_TYPE>);
+            requires (is_default_constructible_v<Mapping_stdhashmap>);
         template <typename HASH, typename KEY_EQUALS_COMPARER>
         Mapping_stdhashmap (HASH&& hasher, KEY_EQUALS_COMPARER&& keyComparer, const initializer_list<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src)
             requires (Cryptography::Digest::IsHashFunction<HASH, KEY_TYPE> and Common::IsEqualsComparer<KEY_EQUALS_COMPARER, KEY_TYPE> ());
 #if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
         template <typename ITERABLE_OF_ADDABLE>
         explicit Mapping_stdhashmap (ITERABLE_OF_ADDABLE&& src)
-            requires (Mapping_stdhashmap_IsDefaultConstructible<KEY_TYPE> and Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and
+            requires (is_default_constructible_v<Mapping_stdhashmap> and Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and
                       not is_base_of_v<Mapping_stdhashmap<KEY_TYPE, MAPPED_VALUE_TYPE>, decay_t<ITERABLE_OF_ADDABLE>>)
             : Mapping_stdhashmap{}
         {
@@ -105,7 +102,7 @@ namespace Stroika::Foundation::Containers::Concrete {
 #else
         template <typename ITERABLE_OF_ADDABLE>
         explicit Mapping_stdhashmap (ITERABLE_OF_ADDABLE&& src)
-            requires (Mapping_stdhashmap_IsDefaultConstructible<KEY_TYPE> and Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and
+            requires (is_default_constructible_v<Mapping_stdhashmap> and Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and
                       not is_base_of_v<Mapping_stdhashmap<KEY_TYPE, MAPPED_VALUE_TYPE>, decay_t<ITERABLE_OF_ADDABLE>>);
 #endif
 #if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
@@ -129,7 +126,7 @@ namespace Stroika::Foundation::Containers::Concrete {
 #endif
         template <typename ITERATOR_OF_ADDABLE>
         Mapping_stdhashmap (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
-            requires (Mapping_stdhashmap_IsDefaultConstructible<KEY_TYPE> and Configuration::IsIterator_v<ITERATOR_OF_ADDABLE>);
+            requires (is_default_constructible_v<Mapping_stdhashmap> and Configuration::IsIterator_v<ITERATOR_OF_ADDABLE>);
         template <typename HASH, typename KEY_EQUALS_COMPARER, typename ITERATOR_OF_ADDABLE>
         Mapping_stdhashmap (HASH&& hasher, KEY_EQUALS_COMPARER&& keyComparer, ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
             requires (Cryptography::Digest::IsHashFunction<HASH, KEY_TYPE> and
