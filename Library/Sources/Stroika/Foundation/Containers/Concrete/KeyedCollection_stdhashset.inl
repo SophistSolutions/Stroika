@@ -56,7 +56,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             : fKeyExtractor_{keyExtractor}
             , fElementHasher_{keyExtractor, keyHash}
             , fElementComparer_{keyExtractor, keyEqualsComparer}
-            , fData_{11, fElementHasher_, fElementComparer_}
+            , fData_{11u, fElementHasher_, fElementComparer_}
         {
         }
         Rep_ (const Rep_& from) = default;
