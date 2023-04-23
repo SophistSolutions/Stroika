@@ -3,7 +3,6 @@
  */
 #include "../../StroikaPreComp.h"
 
-//#include <map>
 #include <unordered_map>
 
 #include "../../Common/Compare.h"
