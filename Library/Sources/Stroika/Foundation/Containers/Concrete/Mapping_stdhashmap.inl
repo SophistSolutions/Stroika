@@ -226,9 +226,14 @@ namespace Stroika::Foundation::Containers::Concrete {
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     inline Mapping_stdhashmap<KEY_TYPE, MAPPED_VALUE_TYPE>::Mapping_stdhashmap (STDHASHMAP<>&& src)
+        #if !qCompilerAndStdLib_requires_breaks_soemtimes_but_static_assert_ok_Buggy
         requires (is_default_constructible_v<Mapping_stdhashmap>)
+        #endif
         : inherited{Memory::MakeSharedPtr<Rep_<typename STDHASHMAP<>::hasher, typename STDHASHMAP<>::key_equal>> (move (src))}
     {
+        #if qCompilerAndStdLib_requires_breaks_soemtimes_but_static_assert_ok_Buggy
+        static_assert (is_default_constructible_v<Mapping_stdhashmap>);
+        #endif
         AssertRepValidType_ ();
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
@@ -242,9 +247,14 @@ namespace Stroika::Foundation::Containers::Concrete {
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     inline Mapping_stdhashmap<KEY_TYPE, MAPPED_VALUE_TYPE>::Mapping_stdhashmap (const initializer_list<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src)
+        #if !qCompilerAndStdLib_requires_breaks_soemtimes_but_static_assert_ok_Buggy
         requires (is_default_constructible_v<Mapping_stdhashmap>)
+        #endif
         : Mapping_stdhashmap{}
     {
+        #if qCompilerAndStdLib_requires_breaks_soemtimes_but_static_assert_ok_Buggy
+        static_assert (is_default_constructible_v<Mapping_stdhashmap>);
+        #endif
         this->AddAll (src);
         AssertRepValidType_ ();
     }

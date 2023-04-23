@@ -77,14 +77,20 @@ namespace Stroika::Foundation::Containers::Concrete {
             requires (Cryptography::Digest::IsHashFunction<std::hash<KEY_TYPE>, KEY_TYPE> and
                       Common::IsEqualsComparer<std::equal_to<KEY_TYPE>, KEY_TYPE> ());
         Mapping_stdhashmap (STDHASHMAP<>&& src)
-            requires (is_default_constructible_v<Mapping_stdhashmap>);
+        #if !qCompilerAndStdLib_requires_breaks_soemtimes_but_static_assert_ok_Buggy
+            requires (is_default_constructible_v<Mapping_stdhashmap>)
+        #endif
+        ;
         template <typename HASH, typename KEY_EQUALS_COMPARER>
         explicit Mapping_stdhashmap (HASH&& hasher, KEY_EQUALS_COMPARER&& keyComparer)
             requires (Cryptography::Digest::IsHashFunction<HASH, KEY_TYPE> and Common::IsEqualsComparer<KEY_EQUALS_COMPARER, KEY_TYPE> ());
         Mapping_stdhashmap (Mapping_stdhashmap&& src) noexcept      = default;
         Mapping_stdhashmap (const Mapping_stdhashmap& src) noexcept = default;
         Mapping_stdhashmap (const initializer_list<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src)
-            requires (is_default_constructible_v<Mapping_stdhashmap>);
+        #if !qCompilerAndStdLib_requires_breaks_soemtimes_but_static_assert_ok_Buggy
+            requires (is_default_constructible_v<Mapping_stdhashmap>)
+            #endif
+            ;
         template <typename HASH, typename KEY_EQUALS_COMPARER>
         Mapping_stdhashmap (HASH&& hasher, KEY_EQUALS_COMPARER&& keyComparer, const initializer_list<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src)
             requires (Cryptography::Digest::IsHashFunction<HASH, KEY_TYPE> and Common::IsEqualsComparer<KEY_EQUALS_COMPARER, KEY_TYPE> ());

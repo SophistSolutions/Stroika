@@ -1568,6 +1568,27 @@ In file included from Namespace.cpp:10:
 
 #endif
 
+
+
+
+
+
+#ifndef qCompilerAndStdLib_requires_breaks_soemtimes_but_static_assert_ok_Buggy
+
+#if defined(__clang__) && defined(__APPLE__)
+#define qCompilerAndStdLib_requires_breaks_soemtimes_but_static_assert_ok_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 14))
+#elif defined(__clang__) && !defined(__APPLE__)
+#define qCompilerAndStdLib_requires_breaks_soemtimes_but_static_assert_ok_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 14))
+#else
+#define qCompilerAndStdLib_requires_breaks_soemtimes_but_static_assert_ok_Buggy 0
+#endif
+
+#endif
+
+
+
+
+
 /*
  ERROR ON GCC VERY WEIRD g++-11-debug-c++2a
 
