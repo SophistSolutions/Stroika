@@ -80,7 +80,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         Mapping_stdhashmap ()
             requires (Mapping_stdhashmap_IsDefaultConstructible<KEY_TYPE>);
         Mapping_stdhashmap (STDHASHMAP<>&& src)
-            requires (Mapping_stdhashmap_IsDefaultConstructible<KEY_TYPE>);
+            requires (is_default_constructible_v<Mapping_stdhashmap>);
         template <typename HASH, typename KEY_EQUALS_COMPARER>
         explicit Mapping_stdhashmap (HASH&& hasher, KEY_EQUALS_COMPARER&& keyComparer)
             requires (Cryptography::Digest::IsHashFunction<HASH, KEY_TYPE> and Common::IsEqualsComparer<KEY_EQUALS_COMPARER, KEY_TYPE> ());

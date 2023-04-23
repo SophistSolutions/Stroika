@@ -226,7 +226,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     inline Mapping_stdhashmap<KEY_TYPE, MAPPED_VALUE_TYPE>::Mapping_stdhashmap (STDHASHMAP<>&& src)
-        requires (Mapping_stdhashmap_IsDefaultConstructible<KEY_TYPE>)
+        requires (is_default_constructible_v<Mapping_stdhashmap>)
         : inherited{Memory::MakeSharedPtr<Rep_<typename STDHASHMAP<>::hasher, typename STDHASHMAP<>::key_equal>> (move (src))}
     {
         AssertRepValidType_ ();
