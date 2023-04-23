@@ -65,7 +65,7 @@ namespace Stroika::Foundation::Containers {
      *          sDiscoveredDevices_.Add (DiscoveryInfo_ {...});
      *      \endcode
      */
-    template <typename T, typename KEY_TYPE, typename DEFAULT_KEY_EXTRACTOR = void>
+    template <typename T, typename KEY_TYPE, typename DEFAULT_KEY_EXTRACTOR = function<KEY_TYPE (ArgByValueType<T>)>>
     struct KeyedCollection_DefaultTraits {
         /**
          *  Default extractor if not specified in constructor (e.g. default-constructor KeyedCollection())
