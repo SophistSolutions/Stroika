@@ -183,7 +183,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual bool RemoveIf (ArgByValueType<KEY_TYPE> key) override
         {
             Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fData_};
-            auto i = fData_.find (key);
+            auto                                                   i = fData_.find (key);
             if (i != fData_.end ()) {
                 fData_.erase (i);
                 return true;
