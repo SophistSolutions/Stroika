@@ -11,6 +11,8 @@
 #ifndef _Stroika_Foundation_Containers_Concrete_Mapping_Factory_inl_
 #define _Stroika_Foundation_Containers_Concrete_Mapping_Factory_inl_
 
+#include <type_traits>
+
 #include "../Concrete/Mapping_Array.h"
 #include "../Concrete/Mapping_LinkedList.h"
 #include "../Concrete/Mapping_stdhashmap.h"
@@ -37,15 +39,14 @@ namespace Stroika::Foundation::Containers::Factory {
     template <typename KEY_TYPE, typename VALUE_TYPE, typename KEY_EQUALS_COMPARER>
     constexpr Mapping_Factory<KEY_TYPE, VALUE_TYPE, KEY_EQUALS_COMPARER>::Mapping_Factory ([[maybe_unused]] const Hints& hints)
         : Mapping_Factory{[hints] () -> FactoryFunctionType {
-            if constexpr (Concrete::Mapping_stdhashmap_IsDefaultConstructible<KEY_TYPE> and is_same_v<KEY_EQUALS_COMPARER, equal_to<KEY_TYPE>>) {
+            if constexpr (is_default_constructible_v<Concrete::Mapping_stdhashmap<KEY_TYPE, VALUE_TYPE>> and
+                          is_same_v<KEY_EQUALS_COMPARER, equal_to<KEY_TYPE>>) {
                 return [] ([[maybe_unused]] const KEY_EQUALS_COMPARER& keyEqualsComparer) {
-                    // OK to omit comparer, because we instance of equal_to<> has no data
                     return Concrete::Mapping_stdhashmap<KEY_TYPE, VALUE_TYPE>{};
                 };
             }
             else if constexpr (is_same_v<KEY_EQUALS_COMPARER, equal_to<KEY_TYPE>> and Configuration::has_lt_v<KEY_TYPE>) {
                 return [] ([[maybe_unused]] const KEY_EQUALS_COMPARER& keyEqualsComparer) {
-                    // OK to omit comparer, because we have less-than defined and using default equal_to<>
                     return Concrete::Mapping_stdmap<KEY_TYPE, VALUE_TYPE>{};
                 };
             }
