@@ -138,7 +138,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual bool Lookup (ArgByValueType<KeyType> key, optional<value_type>* item) const override
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
-            auto                                                  i = fData_.find (value_type{key}); // @todo fix - wrap in value_type wrong
+            auto                                                  i = fData_.find (key);
             if (i == fData_.end ()) {
                 if (item != nullptr) {
                     *item = nullopt;
@@ -183,7 +183,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual bool RemoveIf (ArgByValueType<KEY_TYPE> key) override
         {
             Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fData_};
-            auto i = fData_.find (value_type{key}); // todo fix - wrapping in value_type is wrong!
+            auto i = fData_.find (key);
             if (i != fData_.end ()) {
                 fData_.erase (i);
                 return true;

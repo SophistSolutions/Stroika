@@ -13,6 +13,7 @@
 
 #include "../Concrete/KeyedCollection_Array.h"
 #include "../Concrete/KeyedCollection_stdset.h"
+#include "../Concrete/KeyedCollection_stdhashset.h"
 
 namespace Stroika::Foundation::Containers::Factory {
 
@@ -34,7 +35,14 @@ namespace Stroika::Foundation::Containers::Factory {
     template <typename T, typename KEY_TYPE, typename TRAITS, typename KEY_EXTRACTOR, typename KEY_EQUALS_COMPARER>
     constexpr KeyedCollection_Factory<T, KEY_TYPE, TRAITS, KEY_EXTRACTOR, KEY_EQUALS_COMPARER>::KeyedCollection_Factory ([[maybe_unused]] const Hints& hints)
         : KeyedCollection_Factory{[] () -> FactoryFunctionType {
-            if constexpr (is_same_v<KEY_EQUALS_COMPARER, equal_to<KEY_TYPE>> and Configuration::has_lt_v<KEY_TYPE>) {
+            if constexpr (is_default_constructible_v<Concrete::KeyedCollection_stdhashset<T, KEY_TYPE, TRAITS>> and
+                          is_same_v<KEY_EQUALS_COMPARER, equal_to<KEY_TYPE>>) {
+                return [] (const KEY_EXTRACTOR& keyExtractor, [[maybe_unused]] const KEY_EQUALS_COMPARER& keyComparer) {
+                    return Concrete::KeyedCollection_stdhashset<T, KEY_TYPE, TRAITS>{keyExtractor};
+                };
+            }
+            else if constexpr (is_default_constructible_v<Concrete::KeyedCollection_stdset<T, KEY_TYPE, TRAITS>> and
+                               is_same_v<KEY_EQUALS_COMPARER, equal_to<KEY_TYPE>>) {
                 return [] (const KEY_EXTRACTOR& keyExtractor, [[maybe_unused]] const KEY_EQUALS_COMPARER& keyComparer) {
                     return Concrete::KeyedCollection_stdset<T, KEY_TYPE, TRAITS>{keyExtractor}; // if using == as equals comparer, just map to < for in-order comparison
                 };

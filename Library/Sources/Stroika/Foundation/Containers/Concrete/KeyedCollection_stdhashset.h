@@ -97,6 +97,8 @@ namespace Stroika::Foundation::Containers::Concrete {
             auto operator() (const value_type& v) const noexcept { return fKeyHasher (fKeyExtractor_ (v)); }
             [[no_unique_address]] const KeyExtractorType fKeyExtractor_;
             [[no_unique_address]] const KEY_HASHER       fKeyHasher;
+
+            using is_transparent = int; // see https://en.cppreference.com/w/cpp/container/set/find - allows overloads to lookup by key
         };
 
         // user providers a hasher on KEY_TYPE, but the std::unordered_set holds a T, so it needs a hasher
