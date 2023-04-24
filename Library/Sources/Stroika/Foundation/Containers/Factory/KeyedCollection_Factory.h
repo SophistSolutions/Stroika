@@ -26,10 +26,10 @@ namespace Stroika::Foundation::Containers::Factory {
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      */
-    template <typename T, typename KEY_TYPE, typename TRAITS, typename KEY_EXTRACTOR, typename KEY_EQUALS_COMPARER = equal_to<KEY_TYPE>>
+    template <typename T, typename KEY_TYPE, typename TRAITS, typename KEY_EQUALS_COMPARER = equal_to<KEY_TYPE>>
     class KeyedCollection_Factory {
     public:
-        static_assert (not is_reference_v<T> and not is_reference_v<KEY_TYPE> and not is_reference_v<KEY_EXTRACTOR> and not is_reference_v<KEY_EQUALS_COMPARER>,
+        static_assert (not is_reference_v<T> and not is_reference_v<KEY_TYPE> and not is_reference_v<KEY_EQUALS_COMPARER>,
                        "typically if this fails its because a (possibly indirect) caller forgot to use forward<TTT>(), or remove_cvref_t");
 
     public:
@@ -39,10 +39,13 @@ namespace Stroika::Foundation::Containers::Factory {
         using ConstructedType = KeyedCollection<T, KEY_TYPE, TRAITS>;
 
     public:
+        using KeyExtractorType = typename ConstructedType::KeyExtractorType;
+
+    public:
         /**
          *  Function type to create an ConstructedType object.
          */
-        using FactoryFunctionType = function<ConstructedType (const KEY_EXTRACTOR& keyExtractor, const KEY_EQUALS_COMPARER& keyComparer)>;
+        using FactoryFunctionType = function<ConstructedType (const KeyExtractorType& keyExtractor, const KEY_EQUALS_COMPARER& keyComparer)>;
 
     public:
         /**
@@ -77,7 +80,7 @@ namespace Stroika::Foundation::Containers::Factory {
         /**
          *  You can call this directly, but there is no need, as the KeyedCollection<T,TRAITS> CTOR does so automatically.
          */
-        nonvirtual ConstructedType operator() (const KEY_EXTRACTOR& keyExtractor, const KEY_EQUALS_COMPARER& keyComparer) const;
+        nonvirtual ConstructedType operator() (const KeyExtractorType& keyExtractor, const KEY_EQUALS_COMPARER& keyComparer) const;
 
     public:
         /**

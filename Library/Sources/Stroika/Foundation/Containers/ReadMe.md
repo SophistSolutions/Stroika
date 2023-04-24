@@ -235,7 +235,6 @@ Often ArchTypes will have additional required data, like an Extractor function, 
 
 ~~~
 template <typename CONTAINER_OF_ADDABLE,
-          typename KEY_EXTRACTOR       = typename TraitsType::DefaultKeyExtractor,
           typename KEY_EQUALS_COMPARER = equal_to<KEY_TYPE>,
           enable_if_t<
               Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_base_of_v<KeyedCollection<T, KEY_TYPE, TRAITS>, decay_t<CONTAINER_OF_ADDABLE>> and Common::IsEqualsComparer<KEY_TYPE, KEY_EQUALS_COMPARER> () and KeyedCollection_IsKeyExctractor<T, KEY_TYPE, KEY_EXTRACTOR> ()>* = nullptr>

@@ -24,11 +24,9 @@ namespace Stroika::Foundation::Containers::Factory {
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      */
-    template <typename T, typename KEY_TYPE, typename TRAITS, typename KEY_EXTRACTOR, typename KEY_INORDER_COMPARER = less<KEY_TYPE>>
+    template <typename T, typename KEY_TYPE, typename TRAITS, typename KEY_INORDER_COMPARER = less<KEY_TYPE>>
     class SortedKeyedCollection_Factory {
     public:
-        static_assert (not is_reference_v<T> and not is_reference_v<KEY_TYPE> and not is_reference_v<KEY_EXTRACTOR> and not is_reference_v<KEY_INORDER_COMPARER>,
-                       "typically if this fails its because a (possibly indirect) caller forgot to use forward<TTT>(), or remove_cvref_t");
         static_assert (Common::IsStrictInOrderComparer<KEY_INORDER_COMPARER> (),
                        "StrictInOrder comparer required with SortedKeyedCollection");
 
@@ -39,10 +37,13 @@ namespace Stroika::Foundation::Containers::Factory {
         using ConstructedType = SortedKeyedCollection<T, KEY_TYPE, TRAITS>;
 
     public:
+        using KeyExtractorType = typename ConstructedType::KeyExtractorType;
+
+    public:
         /**
          *  Function type to create an ConstructedType object.
          */
-        using FactoryFunctionType = function<ConstructedType (const KEY_EXTRACTOR& keyExtractor, const KEY_INORDER_COMPARER& keyComparer)>;
+        using FactoryFunctionType = function<ConstructedType (const KeyExtractorType& keyExtractor, const KEY_INORDER_COMPARER& keyComparer)>;
 
     public:
         /**
@@ -73,7 +74,7 @@ namespace Stroika::Foundation::Containers::Factory {
         /**
          *  You can call this directly, but there is no need, as the SortedKeyedCollection<> CTOR does so automatically.
          */
-        nonvirtual ConstructedType operator() (const KEY_EXTRACTOR& keyExtractor = {}, const KEY_INORDER_COMPARER& keyComparer = {}) const;
+        nonvirtual ConstructedType operator() (const KeyExtractorType& keyExtractor = {}, const KEY_INORDER_COMPARER& keyComparer = {}) const;
 
     public:
         /**

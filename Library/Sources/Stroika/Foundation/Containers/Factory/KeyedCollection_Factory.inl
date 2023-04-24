@@ -19,31 +19,31 @@ namespace Stroika::Foundation::Containers::Factory {
 
     /*
      ********************************************************************************
-     * KeyedCollection_Factory<T, KEY_TYPE, TRAITS, KEY_EXTRACTOR, KEY_EQUALS_COMPARER> *
+     ****** KeyedCollection_Factory<T, KEY_TYPE, TRAITS, KEY_EQUALS_COMPARER> *******
      ********************************************************************************
      */
-    template <typename T, typename KEY_TYPE, typename TRAITS, typename KEY_EXTRACTOR, typename KEY_EQUALS_COMPARER>
-    constexpr KeyedCollection_Factory<T, KEY_TYPE, TRAITS, KEY_EXTRACTOR, KEY_EQUALS_COMPARER>::KeyedCollection_Factory (const FactoryFunctionType& f)
+    template <typename T, typename KEY_TYPE, typename TRAITS, typename KEY_EQUALS_COMPARER>
+    constexpr KeyedCollection_Factory<T, KEY_TYPE, TRAITS, KEY_EQUALS_COMPARER>::KeyedCollection_Factory (const FactoryFunctionType& f)
         : fFactory_{f}
     {
     }
-    template <typename T, typename KEY_TYPE, typename TRAITS, typename KEY_EXTRACTOR, typename KEY_EQUALS_COMPARER>
-    constexpr KeyedCollection_Factory<T, KEY_TYPE, TRAITS, KEY_EXTRACTOR, KEY_EQUALS_COMPARER>::KeyedCollection_Factory ()
+    template <typename T, typename KEY_TYPE, typename TRAITS, typename KEY_EQUALS_COMPARER>
+    constexpr KeyedCollection_Factory<T, KEY_TYPE, TRAITS, KEY_EQUALS_COMPARER>::KeyedCollection_Factory ()
         : KeyedCollection_Factory{AccessDefault_ ()}
     {
     }
-    template <typename T, typename KEY_TYPE, typename TRAITS, typename KEY_EXTRACTOR, typename KEY_EQUALS_COMPARER>
-    constexpr KeyedCollection_Factory<T, KEY_TYPE, TRAITS, KEY_EXTRACTOR, KEY_EQUALS_COMPARER>::KeyedCollection_Factory ([[maybe_unused]] const Hints& hints)
+    template <typename T, typename KEY_TYPE, typename TRAITS, typename KEY_EQUALS_COMPARER>
+    constexpr KeyedCollection_Factory<T, KEY_TYPE, TRAITS, KEY_EQUALS_COMPARER>::KeyedCollection_Factory ([[maybe_unused]] const Hints& hints)
         : KeyedCollection_Factory{[] () -> FactoryFunctionType {
             if constexpr (is_default_constructible_v<Concrete::KeyedCollection_stdhashset<T, KEY_TYPE, TRAITS>> and
                           is_same_v<KEY_EQUALS_COMPARER, equal_to<KEY_TYPE>>) {
-                return [] (const KEY_EXTRACTOR& keyExtractor, [[maybe_unused]] const KEY_EQUALS_COMPARER& keyComparer) {
+                return [] (const KeyExtractorType& keyExtractor, [[maybe_unused]] const KEY_EQUALS_COMPARER& keyComparer) {
                     return Concrete::KeyedCollection_stdhashset<T, KEY_TYPE, TRAITS>{keyExtractor};
                 };
             }
             else if constexpr (is_default_constructible_v<Concrete::KeyedCollection_stdset<T, KEY_TYPE, TRAITS>> and
                                is_same_v<KEY_EQUALS_COMPARER, equal_to<KEY_TYPE>>) {
-                return [] (const KEY_EXTRACTOR& keyExtractor, [[maybe_unused]] const KEY_EQUALS_COMPARER& keyComparer) {
+                return [] (const KeyExtractorType& keyExtractor, [[maybe_unused]] const KEY_EQUALS_COMPARER& keyComparer) {
                     return Concrete::KeyedCollection_stdset<T, KEY_TYPE, TRAITS>{keyExtractor}; // if using == as equals comparer, just map to < for in-order comparison
                 };
             }
@@ -56,32 +56,31 @@ namespace Stroika::Foundation::Containers::Factory {
                  *  Note, array CAN be slower than LinkedList as the size grows (array faster when small due to better locality).
                  *  But the whole thing bogs down no matter what, when larger, cuz you really need some indexed data structure like a tree.
                  */
-                return [] (const KEY_EXTRACTOR& keyExtractor, const KEY_EQUALS_COMPARER& keyComparer) {
+                return [] (const KeyExtractorType& keyExtractor, const KEY_EQUALS_COMPARER& keyComparer) {
                     return Concrete::KeyedCollection_Array<T, KEY_TYPE, TRAITS>{keyExtractor, keyComparer};
                 };
             }
         }()}
     {
     }
-    template <typename T, typename KEY_TYPE, typename TRAITS, typename KEY_EXTRACTOR, typename KEY_EQUALS_COMPARER>
-    inline auto KeyedCollection_Factory<T, KEY_TYPE, TRAITS, KEY_EXTRACTOR, KEY_EQUALS_COMPARER>::Default () -> const KeyedCollection_Factory&
+    template <typename T, typename KEY_TYPE, typename TRAITS, typename KEY_EQUALS_COMPARER>
+    inline auto KeyedCollection_Factory<T, KEY_TYPE, TRAITS, KEY_EQUALS_COMPARER>::Default () -> const KeyedCollection_Factory&
     {
         return AccessDefault_ ();
     }
-    template <typename T, typename KEY_TYPE, typename TRAITS, typename KEY_EXTRACTOR, typename KEY_EQUALS_COMPARER>
-    inline auto KeyedCollection_Factory<T, KEY_TYPE, TRAITS, KEY_EXTRACTOR, KEY_EQUALS_COMPARER>::operator() (const KEY_EXTRACTOR& keyExtractor,
-                                                                                                              const KEY_EQUALS_COMPARER& keyComparer) const
-        -> ConstructedType
+    template <typename T, typename KEY_TYPE, typename TRAITS, typename KEY_EQUALS_COMPARER>
+    inline auto KeyedCollection_Factory<T, KEY_TYPE, TRAITS, KEY_EQUALS_COMPARER>::operator() (const KeyExtractorType& keyExtractor,
+                                                                                               const KEY_EQUALS_COMPARER& keyComparer) const -> ConstructedType
     {
         return this->fFactory_ (keyExtractor, keyComparer);
     }
-    template <typename T, typename KEY_TYPE, typename TRAITS, typename KEY_EXTRACTOR, typename KEY_EQUALS_COMPARER>
-    void KeyedCollection_Factory<T, KEY_TYPE, TRAITS, KEY_EXTRACTOR, KEY_EQUALS_COMPARER>::Register (const optional<KeyedCollection_Factory>& f)
+    template <typename T, typename KEY_TYPE, typename TRAITS, typename KEY_EQUALS_COMPARER>
+    void KeyedCollection_Factory<T, KEY_TYPE, TRAITS, KEY_EQUALS_COMPARER>::Register (const optional<KeyedCollection_Factory>& f)
     {
         AccessDefault_ () = f.has_value () ? *f : KeyedCollection_Factory{Hints{}};
     }
-    template <typename T, typename KEY_TYPE, typename TRAITS, typename KEY_EXTRACTOR, typename KEY_EQUALS_COMPARER>
-    inline auto KeyedCollection_Factory<T, KEY_TYPE, TRAITS, KEY_EXTRACTOR, KEY_EQUALS_COMPARER>::AccessDefault_ () -> KeyedCollection_Factory&
+    template <typename T, typename KEY_TYPE, typename TRAITS, typename KEY_EQUALS_COMPARER>
+    inline auto KeyedCollection_Factory<T, KEY_TYPE, TRAITS, KEY_EQUALS_COMPARER>::AccessDefault_ () -> KeyedCollection_Factory&
     {
         static KeyedCollection_Factory sDefault_{Hints{}};
         return sDefault_;

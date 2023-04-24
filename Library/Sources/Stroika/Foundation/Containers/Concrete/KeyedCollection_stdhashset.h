@@ -55,8 +55,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         template <typename KEY_EQUALS_COMPARER = equal_to<key_type>>
         struct ElementEqualsComparer {
             static_assert (not is_reference_v<KEY_EQUALS_COMPARER>);
-            constexpr ElementEqualsComparer (const KeyExtractorType&    keyExtractor      = typename TRAITS::DefaultKeyExtractor{},
-                                             const KEY_EQUALS_COMPARER& keyEqualsComparer = {})
+            constexpr ElementEqualsComparer (const KeyExtractorType& keyExtractor = {}, const KEY_EQUALS_COMPARER& keyEqualsComparer = {})
                 : fKeyExtractor_{keyExtractor}
                 , fKeyComparer{keyEqualsComparer}
             {
@@ -88,7 +87,7 @@ namespace Stroika::Foundation::Containers::Concrete {
          */
         template <typename KEY_HASHER = std::hash<key_type>>
         struct ElementHash {
-            constexpr ElementHash (const KeyExtractorType& keyExtractor = typename TRAITS::DefaultKeyExtractor{}, const KEY_HASHER& kh = {})
+            constexpr ElementHash (const KeyExtractorType& keyExtractor = {}, const KEY_HASHER& kh = {})
                 : fKeyExtractor_{keyExtractor}
                 , fKeyHasher{kh}
             {
@@ -116,8 +115,8 @@ namespace Stroika::Foundation::Containers::Concrete {
     public:
         template <typename KEY_HASH = std::hash<KEY_TYPE>, typename KEY_EQUALS_COMPARER = equal_to<KEY_TYPE>,
                   enable_if_t<Common::IsEqualsComparer<KEY_EQUALS_COMPARER, KEY_TYPE> () and Cryptography::Digest::IsHashFunction<KEY_HASH, KEY_TYPE>>* = nullptr>
-        KeyedCollection_stdhashset (const KeyExtractorType& keyExtractor = typename TRAITS::DefaultKeyExtractor{},
-                                    KEY_HASH&& keyHasher = {}, KEY_EQUALS_COMPARER&& keyComparer = KEY_EQUALS_COMPARER{});
+        KeyedCollection_stdhashset (const KeyExtractorType& keyExtractor = {}, KEY_HASH&& keyHasher = {},
+                                    KEY_EQUALS_COMPARER&& keyComparer = KEY_EQUALS_COMPARER{});
 
         KeyedCollection_stdhashset (KeyedCollection_stdhashset&& src) noexcept      = default;
         KeyedCollection_stdhashset (const KeyedCollection_stdhashset& src) noexcept = default;
