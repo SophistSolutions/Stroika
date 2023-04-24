@@ -74,6 +74,20 @@ namespace Stroika::Foundation::Containers {
     };
 
     /**
+     *  KeyedCollection can be templated with a KeyExtractorType that allows it to be used with default construction
+     *  and no keyextractor specfied.
+     * 
+     *  But the default definition - using std::function - requires the constructor to provide an extracctor function
+     *  since the default for this std::function is not callable.
+     */
+    template <typename T, typename KEY_TYPE, typename TRAITS>
+    concept KeyedCollection_ExtractorCanBeDefaulted = is_invocable_v<typename TRAITS::KeyExtractorType, T> and
+                                                      std::is_convertible_v<std::invoke_result_t<typename TRAITS::KeyExtractorType, T>, KEY_TYPE> and
+                                                      is_default_constructible_v<typename TRAITS::KeyExtractorType> and not
+    is_same_v<typename TRAITS::KeyExtractorType, function<KEY_TYPE (T)>> and
+        not is_same_v<typename TRAITS::KeyExtractorType, function<KEY_TYPE (const T&)>>;
+
+    /**
      *  \brief a cross between Mapping<KEY, T> and Collection<T> and Set<T>
      * 
      *      KeyedCollection adds most access patterns used in Mapping to a Collection, but stores only a single
@@ -223,7 +237,8 @@ namespace Stroika::Foundation::Containers {
          *  \note   <a href="ReadMe.md#Container Constructors">See general information about container constructors that applies here</a>
          */
         template <typename KEY_EQUALS_COMPARER = equal_to<KEY_TYPE>, enable_if_t<Common::IsEqualsComparer<KEY_EQUALS_COMPARER, KEY_TYPE> ()>* = nullptr>
-        KeyedCollection (KEY_EQUALS_COMPARER&& keyComparer = KEY_EQUALS_COMPARER{});
+        KeyedCollection (KEY_EQUALS_COMPARER&& keyComparer = KEY_EQUALS_COMPARER{})
+            requires (KeyedCollection_ExtractorCanBeDefaulted<T, KEY_TYPE, TRAITS>);
         KeyedCollection (KeyedCollection&& src) noexcept      = default;
         KeyedCollection (const KeyedCollection& src) noexcept = default;
         template <typename KEY_EQUALS_COMPARER = equal_to<KEY_TYPE>, enable_if_t<Common::IsEqualsComparer<KEY_EQUALS_COMPARER, KEY_TYPE> ()>* = nullptr>
@@ -231,20 +246,24 @@ namespace Stroika::Foundation::Containers {
         template <typename ITERABLE_OF_ADDABLE, typename KEY_EQUALS_COMPARER = equal_to<KEY_TYPE>,
                   enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and not is_base_of_v<KeyedCollection<T, KEY_TYPE, TRAITS>, decay_t<ITERABLE_OF_ADDABLE>> and
                               Common::IsEqualsComparer<KEY_EQUALS_COMPARER, KEY_TYPE> ()>* = nullptr>
-        KeyedCollection (ITERABLE_OF_ADDABLE&& src);
+        KeyedCollection (ITERABLE_OF_ADDABLE&& src)
+            requires (KeyedCollection_ExtractorCanBeDefaulted<T, KEY_TYPE, TRAITS>);
         template <typename ITERABLE_OF_ADDABLE, typename KEY_EQUALS_COMPARER = equal_to<KEY_TYPE>,
                   enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and not is_base_of_v<KeyedCollection<T, KEY_TYPE, TRAITS>, decay_t<ITERABLE_OF_ADDABLE>> and
                               Common::IsEqualsComparer<KEY_EQUALS_COMPARER, KEY_TYPE> ()>* = nullptr>
-        KeyedCollection (KEY_EQUALS_COMPARER&& keyComparer, ITERABLE_OF_ADDABLE&& src);
+        KeyedCollection (KEY_EQUALS_COMPARER&& keyComparer, ITERABLE_OF_ADDABLE&& src)
+            requires (KeyedCollection_ExtractorCanBeDefaulted<T, KEY_TYPE, TRAITS>);
         template <typename KEY_EQUALS_COMPARER, typename ITERABLE_OF_ADDABLE,
                   enable_if_t<Common::IsEqualsComparer<KEY_EQUALS_COMPARER, KEY_TYPE> () and Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>>* = nullptr>
         KeyedCollection (const KeyExtractorType& keyExtractor, KEY_EQUALS_COMPARER&& keyComparer, ITERABLE_OF_ADDABLE&& src);
         template <typename ITERATOR_OF_ADDABLE, typename KEY_EQUALS_COMPARER = equal_to<KEY_TYPE>,
                   enable_if_t<Configuration::IsIterator_v<ITERATOR_OF_ADDABLE> and Common::IsEqualsComparer<KEY_EQUALS_COMPARER, KEY_TYPE> ()>* = nullptr>
-        KeyedCollection (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
+        KeyedCollection (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
+            requires (KeyedCollection_ExtractorCanBeDefaulted<T, KEY_TYPE, TRAITS>);
         template <typename ITERATOR_OF_ADDABLE, typename KEY_EQUALS_COMPARER = equal_to<KEY_TYPE>,
                   enable_if_t<Configuration::IsIterator_v<ITERATOR_OF_ADDABLE> and Common::IsEqualsComparer<KEY_EQUALS_COMPARER, KEY_TYPE> ()>* = nullptr>
-        KeyedCollection (KEY_EQUALS_COMPARER&& keyComparer, ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
+        KeyedCollection (KEY_EQUALS_COMPARER&& keyComparer, ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
+            requires (KeyedCollection_ExtractorCanBeDefaulted<T, KEY_TYPE, TRAITS>);
         template <typename KEY_EQUALS_COMPARER, typename ITERATOR_OF_ADDABLE,
                   enable_if_t<Common::IsEqualsComparer<KEY_EQUALS_COMPARER, KEY_TYPE> () and Configuration::IsIterator_v<ITERATOR_OF_ADDABLE>>* = nullptr>
         KeyedCollection (const KeyExtractorType& keyExtractor, KEY_EQUALS_COMPARER&& keyComparer, ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
