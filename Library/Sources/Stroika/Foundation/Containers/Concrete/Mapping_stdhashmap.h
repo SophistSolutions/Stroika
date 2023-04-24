@@ -132,7 +132,11 @@ namespace Stroika::Foundation::Containers::Concrete {
 #endif
         template <typename ITERATOR_OF_ADDABLE>
         Mapping_stdhashmap (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
-            requires (is_default_constructible_v<Mapping_stdhashmap> and Configuration::IsIterator_v<ITERATOR_OF_ADDABLE>);
+            requires (
+#if !qCompilerAndStdLib_requires_breaks_soemtimes_but_static_assert_ok_Buggy
+                is_default_constructible_v<Mapping_stdhashmap> and 
+#endif
+                Configuration::IsIterator_v<ITERATOR_OF_ADDABLE>);
         template <typename HASH, typename KEY_EQUALS_COMPARER, typename ITERATOR_OF_ADDABLE>
         Mapping_stdhashmap (HASH&& hasher, KEY_EQUALS_COMPARER&& keyComparer, ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
             requires (Cryptography::Digest::IsHashFunction<HASH, KEY_TYPE> and

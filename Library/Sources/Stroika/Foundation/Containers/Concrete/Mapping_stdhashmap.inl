@@ -288,8 +288,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         requires (Cryptography::Digest::IsHashFunction<HASH, KEY_TYPE> and Common::IsEqualsComparer<KEY_EQUALS_COMPARER, KEY_TYPE> () and
                   Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and
                   not is_base_of_v<Mapping_stdhashmap<KEY_TYPE, MAPPED_VALUE_TYPE>, decay_t<ITERABLE_OF_ADDABLE>>
-
-                  )
+        )
         : Mapping_stdhashmap{forward<HASH> (hasher), forward<KEY_EQUALS_COMPARER> (keyComparer)}
     {
         static_assert (IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>);
@@ -301,9 +300,16 @@ namespace Stroika::Foundation::Containers::Concrete {
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     template <typename ITERATOR_OF_ADDABLE>
     Mapping_stdhashmap<KEY_TYPE, MAPPED_VALUE_TYPE>::Mapping_stdhashmap (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
-        requires (is_default_constructible_v<Mapping_stdhashmap> and Configuration::IsIterator_v<ITERATOR_OF_ADDABLE>)
+        requires (
+#if !qCompilerAndStdLib_requires_breaks_soemtimes_but_static_assert_ok_Buggy
+            is_default_constructible_v<Mapping_stdhashmap>  and
+#endif
+             Configuration::IsIterator_v<ITERATOR_OF_ADDABLE>)
         : Mapping_stdhashmap{}
     {
+#if qCompilerAndStdLib_requires_breaks_soemtimes_but_static_assert_ok_Buggy
+        static_assert (is_default_constructible_v<Mapping_stdhashmap>);
+#endif
         static_assert (IsAddable_v<ExtractValueType_t<ITERATOR_OF_ADDABLE>>);
         this->AddAll (forward<ITERATOR_OF_ADDABLE> (start), forward<ITERATOR_OF_ADDABLE> (end));
         AssertRepValidType_ ();
