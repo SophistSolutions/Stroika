@@ -5,6 +5,12 @@
 # identical, but a few tests are commented out (to not needlessly stress CI system)
 # for v3-Dev builds
 #
+# STEPS to construct DEBUG file from RELEASE:
+#   - Clone Release file
+#   - Change name field (line 22 apx)
+#   - Change brange commented out(line 26 apx)
+#   - Comment out all items with includeInDevBranchBuilds: false
+#
 # NOTE: I've tried many tricks - none which seem to work - to get this working on one file with one
 # workflow and tests
 #     https://github.community/t/what-is-the-correct-if-condition-syntax-for-checking-matrix-os-version/16221
@@ -80,7 +86,7 @@ jobs:
             extra_config_args: --apply-default-release-flags --trace2file enable
             includeInDevBranchBuilds: true
 
-          # # ubuntu 22.04
+          # ubuntu 22.04
           # - displayTargetName: ubuntu-22.04-g++-11 (Debug)
           #   os: unix
           #   compiler: g++-11
@@ -316,13 +322,13 @@ jobs:
           #   config_name: Release
           #   extra_config_args: --arch x86_64 --apply-default-release-flags --trace2file enable
           #   includeInDevBranchBuilds: false
-          - displayTargetName: windows-vs2k22-msys-x86-Debug
-            os: windows
-            runs_on: windows-2022
-            container_image: sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k22:v3
-            config_name: Debug
-            extra_config_args: --arch x86 --apply-default-debug-flags --trace2file enable
-            includeInDevBranchBuilds: true
+          # - displayTargetName: windows-vs2k22-msys-x86-Debug
+          #   os: windows
+          #   runs_on: windows-2022
+          #   container_image: sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k22:v3
+          #   config_name: Debug
+          #   extra_config_args: --arch x86 --apply-default-debug-flags --trace2file enable
+          #   includeInDevBranchBuilds: false
           # - displayTargetName: windows-vs2k22-msys-x86-Release
           #   os: windows
           #   runs_on: windows-2022
@@ -330,13 +336,13 @@ jobs:
           #   config_name: Release
           #   extra_config_args: --arch x86 --apply-default-release-flags --trace2file enable
           #   includeInDevBranchBuilds: false
-          # - displayTargetName: windows-vs2k22-msys-x86_64-Release
-          #   os: windows
-          #   runs_on: windows-2022
-          #   container_image: sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k22:v3
-          #   config_name: Release
-          #   extra_config_args: --arch x86_64 --apply-default-release-flags --trace2file enable
-          #   includeInDevBranchBuilds: false
+          - displayTargetName: windows-vs2k22-msys-x86_64-Release
+            os: windows
+            runs_on: windows-2022
+            container_image: sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k22:v3
+            config_name: Release
+            extra_config_args: --arch x86_64 --apply-default-release-flags --trace2file enable
+            includeInDevBranchBuilds: true
     env:
       # vm has 2 virtual CPUs, but 8GB ram, so jobs=3 (empirical), and QUICK_BUILD avoids some internal testing
       MAKEFLAGS: "--jobs=3 QUICK_BUILD=1"
