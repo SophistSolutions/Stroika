@@ -46,7 +46,7 @@ to run debugger (ptrace/address randomization disable, or for debug builds that 
 ### Windows
 
 ```bash
-docker run -it --storage-opt "size=100GB" sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19
+docker run -it --storage-opt "size=100GB" sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k22
 ```
 
 (defaults for RAM / disk space I found inadequate, but this maybe fixed by MSFT at some point)
@@ -64,13 +64,13 @@ docker run --detach --interactive --tty\
     --storage-opt "size=100GB" \
     -m 8G \
     --name FRED \
-    sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19
+    sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k22
 docker exec \
     FRED \
     git clone https://github.com/SophistSolutions/Stroika.git
 docker exec \
     --workdir c:/Stroika \
-    --env USE_TEST_BASENAME=Windows_VS2k19-In-Docker \
+    --env USE_TEST_BASENAME=Windows_vs2k22-In-Docker \
     FRED \
     sh -c "ScriptsLib/RegressionTests"
 # root around and fiddle inside the container (even while above running)
@@ -93,9 +93,7 @@ cat /Getting-Started-With-Stroika.md
       -  [Ubuntu2004-Small/DockerFile](Ubuntu2004-Small/DockerFile)
       -  [Ubuntu2204-Small/DockerFile](Ubuntu2204-Small/DockerFile)
     - Windows
-      -  [Windows-Cygwin-VS2k19/DockerFile](Windows-Cygwin-VS2k19/DockerFile)
       -  [Windows-Cygwin-VS2k22/DockerFile](Windows-Cygwin-VS2k22/DockerFile)
-      -  [Windows-MSYS-VS2k19/DockerFile](Windows-MSYS-VS2k19/DockerFile)
       -  [Windows-MSYS-VS2k22/DockerFile](Windows-MSYS-VS2k22/DockerFile)
 - Derived
   - Linux

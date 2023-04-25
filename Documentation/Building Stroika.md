@@ -69,7 +69,7 @@ cat Getting-Started-With-Stroika.md
 
 Or - a couple other docker run variants that may help with windows
 ```bash
-docker run --mount type=bind,source=c:/Sandbox,target=c:/Sandbox -it sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k19
+docker run --mount type=bind,source=c:/Sandbox,target=c:/Sandbox -it sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k22
 docker run -it --storage-opt "size=100GB" sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k22
 ```
 

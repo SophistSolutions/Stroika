@@ -34,13 +34,8 @@ ifneq ($(findstring $(DETECTED_HOST_OS),MSYS-Cygwin),)
 	@# in docker windows configuration settings (can get from docker gui - settings/Docker Engine)
 	@# Build with -m 4GB cuz default of 1GB pages alot
 	@# Due to https://stroika.atlassian.net/browse/STK-742 - add   --network "Default Switch" 
-	@#docker build -m 4GB --network "Default Switch" -f Windows-Cygwin-VS2k19/Dockerfile -t sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19 .
-	@# as of 2021-09-20 - on new laptop  fails to build with -m, but works without (crazy buggy docker)
-	docker build --network "Default Switch" -f Windows-Cygwin-VS2k19/Dockerfile -t sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19 .
 	docker build --network "Default Switch" -f Windows-Cygwin-VS2k22/Dockerfile -t sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k22 .
 	@echo "BEWARE DOCKER BUG: https://stroika.atlassian.net/browse/STK-766 - see that for instructions on workaorund for hang building MSYS containers"
-	@echo "***may need todo rm -rf hcs*/Files/'\$Recycle.Bin' when docker build hangs"
-	docker build --network "Default Switch" -f Windows-MSYS-VS2k19/Dockerfile -t sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k19 .
 	docker build --network "Default Switch" -f Windows-MSYS-VS2k22/Dockerfile -t sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k22 .
 endif
 
@@ -72,9 +67,7 @@ ifeq (${DETECTED_HOST_OS},Linux)
 	# #docker tag sophistsolutionsinc/stroika-dev sophistsolutionsinc/stroika-dev:$(STROIKA_VERSION)
 endif
 ifneq ($(findstring $(DETECTED_HOST_OS),MSYS-Cygwin),)
-	@export DO_TO_IMAGE_=stroika-buildvm-windows-cygwin-vs2k19; ${DOCKER_TAG_LINE_}
 	@export DO_TO_IMAGE_=stroika-buildvm-windows-cygwin-vs2k22; ${DOCKER_TAG_LINE_}
-	@export DO_TO_IMAGE_=stroika-buildvm-windows-msys-vs2k19; ${DOCKER_TAG_LINE_}
 	@export DO_TO_IMAGE_=stroika-buildvm-windows-msys-vs2k22; ${DOCKER_TAG_LINE_}
 endif
 
@@ -111,8 +104,6 @@ ifeq (${DETECTED_HOST_OS},Linux)
 	# #docker tag sophistsolutionsinc/stroika-dev sophistsolutionsinc/stroika-dev:$(STROIKA_VERSION)
 endif
 ifneq ($(findstring $(DETECTED_HOST_OS),MSYS-Cygwin),)
-	@export DO_TO_IMAGE_=stroika-buildvm-windows-cygwin-vs2k19; ${DOCKER_PUSH_LINE_}
 	@export DO_TO_IMAGE_=stroika-buildvm-windows-cygwin-vs2k22; ${DOCKER_PUSH_LINE_}
-	@export DO_TO_IMAGE_=stroika-buildvm-windows-msys-vs2k19; ${DOCKER_PUSH_LINE_}
 	@export DO_TO_IMAGE_=stroika-buildvm-windows-msys-vs2k22; ${DOCKER_PUSH_LINE_}
 endif

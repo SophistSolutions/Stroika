@@ -31,15 +31,6 @@ checkin from one spot.
       ./ScriptsLib/RunRemoteRegressionTests
   ```
 
-- \$TEST_TARGET=Windows_VS2k19
-
-  (on windows bash shell run; takes about 4 HRs)
-
-  ```bash
-  USE_TEST_BASENAME=Windows_`./ScriptsLib/DetectedHostOS`_VS2k19 PLATFORM=VisualStudio.Net-2019 \
-      ./ScriptsLib/RegressionTests
-  ```
-
 - \$TEST_TARGET=Windows_VS2k22
 
   (on windows bash shell run; takes about 4 HRs)
@@ -111,15 +102,13 @@ checkin from one spot.
 Must be done on Windows machine (currently doesnt work on - even windows - vm)
 
   ```bash
-  for var in "Cygwin-VS2k19" "Cygwin-VS2k22" "MSYS-VS2k19" "MSYS-VS2k22" ; do LCV=`echo "${var}" | tr '[:upper:]' '[:lower:]'` CONTAINER_IMAGE=sophistsolutionsinc/stroika-buildvm-windows-${LCV} USE_TEST_BASENAME=Windows_${var}-In-Docker ./ScriptsLib/RunLocalWindowsDockerRegressionTests ; done
+  for var in  "Cygwin-VS2k22" "MSYS-VS2k22" ; do LCV=`echo "${var}" | tr '[:upper:]' '[:lower:]'` CONTAINER_IMAGE=sophistsolutionsinc/stroika-buildvm-windows-${LCV} USE_TEST_BASENAME=Windows_${var}-In-Docker ./ScriptsLib/RunLocalWindowsDockerRegressionTests ; done
   ```
 
   OR alternatively
 
   ```sh
-   CONTAINER_IMAGE=sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19 USE_TEST_BASENAME=Windows_Cygwin_VS2k19-In-Docker ./ScriptsLib/RunLocalWindowsDockerRegressionTests
    CONTAINER_IMAGE=sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k22 USE_TEST_BASENAME=Windows_Cygwin_VS2k22-In-Docker ./ScriptsLib/RunLocalWindowsDockerRegressionTests
-   CONTAINER_IMAGE=sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k19 USE_TEST_BASENAME=Windows_MSYS_VS2k19-In-Docker ./ScriptsLib/RunLocalWindowsDockerRegressionTests
    CONTAINER_IMAGE=sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k22 USE_TEST_BASENAME=Windows_MSYS_VS2k22-In-Docker ./ScriptsLib/RunLocalWindowsDockerRegressionTests
   ```
 

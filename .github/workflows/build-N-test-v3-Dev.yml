@@ -295,13 +295,6 @@ jobs:
       matrix:
         # Add to extra_config_args for build speed: --Xerces no --OpenSSL no --lzma no --boost no
         include:
-          - displayTargetName: windows-vs2k19-cygwin-x86-Debug
-            os: windows
-            runs_on: windows-2022
-            container_image: sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k19:v3
-            config_name: Debug
-            extra_config_args: --arch x86 --apply-default-debug-flags --trace2file enable
-            includeInDevBranchBuilds: true
           - displayTargetName: windows-vs2k22-cygwin-x86-Debug
             os: windows
             runs_on: windows-2022
