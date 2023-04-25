@@ -492,9 +492,7 @@ namespace Stroika::Foundation::Traversal {
 }
 
 namespace Stroika::Foundation::Configuration {
-#if !qCompilerAndStdLib_template_specialization_internalErrorWithSpecializationSignifier_Buggy
     template <>
-#endif
     constexpr EnumNames<Traversal::Openness> DefaultNames<Traversal::Openness>::k{EnumNames<Traversal::Openness>::BasicArrayInitializer{{
         {Traversal::Openness::eOpen, L"Open"},
         {Traversal::Openness::eClosed, L"Closed"},

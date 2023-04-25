@@ -400,9 +400,7 @@ namespace Stroika::Foundation::Time {
 }
 
 namespace Stroika::Foundation::Configuration {
-#if !qCompilerAndStdLib_template_specialization_internalErrorWithSpecializationSignifier_Buggy
     template <>
-#endif
     constexpr EnumNames<Stroika::Foundation::Time::Date::NonStandardPrintFormat> DefaultNames<Stroika::Foundation::Time::Date::NonStandardPrintFormat>::k{
         EnumNames<Stroika::Foundation::Time::Date::NonStandardPrintFormat>::BasicArrayInitializer{{
             {Stroika::Foundation::Time::Date::NonStandardPrintFormat::eCurrentLocale_WithZerosStripped,

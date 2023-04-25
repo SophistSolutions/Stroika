@@ -110,13 +110,8 @@ namespace Stroika::Foundation::Containers::Concrete {
                 }
             }
             else {
-// @todo - add patching...
-#if qCompilerAndStdLib_insert_or_assign_Buggy
-                fData_.erase (tuple<INDEXES...> (indexes...));
-                fData_.insert (typename map<tuple<INDEXES...>, T>::value_type (tuple<INDEXES...> (indexes...), v));
-#else
+                // @todo - add patching...
                 fData_.insert_or_assign (tuple<INDEXES...> (indexes...), v);
-#endif
             }
             fChangeCounts_.PerformedChange ();
         }

@@ -366,9 +366,7 @@ namespace Stroika::Frameworks::SystemPerformance {
  ********************************************************************************
  */
 namespace Stroika::Foundation::Configuration {
-#if !qCompilerAndStdLib_template_specialization_internalErrorWithSpecializationSignifier_Buggy
     template <>
-#endif
     constexpr EnumNames<Frameworks::SystemPerformance::Instruments::Process::ProcessType::RunStatus>
         DefaultNames<Frameworks::SystemPerformance::Instruments::Process::ProcessType::RunStatus>::k{
             EnumNames<Frameworks::SystemPerformance::Instruments::Process::ProcessType::RunStatus>::BasicArrayInitializer{{

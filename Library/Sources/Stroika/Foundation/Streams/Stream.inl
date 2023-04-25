@@ -82,9 +82,7 @@ namespace Stroika::Foundation::Streams {
 }
 
 namespace Stroika::Foundation::Configuration {
-#if !qCompilerAndStdLib_template_specialization_internalErrorWithSpecializationSignifier_Buggy
     template <>
-#endif
     constexpr EnumNames<Streams::SeekableFlag> DefaultNames<Streams::SeekableFlag>::k{EnumNames<Streams::SeekableFlag>::BasicArrayInitializer{{
         {Streams::SeekableFlag::eSeekable, L"Seekable"},
         {Streams::SeekableFlag::eNotSeekable, L"Not-Seekable"},

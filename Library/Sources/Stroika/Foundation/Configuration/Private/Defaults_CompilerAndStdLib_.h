@@ -32,21 +32,6 @@
 #if defined(__cplusplus)
 
 /**
- *
- */
-#define kStrokia_Foundation_Configuration_cplusplus_11 201103
-
-/**
- *
- */
-#define kStrokia_Foundation_Configuration_cplusplus_14 201402
-
-/**
- * According to https://en.wikipedia.org/wiki/C%2B%2B17 - 201703
- */
-#define kStrokia_Foundation_Configuration_cplusplus_17 201703
-
-/**
  *  https://github.com/cplusplus/draft/releases/download/n4868/n4868.pdf (search for __cplusplus)
  */
 #define kStrokia_Foundation_Configuration_cplusplus_20 202002L
@@ -116,33 +101,6 @@
 
 #elif defined(_MSC_VER)
 
-// _MSC_VER=1920
-#define _MSC_VER_2k19_16Pt0_ 1920
-#define _MS_VS_2k19_16Pt0Pt0pre2_ 192027305
-#define _MS_VS_2k19_16Pt0Pt0pre4_ 192027404
-
-// _MSC_VER=1921
-#define _MSC_VER_2k19_16Pt1_ 1921
-#define _MS_VS_2k19_16Pt1Pt0_ 192127702
-
-// _MSC_VER=1922
-#define _MSC_VER_2k19_16Pt2_ 1922
-#define _MS_VS_2k19_16Pt2Pt0_ 192227905
-
-// _MSC_VER=1923
-#define _MSC_VER_2k19_16Pt3_ 1923
-#define _MSC_VER_2k19_16Pt4_ 1924
-#define _MSC_VER_2k19_16Pt5_ 1925
-#define _MSC_VER_2k19_16Pt6_ 1926
-#define _MSC_VER_2k19_16Pt7_ 1927
-#define _MSC_VER_2k19_16Pt8_ 1928
-
-// _MSC_VER=1928 (SADLY - due to https://developercommunity2.visualstudio.com/t/The-169-cc-compiler-still-uses-the-s/1335194)
-#define _MSC_VER_2k19_16Pt9_ 1928
-
-// _MSC_VER=1929 (back to incrementing for new 'second dot' versions it appears)...
-#define _MSC_VER_2k19_16Pt10_ 1929
-
 #define _MSC_VER_2k22_17Pt0_ 1930
 #define _MSC_VER_2k22_17Pt1_ 1931
 #define _MSC_VER_2k22_17Pt2_ 1932
@@ -151,12 +109,9 @@
 #define _MSC_VER_2k22_17Pt5_ 1935
 
 // We COULD look at _MSC_FULL_VER but changes too often and too rarely makes a difference: just assume all bug defines the same for a given _MSC_VER
-#if _MSC_VER < 1916
+#if _MSC_VER < _MSC_VER_2k22_17Pt0_
 #define _STROIKA_CONFIGURATION_WARNING_                                                                                                    \
-    "Warning: Stroika does not support versions prior to Microsoft Visual Studio.net 2019 (use Stroika v2.1 or earlier)"
-#elif _MSC_VER <= _MSC_VER_2k19_16Pt4_
-#elif _MSC_VER <= _MSC_VER_2k19_16Pt10_
-// We COULD look at _MSC_FULL_VER but changes too often and too rarely makes a difference: just assume all bug defines the same for a given _MSC_VER
+    "Warning: Stroika does not support versions prior to Microsoft Visual Studio.net 2022 (use Stroika v2.1 or earlier)"
 #elif _MSC_VER <= _MSC_VER_2k22_17Pt5_
 // We COULD look at _MSC_FULL_VER but changes too often and too rarely makes a difference: just assume all bug defines the same for a given _MSC_VER
 #else
@@ -187,7 +142,7 @@
 /* 
  * to find glibc version
 
-        g++-8 foo.cpp
+        g++-11 foo.cpp
 
 foo.cpp:
     #include <iostream>
@@ -202,7 +157,6 @@ foo.cpp:
 
  prints __GLIBCXX__=20180728
  */
-//#define GLIBCXX_8x_ 20180728
 //#define GLIBCXX_10x_ 20200930
 //#define GLIBCXX_11x_ 20210427
 //#define GLIBCXX_11x_ 20210923
@@ -324,7 +278,6 @@ C:\Sandbox\Stroika\DevRoot\Tests\TestCommon\CommonTests_MultiSet.h(250): note: e
 #ifndef qCompilerAndStdLib_maybe_unused_b4_auto_in_for_loop_Buggy
 
 #if defined(_MSC_VER)
-// verified broken in _MSC_VER_2k19_16Pt10_
 // verified broken in _MSC_VER_2k22_17Pt0_
 // verified broken in _MSC_VER_2k22_17Pt1_
 // verified broken in _MSC_VER_2k22_17Pt2_
@@ -332,7 +285,7 @@ C:\Sandbox\Stroika\DevRoot\Tests\TestCommon\CommonTests_MultiSet.h(250): note: e
 // verified broken in _MSC_VER_2k22_17Pt4_
 // verified broken in _MSC_VER_2k22_17Pt5_
 #define qCompilerAndStdLib_maybe_unused_b4_auto_in_for_loop_Buggy                                                                          \
-    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER_2k19_16Pt8_ <= _MSC_VER && _MSC_VER <= _MSC_VER_2k22_17Pt5_)
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k22_17Pt5_)
 #else
 #define qCompilerAndStdLib_maybe_unused_b4_auto_in_for_loop_Buggy 0
 #endif
@@ -382,7 +335,6 @@ SUMMARY: AddressSanitizer: stack-use-after-scope C:\Program Files\Microsoft Visu
 #ifndef qCompilerAndStdLib_ASAN_initializerlist_scope_Buggy
 
 #if defined(_MSC_VER)
-// verified broken in _MSC_VER_2k19_16Pt10_
 // verified broken in _MSC_VER_2k22_17Pt0_
 // verified broken in _MSC_VER_2k22_17Pt1_
 // verified broken in _MSC_VER_2k22_17Pt2_
@@ -412,19 +364,6 @@ SUMMARY: AddressSanitizer: stack-use-after-scope C:\Program Files\Microsoft Visu
 
 #endif
 
-// First broken vs2k19 16.11.0, but seems to have same MSC_VER, so lump in with previous compiler
-#ifndef qCompilerAndStdLib_ASAN_windows_http_badheader_Buggy
-
-#if defined(_MSC_VER)
-// verified broken in _MSC_VER_2k19_16Pt10_
-// Appears FIXED in _MSC_VER_2k22_17Pt0_ (or maybe windows 11 - tested both at same time)
-#define qCompilerAndStdLib_ASAN_windows_http_badheader_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k19_16Pt10_)
-#else
-#define qCompilerAndStdLib_ASAN_windows_http_badheader_Buggy 0
-#endif
-
-#endif
-
 /*
 1>C:\Sandbox\Stroika\DevRoot\Library\Sources\Stroika\Foundation\Cryptography\Encoding\Algorithm\Base64.cpp(60): error C2440: 'initializing': cannot convert from 'int' to 'std::byte'
 1>C:\Sandbox\Stroika\DevRoot\Library\Sources\Stroika\Foundation\Cryptography\Encoding\Algorithm\Base64.cpp(60): note: Conversion to enumeration type requires an explicit cast (static_cast, C-style cast or function-style cast)
@@ -433,7 +372,6 @@ SUMMARY: AddressSanitizer: stack-use-after-scope C:\Program Files\Microsoft Visu
 #ifndef qCompilerAndStdLib_relaxedEnumClassInitializationRules_Buggy
 
 #if defined(_MSC_VER)
-// verified still broken in _MSC_VER_2k19_16Pt10_
 // verified still broken in _MSC_VER_2k22_17Pt0_
 // verified still broken in _MSC_VER_2k22_17Pt1_
 // verified still broken in _MSC_VER_2k22_17Pt2_
@@ -444,29 +382,6 @@ SUMMARY: AddressSanitizer: stack-use-after-scope C:\Program Files\Microsoft Visu
     CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k22_17Pt5_)
 #else
 #define qCompilerAndStdLib_relaxedEnumClassInitializationRules_Buggy 0
-#endif
-
-#endif
-
-//
-// Issue APPEARS to be operator bool called, and that is what gets compared on!!!
-// Also breaks other operators
-// REPORTED TO MSFT  - https://developercommunity.visualstudio.com/content/problem/997235/operator-bool-buggy-interaction-with-auto-generate.html
-//
-// Simple workaround appears to be to use explicit operator==
-// Cannot TEST this now (expect using code from https://developercommunity.visualstudio.com/content/problem/997235/operator-bool-buggy-interaction-with-auto-generate)
-// so probably remove this bug before long - leave define around for POINTER to discussion/reproduction details in case I run into this again anytime soon
-//  (maybe untrue - appears I have explicit test case in Test code)--LGP 2020-05-21
-//
-#ifndef qCompilerAndStdLib_operatorCompareWithOperatorBoolConvertAutoGen_Buggy
-
-#if defined(_MSC_VER)
-// first found broken in _MSC_VER_2k19_16Pt5_
-// APPEARS FIXED? _MSC_VER_2k19_16Pt6_
-#define qCompilerAndStdLib_operatorCompareWithOperatorBoolConvertAutoGen_Buggy                                                             \
-    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k19_16Pt5_)
-#else
-#define qCompilerAndStdLib_operatorCompareWithOperatorBoolConvertAutoGen_Buggy 0
 #endif
 
 #endif
@@ -484,19 +399,13 @@ C :\Sandbox\Stroika\DevRoot\Tests\50\Test.cpp : 750
 #ifndef qCompilerAndStdLib_ReleaseBld32Codegen_DateRangeInitializerDateOperator_Buggy
 
 #if defined(_MSC_VER)
-// first/only found broken in _MSC_VER_2k19_16Pt6_ - and only in RELEASE and 32-bit builds
-// still broken in _MSC_VER_2k19_16Pt7_
-// still broken in _MSC_VER_2k19_16Pt8_
-// still broken in in _MSC_VER_2k19_16Pt10_
 // APPEARS FIXED in _MSC_VER_2k22_17Pt0_
 // And then RE-BROKEN in _MSC_VER_2k22_17Pt2_
 // APPEARS still BROKEN in _MSC_VER_2k22_17Pt3_
 // APPEARS still BROKEN in _MSC_VER_2k22_17Pt4_
 // APPEARS still BROKEN in _MSC_VER_2k22_17Pt5_
 #define qCompilerAndStdLib_ReleaseBld32Codegen_DateRangeInitializerDateOperator_Buggy                                                      \
-    (CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((_MSC_VER_2k19_16Pt6_ <= _MSC_VER && _MSC_VER <= _MSC_VER_2k19_16Pt10_) ||                \
-                                                 (_MSC_VER_2k22_17Pt2_ <= _MSC_VER && _MSC_VER <= _MSC_VER_2k22_17Pt5_)) &&                \
-     !qDebug && defined (_M_IX86))
+    (CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((_MSC_VER_2k22_17Pt2_ <= _MSC_VER && _MSC_VER <= _MSC_VER_2k22_17Pt5_)) && !qDebug && defined (_M_IX86))
 #else
 #define qCompilerAndStdLib_ReleaseBld32Codegen_DateRangeInitializerDateOperator_Buggy 0
 #endif
@@ -766,16 +675,6 @@ ABORTING...
 #ifndef qCompilerAndStdLib_std_get_time_pctx_Buggy
 
 #if defined(_MSC_VER)
-// VERIFIED STILL BROKEN in _MSC_VER_2k19_16Pt0_
-// VERIFIED STILL BROKEN in _MSC_VER_2k19_16Pt1_
-// VERIFIED STILL BROKEN in _MSC_VER_2k19_16Pt2_
-// VERIFIED STILL BROKEN in _MSC_VER_2k19_16Pt3_
-// VERIFIED STILL BROKEN in _MSC_VER_2k19_16Pt4_
-// VERIFIED STILL BROKEN in _MSC_VER_2k19_16Pt5_
-// VERIFIED STILL BROKEN in _MSC_VER_2k19_16Pt6_
-// VERIFIED STILL BROKEN in _MSC_VER_2k19_16Pt7_
-// VERIFIED STILL BROKEN in _MSC_VER_2k19_16Pt8_
-// VERIFIED STILL BROKEN in _MSC_VER_2k19_16Pt10_
 // VERIFIED STILL BROKEN in _MSC_VER_2k22_17Pt0_
 // VERIFIED STILL BROKEN in _MSC_VER_2k22_17Pt1_
 // VERIFIED STILL BROKEN in _MSC_VER_2k22_17Pt2_
@@ -786,56 +685,6 @@ ABORTING...
 #define qCompilerAndStdLib_std_get_time_pctx_Buggy 0
 #endif
 
-#endif
-
-/*
-* 
-* REPORTED IN https://developercommunity.visualstudio.com/t/static_initializer_lambda_funct_init_Bug/1287411
-* 
-*   SUPPOSEDLY FIXED in 16.10 accoridng to above
-* 
-* 
- Compiling Samples/WebService/Sources/Model.cpp ...
-C:\Sandbox\Stroika\DevRoot\Samples\WebService\Sources\Model.cpp(98): fatal error C1001: Internal compiler error.
-(compiler file 'msc1.cpp', line 1584)
- To work around this problem, try simplifying or changing the program near the locations listed above.
-If possible please provide a repro here: https://developercommunity.visualstudio.com
-Please choose the Technical Support command on the Visual C++
- Help menu, or open the Technical Support help file for more information
-INTERNAL COMPILER ERROR in 'C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.28.29333\bin\HostX64\x64\cl.exe'
-    Please choose the Technical Support command on the Visual C++
-*/
-#ifndef qCompilerAndStdLib_static_initializer_lambda_funct_init_Buggy
-#if defined(_MSC_VER)
-// First broken in _MSC_VER_2k19_16Pt8_
-// APPEARS FIXED IN _MSC_VER_2k19_16Pt10_
-#define qCompilerAndStdLib_static_initializer_lambda_funct_init_Buggy (_MSC_VER == _MSC_VER_2k19_16Pt8_)
-#else
-#define qCompilerAndStdLib_static_initializer_lambda_funct_init_Buggy 0
-#endif
-#endif
-
-/**
-1>   Compiling Library/Sources/Stroika/Foundation/Cryptography/OpenSSL/CipherAlgorithm.cpp ...
-1>C:\Sandbox\Stroika\DevRoot\Library\Sources\Stroika\Foundation\Cryptography\OpenSSL\CipherAlgorithm.cpp(89): fatal error C1001: Internal compiler error.
-1>(compiler file 'msc1.cpp', line 1588)
-1> To work around this problem, try simplifying or changing the program near the locations listed above.
-1>If possible please provide a repro here: https://developercommunity.visualstudio.com
-1>Please choose the Technical Support command on the Visual C++
-1> Help menu, or open the Technical Support help file for more information
-1>INTERNAL COMPILER ERROR in 'C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.28.29910\bin\HostX64\x86\cl.exe'
-1>    Please choose the Technical Support command on the Visual C++
-1>    Help menu, or open the Technical Support help file for more information
- */
-#ifndef qCompilerAndStdLib_const_extern_declare_then_const_define_namespace_Buggy
-#if defined(_MSC_VER)
-// First broken in _MSC_VER_2k19_16Pt8_
-// APPEARS FIXED IN _MSC_VER_2k19_16Pt10_
-#define qCompilerAndStdLib_const_extern_declare_then_const_define_namespace_Buggy                                                          \
-    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER == _MSC_VER_2k19_16Pt8_)
-#else
-#define qCompilerAndStdLib_const_extern_declare_then_const_define_namespace_Buggy 0
-#endif
 #endif
 
 /*
@@ -854,8 +703,6 @@ C:\Sandbox\Stroika\DevRoot\Samples\ActiveLedIt\Sources\Toolbar.cpp(885): note: N
 */
 #ifndef qCompilerAndStdLib_altComPtrCvt2ComQIPtrRequiresExtraCast_Buggy
 #if defined(_MSC_VER)
-// First broken in _MSC_VER_2k19_16Pt8_
-// still broken in _MSC_VER_2k19_16Pt10_
 // still broken in _MSC_VER_2k22_17Pt0_
 // still broken in _MSC_VER_2k22_17Pt1_
 // still broken in _MSC_VER_2k22_17Pt2_
@@ -863,37 +710,10 @@ C:\Sandbox\Stroika\DevRoot\Samples\ActiveLedIt\Sources\Toolbar.cpp(885): note: N
 // still broken in _MSC_VER_2k22_17Pt4_
 // still broken in _MSC_VER_2k22_17Pt5_
 #define qCompilerAndStdLib_altComPtrCvt2ComQIPtrRequiresExtraCast_Buggy                                                                    \
-    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER_2k19_16Pt8_ <= _MSC_VER && _MSC_VER <= _MSC_VER_2k22_17Pt5_)
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k22_17Pt5_)
 #else
 #define qCompilerAndStdLib_altComPtrCvt2ComQIPtrRequiresExtraCast_Buggy 0
 #endif
-#endif
-
-/*
-    1>C:\Sandbox\Stroika\DevRoot\Tests\45\Test.cpp(317,33): error C2672:  'Stroika::Foundation::Memory::NEltsOf_REAL_': no matching overloaded function found
-    1>C:\Sandbox\Stroika\DevRoot\Tests\45\Test.cpp(326,13): error C2893:  Failed to specialize function template 'size_t Stroika::Foundation::Memory::NEltsOf_REAL_(const ARRAY_TYPE (&)[SIZE_OF_ARRAY])'
-    1>C:\Sandbox\Stroika\DevRoot\Tests\45\Test.cpp(326,13): message :  With the following template arguments:
-    1>C:\Sandbox\Stroika\DevRoot\Tests\45\Test.cpp(326,13): message :  'ARRAY_TYPE=Stroika::Foundation::Common::KeyValuePair<double,unsigned int>'
-    1>C:\Sandbox\Stroika\DevRoot\Tests\45\Test.cpp(326,13): message :  'SIZE_OF_ARRAY=0'
-    1>C:\Sandbox\Stroika\DevRoot\Tests\45\Test.cpp(326,13): error C3316:  'const Stroika::Foundation::Common::KeyValuePair<double,unsigned int> []': an array of unknown size cannot be used in a range-based for statement
-    1>C:\Sandbox\Stroika\DevRoot\Tests\45\Test.cpp(319,78): error C2065:  'i': undeclared identifier
-    1>C:\Sandbox\Stroika\DevRoot\Tests\45\Test.cpp(319,49): error C2064:  term does not evaluate to a function taking 1 arguments
-    1>C:\Sandbox\Stroika\DevRoot\Tests\45\Test.cpp(326,13): message :  class does not define an 'operator()' or a user defined conversion operator to a pointer-to-function or reference-to-function that takes appropriate number of arguments
-    1>C:\Sandbox\Stroika\DevRoot\Tests\45\Test.cpp(321,75): error C2065:  'i': undeclared identifier
-*/
-#ifndef qCompilerAndStdLib_constexpr_KeyValuePair_array_stdinitializer_Buggy
-
-#if defined(_MSC_VER)
-// WORKS anytime before _MS_VS_2k19_16Pt1Pt0_
-// First broken in _MS_VS_2k19_16Pt1Pt0_
-// broken in _MSC_VER_2k19_16Pt2_
-// verified still broken in _MSC_VER_2k19_16Pt3_
-// Verified FIXED in _MSC_VER_2k19_16Pt4_
-#define qCompilerAndStdLib_constexpr_KeyValuePair_array_stdinitializer_Buggy (_MSC_VER <= _MSC_VER_2k19_16Pt3_)
-#else
-#define qCompilerAndStdLib_constexpr_KeyValuePair_array_stdinitializer_Buggy 0
-#endif
-
 #endif
 
 /*
@@ -953,28 +773,6 @@ READ of size 6 at 0x0110ed9d thread T0
 #else
 #define qCompilerAndStdLib_Debug32_asan_Poison_Buggy 0
 #endif
-#endif
-
-/*
->C:\Sandbox\Stroika\DevRoot\Library\Sources\Stroika\Foundation\Configuration\Enumeration.inl(111): message :  see reference to function template instantiation 'void Stroika::Foundation::Configuration::EnumNames<Stroika::Foundation::Cryptography::OpenSSL::CipherAlgorithm>::RequireItemsOrderedByEnumValue_(void) const' being compiled (compiling source file ..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\CipherAlgorithm.cpp)
-1>C:\Sandbox\Stroika\DevRoot\Library\Sources\Stroika\Foundation\Configuration\Enumeration.inl(208,1): error C1001:  An internal error has occurred in the compiler.
-1>C:\Sandbox\Stroika\DevRoot\Library\Sources\Stroika\Foundation\Configuration\Enumeration.inl(208,1): error C1001: (compiler file 'd:\agent\_work\3\s\src\vctools\Compiler\CxxFE\sl\p1\c\yyaction.cpp', line 1187)
-1>C:\Sandbox\Stroika\DevRoot\Library\Sources\Stroika\Foundation\Configuration\Enumeration.inl(208,1): error C1001:  To work around this problem, try simplifying or changing the program near the locations listed above.
-1>C:\Sandbox\Stroika\DevRoot\Library\Sources\Stroika\Foundation\Configuration\Enumeration.inl(208,1): error C1001: Please choose the Technical Support command on the Visual C++
-1>C:\Sandbox\Stroika\DevRoot\Library\Sources\Stroika\Foundation\Configuration\Enumeration.inl(208,1): error C1001:  Help menu, or open the Technical Support help file for more information (compiling source file ..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\DigestAlgorithm.cpp)
-1>C:\Sandbox\Stroika\DevRoot\Library\Sources\Stroika\Foundation\Configuration\Enumeration.inl(205): message :  see reference to function template instantiation 'void Stroika::Foundation::Configuration::EnumNames<Stroika::Foundation::Cryptography::OpenSSL::DigestAlgorithm>::RequireItemsOrderedByEnumValue_(void) const' being compiled (compiling source file ..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\DigestAlgorithm.cpp)
-*/
-#ifndef qCompilerAndStdLib_template_specialization_internalErrorWithSpecializationSignifier_Buggy
-
-#if defined(_MSC_VER)
-// First noticed broken in _MSC_VER_2k19_16Pt1_
-// VERIFIED BROKEN _MSC_VER_2k19_16Pt2_
-// Fixed in _MSC_VER_2k19_16Pt3_
-#define qCompilerAndStdLib_template_specialization_internalErrorWithSpecializationSignifier_Buggy (_MSC_VER <= _MSC_VER_2k19_16Pt2_)
-#else
-#define qCompilerAndStdLib_template_specialization_internalErrorWithSpecializationSignifier_Buggy 0
-#endif
-
 #endif
 
 /*
@@ -1174,32 +972,6 @@ In function '__copy_m',
 #endif
 #endif
 
-#ifndef qCompilerAndStdLib_GenericLambdaInsideGenericLambdaAssertCall_Buggy
-
-// Generates internal compiler error
-#if defined(_MSC_VER)
-// First noticed broken _MSC_VER_2k19_16Pt2_
-// Fixed in _MSC_VER_2k19_16Pt3_
-#define qCompilerAndStdLib_GenericLambdaInsideGenericLambdaAssertCall_Buggy (_MSC_VER <= _MSC_VER_2k19_16Pt2_)
-#else
-#define qCompilerAndStdLib_GenericLambdaInsideGenericLambdaAssertCall_Buggy 0
-#endif
-
-#endif
-
-#ifndef qCompilerAndStdLib_template_GenericLambdaInsideGenericLambdaDeductionInternalError_Buggy
-
-// Generates internal compiler error
-#if defined(_MSC_VER)
-// First noticed broken _MSC_VER_2k19_16Pt2_
-// Fixed in _MSC_VER_2k19_16Pt3_
-#define qCompilerAndStdLib_template_GenericLambdaInsideGenericLambdaDeductionInternalError_Buggy (_MSC_VER <= _MSC_VER_2k19_16Pt2_)
-#else
-#define qCompilerAndStdLib_template_GenericLambdaInsideGenericLambdaDeductionInternalError_Buggy 0
-#endif
-
-#endif
-
 /*
 5>C:\Sandbox\Stroika\DevRoot\Tests\TestCommon\CommonTests_Iterable.h(60): error C2059: syntax error: 'template'
 25>C:\Sandbox\Stroika\DevRoot\Tests\TestCommon\CommonTests_Iterable.h(76): note: see reference to function template instantiation 'void CommonTests::IterableTests::Test5_SequenceEquals_<USING_ITERABLE_CONTAINER,EQUALS_COMPARER>(const Stroika::Foundation::Traversal::Iterable<T> &,EQUALS_COMPARER)' being compiled
@@ -1209,11 +981,6 @@ In function '__copy_m',
 #ifndef qCompilerAndStdLib_template_template_call_SequentialEquals_Buggy
 
 #if defined(_MSC_VER)
-// First noticed broken _MSC_VER_2k19_16Pt5_
-// still broken in _MSC_VER_2k19_16Pt6_
-// still broken in _MSC_VER_2k19_16Pt7_
-// still broken in _MSC_VER_2k19_16Pt8_
-// still broken in _MSC_VER_2k19_16Pt10_
 // still broken in _MSC_VER_2k22_17Pt0_
 // still broken in _MSC_VER_2k22_17Pt1_
 // still broken in _MSC_VER_2k22_17Pt2_
@@ -1292,59 +1059,6 @@ From:    https://en.cppreference.com/w/cpp/locale/time_get/date_order
 
 #endif
 
-/**
- * (compiler file 'd:\agent\_work\3\s\src\vctools\Compiler\CxxFE\sl\p1\c\ParseTreeActions.cpp', line 5799)
- To work around this problem, try simplifying or changing the program near the locations listed above.
-Please choose the Technical Support command on the Visual C++
- Help menu, or open the Technical Support help file for more information
-C:\Sandbox\Stroika\DevRoot\Tests\32\Test.cpp(621): note: while compiling class template member function 'std::shared_ptr<Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReader::IElementConsumer> `anonymous-namespace'::T7_SAXObjectReader_BLKQCL_ReadSensors_::TunerMappingReader_<`anonymous-namespace'::T7_SAXObjectReader_BLKQCL_ReadSensors_::TemperatureType_>::HandleChildStart(const Stroika::Foundation::DataExchange::StructuredStreamEvents::Name &)'
-C:\Sandbox\Stroika\DevRoot\Tests\32\Test.cpp(656): note: see reference to class template insta
-
-C:\Sandbox\Stroika\DevRoot\Tests\32\Test.cpp(851): fatal error C1001: An internal error has occurred in the compiler.
-(compiler file 'd:\agent\_work\5\s\src\vctools\Compiler\CxxFE\sl\p1\c\ParseTreeActions.cpp', line 6142)
- To work around this problem, try simplifying or changing the program near the locations listed above.
-Please choose the Technical Support command on the Visual C++
- Help menu, or open the Technical Support help file for more information
-
-STILL:
-28>Linking Builds/Debug-U-32/Tests/Test27.exe ...
-33>C:\Sandbox\Stroika\DevRoot\Tests\32\Test.cpp(851): fatal error C1001: Internal compiler error.
-33>(compiler file 'd:\agent\_work\4\s\src\vctools\Compiler\CxxFE\sl\p1\c\ParseTreeActions.cpp', line 6160)
-33> To work around this problem, try simplifying or changing the program near the locations listed above.
-33>If possible please provide a repro here: https://developercommunity.visualstudio.com
-33>Please choose the Technical Support command on the Visual C++
-33> Help menu, or open the Technical Support help file for more information
- */
-#ifndef qCompilerAndStdLib_using_in_template_invoke_other_template_Buggy
-
-#if defined(_MSC_VER)
-
-// FIRST broken in _MSC_VER_2k19_16Pt3_
-// verified broken in _MSC_VER_2k19_16Pt4_
-// verified broken in _MSC_VER_2k19_16Pt5_
-// FIXED in _MSC_VER_2k19_16Pt6_
-#define qCompilerAndStdLib_using_in_template_invoke_other_template_Buggy (_MSC_VER <= _MSC_VER_2k19_16Pt5_)
-#else
-#define qCompilerAndStdLib_using_in_template_invoke_other_template_Buggy 0
-#endif
-
-#endif
-
-/**
- * Internal compiler error building ActiveLedIt
- */
-#ifndef qCompilerAndStdLib_ATL_Assign_wstring_COMOBJ_Buggy
-
-#if defined(_MSC_VER)
-
-// FIRST broken in _MSC_VER_2k19_16Pt3_
-#define qCompilerAndStdLib_ATL_Assign_wstring_COMOBJ_Buggy (_MSC_VER <= _MSC_VER_2k19_16Pt3_)
-#else
-#define qCompilerAndStdLib_ATL_Assign_wstring_COMOBJ_Buggy 0
-#endif
-
-#endif
-
 // libstd c++ clang versions (around 14) have badly fucked this up.
 // they leave __cpp_lib_three_way_comparison undefined, but still provide (in some versions - like V14) a partly broken
 // version available to introduce compiler ambiguiity errors when used
@@ -1416,27 +1130,6 @@ STILL:
 #endif
 
 /*
- MUST RUN TEST    Foundation::Execution::Other
- and see if it passes/fails - maybe review log text
- */
-#ifndef qCompilerAndStdLib_atomic_bool_initialize_before_main_Buggy
-
-#if defined(_MSC_VER)
-
-// verified broken in _MSC_VER_2k19_16Pt0_ (debug builds only)
-// verified broken in _MSC_VER_2k19_16Pt1_ (debug builds only)
-// verified broken in _MSC_VER_2k19_16Pt2_
-// verified broken in _MSC_VER_2k19_16Pt3_
-// verified broken in _MSC_VER_2k19_16Pt4_
-// Appears FIXED in _MSC_VER_2k19_16Pt5_
-#define qCompilerAndStdLib_atomic_bool_initialize_before_main_Buggy (_MSC_VER <= _MSC_VER_2k19_16Pt4_)
-#else
-#define qCompilerAndStdLib_atomic_bool_initialize_before_main_Buggy 0
-#endif
-
-#endif
-
-/*
  * Crazy man!  - https://connect.microsoft.com/VisualStudio/feedback/details/763051/a-value-of-predefined-macro-cplusplus-is-still-199711l
  *
  *       Stroika requires at least C++ ISO/IEC 14882:2011 supported by the compiler (informally known as C++ 11)
@@ -1450,19 +1143,6 @@ STILL:
 
 #if defined(_MSC_VER)
 
-// still broken in _MSC_VER_2k19_16Pt0_
-// CONFUSED ABOUT --- seems fixed when I run msbuild from make cmdline but fail from IDE?_MS_VS_2k19_16Pt0Pt0pre2_
-// CONFUSED ABOUT --- seems fixed when I run msbuild from make cmdline but fail from IDE?_MS_VS_2k19_16Pt0Pt0pre3_
-// still broken in _MS_VS_2k19_16Pt0Pt0pre43_ (aka _MS_VS_2k19_16Pt0Pt0_) (running from visual studio gui)
-// still broken in _MSC_VER_2k19_16Pt1_
-// still broken in _MSC_VER_2k19_16Pt2_
-// still broken in _MSC_VER_2k19_16Pt3_
-// verified still broken in _MSC_VER_2k19_16Pt4_
-// verified still broken in _MSC_VER_2k19_16Pt5_
-// verified still broken in _MSC_VER_2k19_16Pt6_
-// verified still broken in _MSC_VER_2k19_16Pt7_
-// verified still broken in _MSC_VER_2k19_16Pt8_
-// verified still broken in _MSC_VER_2k19_16Pt10_
 // verified still broken in _MSC_VER_2k22_17Pt0_
 // verified still broken in _MSC_VER_2k22_17Pt1_
 // verified still broken in _MSC_VER_2k22_17Pt2_
@@ -1472,70 +1152,6 @@ STILL:
 #define qCompilerAndStdLib_cplusplus_macro_value_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k22_17Pt5_)
 #else
 #define qCompilerAndStdLib_cplusplus_macro_value_Buggy 0
-#endif
-
-#endif
-
-/*
- *
- *  c:\sandbox\stroika\devroot-v2.0\library\sources\stroika\foundation\containers\sortedmapping.h(100): fatal error C1001
-: An internal error has occurred in the compiler. [C:\Sandbox\Stroika\DevRoot-v2.0\Library\Projects\VisualStudio.Net-
-2017\Stroika-Foundation.vcxproj]
-
-BREAKS
-        using _SetRepSharedPtr = typename inherited::template SharedPtrImplementationTemplate<_IRep>;
-
-WORKAROUND:
-        using _SetRepSharedPtr = Memory::SharedPtr<_IRep>;
-
-    Error reported is elsewhere where the typedef is used. Happens about 15 times in Stroika.
-*/
-#ifndef qCompilerAndStdLib_TemplateTemplateWithTypeAlias_Buggy
-
-#if defined(_MSC_VER)
-// verified still broken in _MSC_VER_2k19_16Pt0Pt0_ - preview1
-// verified still broken in _MS_VS_2k19_16Pt0Pt0pre2_
-// verified still broken in _MS_VS_2k19_16Pt0Pt0pre3_
-// verified still broken in _MS_VS_2k19_16Pt0Pt0pre43_ (aka _MS_VS_2k19_16Pt0Pt0_)
-// verified still broken _MSC_VER_2k19_16Pt1_
-// verified still broken _MSC_VER_2k19_16Pt2_
-// verified still broken in _MSC_VER_2k19_16Pt3_
-// verified fixed in _MSC_VER_2k19_16Pt4_
-#define qCompilerAndStdLib_TemplateTemplateWithTypeAlias_Buggy (_MSC_VER <= _MSC_VER_2k19_16Pt3_)
-#else
-#define qCompilerAndStdLib_TemplateTemplateWithTypeAlias_Buggy 0
-#endif
-
-#endif
-
-/*
-VS2k says:
-     *1>C:\Sandbox\Stroika\DevRoot\Library\Sources\Stroika\Foundation\Common\Compare.inl(35): error C2672: 'make_from_tuple': no matching overloaded function found (compiling source file ..\..\Sources\Stroika\Foundation\DataExchange\VariantValue.cpp)
-    1>C:\Sandbox\Stroika\DevRoot\Library\Sources\Stroika\Foundation\DataExchange\VariantValue.cpp(832): note: see reference to function template instantiation 'int Stroika::Foundation::Common::ThreeWayComparer<Stroika::Foundation::Containers::Sequence<Stroika::Foundation::DataExchange::VariantValue>>::operator ()<T,0x0>(const T &,const T &) const' being compiled
-
-    
-clang says:
-    n file included from ./../Characters/FloatConversion.h:15:
-    In file included from ./../Characters/../Containers/../Traversal/../Characters/String.h:13:
-    In file included from ./../Characters/../Containers/../Memory/../Common/Compare.h:412:
-    ./../Characters/../Common/Compare.inl:38:44: error: typename specifier refers to class template member in 'Stroika::Foundation::Containers::Sequence<Stroika::Foundation::DataExchange::VariantValue>';
-          argument deduction not allowed here
-            return make_from_tuple<typename Q::ThreeWayComparer> (fArgs_) (lhs, rhs);
-                                               ^
-    VariantValue.cpp:832:72: note: in instantiation of function template specialization
-          'Stroika::Foundation::Common::ThreeWayComparer<Stroika::Foundation::Containers::Sequence<Stroika::Foundation::DataExchange::VariantValue>>::operator()<Stroika::Foundation::Containers::Sequence<Stroika
-*/
-#ifndef qCompilerAndStdLib_make_from_tuple_Buggy
-
-#if defined(__clang__) && !defined(__APPLE__)
-// Appears FIXED with clang++-9
-#define qCompilerAndStdLib_make_from_tuple_Buggy ((__clang_major__ <= 8))
-#elif defined(_MSC_VER)
-// verified broken _MS_VS_2k19_16Pt0Pt0_
-// verified FIXED in _MSC_VER_2k19_16Pt1_
-#define qCompilerAndStdLib_make_from_tuple_Buggy (_MSC_VER <= _MSC_VER_2k19_16Pt0_)
-#else
-#define qCompilerAndStdLib_make_from_tuple_Buggy 0
 #endif
 
 #endif
@@ -1685,9 +1301,7 @@ make[4]: *** [/mnt/c/Sandbox/Stroika/DevRoot/ScriptsLib/SharedBuildRules-Default
 */
 #ifndef qCompilerAndStdLib_to_chars_FP_Buggy
 
-#if defined(_MSC_VER)
-#define qCompilerAndStdLib_to_chars_FP_Buggy (_MSC_VER < _MSC_VER_2k19_16Pt0_)
-#elif defined(__GNUC__) && !defined(__clang__)
+#if defined(__GNUC__) && !defined(__clang__)
 // according to https://en.cppreference.com/w/cpp/compiler_support fixed in gcc11
 #define qCompilerAndStdLib_to_chars_FP_Buggy 0
 #elif defined(__clang__) && defined(__APPLE__)
@@ -1863,16 +1477,6 @@ error C2975: '_Test': invalid template argument for 'std::conditional', expected
 // still broken in clang++-14
 #define qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 14))
 #elif defined(_MSC_VER)
-// verified still broken in _MSC_VER_2k19_16Pt0_
-// verified still broken in _MSC_VER_2k19_16Pt1_
-// verified still broken in _MSC_VER_2k19_16Pt2_
-// verified still broken in _MSC_VER_2k19_16Pt3_
-// verified still broken in _MSC_VER_2k19_16Pt4_
-// verified still broken in _MSC_VER_2k19_16Pt5_
-// verified still broken in _MSC_VER_2k19_16Pt6_
-// verified still broken in _MSC_VER_2k19_16Pt7_
-// verified still broken in _MSC_VER_2k19_16Pt8_
-// verified still broken in _MSC_VER_2k19_16Pt10_
 // verified still broken in _MSC_VER_2k22_17Pt0_
 // verified still broken in _MSC_VER_2k22_17Pt1_
 // verified still broken in _MSC_VER_2k22_17Pt2_
@@ -1964,67 +1568,6 @@ FAILED: RegressionTestFailure; replaced == L"abcdef";;Test.cpp: 753
 
 #endif
 
-#ifndef qCompilerAndStdLib_TemplateEqualsCompareOverload_Buggy
-
-#if defined(_MSC_VER)
-// first noted broken in _MSC_VER_2k19_16Pt6_
-// Appears fixed in _MSC_VER_2k19_16Pt7_
-#define qCompilerAndStdLib_TemplateEqualsCompareOverload_Buggy (_MSC_VER <= _MSC_VER_2k19_16Pt6_)
-#else
-#define qCompilerAndStdLib_TemplateEqualsCompareOverload_Buggy 0
-#endif
-
-#endif
-
-/*
- >c:\sandbox\stroika\devroot\library\sources\stroika\foundation\containers\concrete\mapping_linkedlist.inl(55): error C2146: syntax error: missing ';' before identifier '_APPLY_ARGTYPE' (compiling source file ..\..\Sources\Stroika\Foundation\DataExchange\Atom.cpp)
-1>c:\sandbox\stroika\devroot\library\sources\stroika\foundation\containers\concrete\mapping_linkedlist.inl(211): note: see reference to class template instantiation 'Stroika::Foundation::Containers::Concrete::Mapping_LinkedList<KEY_TYPE,MAPPED_VALUE_TYPE>::Rep_<KEY_EQUALS_COMPARER>' being compiled (compiling source file ..\..\Sources\Stroika\Foundation\DataExchange\Atom.cpp)
-1>c:\sandbox\stroika\devroot\library\sources\stroika\foundation\containers\concrete\mapping_linkedlist.inl(55): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int (compiling source file ..\..\Sources\Stroika\Foundation\DataExchange\Atom.cpp)
-1>c:\sandbox\stroika\devroot\library\sources\stroika\foundation\containers\concrete\mapping_linkedlist.inl(55): error C2868: 'Stroika::Foundation::Containers::Concrete::Mapping_LinkedList<KEY_TYPE,MAPPED_VALUE_TYPE>::Rep_<KEY_EQUALS_COMPARER>::_APPLY_ARGTYPE': illegal syntax for using-declaration; expected qualified-name (compiling source file ..\..\Sources\Stroika\Foundation\DataExchange\Atom.cpp)
-1>c:\sandbox\stroika\devroot\library\sources\stroika\foundation\containers\concrete\mapping_linkedlist.inl(56): error C2146: syntax error: missing ';' before identifier '_APPLYUNTIL_ARGTYPE' (compiling source file ..\..\Sources\Stroika\Foundation\DataExchange\Atom.cpp)
-1>c:\sandbox\stroika\devroot\library\sources\stroika\foundation\containers\concrete\mapping_linkedlist.inl(56): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int (compiling source file ..\..\Sources\Stroika\Foundation\DataExchange\Atom.cpp)
-*/
-#ifndef qCompilerAndStdLib_TemplateTypenameReferenceToBaseOfBaseClassMemberNotFound_Buggy
-
-#if defined(_MSC_VER)
-// verified still broken in _MSC_VER_2k19_16Pt0_ (.0 preview 1)
-// verified still broken in _MS_VS_2k19_16Pt0Pt0pre2_
-// verified FIXED in _MS_VS_2k19_16Pt0Pt0pre3_
-#define qCompilerAndStdLib_TemplateTypenameReferenceToBaseOfBaseClassMemberNotFound_Buggy (_MSC_FULL_VER <= _MS_VS_2k19_16Pt0Pt0pre2_)
-#else
-#define qCompilerAndStdLib_TemplateTypenameReferenceToBaseOfBaseClassMemberNotFound_Buggy 0
-#endif
-
-#endif
-
-/*
- *  Release-U-32 BUILDS:
- *
- *  LINK : warning C4744: 'static struct std::atomic<void *> Stroika::Foundation::Memory::Private_::BlockAllocationPool_<8>::sHeadLink_' has different type in 'c:\sandbox\stroika\devroot\library\sour
-ces\stroika\foundation\debug\assertions.cpp' and 'c:\sandbox\stroika\devroot\samples\ssdpclient\sources\ssdpclient.cpp': 'struct (4 bytes)' and '__declspec(align(4)) struct (4 bytes)
-*/
-#ifndef qCompilerAndStdLib_inline_static_align_Buggy
-
-#if defined(_MSC_VER)
-// verified still broken in _MSC_VER_2k19_16Pt0_ (.0 preview 1) - not not sure anything more than warnings - no buggy behavior seen?
-// verified still broken in _MS_VS_2k19_16Pt0Pt0pre2_
-// verified still broken in _MS_VS_2k19_16Pt0Pt0pre3_
-// verified still broken in _MS_VS_2k19_16Pt0Pt0pre43_ (aka _MS_VS_2k19_16Pt0Pt0_)
-// verified still broken in _MSC_VER_2k19_16Pt1_
-// verified still broken in _MSC_VER_2k19_16Pt2_
-// verified still broken in _MSC_VER_2k19_16Pt3_
-// verified still broken in _MSC_VER_2k19_16Pt4_
-// verified still broken in _MSC_VER_2k19_16Pt5_
-// verified still broken in _MSC_VER_2k19_16Pt6_
-// verified still broken in _MSC_VER_2k19_16Pt7_
-// verfified FIXED in _MSC_VER_2k19_16Pt8_
-#define qCompilerAndStdLib_inline_static_align_Buggy (_MSC_VER <= _MSC_VER_2k19_16Pt7_)
-#else
-#define qCompilerAndStdLib_inline_static_align_Buggy 0
-#endif
-
-#endif
-
 /*
  * SEE https://developercommunity.visualstudio.com/content/problem/484206/const-int-posv-winerror-map-errval-should-probably.html
  *
@@ -2037,15 +1580,6 @@ ces\stroika\foundation\debug\assertions.cpp' and 'c:\sandbox\stroika\devroot\sam
 #ifndef qCompilerAndStdLib_Winerror_map_doesnt_map_timeout_Buggy
 
 #if defined(_MSC_VER)
-// Verified still broken in _MSC_VER_2k19_16Pt1_
-// Verified still broken in _MSC_VER_2k19_16Pt2_
-// Verified still broken in _MSC_VER_2k19_16Pt3_
-// Verified still broken in _MSC_VER_2k19_16Pt4_
-// Verified still broken in _MSC_VER_2k19_16Pt5_
-// Verified still broken in _MSC_VER_2k19_16Pt6_
-// Verified still broken in _MSC_VER_2k19_16Pt7_
-// Verified still broken in _MSC_VER_2k19_16Pt8_
-// Verified still broken in _MSC_VER_2k19_16Pt10_
 // Verified still broken in _MSC_VER_2k22_17Pt0_
 // Verified still broken in _MSC_VER_2k22_17Pt1_
 // Verified still broken in _MSC_VER_2k22_17Pt2_
@@ -2090,9 +1624,7 @@ ces\stroika\foundation\debug\assertions.cpp' and 'c:\sandbox\stroika\devroot\sam
 #endif
 #endif
 
-#if !defined(qCompilerAndStdLib_insert_or_assign_Buggy)
-#define qCompilerAndStdLib_insert_or_assign_Buggy (__cplusplus < kStrokia_Foundation_Configuration_cplusplus_17)
-#endif
+// Now set in the configure script, because this depends on the OS
 
 // https://github.com/google/sanitizers/issues/1259
 // https://github.com/google/sanitizers/issues/950 (sometimes also shows up as)
@@ -2206,7 +1738,6 @@ SUMMARY: AddressSanitizer: access-violation (<unknown module>)
 #ifndef qCompiler_Sanitizer_ASAN_With_OpenSSL3_LoadLegacyProvider_Buggy
 
 #if defined(_MSC_VER)
-// first noticed IN _MSC_VER_2k19_16Pt10_
 // still buggy in _MSC_VER_2k22_17Pt0_
 // still buggy in _MSC_VER_2k22_17Pt1_
 // still buggy in _MSC_VER_2k22_17Pt2_
@@ -2291,19 +1822,6 @@ FAILED: RegressionTestFailure; tmp == L"Sun 05 Apr 1903 12:01:41 AM";;C:\Sandbox
 #ifndef qCompilerAndStdLib_locale_pctC_returns_numbers_not_alphanames_Buggy
 
 #if defined(_MSC_VER)
-// verified still broken in _MSC_VER_2k19_16Pt0_
-// verified still broken in _MS_VS_2k19_16Pt0Pt0pre2_
-// verified still broken in _MS_VS_2k19_16Pt0Pt0pre3_
-// VERIFIED BROKEN IN _MS_VS_2k19_16Pt0Pt0pre43_ (aka _MS_VS_2k19_16Pt0Pt0_)
-// VERIFIED BROKEN IN _MSC_VER_2k19_16Pt1_
-// VERIFIED BROKEN IN _MSC_VER_2k19_16Pt2_
-// VERIFIED BROKEN IN _MSC_VER_2k19_16Pt3_
-// VERIFIED BROKEN IN _MSC_VER_2k19_16Pt4_
-// VERIFIED BROKEN IN _MSC_VER_2k19_16Pt5_
-// VERIFIED BROKEN IN _MSC_VER_2k19_16Pt6_
-// VERIFIED BROKEN IN _MSC_VER_2k19_16Pt7_
-// VERIFIED BROKEN IN _MSC_VER_2k19_16Pt8_
-// VERIFIED BROKEN IN _MSC_VER_2k19_16Pt10_
 // verified broken in _MSC_VER_2k22_17Pt0_
 // verified broken in _MSC_VER_2k22_17Pt1_
 // verified broken in _MSC_VER_2k22_17Pt2_
@@ -2375,16 +1893,6 @@ FAILED: RegressionTestFailure; f1 < f2 or f2 < f1;;C:\Sandbox\Stroika\DevRoot\Te
 #ifndef qCompilerAndStdLib_locale_time_get_reverses_month_day_with_2digit_year_Buggy
 
 #if defined(_MSC_VER)
-// verified still broken in _MSC_VER_2k19_16Pt0_
-// verified still broken in _MSC_VER_2k19_16Pt1_
-// verified still broken in _MSC_VER_2k19_16Pt2_
-// verified still broken in _MSC_VER_2k19_16Pt3_
-// verified still broken in _MSC_VER_2k19_16Pt4_
-// verified still broken in _MSC_VER_2k19_16Pt5_
-// verified still broken in _MSC_VER_2k19_16Pt6_
-// verified still broken in _MSC_VER_2k19_16Pt7_
-// verified still broken in _MSC_VER_2k19_16Pt8_
-// verified still broken in _MSC_VER_2k19_16Pt10_
 // verified still broken in _MSC_VER_2k22_17Pt0_
 // verified still broken in _MSC_VER_2k22_17Pt1_
 // verified still broken in _MSC_VER_2k22_17Pt2_
@@ -2410,8 +1918,6 @@ FAILED: RegressionTestFailure; f1 < f2 or f2 < f1;;C:\Sandbox\Stroika\DevRoot\Te
 #ifndef qCompilerAndStdLib_locale_get_time_needsStrptime_sometimes_Buggy
 
 #if defined(_GLIBCXX_RELEASE)
-// VERIFIED BROKEN IN GCC8
-// VERIFIED BROKEN IN GCC9.0
 // VERIFIED BROKEN IN GCC10.0
 // VERIFIED BROKEN IN GCC11
 #define qCompilerAndStdLib_locale_get_time_needsStrptime_sometimes_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_GLIBCXX_RELEASE <= 11)
@@ -2421,88 +1927,11 @@ FAILED: RegressionTestFailure; f1 < f2 or f2 < f1;;C:\Sandbox\Stroika\DevRoot\Te
 
 #endif
 
-/**
-stHarness/SimpleClass.cpp ...
-37>C:\Sandbox\Stroika\DevRoot\Library\Sources\Stroika\Foundation\Memory\Common.inl(73): error C2512: 'Stroika::Foundation::Traversal::Range<double,Stroika::Foundation::Traversal::RangeTraits::Default<T>>': no appropriate default constructor available
-37>        with
-37>        [
-37>            T=double
-37>        ]
-37>C:\Sandbox\Stroika\DevRoot\Library\Sources\Stroika\Foundation\Memory\Common.inl(73): note: Constructor for class 'Stroika::Foundation::Traversal::Range<double,Stroika::Foundation::Traversal::RangeTraits::Default<T>>' is declared 'explicit'
-37>        with
-37>        [
- */
-#ifndef qCompilerAndStdLib_default_constructor_initialization_issueWithExplicit_Buggy
-
-#if defined(_MSC_VER)
-// first noticed broken in _MSC_VER_2k19_16Pt8_
-// APPEARS FIXED IN _MSC_VER_2k19_16Pt10_
-#define qCompilerAndStdLib_default_constructor_initialization_issueWithExplicit_Buggy                                                      \
-    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k19_16Pt8_)
-#else
-#define qCompilerAndStdLib_default_constructor_initialization_issueWithExplicit_Buggy 0
-#endif
-
-#endif
-
-/*
- * https://developercommunity.visualstudio.com/content/problem/330322/stdlocale-l2-en-usutf-8-broken-crashes-now.html
- * https://developercommunity.visualstudio.com/t/std::locale-l2-en_USUTF-8;--broke/330322
- *      SUPPOSEDLY FIXED IN Fixed In: Visual Studio 2019 version 16.9 - but without a differnt compiler ID # than 16.8, so
- *      wait to test in 16.10
- *
- *      Take the example code from 
-            https://en.cppreference.com/w/cpp/locale/locale/locale
-
-            and create a new visual stdio C++ windows console application from it.
-
-            Run, and you will get
-                Debug Assertion Failed!
-
-                Program: C:\WINDOWS\SYSTEM32\MSVCP140D.dll
-                File: f:\dd\vctools\crt\crtw32\stdcpp\xmbtowc.c
-                Line: 89
-
-                Expression: ploc->_Mbcurmax == 1 || ploc->_Mbcurmax == 2
-
-            This is a very receent regression in your libraries. This worked in 15.8.0, I believe (or just before it).
-            But its broken in 15.8.2 and 15.8.3.
-            
-            NOTE - Debug version asserts out, and release version doesn't. BUT - for at least some cases (stroika regtests)
-            the release version builds a locale that doesnt work (with my test cases - unicode utf8 conversion).
-           
-
-    FAILED: RegressionTestFailure; false;;C:\Sandbox\Stroika\DevRoot\Tests\02\Test.cpp: 1194
- */
-#ifndef qCompilerAndStdLib_locale_constructor_byname_asserterror_Buggy
-
-#if defined(_MSC_VER)
-// VERIFIED still broken in _MSC_VER_2k19_16Pt0_
-// VERIFIED still broken in _MS_VS_2k19_16Pt0Pt0pre2_
-// VERIFIED still broken in _MS_VS_2k19_16Pt0Pt0pre3_
-// VERIFIED still broken in _MS_VS_2k19_16Pt0Pt0pre43_ (aka _MS_VS_2k19_16Pt0Pt0_)
-// VERIFIED still broken in _MSC_VER_2k19_16Pt1_
-// VERIFIED FIXED _MSC_VER_2k19_16Pt2_ (FIXED BUT INSTEAD WE NOW HAVE qCompilerAndStdLib_locale_utf8_string_convert_Buggy)
-#define qCompilerAndStdLib_locale_constructor_byname_asserterror_Buggy (_MSC_VER <= _MSC_VER_2k19_16Pt1_)
-#else
-#define qCompilerAndStdLib_locale_constructor_byname_asserterror_Buggy 0
-#endif
-
-#endif
-
 // Must run regtest 2, and see if pass/fail (or look into why not handling these unicode strings)
 // FAILED: RegressionTestFailure; not initializedLocale;;C:\Sandbox\Stroika\DevRoot\Tests\02\Test.cpp: 1203
 #ifndef qCompilerAndStdLib_locale_utf8_string_convert_Buggy
 
 #if defined(_MSC_VER)
-// first broken in _MSC_VER_2k19_16Pt2_ (before was qCompilerAndStdLib_locale_constructor_byname_asserterror_Buggy or qCompilerAndStdLib_locale_constructor_byname_asserterror_Buggy)
-// verified still broken in _MSC_VER_2k19_16Pt3_
-// verified still broken in _MSC_VER_2k19_16Pt4_
-// verified still broken in _MSC_VER_2k19_16Pt5_
-// verified still broken in _MSC_VER_2k19_16Pt6_
-// verified still broken in _MSC_VER_2k19_16Pt7_
-// verified still broken in _MSC_VER_2k19_16Pt8_
-// verified still broken in _MSC_VER_2k19_16Pt10_
 // verified still broken in _MSC_VER_2k22_17Pt0_
 // verified still broken in _MSC_VER_2k22_17Pt1_
 // verified still broken in _MSC_VER_2k22_17Pt2_
@@ -2533,7 +1962,6 @@ stHarness/SimpleClass.cpp ...
 #ifndef qCompilerAndStdLib_linkerLosesInlinesSoCannotBeSeenByDebugger_Buggy
 
 #if defined(_MSC_VER)
-// first noticed broken in _MSC_VER_2k19_16Pt10_
 // still broken in _MSC_VER_2k22_17Pt0_
 // Microsoft appears to be ignorning this, so just assume broken in _MSC_VER_2k22_17Pt1_
 // still broken in _MSC_VER_2k22_17Pt2_
@@ -2639,12 +2067,12 @@ stHarness/SimpleClass.cpp ...
 
 // When MSFT fixes qCompilerAndStdLib_cplusplus_macro_value_Buggy move back to the top of the file
 #if qCompilerAndStdLib_cplusplus_macro_value_Buggy
-#if _MSVC_LANG < kStrokia_Foundation_Configuration_cplusplus_17
-#pragma message("Stroika v2.1 requires at least C++ ISO/IEC 14882:2017(E) supported by the compiler (informally known as C++ 17)")
+#if _MSVC_LANG < kStrokia_Foundation_Configuration_cplusplus_20
+#pragma message("Stroika v3 requires at least C++ ISO/IEC 14882:2020(E) supported by the compiler (informally known as C++ 20)")
 #endif
 #else
-#if __cplusplus < kStrokia_Foundation_Configuration_cplusplus_17
-#pragma message("Stroika v2.1 requires at least C++ ISO/IEC 14882:2017(E) supported by the compiler (informally known as C++ 17)")
+#if __cplusplus < kStrokia_Foundation_Configuration_cplusplus_20
+#pragma message("Stroika v3 requires at least C++ ISO/IEC 14882:2020(E) supported by the compiler (informally known as C++ 20)")
 #endif
 #endif
 

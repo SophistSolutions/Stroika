@@ -13,9 +13,7 @@ namespace Stroika::Foundation::IO::FileSystem {
 }
 
 namespace Stroika::Foundation::Configuration {
-#if !qCompilerAndStdLib_template_specialization_internalErrorWithSpecializationSignifier_Buggy
     template <>
-#endif
     constexpr EnumNames<Foundation::IO::FileSystem::BlockDeviceKind> DefaultNames<Foundation::IO::FileSystem::BlockDeviceKind>::k{
         EnumNames<Foundation::IO::FileSystem::BlockDeviceKind>::BasicArrayInitializer{{
             {Foundation::IO::FileSystem::BlockDeviceKind::eRemovableDisk, L"Removable-Disk"},

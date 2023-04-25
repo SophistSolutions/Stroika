@@ -13,9 +13,7 @@ namespace Stroika::Foundation::IO::FileSystem {
 }
 
 namespace Stroika::Foundation::Configuration {
-#if !qCompilerAndStdLib_template_specialization_internalErrorWithSpecializationSignifier_Buggy
     template <>
-#endif
     constexpr EnumNames<IO::FileSystem::FileStream::AdoptFDPolicy> DefaultNames<IO::FileSystem::FileStream::AdoptFDPolicy>::k{
         EnumNames<IO::FileSystem::FileStream::AdoptFDPolicy>::BasicArrayInitializer{{
             {IO::FileSystem::FileStream::AdoptFDPolicy::eCloseOnDestruction, L"Close-On-Destruction"},

@@ -73,38 +73,7 @@ optional<CipherAlgorithm> CipherAlgorithm::GetByNameQuietly (const String& ciphe
  ***************** Cryptography::OpenSSL::CipherAlgorithms **********************
  ********************************************************************************
  */
-#if qCompilerAndStdLib_const_extern_declare_then_const_define_namespace_Buggy
-namespace Stroika::Foundation::Cryptography::OpenSSL::CipherAlgorithms {
-    const Common::ConstantProperty<CipherAlgorithm> kAES_128_CBC{[] () { return ::EVP_aes_128_cbc (); }};
-    const Common::ConstantProperty<CipherAlgorithm> kAES_128_ECB{[] () { return ::EVP_aes_128_ecb (); }};
-    const Common::ConstantProperty<CipherAlgorithm> kAES_128_OFB{[] () { return ::EVP_aes_128_ofb (); }};
-    const Common::ConstantProperty<CipherAlgorithm> kAES_128_CFB1{[] () { return ::EVP_aes_128_cfb1 (); }};
-    const Common::ConstantProperty<CipherAlgorithm> kAES_128_CFB8{[] () { return ::EVP_aes_128_cfb8 (); }};
-    const Common::ConstantProperty<CipherAlgorithm> kAES_128_CFB128{[] () { return ::EVP_aes_128_cfb128 (); }};
-    const Common::ConstantProperty<CipherAlgorithm> kAES_192_CBC{[] () { return ::EVP_aes_192_cbc (); }};
-    const Common::ConstantProperty<CipherAlgorithm> kAES_192_ECB{[] () { return ::EVP_aes_192_ecb (); }};
-    const Common::ConstantProperty<CipherAlgorithm> kAES_192_OFB{[] () { return ::EVP_aes_192_ofb (); }};
-    const Common::ConstantProperty<CipherAlgorithm> kAES_192_CFB1{[] () { return ::EVP_aes_192_cfb1 (); }};
-    const Common::ConstantProperty<CipherAlgorithm> kAES_192_CFB8{[] () { return ::EVP_aes_192_cfb8 (); }};
-    const Common::ConstantProperty<CipherAlgorithm> kAES_192_CFB128{[] () { return ::EVP_aes_192_cfb128 (); }};
-    const Common::ConstantProperty<CipherAlgorithm> kAES_256_CBC{[] () { return ::EVP_aes_256_cbc (); }};
-    const Common::ConstantProperty<CipherAlgorithm> kAES_256_ECB{[] () { return ::EVP_aes_256_ecb (); }};
-    const Common::ConstantProperty<CipherAlgorithm> kAES_256_OFB{[] () { return ::EVP_aes_256_ofb (); }};
-    const Common::ConstantProperty<CipherAlgorithm> kAES_256_CFB1{[] () { return ::EVP_aes_256_cfb1 (); }};
-    const Common::ConstantProperty<CipherAlgorithm> kAES_256_CFB8{[] () { return ::EVP_aes_256_cfb8 (); }};
-    const Common::ConstantProperty<CipherAlgorithm> kAES_256_CFB128{[] () { return ::EVP_aes_256_cfb128 (); }};
-    const Common::ConstantProperty<CipherAlgorithm> kBlowfish_CBC{[] () { return ::EVP_bf_cbc (); }};
-    const Common::ConstantProperty<CipherAlgorithm> kBlowfish{[] () { return kBlowfish_CBC (); }};
-    const Common::ConstantProperty<CipherAlgorithm> kBlowfish_ECB{[] () { return ::EVP_bf_ecb (); }};
-    const Common::ConstantProperty<CipherAlgorithm> kBlowfish_CFB{[] () { return ::EVP_bf_cfb (); }};
-    const Common::ConstantProperty<CipherAlgorithm> kBlowfish_OFB{[] () { return ::EVP_bf_ofb (); }};
-    const Common::ConstantProperty<CipherAlgorithm> kRC2_CBC{[] () { return ::EVP_rc2_cbc (); }};
-    const Common::ConstantProperty<CipherAlgorithm> kRC2_ECB{[] () { return ::EVP_rc2_ecb (); }};
-    const Common::ConstantProperty<CipherAlgorithm> kRC2_CFB{[] () { return ::EVP_rc2_cfb (); }};
-    const Common::ConstantProperty<CipherAlgorithm> kRC2_OFB{[] () { return ::EVP_rc2_ofb (); }};
-    const Common::ConstantProperty<CipherAlgorithm> kRC4{[] () { return ::EVP_rc4 (); }};
-}
-#else
+
 const Common::ConstantProperty<CipherAlgorithm> CipherAlgorithms::kAES_128_CBC{[] () { return ::EVP_aes_128_cbc (); }};
 const Common::ConstantProperty<CipherAlgorithm> CipherAlgorithms::kAES_128_ECB{[] () { return ::EVP_aes_128_ecb (); }};
 const Common::ConstantProperty<CipherAlgorithm> CipherAlgorithms::kAES_128_OFB{[] () { return ::EVP_aes_128_ofb (); }};
@@ -133,6 +102,5 @@ const Common::ConstantProperty<CipherAlgorithm> CipherAlgorithms::kRC2_ECB{[] ()
 const Common::ConstantProperty<CipherAlgorithm> CipherAlgorithms::kRC2_CFB{[] () { return ::EVP_rc2_cfb (); }};
 const Common::ConstantProperty<CipherAlgorithm> CipherAlgorithms::kRC2_OFB{[] () { return ::EVP_rc2_ofb (); }};
 const Common::ConstantProperty<CipherAlgorithm> CipherAlgorithms::kRC4{[] () { return ::EVP_rc4 (); }};
-#endif
 
 #endif

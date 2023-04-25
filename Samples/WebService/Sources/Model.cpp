@@ -20,10 +20,6 @@ using namespace Stroika::Foundation::DataExchange;
 using namespace StroikaSample::WebServices;
 using namespace StroikaSample::WebServices::Model;
 
-#if qCompilerAndStdLib_static_initializer_lambda_funct_init_Buggy
-#error "You can easily rewrite this as a static function, but thats not great as a demo, so don't bother here - just dont use that compiler version"
-#endif
-
 const ObjectVariantMapper StroikaSample::WebServices::Model::kMapper = [] () {
     ObjectVariantMapper mapper;
 

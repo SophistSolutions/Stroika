@@ -609,11 +609,7 @@ namespace {
                 using namespace ObjectReader;
                 DISABLE_COMPILER_MSC_WARNING_START (4573)
                 static const ReaderFromVoidStarFactory sEltReader_ = [] () -> ReaderFromVoidStarFactory {
-#if qCompilerAndStdLib_using_in_template_invoke_other_template_Buggy
-                    typedef KeyValuePair<TunerNumberType_, TARGET_TYPE> KVPType_;
-#else
                     using KVPType_ = KeyValuePair<TunerNumberType_, TARGET_TYPE>;
-#endif
                     return Registry::MakeClassReader<KVPType_> (initializer_list<StructFieldInfo>{
                         {Name{L"Tuner", Name::eAttribute}, StructFieldMetaInfo{&KVPType_::fKey}},
                         {Name{Name::eValue}, StructFieldMetaInfo{&KVPType_::fValue}},
@@ -685,9 +681,7 @@ namespace {
 }
 namespace Stroika::Foundation::Configuration {
     DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wunused-const-variable\"")
-#if !qCompilerAndStdLib_template_specialization_internalErrorWithSpecializationSignifier_Buggy
     template <>
-#endif
     constexpr EnumNames<T7_SAXObjectReader_BLKQCL_ReadSensors_::TunerNumberType_> DefaultNames<T7_SAXObjectReader_BLKQCL_ReadSensors_::TunerNumberType_>::k{
         EnumNames<T7_SAXObjectReader_BLKQCL_ReadSensors_::TunerNumberType_>::BasicArrayInitializer{{
             {T7_SAXObjectReader_BLKQCL_ReadSensors_::TunerNumberType_::eT1, L"eT1"},
@@ -853,11 +847,7 @@ namespace {
                     using namespace ObjectReader;
                     DISABLE_COMPILER_MSC_WARNING_START (4573)
                     static const ReaderFromVoidStarFactory sEltReader_ = [] () -> ReaderFromVoidStarFactory {
-#if qCompilerAndStdLib_using_in_template_invoke_other_template_Buggy
-                        typedef SpectrumType_::value_type KVPType_;
-#else
                         using KVPType_ = SpectrumType_::value_type;
-#endif
                         return Registry::MakeClassReader<KVPType_> (initializer_list<StructFieldInfo>{
                             {Name{L"waveNumber", Name::eAttribute}, StructFieldMetaInfo{&KVPType_::fKey}},
                             {Name{L"intensity", Name::eAttribute}, StructFieldMetaInfo{&KVPType_::fValue}},
@@ -881,12 +871,7 @@ namespace {
                 {
                     using namespace ObjectReader;
                     static const ReaderFromVoidStarFactory sEltReader_ = [] () -> ReaderFromVoidStarFactory {
-#if qCompilerAndStdLib_using_in_template_invoke_other_template_Buggy
-                        typedef KeyValuePair<String, String> KVPType_;
-#else
                         using KVPType_ = KeyValuePair<String, String>;
-#endif
-
                         return Registry::MakeClassReader<KVPType_> (initializer_list<StructFieldInfo>{
                             {Name{L"Key", Name::eAttribute}, StructFieldMetaInfo{&KVPType_::fKey}},
                             {Name{L"Value", Name::eAttribute}, StructFieldMetaInfo{&KVPType_::fValue}},
@@ -1170,9 +1155,7 @@ namespace {
 namespace Stroika::Foundation::Configuration {
     DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wunused-const-variable\"")
     // for ToString ()
-#if !qCompilerAndStdLib_template_specialization_internalErrorWithSpecializationSignifier_Buggy
     template <>
-#endif
     constexpr EnumNames<T11_SAXObjectReader_BLKQCL_GetFactorySettings_Tuners_::TunerNumberType_>
         DefaultNames<T11_SAXObjectReader_BLKQCL_GetFactorySettings_Tuners_::TunerNumberType_>::k{
             EnumNames<T11_SAXObjectReader_BLKQCL_GetFactorySettings_Tuners_::TunerNumberType_>::BasicArrayInitializer{{

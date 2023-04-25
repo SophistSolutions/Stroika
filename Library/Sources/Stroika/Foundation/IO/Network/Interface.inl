@@ -26,9 +26,7 @@ namespace Stroika::Foundation::IO::Network {
 
 }
 namespace Stroika::Foundation::Configuration {
-#if !qCompilerAndStdLib_template_specialization_internalErrorWithSpecializationSignifier_Buggy
     template <>
-#endif
     constexpr EnumNames<IO::Network::Interface::WirelessInfo::State> DefaultNames<IO::Network::Interface::WirelessInfo::State>::k{
         EnumNames<IO::Network::Interface::WirelessInfo::State>::BasicArrayInitializer{{
             {IO::Network::Interface::WirelessInfo::State::eNotReady, L"Not-Ready"},
@@ -41,9 +39,7 @@ namespace Stroika::Foundation::Configuration {
             {IO::Network::Interface::WirelessInfo::State::eAuthenticating, L"Authenticating"},
             {IO::Network::Interface::WirelessInfo::State::eUnknown, L"Unknown"},
         }}};
-#if !qCompilerAndStdLib_template_specialization_internalErrorWithSpecializationSignifier_Buggy
     template <>
-#endif
     constexpr EnumNames<IO::Network::Interface::WirelessInfo::ConnectionMode> DefaultNames<IO::Network::Interface::WirelessInfo::ConnectionMode>::k{
         EnumNames<IO::Network::Interface::WirelessInfo::ConnectionMode>::BasicArrayInitializer{{
             {IO::Network::Interface::WirelessInfo::ConnectionMode::eProfile, L"Profile"},
@@ -54,9 +50,7 @@ namespace Stroika::Foundation::Configuration {
             {IO::Network::Interface::WirelessInfo::ConnectionMode::eInvalid, L"Invalid"},
             {IO::Network::Interface::WirelessInfo::ConnectionMode::eUnknown, L"Unknown"},
         }}};
-#if !qCompilerAndStdLib_template_specialization_internalErrorWithSpecializationSignifier_Buggy
     template <>
-#endif
     constexpr EnumNames<IO::Network::Interface::WirelessInfo::BSSType> DefaultNames<IO::Network::Interface::WirelessInfo::BSSType>::k{
         EnumNames<IO::Network::Interface::WirelessInfo::BSSType>::BasicArrayInitializer{{
             {IO::Network::Interface::WirelessInfo::BSSType::eInfrastructure, L"Infrastructure"},
@@ -64,9 +58,7 @@ namespace Stroika::Foundation::Configuration {
             {IO::Network::Interface::WirelessInfo::BSSType::eAny, L"Any"},
             {IO::Network::Interface::WirelessInfo::BSSType::eUnknown, L"Unknown"},
         }}};
-#if !qCompilerAndStdLib_template_specialization_internalErrorWithSpecializationSignifier_Buggy
     template <>
-#endif
     constexpr EnumNames<IO::Network::Interface::WirelessInfo::PhysicalConnectionType> DefaultNames<IO::Network::Interface::WirelessInfo::PhysicalConnectionType>::k{
         EnumNames<IO::Network::Interface::WirelessInfo::PhysicalConnectionType>::BasicArrayInitializer{{
             {IO::Network::Interface::WirelessInfo::PhysicalConnectionType::eFHSS, L"FHSS"},
@@ -81,9 +73,7 @@ namespace Stroika::Foundation::Configuration {
             {IO::Network::Interface::WirelessInfo::PhysicalConnectionType::e80211ax, L"802.11ax"},
             {IO::Network::Interface::WirelessInfo::PhysicalConnectionType::eUnknown, L"Unknown"},
         }}};
-#if !qCompilerAndStdLib_template_specialization_internalErrorWithSpecializationSignifier_Buggy
     template <>
-#endif
     constexpr EnumNames<IO::Network::Interface::WirelessInfo::AuthAlgorithm> DefaultNames<IO::Network::Interface::WirelessInfo::AuthAlgorithm>::k{
         EnumNames<IO::Network::Interface::WirelessInfo::AuthAlgorithm>::BasicArrayInitializer{{
             {IO::Network::Interface::WirelessInfo::AuthAlgorithm::eOpen, L"Open"},
@@ -95,17 +85,13 @@ namespace Stroika::Foundation::Configuration {
             {IO::Network::Interface::WirelessInfo::AuthAlgorithm::eRSNA_PSK, L"RSNA-PSK"},
             {IO::Network::Interface::WirelessInfo::AuthAlgorithm::eUnknown, L"Unknown"},
         }}};
-#if !qCompilerAndStdLib_template_specialization_internalErrorWithSpecializationSignifier_Buggy
     template <>
-#endif
     constexpr EnumNames<IO::Network::Interface::Status> DefaultNames<IO::Network::Interface::Status>::k{
         EnumNames<IO::Network::Interface::Status>::BasicArrayInitializer{{
             {IO::Network::Interface::Status::eConnected, L"Connected"},
             {IO::Network::Interface::Status::eRunning, L"Running"},
         }}};
-#if !qCompilerAndStdLib_template_specialization_internalErrorWithSpecializationSignifier_Buggy
     template <>
-#endif
     constexpr EnumNames<IO::Network::Interface::Type> DefaultNames<IO::Network::Interface::Type>::k{EnumNames<IO::Network::Interface::Type>::BasicArrayInitializer{{
         {IO::Network::Interface::Type::eLoopback, L"Loopback"},
         {IO::Network::Interface::Type::eWiredEthernet, L"Wired-Ethernet"},

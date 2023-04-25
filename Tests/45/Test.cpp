@@ -542,12 +542,7 @@ namespace {
             // BAD SSL SITE
             const URI kBad_Expired_Site_{L"https://expired.badssl.com/"}; // see https://badssl.com/ - there are several other bads I could try
 
-#if qCompilerAndStdLib_ASAN_windows_http_badheader_Buggy
-            bool doTest = not Debug::kBuiltWithAddressSanitizer;
-#else
-            bool doTest = true;
-#endif
-            if (doTest) {
+            {
                 try {
                     o.fFailConnectionIfSSLCertificateInvalid = true;
                     T1_get_ignore_SSLNotConfigured (o, kBad_Expired_Site_);

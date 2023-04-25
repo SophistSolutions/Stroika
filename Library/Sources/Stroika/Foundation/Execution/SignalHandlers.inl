@@ -43,9 +43,7 @@ namespace Stroika::Foundation::Execution {
 }
 
 namespace Stroika::Foundation::Configuration {
-#if !qCompilerAndStdLib_template_specialization_internalErrorWithSpecializationSignifier_Buggy
     template <>
-#endif
     constexpr EnumNames<Execution::SignalHandler::Type> DefaultNames<Execution::SignalHandler::Type>::k{
         EnumNames<Execution::SignalHandler::Type>::BasicArrayInitializer{{
             {Execution::SignalHandler::Type::eDirect, L"Direct"},

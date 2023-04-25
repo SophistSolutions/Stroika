@@ -83,12 +83,8 @@ namespace Stroika::Foundation::Memory {
         // get this working with constexpr and without static object
         template <typename T1, typename T2>
         struct OffsetOfRequiringDefaultConstructibleObjectType_ {
-#if qCompilerAndStdLib_default_constructor_initialization_issueWithExplicit_Buggy
-            static inline constexpr T2 sObj_{T2{}};
-#else
             static inline constexpr T2 sObj_{};
-#endif
-            static constexpr size_t offset (T1 T2::*member)
+            static constexpr size_t    offset (T1 T2::*member)
             {
                 /*
                  *  UNDEFINED BEHAVIOR: it is undefined, but for the following reason: expr.add-5.sentence-2

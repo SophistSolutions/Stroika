@@ -179,9 +179,7 @@ namespace Stroika::Foundation::DataExchange {
 }
 
 namespace Stroika::Foundation::Configuration {
-#if !qCompilerAndStdLib_template_specialization_internalErrorWithSpecializationSignifier_Buggy
     template <>
-#endif
     constexpr EnumNames<DataExchange::VariantValue::Type> DefaultNames<DataExchange::VariantValue::Type>::k{
         EnumNames<DataExchange::VariantValue::Type>::BasicArrayInitializer{{
             {DataExchange::VariantValue::eNull, L"Null"},

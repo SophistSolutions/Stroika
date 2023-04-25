@@ -468,10 +468,8 @@ namespace Stroika::Foundation::Execution {
          */
         template <typename TEST_TYPE = TRAITS, enable_if_t<TEST_TYPE::kIsRecursiveReadMutex>* = nullptr>
         nonvirtual bool operator== (const Synchronized& rhs) const;
-#if !qCompilerAndStdLib_TemplateEqualsCompareOverload_Buggy
         template <typename TEST_TYPE = TRAITS, enable_if_t<TEST_TYPE::kIsRecursiveReadMutex>* = nullptr>
         nonvirtual bool operator== (const T& rhs) const;
-#endif
 
     public:
         /**

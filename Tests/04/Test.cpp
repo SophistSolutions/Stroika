@@ -81,9 +81,7 @@ namespace {
     }
 }
 namespace Stroika::Foundation::Configuration {
-#if !qCompilerAndStdLib_template_specialization_internalErrorWithSpecializationSignifier_Buggy
     template <>
-#endif
     constexpr EnumNames<Test2_EnumNames_Private_::fooEnum> DefaultNames<Test2_EnumNames_Private_::fooEnum>::k{
         EnumNames<Test2_EnumNames_Private_::fooEnum>::BasicArrayInitializer{{
             {Test2_EnumNames_Private_::fooEnum::eOne, L"eOne"},

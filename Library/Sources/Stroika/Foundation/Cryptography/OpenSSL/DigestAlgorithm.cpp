@@ -72,20 +72,6 @@ optional<DigestAlgorithm> DigestAlgorithm::GetByNameQuietly (const String& diges
  ***************** Cryptography::OpenSSL::DigestAlgorithms **********************
  ********************************************************************************
  */
-#if qCompilerAndStdLib_const_extern_declare_then_const_define_namespace_Buggy
-namespace Stroika::Foundation::Cryptography::OpenSSL::DigestAlgorithms {
-    const Common::ConstantProperty<DigestAlgorithm> kMD5{[] () { return ::EVP_md5 (); }};
-    const Common::ConstantProperty<DigestAlgorithm> kSHA1{[] () { return ::EVP_sha1 (); }};
-    const Common::ConstantProperty<DigestAlgorithm> kSHA1_224{[] () { return ::EVP_sha224 (); }};
-    const Common::ConstantProperty<DigestAlgorithm> kSHA1_256{[] () { return ::EVP_sha256 (); }};
-    const Common::ConstantProperty<DigestAlgorithm> kSHA1_384{[] () { return ::EVP_sha384 (); }};
-    const Common::ConstantProperty<DigestAlgorithm> kSHA1_512{[] () { return ::EVP_sha512 (); }};
-    const Common::ConstantProperty<DigestAlgorithm> kSHA3_224{[] () { return ::EVP_sha3_224 (); }};
-    const Common::ConstantProperty<DigestAlgorithm> kSHA3_256{[] () { return ::EVP_sha3_256 (); }};
-    const Common::ConstantProperty<DigestAlgorithm> kSHA3_384{[] () { return ::EVP_sha3_384 (); }};
-    const Common::ConstantProperty<DigestAlgorithm> kSHA3_512{[] () { return ::EVP_sha3_512 (); }};
-}
-#else
 const Common::ConstantProperty<DigestAlgorithm> DigestAlgorithms::kMD5{[] () { return ::EVP_md5 (); }};
 const Common::ConstantProperty<DigestAlgorithm> DigestAlgorithms::kSHA1{[] () { return ::EVP_sha1 (); }};
 const Common::ConstantProperty<DigestAlgorithm> DigestAlgorithms::kSHA1_224{[] () { return ::EVP_sha224 (); }};
@@ -96,7 +82,5 @@ const Common::ConstantProperty<DigestAlgorithm> DigestAlgorithms::kSHA3_224{[] (
 const Common::ConstantProperty<DigestAlgorithm> DigestAlgorithms::kSHA3_256{[] () { return ::EVP_sha3_256 (); }};
 const Common::ConstantProperty<DigestAlgorithm> DigestAlgorithms::kSHA3_384{[] () { return ::EVP_sha3_384 (); }};
 const Common::ConstantProperty<DigestAlgorithm> DigestAlgorithms::kSHA3_512{[] () { return ::EVP_sha3_512 (); }};
-
-#endif
 
 #endif

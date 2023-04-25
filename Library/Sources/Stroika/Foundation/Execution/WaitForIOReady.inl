@@ -115,9 +115,7 @@ namespace Stroika::Foundation::Execution {
 }
 
 namespace Stroika::Foundation::Configuration {
-#if !qCompilerAndStdLib_template_specialization_internalErrorWithSpecializationSignifier_Buggy
     template <>
-#endif
     constexpr EnumNames<Execution::WaitForIOReady_Support::WaitForIOReady_Base::TypeOfMonitor>
         DefaultNames<Execution::WaitForIOReady_Support::WaitForIOReady_Base::TypeOfMonitor>::k{
             EnumNames<Execution::WaitForIOReady_Support::WaitForIOReady_Base::TypeOfMonitor>::BasicArrayInitializer{{

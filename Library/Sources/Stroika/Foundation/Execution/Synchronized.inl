@@ -284,14 +284,12 @@ namespace Stroika::Foundation::Execution {
     {
         return load () == rhs.load ();
     }
-#if !qCompilerAndStdLib_TemplateEqualsCompareOverload_Buggy
     template <typename T, typename TRAITS>
     template <typename TEST_TYPE, enable_if_t<TEST_TYPE::kIsRecursiveReadMutex>*>
     inline bool Synchronized<T, TRAITS>::operator== (const T& rhs) const
     {
         return load () == rhs;
     }
-#endif
     template <typename T, typename TRAITS>
     template <typename TEST_TYPE, enable_if_t<TEST_TYPE::kIsRecursiveReadMutex>*>
     inline auto Synchronized<T, TRAITS>::operator<=> (const Synchronized& rhs) const

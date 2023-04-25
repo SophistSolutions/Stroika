@@ -412,11 +412,7 @@ namespace {
                     Thread::Start ({thread1, thread2});
                     thread1.WaitForDone ();
                     thread2.WaitForDone ();
-#if qCompilerAndStdLib_TemplateEqualsCompareOverload_Buggy
-                    VerifyTestResult (updaterValue.load () == 2 * 10);
-#else
                     VerifyTestResult (updaterValue == 2 * 10);
-#endif
                 }
             }
             void Test2_LongWritesBlock_ ()
@@ -1224,14 +1220,7 @@ namespace {
                             }
                             else {
                                 // in this case we effectively did an atomic upgrade, because no intervening writers
-#if qCompilerAndStdLib_GenericLambdaInsideGenericLambdaAssertCall_Buggy
-                                bool t = writeLock.load ();
-                                if (not t) {
-                                    DbgTrace ("***assert false");
-                                }
-#else
-                                    Assert (writeLock.load ());
-#endif
+                                Assert (writeLock.load ());
                                 writeLock.store (false);
                             }
                             return true; // instead of reloading here, could return false and let retyr code happen
@@ -1250,14 +1239,7 @@ namespace {
                             }
                             else {
                                 // in this case we effectively did an atomic upgrade, because no intervening writers
-#if qCompilerAndStdLib_GenericLambdaInsideGenericLambdaAssertCall_Buggy
-                                bool t = writeLock.load ();
-                                if (not t) {
-                                    DbgTrace ("***assert false");
-                                }
-#else
-                                    VerifyTestResult (writeLock.load ());
-#endif
+                                VerifyTestResult (writeLock.load ());
                                 writeLock.store (false);
                                 return true; // instead of reloading here, could return false and let retyr code happen
                             }

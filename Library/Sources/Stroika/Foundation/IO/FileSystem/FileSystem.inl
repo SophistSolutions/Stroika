@@ -13,9 +13,7 @@ namespace Stroika::Foundation::IO::FileSystem {
 }
 
 namespace Stroika::Foundation::Configuration {
-#if !qCompilerAndStdLib_template_specialization_internalErrorWithSpecializationSignifier_Buggy
     template <>
-#endif
     constexpr EnumNames<IO::FileSystem::RemoveDirectoryPolicy> DefaultNames<IO::FileSystem::RemoveDirectoryPolicy>::k{
         EnumNames<IO::FileSystem::RemoveDirectoryPolicy>::BasicArrayInitializer{{
             {IO::FileSystem::RemoveDirectoryPolicy::eFailIfNotEmpty, L"Fail-If-Not-Empty"},

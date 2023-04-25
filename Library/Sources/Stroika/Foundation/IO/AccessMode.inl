@@ -23,9 +23,7 @@ namespace Stroika::Foundation::IO {
 }
 
 namespace Stroika::Foundation::Configuration {
-#if !qCompilerAndStdLib_template_specialization_internalErrorWithSpecializationSignifier_Buggy
     template <>
-#endif
     constexpr EnumNames<IO::AccessMode> DefaultNames<IO::AccessMode>::k{EnumNames<IO::AccessMode>::BasicArrayInitializer{{
         {IO::AccessMode::eNoAccess, L"No-Access"},
         {IO::AccessMode::eRead, L"Read"},

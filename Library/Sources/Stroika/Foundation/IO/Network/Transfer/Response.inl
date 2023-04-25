@@ -40,9 +40,7 @@ namespace Stroika::Foundation::IO::Network::Transfer {
  */
 namespace Stroika::Foundation::Configuration {
 
-#if !qCompilerAndStdLib_template_specialization_internalErrorWithSpecializationSignifier_Buggy
     template <>
-#endif
     constexpr EnumNames<Foundation::IO::Network::Transfer::Response::SSLResultInfo::ValidationStatus>
         DefaultNames<Foundation::IO::Network::Transfer::Response::SSLResultInfo::ValidationStatus>::k{
             EnumNames<Foundation::IO::Network::Transfer::Response::SSLResultInfo::ValidationStatus>::BasicArrayInitializer{{

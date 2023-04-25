@@ -75,9 +75,7 @@ namespace Stroika::Foundation::IO::Network::Transfer {
  */
 namespace Stroika::Foundation::Configuration {
 
-#if !qCompilerAndStdLib_template_specialization_internalErrorWithSpecializationSignifier_Buggy
     template <>
-#endif
     constexpr EnumNames<Foundation::IO::Network::Transfer::Connection::Options::Authentication::Options>
         DefaultNames<Foundation::IO::Network::Transfer::Connection::Options::Authentication::Options>::k{
             EnumNames<Foundation::IO::Network::Transfer::Connection::Options::Authentication::Options>::BasicArrayInitializer{{

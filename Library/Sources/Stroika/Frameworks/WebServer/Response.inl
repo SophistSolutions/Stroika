@@ -58,9 +58,7 @@ namespace Stroika::Frameworks::WebServer {
 }
 
 namespace Stroika::Foundation::Configuration {
-#if !qCompilerAndStdLib_template_specialization_internalErrorWithSpecializationSignifier_Buggy
     template <>
-#endif
     constexpr EnumNames<Frameworks::WebServer::Response::State> DefaultNames<Frameworks::WebServer::Response::State>::k{
         EnumNames<Frameworks::WebServer::Response::State>::BasicArrayInitializer{{
             {Frameworks::WebServer::Response::State::ePreparingHeaders, L"Preparing-Headers"},

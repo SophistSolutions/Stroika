@@ -391,7 +391,7 @@ namespace {
                     auto b2 = (fURL_ < newURL);
                     auto b3 = (fURL_ > newURL);
                     auto b4 = (fURL_ != newURL);
-                    VerifyTestResult (b1 != b4); // if this fails, qCompilerAndStdLib_operatorCompareWithOperatorBoolConvertAutoGen_Buggy (but for now worked around with explicit bool)
+                    VerifyTestResult (b1 != b4);
                     VerifyTestResult (b2 != b3 or b1);
                 }
             }

@@ -38,9 +38,7 @@ namespace Stroika::Foundation::Execution {
 }
 
 namespace Stroika::Foundation::Configuration {
-#if !qCompilerAndStdLib_template_specialization_internalErrorWithSpecializationSignifier_Buggy
     template <>
-#endif
     constexpr EnumNames<Execution::Logger::Priority> DefaultNames<Execution::Logger::Priority>::k{EnumNames<Execution::Logger::Priority>::BasicArrayInitializer{{
         {Execution::Logger::Priority::eDebug, L"Debug"},
         {Execution::Logger::Priority::eInfo, L"Info"},

@@ -85,17 +85,13 @@ namespace Stroika::Foundation::Time {
 }
 
 namespace Stroika::Foundation::Configuration {
-#if !qCompilerAndStdLib_template_specialization_internalErrorWithSpecializationSignifier_Buggy
     template <>
-#endif
     constexpr EnumNames<Stroika::Foundation::Time::DateTime::LocaleIndependentFormat> DefaultNames<Stroika::Foundation::Time::DateTime::LocaleIndependentFormat>::k{
         EnumNames<Stroika::Foundation::Time::DateTime::LocaleIndependentFormat>::BasicArrayInitializer{{
             {Stroika::Foundation::Time::DateTime::LocaleIndependentFormat::eISO8601, L"ISO-8601"},
             {Stroika::Foundation::Time::DateTime::LocaleIndependentFormat::eRFC1123, L"RFC-1123"},
         }}};
-#if !qCompilerAndStdLib_template_specialization_internalErrorWithSpecializationSignifier_Buggy
     template <>
-#endif
     constexpr EnumNames<Stroika::Foundation::Time::DateTime::NonStandardPrintFormat> DefaultNames<Stroika::Foundation::Time::DateTime::NonStandardPrintFormat>::k{
         EnumNames<Stroika::Foundation::Time::DateTime::NonStandardPrintFormat>::BasicArrayInitializer{{
             {Stroika::Foundation::Time::DateTime::NonStandardPrintFormat::eCurrentLocale_WithZerosStripped,
