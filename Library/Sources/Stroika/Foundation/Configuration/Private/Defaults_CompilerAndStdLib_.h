@@ -348,18 +348,6 @@ SUMMARY: AddressSanitizer: stack-use-after-scope C:\Program Files\Microsoft Visu
 
 #endif
 
-#ifndef qCompilerAndStdLib_inline_static_align_Buggy
-#if defined(__clang__) && defined(__APPLE__)
-//  broken in apple clang 14
-#define qCompilerAndStdLib_inline_static_align_Buggy                                               \
-    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 14))
-#elif defined(__clang__) && !defined(__APPLE__)
-//  broken in apple clang 14
-#define qCompilerAndStdLib_inline_static_align_Buggy                                               \
-    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 14))
-#endif
-
-#endif
 
 
 /*
