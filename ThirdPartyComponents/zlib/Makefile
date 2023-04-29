@@ -18,6 +18,8 @@ include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
 
 include $(StroikaRoot)/ScriptsLib/SharedMakeVariables-Default.mk
 
+# For windows build with nmake used (maybe replace this with use of NMAKE variable use/setting/call/explicit fullpath?)
+$(call PATCH_PATH_FOR_TOOLPATH_ADDITION_IF_NEEDED)
 
 VERSION=1.2.13
 #VERSION=1.2.12
@@ -144,7 +146,7 @@ ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
 		export AR="$(LIBTOOL)"; \
 		export OBJA="$(OBJA_)"; \
 		env --unset=MAKEFLAGS --unset=MFLAGS \
-		  $(StroikaRoot)ScriptsLib/RunArgumentsWithCommonBuildVars $(CONFIGURATION) nmake -E -f win32/Makefile.msc zlib.lib
+		nmake -E -f win32/Makefile.msc zlib.lib
 else
 	@$(MAKE) --directory $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) --no-print-directory static
 endif
