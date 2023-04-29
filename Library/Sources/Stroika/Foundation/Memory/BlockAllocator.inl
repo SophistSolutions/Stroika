@@ -108,7 +108,7 @@ namespace Stroika::Foundation::Memory {
             static void Compact ();
 
         private:
-           alignas (void*) static    inline conditional_t < qStroika_Foundation_Memory_BlockAllocator_UseLockFree_, atomic < void*>, void*> sHeadLink_{nullptr };
+            alignas (void*) static inline conditional_t<qStroika_Foundation_Memory_BlockAllocator_UseLockFree_, atomic<void*>, void*> sHeadLink_{nullptr};
 
         private:
             static constexpr size_t ComputeChunks_ ();
