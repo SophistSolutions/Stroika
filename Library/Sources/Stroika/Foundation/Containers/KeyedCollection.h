@@ -41,28 +41,36 @@ namespace Stroika::Foundation::Containers {
     }
 
     /**
-     *  \note KEY_EXTRACTOR_TYPE defaults in such a way that you can specify a function in the constructor.
+     *  \note KEY_EXTRACTOR_TYPE defaults in such a way that you can specify a function (std::function or lambda) in the constructor.
      *        Specify a specific function object to allow for slightly more efficient, but less flexible use.
      * 
      *  \par Example Usage
      *      \code
-     *          struct Device_Key_Extractor_ {
-     *              GUID operator() (const DiscoveryInfo_& t) const { return t.fGUID; };
-     *          };
-     *          using DiscoveryDeviceCollection_ = KeyedCollection<DiscoveryInfo_, GUID, KeyedCollection_DefaultTraits<DiscoveryInfo_, GUID, Device_Key_Extractor_>>;
-     *          
-     *          // one way
-     *          DiscoveryDeviceCollection_ sDiscoveredDevices_;
-     *          sDiscoveredDevices_.Add (DiscoveryInfo_ {...});
-     * 
-     *          // another way
-     *          namespace Stroika::Foundation::Containers {
-     *              template <>
-     *              struct KeyedCollection_DefaultTraits<DiscoveryInfo_, GUID, void> : DiscoveryDeviceCollection_ {
+     *          namespace Private_ {
+     *              struct Obj_ {
+     *                  type_index fTypeIndex;  // KEY
+     *                  int otherData{};        // 
      *              };
-     *           }
-     *          KeyedCollection<DiscoveryInfo_, GUID> sDiscoveredDevices2_;
-     *          sDiscoveredDevices_.Add (DiscoveryInfo_ {...});
+     *              struct My_Extractor_ {
+     *                  auto operator() (const Obj_& t) const -> type_index { return t.fTypeIndex; };
+     *              };
+     *              using My_Traits_ = Containers::KeyedCollection_DefaultTraits<Obj_, type_index, My_Extractor_>;
+     *          }
+     *          void RunAll ()
+     *          {
+     *              using namespace Private_;
+     *              {
+     *                  KeyedCollection<Obj_, type_index, My_Traits_>                  s2;
+     *                  s2.Add (Obj_{typeid (int)});
+     *                  s2.Add (Obj_{typeid (long int)});
+     *              }
+     *              {
+     *                  // Or slighltly more flexiblely, but less efficiently
+     *                  KeyedCollection<Obj_, type_index>                  s2{My_Extractor_{}};
+     *                  s2.Add (Obj_{typeid (int)});
+     *                  s2.Add (Obj_{typeid (long int)});
+     *              }
+     *          }
      *      \endcode
      */
     template <typename T, typename KEY_TYPE, typename KEY_EXTRACTOR_TYPE = function<KEY_TYPE (ArgByValueType<T>)>>

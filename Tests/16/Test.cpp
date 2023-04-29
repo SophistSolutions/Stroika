@@ -29,7 +29,8 @@ namespace {
     namespace Test_KeyedCollectionTypeIndexUsesStdSet_ {
         namespace Private_ {
             struct Obj_ {
-                type_index fTypeIndex;
+                type_index fTypeIndex;  // KEY
+                int        otherData{}; //
             };
             struct My_Extractor_ {
                 auto operator() (const Obj_& t) const -> type_index { return t.fTypeIndex; };
@@ -39,10 +40,19 @@ namespace {
         void RunAll ()
         {
             using namespace Private_;
-            Concrete::KeyedCollection_stdset<Obj_, type_index, My_Traits_> s1;
-            KeyedCollection<Obj_, type_index, My_Traits_>                  s2;
-            s2.Add (Obj_{typeid (int)});
-            s2.Add (Obj_{typeid (long int)});
+            {
+                Concrete::KeyedCollection_stdset<Obj_, type_index, My_Traits_> s1;
+                KeyedCollection<Obj_, type_index, My_Traits_>                  s2;
+                s2.Add (Obj_{typeid (int)});
+                s2.Add (Obj_{typeid (long int)});
+            }
+            {
+                // Or slighltly more flexiblely, but less efficiently
+                Concrete::KeyedCollection_stdset<Obj_, type_index> s1;
+                KeyedCollection<Obj_, type_index>                  s2{My_Extractor_{}};
+                s2.Add (Obj_{typeid (int)});
+                s2.Add (Obj_{typeid (long int)});
+            }
         }
     }
 }
