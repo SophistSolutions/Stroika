@@ -1,16 +1,16 @@
 ﻿# Steps to build
 
+## Install Visual studio or some compiler
+
+~~~
+TBD - OR see other dockerfiles
+~~~
+
 ## Git clone
 
 ~~~
 git clone https://github.com/SophistSolutions/Stroika.git
 cd Stroika
-~~~
-
-## Optionally enable VS2k tools (not needed for stroika)
-
-~~~
-"c:\Program Files\Microsoft Visual Studio\2022\BuildTools\Common7\Tools\VsDevCmd.bat"
 ~~~
 
 ## Create default configurations

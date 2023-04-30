@@ -1,0 +1,63 @@
+﻿# See https://hub.docker.com/_/microsoft-windows
+#   for list of available windows server types.
+#
+#   It appears empirically, that nanoserver doesn't work with the visual studio installer.
+#   servercore is the next smallest, and that appears to work fine.
+#
+# SEE 
+#   https://hub.docker.com/_/microsoft-windows-servercore
+#   https://hub.docker.com/_/microsoft-dotnet-framework-sdk/
+#        for list of versions
+#
+# ARG BASE_IMAGE=mcr.microsoft.com/windows/servercore:2004
+# ARG BASE_IMAGE=mcr.microsoft.com/windows/servercore:20H2
+# ARG BASE_IMAGE=mcr.microsoft.com/dotnet/framework/sdk:4.8-windowsservercore-ltsc2019  ## Referenced in https://docs.microsoft.com/en-us/visualstudio/install/build-tools-container?view=vs-2022
+# ARG BASE_IMAGE=mcr.microsoft.com/windows/servercore:ltsc2019                          ## ltsc2019 not working on github actions - LGP 2022-02-23
+
+## Seems to work now on github actions using runner=Windows-2022 --LGP 2022-02-25
+ARG BASE_IMAGE=mcr.microsoft.com/windows/servercore:ltsc2022
+
+FROM ${BASE_IMAGE}
+
+# Sometimes we get sporadic failures building, and I THINK this is due to running out of disk space in builder, so
+# adding this to the docker engine config may help:
+# "storage-opts": [
+# "size=300GB"
+# ]
+# https://unrealcontainers.com/docs/environments/local-windows-10
+
+# install choco
+SHELL ["powershell"]
+ENV CHOCO_URL=https://chocolatey.org/install.ps1
+RUN Set-ExecutionPolicy Bypass -Scope Process -Force; \
+ [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.SecurityProtocolType]'Tls,Tls11,Tls12'; \
+ iex ((New-Object System.Net.WebClient).DownloadString("$env:CHOCO_URL"));
+
+# install cygwin
+SHELL ["cmd", "/S", "/C"]
+RUN choco install -y cygwin cyg-get
+# RUN choco install -y cyg-get
+
+# Add cygwin to the path
+SHELL ["powershell"]
+RUN  \
+    $env:PATH =  $env:PATH + ';c:\tools\cygwin\bin';   \
+    [Environment]::SetEnvironmentVariable('PATH', $env:PATH, [EnvironmentVariableTarget]::Machine);
+
+# Install a bunch of components - mostly that Stroika builds will find handy
+# doxygen for generating docs - optional
+# gdb for debugging - optional
+RUN cyg-get default make git wget patch pkg-config automake dos2unix unzip p7zip doxygen jq
+
+COPY Windows-Cygwin/Getting-Started-With-Stroika.md ./tools/cygwin/home
+COPY Windows-Cygwin/.bash_profile ./tools/cygwin/home
+
+# Note, tried using ENTRYPOINT, but this doesn't seem to work reasonably with docker, 
+# and much worse with windows (in part due to available shell commands)
+# CMD ["cmd", "/c", "call FixupPath.bat && echo see Getting-Started-With-Stroika.md && cmd"]
+CMD ["bash.exe", "--login"]
+
+### NOTE TO RUN
+###     docker run -v c:\Sandbox:c:\Sandbox -it sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k22
+###     docker run -it --storage-opt "size=100GB" sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k22
+###     see ScriptsLib/RunLocalWindowsDockerRegressionTests

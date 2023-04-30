@@ -1,0 +1,35 @@
+#
+#
+name: build-v3-Docker-Containers
+
+on:
+  workflow_dispatch:
+    inputs:
+      ignored:
+        description: "ignored"
+        required: false
+        default: ""
+
+jobs:
+  build-Linux:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Build Linux Container Images
+        run: |
+          cd DockerBuildContainers |
+          make pull-base-images |
+          make build-images |
+          make tag-images |
+          make push-images
+  build-Windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Build Windows Container Images
+        run: |
+          cd DockerBuildContainers |
+          make pull-base-images |
+          make build-images |
+          make tag-images |
+          make push-images
