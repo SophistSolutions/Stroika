@@ -308,14 +308,13 @@ jobs:
             config_name: Debug
             extra_config_args: --arch x86 --apply-default-debug-flags --trace2file enable
             includeInDevBranchBuilds: true
-###TMPHACK ENABLE WHILE DEBUGING MSYS BUILD
-          - displayTargetName: windows-vs2k22-cygwin-x86-Release
-            os: windows
-            runs_on: windows-2022
-            container_image: sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k22:v3
-            config_name: Release
-            extra_config_args: --arch x86 --apply-default-release-flags --trace2file enable
-            includeInDevBranchBuilds: false
+          # - displayTargetName: windows-vs2k22-cygwin-x86-Release
+          #   os: windows
+          #   runs_on: windows-2022
+          #   container_image: sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k22:v3
+          #   config_name: Release
+          #   extra_config_args: --arch x86 --apply-default-release-flags --trace2file enable
+          #   includeInDevBranchBuilds: false
           # - displayTargetName: windows-vs2k22-cygwin-x86_64-Release
           #   os: windows
           #   runs_on: windows-2022
@@ -337,14 +336,13 @@ jobs:
           #   config_name: Release
           #   extra_config_args: --arch x86 --apply-default-release-flags --trace2file enable
           #   includeInDevBranchBuilds: false
-###TMPHACK DISBALE WHILE DEBUGING
-          # - displayTargetName: windows-vs2k22-msys-x86_64-Release
-          #   os: windows
-          #   runs_on: windows-2022
-          #   container_image: sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k22:v3
-          #   config_name: Release
-          #   extra_config_args: --arch x86_64 --apply-default-release-flags --trace2file enable
-          #   includeInDevBranchBuilds: true
+          - displayTargetName: windows-vs2k22-msys-x86_64-Release
+            os: windows
+            runs_on: windows-2022
+            container_image: sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k22:v3
+            config_name: Release
+            extra_config_args: --arch x86_64 --apply-default-release-flags --trace2file enable
+            includeInDevBranchBuilds: true
     env:
       # vm has 2 virtual CPUs, but 8GB ram, so jobs=3 (empirical), and QUICK_BUILD avoids some internal testing
       MAKEFLAGS: "--jobs=3 QUICK_BUILD=1"
