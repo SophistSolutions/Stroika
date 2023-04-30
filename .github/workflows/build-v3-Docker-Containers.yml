@@ -17,19 +17,17 @@ jobs:
       - uses: actions/checkout@v3
       - name: Build Linux Container Images
         run: |
-          cd DockerBuildContainers; |
-          make pull-base-images; |
-          make build-images; |
-          make tag-images; |
-          make push-images
+          make --directory DockerBuildContainers pull-base-images |
+          make --directory DockerBuildContainers make build-images |
+          make --directory DockerBuildContainers make tag-images |
+          make --directory DockerBuildContainers make push-images
   build-Windows:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v3
       - name: Build Windows Container Images
         run: |
-          cd DockerBuildContainers; |
-          make pull-base-images; |
-          make build-images; |
-          make tag-images; |
-          make push-images
+          make --directory DockerBuildContainers pull-base-images |
+          make --directory DockerBuildContainers make build-images |
+          make --directory DockerBuildContainers make tag-images |
+          make --directory DockerBuildContainers make push-images
