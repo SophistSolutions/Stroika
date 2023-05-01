@@ -20,7 +20,7 @@ jobs:
           make --directory DockerBuildContainers pull-base-images
           make --directory DockerBuildContainers build-images
           make --directory DockerBuildContainers tag-images
-          make --directory DockerBuildContainers push-images
+          # make --directory DockerBuildContainers push-images
   build-Windows:
     runs-on: windows-latest
     steps:
@@ -30,4 +30,4 @@ jobs:
           make --directory DockerBuildContainers pull-base-images
           make --directory DockerBuildContainers build-images
           make --directory DockerBuildContainers tag-images
-          make --directory DockerBuildContainers push-images
+          # make --directory DockerBuildContainers push-images
