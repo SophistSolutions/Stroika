@@ -43,8 +43,12 @@ ARG VS_17_5_4=https://download.visualstudio.microsoft.com/download/pr/0bb9a5f5-5
 SHELL ["powershell"]
 RUN Invoke-WebRequest "$env:VS_17_5_4" \
     -OutFile "$env:TEMP\vs_buildtools.exe" -UseBasicParsing
+
+# Since Visual Studio.net 17.5.0, adding Microsoft.VisualStudio.Component.VC.ATLMFC above causes install to fail,
+# But adding here by itself is fine.
+# del stuff to minimize space left in the filesystem layer
 SHELL ["cmd", "/S", "/C"]
-RUN %TEMP%\vs_buildtools.exe \
+RUN (%TEMP%\vs_buildtools.exe \
     --installPath "%ProgramFiles%\Microsoft Visual Studio\2022\BuildTools" \
     --includeRecommended \
     --add Microsoft.VisualStudio.Workload.VCTools \
@@ -55,15 +59,13 @@ RUN %TEMP%\vs_buildtools.exe \
     --remove Microsoft.VisualStudio.Component.Windows10SDK.14393 \
     --remove Microsoft.VisualStudio.Component.Windows81SDK \
     --quiet --wait --norestart --noUpdateInstaller \
-    || IF "%ERRORLEVEL%"=="3010" EXIT 0
-# Since Visual Studio.net 17.5.0, adding Microsoft.VisualStudio.Component.VC.ATLMFC above causes install to fail,
-# But adding here by itself is fine.
-RUN (%TEMP%\vs_buildtools.exe \
+    || IF "%ERRORLEVEL%"=="3010" EXIT 0) \
+    && (%TEMP%\vs_buildtools.exe \
     --installPath "%ProgramFiles%\Microsoft Visual Studio\2022\BuildTools" \
     --add Microsoft.VisualStudio.Component.VC.ATLMFC \
     --quiet --wait --norestart --noUpdateInstaller \
     || IF "%ERRORLEVEL%"=="3010" EXIT 0) \
-    && (del /f /s /q "C:\$Recycle.Bin")
+    && (del /f /s /q "%TEMP%\*.*")
 
 # ### NOTE TO RUN
 # ###     docker run -v c:\Sandbox:c:\Sandbox -it sophistsolutionsinc/stroika-buildvm-windows-cygin-vs2k22

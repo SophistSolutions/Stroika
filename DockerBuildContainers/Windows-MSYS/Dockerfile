@@ -69,7 +69,8 @@ COPY Windows-MSYS/.bash_profile c:/tools/msys64/
 # CMD ["cmd", "/c", "call FixupPath.bat && echo see Getting-Started-With-Stroika.md && cmd"]
 CMD ["bash.exe", "--login"]
 
-## NOT SURE A GOOD IDEA - EXPLAIN WHY WE CARE
+## @todo - NOT SURE A GOOD IDEA - EXPLAIN WHY WE CARE - think had todo with runnning -exec and coming up in a reasonable spot? And maybe
+## home dir??? soemthign quirly with bashrc default scripts on startup - dont remember
 # MSYS defaults to ignorning the inherited path - see https://www.msys2.org/wiki/MSYS2-introduction/
 ENV MSYS2_PATH_TYPE=inherit
 
