@@ -15,16 +15,30 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+      - name: Build System Info
+        shell: "bash"
+        run: |
+          echo "CWD: `pwd`"
+          df -h
+          uname -a
       - name: Build Linux Container Images
         run: |
-          make --directory DockerBuildContainers pull-base-images
-          make --directory DockerBuildContainers build-images
-          make --directory DockerBuildContainers tag-images
+          DEBIAN_FRONTEND=noninteractive make --directory DockerBuildContainers pull-base-images
+          DEBIAN_FRONTEND=noninteractive make --directory DockerBuildContainers build-images
+          DEBIAN_FRONTEND=noninteractive make --directory DockerBuildContainers tag-images
           # make --directory DockerBuildContainers push-images
   build-Windows:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v3
+      - name: Build System Info
+        shell: "bash"
+        run: |
+          echo "CWD: `pwd`"
+          df -h
+          uname -a
+          systeminfo
+          echo NUMBER_OF_PROCESSORS=$NUMBER_OF_PROCESSORS
       - name: Build Windows Container Images
         run: |
           make --directory DockerBuildContainers pull-base-images
