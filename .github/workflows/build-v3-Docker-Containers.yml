@@ -48,8 +48,14 @@ jobs:
           df -h
           uname -a
           systeminfo
+          where bash
           echo "DetectedHostOS: `./ScriptsLib/DetectedHostOS`"
           echo NUMBER_OF_PROCESSORS=$NUMBER_OF_PROCESSORS
+      - name: Update PATH
+        - run: |
+          echo PATH=${PATH}
+          echo GITHUB_PATH=${GITHUB_PATH}
+          echo "c:/Program Files/git/bin/" >> $GITHUB_PATH
       - name: Build Windows Container Images
         run: |
           make --directory DockerBuildContainers pull-base-images
