@@ -1,5 +1,5 @@
 #!/bin/bash
-shopt -s nocasematch
+# shopt -s nocasematch
 
 #
 # Based on https://stackoverflow.com/questions/714100/os-detecting-makefile/52062069#52062069
@@ -12,7 +12,7 @@ shopt -s nocasematch
 #
 DETECTED_HOST_OS=`uname 2>/dev/null` || echo Unknown
 
-if [[ $DETECTED_HOST_OS =~ "cygwin" ]] ; then DETECTED_HOST_OS="Cygwin"; fi;
+if [[ $DETECTED_HOST_OS =~ "CYGWIN" ]] ; then DETECTED_HOST_OS="Cygwin"; fi;
 if [[ $DETECTED_HOST_OS =~ "MSYS" ]] ; then DETECTED_HOST_OS="MSYS"; fi;
 if [[ $DETECTED_HOST_OS =~ "MINGW" ]] ; then DETECTED_HOST_OS="MSYS"; fi;
 
