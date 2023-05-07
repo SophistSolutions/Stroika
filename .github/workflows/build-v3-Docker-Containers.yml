@@ -1,8 +1,5 @@
 #
-#
-# NOT yet usable. NEED ability to PUSH to dockerhub - so some mechanism for private / secrets. Not
-# investigated how todo yet. But still useful to test the build process working and a start towards remote
-# build of containers
+# Windows not yet working, but otherwise seems to work OK to automate build/upload of tagged docker images
 #
 name: build-v3-Docker-Containers
 
@@ -25,13 +22,12 @@ jobs:
           echo "CWD: `pwd`"
           df -h
           uname -a
-          echo "DetectOS: `./ScriptsLib/DetectHostOS`"
+          echo "DetectedHostOS: `./ScriptsLib/DetectedHostOS`"
       - name: Build Linux Container Images
         run: |
           DEBIAN_FRONTEND=noninteractive make --directory DockerBuildContainers pull-base-images
           DEBIAN_FRONTEND=noninteractive make --directory DockerBuildContainers build-images
           DEBIAN_FRONTEND=noninteractive make --directory DockerBuildContainers tag-images
-          # make --directory DockerBuildContainers push-images
       - name: Log in to Docker Hub
         uses: docker/login-action@v1
         with:
@@ -52,7 +48,7 @@ jobs:
           df -h
           uname -a
           systeminfo
-          echo "DetectOS: `./ScriptsLib/DetectHostOS`"
+          echo "DetectedHostOS: `./ScriptsLib/DetectedHostOS`"
           echo NUMBER_OF_PROCESSORS=$NUMBER_OF_PROCESSORS
       - name: Build Windows Container Images
         run: |
