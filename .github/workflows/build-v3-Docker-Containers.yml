@@ -32,6 +32,15 @@ jobs:
           DEBIAN_FRONTEND=noninteractive make --directory DockerBuildContainers build-images
           DEBIAN_FRONTEND=noninteractive make --directory DockerBuildContainers tag-images
           # make --directory DockerBuildContainers push-images
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_PASSWORD }}
+      - name: Push Linux Container Images
+        run: |
+          DEBIAN_FRONTEND=noninteractive make --directory DockerBuildContainers push-images
+
   build-Windows:
     runs-on: windows-latest
     steps:
@@ -50,4 +59,11 @@ jobs:
           make --directory DockerBuildContainers pull-base-images
           make --directory DockerBuildContainers build-images
           make --directory DockerBuildContainers tag-images
-          # make --directory DockerBuildContainers push-images
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_PASSWORD }}
+      - name: Push Windows Container Images
+        run: |
+          make --directory DockerBuildContainers push-images
