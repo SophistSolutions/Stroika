@@ -1,4 +1,5 @@
 DEFAULT_GOAL := help
+SHELL=/bin/bash
 
 STROIKA_VERSION=$(shell dos2unix < ../STROIKA_VERSION | xargs echo -n)
 STROIKA_VERSION_Final=$(shell ../ScriptsLib/ExtractVersionInformation ../STROIKA_VERSION FinalBuild)
