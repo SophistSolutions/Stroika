@@ -1,5 +1,5 @@
 #!/bin/bash
-# shopt -s nocasematch
+shopt -s nocasematch
 
 #
 # Based on https://stackoverflow.com/questions/714100/os-detecting-makefile/52062069#52062069

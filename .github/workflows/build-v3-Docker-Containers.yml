@@ -43,7 +43,7 @@ jobs:
           df -h
           uname -a
           systeminfo
-          echo "DetectOS: `./ScriptsLib/DetectHostOS"
+          echo "DetectOS: `./ScriptsLib/DetectHostOS`"
           echo NUMBER_OF_PROCESSORS=$NUMBER_OF_PROCESSORS
       - name: Build Windows Container Images
         run: |

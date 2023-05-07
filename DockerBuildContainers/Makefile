@@ -76,8 +76,8 @@ ifneq ($(findstring $(DETECTED_HOST_OS),MSYS-Cygwin),)
 endif
 
 
-pull-base-images:
 $(info TO DEBUG WINDOW CONTAINER BUILD: DETECTED_HOST_OS=$(DETECTED_HOST_OS))
+pull-base-images:
 ifeq (${DETECTED_HOST_OS},Linux)
 	docker pull ubuntu:20.04
 	docker pull ubuntu:22.04
