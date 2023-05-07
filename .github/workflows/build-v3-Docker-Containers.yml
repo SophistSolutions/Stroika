@@ -1,5 +1,9 @@
 #
 #
+# NOT yet usable. NEED ability to PUSH to dockerhub - so some mechanism for private / secrets. Not
+# investigated how todo yet. But still useful to test the build process working and a start towards remote
+# build of containers
+#
 name: build-v3-Docker-Containers
 
 on:
