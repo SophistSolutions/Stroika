@@ -25,7 +25,7 @@ jobs:
           echo "CWD: `pwd`"
           df -h
           uname -a
-          echo "DetectOS: `./ScriptsLib/DetectHostOS"
+          echo "DetectOS: `./ScriptsLib/DetectHostOS`"
       - name: Build Linux Container Images
         run: |
           DEBIAN_FRONTEND=noninteractive make --directory DockerBuildContainers pull-base-images
