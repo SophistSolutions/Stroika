@@ -22,6 +22,10 @@ jobs:
           df -h
           uname -a
           echo "DetectedHostOS: `./ScriptsLib/DetectedHostOS`"
+      - name: Install Tools
+        run: |
+          DEBIAN_FRONTEND=noninteractive apt-get update
+          DEBIAN_FRONTEND=noninteractive apt-get install dos2unix
       - name: Build Linux Container Images
         run: |
           DEBIAN_FRONTEND=noninteractive make --directory DockerBuildContainers --no-print-directory pull-base-images
