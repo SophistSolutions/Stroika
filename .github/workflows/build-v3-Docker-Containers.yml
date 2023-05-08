@@ -62,6 +62,16 @@ jobs:
           echo "DetectedHostOS: `./ScriptsLib/DetectedHostOS`"
           echo NUMBER_OF_PROCESSORS=$NUMBER_OF_PROCESSORS
           echo make=`which make`
+          echo PATH=${PATH}
+          
+      # - name: Update PATH (wrong bash in path by default, sad seems hard to update path in github actions)
+      #   shell: "cmd"
+      #   run: |
+      #     echo PATH=%PATH%
+      #     echo GITHUB_PATH=%GITHUB_PATH%
+      #     echo "wherebash:" && where bash
+
+      #     add-content -path .\out-my.txt -value (get-content ".\fred.txt")
       # - name: Update PATH (wrong bash in path by default, sad seems hard to update path in github actions)
       #   shell: "cmd"
       #   run: |
@@ -73,7 +83,7 @@ jobs:
       #   run: |
       #     set PATH="c:/Program Files/git/usr/bin/;%PATH%"
       - name: Build Windows Container Images
-        shell: "bash"
+        # shell: "bash"
         run: |
           make --directory DockerBuildContainers pull-base-images
           make --directory DockerBuildContainers build-images
