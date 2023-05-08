@@ -543,7 +543,12 @@ sub     FillDefaultLibDependencies_
 		}
 		if ($FEATUREFLAG_ZLib ne $LIBFEATUREFLAG_No) {
 			if ($PROJECTPLATFORMSUBDIR =~ /^VisualStudio.Net/) {
-				PortablyAddLibToLibDependencies_("zlib");
+				if ($ENABLE_ASSERTIONS) {
+					PortablyAddLibToLibDependencies_("zlibstaticd");
+				}
+				else {
+					PortablyAddLibToLibDependencies_("zlibstatic");
+				}
 			}
 			else {
 				PortablyAddLibToLibDependencies_("z");
