@@ -61,12 +61,6 @@ jobs:
           copy tmpPathUpdate %GITHUB_PATH%
           del tmpPathUpdate
           where bash
-      - name: Update PATH PS:
-        shell: "pwsh"
-        run: |
-          where bash
-          echo "c:/Program Files/git/usr/bin/" | Out-File -Append -FilePath $env:GITHUB_PATH -Encoding utf8
-          where bash
       - name: Build Windows Container Images
         shell: "bash"
         run: |
