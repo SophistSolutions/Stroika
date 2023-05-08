@@ -61,11 +61,17 @@ jobs:
           systeminfo
           echo "DetectedHostOS: `./ScriptsLib/DetectedHostOS`"
           echo NUMBER_OF_PROCESSORS=$NUMBER_OF_PROCESSORS
-      - name: Build Windows Container Images
-        # Broken in parts due to disk space limit @todo add msys build
+      - name: Fetch Base Container Images
         run: |
           make --directory DockerBuildContainers --no-print-directory pull-base-images
-          make --directory DockerBuildContainers --no-print-directory sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k22
+      - name: Build Windows Container Images (STEP1)
+        run: |
+          make --directory DockerBuildContainers --no-print-directory sophistsolutionsinc/stroika-buildvm-windows-vs2k22
+      - name: Build Windows Container Images
+        run: |
+          make --directory DockerBuildContainers --no-print-directory build-images
+      - name: Tag Windows Container Images
+        run: |
           make --directory DockerBuildContainers --no-print-directory tag-images
       - name: Log in to Docker Hub
         uses: docker/login-action@v1

@@ -41,17 +41,14 @@ ifneq ($(findstring $(DETECTED_HOST_OS),MSYS-Cygwin),)
 	${MAKE} --silent sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k22
 endif
 
-sophistsolutionsinc/stroika-buildvm-windows-cygwin:
-	docker build ${EXTRA_DOCKER_BUILD_ARGS_} -f Windows-Cygwin/Dockerfile -t $@ .
+sophistsolutionsinc/stroika-buildvm-windows-vs2k22:
+	docker build ${EXTRA_DOCKER_BUILD_ARGS_} -f Windows-VS2k22/Dockerfile --build-arg BASE_IMAGE=mcr.microsoft.com/windows/servercore:ltsc2022 -t $@ .
 
-sophistsolutionsinc/stroika-buildvm-windows-msys:
-	docker build ${EXTRA_DOCKER_BUILD_ARGS_} -f Windows-MSYS/Dockerfile -t $@ .
+sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k22:		sophistsolutionsinc/stroika-buildvm-windows-vs2k22
+	docker build ${EXTRA_DOCKER_BUILD_ARGS_} -f Windows-Cygwin/Dockerfile --build-arg BASE_IMAGE=sophistsolutionsinc/stroika-buildvm-windows-vs2k22 -t $@ .
 
-sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k22:		sophistsolutionsinc/stroika-buildvm-windows-cygwin
-	docker build ${EXTRA_DOCKER_BUILD_ARGS_} -f Windows-VS2k22/Dockerfile --build-arg BASE_IMAGE=sophistsolutionsinc/stroika-buildvm-windows-cygwin -t $@ .
-
-sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k22:		sophistsolutionsinc/stroika-buildvm-windows-msys
-	docker build ${EXTRA_DOCKER_BUILD_ARGS_} -f Windows-VS2k22/Dockerfile --build-arg BASE_IMAGE=sophistsolutionsinc/stroika-buildvm-windows-msys -t $@ .
+sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k22:		sophistsolutionsinc/stroika-buildvm-windows-vs2k22
+	docker build ${EXTRA_DOCKER_BUILD_ARGS_} -f Windows-MSYS/Dockerfile --build-arg BASE_IMAGE=sophistsolutionsinc/stroika-buildvm-windows-vs2k22 -t $@ .
 
 
 stroika-dev-containers:
@@ -78,11 +75,11 @@ ifeq (${DETECTED_HOST_OS},Linux)
 	@export DO_TO_IMAGE_=stroika-buildvm-ubuntu2004-regression-tests; ${DOCKER_TAG_LINE_}
 	@export DO_TO_IMAGE_=stroika-buildvm-ubuntu2204-small; ${DOCKER_TAG_LINE_}
 	@export DO_TO_IMAGE_=stroika-buildvm-ubuntu2204-regression-tests; ${DOCKER_TAG_LINE_}
-	# #docker tag sophistsolutionsinc/stroika-dev sophistsolutionsinc/stroika-dev:$(STROIKA_VERSION)
+	#docker tag sophistsolutionsinc/stroika-dev sophistsolutionsinc/stroika-dev:$(STROIKA_VERSION)
 endif
 ifneq ($(findstring $(DETECTED_HOST_OS),MSYS-Cygwin),)
 	@export DO_TO_IMAGE_=stroika-buildvm-windows-cygwin-vs2k22; ${DOCKER_TAG_LINE_}
-	#@export DO_TO_IMAGE_=stroika-buildvm-windows-msys-vs2k22; ${DOCKER_TAG_LINE_}
+	@export DO_TO_IMAGE_=stroika-buildvm-windows-msys-vs2k22; ${DOCKER_TAG_LINE_}
 endif
 
 

@@ -1,4 +1,21 @@
-﻿ARG BASE_IMAGE=sophistsolutionsinc/stroika-buildvm-windows-msys
+﻿# See https://hub.docker.com/_/microsoft-windows
+#   for list of available windows server types.
+#
+#   It appears empirically, that nanoserver doesn't work with the visual studio installer.
+#   servercore is the next smallest, and that appears to work fine.
+#
+# SEE 
+#   https://hub.docker.com/_/microsoft-windows-servercore
+#   https://hub.docker.com/_/microsoft-dotnet-framework-sdk/
+#        for list of versions
+#
+# ARG BASE_IMAGE=mcr.microsoft.com/windows/servercore:2004
+# ARG BASE_IMAGE=mcr.microsoft.com/windows/servercore:20H2
+# ARG BASE_IMAGE=mcr.microsoft.com/dotnet/framework/sdk:4.8-windowsservercore-ltsc2019  ## Referenced in https://docs.microsoft.com/en-us/visualstudio/install/build-tools-container?view=vs-2022
+# ARG BASE_IMAGE=mcr.microsoft.com/windows/servercore:ltsc2019                          ## ltsc2019 not working on github actions - LGP 2022-02-23
+
+## Seems to work now on github actions using runner=Windows-2022 --LGP 2022-02-25
+ARG BASE_IMAGE=mcr.microsoft.com/windows/servercore:ltsc2022
 
 FROM ${BASE_IMAGE}
 
