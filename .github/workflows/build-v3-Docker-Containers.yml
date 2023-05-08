@@ -49,6 +49,7 @@ jobs:
           install: >-
             base-devel
             git
+            make
       - uses: actions/checkout@v3
       - name: Build System Info
         shell: "bash"
