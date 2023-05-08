@@ -100,6 +100,10 @@ sub	ReadConfigFile_ {
 		if (defined $pps) {
 			$configuration {'ARCH'} = $pps;
 		}
+		my $pps = ReadValue_($line, "<CMAKE>");
+		if (defined $pps) {
+			$configuration {'CMAKE'} = $pps;
+		}
 		my $pps = ReadValue_($line, "<ConfigTags>");
 		if (defined $pps) {
 			$configuration {'ConfigTags'} = $pps;

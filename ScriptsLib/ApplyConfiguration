@@ -264,6 +264,7 @@ sub WriteStroikaConfigMakeHeader
 	print (OUT "\n");
 
 	WriteStroikaConfigMakeHeader_CachedLineItem_("ARCH");
+	WriteStroikaConfigMakeHeader_CachedLineItem_("CMAKE");
 	WriteStroikaConfigMakeHeader_CachedLineItem_("TOOLS_PATH_ADDITIONS");
 	WriteStroikaConfigMakeHeader_CachedLineItem_("CC");
 	WriteStroikaConfigMakeHeader_CachedLineItem_("CXX");
@@ -402,6 +403,10 @@ sub WriteStroikaConfigMakeHeader
 			if (not ($tmp eq "")) {
 				$tmp		=	trim (`cygpath --ignore --mixed "$tmp"`);
 			}
+		}
+		{
+			my $tmp = GetConfigurationParameter($activeConfiguration, "CMAKE");
+			print (OUT "CMAKE=$tmp\n");
 		}
 		{
 			#Lib tool requires queer ARCH arguments (and probably Link) - so correct here

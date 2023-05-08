@@ -184,6 +184,7 @@ my $COMPILER_DRIVER_C = "";				# @todo allow cmdline option to set _C or _CPlusP
 my $COMPILER_DRIVER_CPlusPlus = "";
 my $AS = undef;
 my $AR = undef;
+my $CMAKE = undef
 my $LIBTOOL = undef; # Windows format LIB tool
 my $RANLIB = undef;
 my $Linker = undef;
@@ -730,6 +731,10 @@ sub	SetDefaultForCompilerDriver_
 		if (!(defined $AS)) {
 			$AS = GetMSVCVarName_ ("AS");
 		}
+		if (!(defined $CMAKE)) {
+			$CMAKE = GetMSVCVarName_('VSINSTALLDIR') . '/Common7/IDE/CommonExtensions/Microsoft/CMake/CMake/bin/cmake.exe';
+		}
+		
 		if (($COMPILER_DRIVER_C eq "") ) {
 			$COMPILER_DRIVER_C = GetMSVCVarName_ ("CC");
 		}
@@ -2493,6 +2498,14 @@ sub	WriteConfigFile_
 	}
 	print (OUT "    <BuildByDefault>$BuildByDefault</BuildByDefault>\n");
 	print (OUT "    <AS>$AS</AS>\n");
+
+	if (defined $CMAKE) {
+		print (OUT "    <CMAKE>$CMAKE</CMAKE>\n");
+	}
+	else {
+		print (OUT "    <CMAKE>cmake</CMAKE>\n");
+	}
+
 	print (OUT "    <CC>$COMPILER_DRIVER_C</CC>\n");
 	print (OUT "    <CXX>$COMPILER_DRIVER_CPlusPlus</CXX>\n");
 
