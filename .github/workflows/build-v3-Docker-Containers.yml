@@ -1,5 +1,5 @@
 #
-# Windows not yet working, but otherwise seems to work OK to automate build/upload of tagged docker images
+#
 #
 name: build-v3-Docker-Containers
 
@@ -47,7 +47,6 @@ jobs:
           update: true
           install: >-
             base-devel
-            git
             make
       - uses: actions/checkout@v3
       - name: Build System Info
