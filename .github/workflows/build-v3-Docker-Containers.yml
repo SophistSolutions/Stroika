@@ -56,13 +56,11 @@ jobs:
         run: |
           echo PATH=%PATH%
           echo GITHUB_PATH=%GITHUB_PATH%
-          echo "c:/Program Files/git/usr/bin/" >> tmpPathUpdate
-          type %GITHUB_PATH% >> tmpPathUpdate
-          copy tmpPathUpdate %GITHUB_PATH%
-          del tmpPathUpdate
           echo "wherebash:" && where bash
+      - name: Update PATH (wrong bash in path by default, sad seems hard to update path in github actions)
+        shell: "cmd"
+        run: |
           set PATH="c:/Program Files/git/usr/bin/;%PATH%"
-          echo "wherebash:" && where bash
       - name: Build Windows Container Images
         shell: "bash"
         run: |
