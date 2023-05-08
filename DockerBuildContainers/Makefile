@@ -4,7 +4,6 @@ STROIKA_VERSION=$(shell dos2unix < ../STROIKA_VERSION | xargs echo -n)
 STROIKA_VERSION_Final=$(shell ../ScriptsLib/ExtractVersionInformation ../STROIKA_VERSION FinalBuild)
 
 DETECTED_HOST_OS=$(shell ../ScriptsLib/DetectedHostOS)
-$(info TO DEBUG WINDOW CONTAINER BUILD: DETECTED_HOST_OS=$(DETECTED_HOST_OS))
 
 help:
 	@echo "make docker-images to create the docker images on your computer"
