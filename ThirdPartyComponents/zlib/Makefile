@@ -53,8 +53,15 @@ PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_:=$(shell realpath --canoni
 OUTPUT_WORKDIR_PRETTYNAME="$(shell $(StroikaRoot)ScriptsLib/SubstituteBackVariables "$(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/")"
 
 
+ifeq (${ENABLE_ASSERTIONS},1)
+CMAKE_BUILD_TYPE=Debug
+MAYBED=d
+else
+CMAKE_BUILD_TYPE=Release
+endif
+
 ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
-OUTPUT_LIB_=zlib${LIB_SUFFIX}
+OUTPUT_LIB_=zlibstatic${MAYBED}${LIB_SUFFIX}
 else
 OUTPUT_LIB_=libz${LIB_SUFFIX}
 endif
@@ -65,6 +72,37 @@ PRODUCED_OUTPUT_ARTIFACTS=	\
 	$(PER_CONFIGURATION_BUILDS_DIR)lib/${OUTPUT_LIB_}		\
 	$(PER_CONFIGURATION_BUILDS_DIR)include/zlib.h			\
 	$(PER_CONFIGURATION_BUILDS_DIR)include/zconf.h
+
+
+
+
+ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
+# See comments at head of win32/Makefile.msc for the meaning of these flags (DASMV, etc)
+# @todo - https://stroika.atlassian.net/browse/STK-905 - rewrite the windows build stuff (and unix) using cmake) - sb simpler/cleaner build and
+#         get asm stuff working again
+ASFLAGS_=-coff -Z7
+ifeq ($(ENABLE_ASSERTIONS),1)
+CFLAGS+= -DZLIB_DEBUG
+endif
+CFLAGS+= -I.
+ifeq ($(ARCH), x86)
+# For reasons not worth debugging, this ASM code crashes on x86, so just disable - https://stroika.atlassian.net/browse/STK-568
+#CFLAGS+= -DASMV -DASMINF
+#OBJA_=inffas32.obj match686.obj
+### avoid occasional 'fatal error LNK1281: Unable to generate SAFESEH image.'
+#ASFLAGS_+= -safeseh
+endif
+# ifeq ($(ARCH), x86_64)
+# CFLAGS+= -DASMV -DASMINF
+# OBJA_=inffasx64.obj gvmat64.obj inffas8664.obj
+# endif
+endif
+
+
+CMAKE_ARGS=
+CMAKE_ARGS+=	-D CMAKE_INSTALL_PREFIX="$(call FUNCTION_CONVERT_FILES_TO_COMPILER_NATIVE ,${PER_CONFIGURATION_BUILDS_DIR})"
+CMAKE_ARGS+=	-D CMAKE_C_FLAGS="$(call FUNCTION_CONVERT_FILES_TO_COMPILER_NATIVE ,${CFLAGS})"
+# CMAKE_ARGS+=	-D CMAKE_C_FLAGS_${CMAKE_BUILD_TYPE}="$(call FUNCTION_CONVERT_FILES_TO_COMPILER_NATIVE ,${CFLAGS})"
 
 
 
@@ -101,36 +139,14 @@ ifeq (Unix,$(ProjectPlatformSubdir))
 	@(export CC="$(CC)"; export CFLAGS="$(call FUNCTION_QUOTE_QUOTE_CHARACTERS_FOR_SHELL,$(CFLAGS))"; export AR="$(AR)"; export RANLIB="$(RANLIB)"; cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) && ./configure) >> $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/CONFIGURE-OUT.txt 2>&1
 endif
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) "zlib $(VERSION) - Build (see $(OUTPUT_WORKDIR_PRETTYNAME)BUILD-OUT.txt) ..."
-	@$(MAKE) doBuildInternal_ > $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/BUILD-OUT.txt 2>&1
-	@mkdir -p $(PER_CONFIGURATION_BUILDS_DIR)lib && cp $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/${OUTPUT_LIB_} $(PER_CONFIGURATION_BUILDS_DIR)lib/
-	@mkdir -p $(PER_CONFIGURATION_BUILDS_DIR)include && cp $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/zlib.h $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/zconf.h $(PER_CONFIGURATION_BUILDS_DIR)include/
+	cd "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_}" && "${CMAKE}" ${CMAKE_ARGS} .
+	cd "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_}" && "${CMAKE}" --build . --config=${CMAKE_BUILD_TYPE} 
+	cd "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_}" && "${CMAKE}" --install . --config=${CMAKE_BUILD_TYPE} 
 
 
 $(ZIPPEDFILE):
 	@MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) $(StroikaRoot)ScriptsLib/WebGet $(ZIPPEDFILE) $(FETCHURLS)
 
-
-ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
-# See comments at head of win32/Makefile.msc for the meaning of these flags (DASMV, etc)
-# @todo - https://stroika.atlassian.net/browse/STK-905 - rewrite the windows build stuff (and unix) using cmake) - sb simpler/cleaner build and
-#         get asm stuff working again
-ASFLAGS_=-coff -Z7
-ifeq ($(ENABLE_ASSERTIONS),1)
-CFLAGS+= -DZLIB_DEBUG
-endif
-CFLAGS+= -I.
-ifeq ($(ARCH), x86)
-# For reasons not worth debugging, this ASM code crashes on x86, so just disable - https://stroika.atlassian.net/browse/STK-568
-#CFLAGS+= -DASMV -DASMINF
-#OBJA_=inffas32.obj match686.obj
-### avoid occasional 'fatal error LNK1281: Unable to generate SAFESEH image.'
-#ASFLAGS_+= -safeseh
-endif
-# ifeq ($(ARCH), x86_64)
-# CFLAGS+= -DASMV -DASMINF
-# OBJA_=inffasx64.obj gvmat64.obj inffas8664.obj
-# endif
-endif
 
 
 doBuildInternal_:
