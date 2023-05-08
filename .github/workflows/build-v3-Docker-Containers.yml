@@ -39,6 +39,9 @@ jobs:
 
   build-Windows:
     runs-on: windows-latest
+    defaults:
+      run:
+        shell: msys2 {0}
     steps:
       - uses: actions/checkout@v3
       - name: Build System Info
