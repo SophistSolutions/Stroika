@@ -60,20 +60,20 @@ jobs:
           type %GITHUB_PATH% >> tmpPathUpdate
           copy tmpPathUpdate %GITHUB_PATH%
           del tmpPathUpdate
-          echo "wherebash:" ; where bash
+          echo "wherebash:" && where bash
           set PATH="c:/Program Files/git/usr/bin/;%PATH%"
           echo "wherebash:" && where bash
       - name: Build Windows Container Images
         shell: "bash"
         run: |
-          echo "wherebash:" ; which bash
+          echo "wherebash:" && which bash
           make --directory DockerBuildContainers pull-base-images
           make --directory DockerBuildContainers build-images
           make --directory DockerBuildContainers tag-images
       - name: Build Windows Container Images
         shell: "cmd"
         run: |
-          echo "wherebash:" ; where bash
+          echo "wherebash:" && where bash
           make --directory DockerBuildContainers pull-base-images
           make --directory DockerBuildContainers build-images
           make --directory DockerBuildContainers tag-images
