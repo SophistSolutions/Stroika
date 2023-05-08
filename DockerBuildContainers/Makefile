@@ -37,11 +37,15 @@ ifeq (${DETECTED_HOST_OS},Linux)
 	docker build -f Stroika-Dev/Dockerfile -t sophistsolutionsinc/stroika-dev-2204 --build-arg BASED_ON_IMAGE=sophistsolutionsinc/stroika-buildvm-ubuntu2204-regression-tests .
 endif
 ifneq ($(findstring $(DETECTED_HOST_OS),MSYS-Cygwin),)
-	${MAKE} --silent sophistsolutionsinc/stroika-buildvm-windows-cygwin
-	${MAKE} --silent sophistsolutionsinc/stroika-buildvm-windows-msys
 	${MAKE} --silent sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k22
 	${MAKE} --silent sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k22
 endif
+
+sophistsolutionsinc/stroika-buildvm-windows-cygwin:
+	docker build ${EXTRA_DOCKER_BUILD_ARGS_} -f Windows-Cygwin/Dockerfile -t $@ .
+
+sophistsolutionsinc/stroika-buildvm-windows-msys:
+	docker build ${EXTRA_DOCKER_BUILD_ARGS_} -f Windows-MSYS/Dockerfile -t $@ .
 
 sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k22:		sophistsolutionsinc/stroika-buildvm-windows-cygwin
 	docker build ${EXTRA_DOCKER_BUILD_ARGS_} -f Windows-VS2k22/Dockerfile --build-arg BASE_IMAGE=sophistsolutionsinc/stroika-buildvm-windows-cygwin -t $@ .
