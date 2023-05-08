@@ -146,11 +146,6 @@
 #if qHasFeature_ZLib
 #include <zlib.h>
 
-#if qHasFeature_ZLib && defined(_MSC_VER)
-// Use #pragma comment lib instead of explicit entry in the lib entry of the project file
-#pragma comment(lib, "zlib.lib")
-#endif
-
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::DataExchange;
 using namespace Stroika::Foundation::DataExchange::Archive;

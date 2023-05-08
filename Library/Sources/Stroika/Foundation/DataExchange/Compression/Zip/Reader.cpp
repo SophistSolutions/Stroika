@@ -14,11 +14,6 @@
 #if qHasFeature_ZLib
 #include <zlib.h>
 
-#if defined(_MSC_VER)
-// Use #pragma comment lib instead of explicit entry in the lib entry of the project file
-#pragma comment(lib, "zlib.lib")
-#endif
-
 using std::byte;
 
 using namespace Stroika::Foundation;
