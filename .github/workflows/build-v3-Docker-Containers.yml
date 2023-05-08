@@ -62,9 +62,11 @@ jobs:
           echo "DetectedHostOS: `./ScriptsLib/DetectedHostOS`"
           echo NUMBER_OF_PROCESSORS=$NUMBER_OF_PROCESSORS
       - name: Fetch Base Container Images
+        # Done as separate step since takes so long, and can see the time for this step more clearly... (could be omitted)
         run: |
           make --directory DockerBuildContainers --no-print-directory pull-base-images
-      - name: Build Windows Container Images (STEP1)
+      - name: Build Windows Container Images (STEP1-vs2k22)
+        # Done as separate step since takes so long, and can see the time for this step more clearly... (could be omitted)
         run: |
           make --directory DockerBuildContainers --no-print-directory sophistsolutionsinc/stroika-buildvm-windows-vs2k22
       - name: Build Windows Container Images
