@@ -54,6 +54,7 @@ jobs:
           which bash
           echo "DetectedHostOS: `./ScriptsLib/DetectedHostOS`"
           echo NUMBER_OF_PROCESSORS=$NUMBER_OF_PROCESSORS
+          echo make=`which make`
       # - name: Update PATH (wrong bash in path by default, sad seems hard to update path in github actions)
       #   shell: "cmd"
       #   run: |
