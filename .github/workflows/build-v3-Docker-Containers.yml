@@ -48,7 +48,7 @@ jobs:
           df -h
           uname -a
           systeminfo
-          where bash
+          which bash
           echo "DetectedHostOS: `./ScriptsLib/DetectedHostOS`"
           echo NUMBER_OF_PROCESSORS=$NUMBER_OF_PROCESSORS
       - name: Update PATH (wrong bash in path by default, sad seems hard to update path in github actions)
@@ -60,19 +60,20 @@ jobs:
           type %GITHUB_PATH% >> tmpPathUpdate
           copy tmpPathUpdate %GITHUB_PATH%
           del tmpPathUpdate
-          echo "wherebash:" && where bash
+          echo "wherebash:" ; where bash
           set PATH="c:/Program Files/git/usr/bin/;%PATH%"
           echo "wherebash:" && where bash
       - name: Build Windows Container Images
         shell: "bash"
         run: |
-          echo "wherebash:" && where bash
+          echo "wherebash:" ; which bash
           make --directory DockerBuildContainers pull-base-images
           make --directory DockerBuildContainers build-images
           make --directory DockerBuildContainers tag-images
       - name: Build Windows Container Images
         shell: "cmd"
         run: |
+          echo "wherebash:" ; where bash
           make --directory DockerBuildContainers pull-base-images
           make --directory DockerBuildContainers build-images
           make --directory DockerBuildContainers tag-images
