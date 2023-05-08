@@ -59,6 +59,13 @@ jobs:
           echo "c:/Program Files/git/usr/bin/" >> $GITHUB_PATH
           where bash
       - name: Build Windows Container Images
+        shell: "bash"
+        run: |
+          make --directory DockerBuildContainers pull-base-images
+          make --directory DockerBuildContainers build-images
+          make --directory DockerBuildContainers tag-images
+      - name: Build Windows Container Images
+        shell: "cmd"
         run: |
           make --directory DockerBuildContainers pull-base-images
           make --directory DockerBuildContainers build-images
