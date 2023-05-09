@@ -23,10 +23,6 @@ $(call PATCH_PATH_FOR_TOOLPATH_ADDITION_IF_NEEDED)
 
 VERSION=1.2.13
 #VERSION=1.2.12
-#VERSION=1.2.11
-# last stable version
-#VERSION=1.2.8
-# crashes in regtest for inflate on Win32 (but not Win64), 1.2.9 thru 1.2.11
 
 
 BASENAME=zlib-$(VERSION)
@@ -65,7 +61,6 @@ OUTPUT_LIB_=zlibstatic${MAYBED}${LIB_SUFFIX}
 else
 OUTPUT_LIB_=libz${LIB_SUFFIX}
 endif
-
 
 
 PRODUCED_OUTPUT_ARTIFACTS=	\
@@ -144,30 +139,14 @@ endif
 	@cd "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_}" && "${CMAKE}" --build . --target zlibstatic --target zlib --config=${CMAKE_BUILD_TYPE} > BUILD-OUT.txt 2>&1
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) "zlib $(VERSION) - Build (see $(OUTPUT_WORKDIR_PRETTYNAME)INSTALL-OUT.txt) ..."
 	@cd "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_}" && "${CMAKE}" --install . --config=${CMAKE_BUILD_TYPE}  > INSTALL-OUT.txt 2>&1
+	@#Weird for UNIX - zlib copies pkgconfig go share folder but other libs copy to and expect subdir of libs, so copy to both for now -LGP 2023-05-08
+	@mkdir -p $(PER_CONFIGURATION_BUILDS_DIR)lib/pkgconfig
+	@-cp $(PER_CONFIGURATION_BUILDS_DIR)share/pkgconfig/zlib.pc $(PER_CONFIGURATION_BUILDS_DIR)lib/pkgconfig/zlib.pc
 
 
 $(ZIPPEDFILE):
 	@MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) $(StroikaRoot)ScriptsLib/WebGet $(ZIPPEDFILE) $(FETCHURLS)
 
-
-
-# doBuildInternal_:
-# ifeq ($(CONFIGURATION),)
-# 	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
-# endif
-# ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
-# 	cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) && \
-# 		export CFLAGS="$(call FUNCTION_QUOTE_QUOTE_CHARACTERS_FOR_SHELL,$(CFLAGS))"; \
-# 		export ASFLAGS="$(ASFLAGS_)"; \
-# 		export AS="$(AS)"; \
-# 		export CC="$(CC)"; \
-# 		export AR="$(LIBTOOL)"; \
-# 		export OBJA="$(OBJA_)"; \
-# 		env --unset=MAKEFLAGS --unset=MFLAGS \
-# 		nmake -E -f win32/Makefile.msc zlib.lib
-# else
-# 	@$(MAKE) --directory $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) --no-print-directory static
-# endif
 
 
 ORIGs CURRENT:	$(ZIPPEDFILE)
