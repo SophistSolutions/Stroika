@@ -100,11 +100,13 @@ endif
 
 
 CMAKE_ARGS=
+# CMAKE_ARGS+=	-D STATIC=ON
 CMAKE_ARGS+=	-D CMAKE_INSTALL_PREFIX="$(call FUNCTION_CONVERT_FILES_TO_COMPILER_NATIVE ,${PER_CONFIGURATION_BUILDS_DIR})"
+CMAKE_ARGS+=	-D CMAKE_C_COMPILER="$(call FUNCTION_CONVERT_FILES_TO_COMPILER_NATIVE ,$(shell which ${CC}))"
 CMAKE_ARGS+=	-D CMAKE_C_FLAGS="$(call FUNCTION_CONVERT_FILES_TO_COMPILER_NATIVE ,${CFLAGS})"
-# CMAKE_ARGS+=	-D CMAKE_C_FLAGS_${CMAKE_BUILD_TYPE}="$(call FUNCTION_CONVERT_FILES_TO_COMPILER_NATIVE ,${CFLAGS})"
-
-
+CMAKE_ARGS+=	-D CMAKE_LINKER="$(call FUNCTION_CONVERT_FILES_TO_COMPILER_NATIVE ,$(shell which ${Linker}))"
+CMAKE_ARGS+=	-D CMAKE_AR="$(call FUNCTION_CONVERT_FILES_TO_COMPILER_NATIVE ,$(shell which ${AR}))"
+CMAKE_ARGS+=	-D CMAKE_RANLIB="$(call FUNCTION_CONVERT_FILES_TO_COMPILER_NATIVE ,$(shell which ${RANLIB}))"
 
 
 
@@ -132,16 +134,16 @@ $(word 1,$(PRODUCED_OUTPUT_ARTIFACTS)):
 ifeq ($(CONFIGURATION),)
 	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
 endif
-	@$(MAKE) --silent $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)
-ifeq (Unix,$(ProjectPlatformSubdir))
+	@${MAKE} --silent CURRENT
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) "zlib $(VERSION) - Configure (see $(OUTPUT_WORKDIR_PRETTYNAME)CONFIGURE-OUT.txt) ..."
-	@echo "export CC=$(CC); export CFLAGS="$(call FUNCTION_QUOTE_QUOTE_CHARACTERS_FOR_SHELL,$(CFLAGS))"; AR="$(AR)"; RANLIB="$(RANLIB)"; cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) && ./configure" > $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/CONFIGURE-OUT.txt
-	@(export CC="$(CC)"; export CFLAGS="$(call FUNCTION_QUOTE_QUOTE_CHARACTERS_FOR_SHELL,$(CFLAGS))"; export AR="$(AR)"; export RANLIB="$(RANLIB)"; cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) && ./configure) >> $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/CONFIGURE-OUT.txt 2>&1
-endif
+	@rm -rf "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_}"; mkdir "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_}"
+	@echo "${CMAKE} ${CMAKE_ARGS} ${StroikaRoot}/ThirdPartyComponents/zlib/CURRENT/" >  "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_}/CONFIGURE-OUT.txt" 2>&1
+	@echo "SEE ${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_}/CMakeCache.txt" >>  "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_}/CONFIGURE-OUT.txt" 2>&1
+	@cd "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_}" && "${CMAKE}" ${CMAKE_ARGS} ${StroikaRoot}/ThirdPartyComponents/zlib/CURRENT/ >> CONFIGURE-OUT.txt 2>&1
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) "zlib $(VERSION) - Build (see $(OUTPUT_WORKDIR_PRETTYNAME)BUILD-OUT.txt) ..."
-	cd "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_}" && "${CMAKE}" ${CMAKE_ARGS} .
-	cd "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_}" && "${CMAKE}" --build . --config=${CMAKE_BUILD_TYPE} 
-	cd "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_}" && "${CMAKE}" --install . --config=${CMAKE_BUILD_TYPE} 
+	@cd "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_}" && "${CMAKE}" --build . --target zlibstatic --target zlib --config=${CMAKE_BUILD_TYPE} > BUILD-OUT.txt 2>&1
+	@$(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) "zlib $(VERSION) - Build (see $(OUTPUT_WORKDIR_PRETTYNAME)INSTALL-OUT.txt) ..."
+	@cd "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_}" && "${CMAKE}" --install . --config=${CMAKE_BUILD_TYPE}  > INSTALL-OUT.txt 2>&1
 
 
 $(ZIPPEDFILE):
@@ -149,26 +151,26 @@ $(ZIPPEDFILE):
 
 
 
-doBuildInternal_:
-ifeq ($(CONFIGURATION),)
-	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
-endif
-ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
-	cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) && \
-		export CFLAGS="$(call FUNCTION_QUOTE_QUOTE_CHARACTERS_FOR_SHELL,$(CFLAGS))"; \
-		export ASFLAGS="$(ASFLAGS_)"; \
-		export AS="$(AS)"; \
-		export CC="$(CC)"; \
-		export AR="$(LIBTOOL)"; \
-		export OBJA="$(OBJA_)"; \
-		env --unset=MAKEFLAGS --unset=MFLAGS \
-		nmake -E -f win32/Makefile.msc zlib.lib
-else
-	@$(MAKE) --directory $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) --no-print-directory static
-endif
+# doBuildInternal_:
+# ifeq ($(CONFIGURATION),)
+# 	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
+# endif
+# ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
+# 	cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) && \
+# 		export CFLAGS="$(call FUNCTION_QUOTE_QUOTE_CHARACTERS_FOR_SHELL,$(CFLAGS))"; \
+# 		export ASFLAGS="$(ASFLAGS_)"; \
+# 		export AS="$(AS)"; \
+# 		export CC="$(CC)"; \
+# 		export AR="$(LIBTOOL)"; \
+# 		export OBJA="$(OBJA_)"; \
+# 		env --unset=MAKEFLAGS --unset=MFLAGS \
+# 		nmake -E -f win32/Makefile.msc zlib.lib
+# else
+# 	@$(MAKE) --directory $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) --no-print-directory static
+# endif
 
 
-ORIGs CURRENT $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_):	$(ZIPPEDFILE)
+ORIGs CURRENT:	$(ZIPPEDFILE)
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) `$(StroikaRoot)ScriptsLib/SubstituteBackVariables "zlib ${VERSION} - Extracting $(ZIPPEDFILE) to $@"` "... "
 	@mkdir -p $@
 ifeq ($(DETECTED_HOST_OS),Darwin)
@@ -177,15 +179,6 @@ else ifneq ($(findstring $(DETECTED_HOST_OS),MSYS-Cygwin),)
 	@PWD=`pwd` tar xf $(ZIPPEDFILE) --no-same-owner --directory `realpath --relative-to=$$PWD $@` --strip-components=1
 else
 	@tar xf $(ZIPPEDFILE) --no-same-owner --directory $@ --strip-components=1
-endif
-ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
-	@if [ "$@" = "$(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)" ] ; then \
-		$(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) "zlib ${VERSION} - Patching `$(StroikaRoot)ScriptsLib/SubstituteBackVariables "$@"` ... "; \
-		dos2unix -q $@/win32/Makefile.msc > $@/PATCHING.OUT; \
-		patch -p0 $@/win32/Makefile.msc Patches/Makefile.msc.PATCH >> $@/PATCHING.OUT; \
-		patch -p0 $@/win32/Makefile.msc Patches/LOSE_CANDAS_FLAGS.PATCH >> $@/PATCHING.OUT; \
-		unix2dos -q $@/win32/Makefile.msc >> $@/PATCHING.OUT; \
-	fi
 endif
 
 
