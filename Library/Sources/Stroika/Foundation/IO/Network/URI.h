@@ -47,7 +47,7 @@ namespace Stroika::Foundation::IO::Network {
      *          (e.g., its network "location").
      *
      *  From:
-     *      https://tools.ietf.org/html/rfc3986#section-3.2
+     *      https://tools.ietf.org/html/rfc3986#section-3
      *
      *          The generic URI syntax consists of a hierarchical sequence of
      *          components referred to as the scheme, authority, path, query, and
