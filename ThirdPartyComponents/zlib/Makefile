@@ -19,15 +19,6 @@ include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
 include $(StroikaRoot)/ScriptsLib/SharedMakeVariables-Default.mk
 
 
-### - @todo - GET THIS BUILD with CMAKE working on UNIX!!! --LGP 2023-05-10
-### FIRST DEBUG step - maybe its just the 'install' part not working right for UNIX - and I can maybe do CMAKE for the build part???
-ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
-BUILD_WITH_CMAKE_=1
-else
-# TIL I DEBUG Problem building with cmake on UNIX 
-BUILD_WITH_CMAKE_=1
-#BUILD_WITH_CMAKE_=0
-endif
 
 ifneq ($(CONFIGURATION),)
 include $(StroikaRoot)ScriptsLib/Makefile-CMake-Common.mk
@@ -114,22 +105,12 @@ endif
 
 ### MERGE.RETRIFUT INCLDUE_CMAKE,xxxx file with this stuff
 
-ifeq ($(BUILD_WITH_CMAKE_),1)
-# CMAKE_ARGS=
-# CMAKE_ARGS+=	-D STATIC=ON
-# CMAKE_ARGS+=	-D CMAKE_INSTALL_PREFIX="$(call FUNCTION_CONVERT_FILES_TO_COMPILER_NATIVE ,${PER_CONFIGURATION_BUILDS_DIR})"
-# CMAKE_ARGS+=	-D CMAKE_C_COMPILER="$(call FUNCTION_CONVERT_FILES_TO_COMPILER_NATIVE ,$(shell which ${CC}))"
-# CMAKE_ARGS+=	-D CMAKE_C_FLAGS="$(call FUNCTION_CONVERT_FILES_TO_COMPILER_NATIVE ,${CFLAGS})"
-# CMAKE_ARGS+=	-D CMAKE_LINKER="$(call FUNCTION_CONVERT_FILES_TO_COMPILER_NATIVE ,$(shell which ${Linker}))"
-# CMAKE_ARGS+=	-D CMAKE_AR="$(call FUNCTION_CONVERT_FILES_TO_COMPILER_NATIVE ,$(shell which ${AR}))"
-# CMAKE_ARGS+=	-D CMAKE_RANLIB="$(call FUNCTION_CONVERT_FILES_TO_COMPILER_NATIVE ,$(shell which ${RANLIB}))"
 
 # For some reason, comes out as share by default for zlib
 CMAKE_ARGS+=	-D INSTALL_PKGCONFIG_DIR="$(call FUNCTION_CONVERT_FILES_TO_COMPILER_NATIVE ,${PER_CONFIGURATION_BUILDS_DIR}/lib/pkgconfig)"
 
 CMAKE_ARGS+=	-D CMAKE_SKIP_INSTALL_RPATH="YES"
 CMAKE_ARGS+=	-D CMAKE_SKIP_RPATH="YES"
-endif
 
 all:
 ifeq ($(CONFIGURATION),)
@@ -157,7 +138,6 @@ endif
 	@${MAKE} --silent CURRENT
 
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) "zlib $(VERSION) - Configure (see $(OUTPUT_WORKDIR_PRETTYNAME)CONFIGURE-OUT.txt) ..."
-ifeq (${BUILD_WITH_CMAKE_},1)
 	@rm -rf "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_}"; mkdir -p "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_}"
 	@echo "${CMAKE}" ${CMAKE_ARGS} "${COMPILER_NATIVE_FILENAME_FMT_SRC_ROOT}" >  "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_}/CONFIGURE-OUT.txt" 2>&1
 	@echo "SEE ${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_}/CMakeCache.txt" >>  "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_}/CONFIGURE-OUT.txt" 2>&1
@@ -166,15 +146,6 @@ ifeq (${BUILD_WITH_CMAKE_},1)
 	@cd "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_}" && "${CMAKE}" --build . --target zlibstatic --target zlib --config=${CMAKE_BUILD_TYPE} > BUILD-OUT.txt 2>&1
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) "zlib $(VERSION) - Build (see $(OUTPUT_WORKDIR_PRETTYNAME)INSTALL-OUT.txt) ..."
 	@cd "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_}" && "${CMAKE}" --install . --config=${CMAKE_BUILD_TYPE}  > INSTALL-OUT.txt 2>&1
-else
-	@$(MAKE) --silent $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)
-	@echo "export CC=$(CC); export CFLAGS="$(call FUNCTION_QUOTE_QUOTE_CHARACTERS_FOR_SHELL,$(CFLAGS))"; AR="$(AR)"; RANLIB="$(RANLIB)"; cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) && ./configure" > $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/CONFIGURE-OUT.txt
-	@(export CC="$(CC)"; export CFLAGS="$(call FUNCTION_QUOTE_QUOTE_CHARACTERS_FOR_SHELL,$(CFLAGS))"; export AR="$(AR)"; export RANLIB="$(RANLIB)"; cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) && ./configure) >> $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/CONFIGURE-OUT.txt 2>&1
-	@$(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) "zlib $(VERSION) - Build (see $(OUTPUT_WORKDIR_PRETTYNAME)BUILD-OUT.txt) ..."
-	@$(MAKE) --directory $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) --no-print-directory static > $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/BUILD-OUT.txt 2>&1
-	@mkdir -p $(PER_CONFIGURATION_BUILDS_DIR)lib && cp $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/${OUTPUT_LIB_} $(PER_CONFIGURATION_BUILDS_DIR)lib/
-	@mkdir -p $(PER_CONFIGURATION_BUILDS_DIR)include && cp $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/zlib.h $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/zconf.h $(PER_CONFIGURATION_BUILDS_DIR)include/
-endif
 ifeq (Unix,$(ProjectPlatformSubdir))
 	@#some hacks to make more similar to what I had before - not sure why this fixes things....
 	@rm -f $(PER_CONFIGURATION_BUILDS_DIR)/lib/libz.so* $(PER_CONFIGURATION_BUILDS_DIR)/lib/pkgconfig/zlib.pc
@@ -196,18 +167,6 @@ else
 	@tar xf $(ZIPPED_SOURCES_FILE) --no-same-owner --directory $@ --strip-components=1
 endif
 
-ifneq (${BUILD_WITH_CMAKE_},1)
-$(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_):	$(ZIPPED_SOURCES_FILE)
-	@$(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) `$(StroikaRoot)ScriptsLib/SubstituteBackVariables "zlib ${VERSION} - Extracting $(ZIPPED_SOURCES_FILE) to $@"` "... "
-	@mkdir -p $@
-ifeq ($(DETECTED_HOST_OS),Darwin)
-	@tar xf $(ZIPPED_SOURCES_FILE) -C $@ --strip-components 1
-else ifneq ($(findstring $(DETECTED_HOST_OS),MSYS-Cygwin),)
-	@PWD=`pwd` tar xf $(ZIPPED_SOURCES_FILE) --no-same-owner --directory `realpath --relative-to=$$PWD $@` --strip-components=1
-else
-	@tar xf $(ZIPPED_SOURCES_FILE) --no-same-owner --directory $@ --strip-components=1
-endif
-endif
 
 check-prerequisite-tools:
 	@#nothing
