@@ -41,7 +41,7 @@ VERSION=1.2.13
 
 
 BASENAME=zlib-$(VERSION)
-ZIPPEDFILE=../Origs-Cache/$(BASENAME).tar.gz
+ZIPPED_SOURCES_FILE=../Origs-Cache/$(BASENAME).tar.gz
 TARFILE=$(BASENAME).tar
 
 #
@@ -137,8 +137,8 @@ ifeq ($(CONFIGURATION),)
 endif
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Stroika/ThirdPartyComponents/zlib Build $(VERSION) {$(CONFIGURATION)}:"
 	@$(StroikaRoot)ScriptsLib/CheckValidConfiguration $(CONFIGURATION)
-	@#make zippedfile even though a dependency on CURRENT and PRODUCED_ARTIFACTS for parallel-make so completed before either starts (else one sees file partly downloaded and proceeeds)
-	@$(MAKE) --no-print-directory --silent $(ZIPPEDFILE)
+	@#make ZIPPED_SOURCES_FILE even though a dependency on CURRENT and PRODUCED_ARTIFACTS for parallel-make so completed before either starts (else one sees file partly downloaded and proceeeds)
+	@$(MAKE) --no-print-directory --silent $(ZIPPED_SOURCES_FILE)
 	@$(MAKE) --no-print-directory --silent $(PRODUCED_OUTPUT_ARTIFACTS)
 ifneq ($(QUICK_BUILD), 1)
 	@$(MAKE) --no-print-directory --silent CURRENT
@@ -180,32 +180,32 @@ ifeq (Unix,$(ProjectPlatformSubdir))
 	@rm -f $(PER_CONFIGURATION_BUILDS_DIR)/lib/libz.so* $(PER_CONFIGURATION_BUILDS_DIR)/lib/pkgconfig/zlib.pc
 endif
 
-$(ZIPPEDFILE):
-	@MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) $(StroikaRoot)ScriptsLib/WebGet $(ZIPPEDFILE) $(FETCHURLS)
+$(ZIPPED_SOURCES_FILE):
+	@MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) $(StroikaRoot)ScriptsLib/WebGet $(ZIPPED_SOURCES_FILE) $(FETCHURLS)
 
 
 
-ORIGs CURRENT:	$(ZIPPEDFILE)
-	@$(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) `$(StroikaRoot)ScriptsLib/SubstituteBackVariables "zlib ${VERSION} - Extracting $(ZIPPEDFILE) to $@"` "... "
+ORIGs CURRENT:	$(ZIPPED_SOURCES_FILE)
+	@$(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) `$(StroikaRoot)ScriptsLib/SubstituteBackVariables "zlib ${VERSION} - Extracting $(ZIPPED_SOURCES_FILE) to $@"` "... "
 	@mkdir -p $@
 ifeq ($(DETECTED_HOST_OS),Darwin)
-	@tar xf $(ZIPPEDFILE) -C $@ --strip-components 1
+	@tar xf $(ZIPPED_SOURCES_FILE) -C $@ --strip-components 1
 else ifneq ($(findstring $(DETECTED_HOST_OS),MSYS-Cygwin),)
-	@PWD=`pwd` tar xf $(ZIPPEDFILE) --no-same-owner --directory `realpath --relative-to=$$PWD $@` --strip-components=1
+	@PWD=`pwd` tar xf $(ZIPPED_SOURCES_FILE) --no-same-owner --directory `realpath --relative-to=$$PWD $@` --strip-components=1
 else
-	@tar xf $(ZIPPEDFILE) --no-same-owner --directory $@ --strip-components=1
+	@tar xf $(ZIPPED_SOURCES_FILE) --no-same-owner --directory $@ --strip-components=1
 endif
 
 ifneq (${BUILD_WITH_CMAKE_},1)
-$(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_):	$(ZIPPEDFILE)
-	@$(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) `$(StroikaRoot)ScriptsLib/SubstituteBackVariables "zlib ${VERSION} - Extracting $(ZIPPEDFILE) to $@"` "... "
+$(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_):	$(ZIPPED_SOURCES_FILE)
+	@$(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) `$(StroikaRoot)ScriptsLib/SubstituteBackVariables "zlib ${VERSION} - Extracting $(ZIPPED_SOURCES_FILE) to $@"` "... "
 	@mkdir -p $@
 ifeq ($(DETECTED_HOST_OS),Darwin)
-	@tar xf $(ZIPPEDFILE) -C $@ --strip-components 1
+	@tar xf $(ZIPPED_SOURCES_FILE) -C $@ --strip-components 1
 else ifneq ($(findstring $(DETECTED_HOST_OS),MSYS-Cygwin),)
-	@PWD=`pwd` tar xf $(ZIPPEDFILE) --no-same-owner --directory `realpath --relative-to=$$PWD $@` --strip-components=1
+	@PWD=`pwd` tar xf $(ZIPPED_SOURCES_FILE) --no-same-owner --directory `realpath --relative-to=$$PWD $@` --strip-components=1
 else
-	@tar xf $(ZIPPEDFILE) --no-same-owner --directory $@ --strip-components=1
+	@tar xf $(ZIPPED_SOURCES_FILE) --no-same-owner --directory $@ --strip-components=1
 endif
 endif
 
