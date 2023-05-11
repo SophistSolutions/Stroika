@@ -143,9 +143,17 @@ endif
 	@echo "SEE ${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_}/CMakeCache.txt" >>  "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_}/CONFIGURE-OUT.txt" 2>&1
 	@cd "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_}" && "${CMAKE}" ${CMAKE_ARGS} ${COMPILER_NATIVE_FILENAME_FMT_SRC_ROOT} >> CONFIGURE-OUT.txt 2>&1
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) "zlib $(VERSION) - Build (see $(OUTPUT_WORKDIR_PRETTYNAME)BUILD-OUT.txt) ..."
+ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
 	@cd "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_}" && "${CMAKE}" --build . --target zlibstatic --target zlib --config=${CMAKE_BUILD_TYPE} > BUILD-OUT.txt 2>&1
+else
+	@cd "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_}" && "${CMAKE}" --build . --target zlibstatic --target zlib  > BUILD-OUT.txt 2>&1
+endif
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) "zlib $(VERSION) - Build (see $(OUTPUT_WORKDIR_PRETTYNAME)INSTALL-OUT.txt) ..."
+ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
 	@cd "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_}" && "${CMAKE}" --install . --config=${CMAKE_BUILD_TYPE}  > INSTALL-OUT.txt 2>&1
+else
+	@cd "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_}" && "${CMAKE}" --install .  > INSTALL-OUT.txt 2>&1
+endif
 ifeq (Unix,$(ProjectPlatformSubdir))
 	@#some hacks to make more similar to what I had before - not sure why this fixes things....
 	@rm -f $(PER_CONFIGURATION_BUILDS_DIR)/lib/libz.so* $(PER_CONFIGURATION_BUILDS_DIR)/lib/pkgconfig/zlib.pc
