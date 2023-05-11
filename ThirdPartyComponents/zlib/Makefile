@@ -18,35 +18,21 @@ include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
 
 include $(StroikaRoot)/ScriptsLib/SharedMakeVariables-Default.mk
 
-
-### - @todo - GET THIS BUILD with CMAKE working on UNIX!!! --LGP 2023-05-10
-### FIRST DEBUG step - maybe its just the 'install' part not working right for UNIX - and I can maybe do CMAKE for the build part???
-ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
-BUILD_WITH_CMAKE_=1
-else
-# TIL I DEBUG Problem building with cmake on UNIX 
-BUILD_WITH_CMAKE_=1
-#BUILD_WITH_CMAKE_=0
-endif
-
 ifneq ($(CONFIGURATION),)
 include $(StroikaRoot)ScriptsLib/Makefile-CMake-Common.mk
 endif
 
-# # For windows build with nmake used (maybe replace this with use of NMAKE variable use/setting/call/explicit fullpath?)
-# $(call PATCH_PATH_FOR_TOOLPATH_ADDITION_IF_NEEDED)
-
-VERSION=1.2.13
-#VERSION=1.2.12
-
-
-BASENAME=zlib-$(VERSION)
-ZIPPEDFILE=../Origs-Cache/$(BASENAME).tar.gz
-TARFILE=$(BASENAME).tar
 
 #
 # CHECK FOR UPDATED VERSIONS http://zlib.net/
 #
+
+VERSION=1.2.13
+#VERSION=1.2.12
+
+BASENAME=zlib-$(VERSION)
+ZIPPED_SOURCES_FILE=../Origs-Cache/$(BASENAME).tar.gz
+TARFILE=$(BASENAME).tar
 
 FETCHURLS=
 FETCHURLS+=https://github.com/madler/zlib/archive/v$(VERSION).tar.gz
@@ -89,6 +75,7 @@ PRODUCED_OUTPUT_ARTIFACTS=	\
 
 
 
+### @todo REVIEW - NOT SURE NEED ANY OF THESE HACKS ANYMORE SINCE SWITCH TO CMAKE - LGP 2023-05-11
 ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
 # See comments at head of win32/Makefile.msc for the meaning of these flags (DASMV, etc)
 # @todo - https://stroika.atlassian.net/browse/STK-905 - rewrite the windows build stuff (and unix) using cmake) - sb simpler/cleaner build and
@@ -112,9 +99,8 @@ endif
 endif
 
 
-### MERGE.RETRIFUT INCLDUE_CMAKE,xxxx file with this stuff
+### @todo MERGE.RETRIFUT INCLDUE_CMAKE,xxxx file with this stuff
 
-ifeq ($(BUILD_WITH_CMAKE_),1)
 # CMAKE_ARGS=
 # CMAKE_ARGS+=	-D STATIC=ON
 CMAKE_ARGS+=	-D CMAKE_INSTALL_PREFIX="$(call FUNCTION_CONVERT_FILES_TO_COMPILER_NATIVE ,${PER_CONFIGURATION_BUILDS_DIR})"
@@ -129,7 +115,6 @@ CMAKE_ARGS+=	-D INSTALL_PKGCONFIG_DIR="$(call FUNCTION_CONVERT_FILES_TO_COMPILER
 
 CMAKE_ARGS+=	-D CMAKE_SKIP_INSTALL_RPATH="YES"
 CMAKE_ARGS+=	-D CMAKE_SKIP_RPATH="YES"
-endif
 
 all:
 ifeq ($(CONFIGURATION),)
@@ -137,13 +122,10 @@ ifeq ($(CONFIGURATION),)
 endif
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) "Stroika/ThirdPartyComponents/zlib Build $(VERSION) {$(CONFIGURATION)}:"
 	@$(StroikaRoot)ScriptsLib/CheckValidConfiguration $(CONFIGURATION)
-	@#make zippedfile even though a dependency on CURRENT and PRODUCED_ARTIFACTS for parallel-make so completed before either starts (else one sees file partly downloaded and proceeeds)
-	@$(MAKE) --no-print-directory --silent $(ZIPPEDFILE)
-	@$(MAKE) --no-print-directory --silent $(PRODUCED_OUTPUT_ARTIFACTS)
-ifneq ($(QUICK_BUILD), 1)
-	@$(MAKE) --no-print-directory --silent CURRENT
-endif
-	@$(MAKE) --no-print-directory MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) check
+	@#make ZIPPED_SOURCES_FILE even though a dependency on CURRENT and PRODUCED_ARTIFACTS for parallel-make so completed before either starts (else one sees file partly downloaded and proceeeds)
+	@${MAKE} --no-print-directory --silent $(ZIPPED_SOURCES_FILE)
+	@${MAKE} --no-print-directory --silent $(PRODUCED_OUTPUT_ARTIFACTS)
+	@${MAKE} --no-print-directory MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) check
 
 
 #ALL produced artifacts produced by the same thing. But if you try the same rule to make all, if parallel makes invoked on this, you get
@@ -154,60 +136,45 @@ $(word 1,$(PRODUCED_OUTPUT_ARTIFACTS)):
 ifeq ($(CONFIGURATION),)
 	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
 endif
+	@#cmake intermediate files directory points back to this source directory
 	@${MAKE} --silent CURRENT
 
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) "zlib $(VERSION) - Configure (see $(OUTPUT_WORKDIR_PRETTYNAME)CONFIGURE-OUT.txt) ..."
-ifeq (${BUILD_WITH_CMAKE_},1)
 	@rm -rf "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_}"; mkdir -p "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_}"
 	@echo "${CMAKE}" ${CMAKE_ARGS} "${COMPILER_NATIVE_FILENAME_FMT_SRC_ROOT}" >  "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_}/CONFIGURE-OUT.txt" 2>&1
 	@echo "SEE ${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_}/CMakeCache.txt" >>  "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_}/CONFIGURE-OUT.txt" 2>&1
-	@cd "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_}" && "${CMAKE}" ${CMAKE_ARGS} ${COMPILER_NATIVE_FILENAME_FMT_SRC_ROOT} >> CONFIGURE-OUT.txt 2>&1
+	#@cd "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_}" && "${CMAKE}" ${CMAKE_ARGS} ${COMPILER_NATIVE_FILENAME_FMT_SRC_ROOT} >> CONFIGURE-OUT.txt 2>&1
+	cd "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_}" && "${CMAKE}" ${CMAKE_ARGS} ${COMPILER_NATIVE_FILENAME_FMT_SRC_ROOT}
+
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) "zlib $(VERSION) - Build (see $(OUTPUT_WORKDIR_PRETTYNAME)BUILD-OUT.txt) ..."
-	@cd "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_}" && "${CMAKE}" --build . --target zlibstatic --target zlib --config=${CMAKE_BUILD_TYPE} > BUILD-OUT.txt 2>&1
+	#@cd "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_}" && "${CMAKE}" --build . --target zlibstatic --target zlib --config=${CMAKE_BUILD_TYPE} > BUILD-OUT.txt 2>&1
+	#cd "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_}" && "${CMAKE}" --build . --target zlibstatic --target zlib --config=${CMAKE_BUILD_TYPE} 
+	cd "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_}" && "${CMAKE}" --build . --target zlibstatic --target zlib
+
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) "zlib $(VERSION) - Build (see $(OUTPUT_WORKDIR_PRETTYNAME)INSTALL-OUT.txt) ..."
-	@cd "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_}" && "${CMAKE}" --install . --config=${CMAKE_BUILD_TYPE}  > INSTALL-OUT.txt 2>&1
-else
-	@$(MAKE) --silent $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)
-	@echo "export CC=$(CC); export CFLAGS="$(call FUNCTION_QUOTE_QUOTE_CHARACTERS_FOR_SHELL,$(CFLAGS))"; AR="$(AR)"; RANLIB="$(RANLIB)"; cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) && ./configure" > $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/CONFIGURE-OUT.txt
-	@(export CC="$(CC)"; export CFLAGS="$(call FUNCTION_QUOTE_QUOTE_CHARACTERS_FOR_SHELL,$(CFLAGS))"; export AR="$(AR)"; export RANLIB="$(RANLIB)"; cd $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) && ./configure) >> $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/CONFIGURE-OUT.txt 2>&1
-	@$(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) "zlib $(VERSION) - Build (see $(OUTPUT_WORKDIR_PRETTYNAME)BUILD-OUT.txt) ..."
-	@$(MAKE) --directory $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) --no-print-directory static > $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/BUILD-OUT.txt 2>&1
-	@mkdir -p $(PER_CONFIGURATION_BUILDS_DIR)lib && cp $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/${OUTPUT_LIB_} $(PER_CONFIGURATION_BUILDS_DIR)lib/
-	@mkdir -p $(PER_CONFIGURATION_BUILDS_DIR)include && cp $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/zlib.h $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/zconf.h $(PER_CONFIGURATION_BUILDS_DIR)include/
-endif
+	#@cd "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_}" && "${CMAKE}" --install . --config=${CMAKE_BUILD_TYPE}  > INSTALL-OUT.txt 2>&1
+	@cd "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_}" && "${CMAKE}" --install .
 ifeq (Unix,$(ProjectPlatformSubdir))
 	@#some hacks to make more similar to what I had before - not sure why this fixes things....
 	@rm -f $(PER_CONFIGURATION_BUILDS_DIR)/lib/libz.so* $(PER_CONFIGURATION_BUILDS_DIR)/lib/pkgconfig/zlib.pc
 endif
 
-$(ZIPPEDFILE):
-	@MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) $(StroikaRoot)ScriptsLib/WebGet $(ZIPPEDFILE) $(FETCHURLS)
+
+$(ZIPPED_SOURCES_FILE):
+	@MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) $(StroikaRoot)ScriptsLib/WebGet $(ZIPPED_SOURCES_FILE) $(FETCHURLS)
 
 
-
-ORIGs CURRENT:	$(ZIPPEDFILE)
-	@$(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) `$(StroikaRoot)ScriptsLib/SubstituteBackVariables "zlib ${VERSION} - Extracting $(ZIPPEDFILE) to $@"` "... "
+ORIGs CURRENT:	$(ZIPPED_SOURCES_FILE)
+	@$(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) `$(StroikaRoot)ScriptsLib/SubstituteBackVariables "zlib ${VERSION} - Extracting $(ZIPPED_SOURCES_FILE) to $@"` "... "
 	@mkdir -p $@
 ifeq ($(DETECTED_HOST_OS),Darwin)
-	@tar xf $(ZIPPEDFILE) -C $@ --strip-components 1
+	@tar xf $(ZIPPED_SOURCES_FILE) -C $@ --strip-components 1
 else ifneq ($(findstring $(DETECTED_HOST_OS),MSYS-Cygwin),)
-	@PWD=`pwd` tar xf $(ZIPPEDFILE) --no-same-owner --directory `realpath --relative-to=$$PWD $@` --strip-components=1
+	@PWD=`pwd` tar xf $(ZIPPED_SOURCES_FILE) --no-same-owner --directory `realpath --relative-to=$$PWD $@` --strip-components=1
 else
-	@tar xf $(ZIPPEDFILE) --no-same-owner --directory $@ --strip-components=1
+	@tar xf $(ZIPPED_SOURCES_FILE) --no-same-owner --directory $@ --strip-components=1
 endif
 
-ifneq (${BUILD_WITH_CMAKE_},1)
-$(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_):	$(ZIPPEDFILE)
-	@$(StroikaRoot)ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) `$(StroikaRoot)ScriptsLib/SubstituteBackVariables "zlib ${VERSION} - Extracting $(ZIPPEDFILE) to $@"` "... "
-	@mkdir -p $@
-ifeq ($(DETECTED_HOST_OS),Darwin)
-	@tar xf $(ZIPPEDFILE) -C $@ --strip-components 1
-else ifneq ($(findstring $(DETECTED_HOST_OS),MSYS-Cygwin),)
-	@PWD=`pwd` tar xf $(ZIPPEDFILE) --no-same-owner --directory `realpath --relative-to=$$PWD $@` --strip-components=1
-else
-	@tar xf $(ZIPPEDFILE) --no-same-owner --directory $@ --strip-components=1
-endif
-endif
 
 check-prerequisite-tools:
 	@#nothing
