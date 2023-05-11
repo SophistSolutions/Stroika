@@ -25,7 +25,8 @@ ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
 BUILD_WITH_CMAKE_=1
 else
 # TIL I DEBUG Problem building with cmake on UNIX 
-BUILD_WITH_CMAKE_=0
+BUILD_WITH_CMAKE_=1
+#BUILD_WITH_CMAKE_=0
 endif
 
 ifneq ($(CONFIGURATION),)
@@ -173,6 +174,10 @@ else
 	@$(MAKE) --directory $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_) --no-print-directory static > $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/BUILD-OUT.txt 2>&1
 	@mkdir -p $(PER_CONFIGURATION_BUILDS_DIR)lib && cp $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/${OUTPUT_LIB_} $(PER_CONFIGURATION_BUILDS_DIR)lib/
 	@mkdir -p $(PER_CONFIGURATION_BUILDS_DIR)include && cp $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/zlib.h $(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/zconf.h $(PER_CONFIGURATION_BUILDS_DIR)include/
+endif
+ifeq (Unix,$(ProjectPlatformSubdir))
+	@#some hacks to make more similar to what I had before - not sure why this fixes things....
+	@rm -f $(PER_CONFIGURATION_BUILDS_DIR)/lib/libz.so* $(PER_CONFIGURATION_BUILDS_DIR)/lib/pkgconfig/zlib.pc
 endif
 
 $(ZIPPEDFILE):
