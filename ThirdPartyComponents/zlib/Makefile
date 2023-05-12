@@ -71,9 +71,6 @@ PRODUCED_OUTPUT_ARTIFACTS=	\
 
 
 
-# # @todo - https://stroika.atlassian.net/browse/STK-905 - rewrite the windows build stuff (and unix) using cmake) - sb simpler/cleaner build and
-# #         get asm stuff working again
-
 # ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
 # # See comments at head of win32/Makefile.msc for the meaning of these flags (DASMV, etc)
 # ASFLAGS_=-coff -Z7
@@ -98,8 +95,11 @@ PRODUCED_OUTPUT_ARTIFACTS=	\
 # For some reason, comes out as share by default for zlib
 CMAKE_ARGS+=	-D INSTALL_PKGCONFIG_DIR="$(call FUNCTION_CONVERT_FILES_TO_COMPILER_NATIVE ,${PER_CONFIGURATION_BUILDS_DIR}/lib/pkgconfig)"
 
+ifeq (Unix,$(ProjectPlatformSubdir))
+# @todo document - not sure needed - maybe related to shared/.so file stuff
 CMAKE_ARGS+=	-D CMAKE_SKIP_INSTALL_RPATH="YES"
 CMAKE_ARGS+=	-D CMAKE_SKIP_RPATH="YES"
+endif
 
 all:
 ifeq ($(CONFIGURATION),)
