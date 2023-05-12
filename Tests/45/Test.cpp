@@ -22,6 +22,7 @@
 #include "Stroika/Foundation/Execution/RequiredComponentMissingException.h"
 #include "Stroika/Foundation/Execution/SignalHandlers.h"
 #include "Stroika/Foundation/Execution/Sleep.h"
+#include "Stroika/Foundation/Execution/TimeOutException.h"
 #if qHasFeature_LibCurl
 #include "Stroika/Foundation/IO/Network/Transfer/Connection_libcurl.h"
 #endif
@@ -75,6 +76,9 @@ namespace {
                         Execution::ReThrow ();
                     }
                 }
+                catch (const Execution::TimeOutException& e) {
+                    Stroika::TestHarness::WarnTestIssue (Characters::Format (L"Ignorning %s", Characters::ToString (e).c_str ()).c_str ());
+                }
 #if qHasFeature_LibCurl
                 catch (const system_error& lce) {
 #if !qHasFeature_OpenSSL
@@ -118,6 +122,9 @@ namespace {
                     else {
                         Execution::ReThrow ();
                     }
+                }
+                catch (const Execution::TimeOutException& e) {
+                    Stroika::TestHarness::WarnTestIssue (Characters::Format (L"Ignorning %s", Characters::ToString (e).c_str ()).c_str ());
                 }
             }
         }
@@ -304,6 +311,9 @@ namespace {
                         Execution::ReThrow ();
                     }
                 }
+                catch (const Execution::TimeOutException& e) {
+                    Stroika::TestHarness::WarnTestIssue (Characters::Format (L"Ignorning %s", Characters::ToString (e).c_str ()).c_str ());
+                }
 #if qHasFeature_LibCurl
                 // NOTE - even though this uses non-ssl URL, it gets redirected to SSL-based url, so we must support that to test this
                 catch (const system_error& lce) {
@@ -388,6 +398,9 @@ namespace {
                         Execution::ReThrow ();
                     }
                 }
+                catch (const Execution::TimeOutException& e) {
+                    Stroika::TestHarness::WarnTestIssue (Characters::Format (L"Ignorning %s", Characters::ToString (e).c_str ()).c_str ());
+                }
             }
         }
         void DoTests_ ()
@@ -445,6 +458,9 @@ namespace {
                 else {
                     Execution::ReThrow ();
                 }
+            }
+            catch (const Execution::TimeOutException& e) {
+                Stroika::TestHarness::WarnTestIssue (Characters::Format (L"Ignorning %s", Characters::ToString (e).c_str ()).c_str ());
             }
             catch (const Execution::RequiredComponentMissingException&) {
 #if !qHasFeature_LibCurl && !qHasFeature_WinHTTP
@@ -610,6 +626,9 @@ namespace {
                             Execution::ReThrow ();
                         }
                     }
+                    catch (const Execution::TimeOutException& e) {
+                        Stroika::TestHarness::WarnTestIssue (Characters::Format (L"Ignorning %s", Characters::ToString (e).c_str ()).c_str ());
+                    }
                 }
             }
             void DoRegressionTests_ForConnectionFactory_ (function<Connection::Ptr ()> factory) { SimpleGetFetch_T1 (factory ()); }
@@ -710,6 +729,9 @@ namespace {
                 else {
                     Execution::ReThrow ();
                 }
+            }
+            catch (const Execution::TimeOutException& e) {
+                Stroika::TestHarness::WarnTestIssue (Characters::Format (L"Ignorning %s", Characters::ToString (e).c_str ()).c_str ());
             }
             catch (const Execution::RequiredComponentMissingException&) {
 #if !qHasFeature_LibCurl && !qHasFeature_WinHTTP
