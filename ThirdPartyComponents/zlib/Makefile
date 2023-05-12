@@ -146,7 +146,7 @@ else
 endif
 ifeq (Unix,$(ProjectPlatformSubdir))
 	@#some hacks to make more similar to what I had before - not sure why this fixes things... --LGP 2023-05-11
-	@rm -f $(PER_CONFIGURATION_BUILDS_DIR)/lib/libz.so* $(PER_CONFIGURATION_BUILDS_DIR)/lib/libz.*.dynlib $(PER_CONFIGURATION_BUILDS_DIR)/lib/pkgconfig/zlib.pc
+	@rm -f $(PER_CONFIGURATION_BUILDS_DIR)/lib/libz.so* $(PER_CONFIGURATION_BUILDS_DIR)/lib/libz*.dylib $(PER_CONFIGURATION_BUILDS_DIR)/lib/pkgconfig/zlib.pc
 endif
 
 
