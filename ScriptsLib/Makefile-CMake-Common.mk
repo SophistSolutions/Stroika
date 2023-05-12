@@ -88,16 +88,6 @@ CMAKE_ARGS+= -A x64
 else
 CMAKE_ARGS+= -A Win32
 endif
-else ifeq ($(ProjectPlatformSubdir),VisualStudio.Net-2019)
-ifeq (x86_64,$(ARCH))
-CMAKE_ARGS+= -A x64
-else
-CMAKE_ARGS+= -A Win32
-endif
-else ifeq ($(ProjectPlatformSubdir),VisualStudio.Net-2017)
-ifeq (x86_64,$(ARCH))
-CMAKE_USE_GENERATOR = Visual Studio 15 2017 Win64
-endif
 else
 $(error "unsupported version of visual studio.net")
 endif

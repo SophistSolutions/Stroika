@@ -1,6 +1,6 @@
 #
 #	TODO:
-#		@todo	NOTE - try for $(word 1,$(PRODUCED_OUTPUT_ARTIFACTS)) and $(wordlist 2, 9999, $(PRODUCED_OUTPUT_ARTIFACTS)):	$(word 1,$(PRODUCED_OUTPUT_ARTIFACTS))
+#		@todo	NOTE - try for $(word 1,$(PRODUCED_OUTPUT_ARTIFACTS_)) and $(wordlist 2, 9999, $(PRODUCED_OUTPUT_ARTIFACTS_)):	$(word 1,$(PRODUCED_OUTPUT_ARTIFACTS_))
 #				(repeated in most ThirdPartyComponents makefiles)
 #				doesn't work if the first produced output artifact is fine, but the others got deleted. No BIGGIE, as you can just make clobber in that
 #				exceedingly rare case; but certainly a defect of this approach.
@@ -14,22 +14,17 @@ endif
 include ${StroikaRoot}ScriptsLib/Makefile-Common.mk
 include ${StroikaRoot}/ScriptsLib/SharedMakeVariables-Default.mk
 ifneq ($(CONFIGURATION),)
-include ${StroikaRoot}ScriptsLib/Makefile-CMake-Common.mk
+include ${StroikaRoot}ScriptsLib/Makefile-CMake-Common.mk		# for things like CMAKE_ARGS
 endif
-
-# # For windows build with nmake used (maybe replace this with use of NMAKE variable use/setting/call/explicit fullpath?)
-# $(call PATCH_PATH_FOR_TOOLPATH_ADDITION_IF_NEEDED)
-
-VERSION=1.2.13
-#VERSION=1.2.12
-
-
-BASENAME=zlib-$(VERSION)
-ZIPPED_SOURCES_FILE=../Origs-Cache/$(BASENAME).tar.gz
 
 #
 # CHECK FOR UPDATED VERSIONS http://zlib.net/
 #
+VERSION=1.2.13
+#VERSION=1.2.12
+
+BASENAME=zlib-$(VERSION)
+ZIPPED_SOURCES_FILE=../Origs-Cache/$(BASENAME).tar.gz
 
 FETCHURLS=
 FETCHURLS+=https://github.com/madler/zlib/archive/v$(VERSION).tar.gz
@@ -46,15 +41,15 @@ PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_:=$(shell realpath --canoni
 
 OUTPUT_WORKDIR_PRETTYNAME="$(shell ${StroikaRoot}ScriptsLib/SubstituteBackVariables "$(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/")"
 
-COMPILER_NATIVE_FILENAME_FMT_SRC_ROOT:=$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,${StroikaRoot}/ThirdPartyComponents/zlib/CURRENT)
+COMPILER_NATIVE_FILENAME_FMT_SRC_ROOT_:=$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,${StroikaRoot}/ThirdPartyComponents/zlib/CURRENT)
 
 
 
 ifeq (${ENABLE_ASSERTIONS},1)
-CMAKE_BUILD_TYPE=Debug
+CMAKE_BUILD_TYPE_=Debug
 MAYBED=d
 else
-CMAKE_BUILD_TYPE=Release
+CMAKE_BUILD_TYPE_=Release
 endif
 
 ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
@@ -64,32 +59,11 @@ OUTPUT_LIB_=libz${LIB_SUFFIX}
 endif
 
 
-PRODUCED_OUTPUT_ARTIFACTS=	\
+PRODUCED_OUTPUT_ARTIFACTS_=	\
 	$(PER_CONFIGURATION_BUILDS_DIR)lib/${OUTPUT_LIB_}		\
 	$(PER_CONFIGURATION_BUILDS_DIR)include/zlib.h			\
 	$(PER_CONFIGURATION_BUILDS_DIR)include/zconf.h
 
-
-
-# ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
-# # See comments at head of win32/Makefile.msc for the meaning of these flags (DASMV, etc)
-# ASFLAGS_=-coff -Z7
-# ifeq ($(ENABLE_ASSERTIONS),1)
-# CFLAGS+= -DZLIB_DEBUG
-# endif
-# CFLAGS+= -I.
-# ifeq ($(ARCH), x86)
-# # For reasons not worth debugging, this ASM code crashes on x86, so just disable - https://stroika.atlassian.net/browse/STK-568
-# #CFLAGS+= -DASMV -DASMINF
-# #OBJA_=inffas32.obj match686.obj
-# ### avoid occasional 'fatal error LNK1281: Unable to generate SAFESEH image.'
-# #ASFLAGS_+= -safeseh
-# endif
-# # ifeq ($(ARCH), x86_64)
-# # CFLAGS+= -DASMV -DASMINF
-# # OBJA_=inffasx64.obj gvmat64.obj inffas8664.obj
-# # endif
-# endif
 
 
 # For some reason, comes out as share by default for zlib
@@ -109,7 +83,7 @@ endif
 	@${StroikaRoot}ScriptsLib/CheckValidConfiguration $(CONFIGURATION)
 	@#make ZIPPED_SOURCES_FILE even though a dependency on CURRENT and PRODUCED_ARTIFACTS for parallel-make so completed before either starts (else one sees file partly downloaded and proceeeds)
 	@${MAKE} --no-print-directory --silent ${ZIPPED_SOURCES_FILE}
-	@${MAKE} --no-print-directory --silent $(PRODUCED_OUTPUT_ARTIFACTS)
+	@${MAKE} --no-print-directory --silent $(PRODUCED_OUTPUT_ARTIFACTS_)
 ifneq ($(QUICK_BUILD), 1)
 	@${MAKE} --no-print-directory --silent CURRENT
 endif
@@ -118,9 +92,9 @@ endif
 
 #ALL produced artifacts produced by the same thing. But if you try the same rule to make all, if parallel makes invoked on this, you get
 #multiple tries to run the same rule. So remap all to making the first.
-$(wordlist 2, 9999, $(PRODUCED_OUTPUT_ARTIFACTS)):	$(word 1,$(PRODUCED_OUTPUT_ARTIFACTS))
+$(wordlist 2, 9999, $(PRODUCED_OUTPUT_ARTIFACTS_)):	$(word 1,$(PRODUCED_OUTPUT_ARTIFACTS_))
 
-$(word 1,$(PRODUCED_OUTPUT_ARTIFACTS)):
+$(word 1,$(PRODUCED_OUTPUT_ARTIFACTS_)):
 ifeq ($(CONFIGURATION),)
 	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
 endif
@@ -128,19 +102,19 @@ endif
 
 	@${StroikaRoot}ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) "zlib $(VERSION) - Configure (see $(OUTPUT_WORKDIR_PRETTYNAME)CONFIGURE-OUT.txt) ..."
 	@rm -rf "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_}"; mkdir -p "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_}"
-	@echo "${CMAKE}" ${CMAKE_ARGS} "${COMPILER_NATIVE_FILENAME_FMT_SRC_ROOT}" >  "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_}/CONFIGURE-OUT.txt" 2>&1
+	@echo "${CMAKE}" ${CMAKE_ARGS} "${COMPILER_NATIVE_FILENAME_FMT_SRC_ROOT_}" >  "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_}/CONFIGURE-OUT.txt" 2>&1
 	@echo "SEE ${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_}/CMakeCache.txt" >>  "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_}/CONFIGURE-OUT.txt" 2>&1
-	@cd "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_}" && "${CMAKE}" ${CMAKE_ARGS} ${COMPILER_NATIVE_FILENAME_FMT_SRC_ROOT} >> CONFIGURE-OUT.txt 2>&1
+	@cd "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_}" && "${CMAKE}" ${CMAKE_ARGS} ${COMPILER_NATIVE_FILENAME_FMT_SRC_ROOT_} >> CONFIGURE-OUT.txt 2>&1
 	@${StroikaRoot}ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) "zlib $(VERSION) - Build (see $(OUTPUT_WORKDIR_PRETTYNAME)BUILD-OUT.txt) ..."
-	@#@todo dont understand why config=${CMAKE_BUILD_TYPE} NEEDED for windows, and needs to not exist on unix
+	@#@todo dont understand why config=${CMAKE_BUILD_TYPE_} NEEDED for windows, and needs to not exist on unix
 ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
-	@cd "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_}" && "${CMAKE}" --build . --target zlibstatic --target zlib --config=${CMAKE_BUILD_TYPE} > BUILD-OUT.txt 2>&1
+	@cd "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_}" && "${CMAKE}" --build . --target zlibstatic --target zlib --config=${CMAKE_BUILD_TYPE_} > BUILD-OUT.txt 2>&1
 else
 	@cd "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_}" && "${CMAKE}" --build . --target zlibstatic --target zlib  > BUILD-OUT.txt 2>&1
 endif
 	@${StroikaRoot}ScriptsLib/PrintProgressLine $$(($(MAKE_INDENT_LEVEL)+1)) "zlib $(VERSION) - Build (see $(OUTPUT_WORKDIR_PRETTYNAME)INSTALL-OUT.txt) ..."
 ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
-	@cd "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_}" && "${CMAKE}" --install . --config=${CMAKE_BUILD_TYPE}  > INSTALL-OUT.txt 2>&1
+	@cd "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_}" && "${CMAKE}" --install . --config=${CMAKE_BUILD_TYPE_}  > INSTALL-OUT.txt 2>&1
 else
 	@cd "${PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_}" && "${CMAKE}" --install .  > INSTALL-OUT.txt 2>&1
 endif
@@ -176,7 +150,7 @@ ifeq ($(CONFIGURATION),)
 	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
 endif
 	@${StroikaRoot}ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) -n "zlib ${VERSION} - Checking ... "
-	@${StroikaRoot}ScriptsLib/CheckFileExists $(PRODUCED_OUTPUT_ARTIFACTS)
+	@${StroikaRoot}ScriptsLib/CheckFileExists $(PRODUCED_OUTPUT_ARTIFACTS_)
 	@${ECHO} " Stroika/ThirdPartyComponents/zlib -    [Succeeded]";
 
 
@@ -193,5 +167,5 @@ ifeq ($(CONFIGURATION),)
 	@rm -rf ${StroikaRoot}Builds/*/ThirdPartyComponents/lib/libz${LIB_SUFFIX} ${StroikaRoot}Builds/*/ThirdPartyComponents/include/{zlib,zconf}.h
 	@rm -rf CURRENT
 else
-	@rm -rf $(PRODUCED_OUTPUT_ARTIFACTS)
+	@rm -rf $(PRODUCED_OUTPUT_ARTIFACTS_)
 endif
