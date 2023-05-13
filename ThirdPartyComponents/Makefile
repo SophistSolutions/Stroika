@@ -18,8 +18,8 @@ APPLY_CONFIGS=$(or $(CONFIGURATION), $(shell ../ScriptsLib/GetConfigurations --c
 
 ifneq ($(CONFIGURATION),)
 
-ifeq ($(qFeatureFlag_ActivePerl), use)
-	BUILD_ActivePerl=1
+ifeq ($(qFeatureFlag_StrawberryPerl), use)
+	BUILD_StrawberryPerl=1
 endif
 ifeq ($(qFeatureFlag_boost), use)
 	BUILD_boost=1
@@ -49,9 +49,7 @@ endif
 
 
 SubDirs=
-ifeq ($(BUILD_ActivePerl), 1)
-	SubDirs+= ActivePerl
-	#tmphack til we rename (if it works)
+ifeq ($(BUILD_StrawberryPerl), 1)
 	SubDirs+= StrawberryPerl
 endif
 ifeq ($(BUILD_boost), 1)
@@ -83,7 +81,7 @@ endif
 ##WINDOWS ONLY
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
 ifeq ($(BUILD_openssl), 1)
-openssl:	ActivePerl
+openssl:	StrawberryPerl
 endif
 endif
 
@@ -214,12 +212,12 @@ ifeq ($(CONFIGURATION),)
 else
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine $(MAKE_INDENT_LEVEL) -n "Stroika/ThirdPartyComponents $(call FUNCTION_CAPITALIZE_WORD,$@) {$(CONFIGURATION)} ... "
 endif
-	@$(MAKE) --directory ActivePerl --silent $@
 	@$(MAKE) --directory boost --silent $@
 	@$(MAKE) --directory curl --silent $@
 	@$(MAKE) --directory lzma --silent $@
 	@$(MAKE) --directory openssl --silent $@
 	@$(MAKE) --directory sqlite --silent $@
+	@$(MAKE) --directory StrawberryPerl --silent $@
 	@$(MAKE) --directory Xerces --silent $@
 	@$(MAKE) --directory WIX --silent $@
 	@$(MAKE) --directory zlib --silent $@

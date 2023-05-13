@@ -140,9 +140,9 @@ sub	ReadConfigFile_ {
 		if (defined $pps) {
 			$configuration {'qFeatureFlag_LibCurl'} = $pps;
 		}
-		my $pps = ReadValue_($line, "<qFeatureFlag_ActivePerl>");
+		my $pps = ReadValue_($line, "<qFeatureFlag_StrawberryPerl>");
 		if (defined $pps) {
-			$configuration {'qFeatureFlag_ActivePerl'} = $pps;
+			$configuration {'qFeatureFlag_StrawberryPerl'} = $pps;
 		}
 		my $pps = ReadValue_($line, "<qFeatureFlag_OpenSSL>");
 		if (defined $pps) {
