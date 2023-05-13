@@ -331,9 +331,7 @@ export CHERE_INVOKING=1		# even if we need vars set, dont change CWD
 endif
 endif
 
-ifeq ($(qFeatureFlag_ActivePerl), use)
-# See https://stackoverflow.com/questions/45494630/how-to-build-openssl-on-windows-with-visual-studio-2017
-# PERL_VERSION_PATCH_=set PATH=$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$(StroikaRoot))ThirdPartyComponents/ActivePerl/CURRENT/bin;%PATH%
+ifeq ($(qFeatureFlag_StrawberryPerl), use)
 PERL_VERSION_PATCH_=set PATH=$(call FUNCTION_CONVERT_FILEPATH_TO_COMPILER_NATIVE,$(StroikaRoot))ThirdPartyComponents/StrawberryPerl/CURRENT/perl/bin;%PATH%
 endif
 ifeq (${PERL_VERSION_PATCH_},)

@@ -2,18 +2,15 @@
 #	some perl besides cygwin/msys required to build openssl. Tried ActivePerl for a while but too buggy/
 #	PITA to install
 #
-#	To run:
-#		
-## TO USE STRAWBERRYPERL
-##export PATH=/c/Sandbox/Stroika/DevRoot/ThirdPartyComponents/StrawberryPerl/CURRENT/perl/bin:/c/Sandbox/Stroika/DevRoot/ThirdPartyComponents/StrawberryPerl/CURRENT/perl/c/bin:$PATH
-## probably best to NOT include the c/bin parts - just the perl/bin parts... and only for the call to configure
+#	To run STRAWBERRYPERL (roughly):
+#		PATH=$(StroikaRoot)ThirdPartyComponents/StrawberryPerl/CURRENT/perl/bin:$PATH		OR
+#		portableshell.bat from 'CURRENT' directory
 #
 StroikaRoot=$(abspath ../..)/
 
 include $(StroikaRoot)ScriptsLib/Makefile-Common.mk
 
 VERSION=5.32.1.1
-VER=ActivePerl-$(VERSION)-MSWin32-x86
 
 #
 # CHECK FOR UPDATED VERSIONS https://strawberryperl.com/releases.html

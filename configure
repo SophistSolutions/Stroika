@@ -153,7 +153,7 @@ my $Config_Tag = undef;   #see 	https://stroika.atlassian.net/browse/STK-667 to 
 
 my $BuildByDefault = "always";	# for now default to always...
 
-my $FEATUREFLAG_ActivePerl = undef;
+my $FEATUREFLAG_StrawberryPerl = undef;
 my $FEATUREFLAG_LIBCURL = $LIBFEATUREFLAG_No;		#$LIBFEATUREFLAG_UseStaticTPP; tricky some places because of dependencies - resolve that first
 my $FEATUREFLAG_boost = $LIBFEATUREFLAG_UseStaticTPP;
 my $FEATUREFLAG_boost_userspecified = 0;
@@ -242,7 +242,7 @@ sub	DoHelp_
 		print("	    --MACOSX_DEPLOYMENT_TARGET { #|default|none }   /* set MACOSX_DEPLOYMENT_TARGET (mac os min version) (macosx target specific) */\n");
 		print("	    --cppstd-version {FLAG}                         /* Sets can be c++20, c++2a, c++2b, c++23 */\n");
 		print("	    --stdlib {LIB}                                  /* libc++ (clang lib), libstdc++ (gcc and often clang) */\n");
-		print("	    --ActivePerl {use|no}                           /* Enables/disables use of ActivePerl (Windows Only) - JUST USED TO BUILD OPENSSL for Windows*/\n");
+		print("	    --StrawberryPerl {use|no}                       /* Enables/disables use of StrawberryPerl (Windows Only) - JUST USED TO BUILD OPENSSL for Windows*/\n");
 		print("	    --LibCurl {build-only|use|use-system|no}        /* Enables/disables use of LibCurl for this configuration [default TBD]*/\n");
 		print("	    --boost {build-only|use|use-system|no}          /* Enables/disables use of boost for this configuration [default use] */\n");
 		print("	    --OpenSSL {build-only|use|use-system|no}        /* Enables/disables use of OpenSSL for this configuration [default use] */\n");
@@ -254,7 +254,7 @@ sub	DoHelp_
 		print("	    --ZLib {build-only|use|use-system|no}           /* Enables/disables use of ZLib for this configuration [default use] */\n");
 		print("	    --WIX {use|use-system|no}                       /* Enables/disables use of WIX (Windows Only) - to build windows installers*/\n");
 		print("	    --lzma {build-only|use|use-system|no}           /* Enables/disables use of LZMA SDK for this configuration [default use] */\n");
-		print("	    --no-third-party-components           			/* equivilent to --ActivePerl no --LibCurl no --boost no --OpenSSL no --WinHTTP no --ATLMFC no --Xerces no --sqlite no --ZLib no --WIX no --lzma no  */\n");
+		print("	    --no-third-party-components           			/* equivilent to --StrawberryPerl no --LibCurl no --boost no --OpenSSL no --WinHTTP no --ATLMFC no --Xerces no --sqlite no --ZLib no --WIX no --lzma no  */\n");
 		print("	    --trace2file { enable|disable|default }         /* Enables/disable trace2file feature */\n");
 		print("	    --static-link-gccruntime { enable|disable }     /* Enables/disable gcc runtime static link (only applies if gcc family compiler) */\n");
 		print("	    --make-define {ARG}                             /* Define makefile define for the given configuration: text of arg appears as line in Configuration.mk */\n");
@@ -1350,10 +1350,10 @@ sub	ParseCommandLine_Remaining_
 			}
 			$CPPSTD_VERSION_FLAG = "--std=" . $var;
 		}
-		elsif ((lc ($var) eq "-activeperl") or (lc ($var) eq "--activeperl")) {
+		elsif ((lc ($var) eq "-strawberryperl") or (lc ($var) eq "--strawberryperl")) {
 			$i++;
 			$var = $args[$i];
-			$FEATUREFLAG_ActivePerl = $var;
+			$FEATUREFLAG_StrawberryPerl = $var;
 		}
 		elsif ((lc ($var) eq "-wix") or (lc ($var) eq "--wix")) {
 			$i++;
@@ -2208,12 +2208,12 @@ sub PostProcessOptions_ ()
 	}
 
 	
-	if (! defined $FEATUREFLAG_ActivePerl) {
+	if (! defined $FEATUREFLAG_StrawberryPerl) {
 		if ($FEATUREFLAG_OpenSSL eq "use" && ("$^O" eq "cygwin" or "$^O" eq "msys")) {
-			$FEATUREFLAG_ActivePerl = "use";
+			$FEATUREFLAG_StrawberryPerl = "use";
 		}
 		else {
-			$FEATUREFLAG_ActivePerl = $LIBFEATUREFLAG_No;
+			$FEATUREFLAG_StrawberryPerl = $LIBFEATUREFLAG_No;
 		}
 	}
 	if (! defined $FEATUREFLAG_WIX) {
@@ -2506,7 +2506,7 @@ sub	WriteConfigFile_
 	}
 
 	
-	print (OUT "    <qFeatureFlag_ActivePerl>$FEATUREFLAG_ActivePerl</qFeatureFlag_ActivePerl>\n");
+	print (OUT "    <qFeatureFlag_StrawberryPerl>$FEATUREFLAG_StrawberryPerl</qFeatureFlag_StrawberryPerl>\n");
 	print (OUT "    <qFeatureFlag_boost>$FEATUREFLAG_boost</qFeatureFlag_boost>\n");
 	print (OUT "    <qFeatureFlag_LibCurl>$FEATUREFLAG_LIBCURL</qFeatureFlag_LibCurl>\n");
 	print (OUT "    <qFeatureFlag_OpenSSL>$FEATUREFLAG_OpenSSL</qFeatureFlag_OpenSSL>\n");

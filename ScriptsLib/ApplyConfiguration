@@ -300,7 +300,7 @@ sub WriteStroikaConfigMakeHeader
 	WriteStroikaConfigMakeHeader_CachedLineItem_("qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy");
 	WriteStroikaConfigMakeHeader_CachedLineItem_("qCompiler_ValgrindLTO_Buggy");
 
-	WriteStroikaConfigMakeHeader_CachedLineItem_("qFeatureFlag_ActivePerl");
+	WriteStroikaConfigMakeHeader_CachedLineItem_("qFeatureFlag_StrawberryPerl");
 	WriteStroikaConfigMakeHeader_CachedLineItem_("qFeatureFlag_ATLMFC");
 	WriteStroikaConfigMakeHeader_CachedLineItem_("qFeatureFlag_boost");
 	WriteStroikaConfigMakeHeader_CachedLineItem_("qFeatureFlag_LibCurl");
