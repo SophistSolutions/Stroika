@@ -61,6 +61,21 @@ SHELL ["powershell"]
 RUN Invoke-WebRequest "$env:VS_17_5_4" \
     -OutFile "$env:TEMP\vs_buildtools.exe" -UseBasicParsing
 
+### @todo see if
+### https://stackoverflow.com/questions/62551793/how-to-automate-from-command-line-the-installation-of-a-visual-studio-build-to
+### 
+# vs_buildtool.exe --add Microsoft.VisualStudio.Workload.MSBuildTools^ 
+#                  --add Microsoft.VisualStudio.Workload.VCTools^ 
+#                  --add Microsoft.VisualStudio.Component.VC.Tools.x86.x64^ 
+#                  --add Microsoft.VisualStudio.Component.Windows10SDK.18362^ 
+#                  --add Microsoft.VisualStudio.Component.VC.CMake.Project^ 
+#                  --add Microsoft.VisualStudio.Component.TestTools.BuildTools^ 
+#                  --add Microsoft.VisualStudio.Component.VC.ASAN^ 
+#                  --add Microsoft.VisualStudio.Component.VC.140
+# produces  a smaller image, maybe clearer?
+#
+#   AND FIND WAY TO PRINT actutal set of things installed (workloads or comoennts or something so I can maybe do removes)
+
 # Since Visual Studio.net 17.5.0, adding Microsoft.VisualStudio.Component.VC.ATLMFC above causes install to fail,
 # But adding here by itself is fine.
 # del stuff to minimize space left in the filesystem layer
