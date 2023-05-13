@@ -51,6 +51,8 @@ endif
 SubDirs=
 ifeq ($(BUILD_ActivePerl), 1)
 	SubDirs+= ActivePerl
+	#tmphack til we rename (if it works)
+	SubDirs+= StrawberryPerl
 endif
 ifeq ($(BUILD_boost), 1)
 	SubDirs+= boost
