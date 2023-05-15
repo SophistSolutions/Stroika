@@ -56,9 +56,10 @@ ARG VS_17_4_2=https://download.visualstudio.microsoft.com/download/pr/f3f8db49-2
 ARG VS_17_5_1=https://download.visualstudio.microsoft.com/download/pr/07db0e25-01f0-4ac0-946d-e03196d2cc8b/c200c70c03378c5d45f16746a1ab6470bb9894f2492ef753aaeff2545c050e96/vs_BuildTools.exe
 ARG VS_17_5_2=https://download.visualstudio.microsoft.com/download/pr/3b6ddbf8-a147-4435-a494-52ca53c1322f/5b5fe89fa8b28b8f6623fbce6b8688c469759b24c1dada428c8e5227a83cbb57/vs_BuildTools.exe
 ARG VS_17_5_4=https://download.visualstudio.microsoft.com/download/pr/0bb9a5f5-5481-4efe-92ab-cca29a90fa5e/adbfb904ddfc115ae7df00098df92d4e545a5eb062ffea8a93f7b8df8d509ff3/vs_BuildTools.exe
+ARG VS_17_5_5=https://download.visualstudio.microsoft.com/download/pr/7ac7457f-ba6e-4a12-ba2c-1adebad20070/619bb425ddaecbbb256036b1b2d8b5756c64cb1b1dffe5251facf9dabdd88258/vs_BuildTools.exe
 
 SHELL ["powershell"]
-RUN Invoke-WebRequest "$env:VS_17_5_4" \
+RUN Invoke-WebRequest "$env:VS_17_5_5" \
     -OutFile "$env:TEMP\vs_buildtools.exe" -UseBasicParsing
 
 ### @todo see if
