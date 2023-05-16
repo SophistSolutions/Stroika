@@ -74,9 +74,9 @@ namespace Stroika::Foundation::Containers {
         _AssertRepValidType ();
     }
     template <typename T, typename KEY_TYPE, typename TRAITS>
-    template <typename ITERATOR_OF_ADDABLE, Common::EqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER>
+    template <forward_iterator ITERATOR_OF_ADDABLE, Common::EqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER>
     KeyedCollection<T, KEY_TYPE, TRAITS>::KeyedCollection (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
-        requires (KeyedCollection_ExtractorCanBeDefaulted<T, KEY_TYPE, TRAITS> and Configuration::IsIterator_v<ITERATOR_OF_ADDABLE>)
+        requires (KeyedCollection_ExtractorCanBeDefaulted<T, KEY_TYPE, TRAITS>)
         : KeyedCollection{KeyExtractorType{}, KEY_EQUALS_COMPARER{}}
     {
         static_assert (IsAddable_v<ExtractValueType_t<ITERATOR_OF_ADDABLE>>);
@@ -84,9 +84,9 @@ namespace Stroika::Foundation::Containers {
         _AssertRepValidType ();
     }
     template <typename T, typename KEY_TYPE, typename TRAITS>
-    template <typename ITERATOR_OF_ADDABLE, Common::EqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER>
+    template <forward_iterator ITERATOR_OF_ADDABLE, Common::EqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER>
     KeyedCollection<T, KEY_TYPE, TRAITS>::KeyedCollection (KEY_EQUALS_COMPARER&& keyComparer, ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
-        requires (KeyedCollection_ExtractorCanBeDefaulted<T, KEY_TYPE, TRAITS> and Configuration::IsIterator_v<ITERATOR_OF_ADDABLE>)
+        requires (KeyedCollection_ExtractorCanBeDefaulted<T, KEY_TYPE, TRAITS>)
         : KeyedCollection{KeyExtractorType{}, forward<KEY_EQUALS_COMPARER> (keyComparer)}
     {
         static_assert (IsAddable_v<ExtractValueType_t<ITERATOR_OF_ADDABLE>>);
@@ -94,10 +94,9 @@ namespace Stroika::Foundation::Containers {
         _AssertRepValidType ();
     }
     template <typename T, typename KEY_TYPE, typename TRAITS>
-    template <Common::EqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER, typename ITERATOR_OF_ADDABLE>
+    template <Common::EqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER, forward_iterator ITERATOR_OF_ADDABLE>
     KeyedCollection<T, KEY_TYPE, TRAITS>::KeyedCollection (const KeyExtractorType& keyExtractor, KEY_EQUALS_COMPARER&& keyComparer,
                                                            ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
-        requires (Configuration::IsIterator_v<ITERATOR_OF_ADDABLE>)
         : KeyedCollection{keyExtractor, forward<KEY_EQUALS_COMPARER> (keyComparer)}
     {
         static_assert (IsAddable_v<ExtractValueType_t<ITERATOR_OF_ADDABLE>>);

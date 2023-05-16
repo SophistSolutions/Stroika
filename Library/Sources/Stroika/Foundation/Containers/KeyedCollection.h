@@ -275,15 +275,14 @@ namespace Stroika::Foundation::Containers {
         template <Common::EqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER, typename ITERABLE_OF_ADDABLE>
         KeyedCollection (const KeyExtractorType& keyExtractor, KEY_EQUALS_COMPARER&& keyComparer, ITERABLE_OF_ADDABLE&& src)
             requires (Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>);
-        template <typename ITERATOR_OF_ADDABLE, Common::EqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER = equal_to<KEY_TYPE>>
+        template <forward_iterator ITERATOR_OF_ADDABLE, Common::EqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER = equal_to<KEY_TYPE>>
         KeyedCollection (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
-            requires (KeyedCollection_ExtractorCanBeDefaulted<T, KEY_TYPE, TRAITS> and Configuration::IsIterator_v<ITERATOR_OF_ADDABLE>);
-        template <typename ITERATOR_OF_ADDABLE, Common::EqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER = equal_to<KEY_TYPE>>
+            requires (KeyedCollection_ExtractorCanBeDefaulted<T, KEY_TYPE, TRAITS>);
+        template <forward_iterator ITERATOR_OF_ADDABLE, Common::EqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER = equal_to<KEY_TYPE>>
         KeyedCollection (KEY_EQUALS_COMPARER&& keyComparer, ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
-            requires (KeyedCollection_ExtractorCanBeDefaulted<T, KEY_TYPE, TRAITS> and Configuration::IsIterator_v<ITERATOR_OF_ADDABLE>);
-        template <Common::EqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER, typename ITERATOR_OF_ADDABLE>
-        KeyedCollection (const KeyExtractorType& keyExtractor, KEY_EQUALS_COMPARER&& keyComparer, ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
-            requires (Configuration::IsIterator_v<ITERATOR_OF_ADDABLE>);
+            requires (KeyedCollection_ExtractorCanBeDefaulted<T, KEY_TYPE, TRAITS>);
+        template <Common::EqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER, forward_iterator ITERATOR_OF_ADDABLE>
+        KeyedCollection (const KeyExtractorType& keyExtractor, KEY_EQUALS_COMPARER&& keyComparer, ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
 
     protected:
         explicit KeyedCollection (shared_ptr<_IRep>&& rep) noexcept;
