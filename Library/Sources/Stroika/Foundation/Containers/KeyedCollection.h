@@ -250,28 +250,28 @@ namespace Stroika::Foundation::Containers {
         KeyedCollection (ITERABLE_OF_ADDABLE&& src)
             requires (KeyedCollection_ExtractorCanBeDefaulted<T, KEY_TYPE, TRAITS> and Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and
                       not is_base_of_v<KeyedCollection<T, KEY_TYPE, TRAITS>, decay_t<ITERABLE_OF_ADDABLE>>)
-                      #if qCompilerAndStdLib_template_Requires_templateDeclarationMatchesOutOfLine2_Buggy
-                         : KeyedCollection{KeyExtractorType{}, equal_to<KEY_TYPE>{}}
-    {
-        static_assert (IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>);
-        AddAll (forward<ITERABLE_OF_ADDABLE> (src));
-        _AssertRepValidType ();
-    }
-                      #endif
-                      ;
+#if qCompilerAndStdLib_template_Requires_templateDeclarationMatchesOutOfLine2_Buggy
+            : KeyedCollection{KeyExtractorType{}, equal_to<KEY_TYPE>{}}
+        {
+            static_assert (IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>);
+            AddAll (forward<ITERABLE_OF_ADDABLE> (src));
+            _AssertRepValidType ();
+        }
+#endif
+        ;
         template <typename ITERABLE_OF_ADDABLE, Common::EqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER = equal_to<KEY_TYPE>>
         KeyedCollection (KEY_EQUALS_COMPARER&& keyComparer, ITERABLE_OF_ADDABLE&& src)
             requires (KeyedCollection_ExtractorCanBeDefaulted<T, KEY_TYPE, TRAITS> and Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and
                       not is_base_of_v<KeyedCollection<T, KEY_TYPE, TRAITS>, decay_t<ITERABLE_OF_ADDABLE>>)
-                                            #if qCompilerAndStdLib_template_Requires_templateDeclarationMatchesOutOfLine2_Buggy
-                                            : KeyedCollection{KeyExtractorType{}, forward<KEY_EQUALS_COMPARER> (keyComparer)}
-    {
-        static_assert (IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>);
-        AddAll (src);
-        _AssertRepValidType ();
-    }
+#if qCompilerAndStdLib_template_Requires_templateDeclarationMatchesOutOfLine2_Buggy
+            : KeyedCollection{KeyExtractorType{}, forward<KEY_EQUALS_COMPARER> (keyComparer)}
+        {
+            static_assert (IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>);
+            AddAll (src);
+            _AssertRepValidType ();
+        }
 #endif
-                      ;
+        ;
         template <Common::EqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER, typename ITERABLE_OF_ADDABLE>
         KeyedCollection (const KeyExtractorType& keyExtractor, KEY_EQUALS_COMPARER&& keyComparer, ITERABLE_OF_ADDABLE&& src)
             requires (Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>);
