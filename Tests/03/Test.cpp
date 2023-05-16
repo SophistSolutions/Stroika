@@ -186,12 +186,23 @@ namespace {
 }
 
 namespace {
+    namespace Test4_Compare_ {
+        void DoIt ()
+        {
+            static_assert (EqualsComparer<equal_to<int>, int>);
+            static_assert (not EqualsComparer<less<int>, int>);
+        }
+    }
+}
+
+namespace {
     void DoRegressionTests_ ()
     {
         Debug::TraceContextBumper ctx{L"{}::DoRegressionTests_"};
         Test_1_SpaceshipAutoGenForOpEqualsForCommonGUIDBug_ ();
         Test02_Properties_::Run ();
         Test3_CommonGUID_::DoIt ();
+        Test4_Compare_::DoIt ();
     }
 }
 

@@ -221,6 +221,7 @@ namespace Stroika::Foundation::Common {
     };
 
     /**
+    * @todo maybe lose/deprecate these in favor of just using the concepts...
      *  \brief Checks (via ExtractComparisonTraits) if argument is an Equals comparer - one that takes two arguments of type T, and returns a bool, and compares
      *         if one of the items equal to the other (e.g. std::equals).
      *
@@ -234,6 +235,39 @@ namespace Stroika::Foundation::Common {
     constexpr bool IsEqualsComparer ();
     template <typename COMPARER>
     constexpr bool IsEqualsComparer (const COMPARER&);
+
+    /**
+     *  This concept checks if the given function argument (COMPARER) appears to compare 'ARG_T's and return true/false.
+     *  This doesn't require that that you've annotated the comparer, so it can false-positive (like mixing up
+     *  an equality comparer for an in-order comparer).
+     * 
+     *  \see EqualsComparer for something stricter
+     */
+    template <typename COMPARER, typename ARG_T>
+    concept PossiblyEqualsComparer = predicate<COMPARER, ARG_T, ARG_T>;
+
+    /**
+     *  Checks that the argument comparer compares values of type ARG_T, and returns an equals comparison result.
+     * 
+     *  This won't let confuse equal_to with actual in-order comparison functions.
+     * 
+     *  \see PossiblyEqualsComparer, and use DeclareEqualsComparer to mark a given function as an in-order comparer.
+     * 
+     *  \par Example Usage
+     *      \code
+     *          static_assert (EqualsComparer<equal_to<int>, int>);
+     *          static_assert (not EqualsComparer<less<int>, int>);
+     *      \endcode
+     * 
+     *  \par Example Usage
+     *      \code
+     *          template <Common::EqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER = equal_to<KEY_TYPE>>
+     *          KeyedCollection (KEY_EQUALS_COMPARER&& keyComparer = KEY_EQUALS_COMPARER{})
+     *          ...
+     *      \endcode
+     */
+    template <typename COMPARER, typename ARG_T>
+    concept EqualsComparer = PossiblyEqualsComparer<COMPARER, ARG_T> and IsEqualsComparer<COMPARER, ARG_T> ();
 
     /**
      *  \brief Checks (via ExtractComparisonTraits) if argument is a StictInOrder comparer - one that takes two arguments of type T, and returns a bool, and compares
