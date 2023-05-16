@@ -433,6 +433,8 @@ namespace Stroika::Foundation::Configuration {
 
     /**
      * Return true iff FUNCTOR is of the form  function<bool(T)> or convertible to that.
+     * 
+     *  @todo use std::predicate<>.... So DEPRECATE THIS...
      */
     template <typename FUNCTOR_ARG, typename FUNCTOR>
     constexpr bool IsTPredicate ()
