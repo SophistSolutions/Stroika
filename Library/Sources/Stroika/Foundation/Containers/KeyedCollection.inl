@@ -36,6 +36,7 @@ namespace Stroika::Foundation::Containers {
     {
         _AssertRepValidType ();
     }
+    #if !qCompilerAndStdLib_template_Requires_templateDeclarationMatchesOutOfLine2_Buggy
     template <typename T, typename KEY_TYPE, typename TRAITS>
     template <typename ITERABLE_OF_ADDABLE, Common::EqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER>
     inline KeyedCollection<T, KEY_TYPE, TRAITS>::KeyedCollection (ITERABLE_OF_ADDABLE&& src)
@@ -47,6 +48,8 @@ namespace Stroika::Foundation::Containers {
         AddAll (forward<ITERABLE_OF_ADDABLE> (src));
         _AssertRepValidType ();
     }
+    #endif
+    #if !qCompilerAndStdLib_template_Requires_templateDeclarationMatchesOutOfLine2_Buggy
     template <typename T, typename KEY_TYPE, typename TRAITS>
     template <typename ITERABLE_OF_ADDABLE, Common::EqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER>
     inline KeyedCollection<T, KEY_TYPE, TRAITS>::KeyedCollection (KEY_EQUALS_COMPARER&& keyComparer, ITERABLE_OF_ADDABLE&& src)
@@ -58,6 +61,7 @@ namespace Stroika::Foundation::Containers {
         AddAll (src);
         _AssertRepValidType ();
     }
+    #endif
     template <typename T, typename KEY_TYPE, typename TRAITS>
     template <Common::EqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER, typename ITERABLE_OF_ADDABLE>
     inline KeyedCollection<T, KEY_TYPE, TRAITS>::KeyedCollection (const KeyExtractorType& keyExtractor, KEY_EQUALS_COMPARER&& keyComparer,

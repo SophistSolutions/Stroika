@@ -853,6 +853,24 @@ In file included from ../Characters/StringBuilder.h:273,
 
 #endif
 
+
+#ifndef qCompilerAndStdLib_template_Requires_templateDeclarationMatchesOutOfLine2_Buggy
+
+#if defined(__clang__) && defined(__APPLE__)
+// Noticed broken in crapple-clang++14
+#define qCompilerAndStdLib_template_Requires_templateDeclarationMatchesOutOfLine2_Buggy                                                     \
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 14))
+#elif defined(__clang__) && !defined(__APPLE__)
+// Noticed broken in -clang++14
+#define qCompilerAndStdLib_template_Requires_templateDeclarationMatchesOutOfLine2_Buggy                                                     \
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 14))
+#else
+#define qCompilerAndStdLib_template_Requires_templateDeclarationMatchesOutOfLine2_Buggy 0
+#endif
+
+#endif
+
+
 #ifndef qCompilerAndStdLib_template_requresDefNeededonSpecializations_Buggy
 
 #if defined(__clang__) && defined(__APPLE__)
