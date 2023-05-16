@@ -237,11 +237,6 @@ namespace Stroika::Foundation::Containers {
          *          KeyedCollection<DiskInfoType, filesystem::path> result{[] (DiskInfoType e) { return e.fDeviceName; }};
          *      \endcode
          *
-         *  \par Example Usage
-         *      \code
-         *          KeyedCollection<DiskInfoType, filesystem::path> result{[] (DiskInfoType e) { return e.fDeviceName; }};
-         *      \endcode
-         *
          *  \note   <a href="ReadMe.md#Container Constructors">See general information about container constructors that applies here</a>
          */
         template <Common::EqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER = equal_to<KEY_TYPE>>
