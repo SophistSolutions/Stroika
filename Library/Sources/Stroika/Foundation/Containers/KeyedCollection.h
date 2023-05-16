@@ -259,18 +259,18 @@ namespace Stroika::Foundation::Containers {
         KeyedCollection (KEY_EQUALS_COMPARER&& keyComparer, ITERABLE_OF_ADDABLE&& src)
             requires (KeyedCollection_ExtractorCanBeDefaulted<T, KEY_TYPE, TRAITS> and Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and
                       not is_base_of_v<KeyedCollection<T, KEY_TYPE, TRAITS>, decay_t<ITERABLE_OF_ADDABLE>>);
-        template <Common::EqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER, typename ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>>* = nullptr>
-        KeyedCollection (const KeyExtractorType& keyExtractor, KEY_EQUALS_COMPARER&& keyComparer, ITERABLE_OF_ADDABLE&& src);
-        template <typename ITERATOR_OF_ADDABLE, Common::EqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER = equal_to<KEY_TYPE>,
-                  enable_if_t<Configuration::IsIterator_v<ITERATOR_OF_ADDABLE>>* = nullptr>
+        template <Common::EqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER, typename ITERABLE_OF_ADDABLE>
+        KeyedCollection (const KeyExtractorType& keyExtractor, KEY_EQUALS_COMPARER&& keyComparer, ITERABLE_OF_ADDABLE&& src)
+            requires (Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>);
+        template <typename ITERATOR_OF_ADDABLE, Common::EqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER = equal_to<KEY_TYPE>>
         KeyedCollection (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
-            requires (KeyedCollection_ExtractorCanBeDefaulted<T, KEY_TYPE, TRAITS>);
-        template <typename ITERATOR_OF_ADDABLE, Common::EqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER = equal_to<KEY_TYPE>,
-                  enable_if_t<Configuration::IsIterator_v<ITERATOR_OF_ADDABLE>>* = nullptr>
+            requires (KeyedCollection_ExtractorCanBeDefaulted<T, KEY_TYPE, TRAITS> and Configuration::IsIterator_v<ITERATOR_OF_ADDABLE>);
+        template <typename ITERATOR_OF_ADDABLE, Common::EqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER = equal_to<KEY_TYPE>>
         KeyedCollection (KEY_EQUALS_COMPARER&& keyComparer, ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
-            requires (KeyedCollection_ExtractorCanBeDefaulted<T, KEY_TYPE, TRAITS>);
-        template <Common::EqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER, typename ITERATOR_OF_ADDABLE, enable_if_t<Configuration::IsIterator_v<ITERATOR_OF_ADDABLE>>* = nullptr>
-        KeyedCollection (const KeyExtractorType& keyExtractor, KEY_EQUALS_COMPARER&& keyComparer, ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
+            requires (KeyedCollection_ExtractorCanBeDefaulted<T, KEY_TYPE, TRAITS> and Configuration::IsIterator_v<ITERATOR_OF_ADDABLE>);
+        template <Common::EqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER, typename ITERATOR_OF_ADDABLE>
+        KeyedCollection (const KeyExtractorType& keyExtractor, KEY_EQUALS_COMPARER&& keyComparer, ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
+            requires (Configuration::IsIterator_v<ITERATOR_OF_ADDABLE>);
 
     protected:
         explicit KeyedCollection (shared_ptr<_IRep>&& rep) noexcept;
@@ -284,8 +284,7 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
-         *  Returns the extractor (but wrapped as a function<> object, so perhaps slightly less efficient
-         *  to use than the type passed in via CTOR).
+         *  Returns the extractor.
          */
         nonvirtual KeyExtractorType GetKeyExtractor () const;
 

@@ -59,9 +59,10 @@ namespace Stroika::Foundation::Containers {
         _AssertRepValidType ();
     }
     template <typename T, typename KEY_TYPE, typename TRAITS>
-    template <Common::EqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER, typename ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>>*>
+    template <Common::EqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER, typename ITERABLE_OF_ADDABLE>
     inline KeyedCollection<T, KEY_TYPE, TRAITS>::KeyedCollection (const KeyExtractorType& keyExtractor, KEY_EQUALS_COMPARER&& keyComparer,
                                                                   ITERABLE_OF_ADDABLE&& src)
+        requires (Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>)
         : KeyedCollection{keyExtractor, forward<KEY_EQUALS_COMPARER> (keyComparer)}
     {
         static_assert (IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>);
@@ -69,9 +70,9 @@ namespace Stroika::Foundation::Containers {
         _AssertRepValidType ();
     }
     template <typename T, typename KEY_TYPE, typename TRAITS>
-    template <typename ITERATOR_OF_ADDABLE, Common::EqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER, enable_if_t<Configuration::IsIterator_v<ITERATOR_OF_ADDABLE>>*>
+    template <typename ITERATOR_OF_ADDABLE, Common::EqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER>
     KeyedCollection<T, KEY_TYPE, TRAITS>::KeyedCollection (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
-        requires (KeyedCollection_ExtractorCanBeDefaulted<T, KEY_TYPE, TRAITS>)
+        requires (KeyedCollection_ExtractorCanBeDefaulted<T, KEY_TYPE, TRAITS> and Configuration::IsIterator_v<ITERATOR_OF_ADDABLE>)
         : KeyedCollection{KeyExtractorType{}, KEY_EQUALS_COMPARER{}}
     {
         static_assert (IsAddable_v<ExtractValueType_t<ITERATOR_OF_ADDABLE>>);
@@ -79,9 +80,9 @@ namespace Stroika::Foundation::Containers {
         _AssertRepValidType ();
     }
     template <typename T, typename KEY_TYPE, typename TRAITS>
-    template <typename ITERATOR_OF_ADDABLE, Common::EqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER, enable_if_t<Configuration::IsIterator_v<ITERATOR_OF_ADDABLE>>*>
+    template <typename ITERATOR_OF_ADDABLE, Common::EqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER>
     KeyedCollection<T, KEY_TYPE, TRAITS>::KeyedCollection (KEY_EQUALS_COMPARER&& keyComparer, ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
-        requires (KeyedCollection_ExtractorCanBeDefaulted<T, KEY_TYPE, TRAITS>)
+        requires (KeyedCollection_ExtractorCanBeDefaulted<T, KEY_TYPE, TRAITS> and Configuration::IsIterator_v<ITERATOR_OF_ADDABLE>)
         : KeyedCollection{KeyExtractorType{}, forward<KEY_EQUALS_COMPARER> (keyComparer)}
     {
         static_assert (IsAddable_v<ExtractValueType_t<ITERATOR_OF_ADDABLE>>);
@@ -89,9 +90,10 @@ namespace Stroika::Foundation::Containers {
         _AssertRepValidType ();
     }
     template <typename T, typename KEY_TYPE, typename TRAITS>
-    template <Common::EqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER, typename ITERATOR_OF_ADDABLE, enable_if_t<Configuration::IsIterator_v<ITERATOR_OF_ADDABLE>>*>
+    template <Common::EqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER, typename ITERATOR_OF_ADDABLE>
     KeyedCollection<T, KEY_TYPE, TRAITS>::KeyedCollection (const KeyExtractorType& keyExtractor, KEY_EQUALS_COMPARER&& keyComparer,
                                                            ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
+        requires (Configuration::IsIterator_v<ITERATOR_OF_ADDABLE>)
         : KeyedCollection{keyExtractor, forward<KEY_EQUALS_COMPARER> (keyComparer)}
     {
         static_assert (IsAddable_v<ExtractValueType_t<ITERATOR_OF_ADDABLE>>);
@@ -207,7 +209,7 @@ namespace Stroika::Foundation::Containers {
         static_assert (IsAddable_v<ExtractValueType_t<ITERATOR_OF_ADDABLE>>);
         unsigned int                     cntAdded{};
         _SafeReadWriteRepAccessor<_IRep> r{this};
-        for (auto i = forward<ITERATOR_OF_ADDABLE> (start); i != end; ++i) {
+        for (auto i = forward<ITERATOR_OF_ADDABLE> (start); i != forward<ITERATOR_OF_ADDABLE> (end); ++i) {
             if (r._GetWriteableRep ().Add (*i)) {
                 ++cntAdded;
             }
