@@ -299,7 +299,7 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
-         *  Keys () returns an Iterable object with just the key part of the Mapping.
+         *  Keys () returns an Iterable object with just the key part of the KeyedCollection.
          *
          *  Note this method may not return a collection which is sorted. Note also, the
          *  returned value is a copy of the keys (by value) - at least logically (implementations
