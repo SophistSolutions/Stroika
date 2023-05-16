@@ -217,6 +217,11 @@ namespace Stroika::Foundation::Traversal {
                        "Must be able to create optional<T> to use Iterator, because Iterator uses this internally");
 
     public:
+        //  @todo hould we enforce more?? forward_iterator??? unclear
+        //  I think we now support input_iterator but this wont compile here - just eslewhere..... @todo
+        //static_assert (input_iterator<Iterator<T, ITERATOR_TRAITS>>);
+
+    public:
         /**
          *  \brief  difference_type = typename ITERATOR_TRAITS::difference_type;
          */
@@ -345,19 +350,13 @@ namespace Stroika::Foundation::Traversal {
          *  when this method is called. Its legal to update the underlying container, but those
          *  values won't be seen until the next iteration.
          * 
-         *  \note As of Stroika 2.1r1, we only support pre-increment. There were very few cases in the Stroika
-         *        code we used post-increment, and most of those were a mistake. In a couple places, it made code cleaner/
-         *        simpler, but it was rare (and easy to workaround).
+         *  \note As of Stroika v3.0d1, we again support post-increment (operator++ (int)), NOT because its useful, but because its required by std+c++
+         *        to be considered an input iterator (see https://en.cppreference.com/w/cpp/iterator/weakly_incrementable).
          * 
-         *        Problem with support of post-increment, is that its not compatible with (also in 2.1r1) change to have operator* return reference.
-         *        Issue there is that when we incrmenet/move forward, that reference (pointer) returned now refers to the NEXT item though it didn't
-         *        when we saved it to return.
-         * 
-         *        Now - that would be pretty easy to fix - by storing TWO values in the iterator (optional<T>) - and ping pong between them.
-         *        But that would have a performance and memory overhead for virtually no benefit.
-         *              -- LGP 2022-01-04
+         *        It is slower, and not recommended. BUT because of this - supported.
          */
         nonvirtual Iterator& operator++ ();
+        nonvirtual Iterator  operator++ (int);
 
     public:
         /*

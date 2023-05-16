@@ -184,10 +184,9 @@ namespace {
             }
             {
                 using Traversal::Iterator;
-                static_assert (Configuration::IsIterator_v<Iterator<int>>);
-                static_assert (Configuration::IsIterator_v<const Iterator<int>&>);
-                static_assert (Configuration::IsIterator_v<Iterator<int>&>);
-                static_assert (Configuration::IsIterator_v<Iterator<int>&&>);
+                static_assert (input_iterator<Iterator<int>>);
+                static_assert (input_iterator<Iterator<Characters::Character>>);
+                static_assert (input_iterator<Iterator<int>>); // @todo figure out why forward_iterator doesn't work here, but maybe OK
             }
             {
                 static_assert (has_beginend_v<vector<int>>);
