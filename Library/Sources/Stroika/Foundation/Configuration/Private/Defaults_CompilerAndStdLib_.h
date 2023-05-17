@@ -872,6 +872,10 @@ In file included from ../Characters/StringBuilder.h:273,
 #endif
 
 /**
+* 
+* https://github.com/llvm/llvm-project/issues/62785
+* 
+* 
 *  Compiling Library/Sources/Stroika/Foundation/DataExchange/VariantValue.cpp ... 
 PLEASE submit a bug report to https://github.com/llvm/llvm-project/issues/ and include the crash backtrace, preprocessed source, and associated run script.
 Stack dump:
