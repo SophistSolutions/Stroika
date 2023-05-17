@@ -1542,14 +1542,14 @@ make
 
 #ifndef qCompilerAndStdLib_iterator_concept_wrongly_requires_default_CTOR_Buggy
 
-#if  defined(_GLIBCXX_RELEASE)
-#define qCompilerAndStdLib_iterator_concept_wrongly_requires_default_CTOR_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_GLIBCXX_RELEASE <= 11)
+#if defined(_GLIBCXX_RELEASE)
+#define qCompilerAndStdLib_iterator_concept_wrongly_requires_default_CTOR_Buggy                                                            \
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_GLIBCXX_RELEASE <= 11)
 #else
 #define qCompilerAndStdLib_iterator_concept_wrongly_requires_default_CTOR_Buggy 0
 #endif
 
 #endif
-
 
 /*
  * NOW ALLOWED IN C++17
