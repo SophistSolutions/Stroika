@@ -286,7 +286,11 @@ namespace Stroika::Foundation::Traversal {
         Iterator (Iterator&& src) noexcept;
         Iterator (const Iterator& src);
         constexpr Iterator (nullptr_t) noexcept;
+        #if qCompilerAndStdLib_iterator_concept_wrongly_requires_default_CTOR_Buggy
+        Iterator () = default;
+        #else
         Iterator () = delete;
+        #endif
 
     private:
         constexpr Iterator (ConstructionFlagForceAtEnd_) noexcept;
