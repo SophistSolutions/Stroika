@@ -100,14 +100,13 @@ namespace Stroika::Foundation::Containers::Concrete {
         template <typename KEY_INORDER_COMPARER, typename ITERABLE_OF_ADDABLE,
                   enable_if_t<Common::IsStrictInOrderComparer<KEY_INORDER_COMPARER, KEY_TYPE> () and Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>>* = nullptr>
         KeyedCollection_stdset (const KeyExtractorType& keyExtractor, KEY_INORDER_COMPARER&& keyComparer, ITERABLE_OF_ADDABLE&& src);
-        template <typename ITERATOR_OF_ADDABLE, typename KEY_INORDER_COMPARER = less<KEY_TYPE>,
-                  enable_if_t<Configuration::IsIterator_v<ITERATOR_OF_ADDABLE> and Common::IsStrictInOrderComparer<KEY_INORDER_COMPARER, KEY_TYPE> ()>* = nullptr>
+        template <input_iterator ITERATOR_OF_ADDABLE, typename KEY_INORDER_COMPARER = less<KEY_TYPE>,
+                  enable_if_t<Common::IsStrictInOrderComparer<KEY_INORDER_COMPARER, KEY_TYPE> ()>* = nullptr>
         KeyedCollection_stdset (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
-        template <typename ITERATOR_OF_ADDABLE, typename KEY_INORDER_COMPARER = less<KEY_TYPE>,
-                  enable_if_t<Configuration::IsIterator_v<ITERATOR_OF_ADDABLE> and Common::IsStrictInOrderComparer<KEY_INORDER_COMPARER, KEY_TYPE> ()>* = nullptr>
+        template <input_iterator ITERATOR_OF_ADDABLE, typename KEY_INORDER_COMPARER = less<KEY_TYPE>,
+                  enable_if_t<Common::IsStrictInOrderComparer<KEY_INORDER_COMPARER, KEY_TYPE> ()>* = nullptr>
         KeyedCollection_stdset (KEY_INORDER_COMPARER&& keyComparer, ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
-        template <typename KEY_INORDER_COMPARER, typename ITERATOR_OF_ADDABLE,
-                  enable_if_t<Common::IsStrictInOrderComparer<KEY_INORDER_COMPARER, KEY_TYPE> () and Configuration::IsIterator_v<ITERATOR_OF_ADDABLE>>* = nullptr>
+        template <typename KEY_INORDER_COMPARER, input_iterator ITERATOR_OF_ADDABLE, enable_if_t<Common::IsStrictInOrderComparer<KEY_INORDER_COMPARER, KEY_TYPE> ()>* = nullptr>
         KeyedCollection_stdset (const KeyExtractorType& keyExtractor, KEY_INORDER_COMPARER&& keyComparer, ITERATOR_OF_ADDABLE&& start,
                                 ITERATOR_OF_ADDABLE&& end);
 

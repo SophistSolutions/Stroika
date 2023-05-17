@@ -58,7 +58,6 @@ namespace Stroika::Foundation::Traversal {
         requires (is_convertible_v<Configuration::ExtractValueType_t<COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T>, value_type>)
     {
         static_assert (is_convertible_v<Configuration::ExtractValueType_t<COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T>, value_type>);
-        static_assert (Configuration::IsIterator_v<COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T>);
         Containers::Sequence<RangeType>   srs{};
         Containers::SortedSet<value_type> ss{forward<COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T> (start),
                                              forward<COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T> (end)};
