@@ -396,7 +396,13 @@ namespace Stroika::Foundation::Traversal {
                                           bool useIterableSize = false) const;
 
     public:
-        template <Common::IEqualsComparer<T> T_EQUALS_COMPARER = equal_to<T>>
+        template <
+#if qCompilerAndStdLib_template_ForwardDeclareWithConceptsInTypenameCrasher_Buggy
+            typename
+#else
+            Common::IEqualsComparer<T>
+#endif
+            T_EQUALS_COMPARER = equal_to<T>>
         struct SequentialEqualsComparer;
 
     public:
@@ -1466,7 +1472,13 @@ namespace Stroika::Foundation::Traversal {
      *  Computational Complexity: O(N)
      */
     template <typename T>
-    template <Common::IEqualsComparer<T> T_EQUALS_COMPARER>
+    template <
+#if qCompilerAndStdLib_template_ForwardDeclareWithConceptsInTypenameCrasher_Buggy
+        typename
+#else
+        Common::IEqualsComparer<T>
+#endif
+        T_EQUALS_COMPARER>
     struct Iterable<T>::SequentialEqualsComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eEquals> {
         constexpr SequentialEqualsComparer (const T_EQUALS_COMPARER& elementComparer = {}, bool useIterableSize = false);
         nonvirtual bool   operator() (const Iterable& lhs, const Iterable& rhs) const;

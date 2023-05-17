@@ -853,6 +853,8 @@ In file included from ../Characters/StringBuilder.h:273,
 
 #endif
 
+/**
+ */
 #ifndef qCompilerAndStdLib_template_Requires_templateDeclarationMatchesOutOfLine2_Buggy
 
 #if defined(__clang__) && defined(__APPLE__)
@@ -865,6 +867,110 @@ In file included from ../Characters/StringBuilder.h:273,
     CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 14))
 #else
 #define qCompilerAndStdLib_template_Requires_templateDeclarationMatchesOutOfLine2_Buggy 0
+#endif
+
+#endif
+
+/**
+*  Compiling Library/Sources/Stroika/Foundation/DataExchange/VariantValue.cpp ... 
+PLEASE submit a bug report to https://github.com/llvm/llvm-project/issues/ and include the crash backtrace, preprocessed source, and associated run script.
+Stack dump:
+0.      Program arguments: clang++-14 --std=c++2b -I/Sandbox/Stroika-Dev/Builds/clang++-14-debug-libc++-c++2b/ThirdPartyComponents/include/ -I/Sandbox/Stroika-Dev/Library/Sources/ -I/Sandbox/Stroika-Dev/IntermediateFiles/clang++-14-debug-libc++-c++2b/ -Wall -Wno-switch -Wno-sign-compare -Wno-unused-function -Wno-unused-local-typedef -Wno-future-compat -Wno-unknown-attributes -fvisibility=hidden -g -D_GLIBCXX_DEBUG -DqDebug=1 -DqHasFeature_LibCurl=1 -DqHasFeature_OpenSSL=1 -DqHasFeature_WinHTTP=0 -DqHasFeature_Xerces=1 -DqHasFeature_ZLib=1 -DqHasFeature_sqlite=1 -DqHasFeature_LZMA=1 -DqHasFeature_boost=1 -DqTraceToFile=1 -DqDefaultTracingOn=1 -fsanitize=address,undefined -stdlib=libc++ -c VariantValue.cpp -o /Sandbox/Stroika-Dev/IntermediateFiles/clang++-14-debug-libc++-c++2b/Library/Foundation/DataExchange/VariantValue.o
+1.      <eof> parser at end of file
+2.      ./../Characters/../Containers/../Traversal/../Containers/Sequence.h:345:25: instantiating function definition 'Stroika::Foundation::Containers::Sequence<Stroika::Foundation::DataExchange::VariantValue>::operator=='
+3.      ./../Characters/../Containers/../Memory/../Execution/../Time/../Traversal/Iterable.h:1471:19: instantiating function definition 'Stroika::Foundation::Traversal::Iterable<Stroika::Foundation::DataExchange::VariantValue>::SequentialEqualsComparer<>::SequentialEqualsComparer'
+ #0 0x00007ff57742ad01 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/lib/x86_64-linux-gnu/libLLVM-14.so.1+0xe3fd01)
+ #1 0x00007ff577428a3e llvm::sys::RunSignalHandlers() (/lib/x86_64-linux-gnu/libLLVM-14.so.1+0xe3da3e)
+ #2 0x00007ff57742a0ab llvm::sys::CleanupOnSignal(unsigned long) (/lib/x86_64-linux-gnu/libLLVM-14.so.1+0xe3f0ab)
+ #3 0x00007ff577356dff (/lib/x86_64-linux-gnu/libLLVM-14.so.1+0xd6bdff)
+ #4 0x00007ff5760d2520 (/lib/x86_64-linux-gnu/libc.so.6+0x42520)
+ #5 0x00007ff57dbcfba1 (/lib/x86_64-linux-gnu/libclang-cpp.so.14+0xd12ba1)
+ #6 0x00007ff57dbcb9c8 (/lib/x86_64-linux-gnu/libclang-cpp.so.14+0xd0e9c8)
+ #7 0x00007ff57dba4bed (/lib/x86_64-linux-gnu/libclang-cpp.so.14+0xce7bed)
+ #8 0x00007ff57dba0af4 (/lib/x86_64-linux-gnu/libclang-cpp.so.14+0xce3af4)
+ #9 0x00007ff57dba07a4 clang::Expr::EvaluateAsConstantExpr(clang::Expr::EvalResult&, clang::ASTContext const&, clang::Expr::ConstantExprKind) const (/lib/x86_64-linux-gnu/libclang-cpp.so.14+0xce37a4)
+#10 0x00007ff57e108a8a clang::Sema::CheckConstraintSatisfaction(clang::NamedDecl const*, llvm::ArrayRef<clang::Expr const*>, llvm::ArrayRef<clang::TemplateArgument>, clang::SourceRange, clang::ConstraintSatisfaction&) (/lib/x86_64-linux-gnu/libclang-cpp.so.14+0x124ba8a)
+#11 0x00007ff57e1096b5 clang::Sema::EnsureTemplateArgumentListConstraints(clang::TemplateDecl*, llvm::ArrayRef<clang::TemplateArgument>, clang::SourceRange) (/lib/x86_64-linux-gnu/libclang-cpp.so.14+0x124c6b5)
+#12 0x00007ff57e585b77 clang::Sema::CheckTemplateArgumentList(clang::TemplateDecl*, clang::SourceLocation, clang::TemplateArgumentListInfo&, bool, llvm::SmallVectorImpl<clang::TemplateArgument>&, bool, bool*) (/lib/x86_64-linux-gnu/libclang-cpp.so.14+0x16c8b77)
+#13 0x00007ff57e584174 clang::Sema::CheckTemplateIdType(clang::TemplateName, clang::SourceLocation, clang::TemplateArgumentListInfo&) (/lib/x86_64-linux-gnu/libclang-cpp.so.14+0x16c7174)
+#14 0x00007ff57e67b5c9 (/lib/x86_64-linux-gnu/libclang-cpp.so.14+0x17be5c9)
+#15 0x00007ff57e67a793 (/lib/x86_64-linux-gnu/libclang-cpp.so.14+0x17bd793)
+#16 0x00007ff57e66ca63 (/lib/x86_64-linux-gnu/libclang-cpp.so.14+0x17afa63)
+#17 0x00007ff57e66c7de clang::Sema::SubstNestedNameSpecifierLoc(clang::NestedNameSpecifierLoc, clang::MultiLevelTemplateArgumentList const&) (/lib/x86_64-linux-gnu/libclang-cpp.so.14+0x17af7de)
+#18 0x00007ff57e6ac3eb (/lib/x86_64-linux-gnu/libclang-cpp.so.14+0x17ef3eb)
+#19 0x00007ff57e6abac0 clang::Sema::InstantiateFunctionDefinition(clang::SourceLocation, clang::FunctionDecl*, bool, bool, bool) (/lib/x86_64-linux-gnu/libclang-cpp.so.14+0x17eeac0)
+#20 0x00007ff57e31cb38 (/lib/x86_64-linux-gnu/libclang-cpp.so.14+0x145fb38)
+#21 0x00007ff57dfd8bbc clang::Sema::runWithSufficientStackSpace(clang::SourceLocation, llvm::function_ref<void ()>) (/lib/x86_64-linux-gnu/libclang-cpp.so.14+0x111bbbc)
+#22 0x00007ff57e2a0cbb clang::Sema::MarkFunctionReferenced(clang::SourceLocation, clang::FunctionDecl*, bool) (/lib/x86_64-linux-gnu/libclang-cpp.so.14+0x13e3cbb)
+#23 0x00007ff57e3f7a04 (/lib/x86_64-linux-gnu/libclang-cpp.so.14+0x153aa04)
+#24 0x00007ff57e3f3b24 clang::InitializationSequence::Perform(clang::Sema&, clang::InitializedEntity const&, clang::InitializationKind const&, llvm::MutableArrayRef<clang::Expr*>, clang::QualType*) (/lib/x86_64-linux-gnu/libclang-cpp.so.14+0x1536b24)
+#25 0x00007ff57e34708c clang::Sema::BuildCXXTypeConstructExpr(clang::TypeSourceInfo*, clang::SourceLocation, llvm::MutableArrayRef<clang::Expr*>, clang::SourceLocation, bool) (/lib/x86_64-linux-gnu/libclang-cpp.so.14+0x148a08c)
+#26 0x00007ff57e6721d5 (/lib/x86_64-linux-gnu/libclang-cpp.so.14+0x17b51d5)
+#27 0x00007ff57e6723ef (/lib/x86_64-linux-gnu/libclang-cpp.so.14+0x17b53ef)
+#28 0x00007ff57e66bd57 (/lib/x86_64-linux-gnu/libclang-cpp.so.14+0x17aed57)
+#29 0x00007ff57e68e4b5 (/lib/x86_64-linux-gnu/libclang-cpp.so.14+0x17d14b5)
+#30 0x00007ff57e68253f (/lib/x86_64-linux-gnu/libclang-cpp.so.14+0x17c553f)
+#31 0x00007ff57e66a92c clang::Sema::SubstStmt(clang::Stmt*, clang::MultiLevelTemplateArgumentList const&) (/lib/x86_64-linux-gnu/libclang-cpp.so.14+0x17ad92c)
+#32 0x00007ff57e6abca8 clang::Sema::InstantiateFunctionDefinition(clang::SourceLocation, clang::FunctionDecl*, bool, bool, bool) (/lib/x86_64-linux-gnu/libclang-cpp.so.14+0x17eeca8)
+#33 0x00007ff57e6ae0d9 clang::Sema::PerformPendingInstantiations(bool) (/lib/x86_64-linux-gnu/libclang-cpp.so.14+0x17f10d9)
+#34 0x00007ff57dfda60b clang::Sema::ActOnEndOfTranslationUnitFragment(clang::Sema::TUFragmentKind) (/lib/x86_64-linux-gnu/libclang-cpp.so.14+0x111d60b)
+#35 0x00007ff57dfdac71 clang::Sema::ActOnEndOfTranslationUnit() (/lib/x86_64-linux-gnu/libclang-cpp.so.14+0x111dc71)
+#36 0x00007ff57d97ec96 clang::Parser::ParseTopLevelDecl(clang::OpaquePtr<clang::DeclGroupRef>&, bool) (/lib/x86_64-linux-gnu/libclang-cpp.so.14+0xac1c96)
+#37 0x00007ff57d8c18ed clang::ParseAST(clang::Sema&, bool, bool) (/lib/x86_64-linux-gnu/libclang-cpp.so.14+0xa048ed)
+#38 0x00007ff57ea35b71 clang::CodeGenAction::ExecuteAction() (/lib/x86_64-linux-gnu/libclang-cpp.so.14+0x1b78b71)
+#39 0x00007ff57f3d1b57 clang::FrontendAction::Execute() (/lib/x86_64-linux-gnu/libclang-cpp.so.14+0x2514b57)
+#40 0x00007ff57f3293a6 clang::CompilerInstance::ExecuteAction(clang::FrontendAction&) (/lib/x86_64-linux-gnu/libclang-cpp.so.14+0x246c3a6)
+#41 0x00007ff57f44b45b clang::ExecuteCompilerInvocation(clang::CompilerInstance*) (/lib/x86_64-linux-gnu/libclang-cpp.so.14+0x258e45b)
+#42 0x000000000041328b cc1_main(llvm::ArrayRef<char const*>, char const*, void*) (/usr/lib/llvm-14/bin/clang+0x41328b)
+#43 0x00000000004114bc (/usr/lib/llvm-14/bin/clang+0x4114bc)
+#44 0x00007ff57efa7ed2 (/lib/x86_64-linux-gnu/libclang-cpp.so.14+0x20eaed2)
+#45 0x00007ff577356b6d llvm::CrashRecoveryContext::RunSafely(llvm::function_ref<void ()>) (/lib/x86_64-linux-gnu/libLLVM-14.so.1+0xd6bb6d)
+#46 0x00007ff57efa79c0 clang::driver::CC1Command::Execute(llvm::ArrayRef<llvm::Optional<llvm::StringRef> >, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >*, bool*) const (/lib/x86_64-linux-gnu/libclang-cpp.so.14+0x20ea9c0)
+#47 0x00007ff57ef72183 clang::driver::Compilation::ExecuteCommand(clang::driver::Command const&, clang::driver::Command const*&) const (/lib/x86_64-linux-gnu/libclang-cpp.so.14+0x20b5183)
+#48 0x00007ff57ef7240a clang::driver::Compilation::ExecuteJobs(clang::driver::JobList const&, llvm::SmallVectorImpl<std::pair<int, clang::driver::Command const*> >&) const (/lib/x86_64-linux-gnu/libclang-cpp.so.14+0x20b540a)
+#49 0x00007ff57ef8c507 clang::driver::Driver::ExecuteCompilation(clang::driver::Compilation&, llvm::SmallVectorImpl<std::pair<int, clang::driver::Command const*> >&) (/lib/x86_64-linux-gnu/libclang-cpp.so.14+0x20cf507)
+#50 0x0000000000410f26 main (/usr/lib/llvm-14/bin/clang+0x410f26)
+#51 0x00007ff5760b9d90 __libc_start_call_main ./csu/../sysdeps/nptl/libc_start_call_main.h:58:16
+#52 0x00007ff5760b9e40 call_init ./csu/../csu/libc-start.c:128:20
+#53 0x00007ff5760b9e40 __libc_start_main ./csu/../csu/libc-start.c:379:5
+#54 0x000000000040e3b5 _start (/usr/lib/llvm-14/bin/clang+0x40e3b5)
+clang: error: clang frontend command failed with exit code 139 (use -v to see invocation)
+Ubuntu clang version 14.0.0-1ubuntu1
+Target: x86_64-pc-linux-gnu
+Thread model: posix
+InstalledDir: /usr/bin
+clang: note: diagnostic msg: 
+********************
+
+PLEASE ATTACH THE FOLLOWING FILES TO THE BUG REPORT:
+Preprocessed source(s) and associated run script(s) are located at:
+clang: note: diagnostic msg: /tmp/VariantValue-587e15.cpp
+clang: note: diagnostic msg: /tmp/VariantValue-587e15.sh
+clang: note: diagnostic msg: 
+
+********************
+make[4]: *** [/Sandbox/Stroika-Dev/ScriptsLib/SharedBuildRules-Default.mk:30: /Sandbox/Stroika-Dev/IntermediateFiles/clang++-14-debug-libc++-c++2b/Library/Foundation/DataExchange/VariantValue.o] Error 139
+make[4]: *** Waiting for unfinished jobs....
+      Compiling Library/Sources/Stroika/Foundation/Execution/SignalHandlers.cpp ... 
+^Cmake[4]: *** [/Sandbox/Stroika-Dev/ScriptsLib/SharedBuildRules-Default.mk:30: /Sandbox/Stroika-Dev/IntermediateFiles/clang++-14-debug-libc++-c++2b/Library/Foundation/Execution/SignalHandlers.o] Interrupt
+make[3]: *** [Makefile:100: Execution] Interrupt
+make[4]: *** [/Sandbox/Stroika-Dev/ScriptsLib/SharedBuildRules-Default.mk:30: /Sandbox/Stroika-Dev/IntermediateFiles/clang++-14-debug-libc++-c++2b/Library/Foundation/DataExchange/ObjectVariantMapper.o] Interrupt
+make[3]: *** [Makefile:100: DataExchange] Interrupt
+make[2]: *** [Makefile:107: all_objs_] Interrupt
+make[1]: *** [Makefile:20: 
+ */
+#ifndef qCompilerAndStdLib_template_ForwardDeclareWithConceptsInTypenameCrasher_Buggy
+
+#if defined(__clang__) && defined(__APPLE__)
+// Noticed broken in crapple-clang++14
+#define qCompilerAndStdLib_template_ForwardDeclareWithConceptsInTypenameCrasher_Buggy                                                      \
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 14))
+#elif defined(__clang__) && !defined(__APPLE__)
+// Noticed broken in -clang++14
+#define qCompilerAndStdLib_template_ForwardDeclareWithConceptsInTypenameCrasher_Buggy                                                      \
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 14))
+#else
+#define qCompilerAndStdLib_template_ForwardDeclareWithConceptsInTypenameCrasher_Buggy 0
 #endif
 
 #endif
