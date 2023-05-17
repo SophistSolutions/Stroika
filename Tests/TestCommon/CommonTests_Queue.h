@@ -44,7 +44,7 @@ namespace CommonTests {
         }
 
         namespace Test3_Equals {
-            template <typename CONCRETE_CONTAINER, typename EQUALS_COMPARER>
+            template <typename CONCRETE_CONTAINER, Common::IEqualsComparer<typename CONCRETE_CONTAINER::value_type> EQUALS_COMPARER>
             void DoAllTests_ ()
             {
                 CONCRETE_CONTAINER s;

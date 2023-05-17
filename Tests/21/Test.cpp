@@ -153,7 +153,7 @@ namespace {
 }
 
 namespace {
-    template <typename CONCRETE_SEQUENCE_T, typename EQUALS_COMPARER>
+    template <typename CONCRETE_SEQUENCE_T, Common::IEqualsComparer<typename CONCRETE_SEQUENCE_T::value_type> EQUALS_COMPARER>
     void SimpleSequenceTest_4_Equals_ ()
     {
         Debug::TraceContextBumper traceCtx{"{}::SimpleSequenceTest_4_Equals_ ()"};
@@ -667,7 +667,7 @@ namespace {
         SimpleSequenceTest_16_IteratorOwnerRespectedOnCopy_<CONCRETE_SEQUENCE_TYPE> ();
     }
 
-    template <typename CONCRETE_SEQUENCE_TYPE, typename EQUALS_COMPARER>
+    template <typename CONCRETE_SEQUENCE_TYPE, Common::IEqualsComparer<typename CONCRETE_SEQUENCE_TYPE::value_type> EQUALS_COMPARER>
     void SimpleSequenceTest_All_For_Type_ ()
     {
         Debug::TraceContextBumper traceCtx{"{}::SimpleSequenceTest_All_For_Type_ ()"};
@@ -811,7 +811,7 @@ namespace {
                     VerifyTestResult (false);
                 }
 #endif
-                auto cmp = [] (int l, int r) { return l % 3 == r % 3; };
+                auto cmp = Common::DeclareEqualsComparer ([] (int l, int r) { return l % 3 == r % 3; });
                 if (not Sequence<int>::EqualsComparer<decltype (cmp)>{cmp}(s1, s2)) {
                     VerifyTestResult (false);
                 }
@@ -854,7 +854,7 @@ namespace {
     {
         using COMPARE_SIZET       = equal_to<size_t>;
         using COMPARE_SimpleClass = equal_to<SimpleClass>;
-        struct COMPARE_SimpleClassWithoutComparisonOperators {
+        struct COMPARE_SimpleClassWithoutComparisonOperators : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eEquals> {
             using value_type = SimpleClassWithoutComparisonOperators;
             bool operator() (value_type v1, value_type v2) const { return v1.GetValue () == v2.GetValue (); }
         };

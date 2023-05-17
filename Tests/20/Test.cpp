@@ -32,7 +32,7 @@ namespace {
         CommonTests::QueueTests::SimpleQueueTest_All_NotRequiringEquals_For_Type<CONCRETE_CONTAINER, EQUALS_COMPARER> ();
     }
 
-    template <typename CONCRETE_CONTAINER, typename EQUALS_COMPARER>
+    template <typename CONCRETE_CONTAINER, Common::IEqualsComparer<typename CONCRETE_CONTAINER::value_type> EQUALS_COMPARER>
     void SimpleQueueTest_All_For_Type ()
     {
         CommonTests::QueueTests::SimpleQueueTest_All_For_Type<CONCRETE_CONTAINER, EQUALS_COMPARER> ();
@@ -44,7 +44,7 @@ namespace {
     {
         using COMPARE_SIZET       = std::equal_to<size_t>;
         using COMPARE_SimpleClass = std::equal_to<SimpleClass>;
-        struct COMPARE_SimpleClassWithoutComparisonOperators {
+        struct COMPARE_SimpleClassWithoutComparisonOperators : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eEquals> {
             using value_type = SimpleClassWithoutComparisonOperators;
             bool operator() (value_type v1, value_type v2) const { return v1.GetValue () == v2.GetValue (); }
         };

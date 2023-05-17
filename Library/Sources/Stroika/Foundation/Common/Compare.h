@@ -241,17 +241,17 @@ namespace Stroika::Foundation::Common {
      *  This doesn't require that that you've annotated the comparer, so it can false-positive (like mixing up
      *  an equality comparer for an in-order comparer).
      * 
-     *  \see EqualsComparer for something stricter
+     *  \see IEqualsComparer for something stricter
      */
     template <typename COMPARER, typename ARG_T>
-    concept PossiblyEqualsComparer = predicate<COMPARER, ARG_T, ARG_T>;
+    concept IPossiblyComparer = predicate<COMPARER, ARG_T, ARG_T>;
 
     /**
      *  Checks that the argument comparer compares values of type ARG_T, and returns an equals comparison result.
      * 
      *  This won't let confuse equal_to with actual in-order comparison functions.
      * 
-     *  \see PossiblyEqualsComparer, and use DeclareEqualsComparer to mark a given function as an in-order comparer.
+     *  \see IPossiblyComparer, and use DeclareEqualsComparer to mark a given function as an in-order comparer.
      * 
      *  \par Example Usage
      *      \code
@@ -267,7 +267,7 @@ namespace Stroika::Foundation::Common {
      *      \endcode
      */
     template <typename COMPARER, typename ARG_T>
-    concept IEqualsComparer = PossiblyEqualsComparer<COMPARER, ARG_T> and IsEqualsComparer<COMPARER, ARG_T> ();
+    concept IEqualsComparer = IPossiblyComparer<COMPARER, ARG_T> and IsEqualsComparer<COMPARER, ARG_T> ();
 
     /**
      *  \brief Checks (via ExtractComparisonTraits) if argument is a StictInOrder comparer - one that takes two arguments of type T, and returns a bool, and compares
@@ -379,7 +379,7 @@ namespace Stroika::Foundation::Common {
      *  This is done by querying the 'type' of the baseComparer with @see ExtractComparisonTraits, and mapping the logic accordingly.
      */
     template <typename BASE_COMPARER>
-    struct EqualsComparerAdapter {
+    struct EqualsComparerAdapter : ComparisonRelationDeclaration<ComparisonRelationType::eEquals> {
         /**
          */
         constexpr EqualsComparerAdapter (const BASE_COMPARER& baseComparer);
