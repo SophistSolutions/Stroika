@@ -382,9 +382,6 @@ namespace Stroika::Foundation::Traversal {
          *
          *  \em Performance:
          *      This algorithm is O(N)
-         *
-         *  @todo We DO want the check IsEqualsComparer() on these templates, but I've had trouble getting it to compile, and will be changing
-         *        that to the new C++20 style soon anyhow... LGP 2020-05-03
          */
         template <typename LHS_CONTAINER_TYPE, typename RHS_CONTAINER_TYPE, Common::IEqualsComparer<T> EQUALS_COMPARER = equal_to<T>,
                   enable_if_t<Configuration::IsIterable_v<RHS_CONTAINER_TYPE>>* = nullptr>
