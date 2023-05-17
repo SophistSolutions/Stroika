@@ -131,7 +131,7 @@ namespace Stroika::Foundation::Memory {
         InlineBuffer (const InlineBuffer<T, FROM_BUF_SIZE>& src);
         InlineBuffer (const InlineBuffer& src);
         InlineBuffer (InlineBuffer&& src);
-        template <typename ITERATOR_OF_T, enable_if_t<Configuration::IsIterator_v<ITERATOR_OF_T>, char>* = nullptr>
+        template <input_iterator ITERATOR_OF_T>
         InlineBuffer (ITERATOR_OF_T start, ITERATOR_OF_T end);
         template <IsSpanOfT<T> SPAN_T>
         InlineBuffer (const SPAN_T& copyFrom);

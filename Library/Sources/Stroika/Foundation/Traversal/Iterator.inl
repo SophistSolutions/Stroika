@@ -182,7 +182,7 @@ namespace Stroika::Foundation::Traversal {
     auto Iterator<T, ITERATOR_TRAITS>::operator++ (int) -> Iterator
     {
         Iterator<T, ITERATOR_TRAITS> result = *this;
-        this->                        operator++ ();
+        this->                       operator++ ();
         return result;
     }
     template <typename T, typename ITERATOR_TRAITS>

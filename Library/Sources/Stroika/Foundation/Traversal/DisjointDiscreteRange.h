@@ -49,14 +49,12 @@ namespace Stroika::Foundation::Traversal {
         DisjointDiscreteRange (const initializer_list<RangeType>& from);
         template <typename CONTAINER_OF_DISCRETERANGE_OF_T>
         explicit DisjointDiscreteRange (const CONTAINER_OF_DISCRETERANGE_OF_T& from);
-        template <typename COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T>
-        explicit DisjointDiscreteRange (
-            COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T start, COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T end,
-            enable_if_t<is_convertible_v<Configuration::ExtractValueType_t<COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T>, RangeType>, int>* = nullptr);
-        template <typename COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T>
-        explicit DisjointDiscreteRange (
-            COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T start, COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T end,
-            enable_if_t<is_convertible_v<Configuration::ExtractValueType_t<COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T>, value_type>, int>* = nullptr);
+        template <input_iterator COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T>
+        explicit DisjointDiscreteRange (COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T&& start, COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T&& end)
+            requires (is_convertible_v<Configuration::ExtractValueType_t<COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T>, RangeType>);
+        template <input_iterator COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T>
+        explicit DisjointDiscreteRange (COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T&& start, COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T&& end)
+            requires (is_convertible_v<Configuration::ExtractValueType_t<COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T>, value_type>);
 
     public:
         nonvirtual DisjointDiscreteRange& operator= (const DisjointDiscreteRange& rhs) = default;
@@ -64,7 +62,7 @@ namespace Stroika::Foundation::Traversal {
     public:
         /**
          */
-        nonvirtual void Add (value_type elt);
+        nonvirtual void Add (const value_type& elt);
 
     public:
         /**
@@ -110,7 +108,7 @@ namespace Stroika::Foundation::Traversal {
         /**
          *  Find the first element of the DisjointDiscreteRange that passes the argument function test.
          &&&& docs - assumes a bit that one subrange meeting criteria - fill in details
-            */
+         */
         nonvirtual optional<value_type> Find (const function<bool (value_type)>& that) const;
         nonvirtual optional<value_type> Find (const function<bool (value_type)>& that, const FindHints& hints) const;
 

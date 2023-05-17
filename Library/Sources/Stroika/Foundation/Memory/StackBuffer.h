@@ -137,7 +137,7 @@ namespace Stroika::Foundation::Memory {
             requires (is_trivially_copyable_v<T>);
         StackBuffer (const StackBuffer& src) = delete;
         StackBuffer (StackBuffer&& src)      = delete;
-        template <typename ITERATOR_OF_T, enable_if_t<Configuration::IsIterator_v<ITERATOR_OF_T>, char>* = nullptr>
+        template <input_iterator ITERATOR_OF_T>
         StackBuffer (ITERATOR_OF_T start, ITERATOR_OF_T end);
         template <IsSpanOfT<T> SPAN_T>
         StackBuffer (SPAN_T copyFrom);

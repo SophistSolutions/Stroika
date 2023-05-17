@@ -44,24 +44,24 @@ namespace Stroika::Foundation::Traversal {
                        is_convertible_v<Configuration::ExtractValueType_t<CONTAINER_OF_DISCRETERANGE_OF_T>, value_type>);
     }
     template <typename T, typename RANGE_TYPE>
-    template <typename COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T>
-    DisjointDiscreteRange<T, RANGE_TYPE>::DisjointDiscreteRange (
-        COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T start, COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T end,
-        enable_if_t<is_convertible_v<Configuration::ExtractValueType_t<COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T>, RangeType>, int>*)
-        : inherited{start, end}
+    template <input_iterator COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T>
+    DisjointDiscreteRange<T, RANGE_TYPE>::DisjointDiscreteRange (COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T&& start,
+                                                                 COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T&& end)
+        requires (is_convertible_v<Configuration::ExtractValueType_t<COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T>, RangeType>)
+        : inherited{forward<COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T> (start), forward<COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T> (end)}
     {
-        static_assert (is_convertible_v<Configuration::ExtractValueType_t<COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T>, RangeType>);
     }
     template <typename T, typename RANGE_TYPE>
-    template <typename COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T>
-    DisjointDiscreteRange<T, RANGE_TYPE>::DisjointDiscreteRange (
-        COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T start, COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T end,
-        enable_if_t<is_convertible_v<Configuration::ExtractValueType_t<COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T>, value_type>, int>*)
+    template <input_iterator COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T>
+    DisjointDiscreteRange<T, RANGE_TYPE>::DisjointDiscreteRange (COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T&& start,
+                                                                 COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T&& end)
+        requires (is_convertible_v<Configuration::ExtractValueType_t<COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T>, value_type>)
     {
         static_assert (is_convertible_v<Configuration::ExtractValueType_t<COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T>, value_type>);
         static_assert (Configuration::IsIterator_v<COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T>);
         Containers::Sequence<RangeType>   srs{};
-        Containers::SortedSet<value_type> ss{start, end};
+        Containers::SortedSet<value_type> ss{forward<COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T> (start),
+                                             forward<COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T> (end)};
         value_type                        startAt{};
         optional<value_type>              endAt;
         for (const value_type& i : ss) {
@@ -86,7 +86,7 @@ namespace Stroika::Foundation::Traversal {
         *this = move (THIS_CLASS_{srs});
     }
     template <typename T, typename RANGE_TYPE>
-    void DisjointDiscreteRange<T, RANGE_TYPE>::Add (value_type elt)
+    void DisjointDiscreteRange<T, RANGE_TYPE>::Add (const value_type& elt)
     {
         Containers::Sequence<RangeType> srs{this->SubRanges ()};
         // Walk list, and if new item < than a given, either extend or insert. If contained, we have nothing todo
