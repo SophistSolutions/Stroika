@@ -33,6 +33,7 @@
 
 namespace Stroika::Foundation::Containers {
 
+    using Common::IEqualsComparer;
     using Common::KeyValuePair;
     using Configuration::ArgByValueType;
     using Configuration::ExtractValueType_t;
@@ -128,11 +129,11 @@ namespace Stroika::Foundation::Containers {
     public:
         /**
          *  This is the type returned by GetKeyEqualsComparer () and CAN be used as the argument to a Mapping<> as KeyEqualityComparer, but
-         *  we allow any template in the Mapping<> CTOR for a keyEqualityComparer that follows the Common::EqualsComparer concept.
+         *  we allow any template in the Mapping<> CTOR for a keyEqualityComparer that follows the IEqualsComparer concept.
          */
         using KeyEqualsCompareFunctionType =
             Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eEquals, function<bool (key_type, key_type)>>;
-        static_assert (Common::EqualsComparer<KeyEqualsCompareFunctionType, key_type>);
+        static_assert (IEqualsComparer<KeyEqualsCompareFunctionType, key_type>);
 
     public:
         /**
@@ -171,21 +172,21 @@ namespace Stroika::Foundation::Containers {
          *  \note   <a href="ReadMe.md#Container Constructors">See general information about container constructors that applies here</a>
          */
         Mapping ();
-        template <Common::EqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER>
+        template <IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER>
         explicit Mapping (KEY_EQUALS_COMPARER&& keyEqualsComparer);
         Mapping (Mapping&& src) noexcept      = default;
         Mapping (const Mapping& src) noexcept = default;
         Mapping (const initializer_list<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src);
-        template <Common::EqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER>
+        template <IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER>
         Mapping (KEY_EQUALS_COMPARER&& keyEqualsComparer, const initializer_list<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src);
         template <typename ITERABLE_OF_ADDABLE,
                   enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and not is_base_of_v<Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>, decay_t<ITERABLE_OF_ADDABLE>>>* = nullptr>
         explicit Mapping (ITERABLE_OF_ADDABLE&& src);
-        template <Common::EqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER, typename ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>>* = nullptr>
+        template <IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER, typename ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>>* = nullptr>
         Mapping (KEY_EQUALS_COMPARER&& keyEqualsComparer, ITERABLE_OF_ADDABLE&& src);
         template <input_iterator ITERATOR_OF_ADDABLE>
         Mapping (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
-        template <Common::EqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER, input_iterator ITERATOR_OF_ADDABLE>
+        template <IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER, input_iterator ITERATOR_OF_ADDABLE>
         Mapping (KEY_EQUALS_COMPARER&& keyEqualsComparer, ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
 
     protected:

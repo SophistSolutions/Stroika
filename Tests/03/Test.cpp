@@ -189,8 +189,8 @@ namespace {
     namespace Test4_Compare_ {
         void DoIt ()
         {
-            static_assert (EqualsComparer<equal_to<int>, int>);
-            static_assert (not EqualsComparer<less<int>, int>);
+            static_assert (IEqualsComparer<equal_to<int>, int>);
+            static_assert (not IEqualsComparer<less<int>, int>);
         }
     }
 }

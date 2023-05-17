@@ -49,6 +49,7 @@
 namespace Stroika::Foundation::Containers {
 
     using Common::CountedValue;
+    using Common::IEqualsComparer;
     using Configuration::ArgByValueType;
     using Configuration::ExtractValueType_t;
     using Traversal::Iterable;
@@ -138,7 +139,7 @@ namespace Stroika::Foundation::Containers {
     public:
         /**
          *  This is the type returned by GetElementEqualsComparer () and CAN be used as the argument to a MultiSet<> as EqualityComparer, but
-         *  we allow any template in the Set<> CTOR for an equalityComparer that follows the Common::IsEqualsComparer () concept (need better name).
+         *  we allow any template in the Set<> CTOR for an equalityComparer that follows the EqualsComparer concept.
          */
         using ElementEqualityComparerType = Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eEquals, function<bool (T, T)>>;
 
@@ -157,7 +158,7 @@ namespace Stroika::Foundation::Containers {
          *  \note For efficiency sake, the base constructor takes a templated EQUALS_COMPARER (avoiding translation to function<bool(T,T)>>, but
          *        for simplicity sake, many of the other constructors force that conversion.
          *
-         * \req IsEqualsComparer<EQUALS_COMPARER> () - for constructors with that type parameter
+         * \req IEqualsComparer<EQUALS_COMPARER> - for constructors with that type parameter
          * 
          *  \note   <a href="ReadMe.md#Container Constructors">See general information about container constructors that applies here</a>
          *
@@ -178,25 +179,24 @@ namespace Stroika::Foundation::Containers {
          *      \endcode
          */
         MultiSet ();
-        template <typename EQUALS_COMPARER, enable_if_t<Common::IsEqualsComparer<EQUALS_COMPARER, T> ()>* = nullptr>
+        template <IEqualsComparer<T> EQUALS_COMPARER>
         explicit MultiSet (EQUALS_COMPARER&& equalsComparer);
         MultiSet (MultiSet&& src) noexcept      = default;
         MultiSet (const MultiSet& src) noexcept = default;
         MultiSet (const initializer_list<T>& src);
-        template <typename EQUALS_COMPARER, enable_if_t<Common::IsEqualsComparer<EQUALS_COMPARER, T> ()>* = nullptr>
+        template <IEqualsComparer<T> EQUALS_COMPARER>
         MultiSet (EQUALS_COMPARER&& equalsComparer, const initializer_list<T>& src);
         MultiSet (const initializer_list<value_type>& src);
-        template <typename EQUALS_COMPARER, enable_if_t<Common::IsEqualsComparer<EQUALS_COMPARER, T> ()>* = nullptr>
+        template <IEqualsComparer<T> EQUALS_COMPARER>
         MultiSet (EQUALS_COMPARER&& equalsComparer, const initializer_list<value_type>& src);
         template <typename ITERABLE_OF_ADDABLE,
                   enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and not is_base_of_v<MultiSet<T, TRAITS>, decay_t<ITERABLE_OF_ADDABLE>>>* = nullptr>
         explicit MultiSet (ITERABLE_OF_ADDABLE&& src);
-        template <typename EQUALS_COMPARER, typename ITERABLE_OF_ADDABLE,
-                  enable_if_t<Common::IsEqualsComparer<EQUALS_COMPARER, T> () and Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>>* = nullptr>
+        template <IEqualsComparer<T> EQUALS_COMPARER, typename ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>>* = nullptr>
         MultiSet (EQUALS_COMPARER&& equalsComparer, ITERABLE_OF_ADDABLE&& src);
         template <input_iterator ITERATOR_OF_ADDABLE>
         MultiSet (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
-        template <typename EQUALS_COMPARER, input_iterator ITERATOR_OF_ADDABLE, enable_if_t<Common::IsEqualsComparer<EQUALS_COMPARER, T> ()>* = nullptr>
+        template <IEqualsComparer<T> EQUALS_COMPARER, input_iterator ITERATOR_OF_ADDABLE>
         MultiSet (EQUALS_COMPARER&& equalsComparer, ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
 
     protected:

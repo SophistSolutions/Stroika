@@ -255,19 +255,19 @@ namespace Stroika::Foundation::Common {
      * 
      *  \par Example Usage
      *      \code
-     *          static_assert (EqualsComparer<equal_to<int>, int>);
-     *          static_assert (not EqualsComparer<less<int>, int>);
+     *          static_assert (IEqualsComparer<equal_to<int>, int>);
+     *          static_assert (not IEqualsComparer<less<int>, int>);
      *      \endcode
      * 
      *  \par Example Usage
      *      \code
-     *          template <Common::EqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER = equal_to<KEY_TYPE>>
+     *          template <IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER = equal_to<KEY_TYPE>>
      *          KeyedCollection (KEY_EQUALS_COMPARER&& keyComparer = KEY_EQUALS_COMPARER{})
      *          ...
      *      \endcode
      */
     template <typename COMPARER, typename ARG_T>
-    concept EqualsComparer = PossiblyEqualsComparer<COMPARER, ARG_T> and IsEqualsComparer<COMPARER, ARG_T> ();
+    concept IEqualsComparer = PossiblyEqualsComparer<COMPARER, ARG_T> and IsEqualsComparer<COMPARER, ARG_T> ();
 
     /**
      *  \brief Checks (via ExtractComparisonTraits) if argument is a StictInOrder comparer - one that takes two arguments of type T, and returns a bool, and compares
