@@ -265,11 +265,11 @@ namespace Stroika::Foundation::Containers {
         _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().Add (item.fValue, item.fCount);
     }
     template <typename T, typename TRAITS>
-    template <typename ITERATOR_OF_ADDABLE>
+    template <input_iterator ITERATOR_OF_ADDABLE>
     void MultiSet<T, TRAITS>::AddAll (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
     {
         static_assert (IsAddable_v<ExtractValueType_t<ITERATOR_OF_ADDABLE>>);
-        for (ITERATOR_OF_ADDABLE i = forward<ITERATOR_OF_ADDABLE> (start); i != end; ++i) {
+        for (ITERATOR_OF_ADDABLE i = forward<ITERATOR_OF_ADDABLE> (start); i != forward<ITERATOR_OF_ADDABLE> (end); ++i) {
             Add (*i);
         }
     }

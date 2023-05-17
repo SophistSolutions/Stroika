@@ -312,11 +312,11 @@ namespace Stroika::Foundation::Containers {
         }
     }
     template <typename DOMAIN_TYPE, typename RANGE_TYPE>
-    template <typename COPY_FROM_ITERATOR_KEYVALUE>
-    void Bijection<DOMAIN_TYPE, RANGE_TYPE>::AddAll (COPY_FROM_ITERATOR_KEYVALUE start, COPY_FROM_ITERATOR_KEYVALUE end)
+    template <input_iterator COPY_FROM_ITERATOR_KEYVALUE>
+    void Bijection<DOMAIN_TYPE, RANGE_TYPE>::AddAll (COPY_FROM_ITERATOR_KEYVALUE&& start, COPY_FROM_ITERATOR_KEYVALUE&& end)
     {
         static_assert (IsAddable_v<ExtractValueType_t<COPY_FROM_ITERATOR_KEYVALUE>>);
-        for (auto i = start; i != end; ++i) {
+        for (auto i = forward<COPY_FROM_ITERATOR_KEYVALUE> (start); i != forward<COPY_FROM_ITERATOR_KEYVALUE> (end); ++i) {
             Add (*i);
         }
     }

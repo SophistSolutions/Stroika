@@ -389,8 +389,8 @@ namespace Stroika::Foundation::Containers {
          */
         template <typename CONTAINER_OF_KEYVALUE>
         nonvirtual void AddAll (const CONTAINER_OF_KEYVALUE& items);
-        template <typename COPY_FROM_ITERATOR_KEYVALUE>
-        nonvirtual void AddAll (COPY_FROM_ITERATOR_KEYVALUE start, COPY_FROM_ITERATOR_KEYVALUE end);
+        template <input_iterator COPY_FROM_ITERATOR_KEYVALUE>
+        nonvirtual void AddAll (COPY_FROM_ITERATOR_KEYVALUE&& start, COPY_FROM_ITERATOR_KEYVALUE&& end);
 
     public:
         /**

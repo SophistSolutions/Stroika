@@ -200,7 +200,7 @@ namespace Stroika::Foundation::Containers {
     {
         static_assert (IsAddable_v<ExtractValueType_t<ITERATOR_OF_ADDABLE>>);
         unsigned int cntAdded{};
-        for (auto i = forward<ITERATOR_OF_ADDABLE> (start); i != end; ++i) {
+        for (auto i = forward<ITERATOR_OF_ADDABLE> (start); i != forward<ITERATOR_OF_ADDABLE> (end); ++i) {
             if (Add (*i, addReplaceMode)) {
                 ++cntAdded;
             }

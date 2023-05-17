@@ -72,12 +72,12 @@ namespace Stroika::Foundation::Containers {
         return this->Find (item, forward<EQUALS_COMPARER> (equalsComparer)) != this->end ();
     }
     template <typename T>
-    template <typename ITERATOR_OF_ADDABLE>
+    template <input_iterator ITERATOR_OF_ADDABLE>
     void Collection<T>::AddAll (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
     {
         static_assert (IsAddable_v<ExtractValueType_t<ITERATOR_OF_ADDABLE>>);
         _SafeReadWriteRepAccessor<_IRep> tmp{this};
-        for (auto i = forward<ITERATOR_OF_ADDABLE> (start); i != end; ++i) {
+        for (auto i = forward<ITERATOR_OF_ADDABLE> (start); i != forward<ITERATOR_OF_ADDABLE> (end); ++i) {
             tmp._GetWriteableRep ().Add (*i);
         }
     }
