@@ -31,7 +31,7 @@ namespace Stroika::Foundation::Containers::Concrete {
      ********************************************************************************
      */
     template <typename DOMAIN_TYPE, typename RANGE_TYPE>
-    template <typename DOMAIN_EQUALS_COMPARER, typename RANGE_EQUALS_COMPARER>
+    template <IEqualsComparer<DOMAIN_TYPE> DOMAIN_EQUALS_COMPARER, IEqualsComparer<RANGE_TYPE> RANGE_EQUALS_COMPARER>
     class Bijection_LinkedList<DOMAIN_TYPE, RANGE_TYPE>::Rep_
         : public IImplRepBase_,
           public Memory::UseBlockAllocationIfAppropriate<Rep_<DOMAIN_EQUALS_COMPARER, RANGE_EQUALS_COMPARER>> {
@@ -249,8 +249,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         AssertRepValidType_ ();
     }
     template <typename DOMAIN_TYPE, typename RANGE_TYPE>
-    template <typename DOMAIN_EQUALS_COMPARER, typename RANGE_EQUALS_COMPARER,
-              enable_if_t<Common::IsEqualsComparer<DOMAIN_EQUALS_COMPARER, DOMAIN_TYPE> () and Common::IsEqualsComparer<RANGE_EQUALS_COMPARER, RANGE_TYPE> ()>*>
+    template <IEqualsComparer<DOMAIN_TYPE> DOMAIN_EQUALS_COMPARER, IEqualsComparer<RANGE_TYPE> RANGE_EQUALS_COMPARER>
     inline Bijection_LinkedList<DOMAIN_TYPE, RANGE_TYPE>::Bijection_LinkedList (DOMAIN_EQUALS_COMPARER&& domainEqualsComparer,
                                                                                 RANGE_EQUALS_COMPARER&&  rangeEqualsComparer)
         : Bijection_LinkedList{DataExchange::ValidationStrategy::eAssertion, forward<DOMAIN_EQUALS_COMPARER> (domainEqualsComparer),
@@ -259,8 +258,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         AssertRepValidType_ ();
     }
     template <typename DOMAIN_TYPE, typename RANGE_TYPE>
-    template <typename DOMAIN_EQUALS_COMPARER, typename RANGE_EQUALS_COMPARER,
-              enable_if_t<Common::IsEqualsComparer<DOMAIN_EQUALS_COMPARER, DOMAIN_TYPE> () and Common::IsEqualsComparer<RANGE_EQUALS_COMPARER, RANGE_TYPE> ()>*>
+    template <IEqualsComparer<DOMAIN_TYPE> DOMAIN_EQUALS_COMPARER, IEqualsComparer<RANGE_TYPE> RANGE_EQUALS_COMPARER>
     inline Bijection_LinkedList<DOMAIN_TYPE, RANGE_TYPE>::Bijection_LinkedList (DataExchange::ValidationStrategy injectivityCheckPolicy,
                                                                                 DOMAIN_EQUALS_COMPARER&&         domainEqualsComparer,
                                                                                 RANGE_EQUALS_COMPARER&&          rangeEqualsComparer)
@@ -276,8 +274,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         AssertRepValidType_ ();
     }
     template <typename DOMAIN_TYPE, typename RANGE_TYPE>
-    template <typename DOMAIN_EQUALS_COMPARER, typename RANGE_EQUALS_COMPARER,
-              enable_if_t<Common::IsEqualsComparer<DOMAIN_EQUALS_COMPARER, DOMAIN_TYPE> () and Common::IsEqualsComparer<RANGE_EQUALS_COMPARER, RANGE_TYPE> ()>*>
+    template <IEqualsComparer<DOMAIN_TYPE> DOMAIN_EQUALS_COMPARER, IEqualsComparer<RANGE_TYPE> RANGE_EQUALS_COMPARER>
     inline Bijection_LinkedList<DOMAIN_TYPE, RANGE_TYPE>::Bijection_LinkedList (DOMAIN_EQUALS_COMPARER&&            domainEqualsComparer,
                                                                                 RANGE_EQUALS_COMPARER&&             rangeEqualsComparer,
                                                                                 const initializer_list<value_type>& src)
@@ -297,9 +294,8 @@ namespace Stroika::Foundation::Containers::Concrete {
         AssertRepValidType_ ();
     }
     template <typename DOMAIN_TYPE, typename RANGE_TYPE>
-    template <typename DOMAIN_EQUALS_COMPARER, typename RANGE_EQUALS_COMPARER, typename ITERABLE_OF_ADDABLE,
-              enable_if_t<Common::IsEqualsComparer<DOMAIN_EQUALS_COMPARER, DOMAIN_TYPE> () and
-                          Common::IsEqualsComparer<RANGE_EQUALS_COMPARER, RANGE_TYPE> () and Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>>*>
+    template <IEqualsComparer<DOMAIN_TYPE> DOMAIN_EQUALS_COMPARER, IEqualsComparer<RANGE_TYPE> RANGE_EQUALS_COMPARER,
+              typename ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>>*>
     inline Bijection_LinkedList<DOMAIN_TYPE, RANGE_TYPE>::Bijection_LinkedList (DOMAIN_EQUALS_COMPARER&& domainEqualsComparer,
                                                                                 RANGE_EQUALS_COMPARER&& rangeEqualsComparer, ITERABLE_OF_ADDABLE&& src)
         : Bijection_LinkedList{forward<DOMAIN_EQUALS_COMPARER> (domainEqualsComparer), forward<RANGE_EQUALS_COMPARER> (rangeEqualsComparer)}
@@ -318,8 +314,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         AssertRepValidType_ ();
     }
     template <typename DOMAIN_TYPE, typename RANGE_TYPE>
-    template <typename DOMAIN_EQUALS_COMPARER, typename RANGE_EQUALS_COMPARER, input_iterator ITERATOR_OF_ADDABLE,
-              enable_if_t<Common::IsEqualsComparer<DOMAIN_EQUALS_COMPARER, DOMAIN_TYPE> () and Common::IsEqualsComparer<RANGE_EQUALS_COMPARER, RANGE_TYPE> ()>*>
+    template <IEqualsComparer<DOMAIN_TYPE> DOMAIN_EQUALS_COMPARER, IEqualsComparer<RANGE_TYPE> RANGE_EQUALS_COMPARER, input_iterator ITERATOR_OF_ADDABLE>
     Bijection_LinkedList<DOMAIN_TYPE, RANGE_TYPE>::Bijection_LinkedList (DOMAIN_EQUALS_COMPARER&& domainEqualsComparer,
                                                                          RANGE_EQUALS_COMPARER&&  rangeEqualsComparer,
                                                                          ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)

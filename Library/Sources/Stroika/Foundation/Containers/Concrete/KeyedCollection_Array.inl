@@ -25,7 +25,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     /*
      */
     template <typename T, typename KEY_TYPE, typename TRAITS>
-    template <typename KEY_EQUALS_COMPARER>
+    template <IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER>
     class KeyedCollection_Array<T, KEY_TYPE, TRAITS>::Rep_ : public IImplRep_,
                                                              public Memory::UseBlockAllocationIfAppropriate<Rep_<KEY_EQUALS_COMPARER>> {
     private:
@@ -181,23 +181,22 @@ namespace Stroika::Foundation::Containers::Concrete {
      ********************************************************************************
      */
     template <typename T, typename KEY_TYPE, typename TRAITS>
-    template <typename KEY_EQUALS_COMPARER, enable_if_t<Common::IsEqualsComparer<KEY_EQUALS_COMPARER, KEY_TYPE> ()>*>
+    template <IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER>
     inline KeyedCollection_Array<T, KEY_TYPE, TRAITS>::KeyedCollection_Array (KEY_EQUALS_COMPARER&& keyComparer)
         : KeyedCollection_Array{KeyExtractorType{}, forward<KEY_EQUALS_COMPARER> (keyComparer)}
     {
         AssertRepValidType_ ();
     }
     template <typename T, typename KEY_TYPE, typename TRAITS>
-    template <typename KEY_EQUALS_COMPARER, enable_if_t<Common::IsEqualsComparer<KEY_EQUALS_COMPARER, KEY_TYPE> ()>*>
+    template <IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER>
     inline KeyedCollection_Array<T, KEY_TYPE, TRAITS>::KeyedCollection_Array (const KeyExtractorType& keyExtractor, KEY_EQUALS_COMPARER&& keyComparer)
         : inherited{Memory::MakeSharedPtr<Rep_<KEY_EQUALS_COMPARER>> (keyExtractor, forward<KEY_EQUALS_COMPARER> (keyComparer))}
     {
         AssertRepValidType_ ();
     }
     template <typename T, typename KEY_TYPE, typename TRAITS>
-    template <typename ITERABLE_OF_ADDABLE, typename KEY_EQUALS_COMPARER,
-              enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and not is_base_of_v<KeyedCollection_Array<T, KEY_TYPE, TRAITS>, decay_t<ITERABLE_OF_ADDABLE>> and
-                          Common::IsEqualsComparer<KEY_EQUALS_COMPARER, KEY_TYPE> ()>*>
+    template <typename ITERABLE_OF_ADDABLE, IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER,
+              enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and not is_base_of_v<KeyedCollection_Array<T, KEY_TYPE, TRAITS>, decay_t<ITERABLE_OF_ADDABLE>>>*>
     inline KeyedCollection_Array<T, KEY_TYPE, TRAITS>::KeyedCollection_Array (ITERABLE_OF_ADDABLE&& src)
         : KeyedCollection_Array{KeyExtractorType{}, equal_to<KEY_TYPE>{}}
     {
@@ -206,9 +205,8 @@ namespace Stroika::Foundation::Containers::Concrete {
         AssertRepValidType_ ();
     }
     template <typename T, typename KEY_TYPE, typename TRAITS>
-    template <typename ITERABLE_OF_ADDABLE, typename KEY_EQUALS_COMPARER,
-              enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and not is_base_of_v<KeyedCollection_Array<T, KEY_TYPE, TRAITS>, decay_t<ITERABLE_OF_ADDABLE>> and
-                          Common::IsEqualsComparer<KEY_EQUALS_COMPARER, KEY_TYPE> ()>*>
+    template <typename ITERABLE_OF_ADDABLE, IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER,
+              enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and not is_base_of_v<KeyedCollection_Array<T, KEY_TYPE, TRAITS>, decay_t<ITERABLE_OF_ADDABLE>>>*>
     inline KeyedCollection_Array<T, KEY_TYPE, TRAITS>::KeyedCollection_Array (KEY_EQUALS_COMPARER&& keyComparer, ITERABLE_OF_ADDABLE&& src)
         : KeyedCollection_Array{KeyExtractorType{}, forward<KEY_EQUALS_COMPARER> (keyComparer)}
     {
@@ -217,8 +215,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         AssertRepValidType_ ();
     }
     template <typename T, typename KEY_TYPE, typename TRAITS>
-    template <typename KEY_EQUALS_COMPARER, typename ITERABLE_OF_ADDABLE,
-              enable_if_t<Common::IsEqualsComparer<KEY_EQUALS_COMPARER, KEY_TYPE> () and Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>>*>
+    template <IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER, typename ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>>*>
     inline KeyedCollection_Array<T, KEY_TYPE, TRAITS>::KeyedCollection_Array (const KeyExtractorType& keyExtractor,
                                                                               KEY_EQUALS_COMPARER&& keyComparer, ITERABLE_OF_ADDABLE&& src)
         : KeyedCollection_Array{keyExtractor, forward<KEY_EQUALS_COMPARER> (keyComparer)}
@@ -228,7 +225,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         AssertRepValidType_ ();
     }
     template <typename T, typename KEY_TYPE, typename TRAITS>
-    template <input_iterator ITERATOR_OF_ADDABLE, typename KEY_EQUALS_COMPARER, enable_if_t<Common::IsEqualsComparer<KEY_EQUALS_COMPARER, KEY_TYPE> ()>*>
+    template <input_iterator ITERATOR_OF_ADDABLE, IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER>
     KeyedCollection_Array<T, KEY_TYPE, TRAITS>::KeyedCollection_Array (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
         : KeyedCollection_Array{KeyExtractorType{}, KEY_EQUALS_COMPARER{}}
     {
@@ -237,7 +234,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         AssertRepValidType_ ();
     }
     template <typename T, typename KEY_TYPE, typename TRAITS>
-    template <input_iterator ITERATOR_OF_ADDABLE, typename KEY_EQUALS_COMPARER, enable_if_t<Common::IsEqualsComparer<KEY_EQUALS_COMPARER, KEY_TYPE> ()>*>
+    template <input_iterator ITERATOR_OF_ADDABLE, IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER>
     KeyedCollection_Array<T, KEY_TYPE, TRAITS>::KeyedCollection_Array (KEY_EQUALS_COMPARER&& keyComparer, ITERATOR_OF_ADDABLE&& start,
                                                                        ITERATOR_OF_ADDABLE&& end)
         : KeyedCollection_Array{KeyExtractorType{}, forward<KEY_EQUALS_COMPARER> (keyComparer)}
@@ -247,7 +244,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         AssertRepValidType_ ();
     }
     template <typename T, typename KEY_TYPE, typename TRAITS>
-    template <typename KEY_EQUALS_COMPARER, input_iterator ITERATOR_OF_ADDABLE, enable_if_t<Common::IsEqualsComparer<KEY_EQUALS_COMPARER, KEY_TYPE> ()>*>
+    template <IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER, input_iterator ITERATOR_OF_ADDABLE>
     KeyedCollection_Array<T, KEY_TYPE, TRAITS>::KeyedCollection_Array (const KeyExtractorType& keyExtractor, KEY_EQUALS_COMPARER&& keyComparer,
                                                                        ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
         : KeyedCollection_Array{keyExtractor, forward<KEY_EQUALS_COMPARER> (keyComparer)}

@@ -50,30 +50,25 @@ namespace Stroika::Foundation::Containers::Concrete {
         /**
          *  \see docs on KeyedCollection<> constructor
          */
-        template <typename KEY_EQUALS_COMPARER = equal_to<KEY_TYPE>, enable_if_t<Common::IsEqualsComparer<KEY_EQUALS_COMPARER, KEY_TYPE> ()>* = nullptr>
+        template <IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER = equal_to<KEY_TYPE>>
         KeyedCollection_LinkedList (KEY_EQUALS_COMPARER&& keyComparer = KEY_EQUALS_COMPARER{});
         KeyedCollection_LinkedList (KeyedCollection_LinkedList&& src) noexcept      = default;
         KeyedCollection_LinkedList (const KeyedCollection_LinkedList& src) noexcept = default;
-        template <typename KEY_EQUALS_COMPARER = equal_to<KEY_TYPE>, enable_if_t<Common::IsEqualsComparer<KEY_EQUALS_COMPARER, KEY_TYPE> ()>* = nullptr>
+        template <IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER = equal_to<KEY_TYPE>>
         KeyedCollection_LinkedList (const KeyExtractorType& keyExtractor, KEY_EQUALS_COMPARER&& keyComparer = KEY_EQUALS_COMPARER{});
-        template <typename ITERABLE_OF_ADDABLE, typename KEY_EQUALS_COMPARER = equal_to<KEY_TYPE>,
-                  enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and not is_base_of_v<KeyedCollection_LinkedList<T, KEY_TYPE, TRAITS>, decay_t<ITERABLE_OF_ADDABLE>> and
-                              Common::IsEqualsComparer<KEY_EQUALS_COMPARER, KEY_TYPE> ()>* = nullptr>
+        template <typename ITERABLE_OF_ADDABLE, IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER = equal_to<KEY_TYPE>,
+                  enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and not is_base_of_v<KeyedCollection_LinkedList<T, KEY_TYPE, TRAITS>, decay_t<ITERABLE_OF_ADDABLE>>>* = nullptr>
         KeyedCollection_LinkedList (ITERABLE_OF_ADDABLE&& src);
-        template <typename ITERABLE_OF_ADDABLE, typename KEY_EQUALS_COMPARER = equal_to<KEY_TYPE>,
-                  enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and not is_base_of_v<KeyedCollection_LinkedList<T, KEY_TYPE, TRAITS>, decay_t<ITERABLE_OF_ADDABLE>> and
-                              Common::IsEqualsComparer<KEY_EQUALS_COMPARER, KEY_TYPE> ()>* = nullptr>
+        template <typename ITERABLE_OF_ADDABLE, IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER = equal_to<KEY_TYPE>,
+                  enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and not is_base_of_v<KeyedCollection_LinkedList<T, KEY_TYPE, TRAITS>, decay_t<ITERABLE_OF_ADDABLE>>>* = nullptr>
         KeyedCollection_LinkedList (KEY_EQUALS_COMPARER&& keyComparer, ITERABLE_OF_ADDABLE&& src);
-        template <typename KEY_EQUALS_COMPARER, typename ITERABLE_OF_ADDABLE,
-                  enable_if_t<Common::IsEqualsComparer<KEY_EQUALS_COMPARER, KEY_TYPE> () and Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>>* = nullptr>
+        template <IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER, typename ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>>* = nullptr>
         KeyedCollection_LinkedList (const KeyExtractorType& keyExtractor, KEY_EQUALS_COMPARER&& keyComparer, ITERABLE_OF_ADDABLE&& src);
-        template <input_iterator ITERATOR_OF_ADDABLE, typename KEY_EQUALS_COMPARER = equal_to<KEY_TYPE>,
-                  enable_if_t<Common::IsEqualsComparer<KEY_EQUALS_COMPARER, KEY_TYPE> ()>* = nullptr>
+        template <input_iterator ITERATOR_OF_ADDABLE, IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER = equal_to<KEY_TYPE>>
         KeyedCollection_LinkedList (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
-        template <input_iterator ITERATOR_OF_ADDABLE, typename KEY_EQUALS_COMPARER = equal_to<KEY_TYPE>,
-                  enable_if_t<Common::IsEqualsComparer<KEY_EQUALS_COMPARER, KEY_TYPE> ()>* = nullptr>
+        template <input_iterator ITERATOR_OF_ADDABLE, IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER = equal_to<KEY_TYPE>>
         KeyedCollection_LinkedList (KEY_EQUALS_COMPARER&& keyComparer, ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
-        template <typename KEY_EQUALS_COMPARER, input_iterator ITERATOR_OF_ADDABLE, enable_if_t<Common::IsEqualsComparer<KEY_EQUALS_COMPARER, KEY_TYPE> ()>* = nullptr>
+        template <IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER, input_iterator ITERATOR_OF_ADDABLE>
         KeyedCollection_LinkedList (const KeyExtractorType& keyExtractor, KEY_EQUALS_COMPARER&& keyComparer, ITERATOR_OF_ADDABLE&& start,
                                     ITERATOR_OF_ADDABLE&& end);
 
@@ -83,7 +78,7 @@ namespace Stroika::Foundation::Containers::Concrete {
 
     private:
         class IImplRep_;
-        template <typename KEY_EQUALS_COMPARER>
+        template <IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER>
         class Rep_;
 
     private:
