@@ -38,8 +38,7 @@ namespace Stroika::Foundation::Containers {
         _AssertRepValidType ();
     }
     template <typename DOMAIN_TYPE, typename RANGE_TYPE>
-    template <typename DOMAIN_EQUALS_COMPARER, typename RANGE_EQUALS_COMPARER,
-              enable_if_t<Common::IsEqualsComparer<DOMAIN_EQUALS_COMPARER, DOMAIN_TYPE> () and Common::IsEqualsComparer<RANGE_EQUALS_COMPARER, RANGE_TYPE> ()>*>
+    template <Common::EqualsComparer<DOMAIN_TYPE> DOMAIN_EQUALS_COMPARER, Common::EqualsComparer<RANGE_TYPE> RANGE_EQUALS_COMPARER>
     inline Bijection<DOMAIN_TYPE, RANGE_TYPE>::Bijection (DOMAIN_EQUALS_COMPARER&& domainEqualsComparer, RANGE_EQUALS_COMPARER&& rangeEqualsComparer)
         : Bijection{DataExchange::ValidationStrategy::eAssertion, forward<DOMAIN_EQUALS_COMPARER> (domainEqualsComparer),
                     forward<RANGE_EQUALS_COMPARER> (rangeEqualsComparer)}
@@ -47,8 +46,7 @@ namespace Stroika::Foundation::Containers {
         _AssertRepValidType ();
     }
     template <typename DOMAIN_TYPE, typename RANGE_TYPE>
-    template <typename DOMAIN_EQUALS_COMPARER, typename RANGE_EQUALS_COMPARER,
-              enable_if_t<Common::IsEqualsComparer<DOMAIN_EQUALS_COMPARER, DOMAIN_TYPE> () and Common::IsEqualsComparer<RANGE_EQUALS_COMPARER, RANGE_TYPE> ()>*>
+    template <Common::EqualsComparer<DOMAIN_TYPE> DOMAIN_EQUALS_COMPARER, Common::EqualsComparer<RANGE_TYPE> RANGE_EQUALS_COMPARER>
     inline Bijection<DOMAIN_TYPE, RANGE_TYPE>::Bijection (DataExchange::ValidationStrategy injectivityCheckPolicy,
                                                           DOMAIN_EQUALS_COMPARER&& domainEqualsComparer, RANGE_EQUALS_COMPARER&& rangeEqualsComparer)
         : inherited{Factory::Bijection_Factory<DOMAIN_TYPE, RANGE_TYPE, decay_t<DOMAIN_EQUALS_COMPARER>, decay_t<RANGE_EQUALS_COMPARER>>::Default () (
@@ -64,8 +62,7 @@ namespace Stroika::Foundation::Containers {
         _AssertRepValidType ();
     }
     template <typename DOMAIN_TYPE, typename RANGE_TYPE>
-    template <typename DOMAIN_EQUALS_COMPARER, typename RANGE_EQUALS_COMPARER,
-              enable_if_t<Common::IsEqualsComparer<DOMAIN_EQUALS_COMPARER, DOMAIN_TYPE> () and Common::IsEqualsComparer<RANGE_EQUALS_COMPARER, RANGE_TYPE> ()>*>
+    template <Common::EqualsComparer<DOMAIN_TYPE> DOMAIN_EQUALS_COMPARER, Common::EqualsComparer<RANGE_TYPE> RANGE_EQUALS_COMPARER>
     inline Bijection<DOMAIN_TYPE, RANGE_TYPE>::Bijection (DOMAIN_EQUALS_COMPARER&& domainEqualsComparer,
                                                           RANGE_EQUALS_COMPARER&& rangeEqualsComparer, const initializer_list<value_type>& src)
         : Bijection{forward<DOMAIN_EQUALS_COMPARER> (domainEqualsComparer), forward<RANGE_EQUALS_COMPARER> (rangeEqualsComparer)}
@@ -84,9 +81,8 @@ namespace Stroika::Foundation::Containers {
         _AssertRepValidType ();
     }
     template <typename DOMAIN_TYPE, typename RANGE_TYPE>
-    template <typename DOMAIN_EQUALS_COMPARER, typename RANGE_EQUALS_COMPARER, typename ITERABLE_OF_ADDABLE,
-              enable_if_t<Common::IsEqualsComparer<DOMAIN_EQUALS_COMPARER, DOMAIN_TYPE> () and
-                          Common::IsEqualsComparer<RANGE_EQUALS_COMPARER, RANGE_TYPE> () and Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>>*>
+    template <Common::EqualsComparer<DOMAIN_TYPE> DOMAIN_EQUALS_COMPARER, Common::EqualsComparer<RANGE_TYPE> RANGE_EQUALS_COMPARER,
+              typename ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>>*>
     inline Bijection<DOMAIN_TYPE, RANGE_TYPE>::Bijection (DOMAIN_EQUALS_COMPARER&& domainEqualsComparer,
                                                           RANGE_EQUALS_COMPARER&& rangeEqualsComparer, ITERABLE_OF_ADDABLE&& src)
         : Bijection{forward<DOMAIN_EQUALS_COMPARER> (domainEqualsComparer), forward<RANGE_EQUALS_COMPARER> (rangeEqualsComparer)}
@@ -105,8 +101,7 @@ namespace Stroika::Foundation::Containers {
         _AssertRepValidType ();
     }
     template <typename DOMAIN_TYPE, typename RANGE_TYPE>
-    template <typename DOMAIN_EQUALS_COMPARER, typename RANGE_EQUALS_COMPARER, input_iterator ITERATOR_OF_ADDABLE,
-              enable_if_t<Common::IsEqualsComparer<DOMAIN_EQUALS_COMPARER, DOMAIN_TYPE> () and Common::IsEqualsComparer<RANGE_EQUALS_COMPARER, RANGE_TYPE> ()>*>
+    template <Common::EqualsComparer<DOMAIN_TYPE> DOMAIN_EQUALS_COMPARER, Common::EqualsComparer<RANGE_TYPE> RANGE_EQUALS_COMPARER, input_iterator ITERATOR_OF_ADDABLE>
     Bijection<DOMAIN_TYPE, RANGE_TYPE>::Bijection (DOMAIN_EQUALS_COMPARER&& domainEqualsComparer, RANGE_EQUALS_COMPARER&& rangeEqualsComparer,
                                                    ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
         : Bijection{forward<DOMAIN_EQUALS_COMPARER> (domainEqualsComparer), forward<RANGE_EQUALS_COMPARER> (rangeEqualsComparer)}

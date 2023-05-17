@@ -127,18 +127,20 @@ namespace Stroika::Foundation::Containers {
     public:
         /**
          *  This is the type returned by GetDomainEqualsComparer () and CAN be used as the argument to a Bijection<> as EqualityComparer, but
-         *  we allow any template in the Set<> CTOR for an equalityComparer that follows the Common::IsEqualsComparer () concept (need better name).
+         *  we allow any template in the Set<> CTOR for an equalityComparer that follows the Common::EqualsComparer concept.
          */
         using DomainEqualsCompareFunctionType =
             Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eEquals, function<bool (DomainType, DomainType)>>;
+        static_assert (Common::EqualsComparer<DomainEqualsCompareFunctionType, DomainType>);
 
     public:
         /**
          *  This is the type returned by GetRangeEqualsComparer () and CAN be used as the argument to a Bijection<> as EqualityComparer, but
-         *  we allow any template in the Set<> CTOR for an equalityComparer that follows the Common::IsEqualsComparer () concept (need better name).
+         *  we allow any template in the Set<> CTOR for an equalityComparer that follows the Common::EqualsComparer concept
          */
         using RangeEqualsCompareFunctionType =
             Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eEquals, function<bool (RangeType, RangeType)>>;
+        static_assert (Common::EqualsComparer<RangeEqualsCompareFunctionType, RangeType>);
 
     public:
         /**
@@ -161,30 +163,25 @@ namespace Stroika::Foundation::Containers {
          *  \note <a href="ReadMe.md#Container Constructors">See general information about container constructors that applies here</a>
          */
         Bijection ();
-        template <typename DOMAIN_EQUALS_COMPARER, typename RANGE_EQUALS_COMPARER,
-                  enable_if_t<Common::IsEqualsComparer<DOMAIN_EQUALS_COMPARER, DOMAIN_TYPE> () and Common::IsEqualsComparer<RANGE_EQUALS_COMPARER, RANGE_TYPE> ()>* = nullptr>
+        template <Common::EqualsComparer<DOMAIN_TYPE> DOMAIN_EQUALS_COMPARER, Common::EqualsComparer<RANGE_TYPE> RANGE_EQUALS_COMPARER>
         explicit Bijection (DOMAIN_EQUALS_COMPARER&& domainEqualsComparer, RANGE_EQUALS_COMPARER&& rangeEqualsComparer);
-        template <typename DOMAIN_EQUALS_COMPARER, typename RANGE_EQUALS_COMPARER,
-                  enable_if_t<Common::IsEqualsComparer<DOMAIN_EQUALS_COMPARER, DOMAIN_TYPE> () and Common::IsEqualsComparer<RANGE_EQUALS_COMPARER, RANGE_TYPE> ()>* = nullptr>
+        template <Common::EqualsComparer<DOMAIN_TYPE> DOMAIN_EQUALS_COMPARER, Common::EqualsComparer<RANGE_TYPE> RANGE_EQUALS_COMPARER>
         explicit Bijection (DataExchange::ValidationStrategy injectivityCheckPolicy, DOMAIN_EQUALS_COMPARER&& domainEqualsComparer,
                             RANGE_EQUALS_COMPARER&& rangeEqualsComparer);
         Bijection (Bijection&& src) noexcept      = default;
         Bijection (const Bijection& src) noexcept = default;
         Bijection (const initializer_list<value_type>& src);
-        template <typename DOMAIN_EQUALS_COMPARER, typename RANGE_EQUALS_COMPARER,
-                  enable_if_t<Common::IsEqualsComparer<DOMAIN_EQUALS_COMPARER, DOMAIN_TYPE> () and Common::IsEqualsComparer<RANGE_EQUALS_COMPARER, RANGE_TYPE> ()>* = nullptr>
+        template <Common::EqualsComparer<DOMAIN_TYPE> DOMAIN_EQUALS_COMPARER, Common::EqualsComparer<RANGE_TYPE> RANGE_EQUALS_COMPARER>
         Bijection (DOMAIN_EQUALS_COMPARER&& domainEqualsComparer, RANGE_EQUALS_COMPARER&& rangeEqualsComparer, const initializer_list<value_type>& src);
         template <typename ITERABLE_OF_ADDABLE,
                   enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and not is_base_of_v<Bijection<DOMAIN_TYPE, RANGE_TYPE>, decay_t<ITERABLE_OF_ADDABLE>>>* = nullptr>
         explicit Bijection (ITERABLE_OF_ADDABLE&& src);
-        template <typename DOMAIN_EQUALS_COMPARER, typename RANGE_EQUALS_COMPARER, typename ITERABLE_OF_ADDABLE,
-                  enable_if_t<Common::IsEqualsComparer<DOMAIN_EQUALS_COMPARER, DOMAIN_TYPE> () and
-                              Common::IsEqualsComparer<RANGE_EQUALS_COMPARER, RANGE_TYPE> () and Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>>* = nullptr>
+        template <Common::EqualsComparer<DOMAIN_TYPE> DOMAIN_EQUALS_COMPARER, Common::EqualsComparer<RANGE_TYPE> RANGE_EQUALS_COMPARER,
+                  typename ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>>* = nullptr>
         Bijection (DOMAIN_EQUALS_COMPARER&& domainEqualsComparer, RANGE_EQUALS_COMPARER&& rangeEqualsComparer, ITERABLE_OF_ADDABLE&& src);
         template <input_iterator ITERATOR_OF_ADDABLE>
         Bijection (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
-        template <typename DOMAIN_EQUALS_COMPARER, typename RANGE_EQUALS_COMPARER, input_iterator ITERATOR_OF_ADDABLE,
-                  enable_if_t<Common::IsEqualsComparer<DOMAIN_EQUALS_COMPARER, DOMAIN_TYPE> () and Common::IsEqualsComparer<RANGE_EQUALS_COMPARER, RANGE_TYPE> ()>* = nullptr>
+        template <Common::EqualsComparer<DOMAIN_TYPE> DOMAIN_EQUALS_COMPARER, Common::EqualsComparer<RANGE_TYPE> RANGE_EQUALS_COMPARER, input_iterator ITERATOR_OF_ADDABLE>
         Bijection (DOMAIN_EQUALS_COMPARER&& domainEqualsComparer, RANGE_EQUALS_COMPARER&& rangeEqualsComparer, ITERATOR_OF_ADDABLE&& start,
                    ITERATOR_OF_ADDABLE&& end);
 
