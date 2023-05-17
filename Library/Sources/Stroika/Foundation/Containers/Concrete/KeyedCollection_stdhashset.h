@@ -145,17 +145,17 @@ namespace Stroika::Foundation::Containers::Concrete {
                   enable_if_t<KeyedCollection_IsKeyExctractor<T, KEY_TYPE, KEY_EXTRACTOR> () and
                               Common::IsStrictInOrderComparer<KEY_INORDER_COMPARER, KEY_TYPE> () and Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>>* = nullptr>
         KeyedCollection_stdhashset (KEY_EXTRACTOR&& keyExtractor, KEY_INORDER_COMPARER&& keyComparer, ITERABLE_OF_ADDABLE&& src);
-        template <typename ITERATOR_OF_ADDABLE, typename KEY_EXTRACTOR = typename TraitsType::DefaultKeyExtractor, typename KEY_INORDER_COMPARER = less<KEY_TYPE>,
-                  enable_if_t<Configuration::IsIterator_v<ITERATOR_OF_ADDABLE> and KeyedCollection_IsKeyExctractor<T, KEY_TYPE, KEY_EXTRACTOR> () and
+        template <input_iterator ITERATOR_OF_ADDABLE, typename KEY_EXTRACTOR = typename TraitsType::DefaultKeyExtractor, typename KEY_INORDER_COMPARER = less<KEY_TYPE>,
+                  enable_if_t< KeyedCollection_IsKeyExctractor<T, KEY_TYPE, KEY_EXTRACTOR> () and
                               Common::IsStrictInOrderComparer<KEY_INORDER_COMPARER, KEY_TYPE> ()>* = nullptr>
         KeyedCollection_stdhashset (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
-        template <typename ITERATOR_OF_ADDABLE, typename KEY_EXTRACTOR = typename TraitsType::DefaultKeyExtractor, typename KEY_INORDER_COMPARER = less<KEY_TYPE>,
-                  enable_if_t<Configuration::IsIterator_v<ITERATOR_OF_ADDABLE> and KeyedCollection_IsKeyExctractor<T, KEY_TYPE, KEY_EXTRACTOR> () and
+        template <input_iterator ITERATOR_OF_ADDABLE, typename KEY_EXTRACTOR = typename TraitsType::DefaultKeyExtractor, typename KEY_INORDER_COMPARER = less<KEY_TYPE>,
+                  enable_if_t< KeyedCollection_IsKeyExctractor<T, KEY_TYPE, KEY_EXTRACTOR> () and
                               Common::IsStrictInOrderComparer<KEY_INORDER_COMPARER, KEY_TYPE> ()>* = nullptr>
         KeyedCollection_stdhashset (KEY_INORDER_COMPARER&& keyComparer, ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
-        template <typename KEY_EXTRACTOR, typename KEY_INORDER_COMPARER, typename ITERATOR_OF_ADDABLE,
+        template <typename KEY_EXTRACTOR, typename KEY_INORDER_COMPARER, input_iterator ITERATOR_OF_ADDABLE,
                   enable_if_t<KeyedCollection_IsKeyExctractor<T, KEY_TYPE, KEY_EXTRACTOR> () and
-                              Common::IsStrictInOrderComparer<KEY_INORDER_COMPARER, KEY_TYPE> () and Configuration::IsIterator_v<ITERATOR_OF_ADDABLE>>* = nullptr>
+                              Common::IsStrictInOrderComparer<KEY_INORDER_COMPARER, KEY_TYPE> () >* = nullptr>
         KeyedCollection_stdhashset (KEY_EXTRACTOR&& keyExtractor, KEY_INORDER_COMPARER&& keyComparer, ITERATOR_OF_ADDABLE&& start,
                                     ITERATOR_OF_ADDABLE&& end);
 #endif
