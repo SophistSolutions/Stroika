@@ -426,7 +426,7 @@ namespace Stroika::Foundation::Configuration {
      *  @todo PROBABLY DEPRECATE IN FAVOR OF GENERALLY USING input_iterator concept OR forward_iterator
      */
     template <typename T>
-    [[deprecated ("Since Stroika v3.0d1, use forward_iterator some other sort of iterator concept")]] constexpr bool IsIterator_v =
+    [[deprecated ("Since Stroika v3.0d1, use input_iterator, forward_iterator, or some other sort of std iterator concept")]] constexpr bool IsIterator_v =
         Private_::is_iterator<decay_t<T>>::value;
 
     /**

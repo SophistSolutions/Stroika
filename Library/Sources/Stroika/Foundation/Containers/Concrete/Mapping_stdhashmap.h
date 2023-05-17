@@ -130,17 +130,16 @@ namespace Stroika::Foundation::Containers::Concrete {
                       Common::IsEqualsComparer<KEY_EQUALS_COMPARER, KEY_TYPE> () and Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and
                       not is_base_of_v<Mapping_stdhashmap<KEY_TYPE, MAPPED_VALUE_TYPE>, decay_t<ITERABLE_OF_ADDABLE>>);
 #endif
-        template <typename ITERATOR_OF_ADDABLE>
+        template <input_iterator ITERATOR_OF_ADDABLE>
         Mapping_stdhashmap (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
-            requires (
+
 #if !qCompilerAndStdLib_requires_breaks_soemtimes_but_static_assert_ok_Buggy
-                is_default_constructible_v<Mapping_stdhashmap> and
+            requires (is_default_constructible_v<Mapping_stdhashmap>)
 #endif
-                Configuration::IsIterator_v<ITERATOR_OF_ADDABLE>);
-        template <typename HASH, typename KEY_EQUALS_COMPARER, typename ITERATOR_OF_ADDABLE>
+        ;
+        template <typename HASH, typename KEY_EQUALS_COMPARER, input_iterator ITERATOR_OF_ADDABLE>
         Mapping_stdhashmap (HASH&& hasher, KEY_EQUALS_COMPARER&& keyComparer, ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
-            requires (Cryptography::Digest::IsHashFunction<HASH, KEY_TYPE> and
-                      Common::IsEqualsComparer<KEY_EQUALS_COMPARER, KEY_TYPE> () and Configuration::IsIterator_v<ITERATOR_OF_ADDABLE>);
+            requires (Cryptography::Digest::IsHashFunction<HASH, KEY_TYPE> and Common::IsEqualsComparer<KEY_EQUALS_COMPARER, KEY_TYPE> ());
 
     public:
         /**
