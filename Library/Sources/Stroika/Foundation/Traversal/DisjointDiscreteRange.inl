@@ -43,7 +43,7 @@ namespace Stroika::Foundation::Traversal {
         static_assert (is_convertible_v<Configuration::ExtractValueType_t<CONTAINER_OF_DISCRETERANGE_OF_T>, RangeType> or
                        is_convertible_v<Configuration::ExtractValueType_t<CONTAINER_OF_DISCRETERANGE_OF_T>, value_type>);
     }
-    #if !qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
+#if !qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
 
     template <typename T, typename RANGE_TYPE>
     template <input_iterator COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T>
@@ -53,8 +53,8 @@ namespace Stroika::Foundation::Traversal {
         : inherited{forward<COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T> (start), forward<COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T> (end)}
     {
     }
-    #endif
-                #if !qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
+#endif
+#if !qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
 
     template <typename T, typename RANGE_TYPE>
     template <input_iterator COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T>
@@ -89,7 +89,7 @@ namespace Stroika::Foundation::Traversal {
         }
         *this = move (THIS_CLASS_{srs});
     }
-    #endif
+#endif
     template <typename T, typename RANGE_TYPE>
     void DisjointDiscreteRange<T, RANGE_TYPE>::Add (const value_type& elt)
     {
