@@ -551,7 +551,7 @@ namespace Stroika::Foundation::Traversal {
          *  \note desipte the name EQUALS_COMPARER, we allow EQUALS_COMPARER to just be IPotentiallyComparer<> and don't require
          *        EqualsComparer, just to simplify use, and because we cannot anticipate any real ambiguity or confusion resulting from this loose restriction.
          */
-        template <typename THAT_FUNCTION, enable_if_t<Configuration::IsTPredicate<T, THAT_FUNCTION> ()>* = nullptr>
+        template <predicate<T> THAT_FUNCTION>
         nonvirtual Iterator<T> Find (THAT_FUNCTION&& that, Execution::SequencePolicy seq = Execution::SequencePolicy::eDefault) const;
         template <Common::IPotentiallyComparer<T> EQUALS_COMPARER>
         nonvirtual Iterator<T> Find (Configuration::ArgByValueType<T> v, EQUALS_COMPARER&& equalsComparer = {},

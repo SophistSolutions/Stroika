@@ -51,7 +51,7 @@ namespace Stroika::Foundation::Traversal {
             this->Apply ([&sz] (const T&) { ++sz; }, Execution::SequencePolicy::eDefault);
         }
         else {
-            for (Iterator<T> i = MakeIterator (nullptr); i != Iterable<T>::end (); ++i, ++sz)
+            for (Iterator<T> i = MakeIterator (nullptr); i != Iterator<T>::GetEmptyIterator (); ++i, ++sz)
                 ;
         }
         return sz;
@@ -1074,7 +1074,7 @@ namespace Stroika::Foundation::Traversal {
         accessor._ConstGetRep ().Apply (doToElement, seq);
     }
     template <typename T>
-    template <typename THAT_FUNCTION, enable_if_t<Configuration::IsTPredicate<T, THAT_FUNCTION> ()>*>
+    template <predicate<T> THAT_FUNCTION>
     inline Iterator<T> Iterable<T>::Find (THAT_FUNCTION&& that, Execution::SequencePolicy seq) const
     {
         // NB: This transforms perfectly forwarded 'THAT_FUNCTION' and converts it to std::function<> - preventing further inlining at this point -
