@@ -12,6 +12,8 @@
 #ifndef _Stroika_Foundation_Containers_Concrete_KeyedCollection_stdhashset_h_
 #define _Stroika_Foundation_Containers_Concrete_KeyedCollection_stdhashset_h_
 
+//// NOT YET IMPELEMTNED - DRAFT ----
+
 /**
  *  \file
  *
