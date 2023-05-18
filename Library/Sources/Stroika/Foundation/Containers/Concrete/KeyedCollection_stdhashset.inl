@@ -208,7 +208,7 @@ namespace Stroika::Foundation::Containers::Concrete {
 
     template <typename T, typename KEY_TYPE, typename TRAITS>
     template <typename KEY_HASH, typename KEY_EQUALS_COMPARER,
-              enable_if_t<Common::EqualsComparer<KEY_EQUALS_COMPARER, KEY_TYPE> and Cryptography::Digest::IsHashFunction<KEY_HASH, KEY_TYPE>>*>
+              enable_if_t<IEqualsComparer<KEY_EQUALS_COMPARER, KEY_TYPE> and Cryptography::Digest::IsHashFunction<KEY_HASH, KEY_TYPE>>*>
     KeyedCollection_stdhashset<T, KEY_TYPE, TRAITS>::KeyedCollection_stdhashset (const KeyExtractorType& keyExtractor, KEY_HASH&& keyHasher,
                                                                                  KEY_EQUALS_COMPARER&& keyComparer)
         : inherited{Memory::MakeSharedPtr<Rep_<remove_cvref_t<KEY_HASH>, remove_cvref_t<KEY_EQUALS_COMPARER>>> (
