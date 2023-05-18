@@ -230,11 +230,11 @@ namespace Stroika::Foundation::Common {
      *  \note @see IsPotentiallyComparerRelation
      */
     template <typename COMPARER>
-    constexpr bool IsEqualsComparer ();
+    [[deprecated ("Since Stroika 3.0d1 - use IEqualsComparer")]] constexpr bool IsEqualsComparer ();
     template <typename COMPARER, typename ARG_T>
-    constexpr bool IsEqualsComparer ();
+    [[deprecated ("Since Stroika 3.0d1 - use IEqualsComparer")]] constexpr bool IsEqualsComparer ();
     template <typename COMPARER>
-    constexpr bool IsEqualsComparer (const COMPARER&);
+    [[deprecated ("Since Stroika 3.0d1 - use IEqualsComparer")]] constexpr bool IsEqualsComparer (const COMPARER&);
 
     /**
      *  This concept checks if the given function argument (COMPARER) appears to compare 'ARG_T's and return true/false.
@@ -244,7 +244,7 @@ namespace Stroika::Foundation::Common {
      *  \see IEqualsComparer for something stricter
      */
     template <typename COMPARER, typename ARG_T>
-    concept IPotentiallyComparer = predicate<COMPARER, ARG_T, ARG_T>;
+    concept IPotentiallyComparer = relation<COMPARER, ARG_T, ARG_T>;
 
     /**
      *  Checks that the argument comparer compares values of type ARG_T, and returns an equals comparison result.
@@ -267,7 +267,10 @@ namespace Stroika::Foundation::Common {
      *      \endcode
      */
     template <typename COMPARER, typename ARG_T>
-    concept IEqualsComparer = IPotentiallyComparer<COMPARER, ARG_T> and IsEqualsComparer<COMPARER, ARG_T> ();
+    concept IEqualsComparer = IPotentiallyComparer<COMPARER, ARG_T> and ExtractComparisonTraits<decay_t<COMPARER>>::kComparisonRelationKind ==
+    ComparisonRelationType::eEquals
+        //and IsEqualsComparer<COMPARER, ARG_T> ()
+        ;
 
     /**
      *  \brief Checks (via ExtractComparisonTraits) if argument is a StictInOrder comparer - one that takes two arguments of type T, and returns a bool, and compares
@@ -292,7 +295,7 @@ namespace Stroika::Foundation::Common {
      *  \see InOrderComparer for something stricter
      */
     template <typename COMPARER, typename ARG_T>
-    concept PossiblyInOrderComparer = predicate<COMPARER, ARG_T, ARG_T>;
+    concept PossiblyInOrderComparer = relation<COMPARER, ARG_T, ARG_T>;
 
     /**
      *  Checks that the argument comparer compares values of type ARG_T, and returns an in-order comparison result.

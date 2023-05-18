@@ -1092,8 +1092,7 @@ namespace Stroika::Foundation::Traversal {
             return accessor._ConstGetRep ().Find_equal_to (accessor._ConstGetRepSharedPtr (), v, seq);
         }
         else {
-            return Find (
-                [v, equalsComparer] (Configuration::ArgByValueType<T> arg) { return equalsComparer (v, arg); }, seq);
+            return Find ([v, equalsComparer] (Configuration::ArgByValueType<T> arg) { return equalsComparer (v, arg); }, seq);
         }
     }
     template <typename T>

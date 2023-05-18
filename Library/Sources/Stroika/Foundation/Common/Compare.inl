@@ -111,12 +111,12 @@ namespace Stroika::Foundation::Common {
      ********************************************************************************
      */
     template <typename COMPARER>
-    constexpr bool IsEqualsComparer ()
+    [[deprecated ("Since Stroika 3.0d1 - use IEqualsComparer")]] constexpr bool IsEqualsComparer ()
     {
         return ExtractComparisonTraits<std::decay_t<COMPARER>>::kComparisonRelationKind == ComparisonRelationType::eEquals;
     }
     template <typename COMPARER, typename ARG_T>
-    constexpr bool IsEqualsComparer ()
+    [[deprecated ("Since Stroika 3.0d1 - use IEqualsComparer")]] constexpr bool IsEqualsComparer ()
     {
         if constexpr (not IsPotentiallyComparerRelation<COMPARER, ARG_T> ()) {
             return false;
@@ -126,7 +126,7 @@ namespace Stroika::Foundation::Common {
         }
     }
     template <typename COMPARER>
-    constexpr bool IsEqualsComparer (const COMPARER&)
+    [[deprecated ("Since Stroika 3.0d1 - use IEqualsComparer")]] constexpr bool IsEqualsComparer (const COMPARER&)
     {
         return IsEqualsComparer<COMPARER> ();
     }

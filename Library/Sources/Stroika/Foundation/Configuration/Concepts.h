@@ -435,12 +435,9 @@ namespace Stroika::Foundation::Configuration {
     constexpr bool is_callable_v = Private_::is_callable<T>::value;
 
     /**
-     * Return true iff FUNCTOR is of the form  function<bool(T)> or convertible to that.
-     * 
-     *  @todo use std::predicate<>.... So DEPRECATE THIS...
      */
     template <typename FUNCTOR_ARG, typename FUNCTOR>
-    constexpr bool IsTPredicate ()
+    [[deprecated ("Since Stroika v3.0d1, use std::predicate<F,ARG,ARG>")]] constexpr bool IsTPredicate ()
     {
         using T = remove_cvref_t<FUNCTOR_ARG>;
         if constexpr (is_invocable_v<FUNCTOR, T>) {
