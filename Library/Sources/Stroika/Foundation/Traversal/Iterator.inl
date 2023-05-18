@@ -238,7 +238,7 @@ namespace Stroika::Foundation::Traversal {
         return rep.Clone ();
     }
     template <typename T, typename ITERATOR_TRAITS>
-    constexpr inline Iterator<T, ITERATOR_TRAITS> Iterator<T, ITERATOR_TRAITS>::GetEmptyIterator ()
+    constexpr inline Iterator<T, ITERATOR_TRAITS> Iterator<T, ITERATOR_TRAITS>::GetEmptyIterator () noexcept
     {
         return Iterator<T, ITERATOR_TRAITS>{ConstructionFlagForceAtEnd_::ForceAtEnd};
     }

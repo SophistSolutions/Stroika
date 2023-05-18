@@ -505,7 +505,7 @@ namespace Stroika::Foundation::Traversal {
          *  GetEmptyIterator () returns a special iterator which is always empty - always 'at the end'.
          *  This is handy in implementing STL-style 'if (a != b)' style iterator comparisons.
          */
-        static constexpr Iterator GetEmptyIterator ();
+        static constexpr Iterator GetEmptyIterator () noexcept;
 
     public:
         /**
