@@ -1214,7 +1214,12 @@ From:    https://en.cppreference.com/w/cpp/locale/time_get/date_order
 #define qCompilerAndStdLib_stdlib_compare_three_way_missing_Buggy (_LIBCPP_VERSION < 13000)
 #endif
 #else
+
+#if !defined(__APPLE__)
 #define qCompilerAndStdLib_stdlib_compare_three_way_missing_Buggy (__cpp_lib_three_way_comparison < 201907L)
+#else
+#define qCompilerAndStdLib_stdlib_compare_three_way_missing_Buggy 0
+#endif
 #endif
 #else
 #define qCompilerAndStdLib_stdlib_compare_three_way_missing_Buggy 0
@@ -1223,7 +1228,11 @@ From:    https://en.cppreference.com/w/cpp/locale/time_get/date_order
 
 #ifndef qCompilerAndStdLib_stdlib_codecvt_byname_char8_Buggy
 #if defined(_LIBCPP_VERSION)
+#ifdef __APPLE__
+#define qCompilerAndStdLib_stdlib_codecvt_byname_char8_Buggy 1
+#else
 #define qCompilerAndStdLib_stdlib_codecvt_byname_char8_Buggy (_LIBCPP_VERSION <= 14000)
+#endif
 #elif defined(__GLIBCXX__)
 #define qCompilerAndStdLib_stdlib_codecvt_byname_char8_Buggy (__GLIBCXX__ <= 20220513)
 #else
@@ -1239,7 +1248,11 @@ From:    https://en.cppreference.com/w/cpp/locale/time_get/date_order
 // unclear yet if broken in _LIBCPP_VERSION but only docs suggest broken til 15
 #define qCompilerAndStdLib_stdlib_ranges_pretty_broken_Buggy (_LIBCPP_VERSION < 15000)
 #elif defined(__clang_major__)
+#if defined (__APPLE__)
+#define qCompilerAndStdLib_stdlib_ranges_pretty_broken_Buggy 1
+#else
 #define qCompilerAndStdLib_stdlib_ranges_pretty_broken_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 14))
+#endif
 #else
 #define qCompilerAndStdLib_stdlib_ranges_pretty_broken_Buggy 0
 #endif
@@ -1250,7 +1263,11 @@ From:    https://en.cppreference.com/w/cpp/locale/time_get/date_order
 #if _LIBCPP_VERSION <= 14000
 #define qCompilerAndStdLib_stdlib_compare_three_way_present_but_Buggy !qCompilerAndStdLib_stdlib_compare_three_way_missing_Buggy
 #else
+#if defined (__APPLE__)
+#define qCompilerAndStdLib_stdlib_compare_three_way_present_but_Buggy 1
+#else
 #define qCompilerAndStdLib_stdlib_compare_three_way_present_but_Buggy 0
+#endif
 #endif
 #else
 #define qCompilerAndStdLib_stdlib_compare_three_way_present_but_Buggy 0
@@ -1708,7 +1725,11 @@ FAILED: RegressionTestFailure; replaced == L"abcdef";;Test.cpp: 753
 
 #if defined(_LIBCPP_VERSION)
 // Broken in _LIBCPP_VERSION  14000
+#if defined (__APPLE__)
+#define qCompilerAndStdLib_regexp_Compile_bracket_set_Star_Buggy (CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_LIBCPP_VERSION <= 16000))
+#else
 #define qCompilerAndStdLib_regexp_Compile_bracket_set_Star_Buggy (CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_LIBCPP_VERSION <= 14000))
+#endif
 #else
 #define qCompilerAndStdLib_regexp_Compile_bracket_set_Star_Buggy 0
 #endif
