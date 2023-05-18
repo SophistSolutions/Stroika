@@ -137,7 +137,7 @@ namespace Stroika::Foundation::Containers {
         return false;
     }
     template <typename T>
-    template <typename PREDICATE, enable_if_t<Configuration::IsTPredicate<T, PREDICATE> ()>*>
+    template <predicate<T> PREDICATE>
     bool Collection<T>::RemoveIf (PREDICATE&& p)
     {
         if (auto i = this->Find (forward<PREDICATE> (p))) {

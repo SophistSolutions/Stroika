@@ -246,7 +246,7 @@ namespace Stroika::Foundation::Containers {
          */
         template <typename EQUALS_COMPARER = equal_to<T>>
         nonvirtual bool RemoveIf (ArgByValueType<value_type> item, EQUALS_COMPARER&& equalsComparer = {});
-        template <typename PREDICATE, enable_if_t<Configuration::IsTPredicate<T, PREDICATE> ()>* = nullptr>
+        template <predicate<T> PREDICATE>
         nonvirtual bool RemoveIf (PREDICATE&& p);
 
     public:
