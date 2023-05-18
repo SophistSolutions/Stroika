@@ -12,6 +12,7 @@
 #include <exception>
 #include <filesystem>
 #include <functional>
+#include <ranges>
 #include <typeindex>
 #include <typeinfo>
 #include <wchar.h>
@@ -115,9 +116,9 @@ namespace Stroika::Foundation::Characters {
         {
             return t.ToString ();
         }
-        template <typename T>
+        template <ranges::range T>
         String ToString_ (const T& t)
-            requires (Configuration::IsIterable_v<T> and not has_ToStringMethod_v<T> and not is_convertible_v<T, String>)
+            requires (not has_ToStringMethod_v<T> and not is_convertible_v<T, String>)
         {
             StringBuilder sb;
             sb << "[";
