@@ -62,9 +62,9 @@ namespace Stroika::Foundation::Containers::Concrete {
          * 
          *      @todo - STK appraoch to blockallocation not working for unordred map cuz allocates many at a time
          */
-        template <typename HASH = std::hash<key_type>, IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER = std::equal_to<key_type>>
+        template <typename HASH = std::hash<key_type>, typename KEY_EQUALS_COMPARER = std::equal_to<key_type>>
         using STDHASHMAP = unordered_map<KEY_TYPE, MAPPED_VALUE_TYPE, HASH, KEY_EQUALS_COMPARER>;
-        //template <typename HASH = std::hash<key_type>, IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER = std::equal_to<key_type>>
+        //template <typename HASH = std::hash<key_type>, typename KEY_EQUALS_COMPARER = std::equal_to<key_type>>
         //using STDHASHMAP = unordered_map<KEY_TYPE, MAPPED_VALUE_TYPE, HASH, KEY_EQUALS_COMPARER, Memory::BlockAllocatorOrStdAllocatorAsAppropriate<pair<const key_type, mapped_type>, sizeof (value_type) <= 1024>>;
 
     public:
