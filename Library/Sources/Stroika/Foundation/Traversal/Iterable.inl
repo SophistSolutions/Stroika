@@ -68,7 +68,7 @@ namespace Stroika::Foundation::Traversal {
     inline void Iterable<T>::_IRep::Apply (const function<void (ArgByValueType<T> item)>& doToElement, [[maybe_unused]] Execution::SequencePolicy seq) const
     {
         RequireNotNull (doToElement);
-        for (Iterator<T> i = MakeIterator (nullptr); i != Iterable<T>::end (); ++i) {
+        for (Iterator<T> i = MakeIterator (nullptr); i != Iterator<T>::GetEmptyIterator (); ++i) {
             doToElement (*i);
         }
     }
@@ -77,12 +77,12 @@ namespace Stroika::Foundation::Traversal {
                                           [[maybe_unused]] Execution::SequencePolicy seq) const -> Iterator<value_type>
     {
         RequireNotNull (that);
-        for (Iterator<T> i = MakeIterator (thisSharedPtr); i != end (); ++i) {
+        for (Iterator<T> i = MakeIterator (thisSharedPtr); i != Iterator<T>::GetEmptyIterator (); ++i) {
             if (that (*i)) {
                 return i;
             }
         }
-        return end ();
+        return Iterator<T>::GetEmptyIterator ();
     }
     template <typename T>
     inline auto Iterable<T>::_IRep::Find_equal_to (const shared_ptr<_IRep>& thisSharedPtr, const ArgByValueType<T>& v,
@@ -101,17 +101,17 @@ namespace Stroika::Foundation::Traversal {
                     thisSharedPtr, [&v] (const T& rhs) { return equal_to<T>{}(v, rhs); }, seq);
             }
             else {
-                for (Iterator<T> i = MakeIterator (thisSharedPtr); i != end (); ++i) {
+                for (Iterator<T> i = MakeIterator (thisSharedPtr); i != Iterator<T>::GetEmptyIterator (); ++i) {
                     if (equal_to<T>{}(v, *i)) {
                         return i;
                     }
                 }
-                return end ();
+                return Iterator<T>::GetEmptyIterator ();
             }
         }
         else {
             RequireNotReached (); // cannot call if not HasUsableEqualToOptimization
-            return end ();
+            return Iterator<T>::GetEmptyIterator ();
         }
     }
 
@@ -1062,7 +1062,7 @@ namespace Stroika::Foundation::Traversal {
         return MakeIterator ();
     }
     template <typename T>
-    constexpr Iterator<T> Iterable<T>::end ()
+    constexpr Iterator<T> Iterable<T>::end () const
     {
         return Iterator<T>::GetEmptyIterator ();
     }
