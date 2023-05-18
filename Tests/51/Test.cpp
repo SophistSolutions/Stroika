@@ -435,6 +435,7 @@ namespace {
 namespace {
     void Test10_MakeIterableFromIterator_ ()
     {
+        static_assert (ranges::range<Iterable<int>>);
         Debug::TraceContextBumper ctx{L"{}::Test10_MakeIterableFromIterator_"};
         {
             Containers::Sequence<int> a    = {1, 3, 5, 7, 9};

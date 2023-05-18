@@ -8,6 +8,7 @@
 
 #include <compare>
 #include <functional>
+#include <ranges>
 #include <vector>
 
 #include "../Common/Compare.h"
@@ -440,7 +441,7 @@ namespace Stroika::Foundation::Traversal {
          * 
          *  \note in INCOMPATIBLE change in Stroika v3.0d1 - from v2.1 - making this instance method instead of static method (needed for 'std::ranges' concept compatability).
          */
-        nonvirtual constexpr Iterator<T> end () const;
+        nonvirtual constexpr Iterator<T> end () const noexcept;
 
     public:
         /**
@@ -1357,6 +1358,7 @@ namespace Stroika::Foundation::Traversal {
         Iterable<T>* fIterableEnvelope_; // mostly saved for assertions, but also for _UpdateRep- when we lose that - we can ifdef qDebug this field (as we do for read accessor)
 #endif
     };
+
 
     /**
      *  \brief  Implementation detail for iterator implementors.
