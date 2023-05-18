@@ -148,6 +148,9 @@ my $DEFAULT_CWARNING_FLAGS_GCC		= $DEFAULT_CWARNING_FLAGS_SAFE_COMMON_;
 my $DEFAULT_CWARNING_FLAGS_CLANG	= $DEFAULT_CWARNING_FLAGS_SAFE_COMMON_;
 $DEFAULT_CWARNING_FLAGS_CLANG		= $DEFAULT_CWARNING_FLAGS_CLANG . '-Wno-unused-local-typedef '; 		### really needed - get alot of them - e.g. using inherited = ... - (maybe can use [[maybe_unused]])
 $DEFAULT_CWARNING_FLAGS_CLANG		= $DEFAULT_CWARNING_FLAGS_CLANG . '-Wno-future-compat ';
+$DEFAULT_CWARNING_FLAGS_CLANG		= $DEFAULT_CWARNING_FLAGS_CLANG . '-Wno-unqualified-std-cast-call ';
+
+
 
 my $Config_Tag = undef;   #see 	https://stroika.atlassian.net/browse/STK-667 to support plural
 
