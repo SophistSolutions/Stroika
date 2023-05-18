@@ -348,11 +348,13 @@ namespace Stroika::Foundation::Characters {
                     }
                 }
 #endif
+#if 0
                 case Options::Implementation::eCodeCVT: {
                     if constexpr ((is_same_v<SRC_T, char16_t> and is_same_v<SRC_T, char32_t>)and is_same_v<TRG_T, char8_t>) {
                         return ConvertQuietly_codeCvt_ (source, target);
                     }
                 }
+#endif
             }
             return ConvertQuietly_StroikaPortable_ (ConvertToPrimitiveSpan_ (source), ConvertToPrimitiveSpan_ (target)); // default if preferred not available
         }
