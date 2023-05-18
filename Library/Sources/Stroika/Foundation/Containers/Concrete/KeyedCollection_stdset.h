@@ -23,7 +23,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     /**
      *  \brief   KeyedCollection_stdset<KEY_TYPE,MAPPED_VALUE_TYPE> is an std::map-based concrete implementation of the KeyedCollection<KEY_TYPE,MAPPED_VALUE_TYPE> container pattern.
      *
-     * \note The constructors require IsStrictInOrderComparer comparison operators, not IsEqualsComparer operators like ordinary KeyedCollection<>
+     * \note The constructors require IsStrictInOrderComparer comparison operators, not EqualsComparer operators like ordinary KeyedCollection<>
      * 
      * \see DeclareInOrderComparer
      * 
@@ -81,7 +81,7 @@ namespace Stroika::Foundation::Containers::Concrete {
 
     public:
         /**
-         *  \see docs on KeyedCollection<> constructor, except that KEY_EQUALS_COMPARER is replaced with KEY_INORDER_COMPARER and IsEqualsComparer is replaced by IsStrictInOrderComparer
+         *  \see docs on KeyedCollection<> constructor, except that KEY_EQUALS_COMPARER is replaced with KEY_INORDER_COMPARER and EqualsComparer is replaced by IsStrictInOrderComparer
          */
         template <typename KEY_INORDER_COMPARER = less<KEY_TYPE>, enable_if_t<Common::IsStrictInOrderComparer<KEY_INORDER_COMPARER, KEY_TYPE> ()>* = nullptr>
         KeyedCollection_stdset (KEY_INORDER_COMPARER&& keyComparer = KEY_INORDER_COMPARER{});

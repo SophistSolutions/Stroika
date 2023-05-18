@@ -1083,7 +1083,7 @@ namespace Stroika::Foundation::Traversal {
         return accessor._ConstGetRep ().Find (accessor._ConstGetRepSharedPtr (), that, seq);
     }
     template <typename T>
-    template <typename EQUALS_COMPARER, enable_if_t<Common::IsPotentiallyComparerRelation<EQUALS_COMPARER, T> ()>*>
+    template <Common::IPotentiallyComparer<T> EQUALS_COMPARER>
     inline Iterator<T> Iterable<T>::Find (Configuration::ArgByValueType<T> v, EQUALS_COMPARER&& equalsComparer, Execution::SequencePolicy seq) const
     {
         if constexpr (is_same_v<remove_cvref_t<EQUALS_COMPARER>, equal_to<T>> and Configuration::HasUsableEqualToOptimization<T> ()) {
@@ -1092,7 +1092,8 @@ namespace Stroika::Foundation::Traversal {
             return accessor._ConstGetRep ().Find_equal_to (accessor._ConstGetRepSharedPtr (), v, seq);
         }
         else {
-            return Find ([v, equalsComparer] (Configuration::ArgByValueType<T> arg) { return equalsComparer (v, arg); }, seq);
+            return Find (
+                [v, equalsComparer] (Configuration::ArgByValueType<T> arg) { return forward<EQUALS_COMPARER> (equalsComparer) (v, arg); }, seq);
         }
     }
     template <typename T>

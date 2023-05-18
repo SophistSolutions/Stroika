@@ -244,14 +244,14 @@ namespace Stroika::Foundation::Common {
      *  \see IEqualsComparer for something stricter
      */
     template <typename COMPARER, typename ARG_T>
-    concept IPossiblyComparer = predicate<COMPARER, ARG_T, ARG_T>;
+    concept IPotentiallyComparer = predicate<COMPARER, ARG_T, ARG_T>;
 
     /**
      *  Checks that the argument comparer compares values of type ARG_T, and returns an equals comparison result.
      * 
      *  This won't let confuse equal_to with actual in-order comparison functions.
      * 
-     *  \see IPossiblyComparer, and use DeclareEqualsComparer to mark a given function as an in-order comparer.
+     *  \see IPotentiallyComparer, and use DeclareEqualsComparer to mark a given function as an in-order comparer.
      * 
      *  \par Example Usage
      *      \code
@@ -267,7 +267,7 @@ namespace Stroika::Foundation::Common {
      *      \endcode
      */
     template <typename COMPARER, typename ARG_T>
-    concept IEqualsComparer = IPossiblyComparer<COMPARER, ARG_T> and IsEqualsComparer<COMPARER, ARG_T> ();
+    concept IEqualsComparer = IPotentiallyComparer<COMPARER, ARG_T> and IsEqualsComparer<COMPARER, ARG_T> ();
 
     /**
      *  \brief Checks (via ExtractComparisonTraits) if argument is a StictInOrder comparer - one that takes two arguments of type T, and returns a bool, and compares

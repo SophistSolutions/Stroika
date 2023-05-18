@@ -24,12 +24,11 @@ namespace Stroika::Foundation::Containers::Factory {
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      */
-    template <typename T, typename TRAITS, typename EQUALS_COMPARER = equal_to<T>>
+    template <typename T, typename TRAITS, IEqualsComparer<T> EQUALS_COMPARER = equal_to<T>>
     class MultiSet_Factory {
     public:
         static_assert (not is_reference_v<T> and not is_reference_v<EQUALS_COMPARER>,
                        "typically if this fails its because a (possibly indirect) caller forgot to use forward<>(), or remove_cvref_t");
-        static_assert (Common::IsEqualsComparer<EQUALS_COMPARER> (), "Equals comparer required with MultiSet_Factory");
 
     public:
         /**

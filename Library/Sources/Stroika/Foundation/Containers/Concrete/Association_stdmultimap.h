@@ -59,7 +59,7 @@ namespace Stroika::Foundation::Containers::Concrete {
 
     public:
         /**
-         *  \see docs on Association<> constructor, except that KEY_EQUALS_COMPARER is replaced with KEY_INORDER_COMPARER and IsEqualsComparer is replaced by IsStrictInOrderComparer
+         *  \see docs on Association<> constructor, except that KEY_EQUALS_COMPARER is replaced with KEY_INORDER_COMPARER and EqualsComparer is replaced by IsStrictInOrderComparer
          *       and added Association_stdmultimap (STDMAP<>&& src)
          */
         Association_stdmultimap ();
