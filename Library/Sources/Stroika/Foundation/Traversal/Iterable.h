@@ -1359,7 +1359,6 @@ namespace Stroika::Foundation::Traversal {
 #endif
     };
 
-
     /**
      *  \brief  Implementation detail for iterator implementors.
      *
