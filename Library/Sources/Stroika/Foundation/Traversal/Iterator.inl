@@ -77,6 +77,11 @@ namespace Stroika::Foundation::Traversal {
     {
     }
     template <typename T, typename ITERATOR_TRAITS>
+    constexpr Iterator<T, ITERATOR_TRAITS>::Iterator () noexcept
+        : Iterator{ConstructionFlagForceAtEnd_::ForceAtEnd}
+    {
+    }
+    template <typename T, typename ITERATOR_TRAITS>
     constexpr Iterator<T, ITERATOR_TRAITS>::Iterator (ConstructionFlagForceAtEnd_) noexcept
         : fRep_{nullptr}
     {
