@@ -39,13 +39,16 @@ namespace Stroika::Foundation::Containers::Factory {
     template <typename KEY_TYPE, typename VALUE_TYPE, typename KEY_EQUALS_COMPARER>
     constexpr Mapping_Factory<KEY_TYPE, VALUE_TYPE, KEY_EQUALS_COMPARER>::Mapping_Factory ([[maybe_unused]] const Hints& hints)
         : Mapping_Factory{[hints] () -> FactoryFunctionType {
+        #if 0
             if constexpr (is_default_constructible_v<Concrete::Mapping_stdhashmap<KEY_TYPE, VALUE_TYPE>> and
                           is_same_v<KEY_EQUALS_COMPARER, equal_to<KEY_TYPE>>) {
                 return [] ([[maybe_unused]] const KEY_EQUALS_COMPARER& keyEqualsComparer) {
                     return Concrete::Mapping_stdhashmap<KEY_TYPE, VALUE_TYPE>{};
                 };
             }
-            else if constexpr (is_same_v<KEY_EQUALS_COMPARER, equal_to<KEY_TYPE>> and Configuration::has_lt_v<KEY_TYPE>) {
+            else 
+                #endif
+               if constexpr (is_same_v<KEY_EQUALS_COMPARER, equal_to<KEY_TYPE>> and Configuration::has_lt_v<KEY_TYPE>) {
                 return [] ([[maybe_unused]] const KEY_EQUALS_COMPARER& keyEqualsComparer) {
                     return Concrete::Mapping_stdmap<KEY_TYPE, VALUE_TYPE>{};
                 };
