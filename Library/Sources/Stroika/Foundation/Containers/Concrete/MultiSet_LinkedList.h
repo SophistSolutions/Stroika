@@ -40,25 +40,24 @@ namespace Stroika::Foundation::Containers::Concrete {
          *  \see docs on MultiSet<> constructor
          */
         MultiSet_LinkedList ();
-        template <typename EQUALS_COMPARER, enable_if_t<Common::IsEqualsComparer<EQUALS_COMPARER, T> ()>* = nullptr>
+        template <IEqualsComparer<T> EQUALS_COMPARER>
         explicit MultiSet_LinkedList (EQUALS_COMPARER&& equalsComparer);
         MultiSet_LinkedList (MultiSet_LinkedList&& src) noexcept      = default;
         MultiSet_LinkedList (const MultiSet_LinkedList& src) noexcept = default;
         MultiSet_LinkedList (const initializer_list<T>& src);
-        template <typename EQUALS_COMPARER, enable_if_t<Common::IsEqualsComparer<EQUALS_COMPARER, T> ()>* = nullptr>
+        template <IEqualsComparer<T> EQUALS_COMPARER>
         MultiSet_LinkedList (EQUALS_COMPARER&& equalsComparer, const initializer_list<T>& src);
         MultiSet_LinkedList (const initializer_list<value_type>& src);
-        template <typename EQUALS_COMPARER, enable_if_t<Common::IsEqualsComparer<EQUALS_COMPARER, T> ()>* = nullptr>
+        template <IEqualsComparer<T> EQUALS_COMPARER>
         MultiSet_LinkedList (EQUALS_COMPARER&& equalsComparer, const initializer_list<value_type>& src);
         template <typename ITERABLE_OF_ADDABLE,
                   enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and not is_base_of_v<MultiSet_LinkedList<T, TRAITS>, decay_t<ITERABLE_OF_ADDABLE>>>* = nullptr>
         explicit MultiSet_LinkedList (ITERABLE_OF_ADDABLE&& src);
-        template <typename EQUALS_COMPARER, typename ITERABLE_OF_ADDABLE,
-                  enable_if_t<Common::IsEqualsComparer<EQUALS_COMPARER, T> () and Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>>* = nullptr>
+        template <IEqualsComparer<T> EQUALS_COMPARER, typename ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>>* = nullptr>
         MultiSet_LinkedList (EQUALS_COMPARER&& equalsComparer, ITERABLE_OF_ADDABLE&& src);
         template <input_iterator ITERATOR_OF_ADDABLE>
         MultiSet_LinkedList (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
-        template <typename EQUALS_COMPARER, input_iterator ITERATOR_OF_ADDABLE, enable_if_t<Common::IsEqualsComparer<EQUALS_COMPARER, T> ()>* = nullptr>
+        template <IEqualsComparer<T> EQUALS_COMPARER, input_iterator ITERATOR_OF_ADDABLE>
         MultiSet_LinkedList (EQUALS_COMPARER&& equalsComparer, ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
 
     public:
@@ -67,7 +66,7 @@ namespace Stroika::Foundation::Containers::Concrete {
 
     private:
         class IImplRepBase_;
-        template <typename EQUALS_COMPARER>
+        template <IEqualsComparer<T> EQUALS_COMPARER>
         class Rep_;
 
     private:
