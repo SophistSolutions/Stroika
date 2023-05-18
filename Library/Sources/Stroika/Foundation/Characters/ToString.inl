@@ -110,13 +110,14 @@ namespace Stroika::Foundation::Characters {
         constexpr inline bool has_CountedValue_v = Configuration::is_detected_v<Private_::has_CountedValue_t_, T>;
 
         template <typename T>
-        inline String ToString_ (const T& t, enable_if_t<has_ToStringMethod_v<T>>* = 0)
+        inline String ToString_ (const T& t)
+            requires (has_ToStringMethod_v<T>)
         {
             return t.ToString ();
         }
         template <typename T>
-        String ToString_ (const T& t,
-                          enable_if_t<Configuration::IsIterable_v<T> and not has_ToStringMethod_v<T> and not is_convertible_v<T, String>>* = 0)
+        String ToString_ (const T& t)
+            requires (Configuration::IsIterable_v<T> and not has_ToStringMethod_v<T> and not is_convertible_v<T, String>)
         {
             StringBuilder sb;
             sb << "[";
@@ -138,7 +139,8 @@ namespace Stroika::Foundation::Characters {
             return sb.str ();
         }
         template <typename T>
-        inline String ToString_ (const T& t, enable_if_t<is_convertible_v<T, String>>* = 0)
+        inline String ToString_ (const T& t)
+            requires (is_convertible_v<T, String>)
         {
             constexpr size_t kMaxLen2Display_{100}; // no idea what a good value here will be or if we should provide ability to override. I suppose
                                                     // users can template-specialize ToString(const String&)???
@@ -148,12 +150,14 @@ namespace Stroika::Foundation::Characters {
         String ToString_ex_ (const exception& t);
 
         template <typename T>
-        inline String ToString_ (const T& t, enable_if_t<is_convertible_v<T, const exception&>>* = 0)
+        inline String ToString_ (const T& t)
+            requires (is_convertible_v<T, const exception&>)
         {
             return ToString_ex_ (t);
         }
         template <typename T>
-        inline String ToString_ ([[maybe_unused]] const T& t, enable_if_t<is_convertible_v<T, tuple<>>>* = 0)
+        inline String ToString_ ([[maybe_unused]] const T& t)
+            requires (is_convertible_v<T, tuple<>>)
         {
             return "{}"sv;
         }
@@ -194,7 +198,8 @@ namespace Stroika::Foundation::Characters {
             return sb.str ();
         }
         template <typename T>
-        String ToString_ (const T& t, enable_if_t<has_pair_v<T>>* = 0)
+        String ToString_ (const T& t)
+            requires (has_pair_v<T>)
         {
             StringBuilder sb;
             sb << "{";
@@ -203,7 +208,8 @@ namespace Stroika::Foundation::Characters {
             return sb.str ();
         }
         template <typename T>
-        String ToString_ (const T& t, enable_if_t<has_KeyValuePair_v<T>>* = 0)
+        String ToString_ (const T& t)
+            requires (has_KeyValuePair_v<T>)
         {
             StringBuilder sb;
             sb << "{";
@@ -212,7 +218,8 @@ namespace Stroika::Foundation::Characters {
             return sb.str ();
         }
         template <typename T>
-        String ToString_ (const T& t, enable_if_t<has_CountedValue_v<T>>* = 0)
+        String ToString_ (const T& t)
+            requires (has_CountedValue_v<T>)
         {
             StringBuilder sb;
             sb << "{";
@@ -221,14 +228,16 @@ namespace Stroika::Foundation::Characters {
             return sb.str ();
         }
         template <typename T>
-        inline String ToString_ (const T& t, enable_if_t<is_enum_v<T>>* = 0)
+        inline String ToString_ (const T& t)
+            requires (is_enum_v<T>)
         {
             // SHOULD MAYBE only do if can detect is-defined Configuration::DefaultNames<T>, but right now not easy, and
             // not a problem: just don't call this, or replace it with a specific specialization of ToString
             return Configuration::DefaultNames<T>{}.GetName (t);
         }
         template <typename T>
-        inline String ToString_ (const T& t, enable_if_t<is_floating_point_v<T>>* = 0)
+        inline String ToString_ (const T& t)
+            requires (is_floating_point_v<T>)
         {
             return FloatConversion::ToString (t);
         }
