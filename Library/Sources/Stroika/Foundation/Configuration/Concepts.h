@@ -475,6 +475,10 @@ namespace Stroika::Foundation::Configuration {
     using ExtractValueType_t = typename ExtractValueType<decay_t<T>>::type;
 
     /**
+    * 
+    * 
+    *   @todo DEPRECATE AND USE ranges::range instead
+    * 
      *  Check if ITERABLE has begin/end methods, and the begin/end stuff looks like they return an iterator.
      *  This does NOT check for subclassing Traversal::Iterable<> (so works with an array, or stl vector etc).
      * 
