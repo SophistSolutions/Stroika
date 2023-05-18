@@ -1093,7 +1093,7 @@ namespace Stroika::Foundation::Traversal {
         }
         else {
             return Find (
-                [v, equalsComparer] (Configuration::ArgByValueType<T> arg) { return forward<EQUALS_COMPARER> (equalsComparer) (v, arg); }, seq);
+                [v, equalsComparer] (Configuration::ArgByValueType<T> arg) { return equalsComparer (v, arg); }, seq);
         }
     }
     template <typename T>
