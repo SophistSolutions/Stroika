@@ -1246,13 +1246,13 @@ From:    https://en.cppreference.com/w/cpp/locale/time_get/date_order
 #ifndef qCompilerAndStdLib_stdlib_ranges_pretty_broken_Buggy
 #if defined(_LIBCPP_VERSION)
 // unclear yet if broken in _LIBCPP_VERSION but only docs suggest broken til 15
-#define qCompilerAndStdLib_stdlib_ranges_pretty_broken_Buggy (_LIBCPP_VERSION < 15000)
-#elif defined(__clang_major__)
 #if defined (__APPLE__)
 #define qCompilerAndStdLib_stdlib_ranges_pretty_broken_Buggy 1
 #else
-#define qCompilerAndStdLib_stdlib_ranges_pretty_broken_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 14))
+#define qCompilerAndStdLib_stdlib_ranges_pretty_broken_Buggy (_LIBCPP_VERSION < 15000)
 #endif
+#elif defined(__clang_major__)
+#define qCompilerAndStdLib_stdlib_ranges_pretty_broken_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 14))
 #else
 #define qCompilerAndStdLib_stdlib_ranges_pretty_broken_Buggy 0
 #endif
