@@ -820,9 +820,6 @@ sub	SetDefaultForCompilerDriver_
 		}
 		elsif (IsClangOrClangPlusPlus_($COMPILER_DRIVER)) {
 			$CWARNING_FLAGS = $CWARNING_FLAGS . $DEFAULT_CWARNING_FLAGS_CLANG;
-			if (GetClangVersion_ ($COMPILER_DRIVER_CPlusPlus) < 11.0) {
-				$CWARNING_FLAGS = $CWARNING_FLAGS . "-Wno-unknown-attributes ";
-			}
 		}
 	}
 
@@ -1028,9 +1025,6 @@ sub	SetDefaultForCompilerDriver_
 	if ($lsb_release == "20.04" or $lsb_release == "20.10" or $lsb_release == "21.04" or $lsb_release == "21.10" or $lsb_release == "22.04") {
 		# so far only seen on ubuntu 20.10, clang++11, and g++10 - https://stroika.atlassian.net/browse/STK-717
 		if (IsGCCOrGPlusPlus_($COMPILER_DRIVER_CPlusPlus) and (11.0 <= GetGCCVersion_ ($COMPILER_DRIVER_CPlusPlus) and GetGCCVersion_ ($COMPILER_DRIVER_CPlusPlus) < 13.0)) {
-			$qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy = true;
-		}
-		elsif (IsClangOrClangPlusPlus_($COMPILER_DRIVER_CPlusPlus) and (11.0 <= GetClangVersion_ ($COMPILER_DRIVER_CPlusPlus) and GetClangVersion_ ($COMPILER_DRIVER_CPlusPlus) < 12.0)) {
 			$qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy = true;
 		}
 		if (IsGCCOrGPlusPlus_($COMPILER_DRIVER_CPlusPlus) and ($TargettingValgrind == true)) {
@@ -2395,8 +2389,8 @@ sub ValidateConfigurationAndEmitNeededWarnings_
 		}
 	}
 	if (!("$^O" eq "darwin") and IsClangPlusPlus_($COMPILER_DRIVER_CPlusPlus)) {
-		if (GetClangVersion_ ($COMPILER_DRIVER_CPlusPlus) < '10.0') {
-			print "CONFIGURATION-WARNING: Stroika v3 requires clang 10 or later (compiler-driver: $COMPILER_DRIVER_CPlusPlus).\n";
+		if (GetClangVersion_ ($COMPILER_DRIVER_CPlusPlus) < '13.0') {
+			print "CONFIGURATION-WARNING: Stroika v3 requires clang 13 or later (compiler-driver: $COMPILER_DRIVER_CPlusPlus).\n";
 		}
 	}
 	if (IsGCCOrGPlusPlus_($COMPILER_DRIVER_CPlusPlus)) {
@@ -2686,11 +2680,7 @@ if ($onlyGenerateIfCompilerExists) {
 	}
 	# if flag to use libc++ - check if right version is available (but not on XCode)
 	if ($generate && IsClangOrClangPlusPlus_ ($COMPILER_DRIVER_CPlusPlus) && ($STDCXXLIB eq 'libc++') && index ($TARGET_PLATFORMS, "MacOS") == -1) {
-		if (GetClangVersion_ ($COMPILER_DRIVER_CPlusPlus) < '11.0') {
-			$generate = false;
-			$generateBecause = "libc++ doesn't support enough of new chrono support (try libstdc++ or older Stroika or newer libc++).";
-		}
-		elsif (GetClangVersion_ ($COMPILER_DRIVER_CPlusPlus) < '14.0') {
+		if (GetClangVersion_ ($COMPILER_DRIVER_CPlusPlus) < '14.0') {
 			$generate = false;
 			$generateBecause = "libc++ doesn't support enough of new concept support (try libstdc++ or older Stroika or newer libc++).";
 		}

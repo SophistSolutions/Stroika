@@ -42,7 +42,7 @@ Note also - much of this (in perhaps more detail) can be gleaned (programaticall
 
 Building with Stroika requires
 
-- a C++ compiler (suggested Visual Studio.net 2022, but 2017, 2019 also supported)
+- a C++ compiler (suggested Visual Studio.net 2022 or later)
 - a set of unix-like build tools (suggested MSYS OR Cygwin - no need for both)
 
 ### Visual Studio.net 2022
@@ -107,8 +107,8 @@ Note - we've only tested building (from MSYS) using Visual Studio. We've not yet
 - Compiler
   - gcc 11 or later OR
     - Stroika v3 is currently tested with gcc-11, and gcc-12
-  - llvm (clang++) 10 or later
-    - Stroika v3 is currently tested with clang-10, clang-11, clang-12, clang-13, clang-14
+  - llvm (clang++) 13 or later
+    - Stroika v3 is currently tested with clang-13, clang-14
     - libc++ - if used - must be v 14 or later due to concept/chrono support
 - automake (if building curl)
 - libtool (gnu version) – (if building curl)
