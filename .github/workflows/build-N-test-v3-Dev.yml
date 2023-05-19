@@ -76,15 +76,15 @@ jobs:
             extra_config_args: --apply-default-release-flags --trace2file enable
             includeInDevBranchBuilds: true
 
-          # - displayTargetName: ubuntu-20.04-clang++-10
-          #   os: unix
-          #   compiler: clang++-10
-          #   runs_on: ubuntu-latest
-          #   container_image: sophistsolutionsinc/stroika-buildvm-ubuntu2004-regression-tests:v3
-          #   cpp_version: c++2a
-          #   config_name: Release
-          #   extra_config_args: --apply-default-release-flags --trace2file enable
-          #   includeInDevBranchBuilds: true
+          - displayTargetName: ubuntu-20.04-clang++-13
+            os: unix
+            compiler: clang++-13
+            runs_on: ubuntu-latest
+            container_image: sophistsolutionsinc/stroika-buildvm-ubuntu2204-regression-tests:v3
+            cpp_version: c++2a
+            config_name: Release
+            extra_config_args: --apply-default-release-flags --trace2file enable
+            includeInDevBranchBuilds: true
 
           # ubuntu 22.04
           # - displayTargetName: ubuntu-22.04-g++-11 (Debug)
@@ -127,15 +127,15 @@ jobs:
           #   extra_config_args: --apply-default-release-flags --trace2file enable
           #   includeInDevBranchBuilds: false
 
-          - displayTargetName: ubuntu-22.04-clang++-14
-            os: unix
-            compiler: clang++-14
-            runs_on: ubuntu-latest
-            container_image: sophistsolutionsinc/stroika-buildvm-ubuntu2204-regression-tests:v3
-            cpp_version: c++20
-            config_name: Release
-            extra_config_args: --apply-default-release-flags --trace2file enable
-            includeInDevBranchBuilds: false
+          # - displayTargetName: ubuntu-22.04-clang++-14
+          #   os: unix
+          #   compiler: clang++-14
+          #   runs_on: ubuntu-latest
+          #   container_image: sophistsolutionsinc/stroika-buildvm-ubuntu2204-regression-tests:v3
+          #   cpp_version: c++20
+          #   config_name: Release
+          #   extra_config_args: --apply-default-release-flags --trace2file enable
+          #   includeInDevBranchBuilds: false
 
     ### ATTEMPT TO COMPRESS 2 workflow files into one, but so far not working
     ### SEE
@@ -157,11 +157,6 @@ jobs:
           grep "model name" /proc/cpuinfo | head -1
           grep processor /proc/cpuinfo | wc -l
           grep MemTotal /proc/meminfo
-          df -h
-      - name: Build System Info (Windows)
-        if: ${{ matrix.os=='windows' }}
-        run: |
-          echo "CWD=" `pwd`
           df -h
       - name: Configure ${{ matrix.config_name }}
         run: |
@@ -219,11 +214,13 @@ jobs:
           - displayTargetName: MacOS-Debug
             os: macos-latest
             runs_on: macos-latest
+            xcode: 14.3
             config_name: Debug
             extra_config_args: --apply-default-debug-flags --trace2file enable
             includeInDevBranchBuilds: true
           # - displayTargetName: MacOS
           #   os: macos-latest
+          #   xcode: 14.3
           #   runs_on: macos-latest
           #   config_name: Release
           #   extra_config_args: --apply-default-release-flags --trace2file enable
@@ -234,7 +231,7 @@ jobs:
     steps:
       - uses: maxim-lobanov/setup-xcode@v1
         with:
-          xcode-version: '14.3'
+          xcode-version: ${{ matrix.xcode }}
       - uses: actions/checkout@v3
       - name: Build System Info
         run: |
@@ -311,14 +308,13 @@ jobs:
             config_name: Debug
             extra_config_args: --arch x86 --apply-default-debug-flags --trace2file enable
             includeInDevBranchBuilds: true
-###TMPHACK ENABLE WHILE DEBUGING MSYS BUILD
-          - displayTargetName: windows-vs2k22-cygwin-x86-Release
-            os: windows
-            runs_on: windows-2022
-            container_image: sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k22:v3
-            config_name: Release
-            extra_config_args: --arch x86 --apply-default-release-flags --trace2file enable
-            includeInDevBranchBuilds: false
+          # - displayTargetName: windows-vs2k22-cygwin-x86-Release
+          #   os: windows
+          #   runs_on: windows-2022
+          #   container_image: sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k22:v3
+          #   config_name: Release
+          #   extra_config_args: --arch x86 --apply-default-release-flags --trace2file enable
+          #   includeInDevBranchBuilds: false
           # - displayTargetName: windows-vs2k22-cygwin-x86_64-Release
           #   os: windows
           #   runs_on: windows-2022
@@ -340,14 +336,13 @@ jobs:
           #   config_name: Release
           #   extra_config_args: --arch x86 --apply-default-release-flags --trace2file enable
           #   includeInDevBranchBuilds: false
-###TMPHACK DISBALE WHILE DEBUGING
-          # - displayTargetName: windows-vs2k22-msys-x86_64-Release
-          #   os: windows
-          #   runs_on: windows-2022
-          #   container_image: sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k22:v3
-          #   config_name: Release
-          #   extra_config_args: --arch x86_64 --apply-default-release-flags --trace2file enable
-          #   includeInDevBranchBuilds: true
+          - displayTargetName: windows-vs2k22-msys-x86_64-Release
+            os: windows
+            runs_on: windows-2022
+            container_image: sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k22:v3
+            config_name: Release
+            extra_config_args: --arch x86_64 --apply-default-release-flags --trace2file enable
+            includeInDevBranchBuilds: true
     env:
       # vm has 2 virtual CPUs, but 8GB ram, so jobs=3 (empirical), and QUICK_BUILD avoids some internal testing
       MAKEFLAGS: "--jobs=3 QUICK_BUILD=1"

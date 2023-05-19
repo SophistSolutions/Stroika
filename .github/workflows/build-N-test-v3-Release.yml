@@ -8,7 +8,7 @@
 # STEPS to construct DEBUG file from RELEASE:
 #   - Clone Release file
 #   - Change name field (line 22 apx)
-#   - Change brange commented out(line 26 apx)
+#   - Change branch commented out(line 26 apx)
 #   - Comment out all items with includeInDevBranchBuilds: false
 #
 # NOTE: I've tried many tricks - none which seem to work - to get this working on one file with one
@@ -76,11 +76,11 @@ jobs:
             extra_config_args: --apply-default-release-flags --trace2file enable
             includeInDevBranchBuilds: true
 
-          - displayTargetName: ubuntu-20.04-clang++-10
+          - displayTargetName: ubuntu-20.04-clang++-13
             os: unix
-            compiler: clang++-10
+            compiler: clang++-13
             runs_on: ubuntu-latest
-            container_image: sophistsolutionsinc/stroika-buildvm-ubuntu2004-regression-tests:v3
+            container_image: sophistsolutionsinc/stroika-buildvm-ubuntu2204-regression-tests:v3
             cpp_version: c++2a
             config_name: Release
             extra_config_args: --apply-default-release-flags --trace2file enable
@@ -214,11 +214,13 @@ jobs:
           - displayTargetName: MacOS-Debug
             os: macos-latest
             runs_on: macos-latest
+            xcode: 14.3
             config_name: Debug
             extra_config_args: --apply-default-debug-flags --trace2file enable
             includeInDevBranchBuilds: true
           - displayTargetName: MacOS
             os: macos-latest
+            xcode: 14.3
             runs_on: macos-latest
             config_name: Release
             extra_config_args: --apply-default-release-flags --trace2file enable
@@ -227,6 +229,9 @@ jobs:
       # vm has 2 virtual CPUs, but 8GB ram, so jobs=3 (empirical), and QUICK_BUILD avoids some internal testing
       MAKEFLAGS: "--jobs=3 QUICK_BUILD=1"
     steps:
+      - uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: ${{ matrix.xcode }}
       - uses: actions/checkout@v3
       - name: Build System Info
         run: |
