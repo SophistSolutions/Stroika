@@ -272,7 +272,7 @@ namespace Stroika::Foundation::Containers {
         }
     }
     template <typename T, typename KEY_TYPE, typename TRAITS>
-    template <typename PREDICATE, enable_if_t<Configuration::IsTPredicate<T, PREDICATE> ()>*>
+    template <predicate<T> PREDICATE>
     size_t KeyedCollection<T, KEY_TYPE, TRAITS>::RemoveAll (PREDICATE&& p)
     {
         size_t nRemoved{};

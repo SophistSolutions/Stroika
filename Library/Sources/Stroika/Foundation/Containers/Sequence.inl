@@ -168,7 +168,7 @@ namespace Stroika::Foundation::Containers {
         }
     }
     template <typename T>
-    template <typename PREDICATE, enable_if_t<Configuration::IsTPredicate<T, PREDICATE> ()>*>
+    template <predicate<T> PREDICATE>
     size_t Sequence<T>::RemoveAll (PREDICATE&& p)
     {
         // @todo Consider migrating this method to _IRep? Doing so would allow for different (e.g. vector) implementations

@@ -428,7 +428,7 @@ namespace Stroika::Foundation::Containers {
          *  \note mutates container
          */
         nonvirtual void RemoveAll ();
-        template <typename PREDICATE, enable_if_t<Configuration::IsTPredicate<pair<DOMAIN_TYPE, RANGE_TYPE>, PREDICATE> ()>* = nullptr>
+        template <predicate<pair<DOMAIN_TYPE, RANGE_TYPE>> PREDICATE>
         nonvirtual size_t RemoveAll (PREDICATE&& p);
 
     public:

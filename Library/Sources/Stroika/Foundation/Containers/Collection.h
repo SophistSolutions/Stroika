@@ -268,7 +268,7 @@ namespace Stroika::Foundation::Containers {
         nonvirtual size_t RemoveAll (const Iterator<value_type>& start, const Iterator<value_type>& end, EQUALS_COMPARER&& equalsComparer = {});
         template <typename ITERABLE_OF_ADDABLE, typename EQUALS_COMPARER = equal_to<T>, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>>* = nullptr>
         nonvirtual size_t RemoveAll (const ITERABLE_OF_ADDABLE& c, EQUALS_COMPARER&& equalsComparer = {});
-        template <typename PREDICATE, enable_if_t<Configuration::IsTPredicate<T, PREDICATE> ()>* = nullptr>
+        template <predicate<T> PREDICATE>
         nonvirtual size_t RemoveAll (PREDICATE&& p);
 
     public:

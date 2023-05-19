@@ -292,7 +292,7 @@ namespace Stroika::Foundation::Containers {
         return cnt;
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-    template <typename PREDICATE, enable_if_t<Configuration::IsTPredicate<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>, PREDICATE> ()>*>
+    template <predicate<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> PREDICATE>
     size_t Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::RemoveAll (PREDICATE&& p)
     {
         size_t nRemoved{};

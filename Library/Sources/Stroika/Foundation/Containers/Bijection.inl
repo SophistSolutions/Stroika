@@ -360,7 +360,7 @@ namespace Stroika::Foundation::Containers {
         }
     }
     template <typename DOMAIN_TYPE, typename RANGE_TYPE>
-    template <typename PREDICATE, enable_if_t<Configuration::IsTPredicate<pair<DOMAIN_TYPE, RANGE_TYPE>, PREDICATE> ()>*>
+    template <predicate<pair<DOMAIN_TYPE, RANGE_TYPE>> PREDICATE>
     size_t Bijection<DOMAIN_TYPE, RANGE_TYPE>::RemoveAll (PREDICATE&& p)
     {
         size_t nRemoved{};

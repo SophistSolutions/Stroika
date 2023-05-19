@@ -230,7 +230,7 @@ namespace Stroika::Foundation::Containers {
         }
     }
     template <typename T>
-    template <typename PREDICATE, enable_if_t<Configuration::IsTPredicate<T, PREDICATE> ()>*>
+    template <predicate<T> PREDICATE>
     size_t Set<T>::RemoveAll (PREDICATE&& p)
     {
         size_t nRemoved{};
