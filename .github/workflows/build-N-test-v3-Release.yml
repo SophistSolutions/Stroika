@@ -140,6 +140,8 @@ jobs:
     ### ATTEMPT TO COMPRESS 2 workflow files into one, but so far not working
     ### SEE
     ### https://stackoverflow.com/questions/65384420/how-to-make-a-github-action-matrix-element-conditional/65385385#65385385
+    ### This makes sense but matrix not available in job-level if test - but above stackoverflow shows possible complicated
+    ### path to workaround --LGP 2023-05-18
     ###
     #if: github.ref == 'refs/heads/v3-Release' || matrix.includeInDevBranchBuilds
     env:
