@@ -353,7 +353,7 @@ namespace Stroika::Foundation::Containers {
          * 
          *  \note mutates container
          */
-        template <typename ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>>* = nullptr>
+        template <ranges::range ITERABLE_OF_ADDABLE>
         nonvirtual void AddAll (ITERABLE_OF_ADDABLE&& items);
         template <input_iterator ITERATOR_OF_ADDABLE>
         nonvirtual void AddAll (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);

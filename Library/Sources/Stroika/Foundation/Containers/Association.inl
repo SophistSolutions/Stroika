@@ -186,7 +186,7 @@ namespace Stroika::Foundation::Containers {
         }
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-    template <typename ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>>*>
+    template <ranges::range ITERABLE_OF_ADDABLE>
     inline void Association<KEY_TYPE, MAPPED_VALUE_TYPE>::AddAll (ITERABLE_OF_ADDABLE&& items)
     {
         if constexpr (std::is_convertible_v<decay_t<ITERABLE_OF_ADDABLE>*, Iterable<value_type>*>) {

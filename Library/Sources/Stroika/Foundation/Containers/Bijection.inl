@@ -71,9 +71,9 @@ namespace Stroika::Foundation::Containers {
         _AssertRepValidType ();
     }
     template <typename DOMAIN_TYPE, typename RANGE_TYPE>
-    template <typename ITERABLE_OF_ADDABLE,
-              enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and not is_base_of_v<Bijection<DOMAIN_TYPE, RANGE_TYPE>, decay_t<ITERABLE_OF_ADDABLE>>>*>
+    template <ranges::range ITERABLE_OF_ADDABLE>
     inline Bijection<DOMAIN_TYPE, RANGE_TYPE>::Bijection (ITERABLE_OF_ADDABLE&& src)
+        requires (not is_base_of_v<Bijection<DOMAIN_TYPE, RANGE_TYPE>, decay_t<ITERABLE_OF_ADDABLE>>)
         : Bijection{}
     {
         static_assert (IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>);
@@ -81,8 +81,7 @@ namespace Stroika::Foundation::Containers {
         _AssertRepValidType ();
     }
     template <typename DOMAIN_TYPE, typename RANGE_TYPE>
-    template <IEqualsComparer<DOMAIN_TYPE> DOMAIN_EQUALS_COMPARER, IEqualsComparer<RANGE_TYPE> RANGE_EQUALS_COMPARER,
-              typename ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>>*>
+    template <IEqualsComparer<DOMAIN_TYPE> DOMAIN_EQUALS_COMPARER, IEqualsComparer<RANGE_TYPE> RANGE_EQUALS_COMPARER, ranges::range ITERABLE_OF_ADDABLE>
     inline Bijection<DOMAIN_TYPE, RANGE_TYPE>::Bijection (DOMAIN_EQUALS_COMPARER&& domainEqualsComparer,
                                                           RANGE_EQUALS_COMPARER&& rangeEqualsComparer, ITERABLE_OF_ADDABLE&& src)
         : Bijection{forward<DOMAIN_EQUALS_COMPARER> (domainEqualsComparer), forward<RANGE_EQUALS_COMPARER> (rangeEqualsComparer)}
@@ -321,11 +320,10 @@ namespace Stroika::Foundation::Containers {
         }
     }
     template <typename DOMAIN_TYPE, typename RANGE_TYPE>
-    template <typename CONTAINER_OF_KEYVALUE>
+    template <ranges::range CONTAINER_OF_KEYVALUE>
     inline void Bijection<DOMAIN_TYPE, RANGE_TYPE>::AddAll (const CONTAINER_OF_KEYVALUE& items)
     {
         static_assert (IsAddable_v<ExtractValueType_t<CONTAINER_OF_KEYVALUE>>);
-        static_assert (Configuration::IsIterable_v<CONTAINER_OF_KEYVALUE>);
         // see https://stroika.atlassian.net/browse/STK-645
         /*
          *  Note - unlike some other containers - we don't need to check for this != &s because if we

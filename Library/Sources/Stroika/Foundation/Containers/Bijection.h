@@ -174,11 +174,10 @@ namespace Stroika::Foundation::Containers {
         Bijection (const initializer_list<value_type>& src);
         template <IEqualsComparer<DOMAIN_TYPE> DOMAIN_EQUALS_COMPARER, IEqualsComparer<RANGE_TYPE> RANGE_EQUALS_COMPARER>
         Bijection (DOMAIN_EQUALS_COMPARER&& domainEqualsComparer, RANGE_EQUALS_COMPARER&& rangeEqualsComparer, const initializer_list<value_type>& src);
-        template <typename ITERABLE_OF_ADDABLE,
-                  enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and not is_base_of_v<Bijection<DOMAIN_TYPE, RANGE_TYPE>, decay_t<ITERABLE_OF_ADDABLE>>>* = nullptr>
-        explicit Bijection (ITERABLE_OF_ADDABLE&& src);
-        template <IEqualsComparer<DOMAIN_TYPE> DOMAIN_EQUALS_COMPARER, IEqualsComparer<RANGE_TYPE> RANGE_EQUALS_COMPARER,
-                  typename ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>>* = nullptr>
+        template <ranges::range ITERABLE_OF_ADDABLE>
+        explicit Bijection (ITERABLE_OF_ADDABLE&& src)
+            requires (not is_base_of_v<Bijection<DOMAIN_TYPE, RANGE_TYPE>, decay_t<ITERABLE_OF_ADDABLE>>);
+        template <IEqualsComparer<DOMAIN_TYPE> DOMAIN_EQUALS_COMPARER, IEqualsComparer<RANGE_TYPE> RANGE_EQUALS_COMPARER, ranges::range ITERABLE_OF_ADDABLE>
         Bijection (DOMAIN_EQUALS_COMPARER&& domainEqualsComparer, RANGE_EQUALS_COMPARER&& rangeEqualsComparer, ITERABLE_OF_ADDABLE&& src);
         template <input_iterator ITERATOR_OF_ADDABLE>
         Bijection (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
@@ -383,12 +382,12 @@ namespace Stroika::Foundation::Containers {
          *
          * 
          *  \req  IsAddable_v<ExtractValueType_t<CONTAINER_OF_KEYVALUE>>;                       // CONTAINER_OF_KEYVALUE overload
-         *  \req  Configuration::IsIterable_v<CONTAINER_OF_KEYVALUE>                            //  ditto
+         *  \req  ranges::range    CONTAINER_OF_KEYVALUE                         //  ditto
          *  \req  static_assert (IsAddable_v<ExtractValueType_t<COPY_FROM_ITERATOR_KEYVALUE>>); // COPY_FROM_ITERATOR_KEYVALUE overload
 
          *  \note mutates container
          */
-        template <typename CONTAINER_OF_KEYVALUE>
+        template <ranges::range CONTAINER_OF_KEYVALUE>
         nonvirtual void AddAll (const CONTAINER_OF_KEYVALUE& items);
         template <input_iterator COPY_FROM_ITERATOR_KEYVALUE>
         nonvirtual void AddAll (COPY_FROM_ITERATOR_KEYVALUE&& start, COPY_FROM_ITERATOR_KEYVALUE&& end);
