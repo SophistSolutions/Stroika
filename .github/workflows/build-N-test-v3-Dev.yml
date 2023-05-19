@@ -206,6 +206,8 @@ jobs:
             /tmp/Trace*.txt
 
   build-n-test-MacOS:
+    # tmphack to see if this disables macos builds temporarily (cuz missing xcode 14.3)
+    if: 0
     runs-on: ${{ matrix.runs_on }}
     strategy:
       matrix:
