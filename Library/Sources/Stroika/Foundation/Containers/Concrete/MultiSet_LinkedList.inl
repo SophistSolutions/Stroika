@@ -248,7 +248,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         AssertRepValidType_ ();
     }
     template <typename T, typename TRAITS>
-    template <typename ITERABLE_OF_ADDABLE,
+    template <ranges::range ITERABLE_OF_ADDABLE,
               enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and not is_base_of_v<MultiSet_LinkedList<T, TRAITS>, decay_t<ITERABLE_OF_ADDABLE>>>*>
     inline MultiSet_LinkedList<T, TRAITS>::MultiSet_LinkedList (ITERABLE_OF_ADDABLE&& src)
         : MultiSet_LinkedList{}
@@ -258,7 +258,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         AssertRepValidType_ ();
     }
     template <typename T, typename TRAITS>
-    template <IEqualsComparer<T> EQUALS_COMPARER, typename ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>>*>
+    template <IEqualsComparer<T> EQUALS_COMPARER, ranges::range ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>>*>
     inline MultiSet_LinkedList<T, TRAITS>::MultiSet_LinkedList (EQUALS_COMPARER&& equalsComparer, ITERABLE_OF_ADDABLE&& src)
         : MultiSet_LinkedList{forward<EQUALS_COMPARER> (equalsComparer)}
     {

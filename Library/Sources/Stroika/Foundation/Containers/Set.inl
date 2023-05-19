@@ -45,7 +45,7 @@ namespace Stroika::Foundation::Containers {
         _AssertRepValidType ();
     }
     template <typename T>
-    template <typename ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and not is_base_of_v<Set<T>, decay_t<ITERABLE_OF_ADDABLE>>>*>
+    template <ranges::range ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and not is_base_of_v<Set<T>, decay_t<ITERABLE_OF_ADDABLE>>>*>
     inline Set<T>::Set (ITERABLE_OF_ADDABLE&& src)
         : Set{}
     {
@@ -54,7 +54,7 @@ namespace Stroika::Foundation::Containers {
         _AssertRepValidType ();
     }
     template <typename T>
-    template <IEqualsComparer<T> EQUALS_COMPARER, typename ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>>*>
+    template <IEqualsComparer<T> EQUALS_COMPARER, ranges::range ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>>*>
     inline Set<T>::Set (EQUALS_COMPARER&& equalsComparer, ITERABLE_OF_ADDABLE&& src)
         : Set{forward<EQUALS_COMPARER> (equalsComparer)}
     {
@@ -171,7 +171,7 @@ namespace Stroika::Foundation::Containers {
         }
     }
     template <typename T>
-    template <typename ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>>*>
+    template <ranges::range ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>>*>
     inline void Set<T>::AddAll (ITERABLE_OF_ADDABLE&& items)
     {
         static_assert (IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>);
@@ -215,7 +215,7 @@ namespace Stroika::Foundation::Containers {
         return cnt;
     }
     template <typename T>
-    template <typename ITERABLE_OF_ADDABLE>
+    template <ranges::range ITERABLE_OF_ADDABLE>
     inline size_t Set<T>::RemoveAll (const ITERABLE_OF_ADDABLE& s)
     {
         static_assert (IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>);

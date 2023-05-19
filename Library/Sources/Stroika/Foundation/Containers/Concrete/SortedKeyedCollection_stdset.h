@@ -84,15 +84,15 @@ namespace Stroika::Foundation::Containers::Concrete {
         SortedKeyedCollection_stdset (const SortedKeyedCollection_stdset& src) noexcept = default;
         template <typename KEY_INORDER_COMPARER = less<KEY_TYPE>, enable_if_t<Common::IsStrictInOrderComparer<KEY_INORDER_COMPARER, KEY_TYPE> ()>* = nullptr>
         SortedKeyedCollection_stdset (const KeyExtractorType& keyExtractor, KEY_INORDER_COMPARER&& keyComparer = KEY_INORDER_COMPARER{});
-        template <typename ITERABLE_OF_ADDABLE, typename KEY_INORDER_COMPARER = equal_to<KEY_TYPE>,
+        template <ranges::range ITERABLE_OF_ADDABLE, typename KEY_INORDER_COMPARER = equal_to<KEY_TYPE>,
                   enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and not is_base_of_v<SortedKeyedCollection_stdset<T, KEY_TYPE, TRAITS>, decay_t<ITERABLE_OF_ADDABLE>> and
                               Common::IsStrictInOrderComparer<KEY_INORDER_COMPARER, KEY_TYPE> ()>* = nullptr>
         SortedKeyedCollection_stdset (ITERABLE_OF_ADDABLE&& src);
-        template <typename ITERABLE_OF_ADDABLE, typename KEY_INORDER_COMPARER = less<KEY_TYPE>,
+        template <ranges::range ITERABLE_OF_ADDABLE, typename KEY_INORDER_COMPARER = less<KEY_TYPE>,
                   enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and not is_base_of_v<SortedKeyedCollection_stdset<T, KEY_TYPE, TRAITS>, decay_t<ITERABLE_OF_ADDABLE>> and
                               Common::IsStrictInOrderComparer<KEY_INORDER_COMPARER, KEY_TYPE> ()>* = nullptr>
         SortedKeyedCollection_stdset (KEY_INORDER_COMPARER&& keyComparer, ITERABLE_OF_ADDABLE&& src);
-        template <typename KEY_INORDER_COMPARER, typename ITERABLE_OF_ADDABLE,
+        template <typename KEY_INORDER_COMPARER, ranges::range ITERABLE_OF_ADDABLE,
                   enable_if_t<Common::IsStrictInOrderComparer<KEY_INORDER_COMPARER, KEY_TYPE> () and Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>>* = nullptr>
         SortedKeyedCollection_stdset (const KeyExtractorType& keyExtractor, KEY_INORDER_COMPARER&& keyComparer, ITERABLE_OF_ADDABLE&& src);
         template <input_iterator ITERATOR_OF_ADDABLE, typename KEY_INORDER_COMPARER = less<KEY_TYPE>,

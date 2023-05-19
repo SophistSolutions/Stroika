@@ -82,7 +82,7 @@ namespace Stroika::Foundation::Containers {
         }
     }
     template <typename T>
-    template <typename ITERABLE_OF_ADDABLE>
+    template <ranges::range ITERABLE_OF_ADDABLE>
     inline void Collection<T>::AddAll (ITERABLE_OF_ADDABLE&& items)
     {
         static_assert (IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>);
@@ -167,7 +167,7 @@ namespace Stroika::Foundation::Containers {
         return cnt;
     }
     template <typename T>
-    template <typename ITERABLE_OF_ADDABLE, typename EQUALS_COMPARER, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>>*>
+    template <ranges::range ITERABLE_OF_ADDABLE, typename EQUALS_COMPARER, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>>*>
     inline size_t Collection<T>::RemoveAll (const ITERABLE_OF_ADDABLE& c, EQUALS_COMPARER&& equalsComparer)
     {
         static_assert (IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>);

@@ -108,7 +108,7 @@ namespace Stroika::Foundation::Containers {
         _AssertRepValidType ();
     }
     template <typename T>
-    template <typename ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and not is_base_of_v<Sequence<T>, decay_t<ITERABLE_OF_ADDABLE>>>*>
+    template <ranges::range ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and not is_base_of_v<Sequence<T>, decay_t<ITERABLE_OF_ADDABLE>>>*>
     inline Sequence<T>::Sequence (ITERABLE_OF_ADDABLE&& src)
         : Sequence{}
     {
@@ -267,7 +267,7 @@ namespace Stroika::Foundation::Containers {
         }
     }
     template <typename T>
-    template <typename ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>>*>
+    template <ranges::range ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>>*>
     inline void Sequence<T>::InsertAll (size_t i, ITERABLE_OF_ADDABLE&& s)
     {
         static_assert (IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>);
@@ -280,7 +280,7 @@ namespace Stroika::Foundation::Containers {
         Insert (0, item);
     }
     template <typename T>
-    template <typename ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>>*>
+    template <ranges::range ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>>*>
     inline void Sequence<T>::PrependAll (ITERABLE_OF_ADDABLE&& s)
     {
         static_assert (IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>);
@@ -299,7 +299,7 @@ namespace Stroika::Foundation::Containers {
         _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().Insert (_IRep::_kSentinalLastItemIndex, &item, &item + 1);
     }
     template <typename T>
-    template <typename ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>>*>
+    template <ranges::range ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>>*>
     inline void Sequence<T>::AppendAll (ITERABLE_OF_ADDABLE&& s)
     {
         static_assert (IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>);

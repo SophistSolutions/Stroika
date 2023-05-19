@@ -402,14 +402,14 @@ namespace Stroika::Foundation::Containers {
         return nextI;
     }
     template <typename DOMAIN_TYPE, typename RANGE_TYPE>
-    template <typename ITERABLE_OF_ADDABLE>
+    template <ranges::range ITERABLE_OF_ADDABLE>
     inline Bijection<DOMAIN_TYPE, RANGE_TYPE>& Bijection<DOMAIN_TYPE, RANGE_TYPE>::operator+= (const ITERABLE_OF_ADDABLE& items)
     {
         AddAll (items);
         return *this;
     }
     template <typename DOMAIN_TYPE, typename RANGE_TYPE>
-    template <typename ITERABLE_OF_ADDABLE>
+    template <ranges::range ITERABLE_OF_ADDABLE>
     inline Bijection<DOMAIN_TYPE, RANGE_TYPE>& Bijection<DOMAIN_TYPE, RANGE_TYPE>::operator-= (const ITERABLE_OF_ADDABLE& items)
     {
         RemoveAll (items);

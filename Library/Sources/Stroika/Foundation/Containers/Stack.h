@@ -108,7 +108,8 @@ namespace Stroika::Foundation::Containers {
         Stack ();
         Stack (Stack&& src) noexcept      = default;
         Stack (const Stack& src) noexcept = default;
-        template <typename ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and not is_base_of_v<Stack<T>, decay_t<ITERABLE_OF_ADDABLE>>>* = nullptr>
+        template <ranges::range ITERABLE_OF_ADDABLE,
+                  enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and not is_base_of_v<Stack<T>, decay_t<ITERABLE_OF_ADDABLE>>>* = nullptr>
         explicit Stack (ITERABLE_OF_ADDABLE&& src);
         template <typename ITERATOR_OF_ADDABLE>
         Stack (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);

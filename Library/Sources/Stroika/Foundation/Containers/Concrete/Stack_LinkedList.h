@@ -52,7 +52,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         Stack_LinkedList ();
         Stack_LinkedList (Stack_LinkedList&& src) noexcept      = default;
         Stack_LinkedList (const Stack_LinkedList& src) noexcept = default;
-        template <typename ITERABLE_OF_ADDABLE,
+        template <ranges::range ITERABLE_OF_ADDABLE,
                   enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and not is_base_of_v<Stack_LinkedList<T>, decay_t<ITERABLE_OF_ADDABLE>>>* = nullptr>
         explicit Stack_LinkedList (ITERABLE_OF_ADDABLE&& src);
         template <typename ITERATOR_OF_ADDABLE>

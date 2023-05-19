@@ -38,7 +38,7 @@ namespace Stroika::Foundation::Containers {
     }
 #if !qCompilerAndStdLib_template_Requires_templateDeclarationMatchesOutOfLine2_Buggy
     template <typename T, typename KEY_TYPE, typename TRAITS>
-    template <typename ITERABLE_OF_ADDABLE, IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER>
+    template <ranges::range ITERABLE_OF_ADDABLE, IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER>
     inline KeyedCollection<T, KEY_TYPE, TRAITS>::KeyedCollection (ITERABLE_OF_ADDABLE&& src)
         requires (KeyedCollection_ExtractorCanBeDefaulted<T, KEY_TYPE, TRAITS> and Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and
                   not is_base_of_v<KeyedCollection<T, KEY_TYPE, TRAITS>, decay_t<ITERABLE_OF_ADDABLE>>)
@@ -51,7 +51,7 @@ namespace Stroika::Foundation::Containers {
 #endif
 #if !qCompilerAndStdLib_template_Requires_templateDeclarationMatchesOutOfLine2_Buggy
     template <typename T, typename KEY_TYPE, typename TRAITS>
-    template <typename ITERABLE_OF_ADDABLE, IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER>
+    template <ranges::range ITERABLE_OF_ADDABLE, IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER>
     inline KeyedCollection<T, KEY_TYPE, TRAITS>::KeyedCollection (KEY_EQUALS_COMPARER&& keyComparer, ITERABLE_OF_ADDABLE&& src)
         requires (KeyedCollection_ExtractorCanBeDefaulted<T, KEY_TYPE, TRAITS> and Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and
                   not is_base_of_v<KeyedCollection<T, KEY_TYPE, TRAITS>, decay_t<ITERABLE_OF_ADDABLE>>)
@@ -63,7 +63,7 @@ namespace Stroika::Foundation::Containers {
     }
 #endif
     template <typename T, typename KEY_TYPE, typename TRAITS>
-    template <IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER, typename ITERABLE_OF_ADDABLE>
+    template <IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER, ranges::range ITERABLE_OF_ADDABLE>
     inline KeyedCollection<T, KEY_TYPE, TRAITS>::KeyedCollection (const KeyExtractorType& keyExtractor, KEY_EQUALS_COMPARER&& keyComparer,
                                                                   ITERABLE_OF_ADDABLE&& src)
         requires (Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>)
@@ -219,7 +219,7 @@ namespace Stroika::Foundation::Containers {
         return cntAdded;
     }
     template <typename T, typename KEY_TYPE, typename TRAITS>
-    template <typename ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>>*>
+    template <ranges::range ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>>*>
     inline unsigned int KeyedCollection<T, KEY_TYPE, TRAITS>::AddAll (ITERABLE_OF_ADDABLE&& items)
     {
         static_assert (IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>);
@@ -288,7 +288,7 @@ namespace Stroika::Foundation::Containers {
         return nRemoved;
     }
     template <typename T, typename KEY_TYPE, typename TRAITS>
-    template <typename ITERABLE_OF_ADDABLE>
+    template <ranges::range ITERABLE_OF_ADDABLE>
     inline size_t KeyedCollection<T, KEY_TYPE, TRAITS>::RemoveAll (const ITERABLE_OF_ADDABLE& items)
     {
         size_t cnt{};

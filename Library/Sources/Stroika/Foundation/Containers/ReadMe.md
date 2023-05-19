@@ -198,7 +198,7 @@ Each container Archetype has its own set of arguments that make sense for its co
   - Note, the reason for the not_is_base_of<> magic is to avoid ambiguity with copy constructor (not SURE WHY this is needed but it was needed in some cases - maybe due to bugs - maybe can lose - I recall docs on C++ suggest NOT needed). https://stackoverflow.com/questions/4419375/templated-constructor-vs-templated-copy-constructor seems to suggest it is needed (not authoritative). But I seem to recall reading (https://stackoverflow.com/questions/23244665/c-overloading-takes-precedence-over-specialization) that explictly defined copy constructors take precedence over template defined ones. So confused by this, but it appears still needed (2021-12-03).
 
     ~~~
-    template <typename ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and not is_base_of_v<CONTAINER<T>, decay_t<ITERABLE_OF_ADDABLE>>>* = nullptr>
+    template <ranges::range ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and not is_base_of_v<CONTAINER<T>, decay_t<ITERABLE_OF_ADDABLE>>>* = nullptr>
     CONTAINER (ITERABLE_OF_ADDABLE&& src)
     {
         static_assert (IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>);

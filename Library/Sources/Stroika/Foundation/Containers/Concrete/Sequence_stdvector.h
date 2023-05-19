@@ -54,7 +54,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         Sequence_stdvector (const Sequence_stdvector& src) noexcept = default;
         Sequence_stdvector (std::vector<T>&& src);
         Sequence_stdvector (const initializer_list<value_type>& src);
-        template <typename ITERABLE_OF_ADDABLE,
+        template <ranges::range ITERABLE_OF_ADDABLE,
                   enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and not is_base_of_v<Sequence_stdvector<T>, decay_t<ITERABLE_OF_ADDABLE>>>* = nullptr>
         explicit Sequence_stdvector (ITERABLE_OF_ADDABLE&& src);
         template <typename ITERATOR_OF_ADDABLE>

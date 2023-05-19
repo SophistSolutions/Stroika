@@ -188,10 +188,10 @@ namespace Stroika::Foundation::Containers {
         Association (const initializer_list<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src);
         template <IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER>
         Association (KEY_EQUALS_COMPARER&& keyEqualsComparer, const initializer_list<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src);
-        template <typename ITERABLE_OF_ADDABLE,
+        template <ranges::range ITERABLE_OF_ADDABLE,
                   enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and not is_base_of_v<Association<KEY_TYPE, MAPPED_VALUE_TYPE>, decay_t<ITERABLE_OF_ADDABLE>>>* = nullptr>
         explicit Association (ITERABLE_OF_ADDABLE&& src);
-        template <IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER, typename ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>>* = nullptr>
+        template <IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER, ranges::range ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>>* = nullptr>
         Association (KEY_EQUALS_COMPARER&& keyEqualsComparer, ITERABLE_OF_ADDABLE&& src);
         template <input_iterator ITERATOR_OF_ADDABLE>
         Association (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
@@ -551,13 +551,13 @@ namespace Stroika::Foundation::Containers {
     public:
         /**
          */
-        template <typename ITERABLE_OF_ADDABLE>
+        template <ranges::range ITERABLE_OF_ADDABLE>
         nonvirtual Association operator+ (const ITERABLE_OF_ADDABLE& items) const;
 
     public:
         /**
          */
-        template <typename ITERABLE_OF_ADDABLE>
+        template <ranges::range ITERABLE_OF_ADDABLE>
         nonvirtual Association& operator+= (const ITERABLE_OF_ADDABLE& items);
 
     public:

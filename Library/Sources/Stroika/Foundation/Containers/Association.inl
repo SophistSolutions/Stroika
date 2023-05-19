@@ -54,7 +54,7 @@ namespace Stroika::Foundation::Containers {
         _AssertRepValidType ();
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-    template <typename ITERABLE_OF_ADDABLE,
+    template <ranges::range ITERABLE_OF_ADDABLE,
               enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and not is_base_of_v<Association<KEY_TYPE, MAPPED_VALUE_TYPE>, decay_t<ITERABLE_OF_ADDABLE>>>*>
     inline Association<KEY_TYPE, MAPPED_VALUE_TYPE>::Association (ITERABLE_OF_ADDABLE&& src)
         : Association{}
@@ -64,7 +64,7 @@ namespace Stroika::Foundation::Containers {
         _AssertRepValidType ();
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-    template <IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER, typename ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>>*>
+    template <IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER, ranges::range ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>>*>
     inline Association<KEY_TYPE, MAPPED_VALUE_TYPE>::Association (KEY_EQUALS_COMPARER&& keyEqualsComparer, ITERABLE_OF_ADDABLE&& src)
         : Association{forward<KEY_EQUALS_COMPARER> (keyEqualsComparer)}
     {
@@ -402,7 +402,7 @@ namespace Stroika::Foundation::Containers {
         RemoveAll ();
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-    template <typename ITERABLE_OF_ADDABLE>
+    template <ranges::range ITERABLE_OF_ADDABLE>
     inline Association<KEY_TYPE, MAPPED_VALUE_TYPE> Association<KEY_TYPE, MAPPED_VALUE_TYPE>::operator+ (const ITERABLE_OF_ADDABLE& items) const
     {
         Association<KEY_TYPE, MAPPED_VALUE_TYPE> result = *this;
@@ -410,7 +410,7 @@ namespace Stroika::Foundation::Containers {
         return result;
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-    template <typename ITERABLE_OF_ADDABLE>
+    template <ranges::range ITERABLE_OF_ADDABLE>
     inline Association<KEY_TYPE, MAPPED_VALUE_TYPE>& Association<KEY_TYPE, MAPPED_VALUE_TYPE>::operator+= (const ITERABLE_OF_ADDABLE& items)
     {
         AddAll (items);

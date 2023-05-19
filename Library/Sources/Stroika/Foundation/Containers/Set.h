@@ -171,9 +171,10 @@ namespace Stroika::Foundation::Containers {
         Set (const initializer_list<value_type>& src);
         template <IEqualsComparer<T> EQUALS_COMPARER>
         Set (EQUALS_COMPARER&& equalsComparer, const initializer_list<value_type>& src);
-        template <typename ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and not is_base_of_v<Set<T>, decay_t<ITERABLE_OF_ADDABLE>>>* = nullptr>
+        template <ranges::range ITERABLE_OF_ADDABLE,
+                  enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and not is_base_of_v<Set<T>, decay_t<ITERABLE_OF_ADDABLE>>>* = nullptr>
         explicit Set (ITERABLE_OF_ADDABLE&& src);
-        template <IEqualsComparer<T> EQUALS_COMPARER, typename ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>>* = nullptr>
+        template <IEqualsComparer<T> EQUALS_COMPARER, ranges::range ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>>* = nullptr>
         Set (EQUALS_COMPARER&& equalsComparer, ITERABLE_OF_ADDABLE&& src);
         template <input_iterator ITERATOR_OF_ADDABLE>
         Set (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
@@ -269,7 +270,7 @@ namespace Stroika::Foundation::Containers {
          */
         template <input_iterator ITERATOR_OF_ADDABLE>
         nonvirtual void AddAll (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
-        template <typename ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>>* = nullptr>
+        template <ranges::range ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>>* = nullptr>
         nonvirtual void AddAll (ITERABLE_OF_ADDABLE&& items);
 
     public:
@@ -321,7 +322,7 @@ namespace Stroika::Foundation::Containers {
          */
         template <typename ITERATOR_OF_ADDABLE>
         nonvirtual size_t RemoveAll (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
-        template <typename ITERABLE_OF_ADDABLE>
+        template <ranges::range ITERABLE_OF_ADDABLE>
         nonvirtual size_t RemoveAll (const ITERABLE_OF_ADDABLE& s);
         nonvirtual void   RemoveAll ();
         template <predicate<T> PREDICATE>

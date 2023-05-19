@@ -93,10 +93,10 @@ namespace Stroika::Foundation::Containers {
         SortedMultiSet (const initializer_list<value_type>& src);
         template <typename INORDER_COMPARER, enable_if_t<Common::IsStrictInOrderComparer<INORDER_COMPARER, T> ()>* = nullptr>
         SortedMultiSet (INORDER_COMPARER&& inorderComparer, const initializer_list<value_type>& src);
-        template <typename ITERABLE_OF_ADDABLE,
+        template <ranges::range ITERABLE_OF_ADDABLE,
                   enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and not is_base_of_v<SortedMultiSet<T, TRAITS>, decay_t<ITERABLE_OF_ADDABLE>>>* = nullptr>
         explicit SortedMultiSet (ITERABLE_OF_ADDABLE&& src);
-        template <typename INORDER_COMPARER, typename ITERABLE_OF_ADDABLE,
+        template <typename INORDER_COMPARER, ranges::range ITERABLE_OF_ADDABLE,
                   enable_if_t<Common::IsStrictInOrderComparer<INORDER_COMPARER, T> () and Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>>* = nullptr>
         SortedMultiSet (INORDER_COMPARER&& inorderComparer, ITERABLE_OF_ADDABLE&& src);
         template <input_iterator ITERATOR_OF_ADDABLE>

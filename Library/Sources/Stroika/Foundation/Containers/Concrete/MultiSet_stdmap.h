@@ -63,10 +63,10 @@ namespace Stroika::Foundation::Containers::Concrete {
         MultiSet_stdmap (const initializer_list<value_type>& src);
         template <typename INORDER_COMPARER, enable_if_t<Common::IsStrictInOrderComparer<INORDER_COMPARER, T> ()>* = nullptr>
         MultiSet_stdmap (INORDER_COMPARER&& comparer, const initializer_list<value_type>& src);
-        template <typename ITERABLE_OF_ADDABLE,
+        template <ranges::range ITERABLE_OF_ADDABLE,
                   enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and not is_base_of_v<MultiSet_stdmap<T, TRAITS>, decay_t<ITERABLE_OF_ADDABLE>>>* = nullptr>
         explicit MultiSet_stdmap (ITERABLE_OF_ADDABLE&& src);
-        template <typename INORDER_COMPARER, typename ITERABLE_OF_ADDABLE,
+        template <typename INORDER_COMPARER, ranges::range ITERABLE_OF_ADDABLE,
                   enable_if_t<Common::IsStrictInOrderComparer<INORDER_COMPARER, T> () and Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>>* = nullptr>
         MultiSet_stdmap (INORDER_COMPARER&& comparer, ITERABLE_OF_ADDABLE&& src);
         template <input_iterator ITERATOR_OF_ADDABLE>

@@ -179,10 +179,10 @@ namespace Stroika::Foundation::Containers {
         Mapping (const initializer_list<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src);
         template <IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER>
         Mapping (KEY_EQUALS_COMPARER&& keyEqualsComparer, const initializer_list<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src);
-        template <typename ITERABLE_OF_ADDABLE,
+        template <ranges::range ITERABLE_OF_ADDABLE,
                   enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and not is_base_of_v<Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>, decay_t<ITERABLE_OF_ADDABLE>>>* = nullptr>
         explicit Mapping (ITERABLE_OF_ADDABLE&& src);
-        template <IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER, typename ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>>* = nullptr>
+        template <IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER, ranges::range ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>>* = nullptr>
         Mapping (KEY_EQUALS_COMPARER&& keyEqualsComparer, ITERABLE_OF_ADDABLE&& src);
         template <input_iterator ITERATOR_OF_ADDABLE>
         Mapping (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
@@ -377,7 +377,7 @@ namespace Stroika::Foundation::Containers {
          *
          *  \note mutates container
          */
-        template <typename ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>>* = nullptr>
+        template <ranges::range ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>>* = nullptr>
         nonvirtual unsigned int AddAll (ITERABLE_OF_ADDABLE&& items, AddReplaceMode addReplaceMode = AddReplaceMode::eAddReplaces);
         template <input_iterator ITERATOR_OF_ADDABLE>
         nonvirtual unsigned int AddAll (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end,
@@ -592,13 +592,13 @@ namespace Stroika::Foundation::Containers {
     public:
         /**
          */
-        template <typename ITERABLE_OF_ADDABLE>
+        template <ranges::range ITERABLE_OF_ADDABLE>
         nonvirtual Mapping operator+ (const ITERABLE_OF_ADDABLE& items) const;
 
     public:
         /**
          */
-        template <typename ITERABLE_OF_ADDABLE>
+        template <ranges::range ITERABLE_OF_ADDABLE>
         nonvirtual Mapping& operator+= (const ITERABLE_OF_ADDABLE& items);
 
     public:

@@ -57,7 +57,8 @@ namespace Stroika::Foundation::Containers {
         _AssertRepValidType ();
     }
     template <typename T>
-    template <typename ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and not is_base_of_v<SortedCollection<T>, decay_t<ITERABLE_OF_ADDABLE>>>*>
+    template <ranges::range ITERABLE_OF_ADDABLE,
+              enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and not is_base_of_v<SortedCollection<T>, decay_t<ITERABLE_OF_ADDABLE>>>*>
     inline SortedCollection<T>::SortedCollection (ITERABLE_OF_ADDABLE&& src)
         : SortedCollection{}
     {
@@ -66,7 +67,7 @@ namespace Stroika::Foundation::Containers {
         _AssertRepValidType ();
     }
     template <typename T>
-    template <typename INORDER_COMPARER, typename ITERABLE_OF_ADDABLE,
+    template <typename INORDER_COMPARER, ranges::range ITERABLE_OF_ADDABLE,
               enable_if_t<Common::IsStrictInOrderComparer<INORDER_COMPARER, T> () and Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>>*>
     inline SortedCollection<T>::SortedCollection (INORDER_COMPARER&& inOrderComparer, ITERABLE_OF_ADDABLE&& src)
         : SortedCollection{forward<INORDER_COMPARER> (inOrderComparer)}

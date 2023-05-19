@@ -63,10 +63,11 @@ namespace Stroika::Foundation::Containers::Concrete {
         SortedMapping_stdmap (const initializer_list<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src);
         template <typename KEY_INORDER_COMPARER, enable_if_t<Common::IsStrictInOrderComparer<KEY_INORDER_COMPARER, KEY_TYPE> ()>* = nullptr>
         SortedMapping_stdmap (KEY_INORDER_COMPARER&& inorderComparer, const initializer_list<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src);
-        template <typename ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and
+        template <ranges::range ITERABLE_OF_ADDABLE,
+                  enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and
                                                             not is_base_of_v<SortedMapping_stdmap<KEY_TYPE, MAPPED_VALUE_TYPE>, decay_t<ITERABLE_OF_ADDABLE>>>* = nullptr>
         explicit SortedMapping_stdmap (ITERABLE_OF_ADDABLE&& src);
-        template <typename KEY_INORDER_COMPARER, typename ITERABLE_OF_ADDABLE,
+        template <typename KEY_INORDER_COMPARER, ranges::range ITERABLE_OF_ADDABLE,
                   enable_if_t<Common::IsStrictInOrderComparer<KEY_INORDER_COMPARER, KEY_TYPE> () and Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>>* = nullptr>
         SortedMapping_stdmap (KEY_INORDER_COMPARER&& inorderComparer, ITERABLE_OF_ADDABLE&& src);
         template <input_iterator ITERATOR_OF_ADDABLE>

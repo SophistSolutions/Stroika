@@ -492,7 +492,7 @@ namespace Stroika::Foundation::Containers {
          *
          *  \note mutates container
          */
-        template <typename ITERABLE_OF_ADDABLE>
+        template <ranges::range ITERABLE_OF_ADDABLE>
         nonvirtual Bijection& operator+= (const ITERABLE_OF_ADDABLE& items);
 
     public:
@@ -500,7 +500,7 @@ namespace Stroika::Foundation::Containers {
          *
          *  \note mutates container
          */
-        template <typename ITERABLE_OF_ADDABLE>
+        template <ranges::range ITERABLE_OF_ADDABLE>
         nonvirtual Bijection& operator-= (const ITERABLE_OF_ADDABLE& items);
 
     protected:

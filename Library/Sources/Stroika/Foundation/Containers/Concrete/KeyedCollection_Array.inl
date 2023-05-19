@@ -195,7 +195,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         AssertRepValidType_ ();
     }
     template <typename T, typename KEY_TYPE, typename TRAITS>
-    template <typename ITERABLE_OF_ADDABLE, IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER,
+    template <ranges::range ITERABLE_OF_ADDABLE, IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER,
               enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and not is_base_of_v<KeyedCollection_Array<T, KEY_TYPE, TRAITS>, decay_t<ITERABLE_OF_ADDABLE>>>*>
     inline KeyedCollection_Array<T, KEY_TYPE, TRAITS>::KeyedCollection_Array (ITERABLE_OF_ADDABLE&& src)
         : KeyedCollection_Array{KeyExtractorType{}, equal_to<KEY_TYPE>{}}
@@ -205,7 +205,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         AssertRepValidType_ ();
     }
     template <typename T, typename KEY_TYPE, typename TRAITS>
-    template <typename ITERABLE_OF_ADDABLE, IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER,
+    template <ranges::range ITERABLE_OF_ADDABLE, IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER,
               enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and not is_base_of_v<KeyedCollection_Array<T, KEY_TYPE, TRAITS>, decay_t<ITERABLE_OF_ADDABLE>>>*>
     inline KeyedCollection_Array<T, KEY_TYPE, TRAITS>::KeyedCollection_Array (KEY_EQUALS_COMPARER&& keyComparer, ITERABLE_OF_ADDABLE&& src)
         : KeyedCollection_Array{KeyExtractorType{}, forward<KEY_EQUALS_COMPARER> (keyComparer)}
@@ -215,7 +215,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         AssertRepValidType_ ();
     }
     template <typename T, typename KEY_TYPE, typename TRAITS>
-    template <IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER, typename ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>>*>
+    template <IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER, ranges::range ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>>*>
     inline KeyedCollection_Array<T, KEY_TYPE, TRAITS>::KeyedCollection_Array (const KeyExtractorType& keyExtractor,
                                                                               KEY_EQUALS_COMPARER&& keyComparer, ITERABLE_OF_ADDABLE&& src)
         : KeyedCollection_Array{keyExtractor, forward<KEY_EQUALS_COMPARER> (keyComparer)}

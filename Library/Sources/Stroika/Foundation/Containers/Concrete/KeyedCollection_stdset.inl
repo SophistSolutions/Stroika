@@ -223,7 +223,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         AssertRepValidType_ ();
     }
     template <typename T, typename KEY_TYPE, typename TRAITS>
-    template <typename ITERABLE_OF_ADDABLE, typename KEY_INORDER_COMPARER,
+    template <ranges::range ITERABLE_OF_ADDABLE, typename KEY_INORDER_COMPARER,
               enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and not is_base_of_v<KeyedCollection_stdset<T, KEY_TYPE, TRAITS>, decay_t<ITERABLE_OF_ADDABLE>> and
                           Common::IsStrictInOrderComparer<KEY_INORDER_COMPARER, KEY_TYPE> ()>*>
     inline KeyedCollection_stdset<T, KEY_TYPE, TRAITS>::KeyedCollection_stdset (ITERABLE_OF_ADDABLE&& src)
@@ -234,7 +234,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         AssertRepValidType_ ();
     }
     template <typename T, typename KEY_TYPE, typename TRAITS>
-    template <typename ITERABLE_OF_ADDABLE, typename KEY_INORDER_COMPARER,
+    template <ranges::range ITERABLE_OF_ADDABLE, typename KEY_INORDER_COMPARER,
               enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and not is_base_of_v<KeyedCollection_stdset<T, KEY_TYPE, TRAITS>, decay_t<ITERABLE_OF_ADDABLE>> and
                           Common::IsStrictInOrderComparer<KEY_INORDER_COMPARER, KEY_TYPE> ()>*>
     inline KeyedCollection_stdset<T, KEY_TYPE, TRAITS>::KeyedCollection_stdset (KEY_INORDER_COMPARER&& keyComparer, ITERABLE_OF_ADDABLE&& src)
@@ -245,7 +245,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         AssertRepValidType_ ();
     }
     template <typename T, typename KEY_TYPE, typename TRAITS>
-    template <typename KEY_INORDER_COMPARER, typename ITERABLE_OF_ADDABLE,
+    template <typename KEY_INORDER_COMPARER, ranges::range ITERABLE_OF_ADDABLE,
               enable_if_t<Common::IsStrictInOrderComparer<KEY_INORDER_COMPARER, KEY_TYPE> () and Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>>*>
     inline KeyedCollection_stdset<T, KEY_TYPE, TRAITS>::KeyedCollection_stdset (const KeyExtractorType& keyExtractor,
                                                                                 KEY_INORDER_COMPARER&& keyComparer, ITERABLE_OF_ADDABLE&& src)

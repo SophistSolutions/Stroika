@@ -248,7 +248,7 @@ namespace Stroika::Foundation::Containers {
         KeyedCollection (const KeyedCollection& src) noexcept = default;
         template <IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER = equal_to<KEY_TYPE>>
         KeyedCollection (const KeyExtractorType& keyExtractor, KEY_EQUALS_COMPARER&& keyComparer = KEY_EQUALS_COMPARER{});
-        template <typename ITERABLE_OF_ADDABLE, IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER = equal_to<KEY_TYPE>>
+        template <ranges::range ITERABLE_OF_ADDABLE, IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER = equal_to<KEY_TYPE>>
         KeyedCollection (ITERABLE_OF_ADDABLE&& src)
             requires (KeyedCollection_ExtractorCanBeDefaulted<T, KEY_TYPE, TRAITS> and Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and
                       not is_base_of_v<KeyedCollection<T, KEY_TYPE, TRAITS>, decay_t<ITERABLE_OF_ADDABLE>>)
@@ -261,7 +261,7 @@ namespace Stroika::Foundation::Containers {
         }
 #endif
         ;
-        template <typename ITERABLE_OF_ADDABLE, IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER = equal_to<KEY_TYPE>>
+        template <ranges::range ITERABLE_OF_ADDABLE, IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER = equal_to<KEY_TYPE>>
         KeyedCollection (KEY_EQUALS_COMPARER&& keyComparer, ITERABLE_OF_ADDABLE&& src)
             requires (KeyedCollection_ExtractorCanBeDefaulted<T, KEY_TYPE, TRAITS> and Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and
                       not is_base_of_v<KeyedCollection<T, KEY_TYPE, TRAITS>, decay_t<ITERABLE_OF_ADDABLE>>)
@@ -274,7 +274,7 @@ namespace Stroika::Foundation::Containers {
         }
 #endif
         ;
-        template <IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER, typename ITERABLE_OF_ADDABLE>
+        template <IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER, ranges::range ITERABLE_OF_ADDABLE>
         KeyedCollection (const KeyExtractorType& keyExtractor, KEY_EQUALS_COMPARER&& keyComparer, ITERABLE_OF_ADDABLE&& src)
             requires (Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>);
         template <input_iterator ITERATOR_OF_ADDABLE, IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER = equal_to<KEY_TYPE>>
@@ -398,7 +398,7 @@ namespace Stroika::Foundation::Containers {
          */
         template <input_iterator ITERATOR_OF_ADDABLE>
         nonvirtual unsigned int AddAll (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
-        template <typename ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>>* = nullptr>
+        template <ranges::range ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>>* = nullptr>
         nonvirtual unsigned int AddAll (ITERABLE_OF_ADDABLE&& items);
 
     public:
@@ -450,7 +450,7 @@ namespace Stroika::Foundation::Containers {
          */
         template <typename ITERATOR_OF_ADDABLE>
         nonvirtual size_t RemoveAll (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
-        template <typename ITERABLE_OF_ADDABLE>
+        template <ranges::range ITERABLE_OF_ADDABLE>
         nonvirtual size_t RemoveAll (const ITERABLE_OF_ADDABLE& s);
         nonvirtual void   RemoveAll ();
         template <predicate<T> PREDICATE>

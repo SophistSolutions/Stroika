@@ -254,7 +254,8 @@ namespace Stroika::Foundation::Containers {
         Sequence (Sequence&& src) noexcept      = default;
         Sequence (const Sequence& src) noexcept = default;
         Sequence (const initializer_list<value_type>& src);
-        template <typename ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and not is_base_of_v<Sequence<T>, decay_t<ITERABLE_OF_ADDABLE>>>* = nullptr>
+        template <ranges::range ITERABLE_OF_ADDABLE,
+                  enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and not is_base_of_v<Sequence<T>, decay_t<ITERABLE_OF_ADDABLE>>>* = nullptr>
         explicit Sequence (ITERABLE_OF_ADDABLE&& src);
         template <typename ITERATOR_OF_ADDABLE>
         Sequence (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
@@ -454,7 +455,7 @@ namespace Stroika::Foundation::Containers {
          */
         template <typename ITERATOR_OF_ADDABLE>
         nonvirtual void InsertAll (size_t i, ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
-        template <typename ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>>* = nullptr>
+        template <ranges::range ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>>* = nullptr>
         nonvirtual void InsertAll (size_t i, ITERABLE_OF_ADDABLE&& s);
 
     public:
@@ -470,7 +471,7 @@ namespace Stroika::Foundation::Containers {
          *
          *  \note mutates container
          */
-        template <typename ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>>* = nullptr>
+        template <ranges::range ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>>* = nullptr>
         nonvirtual void PrependAll (ITERABLE_OF_ADDABLE&& s);
         template <typename ITERATOR_OF_ADDABLE>
         nonvirtual void PrependAll (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
@@ -496,7 +497,7 @@ namespace Stroika::Foundation::Containers {
          *
          *  \note mutates container
          */
-        template <typename ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>>* = nullptr>
+        template <ranges::range ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>>* = nullptr>
         nonvirtual void AppendAll (ITERABLE_OF_ADDABLE&& s);
         template <typename ITERATOR_OF_ADDABLE>
         nonvirtual void AppendAll (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);

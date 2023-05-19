@@ -217,7 +217,8 @@ namespace Stroika::Foundation::Containers::Concrete {
         AssertRepValidType_ ();
     }
     template <typename T>
-    template <typename ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and not is_base_of_v<Sequence_LinkedList<T>, decay_t<ITERABLE_OF_ADDABLE>>>*>
+    template <ranges::range ITERABLE_OF_ADDABLE,
+              enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and not is_base_of_v<Sequence_LinkedList<T>, decay_t<ITERABLE_OF_ADDABLE>>>*>
     inline Sequence_LinkedList<T>::Sequence_LinkedList (ITERABLE_OF_ADDABLE&& src)
         : Sequence_LinkedList{}
     {

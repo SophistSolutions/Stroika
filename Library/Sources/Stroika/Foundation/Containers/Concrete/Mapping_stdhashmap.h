@@ -94,7 +94,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         Mapping_stdhashmap (HASH&& hasher, KEY_EQUALS_COMPARER&& keyComparer, const initializer_list<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src)
             requires (Cryptography::Digest::IsHashFunction<HASH, KEY_TYPE>);
 #if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
-        template <typename ITERABLE_OF_ADDABLE>
+        template <ranges::range ITERABLE_OF_ADDABLE>
         explicit Mapping_stdhashmap (ITERABLE_OF_ADDABLE&& src)
             requires (is_default_constructible_v<Mapping_stdhashmap> and Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and
                       not is_base_of_v<Mapping_stdhashmap<KEY_TYPE, MAPPED_VALUE_TYPE>, decay_t<ITERABLE_OF_ADDABLE>>)
@@ -105,13 +105,13 @@ namespace Stroika::Foundation::Containers::Concrete {
             AssertRepValidType_ ();
         }
 #else
-        template <typename ITERABLE_OF_ADDABLE>
+        template <ranges::range ITERABLE_OF_ADDABLE>
         explicit Mapping_stdhashmap (ITERABLE_OF_ADDABLE&& src)
             requires (is_default_constructible_v<Mapping_stdhashmap> and Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and
                       not is_base_of_v<Mapping_stdhashmap<KEY_TYPE, MAPPED_VALUE_TYPE>, decay_t<ITERABLE_OF_ADDABLE>>);
 #endif
 #if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
-        template <typename HASH, IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER, typename ITERABLE_OF_ADDABLE>
+        template <typename HASH, IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER, ranges::range ITERABLE_OF_ADDABLE>
         Mapping_stdhashmap (HASH&& hasher, KEY_EQUALS_COMPARER&& keyComparer, ITERABLE_OF_ADDABLE&& src)
             requires (Cryptography::Digest::IsHashFunction<HASH, KEY_TYPE> and Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and
                       not is_base_of_v<Mapping_stdhashmap<KEY_TYPE, MAPPED_VALUE_TYPE>, decay_t<ITERABLE_OF_ADDABLE>>)
@@ -122,7 +122,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             AssertRepValidType_ ();
         }
 #else
-        template <typename HASH, IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER, typename ITERABLE_OF_ADDABLE>
+        template <typename HASH, IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER, ranges::range ITERABLE_OF_ADDABLE>
         Mapping_stdhashmap (HASH&& hasher, KEY_EQUALS_COMPARER&& keyComparer, ITERABLE_OF_ADDABLE&& src)
             requires (Cryptography::Digest::IsHashFunction<HASH, KEY_TYPE> and Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and
                       not is_base_of_v<Mapping_stdhashmap<KEY_TYPE, MAPPED_VALUE_TYPE>, decay_t<ITERABLE_OF_ADDABLE>>);

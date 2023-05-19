@@ -56,7 +56,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         Collection_stdmultiset (Collection_stdmultiset&& src) noexcept      = default;
         Collection_stdmultiset (const Collection_stdmultiset& src) noexcept = default;
         Collection_stdmultiset (const initializer_list<value_type>& src);
-        template <typename ITERABLE_OF_ADDABLE,
+        template <ranges::range ITERABLE_OF_ADDABLE,
                   enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and not is_base_of_v<Collection_stdmultiset<T>, decay_t<ITERABLE_OF_ADDABLE>>>* = nullptr>
         Collection_stdmultiset (ITERABLE_OF_ADDABLE&& src);
         template <typename ITERATOR_OF_ADDABLE>

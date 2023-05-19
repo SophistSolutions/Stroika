@@ -195,7 +195,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         AssertRepValidType_ ();
     }
     template <typename T, typename KEY_TYPE, typename TRAITS>
-    template <typename ITERABLE_OF_ADDABLE, IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER,
+    template <ranges::range ITERABLE_OF_ADDABLE, IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER,
               enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and not is_base_of_v<KeyedCollection_LinkedList<T, KEY_TYPE, TRAITS>, decay_t<ITERABLE_OF_ADDABLE>>>*>
     inline KeyedCollection_LinkedList<T, KEY_TYPE, TRAITS>::KeyedCollection_LinkedList (ITERABLE_OF_ADDABLE&& src)
         : KeyedCollection_LinkedList{KeyExtractorType{}, equal_to<KEY_TYPE>{}}
@@ -205,7 +205,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         AssertRepValidType_ ();
     }
     template <typename T, typename KEY_TYPE, typename TRAITS>
-    template <typename ITERABLE_OF_ADDABLE, IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER,
+    template <ranges::range ITERABLE_OF_ADDABLE, IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER,
               enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and not is_base_of_v<KeyedCollection_LinkedList<T, KEY_TYPE, TRAITS>, decay_t<ITERABLE_OF_ADDABLE>>>*>
     inline KeyedCollection_LinkedList<T, KEY_TYPE, TRAITS>::KeyedCollection_LinkedList (KEY_EQUALS_COMPARER&& keyComparer, ITERABLE_OF_ADDABLE&& src)
         : KeyedCollection_LinkedList{KeyExtractorType{}, forward<KEY_EQUALS_COMPARER> (keyComparer)}
@@ -215,7 +215,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         AssertRepValidType_ ();
     }
     template <typename T, typename KEY_TYPE, typename TRAITS>
-    template <IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER, typename ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>>*>
+    template <IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER, ranges::range ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>>*>
     inline KeyedCollection_LinkedList<T, KEY_TYPE, TRAITS>::KeyedCollection_LinkedList (const KeyExtractorType& keyExtractor,
                                                                                         KEY_EQUALS_COMPARER&& keyComparer, ITERABLE_OF_ADDABLE&& src)
         : KeyedCollection_LinkedList{keyExtractor, forward<KEY_EQUALS_COMPARER> (keyComparer)}
