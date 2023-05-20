@@ -57,7 +57,6 @@ namespace Stroika::Foundation::Cache {
         }
     }
     template <typename KEY, typename VALUE, typename TIME_TRAITS>
-    template <typename K1>
     inline void CallerStalenessCache<KEY, VALUE, TIME_TRAITS>::Clear ()
     {
         if constexpr (is_same_v<void, KEY>) {
@@ -68,8 +67,9 @@ namespace Stroika::Foundation::Cache {
         }
     }
     template <typename KEY, typename VALUE, typename TIME_TRAITS>
-    template <typename K1, enable_if_t<IsKeyedCache<K1>>*>
-    inline void CallerStalenessCache<KEY, VALUE, TIME_TRAITS>::Clear (Configuration::ArgByValueType<K1> k)
+    template <typename K>
+    inline void CallerStalenessCache<KEY, VALUE, TIME_TRAITS>::Clear (const K& k)
+        requires (IsKeyedCache<K>)
     {
         fData_.Remove (k);
     }
@@ -80,9 +80,10 @@ namespace Stroika::Foundation::Cache {
         fData_ = myVal_{move (v), GetCurrentTimestamp ()};
     }
     template <typename KEY, typename VALUE, typename TIME_TRAITS>
-    inline void CallerStalenessCache<KEY, VALUE, TIME_TRAITS>::Add (Configuration::ArgByValueType<KEY>   k,
+    template <typename K>
+    inline void CallerStalenessCache<KEY, VALUE, TIME_TRAITS>::Add (Configuration::ArgByValueType<K>     k,
                                                                     Configuration::ArgByValueType<VALUE> v, AddReplaceMode addReplaceMode)
-        requires (IsKeyedCache<KEY>)
+        requires (IsKeyedCache<K>)
     {
         fData_.Add (k, myVal_{move (v), GetCurrentTimestamp ()}, addReplaceMode);
     }
@@ -97,8 +98,9 @@ namespace Stroika::Foundation::Cache {
         return o->fValue;
     }
     template <typename KEY, typename VALUE, typename TIME_TRAITS>
-    inline optional<VALUE> CallerStalenessCache<KEY, VALUE, TIME_TRAITS>::Lookup (Configuration::ArgByValueType<KEY> k, TimeStampType staleIfOlderThan) const
-        requires (IsKeyedCache<KEY>)
+    template <typename K>
+    inline optional<VALUE> CallerStalenessCache<KEY, VALUE, TIME_TRAITS>::Lookup (Configuration::ArgByValueType<K> k, TimeStampType staleIfOlderThan) const
+        requires (IsKeyedCache<K>)
     {
         optional<myVal_> o = fData_.Lookup (k);
         if (not o.has_value () or o->fDataCapturedAt < staleIfOlderThan) {
@@ -107,8 +109,8 @@ namespace Stroika::Foundation::Cache {
         return o->fValue;
     }
     template <typename KEY, typename VALUE, typename TIME_TRAITS>
-    template <typename K1, enable_if_t<not IsKeyedCache<K1>>*>
     VALUE CallerStalenessCache<KEY, VALUE, TIME_TRAITS>::LookupValue (TimeStampType staleIfOlderThan, const function<VALUE ()>& cacheFiller)
+        requires (not IsKeyedCache<KEY>)
     {
         optional<myVal_> o = fData_;
         if (not o.has_value () or o->fDataCapturedAt < staleIfOlderThan) {
@@ -120,8 +122,9 @@ namespace Stroika::Foundation::Cache {
         return o->fValue;
     }
     template <typename KEY, typename VALUE, typename TIME_TRAITS>
-    template <typename F, typename K1, enable_if_t<IsKeyedCache<K1> and is_invocable_r_v<VALUE, F, K1>>*>
-    VALUE CallerStalenessCache<KEY, VALUE, TIME_TRAITS>::LookupValue (Configuration::ArgByValueType<K1> k, TimeStampType staleIfOlderThan, F&& cacheFiller)
+    template <typename F, typename K>
+    VALUE CallerStalenessCache<KEY, VALUE, TIME_TRAITS>::LookupValue (Configuration::ArgByValueType<K> k, TimeStampType staleIfOlderThan, F&& cacheFiller)
+        requires (IsKeyedCache<K> and is_invocable_r_v<VALUE, F, K>)
     {
         optional<myVal_> o = fData_.Lookup (k);
         if (not o.has_value () or o->fDataCapturedAt < staleIfOlderThan) {
@@ -133,9 +136,10 @@ namespace Stroika::Foundation::Cache {
         return o->fValue;
     }
     template <typename KEY, typename VALUE, typename TIME_TRAITS>
-    template <typename K1, enable_if_t<IsKeyedCache<K1>>*>
-    inline VALUE CallerStalenessCache<KEY, VALUE, TIME_TRAITS>::LookupValue (Configuration::ArgByValueType<K1> k,
+    template <typename K>
+    inline VALUE CallerStalenessCache<KEY, VALUE, TIME_TRAITS>::LookupValue (Configuration::ArgByValueType<K> k,
                                                                              TimeStampType staleIfOlderThan, const VALUE& defaultValue) const
+        requires (IsKeyedCache<K>)
     {
         return Lookup (k, staleIfOlderThan).value_or (defaultValue);
     }

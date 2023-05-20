@@ -97,10 +97,11 @@ namespace Stroika::Foundation::Execution {
      *          DeclareActivity da{&scanningThisAddress};
      *      \endcode
      */
-    template <typename CTOR_ARG, enable_if_t<is_invocable_r_v<Characters::String, CTOR_ARG>>* = nullptr>
+    template <typename CTOR_ARG>
     class LazyEvalActivity final : public Private_::Activities_::AsStringObj_ {
     public:
         LazyEvalActivity (const CTOR_ARG& arg)
+            requires (is_invocable_r_v<Characters::String, CTOR_ARG>)
             : fArg_{arg}
         {
         }

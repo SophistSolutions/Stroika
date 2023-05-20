@@ -22,8 +22,8 @@ namespace Stroika::Foundation::Common {
      ********************************************************************************
      */
     template <typename VALUE_TYPE, typename COUNTER_TYPE>
-    template <typename VTEST, enable_if_t<is_default_constructible_v<VTEST>>*>
     constexpr CountedValue<VALUE_TYPE, COUNTER_TYPE>::CountedValue ()
+        requires (is_default_constructible_v<VALUE_TYPE>)
         : CountedValue{VALUE_TYPE{}}
     {
     }
@@ -34,22 +34,24 @@ namespace Stroika::Foundation::Common {
     {
     }
     template <typename VALUE_TYPE, typename COUNTER_TYPE>
-    template <typename VALUE2_TYPE, typename COUNTER2_TYPE, enable_if_t<is_convertible_v<VALUE2_TYPE, VALUE_TYPE> and is_convertible_v<COUNTER2_TYPE, COUNTER_TYPE>>*>
+    template <typename VALUE2_TYPE, typename COUNTER2_TYPE>
     constexpr CountedValue<VALUE_TYPE, COUNTER_TYPE>::CountedValue (const pair<VALUE2_TYPE, COUNTER2_TYPE>& src)
+        requires (is_convertible_v<VALUE2_TYPE, VALUE_TYPE> and is_convertible_v<COUNTER2_TYPE, COUNTER_TYPE>)
         : fValue{src.first}
         , fCount{src.second}
     {
     }
     template <typename VALUE_TYPE, typename COUNTER_TYPE>
-    template <typename VALUE2_TYPE, typename COUNTER2_TYPE, enable_if_t<is_convertible_v<VALUE2_TYPE, VALUE_TYPE> and is_convertible_v<COUNTER2_TYPE, COUNTER_TYPE>>*>
+    template <typename VALUE2_TYPE, typename COUNTER2_TYPE>
     constexpr CountedValue<VALUE_TYPE, COUNTER_TYPE>::CountedValue (const CountedValue<VALUE2_TYPE, COUNTER2_TYPE>& src)
+        requires (is_convertible_v<VALUE2_TYPE, VALUE_TYPE> and is_convertible_v<COUNTER2_TYPE, COUNTER_TYPE>)
         : fValue{src.fValue}
         , fCount{src.fCount}
     {
     }
     template <typename VALUE_TYPE, typename COUNTER_TYPE>
-    template <typename TEST, enable_if_t<Configuration::has_spaceship_v<TEST>>*>
     constexpr auto CountedValue<VALUE_TYPE, COUNTER_TYPE>::operator<=> (const CountedValue& rhs) const
+        requires (Configuration::has_spaceship_v<VALUE_TYPE>)
     {
         if (auto cmp = fValue <=> rhs.fValue; cmp != strong_ordering::equal) {
             return cmp;
@@ -57,8 +59,8 @@ namespace Stroika::Foundation::Common {
         return fCount <=> rhs.fCount;
     }
     template <typename VALUE_TYPE, typename COUNTER_TYPE>
-    template <typename TEST, enable_if_t<Configuration::has_eq_v<TEST>>*>
     constexpr bool CountedValue<VALUE_TYPE, COUNTER_TYPE>::operator== (const CountedValue& rhs) const
+        requires (Configuration::has_eq_v<VALUE_TYPE>)
     {
         return fValue == rhs.fValue and fValue == rhs.fValue;
     }

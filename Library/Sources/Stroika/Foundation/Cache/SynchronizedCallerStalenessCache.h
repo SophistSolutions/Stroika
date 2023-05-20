@@ -86,10 +86,10 @@ namespace Stroika::Foundation::Cache {
         /**
          * @see CallerStalenessCache<KEY, VALUE, TIME_TRAITS>::Clear;
          */
-        template <typename K1 = KEY>
         nonvirtual void Clear ();
-        template <typename K1 = KEY, enable_if_t<IsKeyedCache<K1>>* = nullptr>
-        nonvirtual void Clear (Configuration::ArgByValueType<K1> k);
+        template <typename K1 = KEY>
+        nonvirtual void Clear (Configuration::ArgByValueType<K1> k)
+            requires (IsKeyedCache<K1>);
 
     public:
         using AddReplaceMode = Containers::AddReplaceMode;
@@ -98,26 +98,27 @@ namespace Stroika::Foundation::Cache {
         /**
          * @see CallerStalenessCache<KEY, VALUE, TIME_TRAITS>::Add;
          */
-        template <typename K1 = KEY, enable_if_t<not IsKeyedCache<K1>>* = nullptr>
-        nonvirtual void Add (Configuration::ArgByValueType<VALUE> v);
-        template <typename K1 = KEY, enable_if_t<IsKeyedCache<K1>>* = nullptr>
-        nonvirtual void Add (Configuration::ArgByValueType<K1> k, Configuration::ArgByValueType<VALUE> v,
-                             AddReplaceMode addReplaceMode = AddReplaceMode::eAddReplaces);
+        nonvirtual void Add (Configuration::ArgByValueType<VALUE> v)
+            requires (not IsKeyedCache<KEY>);
+        nonvirtual void Add (Configuration::ArgByValueType<KEY> k, Configuration::ArgByValueType<VALUE> v,
+                             AddReplaceMode addReplaceMode = AddReplaceMode::eAddReplaces)
+            requires (IsKeyedCache<KEY>);
 
     public:
         /**
          * @see CallerStalenessCache<KEY, VALUE, TIME_TRAITS>::Lookup;
          */
-        template <typename K1 = KEY, enable_if_t<not IsKeyedCache<K1>>* = nullptr>
-        nonvirtual optional<VALUE> Lookup (TimeStampType staleIfOlderThan) const;
-        template <typename K1 = KEY, enable_if_t<IsKeyedCache<K1>>* = nullptr>
-        nonvirtual optional<VALUE> Lookup (Configuration::ArgByValueType<K1> k, TimeStampType staleIfOlderThan) const;
-        template <typename K1 = KEY, enable_if_t<not IsKeyedCache<K1>>* = nullptr>
-        nonvirtual VALUE LookupValue (TimeStampType staleIfOlderThan, const function<VALUE ()>& cacheFiller);
-        template <typename F, typename K1 = KEY, enable_if_t<IsKeyedCache<K1> and is_invocable_r_v<VALUE, F, K1>>* = nullptr>
-        nonvirtual VALUE LookupValue (Configuration::ArgByValueType<K1> k, TimeStampType staleIfOlderThan, F&& cacheFiller);
-        template <typename K1 = KEY, enable_if_t<IsKeyedCache<K1>>* = nullptr>
-        nonvirtual VALUE LookupValue (Configuration::ArgByValueType<K1> k, TimeStampType staleIfOlderThan, const VALUE& defaultValue) const;
+        nonvirtual optional<VALUE> Lookup (TimeStampType staleIfOlderThan) const
+            requires (not IsKeyedCache<KEY>);
+        nonvirtual optional<VALUE> Lookup (Configuration::ArgByValueType<KEY> k, TimeStampType staleIfOlderThan) const
+            requires (IsKeyedCache<KEY>);
+        nonvirtual VALUE LookupValue (TimeStampType staleIfOlderThan, const function<VALUE ()>& cacheFiller)
+            requires (not IsKeyedCache<KEY>);
+        template <typename F>
+        nonvirtual VALUE LookupValue (Configuration::ArgByValueType<KEY> k, TimeStampType staleIfOlderThan, F&& cacheFiller)
+            requires (IsKeyedCache<KEY> and is_invocable_r_v<VALUE, F, KEY>);
+        nonvirtual VALUE LookupValue (Configuration::ArgByValueType<KEY> k, TimeStampType staleIfOlderThan, const VALUE& defaultValue) const
+            requires (IsKeyedCache<KEY>);
 
     public:
         /**

@@ -25,8 +25,10 @@ namespace Stroika::Foundation::Execution {
      ********************************************************************************
      */
     template <typename FUNCTION_SIGNATURE>
-    template <typename CTOR_FUNC_SIG, enable_if_t<is_convertible_v<CTOR_FUNC_SIG, function<FUNCTION_SIGNATURE>> and not is_base_of_v<Function<FUNCTION_SIGNATURE>, remove_cvref_t<CTOR_FUNC_SIG>>>*>
+    template <typename CTOR_FUNC_SIG>
     inline Function<FUNCTION_SIGNATURE>::Function (CTOR_FUNC_SIG&& f)
+        requires (is_convertible_v<CTOR_FUNC_SIG, function<FUNCTION_SIGNATURE>> and
+                  not is_base_of_v<Function<FUNCTION_SIGNATURE>, remove_cvref_t<CTOR_FUNC_SIG>>)
         : fFun_{forward<CTOR_FUNC_SIG> (f)}
         , fOrdering_{fFun_ == nullptr ? OrderingType_{} : ++Private_::sFunctionObjectNextPtrID_}
     {
@@ -75,6 +77,7 @@ namespace Stroika::Foundation::Execution {
     {
         return Characters::ToString (fOrdering_);
     }
+
 }
 
 #endif /*_Stroika_Foundation_Execution_Function_inl_*/

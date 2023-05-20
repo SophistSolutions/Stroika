@@ -48,13 +48,15 @@ namespace Stroika::Foundation::Common {
     public:
         /**
          */
-        template <typename VTEST = VALUE_TYPE, enable_if_t<is_default_constructible_v<VTEST>>* = nullptr>
-        constexpr CountedValue ();
+        constexpr CountedValue ()
+            requires (is_default_constructible_v<VALUE_TYPE>);
         constexpr CountedValue (typename Configuration::ArgByValueType<ValueType> value, CounterType count = 1);
-        template <typename VALUE2_TYPE, typename COUNTER2_TYPE, enable_if_t<is_convertible_v<VALUE2_TYPE, VALUE_TYPE> and is_convertible_v<COUNTER2_TYPE, COUNTER_TYPE>>* = nullptr>
-        constexpr CountedValue (const pair<VALUE2_TYPE, COUNTER2_TYPE>& src);
-        template <typename VALUE2_TYPE, typename COUNTER2_TYPE, enable_if_t<is_convertible_v<VALUE2_TYPE, VALUE_TYPE> and is_convertible_v<COUNTER2_TYPE, COUNTER_TYPE>>* = nullptr>
-        constexpr CountedValue (const CountedValue<VALUE2_TYPE, COUNTER2_TYPE>& src);
+        template <typename VALUE2_TYPE, typename COUNTER2_TYPE>
+        constexpr CountedValue (const pair<VALUE2_TYPE, COUNTER2_TYPE>& src)
+            requires (is_convertible_v<VALUE2_TYPE, VALUE_TYPE> and is_convertible_v<COUNTER2_TYPE, COUNTER_TYPE>);
+        template <typename VALUE2_TYPE, typename COUNTER2_TYPE>
+        constexpr CountedValue (const CountedValue<VALUE2_TYPE, COUNTER2_TYPE>& src)
+            requires (is_convertible_v<VALUE2_TYPE, VALUE_TYPE> and is_convertible_v<COUNTER2_TYPE, COUNTER_TYPE>);
 
     public:
         ValueType   fValue;
@@ -63,14 +65,14 @@ namespace Stroika::Foundation::Common {
     public:
         /**
          */
-        template <typename TEST = VALUE_TYPE, enable_if_t<Configuration::has_spaceship_v<TEST>>* = nullptr>
-        constexpr auto operator<=> (const CountedValue&) const;
+        constexpr auto operator<=> (const CountedValue&) const
+            requires (Configuration::has_spaceship_v<VALUE_TYPE>);
 
     public:
         /**
          */
-        template <typename TEST = VALUE_TYPE, enable_if_t<Configuration::has_eq_v<TEST>>* = nullptr>
-        constexpr bool operator== (const CountedValue&) const;
+        constexpr bool operator== (const CountedValue&) const
+            requires (Configuration::has_eq_v<VALUE_TYPE>);
     };
 
 }
