@@ -256,7 +256,7 @@ namespace Stroika::Foundation::Containers {
         Sequence (const initializer_list<value_type>& src);
         template <ranges::range ITERABLE_OF_ADDABLE, enable_if_t<not is_base_of_v<Sequence<T>, decay_t<ITERABLE_OF_ADDABLE>>>* = nullptr>
         explicit Sequence (ITERABLE_OF_ADDABLE&& src);
-        template <typename ITERATOR_OF_ADDABLE>
+        template <input_iterator ITERATOR_OF_ADDABLE>
         Sequence (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
 
     protected:
@@ -329,7 +329,7 @@ namespace Stroika::Foundation::Containers {
          *
          *  to compare with an alternative comparer.
          */
-        template <typename T_EQUALS_COMPARER = equal_to<T>>
+        template <Common::IEqualsComparer<T> T_EQUALS_COMPARER = equal_to<T>>
         using EqualsComparer = typename Iterable<value_type>::template SequentialEqualsComparer<T_EQUALS_COMPARER>;
 
     public:
@@ -420,9 +420,9 @@ namespace Stroika::Foundation::Containers {
          *  If not found for the by value overloads, IndexOf () return {};
          *  For the IndexOf(Iterator<T>) - \req it is found/legal iterator 
          */
-        template <typename EQUALS_COMPARER = equal_to<T>>
+        template <Common::IEqualsComparer<T> EQUALS_COMPARER = equal_to<T>>
         nonvirtual optional<size_t> IndexOf (ArgByValueType<value_type> i, EQUALS_COMPARER&& equalsComparer = {}) const;
-        template <typename EQUALS_COMPARER = equal_to<T>>
+        template <Common::IEqualsComparer<T> EQUALS_COMPARER = equal_to<T>>
         nonvirtual optional<size_t> IndexOf (const Sequence& s, EQUALS_COMPARER&& equalsComparer = {}) const;
         template <typename IGNORED = void>
         nonvirtual size_t IndexOf (const Iterator<value_type>& i) const;
@@ -452,7 +452,7 @@ namespace Stroika::Foundation::Containers {
          *  \req IsAddable_v<ExtractValueType_t<ITERATOR_OF_ADDABLE>>
          *  \req IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>
          */
-        template <typename ITERATOR_OF_ADDABLE>
+        template <input_iterator ITERATOR_OF_ADDABLE>
         nonvirtual void InsertAll (size_t i, ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
         template <ranges::range ITERABLE_OF_ADDABLE>
         nonvirtual void InsertAll (size_t i, ITERABLE_OF_ADDABLE&& s);
@@ -472,7 +472,7 @@ namespace Stroika::Foundation::Containers {
          */
         template <ranges::range ITERABLE_OF_ADDABLE>
         nonvirtual void PrependAll (ITERABLE_OF_ADDABLE&& s);
-        template <typename ITERATOR_OF_ADDABLE>
+        template <input_iterator ITERATOR_OF_ADDABLE>
         nonvirtual void PrependAll (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
 
     public:
@@ -498,7 +498,7 @@ namespace Stroika::Foundation::Containers {
          */
         template <ranges::range ITERABLE_OF_ADDABLE>
         nonvirtual void AppendAll (ITERABLE_OF_ADDABLE&& s);
-        template <typename ITERATOR_OF_ADDABLE>
+        template <input_iterator ITERATOR_OF_ADDABLE>
         nonvirtual void AppendAll (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
 
     public:

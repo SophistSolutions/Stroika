@@ -319,7 +319,7 @@ namespace Stroika::Foundation::Containers {
          * 
          *  \note mutates container
          */
-        template <typename ITERATOR_OF_ADDABLE>
+        template <input_iterator ITERATOR_OF_ADDABLE>
         nonvirtual size_t RemoveAll (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
         template <ranges::range ITERABLE_OF_ADDABLE>
         nonvirtual size_t RemoveAll (const ITERABLE_OF_ADDABLE& s);

@@ -49,7 +49,7 @@ namespace Stroika::Foundation::Containers {
         _AssertRepValidType ();
     }
     template <typename T>
-    template <typename ITERATOR_OF_ADDABLE>
+    template <input_iterator ITERATOR_OF_ADDABLE>
     inline Deque<T>::Deque (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
         : Deque{}
     {

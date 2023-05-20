@@ -54,7 +54,7 @@ namespace Stroika::Foundation::Containers {
         _AssertRepValidType ();
     }
     template <typename T>
-    template <typename ITERATOR_OF_ADDABLE>
+    template <input_iterator ITERATOR_OF_ADDABLE>
     inline Stack<T>::Stack (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
         : Stack{}
     {

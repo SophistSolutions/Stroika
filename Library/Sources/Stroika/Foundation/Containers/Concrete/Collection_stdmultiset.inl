@@ -163,7 +163,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         AssertRepValidType_ ();
     }
     template <typename T>
-    template <typename ITERATOR_OF_ADDABLE>
+    template <input_iterator ITERATOR_OF_ADDABLE>
     inline Collection_stdmultiset<T>::Collection_stdmultiset (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
         : Collection_stdmultiset{}
     {

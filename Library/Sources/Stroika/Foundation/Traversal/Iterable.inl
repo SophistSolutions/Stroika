@@ -313,7 +313,7 @@ namespace Stroika::Foundation::Traversal {
         return accessor._ConstGetRep ().empty ();
     }
     template <typename T>
-    template <typename EQUALS_COMPARER>
+    template <Common::IPotentiallyComparer<T> EQUALS_COMPARER>
     bool Iterable<T>::Contains (ArgByValueType<T> element, EQUALS_COMPARER&& equalsComparer) const
     {
         // grab iterator to first matching item, and contains if not at end; this is faster than using iterators
@@ -482,7 +482,7 @@ namespace Stroika::Foundation::Traversal {
         return result;
     }
     template <typename T>
-    template <typename EQUALS_COMPARER>
+    template <Common::IPotentiallyComparer<T> EQUALS_COMPARER>
     Iterable<T> Iterable<T>::Distinct (EQUALS_COMPARER&& equalsComparer) const
     {
         vector<T> tmp; // Simplistic/stupid/weak implementation
@@ -508,7 +508,7 @@ namespace Stroika::Foundation::Traversal {
         return CreateGenerator (getNext);
     }
     template <typename T>
-    template <typename RESULT, typename EQUALS_COMPARER>
+    template <typename RESULT, Common::IPotentiallyComparer<T> EQUALS_COMPARER>
     Iterable<RESULT> Iterable<T>::Distinct (const function<RESULT (ArgByValueType<T>)>& extractElt, EQUALS_COMPARER&& equalsComparer) const
     {
         RequireNotNull (extractElt);

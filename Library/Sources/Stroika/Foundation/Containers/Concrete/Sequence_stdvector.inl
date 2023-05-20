@@ -213,7 +213,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         AssertRepValidType_ ();
     }
     template <typename T>
-    template <typename ITERATOR_OF_ADDABLE>
+    template <input_iterator ITERATOR_OF_ADDABLE>
     inline Sequence_stdvector<T>::Sequence_stdvector (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
         : Sequence_stdvector{}
     {

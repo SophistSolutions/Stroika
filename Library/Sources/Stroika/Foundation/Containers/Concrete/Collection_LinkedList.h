@@ -46,7 +46,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         Collection_LinkedList (const initializer_list<value_type>& src);
         template <ranges::range ITERABLE_OF_ADDABLE, enable_if_t<not is_base_of_v<Collection_LinkedList<T>, decay_t<ITERABLE_OF_ADDABLE>>>* = nullptr>
         Collection_LinkedList (ITERABLE_OF_ADDABLE&& src);
-        template <typename ITERATOR_OF_ADDABLE>
+        template <input_iterator ITERATOR_OF_ADDABLE>
         Collection_LinkedList (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
 
     public:

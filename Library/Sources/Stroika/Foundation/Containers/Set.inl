@@ -203,7 +203,7 @@ namespace Stroika::Foundation::Containers {
         return _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().RemoveIf (item);
     }
     template <typename T>
-    template <typename ITERATOR_OF_ADDABLE>
+    template <input_iterator ITERATOR_OF_ADDABLE>
     inline size_t Set<T>::RemoveAll (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
     {
         static_assert (IsAddable_v<ExtractValueType_t<ITERATOR_OF_ADDABLE>>);

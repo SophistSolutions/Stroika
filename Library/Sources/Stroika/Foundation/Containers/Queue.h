@@ -115,7 +115,7 @@ namespace Stroika::Foundation::Containers {
         Queue (const initializer_list<value_type>& src);
         template <ranges::range ITERABLE_OF_ADDABLE, enable_if_t<not is_base_of_v<Queue<T>, decay_t<ITERABLE_OF_ADDABLE>>>* = nullptr>
         explicit Queue (ITERABLE_OF_ADDABLE&& src);
-        template <typename ITERATOR_OF_ADDABLE>
+        template <input_iterator ITERATOR_OF_ADDABLE>
         Queue (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
 
     protected:

@@ -28,7 +28,7 @@ namespace Stroika::Foundation::Containers {
         _AssertRepValidType ();
     }
     template <typename T>
-    template <typename ITERATOR_OF_ADDABLE>
+    template <input_iterator ITERATOR_OF_ADDABLE>
     inline Collection<T>::Collection (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
         : Collection{}
     {
@@ -66,7 +66,7 @@ namespace Stroika::Foundation::Containers {
         _AssertRepValidType ();
     }
     template <typename T>
-    template <typename EQUALS_COMPARER>
+    template <Common::IEqualsComparer<T> EQUALS_COMPARER>
     inline bool Collection<T>::Contains (ArgByValueType<value_type> item, EQUALS_COMPARER&& equalsComparer) const
     {
         return this->Find (item, forward<EQUALS_COMPARER> (equalsComparer)) != this->end ();
@@ -117,7 +117,7 @@ namespace Stroika::Foundation::Containers {
         writerRep->Remove (patchedIterator, nextI);
     }
     template <typename T>
-    template <typename EQUALS_COMPARER>
+    template <Common::IEqualsComparer<T> EQUALS_COMPARER>
     inline void Collection<T>::Remove (ArgByValueType<value_type> item, EQUALS_COMPARER&& equalsComparer)
     {
         auto i = this->Find (item, forward<EQUALS_COMPARER> (equalsComparer));
@@ -126,7 +126,7 @@ namespace Stroika::Foundation::Containers {
         writerRep->Remove (patchedIterator, nullptr);
     }
     template <typename T>
-    template <typename EQUALS_COMPARER>
+    template <Common::IEqualsComparer<T> EQUALS_COMPARER>
     inline bool Collection<T>::RemoveIf (ArgByValueType<value_type> item, EQUALS_COMPARER&& equalsComparer)
     {
         if (auto i = this->Find (item, forward<EQUALS_COMPARER> (equalsComparer))) {
@@ -155,7 +155,7 @@ namespace Stroika::Foundation::Containers {
         }
     }
     template <typename T>
-    template <typename EQUALS_COMPARER>
+    template <Common::IEqualsComparer<T> EQUALS_COMPARER>
     size_t Collection<T>::RemoveAll (const Iterator<value_type>& start, const Iterator<value_type>& end, EQUALS_COMPARER&& equalsComparer)
     {
         size_t cnt{};
@@ -200,7 +200,7 @@ namespace Stroika::Foundation::Containers {
         RemoveAll ();
     }
     template <typename T>
-    template <typename EQUALS_COMPARER>
+    template <Common::IEqualsComparer<T> EQUALS_COMPARER>
     inline void Collection<T>::erase (ArgByValueType<value_type> item, EQUALS_COMPARER&& equalsComparer)
     {
         Remove (item, forward<EQUALS_COMPARER> (equalsComparer));

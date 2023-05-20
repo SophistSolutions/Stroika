@@ -298,7 +298,7 @@ namespace Stroika::Foundation::Containers {
         return cnt;
     }
     template <typename T, typename KEY_TYPE, typename TRAITS>
-    template <typename ITERATOR_OF_ADDABLE>
+    template <input_iterator ITERATOR_OF_ADDABLE>
     inline size_t KeyedCollection<T, KEY_TYPE, TRAITS>::RemoveAll (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
     {
         size_t cnt{};

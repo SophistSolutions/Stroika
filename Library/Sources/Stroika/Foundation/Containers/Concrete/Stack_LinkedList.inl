@@ -132,7 +132,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         }
     }
     template <typename T>
-    template <typename ITERATOR_OF_ADDABLE>
+    template <input_iterator ITERATOR_OF_ADDABLE>
     inline Stack_LinkedList<T>::Stack_LinkedList (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
         : Stack_LinkedList{}
     {

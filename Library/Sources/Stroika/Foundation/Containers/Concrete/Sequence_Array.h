@@ -47,7 +47,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         Sequence_Array (const initializer_list<value_type>& src);
         template <ranges::range ITERABLE_OF_ADDABLE, enable_if_t<not is_base_of_v<Sequence_Array<T>, decay_t<ITERABLE_OF_ADDABLE>>>* = nullptr>
         explicit Sequence_Array (ITERABLE_OF_ADDABLE&& src);
-        template <typename ITERATOR_OF_ADDABLE>
+        template <input_iterator ITERATOR_OF_ADDABLE>
         Sequence_Array (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
 
     public:

@@ -327,7 +327,7 @@ namespace Stroika::Foundation::Containers {
          *  and applies VALUE_EQUALS_COMPARER (defaults to operator==) on each value, and returns
          *  true if contained. Perhpas not very useful but symetric to ContainsKey().
          */
-        template <typename VALUE_EQUALS_COMPARER = equal_to<MAPPED_VALUE_TYPE>>
+        template <Common::IEqualsComparer<MAPPED_VALUE_TYPE> VALUE_EQUALS_COMPARER = equal_to<MAPPED_VALUE_TYPE>>
         nonvirtual bool ContainsMappedValue (ArgByValueType<mapped_type> v, const VALUE_EQUALS_COMPARER& valueEqualsComparer = {}) const;
 
     public:
@@ -512,7 +512,7 @@ namespace Stroika::Foundation::Containers {
         As_ (enable_if_t<!is_convertible_v<typename CONTAINER_OF_Key_T::value_type, pair<KEY_TYPE, MAPPED_VALUE_TYPE>>, int> usesDefaultIterableImpl = 0) const;
 
     public:
-        template <typename VALUE_EQUALS_COMPARER = equal_to<MAPPED_VALUE_TYPE>>
+        template <Common::IEqualsComparer<MAPPED_VALUE_TYPE> VALUE_EQUALS_COMPARER = equal_to<MAPPED_VALUE_TYPE>>
         struct EqualsComparer;
 
     public:
@@ -626,7 +626,7 @@ namespace Stroika::Foundation::Containers {
      *  \note   Not to be confused with GetKeyEqualsComparer () which compares KEY ELEMENTS of Association for equality.
      */
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-    template <typename VALUE_EQUALS_COMPARER>
+    template <Common::IEqualsComparer<MAPPED_VALUE_TYPE> VALUE_EQUALS_COMPARER>
     struct Association<KEY_TYPE, MAPPED_VALUE_TYPE>::EqualsComparer
         : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eEquals> {
         constexpr EqualsComparer (const VALUE_EQUALS_COMPARER& valueEqualsComparer = {});

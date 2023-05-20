@@ -328,7 +328,7 @@ namespace Stroika::Foundation::Traversal {
          *      This algorithm is O(N).
          *
          */
-        template <typename EQUALS_COMPARER = equal_to<T>>
+        template <Common::IPotentiallyComparer<T> EQUALS_COMPARER = equal_to<T>>
         nonvirtual bool Contains (ArgByValueType<T> element, EQUALS_COMPARER&& equalsComparer = EQUALS_COMPARER{}) const;
 
     public:
@@ -646,9 +646,9 @@ namespace Stroika::Foundation::Traversal {
          *  @todo need overloads taking lambda that projects
          *  @todo for now use builtin stl set to accumulate, but need flexability on where compare and maybe also redo with hash?
          */
-        template <typename EQUALS_COMPARER = equal_to<T>>
+        template <Common::IPotentiallyComparer<T> EQUALS_COMPARER = equal_to<T>>
         nonvirtual Iterable<T> Distinct (EQUALS_COMPARER&& equalsComparer = EQUALS_COMPARER{}) const;
-        template <typename RESULT, typename EQUALS_COMPARER = equal_to<RESULT>>
+        template <typename RESULT, Common::IPotentiallyComparer<T> EQUALS_COMPARER = equal_to<RESULT>>
         nonvirtual Iterable<RESULT> Distinct (const function<RESULT (ArgByValueType<T>)>& extractElt,
                                               EQUALS_COMPARER&&                           equalsComparer = EQUALS_COMPARER{}) const;
 

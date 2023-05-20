@@ -159,7 +159,7 @@ namespace Stroika::Foundation::Containers {
         return _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().Lookup (key).size ();
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-    template <typename VALUE_EQUALS_COMPARER>
+    template <Common::IEqualsComparer<MAPPED_VALUE_TYPE> VALUE_EQUALS_COMPARER>
     inline bool Association<KEY_TYPE, MAPPED_VALUE_TYPE>::ContainsMappedValue (ArgByValueType<mapped_type>  v,
                                                                                const VALUE_EQUALS_COMPARER& valueEqualsComparer) const
     {
@@ -454,13 +454,13 @@ namespace Stroika::Foundation::Containers {
      ********************************************************************************
      */
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-    template <typename VALUE_EQUALS_COMPARER>
+    template <Common::IEqualsComparer<MAPPED_VALUE_TYPE> VALUE_EQUALS_COMPARER>
     constexpr Association<KEY_TYPE, MAPPED_VALUE_TYPE>::EqualsComparer<VALUE_EQUALS_COMPARER>::EqualsComparer (const VALUE_EQUALS_COMPARER& valueEqualsComparer)
         : fValueEqualsComparer{valueEqualsComparer}
     {
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-    template <typename VALUE_EQUALS_COMPARER>
+    template <Common::IEqualsComparer<MAPPED_VALUE_TYPE> VALUE_EQUALS_COMPARER>
     bool Association<KEY_TYPE, MAPPED_VALUE_TYPE>::EqualsComparer<VALUE_EQUALS_COMPARER>::operator() (const Association& lhs, const Association& rhs) const
     {
         /*

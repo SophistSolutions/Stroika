@@ -155,7 +155,7 @@ namespace Stroika::Foundation::Containers {
         Collection (const initializer_list<value_type>& src);
         template <ranges::range ITERABLE_OF_ADDABLE, enable_if_t<not is_base_of_v<Collection<T>, decay_t<ITERABLE_OF_ADDABLE>>>* = nullptr>
         Collection (ITERABLE_OF_ADDABLE&& src);
-        template <typename ITERATOR_OF_ADDABLE>
+        template <input_iterator ITERATOR_OF_ADDABLE>
         Collection (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
 
     protected:
@@ -170,7 +170,7 @@ namespace Stroika::Foundation::Containers {
         /**
          * \brief Compares items with TRAITS::EqualsCompareFunctionType::Equals, and returns true if any match.
          */
-        template <typename EQUALS_COMPARER = equal_to<T>>
+        template <Common::IEqualsComparer<T> EQUALS_COMPARER = equal_to<T>>
         nonvirtual bool Contains (ArgByValueType<value_type> item, EQUALS_COMPARER&& equalsComparer = {}) const;
 
     public:
@@ -228,7 +228,7 @@ namespace Stroika::Foundation::Containers {
          *
          *   \note mutates container
          */
-        template <typename EQUALS_COMPARER = equal_to<T>>
+        template <Common::IEqualsComparer<T> EQUALS_COMPARER = equal_to<T>>
         nonvirtual void Remove (ArgByValueType<value_type> item, EQUALS_COMPARER&& equalsComparer = {});
         nonvirtual void Remove (const Iterator<value_type>& i, Iterator<value_type>* nextI = nullptr);
 
@@ -244,7 +244,7 @@ namespace Stroika::Foundation::Containers {
          * 
          *  \note mutates container
          */
-        template <typename EQUALS_COMPARER = equal_to<T>>
+        template <Common::IEqualsComparer<T> EQUALS_COMPARER = equal_to<T>>
         nonvirtual bool RemoveIf (ArgByValueType<value_type> item, EQUALS_COMPARER&& equalsComparer = {});
         template <predicate<T> PREDICATE>
         nonvirtual bool RemoveIf (PREDICATE&& p);
@@ -264,7 +264,7 @@ namespace Stroika::Foundation::Containers {
          *  \note mutates container
          */
         nonvirtual void RemoveAll ();
-        template <typename EQUALS_COMPARER = equal_to<T>>
+        template <Common::IEqualsComparer<T> EQUALS_COMPARER = equal_to<T>>
         nonvirtual size_t RemoveAll (const Iterator<value_type>& start, const Iterator<value_type>& end, EQUALS_COMPARER&& equalsComparer = {});
         template <ranges::range ITERABLE_OF_ADDABLE, typename EQUALS_COMPARER = equal_to<T>>
         nonvirtual size_t RemoveAll (const ITERABLE_OF_ADDABLE& c, EQUALS_COMPARER&& equalsComparer = {});
@@ -293,7 +293,7 @@ namespace Stroika::Foundation::Containers {
          *
          *  \note mutates container
          */
-        template <typename EQUALS_COMPARER = equal_to<T>>
+        template <Common::IEqualsComparer<T> EQUALS_COMPARER = equal_to<T>>
         nonvirtual void erase (ArgByValueType<value_type> item, EQUALS_COMPARER&& equalsComparer = {});
         nonvirtual Iterator<value_type> erase (const Iterator<value_type>& i);
 
