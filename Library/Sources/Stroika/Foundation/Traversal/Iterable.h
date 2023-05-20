@@ -219,8 +219,9 @@ namespace Stroika::Foundation::Traversal {
          *  \note Don't apply this constructor to non-containers (non-iterables), 
          *        and don't allow it to apply to SUBCLASSES of Iterable (since then we want to select the Iterable (const Iterable& from) constructor)
          */
-        template <ranges::range CONTAINER_OF_T, enable_if_t<not is_base_of_v<Iterable<T>, decay_t<CONTAINER_OF_T>>>* = nullptr>
-        explicit Iterable (CONTAINER_OF_T&& from);
+        template <ranges::range CONTAINER_OF_T>
+        explicit Iterable (CONTAINER_OF_T&& from)
+            requires (not is_base_of_v<Iterable<T>, decay_t<CONTAINER_OF_T>>);
 
     public:
         /**
@@ -553,7 +554,7 @@ namespace Stroika::Foundation::Traversal {
         template <predicate<T> THAT_FUNCTION>
         nonvirtual Iterator<T> Find (const Iterator<T>& startAt, THAT_FUNCTION&& that,
                                      Execution::SequencePolicy seq = Execution::SequencePolicy::eDefault) const;
-        template <typename EQUALS_COMPARER, enable_if_t<Common::IsPotentiallyComparerRelation<EQUALS_COMPARER, T> ()>* = nullptr>
+        template <Common::IPotentiallyComparer<T> EQUALS_COMPARER>
         nonvirtual Iterator<T> Find (const Iterator<T>& startAt, Configuration::ArgByValueType<T> v, EQUALS_COMPARER&& equalsComparer = {},
                                      Execution::SequencePolicy seq = Execution::SequencePolicy::eDefault) const;
 

@@ -180,16 +180,21 @@ namespace Stroika::Foundation::Memory {
          *
          *  \note ALL overloads require T is be 'trivially_copyable' - just like memcpy()
          */
-        template <typename T, enable_if_t<is_trivially_copyable_v<T>>* = nullptr>
-        static BLOB Raw (const T* s, const T* e);
-        template <typename T, enable_if_t<is_trivially_copyable_v<T>>* = nullptr>
-        static BLOB Raw (const T* s, size_t sz);
-        template <typename T, enable_if_t<is_same_v<typename char_traits<T>::char_type, T>>* = nullptr>
-        static BLOB Raw (const T* s);
-        template <typename T, enable_if_t<is_same_v<typename char_traits<T>::char_type, T>>* = nullptr>
-        static BLOB Raw (const basic_string<T>& s);
-        template <typename T, enable_if_t<is_trivially_copyable_v<T>>* = nullptr>
-        static BLOB Raw (const T& s);
+        template <typename T>
+        static BLOB Raw (const T* s, const T* e)
+            requires (is_trivially_copyable_v<T>);
+        template <typename T>
+        static BLOB Raw (const T* s, size_t sz)
+            requires (is_trivially_copyable_v<T>);
+        template <typename T>
+        static BLOB Raw (const T* s)
+            requires (is_same_v<typename char_traits<T>::char_type, T>);
+        template <typename T>
+        static BLOB Raw (const basic_string<T>& s)
+            requires (is_same_v<typename char_traits<T>::char_type, T>);
+        template <typename T>
+        static BLOB Raw (const T& s)
+            requires (is_trivially_copyable_v<T>);
 
     public:
         /*

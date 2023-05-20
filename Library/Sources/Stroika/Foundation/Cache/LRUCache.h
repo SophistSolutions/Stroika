@@ -224,8 +224,8 @@ namespace Stroika::Foundation::Cache {
          *  Typically you Lookup with something like LookupValue() which implcitly does the adds.
          */
         nonvirtual void Add (typename Configuration::ArgByValueType<KEY> key, typename Configuration::ArgByValueType<VALUE> value);
-        template <typename K1 = KEY, typename V1 = VALUE, enable_if_t<is_same_v<K1, V1>>* = nullptr>
-        nonvirtual void Add (typename Configuration::ArgByValueType<KEY> key);
+        nonvirtual void Add (typename Configuration::ArgByValueType<KEY> key)
+            requires (is_same_v<KEY, VALUE>);
 
     public:
         /**

@@ -156,29 +156,34 @@ namespace Stroika::Foundation::Memory {
     }
     inline BLOB BLOB::Hex (const string& s) { return Hex (s.c_str ()); }
     inline BLOB BLOB::Hex (const string_view& s) { return Hex (s.data (), s.data () + s.length ()); }
-    template <typename T, enable_if_t<is_trivially_copyable_v<T>>*>
+    template <typename T>
     inline BLOB BLOB::Raw (const T* s, const T* e)
+        requires (is_trivially_copyable_v<T>)
     {
         return BLOB (reinterpret_cast<const byte*> (s), reinterpret_cast<const byte*> (e));
     }
-    template <typename T, enable_if_t<is_trivially_copyable_v<T>>*>
+    template <typename T>
     inline BLOB BLOB::Raw (const T* s, size_t sz)
+        requires (is_trivially_copyable_v<T>)
     {
         return BLOB (reinterpret_cast<const byte*> (s), reinterpret_cast<const byte*> (s + sz));
     }
-    template <typename T, enable_if_t<is_same_v<typename char_traits<T>::char_type, T>>*>
+    template <typename T>
     inline BLOB BLOB::Raw (const T* s)
+        requires (is_same_v<typename char_traits<T>::char_type, T>)
     {
         RequireNotNull (s);
         return Raw (s, s + char_traits<T>::length (s));
     }
-    template <typename T, enable_if_t<is_same_v<typename char_traits<T>::char_type, T>>*>
+    template <typename T>
     inline BLOB BLOB::Raw (const basic_string<T>& s)
+        requires (is_same_v<typename char_traits<T>::char_type, T>)
     {
         return Raw (s.c_str (), s.c_str () + s.length ());
     }
-    template <typename T, enable_if_t<is_trivially_copyable_v<T>>*>
+    template <typename T>
     inline BLOB BLOB::Raw (const T& s)
+        requires (is_trivially_copyable_v<T>)
     {
         return Raw (&s, &s + 1);
     }

@@ -398,8 +398,9 @@ namespace Stroika::Foundation::Streams {
          *
          *  Blocking read of a single character. Returns a NUL-character on EOF ('\0')
          */
-        template <typename TEST_TYPE = ELEMENT_TYPE, enable_if_t<is_same_v<TEST_TYPE, Characters::Character>>* = nullptr>
-        nonvirtual Characters::Character ReadCharacter () const;
+        template <typename TEST_TYPE = ELEMENT_TYPE>
+        nonvirtual Characters::Character ReadCharacter () const
+            requires (is_same_v<TEST_TYPE, Characters::Character>);
 
     public:
         /**

@@ -260,8 +260,8 @@ namespace Stroika::Foundation::Cache {
         *v                                                       = KeyValuePair_{key, value};
     }
     template <typename KEY, typename VALUE, typename KEY_EQUALS_COMPARER, typename KEY_HASH_FUNCTION, typename STATS_TYPE>
-    template <typename K1, typename V1, enable_if_t<is_same_v<K1, V1>>*>
     inline void LRUCache<KEY, VALUE, KEY_EQUALS_COMPARER, KEY_HASH_FUNCTION, STATS_TYPE>::Add (typename Configuration::ArgByValueType<KEY> key)
+        requires (is_same_v<KEY, VALUE>)
     {
         Add (key, key);
     }

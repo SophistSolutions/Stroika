@@ -251,8 +251,9 @@ namespace Stroika::Foundation::Traversal {
         Require (rep == nullptr); // after move (see https://en.cppreference.com/w/cpp/memory/shared_ptr/shared_ptr "After the construction, ... r is empty and its stored pointer is null"
     }
     template <typename T>
-    template <ranges::range CONTAINER_OF_T, enable_if_t<not is_base_of_v<Iterable<T>, decay_t<CONTAINER_OF_T>>>*>
+    template <ranges::range CONTAINER_OF_T>
     Iterable<T>::Iterable (CONTAINER_OF_T&& from)
+        requires (not is_base_of_v<Iterable<T>, decay_t<CONTAINER_OF_T>>)
         : _fRep{mk_ (forward<CONTAINER_OF_T> (from))._fRep}
     {
     }
@@ -1107,7 +1108,7 @@ namespace Stroika::Foundation::Traversal {
         return end ();
     }
     template <typename T>
-    template <typename EQUALS_COMPARER, enable_if_t<Common::IsPotentiallyComparerRelation<EQUALS_COMPARER, T> ()>*>
+    template <Common::IPotentiallyComparer<T> EQUALS_COMPARER>
     Iterator<T> Iterable<T>::Find (const Iterator<T>& startAt, Configuration::ArgByValueType<T> v, EQUALS_COMPARER&& equalsComparer,
                                    [[maybe_unused]] Execution::SequencePolicy seq) const
     {
