@@ -45,8 +45,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         Collection_Array (Collection_Array&& src) noexcept      = default;
         Collection_Array (const Collection_Array& src) noexcept = default;
         Collection_Array (const initializer_list<value_type>& src);
-        template <ranges::range ITERABLE_OF_ADDABLE,
-                  enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and not is_base_of_v<Collection_Array<T>, decay_t<ITERABLE_OF_ADDABLE>>>* = nullptr>
+        template <ranges::range ITERABLE_OF_ADDABLE, enable_if_t<not is_base_of_v<Collection_Array<T>, decay_t<ITERABLE_OF_ADDABLE>>>* = nullptr>
         Collection_Array (ITERABLE_OF_ADDABLE&& src);
         template <typename ITERATOR_OF_ADDABLE>
         Collection_Array (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);

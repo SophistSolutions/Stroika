@@ -251,7 +251,7 @@ namespace Stroika::Foundation::Traversal {
         Require (rep == nullptr); // after move (see https://en.cppreference.com/w/cpp/memory/shared_ptr/shared_ptr "After the construction, ... r is empty and its stored pointer is null"
     }
     template <typename T>
-    template <typename CONTAINER_OF_T, enable_if_t<Configuration::IsIterable_v<CONTAINER_OF_T> and not is_base_of_v<Iterable<T>, decay_t<CONTAINER_OF_T>>>*>
+    template <ranges::range CONTAINER_OF_T, enable_if_t<not is_base_of_v<Iterable<T>, decay_t<CONTAINER_OF_T>>>*>
     Iterable<T>::Iterable (CONTAINER_OF_T&& from)
         : _fRep{mk_ (forward<CONTAINER_OF_T> (from))._fRep}
     {
@@ -320,7 +320,7 @@ namespace Stroika::Foundation::Traversal {
         return static_cast<bool> (this->Find ([&element, &equalsComparer] (T i) -> bool { return equalsComparer (i, element); }));
     }
     template <typename T>
-    template <typename LHS_CONTAINER_TYPE, typename RHS_CONTAINER_TYPE, Common::IEqualsComparer<T> EQUALS_COMPARER, enable_if_t<Configuration::IsIterable_v<RHS_CONTAINER_TYPE>>*>
+    template <ranges::range LHS_CONTAINER_TYPE, ranges::range RHS_CONTAINER_TYPE, Common::IEqualsComparer<T> EQUALS_COMPARER>
     bool Iterable<T>::SetEquals (const LHS_CONTAINER_TYPE& lhs, const RHS_CONTAINER_TYPE& rhs, EQUALS_COMPARER&& equalsComparer)
     {
         // @todo OPTIMIZATION - check if contexpr EQUALS_COMPARE == equal_to and if less<> defined - and if so - construct a std::set<> to lookup/compare (do on shorter side)
@@ -355,13 +355,13 @@ namespace Stroika::Foundation::Traversal {
         return true;
     }
     template <typename T>
-    template <typename RHS_CONTAINER_TYPE, Common::IEqualsComparer<T> EQUALS_COMPARER, enable_if_t<Configuration::IsIterable_v<RHS_CONTAINER_TYPE>>*>
+    template <ranges::range RHS_CONTAINER_TYPE, Common::IEqualsComparer<T> EQUALS_COMPARER>
     inline bool Iterable<T>::SetEquals (const RHS_CONTAINER_TYPE& rhs, EQUALS_COMPARER&& equalsComparer) const
     {
         return SetEquals (*this, rhs, forward<EQUALS_COMPARER> (equalsComparer));
     }
     template <typename T>
-    template <typename LHS_CONTAINER_TYPE, typename RHS_CONTAINER_TYPE, Common::IEqualsComparer<T> EQUALS_COMPARER, enable_if_t<Configuration::IsIterable_v<RHS_CONTAINER_TYPE>>*>
+    template <ranges::range LHS_CONTAINER_TYPE, ranges::range RHS_CONTAINER_TYPE, Common::IEqualsComparer<T> EQUALS_COMPARER>
     bool Iterable<T>::MultiSetEquals (const LHS_CONTAINER_TYPE& lhs, const RHS_CONTAINER_TYPE& rhs, EQUALS_COMPARER&& equalsComparer)
     {
         auto tallyOf = [&equalsComparer] (const auto& c, Configuration::ArgByValueType<T> item) -> size_t {
@@ -390,13 +390,13 @@ namespace Stroika::Foundation::Traversal {
         return true;
     }
     template <typename T>
-    template <typename RHS_CONTAINER_TYPE, Common::IEqualsComparer<T> EQUALS_COMPARER, enable_if_t<Configuration::IsIterable_v<RHS_CONTAINER_TYPE>>*>
+    template <ranges::range RHS_CONTAINER_TYPE, Common::IEqualsComparer<T> EQUALS_COMPARER>
     inline bool Iterable<T>::MultiSetEquals (const RHS_CONTAINER_TYPE& rhs, EQUALS_COMPARER&& equalsComparer) const
     {
         return MultiSetEquals (*this, rhs, equalsComparer);
     }
     template <typename T>
-    template <typename LHS_CONTAINER_TYPE, typename RHS_CONTAINER_TYPE, Common::IEqualsComparer<T> EQUALS_COMPARER, enable_if_t<Configuration::IsIterable_v<RHS_CONTAINER_TYPE>>*>
+    template <ranges::range LHS_CONTAINER_TYPE, ranges::range RHS_CONTAINER_TYPE, Common::IEqualsComparer<T> EQUALS_COMPARER>
     bool Iterable<T>::SequentialEquals (const LHS_CONTAINER_TYPE& lhs, const RHS_CONTAINER_TYPE& rhs, EQUALS_COMPARER&& equalsComparer, bool useIterableSize)
     {
         if (useIterableSize) {
@@ -437,7 +437,7 @@ namespace Stroika::Foundation::Traversal {
         }
     }
     template <typename T>
-    template <typename RHS_CONTAINER_TYPE, Common::IEqualsComparer<T> EQUALS_COMPARER, enable_if_t<Configuration::IsIterable_v<RHS_CONTAINER_TYPE>>*>
+    template <ranges::range RHS_CONTAINER_TYPE, Common::IEqualsComparer<T> EQUALS_COMPARER>
     inline bool Iterable<T>::SequentialEquals (const RHS_CONTAINER_TYPE& rhs, EQUALS_COMPARER&& equalsComparer, bool useIterableSize) const
     {
         return SequentialEquals (*this, rhs, forward<EQUALS_COMPARER> (equalsComparer), useIterableSize);

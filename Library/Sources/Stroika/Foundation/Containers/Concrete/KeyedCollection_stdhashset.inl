@@ -235,7 +235,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     }
     template <typename T, typename KEY_TYPE, typename TRAITS>
     template <ranges::range ITERABLE_OF_ADDABLE, typename KEY_EXTRACTOR, typename KEY_INORDER_COMPARER,
-              enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and not is_base_of_v<KeyedCollection_stdhashset<T, KEY_TYPE, TRAITS>, decay_t<ITERABLE_OF_ADDABLE>> and
+              enable_if_t< not is_base_of_v<KeyedCollection_stdhashset<T, KEY_TYPE, TRAITS>, decay_t<ITERABLE_OF_ADDABLE>> and
                           Common::IsStrictInOrderComparer<KEY_INORDER_COMPARER, KEY_TYPE> () and KeyedCollection_IsKeyExctractor<T, KEY_TYPE, KEY_EXTRACTOR> ()>*>
     inline KeyedCollection_stdhashset<T, KEY_TYPE, TRAITS>::KeyedCollection_stdhashset (ITERABLE_OF_ADDABLE&& src)
         : KeyedCollection_stdhashset{typename TRAITS::DefaultKeyExtractor{}, less<KEY_TYPE>{}}
@@ -246,7 +246,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     }
     template <typename T, typename KEY_TYPE, typename TRAITS>
     template <ranges::range ITERABLE_OF_ADDABLE, typename KEY_EXTRACTOR, typename KEY_INORDER_COMPARER,
-              enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and not is_base_of_v<KeyedCollection_stdhashset<T, KEY_TYPE, TRAITS>, decay_t<ITERABLE_OF_ADDABLE>> and
+              enable_if_t<not is_base_of_v<KeyedCollection_stdhashset<T, KEY_TYPE, TRAITS>, decay_t<ITERABLE_OF_ADDABLE>> and
                           Common::IsStrictInOrderComparer<KEY_INORDER_COMPARER, KEY_TYPE> () and KeyedCollection_IsKeyExctractor<T, KEY_TYPE, KEY_EXTRACTOR> ()>*>
     inline KeyedCollection_stdhashset<T, KEY_TYPE, TRAITS>::KeyedCollection_stdhashset (KEY_INORDER_COMPARER&& keyComparer, ITERABLE_OF_ADDABLE&& src)
         : KeyedCollection_stdhashset{typename TRAITS::DefaultKeyExtractor{}, forward<KEY_INORDER_COMPARER> (keyComparer)}
@@ -258,7 +258,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     template <typename T, typename KEY_TYPE, typename TRAITS>
     template <typename KEY_EXTRACTOR, typename KEY_INORDER_COMPARER, ranges::range ITERABLE_OF_ADDABLE,
               enable_if_t<KeyedCollection_IsKeyExctractor<T, KEY_TYPE, KEY_EXTRACTOR> () and
-                          Common::IsStrictInOrderComparer<KEY_INORDER_COMPARER, KEY_TYPE> () and Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>>*>
+                          Common::IsStrictInOrderComparer<KEY_INORDER_COMPARER, KEY_TYPE> () >*>
     inline KeyedCollection_stdhashset<T, KEY_TYPE, TRAITS>::KeyedCollection_stdhashset (KEY_EXTRACTOR&& keyExtractor,
                                                                                 KEY_INORDER_COMPARER&& keyComparer, ITERABLE_OF_ADDABLE&& src)
         : KeyedCollection_stdhashset{forward<KEY_EXTRACTOR> (keyExtractor), forward<KEY_INORDER_COMPARER> (keyComparer)}

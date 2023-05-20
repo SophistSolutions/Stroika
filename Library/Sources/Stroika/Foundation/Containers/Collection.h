@@ -266,7 +266,7 @@ namespace Stroika::Foundation::Containers {
         nonvirtual void RemoveAll ();
         template <typename EQUALS_COMPARER = equal_to<T>>
         nonvirtual size_t RemoveAll (const Iterator<value_type>& start, const Iterator<value_type>& end, EQUALS_COMPARER&& equalsComparer = {});
-        template <ranges::range ITERABLE_OF_ADDABLE, typename EQUALS_COMPARER = equal_to<T>, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>>* = nullptr>
+        template <ranges::range ITERABLE_OF_ADDABLE, typename EQUALS_COMPARER = equal_to<T>>
         nonvirtual size_t RemoveAll (const ITERABLE_OF_ADDABLE& c, EQUALS_COMPARER&& equalsComparer = {});
         template <predicate<T> PREDICATE>
         nonvirtual size_t RemoveAll (PREDICATE&& p);

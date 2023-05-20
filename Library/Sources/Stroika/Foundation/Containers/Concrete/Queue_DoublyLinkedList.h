@@ -43,8 +43,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         Queue_DoublyLinkedList (Queue_DoublyLinkedList&& src) noexcept      = default;
         Queue_DoublyLinkedList (const Queue_DoublyLinkedList& src) noexcept = default;
         Queue_DoublyLinkedList (const initializer_list<value_type>& src);
-        template <ranges::range ITERABLE_OF_ADDABLE,
-                  enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and not is_base_of_v<Queue_DoublyLinkedList<T>, decay_t<ITERABLE_OF_ADDABLE>>>* = nullptr>
+        template <ranges::range ITERABLE_OF_ADDABLE, enable_if_t<not is_base_of_v<Queue_DoublyLinkedList<T>, decay_t<ITERABLE_OF_ADDABLE>>>* = nullptr>
         explicit Queue_DoublyLinkedList (ITERABLE_OF_ADDABLE&& src);
         template <typename ITERATOR_OF_ADDABLE>
         Queue_DoublyLinkedList (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);

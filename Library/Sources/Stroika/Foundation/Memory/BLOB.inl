@@ -96,10 +96,9 @@ namespace Stroika::Foundation::Memory {
         : fRep_{_MakeSharedPtr<ZeroRep_> ()}
     {
     }
-    template <typename CONTAINER_OF_BYTE>
+    template <ranges::range CONTAINER_OF_BYTE>
     inline BLOB::BLOB (const CONTAINER_OF_BYTE& data)
-        requires Configuration::IsIterable_v<CONTAINER_OF_BYTE> and (is_convertible_v<typename CONTAINER_OF_BYTE::value_type, byte> or
-                                                                     is_convertible_v<typename CONTAINER_OF_BYTE::value_type, uint8_t>)
+        requires (is_convertible_v<typename CONTAINER_OF_BYTE::value_type, byte> or is_convertible_v<typename CONTAINER_OF_BYTE::value_type, uint8_t>)
         : BLOB{as_bytes (span{data.data (), data.size ()})}
     {
     }

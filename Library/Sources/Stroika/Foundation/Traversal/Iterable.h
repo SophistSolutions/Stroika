@@ -219,7 +219,7 @@ namespace Stroika::Foundation::Traversal {
          *  \note Don't apply this constructor to non-containers (non-iterables), 
          *        and don't allow it to apply to SUBCLASSES of Iterable (since then we want to select the Iterable (const Iterable& from) constructor)
          */
-        template <typename CONTAINER_OF_T, enable_if_t<Configuration::IsIterable_v<CONTAINER_OF_T> and not is_base_of_v<Iterable<T>, decay_t<CONTAINER_OF_T>>>* = nullptr>
+        template <ranges::range CONTAINER_OF_T, enable_if_t<not is_base_of_v<Iterable<T>, decay_t<CONTAINER_OF_T>>>* = nullptr>
         explicit Iterable (CONTAINER_OF_T&& from);
 
     public:
@@ -349,11 +349,9 @@ namespace Stroika::Foundation::Traversal {
          *                NOTE ALSO - that 'trick' assumes T has a valid less<T>, which it may not!
          *
          */
-        template <typename LHS_CONTAINER_TYPE, typename RHS_CONTAINER_TYPE, Common::IEqualsComparer<T> EQUALS_COMPARER = equal_to<T>,
-                  enable_if_t<Configuration::IsIterable_v<RHS_CONTAINER_TYPE>>* = nullptr>
+        template <ranges::range LHS_CONTAINER_TYPE, ranges::range RHS_CONTAINER_TYPE, Common::IEqualsComparer<T> EQUALS_COMPARER = equal_to<T>>
         static bool SetEquals (const LHS_CONTAINER_TYPE& lhs, const RHS_CONTAINER_TYPE& rhs, EQUALS_COMPARER&& equalsComparer = EQUALS_COMPARER{});
-        template <typename RHS_CONTAINER_TYPE = initializer_list<T>, Common::IEqualsComparer<T> EQUALS_COMPARER = equal_to<T>,
-                  enable_if_t<Configuration::IsIterable_v<RHS_CONTAINER_TYPE>>* = nullptr>
+        template <ranges::range RHS_CONTAINER_TYPE = initializer_list<T>, Common::IEqualsComparer<T> EQUALS_COMPARER = equal_to<T>>
         nonvirtual bool SetEquals (const RHS_CONTAINER_TYPE& rhs, EQUALS_COMPARER&& equalsComparer = EQUALS_COMPARER{}) const;
 
     public:
@@ -365,11 +363,9 @@ namespace Stroika::Foundation::Traversal {
          *  \em Performance:
          *      This algorithm is O(N^^3)
          */
-        template <typename LHS_CONTAINER_TYPE, typename RHS_CONTAINER_TYPE, Common::IEqualsComparer<T> EQUALS_COMPARER = equal_to<T>,
-                  enable_if_t<Configuration::IsIterable_v<RHS_CONTAINER_TYPE>>* = nullptr>
+        template <ranges::range LHS_CONTAINER_TYPE, ranges::range RHS_CONTAINER_TYPE, Common::IEqualsComparer<T> EQUALS_COMPARER = equal_to<T>>
         static bool MultiSetEquals (const LHS_CONTAINER_TYPE& lhs, const RHS_CONTAINER_TYPE& rhs, EQUALS_COMPARER&& equalsComparer = EQUALS_COMPARER{});
-        template <typename RHS_CONTAINER_TYPE = initializer_list<T>, Common::IEqualsComparer<T> EQUALS_COMPARER = equal_to<T>,
-                  enable_if_t<Configuration::IsIterable_v<RHS_CONTAINER_TYPE>>* = nullptr>
+        template <ranges::range RHS_CONTAINER_TYPE = initializer_list<T>, Common::IEqualsComparer<T> EQUALS_COMPARER = equal_to<T>>
         nonvirtual bool MultiSetEquals (const RHS_CONTAINER_TYPE& rhs, EQUALS_COMPARER&& equalsComparer = EQUALS_COMPARER{}) const;
 
     public:
@@ -384,12 +380,10 @@ namespace Stroika::Foundation::Traversal {
          *  \em Performance:
          *      This algorithm is O(N)
          */
-        template <typename LHS_CONTAINER_TYPE, typename RHS_CONTAINER_TYPE, Common::IEqualsComparer<T> EQUALS_COMPARER = equal_to<T>,
-                  enable_if_t<Configuration::IsIterable_v<RHS_CONTAINER_TYPE>>* = nullptr>
+        template <ranges::range LHS_CONTAINER_TYPE, ranges::range RHS_CONTAINER_TYPE, Common::IEqualsComparer<T> EQUALS_COMPARER = equal_to<T>>
         static bool SequentialEquals (const LHS_CONTAINER_TYPE& lhs, const RHS_CONTAINER_TYPE& rhs,
                                       EQUALS_COMPARER&& equalsComparer = EQUALS_COMPARER{}, bool useIterableSize = false);
-        template <typename RHS_CONTAINER_TYPE = initializer_list<T>, Common::IEqualsComparer<T> EQUALS_COMPARER = equal_to<T>,
-                  enable_if_t<Configuration::IsIterable_v<RHS_CONTAINER_TYPE>>* = nullptr>
+        template <ranges::range RHS_CONTAINER_TYPE = initializer_list<T>, Common::IEqualsComparer<T> EQUALS_COMPARER = equal_to<T>>
         nonvirtual bool SequentialEquals (const RHS_CONTAINER_TYPE& rhs, EQUALS_COMPARER&& equalsComparer = EQUALS_COMPARER{},
                                           bool useIterableSize = false) const;
 

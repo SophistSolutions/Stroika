@@ -189,10 +189,9 @@ namespace Stroika::Foundation::Containers {
         MultiSet (const initializer_list<value_type>& src);
         template <IEqualsComparer<T> EQUALS_COMPARER>
         MultiSet (EQUALS_COMPARER&& equalsComparer, const initializer_list<value_type>& src);
-        template <ranges::range ITERABLE_OF_ADDABLE,
-                  enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and not is_base_of_v<MultiSet<T, TRAITS>, decay_t<ITERABLE_OF_ADDABLE>>>* = nullptr>
+        template <ranges::range ITERABLE_OF_ADDABLE, enable_if_t<not is_base_of_v<MultiSet<T, TRAITS>, decay_t<ITERABLE_OF_ADDABLE>>>* = nullptr>
         explicit MultiSet (ITERABLE_OF_ADDABLE&& src);
-        template <IEqualsComparer<T> EQUALS_COMPARER, ranges::range ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>>* = nullptr>
+        template <IEqualsComparer<T> EQUALS_COMPARER, ranges::range ITERABLE_OF_ADDABLE>
         MultiSet (EQUALS_COMPARER&& equalsComparer, ITERABLE_OF_ADDABLE&& src);
         template <input_iterator ITERATOR_OF_ADDABLE>
         MultiSet (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
@@ -234,7 +233,7 @@ namespace Stroika::Foundation::Containers {
          */
         template <input_iterator ITERATOR_OF_ADDABLE>
         nonvirtual void AddAll (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
-        template <ranges::range ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>>* = nullptr>
+        template <ranges::range ITERABLE_OF_ADDABLE>
         nonvirtual void AddAll (ITERABLE_OF_ADDABLE&& items);
 
     public:

@@ -96,7 +96,7 @@ namespace Stroika::Foundation::Containers::Concrete {
 #if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
         template <ranges::range ITERABLE_OF_ADDABLE>
         explicit Mapping_stdhashmap (ITERABLE_OF_ADDABLE&& src)
-            requires (is_default_constructible_v<Mapping_stdhashmap> and Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and
+            requires (is_default_constructible_v<Mapping_stdhashmap> and
                       not is_base_of_v<Mapping_stdhashmap<KEY_TYPE, MAPPED_VALUE_TYPE>, decay_t<ITERABLE_OF_ADDABLE>>)
             : Mapping_stdhashmap{}
         {
@@ -107,13 +107,13 @@ namespace Stroika::Foundation::Containers::Concrete {
 #else
         template <ranges::range ITERABLE_OF_ADDABLE>
         explicit Mapping_stdhashmap (ITERABLE_OF_ADDABLE&& src)
-            requires (is_default_constructible_v<Mapping_stdhashmap> and Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and
+            requires (is_default_constructible_v<Mapping_stdhashmap> and
                       not is_base_of_v<Mapping_stdhashmap<KEY_TYPE, MAPPED_VALUE_TYPE>, decay_t<ITERABLE_OF_ADDABLE>>);
 #endif
 #if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
         template <typename HASH, IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER, ranges::range ITERABLE_OF_ADDABLE>
         Mapping_stdhashmap (HASH&& hasher, KEY_EQUALS_COMPARER&& keyComparer, ITERABLE_OF_ADDABLE&& src)
-            requires (Cryptography::Digest::IsHashFunction<HASH, KEY_TYPE> and Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and
+            requires (Cryptography::Digest::IsHashFunction<HASH, KEY_TYPE> and
                       not is_base_of_v<Mapping_stdhashmap<KEY_TYPE, MAPPED_VALUE_TYPE>, decay_t<ITERABLE_OF_ADDABLE>>)
             : Mapping_stdhashmap{forward<HASH> (hasher), forward<KEY_EQUALS_COMPARER> (keyComparer)}
         {
@@ -124,7 +124,7 @@ namespace Stroika::Foundation::Containers::Concrete {
 #else
         template <typename HASH, IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER, ranges::range ITERABLE_OF_ADDABLE>
         Mapping_stdhashmap (HASH&& hasher, KEY_EQUALS_COMPARER&& keyComparer, ITERABLE_OF_ADDABLE&& src)
-            requires (Cryptography::Digest::IsHashFunction<HASH, KEY_TYPE> and Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and
+            requires (Cryptography::Digest::IsHashFunction<HASH, KEY_TYPE> and
                       not is_base_of_v<Mapping_stdhashmap<KEY_TYPE, MAPPED_VALUE_TYPE>, decay_t<ITERABLE_OF_ADDABLE>>);
 #endif
         template <input_iterator ITERATOR_OF_ADDABLE>

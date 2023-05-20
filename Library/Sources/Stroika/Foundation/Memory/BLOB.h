@@ -123,10 +123,10 @@ namespace Stroika::Foundation::Memory {
         BLOB (BLOB&& src) noexcept = default;
         BLOB (const BLOB& src) noexcept = default;
         // clang-format on
-        template <typename CONTAINER_OF_BYTE>
+        template <ranges::range CONTAINER_OF_BYTE>
         BLOB (const CONTAINER_OF_BYTE& data)
-            requires Configuration::IsIterable_v<CONTAINER_OF_BYTE> and (is_convertible_v<typename CONTAINER_OF_BYTE::value_type, byte> or
-                                                                         is_convertible_v<typename CONTAINER_OF_BYTE::value_type, uint8_t>);
+            requires (is_convertible_v<typename CONTAINER_OF_BYTE::value_type, byte> or
+                      is_convertible_v<typename CONTAINER_OF_BYTE::value_type, uint8_t>);
         BLOB (span<const byte> s);
         BLOB (const byte* start, const byte* end);
         BLOB (const uint8_t* start, const uint8_t* end);

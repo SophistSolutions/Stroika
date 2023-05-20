@@ -118,7 +118,7 @@ namespace Stroika::Foundation::Common {
         nonvirtual Characters::String ToString () const;
     };
     static_assert (sizeof (GUID) == 16);
-    static_assert (Configuration::IsIterable_v<GUID>);
+    static_assert (ranges::range<GUID>);
 
 }
 

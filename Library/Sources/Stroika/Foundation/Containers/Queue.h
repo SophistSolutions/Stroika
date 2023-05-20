@@ -113,8 +113,7 @@ namespace Stroika::Foundation::Containers {
         Queue (Queue&& src) noexcept      = default;
         Queue (const Queue& src) noexcept = default;
         Queue (const initializer_list<value_type>& src);
-        template <ranges::range ITERABLE_OF_ADDABLE,
-                  enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE> and not is_base_of_v<Queue<T>, decay_t<ITERABLE_OF_ADDABLE>>>* = nullptr>
+        template <ranges::range ITERABLE_OF_ADDABLE, enable_if_t<not is_base_of_v<Queue<T>, decay_t<ITERABLE_OF_ADDABLE>>>* = nullptr>
         explicit Queue (ITERABLE_OF_ADDABLE&& src);
         template <typename ITERATOR_OF_ADDABLE>
         Queue (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
@@ -186,7 +185,7 @@ namespace Stroika::Foundation::Containers {
          *  This also implies that ordering will be preserved in iterating over the Queue, or in Dequeing those elements.
          *
          *  \req  IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>;                   // ITERABLE_OF_ADDABLE overload
-         *  \req  Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>                        //  ditto
+         *  \req  ranges::range <ITERABLE_OF_ADDABLE>                        //  ditto
          *  \req  static_assert (IsAddable_v<ExtractValueType_t<ITERATOR_OF_ADDABLE>>);   // ITERATOR_OF_ADDABLE overload
          * 
          *  \note This works efficiently because a Queue<> iterates from head to tail, and thats the order in which you would want to
@@ -194,7 +193,7 @@ namespace Stroika::Foundation::Containers {
          *
          *  \note mutates container
          */
-        template <ranges::range ITERABLE_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<ITERABLE_OF_ADDABLE>>* = nullptr>
+        template <ranges::range ITERABLE_OF_ADDABLE>
         nonvirtual void AddAllToTail (ITERABLE_OF_ADDABLE&& s);
         template <input_iterator ITERATOR_OF_ADDABLE>
         nonvirtual void AddAllToTail (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
