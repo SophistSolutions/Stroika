@@ -74,21 +74,21 @@ namespace Stroika::Foundation::Cache {
         fData_.Remove (k);
     }
     template <typename KEY, typename VALUE, typename TIME_TRAITS>
-    template <typename K1, enable_if_t<not IsKeyedCache<K1>>*>
     inline void CallerStalenessCache<KEY, VALUE, TIME_TRAITS>::Add (Configuration::ArgByValueType<VALUE> v)
+        requires (not IsKeyedCache<KEY>)
     {
         fData_ = myVal_{move (v), GetCurrentTimestamp ()};
     }
     template <typename KEY, typename VALUE, typename TIME_TRAITS>
-    template <typename K1, enable_if_t<IsKeyedCache<K1>>*>
-    inline void CallerStalenessCache<KEY, VALUE, TIME_TRAITS>::Add (Configuration::ArgByValueType<K1>    k,
+    inline void CallerStalenessCache<KEY, VALUE, TIME_TRAITS>::Add (Configuration::ArgByValueType<KEY>   k,
                                                                     Configuration::ArgByValueType<VALUE> v, AddReplaceMode addReplaceMode)
+        requires (IsKeyedCache<KEY>)
     {
         fData_.Add (k, myVal_{move (v), GetCurrentTimestamp ()}, addReplaceMode);
     }
     template <typename KEY, typename VALUE, typename TIME_TRAITS>
-    template <typename K1, enable_if_t<not IsKeyedCache<K1>>*>
     inline optional<VALUE> CallerStalenessCache<KEY, VALUE, TIME_TRAITS>::Lookup (TimeStampType staleIfOlderThan) const
+        requires (not IsKeyedCache<KEY>)
     {
         optional<myVal_> o = fData_;
         if (not o.has_value () or o->fDataCapturedAt < staleIfOlderThan) {
@@ -97,8 +97,8 @@ namespace Stroika::Foundation::Cache {
         return o->fValue;
     }
     template <typename KEY, typename VALUE, typename TIME_TRAITS>
-    template <typename K1, enable_if_t<IsKeyedCache<K1>>*>
-    inline optional<VALUE> CallerStalenessCache<KEY, VALUE, TIME_TRAITS>::Lookup (Configuration::ArgByValueType<K1> k, TimeStampType staleIfOlderThan) const
+    inline optional<VALUE> CallerStalenessCache<KEY, VALUE, TIME_TRAITS>::Lookup (Configuration::ArgByValueType<KEY> k, TimeStampType staleIfOlderThan) const
+        requires (IsKeyedCache<KEY>)
     {
         optional<myVal_> o = fData_.Lookup (k);
         if (not o.has_value () or o->fDataCapturedAt < staleIfOlderThan) {

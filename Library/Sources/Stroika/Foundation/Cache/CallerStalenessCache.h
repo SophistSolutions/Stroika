@@ -179,13 +179,12 @@ namespace Stroika::Foundation::Cache {
         /**
          *  This not only adds the association of KEY k to VALUE v, but updates the timestamp associated with k.
          */
-        template <typename K1 = KEY, enable_if_t<not IsKeyedCache<K1>>* = nullptr>
-        nonvirtual void Add (Configuration::ArgByValueType<VALUE> v);
-        template <typename K1 = KEY, enable_if_t<IsKeyedCache<K1>>* = nullptr>
-        nonvirtual void Add (Configuration::ArgByValueType<K1> k, Configuration::ArgByValueType<VALUE> v,
-                             AddReplaceMode addReplaceMode = AddReplaceMode::eAddReplaces);
+        nonvirtual void Add (Configuration::ArgByValueType<VALUE> v)
+            requires (not IsKeyedCache<KEY>);
+        nonvirtual void Add (Configuration::ArgByValueType<KEY> k, Configuration::ArgByValueType<VALUE> v,
+                             AddReplaceMode addReplaceMode = AddReplaceMode::eAddReplaces)
+            requires (IsKeyedCache<KEY>);
 
-    public:
         /**
          *  Usually one will use this as (cache fillter overload):
          *      VALUE v = cache.Lookup (key, ts, [this] () -> VALUE {return this->realLookup(key); });
@@ -201,10 +200,10 @@ namespace Stroika::Foundation::Cache {
          *  \note   Lookup (,,DEFAULT_VALUE) - doesn't fill in the cache value - so not quite the same as
          *          Lookup (...,[] () { return DEFAULT_VALUE; });
          */
-        template <typename K1 = KEY, enable_if_t<not IsKeyedCache<K1>>* = nullptr>
-        nonvirtual optional<VALUE> Lookup (TimeStampType staleIfOlderThan) const;
-        template <typename K1 = KEY, enable_if_t<IsKeyedCache<K1>>* = nullptr>
-        nonvirtual optional<VALUE> Lookup (Configuration::ArgByValueType<K1> k, TimeStampType staleIfOlderThan) const;
+        nonvirtual optional<VALUE> Lookup (TimeStampType staleIfOlderThan) const
+            requires (not IsKeyedCache<KEY>);
+        nonvirtual optional<VALUE> Lookup (Configuration::ArgByValueType<KEY> k, TimeStampType staleIfOlderThan) const
+            requires (IsKeyedCache<KEY>);
 
     public:
         /**
