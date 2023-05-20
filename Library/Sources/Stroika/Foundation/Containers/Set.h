@@ -171,8 +171,9 @@ namespace Stroika::Foundation::Containers {
         Set (const initializer_list<value_type>& src);
         template <IEqualsComparer<T> EQUALS_COMPARER>
         Set (EQUALS_COMPARER&& equalsComparer, const initializer_list<value_type>& src);
-        template <ranges::range ITERABLE_OF_ADDABLE, enable_if_t<not is_base_of_v<Set<T>, decay_t<ITERABLE_OF_ADDABLE>>>* = nullptr>
-        explicit Set (ITERABLE_OF_ADDABLE&& src);
+        template <ranges::range ITERABLE_OF_ADDABLE>
+        explicit Set (ITERABLE_OF_ADDABLE&& src)
+            requires (not is_base_of_v<Set<T>, decay_t<ITERABLE_OF_ADDABLE>>);
         template <IEqualsComparer<T> EQUALS_COMPARER, ranges::range ITERABLE_OF_ADDABLE>
         Set (EQUALS_COMPARER&& equalsComparer, ITERABLE_OF_ADDABLE&& src);
         template <input_iterator ITERATOR_OF_ADDABLE>

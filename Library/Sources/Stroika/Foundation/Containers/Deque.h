@@ -83,8 +83,9 @@ namespace Stroika::Foundation::Containers {
         Deque (Deque&& src) noexcept      = default;
         Deque (const Deque& src) noexcept = default;
         Deque (const initializer_list<value_type>& src);
-        template <ranges::range ITERABLE_OF_ADDABLE, enable_if_t<not is_base_of_v<Deque<T>, decay_t<ITERABLE_OF_ADDABLE>>>* = nullptr>
-        explicit Deque (ITERABLE_OF_ADDABLE&& src);
+        template <ranges::range ITERABLE_OF_ADDABLE>
+        explicit Deque (ITERABLE_OF_ADDABLE&& src)
+            requires (not is_base_of_v<Deque<T>, decay_t<ITERABLE_OF_ADDABLE>>);
         template <input_iterator ITERATOR_OF_ADDABLE>
         Deque (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
 

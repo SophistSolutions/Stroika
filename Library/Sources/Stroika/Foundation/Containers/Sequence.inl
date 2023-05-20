@@ -108,8 +108,9 @@ namespace Stroika::Foundation::Containers {
         _AssertRepValidType ();
     }
     template <typename T>
-    template <ranges::range ITERABLE_OF_ADDABLE, enable_if_t<not is_base_of_v<Sequence<T>, decay_t<ITERABLE_OF_ADDABLE>>>*>
+    template <ranges::range ITERABLE_OF_ADDABLE>
     inline Sequence<T>::Sequence (ITERABLE_OF_ADDABLE&& src)
+        requires (not is_base_of_v<Sequence<T>, decay_t<ITERABLE_OF_ADDABLE>>)
         : Sequence{}
     {
         static_assert (IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>);

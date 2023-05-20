@@ -57,8 +57,9 @@ namespace Stroika::Foundation::Containers {
         _AssertRepValidType ();
     }
     template <typename T>
-    template <ranges::range ITERABLE_OF_ADDABLE, enable_if_t<not is_base_of_v<Collection<T>, decay_t<ITERABLE_OF_ADDABLE>>>*>
+    template <ranges::range ITERABLE_OF_ADDABLE>
     inline Collection<T>::Collection (ITERABLE_OF_ADDABLE&& src)
+        requires (not is_base_of_v<Collection<T>, decay_t<ITERABLE_OF_ADDABLE>>)
         : Collection{}
     {
         static_assert (IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>);
@@ -117,7 +118,7 @@ namespace Stroika::Foundation::Containers {
         writerRep->Remove (patchedIterator, nextI);
     }
     template <typename T>
-    template <Common::IEqualsComparer<T> EQUALS_COMPARER>
+    template <Common::IPotentiallyComparer<T> EQUALS_COMPARER>
     inline void Collection<T>::Remove (ArgByValueType<value_type> item, EQUALS_COMPARER&& equalsComparer)
     {
         auto i = this->Find (item, forward<EQUALS_COMPARER> (equalsComparer));

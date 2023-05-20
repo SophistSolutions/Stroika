@@ -54,8 +54,9 @@ namespace Stroika::Foundation::Containers {
         _AssertRepValidType ();
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-    template <ranges::range ITERABLE_OF_ADDABLE, enable_if_t<not is_base_of_v<Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>, decay_t<ITERABLE_OF_ADDABLE>>>*>
+    template <ranges::range ITERABLE_OF_ADDABLE>
     inline Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::Mapping (ITERABLE_OF_ADDABLE&& src)
+        requires (not is_base_of_v<Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>, decay_t<ITERABLE_OF_ADDABLE>>)
         : Mapping{}
     {
         static_assert (IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>);
@@ -374,25 +375,17 @@ namespace Stroika::Foundation::Containers {
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     template <typename CONTAINER_OF_Key_T>
-    CONTAINER_OF_Key_T Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::As_ (
-        [[maybe_unused]] enable_if_t<is_convertible_v<typename CONTAINER_OF_Key_T::value_type, pair<KEY_TYPE, MAPPED_VALUE_TYPE>>, int> usesInsertPair) const
+    CONTAINER_OF_Key_T Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::As_ () const
     {
         CONTAINER_OF_Key_T result;
         for (const auto& i : *this) {
             // the reason we use the overload with an extra result.end () here is so it will work with std::map<> or std::vector<>
-            result.insert (result.end (), pair<KEY_TYPE, MAPPED_VALUE_TYPE>{i.fKey, i.fValue});
-        }
-        return result;
-    }
-    template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-    template <typename CONTAINER_OF_Key_T>
-    CONTAINER_OF_Key_T Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::As_ (
-        enable_if_t<!is_convertible_v<typename CONTAINER_OF_Key_T::value_type, pair<KEY_TYPE, MAPPED_VALUE_TYPE>>, int>) const
-    {
-        CONTAINER_OF_Key_T result;
-        for (const auto& i : *this) {
-            // the reason we use the overload with an extra result.end () here is so it will work with std::map<> or std::vector<>
-            result.insert (result.end (), value_type{i.fKey, i.fValue});
+            if constexpr (is_convertible_v<typename CONTAINER_OF_Key_T::value_type, pair<KEY_TYPE, MAPPED_VALUE_TYPE>>) {
+                result.insert (result.end (), pair<KEY_TYPE, MAPPED_VALUE_TYPE>{i.fKey, i.fValue});
+            }
+            else {
+                result.insert (result.end (), value_type{i.fKey, i.fValue});
+            }
         }
         return result;
     }

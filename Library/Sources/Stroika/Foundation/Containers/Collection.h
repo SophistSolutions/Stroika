@@ -153,8 +153,9 @@ namespace Stroika::Foundation::Containers {
         Collection (Collection&& src) noexcept      = default;
         Collection (const Collection& src) noexcept = default;
         Collection (const initializer_list<value_type>& src);
-        template <ranges::range ITERABLE_OF_ADDABLE, enable_if_t<not is_base_of_v<Collection<T>, decay_t<ITERABLE_OF_ADDABLE>>>* = nullptr>
-        Collection (ITERABLE_OF_ADDABLE&& src);
+        template <ranges::range ITERABLE_OF_ADDABLE>
+        Collection (ITERABLE_OF_ADDABLE&& src)
+            requires (not is_base_of_v<Collection<T>, decay_t<ITERABLE_OF_ADDABLE>>);
         template <input_iterator ITERATOR_OF_ADDABLE>
         Collection (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
 
@@ -228,7 +229,7 @@ namespace Stroika::Foundation::Containers {
          *
          *   \note mutates container
          */
-        template <Common::IEqualsComparer<T> EQUALS_COMPARER = equal_to<T>>
+        template <Common::IPotentiallyComparer<T> EQUALS_COMPARER = equal_to<T>>
         nonvirtual void Remove (ArgByValueType<value_type> item, EQUALS_COMPARER&& equalsComparer = {});
         nonvirtual void Remove (const Iterator<value_type>& i, Iterator<value_type>* nextI = nullptr);
 
