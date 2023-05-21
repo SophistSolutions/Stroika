@@ -67,7 +67,7 @@ namespace Stroika::Foundation::Containers {
         AddAll (forward<ITERABLE_OF_ADDABLE> (src));
         _AssertRepValidType ();
     }
-#eendif
+#endif
     template <typename T>
     template <Common::IEqualsComparer<T> EQUALS_COMPARER>
     inline bool Collection<T>::Contains (ArgByValueType<value_type> item, EQUALS_COMPARER&& equalsComparer) const
