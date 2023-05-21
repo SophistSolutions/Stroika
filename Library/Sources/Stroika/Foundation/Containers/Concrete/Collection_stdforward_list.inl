@@ -159,8 +159,9 @@ namespace Stroika::Foundation::Containers::Concrete {
         AssertRepValidType_ ();
     }
     template <typename T>
-    template <ranges::range ITERABLE_OF_ADDABLE, enable_if_t<not is_base_of_v<Collection_stdforward_list<T>, decay_t<ITERABLE_OF_ADDABLE>>>*>
+    template <ranges::range ITERABLE_OF_ADDABLE>
     inline Collection_stdforward_list<T>::Collection_stdforward_list (ITERABLE_OF_ADDABLE&& src)
+        requires (not is_base_of_v<Collection_stdforward_list<T>, decay_t<ITERABLE_OF_ADDABLE>>)
         : Collection_stdforward_list{}
     {
         static_assert (IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>);

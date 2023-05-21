@@ -24,6 +24,8 @@ namespace Stroika::Foundation::Containers {
     {
         _AssertRepValidType ();
     }
+#if !qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
+
     template <typename T>
     template <ranges::range ITERABLE_OF_ADDABLE>
     inline Stack<T>::Stack (ITERABLE_OF_ADDABLE&& src)
@@ -41,6 +43,7 @@ namespace Stroika::Foundation::Containers {
             Push (si);
         }
     }
+#endif
     template <typename T>
     inline Stack<T>::Stack (const shared_ptr<_IRep>& src) noexcept
         : inherited{src}

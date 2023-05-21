@@ -112,7 +112,23 @@ namespace Stroika::Foundation::Containers {
         Stack (const Stack& src) noexcept = default;
         template <ranges::range ITERABLE_OF_ADDABLE>
         explicit Stack (ITERABLE_OF_ADDABLE&& src)
-            requires (not is_base_of_v<Stack<T>, decay_t<ITERABLE_OF_ADDABLE>>);
+            requires (not is_base_of_v<Stack<T>, decay_t<ITERABLE_OF_ADDABLE>>)
+#if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
+            : Stack{}
+        {
+            static_assert (IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>);
+            // sadly intrinsically expensive to copy an Iterable using the stack API
+            // @todo find a more efficient way - for example - if there is a way to get a reverse-iterator from 'src' this can be much cheaper!
+            vector<T> tmp;
+            for (const auto& si : src) {
+                tmp.push_back (si);
+            }
+            for (const auto& si : tmp) {
+                Push (si);
+            }
+        }
+#endif
+        ;
         template <input_iterator ITERATOR_OF_ADDABLE>
         Stack (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
 

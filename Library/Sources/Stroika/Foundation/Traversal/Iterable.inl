@@ -250,6 +250,7 @@ namespace Stroika::Foundation::Traversal {
         Require (_fRep.GetSharingState () != Memory::SharedByValue_State::eNull);
         Require (rep == nullptr); // after move (see https://en.cppreference.com/w/cpp/memory/shared_ptr/shared_ptr "After the construction, ... r is empty and its stored pointer is null"
     }
+#if !qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
     template <typename T>
     template <ranges::range CONTAINER_OF_T>
     Iterable<T>::Iterable (CONTAINER_OF_T&& from)
@@ -257,6 +258,7 @@ namespace Stroika::Foundation::Traversal {
         : _fRep{mk_ (forward<CONTAINER_OF_T> (from))._fRep}
     {
     }
+#endif
     template <typename T>
     Iterable<T>::Iterable (const initializer_list<T>& from)
         : _fRep{mk_ (from)._fRep}

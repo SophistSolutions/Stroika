@@ -43,8 +43,9 @@ namespace Stroika::Foundation::Containers::Concrete {
         Deque_DoublyLinkedList (Deque_DoublyLinkedList&& src) noexcept      = default;
         Deque_DoublyLinkedList (const Deque_DoublyLinkedList& src) noexcept = default;
         Deque_DoublyLinkedList (const initializer_list<value_type>& src);
-        template <ranges::range ITERABLE_OF_ADDABLE, enable_if_t<not is_base_of_v<Deque_DoublyLinkedList<T>, decay_t<ITERABLE_OF_ADDABLE>>>* = nullptr>
-        explicit Deque_DoublyLinkedList (ITERABLE_OF_ADDABLE&& src);
+        template <ranges::range ITERABLE_OF_ADDABLE>
+        explicit Deque_DoublyLinkedList (ITERABLE_OF_ADDABLE&& src)
+            requires (not is_base_of_v<Deque_DoublyLinkedList<T>, decay_t<ITERABLE_OF_ADDABLE>>);
         template <input_iterator ITERATOR_OF_ADDABLE>
         Deque_DoublyLinkedList (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
 

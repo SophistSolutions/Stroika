@@ -254,9 +254,19 @@ namespace Stroika::Foundation::Containers {
         Sequence (Sequence&& src) noexcept      = default;
         Sequence (const Sequence& src) noexcept = default;
         Sequence (const initializer_list<value_type>& src);
+
         template <ranges::range ITERABLE_OF_ADDABLE>
         explicit Sequence (ITERABLE_OF_ADDABLE&& src)
-            requires (not is_base_of_v<Sequence<T>, decay_t<ITERABLE_OF_ADDABLE>>);
+            requires (not is_base_of_v<Sequence<T>, decay_t<ITERABLE_OF_ADDABLE>>)
+#if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
+            : Sequence{}
+        {
+            static_assert (IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>);
+            AppendAll (forward<ITERABLE_OF_ADDABLE> (src));
+            _AssertRepValidType ();
+        }
+#endif
+        ;
         template <input_iterator ITERATOR_OF_ADDABLE>
         Sequence (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
 

@@ -44,6 +44,7 @@ namespace Stroika::Foundation::Containers {
         AddAll (src);
         _AssertRepValidType ();
     }
+#if !qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
     template <typename T>
     template <ranges::range ITERABLE_OF_ADDABLE>
     inline Set<T>::Set (ITERABLE_OF_ADDABLE&& src)
@@ -54,6 +55,7 @@ namespace Stroika::Foundation::Containers {
         AddAll (forward<ITERABLE_OF_ADDABLE> (src));
         _AssertRepValidType ();
     }
+#endif
     template <typename T>
     template <IEqualsComparer<T> EQUALS_COMPARER, ranges::range ITERABLE_OF_ADDABLE>
     inline Set<T>::Set (EQUALS_COMPARER&& equalsComparer, ITERABLE_OF_ADDABLE&& src)
