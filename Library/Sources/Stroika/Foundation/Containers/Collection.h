@@ -155,7 +155,16 @@ namespace Stroika::Foundation::Containers {
         Collection (const initializer_list<value_type>& src);
         template <ranges::range ITERABLE_OF_ADDABLE>
         Collection (ITERABLE_OF_ADDABLE&& src)
-            requires (not is_base_of_v<Collection<T>, decay_t<ITERABLE_OF_ADDABLE>>);
+            requires (not is_base_of_v<Collection<T>, decay_t<ITERABLE_OF_ADDABLE>>)
+#if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
+            : Collection{}
+        {
+            static_assert (IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>);
+            AddAll (forward<ITERABLE_OF_ADDABLE> (src));
+            _AssertRepValidType ();
+        }
+#endif
+        ;
         template <input_iterator ITERATOR_OF_ADDABLE>
         Collection (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
 

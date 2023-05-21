@@ -56,6 +56,7 @@ namespace Stroika::Foundation::Containers {
     {
         _AssertRepValidType ();
     }
+#if !qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
     template <typename T, typename TRAITS>
     template <ranges::range ITERABLE_OF_ADDABLE>
     inline MultiSet<T, TRAITS>::MultiSet (ITERABLE_OF_ADDABLE&& src)
@@ -66,6 +67,7 @@ namespace Stroika::Foundation::Containers {
         AddAll (forward<ITERABLE_OF_ADDABLE> (src));
         _AssertRepValidType ();
     }
+#endif
     template <typename T, typename TRAITS>
     template <IEqualsComparer<T> EQUALS_COMPARER, ranges::range ITERABLE_OF_ADDABLE>
     inline MultiSet<T, TRAITS>::MultiSet (EQUALS_COMPARER&& equalsComparer, ITERABLE_OF_ADDABLE&& src)
