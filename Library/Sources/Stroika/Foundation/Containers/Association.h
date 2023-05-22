@@ -191,7 +191,7 @@ namespace Stroika::Foundation::Containers {
         template <ranges::range ITERABLE_OF_ADDABLE>
         explicit Association (ITERABLE_OF_ADDABLE&& src)
             requires (not is_base_of_v<Association<KEY_TYPE, MAPPED_VALUE_TYPE>, decay_t<ITERABLE_OF_ADDABLE>>)
-#if !qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
+#if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
             : Association{}
         {
             static_assert (IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>);

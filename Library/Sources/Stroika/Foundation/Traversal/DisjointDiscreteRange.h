@@ -51,7 +51,7 @@ namespace Stroika::Foundation::Traversal {
         explicit DisjointDiscreteRange (const CONTAINER_OF_DISCRETERANGE_OF_T& from);
         template <input_iterator COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T>
         explicit DisjointDiscreteRange (COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T&& start, COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T&& end)
-            requires (is_convertible_v<Configuration::ExtractValueType_t<COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T>, RangeType>)
+            requires (is_convertible_v<Configuration::ExtractValueType_t<COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T>, RANGE_TYPE>)
 #if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
             : inherited{forward<COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T> (start), forward<COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T> (end)} {}
 #endif

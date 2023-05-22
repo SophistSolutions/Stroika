@@ -283,6 +283,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         this->AddAll (src);
         AssertRepValidType_ ();
     }
+#if !qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
     template <typename DOMAIN_TYPE, typename RANGE_TYPE>
     template <ranges::range ITERABLE_OF_ADDABLE>
     inline Bijection_LinkedList<DOMAIN_TYPE, RANGE_TYPE>::Bijection_LinkedList (ITERABLE_OF_ADDABLE&& src)
@@ -293,6 +294,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         this->AddAll (forward<ITERABLE_OF_ADDABLE> (src));
         AssertRepValidType_ ();
     }
+#endif
     template <typename DOMAIN_TYPE, typename RANGE_TYPE>
     template <IEqualsComparer<DOMAIN_TYPE> DOMAIN_EQUALS_COMPARER, IEqualsComparer<RANGE_TYPE> RANGE_EQUALS_COMPARER, ranges::range ITERABLE_OF_ADDABLE>
     inline Bijection_LinkedList<DOMAIN_TYPE, RANGE_TYPE>::Bijection_LinkedList (DOMAIN_EQUALS_COMPARER&& domainEqualsComparer,

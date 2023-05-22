@@ -488,6 +488,7 @@ In file included from /Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Co
 2 errors generated.
 make[4]: *** [/Sandbox/Stroika-Dev//ScriptsLib/SharedBuildRules-Default.mk:30: /Sandbox/Stroika-Dev/IntermediateFiles/clang++-10-debug/
 */
+
 #ifndef qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
 
 #if defined(__clang__) && defined(__APPLE__)
@@ -498,7 +499,7 @@ make[4]: *** [/Sandbox/Stroika-Dev//ScriptsLib/SharedBuildRules-Default.mk:30: /
 // first noticed broken in apply clang 14
 #define qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy                                               \
     CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 14))
-#elif defined(_MSC_VER)
+#elif defined(_MSC_VER) && 0
 // verified broken in _MSC_VER_2k22_17Pt5_ (BUT ONLY WHEN BUILDING INSIDE DOCKER????)
 #define qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy                                               \
     CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k22_17Pt5_)
