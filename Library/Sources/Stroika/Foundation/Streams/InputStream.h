@@ -397,10 +397,16 @@ namespace Stroika::Foundation::Streams {
          *  @todo Consider if we should lose this. Optional appraoch maybe better.
          *
          *  Blocking read of a single character. Returns a NUL-character on EOF ('\0')
+         * 
+         * 
+            
          */
-        template <typename TEST_TYPE = ELEMENT_TYPE>
+        template <typename I = ELEMENT_TYPE>
         nonvirtual Characters::Character ReadCharacter () const
-            requires (is_same_v<TEST_TYPE, Characters::Character>);
+#if !qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
+            requires (is_same_v<ELEMENT_TYPE, Characters::Character>)
+#endif
+        ;
 
     public:
         /**

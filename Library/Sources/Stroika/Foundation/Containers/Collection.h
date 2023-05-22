@@ -165,6 +165,7 @@ namespace Stroika::Foundation::Containers {
         }
 #endif
         ;
+
         template <input_iterator ITERATOR_OF_ADDABLE>
         Collection (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
 
