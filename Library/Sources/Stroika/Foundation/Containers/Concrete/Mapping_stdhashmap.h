@@ -95,7 +95,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             requires (Cryptography::Digest::IsHashFunction<HASH, KEY_TYPE>);
         template <ranges::range ITERABLE_OF_ADDABLE>
         explicit Mapping_stdhashmap (ITERABLE_OF_ADDABLE&& src)
-            requires (is_default_constructible_v<Mapping_stdhashmap> and
+            requires (is_default_constructible_v<Mapping_stdhashmap<KEY_TYPE, MAPPED_VALUE_TYPE>> and
                       not is_base_of_v<Mapping_stdhashmap<KEY_TYPE, MAPPED_VALUE_TYPE>, decay_t<ITERABLE_OF_ADDABLE>>)
 #if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
             : Mapping_stdhashmap{}
