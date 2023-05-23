@@ -164,6 +164,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         this->AddAllToTail (src);
         AssertRepValidType_ ();
     }
+#if !qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
     template <typename T>
     template <ranges::range ITERABLE_OF_ADDABLE>
     inline Deque_DoublyLinkedList<T>::Deque_DoublyLinkedList (ITERABLE_OF_ADDABLE&& src)
@@ -174,6 +175,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         this->AddAllToTail (forward<ITERABLE_OF_ADDABLE> (src));
         AssertRepValidType_ ();
     }
+#endif
     template <typename T>
     template <input_iterator ITERATOR_OF_ADDABLE>
     inline Deque_DoublyLinkedList<T>::Deque_DoublyLinkedList (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)

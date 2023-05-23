@@ -40,6 +40,11 @@ namespace Stroika::Foundation::Characters {
 
 namespace Stroika::Foundation::Execution {
 
+    // SB in .inl file except to support qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
+    namespace Private_ {
+        inline atomic<uint32_t> sFunctionObjectNextPtrID_{1};
+    }
+
     /**
      *  IDEA is be SAME AS std::function<> but allow for operator<, a usable operator== etc...,
      *  which is an unfortunate omission from the c++ standard.
@@ -87,9 +92,14 @@ namespace Stroika::Foundation::Execution {
         Function (Function&&)      = default;
         template <typename CTOR_FUNC_SIG>
         Function (CTOR_FUNC_SIG&& f)
-#if !qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
             requires (is_convertible_v<CTOR_FUNC_SIG, function<FUNCTION_SIGNATURE>> and
                       not is_base_of_v<Function<FUNCTION_SIGNATURE>, remove_cvref_t<CTOR_FUNC_SIG>>)
+#if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
+            : fFun_{forward<CTOR_FUNC_SIG> (f)}
+            , fOrdering_{fFun_ == nullptr ? OrderingType_{} : ++Private_::sFunctionObjectNextPtrID_}
+        {
+            Assert ((fOrdering_ == OrderingType_{}) == (fFun_ == nullptr));
+        }
 #endif
         ;
 

@@ -509,6 +509,20 @@ make[4]: *** [/Sandbox/Stroika-Dev//ScriptsLib/SharedBuildRules-Default.mk:30: /
 
 #endif
 
+#ifndef qCompilerAndStdLib_RequiresIEqialsCrashesAssociation_Buggy
+
+#if defined(__clang__) && defined(__APPLE__)
+// wag untesed
+#define qCompilerAndStdLib_RequiresIEqialsCrashesAssociation_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 14))
+#elif defined(__clang__) && !defined(__APPLE__)
+// first noticed broken in apply clang 14
+#define qCompilerAndStdLib_RequiresIEqialsCrashesAssociation_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 14))
+#else
+#define qCompilerAndStdLib_RequiresIEqialsCrashesAssociation_Buggy 0
+#endif
+
+#endif
+
 /**
  *
 On Vs2k19:

@@ -522,7 +522,13 @@ namespace Stroika::Foundation::Containers {
         As_ (enable_if_t<!is_convertible_v<typename CONTAINER_OF_Key_T::value_type, pair<KEY_TYPE, MAPPED_VALUE_TYPE>>, int> usesDefaultIterableImpl = 0) const;
 
     public:
-        template <Common::IEqualsComparer<MAPPED_VALUE_TYPE> VALUE_EQUALS_COMPARER = equal_to<MAPPED_VALUE_TYPE>>
+        template <
+#if qCompilerAndStdLib_RequiresIEqialsCrashesAssociation_Buggy
+            typename
+#else
+            Common::IEqualsComparer<MAPPED_VALUE_TYPE>
+#endif
+            VALUE_EQUALS_COMPARER = equal_to<MAPPED_VALUE_TYPE>>
         struct EqualsComparer;
 
     public:
@@ -636,7 +642,13 @@ namespace Stroika::Foundation::Containers {
      *  \note   Not to be confused with GetKeyEqualsComparer () which compares KEY ELEMENTS of Association for equality.
      */
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-    template <Common::IEqualsComparer<MAPPED_VALUE_TYPE> VALUE_EQUALS_COMPARER>
+    template <
+#if qCompilerAndStdLib_RequiresIEqialsCrashesAssociation_Buggy
+        typename
+#else
+        Common::IEqualsComparer<MAPPED_VALUE_TYPE>
+#endif
+        VALUE_EQUALS_COMPARER>
     struct Association<KEY_TYPE, MAPPED_VALUE_TYPE>::EqualsComparer
         : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eEquals> {
         constexpr EqualsComparer (const VALUE_EQUALS_COMPARER& valueEqualsComparer = {});

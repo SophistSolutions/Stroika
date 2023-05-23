@@ -29,6 +29,7 @@ namespace Stroika::Foundation::Containers {
         AddAllToTail (src);
         _AssertRepValidType ();
     }
+#if !qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
     template <typename T>
     template <ranges::range ITERABLE_OF_ADDABLE>
     inline Queue<T>::Queue (ITERABLE_OF_ADDABLE&& src)
@@ -39,6 +40,7 @@ namespace Stroika::Foundation::Containers {
         AddAllToTail (forward<ITERABLE_OF_ADDABLE> (src));
         _AssertRepValidType ();
     }
+#endif
     template <typename T>
     inline Queue<T>::Queue (const shared_ptr<_IRep>& rep) noexcept
         : inherited{(RequireNotNull (rep), rep)}

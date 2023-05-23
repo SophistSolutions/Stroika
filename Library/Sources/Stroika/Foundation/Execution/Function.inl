@@ -15,27 +15,23 @@
 
 namespace Stroika::Foundation::Execution {
 
-    namespace Private_ {
-        inline atomic<uint32_t> sFunctionObjectNextPtrID_{1};
-    }
-
     /*
      ********************************************************************************
      ****************************** Execution::Function *****************************
      ********************************************************************************
      */
+#if !qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
     template <typename FUNCTION_SIGNATURE>
     template <typename CTOR_FUNC_SIG>
     inline Function<FUNCTION_SIGNATURE>::Function (CTOR_FUNC_SIG&& f)
-#if !qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
         requires (is_convertible_v<CTOR_FUNC_SIG, function<FUNCTION_SIGNATURE>> and
                   not is_base_of_v<Function<FUNCTION_SIGNATURE>, remove_cvref_t<CTOR_FUNC_SIG>>)
-#endif
         : fFun_{forward<CTOR_FUNC_SIG> (f)}
         , fOrdering_{fFun_ == nullptr ? OrderingType_{} : ++Private_::sFunctionObjectNextPtrID_}
     {
         Assert ((fOrdering_ == OrderingType_{}) == (fFun_ == nullptr));
     }
+#endif
     template <typename FUNCTION_SIGNATURE>
     inline Function<FUNCTION_SIGNATURE>::Function (nullptr_t)
         : fFun_{}
