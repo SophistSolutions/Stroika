@@ -676,7 +676,7 @@ sub	SetInitialDefaults_
 		$COMPILER_DRIVER = "clang";
 		$COMPILER_DRIVER_C = "clang";
 		$COMPILER_DRIVER_CPlusPlus = "clang++";
-		$CWARNING_FLAGS = $DEFAULT_CWARNING_FLAGS_CLANG;
+		#$CWARNING_FLAGS = $DEFAULT_CWARNING_FLAGS_CLANG;
 		$AR = "ar";
 		$AS = "as";
 		$RANLIB = "ranlib";
