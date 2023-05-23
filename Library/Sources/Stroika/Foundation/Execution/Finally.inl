@@ -20,8 +20,8 @@ namespace Stroika::Foundation::Execution {
      ********************************************************************************
      */
     template <typename FUNCTION>
-    inline FinallySentry<FUNCTION>::FinallySentry (FUNCTION f)
-        : fCleanupCodeBlock_{move (f)}
+    inline FinallySentry<FUNCTION>::FinallySentry (FUNCTION&& f)
+        : fCleanupCodeBlock_{std::forward<FUNCTION> (f)}
     {
     }
     template <typename FUNCTION>
@@ -38,9 +38,9 @@ namespace Stroika::Foundation::Execution {
      ********************************************************************************
      */
     template <typename FUNCTION>
-    inline auto Finally (FUNCTION f) -> FinallySentry<FUNCTION>
+    inline auto Finally (FUNCTION&& f) -> FinallySentry<FUNCTION>
     {
-        return {move (f)};
+        return {std::forward<FUNCTION> (f)};
     }
 
 }

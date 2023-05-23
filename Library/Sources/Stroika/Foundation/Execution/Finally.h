@@ -34,7 +34,7 @@ namespace Stroika::Foundation::Execution {
     class FinallySentry {
     public:
         FinallySentry () = delete;
-        FinallySentry (FUNCTION f);
+        FinallySentry (FUNCTION&& f);
         FinallySentry (FinallySentry&&)      = delete;
         FinallySentry (const FinallySentry&) = delete;
 
@@ -88,7 +88,7 @@ namespace Stroika::Foundation::Execution {
      *      \endcode
      */
     template <typename FUNCTION>
-    auto Finally (FUNCTION f) -> FinallySentry<FUNCTION>;
+    auto Finally (FUNCTION&& f) -> FinallySentry<FUNCTION>;
 
 }
 
