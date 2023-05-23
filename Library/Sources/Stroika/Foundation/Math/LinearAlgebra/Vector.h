@@ -9,13 +9,12 @@
 #include "../../Characters/String.h"
 #include "../../Containers/Sequence.h"
 #include "../../Memory/SharedByValue.h"
+#include "../../Traversal/Iterable.h"
 
 /**
  *  \file
  *
  *  \version    <a href="Code-Status.md#Alpha-Early">Alpha-Early</a>
- *
- *  TODO
  */
 
 #define Stroika_Foundation_Math_LinearAlgebra_Vector_ALLOW_MUTATION 1
@@ -35,7 +34,7 @@ namespace Stroika::Foundation::Math::LinearAlgebra {
         Vector (size_t dimension);
         Vector (size_t dimension, Configuration::ArgByValueType<T> fillValue);
         Vector (size_t dimension, const function<T ()>& filler);
-        template <typename CONTAINER_OF_T, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_T, T>>* = nullptr>
+        template <Traversal::IIterableOfT<T> CONTAINER_OF_T>
         Vector (const CONTAINER_OF_T& c);
 
 #if Stroika_Foundation_Math_LinearAlgebra_Vector_ALLOW_MUTATION

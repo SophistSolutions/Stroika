@@ -63,6 +63,12 @@ namespace Stroika::Foundation::Traversal {
 
     using Configuration::ArgByValueType;
 
+    template <typename ITERABLE>
+    concept IIterable = ranges::range<ITERABLE>;
+
+    template <typename ITERABLE, typename OF_T>
+    concept IIterableOfT = IIterable<ITERABLE> and is_convertible_v<ranges::range_value_t<ITERABLE>, OF_T>;
+
     /**
      *  \brief  Iterable<T> is a base class for containers which easily produce an Iterator<T>
      *          to traverse them.

@@ -55,7 +55,7 @@ namespace Stroika::Foundation::Math::LinearAlgebra {
         }
     }
     template <typename T>
-    template <typename CONTAINER_OF_T, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_T, T>>*>
+    template <Traversal::IIterableOfT<T> CONTAINER_OF_T>
     Vector<T>::Vector (const CONTAINER_OF_T& c)
         : fRep_{make_shared<IRep_> ()}
     {
