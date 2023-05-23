@@ -54,12 +54,11 @@ namespace Stroika::Foundation::Traversal {
     }
 #endif
 #if !qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
-
     template <typename T, typename RANGE_TYPE>
     template <input_iterator COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T>
     DisjointDiscreteRange<T, RANGE_TYPE>::DisjointDiscreteRange (COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T&& start,
                                                                  COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T&& end)
-        requires (is_convertible_v<Configuration::ExtractValueType_t<COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T>, value_type>)
+        requires (is_convertible_v<Configuration::ExtractValueType_t<COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T>, T>)
     {
         static_assert (is_convertible_v<Configuration::ExtractValueType_t<COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T>, value_type>);
         Containers::Sequence<RangeType>   srs{};
