@@ -92,7 +92,8 @@ namespace Stroika::Foundation::Execution {
         Function (Function&&)      = default;
         template <typename CTOR_FUNC_SIG>
         Function (CTOR_FUNC_SIG&& f)
-            requires (is_convertible_v<CTOR_FUNC_SIG, function<FUNCTION_SIGNATURE>> and
+            requires (
+                //tmphack to test macos - is_convertible_v<CTOR_FUNC_SIG, function<FUNCTION_SIGNATURE>> and
                       not is_base_of_v<Function<FUNCTION_SIGNATURE>, remove_cvref_t<CTOR_FUNC_SIG>>)
 #if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
             : fFun_{forward<CTOR_FUNC_SIG> (f)}
