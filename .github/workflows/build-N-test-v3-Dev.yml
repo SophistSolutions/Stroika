@@ -217,7 +217,8 @@ jobs:
         include:
           - displayTargetName: MacOS-Debug
             os: macos-latest
-            runs_on: macos-latest
+            # runs_on: macos-latest
+            runs_on: macos-13
             xcode: 14.3
             config_name: Debug
             extra_config_args: --apply-default-debug-flags --trace2file enable
