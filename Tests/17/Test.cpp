@@ -86,8 +86,8 @@ namespace {
             using namespace xPrivate_;
             Mapping<int, A> from;
 
-            static_assert (Configuration::IsIterableOfT_v<Mapping<int, A>, KeyValuePair<int, A>>);
-            static_assert (Configuration::IsIterableOfT_v<Mapping<int, B>, KeyValuePair<int, B>>);
+            static_assert (Traversal::IIterableOfT<Mapping<int, A>, KeyValuePair<int, A>>);
+            static_assert (Traversal::IIterableOfT<Mapping<int, B>, KeyValuePair<int, B>>);
 
             Mapping<int, B> to1;
             for (auto i : from) {

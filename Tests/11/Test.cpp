@@ -84,8 +84,8 @@ namespace {
             using namespace xPrivate_;
             Association<int, A> from;
 
-            static_assert (Configuration::IsIterableOfT_v<Association<int, A>, KeyValuePair<int, A>>);
-            static_assert (Configuration::IsIterableOfT_v<Association<int, B>, KeyValuePair<int, B>>);
+            static_assert (Traversal::IIterableOfT<Association<int, A>, KeyValuePair<int, A>>);
+            static_assert (Traversal::IIterableOfT<Association<int, B>, KeyValuePair<int, B>>);
 
             Association<int, B> to1;
             for (auto i : from) {

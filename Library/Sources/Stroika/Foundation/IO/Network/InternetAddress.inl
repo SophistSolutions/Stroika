@@ -98,8 +98,9 @@ namespace Stroika::Foundation::IO::Network {
         , fArray_16_byte_{octets}
     {
     }
-    template <typename ITERABLE_OF_UINT8OrByte, enable_if_t<Configuration::IsIterableOfT_v<ITERABLE_OF_UINT8OrByte, byte> or Configuration::IsIterableOfT_v<ITERABLE_OF_UINT8OrByte, uint8_t>>*>
+    template <Traversal::IIterable ITERABLE_OF_UINT8OrByte>
     inline InternetAddress::InternetAddress (ITERABLE_OF_UINT8OrByte octets, AddressFamily af)
+        requires (Traversal::IIterableOfT<ITERABLE_OF_UINT8OrByte, byte> or Traversal::IIterableOfT<ITERABLE_OF_UINT8OrByte, uint8_t>)
         : fAddressFamily_{af}
     {
         Require (af != AddressFamily::V4 or octets.size () == 4);
