@@ -35,31 +35,31 @@ namespace Stroika::Foundation::Common {
     }
     template <typename T>
     inline T ReadOnlyProperty<T>::Get ()
-        requires ( IPropertyMutatable<T>)
+        requires (IPropertyMutatable<T>)
     {
         return fGetter_ (this);
     }
     template <typename T>
-    template <typename CHECK, enable_if_t<not PropertyCommon::kIsMutatableType<CHECK>>*>
     inline ReadOnlyProperty<T>::operator const T () const
+        requires (not IPropertyMutatable<T>)
     {
         return Get ();
     }
     template <typename T>
-    template <typename CHECK, enable_if_t<PropertyCommon::kIsMutatableType<CHECK>>*>
     inline ReadOnlyProperty<T>::operator T ()
+        requires (IPropertyMutatable<T>)
     {
         return Get ();
     }
     template <typename T>
-    template <typename CHECK, enable_if_t<not PropertyCommon::kIsMutatableType<CHECK>>*>
     inline const T ReadOnlyProperty<T>::operator() () const
+        requires (not IPropertyMutatable<T>)
     {
         return Get ();
     }
     template <typename T>
-    template <typename CHECK, enable_if_t<PropertyCommon::kIsMutatableType<CHECK>>*>
     inline T ReadOnlyProperty<T>::operator() ()
+        requires (IPropertyMutatable<T>)
     {
         return Get ();
     }

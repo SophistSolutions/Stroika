@@ -163,10 +163,10 @@ namespace Stroika::Foundation::Common {
          * 
          *  This is a non-const method if PropertyCommon::kIsMutatableType<T>, and otherwise a const method.
          */
-        template <typename CHECK = T, enable_if_t<not PropertyCommon::kIsMutatableType<CHECK>>* = nullptr>
-        nonvirtual operator const T () const;
-        template <typename CHECK = T, enable_if_t<PropertyCommon::kIsMutatableType<CHECK>>* = nullptr>
-        nonvirtual operator T ();
+        nonvirtual operator const T () const
+            requires (not IPropertyMutatable<T>);
+        nonvirtual operator T ()
+            requires (IPropertyMutatable<T>);
 
     public:
         /**
@@ -182,10 +182,10 @@ namespace Stroika::Foundation::Common {
          * 
          *  This is a non-const method if PropertyCommon::kIsMutatableType<T>, and otherwise a const method.
          */
-        template <typename CHECK = T, enable_if_t<not PropertyCommon::kIsMutatableType<CHECK>>* = nullptr>
-        nonvirtual const T operator() () const;
-        template <typename CHECK = T, enable_if_t<PropertyCommon::kIsMutatableType<CHECK>>* = nullptr>
-        nonvirtual T operator() ();
+        nonvirtual const T operator() () const
+            requires (not IPropertyMutatable<T>);
+        nonvirtual T operator() ()
+            requires (IPropertyMutatable<T>);
 
     private:
         const function<T (const ReadOnlyProperty*)> fGetter_;
