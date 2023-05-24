@@ -108,7 +108,7 @@ namespace Stroika::Foundation::Execution {
          *        and the existing compiler vs2k17 15.9.3 - dont support this noexcept on function objects, so
          *        try again later.
          */
-        SignalHandler () = delete;
+        SignalHandler ()                     = delete;
         SignalHandler (const SignalHandler&) = default;
         SignalHandler (void (*signalHandler) (SignalID) noexcept, Type type = Type::eDEFAULT);
         SignalHandler (void (*signalHandler) (SignalID), Type type = Type::eDEFAULT);
