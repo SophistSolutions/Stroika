@@ -41,33 +41,19 @@ namespace Stroika::Foundation::Common {
         /**
          *  Similar logic for what overloads are available to pair<>, but here we also allow construction from a 'pair<>'.
          */
-        template <typename K2 = KEY_TYPE, typename V2 = VALUE_TYPE, enable_if_t<is_default_constructible_v<K2> and is_default_constructible_v<V2>>* = nullptr>
-        constexpr KeyValuePair ();
+        constexpr KeyValuePair ()
+            requires (is_default_constructible_v<KEY_TYPE> and is_default_constructible_v<VALUE_TYPE>);
         KeyValuePair (const KeyValuePair&) = default;
         KeyValuePair (KeyValuePair&&)      = default;
-        template <typename K2 = KEY_TYPE, typename V2 = VALUE_TYPE,
-                  enable_if_t<(is_copy_constructible_v<K2> and is_copy_constructible_v<V2>)and(is_convertible_v<const K2&, KEY_TYPE>and is_convertible_v<const V2&, VALUE_TYPE>)>* = nullptr>
-        constexpr KeyValuePair (const KeyType& key, const ValueType& value);
-        template <typename K2 = KEY_TYPE, typename V2 = VALUE_TYPE,
-                  enable_if_t<(is_copy_constructible_v<K2> and is_copy_constructible_v<V2>)and not(is_convertible_v<const K2&, KEY_TYPE> and is_convertible_v<const V2&, VALUE_TYPE>)>* = nullptr>
+        constexpr KeyValuePair (const KeyType& key, const ValueType& value)
+            requires (is_copy_constructible_v<KEY_TYPE> and is_copy_constructible_v<VALUE_TYPE>);
         constexpr explicit KeyValuePair (const KeyType& key, const ValueType& value);
-        template <typename KEY_TYPE2, typename VALUE_TYPE2,
-                  enable_if_t<(is_constructible_v<KEY_TYPE, const KEY_TYPE2&> and is_constructible_v<VALUE_TYPE, const VALUE_TYPE2&>)and(
-                      is_convertible_v<const KEY_TYPE2&, KEY_TYPE>and is_convertible_v<const VALUE_TYPE2&, VALUE_TYPE>)>* = nullptr>
-        constexpr KeyValuePair (const pair<KEY_TYPE2, VALUE_TYPE2>& src);
-        template <typename KEY_TYPE2, typename VALUE_TYPE2,
-                  enable_if_t<(is_constructible_v<KEY_TYPE, const KEY_TYPE2&> and is_constructible_v<VALUE_TYPE, const VALUE_TYPE2&>)and not(
-                      is_convertible_v<const KEY_TYPE2&, KEY_TYPE> and is_convertible_v<const VALUE_TYPE2&, VALUE_TYPE>)>* = nullptr>
-        constexpr explicit KeyValuePair (const pair<KEY_TYPE2, VALUE_TYPE2>& src);
-        // @todo DEBUG why changing below two is_constructible to is_constructible_v breaks on gcc --LGP 2018-07-10
-        template <typename KEY_TYPE2, typename VALUE_TYPE2,
-                  enable_if_t<(is_constructible_v<KEY_TYPE, const KEY_TYPE2&> and is_constructible<VALUE_TYPE, const VALUE_TYPE2&>::value) and
-                              (is_convertible_v<const KEY_TYPE2&, KEY_TYPE> and is_convertible_v<const VALUE_TYPE2&, VALUE_TYPE>)>* = nullptr>
-        constexpr KeyValuePair (const KeyValuePair<KEY_TYPE2, VALUE_TYPE2>& src);
-        template <typename KEY_TYPE2, typename VALUE_TYPE2,
-                  enable_if_t<(is_constructible_v<KEY_TYPE, const KEY_TYPE2&> and is_constructible<VALUE_TYPE, const VALUE_TYPE2&>::value) and
-                              not(is_convertible_v<const KEY_TYPE2&, KEY_TYPE> and is_convertible_v<const VALUE_TYPE2&, VALUE_TYPE>)>* = nullptr>
-        constexpr explicit KeyValuePair (const KeyValuePair<KEY_TYPE2, VALUE_TYPE2>& src);
+        template <typename KEY_TYPE2, typename VALUE_TYPE2>
+        constexpr KeyValuePair (const pair<KEY_TYPE2, VALUE_TYPE2>& src)
+            requires (is_constructible_v<KEY_TYPE, const KEY_TYPE2&> and is_constructible_v<VALUE_TYPE, const VALUE_TYPE2&>);
+        template <typename KEY_TYPE2, typename VALUE_TYPE2>
+        constexpr KeyValuePair (const KeyValuePair<KEY_TYPE2, VALUE_TYPE2>& src)
+            requires (is_constructible_v<KEY_TYPE, const KEY_TYPE2&> and is_constructible_v<VALUE_TYPE, const VALUE_TYPE2&>);
 
     public:
         /**
@@ -92,16 +78,16 @@ namespace Stroika::Foundation::Common {
          *  Define operator<=> in the obvious way key <=> key first, and then if equal, compare values.
          *  This method is only defined if BOTH the key and value have a defined spaceship operator
          */
-        template <typename T1 = KEY_TYPE, typename T2 = VALUE_TYPE, enable_if_t<Configuration::has_spaceship_v<T1> and Configuration::has_spaceship_v<T2>>* = nullptr>
-        constexpr auto operator<=> (const KeyValuePair&) const;
+        constexpr auto operator<=> (const KeyValuePair&) const
+            requires (Configuration::has_spaceship_v<KEY_TYPE> and Configuration::has_spaceship_v<VALUE_TYPE>);
 
     public:
         /**
          *  Define operator== in the obvious way key == key and value == value.
          *  This method is only defined if BOTH the key and value have a defined operator==
          */
-        template <typename T1 = KEY_TYPE, typename T2 = VALUE_TYPE, enable_if_t<Configuration::has_eq_v<T1> and Configuration::has_eq_v<T2>>* = nullptr>
-        constexpr bool operator== (const KeyValuePair&) const;
+        constexpr bool operator== (const KeyValuePair&) const
+            requires (Configuration::has_eq_v<KEY_TYPE> and Configuration::has_eq_v<VALUE_TYPE>);
     };
 
 }
