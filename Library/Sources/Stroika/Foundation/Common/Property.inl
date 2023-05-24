@@ -28,14 +28,14 @@ namespace Stroika::Foundation::Common {
     {
     }
     template <typename T>
-    template <typename CHECK, enable_if_t<not PropertyCommon::kIsMutatableType<CHECK>>*>
     inline T ReadOnlyProperty<T>::Get () const
+        requires (not IPropertyMutatable<T>)
     {
         return fGetter_ (this);
     }
     template <typename T>
-    template <typename CHECK, enable_if_t<PropertyCommon::kIsMutatableType<CHECK>>*>
     inline T ReadOnlyProperty<T>::Get ()
+        requires ( IPropertyMutatable<T>)
     {
         return fGetter_ (this);
     }

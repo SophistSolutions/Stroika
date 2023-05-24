@@ -103,6 +103,9 @@ namespace Stroika::Foundation::Common {
         };
     };
 
+    template <typename T>
+    concept IPropertyMutatable = PropertyCommon::kIsMutatableType<T>;
+
     /**
      *  Implement C#-like syntax for read-only properties (syntactically like data members but backed by a getter function)
      *      \note   Typically not used - use Property
@@ -143,10 +146,10 @@ namespace Stroika::Foundation::Common {
          *  Returns the value of the given property T (by calling the underlying 'getter' for the property.
          *  This is a non-const method if PropertyCommon::kIsMutatableType<T>, and otherwise a const method.
          */
-        template <typename CHECK = T, enable_if_t<not PropertyCommon::kIsMutatableType<CHECK>>* = nullptr>
-        nonvirtual T Get () const;
-        template <typename CHECK = T, enable_if_t<PropertyCommon::kIsMutatableType<CHECK>>* = nullptr>
-        nonvirtual T Get ();
+        nonvirtual T Get () const
+            requires (not IPropertyMutatable<T>);
+        nonvirtual T Get ()
+            requires (IPropertyMutatable<T>);
 
     public:
         /**
