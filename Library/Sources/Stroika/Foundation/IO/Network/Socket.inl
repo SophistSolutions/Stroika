@@ -120,8 +120,9 @@ namespace Stroika::Foundation::IO::Network {
      ******************* ThrowWSASystemErrorIfNegative ******************************
      ********************************************************************************
      */
-    template <typename INT_TYPE, enable_if_t<is_signed_v<INT_TYPE>>*>
+    template <typename INT_TYPE>
     inline INT_TYPE ThrowWSASystemErrorIfSOCKET_ERROR (INT_TYPE returnCode)
+        requires (is_signed_v<INT_TYPE>)
     {
         if (returnCode == SOCKET_ERROR) {
             Execution::ThrowSystemErrNo (::WSAGetLastError ());

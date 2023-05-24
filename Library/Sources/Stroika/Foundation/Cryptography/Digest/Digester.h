@@ -96,9 +96,9 @@ namespace Stroika::Foundation::Cryptography::Digest {
     RETURN_TYPE ComputeDigest (span<const std::byte> from);
     template <typename ALGORITHM, typename RETURN_TYPE = typename Algorithm::DigesterDefaultTraitsForAlgorithm<ALGORITHM>::ReturnType>
     RETURN_TYPE ComputeDigest (const BLOB& from);
-    template <typename ALGORITHM, typename TRIVIALLY_COPYABLE_T, typename RETURN_TYPE = typename Algorithm::DigesterDefaultTraitsForAlgorithm<ALGORITHM>::ReturnType,
-              enable_if_t<is_trivially_copyable_v<TRIVIALLY_COPYABLE_T>>* = nullptr>
-    RETURN_TYPE ComputeDigest (const Traversal::Iterable<TRIVIALLY_COPYABLE_T>& from);
+    template <typename ALGORITHM, typename TRIVIALLY_COPYABLE_T, typename RETURN_TYPE = typename Algorithm::DigesterDefaultTraitsForAlgorithm<ALGORITHM>::ReturnType>
+    RETURN_TYPE ComputeDigest (const Traversal::Iterable<TRIVIALLY_COPYABLE_T>& from)
+        requires (is_trivially_copyable_v<TRIVIALLY_COPYABLE_T>);
 
     /**
      *  \brief IncrementalDigester<ALGORITHM> () is the low level way to call Digest algorithms, appropriate for streamed sources of data (because it a stateful object you can call Write on multiple times before extracting the digest)
@@ -156,8 +156,9 @@ namespace Stroika::Foundation::Cryptography::Digest {
         nonvirtual void Write (span<const std::byte> from);
         nonvirtual void Write (const BLOB& from);
         nonvirtual void Write (const Streams::InputStream<std::byte>::Ptr& from);
-        template <typename TRIVIALLY_COPYABLE_T, enable_if_t<is_trivially_copyable_v<TRIVIALLY_COPYABLE_T>>* = nullptr>
-        nonvirtual void Write (const Traversal::Iterable<TRIVIALLY_COPYABLE_T>& from);
+        template <typename TRIVIALLY_COPYABLE_T>
+        nonvirtual void Write (const Traversal::Iterable<TRIVIALLY_COPYABLE_T>& from)
+            requires (is_trivially_copyable_v<TRIVIALLY_COPYABLE_T>);
 
     public:
         /**
@@ -259,8 +260,9 @@ namespace Stroika::Foundation::Cryptography::Digest {
         nonvirtual ReturnType operator() (const std::byte* from, const std::byte* to) const;
         nonvirtual ReturnType operator() (span<const std::byte> from) const;
         nonvirtual ReturnType operator() (const BLOB& from) const;
-        template <typename TRIVIALLY_COPYABLE_T, enable_if_t<is_trivially_copyable_v<TRIVIALLY_COPYABLE_T>>* = nullptr>
-        nonvirtual ReturnType operator() (const Traversal::Iterable<TRIVIALLY_COPYABLE_T>& from) const;
+        template <typename TRIVIALLY_COPYABLE_T>
+        nonvirtual ReturnType operator() (const Traversal::Iterable<TRIVIALLY_COPYABLE_T>& from) const
+            requires (is_trivially_copyable_v<TRIVIALLY_COPYABLE_T>);
     };
 
 }

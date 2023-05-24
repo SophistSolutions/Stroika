@@ -428,8 +428,9 @@ namespace Stroika::Foundation::IO::Network {
      * or https://docs.microsoft.com/en-us/windows/desktop/api/winsock/nf-winsock-bind
      * for examples of functions this can be used to wrap.
      */
-    template <typename INT_TYPE, enable_if_t<is_signed_v<INT_TYPE>>* = nullptr>
-    INT_TYPE                                  ThrowWSASystemErrorIfSOCKET_ERROR (INT_TYPE returnCode);
+    template <typename INT_TYPE>
+    INT_TYPE ThrowWSASystemErrorIfSOCKET_ERROR (INT_TYPE returnCode)
+        requires (is_signed_v<INT_TYPE>);
     IO::Network::Socket::PlatformNativeHandle ThrowWSASystemErrorIfSOCKET_ERROR (IO::Network::Socket::PlatformNativeHandle returnCode);
 #endif
 
