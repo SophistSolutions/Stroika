@@ -24,8 +24,7 @@ namespace Stroika::Foundation::Execution {
     template <typename FUNCTION_SIGNATURE>
     template <typename CTOR_FUNC_SIG>
     inline Function<FUNCTION_SIGNATURE>::Function (CTOR_FUNC_SIG&& f)
-        requires (
-                     //tmphack to test macos - is_convertible_v<CTOR_FUNC_SIG, function<FUNCTION_SIGNATURE>> and
+        requires (is_convertible_v<CTOR_FUNC_SIG, function<FUNCTION_SIGNATURE>> and
                   not is_base_of_v<Function<FUNCTION_SIGNATURE>, remove_cvref_t<CTOR_FUNC_SIG>>)
         : fFun_{forward<CTOR_FUNC_SIG> (f)}
         , fOrdering_{fFun_ == nullptr ? OrderingType_{} : ++Private_::sFunctionObjectNextPtrID_}
