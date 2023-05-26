@@ -322,11 +322,7 @@ Set<SignalHandler> SignalHandlerRegistry::GetSignalHandlers (SignalID signal) co
     Set<SignalHandler> result = fDirectHandlers_.cget ()->LookupValue (signal);
     if (shared_ptr<SafeSignalsManager::Rep_> tmp = SafeSignalsManager::sTheRep_.load ()) {
 
-#if defined(__APPLE__)
-        Assert (false);
-#else
         result += tmp->GetSignalHandlers (signal);
-#endif
     }
     return result;
 }
