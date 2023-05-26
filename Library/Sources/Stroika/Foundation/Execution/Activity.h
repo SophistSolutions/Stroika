@@ -101,17 +101,10 @@ namespace Stroika::Foundation::Execution {
     class LazyEvalActivity final : public Private_::Activities_::AsStringObj_ {
     public:
         LazyEvalActivity (const CTOR_ARG& arg)
-            requires (is_invocable_r_v<Characters::String, CTOR_ARG>)
-            : fArg_{arg}
-        {
-        }
+            requires (is_invocable_r_v<Characters::String, CTOR_ARG>);
 
     public:
-        virtual Characters::String AsString () const override
-        {
-            return fArg_ (); // what makes this more efficient is that we can just capture data in a lambda (by reference)
-                             // and just invoke that logic during exception processing when we need to convert the activity to a string rep
-        }
+        virtual Characters::String AsString () const override;
 
     private:
         CTOR_ARG fArg_;

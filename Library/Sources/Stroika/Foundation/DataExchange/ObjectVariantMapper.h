@@ -292,10 +292,12 @@ namespace Stroika::Foundation::DataExchange {
             TypeMappingDetails (TypeMappingDetails&&) noexcept = default;
             explicit TypeMappingDetails (const type_index& forTypeInfo, const FromGenericObjectMapperType& fromObjectMapper,
                                          const ToGenericObjectMapperType& toObjectMapper);
-            template <typename T, enable_if_t<not is_same_v<T, void>>* = nullptr>
-            TypeMappingDetails (const type_index& forTypeInfo, const FromObjectMapperType<T>& fromObjectMapper, const ToObjectMapperType<T>& toObjectMapper);
-            template <typename T, enable_if_t<not is_same_v<T, void>>* = nullptr>
-            TypeMappingDetails (const FromObjectMapperType<T>& fromObjectMapper, const ToObjectMapperType<T>& toObjectMapper);
+            template <typename T>
+            TypeMappingDetails (const type_index& forTypeInfo, const FromObjectMapperType<T>& fromObjectMapper, const ToObjectMapperType<T>& toObjectMapper)
+                requires (not is_same_v<T, void>);
+            template <typename T>
+            TypeMappingDetails (const FromObjectMapperType<T>& fromObjectMapper, const ToObjectMapperType<T>& toObjectMapper)
+                requires (not is_same_v<T, void>);
 
             nonvirtual TypeMappingDetails& operator= (TypeMappingDetails&& rhs) noexcept = default;
             nonvirtual TypeMappingDetails& operator= (const TypeMappingDetails& rhs)     = default;
@@ -851,7 +853,8 @@ namespace Stroika::Foundation::DataExchange {
         template <typename T1, typename T2, typename T3>
         static TypeMappingDetails MakeCommonSerializer_ (const tuple<T1, T2, T3>*);
         template <typename T>
-        static TypeMappingDetails MakeCommonSerializer_ (const T*, enable_if_t<is_enum_v<T>>* = 0);
+        static TypeMappingDetails MakeCommonSerializer_ (const T*)
+            requires (is_enum_v<T>);
         template <typename T, size_t SZ>
         static TypeMappingDetails MakeCommonSerializer_ (const T (*)[SZ]);
 

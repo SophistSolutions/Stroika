@@ -76,16 +76,18 @@ namespace Stroika::Foundation::DataExchange {
         , fToObjectMapper{toObjectMapper}
     {
     }
-    template <typename T, enable_if_t<not is_same_v<T, void>>*>
+    template <typename T>
     inline ObjectVariantMapper::TypeMappingDetails::TypeMappingDetails (const type_index& forTypeInfo, const FromObjectMapperType<T>& fromObjectMapper,
                                                                         const ToObjectMapperType<T>& toObjectMapper)
+        requires (not is_same_v<T, void>)
         : TypeMappingDetails{forTypeInfo, mkGenericFromMapper_ (fromObjectMapper), mkGenericToMapper_ (toObjectMapper)}
     {
         Require (type_index{typeid (T)} == forTypeInfo);
     }
-    template <typename T, enable_if_t<not is_same_v<T, void>>*>
+    template <typename T>
     inline ObjectVariantMapper::TypeMappingDetails::TypeMappingDetails (const FromObjectMapperType<T>& fromObjectMapper,
                                                                         const ToObjectMapperType<T>&   toObjectMapper)
+        requires (not is_same_v<T, void>)
         : TypeMappingDetails{type_index{typeid (T)}, mkGenericFromMapper_ (fromObjectMapper), mkGenericToMapper_ (toObjectMapper)}
     {
     }
@@ -770,7 +772,8 @@ namespace Stroika::Foundation::DataExchange {
         return MakeCommonSerializer_Range_<Traversal::Range<T, TRAITS>> (forward<ARGS> (args)...);
     }
     template <typename T>
-    inline ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ (const T*, enable_if_t<is_enum_v<T>>*)
+    inline ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ (const T*)
+        requires (is_enum_v<T>)
     {
         return MakeCommonSerializer_NamedEnumerations<T> ();
     }

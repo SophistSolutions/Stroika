@@ -24,14 +24,15 @@ namespace Stroika::Foundation::DataExchange {
      */
     namespace Private_ {
         template <typename T>
-        inline enable_if_t<not is_floating_point_v<T>, T> CheckedConverter_Range_Helper_Pinner_ (T t, T /*lower*/, T /*upper*/)
+        inline T CheckedConverter_Range_Helper_Pinner_ (T t, T lower, T upper)
         {
-            return t;
-        }
-        template <typename T>
-        inline enable_if_t<is_floating_point_v<T>, T> CheckedConverter_Range_Helper_Pinner_ (T t, T lower, T upper)
-        {
-            return Math::PinToSpecialPoint (Math::PinToSpecialPoint (t, lower), upper);
+            if constexpr (is_floating_point_v<T>) {
+                return Math::PinToSpecialPoint (Math::PinToSpecialPoint (t, lower), upper);
+            }
+            else {
+                // @todo review this code - where called - not sure why not pin in range too here?
+                return t;
+            }
         }
     }
 

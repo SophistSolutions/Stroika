@@ -458,10 +458,11 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
         static ReaderFromVoidStarFactory MakeCommonReader_ (const Time::DateTime*);
         static ReaderFromVoidStarFactory MakeCommonReader_ (const Time::Duration*);
         template <typename T>
-        static ReaderFromVoidStarFactory MakeCommonReader_ (const T*, enable_if_t<is_enum_v<T>>* = nullptr);
+        static ReaderFromVoidStarFactory MakeCommonReader_ (const T*)
+            requires (is_enum_v<T>);
         template <typename T>
-        static ReaderFromVoidStarFactory
-        MakeCommonReader_ (const T*, enable_if_t<is_trivially_copyable_v<T> and is_standard_layout_v<T> and not is_enum_v<T>>* = nullptr);
+        static ReaderFromVoidStarFactory  MakeCommonReader_ (const T*)
+            requires (is_trivially_copyable_v<T> and is_standard_layout_v<T> and not is_enum_v<T>);
         template <typename T>
         static ReaderFromVoidStarFactory MakeCommonReader_ (const optional<T>*);
         template <typename T>
