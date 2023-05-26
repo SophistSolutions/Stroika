@@ -38,4 +38,4 @@ wstring Private_::GetBT_ws ()
 }
 #endif
 
-string Private_::ToString_s (const type_info& s) { return Characters::ToString (s).AsNarrowSDKString (); }
+string Private_::ToString_ (const type_info& s) { return Characters::ToString (s).AsNarrowSDKString (); }

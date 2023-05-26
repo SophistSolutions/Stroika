@@ -35,16 +35,16 @@ namespace Stroika::Foundation::Execution {
      */
     template <typename CTOR_ARG>
     LazyEvalActivity<CTOR_ARG>::LazyEvalActivity (const CTOR_ARG& arg)
-            requires (is_invocable_r_v<Characters::String, CTOR_ARG>)
-            : fArg_{arg}
-        {
-        }
+        requires (is_invocable_r_v<Characters::String, CTOR_ARG>)
+        : fArg_{arg}
+    {
+    }
     template <typename CTOR_ARG>
-    Characters::String LazyEvalActivity<CTOR_ARG>::AsString () const 
-        {
-            return fArg_ (); // what makes this more efficient is that we can just capture data in a lambda (by reference)
-                             // and just invoke that logic during exception processing when we need to convert the activity to a string rep
-        }
+    Characters::String LazyEvalActivity<CTOR_ARG>::AsString () const
+    {
+        return fArg_ (); // what makes this more efficient is that we can just capture data in a lambda (by reference)
+                         // and just invoke that logic during exception processing when we need to convert the activity to a string rep
+    }
     /*
      ********************************************************************************
      *************************** DeclareActivity<ACTIVITY> **************************

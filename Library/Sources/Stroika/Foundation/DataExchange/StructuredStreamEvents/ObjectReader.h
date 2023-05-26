@@ -461,7 +461,7 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
         static ReaderFromVoidStarFactory MakeCommonReader_ (const T*)
             requires (is_enum_v<T>);
         template <typename T>
-        static ReaderFromVoidStarFactory  MakeCommonReader_ (const T*)
+        static ReaderFromVoidStarFactory MakeCommonReader_ (const T*)
             requires (is_trivially_copyable_v<T> and is_standard_layout_v<T> and not is_enum_v<T>);
         template <typename T>
         static ReaderFromVoidStarFactory MakeCommonReader_ (const optional<T>*);

@@ -342,7 +342,12 @@ Set<SignalHandler> SignalHandlerRegistry::GetSignalHandlers (SignalID signal) co
 #else
     if (shared_ptr<SafeSignalsManager::Rep_> tmp = atomic_load (&SafeSignalsManager::sTheRep_)) {
 #endif
+
+#if defined(__APPLE__)
+        Assert (false);
+#else
         result += tmp->GetSignalHandlers (signal);
+#endif
     }
     return result;
 }

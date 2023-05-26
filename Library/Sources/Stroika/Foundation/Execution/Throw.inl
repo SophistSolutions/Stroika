@@ -19,16 +19,16 @@ namespace Stroika::Foundation::Execution {
         string  GetBT_s ();
         wstring GetBT_ws ();
 #endif
-        string ToString_s (const type_info&);
+        string ToString_ (const type_info&);
         template <typename T>
-        inline string Except2String_ (const T& t, enable_if_t<is_convertible_v<T, const exception&>>* = 0)
+        inline string ToString_ (const T& t)
         {
-            return t.what ();
-        }
-        template <typename T>
-        inline string Except2String_ (const T& /*t*/, enable_if_t<not is_convertible_v<T, const exception&>>* = 0)
-        {
-            return ToString_s (typeid (T));
+            if constexpr (is_convertible_v<T, const exception&>) {
+                return t.what ();
+            }
+            else {
+                return ToString_ (typeid (T)); // exact match preferered over template
+            }
         }
     }
 
@@ -43,9 +43,9 @@ namespace Stroika::Foundation::Execution {
         static_assert (is_convertible_v<T*, exception*>);
         if constexpr (qStroika_Foundation_Exection_Throw_TraceThrowpoint) {
 #if qStroika_Foundation_Exection_Throw_TraceThrowpointBacktrace
-            DbgTrace ("Throwing exception: %s from %s", Private_::Except2String_ (e2Throw).c_str (), Private_::GetBT_s ().c_str ());
+            DbgTrace ("Throwing exception: %s from %s", Private_::ToString_ (e2Throw).c_str (), Private_::GetBT_s ().c_str ());
 #else
-            DbgTrace ("Throwing exception: %s", Private_::Except2String_ (e2Throw).c_str ());
+            DbgTrace ("Throwing exception: %s", Private_::ToString_ (e2Throw).c_str ());
 #endif
         }
         throw e2Throw;
