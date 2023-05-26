@@ -92,7 +92,7 @@ namespace Stroika::Foundation::Common {
          *              co.p().constMethod (); // OK
          *              co.p().nonConstMethod ();    // should fail to compile
          * 
-         *      kIsMutatableType, plus appropriate requires's on the various accessor methods are designed to accomplish that.
+         *      kIsMutatableType, plus appropriate enable_if_t's on the various accessor methods are designed to accomplish that.
          */
         template <typename TT>
         static constexpr bool kIsMutatableType = not is_const_v<remove_reference_t<TT>> and is_reference_v<TT>;
