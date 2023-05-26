@@ -19,6 +19,76 @@ namespace Stroika::Foundation::Common {
      ******************** Common::KeyValuePair<KEY_TYPE,VALUE_TYPE> *****************
      ********************************************************************************
      */
+    #if 1
+    template <typename KEY_TYPE, typename VALUE_TYPE>
+    template <typename K2, typename V2, enable_if_t<is_default_constructible_v<K2> and is_default_constructible_v<V2>>*>
+    constexpr KeyValuePair<KEY_TYPE, VALUE_TYPE>::KeyValuePair ()
+        : fKey{}
+        , fValue{}
+    {
+    }
+    template <typename KEY_TYPE, typename VALUE_TYPE>
+    template <typename K2, typename V2,
+              enable_if_t<(is_copy_constructible_v<K2> and is_copy_constructible_v<V2>)and(is_convertible_v<const K2&, KEY_TYPE>and is_convertible_v<const V2&, VALUE_TYPE>)>*>
+    constexpr KeyValuePair<KEY_TYPE, VALUE_TYPE>::KeyValuePair (const KeyType& key, const ValueType& value)
+        : fKey (key)
+        , fValue (value)
+    {
+        // NB: use non-uniform initialization since we allow for conversions of type - is_convertible_v above
+    }
+    template <typename KEY_TYPE, typename VALUE_TYPE>
+    template <typename K2, typename V2,
+              enable_if_t<(is_copy_constructible_v<K2> and is_copy_constructible_v<V2>)and not(is_convertible_v<const K2&, KEY_TYPE> and is_convertible_v<const V2&, VALUE_TYPE>)>*>
+    constexpr KeyValuePair<KEY_TYPE, VALUE_TYPE>::KeyValuePair (const KeyType& key, const ValueType& value)
+        : fKey (key)
+        , fValue (value)
+    {
+        // NB: use non-uniform initialization since we allow for conversions of type - is_convertible_v above
+    }
+    template <typename KEY_TYPE, typename VALUE_TYPE>
+    template <typename KEY_TYPE2, typename VALUE_TYPE2,
+              enable_if_t<(is_constructible_v<KEY_TYPE, const KEY_TYPE2&> and is_constructible_v<VALUE_TYPE, const VALUE_TYPE2&>)and(
+                  is_convertible_v<const KEY_TYPE2&, KEY_TYPE>and is_convertible_v<const VALUE_TYPE2&, VALUE_TYPE>)>*>
+    constexpr KeyValuePair<KEY_TYPE, VALUE_TYPE>::KeyValuePair (const pair<KEY_TYPE2, VALUE_TYPE2>& src)
+        : fKey (src.first)
+        , fValue (src.second)
+    {
+        // NB: use non-uniform initialization since we allow for conversions of type - is_convertible_v above
+    }
+    template <typename KEY_TYPE, typename VALUE_TYPE>
+    template <typename KEY_TYPE2, typename VALUE_TYPE2,
+              enable_if_t<(is_constructible_v<KEY_TYPE, const KEY_TYPE2&> and is_constructible_v<VALUE_TYPE, const VALUE_TYPE2&>)and not(
+                  is_convertible_v<const KEY_TYPE2&, KEY_TYPE> and is_convertible_v<const VALUE_TYPE2&, VALUE_TYPE>)>*>
+    constexpr KeyValuePair<KEY_TYPE, VALUE_TYPE>::KeyValuePair (const pair<KEY_TYPE2, VALUE_TYPE2>& src)
+        : fKey (src.first)
+        , fValue (src.second)
+    {
+        // NB: use non-uniform initialization since we allow for conversions of type - is_convertible_v above
+    }
+    template <typename KEY_TYPE, typename VALUE_TYPE>
+    template <typename KEY_TYPE2, typename VALUE_TYPE2,
+              enable_if_t<(is_constructible_v<KEY_TYPE, const KEY_TYPE2&> and is_constructible<VALUE_TYPE, const VALUE_TYPE2&>::value) and
+                          (is_convertible_v<const KEY_TYPE2&, KEY_TYPE> and is_convertible_v<const VALUE_TYPE2&, VALUE_TYPE>)>*>
+    constexpr KeyValuePair<KEY_TYPE, VALUE_TYPE>::KeyValuePair (const KeyValuePair<KEY_TYPE2, VALUE_TYPE2>& src)
+        : fKey (src.fKey)
+        , fValue (src.fValue)
+    {
+        // NB: use non-uniform initialization since we allow for conversions of type - is_convertible_v above
+    }
+    template <typename KEY_TYPE, typename VALUE_TYPE>
+    template <typename KEY_TYPE2, typename VALUE_TYPE2,
+              enable_if_t<(is_constructible_v<KEY_TYPE, const KEY_TYPE2&> and is_constructible<VALUE_TYPE, const VALUE_TYPE2&>::value) and
+                          not(is_convertible_v<const KEY_TYPE2&, KEY_TYPE> and is_convertible_v<const VALUE_TYPE2&, VALUE_TYPE>)>*>
+    constexpr KeyValuePair<KEY_TYPE, VALUE_TYPE>::KeyValuePair (const KeyValuePair<KEY_TYPE2, VALUE_TYPE2>& src)
+        : fKey (src.fKey)
+        , fValue (src.fValue)
+    {
+        // NB: use non-uniform initialization since we allow for conversions of type - is_convertible_v above
+    }
+
+
+    #else
+
     template <typename KEY_TYPE, typename VALUE_TYPE>
     constexpr KeyValuePair<KEY_TYPE, VALUE_TYPE>::KeyValuePair (const KeyType& key, const ValueType& value)
         requires (is_copy_constructible_v<KEY_TYPE> and is_copy_constructible_v<VALUE_TYPE>)
@@ -45,6 +115,9 @@ namespace Stroika::Foundation::Common {
     {
         // NB: use non-uniform initialization since we allow for conversions of type - is_convertible_v above
     }
+        #endif
+
+
     template <typename KEY_TYPE, typename VALUE_TYPE>
     template <typename KEY_TYPE2, typename VALUE_TYPE2>
     KeyValuePair<KEY_TYPE, VALUE_TYPE>& KeyValuePair<KEY_TYPE, VALUE_TYPE>::operator= (const pair<KEY_TYPE2, VALUE_TYPE2>& rhs)
