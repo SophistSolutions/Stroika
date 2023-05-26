@@ -419,10 +419,18 @@ namespace Stroika::Foundation::Streams {
          *  \note   Only defined on Binary Streams (InputStream<byte>::Ptr), but POD_TYPE can be any (is_pod) type.
          *  \note   ReadRaw will read exactly the number of records requested, or throw an EOF exception.
          */
-        template <typename POD_TYPE, typename TEST_TYPE = ELEMENT_TYPE, enable_if_t<is_same_v<TEST_TYPE, byte>>* = nullptr>
-        nonvirtual POD_TYPE ReadRaw () const;
-        template <typename POD_TYPE, typename TEST_TYPE = ELEMENT_TYPE, enable_if_t<is_same_v<TEST_TYPE, byte>>* = nullptr>
-        nonvirtual void ReadRaw (POD_TYPE* start, POD_TYPE* end) const;
+        template <typename POD_TYPE>
+        nonvirtual POD_TYPE ReadRaw () const
+#if !qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
+            requires (is_same_v<ELEMENT_TYPE, byte>)
+#endif
+        ;
+        template <typename POD_TYPE>
+        nonvirtual void ReadRaw (POD_TYPE* start, POD_TYPE* end) const
+#if !qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
+            requires (is_same_v<ELEMENT_TYPE, byte>)
+#endif
+        ;
 
     public:
         /**
@@ -433,8 +441,12 @@ namespace Stroika::Foundation::Streams {
          *
          *      \req IsSeekable ()
          */
-        template <typename TEST_TYPE = ELEMENT_TYPE, enable_if_t<is_same_v<TEST_TYPE, Characters::Character>>* = nullptr>
-        nonvirtual Characters::String ReadLine () const;
+        template <typename I = ELEMENT_TYPE>
+        nonvirtual Characters::String ReadLine () const
+#if !qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
+            requires (is_same_v<ELEMENT_TYPE, Characters::Character>)
+#endif
+        ;
 
     public:
         /**
@@ -447,8 +459,12 @@ namespace Stroika::Foundation::Streams {
          *
          *      \req IsSeekable ()
          */
-        template <typename TEST_TYPE = ELEMENT_TYPE, enable_if_t<is_same_v<TEST_TYPE, Characters::Character>>* = nullptr>
-        nonvirtual Traversal::Iterable<Characters::String> ReadLines () const;
+        template <typename I = ELEMENT_TYPE>
+        nonvirtual Traversal::Iterable<Characters::String> ReadLines () const
+#if !qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
+            requires (is_same_v<ELEMENT_TYPE, Characters::Character>)
+#endif
+        ;
 
     public:
         /**
@@ -485,11 +501,19 @@ namespace Stroika::Foundation::Streams {
          *  @see ReadRaw()
          *  @see Streams::CopyAll()
          */
-        template <typename TEST_TYPE = ELEMENT_TYPE, enable_if_t<is_same_v<TEST_TYPE, Characters::Character>>* = nullptr>
-        nonvirtual Characters::String ReadAll (size_t upTo = numeric_limits<size_t>::max ()) const;
-        template <typename TEST_TYPE = ELEMENT_TYPE, enable_if_t<is_same_v<TEST_TYPE, byte>>* = nullptr>
-        nonvirtual Memory::BLOB ReadAll (size_t upTo = numeric_limits<size_t>::max ()) const;
-        nonvirtual size_t       ReadAll (ElementType* intoStart, ElementType* intoEnd) const;
+        template <typename I = ELEMENT_TYPE>
+        nonvirtual Characters::String ReadAll (size_t upTo = numeric_limits<size_t>::max ()) const
+#if !qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
+            requires (is_same_v<ELEMENT_TYPE, Characters::Character>)
+#endif
+        ;
+        template <typename I = ELEMENT_TYPE>
+        nonvirtual Memory::BLOB ReadAll (size_t upTo = numeric_limits<size_t>::max ()) const
+#if !qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
+            requires (is_same_v<ELEMENT_TYPE, byte>)
+#endif
+        ;
+        nonvirtual size_t ReadAll (ElementType* intoStart, ElementType* intoEnd) const;
 
     protected:
         /**

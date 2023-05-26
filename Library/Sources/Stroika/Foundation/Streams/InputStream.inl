@@ -195,8 +195,9 @@ namespace Stroika::Foundation::Streams {
         return _GetRepRWRef ().ReadNonBlocking (intoStart, intoEnd);
     }
     template <typename ELEMENT_TYPE>
-    template <typename POD_TYPE, typename TEST_TYPE, enable_if_t<is_same_v<TEST_TYPE, byte>>*>
+    template <typename POD_TYPE>
     POD_TYPE InputStream<ELEMENT_TYPE>::Ptr::ReadRaw () const
+        requires (is_same_v<ELEMENT_TYPE, byte>)
     {
         Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
         Require (IsOpen ());
@@ -211,8 +212,9 @@ namespace Stroika::Foundation::Streams {
         }
     }
     template <typename ELEMENT_TYPE>
-    template <typename POD_TYPE, typename TEST_TYPE, enable_if_t<is_same_v<TEST_TYPE, byte>>*>
+    template <typename POD_TYPE>
     inline void InputStream<ELEMENT_TYPE>::Ptr::ReadRaw (POD_TYPE* start, POD_TYPE* end) const
+        requires (is_same_v<ELEMENT_TYPE, byte>)
     {
         Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{*this};
         Require (IsOpen ());
