@@ -23,7 +23,7 @@ namespace Stroika::Foundation::Cryptography::Digest {
             if constexpr (is_constructible_v<OUT_RESULT, IN_RESULT>) {
                 return OUT_RESULT (hashVal); // intentionally allow narrowing conversions (so () not {})
             }
-            else if (is_trivially_copyable_v<IN_RESULT> and is_trivially_copyable_v<OUT_RESULT>) {
+            else if constexpr (is_trivially_copyable_v<IN_RESULT> and is_trivially_copyable_v<OUT_RESULT>) {
                 // Else if both (IN AND OUT) values trivially copyable, use memcpy (and zero fill result as needed)
                 size_t     mBytes2Copy = std::min (sizeof (OUT_RESULT), sizeof (IN_RESULT));
                 OUT_RESULT result{}; // zero initialize non-copied bits (@todo could just zero-fill end bits)

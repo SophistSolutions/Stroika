@@ -550,9 +550,6 @@ namespace Stroika::Foundation::Traversal {
          *          on a temporary (except with the trick if (auto i = x().Find(...)) { ok to access i here cuz x() temporary
          *          not destroyed yet).
          * 
-         *  \note THAT_FUNTION type used to be hardwired to function<bool (ArgByValueType<T> item)>&, but now use template argument
-         *     and (SOON concept) but for now enable_if_t
-         * 
          *  \note desipte the name EQUALS_COMPARER, we allow EQUALS_COMPARER to just be IPotentiallyComparer<> and don't require
          *        EqualsComparer, just to simplify use, and because we cannot anticipate any real ambiguity or confusion resulting from this loose restriction.
          */

@@ -421,12 +421,10 @@ namespace Stroika::Foundation::Streams {
          */
         template <typename POD_TYPE>
         nonvirtual POD_TYPE ReadRaw () const
-            requires (is_same_v<ELEMENT_TYPE, byte>)
-        ;
+            requires (is_same_v<ELEMENT_TYPE, byte>);
         template <typename POD_TYPE>
         nonvirtual void ReadRaw (POD_TYPE* start, POD_TYPE* end) const
-            requires (is_same_v<ELEMENT_TYPE, byte>)
-        ;
+            requires (is_same_v<ELEMENT_TYPE, byte>);
 
     public:
         /**
@@ -497,15 +495,20 @@ namespace Stroika::Foundation::Streams {
          *  @see ReadRaw()
          *  @see Streams::CopyAll()
          */
+#if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
+        template <typename TEST_TYPE = ELEMENT_TYPE, enable_if_t<is_same_v<TEST_TYPE, Characters::Character>>* = nullptr>
+        nonvirtual Characters::String ReadAll (size_t upTo = numeric_limits<size_t>::max ()) const;
+#else
         template <typename I = ELEMENT_TYPE>
         nonvirtual Characters::String ReadAll (size_t upTo = numeric_limits<size_t>::max ()) const
-#if !qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
-            requires (is_same_v<ELEMENT_TYPE, Characters::Character>)
+            requires (is_same_v<ELEMENT_TYPE, Characters::Character>);
 #endif
-        ;
+#if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
+        template <typename TEST_TYPE = ELEMENT_TYPE, enable_if_t<is_same_v<TEST_TYPE, byte>>* = nullptr>
+        nonvirtual Memory::BLOB ReadAll (size_t upTo = numeric_limits<size_t>::max ()) const;
+#else
         template <typename I = ELEMENT_TYPE>
         nonvirtual Memory::BLOB ReadAll (size_t upTo = numeric_limits<size_t>::max ()) const
-#if !qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
             requires (is_same_v<ELEMENT_TYPE, byte>)
 #endif
         ;

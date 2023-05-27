@@ -103,8 +103,9 @@ namespace Stroika::Foundation::Traversal {
 #endif
 
         public:
-            template <typename K1 = CONTEXT_FOR_EACH_ITERATOR, enable_if_t<is_same_v<K1, void>>* = nullptr>
-            _Rep ();
+            _Rep ()
+                requires (is_same_v<CONTEXT_FOR_EACH_ITERATOR, void>)
+            = default;
 
         protected:
             template <typename K1 = CONTEXT_FOR_EACH_ITERATOR, enable_if_t<not is_same_v<K1, void>>* = nullptr>

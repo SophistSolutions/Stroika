@@ -72,22 +72,22 @@ namespace Stroika::Foundation::Math {
             }
         }
 
-        template <typename T, enable_if_t<is_signed_v<T>>* = nullptr>
+        template <signed_integral T>
         constexpr T RoundUpTo_ (T x, T toNearest)
         {
             return Private::RoundUpTo_SignedHelper_<T> (x, toNearest);
         }
-        template <typename T, enable_if_t<is_unsigned_v<T>>* = nullptr>
+        template <unsigned_integral T>
         constexpr T RoundUpTo_ (T x, T toNearest)
         {
             return Private::RoundUpTo_UnSignedHelper_<T> (x, toNearest);
         }
-        template <typename T, enable_if_t<is_signed_v<T>>* = nullptr>
+        template <signed_integral T>
         constexpr T RoundDownTo_ (T x, T toNearest)
         {
             return Private::RoundDownTo_SignedHelper_<T> (x, toNearest);
         }
-        template <typename T, enable_if_t<is_unsigned_v<T>>* = nullptr>
+        template <unsigned_integral T>
         constexpr T RoundDownTo_ (T x, T toNearest)
         {
             return Private::RoundDownTo_UnSignedHelper_<T> (x, toNearest);
@@ -174,14 +174,14 @@ namespace Stroika::Foundation::Math {
             /* 
              *  Need to use a temporary of type TC, because T1 or T2 maybe a type of a special temporary value which cannot be assigned to (like Sequence<>::TemporaryItem....
              */
-            auto useL = l;
+            TC useL = l;
             if (not isinf (useL) and fabs (useL - numeric_limits<TC>::max ()) <= kEpsilon_) {
                 useL = numeric_limits<TC>::infinity ();
             }
             if (not isinf (useL) and fabs (useL - numeric_limits<TC>::lowest ()) <= kEpsilon_) {
                 useL = -numeric_limits<TC>::infinity ();
             }
-            auto useR = r;
+            TC useR = r;
             if (not isinf (useR) and fabs (useR - numeric_limits<TC>::max ()) <= kEpsilon_) {
                 useR = numeric_limits<TC>::infinity ();
             }
