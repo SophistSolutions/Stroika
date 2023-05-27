@@ -292,8 +292,8 @@ namespace Stroika::Foundation::Execution {
          *          The reason this is only defined for recursive mutexes is so that it can be used in a context where this thread
          *          already has a lock (e.g. called rwget ()).
          */
-        template <typename TEST_TYPE = TRAITS, enable_if_t<TEST_TYPE::kIsRecursiveReadMutex>* = nullptr>
-        nonvirtual operator T () const;
+        nonvirtual operator T () const
+            requires (TRAITS::kIsRecursiveReadMutex);
 
     public:
         /**
@@ -315,10 +315,10 @@ namespace Stroika::Foundation::Execution {
          *          The reason this is only defined for recursive mutexes is so that it can be used in a context where this thread
          *          already has a lock (e.g. called rwget ()).
          */
-        template <typename TEST_TYPE = TRAITS, enable_if_t<TEST_TYPE::kIsRecursiveReadMutex>* = nullptr>
-        nonvirtual T load () const;
-        template <typename TEST_TYPE = TRAITS, enable_if_t<TEST_TYPE::kIsRecursiveReadMutex and TEST_TYPE::kSupportsTimedLocks>* = nullptr>
-        nonvirtual T load (const chrono::duration<double>& tryFor) const;
+        nonvirtual T load () const
+            requires (TRAITS::kIsRecursiveReadMutex);
+        nonvirtual T load (const chrono::duration<double>& tryFor) const
+            requires (TRAITS::kIsRecursiveReadMutex and TRAITS::kSupportsTimedLocks);
 
     public:
         /**
@@ -331,14 +331,14 @@ namespace Stroika::Foundation::Execution {
          *          The reason this is only defined for recursive mutexes is so that it can be used in a context where this thread
          *          already has a lock (e.g. called rwget ()).
          */
-        template <typename TEST_TYPE = TRAITS, enable_if_t<TEST_TYPE::kIsRecursiveLockMutex>* = nullptr>
-        nonvirtual void store (const T& v);
-        template <typename TEST_TYPE = TRAITS, enable_if_t<TEST_TYPE::kIsRecursiveLockMutex>* = nullptr>
-        nonvirtual void store (T&& v);
-        template <typename TEST_TYPE = TRAITS, enable_if_t<TEST_TYPE::kIsRecursiveLockMutex and TEST_TYPE::kSupportsTimedLocks>* = nullptr>
-        nonvirtual void store (const T& v, const chrono::duration<double>& tryFor);
-        template <typename TEST_TYPE = TRAITS, enable_if_t<TEST_TYPE::kIsRecursiveLockMutex and TEST_TYPE::kSupportsTimedLocks>* = nullptr>
-        nonvirtual void store (T&& v, const chrono::duration<double>& tryFor);
+        nonvirtual void store (const T& v)
+            requires (TRAITS::kIsRecursiveLockMutex);
+        nonvirtual void store (T&& v)
+            requires (TRAITS::kIsRecursiveLockMutex);
+        nonvirtual void store (const T& v, const chrono::duration<double>& tryFor)
+            requires (TRAITS::kIsRecursiveLockMutex and TRAITS::kSupportsTimedLocks);
+        nonvirtual void store (T&& v, const chrono::duration<double>& tryFor)
+            requires (TRAITS::kIsRecursiveLockMutex and TRAITS::kSupportsTimedLocks);
 
     public:
         /**
@@ -378,8 +378,8 @@ namespace Stroika::Foundation::Execution {
          *  \note - this creates a lock, so be sure TRAITS::kIsRecursiveLockMutex if using this in a place where the same thread may have a lock.
          */
         nonvirtual WritableReference rwget ();
-        template <typename TEST_TYPE = TRAITS, enable_if_t<TEST_TYPE::kSupportsTimedLocks>* = nullptr>
-        nonvirtual WritableReference rwget (const chrono::duration<double>& tryFor);
+        nonvirtual WritableReference rwget (const chrono::duration<double>& tryFor)
+            requires (TRAITS::kSupportsTimedLocks);
 
     public:
         /*
@@ -523,14 +523,15 @@ namespace Stroika::Foundation::Execution {
          *          }
          *      \endcode
          */
-        template <typename TEST_TYPE = TRAITS, enable_if_t<TEST_TYPE::kSupportSharedLocks>* = nullptr>
         nonvirtual bool UpgradeLockNonAtomicallyQuietly (
             ReadableReference* lockBeingUpgraded, const function<void (WritableReference&&)>& doWithWriteLock,
-            const chrono::duration<Time::DurationSecondsType>& timeout = chrono::duration<Time::DurationSecondsType>{Time::kInfinite});
-        template <typename TEST_TYPE = TRAITS, enable_if_t<TEST_TYPE::kSupportSharedLocks>* = nullptr>
+            const chrono::duration<Time::DurationSecondsType>& timeout = chrono::duration<Time::DurationSecondsType>{Time::kInfinite})
+            requires (TRAITS::kSupportSharedLocks and TRAITS::kSupportsTimedLocks);
         nonvirtual bool UpgradeLockNonAtomicallyQuietly (
             ReadableReference* lockBeingUpgraded, const function<bool (WritableReference&&, bool interveningWriteLock)>& doWithWriteLock,
-            const chrono::duration<Time::DurationSecondsType>& timeout = chrono::duration<Time::DurationSecondsType>{Time::kInfinite});
+            const chrono::duration<Time::DurationSecondsType>& timeout = chrono::duration<Time::DurationSecondsType>{Time::kInfinite})
+            requires (TRAITS::kSupportSharedLocks and TRAITS::kSupportsTimedLocks);
+        ;
 
     public:
         /**
@@ -558,14 +559,15 @@ namespace Stroika::Foundation::Execution {
          *          }
          *      \endcode
          */
-        template <typename TEST_TYPE = TRAITS, enable_if_t<TEST_TYPE::kSupportSharedLocks>* = nullptr>
         nonvirtual void
         UpgradeLockNonAtomically (ReadableReference* lockBeingUpgraded, const function<void (WritableReference&&)>& doWithWriteLock,
-                                  const chrono::duration<Time::DurationSecondsType>& timeout = chrono::duration<Time::DurationSecondsType>{Time::kInfinite});
-        template <typename TEST_TYPE = TRAITS, enable_if_t<TEST_TYPE::kSupportSharedLocks>* = nullptr>
+                                  const chrono::duration<Time::DurationSecondsType>& timeout = chrono::duration<Time::DurationSecondsType>{Time::kInfinite})
+            requires (TRAITS::kSupportSharedLocks and TRAITS::kSupportsTimedLocks);
         nonvirtual void UpgradeLockNonAtomically (
             ReadableReference* lockBeingUpgraded, const function<bool (WritableReference&&, bool interveningWriteLock)>& doWithWriteLock,
-            const chrono::duration<Time::DurationSecondsType>& timeout = chrono::duration<Time::DurationSecondsType>{Time::kInfinite});
+            const chrono::duration<Time::DurationSecondsType>& timeout = chrono::duration<Time::DurationSecondsType>{Time::kInfinite})
+            requires (TRAITS::kSupportSharedLocks and TRAITS::kSupportsTimedLocks);
+        ;
 
     private:
         nonvirtual void NoteLockStateChanged_ (const wchar_t* m) const noexcept;

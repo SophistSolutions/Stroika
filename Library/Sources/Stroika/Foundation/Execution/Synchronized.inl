@@ -106,21 +106,21 @@ namespace Stroika::Foundation::Execution {
         return *this;
     }
     template <typename T, typename TRAITS>
-    template <typename TEST_TYPE, enable_if_t<TEST_TYPE::kIsRecursiveReadMutex>*>
     inline Synchronized<T, TRAITS>::operator T () const
+        requires (TRAITS::kIsRecursiveReadMutex)
     {
         return load ();
     }
     template <typename T, typename TRAITS>
-    template <typename TEST_TYPE, enable_if_t<TEST_TYPE::kIsRecursiveReadMutex>*>
     inline T Synchronized<T, TRAITS>::load () const
+        requires (TRAITS::kIsRecursiveReadMutex)
     {
         ReadLockType_ fromCritSec{fMutex_};
         return fProtectedValue_;
     }
     template <typename T, typename TRAITS>
-    template <typename TEST_TYPE, enable_if_t<TEST_TYPE::kIsRecursiveReadMutex and TEST_TYPE::kSupportsTimedLocks>*>
     inline T Synchronized<T, TRAITS>::load (const chrono::duration<double>& tryFor) const
+        requires (TRAITS::kIsRecursiveReadMutex and TRAITS::kSupportsTimedLocks)
     {
         ReadLockType_ critSec{fMutex_, tryFor};
         if (not critSec) {
@@ -129,8 +129,8 @@ namespace Stroika::Foundation::Execution {
         return fProtectedValue_;
     }
     template <typename T, typename TRAITS>
-    template <typename TEST_TYPE, enable_if_t<TEST_TYPE::kIsRecursiveLockMutex>*>
     inline void Synchronized<T, TRAITS>::store (const T& v)
+        requires (TRAITS::kIsRecursiveLockMutex)
     {
         [[maybe_unused]] auto&& critSec = lock_guard{fMutex_};
         [[maybe_unused]] auto&& cleanup = Execution::Finally ([this] () { NoteLockStateChanged_ (L"Unlocked"); });
@@ -139,8 +139,8 @@ namespace Stroika::Foundation::Execution {
         fProtectedValue_ = v;
     }
     template <typename T, typename TRAITS>
-    template <typename TEST_TYPE, enable_if_t<TEST_TYPE::kIsRecursiveLockMutex>*>
     inline void Synchronized<T, TRAITS>::store (T&& v)
+        requires (TRAITS::kIsRecursiveLockMutex)
     {
         [[maybe_unused]] auto&& critSec = lock_guard{fMutex_};
         [[maybe_unused]] auto&& cleanup = Execution::Finally ([this] () { NoteLockStateChanged_ (L"Unlocked"); });
@@ -149,8 +149,8 @@ namespace Stroika::Foundation::Execution {
         fProtectedValue_ = std::move (v);
     }
     template <typename T, typename TRAITS>
-    template <typename TEST_TYPE, enable_if_t<TEST_TYPE::kIsRecursiveLockMutex and TEST_TYPE::kSupportsTimedLocks>*>
     inline void Synchronized<T, TRAITS>::store (const T& v, const chrono::duration<double>& tryFor)
+        requires (TRAITS::kIsRecursiveLockMutex and TRAITS::kSupportsTimedLocks)
     {
         [[maybe_unused]] auto&& critSec = unique_lock{fMutex_, tryFor};
         if (not critSec) {
@@ -162,8 +162,8 @@ namespace Stroika::Foundation::Execution {
         fProtectedValue_ = v;
     }
     template <typename T, typename TRAITS>
-    template <typename TEST_TYPE, enable_if_t<TEST_TYPE::kIsRecursiveLockMutex and TEST_TYPE::kSupportsTimedLocks>*>
     inline void Synchronized<T, TRAITS>::store (T&& v, const chrono::duration<double>& tryFor)
+        requires (TRAITS::kIsRecursiveLockMutex and TRAITS::kSupportsTimedLocks)
     {
         [[maybe_unused]] auto&& critSec = unique_lock{fMutex_, tryFor};
         if (not critSec) {
@@ -195,8 +195,8 @@ namespace Stroika::Foundation::Execution {
         return WritableReference{this};
     }
     template <typename T, typename TRAITS>
-    template <typename TEST_TYPE, enable_if_t<TEST_TYPE::kSupportsTimedLocks>*>
     inline auto Synchronized<T, TRAITS>::rwget (const chrono::duration<double>& tryFor) -> WritableReference
+        requires (TRAITS::kSupportsTimedLocks)
     {
         [[maybe_unused]] auto&& critSec = unique_lock{fMutex_, tryFor};
         if (not critSec) {
@@ -303,10 +303,10 @@ namespace Stroika::Foundation::Execution {
         return load () <=> rhs;
     }
     template <typename T, typename TRAITS>
-    template <typename TEST_TYPE, enable_if_t<TEST_TYPE::kSupportSharedLocks>*>
     inline bool Synchronized<T, TRAITS>::UpgradeLockNonAtomicallyQuietly ([[maybe_unused]] ReadableReference*         lockBeingUpgraded,
                                                                           const function<void (WritableReference&&)>& doWithWriteLock,
                                                                           const chrono::duration<Time::DurationSecondsType>& timeout)
+        requires (TRAITS::kSupportSharedLocks and TRAITS::kSupportsTimedLocks)
     {
         return UpgradeLockNonAtomicallyQuietly (
             lockBeingUpgraded,
@@ -325,10 +325,10 @@ namespace Stroika::Foundation::Execution {
             timeout);
     }
     template <typename T, typename TRAITS>
-    template <typename TEST_TYPE, enable_if_t<TEST_TYPE::kSupportSharedLocks>*>
     bool Synchronized<T, TRAITS>::UpgradeLockNonAtomicallyQuietly ([[maybe_unused]] ReadableReference* lockBeingUpgraded,
                                                                    const function<bool (WritableReference&&, bool interveningWriteLock)>& doWithWriteLock,
                                                                    const chrono::duration<Time::DurationSecondsType>& timeout)
+        requires (TRAITS::kSupportSharedLocks and TRAITS::kSupportsTimedLocks)
     {
 #if Stroika_Foundation_Execution_Synchronized_USE_NOISY_TRACE_IN_THIS_MODULE_
         Debug::TraceContextBumper ctx{L"Synchronized<T, TRAITS>::UpgradeLockNonAtomically", L"&fMutex_=%p, timeout=%s", &fMutex_,
@@ -359,10 +359,10 @@ namespace Stroika::Foundation::Execution {
         return doWithWriteLock (std::move (wr), interveningWriteLock);
     }
     template <typename T, typename TRAITS>
-    template <typename TEST_TYPE, enable_if_t<TEST_TYPE::kSupportSharedLocks>*>
     inline void Synchronized<T, TRAITS>::UpgradeLockNonAtomically ([[maybe_unused]] ReadableReference*                lockBeingUpgraded,
                                                                    const function<void (WritableReference&&)>&        doWithWriteLock,
                                                                    const chrono::duration<Time::DurationSecondsType>& timeout)
+        requires (TRAITS::kSupportSharedLocks and TRAITS::kSupportsTimedLocks)
     {
 #if Stroika_Foundation_Execution_Synchronized_USE_NOISY_TRACE_IN_THIS_MODULE_
         Debug::TraceContextBumper ctx{L"Synchronized<T, TRAITS>::UpgradeLockNonAtomically", L"&fMutex_=%p, timeout=%s", &fMutex_,
@@ -373,10 +373,10 @@ namespace Stroika::Foundation::Execution {
         }
     }
     template <typename T, typename TRAITS>
-    template <typename TEST_TYPE, enable_if_t<TEST_TYPE::kSupportSharedLocks>*>
     void Synchronized<T, TRAITS>::UpgradeLockNonAtomically ([[maybe_unused]] ReadableReference* lockBeingUpgraded,
                                                             const function<bool (WritableReference&&, bool interveningWriteLock)>& doWithWriteLock,
                                                             const chrono::duration<Time::DurationSecondsType>& timeout)
+        requires (TRAITS::kSupportSharedLocks and TRAITS::kSupportsTimedLocks)
     {
 #if Stroika_Foundation_Execution_Synchronized_USE_NOISY_TRACE_IN_THIS_MODULE_
         Debug::TraceContextBumper ctx{L"Synchronized<T, TRAITS>::UpgradeLockNonAtomically", L"&fMutex_=%p, timeout=%s", &fMutex_,
