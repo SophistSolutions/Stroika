@@ -499,10 +499,6 @@ make[4]: *** [/Sandbox/Stroika-Dev//ScriptsLib/SharedBuildRules-Default.mk:30: /
 // first noticed broken in apply clang 14
 #define qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy                                               \
     CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 14))
-#elif defined(_MSC_VER) && 0
-// verified broken in _MSC_VER_2k22_17Pt5_ (BUT ONLY WHEN BUILDING INSIDE DOCKER????)
-#define qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy                                               \
-    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k22_17Pt5_)
 #else
 #define qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy 0
 #endif
@@ -882,6 +878,22 @@ In file included from ../Characters/StringBuilder.h:273,
     CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 14))
 #else
 #define qCompilerAndStdLib_template_Requires_templateDeclarationMatchesOutOfLine2_Buggy 0
+#endif
+
+#endif
+
+
+
+/**
+ */
+#ifndef qCompilerAndStdLib_template_Requires_constraint_not_treated_constexpr_Buggy
+
+#if defined(__clang__) && defined(__APPLE__)
+// Noticed broken in crapple-clang++14
+#define qCompilerAndStdLib_template_Requires_constraint_not_treated_constexpr_Buggy                                                    \
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 14))
+#else
+#define qCompilerAndStdLib_template_Requires_constraint_not_treated_constexpr_Buggy 0
 #endif
 
 #endif
