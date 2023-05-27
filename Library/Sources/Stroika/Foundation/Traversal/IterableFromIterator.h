@@ -108,8 +108,8 @@ namespace Stroika::Foundation::Traversal {
             = default;
 
         protected:
-            template <typename K1 = CONTEXT_FOR_EACH_ITERATOR, enable_if_t<not is_same_v<K1, void>>* = nullptr>
-            _Rep (const _ContextObjectType& contextForEachIterator);
+            _Rep (const _ContextObjectType& contextForEachIterator)
+                requires (same_as<void, CONTEXT_FOR_EACH_ITERATOR>);
 
         public:
             virtual Iterator<T> MakeIterator (const shared_ptr<typename Iterable<T>::_IRep>& thisSharedPtr) const override;

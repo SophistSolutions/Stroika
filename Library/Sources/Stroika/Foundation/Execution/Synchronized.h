@@ -367,8 +367,8 @@ namespace Stroika::Foundation::Execution {
          *  \note - this creates a lock, so be sure TRAITS::kIsRecursiveReadMutex if using this in a place where the same thread may have a lock.
          */
         nonvirtual ReadableReference cget () const;
-        template <typename TEST_TYPE = TRAITS, enable_if_t<TEST_TYPE::kSupportsTimedLocks>* = nullptr>
-        nonvirtual ReadableReference cget (const chrono::duration<double>& tryFor) const;
+        nonvirtual ReadableReference cget (const chrono::duration<double>& tryFor) const
+            requires (TRAITS::kSupportsTimedLocks);
 
     public:
         /**

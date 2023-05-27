@@ -180,8 +180,8 @@ namespace Stroika::Foundation::Execution {
         return ReadableReference{this};
     }
     template <typename T, typename TRAITS>
-    template <typename TEST_TYPE, enable_if_t<TEST_TYPE::kSupportsTimedLocks>*>
     inline auto Synchronized<T, TRAITS>::cget (const chrono::duration<double>& tryFor) const -> ReadableReference
+        requires (TRAITS::kSupportsTimedLocks)
     {
         ReadLockType_ critSec{fMutex_, tryFor};
         if (not critSec) {

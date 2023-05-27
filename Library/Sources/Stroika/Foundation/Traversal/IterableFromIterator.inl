@@ -34,8 +34,8 @@ namespace Stroika::Foundation::Traversal {
      ********************************************************************************
      */
     template <typename T, typename NEW_ITERATOR_REP_TYPE, typename CONTEXT_FOR_EACH_ITERATOR>
-    template <typename K1, enable_if_t<not is_same_v<K1, void>>*>
     inline IterableFromIterator<T, NEW_ITERATOR_REP_TYPE, CONTEXT_FOR_EACH_ITERATOR>::_Rep::_Rep (const _ContextObjectType& contextForEachIterator)
+        requires (same_as<void, CONTEXT_FOR_EACH_ITERATOR>)
         : _fContextForEachIterator{contextForEachIterator}
     {
     }
@@ -44,6 +44,7 @@ namespace Stroika::Foundation::Traversal {
         [[maybe_unused]] const shared_ptr<typename Iterable<T>::_IRep>& thisSharedPtr) const
     {
         if constexpr (is_same_v<NEW_ITERATOR_REP_TYPE, void>) {
+            AssertNotReached ();
             return nullptr;
         }
         else {
