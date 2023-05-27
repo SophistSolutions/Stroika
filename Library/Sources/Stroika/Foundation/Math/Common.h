@@ -74,14 +74,18 @@ namespace Stroika::Foundation::Math {
      *  \note For floating points, NearlyEquals (Nan,Nan) is TRUE, unlike with operator==
      *        https://medium.com/engineering-housing/nan-is-not-equal-to-nan-771321379694
      */
-    template <typename T1, typename T2, typename TC = typename common_type<T1, T2>::type>
-    bool NearlyEquals (T1 l, T2 r, enable_if_t<is_floating_point_v<TC>>* = nullptr);
-    template <typename T1, typename T2, typename EPSILON_TYPE, typename TC = typename common_type<T1, T2>::type>
-    bool NearlyEquals (T1 l, T2 r, EPSILON_TYPE epsilon, enable_if_t<is_floating_point_v<TC>>* = nullptr);
-    template <typename T1, typename T2, typename TC = typename common_type<T1, T2>::type>
-    bool NearlyEquals (T1 l, T2 r, enable_if_t<is_integral_v<TC>>* = nullptr);
-    template <typename T1, typename T2, typename TC = typename common_type<T1, T2>::type>
-    bool NearlyEquals (T1 l, T2 r, enable_if_t<!is_integral_v<TC> && !is_floating_point_v<TC>>* = nullptr);
+    template <typename T1, typename T2>
+    bool NearlyEquals (T1 l, T2 r)
+        requires (is_floating_point_v<common_type_t<T1, T2>>);
+    template <typename T1, typename T2, typename EPSILON_TYPE>
+    bool NearlyEquals (T1 l, T2 r, EPSILON_TYPE epsilon)
+        requires (is_floating_point_v<common_type_t<T1, T2>>);
+    template <typename T1, typename T2>
+    bool NearlyEquals (T1 l, T2 r)
+        requires (is_integral_v<common_type_t<T1, T2>>);
+    template <typename T1, typename T2>
+    bool NearlyEquals (T1 l, T2 r)
+        requires (not is_integral_v<common_type_t<T1, T2>> and not is_floating_point_v<common_type_t<T1, T2>>);
 
     /**
      *  \brief  PinToSpecialPoint() returns its first argument, or someting NearlyEquals() to it (but better)

@@ -157,29 +157,31 @@ namespace Stroika::Foundation::Math {
             return 10000 * numeric_limits<TC>::epsilon ();
         }
     }
-    template <typename T1, typename T2, typename EPSILON_TYPE, typename TC>
-    inline bool NearlyEquals (T1 l, T2 r, EPSILON_TYPE epsilon, enable_if_t<is_floating_point_v<TC>>*)
+    template <typename T1, typename T2, typename EPSILON_TYPE>
+    inline bool NearlyEquals (T1 l, T2 r, EPSILON_TYPE epsilon)
+        requires (is_floating_point_v<common_type_t<T1, T2>>)
     {
         Require (epsilon >= 0);
-        TC diff = l - r;
+        auto diff = l - r;
         if (isnan (diff)) [[unlikely]] {
             // nan-nan, or inf-inf
             // maybe other cases shouldnt be considered nearly equals?
             return std::fpclassify (l) == std::fpclassify (r);
         }
         if (isinf (diff)) [[unlikely]] {
+            using TC                  = common_type_t<T1, T2>;
             static const TC kEpsilon_ = Private_::mkCompareEpsilon_ (numeric_limits<TC>::max (), numeric_limits<TC>::max ());
             /* 
              *  Need to use a temporary of type TC, because T1 or T2 maybe a type of a special temporary value which cannot be assigned to (like Sequence<>::TemporaryItem....
              */
-            TC useL = l;
+            auto useL = l;
             if (not isinf (useL) and fabs (useL - numeric_limits<TC>::max ()) <= kEpsilon_) {
                 useL = numeric_limits<TC>::infinity ();
             }
             if (not isinf (useL) and fabs (useL - numeric_limits<TC>::lowest ()) <= kEpsilon_) {
                 useL = -numeric_limits<TC>::infinity ();
             }
-            TC useR = r;
+            auto useR = r;
             if (not isinf (useR) and fabs (useR - numeric_limits<TC>::max ()) <= kEpsilon_) {
                 useR = numeric_limits<TC>::infinity ();
             }
@@ -192,18 +194,22 @@ namespace Stroika::Foundation::Math {
         }
         return fabs (diff) <= epsilon;
     }
-    template <typename T1, typename T2, typename TC>
-    inline bool NearlyEquals (T1 l, T2 r, enable_if_t<is_integral_v<TC>>*)
+    template <typename T1, typename T2>
+    inline bool NearlyEquals (T1 l, T2 r)
+        requires (is_integral_v<common_type_t<T1, T2>>)
     {
         return l == r;
     }
-    template <typename T1, typename T2, typename TC>
-    inline bool NearlyEquals (T1 l, T2 r, enable_if_t<is_floating_point_v<TC>>*)
+    template <typename T1, typename T2>
+    inline bool NearlyEquals (T1 l, T2 r)
+        requires (is_floating_point_v<common_type_t<T1, T2>>)
     {
+        using TC = common_type_t<T1, T2>;
         return NearlyEquals (l, r, Private_::mkCompareEpsilon_<TC> (l, r));
     }
-    template <typename T1, typename T2, typename TC>
-    inline bool NearlyEquals (T1 l, T2 r, enable_if_t<!is_integral_v<TC> and !is_floating_point_v<TC>>*)
+    template <typename T1, typename T2>
+    inline bool NearlyEquals (T1 l, T2 r)
+        requires (not is_integral_v<common_type_t<T1, T2>> and not is_floating_point_v<common_type_t<T1, T2>>)
     {
         return l == r;
     }

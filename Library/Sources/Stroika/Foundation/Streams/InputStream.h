@@ -421,15 +421,11 @@ namespace Stroika::Foundation::Streams {
          */
         template <typename POD_TYPE>
         nonvirtual POD_TYPE ReadRaw () const
-#if !qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
             requires (is_same_v<ELEMENT_TYPE, byte>)
-#endif
         ;
         template <typename POD_TYPE>
         nonvirtual void ReadRaw (POD_TYPE* start, POD_TYPE* end) const
-#if !qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
             requires (is_same_v<ELEMENT_TYPE, byte>)
-#endif
         ;
 
     public:
