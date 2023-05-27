@@ -273,14 +273,14 @@ namespace Stroika::Foundation::Streams {
         return New (start, end);
     }
     template <typename ELEMENT_TYPE>
-    template <typename TEST_TYPE, enable_if_t<is_same_v<TEST_TYPE, byte>>*>
     inline auto SharedMemoryStream<ELEMENT_TYPE>::New (const Memory::BLOB& blob) -> Ptr
+        requires (same_as<ELEMENT_TYPE, byte>)
     {
         return New (blob.begin (), blob.end ());
     }
     template <typename ELEMENT_TYPE>
-    template <typename TEST_TYPE, enable_if_t<is_same_v<TEST_TYPE, byte>>*>
     inline auto SharedMemoryStream<ELEMENT_TYPE>::New (Execution::InternallySynchronized internallySynchronized, const Memory::BLOB& blob) -> Ptr
+        requires (same_as<ELEMENT_TYPE, byte>)
     {
         return New (blob.begin (), blob.end ());
     }

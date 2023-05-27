@@ -89,10 +89,10 @@ namespace Stroika::Foundation::Streams {
         static Ptr New (Execution::InternallySynchronized internallySynchronized = Execution::eInternallySynchronized);
         static Ptr New (const ELEMENT_TYPE* start, const ELEMENT_TYPE* end);
         static Ptr New (Execution::InternallySynchronized internallySynchronized, const ELEMENT_TYPE* start, const ELEMENT_TYPE* end);
-        template <typename TEST_TYPE = ELEMENT_TYPE, enable_if_t<is_same_v<TEST_TYPE, byte>>* = nullptr>
-        static Ptr New (const Memory::BLOB& blob);
-        template <typename TEST_TYPE = ELEMENT_TYPE, enable_if_t<is_same_v<TEST_TYPE, byte>>* = nullptr>
-        static Ptr New (Execution::InternallySynchronized internallySynchronized, const Memory::BLOB& blob);
+        static Ptr New (const Memory::BLOB& blob)
+            requires (same_as<ELEMENT_TYPE, byte>);
+        static Ptr New (Execution::InternallySynchronized internallySynchronized, const Memory::BLOB& blob)
+            requires (same_as<ELEMENT_TYPE, byte>);
 
     private:
         class Rep_;
