@@ -350,7 +350,7 @@ jobs:
           #   includeInDevBranchBuilds: true
     env:
       # vm has 2 virtual CPUs, but 8GB ram, so jobs=3 (empirical), and QUICK_BUILD avoids some internal testing
-      MAKEFLAGS: "--jobs=3 QUICK_BUILD=1"
+      MAKEFLAGS: "--jobs=4 QUICK_BUILD=1"
       ARTIFACTS_DIR: "c:/Artifacts/"
     steps:
       - uses: actions/checkout@v3
@@ -373,7 +373,7 @@ jobs:
         ### without this rebaseall, about 30% of the time we get a failure in wget wget 3470 child_info_fork::abort: \??\C:\msys64\usr\bin\msys-crypto-1.1.dll: Loaded to different address: parent(0x478B980000) != child(0x400000
         ### and with this hack, it hasn't happened in 5 tries --LGP 2022-01-26
         run: |
-          docker run --interactive --memory 5G --cpus 2 --storage-opt 'size=50GB' --detach --name buildContainer ${{ matrix.container_image }} ash -c "c:/msys64/usr/bin/rebaseall -v; exec bash"
+          docker run --interactive --memory 5G --cpus 4 --storage-opt 'size=50GB' --detach --name buildContainer ${{ matrix.container_image }} ash -c "c:/msys64/usr/bin/rebaseall -v; exec bash"
       - name: Print Info about docker system
         shell: "bash"
         run: |
