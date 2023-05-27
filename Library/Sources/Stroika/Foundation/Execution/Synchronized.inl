@@ -210,8 +210,8 @@ namespace Stroika::Foundation::Execution {
         return ReadableReference{this};
     }
     template <typename T, typename TRAITS>
-    template <typename TEST_TYPE, enable_if_t<TEST_TYPE::kIsRecursiveReadMutex and TRAITS::kSupportSharedLocks>*>
     inline void Synchronized<T, TRAITS>::lock_shared () const
+        requires (TRAITS::kIsRecursiveReadMutex and TRAITS::kSupportSharedLocks)
     {
 #if Stroika_Foundation_Execution_Synchronized_USE_NOISY_TRACE_IN_THIS_MODULE_
         Debug::TraceContextBumper ctx{L"Synchronized_Traits<MUTEX>::lock_shared", L"&m=%p", &m};
@@ -220,8 +220,8 @@ namespace Stroika::Foundation::Execution {
         NoteLockStateChanged_ (L"Locked Shared");
     }
     template <typename T, typename TRAITS>
-    template <typename TEST_TYPE, enable_if_t<TEST_TYPE::kIsRecursiveReadMutex and TRAITS::kSupportSharedLocks>*>
     inline void Synchronized<T, TRAITS>::unlock_shared () const
+        requires (TRAITS::kIsRecursiveReadMutex and TRAITS::kSupportSharedLocks)
     {
 #if Stroika_Foundation_Execution_Synchronized_USE_NOISY_TRACE_IN_THIS_MODULE_
         Debug::TraceContextBumper ctx{L"Synchronized_Traits<MUTEX>::unlock_shared", L"&m=%p", &m};
@@ -230,8 +230,8 @@ namespace Stroika::Foundation::Execution {
         NoteLockStateChanged_ (L"Unlocked Shared");
     }
     template <typename T, typename TRAITS>
-    template <typename TEST_TYPE, enable_if_t<TEST_TYPE::kIsRecursiveLockMutex>*>
     inline void Synchronized<T, TRAITS>::lock () const
+        requires (TRAITS::kIsRecursiveReadMutex)
     {
 #if Stroika_Foundation_Execution_Synchronized_USE_NOISY_TRACE_IN_THIS_MODULE_
         Debug::TraceContextBumper ctx{L"Synchronized<T, TRAITS>::lock", L"&fMutex_=%p", &fMutex_};
@@ -241,8 +241,8 @@ namespace Stroika::Foundation::Execution {
         ++fWriteLockCount_;
     }
     template <typename T, typename TRAITS>
-    template <typename TEST_TYPE, enable_if_t<TEST_TYPE::kIsRecursiveLockMutex>*>
     inline bool Synchronized<T, TRAITS>::try_lock () const
+        requires (TRAITS::kIsRecursiveReadMutex)
     {
 #if Stroika_Foundation_Execution_Synchronized_USE_NOISY_TRACE_IN_THIS_MODULE_
         Debug::TraceContextBumper ctx{L"Synchronized<T, TRAITS>::try_lock", L"&fMutex_=%p", &fMutex_};
@@ -255,8 +255,8 @@ namespace Stroika::Foundation::Execution {
         return result;
     }
     template <typename T, typename TRAITS>
-    template <typename TEST_TYPE, enable_if_t<TEST_TYPE::kIsRecursiveLockMutex and TEST_TYPE::kSupportsTimedLocks>*>
     inline bool Synchronized<T, TRAITS>::try_lock_for (const chrono::duration<double>& tryFor) const
+        requires (TRAITS::kIsRecursiveReadMutex and TRAITS::kSupportsTimedLocks)
     {
 #if Stroika_Foundation_Execution_Synchronized_USE_NOISY_TRACE_IN_THIS_MODULE_
         Debug::TraceContextBumper ctx{L"Synchronized<T, TRAITS>::try_lock_for", L"&fMutex_=%p", &fMutex_};
@@ -269,8 +269,8 @@ namespace Stroika::Foundation::Execution {
         return result;
     }
     template <typename T, typename TRAITS>
-    template <typename TEST_TYPE, enable_if_t<TEST_TYPE::kIsRecursiveLockMutex>*>
     inline void Synchronized<T, TRAITS>::unlock () const
+        requires (TRAITS::kIsRecursiveReadMutex)
     {
 #if Stroika_Foundation_Execution_Synchronized_USE_NOISY_TRACE_IN_THIS_MODULE_
         Debug::TraceContextBumper ctx{L"Synchronized<T, TRAITS>::unlock", L"&fMutex_=%p", &fMutex_};
@@ -279,26 +279,26 @@ namespace Stroika::Foundation::Execution {
         fMutex_.unlock ();
     }
     template <typename T, typename TRAITS>
-    template <typename TEST_TYPE, enable_if_t<TEST_TYPE::kIsRecursiveReadMutex>*>
     inline bool Synchronized<T, TRAITS>::operator== (const Synchronized& rhs) const
+        requires (TRAITS::kIsRecursiveReadMutex)
     {
         return load () == rhs.load ();
     }
     template <typename T, typename TRAITS>
-    template <typename TEST_TYPE, enable_if_t<TEST_TYPE::kIsRecursiveReadMutex>*>
     inline bool Synchronized<T, TRAITS>::operator== (const T& rhs) const
+        requires (TRAITS::kIsRecursiveReadMutex)
     {
         return load () == rhs;
     }
     template <typename T, typename TRAITS>
-    template <typename TEST_TYPE, enable_if_t<TEST_TYPE::kIsRecursiveReadMutex>*>
     inline auto Synchronized<T, TRAITS>::operator<=> (const Synchronized& rhs) const
+        requires (TRAITS::kIsRecursiveReadMutex)
     {
         return load () <=> rhs.load ();
     }
     template <typename T, typename TRAITS>
-    template <typename TEST_TYPE, enable_if_t<TEST_TYPE::kIsRecursiveReadMutex>*>
     inline auto Synchronized<T, TRAITS>::operator<=> (const T& rhs) const
+        requires (TRAITS::kIsRecursiveReadMutex)
     {
         return load () <=> rhs;
     }

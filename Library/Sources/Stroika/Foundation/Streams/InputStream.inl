@@ -195,6 +195,16 @@ namespace Stroika::Foundation::Streams {
         return _GetRepRWRef ().ReadNonBlocking (intoStart, intoEnd);
     }
     template <typename ELEMENT_TYPE>
+    Characters::Character InputStream<ELEMENT_TYPE>::Ptr::ReadCharacter () const
+        requires (is_same_v<ELEMENT_TYPE, Characters::Character>)
+    {
+        Characters::Character c;
+        if (Read (&c, &c + 1) == 1) {
+            return c;
+        }
+        return '\0';
+    }
+    template <typename ELEMENT_TYPE>
     template <typename POD_TYPE>
     POD_TYPE InputStream<ELEMENT_TYPE>::Ptr::ReadRaw () const
         requires (is_same_v<ELEMENT_TYPE, byte>)

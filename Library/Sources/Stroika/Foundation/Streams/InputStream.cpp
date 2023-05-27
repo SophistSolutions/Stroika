@@ -62,18 +62,6 @@ String InputStream<Character>::Ptr::ReadLine () const
 
 template <>
 template <>
-Characters::Character InputStream<Characters::Character>::Ptr::ReadCharacter () const
-{
-
-    Characters::Character c;
-    if (Read (&c, &c + 1) == 1) {
-        return c;
-    }
-    return '\0';
-}
-
-template <>
-template <>
 Traversal::Iterable<String> InputStream<Character>::Ptr::ReadLines () const
 {
     InputStream<Character>::Ptr copyOfStream = *this;

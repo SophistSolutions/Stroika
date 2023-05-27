@@ -399,13 +399,11 @@ namespace Stroika::Foundation::Streams {
          *  Blocking read of a single character. Returns a NUL-character on EOF ('\0')
          * 
          * 
-            
          */
-        template <typename I = ELEMENT_TYPE>
         nonvirtual Characters::Character ReadCharacter () const
-#if !qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
+            //#if !qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
             requires (is_same_v<ELEMENT_TYPE, Characters::Character>)
-#endif
+        //#endif
         ;
 
     public:
@@ -536,9 +534,6 @@ namespace Stroika::Foundation::Streams {
         friend class InputStream<ELEMENT_TYPE>;
     };
 
-    template <>
-    template <>
-    Characters::Character InputStream<Characters::Character>::Ptr::ReadCharacter () const;
     template <>
     template <>
     Characters::String InputStream<Characters::Character>::Ptr::ReadLine () const;

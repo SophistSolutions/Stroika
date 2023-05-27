@@ -194,18 +194,18 @@ namespace Stroika::Foundation::Streams {
          *  \req IsOpen ()
          */
         nonvirtual void Write (const ElementType* start, const ElementType* end) const;
-        template <typename T = ELEMENT_TYPE, enable_if_t<is_same_v<byte, T>>* = nullptr>
-        nonvirtual void Write (const uint8_t* start, const uint8_t* end) const;
-        template <typename TEST_TYPE = ELEMENT_TYPE, enable_if_t<is_same_v<TEST_TYPE, byte>>* = nullptr>
-        nonvirtual void Write (const Memory::BLOB& blob) const;
-        template <typename TEST_TYPE = ELEMENT_TYPE, enable_if_t<is_same_v<TEST_TYPE, Characters::Character>>* = nullptr>
-        nonvirtual void Write (const wchar_t* start, const wchar_t* end) const;
-        template <typename TEST_TYPE = ELEMENT_TYPE, enable_if_t<is_same_v<TEST_TYPE, Characters::Character>>* = nullptr>
-        nonvirtual void Write (const wchar_t* cStr) const;
-        template <typename TEST_TYPE = ELEMENT_TYPE, enable_if_t<is_same_v<TEST_TYPE, Characters::Character>>* = nullptr>
-        nonvirtual void Write (const Characters::String& s) const;
         nonvirtual void Write (const ElementType& e) const;
         nonvirtual void Write (span<const ElementType> s) const;
+        nonvirtual void Write (const uint8_t* start, const uint8_t* end) const
+            requires (is_same_v<ELEMENT_TYPE, byte>);
+        nonvirtual void Write (const Memory::BLOB& blob) const
+            requires (is_same_v<ELEMENT_TYPE, byte>);
+        nonvirtual void Write (const wchar_t* start, const wchar_t* end) const
+            requires (is_same_v<ELEMENT_TYPE, Characters::Character>);
+        nonvirtual void Write (const wchar_t* cStr) const
+            requires (is_same_v<ELEMENT_TYPE, Characters::Character>);
+        nonvirtual void Write (const Characters::String& s) const
+            requires (is_same_v<ELEMENT_TYPE, Characters::Character>);
 
     public:
         /**
@@ -234,17 +234,19 @@ namespace Stroika::Foundation::Streams {
          *      POD_TYPE    tmp;
          *      Write ((byte*)&tmp, (byte*)(&tmp+1));
          */
-        template <typename POD_TYPE, typename TEST_TYPE = ELEMENT_TYPE, enable_if_t<is_same_v<TEST_TYPE, byte>>* = nullptr>
-        nonvirtual void WriteRaw (const POD_TYPE& p) const;
-        template <typename POD_TYPE, typename TEST_TYPE = ELEMENT_TYPE, enable_if_t<is_same_v<TEST_TYPE, byte>>* = nullptr>
-        nonvirtual void WriteRaw (const POD_TYPE* start, const POD_TYPE* end) const;
+        template <typename POD_TYPE>
+        nonvirtual void WriteRaw (const POD_TYPE& p) const
+            requires (is_same_v<ELEMENT_TYPE, byte>);
+        template <typename POD_TYPE>
+        nonvirtual void WriteRaw (const POD_TYPE* start, const POD_TYPE* end) const
+            requires (is_same_v<ELEMENT_TYPE, byte>);
 
     public:
         /**
          *  \req IsOpen ()
          */
-        template <typename TEST_TYPE = ELEMENT_TYPE, enable_if_t<is_same_v<TEST_TYPE, Characters::Character>>* = nullptr>
-        nonvirtual void PrintF (const wchar_t* format, ...);
+        nonvirtual void PrintF (const wchar_t* format, ...)
+            requires (is_same_v<ELEMENT_TYPE, Characters::Character>);
 
     public:
         /**
@@ -317,8 +319,9 @@ namespace Stroika::Foundation::Streams {
          *
          *  \req IsOpen ()
          */
-        template <typename T, typename TEST_TYPE = ELEMENT_TYPE, enable_if_t<is_same_v<TEST_TYPE, Characters::Character>>* = nullptr>
-        const typename OutputStream<ELEMENT_TYPE>::Ptr& operator<< (T write2TextStream) const;
+        template <typename T>
+        const typename OutputStream<ELEMENT_TYPE>::Ptr& operator<< (const T& write2TextStream) const
+            requires (is_same_v<ELEMENT_TYPE, Characters::Character>);
 
     protected:
         /**
@@ -350,19 +353,14 @@ namespace Stroika::Foundation::Streams {
         friend class OutputStream<ELEMENT_TYPE>;
     };
 
+#if 0
     template <>
     template <>
     void OutputStream<Characters::Character>::Ptr::Write (const Characters::String& s) const;
     template <>
     template <>
     void OutputStream<Characters::Character>::Ptr::Write (const wchar_t* start, const wchar_t* end) const;
-
-    template <>
-    template <>
-    const OutputStream<Characters::Character>::Ptr& OutputStream<Characters::Character>::Ptr::operator<< (const Characters::String& write2TextStream) const;
-    template <>
-    template <>
-    const OutputStream<Characters::Character>::Ptr& OutputStream<Characters::Character>::Ptr::operator<< (const wchar_t* write2TextStream) const;
+#endif
 
     /**
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#Thread-Safety-Rules-Depends-On-Subtype">Thread-Safety-Rules-Depends-On-Subtype/a>

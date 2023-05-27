@@ -259,7 +259,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\iostream\SerializeItemToBLOB.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\iostream\Utilities.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\MemoryStream.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\OutputStream.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\SharedMemoryStream.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\TextReader.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\TextToByteReader.cpp" />
