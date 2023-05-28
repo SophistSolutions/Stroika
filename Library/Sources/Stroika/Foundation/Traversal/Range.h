@@ -546,6 +546,11 @@ namespace Stroika::Foundation::Traversal {
     };
 
     /**
+     */
+    template <typename RANGE_TYPE>
+    concept IRange = derived_from<RANGE_TYPE, Range<typename RANGE_TYPE::value_type, typename RANGE_TYPE::TraitsType>>;
+
+    /**
      *  Alias: T + RANGE => RANGE.Offset(T)
      *  Alias: RANGE + RANGE => RANGE.Union (RANGE)
      */

@@ -54,9 +54,9 @@ namespace Stroika::Foundation::Traversal {
      *          VerifyTestResult (IsPartition (Sequence<RT>{RT{1, 2}, RT{2, 4}}));
      *      \endcode
      */
-    template <typename RANGETYPE>
+    template <Traversal::IRange RANGETYPE>
     bool IsPartition (const Iterable<RANGETYPE>& iterable);
-    template <typename RANGETYPE, typename RANGE_ELT_COMPARER>
+    template <Traversal::IRange RANGETYPE, typename /*predicate<typename RANGETYPE::value_type>*/ RANGE_ELT_COMPARER>
     bool IsPartition (const Iterable<RANGETYPE>& iterable, RANGE_ELT_COMPARER comparer);
 
 }
