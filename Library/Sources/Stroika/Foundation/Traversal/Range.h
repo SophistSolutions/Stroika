@@ -174,7 +174,7 @@ namespace Stroika::Foundation::Traversal {
              *  \note its hard todo GetNext() for floating point as constexpr because underlying function in cmath not yet constexpr (as of C++17)
              */
             static constexpr value_type GetNext (value_type i)
-            requires (is_integral_v<T> or is_enum_v<T>);
+                requires (is_integral_v<T> or is_enum_v<T>);
             static value_type GetNext (value_type i)
                 requires (is_floating_point_v<T>);
 
