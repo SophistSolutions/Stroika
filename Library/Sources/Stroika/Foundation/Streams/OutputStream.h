@@ -210,10 +210,10 @@ namespace Stroika::Foundation::Streams {
     public:
         /**
          */
-        template <typename TEST_TYPE = ELEMENT_TYPE, enable_if_t<is_same_v<TEST_TYPE, Characters::Character>>* = nullptr>
-        nonvirtual void WriteLn (const wchar_t* cStr) const;
-        template <typename TEST_TYPE = ELEMENT_TYPE, enable_if_t<is_same_v<TEST_TYPE, Characters::Character>>* = nullptr>
-        nonvirtual void WriteLn (const Characters::String& s) const;
+        nonvirtual void WriteLn (const wchar_t* cStr) const
+            requires (is_same_v<ELEMENT_TYPE, Characters::Character>);
+        nonvirtual void WriteLn (const Characters::String& s) const
+            requires (is_same_v<ELEMENT_TYPE, Characters::Character>);
 
     public:
         /**

@@ -17,51 +17,47 @@ namespace Stroika::Foundation::Traversal {
      ********************************************************************************
      */
     template <typename T, typename OPENNESS, typename DIFF_TYPE>
-    template <typename TYPE2CHECK, typename SFINAE_CAN_CONVERT_TYPE_TO_SIGNEDDIFFTYPE>
     inline constexpr auto RangeTraits::ExplicitOpennessAndDifferenceType<T, OPENNESS, DIFF_TYPE>::Difference (
-        Configuration::ArgByValueType<value_type> lhs, Configuration::ArgByValueType<value_type> rhs, SFINAE_CAN_CONVERT_TYPE_TO_SIGNEDDIFFTYPE*)
+        Configuration::ArgByValueType<value_type> lhs, Configuration::ArgByValueType<value_type> rhs)
         -> SignedDifferenceType
     {
-        return static_cast<SignedDifferenceType> (rhs) - static_cast<SignedDifferenceType> (lhs);
-    }
-    template <typename T, typename OPENNESS, typename DIFF_TYPE>
-    template <typename TYPE2CHECK, typename SFINAE_CANNOT_CONVERT_TYPE_TO_SIGNEDDIFFTYPE>
-    inline constexpr auto RangeTraits::ExplicitOpennessAndDifferenceType<T, OPENNESS, DIFF_TYPE>::Difference (
-        Configuration::ArgByValueType<value_type> lhs, Configuration::ArgByValueType<value_type> rhs, ...) -> SignedDifferenceType
-    {
-        return static_cast<SignedDifferenceType> (rhs - lhs);
+        if constexpr (is_enum_v<T> or is_convertible_v<T, SignedDifferenceType>) {
+            return static_cast<SignedDifferenceType> (rhs) - static_cast<SignedDifferenceType> (lhs);
+        }
+        else {
+            return static_cast<SignedDifferenceType> (rhs - lhs);
+        }
     }
 
     /*
      ********************************************************************************
-     ********** RangeTraits::Explicit<T, OPENNESS, BOUNDS, DIFF_TYPE> ***************
+     **********& RangeTraits::Explicit<T, OPENNESS, BOUNDS, DIFF_TYPE> **************
      ********************************************************************************
      */
     template <typename T, typename OPENNESS, typename BOUNDS, typename DIFF_TYPE>
-    template <typename SFINAE>
-    constexpr T RangeTraits::Explicit<T, OPENNESS, BOUNDS, DIFF_TYPE>::GetNext (value_type i, enable_if_t<is_integral_v<SFINAE> or is_enum_v<SFINAE>>*)
+    constexpr T RangeTraits::Explicit<T, OPENNESS, BOUNDS, DIFF_TYPE>::GetNext (value_type i)
+        requires (is_integral_v<T> or is_enum_v<T>)
     {
         Require (i != kUpperBound);
         return static_cast<value_type> (static_cast<UnsignedDifferenceType> (i) + 1);
     }
     template <typename T, typename OPENNESS, typename BOUNDS, typename DIFF_TYPE>
-    template <typename SFINAE>
-    inline T RangeTraits::Explicit<T, OPENNESS, BOUNDS, DIFF_TYPE>::GetNext (value_type i, enable_if_t<is_floating_point_v<SFINAE>>*)
+    inline T RangeTraits::Explicit<T, OPENNESS, BOUNDS, DIFF_TYPE>::GetNext (value_type i)
+        requires (is_floating_point_v<T>)
     {
         Require (i != kUpperBound);
         return nextafter (i, kUpperBound);
     }
     template <typename T, typename OPENNESS, typename BOUNDS, typename DIFF_TYPE>
-    template <typename SFINAE>
-    constexpr T RangeTraits::Explicit<T, OPENNESS, BOUNDS, DIFF_TYPE>::GetPrevious (value_type i,
-                                                                                    enable_if_t<is_integral_v<SFINAE> or is_enum_v<SFINAE>>*)
+    constexpr T RangeTraits::Explicit<T, OPENNESS, BOUNDS, DIFF_TYPE>::GetPrevious (value_type i)
+        requires (is_integral_v<T> or is_enum_v<T>)
     {
         Require (i != kLowerBound);
         return static_cast<value_type> (static_cast<SignedDifferenceType> (i) - 1);
     }
     template <typename T, typename OPENNESS, typename BOUNDS, typename DIFF_TYPE>
-    template <typename SFINAE>
-    inline T RangeTraits::Explicit<T, OPENNESS, BOUNDS, DIFF_TYPE>::GetPrevious (value_type i, enable_if_t<is_floating_point_v<SFINAE>>*)
+    inline T RangeTraits::Explicit<T, OPENNESS, BOUNDS, DIFF_TYPE>::GetPrevious (value_type i)
+        requires (is_floating_point_v<T>)
     {
         Require (i != kLowerBound);
         return nextafter (i, kLowerBound);

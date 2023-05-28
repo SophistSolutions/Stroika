@@ -171,14 +171,14 @@ namespace Stroika::Foundation::Streams {
     }
 
     template <typename ELEMENT_TYPE>
-    template <typename TEST_TYPE, enable_if_t<is_same_v<TEST_TYPE, Characters::Character>>*>
     inline void OutputStream<ELEMENT_TYPE>::Ptr::WriteLn (const wchar_t* cStr) const
+        requires (is_same_v<ELEMENT_TYPE, Characters::Character>)
     {
         Write (Characters::String{cStr});
     }
     template <typename ELEMENT_TYPE>
-    template <typename TEST_TYPE, enable_if_t<is_same_v<TEST_TYPE, Characters::Character>>*>
     inline void OutputStream<ELEMENT_TYPE>::Ptr::WriteLn (const Characters::String& s) const
+        requires (is_same_v<ELEMENT_TYPE, Characters::Character>)
     {
         Write (s + Characters::GetEOL<wchar_t> ());
     }

@@ -137,19 +137,13 @@ namespace Stroika::Foundation::Traversal {
             /**
              *  Compute the difference between two elements of type T for the Range (RHS - LHS)
              */
-            template <typename TYPE2CHECK = value_type, typename SFINAE_CAN_CONVERT_TYPE_TO_SIGNEDDIFFTYPE = enable_if_t<is_enum_v<TYPE2CHECK> or is_convertible_v<TYPE2CHECK, SignedDifferenceType>>>
             static constexpr SignedDifferenceType Difference (Configuration::ArgByValueType<value_type> lhs,
-                                                              Configuration::ArgByValueType<value_type> rhs,
-                                                              SFINAE_CAN_CONVERT_TYPE_TO_SIGNEDDIFFTYPE* = nullptr);
-            template <typename TYPE2CHECK = value_type,
-                      typename SFINAE_CANNOT_CONVERT_TYPE_TO_SIGNEDDIFFTYPE = enable_if_t<not(is_enum_v<TYPE2CHECK> or is_convertible_v<TYPE2CHECK, SignedDifferenceType>)>>
-            static constexpr SignedDifferenceType Difference (Configuration::ArgByValueType<value_type> lhs,
-                                                              Configuration::ArgByValueType<value_type> rhs, ...);
+                                                              Configuration::ArgByValueType<value_type> rhs);
 
             // Must be able to convert the underlying 'T' difference type to size_t sometimes
             static size_t DifferenceToSizeT (UnsignedDifferenceType s) { return size_t (s); }
-            template <typename T1C = UnsignedDifferenceType, typename T2C = SignedDifferenceType, typename SFINAE_CAN_ARE_DIFF_CHECK = enable_if_t<not is_same_v<T1C, T2C>>>
             static size_t DifferenceToSizeT (SignedDifferenceType s)
+                requires (not is_same_v<UnsignedDifferenceType, SignedDifferenceType>)
             {
                 return size_t (s);
             }
@@ -179,10 +173,10 @@ namespace Stroika::Foundation::Traversal {
              *
              *  \note its hard todo GetNext() for floating point as constexpr because underlying function in cmath not yet constexpr (as of C++17)
              */
-            template <typename SFINAE = value_type>
-            static constexpr value_type GetNext (value_type i, enable_if_t<is_integral_v<SFINAE> or is_enum_v<SFINAE>>* = nullptr);
-            template <typename SFINAE = value_type>
-            static value_type GetNext (value_type i, enable_if_t<is_floating_point_v<SFINAE>>* = nullptr);
+            static constexpr value_type GetNext (value_type i)
+            requires (is_integral_v<T> or is_enum_v<T>);
+            static value_type GetNext (value_type i)
+                requires (is_floating_point_v<T>);
 
             /**
              *  Return the Previous possible value.
@@ -191,10 +185,10 @@ namespace Stroika::Foundation::Traversal {
              *
              *  \note its hard todo GetPrevious() for floating point as constexpr because underlying function in cmath not yet constexpr (as of C++17)
              */
-            template <typename SFINAE = value_type>
-            static constexpr value_type GetPrevious (value_type i, enable_if_t<is_integral_v<SFINAE> or is_enum_v<SFINAE>>* = nullptr);
-            template <typename SFINAE = value_type>
-            static value_type GetPrevious (value_type i, enable_if_t<is_floating_point_v<SFINAE>>* = nullptr);
+            static constexpr value_type GetPrevious (value_type i)
+                requires (is_integral_v<T> or is_enum_v<T>);
+            static value_type GetPrevious (value_type i)
+                requires (is_floating_point_v<T>);
         };
 
         /**
