@@ -11,9 +11,9 @@
  */
 #include <mutex>
 
+#include "../Characters/StringBuilder.h"
 #include "../Debug/Assertions.h"
 #include "../Debug/Cast.h"
-#include "../Memory/BLOB.h"
 #include "EOFException.h"
 
 namespace Stroika::Foundation::Streams {
@@ -234,6 +234,90 @@ namespace Stroika::Foundation::Streams {
             Execution::Throw ((n == 0) ? EOFException::kThe : EOFException (true));
         }
     }
+    template <typename ELEMENT_TYPE>
+    Characters::String InputStream<ELEMENT_TYPE>::Ptr::ReadLine () const
+        requires (is_same_v<ELEMENT_TYPE, Characters::Character>)
+    {
+        using namespace Characters;
+        Require (this->IsSeekable ());
+        StringBuilder result;
+        while (true) {
+            Character c = ReadCharacter ();
+            if (c.GetCharacterCode () == '\0') {
+                // EOF
+                return result.str ();
+            }
+            result.push_back (c);
+            if (c == '\n') {
+                return result.str ();
+            }
+            else if (c == '\r') {
+                c = this->ReadCharacter ();
+                // if CR is follwed by LF, append that to result too before returning. Otherwise, put the character back
+                if (c == '\n') {
+                    result.push_back (c);
+                    return result.str ();
+                }
+                else {
+                    this->Seek (Whence::eFromCurrent, -1);
+                }
+                return result.str ();
+            }
+        }
+    }
+    template <typename ELEMENT_TYPE>
+    Traversal::Iterable<Characters::String> InputStream<ELEMENT_TYPE>::Ptr::ReadLines () const
+        requires (is_same_v<ELEMENT_TYPE, Characters::Character>)
+    {
+        using namespace Characters;
+        InputStream<Character>::Ptr copyOfStream = *this;
+        return Traversal::CreateGenerator<String> ([copyOfStream] () -> optional<String> {
+            String line = copyOfStream.ReadLine ();
+            if (line.empty ()) {
+                return nullopt;
+            }
+            else {
+                return line;
+            }
+        });
+    }
+    DISABLE_COMPILER_MSC_WARNING_START (6262) // stack usage OK
+    template <typename ELEMENT_TYPE>
+    Characters::String InputStream<ELEMENT_TYPE>::Ptr::ReadAll (size_t upTo) const
+        requires (is_same_v<ELEMENT_TYPE, Characters::Character>)
+    {
+        using namespace Characters;
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+        Debug::TraceContextBumper ctx{L"InputStream<Character>::Ptr::ReadAll", L"upTo: %llu", static_cast<unsigned long long> (upTo)};
+#endif
+        Require (upTo >= 1);
+        StringBuilder result;
+        size_t        nEltsLeft = upTo;
+        while (nEltsLeft > 0) {
+            Character  buf[16 * 1024];
+            Character* s = std::begin (buf);
+            Character* e = std::end (buf);
+            if (nEltsLeft < Memory::NEltsOf (buf)) {
+                e = s + nEltsLeft;
+            }
+            size_t n = Read (s, e);
+            Assert (0 <= n and n <= nEltsLeft);
+            Assert (0 <= n and n <= Memory::NEltsOf (buf));
+            if (n == 0) {
+                break;
+            }
+            else {
+                Assert (n <= nEltsLeft);
+                nEltsLeft -= n;
+                result.Append (span{s, n});
+            }
+        }
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+        DbgTrace (L"Returning %llu characters", static_cast<unsigned long long> (result.size ()));
+#endif
+        return result.str ();
+    }
+    DISABLE_COMPILER_MSC_WARNING_END (6262)
     template <typename ELEMENT_TYPE>
     size_t InputStream<ELEMENT_TYPE>::Ptr::ReadAll (ElementType* intoStart, ElementType* intoEnd) const
     {

@@ -185,7 +185,7 @@ namespace Stroika::Foundation::Streams {
 
     protected:
         /**
-         * _SharedIRep rep is the underlying shared output Stream object.
+         * _SharedIRep rep is the underlying shared input Stream object.
          *
          *  \req rep != nullptr (use nullptr_t constructor)
          */
@@ -261,12 +261,12 @@ namespace Stroika::Foundation::Streams {
          *      Seek (savedReadFrom);
          *      return size - savedReadFrom;
          *(EXCPET MAYBE GUARANTEED ATOMIC????)
-            *  \note   @todo Not sure how useful this is - I can find no calls to this in code base
-            *          Maybe for input stream to see how big a buffer to allocate to read? But even then
-            *          probably not a great strategy -- LGP 2017-06-16
-            *
-            *  \req IsSeekable ()
-            */
+         *  \note   @todo Not sure how useful this is - I can find no calls to this in code base
+         *          Maybe for input stream to see how big a buffer to allocate to read? But even then
+         *          probably not a great strategy -- LGP 2017-06-16
+         *
+         *  \req IsSeekable ()
+         */
         nonvirtual SeekOffsetType GetOffsetToEndOfStream () const;
 
     public:
@@ -401,10 +401,7 @@ namespace Stroika::Foundation::Streams {
          * 
          */
         nonvirtual Characters::Character ReadCharacter () const
-            //#if !qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
-            requires (is_same_v<ELEMENT_TYPE, Characters::Character>)
-        //#endif
-        ;
+            requires (is_same_v<ELEMENT_TYPE, Characters::Character>);
 
     public:
         /**
@@ -433,12 +430,8 @@ namespace Stroika::Foundation::Streams {
          *
          *      \req IsSeekable ()
          */
-        template <typename I = ELEMENT_TYPE>
         nonvirtual Characters::String ReadLine () const
-#if !qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
-            requires (is_same_v<ELEMENT_TYPE, Characters::Character>)
-#endif
-        ;
+            requires (is_same_v<ELEMENT_TYPE, Characters::Character>);
 
     public:
         /**
@@ -451,12 +444,8 @@ namespace Stroika::Foundation::Streams {
          *
          *      \req IsSeekable ()
          */
-        template <typename I = ELEMENT_TYPE>
         nonvirtual Traversal::Iterable<Characters::String> ReadLines () const
-#if !qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
-            requires (is_same_v<ELEMENT_TYPE, Characters::Character>)
-#endif
-        ;
+            requires (is_same_v<ELEMENT_TYPE, Characters::Character>);
 
     public:
         /**
@@ -492,24 +481,19 @@ namespace Stroika::Foundation::Streams {
          *  @todo DOCUMENT EDGE CONDITIONS - like run out of bytes to read full String - or can we return less than requested number (answer yes - but IFF EOF).
          *  @see ReadRaw()
          *  @see Streams::CopyAll()
+         * 
+         *  \note ReadAll -> BLOB in cpp file and templated just due to deadly include embrace.
          */
-#if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
-        template <typename TEST_TYPE = ELEMENT_TYPE, enable_if_t<is_same_v<TEST_TYPE, Characters::Character>>* = nullptr>
-        nonvirtual Characters::String ReadAll (size_t upTo = numeric_limits<size_t>::max ()) const;
-#else
-        template <typename I = ELEMENT_TYPE>
         nonvirtual Characters::String ReadAll (size_t upTo = numeric_limits<size_t>::max ()) const
             requires (is_same_v<ELEMENT_TYPE, Characters::Character>);
-#endif
 #if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
         template <typename TEST_TYPE = ELEMENT_TYPE, enable_if_t<is_same_v<TEST_TYPE, byte>>* = nullptr>
         nonvirtual Memory::BLOB ReadAll (size_t upTo = numeric_limits<size_t>::max ()) const;
 #else
         template <typename I = ELEMENT_TYPE>
         nonvirtual Memory::BLOB ReadAll (size_t upTo = numeric_limits<size_t>::max ()) const
-            requires (is_same_v<ELEMENT_TYPE, byte>)
+            requires (is_same_v<ELEMENT_TYPE, byte>);
 #endif
-        ;
         nonvirtual size_t ReadAll (ElementType* intoStart, ElementType* intoEnd) const;
 
     protected:
@@ -533,19 +517,6 @@ namespace Stroika::Foundation::Streams {
     private:
         friend class InputStream<ELEMENT_TYPE>;
     };
-
-    template <>
-    template <>
-    Characters::String InputStream<Characters::Character>::Ptr::ReadLine () const;
-    template <>
-    template <>
-    Traversal::Iterable<Characters::String> InputStream<Characters::Character>::Ptr::ReadLines () const;
-    template <>
-    template <>
-    Characters::String InputStream<Characters::Character>::Ptr::ReadAll (size_t upTo) const;
-    template <>
-    template <>
-    Memory::BLOB InputStream<byte>::Ptr::ReadAll (size_t upTo) const;
 
     /**
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#Thread-Safety-Rules-Depends-On-Subtype">Thread-Safety-Rules-Depends-On-Subtype/a>

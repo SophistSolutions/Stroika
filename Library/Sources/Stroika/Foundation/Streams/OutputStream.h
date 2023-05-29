@@ -154,14 +154,14 @@ namespace Stroika::Foundation::Streams {
          *      Seek (savedReadFrom);
          *      return size - savedReadFrom;
          *(EXCPET MAYBE GUARANTEED ATOMIC????)
-            *
-            *  \note   @todo Not sure how useful this is - I can find no calls to this in code base
-            *          Maybe for input stream to see how big a buffer to allocate to read? But even then
-            *          probably not a great strategy -- LGP 2017-06-16
-            *
-            *  \req IsSeekable ()
-            *  \req IsOpen ()
-            */
+         *
+         *  \note   @todo Not sure how useful this is - I can find no calls to this in code base
+         *          Maybe for input stream to see how big a buffer to allocate to read? But even then
+         *          probably not a great strategy -- LGP 2017-06-16
+         *
+         *  \req IsSeekable ()
+         *  \req IsOpen ()
+         */
         nonvirtual SeekOffsetType GetOffsetToEndOfStream () const;
 
     public:

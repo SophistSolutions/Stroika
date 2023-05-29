@@ -3,11 +3,9 @@
  */
 #include "../StroikaPreComp.h"
 
-#include "../Characters/Character.h"
-#include "../Characters/String.h"
-#include "../Characters/StringBuilder.h"
 #include "../Containers/Support/ReserveTweaks.h"
 #include "../Debug/Trace.h"
+#include "../Memory/BLOB.h"
 
 #include "InputStream.h"
 
@@ -29,90 +27,6 @@ using Memory::BLOB;
  ******************** Streams::InputStream<ELEMENT_TYPE>::Ptr *******************
  ********************************************************************************
  */
-template <>
-template <>
-String InputStream<Character>::Ptr::ReadLine () const
-{
-    Require (IsSeekable ());
-    StringBuilder result;
-    while (true) {
-        Character c = ReadCharacter ();
-        if (c.GetCharacterCode () == '\0') {
-            // EOF
-            return result.str ();
-        }
-        result.push_back (c);
-        if (c == '\n') {
-            return result.str ();
-        }
-        else if (c == '\r') {
-            c = ReadCharacter ();
-            // if CR is follwed by LF, append that to result too before returning. Otherwise, put the character back
-            if (c == '\n') {
-                result.push_back (c);
-                return result.str ();
-            }
-            else {
-                Seek (Whence::eFromCurrent, -1);
-            }
-            return result.str ();
-        }
-    }
-}
-
-template <>
-template <>
-Traversal::Iterable<String> InputStream<Character>::Ptr::ReadLines () const
-{
-    InputStream<Character>::Ptr copyOfStream = *this;
-    return Traversal::CreateGenerator<String> ([copyOfStream] () -> optional<String> {
-        String line = copyOfStream.ReadLine ();
-        if (line.empty ()) {
-            return nullopt;
-        }
-        else {
-            return line;
-        }
-    });
-}
-
-DISABLE_COMPILER_MSC_WARNING_START (6262) // stack usage OK
-template <>
-template <>
-String InputStream<Character>::Ptr::ReadAll (size_t upTo) const
-{
-#if USE_NOISY_TRACE_IN_THIS_MODULE_
-    Debug::TraceContextBumper ctx{L"InputStream<Character>::Ptr::ReadAll", L"upTo: %llu", static_cast<unsigned long long> (upTo)};
-#endif
-    Require (upTo >= 1);
-    Characters::StringBuilder result;
-    size_t                    nEltsLeft = upTo;
-    while (nEltsLeft > 0) {
-        Character  buf[16 * 1024];
-        Character* s = std::begin (buf);
-        Character* e = std::end (buf);
-        if (nEltsLeft < Memory::NEltsOf (buf)) {
-            e = s + nEltsLeft;
-        }
-        size_t n = Read (s, e);
-        Assert (0 <= n and n <= nEltsLeft);
-        Assert (0 <= n and n <= Memory::NEltsOf (buf));
-        if (n == 0) {
-            break;
-        }
-        else {
-            Assert (n <= nEltsLeft);
-            nEltsLeft -= n;
-            result.Append (span{s, n});
-        }
-    }
-#if USE_NOISY_TRACE_IN_THIS_MODULE_
-    DbgTrace (L"Returning %llu characters", static_cast<unsigned long long> (result.size ()));
-#endif
-    return result.str ();
-}
-DISABLE_COMPILER_MSC_WARNING_END (6262)
-
 DISABLE_COMPILER_MSC_WARNING_START (6262) // stack usage OK
 template <>
 template <>
