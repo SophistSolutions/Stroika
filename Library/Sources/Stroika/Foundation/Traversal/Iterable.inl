@@ -765,7 +765,7 @@ namespace Stroika::Foundation::Traversal {
         return Top (n, std::greater<int>{});
     }
     template <typename T>
-    template <typename INORDER_COMPARER_TYPE>
+    template <Common::IPotentiallyComparer<T> INORDER_COMPARER_TYPE>
     Iterable<T> Iterable<T>::OrderBy (INORDER_COMPARER_TYPE&& inorderComparer, [[maybe_unused]] Execution::SequencePolicy seq) const
     {
         // @todo https://stroika.atlassian.net/browse/STK-972 - optimize case where 'iterable' is already sortable
@@ -984,7 +984,7 @@ namespace Stroika::Foundation::Traversal {
         return Sum ().value_or (defaultValue);
     }
     template <typename T>
-    template <typename RESULT_TYPE, typename INORDER_COMPARE_FUNCTION>
+    template <typename RESULT_TYPE, Common::IPotentiallyComparer<RESULT_TYPE> INORDER_COMPARE_FUNCTION>
     inline optional<RESULT_TYPE> Iterable<T>::Median (const INORDER_COMPARE_FUNCTION& compare) const
     {
         Iterator<T> i = begin ();

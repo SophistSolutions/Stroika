@@ -54,9 +54,10 @@ namespace Stroika::Foundation::Math {
      *  SUPER ROUGH DRAFT
      *  \req not empty
      */
-    template <typename ITERATOR_OF_T, typename RESULT_TYPE = typename iterator_traits<ITERATOR_OF_T>::value_type, typename INORDER_COMPARE_FUNCTION = less<RESULT_TYPE>>
+    template <typename ITERATOR_OF_T, typename RESULT_TYPE = typename iterator_traits<ITERATOR_OF_T>::value_type,
+              Common::IInOrderComparer<RESULT_TYPE> INORDER_COMPARE_FUNCTION = less<RESULT_TYPE>>
     RESULT_TYPE Median (ITERATOR_OF_T start, ITERATOR_OF_T end, const INORDER_COMPARE_FUNCTION& compare = {});
-    template <typename CONTAINER_OF_T, typename RESULT_TYPE = typename CONTAINER_OF_T::value_type, typename INORDER_COMPARE_FUNCTION = less<RESULT_TYPE>>
+    template <typename CONTAINER_OF_T, typename RESULT_TYPE = typename CONTAINER_OF_T::value_type, Common::IInOrderComparer<RESULT_TYPE> INORDER_COMPARE_FUNCTION = less<RESULT_TYPE>>
     RESULT_TYPE Median (const CONTAINER_OF_T& container, const INORDER_COMPARE_FUNCTION& compare = {});
 
     /**

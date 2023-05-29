@@ -31,7 +31,7 @@ namespace Stroika::Foundation::Containers::Concrete {
      ********************************************************************************
      */
     template <typename T>
-    template <typename INORDER_COMPARER>
+    template <IInOrderComparer<T> INORDER_COMPARER>
     class Collection_stdmultiset<T>::Rep_ : public IImplRepBase_, public Memory::UseBlockAllocationIfAppropriate<Rep_<INORDER_COMPARER>> {
     private:
         using inherited = IImplRepBase_;
@@ -155,11 +155,10 @@ namespace Stroika::Foundation::Containers::Concrete {
         AssertRepValidType_ ();
     }
     template <typename T>
-    template <typename INORDER_COMPARER>
+    template <IInOrderComparer<T> INORDER_COMPARER>
     inline Collection_stdmultiset<T>::Collection_stdmultiset (INORDER_COMPARER&& inorderComparer)
         : inherited{Memory::MakeSharedPtr<Rep_<INORDER_COMPARER>> (forward<INORDER_COMPARER> (inorderComparer))}
     {
-        static_assert (Common::IInOrderComparer<INORDER_COMPARER, T>, "StrictInOrder comparer required with Collection_stdmultiset");
         AssertRepValidType_ ();
     }
     template <typename T>

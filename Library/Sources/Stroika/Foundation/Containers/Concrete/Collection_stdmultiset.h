@@ -18,6 +18,8 @@
 
 namespace Stroika::Foundation::Containers::Concrete {
 
+    using Common::IInOrderComparer;
+
     /**
      *  \brief Collection_stdmultiset<T> is an std::multiset-based concrete implementation of the Collection<T> container pattern.
      *
@@ -42,7 +44,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     public:
         /**
          */
-        template <typename INORDER_COMPARER>
+        template <IInOrderComparer<T> INORDER_COMPARER>
         using STDMULTISET =
             multiset<value_type, INORDER_COMPARER, Memory::BlockAllocatorOrStdAllocatorAsAppropriate<value_type, sizeof (value_type) <= 1024>>;
 
@@ -51,7 +53,7 @@ namespace Stroika::Foundation::Containers::Concrete {
          *  \see docs on Collection<T> constructor
          */
         Collection_stdmultiset ();
-        template <typename INORDER_COMPARER>
+        template <IInOrderComparer<T> INORDER_COMPARER>
         explicit Collection_stdmultiset (INORDER_COMPARER&& inorderComparer);
         Collection_stdmultiset (Collection_stdmultiset&& src) noexcept      = default;
         Collection_stdmultiset (const Collection_stdmultiset& src) noexcept = default;
@@ -78,7 +80,7 @@ namespace Stroika::Foundation::Containers::Concrete {
 
     private:
         class IImplRepBase_;
-        template <typename INORDER_COMPARER>
+        template <IInOrderComparer<T> INORDER_COMPARER>
         class Rep_;
 
     private:

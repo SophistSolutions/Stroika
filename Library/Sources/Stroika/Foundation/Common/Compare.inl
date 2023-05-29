@@ -13,7 +13,6 @@
 
 namespace Stroika::Foundation::Common {
 
-
     /*
      ********************************************************************************
      *************** OptionalThreeWayCompare<T, TCOMPARER> **************************
@@ -94,7 +93,6 @@ namespace Stroika::Foundation::Common {
     {
         return IsPotentiallyComparerRelation<FUNCTOR> ();
     }
-
 
     /*
      ********************************************************************************
@@ -257,10 +255,6 @@ namespace Stroika::Foundation::Common {
         AssertNotReached ();
         return strong_ordering::equal;
     }
-
-
-
-
 
     /*******DEPRECATED STUFF  */
     template <typename LT, typename RT>

@@ -158,8 +158,14 @@ namespace Stroika::Foundation::Containers::Concrete {
         AssertRepValidType_ ();
     }
     template <typename T>
+#if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
     template <ranges::range ITERABLE_OF_ADDABLE, enable_if_t<not is_base_of_v<Collection_LinkedList<T>, decay_t<ITERABLE_OF_ADDABLE>>>*>
     inline Collection_LinkedList<T>::Collection_LinkedList (ITERABLE_OF_ADDABLE&& src)
+#else
+    template <ranges::range ITERABLE_OF_ADDABLE>
+    inline Collection_LinkedList<T>::Collection_LinkedList (ITERABLE_OF_ADDABLE&& src)
+        requires (not is_base_of_v<Collection_LinkedList<T>, decay_t<ITERABLE_OF_ADDABLE>>)
+#endif
         : Collection_LinkedList{}
     {
         static_assert (IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>);

@@ -155,7 +155,7 @@ namespace Stroika::Foundation::Containers {
 #endif
     }
     template <typename T>
-    template <typename INORDER_COMPARER_TYPE>
+    template <IPotentiallyComparer<T> INORDER_COMPARER_TYPE>
     auto Sequence<T>::OrderBy (INORDER_COMPARER_TYPE&& inorderComparer) const -> Sequence
     {
         vector<T> tmp{this->begin (), this->end ()}; // due to Sequence_stdvector move constructor, a not very expensive implementation (but @todo must implement random-access-iterators for Sequence to avoid)

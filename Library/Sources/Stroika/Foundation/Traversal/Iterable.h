@@ -931,7 +931,7 @@ namespace Stroika::Foundation::Traversal {
          *  See:
          *      @see https://msdn.microsoft.com/en-us/library/system.linq.enumerable.orderby(v=vs.110).aspx
          */
-        template <typename INORDER_COMPARER_TYPE = less<T>>
+        template <Common::IPotentiallyComparer<T> INORDER_COMPARER_TYPE = less<T>>
         nonvirtual Iterable<T> OrderBy (INORDER_COMPARER_TYPE&&   inorderComparer = INORDER_COMPARER_TYPE{},
                                         Execution::SequencePolicy seq             = Execution::SequencePolicy::ePar) const;
 
@@ -1150,9 +1150,9 @@ namespace Stroika::Foundation::Traversal {
          *
          *  \note   returns nullopt if empty list
          *
-         *  \note Should be of type IsStrictInOrderComparer (), but not required - for convenience of use (so can be used with any lambda functor)
+         *  \note Should be of type IInOrderComparer, but not required - for convenience of use (so can be used with any lambda functor)
          */
-        template <typename RESULT_TYPE = T, typename INORDER_COMPARE_FUNCTION = less<RESULT_TYPE>>
+        template <typename RESULT_TYPE = T, Common::IPotentiallyComparer<RESULT_TYPE> INORDER_COMPARE_FUNCTION = less<RESULT_TYPE>>
         nonvirtual optional<RESULT_TYPE> Median (const INORDER_COMPARE_FUNCTION& compare = {}) const;
 
     public:

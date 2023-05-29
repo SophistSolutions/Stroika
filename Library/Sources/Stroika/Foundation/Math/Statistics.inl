@@ -47,7 +47,7 @@ namespace Stroika::Foundation::Math {
      ********************************** Median **************************************
      ********************************************************************************
      */
-    template <typename ITERATOR_OF_T, typename RESULT_TYPE, typename INORDER_COMPARE_FUNCTION>
+    template <typename ITERATOR_OF_T, typename RESULT_TYPE, Common::IInOrderComparer<RESULT_TYPE> INORDER_COMPARE_FUNCTION>
     RESULT_TYPE Median (ITERATOR_OF_T start, ITERATOR_OF_T end, const INORDER_COMPARE_FUNCTION& compare)
     {
         Require (start != end);                           // the median of no values would be undefined
@@ -67,7 +67,7 @@ namespace Stroika::Foundation::Math {
         }
         return result;
     }
-    template <typename CONTAINER_OF_T, typename RESULT_TYPE, typename INORDER_COMPARE_FUNCTION>
+    template <typename CONTAINER_OF_T, typename RESULT_TYPE, Common::IInOrderComparer<RESULT_TYPE> INORDER_COMPARE_FUNCTION>
     inline RESULT_TYPE Median (const CONTAINER_OF_T& container, const INORDER_COMPARE_FUNCTION& compare)
     {
         Require (not container.empty ());
