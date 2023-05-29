@@ -27,7 +27,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     /**
      */
     template <typename T>
-    template <typename INORDER_COMPARER>
+    template <Common::IInOrderComparer<T> INORDER_COMPARER>
     class Set_stdset<T>::Rep_ : public IImplRepBase_, public Memory::UseBlockAllocationIfAppropriate<Rep_<INORDER_COMPARER>> {
     private:
         using inherited = IImplRepBase_;
@@ -183,11 +183,10 @@ namespace Stroika::Foundation::Containers::Concrete {
         AssertRepValidType_ ();
     }
     template <typename T>
-    template <typename INORDER_COMPARER, enable_if_t<Common::IsStrictInOrderComparer<INORDER_COMPARER, T> ()>*>
+    template <Common::IInOrderComparer<T> INORDER_COMPARER>
     inline Set_stdset<T>::Set_stdset (INORDER_COMPARER&& inorderComparer)
         : inherited{Memory::MakeSharedPtr<Rep_<remove_cvref_t<INORDER_COMPARER>>> (forward<INORDER_COMPARER> (inorderComparer))}
     {
-        static_assert (Common::IsStrictInOrderComparer<INORDER_COMPARER, T> (), "strict in-order comparer required with Set_stdset");
         AssertRepValidType_ ();
     }
     template <typename T>
@@ -198,7 +197,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         AssertRepValidType_ ();
     }
     template <typename T>
-    template <typename INORDER_COMPARER, enable_if_t<Common::IsStrictInOrderComparer<INORDER_COMPARER, T> ()>*>
+    template <Common::IInOrderComparer<T> INORDER_COMPARER>
     inline Set_stdset<T>::Set_stdset (INORDER_COMPARER&& inorderComparer, const initializer_list<value_type>& src)
         : Set_stdset{forward<INORDER_COMPARER> (inorderComparer)}
     {
@@ -215,7 +214,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         AssertRepValidType_ ();
     }
     template <typename T>
-    template <typename INORDER_COMPARER, ranges::range ITERABLE_OF_ADDABLE, enable_if_t<Common::IsStrictInOrderComparer<INORDER_COMPARER, T> ()>*>
+    template <Common::IInOrderComparer<T> INORDER_COMPARER, ranges::range ITERABLE_OF_ADDABLE>
     inline Set_stdset<T>::Set_stdset (INORDER_COMPARER&& inorderComparer, ITERABLE_OF_ADDABLE&& src)
         : Set_stdset{forward<INORDER_COMPARER> (inorderComparer)}
     {
@@ -233,7 +232,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         AssertRepValidType_ ();
     }
     template <typename T>
-    template <typename INORDER_COMPARER, input_iterator ITERATOR_OF_ADDABLE, enable_if_t<Common::IsStrictInOrderComparer<INORDER_COMPARER, T> ()>*>
+    template <Common::IInOrderComparer<T> INORDER_COMPARER, input_iterator ITERATOR_OF_ADDABLE>
     inline Set_stdset<T>::Set_stdset (INORDER_COMPARER&& inorderComparer, ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
         : Set_stdset{forward<INORDER_COMPARER> (inorderComparer)}
     {

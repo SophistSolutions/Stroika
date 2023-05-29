@@ -20,6 +20,8 @@
 
 namespace Stroika::Foundation::Containers::Concrete {
 
+    using Common::IInOrderComparer;
+
     /**
      *  \brief   Mapping_stdmap<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS> is an std::map-based concrete implementation of the Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, typename TRAITS::MappingTraitsType> container pattern.
      *
@@ -52,23 +54,23 @@ namespace Stroika::Foundation::Containers::Concrete {
         /**
          *  \brief STDMAP is std::map<> that can be used inside Mapping_stdmap
          */
-        template <typename KEY_INORDER_COMPARER = less<key_type>>
+        template <typename /*Common::IInOrderComparer<KEY_TYPE>*/ KEY_INORDER_COMPARER = less<key_type>>
         using STDMAP = map<KEY_TYPE, MAPPED_VALUE_TYPE, KEY_INORDER_COMPARER,
                            Memory::BlockAllocatorOrStdAllocatorAsAppropriate<pair<const key_type, mapped_type>, sizeof (value_type) <= 1024>>;
 
     public:
         /**
-         *  \see docs on Mapping<> constructor, except that KEY_EQUALS_COMPARER is replaced with KEY_INORDER_COMPARER and EqualsComparer is replaced by IsStrictInOrderComparer
+         *  \see docs on Mapping<> constructor, except that KEY_EQUALS_COMPARER is replaced with KEY_INORDER_COMPARER and EqualsComparer is replaced by IInOrderComparer
          *       and added Mapping_stdmap (STDMAP<>&& src)
          */
         Mapping_stdmap ();
         Mapping_stdmap (STDMAP<>&& src);
-        template <typename KEY_INORDER_COMPARER, enable_if_t<Common::IsStrictInOrderComparer<KEY_INORDER_COMPARER, KEY_TYPE> ()>* = nullptr>
+        template <IInOrderComparer<KEY_TYPE> KEY_INORDER_COMPARER>
         explicit Mapping_stdmap (KEY_INORDER_COMPARER&& keyComparer);
         Mapping_stdmap (Mapping_stdmap&& src) noexcept      = default;
         Mapping_stdmap (const Mapping_stdmap& src) noexcept = default;
         Mapping_stdmap (const initializer_list<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src);
-        template <typename KEY_INORDER_COMPARER, enable_if_t<Common::IsStrictInOrderComparer<KEY_INORDER_COMPARER, KEY_TYPE> ()>* = nullptr>
+        template <IInOrderComparer<KEY_TYPE> KEY_INORDER_COMPARER>
         Mapping_stdmap (KEY_INORDER_COMPARER&& keyComparer, const initializer_list<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src);
         template <ranges::range ITERABLE_OF_ADDABLE, enable_if_t<not is_base_of_v<Mapping_stdmap<KEY_TYPE, MAPPED_VALUE_TYPE>, decay_t<ITERABLE_OF_ADDABLE>>>* = nullptr>
         explicit Mapping_stdmap (ITERABLE_OF_ADDABLE&& src)
@@ -80,11 +82,11 @@ namespace Stroika::Foundation::Containers::Concrete {
         }
 #endif
         ;
-        template <typename KEY_INORDER_COMPARER, ranges::range ITERABLE_OF_ADDABLE, enable_if_t<Common::IsStrictInOrderComparer<KEY_INORDER_COMPARER, KEY_TYPE> ()>* = nullptr>
+        template <IInOrderComparer<KEY_TYPE> KEY_INORDER_COMPARER, ranges::range ITERABLE_OF_ADDABLE>
         Mapping_stdmap (KEY_INORDER_COMPARER&& keyComparer, ITERABLE_OF_ADDABLE&& src);
         template <input_iterator ITERATOR_OF_ADDABLE>
         Mapping_stdmap (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
-        template <typename KEY_INORDER_COMPARER, input_iterator ITERATOR_OF_ADDABLE, enable_if_t<Common::IsStrictInOrderComparer<KEY_INORDER_COMPARER, KEY_TYPE> ()>* = nullptr>
+        template <IInOrderComparer<KEY_TYPE> KEY_INORDER_COMPARER, input_iterator ITERATOR_OF_ADDABLE>
         Mapping_stdmap (KEY_INORDER_COMPARER&& keyComparer, ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
 
     public:
@@ -95,7 +97,7 @@ namespace Stroika::Foundation::Containers::Concrete {
 
     private:
         class IImplRepBase_;
-        template <typename KEY_INORDER_COMPARER>
+        template <IInOrderComparer<KEY_TYPE> KEY_INORDER_COMPARER>
         class Rep_;
 
     private:

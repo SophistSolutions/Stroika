@@ -33,6 +33,8 @@
 
 namespace Stroika::Foundation::Containers {
 
+    using Common::IInOrderComparer;
+
     /**
      *  \brief  A SortedCollection is a Collection<T> which remains sorted (iteration produces items sorted) even as you add and remove entries.
      *
@@ -82,7 +84,7 @@ namespace Stroika::Foundation::Containers {
     public:
         /**
          *  This CAN be used as the argument to a SortedSet<> as InOrderComparerType, but
-         *  we allow any template in the SortedSet<> CTOR for an inorderComparer that follows Common::IsStrictInOrderComparer () concept (need better name).
+         *  we allow any template in the SortedSet<> CTOR for an inorderComparer that follows Common::IInOrderComparer  concept (need better name).
          */
         using InOrderComparerType = Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eStrictInOrder, function<bool (T, T)>>;
 
@@ -97,25 +99,25 @@ namespace Stroika::Foundation::Containers {
         /**
          *  All constructors either copy their source comparer (copy/move CTOR), or use the default INORDER_COMPARER for 'T'.
          *
-         * \req IsStrictInOrderComparer<INORDER_COMPARER> () - for constructors with inorderComparer parameter
+         * \req IInOrderComparer<INORDER_COMPARER,T>  - for constructors with inorderComparer parameter
          * 
          *  \note   <a href="ReadMe.md#Container Constructors">See general information about container constructors that applies here</a>
          */
         SortedCollection ();
-        template <typename INORDER_COMPARER, enable_if_t<Common::IsStrictInOrderComparer<INORDER_COMPARER, T> ()>* = nullptr>
+        template <IInOrderComparer<T> INORDER_COMPARER>
         explicit SortedCollection (INORDER_COMPARER&& inorderComparer);
         SortedCollection (SortedCollection&& src) noexcept      = default;
         SortedCollection (const SortedCollection& src) noexcept = default;
         SortedCollection (const initializer_list<T>& src);
-        template <typename INORDER_COMPARER, enable_if_t<Common::IsStrictInOrderComparer<INORDER_COMPARER, T> ()>* = nullptr>
+        template <IInOrderComparer<T> INORDER_COMPARER>
         SortedCollection (INORDER_COMPARER&& inOrderComparer, const initializer_list<T>& src);
         template <ranges::range ITERABLE_OF_ADDABLE, enable_if_t<not is_base_of_v<SortedCollection<T>, decay_t<ITERABLE_OF_ADDABLE>>>* = nullptr>
         explicit SortedCollection (ITERABLE_OF_ADDABLE&& src);
-        template <typename INORDER_COMPARER, ranges::range ITERABLE_OF_ADDABLE, enable_if_t<Common::IsStrictInOrderComparer<INORDER_COMPARER, T> ()>* = nullptr>
+        template <IInOrderComparer<T> INORDER_COMPARER, ranges::range ITERABLE_OF_ADDABLE>
         SortedCollection (INORDER_COMPARER&& inOrderComparer, ITERABLE_OF_ADDABLE&& src);
         template <input_iterator ITERATOR_OF_ADDABLE>
         SortedCollection (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
-        template <typename INORDER_COMPARER, input_iterator ITERATOR_OF_ADDABLE, enable_if_t<Common::IsStrictInOrderComparer<INORDER_COMPARER, T> ()>* = nullptr>
+        template <IInOrderComparer<T> INORDER_COMPARER, input_iterator ITERATOR_OF_ADDABLE>
         SortedCollection (INORDER_COMPARER&& inOrderComparer, ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
 
     protected:

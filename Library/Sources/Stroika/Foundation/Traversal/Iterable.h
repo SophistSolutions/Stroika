@@ -892,14 +892,14 @@ namespace Stroika::Foundation::Traversal {
          *          VerifyTestResult (c.Top (3, std::less<int>{}).SequentialEquals ({3, 3, 5}));
          *      \endcode
          * 
-         *  \note Uses PossiblyInOrderComparer instead of InOrderComparer since from context, if you pass in a lambda, it
+         *  \note Uses IPotentiallyComparer instead of IInOrderComparer since from context, if you pass in a lambda, it
          *        should be clear about intent.
          */
         nonvirtual Iterable<T> Top () const;
         nonvirtual Iterable<T> Top (size_t n) const;
-        template <Common::PossiblyInOrderComparer<T> COMPARER>
+        template <Common::IPotentiallyComparer<T> COMPARER>
         nonvirtual Iterable<T> Top (COMPARER&& cmp) const;
-        template <Common::PossiblyInOrderComparer<T> COMPARER>
+        template <Common::IPotentiallyComparer<T> COMPARER>
         nonvirtual Iterable<T> Top (size_t n, COMPARER&& cmp) const;
 
     public:
@@ -926,7 +926,7 @@ namespace Stroika::Foundation::Traversal {
          *
          *  \note alias for Sort ()
          *
-         *  \note Should be of type IsStrictInOrderComparer (), but not required - for convenience of use (so can be used with any lambda functor)
+         *  \note Should be of type IInOrderComparer, but not required - for convenience of use (so can be used with any lambda functor)
          *
          *  See:
          *      @see https://msdn.microsoft.com/en-us/library/system.linq.enumerable.orderby(v=vs.110).aspx

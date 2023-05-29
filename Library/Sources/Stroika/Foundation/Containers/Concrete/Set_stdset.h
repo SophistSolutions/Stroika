@@ -47,7 +47,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     public:
         /**
          */
-        template <typename INORDER_COMPARER>
+        template <Common::IInOrderComparer<T> INORDER_COMPARER>
         using STDSET =
             set<value_type, INORDER_COMPARER, Memory::BlockAllocatorOrStdAllocatorAsAppropriate<value_type, sizeof (value_type) <= 1024>>;
 
@@ -56,20 +56,20 @@ namespace Stroika::Foundation::Containers::Concrete {
          *  \see docs on Set<> constructor, but repalce EQUALS_COMPARER with INORDER_COMPARER
          */
         Set_stdset ();
-        template <typename INORDER_COMPARER, enable_if_t<Common::IsStrictInOrderComparer<INORDER_COMPARER, T> ()>* = nullptr>
+        template <Common::IInOrderComparer<T> INORDER_COMPARER>
         explicit Set_stdset (INORDER_COMPARER&& inorderComparer);
         Set_stdset (Set_stdset&& src) noexcept      = default;
         Set_stdset (const Set_stdset& src) noexcept = default;
         Set_stdset (const initializer_list<value_type>& src);
-        template <typename INORDER_COMPARER, enable_if_t<Common::IsStrictInOrderComparer<INORDER_COMPARER, T> ()>* = nullptr>
+        template <Common::IInOrderComparer<T> INORDER_COMPARER>
         Set_stdset (INORDER_COMPARER&& inorderComparer, const initializer_list<value_type>& src);
         template <ranges::range ITERABLE_OF_ADDABLE, enable_if_t<not is_base_of_v<Set_stdset<T>, decay_t<ITERABLE_OF_ADDABLE>>>* = nullptr>
         explicit Set_stdset (ITERABLE_OF_ADDABLE&& src);
-        template <typename INORDER_COMPARER, ranges::range ITERABLE_OF_ADDABLE, enable_if_t<Common::IsStrictInOrderComparer<INORDER_COMPARER, T> ()>* = nullptr>
+        template <Common::IInOrderComparer<T> INORDER_COMPARER, ranges::range ITERABLE_OF_ADDABLE>
         Set_stdset (INORDER_COMPARER&& inorderComparer, ITERABLE_OF_ADDABLE&& src);
         template <input_iterator ITERATOR_OF_ADDABLE>
         Set_stdset (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
-        template <typename INORDER_COMPARER, input_iterator ITERATOR_OF_ADDABLE, enable_if_t<Common::IsStrictInOrderComparer<INORDER_COMPARER, T> ()>* = nullptr>
+        template <Common::IInOrderComparer<T> INORDER_COMPARER, input_iterator ITERATOR_OF_ADDABLE>
         Set_stdset (INORDER_COMPARER&& inorderComparer, ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
 
     public:
@@ -80,7 +80,7 @@ namespace Stroika::Foundation::Containers::Concrete {
 
     private:
         class IImplRepBase_;
-        template <typename INORDER_COMPARER>
+        template <Common::IInOrderComparer<T> INORDER_COMPARER>
         class Rep_;
 
     private:

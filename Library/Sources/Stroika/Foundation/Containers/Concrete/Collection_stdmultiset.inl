@@ -159,7 +159,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     inline Collection_stdmultiset<T>::Collection_stdmultiset (INORDER_COMPARER&& inorderComparer)
         : inherited{Memory::MakeSharedPtr<Rep_<INORDER_COMPARER>> (forward<INORDER_COMPARER> (inorderComparer))}
     {
-        static_assert (Common::IsStrictInOrderComparer<INORDER_COMPARER> (), "StrictInOrder comparer required with Collection_stdmultiset");
+        static_assert (Common::IInOrderComparer<INORDER_COMPARER, T>, "StrictInOrder comparer required with Collection_stdmultiset");
         AssertRepValidType_ ();
     }
     template <typename T>

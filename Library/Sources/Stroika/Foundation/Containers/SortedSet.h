@@ -21,6 +21,8 @@
 
 namespace Stroika::Foundation::Containers {
 
+    using Common::IInOrderComparer;
+
     /**
      *      A SortedSet is a Set<T> which remains sorted (iterator).
      *
@@ -80,25 +82,25 @@ namespace Stroika::Foundation::Containers {
         /**
          *  All constructors either copy their source comparer (copy/move CTOR), or use the default INORDER comparer for 'T'.
          *
-         * \req IsStrictInOrderComparer<INORDER_COMPARER> () - for constructors with that type parameter
+         * \req IInOrderComparer<INORDER_COMPARER,T> - for constructors with that type parameter
          * 
          *  \note   <a href="ReadMe.md#Container Constructors">See general information about container constructors that applies here</a>
          */
         SortedSet ();
-        template <typename INORDER_COMPARER, enable_if_t<Common::IsStrictInOrderComparer<INORDER_COMPARER, T> ()>* = nullptr>
+        template <Common::IInOrderComparer<T> INORDER_COMPARER>
         explicit SortedSet (INORDER_COMPARER&& inorderComparer);
         SortedSet (SortedSet&& src) noexcept      = default;
         SortedSet (const SortedSet& src) noexcept = default;
         SortedSet (const initializer_list<T>& src);
-        template <typename INORDER_COMPARER, enable_if_t<Common::IsStrictInOrderComparer<INORDER_COMPARER, T> ()>* = nullptr>
+        template <Common::IInOrderComparer<T> INORDER_COMPARER>
         SortedSet (INORDER_COMPARER&& inOrderComparer, const initializer_list<T>& src);
         template <ranges::range ITERABLE_OF_ADDABLE, enable_if_t<not is_base_of_v<SortedSet<T>, decay_t<ITERABLE_OF_ADDABLE>>>* = nullptr>
         explicit SortedSet (ITERABLE_OF_ADDABLE&& src);
-        template <typename INORDER_COMPARER, ranges::range ITERABLE_OF_ADDABLE, enable_if_t<Common::IsStrictInOrderComparer<INORDER_COMPARER, T> ()>* = nullptr>
+        template <Common::IInOrderComparer<T> INORDER_COMPARER, ranges::range ITERABLE_OF_ADDABLE>
         SortedSet (INORDER_COMPARER&& inOrderComparer, ITERABLE_OF_ADDABLE&& src);
         template <input_iterator ITERATOR_OF_ADDABLE>
         SortedSet (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
-        template <typename INORDER_COMPARER, input_iterator ITERATOR_OF_ADDABLE, enable_if_t<Common::IsStrictInOrderComparer<INORDER_COMPARER, T> ()>* = nullptr>
+        template <Common::IInOrderComparer<T> INORDER_COMPARER, input_iterator ITERATOR_OF_ADDABLE>
         SortedSet (INORDER_COMPARER&& inOrderComparer, ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
 
     protected:

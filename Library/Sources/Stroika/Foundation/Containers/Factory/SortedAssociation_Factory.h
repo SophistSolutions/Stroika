@@ -24,12 +24,11 @@ namespace Stroika::Foundation::Containers::Factory {
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      */
-    template <typename KEY_TYPE, typename VALUE_TYPE, typename KEY_INORDER_COMPARER = less<KEY_TYPE>>
+    template <typename KEY_TYPE, typename VALUE_TYPE, IInOrderComparer<KEY_TYPE> KEY_INORDER_COMPARER = less<KEY_TYPE>>
     class SortedAssociation_Factory {
     public:
         static_assert (not is_reference_v<KEY_TYPE> and not is_reference_v<VALUE_TYPE> and not is_reference_v<KEY_INORDER_COMPARER>,
                        "typically if this fails its because a (possibly indirect) caller forgot to use forward<>(), or remove_cvref_t");
-        static_assert (Common::IsStrictInOrderComparer<KEY_INORDER_COMPARER> (), "StrictInOrder comparer required with SortedAssociation");
 
     public:
         /**

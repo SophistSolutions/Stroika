@@ -221,22 +221,6 @@ namespace Stroika::Foundation::Common {
     };
 
     /**
-    * @todo maybe lose/deprecate these in favor of just using the concepts...
-     *  \brief Checks (via ExtractComparisonTraits) if argument is an Equals comparer - one that takes two arguments of type T, and returns a bool, and compares
-     *         if one of the items equal to the other (e.g. std::equals).
-     *
-     *  \note @see ComparisonRelationDeclaration<> to construct an Equals comparer from an arbitrary std::function...
-     *  \note @see IsStrictInOrderComparer
-     *  \note @see IsPotentiallyComparerRelation
-     */
-    template <typename COMPARER>
-    [[deprecated ("Since Stroika 3.0d1 - use IEqualsComparer")]] constexpr bool IsEqualsComparer ();
-    template <typename COMPARER, typename ARG_T>
-    [[deprecated ("Since Stroika 3.0d1 - use IEqualsComparer")]] constexpr bool IsEqualsComparer ();
-    template <typename COMPARER>
-    [[deprecated ("Since Stroika 3.0d1 - use IEqualsComparer")]] constexpr bool IsEqualsComparer (const COMPARER&);
-
-    /**
      *  This concept checks if the given function argument (COMPARER) appears to compare 'ARG_T's and return true/false.
      *  This doesn't require that that you've annotated the comparer, so it can false-positive (like mixing up
      *  an equality comparer for an in-order comparer).
@@ -268,44 +252,18 @@ namespace Stroika::Foundation::Common {
      */
     template <typename COMPARER, typename ARG_T>
     concept IEqualsComparer = IPotentiallyComparer<COMPARER, ARG_T> and ExtractComparisonTraits<decay_t<COMPARER>>::kComparisonRelationKind ==
-    ComparisonRelationType::eEquals
-        //and IsEqualsComparer<COMPARER, ARG_T> ()
-        ;
+    ComparisonRelationType::eEquals;
 
     /**
-     *  \brief Checks (via ExtractComparisonTraits) if argument is a StictInOrder comparer - one that takes two arguments of type T, and returns a bool, and compares
-     *         if one of the items is STRICTLY in-order with respect to the other - e.g. std::less, or std::greater, but but notably NOT std::equal_to, or std::less_equal.
-     *
-     *  \note @see ComparisonRelationDeclaration<> to construct an InOrder comparer from an arbitrary std::function...
-     *  \note @see IsEqualsComparer
-     *  \note @see IsPotentiallyComparerRelation
-     */
-    template <typename COMPARER>
-    constexpr bool IsStrictInOrderComparer ();
-    template <typename COMPARER, typename ARG_T>
-    constexpr bool IsStrictInOrderComparer ();
-    template <typename COMPARER>
-    constexpr bool IsStrictInOrderComparer (const COMPARER&);
-
-    /**
-     *  This concept checks if the given function argument (COMPARER) appears to compare 'ARG_T's and return true/false.
-     *  This doesn't require that that you've annotated the comparer, so it can false-positive (like mixing up
-     *  an equality comparer for an in-order comparer).
-     * 
-     *  \see InOrderComparer for something stricter
-     */
-    template <typename COMPARER, typename ARG_T>
-    concept PossiblyInOrderComparer = relation<COMPARER, ARG_T, ARG_T>;
-
-    /**
-     *  Checks that the argument comparer compares values of type ARG_T, and returns an in-order comparison result.
+     *  Checks that the argument comparer compares values of type ARG_T, and returns a (strict) in-order comparison result.
      * 
      *  This won't let confuse equal_to with actual in-order comparison functions.
      * 
-     *  \see PossiblyInOrderComparer, and use DeclareInOrderComparer to mark a given function as an in-order comparer.
+     *  \see IPotentiallyComparer, and use DeclareInOrderComparer to mark a given function as an in-order comparer.
      */
     template <typename COMPARER, typename ARG_T>
-    concept InOrderComparer = PossiblyInOrderComparer<COMPARER, ARG_T> and IsStrictInOrderComparer<COMPARER, ARG_T> ();
+    concept IInOrderComparer = IPotentiallyComparer<COMPARER, ARG_T> and ExtractComparisonTraits<std::decay_t<COMPARER>>::kComparisonRelationKind ==
+    ComparisonRelationType::eStrictInOrder;
 
     /**
      *  Utility class to serve as base class when constructing user-defined 'function' object comparer so ExtractComparisonTraits<> knows

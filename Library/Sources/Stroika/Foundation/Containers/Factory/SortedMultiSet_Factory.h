@@ -24,12 +24,11 @@ namespace Stroika::Foundation::Containers::Factory {
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      */
-    template <typename T, typename TRAITS, typename INORDER_COMPARER>
+    template <typename T, typename TRAITS, IInOrderComparer<T> INORDER_COMPARER>
     class SortedMultiSet_Factory {
     public:
         static_assert (not is_reference_v<T> and not is_reference_v<INORDER_COMPARER>,
                        "typically if this fails its because a (possibly indirect) caller forgot to use forward<>(), or remove_cvref_t");
-        static_assert (Common::IsStrictInOrderComparer<INORDER_COMPARER> (), "StrictInOrder comparer required with SortedMultiSet");
 
     public:
         /**

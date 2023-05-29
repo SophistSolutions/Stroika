@@ -18,6 +18,8 @@
  */
 namespace Stroika::Foundation::Containers::Concrete {
 
+    using Common::IInOrderComparer;
+
     /**
      *  \brief   SortedMapping_stdmap<KEY_TYPE,MAPPED_VALUE_TYPE> is an std::map-based concrete implementation of the SortedMapping<KEY_TYPE,MAPPED_VALUE_TYPE> container pattern.
      *
@@ -47,7 +49,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         /**
          *  \brief STDMAP is std::map<> that can be used inside SortedMapping_stdmap
          */
-        template <typename KEY_INORDER_COMPARER = less<key_type>>
+        template <IInOrderComparer<KEY_TYPE> KEY_INORDER_COMPARER = less<key_type>>
         using STDMAP = map<KEY_TYPE, MAPPED_VALUE_TYPE, KEY_INORDER_COMPARER,
                            Memory::BlockAllocatorOrStdAllocatorAsAppropriate<pair<const key_type, mapped_type>, sizeof (value_type) <= 1024>>;
 
@@ -56,20 +58,20 @@ namespace Stroika::Foundation::Containers::Concrete {
          *  \see docs on SortedMapping<> constructor
          */
         SortedMapping_stdmap ();
-        template <typename KEY_INORDER_COMPARER, enable_if_t<Common::IsStrictInOrderComparer<KEY_INORDER_COMPARER, KEY_TYPE> ()>* = nullptr>
+        template <IInOrderComparer<KEY_TYPE> KEY_INORDER_COMPARER>
         explicit SortedMapping_stdmap (KEY_INORDER_COMPARER&& inorderComparer);
         SortedMapping_stdmap (SortedMapping_stdmap&& src) noexcept      = default;
         SortedMapping_stdmap (const SortedMapping_stdmap& src) noexcept = default;
         SortedMapping_stdmap (const initializer_list<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src);
-        template <typename KEY_INORDER_COMPARER, enable_if_t<Common::IsStrictInOrderComparer<KEY_INORDER_COMPARER, KEY_TYPE> ()>* = nullptr>
+        template <IInOrderComparer<KEY_TYPE> KEY_INORDER_COMPARER>
         SortedMapping_stdmap (KEY_INORDER_COMPARER&& inorderComparer, const initializer_list<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src);
         template <ranges::range ITERABLE_OF_ADDABLE, enable_if_t<not is_base_of_v<SortedMapping_stdmap<KEY_TYPE, MAPPED_VALUE_TYPE>, decay_t<ITERABLE_OF_ADDABLE>>>* = nullptr>
         explicit SortedMapping_stdmap (ITERABLE_OF_ADDABLE&& src);
-        template <typename KEY_INORDER_COMPARER, ranges::range ITERABLE_OF_ADDABLE, enable_if_t<Common::IsStrictInOrderComparer<KEY_INORDER_COMPARER, KEY_TYPE> ()>* = nullptr>
+        template <IInOrderComparer<KEY_TYPE> KEY_INORDER_COMPARER, ranges::range ITERABLE_OF_ADDABLE>
         SortedMapping_stdmap (KEY_INORDER_COMPARER&& inorderComparer, ITERABLE_OF_ADDABLE&& src);
         template <input_iterator ITERATOR_OF_ADDABLE>
         SortedMapping_stdmap (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
-        template <typename KEY_INORDER_COMPARER, input_iterator ITERATOR_OF_ADDABLE, enable_if_t<Common::IsStrictInOrderComparer<KEY_INORDER_COMPARER, KEY_TYPE> ()>* = nullptr>
+        template <IInOrderComparer<KEY_TYPE> KEY_INORDER_COMPARER, input_iterator ITERATOR_OF_ADDABLE>
         SortedMapping_stdmap (KEY_INORDER_COMPARER&& inorderComparer, ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
 
     public:
@@ -80,7 +82,7 @@ namespace Stroika::Foundation::Containers::Concrete {
 
     private:
         class IImplRepBase_;
-        template <typename KEY_INORDER_COMPARER>
+        template <IInOrderComparer<KEY_TYPE> KEY_INORDER_COMPARER>
         class Rep_;
 
     private:

@@ -49,7 +49,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         /**
          *  \brief STDMAP is std::map<> that can be used inside MultiSet_stdmap
          */
-        template <typename INORDER_COMPARER = less<T>>
+        template <IInOrderComparer<T> INORDER_COMPARER = less<T>>
         using STDMAP =
             map<T, CounterType, INORDER_COMPARER, Memory::BlockAllocatorOrStdAllocatorAsAppropriate<pair<const T, CounterType>, sizeof (value_type) <= 1024>>;
 
@@ -57,23 +57,23 @@ namespace Stroika::Foundation::Containers::Concrete {
         /**
          */
         SortedMultiSet_stdmap ();
-        template <typename INORDER_COMPARER, enable_if_t<Common::IsStrictInOrderComparer<INORDER_COMPARER, T> ()>* = nullptr>
+        template <IInOrderComparer<T> INORDER_COMPARER>
         explicit SortedMultiSet_stdmap (INORDER_COMPARER&& inorderComparer);
         SortedMultiSet_stdmap (SortedMultiSet_stdmap&& src) noexcept      = default;
         SortedMultiSet_stdmap (const SortedMultiSet_stdmap& src) noexcept = default;
         SortedMultiSet_stdmap (const initializer_list<T>& src);
-        template <typename INORDER_COMPARER, enable_if_t<Common::IsStrictInOrderComparer<INORDER_COMPARER, T> ()>* = nullptr>
+        template <IInOrderComparer<T> INORDER_COMPARER>
         SortedMultiSet_stdmap (INORDER_COMPARER&& inorderComparer, const initializer_list<T>& src);
         SortedMultiSet_stdmap (const initializer_list<value_type>& src);
-        template <typename INORDER_COMPARER, enable_if_t<Common::IsStrictInOrderComparer<INORDER_COMPARER, T> ()>* = nullptr>
+        template <IInOrderComparer<T> INORDER_COMPARER>
         SortedMultiSet_stdmap (INORDER_COMPARER&& inorderComparer, const initializer_list<value_type>& src);
         template <ranges::range ITERABLE_OF_ADDABLE, enable_if_t<not is_base_of_v<SortedMultiSet_stdmap<T, TRAITS>, decay_t<ITERABLE_OF_ADDABLE>>>* = nullptr>
         explicit SortedMultiSet_stdmap (ITERABLE_OF_ADDABLE&& src);
-        template <typename INORDER_COMPARER, ranges::range ITERABLE_OF_ADDABLE, enable_if_t<Common::IsStrictInOrderComparer<INORDER_COMPARER, T> ()>* = nullptr>
+        template <IInOrderComparer<T> INORDER_COMPARER, ranges::range ITERABLE_OF_ADDABLE>
         SortedMultiSet_stdmap (INORDER_COMPARER&& inorderComparer, ITERABLE_OF_ADDABLE&& src);
         template <input_iterator ITERATOR_OF_ADDABLE>
         SortedMultiSet_stdmap (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
-        template <typename INORDER_COMPARER, input_iterator ITERATOR_OF_ADDABLE, enable_if_t<Common::IsStrictInOrderComparer<INORDER_COMPARER, T> ()>* = nullptr>
+        template <IInOrderComparer<T> INORDER_COMPARER, input_iterator ITERATOR_OF_ADDABLE>
         SortedMultiSet_stdmap (INORDER_COMPARER&& inorderComparer, ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
 
     public:
@@ -84,7 +84,7 @@ namespace Stroika::Foundation::Containers::Concrete {
 
     private:
         class IImplRepBase_;
-        template <typename INORDER_COMPARER>
+        template <IInOrderComparer<T> INORDER_COMPARER>
         class Rep_;
 
     private:

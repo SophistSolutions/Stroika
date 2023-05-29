@@ -310,7 +310,7 @@ namespace Stroika::Foundation::Containers {
          *
          *  \note alias for Sort ()
          *
-         *  \note Should be of type IsStrictInOrderComparer (), but not required - for convenience of use (so can be used with any lambda functor)
+         *  \note Should be of type IInOrderComparer, but not required - for convenience of use (so can be used with any lambda functor)
          */
         template <typename INORDER_COMPARER_TYPE = less<T>>
         nonvirtual Sequence OrderBy (INORDER_COMPARER_TYPE&& inorderComparer = INORDER_COMPARER_TYPE{}) const;

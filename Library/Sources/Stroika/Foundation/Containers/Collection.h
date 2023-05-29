@@ -140,7 +140,7 @@ namespace Stroika::Foundation::Containers {
          *          Collection<int> c8  { move (c1) };
          *      \endcode
          *
-         *  \req    static_assert (IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>);  // except done with enable_if_t to avoid bad overload of CTOR
+         *  \req    static_assert (IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>);  // except done with requires to avoid bad overload of CTOR
          *  \req    static_assert (IsAddable_v<ExtractValueType_t<ITERATOR_OF_ADDABLE>>);
          *
          *  \note   Most other containers (e.g. Set<>, Sequence<>) have the 'ITERABLE_OF_ADDABLE&& src' CTOR be explicit, whereas Collection does not.

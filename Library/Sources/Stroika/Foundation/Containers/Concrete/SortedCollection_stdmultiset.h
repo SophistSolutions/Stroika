@@ -43,7 +43,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     public:
         /**
          */
-        template <typename INORDER_COMPARER>
+        template <Common::IInOrderComparer<T> INORDER_COMPARER>
         using STDMULTISET =
             multiset<value_type, INORDER_COMPARER, Memory::BlockAllocatorOrStdAllocatorAsAppropriate<value_type, sizeof (value_type) <= 1024>>;
 
@@ -52,20 +52,20 @@ namespace Stroika::Foundation::Containers::Concrete {
          *  \see docs on SortedCollection<> constructor
          */
         SortedCollection_stdmultiset ();
-        template <typename INORDER_COMPARER, enable_if_t<Common::IsStrictInOrderComparer<INORDER_COMPARER, T> ()>* = nullptr>
+        template <Common::IInOrderComparer<T> INORDER_COMPARER>
         explicit SortedCollection_stdmultiset (INORDER_COMPARER&& inorderComparer);
         SortedCollection_stdmultiset (SortedCollection_stdmultiset&& src) noexcept      = default;
         SortedCollection_stdmultiset (const SortedCollection_stdmultiset& src) noexcept = default;
         SortedCollection_stdmultiset (const initializer_list<T>& src);
-        template <typename INORDER_COMPARER, enable_if_t<Common::IsStrictInOrderComparer<INORDER_COMPARER, T> ()>* = nullptr>
+        template <Common::IInOrderComparer<T> INORDER_COMPARER>
         SortedCollection_stdmultiset (INORDER_COMPARER&& inOrderComparer, const initializer_list<T>& src);
         template <ranges::range ITERABLE_OF_ADDABLE, enable_if_t<not is_base_of_v<SortedCollection_stdmultiset<T>, decay_t<ITERABLE_OF_ADDABLE>>>* = nullptr>
         explicit SortedCollection_stdmultiset (ITERABLE_OF_ADDABLE&& src);
-        template <typename INORDER_COMPARER, ranges::range ITERABLE_OF_ADDABLE, enable_if_t<Common::IsStrictInOrderComparer<INORDER_COMPARER, T> ()>* = nullptr>
+        template <Common::IInOrderComparer<T> INORDER_COMPARER, ranges::range ITERABLE_OF_ADDABLE>
         SortedCollection_stdmultiset (INORDER_COMPARER&& inOrderComparer, ITERABLE_OF_ADDABLE&& src);
         template <input_iterator ITERATOR_OF_ADDABLE>
         SortedCollection_stdmultiset (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
-        template <typename INORDER_COMPARER, input_iterator ITERATOR_OF_ADDABLE, enable_if_t<Common::IsStrictInOrderComparer<INORDER_COMPARER, T> ()>* = nullptr>
+        template <Common::IInOrderComparer<T> INORDER_COMPARER, input_iterator ITERATOR_OF_ADDABLE>
         SortedCollection_stdmultiset (INORDER_COMPARER&& inOrderComparer, ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
 
     public:
@@ -76,7 +76,7 @@ namespace Stroika::Foundation::Containers::Concrete {
 
     private:
         class IImplRepBase_;
-        template <typename INORDER_COMPARER>
+        template <Common::IInOrderComparer<T> INORDER_COMPARER>
         class Rep_;
 
     private:

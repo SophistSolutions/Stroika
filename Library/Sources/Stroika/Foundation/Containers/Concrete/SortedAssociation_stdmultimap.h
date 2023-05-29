@@ -47,7 +47,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         /**
          *  \brief STDMULTIMAP is std::multimap<> that can be used inside SortedAssociation_stdmultimap
          */
-        template <typename KEY_INORDER_COMPARER = less<key_type>>
+        template <IInOrderComparer<KEY_TYPE> KEY_INORDER_COMPARER = less<key_type>>
         using STDMULTIMAP =
             multimap<KEY_TYPE, MAPPED_VALUE_TYPE, KEY_INORDER_COMPARER,
                      Memory::BlockAllocatorOrStdAllocatorAsAppropriate<pair<const key_type, mapped_type>, sizeof (value_type) <= 1024>>;
@@ -57,20 +57,20 @@ namespace Stroika::Foundation::Containers::Concrete {
          *  \see docs on SortedAssociation<> constructor
          */
         SortedAssociation_stdmultimap ();
-        template <typename KEY_INORDER_COMPARER, enable_if_t<Common::IsStrictInOrderComparer<KEY_INORDER_COMPARER, KEY_TYPE> ()>* = nullptr>
+        template <IInOrderComparer<KEY_TYPE> KEY_INORDER_COMPARER>
         explicit SortedAssociation_stdmultimap (KEY_INORDER_COMPARER&& inorderComparer);
         SortedAssociation_stdmultimap (SortedAssociation_stdmultimap&& src) noexcept      = default;
         SortedAssociation_stdmultimap (const SortedAssociation_stdmultimap& src) noexcept = default;
-        template <typename KEY_INORDER_COMPARER, enable_if_t<Common::IsStrictInOrderComparer<KEY_INORDER_COMPARER, KEY_TYPE> ()>* = nullptr>
+        template <IInOrderComparer<KEY_TYPE> KEY_INORDER_COMPARER>
         SortedAssociation_stdmultimap (KEY_INORDER_COMPARER&& inorderComparer, const initializer_list<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src);
         template <ranges::range ITERABLE_OF_ADDABLE,
                   enable_if_t<not is_base_of_v<SortedAssociation_stdmultimap<KEY_TYPE, MAPPED_VALUE_TYPE>, decay_t<ITERABLE_OF_ADDABLE>>>* = nullptr>
         explicit SortedAssociation_stdmultimap (ITERABLE_OF_ADDABLE&& src);
-        template <typename KEY_INORDER_COMPARER, ranges::range ITERABLE_OF_ADDABLE, enable_if_t<Common::IsStrictInOrderComparer<KEY_INORDER_COMPARER, KEY_TYPE> ()>* = nullptr>
+        template <IInOrderComparer<KEY_TYPE> KEY_INORDER_COMPARER, ranges::range ITERABLE_OF_ADDABLE>
         SortedAssociation_stdmultimap (KEY_INORDER_COMPARER&& inorderComparer, ITERABLE_OF_ADDABLE&& src);
         template <input_iterator ITERATOR_OF_ADDABLE>
         SortedAssociation_stdmultimap (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
-        template <typename KEY_INORDER_COMPARER, input_iterator ITERATOR_OF_ADDABLE, enable_if_t<Common::IsStrictInOrderComparer<KEY_INORDER_COMPARER, KEY_TYPE> ()>* = nullptr>
+        template <IInOrderComparer<KEY_TYPE> KEY_INORDER_COMPARER, input_iterator ITERATOR_OF_ADDABLE>
         SortedAssociation_stdmultimap (KEY_INORDER_COMPARER&& inorderComparer, ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
 
     public:
@@ -81,7 +81,7 @@ namespace Stroika::Foundation::Containers::Concrete {
 
     private:
         class IImplRepBase_;
-        template <typename KEY_INORDER_COMPARER>
+        template <IInOrderComparer<KEY_TYPE> KEY_INORDER_COMPARER>
         class Rep_;
 
     private:

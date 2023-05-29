@@ -70,7 +70,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     public:
         /**
          *   @todo UPDATE THESE DOCS - REVIEW AND COMPARE - BUT THIS IS LITERALLY QUTIE WRONG
-         *  \see docs on Mapping<> constructor, except that KEY_EQUALS_COMPARER is replaced with KEY_INORDER_COMPARER and EqualsComparer is replaced by IsStrictInOrderComparer
+         *  \see docs on Mapping<> constructor, except that KEY_EQUALS_COMPARER is replaced with KEY_INORDER_COMPARER and EqualsComparer is replaced by IInOrderComparer
          *       and added Mapping_stdhashmap (STDHASHMAP<>&& src)
          */
         Mapping_stdhashmap ()

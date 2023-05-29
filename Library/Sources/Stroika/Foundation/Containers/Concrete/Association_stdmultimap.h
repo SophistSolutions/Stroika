@@ -59,25 +59,25 @@ namespace Stroika::Foundation::Containers::Concrete {
 
     public:
         /**
-         *  \see docs on Association<> constructor, except that KEY_EQUALS_COMPARER is replaced with KEY_INORDER_COMPARER and EqualsComparer is replaced by IsStrictInOrderComparer
+         *  \see docs on Association<> constructor, except that KEY_EQUALS_COMPARER is replaced with KEY_INORDER_COMPARER and EqualsComparer is replaced by IInOrderComparer
          *       and added Association_stdmultimap (STDMAP<>&& src)
          */
         Association_stdmultimap ();
         Association_stdmultimap (STDMULTIMAP<>&& src);
-        template <typename KEY_INORDER_COMPARER, enable_if_t<Common::IsStrictInOrderComparer<KEY_INORDER_COMPARER, KEY_TYPE> ()>* = nullptr>
+        template <typename KEY_INORDER_COMPARER, enable_if_t<Common::IInOrderComparer<KEY_INORDER_COMPARER, KEY_TYPE>>* = nullptr>
         explicit Association_stdmultimap (KEY_INORDER_COMPARER&& keyComparer);
         Association_stdmultimap (Association_stdmultimap&& src) noexcept      = default;
         Association_stdmultimap (const Association_stdmultimap& src) noexcept = default;
         Association_stdmultimap (const initializer_list<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src);
-        template <typename KEY_INORDER_COMPARER, enable_if_t<Common::IsStrictInOrderComparer<KEY_INORDER_COMPARER, KEY_TYPE> ()>* = nullptr>
+        template <typename KEY_INORDER_COMPARER, enable_if_t<Common::IInOrderComparer<KEY_INORDER_COMPARER, KEY_TYPE>>* = nullptr>
         Association_stdmultimap (KEY_INORDER_COMPARER&& keyComparer, const initializer_list<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src);
         template <ranges::range ITERABLE_OF_ADDABLE, enable_if_t<not is_base_of_v<Association_stdmultimap<KEY_TYPE, MAPPED_VALUE_TYPE>, decay_t<ITERABLE_OF_ADDABLE>>>* = nullptr>
         explicit Association_stdmultimap (ITERABLE_OF_ADDABLE&& src);
-        template <typename KEY_INORDER_COMPARER, ranges::range ITERABLE_OF_ADDABLE, enable_if_t<Common::IsStrictInOrderComparer<KEY_INORDER_COMPARER, KEY_TYPE> ()>* = nullptr>
+        template <typename KEY_INORDER_COMPARER, ranges::range ITERABLE_OF_ADDABLE, enable_if_t<Common::IInOrderComparer<KEY_INORDER_COMPARER, KEY_TYPE>>* = nullptr>
         Association_stdmultimap (KEY_INORDER_COMPARER&& keyComparer, ITERABLE_OF_ADDABLE&& src);
         template <input_iterator ITERATOR_OF_ADDABLE>
         Association_stdmultimap (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
-        template <typename KEY_INORDER_COMPARER, input_iterator ITERATOR_OF_ADDABLE, enable_if_t<Common::IsStrictInOrderComparer<KEY_INORDER_COMPARER, KEY_TYPE> ()>* = nullptr>
+        template <typename KEY_INORDER_COMPARER, input_iterator ITERATOR_OF_ADDABLE, enable_if_t<Common::IInOrderComparer<KEY_INORDER_COMPARER, KEY_TYPE>>* = nullptr>
         Association_stdmultimap (KEY_INORDER_COMPARER&& keyComparer, ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
 
     public:

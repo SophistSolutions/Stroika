@@ -21,6 +21,8 @@
 
 namespace Stroika::Foundation::Containers {
 
+    using Common::IInOrderComparer;
+
     /**
      *      A SortedMultiSet is a MultiSet<T, TRAITS> which remains sorted (iterator).
      *
@@ -83,23 +85,23 @@ namespace Stroika::Foundation::Containers {
          *  \note   <a href="ReadMe.md#Container Constructors">See general information about container constructors that applies here</a>
          */
         SortedMultiSet ();
-        template <typename INORDER_COMPARER, enable_if_t<Common::IsStrictInOrderComparer<INORDER_COMPARER, T> ()>* = nullptr>
+        template <Common::IInOrderComparer<T> INORDER_COMPARER>
         explicit SortedMultiSet (INORDER_COMPARER&& inorderComparer);
         SortedMultiSet (SortedMultiSet&& src) noexcept      = default;
         SortedMultiSet (const SortedMultiSet& src) noexcept = default;
         SortedMultiSet (const initializer_list<T>& src);
-        template <typename INORDER_COMPARER, enable_if_t<Common::IsStrictInOrderComparer<INORDER_COMPARER, T> ()>* = nullptr>
+        template <Common::IInOrderComparer<T> INORDER_COMPARER>
         SortedMultiSet (INORDER_COMPARER&& inorderComparer, const initializer_list<T>& src);
         SortedMultiSet (const initializer_list<value_type>& src);
-        template <typename INORDER_COMPARER, enable_if_t<Common::IsStrictInOrderComparer<INORDER_COMPARER, T> ()>* = nullptr>
+        template <Common::IInOrderComparer<T> INORDER_COMPARER>
         SortedMultiSet (INORDER_COMPARER&& inorderComparer, const initializer_list<value_type>& src);
         template <ranges::range ITERABLE_OF_ADDABLE, enable_if_t<not is_base_of_v<SortedMultiSet<T, TRAITS>, decay_t<ITERABLE_OF_ADDABLE>>>* = nullptr>
         explicit SortedMultiSet (ITERABLE_OF_ADDABLE&& src);
-        template <typename INORDER_COMPARER, ranges::range ITERABLE_OF_ADDABLE, enable_if_t<Common::IsStrictInOrderComparer<INORDER_COMPARER, T> ()>* = nullptr>
+        template <Common::IInOrderComparer<T> INORDER_COMPARER, ranges::range ITERABLE_OF_ADDABLE>
         SortedMultiSet (INORDER_COMPARER&& inorderComparer, ITERABLE_OF_ADDABLE&& src);
         template <input_iterator ITERATOR_OF_ADDABLE>
         SortedMultiSet (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
-        template <input_iterator INORDER_COMPARER, input_iterator ITERATOR_OF_ADDABLE, enable_if_t<Common::IsStrictInOrderComparer<INORDER_COMPARER, T> ()>* = nullptr>
+        template <input_iterator INORDER_COMPARER, input_iterator ITERATOR_OF_ADDABLE>
         SortedMultiSet (INORDER_COMPARER&& inorderComparer, ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
 
     protected:

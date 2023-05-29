@@ -16,6 +16,8 @@
 
 namespace Stroika::Foundation::Containers {
 
+    using Common::IInOrderComparer;
+
     /**
      *      A SortedAssociation is a Association<Key,T> which remains sorted (iterator) by the Key.
      *
@@ -64,7 +66,7 @@ namespace Stroika::Foundation::Containers {
     public:
         /**
          *  This CAN be used as the argument to a SortedAssociation<> as InOrderComparerType, but
-         *  we allow any template in the SortedSet<> CTOR for an inorderComparer that follows Common::IsStrictInOrderComparer () concept
+         *  we allow any template in the SortedSet<> CTOR for an inorderComparer that follows Common::IInOrderComparer concept
          */
         using KeyInOrderKeyComparerType =
             Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eStrictInOrder, function<bool (KEY_TYPE, KEY_TYPE)>>;
@@ -92,12 +94,12 @@ namespace Stroika::Foundation::Containers {
          *  \note   <a href="ReadMe.md#Container Constructors">See general information about container constructors that applies here</a>
          */
         SortedAssociation ();
-        template <typename KEY_INORDER_COMPARER, enable_if_t<Common::IsStrictInOrderComparer<KEY_INORDER_COMPARER, KEY_TYPE> ()>* = nullptr>
+        template <IInOrderComparer<KEY_TYPE> KEY_INORDER_COMPARER>
         explicit SortedAssociation (KEY_INORDER_COMPARER&& inorderComparer);
         SortedAssociation (SortedAssociation&& src) noexcept      = default;
         SortedAssociation (const SortedAssociation& src) noexcept = default;
         SortedAssociation (const initializer_list<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src);
-        template <typename KEY_INORDER_COMPARER, enable_if_t<Common::IsStrictInOrderComparer<KEY_INORDER_COMPARER, KEY_TYPE> ()>* = nullptr>
+        template <IInOrderComparer<KEY_TYPE> KEY_INORDER_COMPARER>
         SortedAssociation (KEY_INORDER_COMPARER&& inorderComparer, const initializer_list<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src);
         template <ranges::range ITERABLE_OF_ADDABLE>
         explicit SortedAssociation (ITERABLE_OF_ADDABLE&& src)
@@ -111,11 +113,11 @@ namespace Stroika::Foundation::Containers {
         }
 #endif
         ;
-        template <typename KEY_INORDER_COMPARER, ranges::range ITERABLE_OF_ADDABLE, enable_if_t<Common::IsStrictInOrderComparer<KEY_INORDER_COMPARER, KEY_TYPE> ()>* = nullptr>
+        template <IInOrderComparer<KEY_TYPE> KEY_INORDER_COMPARER, ranges::range ITERABLE_OF_ADDABLE>
         SortedAssociation (KEY_INORDER_COMPARER&& inorderComparer, ITERABLE_OF_ADDABLE&& src);
         template <input_iterator ITERATOR_OF_ADDABLE>
         SortedAssociation (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
-        template <typename KEY_INORDER_COMPARER, input_iterator ITERATOR_OF_ADDABLE, enable_if_t<Common::IsStrictInOrderComparer<KEY_INORDER_COMPARER, KEY_TYPE> ()>* = nullptr>
+        template <IInOrderComparer<KEY_TYPE> KEY_INORDER_COMPARER, input_iterator ITERATOR_OF_ADDABLE>
         SortedAssociation (KEY_INORDER_COMPARER&& inorderComparer, ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
 
     protected:

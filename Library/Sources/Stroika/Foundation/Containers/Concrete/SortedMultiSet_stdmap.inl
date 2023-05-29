@@ -27,7 +27,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     /**
      */
     template <typename T, typename TRAITS>
-    template <typename INORDER_COMPARER>
+    template <IInOrderComparer<T> INORDER_COMPARER>
     class SortedMultiSet_stdmap<T, TRAITS>::Rep_ : public IImplRepBase_, public Memory::UseBlockAllocationIfAppropriate<Rep_<INORDER_COMPARER>> {
     private:
         using inherited = IImplRepBase_;
@@ -225,13 +225,10 @@ namespace Stroika::Foundation::Containers::Concrete {
         AssertRepValidType_ ();
     }
     template <typename T, typename TRAITS>
-    template <typename INORDER_COMPARER, enable_if_t<Common::IsStrictInOrderComparer<INORDER_COMPARER, T> ()>*>
+    template <IInOrderComparer<T> INORDER_COMPARER>
     inline SortedMultiSet_stdmap<T, TRAITS>::SortedMultiSet_stdmap (INORDER_COMPARER&& inorderComparer)
         : inherited{Memory::MakeSharedPtr<Rep_<remove_cvref_t<INORDER_COMPARER>>> (forward<INORDER_COMPARER> (inorderComparer))}
     {
-        static_assert (Common::IsStrictInOrderComparer<INORDER_COMPARER> (),
-                       "SortedMultiSet_stdmap constructor with INORDER_COMPARER - comparer not valid IsStrictInOrderComparer- see "
-                       "ComparisonRelationDeclaration<Common::ComparisonRelationType::eStrictInOrder, function<bool(T, T)>");
         AssertRepValidType_ ();
     }
     template <typename T, typename TRAITS>
@@ -242,7 +239,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         AssertRepValidType_ ();
     }
     template <typename T, typename TRAITS>
-    template <typename INORDER_COMPARER, enable_if_t<Common::IsStrictInOrderComparer<INORDER_COMPARER, T> ()>*>
+    template <IInOrderComparer<T> INORDER_COMPARER>
     SortedMultiSet_stdmap<T, TRAITS>::SortedMultiSet_stdmap (INORDER_COMPARER&& inorderComparer, const initializer_list<T>& src)
         : SortedMultiSet_stdmap{forward<INORDER_COMPARER> (inorderComparer)}
     {
@@ -257,7 +254,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         AssertRepValidType_ ();
     }
     template <typename T, typename TRAITS>
-    template <typename INORDER_COMPARER, enable_if_t<Common::IsStrictInOrderComparer<INORDER_COMPARER, T> ()>*>
+    template <IInOrderComparer<T> INORDER_COMPARER>
     SortedMultiSet_stdmap<T, TRAITS>::SortedMultiSet_stdmap (INORDER_COMPARER&& inorderComparer, const initializer_list<value_type>& src)
         : SortedMultiSet_stdmap{forward<INORDER_COMPARER> (inorderComparer)}
     {
@@ -274,7 +271,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         AssertRepValidType_ ();
     }
     template <typename T, typename TRAITS>
-    template <typename INORDER_COMPARER, ranges::range ITERABLE_OF_ADDABLE, enable_if_t<Common::IsStrictInOrderComparer<INORDER_COMPARER, T> ()>*>
+    template <IInOrderComparer<T> INORDER_COMPARER, ranges::range ITERABLE_OF_ADDABLE>
     inline SortedMultiSet_stdmap<T, TRAITS>::SortedMultiSet_stdmap (INORDER_COMPARER&& inorderComparer, ITERABLE_OF_ADDABLE&& src)
         : SortedMultiSet_stdmap{forward<INORDER_COMPARER> (inorderComparer)}
     {
@@ -292,7 +289,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         AssertRepValidType_ ();
     }
     template <typename T, typename TRAITS>
-    template <typename INORDER_COMPARER, input_iterator ITERATOR_OF_ADDABLE, enable_if_t<Common::IsStrictInOrderComparer<INORDER_COMPARER, T> ()>*>
+    template <IInOrderComparer<T> INORDER_COMPARER, input_iterator ITERATOR_OF_ADDABLE>
     SortedMultiSet_stdmap<T, TRAITS>::SortedMultiSet_stdmap (INORDER_COMPARER&& inorderComparer, ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
         : SortedMultiSet_stdmap{forward<INORDER_COMPARER> (inorderComparer)}
     {

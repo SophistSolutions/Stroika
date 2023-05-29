@@ -13,16 +13,6 @@
 
 namespace Stroika::Foundation::Common {
 
-    /*
-     ********************************************************************************
-     ************************* ThreeWayCompare<LT, RT> ******************************
-     ********************************************************************************
-     */
-    template <typename LT, typename RT>
-    [[deprecated ("Since Stroika 3.0d1 - use compare_three_way{} or <=>")]] constexpr strong_ordering ThreeWayCompare (LT&& lhs, RT&& rhs)
-    {
-        return compare_three_way{}(forward<LT> (lhs), forward<RT> (rhs));
-    }
 
     /*
      ********************************************************************************
@@ -105,57 +95,6 @@ namespace Stroika::Foundation::Common {
         return IsPotentiallyComparerRelation<FUNCTOR> ();
     }
 
-    /*
-     ********************************************************************************
-     ************************ IsEqualsComparer<COMPARER> ****************************
-     ********************************************************************************
-     */
-    template <typename COMPARER>
-    [[deprecated ("Since Stroika 3.0d1 - use IEqualsComparer")]] constexpr bool IsEqualsComparer ()
-    {
-        return ExtractComparisonTraits<std::decay_t<COMPARER>>::kComparisonRelationKind == ComparisonRelationType::eEquals;
-    }
-    template <typename COMPARER, typename ARG_T>
-    [[deprecated ("Since Stroika 3.0d1 - use IEqualsComparer")]] constexpr bool IsEqualsComparer ()
-    {
-        if constexpr (not IsPotentiallyComparerRelation<COMPARER, ARG_T> ()) {
-            return false;
-        }
-        else {
-            return ExtractComparisonTraits<std::decay_t<COMPARER>>::kComparisonRelationKind == ComparisonRelationType::eEquals;
-        }
-    }
-    template <typename COMPARER>
-    [[deprecated ("Since Stroika 3.0d1 - use IEqualsComparer")]] constexpr bool IsEqualsComparer (const COMPARER&)
-    {
-        return IsEqualsComparer<COMPARER> ();
-    }
-
-    /*
-     ********************************************************************************
-     ********************* IsStrictInOrderComparer<COMPARER> ************************
-     ********************************************************************************
-     */
-    template <typename COMPARER>
-    constexpr bool IsStrictInOrderComparer ()
-    {
-        return ExtractComparisonTraits<std::decay_t<COMPARER>>::kComparisonRelationKind == ComparisonRelationType::eStrictInOrder;
-    }
-    template <typename COMPARER, typename ARG_T>
-    constexpr bool IsStrictInOrderComparer ()
-    {
-        if constexpr (not IsPotentiallyComparerRelation<COMPARER, ARG_T> ()) {
-            return false;
-        }
-        else {
-            return ExtractComparisonTraits<std::decay_t<COMPARER>>::kComparisonRelationKind == ComparisonRelationType::eStrictInOrder;
-        }
-    }
-    template <typename COMPARER>
-    constexpr bool IsStrictInOrderComparer (const COMPARER&)
-    {
-        return IsStrictInOrderComparer<COMPARER> ();
-    }
 
     /*
      ********************************************************************************
@@ -317,6 +256,58 @@ namespace Stroika::Foundation::Common {
         }
         AssertNotReached ();
         return strong_ordering::equal;
+    }
+
+
+
+
+
+    /*******DEPRECATED STUFF  */
+    template <typename LT, typename RT>
+    [[deprecated ("Since Stroika 3.0d1 - use compare_three_way{} or <=>")]] constexpr strong_ordering ThreeWayCompare (LT&& lhs, RT&& rhs)
+    {
+        return compare_three_way{}(forward<LT> (lhs), forward<RT> (rhs));
+    }
+
+    template <typename COMPARER>
+    [[deprecated ("Since Stroika 3.0d1 - use IEqualsComparer")]] constexpr bool IsEqualsComparer ()
+    {
+        return ExtractComparisonTraits<std::decay_t<COMPARER>>::kComparisonRelationKind == ComparisonRelationType::eEquals;
+    }
+    template <typename COMPARER, typename ARG_T>
+    [[deprecated ("Since Stroika 3.0d1 - use IEqualsComparer")]] constexpr bool IsEqualsComparer ()
+    {
+        if constexpr (not IsPotentiallyComparerRelation<COMPARER, ARG_T> ()) {
+            return false;
+        }
+        else {
+            return ExtractComparisonTraits<std::decay_t<COMPARER>>::kComparisonRelationKind == ComparisonRelationType::eEquals;
+        }
+    }
+    template <typename COMPARER>
+    [[deprecated ("Since Stroika 3.0d1 - use IEqualsComparer")]] constexpr bool IsEqualsComparer (const COMPARER&)
+    {
+        return IsEqualsComparer<COMPARER> ();
+    }
+    template <typename COMPARER>
+    [[deprecated ("Since Stroika 3.0d1 - use IInOrderComparer")]] constexpr bool IsStrictInOrderComparer ()
+    {
+        return ExtractComparisonTraits<std::decay_t<COMPARER>>::kComparisonRelationKind == ComparisonRelationType::eStrictInOrder;
+    }
+    template <typename COMPARER, typename ARG_T>
+    [[deprecated ("Since Stroika 3.0d1 - use IInOrderComparer")]] constexpr bool IsStrictInOrderComparer ()
+    {
+        if constexpr (not IsPotentiallyComparerRelation<COMPARER, ARG_T> ()) {
+            return false;
+        }
+        else {
+            return ExtractComparisonTraits<std::decay_t<COMPARER>>::kComparisonRelationKind == ComparisonRelationType::eStrictInOrder;
+        }
+    }
+    template <typename COMPARER>
+    [[deprecated ("Since Stroika 3.0d1 - use IInOrderComparer")]] constexpr bool IsStrictInOrderComparer (const COMPARER&)
+    {
+        return ExtractComparisonTraits<std::decay_t<COMPARER>>::kComparisonRelationKind == ComparisonRelationType::eStrictInOrder;
     }
 
 }

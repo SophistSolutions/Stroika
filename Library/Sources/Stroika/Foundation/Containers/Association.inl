@@ -352,29 +352,15 @@ namespace Stroika::Foundation::Containers {
     template <typename CONTAINER_OF_Key_T>
     inline CONTAINER_OF_Key_T Association<KEY_TYPE, MAPPED_VALUE_TYPE>::As () const
     {
-        return As_<CONTAINER_OF_Key_T> ();
-    }
-    template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-    template <typename CONTAINER_OF_Key_T>
-    CONTAINER_OF_Key_T Association<KEY_TYPE, MAPPED_VALUE_TYPE>::As_ (
-        [[maybe_unused]] enable_if_t<is_convertible_v<typename CONTAINER_OF_Key_T::value_type, pair<KEY_TYPE, MAPPED_VALUE_TYPE>>, int> usesInsertPair) const
-    {
         CONTAINER_OF_Key_T result;
         for (const auto& i : *this) {
-            // the reason we use the overload with an extra result.end () here is so it will work with std::map<> or std::vector<>
-            result.insert (result.end (), pair<KEY_TYPE, MAPPED_VALUE_TYPE>{i.fKey, i.fValue});
-        }
-        return result;
-    }
-    template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-    template <typename CONTAINER_OF_Key_T>
-    CONTAINER_OF_Key_T Association<KEY_TYPE, MAPPED_VALUE_TYPE>::As_ (
-        enable_if_t<!is_convertible_v<typename CONTAINER_OF_Key_T::value_type, pair<KEY_TYPE, MAPPED_VALUE_TYPE>>, int>) const
-    {
-        CONTAINER_OF_Key_T result;
-        for (const auto& i : *this) {
-            // the reason we use the overload with an extra result.end () here is so it will work with std::map<> or std::vector<>
-            result.insert (result.end (), value_type{i.fKey, i.fValue});
+            if constexpr (is_convertible_v<typename CONTAINER_OF_Key_T::value_type, pair<KEY_TYPE, MAPPED_VALUE_TYPE>>) {
+                // the reason we use the overload with an extra result.end () here is so it will work with std::map<> or std::vector<>
+                result.insert (result.end (), pair<KEY_TYPE, MAPPED_VALUE_TYPE>{i.fKey, i.fValue});
+            }
+            else {
+                result.insert (result.end (), value_type{i.fKey, i.fValue});
+            }
         }
         return result;
     }

@@ -707,7 +707,7 @@ namespace Stroika::Foundation::Traversal {
         return CreateGenerator (getNext);
     }
     template <typename T>
-    template <Common::PossiblyInOrderComparer<T> COMPARER>
+    template <Common::IPotentiallyComparer<T> COMPARER>
     Iterable<T> Iterable<T>::Top (COMPARER&& cmp) const
     {
         // @todo https://stroika.atlassian.net/browse/STK-972 - optimize case where 'iterable' is already sortable
@@ -729,7 +729,7 @@ namespace Stroika::Foundation::Traversal {
         return CreateGenerator (getNext);
     }
     template <typename T>
-    template <Common::PossiblyInOrderComparer<T> COMPARER>
+    template <Common::IPotentiallyComparer<T> COMPARER>
     Iterable<T> Iterable<T>::Top (size_t n, COMPARER&& cmp) const
     {
         if (n >= size ()) {

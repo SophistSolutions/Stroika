@@ -24,12 +24,8 @@ namespace Stroika::Foundation::Containers::Factory {
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      */
-    template <typename T, typename KEY_TYPE, typename TRAITS, typename KEY_INORDER_COMPARER = less<KEY_TYPE>>
+    template <typename T, typename KEY_TYPE, typename TRAITS, IInOrderComparer<KEY_TYPE> KEY_INORDER_COMPARER = less<KEY_TYPE>>
     class SortedKeyedCollection_Factory {
-    public:
-        static_assert (Common::IsStrictInOrderComparer<KEY_INORDER_COMPARER> (),
-                       "StrictInOrder comparer required with SortedKeyedCollection");
-
     public:
         /**
          *  The type of object produced by the factory.

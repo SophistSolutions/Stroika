@@ -513,14 +513,6 @@ namespace Stroika::Foundation::Containers {
          */
         nonvirtual tuple<_IRep*, Iterator<value_type>> _GetWritableRepAndPatchAssociatedIterator (const Iterator<value_type>& i);
 
-    private:
-        template <typename CONTAINER_OF_Key_T>
-        nonvirtual CONTAINER_OF_Key_T
-        As_ (enable_if_t<is_convertible_v<typename CONTAINER_OF_Key_T::value_type, pair<KEY_TYPE, MAPPED_VALUE_TYPE>>, int> usesInsertPair = 0) const;
-        template <typename CONTAINER_OF_Key_T>
-        nonvirtual CONTAINER_OF_Key_T
-        As_ (enable_if_t<!is_convertible_v<typename CONTAINER_OF_Key_T::value_type, pair<KEY_TYPE, MAPPED_VALUE_TYPE>>, int> usesDefaultIterableImpl = 0) const;
-
     public:
         template <
 #if qCompilerAndStdLib_RequiresIEqialsCrashesAssociation_Buggy

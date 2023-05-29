@@ -19,6 +19,8 @@
 
 namespace Stroika::Foundation::Containers {
 
+    using Common::IInOrderComparer;
+
     /**
      *  \brief  A SortedKeyedCollection is a KeyedCollection<T> which remains sorted (iteration produces items sorted) even as you add and remove entries.
      *
@@ -101,7 +103,7 @@ namespace Stroika::Foundation::Containers {
          *
          *  If TRAITS (TraitsType) has a valid default extractor, enable certain constructors.
          *
-         * \req IsStrictInOrderComparer<KEY_INORDER_COMPARER> () - for constructors with that type parameter
+         * \req IInOrderComparer<KEY_INORDER_COMPARER,KEY_TYPE> - for constructors with that type parameter
          *
          *  \par Example Usage
          *      \code
@@ -109,29 +111,25 @@ namespace Stroika::Foundation::Containers {
          *
          *  \note   <a href="ReadMe.md#Container Constructors">See general information about container constructors that applies here</a>
          */
-        template <typename KEY_INORDER_COMPARER = less<KEY_TYPE>, enable_if_t<Common::IsStrictInOrderComparer<KEY_INORDER_COMPARER, KEY_TYPE> ()>* = nullptr>
+        template <IInOrderComparer<KEY_TYPE> KEY_INORDER_COMPARER = less<KEY_TYPE>>
         SortedKeyedCollection (KEY_INORDER_COMPARER&& keyComparer = KEY_INORDER_COMPARER{});
         SortedKeyedCollection (SortedKeyedCollection&& src) noexcept      = default;
         SortedKeyedCollection (const SortedKeyedCollection& src) noexcept = default;
-        template <typename KEY_INORDER_COMPARER = less<KEY_TYPE>, enable_if_t<Common::IsStrictInOrderComparer<KEY_INORDER_COMPARER, KEY_TYPE> ()>* = nullptr>
+        template <IInOrderComparer<KEY_TYPE> KEY_INORDER_COMPARER = less<KEY_TYPE>>
         SortedKeyedCollection (const KeyExtractorType& keyExtractor, KEY_INORDER_COMPARER&& keyComparer = KEY_INORDER_COMPARER{});
-        template <ranges::range ITERABLE_OF_ADDABLE, typename KEY_INORDER_COMPARER = equal_to<KEY_TYPE>,
-                  enable_if_t<not is_base_of_v<SortedKeyedCollection<T, KEY_TYPE, TRAITS>, decay_t<ITERABLE_OF_ADDABLE>> and
-                              Common::IsStrictInOrderComparer<KEY_INORDER_COMPARER, KEY_TYPE> ()>* = nullptr>
+        template <ranges::range ITERABLE_OF_ADDABLE, IInOrderComparer<KEY_TYPE> KEY_INORDER_COMPARER = equal_to<KEY_TYPE>,
+                  enable_if_t<not is_base_of_v<SortedKeyedCollection<T, KEY_TYPE, TRAITS>, decay_t<ITERABLE_OF_ADDABLE>>>* = nullptr>
         SortedKeyedCollection (ITERABLE_OF_ADDABLE&& src);
-        template <ranges::range ITERABLE_OF_ADDABLE, typename KEY_INORDER_COMPARER = less<KEY_TYPE>,
-                  enable_if_t<not is_base_of_v<SortedKeyedCollection<T, KEY_TYPE, TRAITS>, decay_t<ITERABLE_OF_ADDABLE>> and
-                              Common::IsStrictInOrderComparer<KEY_INORDER_COMPARER, KEY_TYPE> ()>* = nullptr>
+        template <ranges::range ITERABLE_OF_ADDABLE, IInOrderComparer<KEY_TYPE> KEY_INORDER_COMPARER = less<KEY_TYPE>,
+                  enable_if_t<not is_base_of_v<SortedKeyedCollection<T, KEY_TYPE, TRAITS>, decay_t<ITERABLE_OF_ADDABLE>>>* = nullptr>
         SortedKeyedCollection (KEY_INORDER_COMPARER&& keyComparer, ITERABLE_OF_ADDABLE&& src);
-        template <typename KEY_INORDER_COMPARER, ranges::range ITERABLE_OF_ADDABLE, enable_if_t<Common::IsStrictInOrderComparer<KEY_INORDER_COMPARER, KEY_TYPE> ()>* = nullptr>
+        template <IInOrderComparer<KEY_TYPE> KEY_INORDER_COMPARER, ranges::range ITERABLE_OF_ADDABLE>
         SortedKeyedCollection (const KeyExtractorType& keyExtractor, KEY_INORDER_COMPARER&& keyComparer, ITERABLE_OF_ADDABLE&& src);
-        template <input_iterator ITERATOR_OF_ADDABLE, typename KEY_INORDER_COMPARER = less<KEY_TYPE>,
-                  enable_if_t<Common::IsStrictInOrderComparer<KEY_INORDER_COMPARER, KEY_TYPE> ()>* = nullptr>
+        template <input_iterator ITERATOR_OF_ADDABLE, IInOrderComparer<KEY_TYPE> KEY_INORDER_COMPARER = less<KEY_TYPE>>
         SortedKeyedCollection (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
-        template <input_iterator ITERATOR_OF_ADDABLE, typename KEY_INORDER_COMPARER = less<KEY_TYPE>,
-                  enable_if_t<Common::IsStrictInOrderComparer<KEY_INORDER_COMPARER, KEY_TYPE> ()>* = nullptr>
+        template <input_iterator ITERATOR_OF_ADDABLE, IInOrderComparer<KEY_TYPE> KEY_INORDER_COMPARER = less<KEY_TYPE>>
         SortedKeyedCollection (KEY_INORDER_COMPARER&& keyComparer, ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
-        template <typename KEY_INORDER_COMPARER, input_iterator ITERATOR_OF_ADDABLE, enable_if_t<Common::IsStrictInOrderComparer<KEY_INORDER_COMPARER, KEY_TYPE> ()>* = nullptr>
+        template <IInOrderComparer<KEY_TYPE> KEY_INORDER_COMPARER, input_iterator ITERATOR_OF_ADDABLE>
         SortedKeyedCollection (const KeyExtractorType& keyExtractor, KEY_INORDER_COMPARER&& keyComparer, ITERATOR_OF_ADDABLE&& start,
                                ITERATOR_OF_ADDABLE&& end);
 

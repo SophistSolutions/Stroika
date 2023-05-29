@@ -49,7 +49,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         /**
          *  \brief SetInOrderComparer is the COMPARER passed to the STL set. It intrinsically uses the provided extractor and key comparer
          */
-        template <typename KEY_INORDER_COMPARER = less<key_type>>
+        template <IInOrderComparer<KEY_TYPE> KEY_INORDER_COMPARER = less<key_type>>
         struct SetInOrderComparer {
             static_assert (not is_reference_v<KEY_INORDER_COMPARER>);
             SetInOrderComparer () = delete;
@@ -73,34 +73,30 @@ namespace Stroika::Foundation::Containers::Concrete {
         /**
          *  \brief STDSET is std::set<> that can be used inside KeyedCollection_stdset
          */
-        template <typename KEY_INORDER_COMPARER = less<key_type>>
+        template <IInOrderComparer<KEY_TYPE> KEY_INORDER_COMPARER = less<key_type>>
         using STDSET =
             set<value_type, SetInOrderComparer<KEY_INORDER_COMPARER>, Memory::BlockAllocatorOrStdAllocatorAsAppropriate<value_type, sizeof (value_type) <= 1024>>;
 
     public:
-        template <typename KEY_INORDER_COMPARER = less<KEY_TYPE>, enable_if_t<Common::IsStrictInOrderComparer<KEY_INORDER_COMPARER, KEY_TYPE> ()>* = nullptr>
+        template <IInOrderComparer<KEY_TYPE> KEY_INORDER_COMPARER = less<KEY_TYPE>>
         SortedKeyedCollection_stdset (KEY_INORDER_COMPARER&& keyComparer = KEY_INORDER_COMPARER{});
         SortedKeyedCollection_stdset (SortedKeyedCollection_stdset&& src) noexcept      = default;
         SortedKeyedCollection_stdset (const SortedKeyedCollection_stdset& src) noexcept = default;
-        template <typename KEY_INORDER_COMPARER = less<KEY_TYPE>, enable_if_t<Common::IsStrictInOrderComparer<KEY_INORDER_COMPARER, KEY_TYPE> ()>* = nullptr>
+        template <IInOrderComparer<KEY_TYPE> KEY_INORDER_COMPARER = less<KEY_TYPE>>
         SortedKeyedCollection_stdset (const KeyExtractorType& keyExtractor, KEY_INORDER_COMPARER&& keyComparer = KEY_INORDER_COMPARER{});
-        template <ranges::range ITERABLE_OF_ADDABLE, typename KEY_INORDER_COMPARER = equal_to<KEY_TYPE>,
-                  enable_if_t<not is_base_of_v<SortedKeyedCollection_stdset<T, KEY_TYPE, TRAITS>, decay_t<ITERABLE_OF_ADDABLE>> and
-                              Common::IsStrictInOrderComparer<KEY_INORDER_COMPARER, KEY_TYPE> ()>* = nullptr>
+        template <ranges::range ITERABLE_OF_ADDABLE, IInOrderComparer<KEY_TYPE> KEY_INORDER_COMPARER = equal_to<KEY_TYPE>,
+                  enable_if_t<not is_base_of_v<SortedKeyedCollection_stdset<T, KEY_TYPE, TRAITS>, decay_t<ITERABLE_OF_ADDABLE>>>* = nullptr>
         SortedKeyedCollection_stdset (ITERABLE_OF_ADDABLE&& src);
-        template <ranges::range ITERABLE_OF_ADDABLE, typename KEY_INORDER_COMPARER = less<KEY_TYPE>,
-                  enable_if_t<not is_base_of_v<SortedKeyedCollection_stdset<T, KEY_TYPE, TRAITS>, decay_t<ITERABLE_OF_ADDABLE>> and
-                              Common::IsStrictInOrderComparer<KEY_INORDER_COMPARER, KEY_TYPE> ()>* = nullptr>
+        template <ranges::range ITERABLE_OF_ADDABLE, IInOrderComparer<KEY_TYPE> KEY_INORDER_COMPARER = less<KEY_TYPE>,
+                  enable_if_t<not is_base_of_v<SortedKeyedCollection_stdset<T, KEY_TYPE, TRAITS>, decay_t<ITERABLE_OF_ADDABLE>>>* = nullptr>
         SortedKeyedCollection_stdset (KEY_INORDER_COMPARER&& keyComparer, ITERABLE_OF_ADDABLE&& src);
-        template <typename KEY_INORDER_COMPARER, ranges::range ITERABLE_OF_ADDABLE, enable_if_t<Common::IsStrictInOrderComparer<KEY_INORDER_COMPARER, KEY_TYPE> ()>* = nullptr>
+        template <IInOrderComparer<KEY_TYPE> KEY_INORDER_COMPARER, ranges::range ITERABLE_OF_ADDABLE>
         SortedKeyedCollection_stdset (const KeyExtractorType& keyExtractor, KEY_INORDER_COMPARER&& keyComparer, ITERABLE_OF_ADDABLE&& src);
-        template <input_iterator ITERATOR_OF_ADDABLE, typename KEY_INORDER_COMPARER = less<KEY_TYPE>,
-                  enable_if_t<Common::IsStrictInOrderComparer<KEY_INORDER_COMPARER, KEY_TYPE> ()>* = nullptr>
+        template <input_iterator ITERATOR_OF_ADDABLE, IInOrderComparer<KEY_TYPE> KEY_INORDER_COMPARER = less<KEY_TYPE>>
         SortedKeyedCollection_stdset (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
-        template <input_iterator ITERATOR_OF_ADDABLE, typename KEY_INORDER_COMPARER = less<KEY_TYPE>,
-                  enable_if_t<Common::IsStrictInOrderComparer<KEY_INORDER_COMPARER, KEY_TYPE> ()>* = nullptr>
+        template <input_iterator ITERATOR_OF_ADDABLE, IInOrderComparer<KEY_TYPE> KEY_INORDER_COMPARER = less<KEY_TYPE>>
         SortedKeyedCollection_stdset (KEY_INORDER_COMPARER&& keyComparer, ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
-        template <typename KEY_INORDER_COMPARER, input_iterator ITERATOR_OF_ADDABLE, enable_if_t<Common::IsStrictInOrderComparer<KEY_INORDER_COMPARER, KEY_TYPE> ()>* = nullptr>
+        template <IInOrderComparer<KEY_TYPE> KEY_INORDER_COMPARER, input_iterator ITERATOR_OF_ADDABLE>
         SortedKeyedCollection_stdset (const KeyExtractorType& keyExtractor, KEY_INORDER_COMPARER&& keyComparer, ITERATOR_OF_ADDABLE&& start,
                                       ITERATOR_OF_ADDABLE&& end);
 
@@ -112,7 +108,7 @@ namespace Stroika::Foundation::Containers::Concrete {
 
     private:
         class IImplRepBase_;
-        template <typename KEY_INORDER_COMPARER>
+        template <IInOrderComparer<KEY_TYPE> KEY_INORDER_COMPARER>
         class Rep_;
 
     private:
