@@ -1019,6 +1019,18 @@ sub	SetDefaultForCompilerDriver_
 		}
 	}
 
+	## LINK ERROR annotate_string  started in vs2k 22 17.6 linking boost...
+	## https://learn.microsoft.com/en-us/answers/questions/864574/enabling-address-sanitizer-results-in-error-lnk203
+	## https://learn.microsoft.com/en-us/cpp/sanitizers/error-container-overflow?view=msvc-170
+	if (IsMSVCCompiler_($COMPILER_DRIVER_CPlusPlus) && Get_MSVC_CL_Version_ ($COMPILER_DRIVER_CPlusPlus) >= 192930037 ) {
+		my %already = map { $_ => 1 } @sanitizerFlags;
+		if(exists($already{'address'})) {
+			## Workaround issue which started in 17.6 compiler
+			push @CXXFLAGS, '-D_DISABLE_VECTOR_ANNOTATION';
+			push @CXXFLAGS, '-D_DISABLE_STRING_ANNOTATION';
+		}
+	}
+
 	if (IsGCCOrGPlusPlus_($COMPILER_DRIVER_CPlusPlus) and (GetGCCVersion_ ($COMPILER_DRIVER_CPlusPlus) >= 11.0)) {
 		# Needed for sqlite build warning
 		$qCompiler_HasNoMisleadingIndentation_Flag = true;
