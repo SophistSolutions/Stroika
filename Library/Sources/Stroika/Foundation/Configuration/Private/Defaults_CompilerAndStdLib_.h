@@ -823,65 +823,6 @@ InternetMediaType.cpp:180:68: note:   couldn't deduce template parameter 'T_THRE
 #endif
 
 /*
-'InputStream.cpp: In member function ‘Stroika::Foundation::Memory::BLOB Stroika::Foundation::Streams::InputStream<ELEMENT_TYPE>::Ptr::ReadAll(size_t) const requires  is_same_v<ELEMENT_TYPE, std::byte> [with I = std::byte; ELEMENT_TYPE = std::byte; size_t = long unsigned int]’:
-InputStream.cpp:73:13: internal compiler error: Segmentation fault
-   73 |             break;
-      |             ^~~~~
-0xd910e3 crash_signal
-        ../../src/gcc/toplev.cc:322
-0x840c38 vec<tree_node*, va_gc, vl_embed>::last()
-        ../../src/gcc/vec.h:901
-0x840c38 break_maybe_infinite_loop()
-        ../../src/gcc/cp/semantics.cc:713
-0x7ce96d cp_parser_jump_statement
-        ../../src/gcc/cp/parser.cc:14250
-0x7ce96d cp_parser_statement
-        ../../src/gcc/cp/parser.cc:12312
-0x7cee5d cp_parser_statement_seq_opt
-        ../../src/gcc/cp/parser.cc:12850
-0x7cef0f cp_parser_compound_statement
-        ../../src/gcc/cp/parser.cc:12802
-0x7f2ce5 cp_parser_implicitly_scoped_statement
-        ../../src/gcc/cp/parser.cc:14416
-0x7f39ca cp_parser_selection_statement
-        ../../src/gcc/cp/parser.cc:13126
-0x7ce2c5 cp_parser_statement
-        ../../src/gcc/cp/parser.cc:12296
-0x7cee5d cp_parser_statement_seq_opt
-        ../../src/gcc/cp/parser.cc:12850
-0x7efc8e cp_parser_already_scoped_statement
-        ../../src/gcc/cp/parser.cc:14480
-0x7f2fd2 cp_parser_iteration_statement
-        ../../src/gcc/cp/parser.cc:14114
-0x7cdbd5 cp_parser_statement
-        ../../src/gcc/cp/parser.cc:12303
-0x7cee5d cp_parser_statement_seq_opt
-        ../../src/gcc/cp/parser.cc:12850
-0x7cef0f cp_parser_compound_statement
-        ../../src/gcc/cp/parser.cc:12802
-0x7ed963 cp_parser_function_body
-        ../../src/gcc/cp/parser.cc:25069
-0x7ed963 cp_parser_ctor_initializer_opt_and_function_body
-        ../../src/gcc/cp/parser.cc:25120
-0x7eeaae cp_parser_function_definition_after_declarator
-        ../../src/gcc/cp/parser.cc:31252
-0x7efb16 cp_parser_function_definition_from_specifiers_and_declarator
-        ../../src/gcc/cp/parser.cc:31168
-Please submit a full bug report, with preprocessed source (by using -freport-bug).
-*/
-#ifndef qCompilerAndStdLib_compiler_crash_on_break_Buggy
-
-#if defined(__GNUC__) && !defined(__clang__)
-// VERIFIED BROKEN IN GCC 11
-// VERIFIED BROKEN IN GCC 12
-#define qCompilerAndStdLib_compiler_crash_on_break_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ <= 12)
-#else
-#define qCompilerAndStdLib_compiler_crash_on_break_Buggy 0
-#endif
-
-#endif
-
-/*
 ../Characters/StringBuilder.inl:114:27: error: no declaration matches ‘Stroika::Foundation::Characters::StringBuilder& Stroika::Foundation::Characters::StringBuilder::operator+=(APPEND_ARG_T&&) requires requires(Stroika::Foundation::Characters::StringBuilder& s, APPEND_ARG_T&& a) {s->Stroika::Foundation::Characters::StringBuilder::Append()((forward<APPEND_ARG_T>)(a));}’
   114 |     inline StringBuilder& StringBuilder::operator+= (APPEND_ARG_T&& a)
       |                           ^~~~~~~~~~~~~

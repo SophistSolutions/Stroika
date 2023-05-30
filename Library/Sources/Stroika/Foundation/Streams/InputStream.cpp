@@ -67,11 +67,7 @@ Memory::BLOB InputStream<byte>::Ptr::ReadAll (size_t upTo) const
         Assert (0 <= n and n <= nEltsLeft);
         Assert (0 <= n and n <= Memory::NEltsOf (buf));
         if (n == 0) {
-#if qCompilerAndStdLib_compiler_crash_on_break_Buggy
-            return BLOB{r};
-#else
             break;
-#endif
         }
         else {
             // @todo???
