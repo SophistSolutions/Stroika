@@ -881,8 +881,6 @@ Please submit a full bug report, with preprocessed source (by using -freport-bug
 
 #endif
 
-
-
 /*
 ../Characters/StringBuilder.inl:114:27: error: no declaration matches ‘Stroika::Foundation::Characters::StringBuilder& Stroika::Foundation::Characters::StringBuilder::operator+=(APPEND_ARG_T&&) requires requires(Stroika::Foundation::Characters::StringBuilder& s, APPEND_ARG_T&& a) {s->Stroika::Foundation::Characters::StringBuilder::Append()((forward<APPEND_ARG_T>)(a));}’
   114 |     inline StringBuilder& StringBuilder::operator+= (APPEND_ARG_T&& a)

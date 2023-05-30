@@ -483,18 +483,14 @@ namespace Stroika::Foundation::Streams {
          *  @see Streams::CopyAll()
          * 
          *  \note ReadAll -> BLOB in cpp file and templated just due to deadly include embrace.
+         *        cannot get working with require() since to be in CPP file, need to use template
+         *        specialization, and cannot specify requires with template specialization (or I cannot figure out how)
          */
         nonvirtual Characters::String ReadAll (size_t upTo = numeric_limits<size_t>::max ()) const
             requires (is_same_v<ELEMENT_TYPE, Characters::Character>);
-#if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
         template <typename TEST_TYPE = ELEMENT_TYPE, enable_if_t<is_same_v<TEST_TYPE, byte>>* = nullptr>
         nonvirtual Memory::BLOB ReadAll (size_t upTo = numeric_limits<size_t>::max ()) const;
-#else
-        template <typename I = ELEMENT_TYPE>
-        nonvirtual Memory::BLOB ReadAll (size_t upTo = numeric_limits<size_t>::max ()) const
-            requires (is_same_v<ELEMENT_TYPE, byte>);
-#endif
-        nonvirtual size_t ReadAll (ElementType* intoStart, ElementType* intoEnd) const;
+        nonvirtual size_t       ReadAll (ElementType* intoStart, ElementType* intoEnd) const;
 
     protected:
         /**
