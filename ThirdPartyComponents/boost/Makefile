@@ -34,11 +34,10 @@ PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_:=$(shell realpath --canoni
 OUTPUT_WORKDIR_PRETTYNAME="$(shell $(StroikaRoot)ScriptsLib/SubstituteBackVariables "$(PER_CONFIGURATION_THIS_INTERMEDIATEFILES_DIR_NOSLASH_)/")"
 
 
-VERSION=1_81_0
+VERSION=1_82_0
+#VERSION=1_81_0
 #VERSION=1_80_0
 #VERSION=1_79_0
-#VERSION=1_78_0
-#VERSION=1_78_0_b1
 VERSION_WITH_DOTS=$(shell echo $(VERSION) | sed s/_/\./g)
 VERSION_WITH_2DOTS=$(shell echo $(VERSION_WITH_DOTS) | sed 's/\.[ab][0-9]//')
 ZIPPEDFILE=../Origs-Cache/boost_$(VERSION).tar.gz
@@ -209,14 +208,7 @@ endif
 # this selects a bunch of parameters, but the compiler itself can still be overriden by other parameters - just the
 # darwin.jam file (basically) - and other defaults sort of related to that.
 ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
-ifeq ($(ProjectPlatformSubdir),VisualStudio.Net-2022)
-### This SHOULD be 14.3, but must use 14.2 for the time being since thats all thats supported in boost 1_77_0
-TOOLSET_NAME=msvc-14.2
-else ifeq ($(ProjectPlatformSubdir),VisualStudio.Net-2019)
-TOOLSET_NAME=msvc-14.2
-else
 TOOLSET_NAME=msvc
-endif
 else ifeq ($(DETECTED_HOST_OS),Darwin)
 #using the name darwin caused errors with XCode 11.4, but otherwise appears to make sense (and we used til 11.4) -- LGP 2020-04-12
 #TOOLSET_NAME=darwin
