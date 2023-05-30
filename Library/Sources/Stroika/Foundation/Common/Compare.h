@@ -225,6 +225,8 @@ namespace Stroika::Foundation::Common {
      *  This doesn't require that that you've annotated the comparer, so it can false-positive (like mixing up
      *  an equality comparer for an in-order comparer).
      * 
+     *  @todo consuder using std::relation and maybe losing this in favor of that
+     * 
      *  \see IEqualsComparer for something stricter
      */
     template <typename COMPARER, typename ARG_T>
@@ -234,6 +236,8 @@ namespace Stroika::Foundation::Common {
      *  Checks that the argument comparer compares values of type ARG_T, and returns an equals comparison result.
      * 
      *  This won't let confuse equal_to with actual in-order comparison functions.
+     * 
+     *  @todo consuder using std::equivalence_relation and maybe losing this in favor of that
      * 
      *  \see IPotentiallyComparer, and use DeclareEqualsComparer to mark a given function as an in-order comparer.
      * 
