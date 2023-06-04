@@ -89,13 +89,14 @@ RUN (%TEMP%\vs_buildtools.exe \
     --add Microsoft.VisualStudio.Workload.MSBuildTools  \
     --add Microsoft.VisualStudio.Workload.UniversalBuildTools \
     --add Microsoft.VisualStudio.Component.VC.ATL \
+    --add Microsoft.VisualStudio.Component.VC.ATLMFC \
     --add Microsoft.VisualStudio.Workload.VCTools  \
     --add Microsoft.VisualStudio.Component.Windows10SDK.20348 \
     --add Microsoft.VisualStudio.Component.VC.Tools.x86.x64 \ 
     --add Microsoft.VisualStudio.Component.VC.CMake.Project \ 
     --add Microsoft.VisualStudio.Component.TestTools.BuildTools \ 
     --add Microsoft.VisualStudio.Component.VC.ASAN \
-    --add Microsoft.VisualStudio.Component.VC.140 \
+    --add Microsoft.VisualStudio.Component.VC.143 \
     --quiet --wait --norestart --noUpdateInstaller \
     || IF "%ERRORLEVEL%"=="3010" EXIT 0) \
     && (%TEMP%\vs_buildtools.exe \
