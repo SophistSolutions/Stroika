@@ -53,9 +53,6 @@ ARG VS_17_1_6=https://download.visualstudio.microsoft.com/download/pr/949751db-6
 ARG VS_17_2_6=https://download.visualstudio.microsoft.com/download/pr/91cf5cbb-c34a-4766-bff6-aea28265d815/645d56f3dc5b12783a0c9a19dc90a2cfc63191d837e6c988fba91e6db3525bf3/vs_BuildTools.exe
 ARG VS_17_3_6=https://download.visualstudio.microsoft.com/download/pr/5c9aef4f-a79b-4b72-b379-14273860b285/bd2dd3a59d2553382f89712d19e4d5c3d930d9a41c9426cf8194dd5a3a75875f/vs_BuildTools.exe
 ARG VS_17_4_2=https://download.visualstudio.microsoft.com/download/pr/f3f8db49-2cd0-43df-9ced-12dcb6b3954b/8f91b73ed92af58f25d4fe12e7963619af9e8b2997b9a83ec520fe3f52a40099/vs_BuildTools.exe
-ARG VS_17_5_1=https://download.visualstudio.microsoft.com/download/pr/07db0e25-01f0-4ac0-946d-e03196d2cc8b/c200c70c03378c5d45f16746a1ab6470bb9894f2492ef753aaeff2545c050e96/vs_BuildTools.exe
-ARG VS_17_5_2=https://download.visualstudio.microsoft.com/download/pr/3b6ddbf8-a147-4435-a494-52ca53c1322f/5b5fe89fa8b28b8f6623fbce6b8688c469759b24c1dada428c8e5227a83cbb57/vs_BuildTools.exe
-ARG VS_17_5_4=https://download.visualstudio.microsoft.com/download/pr/0bb9a5f5-5481-4efe-92ab-cca29a90fa5e/adbfb904ddfc115ae7df00098df92d4e545a5eb062ffea8a93f7b8df8d509ff3/vs_BuildTools.exe
 ARG VS_17_5_5=https://download.visualstudio.microsoft.com/download/pr/7ac7457f-ba6e-4a12-ba2c-1adebad20070/619bb425ddaecbbb256036b1b2d8b5756c64cb1b1dffe5251facf9dabdd88258/vs_BuildTools.exe
 ARG VS_17_6_2=https://download.visualstudio.microsoft.com/download/pr/db3d4c0f-3622-4e9b-bc48-7b4d831a33a7/0a8ec7c331042e44839ecf22e4e8f451c91c53605e3f1dad6c0ba69a4cbc70a2/vs_BuildTools.exe
 
@@ -78,20 +75,27 @@ RUN Invoke-WebRequest "$env:VS_17_6_2" \
 #
 #   AND FIND WAY TO PRINT actutal set of things installed (workloads or comoennts or something so I can maybe do removes)
 
+
+#    --add Microsoft.VisualStudio.Component.Windows10SDK.19041 \
+#    --add Microsoft.VisualStudio.Component.Windows10SDK.20348 \
+
+
 # Since Visual Studio.net 17.5.0, adding Microsoft.VisualStudio.Component.VC.ATLMFC above causes install to fail,
 # But adding here by itself is fine.
 # del stuff to minimize space left in the filesystem layer
 SHELL ["cmd", "/S", "/C"]
 RUN (%TEMP%\vs_buildtools.exe \
     --installPath "%ProgramFiles%\Microsoft Visual Studio\2022\BuildTools" \
-    --includeRecommended \
-    --add Microsoft.VisualStudio.Workload.VCTools \
+    --add Microsoft.VisualStudio.Workload.MSBuildTools  \
     --add Microsoft.VisualStudio.Workload.UniversalBuildTools \
     --add Microsoft.VisualStudio.Component.VC.ATL \
-    --remove Microsoft.VisualStudio.Component.Windows10SDK.10240 \
-    --remove Microsoft.VisualStudio.Component.Windows10SDK.10586 \
-    --remove Microsoft.VisualStudio.Component.Windows10SDK.14393 \
-    --remove Microsoft.VisualStudio.Component.Windows81SDK \
+    --add Microsoft.VisualStudio.Workload.VCTools  \
+    --add Microsoft.VisualStudio.Component.Windows10SDK.20348 \
+    --add Microsoft.VisualStudio.Component.VC.Tools.x86.x64 \ 
+    --add Microsoft.VisualStudio.Component.VC.CMake.Project \ 
+    --add Microsoft.VisualStudio.Component.TestTools.BuildTools \ 
+    --add Microsoft.VisualStudio.Component.VC.ASAN \
+    --add Microsoft.VisualStudio.Component.VC.140 \
     --quiet --wait --norestart --noUpdateInstaller \
     || IF "%ERRORLEVEL%"=="3010" EXIT 0) \
     && (%TEMP%\vs_buildtools.exe \
