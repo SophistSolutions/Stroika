@@ -75,33 +75,24 @@ RUN Invoke-WebRequest "$env:VS_17_6_2" \
 #
 #   AND FIND WAY TO PRINT actutal set of things installed (workloads or comoennts or something so I can maybe do removes)
 
-
+## ALTERNATE COMPONENT LINES TO CONSIDER
 #    --add Microsoft.VisualStudio.Component.Windows10SDK.19041 \
-#    --add Microsoft.VisualStudio.Component.Windows10SDK.20348 \
+#   --add Microsoft.VisualStudio.Component.TestTools.BuildTools \ 
 
-
-# Since Visual Studio.net 17.5.0, adding Microsoft.VisualStudio.Component.VC.ATLMFC above causes install to fail,
-# But adding here by itself is fine.
 # del stuff to minimize space left in the filesystem layer
 SHELL ["cmd", "/S", "/C"]
 RUN (%TEMP%\vs_buildtools.exe \
     --installPath "%ProgramFiles%\Microsoft Visual Studio\2022\BuildTools" \
     --add Microsoft.VisualStudio.Workload.MSBuildTools  \
     --add Microsoft.VisualStudio.Workload.UniversalBuildTools \
+    --add Microsoft.VisualStudio.Workload.VCTools  \
     --add Microsoft.VisualStudio.Component.VC.ATL \
     --add Microsoft.VisualStudio.Component.VC.ATLMFC \
-    --add Microsoft.VisualStudio.Workload.VCTools  \
     --add Microsoft.VisualStudio.Component.Windows10SDK.20348 \
     --add Microsoft.VisualStudio.Component.VC.Tools.x86.x64 \ 
     --add Microsoft.VisualStudio.Component.VC.CMake.Project \ 
-    --add Microsoft.VisualStudio.Component.TestTools.BuildTools \ 
     --add Microsoft.VisualStudio.Component.VC.ASAN \
     --add Microsoft.VisualStudio.Component.VC.143 \
-    --quiet --wait --norestart --noUpdateInstaller \
-    || IF "%ERRORLEVEL%"=="3010" EXIT 0) \
-    && (%TEMP%\vs_buildtools.exe \
-    --installPath "%ProgramFiles%\Microsoft Visual Studio\2022\BuildTools" \
-    --add Microsoft.VisualStudio.Component.VC.ATLMFC \
     --quiet --wait --norestart --noUpdateInstaller \
     || IF "%ERRORLEVEL%"=="3010" EXIT 0) \
     && (del /f /s /q "%TEMP%\*.*")
