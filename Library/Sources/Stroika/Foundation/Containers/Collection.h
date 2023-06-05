@@ -156,7 +156,7 @@ namespace Stroika::Foundation::Containers {
         template <ranges::range ITERABLE_OF_ADDABLE>
         Collection (ITERABLE_OF_ADDABLE&& src)
             requires (not derived_from<ITERABLE_OF_ADDABLE, Collection<T>>)
-#if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy  && 0
+#if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
             : Collection{}
         {
             static_assert (IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>);
