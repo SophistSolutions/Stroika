@@ -56,7 +56,7 @@ namespace Stroika::Foundation::Containers {
         AddAll (src);
         _AssertRepValidType ();
     }
-#if !qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
+#if !qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy || 1
     template <typename T>
     template <ranges::range ITERABLE_OF_ADDABLE>
     inline Collection<T>::Collection (ITERABLE_OF_ADDABLE&& src)
