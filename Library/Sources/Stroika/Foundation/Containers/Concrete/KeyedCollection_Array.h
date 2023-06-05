@@ -58,7 +58,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         KeyedCollection_Array (const KeyExtractorType& keyExtractor, KEY_EQUALS_COMPARER&& keyComparer = KEY_EQUALS_COMPARER{});
 #if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
         template <ranges::range ITERABLE_OF_ADDABLE, IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER = equal_to<KEY_TYPE>,
-                  enable_if_t<not derived_from<ITERABLE_OF_ADDABLE, KeyedCollection_Array<T, KEY_TYPE, TRAITS>>* = nullptr> KeyedCollection_Array (ITERABLE_OF_ADDABLE&& src);
+                  enable_if_t<not derived_from<ITERABLE_OF_ADDABLE, KeyedCollection_Array<T, KEY_TYPE, TRAITS>>>* = nullptr> KeyedCollection_Array (ITERABLE_OF_ADDABLE&& src);
 #else
         template <ranges::range ITERABLE_OF_ADDABLE, IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER = equal_to<KEY_TYPE>>
         KeyedCollection_Array (ITERABLE_OF_ADDABLE&& src)
