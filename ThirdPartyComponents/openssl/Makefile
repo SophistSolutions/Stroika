@@ -114,9 +114,9 @@ else
 INSTALL_TARGET=install
 endif
 
-
+#### Testing lose this libdir override - see where its needed --LGP 2023-06-04
 # autoconfigure sometimes detects multilib and then changes default libdir to lib64... - so override to look where rest of code looks for it
-CONFIG_ARGS+=	--libdir=lib
+#CONFIG_ARGS+=	--libdir=lib
 
 
 
