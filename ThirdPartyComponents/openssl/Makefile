@@ -27,14 +27,6 @@ VERSION=3.1.0
 #VERSION=3.0.8
 #VERSION=3.0.7
 #VERSION=3.0.5
-#VERSION=3.0.4
-#VERSION=3.0.2
-#VERSION=3.0.1
-#VERSION=3.0.0
-
-#VERSION=1.1.1k
-#VERSION=1.1.1j
-
 
 BASENAME=openssl-$(VERSION)
 EXTRACTED_DIRNAME=$(BASENAME)
@@ -114,10 +106,10 @@ else
 INSTALL_TARGET=install
 endif
 
-#### Testing lose this libdir override - see where its needed --LGP 2023-06-04
-# autoconfigure sometimes detects multilib and then changes default libdir to lib64... - so override to look where rest of code looks for it
-#CONFIG_ARGS+=	--libdir=lib
-
+# autoconfigure sometimes (linux) detects multilib and then changes default libdir to lib64... - so override to look where rest of code looks for it
+ifeq (Unix,$(ProjectPlatformSubdir))
+CONFIG_ARGS+=	--libdir=lib
+endif
 
 
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
