@@ -60,7 +60,7 @@ namespace Stroika::Foundation::Containers {
     template <typename T>
     template <ranges::range ITERABLE_OF_ADDABLE>
     inline Collection<T>::Collection (ITERABLE_OF_ADDABLE&& src)
-        requires (not derived_from<ITERABLE_OF_ADDABLE, Collection<T>>)
+        requires (not derived_from<decay_t<ITERABLE_OF_ADDABLE>, Collection<T>>)
         : Collection{}
     {
         static_assert (IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>);

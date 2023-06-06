@@ -155,7 +155,7 @@ namespace Stroika::Foundation::Containers {
         Collection (const initializer_list<value_type>& src);
         template <ranges::range ITERABLE_OF_ADDABLE>
         Collection (ITERABLE_OF_ADDABLE&& src)
-            requires (not derived_from<ITERABLE_OF_ADDABLE, Collection<T>>)
+            requires (not derived_from<decay_t<ITERABLE_OF_ADDABLE>, Collection<T>>)
 #if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
             : Collection{}
         {
