@@ -1,6 +1,6 @@
-# Stroika::[Foundation](../ReadMe.md)::Containers
+# Stroika::[Foundation](../)::Containers
 
-This folder contains all the Stroika Library [Foundation](../ReadMe.md)::Containers source code.
+This folder contains all the Stroika Library [Foundation](../)::Containers source code.
 
 ## Overview
 
@@ -255,12 +255,12 @@ KeyedCollection (KEY_EQUALS_COMPARER&& keyComparer, CONTAINER_OF_ADDABLE&& src);
   and can be hung into indefinitely, do not allow modifications, and do not see modifications of thier source container.
 
 ## Other Modules
-  - [Adapters/](Adapters/ReadMe.md)
-  - [Concrete/](Concrete/ReadMe.md)
-  - [LockFreeDataStructures/](LockFreeDataStructures/ReadMe.md)
-  - [Factory/](Factory/ReadMe.md)
-  - [Support/](Support/ReadMe.md)
-  - [STL/](STL/ReadMe.md)
+  - [Adapters/](Adapters/)
+  - [Concrete/](Concrete/)
+  - [LockFreeDataStructures/](LockFreeDataStructures/)
+  - [Factory/](Factory/)
+  - [Support/](Support/)
+  - [STL/](STL/)
 
 ## Implementation notes
 ---

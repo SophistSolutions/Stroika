@@ -1,6 +1,6 @@
-# Stroika::[Frameworks](../ReadMe.md)::WebService
+# Stroika::[Frameworks](../)::WebService
 
-This Folder contains the [Frameworks](../ReadMe.md)::WebService Framework source code.
+This Folder contains the [Frameworks](../)::WebService Framework source code.
 
 ## Overview
 
@@ -15,5 +15,5 @@ This framework depends on the Web-Server framework
 ## Modules
 
 - [Basic.h](Basic.h)
-- [Client/](Client/ReadMe.md) - proxies
-- [Server/](Server/ReadMe.md) - stubs
+- [Client/](Client/) - proxies
+- [Server/](Server/) - stubs

@@ -1,3 +1,3 @@
-# This folder contains all the Stroika Library [Foundation](../ReadMe.md)::Linguistics source code
+# This folder contains all the Stroika Library [Foundation](../)::Linguistics source code
 
 > > TODO DOCS

@@ -5,7 +5,7 @@
 
 ## Building and Debugging
 - [Building Stroika](Building%20Stroika.md) - Getting started and troubleshooting builds
-- [Using Docker to Build Stroika](../DockerBuildContainers/ReadMe.md) - Often a good way to quickstart
+- [Using Docker to Build Stroika](../DockerBuildContainers/) - Often a good way to quickstart
 - [Debugging](Debugging.md) - helpful hints
 - [Upgrading](Upgrading.md) - How to upgrade Stroika-based code from older versions
 - [Setup RaspberryPi Target](SetupRaspberryPiTarget.md)

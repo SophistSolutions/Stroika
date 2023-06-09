@@ -1,6 +1,6 @@
-# Stroika::[Foundation](../ReadMe.md)::Configuration
+# Stroika::[Foundation](../)::Configuration
 
-This Folder contains the [Foundation](../ReadMe.md)::Configuration source code.
+This Folder contains the [Foundation](../)::Configuration source code.
 
 ## Modules
 
@@ -14,7 +14,7 @@ This Folder contains the [Foundation](../ReadMe.md)::Configuration source code.
 
 - [Enumeration.h](Enumeration.h)
 - [Locale.h](Locale.h)
-- [Platform/](Platform/ReadMe.md)
+- [Platform/](Platform/)
 - [StroikaConfig.h](StroikaConfig.h) [ReadMe](StroikaConfig-ReadMe)
 - [StroikaVersion.h](StroikaVersion.h)
 - [SystemConfiguration.h](SystemConfiguration.h)

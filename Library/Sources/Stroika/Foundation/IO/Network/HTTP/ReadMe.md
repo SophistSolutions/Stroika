@@ -1,6 +1,6 @@
-# Stroika::[Foundation](../../../ReadMe.md)::[IO](../../ReadMe.md)::Network(../ReadMe.md)::HTTP
+# Stroika::[Foundation](../../../)::[IO](../../)::Network(../)::HTTP
 
-This folder contains all the Stroika Library [Foundation](../../../ReadMe.md)::[IO](../../ReadMe.md)::Network(../ReadMe.md)::HTTP.
+This folder contains all the Stroika Library [Foundation](../../../)::[IO](../../)::Network(../)::HTTP.
 
 ## Modules
 

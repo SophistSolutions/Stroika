@@ -1,6 +1,6 @@
-# Stroika::[Foundation](../ReadMe.md)::Memory
+# Stroika::[Foundation](../)::Memory
 
-This folder contains all the Stroika Library [Foundation](../ReadMe.md)::Memory source code
+This folder contains all the Stroika Library [Foundation](../)::Memory source code
 
 ## Overview
 
@@ -20,7 +20,7 @@ in Stroika and CAN be used to greatly improve the efficiency of some memory acce
 - [InlineBuffer.h](InlineBuffer.h) - mix between vector<T> and array<T> (performance of array<> and closer to behavior of vector<T>)
 - [MemoryAllocator.h](MemoryAllocator.h)
 - [Optional.h](Optional.h) - a few handy optional<T> related helpers
-- [Platform/](Platform/ReadMe.md)
+- [Platform/](Platform/)
 - [SharedByValue.h](SharedByValue.h) - a utility class to implement Copy-On-Write (aka COW)
 - [SharedPtr.h](SharedPtr.h)
 - [StackBuffer.h](StackBuffer.h) - very efficient array like class (uses stack where practical instead of heap)

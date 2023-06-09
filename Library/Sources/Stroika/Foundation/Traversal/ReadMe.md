@@ -1,6 +1,6 @@
-# Stroika::[Foundation](../ReadMe.md)::Traversal
+# Stroika::[Foundation](../)::Traversal
 
-This folder contains all the Stroika Library [Foundation](../ReadMe.md)::Traversal source code.
+This folder contains all the Stroika Library [Foundation](../)::Traversal source code.
 
 ## Overview
 

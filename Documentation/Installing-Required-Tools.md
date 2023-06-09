@@ -3,7 +3,7 @@
 This documetation is incomplete, and really has little to do with Stroika, but has been frequently requested, so I'm adding some brief docs on this.
 
 Note also - much of this (in perhaps more detail) can be gleaned (programatically) from the reading the Docker files
-- [../DockerBuildContainers/ReadMe.md](../DockerBuildContainers/ReadMe.md)
+- [../DockerBuildContainers/](../DockerBuildContainers/)
 
 ---
 

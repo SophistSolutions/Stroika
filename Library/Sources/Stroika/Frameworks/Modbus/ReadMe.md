@@ -1,6 +1,6 @@
-# Stroika::[Frameworks](../ReadMe.md)::Modbus
+# Stroika::[Frameworks](../)::Modbus
 
-This Folder contains the [Frameworks](../ReadMe.md)::Modbus Framework source code.
+This Folder contains the [Frameworks](../)::Modbus Framework source code.
 
 ## Modules
 

@@ -1,6 +1,6 @@
-# Stroika::[Foundation](../../../ReadMe.md)::[IO](../../ReadMe.md)::Network(../ReadMe.md)::Transfer
+# Stroika::[Foundation](../../../)::[IO](../../)::Network(../)::Transfer
 
-This folder contains all the Stroika Library [Foundation](../../../ReadMe.md)::[IO](../../ReadMe.md)::Network(../ReadMe.md)::Transfer.
+This folder contains all the Stroika Library [Foundation](../../../)::[IO](../../)::Network(../)::Transfer.
 
 ## Modules
 

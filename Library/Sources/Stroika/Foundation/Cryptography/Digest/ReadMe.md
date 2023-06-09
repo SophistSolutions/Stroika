@@ -1,6 +1,6 @@
-# Stroika::[Foundation](../../ReadMe.md)::[Cryptography](../ReadMe.md)::Digest
+# Stroika::[Foundation](../../)::[Cryptography](../)::Digest
 
-This folder contains all the Stroika Library [Foundation](../../ReadMe.md)::[Cryptography](../ReadMe.md)::Digest source code.
+This folder contains all the Stroika Library [Foundation](../../)::[Cryptography](../)::Digest source code.
 
 ## Overview
 

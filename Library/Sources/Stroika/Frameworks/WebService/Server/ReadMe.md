@@ -1,6 +1,6 @@
-# Stroika::[Frameworks](../../ReadMe.md)::[WebService](../ReadMe.md)::Server
+# Stroika::[Frameworks](../../)::[WebService](../)::Server
 
-This Folder contains the [Frameworks](../../ReadMe.md)::[WebService](../ReadMe.md)::Server source code.
+This Folder contains the [Frameworks](../../)::[WebService](../)::Server source code.
 
 ## Modules
 

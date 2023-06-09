@@ -1,6 +1,6 @@
-# Stroika::[Foundation](../ReadMe.md)::Common
+# Stroika::[Foundation](../)::Common
 
-This folder contains all the Stroika Library [Foundation](../ReadMe.md)::Common source code.
+This folder contains all the Stroika Library [Foundation](../)::Common source code.
 
 Main:
 

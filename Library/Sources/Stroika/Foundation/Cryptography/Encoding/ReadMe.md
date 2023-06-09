@@ -1,6 +1,6 @@
-# Stroika::[Foundation](../../ReadMe.md)::[Cryptography](../ReadMe.md)::Encoding
+# Stroika::[Foundation](../../)::[Cryptography](../)::Encoding
 
-This folder contains all the Stroika Library [Foundation](../../ReadMe.md)::[Cryptography](../ReadMe.md)::Encoding source code.
+This folder contains all the Stroika Library [Foundation](../../)::[Cryptography](../)::Encoding source code.
 
 ## Overview
 

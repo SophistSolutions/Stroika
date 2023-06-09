@@ -1,6 +1,6 @@
-# Stroika::Foundation::[Database](../ReadMe.md)::SQL
+# Stroika::Foundation::[Database](../)::SQL
 
-This folder contains all the Stroika Library Foundation::[Database](../ReadMe.md)::SQL source code.
+This folder contains all the Stroika Library Foundation::[Database](../)::SQL source code.
 
 ## Modules
 
@@ -17,4 +17,4 @@ This folder contains all the Stroika Library Foundation::[Database](../ReadMe.md
 
 - Other
   - [Utils.h](Utils.h)
-  - [ORM/](ORM/ReadMe.md) - Map between VariantValue tree structures and relational database
+  - [ORM/](ORM/) - Map between VariantValue tree structures and relational database

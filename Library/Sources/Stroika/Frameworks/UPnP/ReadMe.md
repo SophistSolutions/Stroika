@@ -1,6 +1,6 @@
-# Stroika::[Frameworks](../ReadMe.md)::UPnP
+# Stroika::[Frameworks](../)::UPnP
 
-This Folder contains the [Frameworks](../ReadMe.md)::UPnP Framework source code.
+This Folder contains the [Frameworks](../)::UPnP Framework source code.
 
 ## Overview
 
@@ -21,11 +21,11 @@ including
 
 ## Sample/Demo apps
 
-- [SSDPClient](../../../../../Samples/SSDPClient/ReadMe.md)
+- [SSDPClient](../../../../../Samples/SSDPClient/)
 
   This sample demonstrates lisening for announcemnts, and searching for devices.
 
-- [SSDPServer](../../../../../Samples/SSDPServer/ReadMe.md)
+- [SSDPServer](../../../../../Samples/SSDPServer/)
 
   This sample demonstrates lisening for searches and responding, and periodic (and up/down) announcements
 
@@ -33,4 +33,4 @@ including
 
 - [Device.h](Device.h)
 - [DeviceDescription.h](DeviceDescription.h)
-- [SSDP/](SSDP/ReadMe.md)
+- [SSDP/](SSDP/)

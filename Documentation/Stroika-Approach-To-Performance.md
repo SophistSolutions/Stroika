@@ -20,7 +20,7 @@ It's well known that "Premature optimization is the root of all evil". But the r
 
 - Analyze performance and optimize bottlenecks as needed.
 
-- Leverage c++'s powerful abstraction mechanisms to very ***locally*** replace bits of code with different approaches (here is where the earlier abstraction pays dividends). And leverage Stroika's utility classes (e.g. [Foundation::Cache](../Library/Sources/Stroika/Foundation/Cache/ReadMe.md) or alternate container backends [Foundation::Containers](../Library/Sources/Stroika/Foundation/Containers/ReadMe.md#Alternate-Backends-Feature)), or localized use of lower level c++ standard library functions to optimize just the pieces that need it).
+- Leverage c++'s powerful abstraction mechanisms to very ***locally*** replace bits of code with different approaches (here is where the earlier abstraction pays dividends). And leverage Stroika's utility classes (e.g. [Foundation::Cache](../Library/Sources/Stroika/Foundation/Cache/) or alternate container backends [Foundation::Containers](../Library/Sources/Stroika/Foundation/Containers/ReadMe.md#Alternate-Backends-Feature)), or localized use of lower level c++ standard library functions to optimize just the pieces that need it).
 
 ## Experience
 

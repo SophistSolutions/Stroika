@@ -1,7 +1,7 @@
-# Stroika::Foundation::[Characters](../ReadMe.md)::Platform
+# Stroika::Foundation::[Characters](../)::Platform
 
-This Folder contains the Foundation::[Characters](../ReadMe.md)::Platform source code.
+This Folder contains the Foundation::[Characters](../)::Platform source code.
 
 - Modules
 
-  - [Windows](Windows/ReadMe.md)
+  - [Windows](Windows/)

@@ -6,7 +6,7 @@ Stroika provides a layer on top of the Standard C++ Library, with simpler to use
 
 Stylistically, Stroika differs from the Standard C++ Library, boost, and many other C++ libraries, in that it (relatively) embraces object oriented abstractions over template-based genericity (see [Stroika-Approach-To-Performance.md](Documentation/Stroika-Approach-To-Performance.md)). The abstraction of type hierarchies is better suited to how people reason, and templates and concepts - while powerful - can be fiddly and obscure programmer intent. Also, Stroika emphasizes separation of interface from implementation: carefully documenting the interface in the headers, and separating the implementation to other files.
 
-Stroika is comprised of 2 layers: the [Foundation](Library/Sources/Stroika/Foundation/ReadMe.md), which provides building-block classes applicable to most applications, and a series of domain specific [Framework](Library/Sources/Stroika/Frameworks/ReadMe.md)s which provide a rich collection of code in different domains.
+Stroika is comprised of 2 layers: the [Foundation](Library/Sources/Stroika/Foundation/), which provides building-block classes applicable to most applications, and a series of domain specific [Framework](Library/Sources/Stroika/Frameworks/)s which provide a rich collection of code in different domains.
 
 ![alt text](Documentation/Images/AppLayersBlockDiagram.png "Title")
 
@@ -17,30 +17,30 @@ The Frameworks depend on the Foundation; Foundation modules frequently depend on
 - Nearly all public interfaces and methods are well documented; implementations are clear and well commented.
 - Thoroughly integrated assertions (including thread-safety assertions) help document and enforce usage patterns (without performance cost in production builds).
 - Each release is tested with Valgrind (helgrind, memcheck), Google Sanitizers (TSAN, UBSAN, and ASAN), Github CodeQL, and a variety of platforms and compilers, as well as a large body of regression tests (including most documentation examples) to help assure library correctness.
-- [Sample applications](Samples/ReadMe.md) help show common use cases (like building a web server into your app to deliver web-service content and APIs).
+- [Sample applications](Samples/) help show common use cases (like building a web server into your app to deliver web-service content and APIs).
 - [Quick start using pre-built Docker containers](/Documentation/Building%20Stroika.md#build-with-docker) (for Windows, and Linux).
 
-## Stroika [Foundation](Library/Sources/Stroika/Foundation/ReadMe.md) provides
+## Stroika [Foundation](Library/Sources/Stroika/Foundation/) provides
 
-- [Cache classes](Library/Sources/Stroika/Foundation/Cache/ReadMe.md) (a variety of different caching/memoizing strategies directly supported).
-- [Characters classes](Library/Sources/Stroika/Foundation/Characters/ReadMe.md) (simpler to use - especially with UNICODE - Strings class, with functional style mappings - to ToString\<template\>() for most Stroika objects).
-- [Container classes](Library/Sources/Stroika/Foundation/Containers/ReadMe.md) (Collection, Queue, Mapping, Sequence, Set, and much more, each with rich variety of backend implementations).
-- [DataExchange](Library/Sources/Stroika/Foundation/DataExchange/ReadMe.md) (VariantValue, rich collection of data format serializer/deserializers - like JSON, object to/from serialization mappings, and much more).
-- [Execution](Library/Sources/Stroika/Foundation/Execution/ReadMe.md) pattern classes (external process runner, synchronization patterns, blocking queue, thread pools, and much more).
-- [Networking](Library/Sources/Stroika/Foundation/IO/Network/ReadMe.md) support (high level socket wrappers, Web client fetching).
-- Simple, elegant [streams library](Library/Sources/Stroika/Foundation/Streams/ReadMe.md), with adapters for cryptography, compression, text transforms, etc.
+- [Cache classes](Library/Sources/Stroika/Foundation/Cache/) (a variety of different caching/memoizing strategies directly supported).
+- [Characters classes](Library/Sources/Stroika/Foundation/Characters/) (simpler to use - especially with UNICODE - Strings class, with functional style mappings - to ToString\<template\>() for most Stroika objects).
+- [Container classes](Library/Sources/Stroika/Foundation/Containers/) (Collection, Queue, Mapping, Sequence, Set, and much more, each with rich variety of backend implementations).
+- [DataExchange](Library/Sources/Stroika/Foundation/DataExchange/) (VariantValue, rich collection of data format serializer/deserializers - like JSON, object to/from serialization mappings, and much more).
+- [Execution](Library/Sources/Stroika/Foundation/Execution/) pattern classes (external process runner, synchronization patterns, blocking queue, thread pools, and much more).
+- [Networking](Library/Sources/Stroika/Foundation/IO/Network/) support (high level socket wrappers, Web client fetching).
+- Simple, elegant [streams library](Library/Sources/Stroika/Foundation/Streams/), with adapters for cryptography, compression, text transforms, etc.
 - Seamless integration (object oriented wrappers respecting Stroika's safety and adapter rules) with many important libraries , including: boost, libcurl, lzma sdk, openssl, sqlite, xerces, zlib (e.g. wrap a compression stream - using for example zlib).
-- and [more](Library/Sources/Stroika/Foundation/ReadMe.md)...
+- and [more](Library/Sources/Stroika/Foundation/)...
 
-## Stroika [Framework](Library/Sources/Stroika/Frameworks/ReadMe.md)s provides
+## Stroika [Framework](Library/Sources/Stroika/Frameworks/)s provides
 
-- [network measurement](Library/Sources/Stroika/Frameworks/NetworkMonitor/ReadMe.md)
-- SSDP/[UPnP](Library/Sources/Stroika/Frameworks/UPnP/ReadMe.md)
-- [system performance monitoring](Library/Sources/Stroika/Frameworks/SystemPerformance/ReadMe.md)
-- [text editing/word processor](Library/Sources/Stroika/Frameworks/Led/ReadMe.md)
-- [web server](Library/Sources/Stroika/Frameworks/WebServer/ReadMe.md)
-- [web services](Library/Sources/Stroika/Frameworks/WebService/ReadMe.md)
-- and [more](Library/Sources/Stroika/Frameworks/ReadMe.md)...
+- [network measurement](Library/Sources/Stroika/Frameworks/NetworkMonitor/)
+- SSDP/[UPnP](Library/Sources/Stroika/Frameworks/UPnP/)
+- [system performance monitoring](Library/Sources/Stroika/Frameworks/SystemPerformance/)
+- [text editing/word processor](Library/Sources/Stroika/Frameworks/Led/)
+- [web server](Library/Sources/Stroika/Frameworks/WebServer/)
+- [web services](Library/Sources/Stroika/Frameworks/WebService/)
+- and [more](Library/Sources/Stroika/Frameworks/)...
 
 ## Trade-offs
 
@@ -95,11 +95,11 @@ For more details on individual release changes, see:
 
 "Getting Started", build instructions, design and other documentation:
 
-&nbsp;&nbsp;&nbsp;&nbsp; [Documentation/](Documentation/ReadMe.md)
+&nbsp;&nbsp;&nbsp;&nbsp; [Documentation/](Documentation/)
 
 Looking through the samples is also a good way to start:
 
-&nbsp;&nbsp;&nbsp;&nbsp;[Samples/](Samples/ReadMe.md)
+&nbsp;&nbsp;&nbsp;&nbsp;[Samples/](Samples/)
 
 Please report bugs/issues at:
 

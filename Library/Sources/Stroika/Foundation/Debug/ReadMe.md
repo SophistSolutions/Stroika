@@ -1,6 +1,6 @@
-# Stroika::[Foundation](../ReadMe.md)::Debug
+# Stroika::[Foundation](../)::Debug
 
-This folder contains all the Stroika Library [Foundation](../ReadMe.md)::Debug source code.
+This folder contains all the Stroika Library [Foundation](../)::Debug source code.
 
 ## Modules
 

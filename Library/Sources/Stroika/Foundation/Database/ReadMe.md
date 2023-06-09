@@ -1,7 +1,7 @@
-# Stroika::[Foundation](../ReadMe.md)::Database
+# Stroika::[Foundation](../)::Database
 
-This folder contains all the Stroika Library [Foundation](../ReadMe.md)::Database source code.
+This folder contains all the Stroika Library [Foundation](../)::Database source code.
 
 ## Modules
 
-- [SQL](SQL/ReadMe.md) - tools like SQLite, ODBCClient, ORM, etc...
+- [SQL](SQL/) - tools like SQLite, ODBCClient, ORM, etc...

@@ -1,6 +1,6 @@
-﻿# Stroika::[Frameworks](../ReadMe.md)::Led
+﻿# Stroika::[Frameworks](../)::Led
 
-This Folder contains the [Frameworks](../ReadMe.md)::Led Framework source code.
+This Folder contains the [Frameworks](../)::Led Framework source code.
 
 The Led framework is a collection of libraries which support text editing. This includes
 code to serialize and deserialize rich text formats (such as RTF and HTML), and code to
@@ -9,11 +9,11 @@ editing/word processing functionality.
 
 ## See the Sample apps
 
-### [LedIt](../../../../../Samples/LedIt/ReadMe.md)
+### [LedIt](../../../../../Samples/LedIt/)
 
 Word Processor built using the Led framework
 
-### [LedLineIt](../../../../../Samples/LedLineIt/ReadMe.md)
+### [LedLineIt](../../../../../Samples/LedLineIt/)
 
 Simple Text Editor built using the Led framework
 
@@ -31,7 +31,7 @@ Simple Text Editor built using the Led framework
 - [LineBasedPartition.h](LineBasedPartition.h)
 - [Marker.h](Marker.h) - central concept in Led - used to track positions in the text buffer
 - [MarkerCover.h](MarkerCover.h) - set of markers that 'covers' (without overlap) - aka PARTITION of the text positions
-- [Platform/](Platform/ReadMe.md)
+- [Platform/](Platform/)
 - [SimpleLed.h](SimpleLed.h)
 - [SimpleTextImager.h](SimpleTextImager.h)
 - [SimpleTextInteractor.h](SimpleTextInteractor.h)
@@ -43,7 +43,7 @@ Simple Text Editor built using the Led framework
 - [StdDialogs.h](StdDialogs.h)
 - [StyledTextEmbeddedObjects.h](StyledTextEmbeddedObjects.h)
 - [StyledTextImager.h](StyledTextImager.h)
-- [StyledTextIO/](StyledTextIO/ReadMe.md)
+- [StyledTextIO/](StyledTextIO/)
 - [Support.h](Support.h)
 - [SyntaxColoring.h](SyntaxColoring.h)
 - [TextBreaks.h](TextBreaks.h)

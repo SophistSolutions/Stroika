@@ -1,6 +1,6 @@
-# Stroika::[Frameworks](../../ReadMe.md)::[SystemPerformance](../ReadMe.md)::Instruments
+# Stroika::[Frameworks](../../)::[SystemPerformance](../)::Instruments
 
-This Folder contains the [Frameworks](../../ReadMe.md)::[SystemPerformance](../ReadMe.md)::Instruments source code.
+This Folder contains the [Frameworks](../../)::[SystemPerformance](../)::Instruments source code.
 
 ## Modules
 

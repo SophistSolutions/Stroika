@@ -1,6 +1,6 @@
-# Stroika Library [Foundation](../ReadMe.md)::Cache
+# Stroika Library [Foundation](../)::Cache
 
-This folder contains all the Stroika Library [Foundation](../ReadMe.md)::Cache source code.
+This folder contains all the Stroika Library [Foundation](../)::Cache source code.
 
 Cache objects are used to store data that can be otherwise reconstructed. The
 purpose of a cache is to provide quick access to data - to avoid having to

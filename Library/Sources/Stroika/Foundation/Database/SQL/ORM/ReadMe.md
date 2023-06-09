@@ -1,6 +1,6 @@
-# Stroika::Foundation::Database::[SQL](../ReadMe.md)::ORM
+# Stroika::Foundation::Database::[SQL](../)::ORM
 
-This folder contains all the Stroika Library Foundation::Database::[SQL](../ReadMe.md)::ORM source code.
+This folder contains all the Stroika Library Foundation::Database::[SQL](../)::ORM source code.
 
 NOTE: as of Stroika 2.1b13, this 'ORM' functionality is extremely limited compared to a traditional
 ORM, but I could see no better name (mapping C++ structures to/from relational DB structures).

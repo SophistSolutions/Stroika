@@ -1,6 +1,6 @@
-# Stroika::[Foundation](../ReadMe.md)::Execution
+# Stroika::[Foundation](../)::Execution
 
-This folder contains all the Stroika Library [Foundation](../ReadMe.md)::Execution source code.
+This folder contains all the Stroika Library [Foundation](../)::Execution source code.
 
 ## Overview
 
@@ -26,13 +26,13 @@ Execution pattern classes (external process runner, exception handling support, 
 - [NullMutex.h](NullMutex.h)
 - [OperationNotSupportedException.h](OperationNotSupportedException.h)
 - [PIDLoop.h](PIDLoop.h)
-- [Platform/](Platform/ReadMe.md)
+- [Platform/](Platform/)
 - [Process.h](Process.h)
 - [ProcessRunner.h](ProcessRunner.h) - invoke process, hookup stdin/stdout to streams
 - [ProgressMonitor.h](ProgressMonitor.h)
 - [RequiredComponentMissingException.h](RequiredComponentMissingException.h)
 - [RequiredComponentVersionMismatchException.h](RequiredComponentVersionMismatchException.h)
-- [Resources/](Resources/ReadMe.md)
+- [Resources/](Resources/)
 - [SharedStaticData.h](SharedStaticData.h)
 - [SignalHandlers.h](SignalHandlers.h)
 - [Signals.h](Signals.h)

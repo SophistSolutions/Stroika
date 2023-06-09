@@ -1,10 +1,10 @@
-# Stroika::[Frameworks](../../ReadMe.md)::[UPnP](../ReadMe.md)::SSDP
+# Stroika::[Frameworks](../../)::[UPnP](../)::SSDP
 
-This Folder contains the [Frameworks](../../ReadMe.md)::[UPnP](../ReadMe.md)::SSDP source code.
+This Folder contains the [Frameworks](../../)::[UPnP](../)::SSDP source code.
 
 ## Modules
 
 - [Advertisment.h](Advertisment.h)
-- [Client/](Client/ReadMe.md)
+- [Client/](Client/)
 - [Common.h](Common.h)
-- [Server/](Server/ReadMe.md)
+- [Server/](Server/)

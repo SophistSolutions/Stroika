@@ -1,4 +1,4 @@
-# Stroika::Foundation::[Containers](../ReadMe.md)::LockFreeDataStructures
+# Stroika::Foundation::[Containers](..)::LockFreeDataStructures
 
 - Modules
 

@@ -1,6 +1,6 @@
-# Stroika::[Foundation](../ReadMe.md)::DataExchange
+# Stroika::[Foundation](../)::DataExchange
 
-This folder contains all the Stroika Library [Foundation](../ReadMe.md)::DataExchange source code.
+This folder contains all the Stroika Library [Foundation](../)::DataExchange source code.
 
 This module is about data structures and formats - and NOT about the IO/networking interactions of
 an exchange.
@@ -14,11 +14,11 @@ going in/out of a module.
 
 Most Central Classes:
 
-- [Archive](Archive/ReadMe.md)
+- [Archive](Archive/)
 
   Algorithms that provide storage of (often folders) of data. This is for formats like 'zip' file, or .7z files
 
-- [Compression](Compression/ReadMe.md)
+- [Compression](Compression/)
 
   Algorithms that provide compression/decompression of streams of data
 
@@ -34,7 +34,7 @@ Most Central Classes:
 
   This is only moderately similar to std::variant\<>. Its more similar to MSFT COM VARIANT_VALUE. Its an object with a fixed enumeration of possible types (closely fitting the data model used by python, JSON, and other weakly typed languages). It's ideal as a lingua-franca for exchanging data between strongly typed C++ structures and external formats like JSON.
 
-- [Variant](Variant/ReadMe.md)
+- [Variant](Variant/)
 
   Algorithms that convert between VariantValues and forms like XML, JSON, CSV, etc..
 
@@ -51,5 +51,5 @@ Others:
 
 - StructFieldMetaInfo - [StructFieldMetaInfo.h](StructFieldMetaInfo.h)
 
-- [StructFieldMetaInfo/](StructFieldMetaInfo/ReadMe.md)
-- [XML/](XML/ReadMe.md)
+- [StructFieldMetaInfo/](StructFieldMetaInfo/)
+- [XML/](XML/)

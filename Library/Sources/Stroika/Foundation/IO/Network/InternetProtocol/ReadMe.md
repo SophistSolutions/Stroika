@@ -1,6 +1,6 @@
-# Stroika::[Foundation](../../../ReadMe.md)::[IO](../../ReadMe.md)::Network(../ReadMe.md)::InternetProtocol
+# Stroika::[Foundation](../../../)::[IO](../../)::Network(../)::InternetProtocol
 
-This folder contains all the Stroika Library [Foundation](../../../ReadMe.md)::[IO](../../ReadMe.md)::Network(../ReadMe.md)::InternetProtocol.
+This folder contains all the Stroika Library [Foundation](../../../)::[IO](../../)::Network(../)::InternetProtocol.
 
 ## Modules
 

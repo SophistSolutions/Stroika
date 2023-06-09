@@ -1,6 +1,6 @@
-# Stroika::[Frameworks](../ReadMe.md)::Service
+# Stroika::[Frameworks](../)::Service
 
-This Folder contains the [Frameworks](../ReadMe.md)::Service Framework source code.
+This Folder contains the [Frameworks](../)::Service Framework source code.
 
 ## Overview
 

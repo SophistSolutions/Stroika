@@ -1,6 +1,6 @@
-# Stroika::[Foundation](../../ReadMe.md)::[IO](../ReadMe.md)::Network
+# Stroika::[Foundation](../../)::[IO](../)::Network
 
-This folder contains all the Stroika Library [Foundation](../../ReadMe.md)::[IO](../ReadMe.md)::Network.
+This folder contains all the Stroika Library [Foundation](../../)::[IO](../)::Network.
 
 - Sockets
 
@@ -15,16 +15,16 @@ Other Types:
 - [Interface.h](Interface.h)
 - [InternetAddress.h](InternetAddress.h)
 - [InternetAddressRange.h](InternetAddressRange.h)
-- [InternetProtocol/](InternetProtocol/ReadMe.md)
+- [InternetProtocol/](InternetProtocol/)
 - [LinkMonitor.h](LinkMonitor.h) - watch for changes in available networks
 - [Listener.h](Listener.h) - socket listener
 - [Neighbors.h](Neighbors.h) - find nearby devices on network
-- [Platform/](Platform/ReadMe.md)
+- [Platform/](Platform/)
 - [Port.h](Port.h)
-- [SOAP/](SOAP/ReadMe.md)
+- [SOAP/](SOAP/)
 - [SocketAddress.h](SocketAddress.h) - wrapper on sockaddr
 - [SocketStream.h](SocketStream.h)
 - [SystemFirewall.h](SystemFirewall.h)
-- [Transfer/](Transfer/ReadMe.md) - curl/fetch interface
+- [Transfer/](Transfer/) - curl/fetch interface
 - [UniformResourceIdentification.h](UniformResourceIdentification.h)
 - [URL.h](URL.h)

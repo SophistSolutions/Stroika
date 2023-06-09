@@ -2,37 +2,37 @@
 
 This folder contains all the Stroika Library Frameworks source code.
 
-- [Led](Led/ReadMe.md)
+- [Led](Led/)
 
   A rich text processing and editing framework (includes sample LedIt word processor application, and LedLineIt, text editor)
 
-- [Modbus](Modbus/ReadMe.md)
+- [Modbus](Modbus/)
 
   A library to interact with/exchange data over [Modbus](https://en.wikipedia.org/wiki/Modbus)
 
-- [NetworkMonitor](NetworkMonitor/ReadMe.md)
+- [NetworkMonitor](NetworkMonitor/)
   Framework for capturing network measurements, probes, etc.
 
   This is for things like ping, traceroute, but not for things like SNMP network data (which is in system monitor framework)
 
-- [Service](Service/ReadMe.md)
+- [Service](Service/)
 
   Package a program in the form of a UNIX or Windows service (aka daemon, app that auto-starts with OS, has installer, start/stop integrated with OS, etc)
 
-- [System Performance](SystemPerformance/ReadMe.md)
+- [System Performance](SystemPerformance/)
 
   Measure CPU usage, network usage, disk activity etc for a system, in a very straightfoward and system portable way
 
-- [UPnP](UPnP/ReadMe.md)
+- [UPnP](UPnP/)
 
   Universal Plug and Play
   The only part currently implemented is SSDP
 
-- [Web Server](WebServer/ReadMe.md)
+- [Web Server](WebServer/)
 
   Provide basic web server functionality within your application, including routers, interceptors etc.
 
-- [Web Service](WebService/ReadMe.md)
+- [Web Service](WebService/)
 
   Expose programatic APIs through web services (SOAP, JSON, REST).
   This framework depends on the Web-Server framework

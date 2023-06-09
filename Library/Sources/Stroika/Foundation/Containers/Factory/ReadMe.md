@@ -1,4 +1,4 @@
-# Stroika::Foundation::[Containers](../ReadMe.md)::Factory
+# Stroika::Foundation::[Containers](../)::Factory
 
 Generally Strioka users don't need to be concerned with container factories. But when you create
 a container without specifcying the backend data structure to represent it, an appropriate backend

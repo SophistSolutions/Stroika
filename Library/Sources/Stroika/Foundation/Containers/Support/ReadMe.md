@@ -1,4 +1,4 @@
-# Stroika::Foundation::[Containers](../ReadMe.md)::Support
+# Stroika::Foundation::[Containers](..)::Support
 
 - Modules
 

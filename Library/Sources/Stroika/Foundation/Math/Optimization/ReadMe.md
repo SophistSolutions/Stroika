@@ -1,6 +1,6 @@
-# Stroika::[Foundation](../../ReadMe.md)::[Math](../ReadMe.md)::Optimization
+# Stroika::[Foundation](../../)::[Math](../)::Optimization
 
-This folder contains all the Stroika Library [Foundation](../../ReadMe.md)::[Math](../ReadMe.md)::Optimization source code.
+This folder contains all the Stroika Library [Foundation](../../)::[Math](../)::Optimization source code.
 
 ## Modules
 

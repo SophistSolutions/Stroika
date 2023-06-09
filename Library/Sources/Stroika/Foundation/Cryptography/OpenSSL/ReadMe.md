@@ -1,6 +1,6 @@
-# Stroika::[Foundation](../../ReadMe.md)::[Cryptography](../ReadMe.md)::OpenSSL
+# Stroika::[Foundation](../../)::[Cryptography](../)::OpenSSL
 
-This folder contains all the Stroika Library [Foundation](../../ReadMe.md)::[Cryptography](../ReadMe.md)::OpenSSL source code.
+This folder contains all the Stroika Library [Foundation](../../)::[Cryptography](../)::OpenSSL source code.
 
 - [CipherAlgorithm.h](CipherAlgorithm.h)
 - [DerivedKey.h](DerivedKey.h)

@@ -1,6 +1,6 @@
-# Stroika::[Frameworks](../ReadMe.md)::SystemPerformance
+# Stroika::[Frameworks](../)::SystemPerformance
 
-This Folder contains the [Frameworks](../ReadMe.md)::SystemPerformance Framework source code.
+This Folder contains the [Frameworks](../)::SystemPerformance Framework source code.
 
 ## Overview
 
@@ -14,7 +14,7 @@ These statistics include things like wifi signal strength, CPU usage, disk space
 - [Capturer.h](Capturer.h)
 - [CaptureSet.h](CaptureSet.h)
 - [Instrument.h](Instrument.h)
-- [Instruments/](Instruments/ReadMe.md)
+- [Instruments/](Instruments/)
 - [Measurement.h](Measurement.h)
 - [MeasurementSet.h](MeasurementSet.h)
-- [Support/](Support/ReadMe.md)
+- [Support/](Support/)

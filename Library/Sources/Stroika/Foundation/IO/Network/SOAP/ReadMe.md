@@ -1,6 +1,6 @@
-# Stroika::[Foundation](../../../ReadMe.md)::[IO](../../ReadMe.md)::Network(../ReadMe.md)::SOAP
+# Stroika::[Foundation](../../../)::[IO](../../)::Network(../)::SOAP
 
-This folder contains all the Stroika Library [Foundation](../../../ReadMe.md)::[IO](../../ReadMe.md)::Network(../ReadMe.md)::SOAP.
+This folder contains all the Stroika Library [Foundation](../../../)::[IO](../../)::Network(../)::SOAP.
 
 ## Modules
 

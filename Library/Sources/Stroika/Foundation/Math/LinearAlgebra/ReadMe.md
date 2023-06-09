@@ -1,6 +1,6 @@
-# Stroika::[Foundation](../../ReadMe.md)::[Math](../ReadMe.md)::LinearAlgebra
+# Stroika::[Foundation](../../)::[Math](../)::LinearAlgebra
 
-This folder contains all the Stroika Library [Foundation](../../ReadMe.md)::[Math](../ReadMe.md)::LinearAlgebra source code.
+This folder contains all the Stroika Library [Foundation](../../)::[Math](../)::LinearAlgebra source code.
 
 This code is fairly immature.
 

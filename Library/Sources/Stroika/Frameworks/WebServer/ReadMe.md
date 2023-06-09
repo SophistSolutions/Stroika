@@ -1,6 +1,6 @@
-# Stroika::[Frameworks](../ReadMe.md)::WebServer
+# Stroika::[Frameworks](../)::WebServer
 
-This Folder contains the [Frameworks](../ReadMe.md)::WebServer Framework source code.
+This Folder contains the [Frameworks](../)::WebServer Framework source code.
 
 ## Overview
 

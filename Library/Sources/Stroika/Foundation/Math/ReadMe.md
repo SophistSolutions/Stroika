@@ -1,13 +1,13 @@
-# Stroika::[Foundation](../ReadMe.md)::Math
+# Stroika::[Foundation](../)::Math
 
-This folder contains all the Stroika Library [Foundation](../ReadMe.md)::Math source code.
+This folder contains all the Stroika Library [Foundation](../)::Math source code.
 
 ## Modules
 
 - [Angle.h](Angle.h)
 - [Common.h](Common.h)
-- [LinearAlgebra/](LinearAlgebra/ReadMe.md)
-- [Optimization/](Optimization/ReadMe.md)
+- [LinearAlgebra/](LinearAlgebra/)
+- [Optimization/](Optimization/)
 - [ReBin.h](ReBin.h)
 - [Statistics.h](Statistics.h)
 
