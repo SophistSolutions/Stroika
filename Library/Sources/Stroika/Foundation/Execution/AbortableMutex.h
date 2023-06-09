@@ -53,7 +53,7 @@ namespace Stroika::Foundation::Execution {
      *  it can still be interrupted by Thread::Abort ().
      *
      *  This is not generally necessary for quick mutexes, but for any mutex use where you could
-     *  block/lock for an extended time, it makes sense to use this instead. This is compeltely
+     *  block/lock for an extended time, it makes sense to use this instead. This is completely
      *  compatible with std::mutex otherwise, and can be used with std::lock_guard<> etc.
      */
     class AbortableMutex {
