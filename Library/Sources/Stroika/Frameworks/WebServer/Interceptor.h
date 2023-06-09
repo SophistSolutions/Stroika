@@ -27,6 +27,12 @@ namespace Stroika::Frameworks::WebServer {
     /**
      *  \note   Inspired by, but fairly different from
      *          @see https://cxf.apache.org/javadoc/latest/org/apache/cxf/interceptor/Interceptor.html
+     * 
+     *  The basic idea of an interceptor, is that its a handler for web-server requests/messages. These get arranged
+     *  in a chain, and each gets a crack at doing something to an incoming message, preparing its
+     *  response.
+     * 
+     *  Router, fault handlers, and logging are all achieved via interceptors (i.e. the Router IS an Interceptor).
      *
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#C++-Standard-Thread-Safety-For-Envelope-Letter-Internally-Synchronized">C++-Standard-Thread-Safety-For-Envelope-Letter-Internally-Synchronized</a>
      *              But note that HandleMessage() is a const method, so it can safely be called from any number of threads
