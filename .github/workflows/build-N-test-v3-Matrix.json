@@ -1,0 +1,14 @@
+[
+  {
+        "comment": "ubuntu 20.04",
+        "displayTargetName": "ubuntu-20.04-g++-11 (Debug)",
+        "os": "unix",
+        "compiler": "g++-11",
+        "runs_on": "ubuntu-latest",
+        "container_image": "sophistsolutionsinc/stroika-buildvm-ubuntu2004-regression-tests:v3",
+        "cpp_version": "c++2a",
+        "config_name": "Debug",
+        "extra_config_args": "--apply-default-debug-flags --trace2file enable --debug-symbols false",
+        "includeInDevBranchBuilds": false
+    }
+]

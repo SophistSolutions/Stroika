@@ -1,0 +1,106 @@
+#
+# Docs on github action files: https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions
+#
+# build-N-test-v3
+#
+
+name: build-N-test-v3
+
+on:
+  push:
+    branches:
+      - v3-Dev
+      - v3-Release
+  workflow_dispatch:
+    inputs:
+      ignored:
+        description: "ignored"
+        required: false
+        default: ""
+
+## NB: JOBS section IDENTICAL between v3-Dev and 3-Release files EXCEPT that on v3-Dev file
+## comment out all entries marked with includeInDevBranchBuilds: false
+jobs:
+  matrix_prep:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+    - name: Check out code into the Go module directory
+      uses: actions/checkout@v2
+    - id: set-matrix
+      run: |
+        branchName=$(echo '${{ github.ref }}' | sed 's,refs/heads/,,g')  
+        matrix=$(jq --arg branchName "$branchName" 'map( 
+            . | select((.runOn==$branchName) or (.runOn=="always"))
+        )' build-N-test-v3-Matrix.json)                
+        echo "matrix={\"include\":$(echo $matrix)}" >> $GITHUB_OUTPUT
+  build-n-test:
+    needs: matrix_prep
+    runs-on: ${{ matrix.runs_on }}
+    strategy:
+      matrix: ${{fromJson(needs.matrix_prep.outputs.matrix)}}
+
+    env:
+      # vm has 2 virtual CPUs, but 8GB ram, so jobs=3 (empirical), and QUICK_BUILD avoids some internal testing
+      MAKEFLAGS: "--jobs=3 QUICK_BUILD=1"
+    container: ${{ matrix.container_image }}
+    steps:
+      - uses: actions/checkout@v3
+      - name: Build System Info
+        if: ${{ matrix.os=='unix' }}
+        run: |
+          lsb_release -d 2>/dev/null || true
+          echo "CWD=" `pwd`
+          echo "nproc=" `nproc`
+          grep "model name" /proc/cpuinfo | head -1
+          grep processor /proc/cpuinfo | wc -l
+          grep MemTotal /proc/meminfo
+          df -h
+      - name: Configure ${{ matrix.config_name }}
+        run: |
+          ./configure ${{ matrix.config_name }} --compiler-driver ${{ matrix.compiler }} ${{ matrix.extra_config_args }} --cppstd-version ${{ matrix.cpp_version }}
+          cat ConfigurationFiles/${{ matrix.config_name }}.xml
+      # Break out third-party-components to do clean so we dont run out of disk space, and break out TPC AND library
+      # to show the summary time for each part
+      - name: Make third-party-components
+        run: |
+          make third-party-components
+          make clean
+      - name: Make libraries
+        run: make libraries
+      - name: Make Documentation
+        run: make documentation
+      # DISABLED DUE TO SPACE ISSUES
+      # - name: Make all
+      #   run: make all
+      - name: Run Tests
+        run: |
+          make run-tests
+      - name: Save space
+        run: |
+          make --directory Tests clobber
+      - name: Make tools & samples
+        run: |
+          make tools samples
+      - name: Archive Samples Results
+        uses: actions/upload-artifact@v3
+        with:
+          name: Sample apps (${{ matrix.displayTargetName }})
+          path: |
+            Builds/${{ matrix.config_name }}/Samples-*
+      - name: Archive Documentation Results
+        uses: actions/upload-artifact@v3
+        with:
+          name: Doxygen Documentation
+          path: |
+            Builds/Stroika-Doxygen-Help.tar.gz
+      - name: Archive Log Results
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: Log Data (${{ matrix.displayTargetName }})
+          path: |
+            Builds/${{ matrix.config_name }}/PerformanceDump.txt
+            /tmp/Trace*.txt
+
