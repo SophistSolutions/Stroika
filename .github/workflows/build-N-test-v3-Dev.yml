@@ -8,7 +8,7 @@
 # STEPS to construct DEBUG file from RELEASE:
 #   - Clone Release file
 #   - Change name field (line 22 apx)
-#   - Change brange commented out(line 26 apx)
+#   - Change branch commented out(line 26 apx)
 #   - Comment out all items with includeInDevBranchBuilds: false
 #
 # NOTE: I've tried many tricks - none which seem to work - to get this working on one file with one
@@ -208,8 +208,6 @@ jobs:
             /tmp/Trace*.txt
 
   build-n-test-MacOS:
-    # tmphack to see if this disables macos builds temporarily (cuz missing xcode 14.3)
-    #if: 0
     runs-on: ${{ matrix.runs_on }}
     strategy:
       matrix:
@@ -217,7 +215,7 @@ jobs:
         include:
           - displayTargetName: MacOS-Debug
             os: macos-latest
-            # runs_on: macos-latest
+            # runs_on: macos-latest   -- latest is 12, but we need 13 -- LGP 2023-06-10
             runs_on: macos-13
             xcode: 14.3
             config_name: Debug
@@ -226,7 +224,8 @@ jobs:
           # - displayTargetName: MacOS
           #   os: macos-latest
           #   xcode: 14.3
-          #   runs_on: macos-latest
+          #   # runs_on: macos-latest   -- latest is 12, but we need 13 -- LGP 2023-06-10
+          #   runs_on: macos-13
           #   config_name: Release
           #   extra_config_args: --apply-default-release-flags --trace2file enable
           #   includeInDevBranchBuilds: false
@@ -313,13 +312,13 @@ jobs:
             config_name: Debug
             extra_config_args: --arch x86 --apply-default-debug-flags --trace2file enable
             includeInDevBranchBuilds: true
-          - displayTargetName: windows-vs2k22-cygwin-x86-Release
-            os: windows
-            runs_on: windows-2022
-            container_image: sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k22:v3
-            config_name: Release
-            extra_config_args: --arch x86 --apply-default-release-flags --trace2file enable
-            includeInDevBranchBuilds: false
+          # - displayTargetName: windows-vs2k22-cygwin-x86-Release
+          #   os: windows
+          #   runs_on: windows-2022
+          #   container_image: sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k22:v3
+          #   config_name: Release
+          #   extra_config_args: --arch x86 --apply-default-release-flags --trace2file enable
+          #   includeInDevBranchBuilds: false
           # - displayTargetName: windows-vs2k22-cygwin-x86_64-Release
           #   os: windows
           #   runs_on: windows-2022
@@ -341,13 +340,13 @@ jobs:
           #   config_name: Release
           #   extra_config_args: --arch x86 --apply-default-release-flags --trace2file enable
           #   includeInDevBranchBuilds: false
-          # - displayTargetName: windows-vs2k22-msys-x86_64-Release
-          #   os: windows
-          #   runs_on: windows-2022
-          #   container_image: sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k22:v3
-          #   config_name: Release
-          #   extra_config_args: --arch x86_64 --apply-default-release-flags --trace2file enable
-          #   includeInDevBranchBuilds: true
+          - displayTargetName: windows-vs2k22-msys-x86_64-Release
+            os: windows
+            runs_on: windows-2022
+            container_image: sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k22:v3
+            config_name: Release
+            extra_config_args: --arch x86_64 --apply-default-release-flags --trace2file enable
+            includeInDevBranchBuilds: true
     env:
       # vm has 2 virtual CPUs, but 8GB ram, so jobs=3 (empirical), and QUICK_BUILD avoids some internal testing
       MAKEFLAGS: "--jobs=3 QUICK_BUILD=1"
