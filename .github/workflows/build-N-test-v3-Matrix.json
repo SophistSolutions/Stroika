@@ -9,6 +9,6 @@
         "cpp_version": "c++2a",
         "config_name": "Debug",
         "extra_config_args": "--apply-default-debug-flags --trace2file enable --debug-symbols false",
-        "includeInDevBranchBuilds": true
+        "run_on_branch": "always"
     }
 ]
