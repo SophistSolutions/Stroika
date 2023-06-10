@@ -330,6 +330,16 @@ ifeq (${PERL_VERSION_PATCH_},)
 PERL_VERSION_PATCH_=echo 'using installed perl'
 endif
 
+
+ifeq ($(qFeatureFlag_StrawberryPerl), use)
+# These perl scripts require \ not / in pathnames (at least on MSYS) - not sure why not needed for cygwin
+# and THEN, only when run inside docker? So very confusing...
+# --LGP 2023-06-10
+CFLAGS:=$(shell echo ${CFLAGS} | sed 's/\//\\/g')
+endif
+
+
+
 doBuilds_:
 	@
 	@#Run openssl configure scripts
