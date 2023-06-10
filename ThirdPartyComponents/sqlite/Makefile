@@ -21,14 +21,6 @@ include $(StroikaRoot)ScriptsLib/SharedBuildRules-Default.mk
 VERSION=3420000
 #VERSION=3410100
 #VERSION=3400000
-#VERSION=3390400
-#VERSION=3390300
-#VERSION=3390200
-#VERSION=3390100
-#VERSION=3380500
-#VERSION=3380300
-#VERSION=3370200
-#VERSION=3370100
 
 #
 # Download of SQLITE from www.sqlite.org mysteriously started failing on the macos machines only for travisci
