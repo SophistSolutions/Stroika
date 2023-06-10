@@ -900,6 +900,10 @@ In file included from ../Characters/StringBuilder.h:273,
 // Noticed broken in crapple-clang++14
 #define qCompilerAndStdLib_template_Requires_constraint_not_treated_constexpr_Buggy                                                        \
     CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 14))
+#elif defined(__clang__) && !defined(__APPLE__)
+// Noticed broken in -clang++14
+#define qCompilerAndStdLib_template_Requires_constraint_not_treated_constexpr_Buggy                                                    \
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 14))
 #else
 #define qCompilerAndStdLib_template_Requires_constraint_not_treated_constexpr_Buggy 0
 #endif
