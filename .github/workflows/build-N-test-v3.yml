@@ -33,7 +33,7 @@ jobs:
         branchName=$(echo '${{ github.ref }}' | sed 's,refs/heads/,,g')  
         matrix=$(jq --arg branchName "$branchName" 'map( 
             . | select((.runOn==$branchName) or (.runOn=="always"))
-        )' build-N-test-v3-Matrix.json)                
+        )' .github/workflows/build-N-test-v3-Matrix.json)                
         echo "matrix={\"include\":$(echo $matrix)}" >> $GITHUB_OUTPUT
   build-n-test:
     needs: matrix_prep
