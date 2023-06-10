@@ -215,7 +215,8 @@ jobs:
         include:
           - displayTargetName: MacOS-Debug
             os: macos-latest
-            runs_on: macos-latest
+            # runs_on: macos-latest   -- latest is 12, but we need 13 -- LGP 2023-06-10
+            runs_on: macos-13
             xcode: 14.3
             config_name: Debug
             extra_config_args: --apply-default-debug-flags --trace2file enable
@@ -223,7 +224,8 @@ jobs:
           - displayTargetName: MacOS
             os: macos-latest
             xcode: 14.3
-            runs_on: macos-latest
+            # runs_on: macos-latest   -- latest is 12, but we need 13 -- LGP 2023-06-10
+            runs_on: macos-13
             config_name: Release
             extra_config_args: --apply-default-release-flags --trace2file enable
             includeInDevBranchBuilds: false
