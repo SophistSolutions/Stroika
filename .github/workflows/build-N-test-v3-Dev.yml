@@ -23,8 +23,8 @@ name: build-N-test-v3-Dev
 
 on:
   push:
-    branches:
-      - v3-Dev
+    # branches:
+    #   - v3-Dev
       #- v3-Release
   workflow_dispatch:
     inputs:
