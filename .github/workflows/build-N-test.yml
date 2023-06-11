@@ -209,7 +209,7 @@ jobs:
     needs: WindowsMatrixPrep
     runs-on: ${{ matrix.runs_on }}
     strategy:
-      matrix: ${{fromJson(needs.LinuxMatrixPrep.outputs.matrix)}}
+      matrix: ${{fromJson(needs.WindowsMatrixPrep.outputs.matrix)}}
 
     env:
       # vm has 2 virtual CPUs, but 8GB ram, so jobs=3 (empirical), and QUICK_BUILD avoids some internal testing
