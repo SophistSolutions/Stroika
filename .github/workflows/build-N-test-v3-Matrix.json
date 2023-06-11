@@ -1,5 +1,5 @@
 [
-  {
+    {
         "comment": "ubuntu 20.04",
         "displayTargetName": "ubuntu-20.04-g++-11 (Debug)",
         "os": "unix",
@@ -9,6 +9,45 @@
         "cpp_version": "c++2a",
         "config_name": "Debug",
         "extra_config_args": "--apply-default-debug-flags --trace2file enable --debug-symbols false",
-        "run_on_branch": "always"
+        "run_on_branch": "always",
+        "build-job": "Linux"
+    },
+    {
+        "displayTargetName": "ubuntu-20.04-g++-11",
+        "os": "unix",
+        "compiler": "g++-11",
+        "runs_on": "ubuntu-latest",
+        "container_image": "sophistsolutionsinc/stroika-buildvm-ubuntu2004-regression-tests:v3",
+        "cpp_version": "c++2a",
+        "config_name": "Release",
+        "extra_config_args": "--apply-default-release-flags --trace2file enable",
+        "run_on_branch": "v3-Release",
+        "build-job": "Linux"
+    },
+    {
+        "comment": "ubuntu-20.04-clang++-13",
+        "displayTargetName": "ubuntu-20.04-clang++-13",
+        "os": "unix",
+        "compiler": "clang++-13",
+        "runs_on": "ubuntu-latest",
+        "container_image": "sophistsolutionsinc/stroika-buildvm-ubuntu2204-regression-tests:v3",
+        "cpp_version": "c++2a",
+        "config_name": "Release",
+        "extra_config_args": "--apply-default-release-flags --trace2file enable",
+        "run_on_branch": "v3-Dev",
+        "build-job": "Linux"
+    },
+    {
+        "comment": "ubuntu 22.04",
+        "displayTargetName": "ubuntu-22.04-g++-11 (Debug)",
+        "os": "unix",
+        "compiler": "g++-11",
+        "runs_on": "ubuntu-latest",
+        "container_image": "sophistsolutionsinc/stroika-buildvm-ubuntu2204-regression-tests:v3",
+        "cpp_version": "c++20",
+        "config_name": "Debug",
+        "extra_config_args": "--apply-default-debug-flags --trace2file enable --debug-symbols false",
+        "run_on_branch": "v3-Release",
+        "build-job": "Linux"
     }
 ]
