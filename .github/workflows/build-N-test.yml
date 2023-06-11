@@ -18,7 +18,7 @@ on:
 ## NB: JOBS section IDENTICAL between v3-Dev and 3-Release files EXCEPT that on v3-Dev file
 ## comment out all entries marked with includeInDevBranchBuilds: false
 jobs:
-  matrix_prep:
+  LinuxMatrixPrep:
     runs-on: ubuntu-latest
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
@@ -32,11 +32,39 @@ jobs:
             . | select((.run_on_branch==$branchName) or (.run_on_branch=="always")) | select(.build_job=="Linux")
         )' .github/workflows/build-N-test-Matrix.json)                
         echo "matrix={\"include\":$(echo $matrix)}" >> $GITHUB_OUTPUT
+  MacOSMatrixPrep:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+    - name: Check out code into the Go module directory
+      uses: actions/checkout@v2
+    - id: set-matrix
+      run: |
+        branchName=$(echo '${{ github.ref }}' | sed 's,refs/heads/,,g')  
+        matrix=$(jq --arg branchName "$branchName" 'map( 
+            . | select((.run_on_branch==$branchName) or (.run_on_branch=="always")) | select(.build_job=="MacOS")
+        )' .github/workflows/build-N-test-Matrix.json)                
+        echo "matrix={\"include\":$(echo $matrix)}" >> $GITHUB_OUTPUT
+  WindowsMatrixPrep:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+    - name: Check out code into the Go module directory
+      uses: actions/checkout@v2
+    - id: set-matrix
+      run: |
+        branchName=$(echo '${{ github.ref }}' | sed 's,refs/heads/,,g')  
+        matrix=$(jq --arg branchName "$branchName" 'map( 
+            . | select((.run_on_branch==$branchName) or (.run_on_branch=="always")) | select(.build_job=="Windows")
+        )' .github/workflows/build-N-test-Matrix.json)                
+        echo "matrix={\"include\":$(echo $matrix)}" >> $GITHUB_OUTPUT
   build-n-test-Linux:
-    needs: matrix_prep
+    needs: LinuxMatrixPrep
     runs-on: ${{ matrix.runs_on }}
     strategy:
-      matrix: ${{fromJson(needs.matrix_prep.outputs.matrix)}}
+      matrix: ${{fromJson(needs.LinuxMatrixPrep.outputs.matrix)}}
 
     env:
       # vm has 2 virtual CPUs, but 8GB ram, so jobs=3 (empirical), and QUICK_BUILD avoids some internal testing
@@ -102,10 +130,10 @@ jobs:
             /tmp/Trace*.txt
 
   build-n-test-MacOS:
-    needs: matrix_prep
+    needs: MacOSMatrixPrep
     runs-on: ${{ matrix.runs_on }}
     strategy:
-      matrix: ${{fromJson(needs.matrix_prep.outputs.matrix)}}
+      matrix: ${{fromJson(needs.MacOSMatrixPrep.outputs.matrix)}}
 
     env:
       # vm has 2 virtual CPUs, but 8GB ram, so jobs=3 (empirical), and QUICK_BUILD avoids some internal testing
@@ -178,10 +206,10 @@ jobs:
             Builds/${{ matrix.config_name }}/Samples-*
 
   build-n-test-Windows:
-    needs: matrix_prep
+    needs: WindowsMatrixPrep
     runs-on: ${{ matrix.runs_on }}
     strategy:
-      matrix: ${{fromJson(needs.matrix_prep.outputs.matrix)}}
+      matrix: ${{fromJson(needs.LinuxMatrixPrep.outputs.matrix)}}
 
     env:
       # vm has 2 virtual CPUs, but 8GB ram, so jobs=3 (empirical), and QUICK_BUILD avoids some internal testing
