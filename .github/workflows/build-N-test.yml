@@ -101,3 +101,219 @@ jobs:
             Builds/${{ matrix.config_name }}/PerformanceDump.txt
             /tmp/Trace*.txt
 
+  build-n-test-MacOS:
+    needs: matrix_prep
+    runs-on: ${{ matrix.runs_on }}
+    strategy:
+      matrix: ${{fromJson(needs.matrix_prep.outputs.matrix)}}
+
+    env:
+      # vm has 2 virtual CPUs, but 8GB ram, so jobs=3 (empirical), and QUICK_BUILD avoids some internal testing
+      MAKEFLAGS: "--jobs=3 QUICK_BUILD=1"
+    steps:
+      - uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: ${{ matrix.xcode }}
+      - uses: actions/checkout@v3
+      - name: Build System Info
+        run: |
+          echo "CWD: `pwd`"
+          df -h
+          system_profiler SPSoftwareDataType
+          sw_vers
+          echo "    X-CODE: `xcodebuild -version | tr '\n' ';'`"
+      # If we had docker ability, most of these would be built into a docker file
+      - name: Install Basic Build requirements
+        run: |
+          brew install gnu-sed
+          brew install p7zip
+          brew install automake
+          brew install pkg-config
+          make install-realpath
+      - name: Configure
+        run: |
+          ./configure ${{ matrix.config_name }} ${{ matrix.extra_config_args }}
+          cat ConfigurationFiles/${{ matrix.config_name }}.xml
+      - name: Build third-party-components
+        run: |
+          make third-party-components
+          make clean
+      - name: Build Library
+        run: |
+          make libraries
+      - name: Build All
+        run: |
+          make all
+      - name: Run-Tests
+        run: |
+          make run-tests
+      - name: Workaround GitHub-Actions-MacOS Issue with env.TMPDIR
+        run: |
+          mkdir /tmp/LOGS-ARCHIVE
+          cp $TMPDIR/Trace*.txt /tmp/LOGS-ARCHIVE
+      - name: DEBUG Workaround GitHub-Actions-MacOS Issue with env.TMPDIR
+        run: |
+          echo "TMPDIR=$TMPDIR"
+          echo "TMPDIR using ENV.TMPDIR=${{ env.TMPDIR }}"
+          # Just the echo line above shows empty, and then the ls line causes exit 1/failure
+          #ls -l ${{ env.TMPDIR }}/Trace*.txt
+          #if this gets fixed, then lose Workaround GitHub-Actions-MacOS, and directly reference ${{ env.TMPDIR }}/Trace*.txt in Archive Log Results
+      - name: Build System Info
+        run: |
+          df -h
+      - name: Archive Log Results
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: Log Results (${{ matrix.displayTargetName }})
+          path: |
+            Builds/${{ matrix.config_name }}/PerformanceDump.txt
+            /tmp/LOGS-ARCHIVE
+            #${{ env.TMPDIR }}/Trace*.txt
+      - name: Archive Sample Results
+        uses: actions/upload-artifact@v3
+        with:
+          name: Samples (${{ matrix.displayTargetName }})
+          path: |
+            Builds/${{ matrix.config_name }}/Samples-*
+
+  build-n-test-Windows:
+    needs: matrix_prep
+    runs-on: ${{ matrix.runs_on }}
+    strategy:
+      matrix: ${{fromJson(needs.matrix_prep.outputs.matrix)}}
+
+    env:
+      # vm has 2 virtual CPUs, but 8GB ram, so jobs=3 (empirical), and QUICK_BUILD avoids some internal testing
+      MAKEFLAGS: "--jobs=3 QUICK_BUILD=1"
+      ARTIFACTS_DIR: "c:/Artifacts/"
+    steps:
+      - uses: actions/checkout@v3
+      # https://stackoverflow.com/questions/58033366/how-to-get-current-branch-within-github-actions
+      - name: Extract branch name
+        shell: bash
+        run: echo "branch=`echo ${GITHUB_REF#refs/heads/}`" >> $GITHUB_OUTPUT
+        id: extract_branch
+      - name: Build System Info
+        shell: "bash"
+        run: |
+          echo "CWD: `pwd`"
+          df -h
+          systeminfo
+          echo NUMBER_OF_PROCESSORS=$NUMBER_OF_PROCESSORS
+      - name: docker pull ${{ matrix.container_image }}
+        run: docker pull ${{ matrix.container_image }}
+      - name: Start docker build environment
+        ### ash rebaseall nonsense to try and workaround sporadic failure on MSYS
+        ### without this rebaseall, about 30% of the time we get a failure in wget wget 3470 child_info_fork::abort: \??\C:\msys64\usr\bin\msys-crypto-1.1.dll: Loaded to different address: parent(0x478B980000) != child(0x400000
+        ### and with this hack, it hasn't happened in 5 tries --LGP 2022-01-26
+        run: |
+          docker run --interactive --memory 5G --cpus 2 --storage-opt 'size=50GB' --detach --name buildContainer ${{ matrix.container_image }} ash -c "c:/msys64/usr/bin/rebaseall -v; exec bash"
+      - name: Print Info about docker system
+        shell: "bash"
+        run: |
+          docker ps -a
+          docker exec buildContainer systeminfo
+          docker exec buildContainer df -h
+      - name: Git Checkout
+        shell: "bash"
+        run: |
+          docker exec --workdir c:/ buildContainer git clone https://github.com/SophistSolutions/Stroika.git --branch ${{ steps.extract_branch.outputs.branch }}
+      - name: Configure
+        shell: "bash"
+        run: |
+          docker exec --workdir c:/Stroika buildContainer sh -c "./configure ${{ matrix.config_name }} ${{ matrix.extra_config_args }}"
+          docker exec --workdir c:/Stroika buildContainer cat ConfigurationFiles/${{ matrix.config_name }}.xml
+      - name: Build
+        shell: "bash"
+        run: |
+          docker exec --workdir c:/Stroika --env MAKEFLAGS="$MAKEFLAGS" buildContainer make all
+      - name: Run-Tests
+        shell: "bash"
+        run: |
+          docker exec --workdir c:/Stroika --env MAKEFLAGS="$MAKEFLAGS" buildContainer make run-tests
+      - name: Build System Info
+        shell: "bash"
+        run: |
+          df -h
+          docker exec buildContainer df -h
+      - name: Copy Build Artifacts
+        shell: "bash"
+        # due to flaws in docker (windows must stop) - and cp no wildcards
+        run: |
+          docker exec --workdir c:/Stroika buildContainer sh -c 'mkdir TRACE_LOGS && cp $TEMP/Trace*.txt TRACE_LOGS/'
+          docker stop buildContainer
+          docker cp buildContainer:Stroika/Builds/${{ matrix.config_name }}/ $ARTIFACTS_DIR 2> /dev/null
+          docker cp buildContainer:Stroika/TRACE_LOGS $ARTIFACTS_DIR 2> /dev/null
+          rm -rf $ARTIFACTS_DIR/{ThirdPartyComponents,Tests,*.lib}
+      - name: Archive Log Results
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: Log Results (${{ matrix.displayTargetName }})
+          path: |
+            ${{ env.ARTIFACTS_DIR }}PerformanceDump.txt
+            ${{ env.ARTIFACTS_DIR }}TRACE_LOGS
+      - name: Archive Sample Results
+        uses: actions/upload-artifact@v3
+        with:
+          name: Samples (${{ matrix.displayTargetName }})
+          path: |
+            ${{ env.ARTIFACTS_DIR }}Samples-*
+
+  codeql-analyze:
+    name: Analyze
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+
+    strategy:
+      fail-fast: false
+      matrix:
+        language: [ 'cpp' ]
+        # CodeQL supports [ 'cpp', 'csharp', 'go', 'java', 'javascript', 'python' ]
+        # Learn more:
+        # https://docs.github.com/en/free-pro-team@latest/github/finding-security-vulnerabilities-and-errors-in-your-code/configuring-code-scanning#changing-the-languages-that-are-analyzed
+
+    env:
+      # QUICK_BUILD avoids some internal testing
+      MAKEFLAGS: "--jobs=3 QUICK_BUILD=1"
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Install tools required to build Stroika
+      run: |
+        sudo apt-get install -y libtool-bin pkg-config cmake automake autoconf libtool-bin libasan5 libubsan1
+        sudo apt-get install -y g++-11
+
+    - name: Configure
+      run: |
+        ./configure Release --compiler-driver g++-11 --apply-default-release-flags --lto disable
+        cat ConfigurationFiles/Release.xml
+
+    # Break out third-party-components to do clean so we dont run out of disk space, and break out TPC AND library
+    # to show the summary time for each part
+    - name: Make third-party-components
+      run: |
+        make third-party-components
+        make clean
+
+    # Initializes the CodeQL tools for scanning.
+    - name: Initialize CodeQL
+      uses: github/codeql-action/init@v2
+      with:
+        languages: ${{ matrix.language }}
+        # If you wish to specify custom queries, you can do so here or in a config file.
+        # By default, queries listed here will override any specified in a config file.
+        # Prefix the list here with "+" to use these queries and those in the config file.
+        # queries: ./path/to/local/query, your-org/your-repo/queries@main
+
+    - name: Make Stroika
+      run: make all
+
+    - name: Perform CodeQL Analysis
+      uses: github/codeql-action/analyze@v2
