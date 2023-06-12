@@ -29,7 +29,7 @@ jobs:
       run: |
         branchName=$(echo '${{ github.ref }}' | sed 's,refs/heads/,,g')  
         matrix=$(jq --arg branchName "$branchName" 'map( 
-            . | select((.run_on_branch==$branchName) or (.run_on_branch=="always")) | select(.build_job=="Linux")
+            . | select((.run_on_branch==$branchName) or (.run_on_branch=="always") or ${{github.event.inputs.run_all}}) | select(.build_job=="Linux")
         )' .github/workflows/build-N-test-Matrix.json)                
         echo "matrix={\"include\":$(echo $matrix)}" >> $GITHUB_OUTPUT
   MacOSMatrixPrep:
@@ -43,7 +43,7 @@ jobs:
       run: |
         branchName=$(echo '${{ github.ref }}' | sed 's,refs/heads/,,g')  
         matrix=$(jq --arg branchName "$branchName" 'map( 
-            . | select((.run_on_branch==$branchName) or (.run_on_branch=="always")) | select(.build_job=="MacOS")
+            . | select((.run_on_branch==$branchName) or (.run_on_branch=="always") or ${{github.event.inputs.run_all}}) | select(.build_job=="MacOS")
         )' .github/workflows/build-N-test-Matrix.json)                
         echo "matrix={\"include\":$(echo $matrix)}" >> $GITHUB_OUTPUT
   WindowsMatrixPrep:
@@ -57,7 +57,7 @@ jobs:
       run: |
         branchName=$(echo '${{ github.ref }}' | sed 's,refs/heads/,,g')  
         matrix=$(jq --arg branchName "$branchName" 'map( 
-            . | select((.run_on_branch==$branchName) or (.run_on_branch=="always")) | select(.build_job=="Windows")
+            . | select((.run_on_branch==$branchName) or (.run_on_branch=="always") or ${{github.event.inputs.run_all}}) | select(.build_job=="Windows")
         )' .github/workflows/build-N-test-Matrix.json)                
         echo "matrix={\"include\":$(echo $matrix)}" >> $GITHUB_OUTPUT
 
