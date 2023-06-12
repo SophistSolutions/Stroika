@@ -4,17 +4,17 @@
         "comment2": "ubuntu 20.04"
     },
     {
+        "build_job": "Linux",
         "displayTargetName": "ubuntu-20.04-g++-11 (Debug)",
         "compiler": "g++-11",
         "runs_on": "ubuntu-latest",
         "container_image": "sophistsolutionsinc/stroika-buildvm-ubuntu2004-regression-tests:v3",
         "cpp_version": "c++2a",
         "config_name": "Debug",
-        "extra_config_args": "--apply-default-debug-flags --trace2file enable --debug-symbols false",
-        "run_on_branch": "always",
-        "build_job": "Linux"
+        "extra_config_args": "--apply-default-debug-flags --trace2file enable --debug-symbols false"
     },
     {
+        "build_job": "Linux",
         "displayTargetName": "ubuntu-20.04-g++-11",
         "compiler": "g++-11",
         "runs_on": "ubuntu-latest",
@@ -22,13 +22,13 @@
         "cpp_version": "c++2a",
         "config_name": "Release",
         "extra_config_args": "--apply-default-release-flags --trace2file enable",
-        "run_on_branch": "v3-Release",
-        "build_job": "Linux"
+        "run_on_branch": "v3-Release"
     },
     {
         "comment": "ubuntu-20.04-clang++-13"
     },
     {
+        "build_job": "Linux",
         "displayTargetName": "ubuntu-20.04-clang++-13",
         "compiler": "clang++-13",
         "runs_on": "ubuntu-latest",
@@ -36,13 +36,13 @@
         "cpp_version": "c++2a",
         "config_name": "Release",
         "extra_config_args": "--apply-default-release-flags --trace2file enable",
-        "run_on_branch": "v3-Dev",
-        "build_job": "Linux"
+        "run_on_branch": "always"
     },
     {
         "comment": "ubuntu 22.04"
     },
     {
+        "build_job": "Linux",
         "displayTargetName": "ubuntu-22.04-g++-11 (Debug)",
         "compiler": "g++-11",
         "runs_on": "ubuntu-latest",
@@ -50,10 +50,10 @@
         "cpp_version": "c++20",
         "config_name": "Debug",
         "extra_config_args": "--apply-default-debug-flags --trace2file enable --debug-symbols false",
-        "run_on_branch": "v3-Release",
-        "build_job": "Linux"
+        "run_on_branch": "v3-Release"
     },
     {
+        "build_job": "Linux",
         "displayTargetName": "ubuntu-22.04-g++-12 (Debug)",
         "compiler": "g++-12",
         "runs_on": "ubuntu-latest",
@@ -61,10 +61,10 @@
         "cpp_version": "c++20",
         "config_name": "Debug",
         "extra_config_args": "--apply-default-debug-flags --trace2file enable --debug-symbols false",
-        "run_on_branch": "v3-Release",
-        "build_job": "Linux"
+        "run_on_branch": "v3-Release"
     },
     {
+        "build_job": "Linux",
         "displayTargetName": "ubuntu-22.04-g++-12",
         "compiler": "g++-12",
         "runs_on": "ubuntu-latest",
@@ -72,10 +72,10 @@
         "cpp_version": "c++20",
         "config_name": "Release",
         "extra_config_args": "--apply-default-release-flags --trace2file enable",
-        "run_on_branch": "always",
-        "build_job": "Linux"
+        "run_on_branch": "always"
     },
     {
+        "build_job": "Linux",
         "displayTargetName": "ubuntu-22.04-g++-12-c++2a",
         "compiler": "g++-12",
         "runs_on": "ubuntu-latest",
@@ -83,10 +83,10 @@
         "cpp_version": "c++2a",
         "config_name": "Release",
         "extra_config_args": "--apply-default-release-flags --trace2file enable",
-        "run_on_branch": "v3-Release",
-        "build_job": "Linux"
+        "run_on_branch": "v3-Release"
     },
     {
+        "build_job": "Linux",
         "displayTargetName": "ubuntu-22.04-clang++-14",
         "compiler": "g++-12",
         "runs_on": "ubuntu-latest",
@@ -94,8 +94,7 @@
         "cpp_version": "c++20",
         "config_name": "Release",
         "extra_config_args": "--apply-default-release-flags --trace2file enable",
-        "run_on_branch": "v3-Release",
-        "build_job": "Linux"
+        "run_on_branch": "v3-Release"
     },
     {},
     {
@@ -103,22 +102,22 @@
         "comment2": " # runs_on: macos-latest   -- latest is 12, but we need 13 -- LGP 2023-06-10"
     },
     {
+        "build_job": "MacOS",
         "displayTargetName": "MacOS-Debug",
         "runs_on": "macos-13",
         "xcode": "14.3",
         "config_name": "Debug",
         "extra_config_args": "--apply-default-debug-flags --trace2file enable",
-        "run_on_branch": "always",
-        "build_job": "MacOS"
+        "run_on_branch": "always"
     },
     {
+        "build_job": "MacOS",
         "displayTargetName": "MacOS",
         "runs_on": "macos-13",
         "xcode": "14.3",
         "config_name": "Release",
         "extra_config_args": "--apply-default-release-flags --trace2file enable",
-        "run_on_branch": "v3-Release",
-        "build_job": "MacOS"
+        "run_on_branch": "v3-Release"
     },
     {},
     {
