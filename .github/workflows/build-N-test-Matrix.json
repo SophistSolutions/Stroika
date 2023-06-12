@@ -5,7 +5,6 @@
     },
     {
         "displayTargetName": "ubuntu-20.04-g++-11 (Debug)",
-        "os": "unix",
         "compiler": "g++-11",
         "runs_on": "ubuntu-latest",
         "container_image": "sophistsolutionsinc/stroika-buildvm-ubuntu2004-regression-tests:v3",
@@ -17,7 +16,6 @@
     },
     {
         "displayTargetName": "ubuntu-20.04-g++-11",
-        "os": "unix",
         "compiler": "g++-11",
         "runs_on": "ubuntu-latest",
         "container_image": "sophistsolutionsinc/stroika-buildvm-ubuntu2004-regression-tests:v3",
@@ -32,7 +30,6 @@
     },
     {
         "displayTargetName": "ubuntu-20.04-clang++-13",
-        "os": "unix",
         "compiler": "clang++-13",
         "runs_on": "ubuntu-latest",
         "container_image": "sophistsolutionsinc/stroika-buildvm-ubuntu2204-regression-tests:v3",
@@ -47,7 +44,6 @@
     },
     {
         "displayTargetName": "ubuntu-22.04-g++-11 (Debug)",
-        "os": "unix",
         "compiler": "g++-11",
         "runs_on": "ubuntu-latest",
         "container_image": "sophistsolutionsinc/stroika-buildvm-ubuntu2204-regression-tests:v3",
@@ -59,7 +55,6 @@
     },
     {
         "displayTargetName": "ubuntu-22.04-g++-12 (Debug)",
-        "os": "unix",
         "compiler": "g++-12",
         "runs_on": "ubuntu-latest",
         "container_image": "sophistsolutionsinc/stroika-buildvm-ubuntu2204-regression-tests:v3",
@@ -71,7 +66,6 @@
     },
     {
         "displayTargetName": "ubuntu-22.04-g++-12",
-        "os": "unix",
         "compiler": "g++-12",
         "runs_on": "ubuntu-latest",
         "container_image": "sophistsolutionsinc/stroika-buildvm-ubuntu2204-regression-tests:v3",
@@ -83,7 +77,6 @@
     },
     {
         "displayTargetName": "ubuntu-22.04-g++-12-c++2a",
-        "os": "unix",
         "compiler": "g++-12",
         "runs_on": "ubuntu-latest",
         "container_image": "sophistsolutionsinc/stroika-buildvm-ubuntu2204-regression-tests:v3",
@@ -95,7 +88,6 @@
     },
     {
         "displayTargetName": "ubuntu-22.04-clang++-14",
-        "os": "unix",
         "compiler": "g++-12",
         "runs_on": "ubuntu-latest",
         "container_image": "sophistsolutionsinc/stroika-buildvm-ubuntu2204-regression-tests:v3",
@@ -105,14 +97,13 @@
         "run_on_branch": "v3-Release",
         "build_job": "Linux"
     },
-    
+    {},
     {
         "comment": "MacOS",
         "comment2": " # runs_on: macos-latest   -- latest is 12, but we need 13 -- LGP 2023-06-10"
     },
     {
         "displayTargetName": "MacOS-Debug",
-        "os": "macos-latest",
         "runs_on": "macos-13",
         "xcode": "14.3",
         "config_name": "Debug",
@@ -122,7 +113,6 @@
     },
     {
         "displayTargetName": "MacOS",
-        "os": "macos-latest",
         "runs_on": "macos-13",
         "xcode": "14.3",
         "config_name": "Release",
@@ -130,68 +120,62 @@
         "run_on_branch": "v3-Release",
         "build_job": "MacOS"
     },
-
+    {},
     {
         "comment": "Windows"
     },
     {
+        "build_job": "Windows",
         "displayTargetName": "windows-vs2k22-cygwin-x86-Debug",
-        "os": "windows",
         "runs_on": "windows-2022",
         "container_image": "sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k22:v3",
         "config_name": "Debug",
         "extra_config_args": "--arch x86 --apply-default-debug-flags --trace2file enable",
-        "run_on_branch": "always",
-        "build_job": "Windows"
+        "run_on_branch": "always"
     },
     {
+        "build_job": "Windows",
         "displayTargetName": "windows-vs2k22-cygwin-x86-Release",
-        "os": "windows",
         "runs_on": "windows-2022",
         "container_image": "sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k22:v3",
         "config_name": "Release",
         "extra_config_args": "--arch x86 --apply-default-release-flags --trace2file enable",
-        "run_on_branch": "v3-Release",
-        "build_job": "Windows"
+        "run_on_branch": "v3-Release"
     },
     {
+        "build_job": "Windows",
         "displayTargetName": "windows-vs2k22-cygwin-x86_64-Release",
-        "os": "windows",
         "runs_on": "windows-2022",
         "container_image": "sophistsolutionsinc/stroika-buildvm-windows-cygwin-vs2k22:v3",
         "config_name": "Release",
         "extra_config_args": "--arch x86_64 --apply-default-release-flags --trace2file enable",
-        "run_on_branch": "v3-Release",
-        "build_job": "Windows"
+        "run_on_branch": "v3-Release"
     },
     {
+        "build_job": "Windows",
         "displayTargetName": "windows-vs2k22-msys-x86-Debug",
-        "os": "windows",
         "runs_on": "windows-2022",
         "container_image": "sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k22:v3",
         "config_name": "Debug",
         "extra_config_args": "--arch x86 --apply-default-debug-flags --trace2file enable",
-        "run_on_branch": "v3-Release",
-        "build_job": "Windows"
+        "run_on_branch": "v3-Release"
     },
     {
+        "build_job": "Windows",
         "displayTargetName": "windows-vs2k22-msys-x86-Release",
-        "os": "windows",
         "runs_on": "windows-2022",
         "container_image": "sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k22:v3",
         "config_name": "Release",
         "extra_config_args": "--arch x86 --apply-default-release-flags --trace2file enable",
-        "run_on_branch": "v3-Release",
-        "build_job": "Windows"
+        "run_on_branch": "v3-Release"
     },
     {
+        "build_job": "Windows",
         "displayTargetName": "windows-vs2k22-msys-x86_64-Release",
-        "os": "windows",
         "runs_on": "windows-2022",
         "container_image": "sophistsolutionsinc/stroika-buildvm-windows-msys-vs2k22:v3",
         "config_name": "Release",
         "extra_config_args": "--arch x86_64 --apply-default-release-flags --trace2file enable",
-        "run_on_branch": "always",
-        "build_job": "Windows"
+        "run_on_branch": "always"
     }
 ]
