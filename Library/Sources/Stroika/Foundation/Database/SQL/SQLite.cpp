@@ -172,8 +172,8 @@ struct Connection::Rep_ final : IRep {
         flags |= options.fReadOnly ? SQLITE_OPEN_READONLY : SQLITE_OPEN_READWRITE;
 
         string uriArg;
-        {
-            int n{};
+        if constexpr (qDebug) {
+            [[maybe_unused]]int n{};
             if (options.fDBPath) {
                 ++n;
             }

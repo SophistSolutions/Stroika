@@ -81,7 +81,7 @@
     "Warning: Stroika v2.1 does not support versions prior to clang++ 6 (non-apple); note that Stroika v2.0 supports clang3.9, clang4, "   \
     "and clang5"
 #endif
-#if (__clang_major__ > 14) || (__clang_major__ == 14 && (__clang_minor__ > 0))
+#if (__clang_major__ > 15) || (__clang_major__ == 15 && (__clang_minor__ > 0))
 #define _STROIKA_CONFIGURATION_WARNING_                                                                                                    \
     "Info: Stroika untested with this version of clang++ - (>14.0) USING PREVIOUS COMPILER VERSION BUG DEFINES"
 #define CompilerAndStdLib_AssumeBuggyIfNewerCheck_(X) 1
@@ -505,13 +505,32 @@ make[4]: *** [/Sandbox/Stroika-Dev//ScriptsLib/SharedBuildRules-Default.mk:30: /
     CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 14))
 #elif defined(__clang__) && !defined(__APPLE__)
 // first noticed broken in apply clang 14
+// still broken in clang++ 15
 #define qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy                                               \
-    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 14))
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 15))
 #else
 #define qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy 0
 #endif
 
 #endif
+
+
+/*
+    Compiling Tests/11/Test.cpp ...
+PLEASE submit a bug report to https://github.com/llvm/llvm-project/issues/ and include the crash backtrace, preprocessed source, and associated run script.
+Stack dump:
+0.      Program arguments: clang++-15 --std=c++20 -I/mnt/c/Sandbox/Stroika/DevRoot/Builds/clang++-15-release-libstdc++/ThirdPartyComponents/include/ -I/mnt/c/Sandbox/Stroika/DevRoot/Library/Sources/ -I/mnt/c/Sandbox/Stroika/DevRoot/IntermediateFiles/clang++-15-release-libstdc++/ -Wall -Wno-switch -Wno-sign-compare -Wno-unused-function -Wno-unused-local-typedef -Wno-future-compat -Wno-unqualified-std-cast-call -O3 -fvisibility=hidden -g -DqDebug=0 -DqHasFeature_LibCurl=1 -DqHasFeature_OpenSSL=1 -DqHasFeature_WinHTTP=0 -DqHasFeature_Xerces=1 -DqHasFeature_ZLib=1 -DqHasFeature_sqlite=1 -DqHasFeature_LZMA=1 -DqHasFeature_boost=1 -DqTraceToFile=1 -DqDefaultTracingOn=1 -flto -stdlib=libstdc++ -c Test.cpp -o /mnt/c/Sandbox/Stroika/DevRoot/IntermediateFiles/clang++-15-release-libstdc++/Tests/11/Test.o
+1.      <eof> parser at end of file
+2.      /mnt/c/Sandbox/Stroika/DevRoot/Library/Sources/Stroika/Foundation/Containers/Factory/../Concrete/../Association.h:531:25: instantiating function definition 'Stroika::Foundation::Containers::Association<int, int>::operator=='
+3.      /mnt/c/Sandbox/Stroika/DevRoot/Library/Sources/Stroika/Foundation/Containers/Factory/../Concrete/../Association.h:646:19: instantiating function definition 'Stroika::Foundation::Containers::Association<int, int>::EqualsComparer<>::EqualsComparer'
+Stack dump without symbol names (ensure you have llvm-symbolizer in your PATH or set the environment var `LLVM_SYMBOLIZER_PATH` to point to it):
+/usr/lib/llvm-15/bin/../lib/libLLVM-15.so.1(_ZN4llvm3sys15PrintStackTraceERNS_11raw_ostreamEi+0x31)[0x7f3d1ed9c3b1]
+/usr/lib/llvm-15/bin/../lib/libLLVM-15.so.1(_ZN4llvm3sys17RunSignalHandlersEv+0xee)[0x7f3d1ed9a0fe]
+/usr/lib/llvm-15/bin/../lib/libLLVM-15.so.1(_ZN4llvm3sys15CleanupOnSignalEm+0x101)[0x7f3d1ed9b771]
+/usr/lib/llvm-15/bin/../lib/libLLVM-15.so.1(+0xe2767f)[0x7f3d1ecbf67f]
+/lib/x86_64-linux-gnu/libc.so.6(+0x42520)[0x7f3d1d978520]
+/usr/lib/llvm-15/bin/../lib/libclang-cpp.so.15(+0xda0b
+*/
 
 #ifndef qCompilerAndStdLib_RequiresIEqialsCrashesAssociation_Buggy
 
@@ -520,7 +539,8 @@ make[4]: *** [/Sandbox/Stroika-Dev//ScriptsLib/SharedBuildRules-Default.mk:30: /
 #define qCompilerAndStdLib_RequiresIEqialsCrashesAssociation_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 14))
 #elif defined(__clang__) && !defined(__APPLE__)
 // first noticed broken in apply clang 14
-#define qCompilerAndStdLib_RequiresIEqialsCrashesAssociation_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 14))
+// first noticed broken in apply clang 15
+#define qCompilerAndStdLib_RequiresIEqialsCrashesAssociation_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 15))
 #else
 #define qCompilerAndStdLib_RequiresIEqialsCrashesAssociation_Buggy 0
 #endif
@@ -885,7 +905,7 @@ In file included from ../Characters/StringBuilder.h:273,
 #elif defined(__clang__) && !defined(__APPLE__)
 // Noticed broken in -clang++14
 #define qCompilerAndStdLib_template_Requires_templateDeclarationMatchesOutOfLine2_Buggy                                                    \
-    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 14))
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 15))
 #else
 #define qCompilerAndStdLib_template_Requires_templateDeclarationMatchesOutOfLine2_Buggy 0
 #endif
@@ -1010,8 +1030,9 @@ make[1]: *** [Makefile:20:
     CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 14))
 #elif defined(__clang__) && !defined(__APPLE__)
 // Noticed broken in -clang++14
+// Noticed broken in -clang++15
 #define qCompilerAndStdLib_template_ForwardDeclareWithConceptsInTypenameCrasher_Buggy                                                      \
-    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 14))
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 15))
 #else
 #define qCompilerAndStdLib_template_ForwardDeclareWithConceptsInTypenameCrasher_Buggy 0
 #endif
@@ -1026,8 +1047,9 @@ make[1]: *** [Makefile:20:
     CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 14))
 #elif defined(__clang__) && !defined(__APPLE__)
 // First noticed in clang++-14
+// reproduced in clang++-14
 #define qCompilerAndStdLib_template_requresDefNeededonSpecializations_Buggy                                                                \
-    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 14))
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 15))
 #else
 #define qCompilerAndStdLib_template_requresDefNeededonSpecializations_Buggy 0
 #endif
@@ -1073,8 +1095,9 @@ Writer.h:55:49: note: defined here
     CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 14))
 #elif defined(__clang__) && !defined(__APPLE__)
 // First noticed in clang++-14
+// broken in clang++-15
 #define qCompilerAndStdLib_DefaultMemberInitializerNeededEnclosingForDefaultFunArg_Buggy                                                   \
-    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 14))
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 15))
 #else
 #define qCompilerAndStdLib_DefaultMemberInitializerNeededEnclosingForDefaultFunArg_Buggy 0
 #endif
@@ -1292,7 +1315,7 @@ From:    https://en.cppreference.com/w/cpp/locale/time_get/date_order
 #define qCompilerAndStdLib_stdlib_ranges_pretty_broken_Buggy (_LIBCPP_VERSION < 15000)
 #endif
 #elif defined(__clang_major__)
-#define qCompilerAndStdLib_stdlib_ranges_pretty_broken_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 14))
+#define qCompilerAndStdLib_stdlib_ranges_pretty_broken_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 15))
 #else
 #define qCompilerAndStdLib_stdlib_ranges_pretty_broken_Buggy 0
 #endif
@@ -1384,7 +1407,7 @@ In file included from Namespace.cpp:10:
     CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 14))
 #elif defined(__clang__) && !defined(__APPLE__)
 #define qCompilerAndStdLib_requires_breaks_soemtimes_but_static_assert_ok_Buggy                                                            \
-    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 14))
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 15))
 #elif defined(_MSC_VER)
 // verified broken in _MSC_VER_2k22_17Pt5_ (BUT ONLY WHEN BUILDING INSIDE DOCKER????)
 // Fixed in _MSC_VER_2k22_17Pt6_
@@ -1571,6 +1594,14 @@ int main ()
 #endif
 #endif
 
+/*
+ ion_Factory.h:123:
+In file included from ./../Characters/../Containers/Factory/KeyedCollection_Factory.inl:16:
+In file included from ./../Characters/../Containers/Factory/../Concrete/KeyedCollection_stdset.h:136:
+./../Characters/../Containers/Concrete/KeyedCollection_stdset.inl:60:22: error: no viable constructor or deduction guide for deduction of template arguments of 'SetInOrderComparer'
+            , fData_{SetInOrderComparer{keyExtractor, inorderComparer}}
+                     ^
+                     */
 #ifndef qCompilerAndStdLib_deduce_template_arguments_CTOR_Buggy
 
 #if defined(__clang__) && defined(__APPLE__)
@@ -1580,7 +1611,8 @@ int main ()
 #elif defined(__clang__) && !defined(__APPLE__)
 // appears still broken in clang++-13
 // appears still broken in clang++-14
-#define qCompilerAndStdLib_deduce_template_arguments_CTOR_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 14))
+// appears still broken in clang++-15
+#define qCompilerAndStdLib_deduce_template_arguments_CTOR_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 15))
 #elif defined(_MSC_VER)
 // Newly broken in _MSC_VER_2k22_17Pt2_ - wonder if that means this is my bug not vs2k22/clang?
 // broken in _MSC_VER_2k22_17Pt3_
@@ -1673,7 +1705,8 @@ error C2975: '_Test': invalid template argument for 'std::conditional', expected
 // still broken in clang++-12
 // still broken in clang++-13
 // still broken in clang++-14
-#define qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 14))
+// still broken in clang++-15
+#define qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 15))
 #elif defined(_MSC_VER)
 // verified still broken in _MSC_VER_2k22_17Pt0_
 // verified still broken in _MSC_VER_2k22_17Pt1_
@@ -1745,8 +1778,9 @@ Test.cpp:173:31: error: template template argument has different template parame
 // verified still broken in clang++-12
 // verified still broken in clang++-13
 // verified still broken in clang++-14
+// verified still broken in clang++-15
 #define qCompilerAndStdLib_template_template_argument_as_different_template_paramters_Buggy                                                \
-    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 14))
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 15))
 #else
 #define qCompilerAndStdLib_template_template_argument_as_different_template_paramters_Buggy 0
 #endif
