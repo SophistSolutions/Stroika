@@ -514,7 +514,6 @@ make[4]: *** [/Sandbox/Stroika-Dev//ScriptsLib/SharedBuildRules-Default.mk:30: /
 
 #endif
 
-
 /*
     Compiling Tests/11/Test.cpp ...
 PLEASE submit a bug report to https://github.com/llvm/llvm-project/issues/ and include the crash backtrace, preprocessed source, and associated run script.
@@ -532,17 +531,17 @@ Stack dump without symbol names (ensure you have llvm-symbolizer in your PATH or
 /usr/lib/llvm-15/bin/../lib/libclang-cpp.so.15(+0xda0b
 */
 
-#ifndef qCompilerAndStdLib_RequiresIEqialsCrashesAssociation_Buggy
+#ifndef qCompilerAndStdLib_RequiresIEqualsCrashesAssociation_Buggy
 
 #if defined(__clang__) && defined(__APPLE__)
 // wag untesed
-#define qCompilerAndStdLib_RequiresIEqialsCrashesAssociation_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 14))
+#define qCompilerAndStdLib_RequiresIEqualsCrashesAssociation_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 14))
 #elif defined(__clang__) && !defined(__APPLE__)
 // first noticed broken in apply clang 14
 // first noticed broken in apply clang 15
-#define qCompilerAndStdLib_RequiresIEqialsCrashesAssociation_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 15))
+#define qCompilerAndStdLib_RequiresIEqualsCrashesAssociation_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 15))
 #else
-#define qCompilerAndStdLib_RequiresIEqialsCrashesAssociation_Buggy 0
+#define qCompilerAndStdLib_RequiresIEqualsCrashesAssociation_Buggy 0
 #endif
 
 #endif
@@ -1097,7 +1096,6 @@ Writer.h:55:49: note: defined here
 
 #endif
 
-
 /*
 esponse.h: In member function ‘auto Stroika::Frameworks::WebServer::Response::UpdateHeader(FUNCTION&&)’:
 Response.h:373:30: error: no match for ‘operator==’ (operand types are ‘unsigned char:3’ and ‘Stroika::Frameworks::WebServer::Response::State’)
@@ -1509,11 +1507,6 @@ make[4]: *** [/mnt/c/Sandbox/Stroika/DevRoot/ScriptsLib/SharedBuildRules-Default
 // appears still broken in clang++13 (maybe should depend on stdlib version not compiler version)
 // appears fixed in clang++14 (or maybe SB depending on libversion)
 #define qCompilerAndStdLib_to_chars_FP_Buggy (CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_LIBCPP_VERSION <= 14000))
-#elif defined(__clang__) && !defined(__APPLE__)
-// according to https://en.cppreference.com/w/cpp/compiler_support not yet supported so WAG
-// appears still broken in clang++13 (maybe should depend on stdlib version not compiler version)
-// appears fixed in clang++14 (or maybe SB depending on libversion)
-#define qCompilerAndStdLib_to_chars_FP_Buggy (CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__clang_major__ <= 13))
 #else
 #define qCompilerAndStdLib_to_chars_FP_Buggy 0
 #endif
@@ -1729,10 +1722,6 @@ Test.cpp:173:31: error: template template argument has different template parame
 #define qCompilerAndStdLib_template_template_argument_as_different_template_paramters_Buggy                                                \
     CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 14))
 #elif defined(__clang__) && !defined(__APPLE__)
-// verified still broken in clang++-10
-// verified still broken in clang++-11
-// verified still broken in clang++-12
-// verified still broken in clang++-13
 // verified still broken in clang++-14
 // verified still broken in clang++-15
 #define qCompilerAndStdLib_template_template_argument_as_different_template_paramters_Buggy                                                \

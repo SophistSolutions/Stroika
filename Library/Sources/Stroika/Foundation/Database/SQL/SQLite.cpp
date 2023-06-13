@@ -173,7 +173,7 @@ struct Connection::Rep_ final : IRep {
 
         string uriArg;
         if constexpr (qDebug) {
-            [[maybe_unused]]int n{};
+            [[maybe_unused]] int n{};
             if (options.fDBPath) {
                 ++n;
             }
