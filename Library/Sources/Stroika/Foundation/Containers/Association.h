@@ -635,7 +635,7 @@ namespace Stroika::Foundation::Containers {
      */
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     template <
-#if qCompilerAndStdLib_RequiresIEqialsCrashesAssociation_Buggy
+#if qCompilerAndStdLib_RequiresIEqualsCrashesAssociation_Buggy
         typename
 #else
         Common::IEqualsComparer<MAPPED_VALUE_TYPE>
