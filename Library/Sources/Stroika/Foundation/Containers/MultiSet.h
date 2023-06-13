@@ -191,7 +191,7 @@ namespace Stroika::Foundation::Containers {
         MultiSet (EQUALS_COMPARER&& equalsComparer, const initializer_list<value_type>& src);
         template <ranges::range ITERABLE_OF_ADDABLE>
         explicit MultiSet (ITERABLE_OF_ADDABLE&& src)
-            requires (not is_base_of_v<MultiSet<T, TRAITS>, decay_t<ITERABLE_OF_ADDABLE>>)
+            requires (not derived_from<decay_t<ITERABLE_OF_ADDABLE>, MultiSet<T, TRAITS>>)
 #if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
             : MultiSet{}
         {

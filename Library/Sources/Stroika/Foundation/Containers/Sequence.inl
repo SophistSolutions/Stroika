@@ -111,7 +111,7 @@ namespace Stroika::Foundation::Containers {
     template <typename T>
     template <ranges::range ITERABLE_OF_ADDABLE>
     inline Sequence<T>::Sequence (ITERABLE_OF_ADDABLE&& src)
-        requires (not is_base_of_v<Sequence<T>, decay_t<ITERABLE_OF_ADDABLE>>)
+        requires (not derived_from<decay_t<ITERABLE_OF_ADDABLE>, Sequence<T>>)
         : Sequence{}
     {
         static_assert (IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>);

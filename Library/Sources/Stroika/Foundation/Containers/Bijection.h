@@ -176,7 +176,7 @@ namespace Stroika::Foundation::Containers {
         Bijection (DOMAIN_EQUALS_COMPARER&& domainEqualsComparer, RANGE_EQUALS_COMPARER&& rangeEqualsComparer, const initializer_list<value_type>& src);
         template <ranges::range ITERABLE_OF_ADDABLE>
         explicit Bijection (ITERABLE_OF_ADDABLE&& src)
-            requires (not is_base_of_v<Bijection<DOMAIN_TYPE, RANGE_TYPE>, decay_t<ITERABLE_OF_ADDABLE>>)
+            requires (not derived_from<decay_t<ITERABLE_OF_ADDABLE>, Bijection<DOMAIN_TYPE, RANGE_TYPE>>)
 #if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
             : Bijection{}
         {

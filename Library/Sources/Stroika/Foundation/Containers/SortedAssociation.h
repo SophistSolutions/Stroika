@@ -103,7 +103,7 @@ namespace Stroika::Foundation::Containers {
         SortedAssociation (KEY_INORDER_COMPARER&& inorderComparer, const initializer_list<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src);
         template <ranges::range ITERABLE_OF_ADDABLE>
         explicit SortedAssociation (ITERABLE_OF_ADDABLE&& src)
-            requires (not is_base_of_v<SortedAssociation<KEY_TYPE, MAPPED_VALUE_TYPE>, decay_t<ITERABLE_OF_ADDABLE>>)
+            requires (not derived_from<decay_t<ITERABLE_OF_ADDABLE>, SortedAssociation<KEY_TYPE, MAPPED_VALUE_TYPE>>)
 #if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
         {
             static_assert (IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>);

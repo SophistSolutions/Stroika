@@ -258,7 +258,7 @@ namespace Stroika::Foundation::Containers {
 
         template <ranges::range ITERABLE_OF_ADDABLE>
         explicit Sequence (ITERABLE_OF_ADDABLE&& src)
-            requires (not is_base_of_v<Sequence<T>, decay_t<ITERABLE_OF_ADDABLE>>)
+            requires (not derived_from<decay_t<ITERABLE_OF_ADDABLE>, Sequence<T>>)
 #if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
             : Sequence{}
         {

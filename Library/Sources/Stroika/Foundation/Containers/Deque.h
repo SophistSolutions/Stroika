@@ -85,7 +85,7 @@ namespace Stroika::Foundation::Containers {
         Deque (const initializer_list<value_type>& src);
         template <ranges::range ITERABLE_OF_ADDABLE>
         explicit Deque (ITERABLE_OF_ADDABLE&& src)
-            requires (not is_base_of_v<Deque<T>, decay_t<ITERABLE_OF_ADDABLE>>)
+            requires (not derived_from<decay_t<ITERABLE_OF_ADDABLE>, Deque<T>>)
 #if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
         {
             static_assert (IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>);

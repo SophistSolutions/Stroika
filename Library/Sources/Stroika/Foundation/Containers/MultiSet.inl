@@ -60,7 +60,7 @@ namespace Stroika::Foundation::Containers {
     template <typename T, typename TRAITS>
     template <ranges::range ITERABLE_OF_ADDABLE>
     inline MultiSet<T, TRAITS>::MultiSet (ITERABLE_OF_ADDABLE&& src)
-        requires (not is_base_of_v<MultiSet<T, TRAITS>, decay_t<ITERABLE_OF_ADDABLE>>)
+        requires (not derived_from<decay_t<ITERABLE_OF_ADDABLE>, MultiSet<T, TRAITS>>)
         : MultiSet{}
     {
         static_assert (IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>);

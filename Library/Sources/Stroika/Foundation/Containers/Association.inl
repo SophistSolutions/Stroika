@@ -57,7 +57,7 @@ namespace Stroika::Foundation::Containers {
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     template <ranges::range ITERABLE_OF_ADDABLE>
     inline Association<KEY_TYPE, MAPPED_VALUE_TYPE>::Association (ITERABLE_OF_ADDABLE&& src)
-        requires (not is_base_of_v<Association<KEY_TYPE, MAPPED_VALUE_TYPE>, decay_t<ITERABLE_OF_ADDABLE>>)
+        requires (not derived_from<decay_t<ITERABLE_OF_ADDABLE>, Association<KEY_TYPE, MAPPED_VALUE_TYPE>>)
         : Association{}
     {
         static_assert (IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>);

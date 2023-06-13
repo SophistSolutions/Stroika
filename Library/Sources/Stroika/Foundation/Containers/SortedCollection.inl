@@ -55,15 +55,18 @@ namespace Stroika::Foundation::Containers {
         this->AddAll (src);
         _AssertRepValidType ();
     }
+#if !qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
     template <typename T>
-    template <ranges::range ITERABLE_OF_ADDABLE, enable_if_t<not is_base_of_v<SortedCollection<T>, decay_t<ITERABLE_OF_ADDABLE>>>*>
+    template <ranges::range ITERABLE_OF_ADDABLE>
     inline SortedCollection<T>::SortedCollection (ITERABLE_OF_ADDABLE&& src)
+        requires (not is_base_of_v<SortedCollection<T>, decay_t<ITERABLE_OF_ADDABLE>>)
         : SortedCollection{}
     {
         static_assert (IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>);
         this->AddAll (forward<ITERABLE_OF_ADDABLE> (src));
         _AssertRepValidType ();
     }
+#endif
     template <typename T>
     template <IInOrderComparer<T> INORDER_COMPARER, ranges::range ITERABLE_OF_ADDABLE>
     inline SortedCollection<T>::SortedCollection (INORDER_COMPARER&& inOrderComparer, ITERABLE_OF_ADDABLE&& src)

@@ -94,8 +94,18 @@ namespace Stroika::Foundation::Containers {
         SortedSet (const initializer_list<T>& src);
         template <Common::IInOrderComparer<T> INORDER_COMPARER>
         SortedSet (INORDER_COMPARER&& inOrderComparer, const initializer_list<T>& src);
-        template <ranges::range ITERABLE_OF_ADDABLE, enable_if_t<not is_base_of_v<SortedSet<T>, decay_t<ITERABLE_OF_ADDABLE>>>* = nullptr>
-        explicit SortedSet (ITERABLE_OF_ADDABLE&& src);
+        template <ranges::range ITERABLE_OF_ADDABLE>
+        explicit SortedSet (ITERABLE_OF_ADDABLE&& src)
+            requires (not is_base_of_v<SortedSet<T>, decay_t<ITERABLE_OF_ADDABLE>>)
+#if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
+            : SortedSet{}
+        {
+            static_assert (IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>);
+            this->AddAll (forward<ITERABLE_OF_ADDABLE> (src));
+            _AssertRepValidType ();
+        }
+#endif
+        ;
         template <Common::IInOrderComparer<T> INORDER_COMPARER, ranges::range ITERABLE_OF_ADDABLE>
         SortedSet (INORDER_COMPARER&& inOrderComparer, ITERABLE_OF_ADDABLE&& src);
         template <input_iterator ITERATOR_OF_ADDABLE>
