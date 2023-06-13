@@ -5,11 +5,6 @@ name: build-v3-Docker-Containers
 
 on:
   workflow_dispatch:
-    inputs:
-      ignored:
-        description: "ignored"
-        required: false
-        default: ""
 
 jobs:
   build-Linux:
