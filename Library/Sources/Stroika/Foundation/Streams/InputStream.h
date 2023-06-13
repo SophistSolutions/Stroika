@@ -482,7 +482,7 @@ namespace Stroika::Foundation::Streams {
          *  @see ReadRaw()
          *  @see Streams::CopyAll()
          * 
-         *  \note ReadAll -> BLOB in cpp file and templated just due to deadly include embrace.
+         *  \note ReadAll -> BLOB <enable_if_t> in cpp file and templated just due to deadly include embrace.
          *        cannot get working with require() since to be in CPP file, need to use template
          *        specialization, and cannot specify requires with template specialization (or I cannot figure out how)
          */
