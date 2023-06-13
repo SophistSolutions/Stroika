@@ -53,6 +53,8 @@ namespace Stroika::Foundation::Containers::Concrete {
          *  We internally must count on comparing elements of type KEY_TYPE (after extraction).
          *
          *  This helper allows comparing either KEY or T types interchangeably.
+         * 
+         *  Used in STDHASHSET definition, and typically nowhere else
          */
         template <typename KEY_EQUALS_COMPARER = equal_to<key_type>>
         struct ElementEqualsComparer {
@@ -86,6 +88,8 @@ namespace Stroika::Foundation::Containers::Concrete {
          *  We internally must count on comparing elements of type KEY_TYPE (after extraction).
          *
          *  This helper allows hashing either KEY or T types interchangeably.
+         * 
+         *  Used in STDHASHSET definition, and typically nowhere else
          */
         template <typename KEY_HASHER = std::hash<key_type>>
         struct ElementHash {
@@ -102,12 +106,12 @@ namespace Stroika::Foundation::Containers::Concrete {
             using is_transparent = int; // see https://en.cppreference.com/w/cpp/container/set/find - allows overloads to lookup by key
         };
 
-        // user providers a hasher on KEY_TYPE, but the std::unordered_set holds a T, so it needs a hasher
-        // that works on either T or KEY_TYPE. Similarly for the EqualsComparers
-
     public:
         /**
          *  \brief STDHASHSET is std::unordered_set<> that can be used inside KeyedCollection_stdhashset (need specific traits on unordered set)
+         * 
+         * user providers a hasher on KEY_TYPE, but the std::unordered_set holds a T, so it needs a hasher
+         * that works on either T or KEY_TYPE. Similarly for the EqualsComparers
          * 
          *  \see https://en.cppreference.com/w/cpp/container/unordered_set
          */
@@ -115,10 +119,10 @@ namespace Stroika::Foundation::Containers::Concrete {
         using STDHASHSET = unordered_set<T, ElementHash<KEY_HASH>, ElementEqualsComparer<KEY_EQUALS_COMPARER>>;
 
     public:
-        template <typename KEY_HASH = std::hash<KEY_TYPE>, typename KEY_EQUALS_COMPARER = equal_to<KEY_TYPE>,
-                  enable_if_t<IEqualsComparer<KEY_EQUALS_COMPARER, KEY_TYPE> and Cryptography::Digest::IsHashFunction<KEY_HASH, KEY_TYPE>>* = nullptr>
+        template <typename KEY_HASH = std::hash<KEY_TYPE>, typename KEY_EQUALS_COMPARER = equal_to<KEY_TYPE>>
         KeyedCollection_stdhashset (const KeyExtractorType& keyExtractor = {}, KEY_HASH&& keyHasher = {},
-                                    KEY_EQUALS_COMPARER&& keyComparer = KEY_EQUALS_COMPARER{});
+                                    KEY_EQUALS_COMPARER&& keyComparer = KEY_EQUALS_COMPARER{})
+            requires (IEqualsComparer<KEY_EQUALS_COMPARER, KEY_TYPE> and Cryptography::Digest::IsHashFunction<KEY_HASH, KEY_TYPE>);
 
         KeyedCollection_stdhashset (KeyedCollection_stdhashset&& src) noexcept      = default;
         KeyedCollection_stdhashset (const KeyedCollection_stdhashset& src) noexcept = default;
