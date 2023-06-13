@@ -603,10 +603,6 @@ in enable_if_t's, but may not need this anymore
 // Appears to work fine now _MSC_VER_2k22_17Pt1_
 #define qCompilerAndStdLib_template_enableIf_Addable_UseBroken_Buggy                                                                       \
     CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k22_17Pt0_)
-#elif defined(__clang__) && !defined(__APPLE__)
-// broken in clang++-13
-// appears fixed in clang++14
-#define qCompilerAndStdLib_template_enableIf_Addable_UseBroken_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 13))
 #else
 #define qCompilerAndStdLib_template_enableIf_Addable_UseBroken_Buggy 0
 #endif
@@ -884,10 +880,6 @@ In file included from ../Characters/StringBuilder.h:273,
 // Noticed broken in crapple-clang++14
 #define qCompilerAndStdLib_template_Requires_templateDeclarationMatchesOutOfLine_Buggy                                                     \
     CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 14))
-#elif defined(__clang__) && !defined(__APPLE__)
-// Noticed fixed in clang++14, and broken in 12, so guess broken still in 13
-#define qCompilerAndStdLib_template_Requires_templateDeclarationMatchesOutOfLine_Buggy                                                     \
-    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 13))
 #else
 #define qCompilerAndStdLib_template_Requires_templateDeclarationMatchesOutOfLine_Buggy 0
 #endif
@@ -922,6 +914,7 @@ In file included from ../Characters/StringBuilder.h:273,
     CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 14))
 #elif defined(__clang__) && !defined(__APPLE__)
 // Noticed broken in -clang++14
+// appears fixed in clang++15
 #define qCompilerAndStdLib_template_Requires_constraint_not_treated_constexpr_Buggy                                                        \
     CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 14))
 #else
@@ -1104,20 +1097,6 @@ Writer.h:55:49: note: defined here
 
 #endif
 
-/*
-./TextConvert.inl:90:15: error: using declaration requires a qualified name
-        using UnicodeExternalEncodings;
-        */
-#ifndef qCompilerAndStdLib_qualified_enum_using_Buggy
-
-#if defined(__clang__) && !defined(__APPLE__)
-// First noticed in clang++-10
-#define qCompilerAndStdLib_qualified_enum_using_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 10))
-#else
-#define qCompilerAndStdLib_qualified_enum_using_Buggy 0
-#endif
-
-#endif
 
 /*
 esponse.h: In member function ‘auto Stroika::Frameworks::WebServer::Response::UpdateHeader(FUNCTION&&)’:
@@ -1393,6 +1372,7 @@ In file included from Namespace.cpp:10:
 // broken in clang++-12
 // broken in clang++-13
 // broken in clang++-14
+// APPEARS fixed in clang++15
 #define qCompilerAndStdLib_explicitly_defaulted_threeway_warning_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 14))
 #else
 #define qCompilerAndStdLib_explicitly_defaulted_threeway_warning_Buggy 0
@@ -1498,12 +1478,7 @@ In file included from ../Characters/String.h:18,
   */
 #ifndef qCompilerAndStdLib_lambdas_in_unevaluatedContext_Buggy
 
-#if defined(__clang__) && !defined(__APPLE__)
-// First noted in C++20 mode on clang++-12
-// https://en.cppreference.com/w/cpp/20 says maybe fixed in clang++13 or 14
-// appears fixed in clang++-13
-#define qCompilerAndStdLib_lambdas_in_unevaluatedContext_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 12))
-#elif defined(__GNUC__) && !defined(__clang__)
+#if defined(__GNUC__) && !defined(__clang__)
 // VERIFIED BROKEN IN GCC 11
 #define qCompilerAndStdLib_lambdas_in_unevaluatedContext_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ <= 12)
 #else
@@ -1621,25 +1596,6 @@ In file included from ./../Characters/../Containers/Factory/../Concrete/KeyedCol
     CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((_MSC_VER_2k22_17Pt2_ <= _MSC_VER and _MSC_VER <= _MSC_VER_2k22_17Pt3_))
 #else
 #define qCompilerAndStdLib_deduce_template_arguments_CTOR_Buggy 0
-#endif
-
-#endif
-
-/*
-In file included from ./../Characters/../Containers/Concrete/Sequence_stdvector.h:112:
-In file included from ./../Characters/../Containers/Concrete/Sequence_stdvector.inl:18:
-./../Characters/../Containers/Concrete/../Private/IteratorImplHelper.h:78:184: error: missing default argument on parameter 'args'
-        explicit IteratorImplHelper_ (const DATASTRUCTURE_CONTAINER* data, const ContainerDebugChangeCounts_* changeCounter = nullptr, ADDITIONAL_BACKEND_ITERATOR_CTOR_ARGUMENTS&&... args);
-                                                                                                                                                                                       ^
-/Applications/Xcode_12.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/memory:3033:32: note: in instantiation of function template 
-*/
-#ifndef qCompilerAndStdLib_template_default_arguments_then_paramPack_Buggy
-
-#if defined(__clang__) && !defined(__APPLE__)
-#define qCompilerAndStdLib_template_default_arguments_then_paramPack_Buggy                                                                 \
-    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 10))
-#else
-#define qCompilerAndStdLib_template_default_arguments_then_paramPack_Buggy 0
 #endif
 
 #endif
