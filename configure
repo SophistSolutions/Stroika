@@ -812,18 +812,6 @@ sub	SetDefaultForCompilerDriver_
 			$STATIC_LINK_GCCRUNTIME = 1;
 		}
 	}
-	if (! defined $CWARNING_FLAGS) {
-		$CWARNING_FLAGS = '';
-		if (IsGCCOrGPlusPlus_ ($COMPILER_DRIVER)) {
-			$CWARNING_FLAGS = $CWARNING_FLAGS . $DEFAULT_CWARNING_FLAGS_GCC;
-		}
-		elsif (IsClangOrClangPlusPlus_($COMPILER_DRIVER)) {
-			$CWARNING_FLAGS = $CWARNING_FLAGS . $DEFAULT_CWARNING_FLAGS_CLANG;
-			if (GetClangVersion_ ($COMPILER_DRIVER_CPlusPlus) >= 14.0) {
-				$CWARNING_FLAGS		= $CWARNING_FLAGS . '-Wno-unqualified-std-cast-call ';
-			}
-		}
-	}
 
 	if ($COMPILER_DRIVER_C eq "") {
 		$COMPILER_DRIVER_C = $COMPILER_DRIVER;
@@ -845,6 +833,19 @@ sub	SetDefaultForCompilerDriver_
 			}
 		}
 	}
+	if (! defined $CWARNING_FLAGS) {
+		$CWARNING_FLAGS = '';
+		if (IsGCCOrGPlusPlus_ ($COMPILER_DRIVER)) {
+			$CWARNING_FLAGS = $CWARNING_FLAGS . $DEFAULT_CWARNING_FLAGS_GCC;
+		}
+		elsif (IsClangOrClangPlusPlus_($COMPILER_DRIVER)) {
+			$CWARNING_FLAGS = $CWARNING_FLAGS . $DEFAULT_CWARNING_FLAGS_CLANG;
+			if (GetClangVersion_ ($COMPILER_DRIVER_CPlusPlus) >= 14.0) {
+				$CWARNING_FLAGS		= $CWARNING_FLAGS . '-Wno-unqualified-std-cast-call ';
+			}
+		}
+	}
+
 	if ($AS eq "") {
 		if (IsGCCOrGPlusPlus_($COMPILER_DRIVER_CPlusPlus)) {
 			$AS = ReplaceLast_ ($COMPILER_DRIVER_CPlusPlus, 'g++', 'as');
