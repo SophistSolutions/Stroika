@@ -32,13 +32,6 @@ namespace Stroika::Foundation::Common {
     inline const std::byte* Common::GUID::begin () const noexcept { return reinterpret_cast<const std::byte*> (this); }
     inline const std::byte* Common::GUID::end () const noexcept { return reinterpret_cast<const std::byte*> (this) + 16; }
     constexpr size_t        Common::GUID::size () const noexcept { return 16; }
-    template <>
-    Memory::BLOB Common::GUID::As () const
-#if qCompilerAndStdLib_template_requresDefNeededonSpecializations_Buggy
-        requires (is_same_v<Memory::BLOB, Characters::String> or is_same_v<Memory::BLOB, std::string> or is_same_v<Memory::BLOB, Memory::BLOB> or
-                  is_same_v<Memory::BLOB, array<std::byte, 16>> or is_same_v<Memory::BLOB, array<uint8_t, 16>>)
-#endif
-    ; // so it can go in CPP file
     template <typename T>
     inline T Common::GUID::As () const
         requires (is_same_v<T, Characters::String> or is_same_v<T, std::string> or is_same_v<T, Memory::BLOB> or
@@ -56,11 +49,11 @@ namespace Stroika::Foundation::Common {
                                 Data4[0], Data4[1], Data4[2], Data4[3], Data4[4], Data4[5], Data4[6], Data4[7]) > 0);
             return buf;
         }
-        else if constexpr (is_same_v<T, array<std::byte, 16>>) {
-            return *reinterpret_cast<const array<std::byte, 16>*> (this);
+        else if constexpr (is_same_v<T, array<std::byte, 16>> or is_same_v < T, array<uint8_t, 16>>) {
+            return *reinterpret_cast<const T*> (this);
         }
-        else if constexpr (is_same_v<T, array<uint8_t, 16>>) {
-            return *reinterpret_cast<const array<uint8_t, 16>*> (this);
+        else if constexpr (is_same_v<T, Memory::BLOB>) {
+            return T{begin (), end ()}; // tricky case cuz BLOB forward declared, not defined when this procedure definition first seen
         }
     }
 
