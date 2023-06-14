@@ -257,7 +257,6 @@ namespace Stroika::Foundation::Containers {
         Sequence (Sequence&& src) noexcept      = default;
         Sequence (const Sequence& src) noexcept = default;
         Sequence (const initializer_list<value_type>& src);
-
         template <ranges::range ITERABLE_OF_ADDABLE>
         explicit Sequence (ITERABLE_OF_ADDABLE&& src)
             requires (not derived_from<decay_t<ITERABLE_OF_ADDABLE>, Sequence<T>>)

@@ -41,8 +41,8 @@ namespace Stroika::Foundation::Containers {
 
     using Common::IEqualsComparer;
     using Configuration::ArgByValueType;
-    using Configuration::ExtractValueType_t;
     using Traversal::IInputIteratorOfT;
+    using Traversal::IIterableOfT;
     using Traversal::Iterable;
     using Traversal::Iterator;
 
@@ -154,14 +154,14 @@ namespace Stroika::Foundation::Containers {
          *
          *        Set<int> s1  = {1, 2, 3};
          *        Set<int> s2  = s1;
-         *        Set<int> s3  { s1 };
-         *        Set<int> s4  { s1.begin (), s1.end () };
-         *        Set<int> s5  { c };
-         *        Set<int> s6  { v };
-         *        Set<int> s7  { v.begin (), v.end () };
-         *        Set<int> s8  { move (s1) };
-         *        Set<int> s9  { 1, 2, 3 };
-         *        Set<int> s10 { Common::DeclareEqualsComparer ([](int l, int r) { return l == r; }), c };
+         *        Set<int> s3{ s1 };
+         *        Set<int> s4{ s1.begin (), s1.end () };
+         *        Set<int> s5{ c };
+         *        Set<int> s6{ v };
+         *        Set<int> s7{ v.begin (), v.end () };
+         *        Set<int> s8{ move (s1) };
+         *        Set<int> s9{ 1, 2, 3 };
+         *        Set<int> s10{ Common::DeclareEqualsComparer ([](int l, int r) { return l == r; }), c };
          *      \endcode
          */
         Set ();
@@ -172,23 +172,22 @@ namespace Stroika::Foundation::Containers {
         Set (const initializer_list<value_type>& src);
         template <IEqualsComparer<T> EQUALS_COMPARER>
         Set (EQUALS_COMPARER&& equalsComparer, const initializer_list<value_type>& src);
-        template <ranges::range ITERABLE_OF_ADDABLE>
+        template <IIterableOfT<T> ITERABLE_OF_ADDABLE>
         explicit Set (ITERABLE_OF_ADDABLE&& src)
             requires (not derived_from<decay_t<ITERABLE_OF_ADDABLE>, Set<T>>)
 #if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
             : Set{}
         {
-            static_assert (IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>);
             AddAll (forward<ITERABLE_OF_ADDABLE> (src));
             _AssertRepValidType ();
         }
 #endif
         ;
-        template <IEqualsComparer<T> EQUALS_COMPARER, ranges::range ITERABLE_OF_ADDABLE>
+        template <IEqualsComparer<T> EQUALS_COMPARER, IIterableOfT<T> ITERABLE_OF_ADDABLE>
         Set (EQUALS_COMPARER&& equalsComparer, ITERABLE_OF_ADDABLE&& src);
-        template <input_iterator ITERATOR_OF_ADDABLE>
+        template <IInputIteratorOfT<T> ITERATOR_OF_ADDABLE>
         Set (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
-        template <IEqualsComparer<T> EQUALS_COMPARER, input_iterator ITERATOR_OF_ADDABLE>
+        template <IEqualsComparer<T> EQUALS_COMPARER, IInputIteratorOfT<T> ITERATOR_OF_ADDABLE>
         Set (EQUALS_COMPARER&& equalsComparer, ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
 
     protected:
@@ -278,9 +277,9 @@ namespace Stroika::Foundation::Containers {
          *
          *  \note mutates container
          */
-        template <input_iterator ITERATOR_OF_ADDABLE>
+        template <IInputIteratorOfT<T> ITERATOR_OF_ADDABLE>
         nonvirtual void AddAll (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
-        template <ranges::range ITERABLE_OF_ADDABLE>
+        template <IIterableOfT<T> ITERABLE_OF_ADDABLE>
         nonvirtual void AddAll (ITERABLE_OF_ADDABLE&& items);
 
     public:
@@ -330,9 +329,9 @@ namespace Stroika::Foundation::Containers {
          * 
          *  \note mutates container
          */
-        template <input_iterator ITERATOR_OF_ADDABLE>
+        template <IInputIteratorOfT<T> ITERATOR_OF_ADDABLE>
         nonvirtual size_t RemoveAll (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
-        template <ranges::range ITERABLE_OF_ADDABLE>
+        template <IIterableOfT<T> ITERABLE_OF_ADDABLE>
         nonvirtual size_t RemoveAll (const ITERABLE_OF_ADDABLE& s);
         nonvirtual void   RemoveAll ();
         template <predicate<T> PREDICATE>
@@ -439,7 +438,8 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
-         *  // @todo ADD THIS FUNCTIONALITY - useful cuz can be applied to Remove() API
+         *  Note the return value of this find function is an Iterator, when it could have been as easily an optional<T>. Reason
+         *  to return an iterator is so that it can be fed back into a Remove (iterator) call which allows more efficient removeal.
          */
         nonvirtual Iterator<value_type> find (ArgByValueType<value_type> item) const;
 

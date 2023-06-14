@@ -81,36 +81,39 @@ namespace Stroika::Foundation::Containers {
     public:
         /**
          *  All constructors either copy their source comparer (copy/move CTOR), or use the default INORDER comparer for 'T'.
+         * 
+         *  The INORDER_COMPARER must be provided (if not explicitly, then implicitly via defaults) at construction time. This
+         *  is key to differentiating SortedSet from Set construction (where you specify an IEqualsComparer). Here the IEqualsComparer
+         *  is implicitly defined by the supposed IInOrderComparer.
          *
          * \req IInOrderComparer<INORDER_COMPARER,T> - for constructors with that type parameter
          * 
          *  \note   <a href="ReadMe.md#Container Constructors">See general information about container constructors that applies here</a>
          */
         SortedSet ();
-        template <Common::IInOrderComparer<T> INORDER_COMPARER>
+        template <IInOrderComparer<T> INORDER_COMPARER>
         explicit SortedSet (INORDER_COMPARER&& inorderComparer);
         SortedSet (SortedSet&& src) noexcept      = default;
         SortedSet (const SortedSet& src) noexcept = default;
         SortedSet (const initializer_list<T>& src);
-        template <Common::IInOrderComparer<T> INORDER_COMPARER>
+        template <IInOrderComparer<T> INORDER_COMPARER>
         SortedSet (INORDER_COMPARER&& inOrderComparer, const initializer_list<T>& src);
-        template <ranges::range ITERABLE_OF_ADDABLE>
+        template <IIterableOfT<T> ITERABLE_OF_ADDABLE>
         explicit SortedSet (ITERABLE_OF_ADDABLE&& src)
             requires (not is_base_of_v<SortedSet<T>, decay_t<ITERABLE_OF_ADDABLE>>)
 #if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
             : SortedSet{}
         {
-            static_assert (IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>);
             this->AddAll (forward<ITERABLE_OF_ADDABLE> (src));
             _AssertRepValidType ();
         }
 #endif
         ;
-        template <Common::IInOrderComparer<T> INORDER_COMPARER, ranges::range ITERABLE_OF_ADDABLE>
+        template <IInOrderComparer<T> INORDER_COMPARER, IIterableOfT<T> ITERABLE_OF_ADDABLE>
         SortedSet (INORDER_COMPARER&& inOrderComparer, ITERABLE_OF_ADDABLE&& src);
-        template <input_iterator ITERATOR_OF_ADDABLE>
+        template <IInputIteratorOfT<T> ITERATOR_OF_ADDABLE>
         SortedSet (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
-        template <Common::IInOrderComparer<T> INORDER_COMPARER, input_iterator ITERATOR_OF_ADDABLE>
+        template <IInOrderComparer<T> INORDER_COMPARER, IInputIteratorOfT<T> ITERATOR_OF_ADDABLE>
         SortedSet (INORDER_COMPARER&& inOrderComparer, ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
 
     protected:
