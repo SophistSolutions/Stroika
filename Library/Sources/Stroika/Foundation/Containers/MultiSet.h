@@ -170,13 +170,13 @@ namespace Stroika::Foundation::Containers {
          *
          *          MultiSet<int> s1  = {1, 2, 3};
          *          MultiSet<int> s2  = s1;
-         *          MultiSet<int> s3  { s1 };
-         *          MultiSet<int> s4  { s1.begin (), s1.end () };
-         *          MultiSet<int> s5  { c };
-         *          MultiSet<int> s6  { v };
-         *          MultiSet<int> s7  { v.begin (), v.end () };
-         *          MultiSet<int> s8  { move (s1) };
-         *          MultiSet<int> s9  { Common::mkEqualsComparer([](int l, int r) { return l == r; }), c};
+         *          MultiSet<int> s3{ s1 };
+         *          MultiSet<int> s4{ s1.begin (), s1.end () };
+         *          MultiSet<int> s5{ c };
+         *          MultiSet<int> s6{ v };
+         *          MultiSet<int> s7{ v.begin (), v.end () };
+         *          MultiSet<int> s8{ move (s1) };
+         *          MultiSet<int> s9{ Common::mkEqualsComparer([](int l, int r) { return l == r; }), c};
          *      \endcode
          */
         MultiSet ();

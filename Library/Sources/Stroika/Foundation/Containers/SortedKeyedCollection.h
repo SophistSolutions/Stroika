@@ -123,7 +123,6 @@ namespace Stroika::Foundation::Containers {
 #if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
             : SortedKeyedCollection{KeyExtractorType{}, KEY_INORDER_COMPARER{}}
         {
-            static_assert (IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>);
             this->AddAll (src);
             _AssertRepValidType ();
         }

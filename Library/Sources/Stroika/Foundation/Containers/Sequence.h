@@ -77,7 +77,6 @@ namespace Stroika::Foundation::Containers {
 
     using Common::IPotentiallyComparer;
     using Configuration::ArgByValueType;
-    using Configuration::ExtractValueType_t;
     using Traversal::IInputIteratorOfT;
     using Traversal::IIterableOfT;
     using Traversal::Iterable;
@@ -257,19 +256,18 @@ namespace Stroika::Foundation::Containers {
         Sequence (Sequence&& src) noexcept      = default;
         Sequence (const Sequence& src) noexcept = default;
         Sequence (const initializer_list<value_type>& src);
-        template <ranges::range ITERABLE_OF_ADDABLE>
+        template <IIterableOfT<T> ITERABLE_OF_ADDABLE>
         explicit Sequence (ITERABLE_OF_ADDABLE&& src)
             requires (not derived_from<decay_t<ITERABLE_OF_ADDABLE>, Sequence<T>>)
 #if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
             : Sequence{}
         {
-            static_assert (IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>);
             AppendAll (forward<ITERABLE_OF_ADDABLE> (src));
             _AssertRepValidType ();
         }
 #endif
         ;
-        template <input_iterator ITERATOR_OF_ADDABLE>
+        template <IInputIteratorOfT<T> ITERATOR_OF_ADDABLE>
         Sequence (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
 
     protected:
@@ -462,12 +460,11 @@ namespace Stroika::Foundation::Containers {
         /**
          *  \brief Insert all the given items into this sequence, starting at offset 'i'.
          *
-         *  \req IsAddable_v<ExtractValueType_t<ITERATOR_OF_ADDABLE>>
-         *  \req IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>
+         *  \req IInputIteratorOfT<ITERATOR_OF_ADDABLE, T> or IIterableOfT<ITERABLE_OF_ADDABLE, T>
          */
-        template <input_iterator ITERATOR_OF_ADDABLE>
+        template <IInputIteratorOfT<T> ITERATOR_OF_ADDABLE>
         nonvirtual void InsertAll (size_t i, ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
-        template <ranges::range ITERABLE_OF_ADDABLE>
+        template <IIterableOfT<T> ITERABLE_OF_ADDABLE>
         nonvirtual void InsertAll (size_t i, ITERABLE_OF_ADDABLE&& s);
 
     public:
@@ -478,14 +475,13 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
-         *  \req IsAddable_v<ExtractValueType_t<ITERATOR_OF_ADDABLE>>
-         *  \req IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>
+         *  \req IInputIteratorOfT<ITERATOR_OF_ADDABLE, T> or IIterableOfT<ITERABLE_OF_ADDABLE, T>
          *
          *  \note mutates container
          */
-        template <ranges::range ITERABLE_OF_ADDABLE>
+        template <IIterableOfT<T> ITERABLE_OF_ADDABLE>
         nonvirtual void PrependAll (ITERABLE_OF_ADDABLE&& s);
-        template <input_iterator ITERATOR_OF_ADDABLE>
+        template <IInputIteratorOfT<T> ITERATOR_OF_ADDABLE>
         nonvirtual void PrependAll (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
 
     public:
@@ -509,9 +505,9 @@ namespace Stroika::Foundation::Containers {
          *
          *  \note mutates container
          */
-        template <ranges::range ITERABLE_OF_ADDABLE>
+        template <IIterableOfT<T> ITERABLE_OF_ADDABLE>
         nonvirtual void AppendAll (ITERABLE_OF_ADDABLE&& s);
-        template <input_iterator ITERATOR_OF_ADDABLE>
+        template <IInputIteratorOfT<T> ITERATOR_OF_ADDABLE>
         nonvirtual void AppendAll (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
 
     public:

@@ -133,12 +133,12 @@ namespace Stroika::Foundation::Containers {
          *
          *          Collection<int> c1  = {1, 2, 3};
          *          Collection<int> c2  = c1;
-         *          Collection<int> c3  { c1 };
-         *          Collection<int> c4  { c1.begin (), c1.end () };
-         *          Collection<int> c5  { s };
-         *          Collection<int> c6  { v };
-         *          Collection<int> c7  { v.begin (), v.end () };
-         *          Collection<int> c8  { move (c1) };
+         *          Collection<int> c3{ c1 };
+         *          Collection<int> c4{ c1.begin (), c1.end () };
+         *          Collection<int> c5{ s };
+         *          Collection<int> c6{ v };
+         *          Collection<int> c7{ v.begin (), v.end () };
+         *          Collection<int> c8{ move (c1) };
          *      \endcode
          *
          *  \req    static_assert (IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>);  // except done with requires to avoid bad overload of CTOR
