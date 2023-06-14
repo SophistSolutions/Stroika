@@ -28,11 +28,10 @@ namespace Stroika::Foundation::Containers {
         _AssertRepValidType ();
     }
     template <typename T>
-    template <input_iterator ITERATOR_OF_ADDABLE>
+    template <IInputIteratorOfT<T> ITERATOR_OF_ADDABLE>
     inline Collection<T>::Collection (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
         : Collection{}
     {
-        static_assert (IsAddable_v<ExtractValueType_t<ITERATOR_OF_ADDABLE>>);
         AddAll (forward<ITERATOR_OF_ADDABLE> (start), forward<ITERATOR_OF_ADDABLE> (end));
         _AssertRepValidType ();
     }
@@ -58,12 +57,11 @@ namespace Stroika::Foundation::Containers {
     }
 #if !qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
     template <typename T>
-    template <ranges::range ITERABLE_OF_ADDABLE>
+    template <IIterableOfT<T> ITERABLE_OF_ADDABLE>
     inline Collection<T>::Collection (ITERABLE_OF_ADDABLE&& src)
         requires (not derived_from<decay_t<ITERABLE_OF_ADDABLE>, Collection<T>>)
         : Collection{}
     {
-        static_assert (IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>);
         AddAll (forward<ITERABLE_OF_ADDABLE> (src));
         _AssertRepValidType ();
     }
@@ -75,20 +73,18 @@ namespace Stroika::Foundation::Containers {
         return this->Find (item, forward<EQUALS_COMPARER> (equalsComparer)) != this->end ();
     }
     template <typename T>
-    template <input_iterator ITERATOR_OF_ADDABLE>
+    template <IInputIteratorOfT<T> ITERATOR_OF_ADDABLE>
     void Collection<T>::AddAll (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
     {
-        static_assert (IsAddable_v<ExtractValueType_t<ITERATOR_OF_ADDABLE>>);
         _SafeReadWriteRepAccessor<_IRep> tmp{this};
         for (auto i = forward<ITERATOR_OF_ADDABLE> (start); i != forward<ITERATOR_OF_ADDABLE> (end); ++i) {
             tmp._GetWriteableRep ().Add (*i);
         }
     }
     template <typename T>
-    template <ranges::range ITERABLE_OF_ADDABLE>
+    template <IIterableOfT<T> ITERABLE_OF_ADDABLE>
     inline void Collection<T>::AddAll (ITERABLE_OF_ADDABLE&& items)
     {
-        static_assert (IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>);
         if constexpr (std::is_convertible_v<decay_t<ITERABLE_OF_ADDABLE>*, Collection<value_type>*>) {
             // very rare corner case
             if (static_cast<const Iterable<value_type>*> (this) == static_cast<const Iterable<value_type>*> (&items)) [[unlikely]] {
@@ -170,10 +166,9 @@ namespace Stroika::Foundation::Containers {
         return cnt;
     }
     template <typename T>
-    template <ranges::range ITERABLE_OF_ADDABLE, typename EQUALS_COMPARER>
+    template <IIterableOfT<T> ITERABLE_OF_ADDABLE, typename EQUALS_COMPARER>
     inline size_t Collection<T>::RemoveAll (const ITERABLE_OF_ADDABLE& c, EQUALS_COMPARER&& equalsComparer)
     {
-        static_assert (IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>);
         if (static_cast<const void*> (this) == static_cast<const void*> (addressof (c))) {
             return RemoveAll (forward<EQUALS_COMPARER> (equalsComparer));
         }

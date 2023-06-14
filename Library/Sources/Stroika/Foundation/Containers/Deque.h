@@ -22,6 +22,7 @@
 namespace Stroika::Foundation::Containers {
 
     using Configuration::ArgByValueType;
+    using Traversal::IIterableOfT;
     using Traversal::Iterable;
     using Traversal::Iterator;
 
@@ -83,7 +84,7 @@ namespace Stroika::Foundation::Containers {
         Deque (Deque&& src) noexcept      = default;
         Deque (const Deque& src) noexcept = default;
         Deque (const initializer_list<value_type>& src);
-        template <ranges::range ITERABLE_OF_ADDABLE>
+        template <IIterableOfT<T> ITERABLE_OF_ADDABLE>
         explicit Deque (ITERABLE_OF_ADDABLE&& src)
             requires (not derived_from<decay_t<ITERABLE_OF_ADDABLE>, Deque<T>>)
 #if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy

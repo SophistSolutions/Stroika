@@ -247,7 +247,6 @@ namespace Stroika::Foundation::Containers::Concrete {
 #endif
         : Association_Array{}
     {
-        static_assert (IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>);
         if constexpr (Configuration::has_size_v<ITERABLE_OF_ADDABLE>) {
             reserve (src.size ());
         }
@@ -259,7 +258,6 @@ namespace Stroika::Foundation::Containers::Concrete {
     inline Association_Array<KEY_TYPE, MAPPED_VALUE_TYPE>::Association_Array (KEY_EQUALS_COMPARER&& keyEqualsComparer, ITERABLE_OF_ADDABLE&& src)
         : Association_Array{forward<KEY_EQUALS_COMPARER> (keyEqualsComparer)}
     {
-        static_assert (IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>);
         reserve (src.size ());
         this->AddAll (forward<ITERABLE_OF_ADDABLE> (src));
         AssertRepValidType_ ();
@@ -269,7 +267,6 @@ namespace Stroika::Foundation::Containers::Concrete {
     Association_Array<KEY_TYPE, MAPPED_VALUE_TYPE>::Association_Array (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
         : Association_Array{}
     {
-        static_assert (IsAddable_v<ExtractValueType_t<ITERATOR_OF_ADDABLE>>);
         if constexpr (Configuration::has_minus_v<ITERATOR_OF_ADDABLE>) {
             if (start != end) {
                 reserve (end - start);
@@ -284,7 +281,6 @@ namespace Stroika::Foundation::Containers::Concrete {
                                                                        ITERATOR_OF_ADDABLE&& end)
         : Association_Array{forward<KEY_EQUALS_COMPARER> (keyEqualsComparer)}
     {
-        static_assert (IsAddable_v<ExtractValueType_t<ITERATOR_OF_ADDABLE>>);
         if constexpr (Configuration::has_minus_v<ITERATOR_OF_ADDABLE>) {
             if (start != end) {
                 reserve (end - start);

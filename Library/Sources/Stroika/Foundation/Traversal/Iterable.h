@@ -72,7 +72,14 @@ namespace Stroika::Foundation::Traversal {
     concept IIterable = ranges::range<ITERABLE>;
 
     /**
-     *  IIterableOfT checks if argument is IIterable<> and if the value of items iterated over is convertible to OF_T.
+     *  IIterableOfT - concept can iterate over ITERABLE and read values converted to OF_T
+     *
+     *  Checks if argument is IIterable<> and if the value of items iterated over is convertible to OF_T.
+     * 
+     *  Considered calling this IIterableOfFromT, and having an IIterableOfToT, but that wouldn't make sense
+     *  since you cannot write to an iterator. May make sense in some container situations, but not here. Or
+     *  maybe IIterableProducingT? Even if there is a situation where that makes sense (e.g. an algorithm producing
+     *  a subetype) - it wouldn't be producing an Iterable of that type, but a Set or Collection or some such).
      * 
      *  @See IIterable
      */

@@ -44,7 +44,8 @@
 namespace Stroika::Foundation::Containers {
 
     using Configuration::ArgByValueType;
-    using Configuration::ExtractValueType_t;
+    using Traversal::IInputIteratorOfT;
+    using Traversal::IIterableOfT;
     using Traversal::Iterable;
     using Traversal::Iterator;
 
@@ -153,20 +154,19 @@ namespace Stroika::Foundation::Containers {
         Collection (Collection&& src) noexcept      = default;
         Collection (const Collection& src) noexcept = default;
         Collection (const initializer_list<value_type>& src);
-        template <ranges::range ITERABLE_OF_ADDABLE>
+        template <IIterableOfT<T> ITERABLE_OF_ADDABLE>
         Collection (ITERABLE_OF_ADDABLE&& src)
             requires (not derived_from<decay_t<ITERABLE_OF_ADDABLE>, Collection<T>>)
 #if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
             : Collection{}
         {
-            static_assert (IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>);
             AddAll (forward<ITERABLE_OF_ADDABLE> (src));
             _AssertRepValidType ();
         }
 #endif
         ;
 
-        template <input_iterator ITERATOR_OF_ADDABLE>
+        template <IInputIteratorOfT<T> ITERATOR_OF_ADDABLE>
         Collection (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
 
     protected:
@@ -197,14 +197,14 @@ namespace Stroika::Foundation::Containers {
         /**
          *  \note   AddAll/2 is alias for .net AddRange ()
          * 
-         *  \req IsAddable_v<ExtractValueType_t<ITERATOR_OF_ADDABLE>>
-         *  \req IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>
+         *  \req IsAddable_v<ranges::range_value_t<ITERATOR_OF_ADDABLE>>
+         *  \req IsAddable_v<iter_value_t<ITERABLE_OF_ADDABLE>>
          *
          *  \note mutates container
          */
-        template <input_iterator ITERATOR_OF_ADDABLE>
+        template <IInputIteratorOfT<T> ITERATOR_OF_ADDABLE>
         nonvirtual void AddAll (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
-        template <ranges::range ITERABLE_OF_ADDABLE>
+        template <IIterableOfT<T> ITERABLE_OF_ADDABLE>
         nonvirtual void AddAll (ITERABLE_OF_ADDABLE&& items);
 
     public:
@@ -277,7 +277,7 @@ namespace Stroika::Foundation::Containers {
         nonvirtual void RemoveAll ();
         template <Common::IEqualsComparer<T> EQUALS_COMPARER = equal_to<T>>
         nonvirtual size_t RemoveAll (const Iterator<value_type>& start, const Iterator<value_type>& end, EQUALS_COMPARER&& equalsComparer = {});
-        template <ranges::range ITERABLE_OF_ADDABLE, typename EQUALS_COMPARER = equal_to<T>>
+        template <IIterableOfT<T> ITERABLE_OF_ADDABLE, typename EQUALS_COMPARER = equal_to<T>>
         nonvirtual size_t RemoveAll (const ITERABLE_OF_ADDABLE& c, EQUALS_COMPARER&& equalsComparer = {});
         template <predicate<T> PREDICATE>
         nonvirtual size_t RemoveAll (PREDICATE&& p);

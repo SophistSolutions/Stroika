@@ -149,7 +149,6 @@ namespace Stroika::Foundation::Containers::Concrete {
     inline Collection_Array<T>::Collection_Array (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
         : Collection_Array{}
     {
-        static_assert (IsAddable_v<ExtractValueType_t<ITERATOR_OF_ADDABLE>>);
         if constexpr (Configuration::has_minus_v<ITERATOR_OF_ADDABLE>) {
             if (start != end) {
                 reserve (end - start);
@@ -177,7 +176,6 @@ namespace Stroika::Foundation::Containers::Concrete {
 #endif
         : Collection_Array{}
     {
-        static_assert (IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>);
         reserve (src.size ());
         this->AddAll (forward<ITERABLE_OF_ADDABLE> (src));
         AssertRepValidType_ ();

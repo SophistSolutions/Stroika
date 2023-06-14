@@ -38,7 +38,7 @@ namespace Stroika::Foundation::Containers {
     }
 #if !qCompilerAndStdLib_template_Requires_templateDeclarationMatchesOutOfLine2_Buggy
     template <typename T, typename KEY_TYPE, typename TRAITS>
-    template <ranges::range ITERABLE_OF_ADDABLE, IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER>
+    template <IIterableOfT<T> ITERABLE_OF_ADDABLE, IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER>
     inline KeyedCollection<T, KEY_TYPE, TRAITS>::KeyedCollection (ITERABLE_OF_ADDABLE&& src)
         requires (KeyedCollection_ExtractorCanBeDefaulted<T, KEY_TYPE, TRAITS> and
                   not derived_from<decay_t<ITERABLE_OF_ADDABLE>, KeyedCollection<T, KEY_TYPE, TRAITS>>)

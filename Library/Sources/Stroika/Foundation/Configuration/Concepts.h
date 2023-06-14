@@ -471,6 +471,7 @@ namespace Stroika::Foundation::Configuration {
      */
     template <typename T>
     using ExtractValueType_t = typename ExtractValueType<decay_t<T>>::type;
+    //    using ExtractValueType_t = ranges::range_value_t<T>;
 
     /**
     * 
