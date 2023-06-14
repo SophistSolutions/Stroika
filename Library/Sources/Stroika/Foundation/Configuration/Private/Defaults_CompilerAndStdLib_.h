@@ -210,6 +210,7 @@ foo.cpp:
  *******************************************************************
  *******************************************************************
  */
+static_assert (__cpp_lib_atomic_shared_ptr >= 201711, "Stroika v3 requires __cpp_lib_atomic_shared_ptr >= 201711");
 
 /*
  *https://developercommunity.visualstudio.com/t/__sanitizer_annotate_contiguous_containe/10119696?entry=problem&ref=native&refTime=1660499588239&refUserId=b9c6175e-9d87-6b50-bc33-61424496814f
