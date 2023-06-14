@@ -239,7 +239,6 @@ namespace Stroika::Foundation::Containers::Concrete {
     inline SortedMapping_stdmap<KEY_TYPE, MAPPED_VALUE_TYPE>::SortedMapping_stdmap (ITERABLE_OF_ADDABLE&& src)
         : SortedMapping_stdmap{}
     {
-        static_assert (IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>);
         AssertRepValidType_ ();
         this->AddAll (forward<ITERABLE_OF_ADDABLE> (src));
         AssertRepValidType_ ();
@@ -249,7 +248,6 @@ namespace Stroika::Foundation::Containers::Concrete {
     inline SortedMapping_stdmap<KEY_TYPE, MAPPED_VALUE_TYPE>::SortedMapping_stdmap (KEY_INORDER_COMPARER&& inorderComparer, ITERABLE_OF_ADDABLE&& src)
         : SortedMapping_stdmap{forward<KEY_INORDER_COMPARER> (inorderComparer)}
     {
-        static_assert (IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>);
         AssertRepValidType_ ();
         this->AddAll (forward<ITERABLE_OF_ADDABLE> (src));
         AssertRepValidType_ ();
@@ -259,7 +257,6 @@ namespace Stroika::Foundation::Containers::Concrete {
     SortedMapping_stdmap<KEY_TYPE, MAPPED_VALUE_TYPE>::SortedMapping_stdmap (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
         : SortedMapping_stdmap{}
     {
-        static_assert (IsAddable_v<ExtractValueType_t<ITERATOR_OF_ADDABLE>>);
         this->AddAll (forward<ITERATOR_OF_ADDABLE> (start), forward<ITERATOR_OF_ADDABLE> (end));
         AssertRepValidType_ ();
     }
@@ -269,7 +266,6 @@ namespace Stroika::Foundation::Containers::Concrete {
                                                                              ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
         : SortedMapping_stdmap{forward<KEY_INORDER_COMPARER> (inorderComparer)}
     {
-        static_assert (IsAddable_v<ExtractValueType_t<ITERATOR_OF_ADDABLE>>);
         this->AddAll (forward<ITERATOR_OF_ADDABLE> (start), forward<ITERATOR_OF_ADDABLE> (end));
         AssertRepValidType_ ();
     }

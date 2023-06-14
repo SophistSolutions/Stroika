@@ -225,20 +225,18 @@ namespace Stroika::Foundation::Containers::Concrete {
         AssertRepValidType_ ();
     }
     template <typename T, typename TRAITS>
-    template <ranges::range ITERABLE_OF_ADDABLE, enable_if_t<not is_base_of_v<MultiSet_stdmap<T, TRAITS>, decay_t<ITERABLE_OF_ADDABLE>>>*>
+    template <IIterableOfT<CountedValue<T>> ITERABLE_OF_ADDABLE, enable_if_t<not is_base_of_v<MultiSet_stdmap<T, TRAITS>, decay_t<ITERABLE_OF_ADDABLE>>>*>
     inline MultiSet_stdmap<T, TRAITS>::MultiSet_stdmap (ITERABLE_OF_ADDABLE&& src)
         : MultiSet_stdmap{}
     {
-        static_assert (IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>);
         AddAll (forward<ITERABLE_OF_ADDABLE> (src));
         AssertRepValidType_ ();
     }
     template <typename T, typename TRAITS>
-    template <IInOrderComparer<T> INORDER_COMPARER, ranges::range ITERABLE_OF_ADDABLE>
+    template <IInOrderComparer<T> INORDER_COMPARER, IIterableOfT<CountedValue<T>> ITERABLE_OF_ADDABLE>
     inline MultiSet_stdmap<T, TRAITS>::MultiSet_stdmap (INORDER_COMPARER&& comparer, ITERABLE_OF_ADDABLE&& src)
         : MultiSet_stdmap{forward<INORDER_COMPARER> (comparer)}
     {
-        static_assert (IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>);
         AddAll (forward<ITERABLE_OF_ADDABLE> (src));
         AssertRepValidType_ ();
     }
@@ -277,7 +275,6 @@ namespace Stroika::Foundation::Containers::Concrete {
     MultiSet_stdmap<T, TRAITS>::MultiSet_stdmap (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
         : MultiSet_stdmap{}
     {
-        static_assert (IsAddable_v<ExtractValueType_t<ITERATOR_OF_ADDABLE>>);
         AddAll (start, end);
         AssertRepValidType_ ();
     }
@@ -286,7 +283,6 @@ namespace Stroika::Foundation::Containers::Concrete {
     MultiSet_stdmap<T, TRAITS>::MultiSet_stdmap (INORDER_COMPARER&& comparer, ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
         : MultiSet_stdmap{forward<INORDER_COMPARER> (comparer)}
     {
-        static_assert (IsAddable_v<ExtractValueType_t<ITERATOR_OF_ADDABLE>>);
         AddAll (forward<ITERATOR_OF_ADDABLE> (start), forward<ITERATOR_OF_ADDABLE> (end));
         AssertRepValidType_ ();
     }

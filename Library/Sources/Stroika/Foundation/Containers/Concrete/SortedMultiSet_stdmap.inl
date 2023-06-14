@@ -262,20 +262,18 @@ namespace Stroika::Foundation::Containers::Concrete {
         AssertRepValidType_ ();
     }
     template <typename T, typename TRAITS>
-    template <ranges::range ITERABLE_OF_ADDABLE, enable_if_t<not is_base_of_v<SortedMultiSet_stdmap<T, TRAITS>, decay_t<ITERABLE_OF_ADDABLE>>>*>
+    template <IIterableOfT<CountedValue<T>> ITERABLE_OF_ADDABLE, enable_if_t<not is_base_of_v<SortedMultiSet_stdmap<T, TRAITS>, decay_t<ITERABLE_OF_ADDABLE>>>*>
     inline SortedMultiSet_stdmap<T, TRAITS>::SortedMultiSet_stdmap (ITERABLE_OF_ADDABLE&& src)
         : SortedMultiSet_stdmap{}
     {
-        static_assert (IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>);
         this->AddAll (forward<ITERABLE_OF_ADDABLE> (src));
         AssertRepValidType_ ();
     }
     template <typename T, typename TRAITS>
-    template <IInOrderComparer<T> INORDER_COMPARER, ranges::range ITERABLE_OF_ADDABLE>
+    template <IInOrderComparer<T> INORDER_COMPARER, IIterableOfT<CountedValue<T>> ITERABLE_OF_ADDABLE>
     inline SortedMultiSet_stdmap<T, TRAITS>::SortedMultiSet_stdmap (INORDER_COMPARER&& inorderComparer, ITERABLE_OF_ADDABLE&& src)
         : SortedMultiSet_stdmap{forward<INORDER_COMPARER> (inorderComparer)}
     {
-        static_assert (IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>);
         this->AddAll (forward<ITERABLE_OF_ADDABLE> (src));
         AssertRepValidType_ ();
     }
@@ -284,7 +282,6 @@ namespace Stroika::Foundation::Containers::Concrete {
     SortedMultiSet_stdmap<T, TRAITS>::SortedMultiSet_stdmap (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
         : SortedMultiSet_stdmap{}
     {
-        static_assert (IsAddable_v<ExtractValueType_t<ITERATOR_OF_ADDABLE>>);
         AddAll (forward<ITERATOR_OF_ADDABLE> (start), forward<ITERATOR_OF_ADDABLE> (end));
         AssertRepValidType_ ();
     }
@@ -293,7 +290,6 @@ namespace Stroika::Foundation::Containers::Concrete {
     SortedMultiSet_stdmap<T, TRAITS>::SortedMultiSet_stdmap (INORDER_COMPARER&& inorderComparer, ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
         : SortedMultiSet_stdmap{forward<INORDER_COMPARER> (inorderComparer)}
     {
-        static_assert (IsAddable_v<ExtractValueType_t<ITERATOR_OF_ADDABLE>>);
         AddAll (forward<ITERATOR_OF_ADDABLE> (start), forward<ITERATOR_OF_ADDABLE> (end));
         AssertRepValidType_ ();
     }

@@ -71,40 +71,36 @@ namespace Stroika::Foundation::Containers {
     }
 #if !qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
     template <typename T, typename TRAITS>
-    template <ranges::range ITERABLE_OF_ADDABLE>
+    template <IIterableOfT<CountedValue<T>> ITERABLE_OF_ADDABLE>
     inline SortedMultiSet<T, TRAITS>::SortedMultiSet (ITERABLE_OF_ADDABLE&& src)
         requires (not is_base_of_v<SortedMultiSet<T, TRAITS>, decay_t<ITERABLE_OF_ADDABLE>>)
         : SortedMultiSet{}
     {
-        static_assert (IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>);
         this->AddAll (forward<ITERABLE_OF_ADDABLE> (src));
         _AssertRepValidType ();
     }
 #endif
     template <typename T, typename TRAITS>
-    template <Common::IInOrderComparer<T> INORDER_COMPARER, ranges::range ITERABLE_OF_ADDABLE>
+    template <Common::IInOrderComparer<T> INORDER_COMPARER, IIterableOfT<CountedValue<T>> ITERABLE_OF_ADDABLE>
     inline SortedMultiSet<T, TRAITS>::SortedMultiSet (INORDER_COMPARER&& inorderComparer, ITERABLE_OF_ADDABLE&& src)
         : SortedMultiSet{forward<INORDER_COMPARER> (inorderComparer)}
     {
-        static_assert (IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>);
         this->AddAll (forward<ITERABLE_OF_ADDABLE> (src));
         _AssertRepValidType ();
     }
     template <typename T, typename TRAITS>
-    template <input_iterator ITERATOR_OF_ADDABLE>
+    template <IInputIteratorOfT<CountedValue<T>> ITERATOR_OF_ADDABLE>
     SortedMultiSet<T, TRAITS>::SortedMultiSet (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
         : SortedMultiSet{}
     {
-        static_assert (IsAddable_v<ExtractValueType_t<ITERATOR_OF_ADDABLE>>);
         AddAll (forward<ITERATOR_OF_ADDABLE> (start), forward<ITERATOR_OF_ADDABLE> (end));
         _AssertRepValidType ();
     }
     template <typename T, typename TRAITS>
-    template <input_iterator INORDER_COMPARER, input_iterator ITERATOR_OF_ADDABLE>
+    template <IInputIteratorOfT<CountedValue<T>> INORDER_COMPARER, IInputIteratorOfT<CountedValue<T>> ITERATOR_OF_ADDABLE>
     SortedMultiSet<T, TRAITS>::SortedMultiSet (INORDER_COMPARER&& inorderComparer, ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
         : SortedMultiSet{forward<INORDER_COMPARER> (inorderComparer)}
     {
-        static_assert (IsAddable_v<ExtractValueType_t<ITERATOR_OF_ADDABLE>>);
         AddAll (forward<ITERATOR_OF_ADDABLE> (start), forward<ITERATOR_OF_ADDABLE> (end));
         _AssertRepValidType ();
     }

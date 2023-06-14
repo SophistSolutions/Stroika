@@ -248,20 +248,18 @@ namespace Stroika::Foundation::Containers::Concrete {
         AssertRepValidType_ ();
     }
     template <typename T, typename TRAITS>
-    template <ranges::range ITERABLE_OF_ADDABLE, enable_if_t<not is_base_of_v<MultiSet_LinkedList<T, TRAITS>, decay_t<ITERABLE_OF_ADDABLE>>>*>
+    template <IIterableOfT<CountedValue<T>> ITERABLE_OF_ADDABLE, enable_if_t<not is_base_of_v<MultiSet_LinkedList<T, TRAITS>, decay_t<ITERABLE_OF_ADDABLE>>>*>
     inline MultiSet_LinkedList<T, TRAITS>::MultiSet_LinkedList (ITERABLE_OF_ADDABLE&& src)
         : MultiSet_LinkedList{}
     {
-        static_assert (IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>);
         AddAll (forward<ITERABLE_OF_ADDABLE> (src));
         AssertRepValidType_ ();
     }
     template <typename T, typename TRAITS>
-    template <IEqualsComparer<T> EQUALS_COMPARER, ranges::range ITERABLE_OF_ADDABLE>
+    template <IEqualsComparer<T> EQUALS_COMPARER, IIterableOfT<CountedValue<T>> ITERABLE_OF_ADDABLE>
     inline MultiSet_LinkedList<T, TRAITS>::MultiSet_LinkedList (EQUALS_COMPARER&& equalsComparer, ITERABLE_OF_ADDABLE&& src)
         : MultiSet_LinkedList{forward<EQUALS_COMPARER> (equalsComparer)}
     {
-        static_assert (IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>);
         AddAll (forward<ITERABLE_OF_ADDABLE> (src));
         AssertRepValidType_ ();
     }
@@ -300,7 +298,6 @@ namespace Stroika::Foundation::Containers::Concrete {
     MultiSet_LinkedList<T, TRAITS>::MultiSet_LinkedList (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
         : MultiSet_LinkedList{}
     {
-        static_assert (IsAddable_v<ExtractValueType_t<ITERATOR_OF_ADDABLE>>);
         AddAll (forward<ITERATOR_OF_ADDABLE> (start), forward<ITERATOR_OF_ADDABLE> (end));
         AssertRepValidType_ ();
     }
@@ -309,7 +306,6 @@ namespace Stroika::Foundation::Containers::Concrete {
     MultiSet_LinkedList<T, TRAITS>::MultiSet_LinkedList (EQUALS_COMPARER&& equalsComparer, ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
         : MultiSet_LinkedList{forward<EQUALS_COMPARER> (equalsComparer)}
     {
-        static_assert (IsAddable_v<ExtractValueType_t<ITERATOR_OF_ADDABLE>>);
         AddAll (forward<ITERATOR_OF_ADDABLE> (start), forward<ITERATOR_OF_ADDABLE> (end));
         AssertRepValidType_ ();
     }

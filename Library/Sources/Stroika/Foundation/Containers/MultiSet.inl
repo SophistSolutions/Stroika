@@ -58,22 +58,20 @@ namespace Stroika::Foundation::Containers {
     }
 #if !qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
     template <typename T, typename TRAITS>
-    template <ranges::range ITERABLE_OF_ADDABLE>
+    template <IIterableOfT<CountedValue<T>> ITERABLE_OF_ADDABLE>
     inline MultiSet<T, TRAITS>::MultiSet (ITERABLE_OF_ADDABLE&& src)
         requires (not derived_from<decay_t<ITERABLE_OF_ADDABLE>, MultiSet<T, TRAITS>>)
         : MultiSet{}
     {
-        static_assert (IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>);
         AddAll (forward<ITERABLE_OF_ADDABLE> (src));
         _AssertRepValidType ();
     }
 #endif
     template <typename T, typename TRAITS>
-    template <IEqualsComparer<T> EQUALS_COMPARER, ranges::range ITERABLE_OF_ADDABLE>
+    template <IEqualsComparer<T> EQUALS_COMPARER, IIterableOfT<CountedValue<T>> ITERABLE_OF_ADDABLE>
     inline MultiSet<T, TRAITS>::MultiSet (EQUALS_COMPARER&& equalsComparer, ITERABLE_OF_ADDABLE&& src)
         : MultiSet{forward<EQUALS_COMPARER> (equalsComparer)}
     {
-        static_assert (IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>);
         AddAll (forward<ITERABLE_OF_ADDABLE> (src));
         _AssertRepValidType ();
     }
@@ -120,20 +118,18 @@ namespace Stroika::Foundation::Containers {
         _AssertRepValidType ();
     }
     template <typename T, typename TRAITS>
-    template <input_iterator ITERATOR_OF_ADDABLE>
+    template <IInputIteratorOfT<CountedValue<T>> ITERATOR_OF_ADDABLE>
     MultiSet<T, TRAITS>::MultiSet (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
         : MultiSet{}
     {
-        static_assert (IsAddable_v<ExtractValueType_t<ITERATOR_OF_ADDABLE>>);
         AddAll (forward<ITERATOR_OF_ADDABLE> (start), forward<ITERATOR_OF_ADDABLE> (end));
         _AssertRepValidType ();
     }
     template <typename T, typename TRAITS>
-    template <IEqualsComparer<T> EQUALS_COMPARER, input_iterator ITERATOR_OF_ADDABLE>
+    template <IEqualsComparer<T> EQUALS_COMPARER, IInputIteratorOfT<CountedValue<T>> ITERATOR_OF_ADDABLE>
     MultiSet<T, TRAITS>::MultiSet (EQUALS_COMPARER&& equalsComparer, ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
         : MultiSet{forward<EQUALS_COMPARER> (equalsComparer)}
     {
-        static_assert (IsAddable_v<ExtractValueType_t<ITERATOR_OF_ADDABLE>>);
         AddAll (forward<ITERATOR_OF_ADDABLE> (start), forward<ITERATOR_OF_ADDABLE> (end));
         _AssertRepValidType ();
     }
@@ -265,19 +261,17 @@ namespace Stroika::Foundation::Containers {
         _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().Add (item.fValue, item.fCount);
     }
     template <typename T, typename TRAITS>
-    template <input_iterator ITERATOR_OF_ADDABLE>
+    template <IInputIteratorOfT<CountedValue<T>> ITERATOR_OF_ADDABLE>
     void MultiSet<T, TRAITS>::AddAll (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
     {
-        static_assert (IsAddable_v<ExtractValueType_t<ITERATOR_OF_ADDABLE>>);
         for (ITERATOR_OF_ADDABLE i = forward<ITERATOR_OF_ADDABLE> (start); i != forward<ITERATOR_OF_ADDABLE> (end); ++i) {
             Add (*i);
         }
     }
     template <typename T, typename TRAITS>
-    template <ranges::range ITERABLE_OF_ADDABLE>
+    template <IIterableOfT<CountedValue<T>> ITERABLE_OF_ADDABLE>
     void MultiSet<T, TRAITS>::AddAll (ITERABLE_OF_ADDABLE&& items)
     {
-        static_assert (IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>);
         // see https://stroika.atlassian.net/browse/STK-645
         if constexpr (std::is_convertible_v<decay_t<ITERABLE_OF_ADDABLE>*, const MultiSet<T, TRAITS>*>) {
             if (static_cast<const Iterable<value_type>*> (this) == static_cast<const Iterable<value_type>*> (&items)) [[unlikely]] {

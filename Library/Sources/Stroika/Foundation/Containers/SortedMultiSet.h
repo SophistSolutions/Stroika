@@ -95,23 +95,22 @@ namespace Stroika::Foundation::Containers {
         SortedMultiSet (const initializer_list<value_type>& src);
         template <Common::IInOrderComparer<T> INORDER_COMPARER>
         SortedMultiSet (INORDER_COMPARER&& inorderComparer, const initializer_list<value_type>& src);
-        template <ranges::range ITERABLE_OF_ADDABLE>
+        template <IIterableOfT<CountedValue<T>> ITERABLE_OF_ADDABLE>
         explicit SortedMultiSet (ITERABLE_OF_ADDABLE&& src)
             requires (not is_base_of_v<SortedMultiSet<T, TRAITS>, decay_t<ITERABLE_OF_ADDABLE>>)
 #if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
             : SortedMultiSet{}
         {
-            static_assert (IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>);
             this->AddAll (forward<ITERABLE_OF_ADDABLE> (src));
             _AssertRepValidType ();
         }
 #endif
         ;
-        template <Common::IInOrderComparer<T> INORDER_COMPARER, ranges::range ITERABLE_OF_ADDABLE>
+        template <Common::IInOrderComparer<T> INORDER_COMPARER, IIterableOfT<CountedValue<T>> ITERABLE_OF_ADDABLE>
         SortedMultiSet (INORDER_COMPARER&& inorderComparer, ITERABLE_OF_ADDABLE&& src);
-        template <input_iterator ITERATOR_OF_ADDABLE>
+        template <IInputIteratorOfT<CountedValue<T>> ITERATOR_OF_ADDABLE>
         SortedMultiSet (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
-        template <input_iterator INORDER_COMPARER, input_iterator ITERATOR_OF_ADDABLE>
+        template <IInputIteratorOfT<CountedValue<T>> INORDER_COMPARER, IInputIteratorOfT<CountedValue<T>> ITERATOR_OF_ADDABLE>
         SortedMultiSet (INORDER_COMPARER&& inorderComparer, ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
 
     protected:

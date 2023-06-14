@@ -285,11 +285,10 @@ namespace Stroika::Foundation::Containers::Concrete {
         AssertRepValidType_ ();
     }
     template <typename T, typename TRAITS>
-    template <ranges::range ITERABLE_OF_ADDABLE, enable_if_t<not is_base_of_v<MultiSet_Array<T, TRAITS>, decay_t<ITERABLE_OF_ADDABLE>>>*>
+    template <IIterableOfT<CountedValue<T>> ITERABLE_OF_ADDABLE, enable_if_t<not is_base_of_v<MultiSet_Array<T, TRAITS>, decay_t<ITERABLE_OF_ADDABLE>>>*>
     inline MultiSet_Array<T, TRAITS>::MultiSet_Array (ITERABLE_OF_ADDABLE&& src)
         : MultiSet_Array{}
     {
-        static_assert (IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>);
         if constexpr (Configuration::has_size_v<ITERABLE_OF_ADDABLE>) {
             reserve (src.size ());
         }
@@ -297,11 +296,10 @@ namespace Stroika::Foundation::Containers::Concrete {
         AssertRepValidType_ ();
     }
     template <typename T, typename TRAITS>
-    template <IEqualsComparer<T> EQUALS_COMPARER, ranges::range ITERABLE_OF_ADDABLE>
+    template <IEqualsComparer<T> EQUALS_COMPARER, IIterableOfT<CountedValue<T>> ITERABLE_OF_ADDABLE>
     inline MultiSet_Array<T, TRAITS>::MultiSet_Array (EQUALS_COMPARER&& equalsComparer, ITERABLE_OF_ADDABLE&& src)
         : MultiSet_Array{forward<EQUALS_COMPARER> (equalsComparer)}
     {
-        static_assert (IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>);
         reserve (src.size ());
         AddAll (forward<ITERABLE_OF_ADDABLE> (src));
         AssertRepValidType_ ();
@@ -345,7 +343,6 @@ namespace Stroika::Foundation::Containers::Concrete {
     MultiSet_Array<T, TRAITS>::MultiSet_Array (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
         : MultiSet_Array{}
     {
-        static_assert (IsAddable_v<ExtractValueType_t<ITERATOR_OF_ADDABLE>>);
         if constexpr (Configuration::has_minus_v<ITERATOR_OF_ADDABLE>) {
             if (start != end) {
                 reserve (end - start);
@@ -359,7 +356,6 @@ namespace Stroika::Foundation::Containers::Concrete {
     MultiSet_Array<T, TRAITS>::MultiSet_Array (EQUALS_COMPARER&& equalsComparer, ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
         : MultiSet_Array{forward<EQUALS_COMPARER> (equalsComparer)}
     {
-        static_assert (IsAddable_v<ExtractValueType_t<ITERATOR_OF_ADDABLE>>);
         if constexpr (Configuration::has_minus_v<ITERATOR_OF_ADDABLE>) {
             if (start != end) {
                 reserve (end - start);
