@@ -106,7 +106,6 @@ namespace Stroika::Foundation::Containers {
             requires (not derived_from<decay_t<ITERABLE_OF_ADDABLE>, SortedAssociation<KEY_TYPE, MAPPED_VALUE_TYPE>>)
 #if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
         {
-            static_assert (IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>);
             _AssertRepValidType ();
             this->AddAll (forward<ITERABLE_OF_ADDABLE> (src));
             _AssertRepValidType ();

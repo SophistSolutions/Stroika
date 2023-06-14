@@ -31,12 +31,11 @@ namespace Stroika::Foundation::Containers {
     }
 #if !qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
     template <typename T>
-    template <ranges::range ITERABLE_OF_ADDABLE>
+    template <IIterableOfT<T> ITERABLE_OF_ADDABLE>
     inline Queue<T>::Queue (ITERABLE_OF_ADDABLE&& src)
         requires (not derived_from<decay_t<ITERABLE_OF_ADDABLE>, Queue<T>>)
         : Queue{}
     {
-        static_assert (IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>);
         AddAllToTail (forward<ITERABLE_OF_ADDABLE> (src));
         _AssertRepValidType ();
     }
@@ -55,11 +54,10 @@ namespace Stroika::Foundation::Containers {
         _AssertRepValidType ();
     }
     template <typename T>
-    template <input_iterator ITERATOR_OF_ADDABLE>
+    template <IInputIteratorOfT<T> ITERATOR_OF_ADDABLE>
     inline Queue<T>::Queue (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
         : Queue{}
     {
-        static_assert (IsAddable_v<ExtractValueType_t<ITERATOR_OF_ADDABLE>>);
         AddAllToTail (start, end);
         _AssertRepValidType ();
     }
@@ -101,20 +99,18 @@ namespace Stroika::Foundation::Containers {
         return _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().RemoveHead ();
     }
     template <typename T>
-    template <ranges::range ITERABLE_OF_ADDABLE>
+    template <IIterableOfT<T> ITERABLE_OF_ADDABLE>
     inline void Queue<T>::AddAllToTail (ITERABLE_OF_ADDABLE&& s)
     {
-        static_assert (IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>);
         _SafeReadWriteRepAccessor<_IRep> tmp{this};
         for (const auto& i : s) {
             tmp._GetWriteableRep ().AddTail (i);
         }
     }
     template <typename T>
-    template <input_iterator ITERATOR_OF_ADDABLE>
+    template <IInputIteratorOfT<T> ITERATOR_OF_ADDABLE>
     inline void Queue<T>::AddAllToTail (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
     {
-        static_assert (IsAddable_v<ExtractValueType_t<ITERATOR_OF_ADDABLE>>);
         _SafeReadWriteRepAccessor<_IRep> tmp{this};
         for (auto i = forward<ITERATOR_OF_ADDABLE> (start); i != forward<ITERATOR_OF_ADDABLE> (end); ++i) {
             tmp._GetWriteableRep ().AddTail (*i);

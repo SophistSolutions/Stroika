@@ -78,6 +78,8 @@ namespace Stroika::Foundation::Containers {
     using Common::IPotentiallyComparer;
     using Configuration::ArgByValueType;
     using Configuration::ExtractValueType_t;
+    using Traversal::IInputIteratorOfT;
+    using Traversal::IIterableOfT;
     using Traversal::Iterable;
     using Traversal::Iterator;
 
@@ -243,12 +245,12 @@ namespace Stroika::Foundation::Containers {
          *
          *        Sequence<int> s1  = {1, 2, 3};
          *        Sequence<int> s2  = s1;
-         *        Sequence<int> s3  { s1 };
-         *        Sequence<int> s4  { s1.begin (), s1.end () };
-         *        Sequence<int> s5  { c };
-         *        Sequence<int> s6  { v };
-         *        Sequence<int> s7  { v.begin (), v.end () };
-         *        Sequence<int> s8  { move (s1) };
+         *        Sequence<int> s3{ s1 };
+         *        Sequence<int> s4{ s1.begin (), s1.end () };
+         *        Sequence<int> s5{ c };
+         *        Sequence<int> s6{ v };
+         *        Sequence<int> s7{ v.begin (), v.end () };
+         *        Sequence<int> s8{ move (s1) };
          *      \endcode
          */
         Sequence ();

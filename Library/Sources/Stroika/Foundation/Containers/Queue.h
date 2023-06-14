@@ -36,7 +36,8 @@
 namespace Stroika::Foundation::Containers {
 
     using Configuration::ArgByValueType;
-    using Configuration::ExtractValueType_t;
+    using Traversal::IInputIteratorOfT;
+    using Traversal::IIterableOfT;
     using Traversal::Iterable;
     using Traversal::Iterator;
 
@@ -113,18 +114,17 @@ namespace Stroika::Foundation::Containers {
         Queue (Queue&& src) noexcept      = default;
         Queue (const Queue& src) noexcept = default;
         Queue (const initializer_list<value_type>& src);
-        template <ranges::range ITERABLE_OF_ADDABLE>
+        template <IIterableOfT<T> ITERABLE_OF_ADDABLE>
         explicit Queue (ITERABLE_OF_ADDABLE&& src)
             requires (not derived_from<decay_t<ITERABLE_OF_ADDABLE>, Queue<T>>)
 #if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
         {
-            static_assert (IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>);
             AddAllToTail (forward<ITERABLE_OF_ADDABLE> (src));
             _AssertRepValidType ();
         }
 #endif
         ;
-        template <input_iterator ITERATOR_OF_ADDABLE>
+        template <IInputIteratorOfT<T> ITERATOR_OF_ADDABLE>
         Queue (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
 
     protected:
@@ -202,9 +202,9 @@ namespace Stroika::Foundation::Containers {
          *
          *  \note mutates container
          */
-        template <ranges::range ITERABLE_OF_ADDABLE>
+        template <IIterableOfT<T> ITERABLE_OF_ADDABLE>
         nonvirtual void AddAllToTail (ITERABLE_OF_ADDABLE&& s);
-        template <input_iterator ITERATOR_OF_ADDABLE>
+        template <IInputIteratorOfT<T> ITERATOR_OF_ADDABLE>
         nonvirtual void AddAllToTail (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
 
     public:

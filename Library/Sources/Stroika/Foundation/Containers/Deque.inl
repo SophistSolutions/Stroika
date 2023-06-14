@@ -34,7 +34,6 @@ namespace Stroika::Foundation::Containers {
         requires (not derived_from<decay_t<ITERABLE_OF_ADDABLE>, Deque<T>>)
         : Deque{}
     {
-        static_assert (IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>);
         this->AddAllToTail (forward<ITERABLE_OF_ADDABLE> (src));
         _AssertRepValidType ();
     }
@@ -52,11 +51,10 @@ namespace Stroika::Foundation::Containers {
         _AssertRepValidType ();
     }
     template <typename T>
-    template <input_iterator ITERATOR_OF_ADDABLE>
+    template <IInputIteratorOfT<T> ITERATOR_OF_ADDABLE>
     inline Deque<T>::Deque (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
         : Deque{}
     {
-        static_assert (IsAddable_v<ExtractValueType_t<ITERATOR_OF_ADDABLE>>);
         this->AddAllToTail (forward<ITERATOR_OF_ADDABLE> (start), forward<ITERATOR_OF_ADDABLE> (end));
         _AssertRepValidType ();
     }

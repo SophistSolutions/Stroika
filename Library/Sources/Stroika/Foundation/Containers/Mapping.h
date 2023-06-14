@@ -37,6 +37,7 @@ namespace Stroika::Foundation::Containers {
     using Common::KeyValuePair;
     using Configuration::ArgByValueType;
     using Configuration::ExtractValueType_t;
+    using Traversal::IInputIteratorOfT;
     using Traversal::IIterableOfT;
     using Traversal::Iterable;
     using Traversal::Iterator;

@@ -117,7 +117,6 @@ namespace Stroika::Foundation::Containers {
 #if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
             : SortedCollection{}
         {
-            static_assert (IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>);
             this->AddAll (forward<ITERABLE_OF_ADDABLE> (src));
             _AssertRepValidType ();
         }

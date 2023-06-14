@@ -48,6 +48,7 @@ namespace Stroika::Foundation::Containers {
     using Common::IEqualsComparer;
     using Common::KeyValuePair;
     using Configuration::ArgByValueType;
+    using Traversal::IInputIteratorOfT;
     using Traversal::IIterableOfT;
     using Traversal::Iterable;
     using Traversal::Iterator;

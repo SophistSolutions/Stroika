@@ -22,6 +22,7 @@
 namespace Stroika::Foundation::Containers {
 
     using Configuration::ArgByValueType;
+    using Traversal::IInputIteratorOfT;
     using Traversal::IIterableOfT;
     using Traversal::Iterable;
     using Traversal::Iterator;
@@ -89,13 +90,12 @@ namespace Stroika::Foundation::Containers {
             requires (not derived_from<decay_t<ITERABLE_OF_ADDABLE>, Deque<T>>)
 #if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
         {
-            static_assert (IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>);
             this->AddAllToTail (forward<ITERABLE_OF_ADDABLE> (src));
             _AssertRepValidType ();
         }
 #endif
         ;
-        template <input_iterator ITERATOR_OF_ADDABLE>
+        template <IInputIteratorOfT<T> ITERATOR_OF_ADDABLE>
         Deque (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
 
     protected:
