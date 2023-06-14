@@ -63,11 +63,25 @@ namespace Stroika::Foundation::Traversal {
 
     using Configuration::ArgByValueType;
 
+    /**
+     *  Concept IIterable just checks if there is begin/end etc - can iterate over the argument - exactly 'ranges::range'
+     * 
+     *  @See IIterableOfT
+     */
     template <typename ITERABLE>
     concept IIterable = ranges::range<ITERABLE>;
 
+    /**
+     *  IIterableOfT checks if argument is IIterable<> and if the value of items iterated over is convertible to OF_T.
+     * 
+     *  @See IIterable
+     */
     template <typename ITERABLE, typename OF_T>
     concept IIterableOfT = IIterable<ITERABLE> and is_convertible_v<ranges::range_value_t<ITERABLE>, OF_T>;
+    static_assert (IIterableOfT<vector<int>, int>);
+    static_assert (IIterableOfT<vector<long int>, int>);
+    static_assert (IIterableOfT<vector<int>, long int>);
+    static_assert (not IIterableOfT<vector<string>, int>);
 
     /**
      *  \brief  Iterable<T> is a base class for containers which easily produce an Iterator<T>

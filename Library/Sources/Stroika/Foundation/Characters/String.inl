@@ -286,7 +286,7 @@ namespace Stroika::Foundation::Characters {
         RequireNotNull (cString);
         _AssertRepValidType ();
     }
-    template <Memory::IsSpanT SPAN_OF_CHAR_T>
+    template <Memory::ISpanT SPAN_OF_CHAR_T>
     inline String::String (SPAN_OF_CHAR_T s)
         requires (ICharacterCompatible<typename SPAN_OF_CHAR_T::value_type>)
         : inherited{mk_ (span<const typename SPAN_OF_CHAR_T::value_type>{s})}
@@ -300,7 +300,7 @@ namespace Stroika::Foundation::Characters {
     }
     template <IUNICODECanAlwaysConvertTo CHAR_T>
     inline String::String (const Iterable<CHAR_T>& src)
-        requires (not Memory::IsSpanT<CHAR_T>)
+        requires (not Memory::ISpanT<CHAR_T>)
         : inherited{mk_ (src)}
     {
     }

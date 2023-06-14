@@ -66,7 +66,7 @@ namespace Stroika::Foundation::Memory {
         Invariant ();
     }
     template <typename T, size_t BUF_SIZE>
-    template <IsSpanOfT<T> SPAN_T>
+    template <ISpanOfT<T> SPAN_T>
     inline InlineBuffer<T, BUF_SIZE>::InlineBuffer (const SPAN_T& copyFrom)
         : InlineBuffer{}
     {

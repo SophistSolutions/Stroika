@@ -139,7 +139,7 @@ namespace Stroika::Foundation::Memory {
         StackBuffer (StackBuffer&& src)      = delete;
         template <input_iterator ITERATOR_OF_T>
         StackBuffer (ITERATOR_OF_T start, ITERATOR_OF_T end);
-        template <IsSpanOfT<T> SPAN_T>
+        template <ISpanOfT<T> SPAN_T>
         StackBuffer (SPAN_T copyFrom);
         ~StackBuffer ();
 

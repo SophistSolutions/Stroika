@@ -27,7 +27,7 @@ namespace Stroika::Foundation::Memory {
     constexpr std::span<const T, EXTENT> ConstSpan (std::span<T, EXTENT> s);
 
     /**
-     *  \brief use IsSpanOfT<T> as a concept declaration for parameters where you want a span, but accept either T or const T
+     *  \brief use ISpanOfT<T> as a concept declaration for parameters where you want a span, but accept either T or const T
      * 
      *  Sadly, if I declare a function
      *      f (span<int>) {}
@@ -35,7 +35,7 @@ namespace Stroika::Foundation::Memory {
      *      f (span<const int>{}) - that fails, whereas I think, considering the logic/intent, it probably should work.
      * 
      *  Anyhow, replacing the f declaration with the (almost as clear);
-     *      template <IsSpanOfT<int> SPAN_OF_T>
+     *      template <ISpanOfT<int> SPAN_OF_T>
      *      f (SPAN_OF_T) {}
      * 
      *  fixes the problem.
@@ -49,11 +49,10 @@ namespace Stroika::Foundation::Memory {
      *  \see https://stackoverflow.com/questions/62688814/stdspanconst-t-as-parameter-in-function-template
      */
     template <typename SPAN_T, typename T>
-    concept IsSpanOfT =
+    concept ISpanOfT =
         is_same_v<remove_cvref_t<SPAN_T>, span<T>> or is_same_v<remove_cvref_t<SPAN_T>, span<const T>> or
         is_same_v<remove_cvref_t<SPAN_T>, span<T, SPAN_T::extent>> or is_same_v<remove_cvref_t<SPAN_T>, span<const T, SPAN_T::extent>>;
-    static_assert (IsSpanOfT<span<int>, int> and IsSpanOfT<span<const int>, int> and IsSpanOfT<span<const int, 3>, int> and
-                   not IsSpanOfT<span<int>, char>);
+    static_assert (ISpanOfT<span<int>, int> and ISpanOfT<span<const int>, int> and ISpanOfT<span<const int, 3>, int> and not ISpanOfT<span<int>, char>);
 
     namespace Private_ {
         template <class>
@@ -64,13 +63,13 @@ namespace Stroika::Foundation::Memory {
     /**
      *  For when you want to assert an argument is a SPAN, but you haven't yet deduced the type its a span of yet.
      * 
-     *  note - matches span<T>, span<T,EXTENT>, span<const T>, span<const T,EXTENT>, but not things that
+     *  \note matches span<T>, span<T,EXTENT>, span<const T>, span<const T,EXTENT>, but not things that
      *  are CONVERTIBLE to span<T>
      */
     template <typename SPAN_T>
-    concept IsSpanT = Private_::_Is_span_v<SPAN_T>;
-    static_assert (IsSpanT<span<int>> and IsSpanT<span<int, 3>>);
-    static_assert (not IsSpanT<std::string>); // we don't include <string> in this module, but sometimes helpful to test/debug/document
+    concept ISpanT = Private_::_Is_span_v<SPAN_T>;
+    static_assert (ISpanT<span<int>> and ISpanT<span<int, 3>>);
+    static_assert (not ISpanT<std::string>); // we don't include <string> in this module, but sometimes helpful to test/debug/document
 
     /**
      * \brief return true iff intersection of the two spans is non-empty

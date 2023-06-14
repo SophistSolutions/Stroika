@@ -191,14 +191,14 @@ namespace Stroika::Foundation::Characters {
         String ();
         template <ICharacterCompatible CHAR_T>
         String (const CHAR_T* cString);
-        template <Memory::IsSpanT SPAN_OF_CHAR_T>
+        template <Memory::ISpanT SPAN_OF_CHAR_T>
         String (SPAN_OF_CHAR_T s)
             requires (ICharacterCompatible<typename SPAN_OF_CHAR_T::value_type>);
         template <IUnicodeCodePointOrPlainChar CHAR_T>
         String (const basic_string<CHAR_T>& s);
         template <IUNICODECanAlwaysConvertTo CHAR_T>
         String (const Iterable<CHAR_T>& src)
-            requires (not Memory::IsSpanT<CHAR_T>);
+            requires (not Memory::ISpanT<CHAR_T>);
         explicit String (const Character& c);
         String (const basic_string_view<char>& str);
         String (const basic_string_view<char8_t>& str);

@@ -133,7 +133,7 @@ namespace Stroika::Foundation::Memory {
         InlineBuffer (InlineBuffer&& src);
         template <input_iterator ITERATOR_OF_T>
         InlineBuffer (ITERATOR_OF_T start, ITERATOR_OF_T end);
-        template <IsSpanOfT<T> SPAN_T>
+        template <ISpanOfT<T> SPAN_T>
         InlineBuffer (const SPAN_T& copyFrom);
         ~InlineBuffer ();
 
