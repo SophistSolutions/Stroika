@@ -50,12 +50,12 @@ namespace Stroika::Foundation::Containers::Concrete {
         template <IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER>
         Association_Array (KEY_EQUALS_COMPARER&& keyEqualsComparer, const initializer_list<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src);
 #if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
-        template <ranges::range ITERABLE_OF_ADDABLE, enable_if_t<not is_base_of_v<Association_Array<KEY_TYPE, MAPPED_VALUE_TYPE>, decay_t<ITERABLE_OF_ADDABLE>>>* = nullptr>
+        template <ranges::range ITERABLE_OF_ADDABLE, enable_if_t<not derived_from<decay_t<ITERABLE_OF_ADDABLE>, Association_Array<KEY_TYPE, MAPPED_VALUE_TYPE>>>* = nullptr>
         explicit Association_Array (ITERABLE_OF_ADDABLE&& src);
 #else
         template <ranges::range ITERABLE_OF_ADDABLE>
         explicit Association_Array (ITERABLE_OF_ADDABLE&& src)
-            requires (not is_base_of_v<Association_Array<KEY_TYPE, MAPPED_VALUE_TYPE>, decay_t<ITERABLE_OF_ADDABLE>>);
+            requires (not derived_from<decay_t<ITERABLE_OF_ADDABLE>, Association_Array<KEY_TYPE, MAPPED_VALUE_TYPE>>);
 #endif
         template <IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER, ranges::range ITERABLE_OF_ADDABLE>
         Association_Array (KEY_EQUALS_COMPARER&& keyEqualsComparer, ITERABLE_OF_ADDABLE&& src);

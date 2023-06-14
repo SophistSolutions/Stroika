@@ -1228,7 +1228,7 @@ namespace Stroika::Foundation::Characters {
      */
     template <ConvertibleToString LHS_T, ConvertibleToString RHS_T>
     String operator+ (LHS_T&& lhs, RHS_T&& rhs)
-        requires (is_base_of_v<String, decay_t<LHS_T>> or is_base_of_v<String, decay_t<RHS_T>>)
+        requires (derived_from<decay_t<LHS_T>, String> or derived_from<decay_t<RHS_T>, String>)
     {
         if constexpr (Private_::CanBeTreatedAsSpanOfCharacter_<LHS_T> and Private_::CanBeTreatedAsSpanOfCharacter_<RHS_T>) {
             // maybe always true?

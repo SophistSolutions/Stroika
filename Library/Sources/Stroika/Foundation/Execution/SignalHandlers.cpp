@@ -290,7 +290,7 @@ SignalHandlerRegistry::SafeSignalsManager::~SafeSignalsManager ()
  ******************** Execution::SignalHandlerRegistry **************************
  ********************************************************************************
  */
-const SignalHandler SignalHandlerRegistry::kIGNORED = SignalHandler (SIG_IGN, SignalHandler::Type::eDirect);
+const SignalHandler SignalHandlerRegistry::kIGNORED = SignalHandler{SIG_IGN, SignalHandler::Type::eDirect};
 
 SignalHandlerRegistry& SignalHandlerRegistry::Get ()
 {
@@ -301,7 +301,7 @@ SignalHandlerRegistry& SignalHandlerRegistry::Get ()
 SignalHandlerRegistry::SignalHandlerRegistry ()
 {
     if constexpr (qDebug) {
-        static int nConstructed = 0;
+        [[maybe_unused]] static int nConstructed = 0;
         ++nConstructed;
         Assert (nConstructed == 1);
     }

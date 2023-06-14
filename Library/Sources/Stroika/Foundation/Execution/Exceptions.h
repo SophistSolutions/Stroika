@@ -156,7 +156,7 @@ namespace Stroika::Foundation::Execution {
     template <typename BASE_EXCEPTION = exception>
     class Exception : public ExceptionStringHelper, public BASE_EXCEPTION {
     private:
-        static_assert (is_base_of_v<exception, BASE_EXCEPTION>);
+        static_assert (derived_from<BASE_EXCEPTION, exception>);
 
     private:
         using inherited = BASE_EXCEPTION;
@@ -261,7 +261,7 @@ namespace Stroika::Foundation::Execution {
     template <typename BASE_EXCEPTION = system_error>
     class SystemErrorException : public Exception<BASE_EXCEPTION> {
     private:
-        static_assert (is_base_of_v<system_error, BASE_EXCEPTION>);
+        static_assert (derived_from<BASE_EXCEPTION, system_error>);
 
     private:
         using inherited = Exception<BASE_EXCEPTION>;

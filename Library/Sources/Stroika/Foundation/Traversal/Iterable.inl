@@ -254,7 +254,7 @@ namespace Stroika::Foundation::Traversal {
     template <typename T>
     template <ranges::range CONTAINER_OF_T>
     Iterable<T>::Iterable (CONTAINER_OF_T&& from)
-        requires (not is_base_of_v<Iterable<T>, decay_t<CONTAINER_OF_T>>)
+        requires (not derived_from<decay_t<CONTAINER_OF_T>, Iterable<T>>)
         : _fRep{mk_ (forward<CONTAINER_OF_T> (from))._fRep}
     {
     }

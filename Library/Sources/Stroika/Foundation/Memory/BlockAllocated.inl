@@ -48,7 +48,7 @@ namespace Stroika::Foundation::Memory {
     template <typename T>
     constexpr bool UsesBlockAllocation ()
     {
-        return is_base_of_v<BlockAllocationUseHelper<T>, T>;
+        return derived_from<T, BlockAllocationUseHelper<T>>;
     }
 
     /*

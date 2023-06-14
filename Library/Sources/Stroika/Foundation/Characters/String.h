@@ -1493,6 +1493,10 @@ namespace Stroika::Foundation::Characters {
         friend class String;
     };
 
+
+    /**
+     *  The concept ConvertibleToString is satisfied iff the argument type can be used to construct a (Stroika) String.
+     */
     template <typename T>
     concept ConvertibleToString = requires (T t) {
                                       {
@@ -1624,10 +1628,12 @@ namespace Stroika::Foundation::Characters {
      *  \note Design Note
      *      Don't use member function so "x" + String{u"x"} works.
      *      Insist that EITHER LHS or RHS is a string (else operator applies too widely).
+     * 
+     *  Both arguments must be convertible to a String, and at least must be String or derived from String
      */
     template <ConvertibleToString LHS_T, ConvertibleToString RHS_T>
     String operator+ (LHS_T&& lhs, RHS_T&& rhs)
-        requires (is_base_of_v<String, decay_t<LHS_T>> or is_base_of_v<String, decay_t<RHS_T>>);
+        requires (derived_from<decay_t<LHS_T>, String> or derived_from<decay_t<RHS_T>, String>);
 
 }
 
