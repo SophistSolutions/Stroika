@@ -46,27 +46,27 @@ namespace Stroika::Foundation::Characters {
      *  always ASCII, you can simplify alot of pragmatic usage. So Stroika v3 does that,
      *  with checks to enforce.
      */
-    using Character_ASCII = char;
+    using ASCII = char;
 
     /**
      *  Internally, several algorithms and data structures operate on this one-byte subset of UNICODE.
      *  However, most Stroika public APIs don't expose this, because this is not any kind of standard for APIs.
-     *  APIs use char8_t, char16_t, char32_t, Character_ASCII (aka char).
+     *  APIs use char8_t, char16_t, char32_t, ASCII (aka char).
      * 
      *  This refers to ASCII OR https://en.wikipedia.org/wiki/Latin-1_Supplement, so any UNICODE characater code point
      *  less than U+00FF.
      * 
-     *  \note Considered using Character_Latin1 = uint8_t; But this is better since less likely accidentally used.
+     *  \note Considered using Latin1 = uint8_t; But this is better since less likely accidentally used.
      */
-    struct Character_Latin1 {
+    struct Latin1 {
         uint8_t        data;
         constexpr      operator uint8_t () const { return data; }
-        constexpr bool operator== (const Character_Latin1&) const  = default;
-        constexpr auto operator<=> (const Character_Latin1&) const = default;
+        constexpr bool operator== (const Latin1&) const  = default;
+        constexpr auto operator<=> (const Latin1&) const = default;
     };
-    static_assert (is_trivially_constructible_v<Character_Latin1>);
-    static_assert (is_trivially_destructible_v<Character_Latin1>);
-    static_assert (sizeof (Character_Latin1) == 1); // so can re_reinterpret_cast<> between Character_Latin1 and unsigned char/uint8_t;
+    static_assert (is_trivially_constructible_v<Latin1>);
+    static_assert (is_trivially_destructible_v<Latin1>);
+    static_assert (sizeof (Latin1) == 1); // so can re_reinterpret_cast<> between Latin1 and unsigned char/uint8_t;
 
     /**
      *  \brief check if T is char8_t, char16_t, char32_t - one of the three possible unicode UTF code-point classes.
@@ -93,7 +93,7 @@ namespace Stroika::Foundation::Characters {
     concept IUnicodeCodePoint = IBasicUnicodeCodePoint<T> or is_same_v<remove_cv_t<T>, wchar_t>;
 
     /**
-     *  \brief check if T is char8_t, char16_t, char32_t, wchar_t, or Character_ASCII (char)
+     *  \brief check if T is char8_t, char16_t, char32_t, wchar_t, or ASCII (char)
      *
      *  \note rarely used concept, but helpful because this is the subet of IUNICODECanAlwaysConvertTo
      *        which std c++ library natively supports (so used in APIs like strtod, etc).
@@ -103,10 +103,10 @@ namespace Stroika::Foundation::Characters {
      *      o   char16_t                ""
      *      o   char32_t                ""
      *      o   wchar_t                 added IUnicodeCodePoint
-     *      o   Character_ASCII (char)  added here
+     *      o   ASCII (char)  added here
      */
     template <typename T>
-    concept IUnicodeCodePointOrPlainChar = IUnicodeCodePoint<T> or is_same_v<remove_cv_t<T>, Character_ASCII>;
+    concept IUnicodeCodePointOrPlainChar = IUnicodeCodePoint<T> or is_same_v<remove_cv_t<T>, ASCII>;
 
     class Character;
 
@@ -121,7 +121,7 @@ namespace Stroika::Foundation::Characters {
      *      o   Character       added in IUNICODECanAlwaysConvertTo
      *  \note all these types are <= 4 bytes (size of char32_t)
      * 
-     *  \note - Character_ASCII and Character_Latin1 are NOT included here becuase - though these strings
+     *  \note - ASCII and Latin1 are NOT included here becuase - though these strings
      *          can be unambiguously converted to UNICODE, the REVERSE is not true (since for example
      *          not all UNICODE strings are ascii).
      */
@@ -132,8 +132,8 @@ namespace Stroika::Foundation::Characters {
     static_assert (IUNICODECanAlwaysConvertTo<char32_t>);
     static_assert (IUNICODECanAlwaysConvertTo<wchar_t>);
     //static_assert (IUNICODECanAlwaysConvertTo<Character>); true but not defined yet, so cannot assert here
-    static_assert (not IUNICODECanAlwaysConvertTo<Character_ASCII>);
-    static_assert (not IUNICODECanAlwaysConvertTo<Character_Latin1>);
+    static_assert (not IUNICODECanAlwaysConvertTo<ASCII>);
+    static_assert (not IUNICODECanAlwaysConvertTo<Latin1>);
 
     /**
     * &&&& @todo CONSIDER LOSING THIS AND REPLACING WITH IUNICODECanUnambiguouslyConvertFrom but CAREFULLY REVIEWING EACH CASE
@@ -147,8 +147,8 @@ namespace Stroika::Foundation::Characters {
      *        on this point).
      */
     template <typename T>
-    concept ICharacterCompatible = IUNICODECanAlwaysConvertTo<T> or is_same_v<remove_cv_t<T>, Character_ASCII>;
-    static_assert (not ICharacterCompatible<Character_Latin1>);
+    concept ICharacterCompatible = IUNICODECanAlwaysConvertTo<T> or is_same_v<remove_cv_t<T>, ASCII>;
+    static_assert (not ICharacterCompatible<Latin1>);
 
     /**
      *  \brief IUNICODECanUnambiguouslyConvertFrom is any character type where array of them unambiguously convertible to UNICODE string
@@ -159,27 +159,27 @@ namespace Stroika::Foundation::Characters {
      *      o   char32_t            ""
      *      o   wchar_t             ""
      *      o   Character           ""
-     *      o   Character_ASCII     added
-     *      o   Character_Latin1    added
+     *      o   ASCII               added
+     *      o   Latin1              added
      * 
      *  \note IUNICODECanUnambiguouslyConvertFrom means any 'basic character type' - size <= 4 bytes, which
      *        could reasonably, in context (so with extra info), could be safely converted into
      *        a Character object.
      * 
      *  \note Possible alias for this - Character_CanConditionallyConvertUNICODEStringToArrayOfThese
-     *        for example, Character_ASCII is one of these - any depending on what is in the UNICODE string
+     *        for example, ASCII is one of these - any depending on what is in the UNICODE string
      *        you maybe able to (unambiguously) covnert to a string of this type.
      */
     template <typename T>
     concept IUNICODECanUnambiguouslyConvertFrom =
-        IUNICODECanAlwaysConvertTo<T> or is_same_v<remove_cv_t<T>, Character_ASCII> or is_same_v<remove_cv_t<T>, Character_Latin1>;
+        IUNICODECanAlwaysConvertTo<T> or is_same_v<remove_cv_t<T>, ASCII> or is_same_v<remove_cv_t<T>, Latin1>;
     static_assert (IUNICODECanUnambiguouslyConvertFrom<char8_t>);
     static_assert (IUNICODECanUnambiguouslyConvertFrom<char16_t>);
     static_assert (IUNICODECanUnambiguouslyConvertFrom<char32_t>);
     static_assert (IUNICODECanUnambiguouslyConvertFrom<wchar_t>);
     //static_assert (IUNICODECanUnambiguouslyConvertFrom<Character>); true but not defined yet, so cannot assert here
-    static_assert (IUNICODECanUnambiguouslyConvertFrom<Character_ASCII>);
-    static_assert (IUNICODECanUnambiguouslyConvertFrom<Character_Latin1>);
+    static_assert (IUNICODECanUnambiguouslyConvertFrom<ASCII>);
+    static_assert (IUNICODECanUnambiguouslyConvertFrom<Latin1>);
 
     /**
      *  \note <a href="Design Overview.md#Comparisons">Comparisons</a>:
@@ -202,7 +202,7 @@ namespace Stroika::Foundation::Characters {
         /**
          *  \req IsASCII()
          */
-        nonvirtual Character_ASCII GetAsciiCode () const noexcept;
+        nonvirtual ASCII GetAsciiCode () const noexcept;
 
     public:
         /**
@@ -230,8 +230,8 @@ namespace Stroika::Foundation::Characters {
         /**
          *  \brief Return true iff the given character (or all in span) is (are) in the ascii range [0..0x7f]
          * 
-         *  \note unlike other uses of CHAR_T in other methods in this class, even if CHAR_T=Character_ASCII
-         *        the code still loops and checks the range of characters. This is because Character_ASCII == char
+         *  \note unlike other uses of CHAR_T in other methods in this class, even if CHAR_T=ASCII
+         *        the code still loops and checks the range of characters. This is because ASCII == char
          *        and you need some way to check a bunch of 'char' elements and see if they are ascii.
          */
         constexpr bool IsASCII () const noexcept;
@@ -255,11 +255,11 @@ namespace Stroika::Foundation::Characters {
          *  less than U+00FF.
          * 
          *  \note this pays close attention to the CHAR_T, and checks differently (especially for
-         *        sizeof(CHAR_T)==1. If the type is Character_ASCII or Character_Latin1, there is nothing
+         *        sizeof(CHAR_T)==1. If the type is ASCII or Latin1, there is nothing
          *        to check, and so this just returns true. For CHAR_T==char8_t, we walk the sequence of characters
          *        and verify carefully that the encoded characters all will fit in the ISO-Latin1 range (<= 256).
          * 
-         *  @see Character_Latin1
+         *  @see Latin1
          * 
          */
         constexpr bool IsLatin1 () const noexcept;
@@ -282,9 +282,9 @@ namespace Stroika::Foundation::Characters {
          *  most specific possible answer for the entire span. So if all characters ascii, thats returned.
          *  If not, but all characters latin1, thats returned. Else returned none.
          * 
-         *  \note, if CHAR_T == Character_Latin1 or Character_ASCII, then this will NEVER return none. Its equivilent to
-         *         IsASCII. If CHAR_T==Character_ASCII. we do like IsASCII(): and actually check the bytes in the
-         *         ASCII change, despite the Character_ASCII designation (rationale in IsASCII).
+         *  \note, if CHAR_T == Latin1 or ASCII, then this will NEVER return none. Its equivilent to
+         *         IsASCII. If CHAR_T==ASCII. we do like IsASCII(): and actually check the bytes in the
+         *         ASCII change, despite the ASCII designation (rationale in IsASCII).
          */
         template <IUNICODECanUnambiguouslyConvertFrom CHAR_T>
         static constexpr ASCIIOrLatin1Result IsASCIIOrLatin1 (span<const CHAR_T> s) noexcept;
@@ -396,12 +396,12 @@ namespace Stroika::Foundation::Characters {
          * If this source contains any invalid ASCII characters, this returns false, and otherwise true (with set into).
          * 
          *  Supported Types:
-         *      o   Memory::StackBuffer<Character_ASCII>
+         *      o   Memory::StackBuffer<ASCII>
          *      o   string
          */
         template <typename RESULT_T = string, ICharacterCompatible CHAR_T>
         static bool AsASCIIQuietly (span<const CHAR_T> fromS, RESULT_T* into)
-            requires (is_same_v<RESULT_T, string> or is_same_v<RESULT_T, Memory::StackBuffer<Character_ASCII>>);
+            requires (is_same_v<RESULT_T, string> or is_same_v<RESULT_T, Memory::StackBuffer<ASCII>>);
 
     public:
         /**

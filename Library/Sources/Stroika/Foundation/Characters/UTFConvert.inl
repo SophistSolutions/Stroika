@@ -63,7 +63,7 @@ namespace Stroika::Foundation::Characters {
             return optional<size_t>{};
         }
         // Logic based on table from https://en.wikipedia.org/wiki/UTF-8#Encoding
-        if constexpr (is_same_v<CHAR_T, Character_ASCII> or is_same_v<CHAR_T, Character_Latin1>) {
+        if constexpr (is_same_v<CHAR_T, ASCII> or is_same_v<CHAR_T, Latin1>) {
             return 1;
         }
         else if constexpr (is_same_v<CHAR_T, char8_t>) {
@@ -228,7 +228,7 @@ namespace Stroika::Foundation::Characters {
     template <IUNICODECanUnambiguouslyConvertFrom CHAR_T>
     constexpr bool UTFConverter::AllFitsInTwoByteEncoding (span<const CHAR_T> s) noexcept
     {
-        if constexpr (is_same_v<CHAR_T, Character_ASCII> or is_same_v<CHAR_T, Character_Latin1>) {
+        if constexpr (is_same_v<CHAR_T, ASCII> or is_same_v<CHAR_T, Latin1>) {
             return true;
         }
         // see https://en.wikipedia.org/wiki/UTF-16
@@ -242,7 +242,7 @@ namespace Stroika::Foundation::Characters {
                 }
             }
         }
-        else if constexpr (is_same_v<remove_cv_t<CHAR_T>, Character_Latin1>) {
+        else if constexpr (is_same_v<remove_cv_t<CHAR_T>, Latin1>) {
             return true;
         }
         else if constexpr (is_same_v<remove_cv_t<CHAR_T>, char8_t>) {
@@ -319,13 +319,13 @@ namespace Stroika::Foundation::Characters {
             Memory::CopySpanData_StaticCast (source, target);
             return ConversionResultWithStatus{{.fSourceConsumed = source.size (), .fTargetProduced = source.size ()}, ConversionStatusFlag::ok};
         }
-        else if constexpr (is_same_v<SRC_T, Character_Latin1>) {
-            // ALL TRG_T (but maybe ASCII?) have Character_Latin1 as a strict subset so simply copy
+        else if constexpr (is_same_v<SRC_T, Latin1>) {
+            // ALL TRG_T (but maybe ASCII?) have Latin1 as a strict subset so simply copy
             Memory::CopySpanData_StaticCast (source, target);
             return ConversionResultWithStatus{{.fSourceConsumed = source.size (), .fTargetProduced = source.size ()}, ConversionStatusFlag::ok};
         }
-        else if constexpr (is_same_v<TRG_T, Character_Latin1>) {
-            // ALL TRG_T (but maybe ASCII?) have Character_Latin1 as a strict subset so simply copy
+        else if constexpr (is_same_v<TRG_T, Latin1>) {
+            // ALL TRG_T (but maybe ASCII?) have Latin1 as a strict subset so simply copy
             Memory::CopySpanData_StaticCast (source, target);
             return ConversionResultWithStatus{{.fSourceConsumed = source.size (), .fTargetProduced = source.size ()}, ConversionStatusFlag::ok};
         }

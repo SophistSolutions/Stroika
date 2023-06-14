@@ -81,8 +81,8 @@ namespace Stroika::Foundation::Characters {
                     lc = li->ToLowerCase ();
                     rc = ri->ToLowerCase ();
                 }
-                else if constexpr (is_same_v<CHAR_T, Character_ASCII>) {
-                    // @todo NOT SURE if this works for Character_Latin1...
+                else if constexpr (is_same_v<CHAR_T, ASCII>) {
+                    // @todo NOT SURE if this works for Latin1...
                     // see https://en.cppreference.com/w/cpp/string/byte/tolower for rationale for this crazy casting
                     lc = static_cast<CHAR_T> (std::tolower (static_cast<unsigned char> (*li)));
                     rc = static_cast<CHAR_T> (std::tolower (static_cast<unsigned char> (*ri)));
@@ -155,8 +155,8 @@ namespace Stroika::Foundation::Characters {
             if constexpr (is_same_v<remove_cv_t<CHAR_T>, Character>) {
                 return [] (Character c) noexcept { return c.IsASCII (); };
             }
-            else if constexpr (is_same_v<remove_cv_t<CHAR_T>, Character_Latin1>) {
-                return [] (Character_Latin1 c) noexcept { return static_cast<uint8_t> (c) <= 127; };
+            else if constexpr (is_same_v<remove_cv_t<CHAR_T>, Latin1>) {
+                return [] (Latin1 c) noexcept { return static_cast<uint8_t> (c) <= 127; };
             }
             else {
                 return [] (CHAR_T c) noexcept { return static_cast<make_unsigned_t<CHAR_T>> (c) <= 127; };
@@ -184,7 +184,7 @@ namespace Stroika::Foundation::Characters {
     template <IUNICODECanUnambiguouslyConvertFrom CHAR_T>
     constexpr bool Character::IsLatin1 (span<const CHAR_T> fromS) noexcept
     {
-        if constexpr (is_same_v<CHAR_T, Character_ASCII> or is_same_v<CHAR_T, Character_Latin1>) {
+        if constexpr (is_same_v<CHAR_T, ASCII> or is_same_v<CHAR_T, Latin1>) {
             // then data must be ascii or latin1, since any byte is latin1
             return true;
         }
@@ -245,7 +245,7 @@ namespace Stroika::Foundation::Characters {
         constexpr auto eNone   = ASCIIOrLatin1Result::eNone;
         constexpr auto eLatin1 = ASCIIOrLatin1Result::eLatin1;
         constexpr auto eASCII  = ASCIIOrLatin1Result::eASCII;
-        if constexpr (is_same_v<CHAR_T, Character_ASCII> or is_same_v<CHAR_T, Character_Latin1>) {
+        if constexpr (is_same_v<CHAR_T, ASCII> or is_same_v<CHAR_T, Latin1>) {
             // then data must be ascii or latin1, since any byte is latin1
             return IsASCII (s) ? eASCII : eLatin1;
         }
@@ -413,7 +413,7 @@ namespace Stroika::Foundation::Characters {
     }
     template <typename RESULT_T, ICharacterCompatible CHAR_T>
     inline bool Character::AsASCIIQuietly (span<const CHAR_T> fromS, RESULT_T* into)
-        requires (is_same_v<RESULT_T, string> or is_same_v<RESULT_T, Memory::StackBuffer<Character_ASCII>>)
+        requires (is_same_v<RESULT_T, string> or is_same_v<RESULT_T, Memory::StackBuffer<ASCII>>)
     {
         RequireNotNull (into);
         into->clear ();

@@ -96,10 +96,10 @@ namespace {
             }
             virtual PeekSpanData PeekData ([[maybe_unused]] optional<PeekSpanData::StorageCodePointType> preferred) const noexcept override
             {
-                if constexpr (is_same_v<CHAR_T, Character_ASCII>) {
+                if constexpr (is_same_v<CHAR_T, ASCII>) {
                     return PeekSpanData{PeekSpanData::StorageCodePointType::eAscii, {.fAscii = _fData}};
                 }
-                if constexpr (is_same_v<CHAR_T, Character_Latin1>) {
+                if constexpr (is_same_v<CHAR_T, Latin1>) {
                     return PeekSpanData{PeekSpanData::StorageCodePointType::eSingleByteLatin1, {.fSingleByteLatin1 = _fData}};
                 }
                 else if constexpr (sizeof (CHAR_T) == 2) {
@@ -672,10 +672,10 @@ String::String (const basic_string_view<wchar_t>& str)
     // -- LGP 2019-01-29
 }
 
-String String::FromStringConstant (span<const Character_ASCII> s)
+String String::FromStringConstant (span<const ASCII> s)
 {
     Require (Character::IsASCII (s));
-    return String{Memory::MakeSharedPtr<StringConstant_::Rep<Character_ASCII>> (s)};
+    return String{Memory::MakeSharedPtr<StringConstant_::Rep<ASCII>> (s)};
 }
 
 String String::FromStringConstant (span<const wchar_t> s)
@@ -733,10 +733,10 @@ shared_ptr<String::_IRep> String::mkEmpty_ ()
 
 template <typename CHAR_T>
 inline auto String::mk_nocheck_justPickBufRep_ (span<const CHAR_T> s) -> shared_ptr<_IRep>
-    requires (is_same_v<CHAR_T, Character_ASCII> or is_same_v<CHAR_T, Character_Latin1> or is_same_v<CHAR_T, char16_t> or is_same_v<CHAR_T, char32_t>)
+    requires (is_same_v<CHAR_T, ASCII> or is_same_v<CHAR_T, Latin1> or is_same_v<CHAR_T, char16_t> or is_same_v<CHAR_T, char32_t>)
 {
     // No check means needed checking done before, so these assertions just help enforce that
-    if constexpr (is_same_v<CHAR_T, Character_ASCII>) {
+    if constexpr (is_same_v<CHAR_T, ASCII>) {
         Require (Character::IsASCII (s)); // avoid later assertion error
     }
     else if constexpr (sizeof (CHAR_T) == 2) {
@@ -808,7 +808,7 @@ inline auto String::mk_nocheck_justPickBufRep_ (span<const CHAR_T> s) -> shared_
 #if !qCompilerAndStdLib_template_requresDefNeededonSpecializations_Buggy
 template <>
 #endif
-auto String::mk_nocheck_ (span<const Character_ASCII> s) -> shared_ptr<_IRep>
+auto String::mk_nocheck_ (span<const ASCII> s) -> shared_ptr<_IRep>
 {
     Require (Character::IsASCII (s)); // caller must check
     return mk_nocheck_justPickBufRep_ (s);
@@ -816,7 +816,7 @@ auto String::mk_nocheck_ (span<const Character_ASCII> s) -> shared_ptr<_IRep>
 #if !qCompilerAndStdLib_template_requresDefNeededonSpecializations_Buggy
 template <>
 #endif
-auto String::mk_nocheck_ (span<const Character_Latin1> s) -> shared_ptr<_IRep>
+auto String::mk_nocheck_ (span<const Latin1> s) -> shared_ptr<_IRep>
 {
     return mk_nocheck_justPickBufRep_ (s);
 }

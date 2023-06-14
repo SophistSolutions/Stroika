@@ -51,7 +51,7 @@ namespace Stroika::Foundation::Characters {
         Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySyncrhonized_};
         size_t                                                 spanSize = s.size ();
         if (spanSize != 0) {
-            if constexpr (is_same_v<CHAR_T, Character_ASCII>) {
+            if constexpr (is_same_v<CHAR_T, ASCII>) {
                 Character::CheckASCII (s);
             }
             if constexpr (is_same_v<CHAR_T, BufferElementType>) {
@@ -144,7 +144,7 @@ namespace Stroika::Foundation::Characters {
             }
             else {
                 if (isascii (c)) [[likely]] {
-                    fData_.push_back (static_cast<Character_ASCII> (c));
+                    fData_.push_back (static_cast<ASCII> (c));
                     return; // handled
                 }
             }

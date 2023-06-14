@@ -157,7 +157,7 @@ namespace Stroika::Foundation::Characters {
 
     public:
         /**
-         *  \brief Convert between UTF-N encoded (including the special case of Character_ASCII, and Character_Latin1) character spans (e.g. UTF8 to UTF32), throw on failure, resulting span<>.
+         *  \brief Convert between UTF-N encoded (including the special case of ASCII, and Latin1) character spans (e.g. UTF8 to UTF32), throw on failure, resulting span<>.
          * 
          *  Compared with the Convert () API, this loses information (number of source characters consumed). 
          *  Not a general purpose API. But very frequently this is all you need, for the next stage, a new span, 
@@ -191,7 +191,7 @@ namespace Stroika::Foundation::Characters {
 
     public:
         /**
-         *  \brief Convert between UTF-N encoded strings/spans (including the special case of Character_ASCII, and Character_Latin1) (e.g. UTF8 to UTF32), throw on failure
+         *  \brief Convert between UTF-N encoded strings/spans (including the special case of ASCII, and Latin1) (e.g. UTF8 to UTF32), throw on failure
          * 
          *  For overloads taking a target span:
          *      \req size of target span must be at least as large as specified by ComputeTargetBufferSize
@@ -255,7 +255,7 @@ namespace Stroika::Foundation::Characters {
 
     public:
         /**
-         *  \brief Convert UTF encoded (char8_t, char16_t, char32_t, char, wchar_t, Character_ASCII, Character_Latin1) characters to from each other without format exceptions (still may raise memory exceptions if not enuf space)
+         *  \brief Convert UTF encoded (char8_t, char16_t, char32_t, char, wchar_t, ASCII, Latin1) characters to from each other without format exceptions (still may raise memory exceptions if not enuf space)
          * 
          *  \see Convert () above for details. This only differs from Convert, in that it returns a result flag instead
          *       of throwing on errors.
@@ -264,7 +264,7 @@ namespace Stroika::Foundation::Characters {
          * 
          *  \req target.size () >= ComputeTargetBufferSize<TRG_T> (source)
          * 
-         *  \note, if given illegal UTF-8, or illegal ascii (Character_ASCII) source input, the function should (perhaps peramterized)
+         *  \note, if given illegal UTF-8, or illegal ascii (ASCII) source input, the function should (perhaps peramterized)
          *         detect the error and return ConversionStatusFlag::sourceIllegal (depending on Options::fStrictMode).
          *         // @todo RECONSIDER fStrictMode!!!
          * 
@@ -293,7 +293,7 @@ namespace Stroika::Foundation::Characters {
          *  if argument span empty, or insufficient to complete a character, this returns nullopt.
          * 
          *  For example, if CHAR_T == char32_t, or Character, this returns 1.
-         *  If CHAR_T is Character_ASCII, this returns 1.
+         *  If CHAR_T is ASCII, this returns 1.
          */
         template <IUNICODECanUnambiguouslyConvertFrom CHAR_T>
         static constexpr optional<size_t> NextCharacter (span<const CHAR_T> s);
@@ -320,7 +320,7 @@ namespace Stroika::Foundation::Characters {
         using AddConstIfMatching_ = conditional_t<is_const_v<SRC_OF_CONSTNESS_T>, add_const_t<TYPE_T>, TYPE_T>;
         template <typename TYPE_T>
         using MapSizes_ =
-            conditional_t<sizeof (TYPE_T) == 1, conditional_t<is_same_v<TYPE_T, Character_Latin1>, TYPE_T, char8_t>, conditional_t<sizeof (TYPE_T) == 2, char16_t, char32_t>>;
+            conditional_t<sizeof (TYPE_T) == 1, conditional_t<is_same_v<TYPE_T, Latin1>, TYPE_T, char8_t>, conditional_t<sizeof (TYPE_T) == 2, char16_t, char32_t>>;
         template <typename TYPE_T>
         using CompatibleT_ = AddConstIfMatching_<TYPE_T, MapSizes_<TYPE_T>>;
 

@@ -104,7 +104,7 @@ namespace Stroika::Foundation::Memory {
      *  \returns the subspan of the target which was just filled in.
      * 
      *  \note sizeof (FROM_T) may differ from sizeof (TO_T). So this can be used to downshift char16_t data
-     *        to plain ASCII (Character_ASCII) so long as the caller assures the source data is truely ascii first.
+     *        to plain ASCII so long as the caller assures the source data is truely ascii first.
      * 
      *  \req not Intersects (src, target) - so non-overlapping
      */

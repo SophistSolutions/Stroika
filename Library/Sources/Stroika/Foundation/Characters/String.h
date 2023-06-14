@@ -317,20 +317,20 @@ namespace Stroika::Foundation::Characters {
          *  \req ((str.data () + str.size ()) == '\0'); // crazy weird requirement, but done cuz L"x"sv already does NUL-terminate and we can
          *                                              // take advantage of that fact - re-using the NUL-terminator for our own c_str() implementation
          * 
-         *  \note FromStringConstant with 'char' - REQUIRES that the char elements are ASCII (someday this maybe lifted and iterpret as Character_Latin1)
+         *  \note FromStringConstant with 'char' - REQUIRES that the char elements are ASCII (someday this maybe lifted and iterpret as Latin1)
          *        For the case of char, we also do not check/require the nul-termination bit.
          * 
          *  \note for overloads with wchar_t, if sizeof (wchar_t) == 2
          *        \req Require (UTFConverter::AllFitsInTwoByteEncoding (s));
          */
         template <size_t SIZE>
-        static String FromStringConstant (const Character_ASCII (&cString)[SIZE]);
+        static String FromStringConstant (const ASCII (&cString)[SIZE]);
         template <size_t SIZE>
         static String FromStringConstant (const wchar_t (&cString)[SIZE]);
-        static String FromStringConstant (const basic_string_view<Character_ASCII>& str);
+        static String FromStringConstant (const basic_string_view<ASCII>& str);
         static String FromStringConstant (const basic_string_view<wchar_t>& str);
         static String FromStringConstant (const basic_string_view<char32_t>& str);
-        static String FromStringConstant (span<const Character_ASCII> s);
+        static String FromStringConstant (span<const ASCII> s);
         static String FromStringConstant (span<const wchar_t> s);
         static String FromStringConstant (span<const char32_t> s);
 
@@ -1137,7 +1137,7 @@ namespace Stroika::Foundation::Characters {
                  */
                 eAscii,
                 /**
-                 *  Character_Latin1 - 8 bit representation of characters. But 256 of them - more than plain ascii.
+                 *  Latin1 - 8 bit representation of characters. But 256 of them - more than plain ascii.
                  *  And cheap/easy to convert to UNICODE (since code points of wider characters exactly the same values).
                  */
                 eSingleByteLatin1,
@@ -1146,10 +1146,10 @@ namespace Stroika::Foundation::Characters {
             };
             StorageCodePointType fInCP;
             union {
-                span<const Character_ASCII>  fAscii;
-                span<const Character_Latin1> fSingleByteLatin1;
-                span<const char16_t>         fChar16;
-                span<const char32_t>         fChar32;
+                span<const ASCII>    fAscii;
+                span<const Latin1>   fSingleByteLatin1;
+                span<const char16_t> fChar16;
+                span<const char32_t> fChar32;
             };
         };
 
@@ -1167,7 +1167,7 @@ namespace Stroika::Foundation::Characters {
          *  This API is public, but best to avoid depending on internals of String API - like PeekSpanData - since
          *  this reasonably likely to change in future versions.
          */
-        template <IUNICODECanUnambiguouslyConvertFrom CHAR_TYPE = Character_ASCII>
+        template <IUNICODECanUnambiguouslyConvertFrom CHAR_TYPE = ASCII>
         nonvirtual PeekSpanData GetPeekSpanData () const;
 
     public:
@@ -1193,7 +1193,7 @@ namespace Stroika::Foundation::Characters {
          *  If you want the freedom to not pass in this buffer, see the PeekData API.
          * 
          *  \note - CHAR_T must satisfy the concept IUNICODECanAlwaysConvertTo - SAFELY - because the string MIGHT contain characters not in any 
-         *          unsafe char class (like Character_ASCII or Character_Latin1), and so there might not be a way to do the conversion. Use 
+         *          unsafe char class (like ASCII or Latin1), and so there might not be a way to do the conversion. Use 
          *          PeekData () to do that - where it can return nullopt if no conversion possible.
          * 
          *  \par Example Usage
@@ -1417,20 +1417,18 @@ namespace Stroika::Foundation::Characters {
         template <IUnicodeCodePointOrPlainChar CHAR_T>
         static shared_ptr<_IRep> mk_ (basic_string<CHAR_T>&& s);
 #if qCompilerAndStdLib_template_requresDefNeededonSpecializations_Buggy
-        static auto mk_nocheck_ (span<const Character_ASCII> s) -> shared_ptr<_IRep>;
-        static auto mk_nocheck_ (span<const Character_Latin1> s) -> shared_ptr<_IRep>;
+        static auto mk_nocheck_ (span<const ASCII> s) -> shared_ptr<_IRep>;
+        static auto mk_nocheck_ (span<const Latin1> s) -> shared_ptr<_IRep>;
         static auto mk_nocheck_ (span<const char16_t> s) -> shared_ptr<_IRep>;
         static auto mk_nocheck_ (span<const char32_t> s) -> shared_ptr<_IRep>;
 #else
         template <typename CHAR_T>
         static shared_ptr<_IRep> mk_nocheck_ (span<const CHAR_T> s)
-            requires (is_same_v<CHAR_T, Character_ASCII> or is_same_v<CHAR_T, Character_Latin1> or is_same_v<CHAR_T, char16_t> or
-                      is_same_v<CHAR_T, char32_t>);
+            requires (is_same_v<CHAR_T, ASCII> or is_same_v<CHAR_T, Latin1> or is_same_v<CHAR_T, char16_t> or is_same_v<CHAR_T, char32_t>);
 #endif
         template <typename CHAR_T>
         static shared_ptr<_IRep> mk_nocheck_justPickBufRep_ (span<const CHAR_T> s)
-            requires (is_same_v<CHAR_T, Character_ASCII> or is_same_v<CHAR_T, Character_Latin1> or is_same_v<CHAR_T, char16_t> or
-                      is_same_v<CHAR_T, char32_t>);
+            requires (is_same_v<CHAR_T, ASCII> or is_same_v<CHAR_T, Latin1> or is_same_v<CHAR_T, char16_t> or is_same_v<CHAR_T, char32_t>);
 
     private:
         nonvirtual size_t SubString_adjust_ (unsigned int fromOrTo, size_t myLength) const;
@@ -1616,7 +1614,7 @@ namespace Stroika::Foundation::Characters {
      *  \note _k is STILL sometimes useful and better than sv, since the TYPE returned by _k is a String_Constant which IS a String
      *        so it will work in some overload contexts where sv would fail.
      * 
-     *  \note operator"" _k with char*, requires that the argument string MUST BE ASCII (someday maybe lifted to allow Character_Latin1)
+     *  \note operator"" _k with char*, requires that the argument string MUST BE ASCII (someday maybe lifted to allow Latin1)
      */
     String operator"" _k (const char* s, size_t len);
     String operator"" _k (const wchar_t* s, size_t len);

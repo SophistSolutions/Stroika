@@ -33,7 +33,7 @@ namespace Stroika::Foundation::Characters {
         template <IUNICODECanUnambiguouslyConvertFrom CHAR_T>
         static size_t StrLen_ (const CHAR_T* s)
         {
-            if constexpr (is_same_v<CHAR_T, Character_Latin1>) {
+            if constexpr (is_same_v<CHAR_T, Latin1>) {
                 return StrLen_ (reinterpret_cast<const char*> (s));
             }
             else {
@@ -41,30 +41,30 @@ namespace Stroika::Foundation::Characters {
             }
         }
         template <IUNICODECanUnambiguouslyConvertFrom SRC_T>
-        inline void CopyAsASCIICharacters_ (span<const SRC_T> src, span<Character_ASCII> trg)
+        inline void CopyAsASCIICharacters_ (span<const SRC_T> src, span<ASCII> trg)
         {
             Require (trg.size () >= src.size ());
-            Character_ASCII* outI = trg.data ();
+            ASCII* outI = trg.data ();
             for (auto ii = src.begin (); ii != src.end (); ++ii) {
                 if constexpr (is_same_v<SRC_T, Character>) {
                     *outI++ = ii->GetAsciiCode ();
                 }
                 else {
-                    *outI++ = static_cast<Character_ASCII> (*ii);
+                    *outI++ = static_cast<ASCII> (*ii);
                 }
             }
         }
         template <IUNICODECanUnambiguouslyConvertFrom SRC_T>
-        inline void CopyAsLatin1Characters_ (span<const SRC_T> src, span<Character_Latin1> trg)
+        inline void CopyAsLatin1Characters_ (span<const SRC_T> src, span<Latin1> trg)
         {
             Require (trg.size () >= src.size ());
-            Character_Latin1* outI = trg.data ();
+            Latin1* outI = trg.data ();
             for (auto ii = src.begin (); ii != src.end (); ++ii) {
                 if constexpr (is_same_v<SRC_T, Character>) {
-                    *outI++ = Character_Latin1{static_cast<unsigned char> (ii->GetCharacterCode ())};
+                    *outI++ = Latin1{static_cast<unsigned char> (ii->GetCharacterCode ())};
                 }
                 else {
-                    *outI++ = Character_Latin1{static_cast<unsigned char> (*ii)};
+                    *outI++ = Latin1{static_cast<unsigned char> (*ii)};
                 }
             }
         }
@@ -141,9 +141,9 @@ namespace Stroika::Foundation::Characters {
     // just specialize 3 cases - ASCII (char), utf-16, and utf-32 (others - like char8_t, wchar_t mappeed appropriately)
 #if !qCompilerAndStdLib_template_requresDefNeededonSpecializations_Buggy
     template <>
-    auto String::mk_nocheck_ (span<const Character_ASCII> s) -> shared_ptr<_IRep>;
+    auto String::mk_nocheck_ (span<const ASCII> s) -> shared_ptr<_IRep>;
     template <>
-    auto String::mk_nocheck_ (span<const Character_Latin1> s) -> shared_ptr<_IRep>;
+    auto String::mk_nocheck_ (span<const Latin1> s) -> shared_ptr<_IRep>;
     template <>
     auto String::mk_nocheck_ (span<const char16_t> s) -> shared_ptr<_IRep>;
     template <>
@@ -155,44 +155,44 @@ namespace Stroika::Foundation::Characters {
         if (s.empty ()) {
             return mkEmpty_ ();
         }
-        if constexpr (is_same_v<CHAR_T, Character_ASCII>) {
+        if constexpr (is_same_v<CHAR_T, ASCII>) {
             Character::CheckASCII (s);
             return mk_nocheck_ (s);
         }
-        else if constexpr (is_same_v<CHAR_T, Character_Latin1>) {
+        else if constexpr (is_same_v<CHAR_T, Latin1>) {
             Character::CheckLatin1 (s);
             return mk_nocheck_ (s);
         }
         switch (Character::IsASCIIOrLatin1 (s)) {
             case Character::ASCIIOrLatin1Result::eASCII: {
                 if constexpr (sizeof (CHAR_T) == 1) {
-                    return mk_nocheck_ (span<const Character_ASCII>{reinterpret_cast<const Character_ASCII*> (s.data ()), s.size ()});
+                    return mk_nocheck_ (span<const ASCII>{reinterpret_cast<const ASCII*> (s.data ()), s.size ()});
                 }
                 else {
                     // Copy to smaller buffer (e.g. utf16_t to char)
-                    Memory::StackBuffer<Character_ASCII> buf{Memory::eUninitialized, s.size ()};
+                    Memory::StackBuffer<ASCII> buf{Memory::eUninitialized, s.size ()};
 #if qCompilerAndStdLib_spanOfContainer_Buggy
                     Private_::CopyAsASCIICharacters_ (s, span{buf.data (), buf.size ()});
-                    return mk_nocheck_ (span<const Character_ASCII>{buf.data (), buf.size ()});
+                    return mk_nocheck_ (span<const ASCII>{buf.data (), buf.size ()});
 #else
                     Private_::CopyAsASCIICharacters_ (s, span{buf});
-                    return mk_nocheck_ (span<const Character_ASCII>{buf});
+                    return mk_nocheck_ (span<const ASCII>{buf});
 #endif
                 }
             }
             case Character::ASCIIOrLatin1Result::eLatin1: {
                 if constexpr (sizeof (CHAR_T) == 1) {
-                    return mk_nocheck_ (span<const Character_Latin1>{reinterpret_cast<const Character_Latin1*> (s.data ()), s.size ()});
+                    return mk_nocheck_ (span<const Latin1>{reinterpret_cast<const Latin1*> (s.data ()), s.size ()});
                 }
                 else {
-                    // Copy to smaller buffer (e.g. utf32_t to Character_Latin1)
-                    Memory::StackBuffer<Character_Latin1> buf{Memory::eUninitialized, s.size ()};
+                    // Copy to smaller buffer (e.g. utf32_t to Latin1)
+                    Memory::StackBuffer<Latin1> buf{Memory::eUninitialized, s.size ()};
 #if qCompilerAndStdLib_spanOfContainer_Buggy
                     Private_::CopyAsLatin1Characters_ (s, span{buf.data (), buf.size ()});
-                    return mk_nocheck_ (span<const Character_Latin1>{buf.data (), buf.size ()});
+                    return mk_nocheck_ (span<const Latin1>{buf.data (), buf.size ()});
 #else
                     Private_::CopyAsLatin1Characters_ (s, span{buf});
-                    return mk_nocheck_ (span<const Character_Latin1>{buf});
+                    return mk_nocheck_ (span<const Latin1>{buf});
 #endif
                 }
             }
@@ -341,13 +341,13 @@ namespace Stroika::Foundation::Characters {
          *      "For example, ISO-8859-1 are the first 256 Unicode code points (U+0000-U+00FF)."
          */
         if constexpr (sizeof (CHAR_T) == 1) {
-            return mk_ (span<const Character_Latin1>{reinterpret_cast<const Character_Latin1*> (s.data ()), s.size ()});
+            return mk_ (span<const Latin1>{reinterpret_cast<const Latin1*> (s.data ()), s.size ()});
         }
         else {
-            const CHAR_T*                         b = reinterpret_cast<const CHAR_T*> (s.data ());
-            const CHAR_T*                         e = b + s.size ();
-            Memory::StackBuffer<Character_Latin1> buf{Memory::eUninitialized, static_cast<size_t> (e - b)};
-            Character_Latin1*                     pOut = buf.begin ();
+            const CHAR_T*               b = reinterpret_cast<const CHAR_T*> (s.data ());
+            const CHAR_T*               e = b + s.size ();
+            Memory::StackBuffer<Latin1> buf{Memory::eUninitialized, static_cast<size_t> (e - b)};
+            Latin1*                     pOut = buf.begin ();
             for (const CHAR_T* i = b; i != e; ++i, ++pOut) {
                 if (*i >= 256) {
                     static const auto kException_ = out_of_range{"Error converting non-iso-latin-1 text to String"};
@@ -355,13 +355,13 @@ namespace Stroika::Foundation::Characters {
                 }
                 *pOut = *i;
             }
-            return mk_ (span<const Character_Latin1>{buf.begin (), pOut});
+            return mk_ (span<const Latin1>{buf.begin (), pOut});
         }
     }
     template <size_t SIZE>
-    inline String String::FromStringConstant (const Character_ASCII (&cString)[SIZE])
+    inline String String::FromStringConstant (const ASCII (&cString)[SIZE])
     {
-        return FromStringConstant (span<const Character_ASCII>{cString, SIZE - 1}); // -1 because a literal array SIZE includes the NUL-character at the end
+        return FromStringConstant (span<const ASCII>{cString, SIZE - 1}); // -1 because a literal array SIZE includes the NUL-character at the end
     }
     template <size_t SIZE>
     inline String String::FromStringConstant (const wchar_t (&cString)[SIZE])
@@ -856,10 +856,10 @@ namespace Stroika::Foundation::Characters {
     {
         using StorageCodePointType = PeekSpanData::StorageCodePointType;
         StorageCodePointType preferredSCP{};
-        if constexpr (is_same_v<remove_cv_t<CHAR_TYPE>, Character_ASCII>) {
+        if constexpr (is_same_v<remove_cv_t<CHAR_TYPE>, ASCII>) {
             preferredSCP = StorageCodePointType::eAscii;
         }
-        else if constexpr (is_same_v<remove_cv_t<CHAR_TYPE>, Character_Latin1>) {
+        else if constexpr (is_same_v<remove_cv_t<CHAR_TYPE>, Latin1>) {
             preferredSCP = StorageCodePointType::eSingleByteLatin1;
         }
         else if constexpr (is_same_v<remove_cv_t<CHAR_TYPE>, char8_t>) {
@@ -894,12 +894,12 @@ namespace Stroika::Foundation::Characters {
     inline optional<span<const CHAR_TYPE>> String::PeekData (const PeekSpanData& pds)
     {
         using StorageCodePointType = PeekSpanData::StorageCodePointType;
-        if constexpr (is_same_v<CHAR_TYPE, Character_ASCII>) {
+        if constexpr (is_same_v<CHAR_TYPE, ASCII>) {
             if (pds.fInCP == StorageCodePointType::eAscii) {
                 return pds.fAscii;
             }
         }
-        else if constexpr (is_same_v<CHAR_TYPE, Character_Latin1>) {
+        else if constexpr (is_same_v<CHAR_TYPE, Latin1>) {
             if (pds.fInCP == StorageCodePointType::eSingleByteLatin1) {
                 return pds.fSingleByteLatin1;
             }
