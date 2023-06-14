@@ -74,7 +74,7 @@ namespace Stroika::Foundation::Containers::Concrete {
          *       and added Mapping_stdhashmap (STDHASHMAP<>&& src)
          */
         Mapping_stdhashmap ()
-            requires (Cryptography::Digest::IsHashFunction<std::hash<KEY_TYPE>, KEY_TYPE> and IEqualsComparer<std::equal_to<KEY_TYPE>, KEY_TYPE>);
+            requires (Cryptography::Digest::IHashFunction<std::hash<KEY_TYPE>, KEY_TYPE> and IEqualsComparer<std::equal_to<KEY_TYPE>, KEY_TYPE>);
         Mapping_stdhashmap (STDHASHMAP<>&& src)
 #if !qCompilerAndStdLib_requires_breaks_soemtimes_but_static_assert_ok_Buggy
             requires (is_default_constructible_v<Mapping_stdhashmap>)
@@ -82,7 +82,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         ;
         template <typename HASH, IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER>
         explicit Mapping_stdhashmap (HASH&& hasher, KEY_EQUALS_COMPARER&& keyComparer)
-            requires (Cryptography::Digest::IsHashFunction<HASH, KEY_TYPE>);
+            requires (Cryptography::Digest::IHashFunction<HASH, KEY_TYPE>);
         Mapping_stdhashmap (Mapping_stdhashmap&& src) noexcept      = default;
         Mapping_stdhashmap (const Mapping_stdhashmap& src) noexcept = default;
         Mapping_stdhashmap (const initializer_list<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src)
@@ -92,7 +92,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         ;
         template <typename HASH, IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER>
         Mapping_stdhashmap (HASH&& hasher, KEY_EQUALS_COMPARER&& keyComparer, const initializer_list<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src)
-            requires (Cryptography::Digest::IsHashFunction<HASH, KEY_TYPE>);
+            requires (Cryptography::Digest::IHashFunction<HASH, KEY_TYPE>);
         template <ranges::range ITERABLE_OF_ADDABLE>
         explicit Mapping_stdhashmap (ITERABLE_OF_ADDABLE&& src)
             requires (is_default_constructible_v<Mapping_stdhashmap<KEY_TYPE, MAPPED_VALUE_TYPE>> and
@@ -108,7 +108,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         ;
         template <typename HASH, IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER, ranges::range ITERABLE_OF_ADDABLE>
         Mapping_stdhashmap (HASH&& hasher, KEY_EQUALS_COMPARER&& keyComparer, ITERABLE_OF_ADDABLE&& src)
-            requires (Cryptography::Digest::IsHashFunction<HASH, KEY_TYPE> and
+            requires (Cryptography::Digest::IHashFunction<HASH, KEY_TYPE> and
                       not is_base_of_v<Mapping_stdhashmap<KEY_TYPE, MAPPED_VALUE_TYPE>, decay_t<ITERABLE_OF_ADDABLE>>)
 #if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
             : Mapping_stdhashmap{forward<HASH> (hasher), forward<KEY_EQUALS_COMPARER> (keyComparer)}
@@ -128,7 +128,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         ;
         template <typename HASH, IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER, input_iterator ITERATOR_OF_ADDABLE>
         Mapping_stdhashmap (HASH&& hasher, KEY_EQUALS_COMPARER&& keyComparer, ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
-            requires (Cryptography::Digest::IsHashFunction<HASH, KEY_TYPE>);
+            requires (Cryptography::Digest::IHashFunction<HASH, KEY_TYPE>);
 
     public:
         /**

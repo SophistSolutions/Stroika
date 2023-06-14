@@ -96,7 +96,7 @@ namespace Stroika::Foundation::Streams {
         class UnSeekable_CodeCvt_Rep_;
 
     private:
-        template <Characters ::Character_UNICODECanUnambiguouslyConvertFrom OUTPUT_CHAR_T>
+        template <Characters ::IUNICODECanUnambiguouslyConvertFrom OUTPUT_CHAR_T>
         class UnSeekable_UTFConverter_Rep_;
     };
 

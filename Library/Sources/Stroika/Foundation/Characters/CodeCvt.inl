@@ -36,7 +36,7 @@ namespace Stroika::Foundation::Characters {
      *********************** CodeCvt<CHAR_T>::UTFConvertRep_ ************************
      ********************************************************************************
      */
-    template <Character_UNICODECanAlwaysConvertTo CHAR_T>
+    template <IUNICODECanAlwaysConvertTo CHAR_T>
     template <typename SERIALIZED_CHAR_T>
     struct CodeCvt<CHAR_T>::UTFConvertRep_ : CodeCvt<CHAR_T>::IRep {
         using ConversionResult = UTFConverter::ConversionResult;
@@ -99,7 +99,7 @@ namespace Stroika::Foundation::Characters {
      ****************** CodeCvt<CHAR_T>::UTFConvertSwappedRep_ **********************
      ********************************************************************************
      */
-    template <Character_UNICODECanAlwaysConvertTo CHAR_T>
+    template <IUNICODECanAlwaysConvertTo CHAR_T>
     template <typename SERIALIZED_CHAR_T>
     struct CodeCvt<CHAR_T>::UTFConvertSwappedRep_ : UTFConvertRep_<SERIALIZED_CHAR_T> {
         using inherited = UTFConvertRep_<SERIALIZED_CHAR_T>;
@@ -144,7 +144,7 @@ namespace Stroika::Foundation::Characters {
      *********************** CodeCvt<CHAR_T>::UTF2UTFRep_ ***************************
      ********************************************************************************
      */
-    template <Character_UNICODECanAlwaysConvertTo CHAR_T>
+    template <IUNICODECanAlwaysConvertTo CHAR_T>
     template <typename INTERMEDIATE_CHAR_T>
     struct CodeCvt<CHAR_T>::UTF2UTFRep_ : CodeCvt<CHAR_T>::IRep {
         using ConversionResultWithStatus = UTFConverter::ConversionResultWithStatus;
@@ -224,7 +224,7 @@ namespace Stroika::Foundation::Characters {
      *  This is crazy complicated because codecvt goes out of its way to be hard to copy, hard to move, but with
      *  a little care, can be made to work with unique_ptr.
      */
-    template <Character_UNICODECanAlwaysConvertTo CHAR_T>
+    template <IUNICODECanAlwaysConvertTo CHAR_T>
     template <typename STD_CODE_CVT_T>
     struct CodeCvt<CHAR_T>::CodeCvt_WrapStdCodeCvt_ : CodeCvt<CHAR_T>::IRep {
         unique_ptr<STD_CODE_CVT_T> fCodeCvt_;
@@ -304,13 +304,13 @@ namespace Stroika::Foundation::Characters {
      ******************************* CodeCvt<CHAR_T> ********************************
      ********************************************************************************
      */
-    template <Character_UNICODECanAlwaysConvertTo CHAR_T>
+    template <IUNICODECanAlwaysConvertTo CHAR_T>
     inline CodeCvt<CHAR_T>::CodeCvt ()
     {
         // default, is to serialize to UTF-8
         fRep_ = make_shared<UTFConvertRep_<char8_t>> (UTFConverter::kThe);
     }
-    template <Character_UNICODECanAlwaysConvertTo CHAR_T>
+    template <IUNICODECanAlwaysConvertTo CHAR_T>
     inline CodeCvt<CHAR_T>::CodeCvt (const locale& l)
     {
         auto baseRep = make_shared<CodeCvt_WrapStdCodeCvt_<Private_::deletable_facet_<codecvt_byname<wchar_t, char, mbstate_t>>>> (l);
@@ -324,7 +324,7 @@ namespace Stroika::Foundation::Characters {
             fRep_ = make_shared<UTF2UTFRep_<wchar_t>> (baseRep);
         }
     }
-    template <Character_UNICODECanAlwaysConvertTo CHAR_T>
+    template <IUNICODECanAlwaysConvertTo CHAR_T>
     inline CodeCvt<CHAR_T>::CodeCvt (UnicodeExternalEncodings e)
         : fRep_{}
     {
@@ -356,55 +356,55 @@ namespace Stroika::Foundation::Characters {
                 AssertNotImplemented ();
         }
     }
-    template <Character_UNICODECanAlwaysConvertTo CHAR_T>
-    template <Character_UNICODECanAlwaysConvertTo INTERMEDIATE_CHAR_T>
+    template <IUNICODECanAlwaysConvertTo CHAR_T>
+    template <IUNICODECanAlwaysConvertTo INTERMEDIATE_CHAR_T>
     inline CodeCvt<CHAR_T>::CodeCvt (const CodeCvt<INTERMEDIATE_CHAR_T>& basedOn)
         : fRep_{make_shared<UTF2UTFRep_<INTERMEDIATE_CHAR_T>> (basedOn)}
     {
     }
-    template <Character_UNICODECanAlwaysConvertTo CHAR_T>
+    template <IUNICODECanAlwaysConvertTo CHAR_T>
     inline CodeCvt<CHAR_T>::CodeCvt (const shared_ptr<IRep>& rep)
         : fRep_{(RequireNotNull (rep), rep)}
     {
     }
-    template <Character_UNICODECanAlwaysConvertTo CHAR_T>
-    template <IsStdCodeCVTT STD_CODECVT, typename... ARGS>
+    template <IUNICODECanAlwaysConvertTo CHAR_T>
+    template <IStdCodeCVTT STD_CODECVT, typename... ARGS>
     inline CodeCvt<CHAR_T> CodeCvt<CHAR_T>::mkFromStdCodeCvt (ARGS... args)
         requires (is_same_v<CHAR_T, typename STD_CODECVT::intern_type>)
     {
         auto u = make_unique<Private_::deletable_facet_<STD_CODECVT>> (forward<ARGS> (args)...);
         return CodeCvt<CHAR_T>{make_shared<CodeCvt_WrapStdCodeCvt_<Private_::deletable_facet_<STD_CODECVT>>> (move (u))};
     }
-    template <Character_UNICODECanAlwaysConvertTo CHAR_T>
+    template <IUNICODECanAlwaysConvertTo CHAR_T>
     inline auto CodeCvt<CHAR_T>::Bytes2Characters (span<const byte>* from, span<CHAR_T> to) const -> span<CHAR_T>
     {
         AssertNotNull (fRep_);
         Require (to->size () >= ComputeTargetCharacterBufferSize (from));
         return fRep_->Bytes2Characters (from, to);
     }
-    template <Character_UNICODECanAlwaysConvertTo CHAR_T>
+    template <IUNICODECanAlwaysConvertTo CHAR_T>
     inline auto CodeCvt<CHAR_T>::Characters2Bytes (span<const CHAR_T> from, span<byte> to) const -> span<byte>
     {
         AssertNotNull (fRep_);
         Require (to.size () >= ComputeTargetByteBufferSize (from));
         return fRep_->Characters2Bytes (from, to);
     }
-    template <Character_UNICODECanAlwaysConvertTo CHAR_T>
+    template <IUNICODECanAlwaysConvertTo CHAR_T>
     inline size_t CodeCvt<CHAR_T>::ComputeTargetCharacterBufferSize (span<const byte> src) const
     {
         return fRep_->ComputeTargetCharacterBufferSize (src);
     }
-    template <Character_UNICODECanAlwaysConvertTo CHAR_T>
+    template <IUNICODECanAlwaysConvertTo CHAR_T>
     inline size_t CodeCvt<CHAR_T>::ComputeTargetCharacterBufferSize (size_t srcSize) const
     {
         return fRep_->ComputeTargetCharacterBufferSize (srcSize);
     }
-    template <Character_UNICODECanAlwaysConvertTo CHAR_T>
+    template <IUNICODECanAlwaysConvertTo CHAR_T>
     inline size_t CodeCvt<CHAR_T>::ComputeTargetByteBufferSize (span<const CHAR_T> src) const
     {
         return fRep_->ComputeTargetByteBufferSize (src);
     }
-    template <Character_UNICODECanAlwaysConvertTo CHAR_T>
+    template <IUNICODECanAlwaysConvertTo CHAR_T>
     inline size_t CodeCvt<CHAR_T>::ComputeTargetByteBufferSize (size_t srcSize) const
     {
         return fRep_->ComputeTargetByteBufferSize (srcSize);

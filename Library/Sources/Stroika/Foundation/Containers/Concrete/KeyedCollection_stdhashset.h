@@ -122,7 +122,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         template <typename KEY_HASH = std::hash<KEY_TYPE>, typename KEY_EQUALS_COMPARER = equal_to<KEY_TYPE>>
         KeyedCollection_stdhashset (const KeyExtractorType& keyExtractor = {}, KEY_HASH&& keyHasher = {},
                                     KEY_EQUALS_COMPARER&& keyComparer = KEY_EQUALS_COMPARER{})
-            requires (IEqualsComparer<KEY_EQUALS_COMPARER, KEY_TYPE> and Cryptography::Digest::IsHashFunction<KEY_HASH, KEY_TYPE>);
+            requires (IEqualsComparer<KEY_EQUALS_COMPARER, KEY_TYPE> and Cryptography::Digest::IHashFunction<KEY_HASH, KEY_TYPE>);
 
         KeyedCollection_stdhashset (KeyedCollection_stdhashset&& src) noexcept      = default;
         KeyedCollection_stdhashset (const KeyedCollection_stdhashset& src) noexcept = default;

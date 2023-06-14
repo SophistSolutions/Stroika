@@ -30,7 +30,7 @@ namespace Stroika::Foundation::Characters {
      ********************************************************************************
      */
     namespace Private_ {
-        template <Character_UNICODECanUnambiguouslyConvertFrom CHAR_T>
+        template <IUNICODECanUnambiguouslyConvertFrom CHAR_T>
         static size_t StrLen_ (const CHAR_T* s)
         {
             if constexpr (is_same_v<CHAR_T, Character_Latin1>) {
@@ -40,7 +40,7 @@ namespace Stroika::Foundation::Characters {
                 return CString::Length (s);
             }
         }
-        template <Character_UNICODECanUnambiguouslyConvertFrom SRC_T>
+        template <IUNICODECanUnambiguouslyConvertFrom SRC_T>
         inline void CopyAsASCIICharacters_ (span<const SRC_T> src, span<Character_ASCII> trg)
         {
             Require (trg.size () >= src.size ());
@@ -54,7 +54,7 @@ namespace Stroika::Foundation::Characters {
                 }
             }
         }
-        template <Character_UNICODECanUnambiguouslyConvertFrom SRC_T>
+        template <IUNICODECanUnambiguouslyConvertFrom SRC_T>
         inline void CopyAsLatin1Characters_ (span<const SRC_T> src, span<Character_Latin1> trg)
         {
             Require (trg.size () >= src.size ());
@@ -68,7 +68,7 @@ namespace Stroika::Foundation::Characters {
                 }
             }
         }
-        template <CanBeTreatedAsSpanOfCharacter_ USTRING>
+        template <ICanBeTreatedAsSpanOfCharacter_ USTRING>
         inline span<const Character> AsSpanOfCharacters_ (USTRING&& s, Memory::StackBuffer<Character>* mostlyIgnoredBuf)
         {
             /*
@@ -149,7 +149,7 @@ namespace Stroika::Foundation::Characters {
     template <>
     auto String::mk_nocheck_ (span<const char32_t> s) -> shared_ptr<_IRep>;
 #endif
-    template <Character_UNICODECanUnambiguouslyConvertFrom CHAR_T>
+    template <IUNICODECanUnambiguouslyConvertFrom CHAR_T>
     auto String::mk_ (span<const CHAR_T> s) -> shared_ptr<_IRep>
     {
         if (s.empty ()) {
@@ -228,13 +228,13 @@ namespace Stroika::Foundation::Characters {
 #endif
         }
     }
-    template <Character_Compatible CHAR_T>
+    template <ICharacterCompatible CHAR_T>
     auto String::mk_ (span<CHAR_T> s) -> shared_ptr<_IRep>
     {
         // weird and unfortunate overload needed for non-const spans, not automatically promoted to const
         return mk_ (Memory::ConstSpan (s));
     }
-    template <Character_Compatible CHAR_T>
+    template <ICharacterCompatible CHAR_T>
     auto String::mk_ (Iterable<CHAR_T> it) -> shared_ptr<_IRep>
     {
         // redo with small stackbuffer (character and dont do iterable<Characer> do Iterable<CHAR_T> where t is Characer_Compiabple)
@@ -258,7 +258,7 @@ namespace Stroika::Foundation::Characters {
     auto String::mk_ (basic_string<char32_t>&& s) -> shared_ptr<_IRep>;
     template <>
     auto String::mk_ (basic_string<wchar_t>&& s) -> shared_ptr<_IRep>;
-    template <Character_IsUnicodeCodePointOrPlainChar CHAR_T>
+    template <IUnicodeCodePointOrPlainChar CHAR_T>
     inline auto String::mk_ (basic_string<CHAR_T>&& s) -> shared_ptr<_IRep>
     {
         // by default, except for maybe a few special cases, just copy the data - don't move
@@ -279,7 +279,7 @@ namespace Stroika::Foundation::Characters {
     {
         _AssertRepValidType ();
     }
-    template <Character_Compatible CHAR_T>
+    template <ICharacterCompatible CHAR_T>
     inline String::String (const CHAR_T* cString)
         : inherited{mk_ (span{cString, CString::Length (cString)})}
     {
@@ -288,17 +288,17 @@ namespace Stroika::Foundation::Characters {
     }
     template <Memory::IsSpanT SPAN_OF_CHAR_T>
     inline String::String (SPAN_OF_CHAR_T s)
-        requires (Character_Compatible<typename SPAN_OF_CHAR_T::value_type>)
+        requires (ICharacterCompatible<typename SPAN_OF_CHAR_T::value_type>)
         : inherited{mk_ (span<const typename SPAN_OF_CHAR_T::value_type>{s})}
     {
         _AssertRepValidType ();
     }
-    template <Character_IsUnicodeCodePointOrPlainChar CHAR_T>
+    template <IUnicodeCodePointOrPlainChar CHAR_T>
     inline String::String (const basic_string<CHAR_T>& s)
         : inherited{mk_ (span<const CHAR_T>{s.data (), s.size ()})}
     {
     }
-    template <Character_UNICODECanAlwaysConvertTo CHAR_T>
+    template <IUNICODECanAlwaysConvertTo CHAR_T>
     inline String::String (const Iterable<CHAR_T>& src)
         requires (not Memory::IsSpanT<CHAR_T>)
         : inherited{mk_ (src)}
@@ -308,7 +308,7 @@ namespace Stroika::Foundation::Characters {
         : String{span{&c, 1}}
     {
     }
-    template <Character_IsUnicodeCodePointOrPlainChar CHAR_T>
+    template <IUnicodeCodePointOrPlainChar CHAR_T>
     inline String::String (basic_string<CHAR_T>&& s)
         : inherited{mk_ (forward<basic_string<CHAR_T>> (s))}
     {
@@ -322,18 +322,18 @@ namespace Stroika::Foundation::Characters {
     {
         return FromNarrowString (span{from.c_str (), from.length ()}, l);
     }
-    template <Character_IsUnicodeCodePointOrPlainChar CHAR_T>
+    template <IUnicodeCodePointOrPlainChar CHAR_T>
     inline String String::FromLatin1 (const basic_string<CHAR_T>& s)
     {
         return FromLatin1 (span{s.data (), s.size ()});
     }
-    template <Character_UNICODECanUnambiguouslyConvertFrom CHAR_T>
+    template <IUNICODECanUnambiguouslyConvertFrom CHAR_T>
     inline String String::FromLatin1 (const CHAR_T* cString)
     {
         RequireNotNull (cString);
         return FromLatin1 (span{cString, Private_::StrLen_ (cString)});
     }
-    template <Character_UNICODECanUnambiguouslyConvertFrom CHAR_T>
+    template <IUNICODECanUnambiguouslyConvertFrom CHAR_T>
     inline String String::FromLatin1 (span<const CHAR_T> s)
     {
         /*
@@ -465,7 +465,7 @@ namespace Stroika::Foundation::Characters {
 #endif
     }
     inline void String::_AssertRepValidType () const { EnsureMember (&_SafeReadRepAccessor{this}._ConstGetRep (), String::_IRep); }
-    template <Character_Compatible CHAR_T>
+    template <ICharacterCompatible CHAR_T>
     inline span<CHAR_T> String::CopyTo (span<CHAR_T> s) const
         requires (not is_const_v<CHAR_T>)
     {
@@ -705,7 +705,7 @@ namespace Stroika::Foundation::Characters {
 
     template <typename T>
     inline T String::As () const
-        requires (BasicUnicodeStdString<T> or is_same_v<T, String>)
+        requires (IBasicUnicodeStdString<T> or is_same_v<T, String>)
     {
         T r{}; // for now - KISS, but this can be optimized
         As (&r);
@@ -713,7 +713,7 @@ namespace Stroika::Foundation::Characters {
     }
     template <typename T>
     inline void String::As (T* into) const
-        requires (BasicUnicodeStdString<T> or is_same_v<T, String>)
+        requires (IBasicUnicodeStdString<T> or is_same_v<T, String>)
     {
         if constexpr (is_same_v<T, u8string>) {
             AsUTF8 (into);
@@ -851,7 +851,7 @@ namespace Stroika::Foundation::Characters {
         auto                         thisSpan = GetData (&ignored1);
         return Character::AsASCIIQuietly (thisSpan, into);
     }
-    template <Character_UNICODECanUnambiguouslyConvertFrom CHAR_TYPE>
+    template <IUNICODECanUnambiguouslyConvertFrom CHAR_TYPE>
     inline String::PeekSpanData String::GetPeekSpanData () const
     {
         using StorageCodePointType = PeekSpanData::StorageCodePointType;
@@ -890,7 +890,7 @@ namespace Stroika::Foundation::Characters {
         }
         return _SafeReadRepAccessor{this}._ConstGetRep ().PeekData (preferredSCP);
     }
-    template <Character_UNICODECanUnambiguouslyConvertFrom CHAR_TYPE>
+    template <IUNICODECanUnambiguouslyConvertFrom CHAR_TYPE>
     inline optional<span<const CHAR_TYPE>> String::PeekData (const PeekSpanData& pds)
     {
         using StorageCodePointType = PeekSpanData::StorageCodePointType;
@@ -940,12 +940,12 @@ namespace Stroika::Foundation::Characters {
         }
         return nullopt; // can easily happen if you request a type that is not stored in the rep
     }
-    template <Character_UNICODECanUnambiguouslyConvertFrom CHAR_TYPE>
+    template <IUNICODECanUnambiguouslyConvertFrom CHAR_TYPE>
     inline optional<span<const CHAR_TYPE>> String::PeekData () const
     {
         return PeekData<CHAR_TYPE> (GetPeekSpanData<CHAR_TYPE> ());
     }
-    template <Character_UNICODECanAlwaysConvertTo CHAR_TYPE>
+    template <IUNICODECanAlwaysConvertTo CHAR_TYPE>
     span<const CHAR_TYPE> String::GetData (const PeekSpanData& pds, Memory::StackBuffer<CHAR_TYPE>* possiblyUsedBuffer)
     {
         RequireNotNull (possiblyUsedBuffer);
@@ -1052,7 +1052,7 @@ namespace Stroika::Foundation::Characters {
             }
         }
     }
-    template <Character_UNICODECanAlwaysConvertTo CHAR_TYPE>
+    template <IUNICODECanAlwaysConvertTo CHAR_TYPE>
     inline span<const CHAR_TYPE> String::GetData (Memory::StackBuffer<CHAR_TYPE>* possiblyUsedBuffer) const
     {
         RequireNotNull (possiblyUsedBuffer);
@@ -1113,7 +1113,7 @@ namespace Stroika::Foundation::Characters {
         : fCompareOptions{co}
     {
     }
-    template <Private_::CanBeTreatedAsSpanOfCharacter_ LT, Private_::CanBeTreatedAsSpanOfCharacter_ RT>
+    template <Private_::ICanBeTreatedAsSpanOfCharacter_ LT, Private_::ICanBeTreatedAsSpanOfCharacter_ RT>
     inline bool String::EqualsComparer::Cmp_ (LT&& lhs, RT&& rhs) const
     {
         // optimize very common case of ASCII String vs ASCII String
@@ -1134,7 +1134,7 @@ namespace Stroika::Foundation::Characters {
         }
         return Cmp_Generic_ (forward<LT> (lhs), forward<RT> (rhs));
     }
-    template <Private_::CanBeTreatedAsSpanOfCharacter_ LT, Private_::CanBeTreatedAsSpanOfCharacter_ RT>
+    template <Private_::ICanBeTreatedAsSpanOfCharacter_ LT, Private_::ICanBeTreatedAsSpanOfCharacter_ RT>
     bool String::EqualsComparer::Cmp_Generic_ (LT&& lhs, RT&& rhs) const
     {
         // separate function - cuz large stackframe and on windows generates chkstk calls, so dont have in
@@ -1144,7 +1144,7 @@ namespace Stroika::Foundation::Characters {
         return Character::Compare (Private_::AsSpanOfCharacters_ (forward<LT> (lhs), &ignore1),
                                    Private_::AsSpanOfCharacters_ (forward<RT> (rhs), &ignore2), fCompareOptions) == 0;
     }
-    template <ConvertibleToString LT, ConvertibleToString RT>
+    template <IConvertibleToString LT, IConvertibleToString RT>
     inline bool String::EqualsComparer::operator() (LT&& lhs, RT&& rhs) const
     {
         if constexpr (
@@ -1153,7 +1153,7 @@ namespace Stroika::Foundation::Characters {
                 return false; // performance tweak
             }
         }
-        if constexpr (Private_::CanBeTreatedAsSpanOfCharacter_<LT> and Private_::CanBeTreatedAsSpanOfCharacter_<RT>) {
+        if constexpr (Private_::ICanBeTreatedAsSpanOfCharacter_<LT> and Private_::ICanBeTreatedAsSpanOfCharacter_<RT>) {
             return Cmp_ (lhs, rhs);
         }
         else {
@@ -1171,7 +1171,7 @@ namespace Stroika::Foundation::Characters {
         : fCompareOptions{co}
     {
     }
-    template <Private_::CanBeTreatedAsSpanOfCharacter_ LT, Private_::CanBeTreatedAsSpanOfCharacter_ RT>
+    template <Private_::ICanBeTreatedAsSpanOfCharacter_ LT, Private_::ICanBeTreatedAsSpanOfCharacter_ RT>
     inline strong_ordering String::ThreeWayComparer::Cmp_ (LT&& lhs, RT&& rhs) const
     {
         // optimize very common case of ASCII String vs ASCII String
@@ -1184,7 +1184,7 @@ namespace Stroika::Foundation::Characters {
         }
         return Cmp_Generic_ (forward<LT> (lhs), forward<RT> (rhs));
     }
-    template <Private_::CanBeTreatedAsSpanOfCharacter_ LT, Private_::CanBeTreatedAsSpanOfCharacter_ RT>
+    template <Private_::ICanBeTreatedAsSpanOfCharacter_ LT, Private_::ICanBeTreatedAsSpanOfCharacter_ RT>
     strong_ordering String::ThreeWayComparer::Cmp_Generic_ (LT&& lhs, RT&& rhs) const
     {
         // separate function - cuz large stackframe and on windows generates chkstk calls, so dont have in
@@ -1194,10 +1194,10 @@ namespace Stroika::Foundation::Characters {
         return Character::Compare (Private_::AsSpanOfCharacters_ (forward<LT> (lhs), &ignore1),
                                    Private_::AsSpanOfCharacters_ (forward<RT> (rhs), &ignore2), fCompareOptions);
     }
-    template <ConvertibleToString LT, ConvertibleToString RT>
+    template <IConvertibleToString LT, IConvertibleToString RT>
     inline strong_ordering String::ThreeWayComparer::operator() (LT&& lhs, RT&& rhs) const
     {
-        if constexpr (Private_::CanBeTreatedAsSpanOfCharacter_<LT> and Private_::CanBeTreatedAsSpanOfCharacter_<RT>) {
+        if constexpr (Private_::ICanBeTreatedAsSpanOfCharacter_<LT> and Private_::ICanBeTreatedAsSpanOfCharacter_<RT>) {
             return Cmp_ (lhs, rhs);
         }
         else {
@@ -1226,11 +1226,11 @@ namespace Stroika::Foundation::Characters {
      *********************************** operator+ **********************************
      ********************************************************************************
      */
-    template <ConvertibleToString LHS_T, ConvertibleToString RHS_T>
+    template <IConvertibleToString LHS_T, IConvertibleToString RHS_T>
     String operator+ (LHS_T&& lhs, RHS_T&& rhs)
         requires (derived_from<decay_t<LHS_T>, String> or derived_from<decay_t<RHS_T>, String>)
     {
-        if constexpr (Private_::CanBeTreatedAsSpanOfCharacter_<LHS_T> and Private_::CanBeTreatedAsSpanOfCharacter_<RHS_T>) {
+        if constexpr (Private_::ICanBeTreatedAsSpanOfCharacter_<LHS_T> and Private_::ICanBeTreatedAsSpanOfCharacter_<RHS_T>) {
             // maybe always true?
             Memory::StackBuffer<Character> ignored1;
             span<const Character>          lSpan = Private_::AsSpanOfCharacters_ (forward<LHS_T> (lhs), &ignored1);

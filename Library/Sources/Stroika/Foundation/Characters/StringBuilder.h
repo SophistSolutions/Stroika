@@ -39,7 +39,7 @@ namespace Stroika::Foundation::Characters {
      * 
      *  Maybe easy to support all at once.
      */
-    template <Character_UNICODECanAlwaysConvertTo BUF_CHAR_T = char32_t, size_t INLINE_BUF_SIZE = 128>
+    template <IUNICODECanAlwaysConvertTo BUF_CHAR_T = char32_t, size_t INLINE_BUF_SIZE = 128>
     struct StringBuilder_Options {
         static constexpr size_t kInlineBufferSize = INLINE_BUF_SIZE;
         using BufferElementType                   = BUF_CHAR_T;
@@ -64,7 +64,7 @@ namespace Stroika::Foundation::Characters {
 
     public:
         using BufferElementType = typename OPTIONS::BufferElementType;
-        static_assert (Character_UNICODECanAlwaysConvertTo<BufferElementType>);
+        static_assert (IUNICODECanAlwaysConvertTo<BufferElementType>);
 
     public:
         /**
@@ -72,7 +72,7 @@ namespace Stroika::Foundation::Characters {
         StringBuilder () noexcept            = default;
         StringBuilder (const StringBuilder&) = default;
         StringBuilder (const String& initialValue);
-        template <Character_Compatible CHAR_T>
+        template <ICharacterCompatible CHAR_T>
         StringBuilder (span<const CHAR_T> initialValue);
 
     public:
@@ -94,18 +94,18 @@ namespace Stroika::Foundation::Characters {
          *  This function appends as IF the argument was converted to a UNICODE string, and then
          *  appended.
          */
-        template <Character_Compatible CHAR_T>
+        template <ICharacterCompatible CHAR_T>
         nonvirtual void Append (span<const CHAR_T> s);
-        template <Character_Compatible CHAR_T>
+        template <ICharacterCompatible CHAR_T>
         nonvirtual void Append (span<CHAR_T> s);
-        template <Character_Compatible CHAR_T>
+        template <ICharacterCompatible CHAR_T>
         nonvirtual void Append (const CHAR_T* s);
-        template <Character_IsUnicodeCodePointOrPlainChar CHAR_T>
+        template <IUnicodeCodePointOrPlainChar CHAR_T>
         nonvirtual void Append (const basic_string<CHAR_T>& s);
-        template <Character_IsUnicodeCodePointOrPlainChar CHAR_T>
+        template <IUnicodeCodePointOrPlainChar CHAR_T>
         nonvirtual void Append (const basic_string_view<CHAR_T>& s);
         nonvirtual void Append (const String& s);
-        template <Character_UNICODECanUnambiguouslyConvertFrom CHAR_T>
+        template <IUNICODECanUnambiguouslyConvertFrom CHAR_T>
         nonvirtual void Append (CHAR_T c);
 
     public:
@@ -242,7 +242,7 @@ namespace Stroika::Foundation::Characters {
          *          out.Write (sb.GetData (&probablyIgnoredBuf));
          *      \encode
          */
-        template <Character_Compatible CHAR_T>
+        template <ICharacterCompatible CHAR_T>
         nonvirtual span<const CHAR_T> GetData (Memory::StackBuffer<CHAR_T>* probablyIgnoredBuf) const
             requires (not is_const_v<CHAR_T>);
 

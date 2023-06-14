@@ -31,7 +31,7 @@ namespace Stroika::Foundation::IO::Network {
         }
         CheckValidPathForAuthority_ (authority, path);
     }
-    template <Characters::ConvertibleToString STRISH_TYPE>
+    template <Characters::IConvertibleToString STRISH_TYPE>
     inline URI::URI (STRISH_TYPE&& encodedURI)
         : URI{Parse (forward<STRISH_TYPE> (encodedURI))}
     {

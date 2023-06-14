@@ -128,7 +128,7 @@ namespace Stroika::Foundation::Containers {
     public:
         /**
          *  This is the type returned by GetDomainEqualsComparer () and CAN be used as the argument to a Bijection<> as EqualityComparer, but
-         *  we allow any template in the Set<> CTOR for an equalityComparer that follows the Common::EqualsComparer concept.
+         *  we allow any template in the Set<> CTOR for an equalityComparer that follows the Common::IEqualsComparer concept.
          */
         using DomainEqualsCompareFunctionType =
             Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eEquals, function<bool (DomainType, DomainType)>>;

@@ -132,7 +132,7 @@ namespace Stroika::Foundation::DataExchange {
          *  with the Atom (AtomInternalType) CTOR, we \req the value already be interned in the ATOM_MANAGER.
          */
         constexpr Atom ();
-        template <Characters::ConvertibleToString STRING_LIKE>
+        template <Characters::IConvertibleToString STRING_LIKE>
         Atom (STRING_LIKE&& src);
         constexpr Atom (const Atom& src) = default;
         constexpr Atom (const AtomInternalType& src);

@@ -76,7 +76,7 @@ namespace Stroika::Foundation::Streams {
      ***************** TextWriter::UnSeekable_UTFConverter_Rep_ *********************
      ********************************************************************************
      */
-    template <Characters ::Character_UNICODECanUnambiguouslyConvertFrom OUTPUT_CHAR_T>
+    template <Characters ::IUNICODECanUnambiguouslyConvertFrom OUTPUT_CHAR_T>
     class TextWriter::UnSeekable_UTFConverter_Rep_ : public OutputStream<Character>::_IRep {
     public:
         template <typename CONVERTER>

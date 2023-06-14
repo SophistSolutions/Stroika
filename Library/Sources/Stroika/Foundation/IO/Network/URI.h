@@ -118,7 +118,7 @@ namespace Stroika::Foundation::IO::Network {
         URI (const optional<SchemeType>& scheme, const optional<Authority>& authority, const String& path = String{},
              const optional<String>& query = nullopt, const optional<String>& fragment = nullopt);
         //URI (const string& encodedURI);
-        template <Characters::ConvertibleToString STRISH_TYPE>
+        template <Characters::IConvertibleToString STRISH_TYPE>
         URI (STRISH_TYPE&& encodedURI);
         URI (const URI&) = default;
         // clang-format off

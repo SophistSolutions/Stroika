@@ -53,7 +53,7 @@ namespace {
      *              StringRepHelperAllFitInSize_::Rep<char32_t> for anything else - this always works
      */
     struct StringRepHelperAllFitInSize_ : String {
-        template <Character_UNICODECanUnambiguouslyConvertFrom CHAR_T>
+        template <IUNICODECanUnambiguouslyConvertFrom CHAR_T>
         struct Rep : public _IRep {
         private:
             using inherited = _IRep;
@@ -185,7 +185,7 @@ namespace {
      *  @todo Explain queer wrapper class cuz protected
      */
     struct BufferedString_ : StringRepHelperAllFitInSize_ {
-        template <Character_IsUnicodeCodePointOrPlainChar CHAR_T>
+        template <IUnicodeCodePointOrPlainChar CHAR_T>
         struct Rep : public StringRepHelperAllFitInSize_::Rep<CHAR_T>, public Memory::UseBlockAllocationIfAppropriate<Rep<CHAR_T>> {
         private:
             using inherited = StringRepHelperAllFitInSize_::Rep<CHAR_T>;
@@ -353,7 +353,7 @@ namespace {
      *  \note   This class may assure nul-terminated (kAddNullTerminator_), and so 'capacity' always at least one greater than length.
      */
     struct DynamicallyAllocatedString : StringRepHelperAllFitInSize_ {
-        template <Character_UNICODECanUnambiguouslyConvertFrom CHAR_T>
+        template <IUNICODECanUnambiguouslyConvertFrom CHAR_T>
         struct Rep final : public StringRepHelperAllFitInSize_::Rep<CHAR_T>, public Memory::UseBlockAllocationIfAppropriate<Rep<CHAR_T>> {
         private:
             using inherited = StringRepHelperAllFitInSize_::Rep<CHAR_T>;
@@ -432,7 +432,7 @@ namespace {
      *  for better memory allocation performance, and more importantly, better locality of data (more cpu cache friendly)
      */
     struct FixedCapacityInlineStorageString_ : StringRepHelperAllFitInSize_ {
-        template <Character_UNICODECanUnambiguouslyConvertFrom CHAR_T, size_t CAPACITY>
+        template <IUNICODECanUnambiguouslyConvertFrom CHAR_T, size_t CAPACITY>
         struct Rep final : public StringRepHelperAllFitInSize_::Rep<CHAR_T>,
                            public Memory::UseBlockAllocationIfAppropriate<Rep<CHAR_T, CAPACITY>> {
         private:
@@ -493,7 +493,7 @@ namespace {
     struct StringConstant_ : public StringRepHelperAllFitInSize_ {
         using inherited = String;
 
-        template <Character_IsUnicodeCodePointOrPlainChar CHAR_T>
+        template <IUnicodeCodePointOrPlainChar CHAR_T>
         class Rep final : public StringRepHelperAllFitInSize_::Rep<CHAR_T>, public Memory::UseBlockAllocationIfAppropriate<Rep<CHAR_T>> {
         private:
             using inherited = StringRepHelperAllFitInSize_::Rep<CHAR_T>;
@@ -540,7 +540,7 @@ namespace {
     struct StdStringDelegator_ : public StringRepHelperAllFitInSize_ {
         using inherited = String;
 
-        template <Character_IsUnicodeCodePointOrPlainChar CHAR_T>
+        template <IUnicodeCodePointOrPlainChar CHAR_T>
         class Rep final : public StringRepHelperAllFitInSize_::Rep<CHAR_T>, public Memory::UseBlockAllocationIfAppropriate<Rep<CHAR_T>> {
         private:
             using inherited = StringRepHelperAllFitInSize_::Rep<CHAR_T>;
@@ -576,7 +576,7 @@ namespace {
     struct StringWithCStr_ : public String {
     public:
         // Use StringRepHelperAllFitInSize_::Rep<>; to avoid indirection to the rep except in constrution
-        template <Character_IsUnicodeCodePointOrPlainChar CHAR_T>
+        template <IUnicodeCodePointOrPlainChar CHAR_T>
         class Rep final : public StringRepHelperAllFitInSize_::Rep<CHAR_T>, public Memory::UseBlockAllocationIfAppropriate<Rep<CHAR_T>> {
         private:
             using inherited = StringRepHelperAllFitInSize_::Rep<CHAR_T>;

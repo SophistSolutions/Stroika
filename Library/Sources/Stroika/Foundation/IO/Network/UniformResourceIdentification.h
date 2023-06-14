@@ -124,7 +124,7 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
         using inherited = String;
 
     public:
-        template <Characters::ConvertibleToString STRINGISH_T>
+        template <Characters::IConvertibleToString STRINGISH_T>
         SchemeType (STRINGISH_T&& s);
         SchemeType (const SchemeType&) noexcept = default;
         SchemeType (SchemeType&&) noexcept      = default;

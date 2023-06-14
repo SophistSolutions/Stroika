@@ -139,20 +139,20 @@ namespace Stroika::Foundation::Characters {
          *  @See Convert ()
          *  \Alias used to be called QuickComputeConversionOutputBufferSize
          */
-        template <Character_UNICODECanUnambiguouslyConvertFrom TO, Character_UNICODECanUnambiguouslyConvertFrom FROM>
+        template <IUNICODECanUnambiguouslyConvertFrom TO, IUNICODECanUnambiguouslyConvertFrom FROM>
         static constexpr size_t ComputeTargetBufferSize (span<const FROM> src)
             requires (not is_const_v<TO>);
-        template <Character_UNICODECanUnambiguouslyConvertFrom TO, Character_UNICODECanUnambiguouslyConvertFrom FROM>
+        template <IUNICODECanUnambiguouslyConvertFrom TO, IUNICODECanUnambiguouslyConvertFrom FROM>
         static constexpr size_t ComputeTargetBufferSize (span<FROM> src)
             requires (not is_const_v<TO>);
-        template <Character_UNICODECanUnambiguouslyConvertFrom TO, Character_UNICODECanUnambiguouslyConvertFrom FROM>
+        template <IUNICODECanUnambiguouslyConvertFrom TO, IUNICODECanUnambiguouslyConvertFrom FROM>
         static constexpr size_t ComputeTargetBufferSize (size_t srcSize);
 
     public:
         /**
          *  Check if each character in the span fits in a 2-byte encoding (ie no UTF-16 surrogate pairs)
          */
-        template <Character_UNICODECanUnambiguouslyConvertFrom CHAR_T>
+        template <IUNICODECanUnambiguouslyConvertFrom CHAR_T>
         static constexpr bool AllFitsInTwoByteEncoding (span<const CHAR_T> s) noexcept;
 
     public:
@@ -172,10 +172,10 @@ namespace Stroika::Foundation::Characters {
          *          return String{spanOfTargetBufferUsed};
          *      \endcode
          */
-        template <Character_UNICODECanUnambiguouslyConvertFrom SRC_T, Character_UNICODECanUnambiguouslyConvertFrom TRG_T>
+        template <IUNICODECanUnambiguouslyConvertFrom SRC_T, IUNICODECanUnambiguouslyConvertFrom TRG_T>
         nonvirtual span<TRG_T> ConvertSpan (span<const SRC_T> source, span<TRG_T> target) const
             requires (not is_const_v<TRG_T>);
-        template <Character_UNICODECanUnambiguouslyConvertFrom SRC_T, Character_UNICODECanUnambiguouslyConvertFrom TRG_T>
+        template <IUNICODECanUnambiguouslyConvertFrom SRC_T, IUNICODECanUnambiguouslyConvertFrom TRG_T>
         nonvirtual span<TRG_T> ConvertSpan (span<SRC_T> source, span<TRG_T> target) const
             requires (not is_const_v<TRG_T>);
 
@@ -205,7 +205,7 @@ namespace Stroika::Foundation::Characters {
          *      o   wchar_t
          *  are mapped to the appropriate above type.
          * 
-         *  Source and target spans can be of any Character_Compatible character type (but source const and target non-const)
+         *  Source and target spans can be of any ICharacterCompatible character type (but source const and target non-const)
          *  (or basic_string of said)...
          * 
          *  \par Example Usage
@@ -224,9 +224,9 @@ namespace Stroika::Foundation::Characters {
          *          u16string u16_fred = UTFConverter::kThe.Convert<u16string> (U"fred");
          *      \endcode
          */
-        template <Character_UNICODECanUnambiguouslyConvertFrom SRC_T, Character_UNICODECanUnambiguouslyConvertFrom TRG_T>
+        template <IUNICODECanUnambiguouslyConvertFrom SRC_T, IUNICODECanUnambiguouslyConvertFrom TRG_T>
         nonvirtual ConversionResult Convert (span<const SRC_T> source, span<TRG_T> target) const;
-        template <Character_UNICODECanUnambiguouslyConvertFrom SRC_T, Character_UNICODECanUnambiguouslyConvertFrom TRG_T>
+        template <IUNICODECanUnambiguouslyConvertFrom SRC_T, IUNICODECanUnambiguouslyConvertFrom TRG_T>
         nonvirtual ConversionResult Convert (span<SRC_T> source, span<TRG_T> target) const;
         template <typename TO, typename FROM>
         nonvirtual TO Convert (const FROM& from) const
@@ -260,7 +260,7 @@ namespace Stroika::Foundation::Characters {
          *  \see Convert () above for details. This only differs from Convert, in that it returns a result flag instead
          *       of throwing on errors.
          * 
-         *  Source and target spans can be of any Character_Compatible character type (but source const and target non-const)
+         *  Source and target spans can be of any ICharacterCompatible character type (but source const and target non-const)
          * 
          *  \req target.size () >= ComputeTargetBufferSize<TRG_T> (source)
          * 
@@ -271,7 +271,7 @@ namespace Stroika::Foundation::Characters {
          *  \note multibyteConversionState is often ignored, but since some implementations may use it, it is required (to allow
          *        interface as a whole to always work without knowing which implementations require it).
          */
-        template <Character_UNICODECanUnambiguouslyConvertFrom SRC_T, Character_UNICODECanUnambiguouslyConvertFrom TRG_T>
+        template <IUNICODECanUnambiguouslyConvertFrom SRC_T, IUNICODECanUnambiguouslyConvertFrom TRG_T>
         nonvirtual ConversionResultWithStatus ConvertQuietly (span<const SRC_T> source, span<TRG_T> target) const
             requires (not is_const_v<TRG_T>);
 
@@ -283,7 +283,7 @@ namespace Stroika::Foundation::Characters {
          *  UTF32 text would start at offset 3, but in the corresponding UTF8 text it might
          *  start at offset 6.
          */
-        template <Character_Compatible TRG_T, Character_Compatible SRC_T>
+        template <ICharacterCompatible TRG_T, ICharacterCompatible SRC_T>
         nonvirtual size_t ConvertOffset (span<const SRC_T> source, size_t srcIndex) const;
 
     public:
@@ -295,7 +295,7 @@ namespace Stroika::Foundation::Characters {
          *  For example, if CHAR_T == char32_t, or Character, this returns 1.
          *  If CHAR_T is Character_ASCII, this returns 1.
          */
-        template <Character_UNICODECanUnambiguouslyConvertFrom CHAR_T>
+        template <IUNICODECanUnambiguouslyConvertFrom CHAR_T>
         static constexpr optional<size_t> NextCharacter (span<const CHAR_T> s);
 
     public:
@@ -305,7 +305,7 @@ namespace Stroika::Foundation::Characters {
          * 
          *  \note for 'char' - the characters are ASSUMED/REQUIRED to be ASCII
          */
-        template <Character_UNICODECanUnambiguouslyConvertFrom CHAR_T>
+        template <IUNICODECanUnambiguouslyConvertFrom CHAR_T>
         static constexpr optional<size_t> ComputeCharacterLength (span<const CHAR_T> s);
 
     public:
@@ -326,7 +326,7 @@ namespace Stroika::Foundation::Characters {
 
     private:
         // need generic way to convert char to char8_t, and wchar_t to char16_t or char32_t, Character etc
-        template <Character_UNICODECanUnambiguouslyConvertFrom FromT>
+        template <IUNICODECanUnambiguouslyConvertFrom FromT>
         static constexpr span<CompatibleT_<FromT>> ConvertToPrimitiveSpan_ (span<FromT> f);
 
     private:

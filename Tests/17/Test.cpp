@@ -279,7 +279,7 @@ namespace {
                 VerifyTestResult ((fred == Mapping<size_t, size_t>{{1, 2}, {2, 4}, {3, 9}}));
             }
             {
-                static_assert (Cryptography::Digest::IsHashFunction<std::hash<size_t>, size_t>);
+                static_assert (Cryptography::Digest::IHashFunction<std::hash<size_t>, size_t>);
                 Mapping_stdhashmap<size_t, size_t> fred{std::hash<size_t>{}, std::equal_to<size_t>{}};
                 VerifyTestResult ((fred == Mapping_stdhashmap<size_t, size_t>{}));
             }

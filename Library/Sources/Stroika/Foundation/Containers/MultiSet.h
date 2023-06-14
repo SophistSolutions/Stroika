@@ -139,7 +139,7 @@ namespace Stroika::Foundation::Containers {
     public:
         /**
          *  This is the type returned by GetElementEqualsComparer () and CAN be used as the argument to a MultiSet<> as EqualityComparer, but
-         *  we allow any template in the Set<> CTOR for an equalityComparer that follows the EqualsComparer concept.
+         *  we allow any template in the Set<> CTOR for an equalityComparer that follows the IEqualsComparer concept.
          */
         using ElementEqualityComparerType = Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eEquals, function<bool (T, T)>>;
 

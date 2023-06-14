@@ -397,7 +397,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
         // Note - inlined though long, because most of the logic gets compiled out depending on (template or actual)
         // parameters, and want to assure those 'seen' by optimizer so most of the code eliminated.
         //
-        template <typename T, Character_IsUnicodeCodePointOrPlainChar CHAR_T>
+        template <typename T, IUnicodeCodePointOrPlainChar CHAR_T>
         inline T ToFloat_RespectingLocale_ (const span<const CHAR_T> srcSpan, typename span<const CHAR_T>::iterator* remainder)
         {
             if (srcSpan.empty ()) {
@@ -593,7 +593,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
      *************************** FloatConversion::ToFloat ***************************
      ********************************************************************************
      */
-    template <typename T, Character_Compatible CHAR_T>
+    template <typename T, ICharacterCompatible CHAR_T>
     T ToFloat (span<const CHAR_T> s)
     {
         if constexpr (is_same_v<remove_cv_t<CHAR_T>, char>) {
@@ -629,18 +629,18 @@ namespace Stroika::Foundation::Characters::FloatConversion {
                     result = Private_::ToFloat_RespectingLocale_<T> (s, nullptr);
                 }
             }
-            if constexpr (ConvertibleToString<decltype (s)>) {
+            if constexpr (IConvertibleToString<decltype (s)>) {
                 Ensure (Math::NearlyEquals (Private_::ToFloat_Legacy_<T> (String{s}), Private_::ToFloat_RespectingLocale_<T> (s, nullptr)));
                 Ensure (Math::NearlyEquals (Private_::ToFloat_Legacy_<T> (String{s}), result));
             }
             return result;
         }
-        if constexpr (ConvertibleToString<decltype (s)>) {
+        if constexpr (IConvertibleToString<decltype (s)>) {
             Ensure (Math::NearlyEquals (Private_::ToFloat_Legacy_<T> (String{s}), Private_::ToFloat_RespectingLocale_<T> (s, nullptr)));
         }
         return Private_::ToFloat_RespectingLocale_<T> (s, nullptr); // fallback for non-ascii strings to old code
     }
-    template <typename T, Character_Compatible CHAR_T>
+    template <typename T, ICharacterCompatible CHAR_T>
     T ToFloat (span<const CHAR_T> s, typename span<const CHAR_T>::iterator* remainder)
     {
         RequireNotNull (remainder); // use other overload if 'null'
@@ -686,7 +686,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
     }
     template <typename T, typename STRINGISH_ARG>
     inline T ToFloat (STRINGISH_ARG&& s)
-        requires (ConvertibleToString<STRINGISH_ARG> or is_convertible_v<STRINGISH_ARG, std::string>)
+        requires (IConvertibleToString<STRINGISH_ARG> or is_convertible_v<STRINGISH_ARG, std::string>)
     {
         using DecayedStringishArg = remove_cvref_t<STRINGISH_ARG>;
         if constexpr (is_same_v<DecayedStringishArg, const char*> or is_same_v<DecayedStringishArg, const char8_t*> or

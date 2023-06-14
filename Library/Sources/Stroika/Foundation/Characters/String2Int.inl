@@ -57,7 +57,7 @@ namespace Stroika::Foundation::Characters {
      *********************************** String2Int *********************************
      ********************************************************************************
      */
-    template <typename T, Character_IsUnicodeCodePoint CHAR_T>
+    template <typename T, IUnicodeCodePoint CHAR_T>
     inline T String2Int (span<const CHAR_T> s)
     {
         Require ((String{s} == String{s}.Trim ()));
@@ -95,7 +95,7 @@ namespace Stroika::Foundation::Characters {
             return String2Int<T> (String{s});
         }
     }
-    template <typename T, ConvertibleToString STRINGISH_ARG>
+    template <typename T, IConvertibleToString STRINGISH_ARG>
     inline T String2Int (STRINGISH_ARG&& s)
     {
         using DecayedStringishArg = remove_cvref_t<STRINGISH_ARG>;

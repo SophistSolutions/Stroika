@@ -26,7 +26,7 @@ namespace Stroika::Foundation::DataExchange {
     {
     }
     template <typename ATOM_MANAGER>
-    template <Characters::ConvertibleToString STRING_LIKE>
+    template <Characters::IConvertibleToString STRING_LIKE>
     inline Atom<ATOM_MANAGER>::Atom (STRING_LIKE&& src)
         : fValue_{ATOM_MANAGER::Intern (forward<STRING_LIKE> (src))}
     {

@@ -51,7 +51,7 @@ namespace Stroika::Foundation::Characters {
      *   @todo confused thy this is working with codecvt_by_name - think I need to change for that.
      */
     template <typename STD_CODECVT_T>
-    concept IsStdCodeCVTT = Private_::IsStdCodeCvt_<STD_CODECVT_T>;
+    concept IStdCodeCVTT = Private_::IsStdCodeCvt_<STD_CODECVT_T>;
 
     /*
      *  \brief CodeCvt unifies byte<-> unicode conversions, vaguely inspired by (and wraps) std::codecvt, as well as UTFConverter etc, to map between span<bytes> and a span<UNICODE code-point>
@@ -101,7 +101,7 @@ namespace Stroika::Foundation::Characters {
      *  CodeCvt as smart Ptr class, and an 'abstract class' (IRep) in that only for some CHAR_T types
      *  can it be instantiated direcly (the ones std c++ supports, char_16_t, char32_t, and wchar_t with locale).
      */
-    template <Character_UNICODECanAlwaysConvertTo CHAR_T>
+    template <IUNICODECanAlwaysConvertTo CHAR_T>
     class CodeCvt {
     public:
         using intern_type = CHAR_T; // what codecvt calls the (internal/CHAR_T) character type
@@ -140,7 +140,7 @@ namespace Stroika::Foundation::Characters {
         CodeCvt ();
         CodeCvt (const locale& l);
         CodeCvt (UnicodeExternalEncodings e);
-        template <Character_UNICODECanAlwaysConvertTo INTERMEDIATE_CHAR_T>
+        template <IUNICODECanAlwaysConvertTo INTERMEDIATE_CHAR_T>
         CodeCvt (const CodeCvt<INTERMEDIATE_CHAR_T>& basedOn);
         CodeCvt (const shared_ptr<IRep>& rep);
 
@@ -151,7 +151,7 @@ namespace Stroika::Foundation::Characters {
          *  appears now way to deduce or specify those constructor template arguments. But that can be done
          *  explicitly with a static function, and that is what we do with mkFromStdCodeCvt.
          */
-        template <IsStdCodeCVTT STD_CODECVT, typename... ARGS>
+        template <IStdCodeCVTT STD_CODECVT, typename... ARGS>
         static CodeCvt mkFromStdCodeCvt (ARGS... args)
             requires (is_same_v<CHAR_T, typename STD_CODECVT::intern_type>);
 
@@ -254,7 +254,7 @@ namespace Stroika::Foundation::Characters {
         struct CodeCvt_WrapStdCodeCvt_;
     };
 
-    template <Character_UNICODECanAlwaysConvertTo CHAR_T>
+    template <IUNICODECanAlwaysConvertTo CHAR_T>
     struct CodeCvt<CHAR_T>::IRep {
         virtual ~IRep ()                                                                                    = default;
         virtual span<CHAR_T> Bytes2Characters (span<const byte>* from, span<CHAR_T> to) const               = 0;

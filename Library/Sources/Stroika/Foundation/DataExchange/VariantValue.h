@@ -225,7 +225,7 @@ namespace Stroika::Foundation::DataExchange {
         VariantValue (long double val);
         VariantValue (const Date& val);
         VariantValue (const DateTime& val);
-        template <Characters::ConvertibleToString STRINGISH_T>
+        template <Characters::IConvertibleToString STRINGISH_T>
         VariantValue (STRINGISH_T&& val)
             requires (not is_same_v<remove_cvref_t<STRINGISH_T>, String>);
         VariantValue (const String& val);

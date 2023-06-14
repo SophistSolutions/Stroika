@@ -104,7 +104,7 @@ namespace Stroika::Foundation::Characters {
      *  \brief returns true iff T == u8string, u16string, u32string, or wstring
      */
     template <typename T>
-    concept BasicUnicodeStdString = is_same_v<T, u8string> or is_same_v<T, u16string> or is_same_v<T, u32string> or is_same_v<T, wstring>;
+    concept IBasicUnicodeStdString = is_same_v<T, u8string> or is_same_v<T, u16string> or is_same_v<T, u32string> or is_same_v<T, wstring>;
 
     /**
      *  \brief String is like std::u32string, except it is much easier to use, often much more space efficient, and more easily interoperates with other string types
@@ -189,14 +189,14 @@ namespace Stroika::Foundation::Characters {
          *        the same requirements on their arguments as the copy basic_string constructors (eg. char must be ascii)
          */
         String ();
-        template <Character_Compatible CHAR_T>
+        template <ICharacterCompatible CHAR_T>
         String (const CHAR_T* cString);
         template <Memory::IsSpanT SPAN_OF_CHAR_T>
         String (SPAN_OF_CHAR_T s)
-            requires (Character_Compatible<typename SPAN_OF_CHAR_T::value_type>);
-        template <Character_IsUnicodeCodePointOrPlainChar CHAR_T>
+            requires (ICharacterCompatible<typename SPAN_OF_CHAR_T::value_type>);
+        template <IUnicodeCodePointOrPlainChar CHAR_T>
         String (const basic_string<CHAR_T>& s);
-        template <Character_UNICODECanAlwaysConvertTo CHAR_T>
+        template <IUNICODECanAlwaysConvertTo CHAR_T>
         String (const Iterable<CHAR_T>& src)
             requires (not Memory::IsSpanT<CHAR_T>);
         explicit String (const Character& c);
@@ -205,7 +205,7 @@ namespace Stroika::Foundation::Characters {
         String (const basic_string_view<char16_t>& str);
         String (const basic_string_view<char32_t>& str);
         String (const basic_string_view<wchar_t>& str);
-        template <Character_IsUnicodeCodePointOrPlainChar CHAR_T>
+        template <IUnicodeCodePointOrPlainChar CHAR_T>
         explicit String (basic_string<CHAR_T>&& s);
         String (String&& from) noexcept      = default;
         String (const String& from) noexcept = default;
@@ -344,11 +344,11 @@ namespace Stroika::Foundation::Characters {
          *
          *  \note Alias From8bitASCII () or FromExtendedASCII ()
          */
-        template <Character_UNICODECanUnambiguouslyConvertFrom CHAR_T>
+        template <IUNICODECanUnambiguouslyConvertFrom CHAR_T>
         static String FromLatin1 (const CHAR_T* cString);
-        template <Character_UNICODECanUnambiguouslyConvertFrom CHAR_T>
+        template <IUNICODECanUnambiguouslyConvertFrom CHAR_T>
         static String FromLatin1 (span<const CHAR_T> s);
-        template <Character_IsUnicodeCodePointOrPlainChar CHAR_T>
+        template <IUnicodeCodePointOrPlainChar CHAR_T>
         static String FromLatin1 (const basic_string<CHAR_T>& s);
 
     public:
@@ -960,7 +960,7 @@ namespace Stroika::Foundation::Characters {
          * 
          *  \see See also GetData<CHAR_T> (buf) - similar functionality - except caller doesn't need to know size of buffer to allocate
          */
-        template <Character_Compatible CHAR_T>
+        template <ICharacterCompatible CHAR_T>
         nonvirtual span<CHAR_T> CopyTo (span<CHAR_T> s) const
             requires (not is_const_v<CHAR_T>);
 
@@ -968,7 +968,7 @@ namespace Stroika::Foundation::Characters {
         /**
          * Convert String losslessly into a standard C++ type.
          *
-         *  Only specifically specialized variants supported: BasicUnicodeStdString<T> or is_same_v<T,String>
+         *  Only specifically specialized variants supported: IBasicUnicodeStdString<T> or is_same_v<T,String>
          *      o   wstring
          *      o   u8string
          *      o   u16string
@@ -991,10 +991,10 @@ namespace Stroika::Foundation::Characters {
          */
         template <typename T>
         nonvirtual T As () const
-            requires (BasicUnicodeStdString<T> or is_same_v<T, String>);
+            requires (IBasicUnicodeStdString<T> or is_same_v<T, String>);
         template <typename T>
         nonvirtual void As (T* into) const
-            requires (BasicUnicodeStdString<T> or is_same_v<T, String>);
+            requires (IBasicUnicodeStdString<T> or is_same_v<T, String>);
 
     public:
         /**
@@ -1167,7 +1167,7 @@ namespace Stroika::Foundation::Characters {
          *  This API is public, but best to avoid depending on internals of String API - like PeekSpanData - since
          *  this reasonably likely to change in future versions.
          */
-        template <Character_UNICODECanUnambiguouslyConvertFrom CHAR_TYPE = Character_ASCII>
+        template <IUNICODECanUnambiguouslyConvertFrom CHAR_TYPE = Character_ASCII>
         nonvirtual PeekSpanData GetPeekSpanData () const;
 
     public:
@@ -1177,9 +1177,9 @@ namespace Stroika::Foundation::Characters {
          *  This API is public, but best to avoid depending on internals of String API - like PeekSpanData - since
          *  this reasonably likely to change in future versions.
          */
-        template <Character_UNICODECanUnambiguouslyConvertFrom CHAR_TYPE>
+        template <IUNICODECanUnambiguouslyConvertFrom CHAR_TYPE>
         static optional<span<const CHAR_TYPE>> PeekData (const PeekSpanData& pds);
-        template <Character_UNICODECanUnambiguouslyConvertFrom CHAR_TYPE>
+        template <IUNICODECanUnambiguouslyConvertFrom CHAR_TYPE>
         nonvirtual optional<span<const CHAR_TYPE>> PeekData () const;
 
     public:
@@ -1192,7 +1192,7 @@ namespace Stroika::Foundation::Characters {
          *  BUT - it maybe a span of data stored into the argument possiblyUsedBuffer (which is why it must be provided - cannot be nullptr).
          *  If you want the freedom to not pass in this buffer, see the PeekData API.
          * 
-         *  \note - CHAR_T must satisfy the concept Character_UNICODECanAlwaysConvertTo - SAFELY - because the string MIGHT contain characters not in any 
+         *  \note - CHAR_T must satisfy the concept IUNICODECanAlwaysConvertTo - SAFELY - because the string MIGHT contain characters not in any 
          *          unsafe char class (like Character_ASCII or Character_Latin1), and so there might not be a way to do the conversion. Use 
          *          PeekData () to do that - where it can return nullopt if no conversion possible.
          * 
@@ -1207,9 +1207,9 @@ namespace Stroika::Foundation::Characters {
          *        just add a Memory::StackBuffer<T> b; and pass &b to GetData(); And the return span is not the same as pair<> but
          *        easily convertible.
          */
-        template <Character_UNICODECanAlwaysConvertTo CHAR_TYPE>
+        template <IUNICODECanAlwaysConvertTo CHAR_TYPE>
         static span<const CHAR_TYPE> GetData (const PeekSpanData& pds, Memory::StackBuffer<CHAR_TYPE>* possiblyUsedBuffer);
-        template <Character_UNICODECanAlwaysConvertTo CHAR_TYPE>
+        template <IUNICODECanAlwaysConvertTo CHAR_TYPE>
         nonvirtual span<const CHAR_TYPE> GetData (Memory::StackBuffer<CHAR_TYPE>* possiblyUsedBuffer) const;
 
     public:
@@ -1323,17 +1323,17 @@ namespace Stroika::Foundation::Characters {
         nonvirtual String substr (size_t from, size_t count = npos) const;
 
     public:
-        template <Character_Compatible CHAR_T>
+        template <ICharacterCompatible CHAR_T>
         [[deprecated ("Since Stroika v3.0d1, String{}")]] static String FromASCII (span<const CHAR_T> s)
         {
             return String{s};
         }
-        template <Character_Compatible CHAR_T>
+        template <ICharacterCompatible CHAR_T>
         [[deprecated ("Since Stroika v3.0d1, String{}")]] static String FromASCII (const CHAR_T* cString)
         {
             return String{cString};
         }
-        template <Character_IsUnicodeCodePointOrPlainChar CHAR_T>
+        template <IUnicodeCodePointOrPlainChar CHAR_T>
         [[deprecated ("Since Stroika v3.0d1, String{}")]] static String FromASCII (const basic_string<CHAR_T>& str)
         {
             return String{str};
@@ -1372,7 +1372,7 @@ namespace Stroika::Foundation::Characters {
         {
             return FromNarrowSDKString (span{from, to});
         }
-        template <Character_UNICODECanAlwaysConvertTo CHAR_T>
+        template <IUNICODECanAlwaysConvertTo CHAR_T>
         [[deprecated ("Since Stroika v3.0d1, use span{} constructor for this")]] String (const CHAR_T* from, const CHAR_T* to)
             : String{span<const CHAR_T>{from, to}}
         {
@@ -1408,13 +1408,13 @@ namespace Stroika::Foundation::Characters {
          * And mk_(SPAN) also always COPIES data (a few of the mk_ overloads steal, but only if given && arg)
          * FromStringConstant API also does stealing.
          */
-        template <Character_UNICODECanUnambiguouslyConvertFrom CHAR_T>
+        template <IUNICODECanUnambiguouslyConvertFrom CHAR_T>
         static shared_ptr<_IRep> mk_ (span<const CHAR_T> s);
-        template <Character_Compatible CHAR_T>
+        template <ICharacterCompatible CHAR_T>
         static shared_ptr<_IRep> mk_ (Iterable<CHAR_T> it);
-        template <Character_Compatible CHAR_T>
+        template <ICharacterCompatible CHAR_T>
         static shared_ptr<_IRep> mk_ (span<CHAR_T> s);
-        template <Character_IsUnicodeCodePointOrPlainChar CHAR_T>
+        template <IUnicodeCodePointOrPlainChar CHAR_T>
         static shared_ptr<_IRep> mk_ (basic_string<CHAR_T>&& s);
 #if qCompilerAndStdLib_template_requresDefNeededonSpecializations_Buggy
         static auto mk_nocheck_ (span<const Character_ASCII> s) -> shared_ptr<_IRep>;
@@ -1493,16 +1493,15 @@ namespace Stroika::Foundation::Characters {
         friend class String;
     };
 
-
     /**
-     *  The concept ConvertibleToString is satisfied iff the argument type can be used to construct a (Stroika) String.
+     *  The concept IConvertibleToString is satisfied iff the argument type can be used to construct a (Stroika) String.
      */
     template <typename T>
-    concept ConvertibleToString = requires (T t) {
-                                      {
-                                          String{t}
-                                      };
-                                  };
+    concept IConvertibleToString = requires (T t) {
+                                       {
+                                           String{t}
+                                       };
+                                   };
 
     /**
      *  Use Stroika String more easily with std::ostream.
@@ -1522,7 +1521,7 @@ namespace Stroika::Foundation::Characters {
         // This is just anything that can be treated as a 'span<const Character>'
         // clang-format off
         template <typename T>
-        concept CanBeTreatedAsSpanOfCharacter_ =
+        concept ICanBeTreatedAsSpanOfCharacter_ =
             is_base_of_v<String, decay_t<T>>
             or is_same_v<decay_t<T>, u8string> 
             or is_same_v<decay_t<T>, u8string_view> 
@@ -1540,7 +1539,7 @@ namespace Stroika::Foundation::Characters {
             ;
         // clang-format on
 
-        template <CanBeTreatedAsSpanOfCharacter_ USTRING>
+        template <ICanBeTreatedAsSpanOfCharacter_ USTRING>
         span<const Character> AsSpanOfCharacters_ (USTRING&& s, Memory::StackBuffer<Character>* mostlyIgnoredBuf);
 
     }
@@ -1556,15 +1555,15 @@ namespace Stroika::Foundation::Characters {
         /**
          * Extra overloads a slight performance improvement
          */
-        template <ConvertibleToString LT, ConvertibleToString RT>
+        template <IConvertibleToString LT, IConvertibleToString RT>
         nonvirtual bool operator() (LT&& lhs, RT&& rhs) const;
 
         CompareOptions fCompareOptions;
 
     private:
-        template <Private_::CanBeTreatedAsSpanOfCharacter_ LT, Private_::CanBeTreatedAsSpanOfCharacter_ RT>
+        template <Private_::ICanBeTreatedAsSpanOfCharacter_ LT, Private_::ICanBeTreatedAsSpanOfCharacter_ RT>
         bool Cmp_ (LT&& lhs, RT&& rhs) const;
-        template <Private_::CanBeTreatedAsSpanOfCharacter_ LT, Private_::CanBeTreatedAsSpanOfCharacter_ RT>
+        template <Private_::ICanBeTreatedAsSpanOfCharacter_ LT, Private_::ICanBeTreatedAsSpanOfCharacter_ RT>
         bool Cmp_Generic_ (LT&& lhs, RT&& rhs) const;
     };
 
@@ -1579,15 +1578,15 @@ namespace Stroika::Foundation::Characters {
         /**
          * Extra overloads a slight performance improvement
          */
-        template <ConvertibleToString LT, ConvertibleToString RT>
+        template <IConvertibleToString LT, IConvertibleToString RT>
         nonvirtual strong_ordering operator() (LT&& lhs, RT&& rhs) const;
 
         CompareOptions fCompareOptions;
 
     private:
-        template <Private_::CanBeTreatedAsSpanOfCharacter_ LT, Private_::CanBeTreatedAsSpanOfCharacter_ RT>
+        template <Private_::ICanBeTreatedAsSpanOfCharacter_ LT, Private_::ICanBeTreatedAsSpanOfCharacter_ RT>
         strong_ordering Cmp_ (LT&& lhs, RT&& rhs) const;
-        template <Private_::CanBeTreatedAsSpanOfCharacter_ LT, Private_::CanBeTreatedAsSpanOfCharacter_ RT>
+        template <Private_::ICanBeTreatedAsSpanOfCharacter_ LT, Private_::ICanBeTreatedAsSpanOfCharacter_ RT>
         strong_ordering Cmp_Generic_ (LT&& lhs, RT&& rhs) const;
     };
 
@@ -1631,7 +1630,7 @@ namespace Stroika::Foundation::Characters {
      * 
      *  Both arguments must be convertible to a String, and at least must be String or derived from String
      */
-    template <ConvertibleToString LHS_T, ConvertibleToString RHS_T>
+    template <IConvertibleToString LHS_T, IConvertibleToString RHS_T>
     String operator+ (LHS_T&& lhs, RHS_T&& rhs)
         requires (derived_from<decay_t<LHS_T>, String> or derived_from<decay_t<RHS_T>, String>);
 

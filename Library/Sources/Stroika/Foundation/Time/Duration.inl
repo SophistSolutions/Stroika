@@ -51,7 +51,7 @@ namespace Stroika::Foundation::Time {
         }
         src.fRepType_ = eEmpty_;
     }
-    template <Characters::ConvertibleToString STRINGISH_T>
+    template <Characters::IConvertibleToString STRINGISH_T>
     inline Duration::Duration (STRINGISH_T&& durationStr)
         : inherited{kValueWhenEmptyRenderedAsNumber_}
         , fNonStringRep_{}
