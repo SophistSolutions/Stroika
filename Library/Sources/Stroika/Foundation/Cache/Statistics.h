@@ -22,10 +22,10 @@ namespace Stroika::Foundation::Cache::Statistics {
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md#Internally-Synchronized-Thread-Safety">Internally-Synchronized-Thread-Safety</a>
      */
     struct Stats_Basic {
-        atomic<size_t> fCachedCollected_Hits{};
-        atomic<size_t> fCachedCollected_Misses{};
-        void           IncrementHits ();
-        void           IncrementMisses ();
+        atomic<unsigned int> fCachedCollected_Hits{};
+        atomic<unsigned int> fCachedCollected_Misses{};
+        void                 IncrementHits ();
+        void                 IncrementMisses ();
 
         /**
          *  @see Characters::ToString ();

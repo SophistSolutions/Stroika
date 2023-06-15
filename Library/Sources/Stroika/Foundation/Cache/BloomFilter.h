@@ -16,9 +16,9 @@
 #include "../Cryptography/Digest/Hash.h"
 
 /**
- *
- *
+ *  \version    <a href="Code-Status.md#Beta">Beta</a>
  */
+
 namespace Stroika::Foundation::Cache {
 
     /**

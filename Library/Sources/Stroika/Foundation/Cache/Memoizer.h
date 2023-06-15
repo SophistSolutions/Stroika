@@ -16,9 +16,7 @@
 #include "LRUCache.h"
 
 /**
- *      \file
- *
- *  \version    <a href="Code-Status.md#Alpha">Alpha</a>
+ *  \version    <a href="Code-Status.md#Beta">Beta</a>
  *
  * TODO:
  *      @todo   maybe allow passing in Cache object as CTOR parameter as a way to specify the hash function etc (for LRUCache with hash)
