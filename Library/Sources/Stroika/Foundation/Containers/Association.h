@@ -167,13 +167,13 @@ namespace Stroika::Foundation::Containers {
          *
          *          Association<int,int> m1  = {{1, 1}, {2, 2}, {3, 2}};
          *          Association<int,int> m2  = m1;
-         *          Association<int,int> m3  { m1 };
-         *          Association<int,int> m4  { m1.begin (), m1.end () };
-         *          Association<int,int> m5  { c };
-         *          Association<int,int> m6  { m };
-         *          Association<int,int> m7  { m.begin (), m.end () };
-         *          Association<int,int> m8  { move (m1) };
-         *          Association<int,int> m9  { Common::DeclareEqualsComparer ([](int l, int r) { return l == r; }) };
+         *          Association<int,int> m3{ m1 };
+         *          Association<int,int> m4{ m1.begin (), m1.end () };
+         *          Association<int,int> m5{ c };
+         *          Association<int,int> m6{ m };
+         *          Association<int,int> m7{ m.begin (), m.end () };
+         *          Association<int,int> m8{ move (m1) };
+         *          Association<int,int> m9{ Common::DeclareEqualsComparer ([](int l, int r) { return l == r; }) };
          *      \endcode
          * 
          *  \note   Even though the initializer_list<> is of KeyValuePair, you can pass along pair<> objects just
@@ -202,9 +202,9 @@ namespace Stroika::Foundation::Containers {
         ;
         template <IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER, IIterableOfT<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> ITERABLE_OF_ADDABLE>
         Association (KEY_EQUALS_COMPARER&& keyEqualsComparer, ITERABLE_OF_ADDABLE&& src);
-        template <input_iterator ITERATOR_OF_ADDABLE>
+        template <IInputIteratorOfT<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> ITERATOR_OF_ADDABLE>
         Association (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
-        template <IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER, input_iterator ITERATOR_OF_ADDABLE>
+        template <IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER, IInputIteratorOfT<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> ITERATOR_OF_ADDABLE>
         Association (KEY_EQUALS_COMPARER&& keyEqualsComparer, ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
 
     protected:
@@ -361,7 +361,7 @@ namespace Stroika::Foundation::Containers {
          */
         template <IIterableOfT<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> ITERABLE_OF_ADDABLE>
         nonvirtual void AddAll (ITERABLE_OF_ADDABLE&& items);
-        template <input_iterator ITERATOR_OF_ADDABLE>
+        template <IInputIteratorOfT<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> ITERATOR_OF_ADDABLE>
         nonvirtual void AddAll (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
 
     public:

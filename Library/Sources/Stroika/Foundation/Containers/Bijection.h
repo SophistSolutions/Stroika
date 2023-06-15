@@ -39,8 +39,8 @@
 namespace Stroika::Foundation::Containers {
 
     using Common::IEqualsComparer;
+    using Common::KeyValuePair;
     using Configuration::ArgByValueType;
-    using Configuration::ExtractValueType_t;
     using Traversal::IInputIteratorOfT;
     using Traversal::IIterableOfT;
     using Traversal::Iterable;
@@ -150,8 +150,8 @@ namespace Stroika::Foundation::Containers {
          *  \brief check if the argument type can be passed as argument to the arity/1 overload of Add ()
          */
         template <typename POTENTIALLY_ADDABLE_T>
-        static constexpr bool IsAddable_v = is_convertible_v<POTENTIALLY_ADDABLE_T, value_type> or
-                                            is_convertible_v<POTENTIALLY_ADDABLE_T, Common::KeyValuePair<DomainType, RangeType>>;
+        static constexpr bool IsAddable_v =
+            is_convertible_v<POTENTIALLY_ADDABLE_T, value_type> or is_convertible_v<POTENTIALLY_ADDABLE_T, KeyValuePair<DomainType, RangeType>>;
 
     public:
         /**
@@ -176,23 +176,23 @@ namespace Stroika::Foundation::Containers {
         Bijection (const initializer_list<value_type>& src);
         template <IEqualsComparer<DOMAIN_TYPE> DOMAIN_EQUALS_COMPARER, IEqualsComparer<RANGE_TYPE> RANGE_EQUALS_COMPARER>
         Bijection (DOMAIN_EQUALS_COMPARER&& domainEqualsComparer, RANGE_EQUALS_COMPARER&& rangeEqualsComparer, const initializer_list<value_type>& src);
-        template <ranges::range ITERABLE_OF_ADDABLE>
+        template <IIterableOfT<KeyValuePair<DOMAIN_TYPE, RANGE_TYPE>> ITERABLE_OF_ADDABLE>
         explicit Bijection (ITERABLE_OF_ADDABLE&& src)
             requires (not derived_from<decay_t<ITERABLE_OF_ADDABLE>, Bijection<DOMAIN_TYPE, RANGE_TYPE>>)
 #if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
             : Bijection{}
         {
-            static_assert (IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>);
             AddAll (forward<ITERABLE_OF_ADDABLE> (src));
             _AssertRepValidType ();
         }
 #endif
         ;
-        template <IEqualsComparer<DOMAIN_TYPE> DOMAIN_EQUALS_COMPARER, IEqualsComparer<RANGE_TYPE> RANGE_EQUALS_COMPARER, ranges::range ITERABLE_OF_ADDABLE>
+        template <IEqualsComparer<DOMAIN_TYPE> DOMAIN_EQUALS_COMPARER, IEqualsComparer<RANGE_TYPE> RANGE_EQUALS_COMPARER, IIterableOfT<KeyValuePair<DOMAIN_TYPE, RANGE_TYPE>> ITERABLE_OF_ADDABLE>
         Bijection (DOMAIN_EQUALS_COMPARER&& domainEqualsComparer, RANGE_EQUALS_COMPARER&& rangeEqualsComparer, ITERABLE_OF_ADDABLE&& src);
-        template <input_iterator ITERATOR_OF_ADDABLE>
+        template <IInputIteratorOfT<KeyValuePair<DOMAIN_TYPE, RANGE_TYPE>> ITERATOR_OF_ADDABLE>
         Bijection (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
-        template <IEqualsComparer<DOMAIN_TYPE> DOMAIN_EQUALS_COMPARER, IEqualsComparer<RANGE_TYPE> RANGE_EQUALS_COMPARER, input_iterator ITERATOR_OF_ADDABLE>
+        template <IEqualsComparer<DOMAIN_TYPE> DOMAIN_EQUALS_COMPARER, IEqualsComparer<RANGE_TYPE> RANGE_EQUALS_COMPARER,
+                  IInputIteratorOfT<KeyValuePair<DOMAIN_TYPE, RANGE_TYPE>> ITERATOR_OF_ADDABLE>
         Bijection (DOMAIN_EQUALS_COMPARER&& domainEqualsComparer, RANGE_EQUALS_COMPARER&& rangeEqualsComparer, ITERATOR_OF_ADDABLE&& start,
                    ITERATOR_OF_ADDABLE&& end);
 
@@ -393,14 +393,14 @@ namespace Stroika::Foundation::Containers {
          *
          * 
          *  \req  IsAddable_v<ExtractValueType_t<CONTAINER_OF_KEYVALUE>>;                       // CONTAINER_OF_KEYVALUE overload
-         *  \req  ranges::range    CONTAINER_OF_KEYVALUE                         //  ditto
+         *  \req  IIterableOfT<KeyValuePair<DOMAIN_TYPE, RANGE_TYPE>>    CONTAINER_OF_KEYVALUE                         //  ditto
          *  \req  static_assert (IsAddable_v<ExtractValueType_t<COPY_FROM_ITERATOR_KEYVALUE>>); // COPY_FROM_ITERATOR_KEYVALUE overload
 
          *  \note mutates container
          */
-        template <ranges::range CONTAINER_OF_KEYVALUE>
+        template <IIterableOfT<KeyValuePair<DOMAIN_TYPE, RANGE_TYPE>> CONTAINER_OF_KEYVALUE>
         nonvirtual void AddAll (const CONTAINER_OF_KEYVALUE& items);
-        template <input_iterator COPY_FROM_ITERATOR_KEYVALUE>
+        template <IInputIteratorOfT<KeyValuePair<DOMAIN_TYPE, RANGE_TYPE>> COPY_FROM_ITERATOR_KEYVALUE>
         nonvirtual void AddAll (COPY_FROM_ITERATOR_KEYVALUE&& start, COPY_FROM_ITERATOR_KEYVALUE&& end);
 
     public:
@@ -503,7 +503,7 @@ namespace Stroika::Foundation::Containers {
          *
          *  \note mutates container
          */
-        template <ranges::range ITERABLE_OF_ADDABLE>
+        template <IIterableOfT<KeyValuePair<DOMAIN_TYPE, RANGE_TYPE>> ITERABLE_OF_ADDABLE>
         nonvirtual Bijection& operator+= (const ITERABLE_OF_ADDABLE& items);
 
     public:
@@ -511,7 +511,7 @@ namespace Stroika::Foundation::Containers {
          *
          *  \note mutates container
          */
-        template <ranges::range ITERABLE_OF_ADDABLE>
+        template <IIterableOfT<KeyValuePair<DOMAIN_TYPE, RANGE_TYPE>> ITERABLE_OF_ADDABLE>
         nonvirtual Bijection& operator-= (const ITERABLE_OF_ADDABLE& items);
 
     protected:

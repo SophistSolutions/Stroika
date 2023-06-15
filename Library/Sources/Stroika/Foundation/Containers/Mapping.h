@@ -36,7 +36,6 @@ namespace Stroika::Foundation::Containers {
     using Common::IEqualsComparer;
     using Common::KeyValuePair;
     using Configuration::ArgByValueType;
-    using Configuration::ExtractValueType_t;
     using Traversal::IInputIteratorOfT;
     using Traversal::IIterableOfT;
     using Traversal::Iterable;
@@ -159,13 +158,13 @@ namespace Stroika::Foundation::Containers {
          *
          *          Mapping<int,int> m1  = {pair<int, int>{1, 1}, pair<int, int>{2, 2}, pair<int, int>{3, 2}};
          *          Mapping<int,int> m2  = m1;
-         *          Mapping<int,int> m3  { m1 };
-         *          Mapping<int,int> m4  { m1.begin (), m1.end () };
-         *          Mapping<int,int> m5  { c };
-         *          Mapping<int,int> m6  { m };
-         *          Mapping<int,int> m7  { m.begin (), m.end () };
-         *          Mapping<int,int> m8  { move (m1) };
-         *          Mapping<int,int> m9  { Common::DeclareEqualsComparer ([](int l, int r) { return l == r; }) };
+         *          Mapping<int,int> m3{ m1 };
+         *          Mapping<int,int> m4{ m1.begin (), m1.end () };
+         *          Mapping<int,int> m5{ c };
+         *          Mapping<int,int> m6{ m };
+         *          Mapping<int,int> m7{ m.begin (), m.end () };
+         *          Mapping<int,int> m8{ move (m1) };
+         *          Mapping<int,int> m9{ Common::DeclareEqualsComparer ([](int l, int r) { return l == r; }) };
          *      \endcode
          * 
          *  \note   Even though the initializer_list<> is of KeyValuePair, you can pass along pair<> objects just
@@ -187,7 +186,6 @@ namespace Stroika::Foundation::Containers {
 #if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
             : Mapping{}
         {
-            static_assert (IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>);
             AddAll (forward<ITERABLE_OF_ADDABLE> (src));
             _AssertRepValidType ();
         }
@@ -195,9 +193,9 @@ namespace Stroika::Foundation::Containers {
         ;
         template <IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER, IIterableOfT<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> ITERABLE_OF_ADDABLE>
         Mapping (KEY_EQUALS_COMPARER&& keyEqualsComparer, ITERABLE_OF_ADDABLE&& src);
-        template <input_iterator ITERATOR_OF_ADDABLE>
+        template <IInputIteratorOfT<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> ITERATOR_OF_ADDABLE>
         Mapping (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
-        template <IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER, input_iterator ITERATOR_OF_ADDABLE>
+        template <IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER, IInputIteratorOfT<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> ITERATOR_OF_ADDABLE>
         Mapping (KEY_EQUALS_COMPARER&& keyEqualsComparer, ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
 
     protected:
@@ -390,7 +388,7 @@ namespace Stroika::Foundation::Containers {
          */
         template <IIterableOfT<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> ITERABLE_OF_ADDABLE>
         nonvirtual unsigned int AddAll (ITERABLE_OF_ADDABLE&& items, AddReplaceMode addReplaceMode = AddReplaceMode::eAddReplaces);
-        template <input_iterator ITERATOR_OF_ADDABLE>
+        template <IInputIteratorOfT<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> ITERATOR_OF_ADDABLE>
         nonvirtual unsigned int AddAll (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end,
                                         AddReplaceMode addReplaceMode = AddReplaceMode::eAddReplaces);
 
@@ -468,7 +466,7 @@ namespace Stroika::Foundation::Containers {
          *
          *  \note mutates container
          */
-        template <typename ITERABLE_OF_KEY_TYPE>
+        template <IIterableOfT<KEY_TYPE> ITERABLE_OF_KEY_TYPE>
         nonvirtual void RetainAll (const ITERABLE_OF_KEY_TYPE& items);
 
     public:

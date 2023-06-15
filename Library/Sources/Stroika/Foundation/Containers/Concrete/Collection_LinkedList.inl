@@ -158,10 +158,10 @@ namespace Stroika::Foundation::Containers::Concrete {
     }
     template <typename T>
 #if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
-    template <ranges::range ITERABLE_OF_ADDABLE, enable_if_t<not is_base_of_v<Collection_LinkedList<T>, decay_t<ITERABLE_OF_ADDABLE>>>*>
+    template <IIterableOfT<T> ITERABLE_OF_ADDABLE, enable_if_t<not is_base_of_v<Collection_LinkedList<T>, decay_t<ITERABLE_OF_ADDABLE>>>*>
     inline Collection_LinkedList<T>::Collection_LinkedList (ITERABLE_OF_ADDABLE&& src)
 #else
-    template <ranges::range ITERABLE_OF_ADDABLE>
+    template <IIterableOfT<T> ITERABLE_OF_ADDABLE>
     inline Collection_LinkedList<T>::Collection_LinkedList (ITERABLE_OF_ADDABLE&& src)
         requires (not is_base_of_v<Collection_LinkedList<T>, decay_t<ITERABLE_OF_ADDABLE>>)
 #endif

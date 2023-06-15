@@ -51,7 +51,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         Collection_stdforward_list (Collection_stdforward_list&& src) noexcept      = default;
         Collection_stdforward_list (const Collection_stdforward_list& src) noexcept = default;
         Collection_stdforward_list (const initializer_list<value_type>& src);
-        template <ranges::range ITERABLE_OF_ADDABLE>
+        template <IIterableOfT<T> ITERABLE_OF_ADDABLE>
         Collection_stdforward_list (ITERABLE_OF_ADDABLE&& src)
             requires (not is_base_of_v<Collection_stdforward_list<T>, decay_t<ITERABLE_OF_ADDABLE>>)
 #if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
