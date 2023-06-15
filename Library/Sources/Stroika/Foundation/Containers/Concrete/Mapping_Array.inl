@@ -259,12 +259,12 @@ namespace Stroika::Foundation::Containers::Concrete {
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
 #if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
     template <IIterable<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> ITERABLE_OF_ADDABLE,
-              enable_if_t<not is_base_of_v<Mapping_Array<KEY_TYPE, MAPPED_VALUE_TYPE>, remove_cvref_t<ITERABLE_OF_ADDABLE>>>*>
+              enable_if_t<not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, Mapping_Array<KEY_TYPE, MAPPED_VALUE_TYPE>>>*>
     inline Mapping_Array<KEY_TYPE, MAPPED_VALUE_TYPE>::Mapping_Array (ITERABLE_OF_ADDABLE&& src)
 #else
     template <IIterable<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> ITERABLE_OF_ADDABLE>
     inline Mapping_Array<KEY_TYPE, MAPPED_VALUE_TYPE>::Mapping_Array (ITERABLE_OF_ADDABLE&& src)
-        requires (not is_base_of_v<Mapping_Array<KEY_TYPE, MAPPED_VALUE_TYPE>, remove_cvref_t<ITERABLE_OF_ADDABLE>>)
+        requires (not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, Mapping_Array<KEY_TYPE, MAPPED_VALUE_TYPE>>)
 #endif
         : Mapping_Array{}
     {

@@ -53,7 +53,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         Collection_stdforward_list (const initializer_list<value_type>& src);
         template <IIterable<T> ITERABLE_OF_ADDABLE>
         Collection_stdforward_list (ITERABLE_OF_ADDABLE&& src)
-            requires (not is_base_of_v<Collection_stdforward_list<T>, remove_cvref_t<ITERABLE_OF_ADDABLE>>)
+            requires (not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, Collection_stdforward_list<T>>)
 #if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
         {
             this->AddAll (forward<ITERABLE_OF_ADDABLE> (src));

@@ -49,7 +49,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         Queue_Array (Queue_Array&& src) noexcept      = default;
         Queue_Array (const Queue_Array& src) noexcept = default;
         Queue_Array (const initializer_list<value_type>& src);
-        template <IIterable<T> ITERABLE_OF_ADDABLE, enable_if_t<not is_base_of_v<Queue_Array<T>, remove_cvref_t<ITERABLE_OF_ADDABLE>>>* = nullptr>
+        template <IIterable<T> ITERABLE_OF_ADDABLE, enable_if_t<not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, Queue_Array<T>>>* = nullptr>
         explicit Queue_Array (ITERABLE_OF_ADDABLE&& src);
         template <IInputIterator<T> ITERATOR_OF_ADDABLE>
         Queue_Array (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
