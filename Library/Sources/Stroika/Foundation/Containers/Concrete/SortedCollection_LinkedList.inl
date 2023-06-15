@@ -245,7 +245,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         AssertRepValidType_ ();
     }
     template <typename T>
-    template <input_iterator ITERATOR_OF_ADDABLE>
+    template <IInputIteratorOfT<T> ITERATOR_OF_ADDABLE>
     inline SortedCollection_LinkedList<T>::SortedCollection_LinkedList (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
         : SortedCollection_LinkedList{}
     {
@@ -253,7 +253,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         AssertRepValidType_ ();
     }
     template <typename T>
-    template <Common::IInOrderComparer<T> INORDER_COMPARER, input_iterator ITERATOR_OF_ADDABLE>
+    template <Common::IInOrderComparer<T> INORDER_COMPARER, IInputIteratorOfT<T> ITERATOR_OF_ADDABLE>
     inline SortedCollection_LinkedList<T>::SortedCollection_LinkedList (INORDER_COMPARER&& inOrderComparer, ITERATOR_OF_ADDABLE&& start,
                                                                         ITERATOR_OF_ADDABLE&& end)
         : SortedCollection_LinkedList{forward<INORDER_COMPARER> (inOrderComparer)}

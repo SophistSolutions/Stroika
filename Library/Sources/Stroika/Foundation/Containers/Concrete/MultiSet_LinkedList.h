@@ -54,9 +54,9 @@ namespace Stroika::Foundation::Containers::Concrete {
         explicit MultiSet_LinkedList (ITERABLE_OF_ADDABLE&& src);
         template <IEqualsComparer<T> EQUALS_COMPARER, IIterableOfT<CountedValue<T>> ITERABLE_OF_ADDABLE>
         MultiSet_LinkedList (EQUALS_COMPARER&& equalsComparer, ITERABLE_OF_ADDABLE&& src);
-        template <input_iterator ITERATOR_OF_ADDABLE>
+        template <IInputIteratorOfT<CountedValue<T>> ITERATOR_OF_ADDABLE>
         MultiSet_LinkedList (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
-        template <IEqualsComparer<T> EQUALS_COMPARER, input_iterator ITERATOR_OF_ADDABLE>
+        template <IEqualsComparer<T> EQUALS_COMPARER, IInputIteratorOfT<CountedValue<T>> ITERATOR_OF_ADDABLE>
         MultiSet_LinkedList (EQUALS_COMPARER&& equalsComparer, ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
 
     public:

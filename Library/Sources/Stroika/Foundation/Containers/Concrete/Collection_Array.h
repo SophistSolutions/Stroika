@@ -53,7 +53,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         Collection_Array (ITERABLE_OF_ADDABLE&& src)
             requires (not is_base_of_v<Collection_Array<T>, decay_t<ITERABLE_OF_ADDABLE>>);
 #endif
-        template <input_iterator ITERATOR_OF_ADDABLE>
+        template <IInputIteratorOfT<T> ITERATOR_OF_ADDABLE>
         Collection_Array (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
 
     public:

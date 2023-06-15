@@ -89,7 +89,7 @@ namespace Stroika::Foundation::Containers {
          *
          *  \par Example Usage
          *      \code
-         *          Mapping<int, int>       m{1, 2}, {2, 4}};
+         *          Mapping<int, int>       m{{1, 2}, {2, 4}};
          *          SortedMapping<int, int> sm{m};
          *      \endcode
          * 

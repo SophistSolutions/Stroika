@@ -193,9 +193,7 @@ namespace Stroika::Foundation::Containers {
          *
          *  This also implies that ordering will be preserved in iterating over the Queue, or in Dequeing those elements.
          *
-         *  \req  IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>;                   // ITERABLE_OF_ADDABLE overload
-         *  \req  ranges::range <ITERABLE_OF_ADDABLE>                        //  ditto
-         *  \req  static_assert (IsAddable_v<ExtractValueType_t<ITERATOR_OF_ADDABLE>>);   // ITERATOR_OF_ADDABLE overload
+         *  \req  IIterableOfT<ITERABLE_OF_ADDABLE, T>  or IInputIteratorOfT<T>
          * 
          *  \note This works efficiently because a Queue<> iterates from head to tail, and thats the order in which you would want to
          *        add them to copy the Queue (unlike with Stack).

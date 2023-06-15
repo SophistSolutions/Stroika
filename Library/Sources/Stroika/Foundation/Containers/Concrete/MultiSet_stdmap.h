@@ -69,9 +69,9 @@ namespace Stroika::Foundation::Containers::Concrete {
         explicit MultiSet_stdmap (ITERABLE_OF_ADDABLE&& src);
         template <IInOrderComparer<T> INORDER_COMPARER, IIterableOfT<CountedValue<T>> ITERABLE_OF_ADDABLE>
         MultiSet_stdmap (INORDER_COMPARER&& comparer, ITERABLE_OF_ADDABLE&& src);
-        template <input_iterator ITERATOR_OF_ADDABLE>
+        template <IInputIteratorOfT<CountedValue<T>> ITERATOR_OF_ADDABLE>
         MultiSet_stdmap (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
-        template <IInOrderComparer<T> INORDER_COMPARER, input_iterator ITERATOR_OF_ADDABLE>
+        template <IInOrderComparer<T> INORDER_COMPARER, IInputIteratorOfT<CountedValue<T>> ITERATOR_OF_ADDABLE>
         MultiSet_stdmap (INORDER_COMPARER&& comparer, ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
 
     public:

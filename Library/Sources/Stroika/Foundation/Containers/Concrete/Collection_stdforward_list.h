@@ -62,7 +62,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         }
 #endif
         ;
-        template <input_iterator ITERATOR_OF_ADDABLE>
+        template <IInputIteratorOfT<T> ITERATOR_OF_ADDABLE>
         Collection_stdforward_list (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
 
     public:

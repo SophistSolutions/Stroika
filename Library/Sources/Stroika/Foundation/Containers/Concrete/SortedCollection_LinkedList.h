@@ -57,9 +57,9 @@ namespace Stroika::Foundation::Containers::Concrete {
         explicit SortedCollection_LinkedList (ITERABLE_OF_ADDABLE&& src);
         template <Common::IInOrderComparer<T> INORDER_COMPARER, IIterableOfT<T> ITERABLE_OF_ADDABLE>
         SortedCollection_LinkedList (INORDER_COMPARER&& inOrderComparer, ITERABLE_OF_ADDABLE&& src);
-        template <input_iterator ITERATOR_OF_ADDABLE>
+        template <IInputIteratorOfT<T> ITERATOR_OF_ADDABLE>
         SortedCollection_LinkedList (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
-        template <Common::IInOrderComparer<T> INORDER_COMPARER, input_iterator ITERATOR_OF_ADDABLE>
+        template <Common::IInOrderComparer<T> INORDER_COMPARER, IInputIteratorOfT<T> ITERATOR_OF_ADDABLE>
         SortedCollection_LinkedList (INORDER_COMPARER&& inOrderComparer, ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
 
     public:

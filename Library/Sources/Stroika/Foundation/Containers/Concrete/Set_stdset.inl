@@ -205,7 +205,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         AssertRepValidType_ ();
     }
     template <typename T>
-    template <ranges::range ITERABLE_OF_ADDABLE, enable_if_t<not is_base_of_v<Set_stdset<T>, decay_t<ITERABLE_OF_ADDABLE>>>*>
+    template <IIterableOfT<T> ITERABLE_OF_ADDABLE, enable_if_t<not is_base_of_v<Set_stdset<T>, decay_t<ITERABLE_OF_ADDABLE>>>*>
     inline Set_stdset<T>::Set_stdset (ITERABLE_OF_ADDABLE&& src)
         : Set_stdset{}
     {
@@ -213,7 +213,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         AssertRepValidType_ ();
     }
     template <typename T>
-    template <Common::IInOrderComparer<T> INORDER_COMPARER, ranges::range ITERABLE_OF_ADDABLE>
+    template <Common::IInOrderComparer<T> INORDER_COMPARER, IIterableOfT<T> ITERABLE_OF_ADDABLE>
     inline Set_stdset<T>::Set_stdset (INORDER_COMPARER&& inorderComparer, ITERABLE_OF_ADDABLE&& src)
         : Set_stdset{forward<INORDER_COMPARER> (inorderComparer)}
     {
