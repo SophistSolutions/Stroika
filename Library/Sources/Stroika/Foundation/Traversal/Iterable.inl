@@ -260,7 +260,7 @@ namespace Stroika::Foundation::Traversal {
     }
 #endif
     template <typename T>
-    Iterable<T>::Iterable (const initializer_list<T>& from)
+    inline Iterable<T>::Iterable (const initializer_list<T>& from)
         : _fRep{mk_ (from)._fRep}
     {
     }

@@ -62,16 +62,14 @@ namespace Stroika::Foundation::Traversal {
     using Configuration::ArgByValueType;
 
     /**
-     *  IIterable - concept can iterate over ITERABLE (ranges::range) and read values converted to OF_T
+     *  IIterable concept: std::ranges::range and iterated over values convertible to OF_T
      *
-     *  Checks if argument is IIterable<> and if the value of items iterated over is convertible to OF_T.
+     *  Checks if argument is ranges::range and if the value of items iterated over is convertible to OF_T.
      * 
      *  Considered calling this IIterableOfFromT, and having an IIterableOfToT, but that wouldn't make sense
      *  since you cannot write to an iterator. May make sense in some container situations, but not here. Or
      *  maybe IIterableProducingT? Even if there is a situation where that makes sense (e.g. an algorithm producing
      *  a subetype) - it wouldn't be producing an Iterable of that type, but a Set or Collection or some such).
-     * 
-     *  @See IIterable
      */
     template <typename ITERABLE, typename OF_T>
     concept IIterable = ranges::range<ITERABLE> and is_convertible_v<ranges::range_value_t<ITERABLE>, OF_T>;
@@ -202,6 +200,7 @@ namespace Stroika::Foundation::Traversal {
     class Iterable {
     public:
         static_assert (is_copy_constructible_v<Iterator<T>>, "Must be able to create Iterator<T> to use Iterable<T>");
+        // static_assert (IIterable<Iterable<T>, T>);   -- Logically true, but doesn't work presumably cuz Iterable<T> incomplete type at this stage, but should be doable!
 
     public:
         /**
