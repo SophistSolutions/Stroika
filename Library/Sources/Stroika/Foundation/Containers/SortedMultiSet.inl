@@ -73,7 +73,7 @@ namespace Stroika::Foundation::Containers {
     template <typename T, typename TRAITS>
     template <IIterable<CountedValue<T>> ITERABLE_OF_ADDABLE>
     inline SortedMultiSet<T, TRAITS>::SortedMultiSet (ITERABLE_OF_ADDABLE&& src)
-        requires (not is_base_of_v<SortedMultiSet<T, TRAITS>, remove_cvref_t<ITERABLE_OF_ADDABLE>>)
+        requires (not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, SortedMultiSet<T, TRAITS>>)
         : SortedMultiSet{}
     {
         this->AddAll (forward<ITERABLE_OF_ADDABLE> (src));

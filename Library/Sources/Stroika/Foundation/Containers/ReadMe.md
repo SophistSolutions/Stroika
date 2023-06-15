@@ -200,7 +200,7 @@ Each container Archetype has its own set of arguments that make sense for its co
     ~~~
     template <IIterable<T> ITERABLE_OF_ADDABLE>
     CONTAINER (ITERABLE_OF_ADDABLE&& src)
-        requires (not is_base_of_v<CONTAINER<T>, remove_cvref_t<ITERABLE_OF_ADDABLE>>)
+        requires (not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, CONTAINER<T>>)
     {
         something-like-AddAll (forward<ITERABLE_OF_ADDABLE> (src));
         // and more to initialize container
@@ -237,7 +237,7 @@ Often ArchTypes will have additional required data, like an Extractor function, 
 template <Iterable::IIterable<T> CONTAINER_OF_ADDABLE,
           IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER = equal_to<KEY_TYPE>,
           enable_if_t<
-              not is_base_of_v<KeyedCollection<T, KEY_TYPE, TRAITS>, remove_cvref_t<CONTAINER_OF_ADDABLE>> and KeyedCollection_IsKeyExctractor<T, KEY_TYPE, KEY_EXTRACTOR> ()>* = nullptr>
+              not derived_from<remove_cvref_t<CONTAINER_OF_ADDABLE>, KeyedCollection<T, KEY_TYPE, TRAITS>> and KeyedCollection_IsKeyExctractor<T, KEY_TYPE, KEY_EXTRACTOR> ()>* = nullptr>
 KeyedCollection (KEY_EQUALS_COMPARER&& keyComparer, CONTAINER_OF_ADDABLE&& src);
 ~~~
 

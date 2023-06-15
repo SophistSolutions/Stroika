@@ -228,7 +228,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         AssertRepValidType_ ();
     }
     template <typename T>
-    template <IIterable<T> ITERABLE_OF_ADDABLE, enable_if_t<not is_base_of_v<Set_Array<T>, remove_cvref_t<ITERABLE_OF_ADDABLE>>>*>
+    template <IIterable<T> ITERABLE_OF_ADDABLE, enable_if_t<not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, Set_Array<T>>>*>
     inline Set_Array<T>::Set_Array (ITERABLE_OF_ADDABLE&& src)
         : Set_Array{}
     {

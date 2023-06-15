@@ -107,7 +107,7 @@ namespace Stroika::Foundation::Containers {
         SortedMapping (KEY_INORDER_COMPARER&& inorderComparer, const initializer_list<pair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src);
         template <IIterable<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> ITERABLE_OF_ADDABLE>
         explicit SortedMapping (ITERABLE_OF_ADDABLE&& src)
-            requires (not is_base_of_v<SortedMapping<KEY_TYPE, MAPPED_VALUE_TYPE>, remove_cvref_t<ITERABLE_OF_ADDABLE>>)
+            requires (not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, SortedMapping<KEY_TYPE, MAPPED_VALUE_TYPE>>)
 #if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
             : SortedMapping{}
         {

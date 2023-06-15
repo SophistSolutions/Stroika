@@ -76,7 +76,7 @@ namespace Stroika::Foundation::Execution {
     public:
         /**
          *  \note Implementation note:
-         *        Reason for the not is_base_of_v<> restriction on CTOR/1(CTOR_FUNC_SIG&&) is to prevent compiler from
+         *        Reason for the not dervied_from<> restriction on CTOR/1(CTOR_FUNC_SIG&&) is to prevent compiler from
          *        instantiating that constructor template for argument subclasses of this Function type, and having those take precedence over the
          *        default X(const X&) CTOR.
          * 

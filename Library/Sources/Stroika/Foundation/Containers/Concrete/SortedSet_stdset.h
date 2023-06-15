@@ -68,7 +68,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         SortedSet_stdset (const initializer_list<T>& src);
         template <IInOrderComparer<T> INORDER_COMPARER>
         SortedSet_stdset (INORDER_COMPARER&& inOrderComparer, const initializer_list<T>& src);
-        template <IIterable<T> ITERABLE_OF_ADDABLE, enable_if_t<not is_base_of_v<SortedSet_stdset<T>, remove_cvref_t<ITERABLE_OF_ADDABLE>>>* = nullptr>
+        template <IIterable<T> ITERABLE_OF_ADDABLE, enable_if_t<not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, SortedSet_stdset<T>>>* = nullptr>
         explicit SortedSet_stdset (ITERABLE_OF_ADDABLE&& src);
         template <IInOrderComparer<T> INORDER_COMPARER, IIterable<T> ITERABLE_OF_ADDABLE>
         SortedSet_stdset (INORDER_COMPARER&& inOrderComparer, ITERABLE_OF_ADDABLE&& src);
