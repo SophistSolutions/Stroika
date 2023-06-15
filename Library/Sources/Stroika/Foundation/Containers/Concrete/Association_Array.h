@@ -49,38 +49,43 @@ namespace Stroika::Foundation::Containers::Concrete {
         Association_Array (const initializer_list<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src);
         template <IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER>
         Association_Array (KEY_EQUALS_COMPARER&& keyEqualsComparer, const initializer_list<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src);
-#if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
-        template <IIterable<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> ITERABLE_OF_ADDABLE,
-                  enable_if_t<not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, Association_Array<KEY_TYPE, MAPPED_VALUE_TYPE>>>* = nullptr>
-        explicit Association_Array (ITERABLE_OF_ADDABLE&& src);
-#else
         template <IIterable<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> ITERABLE_OF_ADDABLE>
+            requires (not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, Association_Array<KEY_TYPE, MAPPED_VALUE_TYPE>>)
         explicit Association_Array (ITERABLE_OF_ADDABLE&& src)
-            requires (not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, Association_Array<KEY_TYPE, MAPPED_VALUE_TYPE>>);
+#if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
+            : Association_Array{}
+            {
+                if constexpr (Configuration::has_size_v<ITERABLE_OF_ADDABLE>) {
+                    reserve (src.size ());
+                }
+                this->AddAll (forward<ITERABLE_OF_ADDABLE> (src));
+                AssertRepValidType_ ();
+            }
 #endif
-        template <IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER, IIterable<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> ITERABLE_OF_ADDABLE>
-        Association_Array (KEY_EQUALS_COMPARER&& keyEqualsComparer, ITERABLE_OF_ADDABLE&& src);
-        template <IInputIterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> ITERATOR_OF_ADDABLE>
-        Association_Array (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
-        template <IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER, IInputIterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> ITERATOR_OF_ADDABLE>
-        Association_Array (KEY_EQUALS_COMPARER&& keyEqualsComparer, ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
+            ;
+            template <IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER, IIterable<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> ITERABLE_OF_ADDABLE>
+            Association_Array (KEY_EQUALS_COMPARER&& keyEqualsComparer, ITERABLE_OF_ADDABLE&& src);
+            template <IInputIterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> ITERATOR_OF_ADDABLE>
+            Association_Array (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
+            template <IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER, IInputIterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> ITERATOR_OF_ADDABLE>
+            Association_Array (KEY_EQUALS_COMPARER&& keyEqualsComparer, ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
 
-    public:
-        nonvirtual Association_Array& operator= (Association_Array&& rhs) noexcept = default;
-        nonvirtual Association_Array& operator= (const Association_Array& rhs)     = default;
+        public:
+            nonvirtual Association_Array& operator= (Association_Array&& rhs) noexcept = default;
+            nonvirtual Association_Array& operator= (const Association_Array& rhs)     = default;
 
-    public:
-        /*
+        public:
+            /*
          *  \brief Return the number of allocated vector/array elements.
          * 
          * This optional API allows pre-reserving space as an optimization.
          * 
          *  \note alias GetCapacity ();
          */
-        nonvirtual size_t capacity () const;
+            nonvirtual size_t capacity () const;
 
-    public:
-        /**
+        public:
+            /**
          * This optional API allows pre-reserving space as an optimization.
          * 
          *  \note Alias SetCapacity ();
@@ -89,24 +94,24 @@ namespace Stroika::Foundation::Containers::Concrete {
          * 
          *  \req slotsAllocated >= size ()
          */
-        nonvirtual void reserve (size_t slotsAlloced);
+            nonvirtual void reserve (size_t slotsAlloced);
 
-    public:
-        /**
+        public:
+            /**
          *  \brief  Reduce the space used to store the Association_Array<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS> contents.
          *
          *  This has no semantics, no observable behavior. But depending on the representation of
          *  the concrete Association, calling this may save memory.
          */
-        nonvirtual void shrink_to_fit ();
+            nonvirtual void shrink_to_fit ();
 
-    private:
-        class IImplRepBase_;
-        template <IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER>
-        class Rep_;
+        private:
+            class IImplRepBase_;
+            template <IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER>
+            class Rep_;
 
-    private:
-        nonvirtual void AssertRepValidType_ () const;
+        private:
+            nonvirtual void AssertRepValidType_ () const;
     };
 
 }
