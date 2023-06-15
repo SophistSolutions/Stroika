@@ -44,9 +44,10 @@ namespace Stroika::Foundation::Cache {
         inherited::Add (v);
     }
     template <typename KEY, typename VALUE, typename TIME_TRAITS>
-    inline void SynchronizedCallerStalenessCache<KEY, VALUE, TIME_TRAITS>::Add (Configuration::ArgByValueType<KEY> k,
+    template <typename K>
+    inline void SynchronizedCallerStalenessCache<KEY, VALUE, TIME_TRAITS>::Add (Configuration::ArgByValueType<K> k,
                                                                                 Configuration::ArgByValueType<VALUE> v, AddReplaceMode addReplaceMode)
-        requires (IsKeyedCache<KEY>)
+        requires (IsKeyedCache<K>)
     {
         [[maybe_unused]] auto&& lock = lock_guard{fMutex_};
         inherited::Add (k, v, addReplaceMode);
@@ -59,9 +60,10 @@ namespace Stroika::Foundation::Cache {
         return inherited::Lookup (staleIfOlderThan);
     }
     template <typename KEY, typename VALUE, typename TIME_TRAITS>
-    inline optional<VALUE> SynchronizedCallerStalenessCache<KEY, VALUE, TIME_TRAITS>::Lookup (Configuration::ArgByValueType<KEY> k,
+    template <typename K>
+    inline optional<VALUE> SynchronizedCallerStalenessCache<KEY, VALUE, TIME_TRAITS>::Lookup (Configuration::ArgByValueType<K> k,
                                                                                               TimeStampType staleIfOlderThan) const
-        requires (IsKeyedCache<KEY>)
+        requires (IsKeyedCache<K>)
     {
         [[maybe_unused]] auto&& lock = lock_guard{fMutex_};
         return inherited::Lookup (k, staleIfOlderThan);
@@ -74,8 +76,8 @@ namespace Stroika::Foundation::Cache {
         return inherited::LookupValue (staleIfOlderThan, cacheFiller);
     }
     template <typename KEY, typename VALUE, typename TIME_TRAITS>
-    template <typename F>
-    inline VALUE SynchronizedCallerStalenessCache<KEY, VALUE, TIME_TRAITS>::LookupValue (Configuration::ArgByValueType<KEY> k,
+    template <typename F, typename K>
+    inline VALUE SynchronizedCallerStalenessCache<KEY, VALUE, TIME_TRAITS>::LookupValue (Configuration::ArgByValueType<K> k,
                                                                                          TimeStampType staleIfOlderThan, F&& cacheFiller)
         requires (IsKeyedCache<KEY> and is_invocable_r_v<VALUE, F, KEY>)
     {
@@ -105,7 +107,8 @@ namespace Stroika::Foundation::Cache {
         }
     }
     template <typename KEY, typename VALUE, typename TIME_TRAITS>
-    inline VALUE SynchronizedCallerStalenessCache<KEY, VALUE, TIME_TRAITS>::LookupValue (Configuration::ArgByValueType<KEY> k,
+    template <typename K >
+    inline VALUE SynchronizedCallerStalenessCache<KEY, VALUE, TIME_TRAITS>::LookupValue (Configuration::ArgByValueType<K> k,
                                                                                          TimeStampType staleIfOlderThan, const VALUE& defaultValue) const
         requires (IsKeyedCache<KEY>)
     {

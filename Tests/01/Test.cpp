@@ -10,6 +10,7 @@
 #include "Stroika/Foundation/Cache/CallerStalenessCache.h"
 #include "Stroika/Foundation/Cache/LRUCache.h"
 #include "Stroika/Foundation/Cache/Memoizer.h"
+#include "Stroika/Foundation/Cache/SynchronizedCallerStalenessCache.h"
 #include "Stroika/Foundation/Cache/TimedCache.h"
 #include "Stroika/Foundation/Containers/Set.h"
 #include "Stroika/Foundation/Cryptography/Digest/Algorithm/SuperFastHash.h"
@@ -305,10 +306,48 @@ namespace {
                 VerifyTestResult (Private_::MapValue_ (2) == 2 and Private_::sCalls2_ == 2);
             }
         }
+        namespace Private_Sync_ {
+            unsigned int  sCalls1_{0};
+            optional<int> LookupExternalInternetAddress_ (optional<Time::DurationSecondsType> allowedStaleness = {})
+            {
+                using Cache::SynchronizedCallerStalenessCache;
+                static SynchronizedCallerStalenessCache<void, optional<int>> sCache_;
+                return sCache_.LookupValue (sCache_.Ago (allowedStaleness.value_or (30)), [] () -> optional<int> {
+                    sCalls1_++;
+                    return 1;
+                });
+            }
+            void Test_void_ ()
+            {
+                VerifyTestResult (Private_::LookupExternalInternetAddress_ () == 1 and Private_::sCalls1_ == 1);
+                VerifyTestResult (Private_::LookupExternalInternetAddress_ () == 1 and Private_::sCalls1_ == 1);
+            }
+        }
+        namespace Private_Sync_ {
+            unsigned int  sCalls2_{0};
+            optional<int> MapValue_ (int value, optional<Time::DurationSecondsType> allowedStaleness = {})
+            {
+                using Cache::SynchronizedCallerStalenessCache;
+                static SynchronizedCallerStalenessCache<int, optional<int>> sCache_;
+                return sCache_.LookupValue (value, sCache_.Ago (allowedStaleness.value_or (30)), [=] (int v) -> optional<int> {
+                    sCalls2_++;
+                    return v;
+                });
+            }
+            void Test_keyed_ ()
+            {
+                VerifyTestResult (MapValue_ (1) == 1 and Private_::sCalls2_ == 1);
+                VerifyTestResult (MapValue_ (2) == 2 and Private_::sCalls2_ == 2);
+                VerifyTestResult (MapValue_ (1) == 1 and Private_::sCalls2_ == 2);
+                VerifyTestResult (MapValue_ (2) == 2 and Private_::sCalls2_ == 2);
+            }
+        }
         void DoIt ()
         {
             Private_::Test_void_ ();
             Private_::Test_keyed_ ();
+            Private_Sync_::Test_void_ ();
+            Private_Sync_::Test_keyed_ ();
         }
     }
 }

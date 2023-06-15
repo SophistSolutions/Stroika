@@ -100,9 +100,10 @@ namespace Stroika::Foundation::Cache {
          */
         nonvirtual void Add (Configuration::ArgByValueType<VALUE> v)
             requires (not IsKeyedCache<KEY>);
-        nonvirtual void Add (Configuration::ArgByValueType<KEY> k, Configuration::ArgByValueType<VALUE> v,
+        template <typename K = KEY>
+        nonvirtual void Add (Configuration::ArgByValueType<K> k, Configuration::ArgByValueType<VALUE> v,
                              AddReplaceMode addReplaceMode = AddReplaceMode::eAddReplaces)
-            requires (IsKeyedCache<KEY>);
+            requires (IsKeyedCache<K>);
 
     public:
         /**
@@ -110,14 +111,16 @@ namespace Stroika::Foundation::Cache {
          */
         nonvirtual optional<VALUE> Lookup (TimeStampType staleIfOlderThan) const
             requires (not IsKeyedCache<KEY>);
-        nonvirtual optional<VALUE> Lookup (Configuration::ArgByValueType<KEY> k, TimeStampType staleIfOlderThan) const
-            requires (IsKeyedCache<KEY>);
+        template <typename K = KEY>
+        nonvirtual optional<VALUE> Lookup (Configuration::ArgByValueType<K> k, TimeStampType staleIfOlderThan) const
+            requires (IsKeyedCache<K>);
         nonvirtual VALUE LookupValue (TimeStampType staleIfOlderThan, const function<VALUE ()>& cacheFiller)
             requires (not IsKeyedCache<KEY>);
-        template <typename F>
-        nonvirtual VALUE LookupValue (Configuration::ArgByValueType<KEY> k, TimeStampType staleIfOlderThan, F&& cacheFiller)
+        template <typename F, typename K = KEY>
+        nonvirtual VALUE LookupValue (Configuration::ArgByValueType<K> k, TimeStampType staleIfOlderThan, F&& cacheFiller)
             requires (IsKeyedCache<KEY> and is_invocable_r_v<VALUE, F, KEY>);
-        nonvirtual VALUE LookupValue (Configuration::ArgByValueType<KEY> k, TimeStampType staleIfOlderThan, const VALUE& defaultValue) const
+        template <typename K = KEY>
+        nonvirtual VALUE LookupValue (Configuration::ArgByValueType<K> k, TimeStampType staleIfOlderThan, const VALUE& defaultValue) const
             requires (IsKeyedCache<KEY>);
 
     public:
