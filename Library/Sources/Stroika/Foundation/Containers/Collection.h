@@ -44,8 +44,8 @@
 namespace Stroika::Foundation::Containers {
 
     using Configuration::ArgByValueType;
-    using Traversal::IInputIteratorOfT;
-    using Traversal::IIterableOfT;
+    using Traversal::IInputIterator;
+    using Traversal::IIterable;
     using Traversal::Iterable;
     using Traversal::Iterator;
 
@@ -154,7 +154,7 @@ namespace Stroika::Foundation::Containers {
         Collection (Collection&& src) noexcept      = default;
         Collection (const Collection& src) noexcept = default;
         Collection (const initializer_list<value_type>& src);
-        template <IIterableOfT<T> ITERABLE_OF_ADDABLE>
+        template <IIterable<T> ITERABLE_OF_ADDABLE>
         Collection (ITERABLE_OF_ADDABLE&& src)
             requires (not derived_from<decay_t<ITERABLE_OF_ADDABLE>, Collection<T>>)
 #if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
@@ -166,7 +166,7 @@ namespace Stroika::Foundation::Containers {
 #endif
         ;
 
-        template <IInputIteratorOfT<T> ITERATOR_OF_ADDABLE>
+        template <IInputIterator<T> ITERATOR_OF_ADDABLE>
         Collection (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
 
     protected:
@@ -202,9 +202,9 @@ namespace Stroika::Foundation::Containers {
          *
          *  \note mutates container
          */
-        template <IInputIteratorOfT<T> ITERATOR_OF_ADDABLE>
+        template <IInputIterator<T> ITERATOR_OF_ADDABLE>
         nonvirtual void AddAll (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
-        template <IIterableOfT<T> ITERABLE_OF_ADDABLE>
+        template <IIterable<T> ITERABLE_OF_ADDABLE>
         nonvirtual void AddAll (ITERABLE_OF_ADDABLE&& items);
 
     public:
@@ -277,7 +277,7 @@ namespace Stroika::Foundation::Containers {
         nonvirtual void RemoveAll ();
         template <Common::IEqualsComparer<T> EQUALS_COMPARER = equal_to<T>>
         nonvirtual size_t RemoveAll (const Iterator<value_type>& start, const Iterator<value_type>& end, EQUALS_COMPARER&& equalsComparer = {});
-        template <IIterableOfT<T> ITERABLE_OF_ADDABLE, typename EQUALS_COMPARER = equal_to<T>>
+        template <IIterable<T> ITERABLE_OF_ADDABLE, typename EQUALS_COMPARER = equal_to<T>>
         nonvirtual size_t RemoveAll (const ITERABLE_OF_ADDABLE& c, EQUALS_COMPARER&& equalsComparer = {});
         template <predicate<T> PREDICATE>
         nonvirtual size_t RemoveAll (PREDICATE&& p);

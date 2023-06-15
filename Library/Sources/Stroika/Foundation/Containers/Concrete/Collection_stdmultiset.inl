@@ -162,7 +162,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         AssertRepValidType_ ();
     }
     template <typename T>
-    template <IInputIteratorOfT<T> ITERATOR_OF_ADDABLE>
+    template <IInputIterator<T> ITERATOR_OF_ADDABLE>
     inline Collection_stdmultiset<T>::Collection_stdmultiset (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
         : Collection_stdmultiset{}
     {
@@ -178,7 +178,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     }
 #if !qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
     template <typename T>
-    template <IIterableOfT<T> ITERABLE_OF_ADDABLE>
+    template <IIterable<T> ITERABLE_OF_ADDABLE>
     inline Collection_stdmultiset<T>::Collection_stdmultiset (ITERABLE_OF_ADDABLE&& src)
         requires (not is_base_of_v<Collection_stdmultiset<T>, decay_t<ITERABLE_OF_ADDABLE>>)
         : Collection_stdmultiset{}

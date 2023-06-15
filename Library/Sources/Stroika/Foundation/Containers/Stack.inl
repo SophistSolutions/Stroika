@@ -27,7 +27,7 @@ namespace Stroika::Foundation::Containers {
 #if !qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
 
     template <typename T>
-    template <IIterableOfT<T> ITERABLE_OF_ADDABLE>
+    template <IIterable<T> ITERABLE_OF_ADDABLE>
     inline Stack<T>::Stack (ITERABLE_OF_ADDABLE&& src)
         requires (not is_base_of_v<Stack<T>, decay_t<ITERABLE_OF_ADDABLE>>)
         : Stack{}
@@ -57,7 +57,7 @@ namespace Stroika::Foundation::Containers {
         _AssertRepValidType ();
     }
     template <typename T>
-    template <IInputIteratorOfT<T> ITERATOR_OF_ADDABLE>
+    template <IInputIterator<T> ITERATOR_OF_ADDABLE>
     inline Stack<T>::Stack (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
         : Stack{}
     {

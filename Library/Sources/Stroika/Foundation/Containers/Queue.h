@@ -36,8 +36,8 @@
 namespace Stroika::Foundation::Containers {
 
     using Configuration::ArgByValueType;
-    using Traversal::IInputIteratorOfT;
-    using Traversal::IIterableOfT;
+    using Traversal::IInputIterator;
+    using Traversal::IIterable;
     using Traversal::Iterable;
     using Traversal::Iterator;
 
@@ -114,7 +114,7 @@ namespace Stroika::Foundation::Containers {
         Queue (Queue&& src) noexcept      = default;
         Queue (const Queue& src) noexcept = default;
         Queue (const initializer_list<value_type>& src);
-        template <IIterableOfT<T> ITERABLE_OF_ADDABLE>
+        template <IIterable<T> ITERABLE_OF_ADDABLE>
         explicit Queue (ITERABLE_OF_ADDABLE&& src)
             requires (not derived_from<decay_t<ITERABLE_OF_ADDABLE>, Queue<T>>)
 #if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
@@ -124,7 +124,7 @@ namespace Stroika::Foundation::Containers {
         }
 #endif
         ;
-        template <IInputIteratorOfT<T> ITERATOR_OF_ADDABLE>
+        template <IInputIterator<T> ITERATOR_OF_ADDABLE>
         Queue (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
 
     protected:
@@ -193,16 +193,16 @@ namespace Stroika::Foundation::Containers {
          *
          *  This also implies that ordering will be preserved in iterating over the Queue, or in Dequeing those elements.
          *
-         *  \req  IIterableOfT<ITERABLE_OF_ADDABLE, T>  or IInputIteratorOfT<T>
+         *  \req  IIterable<ITERABLE_OF_ADDABLE, T>  or IInputIterator<T>
          * 
          *  \note This works efficiently because a Queue<> iterates from head to tail, and thats the order in which you would want to
          *        add them to copy the Queue (unlike with Stack).
          *
          *  \note mutates container
          */
-        template <IIterableOfT<T> ITERABLE_OF_ADDABLE>
+        template <IIterable<T> ITERABLE_OF_ADDABLE>
         nonvirtual void AddAllToTail (ITERABLE_OF_ADDABLE&& s);
-        template <IInputIteratorOfT<T> ITERATOR_OF_ADDABLE>
+        template <IInputIterator<T> ITERATOR_OF_ADDABLE>
         nonvirtual void AddAllToTail (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
 
     public:

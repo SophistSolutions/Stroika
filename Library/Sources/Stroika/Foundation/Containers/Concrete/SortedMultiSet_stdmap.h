@@ -67,13 +67,13 @@ namespace Stroika::Foundation::Containers::Concrete {
         SortedMultiSet_stdmap (const initializer_list<value_type>& src);
         template <IInOrderComparer<T> INORDER_COMPARER>
         SortedMultiSet_stdmap (INORDER_COMPARER&& inorderComparer, const initializer_list<value_type>& src);
-        template <IIterableOfT<CountedValue<T>> ITERABLE_OF_ADDABLE, enable_if_t<not is_base_of_v<SortedMultiSet_stdmap<T, TRAITS>, decay_t<ITERABLE_OF_ADDABLE>>>* = nullptr>
+        template <IIterable<CountedValue<T>> ITERABLE_OF_ADDABLE, enable_if_t<not is_base_of_v<SortedMultiSet_stdmap<T, TRAITS>, decay_t<ITERABLE_OF_ADDABLE>>>* = nullptr>
         explicit SortedMultiSet_stdmap (ITERABLE_OF_ADDABLE&& src);
-        template <IInOrderComparer<T> INORDER_COMPARER, IIterableOfT<CountedValue<T>> ITERABLE_OF_ADDABLE>
+        template <IInOrderComparer<T> INORDER_COMPARER, IIterable<CountedValue<T>> ITERABLE_OF_ADDABLE>
         SortedMultiSet_stdmap (INORDER_COMPARER&& inorderComparer, ITERABLE_OF_ADDABLE&& src);
-        template <IInputIteratorOfT<CountedValue<T>> ITERATOR_OF_ADDABLE>
+        template <IInputIterator<CountedValue<T>> ITERATOR_OF_ADDABLE>
         SortedMultiSet_stdmap (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
-        template <IInOrderComparer<T> INORDER_COMPARER, IInputIteratorOfT<CountedValue<T>> ITERATOR_OF_ADDABLE>
+        template <IInOrderComparer<T> INORDER_COMPARER, IInputIterator<CountedValue<T>> ITERATOR_OF_ADDABLE>
         SortedMultiSet_stdmap (INORDER_COMPARER&& inorderComparer, ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
 
     public:

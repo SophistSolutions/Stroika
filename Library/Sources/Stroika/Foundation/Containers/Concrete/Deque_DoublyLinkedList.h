@@ -43,7 +43,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         Deque_DoublyLinkedList (Deque_DoublyLinkedList&& src) noexcept      = default;
         Deque_DoublyLinkedList (const Deque_DoublyLinkedList& src) noexcept = default;
         Deque_DoublyLinkedList (const initializer_list<value_type>& src);
-        template <IIterableOfT<T> ITERABLE_OF_ADDABLE>
+        template <IIterable<T> ITERABLE_OF_ADDABLE>
         explicit Deque_DoublyLinkedList (ITERABLE_OF_ADDABLE&& src)
             requires (not is_base_of_v<Deque_DoublyLinkedList<T>, decay_t<ITERABLE_OF_ADDABLE>>)
 #if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
@@ -53,7 +53,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         }
 #endif
         ;
-        template <IInputIteratorOfT<T> ITERATOR_OF_ADDABLE>
+        template <IInputIterator<T> ITERATOR_OF_ADDABLE>
         Deque_DoublyLinkedList (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
 
     public:

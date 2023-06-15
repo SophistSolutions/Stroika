@@ -199,10 +199,10 @@ namespace {
                 static_assert (has_beginend_v<std::pair<int, int>[1]>);
             }
             {
-                static_assert (Traversal::IIterableOfT<vector<int>, int>);
-                static_assert (not Traversal::IIterableOfT<vector<int>, char*>);
-                static_assert (not Traversal::IIterableOfT<vector<int>, String>);
-                static_assert (not Traversal::IIterableOfT<char, String>);
+                static_assert (Traversal::IIterable<vector<int>, int>);
+                static_assert (not Traversal::IIterable<vector<int>, char*>);
+                static_assert (not Traversal::IIterable<vector<int>, String>);
+                static_assert (not Traversal::IIterable<char, String>);
             }
             {
                 auto                                       lambda = [] (int i) { return long (i * 10); };

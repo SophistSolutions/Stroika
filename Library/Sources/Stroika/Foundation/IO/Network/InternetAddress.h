@@ -189,9 +189,9 @@ namespace Stroika::Foundation::IO::Network {
         constexpr InternetAddress (const in6_addr& i);
         constexpr InternetAddress (array<uint8_t, 16> octets, AddressFamily af = AddressFamily::V6);
         constexpr InternetAddress (array<byte, 16> octets, AddressFamily af = AddressFamily::V6);
-        template <Traversal::IIterable ITERABLE_OF_UINT8OrByte>
+        template <ranges::range ITERABLE_OF_UINT8OrByte>
         InternetAddress (ITERABLE_OF_UINT8OrByte octets, AddressFamily af)
-            requires (Traversal::IIterableOfT<ITERABLE_OF_UINT8OrByte, byte> or Traversal::IIterableOfT<ITERABLE_OF_UINT8OrByte, uint8_t>);
+            requires (Traversal::IIterable<ITERABLE_OF_UINT8OrByte, byte> or Traversal::IIterable<ITERABLE_OF_UINT8OrByte, uint8_t>);
 
     public:
         constexpr InternetAddress& operator= (const InternetAddress&) noexcept = default;

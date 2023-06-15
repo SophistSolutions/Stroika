@@ -51,13 +51,13 @@ namespace Stroika::Foundation::Containers::Concrete {
         Set_Array (const initializer_list<value_type>& src);
         template <IEqualsComparer<T> EQUALS_COMPARER>
         Set_Array (EQUALS_COMPARER&& equalsComparer, const initializer_list<value_type>& src);
-        template <IIterableOfT<T> ITERABLE_OF_ADDABLE, enable_if_t<not is_base_of_v<Set_Array<T>, decay_t<ITERABLE_OF_ADDABLE>>>* = nullptr>
+        template <IIterable<T> ITERABLE_OF_ADDABLE, enable_if_t<not is_base_of_v<Set_Array<T>, decay_t<ITERABLE_OF_ADDABLE>>>* = nullptr>
         explicit Set_Array (ITERABLE_OF_ADDABLE&& src);
-        template <IEqualsComparer<T> EQUALS_COMPARER, IIterableOfT<T> ITERABLE_OF_ADDABLE>
+        template <IEqualsComparer<T> EQUALS_COMPARER, IIterable<T> ITERABLE_OF_ADDABLE>
         Set_Array (EQUALS_COMPARER&& equalsComparer, ITERABLE_OF_ADDABLE&& src);
-        template <IInputIteratorOfT<T> ITERATOR_OF_ADDABLE>
+        template <IInputIterator<T> ITERATOR_OF_ADDABLE>
         Set_Array (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
-        template <IEqualsComparer<T> EQUALS_COMPARER, IInputIteratorOfT<T> ITERATOR_OF_ADDABLE>
+        template <IEqualsComparer<T> EQUALS_COMPARER, IInputIterator<T> ITERATOR_OF_ADDABLE>
         Set_Array (EQUALS_COMPARER&& equalsComparer, ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
 
     public:

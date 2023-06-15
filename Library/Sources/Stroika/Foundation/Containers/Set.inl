@@ -46,7 +46,7 @@ namespace Stroika::Foundation::Containers {
     }
 #if !qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
     template <typename T>
-    template <IIterableOfT<T> ITERABLE_OF_ADDABLE>
+    template <IIterable<T> ITERABLE_OF_ADDABLE>
     inline Set<T>::Set (ITERABLE_OF_ADDABLE&& src)
         requires (not derived_from<decay_t<ITERABLE_OF_ADDABLE>, Set<T>>)
         : Set{}
@@ -56,7 +56,7 @@ namespace Stroika::Foundation::Containers {
     }
 #endif
     template <typename T>
-    template <IEqualsComparer<T> EQUALS_COMPARER, IIterableOfT<T> ITERABLE_OF_ADDABLE>
+    template <IEqualsComparer<T> EQUALS_COMPARER, IIterable<T> ITERABLE_OF_ADDABLE>
     inline Set<T>::Set (EQUALS_COMPARER&& equalsComparer, ITERABLE_OF_ADDABLE&& src)
         : Set{forward<EQUALS_COMPARER> (equalsComparer)}
     {
@@ -76,7 +76,7 @@ namespace Stroika::Foundation::Containers {
         _AssertRepValidType ();
     }
     template <typename T>
-    template <IInputIteratorOfT<T> ITERATOR_OF_ADDABLE>
+    template <IInputIterator<T> ITERATOR_OF_ADDABLE>
     inline Set<T>::Set (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
         : Set{}
     {
@@ -84,7 +84,7 @@ namespace Stroika::Foundation::Containers {
         _AssertRepValidType ();
     }
     template <typename T>
-    template <IEqualsComparer<T> EQUALS_COMPARER, IInputIteratorOfT<T> ITERATOR_OF_ADDABLE>
+    template <IEqualsComparer<T> EQUALS_COMPARER, IInputIterator<T> ITERATOR_OF_ADDABLE>
     inline Set<T>::Set (EQUALS_COMPARER&& equalsComparer, ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
         : Set{forward<EQUALS_COMPARER> (equalsComparer)}
     {
@@ -160,7 +160,7 @@ namespace Stroika::Foundation::Containers {
         }
     }
     template <typename T>
-    template <IInputIteratorOfT<T> ITERATOR_OF_ADDABLE>
+    template <IInputIterator<T> ITERATOR_OF_ADDABLE>
     void Set<T>::AddAll (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
     {
         _SafeReadWriteRepAccessor<_IRep> tmp{this};
@@ -169,7 +169,7 @@ namespace Stroika::Foundation::Containers {
         }
     }
     template <typename T>
-    template <IIterableOfT<T> ITERABLE_OF_ADDABLE>
+    template <IIterable<T> ITERABLE_OF_ADDABLE>
     inline void Set<T>::AddAll (ITERABLE_OF_ADDABLE&& items)
     {
         if constexpr (std::is_convertible_v<decay_t<ITERABLE_OF_ADDABLE>*, const Iterable<value_type>*>) {
@@ -200,7 +200,7 @@ namespace Stroika::Foundation::Containers {
         return _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().RemoveIf (item);
     }
     template <typename T>
-    template <IInputIteratorOfT<T> ITERATOR_OF_ADDABLE>
+    template <IInputIterator<T> ITERATOR_OF_ADDABLE>
     inline size_t Set<T>::RemoveAll (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
     {
         size_t cnt{};
@@ -211,7 +211,7 @@ namespace Stroika::Foundation::Containers {
         return cnt;
     }
     template <typename T>
-    template <IIterableOfT<T> ITERABLE_OF_ADDABLE>
+    template <IIterable<T> ITERABLE_OF_ADDABLE>
     inline size_t Set<T>::RemoveAll (const ITERABLE_OF_ADDABLE& s)
     {
         return RemoveAll (std::begin (s), std::end (s));

@@ -138,7 +138,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         AssertRepValidType_ ();
     }
     template <typename T>
-    template <IIterableOfT<T> ITERABLE_OF_ADDABLE, enable_if_t<not is_base_of_v<Queue_DoublyLinkedList<T>, decay_t<ITERABLE_OF_ADDABLE>>>*>
+    template <IIterable<T> ITERABLE_OF_ADDABLE, enable_if_t<not is_base_of_v<Queue_DoublyLinkedList<T>, decay_t<ITERABLE_OF_ADDABLE>>>*>
     inline Queue_DoublyLinkedList<T>::Queue_DoublyLinkedList (ITERABLE_OF_ADDABLE&& src)
         : Queue_DoublyLinkedList{}
     {
@@ -146,7 +146,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         AssertRepValidType_ ();
     }
     template <typename T>
-    template <IInputIteratorOfT<T> ITERATOR_OF_ADDABLE>
+    template <IInputIterator<T> ITERATOR_OF_ADDABLE>
     inline Queue_DoublyLinkedList<T>::Queue_DoublyLinkedList (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
         : Queue_DoublyLinkedList{}
     {

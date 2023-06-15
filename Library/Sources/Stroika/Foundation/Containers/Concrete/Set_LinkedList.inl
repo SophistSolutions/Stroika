@@ -200,7 +200,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         AssertRepValidType_ ();
     }
     template <typename T>
-    template <IIterableOfT<T> ITERABLE_OF_ADDABLE, enable_if_t<not is_base_of_v<Set_LinkedList<T>, decay_t<ITERABLE_OF_ADDABLE>>>*>
+    template <IIterable<T> ITERABLE_OF_ADDABLE, enable_if_t<not is_base_of_v<Set_LinkedList<T>, decay_t<ITERABLE_OF_ADDABLE>>>*>
     inline Set_LinkedList<T>::Set_LinkedList (ITERABLE_OF_ADDABLE&& src)
         : Set_LinkedList{}
     {
@@ -208,7 +208,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         AssertRepValidType_ ();
     }
     template <typename T>
-    template <IEqualsComparer<T> EQUALS_COMPARER, IIterableOfT<T> ITERABLE_OF_ADDABLE>
+    template <IEqualsComparer<T> EQUALS_COMPARER, IIterable<T> ITERABLE_OF_ADDABLE>
     inline Set_LinkedList<T>::Set_LinkedList (EQUALS_COMPARER&& equalsComparer, ITERABLE_OF_ADDABLE&& src)
         : Set_LinkedList{forward<EQUALS_COMPARER> (equalsComparer)}
     {
@@ -216,7 +216,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         AssertRepValidType_ ();
     }
     template <typename T>
-    template <IInputIteratorOfT<T> ITERATOR_OF_ADDABLE>
+    template <IInputIterator<T> ITERATOR_OF_ADDABLE>
     inline Set_LinkedList<T>::Set_LinkedList (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
         : Set_LinkedList{}
     {
@@ -224,7 +224,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         AssertRepValidType_ ();
     }
     template <typename T>
-    template <IEqualsComparer<T> EQUALS_COMPARER, IInputIteratorOfT<T> ITERATOR_OF_ADDABLE>
+    template <IEqualsComparer<T> EQUALS_COMPARER, IInputIterator<T> ITERATOR_OF_ADDABLE>
     inline Set_LinkedList<T>::Set_LinkedList (EQUALS_COMPARER&& equalsComparer, ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
         : Set_LinkedList{forward<EQUALS_COMPARER> (equalsComparer)}
     {

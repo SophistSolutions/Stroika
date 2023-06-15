@@ -51,8 +51,6 @@
  *
  *      @todo   REDO DOCS FOR ITERABLE - SO CLEAR ITS ALSO THE BASIS OF "GENERATORS". IT COULD  BE RENAMED
  *              GENERATOR (though don't)
- *
- *      @todo   since Iterator<T> now uses iterator<> traits stuff, so should Iterable<T>?
  */
 
 namespace Stroika::Foundation::Characters {
@@ -64,15 +62,7 @@ namespace Stroika::Foundation::Traversal {
     using Configuration::ArgByValueType;
 
     /**
-     *  Concept IIterable just checks if there is begin/end etc - can iterate over the argument - exactly 'ranges::range'
-     * 
-     *  @See IIterableOfT
-     */
-    template <typename ITERABLE>
-    concept IIterable = ranges::range<ITERABLE>;
-
-    /**
-     *  IIterableOfT - concept can iterate over ITERABLE and read values converted to OF_T
+     *  IIterable - concept can iterate over ITERABLE (ranges::range) and read values converted to OF_T
      *
      *  Checks if argument is IIterable<> and if the value of items iterated over is convertible to OF_T.
      * 
@@ -84,11 +74,11 @@ namespace Stroika::Foundation::Traversal {
      *  @See IIterable
      */
     template <typename ITERABLE, typename OF_T>
-    concept IIterableOfT = IIterable<ITERABLE> and is_convertible_v<ranges::range_value_t<ITERABLE>, OF_T>;
-    static_assert (IIterableOfT<vector<int>, int>);
-    static_assert (IIterableOfT<vector<long int>, int>);
-    static_assert (IIterableOfT<vector<int>, long int>);
-    static_assert (not IIterableOfT<vector<string>, int>);
+    concept IIterable = ranges::range<ITERABLE> and is_convertible_v<ranges::range_value_t<ITERABLE>, OF_T>;
+    static_assert (IIterable<vector<int>, int>);
+    static_assert (IIterable<vector<long int>, int>);
+    static_assert (IIterable<vector<int>, long int>);
+    static_assert (not IIterable<vector<string>, int>);
 
     /**
      *  \brief  Iterable<T> is a base class for containers which easily produce an Iterator<T>

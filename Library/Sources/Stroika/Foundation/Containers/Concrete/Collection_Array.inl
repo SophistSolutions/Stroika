@@ -145,7 +145,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         AssertRepValidType_ ();
     }
     template <typename T>
-    template <IInputIteratorOfT<T> ITERATOR_OF_ADDABLE>
+    template <IInputIterator<T> ITERATOR_OF_ADDABLE>
     inline Collection_Array<T>::Collection_Array (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
         : Collection_Array{}
     {
@@ -167,10 +167,10 @@ namespace Stroika::Foundation::Containers::Concrete {
     }
     template <typename T>
 #if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
-    template <IIterableOfT<T> ITERABLE_OF_ADDABLE, enable_if_t<not is_base_of_v<Collection_Array<T>, decay_t<ITERABLE_OF_ADDABLE>>>*>
+    template <IIterable<T> ITERABLE_OF_ADDABLE, enable_if_t<not is_base_of_v<Collection_Array<T>, decay_t<ITERABLE_OF_ADDABLE>>>*>
     inline Collection_Array<T>::Collection_Array (ITERABLE_OF_ADDABLE&& src)
 #else
-    template <IIterableOfT<T> ITERABLE_OF_ADDABLE>
+    template <IIterable<T> ITERABLE_OF_ADDABLE>
     inline Collection_Array<T>::Collection_Array (ITERABLE_OF_ADDABLE&& src)
         requires (not is_base_of_v<Collection_Array<T>, decay_t<ITERABLE_OF_ADDABLE>>)
 #endif

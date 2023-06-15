@@ -57,7 +57,7 @@ namespace Stroika::Foundation::Containers {
     }
 #if !qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
     template <typename T>
-    template <IIterableOfT<T> ITERABLE_OF_ADDABLE>
+    template <IIterable<T> ITERABLE_OF_ADDABLE>
     inline SortedCollection<T>::SortedCollection (ITERABLE_OF_ADDABLE&& src)
         requires (not is_base_of_v<SortedCollection<T>, decay_t<ITERABLE_OF_ADDABLE>>)
         : SortedCollection{}
@@ -67,7 +67,7 @@ namespace Stroika::Foundation::Containers {
     }
 #endif
     template <typename T>
-    template <IInOrderComparer<T> INORDER_COMPARER, IIterableOfT<T> ITERABLE_OF_ADDABLE>
+    template <IInOrderComparer<T> INORDER_COMPARER, IIterable<T> ITERABLE_OF_ADDABLE>
     inline SortedCollection<T>::SortedCollection (INORDER_COMPARER&& inOrderComparer, ITERABLE_OF_ADDABLE&& src)
         : SortedCollection{forward<INORDER_COMPARER> (inOrderComparer)}
     {
@@ -75,7 +75,7 @@ namespace Stroika::Foundation::Containers {
         _AssertRepValidType ();
     }
     template <typename T>
-    template <IInputIteratorOfT<T> ITERATOR_OF_ADDABLE>
+    template <IInputIterator<T> ITERATOR_OF_ADDABLE>
     inline SortedCollection<T>::SortedCollection (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
         : SortedCollection{}
     {
@@ -83,7 +83,7 @@ namespace Stroika::Foundation::Containers {
         _AssertRepValidType ();
     }
     template <typename T>
-    template <IInOrderComparer<T> INORDER_COMPARER, IInputIteratorOfT<T> ITERATOR_OF_ADDABLE>
+    template <IInOrderComparer<T> INORDER_COMPARER, IInputIterator<T> ITERATOR_OF_ADDABLE>
     inline SortedCollection<T>::SortedCollection (INORDER_COMPARER&& inOrderComparer, ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
         : SortedCollection{forward<INORDER_COMPARER> (inOrderComparer)}
     {

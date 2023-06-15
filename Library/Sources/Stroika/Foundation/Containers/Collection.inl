@@ -28,7 +28,7 @@ namespace Stroika::Foundation::Containers {
         _AssertRepValidType ();
     }
     template <typename T>
-    template <IInputIteratorOfT<T> ITERATOR_OF_ADDABLE>
+    template <IInputIterator<T> ITERATOR_OF_ADDABLE>
     inline Collection<T>::Collection (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
         : Collection{}
     {
@@ -57,7 +57,7 @@ namespace Stroika::Foundation::Containers {
     }
 #if !qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
     template <typename T>
-    template <IIterableOfT<T> ITERABLE_OF_ADDABLE>
+    template <IIterable<T> ITERABLE_OF_ADDABLE>
     inline Collection<T>::Collection (ITERABLE_OF_ADDABLE&& src)
         requires (not derived_from<decay_t<ITERABLE_OF_ADDABLE>, Collection<T>>)
         : Collection{}
@@ -73,7 +73,7 @@ namespace Stroika::Foundation::Containers {
         return this->Find (item, forward<EQUALS_COMPARER> (equalsComparer)) != this->end ();
     }
     template <typename T>
-    template <IInputIteratorOfT<T> ITERATOR_OF_ADDABLE>
+    template <IInputIterator<T> ITERATOR_OF_ADDABLE>
     void Collection<T>::AddAll (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
     {
         _SafeReadWriteRepAccessor<_IRep> tmp{this};
@@ -82,7 +82,7 @@ namespace Stroika::Foundation::Containers {
         }
     }
     template <typename T>
-    template <IIterableOfT<T> ITERABLE_OF_ADDABLE>
+    template <IIterable<T> ITERABLE_OF_ADDABLE>
     inline void Collection<T>::AddAll (ITERABLE_OF_ADDABLE&& items)
     {
         if constexpr (std::is_convertible_v<decay_t<ITERABLE_OF_ADDABLE>*, Collection<value_type>*>) {
@@ -166,7 +166,7 @@ namespace Stroika::Foundation::Containers {
         return cnt;
     }
     template <typename T>
-    template <IIterableOfT<T> ITERABLE_OF_ADDABLE, typename EQUALS_COMPARER>
+    template <IIterable<T> ITERABLE_OF_ADDABLE, typename EQUALS_COMPARER>
     inline size_t Collection<T>::RemoveAll (const ITERABLE_OF_ADDABLE& c, EQUALS_COMPARER&& equalsComparer)
     {
         if (static_cast<const void*> (this) == static_cast<const void*> (addressof (c))) {

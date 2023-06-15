@@ -658,17 +658,17 @@ namespace Stroika::Foundation::Traversal {
     constexpr typename iterator_traits<ITERATOR>::pointer Iterator2Pointer (ITERATOR i);
 
     /**
-     *  IInputIteratorOfT - concept can iterate over ITERATOR and read returned values converted to OF_T
+     *  IInputIterator - concept can iterate over ITERATOR and read returned values converted to OF_T
      * 
      *  \note this does not require the input iterator is OF T objects, merely that the T objects it iterates over
      *  can be converted to OF_T objects.
      */
     template <typename ITERATOR, typename OF_T>
-    concept IInputIteratorOfT = input_iterator<ITERATOR> and is_convertible_v<std::iter_value_t<ITERATOR>, OF_T>;
-    static_assert (IInputIteratorOfT<Iterator<int>, int>);
-    static_assert (IInputIteratorOfT<Iterator<long int>, int>);
-    static_assert (IInputIteratorOfT<Iterator<int>, long int>);
-    static_assert (not IInputIteratorOfT<Iterator<string>, int>);
+    concept IInputIterator = input_iterator<ITERATOR> and is_convertible_v<std::iter_value_t<ITERATOR>, OF_T>;
+    static_assert (IInputIterator<Iterator<int>, int>);
+    static_assert (IInputIterator<Iterator<long int>, int>);
+    static_assert (IInputIterator<Iterator<int>, long int>);
+    static_assert (not IInputIterator<Iterator<string>, int>);
 
 }
 

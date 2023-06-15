@@ -362,7 +362,7 @@ namespace Stroika::Foundation::Configuration {
     constexpr inline bool has_beginend_v = is_detected_v<Private_::has_beginend_t, T>;
 
     template <typename ITERABLE_OF_T, typename T>
-    [[deprecated ("Since Stroika v3.0d1 use Traversal::IIterableOfT concept")]] constexpr bool IsIterableOfT_v =
+    [[deprecated ("Since Stroika v3.0d1 use Traversal::IIterable concept")]] constexpr bool IsIterableOfT_v =
         Private_::IsIterableOfT_t<ITERABLE_OF_T, T>::value;
 
     /**

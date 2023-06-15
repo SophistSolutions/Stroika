@@ -51,8 +51,8 @@ namespace Stroika::Foundation::Containers {
     using Common::CountedValue;
     using Common::IEqualsComparer;
     using Configuration::ArgByValueType;
-    using Traversal::IInputIteratorOfT;
-    using Traversal::IIterableOfT;
+    using Traversal::IInputIterator;
+    using Traversal::IIterable;
     using Traversal::Iterable;
     using Traversal::Iterator;
 
@@ -190,7 +190,7 @@ namespace Stroika::Foundation::Containers {
         MultiSet (const initializer_list<value_type>& src);
         template <IEqualsComparer<T> EQUALS_COMPARER>
         MultiSet (EQUALS_COMPARER&& equalsComparer, const initializer_list<value_type>& src);
-        template <IIterableOfT<CountedValue<T>> ITERABLE_OF_ADDABLE>
+        template <IIterable<CountedValue<T>> ITERABLE_OF_ADDABLE>
         explicit MultiSet (ITERABLE_OF_ADDABLE&& src)
             requires (not derived_from<decay_t<ITERABLE_OF_ADDABLE>, MultiSet<T, TRAITS>>)
 #if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
@@ -201,11 +201,11 @@ namespace Stroika::Foundation::Containers {
         }
 #endif
         ;
-        template <IEqualsComparer<T> EQUALS_COMPARER, IIterableOfT<CountedValue<T>> ITERABLE_OF_ADDABLE>
+        template <IEqualsComparer<T> EQUALS_COMPARER, IIterable<CountedValue<T>> ITERABLE_OF_ADDABLE>
         MultiSet (EQUALS_COMPARER&& equalsComparer, ITERABLE_OF_ADDABLE&& src);
-        template <IInputIteratorOfT<CountedValue<T>> ITERATOR_OF_ADDABLE>
+        template <IInputIterator<CountedValue<T>> ITERATOR_OF_ADDABLE>
         MultiSet (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
-        template <IEqualsComparer<T> EQUALS_COMPARER, IInputIteratorOfT<CountedValue<T>> ITERATOR_OF_ADDABLE>
+        template <IEqualsComparer<T> EQUALS_COMPARER, IInputIterator<CountedValue<T>> ITERATOR_OF_ADDABLE>
         MultiSet (EQUALS_COMPARER&& equalsComparer, ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
 
     protected:
@@ -236,13 +236,13 @@ namespace Stroika::Foundation::Containers {
          *  \note   AddAll/2 is alias for .net AddRange ()
          *          and AddAll/2 - the iterator can be Iterator<T> or Iterator<CountedValue<T>>
          *
-         *  \req IInputIteratorOfT<CountedValue<T>> or IIterableOfT<CountedValue<T>>
+         *  \req IInputIterator<CountedValue<T>> or IIterable<CountedValue<T>>
          *
          *  \note mutates container
          */
-        template <IInputIteratorOfT<CountedValue<T>> ITERATOR_OF_ADDABLE>
+        template <IInputIterator<CountedValue<T>> ITERATOR_OF_ADDABLE>
         nonvirtual void AddAll (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
-        template <IIterableOfT<CountedValue<T>> ITERABLE_OF_ADDABLE>
+        template <IIterable<CountedValue<T>> ITERABLE_OF_ADDABLE>
         nonvirtual void AddAll (ITERABLE_OF_ADDABLE&& items);
 
     public:
