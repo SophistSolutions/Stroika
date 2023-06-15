@@ -262,7 +262,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         AssertRepValidType_ ();
     }
     template <typename T, typename TRAITS>
-    template <IIterable<CountedValue<T>> ITERABLE_OF_ADDABLE, enable_if_t<not is_base_of_v<SortedMultiSet_stdmap<T, TRAITS>, decay_t<ITERABLE_OF_ADDABLE>>>*>
+    template <IIterable<CountedValue<T>> ITERABLE_OF_ADDABLE, enable_if_t<not is_base_of_v<SortedMultiSet_stdmap<T, TRAITS>, remove_cvref_t<ITERABLE_OF_ADDABLE>>>*>
     inline SortedMultiSet_stdmap<T, TRAITS>::SortedMultiSet_stdmap (ITERABLE_OF_ADDABLE&& src)
         : SortedMultiSet_stdmap{}
     {

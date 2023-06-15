@@ -51,12 +51,12 @@ namespace Stroika::Foundation::Containers::Concrete {
         Association_LinkedList (KEY_EQUALS_COMPARER&& keyEqualsComparer, const initializer_list<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src);
 #if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
         template <IIterable<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> ITERABLE_OF_ADDABLE,
-                  enable_if_t<not derived_from<decay_t<ITERABLE_OF_ADDABLE>, Association_LinkedList<KEY_TYPE, MAPPED_VALUE_TYPE>>>* = nullptr>
+                  enable_if_t<not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, Association_LinkedList<KEY_TYPE, MAPPED_VALUE_TYPE>>>* = nullptr>
         explicit Association_LinkedList (ITERABLE_OF_ADDABLE&& src);
 #else
         template <IIterable<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> ITERABLE_OF_ADDABLE>
         explicit Association_LinkedList (ITERABLE_OF_ADDABLE&& src)
-            requires (not derived_from<decay_t<ITERABLE_OF_ADDABLE>, Association_LinkedList<KEY_TYPE, MAPPED_VALUE_TYPE>>);
+            requires (not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, Association_LinkedList<KEY_TYPE, MAPPED_VALUE_TYPE>>);
 #endif
         template <IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER, IIterable<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> ITERABLE_OF_ADDABLE>
         Association_LinkedList (KEY_EQUALS_COMPARER&& keyEqualsComparer, ITERABLE_OF_ADDABLE&& src);

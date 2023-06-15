@@ -51,7 +51,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         MultiSet_Array (const initializer_list<value_type>& src);
         template <IEqualsComparer<T> EQUALS_COMPARER>
         MultiSet_Array (EQUALS_COMPARER&& equalsComparer, const initializer_list<value_type>& src);
-        template <IIterable<CountedValue<T>> ITERABLE_OF_ADDABLE, enable_if_t<not is_base_of_v<MultiSet_Array<T, TRAITS>, decay_t<ITERABLE_OF_ADDABLE>>>* = nullptr>
+        template <IIterable<CountedValue<T>> ITERABLE_OF_ADDABLE, enable_if_t<not is_base_of_v<MultiSet_Array<T, TRAITS>, remove_cvref_t<ITERABLE_OF_ADDABLE>>>* = nullptr>
         explicit MultiSet_Array (ITERABLE_OF_ADDABLE&& src);
         template <IEqualsComparer<T> EQUALS_COMPARER, IIterable<CountedValue<T>> ITERABLE_OF_ADDABLE>
         MultiSet_Array (EQUALS_COMPARER&& equalsComparer, ITERABLE_OF_ADDABLE&& src);

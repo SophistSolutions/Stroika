@@ -210,7 +210,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         AssertRepValidType_ ();
     }
     template <typename T>
-    template <IIterable<T> ITERABLE_OF_ADDABLE, enable_if_t<not is_base_of_v<SortedCollection_stdmultiset<T>, decay_t<ITERABLE_OF_ADDABLE>>>*>
+    template <IIterable<T> ITERABLE_OF_ADDABLE, enable_if_t<not is_base_of_v<SortedCollection_stdmultiset<T>, remove_cvref_t<ITERABLE_OF_ADDABLE>>>*>
     inline SortedCollection_stdmultiset<T>::SortedCollection_stdmultiset (ITERABLE_OF_ADDABLE&& src)
         : SortedCollection_stdmultiset{}
     {

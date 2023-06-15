@@ -140,8 +140,8 @@ namespace Stroika::Foundation::Containers {
          *  All constructors either copy their source comparer (copy/move CTOR), or use the provided argument comparer
          *  (which in turn defaults to equal_to<T>).
          *
-         *  \note For efficiency sake, the base constructor takes a templated EQUALS_COMPARER (avoiding translation to function<bool(T,T)>>, but
-         *        for simplicity sake, many of the other constructors force that conversion.
+         *  \note For efficiency sake, the base constructor takes a templated EQUALS_COMPARER (avoiding translation to function<bool(T,T)>>
+         *        so the REP can see the actual type, but the container API itself erases this specific type using std::function.
          *
          *  \note   <a href="ReadMe.md#Container Constructors">See general information about container constructors that applies here</a>
          *
@@ -174,7 +174,7 @@ namespace Stroika::Foundation::Containers {
         Set (EQUALS_COMPARER&& equalsComparer, const initializer_list<value_type>& src);
         template <IIterable<T> ITERABLE_OF_ADDABLE>
         explicit Set (ITERABLE_OF_ADDABLE&& src)
-            requires (not derived_from<decay_t<ITERABLE_OF_ADDABLE>, Set<T>>)
+            requires (not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, Set<T>>)
 #if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
             : Set{}
         {

@@ -23,7 +23,7 @@ namespace Stroika::Foundation::Containers {
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     template <IInOrderComparer<KEY_TYPE> KEY_INORDER_COMPARER>
     inline SortedMapping<KEY_TYPE, MAPPED_VALUE_TYPE>::SortedMapping (KEY_INORDER_COMPARER&& inorderComparer)
-        : inherited{Factory::SortedMapping_Factory<KEY_TYPE, MAPPED_VALUE_TYPE, decay_t<KEY_INORDER_COMPARER>>::Default () (
+        : inherited{Factory::SortedMapping_Factory<KEY_TYPE, MAPPED_VALUE_TYPE, remove_cvref_t<KEY_INORDER_COMPARER>>::Default () (
               forward<KEY_INORDER_COMPARER> (inorderComparer))}
     {
         _AssertRepValidType ();
@@ -48,7 +48,7 @@ namespace Stroika::Foundation::Containers {
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     template <IIterable<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> ITERABLE_OF_ADDABLE>
     inline SortedMapping<KEY_TYPE, MAPPED_VALUE_TYPE>::SortedMapping (ITERABLE_OF_ADDABLE&& src)
-        requires (not is_base_of_v<SortedMapping<KEY_TYPE, MAPPED_VALUE_TYPE>, decay_t<ITERABLE_OF_ADDABLE>>)
+        requires (not is_base_of_v<SortedMapping<KEY_TYPE, MAPPED_VALUE_TYPE>, remove_cvref_t<ITERABLE_OF_ADDABLE>>)
         : SortedMapping{}
     {
         _AssertRepValidType ();

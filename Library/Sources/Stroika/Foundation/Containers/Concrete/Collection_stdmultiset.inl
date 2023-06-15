@@ -180,7 +180,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     template <typename T>
     template <IIterable<T> ITERABLE_OF_ADDABLE>
     inline Collection_stdmultiset<T>::Collection_stdmultiset (ITERABLE_OF_ADDABLE&& src)
-        requires (not is_base_of_v<Collection_stdmultiset<T>, decay_t<ITERABLE_OF_ADDABLE>>)
+        requires (not is_base_of_v<Collection_stdmultiset<T>, remove_cvref_t<ITERABLE_OF_ADDABLE>>)
         : Collection_stdmultiset{}
     {
         this->AddAll (forward<ITERABLE_OF_ADDABLE> (src));

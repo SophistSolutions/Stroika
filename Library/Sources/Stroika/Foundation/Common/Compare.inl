@@ -122,11 +122,11 @@ namespace Stroika::Foundation::Common {
      ********************************************************************************
      */
     template <typename FUNCTOR>
-    constexpr inline Common::ComparisonRelationDeclaration<ComparisonRelationType::eEquals, decay_t<FUNCTOR>> DeclareEqualsComparer (FUNCTOR&& f)
+    constexpr inline Common::ComparisonRelationDeclaration<ComparisonRelationType::eEquals, remove_cvref_t<FUNCTOR>> DeclareEqualsComparer (FUNCTOR&& f)
     {
         static_assert (
-            IsPotentiallyComparerRelation<decay_t<FUNCTOR>, typename Configuration::function_traits<decay_t<FUNCTOR>>::template arg<0>::type> ());
-        return Common::ComparisonRelationDeclaration<ComparisonRelationType::eEquals, decay_t<FUNCTOR>>{std::forward<FUNCTOR> (f)};
+            IsPotentiallyComparerRelation<remove_cvref_t<FUNCTOR>, typename Configuration::function_traits<remove_cvref_t<FUNCTOR>>::template arg<0>::type> ());
+        return Common::ComparisonRelationDeclaration<ComparisonRelationType::eEquals, remove_cvref_t<FUNCTOR>>{std::forward<FUNCTOR> (f)};
     }
 
     /*
@@ -135,11 +135,12 @@ namespace Stroika::Foundation::Common {
      ********************************************************************************
      */
     template <typename FUNCTOR>
-    constexpr inline Common::ComparisonRelationDeclaration<ComparisonRelationType::eStrictInOrder, decay_t<FUNCTOR>> DeclareInOrderComparer (FUNCTOR&& f)
+    constexpr inline Common::ComparisonRelationDeclaration<ComparisonRelationType::eStrictInOrder, remove_cvref_t<FUNCTOR>>
+    DeclareInOrderComparer (FUNCTOR&& f)
     {
         static_assert (
-            IsPotentiallyComparerRelation<decay_t<FUNCTOR>, typename Configuration::function_traits<decay_t<FUNCTOR>>::template arg<0>::type> ());
-        return Common::ComparisonRelationDeclaration<ComparisonRelationType::eStrictInOrder, decay_t<FUNCTOR>>{std::forward<FUNCTOR> (f)};
+            IsPotentiallyComparerRelation<remove_cvref_t<FUNCTOR>, typename Configuration::function_traits<remove_cvref_t<FUNCTOR>>::template arg<0>::type> ());
+        return Common::ComparisonRelationDeclaration<ComparisonRelationType::eStrictInOrder, remove_cvref_t<FUNCTOR>>{std::forward<FUNCTOR> (f)};
     }
 
     /*
@@ -266,7 +267,7 @@ namespace Stroika::Foundation::Common {
     template <typename COMPARER>
     [[deprecated ("Since Stroika 3.0d1 - use IEqualsComparer")]] constexpr bool IsEqualsComparer ()
     {
-        return ExtractComparisonTraits<std::decay_t<COMPARER>>::kComparisonRelationKind == ComparisonRelationType::eEquals;
+        return ExtractComparisonTraits<std::remove_cvref_t<COMPARER>>::kComparisonRelationKind == ComparisonRelationType::eEquals;
     }
     template <typename COMPARER, typename ARG_T>
     [[deprecated ("Since Stroika 3.0d1 - use IEqualsComparer")]] constexpr bool IsEqualsComparer ()
@@ -275,7 +276,7 @@ namespace Stroika::Foundation::Common {
             return false;
         }
         else {
-            return ExtractComparisonTraits<std::decay_t<COMPARER>>::kComparisonRelationKind == ComparisonRelationType::eEquals;
+            return ExtractComparisonTraits<std::remove_cvref_t<COMPARER>>::kComparisonRelationKind == ComparisonRelationType::eEquals;
         }
     }
     template <typename COMPARER>
@@ -286,7 +287,7 @@ namespace Stroika::Foundation::Common {
     template <typename COMPARER>
     [[deprecated ("Since Stroika 3.0d1 - use IInOrderComparer")]] constexpr bool IsStrictInOrderComparer ()
     {
-        return ExtractComparisonTraits<std::decay_t<COMPARER>>::kComparisonRelationKind == ComparisonRelationType::eStrictInOrder;
+        return ExtractComparisonTraits<std::remove_cvref_t<COMPARER>>::kComparisonRelationKind == ComparisonRelationType::eStrictInOrder;
     }
     template <typename COMPARER, typename ARG_T>
     [[deprecated ("Since Stroika 3.0d1 - use IInOrderComparer")]] constexpr bool IsStrictInOrderComparer ()
@@ -295,13 +296,13 @@ namespace Stroika::Foundation::Common {
             return false;
         }
         else {
-            return ExtractComparisonTraits<std::decay_t<COMPARER>>::kComparisonRelationKind == ComparisonRelationType::eStrictInOrder;
+            return ExtractComparisonTraits<std::remove_cvref_t<COMPARER>>::kComparisonRelationKind == ComparisonRelationType::eStrictInOrder;
         }
     }
     template <typename COMPARER>
     [[deprecated ("Since Stroika 3.0d1 - use IInOrderComparer")]] constexpr bool IsStrictInOrderComparer (const COMPARER&)
     {
-        return ExtractComparisonTraits<std::decay_t<COMPARER>>::kComparisonRelationKind == ComparisonRelationType::eStrictInOrder;
+        return ExtractComparisonTraits<std::remove_cvref_t<COMPARER>>::kComparisonRelationKind == ComparisonRelationType::eStrictInOrder;
     }
 
 }

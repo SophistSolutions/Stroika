@@ -25,7 +25,7 @@ namespace Stroika::Foundation::Containers {
     template <typename T, typename KEY_TYPE, typename TRAITS>
     template <IInOrderComparer<KEY_TYPE> KEY_INORDER_COMPARER>
     SortedKeyedCollection<T, KEY_TYPE, TRAITS>::SortedKeyedCollection (const KeyExtractorType& keyExtractor, KEY_INORDER_COMPARER&& keyComparer)
-        : inherited (Factory::SortedKeyedCollection_Factory<T, KEY_TYPE, TRAITS, decay_t<KEY_INORDER_COMPARER>>::Default () (
+        : inherited (Factory::SortedKeyedCollection_Factory<T, KEY_TYPE, TRAITS, remove_cvref_t<KEY_INORDER_COMPARER>>::Default () (
               keyExtractor, forward<KEY_INORDER_COMPARER> (keyComparer)))
     {
         _AssertRepValidType ();
@@ -34,7 +34,7 @@ namespace Stroika::Foundation::Containers {
     template <typename T, typename KEY_TYPE, typename TRAITS>
     template <IIterable<T> ITERABLE_OF_ADDABLE, IInOrderComparer<KEY_TYPE> KEY_INORDER_COMPARER>
     inline SortedKeyedCollection<T, KEY_TYPE, TRAITS>::SortedKeyedCollection (ITERABLE_OF_ADDABLE&& src)
-        requires (not derived_from<decay_t<ITERABLE_OF_ADDABLE>, SortedKeyedCollection<T, KEY_TYPE, TRAITS>>)
+        requires (not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, SortedKeyedCollection<T, KEY_TYPE, TRAITS>>)
         : SortedKeyedCollection{KeyExtractorType{}, KEY_INORDER_COMPARER{}}
     {
         this->AddAll (src);

@@ -52,7 +52,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         Set_LinkedList (const initializer_list<value_type>& src);
         template <IEqualsComparer<T> EQUALS_COMPARER>
         Set_LinkedList (EQUALS_COMPARER&& equalsComparer, const initializer_list<value_type>& src);
-        template <IIterable<T> ITERABLE_OF_ADDABLE, enable_if_t<not derived_from<decay_t<ITERABLE_OF_ADDABLE>, Set_LinkedList<T>>>* = nullptr>
+        template <IIterable<T> ITERABLE_OF_ADDABLE, enable_if_t<not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, Set_LinkedList<T>>>* = nullptr>
         explicit Set_LinkedList (ITERABLE_OF_ADDABLE&& src);
         template <IEqualsComparer<T> EQUALS_COMPARER, IIterable<T> ITERABLE_OF_ADDABLE>
         Set_LinkedList (EQUALS_COMPARER&& equalsComparer, ITERABLE_OF_ADDABLE&& src);

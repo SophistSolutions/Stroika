@@ -46,12 +46,12 @@ namespace Stroika::Foundation::Containers::Concrete {
         Collection_Array (const Collection_Array& src) noexcept = default;
         Collection_Array (const initializer_list<value_type>& src);
 #if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
-        template <IIterable<T> ITERABLE_OF_ADDABLE, enable_if_t<not is_base_of_v<Collection_Array<T>, decay_t<ITERABLE_OF_ADDABLE>>>* = nullptr>
+        template <IIterable<T> ITERABLE_OF_ADDABLE, enable_if_t<not is_base_of_v<Collection_Array<T>, remove_cvref_t<ITERABLE_OF_ADDABLE>>>* = nullptr>
         Collection_Array (ITERABLE_OF_ADDABLE&& src);
 #else
         template <IIterable<T> ITERABLE_OF_ADDABLE>
         Collection_Array (ITERABLE_OF_ADDABLE&& src)
-            requires (not is_base_of_v<Collection_Array<T>, decay_t<ITERABLE_OF_ADDABLE>>);
+            requires (not is_base_of_v<Collection_Array<T>, remove_cvref_t<ITERABLE_OF_ADDABLE>>);
 #endif
         template <IInputIterator<T> ITERATOR_OF_ADDABLE>
         Collection_Array (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);

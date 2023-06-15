@@ -32,7 +32,7 @@ namespace Stroika::Foundation::Containers {
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     template <IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER>
     inline Association<KEY_TYPE, MAPPED_VALUE_TYPE>::Association (KEY_EQUALS_COMPARER&& keyEqualsComparer)
-        : inherited{Factory::Association_Factory<KEY_TYPE, MAPPED_VALUE_TYPE, decay_t<KEY_EQUALS_COMPARER>>::Default () (
+        : inherited{Factory::Association_Factory<KEY_TYPE, MAPPED_VALUE_TYPE, remove_cvref_t<KEY_EQUALS_COMPARER>>::Default () (
               forward<KEY_EQUALS_COMPARER> (keyEqualsComparer))}
     {
         _AssertRepValidType ();
@@ -57,7 +57,7 @@ namespace Stroika::Foundation::Containers {
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     template <IIterable<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> ITERABLE_OF_ADDABLE>
     inline Association<KEY_TYPE, MAPPED_VALUE_TYPE>::Association (ITERABLE_OF_ADDABLE&& src)
-        requires (not derived_from<decay_t<ITERABLE_OF_ADDABLE>, Association<KEY_TYPE, MAPPED_VALUE_TYPE>>)
+        requires (not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, Association<KEY_TYPE, MAPPED_VALUE_TYPE>>)
         : Association{}
     {
         AddAll (forward<ITERABLE_OF_ADDABLE> (src));
@@ -186,7 +186,7 @@ namespace Stroika::Foundation::Containers {
     template <IIterable<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> ITERABLE_OF_ADDABLE>
     inline void Association<KEY_TYPE, MAPPED_VALUE_TYPE>::AddAll (ITERABLE_OF_ADDABLE&& items)
     {
-        if constexpr (std::is_convertible_v<decay_t<ITERABLE_OF_ADDABLE>*, Iterable<value_type>*>) {
+        if constexpr (std::is_convertible_v<remove_cvref_t<ITERABLE_OF_ADDABLE>*, Iterable<value_type>*>) {
             // very rare corner case
             if (static_cast<const Iterable<value_type>*> (this) == static_cast<const Iterable<value_type>*> (&items)) [[unlikely]] {
                 vector<value_type> copy{std::begin (items), std::end (items)}; // because you can not iterate over a container while modifying it

@@ -197,12 +197,12 @@ namespace Stroika::Foundation::Containers::Concrete {
     template <typename T, typename KEY_TYPE, typename TRAITS>
 #if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
     template <IIterable<T> ITERABLE_OF_ADDABLE, IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER,
-              enable_if_t<not derived_from<decay_t<ITERABLE_OF_ADDABLE>, KeyedCollection_Array<T, KEY_TYPE, TRAITS>>>*>
+              enable_if_t<not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, KeyedCollection_Array<T, KEY_TYPE, TRAITS>>>*>
     inline KeyedCollection_Array<T, KEY_TYPE, TRAITS>::KeyedCollection_Array (ITERABLE_OF_ADDABLE&& src)
 #else
     template <IIterable<T> ITERABLE_OF_ADDABLE, IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER>
     inline KeyedCollection_Array<T, KEY_TYPE, TRAITS>::KeyedCollection_Array (ITERABLE_OF_ADDABLE&& src)
-        requires (not derived_from<decay_t<ITERABLE_OF_ADDABLE>, KeyedCollection_Array<T, KEY_TYPE, TRAITS>>)
+        requires (not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, KeyedCollection_Array<T, KEY_TYPE, TRAITS>>)
 #endif
         : KeyedCollection_Array{KeyExtractorType{}, equal_to<KEY_TYPE>{}}
     {

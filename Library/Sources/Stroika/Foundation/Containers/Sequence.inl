@@ -111,7 +111,7 @@ namespace Stroika::Foundation::Containers {
     template <typename T>
     template <IIterable<T> ITERABLE_OF_ADDABLE>
     inline Sequence<T>::Sequence (ITERABLE_OF_ADDABLE&& src)
-        requires (not derived_from<decay_t<ITERABLE_OF_ADDABLE>, Sequence<T>>)
+        requires (not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, Sequence<T>>)
         : Sequence{}
     {
         AppendAll (forward<ITERABLE_OF_ADDABLE> (src));

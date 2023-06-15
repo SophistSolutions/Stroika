@@ -211,8 +211,8 @@ namespace Stroika::Foundation::Containers {
          *
          *  If TRAITS (TraitsType) has a valid default extractor, enable certain constructors.
          *
-         *  \note For efficiency sake, the base constructor takes a templated EQUALS_COMPARER (avoiding translation to function<bool(T,T)>>, but
-         *        for simplicity sake, many of the other constructors force that conversion.
+         *  \note For efficiency sake, the base constructor takes a templated EQUALS_COMPARER (avoiding translation to function<bool(T,T)>>
+         *        so the REP can see the actual type, but the container API itself erases this specific type using std::function.
          *
          *  \req EqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER - for constructors with that type parameter
          *
@@ -252,7 +252,7 @@ namespace Stroika::Foundation::Containers {
         template <IIterable<T> ITERABLE_OF_ADDABLE, IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER = equal_to<KEY_TYPE>>
         KeyedCollection (ITERABLE_OF_ADDABLE&& src)
             requires (KeyedCollection_ExtractorCanBeDefaulted<T, KEY_TYPE, TRAITS> and
-                      not derived_from<decay_t<ITERABLE_OF_ADDABLE>, KeyedCollection<T, KEY_TYPE, TRAITS>>)
+                      not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, KeyedCollection<T, KEY_TYPE, TRAITS>>)
 #if qCompilerAndStdLib_template_Requires_templateDeclarationMatchesOutOfLine2_Buggy
             : KeyedCollection{KeyExtractorType{}, equal_to<KEY_TYPE>{}}
         {
@@ -264,7 +264,7 @@ namespace Stroika::Foundation::Containers {
         template <IIterable<T> ITERABLE_OF_ADDABLE, IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER = equal_to<KEY_TYPE>>
         KeyedCollection (KEY_EQUALS_COMPARER&& keyComparer, ITERABLE_OF_ADDABLE&& src)
             requires (KeyedCollection_ExtractorCanBeDefaulted<T, KEY_TYPE, TRAITS> and
-                      not derived_from<decay_t<ITERABLE_OF_ADDABLE>, KeyedCollection<T, KEY_TYPE, TRAITS>>)
+                      not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, KeyedCollection<T, KEY_TYPE, TRAITS>>)
 #if qCompilerAndStdLib_template_Requires_templateDeclarationMatchesOutOfLine2_Buggy
             : KeyedCollection{KeyExtractorType{}, forward<KEY_EQUALS_COMPARER> (keyComparer)}
         {

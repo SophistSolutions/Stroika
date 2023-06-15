@@ -53,7 +53,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         SortedCollection_LinkedList (const initializer_list<T>& src);
         template <Common::IInOrderComparer<T> INORDER_COMPARER>
         SortedCollection_LinkedList (INORDER_COMPARER&& inOrderComparer, const initializer_list<T>& src);
-        template <IIterable<T> ITERABLE_OF_ADDABLE, enable_if_t<not is_base_of_v<SortedCollection_LinkedList<T>, decay_t<ITERABLE_OF_ADDABLE>>>* = nullptr>
+        template <IIterable<T> ITERABLE_OF_ADDABLE, enable_if_t<not is_base_of_v<SortedCollection_LinkedList<T>, remove_cvref_t<ITERABLE_OF_ADDABLE>>>* = nullptr>
         explicit SortedCollection_LinkedList (ITERABLE_OF_ADDABLE&& src);
         template <Common::IInOrderComparer<T> INORDER_COMPARER, IIterable<T> ITERABLE_OF_ADDABLE>
         SortedCollection_LinkedList (INORDER_COMPARER&& inOrderComparer, ITERABLE_OF_ADDABLE&& src);

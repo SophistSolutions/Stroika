@@ -59,7 +59,7 @@ namespace Stroika::Foundation::Containers {
     template <typename T>
     template <IIterable<T> ITERABLE_OF_ADDABLE>
     inline Collection<T>::Collection (ITERABLE_OF_ADDABLE&& src)
-        requires (not derived_from<decay_t<ITERABLE_OF_ADDABLE>, Collection<T>>)
+        requires (not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, Collection<T>>)
         : Collection{}
     {
         AddAll (forward<ITERABLE_OF_ADDABLE> (src));
@@ -85,7 +85,7 @@ namespace Stroika::Foundation::Containers {
     template <IIterable<T> ITERABLE_OF_ADDABLE>
     inline void Collection<T>::AddAll (ITERABLE_OF_ADDABLE&& items)
     {
-        if constexpr (std::is_convertible_v<decay_t<ITERABLE_OF_ADDABLE>*, Collection<value_type>*>) {
+        if constexpr (std::is_convertible_v<remove_cvref_t<ITERABLE_OF_ADDABLE>*, Collection<value_type>*>) {
             // very rare corner case
             if (static_cast<const Iterable<value_type>*> (this) == static_cast<const Iterable<value_type>*> (&items)) [[unlikely]] {
                 vector<value_type> copy{std::begin (items), std::end (items)}; // because you can not iterate over a container while modifying it

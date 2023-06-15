@@ -92,12 +92,12 @@ namespace Stroika::Foundation::Containers::Concrete {
         template <IInOrderComparer<KEY_TYPE> KEY_INORDER_COMPARER = less<KEY_TYPE>>
         KeyedCollection_stdset (const KeyExtractorType& keyExtractor, KEY_INORDER_COMPARER&& keyComparer = KEY_INORDER_COMPARER{});
 #if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
-        template <IIterable<T> ITERABLE_OF_ADDABLE, enable_if_t<not is_base_of_v<KeyedCollection_stdset<T, KEY_TYPE, TRAITS>, decay_t<ITERABLE_OF_ADDABLE>>>* = nullptr>
+        template <IIterable<T> ITERABLE_OF_ADDABLE, enable_if_t<not is_base_of_v<KeyedCollection_stdset<T, KEY_TYPE, TRAITS>, remove_cvref_t<ITERABLE_OF_ADDABLE>>>* = nullptr>
         KeyedCollection_stdset (ITERABLE_OF_ADDABLE&& src);
 #else
         template <IIterable<T> ITERABLE_OF_ADDABLE>
         KeyedCollection_stdset (ITERABLE_OF_ADDABLE&& src)
-            requires (not is_base_of_v<KeyedCollection_stdset<T, KEY_TYPE, TRAITS>, decay_t<ITERABLE_OF_ADDABLE>>);
+            requires (not is_base_of_v<KeyedCollection_stdset<T, KEY_TYPE, TRAITS>, remove_cvref_t<ITERABLE_OF_ADDABLE>>);
 #endif
         template <IIterable<T> ITERABLE_OF_ADDABLE, IInOrderComparer<KEY_TYPE> KEY_INORDER_COMPARER = less<KEY_TYPE>>
         KeyedCollection_stdset (KEY_INORDER_COMPARER&& keyComparer, ITERABLE_OF_ADDABLE&& src);

@@ -31,7 +31,7 @@ namespace Stroika::Foundation::Containers {
     template <typename T, typename KEY_TYPE, typename TRAITS>
     template <IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER>
     inline KeyedCollection<T, KEY_TYPE, TRAITS>::KeyedCollection (const KeyExtractorType& keyExtractor, KEY_EQUALS_COMPARER&& keyComparer)
-        : inherited{Factory::KeyedCollection_Factory<T, KEY_TYPE, TRAITS, decay_t<KEY_EQUALS_COMPARER>>::Default () (
+        : inherited{Factory::KeyedCollection_Factory<T, KEY_TYPE, TRAITS, remove_cvref_t<KEY_EQUALS_COMPARER>>::Default () (
               keyExtractor, forward<KEY_EQUALS_COMPARER> (keyComparer))}
     {
         _AssertRepValidType ();
@@ -41,7 +41,7 @@ namespace Stroika::Foundation::Containers {
     template <IIterable<T> ITERABLE_OF_ADDABLE, IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER>
     inline KeyedCollection<T, KEY_TYPE, TRAITS>::KeyedCollection (ITERABLE_OF_ADDABLE&& src)
         requires (KeyedCollection_ExtractorCanBeDefaulted<T, KEY_TYPE, TRAITS> and
-                  not derived_from<decay_t<ITERABLE_OF_ADDABLE>, KeyedCollection<T, KEY_TYPE, TRAITS>>)
+                  not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, KeyedCollection<T, KEY_TYPE, TRAITS>>)
         : KeyedCollection{KeyExtractorType{}, equal_to<KEY_TYPE>{}}
     {
         AddAll (forward<ITERABLE_OF_ADDABLE> (src));
@@ -53,7 +53,7 @@ namespace Stroika::Foundation::Containers {
     template <IIterable<T> ITERABLE_OF_ADDABLE, IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER>
     inline KeyedCollection<T, KEY_TYPE, TRAITS>::KeyedCollection (KEY_EQUALS_COMPARER&& keyComparer, ITERABLE_OF_ADDABLE&& src)
         requires (KeyedCollection_ExtractorCanBeDefaulted<T, KEY_TYPE, TRAITS> and
-                  not derived_from<decay_t<ITERABLE_OF_ADDABLE>, KeyedCollection<T, KEY_TYPE, TRAITS>>)
+                  not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, KeyedCollection<T, KEY_TYPE, TRAITS>>)
         : KeyedCollection{KeyExtractorType{}, forward<KEY_EQUALS_COMPARER> (keyComparer)}
     {
         AddAll (src);
@@ -214,7 +214,7 @@ namespace Stroika::Foundation::Containers {
     template <IIterable<T> ITERABLE_OF_ADDABLE>
     inline unsigned int KeyedCollection<T, KEY_TYPE, TRAITS>::AddAll (ITERABLE_OF_ADDABLE&& items)
     {
-        if constexpr (is_same_v<decay_t<ITERABLE_OF_ADDABLE>, KeyedCollection>) {
+        if constexpr (is_same_v<remove_cvref_t<ITERABLE_OF_ADDABLE>, KeyedCollection>) {
             // avoid trouble with a.AddAll(a);
             if (this != &items) {
                 return AddAll (std::begin (items), std::end (items));

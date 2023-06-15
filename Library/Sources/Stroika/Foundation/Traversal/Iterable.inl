@@ -254,7 +254,7 @@ namespace Stroika::Foundation::Traversal {
     template <typename T>
     template <ranges::range CONTAINER_OF_T>
     Iterable<T>::Iterable (CONTAINER_OF_T&& from)
-        requires (not derived_from<decay_t<CONTAINER_OF_T>, Iterable<T>>)
+        requires (not derived_from<remove_cvref_t<CONTAINER_OF_T>, Iterable<T>>)
         : _fRep{mk_ (forward<CONTAINER_OF_T> (from))._fRep}
     {
     }
@@ -278,7 +278,7 @@ namespace Stroika::Foundation::Traversal {
     template <typename CONTAINER_OF_T>
     Iterable<T> Iterable<T>::mk_ (CONTAINER_OF_T&& from)
     {
-        using DECAYED_CONTAINER = decay_t<CONTAINER_OF_T>;
+        using DECAYED_CONTAINER = remove_cvref_t<CONTAINER_OF_T>;
         // Most containers are safe to use copy-by-value, except not initializer_list<> - not sure how to check for that generically...
         using USE_CONTAINER_TYPE =
             conditional_t<is_copy_constructible_v<DECAYED_CONTAINER> and not is_same_v<DECAYED_CONTAINER, initializer_list<T>>, DECAYED_CONTAINER, vector<T>>;

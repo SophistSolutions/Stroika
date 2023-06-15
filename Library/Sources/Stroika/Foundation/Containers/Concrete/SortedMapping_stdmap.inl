@@ -236,7 +236,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     template <IIterable<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> ITERABLE_OF_ADDABLE,
-              enable_if_t<not is_base_of_v<SortedMapping_stdmap<KEY_TYPE, MAPPED_VALUE_TYPE>, decay_t<ITERABLE_OF_ADDABLE>>>*>
+              enable_if_t<not is_base_of_v<SortedMapping_stdmap<KEY_TYPE, MAPPED_VALUE_TYPE>, remove_cvref_t<ITERABLE_OF_ADDABLE>>>*>
     inline SortedMapping_stdmap<KEY_TYPE, MAPPED_VALUE_TYPE>::SortedMapping_stdmap (ITERABLE_OF_ADDABLE&& src)
         : SortedMapping_stdmap{}
     {

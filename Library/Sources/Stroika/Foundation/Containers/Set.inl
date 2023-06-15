@@ -25,7 +25,7 @@ namespace Stroika::Foundation::Containers {
     template <typename T>
     template <IEqualsComparer<T> EQUALS_COMPARER>
     inline Set<T>::Set (EQUALS_COMPARER&& equalsComparer)
-        : inherited{Factory::Set_Factory<T, decay_t<EQUALS_COMPARER>>::Default () (forward<EQUALS_COMPARER> (equalsComparer))}
+        : inherited{Factory::Set_Factory<T, remove_cvref_t<EQUALS_COMPARER>>::Default () (forward<EQUALS_COMPARER> (equalsComparer))}
     {
         _AssertRepValidType ();
     }
@@ -48,7 +48,7 @@ namespace Stroika::Foundation::Containers {
     template <typename T>
     template <IIterable<T> ITERABLE_OF_ADDABLE>
     inline Set<T>::Set (ITERABLE_OF_ADDABLE&& src)
-        requires (not derived_from<decay_t<ITERABLE_OF_ADDABLE>, Set<T>>)
+        requires (not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, Set<T>>)
         : Set{}
     {
         AddAll (forward<ITERABLE_OF_ADDABLE> (src));
@@ -172,7 +172,7 @@ namespace Stroika::Foundation::Containers {
     template <IIterable<T> ITERABLE_OF_ADDABLE>
     inline void Set<T>::AddAll (ITERABLE_OF_ADDABLE&& items)
     {
-        if constexpr (std::is_convertible_v<decay_t<ITERABLE_OF_ADDABLE>*, const Iterable<value_type>*>) {
+        if constexpr (std::is_convertible_v<remove_cvref_t<ITERABLE_OF_ADDABLE>*, const Iterable<value_type>*>) {
             // very rare corner case
             if (static_cast<const Iterable<value_type>*> (this) == static_cast<const Iterable<value_type>*> (&items)) [[unlikely]] {
                 vector<value_type> copy{std::begin (items), std::end (items)}; // because you can not iterate over a container while modifying it

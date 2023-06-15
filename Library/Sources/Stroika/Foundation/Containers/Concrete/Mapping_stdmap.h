@@ -73,7 +73,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         template <IInOrderComparer<KEY_TYPE> KEY_INORDER_COMPARER>
         Mapping_stdmap (KEY_INORDER_COMPARER&& keyComparer, const initializer_list<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src);
         template <IIterable<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> ITERABLE_OF_ADDABLE,
-                  enable_if_t<not is_base_of_v<Mapping_stdmap<KEY_TYPE, MAPPED_VALUE_TYPE>, decay_t<ITERABLE_OF_ADDABLE>>>* = nullptr>
+                  enable_if_t<not is_base_of_v<Mapping_stdmap<KEY_TYPE, MAPPED_VALUE_TYPE>, remove_cvref_t<ITERABLE_OF_ADDABLE>>>* = nullptr>
         explicit Mapping_stdmap (ITERABLE_OF_ADDABLE&& src)
 #if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
         {

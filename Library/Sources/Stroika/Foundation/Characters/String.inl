@@ -79,23 +79,23 @@ namespace Stroika::Foundation::Characters {
              * This must be highly optimized as its used in critical locations, to quickly access argument data and
              * convert it into a usable form.
              */
-            if constexpr (derived_from<decay_t<USTRING>, String>) {
+            if constexpr (derived_from<remove_cvref_t<USTRING>, String>) {
                 return s.GetData (mostlyIgnoredBuf);
             }
-            else if constexpr (is_same_v<decay_t<USTRING>, const char32_t*> or
-                               (sizeof (wchar_t) == sizeof (Character) and is_same_v<decay_t<USTRING>, const wchar_t*>)) {
+            else if constexpr (is_same_v<remove_cvref_t<USTRING>, const char32_t*> or
+                               (sizeof (wchar_t) == sizeof (Character) and is_same_v<remove_cvref_t<USTRING>, const wchar_t*>)) {
                 return span{reinterpret_cast<const Character*> (s), CString::Length (s)};
             }
-            else if constexpr (is_same_v<decay_t<USTRING>, u32string> or
-                               (sizeof (wchar_t) == sizeof (Character) and is_same_v<decay_t<USTRING>, wstring>)) {
+            else if constexpr (is_same_v<remove_cvref_t<USTRING>, u32string> or
+                               (sizeof (wchar_t) == sizeof (Character) and is_same_v<remove_cvref_t<USTRING>, wstring>)) {
                 return span{reinterpret_cast<const Character*> (s.c_str ()), s.length ()};
             }
-            else if constexpr (is_same_v<decay_t<USTRING>, u32string_view> or
-                               (sizeof (wchar_t) == sizeof (Character) and is_same_v<decay_t<USTRING>, wstring_view>)) {
+            else if constexpr (is_same_v<remove_cvref_t<USTRING>, u32string_view> or
+                               (sizeof (wchar_t) == sizeof (Character) and is_same_v<remove_cvref_t<USTRING>, wstring_view>)) {
                 return span{reinterpret_cast<const Character*> (s.data ()), s.length ()};
             }
-            else if constexpr (is_same_v<decay_t<USTRING>, const char8_t*> or is_same_v<decay_t<USTRING>, const char16_t*> or
-                               is_same_v<decay_t<USTRING>, const wchar_t*>) {
+            else if constexpr (is_same_v<remove_cvref_t<USTRING>, const char8_t*> or is_same_v<remove_cvref_t<USTRING>, const char16_t*> or
+                               is_same_v<remove_cvref_t<USTRING>, const wchar_t*>) {
                 span spn{s, CString::Length (s)};
                 mostlyIgnoredBuf->resize_uninitialized (UTFConverter::ComputeTargetBufferSize<Character> (spn));
 #if qCompilerAndStdLib_spanOfContainer_Buggy
@@ -104,7 +104,8 @@ namespace Stroika::Foundation::Characters {
                 return UTFConverter::kThe.ConvertSpan (spn, span{*mostlyIgnoredBuf});
 #endif
             }
-            else if constexpr (is_same_v<decay_t<USTRING>, u8string> or is_same_v<decay_t<USTRING>, u16string> or is_same_v<decay_t<USTRING>, wstring>) {
+            else if constexpr (is_same_v<remove_cvref_t<USTRING>, u8string> or is_same_v<remove_cvref_t<USTRING>, u16string> or
+                               is_same_v<remove_cvref_t<USTRING>, wstring>) {
                 span spn{s.data (), s.size ()};
                 mostlyIgnoredBuf->resize_uninitialized (UTFConverter::ComputeTargetBufferSize<Character> (spn));
 #if qCompilerAndStdLib_spanOfContainer_Buggy
@@ -113,8 +114,8 @@ namespace Stroika::Foundation::Characters {
                 return UTFConverter::kThe.ConvertSpan (spn, span{*mostlyIgnoredBuf});
 #endif
             }
-            else if constexpr (is_same_v<decay_t<USTRING>, u8string_view> or is_same_v<decay_t<USTRING>, u16string_view> or
-                               is_same_v<decay_t<USTRING>, wstring_view>) {
+            else if constexpr (is_same_v<remove_cvref_t<USTRING>, u8string_view> or is_same_v<remove_cvref_t<USTRING>, u16string_view> or
+                               is_same_v<remove_cvref_t<USTRING>, wstring_view>) {
                 span spn{s.data (), s.size ()};
                 mostlyIgnoredBuf->resize_uninitialized (UTFConverter::ComputeTargetBufferSize<Character> (spn));
 #if qCompilerAndStdLib_spanOfContainer_Buggy
@@ -1117,7 +1118,7 @@ namespace Stroika::Foundation::Characters {
     inline bool String::EqualsComparer::Cmp_ (LT&& lhs, RT&& rhs) const
     {
         // optimize very common case of ASCII String vs ASCII String
-        if constexpr (is_same_v<decay_t<LT>, String> and is_same_v<decay_t<RT>, String>) {
+        if constexpr (is_same_v<remove_cvref_t<LT>, String> and is_same_v<remove_cvref_t<RT>, String>) {
             if (auto lhsAsciiSpan = lhs.template PeekData<char> ()) {
                 if (auto rhsAsciiSpan = rhs.template PeekData<char> ()) {
                     if (fCompareOptions == CompareOptions::eWithCase) {
@@ -1175,7 +1176,7 @@ namespace Stroika::Foundation::Characters {
     inline strong_ordering String::ThreeWayComparer::Cmp_ (LT&& lhs, RT&& rhs) const
     {
         // optimize very common case of ASCII String vs ASCII String
-        if constexpr (is_same_v<decay_t<LT>, String> and is_same_v<decay_t<RT>, String>) {
+        if constexpr (is_same_v<remove_cvref_t<LT>, String> and is_same_v<remove_cvref_t<RT>, String>) {
             if (auto lhsAsciiSpan = lhs.template PeekData<char> ()) {
                 if (auto rhsAsciiSpan = rhs.template PeekData<char> ()) {
                     return Character::Compare (*lhsAsciiSpan, *rhsAsciiSpan, fCompareOptions);
@@ -1228,7 +1229,7 @@ namespace Stroika::Foundation::Characters {
      */
     template <IConvertibleToString LHS_T, IConvertibleToString RHS_T>
     String operator+ (LHS_T&& lhs, RHS_T&& rhs)
-        requires (derived_from<decay_t<LHS_T>, String> or derived_from<decay_t<RHS_T>, String>)
+        requires (derived_from<remove_cvref_t<LHS_T>, String> or derived_from<remove_cvref_t<RHS_T>, String>)
     {
         if constexpr (Private_::ICanBeTreatedAsSpanOfCharacter_<LHS_T> and Private_::ICanBeTreatedAsSpanOfCharacter_<RHS_T>) {
             // maybe always true?

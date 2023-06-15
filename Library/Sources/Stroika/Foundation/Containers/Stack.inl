@@ -28,7 +28,7 @@ namespace Stroika::Foundation::Containers {
     template <typename T>
     template <IIterable<T> ITERABLE_OF_ADDABLE>
     inline Stack<T>::Stack (ITERABLE_OF_ADDABLE&& src)
-        requires (not derived_from<decay_t<ITERABLE_OF_ADDABLE>, Stack<T>>)
+        requires (not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, Stack<T>>)
         : Stack{}
     {
         // sadly intrinsically expensive to copy an Iterable using the stack API

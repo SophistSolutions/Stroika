@@ -198,7 +198,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     template <typename T>
     template <IInOrderComparer<T> INORDER_COMPARER>
     inline SortedSet_stdset<T>::SortedSet_stdset (INORDER_COMPARER&& inorderComparer)
-        : inherited{Memory::MakeSharedPtr<Rep_<decay_t<INORDER_COMPARER>>> (forward<INORDER_COMPARER> (inorderComparer))}
+        : inherited{Memory::MakeSharedPtr<Rep_<remove_cvref_t<INORDER_COMPARER>>> (forward<INORDER_COMPARER> (inorderComparer))}
     {
         AssertRepValidType_ ();
     }
@@ -211,7 +211,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         AssertRepValidType_ ();
     }
     template <typename T>
-    template <IIterable<T> ITERABLE_OF_ADDABLE, enable_if_t<not is_base_of_v<SortedSet_stdset<T>, decay_t<ITERABLE_OF_ADDABLE>>>*>
+    template <IIterable<T> ITERABLE_OF_ADDABLE, enable_if_t<not is_base_of_v<SortedSet_stdset<T>, remove_cvref_t<ITERABLE_OF_ADDABLE>>>*>
     inline SortedSet_stdset<T>::SortedSet_stdset (ITERABLE_OF_ADDABLE&& src)
         : SortedSet_stdset{}
     {

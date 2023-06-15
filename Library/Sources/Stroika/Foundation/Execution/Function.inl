@@ -22,8 +22,8 @@ namespace Stroika::Foundation::Execution {
      */
 #if qCompilerAndStdLib_template_Requires_constraint_not_treated_constexpr_Buggy
     template <typename FUNCTION_SIGNATURE>
-    template <typename CTOR_FUNC_SIG, enable_if_t<is_convertible_v<remove_cv_t<CTOR_FUNC_SIG>, function<FUNCTION_SIGNATURE>> and
-                                                  not is_base_of_v<Function<FUNCTION_SIGNATURE>, remove_cvref_t<CTOR_FUNC_SIG>>>*>
+    template <typename CTOR_FUNC_SIG, enable_if_t<is_convertible_v<remove_cvref_t<CTOR_FUNC_SIG>, function<FUNCTION_SIGNATURE>> and
+                                                  not derived_from<remove_cvref_t<CTOR_FUNC_SIG>, Function<FUNCTION_SIGNATURE>>>*>
     inline Function<FUNCTION_SIGNATURE>::Function (CTOR_FUNC_SIG&& f)
         : fFun_{forward<CTOR_FUNC_SIG> (f)}
         , fOrdering_{fFun_ == nullptr ? OrderingType_{} : ++Private_::sFunctionObjectNextPtrID_}
@@ -34,8 +34,8 @@ namespace Stroika::Foundation::Execution {
     template <typename FUNCTION_SIGNATURE>
     template <typename CTOR_FUNC_SIG>
     inline Function<FUNCTION_SIGNATURE>::Function (CTOR_FUNC_SIG&& f)
-        requires (is_convertible_v<remove_cv_t<CTOR_FUNC_SIG>, function<FUNCTION_SIGNATURE>> and
-                  not is_base_of_v<Function<FUNCTION_SIGNATURE>, remove_cvref_t<CTOR_FUNC_SIG>>)
+        requires (is_convertible_v<remove_cvref_t<CTOR_FUNC_SIG>, function<FUNCTION_SIGNATURE>> and
+                  not derived_from<remove_cvref_t<CTOR_FUNC_SIG>, Function<FUNCTION_SIGNATURE>>)
         : fFun_{forward<CTOR_FUNC_SIG> (f)}
         , fOrdering_{fFun_ == nullptr ? OrderingType_{} : ++Private_::sFunctionObjectNextPtrID_}
     {

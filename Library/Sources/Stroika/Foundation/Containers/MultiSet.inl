@@ -52,7 +52,7 @@ namespace Stroika::Foundation::Containers {
     template <typename T, typename TRAITS>
     template <IEqualsComparer<T> EQUALS_COMPARER>
     inline MultiSet<T, TRAITS>::MultiSet (EQUALS_COMPARER&& equalsComparer)
-        : inherited{Factory::MultiSet_Factory<T, TRAITS, decay_t<EQUALS_COMPARER>>::Default () (forward<EQUALS_COMPARER> (equalsComparer))}
+        : inherited{Factory::MultiSet_Factory<T, TRAITS, remove_cvref_t<EQUALS_COMPARER>>::Default () (forward<EQUALS_COMPARER> (equalsComparer))}
     {
         _AssertRepValidType ();
     }
@@ -60,7 +60,7 @@ namespace Stroika::Foundation::Containers {
     template <typename T, typename TRAITS>
     template <IIterable<CountedValue<T>> ITERABLE_OF_ADDABLE>
     inline MultiSet<T, TRAITS>::MultiSet (ITERABLE_OF_ADDABLE&& src)
-        requires (not derived_from<decay_t<ITERABLE_OF_ADDABLE>, MultiSet<T, TRAITS>>)
+        requires (not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, MultiSet<T, TRAITS>>)
         : MultiSet{}
     {
         AddAll (forward<ITERABLE_OF_ADDABLE> (src));
@@ -273,10 +273,10 @@ namespace Stroika::Foundation::Containers {
     void MultiSet<T, TRAITS>::AddAll (ITERABLE_OF_ADDABLE&& items)
     {
         // see https://stroika.atlassian.net/browse/STK-645
-        if constexpr (std::is_convertible_v<decay_t<ITERABLE_OF_ADDABLE>*, const MultiSet<T, TRAITS>*>) {
+        if constexpr (std::is_convertible_v<remove_cvref_t<ITERABLE_OF_ADDABLE>*, const MultiSet<T, TRAITS>*>) {
             if (static_cast<const Iterable<value_type>*> (this) == static_cast<const Iterable<value_type>*> (&items)) [[unlikely]] {
                 // very rare corner case
-                vector<typename decay_t<ITERABLE_OF_ADDABLE>::value_type> copy{std::begin (items), std::end (items)}; // because you can not iterate over a container while modifying it
+                vector<typename remove_cvref_t<ITERABLE_OF_ADDABLE>::value_type> copy{std::begin (items), std::end (items)}; // because you can not iterate over a container while modifying it
                 for (const auto& i : copy) {
                     Add (i);
                 }

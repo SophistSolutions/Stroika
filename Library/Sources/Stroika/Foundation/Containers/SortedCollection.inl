@@ -23,7 +23,7 @@ namespace Stroika::Foundation::Containers {
     template <typename T>
     template <IInOrderComparer<T> INORDER_COMPARER>
     inline SortedCollection<T>::SortedCollection (INORDER_COMPARER&& inorderComparer)
-        : inherited{Factory::SortedCollection_Factory<T, decay_t<INORDER_COMPARER>> () (forward<INORDER_COMPARER> (inorderComparer))}
+        : inherited{Factory::SortedCollection_Factory<T, remove_cvref_t<INORDER_COMPARER>> () (forward<INORDER_COMPARER> (inorderComparer))}
     {
         _AssertRepValidType ();
     }
@@ -59,7 +59,7 @@ namespace Stroika::Foundation::Containers {
     template <typename T>
     template <IIterable<T> ITERABLE_OF_ADDABLE>
     inline SortedCollection<T>::SortedCollection (ITERABLE_OF_ADDABLE&& src)
-        requires (not derived_from<decay_t<ITERABLE_OF_ADDABLE>, SortedCollection<T>>)
+        requires (not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, SortedCollection<T>>)
         : SortedCollection{}
     {
         this->AddAll (forward<ITERABLE_OF_ADDABLE> (src));

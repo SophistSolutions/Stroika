@@ -116,7 +116,7 @@ namespace Stroika::Foundation::Containers {
         Queue (const initializer_list<value_type>& src);
         template <IIterable<T> ITERABLE_OF_ADDABLE>
         explicit Queue (ITERABLE_OF_ADDABLE&& src)
-            requires (not derived_from<decay_t<ITERABLE_OF_ADDABLE>, Queue<T>>)
+            requires (not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, Queue<T>>)
 #if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
         {
             AddAllToTail (forward<ITERABLE_OF_ADDABLE> (src));

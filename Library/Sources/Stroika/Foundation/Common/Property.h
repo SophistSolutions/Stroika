@@ -395,13 +395,13 @@ namespace Stroika::Foundation::Common {
      *  \note   \em Thread-Safety   <a href="Thread-Safety.md">SAME AS T/GETTER/SETTER - all methods have exactly the thread safety of the underlying GETTER/SETTER</a>
      */
     template <typename T>
-    class Property : public ReadOnlyProperty<T>, public WriteOnlyProperty<decay_t<T>> {
+    class Property : public ReadOnlyProperty<T>, public WriteOnlyProperty<remove_cvref_t<T>> {
     public:
         /**
          * \brief base_value_type is T the type declared, and decayed_value_type is similar, but with the references etc removed (so can be set/stored)
          */
         using base_value_type    = T;
-        using decayed_value_type = decay_t<T>;
+        using decayed_value_type = remove_cvref_t<T>;
 
     public:
         /**

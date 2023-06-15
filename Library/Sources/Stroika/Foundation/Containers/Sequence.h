@@ -258,7 +258,7 @@ namespace Stroika::Foundation::Containers {
         Sequence (const initializer_list<value_type>& src);
         template <IIterable<T> ITERABLE_OF_ADDABLE>
         explicit Sequence (ITERABLE_OF_ADDABLE&& src)
-            requires (not derived_from<decay_t<ITERABLE_OF_ADDABLE>, Sequence<T>>)
+            requires (not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, Sequence<T>>)
 #if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
             : Sequence{}
         {

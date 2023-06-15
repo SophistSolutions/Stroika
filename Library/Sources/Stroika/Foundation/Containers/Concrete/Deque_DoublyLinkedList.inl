@@ -168,7 +168,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     template <typename T>
     template <IIterable<T> ITERABLE_OF_ADDABLE>
     inline Deque_DoublyLinkedList<T>::Deque_DoublyLinkedList (ITERABLE_OF_ADDABLE&& src)
-        requires (not is_base_of_v<Deque_DoublyLinkedList<T>, decay_t<ITERABLE_OF_ADDABLE>>)
+        requires (not is_base_of_v<Deque_DoublyLinkedList<T>, remove_cvref_t<ITERABLE_OF_ADDABLE>>)
         : Deque_DoublyLinkedList{}
     {
         this->AddAllToTail (forward<ITERABLE_OF_ADDABLE> (src));

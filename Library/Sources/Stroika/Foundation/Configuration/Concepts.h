@@ -448,7 +448,7 @@ namespace Stroika::Foundation::Configuration {
      *  NOTE - similar to std::ranges::range_value_t or std::iter_value_t except works with other types.
      */
     template <typename T>
-    using ExtractValueType_t = typename ExtractValueType<decay_t<T>>::type;
+    using ExtractValueType_t = typename ExtractValueType<remove_cvref_t<T>>::type;
 
     ////////////////////// DEPREACTED BELOW //////////////////////
 
@@ -462,7 +462,7 @@ namespace Stroika::Foundation::Configuration {
 
     template <typename T>
     [[deprecated ("Since Stroika v3.0d1, use input_iterator, forward_iterator, or some other sort of std iterator concept")]] constexpr bool IsIterator_v =
-        Private_::is_iterator<decay_t<T>>::value;
+        Private_::is_iterator<remove_cvref_t<T>>::value;
 
     template <typename FUNCTOR_ARG, typename FUNCTOR>
     [[deprecated ("Since Stroika v3.0d1, use std::predicate<F,ARG,ARG>")]] constexpr bool IsTPredicate ()

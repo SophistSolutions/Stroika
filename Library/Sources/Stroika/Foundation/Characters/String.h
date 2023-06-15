@@ -1520,26 +1520,25 @@ namespace Stroika::Foundation::Characters {
         // clang-format off
         template <typename T>
         concept ICanBeTreatedAsSpanOfCharacter_ =
-            derived_from<decay_t<T>, String>
-            or is_same_v<decay_t<T>, u8string> 
-            or is_same_v<decay_t<T>, u8string_view> 
-            or is_same_v<decay_t<T>, u16string> 
-            or is_same_v<decay_t<T>, u16string_view> 
-            or is_same_v<decay_t<T>, u32string> 
-            or is_same_v<decay_t<T>, u32string_view> 
-            or is_same_v<decay_t<T>, wstring> 
-            or is_same_v<decay_t<T>, wstring_view> 
-            or is_same_v<decay_t<T>, const Character*> 
-            or is_same_v<decay_t<T>, const char8_t*>
-            or is_same_v<decay_t<T>, const char16_t*>
-            or is_same_v<decay_t<T>, const char32_t*>
-            or is_same_v<decay_t<T>, const wchar_t*> 
+            derived_from<remove_cvref_t<T>, String>
+            or is_same_v<remove_cvref_t<T>, u8string> 
+            or is_same_v<remove_cvref_t<T>, u8string_view> 
+            or is_same_v<remove_cvref_t<T>, u16string> 
+            or is_same_v<remove_cvref_t<T>, u16string_view> 
+            or is_same_v<remove_cvref_t<T>, u32string> 
+            or is_same_v<remove_cvref_t<T>, u32string_view> 
+            or is_same_v<remove_cvref_t<T>, wstring> 
+            or is_same_v<remove_cvref_t<T>, wstring_view> 
+            or is_same_v<remove_cvref_t<T>, const Character*> 
+            or is_same_v<remove_cvref_t<T>, const char8_t*>
+            or is_same_v<remove_cvref_t<T>, const char16_t*>
+            or is_same_v<remove_cvref_t<T>, const char32_t*>
+            or is_same_v<remove_cvref_t<T>, const wchar_t*> 
             ;
         // clang-format on
 
         template <ICanBeTreatedAsSpanOfCharacter_ USTRING>
         span<const Character> AsSpanOfCharacters_ (USTRING&& s, Memory::StackBuffer<Character>* mostlyIgnoredBuf);
-
     }
 
     /**
@@ -1630,7 +1629,7 @@ namespace Stroika::Foundation::Characters {
      */
     template <IConvertibleToString LHS_T, IConvertibleToString RHS_T>
     String operator+ (LHS_T&& lhs, RHS_T&& rhs)
-        requires (derived_from<decay_t<LHS_T>, String> or derived_from<decay_t<RHS_T>, String>);
+        requires (derived_from<remove_cvref_t<LHS_T>, String> or derived_from<remove_cvref_t<RHS_T>, String>);
 
 }
 

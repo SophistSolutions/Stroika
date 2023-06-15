@@ -23,7 +23,7 @@ namespace Stroika::Foundation::Containers {
     template <typename T, typename TRAITS>
     template <Common::IInOrderComparer<T> INORDER_COMPARER>
     inline SortedMultiSet<T, TRAITS>::SortedMultiSet (INORDER_COMPARER&& inorderComparer)
-        : inherited{Factory::SortedMultiSet_Factory<T, TRAITS, decay_t<INORDER_COMPARER>>::Default () (forward<INORDER_COMPARER> (inorderComparer))}
+        : inherited{Factory::SortedMultiSet_Factory<T, TRAITS, remove_cvref_t<INORDER_COMPARER>>::Default () (forward<INORDER_COMPARER> (inorderComparer))}
     {
         _AssertRepValidType ();
     }
@@ -73,7 +73,7 @@ namespace Stroika::Foundation::Containers {
     template <typename T, typename TRAITS>
     template <IIterable<CountedValue<T>> ITERABLE_OF_ADDABLE>
     inline SortedMultiSet<T, TRAITS>::SortedMultiSet (ITERABLE_OF_ADDABLE&& src)
-        requires (not is_base_of_v<SortedMultiSet<T, TRAITS>, decay_t<ITERABLE_OF_ADDABLE>>)
+        requires (not is_base_of_v<SortedMultiSet<T, TRAITS>, remove_cvref_t<ITERABLE_OF_ADDABLE>>)
         : SortedMultiSet{}
     {
         this->AddAll (forward<ITERABLE_OF_ADDABLE> (src));

@@ -49,7 +49,7 @@ namespace Stroika::Foundation::Containers {
     template <IEqualsComparer<DOMAIN_TYPE> DOMAIN_EQUALS_COMPARER, IEqualsComparer<RANGE_TYPE> RANGE_EQUALS_COMPARER>
     inline Bijection<DOMAIN_TYPE, RANGE_TYPE>::Bijection (DataExchange::ValidationStrategy injectivityCheckPolicy,
                                                           DOMAIN_EQUALS_COMPARER&& domainEqualsComparer, RANGE_EQUALS_COMPARER&& rangeEqualsComparer)
-        : inherited{Factory::Bijection_Factory<DOMAIN_TYPE, RANGE_TYPE, decay_t<DOMAIN_EQUALS_COMPARER>, decay_t<RANGE_EQUALS_COMPARER>>::Default () (
+        : inherited{Factory::Bijection_Factory<DOMAIN_TYPE, RANGE_TYPE, remove_cvref_t<DOMAIN_EQUALS_COMPARER>, remove_cvref_t<RANGE_EQUALS_COMPARER>>::Default () (
               injectivityCheckPolicy, forward<DOMAIN_EQUALS_COMPARER> (domainEqualsComparer), forward<RANGE_EQUALS_COMPARER> (rangeEqualsComparer))}
     {
         _AssertRepValidType ();
@@ -74,7 +74,7 @@ namespace Stroika::Foundation::Containers {
     template <typename DOMAIN_TYPE, typename RANGE_TYPE>
     template <IIterable<KeyValuePair<DOMAIN_TYPE, RANGE_TYPE>> ITERABLE_OF_ADDABLE>
     inline Bijection<DOMAIN_TYPE, RANGE_TYPE>::Bijection (ITERABLE_OF_ADDABLE&& src)
-        requires (not derived_from<decay_t<ITERABLE_OF_ADDABLE>, Bijection<DOMAIN_TYPE, RANGE_TYPE>>)
+        requires (not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, Bijection<DOMAIN_TYPE, RANGE_TYPE>>)
         : Bijection{}
     {
         AddAll (forward<ITERABLE_OF_ADDABLE> (src));
@@ -300,7 +300,7 @@ namespace Stroika::Foundation::Containers {
     inline void Bijection<DOMAIN_TYPE, RANGE_TYPE>::Add (ADDABLE_T&& p)
     {
         static_assert (IsAddable_v<ADDABLE_T>);
-        if constexpr (is_convertible_v<decay_t<ADDABLE_T>, value_type>) {
+        if constexpr (is_convertible_v<remove_cvref_t<ADDABLE_T>, value_type>) {
             _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().Add (p.first, p.second);
         }
         else {
