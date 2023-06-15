@@ -25,11 +25,10 @@ namespace Stroika::Foundation::Containers {
         _AssertRepValidType ();
     }
 #if !qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
-
     template <typename T>
     template <IIterable<T> ITERABLE_OF_ADDABLE>
     inline Stack<T>::Stack (ITERABLE_OF_ADDABLE&& src)
-        requires (not is_base_of_v<Stack<T>, decay_t<ITERABLE_OF_ADDABLE>>)
+        requires (not derived_from<decay_t<ITERABLE_OF_ADDABLE>, Stack<T>>)
         : Stack{}
     {
         // sadly intrinsically expensive to copy an Iterable using the stack API
@@ -45,9 +44,8 @@ namespace Stroika::Foundation::Containers {
 #endif
     template <typename T>
     inline Stack<T>::Stack (const shared_ptr<_IRep>& src) noexcept
-        : inherited{src}
+        : inherited{(RequireNotNull (src), src)}
     {
-        RequireNotNull (src);
         _AssertRepValidType ();
     }
     template <typename T>

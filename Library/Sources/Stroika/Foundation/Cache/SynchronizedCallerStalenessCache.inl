@@ -107,7 +107,7 @@ namespace Stroika::Foundation::Cache {
         }
     }
     template <typename KEY, typename VALUE, typename TIME_TRAITS>
-    template <typename K >
+    template <typename K>
     inline VALUE SynchronizedCallerStalenessCache<KEY, VALUE, TIME_TRAITS>::LookupValue (Configuration::ArgByValueType<K> k,
                                                                                          TimeStampType staleIfOlderThan, const VALUE& defaultValue) const
         requires (IsKeyedCache<KEY>)

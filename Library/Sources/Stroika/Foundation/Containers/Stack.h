@@ -113,7 +113,7 @@ namespace Stroika::Foundation::Containers {
         Stack (const Stack& src) noexcept = default;
         template <IIterable<T> ITERABLE_OF_ADDABLE>
         explicit Stack (ITERABLE_OF_ADDABLE&& src)
-            requires (not is_base_of_v<Stack<T>, decay_t<ITERABLE_OF_ADDABLE>>)
+            requires (not derived_from<decay_t<ITERABLE_OF_ADDABLE>, Stack<T>>)
 #if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
             : Stack{}
         {

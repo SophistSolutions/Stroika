@@ -59,7 +59,7 @@ namespace Stroika::Foundation::Containers {
     template <typename T>
     template <IIterable<T> ITERABLE_OF_ADDABLE>
     inline SortedSet<T>::SortedSet (ITERABLE_OF_ADDABLE&& src)
-        requires (not is_base_of_v<SortedSet<T>, decay_t<ITERABLE_OF_ADDABLE>>)
+        requires (not derived_from<decay_t<ITERABLE_OF_ADDABLE>, SortedSet<T>>)
         : SortedSet{}
     {
         this->AddAll (forward<ITERABLE_OF_ADDABLE> (src));

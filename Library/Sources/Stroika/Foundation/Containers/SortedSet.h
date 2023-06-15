@@ -100,7 +100,7 @@ namespace Stroika::Foundation::Containers {
         SortedSet (INORDER_COMPARER&& inOrderComparer, const initializer_list<T>& src);
         template <IIterable<T> ITERABLE_OF_ADDABLE>
         explicit SortedSet (ITERABLE_OF_ADDABLE&& src)
-            requires (not is_base_of_v<SortedSet<T>, decay_t<ITERABLE_OF_ADDABLE>>)
+            requires (not derived_from<decay_t<ITERABLE_OF_ADDABLE>, SortedSet<T>>)
 #if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
             : SortedSet{}
         {
