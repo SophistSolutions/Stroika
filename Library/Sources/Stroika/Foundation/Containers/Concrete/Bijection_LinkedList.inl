@@ -287,7 +287,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     template <typename DOMAIN_TYPE, typename RANGE_TYPE>
     template <IIterable<KeyValuePair<DOMAIN_TYPE, RANGE_TYPE>> ITERABLE_OF_ADDABLE>
     inline Bijection_LinkedList<DOMAIN_TYPE, RANGE_TYPE>::Bijection_LinkedList (ITERABLE_OF_ADDABLE&& src)
-        requires (not is_base_of_v<Bijection_LinkedList<DOMAIN_TYPE, RANGE_TYPE>, decay_t<ITERABLE_OF_ADDABLE>>)
+        requires (not derived_from<decay_t<ITERABLE_OF_ADDABLE>, Bijection_LinkedList<DOMAIN_TYPE, RANGE_TYPE>>)
         : Bijection_LinkedList{}
     {
         this->AddAll (forward<ITERABLE_OF_ADDABLE> (src));
