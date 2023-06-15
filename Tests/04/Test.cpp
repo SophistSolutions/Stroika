@@ -193,9 +193,9 @@ namespace {
                 static_assert (not has_beginend_v<int>);
                 static_assert (not has_beginend_v<Traversal::Iterator<int>>);
                 static_assert (has_beginend_v<Traversal::Iterable<int>>);
-                static_assert (IsIterable_v<int> == has_beginend_v<int>);
-                static_assert (IsIterable_v<String> == has_beginend_v<String>);
-                static_assert (IsIterable_v<std::pair<int, int>[1]>);
+                static_assert (ranges::range<int> == has_beginend_v<int>);
+                static_assert (ranges::range<String> == has_beginend_v<String>);
+                static_assert (ranges::range<std::pair<int, int>[1]>);
                 static_assert (has_beginend_v<std::pair<int, int>[1]>);
             }
             {
@@ -205,6 +205,7 @@ namespace {
                 static_assert (not Traversal::IIterable<char, String>);
             }
             {
+                // Test from https://stackoverflow.com/questions/7943525/is-it-possible-to-figure-out-the-parameter-type-and-return-type-of-a-lambda
                 auto                                       lambda = [] (int i) { return long (i * 10); };
                 typedef function_traits<decltype (lambda)> traits;
                 static_assert (traits::kArity == 1);

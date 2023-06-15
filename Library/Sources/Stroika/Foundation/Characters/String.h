@@ -1520,7 +1520,7 @@ namespace Stroika::Foundation::Characters {
         // clang-format off
         template <typename T>
         concept ICanBeTreatedAsSpanOfCharacter_ =
-            is_base_of_v<String, decay_t<T>>
+            derived_from<decay_t<T>, String>
             or is_same_v<decay_t<T>, u8string> 
             or is_same_v<decay_t<T>, u8string_view> 
             or is_same_v<decay_t<T>, u16string> 

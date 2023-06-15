@@ -79,7 +79,7 @@ namespace Stroika::Foundation::Characters {
              * This must be highly optimized as its used in critical locations, to quickly access argument data and
              * convert it into a usable form.
              */
-            if constexpr (is_base_of_v<String, decay_t<USTRING>>) {
+            if constexpr (derived_from<decay_t<USTRING>, String>) {
                 return s.GetData (mostlyIgnoredBuf);
             }
             else if constexpr (is_same_v<decay_t<USTRING>, const char32_t*> or

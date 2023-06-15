@@ -6,6 +6,7 @@
 
 #include "../StroikaPreComp.h"
 
+#include <concepts>
 #include <functional> // needed for std::equal_to
 #include <iterator>   // needed for std::begin/std::end calls
 
@@ -361,10 +362,6 @@ namespace Stroika::Foundation::Configuration {
     template <typename T>
     constexpr inline bool has_beginend_v = is_detected_v<Private_::has_beginend_t, T>;
 
-    template <typename ITERABLE_OF_T, typename T>
-    [[deprecated ("Since Stroika v3.0d1 use Traversal::IIterable concept")]] constexpr bool IsIterableOfT_v =
-        Private_::IsIterableOfT_t<ITERABLE_OF_T, T>::value;
-
     /**
      *  Check if has begin/end methods (not for subclassing Traversal::Iterable<>), and if result of *begin () is convertible to T.
      */
@@ -419,30 +416,9 @@ namespace Stroika::Foundation::Configuration {
     constexpr inline bool is_explicitly_convertible_v = Private_::is_explicitly_convertible<From, To>::value;
 
     /**
-     *  Check T is an interator, but checking if it has iterator_traits...; note - this first decay's its 'T' argument
-     * 
-     *  @todo PROBABLY DEPRECATE IN FAVOR OF GENERALLY USING input_iterator concept OR forward_iterator
-     */
-    template <typename T>
-    [[deprecated ("Since Stroika v3.0d1, use input_iterator, forward_iterator, or some other sort of std iterator concept")]] constexpr bool IsIterator_v =
-        Private_::is_iterator<decay_t<T>>::value;
-
-    /**
      */
     template <typename T>
     constexpr bool is_callable_v = Private_::is_callable<T>::value;
-
-    /**
-     */
-    template <typename FUNCTOR_ARG, typename FUNCTOR>
-    [[deprecated ("Since Stroika v3.0d1, use std::predicate<F,ARG,ARG>")]] constexpr bool IsTPredicate ()
-    {
-        using T = remove_cvref_t<FUNCTOR_ARG>;
-        if constexpr (is_invocable_v<FUNCTOR, T>) {
-            return std::is_convertible_v<std::invoke_result_t<FUNCTOR, T>, bool>;
-        }
-        return false;
-    }
 
     /**
      *  \brief Extract the type of elements in a container, or returned by an iterator (value_type) or void it there is no value_type
@@ -467,26 +443,36 @@ namespace Stroika::Foundation::Configuration {
     };
 
     /**
-     * returns void if T has no value_type
+     * If the given T has a field value_type, return it; returns void if T has no value_type
+     * 
+     *  NOTE - similar to std::ranges::range_value_t or std::iter_value_t except works with other types.
      */
     template <typename T>
     using ExtractValueType_t = typename ExtractValueType<decay_t<T>>::type;
-    //    using ExtractValueType_t = ranges::range_value_t<T>;
 
-    /**
-    * 
-    * 
-    *   @todo DEPRECATE AND USE ranges::range instead
-    * 
-     *  Check if ITERABLE has begin/end methods, and the begin/end stuff looks like they return an iterator.
-     *  This does NOT check for subclassing Traversal::Iterable<> (so works with an array, or stl vector etc).
-     * 
-     *  \note Since Stroika 2.1b14, this also checks that there is a legitimate value_type
-     * 
-     *  \note may in the future ALSO check if return value of begin/end appear to be 'iterators' and of the same type.
-     */
+    ////////////////////// DEPREACTED BELOW //////////////////////
+
     template <typename ITERABLE>
-    constexpr bool IsIterable_v = has_beginend_v<ITERABLE> and not is_same_v<ExtractValueType_t<ITERABLE>, void>;
+    [[deprecated ("Since Stroika v3.0d1, use ranges::range")]] constexpr bool IsIterable_v =
+        has_beginend_v<ITERABLE> and not is_same_v<ExtractValueType_t<ITERABLE>, void>;
+
+    template <typename ITERABLE_OF_T, typename T>
+    [[deprecated ("Since Stroika v3.0d1 use Traversal::IIterable concept")]] constexpr bool IsIterableOfT_v =
+        Private_::IsIterableOfT_t<ITERABLE_OF_T, T>::value;
+
+    template <typename T>
+    [[deprecated ("Since Stroika v3.0d1, use input_iterator, forward_iterator, or some other sort of std iterator concept")]] constexpr bool IsIterator_v =
+        Private_::is_iterator<decay_t<T>>::value;
+
+    template <typename FUNCTOR_ARG, typename FUNCTOR>
+    [[deprecated ("Since Stroika v3.0d1, use std::predicate<F,ARG,ARG>")]] constexpr bool IsTPredicate ()
+    {
+        using T = remove_cvref_t<FUNCTOR_ARG>;
+        if constexpr (is_invocable_v<FUNCTOR, T>) {
+            return std::is_convertible_v<std::invoke_result_t<FUNCTOR, T>, bool>;
+        }
+        return false;
+    }
 
 }
 
