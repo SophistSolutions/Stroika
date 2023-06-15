@@ -283,8 +283,8 @@ namespace {
             }
             void Test_void_ ()
             {
-                VerifyTestResult (Private_::LookupExternalInternetAddress_ () == 1 and Private_::sCalls1_ == 1);
-                VerifyTestResult (Private_::LookupExternalInternetAddress_ () == 1 and Private_::sCalls1_ == 1);
+                VerifyTestResult (LookupExternalInternetAddress_ () == 1 and Private_::sCalls1_ == 1);
+                VerifyTestResult (LookupExternalInternetAddress_ () == 1 and Private_::sCalls1_ == 1);
             }
         }
         namespace Private_ {
@@ -300,10 +300,10 @@ namespace {
             }
             void Test_keyed_ ()
             {
-                VerifyTestResult (Private_::MapValue_ (1) == 1 and Private_::sCalls2_ == 1);
-                VerifyTestResult (Private_::MapValue_ (2) == 2 and Private_::sCalls2_ == 2);
-                VerifyTestResult (Private_::MapValue_ (1) == 1 and Private_::sCalls2_ == 2);
-                VerifyTestResult (Private_::MapValue_ (2) == 2 and Private_::sCalls2_ == 2);
+                VerifyTestResult (MapValue_ (1) == 1 and sCalls2_ == 1);
+                VerifyTestResult (MapValue_ (2) == 2 and sCalls2_ == 2);
+                VerifyTestResult (MapValue_ (1) == 1 and sCalls2_ == 2);
+                VerifyTestResult (MapValue_ (2) == 2 and sCalls2_ == 2);
             }
         }
         namespace Private_Sync_ {
@@ -319,8 +319,8 @@ namespace {
             }
             void Test_void_ ()
             {
-                VerifyTestResult (Private_::LookupExternalInternetAddress_ () == 1 and Private_::sCalls1_ == 1);
-                VerifyTestResult (Private_::LookupExternalInternetAddress_ () == 1 and Private_::sCalls1_ == 1);
+                VerifyTestResult (LookupExternalInternetAddress_ () == 1 and sCalls1_ == 1);
+                VerifyTestResult (LookupExternalInternetAddress_ () == 1 and sCalls1_ == 1);
             }
         }
         namespace Private_Sync_ {
@@ -336,10 +336,10 @@ namespace {
             }
             void Test_keyed_ ()
             {
-                VerifyTestResult (MapValue_ (1) == 1 and Private_::sCalls2_ == 1);
-                VerifyTestResult (MapValue_ (2) == 2 and Private_::sCalls2_ == 2);
-                VerifyTestResult (MapValue_ (1) == 1 and Private_::sCalls2_ == 2);
-                VerifyTestResult (MapValue_ (2) == 2 and Private_::sCalls2_ == 2);
+                VerifyTestResult (MapValue_ (1) == 1 and sCalls2_ == 1);
+                VerifyTestResult (MapValue_ (2) == 2 and sCalls2_ == 2);
+                VerifyTestResult (MapValue_ (1) == 1 and sCalls2_ == 2);
+                VerifyTestResult (MapValue_ (2) == 2 and sCalls2_ == 2);
             }
         }
         void DoIt ()
