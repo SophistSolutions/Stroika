@@ -54,8 +54,19 @@ namespace Stroika::Foundation::Containers::Concrete {
         Sequence_stdvector (const Sequence_stdvector& src) noexcept = default;
         Sequence_stdvector (std::vector<T>&& src);
         Sequence_stdvector (const initializer_list<value_type>& src);
-        template <IIterable<T> ITERABLE_OF_ADDABLE, enable_if_t<not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, Sequence_stdvector<T>>>* = nullptr>
-        explicit Sequence_stdvector (ITERABLE_OF_ADDABLE&& src);
+        template <IIterable<T> ITERABLE_OF_ADDABLE>
+            requires (not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, Sequence_stdvector<T>>)
+        explicit Sequence_stdvector (ITERABLE_OF_ADDABLE&& src)
+#if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
+        {
+            if constexpr (Configuration::has_size_v<ITERABLE_OF_ADDABLE>) {
+                reserve (src.size ());
+            }
+            this->AppendAll (forward<ITERABLE_OF_ADDABLE> (src));
+            AssertRepValidType_ ();
+        }
+#endif
+        ;
         template <IInputIterator<T> ITERATOR_OF_ADDABLE>
         Sequence_stdvector (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
 

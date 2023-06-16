@@ -194,8 +194,10 @@ namespace Stroika::Foundation::Containers::Concrete {
         this->AppendAll (src);
         AssertRepValidType_ ();
     }
+#if !qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
     template <typename T>
-    template <IIterable<T> ITERABLE_OF_ADDABLE, enable_if_t<not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, Sequence_stdvector<T>>>*>
+    template <IIterable<T> ITERABLE_OF_ADDABLE>
+        requires (not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, Sequence_stdvector<T>>)
     inline Sequence_stdvector<T>::Sequence_stdvector (ITERABLE_OF_ADDABLE&& src)
         : Sequence_stdvector{}
     {
@@ -205,6 +207,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         this->AppendAll (forward<ITERABLE_OF_ADDABLE> (src));
         AssertRepValidType_ ();
     }
+#endif
     template <typename T>
     inline Sequence_stdvector<T>::Sequence_stdvector (std::vector<T>&& src)
         : inherited{Memory::MakeSharedPtr<Rep_> (move (src))}
