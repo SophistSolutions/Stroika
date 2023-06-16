@@ -1386,9 +1386,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Sequence_ChunkedArray.h">
       <Filter>Sources\Containers\Concrete</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Set_SparseArray.h">
-      <Filter>Sources\Containers\Concrete</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Endian.h">
       <Filter>Sources\Configuration</Filter>
     </ClInclude>

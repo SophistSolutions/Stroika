@@ -58,6 +58,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             requires (not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, Sequence_stdvector<T>>)
         explicit Sequence_stdvector (ITERABLE_OF_ADDABLE&& src)
 #if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
+            : Sequence_stdvector{}
         {
             if constexpr (Configuration::has_size_v<ITERABLE_OF_ADDABLE>) {
                 reserve (src.size ());
