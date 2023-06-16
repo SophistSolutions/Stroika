@@ -139,9 +139,6 @@ namespace Stroika::Foundation::Containers {
          *          Collection<int> c8{ move (c1) };
          *      \endcode
          *
-         *  \req    static_assert (IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>);  // except done with requires to avoid bad overload of CTOR
-         *  \req    static_assert (IsAddable_v<ExtractValueType_t<ITERATOR_OF_ADDABLE>>);
-         *
          *  \note   Most other containers (e.g. Set<>, Sequence<>) have the 'ITERABLE_OF_ADDABLE&& src' CTOR be explicit, whereas Collection does not.
          *          This is because converting to a Set or Sequence has some semantics, and the programmer should be clear on this. But a Collection<>
          *          acts just like an Iterable<T> (except that its modifyable). So allow this case to be non-explicit.
@@ -156,6 +153,7 @@ namespace Stroika::Foundation::Containers {
             requires (not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, Collection<T>>)
         Collection (ITERABLE_OF_ADDABLE&& src)
 #if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
+            : Collection{}
         {
             AddAll (forward<ITERABLE_OF_ADDABLE> (src));
             _AssertRepValidType ();
