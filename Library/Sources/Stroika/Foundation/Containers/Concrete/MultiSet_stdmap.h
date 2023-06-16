@@ -65,8 +65,16 @@ namespace Stroika::Foundation::Containers::Concrete {
         MultiSet_stdmap (const initializer_list<value_type>& src);
         template <IInOrderComparer<T> INORDER_COMPARER>
         MultiSet_stdmap (INORDER_COMPARER&& comparer, const initializer_list<value_type>& src);
-        template <IIterable<CountedValue<T>> ITERABLE_OF_ADDABLE, enable_if_t<not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, MultiSet_stdmap<T, TRAITS>>>* = nullptr>
-        explicit MultiSet_stdmap (ITERABLE_OF_ADDABLE&& src);
+        template <IIterable<CountedValue<T>> ITERABLE_OF_ADDABLE>
+            requires (not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, MultiSet_stdmap<T, TRAITS>>)
+        explicit MultiSet_stdmap (ITERABLE_OF_ADDABLE&& src)
+#if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
+        {
+            AddAll (forward<ITERABLE_OF_ADDABLE> (src));
+            AssertRepValidType_ ();
+        }
+#endif
+        ;
         template <IInOrderComparer<T> INORDER_COMPARER, IIterable<CountedValue<T>> ITERABLE_OF_ADDABLE>
         MultiSet_stdmap (INORDER_COMPARER&& comparer, ITERABLE_OF_ADDABLE&& src);
         template <IInputIterator<CountedValue<T>> ITERATOR_OF_ADDABLE>

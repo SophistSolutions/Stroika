@@ -13,11 +13,7 @@
 #define _Stroika_Foundation_Containers_Concrete_Mapping_stdhashmap_h_
 
 /**
- *  \file
- *
  *  \version    <a href="Code-Status.md#Beta">Beta</a>
- *
- *  TODO:
  */
 
 namespace Stroika::Foundation::Containers::Concrete {
@@ -81,8 +77,8 @@ namespace Stroika::Foundation::Containers::Concrete {
 #endif
         ;
         template <typename HASH, IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER>
-        explicit Mapping_stdhashmap (HASH&& hasher, KEY_EQUALS_COMPARER&& keyComparer)
-            requires (Cryptography::Digest::IHashFunction<HASH, KEY_TYPE>);
+            requires (Cryptography::Digest::IHashFunction<HASH, KEY_TYPE>)
+        explicit Mapping_stdhashmap (HASH&& hasher, KEY_EQUALS_COMPARER&& keyComparer);
         Mapping_stdhashmap (Mapping_stdhashmap&& src) noexcept      = default;
         Mapping_stdhashmap (const Mapping_stdhashmap& src) noexcept = default;
         Mapping_stdhashmap (const initializer_list<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src)
@@ -91,12 +87,12 @@ namespace Stroika::Foundation::Containers::Concrete {
 #endif
         ;
         template <typename HASH, IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER>
-        Mapping_stdhashmap (HASH&& hasher, KEY_EQUALS_COMPARER&& keyComparer, const initializer_list<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src)
-            requires (Cryptography::Digest::IHashFunction<HASH, KEY_TYPE>);
+            requires (Cryptography::Digest::IHashFunction<HASH, KEY_TYPE>)
+        Mapping_stdhashmap (HASH&& hasher, KEY_EQUALS_COMPARER&& keyComparer, const initializer_list<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src);
         template <IIterable<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> ITERABLE_OF_ADDABLE>
-        explicit Mapping_stdhashmap (ITERABLE_OF_ADDABLE&& src)
             requires (is_default_constructible_v<Mapping_stdhashmap<KEY_TYPE, MAPPED_VALUE_TYPE>> and
                       not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, Mapping_stdhashmap<KEY_TYPE, MAPPED_VALUE_TYPE>>)
+        explicit Mapping_stdhashmap (ITERABLE_OF_ADDABLE&& src)
 #if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
             : Mapping_stdhashmap{}
         {

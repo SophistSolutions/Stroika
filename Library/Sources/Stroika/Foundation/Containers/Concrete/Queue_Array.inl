@@ -138,8 +138,10 @@ namespace Stroika::Foundation::Containers::Concrete {
         AddAllToTail (src);
         AssertRepValidType_ ();
     }
+#if !qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
     template <typename T>
-    template <IIterable<T> ITERABLE_OF_ADDABLE, enable_if_t<not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, Queue_Array<T>>>*>
+    template <IIterable<T> ITERABLE_OF_ADDABLE>
+        requires (not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, Queue_Array<T>>)
     inline Queue_Array<T>::Queue_Array (ITERABLE_OF_ADDABLE&& src)
         : Queue_Array{}
     {
@@ -149,6 +151,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         AddAllToTail (forward<ITERABLE_OF_ADDABLE> (src));
         AssertRepValidType_ ();
     }
+#endif
     template <typename T>
     template <IInputIterator<T> ITERATOR_OF_ADDABLE>
     inline Queue_Array<T>::Queue_Array (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)

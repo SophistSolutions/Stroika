@@ -222,20 +222,11 @@ namespace Stroika::Foundation::Containers::Concrete {
     {
         AssertRepValidType_ ();
     }
-#if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
-    template <typename T, typename KEY_TYPE, typename TRAITS>
-    template <IIterable<T> ITERABLE_OF_ADDABLE, enable_if_t<not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, KeyedCollection_stdset<T, KEY_TYPE, TRAITS>>>*>
-    inline KeyedCollection_stdset<T, KEY_TYPE, TRAITS>::KeyedCollection_stdset (ITERABLE_OF_ADDABLE&& src)
-        : KeyedCollection_stdset{KeyExtractorType{}, less<KEY_TYPE>{}}
-    {
-        this->AddAll (src);
-        AssertRepValidType_ ();
-    }
-#else
+#if !qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
     template <typename T, typename KEY_TYPE, typename TRAITS>
     template <IIterable<T> ITERABLE_OF_ADDABLE>
-    inline KeyedCollection_stdset<T, KEY_TYPE, TRAITS>::KeyedCollection_stdset (ITERABLE_OF_ADDABLE&& src)
         requires (not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, KeyedCollection_stdset<T, KEY_TYPE, TRAITS>>)
+    inline KeyedCollection_stdset<T, KEY_TYPE, TRAITS>::KeyedCollection_stdset (ITERABLE_OF_ADDABLE&& src)
         : KeyedCollection_stdset{KeyExtractorType{}, less<KEY_TYPE>{}}
     {
         this->AddAll (src);

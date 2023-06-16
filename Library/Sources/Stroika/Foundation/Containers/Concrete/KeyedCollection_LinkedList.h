@@ -56,15 +56,16 @@ namespace Stroika::Foundation::Containers::Concrete {
         KeyedCollection_LinkedList (const KeyedCollection_LinkedList& src) noexcept = default;
         template <IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER = equal_to<KEY_TYPE>>
         KeyedCollection_LinkedList (const KeyExtractorType& keyExtractor, KEY_EQUALS_COMPARER&& keyComparer = KEY_EQUALS_COMPARER{});
-#if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
-        template <IIterable<T> ITERABLE_OF_ADDABLE,
-                  enable_if_t<not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, KeyedCollection_LinkedList<T, KEY_TYPE, TRAITS>>>* = nullptr>
-        KeyedCollection_LinkedList (ITERABLE_OF_ADDABLE&& src);
-#else
         template <IIterable<T> ITERABLE_OF_ADDABLE>
+            requires (not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, KeyedCollection_LinkedList<T, KEY_TYPE, TRAITS>>)
         KeyedCollection_LinkedList (ITERABLE_OF_ADDABLE&& src)
-            requires (not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, KeyedCollection_LinkedList<T, KEY_TYPE, TRAITS>>);
+#if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
+        {
+            this->AddAll (src);
+            AssertRepValidType_ ();
+        }
 #endif
+        ;
         template <IIterable<T> ITERABLE_OF_ADDABLE, IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER = equal_to<KEY_TYPE>>
         KeyedCollection_LinkedList (KEY_EQUALS_COMPARER&& keyComparer, ITERABLE_OF_ADDABLE&& src);
         template <IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER, IIterable<T> ITERABLE_OF_ADDABLE>

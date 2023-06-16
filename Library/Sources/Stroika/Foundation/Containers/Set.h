@@ -173,10 +173,9 @@ namespace Stroika::Foundation::Containers {
         template <IEqualsComparer<T> EQUALS_COMPARER>
         Set (EQUALS_COMPARER&& equalsComparer, const initializer_list<value_type>& src);
         template <IIterable<T> ITERABLE_OF_ADDABLE>
-        explicit Set (ITERABLE_OF_ADDABLE&& src)
             requires (not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, Set<T>>)
+        explicit Set (ITERABLE_OF_ADDABLE&& src)
 #if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
-            : Set{}
         {
             AddAll (forward<ITERABLE_OF_ADDABLE> (src));
             _AssertRepValidType ();

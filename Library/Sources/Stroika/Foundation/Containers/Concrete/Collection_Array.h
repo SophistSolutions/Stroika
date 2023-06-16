@@ -45,14 +45,18 @@ namespace Stroika::Foundation::Containers::Concrete {
         Collection_Array (Collection_Array&& src) noexcept      = default;
         Collection_Array (const Collection_Array& src) noexcept = default;
         Collection_Array (const initializer_list<value_type>& src);
-#if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
-        template <IIterable<T> ITERABLE_OF_ADDABLE, enable_if_t<not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, Collection_Array<T>>>* = nullptr>
-        Collection_Array (ITERABLE_OF_ADDABLE&& src);
-#else
+
         template <IIterable<T> ITERABLE_OF_ADDABLE>
+            requires (not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, Collection_Array<T>>)
         Collection_Array (ITERABLE_OF_ADDABLE&& src)
-            requires (not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, Collection_Array<T>>);
+#if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
+        {
+            reserve (src.size ());
+            this->AddAll (forward<ITERABLE_OF_ADDABLE> (src));
+            AssertRepValidType_ ();
+        }
 #endif
+        ;
         template <IInputIterator<T> ITERATOR_OF_ADDABLE>
         Collection_Array (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
 

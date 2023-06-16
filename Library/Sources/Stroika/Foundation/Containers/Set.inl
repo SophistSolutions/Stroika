@@ -47,8 +47,8 @@ namespace Stroika::Foundation::Containers {
 #if !qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
     template <typename T>
     template <IIterable<T> ITERABLE_OF_ADDABLE>
-    inline Set<T>::Set (ITERABLE_OF_ADDABLE&& src)
         requires (not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, Set<T>>)
+    inline Set<T>::Set (ITERABLE_OF_ADDABLE&& src)
         : Set{}
     {
         AddAll (forward<ITERABLE_OF_ADDABLE> (src));

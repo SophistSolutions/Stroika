@@ -32,8 +32,8 @@ namespace Stroika::Foundation::Containers {
 #if !qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
     template <typename T>
     template <IIterable<T> ITERABLE_OF_ADDABLE>
-    inline Queue<T>::Queue (ITERABLE_OF_ADDABLE&& src)
         requires (not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, Queue<T>>)
+    inline Queue<T>::Queue (ITERABLE_OF_ADDABLE&& src)
         : Queue{}
     {
         AddAllToTail (forward<ITERABLE_OF_ADDABLE> (src));

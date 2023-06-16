@@ -167,8 +167,8 @@ namespace Stroika::Foundation::Containers::Concrete {
 #if !qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
     template <typename T>
     template <IIterable<T> ITERABLE_OF_ADDABLE>
-    inline Deque_DoublyLinkedList<T>::Deque_DoublyLinkedList (ITERABLE_OF_ADDABLE&& src)
         requires (not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, Deque_DoublyLinkedList<T>>)
+    inline Deque_DoublyLinkedList<T>::Deque_DoublyLinkedList (ITERABLE_OF_ADDABLE&& src)
         : Deque_DoublyLinkedList{}
     {
         this->AddAllToTail (forward<ITERABLE_OF_ADDABLE> (src));

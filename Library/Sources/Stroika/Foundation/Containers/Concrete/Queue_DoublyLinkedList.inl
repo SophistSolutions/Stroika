@@ -134,23 +134,26 @@ namespace Stroika::Foundation::Containers::Concrete {
     inline Queue_DoublyLinkedList<T>::Queue_DoublyLinkedList (const initializer_list<value_type>& src)
         : Queue_DoublyLinkedList{}
     {
-        AddAllToTail (src);
+        this->AddAllToTail (src);
         AssertRepValidType_ ();
     }
+#if !qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
     template <typename T>
-    template <IIterable<T> ITERABLE_OF_ADDABLE, enable_if_t<not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, Queue_DoublyLinkedList<T>>>*>
+    template <IIterable<T> ITERABLE_OF_ADDABLE>
+        requires (not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, Queue_DoublyLinkedList<T>>)
     inline Queue_DoublyLinkedList<T>::Queue_DoublyLinkedList (ITERABLE_OF_ADDABLE&& src)
         : Queue_DoublyLinkedList{}
     {
-        AddAllToTail (forward<ITERABLE_OF_ADDABLE> (src));
+        this->AddAllToTail (forward<ITERABLE_OF_ADDABLE> (src));
         AssertRepValidType_ ();
     }
+#endif
     template <typename T>
     template <IInputIterator<T> ITERATOR_OF_ADDABLE>
     inline Queue_DoublyLinkedList<T>::Queue_DoublyLinkedList (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
         : Queue_DoublyLinkedList{}
     {
-        AddAllToTail (forward<ITERATOR_OF_ADDABLE> (start), forward<ITERATOR_OF_ADDABLE> (end));
+        this->AddAllToTail (forward<ITERATOR_OF_ADDABLE> (start), forward<ITERATOR_OF_ADDABLE> (end));
         AssertRepValidType_ ();
     }
     template <typename T>

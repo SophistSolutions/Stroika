@@ -13,8 +13,6 @@
 #include "Common.h"
 
 /**
- *  \file
- *
  *  \version    <a href="Code-Status.md#Beta">Beta</a>
  *
  * TODO:
@@ -155,10 +153,9 @@ namespace Stroika::Foundation::Containers {
         Collection (const Collection& src) noexcept = default;
         Collection (const initializer_list<value_type>& src);
         template <IIterable<T> ITERABLE_OF_ADDABLE>
-        Collection (ITERABLE_OF_ADDABLE&& src)
             requires (not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, Collection<T>>)
+        Collection (ITERABLE_OF_ADDABLE&& src)
 #if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
-            : Collection{}
         {
             AddAll (forward<ITERABLE_OF_ADDABLE> (src));
             _AssertRepValidType ();

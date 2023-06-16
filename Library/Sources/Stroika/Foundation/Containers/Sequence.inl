@@ -110,8 +110,8 @@ namespace Stroika::Foundation::Containers {
 #if !qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
     template <typename T>
     template <IIterable<T> ITERABLE_OF_ADDABLE>
-    inline Sequence<T>::Sequence (ITERABLE_OF_ADDABLE&& src)
         requires (not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, Sequence<T>>)
+    inline Sequence<T>::Sequence (ITERABLE_OF_ADDABLE&& src)
         : Sequence{}
     {
         AppendAll (forward<ITERABLE_OF_ADDABLE> (src));

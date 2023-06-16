@@ -50,8 +50,16 @@ namespace Stroika::Foundation::Containers::Concrete {
         MultiSet_LinkedList (const initializer_list<value_type>& src);
         template <IEqualsComparer<T> EQUALS_COMPARER>
         MultiSet_LinkedList (EQUALS_COMPARER&& equalsComparer, const initializer_list<value_type>& src);
-        template <IIterable<CountedValue<T>> ITERABLE_OF_ADDABLE, enable_if_t<not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, MultiSet_LinkedList<T, TRAITS>>>* = nullptr>
-        explicit MultiSet_LinkedList (ITERABLE_OF_ADDABLE&& src);
+        template <IIterable<CountedValue<T>> ITERABLE_OF_ADDABLE>
+            requires (not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, MultiSet_LinkedList<T, TRAITS>>)
+        explicit MultiSet_LinkedList (ITERABLE_OF_ADDABLE&& src)
+#if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
+        {
+            AddAll (forward<ITERABLE_OF_ADDABLE> (src));
+            AssertRepValidType_ ();
+        }
+#endif
+        ;
         template <IEqualsComparer<T> EQUALS_COMPARER, IIterable<CountedValue<T>> ITERABLE_OF_ADDABLE>
         MultiSet_LinkedList (EQUALS_COMPARER&& equalsComparer, ITERABLE_OF_ADDABLE&& src);
         template <IInputIterator<CountedValue<T>> ITERATOR_OF_ADDABLE>

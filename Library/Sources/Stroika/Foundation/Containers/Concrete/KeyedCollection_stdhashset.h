@@ -119,6 +119,9 @@ namespace Stroika::Foundation::Containers::Concrete {
         using STDHASHSET = unordered_set<T, ElementHash<KEY_HASH>, ElementEqualsComparer<KEY_EQUALS_COMPARER>>;
 
     public:
+        /**
+         *  @todo consider adding more CTOR overloads... Like with base class KeyedCollection
+         */
         template <typename KEY_HASH = std::hash<KEY_TYPE>, typename KEY_EQUALS_COMPARER = equal_to<KEY_TYPE>>
         KeyedCollection_stdhashset (const KeyExtractorType& keyExtractor = {}, KEY_HASH&& keyHasher = {},
                                     KEY_EQUALS_COMPARER&& keyComparer = KEY_EQUALS_COMPARER{})

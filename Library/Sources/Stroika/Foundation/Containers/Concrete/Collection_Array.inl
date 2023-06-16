@@ -165,21 +165,18 @@ namespace Stroika::Foundation::Containers::Concrete {
         this->AddAll (src);
         AssertRepValidType_ ();
     }
+#if !qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
     template <typename T>
-#if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
-    template <IIterable<T> ITERABLE_OF_ADDABLE, enable_if_t<not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, Collection_Array<T>>>*>
-    inline Collection_Array<T>::Collection_Array (ITERABLE_OF_ADDABLE&& src)
-#else
     template <IIterable<T> ITERABLE_OF_ADDABLE>
-    inline Collection_Array<T>::Collection_Array (ITERABLE_OF_ADDABLE&& src)
         requires (not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, Collection_Array<T>>)
-#endif
+    inline Collection_Array<T>::Collection_Array (ITERABLE_OF_ADDABLE&& src)
         : Collection_Array{}
     {
         reserve (src.size ());
         this->AddAll (forward<ITERABLE_OF_ADDABLE> (src));
         AssertRepValidType_ ();
     }
+#endif
     template <typename T>
     inline void Collection_Array<T>::shrink_to_fit ()
     {
