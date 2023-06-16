@@ -55,6 +55,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             requires (not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, Collection_stdforward_list<T>>)
         Collection_stdforward_list (ITERABLE_OF_ADDABLE&& src)
 #if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
+            : Collection_stdforward_list{}
         {
             this->AddAll (forward<ITERABLE_OF_ADDABLE> (src));
             AssertRepValidType_ ();

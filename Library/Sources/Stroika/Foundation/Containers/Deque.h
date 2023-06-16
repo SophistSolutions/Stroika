@@ -89,6 +89,7 @@ namespace Stroika::Foundation::Containers {
         explicit Deque (ITERABLE_OF_ADDABLE&& src)
             requires (not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, Deque<T>>)
 #if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
+            : Deque{}
         {
             this->AddAllToTail (forward<ITERABLE_OF_ADDABLE> (src));
             _AssertRepValidType ();

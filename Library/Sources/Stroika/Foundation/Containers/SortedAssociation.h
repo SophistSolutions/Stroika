@@ -105,6 +105,7 @@ namespace Stroika::Foundation::Containers {
         explicit SortedAssociation (ITERABLE_OF_ADDABLE&& src)
             requires (not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, SortedAssociation<KEY_TYPE, MAPPED_VALUE_TYPE>>)
 #if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
+            : SortedAssociation{}
         {
             _AssertRepValidType ();
             this->AddAll (forward<ITERABLE_OF_ADDABLE> (src));

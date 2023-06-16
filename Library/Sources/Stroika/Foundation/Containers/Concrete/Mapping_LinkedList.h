@@ -53,6 +53,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             requires (not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, Mapping_LinkedList<KEY_TYPE, MAPPED_VALUE_TYPE>>)
         explicit Mapping_LinkedList (ITERABLE_OF_ADDABLE&& src)
 #if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
+            : Mapping_LinkedList{}
         {
             this->AddAll (forward<ITERABLE_OF_ADDABLE> (src));
             AssertRepValidType_ ();

@@ -77,6 +77,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             requires (not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, Association_stdmultimap<KEY_TYPE, MAPPED_VALUE_TYPE>>)
         explicit Association_stdmultimap (ITERABLE_OF_ADDABLE&& src)
 #if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
+            : Association_stdmultimap{}
         {
             this->AddAll (forward<ITERABLE_OF_ADDABLE> (src));
             AssertRepValidType_ ();

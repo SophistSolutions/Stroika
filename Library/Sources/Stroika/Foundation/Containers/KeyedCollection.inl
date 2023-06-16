@@ -42,7 +42,7 @@ namespace Stroika::Foundation::Containers {
     inline KeyedCollection<T, KEY_TYPE, TRAITS>::KeyedCollection (ITERABLE_OF_ADDABLE&& src)
         requires (KeyedCollection_ExtractorCanBeDefaulted<T, KEY_TYPE, TRAITS> and
                   not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, KeyedCollection<T, KEY_TYPE, TRAITS>>)
-        : KeyedCollection{KeyExtractorType{}, equal_to<KEY_TYPE>{}}
+        : KeyedCollection{}
     {
         AddAll (forward<ITERABLE_OF_ADDABLE> (src));
         _AssertRepValidType ();

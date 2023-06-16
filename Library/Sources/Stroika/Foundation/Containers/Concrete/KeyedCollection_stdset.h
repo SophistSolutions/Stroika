@@ -95,6 +95,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             requires (not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, KeyedCollection_stdset<T, KEY_TYPE, TRAITS>>)
         KeyedCollection_stdset (ITERABLE_OF_ADDABLE&& src)
 #if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
+            : KeyedCollection_stdset{KeyExtractorType{}, less<KEY_TYPE>{}}
         {
             this->AddAll (src);
             AssertRepValidType_ ();

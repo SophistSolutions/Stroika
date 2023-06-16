@@ -35,7 +35,7 @@ namespace Stroika::Foundation::Containers {
     template <IIterable<T> ITERABLE_OF_ADDABLE, IInOrderComparer<KEY_TYPE> KEY_INORDER_COMPARER>
     inline SortedKeyedCollection<T, KEY_TYPE, TRAITS>::SortedKeyedCollection (ITERABLE_OF_ADDABLE&& src)
         requires (not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, SortedKeyedCollection<T, KEY_TYPE, TRAITS>>)
-        : SortedKeyedCollection{KeyExtractorType{}, KEY_INORDER_COMPARER{}}
+        : SortedKeyedCollection{}
     {
         this->AddAll (src);
         _AssertRepValidType ();

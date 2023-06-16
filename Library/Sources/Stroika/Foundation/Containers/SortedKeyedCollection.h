@@ -121,7 +121,7 @@ namespace Stroika::Foundation::Containers {
         SortedKeyedCollection (ITERABLE_OF_ADDABLE&& src)
             requires (not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, SortedKeyedCollection<T, KEY_TYPE, TRAITS>>)
 #if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
-            : SortedKeyedCollection{KeyExtractorType{}, KEY_INORDER_COMPARER{}}
+            : SortedKeyedCollection{}
         {
             this->AddAll (src);
             _AssertRepValidType ();

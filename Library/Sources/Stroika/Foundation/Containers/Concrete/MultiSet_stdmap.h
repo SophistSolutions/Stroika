@@ -69,6 +69,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             requires (not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, MultiSet_stdmap<T, TRAITS>>)
         explicit MultiSet_stdmap (ITERABLE_OF_ADDABLE&& src)
 #if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
+            : MultiSet_stdmap{}
         {
             AddAll (forward<ITERABLE_OF_ADDABLE> (src));
             AssertRepValidType_ ();

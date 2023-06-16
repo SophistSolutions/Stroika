@@ -62,6 +62,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             requires (not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, Collection_stdmultiset<T>>)
         Collection_stdmultiset (ITERABLE_OF_ADDABLE&& src)
 #if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
+            : Collection_stdmultiset{}
         {
             this->AddAll (forward<ITERABLE_OF_ADDABLE> (src));
             AssertRepValidType_ ();

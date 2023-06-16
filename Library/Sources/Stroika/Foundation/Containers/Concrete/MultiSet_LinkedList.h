@@ -54,6 +54,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             requires (not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, MultiSet_LinkedList<T, TRAITS>>)
         explicit MultiSet_LinkedList (ITERABLE_OF_ADDABLE&& src)
 #if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
+            : MultiSet_LinkedList{}
         {
             AddAll (forward<ITERABLE_OF_ADDABLE> (src));
             AssertRepValidType_ ();

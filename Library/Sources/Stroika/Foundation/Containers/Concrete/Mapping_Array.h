@@ -53,6 +53,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             requires (not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, Mapping_Array<KEY_TYPE, MAPPED_VALUE_TYPE>>)
         explicit Mapping_Array (ITERABLE_OF_ADDABLE&& src)
 #if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
+            : Mapping_Array{}
         {
             if constexpr (Configuration::has_size_v<ITERABLE_OF_ADDABLE>) {
                 reserve (src.size ());

@@ -254,7 +254,7 @@ namespace Stroika::Foundation::Containers {
             requires (KeyedCollection_ExtractorCanBeDefaulted<T, KEY_TYPE, TRAITS> and
                       not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, KeyedCollection<T, KEY_TYPE, TRAITS>>)
 #if qCompilerAndStdLib_template_Requires_templateDeclarationMatchesOutOfLine2_Buggy
-            : KeyedCollection{KeyExtractorType{}, equal_to<KEY_TYPE>{}}
+            : KeyedCollection{}
         {
             AddAll (forward<ITERABLE_OF_ADDABLE> (src));
             _AssertRepValidType ();

@@ -118,6 +118,7 @@ namespace Stroika::Foundation::Containers {
             requires (not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, Queue<T>>)
         explicit Queue (ITERABLE_OF_ADDABLE&& src)
 #if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
+            : Queue{}
         {
             AddAllToTail (forward<ITERABLE_OF_ADDABLE> (src));
             _AssertRepValidType ();
