@@ -209,7 +209,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         this->AddAll (forward<ITERABLE_OF_ADDABLE> (src));
         AssertRepValidType_ ();
     }
-    #endif
+#endif
     template <typename T>
     template <IEqualsComparer<T> EQUALS_COMPARER, IIterable<T> ITERABLE_OF_ADDABLE>
     inline Set_LinkedList<T>::Set_LinkedList (EQUALS_COMPARER&& equalsComparer, ITERABLE_OF_ADDABLE&& src)
