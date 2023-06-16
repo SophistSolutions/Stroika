@@ -210,14 +210,17 @@ namespace Stroika::Foundation::Containers::Concrete {
         this->AddAll (src);
         AssertRepValidType_ ();
     }
+#if !qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
     template <typename T>
-    template <IIterable<T> ITERABLE_OF_ADDABLE, enable_if_t<not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, SortedSet_stdset<T>>>*>
+    template <IIterable<T> ITERABLE_OF_ADDABLE>
+        requires (not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, SortedSet_stdset<T>>)
     inline SortedSet_stdset<T>::SortedSet_stdset (ITERABLE_OF_ADDABLE&& src)
         : SortedSet_stdset{}
     {
         this->AddAll (forward<ITERABLE_OF_ADDABLE> (src));
         AssertRepValidType_ ();
     }
+#endif
     template <typename T>
     template <IInOrderComparer<T> INORDER_COMPARER, IIterable<T> ITERABLE_OF_ADDABLE>
     inline SortedSet_stdset<T>::SortedSet_stdset (INORDER_COMPARER&& inOrderComparer, ITERABLE_OF_ADDABLE&& src)

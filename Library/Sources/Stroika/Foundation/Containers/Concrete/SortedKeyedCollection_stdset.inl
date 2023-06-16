@@ -233,15 +233,17 @@ namespace Stroika::Foundation::Containers::Concrete {
     {
         AssertRepValidType_ ();
     }
+#if !qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
     template <typename T, typename KEY_TYPE, typename TRAITS>
-    template <IIterable<T> ITERABLE_OF_ADDABLE, IInOrderComparer<KEY_TYPE> KEY_INORDER_COMPARER,
-              enable_if_t<not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, SortedKeyedCollection_stdset<T, KEY_TYPE, TRAITS>>>*>
+    template <IIterable<T> ITERABLE_OF_ADDABLE, IInOrderComparer<KEY_TYPE> KEY_INORDER_COMPARER>
+        requires (not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, SortedKeyedCollection_stdset<T, KEY_TYPE, TRAITS>>)
     inline SortedKeyedCollection_stdset<T, KEY_TYPE, TRAITS>::SortedKeyedCollection_stdset (ITERABLE_OF_ADDABLE&& src)
         : SortedKeyedCollection_stdset{KeyExtractorType{}, KEY_INORDER_COMPARER{}}
     {
         this->AddAll (src);
         AssertRepValidType_ ();
     }
+#endif
     template <typename T, typename KEY_TYPE, typename TRAITS>
     template <IIterable<T> ITERABLE_OF_ADDABLE, IInOrderComparer<KEY_TYPE> KEY_INORDER_COMPARER>
     inline SortedKeyedCollection_stdset<T, KEY_TYPE, TRAITS>::SortedKeyedCollection_stdset (KEY_INORDER_COMPARER&& keyComparer, ITERABLE_OF_ADDABLE&& src)

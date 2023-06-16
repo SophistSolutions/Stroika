@@ -261,14 +261,17 @@ namespace Stroika::Foundation::Containers::Concrete {
         this->AddAll (src);
         AssertRepValidType_ ();
     }
+#if !qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
     template <typename T, typename TRAITS>
-    template <IIterable<CountedValue<T>> ITERABLE_OF_ADDABLE, enable_if_t<not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, SortedMultiSet_stdmap<T, TRAITS>>>*>
+    template <IIterable<CountedValue<T>> ITERABLE_OF_ADDABLE>
+        requires (not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, SortedMultiSet_stdmap<T, TRAITS>>)
     inline SortedMultiSet_stdmap<T, TRAITS>::SortedMultiSet_stdmap (ITERABLE_OF_ADDABLE&& src)
         : SortedMultiSet_stdmap{}
     {
         this->AddAll (forward<ITERABLE_OF_ADDABLE> (src));
         AssertRepValidType_ ();
     }
+#endif
     template <typename T, typename TRAITS>
     template <IInOrderComparer<T> INORDER_COMPARER, IIterable<CountedValue<T>> ITERABLE_OF_ADDABLE>
     inline SortedMultiSet_stdmap<T, TRAITS>::SortedMultiSet_stdmap (INORDER_COMPARER&& inorderComparer, ITERABLE_OF_ADDABLE&& src)

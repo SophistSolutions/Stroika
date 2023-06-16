@@ -53,8 +53,17 @@ namespace Stroika::Foundation::Containers::Concrete {
         SortedCollection_LinkedList (const initializer_list<T>& src);
         template <Common::IInOrderComparer<T> INORDER_COMPARER>
         SortedCollection_LinkedList (INORDER_COMPARER&& inOrderComparer, const initializer_list<T>& src);
-        template <IIterable<T> ITERABLE_OF_ADDABLE, enable_if_t<not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, SortedCollection_LinkedList<T>>>* = nullptr>
-        explicit SortedCollection_LinkedList (ITERABLE_OF_ADDABLE&& src);
+        template <IIterable<T> ITERABLE_OF_ADDABLE>
+            requires (not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, SortedCollection_LinkedList<T>>)
+        explicit SortedCollection_LinkedList (ITERABLE_OF_ADDABLE&& src)
+#if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
+            : SortedCollection_LinkedList{}
+        {
+            this->AddAll (forward<ITERABLE_OF_ADDABLE> (src));
+            AssertRepValidType_ ();
+        }
+#endif
+        ;
         template <Common::IInOrderComparer<T> INORDER_COMPARER, IIterable<T> ITERABLE_OF_ADDABLE>
         SortedCollection_LinkedList (INORDER_COMPARER&& inOrderComparer, ITERABLE_OF_ADDABLE&& src);
         template <IInputIterator<T> ITERATOR_OF_ADDABLE>

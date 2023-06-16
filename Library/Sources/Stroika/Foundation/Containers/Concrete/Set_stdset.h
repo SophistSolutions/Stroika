@@ -63,8 +63,17 @@ namespace Stroika::Foundation::Containers::Concrete {
         Set_stdset (const initializer_list<value_type>& src);
         template <Common::IInOrderComparer<T> INORDER_COMPARER>
         Set_stdset (INORDER_COMPARER&& inorderComparer, const initializer_list<value_type>& src);
-        template <IIterable<T> ITERABLE_OF_ADDABLE, enable_if_t<not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, Set_stdset<T>>>* = nullptr>
-        explicit Set_stdset (ITERABLE_OF_ADDABLE&& src);
+        template <IIterable<T> ITERABLE_OF_ADDABLE>
+            requires (not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, Set_stdset<T>>)
+        explicit Set_stdset (ITERABLE_OF_ADDABLE&& src)
+#if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
+            : Set_stdset{}
+        {
+            this->AddAll (forward<ITERABLE_OF_ADDABLE> (src));
+            AssertRepValidType_ ();
+        }
+#endif
+        ;
         template <Common::IInOrderComparer<T> INORDER_COMPARER, IIterable<T> ITERABLE_OF_ADDABLE>
         Set_stdset (INORDER_COMPARER&& inorderComparer, ITERABLE_OF_ADDABLE&& src);
         template <IInputIterator<T> ITERATOR_OF_ADDABLE>

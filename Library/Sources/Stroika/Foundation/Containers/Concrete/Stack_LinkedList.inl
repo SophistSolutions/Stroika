@@ -115,8 +115,10 @@ namespace Stroika::Foundation::Containers::Concrete {
     {
         AssertRepValidType_ ();
     }
+#if !qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
     template <typename T>
-    template <IIterable<T> ITERABLE_OF_ADDABLE, enable_if_t<not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, Stack_LinkedList<T>>>*>
+    template <IIterable<T> ITERABLE_OF_ADDABLE>
+        requires (not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, Stack_LinkedList<T>>)
     inline Stack_LinkedList<T>::Stack_LinkedList (ITERABLE_OF_ADDABLE&& src)
         : Stack_LinkedList{}
     {
@@ -130,6 +132,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             Push (si);
         }
     }
+    #endif
     template <typename T>
     template <IInputIterator<T> ITERATOR_OF_ADDABLE>
     inline Stack_LinkedList<T>::Stack_LinkedList (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)

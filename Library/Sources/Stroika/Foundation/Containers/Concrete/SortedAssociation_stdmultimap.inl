@@ -219,9 +219,10 @@ namespace Stroika::Foundation::Containers::Concrete {
         this->AddAll (src);
         AssertRepValidType_ ();
     }
+#if !qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-    template <IIterable<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> ITERABLE_OF_ADDABLE,
-              enable_if_t<not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, SortedAssociation_stdmultimap<KEY_TYPE, MAPPED_VALUE_TYPE>>>*>
+    template <IIterable<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> ITERABLE_OF_ADDABLE>
+        requires (not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, SortedAssociation_stdmultimap<KEY_TYPE, MAPPED_VALUE_TYPE>>)
     inline SortedAssociation_stdmultimap<KEY_TYPE, MAPPED_VALUE_TYPE>::SortedAssociation_stdmultimap (ITERABLE_OF_ADDABLE&& src)
         : SortedAssociation_stdmultimap{}
     {
@@ -229,6 +230,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         this->AddAll (forward<ITERABLE_OF_ADDABLE> (src));
         AssertRepValidType_ ();
     }
+#endif
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     template <IInOrderComparer<KEY_TYPE> KEY_INORDER_COMPARER, IIterable<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> ITERABLE_OF_ADDABLE>
     inline SortedAssociation_stdmultimap<KEY_TYPE, MAPPED_VALUE_TYPE>::SortedAssociation_stdmultimap (KEY_INORDER_COMPARER&& inorderComparer,

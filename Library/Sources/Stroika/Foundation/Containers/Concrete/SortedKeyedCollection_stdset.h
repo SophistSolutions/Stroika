@@ -84,9 +84,17 @@ namespace Stroika::Foundation::Containers::Concrete {
         SortedKeyedCollection_stdset (const SortedKeyedCollection_stdset& src) noexcept = default;
         template <IInOrderComparer<KEY_TYPE> KEY_INORDER_COMPARER = less<KEY_TYPE>>
         SortedKeyedCollection_stdset (const KeyExtractorType& keyExtractor, KEY_INORDER_COMPARER&& keyComparer = KEY_INORDER_COMPARER{});
-        template <IIterable<T> ITERABLE_OF_ADDABLE, IInOrderComparer<KEY_TYPE> KEY_INORDER_COMPARER = equal_to<KEY_TYPE>,
-                  enable_if_t<not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, SortedKeyedCollection_stdset<T, KEY_TYPE, TRAITS>>>* = nullptr>
-        SortedKeyedCollection_stdset (ITERABLE_OF_ADDABLE&& src);
+        template <IIterable<T> ITERABLE_OF_ADDABLE, IInOrderComparer<KEY_TYPE> KEY_INORDER_COMPARER = equal_to<KEY_TYPE>>
+            requires (not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, SortedKeyedCollection_stdset<T, KEY_TYPE, TRAITS>>)
+        SortedKeyedCollection_stdset (ITERABLE_OF_ADDABLE&& src)
+#if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
+            : SortedKeyedCollection_stdset{KeyExtractorType{}, KEY_INORDER_COMPARER{}}
+        {
+            this->AddAll (src);
+            AssertRepValidType_ ();
+        }
+#endif
+        ;
         template <IIterable<T> ITERABLE_OF_ADDABLE, IInOrderComparer<KEY_TYPE> KEY_INORDER_COMPARER = less<KEY_TYPE>>
         SortedKeyedCollection_stdset (KEY_INORDER_COMPARER&& keyComparer, ITERABLE_OF_ADDABLE&& src);
         template <IInOrderComparer<KEY_TYPE> KEY_INORDER_COMPARER, IIterable<T> ITERABLE_OF_ADDABLE>

@@ -65,9 +65,18 @@ namespace Stroika::Foundation::Containers::Concrete {
         SortedMapping_stdmap (const initializer_list<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src);
         template <IInOrderComparer<KEY_TYPE> KEY_INORDER_COMPARER>
         SortedMapping_stdmap (KEY_INORDER_COMPARER&& inorderComparer, const initializer_list<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src);
-        template <IIterable<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> ITERABLE_OF_ADDABLE,
-                  enable_if_t<not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, SortedMapping_stdmap<KEY_TYPE, MAPPED_VALUE_TYPE>>>* = nullptr>
-        explicit SortedMapping_stdmap (ITERABLE_OF_ADDABLE&& src);
+        template <IIterable<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> ITERABLE_OF_ADDABLE>
+            requires (not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, SortedMapping_stdmap<KEY_TYPE, MAPPED_VALUE_TYPE>>)
+        explicit SortedMapping_stdmap (ITERABLE_OF_ADDABLE&& src)
+#if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
+            : SortedMapping_stdmap{}
+        {
+            AssertRepValidType_ ();
+            this->AddAll (forward<ITERABLE_OF_ADDABLE> (src));
+            AssertRepValidType_ ();
+        }
+#endif
+        ;
         template <IInOrderComparer<KEY_TYPE> KEY_INORDER_COMPARER, IIterable<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> ITERABLE_OF_ADDABLE>
         SortedMapping_stdmap (KEY_INORDER_COMPARER&& inorderComparer, ITERABLE_OF_ADDABLE&& src);
         template <IInputIterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> ITERATOR_OF_ADDABLE>
