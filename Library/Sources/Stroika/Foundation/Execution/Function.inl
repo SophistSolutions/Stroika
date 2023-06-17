@@ -20,17 +20,7 @@ namespace Stroika::Foundation::Execution {
      ****************************** Execution::Function *****************************
      ********************************************************************************
      */
-#if qCompilerAndStdLib_template_Requires_constraint_not_treated_constexpr_Buggy
-    template <typename FUNCTION_SIGNATURE>
-    template <typename CTOR_FUNC_SIG, enable_if_t<is_convertible_v<remove_cvref_t<CTOR_FUNC_SIG>, function<FUNCTION_SIGNATURE>> and
-                                                  not derived_from<remove_cvref_t<CTOR_FUNC_SIG>, Function<FUNCTION_SIGNATURE>>>*>
-    inline Function<FUNCTION_SIGNATURE>::Function (CTOR_FUNC_SIG&& f)
-        : fFun_{forward<CTOR_FUNC_SIG> (f)}
-        , fOrdering_{fFun_ == nullptr ? OrderingType_{} : ++Private_::sFunctionObjectNextPtrID_}
-    {
-        Assert ((fOrdering_ == OrderingType_{}) == (fFun_ == nullptr));
-    }
-#elif !qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
+#if !qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
     template <typename FUNCTION_SIGNATURE>
     template <typename CTOR_FUNC_SIG>
     inline Function<FUNCTION_SIGNATURE>::Function (CTOR_FUNC_SIG&& f)
