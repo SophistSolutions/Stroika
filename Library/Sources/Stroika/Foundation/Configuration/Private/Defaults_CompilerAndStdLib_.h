@@ -1263,7 +1263,6 @@ From:    https://en.cppreference.com/w/cpp/locale/time_get/date_order
 #endif
 #endif
 
-
 #ifndef qCompilerAndStdLib_stdlib_codecvt_byname_char8_Buggy
 #if defined(_LIBCPP_VERSION)
 #ifdef __APPLE__
