@@ -1256,16 +1256,13 @@ From:    https://en.cppreference.com/w/cpp/locale/time_get/date_order
 #endif
 #else
 
-#if !defined(__APPLE__)
-#define qCompilerAndStdLib_stdlib_compare_three_way_missing_Buggy (__cpp_lib_three_way_comparison < 201907L)
+#define qCompilerAndStdLib_stdlib_compare_three_way_missing_Buggy 0
+#endif
 #else
 #define qCompilerAndStdLib_stdlib_compare_three_way_missing_Buggy 0
 #endif
 #endif
-#else
-#define qCompilerAndStdLib_stdlib_compare_three_way_missing_Buggy 0
-#endif
-#endif
+
 
 #ifndef qCompilerAndStdLib_stdlib_codecvt_byname_char8_Buggy
 #if defined(_LIBCPP_VERSION)
@@ -1283,6 +1280,19 @@ From:    https://en.cppreference.com/w/cpp/locale/time_get/date_order
 
 /**
  *      This is going to limit how much I can support ranges in Stroika v3.
+ * 
+./../Characters/Character.inl:168:24: error: no matching function for call to 'all_of'
+        return ranges::all_of (fromS, charComparer);
+                       ^~~~~~
+./../Characters/Character.inl:250:20: note: in instantiation of function template specialization 'Stroika::Foundation::Characters::Character::IsASCII<Stroika::Foundation::Characters::Latin1>' requested here
+            return IsASCII (s) ? eASCII : eLatin1;
+                   ^
+./../Characters/String.inl:167:28: note: in instantiation of function template specialization 'Stroika::Foundation::Characters::Character::IsASCIIOrLatin1<Stroika::Foundation::Characters::Latin1>' requested here
+        switch (Character::IsASCIIOrLatin1 (s)) {
+                           ^
+./../Characters/String.inl:345:20: note: in instantiation of function template specialization 'Stroika::Foundation::Characters::String::mk_<Stroika::Foundation::Characters::Latin1>' requested here
+            return mk_ (span<const Latin1>{reinterpret_cast<const Latin1*> (s.data ()), s.size ()});
+                   ^
  */
 #ifndef qCompilerAndStdLib_stdlib_ranges_pretty_broken_Buggy
 #if defined(_LIBCPP_VERSION)
@@ -1290,7 +1300,8 @@ From:    https://en.cppreference.com/w/cpp/locale/time_get/date_order
 #if defined(__APPLE__)
 #define qCompilerAndStdLib_stdlib_ranges_pretty_broken_Buggy 1
 #else
-#define qCompilerAndStdLib_stdlib_ranges_pretty_broken_Buggy (_LIBCPP_VERSION < 15000)
+// seems still broken in _LIBCPP_VERSION 15007
+#define qCompilerAndStdLib_stdlib_ranges_pretty_broken_Buggy (_LIBCPP_VERSION < 16000)
 #endif
 #elif defined(__clang_major__)
 #define qCompilerAndStdLib_stdlib_ranges_pretty_broken_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 15))
@@ -1301,7 +1312,7 @@ From:    https://en.cppreference.com/w/cpp/locale/time_get/date_order
 
 #ifndef qCompilerAndStdLib_stdlib_compare_three_way_present_but_Buggy
 #if defined(_LIBCPP_VERSION)
-#if _LIBCPP_VERSION <= 14000
+#if _LIBCPP_VERSION <= 16000
 #define qCompilerAndStdLib_stdlib_compare_three_way_present_but_Buggy !qCompilerAndStdLib_stdlib_compare_three_way_missing_Buggy
 #else
 #if defined(__APPLE__)
