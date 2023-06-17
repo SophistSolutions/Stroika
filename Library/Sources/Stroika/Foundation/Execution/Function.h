@@ -90,6 +90,11 @@ namespace Stroika::Foundation::Execution {
         Function (nullptr_t);
         Function (const Function&) = default;
         Function (Function&&)      = default;
+#if qCompilerAndStdLib_template_Requires_constraint_not_treated_constexpr_Buggy
+        template <typename CTOR_FUNC_SIG, enable_if_t<is_convertible_v<remove_cvref_t<CTOR_FUNC_SIG>, function<FUNCTION_SIGNATURE>> and
+                                                      not derived_from<remove_cvref_t<CTOR_FUNC_SIG>, Function<FUNCTION_SIGNATURE>>>* = nullptr>
+        Function (CTOR_FUNC_SIG&& f);
+#else
         template <typename CTOR_FUNC_SIG>
         Function (CTOR_FUNC_SIG&& f)
             requires (is_convertible_v<remove_cvref_t<CTOR_FUNC_SIG>, function<FUNCTION_SIGNATURE>> and
@@ -100,6 +105,7 @@ namespace Stroika::Foundation::Execution {
         {
             Assert ((fOrdering_ == OrderingType_{}) == (fFun_ == nullptr));
         }
+#endif
 #endif
         ;
 
