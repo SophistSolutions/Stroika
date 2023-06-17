@@ -98,14 +98,14 @@
     },
     {
         "build_job": "Linux",
-        "displayTargetName": "clang++-15-debug-libc++-c++23",
+        "displayTargetName": "clang++-15-debug-libc++",
         "compiler": "clang++-15",
         "runs_on": "ubuntu-latest",
         "container_image": "sophistsolutionsinc/stroika-buildvm-ubuntu2204-regression-tests:v3",
-        "cpp_version": "c++23",
+        "cpp_version": "c++20",
         "config_name": "Debug",
         "extra_config_args": "--apply-default-debug-flags --stdlib libc++",
-        "run_on_branch": "never"
+        "run_on_branch": "always"
     },
     {
         "build_job": "Linux",

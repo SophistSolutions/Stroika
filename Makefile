@@ -484,8 +484,8 @@ basic-unix-test-configurations_clang++_versions_:
 	# clang-15
 	./configure clang++-15-debug-libc++ --config-tag Unix --compiler-driver clang++-15 --apply-default-debug-flags --stdlib libc++ --only-if-has-compiler
 	./configure clang++-15-release-libstdc++ --config-tag Unix --compiler-driver clang++-15 --apply-default-release-flags --stdlib libstdc++ --only-if-has-compiler --trace2file enable
-	./configure clang++-15-debug-libc++-c++23 --config-tag Unix --compiler-driver clang++-15 --apply-default-debug-flags --stdlib libc++ --only-if-has-compiler --cppstd-version c++23
-	./configure clang++-15-release-libstdc++23 --config-tag Unix --compiler-driver clang++-15 --apply-default-release-flags --stdlib libstdc++ --only-if-has-compiler --trace2file enable --cppstd-version c++23
+	./configure clang++-15-debug-libstdc++-c++23 --config-tag Unix --compiler-driver clang++-15 --apply-default-debug-flags --stdlib libstdc++ --only-if-has-compiler --cppstd-version c++23
+	./configure clang++-15-release-libc++23 --config-tag Unix --compiler-driver clang++-15 --apply-default-release-flags --stdlib libc++ --only-if-has-compiler --trace2file enable --cppstd-version c++23
 
 basic-unix-test-configurations_sanitizer_configs_:
 	# A few sanitize/configs (list explicit versions first as backup in case g++ doesn't work - enuf c++20 support - on this platform)
