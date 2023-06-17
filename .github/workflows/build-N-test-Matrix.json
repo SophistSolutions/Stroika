@@ -116,7 +116,7 @@
         "cpp_version": "c++20",
         "config_name": "Release",
         "extra_config_args": "--compiler-driver clang++-15 --apply-default-release-flags --stdlib libstdc++ --trace2file enable",
-        "run_on_branch": "never"
+        "run_on_branch": "always"
     },
     {},
     {
