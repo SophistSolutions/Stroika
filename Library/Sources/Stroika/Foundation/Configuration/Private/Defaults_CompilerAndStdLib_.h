@@ -914,9 +914,9 @@ In file included from ../Characters/StringBuilder.h:273,
     CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 14))
 #elif defined(__clang__) && !defined(__APPLE__)
 // Noticed broken in -clang++14
-// appears broken in clang++15 (with libc++)
+// appears fixed in clang++15
 #define qCompilerAndStdLib_template_Requires_constraint_not_treated_constexpr_Buggy                                                        \
-    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 15))
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 14))
 #else
 #define qCompilerAndStdLib_template_Requires_constraint_not_treated_constexpr_Buggy 0
 #endif
@@ -1565,7 +1565,8 @@ int main ()
 
 #if defined(_LIBCPP_VERSION)
 // Appears still buggy in 14.0 clang libc++ on ubuntu 22.04 (doesnt compile)
-#define qCompilerAndStdLib_from_chars_and_tochars_FP_Precision_Buggy (CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_LIBCPP_VERSION <= 14000))
+// Broken with 150007 on clang15 ubunto 22.04
+#define qCompilerAndStdLib_from_chars_and_tochars_FP_Precision_Buggy (CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_LIBCPP_VERSION <= 15007))
 #elif defined(_GLIBCXX_RELEASE)
 // according to https://en.cppreference.com/w/cpp/compiler_support fixed in gcc11 (library so affects clang too if built with glibc)
 // AT LEAST with clang++14, this is broken in _GLIBCXX_RELEASE==12 (Ubuntu 22.04)
