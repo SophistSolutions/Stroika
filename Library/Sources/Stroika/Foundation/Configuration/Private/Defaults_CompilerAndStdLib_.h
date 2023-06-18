@@ -664,6 +664,35 @@ error: no matching constructor for initialization of 'std::span<wchar_t, 1844674
 
 #endif
 
+
+/*
+/lib/llvm-15/bin/../include/c++/v1/__locale:1481:14: error: implicit instantiation of undefined template 'std::codecvt<wchar_t, char8_t, __mbstate_t>'
+    : public codecvt<_InternT, _ExternT, _StateT>
+             ^
+/mnt/c/Sandbox/Stroika/DevRoot/Library/Sources/Stroika/Foundation/Characters/CodeCvt.h:156:50: note: in instantiation of template class 'std::codecvt_byname<wchar_t, char8_t, __mbstate_t>' requested here
+            requires (is_same_v<CHAR_T, typename STD_CODECVT::intern_type>);
+                                                 ^
+Test.cpp:1800:21: note: while substituting deduced template arguments into function template 'mkFromStdCodeCvt' [with STD_CODECVT = std::codecvt_byname<wchar_t, char8_t, __mbstate_t>, ARGS = <const char *>]
+                    CodeCvt<wchar_t>::mkFromStdCodeCvt<std::codecvt_byname<wchar_t, char8_t, std::mbstate_t>> ("en_US.UTF8");
+                    ^
+/usr/lib/llvm-15/bin/../include/c++/v1/__locale:952:85: note: template is declared here
+template <class _InternT, class _ExternT, class _StateT> class _LIBCPP_TEMPLATE_VIS codecvt;
+                                                                                    ^
+Test.cpp:1800:21: error: no matching function for call to 'mkFromStdCodeCvt'
+                    CodeCvt<wchar_t>::mkFromStdCodeCvt<std::codecvt_byname<wchar_t, char8_t, std::mbstate_t>> ("en_US.UTF8");
+                    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/mnt/c/Sandbox/Stroika/DevRoot/Library/Sources/Stroika/Foundation/Characters/CodeCvt.h:155:24: note: candidate template ignored: substitution failure [with STD_CODECVT = std::codecvt_b
+*/
+#ifndef qCompilerAndStdLib_codeCvtDeprecationMaybe_Buggy
+#if defined(_LIBCPP_VERSION)
+#define qCompilerAndStdLib_codeCvtDeprecationMaybe_Buggy _LIBCPP_VERSION <= 15007
+#else
+#define qCompilerAndStdLib_codeCvtDeprecationMaybe_Buggy 0
+#endif
+
+#endif
+
+
 /*
     http://stackoverflow.com/questions/15438968/vswprintf-fails-for-certain-unicode-codepoints-under-mac-os-x
     http://stackoverflow.com/questions/11713745/why-does-the-printf-family-of-functions-care-about-locale

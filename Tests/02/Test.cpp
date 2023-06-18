@@ -1792,12 +1792,10 @@ namespace {
                     return false;
                 }
             };
+            // see https://en.cppreference.com/w/cpp/locale/codecvt_byname for cases not deprecated 
             if (hasLocale ("en_US.UTF8")) {
-// Now using codecvt_byname (locale converter)
-#if qCompilerAndStdLib_stdlib_codecvt_byname_char8_Buggy
-                CodeCvt<wchar_t> codeCvt3a =
-                    CodeCvt<wchar_t>::mkFromStdCodeCvt<std::codecvt_byname<wchar_t, char, std::mbstate_t>> ("en_US.UTF8");
-#else
+                // Now using codecvt_byname (locale converter)
+#if qCompilerAndStdLib_codeCvtDeprecationMaybe_Buggy
                 CodeCvt<wchar_t> codeCvt3a =
                     CodeCvt<wchar_t>::mkFromStdCodeCvt<std::codecvt_byname<wchar_t, char8_t, std::mbstate_t>> ("en_US.UTF8");
 #endif
