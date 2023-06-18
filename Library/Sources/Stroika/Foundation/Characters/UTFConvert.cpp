@@ -610,6 +610,7 @@ namespace {
     }
 }
 
+#if 0
 namespace {
     namespace UTFConvert_codecvSupport_ {
         inline UTFConverter::ConversionStatusFlag cvt_stdcodecvt_results_ (int i)
@@ -717,6 +718,7 @@ namespace {
         }
     }
 }
+#endif
 
 /*
  ********************************************************************************
