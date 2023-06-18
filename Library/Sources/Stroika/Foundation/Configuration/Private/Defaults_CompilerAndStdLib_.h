@@ -1517,7 +1517,9 @@ make[4]: *** [/mnt/c/Sandbox/Stroika/DevRoot/ScriptsLib/SharedBuildRules-Default
 // according to https://en.cppreference.com/w/cpp/compiler_support not yet supported so WAG
 // appears still broken in clang++13 (maybe should depend on stdlib version not compiler version)
 // appears fixed in clang++14 (or maybe SB depending on libversion)
-#define qCompilerAndStdLib_to_chars_FP_Buggy (CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_LIBCPP_VERSION <= 14000))
+// _LIBCPP_VERSION <= 14000
+// _LIBCPP_VERSION <= 15007
+#define qCompilerAndStdLib_to_chars_FP_Buggy (CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_LIBCPP_VERSION <= 15007))
 #else
 #define qCompilerAndStdLib_to_chars_FP_Buggy 0
 #endif
