@@ -664,7 +664,6 @@ error: no matching constructor for initialization of 'std::span<wchar_t, 1844674
 
 #endif
 
-
 /*
 /lib/llvm-15/bin/../include/c++/v1/__locale:1481:14: error: implicit instantiation of undefined template 'std::codecvt<wchar_t, char8_t, __mbstate_t>'
     : public codecvt<_InternT, _ExternT, _StateT>
@@ -691,7 +690,6 @@ Test.cpp:1800:21: error: no matching function for call to 'mkFromStdCodeCvt'
 #endif
 
 #endif
-
 
 /*
     http://stackoverflow.com/questions/15438968/vswprintf-fails-for-certain-unicode-codepoints-under-mac-os-x
