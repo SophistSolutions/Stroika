@@ -914,9 +914,9 @@ In file included from ../Characters/StringBuilder.h:273,
     CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 14))
 #elif defined(__clang__) && !defined(__APPLE__)
 // Noticed broken in -clang++14
-// appears fixed in clang++15
+// appears broken in clang++15 (with libc++)
 #define qCompilerAndStdLib_template_Requires_constraint_not_treated_constexpr_Buggy                                                        \
-    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 14))
+    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 15))
 #else
 #define qCompilerAndStdLib_template_Requires_constraint_not_treated_constexpr_Buggy 0
 #endif
