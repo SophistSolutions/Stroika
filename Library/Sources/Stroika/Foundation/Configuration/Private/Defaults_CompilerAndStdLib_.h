@@ -1756,10 +1756,11 @@ FAILED: RegressionTestFailure; replaced == L"abcdef";;Test.cpp: 753
 
 #if defined(_LIBCPP_VERSION)
 // Broken in _LIBCPP_VERSION  14000
+// Broken in _LIBCPP_VERSION  15007
 #if defined(__APPLE__)
-#define qCompilerAndStdLib_regexp_Compile_bracket_set_Star_Buggy (CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_LIBCPP_VERSION <= 16000))
+#define qCompilerAndStdLib_regexp_Compile_bracket_set_Star_Buggy (CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_LIBCPP_VERSION < 16000))
 #else
-#define qCompilerAndStdLib_regexp_Compile_bracket_set_Star_Buggy (CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_LIBCPP_VERSION <= 14000))
+#define qCompilerAndStdLib_regexp_Compile_bracket_set_Star_Buggy (CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_LIBCPP_VERSION < 16000))
 #endif
 #else
 #define qCompilerAndStdLib_regexp_Compile_bracket_set_Star_Buggy 0
