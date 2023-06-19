@@ -100,19 +100,6 @@ namespace Stroika::Foundation::Configuration {
             static bool const value = test<From, To> (0);
         };
 
-        /**
-         *  Check T is an interator, but checking if it has iterator_traits...
-         *  from https://stackoverflow.com/questions/12032771/how-to-check-if-an-arbitrary-type-is-an-iterator
-         */
-        template <typename T, typename = void>
-        struct is_iterator {
-            static constexpr bool value = false;
-        };
-        template <typename T>
-        struct is_iterator<T, enable_if_t<!is_same_v<typename iterator_traits<T>::value_type, void>>> {
-            static constexpr bool value = true;
-        };
-
         // From https://stackoverflow.com/questions/15393938/find-out-if-a-c-object-is-callable
         template <typename T>
         struct is_callable_impl_ {
@@ -139,7 +126,6 @@ namespace Stroika::Foundation::Configuration {
         };
         template <typename T>
         using is_callable = conditional_t<is_class_v<T>, is_callable_impl_<T>, false_type>;
-
     }
 
     /**
@@ -420,35 +406,36 @@ namespace Stroika::Foundation::Configuration {
     template <typename T>
     constexpr bool is_callable_v = Private_::is_callable<T>::value;
 
+    namespace Private_ {
+        template <typename T, typename = void>
+        struct ExtractValueType {
+            using type = void;
+        };
+        template <typename T>
+        struct ExtractValueType<T, enable_if_t<has_value_type_v<T>>> {
+            using type = typename T::value_type;
+        };
+        template <typename T>
+        struct ExtractValueType<const T*, void> {
+            using type = T;
+        };
+        template <typename T>
+        struct ExtractValueType<T*, void> {
+            using type = T;
+        };
+    }
+
     /**
      *  \brief Extract the type of elements in a container, or returned by an iterator (value_type) or void it there is no value_type
      * 
-     *  When we support C++20, use iter_value_t, or range_value_t
-     */
-    template <typename T, typename = void>
-    struct ExtractValueType {
-        using type = void;
-    };
-    template <typename T>
-    struct ExtractValueType<T, enable_if_t<has_value_type_v<T>>> {
-        using type = typename T::value_type;
-    };
-    template <typename T>
-    struct ExtractValueType<const T*, void> {
-        using type = T;
-    };
-    template <typename T>
-    struct ExtractValueType<T*, void> {
-        using type = T;
-    };
-
-    /**
+     *  \note when known if argument is container or iterator, use std::iter_value_t, or std::ranges::range_value_t
+     * 
      * If the given T has a field value_type, return it; returns void if T has no value_type
      * 
      *  NOTE - similar to std::ranges::range_value_t or std::iter_value_t except works with other types.
      */
     template <typename T>
-    using ExtractValueType_t = typename ExtractValueType<remove_cvref_t<T>>::type;
+    using ExtractValueType_t = typename Private_::ExtractValueType<remove_cvref_t<T>>::type;
 
     ////////////////////// DEPREACTED BELOW //////////////////////
 
@@ -460,6 +447,16 @@ namespace Stroika::Foundation::Configuration {
     [[deprecated ("Since Stroika v3.0d1 use Traversal::IIterable concept")]] constexpr bool IsIterableOfT_v =
         Private_::IsIterableOfT_t<ITERABLE_OF_T, T>::value;
 
+    namespace Private_ {
+        template <typename T, typename = void>
+        struct is_iterator {
+            static constexpr bool value = false;
+        };
+        template <typename T>
+        struct is_iterator<T, enable_if_t<!is_same_v<typename iterator_traits<T>::value_type, void>>> {
+            static constexpr bool value = true;
+        };
+    }
     template <typename T>
     [[deprecated ("Since Stroika v3.0d1, use input_iterator, forward_iterator, or some other sort of std iterator concept")]] constexpr bool IsIterator_v =
         Private_::is_iterator<remove_cvref_t<T>>::value;
