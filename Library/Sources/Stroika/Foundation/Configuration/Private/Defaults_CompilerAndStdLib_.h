@@ -78,7 +78,8 @@
 //      clang++-3.8 -dM -E - < /dev/null
 #if (__clang_major__ < 13) || (__clang_major__ == 13 && (__clang_minor__ < 0))
 #define _STROIKA_CONFIGURATION_WARNING_                                                                                                    \
-    "Warning: Stroika v3 does not support versions prior to clang++ 13 (non-apple); note that Stroika v2.1 supports earlier clang versions, "   \
+    "Warning: Stroika v3 does not support versions prior to clang++ 13 (non-apple); note that Stroika v2.1 supports earlier clang "        \
+    "versions, "                                                                                                                           \
     "and clang5"
 #endif
 #if (__clang_major__ > 15) || (__clang_major__ == 15 && (__clang_minor__ > 0))
