@@ -43,9 +43,9 @@ namespace Stroika::Foundation::Characters {
         template <class>
         inline constexpr bool IsStdCodeCvt_ = false;
         template <class _Elem, class _Byte, class _Statype>
-        inline constexpr bool IsStdCodeCvt_<std::codecvt<_Elem, _Byte, _Statype>> = true;
-        template <class _Elem, class _Byte, class _Statype>
         inline constexpr bool IsStdCodeCvt_<std::codecvt_byname<_Elem, _Byte, _Statype>> = true;
+        template <class _Elem, class _Byte, class _Statype>
+        inline constexpr bool IsStdCodeCvt_<std::codecvt<_Elem, _Byte, _Statype>> = true;
     }
     /**
      *   @todo confused thy this is working with codecvt_by_name - think I need to change for that.
