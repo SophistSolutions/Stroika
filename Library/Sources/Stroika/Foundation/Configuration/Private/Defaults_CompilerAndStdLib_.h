@@ -76,9 +76,9 @@
 // Must check CLANG first, since CLANG also defines GCC
 // see
 //      clang++-3.8 -dM -E - < /dev/null
-#if (__clang_major__ < 6) || (__clang_major__ == 6 && (__clang_minor__ < 0))
+#if (__clang_major__ < 13) || (__clang_major__ == 13 && (__clang_minor__ < 0))
 #define _STROIKA_CONFIGURATION_WARNING_                                                                                                    \
-    "Warning: Stroika v2.1 does not support versions prior to clang++ 6 (non-apple); note that Stroika v2.0 supports clang3.9, clang4, "   \
+    "Warning: Stroika v3 does not support versions prior to clang++ 13 (non-apple); note that Stroika v2.1 supports earlier clang versions, "   \
     "and clang5"
 #endif
 #if (__clang_major__ > 15) || (__clang_major__ == 15 && (__clang_minor__ > 0))
@@ -1371,18 +1371,9 @@ In file included from Namespace.cpp:10:
 */
 #ifndef qCompilerAndStdLib_explicitly_defaulted_threeway_warning_Buggy
 
-#if defined(__clang__) && defined(__APPLE__)
-// also broken in clang++-13
-// also broken in clang++-14 (MAYBE issue not with clang but LIBCPP, but not important distinction given what this issue is)
-#define qCompilerAndStdLib_explicitly_defaulted_threeway_warning_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 14))
-#elif defined(__clang__) && !defined(__APPLE__)
-// First noted in C++20 mode on clang++-10
-// broken in clang++-11
-// broken in clang++-12
-// broken in clang++-13
-// broken in clang++-14
-// APPEARS fixed in clang++15
-#define qCompilerAndStdLib_explicitly_defaulted_threeway_warning_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 14))
+#if defined(_LIBCPP_VERSION)
+// Reproduced using clang++15, libcpp 15007, and Ubunutu 22.04
+#define qCompilerAndStdLib_explicitly_defaulted_threeway_warning_Buggy (_LIBCPP_VERSION <= 15007)
 #else
 #define qCompilerAndStdLib_explicitly_defaulted_threeway_warning_Buggy 0
 #endif

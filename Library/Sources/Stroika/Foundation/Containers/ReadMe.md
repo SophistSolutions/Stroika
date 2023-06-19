@@ -234,11 +234,10 @@ Each container Archetype has its own set of arguments that make sense for its co
 Often ArchTypes will have additional required data, like an Extractor function, or InOrderComparer. Support for these parameters will generally multiply several of the above overloads allowing those parameters to be specified. Those functions will generally be checked with 'concept-like' SFINAE type checkers to avoid constructor ambiguity.
 
 ~~~
-template <Iterable::IIterable<T> CONTAINER_OF_ADDABLE,
-          IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER = equal_to<KEY_TYPE>,
-          enable_if_t<
-              not derived_from<remove_cvref_t<CONTAINER_OF_ADDABLE>, KeyedCollection<T, KEY_TYPE, TRAITS>> and KeyedCollection_IsKeyExctractor<T, KEY_TYPE, KEY_EXTRACTOR> ()>* = nullptr>
-KeyedCollection (KEY_EQUALS_COMPARER&& keyComparer, CONTAINER_OF_ADDABLE&& src);
+template <IIterable<T> ITERABLE_OF_ADDABLE, IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER = equal_to<KEY_TYPE>>
+        KeyedCollection (ITERABLE_OF_ADDABLE&& src)
+            requires (KeyedCollection_ExtractorCanBeDefaulted<T, KEY_TYPE, TRAITS> and
+                      not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, KeyedCollection<T, KEY_TYPE, TRAITS>>)
 ~~~
 
 ## Note About Iterators

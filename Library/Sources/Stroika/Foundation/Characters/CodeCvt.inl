@@ -201,6 +201,7 @@ namespace Stroika::Foundation::Characters {
                     fIntermediateVSFinalCHARCvt_.ComputeTargetBufferSize<INTERMEDIATE_CHAR_T, CHAR_T> (*i));
             }
             else {
+                // @todo FIX - THIS IS WRONG
                 fIntermediateVSFinalCHARCvt_.ComputeTargetBufferSize<CHAR_T, INTERMEDIATE_CHAR_T> (
                     fBytesVSIntermediateCvt_.ComputeTargetCharacterBufferSize (src));
             }
