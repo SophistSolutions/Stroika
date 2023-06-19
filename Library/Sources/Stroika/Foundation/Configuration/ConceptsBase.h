@@ -19,14 +19,6 @@
  * TODO:
  *      @todo   Maybe put concepts in sub-namespace Concept {} - and then list them out here? Instead of the _ stuff?
  *
- *      @todo   Think out if/when qCheckConceptRequirements SB defined? See if it takes up any runtime space/time? And decide
- *              according to that!
- *
- *
- * Notes:
- *
- *
- *
  */
 
 namespace Stroika::Foundation::Configuration {

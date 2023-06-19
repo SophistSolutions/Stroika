@@ -20,9 +20,6 @@
  *
  * TODO:
  *      @todo   Maybe put concepts in sub-namespace Concept {} - and then list them out here? Instead of the _ stuff?
- *
- *      @todo   Think out if/when qCheckConceptRequirements SB defined? See if it takes up any runtime space/time? And decide
- *              according to that!
  */
 
 namespace Stroika::Foundation::Configuration {
@@ -133,27 +130,27 @@ namespace Stroika::Foundation::Configuration {
     /**
      *  \brief Extract the number of arguments, return type, and each individual argument type from a lambda or function object.
      *
-     *  CREDITS:
-     *      From https://stackoverflow.com/questions/7943525/is-it-possible-to-figure-out-the-parameter-type-and-return-type-of-a-lambda
-     *           https://stackoverflow.com/users/224671/kennytm
-     * 
      *  \par Example Usage
      *      \code
      *          auto lambda = [](int i) { return long(i*10); };
      *
-     *          typedef function_traits<decltype(lambda)> traits;
+     *          using traits = FunctionTraits<decltype(lambda)>;
      *
-     *          static_assert(std::is_same<long, traits::result_type>::value, "err");
-     *          static_assert(std::is_same<int, traits::arg<0>::type>::value, "err");
+     *          static_assert(std::is_same<long, traits::result_type>::value);
+     *          static_assert(std::is_same<int, traits::arg<0>::type>::value);
      *      \endcode
+     * 
+     *  CREDITS:
+     *      From https://stackoverflow.com/questions/7943525/is-it-possible-to-figure-out-the-parameter-type-and-return-type-of-a-lambda
+     *           https://stackoverflow.com/users/224671/kennytm
+     * 
+     * For generic types, directly use the result of the signature of its 'operator()'
+     * Specialize for pointers to member function
      */
     template <typename T>
-    struct function_traits : public function_traits<decltype (&T::operator())> {};
-    // For generic types, directly use the result of the signature of its 'operator()'
+    struct FunctionTraits : public FunctionTraits<decltype (&T::operator())> {};
     template <typename ClassType, typename ReturnType, typename... Args>
-    struct function_traits<ReturnType (ClassType::*) (Args...) const>
-    // we specialize for pointers to member function
-    {
+    struct FunctionTraits<ReturnType (ClassType::*) (Args...) const> {
         /**
          *  \brief Number of arguments
          */
@@ -173,21 +170,6 @@ namespace Stroika::Foundation::Configuration {
             // composed of those arguments.
         };
     };
-
-    /**
-     *  \brief check if the given type T can be compared with operator==, and result is convertible to bool
-     * 
-     *  \par Example Usage
-     *      \code
-     *          if constexpr (has_value_type_v<T>) {
-     *              typename T::value_type x;
-     *          }
-     *      \endcode
-     * 
-     *  Issue is that it cannot be usefully defined (as nearly as I can tell in C++17).
-     */
-    template <typename T>
-    constexpr inline bool has_value_type_v = is_detected_v<Private_::has_value_type_t, T>;
 
     /**
      *  \brief check if the given type T can be compared with operator==, and result is convertible to bool
@@ -373,6 +355,16 @@ namespace Stroika::Foundation::Configuration {
         return false;
     }
 
+    template <typename T>
+    concept HasValueType = requires (T t) { typename T::value_type; };
+
+#if 0
+     template <typename T>
+    /* [[deprecated ("Since Stroika v3.0d1, use requires expressions")]] */
+   constexpr inline bool has_value_type_v =
+        is_detected_v<Private_::has_value_type_t, T>;
+#endif
+
     /**
      *  \brief 
      * 
@@ -391,7 +383,7 @@ namespace Stroika::Foundation::Configuration {
             using type = void;
         };
         template <typename T>
-        struct ExtractValueType<T, enable_if_t<has_value_type_v<T>>> {
+        struct ExtractValueType<T, enable_if_t<HasValueType<T>>> {
             using type = typename T::value_type;
         };
         template <typename T>
@@ -418,15 +410,19 @@ namespace Stroika::Foundation::Configuration {
 
     ////////////////////// DEPREACTED BELOW //////////////////////
 
+#if 1
+
+    template <typename T>
+    [[deprecated ("Since Stroika v3.0d1, use requires expressions")]] constexpr inline bool has_value_type_v =
+        is_detected_v<Private_::has_value_type_t, T>;
+#endif
+
     template <typename T>
     [[deprecated ("Since Stroika v3.0d1, use https://en.cppreference.com/w/cpp/concepts/equality_comparable")]] constexpr bool EqualityComparable ()
     {
         return has_eq_v<T>;
     }
 
-    /**
-     *  See http://en.cppreference.com/w/cpp/concept/LessThanComparable
-     */
     template <typename T>
     [[deprecated ("Since Stroika v3.0d1, use https://en.cppreference.com/w/cpp/concepts/totally_ordered - NOT SAME THING AT ALL, BUT "
                   "CLOSEST IN STANDARD")]] constexpr bool
@@ -434,15 +430,12 @@ namespace Stroika::Foundation::Configuration {
     {
         return has_lt_v<T>;
     }
-
     template <typename T>
     [[deprecated ("Since Stroika v3.0d1, use https://en.cppreference.com/w/cpp/concepts/invocable")]] constexpr bool is_callable_v =
         Private_::is_callable<T>::value;
-
     template <typename ITERABLE>
     [[deprecated ("Since Stroika v3.0d1, use ranges::range")]] constexpr bool IsIterable_v =
         has_beginend_v<ITERABLE> and not is_same_v<ExtractValueType_t<ITERABLE>, void>;
-
     template <typename ITERABLE_OF_T, typename T>
     [[deprecated ("Since Stroika v3.0d1 use Traversal::IIterable concept")]] constexpr bool IsIterableOfT_v =
         Private_::IsIterableOfT_t<ITERABLE_OF_T, T>::value;

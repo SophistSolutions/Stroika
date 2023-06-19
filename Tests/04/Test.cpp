@@ -207,10 +207,10 @@ namespace {
             {
                 // Test from https://stackoverflow.com/questions/7943525/is-it-possible-to-figure-out-the-parameter-type-and-return-type-of-a-lambda
                 auto                                       lambda = [] (int i) { return long (i * 10); };
-                typedef function_traits<decltype (lambda)> traits;
+                using traits = FunctionTraits<decltype (lambda)>;
                 static_assert (traits::kArity == 1);
-                static_assert (std::is_same<long, traits::result_type>::value, "err");
-                static_assert (std::is_same<int, traits::arg<0>::type>::value, "err");
+                static_assert (std::is_same<long, traits::result_type>::value);
+                static_assert (std::is_same<int, traits::arg<0>::type>::value);
             }
             {
                 static_assert (Configuration::IsIterableOfPredicateOfT_v<vector<int>, Private_::CONTAINER<int>::IsAddable_t>);
