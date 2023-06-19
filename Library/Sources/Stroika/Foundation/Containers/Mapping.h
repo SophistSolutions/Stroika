@@ -554,7 +554,7 @@ namespace Stroika::Foundation::Containers {
          * only defined if there is a default equals comparer for mapped_type
          */
         nonvirtual bool operator== (const Mapping& rhs) const
-            requires (Configuration::EqualityComparable<MAPPED_VALUE_TYPE> ());
+            requires (equality_comparable<MAPPED_VALUE_TYPE>);
 
     public:
         /**

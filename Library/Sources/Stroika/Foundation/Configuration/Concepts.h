@@ -28,6 +28,8 @@
 namespace Stroika::Foundation::Configuration {
 
     namespace Private_ {
+        // @todo AFTER WE REMOVE DEPRECATED FUNCTIONS BELOW, CAN REMOVE A BUNCH OF THESE AS WELL
+
         template <typename T>
         using has_value_type_t = typename T::value_type;
         template <typename T>
@@ -355,24 +357,6 @@ namespace Stroika::Foundation::Configuration {
     constexpr bool IsIterableOfPredicateOfT_v = Private_::IsIterableOfPredicateOfT_t<ITERABLE_OF_T, CHECKER_PREDICATE>::value;
 
     /**
-     *  See http://en.cppreference.com/w/cpp/concept/EqualityComparable
-     */
-    template <typename T>
-    constexpr bool EqualityComparable ()
-    {
-        return has_eq_v<T>;
-    }
-
-    /**
-     *  See http://en.cppreference.com/w/cpp/concept/LessThanComparable
-     */
-    template <typename T>
-    constexpr bool LessThanComparable ()
-    {
-        return has_lt_v<T>;
-    }
-
-    /**
      *  Check if equal_to<T> is both well defined, and contains no data. The reason it matters that it contains no data, is because
      *  then one instance is as good as another, and it need not be passed anywhere, opening an optimization opportunity.
      */
@@ -400,11 +384,6 @@ namespace Stroika::Foundation::Configuration {
      */
     template <typename From, typename To>
     constexpr inline bool is_explicitly_convertible_v = Private_::is_explicitly_convertible<From, To>::value;
-
-    /**
-     */
-    template <typename T>
-    constexpr bool is_callable_v = Private_::is_callable<T>::value;
 
     namespace Private_ {
         template <typename T, typename = void>
@@ -438,6 +417,27 @@ namespace Stroika::Foundation::Configuration {
     using ExtractValueType_t = typename Private_::ExtractValueType<remove_cvref_t<T>>::type;
 
     ////////////////////// DEPREACTED BELOW //////////////////////
+
+    template <typename T>
+    [[deprecated ("Since Stroika v3.0d1, use https://en.cppreference.com/w/cpp/concepts/equality_comparable")]] constexpr bool EqualityComparable ()
+    {
+        return has_eq_v<T>;
+    }
+
+    /**
+     *  See http://en.cppreference.com/w/cpp/concept/LessThanComparable
+     */
+    template <typename T>
+    [[deprecated ("Since Stroika v3.0d1, use https://en.cppreference.com/w/cpp/concepts/totally_ordered - NOT SAME THING AT ALL, BUT "
+                  "CLOSEST IN STANDARD")]] constexpr bool
+    LessThanComparable ()
+    {
+        return has_lt_v<T>;
+    }
+
+    template <typename T>
+    [[deprecated ("Since Stroika v3.0d1, use https://en.cppreference.com/w/cpp/concepts/invocable")]] constexpr bool is_callable_v =
+        Private_::is_callable<T>::value;
 
     template <typename ITERABLE>
     [[deprecated ("Since Stroika v3.0d1, use ranges::range")]] constexpr bool IsIterable_v =
