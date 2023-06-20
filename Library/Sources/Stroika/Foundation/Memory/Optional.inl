@@ -32,7 +32,7 @@ namespace Stroika::Foundation::Memory {
      ******************************** AccumulateIf **********************************
      ********************************************************************************
      */
-    template <typename T, typename CONVERTIBLE_TO_T, typename OP, enable_if_t<is_convertible_v<CONVERTIBLE_TO_T, T> and is_convertible_v<OP, function<T (T, T)>>>*>
+    template <typename T, convertible_to<T> CONVERTIBLE_TO_T, convertible_to<function<T (T, T)>> OP>
     void AccumulateIf (optional<T>* lhsOptionalValue, const optional<CONVERTIBLE_TO_T>& rhsOptionalValue, const OP& op)
     {
         RequireNotNull (lhsOptionalValue);
@@ -45,7 +45,7 @@ namespace Stroika::Foundation::Memory {
             *lhsOptionalValue = static_cast<T> (*rhsOptionalValue);
         }
     }
-    template <typename T, typename OP, enable_if_t<is_convertible_v<OP, function<T (T, T)>>>*>
+    template <typename T, convertible_to<function<T (T, T)>> OP>
     inline void AccumulateIf (optional<T>* lhsOptionalValue, const T& rhsValue, const OP& op)
     {
         RequireNotNull (lhsOptionalValue);
@@ -56,7 +56,8 @@ namespace Stroika::Foundation::Memory {
             *lhsOptionalValue = rhsValue;
         }
     }
-    template <typename T, template <typename> typename CONTAINER, enable_if_t<is_convertible_v<typename Containers::Adapters::Adder<CONTAINER<T>>::value_type, T>>*>
+    template <typename T, template <typename> typename CONTAINER>
+        requires (is_convertible_v<typename Containers::Adapters::Adder<CONTAINER<T>>::value_type, T>)
     void AccumulateIf (optional<CONTAINER<T>>* lhsOptionalValue, const optional<T>& rhsOptionalValue)
     {
         RequireNotNull (lhsOptionalValue);
@@ -67,7 +68,8 @@ namespace Stroika::Foundation::Memory {
             Containers::Adapters::Adder<CONTAINER<T>>::Add (&**lhsOptionalValue, *rhsOptionalValue);
         }
     }
-    template <typename T, template <typename> typename CONTAINER, enable_if_t<is_convertible_v<typename Containers::Adapters::Adder<CONTAINER<T>>::value_type, T>>*>
+    template <typename T, template <typename> typename CONTAINER>
+        requires (is_convertible_v<typename Containers::Adapters::Adder<CONTAINER<T>>::value_type, T>)
     void AccumulateIf (optional<CONTAINER<T>>* lhsOptionalValue, const T& rhsValue)
     {
         RequireNotNull (lhsOptionalValue);
@@ -76,28 +78,30 @@ namespace Stroika::Foundation::Memory {
         }
         Containers::Adapters::Adder<CONTAINER<T>>::Add (&**lhsOptionalValue, rhsValue);
     }
-    template <typename T, typename CONVERTIBLE_TO_T, typename OP, enable_if_t<is_convertible_v<CONVERTIBLE_TO_T, T> and is_convertible_v<OP, function<T (T, T)>>>*>
+    template <typename T, convertible_to<T> CONVERTIBLE_TO_T, convertible_to<function<T (T, T)>> OP>
     inline optional<T> AccumulateIf (const optional<T>& lhsOptionalValue, const optional<CONVERTIBLE_TO_T>& rhsOptionalValue, const OP& op)
     {
         optional<T> result{lhsOptionalValue};
         AccumulateIf (&result, rhsOptionalValue, op);
         return result;
     }
-    template <typename T, typename OP, enable_if_t<is_convertible_v<OP, function<T (T, T)>>>*>
+    template <typename T, convertible_to<function<T (T, T)>> OP>
     inline optional<T> AccumulateIf (const optional<T>& lhsOptionalValue, const T& rhsValue, const OP& op)
     {
         optional<T> result{lhsOptionalValue};
         AccumulateIf (&result, rhsValue, op);
         return result;
     }
-    template <typename T, template <typename> typename CONTAINER, enable_if_t<is_convertible_v<typename Containers::Adapters::Adder<CONTAINER<T>>::value_type, T>>*>
+    template <typename T, template <typename> typename CONTAINER>
+        requires (is_convertible_v<typename Containers::Adapters::Adder<CONTAINER<T>>::value_type, T>)
     optional<CONTAINER<T>> AccumulateIf (const optional<CONTAINER<T>>& lhsOptionalValue, const optional<T>& rhsOptionalValue)
     {
         optional<T> result{lhsOptionalValue};
         AccumulateIf (&result, rhsOptionalValue);
         return result;
     }
-    template <typename T, template <typename> typename CONTAINER, enable_if_t<is_convertible_v<typename Containers::Adapters::Adder<CONTAINER<T>>::value_type, T>>*>
+    template <typename T, template <typename> typename CONTAINER>
+        requires (is_convertible_v<typename Containers::Adapters::Adder<CONTAINER<T>>::value_type, T>)
     optional<CONTAINER<T>> AccumulateIf (const optional<CONTAINER<T>>& lhsOptionalValue, const T& rhsValue)
     {
         optional<T> result{lhsOptionalValue};

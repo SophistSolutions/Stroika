@@ -29,9 +29,10 @@ namespace Stroika::Foundation::Common {
     }
 #endif
     inline Common::GUID::GUID (const array<uint8_t, 16>& src) noexcept { ::memcpy (this, src.data (), 16); }
-    inline const std::byte* Common::GUID::begin () const noexcept { return reinterpret_cast<const std::byte*> (this); }
-    inline const std::byte* Common::GUID::end () const noexcept { return reinterpret_cast<const std::byte*> (this) + 16; }
-    constexpr size_t        Common::GUID::size () const noexcept { return 16; }
+    inline const std::byte* GUID::begin () const noexcept { return reinterpret_cast<const std::byte*> (this); }
+    inline const std::byte* GUID::end () const noexcept { return reinterpret_cast<const std::byte*> (this) + 16; }
+    constexpr size_t        GUID::size () const noexcept { return 16; }
+    inline const uint8_t*   GUID::data () const noexcept { return reinterpret_cast<const uint8_t*> (this); }
     template <typename T>
     inline T Common::GUID::As () const
         requires (is_same_v<T, Characters::String> or is_same_v<T, std::string> or is_same_v<T, Memory::BLOB> or
