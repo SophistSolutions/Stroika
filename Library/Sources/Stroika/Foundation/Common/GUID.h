@@ -64,13 +64,13 @@ namespace Stroika::Foundation::Common {
 
     public:
         /**
-         *  \nb: Stroika v2.1 allowed Allow iterating and modifying in place of the GUID as a sequence of bytes, but no more
+         *  \nb: Stroika v2.1 allowed iterating and modifying in place of the GUID as a sequence of bytes, but no more
          */
         nonvirtual const std::byte* begin () const noexcept;
 
     public:
         /**
-         *  \nb: Stroika v2.1 allowed Allow iterating and modifying in place of the GUID as a sequence of bytes, but no more
+         *  \nb: Stroika v2.1 allowed iterating and modifying in place of the GUID as a sequence of bytes, but no more
          */
         nonvirtual const std::byte* end () const noexcept;
 

@@ -21,8 +21,8 @@ namespace Stroika::Foundation::Memory {
      ************************ OptionalFromNullable **********************************
      ********************************************************************************
      */
-    template <typename RHS_CONVERTIBLE_TO_OPTIONAL_OF_T, typename T, typename SFINAE_SAFE_CONVERTIBLE>
-    inline optional<T> OptionalFromNullable (const RHS_CONVERTIBLE_TO_OPTIONAL_OF_T* from)
+    template <typename RHS_CONVERTIBLE_TO_OPTIONAL_OF_T, constructible_from<RHS_CONVERTIBLE_TO_OPTIONAL_OF_T> T>
+    constexpr optional<T> OptionalFromNullable (const RHS_CONVERTIBLE_TO_OPTIONAL_OF_T* from)
     {
         return from == nullptr ? nullopt : optional<T>{static_cast<T> (*from)};
     }

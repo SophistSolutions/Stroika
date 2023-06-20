@@ -15,75 +15,12 @@
 #include "ConceptsBase.h"
 
 /*
+ *  \file Misceleneous type traits and concepts for metaprogramming
+ * 
  *  \version    <a href="Code-Status.md#Beta">Beta</a>
  */
 
 namespace Stroika::Foundation::Configuration {
-
-    // @todo move these to localized just before needed/used... NOW... TODAY
-    namespace Private_ {
-        template <typename T>
-        using has_minus_t = decltype (std::declval<T> () - std::declval<T> ());
-        template <typename T>
-        using has_plus_t = decltype (std::declval<T> () + std::declval<T> ());
-
-        // Subtle - but begin () doesn't work with rvalues, so must use declval<T&> -- LGP 2021-11-26
-        template <typename T>
-        using has_beginend_t = decltype (static_cast<bool> (begin (declval<T&> ()) != end (declval<T&> ())));
-
-        // Would be nice to simplify, but my current version of is_detected_v only takes one template parameter, and the std::experimental version not included in VS2k19
-        template <typename ITERABLE_OF_T, typename T>
-        struct IsIterableOfT_Impl2_ {
-            template <typename X, typename USE_ITERABLE = ITERABLE_OF_T,
-                      bool ITER_RESULT_CONVERTIBLE_TO_T = is_convertible_v<decltype (*begin (declval<USE_ITERABLE&> ())), T>>
-            static auto check (const X& x)
-                -> conditional_t<is_detected_v<has_beginend_t, ITERABLE_OF_T> and ITER_RESULT_CONVERTIBLE_TO_T, substitution_succeeded<T>, substitution_failure>;
-            static substitution_failure check (...);
-            using type = decltype (check (declval<T> ()));
-        };
-        template <typename ITERABLE_OF_T, typename T>
-        using IsIterableOfT_t =
-            integral_constant<bool, not is_same<typename IsIterableOfT_Impl2_<ITERABLE_OF_T, T>::type, substitution_failure>::value>;
-
-        // Would be nice to simplify, but my current version of is_detected_v only takes one template parameter, and the std::experimental version not included in VS2k19
-        template <typename ITERABLE_OF_T, template <typename> typename CHECKER_PREDICATE>
-        struct IsIterableOfPredicateOfT_Impl2_ {
-            template <typename X, typename USE_ITERABLE = ITERABLE_OF_T,
-                      bool ITER_RESULT_CONVERTIBLE_TO_T = CHECKER_PREDICATE<decltype (*begin (declval<USE_ITERABLE&> ()))>::value>
-            static auto check (const X& x)
-                -> conditional_t<is_detected_v<has_beginend_t, ITERABLE_OF_T> and ITER_RESULT_CONVERTIBLE_TO_T, substitution_succeeded<int>, substitution_failure>;
-            static substitution_failure check (...);
-            using type = decltype (check (declval<int> ()));
-        };
-        // STILL NOT WORKING -- but trying...
-        template <typename ITERABLE_OF_T, template <typename> typename CHECKER_PREDICATE>
-        using IsIterableOfPredicateOfT_t =
-            integral_constant<bool, not is_same<typename IsIterableOfPredicateOfT_Impl2_<ITERABLE_OF_T, CHECKER_PREDICATE>::type, substitution_failure>::value>;
-
-        /*
-         * FROM http://stackoverflow.com/questions/16893992/check-if-type-can-be-explicitly-converted
-         */
-        template <typename From, typename To>
-        struct is_explicitly_convertible {
-            template <typename T>
-            static void f (T);
-
-            template <typename F, typename T>
-            static constexpr auto test (int) -> decltype (f (static_cast<T> (declval<F> ())), true)
-            {
-                return true;
-            }
-
-            template <typename F, typename T>
-            static constexpr auto test (...) -> bool
-            {
-                return false;
-            }
-
-            static bool const value = test<From, To> (0);
-        };
-
-    }
 
     /**
      *  \brief Extract the number of arguments, return type, and each individual argument type from a lambda or function object.
@@ -244,12 +181,6 @@ namespace Stroika::Foundation::Configuration {
                              };
 
     /**
-     *  Check if has begin/end methods (not for subclassing Traversal::Iterable<>), and if result of *begin () is convertible to T.
-     */
-    template <typename ITERABLE_OF_T, template <typename> typename CHECKER_PREDICATE>
-    constexpr bool IsIterableOfPredicateOfT_v = Private_::IsIterableOfPredicateOfT_t<ITERABLE_OF_T, CHECKER_PREDICATE>::value;
-
-    /**
      *  Check if equal_to<T> is both well defined, and contains no data. The reason it matters that it contains no data, is because
      *  then one instance is as good as another, and it need not be passed anywhere, opening an optimization opportunity.
      */
@@ -280,18 +211,6 @@ namespace Stroika::Foundation::Configuration {
      */
     template <typename T>
     concept IHasValueType = requires (T t) { typename T::value_type; };
-
-    /**
-     *  \brief 
-     * 
-     *  \par Example Usage
-     *      \code
-     *      \endcode
-     * 
-     *  \note see https://stroika.atlassian.net/browse/STK-749 - for why pair/tuple specializations - not sure why STL doesn't do this directly in pair<> template
-     */
-    template <typename From, typename To>
-    constexpr inline bool is_explicitly_convertible_v = Private_::is_explicitly_convertible<From, To>::value;
 
     namespace Private_ {
         template <typename T, typename = void>
@@ -324,6 +243,36 @@ namespace Stroika::Foundation::Configuration {
     template <typename T>
     using ExtractValueType_t = typename Private_::ExtractValueType<remove_cvref_t<T>>::type;
 
+    // @todo move these to localized just before needed/used... NOW... TODAY
+    namespace Private_ {
+        // Subtle - but begin () doesn't work with rvalues, so must use declval<T&> -- LGP 2021-11-26
+        template <typename T>
+        using has_beginend_t = decltype (static_cast<bool> (begin (declval<T&> ()) != end (declval<T&> ())));
+    }
+
+    namespace Private_ {
+        // Would be nice to simplify, but my current version of is_detected_v only takes one template parameter, and the std::experimental version not included in VS2k19
+        template <typename ITERABLE_OF_T, template <typename> typename CHECKER_PREDICATE>
+        struct IsIterableOfPredicateOfT_Impl2_ {
+            template <typename X, typename USE_ITERABLE = ITERABLE_OF_T,
+                      bool ITER_RESULT_CONVERTIBLE_TO_T = CHECKER_PREDICATE<decltype (*begin (declval<USE_ITERABLE&> ()))>::value>
+            static auto check (const X& x)
+                -> conditional_t<is_detected_v<has_beginend_t, ITERABLE_OF_T> and ITER_RESULT_CONVERTIBLE_TO_T, substitution_succeeded<int>, substitution_failure>;
+            static substitution_failure check (...);
+            using type = decltype (check (declval<int> ()));
+        };
+        // STILL NOT WORKING -- but trying...
+        template <typename ITERABLE_OF_T, template <typename> typename CHECKER_PREDICATE>
+        using IsIterableOfPredicateOfT_t =
+            integral_constant<bool, not is_same<typename IsIterableOfPredicateOfT_Impl2_<ITERABLE_OF_T, CHECKER_PREDICATE>::type, substitution_failure>::value>;
+    }
+
+    /**
+     *  Check if has begin/end methods (not for subclassing Traversal::Iterable<>), and if result of *begin () is convertible to T.
+     */
+    template <typename ITERABLE_OF_T, template <typename> typename CHECKER_PREDICATE>
+    constexpr bool IsIterableOfPredicateOfT_v = Private_::IsIterableOfPredicateOfT_t<ITERABLE_OF_T, CHECKER_PREDICATE>::value;
+
     /////////////////////////////////////////////////////////////
     ////////////////////// DEPREACTED BELOW /////////////////////
     /////////////////////////////////////////////////////////////
@@ -334,42 +283,55 @@ namespace Stroika::Foundation::Configuration {
                                                                                                                t + t
                                                                                                            };
                                                                                                        };
-
     namespace Private_ {
+        template <typename From, typename To>
+        struct is_explicitly_convertible {
+            template <typename T>
+            static void f (T);
 
-        // template <typename T>
-        //  using has_size_t = decltype (static_cast<size_t> (declval<T&> ().size ()));
+            template <typename F, typename T>
+            static constexpr auto test (int) -> decltype (f (static_cast<T> (declval<F> ())), true)
+            {
+                return true;
+            }
 
+            template <typename F, typename T>
+            static constexpr auto test (...) -> bool
+            {
+                return false;
+            }
+
+            static bool const value = test<From, To> (0);
+        };
     }
+    template <typename From, typename To>
+    [[deprecated ("Since Stroika v3.0d1 - not sure any point - probalyuse convertible or constructible concepts")]] constexpr inline bool is_explicitly_convertible_v =
+        Private_::is_explicitly_convertible<From, To>::value;
+
     template <typename T>
-    //    [[deprecated ("Since Stroika v3.0d1, use IHasSizeMethod")]] constexpr inline bool has_size_v = is_detected_v<Private_::has_size_t, T>;
     [[deprecated ("Since Stroika v3.0d1, use IHasSizeMethod")]] constexpr inline bool has_size_v = IHasSizeMethod<T>;
 
     template <typename T>
     [[deprecated ("Since Stroika v3.0d1, use std::ranges::range (probably - roughly same)")]] constexpr inline bool has_beginend_v =
         is_detected_v<Private_::has_beginend_t, T>;
 
-    template <typename T>
-    [[deprecated (
-        "Since Stroika v3.0d1, use something else, either requires statment, or random_access_iterator for example")]] constexpr inline bool has_minus_v =
-        is_detected_v<Private_::has_minus_t, T>;
-    template <typename T, typename U>
-    [[deprecated (
-        "Since Stroika v3.0d1, use something else, either requires statment, or random_access_iterator for example")]] constexpr inline bool
-        has_minus_v<std::pair<T, U>> = has_minus_v<T> and has_minus_v<U>;
-    template <typename... Ts>
-    [[deprecated (
-        "Since Stroika v3.0d1, use something else, either requires statment, or random_access_iterator for example")]] constexpr inline bool
-        has_minus_v<std::tuple<Ts...>> = (has_minus_v<Ts> and ...);
-
     namespace Private_ {
-        // @todo AFTER WE REMOVE DEPRECATED FUNCTIONS BELOW, CAN REMOVE A BUNCH OF THESE AS WELL
-
+        template <typename T>
+        using has_minus_t = decltype (std::declval<T> () - std::declval<T> ());
+    }
+    template <typename T>
+    [[deprecated ("Since Stroika v3.0d1, use something else, either requires statment, or random_access_iterator for "
+                  "example")]] constexpr inline bool has_minus_v = is_detected_v<Private_::has_minus_t, T>;
+    template <typename T, typename U>
+    [[deprecated ("Since Stroika v3.0d1, use something else, either requires statment, or random_access_iterator for "
+                  "example")]] constexpr inline bool has_minus_v<std::pair<T, U>> = has_minus_v<T> and has_minus_v<U>;
+    template <typename... Ts>
+    [[deprecated ("Since Stroika v3.0d1, use something else, either requires statment, or random_access_iterator for "
+                  "example")]] constexpr inline bool has_minus_v<std::tuple<Ts...>> = (has_minus_v<Ts> and ...);
+    namespace Private_ {
         template <typename T>
         using has_neq_t = decltype (static_cast<bool> (std::declval<T> () != std::declval<T> ()));
-
     }
-
     template <typename T>
     [[deprecated ("Since Stroika v3.0d1, use IOperatorEq (cuz in C++20 basically same) concept")]] constexpr inline bool has_neq_v =
         is_detected_v<Private_::has_neq_t, T>;
@@ -436,6 +398,23 @@ namespace Stroika::Foundation::Configuration {
     template <typename ITERABLE>
     [[deprecated ("Since Stroika v3.0d1, use ranges::range")]] constexpr bool IsIterable_v =
         has_beginend_v<ITERABLE> and not is_same_v<ExtractValueType_t<ITERABLE>, void>;
+
+    namespace Private_ {
+
+        // Would be nice to simplify, but my current version of is_detected_v only takes one template parameter, and the std::experimental version not included in VS2k19
+        template <typename ITERABLE_OF_T, typename T>
+        struct IsIterableOfT_Impl2_ {
+            template <typename X, typename USE_ITERABLE = ITERABLE_OF_T,
+                      bool ITER_RESULT_CONVERTIBLE_TO_T = is_convertible_v<decltype (*begin (declval<USE_ITERABLE&> ())), T>>
+            static auto check (const X& x)
+                -> conditional_t<is_detected_v<has_beginend_t, ITERABLE_OF_T> and ITER_RESULT_CONVERTIBLE_TO_T, substitution_succeeded<T>, substitution_failure>;
+            static substitution_failure check (...);
+            using type = decltype (check (declval<T> ()));
+        };
+        template <typename ITERABLE_OF_T, typename T>
+        using IsIterableOfT_t =
+            integral_constant<bool, not is_same<typename IsIterableOfT_Impl2_<ITERABLE_OF_T, T>::type, substitution_failure>::value>;
+    }
     template <typename ITERABLE_OF_T, typename T>
     [[deprecated ("Since Stroika v3.0d1 use Traversal::IIterable concept")]] constexpr bool IsIterableOfT_v =
         Private_::IsIterableOfT_t<ITERABLE_OF_T, T>::value;
@@ -465,7 +444,6 @@ namespace Stroika::Foundation::Configuration {
     }
     template <typename T>
     [[deprecated ("Since Stroika v3.0d1, use IOperatorSpaceship")]] constexpr inline bool has_spaceship_v = IOperatorSpaceship<T>;
-
 }
 
 /*

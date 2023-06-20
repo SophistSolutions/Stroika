@@ -63,7 +63,6 @@ CipherAlgorithm CipherAlgorithm::GetByName (const String& cipherName)
 
 optional<CipherAlgorithm> CipherAlgorithm::GetByNameQuietly (const String& cipherName)
 {
-    //return Memory::OptionalFromNullable (EVP_get_cipherbyname (cipherName.AsNarrowSDKString ().c_str ()));
     auto tmp = EVP_get_cipherbyname (cipherName.AsNarrowSDKString ().c_str ());
     return tmp == nullptr ? optional<CipherAlgorithm>{} : tmp;
 }

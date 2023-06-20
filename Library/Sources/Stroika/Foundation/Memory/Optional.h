@@ -167,20 +167,14 @@ namespace Stroika::Foundation::Memory {
      *
      *  \par Example Usage
      *      \code
-     *          float*  d1  =   nullptr;
-     *          double* d2  =   nullptr;
-     *          Assert (not Optional<double>::OptionalFromNullable (d1).has_value ());
-     *          Assert (not Optional<double>::OptionalFromNullable (d2).has_value ());
+     *          float*  d1 = nullptr;
+     *          double* d2 = nullptr;
+     *          VerifyTestResult (not OptionalFromNullable (d1).has_value ());
+     *          VerifyTestResult (not OptionalFromNullable (d2).has_value ());
      *      \endcode
-     *
-     *  \note   I tried making this an Optional<T> constructor overload, but it lead to dangerous confusion with things like
-     *          URL url = URL{"dyn:/StyleSheet.css?ThemeName=Cupertino", URL::eStroikaPre20a50BackCompatMode};
-     *          VerifyTestResult (url.GetScheme () == "dyn");
-     *          // wchar_t* overload is optional gets STRING with value "d";
      */
-    template <typename RHS_CONVERTIBLE_TO_OPTIONAL_OF_T, typename T = RHS_CONVERTIBLE_TO_OPTIONAL_OF_T,
-              typename SFINAE_SAFE_CONVERTIBLE = enable_if_t<Configuration::is_explicitly_convertible_v<RHS_CONVERTIBLE_TO_OPTIONAL_OF_T, T>>>
-    optional<T> OptionalFromNullable (const RHS_CONVERTIBLE_TO_OPTIONAL_OF_T* from);
+    template <typename RHS_CONVERTIBLE_TO_OPTIONAL_OF_T, constructible_from<RHS_CONVERTIBLE_TO_OPTIONAL_OF_T> T = RHS_CONVERTIBLE_TO_OPTIONAL_OF_T>
+    constexpr optional<T> OptionalFromNullable (const RHS_CONVERTIBLE_TO_OPTIONAL_OF_T* from);
 
     /**
      *  if lhs and rhs engaged, this returns *lhs + *rhs, and otherwise nullopt

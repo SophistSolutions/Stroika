@@ -62,9 +62,8 @@ DigestAlgorithm DigestAlgorithm::GetByName (const String& digestName)
 
 optional<DigestAlgorithm> DigestAlgorithm::GetByNameQuietly (const String& digestName)
 {
-    // not sure why doesnt compile ... return Memory::OptionalFromNullable (::EVP_get_digestbyname (digestName.AsNarrowSDKString ().c_str ()));
-    auto tmp = ::EVP_get_digestbyname (digestName.AsNarrowSDKString ().c_str ());
-    return tmp == nullptr ? optional<DigestAlgorithm>{} : tmp;
+   auto tmp = ::EVP_get_digestbyname (digestName.AsNarrowSDKString ().c_str ());
+   return tmp == nullptr ? optional<DigestAlgorithm>{} : tmp;
 }
 
 /*

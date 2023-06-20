@@ -92,6 +92,11 @@ namespace Stroika::Foundation::Common {
     constexpr strong_ordering CompareResultNormalizer (FROM_INT_TYPE f);
 
     /**
+    * 
+    * 
+    * &&& @todo REPLACE WITH CONCEPT  -- IPotentiallyComparer
+    * 
+    * 
      *  \brief return true if argument is a function like object (callable) taking 2 arguments (FUNCTOR_ARG) and
      *         returning a bool or integer.
      *
@@ -401,6 +406,10 @@ namespace Stroika::Foundation::Common {
     private:
         [[no_unique_address]] BASE_COMPARER fBASE_COMPARER_;
     };
+
+    ///////////////////////////////////////////////////////////////////
+    ////////////// BELOW ALL DEPRECATED /////////////////////////////
+    /////////////////////////////////////////////////////////////////
 
     // clang-format off
     /**
