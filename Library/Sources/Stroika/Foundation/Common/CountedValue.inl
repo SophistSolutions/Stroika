@@ -51,7 +51,7 @@ namespace Stroika::Foundation::Common {
     }
     template <typename VALUE_TYPE, typename COUNTER_TYPE>
     constexpr auto CountedValue<VALUE_TYPE, COUNTER_TYPE>::operator<=> (const CountedValue& rhs) const
-        requires (Configuration::HasSpaceship<VALUE_TYPE>)
+        requires (Configuration::IOperatorSpaceship<VALUE_TYPE>)
     {
         if (auto cmp = fValue <=> rhs.fValue; cmp != strong_ordering::equal) {
             return cmp;

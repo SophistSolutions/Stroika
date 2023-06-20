@@ -149,7 +149,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     inline Collection_Array<T>::Collection_Array (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
         : Collection_Array{}
     {
-        if constexpr (Configuration::has_minus_v<ITERATOR_OF_ADDABLE>) {
+        if constexpr (random_access_iterator<ITERATOR_OF_ADDABLE>) {
             if (start != end) {
                 reserve (end - start);
             }

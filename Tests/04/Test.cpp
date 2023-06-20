@@ -159,8 +159,8 @@ namespace {
             {
                 static_assert (IOperatorEq<int>);
                 static_assert (not IOperatorEq<SimpleClassWithoutComparisonOperators>);
-                static_assert (HasLt<int>);
-                static_assert (not HasLt<SimpleClassWithoutComparisonOperators>);
+                static_assert (IOperatorLt<int>);
+                static_assert (not IOperatorLt<SimpleClassWithoutComparisonOperators>);
                 static_assert (has_minus_v<int>);
                 static_assert (not has_minus_v<SimpleClassWithoutComparisonOperators>);
             }
@@ -195,16 +195,6 @@ namespace {
                 static_assert (input_iterator<Iterator<int>>);
                 static_assert (input_iterator<Iterator<Characters::Character>>);
                 static_assert (input_iterator<Iterator<int>>); // @todo figure out why forward_iterator doesn't work here, but maybe OK
-            }
-            {
-                static_assert (has_beginend_v<vector<int>>);
-                static_assert (not has_beginend_v<int>);
-                static_assert (not has_beginend_v<Traversal::Iterator<int>>);
-                static_assert (has_beginend_v<Traversal::Iterable<int>>);
-                static_assert (ranges::range<int> == has_beginend_v<int>);
-                static_assert (ranges::range<String> == has_beginend_v<String>);
-                static_assert (ranges::range<std::pair<int, int>[1]>);
-                static_assert (has_beginend_v<std::pair<int, int>[1]>);
             }
             {
                 static_assert (Traversal::IIterable<vector<int>, int>);

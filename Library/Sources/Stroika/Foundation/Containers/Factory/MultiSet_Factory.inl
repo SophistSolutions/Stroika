@@ -36,7 +36,7 @@ namespace Stroika::Foundation::Containers::Factory {
     template <typename T, typename TRAITS, IEqualsComparer<T> EQUALS_COMPARER>
     constexpr MultiSet_Factory<T, TRAITS, EQUALS_COMPARER>::MultiSet_Factory ([[maybe_unused]] const Hints& hints)
         : MultiSet_Factory{[hints] () -> FactoryFunctionType {
-            if constexpr (is_same_v<EQUALS_COMPARER, equal_to<T>> and Configuration::HasLt<T>) {
+            if constexpr (is_same_v<EQUALS_COMPARER, equal_to<T>> and Configuration::IOperatorLt<T>) {
                 return [] ([[maybe_unused]] const EQUALS_COMPARER& equalsComparer) { return Concrete::MultiSet_stdmap<T, TRAITS>{}; };
             }
             else {

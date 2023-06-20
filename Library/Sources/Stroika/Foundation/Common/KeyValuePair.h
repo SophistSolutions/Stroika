@@ -86,7 +86,7 @@ namespace Stroika::Foundation::Common {
          *  This method is only defined if BOTH the key and value have a defined spaceship operator
          */
         constexpr auto operator<=> (const KeyValuePair&) const
-            requires (Configuration::HasSpaceship<KEY_TYPE> and Configuration::HasSpaceship<VALUE_TYPE>);
+            requires (Configuration::IOperatorSpaceship<KEY_TYPE> and Configuration::IOperatorSpaceship<VALUE_TYPE>);
 
     public:
         /**

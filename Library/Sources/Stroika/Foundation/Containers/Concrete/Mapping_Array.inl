@@ -263,7 +263,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     inline Mapping_Array<KEY_TYPE, MAPPED_VALUE_TYPE>::Mapping_Array (ITERABLE_OF_ADDABLE&& src)
         : Mapping_Array{}
     {
-        if constexpr (Configuration::has_size_v<ITERABLE_OF_ADDABLE>) {
+        if constexpr (Configuration::IHasSize<ITERABLE_OF_ADDABLE>) {
             reserve (src.size ());
         }
         this->AddAll (forward<ITERABLE_OF_ADDABLE> (src));
@@ -284,7 +284,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     Mapping_Array<KEY_TYPE, MAPPED_VALUE_TYPE>::Mapping_Array (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
         : Mapping_Array{}
     {
-        if constexpr (Configuration::has_minus_v<ITERATOR_OF_ADDABLE>) {
+        if constexpr (random_access_iterator<ITERATOR_OF_ADDABLE>) {
             if (start != end) {
                 reserve (end - start);
             }
@@ -298,7 +298,7 @@ namespace Stroika::Foundation::Containers::Concrete {
                                                                ITERATOR_OF_ADDABLE&& end)
         : Mapping_Array{forward<KEY_EQUALS_COMPARER> (keyEqualsComparer)}
     {
-        if constexpr (Configuration::has_minus_v<ITERATOR_OF_ADDABLE>) {
+        if constexpr (random_access_iterator<ITERATOR_OF_ADDABLE>) {
             if (start != end) {
                 reserve (end - start);
             }

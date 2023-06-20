@@ -36,7 +36,7 @@ namespace Stroika::Foundation::Containers::Factory {
     template <typename T>
     constexpr Collection_Factory<T>::Collection_Factory ([[maybe_unused]] const Hints& hints)
         : Collection_Factory{[hints] () -> FactoryFunctionType {
-            if constexpr (Configuration::HasLt<T>) {
+            if constexpr (Configuration::IOperatorLt<T>) {
                 // faster adds/removes - same size - so better if possible to use (unless very small collections maybe)
                 return [] () { return Concrete::Collection_stdmultiset<T>{}; };
             }

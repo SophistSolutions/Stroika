@@ -34,7 +34,7 @@ namespace Stroika::Foundation::Containers::Factory {
     template <typename T, IEqualsComparer<T> EQUALS_COMPARER>
     constexpr Set_Factory<T, EQUALS_COMPARER>::Set_Factory ([[maybe_unused]] const Hints& hints)
         : Set_Factory{[] () -> FactoryFunctionType {
-            if constexpr (is_same_v<EQUALS_COMPARER, equal_to<T>> and Configuration::HasLt<T>) {
+            if constexpr (is_same_v<EQUALS_COMPARER, equal_to<T>> and Configuration::IOperatorLt<T>) {
                 return [] ([[maybe_unused]] const EQUALS_COMPARER& equalsComparer) { return Concrete::Set_stdset<T>{}; };
             }
             else {

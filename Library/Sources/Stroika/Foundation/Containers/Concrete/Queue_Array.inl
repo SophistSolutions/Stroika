@@ -145,7 +145,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     inline Queue_Array<T>::Queue_Array (ITERABLE_OF_ADDABLE&& src)
         : Queue_Array{}
     {
-        if constexpr (Configuration::has_size_v<ITERABLE_OF_ADDABLE>) {
+        if constexpr (Configuration::IHasSize<ITERABLE_OF_ADDABLE>) {
             reserve (src.size ());
         }
         AddAllToTail (forward<ITERABLE_OF_ADDABLE> (src));
@@ -157,7 +157,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     inline Queue_Array<T>::Queue_Array (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
         : Queue_Array{}
     {
-        if constexpr (Configuration::has_minus_v<ITERATOR_OF_ADDABLE>) {
+        if constexpr (random_access_iterator<ITERATOR_OF_ADDABLE>) {
             if (start != end) {
                 reserve (end - start);
             }

@@ -20,16 +20,16 @@
 
 namespace Stroika::Foundation::Configuration {
 
+    // @todo move these to localized just before needed/used... NOW... TODAY
     namespace Private_ {
         template <typename T>
         using has_minus_t = decltype (std::declval<T> () - std::declval<T> ());
         template <typename T>
         using has_plus_t = decltype (std::declval<T> () + std::declval<T> ());
+
         // Subtle - but begin () doesn't work with rvalues, so must use declval<T&> -- LGP 2021-11-26
         template <typename T>
         using has_beginend_t = decltype (static_cast<bool> (begin (declval<T&> ()) != end (declval<T&> ())));
-        template <typename T>
-        using has_size_t = decltype (static_cast<size_t> (declval<T&> ().size ()));
 
         // Would be nice to simplify, but my current version of is_detected_v only takes one template parameter, and the std::experimental version not included in VS2k19
         template <typename ITERABLE_OF_T, typename T>
@@ -179,11 +179,11 @@ namespace Stroika::Foundation::Configuration {
     }
 
     /**
-     *  \brief check if the given type T can be compared with operator<, and result is convertible to bool
+     *  \brief Concept checks if the given type T can be compared with operator<, and result is convertible to bool
      * 
      *  \par Example Usage
      *      \code
-     *          if constexpr (HasLt<T>) {
+     *          if constexpr (IOperatorLt<T>) {
      *              T a{};
      *              T b{};
      *              return a < b;
@@ -194,35 +194,14 @@ namespace Stroika::Foundation::Configuration {
      *        for explanation about complexities with pair/tuple
      */
     template <typename T>
-    concept HasLt = Private_::HasLt_v_<T>;
-
-    /**
-     *  \brief check if the given type T can be combined with a second T using operator-
-     * 
-     *  \par Example Usage
-     *      \code
-     *          if constexpr (has_minus_v<T>) {
-     *              T a{};
-     *              T b{};
-     *              return a - b;
-     *          }
-     *      \endcode
-     * 
-     *  \note see https://stroika.atlassian.net/browse/STK-749 - for why pair/tuple specializations - not sure why STL doesn't do this directly in pair<> template
-     */
-    template <typename T>
-    constexpr inline bool has_minus_v = is_detected_v<Private_::has_minus_t, T>;
-    template <typename T, typename U>
-    constexpr inline bool has_minus_v<std::pair<T, U>> = has_minus_v<T> and has_minus_v<U>;
-    template <typename... Ts>
-    constexpr inline bool has_minus_v<std::tuple<Ts...>> = (has_minus_v<Ts> and ...);
+    concept IOperatorLt = Private_::HasLt_v_<T>;
 
     /**
      *  \brief check if the given type T can be compared with operator<=>
      * 
      *  \par Example Usage
      *      \code
-     *          if constexpr (HasSpaceship<T>) {
+     *          if constexpr (IOperatorSpaceship<T>) {
      *              T a{};
      *              T b{};
      *              return a <=> b;
@@ -230,49 +209,37 @@ namespace Stroika::Foundation::Configuration {
      *      \endcode
      */
     template <typename T>
-    concept HasSpaceship = requires (T t) {
-                               {
-                                   t <=> t
-                                   } -> std::convertible_to<partial_ordering>;
-                           } or requires (T t) {
-                                    {
-                                        t <=> t
-                                        } -> std::convertible_to<strong_ordering>;
-                                } or requires (T t) {
-                                         {
-                                             t <=> t
-                                             } -> std::convertible_to<weak_ordering>;
-                                     };
+    concept IOperatorSpaceship = requires (T t) {
+                                     {
+                                         t <=> t
+                                         } -> std::convertible_to<partial_ordering>;
+                                 } or requires (T t) {
+                                          {
+                                              t <=> t
+                                              } -> std::convertible_to<strong_ordering>;
+                                      } or requires (T t) {
+                                               {
+                                                   t <=> t
+                                                   } -> std::convertible_to<weak_ordering>;
+                                           };
 
     /**
-     *  \brief check if the given type T has a const size() method which can be called to return a size_t.
+     *  \brief concept checks if the given type T has a const size() method which can be called to return a size_t.
      * 
      *  \par Example Usage
      *      \code
-     *          if constexpr (has_size_v<T>) {
+     *          if constexpr (IHasSize<T>) {
      *              T a{};
      *              return a.size ();
      *          }
      *      \endcode
      */
     template <typename T>
-    constexpr inline bool has_size_v = is_detected_v<Private_::has_size_t, T>;
-
-    /**
-     *  \brief check if the given type T can have std::begin()/std::end () applied, and they can be compared and that compare converted to bool
-     * 
-     *  \par Example Usage
-     *      \code
-     *          if constexpr (has_beginend_v<T>) {
-     *              T a{};
-     *              return begin (a) != end (a);
-     *          }
-     *      \endcode
-     * 
-     *  \note see https://stroika.atlassian.net/browse/STK-749 - for why pair/tuple specializations - not sure why STL doesn't do this directly in pair<> template
-     */
-    template <typename T>
-    constexpr inline bool has_beginend_v = is_detected_v<Private_::has_beginend_t, T>;
+    concept IHasSize = requires (const T& t) {
+                           {
+                               t.size ()
+                               } -> std::convertible_to<size_t>;
+                       };
 
     /**
      *  Check if has begin/end methods (not for subclassing Traversal::Iterable<>), and if result of *begin () is convertible to T.
@@ -302,7 +269,7 @@ namespace Stroika::Foundation::Configuration {
      * 
      *  \par Example Usage
      *      \code
-     *          if constexpr (HasValueType<T>) {
+     *          if constexpr (IHasValueType<T>) {
      *              typename T::value_type x;
      *          }
      *      \endcode
@@ -312,7 +279,7 @@ namespace Stroika::Foundation::Configuration {
      *  \note this replaces Stroika v2.1 constexpr inline bool has_value_type_v template variable
      */
     template <typename T>
-    concept HasValueType = requires (T t) { typename T::value_type; };
+    concept IHasValueType = requires (T t) { typename T::value_type; };
 
     /**
      *  \brief 
@@ -332,7 +299,7 @@ namespace Stroika::Foundation::Configuration {
             using type = void;
         };
         template <typename T>
-        struct ExtractValueType<T, enable_if_t<HasValueType<T>>> {
+        struct ExtractValueType<T, enable_if_t<IHasValueType<T>>> {
             using type = typename T::value_type;
         };
         template <typename T>
@@ -357,7 +324,9 @@ namespace Stroika::Foundation::Configuration {
     template <typename T>
     using ExtractValueType_t = typename Private_::ExtractValueType<remove_cvref_t<T>>::type;
 
-    ////////////////////// DEPREACTED BELOW //////////////////////
+    /////////////////////////////////////////////////////////////
+    ////////////////////// DEPREACTED BELOW /////////////////////
+    /////////////////////////////////////////////////////////////
 
     template <typename T>
     [[deprecated ("Since Stroika v3.0d1, use require expression")]] constexpr inline bool has_plus_v = requires (T t) {
@@ -365,6 +334,34 @@ namespace Stroika::Foundation::Configuration {
                                                                                                                t + t
                                                                                                            };
                                                                                                        };
+
+    namespace Private_ {
+
+        // template <typename T>
+        //  using has_size_t = decltype (static_cast<size_t> (declval<T&> ().size ()));
+
+    }
+    template <typename T>
+    //    [[deprecated ("Since Stroika v3.0d1, use IHasSize")]] constexpr inline bool has_size_v = is_detected_v<Private_::has_size_t, T>;
+    [[deprecated ("Since Stroika v3.0d1, use IHasSize")]] constexpr inline bool has_size_v = IHasSize<T>;
+
+    template <typename T>
+    [[deprecated ("Since Stroika v3.0d1, use std::ranges::range (probably - roughly same)")]] constexpr inline bool has_beginend_v =
+        is_detected_v<Private_::has_beginend_t, T>;
+
+    template <typename T>
+    [[deprecated (
+        "Since Stroika v3.0d1, use something else, either requires statment, or random_access_iterator for example")]] constexpr inline bool has_minus_v =
+        is_detected_v<Private_::has_minus_t, T>;
+    template <typename T, typename U>
+    [[deprecated (
+        "Since Stroika v3.0d1, use something else, either requires statment, or random_access_iterator for example")]] constexpr inline bool
+        has_minus_v<std::pair<T, U>> = has_minus_v<T> and has_minus_v<U>;
+    template <typename... Ts>
+    [[deprecated (
+        "Since Stroika v3.0d1, use something else, either requires statment, or random_access_iterator for example")]] constexpr inline bool
+        has_minus_v<std::tuple<Ts...>> = (has_minus_v<Ts> and ...);
+
     namespace Private_ {
         // @todo AFTER WE REMOVE DEPRECATED FUNCTIONS BELOW, CAN REMOVE A BUNCH OF THESE AS WELL
 
@@ -387,10 +384,10 @@ namespace Stroika::Foundation::Configuration {
     [[deprecated ("Since Stroika v3.0d1, use IOperatorEq concept")]] constexpr inline bool has_eq_v = IOperatorEq<T>;
 
     template <typename T>
-    [[deprecated ("Since Stroika v3.0d1, use HasLt concept")]] constexpr inline bool has_lt_v = HasLt<T>;
+    [[deprecated ("Since Stroika v3.0d1, use IOperatorLt concept")]] constexpr inline bool has_lt_v = IOperatorLt<T>;
 
     template <typename T>
-    [[deprecated ("Since Stroika v3.0d1, use HasValueType concept")]] constexpr inline bool has_value_type_v = HasValueType<T>;
+    [[deprecated ("Since Stroika v3.0d1, use IHasValueType concept")]] constexpr inline bool has_value_type_v = IHasValueType<T>;
     template <typename T>
     [[deprecated ("Since Stroika v3.0d1, use https://en.cppreference.com/w/cpp/concepts/equality_comparable")]] constexpr bool EqualityComparable ()
     {
@@ -467,7 +464,7 @@ namespace Stroika::Foundation::Configuration {
         return false;
     }
     template <typename T>
-    [[deprecated ("Since Stroika v3.0d1, use HasSpaceship")]] constexpr inline bool has_spaceship_v = HasSpaceship<T>;
+    [[deprecated ("Since Stroika v3.0d1, use IOperatorSpaceship")]] constexpr inline bool has_spaceship_v = IOperatorSpaceship<T>;
 
 }
 
