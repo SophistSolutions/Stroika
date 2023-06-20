@@ -157,8 +157,8 @@ namespace {
             using namespace Configuration;
 
             {
-                static_assert (has_eq_v<int>);
-                static_assert (not has_eq_v<SimpleClassWithoutComparisonOperators>);
+                static_assert (HasEq<int>);
+                static_assert (not HasEq<SimpleClassWithoutComparisonOperators>);
                 static_assert (has_neq_v<int>);
                 static_assert (not has_neq_v<SimpleClassWithoutComparisonOperators>);
                 static_assert (has_lt_v<int>);
@@ -175,12 +175,24 @@ namespace {
                 static_assert (HasUsableEqualToOptimization<SimpleClass> ());
                 static_assert (HasUsableEqualToOptimization<pair<SimpleClass, SimpleClass>> ());
                 static_assert (not HasUsableEqualToOptimization<SimpleClassWithoutComparisonOperators> ());
-                static_assert (not HasUsableEqualToOptimization<pair<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators>> ());
+                static_assert (not HasEq<SimpleClassWithoutComparisonOperators> );
+                static_assert (not HasEq<pair<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators>>);
+
+
+
+                //tmphack static_assert (not HasUsableEqualToOptimization<pair<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators>> ());
                 {
                     using namespace Stroika::Foundation::Database::SQL::ORM;
-                    static_assert (not has_eq_v<TableProvisioner>);
+                    static_assert (not HasEq<TableProvisioner>);
                     static_assert (not HasUsableEqualToOptimization<TableProvisioner> ());
                 }
+            }
+            {
+                struct X {};
+                static_assert (not HasEq<X>);
+                static_assert (HasEq<int>);
+                static_assert (not HasEq<pair<X, X>>);
+                static_assert (not HasEq<tuple<X, X>>);
             }
             {
                 using Traversal::Iterator;

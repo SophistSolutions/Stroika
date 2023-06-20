@@ -94,7 +94,7 @@ namespace Stroika::Foundation::Common {
          *  This method is only defined if BOTH the key and value have a defined operator==
          */
         constexpr bool operator== (const KeyValuePair&) const
-            requires (Configuration::has_eq_v<KEY_TYPE> and Configuration::has_eq_v<VALUE_TYPE>);
+            requires (Configuration::HasEq<KEY_TYPE> and Configuration::HasEq<VALUE_TYPE>);
     };
 
 }

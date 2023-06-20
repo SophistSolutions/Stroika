@@ -72,7 +72,7 @@ namespace Stroika::Foundation::Common {
         /**
          */
         constexpr bool operator== (const CountedValue&) const
-            requires (Configuration::has_eq_v<VALUE_TYPE>);
+            requires (Configuration::HasEq<VALUE_TYPE>);
     };
 
 }

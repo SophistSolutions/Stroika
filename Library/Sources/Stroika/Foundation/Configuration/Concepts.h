@@ -125,6 +125,20 @@ namespace Stroika::Foundation::Configuration {
         };
         template <typename T>
         using is_callable = conditional_t<is_class_v<T>, is_callable_impl_<T>, false_type>;
+
+        // HasEq_v_
+        template <typename T>
+        concept HasEq_ = requires (T t) {
+                             {
+                                 t == t
+                                 } -> std::convertible_to<bool>;
+                         };
+        template <typename T>
+        constexpr inline bool HasEq_v_ = HasEq_<T>;
+        template <typename T, typename U>
+        constexpr inline bool HasEq_v_<std::pair<T, U>> = HasEq_v_<T> and HasEq_v_<U>;
+        template <typename... Ts>
+        constexpr inline bool HasEq_v_<std::tuple<Ts...>> = (HasEq_v_<Ts> and ...);
     }
 
     /**
@@ -149,23 +163,24 @@ namespace Stroika::Foundation::Configuration {
      */
     template <typename T>
     struct FunctionTraits : public FunctionTraits<decltype (&T::operator())> {};
-    template <typename ClassType, typename ReturnType, typename... Args>
-    struct FunctionTraits<ReturnType (ClassType::*) (Args...) const> {
+    template <typename CLASS_TYPE, typename RETURN_TYPE, typename... ARGS>
+    struct FunctionTraits<RETURN_TYPE (CLASS_TYPE::*) (ARGS...) const> {
         /**
          *  \brief Number of arguments
          */
-        static inline constexpr size_t kArity = sizeof...(Args);
+        static inline constexpr size_t kArity = sizeof...(ARGS);
 
         /**
+         *  Function return type.
          */
-        typedef ReturnType result_type;
+        using result_type = RETURN_TYPE;
 
         /**
          *  type of the ith 'arg'
          */
         template <size_t i>
         struct arg {
-            typedef typename std::tuple_element<i, std::tuple<Args...>>::type type;
+            using type = typename std::tuple_element<i, std::tuple<ARGS...>>::type;
             // the i-th argument is equivalent to the i-th tuple element of a tuple
             // composed of those arguments.
         };
@@ -176,26 +191,18 @@ namespace Stroika::Foundation::Configuration {
      * 
      *  \par Example Usage
      *      \code
-     *          if constexpr (has_eq_v<T>) {
-     *              T a{};
-     *              T b{};
-     *              return a == b;
-     *          }
+     *          struct X {};
+     *          static_assert (not HasEq<X>);
+     *          static_assert (HasEq<int>);
+     *          static_assert (not HasEq<pair<X, X>>);
+     *          static_assert (not HasEq<tuple<X, X>>);
      *      \endcode
      * 
-     *  \note see https://stroika.atlassian.net/browse/STK-749 - for why pair/tuple specializations - not sure why STL doesn't do this directly in pair<> template
-     * 
-     *  \note - why no has_equal_to_v<> defined?
-     *        @see https://stackoverflow.com/questions/70119120/how-to-fix-sfinae-check-for-operator-existing-so-that-it-works-with-stdpair/70122069#70122069
-     * 
-     *  Issue is that it cannot be usefully defined (as nearly as I can tell in C++17).
+     *  \note see https://stackoverflow.com/questions/76510385/how-to-do-simple-c-concept-has-eq-that-works-with-stdpair-is-stdpair-op/76510752#76510752
+     *        for explanation about complexities with pair/tuple
      */
     template <typename T>
-    constexpr inline bool has_eq_v = is_detected_v<Private_::has_eq_t, T>;
-    template <typename T, typename U>
-    constexpr inline bool has_eq_v<std::pair<T, U>> = has_eq_v<T> and has_eq_v<U>;
-    template <typename... Ts>
-    constexpr inline bool has_eq_v<std::tuple<Ts...>> = (has_eq_v<Ts> and ...);
+    concept HasEq = Private_::HasEq_v_<T>;
 
     /**
      *  \brief check if the given type T can be compared with operator!=, and result is convertible to bool
@@ -345,25 +352,32 @@ namespace Stroika::Foundation::Configuration {
     template <typename T>
     constexpr bool HasUsableEqualToOptimization ()
     {
-        if constexpr (has_eq_v<T>) {
-            struct equal_to_empty_tester : equal_to<T> {
+        if constexpr (HasEq<T>) {
+            struct EqualToEmptyTester_ : equal_to<T> {
                 int a;
             };
             // leverage empty base class optimization to see if equal_to contains any real data
-            return sizeof (equal_to_empty_tester) == sizeof (int);
+            return sizeof (EqualToEmptyTester_) == sizeof (int);
         }
         return false;
     }
 
+    /**
+     *  \brief check if the given type T can be compared with operator==, and result is convertible to bool
+     * 
+     *  \par Example Usage
+     *      \code
+     *          if constexpr (HasValueType<T>) {
+     *              typename T::value_type x;
+     *          }
+     *      \endcode
+     * 
+     *  Issue is that it cannot be usefully defined (as nearly as I can tell in C++17).
+     * 
+     *  \note this replaces Stroika v2.1 constexpr inline bool has_value_type_v template variable
+     */
     template <typename T>
     concept HasValueType = requires (T t) { typename T::value_type; };
-
-#if 0
-     template <typename T>
-    /* [[deprecated ("Since Stroika v3.0d1, use requires expressions")]] */
-   constexpr inline bool has_value_type_v =
-        is_detected_v<Private_::has_value_type_t, T>;
-#endif
 
     /**
      *  \brief 
@@ -410,17 +424,16 @@ namespace Stroika::Foundation::Configuration {
 
     ////////////////////// DEPREACTED BELOW //////////////////////
 
-#if 1
+    template <typename T>
+    [[deprecated ("Since Stroika v3.0d1, use HasEq concept")]] constexpr inline bool has_eq_v = HasEq<T>;
 
     template <typename T>
-    [[deprecated ("Since Stroika v3.0d1, use requires expressions")]] constexpr inline bool has_value_type_v =
+    [[deprecated ("Since Stroika v3.0d1, use HasValueType concept")]] constexpr inline bool has_value_type_v =
         is_detected_v<Private_::has_value_type_t, T>;
-#endif
-
     template <typename T>
     [[deprecated ("Since Stroika v3.0d1, use https://en.cppreference.com/w/cpp/concepts/equality_comparable")]] constexpr bool EqualityComparable ()
     {
-        return has_eq_v<T>;
+        return HasEq<T>;
     }
 
     template <typename T>
