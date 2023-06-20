@@ -60,7 +60,7 @@ namespace Stroika::Foundation::Common {
     }
     template <typename VALUE_TYPE, typename COUNTER_TYPE>
     constexpr bool CountedValue<VALUE_TYPE, COUNTER_TYPE>::operator== (const CountedValue& rhs) const
-        requires (Configuration::HasEq<VALUE_TYPE>)
+        requires (Configuration::IOperatorEq<VALUE_TYPE>)
     {
         return fValue == rhs.fValue and fValue == rhs.fValue;
     }

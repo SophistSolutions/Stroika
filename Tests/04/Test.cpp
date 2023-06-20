@@ -157,8 +157,8 @@ namespace {
             using namespace Configuration;
 
             {
-                static_assert (HasEq<int>);
-                static_assert (not HasEq<SimpleClassWithoutComparisonOperators>);
+                static_assert (IOperatorEq<int>);
+                static_assert (not IOperatorEq<SimpleClassWithoutComparisonOperators>);
                 static_assert (HasLt<int>);
                 static_assert (not HasLt<SimpleClassWithoutComparisonOperators>);
                 static_assert (has_minus_v<int>);
@@ -171,24 +171,24 @@ namespace {
                 static_assert (HasUsableEqualToOptimization<SimpleClass> ());
                 static_assert (HasUsableEqualToOptimization<pair<SimpleClass, SimpleClass>> ());
                 static_assert (not HasUsableEqualToOptimization<SimpleClassWithoutComparisonOperators> ());
-                static_assert (not HasEq<SimpleClassWithoutComparisonOperators> );
-                static_assert (not HasEq<pair<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators>>);
+                static_assert (not IOperatorEq<SimpleClassWithoutComparisonOperators>);
+                static_assert (not IOperatorEq<pair<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators>>);
 
 
 
                 //tmphack static_assert (not HasUsableEqualToOptimization<pair<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators>> ());
                 {
                     using namespace Stroika::Foundation::Database::SQL::ORM;
-                    static_assert (not HasEq<TableProvisioner>);
+                    static_assert (not IOperatorEq<TableProvisioner>);
                     static_assert (not HasUsableEqualToOptimization<TableProvisioner> ());
                 }
             }
             {
                 struct X {};
-                static_assert (not HasEq<X>);
-                static_assert (HasEq<int>);
-                static_assert (not HasEq<pair<X, X>>);
-                static_assert (not HasEq<tuple<X, X>>);
+                static_assert (not IOperatorEq<X>);
+                static_assert (IOperatorEq<int>);
+                static_assert (not IOperatorEq<pair<X, X>>);
+                static_assert (not IOperatorEq<tuple<X, X>>);
             }
             {
                 using Traversal::Iterator;

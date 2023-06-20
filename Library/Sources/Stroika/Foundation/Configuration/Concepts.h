@@ -146,22 +146,22 @@ namespace Stroika::Foundation::Configuration {
     }
 
     /**
-     *  \brief check if the given type T can be compared with operator==, and result is convertible to bool
+     *  \brief Check if the given type T can be compared with operator==, and result is convertible to bool
      * 
      *  \par Example Usage
      *      \code
      *          struct X {};
-     *          static_assert (not HasEq<X>);
-     *          static_assert (HasEq<int>);
-     *          static_assert (not HasEq<pair<X, X>>);
-     *          static_assert (not HasEq<tuple<X, X>>);
+     *          static_assert (not IOperatorEq<X>);
+     *          static_assert (IOperatorEq<int>);
+     *          static_assert (not IOperatorEq<pair<X, X>>);
+     *          static_assert (not IOperatorEq<tuple<X, X>>);
      *      \endcode
      * 
      *  \note see https://stackoverflow.com/questions/76510385/how-to-do-simple-c-concept-has-eq-that-works-with-stdpair-is-stdpair-op/76510752#76510752
      *        for explanation about complexities with pair/tuple
      */
     template <typename T>
-    concept HasEq = Private_::HasEq_v_<T>;
+    concept IOperatorEq = Private_::HasEq_v_<T>;
 
     namespace Private_ {
         template <typename T>
@@ -287,7 +287,7 @@ namespace Stroika::Foundation::Configuration {
     template <typename T>
     constexpr bool HasUsableEqualToOptimization ()
     {
-        if constexpr (HasEq<T>) {
+        if constexpr (IOperatorEq<T>) {
             struct EqualToEmptyTester_ : equal_to<T> {
                 int a;
             };
@@ -374,17 +374,17 @@ namespace Stroika::Foundation::Configuration {
     }
 
     template <typename T>
-    [[deprecated ("Since Stroika v3.0d1, use HasEq (cuz in C++20 basically same) concept")]] constexpr inline bool has_neq_v =
+    [[deprecated ("Since Stroika v3.0d1, use IOperatorEq (cuz in C++20 basically same) concept")]] constexpr inline bool has_neq_v =
         is_detected_v<Private_::has_neq_t, T>;
     template <typename T, typename U>
-    [[deprecated ("Since Stroika v3.0d1, use HasEq (cuz in C++20 basically same) concept")]] constexpr inline bool has_neq_v<std::pair<T, U>> =
+    [[deprecated ("Since Stroika v3.0d1, use IOperatorEq (cuz in C++20 basically same) concept")]] constexpr inline bool has_neq_v<std::pair<T, U>> =
         has_neq_v<T> and has_neq_v<U>;
     template <typename... Ts>
-    [[deprecated ("Since Stroika v3.0d1, use HasEq (cuz in C++20 basically same) concept")]] constexpr inline bool has_neq_v<std::tuple<Ts...>> =
+    [[deprecated ("Since Stroika v3.0d1, use IOperatorEq (cuz in C++20 basically same) concept")]] constexpr inline bool has_neq_v<std::tuple<Ts...>> =
         (has_neq_v<Ts> and ...);
 
     template <typename T>
-    [[deprecated ("Since Stroika v3.0d1, use HasEq concept")]] constexpr inline bool has_eq_v = HasEq<T>;
+    [[deprecated ("Since Stroika v3.0d1, use IOperatorEq concept")]] constexpr inline bool has_eq_v = IOperatorEq<T>;
 
     template <typename T>
     [[deprecated ("Since Stroika v3.0d1, use HasLt concept")]] constexpr inline bool has_lt_v = HasLt<T>;
@@ -394,7 +394,7 @@ namespace Stroika::Foundation::Configuration {
     template <typename T>
     [[deprecated ("Since Stroika v3.0d1, use https://en.cppreference.com/w/cpp/concepts/equality_comparable")]] constexpr bool EqualityComparable ()
     {
-        return HasEq<T>;
+        return IOperatorEq<T>;
     }
 
     template <typename T>

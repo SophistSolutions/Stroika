@@ -91,7 +91,7 @@ namespace Stroika::Foundation::Common {
     }
     template <typename KEY_TYPE, typename VALUE_TYPE>
     constexpr inline bool KeyValuePair<KEY_TYPE, VALUE_TYPE>::operator== (const KeyValuePair& rhs) const
-        requires (Configuration::HasEq<KEY_TYPE> and Configuration::HasEq<VALUE_TYPE>)
+        requires (Configuration::IOperatorEq<KEY_TYPE> and Configuration::IOperatorEq<VALUE_TYPE>)
     {
         return fKey == rhs.fKey and fValue == rhs.fValue;
     }
