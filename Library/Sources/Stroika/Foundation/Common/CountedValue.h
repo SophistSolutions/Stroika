@@ -66,7 +66,7 @@ namespace Stroika::Foundation::Common {
         /**
          */
         constexpr auto operator<=> (const CountedValue&) const
-            requires (Configuration::has_spaceship_v<VALUE_TYPE>);
+            requires (Configuration::HasSpaceship<VALUE_TYPE>);
 
     public:
         /**

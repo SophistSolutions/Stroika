@@ -81,7 +81,7 @@ namespace Stroika::Foundation::Common {
     }
     template <typename KEY_TYPE, typename VALUE_TYPE>
     constexpr inline auto KeyValuePair<KEY_TYPE, VALUE_TYPE>::operator<=> (const KeyValuePair& rhs) const
-        requires (Configuration::has_spaceship_v<KEY_TYPE> and Configuration::has_spaceship_v<VALUE_TYPE>)
+        requires (Configuration::HasSpaceship<KEY_TYPE> and Configuration::HasSpaceship<VALUE_TYPE>)
     {
         auto cmp = fKey <=> rhs.fKey;
         if (cmp != strong_ordering::equal) {

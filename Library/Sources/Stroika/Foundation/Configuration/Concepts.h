@@ -126,19 +126,7 @@ namespace Stroika::Foundation::Configuration {
         template <typename T>
         using is_callable = conditional_t<is_class_v<T>, is_callable_impl_<T>, false_type>;
 
-        // HasEq_v_
-        template <typename T>
-        concept HasEq_ = requires (T t) {
-                             {
-                                 t == t
-                                 } -> std::convertible_to<bool>;
-                         };
-        template <typename T>
-        constexpr inline bool HasEq_v_ = HasEq_<T>;
-        template <typename T, typename U>
-        constexpr inline bool HasEq_v_<std::pair<T, U>> = HasEq_v_<T> and HasEq_v_<U>;
-        template <typename... Ts>
-        constexpr inline bool HasEq_v_<std::tuple<Ts...>> = (HasEq_v_<Ts> and ...);
+       
     }
 
     /**
@@ -186,6 +174,21 @@ namespace Stroika::Foundation::Configuration {
         };
     };
 
+    namespace Private_ {
+        template <typename T>
+        concept HasEq_ = requires (T t) {
+                             {
+                                 t == t
+                                 } -> std::convertible_to<bool>;
+                         };
+        template <typename T>
+        constexpr inline bool HasEq_v_ = HasEq_<T>;
+        template <typename T, typename U>
+        constexpr inline bool HasEq_v_<std::pair<T, U>> = HasEq_v_<T> and HasEq_v_<U>;
+        template <typename... Ts>
+        constexpr inline bool HasEq_v_<std::tuple<Ts...>> = (HasEq_v_<Ts> and ...);    
+    }
+
     /**
      *  \brief check if the given type T can be compared with operator==, and result is convertible to bool
      * 
@@ -203,27 +206,6 @@ namespace Stroika::Foundation::Configuration {
      */
     template <typename T>
     concept HasEq = Private_::HasEq_v_<T>;
-
-    /**
-     *  \brief check if the given type T can be compared with operator!=, and result is convertible to bool
-     * 
-     *  \par Example Usage
-     *      \code
-     *          if constexpr (has_neq_v<T>) {
-     *              T a{};
-     *              T b{};
-     *              return a != b;
-     *          }
-     *      \endcode
-     * 
-     *  \note see https://stroika.atlassian.net/browse/STK-749 - for why pair/tuple specializations - not sure why STL doesn't do this directly in pair<> template
-     */
-    template <typename T>
-    constexpr inline bool has_neq_v = is_detected_v<Private_::has_neq_t, T>;
-    template <typename T, typename U>
-    constexpr inline bool has_neq_v<std::pair<T, U>> = has_neq_v<T> and has_neq_v<U>;
-    template <typename... Ts>
-    constexpr inline bool has_neq_v<std::tuple<Ts...>> = (has_neq_v<Ts> and ...);
 
     /**
      *  \brief check if the given type T can be compared with operator<, and result is convertible to bool
@@ -293,7 +275,7 @@ namespace Stroika::Foundation::Configuration {
      * 
      *  \par Example Usage
      *      \code
-     *          if constexpr (has_spaceship_v<T>) {
+     *          if constexpr (HasSpaceship<T>) {
      *              T a{};
      *              T b{};
      *              return a <=> b;
@@ -303,11 +285,19 @@ namespace Stroika::Foundation::Configuration {
      *  \note see https://stroika.atlassian.net/browse/STK-749 - for why pair/tuple specializations - not sure why STL doesn't do this directly in pair<> template
      */
     template <typename T>
-    constexpr inline bool has_spaceship_v = is_detected_v<Private_::has_spaceship_t, T>;
-    template <typename T, typename U>
-    constexpr inline bool has_spaceship_v<std::pair<T, U>> = has_spaceship_v<T> and has_spaceship_v<U>;
-    template <typename... Ts>
-    constexpr inline bool has_spaceship_v<std::tuple<Ts...>> = (has_spaceship_v<Ts> and ...);
+    concept HasSpaceship = requires (T t) {
+                               {
+                                   t <=> t
+                                   } -> std::convertible_to<partial_ordering>;
+                           } or requires (T t) {
+                                    {
+                                        t <=> t
+                                        } -> std::convertible_to<strong_ordering>;
+                                } or requires (T t) {
+                                         {
+                                             t <=> t
+                                             } -> std::convertible_to<weak_ordering>;
+                                     };
 
     /**
      *  \brief check if the given type T has a const size() method which can be called to return a size_t.
@@ -425,6 +415,16 @@ namespace Stroika::Foundation::Configuration {
     ////////////////////// DEPREACTED BELOW //////////////////////
 
     template <typename T>
+    [[deprecated ("Since Stroika v3.0d1, use HasEq (cuz in C++20 basically same) concept")]] constexpr inline bool has_neq_v =
+        is_detected_v<Private_::has_neq_t, T>;
+    template <typename T, typename U>
+    [[deprecated ("Since Stroika v3.0d1, use HasEq (cuz in C++20 basically same) concept")]] constexpr inline bool has_neq_v<std::pair<T, U>> =
+        has_neq_v<T> and has_neq_v<U>;
+    template <typename... Ts>
+    [[deprecated ("Since Stroika v3.0d1, use HasEq (cuz in C++20 basically same) concept")]] constexpr inline bool has_neq_v<std::tuple<Ts...>> =
+        (has_neq_v<Ts> and ...);
+
+    template <typename T>
     [[deprecated ("Since Stroika v3.0d1, use HasEq concept")]] constexpr inline bool has_eq_v = HasEq<T>;
 
     template <typename T>
@@ -476,6 +476,15 @@ namespace Stroika::Foundation::Configuration {
         }
         return false;
     }
+    template <typename T>
+    [[deprecated ("Since Stroika v3.0d1, use HasSpaceship")]] constexpr inline bool has_spaceship_v = HasSpaceship<T>;
+
+    //  template <typename T>
+    //constexpr inline bool has_spaceship_v = is_detected_v<Private_::has_spaceship_t, T>;
+    //template <typename T, typename U>
+    //constexpr inline bool has_spaceship_v<std::pair<T, U>> = has_spaceship_v<T> and has_spaceship_v<U>;
+    // template <typename... Ts>
+    //constexpr inline bool has_spaceship_v<std::tuple<Ts...>> = (has_spaceship_v<Ts> and ...);
 
 }
 

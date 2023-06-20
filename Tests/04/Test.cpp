@@ -159,8 +159,6 @@ namespace {
             {
                 static_assert (HasEq<int>);
                 static_assert (not HasEq<SimpleClassWithoutComparisonOperators>);
-                static_assert (has_neq_v<int>);
-                static_assert (not has_neq_v<SimpleClassWithoutComparisonOperators>);
                 static_assert (has_lt_v<int>);
                 static_assert (not has_lt_v<SimpleClassWithoutComparisonOperators>);
                 static_assert (has_minus_v<int>);
