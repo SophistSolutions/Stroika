@@ -14,7 +14,6 @@
 #include "../Configuration/Common.h"
 
 #include "../Memory/SharedByValue.h"
-#include "../Memory/SharedPtr.h"
 
 /**
  *

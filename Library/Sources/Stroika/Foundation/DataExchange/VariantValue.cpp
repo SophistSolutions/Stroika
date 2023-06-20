@@ -90,8 +90,8 @@ struct VariantValue::TIRep_ final : VariantValue::IRep_, public Memory::UseBlock
  ******************************** VariantValue **********************************
  ********************************************************************************
  */
-const VariantValue::SharedRepImpl_<VariantValue::IRep_> VariantValue::kFalseRep_ = MakeSharedPtr_<TIRep_<bool>> (false);
-const VariantValue::SharedRepImpl_<VariantValue::IRep_> VariantValue::kTrueRep_  = MakeSharedPtr_<TIRep_<bool>> (true);
+const shared_ptr<VariantValue::IRep_>     VariantValue::kFalseRep_ = MakeSharedPtr_<TIRep_<bool>> (false);
+const shared_ptr<VariantValue::IRep_> VariantValue::kTrueRep_  = MakeSharedPtr_<TIRep_<bool>> (true);
 
 VariantValue::VariantValue (bool val)
     : fVal_{val ? kTrueRep_ : kFalseRep_}

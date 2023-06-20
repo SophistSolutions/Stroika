@@ -78,12 +78,9 @@ namespace Stroika::Foundation::Memory {
      ********************************************************************************
      */
     template <typename T, typename... ARGS_TYPE>
-    inline BLOB::_SharedRepImpl<T> BLOB::_MakeSharedPtr (ARGS_TYPE&&... args)
+    inline shared_ptr<T> BLOB::_MakeSharedPtr (ARGS_TYPE&&... args)
     {
-        if constexpr (kBLOBUsesStroikaSharedPtr) {
-            return Memory::MakeSharedPtr<T> (forward<ARGS_TYPE> (args)...);
-        }
-        else if constexpr (Memory::UsesBlockAllocation<T> ()) {
+        if constexpr (Memory::UsesBlockAllocation<T> ()) {
             // almost as good, but still does two allocs, above does one shared alloc of the block allocated controlblock+T
             //return shared_ptr<T> (new T {forward<ARGS_TYPE> (args)...});
             return allocate_shared<T> (Memory::BlockAllocator<T>{}, forward<ARGS_TYPE> (args)...);
@@ -119,7 +116,7 @@ namespace Stroika::Foundation::Memory {
     {
     }
     inline BLOB::BLOB (span<const byte> s)
-        : fRep_{s.empty () ? _SharedIRep{_MakeSharedPtr<ZeroRep_> ()} : _SharedIRep{_MakeSharedPtr<BasicRep_> (s)}}
+        : fRep_{s.empty () ? shared_ptr<_IRep>{_MakeSharedPtr<ZeroRep_> ()} : shared_ptr<_IRep>{_MakeSharedPtr<BasicRep_> (s)}}
     {
         Ensure (s.size () == size ());
     }
@@ -141,11 +138,11 @@ namespace Stroika::Foundation::Memory {
         : fRep_{_MakeSharedPtr<BasicRep_> (list2Concatenate)}
     {
     }
-    inline BLOB::BLOB (const _SharedIRep& rep)
+    inline BLOB::BLOB (const shared_ptr<_IRep>& rep)
         : fRep_{rep}
     {
     }
-    inline BLOB::BLOB (_SharedIRep&& rep)
+    inline BLOB::BLOB (shared_ptr<_IRep>&& rep)
         : fRep_{move (rep)}
     {
     }

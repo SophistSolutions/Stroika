@@ -16,6 +16,8 @@
 #include "../Configuration/Concepts.h"
 #include "../Configuration/TypeHints.h"
 #include "../Debug/AssertExternallySynchronizedMutex.h"
+#include "../Execution/Common.h"
+#include "../Memory/BlockAllocated.h"
 #include "../Memory/SharedByValue.h"
 
 #include "Iterator.h"

@@ -161,11 +161,8 @@ namespace {
                 static_assert (not IOperatorEq<SimpleClassWithoutComparisonOperators>);
                 static_assert (IOperatorLt<int>);
                 static_assert (not IOperatorLt<SimpleClassWithoutComparisonOperators>);
-                static_assert (has_minus_v<int>);
-                static_assert (not has_minus_v<SimpleClassWithoutComparisonOperators>);
             }
             {
-                // https://stroika.atlassian.net/browse/STK-749
                 static_assert (HasUsableEqualToOptimization<int> ());
                 static_assert (HasUsableEqualToOptimization<pair<int, int>> ());
                 static_assert (HasUsableEqualToOptimization<SimpleClass> ());

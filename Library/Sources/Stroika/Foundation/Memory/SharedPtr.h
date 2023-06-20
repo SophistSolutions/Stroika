@@ -15,41 +15,17 @@
 
 /**
  *  \file
- *
- *  TODO:
- *      @todo   I THINK should be able todo SharedPtr::Envolpe<> template specialization for
- *              enabled_shared_from_this, which stores and copies only ONE POINTER> That could
- *              make for much faster atomic copies etc (maybe losing the spinlock).
- *
- *              Not totally sure how do this safely, but add to list of things todo cuz it
- *              would probably greatly improvement many important benchmarks, like the
- *              “Test Simple Struct With Strings Filling And Copying”
- *
- *      @todo   See if fDeleteCounter_ can be somehow inferred from other data to save space/copying. It's hard cuz
- *              of the multiple inheritence case (so comparing counter == fPtr not exactly right always).
- *
- *      @todo   See if I can transparently add (optional traits) locker, to make it threadsafe.
- *              (at least copying envelope safe)
- *
- *      @todo   CLEAR DOCS!!! - once we have stuff stable...
- *          o       CAREFULLY writeup differences between this class and shared_ptr<>
- *                  +   I DON'T BELIEVE weak_ptr<T> makes sense, and seems likely to generate bugs in multithreaded
- *                      applications. Maybe I'm missing something. Ask around a bit...
- *                      FOR THE MOST PART.
- *
- *                      There are specific (rare) cases where weak_ptr IS important, and I wnat to find (TODO)
- *                      SOME way to implemnet athat (e.g. PHRDB:: shared DB stuff).
- *
- *          o       BETTER DOCUMENT - USE ShaerdPtrBase stuff in other module
- *          o       Cleanup documentation, especially about the purpose/point, and how to use.
  */
+_DeprecatedFile_ ("Use shared_ptr instead");
 
 namespace Stroika::Foundation::Memory {
 
-    /**
-     *  Common defines for all SharedPtr<T> templates. Probably not a good idea to use this directly (impl detail and subject to change).
-     */
-    struct SharedPtrBase {
+    DISABLE_COMPILER_MSC_WARNING_START (4996);
+    DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
+    DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
+
+    struct [[deprecated ("Since Stroika v3, this is deprecated, and will go away - use shared_ptr")]] SharedPtrBase
+    {
         /**
          * Note - though we COULD use a smaller reference count type (e.g. uint32_t - for 64bit machines).
          */
@@ -69,72 +45,16 @@ namespace Stroika::Foundation::Memory {
     }
 
     template <typename T>
-    class enable_shared_from_this;
+    class [[deprecated ("Since Stroika v3, this is deprecated, and will go away - use shared_ptr")]] enable_shared_from_this;
 
     namespace Private_ {
         template <typename T>
         class Envelope_;
     }
 
-    /**
-     *
-     * SIMILAR TO std::shared_ptr<> with these exceptions/notes:
-     *
-     *       >  Doesnt support weak ptr.
-     *
-     *       >  Emprically appears faster than std::shared_ptr<> (probably due to block
-     *          allocation of envelope and not supporting weak_ptr)
-     *
-     *  This class is for keeping track of a data structure with reference counts,
-     *  and disposing of that structure when the reference count drops to zero.
-     *  Copying one of these Shared<T> just increments the referce count,
-     *  and destroying/overwriting one decrements it.
-     *
-     *  You can have a ptr having a nullptr value, and it can be copied.
-     *  (Implementation detail - the reference count itself is NEVER nil except upon
-     *  failure of alloction of memory in ctor and then only valid op on class is
-     *  destruction). You can access the value with GetPointer () but this is not
-     *  advised - only if it may be legitimately nullptr do you want to do this.
-     *  Generaly just use ptr-> to access the data, and this will do the
-     *  RequireNotNull (POINTER) for you.
-     *
-     *         This class can be enourmously useful in implementing letter/envelope -
-     *    type data structures - see String, or Shapes, for examples.
-     *
-     *
-     *  Example Usage
-     *  <code>
-     *      {
-     *          SharedPtr<int>  p (new int ());
-     *          *p = 3;
-     *          // 'when 'p' goes out of scope - the int will be automatically deleted
-     *      }
-     *  </code>
-     *
-     *  SharedPtr<T> is a simple utility class - very much akin to the C++11 class
-     *  std::shared_ptr<T>. SharedPtr<T> contains the following basic differences:
-     *
-     *  <li>
-     *      There is no std::weak_ptr - or at least if there is - we must document it clearly
-     *      how/why via extra sharedPTR tmeplate arg(to be worked out)
-     *  </li>
-     *  <li>
-     *      There is an extra template T_TRAITS that allows for solving special problems that
-     *      come up with shared_ptr<> - namely recovering the
-     *      'shared' version of 'T' when only given a plain copy of 'T'
-     *  </li>
-     *
-     *  Otherwise, the intention is that they should operate very similarly, and SharedPtr<T>
-     *  should work with most classes that expect shared_ptr<T> (so long
-     *  as they are templated, and not looking for the particular type name 'shared_ptr').
-     *
-     *  TODO: CHECK EXACT API DIFFERENCES WITH shared_ptr - BUT - they should be reasonably small -
-     *  neglecting the weak_ptr stuff
-     *
-     *  @see    @SharedPtrBase module for how to do much FANCIER SharedPtr<> usage
-     */
     template <typename T>
-    class SharedPtr : public SharedPtrBase {
+    class [[deprecated ("Since Stroika v3, this is deprecated, and will go away - use shared_ptr")]] SharedPtr : public SharedPtrBase
+    {
     public:
         using element_type = T;
 
@@ -147,22 +67,22 @@ namespace Stroika::Foundation::Memory {
         SharedPtr () noexcept;
         SharedPtr (nullptr_t) noexcept;
         template <typename T2, enable_if_t<is_convertible_v<T2*, T*>>* = nullptr>
-        explicit SharedPtr (T2* from);
+        explicit SharedPtr (T2 * from);
         SharedPtr (const SharedPtr& from) noexcept;
-        SharedPtr (SharedPtr&& from) noexcept;
+        SharedPtr (SharedPtr && from) noexcept;
         template <typename T2, enable_if_t<is_convertible_v<T2*, T*>>* = nullptr>
         SharedPtr (const SharedPtr<T2>& from) noexcept;
         template <typename T2, enable_if_t<is_convertible_v<T2*, T*>>* = nullptr>
-        SharedPtr (SharedPtr<T2>&& from) noexcept;
+        SharedPtr (SharedPtr<T2> && from) noexcept;
 
     private:
         explicit SharedPtr (const Envelope_& from) noexcept;
 
     private:
         template <typename T2>
-        static Envelope_ mkEnvelope_ (T2* from, enable_if_t<is_convertible_v<T2*, Private_::ReferenceCounterContainerType_*>>* = nullptr);
+        static Envelope_ mkEnvelope_ (T2 * from, enable_if_t<is_convertible_v<T2*, Private_::ReferenceCounterContainerType_*>>* = nullptr);
         template <typename T2>
-        static Envelope_ mkEnvelope_ (T2* from, enable_if_t<!is_convertible_v<T2*, Private_::ReferenceCounterContainerType_*>>* = nullptr);
+        static Envelope_ mkEnvelope_ (T2 * from, enable_if_t<!is_convertible_v<T2*, Private_::ReferenceCounterContainerType_*>>* = nullptr);
 
     public:
         nonvirtual SharedPtr& operator= (const SharedPtr& rhs) noexcept;
@@ -244,7 +164,7 @@ namespace Stroika::Foundation::Memory {
     public:
         /**
          */
-        nonvirtual void swap (SharedPtr& rhs);
+        nonvirtual void swap (SharedPtr & rhs);
 
     public:
         /**
@@ -406,6 +326,10 @@ namespace std {
     void atomic_store_explicit (Stroika::Foundation::Memory::SharedPtr<T>* storeTo, Stroika::Foundation::Memory::SharedPtr<T> o, memory_order);
 
 }
+
+DISABLE_COMPILER_MSC_WARNING_END (4996);
+DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
+DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
 
 #endif /*_Stroika_Foundation_Memory_SharedPtr_h_*/
 

@@ -26,12 +26,9 @@ namespace Stroika::Foundation::DataExchange {
      ********************************************************************************
      */
     template <typename T, typename... ARGS_TYPE>
-    inline VariantValue::SharedRepImpl_<T> VariantValue::MakeSharedPtr_ (ARGS_TYPE&&... args)
+    inline shared_ptr<T> VariantValue::MakeSharedPtr_ (ARGS_TYPE&&... args)
     {
-        if constexpr (kVariantValueUsesStroikaSharedPtr_) {
-            return Memory::MakeSharedPtr<T> (forward<ARGS_TYPE> (args)...);
-        }
-        else if constexpr (Memory::UsesBlockAllocation<T> ()) {
+        if constexpr (Memory::UsesBlockAllocation<T> ()) {
             // almost as good, but still does two allocs, above does one shared alloc of the block allocated controlblock+T
             //return shared_ptr<T> (new T (forward<ARGS_TYPE> (args)...));
             return allocate_shared<T> (Memory::BlockAllocator<T>{}, forward<ARGS_TYPE> (args)...);

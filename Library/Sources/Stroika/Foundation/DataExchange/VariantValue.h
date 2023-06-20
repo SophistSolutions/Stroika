@@ -20,7 +20,6 @@
 #include "../Containers/Mapping.h"
 #include "../Containers/Sequence.h"
 #include "../Memory/BLOB.h"
-#include "../Memory/SharedPtr.h"
 #include "../Time/DateTime.h"
 
 /**
@@ -37,15 +36,6 @@ namespace Stroika::Foundation::DataExchange {
     using Containers::Sequence;
     using Time::Date;
     using Time::DateTime;
-
-    /**
-     *  \def kVariantValueUsesStroikaSharedPtr_
-     *      If true, use Stroika's SharedPtr<> in place of std::shared_ptr<>. This is an
-     *      internal implementation detail, and may go away as an option.
-     *
-     *      This defaults to @see Memory::kSharedPtr_IsFasterThan_shared_ptr
-     */
-    constexpr bool kVariantValueUsesStroikaSharedPtr_ = Memory::kSharedPtr_IsFasterThan_shared_ptr;
 
     /**
      * \brief   Simple variant-value object, with (variant) basic types analagous to a value in any weakly typed language (like JavaScript, Lisp, etc)
@@ -398,25 +388,21 @@ namespace Stroika::Foundation::DataExchange {
         struct IRep_;
 
     private:
-        template <typename T>
-        using SharedRepImpl_ = conditional_t<kVariantValueUsesStroikaSharedPtr_, Memory::SharedPtr<T>, shared_ptr<T>>;
-
-    private:
         /**
          */
         template <typename T, typename... ARGS_TYPE>
-        static SharedRepImpl_<T> MakeSharedPtr_ (ARGS_TYPE&&... args);
+        static shared_ptr<T> MakeSharedPtr_ (ARGS_TYPE&&... args);
 
     private:
-        SharedRepImpl_<IRep_> fVal_;
+        shared_ptr<IRep_> fVal_;
 
     private:
         template <typename T>
         struct TIRep_;
 
     private:
-        static const SharedRepImpl_<IRep_> kFalseRep_; // avoid even cheap needless allocations
-        static const SharedRepImpl_<IRep_> kTrueRep_;
+        static const shared_ptr<IRep_> kFalseRep_; // avoid even cheap needless allocations
+        static const shared_ptr<IRep_> kTrueRep_;
     };
 
     template <>

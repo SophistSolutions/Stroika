@@ -15,7 +15,6 @@
 #include "../Configuration/Concepts.h"
 #include "../Debug/AssertExternallySynchronizedMutex.h"
 #include "../Memory/Common.h"
-#include "../Memory/SharedPtr.h"
 #include "../Streams/InputStream.h" // maybe bad - leads to circularity problems but hard to pre-declare InputStream
 
 /**
@@ -58,14 +57,6 @@ namespace Stroika::Foundation::Characters {
 
 namespace Stroika::Foundation::Memory {
 
-    /**
-     *      If kBLOBUsesStroikaSharedPtr is true, use Stroika's SharedPtr<> in place of shared_ptr<>. This is an
-     *      internal implementaiton detail, and may go away as an option.
-     *
-     *      This defaults to @see Memory::kSharedPtr_IsFasterThan_shared_ptr
-     */
-    constexpr bool kBLOBUsesStroikaSharedPtr = Memory::kSharedPtr_IsFasterThan_shared_ptr;
-
     using namespace std;
     using std::byte;
 
@@ -97,19 +88,8 @@ namespace Stroika::Foundation::Memory {
     protected:
         /**
          */
-        template <typename T>
-        using _SharedRepImpl = conditional_t<kBLOBUsesStroikaSharedPtr, Memory::SharedPtr<T>, shared_ptr<T>>;
-
-    protected:
-        /**
-         */
-        using _SharedIRep = _SharedRepImpl<_IRep>;
-
-    protected:
-        /**
-         */
         template <typename T, typename... ARGS_TYPE>
-        static _SharedRepImpl<T> _MakeSharedPtr (ARGS_TYPE&&... args);
+        static shared_ptr<T> _MakeSharedPtr (ARGS_TYPE&&... args);
 
     public:
         /**
@@ -139,8 +119,8 @@ namespace Stroika::Foundation::Memory {
         /**
          * Subclass BLOB, and provider your own 'rep' type, to create more efficient storage.
          */
-        explicit BLOB (const _SharedIRep& rep);
-        explicit BLOB (_SharedIRep&& rep);
+        explicit BLOB (const shared_ptr<_IRep>& rep);
+        explicit BLOB (shared_ptr<_IRep>&& rep);
 
     public:
         /**
@@ -368,7 +348,7 @@ namespace Stroika::Foundation::Memory {
 
     private:
         [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
-        _SharedIRep                                                    fRep_;
+        shared_ptr<_IRep>                                              fRep_;
     };
 
     template <>
