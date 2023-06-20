@@ -15,32 +15,16 @@
 #include "ConceptsBase.h"
 
 /*
- *
- *  \version    <a href="Code-Status.md#Alpha">Alpha</a>
- *
- * TODO:
- *      @todo   Maybe put concepts in sub-namespace Concept {} - and then list them out here? Instead of the _ stuff?
+ *  \version    <a href="Code-Status.md#Beta">Beta</a>
  */
 
 namespace Stroika::Foundation::Configuration {
 
     namespace Private_ {
-        // @todo AFTER WE REMOVE DEPRECATED FUNCTIONS BELOW, CAN REMOVE A BUNCH OF THESE AS WELL
-
-        template <typename T>
-        using has_value_type_t = typename T::value_type;
-        template <typename T>
-        using has_eq_t = decltype (static_cast<bool> (std::declval<T> () == std::declval<T> ()));
-        template <typename T>
-        using has_neq_t = decltype (static_cast<bool> (std::declval<T> () != std::declval<T> ()));
-        template <typename T>
-        using has_lt_t = decltype (static_cast<bool> (std::declval<T> () < std::declval<T> ()));
         template <typename T>
         using has_minus_t = decltype (std::declval<T> () - std::declval<T> ());
         template <typename T>
         using has_plus_t = decltype (std::declval<T> () + std::declval<T> ());
-        template <typename T>
-        using has_spaceship_t = decltype (std::declval<T> () <=> std::declval<T> ());
         // Subtle - but begin () doesn't work with rvalues, so must use declval<T&> -- LGP 2021-11-26
         template <typename T>
         using has_beginend_t = decltype (static_cast<bool> (begin (declval<T&> ()) != end (declval<T&> ())));
@@ -99,34 +83,6 @@ namespace Stroika::Foundation::Configuration {
             static bool const value = test<From, To> (0);
         };
 
-        // From https://stackoverflow.com/questions/15393938/find-out-if-a-c-object-is-callable
-        template <typename T>
-        struct is_callable_impl_ {
-        private:
-            typedef char (&yes)[1];
-            typedef char (&no)[2];
-
-            struct Fallback {
-                void operator() ();
-            };
-            struct Derived : T, Fallback {};
-
-            template <typename U, U>
-            struct Check;
-
-            template <typename>
-            static yes test (...);
-
-            template <typename C>
-            static no test (Check<void (Fallback::*) (), &C::operator()>*);
-
-        public:
-            static const bool value = sizeof (test<Derived> (0)) == sizeof (yes);
-        };
-        template <typename T>
-        using is_callable = conditional_t<is_class_v<T>, is_callable_impl_<T>, false_type>;
-
-       
     }
 
     /**
@@ -186,7 +142,7 @@ namespace Stroika::Foundation::Configuration {
         template <typename T, typename U>
         constexpr inline bool HasEq_v_<std::pair<T, U>> = HasEq_v_<T> and HasEq_v_<U>;
         template <typename... Ts>
-        constexpr inline bool HasEq_v_<std::tuple<Ts...>> = (HasEq_v_<Ts> and ...);    
+        constexpr inline bool HasEq_v_<std::tuple<Ts...>> = (HasEq_v_<Ts> and ...);
     }
 
     /**
@@ -207,26 +163,38 @@ namespace Stroika::Foundation::Configuration {
     template <typename T>
     concept HasEq = Private_::HasEq_v_<T>;
 
+    namespace Private_ {
+        template <typename T>
+        concept HasLtBase_ = requires (T t) {
+                                 {
+                                     t < t
+                                     } -> std::convertible_to<bool>;
+                             };
+        template <typename T>
+        constexpr inline bool HasLt_v_ = HasLtBase_<T>;
+        template <typename T, typename U>
+        constexpr inline bool HasLt_v_<std::pair<T, U>> = HasLt_v_<T> and HasLt_v_<U>;
+        template <typename... Ts>
+        constexpr inline bool HasLt_v_<std::tuple<Ts...>> = (HasLt_v_<Ts> and ...);
+    }
+
     /**
      *  \brief check if the given type T can be compared with operator<, and result is convertible to bool
      * 
      *  \par Example Usage
      *      \code
-     *          if constexpr (has_lt_v<T>) {
+     *          if constexpr (HasLt<T>) {
      *              T a{};
      *              T b{};
      *              return a < b;
      *          }
      *      \endcode
      * 
-     *  \note see https://stroika.atlassian.net/browse/STK-749 - for why pair/tuple specializations - not sure why STL doesn't do this directly in pair<> template
+     *  \note see https://stackoverflow.com/questions/76510385/how-to-do-simple-c-concept-has-eq-that-works-with-stdpair-is-stdpair-op/76510752#76510752
+     *        for explanation about complexities with pair/tuple
      */
     template <typename T>
-    constexpr inline bool has_lt_v = is_detected_v<Private_::has_lt_t, T>;
-    template <typename T, typename U>
-    constexpr inline bool has_lt_v<std::pair<T, U>> = has_lt_v<T> and has_lt_v<U>;
-    template <typename... Ts>
-    constexpr inline bool has_lt_v<std::tuple<Ts...>> = (has_lt_v<Ts> and ...);
+    concept HasLt = Private_::HasLt_v_<T>;
 
     /**
      *  \brief check if the given type T can be combined with a second T using operator-
@@ -250,27 +218,6 @@ namespace Stroika::Foundation::Configuration {
     constexpr inline bool has_minus_v<std::tuple<Ts...>> = (has_minus_v<Ts> and ...);
 
     /**
-     *  \brief check if the given type T can be combined with a second T using operator+
-     * 
-     *  \par Example Usage
-     *      \code
-     *          if constexpr (has_plus_v<T>) {
-     *              T a{};
-     *              T b{};
-     *              return a + b;
-     *          }
-     *      \endcode
-     * 
-     *  \note see https://stroika.atlassian.net/browse/STK-749 - for why pair/tuple specializations - not sure why STL doesn't do this directly in pair<> template
-     */
-    template <typename T>
-    constexpr inline bool has_plus_v = is_detected_v<Private_::has_plus_t, T>;
-    template <typename T, typename U>
-    constexpr inline bool has_plus_v<std::pair<T, U>> = has_plus_v<T> and has_plus_v<U>;
-    template <typename... Ts>
-    constexpr inline bool has_plus_v<std::tuple<Ts...>> = (has_plus_v<Ts> and ...);
-
-    /**
      *  \brief check if the given type T can be compared with operator<=>
      * 
      *  \par Example Usage
@@ -281,8 +228,6 @@ namespace Stroika::Foundation::Configuration {
      *              return a <=> b;
      *          }
      *      \endcode
-     * 
-     *  \note see https://stroika.atlassian.net/browse/STK-749 - for why pair/tuple specializations - not sure why STL doesn't do this directly in pair<> template
      */
     template <typename T>
     concept HasSpaceship = requires (T t) {
@@ -415,6 +360,20 @@ namespace Stroika::Foundation::Configuration {
     ////////////////////// DEPREACTED BELOW //////////////////////
 
     template <typename T>
+    [[deprecated ("Since Stroika v3.0d1, use require expression")]] constexpr inline bool has_plus_v = requires (T t) {
+                                                                                                           {
+                                                                                                               t + t
+                                                                                                           };
+                                                                                                       };
+    namespace Private_ {
+        // @todo AFTER WE REMOVE DEPRECATED FUNCTIONS BELOW, CAN REMOVE A BUNCH OF THESE AS WELL
+
+        template <typename T>
+        using has_neq_t = decltype (static_cast<bool> (std::declval<T> () != std::declval<T> ()));
+
+    }
+
+    template <typename T>
     [[deprecated ("Since Stroika v3.0d1, use HasEq (cuz in C++20 basically same) concept")]] constexpr inline bool has_neq_v =
         is_detected_v<Private_::has_neq_t, T>;
     template <typename T, typename U>
@@ -428,8 +387,10 @@ namespace Stroika::Foundation::Configuration {
     [[deprecated ("Since Stroika v3.0d1, use HasEq concept")]] constexpr inline bool has_eq_v = HasEq<T>;
 
     template <typename T>
-    [[deprecated ("Since Stroika v3.0d1, use HasValueType concept")]] constexpr inline bool has_value_type_v =
-        is_detected_v<Private_::has_value_type_t, T>;
+    [[deprecated ("Since Stroika v3.0d1, use HasLt concept")]] constexpr inline bool has_lt_v = HasLt<T>;
+
+    template <typename T>
+    [[deprecated ("Since Stroika v3.0d1, use HasValueType concept")]] constexpr inline bool has_value_type_v = HasValueType<T>;
     template <typename T>
     [[deprecated ("Since Stroika v3.0d1, use https://en.cppreference.com/w/cpp/concepts/equality_comparable")]] constexpr bool EqualityComparable ()
     {
@@ -442,6 +403,35 @@ namespace Stroika::Foundation::Configuration {
     LessThanComparable ()
     {
         return has_lt_v<T>;
+    }
+
+    namespace Private_ {
+        // From https://stackoverflow.com/questions/15393938/find-out-if-a-c-object-is-callable
+        template <typename T>
+        struct is_callable_impl_ {
+        private:
+            typedef char (&yes)[1];
+            typedef char (&no)[2];
+
+            struct Fallback {
+                void operator() ();
+            };
+            struct Derived : T, Fallback {};
+
+            template <typename U, U>
+            struct Check;
+
+            template <typename>
+            static yes test (...);
+
+            template <typename C>
+            static no test (Check<void (Fallback::*) (), &C::operator()>*);
+
+        public:
+            static const bool value = sizeof (test<Derived> (0)) == sizeof (yes);
+        };
+        template <typename T>
+        using is_callable = conditional_t<is_class_v<T>, is_callable_impl_<T>, false_type>;
     }
     template <typename T>
     [[deprecated ("Since Stroika v3.0d1, use https://en.cppreference.com/w/cpp/concepts/invocable")]] constexpr bool is_callable_v =
@@ -478,13 +468,6 @@ namespace Stroika::Foundation::Configuration {
     }
     template <typename T>
     [[deprecated ("Since Stroika v3.0d1, use HasSpaceship")]] constexpr inline bool has_spaceship_v = HasSpaceship<T>;
-
-    //  template <typename T>
-    //constexpr inline bool has_spaceship_v = is_detected_v<Private_::has_spaceship_t, T>;
-    //template <typename T, typename U>
-    //constexpr inline bool has_spaceship_v<std::pair<T, U>> = has_spaceship_v<T> and has_spaceship_v<U>;
-    // template <typename... Ts>
-    //constexpr inline bool has_spaceship_v<std::tuple<Ts...>> = (has_spaceship_v<Ts> and ...);
 
 }
 

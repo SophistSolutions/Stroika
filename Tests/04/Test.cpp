@@ -159,12 +159,10 @@ namespace {
             {
                 static_assert (HasEq<int>);
                 static_assert (not HasEq<SimpleClassWithoutComparisonOperators>);
-                static_assert (has_lt_v<int>);
-                static_assert (not has_lt_v<SimpleClassWithoutComparisonOperators>);
+                static_assert (HasLt<int>);
+                static_assert (not HasLt<SimpleClassWithoutComparisonOperators>);
                 static_assert (has_minus_v<int>);
                 static_assert (not has_minus_v<SimpleClassWithoutComparisonOperators>);
-                static_assert (has_plus_v<int>);
-                static_assert (has_plus_v<SimpleClassWithoutComparisonOperators>);
             }
             {
                 // https://stroika.atlassian.net/browse/STK-749

@@ -45,7 +45,7 @@ namespace Stroika::Foundation::Containers::Factory {
                     return Concrete::Mapping_stdhashmap<KEY_TYPE, VALUE_TYPE>{};
                 };
             }
-            else if constexpr (is_same_v<KEY_EQUALS_COMPARER, equal_to<KEY_TYPE>> and Configuration::has_lt_v<KEY_TYPE>) {
+            else if constexpr (is_same_v<KEY_EQUALS_COMPARER, equal_to<KEY_TYPE>> and Configuration::HasLt<KEY_TYPE>) {
                 return [] ([[maybe_unused]] const KEY_EQUALS_COMPARER& keyEqualsComparer) {
                     return Concrete::Mapping_stdmap<KEY_TYPE, VALUE_TYPE>{};
                 };
