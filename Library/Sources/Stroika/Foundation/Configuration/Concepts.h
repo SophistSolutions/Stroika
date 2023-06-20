@@ -146,7 +146,7 @@ namespace Stroika::Foundation::Configuration {
     }
 
     /**
-     *  \brief Check if the given type T can be compared with operator==, and result is convertible to bool
+     *  \brief Concept checks if the given type T can be compared with operator==, and result is convertible to bool
      * 
      *  \par Example Usage
      *      \code
@@ -197,7 +197,7 @@ namespace Stroika::Foundation::Configuration {
     concept IOperatorLt = Private_::HasLt_v_<T>;
 
     /**
-     *  \brief check if the given type T can be compared with operator<=>
+     *  \brief Concept checks if the given type T can be compared with operator<=>, returning some appropriate ordering
      * 
      *  \par Example Usage
      *      \code
@@ -207,6 +207,8 @@ namespace Stroika::Foundation::Configuration {
      *              return a <=> b;
      *          }
      *      \endcode
+     * 
+     *  @todo CONSIDER - SHOULD THIS TAKE ARGUMENT OF THE ORDERING TO EXPECT? MAYBE BETTER
      */
     template <typename T>
     concept IOperatorSpaceship = requires (T t) {
@@ -224,22 +226,22 @@ namespace Stroika::Foundation::Configuration {
                                            };
 
     /**
-     *  \brief concept checks if the given type T has a const size() method which can be called to return a size_t.
+     *  \brief Concept checks if the given type T has a const size() method which can be called to return a size_t.
      * 
      *  \par Example Usage
      *      \code
-     *          if constexpr (IHasSize<T>) {
+     *          if constexpr (IHasSizeMethod<T>) {
      *              T a{};
      *              return a.size ();
      *          }
      *      \endcode
      */
     template <typename T>
-    concept IHasSize = requires (const T& t) {
-                           {
-                               t.size ()
-                               } -> std::convertible_to<size_t>;
-                       };
+    concept IHasSizeMethod = requires (const T& t) {
+                                 {
+                                     t.size ()
+                                     } -> std::convertible_to<size_t>;
+                             };
 
     /**
      *  Check if has begin/end methods (not for subclassing Traversal::Iterable<>), and if result of *begin () is convertible to T.
@@ -265,7 +267,7 @@ namespace Stroika::Foundation::Configuration {
     }
 
     /**
-     *  \brief check if the given type T can be compared with operator==, and result is convertible to bool
+     *  \brief Concept checks if the given type T has a value_type (type) member
      * 
      *  \par Example Usage
      *      \code
@@ -273,8 +275,6 @@ namespace Stroika::Foundation::Configuration {
      *              typename T::value_type x;
      *          }
      *      \endcode
-     * 
-     *  Issue is that it cannot be usefully defined (as nearly as I can tell in C++17).
      * 
      *  \note this replaces Stroika v2.1 constexpr inline bool has_value_type_v template variable
      */
@@ -342,8 +342,8 @@ namespace Stroika::Foundation::Configuration {
 
     }
     template <typename T>
-    //    [[deprecated ("Since Stroika v3.0d1, use IHasSize")]] constexpr inline bool has_size_v = is_detected_v<Private_::has_size_t, T>;
-    [[deprecated ("Since Stroika v3.0d1, use IHasSize")]] constexpr inline bool has_size_v = IHasSize<T>;
+    //    [[deprecated ("Since Stroika v3.0d1, use IHasSizeMethod")]] constexpr inline bool has_size_v = is_detected_v<Private_::has_size_t, T>;
+    [[deprecated ("Since Stroika v3.0d1, use IHasSizeMethod")]] constexpr inline bool has_size_v = IHasSizeMethod<T>;
 
     template <typename T>
     [[deprecated ("Since Stroika v3.0d1, use std::ranges::range (probably - roughly same)")]] constexpr inline bool has_beginend_v =

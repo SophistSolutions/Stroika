@@ -222,7 +222,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     inline Sequence_Array<T>::Sequence_Array (ITERABLE_OF_ADDABLE&& src)
         : Sequence_Array{}
     {
-        if constexpr (Configuration::IHasSize<ITERABLE_OF_ADDABLE>) {
+        if constexpr (Configuration::IHasSizeMethod<ITERABLE_OF_ADDABLE>) {
             reserve (src.size ());
         }
         this->AppendAll (forward<ITERABLE_OF_ADDABLE> (src));

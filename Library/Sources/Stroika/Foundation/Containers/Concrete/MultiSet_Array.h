@@ -57,7 +57,7 @@ namespace Stroika::Foundation::Containers::Concrete {
 #if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
             : MultiSet_Array{}
         {
-            if constexpr (Configuration::IHasSize<ITERABLE_OF_ADDABLE>) {
+            if constexpr (Configuration::IHasSizeMethod<ITERABLE_OF_ADDABLE>) {
                 reserve (src.size ());
             }
             AddAll (forward<ITERABLE_OF_ADDABLE> (src));

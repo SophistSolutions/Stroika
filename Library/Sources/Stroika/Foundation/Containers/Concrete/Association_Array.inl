@@ -243,7 +243,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     inline Association_Array<KEY_TYPE, MAPPED_VALUE_TYPE>::Association_Array (ITERABLE_OF_ADDABLE&& src)
         : Association_Array{}
     {
-        if constexpr (Configuration::IHasSize<ITERABLE_OF_ADDABLE>) {
+        if constexpr (Configuration::IHasSizeMethod<ITERABLE_OF_ADDABLE>) {
             reserve (src.size ());
         }
         this->AddAll (forward<ITERABLE_OF_ADDABLE> (src));

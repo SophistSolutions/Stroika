@@ -51,7 +51,7 @@ namespace Stroika::Foundation::Containers::Concrete {
 #if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
             : Sequence_Array{}
         {
-            if constexpr (Configuration::IHasSize<ITERABLE_OF_ADDABLE>) {
+            if constexpr (Configuration::IHasSizeMethod<ITERABLE_OF_ADDABLE>) {
                 reserve (src.size ());
             }
             this->AppendAll (forward<ITERABLE_OF_ADDABLE> (src));
