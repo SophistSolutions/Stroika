@@ -91,8 +91,8 @@ namespace Stroika::Foundation::Traversal {
      *  a subetype) - it wouldn't be producing an Iterable of that type, but a Set or Collection or some such).
      */
     template <typename ITERABLE, typename OF_T>
-    //    concept IIterable = ranges::range<ITERABLE> and is_convertible_v<ranges::range_value_t<ITERABLE>, OF_T>;
-    concept IIterable = IIterableWith<ITERABLE, typename Private_::IsAddableOfT<OF_T>::Test>;
+    concept IIterable = ranges::range<ITERABLE> and is_convertible_v<ranges::range_value_t<ITERABLE>, OF_T>;
+    //concept IIterable = IIterableWith<ITERABLE, typename Private_::IsAddableOfT<OF_T>::Test>;
     static_assert (IIterable<vector<int>, int>);
     static_assert (IIterable<vector<long int>, int>);
     static_assert (IIterable<vector<int>, long int>);
