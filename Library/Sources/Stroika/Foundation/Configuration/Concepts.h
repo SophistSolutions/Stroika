@@ -78,8 +78,8 @@ namespace Stroika::Foundation::Configuration {
         constexpr inline bool HasEq_v_ = HasEq_<T>;
         template <typename T, typename U>
         constexpr inline bool HasEq_v_<std::pair<T, U>> = HasEq_v_<T> and HasEq_v_<U>;
-        template <typename... Ts>
-        constexpr inline bool HasEq_v_<std::tuple<Ts...>> = (HasEq_v_<Ts> and ...);
+        //template <typename... Ts>
+       // constexpr inline bool HasEq_v_<std::tuple<Ts...>> = (HasEq_v_<Ts> and ...);
     }
 
     /**
@@ -111,8 +111,8 @@ namespace Stroika::Foundation::Configuration {
         constexpr inline bool HasLt_v_ = HasLtBase_<T>;
         template <typename T, typename U>
         constexpr inline bool HasLt_v_<std::pair<T, U>> = HasLt_v_<T> and HasLt_v_<U>;
-        template <typename... Ts>
-        constexpr inline bool HasLt_v_<std::tuple<Ts...>> = (HasLt_v_<Ts> and ...);
+        //template <typename... Ts>
+       // constexpr inline bool HasLt_v_<std::tuple<Ts...>> = (HasLt_v_<Ts> and ...);
     }
 
     /**
