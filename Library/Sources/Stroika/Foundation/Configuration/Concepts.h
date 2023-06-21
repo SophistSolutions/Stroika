@@ -180,25 +180,27 @@ namespace Stroika::Foundation::Configuration {
                                      } -> std::convertible_to<size_t>;
                              };
 
+    namespace Private_ {
+        template <typename T>
+        constexpr bool HasUsableEqualToOptimization ()
+        {
+            if constexpr (IOperatorEq<T>) {
+                struct EqualToEmptyTester_ : equal_to<T> {
+                    int a;
+                };
+                // leverage empty base class optimization to see if equal_to contains any real data
+                return sizeof (EqualToEmptyTester_) == sizeof (int);
+            }
+            return false;
+        }
+    }
+
     /**
-    * 
-    *   @todo REDO AS CONCEPT - DEPRECATE THIS...
-    * 
      *  Check if equal_to<T> is both well defined, and contains no data. The reason it matters that it contains no data, is because
      *  then one instance is as good as another, and it need not be passed anywhere, opening an optimization opportunity.
      */
     template <typename T>
-    constexpr bool HasUsableEqualToOptimization ()
-    {
-        if constexpr (IOperatorEq<T>) {
-            struct EqualToEmptyTester_ : equal_to<T> {
-                int a;
-            };
-            // leverage empty base class optimization to see if equal_to contains any real data
-            return sizeof (EqualToEmptyTester_) == sizeof (int);
-        }
-        return false;
-    }
+    concept IEqualToOptimizable = Private_::HasUsableEqualToOptimization<T> ();
 
     /**
      *  \brief Concept checks if the given type T has a value_type (type) member
@@ -220,8 +222,8 @@ namespace Stroika::Foundation::Configuration {
         struct ExtractValueType {
             using type = void;
         };
-        template <typename T>
-        struct ExtractValueType<T, enable_if_t<IHasValueType<T>>> {
+        template <IHasValueType T>
+        struct ExtractValueType<T> {
             using type = typename T::value_type;
         };
         template <typename T>
@@ -246,11 +248,15 @@ namespace Stroika::Foundation::Configuration {
     template <typename T>
     using ExtractValueType_t = typename Private_::ExtractValueType<remove_cvref_t<T>>::type;
 
-   
-
     /////////////////////////////////////////////////////////////
     ////////////////////// DEPREACTED BELOW /////////////////////
     /////////////////////////////////////////////////////////////
+
+    template <typename T>
+    [[deprecated ("Since Stroika v3.0d1, use IEqualToOptimizable concept")]] constexpr bool HasUsableEqualToOptimization ()
+    {
+        return IEqualToOptimizable<T>;
+    }
 
     template <typename T>
     [[deprecated ("Since Stroika v3.0d1, use require expression")]] constexpr inline bool has_plus_v = requires (T t) {

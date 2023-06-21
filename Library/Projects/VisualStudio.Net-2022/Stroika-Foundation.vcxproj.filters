@@ -411,9 +411,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\BlockAllocator.cpp">
       <Filter>Sources\Memory</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\SharedPtr.cpp">
-      <Filter>Sources\Memory</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\OptionsFile.cpp">
       <Filter>Sources\DataExchange</Filter>
     </ClCompile>

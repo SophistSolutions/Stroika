@@ -88,10 +88,10 @@ namespace Stroika::Foundation::Traversal {
     inline auto Iterable<T>::_IRep::Find_equal_to (const shared_ptr<_IRep>& thisSharedPtr, const ArgByValueType<T>& v,
                                                    [[maybe_unused]] Execution::SequencePolicy seq) const -> Iterator<value_type>
     {
-        if constexpr (Configuration::HasUsableEqualToOptimization<T> ()) {
+        if constexpr (Configuration::IEqualToOptimizable<T>) {
             /*
              *  This is the default implementation. It is only ever if there is a valid equal_to<> around, and
-             *  that valid equal_to<> is stateless (verified by Configuration::HasUsableEqualToOptimization).
+             *  that valid equal_to<> is stateless (verified by Configuration::IEqualToOptimizable).
              */
             if constexpr (true) {
                 // simpler but not sure if faster; better though cuz by default leverages seq, which might
@@ -110,7 +110,7 @@ namespace Stroika::Foundation::Traversal {
             }
         }
         else {
-            RequireNotReached (); // cannot call if not HasUsableEqualToOptimization
+            RequireNotReached (); // cannot call if not IEqualToOptimizable
             return Iterator<T>::GetEmptyIterator ();
         }
     }
@@ -1089,7 +1089,7 @@ namespace Stroika::Foundation::Traversal {
     template <Common::IPotentiallyComparer<T> EQUALS_COMPARER>
     inline Iterator<T> Iterable<T>::Find (Configuration::ArgByValueType<T> v, EQUALS_COMPARER&& equalsComparer, Execution::SequencePolicy seq) const
     {
-        if constexpr (is_same_v<remove_cvref_t<EQUALS_COMPARER>, equal_to<T>> and Configuration::HasUsableEqualToOptimization<T> ()) {
+        if constexpr (is_same_v<remove_cvref_t<EQUALS_COMPARER>, equal_to<T>> and Configuration::IEqualToOptimizable<T>) {
             // This CAN be much faster than the default implementation for this special (but common) case (often a tree structure will have been maintained making this find faster)
             _SafeReadRepAccessor<> accessor{this};
             return accessor._ConstGetRep ().Find_equal_to (accessor._ConstGetRepSharedPtr (), v, seq);

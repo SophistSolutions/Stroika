@@ -23,7 +23,6 @@ Objs	=	\
 	$(ObjDir)BlockAllocator${OBJ_SUFFIX}\
 	$(ObjDir)Common${OBJ_SUFFIX}\
 	$(ObjDir)MemoryAllocator${OBJ_SUFFIX}\
-	$(ObjDir)SharedPtr${OBJ_SUFFIX}\
 
 
 include $(StroikaRoot)ScriptsLib/SharedBuildRules-Default.mk

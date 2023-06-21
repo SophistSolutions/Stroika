@@ -251,7 +251,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\BlockAllocator.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\Common.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\MemoryAllocator.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\SharedPtr.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\EOFException.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\InputStream.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\iostream\CommonInsertersAndExtractors.cpp" />

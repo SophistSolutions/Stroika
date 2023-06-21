@@ -163,21 +163,21 @@ namespace {
                 static_assert (not IOperatorLt<SimpleClassWithoutComparisonOperators>);
             }
             {
-                static_assert (HasUsableEqualToOptimization<int> ());
-                static_assert (HasUsableEqualToOptimization<pair<int, int>> ());
-                static_assert (HasUsableEqualToOptimization<SimpleClass> ());
-                static_assert (HasUsableEqualToOptimization<pair<SimpleClass, SimpleClass>> ());
-                static_assert (not HasUsableEqualToOptimization<SimpleClassWithoutComparisonOperators> ());
+                static_assert (IEqualToOptimizable<int> );
+                static_assert (IEqualToOptimizable<pair<int, int>>);
+                static_assert (IEqualToOptimizable<SimpleClass> );
+                static_assert (IEqualToOptimizable<pair<SimpleClass, SimpleClass>> );
+                static_assert (not IEqualToOptimizable<SimpleClassWithoutComparisonOperators> );
                 static_assert (not IOperatorEq<SimpleClassWithoutComparisonOperators>);
                 static_assert (not IOperatorEq<pair<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators>>);
 
 
 
-                //tmphack static_assert (not HasUsableEqualToOptimization<pair<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators>> ());
+                //tmphack static_assert (not IEqualToOptimizable<pair<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators>>);
                 {
                     using namespace Stroika::Foundation::Database::SQL::ORM;
                     static_assert (not IOperatorEq<TableProvisioner>);
-                    static_assert (not HasUsableEqualToOptimization<TableProvisioner> ());
+                    static_assert (not IEqualToOptimizable<TableProvisioner>);
                 }
             }
             {

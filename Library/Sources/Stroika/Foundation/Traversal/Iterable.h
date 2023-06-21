@@ -64,6 +64,7 @@ namespace Stroika::Foundation::Traversal {
     using Configuration::ArgByValueType;
 
     /**
+    *   @todo INTEGRATE WITH (RENAMES) existing IIterable<OF_T> - and IsAddable_v, etc...
      */
     template <typename ITERABLE, template <typename> typename ITEM_PREDICATE>
     concept IIterableConstrained = ranges::range<ITERABLE> and ITEM_PREDICATE<typename ITERABLE::value_type>::value;
@@ -1464,7 +1465,7 @@ namespace Stroika::Foundation::Traversal {
          *  But this CAN be much faster (and commonly is) - and is used very heavily by iterables, so
          *  its worth the singling out of this important special case.
          * 
-         *  \req Configuration::HasUsableEqualToOptimization<T> (); would like to only define (with requires) but
+         *  \req Configuration::IEqualToOptimizable<T>; would like to only define (with requires) but
          *       cannot seem to do in C++20 - requires on virtual function
          * 
          *  Default implemented as

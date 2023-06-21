@@ -25,7 +25,7 @@ namespace Stroika::Foundation::Memory {
     namespace Private_ {
         // OK to declare this way because we cannot have threads before main, and since declared this way till be
         // properly zero initialized
-        extern conditional_t<Execution::kSpinLock_IsFasterThan_mutex, Execution::SpinLock, mutex> sSharedPtrCopyLock_;
+        inline conditional_t<Execution::kSpinLock_IsFasterThan_mutex, Execution::SpinLock, mutex> sSharedPtrCopyLock_;
     }
 
     /*
