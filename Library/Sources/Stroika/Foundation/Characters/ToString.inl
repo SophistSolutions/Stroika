@@ -77,38 +77,47 @@ namespace Stroika::Foundation::Characters {
 
     namespace Private_ {
 
-        template <typename T>
-        using has_ToStringMethod_t_ = decltype (static_cast<Characters::String> (declval<const T&> ().ToString ()));
-        template <typename T>
-        using has_pair_t_ = decltype (declval<const T&> ().first, declval<const T&> ().second);
-        template <typename T>
-        using has_KeyValuePair_t_ = decltype (declval<const T&> ().fKey, declval<const T&> ().fValue);
-        template <typename T>
-        using has_CountedValue_t_ = decltype (declval<const T&> ().fValue, declval<const T&> ().fCount);
+        // template <typename T>
+        // using has_ToStringMethod_t_ = decltype (static_cast<Characters::String> (declval<const T&> ().ToString ()));
 
         /**
          *  \brief checks if the given type has a .ToString () const method returning a string
          */
         template <typename T>
-        constexpr inline bool has_ToStringMethod_v = Configuration::is_detected_v<Private_::has_ToStringMethod_t_, T>;
-
+        //  constexpr inline bool has_ToStringMethod_v = Configuration::is_detected_v<Private_::has_ToStringMethod_t_, T>;
+        // constexpr inline bool has_pair_v = Configuration::is_detected_v<Private_::has_pair_t_, T>;
+        concept has_ToStringMethod_v = requires (T t) {
+                                           {
+                                               t.ToString ()
+                                               } -> convertible_to<Characters::String>;
+                                       };
         /**
          *  \brief this given type appears to be a 'pair' of some sort
          */
         template <typename T>
-        constexpr inline bool has_pair_v = Configuration::is_detected_v<Private_::has_pair_t_, T>;
-
+        // constexpr inline bool has_pair_v = Configuration::is_detected_v<Private_::has_pair_t_, T>;
+        concept has_pair_v = requires (T t) {
+                                 t.first;
+                                 t.second;
+                             };
         /**
          *  \brief this given type appears to be a 'KeyValuePair' of some sort
          */
         template <typename T>
-        constexpr inline bool has_KeyValuePair_v = Configuration::is_detected_v<Private_::has_KeyValuePair_t_, T>;
-
+        //constexpr inline bool has_KeyValuePair_v = Configuration::is_detected_v<Private_::has_KeyValuePair_t_, T>;
+        concept has_KeyValuePair_v = requires (T t) {
+                                         t.fKey;
+                                         t.fValue;
+                                     };
         /**
          *  \brief this given type appears to be a 'CountedValue' of some sort
          */
         template <typename T>
-        constexpr inline bool has_CountedValue_v = Configuration::is_detected_v<Private_::has_CountedValue_t_, T>;
+        //constexpr inline bool has_CountedValue_v = Configuration::is_detected_v<Private_::has_CountedValue_t_, T>;
+        concept has_CountedValue_v = requires (T t) {
+                                         t.fValue;
+                                         t.fCount;
+                                     };
 
         template <typename T>
         inline String ToString_ (const T& t)

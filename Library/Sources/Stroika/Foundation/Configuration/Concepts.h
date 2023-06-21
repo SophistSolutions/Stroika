@@ -252,6 +252,9 @@ namespace Stroika::Foundation::Configuration {
     ////////////////////// DEPREACTED BELOW /////////////////////
     /////////////////////////////////////////////////////////////
 
+    DISABLE_COMPILER_MSC_WARNING_START (4996);
+    DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
+    DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
     template <typename T>
     [[deprecated ("Since Stroika v3.0d1, use IEqualToOptimizable concept")]] constexpr bool HasUsableEqualToOptimization ()
     {
@@ -429,6 +432,10 @@ namespace Stroika::Foundation::Configuration {
     }
     template <typename T>
     [[deprecated ("Since Stroika v3.0d1, use IOperatorSpaceship")]] constexpr inline bool has_spaceship_v = IOperatorSpaceship<T>;
+    DISABLE_COMPILER_MSC_WARNING_END (4996);
+    DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
+    DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
+
 }
 
 /*
