@@ -74,9 +74,9 @@ namespace Stroika::Foundation::Traversal {
         // this; but this magic trick of double indirection does allow it. And cannot use concepts as template arguments to another template
         // sadly, so need this trick...
         template <typename T>
-        struct MAGIC_ {
+        struct IsAddableOfT {
             template <typename POTENTIALLY_ADDABLE_T>
-            class IsAddable_t : public is_convertible<POTENTIALLY_ADDABLE_T, T> {};
+            using Test = is_convertible<POTENTIALLY_ADDABLE_T, T>;
         };
     }
 
@@ -92,7 +92,7 @@ namespace Stroika::Foundation::Traversal {
      */
     template <typename ITERABLE, typename OF_T>
     //    concept IIterable = ranges::range<ITERABLE> and is_convertible_v<ranges::range_value_t<ITERABLE>, OF_T>;
-    concept IIterable = IIterableWith<ITERABLE, typename Private_::MAGIC_<OF_T>::IsAddable_t>;
+    concept IIterable = IIterableWith<ITERABLE, typename Private_::IsAddableOfT<OF_T>::Test>;
     static_assert (IIterable<vector<int>, int>);
     static_assert (IIterable<vector<long int>, int>);
     static_assert (IIterable<vector<int>, long int>);
