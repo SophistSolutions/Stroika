@@ -9,16 +9,7 @@
 #include <type_traits>
 
 /*
- *
- *  \version    <a href="Code-Status.md#Alpha-Early">Alpha-Early</a>
- *
- * Description:
- *
- *
- *
- * TODO:
- *      @todo   Maybe put concepts in sub-namespace Concept {} - and then list them out here? Instead of the _ stuff?
- *
+ *  ********* DEPRECATED *******
  */
 
 namespace Stroika::Foundation::Configuration {
