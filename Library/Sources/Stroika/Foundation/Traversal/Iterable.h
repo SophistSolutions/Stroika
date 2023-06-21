@@ -64,6 +64,11 @@ namespace Stroika::Foundation::Traversal {
     using Configuration::ArgByValueType;
 
     /**
+     */
+    template <typename ITERABLE, template <typename> typename ITEM_PREDICATE>
+    concept IIterableConstrained = ranges::range<ITERABLE> and ITEM_PREDICATE<typename ITERABLE::value_type>::value;
+
+    /**
      *  IIterable concept: std::ranges::range and iterated over values convertible to OF_T
      *
      *  Checks if argument is ranges::range and if the value of items iterated over is convertible to OF_T.

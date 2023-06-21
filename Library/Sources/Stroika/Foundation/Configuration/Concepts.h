@@ -181,6 +181,9 @@ namespace Stroika::Foundation::Configuration {
                              };
 
     /**
+    * 
+    *   @todo REDO AS CONCEPT - DEPRECATE THIS...
+    * 
      *  Check if equal_to<T> is both well defined, and contains no data. The reason it matters that it contains no data, is because
      *  then one instance is as good as another, and it need not be passed anywhere, opening an optimization opportunity.
      */
@@ -243,35 +246,7 @@ namespace Stroika::Foundation::Configuration {
     template <typename T>
     using ExtractValueType_t = typename Private_::ExtractValueType<remove_cvref_t<T>>::type;
 
-    // @todo move these to localized just before needed/used... NOW... TODAY
-    namespace Private_ {
-        // Subtle - but begin () doesn't work with rvalues, so must use declval<T&> -- LGP 2021-11-26
-        template <typename T>
-        using has_beginend_t = decltype (static_cast<bool> (begin (declval<T&> ()) != end (declval<T&> ())));
-    }
-
-    namespace Private_ {
-        // Would be nice to simplify, but my current version of is_detected_v only takes one template parameter, and the std::experimental version not included in VS2k19
-        template <typename ITERABLE_OF_T, template <typename> typename CHECKER_PREDICATE>
-        struct IsIterableOfPredicateOfT_Impl2_ {
-            template <typename X, typename USE_ITERABLE = ITERABLE_OF_T,
-                      bool ITER_RESULT_CONVERTIBLE_TO_T = CHECKER_PREDICATE<decltype (*begin (declval<USE_ITERABLE&> ()))>::value>
-            static auto check (const X& x)
-                -> conditional_t<is_detected_v<has_beginend_t, ITERABLE_OF_T> and ITER_RESULT_CONVERTIBLE_TO_T, substitution_succeeded<int>, substitution_failure>;
-            static substitution_failure check (...);
-            using type = decltype (check (declval<int> ()));
-        };
-        // STILL NOT WORKING -- but trying...
-        template <typename ITERABLE_OF_T, template <typename> typename CHECKER_PREDICATE>
-        using IsIterableOfPredicateOfT_t =
-            integral_constant<bool, not is_same<typename IsIterableOfPredicateOfT_Impl2_<ITERABLE_OF_T, CHECKER_PREDICATE>::type, substitution_failure>::value>;
-    }
-
-    /**
-     *  Check if has begin/end methods (not for subclassing Traversal::Iterable<>), and if result of *begin () is convertible to T.
-     */
-    template <typename ITERABLE_OF_T, template <typename> typename CHECKER_PREDICATE>
-    constexpr bool IsIterableOfPredicateOfT_v = Private_::IsIterableOfPredicateOfT_t<ITERABLE_OF_T, CHECKER_PREDICATE>::value;
+   
 
     /////////////////////////////////////////////////////////////
     ////////////////////// DEPREACTED BELOW /////////////////////
@@ -311,6 +286,10 @@ namespace Stroika::Foundation::Configuration {
     template <typename T>
     [[deprecated ("Since Stroika v3.0d1, use IHasSizeMethod")]] constexpr inline bool has_size_v = IHasSizeMethod<T>;
 
+    namespace Private_ {
+        template <typename T>
+        using has_beginend_t = decltype (static_cast<bool> (begin (declval<T&> ()) != end (declval<T&> ())));
+    }
     template <typename T>
     [[deprecated ("Since Stroika v3.0d1, use std::ranges::range (probably - roughly same)")]] constexpr inline bool has_beginend_v =
         is_detected_v<Private_::has_beginend_t, T>;

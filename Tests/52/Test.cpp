@@ -49,7 +49,6 @@
 #include "Stroika/Foundation/Math/Common.h"
 #include "Stroika/Foundation/Math/Statistics.h"
 #include "Stroika/Foundation/Memory/BLOB.h"
-#include "Stroika/Foundation/Memory/SharedPtr.h"
 #include "Stroika/Foundation/Memory/StackBuffer.h"
 #include "Stroika/Foundation/Streams/ExternallyOwnedMemoryInputStream.h"
 #include "Stroika/Foundation/Streams/MemoryStream.h"
@@ -464,104 +463,6 @@ namespace {
             Test_MutexVersusSharedPtrCopy_SharedPtrCopy (Test_MutexVersusSharedPtrCopy_COUNTEST);
         }
         VerifyTestResult (s_Test_MutexVersusSharedPtrCopy_IGNROED_COUNT == 1000); // so nothing optimized away
-    }
-}
-
-namespace {
-
-    namespace Test_stdsharedptr_VERSUS_MemorySharedPtr_PRIVATE_ {
-        int             COUNTER             = 1;
-        shared_ptr<int> s_stdSharedPtr2Copy = shared_ptr<int> (new int (1));
-        void            Test_stdsharedptr_use_ (function<void (int*)> doInsideLock)
-        {
-            shared_ptr<int> tmp = s_stdSharedPtr2Copy;
-            doInsideLock (tmp.get ());
-        }
-        void           Test_stdsharedptr_alloc_ () { s_stdSharedPtr2Copy = shared_ptr<int> (new int (1)); }
-        SharedPtr<int> s_MemorySharedPtr2Copy = SharedPtr<int> (new int (1));
-        void           Test_MemorySharedPtr_use_ (function<void (int*)> doInsideLock)
-        {
-            SharedPtr<int> tmp = s_MemorySharedPtr2Copy;
-            doInsideLock (tmp.get ());
-        }
-        void Test_MemorySharedPtr_alloc_ () { s_MemorySharedPtr2Copy = SharedPtr<int> (new int (1)); }
-        void Test_ACCUM (int* i) { COUNTER += *i; }
-    }
-
-    void Test_stdsharedptrBaseline ()
-    {
-        using namespace Test_stdsharedptr_VERSUS_MemorySharedPtr_PRIVATE_;
-        COUNTER = 0;
-        for (int i = 0; i < 1000; ++i) {
-            Test_stdsharedptr_use_ (Test_ACCUM);
-        }
-        VerifyTestResult (COUNTER == 1000); // so nothing optimized away
-        // less important but still important
-        for (int i = 0; i < 100; ++i) {
-            Test_stdsharedptr_alloc_ ();
-        }
-    }
-    void Test_MemorySharedPtr ()
-    {
-        using namespace Test_stdsharedptr_VERSUS_MemorySharedPtr_PRIVATE_;
-        COUNTER = 0;
-        for (int i = 0; i < 1000; ++i) {
-            Test_MemorySharedPtr_use_ (Test_ACCUM);
-        }
-        VerifyTestResult (COUNTER == 1000); // so nothing optimized away
-        // less important but still important
-        for (int i = 0; i < 100; ++i) {
-            Test_MemorySharedPtr_alloc_ ();
-        }
-    }
-}
-
-namespace {
-
-    namespace Test_stdsharedptr_VERSUS_MemorySharedPtr_PRIVATE_make_shared_ {
-        int             COUNTER             = 1;
-        shared_ptr<int> s_stdSharedPtr2Copy = shared_ptr<int> (new int (1));
-        void            Test_stdsharedptr_use_ (function<void (int*)> doInsideLock)
-        {
-            shared_ptr<int> tmp = s_stdSharedPtr2Copy;
-            doInsideLock (tmp.get ());
-        }
-        void           Test_stdsharedptr_alloc_ () { s_stdSharedPtr2Copy = make_shared<int> (1); }
-        SharedPtr<int> s_MemorySharedPtr2Copy = SharedPtr<int> (new int (1));
-        void           Test_MemorySharedPtr_use_ (function<void (int*)> doInsideLock)
-        {
-            SharedPtr<int> tmp = s_MemorySharedPtr2Copy;
-            doInsideLock (tmp.get ());
-        }
-        void Test_MemorySharedPtr_alloc_ () { s_MemorySharedPtr2Copy = SharedPtr<int> (new int (1)); }
-        void Test_ACCUM (int* i) { COUNTER += *i; }
-    }
-
-    void Test_stdsharedptrBaseline_make_shared ()
-    {
-        using namespace Test_stdsharedptr_VERSUS_MemorySharedPtr_PRIVATE_make_shared_;
-        COUNTER = 0;
-        for (int i = 0; i < 1000; ++i) {
-            Test_stdsharedptr_use_ (Test_ACCUM);
-        }
-        VerifyTestResult (COUNTER == 1000); // so nothing optimized away
-        // less important but still important
-        for (int i = 0; i < 100; ++i) {
-            Test_stdsharedptr_alloc_ ();
-        }
-    }
-    void Test_MemorySharedPtr_make_shared ()
-    {
-        using namespace Test_stdsharedptr_VERSUS_MemorySharedPtr_PRIVATE_make_shared_;
-        COUNTER = 0;
-        for (int i = 0; i < 1000; ++i) {
-            Test_MemorySharedPtr_use_ (Test_ACCUM);
-        }
-        VerifyTestResult (COUNTER == 1000); // so nothing optimized away
-        // less important but still important
-        for (int i = 0; i < 100; ++i) {
-            Test_MemorySharedPtr_alloc_ ();
-        }
     }
 }
 
@@ -1451,10 +1352,6 @@ namespace {
                 Test_MutexVersusSharedPtrCopy_shared_ptr_copy, L"shared_ptr<> copy", 24500, .65, &failedTests);
         Tester (L"Test of simple locking strategies (mutex v SpinLock)", Test_MutexVersusSpinLock_MUTEXT_LOCK, L"mutex",
                 Test_MutexVersusSpinLock_SPIN_LOCK, L"SpinLock", 24500, .5, &failedTests);
-        Tester (L"std::shared_ptr versus Memory::SharedPtr", Test_stdsharedptrBaseline, L"shared_ptr", Test_MemorySharedPtr, L"SharedPtr",
-                27000, 1.05, &failedTests);
-        Tester (L"std::shared_ptr (make_shared) versus Memory::SharedPtr", Test_stdsharedptrBaseline_make_shared, L"shared_ptr",
-                Test_MemorySharedPtr_make_shared, L"SharedPtr", 27000, 1.15, &failedTests);
         Tester (L"Simple Struct With Strings Filling And Copying", Test_StructWithStringsFillingAndCopying<wstring>, L"wstring",
                 Test_StructWithStringsFillingAndCopying<String>, L"Charactes::String", 65000, 0.48, &failedTests);
         Tester (L"Simple Struct With Strings Filling And Copying2", Test_StructWithStringsFillingAndCopying2<wstring>, L"wstring",

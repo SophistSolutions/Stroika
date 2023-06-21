@@ -148,7 +148,7 @@ namespace {
             template <typename TT>
             void TEST ()
             {
-                static_assert (Configuration::IsIterableOfPredicateOfT_v<vector<TT>, Private_::CONTAINER<TT>::template IsAddable_t>);
+                static_assert (Traversal::IIterableConstrained<vector<TT>, Private_::CONTAINER<TT>::template IsAddable_t>);
             }
         }
         void DoAll ()
@@ -208,8 +208,8 @@ namespace {
                 static_assert (std::is_same<int, traits::arg<0>::type>::value);
             }
             {
-                static_assert (Configuration::IsIterableOfPredicateOfT_v<vector<int>, Private_::CONTAINER<int>::IsAddable_t>);
-                static_assert (not Configuration::IsIterableOfPredicateOfT_v<vector<char*>, Private_::CONTAINER<int>::IsAddable_t>);
+                static_assert (Traversal::IIterableConstrained<vector<int>, Private_::CONTAINER<int>::IsAddable_t>);
+                static_assert (not Traversal::IIterableConstrained<vector<char*>, Private_::CONTAINER<int>::IsAddable_t>);
                 Private_::TEST<int> ();
             }
             {

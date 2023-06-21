@@ -15,7 +15,6 @@
 #include "Stroika/Foundation/Memory/ObjectFieldUtilities.h"
 #include "Stroika/Foundation/Memory/Optional.h"
 #include "Stroika/Foundation/Memory/SharedByValue.h"
-#include "Stroika/Foundation/Memory/SharedPtr.h"
 
 #include "../TestHarness/NotCopyable.h"
 #include "../TestHarness/SimpleClass.h"
@@ -159,67 +158,8 @@ namespace {
             int                      field = 1;
             shared_ptr<jimMIXStdSP_> doIt () { return shared_from_this (); }
         };
-        struct jimStkSP_ : Memory::enable_shared_from_this<jimStkSP_> {
-            int                  field = 1;
-            SharedPtr<jimStkSP_> doIt () { return shared_from_this (); }
-        };
-        struct jimMIStkSP_ : X_, Memory::enable_shared_from_this<jimMIStkSP_> {
-            int                    field = 1;
-            SharedPtr<jimMIStkSP_> doIt () { return shared_from_this (); }
-        };
     }
 
-    void Test_5_SharedPtr ()
-    {
-        {
-            SharedPtr<int> p (new int (3));
-            VerifyTestResult (p.use_count () == 1);
-            VerifyTestResult (p.unique ());
-            VerifyTestResult (*p == 3);
-        }
-        {
-            static int nCreates  = 0;
-            static int nDestroys = 0;
-            struct COUNTED_OBJ {
-                COUNTED_OBJ () { ++nCreates; }
-                COUNTED_OBJ (const COUNTED_OBJ&) { ++nCreates; }
-                ~COUNTED_OBJ () { ++nDestroys; }
-                const COUNTED_OBJ& operator= (const COUNTED_OBJ&) = delete;
-            };
-            struct CNT2 : COUNTED_OBJ {};
-            {
-                SharedPtr<COUNTED_OBJ> p (new COUNTED_OBJ ());
-            }
-            VerifyTestResult (nCreates == nDestroys);
-            {
-                SharedPtr<COUNTED_OBJ> p (SharedPtr<CNT2> (new CNT2 ()));
-                VerifyTestResult (nCreates == nDestroys + 1);
-            }
-            VerifyTestResult (nCreates == nDestroys);
-        }
-        {
-            shared_ptr<jimStdSP_> x (new jimStdSP_ ());
-            shared_ptr<jimStdSP_> y = x->doIt ();
-            VerifyTestResult (x == y);
-        }
-        {
-            shared_ptr<jimMIXStdSP_> x (new jimMIXStdSP_ ());
-            shared_ptr<jimMIXStdSP_> y  = x->doIt ();
-            shared_ptr<X_>           xx = x;
-            VerifyTestResult (x == y);
-        }
-        {
-            SharedPtr<jimStkSP_> x (new jimStkSP_ ());
-            SharedPtr<jimStkSP_> y = x->doIt ();
-            VerifyTestResult (x == y);
-        }
-        {
-            SharedPtr<jimMIStkSP_> x (new jimMIStkSP_ ());
-            SharedPtr<jimMIStkSP_> y  = x->doIt ();
-            SharedPtr<X_>          xx = x;
-            VerifyTestResult (x == y);
-        }
-    }
 }
 
 namespace {
@@ -517,7 +457,6 @@ namespace {
         Test1_Optional ();
         Test2_SharedByValue ();
         Test_4_Optional_Of_Mapping_Copy_Problem_ ();
-        Test_5_SharedPtr ();
         Test_6_Bits_ ();
         Test_7_BLOB_ ();
         Test9a_Buffer_::DoTest ();
