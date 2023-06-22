@@ -73,13 +73,6 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
-         *  \brief check if the argument type can be passed as argument to the arity/1 overload of Add (Enqueue)
-         */
-        template <typename POTENTIALLY_ADDABLE_T>
-        static constexpr bool IsAddable_v = inherited::template IsAddable_v<POTENTIALLY_ADDABLE_T>;
-
-    public:
-        /**
          *  This constructor creates a concrete sorted Association object, either empty,
          *  or initialized with any argument values.
          *

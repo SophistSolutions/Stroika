@@ -73,13 +73,6 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
-         *  \brief check if the argument type can be passed as argument to the arity/1 overload of Add (Enqueue)
-         */
-        template <typename POTENTIALLY_ADDABLE_T>
-        static constexpr bool IsAddable_v = inherited::template IsAddable_v<POTENTIALLY_ADDABLE_T>;
-
-    public:
-        /**
          *  All constructors either copy their source comparer (copy/move CTOR), or use the default INORDER comparer for 'T'.
          * 
          *  The INORDER_COMPARER must be provided (if not explicitly, then implicitly via defaults) at construction time. This

@@ -117,6 +117,8 @@ namespace Stroika::Foundation::Containers {
      *          ID, and that required forcing the type T to be constructible just from an ID (awkward and potentially
      *          expensive).
      *
+     *  \note   you can only Add a T/value_type, not a KEY_TYPE, but 'lookup-style' operations can operate on KEY_TYPE.
+     * 
      *  \note   Not based on, but useful to refer to .Net KeyedColleciton<KEY,T>
      *          @see https://msdn.microsoft.com/en-us/library/ms132438%28v=vs.110%29.aspx?f=255&MSPPError=-2147217396
      *
@@ -194,17 +196,8 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
-         *  \brief check if the argument type can be passed as argument to the arity/1 overload of Add ()
-         * 
-         *  NOTE - you can only Add a T/value_type, not a KEY_TYPE, but 'lookup-style' operations can operate on KEY_TYPE.
-         */
-        template <typename POTENTIALLY_ADDABLE_T>
-        static constexpr bool IsAddable_v = is_convertible_v<POTENTIALLY_ADDABLE_T, value_type>;
-
-    public:
-        /**
          *  For the CTOR overload with ITERABLE_OF_ADDABLE, its anything that supports c.begin(), c.end () to find
-         *  all the elements and for which the result of c.begin () IsAddable_v().
+         *  all the elements and for which the result of c.begin ().
          *
          *  All constructors either copy their source comparer (copy/move CTOR), or use the provided argument comparer
          *  (which in turn defaults to equal_to<T>).
@@ -388,9 +381,6 @@ namespace Stroika::Foundation::Containers {
          *  \note   AddAll/2 is alias for .net AddRange ()
          *
          *  Returns the number if items actually added (not necessarily same as end-start)
-         * 
-         *  \req IsAddable_v<ExtractValueType_t<ITERATOR_OF_ADDABLE>>
-         *  \req IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>
          * 
          *  \note mutates container
          */

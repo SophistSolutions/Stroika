@@ -35,8 +35,6 @@ namespace Stroika::Foundation::Containers::Concrete {
         using inherited = Bijection<DOMAIN_TYPE, RANGE_TYPE>;
 
     public:
-        template <typename POTENTIALLY_ADDABLE_T>
-        static constexpr bool IsAddable_v     = inherited::template IsAddable_v<POTENTIALLY_ADDABLE_T>;
         using DomainEqualsCompareFunctionType = typename inherited::DomainEqualsCompareFunctionType;
         using RangeEqualsCompareFunctionType  = typename inherited::RangeEqualsCompareFunctionType;
         using value_type                      = typename inherited::value_type;

@@ -90,13 +90,6 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
-         *  \brief check if the argument type can be passed as argument to the arity/1 overload of Add (Push)
-         */
-        template <typename POTENTIALLY_ADDABLE_T>
-        static constexpr bool IsAddable_v = is_convertible_v<POTENTIALLY_ADDABLE_T, T>;
-
-    public:
-        /**
          *  @todo   MUST WORK OUT DETAILS OF SEMANTICS FOR ITERATOR ADD cuz naive interpreation of above
          *          rules would lead to having a copy reverse the stack (SEE FILE-TODO-NOTE)
          * 

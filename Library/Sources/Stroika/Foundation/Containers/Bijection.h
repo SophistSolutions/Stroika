@@ -147,14 +147,6 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
-         *  \brief check if the argument type can be passed as argument to the arity/1 overload of Add ()
-         */
-        template <typename POTENTIALLY_ADDABLE_T>
-        static constexpr bool IsAddable_v =
-            is_convertible_v<POTENTIALLY_ADDABLE_T, value_type> or is_convertible_v<POTENTIALLY_ADDABLE_T, KeyValuePair<DomainType, RangeType>>;
-
-    public:
-        /**
          *  This constructor creates a concrete Bijection object, either empty, or initialized with any argument
          *  values.
          *
@@ -378,23 +370,17 @@ namespace Stroika::Foundation::Containers {
          *  Also - we guarantee that even if the association is different, if the key has not changed,
          *  then the iteration order is not changed (helpful for AddAll() semantics, and perhaps elsewhere).
          *
-         *  \req  IsAddable_v<ExtractValueType_t<ADDABLE_T>>;   // ADDABLE_T overload
-         *
          *  \note mutates container
          */
         nonvirtual void Add (ArgByValueType<DomainType> key, ArgByValueType<RangeType> newElt);
         template <typename ADDABLE_T>
-        nonvirtual void Add (ADDABLE_T&& p);
+        nonvirtual void Add (ADDABLE_T&& p)
+            requires (convertible_to<ADDABLE_T, pair<DOMAIN_TYPE, RANGE_TYPE>> or convertible_to<ADDABLE_T, KeyValuePair<DOMAIN_TYPE, RANGE_TYPE>>);
 
     public:
         /**
          *  \note   AddAll/2 is alias for .net AddRange ()
          *
-         * 
-         *  \req  IsAddable_v<ExtractValueType_t<CONTAINER_OF_KEYVALUE>>;                       // CONTAINER_OF_KEYVALUE overload
-         *  \req  IIterableOf<KeyValuePair<DOMAIN_TYPE, RANGE_TYPE>>    CONTAINER_OF_KEYVALUE                         //  ditto
-         *  \req  static_assert (IsAddable_v<ExtractValueType_t<COPY_FROM_ITERATOR_KEYVALUE>>); // COPY_FROM_ITERATOR_KEYVALUE overload
-
          *  \note mutates container
          */
         template <IIterableOf<KeyValuePair<DOMAIN_TYPE, RANGE_TYPE>> CONTAINER_OF_KEYVALUE>

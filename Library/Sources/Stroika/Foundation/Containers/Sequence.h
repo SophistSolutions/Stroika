@@ -225,13 +225,6 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
-         *  \brief check if the argument type can be passed as argument to the arity/1 overload of Add (prepend/append)
-         */
-        template <typename POTENTIALLY_ADDABLE_T>
-        static constexpr bool IsAddable_v = is_convertible_v<POTENTIALLY_ADDABLE_T, T>;
-
-    public:
-        /**
          *  For the CTOR overload with ITERABLE_OF_ADDABLE, its anything that supports c.begin(), c.end () to find
          *  all the elements.
          *
@@ -499,9 +492,6 @@ namespace Stroika::Foundation::Containers {
          *  and before Insert, which calling Append () avoids. Also note - if used in a multithreaded enivonment,
          *  the appended items wont necesarily all get appended at once, since other threads could make
          *  changes in between.
-         *
-         *  \req IsAddable_v<ExtractValueType_t<ITERATOR_OF_ADDABLE>>
-         *  \req IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>
          *
          *  \note mutates container
          */

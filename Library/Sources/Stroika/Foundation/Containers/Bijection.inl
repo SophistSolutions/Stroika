@@ -298,8 +298,8 @@ namespace Stroika::Foundation::Containers {
     template <typename DOMAIN_TYPE, typename RANGE_TYPE>
     template <typename ADDABLE_T>
     inline void Bijection<DOMAIN_TYPE, RANGE_TYPE>::Add (ADDABLE_T&& p)
+        requires (convertible_to<ADDABLE_T, pair<DOMAIN_TYPE, RANGE_TYPE>> or convertible_to<ADDABLE_T, KeyValuePair<DOMAIN_TYPE, RANGE_TYPE>>)
     {
-        static_assert (IsAddable_v<ADDABLE_T>);
         if constexpr (is_convertible_v<remove_cvref_t<ADDABLE_T>, value_type>) {
             _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().Add (p.first, p.second);
         }

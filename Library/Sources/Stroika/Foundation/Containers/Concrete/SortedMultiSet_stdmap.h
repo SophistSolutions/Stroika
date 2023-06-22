@@ -37,8 +37,6 @@ namespace Stroika::Foundation::Containers::Concrete {
         using inherited = SortedMultiSet<T, TRAITS>;
 
     public:
-        template <typename POTENTIALLY_ADDABLE_T>
-        static constexpr bool IsAddable_v = inherited::template IsAddable_v<POTENTIALLY_ADDABLE_T>;
         using TraitsType                  = typename inherited::TraitsType;
         using CounterType                 = typename inherited::CounterType;
         using ElementEqualityComparerType = typename inherited::ElementEqualityComparerType;

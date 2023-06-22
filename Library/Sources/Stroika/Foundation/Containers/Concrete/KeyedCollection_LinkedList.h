@@ -38,13 +38,11 @@ namespace Stroika::Foundation::Containers::Concrete {
         using inherited = KeyedCollection<T, KEY_TYPE, TRAITS>;
 
     public:
-        template <typename POTENTIALLY_ADDABLE_T>
-        static constexpr bool IsAddable_v = inherited::template IsAddable_v<POTENTIALLY_ADDABLE_T>;
-        using TraitsType                  = typename inherited::TraitsType;
-        using KeyExtractorType            = typename inherited::KeyExtractorType;
-        using KeyEqualityComparerType     = typename inherited::KeyEqualityComparerType;
-        using KeyType                     = typename inherited::KeyType;
-        using value_type                  = typename inherited::value_type;
+        using TraitsType              = typename inherited::TraitsType;
+        using KeyExtractorType        = typename inherited::KeyExtractorType;
+        using KeyEqualityComparerType = typename inherited::KeyEqualityComparerType;
+        using KeyType                 = typename inherited::KeyType;
+        using value_type              = typename inherited::value_type;
 
     public:
         /**

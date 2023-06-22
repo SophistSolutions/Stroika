@@ -31,8 +31,6 @@ namespace Stroika::Foundation::Containers::Concrete {
         using inherited = Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>;
 
     public:
-        template <typename POTENTIALLY_ADDABLE_T>
-        static constexpr bool IsAddable_v  = inherited::template IsAddable_v<POTENTIALLY_ADDABLE_T>;
         using KeyEqualsCompareFunctionType = typename inherited::KeyEqualsCompareFunctionType;
         using value_type                   = typename inherited::value_type;
         using mapped_type                  = typename inherited::mapped_type;

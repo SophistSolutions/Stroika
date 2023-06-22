@@ -114,13 +114,6 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
-         *  \brief check if the argument type can be passed as argument to the arity/1 overload of Add ()
-         */
-        template <typename POTENTIALLY_ADDABLE_T>
-        static constexpr bool IsAddable_v = is_convertible_v<POTENTIALLY_ADDABLE_T, value_type>;
-
-    public:
-        /**
          *  For the CTOR overload with ITERABLE_OF_ADDABLE, its anything that supports c.begin(), c.end () to find
          *  all the elements, and which has elements (iterated) convertable to T.
          *
@@ -192,9 +185,6 @@ namespace Stroika::Foundation::Containers {
         /**
          *  \note   AddAll/2 is alias for .net AddRange ()
          * 
-         *  \req IsAddable_v<ranges::range_value_t<ITERATOR_OF_ADDABLE>>
-         *  \req IsAddable_v<iter_value_t<ITERABLE_OF_ADDABLE>>
-         *
          *  \note mutates container
          */
         template <IInputIterator<T> ITERATOR_OF_ADDABLE>
@@ -264,8 +254,6 @@ namespace Stroika::Foundation::Containers {
          *  The overloads that remove some subset of the items returns the number of items so removed.
          * 
          *  The overload with Iterator<T> arguments (start/end) must be iterators from this container.
-         *
-         *  \req    for ITERABLE_OF_ADDABLE overload: static_assert (IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>);
          *
          *  \note mutates container
          */
