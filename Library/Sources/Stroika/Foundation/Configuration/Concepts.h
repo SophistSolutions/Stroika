@@ -78,8 +78,8 @@ namespace Stroika::Foundation::Configuration {
         constexpr inline bool HasEq_v_ = HasEq_<T>;
         template <typename T, typename U>
         constexpr inline bool HasEq_v_<std::pair<T, U>> = HasEq_v_<T> and HasEq_v_<U>;
-        //template <typename... Ts>
-       // constexpr inline bool HasEq_v_<std::tuple<Ts...>> = (HasEq_v_<Ts> and ...);
+        template <typename... Ts>
+        constexpr inline bool HasEq_v_<std::tuple<Ts...>> = (HasEq_v_<Ts> and ...);
     }
 
     /**
@@ -88,10 +88,12 @@ namespace Stroika::Foundation::Configuration {
      *  \par Example Usage
      *      \code
      *          struct X {};
-     *          static_assert (not IOperatorEq<X>);
      *          static_assert (IOperatorEq<int>);
-     *          static_assert (not IOperatorEq<pair<X, X>>);
-     *          static_assert (not IOperatorEq<tuple<X, X>>);
+     *          static_assert (not IOperatorEq<X>);
+     *          static_assert (IOperatorEq<pair<int, int>>);
+     *          static_assert (IOperatorEq<tuple<int, string>>);
+     *          static_assert (not IOperatorEq<pair<int, X>>);
+     *          static_assert (not IOperatorEq<tuple<X, int>>);
      *      \endcode
      * 
      *  \note see https://stackoverflow.com/questions/76510385/how-to-do-simple-c-concept-has-eq-that-works-with-stdpair-is-stdpair-op/76510752#76510752
@@ -111,8 +113,8 @@ namespace Stroika::Foundation::Configuration {
         constexpr inline bool HasLt_v_ = HasLtBase_<T>;
         template <typename T, typename U>
         constexpr inline bool HasLt_v_<std::pair<T, U>> = HasLt_v_<T> and HasLt_v_<U>;
-        //template <typename... Ts>
-       // constexpr inline bool HasLt_v_<std::tuple<Ts...>> = (HasLt_v_<Ts> and ...);
+        template <typename... Ts>
+        constexpr inline bool HasLt_v_<std::tuple<Ts...>> = (HasLt_v_<Ts> and ...);
     }
 
     /**

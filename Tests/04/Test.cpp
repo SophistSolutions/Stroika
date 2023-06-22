@@ -182,10 +182,12 @@ namespace {
             }
             {
                 struct X {};
-                static_assert (not IOperatorEq<X>);
                 static_assert (IOperatorEq<int>);
-                static_assert (not IOperatorEq<pair<X, X>>);
-                static_assert (not IOperatorEq<tuple<X, X>>);
+                static_assert (not IOperatorEq<X>);
+                static_assert (IOperatorEq<pair<int, int>>);
+                static_assert (IOperatorEq<tuple<int, string>>);
+                static_assert (not IOperatorEq<pair<int, X>>);
+                static_assert (not IOperatorEq<tuple<X, int>>);
             }
             {
                 using Traversal::Iterator;
