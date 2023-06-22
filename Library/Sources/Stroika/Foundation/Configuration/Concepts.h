@@ -104,17 +104,13 @@ namespace Stroika::Foundation::Configuration {
 
     namespace Private_ {
         template <typename T>
-        concept HasLtBase_ = requires (T t) {
-                                 {
-                                     t < t
-                                     } -> std::convertible_to<bool>;
-                             };
+        concept HasLtBase_ = requires (T t) { { t < t } -> std::convertible_to<bool>; };
         template <typename T>
         constexpr inline bool HasLt_v_ = HasLtBase_<T>;
         template <typename T, typename U>
         constexpr inline bool HasLt_v_<std::pair<T, U>> = HasLt_v_<T> and HasLt_v_<U>;
-        template <typename... Ts>
-        constexpr inline bool HasLt_v_<std::tuple<Ts...>> = (HasLt_v_<Ts> and ...);
+       // template <typename... Ts>
+        //constexpr inline bool HasLt_v_<std::tuple<Ts...>> = (HasLt_v_<Ts> and ...);
     }
 
     /**
@@ -126,6 +122,9 @@ namespace Stroika::Foundation::Configuration {
      *              T a{};
      *              T b{};
      *              return a < b;
+     *          }
+     *          if constexpr (IOperatorLt<T>) {
+     *              f (less<T>{});  // default impl of std::less<T> should work if IOperatorLt<T>
      *          }
      *      \endcode
      * 
