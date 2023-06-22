@@ -31,7 +31,7 @@ namespace Stroika::Foundation::Containers {
     }
 #if !qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
     template <typename T>
-    template <IIterable<T> ITERABLE_OF_ADDABLE>
+    template <IIterableOf<T> ITERABLE_OF_ADDABLE>
         requires (not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, Queue<T>>)
     inline Queue<T>::Queue (ITERABLE_OF_ADDABLE&& src)
         : Queue{}
@@ -99,7 +99,7 @@ namespace Stroika::Foundation::Containers {
         return _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().RemoveHead ();
     }
     template <typename T>
-    template <IIterable<T> ITERABLE_OF_ADDABLE>
+    template <IIterableOf<T> ITERABLE_OF_ADDABLE>
     inline void Queue<T>::AddAllToTail (ITERABLE_OF_ADDABLE&& s)
     {
         _SafeReadWriteRepAccessor<_IRep> tmp{this};

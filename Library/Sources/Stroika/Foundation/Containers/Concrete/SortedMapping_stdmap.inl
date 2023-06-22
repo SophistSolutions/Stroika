@@ -236,7 +236,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     }
 #if !qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-    template <IIterable<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> ITERABLE_OF_ADDABLE>
+    template <IIterableOf<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> ITERABLE_OF_ADDABLE>
         requires (not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, SortedMapping_stdmap<KEY_TYPE, MAPPED_VALUE_TYPE>>)
     inline SortedMapping_stdmap<KEY_TYPE, MAPPED_VALUE_TYPE>::SortedMapping_stdmap (ITERABLE_OF_ADDABLE&& src)
         : SortedMapping_stdmap{}
@@ -247,7 +247,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     }
 #endif
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-    template <IInOrderComparer<KEY_TYPE> KEY_INORDER_COMPARER, IIterable<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> ITERABLE_OF_ADDABLE>
+    template <IInOrderComparer<KEY_TYPE> KEY_INORDER_COMPARER, IIterableOf<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> ITERABLE_OF_ADDABLE>
     inline SortedMapping_stdmap<KEY_TYPE, MAPPED_VALUE_TYPE>::SortedMapping_stdmap (KEY_INORDER_COMPARER&& inorderComparer, ITERABLE_OF_ADDABLE&& src)
         : SortedMapping_stdmap{forward<KEY_INORDER_COMPARER> (inorderComparer)}
     {

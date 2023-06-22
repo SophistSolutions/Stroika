@@ -78,7 +78,7 @@ namespace Stroika::Foundation::Containers {
     using Common::IPotentiallyComparer;
     using Configuration::ArgByValueType;
     using Traversal::IInputIterator;
-    using Traversal::IIterable;
+    using Traversal::IIterableOf;
     using Traversal::Iterable;
     using Traversal::Iterator;
 
@@ -256,7 +256,7 @@ namespace Stroika::Foundation::Containers {
         Sequence (Sequence&& src) noexcept      = default;
         Sequence (const Sequence& src) noexcept = default;
         Sequence (const initializer_list<value_type>& src);
-        template <IIterable<T> ITERABLE_OF_ADDABLE>
+        template <IIterableOf<T> ITERABLE_OF_ADDABLE>
             requires (not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, Sequence<T>>)
         explicit Sequence (ITERABLE_OF_ADDABLE&& src)
 #if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
@@ -460,11 +460,11 @@ namespace Stroika::Foundation::Containers {
         /**
          *  \brief Insert all the given items into this sequence, starting at offset 'i'.
          *
-         *  \req IInputIterator<ITERATOR_OF_ADDABLE, T> or IIterable<ITERABLE_OF_ADDABLE, T>
+         *  \req IInputIterator<ITERATOR_OF_ADDABLE, T> or IIterableOf<ITERABLE_OF_ADDABLE, T>
          */
         template <IInputIterator<T> ITERATOR_OF_ADDABLE>
         nonvirtual void InsertAll (size_t i, ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
-        template <IIterable<T> ITERABLE_OF_ADDABLE>
+        template <IIterableOf<T> ITERABLE_OF_ADDABLE>
         nonvirtual void InsertAll (size_t i, ITERABLE_OF_ADDABLE&& s);
 
     public:
@@ -475,11 +475,11 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
-         *  \req IInputIterator<ITERATOR_OF_ADDABLE, T> or IIterable<ITERABLE_OF_ADDABLE, T>
+         *  \req IInputIterator<ITERATOR_OF_ADDABLE, T> or IIterableOf<ITERABLE_OF_ADDABLE, T>
          *
          *  \note mutates container
          */
-        template <IIterable<T> ITERABLE_OF_ADDABLE>
+        template <IIterableOf<T> ITERABLE_OF_ADDABLE>
         nonvirtual void PrependAll (ITERABLE_OF_ADDABLE&& s);
         template <IInputIterator<T> ITERATOR_OF_ADDABLE>
         nonvirtual void PrependAll (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
@@ -505,7 +505,7 @@ namespace Stroika::Foundation::Containers {
          *
          *  \note mutates container
          */
-        template <IIterable<T> ITERABLE_OF_ADDABLE>
+        template <IIterableOf<T> ITERABLE_OF_ADDABLE>
         nonvirtual void AppendAll (ITERABLE_OF_ADDABLE&& s);
         template <IInputIterator<T> ITERATOR_OF_ADDABLE>
         nonvirtual void AppendAll (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);

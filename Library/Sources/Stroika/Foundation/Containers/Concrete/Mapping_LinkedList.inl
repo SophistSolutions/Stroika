@@ -232,7 +232,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     }
 #if !qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-    template <IIterable<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> ITERABLE_OF_ADDABLE>
+    template <IIterableOf<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> ITERABLE_OF_ADDABLE>
         requires (not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, Mapping_LinkedList<KEY_TYPE, MAPPED_VALUE_TYPE>>)
     inline Mapping_LinkedList<KEY_TYPE, MAPPED_VALUE_TYPE>::Mapping_LinkedList (ITERABLE_OF_ADDABLE&& src)
         : Mapping_LinkedList{}
@@ -242,7 +242,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     }
 #endif
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-    template <IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER, IIterable<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> ITERABLE_OF_ADDABLE>
+    template <IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER, IIterableOf<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> ITERABLE_OF_ADDABLE>
     inline Mapping_LinkedList<KEY_TYPE, MAPPED_VALUE_TYPE>::Mapping_LinkedList (KEY_EQUALS_COMPARER&& keyEqualsComparer, ITERABLE_OF_ADDABLE&& src)
         : Mapping_LinkedList{forward<KEY_EQUALS_COMPARER> (keyEqualsComparer)}
     {

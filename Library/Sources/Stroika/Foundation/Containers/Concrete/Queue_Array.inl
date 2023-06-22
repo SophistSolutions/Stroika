@@ -140,7 +140,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     }
 #if !qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
     template <typename T>
-    template <IIterable<T> ITERABLE_OF_ADDABLE>
+    template <IIterableOf<T> ITERABLE_OF_ADDABLE>
         requires (not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, Queue_Array<T>>)
     inline Queue_Array<T>::Queue_Array (ITERABLE_OF_ADDABLE&& src)
         : Queue_Array{}

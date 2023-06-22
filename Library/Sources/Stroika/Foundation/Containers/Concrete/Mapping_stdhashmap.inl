@@ -270,7 +270,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     }
 #if !qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-    template <IIterable<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> ITERABLE_OF_ADDABLE>
+    template <IIterableOf<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> ITERABLE_OF_ADDABLE>
         requires (is_default_constructible_v<Mapping_stdhashmap<KEY_TYPE, MAPPED_VALUE_TYPE>> and
                   not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, Mapping_stdhashmap<KEY_TYPE, MAPPED_VALUE_TYPE>>)
     inline Mapping_stdhashmap<KEY_TYPE, MAPPED_VALUE_TYPE>::Mapping_stdhashmap (ITERABLE_OF_ADDABLE&& src)
@@ -282,7 +282,7 @@ namespace Stroika::Foundation::Containers::Concrete {
 #endif
 #if !qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-    template <typename HASH, IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER, IIterable<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> ITERABLE_OF_ADDABLE>
+    template <typename HASH, IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER, IIterableOf<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> ITERABLE_OF_ADDABLE>
     inline Mapping_stdhashmap<KEY_TYPE, MAPPED_VALUE_TYPE>::Mapping_stdhashmap (HASH&& hasher, KEY_EQUALS_COMPARER&& keyComparer, ITERABLE_OF_ADDABLE&& src)
         requires (Cryptography::Digest::IHashFunction<HASH, KEY_TYPE> and
                   not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, Mapping_stdhashmap<KEY_TYPE, MAPPED_VALUE_TYPE>>)

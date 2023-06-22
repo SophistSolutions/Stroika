@@ -166,6 +166,24 @@ namespace Stroika::Foundation::Configuration {
                                            };
 
     /**
+     *  A template which ignores its template arguments, and always returns true_type;
+     *  NOT crazy - helpful is template metaprogramming.
+     */
+    template <typename...>
+    using True = true_type;
+
+    /**
+    // Concepts let you construct a 'template' of one arg from one with two args, but class, and variable templates don't allow
+    // this; but this magic trick of double indirection does allow it. And cannot use concepts as template arguments to another template
+    // sadly, so need this trick...
+     */
+    template <typename T>
+    struct ConvertibleTo {
+        template <typename POTENTIALLY_ADDABLE_T>
+        using Test = is_convertible<POTENTIALLY_ADDABLE_T, T>;
+    };
+
+    /**
      *  \brief Concept checks if the given type T has a const size() method which can be called to return a size_t.
      * 
      *  \par Example Usage
@@ -407,7 +425,7 @@ namespace Stroika::Foundation::Configuration {
             integral_constant<bool, not is_same<typename IsIterableOfT_Impl2_<ITERABLE_OF_T, T>::type, substitution_failure>::value>;
     }
     template <typename ITERABLE_OF_T, typename T>
-    [[deprecated ("Since Stroika v3.0d1 use Traversal::IIterable concept")]] constexpr bool IsIterableOfT_v =
+    [[deprecated ("Since Stroika v3.0d1 use Traversal::IIterableOf concept")]] constexpr bool IsIterableOfT_v =
         Private_::IsIterableOfT_t<ITERABLE_OF_T, T>::value;
 
     namespace Private_ {

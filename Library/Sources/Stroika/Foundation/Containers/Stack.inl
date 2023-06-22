@@ -26,7 +26,7 @@ namespace Stroika::Foundation::Containers {
     }
 #if !qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
     template <typename T>
-    template <IIterable<T> ITERABLE_OF_ADDABLE>
+    template <IIterableOf<T> ITERABLE_OF_ADDABLE>
     inline Stack<T>::Stack (ITERABLE_OF_ADDABLE&& src)
         requires (not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, Stack<T>>)
         : Stack{}

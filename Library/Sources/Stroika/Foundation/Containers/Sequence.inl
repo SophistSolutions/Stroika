@@ -109,7 +109,7 @@ namespace Stroika::Foundation::Containers {
     }
 #if !qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
     template <typename T>
-    template <IIterable<T> ITERABLE_OF_ADDABLE>
+    template <IIterableOf<T> ITERABLE_OF_ADDABLE>
         requires (not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, Sequence<T>>)
     inline Sequence<T>::Sequence (ITERABLE_OF_ADDABLE&& src)
         : Sequence{}
@@ -267,7 +267,7 @@ namespace Stroika::Foundation::Containers {
         }
     }
     template <typename T>
-    template <IIterable<T> ITERABLE_OF_ADDABLE>
+    template <IIterableOf<T> ITERABLE_OF_ADDABLE>
     inline void Sequence<T>::InsertAll (size_t i, ITERABLE_OF_ADDABLE&& s)
     {
         Require (i <= this->size ());
@@ -279,7 +279,7 @@ namespace Stroika::Foundation::Containers {
         Insert (0, item);
     }
     template <typename T>
-    template <IIterable<T> ITERABLE_OF_ADDABLE>
+    template <IIterableOf<T> ITERABLE_OF_ADDABLE>
     inline void Sequence<T>::PrependAll (ITERABLE_OF_ADDABLE&& s)
     {
         InsertAll (0, forward<ITERABLE_OF_ADDABLE> (s));
@@ -296,7 +296,7 @@ namespace Stroika::Foundation::Containers {
         _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().Insert (_IRep::_kSentinalLastItemIndex, &item, &item + 1);
     }
     template <typename T>
-    template <IIterable<T> ITERABLE_OF_ADDABLE>
+    template <IIterableOf<T> ITERABLE_OF_ADDABLE>
     inline void Sequence<T>::AppendAll (ITERABLE_OF_ADDABLE&& s)
     {
         AppendAll (s.begin (), s.end ());

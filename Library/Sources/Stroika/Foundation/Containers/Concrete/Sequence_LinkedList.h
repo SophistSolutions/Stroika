@@ -50,7 +50,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         Sequence_LinkedList (Sequence_LinkedList&& src) noexcept      = default;
         Sequence_LinkedList (const Sequence_LinkedList& src) noexcept = default;
         Sequence_LinkedList (const initializer_list<value_type>& src);
-        template <IIterable<T> ITERABLE_OF_ADDABLE>
+        template <IIterableOf<T> ITERABLE_OF_ADDABLE>
             requires (not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, Sequence_LinkedList<T>>)
         explicit Sequence_LinkedList (ITERABLE_OF_ADDABLE&& src)
 #if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy

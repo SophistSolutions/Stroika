@@ -148,7 +148,7 @@ namespace {
             template <typename TT>
             void TEST ()
             {
-                static_assert (Traversal::IIterableWith<vector<TT>, Private_::CONTAINER<TT>::template IsAddable_t>);
+                static_assert (Traversal::IIterable<vector<TT>, Private_::CONTAINER<TT>::template IsAddable_t>);
             }
         }
         void DoAll ()
@@ -208,10 +208,10 @@ namespace {
                 static_assert (input_iterator<Iterator<int>>); // @todo figure out why forward_iterator doesn't work here, but maybe OK
             }
             {
-                static_assert (Traversal::IIterable<vector<int>, int>);
-                static_assert (not Traversal::IIterable<vector<int>, char*>);
-                static_assert (not Traversal::IIterable<vector<int>, String>);
-                static_assert (not Traversal::IIterable<char, String>);
+                static_assert (Traversal::IIterableOf<vector<int>, int>);
+                static_assert (not Traversal::IIterableOf<vector<int>, char*>);
+                static_assert (not Traversal::IIterableOf<vector<int>, String>);
+                static_assert (not Traversal::IIterableOf<char, String>);
             }
             {
                 // Test from https://stackoverflow.com/questions/7943525/is-it-possible-to-figure-out-the-parameter-type-and-return-type-of-a-lambda
@@ -222,8 +222,8 @@ namespace {
                 static_assert (std::is_same<int, traits::arg<0>::type>::value);
             }
             {
-                static_assert (Traversal::IIterableWith<vector<int>, Private_::CONTAINER<int>::IsAddable_t>);
-                static_assert (not Traversal::IIterableWith<vector<char*>, Private_::CONTAINER<int>::IsAddable_t>);
+                static_assert (Traversal::IIterable<vector<int>, Private_::CONTAINER<int>::IsAddable_t>);
+                static_assert (not Traversal::IIterable<vector<char*>, Private_::CONTAINER<int>::IsAddable_t>);
                 Private_::TEST<int> ();
             }
             {

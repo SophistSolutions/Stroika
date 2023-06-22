@@ -64,24 +64,15 @@ namespace Stroika::Foundation::Traversal {
     using Configuration::ArgByValueType;
 
     /**
-    *   @todo INTEGRATE WITH (RENAMES) existing IIterable<OF_T> - and IsAddable_v, etc...
+    *   @todo INTEGRATE WITH (RENAMES) existing IIterableOf<OF_T> - and IsAddable_v, etc...
     * 
     * https://stackoverflow.com/questions/76532448/combining-concepts-in-c-via-parameter
      */
-    template <typename ITERABLE, template <typename> typename ITEM_PREDICATE>
-    concept IIterableWith = ranges::range<ITERABLE> and ITEM_PREDICATE<ranges::range_value_t<ITERABLE>>::value;
-
-    // Concepts let you construct a 'template' of one arg from one with two args, but class, and variable templates don't allow
-    // this; but this magic trick of double indirection does allow it. And cannot use concepts as template arguments to another template
-    // sadly, so need this trick...
-    template <typename T>
-    struct IsAddableOfT {
-        template <typename POTENTIALLY_ADDABLE_T>
-        using Test = is_convertible<POTENTIALLY_ADDABLE_T, T>;
-    };
+    template <typename ITERABLE, template <typename> typename ITEM_PREDICATE = Configuration::True>
+    concept IIterable = ranges::range<ITERABLE> and ITEM_PREDICATE<ranges::range_value_t<ITERABLE>>::value;
 
     /**
-     *  IIterable concept: std::ranges::range and iterated over values convertible to OF_T
+     *  IIterableOf concept: std::ranges::range and iterated over values convertible to OF_T
      *
      *  Checks if argument is ranges::range and if the value of items iterated over is convertible to OF_T.
      * 
@@ -91,12 +82,11 @@ namespace Stroika::Foundation::Traversal {
      *  a subetype) - it wouldn't be producing an Iterable of that type, but a Set or Collection or some such).
      */
     template <typename ITERABLE, typename OF_T>
-    //concept IIterable = ranges::range<ITERABLE> and is_convertible_v<ranges::range_value_t<ITERABLE>, OF_T>;
-    concept IIterable = IIterableWith<ITERABLE, IsAddableOfT<OF_T>::template Test>;
-    static_assert (IIterable<vector<int>, int>);
-    static_assert (IIterable<vector<long int>, int>);
-    static_assert (IIterable<vector<int>, long int>);
-    static_assert (not IIterable<vector<string>, int>);
+    concept IIterableOf = IIterable<ITERABLE, Configuration::ConvertibleTo<OF_T>::template Test>;
+    static_assert (IIterableOf<vector<int>, int>);
+    static_assert (IIterableOf<vector<long int>, int>);
+    static_assert (IIterableOf<vector<int>, long int>);
+    static_assert (not IIterableOf<vector<string>, int>);
 
     /**
      *  \brief  Iterable<T> is a base class for containers which easily produce an Iterator<T>
@@ -220,7 +210,7 @@ namespace Stroika::Foundation::Traversal {
     class Iterable {
     public:
         static_assert (is_copy_constructible_v<Iterator<T>>, "Must be able to create Iterator<T> to use Iterable<T>");
-        // static_assert (IIterable<Iterable<T>, T>);   -- Logically true, but doesn't work presumably cuz Iterable<T> incomplete type at this stage, but should be doable!
+        // static_assert (IIterableOf<Iterable<T>, T>);   -- Logically true, but doesn't work presumably cuz Iterable<T> incomplete type at this stage, but should be doable!
 
     public:
         /**

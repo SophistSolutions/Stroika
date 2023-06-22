@@ -34,7 +34,7 @@ namespace Stroika::Foundation::Math::LinearAlgebra {
         Vector (size_t dimension);
         Vector (size_t dimension, Configuration::ArgByValueType<T> fillValue);
         Vector (size_t dimension, const function<T ()>& filler);
-        template <Traversal::IIterable<T> CONTAINER_OF_T>
+        template <Traversal::IIterableOf<T> CONTAINER_OF_T>
         Vector (const CONTAINER_OF_T& c);
 
 #if Stroika_Foundation_Math_LinearAlgebra_Vector_ALLOW_MUTATION

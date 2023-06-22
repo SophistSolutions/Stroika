@@ -52,7 +52,7 @@ namespace Stroika::Foundation::Containers {
     using Common::IEqualsComparer;
     using Configuration::ArgByValueType;
     using Traversal::IInputIterator;
-    using Traversal::IIterable;
+    using Traversal::IIterableOf;
     using Traversal::Iterable;
     using Traversal::Iterator;
 
@@ -190,7 +190,7 @@ namespace Stroika::Foundation::Containers {
         MultiSet (const initializer_list<value_type>& src);
         template <IEqualsComparer<T> EQUALS_COMPARER>
         MultiSet (EQUALS_COMPARER&& equalsComparer, const initializer_list<value_type>& src);
-        template <IIterable<CountedValue<T>> ITERABLE_OF_ADDABLE>
+        template <IIterableOf<CountedValue<T>> ITERABLE_OF_ADDABLE>
         explicit MultiSet (ITERABLE_OF_ADDABLE&& src)
             requires (not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, MultiSet<T, TRAITS>>)
 #if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
@@ -201,7 +201,7 @@ namespace Stroika::Foundation::Containers {
         }
 #endif
         ;
-        template <IEqualsComparer<T> EQUALS_COMPARER, IIterable<CountedValue<T>> ITERABLE_OF_ADDABLE>
+        template <IEqualsComparer<T> EQUALS_COMPARER, IIterableOf<CountedValue<T>> ITERABLE_OF_ADDABLE>
         MultiSet (EQUALS_COMPARER&& equalsComparer, ITERABLE_OF_ADDABLE&& src);
         template <IInputIterator<CountedValue<T>> ITERATOR_OF_ADDABLE>
         MultiSet (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
@@ -236,13 +236,13 @@ namespace Stroika::Foundation::Containers {
          *  \note   AddAll/2 is alias for .net AddRange ()
          *          and AddAll/2 - the iterator can be Iterator<T> or Iterator<CountedValue<T>>
          *
-         *  \req IInputIterator<CountedValue<T>> or IIterable<CountedValue<T>>
+         *  \req IInputIterator<CountedValue<T>> or IIterableOf<CountedValue<T>>
          *
          *  \note mutates container
          */
         template <IInputIterator<CountedValue<T>> ITERATOR_OF_ADDABLE>
         nonvirtual void AddAll (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
-        template <IIterable<CountedValue<T>> ITERABLE_OF_ADDABLE>
+        template <IIterableOf<CountedValue<T>> ITERABLE_OF_ADDABLE>
         nonvirtual void AddAll (ITERABLE_OF_ADDABLE&& items);
 
     public:

@@ -37,7 +37,7 @@ namespace Stroika::Foundation::Containers {
 
     using Configuration::ArgByValueType;
     using Traversal::IInputIterator;
-    using Traversal::IIterable;
+    using Traversal::IIterableOf;
     using Traversal::Iterable;
     using Traversal::Iterator;
 
@@ -114,7 +114,7 @@ namespace Stroika::Foundation::Containers {
         Queue (Queue&& src) noexcept      = default;
         Queue (const Queue& src) noexcept = default;
         Queue (const initializer_list<value_type>& src);
-        template <IIterable<T> ITERABLE_OF_ADDABLE>
+        template <IIterableOf<T> ITERABLE_OF_ADDABLE>
             requires (not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, Queue<T>>)
         explicit Queue (ITERABLE_OF_ADDABLE&& src)
 #if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
@@ -194,14 +194,14 @@ namespace Stroika::Foundation::Containers {
          *
          *  This also implies that ordering will be preserved in iterating over the Queue, or in Dequeing those elements.
          *
-         *  \req  IIterable<ITERABLE_OF_ADDABLE, T>  or IInputIterator<T>
+         *  \req  IIterableOf<ITERABLE_OF_ADDABLE, T>  or IInputIterator<T>
          * 
          *  \note This works efficiently because a Queue<> iterates from head to tail, and thats the order in which you would want to
          *        add them to copy the Queue (unlike with Stack).
          *
          *  \note mutates container
          */
-        template <IIterable<T> ITERABLE_OF_ADDABLE>
+        template <IIterableOf<T> ITERABLE_OF_ADDABLE>
         nonvirtual void AddAllToTail (ITERABLE_OF_ADDABLE&& s);
         template <IInputIterator<T> ITERATOR_OF_ADDABLE>
         nonvirtual void AddAllToTail (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);

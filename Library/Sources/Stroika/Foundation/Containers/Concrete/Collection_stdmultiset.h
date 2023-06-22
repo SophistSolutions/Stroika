@@ -58,7 +58,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         Collection_stdmultiset (Collection_stdmultiset&& src) noexcept      = default;
         Collection_stdmultiset (const Collection_stdmultiset& src) noexcept = default;
         Collection_stdmultiset (const initializer_list<value_type>& src);
-        template <IIterable<T> ITERABLE_OF_ADDABLE>
+        template <IIterableOf<T> ITERABLE_OF_ADDABLE>
             requires (not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, Collection_stdmultiset<T>>)
         Collection_stdmultiset (ITERABLE_OF_ADDABLE&& src)
 #if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy

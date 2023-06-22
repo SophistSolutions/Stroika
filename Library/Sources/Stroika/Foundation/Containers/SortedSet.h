@@ -98,7 +98,7 @@ namespace Stroika::Foundation::Containers {
         SortedSet (const initializer_list<T>& src);
         template <IInOrderComparer<T> INORDER_COMPARER>
         SortedSet (INORDER_COMPARER&& inOrderComparer, const initializer_list<T>& src);
-        template <IIterable<T> ITERABLE_OF_ADDABLE>
+        template <IIterableOf<T> ITERABLE_OF_ADDABLE>
         explicit SortedSet (ITERABLE_OF_ADDABLE&& src)
             requires (not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, SortedSet<T>>)
 #if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
@@ -109,7 +109,7 @@ namespace Stroika::Foundation::Containers {
         }
 #endif
         ;
-        template <IInOrderComparer<T> INORDER_COMPARER, IIterable<T> ITERABLE_OF_ADDABLE>
+        template <IInOrderComparer<T> INORDER_COMPARER, IIterableOf<T> ITERABLE_OF_ADDABLE>
         SortedSet (INORDER_COMPARER&& inOrderComparer, ITERABLE_OF_ADDABLE&& src);
         template <IInputIterator<T> ITERATOR_OF_ADDABLE>
         SortedSet (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);

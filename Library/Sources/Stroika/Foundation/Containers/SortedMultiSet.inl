@@ -71,7 +71,7 @@ namespace Stroika::Foundation::Containers {
     }
 #if !qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
     template <typename T, typename TRAITS>
-    template <IIterable<CountedValue<T>> ITERABLE_OF_ADDABLE>
+    template <IIterableOf<CountedValue<T>> ITERABLE_OF_ADDABLE>
     inline SortedMultiSet<T, TRAITS>::SortedMultiSet (ITERABLE_OF_ADDABLE&& src)
         requires (not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, SortedMultiSet<T, TRAITS>>)
         : SortedMultiSet{}
@@ -81,7 +81,7 @@ namespace Stroika::Foundation::Containers {
     }
 #endif
     template <typename T, typename TRAITS>
-    template <Common::IInOrderComparer<T> INORDER_COMPARER, IIterable<CountedValue<T>> ITERABLE_OF_ADDABLE>
+    template <Common::IInOrderComparer<T> INORDER_COMPARER, IIterableOf<CountedValue<T>> ITERABLE_OF_ADDABLE>
     inline SortedMultiSet<T, TRAITS>::SortedMultiSet (INORDER_COMPARER&& inorderComparer, ITERABLE_OF_ADDABLE&& src)
         : SortedMultiSet{forward<INORDER_COMPARER> (inorderComparer)}
     {

@@ -226,7 +226,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     }
 #if !qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
     template <typename T, typename TRAITS>
-    template <IIterable<CountedValue<T>> ITERABLE_OF_ADDABLE>
+    template <IIterableOf<CountedValue<T>> ITERABLE_OF_ADDABLE>
         requires (not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, MultiSet_stdmap<T, TRAITS>>)
     inline MultiSet_stdmap<T, TRAITS>::MultiSet_stdmap (ITERABLE_OF_ADDABLE&& src)
         : MultiSet_stdmap{}
@@ -236,7 +236,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     }
 #endif
     template <typename T, typename TRAITS>
-    template <IInOrderComparer<T> INORDER_COMPARER, IIterable<CountedValue<T>> ITERABLE_OF_ADDABLE>
+    template <IInOrderComparer<T> INORDER_COMPARER, IIterableOf<CountedValue<T>> ITERABLE_OF_ADDABLE>
     inline MultiSet_stdmap<T, TRAITS>::MultiSet_stdmap (INORDER_COMPARER&& comparer, ITERABLE_OF_ADDABLE&& src)
         : MultiSet_stdmap{forward<INORDER_COMPARER> (comparer)}
     {

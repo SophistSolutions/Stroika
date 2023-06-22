@@ -201,7 +201,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     }
 #if !qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
     template <typename T>
-    template <IIterable<T> ITERABLE_OF_ADDABLE>
+    template <IIterableOf<T> ITERABLE_OF_ADDABLE>
         requires (not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, Set_LinkedList<T>>)
     inline Set_LinkedList<T>::Set_LinkedList (ITERABLE_OF_ADDABLE&& src)
         : Set_LinkedList{}
@@ -211,7 +211,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     }
 #endif
     template <typename T>
-    template <IEqualsComparer<T> EQUALS_COMPARER, IIterable<T> ITERABLE_OF_ADDABLE>
+    template <IEqualsComparer<T> EQUALS_COMPARER, IIterableOf<T> ITERABLE_OF_ADDABLE>
     inline Set_LinkedList<T>::Set_LinkedList (EQUALS_COMPARER&& equalsComparer, ITERABLE_OF_ADDABLE&& src)
         : Set_LinkedList{forward<EQUALS_COMPARER> (equalsComparer)}
     {

@@ -198,7 +198,7 @@ Each container Archetype has its own set of arguments that make sense for its co
   - Note, the reason for the not_is_base_of<> magic is to avoid ambiguity with copy constructor (not SURE WHY this is needed but it was needed in some cases - maybe due to bugs - maybe can lose - I recall docs on C++ suggest NOT needed). https://stackoverflow.com/questions/4419375/templated-constructor-vs-templated-copy-constructor seems to suggest it is needed (not authoritative). But I seem to recall reading (https://stackoverflow.com/questions/23244665/c-overloading-takes-precedence-over-specialization) that explictly defined copy constructors take precedence over template defined ones. So confused by this, but it appears still needed (2021-12-03).
 
     ~~~
-    template <IIterable<T> ITERABLE_OF_ADDABLE>
+    template <IIterableOf<T> ITERABLE_OF_ADDABLE>
     CONTAINER (ITERABLE_OF_ADDABLE&& src)
         requires (not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, CONTAINER<T>>)
     {
@@ -234,7 +234,7 @@ Each container Archetype has its own set of arguments that make sense for its co
 Often ArchTypes will have additional required data, like an Extractor function, or InOrderComparer. Support for these parameters will generally multiply several of the above overloads allowing those parameters to be specified. Those functions will generally be checked with 'concept-like' SFINAE type checkers to avoid constructor ambiguity.
 
 ~~~
-template <IIterable<T> ITERABLE_OF_ADDABLE, IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER = equal_to<KEY_TYPE>>
+template <IIterableOf<T> ITERABLE_OF_ADDABLE, IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER = equal_to<KEY_TYPE>>
         KeyedCollection (ITERABLE_OF_ADDABLE&& src)
             requires (KeyedCollection_ExtractorCanBeDefaulted<T, KEY_TYPE, TRAITS> and
                       not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, KeyedCollection<T, KEY_TYPE, TRAITS>>)

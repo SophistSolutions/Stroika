@@ -55,7 +55,7 @@ namespace Stroika::Foundation::Containers {
     }
 #if !qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-    template <IIterable<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> ITERABLE_OF_ADDABLE>
+    template <IIterableOf<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> ITERABLE_OF_ADDABLE>
     inline Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::Mapping (ITERABLE_OF_ADDABLE&& src)
         requires (not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>>)
         : Mapping{}
@@ -65,7 +65,7 @@ namespace Stroika::Foundation::Containers {
     }
 #endif
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-    template <IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER, IIterable<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> ITERABLE_OF_ADDABLE>
+    template <IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER, IIterableOf<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> ITERABLE_OF_ADDABLE>
     inline Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::Mapping (KEY_EQUALS_COMPARER&& keyEqualsComparer, ITERABLE_OF_ADDABLE&& src)
         : Mapping{forward<KEY_EQUALS_COMPARER> (keyEqualsComparer)}
     {
@@ -205,7 +205,7 @@ namespace Stroika::Foundation::Containers {
         return cntAdded;
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-    template <IIterable<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> ITERABLE_OF_ADDABLE>
+    template <IIterableOf<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> ITERABLE_OF_ADDABLE>
     inline unsigned int Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::AddAll (ITERABLE_OF_ADDABLE&& items, AddReplaceMode addReplaceMode)
     {
         if constexpr (std::is_convertible_v<remove_cvref_t<ITERABLE_OF_ADDABLE>*, Iterable<value_type>*>) {
@@ -313,7 +313,7 @@ namespace Stroika::Foundation::Containers {
         writerRep->Update (patchedIterator, newValue, nextI);
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-    template <IIterable<KEY_TYPE> ITERABLE_OF_KEY_TYPE>
+    template <IIterableOf<KEY_TYPE> ITERABLE_OF_KEY_TYPE>
     void Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::RetainAll (const ITERABLE_OF_KEY_TYPE& items)
     {
         // @see https://stroika.atlassian.net/browse/STK-539
@@ -415,7 +415,7 @@ namespace Stroika::Foundation::Containers {
         RemoveAll ();
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-    template <IIterable<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> ITERABLE_OF_ADDABLE>
+    template <IIterableOf<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> ITERABLE_OF_ADDABLE>
     inline Mapping<KEY_TYPE, MAPPED_VALUE_TYPE> Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::operator+ (const ITERABLE_OF_ADDABLE& items) const
     {
         Mapping<KEY_TYPE, MAPPED_VALUE_TYPE> result = *this;
@@ -423,7 +423,7 @@ namespace Stroika::Foundation::Containers {
         return result;
     }
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-    template <IIterable<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> ITERABLE_OF_ADDABLE>
+    template <IIterableOf<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> ITERABLE_OF_ADDABLE>
     inline Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>& Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::operator+= (const ITERABLE_OF_ADDABLE& items)
     {
         AddAll (items);

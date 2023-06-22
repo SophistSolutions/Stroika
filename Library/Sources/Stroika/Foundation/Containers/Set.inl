@@ -46,7 +46,7 @@ namespace Stroika::Foundation::Containers {
     }
 #if !qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
     template <typename T>
-    template <IIterable<T> ITERABLE_OF_ADDABLE>
+    template <IIterableOf<T> ITERABLE_OF_ADDABLE>
         requires (not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, Set<T>>)
     inline Set<T>::Set (ITERABLE_OF_ADDABLE&& src)
         : Set{}
@@ -56,7 +56,7 @@ namespace Stroika::Foundation::Containers {
     }
 #endif
     template <typename T>
-    template <IEqualsComparer<T> EQUALS_COMPARER, IIterable<T> ITERABLE_OF_ADDABLE>
+    template <IEqualsComparer<T> EQUALS_COMPARER, IIterableOf<T> ITERABLE_OF_ADDABLE>
     inline Set<T>::Set (EQUALS_COMPARER&& equalsComparer, ITERABLE_OF_ADDABLE&& src)
         : Set{forward<EQUALS_COMPARER> (equalsComparer)}
     {
@@ -169,7 +169,7 @@ namespace Stroika::Foundation::Containers {
         }
     }
     template <typename T>
-    template <IIterable<T> ITERABLE_OF_ADDABLE>
+    template <IIterableOf<T> ITERABLE_OF_ADDABLE>
     inline void Set<T>::AddAll (ITERABLE_OF_ADDABLE&& items)
     {
         if constexpr (std::is_convertible_v<remove_cvref_t<ITERABLE_OF_ADDABLE>*, const Iterable<value_type>*>) {
@@ -211,7 +211,7 @@ namespace Stroika::Foundation::Containers {
         return cnt;
     }
     template <typename T>
-    template <IIterable<T> ITERABLE_OF_ADDABLE>
+    template <IIterableOf<T> ITERABLE_OF_ADDABLE>
     inline size_t Set<T>::RemoveAll (const ITERABLE_OF_ADDABLE& s)
     {
         return RemoveAll (std::begin (s), std::end (s));
