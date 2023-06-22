@@ -157,10 +157,13 @@ namespace {
             using namespace Configuration;
 
             {
-                static_assert (IOperatorEq<int>);
-                static_assert (not IOperatorEq<SimpleClassWithoutComparisonOperators>);
                 static_assert (IOperatorLt<int>);
+                static_assert (IOperatorLt<pair<int, int>>);
+                static_assert (IOperatorLt<SimpleClass>);
+                static_assert (IOperatorLt<pair<SimpleClass, SimpleClass>>);
                 static_assert (not IOperatorLt<SimpleClassWithoutComparisonOperators>);
+                static_assert (not IOperatorLt<SimpleClassWithoutComparisonOperators>);
+                static_assert (not IOperatorLt<pair<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators>>);
             }
             {
                 static_assert (IEqualToOptimizable<int> );
@@ -179,6 +182,15 @@ namespace {
                     static_assert (not IOperatorEq<TableProvisioner>);
                     static_assert (not IEqualToOptimizable<TableProvisioner>);
                 }
+            }
+            {
+                struct X {};
+                static_assert (IOperatorLt<int>);
+                static_assert (not IOperatorLt<X>);
+                static_assert (IOperatorLt<pair<int, int>>);
+                static_assert (IOperatorLt<tuple<int, string>>);
+                static_assert (not IOperatorLt<pair<int, X>>);
+                static_assert (not IOperatorLt<tuple<X, int>>);
             }
             {
                 struct X {};
