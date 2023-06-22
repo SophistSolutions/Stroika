@@ -173,9 +173,9 @@ namespace Stroika::Foundation::Configuration {
     using True = true_type;
 
     /**
-    // Concepts let you construct a 'template' of one arg from one with two args, but class, and variable templates don't allow
-    // this; but this magic trick of double indirection does allow it. And cannot use concepts as template arguments to another template
-    // sadly, so need this trick...
+     * Concepts let you construct a 'template' of one arg from one with two args, but class, and variable templates don't allow
+     * this; but this magic trick of double indirection does allow it. And cannot use concepts as template arguments to another template
+     * sadly, so need this trick...
      */
     template <typename T>
     struct ConvertibleTo {

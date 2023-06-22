@@ -64,22 +64,19 @@ namespace Stroika::Foundation::Traversal {
     using Configuration::ArgByValueType;
 
     /**
-    *   @todo INTEGRATE WITH (RENAMES) existing IIterableOf<OF_T> - and IsAddable_v, etc...
-    * 
-    * https://stackoverflow.com/questions/76532448/combining-concepts-in-c-via-parameter
+     *  IIterable concept: std::ranges::range and iterated over values satisify argument predicate (if given)
+     *
+     *  Checks if argument is ranges::range and if the value of items iterated over ITEM_PREDICATE.
+     * 
+     * https://stackoverflow.com/questions/76532448/combining-concepts-in-c-via-parameter
      */
     template <typename ITERABLE, template <typename> typename ITEM_PREDICATE = Configuration::True>
     concept IIterable = ranges::range<ITERABLE> and ITEM_PREDICATE<ranges::range_value_t<ITERABLE>>::value;
 
     /**
-     *  IIterableOf concept: std::ranges::range and iterated over values convertible to OF_T
+     *  IIterableOf concept: IIterable with the constraint that the items produced by iteration are 'ConvertibleTo' the argument OF_T type
      *
      *  Checks if argument is ranges::range and if the value of items iterated over is convertible to OF_T.
-     * 
-     *  Considered calling this IIterableOfFromT, and having an IIterableOfToT, but that wouldn't make sense
-     *  since you cannot write to an iterator. May make sense in some container situations, but not here. Or
-     *  maybe IIterableProducingT? Even if there is a situation where that makes sense (e.g. an algorithm producing
-     *  a subetype) - it wouldn't be producing an Iterable of that type, but a Set or Collection or some such).
      */
     template <typename ITERABLE, typename OF_T>
     concept IIterableOf = IIterable<ITERABLE, Configuration::ConvertibleTo<OF_T>::template Test>;
@@ -94,8 +91,6 @@ namespace Stroika::Foundation::Traversal {
      *
      *  The Stroika iterators can be used either directly (similar to std::range), or in the STL begin/end style -
      *  and this class supports both styles of usage.
-     * 
-     *  \todo https://stroika.atlassian.net/browse/STK-975 - work with std::range
      * 
      *  Iterable<T> also supports read-only applicative operations on the contained data.
      *
