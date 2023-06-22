@@ -65,20 +65,20 @@ namespace Stroika::Foundation::Traversal {
 
     /**
     *   @todo INTEGRATE WITH (RENAMES) existing IIterable<OF_T> - and IsAddable_v, etc...
+    * 
+    * https://stackoverflow.com/questions/76532448/combining-concepts-in-c-via-parameter
      */
     template <typename ITERABLE, template <typename> typename ITEM_PREDICATE>
     concept IIterableWith = ranges::range<ITERABLE> and ITEM_PREDICATE<ranges::range_value_t<ITERABLE>>::value;
 
-    namespace Private_ {
-        // Concepts let you construct a 'template' of one arg from one with two args, but class, and variable templates don't allow
-        // this; but this magic trick of double indirection does allow it. And cannot use concepts as template arguments to another template
-        // sadly, so need this trick...
-        template <typename T>
-        struct IsAddableOfT {
-            template <typename POTENTIALLY_ADDABLE_T>
-            using Test = is_convertible<POTENTIALLY_ADDABLE_T, T>;
-        };
-    }
+    // Concepts let you construct a 'template' of one arg from one with two args, but class, and variable templates don't allow
+    // this; but this magic trick of double indirection does allow it. And cannot use concepts as template arguments to another template
+    // sadly, so need this trick...
+    template <typename T>
+    struct IsAddableOfT {
+        template <typename POTENTIALLY_ADDABLE_T>
+        using Test = is_convertible<POTENTIALLY_ADDABLE_T, T>;
+    };
 
     /**
      *  IIterable concept: std::ranges::range and iterated over values convertible to OF_T
@@ -91,8 +91,8 @@ namespace Stroika::Foundation::Traversal {
      *  a subetype) - it wouldn't be producing an Iterable of that type, but a Set or Collection or some such).
      */
     template <typename ITERABLE, typename OF_T>
-    concept IIterable = ranges::range<ITERABLE> and is_convertible_v<ranges::range_value_t<ITERABLE>, OF_T>;
-    //concept IIterable = IIterableWith<ITERABLE, typename Private_::IsAddableOfT<OF_T>::Test>;
+    //concept IIterable = ranges::range<ITERABLE> and is_convertible_v<ranges::range_value_t<ITERABLE>, OF_T>;
+    concept IIterable = IIterableWith<ITERABLE, IsAddableOfT<OF_T>::template Test>;
     static_assert (IIterable<vector<int>, int>);
     static_assert (IIterable<vector<long int>, int>);
     static_assert (IIterable<vector<int>, long int>);
