@@ -63,39 +63,6 @@ namespace Stroika::Foundation::Common {
         }
     }
 
-#if 0
-    /*
-     ********************************************************************************
-     ****************** IsPotentiallyComparerRelation<FUNCTOR> **********************
-     ********************************************************************************
-     */
-    template <typename FUNCTOR, typename FUNCTOR_ARG>
-    constexpr bool IsPotentiallyComparerRelation ()
-    {
-        if constexpr (is_invocable_v<FUNCTOR, FUNCTOR_ARG, FUNCTOR_ARG>) {
-            return std::is_convertible_v<std::invoke_result_t<FUNCTOR, FUNCTOR_ARG, FUNCTOR_ARG>, bool>;
-        }
-        return false;
-    }
-    template <typename FUNCTOR>
-    constexpr bool IsPotentiallyComparerRelation ()
-    {
-        if constexpr (Configuration::FunctionTraits<FUNCTOR>::kArity == 2) {
-            using TRAITS = typename Configuration::FunctionTraits<FUNCTOR>;
-            return is_same_v<typename TRAITS::template arg<0>::type, typename TRAITS::template arg<1>::type> and
-                   IsPotentiallyComparerRelation<FUNCTOR, typename Configuration::FunctionTraits<FUNCTOR>::template arg<0>::type> ();
-        }
-        else {
-            return false;
-        }
-    }
-    template <typename FUNCTOR>
-    constexpr bool IsPotentiallyComparerRelation (const FUNCTOR& f)
-    {
-        return IsPotentiallyComparerRelation<FUNCTOR> ();
-    }
-#endif
-
     /*
      ********************************************************************************
      ********** ComparisonRelationDeclaration<TYPE, ACTUAL_COMPARER> ****************
