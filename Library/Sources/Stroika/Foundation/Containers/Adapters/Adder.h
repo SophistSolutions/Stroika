@@ -91,7 +91,7 @@ namespace Stroika::Foundation::Containers::Adapters {
 
     /**
      */
-    template <typename CONTAINER_TYPE>
+    template <IAddableTo CONTAINER_TYPE>
     struct Adder {
     public:
         /**
