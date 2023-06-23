@@ -47,26 +47,6 @@ namespace std {
 
 namespace Stroika::Foundation::Common {
 
-    constexpr std::strong_ordering kLess [[deprecated ("Since Stroika 3.0d1 - use std::strong_ordering")]]  = std::strong_ordering::less;
-    constexpr std::strong_ordering kEqual [[deprecated ("Since Stroika 3.0d1 - use std::strong_ordering")]] = std::strong_ordering::equal;
-    constexpr std::strong_ordering kGreater [[deprecated ("Since Stroika 3.0d1 - use std::strong_ordering")]] = std::strong_ordering::greater;
-
-#if qCompilerAndStdLib_stdlib_compare_three_way_present_but_Buggy or qCompilerAndStdLib_stdlib_compare_three_way_missing_Buggy
-    struct compare_three_way_BWA {
-        // NOTE - this workaround is GENERALLY INADEQUATE, but is adequate for my current use in Stroika -- LGP 2022-11-01
-        template <typename LT, typename RT>
-        constexpr auto operator() (LT&& lhs, RT&& rhs) const
-        {
-            using CT = common_type_t<LT, RT>;
-            if (equal_to<CT>{}(forward<LT> (lhs), forward<RT> (rhs))) {
-                return strong_ordering::equal;
-            }
-            return less<CT>{}(forward<LT> (lhs), forward<RT> (rhs)) ? strong_ordering::less : strong_ordering::greater;
-        }
-        using is_transparent = void;
-    };
-#endif
-
     /**
      *  \brief ThreeWayComparer for optional types, like builtin one, except this lets you pass in explciit 'T' comparer for the T in optional<T>
      *
@@ -90,30 +70,6 @@ namespace Stroika::Foundation::Common {
      */
     template <typename FROM_INT_TYPE>
     constexpr strong_ordering CompareResultNormalizer (FROM_INT_TYPE f);
-
-    /**
-    * 
-    * 
-    * &&& @todo REPLACE WITH CONCEPT  -- IPotentiallyComparer
-    * 
-    * 
-     *  \brief return true if argument is a function like object (callable) taking 2 arguments (FUNCTOR_ARG) and
-     *         returning a bool or integer.
-     *
-     *  \note - the one-typed version of IsPotentiallyComparerRelation may not be able to deduce the FUNCTOR_ARG of the arguments in all cases.
-     *
-     *  \note - this just checks if its a callable (not necessarily valid argument to ExtractComparisonTraits). Its just used to filter which templates get into the overload set.
-     *
-     *  \note Prior to Stroika 2.1b14, this routine took template arguments reversed, but switched to this way because FUNCTOR_ARG can be deduced from FUNCTOR and that can be handy
-     * 
-     *  \see IsEqualsComparer
-     */
-    template <typename FUNCTOR, typename FUNCTOR_ARG>
-    constexpr bool IsPotentiallyComparerRelation ();
-    template <typename FUNCTOR>
-    constexpr bool IsPotentiallyComparerRelation ();
-    template <typename FUNCTOR>
-    constexpr bool IsPotentiallyComparerRelation (const FUNCTOR& functor);
 
     /**
      *
@@ -457,6 +413,48 @@ namespace Stroika::Foundation::Common {
     DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
 
 // clang-format on
+
+constexpr std::strong_ordering kLess [[deprecated ("Since Stroika 3.0d1 - use std::strong_ordering")]]    = std::strong_ordering::less;
+constexpr std::strong_ordering kEqual [[deprecated ("Since Stroika 3.0d1 - use std::strong_ordering")]]   = std::strong_ordering::equal;
+constexpr std::strong_ordering kGreater [[deprecated ("Since Stroika 3.0d1 - use std::strong_ordering")]] = std::strong_ordering::greater;
+
+#if qCompilerAndStdLib_stdlib_compare_three_way_present_but_Buggy or qCompilerAndStdLib_stdlib_compare_three_way_missing_Buggy
+struct compare_three_way_BWA {
+    // NOTE - this workaround is GENERALLY INADEQUATE, but is adequate for my current use in Stroika -- LGP 2022-11-01
+    template <typename LT, typename RT>
+    constexpr auto operator() (LT&& lhs, RT&& rhs) const
+    {
+        using CT = common_type_t<LT, RT>;
+        if (equal_to<CT>{}(forward<LT> (lhs), forward<RT> (rhs))) {
+            return strong_ordering::equal;
+        }
+        return less<CT>{}(forward<LT> (lhs), forward<RT> (rhs)) ? strong_ordering::less : strong_ordering::greater;
+    }
+    using is_transparent = void;
+};
+#endif
+template <typename FUNCTOR, typename FUNCTOR_ARG>
+[[deprecated ("Since Stroika v3.0d1 - use IPotentiallyComparer ")]] constexpr bool IsPotentiallyComparerRelation ()
+{
+    return IPotentiallyComparer<FUNCTOR, FUNCTOR_ARG>;
+}
+template <typename FUNCTOR>
+[[deprecated ("Since Stroika v3.0d1 - use IPotentiallyComparer ")]] constexpr bool IsPotentiallyComparerRelation ()
+{
+    if constexpr (Configuration::FunctionTraits<FUNCTOR>::kArity == 2) {
+        using TRAITS = typename Configuration::FunctionTraits<FUNCTOR>;
+        return is_same_v<typename TRAITS::template arg<0>::type, typename TRAITS::template arg<1>::type> and
+               IsPotentiallyComparerRelation<FUNCTOR, typename Configuration::FunctionTraits<FUNCTOR>::template arg<0>::type> ();
+    }
+    else {
+        return false;
+    }
+}
+template <typename FUNCTOR>
+[[deprecated ("Since Stroika v3.0d1 - use IPotentiallyComparer ")]] constexpr bool IsPotentiallyComparerRelation (const FUNCTOR& f)
+{
+    return IsPotentiallyComparerRelation<FUNCTOR> ();
+}
 }
 
 /*

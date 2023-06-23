@@ -63,6 +63,7 @@ namespace Stroika::Foundation::Common {
         }
     }
 
+#if 0
     /*
      ********************************************************************************
      ****************** IsPotentiallyComparerRelation<FUNCTOR> **********************
@@ -93,6 +94,7 @@ namespace Stroika::Foundation::Common {
     {
         return IsPotentiallyComparerRelation<FUNCTOR> ();
     }
+#endif
 
     /*
      ********************************************************************************
@@ -125,7 +127,7 @@ namespace Stroika::Foundation::Common {
     constexpr inline Common::ComparisonRelationDeclaration<ComparisonRelationType::eEquals, remove_cvref_t<FUNCTOR>> DeclareEqualsComparer (FUNCTOR&& f)
     {
         static_assert (
-            IsPotentiallyComparerRelation<remove_cvref_t<FUNCTOR>, typename Configuration::FunctionTraits<remove_cvref_t<FUNCTOR>>::template arg<0>::type> ());
+            IPotentiallyComparer<remove_cvref_t<FUNCTOR>, typename Configuration::FunctionTraits<remove_cvref_t<FUNCTOR>>::template arg<0>::type>);
         return Common::ComparisonRelationDeclaration<ComparisonRelationType::eEquals, remove_cvref_t<FUNCTOR>>{std::forward<FUNCTOR> (f)};
     }
 
@@ -139,7 +141,7 @@ namespace Stroika::Foundation::Common {
     DeclareInOrderComparer (FUNCTOR&& f)
     {
         static_assert (
-            IsPotentiallyComparerRelation<remove_cvref_t<FUNCTOR>, typename Configuration::FunctionTraits<remove_cvref_t<FUNCTOR>>::template arg<0>::type> ());
+            IPotentiallyComparer<remove_cvref_t<FUNCTOR>, typename Configuration::FunctionTraits<remove_cvref_t<FUNCTOR>>::template arg<0>::type>);
         return Common::ComparisonRelationDeclaration<ComparisonRelationType::eStrictInOrder, remove_cvref_t<FUNCTOR>>{std::forward<FUNCTOR> (f)};
     }
 
