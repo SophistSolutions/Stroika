@@ -20,6 +20,8 @@
 #include "Stroika/Foundation/Containers/Concrete/Collection_stdforward_list.h"
 #include "Stroika/Foundation/Containers/Concrete/Collection_stdmultiset.h"
 
+#include "Stroika/Foundation/Containers/SortedMultiSet.h"
+
 using namespace Stroika;
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Containers;
@@ -95,6 +97,18 @@ namespace {
                 VerifyTestResult (sum == 10); // verify we still hit all items
                 VerifyTestResult (c.Sum () == 7);
             }
+        }
+    }
+}
+
+namespace {
+    namespace SB_SEPARETEFILE_CONTAINERS_MISC_Adder {
+        void DoTest()
+        {
+            using namespace Containers::Adapters;
+            static_assert (IAddableTo<set<int>>);
+            static_assert (IAddableTo<MultiSet<int>>);
+            static_assert (IAddableTo<Containers::SortedMultiSet<int>>);
         }
     }
 }

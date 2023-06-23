@@ -438,7 +438,7 @@ namespace Stroika::Foundation::DataExchange {
             (void)Lookup_ (typeid (T)); // just for side-effect of assert check
         }
     }
-    template <typename ACTUAL_CONTAINER_TYPE>
+    template <Containers::Adapters::IAddableTo ACTUAL_CONTAINER_TYPE>
     ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_WithAdder ()
     {
         using T                                                      = typename ACTUAL_CONTAINER_TYPE::value_type;

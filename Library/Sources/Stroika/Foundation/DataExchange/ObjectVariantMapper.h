@@ -748,7 +748,7 @@ namespace Stroika::Foundation::DataExchange {
         /**
          *  Can be used with any container class which you append with Containers::Adapters::Adder
          */
-        template <typename ACTUAL_CONTAINER_TYPE>
+        template <Containers::Adapters::IAddableTo ACTUAL_CONTAINER_TYPE>
         static TypeMappingDetails MakeCommonSerializer_WithAdder ();
 
     public:

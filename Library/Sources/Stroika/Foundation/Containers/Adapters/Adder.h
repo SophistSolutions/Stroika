@@ -16,20 +16,78 @@
 #include "../MultiSet.h"
 #include "../Sequence.h"
 #include "../Set.h"
-
 /*
- *  \file
- *
  *  \version    <a href="Code-Status.md#Beta">Beta</a>
- * 
- *  TODO:
- *      @todo https://stroika.atlassian.net/browse/STK-743 - Add SupportsAdder concept and use that to simplify use in ObjectVariantMapper
- *
  */
 
 namespace Stroika::Foundation::Containers::Adapters {
 
     using Configuration::ArgByValueType;
+
+    namespace Private_ {
+        struct IAddableTo_ {
+            template <typename T>
+            static constexpr bool IsSupported (...)
+            {
+                return false;
+            }
+            template <typename T>
+            static constexpr bool IsSupported (const Collection<T>*)
+            {
+                return true;
+            }
+            template <typename T, typename KEY_TYPE, typename TRAITS>
+            static constexpr bool IsSupported (const KeyedCollection<T, KEY_TYPE, TRAITS>*)
+            {
+                return true;
+            };
+            template <typename KEY_TYPE, typename VALUE_TYPE>
+            static constexpr bool IsSupported (const Mapping<KEY_TYPE, VALUE_TYPE>*)
+            {
+                return true;
+            };
+            template <typename T>
+            static constexpr bool IsSupported (const set<T>*)
+            {
+                return true;
+            };
+            template <typename T>
+            static constexpr bool IsSupported (const Sequence<T>*)
+            {
+                return true;
+            };
+            template <typename T>
+            static constexpr bool IsSupported (const Set<T>*)
+            {
+                return true;
+            };
+            template <typename T>
+            static constexpr bool IsSupported (const MultiSet<T>*)
+            {
+                return true;
+            };
+            template <typename T>
+            static constexpr bool IsSupported (const vector<T>*)
+            {
+                return true;
+            };
+        };
+
+    }
+
+    /**
+     *  Concept to say if Adder is supported.
+     */
+    template <typename CONTAINER>
+    concept IAddableTo = Private_::IAddableTo_::IsSupported (static_cast<const CONTAINER*> (nullptr));
+
+    /**
+     *  Concept that returns true if the given type of element ELT2ADD can be added to the argument container.
+     * 
+     *  This corresponds to if you can construct an Adder adapter on the template, and invoke .Add on it with the argument type.
+     */
+    template <typename ELT2ADD, typename CONTAINER>
+    concept IAddableCompatible = IAddableTo<CONTAINER> and convertible_to<ELT2ADD, typename CONTAINER::value_type>;
 
     /**
      */
@@ -46,6 +104,8 @@ namespace Stroika::Foundation::Containers::Adapters {
         static void Add (CONTAINER_TYPE* container, Configuration::ArgByValueType<value_type> value);
 
     private:
+        // Cannot do this with if constexpr locally inside Add, cuz hard todo the template matching/overloading
+        // MAYBE possible, but not easy/obvious like this
         static void Add_ (Collection<value_type>* container, Configuration::ArgByValueType<value_type> value);
         template <typename T, typename KEY_TYPE, typename TRAITS>
         static void Add_ (KeyedCollection<T, KEY_TYPE, TRAITS>* container, Configuration::ArgByValueType<T> value);
