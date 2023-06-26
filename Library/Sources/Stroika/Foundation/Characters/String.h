@@ -194,7 +194,7 @@ namespace Stroika::Foundation::Characters {
         template <Memory::ISpanT SPAN_OF_CHAR_T>
         String (SPAN_OF_CHAR_T s)
             requires (IUNICODECanUnambiguouslyConvertFrom<typename SPAN_OF_CHAR_T::value_type>);
-        template <IUNICODECodePointOrPlainChar CHAR_T>
+        template <IStdBasicStringCompatibleCharacter CHAR_T>
         String (const basic_string<CHAR_T>& s);
         template <IUNICODECanAlwaysConvertTo CHAR_T>
         String (const Iterable<CHAR_T>& src)
@@ -205,7 +205,7 @@ namespace Stroika::Foundation::Characters {
         String (const basic_string_view<char16_t>& str);
         String (const basic_string_view<char32_t>& str);
         String (const basic_string_view<wchar_t>& str);
-        template <IUNICODECodePointOrPlainChar CHAR_T>
+        template <IStdBasicStringCompatibleCharacter CHAR_T>
         explicit String (basic_string<CHAR_T>&& s);
         String (String&& from) noexcept      = default;
         String (const String& from) noexcept = default;
@@ -348,7 +348,7 @@ namespace Stroika::Foundation::Characters {
         static String FromLatin1 (const CHAR_T* cString);
         template <IUNICODECanUnambiguouslyConvertFrom CHAR_T>
         static String FromLatin1 (span<const CHAR_T> s);
-        template <IUNICODECodePointOrPlainChar CHAR_T>
+        template <IStdBasicStringCompatibleCharacter CHAR_T>
         static String FromLatin1 (const basic_string<CHAR_T>& s);
 
     public:
@@ -1333,7 +1333,7 @@ namespace Stroika::Foundation::Characters {
         {
             return String{cString};
         }
-        template <IUNICODECodePointOrPlainChar CHAR_T>
+        template <IStdBasicStringCompatibleCharacter CHAR_T>
         [[deprecated ("Since Stroika v3.0d1, String{}")]] static String FromASCII (const basic_string<CHAR_T>& str)
         {
             return String{str};
@@ -1418,7 +1418,7 @@ namespace Stroika::Foundation::Characters {
         static shared_ptr<_IRep> mk_ (Iterable<CHAR_T> it);
         template <IUNICODECanUnambiguouslyConvertFrom CHAR_T>
         static shared_ptr<_IRep> mk_ (span<CHAR_T> s);
-        template <IUNICODECodePointOrPlainChar CHAR_T>
+        template <IStdBasicStringCompatibleCharacter CHAR_T>
         static shared_ptr<_IRep> mk_ (basic_string<CHAR_T>&& s);
 
     private:

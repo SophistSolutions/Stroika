@@ -97,28 +97,11 @@ namespace Stroika::Foundation::Characters {
      * 
      *  \note ALL of these character types are ALSO legitimate arguments to Stroika's String class (array of span of such). In the case
      *        of char, the text must be ASCII.
+     *  \note IStdBasicStringCompatibleCharacter<T> => IUNICODECanUnambiguouslyConvertFrom<T>
      */
     template <typename T>
     concept IStdBasicStringCompatibleCharacter =
         same_as<T, char> or same_as<T, char8_t> or same_as<T, char16_t> or same_as<T, char32_t> or same_as<T, char32_t> or same_as<T, wchar_t>;
-
-    /**
-     *  \brief check if T is char8_t, char16_t, char32_t, wchar_t, or ASCII (char)
-     * 
-     *  \note ALIAS - this could have been called IUNICODECodePointOrASCII
-     *
-     *  \note rarely used concept, but helpful because this is the subet of IUNICODECanAlwaysConvertTo
-     *        which std c++ library natively supports (so used in APIs like strtod, etc).
-     *
-     *  IUNICODECodePointOrPlainChar:
-     *      o   char8_t                 IBasicUNICODECodePoint
-     *      o   char16_t                ""
-     *      o   char32_t                ""
-     *      o   wchar_t                 added IUNICODECodePoint
-     *      o   ASCII (char)  added here
-     */
-    template <typename T>
-    concept IUNICODECodePointOrPlainChar = IUNICODECodePoint<T> or is_same_v<remove_cv_t<T>, ASCII>;
 
     class Character;
 

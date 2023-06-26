@@ -249,7 +249,7 @@ namespace Stroika::Foundation::Characters {
     auto String::mk_ (basic_string<char32_t>&& s) -> shared_ptr<_IRep>;
     template <>
     auto String::mk_ (basic_string<wchar_t>&& s) -> shared_ptr<_IRep>;
-    template <IUNICODECodePointOrPlainChar CHAR_T>
+    template <IStdBasicStringCompatibleCharacter CHAR_T>
     inline auto String::mk_ (basic_string<CHAR_T>&& s) -> shared_ptr<_IRep>
     {
         // by default, except for maybe a few special cases, just copy the data - don't move
@@ -284,7 +284,7 @@ namespace Stroika::Foundation::Characters {
     {
         _AssertRepValidType ();
     }
-    template <IUNICODECodePointOrPlainChar CHAR_T>
+    template <IStdBasicStringCompatibleCharacter CHAR_T>
     inline String::String (const basic_string<CHAR_T>& s)
         : inherited{mk_ (span<const CHAR_T>{s.data (), s.size ()})}
     {
@@ -299,7 +299,7 @@ namespace Stroika::Foundation::Characters {
         : String{span{&c, 1}}
     {
     }
-    template <IUNICODECodePointOrPlainChar CHAR_T>
+    template <IStdBasicStringCompatibleCharacter CHAR_T>
     inline String::String (basic_string<CHAR_T>&& s)
         : inherited{mk_ (forward<basic_string<CHAR_T>> (s))}
     {
@@ -313,7 +313,7 @@ namespace Stroika::Foundation::Characters {
     {
         return FromNarrowString (span{from.c_str (), from.length ()}, l);
     }
-    template <IUNICODECodePointOrPlainChar CHAR_T>
+    template <IStdBasicStringCompatibleCharacter CHAR_T>
     inline String String::FromLatin1 (const basic_string<CHAR_T>& s)
     {
         return FromLatin1 (span{s.data (), s.size ()});
