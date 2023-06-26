@@ -70,6 +70,7 @@ namespace {
                 if constexpr (is_same_v<CHAR_T, char> or is_same_v<CHAR_T, char8_t>) {
                     Require (Character::IsASCII (s));
                 }
+                // Any 8-bit sequence valid for Latin1
                 if constexpr (is_same_v<CHAR_T, char16_t>) {
                     Require (UTFConverter::AllFitsInTwoByteEncoding (s));
                 }
@@ -94,8 +95,9 @@ namespace {
                 // NOTE - this is safe because we never construct this type with surrogates
                 return Character{static_cast<char32_t> (_fData[index])};
             }
-            virtual PeekSpanData PeekData ([[maybe_unused]] optional<PeekSpanData::StorageCodePointType> preferred) const noexcept override
+            virtual PeekSpanData PeekData (optional<PeekSpanData::StorageCodePointType> /*preferred*/) const noexcept override
             {
+                // IGNORE preferred, cuz we return what is in our REP - since returning a direct pointer to that data - no conversion possible
                 if constexpr (is_same_v<CHAR_T, ASCII>) {
                     return PeekSpanData{PeekSpanData::StorageCodePointType::eAscii, {.fAscii = _fData}};
                 }
@@ -576,7 +578,7 @@ namespace {
     struct StringWithCStr_ : public String {
     public:
         // Use StringRepHelperAllFitInSize_::Rep<>; to avoid indirection to the rep except in constrution
-        template <IUnicodeCodePointOrPlainChar CHAR_T>
+        template <IUNICODECanUnambiguouslyConvertFrom CHAR_T>
         class Rep final : public StringRepHelperAllFitInSize_::Rep<CHAR_T>, public Memory::UseBlockAllocationIfAppropriate<Rep<CHAR_T>> {
         private:
             using inherited = StringRepHelperAllFitInSize_::Rep<CHAR_T>;
@@ -1615,10 +1617,10 @@ const wchar_t* String::c_str ()
         PeekSpanData      originalRepPDS = originalRep->PeekData (nullopt);
         switch (originalRepPDS.fInCP) {
             case PeekSpanData::eAscii:
-                _fRep = Memory::MakeSharedPtr<StringWithCStr_::Rep<char>> (originalRep, originalRepPDS);
+                _fRep = Memory::MakeSharedPtr<StringWithCStr_::Rep<ASCII>> (originalRep, originalRepPDS);
                 break;
             case PeekSpanData::eSingleByteLatin1:
-                _fRep = Memory::MakeSharedPtr<StringWithCStr_::Rep<char>> (originalRep, originalRepPDS);
+                _fRep = Memory::MakeSharedPtr<StringWithCStr_::Rep<Latin1>> (originalRep, originalRepPDS);
                 break;
             case PeekSpanData::eChar16:
                 _fRep = Memory::MakeSharedPtr<StringWithCStr_::Rep<char16_t>> (originalRep, originalRepPDS);
