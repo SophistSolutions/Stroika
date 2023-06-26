@@ -403,30 +403,48 @@ namespace {
      */
     struct StringWithCStr_ : public String {
     public:
-        // Use StringRepHelperAllFitInSize_::Rep<>; to avoid indirection to the rep except in constrution
-        template <IUNICODECanUnambiguouslyConvertFrom CHAR_T>
-        class Rep final : public StringRepHelperAllFitInSize_::Rep<CHAR_T>, public Memory::UseBlockAllocationIfAppropriate<Rep<CHAR_T>> {
+        class Rep final : public _IRep, public Memory::UseBlockAllocationIfAppropriate<Rep> {
         private:
-            using inherited = StringRepHelperAllFitInSize_::Rep<CHAR_T>;
-
             shared_ptr<_IRep> fUnderlyingRep_;
             wstring           fCString_;
 
         public:
             // Caller MUST ASSURE generates right size of Rep based on size in underlyingRepPDS
-            Rep (const shared_ptr<_IRep>& underlyingRep, const PeekSpanData& underlyingRepPDS)
-                : inherited{Memory::ValueOf (String::PeekData<CHAR_T> (underlyingRepPDS))}
-                , fUnderlyingRep_{underlyingRep}
+            Rep (const shared_ptr<_IRep>& underlyingRep)
+                : fUnderlyingRep_{underlyingRep}
                 , fCString_{}
             {
                 Memory::StackBuffer<wchar_t> possibleUsedBuf;
-                auto                         wideSpan = String::GetData<wchar_t> (underlyingRepPDS, &possibleUsedBuf);
+                auto                         wideSpan = String::GetData<wchar_t> (underlyingRep->PeekData (nullopt), &possibleUsedBuf);
                 fCString_.assign (wideSpan.begin (), wideSpan.end ());
+            }
+
+        // Overrides for Iterable<Character>
+        public:
+            virtual shared_ptr<Iterable<Character>::_IRep> Clone () const override { return fUnderlyingRep_->Clone (); }
+            virtual Traversal::Iterator<value_type> MakeIterator (const shared_ptr<Iterable<Character>::_IRep>& thisSharedPtr) const override
+            {
+                return fUnderlyingRep_->MakeIterator (thisSharedPtr);
+            }
+            virtual size_t                          size () const override { return fUnderlyingRep_->size (); }
+            virtual bool                            empty () const override { return fUnderlyingRep_->empty (); }
+            virtual Traversal::Iterator<value_type> Find (const shared_ptr<Iterable<Character>::_IRep>& thisSharedPtr,
+                                                          const function<bool (Configuration::ArgByValueType<value_type> item)>& that,
+                                                          [[maybe_unused]] Execution::SequencePolicy seq) const override
+            {
+                return fUnderlyingRep_->Find (thisSharedPtr, that, seq);
             }
 
             // String::_IRep overrides - delegate
         public:
+            virtual Character GetAt (size_t index) const noexcept override { return fUnderlyingRep_->GetAt (index); }
+            virtual PeekSpanData PeekData ([[maybe_unused]] optional<PeekSpanData::StorageCodePointType> preferred) const noexcept override
+            {
+                return fUnderlyingRep_->PeekData (preferred);
+            }
             virtual const wchar_t* c_str_peek () const noexcept override { return fCString_.c_str (); }
+
+
         };
     };
 }
@@ -1410,6 +1428,7 @@ void String::erase (size_t from, size_t count)
 
 const wchar_t* String::c_str () const noexcept
 {
+    // @todo FIX/LOSE ASAP!!!! - LGP 2023-06-28
     // UNSAFE - DEPRECATED API
     return const_cast<String*> (this)->c_str ();
 }
@@ -1417,25 +1436,10 @@ const wchar_t* String::c_str ()
 {
     // Rarely used mechanism, of replacing the underlying rep, for the iterable, as needed
     _SafeReadRepAccessor accessor{this};
-    const wchar_t*       result = (wchar_t*)accessor._ConstGetRep ().c_str_peek ();
+    const wchar_t*       result = accessor._ConstGetRep ().c_str_peek ();
     if (result == nullptr) {
-        shared_ptr<_IRep> originalRep    = accessor._ConstGetRepSharedPtr ();
-        PeekSpanData      originalRepPDS = originalRep->PeekData (nullopt);
-        switch (originalRepPDS.fInCP) {
-            case PeekSpanData::eAscii:
-                _fRep = Memory::MakeSharedPtr<StringWithCStr_::Rep<ASCII>> (originalRep, originalRepPDS);
-                break;
-            case PeekSpanData::eSingleByteLatin1:
-                _fRep = Memory::MakeSharedPtr<StringWithCStr_::Rep<Latin1>> (originalRep, originalRepPDS);
-                break;
-            case PeekSpanData::eChar16:
-                _fRep = Memory::MakeSharedPtr<StringWithCStr_::Rep<char16_t>> (originalRep, originalRepPDS);
-                break;
-            case PeekSpanData::eChar32:
-                _fRep = Memory::MakeSharedPtr<StringWithCStr_::Rep<char32_t>> (originalRep, originalRepPDS);
-                break;
-        }
-        result = (wchar_t*)_SafeReadRepAccessor{this}._ConstGetRep ().c_str_peek ();
+        _fRep                         = Memory::MakeSharedPtr<StringWithCStr_::Rep> (accessor._ConstGetRepSharedPtr ());
+        result = _SafeReadRepAccessor{this}._ConstGetRep ().c_str_peek ();
         AssertNotNull (result);
     }
     EnsureNotNull (result);
