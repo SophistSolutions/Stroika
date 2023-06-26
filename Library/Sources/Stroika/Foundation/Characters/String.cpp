@@ -48,7 +48,8 @@ namespace {
      *  \note - the KEY design choice in StringRepHelperAllFitInSize_::Rep<CHAR_T> is that it contains no
      *        multi-code-point characters. This is what allows the simple calculation of array index
      *        to character offset. So use 
-     *              StringRepHelperAllFitInSize_::Rep<char> for ascii text
+     *              StringRepHelperAllFitInSize_::Rep<ASCII> for ascii text
+     *              StringRepHelperAllFitInSize_::Rep<LATIN1> for ISOLatin1 text
      *              StringRepHelperAllFitInSize_::Rep<char16_t> for isolatin/anything which is a 2-byte unicode char (not surrogates)
      *              StringRepHelperAllFitInSize_::Rep<char32_t> for anything else - this always works
      */
@@ -172,181 +173,6 @@ namespace {
             {
                 return inherited::Find (thisSharedPtr, that, seq); // @todo rewrite to operatoe of fData_
             }
-        };
-    };
-
-    /**
-     *  \brief THIS CLASS IS OBSOLETE - AS OF 2023-01-19 - makes sense - works - but less performant than other options so UNUSED (for now)
-     * 
-     *  This is a utility class to implement most of the basic String::_IRep functionality.
-     *  This implements functions that change the string, but don't GROW it,
-     *  since we don't know in general we can (thats left to subtypes).
-     *
-     *  \note   This class may assure nul-terminated (kAddNullTerminator_), and so 'capacity' always at least one greater than length.
-     *
-     *  @todo Explain queer wrapper class cuz protected
-     */
-    struct BufferedString_ : StringRepHelperAllFitInSize_ {
-        template <IUnicodeCodePointOrPlainChar CHAR_T>
-        struct Rep : public StringRepHelperAllFitInSize_::Rep<CHAR_T>, public Memory::UseBlockAllocationIfAppropriate<Rep<CHAR_T>> {
-        private:
-            using inherited = StringRepHelperAllFitInSize_::Rep<CHAR_T>;
-
-        private:
-            /*
-             * magic 'automatic round-capacity-up-to' these (in CHAR_T) - and use block allocation for them...
-             * 
-             * getconf LEVEL1_DCACHE_LINESIZE; getconf LEVEL2_CACHE_LINESIZE
-             * typically returns 64 bytes. So the blocks allocated will generally fit
-             * in a cache line (except kNElts3_ with char32_t)
-             */
-            static constexpr size_t kNElts1_ = 8;
-            static constexpr size_t kNElts2_ = 16;
-            static constexpr size_t kNElts3_ = sizeof (CHAR_T) == 1 ? 64 : 32;
-
-        private:
-            template <size_t SZ>
-            struct BufferedStringRepBlock_ {
-                static constexpr size_t kNElts = SZ;
-                CHAR_T                  data[kNElts];
-            };
-
-        public:
-            Rep (span<const CHAR_T> t1)
-                : inherited{mkBuf_ (t1)}
-            {
-            }
-            Rep ()           = delete;
-            Rep (const Rep&) = delete;
-
-        public:
-            nonvirtual Rep& operator= (const Rep&) = delete;
-
-        public:
-            virtual ~Rep () override
-            {
-                size_t cap = capacity ();
-                if constexpr (qAllowBlockAllocation) {
-                    Assert (cap >= kNElts1_);
-                    switch (cap) {
-                        case kNElts1_: {
-                            Memory::BlockAllocator<BufferedStringRepBlock_<kNElts1_>>{}.deallocate (
-                                reinterpret_cast<BufferedStringRepBlock_<kNElts1_>*> (const_cast<CHAR_T*> (this->_fData.data ())), 1);
-                        } break;
-                        case kNElts2_: {
-                            Memory::BlockAllocator<BufferedStringRepBlock_<kNElts2_>>{}.deallocate (
-                                reinterpret_cast<BufferedStringRepBlock_<kNElts2_>*> (const_cast<CHAR_T*> (this->_fData.data ())), 1);
-                        } break;
-                        case kNElts3_: {
-                            Memory::BlockAllocator<BufferedStringRepBlock_<kNElts3_>>{}.deallocate (
-                                reinterpret_cast<BufferedStringRepBlock_<kNElts3_>*> (const_cast<CHAR_T*> (this->_fData.data ())), 1);
-                        } break;
-                        default: {
-                            delete[] this->_fData.data ();
-                        } break;
-                    }
-                }
-                else {
-                    delete[] this->_fData.data ();
-                }
-            }
-
-        private:
-            static span<CHAR_T> mkBuf_ (size_t length)
-            {
-                size_t capacity = AdjustCapacity_ (length);
-                Assert (length <= capacity);
-                if constexpr (kAddNullTerminator_) {
-                    Assert (length + 1 <= capacity);
-                }
-                CHAR_T* newBuf = nullptr;
-                if constexpr (qAllowBlockAllocation) {
-                    Assert ((capacity == kNElts1_ or capacity == kNElts2_ or capacity == kNElts3_) or
-                            (capacity > kNElts1_ and capacity > kNElts2_ and capacity > kNElts3_));
-                }
-                DISABLE_COMPILER_MSC_WARNING_START (4065)
-                if constexpr (qAllowBlockAllocation) {
-                    switch (capacity) {
-                        case kNElts1_: {
-                            static_assert (sizeof (BufferedStringRepBlock_<kNElts1_>) == sizeof (CHAR_T) * kNElts1_, "sizes should match");
-                            newBuf = reinterpret_cast<CHAR_T*> (Memory::BlockAllocator<BufferedStringRepBlock_<kNElts1_>>{}.allocate (1));
-                        } break;
-                        case kNElts2_: {
-                            static_assert (sizeof (BufferedStringRepBlock_<kNElts2_>) == sizeof (CHAR_T) * kNElts2_, "sizes should match");
-                            newBuf = reinterpret_cast<CHAR_T*> (Memory::BlockAllocator<BufferedStringRepBlock_<kNElts2_>>{}.allocate (1));
-                        } break;
-                        case kNElts3_: {
-                            static_assert (sizeof (BufferedStringRepBlock_<kNElts3_>) == sizeof (CHAR_T) * kNElts3_, "sizes should match");
-                            newBuf = reinterpret_cast<CHAR_T*> (Memory::BlockAllocator<BufferedStringRepBlock_<kNElts3_>>{}.allocate (1));
-                        } break;
-                        default: {
-                            Assert (capacity > kNElts1_ and capacity > kNElts2_ and capacity > kNElts3_);
-                            newBuf = new CHAR_T[capacity];
-                        } break;
-                    }
-                }
-                else {
-                    newBuf = new CHAR_T[capacity];
-                }
-                DISABLE_COMPILER_MSC_WARNING_END (4065)
-                return span{newBuf, capacity};
-            }
-            static span<CHAR_T> mkBuf_ (span<const CHAR_T> t1)
-            {
-                size_t       len = t1.size ();
-                span<CHAR_T> buf = mkBuf_ (len); // note buf span is over capacity, not size
-                Assert (buf.size () >= len);
-                auto result = Memory::CopySpanData (t1, buf);
-                if constexpr (kAddNullTerminator_) {
-                    Assert (len + 1 <= buf.size ());
-                    *(buf.data () + len) = '\0';
-                }
-                return result; // return span of just characters, even if we have extra NUL-byte (outside span)
-            }
-
-        public:
-            // String::_IRep OVERRIDES
-            virtual const wchar_t* c_str_peek () const noexcept override
-            {
-                if constexpr (kAddNullTerminator_) {
-                    Assert (*(this->_fData.data () + this->size ()) == '\0'); // dont index into buf cuz we cheat and go one past end on purpose
-                    return reinterpret_cast<const wchar_t*> (this->_fData.data ());
-                }
-                else {
-                    return nullptr;
-                }
-            }
-
-        private:
-            // Stick nul-terminator byte just past the end of the span
-            static constexpr bool kAddNullTerminator_ = sizeof (CHAR_T) == sizeof (wchar_t); // costs nothing to nul-terminate in this case
-
-        private:
-            static size_t AdjustCapacity_ (size_t initialCapacity)
-            {
-                if constexpr (kAddNullTerminator_) {
-                    ++initialCapacity;
-                }
-                if constexpr (qAllowBlockAllocation) {
-                    static_assert (kNElts1_ <= kNElts2_ and kNElts2_ <= kNElts3_);
-                    if (initialCapacity <= kNElts1_) [[likely]] {
-                        return kNElts1_;
-                    }
-                    else if (initialCapacity <= kNElts2_) [[likely]] {
-                        return kNElts2_;
-                    }
-                    else if (initialCapacity <= kNElts3_) [[likely]] {
-                        return kNElts3_;
-                    }
-                }
-                size_t result = Containers::Support::ReserveTweaks::GetScaledUpCapacity (initialCapacity, sizeof (CHAR_T));
-                Ensure (initialCapacity <= result);
-                return result;
-            }
-
-        private:
-            // Compute from the base class span size to avoid storing capacity as data member
-            nonvirtual size_t capacity () const { return AdjustCapacity_ (this->_fData.size ()); }
         };
     };
 
@@ -630,9 +456,8 @@ const wregex& Characters::Private_::RegularExpression_GetCompiled (const Regular
  ********************************************************************************
  */
 String::String (const basic_string_view<char>& str)
-    : String{Memory::MakeSharedPtr<StringConstant_::Rep<char>> (span{str.data (), str.size ()})}
+    : String{(Require (Character::IsASCII (span{str.data (), str.size ()})),Memory::MakeSharedPtr<StringConstant_::Rep<ASCII>> (span{str.data (), str.size ()}))}
 {
-    Require (Character::IsASCII (span{str.data (), str.size ()}));
 }
 
 namespace {
@@ -841,7 +666,7 @@ template <>
 auto String::mk_ (basic_string<char>&& s) -> shared_ptr<_IRep>
 {
     Character::CheckASCII (span{s.data (), s.size ()});
-    return Memory::MakeSharedPtr<StdStringDelegator_::Rep<char>> (move (s));
+    return Memory::MakeSharedPtr<StdStringDelegator_::Rep<ASCII>> (move (s));
 }
 
 template <>
