@@ -1033,23 +1033,6 @@ make[1]: *** [Makefile:20:
 
 #endif
 
-#ifndef qCompilerAndStdLib_template_requresDefNeededonSpecializations_Buggy
-
-#if defined(__clang__) && defined(__APPLE__)
-// First noticed in clang++-14
-#define qCompilerAndStdLib_template_requresDefNeededonSpecializations_Buggy                                                                \
-    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 14))
-#elif defined(__clang__) && !defined(__APPLE__)
-// First noticed in clang++-14
-// reproduced in clang++-14
-#define qCompilerAndStdLib_template_requresDefNeededonSpecializations_Buggy                                                                \
-    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 15))
-#else
-#define qCompilerAndStdLib_template_requresDefNeededonSpecializations_Buggy 0
-#endif
-
-#endif
-
 /*
 * 
 * https://stackoverflow.com/questions/53408962/try-to-understand-compiler-error-message-default-member-initializer-required-be

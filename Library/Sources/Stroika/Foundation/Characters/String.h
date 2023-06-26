@@ -1404,9 +1404,13 @@ namespace Stroika::Foundation::Characters {
 
     private:
         /**
-         * note here - for mk_(span<const char>) - calls Character::CheckASCII (), and other <char> guys delegate through that
-         * And mk_(SPAN) also always COPIES data (a few of the mk_ overloads steal, but only if given && arg)
-         * FromStringConstant API also does stealing.
+         *  If the argument CHAR_T is restrictive (such as ASCII/char) - this CHECKS and THROWS (Character::CheckASCII).
+         *  This function also reads the data, and sees if it can downshift 'CHAR_T' to something more restrictive, and produces
+         *  a possibly smaller rep.
+         * 
+         *  For some overloads (e..g && move) - the data is 'stolen/moved'.
+         * 
+         *  See mk_nocheck_ for a simpler - DO WHAT I SAID - operation.
          */
         template <IUNICODECanUnambiguouslyConvertFrom CHAR_T>
         static shared_ptr<_IRep> mk_ (span<const CHAR_T> s);
@@ -1416,18 +1420,16 @@ namespace Stroika::Foundation::Characters {
         static shared_ptr<_IRep> mk_ (span<CHAR_T> s);
         template <IUnicodeCodePointOrPlainChar CHAR_T>
         static shared_ptr<_IRep> mk_ (basic_string<CHAR_T>&& s);
-#if qCompilerAndStdLib_template_requresDefNeededonSpecializations_Buggy
-        static auto mk_nocheck_ (span<const ASCII> s) -> shared_ptr<_IRep>;
-        static auto mk_nocheck_ (span<const Latin1> s) -> shared_ptr<_IRep>;
-        static auto mk_nocheck_ (span<const char16_t> s) -> shared_ptr<_IRep>;
-        static auto mk_nocheck_ (span<const char32_t> s) -> shared_ptr<_IRep>;
-#else
+
+    private:
+        /*
+         *  Note the mk_nocheck_ - just does the mk of the buffer, but assuming the arguments are legit and will fit (though it may
+         *  assert in DEBUG builds this is true).
+         * 
+         *  This just blindly allocates the buffer of the given size/type for the given arguments.
+         */
         template <typename CHAR_T>
         static shared_ptr<_IRep> mk_nocheck_ (span<const CHAR_T> s)
-            requires (is_same_v<CHAR_T, ASCII> or is_same_v<CHAR_T, Latin1> or is_same_v<CHAR_T, char16_t> or is_same_v<CHAR_T, char32_t>);
-#endif
-        template <typename CHAR_T>
-        static shared_ptr<_IRep> mk_nocheck_justPickBufRep_ (span<const CHAR_T> s)
             requires (is_same_v<CHAR_T, ASCII> or is_same_v<CHAR_T, Latin1> or is_same_v<CHAR_T, char16_t> or is_same_v<CHAR_T, char32_t>);
 
     private:

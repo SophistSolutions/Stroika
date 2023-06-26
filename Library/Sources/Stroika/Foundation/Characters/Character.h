@@ -94,6 +94,8 @@ namespace Stroika::Foundation::Characters {
 
     /**
      *  \brief check if T is char8_t, char16_t, char32_t, wchar_t, or ASCII (char)
+     * 
+     *  \note ALIAS - this could have been called IUnicodeCodePointOrASCII
      *
      *  \note rarely used concept, but helpful because this is the subet of IUNICODECanAlwaysConvertTo
      *        which std c++ library natively supports (so used in APIs like strtod, etc).

@@ -140,16 +140,6 @@ namespace Stroika::Foundation::Characters {
      */
     // Since we don't mix spans of single/2-3-4 byte chars in a single rep (would make char indexing too expensive)
     // just specialize 3 cases - ASCII (char), utf-16, and utf-32 (others - like char8_t, wchar_t mappeed appropriately)
-#if !qCompilerAndStdLib_template_requresDefNeededonSpecializations_Buggy
-    template <>
-    auto String::mk_nocheck_ (span<const ASCII> s) -> shared_ptr<_IRep>;
-    template <>
-    auto String::mk_nocheck_ (span<const Latin1> s) -> shared_ptr<_IRep>;
-    template <>
-    auto String::mk_nocheck_ (span<const char16_t> s) -> shared_ptr<_IRep>;
-    template <>
-    auto String::mk_nocheck_ (span<const char32_t> s) -> shared_ptr<_IRep>;
-#endif
     template <IUNICODECanUnambiguouslyConvertFrom CHAR_T>
     auto String::mk_ (span<const CHAR_T> s) -> shared_ptr<_IRep>
     {

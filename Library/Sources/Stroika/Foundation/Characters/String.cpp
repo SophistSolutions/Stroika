@@ -559,15 +559,21 @@ shared_ptr<String::_IRep> String::mkEmpty_ ()
 }
 
 template <typename CHAR_T>
-inline auto String::mk_nocheck_justPickBufRep_ (span<const CHAR_T> s) -> shared_ptr<_IRep>
+inline auto String::mk_nocheck_ (span<const CHAR_T> s) -> shared_ptr<_IRep>
     requires (is_same_v<CHAR_T, ASCII> or is_same_v<CHAR_T, Latin1> or is_same_v<CHAR_T, char16_t> or is_same_v<CHAR_T, char32_t>)
 {
     // No check means needed checking done before, so these assertions just help enforce that
     if constexpr (is_same_v<CHAR_T, ASCII>) {
         Require (Character::IsASCII (s)); // avoid later assertion error
     }
+    else if constexpr (is_same_v<CHAR_T, Latin1>) {
+        // nothing to check
+    }
     else if constexpr (sizeof (CHAR_T) == 2) {
         Require (UTFConverter::AllFitsInTwoByteEncoding (s)); // avoid later assertion error
+    }
+    else {
+        // again - if larger, nothing to check
     }
 
     /**
@@ -632,36 +638,6 @@ inline auto String::mk_nocheck_justPickBufRep_ (span<const CHAR_T> s) -> shared_
     return Memory::MakeSharedPtr<DynamicallyAllocatedString::Rep<CHAR_T>> (s);
 }
 
-#if !qCompilerAndStdLib_template_requresDefNeededonSpecializations_Buggy
-template <>
-#endif
-auto String::mk_nocheck_ (span<const ASCII> s) -> shared_ptr<_IRep>
-{
-    Require (Character::IsASCII (s)); // caller must check
-    return mk_nocheck_justPickBufRep_ (s);
-}
-#if !qCompilerAndStdLib_template_requresDefNeededonSpecializations_Buggy
-template <>
-#endif
-auto String::mk_nocheck_ (span<const Latin1> s) -> shared_ptr<_IRep>
-{
-    return mk_nocheck_justPickBufRep_ (s);
-}
-#if !qCompilerAndStdLib_template_requresDefNeededonSpecializations_Buggy
-template <>
-#endif
-auto String::mk_nocheck_ (span<const char16_t> s) -> shared_ptr<_IRep>
-{
-    return mk_nocheck_justPickBufRep_ (s);
-}
-#if !qCompilerAndStdLib_template_requresDefNeededonSpecializations_Buggy
-template <>
-#endif
-auto String::mk_nocheck_ (span<const char32_t> s) -> shared_ptr<_IRep>
-{
-    return mk_nocheck_justPickBufRep_ (s);
-}
-
 template <>
 auto String::mk_ (basic_string<char>&& s) -> shared_ptr<_IRep>
 {
@@ -678,10 +654,10 @@ auto String::mk_ (basic_string<char16_t>&& s) -> shared_ptr<_IRep>
     // copy the data if any surrogates
     Memory::StackBuffer<char32_t> wideUnicodeBuf{Memory::eUninitialized, UTFConverter::ComputeTargetBufferSize<char32_t> (span{s.data (), s.size ()})};
 #if qCompilerAndStdLib_spanOfContainer_Buggy
-    return mk_nocheck_justPickBufRep_ (
+    return mk_nocheck_ (
         Memory::ConstSpan (UTFConverter::kThe.ConvertSpan (span{s.data (), s.size ()}, span{wideUnicodeBuf.data (), wideUnicodeBuf.size ()})));
 #else
-    return mk_nocheck_justPickBufRep_ (Memory::ConstSpan (UTFConverter::kThe.ConvertSpan (span{s.data (), s.size ()}, span{wideUnicodeBuf})));
+    return mk_nocheck_ (Memory::ConstSpan (UTFConverter::kThe.ConvertSpan (span{s.data (), s.size ()}, span{wideUnicodeBuf})));
 #endif
 }
 
@@ -702,10 +678,10 @@ auto String::mk_ (basic_string<wchar_t>&& s) -> shared_ptr<_IRep>
         Memory::StackBuffer<char32_t> wideUnicodeBuf{Memory::eUninitialized,
                                                      UTFConverter::ComputeTargetBufferSize<char32_t> (span{s.data (), s.size ()})};
 #if qCompilerAndStdLib_spanOfContainer_Buggy
-        return mk_nocheck_justPickBufRep_ (Memory::ConstSpan (
+        return mk_nocheck_ (Memory::ConstSpan (
             UTFConverter::kThe.ConvertSpan (span{s.data (), s.size ()}, span{wideUnicodeBuf.data (), wideUnicodeBuf.size ()})));
 #else
-        return mk_nocheck_justPickBufRep_ (Memory::ConstSpan (UTFConverter::kThe.ConvertSpan (span{s.data (), s.size ()}, span{wideUnicodeBuf})));
+        return mk_nocheck_ (Memory::ConstSpan (UTFConverter::kThe.ConvertSpan (span{s.data (), s.size ()}, span{wideUnicodeBuf})));
 #endif
     }
     else {
