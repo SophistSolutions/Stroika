@@ -138,6 +138,7 @@ namespace Stroika::Foundation::Characters {
      ************************************* String ***********************************
      ********************************************************************************
      */
+
     // Since we don't mix spans of single/2-3-4 byte chars in a single rep (would make char indexing too expensive)
     // just specialize 3 cases - ASCII (char), utf-16, and utf-32 (others - like char8_t, wchar_t mappeed appropriately)
     template <IUNICODECanUnambiguouslyConvertFrom CHAR_T>
@@ -289,7 +290,7 @@ namespace Stroika::Foundation::Characters {
         : inherited{mk_ (span<const CHAR_T>{s.data (), s.size ()})}
     {
     }
-    template <IUNICODECanAlwaysConvertTo CHAR_T>
+    template <IUNICODECanUnambiguouslyConvertFrom CHAR_T>
     inline String::String (const Iterable<CHAR_T>& src)
         requires (not Memory::ISpanT<CHAR_T>)
         : inherited{mk_ (src)}

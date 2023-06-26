@@ -196,19 +196,28 @@ namespace Stroika::Foundation::Characters {
             requires (IUNICODECanUnambiguouslyConvertFrom<typename SPAN_OF_CHAR_T::value_type>);
         template <IStdBasicStringCompatibleCharacter CHAR_T>
         String (const basic_string<CHAR_T>& s);
-        template <IUNICODECanAlwaysConvertTo CHAR_T>
+        template <IStdBasicStringCompatibleCharacter CHAR_T>
+        String (const basic_string_view<CHAR_T>& s);
+        template <IStdBasicStringCompatibleCharacter CHAR_T>
+        explicit String (basic_string<CHAR_T>&& s);
+        template <IUNICODECanUnambiguouslyConvertFrom CHAR_T>
         String (const Iterable<CHAR_T>& src)
             requires (not Memory::ISpanT<CHAR_T>);
         explicit String (const Character& c);
-        String (const basic_string_view<char>& str);
-        String (const basic_string_view<char8_t>& str);
-        String (const basic_string_view<char16_t>& str);
-        String (const basic_string_view<char32_t>& str);
-        String (const basic_string_view<wchar_t>& str);
-        template <IStdBasicStringCompatibleCharacter CHAR_T>
-        explicit String (basic_string<CHAR_T>&& s);
         String (String&& from) noexcept      = default;
         String (const String& from) noexcept = default;
+
+    public:
+        template <>
+        String (const basic_string_view<char>& str); // char==ASCII
+        template <>
+        String (const basic_string_view<char8_t>& str);
+        template <>
+        String (const basic_string_view<char16_t>& str);
+        template <>
+        String (const basic_string_view<char32_t>& str);
+        template <>
+        String (const basic_string_view<wchar_t>& str);
 
     public:
         ~String () = default;
