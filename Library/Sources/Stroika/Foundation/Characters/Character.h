@@ -151,7 +151,7 @@ namespace Stroika::Foundation::Characters {
     static_assert (not ICharacterCompatible<Latin1>);
 
     /**
-     *  \brief IUNICODECanUnambiguouslyConvertFrom is any character type where array of them unambiguously convertible to UNICODE string
+     *  \brief IUNICODECanUnambiguouslyConvertFrom is any 'character representation type' where array of them unambiguously convertible to UNICODE string
      *
      *  IUNICODECanUnambiguouslyConvertFrom:
      *      o   char8_t             IUNICODECanAlwaysConvertTo
