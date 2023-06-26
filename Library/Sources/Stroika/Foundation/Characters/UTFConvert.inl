@@ -360,7 +360,7 @@ namespace Stroika::Foundation::Characters {
         }
     }
 
-    template <ICharacterCompatible TRG_T, ICharacterCompatible SRC_T>
+    template <IUNICODECanUnambiguouslyConvertFrom TRG_T, IUNICODECanUnambiguouslyConvertFrom SRC_T>
     size_t UTFConverter::ConvertOffset (span<const SRC_T> source, size_t srcIndex) const
     {
         static_assert (not is_const_v<TRG_T>);

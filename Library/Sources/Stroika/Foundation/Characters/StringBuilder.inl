@@ -30,7 +30,7 @@ namespace Stroika::Foundation::Characters {
         Append (initialValue);
     }
     template <typename OPTIONS>
-    template <ICharacterCompatible CHAR_T>
+    template <IUNICODECanUnambiguouslyConvertFrom CHAR_T>
     inline StringBuilder<OPTIONS>::StringBuilder (span<const CHAR_T> initialValue)
     {
         Append (initialValue);
@@ -45,7 +45,7 @@ namespace Stroika::Foundation::Characters {
     }
 
     template <typename OPTIONS>
-    template <ICharacterCompatible CHAR_T>
+    template <IUNICODECanUnambiguouslyConvertFrom CHAR_T>
     inline void StringBuilder<OPTIONS>::Append (span<const CHAR_T> s)
     {
         Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fAssertExternallySyncrhonized_};
@@ -75,13 +75,13 @@ namespace Stroika::Foundation::Characters {
         }
     }
     template <typename OPTIONS>
-    template <ICharacterCompatible CHAR_T>
+    template <IUNICODECanUnambiguouslyConvertFrom CHAR_T>
     inline void StringBuilder<OPTIONS>::Append (span<CHAR_T> s)
     {
         Append (Memory::ConstSpan (s));
     }
     template <typename OPTIONS>
-    template <ICharacterCompatible CHAR_T>
+    template <IUNICODECanUnambiguouslyConvertFrom CHAR_T>
     inline void StringBuilder<OPTIONS>::Append (const CHAR_T* s)
     {
         Append (span{s, CString::Length (s)});
@@ -304,7 +304,7 @@ namespace Stroika::Foundation::Characters {
 #endif
 
     template <typename OPTIONS>
-    template <ICharacterCompatible CHAR_T>
+    template <IUNICODECanUnambiguouslyConvertFrom CHAR_T>
     span<const CHAR_T> StringBuilder<OPTIONS>::GetData (Memory::StackBuffer<CHAR_T>* probablyIgnoredBuf) const
         requires (not is_const_v<CHAR_T>)
     {

@@ -72,7 +72,7 @@ namespace Stroika::Foundation::Characters {
         StringBuilder () noexcept            = default;
         StringBuilder (const StringBuilder&) = default;
         StringBuilder (const String& initialValue);
-        template <ICharacterCompatible CHAR_T>
+        template <IUNICODECanUnambiguouslyConvertFrom CHAR_T>
         StringBuilder (span<const CHAR_T> initialValue);
 
     public:
@@ -94,11 +94,11 @@ namespace Stroika::Foundation::Characters {
          *  This function appends as IF the argument was converted to a UNICODE string, and then
          *  appended.
          */
-        template <ICharacterCompatible CHAR_T>
+        template <IUNICODECanUnambiguouslyConvertFrom CHAR_T>
         nonvirtual void Append (span<const CHAR_T> s);
-        template <ICharacterCompatible CHAR_T>
+        template <IUNICODECanUnambiguouslyConvertFrom CHAR_T>
         nonvirtual void Append (span<CHAR_T> s);
-        template <ICharacterCompatible CHAR_T>
+        template <IUNICODECanUnambiguouslyConvertFrom CHAR_T>
         nonvirtual void Append (const CHAR_T* s);
         template <IUnicodeCodePointOrPlainChar CHAR_T>
         nonvirtual void Append (const basic_string<CHAR_T>& s);
@@ -242,7 +242,7 @@ namespace Stroika::Foundation::Characters {
          *          out.Write (sb.GetData (&probablyIgnoredBuf));
          *      \encode
          */
-        template <ICharacterCompatible CHAR_T>
+        template <IUNICODECanUnambiguouslyConvertFrom CHAR_T>
         nonvirtual span<const CHAR_T> GetData (Memory::StackBuffer<CHAR_T>* probablyIgnoredBuf) const
             requires (not is_const_v<CHAR_T>);
 

@@ -593,7 +593,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
      *************************** FloatConversion::ToFloat ***************************
      ********************************************************************************
      */
-    template <typename T, ICharacterCompatible CHAR_T>
+    template <typename T, IUNICODECanUnambiguouslyConvertFrom CHAR_T>
     T ToFloat (span<const CHAR_T> s)
     {
         if constexpr (is_same_v<remove_cv_t<CHAR_T>, char>) {
@@ -640,7 +640,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
         }
         return Private_::ToFloat_RespectingLocale_<T> (s, nullptr); // fallback for non-ascii strings to old code
     }
-    template <typename T, ICharacterCompatible CHAR_T>
+    template <typename T, IUNICODECanUnambiguouslyConvertFrom CHAR_T>
     T ToFloat (span<const CHAR_T> s, typename span<const CHAR_T>::iterator* remainder)
     {
         RequireNotNull (remainder); // use other overload if 'null'

@@ -148,7 +148,7 @@ namespace Stroika::Foundation::Characters {
         return GetCharacterCode ();
     }
     constexpr bool Character::IsASCII () const noexcept { return 0x0 <= fCharacterCode_ and fCharacterCode_ <= 0x7f; }
-    template <IUNICODECanUnambiguouslyConvertFrom CHAR_T>
+    template <IPossibleCharacterRepresentation CHAR_T>
     constexpr bool Character::IsASCII (span<const CHAR_T> fromS) noexcept
     {
         constexpr auto charComparer = [] () noexcept {
@@ -168,14 +168,14 @@ namespace Stroika::Foundation::Characters {
         return ranges::all_of (fromS, charComparer);
 #endif
     }
-    template <ICharacterCompatible CHAR_T>
+    template <IPossibleCharacterRepresentation CHAR_T>
     inline void Character::CheckASCII (span<const CHAR_T> s)
     {
         if (not IsASCII (s)) [[unlikely]] {
             Private_::ThrowNotIsASCII_ ();
         }
     }
-    template <ICharacterCompatible CHAR_T>
+    template <IPossibleCharacterRepresentation CHAR_T>
     inline void Character::CheckASCII (span<CHAR_T> s)
     {
         CheckASCII (Memory::ConstSpan (s));
@@ -411,7 +411,7 @@ namespace Stroika::Foundation::Characters {
         // See ToLowerCase() for implementation comments
         return static_cast<wchar_t> (::towupper (static_cast<wchar_t> (fCharacterCode_)));
     }
-    template <typename RESULT_T, ICharacterCompatible CHAR_T>
+    template <typename RESULT_T, IPossibleCharacterRepresentation CHAR_T>
     inline bool Character::AsASCIIQuietly (span<const CHAR_T> fromS, RESULT_T* into)
         requires (is_same_v<RESULT_T, string> or is_same_v<RESULT_T, Memory::StackBuffer<ASCII>>)
     {

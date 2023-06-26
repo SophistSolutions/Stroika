@@ -219,13 +219,13 @@ namespace Stroika::Foundation::Characters {
 #endif
         }
     }
-    template <ICharacterCompatible CHAR_T>
+    template <IUNICODECanUnambiguouslyConvertFrom CHAR_T>
     auto String::mk_ (span<CHAR_T> s) -> shared_ptr<_IRep>
     {
         // weird and unfortunate overload needed for non-const spans, not automatically promoted to const
         return mk_ (Memory::ConstSpan (s));
     }
-    template <ICharacterCompatible CHAR_T>
+    template <IUNICODECanUnambiguouslyConvertFrom CHAR_T>
     auto String::mk_ (Iterable<CHAR_T> it) -> shared_ptr<_IRep>
     {
         // redo with small stackbuffer (character and dont do iterable<Characer> do Iterable<CHAR_T> where t is Characer_Compiabple)
@@ -270,7 +270,7 @@ namespace Stroika::Foundation::Characters {
     {
         _AssertRepValidType ();
     }
-    template <ICharacterCompatible CHAR_T>
+    template <IUNICODECanUnambiguouslyConvertFrom CHAR_T>
     inline String::String (const CHAR_T* cString)
         : inherited{mk_ (span{cString, CString::Length (cString)})}
     {
@@ -279,7 +279,7 @@ namespace Stroika::Foundation::Characters {
     }
     template <Memory::ISpanT SPAN_OF_CHAR_T>
     inline String::String (SPAN_OF_CHAR_T s)
-        requires (ICharacterCompatible<typename SPAN_OF_CHAR_T::value_type>)
+        requires (IUNICODECanUnambiguouslyConvertFrom<typename SPAN_OF_CHAR_T::value_type>)
         : inherited{mk_ (span<const typename SPAN_OF_CHAR_T::value_type>{s})}
     {
         _AssertRepValidType ();
@@ -456,7 +456,7 @@ namespace Stroika::Foundation::Characters {
 #endif
     }
     inline void String::_AssertRepValidType () const { EnsureMember (&_SafeReadRepAccessor{this}._ConstGetRep (), String::_IRep); }
-    template <ICharacterCompatible CHAR_T>
+    template <IUNICODECanAlwaysConvertTo CHAR_T>
     inline span<CHAR_T> String::CopyTo (span<CHAR_T> s) const
         requires (not is_const_v<CHAR_T>)
     {

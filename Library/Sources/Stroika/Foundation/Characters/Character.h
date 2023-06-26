@@ -137,20 +137,19 @@ namespace Stroika::Foundation::Characters {
     static_assert (not IUNICODECanAlwaysConvertTo<ASCII>);
     static_assert (not IUNICODECanAlwaysConvertTo<Latin1>);
 
-    /**
-    * &&&& @todo CONSIDER LOSING THIS AND REPLACING WITH IUNICODECanUnambiguouslyConvertFrom but CAREFULLY REVIEWING EACH CASE
-    * &&& OR maybe merge wtih IUNICODECanAlwaysConvertTo. Must think through
-    * 
-     *  \brief Something that can be reasonably converted into a Unicode Character object (IUNICODECanAlwaysConvertTo<T> or T==char)
-     * 
-     *  \note all these types are <= 4 bytes (size of char32_t)
-     * 
-     *  \note for many apis, when ICharacterCompatible==char, the API will require the characters are ASCII (but see each API for details
-     *        on this point).
+    /*
+     *  IPossibleCharacterRepresentation concept corresponds to any type which MIGHT be convertible back and forth into a Character (possibly with extra information).
+     *  For example, ASCII, Latin1, wchar_t, and obviously char32_t, etc...
      */
     template <typename T>
-    concept ICharacterCompatible = IUNICODECanAlwaysConvertTo<T> or is_same_v<remove_cv_t<T>, ASCII>;
-    static_assert (not ICharacterCompatible<Latin1>);
+    concept IPossibleCharacterRepresentation = convertible_to<T, char32_t>;
+    static_assert (IPossibleCharacterRepresentation<char8_t>);
+    static_assert (IPossibleCharacterRepresentation<char16_t>);
+    static_assert (IPossibleCharacterRepresentation<char32_t>);
+    static_assert (IPossibleCharacterRepresentation<wchar_t>);
+    //static_assert (IPossibleCharacterRepresentation<Character>); true but not defined yet, so cannot assert here
+    static_assert (IPossibleCharacterRepresentation<ASCII>);
+    static_assert (IPossibleCharacterRepresentation<Latin1>);
 
     /**
      *  \brief IUNICODECanUnambiguouslyConvertFrom is any 'character representation type' where array of them unambiguously convertible to UNICODE string
@@ -237,16 +236,16 @@ namespace Stroika::Foundation::Characters {
          *        and you need some way to check a bunch of 'char' elements and see if they are ascii.
          */
         constexpr bool IsASCII () const noexcept;
-        template <IUNICODECanUnambiguouslyConvertFrom CHAR_T>
+        template <IPossibleCharacterRepresentation CHAR_T>
         static constexpr bool IsASCII (span<const CHAR_T> s) noexcept;
 
     public:
         /**
          *  \brief if not IsASCII (arg) throw RuntimeException...
          */
-        template <ICharacterCompatible CHAR_T>
+        template <IPossibleCharacterRepresentation CHAR_T>
         static void CheckASCII (span<const CHAR_T> s);
-        template <ICharacterCompatible CHAR_T>
+        template <IPossibleCharacterRepresentation CHAR_T>
         static void CheckASCII (span<CHAR_T> s);
 
     public:
@@ -401,7 +400,7 @@ namespace Stroika::Foundation::Characters {
          *      o   Memory::StackBuffer<ASCII>
          *      o   string
          */
-        template <typename RESULT_T = string, ICharacterCompatible CHAR_T>
+        template <typename RESULT_T = string, IPossibleCharacterRepresentation CHAR_T>
         static bool AsASCIIQuietly (span<const CHAR_T> fromS, RESULT_T* into)
             requires (is_same_v<RESULT_T, string> or is_same_v<RESULT_T, Memory::StackBuffer<ASCII>>);
 

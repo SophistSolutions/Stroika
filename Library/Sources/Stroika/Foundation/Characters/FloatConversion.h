@@ -264,9 +264,9 @@ namespace Stroika::Foundation::Characters::FloatConversion {
      *  
      * \note when called with CHAR_T=char, we REQUIRE the argument string is ALL ASCII
      */
-    template <typename T = double, ICharacterCompatible CHAR_T>
+    template <typename T = double, IUNICODECanUnambiguouslyConvertFrom CHAR_T>
     T ToFloat (span<const CHAR_T> s);
-    template <typename T = double, ICharacterCompatible CHAR_T>
+    template <typename T = double, IUNICODECanUnambiguouslyConvertFrom CHAR_T>
     T ToFloat (span<const CHAR_T> s, typename span<const CHAR_T>::iterator* remainder);
     template <typename T = double, typename STRINGISH_ARG>
     T ToFloat (STRINGISH_ARG&& s)

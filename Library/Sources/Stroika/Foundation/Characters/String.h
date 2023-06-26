@@ -189,11 +189,11 @@ namespace Stroika::Foundation::Characters {
          *        the same requirements on their arguments as the copy basic_string constructors (eg. char must be ascii)
          */
         String ();
-        template <ICharacterCompatible CHAR_T>
+        template <IUNICODECanUnambiguouslyConvertFrom CHAR_T>
         String (const CHAR_T* cString);
         template <Memory::ISpanT SPAN_OF_CHAR_T>
         String (SPAN_OF_CHAR_T s)
-            requires (ICharacterCompatible<typename SPAN_OF_CHAR_T::value_type>);
+            requires (IUNICODECanUnambiguouslyConvertFrom<typename SPAN_OF_CHAR_T::value_type>);
         template <IUnicodeCodePointOrPlainChar CHAR_T>
         String (const basic_string<CHAR_T>& s);
         template <IUNICODECanAlwaysConvertTo CHAR_T>
@@ -960,7 +960,7 @@ namespace Stroika::Foundation::Characters {
          * 
          *  \see See also GetData<CHAR_T> (buf) - similar functionality - except caller doesn't need to know size of buffer to allocate
          */
-        template <ICharacterCompatible CHAR_T>
+        template <IUNICODECanAlwaysConvertTo CHAR_T>
         nonvirtual span<CHAR_T> CopyTo (span<CHAR_T> s) const
             requires (not is_const_v<CHAR_T>);
 
@@ -1323,12 +1323,12 @@ namespace Stroika::Foundation::Characters {
         nonvirtual String substr (size_t from, size_t count = npos) const;
 
     public:
-        template <ICharacterCompatible CHAR_T>
+        template <typename CHAR_T>
         [[deprecated ("Since Stroika v3.0d1, String{}")]] static String FromASCII (span<const CHAR_T> s)
         {
             return String{s};
         }
-        template <ICharacterCompatible CHAR_T>
+        template <typename CHAR_T>
         [[deprecated ("Since Stroika v3.0d1, String{}")]] static String FromASCII (const CHAR_T* cString)
         {
             return String{cString};
@@ -1414,9 +1414,9 @@ namespace Stroika::Foundation::Characters {
          */
         template <IUNICODECanUnambiguouslyConvertFrom CHAR_T>
         static shared_ptr<_IRep> mk_ (span<const CHAR_T> s);
-        template <ICharacterCompatible CHAR_T>
+        template <IUNICODECanUnambiguouslyConvertFrom CHAR_T>
         static shared_ptr<_IRep> mk_ (Iterable<CHAR_T> it);
-        template <ICharacterCompatible CHAR_T>
+        template <IUNICODECanUnambiguouslyConvertFrom CHAR_T>
         static shared_ptr<_IRep> mk_ (span<CHAR_T> s);
         template <IUnicodeCodePointOrPlainChar CHAR_T>
         static shared_ptr<_IRep> mk_ (basic_string<CHAR_T>&& s);

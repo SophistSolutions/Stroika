@@ -205,7 +205,7 @@ namespace Stroika::Foundation::Characters {
          *      o   wchar_t
          *  are mapped to the appropriate above type.
          * 
-         *  Source and target spans can be of any ICharacterCompatible character type (but source const and target non-const)
+         *  Source and target spans can be of any IUNICODECanUnambiguouslyConvertFrom character type (but source const and target non-const)
          *  (or basic_string of said)...
          * 
          *  \par Example Usage
@@ -260,7 +260,7 @@ namespace Stroika::Foundation::Characters {
          *  \see Convert () above for details. This only differs from Convert, in that it returns a result flag instead
          *       of throwing on errors.
          * 
-         *  Source and target spans can be of any ICharacterCompatible character type (but source const and target non-const)
+         *  Source and target spans can be of any IUNICODECanUnambiguouslyConvertFrom character type (but source const and target non-const)
          * 
          *  \req target.size () >= ComputeTargetBufferSize<TRG_T> (source)
          * 
@@ -283,7 +283,7 @@ namespace Stroika::Foundation::Characters {
          *  UTF32 text would start at offset 3, but in the corresponding UTF8 text it might
          *  start at offset 6.
          */
-        template <ICharacterCompatible TRG_T, ICharacterCompatible SRC_T>
+        template <IUNICODECanUnambiguouslyConvertFrom TRG_T, IUNICODECanUnambiguouslyConvertFrom SRC_T>
         nonvirtual size_t ConvertOffset (span<const SRC_T> source, size_t srcIndex) const;
 
     public:
