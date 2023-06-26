@@ -87,8 +87,9 @@ namespace Stroika::Foundation::Characters {
         Append (span{s, CString::Length (s)});
     }
     template <typename OPTIONS>
-    template <IUNICODECodePointOrPlainChar CHAR_T>
+    template <IStdBasicStringCompatibleCharacter CHAR_T>
     inline void StringBuilder<OPTIONS>::Append (const basic_string<CHAR_T>& s)
+        requires (IUNICODECanUnambiguouslyConvertFrom<CHAR_T>)
     {
 #if qCompilerAndStdLib_spanOfContainer_Buggy
         Append (span{s.data (), s.size ()});
@@ -97,8 +98,9 @@ namespace Stroika::Foundation::Characters {
 #endif
     }
     template <typename OPTIONS>
-    template <IUNICODECodePointOrPlainChar CHAR_T>
+    template <IStdBasicStringCompatibleCharacter CHAR_T>
     inline void StringBuilder<OPTIONS>::Append (const basic_string_view<CHAR_T>& s)
+        requires (IUNICODECanUnambiguouslyConvertFrom<CHAR_T>)
     {
 #if qCompilerAndStdLib_spanOfContainer_Buggy
         Append (span{s.data (), s.size ()});
