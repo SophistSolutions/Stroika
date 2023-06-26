@@ -69,46 +69,46 @@ namespace Stroika::Foundation::Characters {
     static_assert (sizeof (Latin1) == 1); // so can re_reinterpret_cast<> between Latin1 and unsigned char/uint8_t;
 
     /**
-     *  \brief check if T is char8_t, char16_t, char32_t - one of the three possible unicode UTF code-point classes.
+     *  \brief check if T is char8_t, char16_t, char32_t - one of the three possible UNICODE UTF code-point classes.
      *
-     *  IBasicUnicodeCodePoint:
+     *  IBasicUNICODECodePoint:
      *      o   char8_t
      *      o   char16_t
      *      o   char32_t
      */
     template <typename T>
-    concept IBasicUnicodeCodePoint =
+    concept IBasicUNICODECodePoint =
         is_same_v<remove_cv_t<T>, char8_t> or is_same_v<remove_cv_t<T>, char16_t> or is_same_v<remove_cv_t<T>, char32_t>;
 
     /**
-     *  \brief check if T is IBasicUnicodeCodePoint or wchar_t (any basic code-point class)
+     *  \brief check if T is IBasicUNICODECodePoint or wchar_t (any basic code-point class)
      *
-     *  IUnicodeCodePoint:
-     *      o   char8_t     IBasicUnicodeCodePoint
+     *  IUCodePoint:
+     *      o   char8_t     IBasicUNICODECodePoint
      *      o   char16_t    ""
      *      o   char32_t    ""
      *      o   wchar_t     added here
      */
     template <typename T>
-    concept IUnicodeCodePoint = IBasicUnicodeCodePoint<T> or is_same_v<remove_cv_t<T>, wchar_t>;
+    concept IUNICODECodePoint = IBasicUNICODECodePoint<T> or is_same_v<remove_cv_t<T>, wchar_t>;
 
     /**
      *  \brief check if T is char8_t, char16_t, char32_t, wchar_t, or ASCII (char)
      * 
-     *  \note ALIAS - this could have been called IUnicodeCodePointOrASCII
+     *  \note ALIAS - this could have been called IUNICODECodePointOrASCII
      *
      *  \note rarely used concept, but helpful because this is the subet of IUNICODECanAlwaysConvertTo
      *        which std c++ library natively supports (so used in APIs like strtod, etc).
      *
-     *  IUnicodeCodePointOrPlainChar:
-     *      o   char8_t                 IBasicUnicodeCodePoint
+     *  IUNICODECodePointOrPlainChar:
+     *      o   char8_t                 IBasicUNICODECodePoint
      *      o   char16_t                ""
      *      o   char32_t                ""
-     *      o   wchar_t                 added IUnicodeCodePoint
+     *      o   wchar_t                 added IUNICODECodePoint
      *      o   ASCII (char)  added here
      */
     template <typename T>
-    concept IUnicodeCodePointOrPlainChar = IUnicodeCodePoint<T> or is_same_v<remove_cv_t<T>, ASCII>;
+    concept IUNICODECodePointOrPlainChar = IUNICODECodePoint<T> or is_same_v<remove_cv_t<T>, ASCII>;
 
     class Character;
 
@@ -116,10 +116,10 @@ namespace Stroika::Foundation::Characters {
      *  \brief UNICODE string can be always be converted into array of this type
      * 
      *  IUNICODECanAlwaysConvertTo:
-     *      o   char8_t         IBasicUnicodeCodePoint
+     *      o   char8_t         IBasicUNICODECodePoint
      *      o   char16_t        ""
      *      o   char32_t        ""
-     *      o   wchar_t         IUnicodeCodePoint
+     *      o   wchar_t         IUNICODECodePoint
      *      o   Character       added in IUNICODECanAlwaysConvertTo
      *  \note all these types are <= 4 bytes (size of char32_t)
      * 
@@ -128,7 +128,7 @@ namespace Stroika::Foundation::Characters {
      *          not all UNICODE strings are ascii).
      */
     template <typename T>
-    concept IUNICODECanAlwaysConvertTo = IUnicodeCodePoint<T> or is_same_v<remove_cv_t<T>, Character>;
+    concept IUNICODECanAlwaysConvertTo = IUNICODECodePoint<T> or is_same_v<remove_cv_t<T>, Character>;
     static_assert (IUNICODECanAlwaysConvertTo<char8_t>);
     static_assert (IUNICODECanAlwaysConvertTo<char16_t>);
     static_assert (IUNICODECanAlwaysConvertTo<char32_t>);
@@ -155,11 +155,11 @@ namespace Stroika::Foundation::Characters {
      *  \brief IUNICODECanUnambiguouslyConvertFrom is any 'character representation type' where array of them unambiguously convertible to UNICODE string
      *
      *  IUNICODECanUnambiguouslyConvertFrom:
-     *      o   char8_t             IUNICODECanAlwaysConvertTo
+     *      o   char8_t             IUNICODECodePoint
      *      o   char16_t            ""
      *      o   char32_t            ""
      *      o   wchar_t             ""
-     *      o   Character           ""
+     *      o   Character           added
      *      o   ASCII               added
      *      o   Latin1              added
      * 
@@ -173,7 +173,7 @@ namespace Stroika::Foundation::Characters {
      */
     template <typename T>
     concept IUNICODECanUnambiguouslyConvertFrom =
-        IUNICODECanAlwaysConvertTo<T> or is_same_v<remove_cv_t<T>, ASCII> or is_same_v<remove_cv_t<T>, Latin1>;
+        IUNICODECodePoint<T> or is_same_v<remove_cv_t<T>, Character> or is_same_v<remove_cv_t<T>, ASCII> or is_same_v<remove_cv_t<T>, Latin1>;
     static_assert (IUNICODECanUnambiguouslyConvertFrom<char8_t>);
     static_assert (IUNICODECanUnambiguouslyConvertFrom<char16_t>);
     static_assert (IUNICODECanUnambiguouslyConvertFrom<char32_t>);
@@ -310,7 +310,7 @@ namespace Stroika::Foundation::Characters {
          *          horizontal tab (0x09, '\t')
          *          vertical tab (0x0b, '\v')
          *       ...
-         *       ISO 30112 defines POSIX space characters as Unicode characters 
+         *       ISO 30112 defines POSIX space characters as UNICODE characters 
          *          U+0009..U+000D, U+0020, U+1680, U+180E, U+2000..U+2006, U+2008..U+200A, U+2028, U+2029, U+205F, and U+3000.
          * 
          *  \note before Stroika v3.0d1, this just used iswspace()
@@ -354,8 +354,8 @@ namespace Stroika::Foundation::Characters {
         /**
          *  According to https://en.cppreference.com/w/cpp/string/wide/iswcntrl
          * 
-         *  ISO 30112 defines POSIX control characters as Unicode characters U+0000..U+001F, 
-         *  U+007F..U+009F, U+2028, and U+2029 (Unicode classes Cc, Zl, and Zp)
+         *  ISO 30112 defines POSIX control characters as UNICODE characters U+0000..U+001F, 
+         *  U+007F..U+009F, U+2028, and U+2029 (UNICODE classes Cc, Zl, and Zp)
          */
         constexpr bool IsControl () const noexcept;
 

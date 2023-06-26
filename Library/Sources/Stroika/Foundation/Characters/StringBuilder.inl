@@ -87,7 +87,7 @@ namespace Stroika::Foundation::Characters {
         Append (span{s, CString::Length (s)});
     }
     template <typename OPTIONS>
-    template <IUnicodeCodePointOrPlainChar CHAR_T>
+    template <IUNICODECodePointOrPlainChar CHAR_T>
     inline void StringBuilder<OPTIONS>::Append (const basic_string<CHAR_T>& s)
     {
 #if qCompilerAndStdLib_spanOfContainer_Buggy
@@ -97,7 +97,7 @@ namespace Stroika::Foundation::Characters {
 #endif
     }
     template <typename OPTIONS>
-    template <IUnicodeCodePointOrPlainChar CHAR_T>
+    template <IUNICODECodePointOrPlainChar CHAR_T>
     inline void StringBuilder<OPTIONS>::Append (const basic_string_view<CHAR_T>& s)
     {
 #if qCompilerAndStdLib_spanOfContainer_Buggy

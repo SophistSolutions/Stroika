@@ -397,7 +397,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
         // Note - inlined though long, because most of the logic gets compiled out depending on (template or actual)
         // parameters, and want to assure those 'seen' by optimizer so most of the code eliminated.
         //
-        template <typename T, IUnicodeCodePointOrPlainChar CHAR_T>
+        template <typename T, IUNICODECodePointOrPlainChar CHAR_T>
         inline T ToFloat_RespectingLocale_ (const span<const CHAR_T> srcSpan, typename span<const CHAR_T>::iterator* remainder)
         {
             if (srcSpan.empty ()) {

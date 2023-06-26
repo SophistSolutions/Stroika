@@ -321,7 +321,7 @@ namespace {
     struct StringConstant_ : public StringRepHelperAllFitInSize_ {
         using inherited = String;
 
-        template <IUnicodeCodePointOrPlainChar CHAR_T>
+        template <IUNICODECodePointOrPlainChar CHAR_T>
         class Rep final : public StringRepHelperAllFitInSize_::Rep<CHAR_T>, public Memory::UseBlockAllocationIfAppropriate<Rep<CHAR_T>> {
         private:
             using inherited = StringRepHelperAllFitInSize_::Rep<CHAR_T>;
@@ -368,7 +368,7 @@ namespace {
     struct StdStringDelegator_ : public StringRepHelperAllFitInSize_ {
         using inherited = String;
 
-        template <IUnicodeCodePointOrPlainChar CHAR_T>
+        template <IUNICODECodePointOrPlainChar CHAR_T>
         class Rep final : public StringRepHelperAllFitInSize_::Rep<CHAR_T>, public Memory::UseBlockAllocationIfAppropriate<Rep<CHAR_T>> {
         private:
             using inherited = StringRepHelperAllFitInSize_::Rep<CHAR_T>;

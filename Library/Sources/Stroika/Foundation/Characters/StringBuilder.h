@@ -100,9 +100,9 @@ namespace Stroika::Foundation::Characters {
         nonvirtual void Append (span<CHAR_T> s);
         template <IUNICODECanUnambiguouslyConvertFrom CHAR_T>
         nonvirtual void Append (const CHAR_T* s);
-        template <IUnicodeCodePointOrPlainChar CHAR_T>
+        template <IUNICODECodePointOrPlainChar CHAR_T>
         nonvirtual void Append (const basic_string<CHAR_T>& s);
-        template <IUnicodeCodePointOrPlainChar CHAR_T>
+        template <IUNICODECodePointOrPlainChar CHAR_T>
         nonvirtual void Append (const basic_string_view<CHAR_T>& s);
         nonvirtual void Append (const String& s);
         template <IUNICODECanUnambiguouslyConvertFrom CHAR_T>

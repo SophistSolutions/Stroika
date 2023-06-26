@@ -104,7 +104,7 @@ namespace Stroika::Foundation::Characters {
      *  \brief returns true iff T == u8string, u16string, u32string, or wstring
      */
     template <typename T>
-    concept IBasicUnicodeStdString = is_same_v<T, u8string> or is_same_v<T, u16string> or is_same_v<T, u32string> or is_same_v<T, wstring>;
+    concept IBasicUNICODEStdString = is_same_v<T, u8string> or is_same_v<T, u16string> or is_same_v<T, u32string> or is_same_v<T, wstring>;
 
     /**
      *  \brief String is like std::u32string, except it is much easier to use, often much more space efficient, and more easily interoperates with other string types
@@ -194,7 +194,7 @@ namespace Stroika::Foundation::Characters {
         template <Memory::ISpanT SPAN_OF_CHAR_T>
         String (SPAN_OF_CHAR_T s)
             requires (IUNICODECanUnambiguouslyConvertFrom<typename SPAN_OF_CHAR_T::value_type>);
-        template <IUnicodeCodePointOrPlainChar CHAR_T>
+        template <IUNICODECodePointOrPlainChar CHAR_T>
         String (const basic_string<CHAR_T>& s);
         template <IUNICODECanAlwaysConvertTo CHAR_T>
         String (const Iterable<CHAR_T>& src)
@@ -205,7 +205,7 @@ namespace Stroika::Foundation::Characters {
         String (const basic_string_view<char16_t>& str);
         String (const basic_string_view<char32_t>& str);
         String (const basic_string_view<wchar_t>& str);
-        template <IUnicodeCodePointOrPlainChar CHAR_T>
+        template <IUNICODECodePointOrPlainChar CHAR_T>
         explicit String (basic_string<CHAR_T>&& s);
         String (String&& from) noexcept      = default;
         String (const String& from) noexcept = default;
@@ -348,7 +348,7 @@ namespace Stroika::Foundation::Characters {
         static String FromLatin1 (const CHAR_T* cString);
         template <IUNICODECanUnambiguouslyConvertFrom CHAR_T>
         static String FromLatin1 (span<const CHAR_T> s);
-        template <IUnicodeCodePointOrPlainChar CHAR_T>
+        template <IUNICODECodePointOrPlainChar CHAR_T>
         static String FromLatin1 (const basic_string<CHAR_T>& s);
 
     public:
@@ -968,7 +968,7 @@ namespace Stroika::Foundation::Characters {
         /**
          * Convert String losslessly into a standard C++ type.
          *
-         *  Only specifically specialized variants supported: IBasicUnicodeStdString<T> or is_same_v<T,String>
+         *  Only specifically specialized variants supported: IBasicUNICODEStdString<T> or is_same_v<T,String>
          *      o   wstring
          *      o   u8string
          *      o   u16string
@@ -991,10 +991,10 @@ namespace Stroika::Foundation::Characters {
          */
         template <typename T>
         nonvirtual T As () const
-            requires (IBasicUnicodeStdString<T> or is_same_v<T, String>);
+            requires (IBasicUNICODEStdString<T> or is_same_v<T, String>);
         template <typename T>
         nonvirtual void As (T* into) const
-            requires (IBasicUnicodeStdString<T> or is_same_v<T, String>);
+            requires (IBasicUNICODEStdString<T> or is_same_v<T, String>);
 
     public:
         /**
@@ -1333,7 +1333,7 @@ namespace Stroika::Foundation::Characters {
         {
             return String{cString};
         }
-        template <IUnicodeCodePointOrPlainChar CHAR_T>
+        template <IUNICODECodePointOrPlainChar CHAR_T>
         [[deprecated ("Since Stroika v3.0d1, String{}")]] static String FromASCII (const basic_string<CHAR_T>& str)
         {
             return String{str};
@@ -1418,7 +1418,7 @@ namespace Stroika::Foundation::Characters {
         static shared_ptr<_IRep> mk_ (Iterable<CHAR_T> it);
         template <IUNICODECanUnambiguouslyConvertFrom CHAR_T>
         static shared_ptr<_IRep> mk_ (span<CHAR_T> s);
-        template <IUnicodeCodePointOrPlainChar CHAR_T>
+        template <IUNICODECodePointOrPlainChar CHAR_T>
         static shared_ptr<_IRep> mk_ (basic_string<CHAR_T>&& s);
 
     private:

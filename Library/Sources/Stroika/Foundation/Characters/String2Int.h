@@ -58,7 +58,7 @@ namespace Stroika::Foundation::Characters {
      *      @todo MAYBE replace this with String2IntQuietly () - just always mapping to a default (and maybe make that default a parameter).
      *            and otherwise THROW on invalid.
      */
-    template <typename T = int, IUnicodeCodePoint CHAR_T>
+    template <typename T = int, IUNICODECodePoint CHAR_T>
     T String2Int (span<const CHAR_T> s);
     template <typename T = int, IConvertibleToString STRINGISH_ARG>
     T String2Int (STRINGISH_ARG&& s);

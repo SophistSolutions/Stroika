@@ -249,7 +249,7 @@ namespace Stroika::Foundation::Characters {
     auto String::mk_ (basic_string<char32_t>&& s) -> shared_ptr<_IRep>;
     template <>
     auto String::mk_ (basic_string<wchar_t>&& s) -> shared_ptr<_IRep>;
-    template <IUnicodeCodePointOrPlainChar CHAR_T>
+    template <IUNICODECodePointOrPlainChar CHAR_T>
     inline auto String::mk_ (basic_string<CHAR_T>&& s) -> shared_ptr<_IRep>
     {
         // by default, except for maybe a few special cases, just copy the data - don't move
@@ -284,7 +284,7 @@ namespace Stroika::Foundation::Characters {
     {
         _AssertRepValidType ();
     }
-    template <IUnicodeCodePointOrPlainChar CHAR_T>
+    template <IUNICODECodePointOrPlainChar CHAR_T>
     inline String::String (const basic_string<CHAR_T>& s)
         : inherited{mk_ (span<const CHAR_T>{s.data (), s.size ()})}
     {
@@ -299,7 +299,7 @@ namespace Stroika::Foundation::Characters {
         : String{span{&c, 1}}
     {
     }
-    template <IUnicodeCodePointOrPlainChar CHAR_T>
+    template <IUNICODECodePointOrPlainChar CHAR_T>
     inline String::String (basic_string<CHAR_T>&& s)
         : inherited{mk_ (forward<basic_string<CHAR_T>> (s))}
     {
@@ -313,7 +313,7 @@ namespace Stroika::Foundation::Characters {
     {
         return FromNarrowString (span{from.c_str (), from.length ()}, l);
     }
-    template <IUnicodeCodePointOrPlainChar CHAR_T>
+    template <IUNICODECodePointOrPlainChar CHAR_T>
     inline String String::FromLatin1 (const basic_string<CHAR_T>& s)
     {
         return FromLatin1 (span{s.data (), s.size ()});
@@ -329,7 +329,7 @@ namespace Stroika::Foundation::Characters {
     {
         /*
          *  From http://unicodebook.readthedocs.io/encodings.html
-         *      "For example, ISO-8859-1 are the first 256 Unicode code points (U+0000-U+00FF)."
+         *      "For example, ISO-8859-1 are the first 256 UNICODE code points (U+0000-U+00FF)."
          */
         if constexpr (sizeof (CHAR_T) == 1) {
             return mk_ (span<const Latin1>{reinterpret_cast<const Latin1*> (s.data ()), s.size ()});
@@ -696,7 +696,7 @@ namespace Stroika::Foundation::Characters {
 
     template <typename T>
     inline T String::As () const
-        requires (IBasicUnicodeStdString<T> or is_same_v<T, String>)
+        requires (IBasicUNICODEStdString<T> or is_same_v<T, String>)
     {
         T r{}; // for now - KISS, but this can be optimized
         As (&r);
@@ -704,7 +704,7 @@ namespace Stroika::Foundation::Characters {
     }
     template <typename T>
     inline void String::As (T* into) const
-        requires (IBasicUnicodeStdString<T> or is_same_v<T, String>)
+        requires (IBasicUNICODEStdString<T> or is_same_v<T, String>)
     {
         if constexpr (is_same_v<T, u8string>) {
             AsUTF8 (into);

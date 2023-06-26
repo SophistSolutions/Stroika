@@ -57,7 +57,7 @@ namespace Stroika::Foundation::Characters {
      *********************************** String2Int *********************************
      ********************************************************************************
      */
-    template <typename T, IUnicodeCodePoint CHAR_T>
+    template <typename T, IUNICODECodePoint CHAR_T>
     inline T String2Int (span<const CHAR_T> s)
     {
         Require ((String{s} == String{s}.Trim ()));
