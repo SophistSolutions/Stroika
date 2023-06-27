@@ -473,7 +473,9 @@ const wregex& Characters::Private_::RegularExpression_GetCompiled (const Regular
  ************************************* String ***********************************
  ********************************************************************************
  */
+#if !qCompilerAndStdLib_templateConstructorSpecialization_Buggy
 template<>
+#endif
 String::String (const basic_string_view<char>& str)
     : String{(Require (Character::IsASCII (span{str.data (), str.size ()})),Memory::MakeSharedPtr<StringConstant_::Rep<ASCII>> (span{str.data (), str.size ()}))}
 {
@@ -493,25 +495,33 @@ namespace {
     }
 }
 
+#if !qCompilerAndStdLib_templateConstructorSpecialization_Buggy
 template <>
+#endif
 String::String (const basic_string_view<char8_t>& str)
     : String{mkStr_ (str)}
 {
 }
 
+#if !qCompilerAndStdLib_templateConstructorSpecialization_Buggy
 template <>
+#endif
 String::String (const basic_string_view<char16_t>& str)
     : String{Memory::MakeSharedPtr<StringConstant_::Rep<char16_t>> (span{str.data (), str.size ()})}
 {
 }
 
+#if !qCompilerAndStdLib_templateConstructorSpecialization_Buggy
 template <>
+#endif
 String::String (const basic_string_view<char32_t>& str)
     : String{Memory::MakeSharedPtr<StringConstant_::Rep<char32_t>> (span{str.data (), str.size ()})}
 {
 }
 
+#if !qCompilerAndStdLib_templateConstructorSpecialization_Buggy
 template <>
+#endif
 String::String (const basic_string_view<wchar_t>& str)
     : String{Memory::MakeSharedPtr<StringConstant_::Rep<wchar_t>> (span{str.data (), str.size ()})}
 {

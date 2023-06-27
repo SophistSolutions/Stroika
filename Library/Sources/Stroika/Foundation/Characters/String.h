@@ -208,6 +208,13 @@ namespace Stroika::Foundation::Characters {
         String (const String& from) noexcept = default;
 
     public:
+#if qCompilerAndStdLib_templateConstructorSpecialization_Buggy
+        String (const basic_string_view<char>& str); // char==ASCII
+        String (const basic_string_view<char8_t>& str);
+        String (const basic_string_view<char16_t>& str);
+        String (const basic_string_view<char32_t>& str);
+        String (const basic_string_view<wchar_t>& str);
+#else
         template <>
         String (const basic_string_view<char>& str); // char==ASCII
         template <>
@@ -218,6 +225,7 @@ namespace Stroika::Foundation::Characters {
         String (const basic_string_view<char32_t>& str);
         template <>
         String (const basic_string_view<wchar_t>& str);
+#endif
 
     public:
         ~String () = default;

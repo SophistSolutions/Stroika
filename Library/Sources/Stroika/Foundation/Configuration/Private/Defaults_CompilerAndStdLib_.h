@@ -1101,6 +1101,25 @@ Response.h:373:30: error: no match for ‘operator==’ (operand types are ‘un
 #endif
 
 /*
+      Compiling Library/Sources/Stroika/Foundation/Characters/Character.cpp ...
+In file included from ../Characters/Format.h:15,
+                 from Statistics.cpp:6:
+../Characters/String.h:218:20: error: explicit specialization in non-namespace scope ‘class Stroika::Foundation::Characters::String’
+  218 |          template <>
+      |                    ^
+.
+*/
+#ifndef qCompilerAndStdLib_templateConstructorSpecialization_Buggy
+
+#if defined(__GNUC__) && !defined(__clang__)
+// FIRST SEEEN BROKEN IN GCC 12
+#define qCompilerAndStdLib_templateConstructorSpecialization_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ <= 12)
+#else
+#define qCompilerAndStdLib_templateConstructorSpecialization_Buggy 0
+#endif
+#endif
+
+/*
 In function '__copy_m',
     inlined from '__copy_move_a2' at /usr/include/c++/11/bits/stl_algobase.h:495:30,
     inlined from '__copy_move_a1' at /usr/include/c++/11/bits/stl_algobase.h:522:42,
