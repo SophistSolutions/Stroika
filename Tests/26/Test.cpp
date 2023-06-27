@@ -80,12 +80,12 @@ namespace {
     void DoRegressionTests_ ()
     {
         struct MySimpleClassWithoutComparisonOperators_ComparerWithEquals_
-            : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eEquals> {
+            : Common::ComparisonRelationDeclarationBase<Common::ComparisonRelationType::eEquals> {
             using value_type = SimpleClassWithoutComparisonOperators;
             bool operator() (const value_type& v1, const value_type& v2) const { return v1.GetValue () == v2.GetValue (); }
         };
         struct MySimpleClassWithoutComparisonOperators_ComparerWithLess_
-            : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eStrictInOrder> {
+            : Common::ComparisonRelationDeclarationBase<Common::ComparisonRelationType::eStrictInOrder> {
             using value_type = SimpleClassWithoutComparisonOperators;
             bool operator() (const value_type& v1, const value_type& v2) const { return v1.GetValue () < v2.GetValue (); }
         };

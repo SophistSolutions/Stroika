@@ -566,7 +566,8 @@ namespace Stroika::Foundation::Containers {
      *  Order is meaningless in comparing KeyedCollection - this compares just by Set equality of the keys.
      */
     template <typename T, typename KEY_TYPE, typename TRAITS>
-    struct KeyedCollection<T, KEY_TYPE, TRAITS>::EqualsComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eEquals> {
+    struct KeyedCollection<T, KEY_TYPE, TRAITS>::EqualsComparer
+        : Common::ComparisonRelationDeclarationBase<Common::ComparisonRelationType::eEquals> {
         constexpr EqualsComparer () = default;
         nonvirtual bool operator() (const KeyedCollection& lhs, const KeyedCollection& rhs) const;
         nonvirtual bool operator() (const KeyedCollection& lhs, const Iterable<value_type>& rhs) const;

@@ -466,7 +466,7 @@ namespace Stroika::Foundation::DataExchange {
      *        The ONLY remaining coertions that are done in comparing, are that if two numbers (int,unsigned, float) are compared
      *        they are first promoted.
      */
-    struct VariantValue::EqualsComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eEquals> {
+    struct VariantValue::EqualsComparer : Common::ComparisonRelationDeclarationBase<Common::ComparisonRelationType::eEquals> {
         constexpr EqualsComparer ();
         nonvirtual bool operator() (const VariantValue& lhs, const VariantValue& rhs) const;
     };
@@ -485,7 +485,7 @@ namespace Stroika::Foundation::DataExchange {
      *        The ONLY remaining coertions that are done in comparing, are that if two numbers (int,unsigned, float) are compared
      *        they are first promoted.
      */
-    struct VariantValue::ThreeWayComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eThreeWayCompare> {
+    struct VariantValue::ThreeWayComparer : Common::ComparisonRelationDeclarationBase<Common::ComparisonRelationType::eThreeWayCompare> {
         constexpr ThreeWayComparer ();
         nonvirtual strong_ordering operator() (const VariantValue& lhs, const VariantValue& rhs) const;
     };

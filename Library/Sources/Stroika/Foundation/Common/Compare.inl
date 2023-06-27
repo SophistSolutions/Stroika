@@ -15,6 +15,179 @@ namespace Stroika::Foundation::Common {
 
     /*
      ********************************************************************************
+     ********** ComparisonRelationDeclaration<TYPE, ACTUAL_COMPARER> ****************
+     ********************************************************************************
+     */
+    template <ComparisonRelationType KIND, typename ACTUAL_COMPARER>
+        requires (not is_reference_v<ACTUAL_COMPARER>)
+    inline constexpr ComparisonRelationDeclaration<KIND, ACTUAL_COMPARER>::ComparisonRelationDeclaration (const ACTUAL_COMPARER& actualComparer)
+        : ACTUAL_COMPARER{actualComparer}
+    {
+    }
+    template <ComparisonRelationType KIND, typename ACTUAL_COMPARER>
+        requires (not is_reference_v<ACTUAL_COMPARER>)
+    inline constexpr ComparisonRelationDeclaration<KIND, ACTUAL_COMPARER>::ComparisonRelationDeclaration (ACTUAL_COMPARER&& actualComparer)
+        : ACTUAL_COMPARER{move (actualComparer)}
+    {
+    }
+
+    /*
+     ********************************************************************************
+     **************************** DeclareEqualsComparer *****************************
+     ********************************************************************************
+     */
+    template <typename FUNCTOR>
+    constexpr inline Common::ComparisonRelationDeclaration<ComparisonRelationType::eEquals, remove_cvref_t<FUNCTOR>> DeclareEqualsComparer (FUNCTOR&& f)
+    {
+        static_assert (
+            IPotentiallyComparer<remove_cvref_t<FUNCTOR>, typename Configuration::FunctionTraits<remove_cvref_t<FUNCTOR>>::template arg<0>::type>);
+        return Common::ComparisonRelationDeclaration<ComparisonRelationType::eEquals, remove_cvref_t<FUNCTOR>>{std::forward<FUNCTOR> (f)};
+    }
+
+    /*
+     ********************************************************************************
+     ******************************* DeclareInOrderComparer *************************
+     ********************************************************************************
+     */
+    template <typename FUNCTOR>
+    constexpr inline Common::ComparisonRelationDeclaration<ComparisonRelationType::eStrictInOrder, remove_cvref_t<FUNCTOR>>
+    DeclareInOrderComparer (FUNCTOR&& f)
+    {
+        static_assert (
+            IPotentiallyComparer<remove_cvref_t<FUNCTOR>, typename Configuration::FunctionTraits<remove_cvref_t<FUNCTOR>>::template arg<0>::type>);
+        return Common::ComparisonRelationDeclaration<ComparisonRelationType::eStrictInOrder, remove_cvref_t<FUNCTOR>>{std::forward<FUNCTOR> (f)};
+    }
+
+    /*
+     ********************************************************************************
+     ********************* InOrderComparerAdapter<BASE_COMPARER> ********************
+     ********************************************************************************
+     */
+    template <typename BASE_COMPARER>
+    constexpr inline InOrderComparerAdapter<BASE_COMPARER>::InOrderComparerAdapter (const BASE_COMPARER& baseComparer)
+        : fBASE_COMPARER_{baseComparer}
+    {
+    }
+    template <typename BASE_COMPARER>
+    constexpr inline InOrderComparerAdapter<BASE_COMPARER>::InOrderComparerAdapter (BASE_COMPARER&& baseComparer)
+        : fBASE_COMPARER_{move (baseComparer)}
+    {
+    }
+    template <typename BASE_COMPARER>
+    template <typename LT, typename RT>
+    constexpr inline bool InOrderComparerAdapter<BASE_COMPARER>::operator() (LT&& lhs, RT&& rhs) const
+    {
+        /*
+         *  It would  be nice to be able to use switch statement but use constexpr if because 
+         *  inappropriate 'cases' that wouldn't get executed might not compile -- LGP 2020-05-05
+         */
+        constexpr auto kRelationKind  = ExtractComparisonTraits<BASE_COMPARER>::kComparisonRelationKind;
+        auto           baseComparison = fBASE_COMPARER_ (forward<LT> (lhs), forward<RT> (rhs));
+        if constexpr (kRelationKind == ComparisonRelationType::eStrictInOrder) {
+            return kRelationKind;
+        }
+        if constexpr (kRelationKind == ComparisonRelationType::eInOrderOrEquals) {
+            return baseComparison and not fBASE_COMPARER_ (forward<RT> (rhs), forward<LT> (lhs)); // eliminate equals case
+        }
+        if constexpr (kRelationKind == ComparisonRelationType::eThreeWayCompare) {
+            return baseComparison == strong_ordering::less;
+        }
+        AssertNotReached ();
+        return false;
+    }
+
+    /*
+     ********************************************************************************
+     ********************* EqualsComparerAdapter<BASE_COMPARER> *********************
+     ********************************************************************************
+     */
+    template <typename BASE_COMPARER>
+    constexpr EqualsComparerAdapter<BASE_COMPARER>::EqualsComparerAdapter (const BASE_COMPARER& baseComparer)
+        : fBASE_COMPARER_{baseComparer}
+    {
+    }
+    template <typename BASE_COMPARER>
+    constexpr EqualsComparerAdapter<BASE_COMPARER>::EqualsComparerAdapter (BASE_COMPARER&& baseComparer)
+        : fBASE_COMPARER_{move (baseComparer)}
+    {
+    }
+    template <typename BASE_COMPARER>
+    template <typename LT, typename RT>
+    constexpr bool EqualsComparerAdapter<BASE_COMPARER>::operator() (LT&& lhs, RT&& rhs) const
+    {
+        /*
+         *  It would  be nice to be able to use switch statement but use constexpr if because 
+         *  inappropriate 'cases' that wouldn't get executed might not compile -- LGP 2020-05-05
+         */
+        constexpr auto kRelationKind  = ExtractComparisonTraits_v<BASE_COMPARER>;
+        auto           baseComparison = fBASE_COMPARER_ (forward<LT> (lhs), forward<RT> (rhs));
+        if constexpr (kRelationKind == ComparisonRelationType::eEquals) {
+            return baseComparison;
+        }
+        if constexpr (kRelationKind == ComparisonRelationType::eStrictInOrder) {
+            if (baseComparison) {
+                return false; // if less, cannot be equal
+            }
+            else {
+                return not fBASE_COMPARER_ (forward<RT> (rhs), forward<LT> (lhs)); // if not (LHS < RHS), maybe RHS < LHS?
+            }
+        }
+        if constexpr (kRelationKind == ComparisonRelationType::eInOrderOrEquals) {
+            if (baseComparison) {
+                return fBASE_COMPARER_ (forward<RT> (rhs), forward<LT> (lhs)); // if  (LHS <= RHS), then EQ if reverse true
+            }
+            else {
+                return false; // not not <=, then clearly not equal
+            }
+        }
+        if constexpr (kRelationKind == ComparisonRelationType::eThreeWayCompare) {
+            return baseComparison == strong_ordering::equal;
+        }
+        AssertNotReached ();
+        return false;
+    }
+
+    /*
+     ********************************************************************************
+     ********************* ThreeWayComparerAdapter<BASE_COMPARER> *******************
+     ********************************************************************************
+     */
+    template <typename BASE_COMPARER>
+    constexpr ThreeWayComparerAdapter<BASE_COMPARER>::ThreeWayComparerAdapter (const BASE_COMPARER& baseComparer)
+        : fBASE_COMPARER_{baseComparer}
+    {
+    }
+    template <typename BASE_COMPARER>
+    constexpr ThreeWayComparerAdapter<BASE_COMPARER>::ThreeWayComparerAdapter (BASE_COMPARER&& baseComparer)
+        : fBASE_COMPARER_{move (baseComparer)}
+    {
+    }
+    template <typename BASE_COMPARER>
+    template <typename LT, typename RT>
+    constexpr strong_ordering ThreeWayComparerAdapter<BASE_COMPARER>::operator() (LT&& lhs, RT&& rhs) const
+    {
+        /*
+         *  It would  be nice to be able to use switch statement but use constexpr if because 
+         *  inappropriate 'cases' that wouldn't get executed might not compile -- LGP 2020-05-05
+         */
+        constexpr auto kRelationKind  = ExtractComparisonTraits_v<BASE_COMPARER>;
+        auto           baseComparison = fBASE_COMPARER_ (forward<LT> (lhs), forward<RT> (rhs));
+        if constexpr (kRelationKind == ComparisonRelationType::eThreeWayCompare) {
+            return baseComparison;
+        }
+        if constexpr (kRelationKind == ComparisonRelationType::eStrictInOrder) {
+            if (baseComparison) {
+                return strong_ordering::less;
+            }
+            // if not <, then either equal or greater: if RHS < LHS, then LHS > RHS
+            return fBASE_COMPARER_ (forward<RT> (rhs), forward<LT> (lhs)) ? strong_ordering::greater : strong_ordering::equal;
+        }
+        AssertNotReached ();
+        return strong_ordering::equal;
+    }
+
+    /*
+     ********************************************************************************
      *************** OptionalThreeWayCompare<T, TCOMPARER> **************************
      ********************************************************************************
      */
@@ -63,217 +236,130 @@ namespace Stroika::Foundation::Common {
         }
     }
 
-    /*
-     ********************************************************************************
-     ********** ComparisonRelationDeclaration<TYPE, ACTUAL_COMPARER> ****************
-     ********************************************************************************
-     */
-    template <ComparisonRelationType KIND, typename ACTUAL_COMPARER>
-    inline constexpr ComparisonRelationDeclaration<KIND, ACTUAL_COMPARER>::ComparisonRelationDeclaration (const ACTUAL_COMPARER& actualComparer)
-        : fActualComparer{actualComparer}
-    {
-    }
-    template <ComparisonRelationType KIND, typename ACTUAL_COMPARER>
-    inline constexpr ComparisonRelationDeclaration<KIND, ACTUAL_COMPARER>::ComparisonRelationDeclaration (ACTUAL_COMPARER&& actualComparer)
-        : fActualComparer{move (actualComparer)}
-    {
-    }
-    template <ComparisonRelationType KIND, typename ACTUAL_COMPARER>
-    template <typename LT, typename RT>
-    inline constexpr bool ComparisonRelationDeclaration<KIND, ACTUAL_COMPARER>::operator() (LT&& lhs, RT&& rhs) const
-    {
-        return fActualComparer (forward<LT> (lhs), forward<RT> (rhs));
-    }
+    /********************************DEPRECATED STUFF ************************************************** */
+    /********************************DEPRECATED STUFF ************************************************** */
+    /********************************DEPRECATED STUFF ************************************************** */
 
-    /*
-     ********************************************************************************
-     **************************** DeclareEqualsComparer *****************************
-     ********************************************************************************
-     */
-    template <typename FUNCTOR>
-    constexpr inline Common::ComparisonRelationDeclaration<ComparisonRelationType::eEquals, remove_cvref_t<FUNCTOR>> DeclareEqualsComparer (FUNCTOR&& f)
-    {
-        static_assert (
-            IPotentiallyComparer<remove_cvref_t<FUNCTOR>, typename Configuration::FunctionTraits<remove_cvref_t<FUNCTOR>>::template arg<0>::type>);
-        return Common::ComparisonRelationDeclaration<ComparisonRelationType::eEquals, remove_cvref_t<FUNCTOR>>{std::forward<FUNCTOR> (f)};
-    }
-
-    /*
-     ********************************************************************************
-     ********************************* DeclareInOrderComparer ***********************
-     ********************************************************************************
-     */
-    template <typename FUNCTOR>
-    constexpr inline Common::ComparisonRelationDeclaration<ComparisonRelationType::eStrictInOrder, remove_cvref_t<FUNCTOR>>
-    DeclareInOrderComparer (FUNCTOR&& f)
-    {
-        static_assert (
-            IPotentiallyComparer<remove_cvref_t<FUNCTOR>, typename Configuration::FunctionTraits<remove_cvref_t<FUNCTOR>>::template arg<0>::type>);
-        return Common::ComparisonRelationDeclaration<ComparisonRelationType::eStrictInOrder, remove_cvref_t<FUNCTOR>>{std::forward<FUNCTOR> (f)};
-    }
-
-    /*
-     ********************************************************************************
-     ********************* InOrderComparerAdapter<BASE_COMPARER> ********************
-     ********************************************************************************
-     */
-    template <typename BASE_COMPARER>
-    constexpr inline InOrderComparerAdapter<BASE_COMPARER>::InOrderComparerAdapter (const BASE_COMPARER& baseComparer)
-        : fBASE_COMPARER_{baseComparer}
-    {
-    }
-    template <typename BASE_COMPARER>
-    constexpr inline InOrderComparerAdapter<BASE_COMPARER>::InOrderComparerAdapter (BASE_COMPARER&& baseComparer)
-        : fBASE_COMPARER_{move (baseComparer)}
-    {
-    }
-    template <typename BASE_COMPARER>
-    template <typename T>
-    constexpr inline bool InOrderComparerAdapter<BASE_COMPARER>::operator() (const T& lhs, const T& rhs) const
-    {
-        /*
-         *  It would  be nice to be able to use switch statement but use constexpr if because 
-         *  inappropriate 'cases' that wouldn't get executed might not compile -- LGP 2020-05-05
-         */
-        constexpr auto kRelationKind  = ExtractComparisonTraits<BASE_COMPARER>::kComparisonRelationKind;
-        auto           baseComparison = fBASE_COMPARER_ (lhs, rhs);
-        if constexpr (kRelationKind == ComparisonRelationType::eStrictInOrder) {
-            return kRelationKind;
-        }
-        if constexpr (kRelationKind == ComparisonRelationType::eInOrderOrEquals) {
-            return baseComparison and not fBASE_COMPARER_ (rhs, lhs);
-        }
-        if constexpr (kRelationKind == ComparisonRelationType::eThreeWayCompare) {
-            return baseComparison < 0;
-        }
-        AssertNotReached ();
-        return false;
-    }
-
-    /*
-     ********************************************************************************
-     ********************* EqualsComparerAdapter<BASE_COMPARER> *********************
-     ********************************************************************************
-     */
-    template <typename BASE_COMPARER>
-    constexpr EqualsComparerAdapter<BASE_COMPARER>::EqualsComparerAdapter (const BASE_COMPARER& baseComparer)
-        : fBASE_COMPARER_{baseComparer}
-    {
-    }
-    template <typename BASE_COMPARER>
-    constexpr EqualsComparerAdapter<BASE_COMPARER>::EqualsComparerAdapter (BASE_COMPARER&& baseComparer)
-        : fBASE_COMPARER_{move (baseComparer)}
-    {
-    }
-    template <typename BASE_COMPARER>
-    template <typename T>
-    constexpr bool EqualsComparerAdapter<BASE_COMPARER>::operator() (const T& lhs, const T& rhs) const
-    {
-        /*
-         *  It would  be nice to be able to use switch statement but use constexpr if because 
-         *  inappropriate 'cases' that wouldn't get executed might not compile -- LGP 2020-05-05
-         */
-        constexpr auto kRelationKind  = ExtractComparisonTraits<BASE_COMPARER>::kComparisonRelationKind;
-        auto           baseComparison = fBASE_COMPARER_ (lhs, rhs);
-        if constexpr (kRelationKind == ComparisonRelationType::eEquals) {
-            return baseComparison;
-        }
-        if constexpr (kRelationKind == ComparisonRelationType::eStrictInOrder) {
-            return not baseComparison and not fBASE_COMPARER_ (rhs, lhs);
-        }
-        if constexpr (kRelationKind == ComparisonRelationType::eInOrderOrEquals) {
-            return baseComparison and fBASE_COMPARER_ (rhs, lhs);
-        }
-        if constexpr (kRelationKind == ComparisonRelationType::eThreeWayCompare) {
-            return baseComparison == strong_ordering::equal;
-        }
-        AssertNotReached ();
-        return false;
-    }
-
-    /*
-     ********************************************************************************
-     ********************* ThreeWayComparerAdapter<BASE_COMPARER> *******************
-     ********************************************************************************
-     */
-    template <typename BASE_COMPARER>
-    constexpr ThreeWayComparerAdapter<BASE_COMPARER>::ThreeWayComparerAdapter (const BASE_COMPARER& baseComparer)
-        : fBASE_COMPARER_{baseComparer}
-    {
-    }
-    template <typename BASE_COMPARER>
-    constexpr ThreeWayComparerAdapter<BASE_COMPARER>::ThreeWayComparerAdapter (BASE_COMPARER&& baseComparer)
-        : fBASE_COMPARER_{move (baseComparer)}
-    {
-    }
-    template <typename BASE_COMPARER>
-    template <typename T>
-    constexpr strong_ordering ThreeWayComparerAdapter<BASE_COMPARER>::operator() (const T& lhs, const T& rhs) const
-    {
-        /*
-         *  It would  be nice to be able to use switch statement but use constexpr if because 
-         *  inappropriate 'cases' that wouldn't get executed might not compile -- LGP 2020-05-05
-         */
-        constexpr auto kRelationKind  = ExtractComparisonTraits<BASE_COMPARER>::kComparisonRelationKind;
-        auto           baseComparison = fBASE_COMPARER_ (lhs, rhs);
-        if constexpr (kRelationKind == ComparisonRelationType::eStrictInOrder) {
-            return baseComparison ? strong_ordering::less : (fBASE_COMPARER_ (rhs, lhs) ? strong_ordering::greater : strong_ordering::equal);
-        }
-        if constexpr (kRelationKind == ComparisonRelationType::eThreeWayCompare) {
-            return baseComparison;
-        }
-        AssertNotReached ();
+    // @TODO SEEMS STILL NEEDED ON CLANG++-10???
+    // @TODO PROBABLY DEPRECATE THIS CLASS - and use compare_three_way directly
+#if __cpp_lib_three_way_comparison < 201907L
+    struct [[deprecated ("Since Stroika 3.0d1 - use std::compare_three_way")]] ThreeWayComparer{
+        template <typename LT, typename RT> constexpr auto operator() (LT&& lhs, RT&& rhs) const {using CT = common_type_t<LT, RT>;
+    // ISSUE HERE - PRE C++20, no distinction made between strong_ordering, weak_ordering, and partial_ordering, because
+    // this counts on cooperation with various types and mechanismns like operator<=> = default which we don't have (and declared strong_ordering=int)
+    if (equal_to<CT>{}(forward<LT> (lhs), forward<RT> (rhs))) {
         return strong_ordering::equal;
     }
+    return less<CT>{}(forward<LT> (lhs), forward<RT> (rhs)) ? strong_ordering::less : strong_ordering::greater;
+}
+}
+;
+#else
+    struct [[deprecated ("Since Stroika 3.0d1 - use std::compare_three_way")]] ThreeWayComparer{
+        template <typename LT, typename RT> constexpr auto operator() (LT&& lhs, RT&& rhs)
+            const {return compare_three_way{}(forward<LT> (lhs), forward<RT> (rhs));
+}
+}
+;
+#endif
+DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
+DISABLE_COMPILER_MSC_WARNING_START (4996)
+template <>
+struct ExtractComparisonTraits<ThreeWayComparer> {
+    static constexpr ComparisonRelationType kComparisonRelationKind = ComparisonRelationType::eThreeWayCompare;
+};
+DISABLE_COMPILER_MSC_WARNING_END (4996)
+DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
+DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
 
-    /*******DEPRECATED STUFF  */
+constexpr std::strong_ordering kLess [[deprecated ("Since Stroika 3.0d1 - use std::strong_ordering")]]    = std::strong_ordering::less;
+constexpr std::strong_ordering kEqual [[deprecated ("Since Stroika 3.0d1 - use std::strong_ordering")]]   = std::strong_ordering::equal;
+constexpr std::strong_ordering kGreater [[deprecated ("Since Stroika 3.0d1 - use std::strong_ordering")]] = std::strong_ordering::greater;
+
+#if qCompilerAndStdLib_stdlib_compare_three_way_present_but_Buggy or qCompilerAndStdLib_stdlib_compare_three_way_missing_Buggy
+struct compare_three_way_BWA {
+    // NOTE - this workaround is GENERALLY INADEQUATE, but is adequate for my current use in Stroika -- LGP 2022-11-01
     template <typename LT, typename RT>
-    [[deprecated ("Since Stroika 3.0d1 - use compare_three_way{} or <=>")]] constexpr strong_ordering ThreeWayCompare (LT&& lhs, RT&& rhs)
+    constexpr auto operator() (LT&& lhs, RT&& rhs) const
     {
-        return compare_three_way{}(forward<LT> (lhs), forward<RT> (rhs));
+        using CT = common_type_t<LT, RT>;
+        if (equal_to<CT>{}(forward<LT> (lhs), forward<RT> (rhs))) {
+            return strong_ordering::equal;
+        }
+        return less<CT>{}(forward<LT> (lhs), forward<RT> (rhs)) ? strong_ordering::less : strong_ordering::greater;
     }
+    using is_transparent = void;
+};
+#endif
+template <typename FUNCTOR, typename FUNCTOR_ARG>
+[[deprecated ("Since Stroika v3.0d1 - use IPotentiallyComparer ")]] constexpr bool IsPotentiallyComparerRelation ()
+{
+    return IPotentiallyComparer<FUNCTOR, FUNCTOR_ARG>;
+}
+template <typename FUNCTOR>
+[[deprecated ("Since Stroika v3.0d1 - use IPotentiallyComparer ")]] constexpr bool IsPotentiallyComparerRelation ()
+{
+    if constexpr (Configuration::FunctionTraits<FUNCTOR>::kArity == 2) {
+        using TRAITS = typename Configuration::FunctionTraits<FUNCTOR>;
+        return is_same_v<typename TRAITS::template arg<0>::type, typename TRAITS::template arg<1>::type> and
+               IsPotentiallyComparerRelation<FUNCTOR, typename Configuration::FunctionTraits<FUNCTOR>::template arg<0>::type> ();
+    }
+    else {
+        return false;
+    }
+}
+template <typename FUNCTOR>
+[[deprecated ("Since Stroika v3.0d1 - use IPotentiallyComparer ")]] constexpr bool IsPotentiallyComparerRelation (const FUNCTOR& f)
+{
+    return IsPotentiallyComparerRelation<FUNCTOR> ();
+}
+template <typename LT, typename RT>
+[[deprecated ("Since Stroika 3.0d1 - use compare_three_way{} or <=>")]] constexpr strong_ordering ThreeWayCompare (LT&& lhs, RT&& rhs)
+{
+    return compare_three_way{}(forward<LT> (lhs), forward<RT> (rhs));
+}
 
-    template <typename COMPARER>
-    [[deprecated ("Since Stroika 3.0d1 - use IEqualsComparer")]] constexpr bool IsEqualsComparer ()
-    {
+template <typename COMPARER>
+[[deprecated ("Since Stroika 3.0d1 - use IEqualsComparer")]] constexpr bool IsEqualsComparer ()
+{
+    return ExtractComparisonTraits<std::remove_cvref_t<COMPARER>>::kComparisonRelationKind == ComparisonRelationType::eEquals;
+}
+template <typename COMPARER, typename ARG_T>
+[[deprecated ("Since Stroika 3.0d1 - use IEqualsComparer")]] constexpr bool IsEqualsComparer ()
+{
+    if constexpr (not IsPotentiallyComparerRelation<COMPARER, ARG_T> ()) {
+        return false;
+    }
+    else {
         return ExtractComparisonTraits<std::remove_cvref_t<COMPARER>>::kComparisonRelationKind == ComparisonRelationType::eEquals;
     }
-    template <typename COMPARER, typename ARG_T>
-    [[deprecated ("Since Stroika 3.0d1 - use IEqualsComparer")]] constexpr bool IsEqualsComparer ()
-    {
-        if constexpr (not IsPotentiallyComparerRelation<COMPARER, ARG_T> ()) {
-            return false;
-        }
-        else {
-            return ExtractComparisonTraits<std::remove_cvref_t<COMPARER>>::kComparisonRelationKind == ComparisonRelationType::eEquals;
-        }
+}
+template <typename COMPARER>
+[[deprecated ("Since Stroika 3.0d1 - use IEqualsComparer")]] constexpr bool IsEqualsComparer (const COMPARER&)
+{
+    return IsEqualsComparer<COMPARER> ();
+}
+template <typename COMPARER>
+[[deprecated ("Since Stroika 3.0d1 - use IInOrderComparer")]] constexpr bool IsStrictInOrderComparer ()
+{
+    return ExtractComparisonTraits<std::remove_cvref_t<COMPARER>>::kComparisonRelationKind == ComparisonRelationType::eStrictInOrder;
+}
+template <typename COMPARER, typename ARG_T>
+[[deprecated ("Since Stroika 3.0d1 - use IInOrderComparer")]] constexpr bool IsStrictInOrderComparer ()
+{
+    if constexpr (not IsPotentiallyComparerRelation<COMPARER, ARG_T> ()) {
+        return false;
     }
-    template <typename COMPARER>
-    [[deprecated ("Since Stroika 3.0d1 - use IEqualsComparer")]] constexpr bool IsEqualsComparer (const COMPARER&)
-    {
-        return IsEqualsComparer<COMPARER> ();
-    }
-    template <typename COMPARER>
-    [[deprecated ("Since Stroika 3.0d1 - use IInOrderComparer")]] constexpr bool IsStrictInOrderComparer ()
-    {
+    else {
         return ExtractComparisonTraits<std::remove_cvref_t<COMPARER>>::kComparisonRelationKind == ComparisonRelationType::eStrictInOrder;
     }
-    template <typename COMPARER, typename ARG_T>
-    [[deprecated ("Since Stroika 3.0d1 - use IInOrderComparer")]] constexpr bool IsStrictInOrderComparer ()
-    {
-        if constexpr (not IsPotentiallyComparerRelation<COMPARER, ARG_T> ()) {
-            return false;
-        }
-        else {
-            return ExtractComparisonTraits<std::remove_cvref_t<COMPARER>>::kComparisonRelationKind == ComparisonRelationType::eStrictInOrder;
-        }
-    }
-    template <typename COMPARER>
-    [[deprecated ("Since Stroika 3.0d1 - use IInOrderComparer")]] constexpr bool IsStrictInOrderComparer (const COMPARER&)
-    {
-        return ExtractComparisonTraits<std::remove_cvref_t<COMPARER>>::kComparisonRelationKind == ComparisonRelationType::eStrictInOrder;
-    }
-
+}
+template <typename COMPARER>
+[[deprecated ("Since Stroika 3.0d1 - use IInOrderComparer")]] constexpr bool IsStrictInOrderComparer (const COMPARER&)
+{
+    return ExtractComparisonTraits<std::remove_cvref_t<COMPARER>>::kComparisonRelationKind == ComparisonRelationType::eStrictInOrder;
+}
 }
 
 #endif /*_Stroika_Foundation_Common_Compare_inl_*/

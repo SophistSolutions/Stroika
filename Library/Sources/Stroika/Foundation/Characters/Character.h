@@ -455,7 +455,7 @@ namespace Stroika::Foundation::Characters {
     /**
      *  Like equal_to<Character> but allow optional case insensitive compares
      */
-    struct Character::EqualsComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eEquals> {
+    struct Character::EqualsComparer : Common::ComparisonRelationDeclarationBase<Common::ComparisonRelationType::eEquals> {
         /**
          *  optional CompareOptions to CTOR allows for case insensative compares
          */
@@ -471,7 +471,7 @@ namespace Stroika::Foundation::Characters {
     /**
      *  Like compare_three_way but allow optional case insensitive compares
      */
-    struct Character::ThreeWayComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eThreeWayCompare> {
+    struct Character::ThreeWayComparer : Common::ComparisonRelationDeclarationBase<Common::ComparisonRelationType::eThreeWayCompare> {
         /**
          *  optional CompareOptions to CTOR allows for case insensative compares
          */

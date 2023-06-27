@@ -1562,7 +1562,7 @@ namespace Stroika::Foundation::Characters {
 
     /**
      */
-    struct String::EqualsComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eEquals> {
+    struct String::EqualsComparer : Common::ComparisonRelationDeclarationBase<Common::ComparisonRelationType::eEquals> {
         /**
          *  optional CompareOptions to CTOR allows for case insensative compares
          */
@@ -1585,7 +1585,7 @@ namespace Stroika::Foundation::Characters {
 
     /**
      */
-    struct String::ThreeWayComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eThreeWayCompare> {
+    struct String::ThreeWayComparer : Common::ComparisonRelationDeclarationBase<Common::ComparisonRelationType::eThreeWayCompare> {
         /**
          *  optional CompareOptions to CTOR allows for case insensative compares
          */
@@ -1609,7 +1609,7 @@ namespace Stroika::Foundation::Characters {
     /**
      *  \brief very similar to ThreeWayComparer but returns true if less
      */
-    struct String::LessComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eStrictInOrder> {
+    struct String::LessComparer : Common::ComparisonRelationDeclarationBase<Common::ComparisonRelationType::eStrictInOrder> {
         constexpr LessComparer (CompareOptions co = CompareOptions::eWithCase);
 
         template <typename T1, typename T2>

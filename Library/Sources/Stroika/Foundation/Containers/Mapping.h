@@ -667,7 +667,8 @@ namespace Stroika::Foundation::Containers {
      */
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     template <typename VALUE_EQUALS_COMPARER>
-    struct Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::EqualsComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eEquals> {
+    struct Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::EqualsComparer
+        : Common::ComparisonRelationDeclarationBase<Common::ComparisonRelationType::eEquals> {
         constexpr EqualsComparer (const VALUE_EQUALS_COMPARER& valueEqualsComparer = {});
         nonvirtual bool                             operator() (const Mapping& lhs, const Mapping& rhs) const;
         [[no_unique_address]] VALUE_EQUALS_COMPARER fValueEqualsComparer;

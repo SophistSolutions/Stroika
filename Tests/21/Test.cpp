@@ -854,7 +854,7 @@ namespace {
     {
         using COMPARE_SIZET       = equal_to<size_t>;
         using COMPARE_SimpleClass = equal_to<SimpleClass>;
-        struct COMPARE_SimpleClassWithoutComparisonOperators : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eEquals> {
+        struct COMPARE_SimpleClassWithoutComparisonOperators : Common::ComparisonRelationDeclarationBase<Common::ComparisonRelationType::eEquals> {
             using value_type = SimpleClassWithoutComparisonOperators;
             bool operator() (value_type v1, value_type v2) const { return v1.GetValue () == v2.GetValue (); }
         };

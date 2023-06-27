@@ -553,7 +553,7 @@ namespace Stroika::Foundation::Containers {
      *  \note   Not to be confused with ElementEqualityComparerType and GetElementEqualsComparer () which compares ELEMENTS of Set<T> for equality.
      */
     template <typename T>
-    struct Set<T>::EqualsComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eEquals> {
+    struct Set<T>::EqualsComparer : Common::ComparisonRelationDeclarationBase<Common::ComparisonRelationType::eEquals> {
         nonvirtual bool operator() (const Set& lhs, const Set& rhs) const;
         nonvirtual bool operator() (const Set& lhs, const Iterable<value_type>& rhs) const;
         nonvirtual bool operator() (const Iterable<value_type>& lhs, const Set& rhs) const;

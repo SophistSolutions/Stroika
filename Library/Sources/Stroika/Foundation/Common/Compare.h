@@ -23,11 +23,11 @@
  *  \version    <a href="Code-Status.md#Beta">Beta</a>
  */
 
+#if qCompilerAndStdLib_stdlib_compare_three_way_missing_Buggy
 // Quirky workaround for clang++-14 on XCode 14 (and probably others).
 // No bug define for now - specific to clang++, because not sure what it depends on besides this, and this is bad enuf...
 // this value being too low...
 // This is PROBABLY an issue with the LIBC++ STD LIBRARY, and not CLANG COMPILER, BUT VERIFY THIS....
-#if qCompilerAndStdLib_stdlib_compare_three_way_missing_Buggy
 namespace std {
     struct compare_three_way {
         // NOTE - this workaround is GENERALLY INADEQUATE, but is adequate for my current use in Stroika -- LGP 2022-11-01
@@ -46,30 +46,6 @@ namespace std {
 #endif
 
 namespace Stroika::Foundation::Common {
-
-    /**
-     *  \brief ThreeWayComparer for optional types, like builtin one, except this lets you pass in explciit 'T' comparer for the T in optional<T>
-     *
-     *  You dont need this when the default comparer for 'T' works as you wish. But for example, ThreeWayComparer<optional<String>> - where you want
-     *  to use a case insensitive comparer for the strings, is tricky. THIS class solves that, by letting you pass in explicitly the 
-     *  'base comparer'.
-     */
-    template <typename T, typename TCOMPARER = std::compare_three_way>
-    struct OptionalThreeWayComparer {
-        constexpr OptionalThreeWayComparer (TCOMPARER&& tComparer);
-        constexpr OptionalThreeWayComparer (const TCOMPARER& tComparer);
-        constexpr strong_ordering operator() (const optional<T>& lhs, const optional<T>& rhs) const;
-
-    private:
-        [[no_unique_address]] TCOMPARER fTComparer_;
-    };
-
-    /**
-     * Take the given value and map it to -1, 0, 1 - without any compiler warnings. Handy for 32/64 bit etc codiing when you maybe comparing
-     * different sized values and just returning an int, but don't want the warnings about overflow etc.
-     */
-    template <typename FROM_INT_TYPE>
-    constexpr strong_ordering CompareResultNormalizer (FROM_INT_TYPE f);
 
     /**
      *
@@ -145,10 +121,12 @@ namespace Stroika::Foundation::Common {
     };
 
     /**
-     *  \brief ExtractComparisonTraits<> extracts the @ComparisonRelationType for the given argument comparer. For common builtin types this is known with no user effort. For user-defined comparers, this will need to be declared (e.g. via ComparisonRelationDeclaration)
+     *  \brief ExtractComparisonTraits<> extracts the @ComparisonRelationType for the given argument comparer. 
+     *
+     *  For common builtin types this is known with no user effort. For user-defined comparers, this will need to be declared (e.g. via ComparisonRelationDeclarationBase)
      *
      *  This is ONLY defined for builtin c++ comparison objects, though your code can define it however you wish for
-     *  specific user-defined types using ComparisonRelationDeclaration<>.
+     *  specific user-defined types using ComparisonRelationDeclarationBase<>.
      */
     template <typename COMPARE_FUNCTION>
     struct ExtractComparisonTraits {
@@ -182,6 +160,11 @@ namespace Stroika::Foundation::Common {
     };
 
     /**
+     */
+    template <typename COMPARE_FUNCTION>
+    static constexpr ComparisonRelationType ExtractComparisonTraits_v = ExtractComparisonTraits<COMPARE_FUNCTION>::kComparisonRelationKind;
+
+    /**
      *  This concept checks if the given function argument (COMPARER) appears to compare 'ARG_T's and return true/false.
      *  This doesn't require that that you've annotated the comparer, so it can false-positive (like mixing up
      *  an equality comparer for an in-order comparer).
@@ -192,6 +175,19 @@ namespace Stroika::Foundation::Common {
      */
     template <typename COMPARER, typename ARG_T>
     concept IPotentiallyComparer = relation<COMPARER, ARG_T, ARG_T>;
+
+    // @TODO - TRICKY TO FIX.
+    // need toe check if has FIELD OR is one of a bunch of special types. Need separate concepts for these sseparate cases I think,
+    // and then combine with an OR...
+    /**
+     *  Concept IComparer checks if the argument is a (declared comparison type) Stroika comparer object.
+     */
+    template <typename POTENTIALLY_COMPARER>
+    concept IComparer = requires (POTENTIALLY_COMPARER) {
+                            {
+                                ExtractComparisonTraits<POTENTIALLY_COMPARER>::kComparisonRelationKind
+                                } -> convertible_to<ComparisonRelationType>;
+                        };
 
     /**
      *  Checks that the argument comparer compares values of type ARG_T, and returns an equals comparison result.
@@ -216,7 +212,8 @@ namespace Stroika::Foundation::Common {
      *      \endcode
      */
     template <typename COMPARER, typename ARG_T>
-    concept IEqualsComparer = IPotentiallyComparer<COMPARER, ARG_T> and ExtractComparisonTraits<remove_cvref_t<COMPARER>>::kComparisonRelationKind ==
+    concept IEqualsComparer =
+        /*IComparer<COMPARER> and*/ IPotentiallyComparer<COMPARER, ARG_T> and ExtractComparisonTraits<remove_cvref_t<COMPARER>>::kComparisonRelationKind ==
     ComparisonRelationType::eEquals;
 
     /**
@@ -228,46 +225,50 @@ namespace Stroika::Foundation::Common {
      */
     template <typename COMPARER, typename ARG_T>
     concept IInOrderComparer =
-        IPotentiallyComparer<COMPARER, ARG_T> and ExtractComparisonTraits<std::remove_cvref_t<COMPARER>>::kComparisonRelationKind ==
+        /*IComparer<COMPARER> and*/ IPotentiallyComparer<COMPARER, ARG_T> and ExtractComparisonTraits<std::remove_cvref_t<COMPARER>>::kComparisonRelationKind ==
     ComparisonRelationType::eStrictInOrder;
 
     /**
-     *  Utility class to serve as base class when constructing user-defined 'function' object comparer so ExtractComparisonTraits<> knows
+     *  Utility class to serve as base class when constructing a comparison 'function' object comparer so ExtractComparisonTraits<> knows
      *  the type, or (with just one argument) as base for class that itself provives the operator() method.
-     *
+     *         
      *  \par Example Usage
      *      \code
-     *          using EqualityComparerType = Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eEquals, function<bool(T, T)>>;
-     *      \endcode
-     *
-     *  \par Example Usage
-     *      \code
-     *          struct String::EqualsComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eEquals> {
+     *          struct String::EqualsComparer : Common::ComparisonRelationDeclarationBase<Common::ComparisonRelationType::eEquals> {
      *              nonvirtual bool operator() (const String& lhs, const String& rhs) const;
-     *           };
+     *          };
      *      \endcode
      */
-    template <ComparisonRelationType KIND, typename ACTUAL_COMPARER = void>
-    struct ComparisonRelationDeclaration {
-        static_assert (not is_reference_v<ACTUAL_COMPARER>);
+    template <ComparisonRelationType KIND>
+    struct ComparisonRelationDeclarationBase {
         static constexpr inline ComparisonRelationType kComparisonRelationKind{KIND}; // accessed by ExtractComparisonTraits<>
-        [[no_unique_address]] ACTUAL_COMPARER          fActualComparer;
+    };
 
+    /**
+      *  Utility class to serve combine a (comparing) function object with ComparisonRelationDeclaration, which marks it as being
+      *  of a particular comparison relation kind (e.g equality vs. less than).
+      *         
+      *  \par Example Usage
+      *      \code
+      *         using KeyEqualsCompareFunctionType =
+      *              ComparisonRelationDeclaration<ComparisonRelationType::eEquals, function<bool (key_type, key_type)>>
+      *             ;
+      *      \endcode
+      * 
+      *     @see DeclareEqualsComparer
+      *     @see DeclareInOrderComparer
+      */
+    template <ComparisonRelationType KIND, typename ACTUAL_COMPARER>
+        requires (not is_reference_v<ACTUAL_COMPARER>)
+    struct ComparisonRelationDeclaration : ComparisonRelationDeclarationBase<KIND>, ACTUAL_COMPARER {
+    public:
         /**
          */
         constexpr ComparisonRelationDeclaration () = default;
         constexpr ComparisonRelationDeclaration (const ACTUAL_COMPARER& actualComparer);
         constexpr ComparisonRelationDeclaration (ACTUAL_COMPARER&& actualComparer);
-        constexpr ComparisonRelationDeclaration (const ComparisonRelationDeclaration& src) = default;
-
-        /**
-         */
-        template <typename LT, typename RT>
-        constexpr bool operator() (LT&& lhs, RT&& rhs) const;
-    };
-    template <ComparisonRelationType KIND>
-    struct ComparisonRelationDeclaration<KIND, void> {
-        static constexpr ComparisonRelationType kComparisonRelationKind = KIND; // accessed by ExtractComparisonTraits<>
+        constexpr ComparisonRelationDeclaration (const ComparisonRelationDeclaration&) = default;
+        constexpr ComparisonRelationDeclaration (ComparisonRelationDeclaration&&)      = default;
     };
 
     /**
@@ -306,7 +307,7 @@ namespace Stroika::Foundation::Common {
      *  This is done by querying the 'type' of the baseComparer with @see ExtractComparisonTraits, and mapping the logic accordingly.
      */
     template <typename BASE_COMPARER>
-    struct EqualsComparerAdapter : ComparisonRelationDeclaration<ComparisonRelationType::eEquals> {
+    struct EqualsComparerAdapter : ComparisonRelationDeclarationBase<ComparisonRelationType::eEquals> {
         /**
          */
         constexpr EqualsComparerAdapter (const BASE_COMPARER& baseComparer);
@@ -314,8 +315,8 @@ namespace Stroika::Foundation::Common {
 
         /**
          */
-        template <typename T>
-        constexpr bool operator() (const T& lhs, const T& rhs) const;
+        template <typename LT, typename RT>
+        constexpr bool operator() (LT&& lhs, RT&& rhs) const;
 
     private:
         [[no_unique_address]] BASE_COMPARER fBASE_COMPARER_;
@@ -327,7 +328,7 @@ namespace Stroika::Foundation::Common {
      *  \note this requires the argument comparer is eStrictInOrder, eInOrderOrEquals, or eThreeWayCompare
      */
     template <typename BASE_COMPARER>
-    struct InOrderComparerAdapter {
+    struct InOrderComparerAdapter : ComparisonRelationDeclarationBase<ComparisonRelationType::eStrictInOrder> {
         /**
          */
         constexpr InOrderComparerAdapter (const BASE_COMPARER& baseComparer);
@@ -335,8 +336,8 @@ namespace Stroika::Foundation::Common {
 
         /**
          */
-        template <typename T>
-        constexpr bool operator() (const T& lhs, const T& rhs) const;
+        template <typename LT, typename RT>
+        constexpr bool operator() (LT&& lhs, RT&& rhs) const;
 
     private:
         [[no_unique_address]] BASE_COMPARER fBASE_COMPARER_;
@@ -348,7 +349,7 @@ namespace Stroika::Foundation::Common {
      *  \note - this requires the argument comparer be already a three-way-comparer or a less (strict inorder) comparer
      */
     template <typename BASE_COMPARER>
-    struct ThreeWayComparerAdapter {
+    struct ThreeWayComparerAdapter : ComparisonRelationDeclarationBase<ComparisonRelationType::eThreeWayCompare> {
         /**
          */
         constexpr ThreeWayComparerAdapter (const BASE_COMPARER& baseComparer);
@@ -356,105 +357,37 @@ namespace Stroika::Foundation::Common {
 
         /**
          */
-        template <typename T>
-        constexpr strong_ordering operator() (const T& lhs, const T& rhs) const;
+        template <typename LT, typename RT>
+        constexpr strong_ordering operator() (LT&& lhs, RT&& rhs) const;
 
     private:
         [[no_unique_address]] BASE_COMPARER fBASE_COMPARER_;
     };
 
-    ///////////////////////////////////////////////////////////////////
-    ////////////// BELOW ALL DEPRECATED /////////////////////////////
-    /////////////////////////////////////////////////////////////////
-
-    // clang-format off
     /**
-     *  \brief like std::compare_three_way{} (lhs, rhs), except class templated on T1/T2 instead of function, so you can bind function object for example in templates expecting one
+     *  \brief ThreeWayComparer for optional types, like builtin one, except this lets you pass in explciit 'T' comparer for the T in optional<T>
      *
-     *  \see See also ThreeWayCompare - nearly identical - but function template and can be used to deduce template arguments more easily
-     *  
-     *  \note DO NOT SPECIALIZE ThreeWayComparer<>, since its just a utility which trivailly wraps
-     *        std::compare_three_way in c++20, so just specialize std::compare_three_way<>::operator()...
+     *  You dont need this when the default comparer for 'T' works as you wish. But for example, ThreeWayComparer<optional<String>> - where you want
+     *  to use a case insensitive comparer for the strings, is tricky. THIS class solves that, by letting you pass in explicitly the 
+     *  'base comparer'.
      */
-    // @TODO SEEMS STILL NEEDED ON CLANG++-10???
-    // @TODO PROBABLY DEPRECATE THIS CLASS - and use compare_three_way directly
-#if __cpp_lib_three_way_comparison < 201907L
-    struct [[deprecated ("Since Stroika 3.0d1 - use std::compare_three_way")]] ThreeWayComparer {
-        template <typename LT, typename RT>
-        constexpr auto operator() (LT&& lhs, RT&& rhs) const
-        {
-            using CT = common_type_t<LT, RT>;
-            // ISSUE HERE - PRE C++20, no distinction made between strong_ordering, weak_ordering, and partial_ordering, because
-            // this counts on cooperation with various types and mechanismns like operator<=> = default which we don't have (and declared strong_ordering=int)
-            if (equal_to<CT>{}(forward<LT> (lhs), forward<RT> (rhs))) {
-                return strong_ordering::equal;
-            }
-            return less<CT>{}(forward<LT> (lhs), forward<RT> (rhs)) ? strong_ordering::less : strong_ordering::greater;
-        }
-    };
-#else
-    struct [[deprecated ("Since Stroika 3.0d1 - use std::compare_three_way")]] ThreeWayComparer {
-        template <typename LT, typename RT>
-        constexpr auto operator() (LT&& lhs, RT&& rhs) const
-        {
-            return compare_three_way{}(forward<LT> (lhs), forward<RT> (rhs));
-        }
-    };
-#endif
-    DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
-    DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
-    DISABLE_COMPILER_MSC_WARNING_START (4996)
-    template <>
-    struct ExtractComparisonTraits<ThreeWayComparer> {
-        static constexpr ComparisonRelationType kComparisonRelationKind = ComparisonRelationType::eThreeWayCompare;
-    };
-    DISABLE_COMPILER_MSC_WARNING_END (4996)
-    DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
-    DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+    template <typename T, typename TCOMPARER = std::compare_three_way>
+    struct OptionalThreeWayComparer : ComparisonRelationDeclarationBase<ComparisonRelationType::eThreeWayCompare> {
+        constexpr OptionalThreeWayComparer (TCOMPARER&& tComparer);
+        constexpr OptionalThreeWayComparer (const TCOMPARER& tComparer);
+        constexpr strong_ordering operator() (const optional<T>& lhs, const optional<T>& rhs) const;
 
-// clang-format on
+    private:
+        [[no_unique_address]] TCOMPARER fTComparer_;
+    };
 
-constexpr std::strong_ordering kLess [[deprecated ("Since Stroika 3.0d1 - use std::strong_ordering")]]    = std::strong_ordering::less;
-constexpr std::strong_ordering kEqual [[deprecated ("Since Stroika 3.0d1 - use std::strong_ordering")]]   = std::strong_ordering::equal;
-constexpr std::strong_ordering kGreater [[deprecated ("Since Stroika 3.0d1 - use std::strong_ordering")]] = std::strong_ordering::greater;
+    /**
+     * Take the given value and map it to -1, 0, 1 - without any compiler warnings. Handy for 32/64 bit etc codiing when you maybe comparing
+     * different sized values and just returning an int, but don't want the warnings about overflow etc.
+     */
+    template <typename FROM_INT_TYPE>
+    constexpr strong_ordering CompareResultNormalizer (FROM_INT_TYPE f);
 
-#if qCompilerAndStdLib_stdlib_compare_three_way_present_but_Buggy or qCompilerAndStdLib_stdlib_compare_three_way_missing_Buggy
-struct compare_three_way_BWA {
-    // NOTE - this workaround is GENERALLY INADEQUATE, but is adequate for my current use in Stroika -- LGP 2022-11-01
-    template <typename LT, typename RT>
-    constexpr auto operator() (LT&& lhs, RT&& rhs) const
-    {
-        using CT = common_type_t<LT, RT>;
-        if (equal_to<CT>{}(forward<LT> (lhs), forward<RT> (rhs))) {
-            return strong_ordering::equal;
-        }
-        return less<CT>{}(forward<LT> (lhs), forward<RT> (rhs)) ? strong_ordering::less : strong_ordering::greater;
-    }
-    using is_transparent = void;
-};
-#endif
-template <typename FUNCTOR, typename FUNCTOR_ARG>
-[[deprecated ("Since Stroika v3.0d1 - use IPotentiallyComparer ")]] constexpr bool IsPotentiallyComparerRelation ()
-{
-    return IPotentiallyComparer<FUNCTOR, FUNCTOR_ARG>;
-}
-template <typename FUNCTOR>
-[[deprecated ("Since Stroika v3.0d1 - use IPotentiallyComparer ")]] constexpr bool IsPotentiallyComparerRelation ()
-{
-    if constexpr (Configuration::FunctionTraits<FUNCTOR>::kArity == 2) {
-        using TRAITS = typename Configuration::FunctionTraits<FUNCTOR>;
-        return is_same_v<typename TRAITS::template arg<0>::type, typename TRAITS::template arg<1>::type> and
-               IsPotentiallyComparerRelation<FUNCTOR, typename Configuration::FunctionTraits<FUNCTOR>::template arg<0>::type> ();
-    }
-    else {
-        return false;
-    }
-}
-template <typename FUNCTOR>
-[[deprecated ("Since Stroika v3.0d1 - use IPotentiallyComparer ")]] constexpr bool IsPotentiallyComparerRelation (const FUNCTOR& f)
-{
-    return IsPotentiallyComparerRelation<FUNCTOR> ();
-}
 }
 
 /*

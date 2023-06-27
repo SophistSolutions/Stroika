@@ -961,13 +961,13 @@ namespace {
         }}};
         using ScanIDType = int;
         struct SpectrumType : Mapping<double, double> {
-            struct CompareNumbersEqual_ : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eEquals> {
+            struct CompareNumbersEqual_ : Common::ComparisonRelationDeclarationBase<Common::ComparisonRelationType::eEquals> {
                 bool operator() (double lhs, double rhs) const
                 {
                     return Math::NearlyEquals (lhs, rhs, .001); //return lhs == rhs; due to convert to / from json we lose precision
                 }
             };
-            struct CompareNumbersLess_ : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eStrictInOrder> {
+            struct CompareNumbersLess_ : Common::ComparisonRelationDeclarationBase<Common::ComparisonRelationType::eStrictInOrder> {
                 bool operator() (double lhs, double rhs) const
                 {
                     // special case handle numbers that are close

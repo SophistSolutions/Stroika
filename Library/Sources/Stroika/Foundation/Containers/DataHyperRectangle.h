@@ -179,7 +179,7 @@ namespace Stroika::Foundation::Containers {
      */
     template <typename T, typename... INDEXES>
     template <typename ELEMENT_EQUALS_COMPARER>
-    struct DataHyperRectangle<T, INDEXES...>::EqualsComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eEquals> {
+    struct DataHyperRectangle<T, INDEXES...>::EqualsComparer : Common::ComparisonRelationDeclarationBase<Common::ComparisonRelationType::eEquals> {
         constexpr EqualsComparer (const ELEMENT_EQUALS_COMPARER& elementComparer = {});
         nonvirtual bool         operator() (const DataHyperRectangle& lhs, const DataHyperRectangle& rhs) const;
         ELEMENT_EQUALS_COMPARER fElementComparer_;

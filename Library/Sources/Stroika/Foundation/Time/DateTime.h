@@ -571,7 +571,7 @@ namespace Stroika::Foundation::Time {
 
     /**
      */
-    struct DateTime::ThreeWayComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eThreeWayCompare> {
+    struct DateTime::ThreeWayComparer : Common::ComparisonRelationDeclarationBase<Common::ComparisonRelationType::eThreeWayCompare> {
         /**
          */
         constexpr ThreeWayComparer (bool coerceToCommonTimezone = true);
