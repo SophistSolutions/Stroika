@@ -1618,6 +1618,7 @@ namespace Stroika::Foundation::Characters {
     private:
         ThreeWayComparer fComparer_;
     };
+    static_assert (Common::IInOrderComparer<String::LessComparer, String>);
 
     /**
      *  \brief shorthand for String::FromStringConstant { ARGUMENT }

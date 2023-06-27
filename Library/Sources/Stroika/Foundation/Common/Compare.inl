@@ -81,7 +81,7 @@ namespace Stroika::Foundation::Common {
          *  It would  be nice to be able to use switch statement but use constexpr if because 
          *  inappropriate 'cases' that wouldn't get executed might not compile -- LGP 2020-05-05
          */
-        constexpr auto kRelationKind  = ExtractComparisonTraits<BASE_COMPARER>::kComparisonRelationKind;
+        constexpr auto kRelationKind  = ExtractComparisonTraits_v<BASE_COMPARER>;
         auto           baseComparison = fBASE_COMPARER_ (forward<LT> (lhs), forward<RT> (rhs));
         if constexpr (kRelationKind == ComparisonRelationType::eStrictInOrder) {
             return kRelationKind;
@@ -265,10 +265,12 @@ namespace Stroika::Foundation::Common {
 DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
 DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
 DISABLE_COMPILER_MSC_WARNING_START (4996)
-template <>
-struct ExtractComparisonTraits<ThreeWayComparer> {
-    static constexpr ComparisonRelationType kComparisonRelationKind = ComparisonRelationType::eThreeWayCompare;
-};
+namespace Private_ {
+    template <>
+    struct ExtractComparisonTraits<ThreeWayComparer> {
+        static constexpr ComparisonRelationType kComparisonRelationKind = ComparisonRelationType::eThreeWayCompare;
+    };
+}
 DISABLE_COMPILER_MSC_WARNING_END (4996)
 DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
 DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
@@ -323,7 +325,7 @@ template <typename LT, typename RT>
 template <typename COMPARER>
 [[deprecated ("Since Stroika 3.0d1 - use IEqualsComparer")]] constexpr bool IsEqualsComparer ()
 {
-    return ExtractComparisonTraits<std::remove_cvref_t<COMPARER>>::kComparisonRelationKind == ComparisonRelationType::eEquals;
+    return ExtractComparisonTraits_v<std::remove_cvref_t<COMPARER>> == ComparisonRelationType::eEquals;
 }
 template <typename COMPARER, typename ARG_T>
 [[deprecated ("Since Stroika 3.0d1 - use IEqualsComparer")]] constexpr bool IsEqualsComparer ()
@@ -332,7 +334,7 @@ template <typename COMPARER, typename ARG_T>
         return false;
     }
     else {
-        return ExtractComparisonTraits<std::remove_cvref_t<COMPARER>>::kComparisonRelationKind == ComparisonRelationType::eEquals;
+        return ExtractComparisonTraits_v<std::remove_cvref_t<COMPARER>> == ComparisonRelationType::eEquals;
     }
 }
 template <typename COMPARER>
@@ -343,7 +345,7 @@ template <typename COMPARER>
 template <typename COMPARER>
 [[deprecated ("Since Stroika 3.0d1 - use IInOrderComparer")]] constexpr bool IsStrictInOrderComparer ()
 {
-    return ExtractComparisonTraits<std::remove_cvref_t<COMPARER>>::kComparisonRelationKind == ComparisonRelationType::eStrictInOrder;
+    return ExtractComparisonTraits_v<std::remove_cvref_t<COMPARER>> == ComparisonRelationType::eStrictInOrder;
 }
 template <typename COMPARER, typename ARG_T>
 [[deprecated ("Since Stroika 3.0d1 - use IInOrderComparer")]] constexpr bool IsStrictInOrderComparer ()
@@ -352,14 +354,18 @@ template <typename COMPARER, typename ARG_T>
         return false;
     }
     else {
-        return ExtractComparisonTraits<std::remove_cvref_t<COMPARER>>::kComparisonRelationKind == ComparisonRelationType::eStrictInOrder;
+        return ExtractComparisonTraits_v<std::remove_cvref_t<COMPARER>> == ComparisonRelationType::eStrictInOrder;
     }
 }
 template <typename COMPARER>
 [[deprecated ("Since Stroika 3.0d1 - use IInOrderComparer")]] constexpr bool IsStrictInOrderComparer (const COMPARER&)
 {
-    return ExtractComparisonTraits<std::remove_cvref_t<COMPARER>>::kComparisonRelationKind == ComparisonRelationType::eStrictInOrder;
+    return ExtractComparisonTraits_v<std::remove_cvref_t<COMPARER>> == ComparisonRelationType::eStrictInOrder;
 }
+
+template <typename COMPARE_FUNCTION>
+using ExtractComparisonTraits [[deprecated ("Since Stroika v3.0d1 - use ExtractComparisonTraits_v instead")]] =
+    Private_::ExtractComparisonTraits<COMPARE_FUNCTION>;
 }
 
 #endif /*_Stroika_Foundation_Common_Compare_inl_*/

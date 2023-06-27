@@ -120,8 +120,78 @@ namespace Stroika::Foundation::Common {
         Stroika_Define_Enum_Bounds (eEquals, eThreeWayCompare)
     };
 
+    namespace Private_ {
+        template <typename COMPARE_FUNCTION>
+        struct ExtractComparisonTraits {
+            // @todo fix this with SFINAE (has_XX) so it gives a good explanation
+            // static_assert (has_kComparisonRelationKind filed);
+            static constexpr ComparisonRelationType kComparisonRelationKind = COMPARE_FUNCTION::kComparisonRelationKind;
+        };
+        template <typename T>
+        struct ExtractComparisonTraits<equal_to<T>> {
+            static constexpr ComparisonRelationType kComparisonRelationKind = ComparisonRelationType::eEquals;
+        };
+        template <typename T>
+        struct ExtractComparisonTraits<less<T>> {
+            static constexpr ComparisonRelationType kComparisonRelationKind = ComparisonRelationType::eStrictInOrder;
+        };
+        template <typename T>
+        struct ExtractComparisonTraits<greater<T>> {
+            static constexpr ComparisonRelationType kComparisonRelationKind = ComparisonRelationType::eStrictInOrder;
+        };
+        template <typename T>
+        struct ExtractComparisonTraits<less_equal<T>> {
+            static constexpr ComparisonRelationType kComparisonRelationKind = ComparisonRelationType::eInOrderOrEquals;
+        };
+        template <typename T>
+        struct ExtractComparisonTraits<greater_equal<T>> {
+            static constexpr ComparisonRelationType kComparisonRelationKind = ComparisonRelationType::eInOrderOrEquals;
+        };
+        template <>
+        struct ExtractComparisonTraits<compare_three_way> {
+            static constexpr ComparisonRelationType kComparisonRelationKind = ComparisonRelationType::eThreeWayCompare;
+        };
+
+        template <typename COMPARE_FUNCTION>
+        struct xxx {
+            static constexpr bool xx = false;
+        };
+        template <typename T>
+        struct xxx<equal_to<T>> {
+            static constexpr bool xx = true;
+        };
+        template <typename T>
+        struct xxx<less<T>> {
+            static constexpr bool xx = true;
+        };
+        template <typename T>
+        struct xxx<greater<T>> {
+            static constexpr bool xx = true;
+        };
+        template <typename T>
+        struct xxx<less_equal<T>> {
+            static constexpr bool xx = true;
+        };
+        template <typename T>
+        struct xxx<greater_equal<T>> {
+            static constexpr bool xx = true;
+        };
+        template <>
+        struct xxx<compare_three_way> {
+            static constexpr bool xx = true;
+        };
+
+        template <typename T>
+        concept HasRelationKind_ = requires (T) {
+                                       {
+                                           T::kComparisonRelationKind
+                                       };
+                                   } or xxx<T>::xx;
+
+    }
+
     /**
-     *  \brief ExtractComparisonTraits<> extracts the @ComparisonRelationType for the given argument comparer. 
+     *  \brief ExtractComparisonTraits_v<> extracts the @ComparisonRelationType for the given argument comparer. 
      *
      *  For common builtin types this is known with no user effort. For user-defined comparers, this will need to be declared (e.g. via ComparisonRelationDeclarationBase)
      *
@@ -129,40 +199,8 @@ namespace Stroika::Foundation::Common {
      *  specific user-defined types using ComparisonRelationDeclarationBase<>.
      */
     template <typename COMPARE_FUNCTION>
-    struct ExtractComparisonTraits {
-        // @todo fix this with SFINAE (has_XX) so it gives a good explanation
-        // static_assert (has_kComparisonRelationKind filed);
-        static constexpr ComparisonRelationType kComparisonRelationKind = COMPARE_FUNCTION::kComparisonRelationKind;
-    };
-    template <typename T>
-    struct ExtractComparisonTraits<equal_to<T>> {
-        static constexpr ComparisonRelationType kComparisonRelationKind = ComparisonRelationType::eEquals;
-    };
-    template <typename T>
-    struct ExtractComparisonTraits<less<T>> {
-        static constexpr ComparisonRelationType kComparisonRelationKind = ComparisonRelationType::eStrictInOrder;
-    };
-    template <typename T>
-    struct ExtractComparisonTraits<greater<T>> {
-        static constexpr ComparisonRelationType kComparisonRelationKind = ComparisonRelationType::eStrictInOrder;
-    };
-    template <typename T>
-    struct ExtractComparisonTraits<less_equal<T>> {
-        static constexpr ComparisonRelationType kComparisonRelationKind = ComparisonRelationType::eInOrderOrEquals;
-    };
-    template <typename T>
-    struct ExtractComparisonTraits<greater_equal<T>> {
-        static constexpr ComparisonRelationType kComparisonRelationKind = ComparisonRelationType::eInOrderOrEquals;
-    };
-    template <>
-    struct ExtractComparisonTraits<compare_three_way> {
-        static constexpr ComparisonRelationType kComparisonRelationKind = ComparisonRelationType::eThreeWayCompare;
-    };
-
-    /**
-     */
-    template <typename COMPARE_FUNCTION>
-    static constexpr ComparisonRelationType ExtractComparisonTraits_v = ExtractComparisonTraits<COMPARE_FUNCTION>::kComparisonRelationKind;
+    static constexpr ComparisonRelationType ExtractComparisonTraits_v =
+        Private_::ExtractComparisonTraits<remove_cvref_t<COMPARE_FUNCTION>>::kComparisonRelationKind;
 
     /**
      *  This concept checks if the given function argument (COMPARER) appears to compare 'ARG_T's and return true/false.
@@ -176,25 +214,24 @@ namespace Stroika::Foundation::Common {
     template <typename COMPARER, typename ARG_T>
     concept IPotentiallyComparer = relation<COMPARER, ARG_T, ARG_T>;
 
-    // @TODO - TRICKY TO FIX.
-    // need toe check if has FIELD OR is one of a bunch of special types. Need separate concepts for these sseparate cases I think,
-    // and then combine with an OR...
     /**
      *  Concept IComparer checks if the argument is a (declared comparison type) Stroika comparer object.
      */
     template <typename POTENTIALLY_COMPARER>
-    concept IComparer = requires (POTENTIALLY_COMPARER) {
-                            {
-                                ExtractComparisonTraits<POTENTIALLY_COMPARER>::kComparisonRelationKind
-                                } -> convertible_to<ComparisonRelationType>;
-                        };
+    concept IComparer = (Private_::HasRelationKind_<remove_cvref_t<POTENTIALLY_COMPARER>> and
+                         requires (POTENTIALLY_COMPARER) {
+                             {
+                                 ExtractComparisonTraits_v<POTENTIALLY_COMPARER>
+                                 } -> convertible_to<ComparisonRelationType>;
+                         }) or
+                        (Private_::xxx<remove_cvref_t<POTENTIALLY_COMPARER>>::xx);
 
     /**
      *  Checks that the argument comparer compares values of type ARG_T, and returns an equals comparison result.
      * 
      *  This won't let confuse equal_to with actual in-order comparison functions.
      * 
-     *  @todo consuder using std::equivalence_relation and maybe losing this in favor of that
+     *  @todo consider using std::equivalence_relation and maybe losing this in favor of that
      * 
      *  \see IPotentiallyComparer, and use DeclareEqualsComparer to mark a given function as an in-order comparer.
      * 
@@ -213,7 +250,7 @@ namespace Stroika::Foundation::Common {
      */
     template <typename COMPARER, typename ARG_T>
     concept IEqualsComparer =
-        /*IComparer<COMPARER> and*/ IPotentiallyComparer<COMPARER, ARG_T> and ExtractComparisonTraits<remove_cvref_t<COMPARER>>::kComparisonRelationKind ==
+        IPotentiallyComparer<COMPARER, ARG_T> and IComparer<COMPARER> and ExtractComparisonTraits_v<remove_cvref_t<COMPARER>> ==
     ComparisonRelationType::eEquals;
 
     /**
@@ -225,7 +262,7 @@ namespace Stroika::Foundation::Common {
      */
     template <typename COMPARER, typename ARG_T>
     concept IInOrderComparer =
-        /*IComparer<COMPARER> and*/ IPotentiallyComparer<COMPARER, ARG_T> and ExtractComparisonTraits<std::remove_cvref_t<COMPARER>>::kComparisonRelationKind ==
+        IPotentiallyComparer<COMPARER, ARG_T> and IComparer<COMPARER> and ExtractComparisonTraits_v<std::remove_cvref_t<COMPARER>> ==
     ComparisonRelationType::eStrictInOrder;
 
     /**
