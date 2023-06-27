@@ -60,58 +60,20 @@ namespace Stroika::Foundation::Common {
 
     /*
      ********************************************************************************
-     ********************* InOrderComparerAdapter<BASE_COMPARER> ********************
-     ********************************************************************************
-     */
-    template <typename BASE_COMPARER>
-    constexpr inline InOrderComparerAdapter<BASE_COMPARER>::InOrderComparerAdapter (const BASE_COMPARER& baseComparer)
-        : fBASE_COMPARER_{baseComparer}
-    {
-    }
-    template <typename BASE_COMPARER>
-    constexpr inline InOrderComparerAdapter<BASE_COMPARER>::InOrderComparerAdapter (BASE_COMPARER&& baseComparer)
-        : fBASE_COMPARER_{move (baseComparer)}
-    {
-    }
-    template <typename BASE_COMPARER>
-    template <typename LT, typename RT>
-    constexpr inline bool InOrderComparerAdapter<BASE_COMPARER>::operator() (LT&& lhs, RT&& rhs) const
-    {
-        /*
-         *  It would  be nice to be able to use switch statement but use constexpr if because 
-         *  inappropriate 'cases' that wouldn't get executed might not compile -- LGP 2020-05-05
-         */
-        constexpr auto kRelationKind  = ExtractComparisonTraits_v<BASE_COMPARER>;
-        auto           baseComparison = fBASE_COMPARER_ (forward<LT> (lhs), forward<RT> (rhs));
-        if constexpr (kRelationKind == ComparisonRelationType::eStrictInOrder) {
-            return kRelationKind;
-        }
-        if constexpr (kRelationKind == ComparisonRelationType::eInOrderOrEquals) {
-            return baseComparison and not fBASE_COMPARER_ (forward<RT> (rhs), forward<LT> (lhs)); // eliminate equals case
-        }
-        if constexpr (kRelationKind == ComparisonRelationType::eThreeWayCompare) {
-            return baseComparison == strong_ordering::less;
-        }
-        AssertNotReached ();
-        return false;
-    }
-
-    /*
-     ********************************************************************************
      ********************* EqualsComparerAdapter<BASE_COMPARER> *********************
      ********************************************************************************
      */
-    template <typename BASE_COMPARER>
+    template <IComparer BASE_COMPARER>
     constexpr EqualsComparerAdapter<BASE_COMPARER>::EqualsComparerAdapter (const BASE_COMPARER& baseComparer)
         : fBASE_COMPARER_{baseComparer}
     {
     }
-    template <typename BASE_COMPARER>
+    template <IComparer BASE_COMPARER>
     constexpr EqualsComparerAdapter<BASE_COMPARER>::EqualsComparerAdapter (BASE_COMPARER&& baseComparer)
         : fBASE_COMPARER_{move (baseComparer)}
     {
     }
-    template <typename BASE_COMPARER>
+    template <IComparer BASE_COMPARER>
     template <typename LT, typename RT>
     constexpr bool EqualsComparerAdapter<BASE_COMPARER>::operator() (LT&& lhs, RT&& rhs) const
     {
@@ -149,20 +111,73 @@ namespace Stroika::Foundation::Common {
 
     /*
      ********************************************************************************
+     ********************* InOrderComparerAdapter<BASE_COMPARER> ********************
+     ********************************************************************************
+     */
+    template <IComparer BASE_COMPARER>
+        requires (ExtractComparisonTraits_v<BASE_COMPARER> == ComparisonRelationType::eStrictInOrder or
+                  ExtractComparisonTraits_v<BASE_COMPARER> == ComparisonRelationType::eInOrderOrEquals or
+                  ExtractComparisonTraits_v<BASE_COMPARER> == ComparisonRelationType::eThreeWayCompare)
+    constexpr inline InOrderComparerAdapter<BASE_COMPARER>::InOrderComparerAdapter (const BASE_COMPARER& baseComparer)
+        : fBASE_COMPARER_{baseComparer}
+    {
+    }
+    template <IComparer BASE_COMPARER>
+        requires (ExtractComparisonTraits_v<BASE_COMPARER> == ComparisonRelationType::eStrictInOrder or
+                  ExtractComparisonTraits_v<BASE_COMPARER> == ComparisonRelationType::eInOrderOrEquals or
+                  ExtractComparisonTraits_v<BASE_COMPARER> == ComparisonRelationType::eThreeWayCompare)
+    constexpr inline InOrderComparerAdapter<BASE_COMPARER>::InOrderComparerAdapter (BASE_COMPARER&& baseComparer)
+        : fBASE_COMPARER_{move (baseComparer)}
+    {
+    }
+    template <IComparer BASE_COMPARER>
+        requires (ExtractComparisonTraits_v<BASE_COMPARER> == ComparisonRelationType::eStrictInOrder or
+                  ExtractComparisonTraits_v<BASE_COMPARER> == ComparisonRelationType::eInOrderOrEquals or
+                  ExtractComparisonTraits_v<BASE_COMPARER> == ComparisonRelationType::eThreeWayCompare)
+    template <typename LT, typename RT>
+    constexpr inline bool InOrderComparerAdapter<BASE_COMPARER>::operator() (LT&& lhs, RT&& rhs) const
+    {
+        /*
+         *  It would  be nice to be able to use switch statement but use constexpr if because 
+         *  inappropriate 'cases' that wouldn't get executed might not compile -- LGP 2020-05-05
+         */
+        constexpr auto kRelationKind  = ExtractComparisonTraits_v<BASE_COMPARER>;
+        auto           baseComparison = fBASE_COMPARER_ (forward<LT> (lhs), forward<RT> (rhs));
+        if constexpr (kRelationKind == ComparisonRelationType::eStrictInOrder) {
+            return kRelationKind;
+        }
+        if constexpr (kRelationKind == ComparisonRelationType::eInOrderOrEquals) {
+            return baseComparison and not fBASE_COMPARER_ (forward<RT> (rhs), forward<LT> (lhs)); // eliminate equals case
+        }
+        if constexpr (kRelationKind == ComparisonRelationType::eThreeWayCompare) {
+            return baseComparison == strong_ordering::less;
+        }
+        AssertNotReached ();
+        return false;
+    }
+
+    /*
+     ********************************************************************************
      ********************* ThreeWayComparerAdapter<BASE_COMPARER> *******************
      ********************************************************************************
      */
-    template <typename BASE_COMPARER>
+    template <IComparer BASE_COMPARER>
+        requires (ExtractComparisonTraits_v<BASE_COMPARER> == ComparisonRelationType::eThreeWayCompare or
+                  ExtractComparisonTraits_v<BASE_COMPARER> == ComparisonRelationType::eStrictInOrder)
     constexpr ThreeWayComparerAdapter<BASE_COMPARER>::ThreeWayComparerAdapter (const BASE_COMPARER& baseComparer)
         : fBASE_COMPARER_{baseComparer}
     {
     }
-    template <typename BASE_COMPARER>
+    template <IComparer BASE_COMPARER>
+        requires (ExtractComparisonTraits_v<BASE_COMPARER> == ComparisonRelationType::eThreeWayCompare or
+                  ExtractComparisonTraits_v<BASE_COMPARER> == ComparisonRelationType::eStrictInOrder)
     constexpr ThreeWayComparerAdapter<BASE_COMPARER>::ThreeWayComparerAdapter (BASE_COMPARER&& baseComparer)
         : fBASE_COMPARER_{move (baseComparer)}
     {
     }
-    template <typename BASE_COMPARER>
+    template <IComparer BASE_COMPARER>
+        requires (ExtractComparisonTraits_v<BASE_COMPARER> == ComparisonRelationType::eThreeWayCompare or
+                  ExtractComparisonTraits_v<BASE_COMPARER> == ComparisonRelationType::eStrictInOrder)
     template <typename LT, typename RT>
     constexpr strong_ordering ThreeWayComparerAdapter<BASE_COMPARER>::operator() (LT&& lhs, RT&& rhs) const
     {
@@ -191,17 +206,17 @@ namespace Stroika::Foundation::Common {
      *************** OptionalThreeWayCompare<T, TCOMPARER> **************************
      ********************************************************************************
      */
-    template <typename T, typename TCOMPARER>
+    template <typename T, IComparer TCOMPARER>
     constexpr OptionalThreeWayComparer<T, TCOMPARER>::OptionalThreeWayComparer (TCOMPARER&& comparer)
         : fTComparer_{move (comparer)}
     {
     }
-    template <typename T, typename TCOMPARER>
+    template <typename T, IComparer TCOMPARER>
     constexpr OptionalThreeWayComparer<T, TCOMPARER>::OptionalThreeWayComparer (const TCOMPARER& comparer)
         : fTComparer_{comparer}
     {
     }
-    template <typename T, typename TCOMPARER>
+    template <typename T, IComparer TCOMPARER>
     constexpr strong_ordering OptionalThreeWayComparer<T, TCOMPARER>::operator() (const optional<T>& lhs, const optional<T>& rhs) const
     {
         if (lhs and rhs) {
@@ -267,7 +282,7 @@ DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-d
 DISABLE_COMPILER_MSC_WARNING_START (4996)
 namespace Private_ {
     template <>
-    struct ExtractComparisonTraits<ThreeWayComparer> {
+    struct ExtractComparisonTraits_<ThreeWayComparer> {
         static constexpr ComparisonRelationType kComparisonRelationKind = ComparisonRelationType::eThreeWayCompare;
     };
 }
@@ -365,7 +380,7 @@ template <typename COMPARER>
 
 template <typename COMPARE_FUNCTION>
 using ExtractComparisonTraits [[deprecated ("Since Stroika v3.0d1 - use ExtractComparisonTraits_v instead")]] =
-    Private_::ExtractComparisonTraits<COMPARE_FUNCTION>;
+    Private_::ExtractComparisonTraits_<COMPARE_FUNCTION>;
 }
 
 #endif /*_Stroika_Foundation_Common_Compare_inl_*/
