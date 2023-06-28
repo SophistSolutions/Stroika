@@ -228,8 +228,6 @@ namespace Stroika::Foundation::Common {
      * 
      *  This won't let confuse equal_to with actual in-order comparison functions.
      * 
-     *  @todo consider using std::equivalence_relation and maybe losing this in favor of that
-     * 
      *  \see IPotentiallyComparer, and use DeclareEqualsComparer to mark a given function as an in-order comparer.
      * 
      *  \par Example Usage
