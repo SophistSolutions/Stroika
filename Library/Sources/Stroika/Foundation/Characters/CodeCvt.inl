@@ -319,13 +319,12 @@ namespace Stroika::Foundation::Characters {
     inline CodeCvt<CHAR_T>::CodeCvt (const string& localeName)
     {
         if constexpr (is_same_v<CHAR_T, wchar_t>) {
-            fRep_ = make_shared<CodeCvt_WrapStdCodeCvt_<codecvt_byname<wchar_t, char, mbstate_t>>> (localeName);
+            // fRep_ = make_shared<CodeCvt_WrapStdCodeCvt_<codecvt_byname<wchar_t, char, mbstate_t>>> (localeName);
+            *this = mkFromStdCodeCvt<codecvt_byname<wchar_t, char, mbstate_t>> (localeName);
         }
-        else if constexpr (is_same_v<CHAR_T, char16_t>) {
-            fRep_ = make_shared<CodeCvt_WrapStdCodeCvt_<codecvt_byname<char16_t, char8_t, std::mbstate_t>>> (localeName);
-        }
-        else if constexpr (is_same_v<CHAR_T, char32_t>) {
-            fRep_ = make_shared<CodeCvt_WrapStdCodeCvt_<codecvt_byname<char32_t, char8_t, std::mbstate_t>>> (localeName);
+        else if constexpr (is_same_v<CHAR_T, char16_t> or is_same_v<CHAR_T, char32_t>) {
+            *this = mkFromStdCodeCvt<codecvt_byname<CHAR_T, char8_t, mbstate_t>> (localeName);
+            //            fRep_ = make_shared<CodeCvt_WrapStdCodeCvt_<codecvt_byname<char16_t, char8_t, std::mbstate_t>>> (localeName);
         }
         else {
             // CHAR_T COULD be UTF-8, but not clear if/why that would be useful.
