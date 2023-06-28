@@ -138,13 +138,6 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
-         *  \brief check if the argument type can be passed as argument to the arity/1 overload of Add ()
-         */
-        template <typename POTENTIALLY_ADDABLE_T>
-        static constexpr bool IsAddable_v = is_convertible_v<POTENTIALLY_ADDABLE_T, value_type>;
-
-    public:
-        /**
          *  This constructor creates a concrete mapping object, either empty, or initialized with any argument
          *  values.
          *
@@ -380,9 +373,6 @@ namespace Stroika::Foundation::Containers {
          *  \summary Add all the argument (container or bound range of iterators) elements; if replaceExistingMapping true (default) force replace on each. Return count of added items (not count of updated items)
          *
          *  \note   AddAll/2 is alias for .net AddRange ()
-         *
-         *  \req IsAddable_v<ExtractValueType_t<ITERATOR_OF_ADDABLE>>
-         *  \req IsAddable_v<ExtractValueType_t<ITERABLE_OF_ADDABLE>>
          *
          *  \note mutates container
          */

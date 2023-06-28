@@ -153,7 +153,7 @@ namespace {
         }
         void DoAll ()
         {
-            Debug::TraceContextBumper ctx{L"{}::Test5_SFINAE_Concepts_"};
+            Debug::TraceContextBumper ctx{"{}::Test5_SFINAE_Concepts_"};
             using namespace Configuration;
 
             {
