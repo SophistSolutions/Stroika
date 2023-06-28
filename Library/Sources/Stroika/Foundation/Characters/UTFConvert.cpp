@@ -610,7 +610,7 @@ namespace {
     }
 }
 
-#if 0
+#if 1
 namespace {
     namespace UTFConvert_codecvSupport_ {
         inline UTFConverter::ConversionStatusFlag cvt_stdcodecvt_results_ (int i)
@@ -767,7 +767,7 @@ auto UTFConverter::ConvertQuietly_StroikaPortable_ (span<const char16_t> source,
     return ConvertQuietly_StroikaPortable_helper_ (source, target, UTFConvert_libutfxx_::ConvertUTF16toUTF8_);
 }
 
-#if 0
+#if 1
 namespace {
     template <typename IN_T, typename OUT_T, typename FUN2DO_REAL_WORK>
     inline auto ConvertQuietly_codeCvt_helper_ (span<const IN_T> source, const span<OUT_T> target, FUN2DO_REAL_WORK&& realWork) -> ConversionResultWithStatus

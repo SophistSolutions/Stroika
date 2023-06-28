@@ -94,10 +94,9 @@ namespace Stroika::Foundation::Characters {
                 eWindowsAPIWide2FromMultibyte,
 #endif
 
-#if 0
-                // Deprecated by stdc++, and windows implementation appears quite slow
+                // CPPREFERENCE docs on std::codecvt somewhat confusing about what is deprected, but it appears the interface as a whole is still viable as of C++20
+                // and just several sub-interfaces are deprecated -- LGP 2023-06-28
                 eCodeCVT,
-#endif
 
                 // @todo LIBS TO LOOK AT
                 //      https://github.com/nemtrif/utfcpp
@@ -352,13 +351,11 @@ namespace Stroika::Foundation::Characters {
         static ConversionResultWithStatus ConvertQuietly_boost_locale_ (span<const char8_t> source, const span<char16_t> target);
 #endif
 
-#if 0
     private:
         static ConversionResultWithStatus ConvertQuietly_codeCvt_ (span<const char8_t> source, span<char16_t> target);
         static ConversionResultWithStatus ConvertQuietly_codeCvt_ (span<const char8_t> source, span<char32_t> target);
         static ConversionResultWithStatus ConvertQuietly_codeCvt_ (span<const char16_t> source, span<char8_t> target);
         static ConversionResultWithStatus ConvertQuietly_codeCvt_ (span<const char32_t> source, span<char8_t> target);
-#endif
 
     private:
         static void ThrowIf_ (ConversionStatusFlag cr);
