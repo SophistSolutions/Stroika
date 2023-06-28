@@ -178,12 +178,12 @@ namespace {
             using Characters::Character;
             using Characters::String;
             {
-                Traversal::Iterable<Character> s  = String{L"This"};
+                Traversal::Iterable<Character> s  = String{"This"};
                 TextReader::Ptr                tr = TextReader::New (s);
-                VerifyTestResult (tr.ReadAll () == L"This");
+                VerifyTestResult (tr.ReadAll () == "This");
             }
             {
-                VerifyTestResult ((TextReader::New (String{L"hello world"}).ReadAll () == L"hello world"));
+                VerifyTestResult ((TextReader::New (String{"hello world"}).ReadAll () == "hello world"));
             }
         }
 
