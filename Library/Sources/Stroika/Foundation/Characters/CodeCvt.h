@@ -59,11 +59,14 @@ namespace Stroika::Foundation::Characters {
     static_assert (IStdCodeCVT<std::codecvt_byname<wchar_t, char, std::mbstate_t>>);
 
     /*
-     *  \brief CodeCvt unifies byte<-> unicode conversions, vaguely inspired by (and wraps) std::codecvt, as well as UTFConverter etc, to map between span<bytes> and a span<UNICODE code-point>
+     *  \brief CodeCvt unifies byte <-> unicode conversions, vaguely inspired by (and wraps) std::codecvt, as well as UTFConverter etc, to map between span<bytes> and a span<UNICODE code-point>
      * 
      *  Note that this class - like codecvt - and be used to 'page' over an input, and incrementally convert it (though how it does this 
      *  differs from codecvt - not maintaining a partial state - but instead adjusting the amount consumed from the input to reflect
      *  full-character conversions).
+     * 
+     *  \note - the BINARY format character is OPAQUE given this API (you get/set bytes). Thie CHAR_T in the template argument
+     *          refers to the 'CHARACTER' format you map to/from binary format (so typically wchar_t, or char32_t maybe).
      *
      *  Enhancements over std::codecvt:
      *      o   You can subclass IRep (to provide your own CodeCvt implementation) and copy CodeCvt objects.
@@ -128,6 +131,9 @@ namespace Stroika::Foundation::Characters {
          *      Produces a CodeCvt which maps (back and forth) between bytes in the 'locale' character set, and
          *      UNICODE Characters.
          * 
+         *  CodeCvt (const string& localeName):
+         *      Is equivilent to mkFromStdCodeCvt<...> (std::codecvt_byname {localeName})
+         * 
          *   To use (wrap) existing std::codecvt<A,B,C> class:
          *      Quirky, because classes not generally directly instantiatable, so instead specify CLASS as template param
          *      and ARGS to CTOR.
@@ -148,10 +154,14 @@ namespace Stroika::Foundation::Characters {
          * 
          *          // codeCvt Between UTF16 Characters using codecvt_byname
          *          CodeCvt<char16_t> codeCvt3 = CodeCvt<char16_t,std::codecvt_byname>>{locale{"en_US.UTF8"}};
+         * 
+         *          // or equivilently
+         *          CodeCvt<char16_t> codeCvt4{"en_US.UTF8"};
          *      \endcode
          */
         CodeCvt ();
         CodeCvt (const locale& l);
+        CodeCvt (const string& localeName);
         CodeCvt (UnicodeExternalEncodings e);
         template <IUNICODECanAlwaysConvertTo INTERMEDIATE_CHAR_T>
         CodeCvt (const CodeCvt<INTERMEDIATE_CHAR_T>& basedOn);

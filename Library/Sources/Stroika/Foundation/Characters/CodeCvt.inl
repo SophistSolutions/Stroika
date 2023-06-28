@@ -307,13 +307,32 @@ namespace Stroika::Foundation::Characters {
      */
     template <IUNICODECanAlwaysConvertTo CHAR_T>
     inline CodeCvt<CHAR_T>::CodeCvt ()
-        : fRep_{make_shared<UTFConvertRep_<char8_t>> (UTFConverter::kThe)}   // default, is to serialize to UTF-8
+        : fRep_{make_shared<UTFConvertRep_<char8_t>> (UTFConverter::kThe)} // default, is to serialize to UTF-8
     {
     }
     template <IUNICODECanAlwaysConvertTo CHAR_T>
     inline CodeCvt<CHAR_T>::CodeCvt (const locale& l)
+        : CodeCvt{l.name ()}
     {
-        auto baseRep = make_shared<CodeCvt_WrapStdCodeCvt_<Private_::deletable_facet_<codecvt_byname<wchar_t, char, mbstate_t>>>> (l);
+    }
+    template <IUNICODECanAlwaysConvertTo CHAR_T>
+    inline CodeCvt<CHAR_T>::CodeCvt (const string& localeName)
+    {
+        if constexpr (is_same_v<CHAR_T, wchar_t>) {
+            fRep_ = make_shared<CodeCvt_WrapStdCodeCvt_<codecvt_byname<wchar_t, char, mbstate_t>>> (localeName);
+        }
+        else if constexpr (is_same_v<CHAR_T, char16_t>) {
+            fRep_ = make_shared<CodeCvt_WrapStdCodeCvt_<codecvt_byname<char16_t, char8_t, std::mbstate_t>>> (localeName);
+        }
+        else if constexpr (is_same_v<CHAR_T, char32_t>) {
+            fRep_ = make_shared<CodeCvt_WrapStdCodeCvt_<codecvt_byname<char32_t, char8_t, std::mbstate_t>>> (localeName);
+        }
+        else {
+            // CHAR_T COULD be UTF-8, but not clear if/why that would be useful.
+            AssertNotImplemented ();
+        }
+#if 0
+        auto baseRep = make_shared<CodeCvt_WrapStdCodeCvt_<codecvt_byname<wchar_t, char, mbstate_t>>> (localeName);
         if constexpr (is_same_v<CHAR_T, wchar_t>) {
             fRep_ = move (baseRep);
         }
@@ -323,6 +342,7 @@ namespace Stroika::Foundation::Characters {
         else {
             fRep_ = make_shared<UTF2UTFRep_<wchar_t>> (baseRep);
         }
+#endif
     }
     template <IUNICODECanAlwaysConvertTo CHAR_T>
     inline CodeCvt<CHAR_T>::CodeCvt (UnicodeExternalEncodings e)
