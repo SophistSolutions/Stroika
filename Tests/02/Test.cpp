@@ -1563,6 +1563,25 @@ namespace {
             }
         }
         {
+            // Assure we properly document/TREAT the case of 'SOURCE EXHAUSTED'
+                //char8_t poundSign[] = u8"£";
+                char8_t poundSign[] = u8"\u00a3";
+                static_assert (sizeof (poundSign) == 3);
+                VerifyTestResult (UTFConverter::NextCharacter (span<const char8_t>{poundSign}) == 2u);
+                UTFConverter c;
+                Character outBuf[1024];
+                auto a = c.ConvertQuietly (span<const char8_t>{&poundSign[0], 1}, span<Character> {outBuf});
+                VerifyTestResult (a.fSourceConsumed == 0 and a.fTargetProduced == 0);
+                VerifyTestResult (a.fStatus == UTFConverter::ConversionStatusFlag::sourceExhausted );
+                try {
+                    c.Convert (span<const char8_t>{&poundSign[0], 1}, span<Character> {outBuf});
+                    VerifyTestResult (false);   // not reached
+                }
+                catch (...) {
+                    // good
+                }
+        }
+        {
             // Intentionally no operator+ etc stuff for utf8 because type of u8"" is same as "", so no way to overload
         }
     }

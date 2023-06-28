@@ -192,6 +192,10 @@ namespace Stroika::Foundation::Characters {
         /**
          *  \brief Convert between UTF-N encoded strings/spans (including the special case of ASCII, and Latin1) (e.g. UTF8 to UTF32), throw on failure
          * 
+         *  \note Failures
+         *      Failures can be because of illegal input code-point or source exhuasted. If you want to deal with partial characters,
+         *      you must use the ConvertQuietly API.
+         * 
          *  For overloads taking a target span:
          *      \req size of target span must be at least as large as specified by ComputeTargetBufferSize
          * 
@@ -258,6 +262,13 @@ namespace Stroika::Foundation::Characters {
          * 
          *  \see Convert () above for details. This only differs from Convert, in that it returns a result flag instead
          *       of throwing on errors.
+         * 
+         *  \note - possible error status values include 'illegal source', and 'source exhausted'. Source exhausted ins't always an
+         *          error, but it is more often than not, so its treated as an error, and you must special case handling if you want
+         *          to treat otherwise.
+         * 
+         *          So - ConvertQuietly () of many characters, but where the LAST character is complete WILL convert all the data up to the last
+         *          character, return the number of characters consumed and produced, but ALSO indicate the source exhausted status - not OK.
          * 
          *  Source and target spans can be of any IUNICODECanUnambiguouslyConvertFrom character type (but source const and target non-const)
          * 
