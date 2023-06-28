@@ -166,13 +166,13 @@ namespace Stroika::Foundation::Characters {
 
             // Because we KNOW everything will fit, we can allocate a temporary buffer for the intermediate state, and be done with
             // it by the end of this routine (stay stateless)
-            Memory::StackBuffer<INTERMEDIATE_CHAR_T> intermediateBuf{fBytesVSIntermediateCvt_.ComputeTargetCharacterBufferSize (from)};
-            span<INTERMEDIATE_CHAR_T>                intermediateSpan{intermediateBuf.data (), intermediateBuf.size ()};
+            Memory::StackBuffer<INTERMEDIATE_CHAR_T> intermediateBuf{fBytesVSIntermediateCvt_.ComputeTargetCharacterBufferSize (*from)};
 
-            fBytesVSIntermediateCvt_.Bytes2Characters (from, &intermediateBuf);
+            span<INTERMEDIATE_CHAR_T> intermediateSpan = fBytesVSIntermediateCvt_.Bytes2Characters (from, intermediateBuf);
 
-            // then use fBytesVSIntermediateCvt_ to perform final mapping
-            return fBytesVSIntermediateCvt_.Convert (intermediateBuf, *to);
+            // then use fIntermediateVSFinalCHARCvt_ to perform final mapping
+            auto tmp = as_bytes (intermediateSpan);
+            return fIntermediateVSFinalCHARCvt_.ConvertSpan (intermediateSpan, to);
         }
         virtual span<byte> Characters2Bytes (span<const CHAR_T> from, span<byte> to) const override
         {
@@ -188,7 +188,7 @@ namespace Stroika::Foundation::Characters {
              *  first translate to something usable by fBytesVSIntermediateCvt_
              */
             span<INTERMEDIATE_CHAR_T> intermediateSpan =
-                fIntermediateVSFinalCHARCvt_.Convert (from, span<INTERMEDIATE_CHAR_T>{intermediateBuf.data (), intermediateBuf.size ()});
+                fIntermediateVSFinalCHARCvt_.ConvertSpan (from, span<INTERMEDIATE_CHAR_T>{intermediateBuf.data (), intermediateBuf.size ()});
 
             // Then use fBytesVSIntermediateCvt_, no need to track anything in intermediateBuf, we require all used, no partials etc.
             return fBytesVSIntermediateCvt_.Characters2Bytes (intermediateBuf, to);
@@ -201,9 +201,8 @@ namespace Stroika::Foundation::Characters {
                     fIntermediateVSFinalCHARCvt_.ComputeTargetBufferSize<INTERMEDIATE_CHAR_T, CHAR_T> (*i));
             }
             else {
-                // @todo FIX - THIS IS WRONG
                 fIntermediateVSFinalCHARCvt_.ComputeTargetBufferSize<CHAR_T, INTERMEDIATE_CHAR_T> (
-                    fBytesVSIntermediateCvt_.ComputeTargetCharacterBufferSize (src));
+                    fBytesVSIntermediateCvt_.ComputeTargetCharacterBufferSize (get<span<const byte>> (src)));
             }
         }
         virtual size_t ComputeTargetByteBufferSize (variant<span<const CHAR_T>, size_t> src) const override
@@ -319,29 +318,26 @@ namespace Stroika::Foundation::Characters {
     inline CodeCvt<CHAR_T>::CodeCvt (const string& localeName)
     {
         if constexpr (is_same_v<CHAR_T, wchar_t>) {
-            // fRep_ = make_shared<CodeCvt_WrapStdCodeCvt_<codecvt_byname<wchar_t, char, mbstate_t>>> (localeName);
             *this = mkFromStdCodeCvt<codecvt_byname<wchar_t, char, mbstate_t>> (localeName);
         }
         else if constexpr (is_same_v<CHAR_T, char16_t> or is_same_v<CHAR_T, char32_t>) {
             *this = mkFromStdCodeCvt<codecvt_byname<CHAR_T, char8_t, mbstate_t>> (localeName);
-            //            fRep_ = make_shared<CodeCvt_WrapStdCodeCvt_<codecvt_byname<char16_t, char8_t, std::mbstate_t>>> (localeName);
+        }
+        else if constexpr (is_same_v<CHAR_T, Character>) {
+// HORRIBLE KLUDGE - CLEANUP - @todo LGP 2023-06-28
+#if 1
+            static_assert (sizeof (Character) == sizeof (char32_t)); // cheat - counting on this, and layout same...
+            auto tmp      = CodeCvt<char32_t>::mkFromStdCodeCvt<codecvt_byname<char32_t, char8_t, mbstate_t>> (localeName);
+            auto cheaterP = reinterpret_cast<CodeCvt<CHAR_T>*> (&tmp);
+            *this         = *cheaterP;
+#else
+            fRep_ = make_shared<UTF2UTFRep_<wchar_t>> (CodeCvt<wchar_t>::mkFromStdCodeCvt<codecvt_byname<wchar_t, char, mbstate_t>> (localeName));
+#endif
         }
         else {
             // CHAR_T COULD be UTF-8, but not clear if/why that would be useful.
             AssertNotImplemented ();
         }
-#if 0
-        auto baseRep = make_shared<CodeCvt_WrapStdCodeCvt_<codecvt_byname<wchar_t, char, mbstate_t>>> (localeName);
-        if constexpr (is_same_v<CHAR_T, wchar_t>) {
-            fRep_ = move (baseRep);
-        }
-        else if constexpr (sizeof (CHAR_T) == sizeof (wchar_t)) {
-            fRep_ = reinterpret_pointer_cast<IRep> (baseRep);
-        }
-        else {
-            fRep_ = make_shared<UTF2UTFRep_<wchar_t>> (baseRep);
-        }
-#endif
     }
     template <IUNICODECanAlwaysConvertTo CHAR_T>
     inline CodeCvt<CHAR_T>::CodeCvt (UnicodeExternalEncodings e)
@@ -398,7 +394,7 @@ namespace Stroika::Foundation::Characters {
     inline auto CodeCvt<CHAR_T>::Bytes2Characters (span<const byte>* from, span<CHAR_T> to) const -> span<CHAR_T>
     {
         AssertNotNull (fRep_);
-        Require (to->size () >= ComputeTargetCharacterBufferSize (from));
+        Require (to.size () >= ComputeTargetCharacterBufferSize (*from));
         return fRep_->Bytes2Characters (from, to);
     }
     template <IUNICODECanAlwaysConvertTo CHAR_T>
