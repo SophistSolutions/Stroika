@@ -123,8 +123,6 @@ namespace Stroika::Foundation::Common {
     namespace Private_ {
         template <typename COMPARE_FUNCTION>
         struct ExtractComparisonTraits_ {
-            // @todo fix this with SFINAE (has_XX) so it gives a good explanation
-            // static_assert (has_kComparisonRelationKind filed);
             static constexpr ComparisonRelationType kComparisonRelationKind = COMPARE_FUNCTION::kComparisonRelationKind;
         };
         template <typename T>
@@ -194,9 +192,7 @@ namespace Stroika::Foundation::Common {
      *  This doesn't require that that you've annotated the comparer, so it can false-positive (like mixing up
      *  an equality comparer for an in-order comparer).
      * 
-     *  @todo consuder using std::relation and maybe losing this in favor of that
-     * 
-     *  \see IEqualsComparer for something stricter
+     *  \see IComparer or IEqualsComparer for something stricter
      */
     template <typename COMPARER, typename ARG_T>
     concept IPotentiallyComparer = relation<COMPARER, ARG_T, ARG_T>;
