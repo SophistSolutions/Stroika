@@ -324,6 +324,9 @@ namespace Stroika::Foundation::Characters {
          */
         static const UTFConverter kThe;
 
+    public:
+        static void Throw (ConversionStatusFlag cr);
+
     private:
         // find same size, and then remove_const, and then add back const
         template <typename SRC_OF_CONSTNESS_T, typename TYPE_T>
@@ -370,7 +373,6 @@ namespace Stroika::Foundation::Characters {
 
     private:
         static void ThrowIf_ (ConversionStatusFlag cr);
-        static void Throw_ (ConversionStatusFlag cr);
     };
 
     /**

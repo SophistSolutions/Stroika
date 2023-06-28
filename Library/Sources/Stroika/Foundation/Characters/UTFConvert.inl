@@ -416,7 +416,7 @@ namespace Stroika::Foundation::Characters {
             case ConversionStatusFlag::ok:;
                 break;
             default:
-                Throw_ (cr);
+                Throw (cr);
         }
     }
 

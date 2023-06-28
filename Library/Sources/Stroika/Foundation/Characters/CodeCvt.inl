@@ -39,7 +39,9 @@ namespace Stroika::Foundation::Characters {
     template <IUNICODECanAlwaysConvertTo CHAR_T>
     template <typename SERIALIZED_CHAR_T>
     struct CodeCvt<CHAR_T>::UTFConvertRep_ : CodeCvt<CHAR_T>::IRep {
-        using ConversionResult = UTFConverter::ConversionResult;
+        using ConversionResult           = UTFConverter::ConversionResult;
+        using ConversionResultWithStatus = UTFConverter::ConversionResultWithStatus;
+        using ConversionStatusFlag       = UTFConverter::ConversionStatusFlag;
         UTFConvertRep_ (const UTFConverter& utfCodeCvt)
             : fCodeConverter_{utfCodeCvt}
         {
@@ -50,16 +52,19 @@ namespace Stroika::Foundation::Characters {
             Require (to.size () >= ComputeTargetCharacterBufferSize (*from));
             span<const SERIALIZED_CHAR_T> serializedFrom = ReinterpretBytes_ (*from);
             Assert (serializedFrom.size_bytes () <= from->size ()); // note - serializedFrom could be smaller than from in bytespan
-            ConversionResult r = fCodeConverter_.Convert (serializedFrom, to);
-            *from              = from->subspan (r.fSourceConsumed); // from updated to remaining data, if any
-            return to.subspan (0, r.fTargetProduced);               // point ACTUAL copied data
+            ConversionResultWithStatus r = fCodeConverter_.ConvertQuietly (serializedFrom, to);
+            if (r.fStatus == ConversionStatusFlag ::sourceIllegal) {
+                UTFConverter::Throw (r.fStatus);
+            }
+            *from = from->subspan (r.fSourceConsumed); // from updated to remaining data, if any
+            return to.subspan (0, r.fTargetProduced);  // point ACTUAL copied data
         }
         virtual span<byte> Characters2Bytes (span<const CHAR_T> from, span<byte> to) const override
         {
             Require (to.size () >= ComputeTargetByteBufferSize (from));
             span<SERIALIZED_CHAR_T> serializedTo = ReinterpretBytes_ (to);
-            ConversionResult        r            = fCodeConverter_.Convert (from, serializedTo);
-            Require (r.fSourceConsumed == from.size ());                           // always use all input characters
+            ConversionResult r = fCodeConverter_.Convert (from, serializedTo); // cannot have sourceExhuasted here so no need to call ConvertQuietly
+            Require (r.fSourceConsumed == from.size ());                       // always use all input characters
             return to.subspan (0, r.fTargetProduced * sizeof (SERIALIZED_CHAR_T)); // point ACTUAL copied data
         }
         virtual size_t ComputeTargetCharacterBufferSize (variant<span<const byte>, size_t> src) const override
@@ -160,19 +165,34 @@ namespace Stroika::Foundation::Characters {
             RequireNotNull (from);
             Require (to.size () >= ComputeTargetCharacterBufferSize (*from));
 
-            /*
-             *  Big picture: fBytesVSIntermediateCvt_ goes bytes <--> INTERMEDIATE_CHAR_T, so we use it first.
+        /*
+             *  Big picture: fBytesVSIntermediateCvt_ goes bytes -> INTERMEDIATE_CHAR_T, so we use it first.
+             * 
+             *  BUT - trick - even if we successfully do first conversion (bytes -> INTERMEDIATE_CHAR_T) - we might still get a split
+             *  char on the second conversion. If so - we need to backup in 'from' - to avoid this. Just allege we consumed less. This MIGHT -
+             *  in extreme cases - go all the way back to zero.
              */
+        again:
 
-            // Because we KNOW everything will fit, we can allocate a temporary buffer for the intermediate state, and be done with
+            // Because we KNOW everything will fit (disallow target exhuasted), we can allocate a temporary buffer for the intermediate state, and be done with
             // it by the end of this routine (stay stateless)
             Memory::StackBuffer<INTERMEDIATE_CHAR_T> intermediateBuf{fBytesVSIntermediateCvt_.ComputeTargetCharacterBufferSize (*from)};
+            span<INTERMEDIATE_CHAR_T> intermediateSpan = fBytesVSIntermediateCvt_.Bytes2Characters (from, intermediateBuf); // shortens 'from' if needed
 
-            span<INTERMEDIATE_CHAR_T> intermediateSpan = fBytesVSIntermediateCvt_.Bytes2Characters (from, intermediateBuf);
-
-            // then use fIntermediateVSFinalCHARCvt_ to perform final mapping
-            auto tmp = as_bytes (intermediateSpan);
-            return fIntermediateVSFinalCHARCvt_.ConvertSpan (intermediateSpan, to);
+            // then use fIntermediateVSFinalCHARCvt_ to perform final mapping INTERMEDIATE_CHAR_T -> CHAR_T
+            auto                       tmp = as_bytes (intermediateSpan);
+            ConversionResultWithStatus cr  = fIntermediateVSFinalCHARCvt_.ConvertQuietly (intermediateSpan, to);
+            switch (cr.fStatus) {
+                case ConversionStatusFlag ::sourceIllegal:
+                    UTFConverter::Throw (cr.fStatus);
+                case ConversionStatusFlag ::sourceExhausted:
+                    // TRICKY - if we have at least one character output, then we need to back out bytes 'from' - til this doesn't happen
+                    if (not from->empty ()) {
+                        *from = from->subspan (0, from->size () - 1);
+                    }
+                case ConversionStatusFlag::ok:
+                    return to.subspan (cr.fTargetProduced);
+            }
         }
         virtual span<byte> Characters2Bytes (span<const CHAR_T> from, span<byte> to) const override
         {

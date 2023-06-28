@@ -201,7 +201,7 @@ namespace Stroika::Foundation::Characters {
          *
          *  Returns:
          *      subspan of 'to', with converted characters.
-         *      Throws on failure.
+         *      Throws on failure (corrupt source content).
          *      And '*from' updated to reflect any remaining bytes that are part of the next character.
          * 
          *  Source bytes must begin on a valid character boundary (unlike codecvt - no mbstate).
@@ -213,6 +213,9 @@ namespace Stroika::Foundation::Characters {
          * 
          *  No state is maintained. ALL the input is converted expect possibly a few bytes at the end of the input
          *  which consitute a partial character.
+         * 
+         *  This implies that given a 'lead byte' as argument to Bytes2Characters, this function can return
+         *  an EMPTY span, and that would not be an error (so no throw).
          *
          *  \note we use the name 'Bytes' - because its suggestive of meaning, and in every case I'm aware of
          *        the target type will be char, or char8_t, or byte. But its certainly not guaranteed to be serialized

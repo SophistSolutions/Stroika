@@ -806,7 +806,7 @@ auto UTFConverter::ConvertQuietly_codeCvt_ (span<const char32_t> source, span<ch
 }
 #endif
 
-void UTFConverter::Throw_ (ConversionStatusFlag cr)
+void UTFConverter::Throw (ConversionStatusFlag cr)
 {
     switch (cr) {
         case ConversionStatusFlag::sourceExhausted: {
