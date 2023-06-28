@@ -16,7 +16,7 @@
 
 /**
  *  \file
- *      Simple wrapper on std::codecvt, abstracting commonalities between this and UTFConverter, to map characters <--> bytes
+ *      Simple wrapper on std::codecvt, abstracting commonalities between std::codecvt and UTFConverter, to map characters <--> bytes
  */
 
 namespace Stroika::Foundation::Characters {
@@ -40,22 +40,31 @@ namespace Stroika::Foundation::Characters {
     };
 
     namespace Private_ {
-        template <class>
+        template <typename>
         inline constexpr bool IsStdCodeCvt_ = false;
         template <class _Elem, class _Byte, class _Statype>
-        inline constexpr bool IsStdCodeCvt_<std::codecvt_byname<_Elem, _Byte, _Statype>> = true;
+        inline constexpr bool IsStdCodeCvt_<const std::codecvt_byname<_Elem, _Byte, _Statype>*> = true; // @todo NOT CLEAR WHY THIS IS NEEDED???
         template <class _Elem, class _Byte, class _Statype>
-        inline constexpr bool IsStdCodeCvt_<std::codecvt<_Elem, _Byte, _Statype>> = true;
+        inline constexpr bool IsStdCodeCvt_<const std::codecvt<_Elem, _Byte, _Statype>*> = true;
     }
+
     /**
-     *   @todo confused thy this is working with codecvt_by_name - think I need to change for that.
+     *  Is std::codecvt or subclass of std::codecvt (such as codecvt_byname).
      */
     template <typename STD_CODECVT_T>
-    concept IStdCodeCVTT = Private_::IsStdCodeCvt_<STD_CODECVT_T>;
+    concept IStdCodeCVT = Private_::IsStdCodeCvt_<const STD_CODECVT_T*>;
+    static_assert (IStdCodeCVT<std::codecvt<char16_t, char8_t, std::mbstate_t>>);
+    static_assert (IStdCodeCVT<std::codecvt<char32_t, char8_t, std::mbstate_t>>);
+    static_assert (IStdCodeCVT<std::codecvt<wchar_t, char, std::mbstate_t>>);
+    static_assert (IStdCodeCVT<std::codecvt_byname<wchar_t, char, std::mbstate_t>>);
 
     /*
      *  \brief CodeCvt unifies byte<-> unicode conversions, vaguely inspired by (and wraps) std::codecvt, as well as UTFConverter etc, to map between span<bytes> and a span<UNICODE code-point>
      * 
+     *  Note that this class - like codecvt - and be used to 'page' over an input, and incrementally convert it (though how it does this 
+     *  differs from codecvt - not maintaining a partial state - but instead adjusting the amount consumed from the input to reflect
+     *  full-character conversions).
+     *
      *  Enhancements over std::codecvt:
      *      o   You can subclass IRep (to provide your own CodeCvt implementation) and copy CodeCvt objects.
      *          (unless I'm missing something, you can do one or the other with std::codecvt, but not both)
@@ -115,6 +124,10 @@ namespace Stroika::Foundation::Characters {
          *      Produces the fastest available CodeCvt(), between the templated UNICODE code-point
          *      and UTF-8 (as the binary format).
          * 
+         *  CodeCvt (const locale& l):
+         *      Produces a CodeCvt which maps (back and forth) between bytes in the 'locale' character set, and
+         *      UNICODE Characters.
+         * 
          *   To use (wrap) existing std::codecvt<A,B,C> class:
          *      Quirky, because classes not generally directly instantiatable, so instead specify CLASS as template param
          *      and ARGS to CTOR.
@@ -146,12 +159,12 @@ namespace Stroika::Foundation::Characters {
 
     public:
         /**
-         *  Note, though logically this should be a CodeCvt, since you cannot directly construct
+         *  Note, though logically this should be a CodeCvt constructor, since you cannot directly construct
          *  the STD_CODECVT, it cannot be passed by argument to the constructor. And so their
-         *  appears now way to deduce or specify those constructor template arguments. But that can be done
+         *  appears no way to deduce or specify those constructor template arguments. But that can be done
          *  explicitly with a static function, and that is what we do with mkFromStdCodeCvt.
          */
-        template <IStdCodeCVTT STD_CODECVT, typename... ARGS>
+        template <IStdCodeCVT STD_CODECVT, typename... ARGS>
         static CodeCvt mkFromStdCodeCvt (ARGS... args)
             requires (is_same_v<CHAR_T, typename STD_CODECVT::intern_type>);
 

@@ -307,9 +307,8 @@ namespace Stroika::Foundation::Characters {
      */
     template <IUNICODECanAlwaysConvertTo CHAR_T>
     inline CodeCvt<CHAR_T>::CodeCvt ()
+        : fRep_{make_shared<UTFConvertRep_<char8_t>> (UTFConverter::kThe)}   // default, is to serialize to UTF-8
     {
-        // default, is to serialize to UTF-8
-        fRep_ = make_shared<UTFConvertRep_<char8_t>> (UTFConverter::kThe);
     }
     template <IUNICODECanAlwaysConvertTo CHAR_T>
     inline CodeCvt<CHAR_T>::CodeCvt (const locale& l)
@@ -369,7 +368,7 @@ namespace Stroika::Foundation::Characters {
     {
     }
     template <IUNICODECanAlwaysConvertTo CHAR_T>
-    template <IStdCodeCVTT STD_CODECVT, typename... ARGS>
+    template <IStdCodeCVT STD_CODECVT, typename... ARGS>
     inline CodeCvt<CHAR_T> CodeCvt<CHAR_T>::mkFromStdCodeCvt (ARGS... args)
         requires (is_same_v<CHAR_T, typename STD_CODECVT::intern_type>)
     {
