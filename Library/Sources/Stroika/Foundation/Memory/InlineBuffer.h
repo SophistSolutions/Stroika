@@ -140,10 +140,10 @@ namespace Stroika::Foundation::Memory {
     public:
         /** 
          */
-        template <size_t FROM_BUF_SIZE>
-        nonvirtual InlineBuffer& operator= (const InlineBuffer<T, FROM_BUF_SIZE>& rhs);
         nonvirtual InlineBuffer& operator= (const InlineBuffer& rhs);
         nonvirtual InlineBuffer& operator= (InlineBuffer&& rhs);
+        template <ISpanOfT<T> SPAN_T>
+        nonvirtual InlineBuffer& operator= (const SPAN_T& copyFrom);
 
     public:
         /**
@@ -256,6 +256,14 @@ namespace Stroika::Foundation::Memory {
          */
         nonvirtual void resize_uninitialized (size_t nElements)
             requires (is_trivially_copyable_v<T> and is_trivially_destructible_v<T>);
+
+    public:
+        /**
+         *  Same as resize (nElements), except asserts (documents) the new size must be smaller or equal to the old size.
+         * 
+         *  \req nElements <= size ()
+         */
+        nonvirtual void ShrinkTo (size_t nElements);
 
     public:
         /**

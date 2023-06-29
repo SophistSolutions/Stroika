@@ -92,6 +92,20 @@ namespace Stroika::Foundation::Memory {
         }
     }
     template <typename T, size_t BUF_SIZE>
+    template <ISpanOfT<T> SPAN_T>
+    StackBuffer<T, BUF_SIZE>& StackBuffer<T, BUF_SIZE>::operator= (const SPAN_T& copyFrom)
+    {
+        Invariant ();
+        DestroyElts_ (this->begin (), this->end ());
+        fSize_ = 0;
+        if (not this->HasEnoughCapacity_ (copyFrom.size ())) [[unlikely]] {
+            reserve (copyFrom.size ());
+        }
+        uninitialized_copy (copyFrom.begin (), copyFrom.end (), this->begin ());
+        Invariant ();
+        return *this;
+    }
+    template <typename T, size_t BUF_SIZE>
     inline void StackBuffer<T, BUF_SIZE>::GrowToSize (size_t nElements)
     {
         if (nElements > size ()) {
@@ -141,6 +155,17 @@ namespace Stroika::Foundation::Memory {
             reserve (nElements);
         }
         fSize_ = nElements;
+        Assert (fSize_ == nElements);
+        Ensure (size () <= capacity ());
+    }
+    template <typename T, size_t BUF_SIZE>
+    inline void StackBuffer<T, BUF_SIZE>::ShrinkTo (size_t nElements)
+    {
+        Require (nElements <= fSize_);
+        if (nElements != fSize_) {
+            DestroyElts_ (this->begin () + nElements, this->end ());
+            fSize_ = nElements;
+        }
         Assert (fSize_ == nElements);
         Ensure (size () <= capacity ());
     }

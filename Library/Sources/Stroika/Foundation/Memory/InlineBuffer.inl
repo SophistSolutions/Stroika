@@ -127,22 +127,6 @@ namespace Stroika::Foundation::Memory {
         }
     }
     template <typename T, size_t BUF_SIZE>
-    template <size_t FROM_BUF_SIZE>
-    InlineBuffer<T, BUF_SIZE>& InlineBuffer<T, BUF_SIZE>::operator= (const InlineBuffer<T, FROM_BUF_SIZE>& rhs)
-    {
-        Invariant ();
-        Assert (this != &rhs); // because if same address should be same type so operator=(const InlineBuffer&) should be called
-        // @todo this simple implementation could be more efficient
-        DestroyElts_ (this->begin (), this->end ());
-        fSize_ = 0;
-        if (not this->HasEnoughCapacity_ (rhs.size ())) [[unlikely]] {
-            reserve (rhs.size ());
-        }
-        uninitialized_copy (rhs.begin (), rhs.end (), this->begin ());
-        Invariant ();
-        return *this;
-    }
-    template <typename T, size_t BUF_SIZE>
     InlineBuffer<T, BUF_SIZE>& InlineBuffer<T, BUF_SIZE>::operator= (const InlineBuffer& rhs)
     {
         Invariant ();
@@ -165,6 +149,20 @@ namespace Stroika::Foundation::Memory {
         Invariant ();
         WeakAssertNotImplemented (); // @todo this simple implementation could be more efficient (sb pretty easy based on existing move CTOR code...
         operator= (rhs);             // call copy assign for now
+        return *this;
+    }
+    template <typename T, size_t BUF_SIZE>
+    template <ISpanOfT<T> SPAN_T>
+    InlineBuffer<T, BUF_SIZE>& InlineBuffer<T, BUF_SIZE>::operator= (const SPAN_T& copyFrom)
+    {
+        Invariant ();
+        DestroyElts_ (this->begin (), this->end ());
+        fSize_ = 0;
+        if (not this->HasEnoughCapacity_ (copyFrom.size ())) [[unlikely]] {
+            reserve (copyFrom.size ());
+        }
+        uninitialized_copy (copyFrom.begin (), copyFrom.end (), this->begin ());
+        Invariant ();
         return *this;
     }
     template <typename T, size_t BUF_SIZE>
@@ -218,6 +216,17 @@ namespace Stroika::Foundation::Memory {
             reserve (nElements);
         }
         fSize_ = nElements;
+        Assert (fSize_ == nElements);
+        Ensure (size () <= capacity ());
+    }
+    template <typename T, size_t BUF_SIZE>
+    inline void InlineBuffer<T, BUF_SIZE>::ShrinkTo (size_t nElements)
+    {
+        Require (nElements <= fSize_);
+        if (nElements != fSize_) {
+            DestroyElts_ (this->begin () + nElements, this->end ());
+            fSize_ = nElements;
+        }
         Assert (fSize_ == nElements);
         Ensure (size () <= capacity ());
     }
