@@ -379,6 +379,8 @@ namespace Stroika::Foundation::Characters {
      *  This is a function that takes a span of bytes, and an OPTIONAL mbstate_t (TBD), and targetBuffer, translates into targetBuffer, and returns the changes.
      *  This utility wrapper funciton is meant to capture what you can easily put together from a (configured or default) UTFConverter,
      *  but in a form more easily used/consumed by a the TextReader code.
+     * 
+     *  @todo NEED EXAMPLE OR TO LOSE THIS...
      */
     template <typename OUTPUT_CHAR_T>
     using UTFCodeConverter = function<UTFConverter::ConversionResult (span<const std::byte> source, span<OUTPUT_CHAR_T> targetBuffer)>;
