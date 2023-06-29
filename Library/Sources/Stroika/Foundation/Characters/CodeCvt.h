@@ -221,8 +221,9 @@ namespace Stroika::Foundation::Characters {
          *        the target type will be char, or char8_t, or byte. But its certainly not guaranteed to be serialized
          *        to std::byte, and the codecvt API calls this extern_type
          * 
-         *  \req to.size () >= ComputeTargetCharacterBufferSize (*from) on input.
+         *  /2 overload \req to.size () >= min(Bytes2Characters(*from), ComputeTargetCharacterBufferSize (*from)) on input.
          */
+        nonvirtual size_t Bytes2Characters (span<const byte> from) const;
         nonvirtual span<CHAR_T> Bytes2Characters (span<const byte>* from, span<CHAR_T> to) const;
 
     public:
@@ -233,10 +234,11 @@ namespace Stroika::Foundation::Characters {
          * 
          *  Arguments:
          *      o   span<character> from - all of which will be converted or an exeception thrown (only if data corrupt/unconvertable).
-         *      o   span<byte> to - buffer to have data converted 'into', which MUST be large enuf (call ComputeTargetByteBufferSize)
+         *      o   OPTIONAL span<byte> to - buffer to have data converted 'into', which MUST be large enuf (call ComputeTargetByteBufferSize)
          *
          *  Returns:
-         *      (sub)subspan of 'to', with characters converted to appropriate span of bytes.
+         *      (sub)subspan of 'to', (if provided)with characters converted to appropriate span of bytes.
+         *      Else returns number of bytes it would have been converted to /1 overload).
          *      Throws on failure.
          * 
          *  No state is maintained. ALL the input is converted to all the output, on character
@@ -246,8 +248,9 @@ namespace Stroika::Foundation::Characters {
          *        the target type will be char, or char8_t, or byte. But its certainly not guaranteed to be serialized
          *        to std::byte, and the codecvt API calls this extern_type
          * 
-         *  \req to.size () >= ComputeTargetByteBufferSize (from) on input.
+         *  /2 overload \req to.size () >= min(ComputeTargetByteBufferSize (from),Characters2Bytes(from)) on input.
          */
+        nonvirtual size_t Characters2Bytes (span<const CHAR_T> from) const;
         nonvirtual span<byte> Characters2Bytes (span<const CHAR_T> from, span<byte> to) const;
 
     public:

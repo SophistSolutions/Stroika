@@ -411,17 +411,31 @@ namespace Stroika::Foundation::Characters {
         return CodeCvt<CHAR_T>{make_shared<CodeCvt_WrapStdCodeCvt_<Private_::deletable_facet_<STD_CODECVT>>> (move (u))};
     }
     template <IUNICODECanAlwaysConvertTo CHAR_T>
+    inline auto CodeCvt<CHAR_T>::Bytes2Characters (span<const byte> from) const -> size_t
+    {
+        //quickie reference impl @todo fix/optimize
+        Memory::StackBuffer<CHAR_T> to{ComputeTargetCharacterBufferSize (from)};
+        return fRep_->Bytes2Characters (&from, span{to}).size ();
+    }
+    template <IUNICODECanAlwaysConvertTo CHAR_T>
     inline auto CodeCvt<CHAR_T>::Bytes2Characters (span<const byte>* from, span<CHAR_T> to) const -> span<CHAR_T>
     {
         AssertNotNull (fRep_);
-        Require (to.size () >= ComputeTargetCharacterBufferSize (*from));
+        Require (to.size () >= ComputeTargetCharacterBufferSize (*from) or to.size () >= Bytes2Characters (from));
         return fRep_->Bytes2Characters (from, to);
+    }
+    template <IUNICODECanAlwaysConvertTo CHAR_T>
+    inline auto CodeCvt<CHAR_T>::Characters2Bytes (span<const CHAR_T> from) const -> size_t
+    {
+        // quickie reference impl
+        Memory::StackBuffer<byte> to{ComputeTargetByteBufferSize (from)};
+        return fRep_->Characters2Bytes (from, span{to}).size ();
     }
     template <IUNICODECanAlwaysConvertTo CHAR_T>
     inline auto CodeCvt<CHAR_T>::Characters2Bytes (span<const CHAR_T> from, span<byte> to) const -> span<byte>
     {
         AssertNotNull (fRep_);
-        Require (to.size () >= ComputeTargetByteBufferSize (from));
+        Require (to.size () >= ComputeTargetByteBufferSize (from) or to.size () >= Characters2Bytes (from));
         return fRep_->Characters2Bytes (from, to);
     }
     template <IUNICODECanAlwaysConvertTo CHAR_T>
