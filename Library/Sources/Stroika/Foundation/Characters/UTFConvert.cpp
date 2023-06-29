@@ -617,13 +617,13 @@ namespace {
         {
             using namespace UTFConvert;
             switch (i) {
-                case std::codecvt_utf8_utf16<char16_t>::ok:
+                case std::codecvt_base::ok:
                     return UTFConverter::ConversionStatusFlag::ok;
-                case std::codecvt_utf8_utf16<char16_t>::error:
+                case std::codecvt_base::error:
                     return UTFConverter::ConversionStatusFlag::sourceIllegal;
-                case std::codecvt_utf8_utf16<char16_t>::partial:
+                case std::codecvt_base::partial:
                     return UTFConverter::ConversionStatusFlag::sourceExhausted; // not quite - couldbe target exhuasted?
-                case std::codecvt_utf8_utf16<char16_t>::noconv:
+                case std::codecvt_base::noconv:
                     return UTFConverter::ConversionStatusFlag::sourceIllegal; // not quite
                 default:
                     Assert (false);
@@ -643,7 +643,7 @@ namespace {
 
             const char*                                                sourceCursor = reinterpret_cast<const char*> (*sourceStart);
             char16_t*                                                  outCursor    = *targetStart;
-            [[maybe_unused]] std::codecvt_utf8_utf16<char16_t>::result rr =
+            [[maybe_unused]] std::codecvt_base::result                 rr =
                 cvt.in (ignoredMBState, reinterpret_cast<const char*> (*sourceStart), reinterpret_cast<const char*> (sourceEnd),
                         sourceCursor, *targetStart, targetEnd, outCursor);
             *sourceStart = reinterpret_cast<const char8_t*> (sourceCursor);
@@ -664,7 +664,7 @@ namespace {
             mbstate_t                                                  ignoredMBState{};
             const char16_t*                                            sourceCursor = *sourceStart;
             char*                                                      outCursor    = reinterpret_cast<char*> (*targetStart);
-            [[maybe_unused]] std::codecvt_utf8_utf16<char16_t>::result rr =
+            [[maybe_unused]] std::codecvt_base::result                 rr =
                 cvt.out (ignoredMBState, *sourceStart, sourceEnd, sourceCursor, reinterpret_cast<char*> (*targetStart),
                          reinterpret_cast<char*> (targetEnd), outCursor);
             *sourceStart = reinterpret_cast<const char16_t*> (sourceCursor);
