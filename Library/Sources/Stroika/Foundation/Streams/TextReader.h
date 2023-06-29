@@ -24,9 +24,6 @@
  *
  *      @todo   https://stroika.atlassian.net/browse/STK-487 - TextReader should have CTOR taking String as argument (so can be seekable)
  *
- *      @todo   https://stroika.atlassian.net/browse/STK-274 - TextWriter (and TextReader) should take optional codepage param and maybe overload taking locale
- *              Started - See Added TextReader CTOR overload calling LookupCodeConverter
- *
  *      @todo   DOCUMENT why we put ReadLine etc in InputStreamPtr, instead of here. Gist of why - though more
  *              logical here - requires no state - and so more flexible there. May reconsider.
  *              -- LGP 2015-07-06
@@ -99,10 +96,6 @@ namespace Stroika::Foundation::Streams {
 
     public:
         /**
-         * IF handed 'bytes' - the TextReader interprets the bytes (@todo add support for code page spec, and autodetect
-         * etc - https://stroika.atlassian.net/browse/STK-274). 
-         * If handled an InputStream<Character>::Ptr - it just passes through characters.
-         *
          *  Seekable defaults to true (for Stream and soon everything) since needed for ReadLines () and ReadLine, which is commonly used.
          *  For the constructor taking const InputStream<Character>::Ptr& src, the seekability mimics that of the original source.
          *  For the other constructors, they are seekable.

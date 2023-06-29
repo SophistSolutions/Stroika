@@ -217,7 +217,7 @@ namespace Stroika::Foundation::Characters {
                 fIntermediateVSFinalCHARCvt_.ConvertSpan (from, span<INTERMEDIATE_CHAR_T>{intermediateBuf.data (), intermediateBuf.size ()});
 
             // Then use fBytesVSIntermediateCvt_, no need to track anything in intermediateBuf, we require all used, no partials etc.
-            return fBytesVSIntermediateCvt_.Characters2Bytes (intermediateBuf, to);
+            return fBytesVSIntermediateCvt_.Characters2Bytes (intermediateSpan, to);
         }
         virtual size_t ComputeTargetCharacterBufferSize (variant<span<const byte>, size_t> src) const override
         {

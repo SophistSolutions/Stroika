@@ -171,6 +171,12 @@ namespace Stroika::Foundation::Characters {
          *          // or equivilently
          *          CodeCvt<char16_t> codeCvt4{"en_US.UTF8"};
          *      \endcode
+         * 
+         * 
+         *  @todo - ASSURE THESE 'locale-names' always work:
+         *      (case insensitive equals)
+         *          utf-8
+         *          ISO-8859-1
          */
         CodeCvt ();
         CodeCvt (const locale& l);
