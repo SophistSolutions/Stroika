@@ -323,6 +323,15 @@ namespace Stroika::Foundation::Memory {
         Invariant ();
     }
     template <typename T, size_t BUF_SIZE>
+    template <ISpanOfT<T> SPAN_T>
+    void StackBuffer<T, BUF_SIZE>::push_back (const SPAN_T& copyFrom)
+    {
+        // super simple first draft impl
+        for (auto i : copyFrom) {
+            push_back (i);
+        }
+    }
+    template <typename T, size_t BUF_SIZE>
     inline void StackBuffer<T, BUF_SIZE>::clear () noexcept
     {
         resize (0);

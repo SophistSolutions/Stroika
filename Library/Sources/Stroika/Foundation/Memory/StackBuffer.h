@@ -284,7 +284,14 @@ namespace Stroika::Foundation::Memory {
             requires (is_trivially_copyable_v<T>);
 
     public:
+        /**
+         *  With a single T argument, this is somewhat STLISH, but also takes overload of a span, so you can append multiple.
+         * 
+         *  \note ALIAS: Append
+         */
         nonvirtual void push_back (Configuration::ArgByValueType<T> e);
+        template <ISpanOfT<T> SPAN_T>
+        nonvirtual void push_back (const SPAN_T& copyFrom);
 
     public:
         /**
