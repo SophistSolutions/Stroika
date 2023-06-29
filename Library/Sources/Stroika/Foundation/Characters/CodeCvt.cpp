@@ -23,3 +23,5 @@ void Characters::Private_::ThrowErrorConvertingCharacters2Bytes_ ()
     static const auto kException_ = Execution::RuntimeErrorException{"Error converting characters to output format"sv};
     Execution::Throw (kException_);
 }
+
+string Characters::Private_::AsNarrowSDKString_ (const String& s) { return s.AsNarrowSDKString (); }

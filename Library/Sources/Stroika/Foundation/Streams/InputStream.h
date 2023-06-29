@@ -571,6 +571,9 @@ namespace Stroika::Foundation::Streams {
     public:
         /**
          *  @see InputStream<>::ReadNonBlocking () for the details of the read semantics.
+         * 
+         *  But roughly - if intoStart == nullptr, then just return number of elements readable, and dont read them.
+         *  If intoStart != nullptr, if elts available, read them (into intoStart) and return number read, else return nullopt;
          *
          *  For simple cases, where the amount of data available to read can be computed easily, just implement this as:
          *      \code

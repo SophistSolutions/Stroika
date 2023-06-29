@@ -8,6 +8,7 @@
 
 #include <optional>
 
+#include "../Characters/CodeCvt.h"
 #include "../Characters/UTFConvert.h"
 
 #include "InputStream.h"
@@ -92,6 +93,7 @@ namespace Stroika::Foundation::Streams {
 
     public:
         /**
+         * @todo DOCUMENT - NEED EXAMPLE - WHY???
          */
         static const Characters::UTFCodeConverter<Character> kDefaultUTFCoodeCoverter;
 
@@ -118,11 +120,9 @@ namespace Stroika::Foundation::Streams {
          *      \endcode
          *
          */
-        static Ptr New (const Memory::BLOB& src, const optional<Characters::String>& charset = nullopt);
+        static Ptr New (const Memory::BLOB& src, const Characters::CodeCvt<>& codeConverter = {});
         static Ptr New (const InputStream<byte>::Ptr& src, SeekableFlag seekable = SeekableFlag::eSeekable, ReadAhead readAhead = eReadAheadAllowed);
-        static Ptr New (const InputStream<byte>::Ptr& src, const optional<Characters::String>& charset,
-                        SeekableFlag seekable = SeekableFlag::eSeekable, ReadAhead readAhead = eReadAheadAllowed);
-        static Ptr New (const InputStream<byte>::Ptr& src, const codecvt<wchar_t, char, mbstate_t>& codeConverter,
+        static Ptr New (const InputStream<byte>::Ptr& src, const Characters::CodeCvt<>& codeConverter,
                         SeekableFlag seekable = SeekableFlag::eSeekable, ReadAhead readAhead = eReadAheadAllowed);
         static Ptr New (const InputStream<Character>::Ptr& src);
         static Ptr New (const Traversal::Iterable<Character>& src);
@@ -146,10 +146,6 @@ namespace Stroika::Foundation::Streams {
         [[deprecated ("Since Stroika v3.0d1 - just use InternallySynchronizedInputOutputStream directly ")]] static Ptr
         New (Execution::InternallySynchronized internallySynchronized, const InputStream<byte>::Ptr& src, const optional<Characters::String>& charset,
              SeekableFlag seekable = SeekableFlag::eSeekable, ReadAhead readAhead = eReadAheadAllowed);
-        [[deprecated ("Since Stroika v3.0d1 - just use InternallySynchronizedInputOutputStream directly ")]] static Ptr
-                   New (Execution::InternallySynchronized internallySynchronized, const InputStream<byte>::Ptr& src,
-                        const codecvt<wchar_t, char, mbstate_t>& codeConverter, SeekableFlag seekable = SeekableFlag::eSeekable,
-                        ReadAhead readAhead = eReadAheadAllowed);
         static Ptr New (Execution::InternallySynchronized internallySynchronized, const InputStream<Character>::Ptr& src);
         [[deprecated ("Since Stroika v3.0d1 - just use InternallySynchronizedInputOutputStream directly ")]] static Ptr
         New (Execution::InternallySynchronized internallySynchronized, const Traversal::Iterable<Character>& src);

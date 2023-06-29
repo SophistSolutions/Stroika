@@ -3,6 +3,7 @@
  */
 #include "../../../StroikaPreComp.h"
 
+#include "../../../Characters/CodeCvt.h"
 #include "../../../Characters/Format.h"
 #include "../../../Characters/StringBuilder.h"
 #include "../../../Characters/ToString.h"
@@ -85,7 +86,10 @@ InputStream<byte>::Ptr Response::GetDataBinaryInputStream () const
 InputStream<Character>::Ptr Response::GetDataTextInputStream () const
 {
     if (not fDataTextInputStream_.has_value ()) {
-        fDataTextInputStream_ = Streams::TextReader::New (GetDataBinaryInputStream (), GetCharset ());
+        // @todo NOTE - in Stroika v2.1  - this parameter to TextReader::New was treated as a 'charset' but since 3.0d1, its 
+        // a 'locale name'. I dont think the mapping between charset and locale names is well defined/portable. But IF ever needed to be adjusted/
+        // fixed, this is the place todo that mapping...
+        fDataTextInputStream_ = Streams::TextReader::New (GetDataBinaryInputStream (), GetCharset ()? Characters::CodeCvt<> {*GetCharset ()}: Characters::CodeCvt<>{});
     }
     return *fDataTextInputStream_;
 }

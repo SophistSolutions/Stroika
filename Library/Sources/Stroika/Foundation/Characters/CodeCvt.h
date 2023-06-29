@@ -23,6 +23,8 @@ namespace Stroika::Foundation::Characters {
 
     using namespace std;
 
+    class String; // forward declare to reference without deadly embrace
+
     /**
      *  \brief list of external UNICODE character encodings, for file IO (eDefault = eUTF8)
      */
@@ -172,7 +174,7 @@ namespace Stroika::Foundation::Characters {
          */
         CodeCvt ();
         CodeCvt (const locale& l);
-        CodeCvt (const string& localeName);
+        CodeCvt (const String& localeName);
         CodeCvt (UnicodeExternalEncodings e);
         template <IUNICODECanAlwaysConvertTo INTERMEDIATE_CHAR_T>
         CodeCvt (const CodeCvt<INTERMEDIATE_CHAR_T>& basedOn);

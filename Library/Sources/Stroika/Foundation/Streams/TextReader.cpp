@@ -3,6 +3,7 @@
  */
 #include "../StroikaPreComp.h"
 
+#include "../Characters/CodeCvt.h"
 #include "../Containers/Support/ReserveTweaks.h"
 #include "../Debug/AssertExternallySynchronizedMutex.h"
 #include "../Execution/Common.h"
@@ -23,21 +24,43 @@ using Memory::InlineBuffer;
 using Memory::StackBuffer;
 
 namespace {
-    using MyWCharTConverterType_ = codecvt<wchar_t, char, mbstate_t>;
+const auto kReadPartialCharacterAtEndOfBinaryStreamException_ =
+        Execution::RuntimeErrorException{"TextReader read partial character at end of binary input stream"sv};
 }
 
 class TextReader::FromBinaryStreamBaseRep_ : public InputStream<Character>::_IRep {
 public:
-    FromBinaryStreamBaseRep_ (const InputStream<byte>::Ptr& src, const MyWCharTConverterType_& charConverter)
+    FromBinaryStreamBaseRep_ (const InputStream<byte>::Ptr& src, const Characters::CodeCvt <> &charConverter)
         : _fSource{src}
         , _fCharConverter{charConverter}
     {
     }
 
 protected:
+    /*
+     *  In Read (Character* intoStart, Character* intoEnd) override,
+     *  if we have converted at least one character, but have leftover bytes read,
+     *  we must somehow backup binary read amount for next time - save 'multibyte' state
+     *
+     *  Two strategies: 
+     *      o   SEEK source back: quick/easiy buy maybe impossible (if source not seekable)
+     *      o   OR track 'extra stuff to prepend to next read' - and use that on next read.
+     * 
+     *  We COULD use the 'seek' approach by creating a wrapper class that introduced seekability so
+     *  we could assume it. But that would be costly - because it over-generalizes what we need. We need just very
+     *  limited seekability, and that is best captured by the second approach. And little point in two implementations
+     *  so just go with the second - since it will always work, and work fairly well (downside is a bit of extra code complexity here)
+     */
+    struct _ReadAheadCache {
+        SeekOffsetType        fFrom;    // save offset cuz cache only valid on reads from this offset (if subclass allowed seek)
+        InlineBuffer<byte, 8> fData;    // @todo UPDATE DOCS - AND LOGIC - CAN BE MORE THAN ONE CHARACTERS WORTH DUE TO READ NON BLOCKING WITH nullptr args!!!
+    };
+    optional<_ReadAheadCache> _fReadAheadCache;
+
+protected:
     virtual bool IsSeekable () const override
     {
-        return false; // but many subclasses implement seekability
+        return false; // but subclasses may implement seekability
     }
     virtual void CloseRead () override
     {
@@ -60,82 +83,152 @@ protected:
          *
          *  But always just return at least 1 char if we can, so if partial, and no full chars read, keep reading.
          *
-         *  Since number of wchar_ts filled always <= number of bytes read, we can read up to that # of bytes from upstream binary stream.
+         *  Since number of Characters filled always <= number of bytes read, we can read up to that # of bytes from upstream binary stream.
          */
-        StackBuffer<wchar_t, 8 * 1024>                  outBuf{Memory::eUninitialized, static_cast<size_t> (intoEnd - intoStart)};
-        wchar_t*                                        outCursor = begin (outBuf);
         AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
         {
-            StackBuffer<byte, 8 * 1024> inBuf{Memory::eUninitialized, size_t (intoEnd - intoStart)}; // wag at size
-            size_t                      inBytes = _fSource.Read (begin (inBuf), end (inBuf));
+            size_t                      readAtMostCharacters = size_t (intoEnd - intoStart);    // must read at least one character, and no more than (intoEnd - intoStart)
+            StackBuffer<byte, 8 * 1024> inBuf{Memory::eUninitialized, readAtMostCharacters};
+            if (_fReadAheadCache and _fReadAheadCache->fFrom == this->_fOffset) {
+                // If _fReadAheadCache present, may contain enuf bytes for a full character, so don't do another
+                // blocking read as it MAY not be necessary, and if it is, will be caught in existing logic for 'again' not enuf data
+                inBuf = span<byte>{_fReadAheadCache->fData};
+            }
+            else {
+                inBuf.ShrinkTo (_fSource.Read (begin (inBuf), end (inBuf)));
+            }
         again:
-            const char* firstB = reinterpret_cast<const char*> (begin (inBuf));
-            const char* endB   = firstB + inBytes;
-            Assert (endB <= reinterpret_cast<const char*> (end (inBuf)));
-            const char* cursorB = firstB;
-            mbstate_t   mbState = mbstate_t{};
-            codecvt_utf8<wchar_t>::result r = _fCharConverter.in (mbState, firstB, endB, cursorB, std::begin (outBuf), std::end (outBuf), outCursor);
-            Assert (std::begin (outBuf) <= outCursor and outCursor <= std::end (outBuf));
-            switch (r) {
-                case codecvt_utf8<wchar_t>::partial: {
-                    // see if we can read more from binary source
-                    size_t prevInBufSize = inBuf.size ();
-                    inBuf.GrowToSize_uninitialized (prevInBufSize + 1);
-                    size_t thisReadNBytes = _fSource.Read (begin (inBuf) + prevInBufSize, end (inBuf));
-                    if (thisReadNBytes != 0) {
-                        outCursor = begin (outBuf);
-                        inBytes += thisReadNBytes;
-                        goto again;
-                    }
-                } break;
-                case codecvt_utf8<wchar_t>::error: {
-                    Execution::Throw (Execution::RuntimeErrorException{"Error converting characters codepage"sv});
+            span<const byte> binarySrcSpan{inBuf};
+            span<Character>  targetBuf{intoStart, intoEnd};
+            Assert (_fCharConverter.ComputeTargetCharacterBufferSize (inBuf.size ()) <= targetBuf.size ()); // just because _fCharConverter will require this
+            span<Character> convertedCharacters = _fCharConverter.Bytes2Characters (&binarySrcSpan, targetBuf);
+            if (binarySrcSpan.empty ()) {
+                // then we got data - already copied into intoStart (part of target span) - so just return the number of characters read
+                Assert (convertedCharacters.size () <= targetBuf.size ());
+                _fOffset += convertedCharacters.size ();
+                return convertedCharacters.size ();
+            }
+            else if (convertedCharacters.empty ()) {
+                // We have zero convertedCharacters, so apparently not enough bytes read. Read one more, and try again.
+                byte b;
+                if (_fSource.Read (&b, &b + 1) == 1) {
+                    inBuf.push_back (b);
+                    goto again;
+                }
+                else {
+                    // if we read EOF, and have a partial character read, thats an error - so throw
+                    Execution::Throw (kReadPartialCharacterAtEndOfBinaryStreamException_);
                 }
             }
-            Assert (end (outBuf) - outCursor <= (intoEnd - intoStart)); // no overflow of output buffer - must be able to store all the results into arguments
+            else  {
+                Assert (not binarySrcSpan.empty () and not convertedCharacters.empty ());
+                Assert (convertedCharacters.size () <= targetBuf.size ());
+                _fOffset += convertedCharacters.size ();    // complete the read
+                // Save the extra bytes for next time (with the offset where those bytes come from)
+                _fReadAheadCache.emplace (_ReadAheadCache{.fFrom = _fOffset, .fData = binarySrcSpan});
+                return convertedCharacters.size ();
+            }
         }
-        Character* resultCharP = intoStart;
-        for (const wchar_t* p = std::begin (outBuf); p < outCursor; ++p) {
-            Assert (resultCharP < intoEnd);
-            *resultCharP = *p;
-            ++resultCharP;
-        }
-        size_t n = resultCharP - intoStart;
-        _fOffset += n;
-        Ensure (n != 0 or not _fSource.Read ().has_value ()); // if we read no characters, upstream binary source must be at EOF
-        return n;
+        return 0;
     }
 
     virtual optional<size_t> ReadNonBlocking (Character* intoStart, Character* intoEnd) override
     {
+        /// @todo hANDLE intoStart==nullptr case!!!
         Require ((intoStart == intoEnd) or (intoStart != nullptr));
         Require ((intoStart == intoEnd) or (intoEnd != nullptr));
         Require (IsOpenRead ());
         // Plan:
-        //      o   ReadNonBlocking upstream
-        //      o   save existing decode state
+        //      o   ReadNonBlocking upstream (or grab from _fReadAheadCache)
         //      o   decode and see if at least one character
-        //      o   fall through to _ReadNonBlocking_ReferenceImplementation_ForNonblockingUpstream
-        StackBuffer<byte> inBuf{Memory::eUninitialized, 10}; // enuf to get at least one charcter decoded (wag at number - but enuf for BOM+one char)
-        optional<size_t> inBytes = _fSource.ReadNonBlocking (begin (inBuf), end (inBuf));
-        if (inBytes) {
-            if (*inBytes == 0) {
-                return 0; // EOF - other than zero read bytes COULD mean unknown if EOF or not
+        //      o   if need more data to decode, try 'again' and grab more bytes.
+        AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
+        {
+            size_t readAtMostCharacters = size_t (intoEnd - intoStart); // must read at least one character, and no more than (intoEnd - intoStart)
+            StackBuffer<byte, 8 * 1024> inBuf{Memory::eUninitialized, readAtMostCharacters};
+            {
+                bool atEOF = false;
+                if (_fReadAheadCache and _fReadAheadCache->fFrom == this->_fOffset) {
+                    inBuf = span<byte>{_fReadAheadCache->fData};
+                    // ReadNonBlocking probably needed, but may not be. But since non blocking, its harmless, so try it
+                    if (readAtMostCharacters > inBuf.size ()) {
+                        StackBuffer<byte> buf{Memory::eUninitialized, readAtMostCharacters - inBuf.size ()};
+                        if (auto o = _fSource.ReadNonBlocking (begin (buf), end (buf))) {
+                            atEOF = *o == 0;
+                            inBuf.push_back (span{buf.data (), *o});
+                        }
+                    }
+                }
+                else {
+                    if (auto o = _fSource.ReadNonBlocking (begin (inBuf), end (inBuf))) {
+                        atEOF = *o == 0;
+                        inBuf.ShrinkTo (*o);
+                    }
+                }
+                if (atEOF) {
+                    if (inBuf.size () != 0) {
+                        Execution::Throw (kReadPartialCharacterAtEndOfBinaryStreamException_);
+                    }
+                    return 0;
+                }
             }
-            const char* firstB = reinterpret_cast<const char*> (begin (inBuf));
-            const char* endB   = firstB + *inBytes;
-            Assert (endB <= reinterpret_cast<const char*> (end (inBuf)));
-            const char* cursorB = firstB;
-            mbstate_t   mbState = mbstate_t{};
-            wchar_t     outChar;
-            wchar_t*    outCursor = &outChar;
-            [[maybe_unused]] codecvt_utf8<wchar_t>::result r = _fCharConverter.in (mbState, firstB, endB, cursorB, &outChar, &outChar + 1, outCursor);
-            // we could read one byte upstream, but not ENOUGH to get a full character output!
-            if (outCursor != &outChar) {
-                return _ReadNonBlocking_ReferenceImplementation_ForNonblockingUpstream (intoStart, intoEnd, 1);
+            again:
+            span<const byte> binarySrcSpan{inBuf};
+            if (intoStart == nullptr) {
+                // tricky case. Must possibly do several binary reads til we have enuf for a character, and then return
+                // one for that case, but must save away the read bits (_fReadAheadCache).
+                auto cs =_fCharConverter.Bytes2Characters (binarySrcSpan);
+                if (cs == 0) {
+                    byte b{};
+                    if (auto o = _fSource.ReadNonBlocking (&b, &b+1)) {
+                        inBuf.push_back (b);
+                        goto again;
+                    }
+                    else {
+                        // (re-)save _fReadAheadCache and return null cuz no character ready yet
+                        _fReadAheadCache.emplace (_ReadAheadCache{.fFrom = _fOffset, .fData = binarySrcSpan});
+                        return nullopt;
+                    }
+                }
+                return cs;
+            }
+            else {
+                span<Character> targetBuf{intoStart, intoEnd};
+                Assert (_fCharConverter.ComputeTargetCharacterBufferSize (inBuf.size ()) <= targetBuf.size ()); // just because _fCharConverter will require this
+                span<Character> convertedCharacters = _fCharConverter.Bytes2Characters (&binarySrcSpan, targetBuf);
+                if (binarySrcSpan.empty ()) {
+                    // then we got data - already copied into intoStart (part of target span) - so just return the number of characters read
+                    Assert (convertedCharacters.size () <= targetBuf.size ());
+                    _fOffset += convertedCharacters.size ();
+                    return convertedCharacters.size ();
+                }
+                else if (convertedCharacters.empty ()) {
+                    // We have zero convertedCharacters, so apparently not enough bytes read. Read one more, and try again.
+                    byte b;
+                    if (auto o = _fSource.ReadNonBlocking (&b, &b + 1)) {
+                        if (*o == 1) {
+                            inBuf.push_back (b);
+                            goto again;
+                        }
+                        else {
+                            // if we read EOF, and have a partial character read, thats an error - so throw
+                            Execution::Throw (kReadPartialCharacterAtEndOfBinaryStreamException_);
+                        }
+                    }
+                    else {
+                        return nullopt; // need more bytes, not at EOF, and bytes not ready
+                    }
+                }
+                else {
+                    Assert (not binarySrcSpan.empty () and not convertedCharacters.empty ());
+                    Assert (convertedCharacters.size () <= targetBuf.size ());
+                    _fOffset += convertedCharacters.size (); // complete the read
+                    // Save the extra bytes for next time (with the offset where those bytes come from)
+                    _fReadAheadCache.emplace (_ReadAheadCache{.fFrom = _fOffset, .fData = binarySrcSpan});
+                    return convertedCharacters.size ();
+                }
             }
         }
-        return {};
     }
 
     virtual SeekOffsetType GetReadOffset () const override
@@ -155,7 +248,7 @@ protected:
 
 protected:
     InputStream<byte>::Ptr                                         _fSource;
-    const MyWCharTConverterType_&                                  _fCharConverter;
+     const Characters::CodeCvt<Character>                           _fCharConverter;
     SeekOffsetType                                                 _fOffset{0};
     [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
 };
@@ -164,7 +257,7 @@ class TextReader::UnseekableBinaryStreamRep_ final : public FromBinaryStreamBase
     using inherited = FromBinaryStreamBaseRep_;
 
 public:
-    UnseekableBinaryStreamRep_ (const InputStream<byte>::Ptr& src, const MyWCharTConverterType_& charConverter)
+    UnseekableBinaryStreamRep_ (const InputStream<byte>::Ptr& src, const Characters::CodeCvt<char32_t>& charConverter)
         : inherited{src, charConverter}
     {
     }
@@ -174,7 +267,7 @@ class TextReader::CachingSeekableBinaryStreamRep_ final : public FromBinaryStrea
     using inherited = FromBinaryStreamBaseRep_;
 
 public:
-    CachingSeekableBinaryStreamRep_ (const InputStream<byte>::Ptr& src, const MyWCharTConverterType_& charConverter, ReadAhead readAhead)
+    CachingSeekableBinaryStreamRep_ (const InputStream<byte>::Ptr& src, const Characters::CodeCvt<char32_t>&  charConverter, ReadAhead readAhead)
         : FromBinaryStreamBaseRep_{src, charConverter}
         , fReadAheadAllowed_{readAhead == ReadAhead::eReadAheadAllowed}
     {
@@ -315,6 +408,7 @@ private:
     InlineBuffer<Character> fCache_; // Cache uses wchar_t instead of Character so can use resize_uninitialized () - requires is_trivially_constructible
 };
 
+// Simply iterate over the 'iterable' of characacters, but allow seekability (by saving original iteration start)
 class TextReader::IterableAdapterStreamRep_ final : public InputStream<Character>::_IRep {
 public:
     IterableAdapterStreamRep_ (const Traversal::Iterable<Character>& src)
@@ -460,42 +554,30 @@ private:
  ******************************* Streams::TextReader ****************************
  ********************************************************************************
  */
-namespace {
-    const codecvt_utf8<wchar_t> kUTF8Converter_; // safe to keep static because only read-only const methods used
-}
-
-namespace {
-    const MyWCharTConverterType_& LookupCharsetConverter_ (const optional<Characters::String>& charset)
-    {
-        if (not charset.has_value ()) {
-            return kUTF8Converter_; // not sure this is best? HTTP 1.1 spec says to default to ISO-8859-1
-        }
-        return Characters::LookupCodeConverter<wchar_t> (*charset);
-    }
-}
-
-auto TextReader::New (const Memory::BLOB& src, const optional<Characters::String>& charset) -> Ptr
+auto TextReader::New (const Memory::BLOB& src, const Characters::CodeCvt<>& codeConverter) -> Ptr
 {
-    Ptr p = TextReader::New (src.As<InputStream<byte>::Ptr> (), charset, SeekableFlag::eSeekable);
+    Ptr p = TextReader::New (src.As<InputStream<byte>::Ptr> (), codeConverter, SeekableFlag::eSeekable);
     Ensure (p.IsSeekable ());
     return p;
 }
 
 auto TextReader::New (const InputStream<byte>::Ptr& src, SeekableFlag seekable, ReadAhead readAhead) -> Ptr
 {
-    Ptr p = TextReader::New (src, kUTF8Converter_, seekable, readAhead);
+    Ptr p = TextReader::New (src, Characters::UnicodeExternalEncodings::eUTF8, seekable, readAhead);
     Ensure (p.GetSeekability () == seekable);
     return p;
 }
-
-auto TextReader::New (const InputStream<byte>::Ptr& src, const optional<Characters::String>& charset, SeekableFlag seekable, ReadAhead readAhead) -> Ptr
+#if 0
+auto TextReader::New (const InputStream<byte>::Ptr& src, const optional<Characters::String>& localeName, SeekableFlag seekable, ReadAhead readAhead) -> Ptr
 {
-    Ptr p = TextReader::New (src, LookupCharsetConverter_ (charset), seekable, readAhead);
+    Ptr p = localeName ? TextReader::New (src, Characters::CodeCvt<char32_t> (localeName->AsNarrowSDKString ()), seekable, readAhead)
+                    : New (src, seekable, readAhead);
     Ensure (p.GetSeekability () == seekable);
     return p;
 }
+#endif
 
-auto TextReader::New (const InputStream<byte>::Ptr& src, const codecvt<wchar_t, char, mbstate_t>& codeConverter, SeekableFlag seekable,
+auto TextReader::New (const InputStream<byte>::Ptr& src, const Characters::CodeCvt<>& codeConverter, SeekableFlag seekable,
                       ReadAhead readAhead) -> Ptr
 {
     Ptr p = (seekable == SeekableFlag::eSeekable) ? Ptr{make_shared<CachingSeekableBinaryStreamRep_> (src, codeConverter, readAhead)}
@@ -532,16 +614,17 @@ auto TextReader::New (Execution::InternallySynchronized internallySynchronized, 
 
 auto TextReader::New (Execution::InternallySynchronized internallySynchronized, const Memory::BLOB& src, const optional<Characters::String>& charset) -> Ptr
 {
+    auto codeCvt = charset ? Characters::CodeCvt<>{charset->AsNarrowSDKString ()} : Characters::CodeCvt<>{};
     switch (internallySynchronized) {
         case Execution::eInternallySynchronized:
             AssertNotImplemented ();
             //return InternalSyncRep_::New ();
-            return New (src, charset);
+            return New (src, codeCvt);
         case Execution::eNotKnownInternallySynchronized:
-            return New (src, charset);
+            return New (src, codeCvt);
         default:
             RequireNotReached ();
-            return New (src, charset);
+            return New (src, codeCvt);
     }
 }
 
@@ -564,32 +647,17 @@ auto TextReader::New (Execution::InternallySynchronized internallySynchronized, 
 auto TextReader::New (Execution::InternallySynchronized internallySynchronized, const InputStream<byte>::Ptr& src,
                       const optional<Characters::String>& charset, SeekableFlag seekable, ReadAhead readAhead) -> Ptr
 {
+    auto codeCvt = charset ? Characters::CodeCvt<>{charset->AsNarrowSDKString ()} : Characters::CodeCvt<>{};
     switch (internallySynchronized) {
         case Execution::eInternallySynchronized:
             AssertNotImplemented ();
             //return InternalSyncRep_::New ();
-            return New (src, charset, seekable, readAhead);
+            return New (src, codeCvt, seekable, readAhead);
         case Execution::eNotKnownInternallySynchronized:
-            return New (src, charset, seekable, readAhead);
+            return New (src, codeCvt, seekable, readAhead);
         default:
             RequireNotReached ();
-            return New (src, charset, seekable, readAhead);
-    }
-}
-
-auto TextReader::New (Execution::InternallySynchronized internallySynchronized, const InputStream<byte>::Ptr& src,
-                      const codecvt<wchar_t, char, mbstate_t>& codeConverter, SeekableFlag seekable, ReadAhead readAhead) -> Ptr
-{
-    switch (internallySynchronized) {
-        case Execution::eInternallySynchronized:
-            AssertNotImplemented ();
-            //return InternalSyncRep_::New ();
-            return New (src, codeConverter, seekable, readAhead);
-        case Execution::eNotKnownInternallySynchronized:
-            return New (src, codeConverter, seekable, readAhead);
-        default:
-            RequireNotReached ();
-            return New (src, codeConverter, seekable, readAhead);
+            return New (src, codeCvt, seekable, readAhead);
     }
 }
 
