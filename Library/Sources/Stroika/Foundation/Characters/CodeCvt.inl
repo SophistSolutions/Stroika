@@ -420,8 +420,9 @@ namespace Stroika::Foundation::Characters {
     template <IUNICODECanAlwaysConvertTo CHAR_T>
     inline auto CodeCvt<CHAR_T>::Bytes2Characters (span<const byte>* from, span<CHAR_T> to) const -> span<CHAR_T>
     {
+        RequireNotNull (from);
         AssertNotNull (fRep_);
-        Require (to.size () >= ComputeTargetCharacterBufferSize (*from) or to.size () >= Bytes2Characters (from));
+        Require (to.size () >= ComputeTargetCharacterBufferSize (*from) or to.size () >= Bytes2Characters (*from)); // ComputeTargetCharacterBufferSize cheaper to compute
         return fRep_->Bytes2Characters (from, to);
     }
     template <IUNICODECanAlwaysConvertTo CHAR_T>
@@ -435,7 +436,7 @@ namespace Stroika::Foundation::Characters {
     inline auto CodeCvt<CHAR_T>::Characters2Bytes (span<const CHAR_T> from, span<byte> to) const -> span<byte>
     {
         AssertNotNull (fRep_);
-        Require (to.size () >= ComputeTargetByteBufferSize (from) or to.size () >= Characters2Bytes (from));
+        Require (to.size () >= ComputeTargetByteBufferSize (from) or to.size () >= Characters2Bytes (from));     // ComputeTargetByteBufferSize cheaper to compute
         return fRep_->Characters2Bytes (from, to);
     }
     template <IUNICODECanAlwaysConvertTo CHAR_T>
