@@ -11,6 +11,22 @@ using namespace Stroika;
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
 
+
+ namespace  {
+    // crazy - from https://en.cppreference.com/w/cpp/locale/codecvt
+    template <typename FACET>
+    struct deletable_facet_ : FACET {
+        template <typename... Args>
+        deletable_facet_ (Args&&... args)
+            : FACET{forward<Args> (args)...}
+        {
+        }
+        ~deletable_facet_ () {}
+    };
+}
+
+
+
 /**
  *  BASED on
  *      https://github.com/codebrainz/libutfxx/blob/master/utf/ConvertUTF.h
@@ -610,20 +626,19 @@ namespace {
     }
 }
 
-#if 1
 namespace {
-    namespace UTFConvert_codecvSupport_ {
+    namespace UTFConvert_codecvtSupport_ {
         inline UTFConverter::ConversionStatusFlag cvt_stdcodecvt_results_ (int i)
         {
             using namespace UTFConvert;
             switch (i) {
-                case std::codecvt_base::ok:
+                case codecvt_base::ok:
                     return UTFConverter::ConversionStatusFlag::ok;
-                case std::codecvt_base::error:
+                case codecvt_base::error:
                     return UTFConverter::ConversionStatusFlag::sourceIllegal;
-                case std::codecvt_base::partial:
+                case codecvt_base::partial:
                     return UTFConverter::ConversionStatusFlag::sourceExhausted; // not quite - couldbe target exhuasted?
-                case std::codecvt_base::noconv:
+                case codecvt_base::noconv:
                     return UTFConverter::ConversionStatusFlag::sourceIllegal; // not quite
                 default:
                     Assert (false);
@@ -633,92 +648,61 @@ namespace {
         inline UTFConverter::ConversionStatusFlag ConvertUTF8toUTF16_codecvt_ (const char8_t** sourceStart, const char8_t* sourceEnd,
                                                                                char16_t** targetStart, char16_t* targetEnd)
         {
-            DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
-            DISABLE_COMPILER_MSC_WARNING_START (4996); // warning STL4020: std::codecvt<char16_t, char, mbstate_t> DEPRECATED
-            // SIGH - DEPRECATED but ALSO more than twice as slow as my (lifted) implementation (not sure why - looks similar).
-            //      --LGP 2022-12-17
-            //  https://en.cppreference.com/w/cpp/locale/codecvt_utf8_utf16
-            static const std::codecvt_utf8_utf16<char16_t> cvt;
+            static const deletable_facet_<codecvt<char16_t, char8_t, mbstate_t>> cvt;
             mbstate_t                                      ignoredMBState{};
 
-            const char*                                                sourceCursor = reinterpret_cast<const char*> (*sourceStart);
+            const char8_t*                                                sourceCursor = *sourceStart;
             char16_t*                                                  outCursor    = *targetStart;
-            [[maybe_unused]] std::codecvt_base::result                 rr =
-                cvt.in (ignoredMBState, reinterpret_cast<const char*> (*sourceStart), reinterpret_cast<const char*> (sourceEnd),
+            codecvt_base::result                 rr =
+                cvt.in (ignoredMBState, *sourceStart, sourceEnd,
                         sourceCursor, *targetStart, targetEnd, outCursor);
             *sourceStart = reinterpret_cast<const char8_t*> (sourceCursor);
             *targetStart = outCursor;
             return cvt_stdcodecvt_results_ (rr);
-            DISABLE_COMPILER_MSC_WARNING_END (4996);
-            DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
         }
         inline UTFConverter::ConversionStatusFlag ConvertUTF16toUTF8_codecvt_ (const char16_t** sourceStart, const char16_t* sourceEnd,
                                                                                char8_t** targetStart, char8_t* targetEnd)
         {
-            DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
-            DISABLE_COMPILER_MSC_WARNING_START (4996); // warning STL4020: std::codecvt<char16_t, char, mbstate_t> DEPRECATED
-            // SIGH - DEPRECATED but ALSO more than twice as slow as my (lifted) implementation (not sure why - looks similar).
-            //      --LGP 2022-12-17
-            //  https://en.cppreference.com/w/cpp/locale/codecvt_utf8_utf16
-            static const std::codecvt_utf8_utf16<char16_t>             cvt;
+            static const deletable_facet_<codecvt<char16_t, char8_t, mbstate_t>> cvt;
             mbstate_t                                                  ignoredMBState{};
             const char16_t*                                            sourceCursor = *sourceStart;
-            char*                                                      outCursor    = reinterpret_cast<char*> (*targetStart);
-            [[maybe_unused]] std::codecvt_base::result                 rr =
-                cvt.out (ignoredMBState, *sourceStart, sourceEnd, sourceCursor, reinterpret_cast<char*> (*targetStart),
-                         reinterpret_cast<char*> (targetEnd), outCursor);
+            char8_t*                                                                  outCursor    = *targetStart;
+           codecvt_base::result                 rr =
+                cvt.out (ignoredMBState, *sourceStart, sourceEnd, sourceCursor, *targetStart,
+                         targetEnd, outCursor);
             *sourceStart = reinterpret_cast<const char16_t*> (sourceCursor);
             *targetStart = reinterpret_cast<char8_t*> (outCursor);
             return cvt_stdcodecvt_results_ (rr);
-            DISABLE_COMPILER_MSC_WARNING_END (4996);
-            DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
         }
         inline UTFConverter::ConversionStatusFlag ConvertUTF8toUTF32_codecvt_ (const char8_t** sourceStart, const char8_t* sourceEnd,
                                                                                char32_t** targetStart, char32_t* targetEnd)
         {
-            DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
-            DISABLE_COMPILER_MSC_WARNING_START (4996); // warning STL4020: std::codecvt<char16_t, char, mbstate_t> DEPRECATED
-            // SIGH - DEPRECATED but ALSO more than twice as slow as my (lifted) implementation (not sure why - looks similar).
-            //      --LGP 2022-12-17
-            //  https://en.cppreference.com/w/cpp/locale/codecvt_utf8_utf16
-            static const std::codecvt_utf8_utf16<char32_t> cvt;
+            static const deletable_facet_<codecvt<char32_t, char8_t, mbstate_t>> cvt;
             mbstate_t                                      ignoredState{};
 
-            const char*                                                sourceCursor = reinterpret_cast<const char*> (*sourceStart);
+            const char8_t*                                                sourceCursor = *sourceStart;
             char32_t*                                                  outCursor    = *targetStart;
-            [[maybe_unused]] std::codecvt_utf8_utf16<char32_t>::result rr =
-                cvt.in (ignoredState, reinterpret_cast<const char*> (*sourceStart), reinterpret_cast<const char*> (sourceEnd), sourceCursor,
+            codecvt_base::result                 rr =
+                cvt.in (ignoredState, *sourceStart, sourceEnd, sourceCursor,
                         *targetStart, targetEnd, outCursor);
             *sourceStart = reinterpret_cast<const char8_t*> (sourceCursor);
             *targetStart = outCursor;
             return cvt_stdcodecvt_results_ (rr);
-            DISABLE_COMPILER_MSC_WARNING_END (4996);
-            DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
         }
         inline UTFConverter::ConversionStatusFlag ConvertUTF32toUTF8_codecvt_ (const char32_t** sourceStart, const char32_t* sourceEnd,
                                                                                char8_t** targetStart, char8_t* targetEnd)
         {
-            DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
-            DISABLE_COMPILER_MSC_WARNING_START (4996); // warning STL4020: std::codecvt<char16_t, char, mbstate_t> DEPRECATED
-            // SIGH - DEPRECATED but ALSO more than twice as slow as my (lifted) implementation (not sure why - looks similar).
-            //      --LGP 2022-12-17
-            //  https://en.cppreference.com/w/cpp/locale/codecvt_utf8_utf16
-            static const std::codecvt_utf8<char32_t>             cvt;
-            mbstate_t                                            ignoredState{};
+            static const deletable_facet_<codecvt<char32_t, char8_t, mbstate_t>> cvt;
+            mbstate_t                                                            ignoredState{};
             const char32_t*                                      sourceCursor = *sourceStart;
-            char*                                                outCursor    = reinterpret_cast<char*> (*targetStart);
-            [[maybe_unused]] std::codecvt_utf8<char32_t>::result rr =
-                cvt.out (ignoredState, *sourceStart, sourceEnd, sourceCursor, reinterpret_cast<char*> (*targetStart),
-                         reinterpret_cast<char*> (targetEnd), outCursor);
+            char8_t*                                                outCursor    = *targetStart;
+            codecvt_base::result           rr = cvt.out (ignoredState, *sourceStart, sourceEnd, sourceCursor, *targetStart,   targetEnd, outCursor);
             *sourceStart = reinterpret_cast<const char32_t*> (sourceCursor);
             *targetStart = reinterpret_cast<char8_t*> (outCursor);
             return cvt_stdcodecvt_results_ (rr);
-            DISABLE_COMPILER_MSC_WARNING_END (4996);
-            DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
         }
     }
 }
-#endif
 
 /*
  ********************************************************************************
@@ -767,12 +751,11 @@ auto UTFConverter::ConvertQuietly_StroikaPortable_ (span<const char16_t> source,
     return ConvertQuietly_StroikaPortable_helper_ (source, target, UTFConvert_libutfxx_::ConvertUTF16toUTF8_);
 }
 
-#if 1
 namespace {
     template <typename IN_T, typename OUT_T, typename FUN2DO_REAL_WORK>
     inline auto ConvertQuietly_codeCvt_helper_ (span<const IN_T> source, const span<OUT_T> target, FUN2DO_REAL_WORK&& realWork) -> ConversionResultWithStatus
     {
-        using namespace UTFConvert_codecvSupport_;
+        using namespace UTFConvert_codecvtSupport_;
         const IN_T*          sourceStart = reinterpret_cast<const IN_T*> (source.data ());
         const IN_T*          sourceEnd   = sourceStart + source.size ();
         OUT_T*               targetStart = reinterpret_cast<OUT_T*> (target.data ());
@@ -790,21 +773,21 @@ namespace {
 }
 auto UTFConverter::ConvertQuietly_codeCvt_ (span<const char8_t> source, span<char16_t> target) -> ConversionResultWithStatus
 {
-    return ConvertQuietly_codeCvt_helper_ (source, target, UTFConvert_codecvSupport_::ConvertUTF8toUTF16_codecvt_);
+    return ConvertQuietly_codeCvt_helper_ (source, target, UTFConvert_codecvtSupport_::ConvertUTF8toUTF16_codecvt_);
 }
 auto UTFConverter::ConvertQuietly_codeCvt_ (span<const char16_t> source, span<char8_t> target) -> ConversionResultWithStatus
 {
-    return ConvertQuietly_codeCvt_helper_ (source, target, UTFConvert_codecvSupport_::ConvertUTF16toUTF8_codecvt_);
+    return ConvertQuietly_codeCvt_helper_ (source, target, UTFConvert_codecvtSupport_::ConvertUTF16toUTF8_codecvt_);
 }
 auto UTFConverter::ConvertQuietly_codeCvt_ (span<const char8_t> source, span<char32_t> target) -> ConversionResultWithStatus
 {
-    return ConvertQuietly_codeCvt_helper_ (source, target, UTFConvert_codecvSupport_::ConvertUTF8toUTF32_codecvt_);
+    return ConvertQuietly_codeCvt_helper_ (source, target, UTFConvert_codecvtSupport_::ConvertUTF8toUTF32_codecvt_);
 }
 auto UTFConverter::ConvertQuietly_codeCvt_ (span<const char32_t> source, span<char8_t> target) -> ConversionResultWithStatus
 {
-    return ConvertQuietly_codeCvt_helper_ (source, target, UTFConvert_codecvSupport_::ConvertUTF32toUTF8_codecvt_);
+    return ConvertQuietly_codeCvt_helper_ (source, target, UTFConvert_codecvtSupport_::ConvertUTF32toUTF8_codecvt_);
 }
-#endif
+
 
 void UTFConverter::Throw (ConversionStatusFlag cr)
 {
