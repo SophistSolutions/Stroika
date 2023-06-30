@@ -27,11 +27,12 @@ namespace Stroika::Foundation::Containers::LockFreeDataStructures {
     template <typename U>
     class forward_list<T>::ForwardIterator_ {
         friend class forward_list;
-        node_*                            current;
-        typedef std::forward_iterator_tag iterator_category;
-        typedef U                         value_type;
-        typedef U&                        reference;
-        typedef U*                        pointer;
+        node_* current;
+        using iterator_category = std::forward_iterator_tag;
+        using value_type        = U;
+        using reference         = U&;
+        using pointer           = U*;
+        //using difference_type = ptrdiff_t;    // doesn't work cuz we dont support operator- on iterators (not sure what it should do?)
 
     public:
         ForwardIterator_ ()
@@ -114,6 +115,7 @@ namespace Stroika::Foundation::Containers::LockFreeDataStructures {
              operator ForwardIterator_<const T> () const { return ForwardIterator_<const T> (current); }
         bool operator== (const ForwardIterator_& rhs) const { return current == rhs.current; }
     };
+    // static_assert (weakly_incrementable<forward_list<int>::const_iterator>); // fails cuz cannot take difference of two iterators...
 
     /*
      ********************************************************************************

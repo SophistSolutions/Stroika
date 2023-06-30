@@ -233,6 +233,22 @@ namespace Stroika::Foundation::Containers::LockFreeDataStructures {
 
     public:
         /**
+         * DRAFT IMPL - needed for test use
+         * NOT lock free
+         * untested, and unsure if I have off by one issue
+         */
+        nonvirtual bool remove (T value)
+        {
+            for (auto i = begin (); i != this->end (); ++i) {
+                if ((i + 1) != this->end () and *i == value) {
+                    T ignored{};
+                    this->erase_after (i, &ignored);
+                }
+            }
+        }
+
+    public:
+        /**
          *  @see https://en.cppreference.com/w/cpp/container/forward_list/erase_after
          * 
          *  <<@todo fix - wrong API - sb two overloads and this is neither)
