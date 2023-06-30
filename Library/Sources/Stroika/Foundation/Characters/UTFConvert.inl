@@ -55,7 +55,6 @@ namespace Stroika::Foundation::Characters {
         }
     }
     inline constexpr UTFConverter UTFConverter::kThe;
-
     template <IUNICODECanUnambiguouslyConvertFrom CHAR_T>
     constexpr optional<size_t> UTFConverter::NextCharacter (span<const CHAR_T> s)
     {
@@ -106,7 +105,6 @@ namespace Stroika::Foundation::Characters {
         AssertNotReached ();
         return nullopt;
     }
-
     template <IUNICODECanUnambiguouslyConvertFrom CHAR_T>
     constexpr optional<size_t> UTFConverter::ComputeCharacterLength (span<const CHAR_T> s)
     {
@@ -126,7 +124,6 @@ namespace Stroika::Foundation::Characters {
             return nullopt; // didn't end evenly at end of span, so something went wrong
         }
     }
-
     template <IUNICODECanUnambiguouslyConvertFrom TO, IUNICODECanUnambiguouslyConvertFrom FROM>
     constexpr size_t UTFConverter::ComputeTargetBufferSize (size_t srcSize)
     {
@@ -224,7 +221,6 @@ namespace Stroika::Foundation::Characters {
     {
         return ComputeTargetBufferSize<TO> (Memory::ConstSpan (src));
     }
-
     template <IUNICODECanUnambiguouslyConvertFrom CHAR_T>
     constexpr bool UTFConverter::AllFitsInTwoByteEncoding (span<const CHAR_T> s) noexcept
     {
@@ -265,7 +261,6 @@ namespace Stroika::Foundation::Characters {
         }
         return true;
     }
-
     template <IUNICODECanUnambiguouslyConvertFrom SRC_T, IUNICODECanUnambiguouslyConvertFrom TRG_T>
     inline auto UTFConverter::Convert (span<const SRC_T> source, span<TRG_T> target) const -> ConversionResult
     {
@@ -294,7 +289,6 @@ namespace Stroika::Foundation::Characters {
             return TO{buf.begin (), get<1> (Convert (span{from}, span{buf}))};
         }
     }
-
     template <IUNICODECanUnambiguouslyConvertFrom SRC_T, IUNICODECanUnambiguouslyConvertFrom TRG_T>
     inline span<TRG_T> UTFConverter::ConvertSpan (span<const SRC_T> source, span<TRG_T> target) const
         requires (not is_const_v<TRG_T>)
@@ -307,7 +301,6 @@ namespace Stroika::Foundation::Characters {
     {
         return ConvertSpan (Memory::ConstSpan (source), target);
     }
-
     template <IUNICODECanUnambiguouslyConvertFrom SRC_T, IUNICODECanUnambiguouslyConvertFrom TRG_T>
     inline auto UTFConverter::ConvertQuietly (span<const SRC_T> source, span<TRG_T> target) const -> ConversionResultWithStatus
         requires (not is_const_v<TRG_T>)
@@ -349,7 +342,10 @@ namespace Stroika::Foundation::Characters {
                 }
 #endif
                 case Options::Implementation::eCodeCVT: {
-                    if constexpr ((is_same_v<SRC_T, char16_t> and is_same_v<SRC_T, char32_t>)and is_same_v<TRG_T, char8_t>) {
+                    if constexpr ((is_same_v<SRC_T, char16_t> or is_same_v<SRC_T, char32_t>)and is_same_v<TRG_T, char8_t>) {
+                        return ConvertQuietly_codeCvt_ (source, target);
+                    }
+                    if constexpr (is_same_v<SRC_T, char8_t> and (is_same_v<TRG_T, char16_t> or is_same_v<SRC_T, char32_t>)) {
                         return ConvertQuietly_codeCvt_ (source, target);
                     }
                 }
@@ -357,7 +353,6 @@ namespace Stroika::Foundation::Characters {
             return ConvertQuietly_StroikaPortable_ (ConvertToPrimitiveSpan_ (source), ConvertToPrimitiveSpan_ (target)); // default if preferred not available
         }
     }
-
     template <IUNICODECanUnambiguouslyConvertFrom TRG_T, IUNICODECanUnambiguouslyConvertFrom SRC_T>
     size_t UTFConverter::ConvertOffset (span<const SRC_T> source, size_t srcIndex) const
     {
@@ -370,13 +365,11 @@ namespace Stroika::Foundation::Characters {
         ConversionResult           r = Convert (fakeSrc, span{fakeOut});
         return r.fTargetProduced;
     }
-
     template <IUNICODECanUnambiguouslyConvertFrom FromT>
     constexpr auto UTFConverter::ConvertToPrimitiveSpan_ (span<FromT> f) -> span<CompatibleT_<FromT>>
     {
         return span{(CompatibleT_<FromT>*)f.data (), f.size ()};
     }
-
 #if qPlatform_Windows
     inline auto UTFConverter::ConvertQuietly_Win32_ (span<const char8_t> source, span<char16_t> target) -> ConversionResultWithStatus
     {
@@ -409,7 +402,6 @@ namespace Stroika::Foundation::Characters {
         }
     }
 #endif
-
     inline void UTFConverter::ThrowIf_ (ConversionStatusFlag cr)
     {
         switch (cr) {
@@ -419,7 +411,6 @@ namespace Stroika::Foundation::Characters {
                 Throw (cr);
         }
     }
-
 #if __has_include("boost/locale/encoding_utf.hpp")
     inline auto UTFConverter::ConvertQuietly_boost_locale_ (span<const char8_t> source, const span<char16_t> target) -> ConversionResultWithStatus
     {
