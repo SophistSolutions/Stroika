@@ -158,7 +158,7 @@ namespace Stroika::Foundation::Streams {
      ********************************************************************************
      */
     inline auto            TextWriter::New (const OutputStream<Character>::Ptr& src) -> Ptr { return src; }
-    inline TextWriter::Ptr TextWriter::New (const OutputStream<byte>::Ptr& src, Characters::CodeCvt<Character>&& char2OutputConverter)
+    inline TextWriter::Ptr TextWriter::New (const OutputStream<byte>::Ptr& src, Characters::CodeCvt<>&& char2OutputConverter)
     {
         return TextWriter::Ptr{make_shared<UnSeekable_CodeCvt_Rep_> (src, move (char2OutputConverter))};
     }

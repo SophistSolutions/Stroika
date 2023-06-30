@@ -40,6 +40,8 @@ namespace Stroika::Foundation::Streams {
     using Characters::Character;
 
     /**
+     *  \brief TextReader is an InputStream of Character, usually constructted wrapping some binary object or binary stream
+     *
      *  \note   This was called TextInputStreamBinaryAdapter
      *
      *  \note   This is similar to the .net TextReader (https://msdn.microsoft.com/en-us/library/system.io.textreader(v=vs.110).aspx) except that
@@ -111,7 +113,6 @@ namespace Stroika::Foundation::Streams {
          *              DbgTrace (L"***in Configuration::GetSystemConfiguration_CPU capture_ line=%s", line.c_str ());
          *          }
          *      \endcode
-         *
          */
         static Ptr New (const Memory::BLOB& src, const Characters::CodeCvt<>& codeConverter = {});
         static Ptr New (const InputStream<byte>::Ptr& src, SeekableFlag seekable = SeekableFlag::eSeekable, ReadAhead readAhead = eReadAheadAllowed);
