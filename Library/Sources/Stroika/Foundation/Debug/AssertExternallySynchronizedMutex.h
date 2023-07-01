@@ -7,6 +7,7 @@
 #include "../StroikaPreComp.h"
 
 #include <algorithm>
+#include <array>
 #include <atomic>
 #include <forward_list>
 #include <memory>
@@ -26,7 +27,7 @@
  *  \version    <a href="Code-Status.md#Beta">Beta</a>
  *
  *  TODO:
- *      @todo   see if fSharedLockThreads_ can be replaced wtih LOCK-FREE - at least 99% of the time.... Locks affect timing, and can hide thread
+ *      @todo   see if fSharedLocks_ can be replaced wtih LOCK-FREE - at least 99% of the time.... Locks affect timing, and can hide thread
  *              bugs. Quickie attempt at profiling yeilds that that time is NOT spent with the locks but with the remove()
  *              code (since I switched from multiset to forward_list, so maybe cuz of that). Or could be bad measurement (I just
  *              test on DEBUG builds).
@@ -163,11 +164,18 @@ namespace Stroika::Foundation::Debug {
             atomic_uint_fast32_t fFullLocks_{0};
             thread::id           fThreadWithFullLock_; // or value undefined/last value where it had full lock
 
-            // most logically a multiset, but std::multiset is not threadsafe and requires external locking.
-            // So does forward_list, but its closer to lock free, so try it for now
-            // GetSharedLockMutexThreads_ () used to access fSharedLockThreads_
-            forward_list<thread::id> fSharedLockThreads_;
-            optional<thread::id> fSingleSharedLockThread_; // AWKWARD speed tweak (testing still but maybe tweak cuz avoids allocating memory in very common case)
+        private:
+            // Use of inline array avoids mallocs, and makes this run slightly faster. No semantic differerence,
+            // just makes debug mode a bit faster.
+            static constexpr size_t kInlineSharedLockBufSize_ = 2;
+            struct {
+                // most logically a multiset, but std::multiset is not threadsafe and requires external locking.
+                // So does forward_list, but its closer to lock free, so try it for now
+                // GetSharedLockMutexThreads_ () used to access fSharedLocks_
+                [[no_unique_address]] array<thread::id, kInlineSharedLockBufSize_> fInitialThreads_;
+                [[no_unique_address]] uint8_t fInitialThreadsSize_{0}; // not sure how to add this field only conditionally
+                forward_list<thread::id>      fOverflowThreads_;
+            } fSharedLocks_;
 
         private:
             bool                 GetSharedLockEmpty_ () const;
@@ -310,7 +318,7 @@ namespace Stroika::Foundation::Debug {
         shared_ptr<SharedContext> fSharedContext_;
 
     private:
-        static mutex& GetSharedLockMutexThreads_ (); // MUTEX ONLY FOR fSharedLockThreads_ (could do one mutex per AssertExternallySynchronizedMutex but static probably performs better)
+        static mutex& GetSharedLockMutexThreads_ (); // MUTEX ONLY FOR fSharedLocks_ (could do one mutex per AssertExternallySynchronizedMutex but static probably performs better)
 #endif
     };
 

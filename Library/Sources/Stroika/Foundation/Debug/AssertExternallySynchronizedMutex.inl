@@ -24,56 +24,70 @@ namespace Stroika::Foundation::Debug {
     inline AssertExternallySynchronizedMutex::SharedContext ::~SharedContext ()
     {
         Assert (fFullLocks_ == 0);
-        Assert (fSharedLockThreads_.empty () and not fSingleSharedLockThread_);
+        Assert (fSharedLocks_.fOverflowThreads_.empty () and fSharedLocks_.fInitialThreadsSize_ == 0);
     }
     inline bool AssertExternallySynchronizedMutex ::SharedContext ::GetSharedLockEmpty_ () const
     {
         lock_guard<mutex> sharedLockProtect{GetSharedLockMutexThreads_ ()};
-        return fSharedLockThreads_.empty () and fSingleSharedLockThread_ == nullopt;
+        return fSharedLocks_.fInitialThreadsSize_ == 0 and fSharedLocks_.fOverflowThreads_.empty ();
     }
     inline pair<size_t, size_t> AssertExternallySynchronizedMutex ::SharedContext ::CountSharedLockThreads_ () const
     {
+        auto              tid = this_thread::get_id ();
         lock_guard<mutex> sharedLockProtect{GetSharedLockMutexThreads_ ()};
-        size_t            thisThreadCnt = std::count (fSharedLockThreads_.begin (), fSharedLockThreads_.end (), this_thread::get_id ());
-        if (fSingleSharedLockThread_ == this_thread::get_id ()) {
-            ++thisThreadCnt;
-        }
-        size_t otherThreadCnt = std::distance (fSharedLockThreads_.begin (), fSharedLockThreads_.end ());
-        if (fSingleSharedLockThread_) {
-            ++otherThreadCnt;
-        }
+        size_t            thisThreadCnt = std::count (fSharedLocks_.fInitialThreads_.begin (),
+                                                      fSharedLocks_.fInitialThreads_.begin () + fSharedLocks_.fInitialThreadsSize_, tid) and
+                               std::count (fSharedLocks_.fOverflowThreads_.begin (), fSharedLocks_.fOverflowThreads_.end (), tid);
+        size_t otherThreadCnt = fSharedLocks_.fInitialThreadsSize_ +
+                                std::distance (fSharedLocks_.fOverflowThreads_.begin (), fSharedLocks_.fOverflowThreads_.end ());
         otherThreadCnt -= thisThreadCnt;
         return make_pair (thisThreadCnt, otherThreadCnt);
     }
     inline size_t AssertExternallySynchronizedMutex ::SharedContext ::GetSharedLockThreadsCount_ () const
     {
         lock_guard<mutex> sharedLockProtect{GetSharedLockMutexThreads_ ()};
-        return std::distance (fSharedLockThreads_.begin (), fSharedLockThreads_.end ()) + (fSingleSharedLockThread_ ? 1 : 0);
+        return fSharedLocks_.fInitialThreadsSize_ + std::distance (fSharedLocks_.fOverflowThreads_.begin (), fSharedLocks_.fOverflowThreads_.end ());
     }
     inline size_t AssertExternallySynchronizedMutex ::SharedContext ::CountOfIInSharedLockThreads_ (thread::id i) const
     {
         lock_guard<mutex> sharedLockProtect{GetSharedLockMutexThreads_ ()};
-        return std::count (fSharedLockThreads_.begin (), fSharedLockThreads_.end (), i) + ((i == fSingleSharedLockThread_) ? 1 : 0);
+        return std::count (fSharedLocks_.fInitialThreads_.begin (), fSharedLocks_.fInitialThreads_.begin () + fSharedLocks_.fInitialThreadsSize_, i) +
+               std::count (fSharedLocks_.fOverflowThreads_.begin (), fSharedLocks_.fOverflowThreads_.end (), i);
     }
     inline void AssertExternallySynchronizedMutex ::SharedContext ::AddSharedLock_ (thread::id i)
     {
         lock_guard<mutex> sharedLockProtect{GetSharedLockMutexThreads_ ()};
-        if (fSingleSharedLockThread_ == nullopt) {
-            fSingleSharedLockThread_ = i;
+        if (fSharedLocks_.fInitialThreadsSize_ < kInlineSharedLockBufSize_) {
+            fSharedLocks_.fInitialThreads_[fSharedLocks_.fInitialThreadsSize_++] = i;
         }
         else {
-            fSharedLockThreads_.push_front (i);
+            fSharedLocks_.fOverflowThreads_.push_front (i);
         }
     }
     inline void AssertExternallySynchronizedMutex ::SharedContext ::RemoveSharedLock_ (thread::id i)
     {
         lock_guard<mutex> sharedLockProtect{GetSharedLockMutexThreads_ ()};
-        if (i == fSingleSharedLockThread_) {
-            fSingleSharedLockThread_ = nullopt;
+        if constexpr (kInlineSharedLockBufSize_ != 0) {
+            auto re = fSharedLocks_.fInitialThreads_.begin () + fSharedLocks_.fInitialThreadsSize_;
+            auto ri = find (fSharedLocks_.fInitialThreads_.begin (), re, i);
+            if (ri != re) {
+                copy (ri + 1, re, ri);
+                --fSharedLocks_.fInitialThreadsSize_;
+                return;
+            }
         }
-        else {
-            fSharedLockThreads_.remove (i);
+        auto re = fSharedLocks_.fOverflowThreads_.end ();
+        for (auto beforeI = fSharedLocks_.fOverflowThreads_.before_begin ();; ++beforeI) {
+            Assert (beforeI != re);
+            auto n = beforeI;
+            n++;
+            Assert (n != re);
+            if (*n == i) {
+                fSharedLocks_.fOverflowThreads_.erase_after (beforeI);
+                return;
+            }
         }
+        RequireNotReached ();
     }
 #endif
 
