@@ -24,39 +24,56 @@ namespace Stroika::Foundation::Debug {
     inline AssertExternallySynchronizedMutex::SharedContext ::~SharedContext ()
     {
         Assert (fFullLocks_ == 0);
-        Assert (fSharedLockThreads_.empty ());
+        Assert (fSharedLockThreads_.empty () and not fSingleSharedLockThread_);
     }
     inline bool AssertExternallySynchronizedMutex ::SharedContext ::GetSharedLockEmpty_ () const
     {
         lock_guard<mutex> sharedLockProtect{GetSharedLockMutexThreads_ ()};
-        return fSharedLockThreads_.empty ();
+        return fSharedLockThreads_.empty () and fSingleSharedLockThread_ == nullopt;
     }
     inline pair<size_t, size_t> AssertExternallySynchronizedMutex ::SharedContext ::CountSharedLockThreads_ () const
     {
         lock_guard<mutex> sharedLockProtect{GetSharedLockMutexThreads_ ()};
-        size_t            thisThreadCnt  = std::count (fSharedLockThreads_.begin (), fSharedLockThreads_.end (), this_thread::get_id ());
-        size_t            otherThreadCnt = std::distance (fSharedLockThreads_.begin (), fSharedLockThreads_.end ()) - thisThreadCnt;
+        size_t            thisThreadCnt = std::count (fSharedLockThreads_.begin (), fSharedLockThreads_.end (), this_thread::get_id ());
+        if (fSingleSharedLockThread_ == this_thread::get_id ()) {
+            ++thisThreadCnt;
+        }
+        size_t otherThreadCnt = std::distance (fSharedLockThreads_.begin (), fSharedLockThreads_.end ());
+        if (fSingleSharedLockThread_) {
+            ++otherThreadCnt;
+        }
+        otherThreadCnt -= thisThreadCnt;
         return make_pair (thisThreadCnt, otherThreadCnt);
     }
     inline size_t AssertExternallySynchronizedMutex ::SharedContext ::GetSharedLockThreadsCount_ () const
     {
         lock_guard<mutex> sharedLockProtect{GetSharedLockMutexThreads_ ()};
-        return std::distance (fSharedLockThreads_.begin (), fSharedLockThreads_.end ());
+        return std::distance (fSharedLockThreads_.begin (), fSharedLockThreads_.end ()) + (fSingleSharedLockThread_ ? 1 : 0);
     }
     inline size_t AssertExternallySynchronizedMutex ::SharedContext ::CountOfIInSharedLockThreads_ (thread::id i) const
     {
         lock_guard<mutex> sharedLockProtect{GetSharedLockMutexThreads_ ()};
-        return std::count (fSharedLockThreads_.begin (), fSharedLockThreads_.end (), i);
+        return std::count (fSharedLockThreads_.begin (), fSharedLockThreads_.end (), i) + ((i == fSingleSharedLockThread_) ? 1 : 0);
     }
     inline void AssertExternallySynchronizedMutex ::SharedContext ::AddSharedLock_ (thread::id i)
     {
         lock_guard<mutex> sharedLockProtect{GetSharedLockMutexThreads_ ()};
-        fSharedLockThreads_.push_front (i);
+        if (fSingleSharedLockThread_ == nullopt) {
+            fSingleSharedLockThread_ = i;
+        }
+        else {
+            fSharedLockThreads_.push_front (i);
+        }
     }
     inline void AssertExternallySynchronizedMutex ::SharedContext ::RemoveSharedLock_ (thread::id i)
     {
         lock_guard<mutex> sharedLockProtect{GetSharedLockMutexThreads_ ()};
-        fSharedLockThreads_.remove (i);
+        if (i == fSingleSharedLockThread_) {
+            fSingleSharedLockThread_ = nullopt;
+        }
+        else {
+            fSharedLockThreads_.remove (i);
+        }
     }
 #endif
 

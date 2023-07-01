@@ -167,6 +167,7 @@ namespace Stroika::Foundation::Debug {
             // So does forward_list, but its closer to lock free, so try it for now
             // GetSharedLockMutexThreads_ () used to access fSharedLockThreads_
             forward_list<thread::id> fSharedLockThreads_;
+            optional<thread::id> fSingleSharedLockThread_; // AWKWARD speed tweak (testing still but maybe tweak cuz avoids allocating memory in very common case)
 
         private:
             bool                 GetSharedLockEmpty_ () const;
