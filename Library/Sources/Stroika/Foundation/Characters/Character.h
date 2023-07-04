@@ -77,8 +77,7 @@ namespace Stroika::Foundation::Characters {
      *      o   char32_t
      */
     template <typename T>
-    concept IBasicUNICODECodePoint =
-        is_same_v<remove_cv_t<T>, char8_t> or is_same_v<remove_cv_t<T>, char16_t> or is_same_v<remove_cv_t<T>, char32_t>;
+    concept IBasicUNICODECodePoint = same_as<remove_cv_t<T>, char8_t> or same_as<remove_cv_t<T>, char16_t> or same_as<remove_cv_t<T>, char32_t>;
 
     /**
      *  \brief check if T is IBasicUNICODECodePoint or wchar_t (any basic code-point class)
@@ -90,7 +89,7 @@ namespace Stroika::Foundation::Characters {
      *      o   wchar_t     added here
      */
     template <typename T>
-    concept IUNICODECodePoint = IBasicUNICODECodePoint<T> or is_same_v<remove_cv_t<T>, wchar_t>;
+    concept IUNICODECodePoint = IBasicUNICODECodePoint<T> or same_as<remove_cv_t<T>, wchar_t>;
 
     /**
      *  concept IStdBasicStringCompatibleCharacter tests if the 'T' argument is a legit CHARACTER argument to std::basic_string.
@@ -121,7 +120,7 @@ namespace Stroika::Foundation::Characters {
      *          not all UNICODE strings are ascii).
      */
     template <typename T>
-    concept IUNICODECanAlwaysConvertTo = IUNICODECodePoint<T> or is_same_v<remove_cv_t<T>, Character>;
+    concept IUNICODECanAlwaysConvertTo = IUNICODECodePoint<T> or same_as<remove_cv_t<T>, Character>;
     static_assert (IUNICODECanAlwaysConvertTo<char8_t>);
     static_assert (IUNICODECanAlwaysConvertTo<char16_t>);
     static_assert (IUNICODECanAlwaysConvertTo<char32_t>);
@@ -166,7 +165,7 @@ namespace Stroika::Foundation::Characters {
      */
     template <typename T>
     concept IUNICODECanUnambiguouslyConvertFrom =
-        IUNICODECodePoint<T> or is_same_v<remove_cv_t<T>, Character> or is_same_v<remove_cv_t<T>, ASCII> or is_same_v<remove_cv_t<T>, Latin1>;
+        IUNICODECodePoint<T> or same_as<remove_cv_t<T>, Character> or same_as<remove_cv_t<T>, ASCII> or same_as<remove_cv_t<T>, Latin1>;
     static_assert (IUNICODECanUnambiguouslyConvertFrom<char8_t>);
     static_assert (IUNICODECanUnambiguouslyConvertFrom<char16_t>);
     static_assert (IUNICODECanUnambiguouslyConvertFrom<char32_t>);
@@ -218,7 +217,7 @@ namespace Stroika::Foundation::Characters {
          */
         template <typename T>
         nonvirtual T As () const noexcept
-            requires (is_same_v<T, char32_t> or (sizeof (wchar_t) == sizeof (char32_t) and is_same_v<T, wchar_t>));
+            requires (same_as<T, char32_t> or (sizeof (wchar_t) == sizeof (char32_t) and same_as<T, wchar_t>));
 
     public:
         /**
@@ -395,7 +394,7 @@ namespace Stroika::Foundation::Characters {
          */
         template <typename RESULT_T = string, IPossibleCharacterRepresentation CHAR_T>
         static bool AsASCIIQuietly (span<const CHAR_T> fromS, RESULT_T* into)
-            requires (is_same_v<RESULT_T, string> or is_same_v<RESULT_T, Memory::StackBuffer<ASCII>>);
+            requires (same_as<RESULT_T, string> or same_as<RESULT_T, Memory::StackBuffer<ASCII>>);
 
     public:
         /**
