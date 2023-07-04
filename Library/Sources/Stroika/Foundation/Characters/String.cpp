@@ -1453,7 +1453,7 @@ const wchar_t* String::c_str ()
         AssertNotNull (result);
     }
     EnsureNotNull (result);
-    Ensure (result[size ()] == '\0');
+    Ensure (result[size ()] == '\0' or (::wcslen (result) > size () and sizeof(wchar_t) == 2)); // if there are surrogates, wcslen () might be larger than size
     return result;
 }
 
