@@ -136,11 +136,15 @@ namespace {
                     break;
                 default:
                     // JSON rule is Any code point except " or \ or control character. So OK to emit most large unicode chars - just not control chars
-                    char32_t c = *i;
-                    Assert (c < 0xffff); // @todo must fix to support WIDE/SURROGATE CHARACTERS
-                    if (iswcntrl (static_cast<wint_t> (c))) {
+                    Character c = *i;
+                    if (c.IsSurrogatePair ()) {
+                        wchar_t buf[20];
+                        (void)::swprintf (buf, Memory::NEltsOf (buf), L"\\u%04x\\u%04x", c.GetSurrogatePair ().first, c.GetSurrogatePair ().second);
+                        sb.Append (buf);
+                    }
+                    else if (c.IsControl ()) {
                         wchar_t buf[10];
-                        (void)::swprintf (buf, Memory::NEltsOf (buf), L"\\u%04x", static_cast<char16_t> (c));
+                        (void)::swprintf (buf, Memory::NEltsOf (buf), L"\\u%04x", static_cast<char16_t> (c.GetCharacterCode ()));
                         sb.Append (buf);
                     }
                     else {

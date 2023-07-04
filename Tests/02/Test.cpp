@@ -1637,6 +1637,29 @@ namespace {
             VerifyTestResult (String{kTestWithSurrogates_}.length () == 1);
             VerifyTestResult (String{kTestWithSurrogates_}.AsUTF16 ().length () == 2);
         }
+        {
+            // https://www.informit.com/articles/article.aspx?p=2274038&seqNum=10 SURROGATE SAMPLES
+            {
+                constexpr auto ch = Character{0x10000};
+                VerifyTestResult ((ch.IsSurrogatePair () and ch.GetSurrogatePair () == pair<char16_t, char16_t>{0xD800, 0xDC00}));
+                VerifyTestResult ((ch == Character{0xD800, 0xDC00}));
+            }
+            {
+                constexpr auto ch = Character{0x10E6D};
+                VerifyTestResult ((ch.IsSurrogatePair () and ch.GetSurrogatePair () == pair<char16_t, char16_t>{0xD803, 0xDE6D}));
+                VerifyTestResult ((ch == Character{0xD803, 0xDE6D}));
+            }
+            {
+                constexpr auto ch = Character{0x1D11E};
+                VerifyTestResult ((ch.IsSurrogatePair () and ch.GetSurrogatePair () == pair<char16_t, char16_t>{0xD834, 0xDD1E}));
+                VerifyTestResult ((ch == Character{0xD834, 0xDD1E}));
+            }
+            {
+                constexpr auto ch = Character{0x10FFFF};
+                VerifyTestResult ((ch.IsSurrogatePair () and ch.GetSurrogatePair () == pair<char16_t, char16_t>{0xDBFF, 0xDFFF}));
+                VerifyTestResult ((ch == Character{0xDBFF, 0xDFFF}));
+            }
+        }
     }
 }
 

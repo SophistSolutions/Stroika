@@ -418,6 +418,13 @@ namespace Stroika::Foundation::Characters {
 
     public:
         /**
+         *  \req IsSurrogatePair
+         *  returns the high/low psudo-characters of the character
+         */
+        constexpr pair<char16_t, char16_t> GetSurrogatePair () const;
+
+    public:
+        /**
          */
         constexpr bool operator== (const Character&) const noexcept = default;
 

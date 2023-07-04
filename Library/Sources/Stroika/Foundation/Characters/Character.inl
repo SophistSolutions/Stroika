@@ -478,6 +478,19 @@ namespace Stroika::Foundation::Characters {
     {
         return UNI_SUR_LOW_START <= lowSurrogate and lowSurrogate <= UNI_SUR_LOW_END;
     }
+    constexpr pair<char16_t, char16_t> Character::GetSurrogatePair () const
+    {
+        Require (IsSurrogatePair ());
+        /*
+         * Run fCharacterCode_ = ((hiSurrogate - UNI_SUR_HIGH_START) << halfShift) + (lowSurrogate - UNI_SUR_LOW_START) + halfBase; BACKWARDS
+         */
+        constexpr int      halfShift = 10; /* used for shifting by 10 bits */
+        constexpr char32_t halfBase  = 0x0010000UL;
+        constexpr char32_t halfMask  = 0x3FFUL;
+        char32_t           ch        = fCharacterCode_ - halfBase;
+        return pair<char16_t, char16_t>{static_cast<char16_t> ((ch >> halfShift) + UNI_SUR_HIGH_START),
+                                        static_cast<char16_t> ((ch & halfMask) + UNI_SUR_LOW_START)};
+    }
 
     /*
      ********************************************************************************
