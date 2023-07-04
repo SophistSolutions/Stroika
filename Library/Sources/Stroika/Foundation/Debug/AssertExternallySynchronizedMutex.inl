@@ -71,7 +71,9 @@ namespace Stroika::Foundation::Debug {
             auto re = fSharedLocks_.fInitialThreads_.begin () + fSharedLocks_.fInitialThreadsSize_;
             auto ri = find (fSharedLocks_.fInitialThreads_.begin (), re, i);
             if (ri != re) {
-                copy (ri + 1, re, ri);
+                if (ri + 1 != re) {
+                    copy (ri + 1, re, ri);  // if test not useful if optimized, but this code mainly used unoptimized and appears to help there
+                }
                 --fSharedLocks_.fInitialThreadsSize_;
                 return;
             }
