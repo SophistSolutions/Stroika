@@ -34,6 +34,7 @@ namespace Stroika::Foundation::Common {
      *      o   @todo COULD add EqualsComparer/ThreeWayComparer members which take explicit 'T' comparer argument
      */
     template <typename VALUE_TYPE, typename COUNTER_TYPE = unsigned int>
+        requires (default_initializable<COUNTER_TYPE> and unsigned_integral<COUNTER_TYPE>)
     struct CountedValue {
     public:
         /**
@@ -49,14 +50,12 @@ namespace Stroika::Foundation::Common {
         /**
          */
         constexpr CountedValue ()
-            requires (is_default_constructible_v<VALUE_TYPE>);
+            requires (default_initializable<VALUE_TYPE>);
         constexpr CountedValue (typename Configuration::ArgByValueType<ValueType> value, CounterType count = 1);
-        template <typename VALUE2_TYPE, typename COUNTER2_TYPE>
-        constexpr CountedValue (const pair<VALUE2_TYPE, COUNTER2_TYPE>& src)
-            requires (is_convertible_v<VALUE2_TYPE, VALUE_TYPE> and is_convertible_v<COUNTER2_TYPE, COUNTER_TYPE>);
-        template <typename VALUE2_TYPE, typename COUNTER2_TYPE>
-        constexpr CountedValue (const CountedValue<VALUE2_TYPE, COUNTER2_TYPE>& src)
-            requires (is_convertible_v<VALUE2_TYPE, VALUE_TYPE> and is_convertible_v<COUNTER2_TYPE, COUNTER_TYPE>);
+        template <convertible_to<VALUE_TYPE> VALUE2_TYPE, convertible_to<COUNTER_TYPE> COUNTER2_TYPE>
+        constexpr CountedValue (const pair<VALUE2_TYPE, COUNTER2_TYPE>& src);
+        template <convertible_to<VALUE_TYPE> VALUE2_TYPE, convertible_to<COUNTER_TYPE> COUNTER2_TYPE>
+        constexpr CountedValue (const CountedValue<VALUE2_TYPE, COUNTER2_TYPE>& src);
 
     public:
         ValueType   fValue;
