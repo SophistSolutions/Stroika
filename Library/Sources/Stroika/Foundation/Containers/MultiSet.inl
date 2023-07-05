@@ -58,7 +58,7 @@ namespace Stroika::Foundation::Containers {
     }
 #if !qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
     template <typename T, typename TRAITS>
-    template <IIterableOf<CountedValue<T>> ITERABLE_OF_ADDABLE>
+    template <IIterableOf<typename TRAITS::CountedValueType> ITERABLE_OF_ADDABLE>
     inline MultiSet<T, TRAITS>::MultiSet (ITERABLE_OF_ADDABLE&& src)
         requires (not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, MultiSet<T, TRAITS>>)
         : MultiSet{}
@@ -68,7 +68,7 @@ namespace Stroika::Foundation::Containers {
     }
 #endif
     template <typename T, typename TRAITS>
-    template <IEqualsComparer<T> EQUALS_COMPARER, IIterableOf<CountedValue<T>> ITERABLE_OF_ADDABLE>
+    template <IEqualsComparer<T> EQUALS_COMPARER, IIterableOf<typename TRAITS::CountedValueType> ITERABLE_OF_ADDABLE>
     inline MultiSet<T, TRAITS>::MultiSet (EQUALS_COMPARER&& equalsComparer, ITERABLE_OF_ADDABLE&& src)
         : MultiSet{forward<EQUALS_COMPARER> (equalsComparer)}
     {
@@ -118,7 +118,7 @@ namespace Stroika::Foundation::Containers {
         _AssertRepValidType ();
     }
     template <typename T, typename TRAITS>
-    template <IInputIterator<CountedValue<T>> ITERATOR_OF_ADDABLE>
+    template <IInputIterator<typename TRAITS::CountedValueType> ITERATOR_OF_ADDABLE>
     MultiSet<T, TRAITS>::MultiSet (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
         : MultiSet{}
     {
@@ -126,7 +126,7 @@ namespace Stroika::Foundation::Containers {
         _AssertRepValidType ();
     }
     template <typename T, typename TRAITS>
-    template <IEqualsComparer<T> EQUALS_COMPARER, IInputIterator<CountedValue<T>> ITERATOR_OF_ADDABLE>
+    template <IEqualsComparer<T> EQUALS_COMPARER, IInputIterator<typename TRAITS::CountedValueType> ITERATOR_OF_ADDABLE>
     MultiSet<T, TRAITS>::MultiSet (EQUALS_COMPARER&& equalsComparer, ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
         : MultiSet{forward<EQUALS_COMPARER> (equalsComparer)}
     {
@@ -161,7 +161,7 @@ namespace Stroika::Foundation::Containers {
         // Not just simple map cuz must pause and 'create' new extra elements
         struct Context_ {
             MultiSet<T, TRAITS>       fOriginalMultiset;
-            Iterator<CountedValue<T>> fCurrentIteratorOverOrig;
+            Iterator<typename TRAITS::CountedValueType> fCurrentIteratorOverOrig;
             size_t fIthAdvanceOfIterator{0}; // because not a random-accessor iterator so hard to compute without tracking
             size_t fIthOfCurrentIterator{0};
             Context_ (const Context_& rhs)
@@ -200,27 +200,31 @@ namespace Stroika::Foundation::Containers {
     template <typename T, typename TRAITS>
     inline Iterable<T> MultiSet<T, TRAITS>::UniqueElements () const
     {
-        return this->template Map<T> ([] (const CountedValue<T>& cv) { return cv.fValue; });
+        return this->template Map<T> ([] (const typename TRAITS::CountedValueType& cv) { return cv.fValue; });
     }
     template <typename T, typename TRAITS>
-    Iterable<CountedValue<T>> MultiSet<T, TRAITS>::Top () const
+    Iterable<typename TRAITS::CountedValueType> MultiSet<T, TRAITS>::Top () const
     {
-        return this->inherited::Top ([] (const CountedValue<T>& lhs, const CountedValue<T>& rhs) { return lhs.fCount > rhs.fCount; });
+        return this->inherited::Top ([] (const typename TRAITS::CountedValueType& lhs, const typename TRAITS::CountedValueType& rhs) {
+            return lhs.fCount > rhs.fCount;
+        });
     }
     template <typename T, typename TRAITS>
-    Iterable<CountedValue<T>> MultiSet<T, TRAITS>::Top (size_t n) const
+    Iterable<typename TRAITS::CountedValueType> MultiSet<T, TRAITS>::Top (size_t n) const
     {
-        return this->inherited::Top (n, [] (const CountedValue<T>& lhs, const CountedValue<T>& rhs) { return lhs.fCount > rhs.fCount; });
+        return this->inherited::Top (n, [] (const typename TRAITS::CountedValueType& lhs, const typename TRAITS::CountedValueType& rhs) {
+            return lhs.fCount > rhs.fCount;
+        });
     }
     template <typename T, typename TRAITS>
     Iterable<T> MultiSet<T, TRAITS>::TopElements () const
     {
-        return Top ().template Map<T> ([] (const CountedValue<T>& cv) { return cv.fValue; });
+        return Top ().template Map<T> ([] (const typename TRAITS::CountedValueType& cv) { return cv.fValue; });
     }
     template <typename T, typename TRAITS>
     Iterable<T> MultiSet<T, TRAITS>::TopElements (size_t n) const
     {
-        return Top (n).template Map<T> ([] (const CountedValue<T>& cv) { return cv.fValue; });
+        return Top (n).template Map<T> ([] (const typename TRAITS::CountedValueType& cv) { return cv.fValue; });
     }
     template <typename T, typename TRAITS>
     inline auto MultiSet<T, TRAITS>::GetElementEqualsComparer () const -> ElementEqualityComparerType
@@ -261,7 +265,7 @@ namespace Stroika::Foundation::Containers {
         _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().Add (item.fValue, item.fCount);
     }
     template <typename T, typename TRAITS>
-    template <IInputIterator<CountedValue<T>> ITERATOR_OF_ADDABLE>
+    template <IInputIterator<typename TRAITS::CountedValueType> ITERATOR_OF_ADDABLE>
     void MultiSet<T, TRAITS>::AddAll (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
     {
         for (ITERATOR_OF_ADDABLE i = forward<ITERATOR_OF_ADDABLE> (start); i != forward<ITERATOR_OF_ADDABLE> (end); ++i) {
@@ -269,7 +273,7 @@ namespace Stroika::Foundation::Containers {
         }
     }
     template <typename T, typename TRAITS>
-    template <IIterableOf<CountedValue<T>> ITERABLE_OF_ADDABLE>
+    template <IIterableOf<typename TRAITS::CountedValueType> ITERABLE_OF_ADDABLE>
     void MultiSet<T, TRAITS>::AddAll (ITERABLE_OF_ADDABLE&& items)
     {
         // see https://stroika.atlassian.net/browse/STK-645

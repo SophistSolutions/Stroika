@@ -52,9 +52,9 @@ namespace Stroika::Foundation::Containers::Concrete {
     private:
         [[no_unique_address]] const EQUALS_COMPARER fEqualsComparer_;
 
-        // Iterable<CountedValue<T>>::_IRep overrides
+        // Iterable<typename TRAITS::CountedValueType>::_IRep overrides
     public:
-        virtual shared_ptr<typename Iterable<CountedValue<T>>::_IRep> Clone () const override
+        virtual shared_ptr<typename Iterable<typename TRAITS::CountedValueType>::_IRep> Clone () const override
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
             return Memory::MakeSharedPtr<Rep_> (*this);
@@ -69,7 +69,8 @@ namespace Stroika::Foundation::Containers::Concrete {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
             return fData_.empty ();
         }
-        virtual Iterator<value_type> MakeIterator ([[maybe_unused]] const shared_ptr<typename Iterable<CountedValue<T>>::_IRep>& thisSharedPtr) const override
+        virtual Iterator<value_type>
+        MakeIterator ([[maybe_unused]] const shared_ptr<typename Iterable<typename TRAITS::CountedValueType>::_IRep>& thisSharedPtr) const override
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
             return Iterator<value_type>{make_unique<IteratorRep_> (&fData_, &fChangeCounts_)};
@@ -79,7 +80,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
             fData_.Apply (doToElement);
         }
-        virtual Iterator<value_type> Find ([[maybe_unused]] const shared_ptr<typename Iterable<CountedValue<T>>::_IRep>& thisSharedPtr,
+        virtual Iterator<value_type> Find ([[maybe_unused]] const shared_ptr<typename Iterable<typename TRAITS::CountedValueType>::_IRep>& thisSharedPtr,
                                            const function<bool (ArgByValueType<value_type> item)>&                       that,
                                            [[maybe_unused]] Execution::SequencePolicy                                    seq) const override
         {
@@ -249,7 +250,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     }
 #if !qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
     template <typename T, typename TRAITS>
-    template <IIterableOf<CountedValue<T>> ITERABLE_OF_ADDABLE>
+    template <IIterableOf<typename TRAITS::CountedValueType> ITERABLE_OF_ADDABLE>
         requires (not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, MultiSet_LinkedList<T, TRAITS>>)
     inline MultiSet_LinkedList<T, TRAITS>::MultiSet_LinkedList (ITERABLE_OF_ADDABLE&& src)
         : MultiSet_LinkedList{}
@@ -259,7 +260,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     }
 #endif
     template <typename T, typename TRAITS>
-    template <IEqualsComparer<T> EQUALS_COMPARER, IIterableOf<CountedValue<T>> ITERABLE_OF_ADDABLE>
+    template <IEqualsComparer<T> EQUALS_COMPARER, IIterableOf<typename TRAITS::CountedValueType> ITERABLE_OF_ADDABLE>
     inline MultiSet_LinkedList<T, TRAITS>::MultiSet_LinkedList (EQUALS_COMPARER&& equalsComparer, ITERABLE_OF_ADDABLE&& src)
         : MultiSet_LinkedList{forward<EQUALS_COMPARER> (equalsComparer)}
     {
@@ -297,7 +298,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         AssertRepValidType_ ();
     }
     template <typename T, typename TRAITS>
-    template <IInputIterator<CountedValue<T>> ITERATOR_OF_ADDABLE>
+    template <IInputIterator<typename TRAITS::CountedValueType> ITERATOR_OF_ADDABLE>
     MultiSet_LinkedList<T, TRAITS>::MultiSet_LinkedList (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
         : MultiSet_LinkedList{}
     {
@@ -305,7 +306,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         AssertRepValidType_ ();
     }
     template <typename T, typename TRAITS>
-    template <IEqualsComparer<T> EQUALS_COMPARER, IInputIterator<CountedValue<T>> ITERATOR_OF_ADDABLE>
+    template <IEqualsComparer<T> EQUALS_COMPARER, IInputIterator<typename TRAITS::CountedValueType> ITERATOR_OF_ADDABLE>
     MultiSet_LinkedList<T, TRAITS>::MultiSet_LinkedList (EQUALS_COMPARER&& equalsComparer, ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
         : MultiSet_LinkedList{forward<EQUALS_COMPARER> (equalsComparer)}
     {

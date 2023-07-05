@@ -98,9 +98,9 @@ namespace Stroika::Foundation::Containers {
      *
      */
     template <typename T, typename TRAITS = DefaultTraits::MultiSet<T>>
-    class MultiSet : public Iterable<CountedValue<T>> {
+    class MultiSet : public Iterable<typename TRAITS::CountedValueType> {
     private:
-        using inherited = Iterable<CountedValue<T>>;
+        using inherited = Iterable<typename TRAITS::CountedValueType>;
 
     public:
         /**
@@ -130,9 +130,12 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
+         *  typename TRAITS::CountedValueType - not 'T' itself
+         * 
          *  @see inherited::value_type
          */
         using value_type = typename inherited::value_type;
+        static_assert (same_as<typename TRAITS::CountedValueType, value_type>);
 
     protected:
         class _IRep;
@@ -183,7 +186,7 @@ namespace Stroika::Foundation::Containers {
         MultiSet (const initializer_list<value_type>& src);
         template <IEqualsComparer<T> EQUALS_COMPARER>
         MultiSet (EQUALS_COMPARER&& equalsComparer, const initializer_list<value_type>& src);
-        template <IIterableOf<CountedValue<T>> ITERABLE_OF_ADDABLE>
+        template <IIterableOf<typename TRAITS::CountedValueType> ITERABLE_OF_ADDABLE>
         explicit MultiSet (ITERABLE_OF_ADDABLE&& src)
             requires (not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, MultiSet<T, TRAITS>>)
 #if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
@@ -194,11 +197,11 @@ namespace Stroika::Foundation::Containers {
         }
 #endif
         ;
-        template <IEqualsComparer<T> EQUALS_COMPARER, IIterableOf<CountedValue<T>> ITERABLE_OF_ADDABLE>
+        template <IEqualsComparer<T> EQUALS_COMPARER, IIterableOf<typename TRAITS::CountedValueType> ITERABLE_OF_ADDABLE>
         MultiSet (EQUALS_COMPARER&& equalsComparer, ITERABLE_OF_ADDABLE&& src);
-        template <IInputIterator<CountedValue<T>> ITERATOR_OF_ADDABLE>
+        template <IInputIterator<typename TRAITS::CountedValueType> ITERATOR_OF_ADDABLE>
         MultiSet (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
-        template <IEqualsComparer<T> EQUALS_COMPARER, IInputIterator<CountedValue<T>> ITERATOR_OF_ADDABLE>
+        template <IEqualsComparer<T> EQUALS_COMPARER, IInputIterator<typename TRAITS::CountedValueType> ITERATOR_OF_ADDABLE>
         MultiSet (EQUALS_COMPARER&& equalsComparer, ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
 
     protected:
@@ -227,15 +230,15 @@ namespace Stroika::Foundation::Containers {
     public:
         /**
          *  \note   AddAll/2 is alias for .net AddRange ()
-         *          and AddAll/2 - the iterator can be Iterator<T> or Iterator<CountedValue<T>>
+         *          and AddAll/2 - the iterator can be Iterator<T> or Iterator<typename TRAITS::CountedValueType>
          *
-         *  \req IInputIterator<CountedValue<T>> or IIterableOf<CountedValue<T>>
+         *  \req IInputIterator<typename TRAITS::CountedValueType> or IIterableOf<typename TRAITS::CountedValueType>
          *
          *  \note mutates container
          */
-        template <IInputIterator<CountedValue<T>> ITERATOR_OF_ADDABLE>
+        template <IInputIterator<typename TRAITS::CountedValueType> ITERATOR_OF_ADDABLE>
         nonvirtual void AddAll (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
-        template <IIterableOf<CountedValue<T>> ITERABLE_OF_ADDABLE>
+        template <IIterableOf<typename TRAITS::CountedValueType> ITERABLE_OF_ADDABLE>
         nonvirtual void AddAll (ITERABLE_OF_ADDABLE&& items);
 
     public:
@@ -379,8 +382,8 @@ namespace Stroika::Foundation::Containers {
          *  \See Iterable<T>::Top
          *  \See TopElements
          */
-        nonvirtual Iterable<CountedValue<T>> Top () const;
-        nonvirtual Iterable<CountedValue<T>> Top (size_t n) const;
+        nonvirtual Iterable<typename TRAITS::CountedValueType> Top () const;
+        nonvirtual Iterable<typename TRAITS::CountedValueType> Top (size_t n) const;
 
     public:
         /**
@@ -458,9 +461,9 @@ namespace Stroika::Foundation::Containers {
     /**
      */
     template <typename T, typename TRAITS>
-    class MultiSet<T, TRAITS>::_IRep : public Iterable<CountedValue<T>>::_IRep {
+    class MultiSet<T, TRAITS>::_IRep : public Iterable<typename TRAITS::CountedValueType>::_IRep {
     private:
-        using inherited = typename Iterable<CountedValue<T>>::_IRep;
+        using inherited = typename Iterable<typename TRAITS::CountedValueType>::_IRep;
 
     public:
         using CounterType = typename MultiSet::CounterType;
