@@ -60,6 +60,8 @@ A very helpful template class used internally in Stroika is SharedByValue\<T>. Y
 
 SharedByValue implements &#39;copy-on-write&#39;, fairly simply and transparently. So you store your actual data in a &#39;rep&#39; (letter part of letter-envelope pattern), and when const methods are accessed, you simply dereference the pointer. Such objects can be copied for the performance cost of copying a shared_ptr\<T> - fairly cheap. The only time you pay (a significant) cost, is when you mutate one of these objects (which is already shared) – then you do the copying of the data behind the object.
 
+Stroika's container library, for example, uses SharedByValue, so copying a Stroika Sequence<T> is generally much cheaper than copying a vector<T>. Similarly for String objects (vs std::string). Note however, while this makes copying much cheaper, it makes accessing the insides of a String or Sequence correspondingly more expensive than their vector/string counterparts.
+
 ---
 
 ## Const and Logical Const
@@ -80,11 +82,11 @@ We arguably COULD get rid of PTR objects and just use shared_ptr\<T> or shared_p
 
 One reason it&#39;s very important to understand what values are copy-by-value, and what are copy-by-reference, is because of understanding thread safety.
 
-All of Stroika is built to be extremely &#39;thread safe&#39;, but automatically synchronizing all operations would create a high and almost pointless performance penalty.
+All of Stroika is built to be &#39;thread safe&#39;, but automatically synchronizing all operations would create a high and almost pointless performance penalty.
 
 Instead, Stroika mostly follows the C++ STL (Standard Template Library) thread safety convention, of having const methods always safe for multiple readers, and non-const methods ONLY safe with a single caller at a time.
 
-But that only goes one level deep – the outer object you are accessing. For the special case of these &#39;Ptr&#39; objects, the user must also worry about synchronizing the internal shared &#39;rep&#39; objects. The way this is done varies from class to class, and look at the particular &#39;Ptr&#39; classes you are using to see. For example, Thread::Ptr internal rep objects are always internally synchronized (meaning the caller only need worry about synchronizing the Ptr object). Stream internal rep objects are by default, _not_ externally synchronized, but you can easily construct a synchronized internal stream with InputStream\<>::Synchronize () – for example.
+But that only goes one level deep – the outer object you are accessing. For the special case of these &#39;Ptr&#39; objects, the user must also worry about synchronizing the internal shared &#39;rep&#39; objects. The way this is done varies from class to class, and look at the particular &#39;Ptr&#39; classes you are using to see. For example, Thread::Ptr internal rep objects are always internally synchronized (meaning the caller only need worry about synchronizing the Ptr object). Stream internal rep objects are by default, _not_ externally synchronized, but you can easily construct an internally synchronized stream with InternallySynchronizedInputStream\<T>::New () – for example (which creates a new delegating object with locks around each call).
 
 And to synchronize any c++ object, you can always use the utility template Synchronized\<T> - to wrap access to the object. You can also use lock_guard\<>; etc, but Synchronized\<> makes accessing shared data in a thread-safe way MUCH simpler and more transparent (but only synchronizes the &#39;envelope&#39; – not the &#39;shared rep&#39; of &#39;Ptr&#39; objects.
 
@@ -96,9 +98,9 @@ In the several families of classes, such as Threads, Streams (InputStream, Outpu
 
 The envelope typically follows C++-Standard-Thread-Safety, but the thread safety rules applying to the letter (shared rep object) – depend on how that object was created. So see its Object::New () method for documentation on this.
 
-### Debug::AssertExternallySynchronized\<T>
+### Debug::AssertExternallySynchronizedMutex\<T>
 
-To help document, and to help ensure that Stroika classes are used in a thread safe manner, the helper class Debug::AssertExternallySynchronized\<T> is used fairly consistently throughout Stroika to &#39;wrap&#39; objects in a thread-safety-checking envelope. This has no performance cost (space or runtime) in release builds, but has a significant (roughly 2x slowdown) in debug builds.
+To document, and to help ensure that Stroika classes are used in a thread safe manner, the helper class Debug::AssertExternallySynchronizedMutex\<T> is used fairly consistently throughout Stroika to &#39;wrap&#39; objects in a thread-safety-checking envelope. This has no performance cost (space or runtime) in release builds, but has a significant (roughly 2x slowdown) in debug builds.
 
 But it means that if your code runs correctly (without assertion errors) in Debug builds, it&#39;s probably thread safe.
 
@@ -111,6 +113,8 @@ This doesn&#39;t completely replace tools like thread-sanitizer, and valgrind/he
 Tools like valgrind (helgrind and memcheck), and sanitizers (address, undefined behavior, and thread sanitizer) are all regularly run as part of the Stroika regression test suite, and are a sensible addition Stroika-based development process.
 
 They are especially useful to help validate that any subtle bugs aren&#39;t present ONLY in release builds, but not in debug builds (extremely rare, but it can happen).
+
+All Stroika's regression tests are regularly run with valgrind and sanitizers.
 
 ---
 
@@ -162,6 +166,7 @@ Examples of common STL methods which appear in Stroika code (with STL semantics)
 - &#39;t&#39; prefix for thread_local variables
 - &#39;s&#39; prefix for static varaibles.
 - &#39;\_&#39; prefix for PROTECTED instance variables or functions
+- 'I' prefix for concepts (since they essentially ACT as interfaces, but are used in a context where they cannot be confused with subclassable interfaces)
 
 #### Suffix
 
