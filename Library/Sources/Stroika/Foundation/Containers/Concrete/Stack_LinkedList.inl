@@ -120,17 +120,8 @@ namespace Stroika::Foundation::Containers::Concrete {
     template <IIterableOf<T> ITERABLE_OF_ADDABLE>
         requires (not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, Stack_LinkedList<T>>)
     inline Stack_LinkedList<T>::Stack_LinkedList (ITERABLE_OF_ADDABLE&& src)
-        : Stack_LinkedList{}
+        : Stack_LinkedList{src.begin (), src.end ()}
     {
-        // sadly intrinsically expensive to copy an Iterable using the stack API
-        // @todo find a more efficient way - for example - if there is a way to get a reverse-iterator from 'src' this can be much cheaper! - or at least copy ptrs
-        vector<T> tmp;
-        for (const auto& si : src) {
-            tmp.push_back (si);
-        }
-        for (const auto& si : tmp) {
-            Push (si);
-        }
     }
 #endif
     template <typename T>
@@ -140,10 +131,9 @@ namespace Stroika::Foundation::Containers::Concrete {
     {
         // sadly intrinsically expensive to copy an Iterable using the stack API
         // @todo find a more efficient way - for example - if there is a way to get a reverse-iterator from 'src' this can be much cheaper! - or at least copy PTRS
+        // @todo use if constexpr here on types provided!!!
         vector<T> tmp;
-        for (auto i = forward<ITERATOR_OF_ADDABLE> (start); i != end; ++i) {
-            tmp.push_back (*i);
-        }
+        copy (forward<ITERATOR_OF_ADDABLE> (start), forward<ITERATOR_OF_ADDABLE> (end), back_inserter (tmp));
         for (const auto& si : tmp) {
             Push (si);
         }

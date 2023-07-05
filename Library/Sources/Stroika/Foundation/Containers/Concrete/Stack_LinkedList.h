@@ -54,20 +54,9 @@ namespace Stroika::Foundation::Containers::Concrete {
             requires (not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, Stack_LinkedList<T>>)
         explicit Stack_LinkedList (ITERABLE_OF_ADDABLE&& src)
 #if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
-            : Stack_LinkedList{}
-        {
-            // sadly intrinsically expensive to copy an Iterable using the stack API
-            // @todo find a more efficient way - for example - if there is a way to get a reverse-iterator from 'src' this can be much cheaper! - or at least copy ptrs
-            vector<T> tmp;
-            for (const auto& si : src) {
-                tmp.push_back (si);
-            }
-            for (const auto& si : tmp) {
-                Push (si);
-            }
-        }
+            : Stack_LinkedList{src.begin (), src.end ()} {}
 #endif
-        ;
+            ;
         template <IInputIterator<T> ITERATOR_OF_ADDABLE>
         Stack_LinkedList (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
 
