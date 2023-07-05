@@ -2313,9 +2313,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\ReadMe.md">
       <Filter>Sources\Containers\Concrete</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\TODO.md">
-      <Filter>Sources\Containers\Concrete</Filter>
-    </None>
     <None Include="..\..\Sources\Stroika\Foundation\Containers\STL\ReadMe.md">
       <Filter>Sources\Containers\STL</Filter>
     </None>
@@ -3509,6 +3506,9 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\KeyedCollection_stdhashset.inl">
       <Filter>Sources\Containers\Concrete</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\TODO.md">
+      <Filter>Sources\Containers\DataStructures</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
