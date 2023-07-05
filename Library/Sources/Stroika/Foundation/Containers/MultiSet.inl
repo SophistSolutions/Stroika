@@ -160,7 +160,7 @@ namespace Stroika::Foundation::Containers {
         // Need explicit struct because we need to re-create the iterator on copies
         // Not just simple map cuz must pause and 'create' new extra elements
         struct Context_ {
-            MultiSet<T, TRAITS>       fOriginalMultiset;
+            MultiSet<T, TRAITS>                         fOriginalMultiset;
             Iterator<typename TRAITS::CountedValueType> fCurrentIteratorOverOrig;
             size_t fIthAdvanceOfIterator{0}; // because not a random-accessor iterator so hard to compute without tracking
             size_t fIthOfCurrentIterator{0};
