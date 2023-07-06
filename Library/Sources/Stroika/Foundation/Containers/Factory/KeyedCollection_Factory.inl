@@ -49,11 +49,11 @@ namespace Stroika::Foundation::Containers::Factory {
         if (this->fFactory_ == nullptr) [[likely]] {
             if constexpr (is_default_constructible_v<Concrete::KeyedCollection_stdhashset<T, KEY_TYPE, TRAITS>> and
                           is_same_v<KEY_EQUALS_COMPARER, equal_to<KEY_TYPE>>) {
-                    return Concrete::KeyedCollection_stdhashset<T, KEY_TYPE, TRAITS>{keyExtractor};
+                return Concrete::KeyedCollection_stdhashset<T, KEY_TYPE, TRAITS>{keyExtractor};
             }
             else if constexpr (is_default_constructible_v<Concrete::KeyedCollection_stdset<T, KEY_TYPE, TRAITS>> and
                                is_same_v<KEY_EQUALS_COMPARER, equal_to<KEY_TYPE>>) {
-                    return Concrete::KeyedCollection_stdset<T, KEY_TYPE, TRAITS>{keyExtractor}; // if using == as equals comparer, just map to < for in-order comparison
+                return Concrete::KeyedCollection_stdset<T, KEY_TYPE, TRAITS>{keyExtractor}; // if using == as equals comparer, just map to < for in-order comparison
             }
             else {
                 /*
