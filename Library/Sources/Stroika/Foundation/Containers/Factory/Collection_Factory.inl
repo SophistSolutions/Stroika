@@ -32,29 +32,12 @@ namespace Stroika::Foundation::Containers::Factory {
         : Collection_Factory{AccessDefault_ ()}
     {
     }
-    DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wunused-lambda-capture\"");
     template <typename T>
-    constexpr Collection_Factory<T>::Collection_Factory ([[maybe_unused]] const Hints& hints)
-        : Collection_Factory{[hints] () -> FactoryFunctionType {
-            if constexpr (Configuration::IOperatorLt<T>) {
-                // faster adds/removes - same size - so better if possible to use (unless very small collections maybe)
-                return [] () { return Concrete::Collection_stdmultiset<T>{}; };
-            }
-            else {
-                if (hints.fOptimizeForLookupSpeedOverUpdateSpeed.value_or (true)) {
-                    // questionable choice. For smaller sizes, probably faster, due to better locality.
-                    // but adds can occionally be slow (realloc/O(N)) instead of O(1).
-                    return [] () { return Concrete::Collection_Array<T>{}; };
-                }
-                else {
-                    // This generally performs well, so long as you don't call 'size'
-                    return [] () { return Concrete::Collection_LinkedList<T>{}; };
-                }
-            }
-        }()}
+    constexpr Collection_Factory<T>::Collection_Factory (const Hints& hints)
+        : fFactory_{nullptr}
+        , fHints_OptimizeForLookupSpeedOverUpdateSpeed{hints.fOptimizeForLookupSpeedOverUpdateSpeed.value_or (true)}
     {
     }
-    DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wunused-lambda-capture\"");
     template <typename T>
     inline auto Collection_Factory<T>::Default () -> const Collection_Factory&
     {
@@ -63,7 +46,29 @@ namespace Stroika::Foundation::Containers::Factory {
     template <typename T>
     inline auto Collection_Factory<T>::operator() () const -> ConstructedType
     {
-        return this->fFactory_ ();
+        if (this->fFactory_ == nullptr) [[likely]] {
+            if constexpr (Configuration::IOperatorLt<T>) {
+                // faster adds/removes - same size - so better if possible to use (unless very small collections maybe)
+                static const auto kDefault_ = Concrete::Collection_stdmultiset<T>{};
+                return kDefault_;
+            }
+            else {
+                if (fHints_OptimizeForLookupSpeedOverUpdateSpeed) [[likely]] {
+                    // questionable choice. For smaller sizes, probably faster, due to better locality.
+                    // but adds can occionally be slow (realloc/O(N)) instead of O(1).
+                    static const auto kDefault_ = Concrete::Collection_Array<T>{};
+                    return kDefault_;
+                }
+                else {
+                    // This generally performs well, so long as you don't call 'size'
+                    static const auto kDefault_ = Concrete::Collection_LinkedList<T>{};
+                    return kDefault_;
+                }
+            }
+        }
+        else {
+            return this->fFactory_ ();
+        }
     }
     template <typename T>
     void Collection_Factory<T>::Register (const optional<Collection_Factory>& f)

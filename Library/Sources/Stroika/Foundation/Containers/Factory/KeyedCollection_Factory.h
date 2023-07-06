@@ -106,7 +106,7 @@ namespace Stroika::Foundation::Containers::Factory {
         static void Register (const optional<KeyedCollection_Factory>& f = nullopt);
 
     private:
-        FactoryFunctionType fFactory_;
+        const FactoryFunctionType fFactory_;
 
     private:
         // function to assure magically constructed even if called before main

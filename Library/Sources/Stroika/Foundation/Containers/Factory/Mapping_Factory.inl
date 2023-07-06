@@ -35,38 +35,12 @@ namespace Stroika::Foundation::Containers::Factory {
         : Mapping_Factory{AccessDefault_ ()}
     {
     }
-    DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wunused-lambda-capture\"");
     template <typename KEY_TYPE, typename VALUE_TYPE, IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER>
-    constexpr Mapping_Factory<KEY_TYPE, VALUE_TYPE, KEY_EQUALS_COMPARER>::Mapping_Factory ([[maybe_unused]] const Hints& hints)
-        : Mapping_Factory{[hints] () -> FactoryFunctionType {
-            if constexpr (is_same_v<KEY_EQUALS_COMPARER, equal_to<KEY_TYPE>> and
-                          is_default_constructible_v<Concrete::Mapping_stdhashmap<KEY_TYPE, VALUE_TYPE>>) {
-                return [] ([[maybe_unused]] const KEY_EQUALS_COMPARER& keyEqualsComparer) {
-                    return Concrete::Mapping_stdhashmap<KEY_TYPE, VALUE_TYPE>{};
-                };
-            }
-            else if constexpr (is_same_v<KEY_EQUALS_COMPARER, equal_to<KEY_TYPE>> and Configuration::IOperatorLt<KEY_TYPE>) {
-                return [] ([[maybe_unused]] const KEY_EQUALS_COMPARER& keyEqualsComparer) {
-                    return Concrete::Mapping_stdmap<KEY_TYPE, VALUE_TYPE>{};
-                };
-            }
-            else {
-                if (hints.fOptimizeForLookupSpeedOverUpdateSpeed.value_or (true)) {
-                    // array has better memory locality properties so lookups faster
-                    return [] (const KEY_EQUALS_COMPARER& keyEqualsComparer) {
-                        return Concrete::Mapping_Array<KEY_TYPE, VALUE_TYPE>{keyEqualsComparer};
-                    };
-                }
-                else {
-                    return [] (const KEY_EQUALS_COMPARER& keyEqualsComparer) {
-                        return Concrete::Mapping_LinkedList<KEY_TYPE, VALUE_TYPE>{keyEqualsComparer};
-                    };
-                }
-            }
-        }()}
+    constexpr Mapping_Factory<KEY_TYPE, VALUE_TYPE, KEY_EQUALS_COMPARER>::Mapping_Factory ( const Hints& hints)
+        : fFactory_{nullptr}
+        , fHints_OptimizeForLookupSpeedOverUpdateSpeed{hints.fOptimizeForLookupSpeedOverUpdateSpeed.value_or (true)}
     {
     }
-    DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wunused-lambda-capture\"");
     template <typename KEY_TYPE, typename VALUE_TYPE, IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER>
     inline auto Mapping_Factory<KEY_TYPE, VALUE_TYPE, KEY_EQUALS_COMPARER>::Default () -> const Mapping_Factory&
     {
@@ -75,7 +49,29 @@ namespace Stroika::Foundation::Containers::Factory {
     template <typename KEY_TYPE, typename VALUE_TYPE, IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER>
     inline auto Mapping_Factory<KEY_TYPE, VALUE_TYPE, KEY_EQUALS_COMPARER>::operator() (const KEY_EQUALS_COMPARER& keyEqualsComparer) const -> ConstructedType
     {
-        return this->fFactory_ (keyEqualsComparer);
+        if (this->fFactory_ == nullptr) [[likely]] {
+            if constexpr (is_same_v<KEY_EQUALS_COMPARER, equal_to<KEY_TYPE>> and
+                          is_default_constructible_v<Concrete::Mapping_stdhashmap<KEY_TYPE, VALUE_TYPE>>) {
+                static const auto kDefault_ = Concrete::Mapping_stdhashmap<KEY_TYPE, VALUE_TYPE>{};
+                return kDefault_;
+            }
+            else if constexpr (is_same_v<KEY_EQUALS_COMPARER, equal_to<KEY_TYPE>> and Configuration::IOperatorLt<KEY_TYPE>) {
+                static const auto kDefault_ = Concrete::Mapping_stdmap<KEY_TYPE, VALUE_TYPE>{};
+                return kDefault_;
+            }
+            else {
+                if (fHints_OptimizeForLookupSpeedOverUpdateSpeed) [[likely]] {
+                    // array has better memory locality properties so lookups faster
+                    return Concrete::Mapping_Array<KEY_TYPE, VALUE_TYPE>{keyEqualsComparer};
+                }
+                else {
+                    return Concrete::Mapping_LinkedList<KEY_TYPE, VALUE_TYPE>{keyEqualsComparer};
+                }
+            }
+        }
+        else {
+            return this->fFactory_ (keyEqualsComparer);
+        }
     }
     template <typename KEY_TYPE, typename VALUE_TYPE, IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER>
     void Mapping_Factory<KEY_TYPE, VALUE_TYPE, KEY_EQUALS_COMPARER>::Register (const optional<Mapping_Factory>& f)

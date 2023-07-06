@@ -44,7 +44,8 @@ namespace Stroika::Foundation::Containers::Factory {
     inline auto Stack_Factory<T>::operator() () const -> ConstructedType
     {
         if (this->fFactory_ == nullptr) [[likely]] {
-            return Concrete::Stack_LinkedList<T>{};
+            static const auto kDefault_ = Concrete::Stack_LinkedList<T>{}; // some stacks remain empty, so why not share them...
+            return kDefault_;
         }
         else {
             return this->fFactory_ ();

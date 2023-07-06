@@ -34,33 +34,7 @@ namespace Stroika::Foundation::Containers::Factory {
     }
     template <typename T, typename KEY_TYPE, typename TRAITS, typename KEY_EQUALS_COMPARER>
     constexpr KeyedCollection_Factory<T, KEY_TYPE, TRAITS, KEY_EQUALS_COMPARER>::KeyedCollection_Factory ([[maybe_unused]] const Hints& hints)
-        : KeyedCollection_Factory{[] () -> FactoryFunctionType {
-            if constexpr (is_default_constructible_v<Concrete::KeyedCollection_stdhashset<T, KEY_TYPE, TRAITS>> and
-                          is_same_v<KEY_EQUALS_COMPARER, equal_to<KEY_TYPE>>) {
-                return [] (const KeyExtractorType& keyExtractor, [[maybe_unused]] const KEY_EQUALS_COMPARER& keyComparer) {
-                    return Concrete::KeyedCollection_stdhashset<T, KEY_TYPE, TRAITS>{keyExtractor};
-                };
-            }
-            else if constexpr (is_default_constructible_v<Concrete::KeyedCollection_stdset<T, KEY_TYPE, TRAITS>> and
-                               is_same_v<KEY_EQUALS_COMPARER, equal_to<KEY_TYPE>>) {
-                return [] (const KeyExtractorType& keyExtractor, [[maybe_unused]] const KEY_EQUALS_COMPARER& keyComparer) {
-                    return Concrete::KeyedCollection_stdset<T, KEY_TYPE, TRAITS>{keyExtractor}; // if using == as equals comparer, just map to < for in-order comparison
-                };
-            }
-            else {
-                /*
-                 *  Note - though this is not an efficient implementation of KeyedCollection<> for large sizes, its probably the most
-                 *  efficient representation which adds no requirements to KEY_TYPE, such as operator< (or a traits less) or
-                 *  a hash function. And its quite reasonable for small KeyedCollection's - which are often the case.
-                 *
-                 *  Note, array CAN be slower than LinkedList as the size grows (array faster when small due to better locality).
-                 *  But the whole thing bogs down no matter what, when larger, cuz you really need some indexed data structure like a tree.
-                 */
-                return [] (const KeyExtractorType& keyExtractor, const KEY_EQUALS_COMPARER& keyComparer) {
-                    return Concrete::KeyedCollection_Array<T, KEY_TYPE, TRAITS>{keyExtractor, keyComparer};
-                };
-            }
-        }()}
+        : fFactory_{nullptr}
     {
     }
     template <typename T, typename KEY_TYPE, typename TRAITS, typename KEY_EQUALS_COMPARER>
@@ -72,7 +46,30 @@ namespace Stroika::Foundation::Containers::Factory {
     inline auto KeyedCollection_Factory<T, KEY_TYPE, TRAITS, KEY_EQUALS_COMPARER>::operator() (const KeyExtractorType& keyExtractor,
                                                                                                const KEY_EQUALS_COMPARER& keyComparer) const -> ConstructedType
     {
-        return this->fFactory_ (keyExtractor, keyComparer);
+        if (this->fFactory_ == nullptr) [[likely]] {
+            if constexpr (is_default_constructible_v<Concrete::KeyedCollection_stdhashset<T, KEY_TYPE, TRAITS>> and
+                          is_same_v<KEY_EQUALS_COMPARER, equal_to<KEY_TYPE>>) {
+                    return Concrete::KeyedCollection_stdhashset<T, KEY_TYPE, TRAITS>{keyExtractor};
+            }
+            else if constexpr (is_default_constructible_v<Concrete::KeyedCollection_stdset<T, KEY_TYPE, TRAITS>> and
+                               is_same_v<KEY_EQUALS_COMPARER, equal_to<KEY_TYPE>>) {
+                    return Concrete::KeyedCollection_stdset<T, KEY_TYPE, TRAITS>{keyExtractor}; // if using == as equals comparer, just map to < for in-order comparison
+            }
+            else {
+                /*
+                 *  Note - though this is not an efficient implementation of KeyedCollection<> for large sizes, its probably the most
+                 *  efficient representation which adds no requirements to KEY_TYPE, such as operator< (or a traits less) or
+                 *  a hash function. And its quite reasonable for small KeyedCollection's - which are often the case.
+                 *
+                 *  Note, array CAN be slower than LinkedList as the size grows (array faster when small due to better locality).
+                 *  But the whole thing bogs down no matter what, when larger, cuz you really need some indexed data structure like a tree.
+                 */
+                return Concrete::KeyedCollection_Array<T, KEY_TYPE, TRAITS>{keyExtractor, keyComparer};
+            }
+        }
+        else {
+            return this->fFactory_ (keyExtractor, keyComparer);
+        }
     }
     template <typename T, typename KEY_TYPE, typename TRAITS, typename KEY_EQUALS_COMPARER>
     void KeyedCollection_Factory<T, KEY_TYPE, TRAITS, KEY_EQUALS_COMPARER>::Register (const optional<KeyedCollection_Factory>& f)
