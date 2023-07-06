@@ -24,11 +24,18 @@ namespace Stroika::Foundation::Containers {
     {
         _AssertRepValidType ();
     }
-#if !qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
+#if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
+    template <typename T>
+       template <typename ITERABLE_OF_ADDABLE, enable_if_t<IIterableOf<ITERABLE_OF_ADDABLE,T> and not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, Stack<T>>>* >
+    inline Stack<T>::Stack (ITERABLE_OF_ADDABLE&& src)
+        : inherited{Factory::Stack_Factory<T>::Default () (begin (src), end (src))}
+    {
+    }
+#else
     template <typename T>
     template <IIterableOf<T> ITERABLE_OF_ADDABLE>
     inline Stack<T>::Stack (ITERABLE_OF_ADDABLE&& src)
-        requires (not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, Stack<T>>)
+         requires (not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, Stack<T>>)
         : inherited{Factory::Stack_Factory<T>::Default () (begin (src), end (src))}
     {
     }
