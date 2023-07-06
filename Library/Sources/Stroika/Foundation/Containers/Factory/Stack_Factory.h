@@ -72,6 +72,8 @@ namespace Stroika::Foundation::Containers::Factory {
          *  You can call this directly, but there is no need, as the Stack<T> CTOR does so automatically.
          */
         nonvirtual ConstructedType operator() () const;
+        template <typename IT>
+        nonvirtual ConstructedType operator() (IT&& start, IT&& end) const;
 
     public:
         /**

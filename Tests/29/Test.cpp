@@ -131,6 +131,23 @@ namespace {
 }
 
 namespace {
+    namespace Test3_StackContructionByValue_ {
+
+        void Test ()
+        {
+            Stack<int> a;
+            a.Push (1);
+            a.Push (2);
+            vector<int> aa (a.begin (), a.end ());
+            Stack<int>  b{aa};
+            VerifyTestResult (b.size () == 2);
+            VerifyTestResult (b.Pop () == 2);
+            VerifyTestResult (b.Pop () == 1);
+        }
+    }
+}
+
+namespace {
     void DoRegressionTests_ ()
     {
         using COMPARE_SIZET       = equal_to<size_t>;
@@ -149,6 +166,8 @@ namespace {
         Tests_All_For_Type_<Stack_LinkedList<SimpleClass>, COMPARE_SimpleClass> ();
         Tests_All_For_Type_WhichDontRequireComparer_For_Type_<Stack_LinkedList<SimpleClassWithoutComparisonOperators>, COMPARE_SimpleClassWithoutComparisonOperators> ();
         Tests_All_For_Type_<Stack_LinkedList<SimpleClassWithoutComparisonOperators>, COMPARE_SimpleClassWithoutComparisonOperators> ();
+
+        Test3_StackContructionByValue_::Test ();
 
         VerifyTestResult (SimpleClass::GetTotalLiveCount () == 0 and SimpleClassWithoutComparisonOperators::GetTotalLiveCount () == 0); // simple portable leak check
     }

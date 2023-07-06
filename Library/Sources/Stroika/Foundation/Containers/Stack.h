@@ -21,8 +21,6 @@
  *
  *
  *  TODO:
- *      @todo   Improve performance of CTOR's using reverse-iterator (?)
- *
  *      @todo   Embellish test cases (regression tests), and fix/make sure copying works.
  *
  *      @todo   Review
@@ -108,20 +106,9 @@ namespace Stroika::Foundation::Containers {
         explicit Stack (ITERABLE_OF_ADDABLE&& src)
             requires (not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, Stack<T>>)
 #if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
-            : Stack{}
-        {
-            // sadly intrinsically expensive to copy an Iterable using the stack API
-            // @todo find a more efficient way - for example - if there is a way to get a reverse-iterator from 'src' this can be much cheaper!
-            vector<T> tmp;
-            for (const auto& si : src) {
-                tmp.push_back (si);
-            }
-            for (const auto& si : tmp) {
-                Push (si);
-            }
-        }
+            : inherited{Factory::Stack_Factory<T>::Default () (begin (src), end (src))}
 #endif
-        ;
+            ;
         template <IInputIterator<T> ITERATOR_OF_ADDABLE>
         Stack (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
 

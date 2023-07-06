@@ -29,17 +29,8 @@ namespace Stroika::Foundation::Containers {
     template <IIterableOf<T> ITERABLE_OF_ADDABLE>
     inline Stack<T>::Stack (ITERABLE_OF_ADDABLE&& src)
         requires (not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, Stack<T>>)
-        : Stack{}
+        : inherited{Factory::Stack_Factory<T>::Default () (begin (src), end (src))}
     {
-        // sadly intrinsically expensive to copy an Iterable using the stack API
-        // @todo find a more efficient way - for example - if there is a way to get a reverse-iterator from 'src' this can be much cheaper!
-        vector<T> tmp;
-        for (const auto& si : src) {
-            tmp.push_back (si);
-        }
-        for (const auto& si : tmp) {
-            Push (si);
-        }
     }
 #endif
     template <typename T>
@@ -57,17 +48,8 @@ namespace Stroika::Foundation::Containers {
     template <typename T>
     template <IInputIterator<T> ITERATOR_OF_ADDABLE>
     inline Stack<T>::Stack (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
-        : Stack{}
+        : inherited{Factory::Stack_Factory<T>::Default () (forward<ITERATOR_OF_ADDABLE> (start), forward<ITERATOR_OF_ADDABLE> (end))}
     {
-        // sadly intrinsically expensive to copy an Iterable using the stack API
-        // @todo find a more efficient way - for example - if there is a way to get a reverse-iterator from 'src' this can be much cheaper!
-        vector<T> tmp;
-        for (auto i = forward<ITERATOR_OF_ADDABLE> (start); i != end; ++i) {
-            tmp.push_back (*i);
-        }
-        for (const auto& si : tmp) {
-            Push (si);
-        }
     }
     template <typename T>
     inline void Stack<T>::Push (ArgByValueType<value_type> item)

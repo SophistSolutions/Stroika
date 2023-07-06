@@ -126,7 +126,7 @@ namespace Stroika::Foundation::Containers::Concrete {
 #endif
     template <typename T>
     template <IInputIterator<T> ITERATOR_OF_ADDABLE>
-    inline Stack_LinkedList<T>::Stack_LinkedList (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
+    Stack_LinkedList<T>::Stack_LinkedList (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
         : Stack_LinkedList{}
     {
         // sadly intrinsically expensive to copy an Iterable using the stack API
@@ -134,8 +134,8 @@ namespace Stroika::Foundation::Containers::Concrete {
         // @todo use if constexpr here on types provided!!!
         vector<T> tmp;
         copy (forward<ITERATOR_OF_ADDABLE> (start), forward<ITERATOR_OF_ADDABLE> (end), back_inserter (tmp));
-        for (const auto& si : tmp) {
-            Push (si);
+        for (auto ri = tmp.rbegin (); ri != tmp.rend (); ++ri) {
+            this->Push (*ri);
         }
     }
     template <typename T>

@@ -32,7 +32,7 @@ namespace Stroika::Foundation::Containers::Factory {
     }
     template <typename T>
     constexpr Stack_Factory<T>::Stack_Factory ([[maybe_unused]] const Hints& hints)
-        : Stack_Factory{[] () -> FactoryFunctionType { return [] () { return Concrete::Stack_LinkedList<T>{}; }; }()}
+        : Stack_Factory{nullptr}
     {
     }
     template <typename T>
@@ -43,7 +43,29 @@ namespace Stroika::Foundation::Containers::Factory {
     template <typename T>
     inline auto Stack_Factory<T>::operator() () const -> ConstructedType
     {
-        return this->fFactory_ ();
+        if (this->fFactory_ == nullptr) [[likely]] {
+            return Concrete::Stack_LinkedList<T>{};
+        }
+        else {
+            return this->fFactory_ ();
+        }
+    }
+    template <typename T>
+    template <typename IT>
+    auto Stack_Factory<T>::operator() (IT&& start, IT&& end) const -> ConstructedType
+    {
+        if (this->fFactory_ == nullptr) [[likely]] {
+            return Concrete::Stack_LinkedList<T>{forward<IT> (start), forward<IT> (end)};
+        }
+        else {
+            ConstructedType r = this->fFactory_ ();
+            vector<T>       tmp;
+            copy (forward<IT> (start), forward<IT> (end), back_inserter (tmp));
+            for (auto ri = tmp.rbegin (); ri != tmp.rend (); ++ri) {
+                r.Push (*ri);
+            }
+            return r;
+        }
     }
     template <typename T>
     void Stack_Factory<T>::Register (const optional<Stack_Factory>& f)
