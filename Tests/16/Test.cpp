@@ -47,8 +47,7 @@ namespace {
                 s2.Add (Obj_{typeid (long int)});
             }
             {
-                // Or slighltly more flexiblely, but less efficiently
-                Concrete::KeyedCollection_stdset<Obj_, type_index> s1;
+                // Or slighltly more flexiblely, but less efficiently (cuz extractor stored in std::function and invoked through that wrapper)
                 KeyedCollection<Obj_, type_index>                  s2{My_Extractor_{}};
                 s2.Add (Obj_{typeid (int)});
                 s2.Add (Obj_{typeid (long int)});

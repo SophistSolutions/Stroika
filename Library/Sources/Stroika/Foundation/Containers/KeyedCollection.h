@@ -31,16 +31,10 @@ namespace Stroika::Foundation::Containers {
     using Traversal::Iterator;
 
     /**
-     *  @todo SB concept
      */
-    template <typename T, typename KEY_TYPE, typename POTENTIAL_KEY_EXTRACTOR>
-    constexpr bool KeyedCollection_IsKeyExctractor ()
-    {
-        if constexpr (is_invocable_v<POTENTIAL_KEY_EXTRACTOR, T>) {
-            return std::is_convertible_v<std::invoke_result_t<POTENTIAL_KEY_EXTRACTOR, T>, KEY_TYPE>;
-        }
-        return false;
-    }
+    template <typename POTENTIAL_KEY_EXTRACTOR, typename T, typename KEY_TYPE>
+    concept IKeyedCollection_KeyExctractor =
+        is_invocable_v<POTENTIAL_KEY_EXTRACTOR, T> and is_convertible_v<std::invoke_result_t<POTENTIAL_KEY_EXTRACTOR, T>, KEY_TYPE>;
 
     /**
      *  \note KEY_EXTRACTOR_TYPE defaults in such a way that you can specify a function (std::function or lambda) in the constructor.
@@ -91,9 +85,9 @@ namespace Stroika::Foundation::Containers {
      *  since the default for this std::function is not callable.
      */
     template <typename T, typename KEY_TYPE, typename TRAITS>
-    concept KeyedCollection_ExtractorCanBeDefaulted = is_invocable_v<typename TRAITS::KeyExtractorType, T> and
-                                                      std::is_convertible_v<std::invoke_result_t<typename TRAITS::KeyExtractorType, T>, KEY_TYPE> and
-                                                      is_default_constructible_v<typename TRAITS::KeyExtractorType> and not
+    concept IKeyedCollection_ExtractorCanBeDefaulted = is_invocable_v<typename TRAITS::KeyExtractorType, T> and
+                                                       std::is_convertible_v<std::invoke_result_t<typename TRAITS::KeyExtractorType, T>, KEY_TYPE> and
+                                                       is_default_constructible_v<typename TRAITS::KeyExtractorType> and not
     is_same_v<typename TRAITS::KeyExtractorType, function<KEY_TYPE (T)>> and
         not is_same_v<typename TRAITS::KeyExtractorType, function<KEY_TYPE (const T&)>>;
 
@@ -151,7 +145,7 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
-         *  @see inherited::value_type
+         *  @see inherited::value_type - this is 'T' (not KEY_TYPE)
          */
         using value_type = typename inherited::value_type;
 
@@ -180,8 +174,11 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
+         *  This is the type of the 'extractor' function, which can be static (so occupy no space) but defaults to
+         *  function<KEY_TYPE (ArgByValueType<T>)>> - specified in the TRAITS argument to KeyedCollection<>
          */
         using KeyExtractorType = typename TRAITS::KeyExtractorType;
+        static_assert (IKeyedCollection_KeyExctractor<KeyExtractorType, T, KEY_TYPE>);
 
     public:
         /**
@@ -237,14 +234,14 @@ namespace Stroika::Foundation::Containers {
          */
         template <IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER = equal_to<KEY_TYPE>>
         KeyedCollection (KEY_EQUALS_COMPARER&& keyComparer = KEY_EQUALS_COMPARER{})
-            requires (KeyedCollection_ExtractorCanBeDefaulted<T, KEY_TYPE, TRAITS>);
+            requires (IKeyedCollection_ExtractorCanBeDefaulted<T, KEY_TYPE, TRAITS>);
         KeyedCollection (KeyedCollection&& src) noexcept      = default;
         KeyedCollection (const KeyedCollection& src) noexcept = default;
         template <IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER = equal_to<KEY_TYPE>>
         KeyedCollection (const KeyExtractorType& keyExtractor, KEY_EQUALS_COMPARER&& keyComparer = KEY_EQUALS_COMPARER{});
         template <IIterableOf<T> ITERABLE_OF_ADDABLE, IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER = equal_to<KEY_TYPE>>
         KeyedCollection (ITERABLE_OF_ADDABLE&& src)
-            requires (KeyedCollection_ExtractorCanBeDefaulted<T, KEY_TYPE, TRAITS> and
+            requires (IKeyedCollection_ExtractorCanBeDefaulted<T, KEY_TYPE, TRAITS> and
                       not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, KeyedCollection<T, KEY_TYPE, TRAITS>>)
 #if qCompilerAndStdLib_template_Requires_templateDeclarationMatchesOutOfLine2_Buggy
             : KeyedCollection{}
@@ -256,7 +253,7 @@ namespace Stroika::Foundation::Containers {
         ;
         template <IIterableOf<T> ITERABLE_OF_ADDABLE, IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER = equal_to<KEY_TYPE>>
         KeyedCollection (KEY_EQUALS_COMPARER&& keyComparer, ITERABLE_OF_ADDABLE&& src)
-            requires (KeyedCollection_ExtractorCanBeDefaulted<T, KEY_TYPE, TRAITS> and
+            requires (IKeyedCollection_ExtractorCanBeDefaulted<T, KEY_TYPE, TRAITS> and
                       not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, KeyedCollection<T, KEY_TYPE, TRAITS>>)
 #if qCompilerAndStdLib_template_Requires_templateDeclarationMatchesOutOfLine2_Buggy
             : KeyedCollection{KeyExtractorType{}, forward<KEY_EQUALS_COMPARER> (keyComparer)}
@@ -270,10 +267,10 @@ namespace Stroika::Foundation::Containers {
         KeyedCollection (const KeyExtractorType& keyExtractor, KEY_EQUALS_COMPARER&& keyComparer, ITERABLE_OF_ADDABLE&& src);
         template <IInputIterator<T> ITERATOR_OF_ADDABLE, IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER = equal_to<KEY_TYPE>>
         KeyedCollection (ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
-            requires (KeyedCollection_ExtractorCanBeDefaulted<T, KEY_TYPE, TRAITS>);
+            requires (IKeyedCollection_ExtractorCanBeDefaulted<T, KEY_TYPE, TRAITS>);
         template <IInputIterator<T> ITERATOR_OF_ADDABLE, IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER = equal_to<KEY_TYPE>>
         KeyedCollection (KEY_EQUALS_COMPARER&& keyComparer, ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end)
-            requires (KeyedCollection_ExtractorCanBeDefaulted<T, KEY_TYPE, TRAITS>);
+            requires (IKeyedCollection_ExtractorCanBeDefaulted<T, KEY_TYPE, TRAITS>);
         template <IEqualsComparer<KEY_TYPE> KEY_EQUALS_COMPARER, IInputIterator<T> ITERATOR_OF_ADDABLE>
         KeyedCollection (const KeyExtractorType& keyExtractor, KEY_EQUALS_COMPARER&& keyComparer, ITERATOR_OF_ADDABLE&& start, ITERATOR_OF_ADDABLE&& end);
 
