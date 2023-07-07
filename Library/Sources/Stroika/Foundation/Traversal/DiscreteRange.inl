@@ -88,7 +88,7 @@ namespace Stroika::Foundation::Traversal {
             {
             }
             virtual shared_ptr<typename Iterable<T>::_IRep> Clone () const override { return Memory::MakeSharedPtr<MyRep_> (*this); }
-            virtual Iterator<T> MakeIterator ([[maybe_unused]] const shared_ptr<typename Iterable<T>::_IRep>& thisSharedPtr) const override
+            virtual Iterator<T>                             MakeIterator () const override
             {
                 if (fForcedEnd) {
                     return Iterator<T>{make_unique<DiscreteRange::MyIteratorRep_> ()};

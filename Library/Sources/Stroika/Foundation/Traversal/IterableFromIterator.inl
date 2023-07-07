@@ -40,8 +40,7 @@ namespace Stroika::Foundation::Traversal {
     {
     }
     template <typename T, typename NEW_ITERATOR_REP_TYPE, typename CONTEXT_FOR_EACH_ITERATOR>
-    Iterator<T> IterableFromIterator<T, NEW_ITERATOR_REP_TYPE, CONTEXT_FOR_EACH_ITERATOR>::_Rep::MakeIterator (
-        [[maybe_unused]] const shared_ptr<typename Iterable<T>::_IRep>& thisSharedPtr) const
+    Iterator<T> IterableFromIterator<T, NEW_ITERATOR_REP_TYPE, CONTEXT_FOR_EACH_ITERATOR>::_Rep::MakeIterator () const
     {
         if constexpr (is_same_v<NEW_ITERATOR_REP_TYPE, void>) {
             AssertNotReached ();
@@ -78,7 +77,7 @@ namespace Stroika::Foundation::Traversal {
                     : fOriginalIterator{originalIterator}
                 {
                 }
-                virtual Iterator<T> MakeIterator ([[maybe_unused]] const shared_ptr<typename Iterable<T>::_IRep>& thisSharedPtr) const override
+                virtual Iterator<T> MakeIterator () const override
                 {
 #if qDebug
                     return fIteratorTracker_.MakeDelegatedIterator (fOriginalIterator);

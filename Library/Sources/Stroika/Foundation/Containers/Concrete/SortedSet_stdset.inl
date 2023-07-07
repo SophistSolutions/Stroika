@@ -57,7 +57,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
             return Memory::MakeSharedPtr<Rep_> (*this);
         }
-        virtual Iterator<value_type> MakeIterator ([[maybe_unused]] const shared_ptr<typename Iterable<T>::_IRep>& thisSharedPtr) const override
+        virtual Iterator<value_type> MakeIterator () const override
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
             return Iterator<value_type>{make_unique<IteratorRep_> (&fData_, &fChangeCounts_)};
@@ -79,19 +79,17 @@ namespace Stroika::Foundation::Containers::Concrete {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
             fData_.Apply (doToElement);
         }
-        virtual Iterator<value_type> Find (const shared_ptr<typename Iterable<T>::_IRep>& thisSharedPtr,
-                                           const function<bool (ArgByValueType<value_type> item)>& that, Execution::SequencePolicy seq) const override
+        virtual Iterator<value_type> Find (const function<bool (ArgByValueType<value_type> item)>& that, Execution::SequencePolicy seq) const override
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
-            return this->inherited::Find (thisSharedPtr, that, seq); // @todo rewrite to use fData
+            return this->inherited::Find (that, seq); // @todo rewrite to use fData
         }
-        virtual Iterator<value_type> Find_equal_to ([[maybe_unused]] const shared_ptr<typename Iterable<T>::_IRep>& thisSharedPtr,
-                                                    const ArgByValueType<value_type>& v, [[maybe_unused]] Execution::SequencePolicy seq) const override
+        virtual Iterator<value_type> Find_equal_to (const ArgByValueType<value_type>& v, [[maybe_unused]] Execution::SequencePolicy seq) const override
         {
             // if doing a find by 'equals-to' - we already have this indexed
             auto found = fData_.find (v);
-            Ensure ((found == fData_.end () and this->inherited::Find_equal_to (thisSharedPtr, v, seq) == Iterator<value_type>{nullptr}) or
-                    (found == Debug::UncheckedDynamicCast<const IteratorRep_&> (this->inherited::Find_equal_to (thisSharedPtr, v, seq).ConstGetRep ())
+            Ensure ((found == fData_.end () and this->inherited::Find_equal_to (v, seq) == Iterator<value_type>{nullptr}) or
+                    (found == Debug::UncheckedDynamicCast<const IteratorRep_&> (this->inherited::Find_equal_to (v, seq).ConstGetRep ())
                                   .fIterator.GetUnderlyingIteratorRep ()));
             return Iterator<value_type>{make_unique<IteratorRep_> (&fData_, &fChangeCounts_, found)};
         }

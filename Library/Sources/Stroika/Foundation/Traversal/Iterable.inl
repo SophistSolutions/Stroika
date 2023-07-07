@@ -51,7 +51,7 @@ namespace Stroika::Foundation::Traversal {
             this->Apply ([&sz] (const T&) { ++sz; }, Execution::SequencePolicy::eDefault);
         }
         else {
-            for (Iterator<T> i = MakeIterator (nullptr); i != Iterator<T>::GetEmptyIterator (); ++i, ++sz)
+            for (Iterator<T> i = MakeIterator (); i != Iterator<T>::GetEmptyIterator (); ++i, ++sz)
                 ;
         }
         return sz;
@@ -59,7 +59,7 @@ namespace Stroika::Foundation::Traversal {
     template <typename T>
     inline bool Iterable<T>::_IRep::empty () const
     {
-        if (auto i = MakeIterator (nullptr)) {
+        if (auto i = MakeIterator ()) {
             return false;
         }
         return true;
@@ -68,16 +68,16 @@ namespace Stroika::Foundation::Traversal {
     inline void Iterable<T>::_IRep::Apply (const function<void (ArgByValueType<T> item)>& doToElement, [[maybe_unused]] Execution::SequencePolicy seq) const
     {
         RequireNotNull (doToElement);
-        for (Iterator<T> i = MakeIterator (nullptr); i != Iterator<T>::GetEmptyIterator (); ++i) {
+        for (Iterator<T> i = MakeIterator (); i != Iterator<T>::GetEmptyIterator (); ++i) {
             doToElement (*i);
         }
     }
     template <typename T>
-    inline auto Iterable<T>::_IRep::Find (const shared_ptr<_IRep>& thisSharedPtr, const function<bool (ArgByValueType<T> item)>& that,
-                                          [[maybe_unused]] Execution::SequencePolicy seq) const -> Iterator<value_type>
+    inline auto Iterable<T>::_IRep::Find (const function<bool (ArgByValueType<T> item)>& that, [[maybe_unused]] Execution::SequencePolicy seq) const
+        -> Iterator<value_type>
     {
         RequireNotNull (that);
-        for (Iterator<T> i = MakeIterator (thisSharedPtr); i != Iterator<T>::GetEmptyIterator (); ++i) {
+        for (Iterator<T> i = MakeIterator (); i != Iterator<T>::GetEmptyIterator (); ++i) {
             if (that (*i)) {
                 return i;
             }
@@ -85,8 +85,8 @@ namespace Stroika::Foundation::Traversal {
         return Iterator<T>::GetEmptyIterator ();
     }
     template <typename T>
-    inline auto Iterable<T>::_IRep::Find_equal_to (const shared_ptr<_IRep>& thisSharedPtr, const ArgByValueType<T>& v,
-                                                   [[maybe_unused]] Execution::SequencePolicy seq) const -> Iterator<value_type>
+    inline auto Iterable<T>::_IRep::Find_equal_to (const ArgByValueType<T>& v, [[maybe_unused]] Execution::SequencePolicy seq) const
+        -> Iterator<value_type>
     {
         if constexpr (Configuration::IEqualToOptimizable<T>) {
             /*
@@ -97,11 +97,10 @@ namespace Stroika::Foundation::Traversal {
                 // simpler but not sure if faster; better though cuz by default leverages seq, which might
                 // help. In 'size' testing, on windows, this was slightly larger, so
                 // not 100% sure this is the best default -- LGP 2023-02-06
-                return Find (
-                    thisSharedPtr, [&v] (const T& rhs) { return equal_to<T>{}(v, rhs); }, seq);
+                return Find ([&v] (const T& rhs) { return equal_to<T>{}(v, rhs); }, seq);
             }
             else {
-                for (Iterator<T> i = MakeIterator (thisSharedPtr); i != Iterator<T>::GetEmptyIterator (); ++i) {
+                for (Iterator<T> i = MakeIterator (); i != Iterator<T>::GetEmptyIterator (); ++i) {
                     if (equal_to<T>{}(v, *i)) {
                         return i;
                     }
@@ -301,7 +300,7 @@ namespace Stroika::Foundation::Traversal {
     inline Iterator<T> Iterable<T>::MakeIterator () const
     {
         _SafeReadRepAccessor<> accessor{this};
-        return accessor._ConstGetRep ().MakeIterator (accessor._ConstGetRepSharedPtr ());
+        return accessor._ConstGetRep ().MakeIterator ();
     }
     template <typename T>
     inline size_t Iterable<T>::size () const
@@ -824,7 +823,7 @@ namespace Stroika::Foundation::Traversal {
             optional<RESULT_T>          result; // actual result captured in sife-effect of lambda
             auto                        f = [&that, &result] (ArgByValueType<T> i) { return (result = that (i)).has_value (); };
             _SafeReadRepAccessor<_IRep> accessor{this};
-            Iterator<T> t = accessor._ConstGetRep ().Find (accessor._ConstGetRepSharedPtr (), f, Execution::SequencePolicy::eSeq);
+            Iterator<T>                 t = accessor._ConstGetRep ().Find (f, Execution::SequencePolicy::eSeq);
             return t ? result : optional<RESULT_T>{};
         }
         else {
@@ -1083,7 +1082,7 @@ namespace Stroika::Foundation::Traversal {
         // NB: This transforms perfectly forwarded 'THAT_FUNCTION' and converts it to std::function<> - preventing further inlining at this point -
         // just so it can be done
         _SafeReadRepAccessor<> accessor{this};
-        return accessor._ConstGetRep ().Find (accessor._ConstGetRepSharedPtr (), that, seq);
+        return accessor._ConstGetRep ().Find (that, seq);
     }
     template <typename T>
     template <Common::IPotentiallyComparer<T> EQUALS_COMPARER>
@@ -1092,7 +1091,7 @@ namespace Stroika::Foundation::Traversal {
         if constexpr (is_same_v<remove_cvref_t<EQUALS_COMPARER>, equal_to<T>> and Configuration::IEqualToOptimizable<T>) {
             // This CAN be much faster than the default implementation for this special (but common) case (often a tree structure will have been maintained making this find faster)
             _SafeReadRepAccessor<> accessor{this};
-            return accessor._ConstGetRep ().Find_equal_to (accessor._ConstGetRepSharedPtr (), v, seq);
+            return accessor._ConstGetRep ().Find_equal_to (v, seq);
         }
         else {
             return Find ([v, equalsComparer] (Configuration::ArgByValueType<T> arg) { return equalsComparer (v, arg); }, seq);

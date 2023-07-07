@@ -496,7 +496,7 @@ namespace Stroika::Foundation::Containers {
          *  They need not be in the same order to compare equals. Still - they often are, and if they are, this algorithm is faster.
          *  If they miss, we need to fall back to a slower strategy.
          */
-        auto li                = lhsR._ConstGetRep ().MakeIterator (nullptr);
+        auto li                = lhsR._ConstGetRep ().MakeIterator ();
         auto ri                = rhs.MakeIterator ();
         auto keyEqualsComparer = lhs.GetKeyEqualsComparer (); // arbitrarily select left side key equals comparer
         while (not li.Done ()) {

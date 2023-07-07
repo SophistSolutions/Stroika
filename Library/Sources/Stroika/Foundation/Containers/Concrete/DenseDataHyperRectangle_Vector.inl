@@ -46,8 +46,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
             return Memory::MakeSharedPtr<Rep_> (*this);
         }
-        virtual Iterator<tuple<T, INDEXES...>>
-        MakeIterator ([[maybe_unused]] const shared_ptr<typename Iterable<tuple<T, INDEXES...>>::_IRep>& thisSharedPtr) const override
+        virtual Iterator<tuple<T, INDEXES...>> MakeIterator () const override
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
 /// NYI
@@ -76,8 +75,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             fData_.Apply (doToElement);
 #endif
         }
-        virtual Iterator<tuple<T, INDEXES...>> Find ([[maybe_unused]] const shared_ptr<typename Iterable<tuple<T, INDEXES...>>::_IRep>& thisSharedPtr,
-                                                     [[maybe_unused]] const function<bool (ArgByValueType<value_type> item)>& doToElement,
+        virtual Iterator<tuple<T, INDEXES...>> Find ([[maybe_unused]] const function<bool (ArgByValueType<value_type> item)>& doToElement,
                                                      [[maybe_unused]] Execution::SequencePolicy se) const override
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};

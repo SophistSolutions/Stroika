@@ -30,7 +30,7 @@ namespace Stroika::Foundation::Containers {
         if (this->size () != rhs.size ()) {
             return false;
         }
-        for (auto i = this->MakeIterator (nullptr); not i.Done (); ++i) {
+        for (auto i = this->MakeIterator (); not i.Done (); ++i) {
             if (i->fCount != rhs.OccurrencesOf (i->fValue)) {
                 return false;
             }

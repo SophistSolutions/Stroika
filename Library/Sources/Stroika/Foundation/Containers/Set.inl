@@ -514,7 +514,7 @@ namespace Stroika::Foundation::Containers {
         }
         // Note - no need to iterate over rhs because we checked sizes the same
         [[maybe_unused]] size_t rhsSize{};
-        for (auto i = rhs.MakeIterator (nullptr); not i.Done (); ++i) {
+        for (auto i = rhs.MakeIterator (); not i.Done (); ++i) {
             if (not Lookup (*i, nullptr, nullptr)) {
                 return false;
             }

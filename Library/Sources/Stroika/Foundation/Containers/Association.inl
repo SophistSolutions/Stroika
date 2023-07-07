@@ -478,7 +478,7 @@ namespace Stroika::Foundation::Containers {
          *  If they miss, we need to fall back to a slower strategy.
          */
         auto quickEqualsTest = [&] () -> bool {
-            auto li                = lhsR._ConstGetRep ().MakeIterator (nullptr);
+            auto li                = lhsR._ConstGetRep ().MakeIterator ();
             auto ri                = rhs.MakeIterator ();
             auto keyEqualsComparer = lhs.GetKeyEqualsComparer (); // arbitrarily select left side key equals comparer
             while (not li.Done ()) {

@@ -61,8 +61,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
             return Memory::MakeSharedPtr<Rep_> (*this);
         }
-        virtual Iterator<value_type>
-        MakeIterator ([[maybe_unused]] const shared_ptr<typename Iterable<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>::_IRep>& thisSharedPtr) const override
+        virtual Iterator<value_type> MakeIterator () const override
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
             return Iterator<value_type>{make_unique<IteratorRep_> (&fData_, &fChangeCounts_)};
@@ -84,11 +83,10 @@ namespace Stroika::Foundation::Containers::Concrete {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
             fData_.Apply (doToElement);
         }
-        virtual Iterator<value_type> Find (const shared_ptr<typename Iterable<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>::_IRep>& thisSharedPtr,
-                                           const function<bool (ArgByValueType<value_type> item)>& that, Execution::SequencePolicy seq) const override
+        virtual Iterator<value_type> Find (const function<bool (ArgByValueType<value_type> item)>& that, Execution::SequencePolicy seq) const override
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
-            return this->inherited::Find (thisSharedPtr, that, seq); // @todo rewrite to use fData
+            return this->inherited::Find (that, seq); // @todo rewrite to use fData
         }
 
         // Association<KEY_TYPE, MAPPED_VALUE_TYPE>::_IRep overrides

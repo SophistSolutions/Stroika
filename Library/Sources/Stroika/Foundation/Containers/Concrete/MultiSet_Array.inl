@@ -74,8 +74,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
             return fData_.size () == 0;
         }
-        virtual Iterator<value_type>
-        MakeIterator ([[maybe_unused]] const shared_ptr<typename Iterable<typename TRAITS::CountedValueType>::_IRep>& thisSharedPtr) const override
+        virtual Iterator<value_type> MakeIterator () const override
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
             return Iterator<value_type>{make_unique<IteratorRep_> (&fData_, &fChangeCounts_)};
@@ -85,8 +84,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};
             fData_.Apply (doToElement, seq);
         }
-        virtual Iterator<value_type> Find ([[maybe_unused]] const shared_ptr<typename Iterable<typename TRAITS::CountedValueType>::_IRep>& thisSharedPtr,
-                                           const function<bool (ArgByValueType<value_type> item)>& that,
+        virtual Iterator<value_type> Find (const function<bool (ArgByValueType<value_type> item)>& that,
                                            [[maybe_unused]] Execution::SequencePolicy              seq) const override
         {
             Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fData_};

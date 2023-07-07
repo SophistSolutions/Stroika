@@ -124,20 +124,19 @@ namespace {
                 AssertNotReached (); // Since String reps now immutable, this should never be called
                 return nullptr;
             }
-            virtual Traversal::Iterator<value_type> MakeIterator (const shared_ptr<Iterable<Character>::_IRep>& thisSharedPtr) const override
+            virtual Traversal::Iterator<value_type> MakeIterator () const override
             {
+                // NOTE - UNDETECTED CALLER ERROR - if iterator constructed and used after string rep destroyed (never changed) -- LGP 2023-07-07
                 struct MyIterRep_ final : Iterator<Character>::IRep, public Memory::UseBlockAllocationIfAppropriate<MyIterRep_> {
-                    shared_ptr<Iterable<Character>::_IRep> fHoldRepToAssureDataNotDestroyed_; // bump reference count (CAN BE NULL)
-                    span<const CHAR_T> fData_; // clone span (not underlying data) pointing inside fHoldRepToAssureDataNotDestroyed
+                    span<const CHAR_T> fData_; // clone span (not underlying data)
                     size_t             fIdx_{0};
-                    MyIterRep_ (const shared_ptr<Iterable<Character>::_IRep>& savedRefToKeepDataAlive, span<const CHAR_T> data)
-                        : fHoldRepToAssureDataNotDestroyed_{savedRefToKeepDataAlive}
-                        , fData_{data}
+                    MyIterRep_ (span<const CHAR_T> data)
+                        :  fData_{data}
                     {
                     }
                     virtual unique_ptr<Iterator<Character>::IRep> Clone () const override
                     {
-                        return make_unique<MyIterRep_> (fHoldRepToAssureDataNotDestroyed_, fData_.subspan (fIdx_));
+                        return make_unique<MyIterRep_> (fData_.subspan (fIdx_));
                     }
                     virtual void More (optional<Character>* result, bool advance) override
                     {
@@ -159,19 +158,16 @@ namespace {
                         RequireNotNull (rhs);
                         RequireMember (rhs, MyIterRep_);
                         const MyIterRep_* rrhs = Debug::UncheckedDynamicCast<const MyIterRep_*> (rhs);
-                        Require (fHoldRepToAssureDataNotDestroyed_ == rrhs->fHoldRepToAssureDataNotDestroyed_); // from same string object
                         return fData_.data () == rrhs->fData_.data () and fIdx_ == rrhs->fIdx_;
                     }
                 };
-                return Iterator<Character>{make_unique<MyIterRep_> (thisSharedPtr, this->_fData)};
+                return Iterator<Character>{make_unique<MyIterRep_> ( this->_fData)};
             }
             virtual size_t                          size () const override { return _fData.size (); }
             virtual bool                            empty () const override { return _fData.empty (); }
-            virtual Traversal::Iterator<value_type> Find (const shared_ptr<Iterable<Character>::_IRep>& thisSharedPtr,
-                                                          const function<bool (Configuration::ArgByValueType<value_type> item)>& that,
-                                                          [[maybe_unused]] Execution::SequencePolicy seq) const override
+            virtual Traversal::Iterator<value_type> Find (const function<bool (Configuration::ArgByValueType<value_type> item)>& that, Execution::SequencePolicy seq) const override
             {
-                return inherited::Find (thisSharedPtr, that, seq); // @todo rewrite to operatoe of fData_
+                return inherited::Find (that, seq); // @todo rewrite to operatoe of fData_
             }
         };
     };
@@ -422,17 +418,17 @@ namespace {
         // Overrides for Iterable<Character>
         public:
             virtual shared_ptr<Iterable<Character>::_IRep> Clone () const override { return fUnderlyingRep_->Clone (); }
-            virtual Traversal::Iterator<value_type> MakeIterator (const shared_ptr<Iterable<Character>::_IRep>& thisSharedPtr) const override
+            virtual Traversal::Iterator<value_type> MakeIterator () const override
             {
-                return fUnderlyingRep_->MakeIterator (thisSharedPtr);
+                return fUnderlyingRep_->MakeIterator ();
             }
             virtual size_t                          size () const override { return fUnderlyingRep_->size (); }
             virtual bool                            empty () const override { return fUnderlyingRep_->empty (); }
-            virtual Traversal::Iterator<value_type> Find (const shared_ptr<Iterable<Character>::_IRep>& thisSharedPtr,
+            virtual Traversal::Iterator<value_type> Find (
                                                           const function<bool (Configuration::ArgByValueType<value_type> item)>& that,
                                                           [[maybe_unused]] Execution::SequencePolicy seq) const override
             {
-                return fUnderlyingRep_->Find (thisSharedPtr, that, seq);
+                return fUnderlyingRep_->Find ( that, seq);
             }
 
             // String::_IRep overrides - delegate

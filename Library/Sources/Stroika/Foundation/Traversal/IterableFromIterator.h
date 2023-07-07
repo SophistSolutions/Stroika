@@ -47,7 +47,7 @@ namespace Stroika::Foundation::Traversal {
      *                      : fOriginalIterator{originalIterator}
      *                  {
      *                  }
-     *                  virtual Iterator<T>     MakeIterator (const shared_ptr<_IRep>& thisSharedPtr) const override
+     *                  virtual Iterator<T>     MakeIterator () const override
      *                  {
      *                      return fOriginalIterator;
      *                  }
@@ -112,7 +112,7 @@ namespace Stroika::Foundation::Traversal {
                 requires (same_as<void, CONTEXT_FOR_EACH_ITERATOR>);
 
         public:
-            virtual Iterator<T> MakeIterator (const shared_ptr<typename Iterable<T>::_IRep>& thisSharedPtr) const override;
+            virtual Iterator<T> MakeIterator () const override;
         };
     };
 

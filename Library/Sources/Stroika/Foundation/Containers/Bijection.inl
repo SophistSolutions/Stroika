@@ -454,7 +454,7 @@ namespace Stroika::Foundation::Containers {
         }
         // Since both sides are the same size, we can iterate over one, and make sure the key/values in the first
         // are present, and with the same Bijection in the second.
-        for (auto i = this->MakeIterator (nullptr); not i.Done (); ++i) {
+        for (auto i = this->MakeIterator (); not i.Done (); ++i) {
             optional<RangeType> tmp;
             if (not rhs.Lookup (i->first, &tmp) or not GetRangeEqualsComparer () (*tmp, i->second)) {
                 return false;

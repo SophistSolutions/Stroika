@@ -1382,29 +1382,20 @@ namespace Stroika::Foundation::Traversal {
      *  Abstract class used in subclasses which extend the idea of Iterable.
      *  Most abstract Containers in Stroika subclass of Iterable<T>.
      * 
-     *  \note Design Note: shared_from_this/enable_shared_from_this vs explicit
-     *        const shared_ptr<_IRep>& thisSharedPtr arguments to most functions.
+     *  \note Design Note: weak_ptr vs. dangling pointers vs shared_from_this
      * 
-     *        Some of these methods - most notably MakeIterator () - create objects which must
-     *        reference the underlying Iterable after the iterator returns. That means it needs
-     *        to somehow 'increment the reference count'. This isn't done in the API, but all the backend
-     *        implementations must do it somehow. They do it - before Stroika v3 - by using enable_shared_from_this.
+     *        Prior to Stroika v3, we had a mixed API where we passed in a shared_ptr as argument to MakeIterator and sometimes
+     *        saved the shared_ptr, making the iterators safe if certain things changed. But not generally enuf to be useful and its
+     *        costly.
      * 
-     *        Doing that increase the size of each rep instance (by the size of a weak_ptr - DOUBLE CHECK THIS? - which is basically
-     *        sizeof (void*) - I think. Not huge, but significant (in particular for string objects).
+     *        More CORRECT would be to use a weak_ptr (in debug builds) and NO pointer in no-debug builds, but that makes the API a little awkward (may still
+     *        do/revisit - LGP 2023-07-07).
      * 
-     *        The alternative, is to just pass in the shared_ptr<> on the MakeIterator() calls. This doesn't cost much extra (passing ptr on stack
-     *        as extra argument). And it is compensatated by avoiding the shared_from_this call (probably a loss over all) - but compoensated
-     *        by avoiding the storage of the weak_ptr (to be tested - but hopefully a win).
+     *        Containers internally use fChangeCounts - in DEBUG builds - to try to assure the underlying container is not modified during iteration, and
+     *        and there are serveral modifying APIs that take an Iterator and return an updated Iterator to avoid this issue.
      * 
-     *        Sadly - the default implementation of most Iterable<>::IRep methods vectors to MakeIterator, so those methods likewise need to
-     *        pass in the shared_ptr - even if unused (maybe making this not a winner - will test). Except WHY - since they don't actually
-     *        hang onto the Iterator result (so dont really need to extend its life). Because of this, the calls to the IRep::MakeIterator () allow
-     *        the shared_ptr to be a nullptr, meaning just dont need to bump the reference count.
-     * 
-     *        So, the rule is - if the caller calls something that returns an iterator, but the iterator is examined and not
-     *        RETURNED by the caller which could have saved the shared_ptr and already has it 'locked'/'incremented' so it cannot
-     *        change, then it can pass nullptr to such routines.
+     *        But the main takeway, is that Iterator<> objects must be short lived, and not used after any modification to the underlying Iterable being
+     *        iterated over.
      */
     template <typename T>
     class Iterable<T>::_IRep {
@@ -1421,10 +1412,11 @@ namespace Stroika::Foundation::Traversal {
 
     public:
         /**
-         *  _IRep::MakeIterator takes a shared_ptr, whose get-value may be nullptr (only in case where
-         *  the returned Iterator definitely is not hung onto) or .get == this
+         *  This returns an object owning INTERNAL POINTERS to the thing being iterated over. It's a potentially
+         *  undetected error to ever operate on the iterator after the Iterable has been modified (many Stroika classes like containers
+         *  will detect this error in debug builds).
          */
-        virtual Iterator<value_type> MakeIterator (const shared_ptr<_IRep>& thisSharedPtr) const = 0;
+        virtual Iterator<value_type> MakeIterator () const = 0;
 
     public:
         /**
@@ -1447,14 +1439,13 @@ namespace Stroika::Foundation::Traversal {
 
     public:
         /*
-         *  \see _IRep::MakeIterator for rules about thisSharedPtr
+         *  \see _IRep::MakeIterator for rules about lifetime of returned Iterator<T>
          *  Defaults to, and is equivilent to, walking the Iterable, and applyting 'that' function, and returning the first (depending on seq) entry that
          *  returns true, or empty iterator if none does.
          * 
          *  \see _IRep::MakeIterator for rules about thisSharedPtr
          */
-        virtual Iterator<value_type> Find (const shared_ptr<_IRep>& thisSharedPtr, const function<bool (ArgByValueType<T> item)>& that,
-                                           Execution::SequencePolicy seq) const;
+        virtual Iterator<value_type> Find (const function<bool (ArgByValueType<T> item)>& that, Execution::SequencePolicy seq) const;
 
     public:
         /**
@@ -1467,13 +1458,12 @@ namespace Stroika::Foundation::Traversal {
          * 
          *  Default implemented as
          *      \code
-         *          return Find (thisSharedPtr, [] (const T& lhs) { return equal_to<T>{}(lhs, v); }, seq);
+         *          return Find ([] (const T& lhs) { return equal_to<T>{}(lhs, v); }, seq);
          *      \endcode
          * 
-         *  \see _IRep::MakeIterator for rules about thisSharedPtr
+         *  \see _IRep::MakeIterator for rules about lifetime of returned Iterator<T>
          */
-        virtual Iterator<value_type> Find_equal_to (const shared_ptr<_IRep>& thisSharedPtr, const ArgByValueType<T>& v,
-                                                    Execution::SequencePolicy seq) const;
+        virtual Iterator<value_type> Find_equal_to (const ArgByValueType<T>& v, Execution::SequencePolicy seq) const;
     };
 
     /**
