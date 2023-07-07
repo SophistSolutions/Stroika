@@ -88,11 +88,8 @@ namespace Stroika::Foundation::Containers {
 
     public:
         /**
-         *  @todo   MUST WORK OUT DETAILS OF SEMANTICS FOR ITERATOR ADD cuz naive interpreation of above
-         *          rules would lead to having a copy reverse the stack (SEE FILE-TODO-NOTE)
-         * 
-         *  \note When copying an Iterable<> or range of iterators, the copy is done by repeatedly pushing
-         *        the arguments in the revsere order they are encountered, this preserving the 'iteration order'
+         *  \note When copying an Iterable<> or range, the copy is done by repeatedly pushing
+         *        the arguments in the revsere order they are encountered, thus preserving the 'iteration order'
          *        of argument and copied stack.
          *
          *  \note   <a href="ReadMe.md#Container Constructors">See general information about container constructors that applies here</a>
@@ -103,7 +100,8 @@ namespace Stroika::Foundation::Containers {
         Stack (Stack&& src) noexcept      = default;
         Stack (const Stack& src) noexcept = default;
 #if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
-        template <typename ITERABLE_OF_ADDABLE, enable_if_t<IIterableOf<ITERABLE_OF_ADDABLE,T> and not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, Stack<T>>>* = nullptr>
+        template <typename ITERABLE_OF_ADDABLE,
+                  enable_if_t<IIterableOf<ITERABLE_OF_ADDABLE, T> and not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, Stack<T>>>* = nullptr>
         explicit Stack (ITERABLE_OF_ADDABLE&& src);
 #else
         template <IIterableOf<T> ITERABLE_OF_ADDABLE>
