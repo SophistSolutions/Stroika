@@ -243,8 +243,10 @@ namespace Stroika::Foundation::Containers::LockFreeDataStructures {
                 if ((i + 1) != this->end () and *i == value) {
                     T ignored{};
                     this->erase_after (i, &ignored);
+                    return true;
                 }
             }
+            return false;
         }
 
     public:
