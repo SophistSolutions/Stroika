@@ -28,7 +28,7 @@ namespace Stroika::Foundation::Containers {
     template <typename T>
     template <typename ITERABLE_OF_ADDABLE, enable_if_t<IIterableOf<ITERABLE_OF_ADDABLE, T> and not derived_from<remove_cvref_t<ITERABLE_OF_ADDABLE>, Stack<T>>>*>
     inline Stack<T>::Stack (ITERABLE_OF_ADDABLE&& src)
-     : Stack{begin (src), end (src)}
+        : Stack{begin (src), end (src)}
     {
     }
 #else
