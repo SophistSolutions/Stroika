@@ -62,6 +62,11 @@ namespace {
         protected:
             span<const CHAR_T> _fData;
 
+        #if qDebug
+        private:
+           mutable unsigned int fOutsandingIterators_{};
+            #endif
+
         protected:
             Rep () = default;
             Rep (span<const CHAR_T> s)
@@ -78,6 +83,7 @@ namespace {
             }
             Rep& operator= (span<const CHAR_T> s)
             {
+                Require (fOutsandingIterators_ == 0);
                 if constexpr (is_same_v<CHAR_T, char> or is_same_v<CHAR_T, char8_t>) {
                     Require (Character::IsASCII (s));
                 }
@@ -130,13 +136,39 @@ namespace {
                 struct MyIterRep_ final : Iterator<Character>::IRep, public Memory::UseBlockAllocationIfAppropriate<MyIterRep_> {
                     span<const CHAR_T> fData_; // clone span (not underlying data)
                     size_t             fIdx_{0};
-                    MyIterRep_ (span<const CHAR_T> data)
+                    #if qDebug
+                   const  Rep* fOwningRep_;
+                    #endif
+                    MyIterRep_ (span<const CHAR_T> data
+                        #if qDebug
+                        , const Rep* dbgRep
+                    #endif
+                    )
                         :  fData_{data}
+#if qDebug
+                        , fOwningRep_{dbgRep}
+#endif
                     {
+#if qDebug
+                        ++fOwningRep_->fOutsandingIterators_;
+                        #endif
                     }
-                    virtual unique_ptr<Iterator<Character>::IRep> Clone () const override
+#if qDebug
+                    virtual ~MyIterRep_() override
+                    { 
+                        Require (fOwningRep_->fOutsandingIterators_ > 0);   // if this fails, probably cuz fOwningRep_ destroyed
+                        --fOwningRep_->fOutsandingIterators_;
+
+                    }
+#endif
+                    
+                    virtual unique_ptr < Iterator < Character> ::IRep> Clone() const override
                     {
-                        return make_unique<MyIterRep_> (fData_.subspan (fIdx_));
+                        return make_unique<MyIterRep_> (fData_.subspan (fIdx_)
+                        #if qDebug
+                                                            , fOwningRep_
+                            #endif
+                        );
                     }
                     virtual void More (optional<Character>* result, bool advance) override
                     {
@@ -161,7 +193,14 @@ namespace {
                         return fData_.data () == rrhs->fData_.data () and fIdx_ == rrhs->fIdx_;
                     }
                 };
-                return Iterator<Character>{make_unique<MyIterRep_> ( this->_fData)};
+                return Iterator<Character>{make_unique<MyIterRep_> ( this->_fData
+                
+                   #if qDebug
+                                             ,
+                                             this
+#endif
+                
+                )};
             }
             virtual size_t                          size () const override { return _fData.size (); }
             virtual bool                            empty () const override { return _fData.empty (); }
@@ -615,7 +654,7 @@ inline auto String::mk_nocheck_ (span<const CHAR_T> s) -> shared_ptr<_IRep>
      */
     constexpr size_t kBaseOfFixedBufSize_ = sizeof (StringRepHelperAllFitInSize_::Rep<CHAR_T>);
     static_assert (kBaseOfFixedBufSize_ < 64); // this code below assumes, so must re-tune if this ever fails
-    if constexpr (qPlatform_Windows) {
+    if constexpr (qPlatform_Windows and not qDebug) {
         static_assert (kBaseOfFixedBufSize_ == 3 * sizeof (void*));
         if constexpr (sizeof (void*) == 4) {
             static_assert (kBaseOfFixedBufSize_ == 12);
@@ -633,20 +672,20 @@ inline auto String::mk_nocheck_ (span<const CHAR_T> s) -> shared_ptr<_IRep>
     static constexpr size_t kNElts3_ = (128 - kBaseOfFixedBufSize_ - kOverheadSizeForMakeShared_) / sizeof (CHAR_T);
 
     // These checks are NOT important, just for documentation/reference
-    if constexpr (qPlatform_Windows and sizeof (CHAR_T) == 1) {
+    if constexpr (qPlatform_Windows and sizeof (CHAR_T) == 1 and not qDebug) {
         if constexpr (sizeof (void*) == 4) {
             static_assert (kNElts1_ == 40);
             static_assert (kNElts2_ == 72);
             static_assert (kNElts3_ == 104);
         }
-        if constexpr (sizeof (void*) == 8) {
+        if constexpr ( sizeof (void*) == 8) {
             static_assert (kNElts1_ == 24);
             static_assert (kNElts2_ == 56);
             static_assert (kNElts3_ == 88);
         }
     }
 
-    static_assert (kNElts1_ >= 6);       // crazy otherwise
+    static_assert(qDebug or kNElts1_ >= 6);           // crazy otherwise
     static_assert (kNElts2_ > kNElts1_); // ""
     static_assert (kNElts3_ > kNElts2_); // ""
 

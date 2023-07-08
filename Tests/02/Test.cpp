@@ -1194,19 +1194,6 @@ namespace {
             }
             VerifyTestResult (i == 3);
         }
-        {
-            // Current (may want to rethink since differs from containers) spec is that iteration 'captures' value logically
-            // at the time we start iterating
-            // -- LGP 2013-12-17
-            String x = L"123";
-            int    i = 0;
-            for (auto c : x) {
-                VerifyTestResult (c == x[i]);
-                ++i;
-                x += L"9";
-            }
-            VerifyTestResult (i == 3);
-        }
     }
 }
 
