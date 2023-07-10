@@ -316,7 +316,7 @@ namespace Stroika::Foundation::Characters {
             }
             else {
                 Require (_Mid1 == _Last1);
-                *from = span<const byte>{};         // used all input
+                *from = span<const byte>{}; // used all input
             }
             return to.subspan (0, _Mid2 - _First2); // point ACTUAL copied data
         }
