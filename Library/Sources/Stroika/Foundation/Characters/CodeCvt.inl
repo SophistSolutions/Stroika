@@ -175,42 +175,43 @@ namespace Stroika::Foundation::Characters {
             RequireNotNull (from);
             Require (to.size () >= ComputeTargetCharacterBufferSize (*from));
             if constexpr (sizeof (CHAR_T) == sizeof (INTERMEDIATE_CHAR_T)) {
-                auto spr = fBytesVSIntermediateCvt_.Bytes2Characters (from, Memory::SpanReInterpretCast<INTERMEDIATE_CHAR_T> (to));
-                return span<CHAR_T>{to.begin (), spr.size ()};
+                return span<CHAR_T>{to.begin (),
+                                    fBytesVSIntermediateCvt_.Bytes2Characters (from, Memory::SpanReInterpretCast<INTERMEDIATE_CHAR_T> (to)).size ()};
             }
             else {
                 /*
                  *  Big picture: fBytesVSIntermediateCvt_ goes bytes -> INTERMEDIATE_CHAR_T, so we use it first.
                  * 
                  *  BUT - trick - even if we successfully do first conversion (bytes -> INTERMEDIATE_CHAR_T) - we might still get a split
-                 *  char on the second conversion. If so - we need to backup in 'from' - to avoid this. Just allege we consumed less. This MIGHT -
+                 *  char on the second conversion (RARE). If so - we need to backup in 'from' - to avoid this. Just allege we consumed less. This MIGHT -
                  *  in extreme cases - go all the way back to zero.
                  */
-            again:
-                // Because we KNOW everything will fit (disallow target exhuasted), we can allocate a temporary buffer for the intermediate state, and be done with
-                // it by the end of this routine (stay stateless)
-                Memory::StackBuffer<INTERMEDIATE_CHAR_T> intermediateBuf{fBytesVSIntermediateCvt_.ComputeTargetCharacterBufferSize (*from)};
-                span<const INTERMEDIATE_CHAR_T> intermediateSpan = fBytesVSIntermediateCvt_.Bytes2Characters (from, intermediateBuf); // shortens 'from' if needed
+                while (true) {
+                    // Because we KNOW everything will fit (disallow target exhuasted), we can allocate a temporary buffer for the intermediate state, and be done with
+                    // it by the end of this routine (stay stateless)
+                    Memory::StackBuffer<INTERMEDIATE_CHAR_T> intermediateBuf{fBytesVSIntermediateCvt_.ComputeTargetCharacterBufferSize (*from)};
+                    span<const INTERMEDIATE_CHAR_T> intermediateSpan = fBytesVSIntermediateCvt_.Bytes2Characters (from, intermediateBuf); // shortens 'from' if needed
 
-                // then use fIntermediateVSFinalCHARCvt_ to perform final mapping INTERMEDIATE_CHAR_T -> CHAR_T
-                ConversionResultWithStatus cr = fIntermediateVSFinalCHARCvt_.ConvertQuietly (intermediateSpan, to);
-                switch (cr.fStatus) {
-                    case ConversionStatusFlag ::sourceIllegal:
-                        UTFConverter::Throw (cr.fStatus);
-                    case ConversionStatusFlag ::sourceExhausted:
-                        // TRICKY - if we have at least one character output, then we need to back out bytes 'from' - til this doesn't happen
-                        if (not from->empty ()) {
-                            *from = from->subspan (0, from->size () - 1);
-                            goto again;
-                        }
-                        else {
-                            return span<CHAR_T>{}; // no update to 'from' since we consumed no characters
-                        }
-                    case ConversionStatusFlag::ok:
-                        return to.subspan (0, cr.fTargetProduced);
-                    default:
-                        AssertNotReached ();
-                        return span<CHAR_T>{};
+                    // then use fIntermediateVSFinalCHARCvt_ to perform final mapping INTERMEDIATE_CHAR_T -> CHAR_T
+                    ConversionResultWithStatus cr = fIntermediateVSFinalCHARCvt_.ConvertQuietly (intermediateSpan, to);
+                    switch (cr.fStatus) {
+                        case ConversionStatusFlag::sourceIllegal:
+                            UTFConverter::Throw (cr.fStatus);
+                        case ConversionStatusFlag::sourceExhausted:
+                            // TRICKY - if we have at least one character output, then we need to back out bytes 'from' - til this doesn't happen
+                            if (not from->empty ()) {
+                                *from = from->subspan (0, from->size () - 1);
+                                continue; // 'goto try again'
+                            }
+                            else {
+                                return span<CHAR_T>{}; // no update to 'from' since we consumed no characters
+                            }
+                        case ConversionStatusFlag::ok:
+                            return to.subspan (0, cr.fTargetProduced);
+                        default:
+                            AssertNotReached ();
+                            return span<CHAR_T>{};
+                    }
                 }
             }
         }
@@ -493,6 +494,7 @@ namespace Stroika::Foundation::Characters {
     {
         return fRep_->ComputeTargetByteBufferSize (srcSize);
     }
+
 }
 
 #endif /*_Stroika_Foundation_Characters_CodeCvt_inl_*/
