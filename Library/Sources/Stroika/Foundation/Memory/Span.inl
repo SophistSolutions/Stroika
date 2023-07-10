@@ -60,6 +60,18 @@ namespace Stroika::Foundation::Memory {
      *************************** Memory::CopySpanData *******************************
      ********************************************************************************
      */
+    template <typename TO_T, typename FROM_T>
+    constexpr std::span<TO_T> SpanReInterpretCast (span<FROM_T> src)
+        requires (sizeof (FROM_T) == sizeof (TO_T))
+    {
+        return span<TO_T>{reinterpret_cast<TO_T*> (src.data ()), src.size ()};
+    }
+
+    /*
+     ********************************************************************************
+     *************************** Memory::CopySpanData *******************************
+     ********************************************************************************
+     */
     template <typename T>
     constexpr std::span<T> CopySpanData (span<const T> src, span<T> target)
     {
@@ -80,6 +92,10 @@ namespace Stroika::Foundation::Memory {
     {
         return CopySpanData (ConstSpan (src), target);
     }
+
+    template <typename FROM_T, typename TO_T>
+    constexpr std::span<TO_T> SpanReInterpretCast (span<FROM_T> src)
+        requires (sizeof (FROM_T) == sizeof (TO_T));
 
     /*
      ********************************************************************************

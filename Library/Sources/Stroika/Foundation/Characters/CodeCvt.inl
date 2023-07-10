@@ -155,8 +155,13 @@ namespace Stroika::Foundation::Characters {
     struct CodeCvt<CHAR_T>::UTF2UTFRep_ : CodeCvt<CHAR_T>::IRep {
         using ConversionResultWithStatus = UTFConverter::ConversionResultWithStatus;
         using ConversionStatusFlag       = UTFConverter::ConversionStatusFlag;
-        //  static_assert (sizeof (CHAR_T) != sizeof (INTERMEDIATE_CHAR_T)); // use another rep for that case  -- @todo DONT DISALLOW, OPTIMIZE THAT CASE...
+        UTF2UTFRep_ (const CodeCvt<INTERMEDIATE_CHAR_T>& origCodeCvt)
+            requires (sizeof (CHAR_T) == sizeof (INTERMEDIATE_CHAR_T))
+            : fBytesVSIntermediateCvt_{origCodeCvt}
+        {
+        }
         UTF2UTFRep_ (const CodeCvt<INTERMEDIATE_CHAR_T>& origCodeCvt, const UTFConverter& secondStep = {})
+            requires (sizeof (CHAR_T) != sizeof (INTERMEDIATE_CHAR_T))
             : fBytesVSIntermediateCvt_{origCodeCvt}
             , fIntermediateVSFinalCHARCvt_{secondStep}
         {
@@ -165,84 +170,115 @@ namespace Stroika::Foundation::Characters {
         {
             RequireNotNull (from);
             Require (to.size () >= ComputeTargetCharacterBufferSize (*from));
+            if constexpr (sizeof (CHAR_T) == sizeof (INTERMEDIATE_CHAR_T)) {
+                auto spr = fBytesVSIntermediateCvt_.Bytes2Characters (from, Memory::SpanReInterpretCast<INTERMEDIATE_CHAR_T> (to));
+                return span<CHAR_T>{to.begin (), spr.size ()};
+            }
+            else {
+                /*
+                 *  Big picture: fBytesVSIntermediateCvt_ goes bytes -> INTERMEDIATE_CHAR_T, so we use it first.
+                 * 
+                 *  BUT - trick - even if we successfully do first conversion (bytes -> INTERMEDIATE_CHAR_T) - we might still get a split
+                 *  char on the second conversion. If so - we need to backup in 'from' - to avoid this. Just allege we consumed less. This MIGHT -
+                 *  in extreme cases - go all the way back to zero.
+                 */
+            again:
+                // Because we KNOW everything will fit (disallow target exhuasted), we can allocate a temporary buffer for the intermediate state, and be done with
+                // it by the end of this routine (stay stateless)
+                Memory::StackBuffer<INTERMEDIATE_CHAR_T> intermediateBuf{fBytesVSIntermediateCvt_.ComputeTargetCharacterBufferSize (*from)};
+                span<const INTERMEDIATE_CHAR_T> intermediateSpan = fBytesVSIntermediateCvt_.Bytes2Characters (from, intermediateBuf); // shortens 'from' if needed
 
-            /*
-             *  Big picture: fBytesVSIntermediateCvt_ goes bytes -> INTERMEDIATE_CHAR_T, so we use it first.
-             * 
-             *  BUT - trick - even if we successfully do first conversion (bytes -> INTERMEDIATE_CHAR_T) - we might still get a split
-             *  char on the second conversion. If so - we need to backup in 'from' - to avoid this. Just allege we consumed less. This MIGHT -
-             *  in extreme cases - go all the way back to zero.
-             */
-        again:
-            // Because we KNOW everything will fit (disallow target exhuasted), we can allocate a temporary buffer for the intermediate state, and be done with
-            // it by the end of this routine (stay stateless)
-            Memory::StackBuffer<INTERMEDIATE_CHAR_T> intermediateBuf{fBytesVSIntermediateCvt_.ComputeTargetCharacterBufferSize (*from)};
-            span<const INTERMEDIATE_CHAR_T> intermediateSpan = fBytesVSIntermediateCvt_.Bytes2Characters (from, intermediateBuf); // shortens 'from' if needed
-
-            // then use fIntermediateVSFinalCHARCvt_ to perform final mapping INTERMEDIATE_CHAR_T -> CHAR_T
-            ConversionResultWithStatus cr = fIntermediateVSFinalCHARCvt_.ConvertQuietly (intermediateSpan, to);
-            switch (cr.fStatus) {
-                case ConversionStatusFlag ::sourceIllegal:
-                    UTFConverter::Throw (cr.fStatus);
-                case ConversionStatusFlag ::sourceExhausted:
-                    // TRICKY - if we have at least one character output, then we need to back out bytes 'from' - til this doesn't happen
-                    if (not from->empty ()) {
-                        *from = from->subspan (0, from->size () - 1);
-                        goto again;
-                    }
-                    else {
-                        return span<CHAR_T>{}; // no update to 'from' since we consumed no characters
-                    }
-                case ConversionStatusFlag::ok:
-                    return to.subspan (0, cr.fTargetProduced);
-                default:
-                    AssertNotReached ();
-                    return span<CHAR_T>{};
+                // then use fIntermediateVSFinalCHARCvt_ to perform final mapping INTERMEDIATE_CHAR_T -> CHAR_T
+                ConversionResultWithStatus cr = fIntermediateVSFinalCHARCvt_.ConvertQuietly (intermediateSpan, to);
+                switch (cr.fStatus) {
+                    case ConversionStatusFlag ::sourceIllegal:
+                        UTFConverter::Throw (cr.fStatus);
+                    case ConversionStatusFlag ::sourceExhausted:
+                        // TRICKY - if we have at least one character output, then we need to back out bytes 'from' - til this doesn't happen
+                        if (not from->empty ()) {
+                            *from = from->subspan (0, from->size () - 1);
+                            goto again;
+                        }
+                        else {
+                            return span<CHAR_T>{}; // no update to 'from' since we consumed no characters
+                        }
+                    case ConversionStatusFlag::ok:
+                        return to.subspan (0, cr.fTargetProduced);
+                    default:
+                        AssertNotReached ();
+                        return span<CHAR_T>{};
+                }
             }
         }
         virtual span<byte> Characters2Bytes (span<const CHAR_T> from, span<byte> to) const override
         {
             Require (to.size () >= ComputeTargetByteBufferSize (from));
+            if constexpr (sizeof (CHAR_T) == sizeof (INTERMEDIATE_CHAR_T)) {
+                return fBytesVSIntermediateCvt_.Characters2Bytes (Memory::SpanReInterpretCast< const INTERMEDIATE_CHAR_T> (from), to);
+            }
+            else {
+                /*
+                 *  Because we KNOW everything will fit, we can allocate a temporary buffer for the intermediate state, and be done with
+                 *  it by the end of this routine (stay stateless)
+                 */
+                Memory::StackBuffer<INTERMEDIATE_CHAR_T> intermediateBuf{
+                    fIntermediateVSFinalCHARCvt_.template ComputeTargetBufferSize<INTERMEDIATE_CHAR_T> (from)};
 
-            /*
-             *  Because we KNOW everything will fit, we can allocate a temporary buffer for the intermediate state, and be done with
-             *  it by the end of this routine (stay stateless)
-             */
-            Memory::StackBuffer<INTERMEDIATE_CHAR_T> intermediateBuf{fIntermediateVSFinalCHARCvt_.ComputeTargetBufferSize<INTERMEDIATE_CHAR_T> (from)};
+                /*
+                 *  first translate to something usable by fBytesVSIntermediateCvt_
+                 */
+                span<INTERMEDIATE_CHAR_T> intermediateSpan =
+                    fIntermediateVSFinalCHARCvt_.ConvertSpan (from, span<INTERMEDIATE_CHAR_T>{intermediateBuf.data (), intermediateBuf.size ()});
 
-            /*
-             *  first translate to something usable by fBytesVSIntermediateCvt_
-             */
-            span<INTERMEDIATE_CHAR_T> intermediateSpan =
-                fIntermediateVSFinalCHARCvt_.ConvertSpan (from, span<INTERMEDIATE_CHAR_T>{intermediateBuf.data (), intermediateBuf.size ()});
-
-            // Then use fBytesVSIntermediateCvt_, no need to track anything in intermediateBuf, we require all used, no partials etc.
-            return fBytesVSIntermediateCvt_.Characters2Bytes (intermediateSpan, to);
+                // Then use fBytesVSIntermediateCvt_, no need to track anything in intermediateBuf, we require all used, no partials etc.
+                return fBytesVSIntermediateCvt_.Characters2Bytes (intermediateSpan, to);
+            }
         }
         virtual size_t ComputeTargetCharacterBufferSize (variant<span<const byte>, size_t> src) const override
         {
-            if (const size_t* i = get_if<size_t> (&src)) {
-                return fIntermediateVSFinalCHARCvt_.ComputeTargetBufferSize<INTERMEDIATE_CHAR_T, CHAR_T> (
-                    fBytesVSIntermediateCvt_.ComputeTargetCharacterBufferSize (*i));
+            if constexpr (sizeof (CHAR_T) == sizeof (INTERMEDIATE_CHAR_T)) {
+                if (const size_t* i = get_if<size_t> (&src)) {
+                    return fBytesVSIntermediateCvt_.ComputeTargetCharacterBufferSize (*i);
+                }
+                else {
+                    return fBytesVSIntermediateCvt_.ComputeTargetCharacterBufferSize (get<span<const byte>> (src));
+                }
             }
             else {
-                return fIntermediateVSFinalCHARCvt_.ComputeTargetBufferSize<CHAR_T, INTERMEDIATE_CHAR_T> (
-                    fBytesVSIntermediateCvt_.ComputeTargetCharacterBufferSize (get<span<const byte>> (src)));
+                if (const size_t* i = get_if<size_t> (&src)) {
+                    return fIntermediateVSFinalCHARCvt_.template ComputeTargetBufferSize<INTERMEDIATE_CHAR_T, CHAR_T> (
+                        fBytesVSIntermediateCvt_.ComputeTargetCharacterBufferSize (*i));
+                }
+                else {
+                    return fIntermediateVSFinalCHARCvt_.template ComputeTargetBufferSize<CHAR_T, INTERMEDIATE_CHAR_T> (
+                        fBytesVSIntermediateCvt_.ComputeTargetCharacterBufferSize (get<span<const byte>> (src)));
+                }
             }
         }
         virtual size_t ComputeTargetByteBufferSize (variant<span<const CHAR_T>, size_t> src) const override
         {
-            if (const size_t* i = get_if<size_t> (&src)) {
-                return fBytesVSIntermediateCvt_.ComputeTargetByteBufferSize (
-                    fIntermediateVSFinalCHARCvt_.ComputeTargetBufferSize<INTERMEDIATE_CHAR_T, CHAR_T> (*i));
+            if constexpr (sizeof (CHAR_T) == sizeof (INTERMEDIATE_CHAR_T)) {
+                if (const size_t* i = get_if<size_t> (&src)) {
+                    return fBytesVSIntermediateCvt_.ComputeTargetByteBufferSize (*i);
+                }
+                else {
+                    return fBytesVSIntermediateCvt_.ComputeTargetByteBufferSize (Memory::SpanReInterpretCast<const INTERMEDIATE_CHAR_T> (get<span<const CHAR_T>> (src)));
+                }
             }
             else {
-                return fBytesVSIntermediateCvt_.ComputeTargetByteBufferSize (
-                    fIntermediateVSFinalCHARCvt_.ComputeTargetBufferSize<INTERMEDIATE_CHAR_T> (get<span<const CHAR_T>> (src)));
+                if (const size_t* i = get_if<size_t> (&src)) {
+                    return fBytesVSIntermediateCvt_.ComputeTargetByteBufferSize (
+                        fIntermediateVSFinalCHARCvt_.template ComputeTargetBufferSize<INTERMEDIATE_CHAR_T, CHAR_T> (*i));
+                }
+                else {
+                    return fBytesVSIntermediateCvt_.ComputeTargetByteBufferSize (
+                        fIntermediateVSFinalCHARCvt_.template ComputeTargetBufferSize<INTERMEDIATE_CHAR_T> (get<span<const CHAR_T>> (src)));
+                }
             }
         }
-        CodeCvt<INTERMEDIATE_CHAR_T> fBytesVSIntermediateCvt_;
-        UTFConverter                 fIntermediateVSFinalCHARCvt_;
+
+        CodeCvt<INTERMEDIATE_CHAR_T>                                                       fBytesVSIntermediateCvt_;
+        conditional_t<sizeof (CHAR_T) != sizeof (INTERMEDIATE_CHAR_T), UTFConverter, byte> fIntermediateVSFinalCHARCvt_;    // would like to remove field if sizeof ==, but not sure how (void doesnt work)
     };
 
     /*
@@ -280,7 +316,7 @@ namespace Stroika::Foundation::Characters {
             }
             else {
                 Require (_Mid1 == _Last1);
-                *from = span<const byte>{}; // used all input
+                *from = span<const byte>{};         // used all input
             }
             return to.subspan (0, _Mid2 - _First2); // point ACTUAL copied data
         }
@@ -457,7 +493,6 @@ namespace Stroika::Foundation::Characters {
     {
         return fRep_->ComputeTargetByteBufferSize (srcSize);
     }
-
 }
 
 #endif /*_Stroika_Foundation_Characters_CodeCvt_inl_*/

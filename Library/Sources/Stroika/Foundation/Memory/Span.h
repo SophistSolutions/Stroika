@@ -79,6 +79,16 @@ namespace Stroika::Foundation::Memory {
     template <typename T1, typename T2, size_t E1, size_t E2>
     constexpr bool Intersects (std::span<T1, E1> lhs, std::span<T2, E2> rhs);
 
+
+    /**
+     *  Reinterpret a span of one thing, into a span of another (of the same sized type).
+     * 
+     *  Someday, we may lift the requirement about 'same size' but then must think out implications for size.
+     */
+    template <typename TO_T, typename FROM_T>
+    constexpr std::span<TO_T> SpanReInterpretCast (span<FROM_T> src)
+        requires (sizeof (FROM_T) == sizeof (TO_T));
+
     /*
      *  \brief Span-flavored memcpy/std::copy (copies from, to)
      *
@@ -111,6 +121,7 @@ namespace Stroika::Foundation::Memory {
     constexpr std::span<TO_T> CopySpanData_StaticCast (span<const FROM_T> src, span<TO_T> target);
     template <typename FROM_T, typename TO_T>
     constexpr std::span<TO_T> CopySpanData_StaticCast (span<FROM_T> src, span<TO_T> target);
+
 
 }
 
