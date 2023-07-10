@@ -30,6 +30,12 @@ namespace Stroika::Foundation::Streams {
      *  Draft implementation (not very performant, but doesnt seem used much and easy to tweak)
      * 
      * DOC CONNECTION TO TextWriter and maybe share output/format flags?
+     * 
+     * @todo NOTE - this CURRENTLY HARDWIRES converting to UTF-8
+     * 
+     *      @todo take optional CodeCvt argument, or things you would pass to CodeCvt (character coing) for what binary rep to create!
+     * 
+     *      WONT change this part of the API - just adding overloads, so OK to release as-is - 2023-07-10
      */
     class TextToByteReader : public InputStream<std::byte> {
     public:
