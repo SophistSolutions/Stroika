@@ -63,6 +63,11 @@ namespace Stroika::Foundation::Characters {
     /*
      *  \brief CodeCvt unifies byte <-> unicode conversions, vaguely inspired by (and wraps) std::codecvt, as well as UTFConverter etc, to map between span<bytes> and a span<UNICODE code-point>
      * 
+     *  Note, UTFConverter is probably a slightly better API, and better designed, and faster. HOWEVER, it ONLY converts from UNICODE. std::codecvt can convert to/from
+     *  any locale code page, and is is more general.
+     * 
+     *  Use the CodeCvt<> API when your code conversions may involve non UNICODE byte representations.
+     * 
      *  Note that this class - like codecvt - and be used to 'page' over an input, and incrementally convert it (though how it does this 
      *  differs from codecvt - not maintaining a partial state - but instead adjusting the amount consumed from the input to reflect
      *  full-character conversions).
@@ -101,7 +106,8 @@ namespace Stroika::Foundation::Characters {
      *      o   Maybe enhancement, maybe step back:
      *          Must call ComputeTargetCharacterBufferSize/ComputeTargetByteBufferSize and provide
      *          an output buffer large enuf. This way, can NEVER get get partial conversion due to lack of output buffer space (which simplfies alot
-     *          within this API).
+     *          within this API). NOTE - large enuf doesn't necessarily mean as large as ComputeTargetCharacterBufferSize/ComputeTargetByteBufferSize would say, as those
+     *          provide safe estimate. If you know for special reasons, you can use a smaller size, but the call must always FIT - no 'targetExhuasted' exceptions thrown.
      *      o   no 'noconv' error code.
      * 
      *  Enhancements over UTFConverter:

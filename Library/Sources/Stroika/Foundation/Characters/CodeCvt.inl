@@ -150,6 +150,10 @@ namespace Stroika::Foundation::Characters {
      *********************** CodeCvt<CHAR_T>::UTF2UTFRep_ ***************************
      ********************************************************************************
      */
+    /*
+     * Utility rep to wrap some kind of rep along with (optional) UTFConverter, to complete
+     * conversion from bytes to/from desired rep generally through some intermediary rep.
+     */
     template <IUNICODECanAlwaysConvertTo CHAR_T>
     template <typename INTERMEDIATE_CHAR_T>
     struct CodeCvt<CHAR_T>::UTF2UTFRep_ : CodeCvt<CHAR_T>::IRep {
@@ -214,7 +218,7 @@ namespace Stroika::Foundation::Characters {
         {
             Require (to.size () >= ComputeTargetByteBufferSize (from));
             if constexpr (sizeof (CHAR_T) == sizeof (INTERMEDIATE_CHAR_T)) {
-                return fBytesVSIntermediateCvt_.Characters2Bytes (Memory::SpanReInterpretCast< const INTERMEDIATE_CHAR_T> (from), to);
+                return fBytesVSIntermediateCvt_.Characters2Bytes (Memory::SpanReInterpretCast<const INTERMEDIATE_CHAR_T> (from), to);
             }
             else {
                 /*
@@ -236,49 +240,45 @@ namespace Stroika::Foundation::Characters {
         }
         virtual size_t ComputeTargetCharacterBufferSize (variant<span<const byte>, size_t> src) const override
         {
-            if constexpr (sizeof (CHAR_T) == sizeof (INTERMEDIATE_CHAR_T)) {
+            size_t intermediateCharCntMax = [&] () {
                 if (const size_t* i = get_if<size_t> (&src)) {
                     return fBytesVSIntermediateCvt_.ComputeTargetCharacterBufferSize (*i);
                 }
                 else {
                     return fBytesVSIntermediateCvt_.ComputeTargetCharacterBufferSize (get<span<const byte>> (src));
                 }
+            }();
+            if constexpr (sizeof (CHAR_T) == sizeof (INTERMEDIATE_CHAR_T)) {
+                return intermediateCharCntMax;
             }
             else {
-                if (const size_t* i = get_if<size_t> (&src)) {
-                    return fIntermediateVSFinalCHARCvt_.template ComputeTargetBufferSize<INTERMEDIATE_CHAR_T, CHAR_T> (
-                        fBytesVSIntermediateCvt_.ComputeTargetCharacterBufferSize (*i));
-                }
-                else {
-                    return fIntermediateVSFinalCHARCvt_.template ComputeTargetBufferSize<CHAR_T, INTERMEDIATE_CHAR_T> (
-                        fBytesVSIntermediateCvt_.ComputeTargetCharacterBufferSize (get<span<const byte>> (src)));
-                }
+                return fIntermediateVSFinalCHARCvt_.template ComputeTargetBufferSize<INTERMEDIATE_CHAR_T, CHAR_T> (intermediateCharCntMax);
             }
         }
         virtual size_t ComputeTargetByteBufferSize (variant<span<const CHAR_T>, size_t> src) const override
         {
-            if constexpr (sizeof (CHAR_T) == sizeof (INTERMEDIATE_CHAR_T)) {
-                if (const size_t* i = get_if<size_t> (&src)) {
-                    return fBytesVSIntermediateCvt_.ComputeTargetByteBufferSize (*i);
+            size_t intermediateCharCntMax = [&] () {
+                if constexpr (sizeof (CHAR_T) == sizeof (INTERMEDIATE_CHAR_T)) {
+                    if (const size_t* i = get_if<size_t> (&src)) {
+                        return *i;
+                    }
+                    else {
+                        return get<span<const CHAR_T>> (src).size ();
+                    }
                 }
                 else {
-                    return fBytesVSIntermediateCvt_.ComputeTargetByteBufferSize (Memory::SpanReInterpretCast<const INTERMEDIATE_CHAR_T> (get<span<const CHAR_T>> (src)));
+                    if (const size_t* i = get_if<size_t> (&src)) {
+                        fIntermediateVSFinalCHARCvt_.template ComputeTargetBufferSize<INTERMEDIATE_CHAR_T, CHAR_T> (*i);
+                    }
+                    else {
+                        fIntermediateVSFinalCHARCvt_.template ComputeTargetBufferSize<INTERMEDIATE_CHAR_T> (get<span<const CHAR_T>> (src));
+                    }
                 }
-            }
-            else {
-                if (const size_t* i = get_if<size_t> (&src)) {
-                    return fBytesVSIntermediateCvt_.ComputeTargetByteBufferSize (
-                        fIntermediateVSFinalCHARCvt_.template ComputeTargetBufferSize<INTERMEDIATE_CHAR_T, CHAR_T> (*i));
-                }
-                else {
-                    return fBytesVSIntermediateCvt_.ComputeTargetByteBufferSize (
-                        fIntermediateVSFinalCHARCvt_.template ComputeTargetBufferSize<INTERMEDIATE_CHAR_T> (get<span<const CHAR_T>> (src)));
-                }
-            }
+            }();
+            return fBytesVSIntermediateCvt_.ComputeTargetByteBufferSize (intermediateCharCntMax);
         }
-
-        CodeCvt<INTERMEDIATE_CHAR_T>                                                       fBytesVSIntermediateCvt_;
-        conditional_t<sizeof (CHAR_T) != sizeof (INTERMEDIATE_CHAR_T), UTFConverter, byte> fIntermediateVSFinalCHARCvt_;    // would like to remove field if sizeof ==, but not sure how (void doesnt work)
+        CodeCvt<INTERMEDIATE_CHAR_T> fBytesVSIntermediateCvt_;
+        conditional_t<sizeof (CHAR_T) != sizeof (INTERMEDIATE_CHAR_T), UTFConverter, byte> fIntermediateVSFinalCHARCvt_; // would like to remove field if sizeof ==, but not sure how (void doesnt work)
     };
 
     /*
