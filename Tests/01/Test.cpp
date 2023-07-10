@@ -526,9 +526,9 @@ namespace {
                     Traversal::DiscreteRange<InternetAddress> scanAddressRange = cidr.GetRange ();
                     BloomFilter<InternetAddress>              addressesProbablyUsed{
                         BloomFilter<InternetAddress>{static_cast<size_t> (bitSizeFactor * scanAddressRange.GetNumberOfContainedPoints ())}};
-                    unsigned int nLoopIterations{};
-                    unsigned int nActualCollisions{};
-                    unsigned int nContainsMistakes{};
+                    [[maybe_unused]] unsigned int nLoopIterations{};
+                    [[maybe_unused]] unsigned int nActualCollisions{};
+                    [[maybe_unused]] unsigned int nContainsMistakes{};
                     while (true) {
                         nLoopIterations++;
                         auto bloomFilterStats = addressesProbablyUsed.GetStatistics ();
