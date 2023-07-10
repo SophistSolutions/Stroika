@@ -234,7 +234,7 @@ sub WriteStroikaConfigMakeHeader
 	
 	open(OUT,">$configFileMakeName");
 	print (OUT "#\n");
-	print (OUT "#Copyright(c) Sophist Solutions, Inc. 1990-2022.  All rights reserved\n");
+	print (OUT "#Copyright(c) Sophist Solutions, Inc. 1990-2023.  All rights reserved\n");
 	print (OUT "#\n");
 	print (OUT "\n");
 	print (OUT "\n");
@@ -573,7 +573,7 @@ sub WriteVS2kIntellisenseConfigFile
 	#
 	open(OUT,">$vs2kIntellisenseCng");		### ConfigurationBased.props file
 	print (OUT "<!--\n");
-	print (OUT " Copyright(c) Sophist Solutions, Inc. 1990-2022.  All rights reserved\n");
+	print (OUT " Copyright(c) Sophist Solutions, Inc. 1990-2023.  All rights reserved\n");
 	print (OUT "-->\n");
 	print (OUT "\n");
 	print (OUT "\n");
