@@ -7,6 +7,8853 @@ especially those they need to be aware of when upgrading.
 
 ## History
 
+
+### DRAFT v3.0d1 release as of July 10
+
+- Documentation
+  - v3 Roadmap
+
+- Require C++20 or later (Lose c++17 language compatability)
+  - lose __cpp_impl_three_way_comparison checks since now assuming C++20
+  - makefile compile flags to require C++20 (not c++17), and some experimental c++23 compiler configs
+  - deprecated macros LIKELY_ATTR  and UNLIKELY_ATTR and use std names directly
+  -  marked NO_UNIQUE_ADDRESS_ATTR as DEPRECATED (unenforced) and use no_unique_address directly from now on since in C++20/assuming C++20
+  - require/check for __cpp_lib_chrono < 201907 C++20 chrono lib support
+
+
+- Samples
+  -     cleanup/simplify examples
+  -  in sample service, don't strip when building installer if IncludeDebugSymbolsInExecutables set
+  - LedIt
+    -     fixed LedIt/LedLineIt app startup to now have Execution::Logger::Activator
+
+
+
+- Github actions/workflows
+  - renamed github action to build-N-test
+
+- Platforms
+  - lose support for ubuntu 18.04 (about to come out with next lts and it has no c++ 20 compilers) and Centos (no easy C++ 20 compilers and abandoned by IBM/redhat)
+
+- It appears we need at least clang++-10 for adequate C++20 support for Stroika (compare stuff spaceship not working enuf before)
+- appears g++ 8, 9 not going to work with Stroika v3 (due to lack of spaceship op support)
+
++ require libc++14 or later
+
+
+- Stroika Library
+  - General
+    - Concepts Usage
+    - use if constexpr instead of #if qDebug in a few places
+  - Foundation
+    - Cache
+      -  TimedCache (and SynchronizedTimedCache) use Time::Duration directly (no longer support overload taking DUrationSecondsType); should be mostly transparent/backward compatable, except for C++ 2 conversions on construction issue may cause some code to not build without explicit specificaiton (_duration) that something is a duration arg to TimedCache
+      - MANY not entirely backward compatible changes to Cache::TimedCache. MOSTLY, this was LOSING the template parameter TRACK_READ_ACCESS from DefaultTraits, and replacing it with LookupMarksDataAsRefreshed::eTreatFoundThroughLookupAsRefreshed being used rarely in Lookup and LookupValue calls as appropriate. This allowed making Lookup() methods const (thread implications). ALSO - use the nomenclature fresheness throughout TimedCache API, so GetTimeout deprecated, and now GetMinimumAllowedFreshness () (similarly for SetTimeout). DoBookkeeping () DEPRECATED (renamed to) PurgeSpoiledData; and Lookup() no longer calls 'clearold' - but really not needed since Add does now(depending on PurgeSpoiledDataFlagType flag to Add) so not that useful. For most use cases, no changes should be needed to calling code. NOTE STILL NOT YET IMPLEMETNED these changes in SynchronizedTimedCache (next)
+      - progress on SyncrhonizedTimedCache cleanups - and TimedCache cleanups from previous checkin
+      - GetElements() support in TimedCache, and use that in SyncrhonizedTimedCache copy constructor
+      - cleanup example use of Synchronized<Cache::TimedCache; fixed declartion error in TimedCached code only caught by unix compilers; TimedCache::Add (..., freshness) overload added, and used in CopyCTOR (for synchronized cache)
+      - Comments, cleanups, and extra optional arg to TimedCache::LookupValue (): https://stroika.atlassian.net/browse/STK-944
+      - comments and fixed minor recent regression in SynchronizedTimedCache<KEY, VALUE, TRAITS>::LookupValue
+      - TimedCache cleanups (slight semantic changes)
+      - TimedCache::GetElements -> TimedCache::Eleements() to match LRUCache naming (never released)
+      - https://stroika.atlassian.net/browse/STK-944 -- use lock_guard not shared_lock in Cache/SynchronizedTimedCache (probably reverse in Stroika v3)
+      - Make Foundation::Cache 'Statistics' classes use atomic, and be internally synchronized
+      - Cache::TimedCache now aggregates StatsType instead of inheriting (cuz now can use c++20 [[no_unique_address]])
+    - Common
+      - Common::Comparison
+        - lose Common::strong_ordering and Common::kLess, kEquals, kGreater (**not backwards compatible**)
+        -  new bug define qCompilerAndStdLib_stdlib_compare_three_way_missing_Buggy trying to address quirkly lib++ support for three way compare
+        - support directly/depend upon std c++ 20 three way compare/spaceship operator (no more conditional support for it not existing).
+        - Deprecated  Common::ThreeWayComparer and switched to using std::compare_three_way instead
+    - Configuration
+        <br>Lose obsolete bug defines for vs2k17
+        - qCompilerAndStdLib_alignas_Sometimes_Mysteriously_Buggy
+          ~~~
+          -#define qCompilerAndStdLib_alignas_Sometimes_Mysteriously_Buggy
+          -#define qCompilerAndStdLib_static_inline_order_of_construction_Buggy
+          -#define qCompilerAndStdLib_maybe_unused_b4_auto_in_for_loop2_Buggy
+          -#define qCompilerAndStdLib_initializer_list_sometimes_very_Buggy
+          -#define qCompilerAndStdLib_maybe_unused_in_lambda_ignored_Buggy
+          -#define qCompilerAndStdLib_MemInitializerWithBitfield_Buggy
+          -#define qCompilerAndStdLib_usingOfEnumFailsToBringIntoScope_Buggy
+          -#define qCompilerAndStdLib_uniformInitializationsFailsOnIntSize_t_Buggy
+          -#define qCompilerAndStdLib_startupAppMagicStaticsNotWorkingFully_Buggy
+          -#define qCompilerAndStdLib_template_value_type_ambiguous_confusion_Buggy
+          -#define qCompilerAndStdLib_constexpr_call_constexpr_sometimes_internalError_Buggy
+          -#define qCompilerAndStdLib_if_constexpr_annoyingly_evaluates_untaken_path_Buggy
+          -#define qCompilerAndStdLib_attributes_before_template_in_Template_Buggy
+          -#define qCompilerAndStdLib_constexpr_stdinitializer_Buggy
+          -#define qCompiler_cpp17InlineStaticMemberOfClassDoubleDeleteAtExit_Buggy
+          -#define qCompilerAndStdLib_uninitialized_copy_n_Warning_Buggy
+          #define qCompilerAndStdLib_TemplateTemplateWithTypeAlias_Buggy
+          #define qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy
+          -#define qCompilerAndStdLib_TemplateUsingOfTemplateOfTemplateSpecializationVariadic_Buggy
+          -#define qCompilerAndStdLib_lambda_expand_in_namespace_Buggy
+          ~~~
+    - Containers
+      -  ALL
+         - major switch to using concepts, and requires (in place of enable_if_t)
+      - Association
+        - Added Association<KEY_TYPE, MAPPED_VALUE_TYPE>::operator[] () syntactic sugar
+
+    - Foundation::Cryptograpy
+      - Fixed Digester<> to fully support a RETURN_TYPE=Common::GUID - adding regression test and fixing template (worked with MD5 but now works with SuperFastHash and others)
+      - Digest::ComputeDigest () and Digester<> etc - now support taking Iterable\<TRIVIALLY_COPYABLE_T> - so for example String
+    - Database
+      - SQLite
+        - fixed CompiledOptions::kThe.ENABLE_JSON1 for newwer sqlite
+    - Foundation::DataExchange
+      - DataExchange::ValidationStrategy support on Date class, and other related cleanups
+      - Added draft support for ObjectVariantMapper::MakeCommonSerializer (OptionalSerializerOptions ...) so it can take explicit T serializer
+    - Debug
+      - use Debug::DropIntoDebuggerIfPresent () rather than direct call to windows DebugBreak()
+      - fixed (serious regrssion - string visualizer) was broken, and updated older visual studio natvis files to match
+      - Debug::AssertExternallySynchronizedMutex now hides fSharedContext, and accessed via (public was protected) GetSharedContext and SetAssertExternallySynchronizedMutexContext (not backward compatible but close); DataBase::Connection (and sucblasses) changes to use of AssertExternallySynchronizedMutex and chagnes to thread safety rules/docs for these classes (base unspecified if letter is threadsafe and for ODBC and SQLITE say they are not); implies some changes to GetSharedContext/SetAssertExternallySynchronizedMutexContext () usage for these classes (sb all internal and not noticable outside for hte most part)
+      - progress celaning up Iterbale to use new AssertExternallySynchronizedMutex ReadLock/WriteLock support
+    - Memory
+      - Minor tweaks to Memory/BlockAllocator (clarity)
+    - Time
+      - lose Date::kEmptyJulianRep - not 100% backward compatible, but very close - since we must have eliminated Date::empty() in Stroika 2.1
+      - fixed GLARING bug in ::DayDifference ()
+      - small mostly cosmetic cleanups (esp to date code)
+      - rewrite Date class to be based on chron::year_month_day - https://stroika.atlassian.net/browse/STK-793
+      - fixes related to https://stroika.atlassian.net/browse/STK-950: imporved iso8601 datetime parsing, TimeOfDay CTOR overload with ThrowIfOutOfRangeFlag and use in a bunch of places (so better runtime validation of input dates)
+      - introduced new DataExchange::ValidationStrategy and used that to replace (not backward compat but unimportant) Bijection::InjectivityViolationPolicy, and just introduced tmporarily TimeOfDay::ThrowIfOutOfRangeFlag - with same meaning basically
+      - more constructor options for TimeOfDay (..., DataExchange::ValidationStrategy validationStrategy);
+      - cosmetic, and DataExchange::ValidationStrategy support on Timezones CTORs (and use in DateTime code show better validates/throws); and  better https://www.rfc-editor.org/rfc/rfc822#section-5 timezone parsing
+      - fixed GLARING bug in ::DayDifference ()
+      - lose MonthOfYear::eEmptyMonthOfYear, DayOfMonth::eEmptyDayOfMonth and Year::eEmptyYear - not totally backward compatble, but there wasn't any longer much of a sensible use case for these
+      - deprecated Date::mdy/3, and replaced wtih mdy/0
+      - https://stroika.atlassian.net/browse/STK-793 - replaced Time::MonthOfYear enum with trivial wrapper on chrono::month
+      - more cleanups of Date class - using month directly not MonthOfYear - mostly
+      - re-implement Date class DayOfWeek as trivial subclass of weekday
+      -  more Date code cleanups - To/From JulianRep code takes optional DataExchange::ValidationStrategy, and Date::operator++ now deprecated (documented class immutable)
+      - in Date code - replace DayOfMonth with use of chrono::day (but still support old name as construction wrapper)
+      - Import a few date related chrono literals to Time namespace, and regtests and docs examples using them 1906y/May/12d == Date{1906y, May, 12d}
+      - more Date cleanups, regtests and docs; and deprecated Date::AddDays() and replaced with Date::Add() and better overloads ofr operator+/operator- etc; similar for Date::Difference, and Date::DaysSince(now Since)
+      - Support floating point _duration conversion operator; and make _duration literal operators also [[nodiscard]]
+      - Range (traits) DifferenceToSizeT support, and used to fix regression in DateRange code
+      - used [[nodiscard]] in a couple places to help avoid bugs with mutable Date (Add method should not be discard result)
+      - use [[nodiscard]] in a few places; Year/Date/etc no longer have 'off sign' constructor support - caller must do the cast
+
+- Frameworks
+  - Led
+    - Tons of Led support cleanups - losing APIs like Led_SDKString2ANSI Led_SDK_String Led_SDK_Char etc, and replacing with already existing (long existing) Stroika Foundation equivilents
+    - cleanups of obsolete Led framework APIs, and refactoring
+
+  - SSDP
+    - SSDP server BasicServer, SearchResponder and PeriodicNotifier now all support optional IPVersionSupport flags, and bind both V4 and V6 versions of IP depending on flag provided (default both which is a change); AND other cleanups
+
+
+
+
+- cleanup vscode tasks.json (move CHERE_INVOKING stuff under windows section cuz for msys workaround, and clenaed up panel usage and a bit more
+
+- lose --compiler-driver g++10 in default configurations now that we do this in the configure script, and lost some if version=18.04 ubuntu checkis for default configurations in Makefile
+- Testing
+  - stop regression tests script immediately if build fails - no point in rest of tests and often runs more slowly cuz make tries to build again without jobs flag
+
+- c++20 not 17 on github actions
+
+- vs2k 17.1.6 and 16.11.13
+- support visual studio compiler _MSC_VER_2k22_17Pt2_ (2 new bugs and nothing fixed)
+- Updated vs2k versions to VS_17_2_0 and VS_16_11_14 for docker files
+- bug defines and workarounds for _MSC_VER_2k22_17Pt4_ (and a few cosmetic cleanups)
+
+- ThirdPartyComponents
+  - sqlite use 3.38.300
+  - libcurl 7.83.0
+  - zlib 1.2.12
+    - disable ASM build for x64 windows zlib - and created jira ticket https://stroika.atlassian.net/browse/STK-905 to track future cleanup of makefile to reenable this (probably using cmake)
+  - boost 1.79.0
+
+
+- Build System
+  - Skel tool
+    - in skel makefile, delegate a few more top level phony makefile targets
+  - configure
+    - better error reporting in configure script
+    - set configure script to default to --std=c++20 (effectively requiring g++ 9 or later - maybe 10 or later - we'll see)
+    - change configure test for libc++ < version 11 - fail with good message
+  - Docker
+    - more cleanups to dockerfile for ubuntu 20.04
+    - Better docs about docker container windows build workarounds, and need to specify --network "Default Switch" in docker build script in one more place
+
+
+
+#if 0
+
+    Moved ThreeWayComparer to end of file to avoid bug/issue with clang-format (and cuz makes sense to put deprecated stuff at end of file anyhow)
+
+commit d83cf65286b95780045b9eb41bfa01808b7a6167
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Oct 31 21:56:14 2022 -0400
+
+    Deprecated Common::ThreeWayCompare () and used compare_three_way{} or <=> (todo more of later) to replace
+
+commit d024a2831df0c4455777be53ff16b782fdfd1910
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Nov 1 11:01:47 2022 -0400
+
+    Attempted workaround for clang++ issue on macos (and elsewhere) if __cpp_lib_three_way_comparison < 201907L for  missing compare_three_way
+
+commit c44eac9362cf261fc8342863ce5e61d9a906384d
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Nov 1 13:11:54 2022 -0400
+
+    for ScriptsLib/RunRemoteRegressionTests - set /usr/local/bin first in path (needed to find right realpath in macos)
+
+commit 681a109b4cf4b5827ce20ed1899a7b9db06e6d62
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Nov 5 13:49:32 2022 -0400
+
+    notes about https://stroika.atlassian.net/browse/STK-950
+
+Date:   Sat Nov 5 14:05:34 2022 -0400
+
+    wrap use of qStroika_Foundation_Exection_Throw_TraceThrowpoint with if constexpr instead of #if (cuz legal c++)
+
+commit 4996ca37a6e797feae922e1ff06a8b4d5d27c28b
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Nov 6 19:13:42 2022 -0500
+
+    added optional parameter consumedCharacters to DateTime::ParseQuietly, and changed semantics for DateTime::Parse - to generally fail/exception with badly formatted (at least iso8601) datetimes (not just quietly ignore crap at the end); added regtest to reflect that and FIXED regression test I had checked in from sterling - this completes  https://stroika.atlassian.net/browse/STK-950 (**NOTE NOTE FULLY BACKWARD COMPATBILE AS DateTime::Parse() is now a little more likely to throw)
+
+commit 968acbfd3f811948eeda2693cf58fdeff1b87040
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Tue Nov 8 10:05:38 2022 -0500
+
+    no longer support Ubuntu 18.04; lose support for g++ versions before g++-11 (due to lack of chrono::month, etc)
+
+commit e7c97edcc68bea77aa7eb6c49fe8fbdce5413341
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Nov 8 10:15:11 2022 -0500
+
+    now requier g++-11 or later - no longer supporting g++-10, so lose qCompilerAndStdLib_SpaceshipAutoGenForOpEqualsForCommonGUID_Buggy bug workaround
+
+commit 649fa6a1ffa0a7666b227269a0e750b98b8ddfba
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Tue Nov 8 10:24:12 2022 -0500
+
+    in configure script - lose support for older gcc's - now require g++-11
+
+commit cfe4d34506ce00696fda80e7866e9774e09a7103
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Tue Nov 8 13:10:09 2022 -0500
+
+    for clang++-10, disable (in configure script) -Wno-unknown-attributes warning cuz [[likely]] not supported by clang++10 and just generates warning. Since specific to that version, just blanket disable warnigns for this for clang++10
+
+commit 5804c184ba8063744c4a7c144d84b9b0e4068aab
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Tue Nov 8 13:30:49 2022 -0500
+
+    lots more cleanups on docker container builds (shorten/simplify; emiminate some uneeded steps; more careful about what compilers to install - try to get so works for both v2.1 and v3 builds
+
+Date:   Tue Nov 8 13:50:16 2022 -0500
+
+    a few more dockerfile clanups (--qq install maybe not helping or at least not much)
+
+commit 1a5e701745cd93d1e9ea6e09714090467361ac88
+
+    push tag v3 for docker container even if not final and called make push-tags
+
+commit 85cf85e37831c09370e7ef438ffb522342033731
+
+    simplify docker containers for v3 - no longer need to install v2.1 Stroiak-Dev stuff since we include tag v3 in docker container (like branch)
+
+commit ddc45b6fe2c668d291951e47c6b580c1607052fa
+Date:   Mon Nov 14 11:18:52 2022 -0500
+
+    _Stroika_Foundation_STRINGIFY_ macro utility
+
+Date:   Mon Nov 14 11:45:28 2022 -0500
+
+    progress towards defining and working around new bug defines qCompilerAndStdLib_stdlib_compare_three_way_present_but_Buggy and qCompilerAndStdLib_stdlib_compare_three_way_missing_Buggy
+
+Date:   Mon Nov 14 13:26:03 2022 -0500
+
+    more work on qCompilerAndStdLib_stdlib_compare_three_way_present_but_Buggy and qCompilerAndStdLib_stdlib_compare_three_way_missing_Buggy defines - on xcode
+
+Date:   Mon Nov 14 13:31:23 2022 -0500
+
+    more refactoring to deal with qCompilerAndStdLib_stdlib_compare_three_way_present_but_Buggy or qCompilerAndStdLib_stdlib_compare_three_way_missing_Buggy
+
+commit 74f9e688112ca04f50e0f01c001b1cce4f83d295
+Date:   Mon Nov 14 13:45:22 2022 -0500
+    more qCompilerAndStdLib_stdlib_compare_three_way_present_but_Buggy or qCompilerAndStdLib_stdlib_compare_three_way_missing_Buggy bug workarounds
+
+commit 68c2d0e634a786e3c76bfb2f6c243c5a6183960b
+Date:   Mon Nov 14 13:52:35 2022 -0500
+    more cosmetic and qCompilerAndStdLib_stdlib_compare_three_way_present_but_Buggy or qCompilerAndStdLib_stdlib_compare_three_way_missing_Buggy bwa code
+
+    new check/warning about version of libc++ being used - must be 11 or >, and fixed qCompilerAndStdLib_stdlib_compare_three_way_missing_Buggy bug define to be _LIBCPP_VERSION < 12000 - in libcpp-branch of logic
+
+
+commit 161244229612007a6924d399ff226e6af51da729
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Nov 14 20:47:23 2022 -0500
+
+    tweak installed components for Ubuntu2004-RegressionTests/Dockerfile
+
+commit df93cb55fdd15690adcf3aca9f9a67842b473428
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Mon Nov 14 21:06:32 2022 -0500
+
+    fixed build of buntu2004-RegressionTests/Dockerfile for clang++10/11/12
+
+commit 256a31cc39dc4a93194cdcd41783d5c68109dc23
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Mon Nov 14 21:06:57 2022 -0500
+
+    configure script for clang++10 - default to libstdc++
+
+commit 5b0d5621a87323280d7a256fd0eff3248e726e4c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Nov 14 22:16:26 2022 -0500
+
+    tmphack - add build v3-Release workflow github/workflows/build-N-test-v3-Release.yml to force build
+
+commit 86b51e052e0aec55950d89fdf66cd7d5bd300944
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Nov 14 22:18:30 2022 -0500
+
+    undo last checkin (was just a trick to get build-N-test-v3-Release avaialbel workflow
+
+Date:   Wed Nov 16 07:38:53 2022 -0500
+
+    workaround issue with BOOST 1.80.0 not compiling with C++2b flag on clang++14
+
+commit 8e43a9d06a2cfeabf3f294302376cd6d0d6b15b6
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Wed Nov 16 07:55:37 2022 -0500
+
+    https://stroika.atlassian.net/browse/STK-717 also broken on 20.04
+commit 9ef4cce0cf20492db404b5fb79b990235b7a00d5
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Nov 17 08:32:01 2022 -0500
+
+    define qCompilerAndStdLib_locale_time_get_PCTM_RequiresLeadingZero_Buggy for clang++14
+commit 378355ac059b867090838064aae8cde3bc5984fd
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Thu Nov 17 08:49:42 2022 -0500
+
+    qCompilerAndStdLib_stdlib_compare_three_way_missing_Buggy broken for LIBCPP 12000 too
+
+commit 6c4c638449ce74276c9c1cf15e7a469574f8182c
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Thu Nov 17 09:00:51 2022 -0500
+
+    Iterable<> docs and regtest
+
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Nov 29 16:56:31 2022 -0500
+
+    experiment setting qCompilerAndStdLib_SpaceshipOperator_x86_Optimizer_Sometimes_Buggy 0 -- test if was really differnt issue
+
+commit 359eedf5e0a322123ce239fd8c68fbc0d29f8df6
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Nov 30 08:16:12 2022 -0500
+
+    Revert "experiment setting qCompilerAndStdLib_SpaceshipOperator_x86_Optimizer_Sometimes_Buggy 0 -- test if was really differnt issue"
+    
+    This reverts commit 54209f7198b93eb20db28986c3fc78cc522ad23e.
+
+commit 2ee45d18d7e224967a03640970c5b7f3256420d4
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Wed Nov 30 08:18:04 2022 -0500
+
+    minor dockerfile tweaks - mostly cuz now need more calls to apt-get update for docker build to work
+
+commit 919dba10f9cc6c4648ee4b3e9b1a004a935de342
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Nov 30 09:23:41 2022 -0500
+
+    updated ScriptsLib/RunLocalWindowsDockerRegressionTests
+
+commit f40b20bce1c1c424f11cfa12460556eb11a18d01
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Nov 30 16:40:33 2022 -0500
+
+
+commit 5134b1074e76e3a3e1dcae38f886f3275a18310a
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Wed Nov 30 19:45:32 2022 -0500
+
+    g++-release-sanitize_thread_undefined https://stroika.atlassian.net/browse/STK-761 workaround for 20.04 as well
+
+commit c21cb98b19fea72a216532f662f8a05534360008
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Wed Nov 30 20:53:38 2022 -0500
+
+    a couple more workarounds for https://stroika.atlassian.net/browse/STK-717
+
+commit faf83c8a0e7c0ddd184dd02ec42017d5cf0ccafd
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Dec 1 06:41:48 2022 -0500
+
+    regtest for URI::SetScheme and docs
+
+commit 6dabebb80852ffe7a746f5921ede0bbae7052fb6
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Dec 1 07:48:31 2022 -0500
+
+    added debugging dbgtrace on error to IO/Network/LinkMonitor
+
+commit 6b5c35e6e69b0b507b09154c4225be54aff75aa5
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Dec 1 07:51:32 2022 -0500
+
+    several fixes and simplifications to SSDPServer sample and framework code (not fully backward compatible): set location.scheme in sample; changed API for SearchResponder and SearchResponder so use CTOR to specify arguments, and lose Run method ( was pointless use of thread); fixed bug in combining urls in BasicServer so now should advertise / notify properly by default (at least this sample works well with stroika ssdpclient)
+
+commit 9eedc54ffad681b8750352050105ae53208e4ede
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Dec 1 08:08:59 2022 -0500
+
+    cosmeitc cleanups to SSDP Sample server, and one critical bugfix (new Stroika SSDPServer code more picky about order of writes/setting headers so set headers before write)
+
+commit b6b467fc0d94bf0f78c2c10551ce2e42f43839e2
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Dec 1 08:25:25 2022 -0500
+
+    fixed Network::GetPrimaryInternetAddress () on windows to return NON-LOCAL address (I think already did this fine on unix)
+
+commit e7df1c347239fb6f9b6a542f3a01f49c4f01b512
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Dec 1 09:28:00 2022 -0500
+
+    redo SSDP periodicNotifier class to use IntervalTimer (imposes new minor requirement on use - instantiating intervaltimermgr), and other related code simpliciations/cleanups
+
+commit 7c7ba23f4b12127846cd36b8925049f8a415659e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Dec 1 10:35:19 2022 -0500
+
+    Added InternetAddress from const char* and string_view
+
+Date:   Thu Dec 1 11:31:41 2022 -0500
+
+    Added a couple more Execution::DeclareActivity in Networking code, so exceptions more obvious what failed; and added linux IPV6_MULTICAST_HOPS workaround to issue https://stroika.atlassian.net/browse/STK-578
+
+Date:   Thu Dec 1 11:38:17 2022 -0500
+    notes in code about https://stroika.atlassian.net/browse/STK-962 so more clear where/what to fix
+
+Date:   Thu Dec 1 14:37:00 2022 -0500
+    https://stroika.atlassian.net/browse/STK-717 - qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy
+
+Date:   Thu Dec 1 15:19:36 2022 -0500
+    https://stroika.atlassian.net/browse/STK-734 - cleanup docs on using Debug::AssertExternallySynchronizedMutex, and cleaned up TimedCache, LRUCache, and StringBuilder to use new style usage (and better documented after testing these three a bit more)
+
+Date:   Fri Dec 2 10:41:52 2022 -0500
+    related to https://stroika.atlassian.net/browse/STK-734 - cleanup of AssertExternallySynchronizedMutex: replace all uses of  shared_lock<const AssertExternallySynchronizedMutex> with AssertExternallySynchronizedMutex::ReadLock and use of lock_guard<const AssertExternallySynchronizedMutex> (or scoped_lock) with AssertExternallySynchronizedMutex::WriteLock, and used that to fix several cases where we had the wrong 'constness' or readlocks/write locks mixed up on AssertExternallySynchronizedMutex
+
+commit d3bfbc5310e947ff6d8bb206c224fd15ac7f827c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Dec 2 11:07:54 2022 -0500
+
+    progress cleaning up Iterable's use of new AssertExternallySynchronizedMutex ReadLock/WriteLock code (not done)
+    And wrapped fIterableEnvelope_ if #if qDebug for writelock now possible
+
+commit d6ab2e356799e00061e3e7c89cf1b27824f2a069
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Dec 2 11:34:40 2022 -0500
+
+    vaguely related to https://stroika.atlassian.net/browse/STK-734 - and **not backward compatible - AssertExternallySynchronizedMutex lock and unlock methods now non-const (all well documented now why, including why we leave shared_lock/shared_unlock as const
+
+commit 0d164b693cd11bdce886274650eb13d3831f0d8d
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Dec 2 11:44:22 2022 -0500
+
+    Cosmetic
+
+commit 2bd02016080b4fb82cb6223b4be8bd147822ebd6
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Dec 2 11:45:20 2022 -0500
+
+    https://stroika.atlassian.net/browse/STK-734 switch to have BLOB use aggregated AssertExternallySynchronizedMutex intead of private inheritance
+
+commit 7ee8f51d3f3066039d60f0a02de19b7a109b394f
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Dec 2 11:55:44 2022 -0500
+
+    https://stroika.atlassian.net/browse/STK-734 - aggregated use instead of inheritance use of AssertExternallySynchronizedMutex a little more
+
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Dec 2 13:53:40 2022 -0500
+
+    https://stroika.atlassian.net/browse/STK-734 - more AssertExternallySynchronizedMutex cleanups
+
+commit 85ec3c5dd768a500b4f4fc9df9cd46f1f8b78925
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Dec 2 14:59:27 2022 -0500
+
+    https://stroika.atlassian.net/browse/STK-734 - more cleanups - more classes using this style impl
+
+commit 54669206a83005ff215deaae2b60bdd3408239cf
+Date:   Fri Dec 2 15:26:35 2022 -0500
+
+    more fixes for https://stroika.atlassian.net/browse/STK-734 - instead of baseclass use    [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
+
+commit cf4551bd8fcd592247b55df65167dbcf5ef54dee
+Date:   Fri Dec 2 15:51:39 2022 -0500
+    Completed (except for testing) https://stroika.atlassian.net/browse/STK-734 - convert private struct Debug::AssertExternallySy.... to using direct member
+
+commit 06fb88a71fe7e914a5788e1b59f4efe9d0dec759
+Date:   Fri Dec 2 18:07:53 2022 -0500
+
+    Added comments about possible strategy line for See https://stroika.atlassian.net/browse/STK-963 on attempted thread interruption - but no such luck
+
+commit 58f7586b3138c832a0d0c9bda2971f4617a10589
+Date:   Fri Dec 2 22:00:38 2022 -0500
+    partial fix/woarkound for https://stroika.atlassian.net/browse/STK-964 - enuf to probably fix balance of https://stroika.atlassian.net/browse/STK-963
+
+commit 339d3a79b0e0942064be29b7af2c28e551e2fe82
+Date:   Sat Dec 3 10:24:06 2022 -0500
+
+    fix/cleanup related to https://stroika.atlassian.net/browse/STK-963 - which would ahve fixed it - but had fixed somethign else first - now use Execution::WaitForIOReady in Server/SearchResponder so avoids blocking read until socket read (really this cahnge fixes another bug wihc is we were only waiting on one socket until stuff came in and then on the other); so searchrespnder should work much better now
+
+commit 7adee4e20d67c6ba705e85afdbf6c65b77440434
+Date:   Sun Dec 4 11:24:40 2022 -0500
+
+    added assertions Variant::Reader (not null rep); and refactored some Read calls to have new protected _ToByteReader and _ToCharacterReader, so can more easily re-use logic in other subclass constructors (some semantic change but trivial and should be no issue)
+
+commit 259382605a40259de134be6362e9baab9789df84
+Date:   Sun Dec 4 11:27:00 2022 -0500
+
+    Added INI::Reader ReadProfile overloads
+
+commit f6744b908dfebc2296888c4d527880eee82e17b4
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Dec 4 11:40:39 2022 -0500
+
+    Variant/CharacterDelimitedLines/Reader supported convert to VariantValues (basic Reader function) and added regtest of ReadMatrix use
+
+commit 291cc5063669aa60e9bbb81085cd7d2f22cb3358
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Dec 4 11:40:55 2022 -0500
+
+    fixed missing include file
+
+commit b6daa5d93140c511df63073bdc8b924c0cc4c66b
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Dec 5 09:30:36 2022 -0500
+
+    refactoring DataExchange/Variant/Writer code - better abstracting transformations; use that in (so far untested but probably solid) DataExchange::Variant::CharacterDelimitedLines readers/writers
+
+commit 5febd19d3d6ea78304018da0b3fa3f449ee3c122
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Dec 5 10:39:01 2022 -0500
+
+    better regression tets for new Variant::CharacterDelimitedLines::Writer
+
+commit 137034b470810ce01b77bc1368487038f197b8bd
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Dec 5 11:52:08 2022 -0500
+
+    DataExchange/Variant/INI progress cleanups - and first draft of Writer (so far untested)
+
+commit 130df3ba656a537227f321733d238eaefab16dc7
+Date:   Mon Dec 5 18:08:38 2022 -0500
+    regression tests for Variant::INI::Writer
+
+commit bb51b8d67f81cfcf413b5253a5c32534b5978e15
+Date:   Mon Dec 5 21:00:03 2022 -0500
+    DataExchange::Variant::INI Profile/Section ToString() support; and fixed regression test case for reader/writer
+
+commit 97fab5b8bc00f9a2db7b4dab8cfc50a6197b3710
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Dec 5 21:11:42 2022 -0500
+
+    qCompilerAndStdLib_DefaultMemberInitializerNeededEnclosingForDefaultFunArg_Buggy workaround
+
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Thu Dec 8 10:01:22 2022 -0500
+
+commit bfb415790a4b45ddd161a91535726dc919ab9e11
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Dec 14 10:36:02 2022 -0500
+
+    use PREDICATE&& instead of const PREDICATE& in a few places - in response to (oblique) suggestion from https://www.reddit.com/r/cpp/comments/zl7ncq/stroika_an_opensource_modern_portable_threadsavvy/ comment/suggestion
+
+commit 28c2c664f37bd631811fca6cdb99bf04592ad45b
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Dec 14 15:20:53 2022 -0500
+
+    fixed more perfect forwarding usages, and added comments about performance of <T>::RemoveAll (PREDICATE&& p)
+
+commit cacfaa3de7c8066d32260793af16b18ffc48be3b
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Dec 14 15:43:25 2022 -0500
+
+    Added CORSOptions::ToString () const
+
+commit b8087fe20ad3ae013baa0c9456b28fad551631b1
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Dec 14 19:51:17 2022 -0500
+
+    Added JSONTest code to PerformanceRegTest code (52) - draft
+
+commit 623a0c958dfcd76d33b5ef8812cd8886b54ebef9
+Date:   Wed Dec 14 21:51:52 2022 -0500
+    BLOB::As<string>/0/1 supported
+
+commit 563bc2000e2294209821e6ff146fc0ab90ddd3aa
+Date:   Wed Dec 14 21:52:27 2022 -0500
+    Simplified file reading code for jSON reader performance test
+
+commit d42901fb3e88f6cf82e682ba7ce673cb733f0b5f
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Dec 15 09:31:07 2022 -0500
+
+    Added support for perfrmance test code to download and run json parser regtest on nlohmann/json : https://stroika.atlassian.net/browse/STK-781
+
+commit c0799b23783bc9b904e5e0597c11e4b0e2e7c909
+Date:   Thu Dec 15 10:34:29 2022 -0500
+
+    lots of cleanups to Streams/ExternallyOwnedMemoryInputStream - mostly using concepts in place of enable_if_t; but also extended to support char iterators for New with ELEMENT_TYPE=byte (for easier integration with stl/common c++ usage)
+commit 951ab60014f60a98d30b68fef78f471229582f6c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Dec 15 10:48:11 2022 -0500
+
+    cosmetic cleanup and hack a bit so better at finding (rarely used) test data in json regtest
+
+commit e1dc8104566ad16e6dabb12b30cb1f5a57d17fb3
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Dec 15 11:38:30 2022 -0500
+
+    Added boost_json-parser to performance tests; guess dont need others since this is the fastest I've tried and easy to test against
+
+commit fbfb934fc90df4454536fdb429c19c3d66b84422
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Dec 15 12:09:24 2022 -0500
+
+    Add support to Stroika VariantValue so can be trivially constructed from boost::json::value, if Stroika built with boost
+
+commit 91edfca962f496c773db15e9e4aa87f98f455b13
+    support DataExchange::VariantValue::As<boost::json::value> () - for full (easy) interoperability with boost (json support)
+
+commit d31f666c5fb0993cb0d925687d7a79448650ba1a
+    fixed bug with Foundation/Memory/InlineBuffer in move CTOR (for non bytes case)
+
+commit c58e1bd625cdf9b56f61c6732b5cb728598a71de
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Dec 15 18:09:53 2022 -0500
+
+    Added Profile configuration for windows, since handy for doing profiling (not auto-built - just defined so can be easily used)
+
+commit eeb75c9d74af61f8240f9250b9823bf55de55f40
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Dec 15 19:14:13 2022 -0500
+
+    add performance regression test for DoStroikaJSONParse_boost_json2Stk
+
+commit 1ccf2938165df21abdaddaf6b624ec992f2e6c33
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Dec 15 21:27:21 2022 -0500
+
+    chekc more places for JSONTestData in running regressiontests (performance)
+
+commit 7a96121a799f4c626664ca91169fdc4adb8a34bc
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Sat Dec 17 14:51:38 2022 -0500
+
+    Added -lboost_json to link libs by default, though so far not really used, suppored by Stroika so may as well add to libs list
+
+commit 5385cd96f70cc1123eb5760905d6830a41d9fdb7
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Dec 16 15:29:32 2022 -0500
+
+    project file (sln) support for Profile configuration on VS2k22
+
+commit 0876f8f022a8ff4faa8bc461de22d001e95a39d6
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Dec 16 15:50:20 2022 -0500
+
+    tweak Windows Profile configuration
+
+commit 18425d79f137580e9042367e94a0f45c63c8e399
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Dec 16 15:51:14 2022 -0500
+
+    configure script: put -DEBUG linker line BEFORE others, not after, since affects interpretation of -OPT flags, I think (docs not clear)
+
+commit 3cda61ee05484a99e5b632fb912ba892f0426dc1
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Dec 16 15:53:45 2022 -0500
+
+    where we gave linker line -DEBUG, instead use -DEBUG:FULL - docs not clear on if this is a change or not - nor what is left out with other options; but if I turn on debugging, dont supporeize me - give me the debug info ;=)
+
+commit a49a76c67dc0e25b0585093e2780456ce8290e51
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Dec 16 15:54:22 2022 -0500
+
+    where we gave linker line -DEBUG, instead use -DEBUG:FULL - docs not clear on if this is a change or not - nor what is left out with other options; but if I turn on debugging, dont supporeize me - give me the debug info ;=)
+
+commit 8aed5048e9165b0f63155e84fd9e2be8274b610a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Dec 17 15:16:13 2022 -0500
+
+    Memory::InlineBuffer - added kMinCapacity; and added  static_assert (is_trivially_destructible_v<T>) and lose destroy_elts call on resize_uninitialized
+
+commit dea97d13122dcf667ad21a276168e6428a452781
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Dec 17 15:17:11 2022 -0500
+
+    rewrote part of JSONParse - really to use (Draft  of new BufferedStreamReader_) - as performance improvement reading large json files
+
+commit f7499bb38f87e37a55936f602d720c7ed308249f
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Dec 17 19:27:52 2022 -0500
+
+    first draft new StreamReader<ELEMENT_TYPE> and used in JSON parser code (speedup for large files of around 15%) - large regtest file from 1.04 to .85
+
+commit 072e98b024f97ca47420b39401afe67cf0585163
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Dec 17 19:57:47 2022 -0500
+
+    sped up conversion from boost::json::Value to Stroika VariantValue
+
+commit 4110508ecdd248211b564b870d2ded3ecadafb14
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Dec 17 20:26:30 2022 -0500
+
+    added MOVE ctor for Sequence_stdvector taking std::vector<>
+
+commit a080430680c17cf2e67cb6571a6c09540ff02e73
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Dec 17 22:01:53 2022 -0500
+
+    use Containers::Concrete::Mapping_stdmap<String, VariantValue>{std::move (r)} and Containers::Concrete::Sequence_stdvector<VariantValue>{std::move (r)} in VariantValue::CTOR{boost json obj
+
+commit 7d832bb19338c76b150b8b5b594961d8ce5e833c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Dec 17 22:04:05 2022 -0500
+
+    Progress on (ugly/messy) UTFConvert::ConvertQuietly () methods : did qPlatform_Windows impl (now default on windows cuz seems fastest), and std::codecvt_utf8_utf16 impl but that is HORRIBLE! - and we use elswhere (in TextReader) - must lose it I guess - cuz its horrible. Not sure what todo; but its a mess and should work better for Stroika v3
+
+commit e23fcf0541bc2b78ad73690b6f3f75ae5f3746ee
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Dec 17 22:19:45 2022 -0500
+
+    fixed small regression in recent UNICODE UTF changes
+
+commit 421ecb16a5785a4b58f2450aab488d5c0ca6b017
+    slight speed tweak in recent qPlatform_Windows UtfConvert tweak (smallstackbfufer isntead of string object)
+
+commit d2e494d6da4443321a8a2a46ca468e6d86e491e8
+    Docs on SmallStackBuffer, and adjusted default sizes for Windows, to avoid _chkstk calls, which helps performance (significant on boost_json-vv-parser: .\52\JSONTestData\large-dict.json test)
+
+commit dadc827ea6a7b6d4bf32cecc3a61bccaee1bc800
+Date:   Sun Dec 18 10:47:33 2022 -0500
+
+    further tweaked (windows only) code for UTFConvert - dont even need SmallStackBuffer
+
+commit 23e0a4dfc53fd5e08aa071566eeccd5e9d1fd313
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Dec 18 10:51:45 2022 -0500
+
+    tweak mkWS_() overload - dont need Reserve .... call cuz dont internally in StringBuilder and better todo elsewise anyhow
+
+commit 3b0e9ad9099e1a6d67e67b63a7f223085d369281
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Dec 18 10:54:46 2022 -0500
+
+    replace use of is_trivially_default_constructible_v with  is_trivial_v because our decisions apply BOTH to construction and DESTRUCTION
+
+commit 8fb9acdb6131fa8f01b93728c3d5f890135ed8a6
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Dec 18 11:04:33 2022 -0500
+
+    ok - maybe better - use is_trivially_copyable_v instead of is_trivial_v - appears to capture more accurately what we want here
+
+commit 3c3cec350205c9318ac933747116dd81c6f6fbd6
+Date:   Mon Dec 19 09:45:34 2022 -0500
+
+    Slight speed tweak for JSON reader, using Containers::Concrete::Mapping_stdmap and move
+
+commit e854ea98e94222c1dd37039861102df27ff530f9
+Date:   Mon Dec 19 14:13:08 2022 -0500
+    fixed (recent) regression in UTFConvert::ConvertQuietly windows code - so restructured a bit so better internall checking
+
+commit fcd232f32c6b8a3877351ad548b706b4b751e6db
+    JSON::Reader - minor tweaks and cleanups
+
+commit 639215b4335eaa9519d1065758601c451313c0a8
+    First draft new Characers::UTFConverter to deal with messy state of UTF conversions
+
+commit b3d3dcda4caca0f62b9be3ee4c4a7dbb6c43f3c0
+Date:   Mon Dec 19 20:59:03 2022 -0500
+    More progress on new (or majorly refactored) UTFConvert module
+
+commit 510a3ff58584b2e7ea97b607c3557c03de4d0fcc
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Dec 19 21:19:36 2022 -0500
+
+    Mostly cosmetic cleanups to new UTFConverter code
+
+commit 769009bd68a9868b522b39da476d0bc6a851dcc6
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Dec 20 13:04:49 2022 -0500
+
+    Annotate bug workaround for qCompilerAndStdLib_DefaultMemberInitializerNeededEnclosingForDefaultFunArg_Buggy
+
+commit 682a3eea6a8846d5066a35ba6b385dd5d0575855
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Dec 20 13:05:16 2022 -0500
+
+    cosmetic cleanups and workaround qCompilerAndStdLib_DefaultMemberInitializerNeededEnclosingForDefaultFunArg_Buggy
+
+Date:   Tue Dec 20 14:12:06 2022 -0500
+    rough incomplete draft of boost locale support for utf_to_utf
+
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Dec 20 15:03:59 2022 -0500
+    tiny progress on Options::Implementation::eBoost_Locale
+
+commit a093c60b540c17caed5da4a43398e6d814d03e9a
+Date:   Tue Dec 20 16:13:40 2022 -0500
+
+    Lose deprecated CodePage UTFConvert code - and put in backward compatible stuff to DELEGATE to new UTFConvert(er) code in another module, marking as deprecated
+
+commit 2e25f4d0e516ebb6f6ecc0944d0b1dcf9af75b53
+
+    Replace deprecated use of UTFConvert with use of new UTFConverter
+
+commit 53a232ffbe8f64d806e4026e80ab8d59ec97a527
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Dec 20 19:26:37 2022 -0500
+
+    code factoring - ConvertQuietly_StroikaPortable_helper_
+
+commit 2636595483d8713a0ee2b9ff189c2fe9174d3e44
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Dec 20 19:33:41 2022 -0500
+
+    ConvertQuietly_codeCvt_helper_ factoring
+
+commit b0ad2f0661ef6d42de1b2948e0a05664d7961c1c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Dec 20 19:56:12 2022 -0500
+
+    fixed minor recent regressions(refactoring)
+
+commit 23332fdfb59fd2fa46435c40f5f8169cdbd5cb8e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Dec 20 20:17:18 2022 -0500
+
+    reversed order of template paramters for UTFConverter::ComputeOutputBufferSize () so could specify just one explicitly and infer the second one
+
+commit 38673d0334531bbc3fb3fe72283ef6ab8d3a1d75
+    span cleanups
+
+commit b3f405edba09058298e20c4b12e803df04aa8ed4
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Dec 21 07:48:10 2022 -0500
+
+    use legacy UTF8_ typedef and directly use char8_t now
+
+commit b8115f8b80d3b07db7e18fa917d2516d6d8f808f
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Dec 21 08:48:55 2022 -0500
+
+    mostly cosmetic, plus one AsUTF8 cleanup and const & in loop
+
+commit 299a0ea5fc063d52593a2ee07ba24fedba9521ea
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Dec 21 08:50:03 2022 -0500
+
+    fixed locale code to use AsNarrowSDKString not AsUTF8
+
+commit c3ddc30f2dc12604996909aa196f073a93608af2
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Dec 21 08:51:19 2022 -0500
+
+    lose -#if __cpp_char8_t >= 201811L check for char8_t; and changed (NOT BACKWARD COMPATIBLE) String::AsUTF8 default template arg from string to u8string; so to get old behjavior must change code from .AsUTF8() to .AsUTF8<string>()
+
+commit b5a427a0a592fbf9853b573467368da7d801d793
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Dec 21 09:24:41 2022 -0500
+
+    remove explicit include of ../Execution/Throw.h in Memory/StackBuffer.inl to workaround deadly include embrace
+
+commit 8404785f889a342a5a63ba818ffa2824afe52f3c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Dec 21 09:25:29 2022 -0500
+
+    new UTFConverter::Convert overloads for basic_string templates - so can say  wstring wide_fred = UTFConverter::kThe.Convert<wstring> (u8'fred')
+
+commit 60e01093f674d066bd5d5985a79180ba8961f929
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Dec 21 10:56:21 2022 -0500
+
+    SafeBegin/SafeEnd() utilities in Memory to deal with fact that you cannot easily get the address of the start of a span (in case its empty) and similar issue with end of span as address
+
+commit 48585f28c2634e154226a716b59a8549af84254f
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Dec 21 10:57:17 2022 -0500
+
+    re-engineer BLOB class to be more based on span (rather than pair<const byte*,const byte*> - not fully backward compatible, but mostly just new apis supported (span)
+
+commit eba8bed20a0dff0f030bab3769ea53ded0df47f5
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Wed Dec 21 11:53:32 2022 -0500
+
+    fixed a couple more regressions due to default change in AsUTF8 template type param
+
+commit 5b6e654e5c6df8e490372786b6a772de9e4b9f67
+Date:   Wed Dec 21 11:56:19 2022 -0500
+    added missing value_type so  static_assert (Configuration::IsIterable_v<GUID>); passes
+
+commit 949507cf23504b084030c554e73e6158f8d132e3
+Date:   Wed Dec 21 11:56:44 2022 -0500
+    use requires instead of enable_if_t in more places
+
+commit 7cfe7bb4c08162574b8bfcccbd6a7219f3f6dd54
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Dec 21 13:21:35 2022 -0500
+
+    fixed regression in InternetAddress CTOR due to change in s.AsUTF8 (unsinged vs signed)
+
+Date:   Wed Dec 21 14:55:08 2022 -0500
+    https://stroika.atlassian.net/browse/STK-965 - deprecated String::c_str() const version and did quickie (to be rewritten) non-const version and changed a bunch of (easy) code to use .As<wstring>() to avoid const c_str () issue
+
+commit 9a7bb4975e88145bdff094016c79def3f5bb5706
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Dec 21 16:51:28 2022 -0500
+
+    qCompilerAndStdLib_stdlibVsBoostSpanSelect_Buggy bug define and start at workarounds
+
+commit d3c24634d748925c605cdf1fb0b0874b1912520d
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Dec 22 09:00:47 2022 -0500
+
+    qCompilerAndStdLib_stdlibVsBoostSpanSelect_Buggy
+
+commit 93b1ff7a318554c2a913fb2801ed07b3c32fd941
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Dec 22 09:08:43 2022 -0500
+
+    qCompilerAndStdLib_stdlibVsBoostSpanSelect_Buggy mkSpan_BWA_ workarounds
+
+commit 77c5e86a8318bb2db443174a5a41e49d717ffccd
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Thu Dec 22 09:35:24 2022 -0500
+
+    fixed qCompilerAndStdLib_stdlibVsBoostSpanSelect_Buggy to depend on LIBCPP_VERSION not clang version (cuz works on clang12 using gnu libstdc++)
+
+commit e8bb8e3dfc888fd1e1a24e71370cf6abb5e29b64
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Dec 22 09:53:52 2022 -0500
+
+    fixed typo on qCompilerAndStdLib_stdlibVsBoostSpanSelect_Buggy
+
+commit 9212f2905514a4c0ee29415fea50999acf1e34b9
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Dec 22 09:55:15 2022 -0500
+
+    Comments and more use of span
+
+commit dd698adb87d91fbbabc2b555d26fb4ee93b059dd
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Dec 22 09:55:33 2022 -0500
+
+    fix use of deprecated String::c_str()
+
+commit 7d91538e169427fc3e5d280d7272475609365eed
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Dec 22 12:39:22 2022 -0500
+
+    fixed small typo in ConvertQuietly_StroikaPortable_
+
+commit 57bb12d368b2841d81681f65a487ce2cff468c49
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Dec 22 11:58:15 2022 -0500
+
+    define qSupport_SystemPerformance_Instruments_CPU_LoadAverage so also works on MacOS
+
+commit 118cf54abb1a0f7dde36b80c4ed64539fd089867
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Dec 22 11:58:39 2022 -0500
+
+    define Common::GUID::size () const method
+
+commit ec6ce1735e8f2fe31f97da706c92ce68a7d56d27
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Dec 22 12:45:37 2022 -0500
+
+    tweak qCompilerAndStdLib_stdlibVsBoostSpanSelect_Buggy so compiles on xcode
+
+commit 64a2d6755a597265c85b29c0baa58cd8fbf1f0d1
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Dec 22 13:03:52 2022 -0500
+
+    make format-code; and a few small cleanups/tightening of UTFConvert code to amke easier to workaround issues on xcode 14 compiler
+
+commit ec33a3f220a02650dc57f85a24cd42ca3bb682f3
+Merge: 64a2d6755a ec6ce1735e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Dec 22 13:08:29 2022 -0500
+
+    Merge branch 'v3-Dev' of github.com:SophistSolutions/Stroika into v3-Dev
+
+commit 17d7f107882a979d1c6655034693c953fc5166ce
+    more tweaks to qCompilerAndStdLib_stdlibVsBoostSpanSelect_Buggy for xcode14
+
+commit 1428645b4c2551c019a8e4a192b37648906dd3c3
+    https://stroika.atlassian.net/browse/STK-965 added String::c_str (Memory::StackBuffer<wchar_t>* useBuf) const and started experimentally using
+
+commit 205e3200aaf1f799973e004d1adf7e6e7c6a9e60
+    changed  String::c_str (Memory::StackBuffer<wchar_t... API and used in a few more places; and docs and related cleanups
+
+commit e03adb06a4159533a7ef5947abcdc32befeff548
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Dec 22 17:10:51 2022 -0500
+
+    Lose support for qCompilerAndStdLib_conditionvariable_waitfor_nounlock_Buggy cuz no longer support such old LIPCPPVERSION and no other refernces to this bug; Same for qCompilerAndStdLib_strong_ordering_equals_Buggy
+
+commit 909abb3126182ad439fd5f123b8c82c0749f11db
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Dec 22 17:11:33 2022 -0500
+
+    Lose support for qCompilerAndStdLib_conditionvariable_waitfor_nounlock_Buggy cuz no longer support such old LIPCPPVERSION and no other refernces to this bug; Same for qCompilerAndStdLib_strong_ordering_equals_Buggy
+
+commit 4fd1fc02ae9ebb39ade497d7c6eff088241d1bbb
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Dec 22 17:44:07 2022 -0500
+
+    cleanup qCompilerAndStdLib_stdlibVsBoostSpanSelect_Buggy and new experimental c_str() changes
+
+commit e31c8f22c6b944eea44ab7472bf246c5b8438869
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Dec 22 17:47:14 2022 -0500
+
+    renamed qCompilerAndStdLib_stdlibVsBoostSpanSelect_Buggy -> qCompilerAndStdLib_spanOfContainer_Buggy
+
+commit ebca2c13b5af396d1f28972248c7c93abf94cb56
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Dec 22 18:11:28 2022 -0500
+
+    cleanups for https://stroika.atlassian.net/browse/STK-965 String::c_str() changes
+
+commit 539bbdc3ee05faa788a06c84f9ef9681e4c1d560
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Dec 22 20:54:22 2022 -0500
+
+    more cosmetic and c_str () cleanups
+
+commit 0c72da4f8a80ed9583ba6b2d4306a4fd0ee3062f
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Dec 22 22:32:30 2022 -0500
+
+    more adapt to String::c_str() changes
+
+commit 1dff10522a49de2400533d3f3819a9ed8dd943f1
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Dec 23 10:00:52 2022 -0500
+
+    https://stroika.atlassian.net/browse/STK-965 and https://stroika.atlassian.net/browse/STK-684: **incompatible changes** but mostly minor - lose String::data method (never used); lose support for String::As<const wchar_t*> () and String::As<const Character*> () - harder to tell but apparently never used; and added more utfxstring overloads for As() and cleaned up remaining c_str() usage
+
+commit 6aa058eae548f37bcd239966218e62024034537b
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Dec 24 10:16:38 2022 -0500
+
+    https://stroika.atlassian.net/browse/STK-965 https://stroika.atlassian.net/browse/STK-684 - cleanup String
+    constructors.
+    
+    BIG change (not backward compatible): InlineBuffer/StackBuffer now have operator T* explicit; and
+    add method data() to let you access the pointer (to avoid confusion with a->b->a constructor
+    issue).
+    
+    Also data returns new type field (pointer) - but minor.
+    
+    A few other small fixes/cleanups.
+
+commit 0e6d7b4b7997c495f675962243fd6bfb411cbc57
+    fixed another use of c_str()
+
+commit 555da5c8741566378e9df07f6082e5ca3950e154
+    more Led refactoring - lose Led_ThrowIfErrorHRESULT and use Platform::Windows::ThrowIfErrorHRESULT
+
+commit aec4551e0417712d42a2bc51e7cf58b4d24abf19
+    tweak CATCH_AND_HANDLE_EXCEPTIONS_IN_HRESULT_FUNCTION; and use in sample apps
+
+commit bc1d1485e98c9ea73c4b84afe12687e2e4ec0fa9
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Dec 24 15:58:41 2022 -0500
+
+    more name changes on AssertExternallySynchronizedMutex::ReadLock -> AssertExternallySynchronizedMutex::ReadContext (and WriteContext) and unified names of instances - all to address confusion in posts on Reddit, about whether these are real locks or not
+
+commit 835c5ba4939819e698294d6438e70d152258c5f9
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Dec 24 17:44:05 2022 -0500
+
+    renamed UTFConverter::ComputeOutputBufferSize -> UTFConverter::ComputeTargetBufferSize, and changed UTFConverter return of tuples to use ConversionResult type with named fields
+
+commit e39a006aa6e7ae975841b6d3bc624d0e8b7ebb9b
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Dec 25 09:11:12 2022 -0500
+
+    StringBuilder - major cleanup/fixes - using concepts, using span<>, better use of AssertExternallySynchronizedMutex; a few method deprecations and may new overloads (cleanly captured with requires)
+
+commit b934eb8e0d016454008e7fb0b2dac9513903b585
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Dec 25 09:11:58 2022 -0500
+
+    use newer StringBuilder Append API (span)
+
+Date:   Sun Dec 25 19:57:09 2022 -0500
+    StringBuilder deprecate (testing) begin/end/c_str() methods
+
+Date:   Mon Dec 26 11:42:17 2022 -0500
+    comments; and Character concepts - Character_IsBasicUnicodeCodePoint, Character_IsUnicodeCodePoint, Character_IsUnicodeCodePointOrPlainChar, Character_Compatible
+
+commit 736398915d134b390e37172f980de90fd336e90c
+Date:   Mon Dec 26 11:43:33 2022 -0500
+    ToFloat and String2Int overloads taking span<> (and more overloads to begin to make up for ambiguity - come back later and rewrite all this using requires
+
+commit 1ef780e5e45bed056ffbe780a70d63b32e2cc2fb
+    deprecate StringBuilder begin/end/c_str() and add replacement API - GetData (prototype for what I will do in String)
+
+commit b0e9d0815f7cfaea5beaf086b342d6cfdf7596d0
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Dec 26 11:47:37 2022 -0500
+
+    OutputStream (start of) span support
+
+commit b766184bb27ee0adee9db77230f58531ccd92dfc
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Dec 26 11:48:20 2022 -0500
+
+    replace use of (now deprecated) StringBuilder begin/end with GetData() API
+
+commit d3f4e9f3d7bc6170d3c0d8910331d4bebeb34d96
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Dec 26 18:03:11 2022 -0500
+
+    new Character_SafelyCompatible  (at least for now)
+
+commit 767efd44a74626d56714944f3936d93097e98934
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Dec 26 18:03:51 2022 -0500
+
+    use Character_Compatible etc concpets to cleanup more of StringBuilder
+
+commit 92ffe279f63c496efaace97be2408fc3bab70ca9
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Mon Dec 26 18:04:40 2022 -0500
+
+    qCompilerAndStdLib_spanOfContainer_Buggy workarounds
+
+commit 67209281f5eef9ce425d127afa96208819936c68
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Mon Dec 26 18:45:02 2022 -0500
+
+    qCompilerAndStdLib_spanOfContainer_Buggy BWAs
+
+commit 60902957b6ec0318127f3be13520e908777d2d7f
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Mon Dec 26 18:52:45 2022 -0500
+
+    docs
+
+commit 6a60eb3e75b8ac1f6aeeab021b4a9306da544d64
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Dec 26 18:56:57 2022 -0500
+
+    hopefully silence warning
+
+commit 36581b771f9039fc6c7335a73d080eec934224fd
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Dec 26 18:57:24 2022 -0500
+
+    comments
+
+commit 634d9f45416a675f4f9b360c29a933a01ef15cb6
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Dec 26 20:13:59 2022 -0500
+
+    lose some support for clang++ versions prior to 10 - since dont work with Stroika v3 - and change default std c++ lib for using clang (prior to clang++14) to libstdc++ since libc++ doesnt work prior to 14 (didnt try 13)
+
+commit 7a4f01b7db48535d4ad7601770c602263a5ca0a9
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Dec 26 20:55:17 2022 -0500
+
+    cosmetic
+
+commit a050ecb36dfe586b03131f6e041ba954d4dffa90
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Dec 26 20:55:42 2022 -0500
+
+    new concept ConvertibleToString
+
+commit 55be3d0a95af53be85fb40082be7d72189c2554d
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Dec 26 20:56:21 2022 -0500
+
+    big simplification to String2Int code using concepts (hopefully still correct)
+
+commit 7b4f848a39e14059a5c00048da2acc49c9b3be59
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Dec 26 20:57:05 2022 -0500
+
+    cosmeitc
+
+commit f79206de3db7a1be52726cf7c6af46b5ebab2cf4
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Dec 26 20:57:18 2022 -0500
+
+    minor cleanups to avoid warnings
+
+commit 8ce17713ba756481efd2d46ad9f3af1057862681
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Dec 26 22:55:15 2022 -0500
+
+    mostly cosmetic cleanups esp to String2Int
+
+commit a4df6791e848c2827ec9aba4ceac24fee8e7098f
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Mon Dec 26 22:59:26 2022 -0500
+
+    fixed typo
+
+commit df13d69e8e0582b5ec0b64fcf6da0b42ff69cab9
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Dec 27 10:10:20 2022 -0500
+
+    new Characters::IsAscii/AsASCIIQuietly functions (for any unicode and char buf - string or stackbuffer - output)
+
+commit aa71f6c79077741620bc9f7ca4e844b7b7864904
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Dec 27 11:46:14 2022 -0500
+
+    more cleanups to Character::AsASCIIQuietly - changed concept requirement and improved impl
+
+commit c1c1cf19d8e82946649513e3c1a3a64b696daa51
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Dec 27 11:47:12 2022 -0500
+
+    String2Int - method optimizes more span cases; and use Character::AsASCIIQuietly in place of deprecated String::AsASCIIQuietly
+
+commit 2f395fbb49b4e9389ece4876e337434dff519423
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Dec 27 11:47:51 2022 -0500
+
+    deprecated one overload (static) of String::AsASCIIQuietly - and have it delegate to new Character::AsASCIIQuietly
+
+commit 2c51e1c233bc12ccf03b8585c30348f5469c398e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Dec 27 14:55:44 2022 -0500
+
+    Comments
+
+commit c4a7beffb03493eb3984d855ec64866ac416d939
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Dec 27 14:56:06 2022 -0500
+
+    Added regtest that Math::NearlyEquals (NAN,NAN)
+
+commit 3057c05e5dbbafffa1de206728b15798c68453f0
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Dec 27 15:41:14 2022 -0500
+
+    refactoring of ToFloat () using span (not complete but better)
+
+commit 853342a99082ea2f355f6c407bfce7b1f5c0ab28
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Tue Dec 27 15:43:32 2022 -0500
+
+    fixed a couple typos
+
+commit 65d7ec069b9c1cde55bd02ab193cc3243623cf36
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Dec 27 18:43:15 2022 -0500
+
+    loosed requires on Character::IsASCII (and renmaed from IsAscii); and docs
+
+commit 01bab2690fd29b8e085dc2a4d6d72418857fee82
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Dec 27 18:44:55 2022 -0500
+
+    new (untested) UTFConverter::ConvertOffset ()
+
+commit 78ff10a6f639826db2bfb16e24c6f394ddf5c6e0
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Dec 27 18:45:18 2022 -0500
+
+    make format-code
+
+commit a8896cce82c6ae141287760299b104c27c1c5444
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Dec 27 19:38:38 2022 -0500
+
+    make format-code (sadly messing stuff up)
+
+commit c3081a82de4cc8e8b5c45bdfbee2f6c923f0939a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Dec 27 19:39:46 2022 -0500
+
+    progress rewriting ToFloat code to be more C++20-ish/spanish etc
+
+commit 32e853ae4b08b28541cdbcaa958765eb25e89c1f
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Dec 28 09:23:02 2022 -0500
+
+    more cleanups to the ToFloat code
+
+commit c3290a9e8f81118cdb768b382f2bc83cb92c26a9
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Dec 28 09:20:40 2022 -0500
+
+    Revert "lose some support for clang++ versions prior to 9 - since dont work with Stroika v3 - and change default std c++ lib for using clang (prior to clang++14) to libstdc++ since libc++ doesnt work prior to 14 (didnt try 13)"
+    
+    This reverts commit 634d9f45416a675f4f9b360c29a933a01ef15cb6.
+
+commit c5b6c360bd8fd53dfe2bba75527a62adbda9e351
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Dec 26 20:13:59 2022 -0500
+
+    lose some support for clang++ versions prior to 10 - since dont work with Stroika v3 - and change default std c++ lib for using clang (prior to clang++14) to libstdc++ since libc++ doesnt work prior to 14 (didnt try 13)
+
+commit 7fe8c95de9333a52525681832da21d0e5221230a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Dec 28 09:39:21 2022 -0500
+
+    fix recent configure changes for macos/xcode clang versions
+
+commit 141d1008923d15a4eca3318b475f46291c0ca023
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Dec 28 09:40:49 2022 -0500
+
+    fixed typo
+
+commit 43d7fabb5ce1fd5e7111619f14071d2f748ea7c3
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Dec 28 09:46:23 2022 -0500
+
+    more progress on ToFloat code
+
+commit b893263669ad1f0ef504265ba54b6862913dfbe5
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Dec 28 11:52:50 2022 -0500
+
+    mostly cosmetic/comments and small bugfix to UTFConvert code
+
+commit 6b62260c81c0cb9bcce3cef4795872006b3f2f97
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Dec 28 12:20:22 2022 -0500
+
+    Comments
+
+commit e86db6291d2e5b01c31aa531ad89278fa43b9b37
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Dec 28 12:32:57 2022 -0500
+
+    more factoring/comments/cleanups/fixes to Characters/FloatConversion (maybe working now?)
+
+commit a24e7277baa3932a8863386dcadee30a23cb4b20
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Dec 28 12:49:06 2022 -0500
+
+    use boost 1.81.0
+
+commit d6a032f8714ade4d419e9c132814c91a5c98c761
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Wed Dec 28 13:07:36 2022 -0500
+
+    fixed warning
+
+commit 223ebcfc71abcc6f33ca8048335afde313bdd1e5
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Dec 28 14:11:28 2022 -0500
+
+    cosmetic
+
+commit b7ca9dba77eb50b007a433374579964277da5202
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Dec 28 17:19:31 2022 -0500
+
+    fixed small bug with ToFloat logic - peek at s not null terminated
+
+commit d71dac2e7c13be08a72a1386145148e2e737c9a5
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Wed Dec 28 17:50:43 2022 -0500
+
+    finally a relatively simple way to reproduce https://stroika.atlassian.net/browse/STK-966 - clang specific ToFloat bug
+
+commit 399041326311bb426b633a0076a77b22d597d4d7
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Dec 28 17:51:24 2022 -0500
+
+    minor code cleanup (better names)
+
+commit 678c47cf0d9c300303f8ca47a516424ab12c1ecd
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Dec 29 09:14:44 2022 -0500
+
+    fixed https://stroika.atlassian.net/browse/STK-966 - ToFloat failing - due to strtod requires NUL-termination, and new code didn't generally require/pass in NUL-terminated strings (did often enough to be confusing)
+
+commit f17872678fc5df77df7843f614102b725d3d539a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Dec 29 09:15:27 2022 -0500
+
+    A few other ToFloat cleanups/fixes
+
+commit 304f2d98dbc5066fefa4d891df0082192c9939fd
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Dec 29 09:16:20 2022 -0500
+
+    Character::AsASCIIQuietly now templated on Character_Compatible
+
+commit 60542bcfcd6cc031e1e690219937671e6bc2b5e7
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Dec 29 09:16:37 2022 -0500
+
+    cosmetic
+
+commit d97aa8ead8ae3bf94f2f585ff20ac98df038b4a2
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Dec 29 09:17:10 2022 -0500
+
+    StackBuffer resize (BOTH cases now) use Foundation::Containers::Support::ReserveTweaks::GetScaledUpCapacity
+
+commit c3985d9b70a18d4fb89fd252ae90a09829e4f1fe
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Dec 29 09:19:04 2022 -0500
+
+    make format-code
+
+commit 8f6768186fd354f3532d855ece18bf72bd13d1fa
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Dec 29 09:40:20 2022 -0500
+
+    regtest for GetScaledUpCapacity () behavior
+
+commit 10ffce4ff1c85ba473459c0c02bcc1a2ab555d87
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Dec 29 09:41:31 2022 -0500
+
+    fixed typo
+
+commit 3cd5823ec5537ffdd5a3287ff48601b915d3064a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Dec 29 10:09:58 2022 -0500
+
+    avoid clang warning
+
+commit b398dcab67698f2e32f476bc4e6c1d63619ac41b
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Dec 29 10:10:11 2022 -0500
+
+    make format-code
+
+commit ecbb238c1f3872baf67485e61c046e1d154280a4
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Dec 29 10:44:20 2022 -0500
+
+    tweak regtests
+
+commit 813587847662651e17ee5c03dbbc62a00dd34918
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Dec 29 11:38:01 2022 -0500
+
+    not backward compatible, but minor change in ToStringOptions parameters - GetUseLocale now returns locale, not optional, and new GetUsingLocaleClassic, and a few changes in rarely used types related
+
+commit f1e06320a80f54e3241f739169ec297aab2be30f
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Dec 29 11:52:31 2022 -0500
+
+    make format-code
+
+commit f92cf23198db427133de843bc985364391a1c088
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Dec 29 11:52:55 2022 -0500
+
+    lose a bunch of backward compat code from performance test regtest
+
+commit 74681156a7df4962f560bb4c690a51f8d15de2e6
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Dec 29 12:38:03 2022 -0500
+
+    updated v3-Roadmap
+
+commit efd27ab18953dae02848fdeaedc8aca65fd474d5
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Dec 29 12:38:20 2022 -0500
+
+    cometic
+
+commit a502951b0ad07719155524eb5731f9d3cd374018
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Dec 29 12:56:18 2022 -0500
+
+    v3-roadmap
+
+commit 34d9570225b422912b0a153f64ea8f932d902a18
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Thu Dec 29 14:57:17 2022 -0500
+
+    fixed small regression in ToStringOptions::ToStringOptions
+
+commit 18b7b193e0b5adb3c6b1830e232d9c1e727e2304
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Dec 29 14:58:44 2022 -0500
+
+    deprecated InlineBuffer::ReserveAtLeast and replacced with flag arg to reserve function, and simplified and probably improved performance of use of reserve internally in that class
+
+commit d0723c617213ad183f33eba2e8d0cf9baa632b72
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Dec 29 15:06:13 2022 -0500
+
+    cosmetic
+
+commit 0234d9b8ba000a7093214026be0c008351f0ddfc
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Dec 29 15:27:58 2022 -0500
+
+    like with inlinebuffer to stackbuffer - lose ReserverAtLeast - and replace with atLeast flag argument to reserve() and use that toughout class itself for stuff like grow. and cleanup use of GetScaledUpCapacity and special case for still inside inline buffer
+
+commit 681a34f85967e554cfbce6b39818649ed5d2cf33
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Dec 29 21:26:16 2022 -0500
+
+    draft new String API for PeekData/GetData (allowing return of spans of differnt code-point types)
+
+commit 5042ae13f18abf86e1770e7b96051158b0994771
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Thu Dec 29 22:12:26 2022 -0500
+
+    fixed typo
+
+commit 475ae331e68a18410692b1998c838479c61b64c1
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Dec 29 22:24:39 2022 -0500
+
+    tweak perf test
+
+commit d46b8726065172e4a08b6cd6c24e1d1a9592e87b
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Dec 29 22:57:36 2022 -0500
+
+    refactor String PeekDataSpan code
+
+commit a7cd11078470b708e2a8b3b2c90ef9080b4a9c64
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Thu Dec 29 22:59:50 2022 -0500
+
+    fixed typo
+
+commit bad9b746f38cd1c3cbcf74de812d313dbba0ddd6
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Dec 29 23:07:27 2022 -0500
+
+    cosmietc
+
+commit 942006bb1a05624b8d244d43badc3acda78e7db3
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Dec 30 09:14:51 2022 -0500
+
+    tweak make configurations for clang
+
+commit dd4c40945717d2e9a8232a9a3464d55e3d77d919
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Fri Dec 30 09:28:08 2022 -0500
+
+    cannot cast iterators for spans so cast underlying pointers
+
+commit 2f6d25dd302ee1879dcbf9034f1f176101b51630
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Dec 30 09:41:11 2022 -0500
+
+    more cleanups of String PeekData code
+
+commit b9a9f765bec35ca7aa6c6c5ed7f7134c30649ebf
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Dec 30 10:41:42 2022 -0500
+
+    String class cleanup impl
+
+commit 30b64f909ccfa445c3ed03d78d30da49542e233d
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Dec 30 10:52:10 2022 -0500
+
+    failed attempt to use new String GetData stuff - need to fix ctors for string rep construction first ofor ones doing construction
+
+commit 9bd2b0402c2207019c8aaba954283780841ba5f2
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Dec 30 16:12:42 2022 -0500
+
+    tighten Character::As<> template so instead of just two specializations, uses requires so compiler not linker warn about bad arg types
+
+commit 1ff8499f568ba2963d9f483645cf69bdb0259894
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Dec 30 16:17:00 2022 -0500
+
+    cosmetic
+
+commit fe4216eaa0164db00c58fead4076b0f784fa4c6b
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Dec 30 16:26:30 2022 -0500
+
+    cleanups to String::GetData ()
+
+commit 4e00fb224f38b920a26720ee0ff8b860e95fe64d
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Dec 30 16:27:09 2022 -0500
+
+    draft rewrite of String::Find () using new style data access
+
+commit 8ef44399aef3ace7c91de9d077c4fc5e2798edb4
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Fri Dec 30 16:29:32 2022 -0500
+
+    fix recent checkins for String::PeekData (stricter compiler)
+
+commit 4020d7c35dc94700d44b6c6dd689fd4033aa4eee
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Dec 30 16:50:55 2022 -0500
+
+    code cleanups, docs, and bug fixes to recent PeekData code in String class (and some classes renamed, some methods no static)
+
+commit 17139ade5db085463f381b17d2c92954b7004092
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Fri Dec 30 17:03:30 2022 -0500
+
+    docs
+
+commit f1beeec74a74bb903935064042162336ac68d1c4
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Dec 30 20:03:45 2022 -0500
+
+    silence warning
+
+commit b30a8f3e99954e34781955c7110e8f500c79cb86
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Dec 30 20:04:49 2022 -0500
+
+    silence warning
+
+commit 59038aa4d30828cbd799ae55dcb4430f267bc076
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Dec 30 20:10:09 2022 -0500
+
+    mostly cosmetic
+
+commit baa6781b742144217ab5a3d9bca599ea1db2e217
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Fri Dec 30 21:22:55 2022 -0500
+
+    qCompilerAndStdLib_spanOfContainer_Buggy bug workarounds
+
+commit 7d0fcd4964a0da01988f9a983579aa120436fe38
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Dec 30 21:23:39 2022 -0500
+
+    draft of ComputeCharacterLength and NextCharacter
+
+commit dd59988de5b68a84fd5f1c8e3aba5ad5bc65e816
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Fri Dec 30 21:31:08 2022 -0500
+
+    qCompilerAndStdLib_spanOfContainer_Buggy BWA
+
+commit 171ad594141ae780ee7f1173bfa8a923f015bf2d
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Dec 31 03:48:33 2022 -0500
+
+    comments/cosmetic
+
+commit c97151fc158f2c099c8c9012769909c13400dcab
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Dec 31 04:31:44 2022 -0500
+
+    Added Character::Compare () overload for span
+
+commit 532f0e5169475749f63c52c02db95e45819d6cf6
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Dec 31 04:41:06 2022 -0500
+
+    progress converting String code to use new GetData<> api
+
+commit 6fedc68463bd351da69de510ca5eb0a4957d242d
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Dec 31 05:06:04 2022 -0500
+
+    BitSubString example/docs
+
+commit e3169211f28c59770b5fe121cf559e8ea9e736d7
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Dec 31 11:08:40 2022 -0500
+
+    fixes to UTFConverter::NextCharacter and UTFConverter::ComputeCharacterLength, and regression tests for said
+
+commit 10a5fa9e46e18e03062b3948c8f18a383f3dee84
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Dec 31 14:16:32 2022 -0500
+
+    lose __cpp_char8_t < 201811L checks
+
+commit bee907bd00fcd1bc2c2391bc722525f62c8f929b
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Dec 31 14:43:46 2022 -0500
+
+    cleanup new String usage/code
+
+commit 632c011fe00ca666fadacd244642e30e5d686dff
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Dec 31 14:44:05 2022 -0500
+
+    simplified regtest
+
+commit 8726ef15142b631d6382e615e5eb17197aabc4be
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Dec 31 15:26:23 2022 -0500
+
+    make format-code
+
+commit 75a1f98208abef4b79d990c2579d9b2483fc6707
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Dec 31 15:26:58 2022 -0500
+
+    define config constant kStackBuffer_TargetInlineByteBufferSize to make better choices in other parts of the code
+
+commit 1869cd071ae314a511b3b0048888e16a8ac52e12
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Dec 31 16:56:08 2022 -0500
+
+    ComputeCharacterLength and NextCharacter nowhave wider characterset applicability; and UTFConverter::ComputeBufferSize uses countcharacters etc and kStackBuffer_TargetInlineByteBufferSize to sometimes do counting (not well thought out but a few sensible cases included
+
+commit 153e09611d655e14c70b121e00f249a485be2667
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Dec 31 16:57:07 2022 -0500
+
+    More progress on String conversion to new GetData<> logic, including changing what it hashes to so changed  hardwired values in regtests for hash of strings
+
+commit b6abda77105e528a2468727bd9650f673963053a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Dec 31 19:07:18 2022 -0500
+
+    code cleanups using span - use as_bytes now, and .data instead of &*s.begin ()
+
+commit 7ee659c694d7cf07a0f81e03301209670181d3a9
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Dec 31 19:07:40 2022 -0500
+
+    digester ctor constexpr
+
+commit c728e466b0c5182d823469116b935074eb107346
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Sat Dec 31 19:08:08 2022 -0500
+
+    re-order function defs to avoid issue calling inline
+
+commit 38c5062bc880d4a2ce9311954a935fbaf686b213
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Sat Dec 31 19:10:42 2022 -0500
+
+    re-order function defs to avoid issue calling inline
+
+commit 105a614b747d46f5f4f6ee688b4ef05777b8a2ea
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jan 1 09:39:05 2023 -0500
+
+    use .data not .begin with pointers and spans
+
+commit 778ea4b0af77d81e4c3a68125bc9b642e1b329dd
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jan 1 09:44:47 2023 -0500
+
+    update v3-Roadmap
+
+commit 332491ef825903ce3fabe8ea78142e3dad5b4e08
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jan 1 09:57:37 2023 -0500
+
+    cleanup now needless casts
+
+commit 74b96a8e03c2dfb2d4f11fdfc5390649105ac34c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jan 1 10:15:48 2023 -0500
+
+    silence a few warnings
+
+commit 85b22b05e19f51559cc8927f996202f2f8ef7553
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Sun Jan 1 10:28:56 2023 -0500
+
+    qCompilerAndStdLib_spanOfContainer_Buggy workarounds
+
+commit ec232ac62db8657f7f21bacfab5856e3ede312fd
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jan 1 10:33:46 2023 -0500
+
+    comments, cosmetic
+
+commit 28ccc2be898238155f8f4e6551b7d8a44e69cf5b
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jan 1 14:35:31 2023 -0500
+
+    Draft new String::mk_ API - using spans - but still existing backends
+
+commit 027da1a8c326493985ec4848689d06face692a7b
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jan 1 17:23:27 2023 -0500
+
+    qCompilerAndStdLib_spanOfContainer_Buggy bug workarounds
+
+commit 3e6eefc68efbfab72b4d6e9868a28a66ac25b421
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jan 1 18:25:45 2023 -0500
+
+    cleanup Characters::CString:Length to use template requires instead of a bunch of specializations - much better!
+
+commit 12c2f5232381cdb7a6a53aa675f4c0b0ef8ddc92
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jan 1 18:26:27 2023 -0500
+
+    fixed small bug in UTFConverter::Convert ()
+
+commit 413e82bf7ae66c0ffb2b544443e45902fbb73d1a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jan 1 18:28:49 2023 -0500
+
+    progress on new span/concept based String::mk_ () - and got all c-string arg CTORs for String rewritten much simpler using this technique
+
+commit 35a0f19ebcac48a42e1354a74dde5c610abd2daa
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Sun Jan 1 18:42:04 2023 -0500
+
+    get recent changes compiling/working on unix/clang
+
+commit 30ed732945932b24ad6b0f8269b804fe3ababe24
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jan 1 21:41:37 2023 -0500
+
+    qCompilerAndStdLib_spanOfContainer_Buggy bwa
+
+commit 94ced3c50402542c523549ef6efc3cf58efa2aa7
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jan 2 09:17:25 2023 -0500
+
+    fixed Character case of UTFConverter::Convert
+
+commit 6f26390069ba9ed80c6d28ba603c5b9a107bde60
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jan 2 09:27:49 2023 -0500
+
+    more progress refactoring String constructors and mk_ provite routines
+
+commit a28628819fe664ea7ea189fe8ef1abc6aba6b132
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jan 2 09:52:45 2023 -0500
+
+    cosmetic and lose Memory::Private::VC_BWA_std_copy utiliuty
+
+commit e624af3895d3d506bd4515e1a0ecf3e05d39b9fd
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jan 2 10:40:20 2023 -0500
+
+    comments
+
+commit 73b13190ab0f4089c1e35e2d243f5de5c86be59e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jan 2 10:40:40 2023 -0500
+
+    more cleanup/generalizing of String CTORs
+
+commit 303099336591be7598b0a8346c983e691eb889a0
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jan 2 10:42:01 2023 -0500
+
+    fixed  typo and make format-code
+
+commit 7ad6d1cfe829adba6b05864f6c0c9f33df380c7e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jan 2 11:21:19 2023 -0500
+
+    lose some legacy Memory::Private::VC_BWA_std_copy referenes i missed; add default value and a few other cleanups to some old Led code
+
+commit bbf535d0e1454d9840d8f3b66e65b80198dcfa70
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jan 2 11:32:00 2023 -0500
+
+    deprecated string {from/to} - use span instead - and update code to avoid deprecated calls
+
+commit 01f0fbc26b6a04df5721b2992b15a9ead22dab8a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jan 2 11:32:11 2023 -0500
+
+    fixed typo
+
+commit e839e92ca9723b0aa8e0eb55fba5aa10d9d4ecd9
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jan 2 11:34:15 2023 -0500
+
+    make format-code
+
+commit b03e08777ce76de87f920694b3650a8883a6400d
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jan 2 11:45:42 2023 -0500
+
+    comments
+
+commit 8893c7f46a3d1c589e20f9c42f8d0263a6ebb8d1
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jan 2 11:45:57 2023 -0500
+
+    cosmetic
+
+commit 7f452426ece128b974624bafcaf5598c27a845d8
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jan 2 11:49:11 2023 -0500
+
+    fixed a few errant noexcept annotations
+
+commit 844a76b626d329ebec55023a18feb8e9658f54b6
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jan 2 11:51:01 2023 -0500
+
+    fixed another noexcept usage
+
+commit 833aed82be7368ef07b5f793a7a54be2a300dd6f
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jan 2 11:53:40 2023 -0500
+
+    fix typo/spelling
+
+commit 4ef487555b0ac0996b432dbfa340e5457a46bf88
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Mon Jan 2 13:40:57 2023 -0500
+
+    use noexcept in a few places to make clang libc++ happier about span usage, and other cleanups to span using
+
+commit a58562be2035bc3250bc99f97c27e61eacad1fd8
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jan 2 13:28:03 2023 -0500
+
+    cosmetic
+
+commit 76174a01f953588906082c1636515e96810dbcb9
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jan 2 14:01:55 2023 -0500
+
+    use noexcept in a few places where its known to be safe and esp relevent like StackBuffer/InlineBuffer data()/size()/capacity methods since that appears to affect buggy behavior in libc++ (and fixing it in stroika just a plus so better to avoid the bugs if I can)
+
+commit 913307fc558bfff01ff932f29f5163f0edddf9cb
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Mon Jan 2 14:04:17 2023 -0500
+
+    fixed typo
+
+commit 75ef018d8248eb9a16fce54e517e4348095a9060
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Mon Jan 2 14:16:54 2023 -0500
+
+    qCompilerAndStdLib_spanOfContainer_Buggy workarounds
+
+commit 163cf048cb086ed374ccebfe49cb1f3bd43ca3bb
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jan 2 14:27:19 2023 -0500
+
+    cosmetic, and cleanup span usage
+
+commit a676f1e87fb5e776c08ccc4bfddab93d23403c32
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jan 2 14:41:34 2023 -0500
+
+    more celanups of qCompilerAndStdLib_spanOfContainer_Buggy
+
+commit b3f13db36d2b347e165c6ff776bcb81825c03b6b
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jan 2 14:44:40 2023 -0500
+
+    fixed typo
+
+commit 3c2128d0a3842e641863ef26698205299a860119
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jan 2 14:50:41 2023 -0500
+
+    qCompilerAndStdLib_spanOfContainer_Buggy workaround
+
+commit dc0b5f27c91875fcea7f315c9e3bf350ec5d3d31
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Mon Jan 2 14:51:06 2023 -0500
+
+    qCompilerAndStdLib_spanOfContainer_Buggy workaround
+
+commit 8a7fb0797e13d1f10d9dd2caf17624eeb7703a41
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jan 2 14:52:59 2023 -0500
+
+    qCompilerAndStdLib_spanOfContainer_Buggy workaround
+
+commit 21ccb0637ec82e675167a3016fdba98720d68db1
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jan 2 17:23:26 2023 -0500
+
+    GUID noexcept usage, and made it immutable (and fixed one dependency on its mutability)
+
+commit c506da2273f9fd9fedf4a20b8335f25fed0ea936
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jan 2 17:23:56 2023 -0500
+
+    cosmetic
+
+commit a60dca1305f4685e2e27c04ec7fe6ecc73a64c6b
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jan 2 17:41:13 2023 -0500
+
+    modernized GUID class (As template with requires, and noexcept and other cleanups
+
+commit a6e2a06c0f8e1750cf03c9385a0bbd5a105f3884
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jan 2 17:42:24 2023 -0500
+
+    uniform init
+
+commit a44420b28817c4ac8fc83fbfe21ab8e22a6b47a0
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jan 2 17:42:35 2023 -0500
+
+    .vscode
+
+commit 28b5e9c0ff0eeb6dfb04c73989045224bfc91f53
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jan 2 17:50:57 2023 -0500
+
+    tweak last checkin so Common::GUID::As<BLOB> can go in CPP file; not sure worth it.
+
+commit 1bb01568bb55d8d8a80d5149419ec031093169ef
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jan 2 17:56:00 2023 -0500
+
+    added data() member to GUID so can be treated like a (constnat) span of bytes
+
+commit e849d263506bde44a80369171f9f7e60d5359eaa
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jan 2 17:57:38 2023 -0500
+
+    celanup last checkin
+
+commit 9ff7ef1f19ee6e50ac6abe5568dd67f6968db893
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jan 2 18:05:42 2023 -0500
+
+    qCompilerAndStdLib_template_requresDefNeededonSpecializations_Buggy workaround
+
+commit 91fb7af8efea94b18f99ba876692f4c9e1d1886b
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jan 2 18:08:52 2023 -0500
+
+    fixed
+
+commit c4a3dd1a928f16c15f4e9fe815373ed9e64ddf5e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jan 2 18:10:38 2023 -0500
+
+    fixed typo
+
+commit 2051aa88f1d4f01c5c2544b58406c11f69a524d8
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jan 2 18:11:06 2023 -0500
+
+    amke format-code
+
+commit 3ee8e5e11c7f7b6e3d7e1980736c19e11f17f494
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jan 2 21:57:42 2023 -0500
+
+    cosmetic
+
+commit 08b55ab86ce463f40b1000834c861dac6aac51d8
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jan 2 21:58:06 2023 -0500
+
+    cosmetic
+
+commit 4c5ac2b293f072383a486e760de42552d44844a8
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jan 2 21:59:38 2023 -0500
+
+    Refactored String::FromUTF8() and deprecated /2 overload (use span instead)
+
+commit 8b8ca0e422299e996b5907234a7a4b22ec07282f
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jan 2 22:02:45 2023 -0500
+
+    cosmetic
+
+commit fedb1a9418701c1c24872fe7674bf61869726fa7
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jan 2 22:04:39 2023 -0500
+
+    fix a few more issues with String::FromUTF8 use
+
+commit d08a09c11e47cf9589491c36ffee925135b66506
+Merge: 8b8ca0e422 fedb1a9418
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jan 2 22:06:54 2023 -0500
+
+    Merge branch 'v3-Dev' of github.com:SophistSolutions/Stroika into v3-Dev
+
+commit d618e95774b8cc42e8e2128f6b96513e26384f85
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jan 2 22:26:35 2023 -0500
+
+    refactor String::FromSDKString
+
+commit 2babfcfeb61117336e479ce02ca2b83e0e3efc47
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jan 2 22:54:11 2023 -0500
+
+    String::FromNarrowString/FromNarrowSDKString refactored/deprecate /2 overload
+
+commit 356e003d3082777e64cb668c224b5461d297ff01
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jan 2 23:02:40 2023 -0500
+
+    fixed (for now at least) BLOB::CTOR (container)
+
+commit 8cfb883d29928aaa44b829bc1beeadf385dcd382
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jan 3 08:59:16 2023 -0500
+
+    fixed regression in String cleanup checkins
+
+commit e2fb0a6125865fee465de9047c2cb0b05674e6c2
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jan 3 10:32:32 2023 -0500
+
+    new utility Memory::ConstSpan - to workaround what APPEARS to be a defect in the design of span<> - see https://stackoverflow.com/questions/62688814/stdspanconst-t-as-parameter-in-function-template
+
+commit fb1424872285cefc87cd00788bc9af9cea7087f5
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jan 3 10:34:48 2023 -0500
+
+    more cleanups / refactoring of String code - FromASCII and FromISOLAtin1 and use
+
+commit d4dabc30e5c0cb441ccbf98e2cf93f6807183e8f
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jan 3 10:39:30 2023 -0500
+
+    cleanup some deprecated uses of String::FromISOLatin1
+
+commit ef1c6c158e4fbd8fc93eb5f0703b10b04bf22d71
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jan 3 10:41:32 2023 -0500
+
+    cleanup some deprecated uses of String::FromISOLatin1
+
+commit 72cf98b7b057798e8902544009f38eefdf08e59b
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jan 3 10:45:27 2023 -0500
+
+    comments
+
+commit 59a925087db9ecfe365e705b2f4deb9026776803
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jan 3 11:23:00 2023 -0500
+
+    refactored String::Concatenate (and generalized) - and made a few String methods like empty () etc noexcept
+
+commit fa7acafced64298d11973246940c12da09fe526a
+Merge: 59a925087d ef1c6c158e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jan 3 11:24:01 2023 -0500
+
+    Merge branch 'v3-Dev' of github.com:SophistSolutions/Stroika into v3-Dev
+
+commit 77f679982ff448eeeb9120838decc3cd4dfc0f8e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jan 3 11:43:53 2023 -0500
+
+    String docs, cosmetic, and one or two noexcept fixes
+
+commit b428cbc5981539ef4cd5dcb1403b251c0b3842fc
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jan 3 12:25:52 2023 -0500
+
+    a few minor String fixes, including refactoring String::Copy so much more general/span friendly
+
+commit ddb1ff51a7a09ffad96ca3f0cd5b54e4d31e3084
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jan 3 13:28:26 2023 -0500
+
+    more String class cleanup/refactoring
+
+commit 3b85c0234b21b2ecb5d1c80be36fc3ce49faa8cf
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jan 3 14:00:43 2023 -0500
+
+    cosmetic
+
+commit e3f8ed6e2ae4b9364ac19e70319017be8dafcc16
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jan 3 14:23:08 2023 -0500
+
+    Character::AsASCIIQuietly uses requires
+
+commit c1d492626cbe3febb75af2293106956b592a0c3b
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jan 3 14:23:40 2023 -0500
+
+    completes first draft of changes to String public APIs (maybe all but deprecating mutability)
+
+commit a2fe81232f869a5c46835ea3c9630f3075544b6c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jan 3 14:47:44 2023 -0500
+
+    replace use of deprecated String::mk_ api
+
+commit 262b5f02729227f134e67b7837ec6cbde160664e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jan 3 14:55:15 2023 -0500
+
+    cosmetic
+
+commit cf5bbbcd96a80e61c6a5ff5e751d6c6f826a62bc
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jan 3 15:51:55 2023 -0500
+
+    lose pair<const CHAR_TYPE*, const CHAR_TYPE*> String::GetData () variation/overload, and updated all the code that used it to use the new style GetData(); added regtests for String::Replace(); minor cleanups;
+
+commit 285e426bead96d5d6479f364a36ab2d70e4414a9
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jan 3 15:55:32 2023 -0500
+
+    cosmetic
+
+commit ef569d1a1d7cd18afcc9191f64446457e4b06381
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jan 3 16:55:02 2023 -0500
+
+    **not backward compatible - but minor** - lose Characters/Concrete folder - and moved the stuff we still need either private into String.cpp or for String_Constnat and String_ExternalMemoryOwnership_ApplicationLifetime - into the .h file (at least temporarily)
+
+commit 382af806ce1d6c12ce5df150c7b9c41cf3e219d3
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jan 3 17:00:57 2023 -0500
+
+    typo
+
+commit 3d9120dde955a45f4fb8804b64e8acbdd3cd56c2
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jan 3 17:02:38 2023 -0500
+
+    cosmetic
+
+commit 60a6449b70e57fd0bd316458dd70892f65826fb7
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jan 3 18:32:15 2023 -0500
+
+    deprecated String_Constant and replaced wtih String::FromStringConstant static method (like String::FromASCII); and now migrated ALL reps so hidden inside String.cpp file
+
+commit eb4eaac4640cc25288b5cce61ebf2d2812171e6a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jan 3 20:48:38 2023 -0500
+
+    fixed bug / regression in String_Constant/String_ExternalMemoryOwnership_ApplicationLifetime
+
+commit 85c7fbbe904f95469a5feff4b87e5f3b6fa9526b
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jan 3 21:00:19 2023 -0500
+
+    lose legacy String_ExternalMemoryOwnership_ApplicationLifetime and String_Constant usage
+
+commit 5ebff8a489b6a3ee4dc72c21914f8990e5f30f7e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jan 3 21:08:01 2023 -0500
+
+    lose legacy String_Constant references
+
+commit 374ee1c34a9b8d993fb883c3a789fb75e3e03179
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jan 3 21:58:05 2023 -0500
+
+    cosmetic
+
+commit 613b776cfd6db38c3b6c91f17c50c4e6dcaa3000
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jan 3 21:58:53 2023 -0500
+
+    big cleanup of String rep internals (and related) - especailly progress on BufferedStringRep_
+
+commit 892a942aad9acc68161506b1faf1802eea8a12d0
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jan 3 22:07:56 2023 -0500
+
+    fixed clang++ compat issues
+
+commit 8610dab4f2380a6501a5befca5348f3b0a942793
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jan 3 22:08:30 2023 -0500
+
+    make format-code
+
+commit 23ffe28903c45a9928ba3f6f9ca9e17dd7af889c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jan 4 09:05:44 2023 -0500
+
+    cosmetic
+
+commit ecb304eaaf9aba7531cc26bd0fed3b9a71bb2830
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jan 4 09:28:48 2023 -0500
+
+    refactoring of the string reps
+
+commit b408a72260da8e4125384d63bebe97f875947a03
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jan 4 10:03:03 2023 -0500
+
+    todo notes
+
+commit e9c1beceadc07866a4d8f2762977de38ac965b53
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jan 4 10:03:19 2023 -0500
+
+    docs
+
+commit afcab976d189cd7ca1c80f660209d02c82fcb0db
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jan 4 10:04:01 2023 -0500
+
+    refactoring  of String::IRep code - in preps for https://stroika.atlassian.net/browse/STK-684 string rep changes
+
+commit 239f4f5749f7aef15519762a2bdce3def9d16f27
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jan 4 10:32:02 2023 -0500
+
+    Compare_CS_() cannot use memcmp() - at least not portably - due to differnt byte orderings, but can still rewrite this to be faster
+
+commit ef7c1507bca2eb76518b4dee334401473e2d6711
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jan 4 11:30:34 2023 -0500
+
+    Character::Compare - now templated with concepts on CHAR_T, and moved to header, and span based (deprecated /4 overload)
+
+commit f1a74056782e05a29fd2d20cea65c62a8fee37a8
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jan 4 13:26:53 2023 -0500
+
+    rewrite String::EqualsComparer and  String::ThreeWayComparer using concepts to greatly simplfiy (havent profiled yet)
+
+commit 0770583d6c8b7984ca0e5a8fd0ec00b748fb01a1
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jan 4 13:28:10 2023 -0500
+
+    cosmetic
+
+commit 6a091184ee0a89b66d951baec610cd93be077222
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jan 4 13:51:17 2023 -0500
+
+    more progress on String::IRep refactoring
+
+commit 1c769833189876e7302b202119c6256621c7ca7b
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jan 4 13:58:40 2023 -0500
+
+    fixed small recent String class regression
+
+commit 64c7856b1814578e5d5fb3867ee65dc0bb1f898e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jan 4 14:01:30 2023 -0500
+
+    cosmetic
+
+commit 3f043507de7a5262bc600cd03040a27df51656d7
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jan 4 14:41:13 2023 -0500
+
+    progress revising comments on String class; String::AsUTF32/AsUTF16 fixes for wstring; and continue migrating code from String::IRep to StringRepHelper_
+
+commit ab43cbd82dfa287e949e17cef21514fb379dc48a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jan 4 15:31:00 2023 -0500
+
+    docs/notes
+
+commit 8a39bb688ea90c73cd2aaf8f2270f7ca2bd52523
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jan 4 15:31:30 2023 -0500
+
+    more String::IRep migration into CPP file - close to done
+
+commit fb71fe013803377ef3f214d5e6046f45d0b9b76a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jan 4 20:01:07 2023 -0500
+
+    SharedByValue<>: fixed broken (and unused) rwget_ptr, and implemented new cget_ptr (pretty sure safe - havent thought about this in a while)
+
+commit 1410129c0776c935060b780568d2b243f7eb3e0a
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Wed Jan 4 20:05:47 2023 -0500
+
+    fixed constexpr use on Character::Compare
+
+commit 8ab6e7c24dcc114adb826bfc8432d616c7adbfdb
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jan 4 20:13:52 2023 -0500
+
+    String code: fixed #if qDebug missing; tmphack fix to SubString_() so it no longer depends on c_str_peek returning non-null
+
+commit a670f1115566671d881a0620c0f812bce24cb954
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jan 4 20:14:54 2023 -0500
+
+    forced c_str_peek for buffered string to return nullptr; and use new impl of c_str () that auto-patches with wrapper that returns non-null as needed
+
+commit 2e60df30ac4435dad8b6f3e32fcf0222f2236420
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jan 4 20:16:49 2023 -0500
+
+    avoid calling memcpy with nullptr
+
+commit ff69dd612b8449cf96e180362dd5d6462c4e02b0
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Wed Jan 4 20:20:55 2023 -0500
+
+    fixed some warnings
+
+commit 211b3a25169d4b966165413752739670f1a1f9ad
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jan 4 20:21:39 2023 -0500
+
+    make format-code
+
+commit 01d9b7b75b1d7290f16d50bba30e8389f62bf69b
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jan 4 20:33:52 2023 -0500
+
+    mostly cosmetic
+
+commit c2f18a294f92b319f362f2d1a2cd5f8582fa144d
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jan 5 08:57:25 2023 -0500
+
+    workaround issue with compiling on visual studio .net 2k19 compiler (compiler bug but worakround by moving declaration)
+
+commit 31d803ba525b83bb1cd1f64d0fe7c7bf66d1e8ae
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jan 5 09:26:34 2023 -0500
+
+    cleanups/docs and regtests for String class
+
+commit 8b0c732fe26511523b8802c48b0b48e63606bda2
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jan 5 09:42:54 2023 -0500
+
+    String class minor cleanups
+
+commit a85a14c7e589ede0c4e544df3f737d108e16cd06
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jan 5 09:48:13 2023 -0500
+
+    minor String cleanups and fixed one typo in regtest / docs for Strings
+
+commit d6734a1170893b11829c1947c2bb135b9561654b
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jan 5 10:21:51 2023 -0500
+
+    String impl refactoring - StringRepHelper_ -> StringRepHelperAllFitInSize_ and REP now TEMPLATED on CHAR_T
+
+commit 4c66c4ada845fca34d8fa13c882e0706708ebfca
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jan 5 10:31:33 2023 -0500
+
+    minor String cleanups (reps)
+
+commit 97b9b594bf3e16ff4680cda94d335753cde1bfdc
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Thu Jan 5 10:34:32 2023 -0500
+
+    fixed a couple typos
+
+commit 8cdf3065d0d2bd083910447d88dc9c56efd81e18
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jan 5 10:50:56 2023 -0500
+
+    workaround qCompilerAndStdLib_spanOfContainer_Buggy
+
+commit 30c60d4c0314233861d4aa040b3a1539cad06091
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Thu Jan 5 11:04:23 2023 -0500
+
+    more qCompilerAndStdLib_spanOfContainer_Buggy bug workarounds (clang++14)
+
+commit 45d33a85e0f0709580e74d716b69c85eb3b1f92d
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jan 5 11:30:47 2023 -0500
+
+    cosmetic
+
+commit d4e753b6b21aa369e2a70b8bf14572efccf3ba68
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jan 5 13:24:29 2023 -0500
+
+    fixed bug with Find code for ascii optimized case, and supported creatming mk_span<char> for ascii case - so now have first proof of concept nearly completed  https://stroika.atlassian.net/browse/STK-684
+
+commit 2963c141a9281909ad40072b63730ca01fcac035
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jan 5 15:58:11 2023 -0500
+
+    fixed typo
+
+commit f5d6c0499da50ec4b57e5c58b7aa90b037d458c9
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jan 5 21:37:07 2023 -0500
+
+    Silence warning calling std::tolower
+
+commit e23d3dca0711f91b2dda376dfd29322da313aabf
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jan 5 21:37:54 2023 -0500
+
+    Comments, and significant speed tweeks (at least for reading json files) on String comparison routines
+
+commit afb6519d4afcad9a29d53897bebf8968059187f2
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jan 5 22:25:28 2023 -0500
+
+    JSON reader performance tweaks
+
+commit 5aba0286c27ac8c95db7e38f380f21403827e9a2
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jan 5 23:11:13 2023 -0500
+
+    fixed typo
+
+commit 0c11de5a42d4d123d119fd92732b57f8fef6022f
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Jan 6 10:39:32 2023 -0500
+
+    Fixed bug in Character::IsAscii (backwards test in one case); new UTFConverter::AllFitsInOneByteEncoding and AllFitsInTwoByteEncoding, and new String mk_ specializations for char/utf16/utf32 cases (intead of wchar_t)
+
+commit 1da919ae7fc57b02a4de4f0a819d0441bf4a9ee4
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Jan 6 10:39:48 2023 -0500
+
+    make String::FromUTF8 inline
+
+commit 80733f9a7014bfe54c26e7c88c59b3e2ecfc985f
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Jan 6 12:00:16 2023 -0500
+
+    fixed build for macos
+
+commit 85660e168a71b9384d46a813768636d335e71b38
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Jan 7 09:17:26 2023 -0500
+
+    disable surrogates test code while working on it
+
+commit e5cc4d5ba6059a156aa2f86d40a4bf45ddfb55b5
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Jan 7 11:03:06 2023 -0500
+
+    UTFConvert code - expand UTFConverter::ConvertOffset to Character_Compatible; ComputeTargetBufferSize supports non-const spans; a few extra requires to hopefully (failed for windows) get better compiler error messages; new UTFCodeConverter template (hopes of cleaning up TextReader stream code); and comments (about future libs to look at for UTF conversion logic)
+
+commit 7d81cfe3d6f57566d5099727be14e5efb22ddb19
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Jan 7 13:30:25 2023 -0500
+
+    new UTFConverter::ConvertSpan () utility
+
+commit bcd6c052a5ac34622e66e06239795da391943f50
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Jan 7 14:14:35 2023 -0500
+
+    Major milestone - basically finsihed but polish - on https://stroika.atlassian.net/browse/STK-534, https://stroika.atlassian.net/browse/STK-684, and https://stroika.atlassian.net/browse/STK-965: no longer assume sizeof(Character) == sizeof (wchar_t), and now can have reps of strings of differnet backend/internal sizes; must review/tweak performance, but probably not bad right now, and still alot more polish relating to this needed
+
+commit 4072f7970acaed42f53679957704faac9e597b88
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Jan 7 14:17:20 2023 -0500
+
+    workaround temporar issues to CHaracter contructors
+
+commit 088b8b7f36364d04ae6e811b3c7069c39c0251e0
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Jan 7 14:27:09 2023 -0500
+
+    another hack to get compiling recent changes on clang (if constexpr not strong enuf)
+
+commit 1a0ac9325eb7b5cd94a0deb312baeb6115d32962
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Jan 7 14:31:41 2023 -0500
+
+    silecne warning
+
+commit da342907d6d31c3874ff3b5d45912766984744cd
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Jan 7 14:51:22 2023 -0500
+
+    Minor tweak/docs for Character::IsWhitespace ()
+
+commit a128815233aa47173dd9eee40d96f65549e5ae3d
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Jan 7 15:31:21 2023 -0500
+
+    document https://stroika.atlassian.net/browse/STK-969 issue
+
+commit 128cd345b632a70a3160e49493b5834355736205
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Jan 7 15:35:19 2023 -0500
+
+    Address (with static_assert) bug I ran into in StreamReader due to InlineBufferElementType_ hack for Character object - hopefully adequite to prevent in future)
+
+commit 68ccadd336cb6253b318febe70374414b5b94b9c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Jan 7 16:19:05 2023 -0500
+
+    fixed a couple regressions with Character::IsWhitespace ()
+
+commit 04361d2a321f9690a03ae1e0443c65cb5345643d
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Jan 7 16:19:33 2023 -0500
+
+    simplify/cleanup Character class
+
+commit 620f5655866ffbec4d6c6fc078897229856630a2
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Jan 7 16:27:26 2023 -0500
+
+    Minor cleanups
+
+commit 73badde6c89f9f57a694cf1091b4f8806e771be6
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Jan 7 17:16:55 2023 -0500
+
+    Character (char16_t hiSurrogate, char16_t lowSurrogate) CTOR and related refactoring
+
+commit 5a4cb6d6c4e504b937f075c1d7ca74bb5757962a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Jan 7 17:43:56 2023 -0500
+
+    simplify some code using new UTFConverter::ConvertSpan
+
+commit 445df676047e90257ae37440775d406614c72b65
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Jan 7 17:56:39 2023 -0500
+
+    comemnts and fixed minor regression in last checkin
+
+commit bc0d9636e042007828bb6a340c594d19c89ab6d3
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Jan 7 22:30:12 2023 -0500
+
+    lose String::mk_/2 - to simplify code and also global operator+ simplified (for now just one overload)
+
+commit 13ab0237faab8e576531c31eb95d7afc6b1342ef
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jan 8 09:06:49 2023 -0500
+
+    cosmetic
+
+commit dfd61ea4c1ee254e54e80c120b396cdeb65acf39
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jan 8 10:38:42 2023 -0500
+
+    slight improvement on operator+ (STRINGISH,STRINGISH)
+
+commit fa2a8711517c468785534dfafc70ba4ad65a6641
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jan 8 11:09:48 2023 -0500
+
+    renamed Characters::Private_::Access_ to AsSpanOfCharacters_, embellished function, and greatly embellished Characters::Private_::CanBeTreatedAsSpanOfCharacter_ - so should be a bit more performant
+
+commit de8aa1426f4b504cf720e28e7a39bcf6112a3bdc
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jan 8 11:11:58 2023 -0500
+
+    silence warning
+
+commit e8422a48e7a6f585a1500963903de6c346c35de5
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jan 8 11:28:40 2023 -0500
+
+    cleanup/enahnce recent AsSpanOfCharacters_ checkin - handle more cases
+
+commit 0dc29a5a27a556abecec437a8583af12e775760f
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jan 8 12:01:20 2023 -0500
+
+    now operator+ (STRING,STRING) doesnt match Iterable<CHARACTER> UNLESS one side or the other is a subtype of String
+
+commit edb9bad78725174488b33d4d89d4a30a6d4e8955
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jan 8 18:09:29 2023 -0500
+
+    huge (but incomplete) change to String code - now allow String{string} - but ONLY if checked/assertions - that the string is ascii. _k checks at COMPILETIME that its ascii (or should) - rather meaning checks with asserts, and so no overhead except in debug builds; Not everwhere can we lose the L (format code still depends on wchar_t); but pretty soon everwhere else - esp if we redo format code
+
+commit c7d4c12f97c4a3d13cf4b3177c8726f9876f9f40
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jan 8 20:31:03 2023 -0500
+
+    a few more cases using plain asciii string instead of L string
+
+commit 4d1a7690351531b959e8122b17df74bbcffa3a0d
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jan 8 22:29:33 2023 -0500
+
+    lose a few more unneeded L prefixes for ascii stroika strings
+
+commit 19cd58d445d95d1e39864afce91b3ce95c7835db
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jan 9 11:59:56 2023 -0500
+
+    tons of changes - switching string constantts from L to plain ascii - esp using sv; and a few things like Activitiy ctors redone so more generic using STRINGLIKE_T
+
+commit 5fde7b91eb2830d2fed352cbaf17d83a785f14b9
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jan 9 14:42:16 2023 -0500
+
+    use more of plain strings (for ascii text) instead of L strings (react to new String class feature)
+
+commit 9ca709cd840168da3b60b26e336d090602bc48cd
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jan 9 15:33:22 2023 -0500
+
+    more conversions from using L strings to ascii plain strings - and delegated Stringhsh constructor for VariantValue (and documented)
+
+commit 5cbb92da7166a1995fb1e1838c4039387301373b
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jan 9 15:43:15 2023 -0500
+
+    more conversions from using L strings to ascii plain strings - and cosmetic
+
+commit 5e01d94e0bdefda847660f0a5ad407a813bd4324
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jan 9 15:45:20 2023 -0500
+
+    changed name of concept BasicUnicodeStdString for clarity
+
+commit b7664fd5ef499113c66289926938378b2d30dfdb
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jan 9 16:14:27 2023 -0500
+
+    Added Character::CheckASCII overload
+
+commit a57e8091176f29c8fa579024184b7d94a0420efc
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jan 9 17:47:22 2023 -0500
+
+    cosmetic
+
+commit c2eda08c928611c537baea9c622869609a450383
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jan 9 17:56:17 2023 -0500
+
+    cleanup obsolete code
+
+commit 931cf3c7b459802767534eb1c2de051eef22ebfd
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jan 9 18:10:40 2023 -0500
+
+    use plain String CTOR instead of String::FromASCII siunce about to mark that as deprecated, and its no longer needed
+
+commit 2338ce8d53b52cbd927df7502c93925913b8d09f
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jan 9 18:33:14 2023 -0500
+
+    String::FromASCII () now marked as DEPRECATED (since you can just use String CTOR directly)
+
+commit ce7f810c72265ef2dd6c508135d65f34d01b75b7
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jan 9 18:41:00 2023 -0500
+
+    Comments and fix minor issue with Span
+
+commit 2929de9479f5c9fa0d84a4e543b5abd62ab80f90
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jan 9 18:55:03 2023 -0500
+
+    Minor assertions cleanup in String code
+
+commit 2702cb370958347d12ac961f964153935d35311b
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jan 9 18:55:21 2023 -0500
+
+    fixed serious regression in recent checkin
+
+commit 78563366febea3003092acd4f89bae59e0cf049f
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jan 10 07:07:05 2023 -0500
+
+    https://stroika.atlassian.net/browse/STK-296 - supported move CTORs for String class so can move from wstring&, or other std::basic_string types and re-use memory from those objects
+
+commit 6efc9a7343d574eb280d698424585de3952a6641
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jan 10 07:10:19 2023 -0500
+
+    fixed typo
+
+commit bf09e438d2546d2f61c560ba61c5976bf2db1c6a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jan 10 07:29:50 2023 -0500
+
+    fixed a few corner cases - checking UTFConverter::AllFitsInTwoByteEncoding on basic_string MOVE/STEAL code
+
+commit 0051e3891317fa78f9e301c087a55d595c9468c6
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jan 10 08:39:37 2023 -0500
+
+    in URI class - use requires instead of unconstrained templates for polymorphic getter functions
+
+commit 7d20c5dffcdb94098b5709b059d358fb94c9a088
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jan 10 08:46:41 2023 -0500
+
+    cosmetic
+
+commit 5822f90a831dc0d1d67f339df1d996d35a8d12ba
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jan 10 09:36:27 2023 -0500
+
+    used requires (is_trivially_copyable_v<T>) on _uninitialized CTORs and methods for resizing for StackBuffer and InlineBuffer
+
+commit 672760951628fb2dc653d8b3ba94fb84c4aa917f
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jan 10 09:37:42 2023 -0500
+
+    use Memory::eUninitialized on a bunch of StackBuffer construction calls as performance tweak - forgotten - as part of String code mostly
+
+commit 452d974ab53988838d7f5e05d81d899465d908e9
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jan 10 09:44:56 2023 -0500
+
+    mostly cosmetic cleanups to URI code
+
+commit debd7805e4857e5ad6335ecfe304eaa9ec961779
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Tue Jan 10 10:00:31 2023 -0500
+
+    fixed typo in recent URI cleanuops
+
+commit 4d1b965591e3fd086ad6ae71433d7588edf4ce36
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jan 10 10:02:45 2023 -0500
+
+    make format-code
+
+commit c96ed1580368b903e1fac725479a11ec3744d7ac
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jan 10 10:41:42 2023 -0500
+
+    surrogate Character CTOR now constexpr
+
+commit a007f6ec63327bff1514b3acf577ef6e5e752473
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jan 10 10:53:58 2023 -0500
+
+    mostly cosmetic
+
+commit 54da67a73abfb24f2aa11f77c1b7396d9d41c405
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jan 10 10:54:52 2023 -0500
+
+    fixed StringBuilder::Append performance regression (without ConstSpan stuff invokes String CTOR needlessly for common case)
+
+commit 8aa2a7aa994c7e2141d77724b88fe12e6cc0fce8
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jan 10 11:34:43 2023 -0500
+
+    kCanUseMemCmpOptimization_ optimization on Character::Compare (CI)
+
+commit b7313694cf42debfeb202d1c724130ffc0a77714
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jan 10 12:04:05 2023 -0500
+
+    cosmetic
+
+commit 766cf0cd7045ef79fddb85fc0ed651c629ca26e2
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jan 10 12:25:19 2023 -0500
+
+    fixed regression in recent Character::Compare optimization
+
+commit e164c84e5f64c133f824f968f40dba8dafa3b02a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jan 10 12:26:58 2023 -0500
+
+    **not 100% backward compatible** - but changed most constexpr string constants throughout stroika from wstring_view to string_view - since they are all ascii. As long as used through String{} API, this will be 100% transparent. But if used directly, it may not compile (but hopefully in obvious ways)
+
+commit 6ac750bf956ad7d7efebbaf0b0d6dfc0d9339d3a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jan 10 12:42:35 2023 -0500
+
+    docs on todo issues, and tweaks on Character comparison, and tolower logic
+
+commit 8512c3d155d0a951e10fd9e28384d46e3ff8bc8c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jan 10 12:43:36 2023 -0500
+
+    tweak Character::ToUpperCase ()
+
+commit f4959a4adf510a0900720983cd38932f6824abd4
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jan 10 13:01:26 2023 -0500
+
+    make format-code
+
+commit e81533e41d56c98cf19d5393b51711090bd9ee60
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jan 10 13:01:46 2023 -0500
+
+    make format-code
+
+commit e43a4e06bca95b469aec82a2a52be4e3b9522a05
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jan 10 13:51:22 2023 -0500
+
+    a couple minor tweaks to InlineBuffer/StackBuffer - resize_uninitialized requres changes, and tweaked impl (dont case if > size just if > capacity)
+
+commit ca7b758c3171c3cf20e733e0d7aef706ea260a6a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jan 10 14:53:19 2023 -0500
+
+    StringBuilder no longer tracks separate Length field (use fData_.size())
+
+commit 9e21cafb3c1c343c676daed94c05fa1dabbe40f4
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Tue Jan 10 16:38:02 2023 -0500
+
+    more qCompilerAndStdLib_spanOfContainer_Buggy bug workarounds
+
+commit 7f0ba8caf6ba173ea4f0e2291b2fa07b154403d8
+Merge: 9e21cafb3c ca7b758c31
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Tue Jan 10 16:38:37 2023 -0500
+
+    Merge branch 'v3-Dev' of github.com:SophistSolutions/Stroika into v3-Dev
+
+commit 5747d554a6550c55e4f294150f5f49615f87a85b
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jan 10 16:40:52 2023 -0500
+
+    tweak String buffered chunk sizes
+
+commit 1112a54551e33671e08d2ecdf95764a23f4396bf
+Merge: 7f0ba8caf6 5747d554a6
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Tue Jan 10 16:42:07 2023 -0500
+
+    Merge branch 'v3-Dev' of github.com:SophistSolutions/Stroika into v3-Dev
+
+commit 139d4cc51cd6ea08c2ad5466c9885735d2190bba
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jan 10 16:48:11 2023 -0500
+
+    make format-code
+
+commit ae724bfc0a35a413a4405c199cba2cc82faa37c6
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jan 10 21:13:55 2023 -0500
+
+    hopefully qCompilerAndStdLib_clangWithLibStdCPPStringConstexpr_Buggy workaround
+
+commit 5f6ea1003e5200701670e6a0e8da0dcc40f05f8f
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jan 10 21:15:47 2023 -0500
+
+    Comments
+
+commit 2e9dbdc43fa2483f352402a86aca4238df7ccb13
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jan 10 21:19:14 2023 -0500
+
+    Somewhat dangerous (but good time for such risks) change to Memory::ValueOf - returning const& now. Documented in declaration why I believe this is safe/appropriate (what optional does)
+
+commit 1ef0efbc21345fac63b6626df042ced304a2e6af
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jan 10 21:20:18 2023 -0500
+
+    Memory::ValueOf constexpr
+
+commit 5d538bc1f82ef8ec813cbd081dd88a268237be9a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jan 10 21:59:39 2023 -0500
+
+    make format-code
+
+commit 83d0d3c92fc862d8c7112d2b802a93199c2b8d36
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jan 11 07:35:27 2023 -0500
+
+    constexpr usage
+
+commit ab5887f8369445bb5c71903d2f010faa0ef73c33
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jan 11 07:35:50 2023 -0500
+
+    minor StreamReader tweaks
+
+commit f025c1ee0359a8df232528526b3bf4a6952c0e87
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jan 11 10:27:35 2023 -0500
+
+    minor performance tweaks to Character code
+
+commit fecff0d0f29afe151770348f423b351dd83f20a8
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jan 11 10:28:18 2023 -0500
+
+    minor correctness/performance tweaks to recent StackBuffer/InlineBuffer reserve() call changes
+
+commit 0ee368bc930d595689c3d2b400136f9a3aa887c7
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jan 11 15:17:38 2023 -0500
+
+    tried kUseStdTraitsCompare_, but no obvious difference
+
+commit 4f0a05bde44b9dfddb053f1be120b0a9f091918f
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jan 11 16:59:27 2023 -0500
+
+    minor clenaup to Character compare code
+
+commit f28dce32539d901aadcebdccf984bc69ec5a753a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jan 12 07:17:04 2023 -0500
+
+    draft of support for Mapping_stdhashmap
+
+commit 345645088fb9eb3a5e47034ee1b8de87a184dfcb
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jan 12 07:18:08 2023 -0500
+
+    a few small fixes to DeclareEqualsComparer and DeclareInOrderComparer to use decay_t (all this code needs careful review/rewrite in lgiht of new concept stuff etc)
+
+commit 12b5da892fc76a296a05527487bb404d298108cd
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jan 12 08:11:26 2023 -0500
+
+    cosmetic
+
+commit 5a55e6c38d60b9d6d26afc36c1cb280386fc2a06
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jan 12 08:11:40 2023 -0500
+
+    cosmetic
+
+commit 4eabe349621f04acae8d04a9f5af7b3267233ef4
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jan 12 08:11:59 2023 -0500
+
+    cosmetic/uniform init
+
+commit 090d23a946961325f6a523c7b0b5417301354daf
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jan 12 08:12:22 2023 -0500
+
+    new concept IsHashFunction
+
+commit e4586ccf2902999c39f01c8d61e83ed862c809db
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jan 12 08:48:23 2023 -0500
+
+    Little progress on Mapping_stdhashmap
+
+commit 9afa67854f74b6209f6cd30a6c46a1e8eb29ddbc
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jan 12 09:14:02 2023 -0500
+
+    draft workaround for qCOMPILERBUG_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
+
+commit b6610679a94d3e97399ac460ed59435637f1c08b
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jan 12 09:17:52 2023 -0500
+
+    cosmetic
+
+commit 754b535163a90a12d0552b22ce74eb67f41dd418
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jan 12 09:19:30 2023 -0500
+
+    make format-code
+
+commit d711d85515f0b4cb0251793ef76167b59ac51902
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jan 12 09:24:36 2023 -0500
+
+    updated bug define for qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
+
+commit fe48a6cc6ff00d91437762a5c0a7500893feb028
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Thu Jan 12 09:34:07 2023 -0500
+
+    fixed bug with qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy def
+
+commit 7634b0fbbe91e0e1c8900ba0b0a5fe263ce4cdf9
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Thu Jan 12 09:34:24 2023 -0500
+
+    avoid bug warning on bug workaround define qCompilerAndStdLib_clangWithLibStdCPPStringConstexpr_Buggy
+
+commit 9039e2f38e624e1751526f2069f7db2121144652
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jan 12 09:47:28 2023 -0500
+
+    improved qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy bug workaround
+
+commit a8120f1f791a259d32f11fe7e7626c7d5490701f
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jan 12 09:49:42 2023 -0500
+
+    make format-code
+
+commit d81428cf4a5c69caeeb4a0426299ba6abdc88814
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jan 12 10:02:58 2023 -0500
+
+    hopefully complete usable first draft of Mapping_stdhashmap
+
+commit 69f90208a59237189a01499ec9071f6ee1987805
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jan 12 10:08:02 2023 -0500
+
+    fixed typo
+
+commit c10f3e6c359d72409052e1f47cf92fafba6ee0cc
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jan 12 10:08:20 2023 -0500
+
+    make format-code
+
+commit 7629f6564a3843d61e506638ee53b0b72fc6b2ef
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jan 12 10:28:59 2023 -0500
+
+    Cryptography/Digest/HashBase
+
+commit 640574766ff7149f86393d78c2cd400e6d6d6fd8
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jan 12 10:32:38 2023 -0500
+
+    fixed missing checkin
+
+commit bbb9cd136bfe245f2056ff5e358cf0c153735eab
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jan 12 10:34:05 2023 -0500
+
+    use HashBase.h for concept
+
+commit 2f510e6d23421953524c9669324ad27b7e71b4fe
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jan 12 10:40:16 2023 -0500
+
+    Mitigate Mapping_stdhashmap include dependencies
+
+commit a9ff06735a607056122bbbd7f3c4f5b68f281e24
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jan 12 10:40:44 2023 -0500
+
+    test having Mapping_Factory include Mapping_stdhashmap
+
+commit 40d7613d1eafafedbc941c487dda3126f0a3f366
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jan 12 11:08:50 2023 -0500
+
+    default Mapping factory to using Concrete::Mapping_stdhashmap
+
+commit e62b0310a488d6802c5ae336cbcf46d7c9f06d75
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jan 12 11:31:03 2023 -0500
+
+    minor tweak to performance regtest
+
+commit 95ca6184568f232076b4fa854c95eb47058ca378
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jan 12 11:38:09 2023 -0500
+
+    switched JSON::Reader to use Mapping_stdhashmap<String, VariantValue>::STDHASHMAP move ctor - slight performance tweak it appears
+
+commit 1f132271c13d02ef053fe60379f86f978aa97e76
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jan 12 20:56:34 2023 -0500
+
+    Adjusted regtest to take into account that order of elts can cahnge due to Mapping now defaulting to non-sorted(hashmap)
+
+commit 5eb18e2be5fffa22045f2b157e8dceeb6a12dbf5
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jan 12 21:21:39 2023 -0500
+
+    Mapping - use requires so cleaer about Mapping::operator== and documented better as well the behavior
+
+commit 183fcaf8fd5fa4fd251ab8e3c7f76868995aa0ff
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jan 12 21:44:02 2023 -0500
+
+    to some degreee fix bugs with comparing VariantValue objects, but mostly document https://stroika.atlassian.net/browse/STK-971 - BROKEN FOR CASE OF MAPPINGS.
+
+commit 3ce8d8e12e4f8a8436ae6d3fffd5b16d2ed77396
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jan 12 21:44:48 2023 -0500
+
+    loosened test case for comparing VariantValue output - parse/unparse json roundtriping - since using unorderedmap, must be more careful testing/comparing
+
+commit bf19ef9266b3b67c04b6d0fc48cd1caa2661dbbb
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jan 12 12:45:57 2023 -0500
+
+    Minor performance tweak for VariantValue construction
+
+commit 42a597b5669b607256ed9214e3549ba2ad9f90d6
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jan 12 13:08:41 2023 -0500
+
+    Minor JSON::Reader performance tweaks and code cleanups
+
+commit a6b58a2110235eae02203d6819a76c60cecf4d2b
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jan 12 14:38:47 2023 -0500
+
+    more cleanups to do but significant speedup from Digester 'span' support (prelim) - on hashtable stuff from json parsing
+
+commit 3638f865194d0d79cf512968c581e6baefaa9fd7
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jan 12 14:39:19 2023 -0500
+
+    minor tweaks to std::hash<String>::operator() (const String& arg) - still should explore
+
+commit f2bbebf43aebd8ed993c4af80e0c0125763602df
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jan 12 14:40:08 2023 -0500
+
+    VariantValue CTOR from boost json uses Mapping_stdhashmap<>::STDHASHMAP optimization
+
+commit 54e28ab217f7a6c419e13babe9954b9154c282e3
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jan 12 23:03:06 2023 -0500
+
+    cosmetic
+
+commit a30ca20fed747ae9e41e55509bb8f69b48d4fdab
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jan 12 23:03:38 2023 -0500
+
+    fixed SortedMapping<KEY_TYPE, MAPPED_VALUE_TYPE>::operator<=>
+
+commit d70a58e6acf3e77e3d5e89457f850cd74c398117
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jan 12 23:11:56 2023 -0500
+
+    Fixed https://stroika.atlassian.net/browse/STK-971 - VariantValue compare functions - and at same not - INCOMPATIBLE change - LOSING 'exactTypeMatchOnly' pareter to EqualsComparer/ThreeWayComparer functions for VariantValue (dont think ever used and documented didnt make much sense)
+
+commit b3e82ca1204a6c7184e3b8013a4d44a25df34877
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Jan 13 09:53:34 2023 -0500
+
+    Fixed https://stroika.atlassian.net/browse/STK-971 - added Normalize() method to do heavy lifting/factor logic for how things compared
+
+commit 37b99b9ce1a9673a7362fb6d2672c1f2af12f3ed
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Jan 13 10:08:10 2023 -0500
+
+    cosmetic
+
+commit 0388cb4914ef829007de520f0b5e59f0fe5ab9bc
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Jan 14 11:58:52 2023 -0500
+
+    comments and use remove_cvref_t intead of remove_cv_t in one place (need todo more)
+
+commit 99e6b3381a2d3c549fe12093eead4b2e2ac7bf9c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Jan 14 19:37:46 2023 -0500
+
+    qStroikaFoundationDebugAssertExternallySynchronizedMutexEnabled support - so AssertExternallySynchronizedMutexEnabled independently of qDebug (but defaults to qDebug and not Stroika_Foundation_Debug_Sanitizer_HAS_ThreadSanitizer
+
+commit 936932fdc3cb64aeac78635cd19912520bf11490
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Sat Jan 14 22:30:47 2023 -0500
+
+    improved qCompilerAndStdLib_clangWithLibStdCPPStringConstexpr_Buggy bug workaround
+
+commit f2441584bf583f0c51586a2f39978801a07ecf95
+Merge: 936932fdc3 99e6b3381a
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Sat Jan 14 22:31:06 2023 -0500
+
+    Merge branch 'v2-Dev' of github.com:SophistSolutions/Stroika into v3-Dev
+
+commit e292e3013f002342eb4b703d04fc0785eb9fc14b
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Jan 14 22:32:21 2023 -0500
+
+    deprecate a bunch of Characters/SDKString functions - not great organization and simpler API to just vector through string. A bit more expensive that way but not woth the extra api for stuff thats never used
+
+commit b5254fbb8e73ac08ae3279ac0006f7fb58a994b2
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Jan 14 22:52:57 2023 -0500
+
+    use Memory::MemCmp isntead of memcpy to workaorund issue with nullptr passed/ubsan
+
+commit 63373086963b08c2da3b1053dfbc018a6a34e0e3
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Jan 14 22:56:17 2023 -0500
+
+    switch Memory::MemCmp () to use memcpy where it can
+
+commit 4ac57256c36740c201bb05526e693db2d413656d
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Sat Jan 14 22:57:19 2023 -0500
+
+    Added clang++-12-debug-libstdc++ so at least some (pre-14) clang++ debug build gets done on Ubuntu 22.04
+
+commit ee43e61d078007c69f119c641b6067a22943e6de
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Jan 14 23:04:47 2023 -0500
+
+    revise a few more calls to deprecated string functions
+
+commit 09547edb8029055eab24f4e8f59811d2505417a1
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Jan 14 23:12:10 2023 -0500
+
+    use std::remove_cvref_t directly - no longer need for indirection trhough obsolete Configuration::remove_cvref_t
+
+commit 514cb9b0a6a46949b266b8f5c28b7b49a5153e00
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Jan 14 23:41:02 2023 -0500
+
+    silence warning
+
+commit d17b8b8173b1dd22e715c94bf25452eac043ac5a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Jan 14 23:41:12 2023 -0500
+
+    fixed typo
+
+commit 57d3eb1f3c9f9f98ace38e59a11beb5f6a7c6f00
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Jan 14 23:50:24 2023 -0500
+
+    reversed accidental switch from memcpy to Memory::MemCmp() and used std::copy instead
+
+commit 0a34dc018344d363ae9c4828880286c3e541d18b
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jan 15 00:10:22 2023 -0500
+
+    lose a few more references to deprecated string functions
+
+commit d1322eecfd713f1a09ca3ccf19cab9815e0c3f31
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jan 15 00:20:13 2023 -0500
+
+    fixed typo/comments
+
+commit 80e50b2cf9673c0798e863528e45fbb52fc09773
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Sun Jan 15 08:56:25 2023 -0500
+
+    fixed missing include
+
+commit d653f9f21c402e6cbbbdba4eac601a50e7a515bb
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jan 15 09:15:49 2023 -0500
+
+    minor cleanups - use constexpr, and =default, and luse unneeded Memory::SafeBegin/SafeEnd
+
+commit 9f164a5523653bd726777322229d920c1a5c9d19
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jan 15 09:38:35 2023 -0500
+
+    mostly cosmetic code cleanup to Traversal code (put reduce near Map)
+
+commit 8133e0e6c6481be7c7809cc6b0234838730508bf
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jan 15 12:30:17 2023 -0500
+
+    new PossiblyInOrderComparer and InOrderComparer using concepts (experimental)
+
+commit bfb96a752aae9b16cf179602e0662295aafab9f0
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jan 15 12:36:57 2023 -0500
+
+    New feature - Iterable<T>::Top - designed to address Sterls concern with 'SortedMultiset'
+    https://stroika.atlassian.net/browse/STK-953
+
+commit d89e8a204cc04b155ee21bfc5c7fced7a1740370
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jan 15 13:16:54 2023 -0500
+
+    https://stroika.atlassian.net/browse/STK-953 - new Multiset Top () and TopElements() methods - I believe address this ticket/request
+
+commit 7ebf4d5a4a118ab18ec4d81cb04aee01062244e5
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jan 15 13:31:46 2023 -0500
+
+    cosmetic
+
+commit ae829a5e1ad5e5c1cad0e7877d20839ace4aaca8
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jan 15 14:12:34 2023 -0500
+
+    fixed missing template specifier
+
+commit ecf95efaf4b117da3981c590d4ddc261ed475a30
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jan 15 14:12:57 2023 -0500
+
+    check #if __cpp_lib_execution
+
+commit 92e0ea3cdecf96bd5e1e6e4f7d5e8fb4b2428dac
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jan 15 14:13:09 2023 -0500
+
+    cosmetic
+
+commit accd140552de09bc4b7a9164c81c56940cc9273a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jan 15 14:24:00 2023 -0500
+
+    mostly cosmetic
+
+commit efae0a654ea4da19bfabbd8493c0ff7cb872afde
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jan 15 14:43:26 2023 -0500
+
+    make format-code
+
+commit 3e20a552bc86e4a4daf38e5220dbf14c6e4743ef
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jan 15 14:43:56 2023 -0500
+
+    cleanup L string usage for recent string changes
+
+commit 63703ac547f85655e1a30c7f6eda78facc4bae93
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jan 15 14:44:33 2023 -0500
+
+    cleanup L string usage for recent string changes
+
+commit 9db114b14f709cd823023e2c65e85b7ce9051bdd
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jan 15 14:45:13 2023 -0500
+
+    must be more careful comparing VariantValue for equality now - 5 == 5 no longer works - must save .ConvertTo(eInteger)
+
+commit e9acf5ec188542dc5cefa8809c1b9a6abf8e4375
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jan 15 15:35:57 2023 -0500
+
+    JSON reader - Reader_Object_ - slight cleanup/simplification (with eye towards better performance but mostly clarity)
+
+commit 70da3bdbf45a073e6760718c5be342adc2a1996f
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jan 15 15:49:01 2023 -0500
+
+    cosmetic test cleanups
+
+commit 2afba91fe9b7eceda3889de0338d200a8fabb1da
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jan 15 19:23:03 2023 -0500
+
+    suppress warning
+
+commit 649246543db3b13c1354a6ef6c8a570d409b7343
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jan 15 22:45:55 2023 -0500
+
+    slight performance tweak for Memory/InlineBuffer and Memory/StackBuffer - delegate through HasEnoughCapacity_ which checks common constant (BUFSIZE) first - to avoid computing capacity when not needed (generally)
+
+commit fd9cda26cc40d80363150efc8e87afd9a95b7e2a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jan 15 22:46:27 2023 -0500
+
+    minor cosmetic cleanups to JSON Reader (mostly make-format-code)
+
+commit c7dad81682b0e292e58f1ad85e9512cbf81db0fd
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jan 15 22:49:26 2023 -0500
+
+    fixed makefile typo
+
+commit acce493a7a8d541da6958e613b28ca33ebfb4b4e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jan 16 09:33:12 2023 -0500
+
+    cosmetic
+
+commit 60d16fa92adc888d7702bc2fb9fd376b9c948eae
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jan 16 20:21:44 2023 -0500
+
+    silence warning/cosmetic
+
+commit 05f948e9c14b1e47089d017fb090cf63b0923fa0
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jan 16 20:38:24 2023 -0500
+
+    mostly cosmetic/constexpr clenaups to StackBuffer/InlineBuffer (and some [[likely]] annotations)
+
+commit 61b6f11c9d3f6684f5498c6face68aa416abba7e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jan 16 21:25:13 2023 -0500
+
+    code cleanups to new BufferedStringRep::Rep class (could help performance but untested)
+
+commit 21114db69e0d6d7e9fe259b0b5d69751a6790201
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jan 17 09:27:53 2023 -0500
+
+    fixed minor regressions and more performance tweaks (incomplete recent work on buffered string rep)
+
+commit dbb4eb36055b0619b5c526bb5cdccd19cac1881d
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jan 17 09:52:44 2023 -0500
+
+    cosmetic/uniform init
+
+commit d80d779b12f490ed4e734b958927e7a6b79d57cd
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jan 17 09:53:16 2023 -0500
+
+    windows CreateProcess appears to set hProcess to nullptr instead of INVALID_HANDLE_VALUE in some cases, so accomodate
+
+commit b8261364a0b0e50517fce8145ca77460bcb887ce
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jan 18 10:43:10 2023 -0500
+
+    Minor progress on basic stroika json reader performance: StreamReader use a few more inlines and likelys, comments, and  factored StackBuffer_DefaultInlineSize and InlineBuffer_DefaultInlineSize size calculation out of template declaration so separately callable/checkable and  Memory::InlineBuffer<char32_t, 128> in StringBuilder instead of default
+
+commit e5e3980f187a8f92d7689b1789a822dcb1963096
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jan 19 08:28:08 2023 -0500
+
+    Minor string class lib cleanups
+
+commit 8852508a6fbf75234a9843d75c49d06807079d72
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jan 19 10:07:15 2023 -0500
+
+    String performance enhancement - new FixedCapacityInlineStorageString_ impl
+
+commit f1b573fb2704744e44bc22d0a107e35d2ec0d156
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jan 19 10:25:35 2023 -0500
+
+    Minor tweak to String::mk_nocheck_justPickBufRep_ so also does 96 byte size (1.5 x64 cache lines)
+
+commit 9d46e38f5fdb913afaabb974da4be71317f9f537
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jan 19 10:41:43 2023 -0500
+
+    String class cleanups
+
+commit 48879884bfa41bc8b68e248b77453d754b29d6e9
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jan 19 10:54:46 2023 -0500
+
+    String DynamicallyAllocatedString to replace use of (now obsolete internal) BufferedString_
+
+commit 82f4f8280fda164c0ad35a9660196a97fdb2027c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jan 19 12:03:39 2023 -0500
+
+    more cleanups to String code and revamp (perforamnce) StringWithCStr_ rep
+
+commit 6aa88cdc186ce59762fb712413f8131731b80c19
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jan 19 12:04:33 2023 -0500
+
+    cosmetic
+
+commit afb8a5450eebff057c45674447b6fd9dda845f10
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jan 19 12:09:31 2023 -0500
+
+    cosmetic
+
+commit 6457b74a767987791a128dcdbeba954f698a6ff5
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jan 19 12:12:52 2023 -0500
+
+    minor execution::par fix in Iterable
+
+commit 6f808dda911f24672e7ea0e51f5e26b4ab8b4e06
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jan 19 12:35:05 2023 -0500
+
+    enhanced/fixed String (documentation purpose only) static assertions about sizes
+
+commit 3f9c33dcd59fd09dc59ed26d1339b4ed5398a38e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Jan 20 08:24:59 2023 -0500
+
+    Character IsSurrogatePair support, and made a couple more methods constexpr
+
+commit 49657d7f28fedbfc8faecc68a93edb6afbd668a0
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Jan 20 08:55:15 2023 -0500
+
+    use final in String rep defintions
+
+commit 7c9ff65bee62234c13b45099d429f94cb3798911
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Jan 20 09:17:42 2023 -0500
+
+    restructure FixedCapacityInlineStorageString_::Rep CTOR (and base class) to avoid UB failure on linux/g++ - dont access data til after initializing base class
+
+commit 3268ca05360a519936b3ff8eab2fbe3c64b5bbe3
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Jan 20 09:24:25 2023 -0500
+
+    String class cleanups
+
+commit a2802dce286b047fb4548c2912e5aaad6b6fa22a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Jan 20 09:34:44 2023 -0500
+
+    Comments
+
+commit dbb5a16e8a2bfba68aaf46a6a56e10f15abcc818
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Jan 21 09:35:17 2023 -0500
+
+    incompatible change (but probbaly unused) - renamed String::FromISOLatin1 -> String::FromLatin1
+
+commit bfa1aeb4687b992257316b7ea239d5877b3fe3dc
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Jan 21 10:30:17 2023 -0500
+
+    new preliminary support for Character_CompatibleIsh, Character::IsLatin1, Character_ASCII, and Character_ISOLatin1
+
+commit b0dfa0e6b1f659fba93779139dae67d8dd7d8d29
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Jan 21 10:45:12 2023 -0500
+
+    react to new version of clang-format
+
+commit 90ae1ddc7bd3b4ed787e49587c830cd6b0cf90d8
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Jan 21 11:05:08 2023 -0500
+
+    Update ScriptsLib/FormatCode to call ScriptsLib/GetMessageForMissingTool and updated ScriptsLib/GetMessageForMissingTool to give better suggestsions for how to install for windows
+
+commit 45309d2e49cbc5416f6c96504cd54c6f5123f62d
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Jan 21 11:34:32 2023 -0500
+
+    a few small chantes to .clang-format file, and re-ran make format-code (mainly column limit set to 140, PenaltyExcessCharacter AllowShortEnumsOnASingleLine
+
+commit 9abf1393c29e7c8adc7f5fe66f754dfab4649ed3
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Jan 21 12:19:20 2023 -0500
+
+    make format-code
+
+commit 764e2bd3de78083063bd08e34acee5ce07faa9dd
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Jan 21 12:19:49 2023 -0500
+
+    make format-code
+
+commit 4734fc9ff1a27684d0ce003ed601c0ed7d9c635f
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Jan 21 12:20:29 2023 -0500
+
+    make format-code
+
+commit 62276fb241963bcdb5a767012d9bcf88c2968809
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Jan 21 12:47:39 2023 -0500
+
+    fixes for String::FromLatin1 and new regtest Test57_Latin1_Tests_
+
+commit b96321383e2a9c554a57eddc9a88448de6902805
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Jan 21 12:53:27 2023 -0500
+
+    fix a few referens to ISOLatin1 to Latin1
+
+commit 174b8124aa26265bc638191871710135a124409f
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Jan 21 12:53:55 2023 -0500
+
+    Draft private String StrLen_ function
+
+commit 5e9a45e15782ff9fa2a773da343970f15a4df679
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Jan 21 12:54:57 2023 -0500
+
+    make format-code
+
+commit b2321fe9f9928fe7532eb9740fbf7c67074aefff
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Jan 21 13:33:29 2023 -0500
+
+    start process of switching Character_Compatible to Character_CompatibleIsh; and fCharLatin8 isnead of fChar8 in String::PeekSpanData
+
+commit 2f6ef0934439041c717e8d9b0c177e2ebed5c81c
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Sat Jan 21 13:43:28 2023 -0500
+
+    silecne some compiler warnings about multibyte character constants
+
+commit 8a4363defb446408cadf0ca248d83d2501938194
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Jan 21 13:47:40 2023 -0500
+
+    make format-code
+
+commit ec50c028810e6cac9f042c7089360900b65c25fb
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Jan 21 15:17:50 2023 -0500
+
+    Converted many string / UTF functions from using Character_Compatible to Character_CompatibleIsh, so we now support StorageCodePointType::eSingleByteLatin1 - nearly fully
+
+commit 78f823c3ecfc805c59e62b73b07edea5250e848c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Jan 21 17:45:01 2023 -0500
+
+    new Character::IsASCIIOrLatin1 utility and used to refactor String rep construction a bit - so now more fully/accurately decides on creating Character_Latin1 reps
+
+commit f6537c25969dc0224d1f8e362baafa53f3e775da
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Jan 21 17:45:38 2023 -0500
+
+    Cosmetic
+
+commit 3327bcdd149d81acb201fa3bb5ded536f19e8fef
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Jan 21 17:51:34 2023 -0500
+
+    fixed typo
+
+commit 05e763099236d8a31b8bacff22dc23621055a5db
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jan 22 08:45:55 2023 -0500
+
+    comments and todo
+
+commit 3bb415f21363d23273fae20cbcdc4aaf392ee073
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jan 22 09:01:55 2023 -0500
+
+    workaround dissapointing UNICODE C++ string literal issues
+
+commit a02ca2cc7d5b70ca2ec6bb0c8cc8bbf41b0c28e9
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jan 22 09:21:19 2023 -0500
+
+    fixed bug in new Character::IsASCIIOrLatin1 and added docs
+
+commit 3a709dc91726387d1463ba45c55448a0acf7cd2b
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jan 22 09:22:39 2023 -0500
+
+    fixed a few bugs in String unicode conversion logic (updates for new Character_Latin1 stuff) and some docs/cosmeticish improvements (not nearly done)
+
+commit 235a54fb54336f240075fb6bea495faa480c719f
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jan 22 09:22:58 2023 -0500
+
+    make format-code
+
+commit 83822467a2537af8c2fd6159ffcee8c41f759545
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jan 22 09:24:29 2023 -0500
+
+    Some small improvements to uniocde regression tests but still terrible and must rewrtie
+
+commit 582af5227810bd9cd992739f3e48b9070d2f62ff
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Sun Jan 22 13:22:31 2023 -0500
+
+    workaround qCompilerAndStdLib_template_requresDefNeededonSpecializations_Buggy
+
+commit f77fc8dda875bf3d53a1e73420396ad8acd53121
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jan 22 13:23:35 2023 -0500
+
+    added Character_IsBasicOrLatin1UnicodeCodePoint concept
+
+commit d237130d6b0d17fa089cdfc5dbb9787f6b7837d3
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jan 22 13:24:17 2023 -0500
+
+    Draft refactor/fix UTFConverter (better template/concept use and incidentally supproted Character_Latin1
+
+commit 52613d55c08783aa8f047956da3fc4c3efa90b18
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jan 22 13:26:04 2023 -0500
+
+    draft of Test50a_UnicodeStringLiterals_ test
+
+commit d6e9c764a29b2d7cb1d9438be90d32985944e43f
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jan 22 13:27:12 2023 -0500
+
+    mostly minor string cleanups in Duration regtest
+
+commit f24e95b386b38f4e2a684ab52a6e146f82d9dcce
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Sun Jan 22 15:25:13 2023 -0500
+
+    hopefully worked around compile issue with UTFConvert code on unix
+
+commit acd38cc2162b499428f2d72cf4ea4885dd59eb10
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jan 22 15:39:49 2023 -0500
+
+    cosmetic
+
+commit ddbdbb97ec309588b149df9a8f32597a9f5228d4
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jan 22 15:57:08 2023 -0500
+
+    more cleanups to UTFConvert code
+
+commit c75fc1ea865f7c3e0e05bf8c0cbd0d7452cc2019
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Sun Jan 22 16:11:08 2023 -0500
+
+    more UTFConverter cleanups
+
+commit e8b1c7a30dc60a3aa3ef4155cb2cd969ac0d92f7
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jan 22 16:24:13 2023 -0500
+
+    fix macos specific bug
+
+commit cddd1cffe1f3dbaa8f7aca2c2599c40a7f37a226
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Sun Jan 22 16:24:42 2023 -0500
+
+    more UTFConvert cleanups
+
+commit 09e2c9ce8a3da3af705243ebaee8c25be82c85ea
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Sun Jan 22 16:34:21 2023 -0500
+
+    more cleanups to UTFConverter code
+
+commit 211080f11521ae8beb02d85e0837f10a38ba637a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jan 22 16:55:35 2023 -0500
+
+    finsihed another round of cleanups to UTFConverter code
+
+commit ddf2cef8bfd6411c495961354e143ff1e2a07cc3
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jan 22 17:02:51 2023 -0500
+
+    cosmetic
+
+commit 023b3f1ee2b93861b9e19ff5cef7518a90432789
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jan 22 17:03:17 2023 -0500
+
+    minor tweak to String::Append code (proabbly going to deprecate so pointless)
+
+commit 02966f9fd4f8e80125dfe42904f0a5d3aca1f4a1
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jan 22 17:23:27 2023 -0500
+
+    more cleanups to Character (concept use)
+
+commit 805d543611de38891ba183cfdab00794844cbc91
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jan 22 17:31:01 2023 -0500
+
+    more mostly/hopefully cosmetic cleanups - using .data () instead of &*.begin ()
+
+commit dee2389a1821c337c26ae452ba955975f446fe41
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jan 22 20:32:09 2023 -0500
+
+    Cosmetic
+
+commit e6191a014a28229399868777b1c08178bd6e5f3f
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jan 23 10:07:28 2023 -0500
+
+    use ConvertibleToString concept on StringBuilder Append method
+
+commit e91d62a7aa2824174cdd25dd72681c087c9c3eea
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Mon Jan 23 10:10:35 2023 -0500
+
+    fixed typo
+
+commit 6d8c3e5162caf773fa84cd679a21a86b0ebaf301
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jan 23 10:47:59 2023 -0500
+
+    qCompilerAndStdLib_template_Requires_templateDeclarationMatchesOutOfLine_Buggy bug define and workaroudn and switched StringBuilder operators to use better requires clause
+
+commit a238b5c5e4c0cea1e025b8c6bf9064ac80ab88fb
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jan 23 10:54:43 2023 -0500
+
+    cosmetic
+
+commit 5c1c73423285bd82125b279850d84ab84166e69d
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jan 23 11:27:44 2023 -0500
+
+    Minor possible performance tweak
+
+commit e939564ab278482bab4c2b4bb95e783b750a68f9
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jan 23 11:39:40 2023 -0500
+
+    cosmetic
+
+commit 6ec8ade2b9c87a35f600c35066b127e11eabbf15
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jan 23 12:22:09 2023 -0500
+
+    fiddling with Character concept names, and docs
+
+commit 39aea50eda0b8c27987bf7e51a52dfd1c7e80294
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jan 23 13:11:24 2023 -0500
+
+    more Character concept name cleanups
+
+commit 8287af235498456c1b585dc3eb98b44a98b07fa5
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jan 23 15:36:16 2023 -0500
+
+    **not fully backward compatible - some use of StringBuilder must be changed to StringBuilder<> (not sure why CTA~DG no work); but changed StringBuilder to a template and parameterized a few things we will want to change/parameterize next
+
+commit fbf3353f37936f82015e61790fcaa580238387fb
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jan 23 15:45:06 2023 -0500
+
+    fixed typo
+
+commit 8308af1c651f98ad0e5939d4a08f19d2a7deb392
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Mon Jan 23 15:47:16 2023 -0500
+
+    fixed typo
+
+commit 4dbd13610ce25b7176d09c0d27643084b1f18189
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Mon Jan 23 16:00:47 2023 -0500
+
+    maybe cleanup bug workarounds for finicy requires parsing
+
+commit e273fa444c240ce07b329b08cd399615a5c6a0a9
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Mon Jan 23 16:11:27 2023 -0500
+
+    fix typo
+
+commit 6b5a9def6a2f4c9985fd871d50e64214099a7cb4
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jan 23 16:18:45 2023 -0500
+
+    qCompilerAndStdLib_template_Requires_templateDeclarationMatchesOutOfLine_Buggy for vis studio defined
+
+commit f0e053a05def963b532effb62005a804c7d572b7
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jan 23 16:29:44 2023 -0500
+
+    fixed qCompilerAndStdLib_template_Requires_templateDeclarationMatchesOutOfLine_Buggy for clang
+
+commit c6ffa6f8ccab387bfac18d05ec6bdda019d6d2f6
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jan 23 16:32:49 2023 -0500
+
+    updated qCompilerAndStdLib_template_Requires_templateDeclarationMatchesOutOfLine_Buggy
+
+commit 42c0a9f04db98fc8684e7c5d6a3f55c19f24950a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jan 23 16:33:00 2023 -0500
+
+    cosmetic
+
+commit 1cf6779cea908961ce8f04f3eb50c548ed365739
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jan 23 16:33:13 2023 -0500
+
+    cosemtic
+
+commit 5c7a1b75948929f4030a33e9cc647b8d3056578c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jan 23 16:34:50 2023 -0500
+
+    fixed typo
+
+commit cc70352d76f8eed0039a372ba43e51cce98aee47
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Mon Jan 23 16:51:55 2023 -0500
+
+    cosmetic/comments
+
+commit daf14f55fe9f31a57a4cc55ab017dc9f6ad80301
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jan 23 23:06:17 2023 -0500
+
+    fixed UTFConverter::ConvertQuietly () for copy of Character type
+
+commit 6fb33b25060e970579a327067531fda77861f10f
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jan 23 23:06:55 2023 -0500
+
+    more (nearly complete) support for StringBuilder differnt configured backend type characters BufferElementType)
+
+commit 52bf611b49ae51edbd20bd7047ab7be336e95383
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jan 24 10:56:36 2023 -0500
+
+    assertions
+
+commit d361368e04f3ffecb8df3958211651b0477b9033
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jan 24 10:59:19 2023 -0500
+
+    (expensive) fix to UTFConverter::AllFitsInTwoByteEncoding () for char8_t
+
+commit 8ae4af404e6525ded7569d6825ee9d668dbbdebc
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jan 24 11:00:44 2023 -0500
+
+    minor tweak - use InlineBuffer default CTOR instead of (size_t) ctor in one place cuz slightly cheaper, does same thing, and noexcept
+
+commit d38b063890e0794b16658fdc573e8c3f6fa7cb99
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jan 24 11:01:36 2023 -0500
+
+    experiemnt (now disabled) with StringBuilder<StringBuilder_Options<char8_t, 64>> in JSON::Reader
+
+commit b2e097be8560dc8c8a3d991177baf61f3d01c8e9
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jan 24 11:01:59 2023 -0500
+
+    tweak regtests Test50a_UnicodeStringLiterals_
+
+commit 036dffb587e06c09434de339d0392e95ddf96793
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jan 24 11:03:57 2023 -0500
+
+    fixed typo in regtest
+
+commit 4b81a22ef007f9335397757a9523ac9793aaa423
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jan 24 11:36:51 2023 -0500
+
+    cosmetic
+
+commit 219f544e70d6b74db0ac2d5396ad62de38af7eea
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jan 24 13:30:11 2023 -0500
+
+    simplified UTFConverter::NextCharacter and changed API slightly
+
+commit 5482b964533323e5d64299cf60f599e06e1f484c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jan 24 13:30:46 2023 -0500
+
+    tweak Test50a_UnicodeStringLiterals_ regtest
+
+commit 8dfb75ce9befa31107b6d13befd728a10f7d9b4c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jan 24 13:39:08 2023 -0500
+
+    a few small fixes to StringBuilder for different BufferElementTyps and Append (CHAR_T now instead of just Character)
+
+commit 0b629e4eb0a7148d37741b545de140450c06fb0b
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jan 24 13:49:13 2023 -0500
+
+    fixed typo
+
+commit 488b1983562d843fd7b7d5d508e2a7bfab39fcf8
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jan 26 09:02:43 2023 -0500
+
+    a few small celanups/tweaks to StackBuffer/InlineBuffer
+
+commit a81cf76778afff0c00cbaf4e685b03966c5d7b4a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jan 26 10:13:02 2023 -0500
+
+    cosmetic
+
+commit 4a98e58e662b221f1fdbc592c14abad2050f5397
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jan 26 10:16:04 2023 -0500
+
+    Minor code cleanup (use inlinebuffer push_back in StringBuilder::push_back)
+
+commit d6d63fad3f6eecc63b070bc4b26d6e0c881f74ab
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jan 26 10:21:24 2023 -0500
+
+    comments
+
+commit 05b6b9aafd7c38c5009cb61fd3d5ddb1caf45c2e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jan 26 10:33:06 2023 -0500
+
+    Comments
+
+commit eb3a1a44970f9f84be004d74811e1f924a867b18
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jan 26 10:33:33 2023 -0500
+
+    Invariant calls in StackBuffer/InlineBuffer push_back
+
+commit 5eaa03418b9b07b8f261f62a80d82c500b07f0fd
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jan 26 10:47:57 2023 -0500
+
+    Block allocation code - annotate with [[likelly]] - no clear diff on windows
+
+commit 42eef14dea9eb9837ea3d2b636a575f4f3b01410
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jan 26 14:41:45 2023 -0500
+
+    big performance tweak for windows json parser - using __forceinline on  StringBuilder<OPTIONS>::Append (CHAR_T c)
+
+commit 5c9de10869f42bb6cc2f9707197dd30a246b0536
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jan 26 14:52:10 2023 -0500
+
+    cleanup StringBuilder.inl (simpler push_back code now performs OK for char32_t case)
+
+commit dce274b4a577ca510fc77f96653893fb1c62aa64
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jan 26 14:55:14 2023 -0500
+
+    slight performance tweak to Variant/JSON/Reader.cpp reading strings (only perftested windoze)
+
+commit 10bf13c664f2e6800750a4c2caf4ff4b94dd40ef
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jan 26 15:02:43 2023 -0500
+
+    tweaked performance tests
+
+commit 292981e4a536def2e1f3d980ca390a273fa312c8
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jan 26 19:12:48 2023 -0500
+
+    JSON::Reader object now takes options, which allow you to select (defaults to) using boost to parse intead of stroika, but still can select the stroika parser
+
+commit c306976ad4f18dca1e521ccfe1ec83e89b93cb3e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Jan 27 08:23:28 2023 -0500
+
+    Added BLOB::data () method
+
+commit e3b5371a3982839063a53ed55deb5182c604ff4b
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Jan 27 08:24:02 2023 -0500
+
+    in new boost support for Variant::JSON::Reader, wrap failures in BadFormatException
+
+commit bb1e49abddfe5339328294519210ca2f5c6d65cf
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Jan 27 09:27:07 2023 -0500
+
+    Tweaked json (boost based) reader erorr reporting/comments
+
+commit d91ba0f18b02a0761b45bb7137cdd0a056dd1c17
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Jan 27 09:27:55 2023 -0500
+
+    fixed bad regression test Test_05_ParseRegressionTest_3_ - badly formatted input
+
+commit c19d49e60790cd5e4f127d92318dc48a96e95d5a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Jan 27 10:06:26 2023 -0500
+
+    cosmetic
+
+commit c55ffdd4c8eac180f519d103f334f673f25dc60c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Jan 27 10:06:44 2023 -0500
+
+    cosmetic
+
+commit 1594b9f34df7217a8adedb756f38abe851aa0814
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Jan 27 10:07:42 2023 -0500
+
+    cosemtic
+
+commit 85c821be3b60435718718b28d6986ac4c0cb455a
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Fri Jan 27 10:54:29 2023 -0500
+
+    silecnce warning
+
+commit be80c33f69a5bbe1e8c153d0a2721324129f58df
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Jan 27 11:14:29 2023 -0500
+
+    options.fCanReadPastEndOfJSONObjectInStream for JSON parser, so can disable boost in that case (for now til I fix)
+
+commit e3d23fa25c504597c9fd9829c826e8905643f455
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Jan 28 12:32:38 2023 -0500
+
+    primitive hack impl of Variant::Reader::_ToByteReader (const Streams::InputStream<Characters::Character>::Ptr& in)
+
+commit 8b9a718fdd530604ad23e2d47fe7b60ca90c975f
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Jan 28 12:33:28 2023 -0500
+
+    rewrote boost support in DataExchange/Variant/JSON/Reader - so should handle incrmentals etc, and stream of bytes or characters (with some caveats to fix there)
+
+commit 3e14e223763789f5279657e10598fe9f25211a7a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Jan 28 12:33:49 2023 -0500
+
+    cosmetic
+
+commit 1963d94adc5b27c63898e3ad15122f1a3bab2e39
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Jan 28 18:16:53 2023 -0500
+
+    lose unneeded options.fCanReadPastEndOfJSONObjectInStream
+
+commit 05cd839860285e1fe000ea14e9ad8f578d75ccc7
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Jan 28 18:17:04 2023 -0500
+
+    lose unneeded options.fCanReadPastEndOfJSONObjectInStream
+
+commit 070617dac7c1c4792c06e2674981ff97bb190482
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Jan 28 21:05:47 2023 -0500
+
+    placeholder tmphack impl of Foundation/Streams/TextToByteReader and redriected Variant/Reader code to it
+
+commit 70ce0db7187e19375eaf30534488b6af424f2086
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jan 29 11:21:29 2023 -0500
+
+    progress building real impl of TextToByteReader - but still quite weak
+
+commit 1214b690e20aa5cab6d87dc1033e2ca1bffefd83
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jan 29 12:18:46 2023 -0500
+
+    refactor - migrate ConstSpan utility to file Memory/Span.h
+
+commit c19b4b62799c769cf906b9a48b45d78a6a1224a7
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jan 29 12:39:33 2023 -0500
+
+    New Memory CopySpanData and CopySpanData_StaticCast utilities
+
+commit 223de2da2806ea448f8b69529052adb8524f1a07
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jan 29 16:58:30 2023 -0500
+
+    Memory::Intersects (SPANS) - and use in assertions for Memory::CopySpanData etc
+
+commit ae5ef10c465e52d3056903f240e921ff61ad5f5a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jan 29 17:17:09 2023 -0500
+
+    Improved implemtnation of TextToByteReader (using new stream copy stuff) - but still weak -but probbaly good enuf for now
+
+commit 3e0f4d5b6f3fbde68a94151c111b0453c837e1a7
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jan 29 21:18:05 2023 -0500
+
+    use new Memory::CopySpanData code
+
+commit 34d6c1ed78a7b08644189e2b01556de80a70b1ae
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jan 29 21:54:39 2023 -0500
+
+    switch many uses of std::copy to Memory::CopySpanData; CopySpanData_StaticCast now drops requirement about src/trg elt sizes being the same (and documented where handy); commnents
+
+commit 3e3f9f5da8ef36c24ad741883bc3087c4084342f
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jan 29 22:10:02 2023 -0500
+
+    use more Memory::CopySpanData; and one qCompilerAndStdLib_spanOfContainer_Buggy workaround
+
+commit f8660bcd062214cea4d33908e22a293bb8023c57
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Sun Jan 29 22:17:15 2023 -0500
+
+    qCompilerAndStdLib_spanOfContainer_Buggy workarounds
+
+commit c748fe29393fd2c6203b161365c23fec90a40bbd
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Sun Jan 29 23:17:10 2023 -0500
+
+    worakround quirk of clang++10
+
+commit f66a97ab6c3c59a44d84fd5dc8035b6d9674a897
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jan 29 23:18:19 2023 -0500
+
+    Cosmetic
+
+commit 8e5b7acbed38bb17db686a4f098ce131ac55eede
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jan 29 23:19:24 2023 -0500
+
+    avoid needless operator= in VariantValue::CTOR (boost value), and cleanup use of operator= defs for VariantValue = use more concepts and hopefully fixed some copy/move stuff
+
+commit e062c2f0e8c89f666a123b4b0e9d78e14bfc50a5
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jan 29 23:25:54 2023 -0500
+
+    Comments
+
+commit d637516f5d3f230b096511db591094527fe89cfc
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Mon Jan 30 00:38:53 2023 -0500
+
+    minor
+
+commit c337eea3bebdedfa4bb35a16b0fff81f3532fd44
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jan 30 10:04:43 2023 -0500
+
+    Minor tweaks to  VariantValue performance (final and mk_ instead of VariantValue CTOR
+
+commit d573396ca6454de478f21940466d3dd760513c3a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jan 30 22:41:03 2023 -0500
+
+    Draft/test of using explicit _IterableRepSharedPtr arg to MakeIterator and other Iterable<>::IRep methods that return iterators, so they can save the shared_ptr inside (thus losing the need for shared_from_this) - prototypes with the string code. Still testing to see how this impacts performance
+
+commit fa0d128616e495835d026a0e80c8bef97da56f39
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jan 31 13:29:57 2023 -0500
+
+    got working and performs on balance better (for strings) losing enable_shared_from_this and doing explicitly - todo for other iterbale/containers; and because of this re-tuned the size of blocks for strings in reps
+
+commit cc965e085828dadc6fea6575de4cec8b721bb9fb
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jan 31 13:33:34 2023 -0500
+
+    cosmetic mostly
+
+commit 99826270136966e55966a79b9ec81dca066ca1a4
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jan 31 13:36:32 2023 -0500
+
+    cosmetic
+
+commit 80dc761187f581b1c4dbe6afb127aa43c16b9cc3
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Feb 1 08:13:26 2023 -0500
+
+    silence warning
+
+commit 5b6aaa0831088e660cf7b20484366ade6e398d31
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Feb 1 08:13:37 2023 -0500
+
+    cosmetic
+
+commit 78fbd8bacc5249df26343c27904ac16bf23c2919
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Feb 1 08:17:15 2023 -0500
+
+    maybe_unused
+
+commit 8ca729a96067060728d41f9042dda4e62b9bc298
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Feb 1 09:17:34 2023 -0500
+
+    more updates to scripts/docs to clarify require XCode 14 or later, apple clang 14 or later, c++20 or later, and lose qCompiler_LimitLengthBeforeMainCrash_Buggy (cuz only applied to older XCode)
+
+commit 7d1c77b31444d9b3979cd05fa41561ce36919911
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Feb 1 12:04:10 2023 -0500
+
+    cosmetic
+
+commit ad0c879e2f612bcde7e74decfaae534ced4e5b5b
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Feb 1 12:04:36 2023 -0500
+
+    todo comments
+
+commit a77625fa4d5bbcbcb91b000779688ea49cbb5baa
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Feb 1 12:05:31 2023 -0500
+
+    make format-code
+
+commit dfcbdae35db93a8899eb70065df8dcb8b0142507
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Feb 1 12:26:57 2023 -0500
+
+    Mapping no longer uses enable_shared_from_this
+
+commit 14fd656e3b7b8f531fddbfb61ce0eefbffc02076
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Feb 1 12:38:56 2023 -0500
+
+    fixed overaggressive LIBCPP_VERSION check - need 13 supported for xcode 14
+
+commit dee7b4dc569d538899af33467cac6205b73e076b
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Feb 1 22:50:05 2023 -0500
+
+    lose shared_from_this support in Association
+
+commit dfa7e79b5ddb0d43e52fafdc2237fb7404e96e5a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Feb 2 08:35:53 2023 -0500
+
+    get rid of used of shared_from_this in Bijection
+
+commit 9b22541f96afb5d0184bc16c622f1fe24278d94d
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Feb 2 09:02:24 2023 -0500
+
+    get rid of used of shared_from_this in KeyedCollection
+
+commit 4233435974b6a0383e19ee13159423f8d84c8e51
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Feb 2 09:02:38 2023 -0500
+
+    make format-code
+
+commit d28ef1ed7ef67997a2e045cf4b5347966b16a9df
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Feb 2 09:23:54 2023 -0500
+
+    lose enable_shared_from_this on Mutliset (but not done same as others so fix)
+
+commit e101d86b14e0e19525dfaec17065477cce7fd101
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Feb 2 10:05:20 2023 -0500
+
+    fix minor typo regression
+
+commit bed7aee85e5885ad172fc8a4ee22ec9c2c522111
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Feb 2 10:12:57 2023 -0500
+
+    make Mutliset thisSharedPtr code a little more like rest of containers
+
+commit 831bd6dcad983a3edcedaf78432422fe7450317d
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Feb 2 10:15:17 2023 -0500
+
+    now mark enable_shared_from_this_PtrImplementationTemplate as deprecated
+
+commit 5c136bede2b210f6be9afc5cb83aa0849a034eac
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Feb 2 10:42:19 2023 -0500
+
+    cleanups of recent changes
+
+commit da8e896c1d5570b350425a3a02f28267b3daf9cb
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Feb 2 10:51:43 2023 -0500
+
+    Deprecated the using PtrImplementationTemplate in Iterator<T> - just use unique_ptr everywhere (probably clearer and not directly used much throughout Stroika)
+
+commit 0328b3adf234ab6cc9ccf2182b3116f14a8f8f05
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Feb 2 11:19:40 2023 -0500
+
+    deprecated the name PtrImplementationTemplate -  just use shared_ptr<_IRep> in a bunch of places (I think clearer)
+
+commit 455e2d8c69468e5b9ab8c8b51c7da36e3b20d5f3
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Feb 2 11:49:08 2023 -0500
+
+    deprecated Iterator<T>::RepSmartPtr - use unique_ptr<IRep> instead - clearer about kind of ptr - and avoids saying in using type the rep-type redundnantly
+
+commit a641c415aff3eca07c48fc09d838aca86dd244cd
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Feb 2 11:58:07 2023 -0500
+
+    Iterable<T>::_IteratorRepSharedPtr deprecated
+
+commit db213f5e80d895b4bb98a05fd850fb4b93cd4a70
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Feb 2 12:06:21 2023 -0500
+
+    new Memory::MakeSharedPtr
+
+commit 3d689883259e5c3adbadb9cb893567dca57181a3
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Feb 2 12:34:33 2023 -0500
+
+    deprecated Iterator<>::MakeSmartPtr - and use make_unique directly
+
+commit bbbfe9b4b9d9078e63a5c5d18cfd75e444bef9a2
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Feb 2 12:35:07 2023 -0500
+
+    depreate Iterator::MakeSmartPtr
+
+commit e7824737861ced87fa7aaebc911dd192887f4add
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Feb 2 13:23:29 2023 -0500
+
+    more fixes to use make_unique to replace Iterator<>::MakeSmartPtr
+
+commit b03d69c24944342402a7b796d353f9156d20b328
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Thu Feb 2 13:39:51 2023 -0500
+
+    more fixes for Iterator<> make_unique change
+
+commit 7a798b10c680d43ee84c92423d05a52c474102f6
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Feb 2 13:49:13 2023 -0500
+
+    DELETED (not deprecated) MakeSharedPtr function in Memory for SharedPtr class cuz no longer really use this and I want to use the name for something else
+
+commit ed223ade9d050207d96a3a1ed814230a454c65fb
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Feb 2 14:15:25 2023 -0500
+
+    Deprecated Iterable::MakeSmartPtr and switched to using Memory::MakeSharedPtr
+
+commit e911341aa2178995965f3089aa13e6f602dfed85
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Feb 2 14:17:15 2023 -0500
+
+    cosmetic
+
+commit 958fffa1796814fdb68e790fec1de750f1898988
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Feb 2 14:26:35 2023 -0500
+
+    A few more Memory::MakeSharedPtr cleanups
+
+commit 6f1af44e0ba44d95f424cbf6a64b967de5583889
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Feb 2 17:16:51 2023 -0500
+
+    lose _IRepSharedPtr _SetSharedPtrIRep using declarations that were just confusing from Set<> template - hid too much with those.
+
+commit c5316ea57b89d0bd903f635ec06f70e9add313b1
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Feb 3 08:17:15 2023 -0500
+
+    Attemtp to workaround gcc compler complaint
+
+commit f2024df05ec2172566182939c32b1952ea127132
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Feb 3 08:17:35 2023 -0500
+
+    make format-code
+
+commit 4b80e55029a5495e8e25f57a3e69b78c9662e95f
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Feb 3 08:26:31 2023 -0500
+
+    reduce use of _IRepSharedPtr/_StackRepSharedPtr = use what it maps to in Stack class
+
+commit 6a65d4b3958dbb3c7c00d803f51e7efc0d60122c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Feb 3 08:45:58 2023 -0500
+
+    reduce use of _IRepSharedPtr/etc in Collection class
+
+commit dbf6efb0f5c8bee901b4a477ba6183f1b8c25a7a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Feb 3 09:08:26 2023 -0500
+
+    reduce use of _IRepSharedPtr/etc in Sequence<T> classes
+
+commit 4187c75d360ca486eb3668c2dd3634cc0259033c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Feb 3 09:29:00 2023 -0500
+
+    fixed typo
+
+commit 12675569fc101d69c71b746db4f9390fb468978a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Feb 3 16:11:23 2023 -0500
+
+    reduce use of _IRepSharedPtr/etc in Queue<T> classes
+
+commit 71aaae346c132f0a01c55bc7f32f030903c02c27
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Feb 3 16:14:28 2023 -0500
+
+    reduce use of _IRepSharedPtr/etc in Deque<T> classes
+
+commit f935fad2ca27e8f4c2d6c9f0a872dff1b0ec2bb0
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Feb 3 16:24:56 2023 -0500
+
+    make format-code
+
+commit 36e2d4c572933405ca877c034461c91cd487c0ab
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Feb 3 16:27:42 2023 -0500
+
+    reduce use of _IRepSharedPtr/etc in KeyedCollection<T> classes
+
+commit aef53920ac06a464e1414d0fc5e12035e5dd881c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Feb 3 16:32:12 2023 -0500
+
+    cosmetic
+
+commit 9ccd03055e9ab6a0f9fdb5f46553c117a2b3cce5
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Feb 3 22:47:53 2023 -0500
+
+    reduce use of _IRepSharedPtr/etc in Bijection<T> classes
+
+commit 5643183fb61f286630183fa7a66a96d93715b23b
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Feb 4 09:15:39 2023 -0500
+
+    reduce use of _IRepSharedPtr/etc in MultiSet<T> classes
+
+commit ac85a03ec400870fecc11d0eab8259668ae49c31
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Feb 4 09:25:12 2023 -0500
+
+    cosmetic
+
+commit eb4996b61a06b543ac466c553aa151ff70c78815
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Sat Feb 4 10:41:48 2023 -0500
+
+    qCompilerAndStdLib_copy_warning_overflow_Buggy workaround
+
+commit 585d6fda6a980d07360dcfe0abf2bfee9485fc0a
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Sat Feb 4 10:42:01 2023 -0500
+
+    workspace changes
+
+commit fa18ce6f36ae05c0d94acd153b883dd75d92f38a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Feb 4 10:04:14 2023 -0500
+
+    reduce use of _IRepSharedPtr/etc in DataHyperRectangle<T> classes
+
+commit 247c0db2c9b5b8a0c692266873b4f873b72a7f78
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Feb 4 10:44:16 2023 -0500
+
+    fixed return value of Iterable<T>::_SafeReadRepAccessor<REP_SUB_TYPE>::_ConstGetRepSharedPtr () - mostly
+
+commit c297f5308c5694d2544bf7e1dbcdf92c492de029
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Feb 4 10:46:49 2023 -0500
+
+    reduce use of _IRepSharedPtr/etc in Mapping<T> classes
+
+commit c116a21de53fa15c309465065945d90f034a4d58
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Feb 4 10:55:04 2023 -0500
+
+    make format-code
+
+commit 59e110cd01aed52b4feeea9d993e8c1e2470b131
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Feb 4 10:55:39 2023 -0500
+
+    new (untested) Debug::UncheckedDynamicPointerCast
+
+commit e5e6ae33519094210a21fc50980deb034e033693
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Feb 4 11:08:40 2023 -0500
+
+    fixed and used Debug::UncheckedDynamicPointerCast
+
+commit 4581f14e48a4e4d8c0b1f4365288e184da680062
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Feb 4 11:09:59 2023 -0500
+
+    lose unneeded dynamic_pointer_cast due to fix in iterable::accessor:: ConstGetRepSharedPtr ()
+
+commit be97ad57413d3a4792b3a91e10281c1cac7bbd40
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Feb 4 11:10:47 2023 -0500
+
+    fixed typo
+
+commit 9f261cab6296dbecc6e689473137bf267b0d984c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Feb 4 11:37:30 2023 -0500
+
+    use Debug::UncheckedDynamicPointerCast more and better document behavior
+
+commit 5e36c565a1eb5cded8df213fc671756f3ca59615
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Feb 4 11:55:58 2023 -0500
+
+    UncheckedDynamicCast and UncheckedDynamicPointerCast noexcept; and fixed bug in UncheckedDynamicPointerCast and used in a couple more places
+
+commit 94619f8aee37d8790d8eef1c4f18d7b61a805a7f
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Feb 4 11:56:20 2023 -0500
+
+    make format-code
+
+commit 56b08d9ef743d735f7cca321a8981196da942531
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Feb 4 12:42:44 2023 -0500
+
+    reduce use of _IRepSharedPtr/etc in Association<T> classes
+
+commit b1c39dcdd71c0ee73355f5f6e153c752bbaaab1a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Feb 4 12:49:16 2023 -0500
+
+    KeyedCollection rep Keys method now takes KEY rep as smartptr arg
+
+commit b4c306ddd25dbd8c4271137a5fc74d0ad3142eb0
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Sat Feb 4 14:35:33 2023 -0500
+
+    fixed include problmes
+
+commit 2cef850cf857cdbd728f1474dc339f73ba9229d2
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Feb 4 14:36:36 2023 -0500
+
+    lose use of _IterableRepSharedPtr in String class
+
+commit ede07879901300fe299dd98bd4948b4e66bbf2a7
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Feb 4 17:07:47 2023 -0500
+
+    cosmetic
+
+commit 2554271ab45cf128f914ba739cc3cdd7943698bc
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Feb 4 17:29:31 2023 -0500
+
+    get rid of remaining use of _IterableRepSharedPtr
+
+commit 307e475970a078ba2f4f48fc9f535de33bcb1215
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Feb 4 17:37:12 2023 -0500
+
+    deprecated IterableBase
+
+commit 7e2515c966c7e8a4883d9e445aa2153945505a1c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Feb 4 17:40:31 2023 -0500
+
+    remove some code deprecated in Stroika v2.x
+
+commit 53fb15c76d10f1ea4b0a1b0b99244c5e3533bd60
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Feb 4 19:01:10 2023 -0500
+
+    fixed mistake in last deprecation removeal checkin
+
+commit 0094f983b4698f64958f844d94b6693e9d5ea060
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Feb 4 21:10:22 2023 -0500
+
+    Iterator no longer inherites from IteratorBase: deprecated
+
+commit d62bb0ab961b2bacc40fedd29cc19bdf7b5c60c5
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Feb 5 00:16:33 2023 -0500
+
+    Iterable now aggregates AssertExternallySynchronizedMutex intead of inheriting from it
+
+commit ac74cc5bd5bfbe361a06e02c35c20cb91b02868d
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Feb 5 09:29:23 2023 -0500
+
+    Comments
+
+commit 9aed48df5b9959e47f29fecb4cf417703f231ac2
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Feb 5 09:29:43 2023 -0500
+
+    cosmetic/uniform init
+
+commit fb6cdd9516d9f7138fd20b67221526c870e3eb91
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Feb 5 09:30:13 2023 -0500
+
+    cosmetic/docs
+
+commit e0ee0d9a4ed691011a00bec6fd12054c635810fa
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Feb 5 09:32:11 2023 -0500
+
+    not 100% backward compatible for container implementors, but otherwise sb fine; REMOVE _IRep methods for stuff like Keys() and default impl, and instead redo all this using Map(mcuh simpler/cleaner) - only done for Assocation, Bijection, and KeyedCollection so far; deprecated/renamed two Bijection methods Map/InverseMap to avoid name conflict with Iterable Map
+
+commit 3e906109c8142daf0b0744a36cc4368f73e66b65
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Feb 5 09:56:18 2023 -0500
+
+    lose Mapping _IRep Keys/MappedValues use use base class Iterable::Map<> todo this (as before)
+
+commit b75e3fd224460c337aebc4bb829f6a6d07ca58e6
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Feb 5 10:50:35 2023 -0500
+
+    rewrote MultiSet Elements and UniqueElements() using Map/Generators (much simpler/cleaner, and no need for _IRep methods todo any of that)
+
+commit 1282968814f51fbf54125e214aad32856d729cc6
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Feb 5 11:27:30 2023 -0500
+
+    small cleanups to Iterable<> Generator code
+
+commit f2c2f61ad887de2d74117792189f1a46c6611fad
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Sun Feb 5 12:09:23 2023 -0500
+
+    fix syntax errors (template)
+
+commit 942abf32b701e4f8b3d2eebc6110b622c4d33b91
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Feb 5 21:02:47 2023 -0500
+
+    cosmetic
+
+commit 73daf6d61474a75056def72184dedeaaa6bec47e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Feb 6 09:22:01 2023 -0500
+
+    refactor Iterable<>::_IRep code/apis - lose _Find_equal_to_default_implementation and _Find etc, and just do default impl of the Find/Find_equal_to etc implementations where possible and lose the overrides in each subclass that just called that helper mechanism. Appears to generate (at least testing on windows) basically same code (at least code size didnt change), and much simpler - facilitating future cleanups
+
+commit 12812aad81a73e7090d033c1662a2cc879c0e06f
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Feb 6 11:33:17 2023 -0500
+
+    Comments
+
+commit 6021c5f6c58f3905f82ed25ea0ecb57811faa7cd
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Feb 6 11:44:25 2023 -0500
+
+    Comments
+
+commit 94e5d5015416e2023c21c16a3699ff44dcce3bd8
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Feb 6 13:39:55 2023 -0500
+
+    fixed small regression (compile error) in Foundation/Traversal/Iterable.inl
+
+commit 9f4d7b746f99d75359710f5342e3b81ddeff8fa2
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Feb 6 14:18:51 2023 -0500
+
+    changed impl of _IRep::Find_equal_to by default to call Find with seq - and no obvious performance diff, makes good a bit larger, but I think will pay off once I do seq support in Data structures
+
+commit 0642a2fb630edc81a24ae7f813659647493f2f55
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Feb 6 15:36:46 2023 -0500
+
+    fixed small CTOR bug iwth SynchronizedTimedCache
+
+commit 59f5cf6d03cf278190a5e91c14b6ecc47c5bebd0
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Feb 6 15:37:25 2023 -0500
+
+    no longer make Duration DCTORs from numbers be explicit
+
+commit d4afc96d6d833a8cf8112bb80014d12d88688212
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Feb 6 15:38:52 2023 -0500
+
+    docs
+
+commit d98b2e43f868860dc40d6cb92a866d52600ae608
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Feb 6 15:41:18 2023 -0500
+
+    cosmetic
+
+commit 528fee37c7cf0de4ae3bfb3bfc29977acc59d5b2
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Feb 6 15:42:13 2023 -0500
+
+    DataStructure::Array::Apply now takes SequencePolicy seq param, and used in Concrete reps (makes size bigger - not sure worth it)
+
+commit f871b0c2e9c342c3ba27b9c15719cd13cef2f6d2
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Feb 6 15:44:22 2023 -0500
+
+    reverseted change to Iterable<>::Find - now back to Execution::SequencePolicy::eDefault by default
+
+commit e940d5df78d3f31e66f84ade0536a55a5be52a89
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Feb 6 15:49:49 2023 -0500
+
+    fix another regresion with SynchronizedTimedCache copy CTOR
+
+commit 6359e15d9331df42995dfaf12d6293d1a4bfc47d
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Feb 6 15:51:16 2023 -0500
+
+    [[maybe_unused]]
+
+commit 5abad6ce86e2f0f3151a3be9e0dd6ac58ab43662
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Feb 6 16:07:53 2023 -0500
+
+    comments
+
+commit 3e1542a64874cc2fc86c3d5276c02009781b1202
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Feb 6 16:08:07 2023 -0500
+
+    Added regtest and used to fix bugs with TimedCache
+
+commit 66ac145f07887d737de175c9f09505fd03819a38
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Feb 6 16:14:03 2023 -0500
+
+    antoher regtest to fix another regrssion with TimedCache
+
+commit 82b73dd8904528b4760b307aa07786c0af06bd2a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Feb 6 20:05:09 2023 -0500
+
+    added back deprecated defintiion of WideStringToNarrowSDKString so easier to upgrade v2.1 Stroika code
+
+commit fcfe4ae3af15b958cfe9e97a2c675cd79e662d94
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Feb 6 20:07:28 2023 -0500
+
+    check __cpp_lib_execution >= 201603L
+
+commit 83267e0d85303065c3d04cd3a77a7a78af40f93c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Feb 6 20:10:25 2023 -0500
+
+    fixed typo
+
+commit a5449331eb802090bb1fb1e418e5508de1c2ba02
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Feb 6 20:47:57 2023 -0500
+
+    cosmetic
+
+commit cf796b500b4849098b1b7eaf70020fd4d4c7ad37
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Feb 6 20:48:22 2023 -0500
+
+    cosmetic
+
+commit ed33078101e49ffed688af8b3c234b28295402b8
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Feb 6 23:32:26 2023 -0500
+
+    cosmetic
+
+commit 2c5faa341bea56eb1c6adcf4b97914e7193faf46
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Feb 7 07:31:01 2023 -0500
+
+    make format-code
+
+commit 1436b3c1a895f8751518ea551c6b9e057f1753b6
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Feb 7 07:33:09 2023 -0500
+
+    annotated some if tests with likely/unlikely
+
+commit ecf0ee5fadf7edd9afb310660306415f3d3b6770
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Feb 7 08:27:06 2023 -0500
+
+    minor likely attribute tweaks
+
+commit 303e425d1e66b2aa2deb596ffc0a9afe206e5821
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Feb 7 08:28:01 2023 -0500
+
+    simplify Character::IsASCII with ranges, and on vs2k22 at least, super tight assembly for this
+
+commit 3bbdcca0f827ba634803e986ae5d2fe38d93427d
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Feb 7 09:55:26 2023 -0500
+
+    cleanup Character::IsLatin1 and Character::IsASCIIOrLatin1 to use ranges; and other related small cleanups; reviewed generated assembly on windows and looks pretty good
+
+commit 2d49dbc209f43399830e317291294b177a73cd93
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Feb 8 09:25:11 2023 -0500
+
+    fixed regression in Character::IsASCIIOrLatin1 - but better - cuz actually check properly if IsLatin1 now
+
+commit 5332f1ff608aafb4808aa1e6561bdc5259a9d313
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Feb 8 09:59:51 2023 -0500
+
+    docs, cleanups about details if IsASCII, IsLatin1, etc code
+
+commit eb4a477988692d1a69fd732c970b45215c9c1481
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Feb 8 10:04:52 2023 -0500
+
+    make format-code
+
+commit cceabba63a45a7fae153607a788f5fb30eb25ed0
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Feb 8 10:45:09 2023 -0500
+
+    docs
+
+commit 557c091332fe1871b092d9023b62c618b1087998
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Feb 8 11:27:26 2023 -0500
+
+    qCompilerAndStdLib_stdlib_ranges_pretty_broken_Buggy define and support
+
+commit 1b8573ef89ba02fa6fe46bab9793ca92c615d701
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Wed Feb 8 11:49:03 2023 -0500
+
+    upped LIBCPP version broken to 15000 and qCompilerAndStdLib_stdlib_ranges_pretty_broken_Buggy broken for clang up to 14 - even if using libstdc++
+
+commit c5b1d1a540a24f5d006f8a2168266700ee3da4bd
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Feb 8 11:52:01 2023 -0500
+
+    Cosmetic
+
+commit 16ff5f6823aa792afe8314ded6a9714bad8c40d4
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Feb 8 11:51:23 2023 -0500
+
+    cosmetic
+
+commit 50853aa9b8678ae53640d870cc564f97702c1a88
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Wed Feb 8 12:03:27 2023 -0500
+
+    workaround qCompilerAndStdLib_stdlib_ranges_pretty_broken_Buggy
+
+commit 0a47e4babea6d47740bee7f77d6fffb8bc91b87e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Feb 8 22:14:10 2023 -0500
+
+    tiny progress on https://stroika.atlassian.net/browse/STK-747 jap locale character/number parsing, but not real progress (but fixed bug with test case where had wrong characters)
+
+commit 41b0eec3bc3434bdbb68dc1220955a2ca50267fc
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Feb 9 08:26:32 2023 -0500
+
+    silence warning
+
+commit 6f646d9b65892a106c32e7f8d09892e592ab5900
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Feb 9 08:27:19 2023 -0500
+
+    make format-code
+
+commit e2dfc93d65d7fba3da8b1aeb2d87ecd961a05cdb
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Feb 9 08:27:46 2023 -0500
+
+    comments
+
+commit 3ea2961703daa107621deed6f769d704b1adb509
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Feb 9 08:28:22 2023 -0500
+
+    enhance (still failing) parse japanese numbers test
+
+commit 26147076c2876de4d9d74307cc95c5d09b3d4b83
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Feb 9 08:30:28 2023 -0500
+
+    make format-code
+
+commit 2862137496c4d73e40b42d9aa37bec4de3695323
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Feb 9 13:50:14 2023 -0500
+
+    Early draft of Characters_TextConvert and Characters::CodeCvt (not fully implemented and not used at all)
+
+commit f96a81f78ba7725dbebbce99ae3171defffcb7a3
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Feb 9 15:47:54 2023 -0500
+
+    alot of progress/celanups to CodeCvt<CHAR_T> but locale support not yet compiling (so part not compiling disabled)
+
+commit 921e0091511c4d5b6817bbf9459dc38b56c3759b
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Feb 9 15:48:44 2023 -0500
+
+    cosmetic
+
+commit 0e773a7a337f7a22291a236d46e0bca69a1e85a7
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Feb 9 21:44:38 2023 -0500
+
+    fixed typo
+
+commit af8465ab7c9c694e1092a159d86f74ac09cfcf18
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Feb 9 22:29:27 2023 -0500
+
+    completed first draft of Characters::CodeCvt (wrapper on std::code_cvt) - PITA - crazy non-movable/non-deletable, pita to use; still untested
+
+commit eb3f343d08d007b1506aa2888a36bbc30dbcd42a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Feb 9 23:37:34 2023 -0500
+
+    cosmetic; and progress on Characters_TextConvert (still alot todo before testable)
+
+commit 3acc53415df589d89ab7ef90587b424494270cdf
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Feb 9 23:44:59 2023 -0500
+
+    fixed recent TextConverter progres code - pickier clang compiler
+
+commit 7c944d7a726b0abe05fb6f2e7a844c30b79e1aad
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Feb 9 23:47:06 2023 -0500
+
+    cosmetic
+
+commit f5be86da953de65256e15bf38d27cc6cbcd8e4ed
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Fri Feb 10 08:37:23 2023 -0500
+
+    qCompilerAndStdLib_qualified_enum_using_Buggy workaround
+
+commit ec3bb6811f098c388f6f4b10b07477d63e9f31ed
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Feb 10 09:09:13 2023 -0500
+
+    Characters/TextConvert progress
+
+commit af54f1a09ce464fda61cdbdfd3d1080862f9c454
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Feb 10 09:28:32 2023 -0500
+
+    Comments
+
+commit 3c8406bcb46bb945339d12381c0a429f53c8d458
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Feb 10 11:53:50 2023 -0500
+
+    enhance Characters/CodeCvt.h
+
+commit ddabaa41bda6316093fe939bf04c426e6add5b21
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Feb 10 17:31:07 2023 -0500
+
+    Added std::byte operator_b (unsigned long long b) to namespace Memory; and used it in a bunch of places
+
+commit e0764994bb72845c27483a586c9ff1fd1f6d2339
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Feb 10 17:31:22 2023 -0500
+
+    cosmetic
+
+commit 998bd2dcc7febfbb8da1e5bbc1b2b7adfb063a4d
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Feb 10 20:08:38 2023 -0500
+
+    docs, and renamed CodeCvt<CHAR_T>::in/out to Bytes2Characters/Characters2Bytes
+
+commit 7519fe1b5528380abc0b87f677fbea26325cad10
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Feb 10 20:09:04 2023 -0500
+
+    first draft UTFConverter::AsCodeCvt () support
+
+commit ba09635ec2a375ee670c0a149949e878c5357619
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Feb 10 20:35:10 2023 -0500
+
+    workaround small msvc2k19 bug - not worht define (sizeof fails on static constexpr array)
+
+commit dbe22e66d358cfb9ee2a07ba53683d5208c65314
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Feb 10 20:35:39 2023 -0500
+
+    did and used span overload for Memory::MemCmp
+
+commit a2a56765d2d1ae674468efc924d898518a4f60dc
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Feb 11 08:20:16 2023 -0500
+
+    refactored UTFConverter handling of mbstate_t - much simpler now, clearer, and seems to work better
+
+commit d8e027312ac25d38130d37f12c2e70e181621dee
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Feb 11 08:21:18 2023 -0500
+
+    docs on CodeCvt
+
+commit 6f9292d1c1b8ac91a3cbb1a3c8b2dff30ce64ba5
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Feb 11 09:08:27 2023 -0500
+
+    tweak to CodeCVT API, and imporved impl in UTFConverter::AsCodeCVT (handle target buffer size issue)
+
+commit 0501841f5ab185803696640fb6517b359ab41066
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Sat Feb 11 11:25:30 2023 -0500
+
+    fixed bug/recent regrssion
+
+commit 635f662d89f4a7565da7bf03f9962b625618aaa5
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Feb 11 11:11:35 2023 -0500
+
+    docs
+
+commit 943d7a0e8c2d1da3c66e32a0c845344fc0b33c73
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Feb 11 11:18:53 2023 -0500
+
+    revised API (still NYI) for ConstructCodeCvtToUnicode and ConstructCodeCvtUnicodeToBytes
+
+commit d885bde3a4fe96d838918f4d5b6a56647cf23bcf
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Feb 11 11:26:19 2023 -0500
+
+    silence warnings
+
+commit 62f3cb9c5c71519449d5920f7265cb1130355741
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Feb 11 13:58:25 2023 -0500
+
+    Loosen CodeCvt constraint so can be used on Character_UNICODECanAlwaysConvertTo
+
+commit d5ebd43141ae9169f6e9699dd4e9aeafd194c8fb
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Feb 11 13:58:49 2023 -0500
+
+    cosmetic
+
+commit d39f87c904177ab93a6114bbfc6a07731dda561f
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Feb 11 13:59:11 2023 -0500
+
+    restruct ConstructCodeCvtUnicodeToBytes to Character_UNICODECanAlwaysConvertTo
+
+commit ca181aeee84c41a0c03b2c11199debcf7d4bf345
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Feb 11 14:00:29 2023 -0500
+
+    TextWriter - deprecated InternallySynchronized overloads of new (use InternallySynchronizedOutputStream explicitly); and draft of support for creating TextWriter from CodeCvt and UnSeekable_UTFConverter_Rep_
+
+commit a1993d6eb74fbbfa50681c8ebaec81ec732e39cc
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Feb 11 14:09:31 2023 -0500
+
+    better enum names on recent code introduction
+
+commit c4930bc0eebb326d94cf04ad9676c15a153ef34a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Feb 11 14:18:23 2023 -0500
+
+    stubbed out (fake) implemantions of ConstructCodeCvtToUnicode and ConstructCodeCvtUnicodeToBytes:
+
+commit df6d96b32291187710bce804390d9850b4440b16
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Feb 11 14:18:53 2023 -0500
+
+    cosmetic
+
+commit ae225e915b0745b59a3374c2b7928bdb750d5d16
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Feb 11 14:39:09 2023 -0500
+
+    A bit more progress on TextCovnert code - renamed ConstructCodeCvt, added eDefault o UnicodeExternalEncodings, and partial implemenation
+
+commit e5787eb53429ddabbbf7001331e4641da8d50886
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Feb 11 14:55:27 2023 -0500
+
+    fixed typo
+
+commit 83ed004128500910af166db764a9357de207a5e6
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Feb 11 15:21:42 2023 -0500
+
+    new Characters::ByteOrderMark flag; Major changes (depecation old api) for TextWriter - now pass in UnicodeExternalEncodings and ByteOrderMark or CodeCvt
+
+commit e9326929002fa3251dcc21dbfd7081f6ac5cab18
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Feb 11 15:34:59 2023 -0500
+
+    silence warning
+
+commit de72f5f7e8f34a82bc49cf26e8b88969b241786c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Feb 11 15:35:24 2023 -0500
+
+    react to recent deprecations
+
+commit 2210e6154043e3311a9ca5a8e1ce32fa9f6b2ba6
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Feb 11 15:37:05 2023 -0500
+
+    changed TextWriter to defalt to NOT including BOM (just seemed most uses dont include it
+
+commit 38eded06afe39cf23a04ecf587953aeb8ec0974b
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Feb 11 16:56:13 2023 -0500
+
+    simplifications to Characters::ConstructCodeCvt API
+
+commit 770e142059c96d74521302a96c8bfeda94a3cf81
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Feb 11 18:28:39 2023 -0500
+
+    try doing ConstructCodeCvt (UnicodeExternalEncodings having its own rep - not from UTFConverter code
+
+commit 6825ed0a0793d6f3ac8df1670ddfeac19b26e633
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Feb 11 18:38:44 2023 -0500
+
+    lose UTFConverter::AsCodeCvt () support
+
+commit 086b2156879725d477a1cdaf64d3fd5ab52855d3
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Feb 11 20:00:16 2023 -0500
+
+    cleanup CodeCvt code
+
+commit 59093d190f7bd604fcc132d8343b8d114afbdf41
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Feb 11 20:01:20 2023 -0500
+
+    dont need TestConvert.cpp
+
+commit 61d175c4de43f6c7bacfb81125821d77b4740a13
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Feb 11 20:37:07 2023 -0500
+
+    more refactoring of CodeCvt logic - moved stome stuff from TextConvert to CodeCvt template - more of a swiss-army-knife
+
+commit 2edc72c62c54bc7c12103a12a5cc957344178b11
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Feb 11 20:40:20 2023 -0500
+
+    generalized CodeCvt<CHAR_T>::UTFConvertRep_ (thogh not sure for any reason yet)
+
+commit cd2055a95b48870dabf0fe53d331ef89ed5cc693
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Feb 11 21:24:58 2023 -0500
+
+     CodeCvt<CHAR_T>::UTFConvertRep_  support for 'based on' CodeCvt combos
+
+commit 95087ab161c0e26acbe426e989df6e52287e700f
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Feb 11 21:37:40 2023 -0500
+
+    Address a few compiler specific errors cauight by gcc/clang
+
+commit 37f9586005ed52d7d77e70546c6eeb5b591a851e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Feb 11 21:58:11 2023 -0500
+
+     CodeCvt (const locale& = locale{}) loses requires - so no more need for (most) ConstructCodeCvt - just does based on stuff automatically if needed (untesetd)
+
+commit 5e6eda713f0601b36d43b5fbeeeefa7880acc0e9
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Feb 12 10:07:33 2023 -0500
+
+    Added draft SpanOfT concept to Memory
+
+commit aa5337e802a7e8f6ba46cffeb3b9942015051173
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Feb 12 10:08:21 2023 -0500
+
+    added span CTOR overload to StackBuffer and InlineBuffer
+
+commit a2cd45f0d05ee6bb3aa4c499e4ff0d7469d8f68d
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Feb 12 10:09:32 2023 -0500
+
+    Support CodeCvt<CHAR_T>::UTFConvertSwappedRep_ and lose remnants of ConstructCodeCvt (replace with docs on ReadByteOrderMark
+
+commit 01dbb5de4d7aa6a583406cdf672de2a94fa00538
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Feb 12 10:34:23 2023 -0500
+
+    further imporve concept SpanOfT adding static_asserts for docs and checking
+
+commit 6c16b090a2f9dfebeeae4c87f31e74b4f06d2e6c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Feb 12 11:55:00 2023 -0500
+
+    fixed missing template prefix
+
+commit 56c16a6e076e7e88f20ed4cd2845d9ac30d3fe45
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Sun Feb 12 12:05:43 2023 -0500
+
+    resolve g++ syntax error
+
+commit 0afdfe2d084a625f88f170a9df7e9dec0fb72b4c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Feb 12 10:34:42 2023 -0500
+
+    cosmetic
+
+commit 2aad207895c3f548c18454e642bf034ac95566f5
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Feb 12 12:07:28 2023 -0500
+
+    renamed SpanOfT to IsSpanOfT, and added IsSpanT, and improved them all and documented better (works across extent)
+
+commit 03790695c359d540931931e9af89de355bb4b250
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Feb 12 12:09:07 2023 -0500
+
+    experimental use of new IsSpanT/IsSpanT concepts in String CTOR
+
+commit fcd0d52ceb18f991f4f0bce5639db1aedbf3168b
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Sun Feb 12 15:26:36 2023 -0500
+
+    missing byteswap workaround
+
+commit 35476e7a4f479c52a863b27686823d214d4c3427
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Sun Feb 12 15:33:24 2023 -0500
+
+    progress improving backward compat impl of byteswap
+
+commit f450a4010ba8e88c89f71e80bd90c3e9621ab0a0
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Sun Feb 12 15:33:35 2023 -0500
+
+    workspace
+
+commit bc2ffbdcfde628a999ccc9f14bfad9652d262f26
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Feb 12 17:40:57 2023 -0500
+
+    provide workaround for missing bit_cast and improved workaround for miussing byte_swap
+
+commit 2d1d9065378a1c613452f44c6eb6398c735dee10
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Feb 12 17:52:26 2023 -0500
+
+    cosmetic; ad fixed depreacted TextWriter CTOR usage
+
+commit 73b118abdd5be3b66de216893bdfa02ad30193c7
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Feb 12 19:24:24 2023 -0500
+
+    use memory::bit_cast for macos/old clang compat
+
+commit 6ac859507004a22244657b642f966d853c747f0b
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Feb 12 20:31:57 2023 -0500
+
+    cleanup recent compiler bug workarounds
+
+commit 16b4fb3927595ecd2fbb668d5d9823da34a780eb
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Feb 13 11:57:45 2023 -0500
+
+    cosmetic
+
+commit 7a8b0a8c90ef2f2eda02afcd0901111419892d87
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Feb 13 11:58:34 2023 -0500
+
+    refactored CodeCvt_WrapStdCodeCvt_ support in CodeCvt - now direclty accessible through CTOR for any subclass/variant of std::codecvt (and about to change default CTORS)
+
+commit 9fd369cc98d007ac4d1c5868adb0bd5e68dfe252
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Feb 13 14:06:18 2023 -0500
+
+    minor tweaks to bit_cast and byteswap BWA implementations
+
+commit 4df21a3f48d1b8f0187e55e7f3d3556b26f01a29
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Feb 13 14:15:08 2023 -0500
+
+    fixed one CTOR bug with CodeCvt stuff and comments
+
+commit cb48d27558c87d70c6d22a45254d9ad2a10c4649
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Feb 13 14:19:28 2023 -0500
+
+    changed default CTOR implementation of CodeCvt to be faster, and more flexible (supports more target code-points)
+
+commit 86d0a12642bd66c067165d0b2abead72394fb481
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Feb 13 14:29:17 2023 -0500
+
+    comsetic
+
+commit 9e20ad834c8c0edca7db2836839dfd39d68c6fc9
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Feb 13 14:30:10 2023 -0500
+
+    lose MBState type in CodeCgvt - just use std::mbstate_t directly
+
+commit 4320e23ff3644fc1f0057694533339e51f0f732f
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Feb 13 14:33:50 2023 -0500
+
+    silence deprecation warnings
+
+commit 2ae408112454f859086942764178a6a845803f08
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Mon Feb 13 14:46:23 2023 -0500
+
+    docs
+
+commit 35fd56911cb78e0dcc65e67fd24fa26644125e3e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Feb 13 14:47:22 2023 -0500
+
+    cosmetic
+
+commit f4f1223c2984f3a602985417835e92dd630af7e3
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Feb 13 23:03:07 2023 -0500
+
+    fixed typo/infinite recurse
+
+commit 2a2a1d04b44ff2caf5de56a969b9b5715d429779
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Feb 14 08:22:23 2023 -0500
+
+    cleanup codecvt use (for locale) in String class (and docuemnt why still using)
+
+commit e77df1eb378bb4b6ade05ac051b83884b4ac4e7f
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Feb 14 08:23:37 2023 -0500
+
+    deprecate a few TextReader overloads (InternallySynchronizedInputOutputStream directly)
+
+commit 7cfa5bc03548443c768a950b1d12ffebd2cb845b
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Feb 14 08:47:54 2023 -0500
+
+    lose qMaintainingMBShiftStateNotWorking_ in Streams/TextReader.cpp cuz probably losing mbstate in CodeCvt
+
+commit 8923cde12348ef5ddf90bc1d0b76e1aa986ac690
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Feb 18 02:36:18 2023 -0500
+
+    added overload of UTFConverter::ComputeTargetBufferSize () taking just size_t - computing max for any input; and used in new CodeCvt<CHAR_T>::GetMinBytesPerCharacter ()/GetMaxBytesPerCharacter
+
+commit 5538c4581da8b515d2fe71835aff51c19dbb2341
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Feb 18 03:53:18 2023 -0500
+
+    cosmetic
+
+commit c60ecdc8e8a213f237e40f5158f41418bd081331
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Feb 18 03:53:46 2023 -0500
+
+    comments/requires
+
+commit 0d226c2ceee69c61f4f26af27153b7a5750a4474
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Feb 18 04:46:25 2023 -0500
+
+    lose mbstate_t support from UTFConverter and CodeCvt classes
+
+commit 8a47ed1fb765c1fda1b9e87a60c528a792c81dcc
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Feb 18 05:15:55 2023 -0500
+
+    minor cleanup
+
+commit 5ecbbb64d9c79d1bf1c3a0c4f28abed22ec8da69
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Feb 18 10:47:06 2023 -0500
+
+    Fixed recent regression in Date::ToJulianRep () - when month wraps - need to use integer arithmatic - regression from when I converted to using new chron date code
+
+commit 67bafc7b9456aee215240d80f4676803832ef6a1
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Feb 18 11:04:50 2023 -0500
+
+    regression test for recent date conversion fix
+
+commit 329e8ffd50548829367f7f139a02cdc430f043ce
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Feb 18 12:27:47 2023 -0500
+
+    for macos builds, for some reason, now need brew install pkg-config
+
+commit 326e2f3b8bafbc45b12ecd461bac20a6fa7fa295
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Feb 18 18:13:09 2023 -0500
+
+    big changes to Date code - https://stroika.atlassian.net/browse/STK-668 - support full julian date range for Date (4000 BC to distant futu
+    re - with caveats) - reanmed JulianRepType to JulianRepType
+
+commit a201f2927ebd5310e79dfe576142e747b3a06709
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Feb 19 10:08:11 2023 -0500
+
+    Cosmetic
+
+commit cc869e0de36e51a6d94d035d5ab0ea7d7145d16a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Feb 19 11:56:45 2023 -0500
+
+    more simplifications of CodeCvt class
+
+commit 2a1b0efc894de38403504c325ee4bb755a261484
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Feb 19 12:32:44 2023 -0500
+
+    fixed typo
+
+commit d8ee02af1eb3caee51a936de484a2b22839ffc9b
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Feb 19 12:33:07 2023 -0500
+
+    simplify earlier CodeCvt changes using std::variant
+
+commit 852e9822c70b89484d675cac66a9234cd002d55f
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Feb 19 12:55:03 2023 -0500
+
+    CodeCvt cleanup - now just takes span from not span* from, since assert all consumed
+
+commit 156369a587c037cc959fd52a115ca53973d4a81d
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Feb 19 13:35:06 2023 -0500
+
+    more cleanups to CodeCvt code - returning span instead of updating to argument, and no more result - just throw on failure
+
+commit 2e8d60766fe0e22193c96fcf43c0f9de5b9fe599
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Feb 19 14:02:18 2023 -0500
+
+    more cleanups to CodeCvt - incoimpmlete
+
+commit 9435222b3f88ea147a53b9b4645a78e25e3e1789
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Feb 19 16:18:15 2023 -0500
+
+    forgotten checkin
+
+commit 1ba65cca7c2799f05f81e81da7a82d0f5c8f93f2
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Feb 19 16:34:17 2023 -0500
+
+    comments/cleanup CodeCvt
+
+commit 22e20db20f195c95741e3a6f3d64cdc6a2a1bb85
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Feb 19 17:41:43 2023 -0500
+
+    cosmetic
+
+commit 7731277e2ad1d150a43cc9dddbbd5760eadddda1
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Feb 19 17:42:59 2023 -0500
+
+    fixed typo
+
+commit 7c0a272123df8c2e2a8ef9dcd6115ed0f2c4493a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Feb 19 20:42:08 2023 -0500
+
+    more CodeCvt cleanups - repos return span instead of pointer to span arg
+
+commit 549445752839f55de82d91bbda641dc32e3b13ab
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Feb 19 20:47:55 2023 -0500
+
+    fixed typos
+
+commit 1d412321bf7fcc52ede74a4ac3134dcc9ba3cbad
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Feb 19 23:29:14 2023 -0500
+
+    renamed regtest to from Characters::Strings to just Characters; started adding CodeCVT tests there (but incomplete - not working)
+
+commit f17a6da04aca500547aeeae0cf90a048266460c2
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Feb 19 23:31:25 2023 -0500
+
+    improved regtests
+
+commit 90d398ff26f9bfee02d383151be6e7a67b2dc2dd
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Feb 20 08:31:17 2023 -0500
+
+    fixed CodeCvt regtest and code
+
+commit 77cba12c77cf4a90a50bb506c8cce3fe35df6f7f
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Feb 20 09:24:58 2023 -0500
+
+    cosmetic
+
+commit 98e6f4d2977c6f00381ec96888f0be2894e61455
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Feb 20 09:59:21 2023 -0500
+
+    new CodeCvt mkFromStdCodeCvt to workaround constructor issue with CodeCvt, and test case
+
+commit 56d688b4415c72114ed7a1f04ac5199bcf340368
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Feb 20 10:22:43 2023 -0500
+
+    more CodeCvt tweaks and regtests
+
+commit 6aad5edc0455873bb4e67d1926c69d73547a2172
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Feb 20 10:47:50 2023 -0500
+
+    qCompilerAndStdLib_stdlib_codecvt_byname_char8_Buggy and missing locale fixes for recent checkins
+
+commit 591e0b738e0bc3913000e1f5b14e139409da443c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Feb 20 11:21:21 2023 -0500
+
+    cosmetic
+
+commit fcb6bbe68e425680448e1b4388edc7cfb3d044ec
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Mon Feb 20 11:29:52 2023 -0500
+
+    silence warnings
+
+commit 08ec0b3e52842137e52038f92dacd5e9d74bb21d
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Mon Feb 20 11:40:03 2023 -0500
+
+    qCompilerAndStdLib_stdlib_codecvt_byname_char8_Buggy seems buggy for lib std c++ too
+
+commit d5589806e51d9595b5a495bc59509db58dc2e9d1
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Mar 11 13:49:20 2023 -0500
+
+    cosmetic
+
+commit c90db1cb9f7320ca134b00a03af94cb07c9b07cc
+Merge: d5589806e5 1ebea54c52
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Apr 15 08:25:22 2023 -0400
+
+    Merge branch 'v2.1-Release' into v3-Dev
+
+commit fa4bdc68ce64e1fd8025ee0b82b63ac0447a8788
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Apr 15 08:53:50 2023 -0400
+
+    fixed merge issues
+
+commit 085856ac50f1b660041ead95e82a8c19dd5f0908
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Apr 15 09:03:57 2023 -0400
+
+    make format-code
+
+commit 7de969a9a46894c7926a00d95ea821054282a3ae
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Apr 15 15:28:51 2023 -0400
+
+    cosmetic and docs
+
+commit ad9b06996829057c5de473c673c625ecc2999a0a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Apr 16 11:22:13 2023 -0400
+
+    start at supporting Hints objects in Container factories
+
+commit 0a6660d2713a70e26182b385f4def922c139d87d
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Apr 16 12:01:37 2023 -0400
+
+    new Set_Array implemetnation
+
+commit d46ffce8f5ccaa7a99ee306964e0951590af3ff6
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Apr 16 13:09:31 2023 -0400
+
+    SetFactory now uses Set_Array by default
+
+commit b044a0245ec651a94d14dfd7dded01111c255ab1
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Apr 16 15:10:00 2023 -0400
+
+    use new Array push_back
+
+commit 3d2814f748d06e071ec52fe66c5b9f238fca4271
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Apr 16 16:40:30 2023 -0400
+
+    Set_Array capacity overrides
+
+commit fe6958c520742a1ed06bcfa830150ebf61253626
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Apr 16 19:46:14 2023 -0400
+
+    fixed bug with Containers::Stack (serious/rediculous); and improved regtests
+
+commit 9f2d5a3261a829076a7c98dc6ee9b63a2194c914
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Apr 17 08:34:41 2023 -0400
+
+    simpler impl of container factories using std::function - did assoc and bijection so far
+
+commit 83b53a84c83b631b714d6a8756843a991c4e61a8
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Apr 17 09:07:40 2023 -0400
+
+    Collection factory cleanup, and enabled CollectionFactory use of Collection_stdmultiset
+
+commit 06020ca61bdc701ec930483976dea79cb106b6f8
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Apr 17 10:10:01 2023 -0400
+
+    more fiddling with how container factories work (experimemting with assocation)
+
+commit 4a8586f226307d61c6311585ebe5990cd4640942
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Apr 17 10:45:22 2023 -0400
+
+    maybe good cleanup of Association_Factory - review and test
+
+commit f04837893cef820ebb83a86381390643b9beb5f0
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Apr 17 12:22:17 2023 -0400
+
+    hopefully final design for container factories - implemented for association - and generates much less code; not yet tested on other containers
+
+commit e8f2222e9b8c9e40bc1e997847c5060d9620ee6e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Apr 17 12:23:14 2023 -0400
+
+    docs
+
+commit 46ae0c41b2cecb02bb7e06c722922a29d9643513
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Apr 17 12:31:04 2023 -0400
+
+    minor tweaks to new Association_Factory code
+
+commit 4f4b73cb082cf6856412c315c1a230a41eb46473
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Apr 17 13:43:32 2023 -0400
+
+    Another tweak to Association_Factory so it works when called before main (magic static inline didn't work - not sure why)
+
+commit 6da408e06d883ddb02f397ffe2e9d44efd95f393
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Apr 18 10:25:44 2023 -0400
+
+    minor cleanups to Association_Factory
+
+commit 8417dce6e30d2943f10c88ef99669ca518bfba39
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Apr 18 10:26:13 2023 -0400
+
+    try redo of BijectionFactory using new pattern
+
+commit 0a4cb471f4ae790cea943021663239b0055e4b21
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Tue Apr 18 11:03:53 2023 -0400
+
+    cosmetic
+
+commit 1b73cdd61ad5eada7653535fa3afd9f6a8a797b8
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Apr 18 20:49:28 2023 -0400
+
+    spelling tweak
+
+commit c83ef25f6181021b370f718b39b5b9edb6c474b0
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Apr 18 20:50:01 2023 -0400
+
+    spelling tweak
+
+commit 2636c0097c6a8a9f87703011b6f0907b104f136b
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Apr 18 20:50:44 2023 -0400
+
+    new factory pattern on collection/densedatahyperrectangle
+
+commit 0490b1ec344b8792e8ce2593dd781f874b4eea6a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Apr 19 07:26:28 2023 -0400
+
+    new factory pattern up to keyedcollection_Factory
+
+commit 746b981cd9a52d70a2e697ca7d454e17f732393f
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Apr 19 07:30:18 2023 -0400
+
+    new factory pattern up to keyedcollection_Factory
+
+commit 38f35022f374367d2ae3bf1f9593d50c34e092ec
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Apr 19 07:59:28 2023 -0400
+
+    new factory pattern up to Mapping_Factory
+
+commit 3797fd2faf5c89d439588da09a9ad51e14a424aa
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Apr 19 08:31:37 2023 -0400
+
+    removed erroneously unneeded comments about          *  \note   https://stroika.atlassian.net/browse/STK-933
+
+commit dd06dc1c76347acd837ea02a5c9884462ade65cd
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Apr 19 10:21:16 2023 -0400
+
+    updated queue factory to new style
+
+commit 53918e2296baaab71e510dfb5d20fd5f6919e6bc
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Apr 19 15:11:59 2023 -0400
+
+    Multiset_Factory and Sequence_Factory updates to lastest
+
+commit 3fbc48d5ca3ee6992514b644f6e9c6f7115e9623
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Apr 19 15:26:09 2023 -0400
+
+    Update Set_Factory to use latest pattern
+
+commit eacc076e3d4980e3a809601f286e053894984d81
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Apr 19 22:02:17 2023 -0400
+
+    SortedAssociation_Factory and SortedCollection_Factory upgrade
+
+commit b5f004300f29c6c82a2cd460c2f731c9186353d1
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Apr 20 04:08:18 2023 -0400
+
+    cosmetic/comments; plus SortedKeyedCollection_Factory factory update
+
+commit 4c3b150e78a526f93d06412618cbcda8a9183bd8
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Apr 20 05:03:47 2023 -0400
+
+    finished (draft) of container factory cleanups
+
+commit aac13363c2993ebecf2dac3b03240273737bd6fa
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Apr 20 09:08:52 2023 -0400
+
+    docs about container factories
+
+commit c8a45a173154d2b8b6ef16006484475e761c067c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Apr 20 09:11:41 2023 -0400
+
+    docs typo fixed
+
+commit b6e96f8037ce92d7ac4901cc979afaa9f46b1615
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Apr 20 10:15:29 2023 -0400
+
+    new KeyedCollection_Array and switched to that as default in factory if no operator< available
+
+commit 8bc93cd2229eb50bf413881d6cb174efb21f1ebf
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Apr 20 10:19:39 2023 -0400
+
+    fixed typo
+
+commit 2e5fdce3deff22170a333cf73be0f7953509d919
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Apr 20 11:51:28 2023 -0400
+
+    fixed missing checkins
+
+commit 9ae5e5bcf793cb2d1ef04537fbbbfe7d07bf126b
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Apr 20 16:38:29 2023 -0400
+
+    lose one uneeded capture; and clang diagnostic ignored nused-lambda-captur in one spot
+
+commit b09842a6ba5a1814395190229ce8e9e2339b4017
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Apr 20 16:39:39 2023 -0400
+
+    lose unneeded capture
+
+commit dcc0079f99ff9e011679c94d646a6d5449257c4f
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Apr 21 08:15:12 2023 -0400
+
+    silence some clang warnings
+
+commit 8bac60bd775825efbcfa53143f994f229a8157d7
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Apr 21 09:01:03 2023 -0400
+
+    (not backward compatible but to internal routine) change to DataStructure::Array - changed its Find() method to return optional, and more closely mimic LinkedList (so cloning code with if() not a problem)
+
+commit 356fd0387037a0b82fae30dd1181ee6a993fd929
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Apr 22 08:21:14 2023 -0400
+
+    fix unused warning
+
+commit a2a1719119a0c71ca90e503e8feee71359be7ae0
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Apr 23 12:37:40 2023 -0400
+
+    lose uneeded #include
+
+commit a73daaec7b03e18d41e778e8c2007c3f2a9563c6
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Apr 23 12:38:01 2023 -0400
+
+    Draft support for Concrete::KeyedCollection_stdhashset including regtests passing
+
+commit 749b513681093e7173521bc8b0cf977fa0e87550
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Apr 23 12:38:45 2023 -0400
+
+    Draft support for Concrete::KeyedCollection_stdhashset including regtests passing
+
+commit 1e6852729ac4f7ea7a9c17cb695f1df2d206a5ab
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Apr 23 12:49:19 2023 -0400
+
+    cleanup - reduce dependnecy on Mapping_stdhashmap_IsDefaultConstructible and replace with using is_default_constructible_v
+
+commit 92c7f3c5995611971ea33b502739e804fccf06a0
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Apr 23 12:58:05 2023 -0400
+
+    more experiment losing Mapping_stdhashmap_IsDefaultConstructible
+
+commit 75ed8f114460cfedccc07f3f43fd7f069032f773
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Apr 23 13:09:31 2023 -0400
+
+    lose Mapping_stdhashmap_IsDefaultConstructible and use is_default_constructible_v instead
+
+commit c5591811dcc006358fa72d24e767c8eb86cd83df
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Apr 23 15:16:20 2023 -0400
+
+    more work on enabling KeyedCollection_stdhashset in factory
+
+commit d51d72e9d2ac8858541b1151394286d15a272c8c
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Sun Apr 23 17:21:20 2023 -0400
+
+    silence warning
+
+commit 0476cef721efcf83ea864b0ec1476c4a5317e97b
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Apr 23 17:24:35 2023 -0400
+
+    Silence warning
+
+commit 1a31d20c89025eee792a01acb5e0931f37da3747
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Sun Apr 23 17:51:39 2023 -0400
+
+    worked around new qCompilerAndStdLib_requires_breaks_soemtimes_but_static_assert_ok_Buggy issue with clang
+
+commit 9df89b9a9bd3d9fd44428ecde4e6bf082a643490
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Apr 23 17:56:00 2023 -0400
+
+    cosmetic
+
+commit 6e6dcf768312c29a2a3ef1f68ca2f2b9c6149887
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Apr 23 18:05:40 2023 -0400
+
+    testong chagne to KeyedColelction traits
+
+commit 08184b4eb45b6830b96913e9b75d8aa0533125d3
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Sun Apr 23 21:34:35 2023 -0400
+
+    Another qCompilerAndStdLib_requires_breaks_soemtimes_but_static_assert_ok_Buggy workaround
+
+commit 8d32e55b166892c9372fd70979c325f013f6b97a
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Sun Apr 23 21:38:57 2023 -0400
+
+    Another qCompilerAndStdLib_spanOfContainer_Buggy BWA
+
+commit d2043ce3ad62e8de86c3445f4275ff61ff28c692
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Apr 24 10:03:50 2023 -0400
+
+    (not backward compatible in minor ways) - KEY_EXTRACTOR no longer template parameter to CTOR or factory for KeyedCollection and its subclasses since part of the traits(was just default part of traits)
+
+commit 78fde768a1e9d4d25ca2a5fdf03cc0ffc4a8223a
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Mon Apr 24 10:41:13 2023 -0400
+
+    fixed typo in recent checkins
+
+commit 84c7114ec10b61be88e5326e60b515f1d3de98f9
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Apr 24 13:22:41 2023 -0400
+
+    experiment using KeyedCollection_ExtractorCanBeDefaulted requires
+
+commit ccf6167cae4d4f23c505ecd3c360f2efd74d2647
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Apr 25 07:12:32 2023 -0400
+
+    loose support for vs2k19
+
+commit 21eb91238dd4e6c94fc2be2e34ef6fa5949190be
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Apr 25 08:58:49 2023 -0400
+
+    lose compiler support for vs2k19, and bug defines that were specific to it
+
+commit e6ac05af5188cf44b8fa41a9cb7aca98625ebc63
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Apr 25 09:10:27 2023 -0400
+
+    tweaks to github action files - better docs - and better choice for windows builds
+
+commit 79308c3c3a1d3626906b33b52bdedf665663bdd6
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Apr 25 09:38:32 2023 -0400
+
+    qCompilerAndStdLib_inline_static_align_Buggy still broken for clang
+
+commit b94525d52e6aad7fb877b6138643625d6130fa91
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Sat Apr 29 10:21:23 2023 -0400
+
+    start to lose qCompilerAndStdLib_inline_static_align_Buggy support
+
+commit 86590a87c7e1c56df11e4b5decc3003ae50c7a09
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Apr 29 10:31:25 2023 -0400
+
+    qCompilerAndStdLib_inline_static_align_Buggy no longer needed - my bad
+
+commit 547d9d9849b10bbd086237e72fe549d8af09b03e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Apr 29 10:43:40 2023 -0400
+
+    cosmetic
+
+commit 69dfbc48680a191fc1f88779845ca1978ef5f40d
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Apr 29 11:18:30 2023 -0400
+
+    no more vissutdio vs2k19 support
+
+commit 07dd45bc7b79fec8ed848c82474793f029bc379f
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Apr 29 11:47:46 2023 -0400
+
+    keyeedcollection docs/samples
+
+commit 9ea3209a34083509f25322d0999a80fb99b2051b
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Apr 29 11:59:54 2023 -0400
+
+    github actions workaround issue with msys docker containers
+
+commit f9d078f8db9f5a89373a736b3735041a9ca91a53
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Apr 29 14:20:20 2023 -0400
+
+    replace use of RunArgumentsWithCommonBuildVars with PATCH_PATH_FOR_TOOLPATH_ADDITION_IF_NEEDED since SIMPLER, former not working under DOCKER/MSYS anymore - probably related to https://stroika.atlassian.net/browse/STK-941 WORKAROUND NOT WORKING
+
+commit a5c1691b44c289a4ba35f9fd0e48f9d9da699a7f
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Apr 29 18:11:32 2023 -0400
+
+    REVERTED TO OLDER MSYS DUE TO https://stroika.atlassian.net/browse/STK-979 in docker container for msys
+
+commit d261306102358ba9d9c65c57d9cdf9ec7d5e3ad9
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Apr 29 22:05:33 2023 -0400
+
+    Revert "github actions workaround issue with msys docker containers"
+    
+    This reverts commit 9ea3209a34083509f25322d0999a80fb99b2051b.
+
+commit 00caa8313eadef6c8b6cadcd37af39385ed49363
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Apr 30 09:20:55 2023 -0400
+
+    Revert "Revert "github actions workaround issue with msys docker containers""
+    
+    This reverts commit d261306102358ba9d9c65c57d9cdf9ec7d5e3ad9.
+
+commit 91d8ab7aecc4d46d10639e61d4d5b840cc26dcd9
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Apr 30 17:52:07 2023 -0400
+
+    refactored windows docker container building; and added (untested) github action to build the containers
+
+commit 6fa3de6e691254f4a43207559531c5df1fca907d
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Apr 30 17:57:02 2023 -0400
+
+    tweak build-v3-Docker-Containers.yml
+
+commit d9ff1e2d6641128caeefe11afaa74937174764a1
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Apr 30 17:59:03 2023 -0400
+
+    tweak build-v3-Docker-Containers.yml
+
+commit 557565acf6737becb67f761c8d6367a7c9ebdcc7
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Apr 30 20:23:24 2023 -0400
+
+    fixed bash_profile docker build windows
+
+commit 658187139142eec43a79cd27d6b00469a444dd8a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Apr 30 20:25:23 2023 -0400
+
+    github action cleanups
+
+commit a4ce54d52eadc5331393ec63d58f12c0e54bc27d
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Apr 30 20:31:33 2023 -0400
+
+    github action cleanups
+
+commit 119021e8dfc29292b6569df2e6879cf94259a58e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Apr 30 20:46:32 2023 -0400
+
+    more tweaks to docker container builds
+
+commit a9de2b9dc3fcda50131ea9d51d0f07eabf54a472
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Apr 30 21:48:33 2023 -0400
+
+    github docker build actions
+
+commit a4660fd2caf97dd43f3fd8aa7c86dce7332aadb7
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Apr 30 22:46:48 2023 -0400
+
+    github docker build action
+
+commit 95ef6f2b5484fdde8737e9d8ca2ba619cf0536ab
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon May 1 10:21:22 2023 -0400
+
+    more stuff to .github/workflows/build-v3-Docker-Containers.yml to debug docker build
+
+commit 4e87a0860a58f7ba67362193a247b46347e15d73
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon May 1 10:57:08 2023 -0400
+
+    more detbugging github action build docker containers
+
+commit 0207af552b8a4a86a38eee3ecb01591da10bd42c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun May 7 11:05:29 2023 -0400
+
+    bug defines qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy  and qCompilerAndStdLib_requires_breaks_soemtimes_but_static_assert_ok_Buggy for vs2k building inside docker only???
+
+commit 31d0baa3ff8fa677bf6a18670735a73f86f478ac
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun May 7 11:21:27 2023 -0400
+
+    debug build windows containers
+
+commit 6cfe434595598d1c140084f561e309fdc28cfa25
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun May 7 11:26:34 2023 -0400
+
+    experimetnal change for DetectHostOSScript
+
+commit 76826097ffbe36347c7fbe8ad65cd3971e5cb3eb
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun May 7 11:33:46 2023 -0400
+
+    fixed typo in test
+
+commit a3ff4de656de966a860a5cd57b0bc4d29b5dfcc5
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun May 7 11:37:17 2023 -0400
+
+    fixed typo in test
+
+commit 7f91a176af214f78b72a6ee833b9498d44bc0de3
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun May 7 11:56:01 2023 -0400
+
+    maybe support pushing containers
+
+commit 8407c010bc5fc01f0e68c59ac8cf4ce14ccc6c27
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun May 7 14:41:06 2023 -0400
+
+    more attempts to debug build windows docker images
+
+commit 8df58b464ab58da82953f9f615d14ec060d86327
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun May 7 17:53:36 2023 -0400
+
+    test possible fix to docker build for windows github action
+
+commit 0cac369183696bcb3949e3bc0e2b1a4c77290f1b
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun May 7 19:50:37 2023 -0400
+
+    debug issue running windows docker make
+
+commit 26703c08046e4b0e39049e86102f33d4cf23ed9f
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun May 7 19:53:17 2023 -0400
+
+    debug issue running windows docker make
+
+commit 0c0c633c10718ecff6f01ac0c807da7aca604e08
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun May 7 19:59:56 2023 -0400
+
+    tweak github docker build github action file
+
+commit 610dbbebc361858f9fe1f520c169bf9581fd283e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun May 7 20:02:27 2023 -0400
+
+    more experiemnt with github
+
+commit be990194fe2ba96bbbda1d762b6ef31345db3809
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun May 7 20:04:59 2023 -0400
+
+    more experiemnt with github
+
+commit 34e955597540565f058be3437931a44e6720f802
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun May 7 20:16:47 2023 -0400
+
+    update path in github actions
+
+commit a6f117eb86e611a29a3fe844e81bc8adc7851a0b
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun May 7 20:17:58 2023 -0400
+
+    work on github action
+
+commit e6269e1c86c17853bd187273ea055bf29a2d6ff6
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun May 7 20:24:43 2023 -0400
+
+    more tweaks to path for github action windows
+
+commit 8e2c6b6f3d081ba27c7824eb73b8fae3dbcd4900
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun May 7 20:29:43 2023 -0400
+
+    tewak githib actions
+
+commit 318139648032f189d40cf859bc36b211b9793be3
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun May 7 20:37:07 2023 -0400
+
+    Debug github actions
+
+commit 4491562e3d38076e8e49486dcc5019530c44b213
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun May 7 20:45:40 2023 -0400
+
+    Debug github actions
+
+commit 7a732a40bd9cd27e7da88c48fd1a997d314389a0
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun May 7 20:52:55 2023 -0400
+
+    github actions
+
+commit 7a43a2c1ff65e7f3c0a23884dbc178d03eb3498e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun May 7 20:59:28 2023 -0400
+
+    github actions
+
+commit 3782e277f9a15aefa4f1f90b82ca895423763243
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun May 7 21:01:38 2023 -0400
+
+    github actions
+
+commit 270b5a7635e92015d82e678edfdef912185dba86
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun May 7 21:05:05 2023 -0400
+
+    github actions
+
+commit ca83ee268661aba3323a8eb5e2fff49e4c5fc2fb
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun May 7 21:11:09 2023 -0400
+
+    github actions
+
+commit 5b785079d938cfc130d356193e4e6086498c2b67
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon May 8 01:49:16 2023 -0400
+
+    github actions
+
+commit d97c96e82e94d54a2f84f455eb79c83e699b380e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon May 8 01:54:01 2023 -0400
+
+    github action cleanups
+
+commit 99b56b196c0bffa862cd74b7bfca293f8e6a2d0a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon May 8 02:00:11 2023 -0400
+
+    more cleanups
+
+commit 3c41922f4bcdfbd5554c8f149df96a7d5f261335
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon May 8 02:05:20 2023 -0400
+
+    cleanup github action for make containers
+
+commit 4b2bafa98a13db6b6c04292538e69688a411460c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon May 8 02:13:03 2023 -0400
+
+    install mising tools for unix build docker image
+
+commit c905b73982f5704e88b26402e2a9822dca5a9b89
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon May 8 02:45:28 2023 -0400
+
+    Added CMAKE variable to configure script
+
+commit 29b9e2baa65e53c2eaeb4040bf257e2e636bafa8
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon May 8 02:48:04 2023 -0400
+
+    install dos2unix in docker builder contaeiner for unix
+
+commit 11b28cff89f4d4b31cc7b07461838c9e2d6168c5
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon May 8 04:48:45 2023 -0400
+
+    experimental zlib cmake build support
+
+commit 77d775eb307b13dad30ba14e09515bfdb470c878
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon May 8 05:00:56 2023 -0400
+
+    more tweaks for new zlib thirdpartycomponents build
+
+commit 975fb7b275ec4d8244838a3400691352332b5dee
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon May 8 11:40:51 2023 -0400
+
+    workaround dispace issue building docker container(s)
+
+commit a867c9abc4cbaf12c4d6ea33371ce297db7a793e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon May 8 13:04:47 2023 -0400
+
+    progress on make docker containers windows
+
+commit 092fe4122d25871dbba5f1e84489c28745b33c94
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon May 8 13:48:07 2023 -0400
+
+    more tweaks to windows docker builds
+
+commit 6cf906d3b81da8fb647d3447963b7db48c02b2ed
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon May 8 14:00:02 2023 -0400
+
+    docs on github actions
+
+commit 42fdb611c6dc1f805e1b3319ee8706f083f1d3b0
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon May 8 14:04:04 2023 -0400
+
+    fixed typo
+
+commit 45049fbc7ef26ad57763c98589f45f585539d937
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon May 8 15:15:22 2023 -0400
+
+    fixed typo building docker containers
+
+commit 207724acb00a840b01c2fc03937cfe8106fd8853
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon May 8 19:18:15 2023 -0400
+
+    lose (pointless and now wrong) #pragma comment(lib, "zlib.lib")
+
+commit e53cc99b232d5f018d3a852fa678ddce64c26b1d
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Mon May 8 20:17:50 2023 -0400
+
+    maybe fixed cmake build of zlib
+
+commit 60b1571ae7d9ca46bae781c1218cc403f6834de8
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Mon May 8 20:35:33 2023 -0400
+
+    progress getting new cmake based build for zlib working on unix
+
+commit c1b89a495e0add4b36faffe3016668a931b572c1
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon May 8 20:58:57 2023 -0400
+
+    more cmake build cleanups (esp with zlib)
+
+commit 1d3edf293fe721498b977623e7d5002e4ce5feca
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed May 10 08:46:41 2023 -0400
+
+    comment
+
+commit 285e5294ef76f173e5f7ecc3ba7ef431e50e41c6
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed May 10 08:48:31 2023 -0400
+
+    see if msys builds work on windoze now
+
+commit 9e5f9b644ed1e4ba0dc6f1a823a1b80e0ddee215
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Wed May 10 09:24:45 2023 -0400
+
+    +BUILD_WITH_CMAKE_ workaround for UNIX builds for now
+
+commit 1b95123e7293b5cd5068468acc1dcde65e518564
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Wed May 10 12:16:56 2023 -0400
+
+    Revert "see if msys builds work on windoze now"
+    
+    This reverts commit 285e5294ef76f173e5f7ecc3ba7ef431e50e41c6.
+
+commit 86c8ac26d84319efdea58cbfc03502080abf124b
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Thu May 11 12:17:59 2023 -0400
+
+    test possible fix using CMAKE with zlib on unix
+
+commit 80b75a9426938f29df5f1871e4df808c7ca0fec5
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Thu May 11 13:08:29 2023 -0400
+
+    zlib experiemntal makefile fixes
+
+commit e6a6c9f19aa52dc57ac71f7d79cc001d8743802e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu May 11 16:47:40 2023 -0400
+
+    lose a bunch of CMAKE_ARGS overrides in zlib makefile -already done in shared cmake include
+
+commit 96cdaae97a26561dbc3719e1d49d15bc40fbe40d
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu May 11 16:48:38 2023 -0400
+
+    Revert "zlib experiemntal makefile fixes"
+    
+    This reverts commit 80b75a9426938f29df5f1871e4df808c7ca0fec5.
+
+commit 03984f44ab098bf8d7bdf1b786bd01d7aee76f88
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu May 11 16:49:32 2023 -0400
+
+    but dont need the zlib Patches anymore
+
+commit 504c0976908de0595636e0523eaf43433eb1fcc9
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu May 11 16:51:32 2023 -0400
+
+    zlib makefile cleanup
+
+commit 4f2988d6302e73f17ee7f2c558bbbecc3f5facab
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu May 11 16:56:56 2023 -0400
+
+    more zlib cleanups
+
+commit fcda2a5bcdf4bcd484f6fc26960c66d385aed1e9
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu May 11 16:59:49 2023 -0400
+
+    maybe worakround zlib third party compnents makefile issue
+
+commit 6ee8f11c5ec9c2a534aa2cc7095a63800cb10da0
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu May 11 18:14:19 2023 -0400
+
+    zlib build trick not producing dynlibs also needed for macos
+
+commit 203b7d0d7f2ed7b1f96d0d8783daaa448fe7d755
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu May 11 18:17:00 2023 -0400
+
+    minor tweak to .github action files
+
+commit bcf0f33f37425eb06073890f8dc1b47954bdc3e1
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Thu May 11 21:29:54 2023 -0400
+
+    fixed recent libz makefile changes
+
+commit d4379680dd468261914ec0a696e3f56946faf8d9
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu May 11 21:38:50 2023 -0400
+
+    zlib makefile cleanups
+
+commit 59a33febf65821be65645b3af52fa7955ba52f23
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu May 11 21:39:34 2023 -0400
+
+    Comment out a bunch of stuff probbaly not needed on makefile anymore for windows zlib
+
+commit 93a09b64d89544955adbe8e36a4c742127d0269b
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu May 11 21:41:03 2023 -0400
+
+    todo commetns zlib
+
+commit 5b6d611aef96a29bb114c6df541b012f123ed838
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu May 11 23:17:16 2023 -0400
+
+    fix mac zlib build issue
+
+commit 26c21c912ffca24defd23aba30b3232fcc4a8c5b
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri May 12 10:18:33 2023 -0400
+
+    more zlib makefile cleanups after testing
+
+commit e4b06450940666e043c7d621548279407e72971e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri May 12 10:32:06 2023 -0400
+
+    more zlib makefile cleanups
+
+commit 0801e8dd53d78864a80a7c0852613112f624e7bc
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri May 12 10:57:44 2023 -0400
+
+    in IO::Transfer regtest, also just warn - not fail - on timeouts - since remote network servers we ping often timeout
+
+commit 6794ece8b293841924f7489cafb555c175871806
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri May 12 10:57:57 2023 -0400
+
+    cosmetic
+
+commit 42e31b2acb899cc6012306e94bc9bc49ad638f7d
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri May 12 11:42:14 2023 -0400
+
+    test if windows-vs2k22-msys-x86_64-Release now builds under docker/github actions
+
+commit 837c469c25ae4ae4994436b7db7a111f040cda52
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri May 12 19:18:26 2023 -0400
+
+    sigh - docker msys stuff still broken... debug on laptop not github actions
+
+commit 4b38071ad24b09b740339c62873faa25f8bef7e3
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat May 13 15:12:38 2023 -0400
+
+    support building (windows) strawberry perl tool
+
+commit 30984a94a0b9ae5a0c0776e90649b5149aa79314
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat May 13 15:16:08 2023 -0400
+
+    experiemnt strawberry perl
+
+commit 2be04ce58db1a0fcab239f312bb1c2c1fb78d5b4
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat May 13 16:06:41 2023 -0400
+
+    use strawberryperl instead of activeperl on windows - seems bug for bug compatible, but better installation story, and seems for free of encumbrances
+
+commit 88f127e2fc1355bafab7450627f5d6494857ecb6
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat May 13 16:08:04 2023 -0400
+
+    commetns about things to try to make windows vis stud docker container smaller
+
+commit b9df601637614a400d68a6388b01b1bc4e733aa7
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat May 13 17:12:52 2023 -0400
+
+    get MSYS docker container working either from choco or myss installer, but doesnt seem to matter mcuh one way or other other
+
+commit 8e0b285cfd2134ac85bf09e8efc37eeb86945069
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon May 15 14:06:21 2023 -0400
+
+    vs2k 17.5.5 in dockerfile
+
+commit 9957094d308d6dd8374c8797da0481964229cd02
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue May 16 07:20:32 2023 -0400
+
+    new concept EqualsComparer and PossiblyEqualsComparer. Added regtests, and used once (experimentally) in KeyedCollection
+
+commit 859851df6cc88744f6ca8c1a28fef9d66b4947fe
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue May 16 09:29:39 2023 -0400
+
+    tweak KeyedCollection CTORS (losing enable_if_t)
+
+commit bb25201168dae929fed1669c6847fa5d737b533a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue May 16 09:35:22 2023 -0400
+
+    tweak KeyedCollection CTORS (losing enable_if_t)
+
+commit 84d2f412ca0e785ea2016830163af7a5b1c1a32e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue May 16 09:44:19 2023 -0400
+
+    more KeyedCollection cleanups
+
+commit ffa67a76526df1a38707da63a2352f1b7c25805c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue May 16 09:51:35 2023 -0400
+
+    fixed typo
+
+commit b96fa8f193a12b0a4cfba71bbd03a81ed9677bfb
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue May 16 10:08:19 2023 -0400
+
+    more KeyedCollection ctor cleanups
+
+commit d9cf8642bbfa12cf367ed6d4cbfce53507899c73
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue May 16 10:19:49 2023 -0400
+
+    todo docs
+
+commit 1137e81d425617cb0d770b8474d7f8c065c6842d
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Tue May 16 10:51:22 2023 -0400
+
+    fixed comment typo
+
+commit a9c20cf81bb226809592f2bf203635c1a21073ce
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Tue May 16 11:17:02 2023 -0400
+
+    workaround qCompilerAndStdLib_template_Requires_templateDeclarationMatchesOutOfLine2_Buggy
+
+commit a323c10d6bd55e4b9b620ac681204011e17543ee
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue May 16 11:28:38 2023 -0400
+
+    cosmetic
+
+commit ff8fc42ccb1b83c1a8b1e63bbce24e9de21f9f95
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue May 16 13:59:33 2023 -0400
+
+    start using forward_iterator in place of soon-to-be-deprecated (Configuration::IsIterator_v"
+    git push
+    "
+
+commit 5ba5e6f1c314285d028fd15a4559a4bcd0c0e6a1
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue May 16 17:39:31 2023 -0400
+
+    IsIterator_v marked SOON TO BE DEPREACTED; fixed Iterator<> template to support postfix iteration (though got rid of at end of v2.1, add back so supports static_assert (input_iterator<Iterator<int>>) concept - useless, and maybe counter productive, but important to support that concept
+
+commit 8ebed4fc4d311a7ac2c22f9cbfbca1a200a49d16
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Tue May 16 19:33:24 2023 -0400
+
+    fixed typo
+
+commit d7cc47bf04016e88f8742402afeceab0d332a766
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue May 16 20:10:02 2023 -0400
+
+    More cleanups using input_iterator instead of soon to be deprecated Configuration::IsIterator_v<ITERATOR_OF_T>
+
+commit 463943fae09a61368fd33c6f8b22edb7dd449e2b
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue May 16 20:28:24 2023 -0400
+
+    More cleanups using input_iterator instead of soon to be deprecated Configuration::IsIterator_v<ITERATOR_OF_T> and losing enable_if_t usage where possible
+
+commit 3074210ab35e5ea9acc9d21661dd69e4e6d93a10
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Tue May 16 20:48:55 2023 -0400
+
+    dont ref g++-10 anymore in Makefile predefined configs
+
+commit ded4d9360f8980279d56f03128d2d67646a97488
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Tue May 16 20:52:28 2023 -0400
+
+    qCompilerAndStdLib_iterator_concept_wrongly_requires_default_CTOR_Buggy workaround
+
+commit eebaf77b31b3bcdb4318395194f010d185ebd980
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue May 16 20:53:24 2023 -0400
+
+    a few more input_iterator conversions losting more enable_if_t usage
+
+commit 51abbde5ff26f9cc636e6cb0ae58929c58e9de41
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue May 16 21:14:54 2023 -0400
+
+    more cleanups
+
+commit e844778df377f0a2d50faedf5411c97d5fc309fa
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Tue May 16 21:19:08 2023 -0400
+
+    more qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy workarounds
+
+commit dd270f4424fe4cbd7357dba84c97165bce3b5c73
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue May 16 21:23:46 2023 -0400
+
+    make format
+
+commit 88c682735025388dcb5d9769c275bea5a875074f
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue May 16 21:34:53 2023 -0400
+
+    more celanup of enable_if_t and  Configuration::IsIterator_v() usage - now later marked deprecated
+
+commit 9579346b3b225dc2f274d8ad70da8a5cddd32a39
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed May 17 10:11:42 2023 -0400
+
+    lose remaining use of Configuration::IsIterator_v and some enable_if_ts, and use input_iterator concept isntead
+
+commit ec5a3b5f24c57122f1bb49466d5eb92ade312005
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed May 17 10:45:17 2023 -0400
+
+    start converting more use of Common::EqualsComparer<> concept to simplify tempaltes intead of enable_if_t<Common::IsEqualsComparer
+
+commit 940c9cf6f39e361a3fa256b644f44bc73240a207
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed May 17 11:12:46 2023 -0400
+
+    experiment using using Common::EqualsComparer to simplify declarations in containers
+
+commit 8b3a91093b369d9d2697f4bff72a8bf5b6a509e8
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed May 17 11:55:07 2023 -0400
+
+    more use of concepts in AddAll usage
+
+commit 19852c870274ad05b9e59f25621fbbd23d5b1cff
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed May 17 12:36:28 2023 -0400
+
+    renamed Common::EqualsComparer to IEqualsComparer
+
+commit 5b3310a2b9abe02f5b046a25c46e1be1e8b96fa3
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed May 17 13:44:46 2023 -0400
+
+    more cleanups - esp to Iterbale<> to sue the new Common::IEqualsCOmparer - and in doing so fixed longstanding worakround where I had removed a (useful/needed) type constraint - added back and fixed calls now
+
+commit d5d7e2f424ac7c9dd29ba11395bfe5ebf7e8f13e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed May 17 15:20:18 2023 -0400
+
+    qCompilerAndStdLib_template_ForwardDeclareWithConceptsInTypenameCrasher_Buggy BWA
+
+commit 94c36814df62b2c05b39d3a73f00b2952ce70503
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed May 17 15:30:22 2023 -0400
+
+    docs
+
+commit 658eac4c90c5c4254bec95627814f6bbccb316d5
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed May 17 15:32:08 2023 -0400
+
+    commetns cleanups
+
+commit e6583afc8821934e7df52a8bc5a0937744ce9077
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed May 17 15:43:06 2023 -0400
+
+    more use of IEqualsComparer<KEY_TYPE> - testing narrow case to see if breaks any compilers before I do rest similar
+
+commit c77637faa7da2603606ec0ca112bd7717ee1a61f
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed May 17 19:55:14 2023 -0400
+
+    more use of concept IEqualsComparer<KEY_TYPE> in place of enable_if_t<Common::IsEqualsComparer...
+
+commit b8a93ea6ff3cd71d51c2dbea498fd68ee77a6d67
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed May 17 20:23:53 2023 -0400
+
+    more use of concept IEqualsComparer<KEY_TYPE> in place of enable_if_t<Common::IsEqualsComparer...
+
+commit d2cba14b79a38ddf6062767ed47d157cc1e8df8a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed May 17 20:45:00 2023 -0400
+
+    tmphack bug worakround for recent checkins
+
+commit 215a458ba83b81b4254f3b0b63c7d4101a1acdb5
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed May 17 21:08:32 2023 -0400
+
+    fixed very recent Mapping_stdhashmap regression
+
+commit 5aa662042ed596a8534eab133a4839e2f3bf30db
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu May 18 08:51:32 2023 -0400
+
+    more use of concept IEqualsComparer<KEY_TYPE> in place of enable_if_t<Common::IsEqualsComparer...
+
+commit 727c9dd8880c701c3e92cf35e48623f2da271caf
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu May 18 09:48:15 2023 -0400
+
+    more use of concept IEqualsComparer<KEY_TYPE> in place of enable_if_t<Common::IsEqualsComparer...
+
+commit 79f0f5dc81b00dc2da909e9feb17537d722def03
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu May 18 09:49:44 2023 -0400
+
+    fixed typo
+
+commit 09d49a01f14f42f5c0088e13b5ab40674b54a5a0
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu May 18 09:58:55 2023 -0400
+
+    fixed typo
+
+commit bdbfe68a9278a5d244fdfc73ff36e4218f0b5ea5
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu May 18 10:18:24 2023 -0400
+
+    feprecated IsEqualsComparer
+
+commit 615b882cb012888996931d02cc9f58f3e239dfb8
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu May 18 10:37:17 2023 -0400
+
+    cleanup enable_if_t in ToString to use requires
+
+commit 37dbaa6523f7e5624c23afa6f5e19b482af57bbc
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu May 18 11:04:37 2023 -0400
+
+    **not backwards compatible** change to Iterable<>::end() - went from static to instance method for ranges compatability
+
+commit 7ccc68d29580a0d90b55640c7a645399cfadcb7d
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu May 18 11:39:14 2023 -0400
+
+    Iterator::DEFAULT CTOR must exist for being range compatible (concept semiregular = std::copyable<T> && std::default_initializable)
+
+commit 666971023fa24f4954c773a0e46bec63ce542a27
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu May 18 11:41:16 2023 -0400
+
+    Iterator::GetEmptyIterator() noexcept
+
+commit 2dcacf5672d2b52f18fb646bfe2bf5a108ca7d7a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu May 18 11:45:32 2023 -0400
+
+    start assert (test) Iterables are valid ranges::range type, and make Iterable::end() noexcept
+
+commit 754c823dfb04ea648088b47f140968e6b83a1106
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu May 18 11:53:44 2023 -0400
+
+    todo comments
+
+commit 789fe4f70a27a914253662d4356d0e41854ddc6e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu May 18 11:54:01 2023 -0400
+
+    cosmetic
+
+commit f3203bdea9b5affcfccdeecbb36772468b1d299f
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu May 18 11:54:22 2023 -0400
+
+    experimentally try using ranges::range intead of Configuration::IsIterable_v
+
+commit fafcaee02cb72253a9637a8809d04ad84708468e
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Thu May 18 13:18:13 2023 -0400
+
+    fixed a couple recent regressions/cleaned up one use of depreacted funciton
+
+commit c6cab7d75dd4f23161591516838e94a07964140f
+Author: Lewis G. Pringle, Jr <lewis@sophists.com>
+Date:   Thu May 18 13:20:56 2023 -0400
+
+    remote another use of depreacted funciofn and ebale_ioft
+
+commit a3a4bce969d85fbcf3a93cbab16dac3992b7fd80
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu May 18 17:20:02 2023 -0400
+
+    added-Wno-unqualified-std-cast-call for clang/xcode
+
+commit bdda8f16bb74290999f349bc3b8e2fbde5fe477a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu May 18 19:34:56 2023 -0400
+
+    update some bug defines for new apple xcode compiler
+
+commit b3384c483e696925c8809beca88f9367574d8a4a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu May 18 19:37:17 2023 -0400
+
+    bug defines for new xcode
+
+commit 22165c767674e112deb528a9bc824d929458b9a8
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu May 18 19:57:14 2023 -0400
+
+    lose UTFConvert support for eCodeCVT - depreacted and I dont believe needed (testing)
+
+commit a672306f7307d8cdb5a69a374258fde74079d746
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu May 18 19:57:37 2023 -0400
+
+    cosmetic
+
+commit e010dfcc8ee1af8c88d6d58a6bd5b2f80725ef27
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu May 18 19:58:02 2023 -0400
+
+    replace use of deprecated Configuration::IsTPredicate with std::predicate concept
+
+commit df7dc082876a909b88489bda8d8c2bba44897040
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu May 18 20:15:38 2023 -0400
+
+    test with clang++14 not clang++10 in github actions
+
+commit 63221f1795133d4b2b8c92540721e4560b516599
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu May 18 20:20:38 2023 -0400
+
+    try forcing use of xcode 14.3 in github actions
+
+commit ef099bc99f09c230e832f68e853be2b919afad2a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu May 18 20:26:12 2023 -0400
+
+    github actions - try to use xcode 14.3 (via config) and try using clang++13 instead of clang++10
+
+commit e145c4a7ca0d080332f4239d45f11960ae9f0f9f
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu May 18 20:31:41 2023 -0400
+
+    try to disable macos builds git actions
+
+commit a890f976fa712bf730fa277eca7b63e6a200fc48
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu May 18 20:33:41 2023 -0400
+
+    dbug github actions
+
+commit 66f4e13cf5aeb11c62ab03267ded8030ad5c9614
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu May 18 20:49:59 2023 -0400
+
+    todo
+
+commit 1a130c819d8a5f67af50eb966b592146cec63f7b
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu May 18 20:56:56 2023 -0400
+
+    require clang++13 or later - due to support for std ranges
+
+commit e60fa5159ef28e970c8c30b6711f7e01e25b1517
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri May 19 00:01:36 2023 -0400
+
+    tmphack - reset github action for windows dev so only cgywin builds not msys til thats fixed
+
+commit 1f4fe084028bb2f2f88f8b204571a595e23eda81
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri May 19 14:59:39 2023 -0400
+
+    more use of ranges::range concept instead of  enable_if_t IsIterable_v
+
+commit 579dc6e5eca7e059d308d811779e3c4c3664d78f
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri May 19 15:17:08 2023 -0400
+
+    changed several typename ITERABLE_OF_ADDABLE to ranges::range ITERABLE_OF_ADDABLEranges::range
+
+commit a4329b6aca8fd50e7bc545a7da36d8a9c56150cf
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri May 19 20:41:56 2023 -0400
+
+    use more ranges::range concepts and lose enable_if_t / IsIterable_v usage
+
+commit 7343215fdf4662a7b873e6eb2008319f4bfdaa6c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri May 19 21:43:01 2023 -0400
+
+    replace a few more uses of typename ITERATOR_OF_ADDABLE with concept input_iterator ITERATOR_OF_ADDABLE
+
+commit 12aa5279bbff9697dd43d9865d19050dc32103c9
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri May 19 23:13:18 2023 -0400
+
+    lose more cases of enable_if_t - replacing most with using requires()
+
+commit ee52ade81697a87b06cb304394730a1ed994cfb3
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat May 20 03:38:08 2023 -0400
+
+    switch a few more uses of enable_if_t to concepts or requires
+
+commit a0996173bbe418548ef53ef982cc235da35f7968
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat May 20 07:06:14 2023 -0400
+
+    replace a few more uses of enable_if_t with requires
+
+commit e1cef475229f55de31bba01ea9bc003cfb1c1dc6
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat May 20 17:28:31 2023 -0400
+
+    more getting rid of enable_if_t, using requires
+
+commit 5ee734ae742ab20dc6050492496ae71f43456eca
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun May 21 08:15:39 2023 -0400
+
+    qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy workarounds
+
+commit 54d0bcef8a605a8782b27d79027375a5a3cfd8f9
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun May 21 08:34:18 2023 -0400
+
+    more qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy bwa
+
+commit b2e041e2d922772f1adf8a8068cc8e15f4618ade
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun May 21 18:59:08 2023 -0400
+
+    typo fixed
+
+commit 819c2dfea9e2bf7c6aa3699d70b0738094a080b3
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun May 21 18:59:40 2023 -0400
+
+    only add -Wno-unqualified-std-cast-call for clang++-14 or later
+
+commit ea1f5ea969592131df9dc7069750a3d42c1f84ca
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon May 22 07:26:13 2023 -0400
+
+    more qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy BWA
+
+commit 0646385a1f7d146429da79b41451ed5657aa9cc0
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon May 22 14:02:23 2023 -0400
+
+    more cleanups of qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy - including dont set for msvc
+
+commit 0521cae9bb256c35f448a20fdd65308d5df29973
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon May 22 16:57:36 2023 -0400
+
+    cleanup qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy tests
+
+commit bd4f322d6abb94cba42cab3d4fa12df898136ac0
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue May 23 05:43:44 2023 -0400
+
+    new qCompilerAndStdLib_RequiresIEqialsCrashesAssociation_Buggy bwa; and more qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
+
+commit 23b78e3234c2d773afd5f192ea5e6d282aa10f1c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue May 23 05:52:52 2023 -0400
+
+    more qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy bwas
+
+commit 90a9c4196e3518e5d2e625bdea1a828cfb47cc2a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue May 23 12:50:10 2023 -0400
+
+    maybe find better workaround for qCompilerAndStdLib_requires_breaks_soemtimes_but_static_assert_ok_Buggy
+
+commit a78ca171dbab6879f96771b6fc7cf1c92d9849da
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue May 23 12:51:06 2023 -0400
+
+    maybe find better workaround for qCompilerAndStdLib_requires_breaks_soemtimes_but_static_assert_ok_Buggy
+
+commit 3dbd3b4ac101d3e06283f81b1b595511dcae1cc9
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue May 23 15:15:54 2023 -0400
+
+    better workaround of qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
+
+commit f474286ee0a20fb9e7f9e4343b784c3ffa471774
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue May 23 15:17:23 2023 -0400
+
+    retest macos xcode avail
+
+commit 4aa186339f06257f616b049a0f11d2b45e17e991
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue May 23 15:20:57 2023 -0400
+
+    try setting macos 13 runner for xcode
+
+commit 4af0f89a0e020affd9b8d84d520c95b29f7a6431
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue May 23 15:53:12 2023 -0400
+
+    Added new Traveral::IIterable and IIterableOfT
+
+commit 59303801df00aa3b84663fdaac4750950a0737d6
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue May 23 16:05:14 2023 -0400
+
+    lose setting  = ; for macos cuz probibits doing it later/better in common code
+
+commit c7d0f232db4b535d5015402aec2b550364397b71
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue May 23 16:13:34 2023 -0400
+
+    use perfect forwarding for Finally
+
+commit dfa9b8c8952df1554da3fb553407a7bfa8045e0e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue May 23 16:40:12 2023 -0400
+
+    deprecated IsIterableOfT_v in favor of new Traversal::IIterableOfT
+
+commit 16c7430469e96e1c267eac4988c5c5a9cb05b782
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue May 23 16:45:43 2023 -0400
+
+    test possible xcode bwa
+
+commit 44b93a443b9fbb58554c2a905b974dd97a590c04
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue May 23 20:01:00 2023 -0400
+
+    Revert "test possible xcode bwa"
+    
+    This reverts commit 16c7430469e96e1c267eac4988c5c5a9cb05b782.
+
+commit 22fb8a71318f1e0862788522ea881a3d1688d4f4
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue May 23 20:33:58 2023 -0400
+
+    lose some more unneeded use of enable_if_t (use requires instead)
+
+commit dd4f0e0b32cce29cdef007432359d59dd6725afd
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed May 24 08:33:08 2023 -0400
+
+    declare CTORs to helpefukky workaround issue on xcode
+
+commit 45db12dbd96a5cf32e0bd58b96f9276cdcce0dec
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed May 24 09:03:26 2023 -0400
+
+    cleanups to KeyValuePair designed to hopefully address issue on xcode 14
+
+commit 060de0522c2db89dea8e68991ff44d2185600add
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed May 24 09:33:49 2023 -0400
+
+    start converting Properties code to using concpets
+
+commit 642563a62e907a10575a54cb70edb1cdac263a94
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed May 24 13:26:04 2023 -0400
+
+    more replace enable_if_t with requires
+
+commit 52ebfac4a8e530fda2659cb990da78635a4de897
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed May 24 14:17:10 2023 -0400
+
+    use more requires and if constexpr to replace enable_if_t usage
+
+commit f5e910940670dedc6db3c2aebef806b6f923c440
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri May 26 15:20:10 2023 -0400
+
+    cleanup use of enable_if_t with requires
+
+commit 27351cc1441942cafd0d85fd11fc565542a1d037
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri May 26 16:00:54 2023 -0400
+
+    test revert some of the CTOR cleanups to KeyValuePair to see if fixes xcode build
+
+commit 364ec924ccbd0b08d24e6611d86af8493bfce662
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri May 26 16:50:36 2023 -0400
+
+    undo ttrial hack to workaround macos xcode bug; more enable_if_t cleanups and new tmphack test to isolate xcode bug
+
+commit 2ce9cfc573a66860039163f1002d3e2beb897083
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri May 26 17:53:08 2023 -0400
+
+    __cpp_lib_atomic_shared_ptr assumed  >= 201711
+
+commit 9b1aade65707b9f1fbf24b3e90f0042cb31c7b99
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri May 26 17:57:40 2023 -0400
+
+    undo last XCODE debug hack and try another new one in Function.inl
+
+commit 58c683339155f0a771548c7e06b9aa4a31ecaf65
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri May 26 17:58:12 2023 -0400
+
+    undo last XCODE debug hack and try another new one in Function.inl
+
+commit ca66fbd28aa03e2363205ff5e124de3d587d5ddc
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri May 26 18:04:43 2023 -0400
+
+    disable some deprecated C++ warnings for stdcodecvt
+
+commit aec0c9460d38bae5b01a5942b5a13a66ccbcc662
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri May 26 18:28:31 2023 -0400
+
+    cleanup a few more enable_if_t usages
+
+commit 3494ce59f3ae258fa60f8d21fccad9a6eefdb7b2
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri May 26 18:29:08 2023 -0400
+
+    Revert "__cpp_lib_atomic_shared_ptr assumed  >= 201711"
+    
+    This reverts commit 2ce9cfc573a66860039163f1002d3e2beb897083.
+
+commit babf141c8ecbf1da7af3ce10bba6d6f7b87497ad
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri May 26 18:30:44 2023 -0400
+
+    Cosmetic
+
+commit 7bebfe14dcd5790d6d29195d1d89e1e14fcd0c56
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri May 26 20:39:27 2023 -0400
+
+    remove more enable_if_ts and fixed regression in recent checkins
+
+commit 355e52e618794298115a8114c77ae4fb2522b9f1
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri May 26 21:31:31 2023 -0400
+
+    a few more enable_if_t fixes and fixes to regressions in prev enable_if_t fixes
+
+commit 2c9927ceb7336db696d5224e92ac18d8ba6ae8a8
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat May 27 07:34:51 2023 -0400
+
+    new attempted qCompilerAndStdLib_template_Requires_constraint_not_treated_constexpr_Buggy BWA
+
+commit 2af11710b6aa02a3034f892545d508bfc1a4d802
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat May 27 09:04:32 2023 -0400
+
+    cleanup qCompilerAndStdLib_template_Requires_constraint_not_treated_constexpr_Buggy BWA
+
+commit 610c091ed02d53382e551b3125671bc6af5c4b9d
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat May 27 09:05:59 2023 -0400
+
+    try github actions windows --cpus 4 and --jobs=4
+
+commit c9fd32d8e7389ce8367b570955a93d4726bac662
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat May 27 09:24:47 2023 -0400
+
+    Revert "try github actions windows --cpus 4 and --jobs=4"
+    
+    This reverts commit 610c091ed02d53382e551b3125671bc6af5c4b9d.
+
+commit 62b33de4aeb2a2364e185b909150c16196b3d0a7
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat May 27 09:25:53 2023 -0400
+
+    enable_if_t cleanups
+
+commit 527a52a8a18b09466fbcd9ae21bd813120600288
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat May 27 10:11:44 2023 -0400
+
+    enable_if_t cleanups
+
+commit 04eefbc4aa104974f21111c103d3bcd88e78a427
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat May 27 11:01:54 2023 -0400
+
+    Synchronized<> use requires instead of enable_if_t in a few places
+
+commit 2c3c95f6ffb272c784c4c15dee05749992ad8f81
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat May 27 17:45:24 2023 -0400
+
+    lose OutputStream.cpp and more refactoring to use requires instead of enable_if_t
+
+commit b0ad34d4d7fa4b5eedb025b1594e2e975c2f410d
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun May 28 09:00:36 2023 -0400
+
+    more enable_if_t cleanups
+
+commit 54086630289bbabc5fdf9774605e201d2f4d2b7e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun May 28 13:45:27 2023 -0400
+
+    tweaks to enable_if_t code
+
+commit e470fae5c70980bcda3bd69df2dd7c290bee3cd0
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun May 28 14:25:52 2023 -0400
+
+    IRange concept and used in partition code
+
+commit 5c04da4ed621f0b7ad86b64b06a489dbd3196766
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun May 28 21:17:59 2023 -0400
+
+    use new IInOrderComparer in a bunch of spots instead of deprecated IsStrictInOrderComparer
+
+commit 05db0d1f6b4d213dd230fa357805d6e12dec07cd
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon May 29 05:12:21 2023 -0400
+
+    qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy cleanups, and enable_if_t cleanups
+
+commit 72ad987395531852bcbf40bb7f7a0f33c2d6eeff
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon May 29 06:59:33 2023 -0400
+
+    cleanup inputstream requires code
+
+commit b14a4a5199569c50c52b311d78b1dd80154a56e7
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon May 29 20:20:49 2023 -0400
+
+    more use of IInOrderComparer<>
+
+commit 7fbe3040d69b2a5cfec5896c58eda511b9b58ef2
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon May 29 22:52:16 2023 -0400
+
+    workaround issue LINK ERROR annotate_string  started in vs2k 22 17.6 linking boost
+
+commit cbf5edb3c5cc537cbd1955678cbf5f6d1b83f984
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon May 29 22:52:53 2023 -0400
+
+    Boost 1.82.0; and lose TOOLSET_NAME=msvc-14.2 workaround no longer needed
+
+commit 00fa0475bbd6ded24c466abb8371d4af64b7a0f5
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon May 29 22:53:26 2023 -0400
+
+    sqlite 3.42.0
+
+commit 9be15fe9ef14d8e60b163c174e8bfd3d9452cc50
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon May 29 22:55:09 2023 -0400
+
+    VS_17_6_2 in docker container
+
+commit e03e7ffdce5fb8541ba6144f259c5176a65b5d3d
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon May 29 23:40:01 2023 -0400
+
+    workaround qCompilerAndStdLib_compiler_crash_on_break_Buggy
+
+commit 0ba6f21476659eaced6587860048bfa81da05531
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue May 30 07:31:57 2023 -0400
+
+    maybe cleanup ReadAll/BLOB overload in InputStream (documented why this is so hard)
+
+commit 0441ed5f2e563be6f32e512cd65eccc483f22600
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue May 30 08:18:16 2023 -0400
+
+    qCompilerAndStdLib_compiler_crash_on_break_Buggy BWA appears no longer needed
+
+commit 08adfa64d8b93154166b6e3b63c628205bc7aeea
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue May 30 10:04:47 2023 -0400
+
+    comments
+
+commit 9fd717999d0ac03cfbe41bf070809ce93935d026
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jun 4 08:33:34 2023 -0400
+
+    tweak dockerfile windows readme
+
+commit 0e191895e709a6daeee4eeda9d308a01d18a56f3
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jun 4 10:32:26 2023 -0400
+
+    in Windows-VS2k22/Dockerfile use explicit set of includes not recommended and then removes (not sure better, seems larger, but maybe can trim back down)
+
+commit 521a60c306839c37a5fc6796eea3473a2f40ec78
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jun 4 10:33:32 2023 -0400
+
+    tweaked Windows-MSYS/Dockerfile paths so now all builds except openssl (fixes issue with missing sdk in config file - but still could celanup more/better paths)
+
+commit 6cea24f3f65b2bb9f4695b5163b3f43fa8a1bd11
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jun 4 11:56:32 2023 -0400
+
+    simplify Windows-VS2k22/Dockerfile   and smaller hope stull works:
+
+commit 1f2437c9a976a27238e25f73a1b26c1c58dd610a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jun 4 16:35:54 2023 -0400
+
+    cleanups to Windows-VS2k22/Dockerfile
+
+commit d7843770c328d4e0b0137a0e8304071b8761f798
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jun 4 19:47:53 2023 -0400
+
+    comments
+
+commit 529623760e48432584945022fa8ddb6720deb24b
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jun 4 19:49:01 2023 -0400
+
+    _MSC_VER_2k22_17Pt6_ bug define support
+
+commit 5422d2bdc2201bb0fa95943dfb952a61c3b2ff9d
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jun 4 21:11:14 2023 -0400
+
+    experiemntal simplification ot openssl makefile
+
+commit 912214da62d2a943fcbeddca7789588353c53486
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jun 5 08:22:02 2023 -0400
+
+    undo attempted (or limited attempted) openssl makefile cleanup
+
+commit ebbc7f51e99cc98ef84a2464911609892c1b3b25
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jun 5 08:41:32 2023 -0400
+
+    experiment using derived_from instead of is_base_of_v
+
+commit e03702e3ffb73149b21f9e4b2dd31a726e7bf3f2
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jun 5 08:42:52 2023 -0400
+
+    test turning offqCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy when using new concept code for Collection CTOR
+
+commit f9ca4e809ff8d787b254815f8441667ace0f7e19
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jun 5 09:18:07 2023 -0400
+
+    fixed typo
+
+commit cca87a2c9d93e1777c5cc76576e88f237cc05302
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jun 5 09:20:51 2023 -0400
+
+    undo macos test of qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
+
+commit 6f639d4ff7d5f5f66eb4a4e3da6955ceacb7c028
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jun 6 07:30:38 2023 -0400
+
+    even using derived_from, still need decay_t
+
+commit ad1f736512e3cdc63070ff47a154c67f0f61c8cc
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Jun 9 09:55:17 2023 -0400
+
+    fixed typo
+
+commit 10abaec20e208bd7c96eb22c1f542c8f0e52a62a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Jun 9 09:55:33 2023 -0400
+
+    experiment with differnt docs layout strategy
+
+commit 0f801b3c20a3aad76a82182e755420f33b6bdc83
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Jun 9 10:16:49 2023 -0400
+
+    experiment with differnt docs layout strategy
+
+commit 3e2882cbfea66de9251cdbaa3bbcc6a53aab45bb
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Jun 9 10:23:13 2023 -0400
+
+    docs
+
+commit 043ab198f5bb10430d286e303c51458e83457341
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Jun 10 10:29:32 2023 -0400
+
+    experiemntal fix for issue with msys build under docker windows openssl
+
+commit 9ffa45e3af2c4873048fd45b5e7ba5ade79bc84c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Jun 10 12:39:57 2023 -0400
+
+    use macos 13 not macos latest for now on github actions
+
+commit 32443fc2ca409f8e37c1ca20d5bdb9db6a773439
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Jun 10 15:28:12 2023 -0400
+
+    qCompilerAndStdLib_template_Requires_constraint_not_treated_constexpr_Buggy broken on real clang++14
+
+commit 2f5fd76356f9d54ece939162e50c225a1ad620db
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Jun 10 15:34:15 2023 -0400
+
+    curl 8.1.2
+
+commit 491e1a4c6b829ff38bfe5730fd24fd2a935aa517
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Jun 10 15:37:31 2023 -0400
+
+    retransated v3-Release workspace file to Debug for github actions
+
+commit 8b95a9893ddbf3e87fd048c121a8749208bc19eb
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Jun 10 18:52:30 2023 -0400
+
+    initial try at merged matrix single github workflow
+
+commit db1f88bd6d859f2265223fa6e655a70f59c6034a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Jun 10 18:56:38 2023 -0400
+
+    initial try at merged matrix single github workflow
+
+commit 20e523cbd2a1b82e66342a4c575392fa7a69232c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Jun 10 19:00:14 2023 -0400
+
+    test
+
+commit 4a5bb8b8e5848705b28b20e383135872a6647755
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Jun 10 19:03:48 2023 -0400
+
+    test
+
+commit 5680e07153f1caa52d56af40bda5daeb870f2c93
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Jun 10 20:52:32 2023 -0400
+
+    more work on combined workflow
+
+commit 719ff9df98047609158b4101bff151fb455e42b8
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Jun 10 20:58:56 2023 -0400
+
+    more progress factoring github workflow
+
+commit f181ea4c4ab3b50ef1e46a3edfcd52dadd92ee7e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Jun 10 20:59:56 2023 -0400
+
+    fixed missing file last checkin
+
+commit 679147e23ab99110460f24ce490d0887014b5f8f
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Jun 10 21:01:52 2023 -0400
+
+    cleanup recent workflow chekcins
+
+commit 792c8971b8f01a8908b3c8044ab932f12445cdc4
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Jun 10 21:35:15 2023 -0400
+
+    progress merging workflow files
+
+commit b1dd4a016aedaadbca38acef0720c4f5d1a873d1
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jun 11 08:09:54 2023 -0400
+
+    progress refactoring github actions workflow
+
+commit 838e4c74507e452af010fe20b47dcd64b1a38b67
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jun 11 08:11:14 2023 -0400
+
+    progress merging workflow files
+
+commit ddb49ea0cfd205c77262c50e5cb8f0e3102ecefb
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jun 11 08:14:28 2023 -0400
+
+    progress merging workflow files
+
+commit 29973ba6a955e926dbbe8ae04e9fe77155055d82
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jun 11 08:20:52 2023 -0400
+
+    progress merging workflow files
+
+commit d530709ca3e3898034b0e3de3eb7af60ee4a2063
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jun 11 08:25:31 2023 -0400
+
+    progress merging workflow files
+
+commit a7d468f553fcbed1bad6a2638523be70ac968f9d
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jun 11 08:28:22 2023 -0400
+
+    progress merging workflow files
+
+commit 5708737dddc56f3bf647e74406e5f9450bff5501
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jun 12 07:47:59 2023 -0400
+
+    more .github action workflow cleanups and delete old 2 file solution
+
+commit 5f9a6ca9b8e6847b4b7d358099d69c43e11c6a70
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jun 12 07:53:58 2023 -0400
+
+    github action cleanups
+
+commit 331a2ccbe29688ee017c5d253c76a5461733a30f
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jun 12 08:03:44 2023 -0400
+
+    github action cleanups
+
+commit 55d5d047f02208c2a8174cf8feba1cf4f07339c6
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jun 12 08:09:48 2023 -0400
+
+    test fix for github event run_all
+
+commit 3ffaa89e28446e49c35c305c595ea5e165f4fa7a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jun 12 09:02:30 2023 -0400
+
+    test fix for github event run_all(try2)
+
+commit 0d18646dcd4fdaa7fc94e530464c9b8ba7e0a83d
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jun 12 09:06:09 2023 -0400
+
+    test fix for github event run_all(try2)
+
+commit 1df6c664eddb793f5306f5ae3da4081b341ffe0b
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jun 12 09:07:36 2023 -0400
+
+    test fix for github event run_all(try4)
+
+commit fb393a35cec57e2e8dbd5f829deefa000be96b30
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jun 12 22:51:28 2023 -0400
+
+    lose a few more enable_if_t uses, and translate a few more cases of is_base_of_v to derived_from
+
+commit a626e5c8f43213e1debb18290e02c052677eeee3
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jun 13 07:26:10 2023 -0400
+
+    comments
+
+commit 62555f9a9661b37152e4606b3d093955f4522408
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jun 13 11:05:50 2023 -0400
+
+    install clang++15 to docker container unix
+
+commit 5d65fc457723b08f72efc8c22d80f61dd7a11ccf
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jun 13 11:08:10 2023 -0400
+
+    clenaup workflow file
+
+commit 814bfe84726c3b0b1f9670f75e6109671b3ec4c9
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jun 13 12:17:03 2023 -0400
+
+    a few more enable_if_t cleanups
+
+commit c2dc7ca217945ef3ba69b21f663d5e33d709936a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jun 13 13:06:04 2023 -0400
+
+    fixed configure to set COMPILER_DRIVER_CPlusPlus before using it to adjust CWARNING_FLAGS
+
+commit 0395d3dccbb642ea3caebb3254d4ea8ed82f730b
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jun 13 14:11:51 2023 -0400
+
+    cleanups to GUID::As() template, due to incompatability issues iwth clang++-15
+
+commit 82c257a645a8c53bd7c272facf43638f359c48e4
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jun 13 16:39:36 2023 -0400
+
+    clang++-15 support
+
+commit 786e0c9075db8357d529396509121111ce3bbf42
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jun 13 16:49:08 2023 -0400
+
+    lose bug defines qCompilerAndStdLib_template_default_arguments_then_paramPack_Buggy  and cleanup a few other bug defines
+
+commit dd000f56b7704755a3818a30022105e62afc16c1
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jun 13 17:17:58 2023 -0400
+
+    cosmetic and cleanups to bug defines
+
+commit 85171cf7788fc8d0fc5e10ca19b0d4abdcd3451c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jun 13 17:30:54 2023 -0400
+
+    fixed missing checkin
+
+commit fabeb8369986188ffb4f6fbffc70c9fbfd5d1be6
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jun 13 20:11:52 2023 -0400
+
+    static_assert __cpp_lib_atomic_shared_ptr
+
+commit 017e8aaad830da8d4f831f5946b4a4597d3e535e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jun 13 20:25:35 2023 -0400
+
+    minor cleanups: mostly using dervied_from instead of is_base_of_v
+
+commit 7091f598029d15437ccff873d786d70047836b27
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jun 13 21:04:53 2023 -0400
+
+    undo __cpp_lib_atomic_shared_ptr check - comment out
+
+commit 1b105c6e81f92d22a5f522342ede74c5d2f16999
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jun 13 21:19:28 2023 -0400
+
+    renamed concepts to start with I and somewhat simpler names
+
+commit 3a496cf57ccb74b0d4b7f12dd40658448516cc18
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jun 13 21:33:06 2023 -0400
+
+    renamed Character_Latin1 to Latin1, and Character_ASCII to ASCII
+
+commit 9827ca6d70e366de1032d2bfe1cf725768917308
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jun 14 09:39:38 2023 -0400
+
+    more 'I' in concept name cleanups and docs
+
+commit d41da2b1cc90e48d706bcbd2194051a21f2799be
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jun 14 11:46:21 2023 -0400
+
+    new IInputIteratorOfT concept and experimenting iwth its use, and IIterableOfT more usage, in preps for losing ExtractValueType_t  etc
+
+commit 811a4c235f4057ba8bcdf0f64abc77e74bfbf4dd
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jun 14 12:21:41 2023 -0400
+
+    fix minor recent regression
+
+commit 26f56cff4661bc7bee025e93a2b475a7a86b8716
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jun 14 14:08:04 2023 -0400
+
+    use more of IInputIteratorOfT<> instead of input_iterator, and lse a few more uses of ExtractValueType_t and fix typo in last checkin
+
+commit 73425e35e034f33209fa6a1cc970865aac9a3180
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jun 14 14:36:45 2023 -0400
+
+    More conversions to using IInputIteratorOfT<T> and IIterableOfT<T> concepts
+
+commit c6633f061bbefdff40a1923d6182caa64c2d949b
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jun 14 16:55:51 2023 -0400
+
+    more use of IIterableOfT and IInputIteratorOfT, instead of ranges::range and input_iterator
+
+commit 7fe4b60e0283ae8684f9beb84906a4baa2cc68fa
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jun 14 19:53:15 2023 -0400
+
+    ExtractValueType_t  ranges::range to IIterableOfT conversion and input_iterator to IInputIteraterOfT conversion for Multiset code
+
+commit 2165a3e3704bf6ab589d9ba90be4f34cd76e0f53
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jun 14 20:45:34 2023 -0400
+
+    more progress losing ExtractValueType_t and using IInputIteratorOfT amd IIterableOfT in containers
+
+commit 2b8fe46a93fa6bde5d1abd355d827336f0d4215c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jun 14 21:04:53 2023 -0400
+
+    more progress losing ExtractValueType_t and using IInputIteratorOfT amd IIterableOfT in containers
+
+commit 99ae6f2ec34342f4e06302d566fd99e8a38cc1b6
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jun 14 22:51:00 2023 -0400
+
+    renamed IInputIteratorOfT -> IInputIterator and IIterableOfT -> IIterable
+
+commit e6d7d89e87fdc4d1936648fa5570e5e5152dfe2f
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jun 14 23:08:36 2023 -0400
+
+    comsetic and fix small regression
+
+commit 6fa8bdb122b905c89688abdbc3036144f0a8fbef
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jun 15 09:35:47 2023 -0400
+
+    cleanups
+
+commit 9d3c81a69968cdc618404a06575bcd194eb10a7a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jun 15 09:47:50 2023 -0400
+
+    added regression test to capture recent regression in sycnronized caller staleness cache caught in WTF
+
+commit 7b1967ead0e6eb21f879f48c3d572a568521e18b
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jun 15 10:09:40 2023 -0400
+
+    modest code cleanups (derived_from intead of is_base_of_v etc)
+
+commit 85fae78639469bffec85584f79d9858213322569
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jun 15 10:28:19 2023 -0400
+
+    minor cleanups
+
+commit 145d7205a83cc9043cf391c4f80f44c0ac557238
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jun 15 10:29:00 2023 -0400
+
+    cosmetic
+
+commit 7b7067da0e23e04602b5e7d184e435fc109889b8
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jun 15 10:50:04 2023 -0400
+
+    use remove_cvref_t instead of decay_t, since clearer and sufficeint in most (all) cases
+
+commit 1b854c5ed32b647c3ff46f7c8c35cd2854ba792e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jun 15 10:56:13 2023 -0400
+
+    fixed regression (rencet) in callerstaleness cache regtests
+
+commit 20a22f67b6514e281bf32d089a83229243bb5702
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jun 15 13:41:58 2023 -0400
+
+    derived_from is_base_of_v cleanup
+
+commit 7ef3e6153d46f8693bc15379ff69dda3502f200b
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jun 15 17:15:52 2023 -0400
+
+    finished replaceing use of is_base_of_v with derived_from
+
+commit f75768e0d22730f8f5f3a6b22caf352752d44f98
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jun 15 18:02:43 2023 -0400
+
+    qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy cleanups and alt layout for requires declarations testing
+
+commit 2fec5eee027179d77add066d4598a042dd89cc29
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jun 15 20:59:50 2023 -0400
+
+    cleanup containers (1/2) qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy workaroudns
+
+commit 6a59121c8bf322782cbee53071bd75eacd873405
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Jun 16 09:07:32 2023 -0400
+
+    fix minor recent regrssions
+
+commit 694f83131b3bc36a97d1ca93f895e218b7d56bde
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Jun 16 09:10:20 2023 -0400
+
+    fix minor recent regrssions
+
+commit 33d109c3d02505460fdf85645ab904ddeb4cbd83
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Jun 16 10:19:31 2023 -0400
+
+    maybe fix regressions with qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy cleanups
+
+commit 787d6e8e8b147ee6bda404ff566578a2b7a5f4fe
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Jun 16 10:20:00 2023 -0400
+
+    fixed and add to github worflkw matrix for clang++-15
+
+commit eb6abee0484b476ca821b78a7fbffcb092ff1bc2
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Jun 16 10:41:55 2023 -0400
+
+    more qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy cleanups
+
+commit b20cef71e01d72579f9c48663c6d62a78968fe75
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Jun 16 12:12:12 2023 -0400
+
+    cosmetic and disable clang++15 on github actions til I debug more
+
+commit c114ff2d9be451607ba54973461692181572689c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Jun 16 12:42:45 2023 -0400
+
+    lose unimplemented Concrete/Set_SparseArray cuz probably not worth doing
+
+commit 3a6162c4b188930e20dd0ec099fdec6504c16029
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Jun 16 12:43:47 2023 -0400
+
+    fixed another qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
+
+commit 0c411a8ce9c9a64656b94f875a965d03e9700db6
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Jun 16 17:16:33 2023 -0400
+
+    more qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy workarounds
+
+commit f855e335282fc93a0b5e9781100c49c7e7be2e02
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Jun 17 10:56:12 2023 -0400
+
+    renenable github action clang++-15-release-libstdc++
+
+commit 56fe0f32c498b84ca23cb0c24811e0872dab03c5
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Jun 17 10:56:41 2023 -0400
+
+    cosmetic
+
+commit cacc79ae442a7b50c0d704e39cb6116902e157c4
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Jun 17 11:32:10 2023 -0400
+
+    qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy doesnt appear needed anymore
+
+commit 1093b251706914e8ad45cbce09d1607d995d80b6
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Jun 17 11:32:41 2023 -0400
+
+    eliminate another use of enable_if_t
+
+commit 213d6aad4beb6394490a9f52f3e8ae6ef35cd0d9
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Jun 17 12:38:49 2023 -0400
+
+    appears broken on clang++ xcode 14 macos...
+    Revert "qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy doesnt appear needed anymore"
+    
+    This reverts commit cacc79ae442a7b50c0d704e39cb6116902e157c4.
+
+commit 0bdf50b9a63137143d01d4648ff7ddcd5c7f1dfd
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Jun 17 13:06:46 2023 -0400
+
+    more enable clang++15 builds
+
+commit 56ea03b8a3759b2f1aedfae313a37656d1708766
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Jun 17 15:15:32 2023 -0400
+
+    disable clang++-15-debug-libc on github for now cuz not workign - try on laptop first
+
+commit 3bd24df13d4e418f60a5b3b6220ea9566789b910
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Jun 17 16:31:41 2023 -0400
+
+    fixes to qCompilerAndStdLib_stdlib_compare_three_way_missing_Buggy qCompilerAndStdLib_stdlib_compare_three_way_present_but_Buggy and qCompilerAndStdLib_stdlib_ranges_pretty_broken_Buggy for clang++15 stdlib=c++
+
+commit 98ffd922e3008b3468d6c3c3d3baf6964da5fc9a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Jun 17 16:32:47 2023 -0400
+
+    Cosmetic
+
+commit db752037a368b4f063feced8a2c014295ae892c0
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jun 18 08:48:34 2023 -0400
+
+    fixed bug define qCompilerAndStdLib_to_chars_FP_Buggy for _LIBCPP_VERSION <= 15007 - still broken
+
+commit 26e1b99e965ca06701687551c699c7618e108322
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jun 18 08:58:23 2023 -0400
+
+    fixed a few more clang++15 bug define issues
+
+commit 92052f6974d95e2f1992ce81d4956e6b6a7c0e12
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jun 18 08:59:20 2023 -0400
+
+    turn clang++-15-debug-libc++ on laways to tst
+
+commit 7f4ca96f1c827c5a7ee43d0e2d8b9418d43612b9
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jun 18 09:12:02 2023 -0400
+
+    refix clang 15 bug defines
+
+commit 5b59e5cc5bff855676f010ae92400ff2fcf18aca
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jun 18 10:08:48 2023 -0400
+
+    qCompilerAndStdLib_template_Requires_constraint_not_treated_constexpr_Buggy clang+15 updates
+
+commit 449b710ba71e96ee0eef75a92a93ffdeef777015
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jun 18 10:09:31 2023 -0400
+
+    UTFConvert_codecvSupport_ code disabled cuz not fast, not useful, and deprecated
+
+commit 46714307c6795cd7510bdd65205af627117e1d77
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jun 18 10:26:40 2023 -0400
+
+    new bug define qCompilerAndStdLib_codeCvtDeprecationMaybe_Buggy for LIBCPP_VERSION 15007
+
+commit 28b67abcf1f03cc42fee1cc25eef57a26162199b
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jun 18 10:27:01 2023 -0400
+
+    cosmetic
+
+commit 913f23ac7ac8d35c43dde0fff03219cf41ca21d7
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jun 18 20:08:04 2023 -0400
+
+    lose qCompilerAndStdLib_stdlib_codecvt_byname_char8_Buggy bug define cuz not used and not documetned what it means
+
+commit 05e4879c068323e2d324239ea66df0d206994fad
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jun 18 20:16:28 2023 -0400
+
+    more celanups of regtests of :mkFromStdCodeCvt<std::codecvt_byname<
+
+commit 7d16b8eb25510136919f3329c3dfcf9625ce576e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jun 18 20:45:47 2023 -0400
+
+    more misc code cleanups - for diff compiler verisons, etc
+
+commit 02e1aa24f7e75e62aac743e1658137dca7bda17f
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sun Jun 18 20:49:24 2023 -0400
+
+    cosmeitc
+
+commit 96ffd0c5db04479b7bd339ace22407330f8b9704
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jun 19 06:39:20 2023 -0400
+
+    adjust version for qCompilerAndStdLib_regexp_Compile_bracket_set_Star_Buggy bug deinfe
+
+commit b0601e776c808e97dcb5ede7d76c58814e688e6b
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jun 19 12:43:19 2023 -0400
+
+    Concepts cleanups'
+
+commit 85bdb93171a20702d6073d2bfa46e61aa929cd6d
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jun 19 13:29:17 2023 -0400
+
+    deprecating some old manual concept stuff, and use officail concept names
+
+commit e81d14af7f91fcab7cdc791fbb77d8ded2ebfe8b
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jun 19 14:36:35 2023 -0400
+
+    more concepts cleanups
+
+commit b7b64b5331df059d1336e252db386d98cac0bff1
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jun 19 20:59:18 2023 -0400
+
+    New Configuration::HasEq concept to replace has_eq_v
+
+commit 549251f85b2e6d82aab7c37c92f66c9cc61735c8
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jun 19 22:04:54 2023 -0400
+
+    more concepts cleanups
+
+commit 550527f1097d5519f481b94e8c4effffb3b39cd6
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jun 20 00:00:11 2023 -0400
+
+    more celanups to Concepts module code
+
+commit c989d6b01680c0927cc63f07abcc05011faffae4
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jun 20 00:04:14 2023 -0400
+
+    concept name cleanups
+
+commit 52b353663bafea9a014dd9fddea6b14fb21835fb
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jun 20 10:51:28 2023 -0400
+
+    more cleanups for new concepts code
+
+commit 54fcd4bfcbf122af22d92e982f138b0b08afe189
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jun 20 11:25:32 2023 -0400
+
+    minor cosmetic cleanusp to concpet code
+
+commit ea98359b1420d4a89bb308bc1fd76e6d69d0e105
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jun 20 14:16:11 2023 -0400
+
+    more concept and enable_if_t cleanups
+
+commit 9f493f32cb6d447778b58b168e0c354fd39675b5
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jun 20 15:20:32 2023 -0400
+
+    cleanups  - mostly losing enable_if_t in favor of using concepts
+
+commit 8486b5004569fb24aafbbfa17c16486d61b088e5
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jun 20 19:45:26 2023 -0400
+
+    Memory::SharedPtr now deprecated, and no longer used (even conditionally)
+
+commit 8030b6dff8e3fa399bbb2162d94c3d2943b243af
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jun 20 21:22:17 2023 -0400
+
+    more concept cleanups
+
+commit 66f5a3435e307126fd471db67a564188d2b876df
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jun 20 21:50:11 2023 -0400
+
+    more cleanup of concept code, and more disabling of SharedPtr deprecation warnings
+
+commit 76d10af55d29588ef793770d54ca2abaabfe9db6
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jun 21 00:04:44 2023 -0400
+
+    more deprecation of pre-concept code
+
+commit 26578d38c964c093180d225e25c01f7d64bdc1ff
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jun 21 08:30:22 2023 -0400
+
+    cosmetic
+
+commit 942e5b8618642a2c93fe913856a437e3e9af3cde
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jun 21 10:17:24 2023 -0400
+
+    magic to refactor IIterbale with template instead of type T (IsAddable_v)
+
+commit 896245b6d4305312af5e2d55d2345aedca62aed0
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jun 21 11:44:15 2023 -0400
+
+    back to using old definition of IIterbale since new one not working except on visual studio
+
+commit 07e44f37bb7047c37668854f7c8ba47c0e840690
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jun 21 12:17:10 2023 -0400
+
+    back to using old definition of IIterbale since new one not working except on visual studio
+
+commit eae6da0c51596cf42369bef7153677e917c6a15d
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jun 21 12:32:27 2023 -0400
+
+    dont appear to need tuple workaround for HasLt_v_ HasEq_v_
+
+commit e9c19c2ad37877565aecf61fa2579edfda9e2249
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jun 21 21:11:57 2023 -0400
+
+    dont appear to need tuple workaround for HasLt_v_ HasEq_v_
+
+commit e2a6312f39e9e4db3c271a69b188fa50bcfd30fb
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jun 21 22:35:00 2023 -0400
+
+    dont need tuple support for HasLt concept
+
+commit dadc194760a76071e48a310ba14f9d8f328c2c74
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jun 21 22:39:44 2023 -0400
+
+    dont need tuple support for HasLt concept
+
+commit 303a6fb841aaa9879ba7be1bcab811ee312f420c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jun 22 07:28:10 2023 -0400
+
+    comsetic
+
+commit 0c1b76080a792a8d53d50977a247a22aa0eb41cc
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jun 22 10:05:13 2023 -0400
+
+    test fix to IIterableWith from stackoverflow hints
+
+commit 44105968daea89ec2c80976364d12c096131c698
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jun 22 11:31:15 2023 -0400
+
+    cleanups of recent IIterable code - IIterableOf, Configuration::ConvertibleTo, etc
+
+commit 8fcdb24c36c39dae3cb7180781c56b6659ba3e20
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jun 22 11:39:47 2023 -0400
+
+    Comments
+
+commit 126bc4325a0520b1ffbd1e5ad606a3f2d039c7ab
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jun 22 15:53:17 2023 -0400
+
+    Lose continaer IsAddable_v template variable - cannot get workgin reasonably with concpet/contraints, and not used anywhere else, so lose it - and really almost same concept as ConvertibleTo<value_type> so maybe just use that anyhow
+
+commit 1fe51528f829970de5e3809c2a0c49fde967f593
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jun 22 21:27:23 2023 -0400
+
+    https://stroika.atlassian.net/browse/STK-743: added Containers::Adapters::IAddableTo and used teh concept in ObjectVariantMapper
+
+commit 7479889b7e5f673a091712e3c5f78c6792a3fc09
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jun 22 21:31:44 2023 -0400
+
+    Cleanup to recent Addable changes
+
+commit 20603cd788cb476d22987306d47250e9d08a9a62
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Jun 23 09:45:23 2023 -0400
+
+    cleanups to Compare.h- deprecated IsPotentiallyComparerRelation
+
+commit 04c31b00b32d806b7e2ffd61f459e88509d89433
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Jun 23 09:46:21 2023 -0400
+
+    cleanups to Compare.h- deprecated IsPotentiallyComparerRelation
+
+commit 37b34cac556111625ca4595fac13e30bce6bac1e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jun 26 08:46:34 2023 -0400
+
+    docs
+
+commit af7bbc61e3d4cbccee478b15981691270ee355a6
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jun 26 08:47:38 2023 -0400
+
+    StringWithCStr_ fixed to use IUNICODECanUnambiguouslyConvertFrom instead of IUnicodeCodePointOrPlainChar and use ASCII/LATIN1 for sharedptr reps depending on keepspandata returned on c_str() wrapper
+
+commit a5794461031ee1db64f7c0ad4e6786e740e1e61f
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jun 26 09:01:26 2023 -0400
+
+    Comments, and tiny cleanups to string code, and lose unused BufferedString_
+
+commit 832c50c936ea9aa97ffa75ca939a7131a84837ae
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jun 26 09:45:58 2023 -0400
+
+    no longer need qCompilerAndStdLib_template_requresDefNeededonSpecializations_Buggy and cleanup String::mk_nocheck_ code/docs
+
+commit 96f97328adab9341b802b4565138e624db5795c7
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jun 26 10:51:16 2023 -0400
+
+    Lose concept ICharacterCompatible and add concept IPossibleCharacterRepresentation; update each place we were using ICharacterCompatible with one of the more appropriate character concepts
+
+commit 1bf8b0c14ca8f34b42bae3eccd00a9f0085496e4
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jun 26 11:42:36 2023 -0400
+
+    use UNICODE in place of Unicode in a few places
+
+commit 0331210f2225cc12d6cfb1464b67af4cede54d6c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jun 26 13:58:55 2023 -0400
+
+    new IStdBasicStringCompatibleCharacter concept and use in place of IUNICODECodePointOrPlainChar in a few places
+
+commit ae83d9e1271963d7275f61652a67ed36b1d2bf2a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jun 26 14:13:27 2023 -0400
+
+    lose IUNICODECodePointOrPlainChar - mostly use IStdBasicStringCompatibleCharacter in its place
+
+commit 951223a1105844d21168e78ff4dfdf2b0db78e10
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jun 26 14:55:12 2023 -0400
+
+    Minor String class CTOR cleanups
+
+commit fd836e4ee87fc445e0a1f91d2d7a40856b92361e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jun 26 16:08:50 2023 -0400
+
+    cleanup private String StringWithCStr_
+
+commit 0f3d3c73a4d436983e62425963f2255c9770358b
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jun 26 20:12:37 2023 -0400
+
+    qCompilerAndStdLib_templateConstructorSpecialization_Buggy workaround
+
+commit 8607215e408a14aa4619db92933f95b6336f437e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jun 27 11:54:01 2023 -0400
+
+    **NOT BACKWARD COMPAT CHANGE** ONE TEMPLATE ARG VARIATION OF Common::ComparisonRelationDeclaration renamed to Common::ComparisonRelationDeclarationBase; and several cleanups to concepts code
+
+commit 63d5ed4ab52b60c91673ae9c153c562a5e5241a0
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jun 27 17:37:41 2023 -0400
+
+    refactored ExtractComparisonTraits_v and only use that making ExtractComparisonTraits deprecated; Fixed IComparer and now use in in IEqualsComparer/IInOrderComparer
+
+commit b9443d5f26049119f2f3c59beb2d9f16538e331f
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jun 27 19:55:13 2023 -0400
+
+    more cleanups to concepts support in Common/Compare
+
+commit 2637345b664007111686a76b338dc8ddef5ed6a7
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jun 27 20:01:54 2023 -0400
+
+    lose a few more accidentally left around IsAddable_v definitions
+
+commit 1357c2ebf8f4b47ce933c7d2a1a70baaf3e3c3da
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jun 27 20:08:34 2023 -0400
+
+    comments
+
+commit 1223d05faca80495520a6131bb4276b9f77abfff
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jun 27 20:09:03 2023 -0400
+
+    comments
+
+commit 15f5075b0aadf20036b34af2d2ec9d6d59f9ed23
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jun 28 10:40:41 2023 -0400
+
+    code cleanps/concepts/docs for Characters/CodeCvt
+
+commit e1592ac658c175dcad91595c846d662945ceb12e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jun 28 11:09:50 2023 -0400
+
+    More CodeCvt cleanups
+
+commit c570d4777d785b4a2cd225d1827a259e7f60002f
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jun 28 11:45:12 2023 -0400
+
+    CodeCvt cleanups and regtests
+
+commit 4740bca5358f9800a5be267ba3685bc8e384b899
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jun 28 13:19:30 2023 -0400
+
+    CodeCvt now works with (by default) target charactertype Character
+
+commit f3f0c5b3d28bcd66b63d1ead2e1ae08fd6a78a76
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jun 28 13:38:16 2023 -0400
+
+    docs
+
+commit 75c48c701b7eedf457302cea783cfeb22e6345c7
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jun 28 14:44:40 2023 -0400
+
+    re-enable some codecvt support in UTFConverter - probably not useful, but probably not really deprecated so include in case someday that impl becomes faster
+
+commit a4dbeb00a5ea985d9f94720b8e0706c27265ef25
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jun 28 15:03:04 2023 -0400
+
+    better document and add assert tests - UTFConverter Convert() api throws if given partial characters
+
+commit f0f820bb9cd065b656e241d19172db63a5d62bb7
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jun 28 16:57:08 2023 -0400
+
+    Cleanup CodeCvt semantics, so partial byte input produces zero bytes consumed, and zero chars emitted, but no error
+
+commit 1161406e93a85ac099d9dac422054eb9457c4d35
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jun 28 16:58:29 2023 -0400
+
+    cosmetic
+
+commit 96d1a1a3bf8a97d0e35189672a566d3f462d0e48
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jun 28 22:26:20 2023 -0400
+
+    tood
+
+commit 6e5638c6baa1d9cf39221156ff3aed9f9eecb31c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jun 29 10:12:26 2023 -0400
+
+    new InlineBuffer/StackBuffer ShrinkTo methods, and operator=(SPAN) support
+
+commit 35858adac482bf4ac5f9a9f40e843115758d7334
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jun 29 10:45:37 2023 -0400
+
+    InlineBuffer/StackBuffer push_back overloads (span)
+
+commit 0c841944ccb811246847a689279d546b602df9c6
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jun 29 14:32:59 2023 -0400
+
+    new overloads of CodeCvt Characters2Bytes and Bytes2Characters and loosened req on args to /2 overloads
+
+commit cf1804c97c946167096b3503e824a9b48921187a
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jun 29 14:41:14 2023 -0400
+
+    fixed typo
+
+commit 8db6cddd64cbd81c4d58080fc68af61a06a9b212
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jun 29 15:37:51 2023 -0400
+
+    TextReader rewritten to use new CodeCvt instead of directly using std::codecvt - for speed and flexability and to avoid c++ deprecations
+
+commit d1c9ec25378719966d6612548d02566515c1eeaf
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jun 29 16:52:20 2023 -0400
+
+    lose LookupCodeConverter cuz codecvt stuff not easy to use (this API not well suited to codecvt limitaitons) and function largely replaced by new CodeCvt template; and fixed a bug with CodeCvt
+
+commit 69e8316dc8f1ffa223dacd1fdc788be049c9144d
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jun 29 18:29:17 2023 -0400
+
+    simplify some UTFConverter code
+
+commit a8b9a08c11a58a7b3bcbda0c576b599746995270
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jun 29 19:31:28 2023 -0400
+
+    lose use of deprecated codecvt_utf8_utf16 etc functions
+
+commit 34054fd8a02ca5085e64de066f305efe0a0bca0b
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jun 29 20:16:31 2023 -0400
+
+    cosmetic
+
+commit 0e58fe2ba54e9de3f7027bb2ea5eaebc0786e49e
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jun 29 21:13:22 2023 -0400
+
+    cosmetic
+
+commit 61b1a153c51f922eeccde888ce0d798a6caeb6bc
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Jun 30 00:09:22 2023 -0400
+
+    fixed configure lines for clang++-15 and c++23
+
+commit 766ef7f35130cb1f5101d8714a9f09a183ae52c3
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Jun 30 17:32:18 2023 -0400
+
+    minor fruitless tweaks to LockFreeDataStructures/forward_list
+
+commit e704a682f2646ce2713ccb90838b2051fda0b584
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Jun 30 22:41:06 2023 -0400
+
+    try expperimental fSingleSharedLockThread_ in AssertExternallySynchronizedMutex for speed tweak
+
+commit ac2d3aa923afcc670e06f70a891ea7260f865169
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Jul 1 12:39:00 2023 -0400
+
+    AssertExternallySynchronizedMutex further performance tweaks
+
+commit 412e2696a0af59aafaff1dede756c26c1f2956f0
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jul 4 08:03:01 2023 -0400
+
+    new Character::GetSurrogatePair() API and regtests and use in Variant/JSON/Writer
+
+commit 9329368bea8d49f0fbe6db562b7654146c4e38ed
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jul 4 08:46:12 2023 -0400
+
+    small celanup character concepts
+
+commit ed8bfc28edb293f04d697787cc271e583df3ffcd
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jul 4 08:54:34 2023 -0400
+
+    another minmor AssertExternallySynchronizedMutex speed tweak
+
+commit 1d22746e880f3618ff696eaef637ec5468edf35b
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jul 4 09:45:25 2023 -0400
+
+    comments
+
+commit ecea81d8643536f3c130663af2a24d11d7147eab
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jul 4 09:46:03 2023 -0400
+
+    loosen assert for String::c_str() for case of surrogates
+
+commit c43d0160007bd7ed0aba0f80b6ced9e447897aed
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Tue Jul 4 19:32:28 2023 -0400
+
+    docs
+
+commit dd3bea952b68ff91d97ac67149839bda1f59eb18
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jul 5 11:44:36 2023 -0400
+
+    docs
+
+commit 6dc66ff8b93927a2f0999ee812337487c61a6119
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jul 5 12:23:46 2023 -0400
+
+    Concept cleanups CountedValue
+
+commit fda19e745a748138971aacb888ae867dac6de57b
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jul 5 12:52:20 2023 -0400
+
+    Silence some warnings
+
+commit 4a653070215c3c6b00efb7e77bf88748852f18b9
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jul 5 14:26:13 2023 -0400
+
+    fixed Multiset<> code to handle alternate 'countertype' besides default unsinged int
+
+commit a5a365e833d699103659b69cd383b575e2e07de8
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jul 5 15:11:38 2023 -0400
+
+    Cosmetic
+
+commit c98ba2a55aaf486800189459ebabd001c88fc6a3
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jul 5 15:12:12 2023 -0400
+
+    workspace
+
+commit 38c966f7974a50d4b9c52507eea455de1421b2c9
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Wed Jul 5 15:12:29 2023 -0400
+
+    Minor cleanups to Stack code
+
+commit 15fa30f5a2311e87809c870ec74ac089087c6d6c
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jul 6 09:36:24 2023 -0400
+
+    Slight cleanup / performance boost of Stack factory and construction mechanism and more tests of said
+
+commit e6d15abf578318036f48ecc449eda0a581c07aae
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jul 6 10:29:13 2023 -0400
+
+    lots of small tweaks to Container factory code (untested tweaks - speculative)
+
+commit f4abf9bb6cc52eb1deefe2f4d04b8ed65155dc07
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jul 6 11:02:27 2023 -0400
+
+    Minor tweaks
+
+commit 9986d4c7c4ee2f65cbd5d82fec013b203924edaf
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Thu Jul 6 17:08:10 2023 -0400
+
+    better workaround for qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy for Stack template
+
+commit 7e5d60441de99328ad00f4bdffc2e575f1122e8d
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Jul 7 08:07:30 2023 -0400
+
+    Minor tweaks to Stack docs and code
+
+commit b5ca769e976da1ccf3a156b27e0dd4d790426c3b
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Jul 7 10:21:37 2023 -0400
+
+    fixed typo
+
+commit 126df7b7e7903e0103cb2c45b33518af594546cf
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Jul 7 10:22:00 2023 -0400
+
+    cosetci
+
+commit dbd413705abd3ecf908fa2f55c930fd6011368ea
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Jul 7 11:00:20 2023 -0400
+
+    cleanups, and comments and concepts on KeyedCollection (mostly add requires in concrete constructors)
+
+commit 8b7567ed68d446e3582c2b10e097cade0a692f3f
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Jul 7 11:26:22 2023 -0400
+
+    minor tweak to draft lockfree linked list code
+
+commit 0ff94526d639762900da40d4309597569179dc54
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Fri Jul 7 17:34:55 2023 -0400
+
+    lose (**not backward compatible change**) shared_ptr argument Iterable<>::IRep::MakeIterator and Find() methods
+
+commit 9299a848d91967d55bf7d5a48dbaaf0de5beeec8
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Jul 8 11:12:22 2023 -0400
+
+    apprently -unqualified-std-cast-ca only needed clang++ 15 or greater (unknown in 14)
+
+commit f3fc3fa0f2e84a68593ab641c141b36629e51740
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Sat Jul 8 17:59:27 2023 -0400
+
+    Add debugging code to StringRepHelperAllFitInSize_ rep makeiterator code - so it tracks count of running iterators and gives better error message when modified during use. Then deleted regression test that tested this case (since it generates failure/crash but not reliably) - dont allow modifying strings when running existing iterator;  had to tweak sizes assumed asserts for extra debug code added
+
+commit 89a3b8e49ff46c936f7d056819e7cb8f6ad1c6d3
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jul 10 10:48:03 2023 -0400
+
+    adjust configure script for setting Wno-unqualified-std-cast-call so works with linux and macos clang version#s
+
+commit 7c975719e3e64bbfb0f7694e5555e90e39754056
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jul 10 13:48:00 2023 -0400
+
+    new Memory::SpanReInterpretCast utility; and use to fix a few corner cases of CodeCvt<CHAR_T>::UTF2UTFRep_
+
+commit e9d09aaf93f2ea9e704534103e3917661c6bc061
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jul 10 14:13:52 2023 -0400
+
+    More CodeCvt cleanups
+
+commit 619a43afde45e44b8b614abe9a7a9826a94618ee
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jul 10 14:26:58 2023 -0400
+
+    update copyright
+
+commit 3e3dca251a9b832902a505612be1bb97bdc9d4ff
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jul 10 14:35:54 2023 -0400
+
+    todo docs
+
+commit 181b2329e9e47c617d4f75f6f50d52e10a3f2d22
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jul 10 14:36:44 2023 -0400
+
+    cosmetic
+
+commit 6426d1f6b693d3c76e5871cab7aaceea54ef6036
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jul 10 14:37:05 2023 -0400
+
+    start 3.0d1 release
+
+commit cf680f06bb9b859db2f08ca09f8a75f2b7964158
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jul 10 14:48:21 2023 -0400
+
+    vis studio docker container VS_17_6_4
+
+commit d317e776c4ac3aa20f51bf68b45df6912b2409ef
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jul 10 14:56:05 2023 -0400
+
+    fixed makefile typo
+
+commit adb2598a1191f49975083858aec58c8f35a9bca3
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jul 10 16:01:11 2023 -0400
+
+    cosmetic and workaround visual studio compiler bug
+
+commit 54c2dc08ab19f38fda0bc8914153ccf802d4aa31
+Author: Lewis Pringle <lewis@sophists.com>
+Date:   Mon Jul 10 16:03:50 2023 -0400
+
+    Silence warning
+#endif
+
+
+
 ### 2.1.13 {2023-04-14}
 
 #### TLDR
