@@ -70,11 +70,12 @@ checkin from one spot.
 - \$TEST_TARGET=Ubuntu2004-Cross-Compile2RaspberryPi
 
   (remote execute on machine hercules (and then that will test on raspberrypi) - using docker and copy back results; takes about 3 HRs) - note - many of these tests fail as of 2019-04-22, because its hard to get the latest version of libc on a raspberrypi. Ignore those failures.
+  (SKIP FOR NOW CUZ NO ACCEPTABLE CROSS COMPILERS ON 2004)--LGP 2023-07-11
 
   ```bash
   RUN_IN_DOCKER=1 \
       USE_TEST_BASENAME=Ubuntu2004-Cross-Compile2RaspberryPi \
-      RASPBERRYPI_REMOTE_MACHINE=192.168.244.24 \
+      RASPBERRYPI_REMOTE_MACHINE=192.168.244.52 \
       BUILD_CONFIGURATIONS_MAKEFILE_TARGET=raspberrypi-cross-compile-test-configurations \
       CONTAINER_IMAGE=sophistsolutionsinc/stroika-buildvm-ubuntu2004-regression-tests \
       MACHINE=Hercules \
@@ -88,7 +89,7 @@ checkin from one spot.
   ```bash
   RUN_IN_DOCKER=1 \
       USE_TEST_BASENAME=Ubuntu2204-Cross-Compile2RaspberryPi \
-      RASPBERRYPI_REMOTE_MACHINE=192.168.244.24 \
+      RASPBERRYPI_REMOTE_MACHINE=192.168.244.52 \
       BUILD_CONFIGURATIONS_MAKEFILE_TARGET=raspberrypi-cross-compile-test-configurations \
       CONTAINER_IMAGE=sophistsolutionsinc/stroika-buildvm-ubuntu2204-regression-tests \
       MACHINE=Hercules \
