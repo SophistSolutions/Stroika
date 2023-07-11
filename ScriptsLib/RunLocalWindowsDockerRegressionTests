@@ -20,7 +20,7 @@ DOCKER="${DOCKER:-docker.exe}"
 
 # FYI possible error: https://stackoverflow.com/questions/67162945/docker-for-windows-the-requested-resource-is-in-use-error-when-mem-limit-is-set
 
-echo "Running docker build (${CONTAINER_IMAGE} for ${USE_TEST_BASENAME})(usually takes about 3 hrs)"
+echo "Running docker build (${CONTAINER_IMAGE} for ${USE_TEST_BASENAME})(usually takes about 5 hrs)"
 $DOCKER run \
     --detach \
     --interactive \
