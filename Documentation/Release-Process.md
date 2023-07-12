@@ -7,7 +7,7 @@ Rough steps I go through do do each release (rough draft)
 Prepare them by doing
 
 ```bash
-git log --reverse v2.1-Release...HEAD > a
+git log --reverse v3-Release...HEAD > a
 ```
 
 Then summarize them into Release-Notes.md
@@ -18,15 +18,7 @@ Just delete the 'x' in the version#, and save/checkin/commit.
 
 ## Docker tag the latest containers, and push
 
-in DockerBuildContainers (both windows dev vm and Hercules)
-
-```bash
-(sometimes remove all existing containers/images first)
-make pull-base-images
-make tag-images
-make build-images
-make push-images
-```
+Rebuild and publish latest containers using the github action 'build-v3-Docker-Containers' (and blow away and reload docker containers after build on local systems doing builds or rebuild locally).
 
 ## Do most builds on hercules-dev VM
 
@@ -54,8 +46,8 @@ Change to next version, including the suffix 'x' on version name.
 ## Checkin results
 
 ```bash
-VER=2.1.13 sh -c 'mv Tests/HistoricalPerformanceRegressionTestResults/PerformanceDump-*$VER*.txt Tests/HistoricalPerformanceRegressionTestResults/2.1/ && git add Tests/HistoricalPerformanceRegressionTestResults/2.1/PerformanceDump-*$VER.txt'
-VER=2.1.13 sh -c 'mv Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-*-$VER-OUT.txt Tests/HistoricalRegressionTestResults/2.1/ && git add Tests/HistoricalRegressionTestResults/2.1/REGRESSION-TESTS-*-$VER-OUT.txt'
+VER=3.0.0d1 sh -c 'mv Tests/HistoricalPerformanceRegressionTestResults/PerformanceDump-*$VER*.txt Tests/HistoricalPerformanceRegressionTestResults/2.1/ && git add Tests/HistoricalPerformanceRegressionTestResults/2.1/PerformanceDump-*$VER.txt'
+VER=3.0.0d1 sh -c 'mv Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-*-$VER-OUT.txt Tests/HistoricalRegressionTestResults/2.1/ && git add Tests/HistoricalRegressionTestResults/2.1/REGRESSION-TESTS-*-$VER-OUT.txt'
 ```
 
 

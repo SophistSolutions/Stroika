@@ -2871,136 +2871,40 @@ Date:   Sun Jan 29 22:10:02 2023 -0500
 
     use more Memory::CopySpanData; and one qCompilerAndStdLib_spanOfContainer_Buggy workaround
 
-commit f8660bcd062214cea4d33908e22a293bb8023c57
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Sun Jan 29 22:17:15 2023 -0500
-
-    qCompilerAndStdLib_spanOfContainer_Buggy workarounds
-
-commit c748fe29393fd2c6203b161365c23fec90a40bbd
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Sun Jan 29 23:17:10 2023 -0500
-
-    worakround quirk of clang++10
-
-commit f66a97ab6c3c59a44d84fd5dc8035b6d9674a897
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jan 29 23:18:19 2023 -0500
-
-    Cosmetic
-
 commit 8e5b7acbed38bb17db686a4f098ce131ac55eede
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sun Jan 29 23:19:24 2023 -0500
-
     avoid needless operator= in VariantValue::CTOR (boost value), and cleanup use of operator= defs for VariantValue = use more concepts and hopefully fixed some copy/move stuff
 
-commit e062c2f0e8c89f666a123b4b0e9d78e14bfc50a5
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jan 29 23:25:54 2023 -0500
-
-    Comments
-
-commit d637516f5d3f230b096511db591094527fe89cfc
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Mon Jan 30 00:38:53 2023 -0500
-
-    minor
-
 commit c337eea3bebdedfa4bb35a16b0fff81f3532fd44
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Mon Jan 30 10:04:43 2023 -0500
-
     Minor tweaks to  VariantValue performance (final and mk_ instead of VariantValue CTOR
 
 commit d573396ca6454de478f21940466d3dd760513c3a
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Mon Jan 30 22:41:03 2023 -0500
-
     Draft/test of using explicit _IterableRepSharedPtr arg to MakeIterator and other Iterable<>::IRep methods that return iterators, so they can save the shared_ptr inside (thus losing the need for shared_from_this) - prototypes with the string code. Still testing to see how this impacts performance
 
 commit fa0d128616e495835d026a0e80c8bef97da56f39
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Tue Jan 31 13:29:57 2023 -0500
-
     got working and performs on balance better (for strings) losing enable_shared_from_this and doing explicitly - todo for other iterbale/containers; and because of this re-tuned the size of blocks for strings in reps
 
-commit cc965e085828dadc6fea6575de4cec8b721bb9fb
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jan 31 13:33:34 2023 -0500
-
-    cosmetic mostly
-
-commit 99826270136966e55966a79b9ec81dca066ca1a4
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jan 31 13:36:32 2023 -0500
-
-    cosmetic
-
-commit 80dc761187f581b1c4dbe6afb127aa43c16b9cc3
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Feb 1 08:13:26 2023 -0500
-
-    silence warning
-
-commit 5b6aaa0831088e660cf7b20484366ade6e398d31
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Feb 1 08:13:37 2023 -0500
-
-    cosmetic
-
-commit 78fbd8bacc5249df26343c27904ac16bf23c2919
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Feb 1 08:17:15 2023 -0500
-
-    maybe_unused
-
 commit 8ca729a96067060728d41f9042dda4e62b9bc298
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Wed Feb 1 09:17:34 2023 -0500
-
     more updates to scripts/docs to clarify require XCode 14 or later, apple clang 14 or later, c++20 or later, and lose qCompiler_LimitLengthBeforeMainCrash_Buggy (cuz only applied to older XCode)
 
-commit 7d1c77b31444d9b3979cd05fa41561ce36919911
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Feb 1 12:04:10 2023 -0500
-
-    cosmetic
-
-commit ad0c879e2f612bcde7e74decfaae534ced4e5b5b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Feb 1 12:04:36 2023 -0500
-
-    todo comments
-
-commit a77625fa4d5bbcbcb91b000779688ea49cbb5baa
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Feb 1 12:05:31 2023 -0500
-
-    make format-code
-
 commit dfcbdae35db93a8899eb70065df8dcb8b0142507
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Wed Feb 1 12:26:57 2023 -0500
-
     Mapping no longer uses enable_shared_from_this
 
 commit 14fd656e3b7b8f531fddbfb61ce0eefbffc02076
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Wed Feb 1 12:38:56 2023 -0500
-
     fixed overaggressive LIBCPP_VERSION check - need 13 supported for xcode 14
 
 commit dee7b4dc569d538899af33467cac6205b73e076b
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Wed Feb 1 22:50:05 2023 -0500
-
     lose shared_from_this support in Association
 
 commit dfa7e79b5ddb0d43e52fafdc2237fb7404e96e5a
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Thu Feb 2 08:35:53 2023 -0500
-
     get rid of used of shared_from_this in Bijection
 
 commit 9b22541f96afb5d0184bc16c622f1fe24278d94d
@@ -3110,12 +3014,6 @@ Author: Lewis Pringle <lewis@sophists.com>
 Date:   Thu Feb 2 14:15:25 2023 -0500
 
     Deprecated Iterable::MakeSmartPtr and switched to using Memory::MakeSharedPtr
-
-commit e911341aa2178995965f3089aa13e6f602dfed85
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Feb 2 14:17:15 2023 -0500
-
-    cosmetic
 
 commit 958fffa1796814fdb68e790fec1de750f1898988
 Author: Lewis Pringle <lewis@sophists.com>
