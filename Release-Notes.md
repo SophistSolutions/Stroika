@@ -59,6 +59,29 @@ especially those they need to be aware of when upgrading.
       - https://stroika.atlassian.net/browse/STK-944 -- use lock_guard not shared_lock in Cache/SynchronizedTimedCache (probably reverse in Stroika v3)
       - Make Foundation::Cache 'Statistics' classes use atomic, and be internally synchronized
       - Cache::TimedCache now aggregates StatsType instead of inheriting (cuz now can use c++20 [[no_unique_address]])
+    - Characters
+      - Character
+        - Character::AsASCIIQuietly uses requires
+      - String
+        - refactored String::Concatenate (and generalized) - and made a few String methods like empty () etc noexcept
+        - a few minor String fixes, including refactoring String::Copy so much more general/span friendly
+        - String docs, cosmetic, and one or two noexcept fixes
+        - completes first draft of changes to String public APIs (maybe all but deprecating mutability)
+        - lose pair<const CHAR_TYPE*, const CHAR_TYPE*> String::GetData () variation/overload, and updated all the code that used it to use the new style GetData(); added regtests for String::Replace(); minor cleanups;
+        - **not backward compatible - but minor** - lose Characters/Concrete folder - and moved the stuff we still need either private into String.cpp or for String_Constnat and String_ExternalMemoryOwnership_ApplicationLifetime - into the .h file (at least temporarily)
+        - deprecated String_Constant and replaced wtih String::FromStringConstant static method (like String::FromASCII); and now migrated ALL reps so hidden inside String.cpp file
+        - fixed bug / regression in String_Constant/String_ExternalMemoryOwnership_ApplicationLifetime
+        - big cleanup of String rep internals (and related) - especailly progress on BufferedStringRep_
+        - refactoring of the string reps
+        - refactoring  of String::IRep code - in preps for https://stroika.atlassian.net/browse/STK-684 string rep changes
+        - cleanups for https://stroika.atlassian.net/browse/STK-965 String::c_str() changes
+        - https://stroika.atlassian.net/browse/STK-965 and https://stroika.atlassian.net/browse/STK-684: **incompatible changes** but mostly minor - lose String::data method (never used); lose support for String::As<const wchar_t*> () and String::As<const Character*> () - harder to tell but apparently never used; and added more utfxstring overloads for As() and cleaned up remaining c_str() usage
+        - https://stroika.atlassian.net/browse/STK-965 https://stroika.atlassian.net/browse/STK-684 - cleanup String constructors.
+            <br>BIG change (not backward compatible): InlineBuffer/StackBuffer now have operator T* explicit; and
+                add method data() to let you access the pointer (to avoid confusion with a->b->a constructor
+                issue).
+            <br>Also data returns new type field (pointer) - but minor.
+            <br>A few other small fixes/cleanups.
     - Common
       - Common::Comparison
         - lose Common::strong_ordering and Common::kLess, kEquals, kGreater (**not backwards compatible**)
@@ -751,7 +774,6 @@ Date:   Tue Dec 20 19:26:37 2022 -0500
     code factoring - ConvertQuietly_StroikaPortable_helper_
 
 commit 2636595483d8713a0ee2b9ff189c2fe9174d3e44
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Tue Dec 20 19:33:41 2022 -0500
 
     ConvertQuietly_codeCvt_helper_ factoring
@@ -922,34 +944,6 @@ commit e31c8f22c6b944eea44ab7472bf246c5b8438869
 Date:   Thu Dec 22 17:47:14 2022 -0500
     renamed qCompilerAndStdLib_stdlibVsBoostSpanSelect_Buggy -> qCompilerAndStdLib_spanOfContainer_Buggy
 
-commit ebca2c13b5af396d1f28972248c7c93abf94cb56
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Dec 22 18:11:28 2022 -0500
-    cleanups for https://stroika.atlassian.net/browse/STK-965 String::c_str() changes
-
-commit 0c72da4f8a80ed9583ba6b2d4306a4fd0ee3062f
-Date:   Thu Dec 22 22:32:30 2022 -0500
-    more adapt to String::c_str() changes
-
-commit 1dff10522a49de2400533d3f3819a9ed8dd943f1
-Date:   Fri Dec 23 10:00:52 2022 -0500
-    https://stroika.atlassian.net/browse/STK-965 and https://stroika.atlassian.net/browse/STK-684: **incompatible changes** but mostly minor - lose String::data method (never used); lose support for String::As<const wchar_t*> () and String::As<const Character*> () - harder to tell but apparently never used; and added more utfxstring overloads for As() and cleaned up remaining c_str() usage
-
-commit 6aa058eae548f37bcd239966218e62024034537b
-Date:   Sat Dec 24 10:16:38 2022 -0500
-    https://stroika.atlassian.net/browse/STK-965 https://stroika.atlassian.net/browse/STK-684 - cleanup String
-    constructors.
-    
-    BIG change (not backward compatible): InlineBuffer/StackBuffer now have operator T* explicit; and
-    add method data() to let you access the pointer (to avoid confusion with a->b->a constructor
-    issue).
-    
-    Also data returns new type field (pointer) - but minor.
-    
-    A few other small fixes/cleanups.
-
-commit 0e6d7b4b7997c495f675962243fd6bfb411cbc57
-    fixed another use of c_str()
 
 commit 555da5c8741566378e9df07f6082e5ca3950e154
     more Led refactoring - lose Led_ThrowIfErrorHRESULT and use Platform::Windows::ThrowIfErrorHRESULT
@@ -1191,35 +1185,9 @@ Date:   Sun Jan 1 18:25:45 2023 -0500
 
     cleanup Characters::CString:Length to use template requires instead of a bunch of specializations - much better!
 
-commit 12c2f5232381cdb7a6a53aa675f4c0b0ef8ddc92
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jan 1 18:26:27 2023 -0500
-
-    fixed small bug in UTFConverter::Convert ()
-
-commit 413e82bf7ae66c0ffb2b544443e45902fbb73d1a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jan 1 18:28:49 2023 -0500
-
-    progress on new span/concept based String::mk_ () - and got all c-string arg CTORs for String rewritten much simpler using this technique
-
-commit 35a0f19ebcac48a42e1354a74dde5c610abd2daa
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Sun Jan 1 18:42:04 2023 -0500
-
-    get recent changes compiling/working on unix/clang
-
 commit 30ed732945932b24ad6b0f8269b804fe3ababe24
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sun Jan 1 21:41:37 2023 -0500
-
     qCompilerAndStdLib_spanOfContainer_Buggy bwa
-
-commit 94ced3c50402542c523549ef6efc3cf58efa2aa7
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jan 2 09:17:25 2023 -0500
-
-    fixed Character case of UTFConverter::Convert
 
 commit 6f26390069ba9ed80c6d28ba603c5b9a107bde60
 Author: Lewis Pringle <lewis@sophists.com>
@@ -1228,268 +1196,53 @@ Date:   Mon Jan 2 09:27:49 2023 -0500
     more progress refactoring String constructors and mk_ provite routines
 
 commit a28628819fe664ea7ea189fe8ef1abc6aba6b132
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Mon Jan 2 09:52:45 2023 -0500
-
     cosmetic and lose Memory::Private::VC_BWA_std_copy utiliuty
 
-commit e624af3895d3d506bd4515e1a0ecf3e05d39b9fd
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jan 2 10:40:20 2023 -0500
-
-    comments
-
 commit 73b13190ab0f4089c1e35e2d243f5de5c86be59e
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Mon Jan 2 10:40:40 2023 -0500
-
     more cleanup/generalizing of String CTORs
 
-commit 303099336591be7598b0a8346c983e691eb889a0
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jan 2 10:42:01 2023 -0500
-
-    fixed  typo and make format-code
-
 commit 7ad6d1cfe829adba6b05864f6c0c9f33df380c7e
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Mon Jan 2 11:21:19 2023 -0500
-
     lose some legacy Memory::Private::VC_BWA_std_copy referenes i missed; add default value and a few other cleanups to some old Led code
 
 commit bbf535d0e1454d9840d8f3b66e65b80198dcfa70
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Mon Jan 2 11:32:00 2023 -0500
-
     deprecated string {from/to} - use span instead - and update code to avoid deprecated calls
 
-commit 01f0fbc26b6a04df5721b2992b15a9ead22dab8a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jan 2 11:32:11 2023 -0500
-
-    fixed typo
-
-commit e839e92ca9723b0aa8e0eb55fba5aa10d9d4ecd9
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jan 2 11:34:15 2023 -0500
-
-    make format-code
-
-commit b03e08777ce76de87f920694b3650a8883a6400d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jan 2 11:45:42 2023 -0500
-
-    comments
-
-commit 8893c7f46a3d1c589e20f9c42f8d0263a6ebb8d1
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jan 2 11:45:57 2023 -0500
-
-    cosmetic
-
-commit 7f452426ece128b974624bafcaf5598c27a845d8
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jan 2 11:49:11 2023 -0500
-
-    fixed a few errant noexcept annotations
-
-commit 844a76b626d329ebec55023a18feb8e9658f54b6
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jan 2 11:51:01 2023 -0500
-
-    fixed another noexcept usage
-
-commit 833aed82be7368ef07b5f793a7a54be2a300dd6f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jan 2 11:53:40 2023 -0500
-
-    fix typo/spelling
-
-commit 4ef487555b0ac0996b432dbfa340e5457a46bf88
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Mon Jan 2 13:40:57 2023 -0500
-
-    use noexcept in a few places to make clang libc++ happier about span usage, and other cleanups to span using
-
-commit a58562be2035bc3250bc99f97c27e61eacad1fd8
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jan 2 13:28:03 2023 -0500
-
-    cosmetic
-
 commit 76174a01f953588906082c1636515e96810dbcb9
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Mon Jan 2 14:01:55 2023 -0500
-
     use noexcept in a few places where its known to be safe and esp relevent like StackBuffer/InlineBuffer data()/size()/capacity methods since that appears to affect buggy behavior in libc++ (and fixing it in stroika just a plus so better to avoid the bugs if I can)
 
-commit 913307fc558bfff01ff932f29f5163f0edddf9cb
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Mon Jan 2 14:04:17 2023 -0500
-
-    fixed typo
-
 commit 75ef018d8248eb9a16fce54e517e4348095a9060
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
 Date:   Mon Jan 2 14:16:54 2023 -0500
-
     qCompilerAndStdLib_spanOfContainer_Buggy workarounds
 
-commit 163cf048cb086ed374ccebfe49cb1f3bd43ca3bb
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jan 2 14:27:19 2023 -0500
-
-    cosmetic, and cleanup span usage
-
-commit a676f1e87fb5e776c08ccc4bfddab93d23403c32
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jan 2 14:41:34 2023 -0500
-
-    more celanups of qCompilerAndStdLib_spanOfContainer_Buggy
-
-commit b3f13db36d2b347e165c6ff776bcb81825c03b6b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jan 2 14:44:40 2023 -0500
-
-    fixed typo
-
-commit 3c2128d0a3842e641863ef26698205299a860119
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jan 2 14:50:41 2023 -0500
-
-    qCompilerAndStdLib_spanOfContainer_Buggy workaround
-
-commit dc0b5f27c91875fcea7f315c9e3bf350ec5d3d31
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Mon Jan 2 14:51:06 2023 -0500
-
-    qCompilerAndStdLib_spanOfContainer_Buggy workaround
-
-commit 8a7fb0797e13d1f10d9dd2caf17624eeb7703a41
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jan 2 14:52:59 2023 -0500
-
-    qCompilerAndStdLib_spanOfContainer_Buggy workaround
-
 commit 21ccb0637ec82e675167a3016fdba98720d68db1
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Mon Jan 2 17:23:26 2023 -0500
-
     GUID noexcept usage, and made it immutable (and fixed one dependency on its mutability)
-
-commit c506da2273f9fd9fedf4a20b8335f25fed0ea936
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jan 2 17:23:56 2023 -0500
-
-    cosmetic
-
-commit a60dca1305f4685e2e27c04ec7fe6ecc73a64c6b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jan 2 17:41:13 2023 -0500
 
     modernized GUID class (As template with requires, and noexcept and other cleanups
 
-commit a6e2a06c0f8e1750cf03c9385a0bbd5a105f3884
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jan 2 17:42:24 2023 -0500
-
-    uniform init
-
-commit a44420b28817c4ac8fc83fbfe21ab8e22a6b47a0
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jan 2 17:42:35 2023 -0500
-
-    .vscode
-
-commit 28b5e9c0ff0eeb6dfb04c73989045224bfc91f53
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jan 2 17:50:57 2023 -0500
-
-    tweak last checkin so Common::GUID::As<BLOB> can go in CPP file; not sure worth it.
-
 commit 1bb01568bb55d8d8a80d5149419ec031093169ef
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Mon Jan 2 17:56:00 2023 -0500
-
     added data() member to GUID so can be treated like a (constnat) span of bytes
 
-commit e849d263506bde44a80369171f9f7e60d5359eaa
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jan 2 17:57:38 2023 -0500
-
-    celanup last checkin
-
 commit 9ff7ef1f19ee6e50ac6abe5568dd67f6968db893
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Mon Jan 2 18:05:42 2023 -0500
-
     qCompilerAndStdLib_template_requresDefNeededonSpecializations_Buggy workaround
 
-commit 91fb7af8efea94b18f99ba876692f4c9e1d1886b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jan 2 18:08:52 2023 -0500
-
-    fixed
-
-commit c4a3dd1a928f16c15f4e9fe815373ed9e64ddf5e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jan 2 18:10:38 2023 -0500
-
-    fixed typo
-
-commit 2051aa88f1d4f01c5c2544b58406c11f69a524d8
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jan 2 18:11:06 2023 -0500
-
-    amke format-code
-
-commit 3ee8e5e11c7f7b6e3d7e1980736c19e11f17f494
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jan 2 21:57:42 2023 -0500
-
-    cosmetic
-
-commit 08b55ab86ce463f40b1000834c861dac6aac51d8
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jan 2 21:58:06 2023 -0500
-
-    cosmetic
-
 commit 4c5ac2b293f072383a486e760de42552d44844a8
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Mon Jan 2 21:59:38 2023 -0500
-
     Refactored String::FromUTF8() and deprecated /2 overload (use span instead)
 
-commit 8b8ca0e422299e996b5907234a7a4b22ec07282f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jan 2 22:02:45 2023 -0500
-
-    cosmetic
-
-commit fedb1a9418701c1c24872fe7674bf61869726fa7
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jan 2 22:04:39 2023 -0500
-
-    fix a few more issues with String::FromUTF8 use
-
-commit d08a09c11e47cf9589491c36ffee925135b66506
-Merge: 8b8ca0e422 fedb1a9418
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jan 2 22:06:54 2023 -0500
-
-    Merge branch 'v3-Dev' of github.com:SophistSolutions/Stroika into v3-Dev
-
 commit d618e95774b8cc42e8e2128f6b96513e26384f85
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Mon Jan 2 22:26:35 2023 -0500
-
     refactor String::FromSDKString
 
 commit 2babfcfeb61117336e479ce02ca2b83e0e3efc47
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Mon Jan 2 22:54:11 2023 -0500
-
     String::FromNarrowString/FromNarrowSDKString refactored/deprecate /2 overload
 
 commit 356e003d3082777e64cb668c224b5461d297ff01
@@ -1510,198 +1263,10 @@ Date:   Tue Jan 3 10:32:32 2023 -0500
 
     new utility Memory::ConstSpan - to workaround what APPEARS to be a defect in the design of span<> - see https://stackoverflow.com/questions/62688814/stdspanconst-t-as-parameter-in-function-template
 
-commit fb1424872285cefc87cd00788bc9af9cea7087f5
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jan 3 10:34:48 2023 -0500
 
-    more cleanups / refactoring of String code - FromASCII and FromISOLAtin1 and use
 
-commit d4dabc30e5c0cb441ccbf98e2cf93f6807183e8f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jan 3 10:39:30 2023 -0500
 
-    cleanup some deprecated uses of String::FromISOLatin1
 
-commit ef1c6c158e4fbd8fc93eb5f0703b10b04bf22d71
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jan 3 10:41:32 2023 -0500
-
-    cleanup some deprecated uses of String::FromISOLatin1
-
-commit 72cf98b7b057798e8902544009f38eefdf08e59b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jan 3 10:45:27 2023 -0500
-
-    comments
-
-commit 59a925087db9ecfe365e705b2f4deb9026776803
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jan 3 11:23:00 2023 -0500
-
-    refactored String::Concatenate (and generalized) - and made a few String methods like empty () etc noexcept
-
-commit fa7acafced64298d11973246940c12da09fe526a
-Merge: 59a925087d ef1c6c158e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jan 3 11:24:01 2023 -0500
-
-    Merge branch 'v3-Dev' of github.com:SophistSolutions/Stroika into v3-Dev
-
-commit 77f679982ff448eeeb9120838decc3cd4dfc0f8e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jan 3 11:43:53 2023 -0500
-
-    String docs, cosmetic, and one or two noexcept fixes
-
-commit b428cbc5981539ef4cd5dcb1403b251c0b3842fc
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jan 3 12:25:52 2023 -0500
-
-    a few minor String fixes, including refactoring String::Copy so much more general/span friendly
-
-commit ddb1ff51a7a09ffad96ca3f0cd5b54e4d31e3084
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jan 3 13:28:26 2023 -0500
-
-    more String class cleanup/refactoring
-
-commit 3b85c0234b21b2ecb5d1c80be36fc3ce49faa8cf
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jan 3 14:00:43 2023 -0500
-
-    cosmetic
-
-commit e3f8ed6e2ae4b9364ac19e70319017be8dafcc16
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jan 3 14:23:08 2023 -0500
-
-    Character::AsASCIIQuietly uses requires
-
-commit c1d492626cbe3febb75af2293106956b592a0c3b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jan 3 14:23:40 2023 -0500
-
-    completes first draft of changes to String public APIs (maybe all but deprecating mutability)
-
-commit a2fe81232f869a5c46835ea3c9630f3075544b6c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jan 3 14:47:44 2023 -0500
-
-    replace use of deprecated String::mk_ api
-
-commit 262b5f02729227f134e67b7837ec6cbde160664e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jan 3 14:55:15 2023 -0500
-
-    cosmetic
-
-commit cf5bbbcd96a80e61c6a5ff5e751d6c6f826a62bc
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jan 3 15:51:55 2023 -0500
-
-    lose pair<const CHAR_TYPE*, const CHAR_TYPE*> String::GetData () variation/overload, and updated all the code that used it to use the new style GetData(); added regtests for String::Replace(); minor cleanups;
-
-commit 285e426bead96d5d6479f364a36ab2d70e4414a9
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jan 3 15:55:32 2023 -0500
-
-    cosmetic
-
-commit ef569d1a1d7cd18afcc9191f64446457e4b06381
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jan 3 16:55:02 2023 -0500
-
-    **not backward compatible - but minor** - lose Characters/Concrete folder - and moved the stuff we still need either private into String.cpp or for String_Constnat and String_ExternalMemoryOwnership_ApplicationLifetime - into the .h file (at least temporarily)
-
-commit 382af806ce1d6c12ce5df150c7b9c41cf3e219d3
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jan 3 17:00:57 2023 -0500
-
-    typo
-
-commit 3d9120dde955a45f4fb8804b64e8acbdd3cd56c2
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jan 3 17:02:38 2023 -0500
-
-    cosmetic
-
-commit 60a6449b70e57fd0bd316458dd70892f65826fb7
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jan 3 18:32:15 2023 -0500
-
-    deprecated String_Constant and replaced wtih String::FromStringConstant static method (like String::FromASCII); and now migrated ALL reps so hidden inside String.cpp file
-
-commit eb4eaac4640cc25288b5cce61ebf2d2812171e6a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jan 3 20:48:38 2023 -0500
-
-    fixed bug / regression in String_Constant/String_ExternalMemoryOwnership_ApplicationLifetime
-
-commit 85c7fbbe904f95469a5feff4b87e5f3b6fa9526b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jan 3 21:00:19 2023 -0500
-
-    lose legacy String_ExternalMemoryOwnership_ApplicationLifetime and String_Constant usage
-
-commit 5ebff8a489b6a3ee4dc72c21914f8990e5f30f7e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jan 3 21:08:01 2023 -0500
-
-    lose legacy String_Constant references
-
-commit 374ee1c34a9b8d993fb883c3a789fb75e3e03179
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jan 3 21:58:05 2023 -0500
-
-    cosmetic
-
-commit 613b776cfd6db38c3b6c91f17c50c4e6dcaa3000
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jan 3 21:58:53 2023 -0500
-
-    big cleanup of String rep internals (and related) - especailly progress on BufferedStringRep_
-
-commit 892a942aad9acc68161506b1faf1802eea8a12d0
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jan 3 22:07:56 2023 -0500
-
-    fixed clang++ compat issues
-
-commit 8610dab4f2380a6501a5befca5348f3b0a942793
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jan 3 22:08:30 2023 -0500
-
-    make format-code
-
-commit 23ffe28903c45a9928ba3f6f9ca9e17dd7af889c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jan 4 09:05:44 2023 -0500
-
-    cosmetic
-
-commit ecb304eaaf9aba7531cc26bd0fed3b9a71bb2830
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jan 4 09:28:48 2023 -0500
-
-    refactoring of the string reps
-
-commit b408a72260da8e4125384d63bebe97f875947a03
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jan 4 10:03:03 2023 -0500
-
-    todo notes
-
-commit e9c1beceadc07866a4d8f2762977de38ac965b53
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jan 4 10:03:19 2023 -0500
-
-    docs
-
-commit afcab976d189cd7ca1c80f660209d02c82fcb0db
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jan 4 10:04:01 2023 -0500
-
-    refactoring  of String::IRep code - in preps for https://stroika.atlassian.net/browse/STK-684 string rep changes
 
 commit 239f4f5749f7aef15519762a2bdce3def9d16f27
 Author: Lewis Pringle <lewis@sophists.com>
