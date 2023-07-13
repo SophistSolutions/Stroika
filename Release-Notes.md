@@ -45,14 +45,14 @@ especially those they need to be aware of when upgrading.
 - It appears we need at least clang++-10 for adequate C++20 support for Stroika (compare stuff spaceship not working enuf before)
 - appears g++ 8, 9 not going to work with Stroika v3 (due to lack of spaceship op support)
 
-+ require libc++14 or later
-
+- require libc++ 14 or later
 
 - Stroika Library
   - General
     - Concepts Usage
     - use if constexpr instead of #if qDebug in a few places
       <br/>e.g. around qStroika_Foundation_Exection_Throw_TraceThrowpoint
+    - use more perfect forwarding (e.g. use PREDICATE&& instead of const PREDICATE& - in response to (oblique) suggestion from https://www.reddit.com/r/cpp/comments/zl7ncq/stroika_an_opensource_modern_portable_threadsavvy/ comment/suggestion)
 
   - Foundation
     - Cache
@@ -112,6 +112,11 @@ especially those they need to be aware of when upgrading.
       - StringBuilder
         - major cleanup/fixes - using concepts, using span<>
         - a few method deprecations and may new overloads (cleanly captured with requires)
+      - UTFConverter
+        - New class, losely based on and replacing UTFConvert class
+        - Abstracts various algorithms, like codecvt, portable UTF converter code, and third party library code converters.
+          KEY concept is always UNICODE - always UTFX to UTFY.
+        - Replace deprecated use of UTFConvert with use of new UTFConverter
     - Common
       - Common::Comparison
         - lose Common::strong_ordering and Common::kLess, kEquals, kGreater (**not backwards compatible**)
@@ -156,6 +161,8 @@ especially those they need to be aware of when upgrading.
          - major switch to using concepts, and requires (in place of enable_if_t)
       - Association
         - Added Association<KEY_TYPE, MAPPED_VALUE_TYPE>::operator[] () syntactic sugar
+      - Sequence
+        - added MOVE ctor for Sequence_stdvector taking std::vector<>
     - Foundation::Cryptograpy
       - Fixed Digester<> to fully support a RETURN_TYPE=Common::GUID - adding regression test and fixing template (worked with MD5 but now works with SuperFastHash and others)
       - Digest::ComputeDigest () and Digester<> etc - now support taking Iterable\<TRIVIALLY_COPYABLE_T> - so for example String
@@ -166,7 +173,9 @@ especially those they need to be aware of when upgrading.
       - DataExchange::ValidationStrategy support on Date class, and other related cleanups
       - Added draft support for ObjectVariantMapper::MakeCommonSerializer (OptionalSerializerOptions ...) so it can take explicit T serializer
       - New utility (factoring) Variant::Reader::_ToByteReader (const Streams::InputStream<Characters::Character>::Ptr& in)
-      - Character::GetSurrogatePair()  use in Variant/JSON/Writer
+      - VariantValue
+        - Add support to Stroika VariantValue so can be trivially constructed from boost::json::value, if Stroika built with boost
+        - support VariantValue::As<boost::json::value> () - for full (easy) interoperability with boost (json support)
       - Variant Reader/Writer
         - General
           - refactoring DataExchange/Variant/Writer code - better abstracting transformations; use that in (so far untested but probably solid) DataExchange::Variant::CharacterDelimitedLines readers/writers
@@ -179,6 +188,22 @@ especially those they need to be aware of when upgrading.
           - DataExchange/Variant/INI progress cleanups - and first draft of Writer (so far untested)
           - regression tests for Variant::INI::Writer
           - DataExchange::Variant::INI Profile/Section ToString() support; and fixed regression test case for reader/writer
+        - JSON
+          - Added JSONTest code to PerformanceRegTest code (52)
+          - Character::GetSurrogatePair()  use in Variant/JSON/Writer
+          - Added support for perfrmance test code to download and run json parser regtest on nlohmann/json : https://stroika.atlassian.net/browse/STK-781'''
+          - in new boost support for Variant::JSON::Reader, wrap failures in BadFormatException
+          - JSON::Reader object now takes options, which allow you to select (defaults to) using boost to parse intead of stroika, but still can select the stroika parser
+          - rewrote boost support in DataExchange/Variant/JSON/Reader - so should handle incrmentals etc, and stream of bytes or characters (with some caveats to fix there)
+          - Performance
+            - use new StreamReader<ELEMENT_TYPE>in JSON parser code (speedup for large files of around 15%) - large regtest file from 1.04 to .85
+            - rewrote part of JSON::Reader{}.Parse - really to use (Draft  of new BufferedStreamReader_) - as performance improvement reading large json files
+            - Slight speed tweak for JSON reader, using Containers::Concrete::Mapping_stdmap and move
+            - JSON reader - Reader_Object_ - slight cleanup/simplification (with eye towards better performance but mostly clarity)
+            - VariantValue CTOR from boost json uses Mapping_stdhashmap<>::STDHASHMAP optimization
+            - slight performance tweak to Variant/JSON/Reader.cpp reading strings (only perftested windoze)
+            - big performance tweak for windows json parser - using __forceinline on  StringBuilder<OPTIONS>::Append (CHAR_T c)
+            - switched JSON::Reader to use Mapping_stdhashmap<String, VariantValue>::STDHASHMAP move ctor - slight performance tweak it appears
     - Debug
       - AssertExternallySynchronizedMutex
         - https://stroika.atlassian.net/browse/STK-734 - classes that use AssertExternallySynchronizedMutex, now AGGREGATE it rather than subclassing (use [[no-unique-address]])
@@ -195,10 +220,25 @@ especially those they need to be aware of when upgrading.
         - Minor tweaks to Memory/BlockAllocator (clarity)
       - BLOB
           - Added BLOB::data () method
+          - BLOB::As<string>/0/1 supported
       - SmallStackBuffer, StackBuffer, InlineBuffer
+        - Docs on StackBuffer, and adjusted default sizes for Windows, to avoid _chkstk calls, which helps performance (significant on boost_json-vv-parser: .\52\JSONTestData\large-dict.json test)
         - Refactored/Renamed SmallStackBuffer to InlineBuffer and StackBuffer
         - deprecated InlineBuffer::ReserveAtLeast and replacced with flag arg to reserve function, and simplified and probably improved performance of use of reserve internally in that class
         - like with inlinebuffer to stackbuffer - lose ReserverAtLeast - and replace with atLeast flag argument to reserve() and use that toughout class itself for stuff like grow. and cleanup use of GetScaledUpCapacity and special case for still inside inline buffer
+        - fixed bug with Foundation/Memory/InlineBuffer in move CTOR (for non bytes case)
+        - Memory::InlineBuffer - added kMinCapacity; and added  static_assert (is_trivially_destructible_v<T>) and lose destroy_elts call on resize_uninitialized
+        - use noexcept in a few places where its known to be safe and esp relevent like StackBuffer/InlineBuffer data()/size()/capacity methods since that appears to affect buggy behavior in libc++ (and fixing it in stroika just a plus so better to avoid the bugs if I can)
+        - used requires (is_trivially_copyable_v<T>) on _uninitialized CTORs and methods for resizing for StackBuffer and InlineBuffer
+        - a couple minor tweaks to InlineBuffer/StackBuffer - resize_uninitialized requres changes, and tweaked impl (dont case if > size just if > capacity)
+        - minor correctness/performance tweaks to recent StackBuffer/InlineBuffer reserve() call changes
+        - slight performance tweak for Memory/InlineBuffer and Memory/StackBuffer - delegate through HasEnoughCapacity_ which checks common constant (BUFSIZE) first - to avoid computing capacity when not needed (generally)
+        - mostly cosmetic/constexpr clenaups to StackBuffer/InlineBuffer (and some [[likely]] annotations)
+        - Minor progress on basic stroika json reader performance: StreamReader use a few more inlines and likelys, comments, and  factored StackBuffer_DefaultInlineSize and InlineBuffer_DefaultInlineSize size calculation out of template declaration so separately callable/checkable and  Memory::InlineBuffer<char32_t, 128> in StringBuilder instead of default
+        - Invariant calls in StackBuffer/InlineBuffer push_back
+        - added span CTOR overload to StackBuffer and InlineBuffer
+        - new InlineBuffer/StackBuffer ShrinkTo methods, and operator=(SPAN) support
+        - InlineBuffer/StackBuffer push_back overloads (span)
       - std::span
         <br/> use std::span in a thourough way throughout Stroika
     - IO
@@ -207,8 +247,13 @@ especially those they need to be aware of when upgrading.
         - fixed Network::GetPrimaryInternetAddress () on windows to return NON-LOCAL address (I think already did this fine on unix)
         - InternetAddress
           - Added InternetAddress CTOR overloads from const char* and string_view
+        - Socket
+          - windows socket thread interuption - partial fix/woarkound for https://stroika.atlassian.net/browse/STK-964 - enuf to probably fix balance of https://stroika.atlassian.net/browse/STK-963
         - URI
           - regtest for URI::SetScheme and docs
+    - Streams
+      - cleanups to Streams/ExternallyOwnedMemoryInputStream - mostly using concepts in place of enable_if_t; but also extended to support char iterators for New with ELEMENT_TYPE=byte (for easier integration with stl/common c++ usage)
+      - first draft new StreamReader<ELEMENT_TYPE>
     - Time
       -All
         - fixes related to https://stroika.atlassian.net/browse/STK-950: imporved iso8601 datetime parsing, TimeOfDay CTOR overload with ThrowIfOutOfRangeFlag and use in a bunch of places (so better runtime validation of input dates)
@@ -248,6 +293,9 @@ especially those they need to be aware of when upgrading.
     - SSDP server BasicServer, SearchResponder and PeriodicNotifier now all support optional IPVersionSupport flags, and bind both V4 and V6 versions of IP depending on flag provided (default both which is a change); AND other cleanups
     - several fixes and simplifications to SSDPServer sample and framework code (not fully backward compatible): set location.scheme in sample; changed API for SearchResponder and SearchResponder so use CTOR to specify arguments, and lose Run method (was pointless use of thread); fixed bug in combining urls in BasicServer so now should advertise / notify properly by default (at least this sample works well with stroika ssdpclient)
     - redo SSDP periodicNotifier class to use IntervalTimer (imposes new minor requirement on use - instantiating intervaltimermgr), and other related code simpliciations/cleanups)
+    - fix/cleanup related to https://stroika.atlassian.net/browse/STK-963 - which would ahve fixed it - but had fixed something else first - now use Execution::WaitForIOReady in Server/SearchResponder so avoids blocking read until socket read (really this cahnge fixes another bug wihc is we were only waiting on one socket until stuff came in and then on the other); so searchrespnder should work much better now
+  - WebServer
+    - Added CORSOptions::ToString () const
 
 - cleanup vscode tasks.json (move CHERE_INVOKING stuff under windows section cuz for msys workaround, and clenaed up panel usage and a bit more
 
@@ -261,12 +309,12 @@ especially those they need to be aware of when upgrading.
 - support visual studio compiler _MSC_VER_2k22_17Pt2_ (2 new bugs and nothing fixed)
 - Updated vs2k versions to VS_17_2_0 and VS_16_11_14 for docker files
 - bug defines and workarounds for _MSC_VER_2k22_17Pt4_ (and a few cosmetic cleanups)
-
 - ThirdPartyComponents
   - boost 
     - Boost 1.82.0
     - lose TOOLSET_NAME=msvc-14.2 workaround no longer needed
-  - libcurl 7.83.0
+  - libcurl 
+    - 8.1.2
   - sqlite 
     - use 3.42.0
   - zlib
@@ -290,6 +338,11 @@ especially those they need to be aware of when upgrading.
     - Docker v3 in image names for v3 containers
     - Windows
       -  vis studio docker container VS_17_6_4
+- Tests
+  - Performance
+    - JSON Performance
+      - Added boost_json-parser to performance tests; guess dont need others since this is the fastest I've tried and easy to test against
+      - add performance regression test for DoStroikaJSONParse_boost_json2Stk
 
 --UNORGNAINZIED
 
@@ -297,147 +350,14 @@ especially those they need to be aware of when upgrading.
 - Deprecated Common::ThreeWayCompare () and used compare_three_way{} or <=> (todo more of later) to replace
 
 - for ScriptsLib/RunRemoteRegressionTests - set /usr/local/bin first in path (needed to find right realpath in macos)
--  new UTFConverter::AllFitsInOneByteEncoding and AllFitsInTwoByteEncoding, and new String mk_ specializations for char/utf16/ utf32 cases (intead of wchar_t)
 
+- Added Profile configuration for windows, since handy for doing profiling (not auto-built - just defined so can be easily used)
 
 #if 0
-commit 58f7586b3138c832a0d0c9bda2971f4617a10589
-Date:   Fri Dec 2 22:00:38 2022 -0500
-    partial fix/woarkound for https://stroika.atlassian.net/browse/STK-964 - enuf to probably fix balance of https://stroika.atlassian.net/browse/STK-963
-
-commit 339d3a79b0e0942064be29b7af2c28e551e2fe82
-Date:   Sat Dec 3 10:24:06 2022 -0500
-    fix/cleanup related to https://stroika.atlassian.net/browse/STK-963 - which would ahve fixed it - but had fixed somethign else first - now use Execution::WaitForIOReady in Server/SearchResponder so avoids blocking read until socket read (really this cahnge fixes another bug wihc is we were only waiting on one socket until stuff came in and then on the other); so searchrespnder should work much better now
-
-commit bfb415790a4b45ddd161a91535726dc919ab9e11
-Date:   Wed Dec 14 10:36:02 2022 -0500
-    use PREDICATE&& instead of const PREDICATE& in a few places - in response to (oblique) suggestion from https://www.reddit.com/r/cpp/comments/zl7ncq/stroika_an_opensource_modern_portable_threadsavvy/ comment/suggestion
-
-commit 28c2c664f37bd631811fca6cdb99bf04592ad45b
-Date:   Wed Dec 14 15:20:53 2022 -0500
-    fixed more perfect forwarding usages, and added comments about performance of <T>::RemoveAll (PREDICATE&& p)
-
-commit cacfaa3de7c8066d32260793af16b18ffc48be3b
-Date:   Wed Dec 14 15:43:25 2022 -0500
-    Added CORSOptions::ToString () const
-
-commit b8087fe20ad3ae013baa0c9456b28fad551631b1
-Date:   Wed Dec 14 19:51:17 2022 -0500
-    Added JSONTest code to PerformanceRegTest code (52) - draft
-
-commit 623a0c958dfcd76d33b5ef8812cd8886b54ebef9
-Date:   Wed Dec 14 21:51:52 2022 -0500
-    BLOB::As<string>/0/1 supported
-
-commit 563bc2000e2294209821e6ff146fc0ab90ddd3aa
-Date:   Wed Dec 14 21:52:27 2022 -0500
-    Simplified file reading code for jSON reader performance test
-
-commit d42901fb3e88f6cf82e682ba7ce673cb733f0b5f
-Date:   Thu Dec 15 09:31:07 2022 -0500
-    Added support for perfrmance test code to download and run json parser regtest on nlohmann/json : https://stroika.atlassian.net/browse/STK-781
-
-commit c0799b23783bc9b904e5e0597c11e4b0e2e7c909
-Date:   Thu Dec 15 10:34:29 2022 -0500
-    lots of cleanups to Streams/ExternallyOwnedMemoryInputStream - mostly using concepts in place of enable_if_t; but also extended to support char iterators for New with ELEMENT_TYPE=byte (for easier integration with stl/common c++ usage)
-
-commit 951ab60014f60a98d30b68fef78f471229582f6c
-Date:   Thu Dec 15 10:48:11 2022 -0500
-    cosmetic cleanup and hack a bit so better at finding (rarely used) test data in json regtest
-
-commit e1dc8104566ad16e6dabb12b30cb1f5a57d17fb3
-Date:   Thu Dec 15 11:38:30 2022 -0500
-    Added boost_json-parser to performance tests; guess dont need others since this is the fastest I've tried and easy to test against
-
-commit fbfb934fc90df4454536fdb429c19c3d66b84422
-Date:   Thu Dec 15 12:09:24 2022 -0500
-    Add support to Stroika VariantValue so can be trivially constructed from boost::json::value, if Stroika built with boost
-
-commit 91edfca962f496c773db15e9e4aa87f98f455b13
-    support DataExchange::VariantValue::As<boost::json::value> () - for full (easy) interoperability with boost (json support)
-
-commit d31f666c5fb0993cb0d925687d7a79448650ba1a
-    fixed bug with Foundation/Memory/InlineBuffer in move CTOR (for non bytes case)
-
-commit c58e1bd625cdf9b56f61c6732b5cb728598a71de
-Date:   Thu Dec 15 18:09:53 2022 -0500
-    Added Profile configuration for windows, since handy for doing profiling (not auto-built - just defined so can be easily used)
-
-commit eeb75c9d74af61f8240f9250b9823bf55de55f40
-Date:   Thu Dec 15 19:14:13 2022 -0500
-    add performance regression test for DoStroikaJSONParse_boost_json2Stk
-
-commit 1ccf2938165df21abdaddaf6b624ec992f2e6c33
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Dec 15 21:27:21 2022 -0500
-
-    chekc more places for JSONTestData in running regressiontests (performance)
-
-commit 7a96121a799f4c626664ca91169fdc4adb8a34bc
-Date:   Sat Dec 17 14:51:38 2022 -0500
-    Added -lboost_json to link libs by default, though so far not really used, suppored by Stroika so may as well add to libs list
-
-commit 5385cd96f70cc1123eb5760905d6830a41d9fdb7
-Date:   Fri Dec 16 15:29:32 2022 -0500
-    project file (sln) support for Profile configuration on VS2k22
-
-commit 0876f8f022a8ff4faa8bc461de22d001e95a39d6
-Date:   Fri Dec 16 15:50:20 2022 -0500
-    tweak Windows Profile configuration
-
-commit 18425d79f137580e9042367e94a0f45c63c8e399
-Date:   Fri Dec 16 15:51:14 2022 -0500
-    configure script: put -DEBUG linker line BEFORE others, not after, since affects interpretation of -OPT flags, I think (docs not clear)
-
-commit 3cda61ee05484a99e5b632fb912ba892f0426dc1
-Date:   Fri Dec 16 15:53:45 2022 -0500
-    where we gave linker line -DEBUG, instead use -DEBUG:FULL - docs not clear on if this is a change or not - nor what is left out with other options; but if I turn on debugging, dont supporeize me - give me the debug info ;=)
-
-commit a49a76c67dc0e25b0585093e2780456ce8290e51
-Date:   Fri Dec 16 15:54:22 2022 -0500
-    where we gave linker line -DEBUG, instead use -DEBUG:FULL - docs not clear on if this is a change or not - nor what is left out with other options; but if I turn on debugging, dont supporeize me - give me the debug info ;=)
-
-commit 8aed5048e9165b0f63155e84fd9e2be8274b610a
-Date:   Sat Dec 17 15:16:13 2022 -0500
-    Memory::InlineBuffer - added kMinCapacity; and added  static_assert (is_trivially_destructible_v<T>) and lose destroy_elts call on resize_uninitialized
-
-commit dea97d13122dcf667ad21a276168e6428a452781
-Date:   Sat Dec 17 15:17:11 2022 -0500
-    rewrote part of JSONParse - really to use (Draft  of new BufferedStreamReader_) - as performance improvement reading large json files
-
-commit f7499bb38f87e37a55936f602d720c7ed308249f
-Date:   Sat Dec 17 19:27:52 2022 -0500
-    first draft new StreamReader<ELEMENT_TYPE> and used in JSON parser code (speedup for large files of around 15%) - large regtest file from 1.04 to .85
-
-commit 072e98b024f97ca47420b39401afe67cf0585163
-Date:   Sat Dec 17 19:57:47 2022 -0500
-    sped up conversion from boost::json::Value to Stroika VariantValue
-
-commit 4110508ecdd248211b564b870d2ded3ecadafb14
-Date:   Sat Dec 17 20:26:30 2022 -0500
-    added MOVE ctor for Sequence_stdvector taking std::vector<>
-
-commit a080430680c17cf2e67cb6571a6c09540ff02e73
-Date:   Sat Dec 17 22:01:53 2022 -0500
-    use Containers::Concrete::Mapping_stdmap<String, VariantValue>{std::move (r)} and Containers::Concrete::Sequence_stdvector<VariantValue>{std::move (r)} in VariantValue::CTOR{boost json obj
 
 commit 7d832bb19338c76b150b8b5b594961d8ce5e833c
 Date:   Sat Dec 17 22:04:05 2022 -0500
     Progress on (ugly/messy) UTFConvert::ConvertQuietly () methods : did qPlatform_Windows impl (now default on windows cuz seems fastest), and std::codecvt_utf8_utf16 impl but that is HORRIBLE! - and we use elswhere (in TextReader) - must lose it I guess - cuz its horrible. Not sure what todo; but its a mess and should work better for Stroika v3
-
-commit e23fcf0541bc2b78ad73690b6f3f75ae5f3746ee
-Date:   Sat Dec 17 22:19:45 2022 -0500
-    fixed small regression in recent UNICODE UTF changes
-
-commit 421ecb16a5785a4b58f2450aab488d5c0ca6b017
-    slight speed tweak in recent qPlatform_Windows UtfConvert tweak (smallstackbfufer isntead of string object)
-
-commit d2e494d6da4443321a8a2a46ca468e6d86e491e8
-    Docs on SmallStackBuffer, and adjusted default sizes for Windows, to avoid _chkstk calls, which helps performance (significant on boost_json-vv-parser: .\52\JSONTestData\large-dict.json test)
-
-commit dadc827ea6a7b6d4bf32cecc3a61bccaee1bc800
-Date:   Sun Dec 18 10:47:33 2022 -0500
-    further tweaked (windows only) code for UTFConvert - dont even need SmallStackBuffer
 
 commit 23e0a4dfc53fd5e08aa071566eeccd5e9d1fd313
 Date:   Sun Dec 18 10:51:45 2022 -0500
@@ -451,27 +371,16 @@ commit 8fb9acdb6131fa8f01b93728c3d5f890135ed8a6
 Date:   Sun Dec 18 11:04:33 2022 -0500
     ok - maybe better - use is_trivially_copyable_v instead of is_trivial_v - appears to capture more accurately what we want here
 
-commit 3c3cec350205c9318ac933747116dd81c6f6fbd6
-Date:   Mon Dec 19 09:45:34 2022 -0500
-    Slight speed tweak for JSON reader, using Containers::Concrete::Mapping_stdmap and move
-
 commit e854ea98e94222c1dd37039861102df27ff530f9
 Date:   Mon Dec 19 14:13:08 2022 -0500
     fixed (recent) regression in UTFConvert::ConvertQuietly windows code - so restructured a bit so better internall checking
 
 commit fcd232f32c6b8a3877351ad548b706b4b751e6db
-    JSON::Reader - minor tweaks and cleanups
-
-commit 639215b4335eaa9519d1065758601c451313c0a8
-    First draft new Characers::UTFConverter to deal with messy state of UTF conversions
+    
 
 commit b3d3dcda4caca0f62b9be3ee4c4a7dbb6c43f3c0
 Date:   Mon Dec 19 20:59:03 2022 -0500
     More progress on new (or majorly refactored) UTFConvert module
-
-commit 510a3ff58584b2e7ea97b607c3557c03de4d0fcc
-Date:   Mon Dec 19 21:19:36 2022 -0500
-    Mostly cosmetic cleanups to new UTFConverter code
 
 Date:   Tue Dec 20 14:12:06 2022 -0500
     rough incomplete draft of boost locale support for utf_to_utf
@@ -484,7 +393,6 @@ Date:   Tue Dec 20 16:13:40 2022 -0500
     Lose deprecated CodePage UTFConvert code - and put in backward compatible stuff to DELEGATE to new UTFConvert(er) code in another module, marking as deprecated
 
 commit 2e25f4d0e516ebb6f6ecc0944d0b1dcf9af75b53
-    Replace deprecated use of UTFConvert with use of new UTFConverter
 
 commit 53a232ffbe8f64d806e4026e80ab8d59ec97a527
 Date:   Tue Dec 20 19:26:37 2022 -0500
@@ -497,10 +405,6 @@ Date:   Tue Dec 20 19:33:41 2022 -0500
 commit b0ad2f0661ef6d42de1b2948e0a05664d7961c1c
 Date:   Tue Dec 20 19:56:12 2022 -0500
     fixed minor recent regressions(refactoring)
-
-commit 23332fdfb59fd2fa46435c40f5f8169cdbd5cb8e
-Date:   Tue Dec 20 20:17:18 2022 -0500
-    reversed order of template paramters for UTFConverter::ComputeOutputBufferSize () so could specify just one explicitly and infer the second one
 
 commit b3f405edba09058298e20c4b12e803df04aa8ed4
 Date:   Wed Dec 21 07:48:10 2022 -0500
@@ -521,10 +425,6 @@ Date:   Wed Dec 21 08:51:19 2022 -0500
 commit b5a427a0a592fbf9853b573467368da7d801d793
 Date:   Wed Dec 21 09:24:41 2022 -0500
     remove explicit include of ../Execution/Throw.h in Memory/StackBuffer.inl to workaround deadly include embrace
-
-commit 8404785f889a342a5a63ba818ffa2824afe52f3c
-Date:   Wed Dec 21 09:25:29 2022 -0500
-    new UTFConverter::Convert overloads for basic_string templates - so can say  wstring wide_fred = UTFConverter::kThe.Convert<wstring> (u8'fred')
 
 commit 60e01093f674d066bd5d5985a79180ba8961f929
 Date:   Wed Dec 21 10:56:21 2022 -0500
@@ -586,10 +486,6 @@ Date:   Thu Dec 22 17:10:51 2022 -0500
 commit 909abb3126182ad439fd5f123b8c82c0749f11db
 Date:   Thu Dec 22 17:11:33 2022 -0500
     Lose support for qCompilerAndStdLib_conditionvariable_waitfor_nounlock_Buggy cuz no longer support such old LIPCPPVERSION and no other refernces to this bug; Same for qCompilerAndStdLib_strong_ordering_equals_Buggy
-
-commit 835c5ba4939819e698294d6438e70d152258c5f9
-Date:   Sat Dec 24 17:44:05 2022 -0500
-    renamed UTFConverter::ComputeOutputBufferSize -> UTFConverter::ComputeTargetBufferSize, and changed UTFConverter return of tuples to use ConversionResult type with named fields
 
 commit b934eb8e0d016454008e7fb0b2dac9513903b585
 Date:   Sun Dec 25 09:11:58 2022 -0500
@@ -762,7 +658,6 @@ Date:   Mon Jan 2 11:32:00 2023 -0500
 
 commit 76174a01f953588906082c1636515e96810dbcb9
 Date:   Mon Jan 2 14:01:55 2023 -0500
-    use noexcept in a few places where its known to be safe and esp relevent like StackBuffer/InlineBuffer data()/size()/capacity methods since that appears to affect buggy behavior in libc++ (and fixing it in stroika just a plus so better to avoid the bugs if I can)
 
 commit 21ccb0637ec82e675167a3016fdba98720d68db1
 Date:   Mon Jan 2 17:23:26 2023 -0500
@@ -817,9 +712,6 @@ commit fb71fe013803377ef3f214d5e6046f45d0b9b76a
 Date:   Wed Jan 4 20:01:07 2023 -0500
     SharedByValue<>: fixed broken (and unused) rwget_ptr, and implemented new cget_ptr (pretty sure safe - havent thought about this in a while)
 
-commit 1410129c0776c935060b780568d2b243f7eb3e0a
-Date:   Wed Jan 4 20:05:47 2023 -0500
- 
 commit 8ab6e7c24dcc114adb826bfc8432d616c7adbfdb
 Date:   Wed Jan 4 20:13:52 2023 -0500
     String code: fixed #if qDebug missing; tmphack fix to SubString_() so it no longer depends on c_str_peek returning non-null
@@ -847,10 +739,6 @@ Date:   Thu Jan 5 13:24:29 2023 -0500
 commit e23d3dca0711f91b2dda376dfd29322da313aabf
 Date:   Thu Jan 5 21:37:54 2023 -0500
     Comments, and significant speed tweeks (at least for reading json files) on String comparison routines
-
-commit afb6519d4afcad9a29d53897bebf8968059187f2
-Date:   Thu Jan 5 22:25:28 2023 -0500
-    JSON reader performance tweaks
 
 commit 0c11de5a42d4d123d119fd92732b57f8fef6022f
 Date:   Fri Jan 6 10:39:32 2023 -0500
@@ -912,17 +800,12 @@ commit 78563366febea3003092acd4f89bae59e0cf049f
 Date:   Tue Jan 10 07:07:05 2023 -0500
     https://stroika.atlassian.net/browse/STK-296 - supported move CTORs for String class so can move from wstring&, or other std::basic_string types and re-use memory from those objects
 
-commit bf09e438d2546d2f61c560ba61c5976bf2db1c6a
-Date:   Tue Jan 10 07:29:50 2023 -0500
-    fixed a few corner cases - checking UTFConverter::AllFitsInTwoByteEncoding on basic_string MOVE/STEAL code
-
 commit 0051e3891317fa78f9e301c087a55d595c9468c6
 Date:   Tue Jan 10 08:39:37 2023 -0500
     in URI class - use requires instead of unconstrained templates for polymorphic getter functions
 
 commit 5822f90a831dc0d1d67f339df1d996d35a8d12ba
 Date:   Tue Jan 10 09:36:27 2023 -0500
-    used requires (is_trivially_copyable_v<T>) on _uninitialized CTORs and methods for resizing for StackBuffer and InlineBuffer
 
 commit 672760951628fb2dc653d8b3ba94fb84c4aa917f
 Date:   Tue Jan 10 09:37:42 2023 -0500
@@ -938,7 +821,6 @@ Date:   Tue Jan 10 12:26:58 2023 -0500
 
 commit e43a4e06bca95b469aec82a2a52be4e3b9522a05
 Date:   Tue Jan 10 13:51:22 2023 -0500
-    a couple minor tweaks to InlineBuffer/StackBuffer - resize_uninitialized requres changes, and tweaked impl (dont case if > size just if > capacity)
 
 commit ca7b758c3171c3cf20e733e0d7aef706ea260a6a
 Date:   Tue Jan 10 14:53:19 2023 -0500
@@ -962,7 +844,6 @@ Date:   Tue Jan 10 21:20:18 2023 -0500
 
 commit fecff0d0f29afe151770348f423b351dd83f20a8
 Date:   Wed Jan 11 10:28:18 2023 -0500
-    minor correctness/performance tweaks to recent StackBuffer/InlineBuffer reserve() call changes
 
 commit 0ee368bc930d595689c3d2b400136f9a3aa887c7
 Date:   Wed Jan 11 15:17:38 2023 -0500
@@ -1014,7 +895,6 @@ Date:   Thu Jan 12 11:08:50 2023 -0500
 
 commit 95ca6184568f232076b4fa854c95eb47058ca378
 Date:   Thu Jan 12 11:38:09 2023 -0500
-    switched JSON::Reader to use Mapping_stdhashmap<String, VariantValue>::STDHASHMAP move ctor - slight performance tweak it appears
 
 commit 1f132271c13d02ef053fe60379f86f978aa97e76
 Date:   Thu Jan 12 20:56:34 2023 -0500
@@ -1032,10 +912,6 @@ commit 3ce8d8e12e4f8a8436ae6d3fffd5b16d2ed77396
 Date:   Thu Jan 12 21:44:48 2023 -0500
     loosened test case for comparing VariantValue output - parse/unparse json roundtriping - since using unorderedmap, must be more careful testing/comparing
 
-commit 42a597b5669b607256ed9214e3549ba2ad9f90d6
-Date:   Thu Jan 12 13:08:41 2023 -0500
-    Minor JSON::Reader performance tweaks and code cleanups
-
 commit a6b58a2110235eae02203d6819a76c60cecf4d2b
 Date:   Thu Jan 12 14:38:47 2023 -0500
     more cleanups to do but significant speedup from Digester 'span' support (prelim) - on hashtable stuff from json parsing
@@ -1046,8 +922,7 @@ Date:   Thu Jan 12 14:39:19 2023 -0500
 
 commit f2bbebf43aebd8ed993c4af80e0c0125763602df
 Date:   Thu Jan 12 14:40:08 2023 -0500
-    VariantValue CTOR from boost json uses Mapping_stdhashmap<>::STDHASHMAP optimization
-
+ 
 commit a30ca20fed747ae9e41e55509bb8f69b48d4fdab
 Date:   Thu Jan 12 23:03:38 2023 -0500
     fixed SortedMapping<KEY_TYPE, MAPPED_VALUE_TYPE>::operator<=>
@@ -1105,18 +980,6 @@ commit 9db114b14f709cd823023e2c65e85b7ce9051bdd
 Date:   Sun Jan 15 14:45:13 2023 -0500
     must be more careful comparing VariantValue for equality now - 5 == 5 no longer works - must save .ConvertTo(eInteger)
 
-commit e9acf5ec188542dc5cefa8809c1b9a6abf8e4375
-Date:   Sun Jan 15 15:35:57 2023 -0500
-    JSON reader - Reader_Object_ - slight cleanup/simplification (with eye towards better performance but mostly clarity)
-
-commit 649246543db3b13c1354a6ef6c8a570d409b7343
-Date:   Sun Jan 15 22:45:55 2023 -0500
-    slight performance tweak for Memory/InlineBuffer and Memory/StackBuffer - delegate through HasEnoughCapacity_ which checks common constant (BUFSIZE) first - to avoid computing capacity when not needed (generally)
-
-commit 05f948e9c14b1e47089d017fb090cf63b0923fa0
-Date:   Mon Jan 16 20:38:24 2023 -0500
-    mostly cosmetic/constexpr clenaups to StackBuffer/InlineBuffer (and some [[likely]] annotations)
-
 commit 61b6f11c9d3f6684f5498c6face68aa416abba7e
 Date:   Mon Jan 16 21:25:13 2023 -0500
     code cleanups to new BufferedStringRep::Rep class (could help performance but untested)
@@ -1131,7 +994,6 @@ Date:   Tue Jan 17 09:53:16 2023 -0500
 
 commit b8261364a0b0e50517fce8145ca77460bcb887ce
 Date:   Wed Jan 18 10:43:10 2023 -0500
-    Minor progress on basic stroika json reader performance: StreamReader use a few more inlines and likelys, comments, and  factored StackBuffer_DefaultInlineSize and InlineBuffer_DefaultInlineSize size calculation out of template declaration so separately callable/checkable and  Memory::InlineBuffer<char32_t, 128> in StringBuilder instead of default
 
 commit 8852508a6fbf75234a9843d75c49d06807079d72
 Date:   Thu Jan 19 10:07:15 2023 -0500
@@ -1230,7 +1092,6 @@ Date:   Thu Jan 26 10:16:04 2023 -0500
 
 commit eb3a1a44970f9f84be004d74811e1f924a867b18
 Date:   Thu Jan 26 10:33:33 2023 -0500
-    Invariant calls in StackBuffer/InlineBuffer push_back
 
 commit 5eaa03418b9b07b8f261f62a80d82c500b07f0fd
 Date:   Thu Jan 26 10:47:57 2023 -0500
@@ -1238,39 +1099,24 @@ Date:   Thu Jan 26 10:47:57 2023 -0500
 
 commit 42eef14dea9eb9837ea3d2b636a575f4f3b01410
 Date:   Thu Jan 26 14:41:45 2023 -0500
-    big performance tweak for windows json parser - using __forceinline on  StringBuilder<OPTIONS>::Append (CHAR_T c)
-
+   
 commit 5c9de10869f42bb6cc2f9707197dd30a246b0536
 Date:   Thu Jan 26 14:52:10 2023 -0500
     cleanup StringBuilder.inl (simpler push_back code now performs OK for char32_t case)
 
 commit dce274b4a577ca510fc77f96653893fb1c62aa64
 Date:   Thu Jan 26 14:55:14 2023 -0500
-    slight performance tweak to Variant/JSON/Reader.cpp reading strings (only perftested windoze)
+   
 
 commit 292981e4a536def2e1f3d980ca390a273fa312c8
 Date:   Thu Jan 26 19:12:48 2023 -0500
-    JSON::Reader object now takes options, which allow you to select (defaults to) using boost to parse intead of stroika, but still can select the stroika parser
-
+   
 commit e3b5371a3982839063a53ed55deb5182c604ff4b
 Date:   Fri Jan 27 08:24:02 2023 -0500
-    in new boost support for Variant::JSON::Reader, wrap failures in BadFormatException
-
+   
 commit d91ba0f18b02a0761b45bb7137cdd0a056dd1c17
 Date:   Fri Jan 27 09:27:55 2023 -0500
     fixed bad regression test Test_05_ParseRegressionTest_3_ - badly formatted input
-
-commit be80c33f69a5bbe1e8c153d0a2721324129f58df
-Date:   Fri Jan 27 11:14:29 2023 -0500
-    options.fCanReadPastEndOfJSONObjectInStream for JSON parser, so can disable boost in that case (for now til I fix)
-
-commit 8b9a718fdd530604ad23e2d47fe7b60ca90c975f
-Date:   Sat Jan 28 12:33:28 2023 -0500
-    rewrote boost support in DataExchange/Variant/JSON/Reader - so should handle incrmentals etc, and stream of bytes or characters (with some caveats to fix there)
-
-commit 1963d94adc5b27c63898e3ad15122f1a3bab2e39
-Date:   Sat Jan 28 18:16:53 2023 -0500
-    lose unneeded options.fCanReadPastEndOfJSONObjectInStream
 
 commit 05cd839860285e1fe000ea14e9ad8f578d75ccc7
 Date:   Sat Jan 28 18:17:04 2023 -0500
@@ -1531,14 +1377,6 @@ commit dbe22e66d358cfb9ee2a07ba53683d5208c65314
 Date:   Fri Feb 10 20:35:39 2023 -0500
     did and used span overload for Memory::MemCmp
 
-commit a2a56765d2d1ae674468efc924d898518a4f60dc
-Date:   Sat Feb 11 08:20:16 2023 -0500
-    refactored UTFConverter handling of mbstate_t - much simpler now, clearer, and seems to work better
-
-commit 6f9292d1c1b8ac91a3cbb1a3c8b2dff30ce64ba5
-Date:   Sat Feb 11 09:08:27 2023 -0500
-    tweak to CodeCVT API, and imporved impl in UTFConverter::AsCodeCVT (handle target buffer size issue)
-
 commit 943d7a0e8c2d1da3c66e32a0c845344fc0b33c73
 Date:   Sat Feb 11 11:18:53 2023 -0500
     revised API (still NYI) for ConstructCodeCvtToUnicode and ConstructCodeCvtUnicodeToBytes
@@ -1570,10 +1408,6 @@ Date:   Sat Feb 11 21:37:40 2023 -0500
 commit 5e6eda713f0601b36d43b5fbeeeefa7880acc0e9
 Date:   Sun Feb 12 10:07:33 2023 -0500
     Added draft SpanOfT concept to Memory
-
-commit aa5337e802a7e8f6ba46cffeb3b9942015051173
-Date:   Sun Feb 12 10:08:21 2023 -0500
-    added span CTOR overload to StackBuffer and InlineBuffer
 
 commit a2cd45f0d05ee6bb3aa4c499e4ff0d7469d8f68d
 Date:   Sun Feb 12 10:09:32 2023 -0500
@@ -1622,10 +1456,6 @@ Date:   Tue Feb 14 08:23:37 2023 -0500
 commit 7cfa5bc03548443c768a950b1d12ffebd2cb845b
 Date:   Tue Feb 14 08:47:54 2023 -0500
     lose qMaintainingMBShiftStateNotWorking_ in Streams/TextReader.cpp cuz probably losing mbstate in CodeCvt
-
-commit 8923cde12348ef5ddf90bc1d0b76e1aa986ac690
-Date:   Sat Feb 18 02:36:18 2023 -0500
-    added overload of UTFConverter::ComputeTargetBufferSize () taking just size_t - computing max for any input; and used in new CodeCvt<CHAR_T>::GetMinBytesPerCharacter ()/GetMaxBytesPerCharacter
 
 commit 329e8ffd50548829367f7f139a02cdc430f043ce
 Date:   Sat Feb 18 12:27:47 2023 -0500
@@ -2137,9 +1967,6 @@ commit 7fbe3040d69b2a5cfec5896c58eda511b9b58ef2
 Date:   Mon May 29 22:52:16 2023 -0400
     workaround issue LINK ERROR annotate_string  started in vs2k 22 17.6 linking boost
 
-commit cbf5edb3c5cc537cbd1955678cbf5f6d1b83f984
-Date:   Mon May 29 22:52:53 2023 -0400
-
 commit e03e7ffdce5fb8541ba6144f259c5176a65b5d3d
 Date:   Mon May 29 23:40:01 2023 -0400
     workaround qCompilerAndStdLib_compiler_crash_on_break_Buggy
@@ -2203,10 +2030,6 @@ Date:   Sat Jun 10 12:39:57 2023 -0400
 commit 32443fc2ca409f8e37c1ca20d5bdb9db6a773439
 Date:   Sat Jun 10 15:28:12 2023 -0400
     qCompilerAndStdLib_template_Requires_constraint_not_treated_constexpr_Buggy broken on real clang++14
-
-commit 2f5fd76356f9d54ece939162e50c225a1ad620db
-Date:   Sat Jun 10 15:34:15 2023 -0400
-    curl 8.1.2
 
 commit 491e1a4c6b829ff38bfe5730fd24fd2a935aa517
 Date:   Sat Jun 10 15:37:31 2023 -0400
@@ -2402,10 +2225,6 @@ commit 92052f6974d95e2f1992ce81d4956e6b6a7c0e12
 Date:   Sun Jun 18 08:59:20 2023 -0400
     turn clang++-15-debug-libc++ on laways to tst
 
-commit 7f4ca96f1c827c5a7ee43d0e2d8b9418d43612b9
-Date:   Sun Jun 18 09:12:02 2023 -0400
-    refix clang 15 bug defines
-
 commit 5b59e5cc5bff855676f010ae92400ff2fcf18aca
 Date:   Sun Jun 18 10:08:48 2023 -0400
     qCompilerAndStdLib_template_Requires_constraint_not_treated_constexpr_Buggy clang+15 updates
@@ -2529,14 +2348,6 @@ Date:   Tue Jun 27 19:55:13 2023 -0400
 commit 2637345b664007111686a76b338dc8ddef5ed6a7
 Date:   Tue Jun 27 20:01:54 2023 -0400
     lose a few more accidentally left around IsAddable_v definitions
-
-commit 6e5638c6baa1d9cf39221156ff3aed9f9eecb31c
-Date:   Thu Jun 29 10:12:26 2023 -0400
-    new InlineBuffer/StackBuffer ShrinkTo methods, and operator=(SPAN) support
-
-commit 35858adac482bf4ac5f9a9f40e843115758d7334
-Date:   Thu Jun 29 10:45:37 2023 -0400
-    InlineBuffer/StackBuffer push_back overloads (span)
 
 commit 0c841944ccb811246847a689279d546b602df9c6
 Date:   Thu Jun 29 14:32:59 2023 -0400
