@@ -168,6 +168,18 @@ especially those they need to be aware of when upgrading.
       - Added draft support for ObjectVariantMapper::MakeCommonSerializer (OptionalSerializerOptions ...) so it can take explicit T serializer
       - New utility (factoring) Variant::Reader::_ToByteReader (const Streams::InputStream<Characters::Character>::Ptr& in)
       - Character::GetSurrogatePair()  use in Variant/JSON/Writer
+      - Variant Reader/Writer
+        - General
+          - refactoring DataExchange/Variant/Writer code - better abstracting transformations; use that in (so far untested but probably solid) DataExchange::Variant::CharacterDelimitedLines readers/writers
+          - added assertions Variant::Reader (not null rep); and refactored some Read calls to have new protected _ToByteReader and _ToCharacterReader, so can more easily re-use logic in other subclass constructors (some semantic change but trivial and should be no issue)
+        - CharacterDelimitedLines
+          - Variant/CharacterDelimitedLines/Reader supported convert to VariantValues (basic Reader function) and added regtest of ReadMatrix use
+          - better regression tets for new Variant::CharacterDelimitedLines::Writer
+        - INI
+          - Added INI::Reader ReadProfile overloads
+          - DataExchange/Variant/INI progress cleanups - and first draft of Writer (so far untested)
+          - regression tests for Variant::INI::Writer
+          - DataExchange::Variant::INI Profile/Section ToString() support; and fixed regression test case for reader/writer
     - Debug
       - AssertExternallySynchronizedMutex
         - fSingleSharedLockThread_ in AssertExternallySynchronizedMutex for speed tweak (debug builds)
@@ -225,6 +237,9 @@ especially those they need to be aware of when upgrading.
       - use [[nodiscard]] in a few places; Year/Date/etc no longer have 'off sign' constructor support - caller must do the cast
       - DateTime
         - added optional parameter consumedCharacters to DateTime::ParseQuietly, and changed semantics for DateTime::Parse - to generally fail/exception with badly formatted (at least iso8601) datetimes (not just quietly ignore crap at the end); added regtest to reflect that and FIXED regression test I had checked in from sterling - this completes  https://stroika.atlassian.net/browse/STK-950 (**NOTE NOT FULLY BACKWARD COMPATBILE** AS DateTime::Parse() is now a little more likely to throw)
+  - Traveral
+    - Iterable
+      - lose shared_from_this support in Iterable and various container subclasses, and String, etc...
 - Frameworks
   - Led
     - Tons of Led support cleanups - losing APIs like Led_SDKString2ANSI Led_SDK_String Led_SDK_Char etc, and replacing with already existing (long existing) Stroika Foundation equivilents
@@ -301,38 +316,6 @@ Date:   Fri Dec 2 22:00:38 2022 -0500
 commit 339d3a79b0e0942064be29b7af2c28e551e2fe82
 Date:   Sat Dec 3 10:24:06 2022 -0500
     fix/cleanup related to https://stroika.atlassian.net/browse/STK-963 - which would ahve fixed it - but had fixed somethign else first - now use Execution::WaitForIOReady in Server/SearchResponder so avoids blocking read until socket read (really this cahnge fixes another bug wihc is we were only waiting on one socket until stuff came in and then on the other); so searchrespnder should work much better now
-
-commit 7adee4e20d67c6ba705e85afdbf6c65b77440434
-Date:   Sun Dec 4 11:24:40 2022 -0500
-    added assertions Variant::Reader (not null rep); and refactored some Read calls to have new protected _ToByteReader and _ToCharacterReader, so can more easily re-use logic in other subclass constructors (some semantic change but trivial and should be no issue)
-
-commit 259382605a40259de134be6362e9baab9789df84
-Date:   Sun Dec 4 11:27:00 2022 -0500
-    Added INI::Reader ReadProfile overloads
-
-commit f6744b908dfebc2296888c4d527880eee82e17b4
-Date:   Sun Dec 4 11:40:39 2022 -0500
-    Variant/CharacterDelimitedLines/Reader supported convert to VariantValues (basic Reader function) and added regtest of ReadMatrix use
-
-commit b6daa5d93140c511df63073bdc8b924c0cc4c66b
-Date:   Mon Dec 5 09:30:36 2022 -0500
-    refactoring DataExchange/Variant/Writer code - better abstracting transformations; use that in (so far untested but probably solid) DataExchange::Variant::CharacterDelimitedLines readers/writers
-
-commit 5febd19d3d6ea78304018da0b3fa3f449ee3c122
-Date:   Mon Dec 5 10:39:01 2022 -0500
-    better regression tets for new Variant::CharacterDelimitedLines::Writer
-
-commit 137034b470810ce01b77bc1368487038f197b8bd
-Date:   Mon Dec 5 11:52:08 2022 -0500
-    DataExchange/Variant/INI progress cleanups - and first draft of Writer (so far untested)
-
-commit 130df3ba656a537227f321733d238eaefab16dc7
-Date:   Mon Dec 5 18:08:38 2022 -0500
-    regression tests for Variant::INI::Writer
-
-commit bb51b8d67f81cfcf413b5253a5c32534b5978e15
-Date:   Mon Dec 5 21:00:03 2022 -0500
-    DataExchange::Variant::INI Profile/Section ToString() support; and fixed regression test case for reader/writer
 
 commit 97fab5b8bc00f9a2db7b4dab8cfc50a6197b3710
 Date:   Mon Dec 5 21:11:42 2022 -0500
@@ -466,7 +449,6 @@ commit d2e494d6da4443321a8a2a46ca468e6d86e491e8
 
 commit dadc827ea6a7b6d4bf32cecc3a61bccaee1bc800
 Date:   Sun Dec 18 10:47:33 2022 -0500
-
     further tweaked (windows only) code for UTFConvert - dont even need SmallStackBuffer
 
 commit 23e0a4dfc53fd5e08aa071566eeccd5e9d1fd313
@@ -483,7 +465,6 @@ Date:   Sun Dec 18 11:04:33 2022 -0500
 
 commit 3c3cec350205c9318ac933747116dd81c6f6fbd6
 Date:   Mon Dec 19 09:45:34 2022 -0500
-
     Slight speed tweak for JSON reader, using Containers::Concrete::Mapping_stdmap and move
 
 commit e854ea98e94222c1dd37039861102df27ff530f9
@@ -592,30 +573,6 @@ Date:   Wed Dec 21 13:21:35 2022 -0500
 Date:   Wed Dec 21 14:55:08 2022 -0500
     https://stroika.atlassian.net/browse/STK-965 - deprecated String::c_str() const version and did quickie (to be rewritten) non-const version and changed a bunch of (easy) code to use .As<wstring>() to avoid const c_str () issue
 
-commit 9a7bb4975e88145bdff094016c79def3f5bb5706
-Date:   Wed Dec 21 16:51:28 2022 -0500
-    qCompilerAndStdLib_stdlibVsBoostSpanSelect_Buggy bug define and start at workarounds
-
-commit d3c24634d748925c605cdf1fb0b0874b1912520d
-Date:   Thu Dec 22 09:00:47 2022 -0500
-    qCompilerAndStdLib_stdlibVsBoostSpanSelect_Buggy
-
-commit 93b1ff7a318554c2a913fb2801ed07b3c32fd941
-Date:   Thu Dec 22 09:08:43 2022 -0500
-    qCompilerAndStdLib_stdlibVsBoostSpanSelect_Buggy mkSpan_BWA_ workarounds
-
-commit 77c5e86a8318bb2db443174a5a41e49d717ffccd
-Date:   Thu Dec 22 09:35:24 2022 -0500
-    fixed qCompilerAndStdLib_stdlibVsBoostSpanSelect_Buggy to depend on LIBCPP_VERSION not clang version (cuz works on clang12 using gnu libstdc++)
-
-commit e8bb8e3dfc888fd1e1a24e71370cf6abb5e29b64
-Date:   Thu Dec 22 09:53:52 2022 -0500
-    fixed typo on qCompilerAndStdLib_stdlibVsBoostSpanSelect_Buggy
-
-commit 9212f2905514a4c0ee29415fea50999acf1e34b9
-Date:   Thu Dec 22 09:55:15 2022 -0500
-    Comments and more use of span
-
 commit dd698adb87d91fbbabc2b555d26fb4ee93b059dd
 Date:   Thu Dec 22 09:55:33 2022 -0500
     fix use of deprecated String::c_str()
@@ -632,22 +589,15 @@ commit 118cf54abb1a0f7dde36b80c4ed64539fd089867
 Date:   Thu Dec 22 11:58:39 2022 -0500
     define Common::GUID::size () const method
 
-commit ec6ce1735e8f2fe31f97da706c92ce68a7d56d27
-Date:   Thu Dec 22 12:45:37 2022 -0500
-    tweak qCompilerAndStdLib_stdlibVsBoostSpanSelect_Buggy so compiles on xcode
-
 commit 64a2d6755a597265c85b29c0baa58cd8fbf1f0d1
 Date:   Thu Dec 22 13:03:52 2022 -0500
     make format-code; and a few small cleanups/tightening of UTFConvert code to amke easier to workaround issues on xcode 14 compiler
-
-commit 17d7f107882a979d1c6655034693c953fc5166ce
-    more tweaks to qCompilerAndStdLib_stdlibVsBoostSpanSelect_Buggy for xcode14
 
 commit 1428645b4c2551c019a8e4a192b37648906dd3c3
     https://stroika.atlassian.net/browse/STK-965 added String::c_str (Memory::StackBuffer<wchar_t>* useBuf) const and started experimentally using
 
 commit 205e3200aaf1f799973e004d1adf7e6e7c6a9e60
-    changed  String::c_str (Memory::StackBuffer<wchar_t... API and used in a few more places; and docs and related cleanups
+    changed  String::c_str (Memory::StackBuffer\<wchar_t...> API and used in a few more places; and docs and related cleanups)
 
 commit e03adb06a4159533a7ef5947abcdc32befeff548
 Date:   Thu Dec 22 17:10:51 2022 -0500
@@ -657,19 +607,9 @@ commit 909abb3126182ad439fd5f123b8c82c0749f11db
 Date:   Thu Dec 22 17:11:33 2022 -0500
     Lose support for qCompilerAndStdLib_conditionvariable_waitfor_nounlock_Buggy cuz no longer support such old LIPCPPVERSION and no other refernces to this bug; Same for qCompilerAndStdLib_strong_ordering_equals_Buggy
 
-commit 4fd1fc02ae9ebb39ade497d7c6eff088241d1bbb
-Date:   Thu Dec 22 17:44:07 2022 -0500
-    cleanup qCompilerAndStdLib_stdlibVsBoostSpanSelect_Buggy and new experimental c_str() changes
-
-commit bc1d1485e98c9ea73c4b84afe12687e2e4ec0fa9
-Date:   Sat Dec 24 15:58:41 2022 -0500
-
 commit 835c5ba4939819e698294d6438e70d152258c5f9
 Date:   Sat Dec 24 17:44:05 2022 -0500
     renamed UTFConverter::ComputeOutputBufferSize -> UTFConverter::ComputeTargetBufferSize, and changed UTFConverter return of tuples to use ConversionResult type with named fields
-
-commit e39a006aa6e7ae975841b6d3bc624d0e8b7ebb9b
-Date:   Sun Dec 25 09:11:12 2022 -0500
 
 commit b934eb8e0d016454008e7fb0b2dac9513903b585
 Date:   Sun Dec 25 09:11:58 2022 -0500
@@ -689,15 +629,11 @@ commit 1ef780e5e45bed056ffbe780a70d63b32e2cc2fb
 
 commit b0e9d0815f7cfaea5beaf086b342d6cfdf7596d0
 Date:   Mon Dec 26 11:47:37 2022 -0500
-
     OutputStream (start of) span support
 
 commit b766184bb27ee0adee9db77230f58531ccd92dfc
 Date:   Mon Dec 26 11:48:20 2022 -0500
     replace use of (now deprecated) StringBuilder begin/end with GetData() API
-
-commit d3f4e9f3d7bc6170d3c0d8910331d4bebeb34d96
-Date:   Mon Dec 26 18:03:11 2022 -0500
 
 commit 767efd44a74626d56714944f3936d93097e98934
 Date:   Mon Dec 26 18:03:51 2022 -0500
@@ -714,12 +650,6 @@ Date:   Mon Dec 26 20:55:42 2022 -0500
 commit 55be3d0a95af53be85fb40082be7d72189c2554d
 Date:   Mon Dec 26 20:56:21 2022 -0500
     big simplification to String2Int code using concepts (hopefully still correct)
-
-commit df13d69e8e0582b5ec0b64fcf6da0b42ff69cab9
-Date:   Tue Dec 27 10:10:20 2022 -0500
-
-commit aa71f6c79077741620bc9f7ca4e844b7b7864904
-Date:   Tue Dec 27 11:46:14 2022 -0500
 
 commit c1c1cf19d8e82946649513e3c1a3a64b696daa51
 Date:   Tue Dec 27 11:47:12 2022 -0500
@@ -762,9 +692,6 @@ Date:   Wed Dec 28 17:50:43 2022 -0500
 Date:   Thu Dec 29 09:14:44 2022 -0500
     fixed https://stroika.atlassian.net/browse/STK-966 - ToFloat failing - due to strtod requires NUL-termination, and new code didn't generally require/pass in NUL-terminated strings (did often enough to be confusing)
 
-commit 304f2d98dbc5066fefa4d891df0082192c9939fd
-Date:   Thu Dec 29 09:16:20 2022 -0500
-
 commit d97aa8ead8ae3bf94f2f585ff20ac98df038b4a2
 Date:   Thu Dec 29 09:17:10 2022 -0500
     StackBuffer resize (BOTH cases now) use Foundation::Containers::Support::ReserveTweaks::GetScaledUpCapacity
@@ -797,9 +724,6 @@ commit 30b64f909ccfa445c3ed03d78d30da49542e233d
 Date:   Fri Dec 30 10:52:10 2022 -0500
     failed attempt to use new String GetData stuff - need to fix ctors for string rep construction first ofor ones doing construction
 
-commit 9bd2b0402c2207019c8aaba954283780841ba5f2
-Date:   Fri Dec 30 16:12:42 2022 -0500
-
 commit 4e00fb224f38b920a26720ee0ff8b860e95fe64d
 Date:   Fri Dec 30 16:27:09 2022 -0500
     draft rewrite of String::Find () using new style data access
@@ -811,13 +735,6 @@ Date:   Fri Dec 30 16:29:32 2022 -0500
 commit 4020d7c35dc94700d44b6c6dd689fd4033aa4eee
 Date:   Fri Dec 30 16:50:55 2022 -0500
     code cleanups, docs, and bug fixes to recent PeekData code in String class (and some classes renamed, some methods no static)
-
-commit c97151fc158f2c099c8c9012769909c13400dcab
-Date:   Sat Dec 31 04:31:44 2022 -0500
-
-commit 10a5fa9e46e18e03062b3948c8f18a383f3dee84
-Date:   Sat Dec 31 14:16:32 2022 -0500
-    lose __cpp_char8_t < 201811L checks
 
 commit 75a1f98208abef4b79d990c2579d9b2483fc6707
 Date:   Sat Dec 31 15:26:58 2022 -0500
@@ -1003,10 +920,6 @@ commit 9ca709cd840168da3b60b26e336d090602bc48cd
 Date:   Mon Jan 9 15:33:22 2023 -0500
     more conversions from using L strings to ascii plain strings - and delegated Stringhsh constructor for VariantValue (and documented)
 
-commit b7664fd5ef499113c66289926938378b2d30dfdb
-Date:   Mon Jan 9 16:14:27 2023 -0500
- 
-
 commit 931cf3c7b459802767534eb1c2de051eef22ebfd
 Date:   Mon Jan 9 18:10:40 2023 -0500
     use plain String CTOR instead of String::FromASCII siunce about to mark that as deprecated, and its no longer needed
@@ -1035,15 +948,9 @@ commit 672760951628fb2dc653d8b3ba94fb84c4aa917f
 Date:   Tue Jan 10 09:37:42 2023 -0500
     use Memory::eUninitialized on a bunch of StackBuffer construction calls as performance tweak - forgotten - as part of String code mostly
 
-commit c96ed1580368b903e1fac725479a11ec3744d7ac
-Date:   Tue Jan 10 10:41:42 2023 -0500
-    
 commit 54da67a73abfb24f2aa11f77c1b7396d9d41c405
 Date:   Tue Jan 10 10:54:52 2023 -0500
     fixed StringBuilder::Append performance regression (without ConstSpan stuff invokes String CTOR needlessly for common case)
-
-commit 8aa2a7aa994c7e2141d77724b88fe12e6cc0fce8
-Date:   Tue Jan 10 11:34:43 2023 -0500
 
 commit e164c84e5f64c133f824f968f40dba8dafa3b02a
 Date:   Tue Jan 10 12:26:58 2023 -0500
@@ -1266,7 +1173,6 @@ commit 6f808dda911f24672e7ea0e51f5e26b4ab8b4e06
 Date:   Thu Jan 19 12:35:05 2023 -0500
     enhanced/fixed String (documentation purpose only) static assertions about sizes
 
-
 commit 49657d7f28fedbfc8faecc68a93edb6afbd668a0
 Date:   Fri Jan 20 08:55:15 2023 -0500
     use final in String rep defintions
@@ -1297,12 +1203,6 @@ Date:   Sat Jan 21 12:47:39 2023 -0500
 commit b2321fe9f9928fe7532eb9740fbf7c67074aefff
 Date:   Sat Jan 21 13:33:29 2023 -0500
   
-commit ec50c028810e6cac9f042c7089360900b65c25fb
-Date:   Sat Jan 21 15:17:50 2023 -0500
-   
-commit 78f823c3ecfc805c59e62b73b07edea5250e848c
-Date:   Sat Jan 21 17:45:01 2023 -0500
-    
 commit 83822467a2537af8c2fd6159ffcee8c41f759545
 Date:   Sun Jan 22 09:24:29 2023 -0500
     Some small improvements to uniocde regression tests but still terrible and must rewrtie
@@ -1368,10 +1268,6 @@ commit dce274b4a577ca510fc77f96653893fb1c62aa64
 Date:   Thu Jan 26 14:55:14 2023 -0500
     slight performance tweak to Variant/JSON/Reader.cpp reading strings (only perftested windoze)
 
-commit 10bf13c664f2e6800750a4c2caf4ff4b94dd40ef
-Date:   Thu Jan 26 15:02:43 2023 -0500
-    tweaked performance tests
-
 commit 292981e4a536def2e1f3d980ca390a273fa312c8
 Date:   Thu Jan 26 19:12:48 2023 -0500
     JSON::Reader object now takes options, which allow you to select (defaults to) using boost to parse intead of stroika, but still can select the stroika parser
@@ -1387,9 +1283,6 @@ Date:   Fri Jan 27 09:27:55 2023 -0500
 commit be80c33f69a5bbe1e8c153d0a2721324129f58df
 Date:   Fri Jan 27 11:14:29 2023 -0500
     options.fCanReadPastEndOfJSONObjectInStream for JSON parser, so can disable boost in that case (for now til I fix)
-
-commit e3d23fa25c504597c9fd9829c826e8905643f455
-Date:   Sat Jan 28 12:32:38 2023 -0500
 
 commit 8b9a718fdd530604ad23e2d47fe7b60ca90c975f
 Date:   Sat Jan 28 12:33:28 2023 -0500
@@ -1441,39 +1334,18 @@ Date:   Mon Jan 30 10:04:43 2023 -0500
 
 commit d573396ca6454de478f21940466d3dd760513c3a
 Date:   Mon Jan 30 22:41:03 2023 -0500
-    Draft/test of using explicit _IterableRepSharedPtr arg to MakeIterator and other Iterable<>::IRep methods that return iterators, so they can save the shared_ptr inside (thus losing the need for shared_from_this) - prototypes with the string code. Still testing to see how this impacts performance
+    
 
 commit fa0d128616e495835d026a0e80c8bef97da56f39
 Date:   Tue Jan 31 13:29:57 2023 -0500
-    got working and performs on balance better (for strings) losing enable_shared_from_this and doing explicitly - todo for other iterbale/containers; and because of this re-tuned the size of blocks for strings in reps
 
 commit 8ca729a96067060728d41f9042dda4e62b9bc298
 Date:   Wed Feb 1 09:17:34 2023 -0500
     more updates to scripts/docs to clarify require XCode 14 or later, apple clang 14 or later, c++20 or later, and lose qCompiler_LimitLengthBeforeMainCrash_Buggy (cuz only applied to older XCode)
 
-commit dfcbdae35db93a8899eb70065df8dcb8b0142507
-Date:   Wed Feb 1 12:26:57 2023 -0500
-    Mapping no longer uses enable_shared_from_this
-
 commit 14fd656e3b7b8f531fddbfb61ce0eefbffc02076
 Date:   Wed Feb 1 12:38:56 2023 -0500
     fixed overaggressive LIBCPP_VERSION check - need 13 supported for xcode 14
-
-commit dee7b4dc569d538899af33467cac6205b73e076b
-Date:   Wed Feb 1 22:50:05 2023 -0500
-    lose shared_from_this support in Association
-
-commit dfa7e79b5ddb0d43e52fafdc2237fb7404e96e5a
-Date:   Thu Feb 2 08:35:53 2023 -0500
-    get rid of used of shared_from_this in Bijection
-
-commit 9b22541f96afb5d0184bc16c622f1fe24278d94d
-Date:   Thu Feb 2 09:02:24 2023 -0500
-    get rid of used of shared_from_this in KeyedCollection
-
-commit 831bd6dcad983a3edcedaf78432422fe7450317d
-Date:   Thu Feb 2 10:15:17 2023 -0500
-    now mark enable_shared_from_this_PtrImplementationTemplate as deprecated
 
 commit da8e896c1d5570b350425a3a02f28267b3daf9cb
 Date:   Thu Feb 2 10:51:43 2023 -0500
