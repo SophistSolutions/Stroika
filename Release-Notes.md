@@ -30,7 +30,6 @@ especially those they need to be aware of when upgrading.
         <br/> no longer support Ubuntu 18.04; lose support for g++ versions before g++-11 (due to lack of chrono::month, etc)
       - Centos (no easy C++ 20 compilers and abandoned by IBM/redhat)
 
-
 - Samples
   -     cleanup/simplify examples
   -  in sample service, don't strip when building installer if IncludeDebugSymbolsInExecutables set
@@ -39,7 +38,6 @@ especially those they need to be aware of when upgrading.
   - SSDP
     - cosmeitc cleanups to SSDP Sample server,
     - one critical bugfix (new Stroika SSDPServer code more picky about order of writes/setting headers so set headers before write)
-
 
 - Github actions/workflows
   - renamed github action to build-N-test
@@ -112,7 +110,7 @@ especially those they need to be aware of when upgrading.
             <br>Also data returns new type field (pointer) - but minor.
             <br>A few other small fixes/cleanups.
       - StringBuilder
-        - major cleanup/fixes - using concepts, using span<>, better use of AssertExternallySynchronizedMutex;
+        - major cleanup/fixes - using concepts, using span<>
         - a few method deprecations and may new overloads (cleanly captured with requires)
     - Common
       - Common::Comparison
@@ -150,6 +148,7 @@ especially those they need to be aware of when upgrading.
         - qCompilerAndStdLib_stdlib_compare_three_way_present_but_Buggy
         - qCompilerAndStdLib_spanOfContainer_Buggy
         - qCompilerAndStdLib_stdlib_compare_three_way_missing_Buggy (trying to address quirkly lib++ support for three way compare)
+        - qCompilerAndStdLib_DefaultMemberInitializerNeededEnclosingForDefaultFunArg_Buggy
       - Support compiler  _MSC_VER_2k22_17Pt6_ bug define support
       - new _Stroika_Foundation_STRINGIFY_ macro
     - Containers
@@ -182,16 +181,15 @@ especially those they need to be aware of when upgrading.
           - DataExchange::Variant::INI Profile/Section ToString() support; and fixed regression test case for reader/writer
     - Debug
       - AssertExternallySynchronizedMutex
+        - https://stroika.atlassian.net/browse/STK-734 - classes that use AssertExternallySynchronizedMutex, now AGGREGATE it rather than subclassing (use [[no-unique-address]])
+        - name changes on AssertExternallySynchronizedMutex::ReadLock -> AssertExternallySynchronizedMutex::ReadContext (and WriteContext) and unified names of instances - all to address confusion in posts on Reddit, about whether these are real locks or not
+        - **not backward compatible** - AssertExternallySynchronizedMutex lock and unlock methods now non-const (all well documented now why, including why we leave shared_lock/shared_unlock as const
         - fSingleSharedLockThread_ in AssertExternallySynchronizedMutex for speed tweak (debug builds)
         - AssertExternallySynchronizedMutex further performance tweaks
         - Debug::AssertExternallySynchronizedMutex now hides fSharedContext, and accessed via (public was protected) GetSharedContext and SetAssertExternallySynchronizedMutexContext (not backward compatible but close); DataBase::Connection (and sucblasses) changes to use of AssertExternallySynchronizedMutex and chagnes to thread safety rules/docs for these classes (base unspecified if letter is threadsafe and for ODBC and SQLITE say they are not); implies some changes to GetSharedContext/SetAssertExternallySynchronizedMutexContext () usage for these classes (sb all internal and not noticable outside for hte most part)
-        - progress celaning up Iterbale to use new AssertExternallySynchronizedMutex ReadLock/WriteLock support
-        - more name changes on AssertExternallySynchronizedMutex::ReadLock -> AssertExternallySynchronizedMutex::ReadContext (and WriteContext) and unified names of instances - all to address confusion in posts on Reddit, about whether these are real locks or not
-        -    qStroikaFoundationDebugAssertExternallySynchronizedMutexEnabled support - so AssertExternallySynchronizedMutexEnabled independently of qDebug (but defaults to qDebug and not Stroika_Foundation_Debug_Sanitizer_HAS_ThreadSanitizer)
+        - qStroikaFoundationDebugAssertExternallySynchronizedMutexEnabled support - so AssertExternallySynchronizedMutexEnabled independently of qDebug (but defaults to qDebug and not Stroika_Foundation_Debug_Sanitizer_HAS_ThreadSanitizer)
       - use Debug::DropIntoDebuggerIfPresent () rather than direct call to windows DebugBreak()
       - fixed (serious regrssion - string visualizer) was broken, and updated older visual studio natvis files to match
-      - **not backward compatible** - AssertExternallySynchronizedMutex lock and unlock methods now non-const (all well documented now why, including why we leave shared_lock/shared_unlock as const
-      - https://stroika.atlassian.net/browse/STK-734 - classes that use AssertExternallySynchronizedMutex, now AGGREGATE it rather than subclassing.
     - Memory
       - BlockAllocation 
         - Minor tweaks to Memory/BlockAllocator (clarity)
@@ -303,12 +301,6 @@ especially those they need to be aware of when upgrading.
 
 
 #if 0
-
-commit d3bfbc5310e947ff6d8bb206c224fd15ac7f827c
-Date:   Fri Dec 2 11:07:54 2022 -0500
-    progress cleaning up Iterable's use of new AssertExternallySynchronizedMutex ReadLock/WriteLock code (not done)
-    And wrapped fIterableEnvelope_ if #if qDebug for writelock now possible
-
 commit 58f7586b3138c832a0d0c9bda2971f4617a10589
 Date:   Fri Dec 2 22:00:38 2022 -0500
     partial fix/woarkound for https://stroika.atlassian.net/browse/STK-964 - enuf to probably fix balance of https://stroika.atlassian.net/browse/STK-963
@@ -316,10 +308,6 @@ Date:   Fri Dec 2 22:00:38 2022 -0500
 commit 339d3a79b0e0942064be29b7af2c28e551e2fe82
 Date:   Sat Dec 3 10:24:06 2022 -0500
     fix/cleanup related to https://stroika.atlassian.net/browse/STK-963 - which would ahve fixed it - but had fixed somethign else first - now use Execution::WaitForIOReady in Server/SearchResponder so avoids blocking read until socket read (really this cahnge fixes another bug wihc is we were only waiting on one socket until stuff came in and then on the other); so searchrespnder should work much better now
-
-commit 97fab5b8bc00f9a2db7b4dab8cfc50a6197b3710
-Date:   Mon Dec 5 21:11:42 2022 -0500
-    qCompilerAndStdLib_DefaultMemberInitializerNeededEnclosingForDefaultFunArg_Buggy workaround
 
 commit bfb415790a4b45ddd161a91535726dc919ab9e11
 Date:   Wed Dec 14 10:36:02 2022 -0500
@@ -484,14 +472,6 @@ Date:   Mon Dec 19 20:59:03 2022 -0500
 commit 510a3ff58584b2e7ea97b607c3557c03de4d0fcc
 Date:   Mon Dec 19 21:19:36 2022 -0500
     Mostly cosmetic cleanups to new UTFConverter code
-
-commit 769009bd68a9868b522b39da476d0bc6a851dcc6
-Date:   Tue Dec 20 13:04:49 2022 -0500
-    Annotate bug workaround for qCompilerAndStdLib_DefaultMemberInitializerNeededEnclosingForDefaultFunArg_Buggy
-
-commit 682a3eea6a8846d5066a35ba6b385dd5d0575855
-Date:   Tue Dec 20 13:05:16 2022 -0500
-    cosmetic cleanups and workaround qCompilerAndStdLib_DefaultMemberInitializerNeededEnclosingForDefaultFunArg_Buggy
 
 Date:   Tue Dec 20 14:12:06 2022 -0500
     rough incomplete draft of boost locale support for utf_to_utf
@@ -1427,9 +1407,6 @@ commit 0094f983b4698f64958f844d94b6693e9d5ea060
 Date:   Sat Feb 4 21:10:22 2023 -0500
     Iterator no longer inherites from IteratorBase: deprecated
 
-commit d62bb0ab961b2bacc40fedd29cc19bdf7b5c60c5
-Date:   Sun Feb 5 00:16:33 2023 -0500
-    Iterable now aggregates AssertExternallySynchronizedMutex intead of inheriting from it
 
 commit e0ee0d9a4ed691011a00bec6fd12054c635810fa
 Date:   Sun Feb 5 09:32:11 2023 -0500
