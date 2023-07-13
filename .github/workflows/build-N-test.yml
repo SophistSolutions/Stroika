@@ -312,10 +312,10 @@ jobs:
     - name: Install tools required to build Stroika
       run: |
         sudo apt-get install -y libtool-bin pkg-config cmake automake autoconf libtool-bin
-        sudo apt-get install -y g++-11
+        sudo apt-get install -y g++
     - name: Configure
       run: |
-        ./configure Release --compiler-driver g++-11 --apply-default-release-flags --lto disable
+        ./configure Release --compiler-driver g++ --apply-default-release-flags --lto disable
         cat ConfigurationFiles/Release.xml
     # Break out third-party-components to do clean so we dont run out of disk space, and break out TPC AND library
     # to show the summary time for each part
