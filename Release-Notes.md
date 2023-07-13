@@ -22,8 +22,11 @@ especially those they need to be aware of when upgrading.
   - Lose Support for systems
     - Compiler
       - g++ 11 or later required
+      - Visual Studio.Net - loose support for vs2k19 - require vs2k22 or later
+
 
     - Platform
+
       - Ubuntu 18.04
         <br/> no longer support Ubuntu 18.04; lose support for g++ versions before g++-11 (due to lack of chrono::month, etc)
       - Centos (no easy C++ 20 compilers and abandoned by IBM/redhat)
@@ -225,6 +228,13 @@ especially those they need to be aware of when upgrading.
   - zlib 1.2.12
     - disable ASM build for x64 windows zlib - and created jira ticket https://stroika.atlassian.net/browse/STK-905 to track future cleanup of makefile to reenable this (probably using cmake)
   - boost 1.79.0
+  - zlib
+    - zlib experiemntal makefile fixes
+    - lose a bunch of CMAKE_ARGS overrides in zlib makefile -already done in shared cmake include
+
+    - but dont need the zlib Patches anymore
+
+    - Comment out a bunch of stuff probbaly not needed on makefile anymore for windows zlib
 
 
 - Build System
@@ -2204,1384 +2214,371 @@ Date:   Mon Feb 20 10:47:50 2023 -0500
 
     qCompilerAndStdLib_stdlib_codecvt_byname_char8_Buggy and missing locale fixes for recent checkins
 
-commit 591e0b738e0bc3913000e1f5b14e139409da443c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Feb 20 11:21:21 2023 -0500
-
-    cosmetic
-
-commit fcb6bbe68e425680448e1b4388edc7cfb3d044ec
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Mon Feb 20 11:29:52 2023 -0500
-
-    silence warnings
-
 commit 08ec0b3e52842137e52038f92dacd5e9d74bb21d
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
 Date:   Mon Feb 20 11:40:03 2023 -0500
-
     qCompilerAndStdLib_stdlib_codecvt_byname_char8_Buggy seems buggy for lib std c++ too
 
-commit d5589806e51d9595b5a495bc59509db58dc2e9d1
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Mar 11 13:49:20 2023 -0500
-
-    cosmetic
-
-commit c90db1cb9f7320ca134b00a03af94cb07c9b07cc
-Merge: d5589806e5 1ebea54c52
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Apr 15 08:25:22 2023 -0400
-
-    Merge branch 'v2.1-Release' into v3-Dev
-
-commit fa4bdc68ce64e1fd8025ee0b82b63ac0447a8788
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Apr 15 08:53:50 2023 -0400
-
-    fixed merge issues
-
-commit 085856ac50f1b660041ead95e82a8c19dd5f0908
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Apr 15 09:03:57 2023 -0400
-
-    make format-code
-
-commit 7de969a9a46894c7926a00d95ea821054282a3ae
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Apr 15 15:28:51 2023 -0400
-
-    cosmetic and docs
-
 commit ad9b06996829057c5de473c673c625ecc2999a0a
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sun Apr 16 11:22:13 2023 -0400
-
     start at supporting Hints objects in Container factories
 
 commit 0a6660d2713a70e26182b385f4def922c139d87d
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sun Apr 16 12:01:37 2023 -0400
-
     new Set_Array implemetnation
 
 commit d46ffce8f5ccaa7a99ee306964e0951590af3ff6
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sun Apr 16 13:09:31 2023 -0400
-
     SetFactory now uses Set_Array by default
 
 commit b044a0245ec651a94d14dfd7dded01111c255ab1
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sun Apr 16 15:10:00 2023 -0400
-
     use new Array push_back
 
-commit 3d2814f748d06e071ec52fe66c5b9f238fca4271
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Apr 16 16:40:30 2023 -0400
-
-    Set_Array capacity overrides
-
 commit fe6958c520742a1ed06bcfa830150ebf61253626
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sun Apr 16 19:46:14 2023 -0400
-
     fixed bug with Containers::Stack (serious/rediculous); and improved regtests
 
 commit 9f2d5a3261a829076a7c98dc6ee9b63a2194c914
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Mon Apr 17 08:34:41 2023 -0400
-
     simpler impl of container factories using std::function - did assoc and bijection so far
 
 commit 83b53a84c83b631b714d6a8756843a991c4e61a8
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Mon Apr 17 09:07:40 2023 -0400
-
     Collection factory cleanup, and enabled CollectionFactory use of Collection_stdmultiset
 
 commit 06020ca61bdc701ec930483976dea79cb106b6f8
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Mon Apr 17 10:10:01 2023 -0400
-
     more fiddling with how container factories work (experimemting with assocation)
 
 commit 4a8586f226307d61c6311585ebe5990cd4640942
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Mon Apr 17 10:45:22 2023 -0400
-
     maybe good cleanup of Association_Factory - review and test
 
 commit f04837893cef820ebb83a86381390643b9beb5f0
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Mon Apr 17 12:22:17 2023 -0400
-
     hopefully final design for container factories - implemented for association - and generates much less code; not yet tested on other containers
 
-commit e8f2222e9b8c9e40bc1e997847c5060d9620ee6e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Apr 17 12:23:14 2023 -0400
-
-    docs
-
-commit 46ae0c41b2cecb02bb7e06c722922a29d9643513
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Apr 17 12:31:04 2023 -0400
-
-    minor tweaks to new Association_Factory code
-
 commit 4f4b73cb082cf6856412c315c1a230a41eb46473
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Mon Apr 17 13:43:32 2023 -0400
-
     Another tweak to Association_Factory so it works when called before main (magic static inline didn't work - not sure why)
 
-commit 6da408e06d883ddb02f397ffe2e9d44efd95f393
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Apr 18 10:25:44 2023 -0400
-
-    minor cleanups to Association_Factory
-
 commit 8417dce6e30d2943f10c88ef99669ca518bfba39
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Tue Apr 18 10:26:13 2023 -0400
-
-    try redo of BijectionFactory using new pattern
-
-commit 0a4cb471f4ae790cea943021663239b0055e4b21
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Tue Apr 18 11:03:53 2023 -0400
-
-    cosmetic
-
-commit 1b73cdd61ad5eada7653535fa3afd9f6a8a797b8
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Apr 18 20:49:28 2023 -0400
-
-    spelling tweak
-
-commit c83ef25f6181021b370f718b39b5b9edb6c474b0
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Apr 18 20:50:01 2023 -0400
-
-    spelling tweak
-
-commit 2636c0097c6a8a9f87703011b6f0907b104f136b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Apr 18 20:50:44 2023 -0400
-
+    red of BijectionFactory using new pattern
     new factory pattern on collection/densedatahyperrectangle
-
-commit 0490b1ec344b8792e8ce2593dd781f874b4eea6a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Apr 19 07:26:28 2023 -0400
-
     new factory pattern up to keyedcollection_Factory
 
-commit 746b981cd9a52d70a2e697ca7d454e17f732393f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Apr 19 07:30:18 2023 -0400
-
-    new factory pattern up to keyedcollection_Factory
-
-commit 38f35022f374367d2ae3bf1f9593d50c34e092ec
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Apr 19 07:59:28 2023 -0400
-
-    new factory pattern up to Mapping_Factory
-
-commit 3797fd2faf5c89d439588da09a9ad51e14a424aa
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Apr 19 08:31:37 2023 -0400
-
-    removed erroneously unneeded comments about          *  \note   https://stroika.atlassian.net/browse/STK-933
-
-commit dd06dc1c76347acd837ea02a5c9884462ade65cd
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Apr 19 10:21:16 2023 -0400
-
-    updated queue factory to new style
-
-commit 53918e2296baaab71e510dfb5d20fd5f6919e6bc
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Wed Apr 19 15:11:59 2023 -0400
 
     Multiset_Factory and Sequence_Factory updates to lastest
 
 commit 3fbc48d5ca3ee6992514b644f6e9c6f7115e9623
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Wed Apr 19 15:26:09 2023 -0400
-
     Update Set_Factory to use latest pattern
 
 commit eacc076e3d4980e3a809601f286e053894984d81
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Wed Apr 19 22:02:17 2023 -0400
-
     SortedAssociation_Factory and SortedCollection_Factory upgrade
 
 commit b5f004300f29c6c82a2cd460c2f731c9186353d1
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Thu Apr 20 04:08:18 2023 -0400
-
     cosmetic/comments; plus SortedKeyedCollection_Factory factory update
 
-commit 4c3b150e78a526f93d06412618cbcda8a9183bd8
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Apr 20 05:03:47 2023 -0400
-
-    finished (draft) of container factory cleanups
-
-commit aac13363c2993ebecf2dac3b03240273737bd6fa
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Apr 20 09:08:52 2023 -0400
-
-    docs about container factories
-
-commit c8a45a173154d2b8b6ef16006484475e761c067c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Apr 20 09:11:41 2023 -0400
-
-    docs typo fixed
-
 commit b6e96f8037ce92d7ac4901cc979afaa9f46b1615
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Thu Apr 20 10:15:29 2023 -0400
-
     new KeyedCollection_Array and switched to that as default in factory if no operator< available
 
-commit 8bc93cd2229eb50bf413881d6cb174efb21f1ebf
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Apr 20 10:19:39 2023 -0400
-
-    fixed typo
-
-commit 2e5fdce3deff22170a333cf73be0f7953509d919
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Apr 20 11:51:28 2023 -0400
-
-    fixed missing checkins
-
-commit 9ae5e5bcf793cb2d1ef04537fbbbfe7d07bf126b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Apr 20 16:38:29 2023 -0400
-
-    lose one uneeded capture; and clang diagnostic ignored nused-lambda-captur in one spot
-
-commit b09842a6ba5a1814395190229ce8e9e2339b4017
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Apr 20 16:39:39 2023 -0400
-
-    lose unneeded capture
-
-commit dcc0079f99ff9e011679c94d646a6d5449257c4f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Apr 21 08:15:12 2023 -0400
-
-    silence some clang warnings
-
 commit 8bac60bd775825efbcfa53143f994f229a8157d7
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Fri Apr 21 09:01:03 2023 -0400
-
     (not backward compatible but to internal routine) change to DataStructure::Array - changed its Find() method to return optional, and more closely mimic LinkedList (so cloning code with if() not a problem)
 
-commit 356fd0387037a0b82fae30dd1181ee6a993fd929
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Apr 22 08:21:14 2023 -0400
-
-    fix unused warning
-
-commit a2a1719119a0c71ca90e503e8feee71359be7ae0
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Apr 23 12:37:40 2023 -0400
-
-    lose uneeded #include
-
 commit a73daaec7b03e18d41e778e8c2007c3f2a9563c6
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sun Apr 23 12:38:01 2023 -0400
-
     Draft support for Concrete::KeyedCollection_stdhashset including regtests passing
 
 commit 749b513681093e7173521bc8b0cf977fa0e87550
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sun Apr 23 12:38:45 2023 -0400
-
     Draft support for Concrete::KeyedCollection_stdhashset including regtests passing
 
 commit 1e6852729ac4f7ea7a9c17cb695f1df2d206a5ab
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sun Apr 23 12:49:19 2023 -0400
-
     cleanup - reduce dependnecy on Mapping_stdhashmap_IsDefaultConstructible and replace with using is_default_constructible_v
 
-commit 92c7f3c5995611971ea33b502739e804fccf06a0
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Apr 23 12:58:05 2023 -0400
-
-    more experiment losing Mapping_stdhashmap_IsDefaultConstructible
-
 commit 75ed8f114460cfedccc07f3f43fd7f069032f773
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sun Apr 23 13:09:31 2023 -0400
-
     lose Mapping_stdhashmap_IsDefaultConstructible and use is_default_constructible_v instead
 
-commit c5591811dcc006358fa72d24e767c8eb86cd83df
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Apr 23 15:16:20 2023 -0400
-
-    more work on enabling KeyedCollection_stdhashset in factory
-
-commit d51d72e9d2ac8858541b1151394286d15a272c8c
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Sun Apr 23 17:21:20 2023 -0400
-
-    silence warning
-
-commit 0476cef721efcf83ea864b0ec1476c4a5317e97b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Apr 23 17:24:35 2023 -0400
-
-    Silence warning
-
 commit 1a31d20c89025eee792a01acb5e0931f37da3747
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
 Date:   Sun Apr 23 17:51:39 2023 -0400
-
     worked around new qCompilerAndStdLib_requires_breaks_soemtimes_but_static_assert_ok_Buggy issue with clang
 
-commit 9df89b9a9bd3d9fd44428ecde4e6bf082a643490
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Apr 23 17:56:00 2023 -0400
-
-    cosmetic
-
-commit 6e6dcf768312c29a2a3ef1f68ca2f2b9c6149887
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Apr 23 18:05:40 2023 -0400
-
-    testong chagne to KeyedColelction traits
-
-commit 08184b4eb45b6830b96913e9b75d8aa0533125d3
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Sun Apr 23 21:34:35 2023 -0400
-
-    Another qCompilerAndStdLib_requires_breaks_soemtimes_but_static_assert_ok_Buggy workaround
-
-
 commit d2043ce3ad62e8de86c3445f4275ff61ff28c692
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Mon Apr 24 10:03:50 2023 -0400
-
     (not backward compatible in minor ways) - KEY_EXTRACTOR no longer template parameter to CTOR or factory for KeyedCollection and its subclasses since part of the traits(was just default part of traits)
 
-commit 78fde768a1e9d4d25ca2a5fdf03cc0ffc4a8223a
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Mon Apr 24 10:41:13 2023 -0400
-
-    fixed typo in recent checkins
-
 commit 84c7114ec10b61be88e5326e60b515f1d3de98f9
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Mon Apr 24 13:22:41 2023 -0400
-
     experiment using KeyedCollection_ExtractorCanBeDefaulted requires
 
-commit ccf6167cae4d4f23c505ecd3c360f2efd74d2647
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Apr 25 07:12:32 2023 -0400
-
-    loose support for vs2k19
-
-commit 21eb91238dd4e6c94fc2be2e34ef6fa5949190be
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Apr 25 08:58:49 2023 -0400
-
-    lose compiler support for vs2k19, and bug defines that were specific to it
-
-commit e6ac05af5188cf44b8fa41a9cb7aca98625ebc63
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Apr 25 09:10:27 2023 -0400
-
-    tweaks to github action files - better docs - and better choice for windows builds
-
-commit 79308c3c3a1d3626906b33b52bdedf665663bdd6
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Apr 25 09:38:32 2023 -0400
-
-    qCompilerAndStdLib_inline_static_align_Buggy still broken for clang
-
-commit b94525d52e6aad7fb877b6138643625d6130fa91
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Sat Apr 29 10:21:23 2023 -0400
-
-    start to lose qCompilerAndStdLib_inline_static_align_Buggy support
-
-commit 86590a87c7e1c56df11e4b5decc3003ae50c7a09
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Apr 29 10:31:25 2023 -0400
-
-    qCompilerAndStdLib_inline_static_align_Buggy no longer needed - my bad
-
-commit 547d9d9849b10bbd086237e72fe549d8af09b03e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Apr 29 10:43:40 2023 -0400
-
-    cosmetic
-
-commit 69dfbc48680a191fc1f88779845ca1978ef5f40d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Apr 29 11:18:30 2023 -0400
-
-    no more vissutdio vs2k19 support
-
 commit 07dd45bc7b79fec8ed848c82474793f029bc379f
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sat Apr 29 11:47:46 2023 -0400
-
     keyeedcollection docs/samples
 
 commit 9ea3209a34083509f25322d0999a80fb99b2051b
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sat Apr 29 11:59:54 2023 -0400
-
     github actions workaround issue with msys docker containers
 
 commit f9d078f8db9f5a89373a736b3735041a9ca91a53
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sat Apr 29 14:20:20 2023 -0400
-
     replace use of RunArgumentsWithCommonBuildVars with PATCH_PATH_FOR_TOOLPATH_ADDITION_IF_NEEDED since SIMPLER, former not working under DOCKER/MSYS anymore - probably related to https://stroika.atlassian.net/browse/STK-941 WORKAROUND NOT WORKING
 
-commit a5c1691b44c289a4ba35f9fd0e48f9d9da699a7f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Apr 29 18:11:32 2023 -0400
-
-    REVERTED TO OLDER MSYS DUE TO https://stroika.atlassian.net/browse/STK-979 in docker container for msys
-
-commit d261306102358ba9d9c65c57d9cdf9ec7d5e3ad9
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Apr 29 22:05:33 2023 -0400
-
-    Revert "github actions workaround issue with msys docker containers"
-    
-    This reverts commit 9ea3209a34083509f25322d0999a80fb99b2051b.
-
-commit 00caa8313eadef6c8b6cadcd37af39385ed49363
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Apr 30 09:20:55 2023 -0400
-
-    Revert "Revert "github actions workaround issue with msys docker containers""
-    
-    This reverts commit d261306102358ba9d9c65c57d9cdf9ec7d5e3ad9.
-
 commit 91d8ab7aecc4d46d10639e61d4d5b840cc26dcd9
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sun Apr 30 17:52:07 2023 -0400
-
     refactored windows docker container building; and added (untested) github action to build the containers
 
 commit 6fa3de6e691254f4a43207559531c5df1fca907d
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sun Apr 30 17:57:02 2023 -0400
-
     tweak build-v3-Docker-Containers.yml
 
 commit d9ff1e2d6641128caeefe11afaa74937174764a1
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sun Apr 30 17:59:03 2023 -0400
-
     tweak build-v3-Docker-Containers.yml
 
-commit 557565acf6737becb67f761c8d6367a7c9ebdcc7
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Apr 30 20:23:24 2023 -0400
-
-    fixed bash_profile docker build windows
-
-commit 658187139142eec43a79cd27d6b00469a444dd8a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Apr 30 20:25:23 2023 -0400
-
-    github action cleanups
-
-commit a4ce54d52eadc5331393ec63d58f12c0e54bc27d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Apr 30 20:31:33 2023 -0400
-
-    github action cleanups
-
-commit 119021e8dfc29292b6569df2e6879cf94259a58e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Apr 30 20:46:32 2023 -0400
-
-    more tweaks to docker container builds
-
 commit a9de2b9dc3fcda50131ea9d51d0f07eabf54a472
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sun Apr 30 21:48:33 2023 -0400
-
     github docker build actions
 
-commit a4660fd2caf97dd43f3fd8aa7c86dce7332aadb7
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Apr 30 22:46:48 2023 -0400
-
-    github docker build action
-
 commit 95ef6f2b5484fdde8737e9d8ca2ba619cf0536ab
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Mon May 1 10:21:22 2023 -0400
-
     more stuff to .github/workflows/build-v3-Docker-Containers.yml to debug docker build
 
-commit 4e87a0860a58f7ba67362193a247b46347e15d73
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon May 1 10:57:08 2023 -0400
-
-    more detbugging github action build docker containers
-
 commit 0207af552b8a4a86a38eee3ecb01591da10bd42c
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sun May 7 11:05:29 2023 -0400
-
     bug defines qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy  and qCompilerAndStdLib_requires_breaks_soemtimes_but_static_assert_ok_Buggy for vs2k building inside docker only???
 
-commit 31d0baa3ff8fa677bf6a18670735a73f86f478ac
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun May 7 11:21:27 2023 -0400
-
-    debug build windows containers
-
-commit 6cfe434595598d1c140084f561e309fdc28cfa25
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun May 7 11:26:34 2023 -0400
-
-    experimetnal change for DetectHostOSScript
-
-commit 76826097ffbe36347c7fbe8ad65cd3971e5cb3eb
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun May 7 11:33:46 2023 -0400
-
-    fixed typo in test
-
-commit a3ff4de656de966a860a5cd57b0bc4d29b5dfcc5
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun May 7 11:37:17 2023 -0400
-
-    fixed typo in test
-
-commit 7f91a176af214f78b72a6ee833b9498d44bc0de3
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun May 7 11:56:01 2023 -0400
-
-    maybe support pushing containers
-
-commit 8407c010bc5fc01f0e68c59ac8cf4ce14ccc6c27
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun May 7 14:41:06 2023 -0400
-
-    more attempts to debug build windows docker images
-
-commit 8df58b464ab58da82953f9f615d14ec060d86327
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun May 7 17:53:36 2023 -0400
-
-    test possible fix to docker build for windows github action
-
-commit 0cac369183696bcb3949e3bc0e2b1a4c77290f1b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun May 7 19:50:37 2023 -0400
-
-    debug issue running windows docker make
-
-commit 26703c08046e4b0e39049e86102f33d4cf23ed9f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun May 7 19:53:17 2023 -0400
-
-    debug issue running windows docker make
-
-commit 0c0c633c10718ecff6f01ac0c807da7aca604e08
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun May 7 19:59:56 2023 -0400
-
-    tweak github docker build github action file
-
-commit 610dbbebc361858f9fe1f520c169bf9581fd283e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun May 7 20:02:27 2023 -0400
-
-    more experiemnt with github
-
-commit be990194fe2ba96bbbda1d762b6ef31345db3809
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun May 7 20:04:59 2023 -0400
-
-    more experiemnt with github
-
-commit 34e955597540565f058be3437931a44e6720f802
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun May 7 20:16:47 2023 -0400
-
-    update path in github actions
-
-commit a6f117eb86e611a29a3fe844e81bc8adc7851a0b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun May 7 20:17:58 2023 -0400
-
-    work on github action
-
-commit e6269e1c86c17853bd187273ea055bf29a2d6ff6
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun May 7 20:24:43 2023 -0400
-
-    more tweaks to path for github action windows
-
-commit 8e2c6b6f3d081ba27c7824eb73b8fae3dbcd4900
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun May 7 20:29:43 2023 -0400
-
-    tewak githib actions
-
-commit 318139648032f189d40cf859bc36b211b9793be3
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun May 7 20:37:07 2023 -0400
-
-    Debug github actions
-
-commit 4491562e3d38076e8e49486dcc5019530c44b213
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun May 7 20:45:40 2023 -0400
-
-    Debug github actions
-
-commit 7a732a40bd9cd27e7da88c48fd1a997d314389a0
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun May 7 20:52:55 2023 -0400
-
-    github actions
-
-commit 7a43a2c1ff65e7f3c0a23884dbc178d03eb3498e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun May 7 20:59:28 2023 -0400
-
-    github actions
-
-commit 3782e277f9a15aefa4f1f90b82ca895423763243
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun May 7 21:01:38 2023 -0400
-
-    github actions
-
-commit 270b5a7635e92015d82e678edfdef912185dba86
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun May 7 21:05:05 2023 -0400
-
-    github actions
-
-commit ca83ee268661aba3323a8eb5e2fff49e4c5fc2fb
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun May 7 21:11:09 2023 -0400
-
-    github actions
-
-commit 5b785079d938cfc130d356193e4e6086498c2b67
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon May 8 01:49:16 2023 -0400
-
-    github actions
-
-commit d97c96e82e94d54a2f84f455eb79c83e699b380e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon May 8 01:54:01 2023 -0400
-
-    github action cleanups
-
-commit 99b56b196c0bffa862cd74b7bfca293f8e6a2d0a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon May 8 02:00:11 2023 -0400
-
-    more cleanups
-
 commit 3c41922f4bcdfbd5554c8f149df96a7d5f261335
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Mon May 8 02:05:20 2023 -0400
-
     cleanup github action for make containers
 
-commit 4b2bafa98a13db6b6c04292538e69688a411460c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon May 8 02:13:03 2023 -0400
-
-    install mising tools for unix build docker image
-
 commit c905b73982f5704e88b26402e2a9822dca5a9b89
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Mon May 8 02:45:28 2023 -0400
-
     Added CMAKE variable to configure script
 
 commit 29b9e2baa65e53c2eaeb4040bf257e2e636bafa8
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Mon May 8 02:48:04 2023 -0400
-
     install dos2unix in docker builder contaeiner for unix
 
 commit 11b28cff89f4d4b31cc7b07461838c9e2d6168c5
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Mon May 8 04:48:45 2023 -0400
-
     experimental zlib cmake build support
 
 commit 77d775eb307b13dad30ba14e09515bfdb470c878
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Mon May 8 05:00:56 2023 -0400
-
     more tweaks for new zlib thirdpartycomponents build
 
 commit 975fb7b275ec4d8244838a3400691352332b5dee
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Mon May 8 11:40:51 2023 -0400
-
     workaround dispace issue building docker container(s)
 
 commit a867c9abc4cbaf12c4d6ea33371ce297db7a793e
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Mon May 8 13:04:47 2023 -0400
-
     progress on make docker containers windows
 
 commit 092fe4122d25871dbba5f1e84489c28745b33c94
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Mon May 8 13:48:07 2023 -0400
-
     more tweaks to windows docker builds
 
-commit 6cf906d3b81da8fb647d3447963b7db48c02b2ed
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon May 8 14:00:02 2023 -0400
-
-    docs on github actions
-
-commit 42fdb611c6dc1f805e1b3319ee8706f083f1d3b0
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon May 8 14:04:04 2023 -0400
-
-    fixed typo
-
-commit 45049fbc7ef26ad57763c98589f45f585539d937
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon May 8 15:15:22 2023 -0400
-
-    fixed typo building docker containers
-
 commit 207724acb00a840b01c2fc03937cfe8106fd8853
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Mon May 8 19:18:15 2023 -0400
-
     lose (pointless and now wrong) #pragma comment(lib, "zlib.lib")
 
-commit e53cc99b232d5f018d3a852fa678ddce64c26b1d
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Mon May 8 20:17:50 2023 -0400
-
-    maybe fixed cmake build of zlib
-
-commit 60b1571ae7d9ca46bae781c1218cc403f6834de8
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Mon May 8 20:35:33 2023 -0400
-
-    progress getting new cmake based build for zlib working on unix
-
-commit c1b89a495e0add4b36faffe3016668a931b572c1
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon May 8 20:58:57 2023 -0400
-
-    more cmake build cleanups (esp with zlib)
-
-commit 1d3edf293fe721498b977623e7d5002e4ce5feca
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed May 10 08:46:41 2023 -0400
-
-    comment
-
-commit 285e5294ef76f173e5f7ecc3ba7ef431e50e41c6
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed May 10 08:48:31 2023 -0400
-
-    see if msys builds work on windoze now
-
-commit 9e5f9b644ed1e4ba0dc6f1a823a1b80e0ddee215
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Wed May 10 09:24:45 2023 -0400
-
-    +BUILD_WITH_CMAKE_ workaround for UNIX builds for now
-
-commit 1b95123e7293b5cd5068468acc1dcde65e518564
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Wed May 10 12:16:56 2023 -0400
-
-    Revert "see if msys builds work on windoze now"
-    
-    This reverts commit 285e5294ef76f173e5f7ecc3ba7ef431e50e41c6.
-
-commit 86c8ac26d84319efdea58cbfc03502080abf124b
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Thu May 11 12:17:59 2023 -0400
-
-    test possible fix using CMAKE with zlib on unix
-
-commit 80b75a9426938f29df5f1871e4df808c7ca0fec5
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Thu May 11 13:08:29 2023 -0400
-
-    zlib experiemntal makefile fixes
-
-commit e6a6c9f19aa52dc57ac71f7d79cc001d8743802e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu May 11 16:47:40 2023 -0400
-
-    lose a bunch of CMAKE_ARGS overrides in zlib makefile -already done in shared cmake include
-
-commit 96cdaae97a26561dbc3719e1d49d15bc40fbe40d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu May 11 16:48:38 2023 -0400
-
-    Revert "zlib experiemntal makefile fixes"
-    
-    This reverts commit 80b75a9426938f29df5f1871e4df808c7ca0fec5.
-
-commit 03984f44ab098bf8d7bdf1b786bd01d7aee76f88
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu May 11 16:49:32 2023 -0400
-
-    but dont need the zlib Patches anymore
-
-commit 504c0976908de0595636e0523eaf43433eb1fcc9
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu May 11 16:51:32 2023 -0400
-
-    zlib makefile cleanup
-
-commit 4f2988d6302e73f17ee7f2c558bbbecc3f5facab
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu May 11 16:56:56 2023 -0400
-
-    more zlib cleanups
-
-commit fcda2a5bcdf4bcd484f6fc26960c66d385aed1e9
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu May 11 16:59:49 2023 -0400
-
-    maybe worakround zlib third party compnents makefile issue
-
-commit 6ee8f11c5ec9c2a534aa2cc7095a63800cb10da0
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu May 11 18:14:19 2023 -0400
-
-    zlib build trick not producing dynlibs also needed for macos
-
-commit 203b7d0d7f2ed7b1f96d0d8783daaa448fe7d755
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu May 11 18:17:00 2023 -0400
-
-    minor tweak to .github action files
-
-commit bcf0f33f37425eb06073890f8dc1b47954bdc3e1
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Thu May 11 21:29:54 2023 -0400
-
-    fixed recent libz makefile changes
-
-commit d4379680dd468261914ec0a696e3f56946faf8d9
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu May 11 21:38:50 2023 -0400
-
-    zlib makefile cleanups
-
-commit 59a33febf65821be65645b3af52fa7955ba52f23
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu May 11 21:39:34 2023 -0400
-
-    Comment out a bunch of stuff probbaly not needed on makefile anymore for windows zlib
-
-commit 93a09b64d89544955adbe8e36a4c742127d0269b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu May 11 21:41:03 2023 -0400
-
-    todo commetns zlib
-
-commit 5b6d611aef96a29bb114c6df541b012f123ed838
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu May 11 23:17:16 2023 -0400
-
-    fix mac zlib build issue
-
-commit 26c21c912ffca24defd23aba30b3232fcc4a8c5b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri May 12 10:18:33 2023 -0400
-
-    more zlib makefile cleanups after testing
-
-commit e4b06450940666e043c7d621548279407e72971e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri May 12 10:32:06 2023 -0400
-
-    more zlib makefile cleanups
-
 commit 0801e8dd53d78864a80a7c0852613112f624e7bc
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Fri May 12 10:57:44 2023 -0400
-
     in IO::Transfer regtest, also just warn - not fail - on timeouts - since remote network servers we ping often timeout
 
-commit 6794ece8b293841924f7489cafb555c175871806
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri May 12 10:57:57 2023 -0400
-
-    cosmetic
-
 commit 42e31b2acb899cc6012306e94bc9bc49ad638f7d
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Fri May 12 11:42:14 2023 -0400
-
     test if windows-vs2k22-msys-x86_64-Release now builds under docker/github actions
 
 commit 837c469c25ae4ae4994436b7db7a111f040cda52
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Fri May 12 19:18:26 2023 -0400
-
     sigh - docker msys stuff still broken... debug on laptop not github actions
 
 commit 4b38071ad24b09b740339c62873faa25f8bef7e3
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sat May 13 15:12:38 2023 -0400
-
     support building (windows) strawberry perl tool
 
 commit 30984a94a0b9ae5a0c0776e90649b5149aa79314
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sat May 13 15:16:08 2023 -0400
-
     experiemnt strawberry perl
 
 commit 2be04ce58db1a0fcab239f312bb1c2c1fb78d5b4
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sat May 13 16:06:41 2023 -0400
-
     use strawberryperl instead of activeperl on windows - seems bug for bug compatible, but better installation story, and seems for free of encumbrances
 
 commit 88f127e2fc1355bafab7450627f5d6494857ecb6
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sat May 13 16:08:04 2023 -0400
-
     commetns about things to try to make windows vis stud docker container smaller
 
 commit b9df601637614a400d68a6388b01b1bc4e733aa7
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sat May 13 17:12:52 2023 -0400
-
     get MSYS docker container working either from choco or myss installer, but doesnt seem to matter mcuh one way or other other
 
-commit 8e0b285cfd2134ac85bf09e8efc37eeb86945069
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon May 15 14:06:21 2023 -0400
-
-    vs2k 17.5.5 in dockerfile
-
 commit 9957094d308d6dd8374c8797da0481964229cd02
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Tue May 16 07:20:32 2023 -0400
-
     new concept EqualsComparer and PossiblyEqualsComparer. Added regtests, and used once (experimentally) in KeyedCollection
 
 commit 859851df6cc88744f6ca8c1a28fef9d66b4947fe
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Tue May 16 09:29:39 2023 -0400
-
     tweak KeyedCollection CTORS (losing enable_if_t)
 
 commit bb25201168dae929fed1669c6847fa5d737b533a
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Tue May 16 09:35:22 2023 -0400
-
     tweak KeyedCollection CTORS (losing enable_if_t)
 
 commit 84d2f412ca0e785ea2016830163af7a5b1c1a32e
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Tue May 16 09:44:19 2023 -0400
-
     more KeyedCollection cleanups
 
-commit ffa67a76526df1a38707da63a2352f1b7c25805c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue May 16 09:51:35 2023 -0400
-
-    fixed typo
-
-commit b96fa8f193a12b0a4cfba71bbd03a81ed9677bfb
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue May 16 10:08:19 2023 -0400
-
-    more KeyedCollection ctor cleanups
-
-commit d9cf8642bbfa12cf367ed6d4cbfce53507899c73
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue May 16 10:19:49 2023 -0400
-
-    todo docs
-
-commit 1137e81d425617cb0d770b8474d7f8c065c6842d
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Tue May 16 10:51:22 2023 -0400
-
-    fixed comment typo
-
 commit a9c20cf81bb226809592f2bf203635c1a21073ce
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
 Date:   Tue May 16 11:17:02 2023 -0400
-
     workaround qCompilerAndStdLib_template_Requires_templateDeclarationMatchesOutOfLine2_Buggy
 
-commit a323c10d6bd55e4b9b620ac681204011e17543ee
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue May 16 11:28:38 2023 -0400
-
-    cosmetic
-
 commit ff8fc42ccb1b83c1a8b1e63bbce24e9de21f9f95
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Tue May 16 13:59:33 2023 -0400
-
     start using forward_iterator in place of soon-to-be-deprecated (Configuration::IsIterator_v"
-    git push
-    "
 
 commit 5ba5e6f1c314285d028fd15a4559a4bcd0c0e6a1
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Tue May 16 17:39:31 2023 -0400
-
     IsIterator_v marked SOON TO BE DEPREACTED; fixed Iterator<> template to support postfix iteration (though got rid of at end of v2.1, add back so supports static_assert (input_iterator<Iterator<int>>) concept - useless, and maybe counter productive, but important to support that concept
 
-commit 8ebed4fc4d311a7ac2c22f9cbfbca1a200a49d16
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Tue May 16 19:33:24 2023 -0400
-
-    fixed typo
-
 commit d7cc47bf04016e88f8742402afeceab0d332a766
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Tue May 16 20:10:02 2023 -0400
-
     More cleanups using input_iterator instead of soon to be deprecated Configuration::IsIterator_v<ITERATOR_OF_T>
 
 commit 463943fae09a61368fd33c6f8b22edb7dd449e2b
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Tue May 16 20:28:24 2023 -0400
-
     More cleanups using input_iterator instead of soon to be deprecated Configuration::IsIterator_v<ITERATOR_OF_T> and losing enable_if_t usage where possible
 
-commit 3074210ab35e5ea9acc9d21661dd69e4e6d93a10
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Tue May 16 20:48:55 2023 -0400
-
-    dont ref g++-10 anymore in Makefile predefined configs
-
 commit ded4d9360f8980279d56f03128d2d67646a97488
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
 Date:   Tue May 16 20:52:28 2023 -0400
-
     qCompilerAndStdLib_iterator_concept_wrongly_requires_default_CTOR_Buggy workaround
 
 commit eebaf77b31b3bcdb4318395194f010d185ebd980
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Tue May 16 20:53:24 2023 -0400
-
     a few more input_iterator conversions losting more enable_if_t usage
 
-commit 51abbde5ff26f9cc636e6cb0ae58929c58e9de41
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue May 16 21:14:54 2023 -0400
-
-    more cleanups
-
 commit e844778df377f0a2d50faedf5411c97d5fc309fa
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
 Date:   Tue May 16 21:19:08 2023 -0400
-
     more qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy workarounds
 
-commit dd270f4424fe4cbd7357dba84c97165bce3b5c73
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue May 16 21:23:46 2023 -0400
-
-    make format
-
 commit 88c682735025388dcb5d9769c275bea5a875074f
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Tue May 16 21:34:53 2023 -0400
-
     more celanup of enable_if_t and  Configuration::IsIterator_v() usage - now later marked deprecated
 
 commit 9579346b3b225dc2f274d8ad70da8a5cddd32a39
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Wed May 17 10:11:42 2023 -0400
-
     lose remaining use of Configuration::IsIterator_v and some enable_if_ts, and use input_iterator concept isntead
 
 commit ec5a3b5f24c57122f1bb49466d5eb92ade312005
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Wed May 17 10:45:17 2023 -0400
-
     start converting more use of Common::EqualsComparer<> concept to simplify tempaltes intead of enable_if_t<Common::IsEqualsComparer
 
 commit 940c9cf6f39e361a3fa256b644f44bc73240a207
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Wed May 17 11:12:46 2023 -0400
-
     experiment using using Common::EqualsComparer to simplify declarations in containers
 
 commit 8b3a91093b369d9d2697f4bff72a8bf5b6a509e8
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Wed May 17 11:55:07 2023 -0400
-
     more use of concepts in AddAll usage
 
 commit 19852c870274ad05b9e59f25621fbbd23d5b1cff
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Wed May 17 12:36:28 2023 -0400
-
     renamed Common::EqualsComparer to IEqualsComparer
 
 commit 5b3310a2b9abe02f5b046a25c46e1be1e8b96fa3
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Wed May 17 13:44:46 2023 -0400
-
     more cleanups - esp to Iterbale<> to sue the new Common::IEqualsCOmparer - and in doing so fixed longstanding worakround where I had removed a (useful/needed) type constraint - added back and fixed calls now
 
 commit d5d7e2f424ac7c9dd29ba11395bfe5ebf7e8f13e
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Wed May 17 15:20:18 2023 -0400
-
-    qCompilerAndStdLib_template_ForwardDeclareWithConceptsInTypenameCrasher_Buggy BWA
-
-commit 94c36814df62b2c05b39d3a73f00b2952ce70503
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed May 17 15:30:22 2023 -0400
-
-    docs
-
-commit 658eac4c90c5c4254bec95627814f6bbccb316d5
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed May 17 15:32:08 2023 -0400
-
-    commetns cleanups
+   qCompilerAndStdLib_template_ForwardDeclareWithConceptsInTypenameCrasher_Buggy BWA
 
 commit e6583afc8821934e7df52a8bc5a0937744ce9077
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Wed May 17 15:43:06 2023 -0400
-
     more use of IEqualsComparer<KEY_TYPE> - testing narrow case to see if breaks any compilers before I do rest similar
 
 commit c77637faa7da2603606ec0ca112bd7717ee1a61f
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Wed May 17 19:55:14 2023 -0400
-
     more use of concept IEqualsComparer<KEY_TYPE> in place of enable_if_t<Common::IsEqualsComparer...
 
 commit b8a93ea6ff3cd71d51c2dbea498fd68ee77a6d67
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Wed May 17 20:23:53 2023 -0400
-
     more use of concept IEqualsComparer<KEY_TYPE> in place of enable_if_t<Common::IsEqualsComparer...
 
-commit d2cba14b79a38ddf6062767ed47d157cc1e8df8a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed May 17 20:45:00 2023 -0400
-
-    tmphack bug worakround for recent checkins
-
-commit 215a458ba83b81b4254f3b0b63c7d4101a1acdb5
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed May 17 21:08:32 2023 -0400
-
-    fixed very recent Mapping_stdhashmap regression
-
 commit 5aa662042ed596a8534eab133a4839e2f3bf30db
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Thu May 18 08:51:32 2023 -0400
-
     more use of concept IEqualsComparer<KEY_TYPE> in place of enable_if_t<Common::IsEqualsComparer...
 
 commit 727c9dd8880c701c3e92cf35e48623f2da271caf
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Thu May 18 09:48:15 2023 -0400
-
     more use of concept IEqualsComparer<KEY_TYPE> in place of enable_if_t<Common::IsEqualsComparer...
 
-commit 79f0f5dc81b00dc2da909e9feb17537d722def03
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu May 18 09:49:44 2023 -0400
-
-    fixed typo
-
-commit 09d49a01f14f42f5c0088e13b5ab40674b54a5a0
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu May 18 09:58:55 2023 -0400
-
-    fixed typo
-
 commit bdbfe68a9278a5d244fdfc73ff36e4218f0b5ea5
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Thu May 18 10:18:24 2023 -0400
 
     feprecated IsEqualsComparer
 
 commit 615b882cb012888996931d02cc9f58f3e239dfb8
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Thu May 18 10:37:17 2023 -0400
-
     cleanup enable_if_t in ToString to use requires
 
 commit 37dbaa6523f7e5624c23afa6f5e19b482af57bbc
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Thu May 18 11:04:37 2023 -0400
-
     **not backwards compatible** change to Iterable<>::end() - went from static to instance method for ranges compatability
 
 commit 7ccc68d29580a0d90b55640c7a645399cfadcb7d
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Thu May 18 11:39:14 2023 -0400
-
     Iterator::DEFAULT CTOR must exist for being range compatible (concept semiregular = std::copyable<T> && std::default_initializable)
 
 commit 666971023fa24f4954c773a0e46bec63ce542a27
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Thu May 18 11:41:16 2023 -0400
-
     Iterator::GetEmptyIterator() noexcept
 
 commit 2dcacf5672d2b52f18fb646bfe2bf5a108ca7d7a
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Thu May 18 11:45:32 2023 -0400
-
     start assert (test) Iterables are valid ranges::range type, and make Iterable::end() noexcept
 
-commit 754c823dfb04ea648088b47f140968e6b83a1106
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu May 18 11:53:44 2023 -0400
-
-    todo comments
-
-commit 789fe4f70a27a914253662d4356d0e41854ddc6e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu May 18 11:54:01 2023 -0400
-
-    cosmetic
-
 commit f3203bdea9b5affcfccdeecbb36772468b1d299f
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Thu May 18 11:54:22 2023 -0400
-
     experimentally try using ranges::range intead of Configuration::IsIterable_v
 
 commit fafcaee02cb72253a9637a8809d04ad84708468e
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
 Date:   Thu May 18 13:18:13 2023 -0400
-
     fixed a couple recent regressions/cleaned up one use of depreacted funciton
 
 commit c6cab7d75dd4f23161591516838e94a07964140f
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
 Date:   Thu May 18 13:20:56 2023 -0400
-
     remote another use of depreacted funciofn and ebale_ioft
 
 commit a3a4bce969d85fbcf3a93cbab16dac3992b7fd80
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Thu May 18 17:20:02 2023 -0400
-
     added-Wno-unqualified-std-cast-call for clang/xcode
 
-commit bdda8f16bb74290999f349bc3b8e2fbde5fe477a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu May 18 19:34:56 2023 -0400
-
-    update some bug defines for new apple xcode compiler
-
-commit b3384c483e696925c8809beca88f9367574d8a4a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu May 18 19:37:17 2023 -0400
-
-    bug defines for new xcode
-
-commit 22165c767674e112deb528a9bc824d929458b9a8
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu May 18 19:57:14 2023 -0400
-
-    lose UTFConvert support for eCodeCVT - depreacted and I dont believe needed (testing)
-
-commit a672306f7307d8cdb5a69a374258fde74079d746
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu May 18 19:57:37 2023 -0400
-
-    cosmetic
-
 commit e010dfcc8ee1af8c88d6d58a6bd5b2f80725ef27
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Thu May 18 19:58:02 2023 -0400
-
     replace use of deprecated Configuration::IsTPredicate with std::predicate concept
 
-commit df7dc082876a909b88489bda8d8c2bba44897040
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu May 18 20:15:38 2023 -0400
-
-    test with clang++14 not clang++10 in github actions
-
-commit 63221f1795133d4b2b8c92540721e4560b516599
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu May 18 20:20:38 2023 -0400
-
-    try forcing use of xcode 14.3 in github actions
-
 commit ef099bc99f09c230e832f68e853be2b919afad2a
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Thu May 18 20:26:12 2023 -0400
-
     github actions - try to use xcode 14.3 (via config) and try using clang++13 instead of clang++10
 
-commit e145c4a7ca0d080332f4239d45f11960ae9f0f9f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu May 18 20:31:41 2023 -0400
-
-    try to disable macos builds git actions
-
-commit a890f976fa712bf730fa277eca7b63e6a200fc48
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu May 18 20:33:41 2023 -0400
-
-    dbug github actions
-
-commit 66f4e13cf5aeb11c62ab03267ded8030ad5c9614
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu May 18 20:49:59 2023 -0400
-
-    todo
-
 commit 1a130c819d8a5f67af50eb966b592146cec63f7b
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Thu May 18 20:56:56 2023 -0400
-
     require clang++13 or later - due to support for std ranges
 
 commit e60fa5159ef28e970c8c30b6711f7e01e25b1517
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Fri May 19 00:01:36 2023 -0400
-
     tmphack - reset github action for windows dev so only cgywin builds not msys til thats fixed
 
 commit 1f4fe084028bb2f2f88f8b204571a595e23eda81
