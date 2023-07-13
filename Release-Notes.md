@@ -91,6 +91,9 @@ especially those they need to be aware of when upgrading.
                 issue).
             <br>Also data returns new type field (pointer) - but minor.
             <br>A few other small fixes/cleanups.
+      - StringBuilder
+        - major cleanup/fixes - using concepts, using span<>, better use of AssertExternallySynchronizedMutex;
+        - a few method deprecations and may new overloads (cleanly captured with requires)
     - Common
       - Common::Comparison
         - lose Common::strong_ordering and Common::kLess, kEquals, kGreater (**not backwards compatible**)
@@ -146,10 +149,16 @@ especially those they need to be aware of when upgrading.
       - Added draft support for ObjectVariantMapper::MakeCommonSerializer (OptionalSerializerOptions ...) so it can take explicit T serializer
       - New utility (factoring) Variant::Reader::_ToByteReader (const Streams::InputStream<Characters::Character>::Ptr& in)
     - Debug
+      - AssertExternallySynchronizedMutex
+        - fSingleSharedLockThread_ in AssertExternallySynchronizedMutex for speed tweak (debug builds)
+        - AssertExternallySynchronizedMutex further performance tweaks
+        - Debug::AssertExternallySynchronizedMutex now hides fSharedContext, and accessed via (public was protected) GetSharedContext and SetAssertExternallySynchronizedMutexContext (not backward compatible but close); DataBase::Connection (and sucblasses) changes to use of AssertExternallySynchronizedMutex and chagnes to thread safety rules/docs for these classes (base unspecified if letter is threadsafe and for ODBC and SQLITE say they are not); implies some changes to GetSharedContext/SetAssertExternallySynchronizedMutexContext () usage for these classes (sb all internal and not noticable outside for hte most part)
+        - progress celaning up Iterbale to use new AssertExternallySynchronizedMutex ReadLock/WriteLock support
+        - more name changes on AssertExternallySynchronizedMutex::ReadLock -> AssertExternallySynchronizedMutex::ReadContext (and WriteContext) and unified names of instances - all to address confusion in posts on Reddit, about whether these are real locks or not
+        -    qStroikaFoundationDebugAssertExternallySynchronizedMutexEnabled support - so AssertExternallySynchronizedMutexEnabled independently of qDebug (but defaults to qDebug and not Stroika_Foundation_Debug_Sanitizer_HAS_ThreadSanitizer
+
       - use Debug::DropIntoDebuggerIfPresent () rather than direct call to windows DebugBreak()
       - fixed (serious regrssion - string visualizer) was broken, and updated older visual studio natvis files to match
-      - Debug::AssertExternallySynchronizedMutex now hides fSharedContext, and accessed via (public was protected) GetSharedContext and SetAssertExternallySynchronizedMutexContext (not backward compatible but close); DataBase::Connection (and sucblasses) changes to use of AssertExternallySynchronizedMutex and chagnes to thread safety rules/docs for these classes (base unspecified if letter is threadsafe and for ODBC and SQLITE say they are not); implies some changes to GetSharedContext/SetAssertExternallySynchronizedMutexContext () usage for these classes (sb all internal and not noticable outside for hte most part)
-      - progress celaning up Iterbale to use new AssertExternallySynchronizedMutex ReadLock/WriteLock support
     - Memory
       - BlockAllocation 
         - Minor tweaks to Memory/BlockAllocator (clarity)
@@ -660,9 +669,7 @@ Date:   Sun Dec 18 10:54:46 2022 -0500
     replace use of is_trivially_default_constructible_v with  is_trivial_v because our decisions apply BOTH to construction and DESTRUCTION
 
 commit 8fb9acdb6131fa8f01b93728c3d5f890135ed8a6
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sun Dec 18 11:04:33 2022 -0500
-
     ok - maybe better - use is_trivially_copyable_v instead of is_trivial_v - appears to capture more accurately what we want here
 
 commit 3c3cec350205c9318ac933747116dd81c6f6fbd6
@@ -685,9 +692,7 @@ Date:   Mon Dec 19 20:59:03 2022 -0500
     More progress on new (or majorly refactored) UTFConvert module
 
 commit 510a3ff58584b2e7ea97b607c3557c03de4d0fcc
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Mon Dec 19 21:19:36 2022 -0500
-
     Mostly cosmetic cleanups to new UTFConverter code
 
 commit 769009bd68a9868b522b39da476d0bc6a851dcc6
@@ -776,30 +781,22 @@ Date:   Wed Dec 21 11:56:44 2022 -0500
     use requires instead of enable_if_t in more places
 
 commit 7cfe7bb4c08162574b8bfcccbd6a7219f3f6dd54
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Wed Dec 21 13:21:35 2022 -0500
-
     fixed regression in InternetAddress CTOR due to change in s.AsUTF8 (unsinged vs signed)
 
 Date:   Wed Dec 21 14:55:08 2022 -0500
     https://stroika.atlassian.net/browse/STK-965 - deprecated String::c_str() const version and did quickie (to be rewritten) non-const version and changed a bunch of (easy) code to use .As<wstring>() to avoid const c_str () issue
 
 commit 9a7bb4975e88145bdff094016c79def3f5bb5706
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Wed Dec 21 16:51:28 2022 -0500
-
     qCompilerAndStdLib_stdlibVsBoostSpanSelect_Buggy bug define and start at workarounds
 
 commit d3c24634d748925c605cdf1fb0b0874b1912520d
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Thu Dec 22 09:00:47 2022 -0500
-
     qCompilerAndStdLib_stdlibVsBoostSpanSelect_Buggy
 
 commit 93b1ff7a318554c2a913fb2801ed07b3c32fd941
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Thu Dec 22 09:08:43 2022 -0500
-
     qCompilerAndStdLib_stdlibVsBoostSpanSelect_Buggy mkSpan_BWA_ workarounds
 
 commit 77c5e86a8318bb2db443174a5a41e49d717ffccd
@@ -861,7 +858,6 @@ Date:   Thu Dec 22 17:44:07 2022 -0500
 
 commit bc1d1485e98c9ea73c4b84afe12687e2e4ec0fa9
 Date:   Sat Dec 24 15:58:41 2022 -0500
-    more name changes on AssertExternallySynchronizedMutex::ReadLock -> AssertExternallySynchronizedMutex::ReadContext (and WriteContext) and unified names of instances - all to address confusion in posts on Reddit, about whether these are real locks or not
 
 commit 835c5ba4939819e698294d6438e70d152258c5f9
 Date:   Sat Dec 24 17:44:05 2022 -0500
@@ -869,7 +865,6 @@ Date:   Sat Dec 24 17:44:05 2022 -0500
 
 commit e39a006aa6e7ae975841b6d3bc624d0e8b7ebb9b
 Date:   Sun Dec 25 09:11:12 2022 -0500
-    StringBuilder - major cleanup/fixes - using concepts, using span<>, better use of AssertExternallySynchronizedMutex; a few method deprecations and may new overloads (cleanly captured with requires)
 
 commit b934eb8e0d016454008e7fb0b2dac9513903b585
 Date:   Sun Dec 25 09:11:58 2022 -0500
@@ -1157,12 +1152,6 @@ Date:   Wed Jan 4 13:26:53 2023 -0500
 
     rewrite String::EqualsComparer and  String::ThreeWayComparer using concepts to greatly simplfiy (havent profiled yet)
 
-commit 0770583d6c8b7984ca0e5a8fd0ec00b748fb01a1
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jan 4 13:28:10 2023 -0500
-
-    cosmetic
-
 commit 6a091184ee0a89b66d951baec610cd93be077222
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Wed Jan 4 13:51:17 2023 -0500
@@ -1376,45 +1365,29 @@ commit e4586ccf2902999c39f01c8d61e83ed862c809db
 Date:   Thu Jan 12 08:48:23 2023 -0500
     Little progress on Mapping_stdhashmap
 
-
 commit d711d85515f0b4cb0251793ef76167b59ac51902
 Date:   Thu Jan 12 09:24:36 2023 -0500
     updated bug define for qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
 
 commit fe48a6cc6ff00d91437762a5c0a7500893feb028
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
 Date:   Thu Jan 12 09:34:07 2023 -0500
-
     fixed bug with qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy def
 
 commit 7634b0fbbe91e0e1c8900ba0b0a5fe263ce4cdf9
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
 Date:   Thu Jan 12 09:34:24 2023 -0500
 
     avoid bug warning on bug workaround define qCompilerAndStdLib_clangWithLibStdCPPStringConstexpr_Buggy
 
 commit 9039e2f38e624e1751526f2069f7db2121144652
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Thu Jan 12 09:47:28 2023 -0500
-
     improved qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy bug workaround
 
-commit a8120f1f791a259d32f11fe7e7626c7d5490701f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jan 12 09:49:42 2023 -0500
-
-    make format-code
-
 commit d81428cf4a5c69caeeb4a0426299ba6abdc88814
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Thu Jan 12 10:02:58 2023 -0500
-
     hopefully complete usable first draft of Mapping_stdhashmap
 
 commit 7629f6564a3843d61e506638ee53b0b72fc6b2ef
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Thu Jan 12 10:28:59 2023 -0500
-
     Cryptography/Digest/HashBase
 
 commit 40d7613d1eafafedbc941c487dda3126f0a3f366
@@ -1426,57 +1399,35 @@ Date:   Thu Jan 12 11:38:09 2023 -0500
     switched JSON::Reader to use Mapping_stdhashmap<String, VariantValue>::STDHASHMAP move ctor - slight performance tweak it appears
 
 commit 1f132271c13d02ef053fe60379f86f978aa97e76
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Thu Jan 12 20:56:34 2023 -0500
-
     Adjusted regtest to take into account that order of elts can cahnge due to Mapping now defaulting to non-sorted(hashmap)
 
 commit 5eb18e2be5fffa22045f2b157e8dceeb6a12dbf5
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Thu Jan 12 21:21:39 2023 -0500
-
     Mapping - use requires so cleaer about Mapping::operator== and documented better as well the behavior
 
 commit 183fcaf8fd5fa4fd251ab8e3c7f76868995aa0ff
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Thu Jan 12 21:44:02 2023 -0500
-
     to some degreee fix bugs with comparing VariantValue objects, but mostly document https://stroika.atlassian.net/browse/STK-971 - BROKEN FOR CASE OF MAPPINGS.
 
 commit 3ce8d8e12e4f8a8436ae6d3fffd5b16d2ed77396
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Thu Jan 12 21:44:48 2023 -0500
-
     loosened test case for comparing VariantValue output - parse/unparse json roundtriping - since using unorderedmap, must be more careful testing/comparing
 
-commit bf19ef9266b3b67c04b6d0fc48cd1caa2661dbbb
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jan 12 12:45:57 2023 -0500
-
-    Minor performance tweak for VariantValue construction
-
 commit 42a597b5669b607256ed9214e3549ba2ad9f90d6
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Thu Jan 12 13:08:41 2023 -0500
-
     Minor JSON::Reader performance tweaks and code cleanups
 
 commit a6b58a2110235eae02203d6819a76c60cecf4d2b
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Thu Jan 12 14:38:47 2023 -0500
-
     more cleanups to do but significant speedup from Digester 'span' support (prelim) - on hashtable stuff from json parsing
 
 commit 3638f865194d0d79cf512968c581e6baefaa9fd7
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Thu Jan 12 14:39:19 2023 -0500
-
     minor tweaks to std::hash<String>::operator() (const String& arg) - still should explore
 
 commit f2bbebf43aebd8ed993c4af80e0c0125763602df
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Thu Jan 12 14:40:08 2023 -0500
-
     VariantValue CTOR from boost json uses Mapping_stdhashmap<>::STDHASHMAP optimization
 
 commit a30ca20fed747ae9e41e55509bb8f69b48d4fdab
@@ -1484,67 +1435,39 @@ Date:   Thu Jan 12 23:03:38 2023 -0500
     fixed SortedMapping<KEY_TYPE, MAPPED_VALUE_TYPE>::operator<=>
 
 commit d70a58e6acf3e77e3d5e89457f850cd74c398117
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Thu Jan 12 23:11:56 2023 -0500
-
     Fixed https://stroika.atlassian.net/browse/STK-971 - VariantValue compare functions - and at same not - INCOMPATIBLE change - LOSING 'exactTypeMatchOnly' pareter to EqualsComparer/ThreeWayComparer functions for VariantValue (dont think ever used and documented didnt make much sense)
 
 commit b3e82ca1204a6c7184e3b8013a4d44a25df34877
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Fri Jan 13 09:53:34 2023 -0500
-
     Fixed https://stroika.atlassian.net/browse/STK-971 - added Normalize() method to do heavy lifting/factor logic for how things compared
 
 commit 0388cb4914ef829007de520f0b5e59f0fe5ab9bc
 Date:   Sat Jan 14 11:58:52 2023 -0500
     comments and use remove_cvref_t intead of remove_cv_t in one place (need todo more)
 
-commit 99e6b3381a2d3c549fe12093eead4b2e2ac7bf9c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jan 14 19:37:46 2023 -0500
-
-    qStroikaFoundationDebugAssertExternallySynchronizedMutexEnabled support - so AssertExternallySynchronizedMutexEnabled independently of qDebug (but defaults to qDebug and not Stroika_Foundation_Debug_Sanitizer_HAS_ThreadSanitizer
-
 commit 936932fdc3cb64aeac78635cd19912520bf11490
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
 Date:   Sat Jan 14 22:30:47 2023 -0500
-
     improved qCompilerAndStdLib_clangWithLibStdCPPStringConstexpr_Buggy bug workaround
 
 commit e292e3013f002342eb4b703d04fc0785eb9fc14b
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sat Jan 14 22:32:21 2023 -0500
-
     deprecate a bunch of Characters/SDKString functions - not great organization and simpler API to just vector through string. A bit more expensive that way but not woth the extra api for stuff thats never used
 
 commit b5254fbb8e73ac08ae3279ac0006f7fb58a994b2
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sat Jan 14 22:52:57 2023 -0500
-
     use Memory::MemCmp isntead of memcpy to workaorund issue with nullptr passed/ubsan
 
 commit 63373086963b08c2da3b1053dfbc018a6a34e0e3
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sat Jan 14 22:56:17 2023 -0500
-
     switch Memory::MemCmp () to use memcpy where it can
 
 commit 4ac57256c36740c201bb05526e693db2d413656d
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
 Date:   Sat Jan 14 22:57:19 2023 -0500
-
     Added clang++-12-debug-libstdc++ so at least some (pre-14) clang++ debug build gets done on Ubuntu 22.04
 
-commit ee43e61d078007c69f119c641b6067a22943e6de
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jan 14 23:04:47 2023 -0500
-
-    revise a few more calls to deprecated string functions
-
 commit 09547edb8029055eab24f4e8f59811d2505417a1
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sat Jan 14 23:12:10 2023 -0500
-
     use std::remove_cvref_t directly - no longer need for indirection trhough obsolete Configuration::remove_cvref_t
 
 commit 8133e0e6c6481be7c7809cc6b0234838730508bf
@@ -1552,16 +1475,12 @@ Date:   Sun Jan 15 12:30:17 2023 -0500
     new PossiblyInOrderComparer and InOrderComparer using concepts (experimental)
 
 commit bfb96a752aae9b16cf179602e0662295aafab9f0
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sun Jan 15 12:36:57 2023 -0500
-
     New feature - Iterable<T>::Top - designed to address Sterls concern with 'SortedMultiset'
     https://stroika.atlassian.net/browse/STK-953
 
 commit d89e8a204cc04b155ee21bfc5c7fced7a1740370
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sun Jan 15 13:16:54 2023 -0500
-
     https://stroika.atlassian.net/browse/STK-953 - new Multiset Top () and TopElements() methods - I believe address this ticket/request
 
 commit 9db114b14f709cd823023e2c65e85b7ce9051bdd
@@ -1581,15 +1500,11 @@ Date:   Mon Jan 16 20:38:24 2023 -0500
     mostly cosmetic/constexpr clenaups to StackBuffer/InlineBuffer (and some [[likely]] annotations)
 
 commit 61b6f11c9d3f6684f5498c6face68aa416abba7e
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Mon Jan 16 21:25:13 2023 -0500
-
     code cleanups to new BufferedStringRep::Rep class (could help performance but untested)
 
 commit 21114db69e0d6d7e9fe259b0b5d69751a6790201
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Tue Jan 17 09:27:53 2023 -0500
-
     fixed minor regressions and more performance tweaks (incomplete recent work on buffered string rep)
 
 commit d80d779b12f490ed4e734b958927e7a6b79d57cd
@@ -1615,9 +1530,7 @@ Date:   Thu Jan 19 10:54:46 2023 -0500
     String DynamicallyAllocatedString to replace use of (now obsolete internal) BufferedString_
 
 commit 82f4f8280fda164c0ad35a9660196a97fdb2027c
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Thu Jan 19 12:03:39 2023 -0500
-
     more cleanups to String code and revamp (perforamnce) StringWithCStr_ rep
 
 commit 6f808dda911f24672e7ea0e51f5e26b4ab8b4e06
@@ -1638,7 +1551,6 @@ Date:   Fri Jan 20 09:17:42 2023 -0500
 
 commit dbb5a16e8a2bfba68aaf46a6a56e10f15abcc818
 Date:   Sat Jan 21 09:35:17 2023 -0500
-
     incompatible change (but probbaly unused) - renamed String::FromISOLatin1 -> String::FromLatin1
 
 commit bfa1aeb4687b992257316b7ea239d5877b3fe3dc
@@ -1749,10 +1661,6 @@ commit e3b5371a3982839063a53ed55deb5182c604ff4b
 Date:   Fri Jan 27 08:24:02 2023 -0500
     in new boost support for Variant::JSON::Reader, wrap failures in BadFormatException
 
-commit bb1e49abddfe5339328294519210ca2f5c6d65cf
-Date:   Fri Jan 27 09:27:07 2023 -0500
-    Tweaked json (boost based) reader erorr reporting/comments
-
 commit d91ba0f18b02a0761b45bb7137cdd0a056dd1c17
 Date:   Fri Jan 27 09:27:55 2023 -0500
     fixed bad regression test Test_05_ParseRegressionTest_3_ - badly formatted input
@@ -1773,15 +1681,11 @@ Date:   Sat Jan 28 18:16:53 2023 -0500
     lose unneeded options.fCanReadPastEndOfJSONObjectInStream
 
 commit 05cd839860285e1fe000ea14e9ad8f578d75ccc7
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sat Jan 28 18:17:04 2023 -0500
-
     lose unneeded options.fCanReadPastEndOfJSONObjectInStream
 
 commit 070617dac7c1c4792c06e2674981ff97bb190482
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sat Jan 28 21:05:47 2023 -0500
-
     placeholder tmphack impl of Foundation/Streams/TextToByteReader and redriected Variant/Reader code to it
 
 commit 70ce0db7187e19375eaf30534488b6af424f2086
@@ -1801,28 +1705,12 @@ Date:   Sun Jan 29 16:58:30 2023 -0500
     Memory::Intersects (SPANS) - and use in assertions for Memory::CopySpanData etc
 
 commit ae5ef10c465e52d3056903f240e921ff61ad5f5a
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sun Jan 29 17:17:09 2023 -0500
-
     Improved implemtnation of TextToByteReader (using new stream copy stuff) - but still weak -but probbaly good enuf for now
 
-commit 3e0f4d5b6f3fbde68a94151c111b0453c837e1a7
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jan 29 21:18:05 2023 -0500
-
-    use new Memory::CopySpanData code
-
 commit 34d6c1ed78a7b08644189e2b01556de80a70b1ae
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sun Jan 29 21:54:39 2023 -0500
-
     switch many uses of std::copy to Memory::CopySpanData; CopySpanData_StaticCast now drops requirement about src/trg elt sizes being the same (and documented where handy); commnents
-
-commit 3e3f9f5da8ef36c24ad741883bc3087c4084342f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jan 29 22:10:02 2023 -0500
-
-    use more Memory::CopySpanData; 
 
 commit 8e5b7acbed38bb17db686a4f098ce131ac55eede
 Date:   Sun Jan 29 23:19:24 2023 -0500
@@ -1866,52 +1754,16 @@ Date:   Thu Feb 2 09:02:24 2023 -0500
 
     get rid of used of shared_from_this in KeyedCollection
 
-commit 4233435974b6a0383e19ee13159423f8d84c8e51
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Feb 2 09:02:38 2023 -0500
-
-    make format-code
-
-commit d28ef1ed7ef67997a2e045cf4b5347966b16a9df
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Feb 2 09:23:54 2023 -0500
-
-    lose enable_shared_from_this on Mutliset (but not done same as others so fix)
-
-commit e101d86b14e0e19525dfaec17065477cce7fd101
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Feb 2 10:05:20 2023 -0500
-
-    fix minor typo regression
-
-commit bed7aee85e5885ad172fc8a4ee22ec9c2c522111
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Feb 2 10:12:57 2023 -0500
-
-    make Mutliset thisSharedPtr code a little more like rest of containers
-
 commit 831bd6dcad983a3edcedaf78432422fe7450317d
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Thu Feb 2 10:15:17 2023 -0500
-
     now mark enable_shared_from_this_PtrImplementationTemplate as deprecated
 
-commit 5c136bede2b210f6be9afc5cb83aa0849a034eac
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Feb 2 10:42:19 2023 -0500
-
-    cleanups of recent changes
-
 commit da8e896c1d5570b350425a3a02f28267b3daf9cb
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Thu Feb 2 10:51:43 2023 -0500
-
     Deprecated the using PtrImplementationTemplate in Iterator<T> - just use unique_ptr everywhere (probably clearer and not directly used much throughout Stroika)
 
 commit 0328b3adf234ab6cc9ccf2182b3116f14a8f8f05
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Thu Feb 2 11:19:40 2023 -0500
-
     deprecated the name PtrImplementationTemplate -  just use shared_ptr<_IRep> in a bunch of places (I think clearer)
 
 commit 455e2d8c69468e5b9ab8c8b51c7da36e3b20d5f3
@@ -1955,557 +1807,154 @@ Date:   Fri Feb 3 08:26:31 2023 -0500
     reduce use of _IRepSharedPtr/_StackRepSharedPtr = use what it maps to in Stack class
 
 commit 6a65d4b3958dbb3c7c00d803f51e7efc0d60122c
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Fri Feb 3 08:45:58 2023 -0500
-
-    reduce use of _IRepSharedPtr/etc in Collection class
-
-commit dbf6efb0f5c8bee901b4a477ba6183f1b8c25a7a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Feb 3 09:08:26 2023 -0500
-
-    reduce use of _IRepSharedPtr/etc in Sequence<T> classes
-
-commit 4187c75d360ca486eb3668c2dd3634cc0259033c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Feb 3 09:29:00 2023 -0500
-
-    fixed typo
-
-commit 12675569fc101d69c71b746db4f9390fb468978a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Feb 3 16:11:23 2023 -0500
-
-    reduce use of _IRepSharedPtr/etc in Queue<T> classes
-
-commit 71aaae346c132f0a01c55bc7f32f030903c02c27
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Feb 3 16:14:28 2023 -0500
-
-    reduce use of _IRepSharedPtr/etc in Deque<T> classes
-
-commit f935fad2ca27e8f4c2d6c9f0a872dff1b0ec2bb0
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Feb 3 16:24:56 2023 -0500
-
-    make format-code
-
-commit 36e2d4c572933405ca877c034461c91cd487c0ab
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Feb 3 16:27:42 2023 -0500
-
-    reduce use of _IRepSharedPtr/etc in KeyedCollection<T> classes
-
-commit aef53920ac06a464e1414d0fc5e12035e5dd881c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Feb 3 16:32:12 2023 -0500
-
-    cosmetic
-
-commit 9ccd03055e9ab6a0f9fdb5f46553c117a2b3cce5
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Feb 3 22:47:53 2023 -0500
-
-    reduce use of _IRepSharedPtr/etc in Bijection<T> classes
-
-commit 5643183fb61f286630183fa7a66a96d93715b23b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Feb 4 09:15:39 2023 -0500
-
-    reduce use of _IRepSharedPtr/etc in MultiSet<T> classes
-
-
-commit 585d6fda6a980d07360dcfe0abf2bfee9485fc0a
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Sat Feb 4 10:42:01 2023 -0500
-
-    workspace changes
-
-commit fa18ce6f36ae05c0d94acd153b883dd75d92f38a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Feb 4 10:04:14 2023 -0500
-
-    reduce use of _IRepSharedPtr/etc in DataHyperRectangle<T> classes
+    reduce use of _IRepSharedPtr/etc in container archtype classes
 
 commit 247c0db2c9b5b8a0c692266873b4f873b72a7f78
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sat Feb 4 10:44:16 2023 -0500
-
     fixed return value of Iterable<T>::_SafeReadRepAccessor<REP_SUB_TYPE>::_ConstGetRepSharedPtr () - mostly
 
-commit c297f5308c5694d2544bf7e1dbcdf92c492de029
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Feb 4 10:46:49 2023 -0500
-
-    reduce use of _IRepSharedPtr/etc in Mapping<T> classes
-
-commit c116a21de53fa15c309465065945d90f034a4d58
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Feb 4 10:55:04 2023 -0500
-
-    make format-code
-
 commit 59e110cd01aed52b4feeea9d993e8c1e2470b131
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sat Feb 4 10:55:39 2023 -0500
-
-    new (untested) Debug::UncheckedDynamicPointerCast
-
-commit e5e6ae33519094210a21fc50980deb034e033693
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Feb 4 11:08:40 2023 -0500
-
-    fixed and used Debug::UncheckedDynamicPointerCast
+    new Debug::UncheckedDynamicPointerCast
 
 commit 4581f14e48a4e4d8c0b1f4365288e184da680062
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sat Feb 4 11:09:59 2023 -0500
-
     lose unneeded dynamic_pointer_cast due to fix in iterable::accessor:: ConstGetRepSharedPtr ()
 
-commit be97ad57413d3a4792b3a91e10281c1cac7bbd40
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Feb 4 11:10:47 2023 -0500
-
-    fixed typo
-
-commit 9f261cab6296dbecc6e689473137bf267b0d984c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Feb 4 11:37:30 2023 -0500
-
-    use Debug::UncheckedDynamicPointerCast more and better document behavior
-
-commit 5e36c565a1eb5cded8df213fc671756f3ca59615
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Feb 4 11:55:58 2023 -0500
-
-    UncheckedDynamicCast and UncheckedDynamicPointerCast noexcept; and fixed bug in UncheckedDynamicPointerCast and used in a couple more places
-
-commit 94619f8aee37d8790d8eef1c4f18d7b61a805a7f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Feb 4 11:56:20 2023 -0500
-
-    make format-code
-
-commit 56b08d9ef743d735f7cca321a8981196da942531
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Feb 4 12:42:44 2023 -0500
-
-    reduce use of _IRepSharedPtr/etc in Association<T> classes
-
 commit b1c39dcdd71c0ee73355f5f6e153c752bbaaab1a
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sat Feb 4 12:49:16 2023 -0500
-
     KeyedCollection rep Keys method now takes KEY rep as smartptr arg
-
-commit b4c306ddd25dbd8c4271137a5fc74d0ad3142eb0
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Sat Feb 4 14:35:33 2023 -0500
-
-    fixed include problmes
-
-commit 2cef850cf857cdbd728f1474dc339f73ba9229d2
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Feb 4 14:36:36 2023 -0500
-
-    lose use of _IterableRepSharedPtr in String class
-
-commit ede07879901300fe299dd98bd4948b4e66bbf2a7
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Feb 4 17:07:47 2023 -0500
-
-    cosmetic
 
 commit 2554271ab45cf128f914ba739cc3cdd7943698bc
 Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sat Feb 4 17:29:31 2023 -0500
 
-    get rid of remaining use of _IterableRepSharedPtr
+    get rid use of _IterableRepSharedPtr
 
 commit 307e475970a078ba2f4f48fc9f535de33bcb1215
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sat Feb 4 17:37:12 2023 -0500
-
     deprecated IterableBase
 
-commit 7e2515c966c7e8a4883d9e445aa2153945505a1c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Feb 4 17:40:31 2023 -0500
-
-    remove some code deprecated in Stroika v2.x
-
-commit 53fb15c76d10f1ea4b0a1b0b99244c5e3533bd60
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Feb 4 19:01:10 2023 -0500
-
-    fixed mistake in last deprecation removeal checkin
-
 commit 0094f983b4698f64958f844d94b6693e9d5ea060
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sat Feb 4 21:10:22 2023 -0500
-
     Iterator no longer inherites from IteratorBase: deprecated
 
 commit d62bb0ab961b2bacc40fedd29cc19bdf7b5c60c5
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sun Feb 5 00:16:33 2023 -0500
-
     Iterable now aggregates AssertExternallySynchronizedMutex intead of inheriting from it
 
-commit ac74cc5bd5bfbe361a06e02c35c20cb91b02868d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Feb 5 09:29:23 2023 -0500
-
-    Comments
-
-commit 9aed48df5b9959e47f29fecb4cf417703f231ac2
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Feb 5 09:29:43 2023 -0500
-
-    cosmetic/uniform init
-
-commit fb6cdd9516d9f7138fd20b67221526c870e3eb91
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Feb 5 09:30:13 2023 -0500
-
-    cosmetic/docs
-
 commit e0ee0d9a4ed691011a00bec6fd12054c635810fa
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sun Feb 5 09:32:11 2023 -0500
-
     not 100% backward compatible for container implementors, but otherwise sb fine; REMOVE _IRep methods for stuff like Keys() and default impl, and instead redo all this using Map(mcuh simpler/cleaner) - only done for Assocation, Bijection, and KeyedCollection so far; deprecated/renamed two Bijection methods Map/InverseMap to avoid name conflict with Iterable Map
 
 commit 3e906109c8142daf0b0744a36cc4368f73e66b65
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sun Feb 5 09:56:18 2023 -0500
-
     lose Mapping _IRep Keys/MappedValues use use base class Iterable::Map<> todo this (as before)
 
 commit b75e3fd224460c337aebc4bb829f6a6d07ca58e6
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sun Feb 5 10:50:35 2023 -0500
-
     rewrote MultiSet Elements and UniqueElements() using Map/Generators (much simpler/cleaner, and no need for _IRep methods todo any of that)
 
 commit 1282968814f51fbf54125e214aad32856d729cc6
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sun Feb 5 11:27:30 2023 -0500
-
     small cleanups to Iterable<> Generator code
 
-commit f2c2f61ad887de2d74117792189f1a46c6611fad
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Sun Feb 5 12:09:23 2023 -0500
-
-    fix syntax errors (template)
-
-commit 942abf32b701e4f8b3d2eebc6110b622c4d33b91
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Feb 5 21:02:47 2023 -0500
-
-    cosmetic
-
 commit 73daf6d61474a75056def72184dedeaaa6bec47e
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Mon Feb 6 09:22:01 2023 -0500
-
     refactor Iterable<>::_IRep code/apis - lose _Find_equal_to_default_implementation and _Find etc, and just do default impl of the Find/Find_equal_to etc implementations where possible and lose the overrides in each subclass that just called that helper mechanism. Appears to generate (at least testing on windows) basically same code (at least code size didnt change), and much simpler - facilitating future cleanups
 
-commit 12812aad81a73e7090d033c1662a2cc879c0e06f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Feb 6 11:33:17 2023 -0500
-
-    Comments
-
-commit 6021c5f6c58f3905f82ed25ea0ecb57811faa7cd
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Feb 6 11:44:25 2023 -0500
-
-    Comments
-
 commit 94e5d5015416e2023c21c16a3699ff44dcce3bd8
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Mon Feb 6 13:39:55 2023 -0500
-
     fixed small regression (compile error) in Foundation/Traversal/Iterable.inl
 
 commit 9f4d7b746f99d75359710f5342e3b81ddeff8fa2
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Mon Feb 6 14:18:51 2023 -0500
-
     changed impl of _IRep::Find_equal_to by default to call Find with seq - and no obvious performance diff, makes good a bit larger, but I think will pay off once I do seq support in Data structures
 
 commit 0642a2fb630edc81a24ae7f813659647493f2f55
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Mon Feb 6 15:36:46 2023 -0500
-
     fixed small CTOR bug iwth SynchronizedTimedCache
 
 commit 59f5cf6d03cf278190a5e91c14b6ecc47c5bebd0
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Mon Feb 6 15:37:25 2023 -0500
-
     no longer make Duration DCTORs from numbers be explicit
 
-commit d4afc96d6d833a8cf8112bb80014d12d88688212
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Feb 6 15:38:52 2023 -0500
-
-    docs
-
-commit d98b2e43f868860dc40d6cb92a866d52600ae608
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Feb 6 15:41:18 2023 -0500
-
-    cosmetic
-
 commit 528fee37c7cf0de4ae3bfb3bfc29977acc59d5b2
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Mon Feb 6 15:42:13 2023 -0500
-
     DataStructure::Array::Apply now takes SequencePolicy seq param, and used in Concrete reps (makes size bigger - not sure worth it)
 
 commit f871b0c2e9c342c3ba27b9c15719cd13cef2f6d2
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Mon Feb 6 15:44:22 2023 -0500
-
     reverseted change to Iterable<>::Find - now back to Execution::SequencePolicy::eDefault by default
 
 commit e940d5df78d3f31e66f84ade0536a55a5be52a89
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Mon Feb 6 15:49:49 2023 -0500
-
     fix another regresion with SynchronizedTimedCache copy CTOR
 
-commit 6359e15d9331df42995dfaf12d6293d1a4bfc47d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Feb 6 15:51:16 2023 -0500
-
-    [[maybe_unused]]
-
-commit 5abad6ce86e2f0f3151a3be9e0dd6ac58ab43662
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Feb 6 16:07:53 2023 -0500
-
-    comments
-
 commit 3e1542a64874cc2fc86c3d5276c02009781b1202
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Mon Feb 6 16:08:07 2023 -0500
-
     Added regtest and used to fix bugs with TimedCache
 
 commit 66ac145f07887d737de175c9f09505fd03819a38
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Mon Feb 6 16:14:03 2023 -0500
-
     antoher regtest to fix another regrssion with TimedCache
 
 commit 82b73dd8904528b4760b307aa07786c0af06bd2a
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Mon Feb 6 20:05:09 2023 -0500
-
     added back deprecated defintiion of WideStringToNarrowSDKString so easier to upgrade v2.1 Stroika code
 
 commit fcfe4ae3af15b958cfe9e97a2c675cd79e662d94
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Mon Feb 6 20:07:28 2023 -0500
-
     check __cpp_lib_execution >= 201603L
 
-commit 83267e0d85303065c3d04cd3a77a7a78af40f93c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Feb 6 20:10:25 2023 -0500
-
-    fixed typo
-
-commit a5449331eb802090bb1fb1e418e5508de1c2ba02
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Feb 6 20:47:57 2023 -0500
-
-    cosmetic
-
-commit cf796b500b4849098b1b7eaf70020fd4d4c7ad37
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Feb 6 20:48:22 2023 -0500
-
-    cosmetic
-
-commit ed33078101e49ffed688af8b3c234b28295402b8
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Feb 6 23:32:26 2023 -0500
-
-    cosmetic
-
-commit 2c5faa341bea56eb1c6adcf4b97914e7193faf46
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Feb 7 07:31:01 2023 -0500
-
-    make format-code
-
-commit 1436b3c1a895f8751518ea551c6b9e057f1753b6
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Feb 7 07:33:09 2023 -0500
-
-    annotated some if tests with likely/unlikely
-
 commit ecf0ee5fadf7edd9afb310660306415f3d3b6770
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Tue Feb 7 08:27:06 2023 -0500
-
     minor likely attribute tweaks
 
 commit 303e425d1e66b2aa2deb596ffc0a9afe206e5821
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Tue Feb 7 08:28:01 2023 -0500
-
     simplify Character::IsASCII with ranges, and on vs2k22 at least, super tight assembly for this
 
 commit 3bbdcca0f827ba634803e986ae5d2fe38d93427d
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Tue Feb 7 09:55:26 2023 -0500
-
     cleanup Character::IsLatin1 and Character::IsASCIIOrLatin1 to use ranges; and other related small cleanups; reviewed generated assembly on windows and looks pretty good
 
 commit 2d49dbc209f43399830e317291294b177a73cd93
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Wed Feb 8 09:25:11 2023 -0500
-
     fixed regression in Character::IsASCIIOrLatin1 - but better - cuz actually check properly if IsLatin1 now
 
 commit 5332f1ff608aafb4808aa1e6561bdc5259a9d313
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Wed Feb 8 09:59:51 2023 -0500
-
     docs, cleanups about details if IsASCII, IsLatin1, etc code
 
-commit eb4a477988692d1a69fd732c970b45215c9c1481
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Feb 8 10:04:52 2023 -0500
-
-    make format-code
-
-commit cceabba63a45a7fae153607a788f5fb30eb25ed0
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Feb 8 10:45:09 2023 -0500
-
-    docs
-
 commit 557c091332fe1871b092d9023b62c618b1087998
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Wed Feb 8 11:27:26 2023 -0500
-
     qCompilerAndStdLib_stdlib_ranges_pretty_broken_Buggy define and support
 
 commit 1b8573ef89ba02fa6fe46bab9793ca92c615d701
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
 Date:   Wed Feb 8 11:49:03 2023 -0500
-
     upped LIBCPP version broken to 15000 and qCompilerAndStdLib_stdlib_ranges_pretty_broken_Buggy broken for clang up to 14 - even if using libstdc++
 
-commit c5b1d1a540a24f5d006f8a2168266700ee3da4bd
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Feb 8 11:52:01 2023 -0500
-
-    Cosmetic
-
-commit 16ff5f6823aa792afe8314ded6a9714bad8c40d4
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Feb 8 11:51:23 2023 -0500
-
-    cosmetic
-
 commit 50853aa9b8678ae53640d870cc564f97702c1a88
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
 Date:   Wed Feb 8 12:03:27 2023 -0500
-
     workaround qCompilerAndStdLib_stdlib_ranges_pretty_broken_Buggy
 
 commit 0a47e4babea6d47740bee7f77d6fffb8bc91b87e
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Wed Feb 8 22:14:10 2023 -0500
-
     tiny progress on https://stroika.atlassian.net/browse/STK-747 jap locale character/number parsing, but not real progress (but fixed bug with test case where had wrong characters)
 
-commit 41b0eec3bc3434bdbb68dc1220955a2ca50267fc
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Feb 9 08:26:32 2023 -0500
-
-    silence warning
-
-commit 6f646d9b65892a106c32e7f8d09892e592ab5900
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Feb 9 08:27:19 2023 -0500
-
-    make format-code
-
-commit e2dfc93d65d7fba3da8b1aeb2d87ecd961a05cdb
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Feb 9 08:27:46 2023 -0500
-
-    comments
-
 commit 3ea2961703daa107621deed6f769d704b1adb509
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Thu Feb 9 08:28:22 2023 -0500
-
     enhance (still failing) parse japanese numbers test
 
-commit 26147076c2876de4d9d74307cc95c5d09b3d4b83
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Feb 9 08:30:28 2023 -0500
-
-    make format-code
-
 commit 2862137496c4d73e40b42d9aa37bec4de3695323
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Thu Feb 9 13:50:14 2023 -0500
-
     Early draft of Characters_TextConvert and Characters::CodeCvt (not fully implemented and not used at all)
 
-commit f96a81f78ba7725dbebbce99ae3171defffcb7a3
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Feb 9 15:47:54 2023 -0500
-
-    alot of progress/celanups to CodeCvt<CHAR_T> but locale support not yet compiling (so part not compiling disabled)
-
-commit 921e0091511c4d5b6817bbf9459dc38b56c3759b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Feb 9 15:48:44 2023 -0500
-
-    cosmetic
-
-commit 0e773a7a337f7a22291a236d46e0bca69a1e85a7
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Feb 9 21:44:38 2023 -0500
-
-    fixed typo
-
-commit af8465ab7c9c694e1092a159d86f74ac09cfcf18
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Feb 9 22:29:27 2023 -0500
-
-    completed first draft of Characters::CodeCvt (wrapper on std::code_cvt) - PITA - crazy non-movable/non-deletable, pita to use; still untested
-
 commit eb3f343d08d007b1506aa2888a36bbc30dbcd42a
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Thu Feb 9 23:37:34 2023 -0500
-
     cosmetic; and progress on Characters_TextConvert (still alot todo before testable)
-
-commit 3acc53415df589d89ab7ef90587b424494270cdf
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Feb 9 23:44:59 2023 -0500
-
-    fixed recent TextConverter progres code - pickier clang compiler
-
-commit 7c944d7a726b0abe05fb6f2e7a844c30b79e1aad
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Feb 9 23:47:06 2023 -0500
-
-    cosmetic
 
 commit f5be86da953de65256e15bf38d27cc6cbcd8e4ed
 Author: Lewis G. Pringle, Jr <lewis@sophists.com>
@@ -2513,461 +1962,114 @@ Date:   Fri Feb 10 08:37:23 2023 -0500
 
     qCompilerAndStdLib_qualified_enum_using_Buggy workaround
 
-commit ec3bb6811f098c388f6f4b10b07477d63e9f31ed
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Feb 10 09:09:13 2023 -0500
-
-    Characters/TextConvert progress
-
-commit af54f1a09ce464fda61cdbdfd3d1080862f9c454
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Feb 10 09:28:32 2023 -0500
-
-    Comments
-
-commit 3c8406bcb46bb945339d12381c0a429f53c8d458
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Feb 10 11:53:50 2023 -0500
-
-    enhance Characters/CodeCvt.h
-
 commit ddabaa41bda6316093fe939bf04c426e6add5b21
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Fri Feb 10 17:31:07 2023 -0500
-
     Added std::byte operator_b (unsigned long long b) to namespace Memory; and used it in a bunch of places
 
-commit e0764994bb72845c27483a586c9ff1fd1f6d2339
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Feb 10 17:31:22 2023 -0500
-
-    cosmetic
-
-commit 998bd2dcc7febfbb8da1e5bbc1b2b7adfb063a4d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Feb 10 20:08:38 2023 -0500
-
-    docs, and renamed CodeCvt<CHAR_T>::in/out to Bytes2Characters/Characters2Bytes
-
-commit 7519fe1b5528380abc0b87f677fbea26325cad10
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Feb 10 20:09:04 2023 -0500
-
-    first draft UTFConverter::AsCodeCvt () support
-
 commit ba09635ec2a375ee670c0a149949e878c5357619
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Fri Feb 10 20:35:10 2023 -0500
-
     workaround small msvc2k19 bug - not worht define (sizeof fails on static constexpr array)
 
 commit dbe22e66d358cfb9ee2a07ba53683d5208c65314
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Fri Feb 10 20:35:39 2023 -0500
-
     did and used span overload for Memory::MemCmp
 
 commit a2a56765d2d1ae674468efc924d898518a4f60dc
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sat Feb 11 08:20:16 2023 -0500
-
     refactored UTFConverter handling of mbstate_t - much simpler now, clearer, and seems to work better
 
-commit d8e027312ac25d38130d37f12c2e70e181621dee
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Feb 11 08:21:18 2023 -0500
-
-    docs on CodeCvt
-
 commit 6f9292d1c1b8ac91a3cbb1a3c8b2dff30ce64ba5
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sat Feb 11 09:08:27 2023 -0500
-
     tweak to CodeCVT API, and imporved impl in UTFConverter::AsCodeCVT (handle target buffer size issue)
 
-commit 0501841f5ab185803696640fb6517b359ab41066
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Sat Feb 11 11:25:30 2023 -0500
-
-    fixed bug/recent regrssion
-
-commit 635f662d89f4a7565da7bf03f9962b625618aaa5
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Feb 11 11:11:35 2023 -0500
-
-    docs
-
 commit 943d7a0e8c2d1da3c66e32a0c845344fc0b33c73
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sat Feb 11 11:18:53 2023 -0500
-
     revised API (still NYI) for ConstructCodeCvtToUnicode and ConstructCodeCvtUnicodeToBytes
 
-commit d885bde3a4fe96d838918f4d5b6a56647cf23bcf
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Feb 11 11:26:19 2023 -0500
-
-    silence warnings
-
-commit 62f3cb9c5c71519449d5920f7265cb1130355741
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Feb 11 13:58:25 2023 -0500
-
-    Loosen CodeCvt constraint so can be used on Character_UNICODECanAlwaysConvertTo
-
-commit d5ebd43141ae9169f6e9699dd4e9aeafd194c8fb
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Feb 11 13:58:49 2023 -0500
-
-    cosmetic
-
-commit d39f87c904177ab93a6114bbfc6a07731dda561f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Feb 11 13:59:11 2023 -0500
-
-    restruct ConstructCodeCvtUnicodeToBytes to Character_UNICODECanAlwaysConvertTo
-
 commit ca181aeee84c41a0c03b2c11199debcf7d4bf345
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sat Feb 11 14:00:29 2023 -0500
-
     TextWriter - deprecated InternallySynchronized overloads of new (use InternallySynchronizedOutputStream explicitly); and draft of support for creating TextWriter from CodeCvt and UnSeekable_UTFConverter_Rep_
 
-commit a1993d6eb74fbbfa50681c8ebaec81ec732e39cc
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Feb 11 14:09:31 2023 -0500
-
-    better enum names on recent code introduction
-
-commit c4930bc0eebb326d94cf04ad9676c15a153ef34a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Feb 11 14:18:23 2023 -0500
-
-    stubbed out (fake) implemantions of ConstructCodeCvtToUnicode and ConstructCodeCvtUnicodeToBytes:
-
-commit df6d96b32291187710bce804390d9850b4440b16
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Feb 11 14:18:53 2023 -0500
-
-    cosmetic
-
 commit ae225e915b0745b59a3374c2b7928bdb750d5d16
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sat Feb 11 14:39:09 2023 -0500
-
     A bit more progress on TextCovnert code - renamed ConstructCodeCvt, added eDefault o UnicodeExternalEncodings, and partial implemenation
 
-commit e5787eb53429ddabbbf7001331e4641da8d50886
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Feb 11 14:55:27 2023 -0500
-
-    fixed typo
-
 commit 83ed004128500910af166db764a9357de207a5e6
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sat Feb 11 15:21:42 2023 -0500
-
     new Characters::ByteOrderMark flag; Major changes (depecation old api) for TextWriter - now pass in UnicodeExternalEncodings and ByteOrderMark or CodeCvt
 
-commit e9326929002fa3251dcc21dbfd7081f6ac5cab18
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Feb 11 15:34:59 2023 -0500
-
-    silence warning
-
-commit de72f5f7e8f34a82bc49cf26e8b88969b241786c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Feb 11 15:35:24 2023 -0500
-
-    react to recent deprecations
-
 commit 2210e6154043e3311a9ca5a8e1ce32fa9f6b2ba6
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sat Feb 11 15:37:05 2023 -0500
-
     changed TextWriter to defalt to NOT including BOM (just seemed most uses dont include it
 
-commit 38eded06afe39cf23a04ecf587953aeb8ec0974b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Feb 11 16:56:13 2023 -0500
-
-    simplifications to Characters::ConstructCodeCvt API
-
-commit 770e142059c96d74521302a96c8bfeda94a3cf81
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Feb 11 18:28:39 2023 -0500
-
-    try doing ConstructCodeCvt (UnicodeExternalEncodings having its own rep - not from UTFConverter code
-
-commit 6825ed0a0793d6f3ac8df1670ddfeac19b26e633
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Feb 11 18:38:44 2023 -0500
-
-    lose UTFConverter::AsCodeCvt () support
-
-commit 086b2156879725d477a1cdaf64d3fd5ab52855d3
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Feb 11 20:00:16 2023 -0500
-
-    cleanup CodeCvt code
-
-commit 59093d190f7bd604fcc132d8343b8d114afbdf41
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Feb 11 20:01:20 2023 -0500
-
-    dont need TestConvert.cpp
-
 commit 61d175c4de43f6c7bacfb81125821d77b4740a13
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sat Feb 11 20:37:07 2023 -0500
-
     more refactoring of CodeCvt logic - moved stome stuff from TextConvert to CodeCvt template - more of a swiss-army-knife
 
-commit 2edc72c62c54bc7c12103a12a5cc957344178b11
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Feb 11 20:40:20 2023 -0500
-
-    generalized CodeCvt<CHAR_T>::UTFConvertRep_ (thogh not sure for any reason yet)
-
-commit cd2055a95b48870dabf0fe53d331ef89ed5cc693
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Feb 11 21:24:58 2023 -0500
-
-     CodeCvt<CHAR_T>::UTFConvertRep_  support for 'based on' CodeCvt combos
-
 commit 95087ab161c0e26acbe426e989df6e52287e700f
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sat Feb 11 21:37:40 2023 -0500
-
     Address a few compiler specific errors cauight by gcc/clang
 
-commit 37f9586005ed52d7d77e70546c6eeb5b591a851e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Feb 11 21:58:11 2023 -0500
-
-     CodeCvt (const locale& = locale{}) loses requires - so no more need for (most) ConstructCodeCvt - just does based on stuff automatically if needed (untesetd)
-
 commit 5e6eda713f0601b36d43b5fbeeeefa7880acc0e9
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sun Feb 12 10:07:33 2023 -0500
-
     Added draft SpanOfT concept to Memory
 
 commit aa5337e802a7e8f6ba46cffeb3b9942015051173
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sun Feb 12 10:08:21 2023 -0500
-
     added span CTOR overload to StackBuffer and InlineBuffer
 
 commit a2cd45f0d05ee6bb3aa4c499e4ff0d7469d8f68d
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sun Feb 12 10:09:32 2023 -0500
-
     Support CodeCvt<CHAR_T>::UTFConvertSwappedRep_ and lose remnants of ConstructCodeCvt (replace with docs on ReadByteOrderMark
 
 commit 01dbb5de4d7aa6a583406cdf672de2a94fa00538
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sun Feb 12 10:34:23 2023 -0500
-
     further imporve concept SpanOfT adding static_asserts for docs and checking
 
-commit 6c16b090a2f9dfebeeae4c87f31e74b4f06d2e6c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Feb 12 11:55:00 2023 -0500
-
-    fixed missing template prefix
-
-commit 56c16a6e076e7e88f20ed4cd2845d9ac30d3fe45
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Sun Feb 12 12:05:43 2023 -0500
-
-    resolve g++ syntax error
-
-commit 0afdfe2d084a625f88f170a9df7e9dec0fb72b4c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Feb 12 10:34:42 2023 -0500
-
-    cosmetic
-
 commit 2aad207895c3f548c18454e642bf034ac95566f5
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sun Feb 12 12:07:28 2023 -0500
-
     renamed SpanOfT to IsSpanOfT, and added IsSpanT, and improved them all and documented better (works across extent)
 
 commit 03790695c359d540931931e9af89de355bb4b250
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sun Feb 12 12:09:07 2023 -0500
-
     experimental use of new IsSpanT/IsSpanT concepts in String CTOR
 
-commit fcd0d52ceb18f991f4f0bce5639db1aedbf3168b
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Sun Feb 12 15:26:36 2023 -0500
-
-    missing byteswap workaround
-
-commit 35476e7a4f479c52a863b27686823d214d4c3427
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Sun Feb 12 15:33:24 2023 -0500
-
-    progress improving backward compat impl of byteswap
-
-commit f450a4010ba8e88c89f71e80bd90c3e9621ab0a0
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Sun Feb 12 15:33:35 2023 -0500
-
-    workspace
-
 commit bc2ffbdcfde628a999ccc9f14bfad9652d262f26
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sun Feb 12 17:40:57 2023 -0500
-
     provide workaround for missing bit_cast and improved workaround for miussing byte_swap
 
-commit 2d1d9065378a1c613452f44c6eb6398c735dee10
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Feb 12 17:52:26 2023 -0500
-
-    cosmetic; ad fixed depreacted TextWriter CTOR usage
-
 commit 73b118abdd5be3b66de216893bdfa02ad30193c7
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sun Feb 12 19:24:24 2023 -0500
 
     use memory::bit_cast for macos/old clang compat
 
-commit 6ac859507004a22244657b642f966d853c747f0b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Feb 12 20:31:57 2023 -0500
-
-    cleanup recent compiler bug workarounds
-
-commit 16b4fb3927595ecd2fbb668d5d9823da34a780eb
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Feb 13 11:57:45 2023 -0500
-
-    cosmetic
-
 commit 7a8b0a8c90ef2f2eda02afcd0901111419892d87
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Mon Feb 13 11:58:34 2023 -0500
-
     refactored CodeCvt_WrapStdCodeCvt_ support in CodeCvt - now direclty accessible through CTOR for any subclass/variant of std::codecvt (and about to change default CTORS)
 
 commit 9fd369cc98d007ac4d1c5868adb0bd5e68dfe252
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Mon Feb 13 14:06:18 2023 -0500
-
     minor tweaks to bit_cast and byteswap BWA implementations
 
-commit 4df21a3f48d1b8f0187e55e7f3d3556b26f01a29
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Feb 13 14:15:08 2023 -0500
-
-    fixed one CTOR bug with CodeCvt stuff and comments
-
 commit cb48d27558c87d70c6d22a45254d9ad2a10c4649
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Mon Feb 13 14:19:28 2023 -0500
-
     changed default CTOR implementation of CodeCvt to be faster, and more flexible (supports more target code-points)
 
-commit 86d0a12642bd66c067165d0b2abead72394fb481
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Feb 13 14:29:17 2023 -0500
-
-    comsetic
-
-commit 9e20ad834c8c0edca7db2836839dfd39d68c6fc9
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Feb 13 14:30:10 2023 -0500
-
-    lose MBState type in CodeCgvt - just use std::mbstate_t directly
-
-commit 4320e23ff3644fc1f0057694533339e51f0f732f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Feb 13 14:33:50 2023 -0500
-
-    silence deprecation warnings
-
-commit 2ae408112454f859086942764178a6a845803f08
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Mon Feb 13 14:46:23 2023 -0500
-
-    docs
-
-commit 35fd56911cb78e0dcc65e67fd24fa26644125e3e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Feb 13 14:47:22 2023 -0500
-
-    cosmetic
-
-commit f4f1223c2984f3a602985417835e92dd630af7e3
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Feb 13 23:03:07 2023 -0500
-
-    fixed typo/infinite recurse
-
 commit 2a2a1d04b44ff2caf5de56a969b9b5715d429779
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Tue Feb 14 08:22:23 2023 -0500
-
     cleanup codecvt use (for locale) in String class (and docuemnt why still using)
 
 commit e77df1eb378bb4b6ade05ac051b83884b4ac4e7f
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Tue Feb 14 08:23:37 2023 -0500
-
     deprecate a few TextReader overloads (InternallySynchronizedInputOutputStream directly)
 
 commit 7cfa5bc03548443c768a950b1d12ffebd2cb845b
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Tue Feb 14 08:47:54 2023 -0500
-
     lose qMaintainingMBShiftStateNotWorking_ in Streams/TextReader.cpp cuz probably losing mbstate in CodeCvt
 
 commit 8923cde12348ef5ddf90bc1d0b76e1aa986ac690
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Sat Feb 18 02:36:18 2023 -0500
-
     added overload of UTFConverter::ComputeTargetBufferSize () taking just size_t - computing max for any input; and used in new CodeCvt<CHAR_T>::GetMinBytesPerCharacter ()/GetMaxBytesPerCharacter
-
-commit 5538c4581da8b515d2fe71835aff51c19dbb2341
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Feb 18 03:53:18 2023 -0500
-
-    cosmetic
-
-commit c60ecdc8e8a213f237e40f5158f41418bd081331
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Feb 18 03:53:46 2023 -0500
-
-    comments/requires
-
-commit 0d226c2ceee69c61f4f26af27153b7a5750a4474
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Feb 18 04:46:25 2023 -0500
-
-    lose mbstate_t support from UTFConverter and CodeCvt classes
-
-commit 8a47ed1fb765c1fda1b9e87a60c528a792c81dcc
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Feb 18 05:15:55 2023 -0500
-
-    minor cleanup
-
-commit 5ecbbb64d9c79d1bf1c3a0c4f28abed22ec8da69
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Feb 18 10:47:06 2023 -0500
-
-    Fixed recent regression in Date::ToJulianRep () - when month wraps - need to use integer arithmatic - regression from when I converted to using new chron date code
-
-commit 67bafc7b9456aee215240d80f4676803832ef6a1
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Feb 18 11:04:50 2023 -0500
-
-    regression test for recent date conversion fix
 
 commit 329e8ffd50548829367f7f139a02cdc430f043ce
 Author: Lewis Pringle <lewis@sophists.com>
@@ -5812,51 +4914,27 @@ Date:   Mon Jun 26 10:51:16 2023 -0400
     Lose concept ICharacterCompatible and add concept IPossibleCharacterRepresentation; update each place we were using ICharacterCompatible with one of the more appropriate character concepts
 
 commit 1bf8b0c14ca8f34b42bae3eccd00a9f0085496e4
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Mon Jun 26 11:42:36 2023 -0400
-
     use UNICODE in place of Unicode in a few places
 
 commit 0331210f2225cc12d6cfb1464b67af4cede54d6c
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Mon Jun 26 13:58:55 2023 -0400
-
     new IStdBasicStringCompatibleCharacter concept and use in place of IUNICODECodePointOrPlainChar in a few places
 
 commit ae83d9e1271963d7275f61652a67ed36b1d2bf2a
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Mon Jun 26 14:13:27 2023 -0400
-
     lose IUNICODECodePointOrPlainChar - mostly use IStdBasicStringCompatibleCharacter in its place
 
-commit 951223a1105844d21168e78ff4dfdf2b0db78e10
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jun 26 14:55:12 2023 -0400
-
-    Minor String class CTOR cleanups
-
-commit fd836e4ee87fc445e0a1f91d2d7a40856b92361e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jun 26 16:08:50 2023 -0400
-
-    cleanup private String StringWithCStr_
-
 commit 0f3d3c73a4d436983e62425963f2255c9770358b
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Mon Jun 26 20:12:37 2023 -0400
-
     qCompilerAndStdLib_templateConstructorSpecialization_Buggy workaround
 
 commit 8607215e408a14aa4619db92933f95b6336f437e
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Tue Jun 27 11:54:01 2023 -0400
-
     **NOT BACKWARD COMPAT CHANGE** ONE TEMPLATE ARG VARIATION OF Common::ComparisonRelationDeclaration renamed to Common::ComparisonRelationDeclarationBase; and several cleanups to concepts code
 
 commit 63d5ed4ab52b60c91673ae9c153c562a5e5241a0
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Tue Jun 27 17:37:41 2023 -0400
-
     refactored ExtractComparisonTraits_v and only use that making ExtractComparisonTraits deprecated; Fixed IComparer and now use in in IEqualsComparer/IInOrderComparer
 
 commit b9443d5f26049119f2f3c59beb2d9f16538e331f
@@ -5871,161 +4949,36 @@ Date:   Tue Jun 27 20:01:54 2023 -0400
 
     lose a few more accidentally left around IsAddable_v definitions
 
-commit 1357c2ebf8f4b47ce933c7d2a1a70baaf3e3c3da
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jun 27 20:08:34 2023 -0400
-
-    comments
-
-commit 1223d05faca80495520a6131bb4276b9f77abfff
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jun 27 20:09:03 2023 -0400
-
-    comments
-
-commit 15f5075b0aadf20036b34af2d2ec9d6d59f9ed23
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jun 28 10:40:41 2023 -0400
-
-    code cleanps/concepts/docs for Characters/CodeCvt
-
-commit e1592ac658c175dcad91595c846d662945ceb12e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jun 28 11:09:50 2023 -0400
-
-    More CodeCvt cleanups
-
-commit c570d4777d785b4a2cd225d1827a259e7f60002f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jun 28 11:45:12 2023 -0400
-
-    CodeCvt cleanups and regtests
-
-commit 4740bca5358f9800a5be267ba3685bc8e384b899
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jun 28 13:19:30 2023 -0400
-
-    CodeCvt now works with (by default) target charactertype Character
-
-commit f3f0c5b3d28bcd66b63d1ead2e1ae08fd6a78a76
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jun 28 13:38:16 2023 -0400
-
-    docs
-
-commit 75c48c701b7eedf457302cea783cfeb22e6345c7
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jun 28 14:44:40 2023 -0400
-
-    re-enable some codecvt support in UTFConverter - probably not useful, but probably not really deprecated so include in case someday that impl becomes faster
-
-commit a4dbeb00a5ea985d9f94720b8e0706c27265ef25
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jun 28 15:03:04 2023 -0400
-
-    better document and add assert tests - UTFConverter Convert() api throws if given partial characters
-
-commit f0f820bb9cd065b656e241d19172db63a5d62bb7
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jun 28 16:57:08 2023 -0400
-
-    Cleanup CodeCvt semantics, so partial byte input produces zero bytes consumed, and zero chars emitted, but no error
-
-commit 1161406e93a85ac099d9dac422054eb9457c4d35
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jun 28 16:58:29 2023 -0400
-
-    cosmetic
-
-commit 96d1a1a3bf8a97d0e35189672a566d3f462d0e48
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jun 28 22:26:20 2023 -0400
-
-    tood
-
 commit 6e5638c6baa1d9cf39221156ff3aed9f9eecb31c
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Thu Jun 29 10:12:26 2023 -0400
-
     new InlineBuffer/StackBuffer ShrinkTo methods, and operator=(SPAN) support
 
 commit 35858adac482bf4ac5f9a9f40e843115758d7334
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Thu Jun 29 10:45:37 2023 -0400
-
     InlineBuffer/StackBuffer push_back overloads (span)
 
 commit 0c841944ccb811246847a689279d546b602df9c6
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Thu Jun 29 14:32:59 2023 -0400
-
     new overloads of CodeCvt Characters2Bytes and Bytes2Characters and loosened req on args to /2 overloads
 
-commit cf1804c97c946167096b3503e824a9b48921187a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jun 29 14:41:14 2023 -0400
-
-    fixed typo
-
 commit 8db6cddd64cbd81c4d58080fc68af61a06a9b212
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Thu Jun 29 15:37:51 2023 -0400
-
     TextReader rewritten to use new CodeCvt instead of directly using std::codecvt - for speed and flexability and to avoid c++ deprecations
 
 commit d1c9ec25378719966d6612548d02566515c1eeaf
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Thu Jun 29 16:52:20 2023 -0400
-
     lose LookupCodeConverter cuz codecvt stuff not easy to use (this API not well suited to codecvt limitaitons) and function largely replaced by new CodeCvt template; and fixed a bug with CodeCvt
 
-commit 69e8316dc8f1ffa223dacd1fdc788be049c9144d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jun 29 18:29:17 2023 -0400
-
-    simplify some UTFConverter code
-
 commit a8b9a08c11a58a7b3bcbda0c576b599746995270
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Thu Jun 29 19:31:28 2023 -0400
-
     lose use of deprecated codecvt_utf8_utf16 etc functions
 
-commit 34054fd8a02ca5085e64de066f305efe0a0bca0b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jun 29 20:16:31 2023 -0400
-
-    cosmetic
-
-commit 0e58fe2ba54e9de3f7027bb2ea5eaebc0786e49e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jun 29 21:13:22 2023 -0400
-
-    cosmetic
-
-commit 61b1a153c51f922eeccde888ce0d798a6caeb6bc
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Jun 30 00:09:22 2023 -0400
-
-    fixed configure lines for clang++-15 and c++23
-
 commit 766ef7f35130cb1f5101d8714a9f09a183ae52c3
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Fri Jun 30 17:32:18 2023 -0400
-
     minor fruitless tweaks to LockFreeDataStructures/forward_list
 
 commit e704a682f2646ce2713ccb90838b2051fda0b584
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Fri Jun 30 22:41:06 2023 -0400
-
-    try expperimental fSingleSharedLockThread_ in AssertExternallySynchronizedMutex for speed tweak
-
-commit ac2d3aa923afcc670e06f70a891ea7260f865169
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jul 1 12:39:00 2023 -0400
-
-    AssertExternallySynchronizedMutex further performance tweaks
 
 commit 412e2696a0af59aafaff1dede756c26c1f2956f0
 Author: Lewis Pringle <lewis@sophists.com>
@@ -6039,17 +4992,6 @@ Date:   Tue Jul 4 08:46:12 2023 -0400
 
     small celanup character concepts
 
-commit ed8bfc28edb293f04d697787cc271e583df3ffcd
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jul 4 08:54:34 2023 -0400
-
-    another minmor AssertExternallySynchronizedMutex speed tweak
-
-commit 1d22746e880f3618ff696eaef637ec5468edf35b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jul 4 09:45:25 2023 -0400
-
-    comments
 
 commit ecea81d8643536f3c130663af2a24d11d7147eab
 Author: Lewis Pringle <lewis@sophists.com>
