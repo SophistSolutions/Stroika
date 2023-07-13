@@ -23,14 +23,12 @@ especially those they need to be aware of when upgrading.
     - Compiler
       - g++ 11 or later required
       - Visual Studio.Net - loose support for vs2k19 - require vs2k22 or later
-
+      - clang++ 13 or later (14.3 or later on macos/xcode)
 
     - Platform
-
       - Ubuntu 18.04
         <br/> no longer support Ubuntu 18.04; lose support for g++ versions before g++-11 (due to lack of chrono::month, etc)
       - Centos (no easy C++ 20 compilers and abandoned by IBM/redhat)
-
 
 
 - Samples
@@ -38,12 +36,13 @@ especially those they need to be aware of when upgrading.
   -  in sample service, don't strip when building installer if IncludeDebugSymbolsInExecutables set
   - LedIt
     -     fixed LedIt/LedLineIt app startup to now have Execution::Logger::Activator
-
+  - SSDP
+    - cosmeitc cleanups to SSDP Sample server,
+    - one critical bugfix (new Stroika SSDPServer code more picky about order of writes/setting headers so set headers before write)
 
 
 - Github actions/workflows
   - renamed github action to build-N-test
-
 
 - It appears we need at least clang++-10 for adequate C++20 support for Stroika (compare stuff spaceship not working enuf before)
 - appears g++ 8, 9 not going to work with Stroika v3 (due to lack of spaceship op support)
@@ -73,17 +72,35 @@ especially those they need to be aware of when upgrading.
       - Cache::TimedCache now aggregates StatsType instead of inheriting (cuz now can use c++20 [[no_unique_address]])
     - Characters
       - Character
-        - Character::AsASCIIQuietly uses requires
+        - Added concepts
+          - IBasicUNICODECodePoint
+          - IUNICODECodePoint
+          - IStdBasicStringCompatibleCharacter
+          - IUNICODECanAlwaysConvertTo
+          - IPossibleCharacterRepresentation
+          - IUNICODECanUnambiguouslyConvertFrom
+        - cleanup Character::IsASCII, Character::IsLatin1 and Character::IsASCIIOrLatin1  (eg use ranges) 
+        - new Character::IsASCIIOrLatin1 utility and used to refactor String rep construction a bit - so now more fully/accurately decides on creating Character_Latin1 reps
+        - kCanUseMemCmpOptimization_ optimization on Character::Compare (CI)
+        - Added Character::CheckASCII overload
+        - Character (char16_t hiSurrogate, char16_t lowSurrogate) CTOR and related refactoring, and Character::GetSurrogatePair() method
+        - simplify/cleanup Character class
+        - Minor tweak/docs for Character::IsWhitespace ()
+        - fixed constexpr use on Character::Compare
+        - Character::Compare - now templated with concepts on CHAR_T, and moved to header, and span based (deprecated /4 overload)
+        - new Characters::IsAscii/AsASCIIQuietly functions (for any unicode and char buf - string or stackbuffer - output)
+        - loosed requires on Character::IsASCII (and renmaed from IsAscii);
+        - tighten Character::As<> template so instead of just two specializations, uses requires so compiler not linker warn about bad arg types
+        - Added Character::Compare () overload for span
       - String
         - refactored String::Concatenate (and generalized) - and made a few String methods like empty () etc noexcept
         - a few minor String fixes, including refactoring String::Copy so much more general/span friendly
         - String docs, cosmetic, and one or two noexcept fixes
         - completes first draft of changes to String public APIs (maybe all but deprecating mutability)
         - lose pair<const CHAR_TYPE*, const CHAR_TYPE*> String::GetData () variation/overload, and updated all the code that used it to use the new style GetData(); added regtests for String::Replace(); minor cleanups;
-        - **not backward compatible - but minor** - lose Characters/Concrete folder - and moved the stuff we still need either private into String.cpp or for String_Constnat and String_ExternalMemoryOwnership_ApplicationLifetime - into the .h file (at least temporarily)
+        - **not backward compatible - but minor** - lose Characters/Concrete folder - and moved the stuff we still need either private into String.cpp or for String_Constant and String_ExternalMemoryOwnership_ApplicationLifetime - into the .h file (at least temporarily)
         - deprecated String_Constant and replaced wtih String::FromStringConstant static method (like String::FromASCII); and now migrated ALL reps so hidden inside String.cpp file
         - fixed bug / regression in String_Constant/String_ExternalMemoryOwnership_ApplicationLifetime
-        - big cleanup of String rep internals (and related) - especailly progress on BufferedStringRep_
         - refactoring of the string reps
         - refactoring  of String::IRep code - in preps for https://stroika.atlassian.net/browse/STK-684 string rep changes
         - cleanups for https://stroika.atlassian.net/browse/STK-965 String::c_str() changes
@@ -100,12 +117,10 @@ especially those they need to be aware of when upgrading.
     - Common
       - Common::Comparison
         - lose Common::strong_ordering and Common::kLess, kEquals, kGreater (**not backwards compatible**)
-        -  new bug define qCompilerAndStdLib_stdlib_compare_three_way_missing_Buggy trying to address quirkly lib++ support for three way compare
         - support directly/depend upon std c++ 20 three way compare/spaceship operator (no more conditional support for it not existing).
         - Deprecated  Common::ThreeWayComparer and switched to using std::compare_three_way instead
     - Configuration
-        <br>Lose obsolete bug defines for vs2k17
-        - 
+        - Lose obsolete bug defines for vs2k17
           ~~~
           qCompilerAndStdLib_alignas_Sometimes_Mysteriously_Buggy
           qCompilerAndStdLib_alignas_Sometimes_Mysteriously_Buggy
@@ -130,20 +145,18 @@ especially those they need to be aware of when upgrading.
           qCompilerAndStdLib_lambda_expand_in_namespace_Buggy
           qCompilerAndStdLib_SpaceshipAutoGenForOpEqualsForCommonGUID_Buggy
           ~~~
-
       - new Compiler bug defines
-        -     qCompilerAndStdLib_copy_warning_overflow_Buggy workaround
+        - qCompilerAndStdLib_copy_warning_overflow_Buggy
+        - qCompilerAndStdLib_stdlib_compare_three_way_present_but_Buggy
         - qCompilerAndStdLib_spanOfContainer_Buggy
-
-      - Support compiler    _MSC_VER_2k22_17Pt6_ bug define support
-
-
+        - qCompilerAndStdLib_stdlib_compare_three_way_missing_Buggy (trying to address quirkly lib++ support for three way compare)
+      - Support compiler  _MSC_VER_2k22_17Pt6_ bug define support
+      - new _Stroika_Foundation_STRINGIFY_ macro
     - Containers
       -  ALL
          - major switch to using concepts, and requires (in place of enable_if_t)
       - Association
         - Added Association<KEY_TYPE, MAPPED_VALUE_TYPE>::operator[] () syntactic sugar
-
     - Foundation::Cryptograpy
       - Fixed Digester<> to fully support a RETURN_TYPE=Common::GUID - adding regression test and fixing template (worked with MD5 but now works with SuperFastHash and others)
       - Digest::ComputeDigest () and Digester<> etc - now support taking Iterable\<TRIVIALLY_COPYABLE_T> - so for example String
@@ -154,6 +167,7 @@ especially those they need to be aware of when upgrading.
       - DataExchange::ValidationStrategy support on Date class, and other related cleanups
       - Added draft support for ObjectVariantMapper::MakeCommonSerializer (OptionalSerializerOptions ...) so it can take explicit T serializer
       - New utility (factoring) Variant::Reader::_ToByteReader (const Streams::InputStream<Characters::Character>::Ptr& in)
+      - Character::GetSurrogatePair()  use in Variant/JSON/Writer
     - Debug
       - AssertExternallySynchronizedMutex
         - fSingleSharedLockThread_ in AssertExternallySynchronizedMutex for speed tweak (debug builds)
@@ -161,10 +175,11 @@ especially those they need to be aware of when upgrading.
         - Debug::AssertExternallySynchronizedMutex now hides fSharedContext, and accessed via (public was protected) GetSharedContext and SetAssertExternallySynchronizedMutexContext (not backward compatible but close); DataBase::Connection (and sucblasses) changes to use of AssertExternallySynchronizedMutex and chagnes to thread safety rules/docs for these classes (base unspecified if letter is threadsafe and for ODBC and SQLITE say they are not); implies some changes to GetSharedContext/SetAssertExternallySynchronizedMutexContext () usage for these classes (sb all internal and not noticable outside for hte most part)
         - progress celaning up Iterbale to use new AssertExternallySynchronizedMutex ReadLock/WriteLock support
         - more name changes on AssertExternallySynchronizedMutex::ReadLock -> AssertExternallySynchronizedMutex::ReadContext (and WriteContext) and unified names of instances - all to address confusion in posts on Reddit, about whether these are real locks or not
-        -    qStroikaFoundationDebugAssertExternallySynchronizedMutexEnabled support - so AssertExternallySynchronizedMutexEnabled independently of qDebug (but defaults to qDebug and not Stroika_Foundation_Debug_Sanitizer_HAS_ThreadSanitizer
-
+        -    qStroikaFoundationDebugAssertExternallySynchronizedMutexEnabled support - so AssertExternallySynchronizedMutexEnabled independently of qDebug (but defaults to qDebug and not Stroika_Foundation_Debug_Sanitizer_HAS_ThreadSanitizer)
       - use Debug::DropIntoDebuggerIfPresent () rather than direct call to windows DebugBreak()
       - fixed (serious regrssion - string visualizer) was broken, and updated older visual studio natvis files to match
+      - **not backward compatible** - AssertExternallySynchronizedMutex lock and unlock methods now non-const (all well documented now why, including why we leave shared_lock/shared_unlock as const
+      - https://stroika.atlassian.net/browse/STK-734 - classes that use AssertExternallySynchronizedMutex, now AGGREGATE it rather than subclassing.
     - Memory
       - BlockAllocation 
         - Minor tweaks to Memory/BlockAllocator (clarity)
@@ -174,6 +189,16 @@ especially those they need to be aware of when upgrading.
         - Refactored/Renamed SmallStackBuffer to InlineBuffer and StackBuffer
         - deprecated InlineBuffer::ReserveAtLeast and replacced with flag arg to reserve function, and simplified and probably improved performance of use of reserve internally in that class
         - like with inlinebuffer to stackbuffer - lose ReserverAtLeast - and replace with atLeast flag argument to reserve() and use that toughout class itself for stuff like grow. and cleanup use of GetScaledUpCapacity and special case for still inside inline buffer
+      - std::span
+        <br/> use std::span in a thourough way throughout Stroika
+    - IO
+      - Network
+        - Added a couple more Execution::DeclareActivity in Networking code, so exceptions more obvious what failed; and added linux IPV6_MULTICAST_HOPS workaround to issue https://stroika.atlassian.net/browse/STK-578
+        - fixed Network::GetPrimaryInternetAddress () on windows to return NON-LOCAL address (I think already did this fine on unix)
+        - InternetAddress
+          - Added InternetAddress CTOR overloads from const char* and string_view
+        - URI
+          - regtest for URI::SetScheme and docs
     - Time
       -All
         - fixes related to https://stroika.atlassian.net/browse/STK-950: imporved iso8601 datetime parsing, TimeOfDay CTOR overload with ThrowIfOutOfRangeFlag and use in a bunch of places (so better runtime validation of input dates)
@@ -200,17 +225,16 @@ especially those they need to be aware of when upgrading.
       - use [[nodiscard]] in a few places; Year/Date/etc no longer have 'off sign' constructor support - caller must do the cast
       - DateTime
         - added optional parameter consumedCharacters to DateTime::ParseQuietly, and changed semantics for DateTime::Parse - to generally fail/exception with badly formatted (at least iso8601) datetimes (not just quietly ignore crap at the end); added regtest to reflect that and FIXED regression test I had checked in from sterling - this completes  https://stroika.atlassian.net/browse/STK-950 (**NOTE NOT FULLY BACKWARD COMPATBILE** AS DateTime::Parse() is now a little more likely to throw)
-
 - Frameworks
   - Led
     - Tons of Led support cleanups - losing APIs like Led_SDKString2ANSI Led_SDK_String Led_SDK_Char etc, and replacing with already existing (long existing) Stroika Foundation equivilents
     - cleanups of obsolete Led framework APIs, and refactoring
     - lose Led_ThrowIfErrorHRESULT and use Platform::Windows::ThrowIfErrorHRESULT
     - tweak CATCH_AND_HANDLE_EXCEPTIONS_IN_HRESULT_FUNCTION; and use in sample apps
-
-
   - SSDP
     - SSDP server BasicServer, SearchResponder and PeriodicNotifier now all support optional IPVersionSupport flags, and bind both V4 and V6 versions of IP depending on flag provided (default both which is a change); AND other cleanups
+    - several fixes and simplifications to SSDPServer sample and framework code (not fully backward compatible): set location.scheme in sample; changed API for SearchResponder and SearchResponder so use CTOR to specify arguments, and lose Run method (was pointless use of thread); fixed bug in combining urls in BasicServer so now should advertise / notify properly by default (at least this sample works well with stroika ssdpclient)
+    - redo SSDP periodicNotifier class to use IntervalTimer (imposes new minor requirement on use - instantiating intervaltimermgr), and other related code simpliciations/cleanups)
 
 - cleanup vscode tasks.json (move CHERE_INVOKING stuff under windows section cuz for msys workaround, and clenaed up panel usage and a bit more
 
@@ -226,22 +250,19 @@ especially those they need to be aware of when upgrading.
 - bug defines and workarounds for _MSC_VER_2k22_17Pt4_ (and a few cosmetic cleanups)
 
 - ThirdPartyComponents
-  - sqlite 
-    - use 3.42.0
-  - libcurl 7.83.0
-  - zlib 1.2.12
-    - disable ASM build for x64 windows zlib - and created jira ticket https://stroika.atlassian.net/browse/STK-905 to track future cleanup of makefile to reenable this (probably using cmake)
   - boost 
     - Boost 1.82.0
     - lose TOOLSET_NAME=msvc-14.2 workaround no longer needed
+  - libcurl 7.83.0
+  - sqlite 
+    - use 3.42.0
   - zlib
+    - 1.2.12
+    - disable ASM build for x64 windows zlib - and created jira ticket https://stroika.atlassian.net/browse/STK-905 to track future cleanup of makefile to reenable this (probably using cmake)
     - zlib experiemntal makefile fixes
     - lose a bunch of CMAKE_ARGS overrides in zlib makefile -already done in shared cmake include
-
     - but dont need the zlib Patches anymore
-
     - Comment out a bunch of stuff probbaly not needed on makefile anymore for windows zlib
-
 - Build System
   - Skel tool
     - in skel makefile, delegate a few more top level phony makefile targets
@@ -257,184 +278,21 @@ especially those they need to be aware of when upgrading.
     - Windows
       -  vis studio docker container VS_17_6_4
 
+--UNORGNAINZIED
 
 - Moved ThreeWayComparer to end of file to avoid bug/issue with clang-format (and cuz makes sense to put deprecated stuff at end of file anyhow)
 - Deprecated Common::ThreeWayCompare () and used compare_three_way{} or <=> (todo more of later) to replace
 
 - for ScriptsLib/RunRemoteRegressionTests - set /usr/local/bin first in path (needed to find right realpath in macos)
+-  new UTFConverter::AllFitsInOneByteEncoding and AllFitsInTwoByteEncoding, and new String mk_ specializations for char/utf16/ utf32 cases (intead of wchar_t)
 
 
 #if 0
-
-
-commit ddc45b6fe2c668d291951e47c6b580c1607052fa
-Date:   Mon Nov 14 11:18:52 2022 -0500
-
-    _Stroika_Foundation_STRINGIFY_ macro utility
-
-Date:   Mon Nov 14 11:45:28 2022 -0500
-
-    progress towards defining and working around new bug defines qCompilerAndStdLib_stdlib_compare_three_way_present_but_Buggy and qCompilerAndStdLib_stdlib_compare_three_way_missing_Buggy
-
-Date:   Mon Nov 14 13:26:03 2022 -0500
-
-    more work on qCompilerAndStdLib_stdlib_compare_three_way_present_but_Buggy and qCompilerAndStdLib_stdlib_compare_three_way_missing_Buggy defines - on xcode
-
-Date:   Mon Nov 14 13:31:23 2022 -0500
-
-    more refactoring to deal with qCompilerAndStdLib_stdlib_compare_three_way_present_but_Buggy or qCompilerAndStdLib_stdlib_compare_three_way_missing_Buggy
-
-commit 74f9e688112ca04f50e0f01c001b1cce4f83d295
-Date:   Mon Nov 14 13:45:22 2022 -0500
-    more qCompilerAndStdLib_stdlib_compare_three_way_present_but_Buggy or qCompilerAndStdLib_stdlib_compare_three_way_missing_Buggy bug workarounds
-
-commit 68c2d0e634a786e3c76bfb2f6c243c5a6183960b
-Date:   Mon Nov 14 13:52:35 2022 -0500
-    more cosmetic and qCompilerAndStdLib_stdlib_compare_three_way_present_but_Buggy or qCompilerAndStdLib_stdlib_compare_three_way_missing_Buggy bwa code
-
-    new check/warning about version of libc++ being used - must be 11 or >, and fixed qCompilerAndStdLib_stdlib_compare_three_way_missing_Buggy bug define to be _LIBCPP_VERSION < 12000 - in libcpp-branch of logic
-
-commit df93cb55fdd15690adcf3aca9f9a67842b473428
-Date:   Mon Nov 14 21:06:32 2022 -0500
-
-    fixed build of buntu2004-RegressionTests/Dockerfile for clang++10/11/12
-
-commit 256a31cc39dc4a93194cdcd41783d5c68109dc23
-Date:   Mon Nov 14 21:06:57 2022 -0500
-    configure script for clang++10 - default to libstdc++
-
-commit 5b0d5621a87323280d7a256fd0eff3248e726e4c
-Date:   Mon Nov 14 22:16:26 2022 -0500
-    tmphack - add build v3-Release workflow github/workflows/build-N-test-v3-Release.yml to force build
-
-commit 86b51e052e0aec55950d89fdf66cd7d5bd300944
-Date:   Mon Nov 14 22:18:30 2022 -0500
-    undo last checkin (was just a trick to get build-N-test-v3-Release avaialbel workflow
-
-Date:   Wed Nov 16 07:38:53 2022 -0500
-    workaround issue with BOOST 1.80.0 not compiling with C++2b flag on clang++14
-
-commit 8e43a9d06a2cfeabf3f294302376cd6d0d6b15b6
-Date:   Wed Nov 16 07:55:37 2022 -0500
-    https://stroika.atlassian.net/browse/STK-717 also broken on 20.04
-
-commit 9ef4cce0cf20492db404b5fb79b990235b7a00d5
-Date:   Thu Nov 17 08:32:01 2022 -0500
-    define qCompilerAndStdLib_locale_time_get_PCTM_RequiresLeadingZero_Buggy for clang++14
-
-commit 378355ac059b867090838064aae8cde3bc5984fd
-Date:   Thu Nov 17 08:49:42 2022 -0500
-    qCompilerAndStdLib_stdlib_compare_three_way_missing_Buggy broken for LIBCPP 12000 too
-
-commit 6c4c638449ce74276c9c1cf15e7a469574f8182c
-Date:   Thu Nov 17 09:00:51 2022 -0500
-    Iterable<> docs and regtest
-
-Date:   Tue Nov 29 16:56:31 2022 -0500
-    experiment setting qCompilerAndStdLib_SpaceshipOperator_x86_Optimizer_Sometimes_Buggy 0 -- test if was really differnt issue
-
-commit 359eedf5e0a322123ce239fd8c68fbc0d29f8df6
-Date:   Wed Nov 30 08:16:12 2022 -0500
-    Revert "experiment setting qCompilerAndStdLib_SpaceshipOperator_x86_Optimizer_Sometimes_Buggy 0 -- test if was really differnt issue"
-    
-    This reverts commit 54209f7198b93eb20db28986c3fc78cc522ad23e.
-
-commit 2ee45d18d7e224967a03640970c5b7f3256420d4
-Date:   Wed Nov 30 08:18:04 2022 -0500
-    minor dockerfile tweaks - mostly cuz now need more calls to apt-get update for docker build to work
-
-commit 919dba10f9cc6c4648ee4b3e9b1a004a935de342
-Date:   Wed Nov 30 09:23:41 2022 -0500
-    updated ScriptsLib/RunLocalWindowsDockerRegressionTests
-
-commit 5134b1074e76e3a3e1dcae38f886f3275a18310a
-Date:   Wed Nov 30 19:45:32 2022 -0500
-    g++-release-sanitize_thread_undefined https://stroika.atlassian.net/browse/STK-761 workaround for 20.04 as well
-
-commit c21cb98b19fea72a216532f662f8a05534360008
-Date:   Wed Nov 30 20:53:38 2022 -0500
-    a couple more workarounds for https://stroika.atlassian.net/browse/STK-717
-
-commit faf83c8a0e7c0ddd184dd02ec42017d5cf0ccafd
-Date:   Thu Dec 1 06:41:48 2022 -0500
-    regtest for URI::SetScheme and docs
-
-commit 6dabebb80852ffe7a746f5921ede0bbae7052fb6
-Date:   Thu Dec 1 07:48:31 2022 -0500
-    added debugging dbgtrace on error to IO/Network/LinkMonitor
-
-commit 6b5c35e6e69b0b507b09154c4225be54aff75aa5
-Date:   Thu Dec 1 07:51:32 2022 -0500
-    several fixes and simplifications to SSDPServer sample and framework code (not fully backward compatible): set location.scheme in sample; changed API for SearchResponder and SearchResponder so use CTOR to specify arguments, and lose Run method ( was pointless use of thread); fixed bug in combining urls in BasicServer so now should advertise / notify properly by default (at least this sample works well with stroika ssdpclient)
-
-commit 9eedc54ffad681b8750352050105ae53208e4ede
-Date:   Thu Dec 1 08:08:59 2022 -0500
-    cosmeitc cleanups to SSDP Sample server, and one critical bugfix (new Stroika SSDPServer code more picky about order of writes/setting headers so set headers before write)
-
-commit b6b467fc0d94bf0f78c2c10551ce2e42f43839e2
-Date:   Thu Dec 1 08:25:25 2022 -0500
-    fixed Network::GetPrimaryInternetAddress () on windows to return NON-LOCAL address (I think already did this fine on unix)
-
-commit e7df1c347239fb6f9b6a542f3a01f49c4f01b512
-Date:   Thu Dec 1 09:28:00 2022 -0500
-    redo SSDP periodicNotifier class to use IntervalTimer (imposes new minor requirement on use - instantiating intervaltimermgr), and other related code simpliciations/cleanups
-
-commit 7c7ba23f4b12127846cd36b8925049f8a415659e
-Date:   Thu Dec 1 10:35:19 2022 -0500
-    Added InternetAddress from const char* and string_view
-
-Date:   Thu Dec 1 11:31:41 2022 -0500
-    Added a couple more Execution::DeclareActivity in Networking code, so exceptions more obvious what failed; and added linux IPV6_MULTICAST_HOPS workaround to issue https://stroika.atlassian.net/browse/STK-578
-
-Date:   Thu Dec 1 11:38:17 2022 -0500
-    notes in code about https://stroika.atlassian.net/browse/STK-962 so more clear where/what to fix
-
-Date:   Thu Dec 1 14:37:00 2022 -0500
-    https://stroika.atlassian.net/browse/STK-717 - qCompiler_SanitizerDoubleLockWithConditionVariables_Buggy
-
-Date:   Thu Dec 1 15:19:36 2022 -0500
-    https://stroika.atlassian.net/browse/STK-734 - cleanup docs on using Debug::AssertExternallySynchronizedMutex, and cleaned up TimedCache, LRUCache, and StringBuilder to use new style usage (and better documented after testing these three a bit more)
-
-Date:   Fri Dec 2 10:41:52 2022 -0500
-    related to https://stroika.atlassian.net/browse/STK-734 - cleanup of AssertExternallySynchronizedMutex: replace all uses of  shared_lock<const AssertExternallySynchronizedMutex> with AssertExternallySynchronizedMutex::ReadLock and use of lock_guard<const AssertExternallySynchronizedMutex> (or scoped_lock) with AssertExternallySynchronizedMutex::WriteLock, and used that to fix several cases where we had the wrong 'constness' or readlocks/write locks mixed up on AssertExternallySynchronizedMutex
 
 commit d3bfbc5310e947ff6d8bb206c224fd15ac7f827c
 Date:   Fri Dec 2 11:07:54 2022 -0500
     progress cleaning up Iterable's use of new AssertExternallySynchronizedMutex ReadLock/WriteLock code (not done)
     And wrapped fIterableEnvelope_ if #if qDebug for writelock now possible
-
-commit d6ab2e356799e00061e3e7c89cf1b27824f2a069
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Dec 2 11:34:40 2022 -0500
-    vaguely related to https://stroika.atlassian.net/browse/STK-734 - and **not backward compatible - AssertExternallySynchronizedMutex lock and unlock methods now non-const (all well documented now why, including why we leave shared_lock/shared_unlock as const
-
-commit 2bd02016080b4fb82cb6223b4be8bd147822ebd6
-Date:   Fri Dec 2 11:45:20 2022 -0500
-    https://stroika.atlassian.net/browse/STK-734 switch to have BLOB use aggregated AssertExternallySynchronizedMutex intead of private inheritance
-
-commit 7ee8f51d3f3066039d60f0a02de19b7a109b394f
-Date:   Fri Dec 2 11:55:44 2022 -0500
-    https://stroika.atlassian.net/browse/STK-734 - aggregated use instead of inheritance use of AssertExternallySynchronizedMutex a little more
-
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Dec 2 13:53:40 2022 -0500
-    https://stroika.atlassian.net/browse/STK-734 - more AssertExternallySynchronizedMutex cleanups
-
-commit 85ec3c5dd768a500b4f4fc9df9cd46f1f8b78925
-Date:   Fri Dec 2 14:59:27 2022 -0500
-    https://stroika.atlassian.net/browse/STK-734 - more cleanups - more classes using this style impl
-
-commit 54669206a83005ff215deaae2b60bdd3408239cf
-Date:   Fri Dec 2 15:26:35 2022 -0500
-    more fixes for https://stroika.atlassian.net/browse/STK-734 - instead of baseclass use    [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
-
-commit cf4551bd8fcd592247b55df65167dbcf5ef54dee
-Date:   Fri Dec 2 15:51:39 2022 -0500
-    Completed (except for testing) https://stroika.atlassian.net/browse/STK-734 - convert private struct Debug::AssertExternallySy.... to using direct member
-
-commit 06fb88a71fe7e914a5788e1b59f4efe9d0dec759
-Date:   Fri Dec 2 18:07:53 2022 -0500
-    Added comments about possible strategy line for See https://stroika.atlassian.net/browse/STK-963 on attempted thread interruption - but no such luck
 
 commit 58f7586b3138c832a0d0c9bda2971f4617a10589
 Date:   Fri Dec 2 22:00:38 2022 -0500
@@ -683,9 +541,6 @@ commit 23332fdfb59fd2fa46435c40f5f8169cdbd5cb8e
 Date:   Tue Dec 20 20:17:18 2022 -0500
     reversed order of template paramters for UTFConverter::ComputeOutputBufferSize () so could specify just one explicitly and infer the second one
 
-commit 38673d0334531bbc3fb3fe72283ef6ab8d3a1d75
-    span cleanups
-
 commit b3f405edba09058298e20c4b12e803df04aa8ed4
 Date:   Wed Dec 21 07:48:10 2022 -0500
     use legacy UTF8_ typedef and directly use char8_t now
@@ -824,7 +679,6 @@ Date:   Sun Dec 25 19:57:09 2022 -0500
     StringBuilder deprecate (testing) begin/end/c_str() methods
 
 Date:   Mon Dec 26 11:42:17 2022 -0500
-    comments; and Character concepts - Character_IsBasicUnicodeCodePoint, Character_IsUnicodeCodePoint, Character_IsUnicodeCodePointOrPlainChar, Character_Compatible
 
 commit 736398915d134b390e37172f980de90fd336e90c
 Date:   Mon Dec 26 11:43:33 2022 -0500
@@ -844,7 +698,6 @@ Date:   Mon Dec 26 11:48:20 2022 -0500
 
 commit d3f4e9f3d7bc6170d3c0d8910331d4bebeb34d96
 Date:   Mon Dec 26 18:03:11 2022 -0500
-    new Character_SafelyCompatible  (at least for now)
 
 commit 767efd44a74626d56714944f3936d93097e98934
 Date:   Mon Dec 26 18:03:51 2022 -0500
@@ -864,11 +717,9 @@ Date:   Mon Dec 26 20:56:21 2022 -0500
 
 commit df13d69e8e0582b5ec0b64fcf6da0b42ff69cab9
 Date:   Tue Dec 27 10:10:20 2022 -0500
-    new Characters::IsAscii/AsASCIIQuietly functions (for any unicode and char buf - string or stackbuffer - output)
 
 commit aa71f6c79077741620bc9f7ca4e844b7b7864904
 Date:   Tue Dec 27 11:46:14 2022 -0500
-    more cleanups to Character::AsASCIIQuietly - changed concept requirement and improved impl
 
 commit c1c1cf19d8e82946649513e3c1a3a64b696daa51
 Date:   Tue Dec 27 11:47:12 2022 -0500
@@ -887,7 +738,6 @@ Date:   Tue Dec 27 15:41:14 2022 -0500
 
 commit 65d7ec069b9c1cde55bd02ab193cc3243623cf36
 Date:   Tue Dec 27 18:43:15 2022 -0500
-    loosed requires on Character::IsASCII (and renmaed from IsAscii); and docs
 
 commit c3081a82de4cc8e8b5c45bdfbee2f6c923f0939a
 Date:   Tue Dec 27 19:39:46 2022 -0500
@@ -914,7 +764,6 @@ Date:   Thu Dec 29 09:14:44 2022 -0500
 
 commit 304f2d98dbc5066fefa4d891df0082192c9939fd
 Date:   Thu Dec 29 09:16:20 2022 -0500
-    Character::AsASCIIQuietly now templated on Character_Compatible
 
 commit d97aa8ead8ae3bf94f2f585ff20ac98df038b4a2
 Date:   Thu Dec 29 09:17:10 2022 -0500
@@ -950,7 +799,6 @@ Date:   Fri Dec 30 10:52:10 2022 -0500
 
 commit 9bd2b0402c2207019c8aaba954283780841ba5f2
 Date:   Fri Dec 30 16:12:42 2022 -0500
-    tighten Character::As<> template so instead of just two specializations, uses requires so compiler not linker warn about bad arg types
 
 commit 4e00fb224f38b920a26720ee0ff8b860e95fe64d
 Date:   Fri Dec 30 16:27:09 2022 -0500
@@ -964,13 +812,8 @@ commit 4020d7c35dc94700d44b6c6dd689fd4033aa4eee
 Date:   Fri Dec 30 16:50:55 2022 -0500
     code cleanups, docs, and bug fixes to recent PeekData code in String class (and some classes renamed, some methods no static)
 
-commit 7d0fcd4964a0da01988f9a983579aa120436fe38
-Date:   Fri Dec 30 21:23:39 2022 -0500
-    draft of ComputeCharacterLength and NextCharacter
-
 commit c97151fc158f2c099c8c9012769909c13400dcab
 Date:   Sat Dec 31 04:31:44 2022 -0500
-    Added Character::Compare () overload for span
 
 commit 10a5fa9e46e18e03062b3948c8f18a383f3dee84
 Date:   Sat Dec 31 14:16:32 2022 -0500
@@ -979,10 +822,6 @@ Date:   Sat Dec 31 14:16:32 2022 -0500
 commit 75a1f98208abef4b79d990c2579d9b2483fc6707
 Date:   Sat Dec 31 15:26:58 2022 -0500
     define config constant kStackBuffer_TargetInlineByteBufferSize to make better choices in other parts of the code
-
-commit 1869cd071ae314a511b3b0048888e16a8ac52e12
-Date:   Sat Dec 31 16:56:08 2022 -0500
-    ComputeCharacterLength and NextCharacter nowhave wider characterset applicability; and UTFConverter::ComputeBufferSize uses countcharacters etc and kStackBuffer_TargetInlineByteBufferSize to sometimes do counting (not well thought out but a few sensible cases included
 
 commit 153e09611d655e14c70b121e00f249a485be2667
 Date:   Sat Dec 31 16:57:07 2022 -0500
@@ -1068,7 +907,6 @@ Date:   Wed Jan 4 10:32:02 2023 -0500
 
 commit ef7c1507bca2eb76518b4dee334401473e2d6711
 Date:   Wed Jan 4 11:30:34 2023 -0500
-    Character::Compare - now templated with concepts on CHAR_T, and moved to header, and span based (deprecated /4 overload)
 
 commit f1a74056782e05a29fd2d20cea65c62a8fee37a8
 Date:   Wed Jan 4 13:26:53 2023 -0500
@@ -1084,8 +922,7 @@ Date:   Wed Jan 4 20:01:07 2023 -0500
 
 commit 1410129c0776c935060b780568d2b243f7eb3e0a
 Date:   Wed Jan 4 20:05:47 2023 -0500
-    fixed constexpr use on Character::Compare
-
+ 
 commit 8ab6e7c24dcc114adb826bfc8432d616c7adbfdb
 Date:   Wed Jan 4 20:13:52 2023 -0500
     String code: fixed #if qDebug missing; tmphack fix to SubString_() so it no longer depends on c_str_peek returning non-null
@@ -1120,15 +957,13 @@ Date:   Thu Jan 5 22:25:28 2023 -0500
 
 commit 0c11de5a42d4d123d119fd92732b57f8fef6022f
 Date:   Fri Jan 6 10:39:32 2023 -0500
-    Fixed bug in Character::IsAscii (backwards test in one case); new UTFConverter::AllFitsInOneByteEncoding and AllFitsInTwoByteEncoding, and new String mk_ specializations for char/utf16/utf32 cases (intead of wchar_t)
-
+  
 commit bcd6c052a5ac34622e66e06239795da391943f50
 Date:   Sat Jan 7 14:14:35 2023 -0500
     Major milestone - basically finsihed but polish - on https://stroika.atlassian.net/browse/STK-534, https://stroika.atlassian.net/browse/STK-684, and https://stroika.atlassian.net/browse/STK-965: no longer assume sizeof(Character) == sizeof (wchar_t), and now can have reps of strings of differnet backend/internal sizes; must review/tweak performance, but probably not bad right now, and still alot more polish relating to this needed
 
 commit da342907d6d31c3874ff3b5d45912766984744cd
 Date:   Sat Jan 7 14:51:22 2023 -0500
-    Minor tweak/docs for Character::IsWhitespace ()
 
 commit a128815233aa47173dd9eee40d96f65549e5ae3d
 Date:   Sat Jan 7 15:31:21 2023 -0500
@@ -1140,19 +975,13 @@ Date:   Sat Jan 7 15:35:19 2023 -0500
 
 commit 04361d2a321f9690a03ae1e0443c65cb5345643d
 Date:   Sat Jan 7 16:19:33 2023 -0500
-    simplify/cleanup Character class
 
 commit 73badde6c89f9f57a694cf1091b4f8806e771be6
 Date:   Sat Jan 7 17:16:55 2023 -0500
-    Character (char16_t hiSurrogate, char16_t lowSurrogate) CTOR and related refactoring
 
 commit dfd61ea4c1ee254e54e80c120b396cdeb65acf39
 Date:   Sun Jan 8 10:38:42 2023 -0500
     slight improvement on operator+ (STRINGISH,STRINGISH)
-
-commit fa2a8711517c468785534dfafc70ba4ad65a6641
-Date:   Sun Jan 8 11:09:48 2023 -0500
-    renamed Characters::Private_::Access_ to AsSpanOfCharacters_, embellished function, and greatly embellished Characters::Private_::CanBeTreatedAsSpanOfCharacter_ - so should be a bit more performant
 
 commit edb9bad78725174488b33d4d89d4a30a6d4e8955
 Date:   Sun Jan 8 18:09:29 2023 -0500
@@ -1176,7 +1005,7 @@ Date:   Mon Jan 9 15:33:22 2023 -0500
 
 commit b7664fd5ef499113c66289926938378b2d30dfdb
 Date:   Mon Jan 9 16:14:27 2023 -0500
-    Added Character::CheckASCII overload
+ 
 
 commit 931cf3c7b459802767534eb1c2de051eef22ebfd
 Date:   Mon Jan 9 18:10:40 2023 -0500
@@ -1208,15 +1037,13 @@ Date:   Tue Jan 10 09:37:42 2023 -0500
 
 commit c96ed1580368b903e1fac725479a11ec3744d7ac
 Date:   Tue Jan 10 10:41:42 2023 -0500
-    surrogate Character CTOR now constexpr
-
+    
 commit 54da67a73abfb24f2aa11f77c1b7396d9d41c405
 Date:   Tue Jan 10 10:54:52 2023 -0500
     fixed StringBuilder::Append performance regression (without ConstSpan stuff invokes String CTOR needlessly for common case)
 
 commit 8aa2a7aa994c7e2141d77724b88fe12e6cc0fce8
 Date:   Tue Jan 10 11:34:43 2023 -0500
-    kCanUseMemCmpOptimization_ optimization on Character::Compare (CI)
 
 commit e164c84e5f64c133f824f968f40dba8dafa3b02a
 Date:   Tue Jan 10 12:26:58 2023 -0500
@@ -1439,9 +1266,6 @@ commit 6f808dda911f24672e7ea0e51f5e26b4ab8b4e06
 Date:   Thu Jan 19 12:35:05 2023 -0500
     enhanced/fixed String (documentation purpose only) static assertions about sizes
 
-commit 3f9c33dcd59fd09dc59ed26d1339b4ed5398a38e
-Date:   Fri Jan 20 08:24:59 2023 -0500
-    Character IsSurrogatePair support, and made a couple more methods constexpr
 
 commit 49657d7f28fedbfc8faecc68a93edb6afbd668a0
 Date:   Fri Jan 20 08:55:15 2023 -0500
@@ -1457,8 +1281,7 @@ Date:   Sat Jan 21 09:35:17 2023 -0500
 
 commit bfa1aeb4687b992257316b7ea239d5877b3fe3dc
 Date:   Sat Jan 21 10:30:17 2023 -0500
-    new preliminary support for Character_CompatibleIsh, Character::IsLatin1, Character_ASCII, and Character_ISOLatin1
-
+   
 commit 90ae1ddc7bd3b4ed787e49587c830cd6b0cf90d8
 Date:   Sat Jan 21 11:05:08 2023 -0500
     Update ScriptsLib/FormatCode to call ScriptsLib/GetMessageForMissingTool and updated ScriptsLib/GetMessageForMissingTool to give better suggestsions for how to install for windows
@@ -1473,16 +1296,13 @@ Date:   Sat Jan 21 12:47:39 2023 -0500
 
 commit b2321fe9f9928fe7532eb9740fbf7c67074aefff
 Date:   Sat Jan 21 13:33:29 2023 -0500
-    start process of switching Character_Compatible to Character_CompatibleIsh; and fCharLatin8 isnead of fChar8 in String::PeekSpanData
-
+  
 commit ec50c028810e6cac9f042c7089360900b65c25fb
 Date:   Sat Jan 21 15:17:50 2023 -0500
-    Converted many string / UTF functions from using Character_Compatible to Character_CompatibleIsh, so we now support StorageCodePointType::eSingleByteLatin1 - nearly fully
-
+   
 commit 78f823c3ecfc805c59e62b73b07edea5250e848c
 Date:   Sat Jan 21 17:45:01 2023 -0500
-    new Character::IsASCIIOrLatin1 utility and used to refactor String rep construction a bit - so now more fully/accurately decides on creating Character_Latin1 reps
-
+    
 commit 83822467a2537af8c2fd6159ffcee8c41f759545
 Date:   Sun Jan 22 09:24:29 2023 -0500
     Some small improvements to uniocde regression tests but still terrible and must rewrtie
@@ -1493,15 +1313,12 @@ Date:   Sun Jan 22 13:22:31 2023 -0500
 
 commit f77fc8dda875bf3d53a1e73420396ad8acd53121
 Date:   Sun Jan 22 13:23:35 2023 -0500
-    added Character_IsBasicOrLatin1UnicodeCodePoint concept
-
 commit 52613d55c08783aa8f047956da3fc4c3efa90b18
 Date:   Sun Jan 22 13:26:04 2023 -0500
     draft of Test50a_UnicodeStringLiterals_ test
 
 commit 02966f9fd4f8e80125dfe42904f0a5d3aca1f4a1
 Date:   Sun Jan 22 17:23:27 2023 -0500
-    more cleanups to Character (concept use)
 
 commit e6191a014a28229399868777b1c08178bd6e5f3f
 Date:   Mon Jan 23 10:07:28 2023 -0500
@@ -1812,15 +1629,9 @@ Date:   Tue Feb 7 08:27:06 2023 -0500
 
 commit 303e425d1e66b2aa2deb596ffc0a9afe206e5821
 Date:   Tue Feb 7 08:28:01 2023 -0500
-    simplify Character::IsASCII with ranges, and on vs2k22 at least, super tight assembly for this
 
 commit 3bbdcca0f827ba634803e986ae5d2fe38d93427d
 Date:   Tue Feb 7 09:55:26 2023 -0500
-    cleanup Character::IsLatin1 and Character::IsASCIIOrLatin1 to use ranges; and other related small cleanups; reviewed generated assembly on windows and looks pretty good
-
-commit 2d49dbc209f43399830e317291294b177a73cd93
-Date:   Wed Feb 8 09:25:11 2023 -0500
-    fixed regression in Character::IsASCIIOrLatin1 - but better - cuz actually check properly if IsLatin1 now
 
 commit 5332f1ff608aafb4808aa1e6561bdc5259a9d313
 Date:   Wed Feb 8 09:59:51 2023 -0500
@@ -2621,8 +2432,7 @@ Date:   Tue Jun 13 21:19:28 2023 -0400
 
 commit 3a496cf57ccb74b0d4b7f12dd40658448516cc18
 Date:   Tue Jun 13 21:33:06 2023 -0400
-    renamed Character_Latin1 to Latin1, and Character_ASCII to ASCII
-
+    
 commit 9827ca6d70e366de1032d2bfe1cf725768917308
 Date:   Wed Jun 14 09:39:38 2023 -0400
     more 'I' in concept name cleanups and docs
@@ -2730,10 +2540,6 @@ Date:   Sat Jun 17 13:06:46 2023 -0400
 commit 56ea03b8a3759b2f1aedfae313a37656d1708766
 Date:   Sat Jun 17 15:15:32 2023 -0400
     disable clang++-15-debug-libc on github for now cuz not workign - try on laptop first
-
-commit 3bd24df13d4e418f60a5b3b6220ea9566789b910
-Date:   Sat Jun 17 16:31:41 2023 -0400
-    fixes to qCompilerAndStdLib_stdlib_compare_three_way_missing_Buggy qCompilerAndStdLib_stdlib_compare_three_way_present_but_Buggy and qCompilerAndStdLib_stdlib_ranges_pretty_broken_Buggy for clang++15 stdlib=c++
 
 commit db752037a368b4f063feced8a2c014295ae892c0
 Date:   Sun Jun 18 08:48:34 2023 -0400
@@ -2855,22 +2661,6 @@ commit 832c50c936ea9aa97ffa75ca939a7131a84837ae
 Date:   Mon Jun 26 09:45:58 2023 -0400
     no longer need qCompilerAndStdLib_template_requresDefNeededonSpecializations_Buggy and cleanup String::mk_nocheck_ code/docs
 
-commit 96f97328adab9341b802b4565138e624db5795c7
-Date:   Mon Jun 26 10:51:16 2023 -0400
-    Lose concept ICharacterCompatible and add concept IPossibleCharacterRepresentation; update each place we were using ICharacterCompatible with one of the more appropriate character concepts
-
-commit 1bf8b0c14ca8f34b42bae3eccd00a9f0085496e4
-Date:   Mon Jun 26 11:42:36 2023 -0400
-    use UNICODE in place of Unicode in a few places
-
-commit 0331210f2225cc12d6cfb1464b67af4cede54d6c
-Date:   Mon Jun 26 13:58:55 2023 -0400
-    new IStdBasicStringCompatibleCharacter concept and use in place of IUNICODECodePointOrPlainChar in a few places
-
-commit ae83d9e1271963d7275f61652a67ed36b1d2bf2a
-Date:   Mon Jun 26 14:13:27 2023 -0400
-    lose IUNICODECodePointOrPlainChar - mostly use IStdBasicStringCompatibleCharacter in its place
-
 commit 0f3d3c73a4d436983e62425963f2255c9770358b
 Date:   Mon Jun 26 20:12:37 2023 -0400
     qCompilerAndStdLib_templateConstructorSpecialization_Buggy workaround
@@ -2884,15 +2674,11 @@ Date:   Tue Jun 27 17:37:41 2023 -0400
     refactored ExtractComparisonTraits_v and only use that making ExtractComparisonTraits deprecated; Fixed IComparer and now use in in IEqualsComparer/IInOrderComparer
 
 commit b9443d5f26049119f2f3c59beb2d9f16538e331f
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Tue Jun 27 19:55:13 2023 -0400
-
     more cleanups to concepts support in Common/Compare
 
 commit 2637345b664007111686a76b338dc8ddef5ed6a7
-Author: Lewis Pringle <lewis@sophists.com>
 Date:   Tue Jun 27 20:01:54 2023 -0400
-
     lose a few more accidentally left around IsAddable_v definitions
 
 commit 6e5638c6baa1d9cf39221156ff3aed9f9eecb31c
@@ -2923,13 +2709,6 @@ commit 766ef7f35130cb1f5101d8714a9f09a183ae52c3
 Date:   Fri Jun 30 17:32:18 2023 -0400
     minor fruitless tweaks to LockFreeDataStructures/forward_list
 
-commit e704a682f2646ce2713ccb90838b2051fda0b584
-Date:   Fri Jun 30 22:41:06 2023 -0400
-
-commit 412e2696a0af59aafaff1dede756c26c1f2956f0
-Date:   Tue Jul 4 08:03:01 2023 -0400
-    new Character::GetSurrogatePair() API and regtests and use in Variant/JSON/Writer
-
 commit ecea81d8643536f3c130663af2a24d11d7147eab
 Date:   Tue Jul 4 09:46:03 2023 -0400
     loosen assert for String::c_str() for case of surrogates
@@ -2941,10 +2720,6 @@ Date:   Wed Jul 5 12:23:46 2023 -0400
 commit 4a653070215c3c6b00efb7e77bf88748852f18b9
 Date:   Wed Jul 5 14:26:13 2023 -0400
     fixed Multiset<> code to handle alternate 'countertype' besides default unsinged int
-
-commit 38c966f7974a50d4b9c52507eea455de1421b2c9
-Date:   Wed Jul 5 15:12:29 2023 -0400
-    Minor cleanups to Stack code
 
 commit 15fa30f5a2311e87809c870ec74ac089087c6d6c
 Date:   Thu Jul 6 09:36:24 2023 -0400
