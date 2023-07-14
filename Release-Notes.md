@@ -11,7 +11,8 @@ especially those they need to be aware of when upgrading.
 ### DRAFT v3.0d1 release as of July 10
 
 - Documentation
-  - v3 Roadmap
+  - [v3 Roadmap](https://github.com/SophistSolutions/Stroika/discussions/120)
+  - [Design Overview.md](Design Overview.md)
 
 - Require C++20 or later (Lose c++17 language compatability)
   - lose __cpp_impl_three_way_comparison checks since now assuming C++20
