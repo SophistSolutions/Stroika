@@ -130,7 +130,7 @@ I&#39;m not even slightly happy about the way this looks but I&#39;ve found no b
 
 I personally prefer the style &quot;CamelCase&quot; – probably because I first did object oriented programing in Object Pascal/MacApp – a few years back. Maybe there is another reason. But now it&#39;s a quite convenient – providing a subtle but readable visual distinction.
 
-All (or nearly all) Stroika classes, and methods use essentially the same &#39;Studly Caps&#39; naming styled from MacApp, with a few minor versions:
+All (or nearly all) Stroika classes, and methods use essentially the same &#39;Studly Caps&#39; naming styled from MacApp, with a few minor deviations:
 
 However, STL / stdc++ - has its own naming convention (basically all lower case, and \_), plus its own words it uses by analogy / convention throughout (e.g. begin, end, empty).
 
@@ -294,166 +294,18 @@ that you aren't converting (so maybe accidentally implicitly converting) a strin
 that the string is being parsed into that object type.
 
 
-### <a name="Comparisons"></a> Comparisons: spaceship operator, operator==, operator<=> and operator<, operator>, etc…
-
-- Note this has materially changed in Stroika v2.1, due to the upcoming
-  changes in C++20 to support the spaceship operator and automatic compare
-  operation functions generated from it.
+### <a name="Comparisons"></a> Comparisons: spaceship operator (operator<=>), operator== etc…
 
 Stroika types generally support the c++20 operator== and operator<=> semantics and operators.
 
-But sometimes you want to have a compare functor that takes parameters (e.g. string optionally case insensitive).
+But for many classes, for example, 'set' containers, it matters if the function argument is an equality comparer, or ordering comparer, and the C++ comparison syntax does't make that distinction (less and equal are two functions objects
+that have the same 'signature' but one 'works' in a std::set, but the other fails pretty badly).
 
-Stroika types follow the convention of providing a ThreeWayComparer function object and an EqualsComparer object for type T, as static members of that type T If-and-only-if the comparitors can be parameterized. These are **not** available (as nested members) if they cannot be parameterized.
+Stroika uses a utility class template ComparisonRelationDeclaration<> and some related classes and functions and types, to annotate function objects
+and some concepts to filter, so you can declare the type of comparison relation function.
 
-One subtlety that does occasionally need to be accomodated is telling a less comparer from an equals comparer, etc in overloads. This is done with Common::ComparisonRelationType and Common::ComparisonRelationDeclaration.
-
-#### Definition of comparison
-
-As much as possible, an attempt was made to make this the same across C++ versions, but C++20 is different enough, that this wasn't done perfectly.
-
-These instructions cover support of both.
-
-For a class T, where the compare functions are NOT paramterized:
-
-##### ALWAYS define
-
-```C++
-#if __cpp_impl_three_way_comparison >= 201907
-    public:
-        /**
-         * assumes strong_ordering, but use right ordering or auto if appropriate (mostly for templates)
-         */
-        constexpr strong_ordering operator<=> (const T& rhs) const;
-
-    public:
-        /**
-         */
-        constexpr bool operator== (const T& rhs) const;
-#endif
-```
-
-(note - sometimes you can use instead)
-
-```C++
-#if __cpp_impl_three_way_comparison >= 201907
-    public:
-        /**
-         */
-        constexpr auto operator<=> (const T& rhs) const = default;
-#endif
-```
-
-and then define
-
-```C++
-#if __cpp_impl_three_way_comparison < 201907
-    constexpr bool operator< (const T& lhs, const T& rhs);
-    constexpr bool operator<= (const T& lhs, const T& rhs);
-    constexpr bool operator== (const T& lhs, const T& rhs);
-    constexpr bool operator!= (const T& lhs, const T& rhs);
-    constexpr bool operator>= (const T& lhs, const T& rhs);
-    constexpr bool operator> (const T& lhs, const T& rhs);
-#endif
-```
-
-    **NOTE** This is even simpler for code which is only required to support C++20 - just define the one or two compare funcitons and you are done.
-
-##### If T compare function may be parameterized also
-
-```C++
-  struct T {
-     ....
-     struct EqualsComparer;
-     struct ThreeWayComparer;
-  };
-  struct T::EqualsComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eEquals> {
-        constexpr EqualsComparer (int extraArgs = 0);
-        bool operator() (const T& lhs, const T& rhs) const;
-  };
-  struct T::ThreeWayComparer : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eThreeWayCompare> {
-        constexpr ThreeWayComparer (int extraArgs = 0);
-        strong_ordering operator() (const T& lhs, const T& rhs) const;
-  };
-
-```
-
-#### How to **call** the comparison functions
-
-Calling comparison functions is simple.
-
-##### Using default comparison
-
-This works beautifully. Just writing code naturally as
-
-```C++
-    if (L"aa" < String{L"ss"}) {
-    }
-```
-
-All the various operators should just work with no effort, on both C++ 17, and with C++ 20 and later.
-
-##### Using possibly explicit comparison functor
-
-Then to make use of these explicit function compare objects (the most common case) where the comparison function is not parameterized:
-
-```C++
-auto compareFunc = equal_to<T>{};
-if (compareFunc(t1, t2)) {
-  ...
-}
-```
-
-or
-
-```C++
-auto compareFunc = Common::compare_three_way<T,T>{};
-if (compareFunc(t1, t2) == std::strong_ordering::less) {
-  ...
-}
-```
-
-For the more complicated case of passing in explicit parameters, you use the nested members inside T, for example:
-
-```C++
-  var cmp1 = String::EqualsComparer{};
-  String s1 = "abc";
-  String s2 = "ABC";
-  if (s1 == s2) {
-    // NOT REACHED
-  }
-  if (cmp1(s1, s2)) {
-    // NOT REACHED
-  }
-  var cmp2 = String::EqualsComparer{String::CaseInsensivie};
-  if (cmp2(s1, s2)) {
-    // REACHED
-  }
-
-  var cmp3 = String::ThreeWayComparer{String::CaseInsensivie};
-  if (cmp2(s1, s2) == Common::kEqual) { // can say == 0, if C++20 or later
-    // REACHED
-  }
-```
-
-#### Comparisons Rationale
-
-- Working with builtin types (e.g. int)
-- Working with STL types, and 3rd-party libraries
-- Seamlessly fit with user code
-
-Note that we choose to use non-member operator overloads for these comparison functions (in C++17) because putting them in the namespace where the class is defined provides the same convenience of use (name lookup) as member functions, but allows for cases like C \&lt; O where C is some time convertible to O, and O is the class we are adding operator\&lt; support for.
-
-So for example:
-
-```C++
-    if (L"aa" < String{L"ss"}) {
-    }
-```
-
-Works as expected, so long as either the left or right side is a String class, and the other side is convertible to a String.
-
-**Design Note** - We considered specializing equal_to<> and three_way_compare<> templates to allow for refining the behavior (adding parameters) to compare functions. But the problem with this is I was unable to get ADDING NEW parameters to the base compare-templates (e.g. for Collection<>EqualsComparer we add in to the EqualsCompare template the BASE_COMPARER object, which cannot be added to the std::equal_to<> template - or I couldn't figure out how). So that left the approach of a nested type for the comparer objects.
+NOTE - if you use 'three-way-comparers', there is no need for that, as their function signature is enough to automatically detect what they are.
+<a href="https://stroika.atlassian.net/browse/STK-980">Stroika containers and concepts for equality comparosn etc should automatically convert/handle operator<=></a>
 
 ### Using T= versus typedef
 
@@ -594,32 +446,12 @@ SINGLETON::Get()->SomeMutableMethod()
 
 MAY NOT be safe, depending on the particular type. See each singleton type to see how to call its mutable singleton methods.
 
-### enable_if<> usage
+### Concepts usage
 
-I’ve experiment with a number of different styles of enable_if usage, and finally standardized on an approach.
+Stroika templates make substantial use of concepts to help provide documentation about expectations and better error messages.
 
-This may change – as I see more alternatives and gain more experience.
-
-- First – just use enable_if_t.
-- For values, use \_v type traits variants (brevity)
-
-Tried and rejected approaches:
-
-- typename ENABLE_IF= typename enable_if_t\<TEST\>
-  - The problem with this approach is that you cannot repeat the enable_if in the implementation (.inl) file definition – just in the declaration. This is confusing.
-- Enable_if_t\&lt;TEST,int\&gt; = 0
-  - Value – not type; this works well, since the identical enable_if_t\&lt;\&gt; line can be included in the .inl file in the definition. But its needlessly confusing to define the &#39;int&#39; type on the enable_if_t.
-
-USE:
-
-enable_if_t\<is_function_v\<FUNCTION\>\>\* = nullptr
-
-Reasons:
-
-- No extra confusing types as args to enable_if_t.
-- \* (to make it a type that can be initialized) is modest and any easy pattern to follow. Seems needed since else you cannot provide a default value
-- Nullptr value maybe would be clearer with =0, which works, but everywhere else we initialize void\* ptr with nullptr.
-- CAN be repeated (without default value) – in the .inl file (definition).
+Since concepts are largely 'interfaces' and syntactically, cannot be confused with abstract class 'interfaces', Stroika uses the naming convention
+of starting each concept with the prefix 'I'.
 
 ### Quietly
 
