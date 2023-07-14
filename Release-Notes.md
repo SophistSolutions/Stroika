@@ -29,15 +29,6 @@ especially those they need to be aware of when upgrading.
       - Ubuntu 18.04
         <br/> no longer support Ubuntu 18.04; lose support for g++ versions before g++-11 (due to lack of chrono::month, etc)
       - Centos (no easy C++ 20 compilers and abandoned by IBM/redhat)
-- Samples
-  -     cleanup/simplify examples
-  -  in sample service, don't strip when building installer if IncludeDebugSymbolsInExecutables set
-  - LedIt
-    -     fixed LedIt/LedLineIt app startup to now have Execution::Logger::Activator
-  - SSDP
-    - cosmeitc cleanups to SSDP Sample server,
-    - one critical bugfix (new Stroika SSDPServer code more picky about order of writes/setting headers so set headers before write)
-
 - Github actions/workflows
   - renamed github action to build-N-test
 
@@ -162,6 +153,19 @@ especially those they need to be aware of when upgrading.
       - StringBuilder
         - major cleanup/fixes - using concepts, using span<>
         - a few method deprecations and may new overloads (cleanly captured with requires)
+        - StringBuilder deprecate (testing) begin/end/c_str() methods
+        - use newer StringBuilder Append API (span)
+        - replace use of (now deprecated) StringBuilder begin/end with GetData() API
+        - use Character_Compatible etc concpets to cleanup more of StringBuilder
+        - deprecate StringBuilder begin/end/c_str() and add replacement API - GetData (prototype for what I will do in String)
+        - fixed StringBuilder::Append performance regression (without ConstSpan stuff invokes String CTOR needlessly for common case)
+        - StringBuilder no longer tracks separate Length field (use fData_.size())
+        - switched StringBuilder operators to use better requires clause
+        - **not fully backward compatible - some use of StringBuilder must be changed to StringBuilder<> (not sure why CTA~DG no work); but changed StringBuilder to a template and parameterized a few things we will want to change/parameterize next
+        - more (nearly complete) support for StringBuilder differnt configured backend type characters BufferElementType)
+        - a few small fixes to StringBuilder for different BufferElementTyps and Append (CHAR_T now instead of just Character)
+        - Minor code cleanup (use inlinebuffer push_back in StringBuilder::push_back)
+        - cleanup StringBuilder.inl (simpler push_back code now performs OK for char32_t case)
       - UTFConverter
         - Lose deprecated CodePage UTFConvert code - and replace with new UTFConverter module
         - Abstracts various algorithms, like codecvt, portable UTF converter code, and third party library code converters.
@@ -347,19 +351,6 @@ especially those they need to be aware of when upgrading.
     - fix/cleanup related to https://stroika.atlassian.net/browse/STK-963 - which would ahve fixed it - but had fixed something else first - now use Execution::WaitForIOReady in Server/SearchResponder so avoids blocking read until socket read (really this cahnge fixes another bug wihc is we were only waiting on one socket until stuff came in and then on the other); so searchrespnder should work much better now
   - WebServer
     - Added CORSOptions::ToString () const
-
-- cleanup vscode tasks.json (move CHERE_INVOKING stuff under windows section cuz for msys workaround, and clenaed up panel usage and a bit more
-
-- lose --compiler-driver g++10 in default configurations now that we do this in the configure script, and lost some if version=18.04 ubuntu checkis for default configurations in Makefile
-- Testing
-  - stop regression tests script immediately if build fails - no point in rest of tests and often runs more slowly cuz make tries to build again without jobs flag
-
-- c++20 not 17 on github actions
-
-- vs2k 17.1.6 and 16.11.13
-- support visual studio compiler _MSC_VER_2k22_17Pt2_ (2 new bugs and nothing fixed)
-- Updated vs2k versions to VS_17_2_0 and VS_16_11_14 for docker files
-- bug defines and workarounds for _MSC_VER_2k22_17Pt4_ (and a few cosmetic cleanups)
 - ThirdPartyComponents
   - boost 
     - Boost 1.82.0
@@ -375,6 +366,20 @@ especially those they need to be aware of when upgrading.
     - lose a bunch of CMAKE_ARGS overrides in zlib makefile -already done in shared cmake include
     - but dont need the zlib Patches anymore
     - Comment out a bunch of stuff probbaly not needed on makefile anymore for windows zlib
+- Samples
+  - cleanup/simplify examples
+  - in sample service, don't strip when building installer if IncludeDebugSymbolsInExecutables set
+  - LedIt
+    - fixed LedIt/LedLineIt app startup to now have Execution::Logger::Activator
+  - SSDP
+    - cosmeitc cleanups to SSDP Sample server,
+    - one critical bugfix (new Stroika SSDPServer code more picky about order of writes/setting headers so set headers before write)
+- Tests
+  - stop regression tests script immediately if build fails - no point in rest of tests and often runs more slowly cuz make tries to build again without jobs flag
+  - Performance
+    - JSON Performance
+      - Added boost_json-parser to performance tests; guess dont need others since this is the fastest I've tried and easy to test against
+      - add performance regression test for DoStroikaJSONParse_boost_json2Stk
 - Build System
   - Skel tool
     - in skel makefile, delegate a few more top level phony makefile targets
@@ -389,13 +394,16 @@ especially those they need to be aware of when upgrading.
     - Docker v3 in image names for v3 containers
     - Windows
       -  vis studio docker container VS_17_6_4
-- Tests
-  - Performance
-    - JSON Performance
-      - Added boost_json-parser to performance tests; guess dont need others since this is the fastest I've tried and easy to test against
-      - add performance regression test for DoStroikaJSONParse_boost_json2Stk
-
 --UNORGNAINZIED
+- cleanup vscode tasks.json (move CHERE_INVOKING stuff under windows section cuz for msys workaround, and clenaed up panel usage and a bit more
+
+- lose --compiler-driver g++10 in default configurations now that we do this in the configure script, and lost some if version=18.04 ubuntu checkis for default configurations in Makefile
+- c++20 not 17 on github actions
+
+- vs2k 17.1.6 and 16.11.13
+- support visual studio compiler _MSC_VER_2k22_17Pt2_ (2 new bugs and nothing fixed)
+- Updated vs2k versions to VS_17_2_0 and VS_16_11_14 for docker files
+- bug defines and workarounds for _MSC_VER_2k22_17Pt4_ (and a few cosmetic cleanups)
 
 - Moved ThreeWayComparer to end of file to avoid bug/issue with clang-format (and cuz makes sense to put deprecated stuff at end of file anyhow)
 - Deprecated Common::ThreeWayCompare () and used compare_three_way{} or <=> (todo more of later) to replace
@@ -405,21 +413,9 @@ especially those they need to be aware of when upgrading.
 - Added Profile configuration for windows, since handy for doing profiling (not auto-built - just defined so can be easily used)
 
 
-
 ==
 CodeCvt
 - new CodeCvt<> template to replace use of std::codecvt, and integrate with new UTFConverter.
-
-
-=== StringBuilder
-    StringBuilder deprecate (testing) begin/end/c_str() methods
-
-    use newer StringBuilder Append API (span)
-
-    replace use of (now deprecated) StringBuilder begin/end with GetData() API
-
-    use Character_Compatible etc concpets to cleanup more of StringBuilder
-
 
 
 
@@ -462,7 +458,6 @@ Date:   Mon Dec 26 11:43:33 2022 -0500
     ToFloat and String2Int overloads taking span<> (and more overloads to begin to make up for ambiguity - come back later and rewrite all this using requires
 
 commit 1ef780e5e45bed056ffbe780a70d63b32e2cc2fb
-    deprecate StringBuilder begin/end/c_str() and add replacement API - GetData (prototype for what I will do in String)
 
 commit b0e9d0815f7cfaea5beaf086b342d6cfdf7596d0
 Date:   Mon Dec 26 11:47:37 2022 -0500
@@ -617,7 +612,6 @@ Date:   Tue Jan 10 09:37:42 2023 -0500
 
 commit 54da67a73abfb24f2aa11f77c1b7396d9d41c405
 Date:   Tue Jan 10 10:54:52 2023 -0500
-    fixed StringBuilder::Append performance regression (without ConstSpan stuff invokes String CTOR needlessly for common case)
 
 commit e164c84e5f64c133f824f968f40dba8dafa3b02a
 Date:   Tue Jan 10 12:26:58 2023 -0500
@@ -625,7 +619,6 @@ Date:   Tue Jan 10 12:26:58 2023 -0500
 
 commit ca7b758c3171c3cf20e733e0d7aef706ea260a6a
 Date:   Tue Jan 10 14:53:19 2023 -0500
-    StringBuilder no longer tracks separate Length field (use fData_.size())
 
 commit ae724bfc0a35a413a4405c199cba2cc82faa37c6
 Date:   Tue Jan 10 21:13:55 2023 -0500
@@ -786,31 +779,11 @@ Date:   Sun Jan 22 13:22:31 2023 -0500
 
 commit 6d8c3e5162caf773fa84cd679a21a86b0ebaf301
 Date:   Mon Jan 23 10:47:59 2023 -0500
-    qCompilerAndStdLib_template_Requires_templateDeclarationMatchesOutOfLine_Buggy bug define and workaroudn and switched StringBuilder operators to use better requires clause
-
-commit 8287af235498456c1b585dc3eb98b44a98b07fa5
-Date:   Mon Jan 23 15:36:16 2023 -0500
-    **not fully backward compatible - some use of StringBuilder must be changed to StringBuilder<> (not sure why CTA~DG no work); but changed StringBuilder to a template and parameterized a few things we will want to change/parameterize next
-
-commit 6fb33b25060e970579a327067531fda77861f10f
-Date:   Mon Jan 23 23:06:55 2023 -0500
-    more (nearly complete) support for StringBuilder differnt configured backend type characters BufferElementType)
-
-commit 8dfb75ce9befa31107b6d13befd728a10f7d9b4c
-Date:   Tue Jan 24 13:39:08 2023 -0500
-    a few small fixes to StringBuilder for different BufferElementTyps and Append (CHAR_T now instead of just Character)
-
-commit 4a98e58e662b221f1fdbc592c14abad2050f5397
-Date:   Thu Jan 26 10:16:04 2023 -0500
-    Minor code cleanup (use inlinebuffer push_back in StringBuilder::push_back)
+    qCompilerAndStdLib_template_Requires_templateDeclarationMatchesOutOfLine_Buggy bug define and workaroudn and 
 
 commit 5eaa03418b9b07b8f261f62a80d82c500b07f0fd
 Date:   Thu Jan 26 10:47:57 2023 -0500
     Block allocation code - annotate with [[likelly]] - no clear diff on windows
-
-commit 5c9de10869f42bb6cc2f9707197dd30a246b0536
-Date:   Thu Jan 26 14:52:10 2023 -0500
-    cleanup StringBuilder.inl (simpler push_back code now performs OK for char32_t case)
 
 commit d91ba0f18b02a0761b45bb7137cdd0a056dd1c17
 Date:   Fri Jan 27 09:27:55 2023 -0500
