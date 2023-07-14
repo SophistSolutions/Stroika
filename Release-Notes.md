@@ -108,6 +108,57 @@ especially those they need to be aware of when upgrading.
                 issue).
             <br>Also data returns new type field (pointer) - but minor.
             <br>A few other small fixes/cleanups.
+        - tweak mkWS_() overload - dont need Reserve .... call cuz dont internally in StringBuilder and better todo elsewise anyhow
+        - use legacy UTF8_ typedef and directly use char8_t now
+        - fixed locale code to use AsNarrowSDKString not AsUTF8
+        - lose -#if __cpp_char8_t >= 201811L check for char8_t; and changed (NOT BACKWARD COMPATIBLE) String::AsUTF8 default template arg from string to u8string; so to get old behjavior must change code from .AsUTF8() to .AsUTF8<string>()
+        - https://stroika.atlassian.net/browse/STK-965 - deprecated String::c_str() const version and did quickie (to be rewritten) non-const version and changed a bunch of (easy) code to use .As<wstring>() to avoid const c_str () issue
+        - fix use of deprecated String::c_str()
+        - <https://stroika.atlassian.net/browse/STK-965> added String::c_str (Memory::StackBuffer<wchar_t>* useBuf) const and started experimentally using
+        - changed  String::c_str (Memory::StackBuffer\<wchar_t...> API and used in a few more places; and docs and related cleanups)
+        - failed attempt to use new String GetData stuff - need to fix ctors for string rep construction first ofor ones doing construction
+        - draft rewrite of String::Find () using new style data access
+        - code cleanups, docs, and bug fixes to recent PeekData code in String class (and some classes renamed, some methods no static)
+        - More progress on String conversion to new GetData<> logic, including changing what it hashes to so changed  hardwired values in regtests for hash of strings
+        - Draft new String::mk_ API - using spans - but still existing backends
+        - more progress refactoring String constructors and mk_ provite routines
+        - more cleanup/generalizing of String CTORs
+        - deprecated string {from/to} - use span instead - and update code to avoid deprecated calls
+        - Refactored String::FromUTF8() and deprecated /2 overload (use span instead)
+        - refactor String::FromSDKString
+        - String::FromNarrowString/FromNarrowSDKString refactored/deprecate /2 overload
+        - rewrite String::EqualsComparer and  String::ThreeWayComparer using concepts to greatly simplfiy (havent profiled yet)
+        - String code: fixed #if qDebug missing; tmphack fix to SubString_() so it no longer depends on c_str_peek returning non-null
+        - forced c_str_peek for buffered string to return nullptr; and use new impl of c_str () that auto-patches with wrapper that returns non-null as needed
+        - String impl refactoring - StringRepHelper_ -> StringRepHelperAllFitInSize_ and REP now TEMPLATED on CHAR_T
+        - fixed bug with Find code for ascii optimized case, and supported creatming mk_span<char> for ascii case - so now have first proof of concept nearly completed  https://stroika.atlassian.net/browse/STK-684
+        - Major milestone - basically finsihed but polish - on https://stroika.atlassian.net/browse/STK-534, https://stroika.atlassian.net/browse/STK-684, and https://stroika.atlassian.net/browse/STK-965: no longer assume sizeof(Character) == sizeof (wchar_t), and now can have reps of strings of differnet backend/internal sizes; must review/tweak performance, but probably not bad right now, and still alot more polish relating to this needed
+        - slight improvement on operator+ (STRINGISH,STRINGISH)
+        - huge (but incomplete) change to String code - now allow String{string} - but ONLY if checked/assertions - that the string is ascii. _k checks at COMPILETIME that its ascii (or should) - rather meaning checks with asserts, and so no overhead except in debug builds; Not everwhere can we lose the L (format code still depends on wchar_t); but pretty soon everwhere else - esp if we redo format code
+        - a few more cases using plain asciii string instead of L string
+        - tons of changes - switching string constantts from L to plain ascii - esp using sv; and a few things like Activitiy ctors redone so more generic using STRINGLIKE_T
+        - use plain String CTOR instead of String::FromASCII siunce about to mark that as deprecated, and its no longer needed
+        - String::FromASCII () now marked as DEPRECATED (since you can just use String CTOR directly)
+        - https://stroika.atlassian.net/browse/STK-296 - supported move CTORs for String class so can move from wstring&, or other std::basic_string types and re-use memory from those objects
+        - code cleanups to new BufferedStringRep::Rep class (could help performance but untested)
+        - fixed minor regressions and more performance tweaks (incomplete recent work on buffered string rep)
+        - String performance enhancement - new FixedCapacityInlineStorageString_ impl
+        - Minor tweak to String::mk_nocheck_justPickBufRep_ so also does 96 byte size (1.5 x64 cache lines)
+        - String DynamicallyAllocatedString to replace use of (now obsolete internal) BufferedString_
+        - more cleanups to String code and revamp (perforamnce) StringWithCStr_ rep
+        - enhanced/fixed String (documentation purpose only) static assertions about sizes
+        - use final in String rep defintions
+        - restructure FixedCapacityInlineStorageString_::Rep CTOR (and base class) to avoid UB failure on linux/g++ - dont access data til after initializing base class
+        - incompatible change (but probbaly unused) - renamed String::FromISOLatin1 -> String::FromLatin1
+        - use ConvertibleToString concept on StringBuilder Append method
+        - RegTests Updates
+          - Test50a_UnicodeStringLiterals_
+        - experimental use of new IsSpanT/IsSpanT concepts in String CTOR
+        - cleanup codecvt use (for locale) in String class (and docuemnt why still using)
+        - StringWithCStr_ fixed to use IUNICODECanUnambiguouslyConvertFrom instead of IUnicodeCodePointOrPlainChar and use ASCII/LATIN1 for sharedptr reps depending on keepspandata returned on c_str() wrapper
+        - no longer need qCompilerAndStdLib_template_requresDefNeededonSpecializations_Buggy and cleanup String::mk_nocheck_ code/docs
+        - loosen assert for String::c_str() for case of surrogates
+        - Add debugging code to StringRepHelperAllFitInSize_ rep makeiterator code - so it tracks count of running iterators and gives better error message when modified during use. Then deleted regression test that tested this case (since it generates failure/crash but not reliably) - dont allow modifying strings when running existing iterator;  had to tweak sizes assumed asserts for extra debug code added
       - StringBuilder
         - major cleanup/fixes - using concepts, using span<>
         - a few method deprecations and may new overloads (cleanly captured with requires)
@@ -353,47 +404,26 @@ especially those they need to be aware of when upgrading.
 
 - Added Profile configuration for windows, since handy for doing profiling (not auto-built - just defined so can be easily used)
 
+
+
+==
+CodeCvt
+- new CodeCvt<> template to replace use of std::codecvt, and integrate with new UTFConverter.
+
+
+=== StringBuilder
+    StringBuilder deprecate (testing) begin/end/c_str() methods
+
+    use newer StringBuilder Append API (span)
+
+    replace use of (now deprecated) StringBuilder begin/end with GetData() API
+
+    use Character_Compatible etc concpets to cleanup more of StringBuilder
+
+
+
+
 #if 0
-
-commit 23e0a4dfc53fd5e08aa071566eeccd5e9d1fd313
-Date:   Sun Dec 18 10:51:45 2022 -0500
-    tweak mkWS_() overload - dont need Reserve .... call cuz dont internally in StringBuilder and better todo elsewise anyhow
-
-commit 3b0e9ad9099e1a6d67e67b63a7f223085d369281
-Date:   Sun Dec 18 10:54:46 2022 -0500
-    replace use of is_trivially_default_constructible_v with  is_trivial_v because our decisions apply BOTH to construction and DESTRUCTION
-
-commit 8fb9acdb6131fa8f01b93728c3d5f890135ed8a6
-Date:   Sun Dec 18 11:04:33 2022 -0500
-    ok - maybe better - use is_trivially_copyable_v instead of is_trivial_v - appears to capture more accurately what we want here
-
-commit 53a232ffbe8f64d806e4026e80ab8d59ec97a527
-Date:   Tue Dec 20 19:26:37 2022 -0500
-    code factoring - ConvertQuietly_StroikaPortable_helper_
-
-commit 2636595483d8713a0ee2b9ff189c2fe9174d3e44
-Date:   Tue Dec 20 19:33:41 2022 -0500
-    ConvertQuietly_codeCvt_helper_ factoring
-
-commit b0ad2f0661ef6d42de1b2948e0a05664d7961c1c
-Date:   Tue Dec 20 19:56:12 2022 -0500
-    fixed minor recent regressions(refactoring)
-
-commit b3f405edba09058298e20c4b12e803df04aa8ed4
-Date:   Wed Dec 21 07:48:10 2022 -0500
-    use legacy UTF8_ typedef and directly use char8_t now
-
-commit b8115f8b80d3b07db7e18fa917d2516d6d8f808f
-Date:   Wed Dec 21 08:48:55 2022 -0500
-    mostly cosmetic, plus one AsUTF8 cleanup and const & in loop
-
-commit 299a0ea5fc063d52593a2ee07ba24fedba9521ea
-Date:   Wed Dec 21 08:50:03 2022 -0500
-    fixed locale code to use AsNarrowSDKString not AsUTF8
-
-commit c3ddc30f2dc12604996909aa196f073a93608af2
-Date:   Wed Dec 21 08:51:19 2022 -0500
-    lose -#if __cpp_char8_t >= 201811L check for char8_t; and changed (NOT BACKWARD COMPATIBLE) String::AsUTF8 default template arg from string to u8string; so to get old behjavior must change code from .AsUTF8() to .AsUTF8<string>()
 
 commit b5a427a0a592fbf9853b573467368da7d801d793
 Date:   Wed Dec 21 09:24:41 2022 -0500
@@ -407,32 +437,9 @@ commit 48585f28c2634e154226a716b59a8549af84254f
 Date:   Wed Dec 21 10:57:17 2022 -0500
     re-engineer BLOB class to be more based on span (rather than pair<const byte*,const byte*> - not fully backward compatible, but mostly just new apis supported (span)
 
-commit eba8bed20a0dff0f030bab3769ea53ded0df47f5
-Date:   Wed Dec 21 11:53:32 2022 -0500
-    fixed a couple more regressions due to default change in AsUTF8 template type param
-
 commit 5b6e654e5c6df8e490372786b6a772de9e4b9f67
 Date:   Wed Dec 21 11:56:19 2022 -0500
     added missing value_type so  static_assert (Configuration::IsIterable_v<GUID>); passes
-
-commit 949507cf23504b084030c554e73e6158f8d132e3
-Date:   Wed Dec 21 11:56:44 2022 -0500
-    use requires instead of enable_if_t in more places
-
-commit 7cfe7bb4c08162574b8bfcccbd6a7219f3f6dd54
-Date:   Wed Dec 21 13:21:35 2022 -0500
-    fixed regression in InternetAddress CTOR due to change in s.AsUTF8 (unsinged vs signed)
-
-Date:   Wed Dec 21 14:55:08 2022 -0500
-    https://stroika.atlassian.net/browse/STK-965 - deprecated String::c_str() const version and did quickie (to be rewritten) non-const version and changed a bunch of (easy) code to use .As<wstring>() to avoid const c_str () issue
-
-commit dd698adb87d91fbbabc2b555d26fb4ee93b059dd
-Date:   Thu Dec 22 09:55:33 2022 -0500
-    fix use of deprecated String::c_str()
-
-commit 7d91538e169427fc3e5d280d7272475609365eed
-Date:   Thu Dec 22 12:39:22 2022 -0500
-    fixed small typo in ConvertQuietly_StroikaPortable_
 
 commit 57bb12d368b2841d81681f65a487ce2cff468c49
 Date:   Thu Dec 22 11:58:15 2022 -0500
@@ -442,12 +449,6 @@ commit 118cf54abb1a0f7dde36b80c4ed64539fd089867
 Date:   Thu Dec 22 11:58:39 2022 -0500
     define Common::GUID::size () const method
 
-commit 1428645b4c2551c019a8e4a192b37648906dd3c3
-    https://stroika.atlassian.net/browse/STK-965 added String::c_str (Memory::StackBuffer<wchar_t>* useBuf) const and started experimentally using
-
-commit 205e3200aaf1f799973e004d1adf7e6e7c6a9e60
-    changed  String::c_str (Memory::StackBuffer\<wchar_t...> API and used in a few more places; and docs and related cleanups)
-
 commit e03adb06a4159533a7ef5947abcdc32befeff548
 Date:   Thu Dec 22 17:10:51 2022 -0500
     Lose support for qCompilerAndStdLib_conditionvariable_waitfor_nounlock_Buggy cuz no longer support such old LIPCPPVERSION and no other refernces to this bug; Same for qCompilerAndStdLib_strong_ordering_equals_Buggy
@@ -455,15 +456,6 @@ Date:   Thu Dec 22 17:10:51 2022 -0500
 commit 909abb3126182ad439fd5f123b8c82c0749f11db
 Date:   Thu Dec 22 17:11:33 2022 -0500
     Lose support for qCompilerAndStdLib_conditionvariable_waitfor_nounlock_Buggy cuz no longer support such old LIPCPPVERSION and no other refernces to this bug; Same for qCompilerAndStdLib_strong_ordering_equals_Buggy
-
-commit b934eb8e0d016454008e7fb0b2dac9513903b585
-Date:   Sun Dec 25 09:11:58 2022 -0500
-    use newer StringBuilder Append API (span)
-
-Date:   Sun Dec 25 19:57:09 2022 -0500
-    StringBuilder deprecate (testing) begin/end/c_str() methods
-
-Date:   Mon Dec 26 11:42:17 2022 -0500
 
 commit 736398915d134b390e37172f980de90fd336e90c
 Date:   Mon Dec 26 11:43:33 2022 -0500
@@ -476,21 +468,9 @@ commit b0e9d0815f7cfaea5beaf086b342d6cfdf7596d0
 Date:   Mon Dec 26 11:47:37 2022 -0500
     OutputStream (start of) span support
 
-commit b766184bb27ee0adee9db77230f58531ccd92dfc
-Date:   Mon Dec 26 11:48:20 2022 -0500
-    replace use of (now deprecated) StringBuilder begin/end with GetData() API
-
-commit 767efd44a74626d56714944f3936d93097e98934
-Date:   Mon Dec 26 18:03:51 2022 -0500
-    use Character_Compatible etc concpets to cleanup more of StringBuilder
-
 commit 634d9f45416a675f4f9b360c29a933a01ef15cb6
 Date:   Mon Dec 26 20:13:59 2022 -0500
     lose some support for clang++ versions prior to 10 - since dont work with Stroika v3 - and change default std c++ lib for using clang (prior to clang++14) to libstdc++ since libc++ doesnt work prior to 14 (didnt try 13)
-
-commit a050ecb36dfe586b03131f6e041ba954d4dffa90
-Date:   Mon Dec 26 20:55:42 2022 -0500
-    new concept ConvertibleToString
 
 commit 55be3d0a95af53be85fb40082be7d72189c2554d
 Date:   Mon Dec 26 20:56:21 2022 -0500
@@ -511,16 +491,9 @@ commit 3057c05e5dbbafffa1de206728b15798c68453f0
 Date:   Tue Dec 27 15:41:14 2022 -0500
     refactoring of ToFloat () using span (not complete but better)
 
-commit 65d7ec069b9c1cde55bd02ab193cc3243623cf36
-Date:   Tue Dec 27 18:43:15 2022 -0500
-
 commit c3081a82de4cc8e8b5c45bdfbee2f6c923f0939a
 Date:   Tue Dec 27 19:39:46 2022 -0500
     progress rewriting ToFloat code to be more C++20-ish/spanish etc
-
-commit 32e853ae4b08b28541cdbcaa958765eb25e89c1f
-Date:   Wed Dec 28 09:23:02 2022 -0500
-    more cleanups to the ToFloat code
 
 commit c5b6c360bd8fd53dfe2bba75527a62adbda9e351
 Date:   Mon Dec 26 20:13:59 2022 -0500
@@ -554,7 +527,6 @@ Date:   Thu Dec 29 14:57:17 2022 -0500
 
     fixed small regression in ToStringOptions::ToStringOptions
 
-
     draft new String API for PeekData/GetData (allowing return of spans of differnt code-point types)
 
 commit 942006bb1a05624b8d244d43badc3acda78e7db3
@@ -565,68 +537,29 @@ commit dd4c40945717d2e9a8232a9a3464d55e3d77d919
 Date:   Fri Dec 30 09:28:08 2022 -0500
     cannot cast iterators for spans so cast underlying pointers
 
-commit 30b64f909ccfa445c3ed03d78d30da49542e233d
-Date:   Fri Dec 30 10:52:10 2022 -0500
-    failed attempt to use new String GetData stuff - need to fix ctors for string rep construction first ofor ones doing construction
-
-commit 4e00fb224f38b920a26720ee0ff8b860e95fe64d
-Date:   Fri Dec 30 16:27:09 2022 -0500
-    draft rewrite of String::Find () using new style data access
-
 commit 8ef44399aef3ace7c91de9d077c4fc5e2798edb4
 Date:   Fri Dec 30 16:29:32 2022 -0500
     fix recent checkins for String::PeekData (stricter compiler)
-
-commit 4020d7c35dc94700d44b6c6dd689fd4033aa4eee
-Date:   Fri Dec 30 16:50:55 2022 -0500
-    code cleanups, docs, and bug fixes to recent PeekData code in String class (and some classes renamed, some methods no static)
 
 commit 75a1f98208abef4b79d990c2579d9b2483fc6707
 Date:   Sat Dec 31 15:26:58 2022 -0500
     define config constant kStackBuffer_TargetInlineByteBufferSize to make better choices in other parts of the code
 
-commit 153e09611d655e14c70b121e00f249a485be2667
-Date:   Sat Dec 31 16:57:07 2022 -0500
-    More progress on String conversion to new GetData<> logic, including changing what it hashes to so changed  hardwired values in regtests for hash of strings
-
-commit b6abda77105e528a2468727bd9650f673963053a
-Date:   Sat Dec 31 19:07:18 2022 -0500
-    code cleanups using span - use as_bytes now, and .data instead of &*s.begin ()
-
 commit 7ee659c694d7cf07a0f81e03301209670181d3a9
 Date:   Sat Dec 31 19:07:40 2022 -0500
     digester ctor constexpr
-
-commit 28ccc2be898238155f8f4e6551b7d8a44e69cf5b
-Date:   Sun Jan 1 14:35:31 2023 -0500
-    Draft new String::mk_ API - using spans - but still existing backends
 
 commit 3e6eefc68efbfab72b4d6e9868a28a66ac25b421
 Date:   Sun Jan 1 18:25:45 2023 -0500
     cleanup Characters::CString:Length to use template requires instead of a bunch of specializations - much better!
 
-commit 6f26390069ba9ed80c6d28ba603c5b9a107bde60
-Date:   Mon Jan 2 09:27:49 2023 -0500
-    more progress refactoring String constructors and mk_ provite routines
-
 commit a28628819fe664ea7ea189fe8ef1abc6aba6b132
 Date:   Mon Jan 2 09:52:45 2023 -0500
     cosmetic and lose Memory::Private::VC_BWA_std_copy utiliuty
 
-commit 73b13190ab0f4089c1e35e2d243f5de5c86be59e
-Date:   Mon Jan 2 10:40:40 2023 -0500
-    more cleanup/generalizing of String CTORs
-
 commit 7ad6d1cfe829adba6b05864f6c0c9f33df380c7e
 Date:   Mon Jan 2 11:21:19 2023 -0500
     lose some legacy Memory::Private::VC_BWA_std_copy referenes i missed; add default value and a few other cleanups to some old Led code
-
-commit bbf535d0e1454d9840d8f3b66e65b80198dcfa70
-Date:   Mon Jan 2 11:32:00 2023 -0500
-    deprecated string {from/to} - use span instead - and update code to avoid deprecated calls
-
-commit 76174a01f953588906082c1636515e96810dbcb9
-Date:   Mon Jan 2 14:01:55 2023 -0500
 
 commit 21ccb0637ec82e675167a3016fdba98720d68db1
 Date:   Mon Jan 2 17:23:26 2023 -0500
@@ -642,18 +575,6 @@ commit 9ff7ef1f19ee6e50ac6abe5568dd67f6968db893
 Date:   Mon Jan 2 18:05:42 2023 -0500
     qCompilerAndStdLib_template_requresDefNeededonSpecializations_Buggy workaround
 
-commit 4c5ac2b293f072383a486e760de42552d44844a8
-Date:   Mon Jan 2 21:59:38 2023 -0500
-    Refactored String::FromUTF8() and deprecated /2 overload (use span instead)
-
-commit d618e95774b8cc42e8e2128f6b96513e26384f85
-Date:   Mon Jan 2 22:26:35 2023 -0500
-    refactor String::FromSDKString
-
-commit 2babfcfeb61117336e479ce02ca2b83e0e3efc47
-Date:   Mon Jan 2 22:54:11 2023 -0500
-    String::FromNarrowString/FromNarrowSDKString refactored/deprecate /2 overload
-
 commit 356e003d3082777e64cb668c224b5461d297ff01
 Date:   Mon Jan 2 23:02:40 2023 -0500
     fixed (for now at least) BLOB::CTOR (container)
@@ -666,13 +587,6 @@ commit 239f4f5749f7aef15519762a2bdce3def9d16f27
 Date:   Wed Jan 4 10:32:02 2023 -0500
     Compare_CS_() cannot use memcmp() - at least not portably - due to differnt byte orderings, but can still rewrite this to be faster
 
-commit ef7c1507bca2eb76518b4dee334401473e2d6711
-Date:   Wed Jan 4 11:30:34 2023 -0500
-
-commit f1a74056782e05a29fd2d20cea65c62a8fee37a8
-Date:   Wed Jan 4 13:26:53 2023 -0500
-    rewrite String::EqualsComparer and  String::ThreeWayComparer using concepts to greatly simplfiy (havent profiled yet)
-
 commit 3f043507de7a5262bc600cd03040a27df51656d7
 Date:   Wed Jan 4 14:41:13 2023 -0500
     progress revising comments on String class; String::AsUTF32/AsUTF16 fixes for wstring; and continue migrating code from String::IRep to StringRepHelper_
@@ -681,40 +595,9 @@ commit fb71fe013803377ef3f214d5e6046f45d0b9b76a
 Date:   Wed Jan 4 20:01:07 2023 -0500
     SharedByValue<>: fixed broken (and unused) rwget_ptr, and implemented new cget_ptr (pretty sure safe - havent thought about this in a while)
 
-commit 8ab6e7c24dcc114adb826bfc8432d616c7adbfdb
-Date:   Wed Jan 4 20:13:52 2023 -0500
-    String code: fixed #if qDebug missing; tmphack fix to SubString_() so it no longer depends on c_str_peek returning non-null
-
-commit a670f1115566671d881a0620c0f812bce24cb954
-Date:   Wed Jan 4 20:14:54 2023 -0500
-    forced c_str_peek for buffered string to return nullptr; and use new impl of c_str () that auto-patches with wrapper that returns non-null as needed
-
 commit 2e60df30ac4435dad8b6f3e32fcf0222f2236420
 Date:   Wed Jan 4 20:16:49 2023 -0500
     avoid calling memcpy with nullptr
-
-commit c2f18a294f92b319f362f2d1a2cd5f8582fa144d
-Date:   Thu Jan 5 08:57:25 2023 -0500
-    workaround issue with compiling on visual studio .net 2k19 compiler (compiler bug but worakround by moving declaration)
-
-commit d6734a1170893b11829c1947c2bb135b9561654b
-Date:   Thu Jan 5 10:21:51 2023 -0500
-    String impl refactoring - StringRepHelper_ -> StringRepHelperAllFitInSize_ and REP now TEMPLATED on CHAR_T
-
-commit d4e753b6b21aa369e2a70b8bf14572efccf3ba68
-Date:   Thu Jan 5 13:24:29 2023 -0500
-    fixed bug with Find code for ascii optimized case, and supported creatming mk_span<char> for ascii case - so now have first proof of concept nearly completed  https://stroika.atlassian.net/browse/STK-684
-
-commit e23d3dca0711f91b2dda376dfd29322da313aabf
-Date:   Thu Jan 5 21:37:54 2023 -0500
-    Comments, and significant speed tweeks (at least for reading json files) on String comparison routines
-
-commit 0c11de5a42d4d123d119fd92732b57f8fef6022f
-Date:   Fri Jan 6 10:39:32 2023 -0500
-  
-commit bcd6c052a5ac34622e66e06239795da391943f50
-Date:   Sat Jan 7 14:14:35 2023 -0500
-    Major milestone - basically finsihed but polish - on https://stroika.atlassian.net/browse/STK-534, https://stroika.atlassian.net/browse/STK-684, and https://stroika.atlassian.net/browse/STK-965: no longer assume sizeof(Character) == sizeof (wchar_t), and now can have reps of strings of differnet backend/internal sizes; must review/tweak performance, but probably not bad right now, and still alot more polish relating to this needed
 
 commit a128815233aa47173dd9eee40d96f65549e5ae3d
 Date:   Sat Jan 7 15:31:21 2023 -0500
@@ -724,48 +607,9 @@ commit 128cd345b632a70a3160e49493b5834355736205
 Date:   Sat Jan 7 15:35:19 2023 -0500
     Address (with static_assert) bug I ran into in StreamReader due to InlineBufferElementType_ hack for Character object - hopefully adequite to prevent in future)
 
-commit dfd61ea4c1ee254e54e80c120b396cdeb65acf39
-Date:   Sun Jan 8 10:38:42 2023 -0500
-    slight improvement on operator+ (STRINGISH,STRINGISH)
-
-commit edb9bad78725174488b33d4d89d4a30a6d4e8955
-Date:   Sun Jan 8 18:09:29 2023 -0500
-    huge (but incomplete) change to String code - now allow String{string} - but ONLY if checked/assertions - that the string is ascii. _k checks at COMPILETIME that its ascii (or should) - rather meaning checks with asserts, and so no overhead except in debug builds; Not everwhere can we lose the L (format code still depends on wchar_t); but pretty soon everwhere else - esp if we redo format code
-
-commit c7d4c12f97c4a3d13cf4b3177c8726f9876f9f40
-Date:   Sun Jan 8 20:31:03 2023 -0500
-    a few more cases using plain asciii string instead of L string
-
-commit 19cd58d445d95d1e39864afce91b3ce95c7835db
-Date:   Mon Jan 9 11:59:56 2023 -0500
-    tons of changes - switching string constantts from L to plain ascii - esp using sv; and a few things like Activitiy ctors redone so more generic using STRINGLIKE_T
-
-commit 5fde7b91eb2830d2fed352cbaf17d83a785f14b9
-Date:   Mon Jan 9 14:42:16 2023 -0500
-    use more of plain strings (for ascii text) instead of L strings (react to new String class feature)
-
-commit 9ca709cd840168da3b60b26e336d090602bc48cd
-Date:   Mon Jan 9 15:33:22 2023 -0500
-    more conversions from using L strings to ascii plain strings - and delegated Stringhsh constructor for VariantValue (and documented)
-
-commit 931cf3c7b459802767534eb1c2de051eef22ebfd
-Date:   Mon Jan 9 18:10:40 2023 -0500
-    use plain String CTOR instead of String::FromASCII siunce about to mark that as deprecated, and its no longer needed
-
-commit 2338ce8d53b52cbd927df7502c93925913b8d09f
-Date:   Mon Jan 9 18:33:14 2023 -0500
-    String::FromASCII () now marked as DEPRECATED (since you can just use String CTOR directly)
-
-commit 78563366febea3003092acd4f89bae59e0cf049f
-Date:   Tue Jan 10 07:07:05 2023 -0500
-    https://stroika.atlassian.net/browse/STK-296 - supported move CTORs for String class so can move from wstring&, or other std::basic_string types and re-use memory from those objects
-
 commit 0051e3891317fa78f9e301c087a55d595c9468c6
 Date:   Tue Jan 10 08:39:37 2023 -0500
     in URI class - use requires instead of unconstrained templates for polymorphic getter functions
-
-commit 5822f90a831dc0d1d67f339df1d996d35a8d12ba
-Date:   Tue Jan 10 09:36:27 2023 -0500
 
 commit 672760951628fb2dc653d8b3ba94fb84c4aa917f
 Date:   Tue Jan 10 09:37:42 2023 -0500
@@ -779,16 +623,9 @@ commit e164c84e5f64c133f824f968f40dba8dafa3b02a
 Date:   Tue Jan 10 12:26:58 2023 -0500
     **not 100% backward compatible** - but changed most constexpr string constants throughout stroika from wstring_view to string_view - since they are all ascii. As long as used through String{} API, this will be 100% transparent. But if used directly, it may not compile (but hopefully in obvious ways)
 
-commit e43a4e06bca95b469aec82a2a52be4e3b9522a05
-Date:   Tue Jan 10 13:51:22 2023 -0500
-
 commit ca7b758c3171c3cf20e733e0d7aef706ea260a6a
 Date:   Tue Jan 10 14:53:19 2023 -0500
     StringBuilder no longer tracks separate Length field (use fData_.size())
-
-commit 5747d554a6550c55e4f294150f5f49615f87a85b
-Date:   Tue Jan 10 16:40:52 2023 -0500
-    tweak String buffered chunk sizes
 
 commit ae724bfc0a35a413a4405c199cba2cc82faa37c6
 Date:   Tue Jan 10 21:13:55 2023 -0500
@@ -801,9 +638,6 @@ Date:   Tue Jan 10 21:19:14 2023 -0500
 commit 1ef0efbc21345fac63b6626df042ced304a2e6af
 Date:   Tue Jan 10 21:20:18 2023 -0500
     Memory::ValueOf constexpr
-
-commit fecff0d0f29afe151770348f423b351dd83f20a8
-Date:   Wed Jan 11 10:28:18 2023 -0500
 
 commit 0ee368bc930d595689c3d2b400136f9a3aa887c7
 Date:   Wed Jan 11 15:17:38 2023 -0500
@@ -853,9 +687,6 @@ commit 40d7613d1eafafedbc941c487dda3126f0a3f366
 Date:   Thu Jan 12 11:08:50 2023 -0500
     default Mapping factory to using Concrete::Mapping_stdhashmap
 
-commit 95ca6184568f232076b4fa854c95eb47058ca378
-Date:   Thu Jan 12 11:38:09 2023 -0500
-
 commit 1f132271c13d02ef053fe60379f86f978aa97e76
 Date:   Thu Jan 12 20:56:34 2023 -0500
     Adjusted regtest to take into account that order of elts can cahnge due to Mapping now defaulting to non-sorted(hashmap)
@@ -880,9 +711,6 @@ commit 3638f865194d0d79cf512968c581e6baefaa9fd7
 Date:   Thu Jan 12 14:39:19 2023 -0500
     minor tweaks to std::hash<String>::operator() (const String& arg) - still should explore
 
-commit f2bbebf43aebd8ed993c4af80e0c0125763602df
-Date:   Thu Jan 12 14:40:08 2023 -0500
- 
 commit a30ca20fed747ae9e41e55509bb8f69b48d4fdab
 Date:   Thu Jan 12 23:03:38 2023 -0500
     fixed SortedMapping<KEY_TYPE, MAPPED_VALUE_TYPE>::operator<=>
@@ -940,56 +768,10 @@ commit 9db114b14f709cd823023e2c65e85b7ce9051bdd
 Date:   Sun Jan 15 14:45:13 2023 -0500
     must be more careful comparing VariantValue for equality now - 5 == 5 no longer works - must save .ConvertTo(eInteger)
 
-commit 61b6f11c9d3f6684f5498c6face68aa416abba7e
-Date:   Mon Jan 16 21:25:13 2023 -0500
-    code cleanups to new BufferedStringRep::Rep class (could help performance but untested)
-
-commit 21114db69e0d6d7e9fe259b0b5d69751a6790201
-Date:   Tue Jan 17 09:27:53 2023 -0500
-    fixed minor regressions and more performance tweaks (incomplete recent work on buffered string rep)
-
 commit d80d779b12f490ed4e734b958927e7a6b79d57cd
 Date:   Tue Jan 17 09:53:16 2023 -0500
     windows CreateProcess appears to set hProcess to nullptr instead of INVALID_HANDLE_VALUE in some cases, so accomodate
 
-commit b8261364a0b0e50517fce8145ca77460bcb887ce
-Date:   Wed Jan 18 10:43:10 2023 -0500
-
-commit 8852508a6fbf75234a9843d75c49d06807079d72
-Date:   Thu Jan 19 10:07:15 2023 -0500
-    String performance enhancement - new FixedCapacityInlineStorageString_ impl
-
-commit f1b573fb2704744e44bc22d0a107e35d2ec0d156
-Date:   Thu Jan 19 10:25:35 2023 -0500
-    Minor tweak to String::mk_nocheck_justPickBufRep_ so also does 96 byte size (1.5 x64 cache lines)
-
-commit 48879884bfa41bc8b68e248b77453d754b29d6e9
-Date:   Thu Jan 19 10:54:46 2023 -0500
-    String DynamicallyAllocatedString to replace use of (now obsolete internal) BufferedString_
-
-commit 82f4f8280fda164c0ad35a9660196a97fdb2027c
-Date:   Thu Jan 19 12:03:39 2023 -0500
-    more cleanups to String code and revamp (perforamnce) StringWithCStr_ rep
-
-commit 6f808dda911f24672e7ea0e51f5e26b4ab8b4e06
-Date:   Thu Jan 19 12:35:05 2023 -0500
-    enhanced/fixed String (documentation purpose only) static assertions about sizes
-
-commit 49657d7f28fedbfc8faecc68a93edb6afbd668a0
-Date:   Fri Jan 20 08:55:15 2023 -0500
-    use final in String rep defintions
-
-commit 7c9ff65bee62234c13b45099d429f94cb3798911
-Date:   Fri Jan 20 09:17:42 2023 -0500
-    restructure FixedCapacityInlineStorageString_::Rep CTOR (and base class) to avoid UB failure on linux/g++ - dont access data til after initializing base class
-
-commit dbb5a16e8a2bfba68aaf46a6a56e10f15abcc818
-Date:   Sat Jan 21 09:35:17 2023 -0500
-    incompatible change (but probbaly unused) - renamed String::FromISOLatin1 -> String::FromLatin1
-
-commit bfa1aeb4687b992257316b7ea239d5877b3fe3dc
-Date:   Sat Jan 21 10:30:17 2023 -0500
-   
 commit 90ae1ddc7bd3b4ed787e49587c830cd6b0cf90d8
 Date:   Sat Jan 21 11:05:08 2023 -0500
     Update ScriptsLib/FormatCode to call ScriptsLib/GetMessageForMissingTool and updated ScriptsLib/GetMessageForMissingTool to give better suggestsions for how to install for windows
@@ -998,33 +780,9 @@ commit 45309d2e49cbc5416f6c96504cd54c6f5123f62d
 Date:   Sat Jan 21 11:34:32 2023 -0500
     a few small chantes to .clang-format file, and re-ran make format-code (mainly column limit set to 140, PenaltyExcessCharacter AllowShortEnumsOnASingleLine
 
-commit 62276fb241963bcdb5a767012d9bcf88c2968809
-Date:   Sat Jan 21 12:47:39 2023 -0500
-    fixes for String::FromLatin1 and new regtest Test57_Latin1_Tests_
-
-commit b2321fe9f9928fe7532eb9740fbf7c67074aefff
-Date:   Sat Jan 21 13:33:29 2023 -0500
-  
-commit 83822467a2537af8c2fd6159ffcee8c41f759545
-Date:   Sun Jan 22 09:24:29 2023 -0500
-    Some small improvements to uniocde regression tests but still terrible and must rewrtie
-
 commit 582af5227810bd9cd992739f3e48b9070d2f62ff
 Date:   Sun Jan 22 13:22:31 2023 -0500
     workaround qCompilerAndStdLib_template_requresDefNeededonSpecializations_Buggy
-
-commit f77fc8dda875bf3d53a1e73420396ad8acd53121
-Date:   Sun Jan 22 13:23:35 2023 -0500
-commit 52613d55c08783aa8f047956da3fc4c3efa90b18
-Date:   Sun Jan 22 13:26:04 2023 -0500
-    draft of Test50a_UnicodeStringLiterals_ test
-
-commit 02966f9fd4f8e80125dfe42904f0a5d3aca1f4a1
-Date:   Sun Jan 22 17:23:27 2023 -0500
-
-commit e6191a014a28229399868777b1c08178bd6e5f3f
-Date:   Mon Jan 23 10:07:28 2023 -0500
-    use ConvertibleToString concept on StringBuilder Append method
 
 commit 6d8c3e5162caf773fa84cd679a21a86b0ebaf301
 Date:   Mon Jan 23 10:47:59 2023 -0500
@@ -1038,10 +796,6 @@ commit 6fb33b25060e970579a327067531fda77861f10f
 Date:   Mon Jan 23 23:06:55 2023 -0500
     more (nearly complete) support for StringBuilder differnt configured backend type characters BufferElementType)
 
-commit b2e097be8560dc8c8a3d991177baf61f3d01c8e9
-Date:   Tue Jan 24 11:01:59 2023 -0500
-    tweak regtests Test50a_UnicodeStringLiterals_
-
 commit 8dfb75ce9befa31107b6d13befd728a10f7d9b4c
 Date:   Tue Jan 24 13:39:08 2023 -0500
     a few small fixes to StringBuilder for different BufferElementTyps and Append (CHAR_T now instead of just Character)
@@ -1050,16 +804,10 @@ commit 4a98e58e662b221f1fdbc592c14abad2050f5397
 Date:   Thu Jan 26 10:16:04 2023 -0500
     Minor code cleanup (use inlinebuffer push_back in StringBuilder::push_back)
 
-commit eb3a1a44970f9f84be004d74811e1f924a867b18
-Date:   Thu Jan 26 10:33:33 2023 -0500
-
 commit 5eaa03418b9b07b8f261f62a80d82c500b07f0fd
 Date:   Thu Jan 26 10:47:57 2023 -0500
     Block allocation code - annotate with [[likelly]] - no clear diff on windows
 
-commit 42eef14dea9eb9837ea3d2b636a575f4f3b01410
-Date:   Thu Jan 26 14:41:45 2023 -0500
-   
 commit 5c9de10869f42bb6cc2f9707197dd30a246b0536
 Date:   Thu Jan 26 14:52:10 2023 -0500
     cleanup StringBuilder.inl (simpler push_back code now performs OK for char32_t case)
@@ -1256,24 +1004,6 @@ commit 82b73dd8904528b4760b307aa07786c0af06bd2a
 Date:   Mon Feb 6 20:05:09 2023 -0500
     added back deprecated defintiion of WideStringToNarrowSDKString so easier to upgrade v2.1 Stroika code
 
-commit fcfe4ae3af15b958cfe9e97a2c675cd79e662d94
-Date:   Mon Feb 6 20:07:28 2023 -0500
-    check __cpp_lib_execution >= 201603L
-
-commit ecf0ee5fadf7edd9afb310660306415f3d3b6770
-Date:   Tue Feb 7 08:27:06 2023 -0500
-    minor likely attribute tweaks
-
-commit 303e425d1e66b2aa2deb596ffc0a9afe206e5821
-Date:   Tue Feb 7 08:28:01 2023 -0500
-
-commit 3bbdcca0f827ba634803e986ae5d2fe38d93427d
-Date:   Tue Feb 7 09:55:26 2023 -0500
-
-commit 5332f1ff608aafb4808aa1e6561bdc5259a9d313
-Date:   Wed Feb 8 09:59:51 2023 -0500
-    docs, cleanups about details if IsASCII, IsLatin1, etc code
-
 commit 557c091332fe1871b092d9023b62c618b1087998
 Date:   Wed Feb 8 11:27:26 2023 -0500
     qCompilerAndStdLib_stdlib_ranges_pretty_broken_Buggy define and support
@@ -1363,10 +1093,6 @@ commit 2aad207895c3f548c18454e642bf034ac95566f5
 Date:   Sun Feb 12 12:07:28 2023 -0500
     renamed SpanOfT to IsSpanOfT, and added IsSpanT, and improved them all and documented better (works across extent)
 
-commit 03790695c359d540931931e9af89de355bb4b250
-Date:   Sun Feb 12 12:09:07 2023 -0500
-    experimental use of new IsSpanT/IsSpanT concepts in String CTOR
-
 commit bc2ffbdcfde628a999ccc9f14bfad9652d262f26
 Date:   Sun Feb 12 17:40:57 2023 -0500
     provide workaround for missing bit_cast and improved workaround for miussing byte_swap
@@ -1387,10 +1113,6 @@ commit cb48d27558c87d70c6d22a45254d9ad2a10c4649
 Date:   Mon Feb 13 14:19:28 2023 -0500
     changed default CTOR implementation of CodeCvt to be faster, and more flexible (supports more target code-points)
 
-commit 2a2a1d04b44ff2caf5de56a969b9b5715d429779
-Date:   Tue Feb 14 08:22:23 2023 -0500
-    cleanup codecvt use (for locale) in String class (and docuemnt why still using)
-
 commit e77df1eb378bb4b6ade05ac051b83884b4ac4e7f
 Date:   Tue Feb 14 08:23:37 2023 -0500
     deprecate a few TextReader overloads (InternallySynchronizedInputOutputStream directly)
@@ -1407,10 +1129,6 @@ commit 326e2f3b8bafbc45b12ecd461bac20a6fa7fa295
 Date:   Sat Feb 18 18:13:09 2023 -0500
     big changes to Date code - https://stroika.atlassian.net/browse/STK-668 - support full julian date range for Date (4000 BC to distant futu
     re - with caveats) - reanmed JulianRepType to JulianRepType
-
-commit 1d412321bf7fcc52ede74a4ac3134dcc9ba3cbad
-Date:   Sun Feb 19 23:29:14 2023 -0500
-    renamed regtest to from Characters::Strings to just Characters; started adding CodeCVT tests there (but incomplete - not working)
 
 commit 56d688b4415c72114ed7a1f04ac5199bcf340368
 Date:   Mon Feb 20 10:22:43 2023 -0500
@@ -1833,10 +1551,6 @@ commit 23b78e3234c2d773afd5f192ea5e6d282aa10f1c
 Date:   Tue May 23 05:52:52 2023 -0400
     more qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy bwas
 
-commit 90a9c4196e3518e5d2e625bdea1a828cfb47cc2a
-Date:   Tue May 23 12:50:10 2023 -0400
-    maybe find better workaround for qCompilerAndStdLib_requires_breaks_soemtimes_but_static_assert_ok_Buggy
-
 commit a78ca171dbab6879f96771b6fc7cf1c92d9849da
 Date:   Tue May 23 12:51:06 2023 -0400
     maybe find better workaround for qCompilerAndStdLib_requires_breaks_soemtimes_but_static_assert_ok_Buggy
@@ -1844,10 +1558,6 @@ Date:   Tue May 23 12:51:06 2023 -0400
 commit 3dbd3b4ac101d3e06283f81b1b595511dcae1cc9
 Date:   Tue May 23 15:15:54 2023 -0400
     better workaround of qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
-
-commit 4aa186339f06257f616b049a0f11d2b45e17e991
-Date:   Tue May 23 15:20:57 2023 -0400
-    try setting macos 13 runner for xcode
 
 commit 4af0f89a0e020affd9b8d84d520c95b29f7a6431
 Date:   Tue May 23 15:53:12 2023 -0400
@@ -2251,14 +1961,6 @@ commit 1fe51528f829970de5e3809c2a0c49fde967f593
 Date:   Thu Jun 22 21:27:23 2023 -0400
     https://stroika.atlassian.net/browse/STK-743: added Containers::Adapters::IAddableTo and used teh concept in ObjectVariantMapper
 
-commit af7bbc61e3d4cbccee478b15981691270ee355a6
-Date:   Mon Jun 26 08:47:38 2023 -0400
-    StringWithCStr_ fixed to use IUNICODECanUnambiguouslyConvertFrom instead of IUnicodeCodePointOrPlainChar and use ASCII/LATIN1 for sharedptr reps depending on keepspandata returned on c_str() wrapper
-
-commit 832c50c936ea9aa97ffa75ca939a7131a84837ae
-Date:   Mon Jun 26 09:45:58 2023 -0400
-    no longer need qCompilerAndStdLib_template_requresDefNeededonSpecializations_Buggy and cleanup String::mk_nocheck_ code/docs
-
 commit 0f3d3c73a4d436983e62425963f2255c9770358b
 Date:   Mon Jun 26 20:12:37 2023 -0400
     qCompilerAndStdLib_templateConstructorSpecialization_Buggy workaround
@@ -2299,10 +2001,6 @@ commit 766ef7f35130cb1f5101d8714a9f09a183ae52c3
 Date:   Fri Jun 30 17:32:18 2023 -0400
     minor fruitless tweaks to LockFreeDataStructures/forward_list
 
-commit ecea81d8643536f3c130663af2a24d11d7147eab
-Date:   Tue Jul 4 09:46:03 2023 -0400
-    loosen assert for String::c_str() for case of surrogates
-
 commit 6dc66ff8b93927a2f0999ee812337487c61a6119
 Date:   Wed Jul 5 12:23:46 2023 -0400
     Concept cleanups CountedValue
@@ -2342,10 +2040,6 @@ Date:   Fri Jul 7 17:34:55 2023 -0400
 commit 9299a848d91967d55bf7d5a48dbaaf0de5beeec8
 Date:   Sat Jul 8 11:12:22 2023 -0400
     apprently -unqualified-std-cast-ca only needed clang++ 15 or greater (unknown in 14)
-
-commit f3fc3fa0f2e84a68593ab641c141b36629e51740
-Date:   Sat Jul 8 17:59:27 2023 -0400
-    Add debugging code to StringRepHelperAllFitInSize_ rep makeiterator code - so it tracks count of running iterators and gives better error message when modified during use. Then deleted regression test that tested this case (since it generates failure/crash but not reliably) - dont allow modifying strings when running existing iterator;  had to tweak sizes assumed asserts for extra debug code added
 
 commit 89a3b8e49ff46c936f7d056819e7cb8f6ad1c6d3
 Date:   Mon Jul 10 10:48:03 2023 -0400
