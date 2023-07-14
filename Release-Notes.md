@@ -24,12 +24,10 @@ especially those they need to be aware of when upgrading.
       - g++ 11 or later required
       - Visual Studio.Net - loose support for vs2k19 - require vs2k22 or later
       - clang++ 13 or later (14.3 or later on macos/xcode)
-
     - Platform
       - Ubuntu 18.04
         <br/> no longer support Ubuntu 18.04; lose support for g++ versions before g++-11 (due to lack of chrono::month, etc)
       - Centos (no easy C++ 20 compilers and abandoned by IBM/redhat)
-
 - Samples
   -     cleanup/simplify examples
   -  in sample service, don't strip when building installer if IncludeDebugSymbolsInExecutables set
@@ -113,10 +111,11 @@ especially those they need to be aware of when upgrading.
         - major cleanup/fixes - using concepts, using span<>
         - a few method deprecations and may new overloads (cleanly captured with requires)
       - UTFConverter
-        - New class, losely based on and replacing UTFConvert class
+        - Lose deprecated CodePage UTFConvert code - and replace with new UTFConverter module
         - Abstracts various algorithms, like codecvt, portable UTF converter code, and third party library code converters.
           KEY concept is always UNICODE - always UTFX to UTFY.
-        - Replace deprecated use of UTFConvert with use of new UTFConverter
+        - Options::Implementation::eBoost_Locale (boost locale support for utf_to_utf)
+        - qPlatform_Windows impl (now default on windows cuz seems fastest),
     - Common
       - Common::Comparison
         - lose Common::strong_ordering and Common::kLess, kEquals, kGreater (**not backwards compatible**)
@@ -355,10 +354,6 @@ especially those they need to be aware of when upgrading.
 
 #if 0
 
-commit 7d832bb19338c76b150b8b5b594961d8ce5e833c
-Date:   Sat Dec 17 22:04:05 2022 -0500
-    Progress on (ugly/messy) UTFConvert::ConvertQuietly () methods : did qPlatform_Windows impl (now default on windows cuz seems fastest), and std::codecvt_utf8_utf16 impl but that is HORRIBLE! - and we use elswhere (in TextReader) - must lose it I guess - cuz its horrible. Not sure what todo; but its a mess and should work better for Stroika v3
-
 commit 23e0a4dfc53fd5e08aa071566eeccd5e9d1fd313
 Date:   Sun Dec 18 10:51:45 2022 -0500
     tweak mkWS_() overload - dont need Reserve .... call cuz dont internally in StringBuilder and better todo elsewise anyhow
@@ -370,29 +365,6 @@ Date:   Sun Dec 18 10:54:46 2022 -0500
 commit 8fb9acdb6131fa8f01b93728c3d5f890135ed8a6
 Date:   Sun Dec 18 11:04:33 2022 -0500
     ok - maybe better - use is_trivially_copyable_v instead of is_trivial_v - appears to capture more accurately what we want here
-
-commit e854ea98e94222c1dd37039861102df27ff530f9
-Date:   Mon Dec 19 14:13:08 2022 -0500
-    fixed (recent) regression in UTFConvert::ConvertQuietly windows code - so restructured a bit so better internall checking
-
-commit fcd232f32c6b8a3877351ad548b706b4b751e6db
-    
-
-commit b3d3dcda4caca0f62b9be3ee4c4a7dbb6c43f3c0
-Date:   Mon Dec 19 20:59:03 2022 -0500
-    More progress on new (or majorly refactored) UTFConvert module
-
-Date:   Tue Dec 20 14:12:06 2022 -0500
-    rough incomplete draft of boost locale support for utf_to_utf
-
-Date:   Tue Dec 20 15:03:59 2022 -0500
-    tiny progress on Options::Implementation::eBoost_Locale
-
-commit a093c60b540c17caed5da4a43398e6d814d03e9a
-Date:   Tue Dec 20 16:13:40 2022 -0500
-    Lose deprecated CodePage UTFConvert code - and put in backward compatible stuff to DELEGATE to new UTFConvert(er) code in another module, marking as deprecated
-
-commit 2e25f4d0e516ebb6f6ecc0944d0b1dcf9af75b53
 
 commit 53a232ffbe8f64d806e4026e80ab8d59ec97a527
 Date:   Tue Dec 20 19:26:37 2022 -0500
@@ -468,10 +440,6 @@ Date:   Thu Dec 22 11:58:15 2022 -0500
 commit 118cf54abb1a0f7dde36b80c4ed64539fd089867
 Date:   Thu Dec 22 11:58:39 2022 -0500
     define Common::GUID::size () const method
-
-commit 64a2d6755a597265c85b29c0baa58cd8fbf1f0d1
-Date:   Thu Dec 22 13:03:52 2022 -0500
-    make format-code; and a few small cleanups/tightening of UTFConvert code to amke easier to workaround issues on xcode 14 compiler
 
 commit 1428645b4c2551c019a8e4a192b37648906dd3c3
     https://stroika.atlassian.net/browse/STK-965 added String::c_str (Memory::StackBuffer<wchar_t>* useBuf) const and started experimentally using
@@ -747,9 +715,6 @@ commit bcd6c052a5ac34622e66e06239795da391943f50
 Date:   Sat Jan 7 14:14:35 2023 -0500
     Major milestone - basically finsihed but polish - on https://stroika.atlassian.net/browse/STK-534, https://stroika.atlassian.net/browse/STK-684, and https://stroika.atlassian.net/browse/STK-965: no longer assume sizeof(Character) == sizeof (wchar_t), and now can have reps of strings of differnet backend/internal sizes; must review/tweak performance, but probably not bad right now, and still alot more polish relating to this needed
 
-commit da342907d6d31c3874ff3b5d45912766984744cd
-Date:   Sat Jan 7 14:51:22 2023 -0500
-
 commit a128815233aa47173dd9eee40d96f65549e5ae3d
 Date:   Sat Jan 7 15:31:21 2023 -0500
     document https://stroika.atlassian.net/browse/STK-969 issue
@@ -757,12 +722,6 @@ Date:   Sat Jan 7 15:31:21 2023 -0500
 commit 128cd345b632a70a3160e49493b5834355736205
 Date:   Sat Jan 7 15:35:19 2023 -0500
     Address (with static_assert) bug I ran into in StreamReader due to InlineBufferElementType_ hack for Character object - hopefully adequite to prevent in future)
-
-commit 04361d2a321f9690a03ae1e0443c65cb5345643d
-Date:   Sat Jan 7 16:19:33 2023 -0500
-
-commit 73badde6c89f9f57a694cf1091b4f8806e771be6
-Date:   Sat Jan 7 17:16:55 2023 -0500
 
 commit dfd61ea4c1ee254e54e80c120b396cdeb65acf39
 Date:   Sun Jan 8 10:38:42 2023 -0500
@@ -1104,16 +1063,6 @@ commit 5c9de10869f42bb6cc2f9707197dd30a246b0536
 Date:   Thu Jan 26 14:52:10 2023 -0500
     cleanup StringBuilder.inl (simpler push_back code now performs OK for char32_t case)
 
-commit dce274b4a577ca510fc77f96653893fb1c62aa64
-Date:   Thu Jan 26 14:55:14 2023 -0500
-   
-
-commit 292981e4a536def2e1f3d980ca390a273fa312c8
-Date:   Thu Jan 26 19:12:48 2023 -0500
-   
-commit e3b5371a3982839063a53ed55deb5182c604ff4b
-Date:   Fri Jan 27 08:24:02 2023 -0500
-   
 commit d91ba0f18b02a0761b45bb7137cdd0a056dd1c17
 Date:   Fri Jan 27 09:27:55 2023 -0500
     fixed bad regression test Test_05_ParseRegressionTest_3_ - badly formatted input
@@ -1157,13 +1106,6 @@ Date:   Sun Jan 29 23:19:24 2023 -0500
 commit c337eea3bebdedfa4bb35a16b0fff81f3532fd44
 Date:   Mon Jan 30 10:04:43 2023 -0500
     Minor tweaks to  VariantValue performance (final and mk_ instead of VariantValue CTOR
-
-commit d573396ca6454de478f21940466d3dd760513c3a
-Date:   Mon Jan 30 22:41:03 2023 -0500
-    
-
-commit fa0d128616e495835d026a0e80c8bef97da56f39
-Date:   Tue Jan 31 13:29:57 2023 -0500
 
 commit 8ca729a96067060728d41f9042dda4e62b9bc298
 Date:   Wed Feb 1 09:17:34 2023 -0500
@@ -1252,7 +1194,6 @@ Date:   Sat Feb 4 17:37:12 2023 -0500
 commit 0094f983b4698f64958f844d94b6693e9d5ea060
 Date:   Sat Feb 4 21:10:22 2023 -0500
     Iterator no longer inherites from IteratorBase: deprecated
-
 
 commit e0ee0d9a4ed691011a00bec6fd12054c635810fa
 Date:   Sun Feb 5 09:32:11 2023 -0500
@@ -2309,21 +2250,9 @@ commit 1fe51528f829970de5e3809c2a0c49fde967f593
 Date:   Thu Jun 22 21:27:23 2023 -0400
     https://stroika.atlassian.net/browse/STK-743: added Containers::Adapters::IAddableTo and used teh concept in ObjectVariantMapper
 
-commit 20603cd788cb476d22987306d47250e9d08a9a62
-Date:   Fri Jun 23 09:45:23 2023 -0400
-    cleanups to Compare.h- deprecated IsPotentiallyComparerRelation
-
-commit 04c31b00b32d806b7e2ffd61f459e88509d89433
-Date:   Fri Jun 23 09:46:21 2023 -0400
-    cleanups to Compare.h- deprecated IsPotentiallyComparerRelation
-
 commit af7bbc61e3d4cbccee478b15981691270ee355a6
 Date:   Mon Jun 26 08:47:38 2023 -0400
     StringWithCStr_ fixed to use IUNICODECanUnambiguouslyConvertFrom instead of IUnicodeCodePointOrPlainChar and use ASCII/LATIN1 for sharedptr reps depending on keepspandata returned on c_str() wrapper
-
-commit a5794461031ee1db64f7c0ad4e6786e740e1e61f
-Date:   Mon Jun 26 09:01:26 2023 -0400
-    Comments, and tiny cleanups to string code, and lose unused BufferedString_
 
 commit 832c50c936ea9aa97ffa75ca939a7131a84837ae
 Date:   Mon Jun 26 09:45:58 2023 -0400
