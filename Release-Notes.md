@@ -39,7 +39,12 @@ especially those they need to be aware of when upgrading.
 
   - Foundation
     - Cache
-      -  TimedCache (and SynchronizedTimedCache) use Time::Duration directly (no longer support overload taking DUrationSecondsType); should be mostly transparent/backward compatable, except for C++ 2 conversions on construction issue may cause some code to not build without explicit specificaiton (_duration) that something is a duration arg to TimedCache
+      - TimedCache
+        - fixed small CTOR bug iwth SynchronizedTimedCache
+        - fix another regresion with SynchronizedTimedCache copy CTOR
+        - Added regtest and used to fix bugs with TimedCache
+        - antoher regtest to fix another regrssion with TimedCache
+        -  TimedCache (and SynchronizedTimedCache) use Time::Duration directly (no longer support overload taking DUrationSecondsType); should be mostly transparent/backward compatable, except for C++ 2 conversions on construction issue may cause some code to not build without explicit specificaiton (_duration) that something is a duration arg to TimedCache
       - MANY not entirely backward compatible changes to Cache::TimedCache. MOSTLY, this was LOSING the template parameter TRACK_READ_ACCESS from DefaultTraits, and replacing it with LookupMarksDataAsRefreshed::eTreatFoundThroughLookupAsRefreshed being used rarely in Lookup and LookupValue calls as appropriate. This allowed making Lookup() methods const (thread implications). ALSO - use the nomenclature fresheness throughout TimedCache API, so GetTimeout deprecated, and now GetMinimumAllowedFreshness () (similarly for SetTimeout). DoBookkeeping () DEPRECATED (renamed to) PurgeSpoiledData; and Lookup() no longer calls 'clearold' - but really not needed since Add does now(depending on PurgeSpoiledDataFlagType flag to Add) so not that useful. For most use cases, no changes should be needed to calling code. NOTE STILL NOT YET IMPLEMETNED these changes in SynchronizedTimedCache (next)
       - progress on SyncrhonizedTimedCache cleanups - and TimedCache cleanups from previous checkin
       - GetElements() support in TimedCache, and use that in SyncrhonizedTimedCache copy constructor
@@ -76,8 +81,11 @@ especially those they need to be aware of when upgrading.
       - CodeCvt
         - new CodeCvt<> template to replace use of std::codecvt, and integrate with new UTFConverter.
         - moved stome stuff from TextConvert to CodeCvt template - more of a swiss-army-knife
+      - CString
+        - cleanup Characters::CString:Length to use template requires instead of a bunch of specializations - much better!
       - String
         - refactored String::Concatenate (and generalized) - and made a few String methods like empty () etc noexcept
+        - new String API for PeekData/GetData (allowing return of spans of different code-point types)
         - a few minor String fixes, including refactoring String::Copy so much more general/span friendly
         - String docs, cosmetic, and one or two noexcept fixes
         - completes first draft of changes to String public APIs (maybe all but deprecating mutability)
@@ -86,6 +94,7 @@ especially those they need to be aware of when upgrading.
         - deprecated String_Constant and replaced wtih String::FromStringConstant static method (like String::FromASCII); and now migrated ALL reps so hidden inside String.cpp file
         - fixed bug / regression in String_Constant/String_ExternalMemoryOwnership_ApplicationLifetime
         - refactoring of the string reps
+        - deprecated one overload (static) of String::AsASCIIQuietly - and have it delegate to new Character::AsASCIIQuietly
         - refactoring  of String::IRep code - in preps for https://stroika.atlassian.net/browse/STK-684 string rep changes
         - cleanups for https://stroika.atlassian.net/browse/STK-965 String::c_str() changes
         - https://stroika.atlassian.net/browse/STK-965 and https://stroika.atlassian.net/browse/STK-684: **incompatible changes** but mostly minor - lose String::data method (never used); lose support for String::As<const wchar_t*> () and String::As<const Character*> () - harder to tell but apparently never used; and added more utfxstring overloads for As() and cleaned up remaining c_str() usage
@@ -113,7 +122,10 @@ especially those they need to be aware of when upgrading.
         - deprecated string {from/to} - use span instead - and update code to avoid deprecated calls
         - Refactored String::FromUTF8() and deprecated /2 overload (use span instead)
         - refactor String::FromSDKString
+        - fix recent checkins for String::PeekData (stricter compiler)
+        - progress revising comments on String class; String::AsUTF32/AsUTF16 fixes for wstring; and continue migrating code from String::IRep to StringRepHelper_
         - String::FromNarrowString/FromNarrowSDKString refactored/deprecate /2 overload
+        - use Memory::eUninitialized on a bunch of StackBuffer construction calls as performance tweak - forgotten - as part of String code mostly
         - rewrite String::EqualsComparer and  String::ThreeWayComparer using concepts to greatly simplfiy (havent profiled yet)
         - String code: fixed #if qDebug missing; tmphack fix to SubString_() so it no longer depends on c_str_peek returning non-null
         - forced c_str_peek for buffered string to return nullptr; and use new impl of c_str () that auto-patches with wrapper that returns non-null as needed
@@ -221,6 +233,8 @@ especially those they need to be aware of when upgrading.
         - qCompilerAndStdLib_spanOfContainer_Buggy
         - qCompilerAndStdLib_stdlib_compare_three_way_missing_Buggy (trying to address quirkly lib++ support for three way compare)
         - qCompilerAndStdLib_DefaultMemberInitializerNeededEnclosingForDefaultFunArg_Buggy
+        - qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
+        - qCompilerAndStdLib_clangWithLibStdCPPStringConstexpr_Buggy
       - Support compiler  _MSC_VER_2k22_17Pt6_ bug define support
       - new _Stroika_Foundation_STRINGIFY_ macro
     - Containers
@@ -289,6 +303,7 @@ especially those they need to be aware of when upgrading.
           - re-engineer BLOB class to be more based on span (rather than pair<const byte*,const byte*> - not fully backward compatible, but mostly just new apis supported (span)
           - Added BLOB::data () method
           - BLOB::As<string>/0/1 supported
+          - fixed (for now at least) BLOB::CTOR (container)
       - SmallStackBuffer, StackBuffer, InlineBuffer
         - Docs on StackBuffer, and adjusted default sizes for Windows, to avoid _chkstk calls, which helps performance (significant on boost_json-vv-parser: .\52\JSONTestData\large-dict.json test)
         - Refactored/Renamed SmallStackBuffer to InlineBuffer and StackBuffer
@@ -307,8 +322,12 @@ especially those they need to be aware of when upgrading.
         - added span CTOR overload to StackBuffer and InlineBuffer
         - new InlineBuffer/StackBuffer ShrinkTo methods, and operator=(SPAN) support
         - InlineBuffer/StackBuffer push_back overloads (span)
+        - StackBuffer resize (BOTH cases now) use Foundation::Containers::Support::ReserveTweaks::GetScaledUpCapacity
+        - define config constant kStackBuffer_TargetInlineByteBufferSize to make better choices in other parts of the code
       - std::span
         <br/> use std::span in a thourough way throughout Stroika
+      - regtest for GetScaledUpCapacity () behavior
+      - Memory::ValueOf constexpr
     - IO
       - Network
         - Added a couple more Execution::DeclareActivity in Networking code, so exceptions more obvious what failed; and added linux IPV6_MULTICAST_HOPS workaround to issue https://stroika.atlassian.net/browse/STK-578
@@ -427,8 +446,6 @@ especially those they need to be aware of when upgrading.
 
 - Added Profile configuration for windows, since handy for doing profiling (not auto-built - just defined so can be easily used)
 
-
-
 ==
 
 
@@ -441,27 +458,9 @@ commit 634d9f45416a675f4f9b360c29a933a01ef15cb6
 Date:   Mon Dec 26 20:13:59 2022 -0500
     lose some support for clang++ versions prior to 10 - since dont work with Stroika v3 - and change default std c++ lib for using clang (prior to clang++14) to libstdc++ since libc++ doesnt work prior to 14 (didnt try 13)
 
-commit 2f395fbb49b4e9389ece4876e337434dff519423
-Date:   Tue Dec 27 11:47:51 2022 -0500
-    deprecated one overload (static) of String::AsASCIIQuietly - and have it delegate to new Character::AsASCIIQuietly
-
-Date:   Tue Dec 27 14:56:06 2022 -0500
-    Added regtest that Math::NearlyEquals (NAN,NAN)
-
 commit c5b6c360bd8fd53dfe2bba75527a62adbda9e351
 Date:   Mon Dec 26 20:13:59 2022 -0500
     lose some support for clang++ versions prior to 10 - since dont work with Stroika v3 - and change default std c++ lib for using clang (prior to clang++14) to libstdc++ since libc++ doesnt work prior to 14 (didnt try 13)
-
-commit d71dac2e7c13be08a72a1386145148e2e737c9a5
-Date:   Wed Dec 28 17:50:43 2022 -05000
-
-commit d97aa8ead8ae3bf94f2f585ff20ac98df038b4a2
-Date:   Thu Dec 29 09:17:10 2022 -0500
-    StackBuffer resize (BOTH cases now) use Foundation::Containers::Support::ReserveTweaks::GetScaledUpCapacity
-
-commit 8f6768186fd354f3532d855ece18bf72bd13d1fa
-Date:   Thu Dec 29 09:40:20 2022 -0500
-    regtest for GetScaledUpCapacity () behavior
 
 commit 813587847662651e17ee5c03dbbc62a00dd34918
 Date:   Thu Dec 29 11:38:01 2022 -0500
@@ -472,47 +471,13 @@ Date:   Thu Dec 29 14:57:17 2022 -0500
 
     fixed small regression in ToStringOptions::ToStringOptions
 
-    draft new String API for PeekData/GetData (allowing return of spans of differnt code-point types)
-
-commit 942006bb1a05624b8d244d43badc3acda78e7db3
-Date:   Fri Dec 30 09:14:51 2022 -0500
-    tweak make configurations for clang
-
 commit dd4c40945717d2e9a8232a9a3464d55e3d77d919
 Date:   Fri Dec 30 09:28:08 2022 -0500
     cannot cast iterators for spans so cast underlying pointers
 
-commit 8ef44399aef3ace7c91de9d077c4fc5e2798edb4
-Date:   Fri Dec 30 16:29:32 2022 -0500
-    fix recent checkins for String::PeekData (stricter compiler)
-
-commit 75a1f98208abef4b79d990c2579d9b2483fc6707
-Date:   Sat Dec 31 15:26:58 2022 -0500
-    define config constant kStackBuffer_TargetInlineByteBufferSize to make better choices in other parts of the code
-
 commit 7ee659c694d7cf07a0f81e03301209670181d3a9
 Date:   Sat Dec 31 19:07:40 2022 -0500
     digester ctor constexpr
-
-commit 3e6eefc68efbfab72b4d6e9868a28a66ac25b421
-Date:   Sun Jan 1 18:25:45 2023 -0500
-    cleanup Characters::CString:Length to use template requires instead of a bunch of specializations - much better!
-
-commit a28628819fe664ea7ea189fe8ef1abc6aba6b132
-Date:   Mon Jan 2 09:52:45 2023 -0500
-    cosmetic and lose Memory::Private::VC_BWA_std_copy utiliuty
-
-commit 7ad6d1cfe829adba6b05864f6c0c9f33df380c7e
-Date:   Mon Jan 2 11:21:19 2023 -0500
-    lose some legacy Memory::Private::VC_BWA_std_copy referenes i missed; add default value and a few other cleanups to some old Led code
-
-commit 9ff7ef1f19ee6e50ac6abe5568dd67f6968db893
-Date:   Mon Jan 2 18:05:42 2023 -0500
-    qCompilerAndStdLib_template_requresDefNeededonSpecializations_Buggy workaround
-
-commit 356e003d3082777e64cb668c224b5461d297ff01
-Date:   Mon Jan 2 23:02:40 2023 -0500
-    fixed (for now at least) BLOB::CTOR (container)
 
 commit e2fb0a6125865fee465de9047c2cb0b05674e6c2
 Date:   Tue Jan 3 10:32:32 2023 -0500
@@ -521,10 +486,6 @@ Date:   Tue Jan 3 10:32:32 2023 -0500
 commit 239f4f5749f7aef15519762a2bdce3def9d16f27
 Date:   Wed Jan 4 10:32:02 2023 -0500
     Compare_CS_() cannot use memcmp() - at least not portably - due to differnt byte orderings, but can still rewrite this to be faster
-
-commit 3f043507de7a5262bc600cd03040a27df51656d7
-Date:   Wed Jan 4 14:41:13 2023 -0500
-    progress revising comments on String class; String::AsUTF32/AsUTF16 fixes for wstring; and continue migrating code from String::IRep to StringRepHelper_
 
 commit fb71fe013803377ef3f214d5e6046f45d0b9b76a
 Date:   Wed Jan 4 20:01:07 2023 -0500
@@ -546,25 +507,13 @@ commit 0051e3891317fa78f9e301c087a55d595c9468c6
 Date:   Tue Jan 10 08:39:37 2023 -0500
     in URI class - use requires instead of unconstrained templates for polymorphic getter functions
 
-commit 672760951628fb2dc653d8b3ba94fb84c4aa917f
-Date:   Tue Jan 10 09:37:42 2023 -0500
-    use Memory::eUninitialized on a bunch of StackBuffer construction calls as performance tweak - forgotten - as part of String code mostly
-
 commit e164c84e5f64c133f824f968f40dba8dafa3b02a
 Date:   Tue Jan 10 12:26:58 2023 -0500
     **not 100% backward compatible** - but changed most constexpr string constants throughout stroika from wstring_view to string_view - since they are all ascii. As long as used through String{} API, this will be 100% transparent. But if used directly, it may not compile (but hopefully in obvious ways)
 
-commit ae724bfc0a35a413a4405c199cba2cc82faa37c6
-Date:   Tue Jan 10 21:13:55 2023 -0500
-    hopefully qCompilerAndStdLib_clangWithLibStdCPPStringConstexpr_Buggy workaround
-
 commit 2e9dbdc43fa2483f352402a86aca4238df7ccb13
 Date:   Tue Jan 10 21:19:14 2023 -0500
     Somewhat dangerous (but good time for such risks) change to Memory::ValueOf - returning const& now. Documented in declaration why I believe this is safe/appropriate (what optional does)
-
-commit 1ef0efbc21345fac63b6626df042ced304a2e6af
-Date:   Tue Jan 10 21:20:18 2023 -0500
-    Memory::ValueOf constexpr
 
 commit 0ee368bc930d595689c3d2b400136f9a3aa887c7
 Date:   Wed Jan 11 15:17:38 2023 -0500
@@ -585,22 +534,6 @@ Date:   Thu Jan 12 08:12:22 2023 -0500
 commit e4586ccf2902999c39f01c8d61e83ed862c809db
 Date:   Thu Jan 12 08:48:23 2023 -0500
     Little progress on Mapping_stdhashmap
-
-commit d711d85515f0b4cb0251793ef76167b59ac51902
-Date:   Thu Jan 12 09:24:36 2023 -0500
-    updated bug define for qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
-
-commit fe48a6cc6ff00d91437762a5c0a7500893feb028
-Date:   Thu Jan 12 09:34:07 2023 -0500
-    fixed bug with qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy def
-
-commit 7634b0fbbe91e0e1c8900ba0b0a5fe263ce4cdf9
-Date:   Thu Jan 12 09:34:24 2023 -0500
-    avoid bug warning on bug workaround define qCompilerAndStdLib_clangWithLibStdCPPStringConstexpr_Buggy
-
-commit 9039e2f38e624e1751526f2069f7db2121144652
-Date:   Thu Jan 12 09:47:28 2023 -0500
-    improved qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy bug workaround
 
 commit d81428cf4a5c69caeeb4a0426299ba6abdc88814
 Date:   Thu Jan 12 10:02:58 2023 -0500
@@ -653,10 +586,6 @@ Date:   Fri Jan 13 09:53:34 2023 -0500
 commit 0388cb4914ef829007de520f0b5e59f0fe5ab9bc
 Date:   Sat Jan 14 11:58:52 2023 -0500
     comments and use remove_cvref_t intead of remove_cv_t in one place (need todo more)
-
-commit 936932fdc3cb64aeac78635cd19912520bf11490
-Date:   Sat Jan 14 22:30:47 2023 -0500
-    improved qCompilerAndStdLib_clangWithLibStdCPPStringConstexpr_Buggy bug workaround
 
 commit e292e3013f002342eb4b703d04fc0785eb9fc14b
 Date:   Sat Jan 14 22:32:21 2023 -0500
@@ -881,7 +810,6 @@ Date:   Mon Feb 6 14:18:51 2023 -0500
 
 commit 0642a2fb630edc81a24ae7f813659647493f2f55
 Date:   Mon Feb 6 15:36:46 2023 -0500
-    fixed small CTOR bug iwth SynchronizedTimedCache
 
 commit 59f5cf6d03cf278190a5e91c14b6ecc47c5bebd0
 Date:   Mon Feb 6 15:37:25 2023 -0500
@@ -894,18 +822,6 @@ Date:   Mon Feb 6 15:42:13 2023 -0500
 commit f871b0c2e9c342c3ba27b9c15719cd13cef2f6d2
 Date:   Mon Feb 6 15:44:22 2023 -0500
     reverseted change to Iterable<>::Find - now back to Execution::SequencePolicy::eDefault by default
-
-commit e940d5df78d3f31e66f84ade0536a55a5be52a89
-Date:   Mon Feb 6 15:49:49 2023 -0500
-    fix another regresion with SynchronizedTimedCache copy CTOR
-
-commit 3e1542a64874cc2fc86c3d5276c02009781b1202
-Date:   Mon Feb 6 16:08:07 2023 -0500
-    Added regtest and used to fix bugs with TimedCache
-
-commit 66ac145f07887d737de175c9f09505fd03819a38
-Date:   Mon Feb 6 16:14:03 2023 -0500
-    antoher regtest to fix another regrssion with TimedCache
 
 commit 82b73dd8904528b4760b307aa07786c0af06bd2a
 Date:   Mon Feb 6 20:05:09 2023 -0500
@@ -930,9 +846,6 @@ Date:   Wed Feb 8 22:14:10 2023 -0500
 commit 3ea2961703daa107621deed6f769d704b1adb509
 Date:   Thu Feb 9 08:28:22 2023 -0500
     enhance (still failing) parse japanese numbers test
-
-commit 2862137496c4d73e40b42d9aa37bec4de3695323
-Date:   Thu Feb 9 13:50:14 2023 -0500
 
 commit eb3f343d08d007b1506aa2888a36bbc30dbcd42a
 Date:   Thu Feb 9 23:37:34 2023 -0500
@@ -995,9 +908,6 @@ commit 73b118abdd5be3b66de216893bdfa02ad30193c7
 Date:   Sun Feb 12 19:24:24 2023 -0500
     use memory::bit_cast for macos/old clang compat
 
-commit 7a8b0a8c90ef2f2eda02afcd0901111419892d87
-Date:   Mon Feb 13 11:58:34 2023 -0500
-
 commit 9fd369cc98d007ac4d1c5868adb0bd5e68dfe252
 Date:   Mon Feb 13 14:06:18 2023 -0500
     minor tweaks to bit_cast and byteswap BWA implementations
@@ -1008,9 +918,6 @@ Date:   Mon Feb 13 14:19:28 2023 -0500
 commit e77df1eb378bb4b6ade05ac051b83884b4ac4e7f
 Date:   Tue Feb 14 08:23:37 2023 -0500
     deprecate a few TextReader overloads (InternallySynchronizedInputOutputStream directly)
-
-commit 7cfa5bc03548443c768a950b1d12ffebd2cb845b
-Date:   Tue Feb 14 08:47:54 2023 -0500
 
 commit 329e8ffd50548829367f7f139a02cdc430f043ce
 Date:   Sat Feb 18 12:27:47 2023 -0500
@@ -1158,10 +1065,6 @@ commit 95ef6f2b5484fdde8737e9d8ca2ba619cf0536ab
 Date:   Mon May 1 10:21:22 2023 -0400
     more stuff to .github/workflows/build-v3-Docker-Containers.yml to debug docker build
 
-commit 0207af552b8a4a86a38eee3ecb01591da10bd42c
-Date:   Sun May 7 11:05:29 2023 -0400
-    bug defines qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy  and qCompilerAndStdLib_requires_breaks_soemtimes_but_static_assert_ok_Buggy for vs2k building inside docker only???
-
 commit 3c41922f4bcdfbd5554c8f149df96a7d5f261335
 Date:   Mon May 8 02:05:20 2023 -0400
     cleanup github action for make containers
@@ -1273,10 +1176,6 @@ Date:   Tue May 16 20:52:28 2023 -0400
 commit eebaf77b31b3bcdb4318395194f010d185ebd980
 Date:   Tue May 16 20:53:24 2023 -0400
     a few more input_iterator conversions losting more enable_if_t usage
-
-commit e844778df377f0a2d50faedf5411c97d5fc309fa
-Date:   Tue May 16 21:19:08 2023 -0400
-    more qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy workarounds
 
 commit 88c682735025388dcb5d9769c275bea5a875074f
 Date:   Tue May 16 21:34:53 2023 -0400
@@ -1410,41 +1309,13 @@ commit ee52ade81697a87b06cb304394730a1ed994cfb3
 Date:   Sat May 20 03:38:08 2023 -0400
     switch a few more uses of enable_if_t to concepts or requires
 
-commit 5ee734ae742ab20dc6050492496ae71f43456eca
-Date:   Sun May 21 08:15:39 2023 -0400
-    qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy workarounds
-
 commit 819c2dfea9e2bf7c6aa3699d70b0738094a080b3
 Date:   Sun May 21 18:59:40 2023 -0400
     only add -Wno-unqualified-std-cast-call for clang++-14 or later
 
-commit ea1f5ea969592131df9dc7069750a3d42c1f84ca
-Date:   Mon May 22 07:26:13 2023 -0400
-    more qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy BWA
-
-commit 0646385a1f7d146429da79b41451ed5657aa9cc0
-Date:   Mon May 22 14:02:23 2023 -0400
-    more cleanups of qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy - including dont set for msvc
-
-commit 0521cae9bb256c35f448a20fdd65308d5df29973
-Date:   Mon May 22 16:57:36 2023 -0400
-    cleanup qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy tests
-
-commit bd4f322d6abb94cba42cab3d4fa12df898136ac0
-Date:   Tue May 23 05:43:44 2023 -0400
-    new qCompilerAndStdLib_RequiresIEqialsCrashesAssociation_Buggy bwa; and more qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
-
-commit 23b78e3234c2d773afd5f192ea5e6d282aa10f1c
-Date:   Tue May 23 05:52:52 2023 -0400
-    more qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy bwas
-
 commit a78ca171dbab6879f96771b6fc7cf1c92d9849da
 Date:   Tue May 23 12:51:06 2023 -0400
     maybe find better workaround for qCompilerAndStdLib_requires_breaks_soemtimes_but_static_assert_ok_Buggy
-
-commit 3dbd3b4ac101d3e06283f81b1b595511dcae1cc9
-Date:   Tue May 23 15:15:54 2023 -0400
-    better workaround of qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
 
 commit 4af0f89a0e020affd9b8d84d520c95b29f7a6431
 Date:   Tue May 23 15:53:12 2023 -0400
@@ -1489,10 +1360,6 @@ Date:   Sun May 28 14:25:52 2023 -0400
 commit 5c04da4ed621f0b7ad86b64b06a489dbd3196766
 Date:   Sun May 28 21:17:59 2023 -0400
     use new IInOrderComparer in a bunch of spots instead of deprecated IsStrictInOrderComparer
-
-commit 05db0d1f6b4d213dd230fa357805d6e12dec07cd
-Date:   Mon May 29 05:12:21 2023 -0400
-    qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy cleanups, and enable_if_t cleanups
 
 commit 72ad987395531852bcbf40bb7f7a0f33c2d6eeff
 Date:   Mon May 29 06:59:33 2023 -0400
@@ -1545,14 +1412,6 @@ Date:   Mon Jun 5 08:22:02 2023 -0400
 commit ebbc7f51e99cc98ef84a2464911609892c1b3b25
 Date:   Mon Jun 5 08:41:32 2023 -0400
     experiment using derived_from instead of is_base_of_v
-
-commit e03702e3ffb73149b21f9e4b2dd31a726e7bf3f2
-Date:   Mon Jun 5 08:42:52 2023 -0400
-    test turning offqCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy when using new concept code for Collection CTOR
-
-commit cca87a2c9d93e1777c5cc76576e88f237cc05302
-Date:   Mon Jun 5 09:20:51 2023 -0400
-    undo macos test of qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
 
 commit 6f639d4ff7d5f5f66eb4a4e3da6955ceacb7c028
 Date:   Tue Jun 6 07:30:38 2023 -0400
@@ -1703,26 +1562,6 @@ commit 7ef3e6153d46f8693bc15379ff69dda3502f200b
 Date:   Thu Jun 15 17:15:52 2023 -0400
     finished replaceing use of is_base_of_v with derived_from
 
-commit f75768e0d22730f8f5f3a6b22caf352752d44f98
-Date:   Thu Jun 15 18:02:43 2023 -0400
-    qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy cleanups and alt layout for requires declarations testing
-
-commit 2fec5eee027179d77add066d4598a042dd89cc29
-Date:   Thu Jun 15 20:59:50 2023 -0400
-    cleanup containers (1/2) qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy workaroudns
-
-commit 33d109c3d02505460fdf85645ab904ddeb4cbd83
-Date:   Fri Jun 16 10:19:31 2023 -0400
-    maybe fix regressions with qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy cleanups
-
-commit 787d6e8e8b147ee6bda404ff566578a2b7a5f4fe
-Date:   Fri Jun 16 10:20:00 2023 -0400
-    fixed and add to github worflkw matrix for clang++-15
-
-commit eb6abee0484b476ca821b78a7fbffcb092ff1bc2
-Date:   Fri Jun 16 10:41:55 2023 -0400
-    more qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy cleanups
-
 commit b20cef71e01d72579f9c48663c6d62a78968fe75
 Date:   Fri Jun 16 12:12:12 2023 -0400
     cosmetic and disable clang++15 on github actions til I debug more
@@ -1730,14 +1569,6 @@ Date:   Fri Jun 16 12:12:12 2023 -0400
 commit c114ff2d9be451607ba54973461692181572689c
 Date:   Fri Jun 16 12:42:45 2023 -0400
     lose unimplemented Concrete/Set_SparseArray cuz probably not worth doing
-
-commit 3a6162c4b188930e20dd0ec099fdec6504c16029
-Date:   Fri Jun 16 12:43:47 2023 -0400
-    fixed another qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
-
-commit 0c411a8ce9c9a64656b94f875a965d03e9700db6
-Date:   Fri Jun 16 17:16:33 2023 -0400
-    more qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy workarounds
 
 commit f855e335282fc93a0b5e9781100c49c7e7be2e02
 Date:   Sat Jun 17 10:56:12 2023 -0400
@@ -1897,10 +1728,6 @@ Date:   Thu Jul 6 09:36:24 2023 -0400
 commit e6d15abf578318036f48ecc449eda0a581c07aae
 Date:   Thu Jul 6 10:29:13 2023 -0400
     lots of small tweaks to Container factory code (untested tweaks - speculative)
-
-commit 9986d4c7c4ee2f65cbd5d82fec013b203924edaf
-Date:   Thu Jul 6 17:08:10 2023 -0400
-    better workaround for qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy for Stack template
 
 commit 7e5d60441de99328ad00f4bdffc2e575f1122e8d
 Date:   Fri Jul 7 08:07:30 2023 -0400
