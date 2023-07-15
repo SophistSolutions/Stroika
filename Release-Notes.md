@@ -13,32 +13,25 @@ especially those they need to be aware of when upgrading.
 - Documentation
   - [v3 Roadmap](https://github.com/SophistSolutions/Stroika/discussions/120)
   - [Design Overview.md](Design Overview.md)
-
-- Require C++20 or later (Lose c++17 language compatability)
-  - lose __cpp_impl_three_way_comparison checks since now assuming C++20
-  - makefile compile flags to require C++20 (not c++17), and some experimental c++23 compiler configs
-  - deprecated macros LIKELY_ATTR  and UNLIKELY_ATTR and use std names directly
-  -  marked NO_UNIQUE_ADDRESS_ATTR as DEPRECATED (unenforced) and use no_unique_address directly from now on since in C++20/assuming C++20
-  - require/check for __cpp_lib_chrono < 201907 C++20 chrono lib support
-  - Lose Support for systems
-    - Compiler
-      - g++ 11 or later required
-      - Visual Studio.Net - loose support for vs2k19 - require vs2k22 or later
-      - clang++ 13 or later (14.3 or later on macos/xcode)
-    - Platform
-      - Ubuntu 18.04
-        <br/> no longer support Ubuntu 18.04; lose support for g++ versions before g++-11 (due to lack of chrono::month, etc)
-      - Centos (no easy C++ 20 compilers and abandoned by IBM/redhat)
-- Github actions/workflows
-  - renamed github action to build-N-test
-
-- It appears we need at least clang++-10 for adequate C++20 support for Stroika (compare stuff spaceship not working enuf before)
-- appears g++ 8, 9 not going to work with Stroika v3 (due to lack of spaceship op support)
-
-- require libc++ 14 or later
-
 - Stroika Library
   - General
+    - Require C++20 or later (Lose c++17 language compatability)
+      - lose __cpp_impl_three_way_comparison checks since now assuming C++20
+      - makefile compile flags to require C++20 (not c++17), and some experimental c++23 compiler configs
+      - deprecated macros LIKELY_ATTR  and UNLIKELY_ATTR and use std names directly
+      -  marked NO_UNIQUE_ADDRESS_ATTR as DEPRECATED (unenforced) and use no_unique_address directly from now on since in C++20/assuming C++20
+      - require/check for __cpp_lib_chrono < 201907 C++20 chrono lib support
+      - Lose Support for systems
+        - Compiler
+          - g++ 11 or later required
+          - Visual Studio.Net - require vs2k22 or later
+          - clang++ 13 or later (14.3 or later on macos/xcode)
+          - MacOS XCode 14.3 or later
+          - if using libc++, require libc++ 14 or later
+        - Platform
+          - Ubuntu 18.04
+            <br/> no longer support Ubuntu 18.04; lose support for g++ versions before g++-11 (due to lack of chrono::month, etc)
+          - Centos (no easy C++ 20 compilers and abandoned by IBM/redhat)
     - Concepts Usage
     - use if constexpr instead of #if qDebug in a few places
       <br/>e.g. around qStroika_Foundation_Exection_Throw_TraceThrowpoint
@@ -80,6 +73,9 @@ especially those they need to be aware of when upgrading.
         - loosed requires on Character::IsASCII (and renmaed from IsAscii);
         - tighten Character::As<> template so instead of just two specializations, uses requires so compiler not linker warn about bad arg types
         - Added Character::Compare () overload for span
+      - CodeCvt
+        - new CodeCvt<> template to replace use of std::codecvt, and integrate with new UTFConverter.
+        - moved stome stuff from TextConvert to CodeCvt template - more of a swiss-army-knife
       - String
         - refactored String::Concatenate (and generalized) - and made a few String methods like empty () etc noexcept
         - a few minor String fixes, including refactoring String::Copy so much more general/span friendly
@@ -171,12 +167,28 @@ especially those they need to be aware of when upgrading.
         - Abstracts various algorithms, like codecvt, portable UTF converter code, and third party library code converters.
           KEY concept is always UNICODE - always UTFX to UTFY.
         - Options::Implementation::eBoost_Locale (boost locale support for utf_to_utf)
-        - qPlatform_Windows impl (now default on windows cuz seems fastest),
+        - qPlatform_Windows impl (now default on windows cuz seems fastest)
+      - ToFloat/String2Int
+        - ToFloat and String2Int overloads taking span<> (and more overloads to begin to make up for ambiguity - come back later and rewrite all this using requires
+        - refactoring of ToFloat () using span (not complete but better)
+        - progress rewriting ToFloat code to be more C++20-ish/spanish etc
+        - fixed small bug with ToFloat logic - peek at s not null terminated
+        - finally a relatively simple way to reproduce https://stroika.atlassian.net/browse/STK-966 - clang specific ToFloat bug
+        - fixed https://stroika.atlassian.net/browse/STK-966 - ToFloat failing - due to strtod requires NUL-termination, and new code didn't generally require/pass in NUL-terminated strings (did often enough to be confusing)
+        - big simplification to String2Int code using concepts (hopefully still correct)
+        - String2Int - method optimizes more span cases; and use Character::AsASCIIQuietly in place of deprecated String::AsASCIIQuietly
     - Common
       - Common::Comparison
         - lose Common::strong_ordering and Common::kLess, kEquals, kGreater (**not backwards compatible**)
         - support directly/depend upon std c++ 20 three way compare/spaceship operator (no more conditional support for it not existing).
         - Deprecated  Common::ThreeWayComparer and switched to using std::compare_three_way instead
+      - GUID
+        - added missing value_type so  static_assert (IIterable<GUID>); passes
+        - define Common::GUID::size () const method
+        - modernized GUID class (As template with requires, and noexcept and other cleanups)
+        - added data() member to GUID so can be treated like a (constnat) span of bytes
+        - GUID noexcept usage, and made it immutable (and fixed one dependency on its mutability)
+        - cleanups to GUID::As() template, due to incompatability issues iwth clang++-15
     - Configuration
         - Lose obsolete bug defines for vs2k17
           ~~~
@@ -274,6 +286,7 @@ especially those they need to be aware of when upgrading.
       - BlockAllocation 
         - Minor tweaks to Memory/BlockAllocator (clarity)
       - BLOB
+          - re-engineer BLOB class to be more based on span (rather than pair<const byte*,const byte*> - not fully backward compatible, but mostly just new apis supported (span)
           - Added BLOB::data () method
           - BLOB::As<string>/0/1 supported
       - SmallStackBuffer, StackBuffer, InlineBuffer
@@ -349,6 +362,8 @@ especially those they need to be aware of when upgrading.
     - several fixes and simplifications to SSDPServer sample and framework code (not fully backward compatible): set location.scheme in sample; changed API for SearchResponder and SearchResponder so use CTOR to specify arguments, and lose Run method (was pointless use of thread); fixed bug in combining urls in BasicServer so now should advertise / notify properly by default (at least this sample works well with stroika ssdpclient)
     - redo SSDP periodicNotifier class to use IntervalTimer (imposes new minor requirement on use - instantiating intervaltimermgr), and other related code simpliciations/cleanups)
     - fix/cleanup related to https://stroika.atlassian.net/browse/STK-963 - which would ahve fixed it - but had fixed something else first - now use Execution::WaitForIOReady in Server/SearchResponder so avoids blocking read until socket read (really this cahnge fixes another bug wihc is we were only waiting on one socket until stuff came in and then on the other); so searchrespnder should work much better now
+  - SystemPerformance
+    - define qSupport_SystemPerformance_Instruments_CPU_LoadAverage so also works on MacOS
   - WebServer
     - Added CORSOptions::ToString () const
 - ThirdPartyComponents
@@ -394,13 +409,13 @@ especially those they need to be aware of when upgrading.
     - Docker v3 in image names for v3 containers
     - Windows
       -  vis studio docker container VS_17_6_4
+- Github actions/workflows
+  - renamed github action to build-N-test
+
+
+
+
 --UNORGNAINZIED
-- cleanup vscode tasks.json (move CHERE_INVOKING stuff under windows section cuz for msys workaround, and clenaed up panel usage and a bit more
-
-- lose --compiler-driver g++10 in default configurations now that we do this in the configure script, and lost some if version=18.04 ubuntu checkis for default configurations in Makefile
-- c++20 not 17 on github actions
-
-- vs2k 17.1.6 and 16.11.13
 - support visual studio compiler _MSC_VER_2k22_17Pt2_ (2 new bugs and nothing fixed)
 - Updated vs2k versions to VS_17_2_0 and VS_16_11_14 for docker files
 - bug defines and workarounds for _MSC_VER_2k22_17Pt4_ (and a few cosmetic cleanups)
@@ -413,52 +428,11 @@ especially those they need to be aware of when upgrading.
 - Added Profile configuration for windows, since handy for doing profiling (not auto-built - just defined so can be easily used)
 
 
-==
-CodeCvt
-- new CodeCvt<> template to replace use of std::codecvt, and integrate with new UTFConverter.
 
+==
 
 
 #if 0
-
-commit b5a427a0a592fbf9853b573467368da7d801d793
-Date:   Wed Dec 21 09:24:41 2022 -0500
-    remove explicit include of ../Execution/Throw.h in Memory/StackBuffer.inl to workaround deadly include embrace
-
-commit 60e01093f674d066bd5d5985a79180ba8961f929
-Date:   Wed Dec 21 10:56:21 2022 -0500
-    SafeBegin/SafeEnd() utilities in Memory to deal with fact that you cannot easily get the address of the start of a span (in case its empty) and similar issue with end of span as address
-
-commit 48585f28c2634e154226a716b59a8549af84254f
-Date:   Wed Dec 21 10:57:17 2022 -0500
-    re-engineer BLOB class to be more based on span (rather than pair<const byte*,const byte*> - not fully backward compatible, but mostly just new apis supported (span)
-
-commit 5b6e654e5c6df8e490372786b6a772de9e4b9f67
-Date:   Wed Dec 21 11:56:19 2022 -0500
-    added missing value_type so  static_assert (Configuration::IsIterable_v<GUID>); passes
-
-commit 57bb12d368b2841d81681f65a487ce2cff468c49
-Date:   Thu Dec 22 11:58:15 2022 -0500
-    define qSupport_SystemPerformance_Instruments_CPU_LoadAverage so also works on MacOS
-
-commit 118cf54abb1a0f7dde36b80c4ed64539fd089867
-Date:   Thu Dec 22 11:58:39 2022 -0500
-    define Common::GUID::size () const method
-
-commit e03adb06a4159533a7ef5947abcdc32befeff548
-Date:   Thu Dec 22 17:10:51 2022 -0500
-    Lose support for qCompilerAndStdLib_conditionvariable_waitfor_nounlock_Buggy cuz no longer support such old LIPCPPVERSION and no other refernces to this bug; Same for qCompilerAndStdLib_strong_ordering_equals_Buggy
-
-commit 909abb3126182ad439fd5f123b8c82c0749f11db
-Date:   Thu Dec 22 17:11:33 2022 -0500
-    Lose support for qCompilerAndStdLib_conditionvariable_waitfor_nounlock_Buggy cuz no longer support such old LIPCPPVERSION and no other refernces to this bug; Same for qCompilerAndStdLib_strong_ordering_equals_Buggy
-
-commit 736398915d134b390e37172f980de90fd336e90c
-Date:   Mon Dec 26 11:43:33 2022 -0500
-    ToFloat and String2Int overloads taking span<> (and more overloads to begin to make up for ambiguity - come back later and rewrite all this using requires
-
-commit 1ef780e5e45bed056ffbe780a70d63b32e2cc2fb
-
 commit b0e9d0815f7cfaea5beaf086b342d6cfdf7596d0
 Date:   Mon Dec 26 11:47:37 2022 -0500
     OutputStream (start of) span support
@@ -467,14 +441,6 @@ commit 634d9f45416a675f4f9b360c29a933a01ef15cb6
 Date:   Mon Dec 26 20:13:59 2022 -0500
     lose some support for clang++ versions prior to 10 - since dont work with Stroika v3 - and change default std c++ lib for using clang (prior to clang++14) to libstdc++ since libc++ doesnt work prior to 14 (didnt try 13)
 
-commit 55be3d0a95af53be85fb40082be7d72189c2554d
-Date:   Mon Dec 26 20:56:21 2022 -0500
-    big simplification to String2Int code using concepts (hopefully still correct)
-
-commit c1c1cf19d8e82946649513e3c1a3a64b696daa51
-Date:   Tue Dec 27 11:47:12 2022 -0500
-    String2Int - method optimizes more span cases; and use Character::AsASCIIQuietly in place of deprecated String::AsASCIIQuietly
-
 commit 2f395fbb49b4e9389ece4876e337434dff519423
 Date:   Tue Dec 27 11:47:51 2022 -0500
     deprecated one overload (static) of String::AsASCIIQuietly - and have it delegate to new Character::AsASCIIQuietly
@@ -482,28 +448,12 @@ Date:   Tue Dec 27 11:47:51 2022 -0500
 Date:   Tue Dec 27 14:56:06 2022 -0500
     Added regtest that Math::NearlyEquals (NAN,NAN)
 
-commit 3057c05e5dbbafffa1de206728b15798c68453f0
-Date:   Tue Dec 27 15:41:14 2022 -0500
-    refactoring of ToFloat () using span (not complete but better)
-
-commit c3081a82de4cc8e8b5c45bdfbee2f6c923f0939a
-Date:   Tue Dec 27 19:39:46 2022 -0500
-    progress rewriting ToFloat code to be more C++20-ish/spanish etc
-
 commit c5b6c360bd8fd53dfe2bba75527a62adbda9e351
 Date:   Mon Dec 26 20:13:59 2022 -0500
     lose some support for clang++ versions prior to 10 - since dont work with Stroika v3 - and change default std c++ lib for using clang (prior to clang++14) to libstdc++ since libc++ doesnt work prior to 14 (didnt try 13)
 
-commit b7ca9dba77eb50b007a433374579964277da5202
-Date:   Wed Dec 28 17:19:31 2022 -0500
-    fixed small bug with ToFloat logic - peek at s not null terminated
-
 commit d71dac2e7c13be08a72a1386145148e2e737c9a5
-Date:   Wed Dec 28 17:50:43 2022 -0500
-    finally a relatively simple way to reproduce https://stroika.atlassian.net/browse/STK-966 - clang specific ToFloat bug
-
-Date:   Thu Dec 29 09:14:44 2022 -0500
-    fixed https://stroika.atlassian.net/browse/STK-966 - ToFloat failing - due to strtod requires NUL-termination, and new code didn't generally require/pass in NUL-terminated strings (did often enough to be confusing)
+Date:   Wed Dec 28 17:50:43 2022 -05000
 
 commit d97aa8ead8ae3bf94f2f585ff20ac98df038b4a2
 Date:   Thu Dec 29 09:17:10 2022 -0500
@@ -556,16 +506,6 @@ commit 7ad6d1cfe829adba6b05864f6c0c9f33df380c7e
 Date:   Mon Jan 2 11:21:19 2023 -0500
     lose some legacy Memory::Private::VC_BWA_std_copy referenes i missed; add default value and a few other cleanups to some old Led code
 
-commit 21ccb0637ec82e675167a3016fdba98720d68db1
-Date:   Mon Jan 2 17:23:26 2023 -0500
-    GUID noexcept usage, and made it immutable (and fixed one dependency on its mutability)
-
-    modernized GUID class (As template with requires, and noexcept and other cleanups
-
-commit 1bb01568bb55d8d8a80d5149419ec031093169ef
-Date:   Mon Jan 2 17:56:00 2023 -0500
-    added data() member to GUID so can be treated like a (constnat) span of bytes
-
 commit 9ff7ef1f19ee6e50ac6abe5568dd67f6968db893
 Date:   Mon Jan 2 18:05:42 2023 -0500
     qCompilerAndStdLib_template_requresDefNeededonSpecializations_Buggy workaround
@@ -610,15 +550,9 @@ commit 672760951628fb2dc653d8b3ba94fb84c4aa917f
 Date:   Tue Jan 10 09:37:42 2023 -0500
     use Memory::eUninitialized on a bunch of StackBuffer construction calls as performance tweak - forgotten - as part of String code mostly
 
-commit 54da67a73abfb24f2aa11f77c1b7396d9d41c405
-Date:   Tue Jan 10 10:54:52 2023 -0500
-
 commit e164c84e5f64c133f824f968f40dba8dafa3b02a
 Date:   Tue Jan 10 12:26:58 2023 -0500
     **not 100% backward compatible** - but changed most constexpr string constants throughout stroika from wstring_view to string_view - since they are all ascii. As long as used through String{} API, this will be 100% transparent. But if used directly, it may not compile (but hopefully in obvious ways)
-
-commit ca7b758c3171c3cf20e733e0d7aef706ea260a6a
-Date:   Tue Jan 10 14:53:19 2023 -0500
 
 commit ae724bfc0a35a413a4405c199cba2cc82faa37c6
 Date:   Tue Jan 10 21:13:55 2023 -0500
@@ -999,7 +933,6 @@ Date:   Thu Feb 9 08:28:22 2023 -0500
 
 commit 2862137496c4d73e40b42d9aa37bec4de3695323
 Date:   Thu Feb 9 13:50:14 2023 -0500
-    Early draft of Characters_TextConvert and Characters::CodeCvt (not fully implemented and not used at all)
 
 commit eb3f343d08d007b1506aa2888a36bbc30dbcd42a
 Date:   Thu Feb 9 23:37:34 2023 -0500
@@ -1022,10 +955,6 @@ commit dbe22e66d358cfb9ee2a07ba53683d5208c65314
 Date:   Fri Feb 10 20:35:39 2023 -0500
     did and used span overload for Memory::MemCmp
 
-commit 943d7a0e8c2d1da3c66e32a0c845344fc0b33c73
-Date:   Sat Feb 11 11:18:53 2023 -0500
-    revised API (still NYI) for ConstructCodeCvtToUnicode and ConstructCodeCvtUnicodeToBytes
-
 commit ca181aeee84c41a0c03b2c11199debcf7d4bf345
 Date:   Sat Feb 11 14:00:29 2023 -0500
     TextWriter - deprecated InternallySynchronized overloads of new (use InternallySynchronizedOutputStream explicitly); and draft of support for creating TextWriter from CodeCvt and UnSeekable_UTFConverter_Rep_
@@ -1042,10 +971,6 @@ commit 2210e6154043e3311a9ca5a8e1ce32fa9f6b2ba6
 Date:   Sat Feb 11 15:37:05 2023 -0500
     changed TextWriter to defalt to NOT including BOM (just seemed most uses dont include it
 
-commit 61d175c4de43f6c7bacfb81125821d77b4740a13
-Date:   Sat Feb 11 20:37:07 2023 -0500
-    more refactoring of CodeCvt logic - moved stome stuff from TextConvert to CodeCvt template - more of a swiss-army-knife
-
 commit 95087ab161c0e26acbe426e989df6e52287e700f
 Date:   Sat Feb 11 21:37:40 2023 -0500
     Address a few compiler specific errors cauight by gcc/clang
@@ -1053,10 +978,6 @@ Date:   Sat Feb 11 21:37:40 2023 -0500
 commit 5e6eda713f0601b36d43b5fbeeeefa7880acc0e9
 Date:   Sun Feb 12 10:07:33 2023 -0500
     Added draft SpanOfT concept to Memory
-
-commit a2cd45f0d05ee6bb3aa4c499e4ff0d7469d8f68d
-Date:   Sun Feb 12 10:09:32 2023 -0500
-    Support CodeCvt<CHAR_T>::UTFConvertSwappedRep_ and lose remnants of ConstructCodeCvt (replace with docs on ReadByteOrderMark
 
 commit 01dbb5de4d7aa6a583406cdf672de2a94fa00538
 Date:   Sun Feb 12 10:34:23 2023 -0500
@@ -1076,7 +997,6 @@ Date:   Sun Feb 12 19:24:24 2023 -0500
 
 commit 7a8b0a8c90ef2f2eda02afcd0901111419892d87
 Date:   Mon Feb 13 11:58:34 2023 -0500
-    refactored CodeCvt_WrapStdCodeCvt_ support in CodeCvt - now direclty accessible through CTOR for any subclass/variant of std::codecvt (and about to change default CTORS)
 
 commit 9fd369cc98d007ac4d1c5868adb0bd5e68dfe252
 Date:   Mon Feb 13 14:06:18 2023 -0500
@@ -1084,7 +1004,6 @@ Date:   Mon Feb 13 14:06:18 2023 -0500
 
 commit cb48d27558c87d70c6d22a45254d9ad2a10c4649
 Date:   Mon Feb 13 14:19:28 2023 -0500
-    changed default CTOR implementation of CodeCvt to be faster, and more flexible (supports more target code-points)
 
 commit e77df1eb378bb4b6ade05ac051b83884b4ac4e7f
 Date:   Tue Feb 14 08:23:37 2023 -0500
@@ -1092,7 +1011,6 @@ Date:   Tue Feb 14 08:23:37 2023 -0500
 
 commit 7cfa5bc03548443c768a950b1d12ffebd2cb845b
 Date:   Tue Feb 14 08:47:54 2023 -0500
-    lose qMaintainingMBShiftStateNotWorking_ in Streams/TextReader.cpp cuz probably losing mbstate in CodeCvt
 
 commit 329e8ffd50548829367f7f139a02cdc430f043ce
 Date:   Sat Feb 18 12:27:47 2023 -0500
@@ -1102,10 +1020,6 @@ commit 326e2f3b8bafbc45b12ecd461bac20a6fa7fa295
 Date:   Sat Feb 18 18:13:09 2023 -0500
     big changes to Date code - https://stroika.atlassian.net/browse/STK-668 - support full julian date range for Date (4000 BC to distant futu
     re - with caveats) - reanmed JulianRepType to JulianRepType
-
-commit 56d688b4415c72114ed7a1f04ac5199bcf340368
-Date:   Mon Feb 20 10:22:43 2023 -0500
-    more CodeCvt tweaks and regtests
 
 commit 6aad5edc0455873bb4e67d1926c69d73547a2172
 Date:   Mon Feb 20 10:47:50 2023 -0500
@@ -1702,7 +1616,6 @@ Date:   Tue Jun 13 13:06:04 2023 -0400
 
 commit 0395d3dccbb642ea3caebb3254d4ea8ed82f730b
 Date:   Tue Jun 13 14:11:51 2023 -0400
-    cleanups to GUID::As() template, due to incompatability issues iwth clang++-15
 
 commit 82c257a645a8c53bd7c272facf43638f359c48e4
 Date:   Tue Jun 13 16:39:36 2023 -0400
@@ -1862,10 +1775,6 @@ commit 913f23ac7ac8d35c43dde0fff03219cf41ca21d7
 Date:   Sun Jun 18 20:08:04 2023 -0400
     lose qCompilerAndStdLib_stdlib_codecvt_byname_char8_Buggy bug define cuz not used and not documetned what it means
 
-commit 05e4879c068323e2d324239ea66df0d206994fad
-Date:   Sun Jun 18 20:16:28 2023 -0400
-    more celanups of regtests of :mkFromStdCodeCvt<std::codecvt_byname<
-
 commit 7d16b8eb25510136919f3329c3dfcf9625ce576e
 Date:   Sun Jun 18 20:45:47 2023 -0400
     more misc code cleanups - for diff compiler verisons, etc
@@ -1956,7 +1865,6 @@ Date:   Tue Jun 27 20:01:54 2023 -0400
 
 commit 0c841944ccb811246847a689279d546b602df9c6
 Date:   Thu Jun 29 14:32:59 2023 -0400
-    new overloads of CodeCvt Characters2Bytes and Bytes2Characters and loosened req on args to /2 overloads
 
 commit 8db6cddd64cbd81c4d58080fc68af61a06a9b212
 Date:   Thu Jun 29 15:37:51 2023 -0400
@@ -2020,7 +1928,7 @@ Date:   Mon Jul 10 10:48:03 2023 -0400
 
 commit 7c975719e3e64bbfb0f7694e5555e90e39754056
 Date:   Mon Jul 10 13:48:00 2023 -0400
-    new Memory::SpanReInterpretCast utility; and use to fix a few corner cases of CodeCvt<CHAR_T>::UTF2UTFRep_
+    new Memory::SpanReInterpretCast utility; 
 
 #endif
 
