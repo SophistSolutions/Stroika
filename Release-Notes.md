@@ -340,7 +340,17 @@ especially those they need to be aware of when upgrading.
           - regtest for URI::SetScheme and docs
     - Streams
       - cleanups to Streams/ExternallyOwnedMemoryInputStream - mostly using concepts in place of enable_if_t; but also extended to support char iterators for New with ELEMENT_TYPE=byte (for easier integration with stl/common c++ usage)
-      - first draft new StreamReader<ELEMENT_TYPE>
+      - new StreamReader\<ELEMENT_TYPE>
+      - Inputstream use requires instead of enable_if_t
+      - OutputStream (start of) span support
+      - Address (with static_assert) bug I ran into in StreamReader due to InlineBufferElementType_ hack for Character object - hopefully adequite to prevent in future)
+      - TextWriter - deprecated InternallySynchronized overloads of new (use InternallySynchronizedOutputStream explicitly); and draft of support for creating TextWriter from CodeCvt and UnSeekable_UTFConverter_Rep_
+      - placeholder tmphack impl of Foundation/Streams/TextToByteReader and redriected Variant/Reader code to it
+      - Improved implemtnation of TextToByteReader (using new stream copy stuff) - but still weak -but probbaly good enuf for now
+      - deprecate a few TextReader overloads (InternallySynchronizedInputOutputStream directly)
+      - lose OutputStream.cpp and more refactoring to use requires instead of enable_if_t
+      - maybe cleanup ReadAll/BLOB overload in InputStream (documented why this is so hard)
+      - TextReader rewritten to use new CodeCvt instead of directly using std::codecvt - for speed and flexability and to avoid c++ deprecations
     - Time
       -All
         - fixes related to https://stroika.atlassian.net/browse/STK-950: imporved iso8601 datetime parsing, TimeOfDay CTOR overload with ThrowIfOutOfRangeFlag and use in a bunch of places (so better runtime validation of input dates)
@@ -446,14 +456,15 @@ especially those they need to be aware of when upgrading.
 
 - Added Profile configuration for windows, since handy for doing profiling (not auto-built - just defined so can be easily used)
 
-==
+
+
+---
+
+
+===
 
 
 #if 0
-commit b0e9d0815f7cfaea5beaf086b342d6cfdf7596d0
-Date:   Mon Dec 26 11:47:37 2022 -0500
-    OutputStream (start of) span support
-
 commit 634d9f45416a675f4f9b360c29a933a01ef15cb6
 Date:   Mon Dec 26 20:13:59 2022 -0500
     lose some support for clang++ versions prior to 10 - since dont work with Stroika v3 - and change default std c++ lib for using clang (prior to clang++14) to libstdc++ since libc++ doesnt work prior to 14 (didnt try 13)
@@ -498,10 +509,6 @@ Date:   Wed Jan 4 20:16:49 2023 -0500
 commit a128815233aa47173dd9eee40d96f65549e5ae3d
 Date:   Sat Jan 7 15:31:21 2023 -0500
     document https://stroika.atlassian.net/browse/STK-969 issue
-
-commit 128cd345b632a70a3160e49493b5834355736205
-Date:   Sat Jan 7 15:35:19 2023 -0500
-    Address (with static_assert) bug I ran into in StreamReader due to InlineBufferElementType_ hack for Character object - hopefully adequite to prevent in future)
 
 commit 0051e3891317fa78f9e301c087a55d595c9468c6
 Date:   Tue Jan 10 08:39:37 2023 -0500
@@ -656,10 +663,6 @@ commit 05cd839860285e1fe000ea14e9ad8f578d75ccc7
 Date:   Sat Jan 28 18:17:04 2023 -0500
     lose unneeded options.fCanReadPastEndOfJSONObjectInStream
 
-commit 070617dac7c1c4792c06e2674981ff97bb190482
-Date:   Sat Jan 28 21:05:47 2023 -0500
-    placeholder tmphack impl of Foundation/Streams/TextToByteReader and redriected Variant/Reader code to it
-
 commit 70ce0db7187e19375eaf30534488b6af424f2086
 Date:   Sun Jan 29 11:21:29 2023 -0500
     progress building real impl of TextToByteReader - but still quite weak
@@ -678,7 +681,6 @@ Date:   Sun Jan 29 16:58:30 2023 -0500
 
 commit ae5ef10c465e52d3056903f240e921ff61ad5f5a
 Date:   Sun Jan 29 17:17:09 2023 -0500
-    Improved implemtnation of TextToByteReader (using new stream copy stuff) - but still weak -but probbaly good enuf for now
 
 commit 34d6c1ed78a7b08644189e2b01556de80a70b1ae
 Date:   Sun Jan 29 21:54:39 2023 -0500
@@ -868,10 +870,6 @@ commit dbe22e66d358cfb9ee2a07ba53683d5208c65314
 Date:   Fri Feb 10 20:35:39 2023 -0500
     did and used span overload for Memory::MemCmp
 
-commit ca181aeee84c41a0c03b2c11199debcf7d4bf345
-Date:   Sat Feb 11 14:00:29 2023 -0500
-    TextWriter - deprecated InternallySynchronized overloads of new (use InternallySynchronizedOutputStream explicitly); and draft of support for creating TextWriter from CodeCvt and UnSeekable_UTFConverter_Rep_
-
 commit ae225e915b0745b59a3374c2b7928bdb750d5d16
 Date:   Sat Feb 11 14:39:09 2023 -0500
     A bit more progress on TextCovnert code - renamed ConstructCodeCvt, added eDefault o UnicodeExternalEncodings, and partial implemenation
@@ -911,13 +909,6 @@ Date:   Sun Feb 12 19:24:24 2023 -0500
 commit 9fd369cc98d007ac4d1c5868adb0bd5e68dfe252
 Date:   Mon Feb 13 14:06:18 2023 -0500
     minor tweaks to bit_cast and byteswap BWA implementations
-
-commit cb48d27558c87d70c6d22a45254d9ad2a10c4649
-Date:   Mon Feb 13 14:19:28 2023 -0500
-
-commit e77df1eb378bb4b6ade05ac051b83884b4ac4e7f
-Date:   Tue Feb 14 08:23:37 2023 -0500
-    deprecate a few TextReader overloads (InternallySynchronizedInputOutputStream directly)
 
 commit 329e8ffd50548829367f7f139a02cdc430f043ce
 Date:   Sat Feb 18 12:27:47 2023 -0500
@@ -1217,18 +1208,6 @@ commit c77637faa7da2603606ec0ca112bd7717ee1a61f
 Date:   Wed May 17 19:55:14 2023 -0400
     more use of concept IEqualsComparer<KEY_TYPE> in place of enable_if_t<Common::IsEqualsComparer...
 
-commit b8a93ea6ff3cd71d51c2dbea498fd68ee77a6d67
-Date:   Wed May 17 20:23:53 2023 -0400
-    more use of concept IEqualsComparer<KEY_TYPE> in place of enable_if_t<Common::IsEqualsComparer...
-
-commit 5aa662042ed596a8534eab133a4839e2f3bf30db
-Date:   Thu May 18 08:51:32 2023 -0400
-    more use of concept IEqualsComparer<KEY_TYPE> in place of enable_if_t<Common::IsEqualsComparer...
-
-commit 727c9dd8880c701c3e92cf35e48623f2da271caf
-Date:   Thu May 18 09:48:15 2023 -0400
-    more use of concept IEqualsComparer<KEY_TYPE> in place of enable_if_t<Common::IsEqualsComparer...
-
 commit bdbfe68a9278a5d244fdfc73ff36e4218f0b5ea5
 Date:   Thu May 18 10:18:24 2023 -0400
     feprecated IsEqualsComparer
@@ -1351,7 +1330,6 @@ Date:   Sat May 27 11:01:54 2023 -0400
 
 commit 2c3c95f6ffb272c784c4c15dee05749992ad8f81
 Date:   Sat May 27 17:45:24 2023 -0400
-    lose OutputStream.cpp and more refactoring to use requires instead of enable_if_t
 
 commit e470fae5c70980bcda3bd69df2dd7c290bee3cd0
 Date:   Sun May 28 14:25:52 2023 -0400
@@ -1360,10 +1338,6 @@ Date:   Sun May 28 14:25:52 2023 -0400
 commit 5c04da4ed621f0b7ad86b64b06a489dbd3196766
 Date:   Sun May 28 21:17:59 2023 -0400
     use new IInOrderComparer in a bunch of spots instead of deprecated IsStrictInOrderComparer
-
-commit 72ad987395531852bcbf40bb7f7a0f33c2d6eeff
-Date:   Mon May 29 06:59:33 2023 -0400
-    cleanup inputstream requires code
 
 commit b14a4a5199569c50c52b311d78b1dd80154a56e7
 Date:   Mon May 29 20:20:49 2023 -0400
@@ -1376,10 +1350,6 @@ Date:   Mon May 29 22:52:16 2023 -0400
 commit e03e7ffdce5fb8541ba6144f259c5176a65b5d3d
 Date:   Mon May 29 23:40:01 2023 -0400
     workaround qCompilerAndStdLib_compiler_crash_on_break_Buggy
-
-commit 0ba6f21476659eaced6587860048bfa81da05531
-Date:   Tue May 30 07:31:57 2023 -0400
-    maybe cleanup ReadAll/BLOB overload in InputStream (documented why this is so hard)
 
 commit 0441ed5f2e563be6f32e512cd65eccc483f22600
 Date:   Tue May 30 08:18:16 2023 -0400
@@ -1694,12 +1664,8 @@ commit 2637345b664007111686a76b338dc8ddef5ed6a7
 Date:   Tue Jun 27 20:01:54 2023 -0400
     lose a few more accidentally left around IsAddable_v definitions
 
-commit 0c841944ccb811246847a689279d546b602df9c6
-Date:   Thu Jun 29 14:32:59 2023 -0400
-
 commit 8db6cddd64cbd81c4d58080fc68af61a06a9b212
 Date:   Thu Jun 29 15:37:51 2023 -0400
-    TextReader rewritten to use new CodeCvt instead of directly using std::codecvt - for speed and flexability and to avoid c++ deprecations
 
 commit d1c9ec25378719966d6612548d02566515c1eeaf
 Date:   Thu Jun 29 16:52:20 2023 -0400
