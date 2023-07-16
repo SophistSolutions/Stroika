@@ -244,9 +244,12 @@ especially those they need to be aware of when upgrading.
         - Added Association<KEY_TYPE, MAPPED_VALUE_TYPE>::operator[] () syntactic sugar
       - Sequence
         - added MOVE ctor for Sequence_stdvector taking std::vector<>
-    - Foundation::Cryptograpy
+    - Cryptograpy
       - Fixed Digester<> to fully support a RETURN_TYPE=Common::GUID - adding regression test and fixing template (worked with MD5 but now works with SuperFastHash and others)
       - Digest::ComputeDigest () and Digester<> etc - now support taking Iterable\<TRIVIALLY_COPYABLE_T> - so for example String
+      - Digester ctor constexpr
+      - Cryptography/Digest/HashBase
+      - more cleanups to do but significant speedup from Digester 'span' support (prelim) - on hashtable stuff from json parsing
     - Database
       - SQLite
         - fixed CompiledOptions::kThe.ENABLE_JSON1 for newwer sqlite
@@ -326,8 +329,24 @@ especially those they need to be aware of when upgrading.
         - define config constant kStackBuffer_TargetInlineByteBufferSize to make better choices in other parts of the code
       - std::span
         <br/> use std::span in a thourough way throughout Stroika
+      - Memory span support
+        - new utility Memory::ConstSpan - to workaround what APPEARS to be a defect in the design of span<> - see https://stackoverflow.com/questions/62688814/stdspanconst-t-as-parameter-in-function-template
+        - refactor - migrate ConstSpan utility to file Memory/Span.h
+        - New Memory CopySpanData and CopySpanData_StaticCast utilities
+        - Memory::Intersects (SPANS) - and use in assertions for Memory::CopySpanData etc
+        - switch many uses of std::copy to Memory::CopySpanData; CopySpanData_StaticCast now drops requirement about src/trg elt sizes being the same (and documented where handy); commnents
+        - Added draft SpanOfT concept to Memory
+        - further imporve concept SpanOfT adding static_asserts for docs and checking
+        - renamed SpanOfT to IsSpanOfT, and added IsSpanT, and improved them all and documented better (works across extent)
+        - new Memory::SpanReInterpretCast utility; 
       - regtest for GetScaledUpCapacity () behavior
       - Memory::ValueOf constexpr
+      - Added std::byte operator_b (unsigned long long b) to namespace Memory; and used it in a bunch of places
+      - MemCpy/MemCmp
+        - avoid calling memcpy with nullptr
+        - use Memory::MemCmp isntead of memcpy to workaorund issue with nullptr passed/ubsan
+        - switch Memory::MemCmp () to use memcpy where it can
+        - did and used span overload for Memory::MemCmp
     - IO
       - Network
         - Added a couple more Execution::DeclareActivity in Networking code, so exceptions more obvious what failed; and added linux IPV6_MULTICAST_HOPS workaround to issue https://stroika.atlassian.net/browse/STK-578
@@ -442,8 +461,6 @@ especially those they need to be aware of when upgrading.
   - renamed github action to build-N-test
 
 
-
-
 --UNORGNAINZIED
 - support visual studio compiler _MSC_VER_2k22_17Pt2_ (2 new bugs and nothing fixed)
 - Updated vs2k versions to VS_17_2_0 and VS_16_11_14 for docker files
@@ -457,9 +474,7 @@ especially those they need to be aware of when upgrading.
 - Added Profile configuration for windows, since handy for doing profiling (not auto-built - just defined so can be easily used)
 
 
-
 ---
-
 
 ===
 
@@ -479,20 +494,11 @@ Date:   Thu Dec 29 11:38:01 2022 -0500
 
 commit 34d9570225b422912b0a153f64ea8f932d902a18
 Date:   Thu Dec 29 14:57:17 2022 -0500
-
     fixed small regression in ToStringOptions::ToStringOptions
 
 commit dd4c40945717d2e9a8232a9a3464d55e3d77d919
 Date:   Fri Dec 30 09:28:08 2022 -0500
     cannot cast iterators for spans so cast underlying pointers
-
-commit 7ee659c694d7cf07a0f81e03301209670181d3a9
-Date:   Sat Dec 31 19:07:40 2022 -0500
-    digester ctor constexpr
-
-commit e2fb0a6125865fee465de9047c2cb0b05674e6c2
-Date:   Tue Jan 3 10:32:32 2023 -0500
-    new utility Memory::ConstSpan - to workaround what APPEARS to be a defect in the design of span<> - see https://stackoverflow.com/questions/62688814/stdspanconst-t-as-parameter-in-function-template
 
 commit 239f4f5749f7aef15519762a2bdce3def9d16f27
 Date:   Wed Jan 4 10:32:02 2023 -0500
@@ -501,10 +507,6 @@ Date:   Wed Jan 4 10:32:02 2023 -0500
 commit fb71fe013803377ef3f214d5e6046f45d0b9b76a
 Date:   Wed Jan 4 20:01:07 2023 -0500
     SharedByValue<>: fixed broken (and unused) rwget_ptr, and implemented new cget_ptr (pretty sure safe - havent thought about this in a while)
-
-commit 2e60df30ac4435dad8b6f3e32fcf0222f2236420
-Date:   Wed Jan 4 20:16:49 2023 -0500
-    avoid calling memcpy with nullptr
 
 commit a128815233aa47173dd9eee40d96f65549e5ae3d
 Date:   Sat Jan 7 15:31:21 2023 -0500
@@ -548,7 +550,6 @@ Date:   Thu Jan 12 10:02:58 2023 -0500
 
 commit 7629f6564a3843d61e506638ee53b0b72fc6b2ef
 Date:   Thu Jan 12 10:28:59 2023 -0500
-    Cryptography/Digest/HashBase
 
 commit 40d7613d1eafafedbc941c487dda3126f0a3f366
 Date:   Thu Jan 12 11:08:50 2023 -0500
@@ -572,7 +573,6 @@ Date:   Thu Jan 12 21:44:48 2023 -0500
 
 commit a6b58a2110235eae02203d6819a76c60cecf4d2b
 Date:   Thu Jan 12 14:38:47 2023 -0500
-    more cleanups to do but significant speedup from Digester 'span' support (prelim) - on hashtable stuff from json parsing
 
 commit 3638f865194d0d79cf512968c581e6baefaa9fd7
 Date:   Thu Jan 12 14:39:19 2023 -0500
@@ -597,14 +597,6 @@ Date:   Sat Jan 14 11:58:52 2023 -0500
 commit e292e3013f002342eb4b703d04fc0785eb9fc14b
 Date:   Sat Jan 14 22:32:21 2023 -0500
     deprecate a bunch of Characters/SDKString functions - not great organization and simpler API to just vector through string. A bit more expensive that way but not woth the extra api for stuff thats never used
-
-commit b5254fbb8e73ac08ae3279ac0006f7fb58a994b2
-Date:   Sat Jan 14 22:52:57 2023 -0500
-    use Memory::MemCmp isntead of memcpy to workaorund issue with nullptr passed/ubsan
-
-commit 63373086963b08c2da3b1053dfbc018a6a34e0e3
-Date:   Sat Jan 14 22:56:17 2023 -0500
-    switch Memory::MemCmp () to use memcpy where it can
 
 commit 4ac57256c36740c201bb05526e693db2d413656d
 Date:   Sat Jan 14 22:57:19 2023 -0500
@@ -666,25 +658,6 @@ Date:   Sat Jan 28 18:17:04 2023 -0500
 commit 70ce0db7187e19375eaf30534488b6af424f2086
 Date:   Sun Jan 29 11:21:29 2023 -0500
     progress building real impl of TextToByteReader - but still quite weak
-
-commit 1214b690e20aa5cab6d87dc1033e2ca1bffefd83
-Date:   Sun Jan 29 12:18:46 2023 -0500
-    refactor - migrate ConstSpan utility to file Memory/Span.h
-
-commit c19b4b62799c769cf906b9a48b45d78a6a1224a7
-Date:   Sun Jan 29 12:39:33 2023 -0500
-    New Memory CopySpanData and CopySpanData_StaticCast utilities
-
-commit 223de2da2806ea448f8b69529052adb8524f1a07
-Date:   Sun Jan 29 16:58:30 2023 -0500
-    Memory::Intersects (SPANS) - and use in assertions for Memory::CopySpanData etc
-
-commit ae5ef10c465e52d3056903f240e921ff61ad5f5a
-Date:   Sun Jan 29 17:17:09 2023 -0500
-
-commit 34d6c1ed78a7b08644189e2b01556de80a70b1ae
-Date:   Sun Jan 29 21:54:39 2023 -0500
-    switch many uses of std::copy to Memory::CopySpanData; CopySpanData_StaticCast now drops requirement about src/trg elt sizes being the same (and documented where handy); commnents
 
 commit 8e5b7acbed38bb17db686a4f098ce131ac55eede
 Date:   Sun Jan 29 23:19:24 2023 -0500
@@ -858,17 +831,9 @@ Author: Lewis G. Pringle, Jr <lewis@sophists.com>
 Date:   Fri Feb 10 08:37:23 2023 -0500
     qCompilerAndStdLib_qualified_enum_using_Buggy workaround
 
-commit ddabaa41bda6316093fe939bf04c426e6add5b21
-Date:   Fri Feb 10 17:31:07 2023 -0500
-    Added std::byte operator_b (unsigned long long b) to namespace Memory; and used it in a bunch of places
-
 commit ba09635ec2a375ee670c0a149949e878c5357619
 Date:   Fri Feb 10 20:35:10 2023 -0500
     workaround small msvc2k19 bug - not worht define (sizeof fails on static constexpr array)
-
-commit dbe22e66d358cfb9ee2a07ba53683d5208c65314
-Date:   Fri Feb 10 20:35:39 2023 -0500
-    did and used span overload for Memory::MemCmp
 
 commit ae225e915b0745b59a3374c2b7928bdb750d5d16
 Date:   Sat Feb 11 14:39:09 2023 -0500
@@ -888,15 +853,6 @@ Date:   Sat Feb 11 21:37:40 2023 -0500
 
 commit 5e6eda713f0601b36d43b5fbeeeefa7880acc0e9
 Date:   Sun Feb 12 10:07:33 2023 -0500
-    Added draft SpanOfT concept to Memory
-
-commit 01dbb5de4d7aa6a583406cdf672de2a94fa00538
-Date:   Sun Feb 12 10:34:23 2023 -0500
-    further imporve concept SpanOfT adding static_asserts for docs and checking
-
-commit 2aad207895c3f548c18454e642bf034ac95566f5
-Date:   Sun Feb 12 12:07:28 2023 -0500
-    renamed SpanOfT to IsSpanOfT, and added IsSpanT, and improved them all and documented better (works across extent)
 
 commit bc2ffbdcfde628a999ccc9f14bfad9652d262f26
 Date:   Sun Feb 12 17:40:57 2023 -0500
@@ -1328,9 +1284,6 @@ commit 04eefbc4aa104974f21111c103d3bcd88e78a427
 Date:   Sat May 27 11:01:54 2023 -0400
     Synchronized<> use requires instead of enable_if_t in a few places
 
-commit 2c3c95f6ffb272c784c4c15dee05749992ad8f81
-Date:   Sat May 27 17:45:24 2023 -0400
-
 commit e470fae5c70980bcda3bd69df2dd7c290bee3cd0
 Date:   Sun May 28 14:25:52 2023 -0400
     IRange concept and used in partition code
@@ -1458,9 +1411,6 @@ commit fabeb8369986188ffb4f6fbffc70c9fbfd5d1be6
 Date:   Tue Jun 13 20:11:52 2023 -0400
     static_assert __cpp_lib_atomic_shared_ptr
 
-commit 017e8aaad830da8d4f831f5946b4a4597d3e535e
-Date:   Tue Jun 13 20:25:35 2023 -0400
-
 commit 7091f598029d15437ccff873d786d70047836b27
 Date:   Tue Jun 13 21:04:53 2023 -0400
     undo __cpp_lib_atomic_shared_ptr check - comment out
@@ -1469,9 +1419,6 @@ commit 1b105c6e81f92d22a5f522342ede74c5d2f16999
 Date:   Tue Jun 13 21:19:28 2023 -0400
     renamed concepts to start with I and somewhat simpler names
 
-commit 3a496cf57ccb74b0d4b7f12dd40658448516cc18
-Date:   Tue Jun 13 21:33:06 2023 -0400
-    
 commit 9827ca6d70e366de1032d2bfe1cf725768917308
 Date:   Wed Jun 14 09:39:38 2023 -0400
     more 'I' in concept name cleanups and docs
@@ -1718,10 +1665,6 @@ Date:   Sat Jul 8 11:12:22 2023 -0400
 commit 89a3b8e49ff46c936f7d056819e7cb8f6ad1c6d3
 Date:   Mon Jul 10 10:48:03 2023 -0400
     adjust configure script for setting Wno-unqualified-std-cast-call so works with linux and macos clang version#s
-
-commit 7c975719e3e64bbfb0f7694e5555e90e39754056
-Date:   Mon Jul 10 13:48:00 2023 -0400
-    new Memory::SpanReInterpretCast utility; 
 
 #endif
 
