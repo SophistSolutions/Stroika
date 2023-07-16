@@ -12,7 +12,7 @@ especially those they need to be aware of when upgrading.
 
 - Documentation
   - [v3 Roadmap](https://github.com/SophistSolutions/Stroika/discussions/120)
-  - [Design Overview.md](Design Overview.md)
+  - [Design Overview.md](./DockerBuildContainers/Design Overview.md)
 - Stroika Library
   - General
     - Require C++20 or later (Lose c++17 language compatability)
@@ -25,9 +25,9 @@ especially those they need to be aware of when upgrading.
         - Compiler
           - g++ 11 or later required
           - Visual Studio.Net - require vs2k22 or later
-          - clang++ 13 or later (14.3 or later on macos/xcode)
+          - clang++ 13 or later (14.3 or later on macos/xcode) - tested up to clang++-15
           - MacOS XCode 14.3 or later
-          - if using libc++, require libc++ 14 or later
+          - if using libc++, require libc++ 14 or later, tested up to libc++ 15
         - Platform
           - Ubuntu 18.04
             <br/> no longer support Ubuntu 18.04; lose support for g++ versions before g++-11 (due to lack of chrono::month, etc)
@@ -226,6 +226,7 @@ especially those they need to be aware of when upgrading.
           qCompilerAndStdLib_TemplateUsingOfTemplateOfTemplateSpecializationVariadic_Buggy
           qCompilerAndStdLib_lambda_expand_in_namespace_Buggy
           qCompilerAndStdLib_SpaceshipAutoGenForOpEqualsForCommonGUID_Buggy
+          qCompiler_LimitLengthBeforeMainCrash_Buggy
           ~~~
       - new Compiler bug defines
         - qCompilerAndStdLib_copy_warning_overflow_Buggy
@@ -480,14 +481,6 @@ especially those they need to be aware of when upgrading.
 
 
 #if 0
-commit 634d9f45416a675f4f9b360c29a933a01ef15cb6
-Date:   Mon Dec 26 20:13:59 2022 -0500
-    lose some support for clang++ versions prior to 10 - since dont work with Stroika v3 - and change default std c++ lib for using clang (prior to clang++14) to libstdc++ since libc++ doesnt work prior to 14 (didnt try 13)
-
-commit c5b6c360bd8fd53dfe2bba75527a62adbda9e351
-Date:   Mon Dec 26 20:13:59 2022 -0500
-    lose some support for clang++ versions prior to 10 - since dont work with Stroika v3 - and change default std c++ lib for using clang (prior to clang++14) to libstdc++ since libc++ doesnt work prior to 14 (didnt try 13)
-
 commit 813587847662651e17ee5c03dbbc62a00dd34918
 Date:   Thu Dec 29 11:38:01 2022 -0500
     not backward compatible, but minor change in ToStringOptions parameters - GetUseLocale now returns locale, not optional, and new GetUsingLocaleClassic, and a few changes in rarely used types related
@@ -598,10 +591,6 @@ commit e292e3013f002342eb4b703d04fc0785eb9fc14b
 Date:   Sat Jan 14 22:32:21 2023 -0500
     deprecate a bunch of Characters/SDKString functions - not great organization and simpler API to just vector through string. A bit more expensive that way but not woth the extra api for stuff thats never used
 
-commit 4ac57256c36740c201bb05526e693db2d413656d
-Date:   Sat Jan 14 22:57:19 2023 -0500
-    Added clang++-12-debug-libstdc++ so at least some (pre-14) clang++ debug build gets done on Ubuntu 22.04
-
 commit 09547edb8029055eab24f4e8f59811d2505417a1
 Date:   Sat Jan 14 23:12:10 2023 -0500
     use std::remove_cvref_t directly - no longer need for indirection trhough obsolete Configuration::remove_cvref_t
@@ -666,10 +655,6 @@ Date:   Sun Jan 29 23:19:24 2023 -0500
 commit c337eea3bebdedfa4bb35a16b0fff81f3532fd44
 Date:   Mon Jan 30 10:04:43 2023 -0500
     Minor tweaks to  VariantValue performance (final and mk_ instead of VariantValue CTOR
-
-commit 8ca729a96067060728d41f9042dda4e62b9bc298
-Date:   Wed Feb 1 09:17:34 2023 -0500
-    more updates to scripts/docs to clarify require XCode 14 or later, apple clang 14 or later, c++20 or later, and lose qCompiler_LimitLengthBeforeMainCrash_Buggy (cuz only applied to older XCode)
 
 commit 14fd656e3b7b8f531fddbfb61ce0eefbffc02076
 Date:   Wed Feb 1 12:38:56 2023 -0500
@@ -806,10 +791,6 @@ commit 557c091332fe1871b092d9023b62c618b1087998
 Date:   Wed Feb 8 11:27:26 2023 -0500
     qCompilerAndStdLib_stdlib_ranges_pretty_broken_Buggy define and support
 
-commit 1b8573ef89ba02fa6fe46bab9793ca92c615d701
-Date:   Wed Feb 8 11:49:03 2023 -0500
-    upped LIBCPP version broken to 15000 and qCompilerAndStdLib_stdlib_ranges_pretty_broken_Buggy broken for clang up to 14 - even if using libstdc++
-
 commit 50853aa9b8678ae53640d870cc564f97702c1a88
 Date:   Wed Feb 8 12:03:27 2023 -0500
     workaround qCompilerAndStdLib_stdlib_ranges_pretty_broken_Buggy
@@ -847,20 +828,9 @@ commit 2210e6154043e3311a9ca5a8e1ce32fa9f6b2ba6
 Date:   Sat Feb 11 15:37:05 2023 -0500
     changed TextWriter to defalt to NOT including BOM (just seemed most uses dont include it
 
-commit 95087ab161c0e26acbe426e989df6e52287e700f
-Date:   Sat Feb 11 21:37:40 2023 -0500
-    Address a few compiler specific errors cauight by gcc/clang
-
-commit 5e6eda713f0601b36d43b5fbeeeefa7880acc0e9
-Date:   Sun Feb 12 10:07:33 2023 -0500
-
 commit bc2ffbdcfde628a999ccc9f14bfad9652d262f26
 Date:   Sun Feb 12 17:40:57 2023 -0500
     provide workaround for missing bit_cast and improved workaround for miussing byte_swap
-
-commit 73b118abdd5be3b66de216893bdfa02ad30193c7
-Date:   Sun Feb 12 19:24:24 2023 -0500
-    use memory::bit_cast for macos/old clang compat
 
 commit 9fd369cc98d007ac4d1c5868adb0bd5e68dfe252
 Date:   Mon Feb 13 14:06:18 2023 -0500
@@ -971,10 +941,6 @@ Date:   Sun Apr 23 12:49:19 2023 -0400
 commit 75ed8f114460cfedccc07f3f43fd7f069032f773
 Date:   Sun Apr 23 13:09:31 2023 -0400
     lose Mapping_stdhashmap_IsDefaultConstructible and use is_default_constructible_v instead
-
-commit 1a31d20c89025eee792a01acb5e0931f37da3747
-Date:   Sun Apr 23 17:51:39 2023 -0400
-    worked around new qCompilerAndStdLib_requires_breaks_soemtimes_but_static_assert_ok_Buggy issue with clang
 
 commit d2043ce3ad62e8de86c3445f4275ff61ff28c692
 Date:   Mon Apr 24 10:03:50 2023 -0400
@@ -1200,21 +1166,9 @@ commit c6cab7d75dd4f23161591516838e94a07964140f
 Date:   Thu May 18 13:20:56 2023 -0400
     remote another use of depreacted funciofn and ebale_ioft
 
-commit a3a4bce969d85fbcf3a93cbab16dac3992b7fd80
-Date:   Thu May 18 17:20:02 2023 -0400
-    added-Wno-unqualified-std-cast-call for clang/xcode
-
 commit e010dfcc8ee1af8c88d6d58a6bd5b2f80725ef27
 Date:   Thu May 18 19:58:02 2023 -0400
     replace use of deprecated Configuration::IsTPredicate with std::predicate concept
-
-commit ef099bc99f09c230e832f68e853be2b919afad2a
-Date:   Thu May 18 20:26:12 2023 -0400
-    github actions - try to use xcode 14.3 (via config) and try using clang++13 instead of clang++10
-
-commit 1a130c819d8a5f67af50eb966b592146cec63f7b
-Date:   Thu May 18 20:56:56 2023 -0400
-    require clang++13 or later - due to support for std ranges
 
 commit e60fa5159ef28e970c8c30b6711f7e01e25b1517
 Date:   Fri May 19 00:01:36 2023 -0400
@@ -1243,10 +1197,6 @@ Date:   Fri May 19 23:13:18 2023 -0400
 commit ee52ade81697a87b06cb304394730a1ed994cfb3
 Date:   Sat May 20 03:38:08 2023 -0400
     switch a few more uses of enable_if_t to concepts or requires
-
-commit 819c2dfea9e2bf7c6aa3699d70b0738094a080b3
-Date:   Sun May 21 18:59:40 2023 -0400
-    only add -Wno-unqualified-std-cast-call for clang++-14 or later
 
 commit a78ca171dbab6879f96771b6fc7cf1c92d9849da
 Date:   Tue May 23 12:51:06 2023 -0400
@@ -1348,10 +1298,6 @@ commit 9ffa45e3af2c4873048fd45b5e7ba5ade79bc84c
 Date:   Sat Jun 10 12:39:57 2023 -0400
     use macos 13 not macos latest for now on github actions
 
-commit 32443fc2ca409f8e37c1ca20d5bdb9db6a773439
-Date:   Sat Jun 10 15:28:12 2023 -0400
-    qCompilerAndStdLib_template_Requires_constraint_not_treated_constexpr_Buggy broken on real clang++14
-
 commit 491e1a4c6b829ff38bfe5730fd24fd2a935aa517
 Date:   Sat Jun 10 15:37:31 2023 -0400
     retransated v3-Release workspace file to Debug for github actions
@@ -1386,22 +1332,9 @@ commit fb393a35cec57e2e8dbd5f829deefa000be96b30
 Date:   Mon Jun 12 22:51:28 2023 -0400
     lose a few more enable_if_t uses, and translate a few more cases of is_base_of_v to derived_from
 
-commit 62555f9a9661b37152e4606b3d093955f4522408
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jun 13 11:05:50 2023 -0400
-
-    install clang++15 to docker container unix
-
 commit c2dc7ca217945ef3ba69b21f663d5e33d709936a
 Date:   Tue Jun 13 13:06:04 2023 -0400
     fixed configure to set COMPILER_DRIVER_CPlusPlus before using it to adjust CWARNING_FLAGS
-
-commit 0395d3dccbb642ea3caebb3254d4ea8ed82f730b
-Date:   Tue Jun 13 14:11:51 2023 -0400
-
-commit 82c257a645a8c53bd7c272facf43638f359c48e4
-Date:   Tue Jun 13 16:39:36 2023 -0400
-    clang++-15 support
 
 commit 786e0c9075db8357d529396509121111ce3bbf42
 Date:   Tue Jun 13 16:49:08 2023 -0400
@@ -1479,45 +1412,13 @@ commit 7ef3e6153d46f8693bc15379ff69dda3502f200b
 Date:   Thu Jun 15 17:15:52 2023 -0400
     finished replaceing use of is_base_of_v with derived_from
 
-commit b20cef71e01d72579f9c48663c6d62a78968fe75
-Date:   Fri Jun 16 12:12:12 2023 -0400
-    cosmetic and disable clang++15 on github actions til I debug more
-
 commit c114ff2d9be451607ba54973461692181572689c
 Date:   Fri Jun 16 12:42:45 2023 -0400
     lose unimplemented Concrete/Set_SparseArray cuz probably not worth doing
 
-commit f855e335282fc93a0b5e9781100c49c7e7be2e02
-Date:   Sat Jun 17 10:56:12 2023 -0400
-    renenable github action clang++-15-release-libstdc++
-
-commit 0bdf50b9a63137143d01d4648ff7ddcd5c7f1dfd
-Date:   Sat Jun 17 13:06:46 2023 -0400
-    more enable clang++15 builds
-
-commit 56ea03b8a3759b2f1aedfae313a37656d1708766
-Date:   Sat Jun 17 15:15:32 2023 -0400
-    disable clang++-15-debug-libc on github for now cuz not workign - try on laptop first
-
 commit db752037a368b4f063feced8a2c014295ae892c0
 Date:   Sun Jun 18 08:48:34 2023 -0400
     fixed bug define qCompilerAndStdLib_to_chars_FP_Buggy for _LIBCPP_VERSION <= 15007 - still broken
-
-commit 26e1b99e965ca06701687551c699c7618e108322
-Date:   Sun Jun 18 08:58:23 2023 -0400
-    fixed a few more clang++15 bug define issues
-
-commit 92052f6974d95e2f1992ce81d4956e6b6a7c0e12
-Date:   Sun Jun 18 08:59:20 2023 -0400
-    turn clang++-15-debug-libc++ on laways to tst
-
-commit 5b59e5cc5bff855676f010ae92400ff2fcf18aca
-Date:   Sun Jun 18 10:08:48 2023 -0400
-    qCompilerAndStdLib_template_Requires_constraint_not_treated_constexpr_Buggy clang+15 updates
-
-commit 46714307c6795cd7510bdd65205af627117e1d77
-Date:   Sun Jun 18 10:26:40 2023 -0400
-    new bug define qCompilerAndStdLib_codeCvtDeprecationMaybe_Buggy for LIBCPP_VERSION 15007
 
 commit 913f23ac7ac8d35c43dde0fff03219cf41ca21d7
 Date:   Sun Jun 18 20:08:04 2023 -0400
@@ -1657,14 +1558,6 @@ Date:   Fri Jul 7 11:26:22 2023 -0400
 commit 0ff94526d639762900da40d4309597569179dc54
 Date:   Fri Jul 7 17:34:55 2023 -0400
     lose (**not backward compatible change**) shared_ptr argument Iterable<>::IRep::MakeIterator and Find() methods
-
-commit 9299a848d91967d55bf7d5a48dbaaf0de5beeec8
-Date:   Sat Jul 8 11:12:22 2023 -0400
-    apprently -unqualified-std-cast-ca only needed clang++ 15 or greater (unknown in 14)
-
-commit 89a3b8e49ff46c936f7d056819e7cb8f6ad1c6d3
-Date:   Mon Jul 10 10:48:03 2023 -0400
-    adjust configure script for setting Wno-unqualified-std-cast-call so works with linux and macos clang version#s
 
 #endif
 
