@@ -7,7 +7,6 @@ especially those they need to be aware of when upgrading.
 
 ## History
 
-
 ### DRAFT v3.0d1 release as of July 10
 
 - Documentation
@@ -199,6 +198,7 @@ especially those they need to be aware of when upgrading.
         - fixed https://stroika.atlassian.net/browse/STK-966 - ToFloat failing - due to strtod requires NUL-termination, and new code didn't generally require/pass in NUL-terminated strings (did often enough to be confusing)
         - big simplification to String2Int code using concepts (hopefully still correct)
         - String2Int - method optimizes more span cases; and use Character::AsASCIIQuietly in place of deprecated String::AsASCIIQuietly
+      - deprecate a bunch of Characters/SDKString functions - not great organization and simpler API to just vector through string. A bit more expensive that way but not woth the extra api for stuff thats never used
     - Common
       - Compare
         - lose Common::strong_ordering and Common::kLess, kEquals, kGreater (**not backwards compatible**)
@@ -259,16 +259,27 @@ especially those they need to be aware of when upgrading.
         - qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
         - qCompilerAndStdLib_clangWithLibStdCPPStringConstexpr_Buggy
         - qCompilerAndStdLib_stdlib_ranges_pretty_broken_Buggy
+        - qCompilerAndStdLib_template_Requires_templateDeclarationMatchesOutOfLine_Buggy
       - Support compiler _MSC_VER_2k22_17Pt6_ bug define support
       - new _Stroika_Foundation_STRINGIFY_ macro
       - new Configuration::ConvertibleTo template class as helper for IIterableOf\<T> concept
     - Containers
-      -  ALL
+      -  Many Submodules
          - major switch to using concepts, and requires (in place of enable_if_t)
+         - not 100% backward compatible for container implementors, but otherwise sb fine; REMOVE _IRep methods for stuff like Keys() and default impl, and instead redo all this using Map(mcuh simpler/cleaner) - only done for Assocation, Bijection, and KeyedCollection so far; deprecated/renamed two Bijection methods Map/InverseMap to avoid name conflict with Iterable Map
       - LockFree
         - minor fruitless tweaks to LockFreeDataStructures/forward_list
+      - DataStructures
+        -  new Array\<T>: push_back
       - Association
         - Added Association<KEY_TYPE, MAPPED_VALUE_TYPE>::operator[] () syntactic sugar
+      - KeyedCollection
+        - KeyedCollection rep Keys method now takes KEY rep as smartptr arg
+        - Draft support for Concrete::KeyedCollection_stdhashset including regtests passing
+        - (not backward compatible in minor ways) - KEY_EXTRACTOR no longer template parameter to CTOR or factory for KeyedCollection and its subclasses since part of the traits(was just default part of traits)
+        - experiment using KeyedCollection_ExtractorCanBeDefaulted requires
+        - tweak KeyedCollection CTORS (losing enable_if_t, and add requires in concrete constructors)
+        - Docs/Samples
       - Mapping
         - **New** Mapping_stdhashmap
         - default Mapping factory to using Concrete::Mapping_stdhashmap (where applicable)
@@ -292,6 +303,7 @@ especially those they need to be aware of when upgrading.
         - fixed CompiledOptions::kThe.ENABLE_JSON1 for newwer sqlite
     - DataExchange
       - DataExchange::ValidationStrategy support on Date class, and other related cleanups
+        - used that to replace (not backward compat but unimportant) Bijection::InjectivityViolationPolicy, and just introduced TimeOfDay::ThrowIfOutOfRangeFlag - with same meaning basically
       - Added draft support for ObjectVariantMapper::MakeCommonSerializer (OptionalSerializerOptions ...) so it can take explicit T serializer
       - New utility (factoring) Variant::Reader::_ToByteReader (const Streams::InputStream<Characters::Character>::Ptr& in)
       - VariantValue
@@ -344,6 +356,8 @@ especially those they need to be aware of when upgrading.
       - use DropIntoDebuggerIfPresent () rather than direct call to windows DebugBreak()
       - fixed (serious regrssion - string visualizer) was broken, and updated older visual studio natvis files to match
       - new UncheckedDynamicPointerCast
+    - Execution
+      - windows CreateProcess appears to set hProcess to nullptr instead of INVALID_HANDLE_VALUE in some cases, so accomodate
     - Memory
       - BlockAllocation 
         - Minor tweaks to Memory/BlockAllocator (clarity)
@@ -429,7 +443,7 @@ especially those they need to be aware of when upgrading.
         - lose Date::kEmptyJulianRep - not 100% backward compatible, but very close - since we must have eliminated Date::empty() in Stroika 2.1
         - fixed GLARING bug in ::DayDifference ()
         - rewrite Date class to be based on chron::year_month_day - https://stroika.atlassian.net/browse/STK-793
-      - introduced new DataExchange::ValidationStrategy and used that to replace (not backward compat but unimportant) Bijection::InjectivityViolationPolicy, and just introduced tmporarily TimeOfDay::ThrowIfOutOfRangeFlag - with same meaning basically
+        - big changes to Date code - https://stroika.atlassian.net/browse/STK-668 - support full julian date range for Date (4000 BC to distant future - with caveats) - reanmed JulianRepType to JulianRepType
       - more constructor options for TimeOfDay (..., DataExchange::ValidationStrategy validationStrategy);
       - cosmetic, and DataExchange::ValidationStrategy support on Timezones CTORs (and use in DateTime code show better validates/throws); and  better https://www.rfc-editor.org/rfc/rfc822#section-5 timezone parsing
       - fixed GLARING bug in ::DayDifference ()
@@ -457,13 +471,18 @@ especially those they need to be aware of when upgrading.
       - lose unneeded dynamic_pointer_cast due to fix in iterable::accessor:: ConstGetRepSharedPtr ()
       - deprecated IterableBase
       - refactor Iterable<>::_IRep code/apis - lose _Find_equal_to_default_implementation and _Find etc, and just do default impl of the Find/Find_equal_to etc implementations where possible and lose the overrides in each subclass that just called that helper mechanism. Appears to generate (at least testing on windows) basically same code (at least code size didnt change), and much simpler - facilitating future cleanups
+      - changed impl of _IRep::Find_equal_to by default to call Find with seq - and no obvious performance diff, makes good a bit larger, but I think will pay off once I do seq support in Data structures
       - **not backwards compatible** change to Iterable<>::end() - went from static to instance method for ranges compatability
       - new IIterable concept
       - lose (**not backward compatible change**) shared_ptr argument Iterable<>::IRep::MakeIterator and Find() methods
       - replace most use of ExtractValueType_t and using IInputIterator amd IIterable in containers instead
       - deprecated Configuration::IsIterable_v - using ranges::range or IIterable
     - Iterator
-      - new IInputIterator concept
+      - deprecated Iterator<>::MakeSmartPtr - and use make_unique directly; Deprecated the using PtrImplementationTemplate in Iterator<T>; deprecated Iterator<T>::RepSmartPtr
+      - deprecated Configuration::IsIterator_v and instead use concept std::input_iterator or appropriate std iterator, or new IInputIterator concept
+          Iterator no longer inherites from IteratorBase: deprecated
+      - Iterator::DEFAULT CTOR must exist for being range compatible (concept semiregular = std::copyable<T> && std::default_initializable)
+      - Iterator::GetEmptyIterator() noexcept
 - Frameworks
   - Led
     - Tons of Led support cleanups - losing APIs like Led_SDKString2ANSI Led_SDK_String Led_SDK_Char etc, and replacing with already existing (long existing) Stroika Foundation equivilents
@@ -494,6 +513,7 @@ especially those they need to be aware of when upgrading.
     - lose a bunch of CMAKE_ARGS overrides in zlib makefile -already done in shared cmake include
     - but dont need the zlib Patches anymore
     - Comment out a bunch of stuff probbaly not needed on makefile anymore for windows zlib
+    - lose (pointless and now wrong) #pragma comment(lib, "zlib.lib")
 - Samples
   - cleanup/simplify examples
   - in sample service, don't strip when building installer if IncludeDebugSymbolsInExecutables set
@@ -509,15 +529,12 @@ especially those they need to be aware of when upgrading.
       - Added boost_json-parser to performance tests; guess dont need others since this is the fastest I've tried and easy to test against
       - add performance regression test for DoStroikaJSONParse_boost_json2Stk
 - Build System
-  - Skel tool
-    - in skel makefile, delegate a few more top level phony makefile targets
+  - Clang-Format
+    - a few small chantes to .clang-format file, and re-ran make format-code (mainly column limit set to 140, PenaltyExcessCharacter AllowShortEnumsOnASingleLine
   - configure
     - better error reporting in configure script
     - set configure script to default to --std=c++20 (effectively requiring g++ 9 or later - maybe 10 or later - we'll see)
     - change configure test for libc++ < version 11 - fail with good message
-  - Scripts
-    - ApplyConfiguration
-      - fixed to handle bad .vscode/c_cpp_properties.json files - if they were empty - it was not updating them, and leaving them empty
   - Docker
     - more cleanups to dockerfile for ubuntu 20.04
     - Better docs about docker container windows build workarounds, and need to specify --network "Default Switch" in docker build script in one more place
@@ -525,7 +542,14 @@ especially those they need to be aware of when upgrading.
     - Docker v3 in image names for v3 containers
     - Windows
       -  vis studio docker container VS_17_6_4
-- Github actions/workflows
+- - Scripts
+    - ApplyConfiguration
+      - fixed to handle bad .vscode/c_cpp_properties.json files - if they were empty - it was not updating them, and leaving them empty
+    - Misc
+      - Update ScriptsLib/FormatCode to call ScriptsLib/GetMessageForMissingTool and updated ScriptsLib/GetMessageForMissingTool to give better suggestions for how to install for windows
+  - Skel tool
+    - in skel makefile, delegate a few more top level phony makefile targets
+  Github actions/workflows
   - renamed github action to build-N-test
 
 --UNORGNAINZIED
@@ -547,26 +571,6 @@ especially those they need to be aware of when upgrading.
 
 #if 0
 
-commit e292e3013f002342eb4b703d04fc0785eb9fc14b
-Date:   Sat Jan 14 22:32:21 2023 -0500
-    deprecate a bunch of Characters/SDKString functions - not great organization and simpler API to just vector through string. A bit more expensive that way but not woth the extra api for stuff thats never used
-
-commit d80d779b12f490ed4e734b958927e7a6b79d57cd
-Date:   Tue Jan 17 09:53:16 2023 -0500
-    windows CreateProcess appears to set hProcess to nullptr instead of INVALID_HANDLE_VALUE in some cases, so accomodate
-
-commit 90ae1ddc7bd3b4ed787e49587c830cd6b0cf90d8
-Date:   Sat Jan 21 11:05:08 2023 -0500
-    Update ScriptsLib/FormatCode to call ScriptsLib/GetMessageForMissingTool and updated ScriptsLib/GetMessageForMissingTool to give better suggestsions for how to install for windows
-
-commit 45309d2e49cbc5416f6c96504cd54c6f5123f62d
-Date:   Sat Jan 21 11:34:32 2023 -0500
-    a few small chantes to .clang-format file, and re-ran make format-code (mainly column limit set to 140, PenaltyExcessCharacter AllowShortEnumsOnASingleLine
-
-commit 6d8c3e5162caf773fa84cd679a21a86b0ebaf301
-Date:   Mon Jan 23 10:47:59 2023 -0500
-    qCompilerAndStdLib_template_Requires_templateDeclarationMatchesOutOfLine_Buggy bug define and workaroudn and 
-
 commit d91ba0f18b02a0761b45bb7137cdd0a056dd1c17
 Date:   Fri Jan 27 09:27:55 2023 -0500
     fixed bad regression test Test_05_ParseRegressionTest_3_ - badly formatted input
@@ -575,68 +579,9 @@ commit 05cd839860285e1fe000ea14e9ad8f578d75ccc7
 Date:   Sat Jan 28 18:17:04 2023 -0500
     lose unneeded options.fCanReadPastEndOfJSONObjectInStream
 
-commit 70ce0db7187e19375eaf30534488b6af424f2086
-Date:   Sun Jan 29 11:21:29 2023 -0500
-    progress building real impl of TextToByteReader - but still quite weak
-
-commit da8e896c1d5570b350425a3a02f28267b3daf9cb
-Date:   Thu Feb 2 10:51:43 2023 -0500
-    Deprecated the using PtrImplementationTemplate in Iterator<T> - just use unique_ptr everywhere (probably clearer and not directly used much throughout Stroika)
-
-commit 0328b3adf234ab6cc9ccf2182b3116f14a8f8f05
-Date:   Thu Feb 2 11:19:40 2023 -0500
-    deprecated the name PtrImplementationTemplate -  just use shared_ptr<_IRep> in a bunch of places (I think clearer)
-
-commit 455e2d8c69468e5b9ab8c8b51c7da36e3b20d5f3
-Date:   Thu Feb 2 11:49:08 2023 -0500
-    deprecated Iterator<T>::RepSmartPtr - use unique_ptr<IRep> instead - clearer about kind of ptr - and avoids saying in using type the rep-type redundnantly
-
-commit 3d689883259e5c3adbadb9cb893567dca57181a3
-Date:   Thu Feb 2 12:34:33 2023 -0500
-    deprecated Iterator<>::MakeSmartPtr - and use make_unique directly
-
-commit bbbfe9b4b9d9078e63a5c5d18cfd75e444bef9a2
-Date:   Thu Feb 2 12:35:07 2023 -0500
-    depreate Iterator::MakeSmartPtr
-
-commit e7824737861ced87fa7aaebc911dd192887f4add
-Date:   Thu Feb 2 13:23:29 2023 -0500
-    more fixes to use make_unique to replace Iterator<>::MakeSmartPtr
-
-commit 6f1af44e0ba44d95f424cbf6a64b967de5583889
-Date:   Thu Feb 2 17:16:51 2023 -0500
-    lose _IRepSharedPtr _SetSharedPtrIRep using declarations that were just confusing from Set<> template - hid too much with those.
-
-commit 4b80e55029a5495e8e25f57a3e69b78c9662e95f
-Date:   Fri Feb 3 08:26:31 2023 -0500
-    reduce use of _IRepSharedPtr/_StackRepSharedPtr = use what it maps to in Stack class
-
-commit 6a65d4b3958dbb3c7c00d803f51e7efc0d60122c
-Date:   Fri Feb 3 08:45:58 2023 -0500
-    reduce use of _IRepSharedPtr/etc in container archtype classes
-
-commit 59e110cd01aed52b4feeea9d993e8c1e2470b131
-Date:   Sat Feb 4 10:55:39 2023 -0500
-
-commit b1c39dcdd71c0ee73355f5f6e153c752bbaaab1a
-Date:   Sat Feb 4 12:49:16 2023 -0500
-    KeyedCollection rep Keys method now takes KEY rep as smartptr arg
-
-commit 0094f983b4698f64958f844d94b6693e9d5ea060
-Date:   Sat Feb 4 21:10:22 2023 -0500
-    Iterator no longer inherites from IteratorBase: deprecated
-
-commit e0ee0d9a4ed691011a00bec6fd12054c635810fa
-Date:   Sun Feb 5 09:32:11 2023 -0500
-    not 100% backward compatible for container implementors, but otherwise sb fine; REMOVE _IRep methods for stuff like Keys() and default impl, and instead redo all this using Map(mcuh simpler/cleaner) - only done for Assocation, Bijection, and KeyedCollection so far; deprecated/renamed two Bijection methods Map/InverseMap to avoid name conflict with Iterable Map
-
 commit b75e3fd224460c337aebc4bb829f6a6d07ca58e6
 Date:   Sun Feb 5 10:50:35 2023 -0500
     rewrote MultiSet Elements and UniqueElements() using Map/Generators (much simpler/cleaner, and no need for _IRep methods todo any of that)
-
-commit 9f4d7b746f99d75359710f5342e3b81ddeff8fa2
-Date:   Mon Feb 6 14:18:51 2023 -0500
-    changed impl of _IRep::Find_equal_to by default to call Find with seq - and no obvious performance diff, makes good a bit larger, but I think will pay off once I do seq support in Data structures
 
 commit 59f5cf6d03cf278190a5e91c14b6ecc47c5bebd0
 Date:   Mon Feb 6 15:37:25 2023 -0500
@@ -667,10 +612,6 @@ Author: Lewis G. Pringle, Jr <lewis@sophists.com>
 Date:   Fri Feb 10 08:37:23 2023 -0500
     qCompilerAndStdLib_qualified_enum_using_Buggy workaround
 
-commit ba09635ec2a375ee670c0a149949e878c5357619
-Date:   Fri Feb 10 20:35:10 2023 -0500
-    workaround small msvc2k19 bug - not worht define (sizeof fails on static constexpr array)
-
 commit ae225e915b0745b59a3374c2b7928bdb750d5d16
 Date:   Sat Feb 11 14:39:09 2023 -0500
     A bit more progress on TextCovnert code - renamed ConstructCodeCvt, added eDefault o UnicodeExternalEncodings, and partial implemenation
@@ -695,11 +636,6 @@ commit 329e8ffd50548829367f7f139a02cdc430f043ce
 Date:   Sat Feb 18 12:27:47 2023 -0500
     for macos builds, for some reason, now need brew install pkg-config
 
-commit 326e2f3b8bafbc45b12ecd461bac20a6fa7fa295
-Date:   Sat Feb 18 18:13:09 2023 -0500
-    big changes to Date code - https://stroika.atlassian.net/browse/STK-668 - support full julian date range for Date (4000 BC to distant futu
-    re - with caveats) - reanmed JulianRepType to JulianRepType
-
 commit 6aad5edc0455873bb4e67d1926c69d73547a2172
 Date:   Mon Feb 20 10:47:50 2023 -0500
     qCompilerAndStdLib_stdlib_codecvt_byname_char8_Buggy and missing locale fixes for recent checkins
@@ -722,7 +658,6 @@ Date:   Sun Apr 16 13:09:31 2023 -0400
 
 commit b044a0245ec651a94d14dfd7dded01111c255ab1
 Date:   Sun Apr 16 15:10:00 2023 -0400
-    use new Array push_back
 
 commit fe6958c520742a1ed06bcfa830150ebf61253626
 Date:   Sun Apr 16 19:46:14 2023 -0400
@@ -756,7 +691,6 @@ commit 8417dce6e30d2943f10c88ef99669ca518bfba39
 Date:   Tue Apr 18 10:26:13 2023 -0400
     red of BijectionFactory using new pattern
     new factory pattern on collection/densedatahyperrectangle
-    new factory pattern up to keyedcollection_Factory
 
 Date:   Wed Apr 19 15:11:59 2023 -0400
     Multiset_Factory and Sequence_Factory updates to lastest
@@ -769,37 +703,9 @@ commit eacc076e3d4980e3a809601f286e053894984d81
 Date:   Wed Apr 19 22:02:17 2023 -0400
     SortedAssociation_Factory and SortedCollection_Factory upgrade
 
-commit b5f004300f29c6c82a2cd460c2f731c9186353d1
-Date:   Thu Apr 20 04:08:18 2023 -0400
-    cosmetic/comments; plus SortedKeyedCollection_Factory factory update
-
-commit b6e96f8037ce92d7ac4901cc979afaa9f46b1615
-Date:   Thu Apr 20 10:15:29 2023 -0400
-    new KeyedCollection_Array and switched to that as default in factory if no operator< available
-
 commit 8bac60bd775825efbcfa53143f994f229a8157d7
 Date:   Fri Apr 21 09:01:03 2023 -0400
     (not backward compatible but to internal routine) change to DataStructure::Array - changed its Find() method to return optional, and more closely mimic LinkedList (so cloning code with if() not a problem)
-
-commit a73daaec7b03e18d41e778e8c2007c3f2a9563c6
-Date:   Sun Apr 23 12:38:01 2023 -0400
-    Draft support for Concrete::KeyedCollection_stdhashset including regtests passing
-
-commit 749b513681093e7173521bc8b0cf977fa0e87550
-Date:   Sun Apr 23 12:38:45 2023 -0400
-    Draft support for Concrete::KeyedCollection_stdhashset including regtests passing
-
-commit d2043ce3ad62e8de86c3445f4275ff61ff28c692
-Date:   Mon Apr 24 10:03:50 2023 -0400
-    (not backward compatible in minor ways) - KEY_EXTRACTOR no longer template parameter to CTOR or factory for KeyedCollection and its subclasses since part of the traits(was just default part of traits)
-
-commit 84c7114ec10b61be88e5326e60b515f1d3de98f9
-Date:   Mon Apr 24 13:22:41 2023 -0400
-    experiment using KeyedCollection_ExtractorCanBeDefaulted requires
-
-commit 07dd45bc7b79fec8ed848c82474793f029bc379f
-Date:   Sat Apr 29 11:47:46 2023 -0400
-    keyeedcollection docs/samples
 
 commit 9ea3209a34083509f25322d0999a80fb99b2051b
 Date:   Sat Apr 29 11:59:54 2023 -0400
@@ -857,10 +763,6 @@ commit 092fe4122d25871dbba5f1e84489c28745b33c94
 Date:   Mon May 8 13:48:07 2023 -0400
     more tweaks to windows docker builds
 
-commit 207724acb00a840b01c2fc03937cfe8106fd8853
-Date:   Mon May 8 19:18:15 2023 -0400
-    lose (pointless and now wrong) #pragma comment(lib, "zlib.lib")
-
 commit 0801e8dd53d78864a80a7c0852613112f624e7bc
 Date:   Fri May 12 10:57:44 2023 -0400
     in IO::Transfer regtest, also just warn - not fail - on timeouts - since remote network servers we ping often timeout
@@ -893,53 +795,13 @@ commit b9df601637614a400d68a6388b01b1bc4e733aa7
 Date:   Sat May 13 17:12:52 2023 -0400
     get MSYS docker container working either from choco or myss installer, but doesnt seem to matter mcuh one way or other other
 
-commit 859851df6cc88744f6ca8c1a28fef9d66b4947fe
-Date:   Tue May 16 09:29:39 2023 -0400
-    tweak KeyedCollection CTORS (losing enable_if_t)
-
-commit bb25201168dae929fed1669c6847fa5d737b533a
-Date:   Tue May 16 09:35:22 2023 -0400
-    tweak KeyedCollection CTORS (losing enable_if_t)
-
-commit 84d2f412ca0e785ea2016830163af7a5b1c1a32e
-Date:   Tue May 16 09:44:19 2023 -0400
-    more KeyedCollection cleanups
-
 commit a9c20cf81bb226809592f2bf203635c1a21073ce
 Date:   Tue May 16 11:17:02 2023 -0400
     workaround qCompilerAndStdLib_template_Requires_templateDeclarationMatchesOutOfLine2_Buggy
 
-commit ff8fc42ccb1b83c1a8b1e63bbce24e9de21f9f95
-Date:   Tue May 16 13:59:33 2023 -0400
-    start using forward_iterator in place of soon-to-be-deprecated (Configuration::IsIterator_v)
-
-commit 5ba5e6f1c314285d028fd15a4559a4bcd0c0e6a1
-Date:   Tue May 16 17:39:31 2023 -0400
-    IsIterator_v marked SOON TO BE DEPREACTED; fixed Iterator<> template to support postfix iteration (though got rid of at end of v2.1, add back so supports static_assert (input_iterator<Iterator<int>>) concept - useless, and maybe counter productive, but important to support that concept
-
-commit d7cc47bf04016e88f8742402afeceab0d332a766
-Date:   Tue May 16 20:10:02 2023 -0400
-    More cleanups using input_iterator instead of soon to be deprecated Configuration::IsIterator_v<ITERATOR_OF_T>
-
-commit 463943fae09a61368fd33c6f8b22edb7dd449e2b
-Date:   Tue May 16 20:28:24 2023 -0400
-    More cleanups using input_iterator instead of soon to be deprecated Configuration::IsIterator_v<ITERATOR_OF_T> and losing enable_if_t usage where possible
-
 commit ded4d9360f8980279d56f03128d2d67646a97488
 Date:   Tue May 16 20:52:28 2023 -0400
     qCompilerAndStdLib_iterator_concept_wrongly_requires_default_CTOR_Buggy workaround
-
-commit eebaf77b31b3bcdb4318395194f010d185ebd980
-Date:   Tue May 16 20:53:24 2023 -0400
-    a few more input_iterator conversions losting more enable_if_t usage
-
-commit 88c682735025388dcb5d9769c275bea5a875074f
-Date:   Tue May 16 21:34:53 2023 -0400
-    more celanup of enable_if_t and  Configuration::IsIterator_v() usage - now later marked deprecated
-
-commit 9579346b3b225dc2f274d8ad70da8a5cddd32a39
-Date:   Wed May 17 10:11:42 2023 -0400
-    lose remaining use of Configuration::IsIterator_v and some enable_if_ts, and use input_iterator concept isntead
 
 commit 8b3a91093b369d9d2697f4bff72a8bf5b6a509e8
 Date:   Wed May 17 11:55:07 2023 -0400
@@ -952,17 +814,6 @@ Date:   Wed May 17 15:20:18 2023 -0400
 commit 615b882cb012888996931d02cc9f58f3e239dfb8
 Date:   Thu May 18 10:37:17 2023 -0400
     cleanup enable_if_t in ToString to use requires
-
-commit 37dbaa6523f7e5624c23afa6f5e19b482af57bbc
-Date:   Thu May 18 11:04:37 2023 -0400
-
-commit 7ccc68d29580a0d90b55640c7a645399cfadcb7d
-Date:   Thu May 18 11:39:14 2023 -0400
-    Iterator::DEFAULT CTOR must exist for being range compatible (concept semiregular = std::copyable<T> && std::default_initializable)
-
-commit 666971023fa24f4954c773a0e46bec63ce542a27
-Date:   Thu May 18 11:41:16 2023 -0400
-    Iterator::GetEmptyIterator() noexcept
 
 commit fafcaee02cb72253a9637a8809d04ad84708468e
 Date:   Thu May 18 13:18:13 2023 -0400
@@ -1134,10 +985,6 @@ commit 1b105c6e81f92d22a5f522342ede74c5d2f16999
 Date:   Tue Jun 13 21:19:28 2023 -0400
     renamed concepts to start with I and somewhat simpler names
 
-commit 26f56cff4661bc7bee025e93a2b475a7a86b8716
-Date:   Wed Jun 14 14:08:04 2023 -0400
-    use more of IInputIteratorOfT<> instead of input_iterator, and lse a few more uses of ExtractValueType_t and fix typo in last checkin
-
 commit 9d3c81a69968cdc618404a06575bcd194eb10a7a
 Date:   Thu Jun 15 09:47:50 2023 -0400
     added regression test to capture recent regression in sycnronized caller staleness cache caught in WTF
@@ -1258,16 +1105,9 @@ commit 7e5d60441de99328ad00f4bdffc2e575f1122e8d
 Date:   Fri Jul 7 08:07:30 2023 -0400
     Minor tweaks to Stack docs and code
 
-commit dbd413705abd3ecf908fa2f55c930fd6011368ea
-Date:   Fri Jul 7 11:00:20 2023 -0400
-    cleanups, and comments and concepts on KeyedCollection (mostly add requires in concrete constructors)
-
-commit 8b7567ed68d446e3582c2b10e097cade0a692f3f
-Date:   Fri Jul 7 11:26:22 2023 -0400
-
 #endif
 
-
+===
 
 ### 2.1.13 {2023-04-14}
 
