@@ -681,11 +681,18 @@ sub WriteVSCodeCPPExtensionConfigFile
 	if (!(-e $vsCodeCppExtensionCng)) {
 		`echo "{\\\"configurations\\\":[]}" > $vsCodeCppExtensionCng`;
 	}
+	{
+		local $envVars = `jq ".[]" < $vsCodeCppExtensionCng`;
+		if ($envVars eq null || $envVars eq "") {
+			`echo "{\\\"configurations\\\":[]}" > $vsCodeCppExtensionCng`;
+		}
+	}
+
 
 	# Add myDefaultIncludePath environment-variable if missing
 	{
 		local $envVars = `jq ".env" < $vsCodeCppExtensionCng`;
-		if ($envVars == null) {
+		if ($envVars eq null || $envVars eq "") {
 			local $r = ` jq ".env={}" < $vsCodeCppExtensionCng`;
 			open(FH, '>', $vsCodeCppExtensionCng) or die $!;
 			print FH $r;
