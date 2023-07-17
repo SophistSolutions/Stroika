@@ -36,7 +36,7 @@ especially those they need to be aware of when upgrading.
     - use if constexpr instead of #if qDebug in a few places
       <br/>e.g. around qStroika_Foundation_Exection_Throw_TraceThrowpoint
     - use more perfect forwarding (e.g. use PREDICATE&& instead of const PREDICATE& - in response to (oblique) suggestion from https://www.reddit.com/r/cpp/comments/zl7ncq/stroika_an_opensource_modern_portable_threadsavvy/ comment/suggestion)
-
+    - **not 100% backward compatible** - but changed most constexpr string constants throughout stroika from wstring_view to string_view - since they are all ascii. As long as used through String{} API, this will be 100% transparent. But if used directly, it may not compile (but hopefully in obvious ways)
   - Foundation
     - Cache
       - TimedCache
@@ -72,12 +72,15 @@ especially those they need to be aware of when upgrading.
         - Character (char16_t hiSurrogate, char16_t lowSurrogate) CTOR and related refactoring, and Character::GetSurrogatePair() method
         - simplify/cleanup Character class
         - Minor tweak/docs for Character::IsWhitespace ()
-        - fixed constexpr use on Character::Compare
-        - Character::Compare - now templated with concepts on CHAR_T, and moved to header, and span based (deprecated /4 overload)
         - new Characters::IsAscii/AsASCIIQuietly functions (for any unicode and char buf - string or stackbuffer - output)
         - loosed requires on Character::IsASCII (and renmaed from IsAscii);
         - tighten Character::As<> template so instead of just two specializations, uses requires so compiler not linker warn about bad arg types
-        - Added Character::Compare () overload for span
+        - Character::Compare
+          - Added Character::Compare () overload for span
+          - tried kUseStdTraitsCompare_, but no obvious difference
+          - Compare_CS_() cannot use memcmp() - at least not portably - due to differnt byte orderings, but can still rewrite this to be faster
+          - Character::Compare - now templated with concepts on CHAR_T, and moved to header, and span based (deprecated /4 overload)
+          - fixed constexpr use on Character::Compare
       - CodeCvt
         - new CodeCvt<> template to replace use of std::codecvt, and integrate with new UTFConverter.
         - moved stome stuff from TextConvert to CodeCvt template - more of a swiss-army-knife
@@ -181,6 +184,7 @@ especially those they need to be aware of when upgrading.
         - Options::Implementation::eBoost_Locale (boost locale support for utf_to_utf)
         - qPlatform_Windows impl (now default on windows cuz seems fastest)
       - ToFloat/String2Int
+        - **not backward compatible** - but minor - change in FloatConversion::ToStringOptions parameters - GetUseLocale now returns locale, not optional, and new GetUsingLocaleClassic, and a few changes in rarely used types related
         - ToFloat and String2Int overloads taking span<> (and more overloads to begin to make up for ambiguity - come back later and rewrite all this using requires
         - refactoring of ToFloat () using span (not complete but better)
         - progress rewriting ToFloat code to be more C++20-ish/spanish etc
@@ -190,10 +194,22 @@ especially those they need to be aware of when upgrading.
         - big simplification to String2Int code using concepts (hopefully still correct)
         - String2Int - method optimizes more span cases; and use Character::AsASCIIQuietly in place of deprecated String::AsASCIIQuietly
     - Common
-      - Common::Comparison
+      - Compare
         - lose Common::strong_ordering and Common::kLess, kEquals, kGreater (**not backwards compatible**)
         - support directly/depend upon std c++ 20 three way compare/spaceship operator (no more conditional support for it not existing).
         - Deprecated  Common::ThreeWayComparer and switched to using std::compare_three_way instead
+        - a few small fixes to DeclareEqualsComparer and DeclareInOrderComparer to use decay_t (all this code needs careful review/rewrite in lgiht of new concept stuff etc)
+        - new PossiblyInOrderComparer and InOrderComparer using concepts (experimental)
+        - new concept EqualsComparer and PossiblyEqualsComparer. Added regtests, and used once (experimentally) in KeyedCollection
+        - start converting more use of Common::EqualsComparer<> concept to simplify tempaltes intead of enable_if_t<Common::IsEqualsComparer
+        - experiment using using Common::EqualsComparer to simplify declarations in containers
+        - renamed Common::EqualsComparer to IEqualsComparer
+        - more cleanups - esp to Iterbale<> to sue the new Common::IEqualsCOmparer - and in doing so fixed longstanding worakround where I - had removed a (useful/needed) type constraint - added back and fixed calls now
+        - more use of IEqualsComparer<KEY_TYPE> - testing narrow case to see if breaks any compilers before I do rest similar
+        - more use of concept IEqualsComparer<KEY_TYPE> in place of enable_if_t<Common::IsEqualsComparer...
+        - feprecated IsEqualsComparer
+        - use new IInOrderComparer in a bunch of spots instead of deprecated IsStrictInOrderComparer
+        - refactored ExtractComparisonTraits_v and only use that making ExtractComparisonTraits deprecated; Fixed IComparer and now use in - in IEqualsComparer/IInOrderComparer
       - GUID
         - added missing value_type so  static_assert (IIterable<GUID>); passes
         - define Common::GUID::size () const method
@@ -243,6 +259,13 @@ especially those they need to be aware of when upgrading.
          - major switch to using concepts, and requires (in place of enable_if_t)
       - Association
         - Added Association<KEY_TYPE, MAPPED_VALUE_TYPE>::operator[] () syntactic sugar
+      - Mapping
+        - **New** Mapping_stdhashmap
+        - default Mapping factory to using Concrete::Mapping_stdhashmap (where applicable)
+        - fixed SortedMapping<KEY_TYPE, MAPPED_VALUE_TYPE>::operator<=>
+        - lose Mapping _IRep Keys/MappedValues use use base class Iterable::Map<> todo this (as before)
+        - Adjusted regtest to take into account that order of elts can change due to Mapping now defaulting to non-sorted(hashmap)
+        - Mapping - use requires so cleaer about Mapping::operator== and documented better as well the behavior
       - Sequence
         - added MOVE ctor for Sequence_stdvector taking std::vector<>
     - Cryptograpy
@@ -251,6 +274,7 @@ especially those they need to be aware of when upgrading.
       - Digester ctor constexpr
       - Cryptography/Digest/HashBase
       - more cleanups to do but significant speedup from Digester 'span' support (prelim) - on hashtable stuff from json parsing
+      - new concept Digest::IHashFunction
     - Database
       - SQLite
         - fixed CompiledOptions::kThe.ENABLE_JSON1 for newwer sqlite
@@ -261,6 +285,12 @@ especially those they need to be aware of when upgrading.
       - VariantValue
         - Add support to Stroika VariantValue so can be trivially constructed from boost::json::value, if Stroika built with boost
         - support VariantValue::As<boost::json::value> () - for full (easy) interoperability with boost (json support)
+        - to some degreee fix bugs with comparing VariantValue objects, but mostly document https://stroika.atlassian.net/browse/STK-971 - BROKEN FOR CASE OF MAPPINGS.
+        - loosened test case for comparing VariantValue output - parse/unparse json roundtriping - since using unorderedmap, must be more careful testing/comparing
+        - Fixed https://stroika.atlassian.net/browse/STK-971 - VariantValue compare functions - and at same not - INCOMPATIBLE change - LOSING 'exactTypeMatchOnly' pareter to EqualsComparer/ThreeWayComparer functions for VariantValue (dont think ever used and documented didnt make much sense)
+        - must be more careful comparing VariantValue for equality now - 5 == 5 no longer works - must save .ConvertTo(eInteger)
+        - avoid needless operator= in VariantValue::CTOR (boost value), and cleanup use of operator= defs for VariantValue = use more concepts and hopefully fixed some copy/move stuff
+        - Minor tweaks to  VariantValue performance (final and mk_ instead of VariantValue CTOR
       - Variant Reader/Writer
         - General
           - refactoring DataExchange/Variant/Writer code - better abstracting transformations; use that in (so far untested but probably solid) DataExchange::Variant::CharacterDelimitedLines readers/writers
@@ -341,13 +371,19 @@ especially those they need to be aware of when upgrading.
         - renamed SpanOfT to IsSpanOfT, and added IsSpanT, and improved them all and documented better (works across extent)
         - new Memory::SpanReInterpretCast utility; 
       - regtest for GetScaledUpCapacity () behavior
-      - Memory::ValueOf constexpr
+      - ValueOf
+        - Memory::ValueOf constexpr
+        - Somewhat dangerous (but good time for such risks) change to Memory::ValueOf - returning const& now. Documented in declaration why I believe this is safe/appropriate (what optional does)
+      - MakeSharedPtr
+        - new Memory::MakeSharedPtr;  DELETED (not deprecated) MakeSharedPtr function in Memory for SharedPtr class cuz no longer really use this and I want to use the name for something else; Deprecated Iterable::MakeSmartPtr and switched to using Memory::MakeSharedPtr
+      - Memory::SharedPtr now deprecated, and no longer used (even conditionally)
       - Added std::byte operator_b (unsigned long long b) to namespace Memory; and used it in a bunch of places
       - MemCpy/MemCmp
         - avoid calling memcpy with nullptr
         - use Memory::MemCmp isntead of memcpy to workaorund issue with nullptr passed/ubsan
         - switch Memory::MemCmp () to use memcpy where it can
         - did and used span overload for Memory::MemCmp
+      - SharedByValue<>: fixed broken (and unused) rwget_ptr, and implemented new cget_ptr (pretty sure safe - havent thought about this in a while)
     - IO
       - Network
         - Added a couple more Execution::DeclareActivity in Networking code, so exceptions more obvious what failed; and added linux IPV6_MULTICAST_HOPS workaround to issue https://stroika.atlassian.net/browse/STK-578
@@ -358,6 +394,7 @@ especially those they need to be aware of when upgrading.
           - windows socket thread interuption - partial fix/woarkound for https://stroika.atlassian.net/browse/STK-964 - enuf to probably fix balance of https://stroika.atlassian.net/browse/STK-963
         - URI
           - regtest for URI::SetScheme and docs
+          - in URI class - use requires instead of unconstrained templates for polymorphic getter functions
     - Streams
       - cleanups to Streams/ExternallyOwnedMemoryInputStream - mostly using concepts in place of enable_if_t; but also extended to support char iterators for New with ELEMENT_TYPE=byte (for easier integration with stl/common c++ usage)
       - new StreamReader\<ELEMENT_TYPE>
@@ -451,6 +488,9 @@ especially those they need to be aware of when upgrading.
     - better error reporting in configure script
     - set configure script to default to --std=c++20 (effectively requiring g++ 9 or later - maybe 10 or later - we'll see)
     - change configure test for libc++ < version 11 - fail with good message
+  - Scripts
+    - ApplyConfiguration
+      - fixed to handle bad .vscode/c_cpp_properties.json files - if they were empty - it was not updating them, and leaving them empty
   - Docker
     - more cleanups to dockerfile for ubuntu 20.04
     - Better docs about docker container windows build workarounds, and need to specify --network "Default Switch" in docker build script in one more place
@@ -481,103 +521,17 @@ especially those they need to be aware of when upgrading.
 
 
 #if 0
-commit 813587847662651e17ee5c03dbbc62a00dd34918
-Date:   Thu Dec 29 11:38:01 2022 -0500
-    not backward compatible, but minor change in ToStringOptions parameters - GetUseLocale now returns locale, not optional, and new GetUsingLocaleClassic, and a few changes in rarely used types related
 
-commit 34d9570225b422912b0a153f64ea8f932d902a18
-Date:   Thu Dec 29 14:57:17 2022 -0500
-    fixed small regression in ToStringOptions::ToStringOptions
-
-commit dd4c40945717d2e9a8232a9a3464d55e3d77d919
-Date:   Fri Dec 30 09:28:08 2022 -0500
-    cannot cast iterators for spans so cast underlying pointers
-
-commit 239f4f5749f7aef15519762a2bdce3def9d16f27
-Date:   Wed Jan 4 10:32:02 2023 -0500
-    Compare_CS_() cannot use memcmp() - at least not portably - due to differnt byte orderings, but can still rewrite this to be faster
-
-commit fb71fe013803377ef3f214d5e6046f45d0b9b76a
-Date:   Wed Jan 4 20:01:07 2023 -0500
-    SharedByValue<>: fixed broken (and unused) rwget_ptr, and implemented new cget_ptr (pretty sure safe - havent thought about this in a while)
-
-commit a128815233aa47173dd9eee40d96f65549e5ae3d
-Date:   Sat Jan 7 15:31:21 2023 -0500
-    document https://stroika.atlassian.net/browse/STK-969 issue
-
-commit 0051e3891317fa78f9e301c087a55d595c9468c6
-Date:   Tue Jan 10 08:39:37 2023 -0500
-    in URI class - use requires instead of unconstrained templates for polymorphic getter functions
-
-commit e164c84e5f64c133f824f968f40dba8dafa3b02a
-Date:   Tue Jan 10 12:26:58 2023 -0500
-    **not 100% backward compatible** - but changed most constexpr string constants throughout stroika from wstring_view to string_view - since they are all ascii. As long as used through String{} API, this will be 100% transparent. But if used directly, it may not compile (but hopefully in obvious ways)
-
-commit 2e9dbdc43fa2483f352402a86aca4238df7ccb13
-Date:   Tue Jan 10 21:19:14 2023 -0500
-    Somewhat dangerous (but good time for such risks) change to Memory::ValueOf - returning const& now. Documented in declaration why I believe this is safe/appropriate (what optional does)
-
-commit 0ee368bc930d595689c3d2b400136f9a3aa887c7
-Date:   Wed Jan 11 15:17:38 2023 -0500
-    tried kUseStdTraitsCompare_, but no obvious difference
-
-commit f28dce32539d901aadcebdccf984bc69ec5a753a
-Date:   Thu Jan 12 07:17:04 2023 -0500
-    draft of support for Mapping_stdhashmap
-
-commit 345645088fb9eb3a5e47034ee1b8de87a184dfcb
-Date:   Thu Jan 12 07:18:08 2023 -0500
-    a few small fixes to DeclareEqualsComparer and DeclareInOrderComparer to use decay_t (all this code needs careful review/rewrite in lgiht of new concept stuff etc)
-
-commit 090d23a946961325f6a523c7b0b5417301354daf
-Date:   Thu Jan 12 08:12:22 2023 -0500
-    new concept IsHashFunction
-
-commit e4586ccf2902999c39f01c8d61e83ed862c809db
-Date:   Thu Jan 12 08:48:23 2023 -0500
-    Little progress on Mapping_stdhashmap
-
-commit d81428cf4a5c69caeeb4a0426299ba6abdc88814
-Date:   Thu Jan 12 10:02:58 2023 -0500
-    hopefully complete usable first draft of Mapping_stdhashmap
-
-commit 7629f6564a3843d61e506638ee53b0b72fc6b2ef
-Date:   Thu Jan 12 10:28:59 2023 -0500
-
-commit 40d7613d1eafafedbc941c487dda3126f0a3f366
-Date:   Thu Jan 12 11:08:50 2023 -0500
-    default Mapping factory to using Concrete::Mapping_stdhashmap
-
-commit 1f132271c13d02ef053fe60379f86f978aa97e76
-Date:   Thu Jan 12 20:56:34 2023 -0500
-    Adjusted regtest to take into account that order of elts can cahnge due to Mapping now defaulting to non-sorted(hashmap)
-
-commit 5eb18e2be5fffa22045f2b157e8dceeb6a12dbf5
-Date:   Thu Jan 12 21:21:39 2023 -0500
-    Mapping - use requires so cleaer about Mapping::operator== and documented better as well the behavior
-
-commit 183fcaf8fd5fa4fd251ab8e3c7f76868995aa0ff
-Date:   Thu Jan 12 21:44:02 2023 -0500
-    to some degreee fix bugs with comparing VariantValue objects, but mostly document https://stroika.atlassian.net/browse/STK-971 - BROKEN FOR CASE OF MAPPINGS.
 
 commit 3ce8d8e12e4f8a8436ae6d3fffd5b16d2ed77396
 Date:   Thu Jan 12 21:44:48 2023 -0500
-    loosened test case for comparing VariantValue output - parse/unparse json roundtriping - since using unorderedmap, must be more careful testing/comparing
-
-commit a6b58a2110235eae02203d6819a76c60cecf4d2b
-Date:   Thu Jan 12 14:38:47 2023 -0500
 
 commit 3638f865194d0d79cf512968c581e6baefaa9fd7
 Date:   Thu Jan 12 14:39:19 2023 -0500
     minor tweaks to std::hash<String>::operator() (const String& arg) - still should explore
 
-commit a30ca20fed747ae9e41e55509bb8f69b48d4fdab
-Date:   Thu Jan 12 23:03:38 2023 -0500
-    fixed SortedMapping<KEY_TYPE, MAPPED_VALUE_TYPE>::operator<=>
-
 commit d70a58e6acf3e77e3d5e89457f850cd74c398117
 Date:   Thu Jan 12 23:11:56 2023 -0500
-    Fixed https://stroika.atlassian.net/browse/STK-971 - VariantValue compare functions - and at same not - INCOMPATIBLE change - LOSING 'exactTypeMatchOnly' pareter to EqualsComparer/ThreeWayComparer functions for VariantValue (dont think ever used and documented didnt make much sense)
 
 commit b3e82ca1204a6c7184e3b8013a4d44a25df34877
 Date:   Fri Jan 13 09:53:34 2023 -0500
@@ -597,7 +551,6 @@ Date:   Sat Jan 14 23:12:10 2023 -0500
 
 commit 8133e0e6c6481be7c7809cc6b0234838730508bf
 Date:   Sun Jan 15 12:30:17 2023 -0500
-    new PossiblyInOrderComparer and InOrderComparer using concepts (experimental)
 
 commit bfb96a752aae9b16cf179602e0662295aafab9f0
 Date:   Sun Jan 15 12:36:57 2023 -0500
@@ -610,7 +563,6 @@ Date:   Sun Jan 15 13:16:54 2023 -0500
 
 commit 9db114b14f709cd823023e2c65e85b7ce9051bdd
 Date:   Sun Jan 15 14:45:13 2023 -0500
-    must be more careful comparing VariantValue for equality now - 5 == 5 no longer works - must save .ConvertTo(eInteger)
 
 commit d80d779b12f490ed4e734b958927e7a6b79d57cd
 Date:   Tue Jan 17 09:53:16 2023 -0500
@@ -650,11 +602,9 @@ Date:   Sun Jan 29 11:21:29 2023 -0500
 
 commit 8e5b7acbed38bb17db686a4f098ce131ac55eede
 Date:   Sun Jan 29 23:19:24 2023 -0500
-    avoid needless operator= in VariantValue::CTOR (boost value), and cleanup use of operator= defs for VariantValue = use more concepts and hopefully fixed some copy/move stuff
 
 commit c337eea3bebdedfa4bb35a16b0fff81f3532fd44
 Date:   Mon Jan 30 10:04:43 2023 -0500
-    Minor tweaks to  VariantValue performance (final and mk_ instead of VariantValue CTOR
 
 commit 14fd656e3b7b8f531fddbfb61ce0eefbffc02076
 Date:   Wed Feb 1 12:38:56 2023 -0500
@@ -676,10 +626,6 @@ commit a641c415aff3eca07c48fc09d838aca86dd244cd
 Date:   Thu Feb 2 11:58:07 2023 -0500
     Iterable<T>::_IteratorRepSharedPtr deprecated
 
-commit db213f5e80d895b4bb98a05fd850fb4b93cd4a70
-Date:   Thu Feb 2 12:06:21 2023 -0500
-    new Memory::MakeSharedPtr
-
 commit 3d689883259e5c3adbadb9cb893567dca57181a3
 Date:   Thu Feb 2 12:34:33 2023 -0500
     deprecated Iterator<>::MakeSmartPtr - and use make_unique directly
@@ -691,14 +637,6 @@ Date:   Thu Feb 2 12:35:07 2023 -0500
 commit e7824737861ced87fa7aaebc911dd192887f4add
 Date:   Thu Feb 2 13:23:29 2023 -0500
     more fixes to use make_unique to replace Iterator<>::MakeSmartPtr
-
-commit 7a798b10c680d43ee84c92423d05a52c474102f6
-Date:   Thu Feb 2 13:49:13 2023 -0500
-    DELETED (not deprecated) MakeSharedPtr function in Memory for SharedPtr class cuz no longer really use this and I want to use the name for something else
-
-commit ed223ade9d050207d96a3a1ed814230a454c65fb
-Date:   Thu Feb 2 14:15:25 2023 -0500
-    Deprecated Iterable::MakeSmartPtr and switched to using Memory::MakeSharedPtr
 
 commit 6f1af44e0ba44d95f424cbf6a64b967de5583889
 Date:   Thu Feb 2 17:16:51 2023 -0500
@@ -746,7 +684,6 @@ Date:   Sun Feb 5 09:32:11 2023 -0500
 
 commit 3e906109c8142daf0b0744a36cc4368f73e66b65
 Date:   Sun Feb 5 09:56:18 2023 -0500
-    lose Mapping _IRep Keys/MappedValues use use base class Iterable::Map<> todo this (as before)
 
 commit b75e3fd224460c337aebc4bb829f6a6d07ca58e6
 Date:   Sun Feb 5 10:50:35 2023 -0500
@@ -767,9 +704,6 @@ Date:   Mon Feb 6 13:39:55 2023 -0500
 commit 9f4d7b746f99d75359710f5342e3b81ddeff8fa2
 Date:   Mon Feb 6 14:18:51 2023 -0500
     changed impl of _IRep::Find_equal_to by default to call Find with seq - and no obvious performance diff, makes good a bit larger, but I think will pay off once I do seq support in Data structures
-
-commit 0642a2fb630edc81a24ae7f813659647493f2f55
-Date:   Mon Feb 6 15:36:46 2023 -0500
 
 commit 59f5cf6d03cf278190a5e91c14b6ecc47c5bebd0
 Date:   Mon Feb 6 15:37:25 2023 -0500
@@ -934,14 +868,6 @@ commit 749b513681093e7173521bc8b0cf977fa0e87550
 Date:   Sun Apr 23 12:38:45 2023 -0400
     Draft support for Concrete::KeyedCollection_stdhashset including regtests passing
 
-commit 1e6852729ac4f7ea7a9c17cb695f1df2d206a5ab
-Date:   Sun Apr 23 12:49:19 2023 -0400
-    cleanup - reduce dependnecy on Mapping_stdhashmap_IsDefaultConstructible and replace with using is_default_constructible_v
-
-commit 75ed8f114460cfedccc07f3f43fd7f069032f773
-Date:   Sun Apr 23 13:09:31 2023 -0400
-    lose Mapping_stdhashmap_IsDefaultConstructible and use is_default_constructible_v instead
-
 commit d2043ce3ad62e8de86c3445f4275ff61ff28c692
 Date:   Mon Apr 24 10:03:50 2023 -0400
     (not backward compatible in minor ways) - KEY_EXTRACTOR no longer template parameter to CTOR or factory for KeyedCollection and its subclasses since part of the traits(was just default part of traits)
@@ -1046,10 +972,6 @@ commit b9df601637614a400d68a6388b01b1bc4e733aa7
 Date:   Sat May 13 17:12:52 2023 -0400
     get MSYS docker container working either from choco or myss installer, but doesnt seem to matter mcuh one way or other other
 
-commit 9957094d308d6dd8374c8797da0481964229cd02
-Date:   Tue May 16 07:20:32 2023 -0400
-    new concept EqualsComparer and PossiblyEqualsComparer. Added regtests, and used once (experimentally) in KeyedCollection
-
 commit 859851df6cc88744f6ca8c1a28fef9d66b4947fe
 Date:   Tue May 16 09:29:39 2023 -0400
     tweak KeyedCollection CTORS (losing enable_if_t)
@@ -1068,7 +990,7 @@ Date:   Tue May 16 11:17:02 2023 -0400
 
 commit ff8fc42ccb1b83c1a8b1e63bbce24e9de21f9f95
 Date:   Tue May 16 13:59:33 2023 -0400
-    start using forward_iterator in place of soon-to-be-deprecated (Configuration::IsIterator_v"
+    start using forward_iterator in place of soon-to-be-deprecated (Configuration::IsIterator_v)
 
 commit 5ba5e6f1c314285d028fd15a4559a4bcd0c0e6a1
 Date:   Tue May 16 17:39:31 2023 -0400
@@ -1098,41 +1020,13 @@ commit 9579346b3b225dc2f274d8ad70da8a5cddd32a39
 Date:   Wed May 17 10:11:42 2023 -0400
     lose remaining use of Configuration::IsIterator_v and some enable_if_ts, and use input_iterator concept isntead
 
-commit ec5a3b5f24c57122f1bb49466d5eb92ade312005
-Date:   Wed May 17 10:45:17 2023 -0400
-    start converting more use of Common::EqualsComparer<> concept to simplify tempaltes intead of enable_if_t<Common::IsEqualsComparer
-
-commit 940c9cf6f39e361a3fa256b644f44bc73240a207
-Date:   Wed May 17 11:12:46 2023 -0400
-    experiment using using Common::EqualsComparer to simplify declarations in containers
-
 commit 8b3a91093b369d9d2697f4bff72a8bf5b6a509e8
 Date:   Wed May 17 11:55:07 2023 -0400
     more use of concepts in AddAll usage
 
-commit 19852c870274ad05b9e59f25621fbbd23d5b1cff
-Date:   Wed May 17 12:36:28 2023 -0400
-    renamed Common::EqualsComparer to IEqualsComparer
-
-commit 5b3310a2b9abe02f5b046a25c46e1be1e8b96fa3
-Date:   Wed May 17 13:44:46 2023 -0400
-    more cleanups - esp to Iterbale<> to sue the new Common::IEqualsCOmparer - and in doing so fixed longstanding worakround where I had removed a (useful/needed) type constraint - added back and fixed calls now
-
 commit d5d7e2f424ac7c9dd29ba11395bfe5ebf7e8f13e
 Date:   Wed May 17 15:20:18 2023 -0400
    qCompilerAndStdLib_template_ForwardDeclareWithConceptsInTypenameCrasher_Buggy BWA
-
-commit e6583afc8821934e7df52a8bc5a0937744ce9077
-Date:   Wed May 17 15:43:06 2023 -0400
-    more use of IEqualsComparer<KEY_TYPE> - testing narrow case to see if breaks any compilers before I do rest similar
-
-commit c77637faa7da2603606ec0ca112bd7717ee1a61f
-Date:   Wed May 17 19:55:14 2023 -0400
-    more use of concept IEqualsComparer<KEY_TYPE> in place of enable_if_t<Common::IsEqualsComparer...
-
-commit bdbfe68a9278a5d244fdfc73ff36e4218f0b5ea5
-Date:   Thu May 18 10:18:24 2023 -0400
-    feprecated IsEqualsComparer
 
 commit 615b882cb012888996931d02cc9f58f3e239dfb8
 Date:   Thu May 18 10:37:17 2023 -0400
@@ -1237,14 +1131,6 @@ Date:   Sat May 27 11:01:54 2023 -0400
 commit e470fae5c70980bcda3bd69df2dd7c290bee3cd0
 Date:   Sun May 28 14:25:52 2023 -0400
     IRange concept and used in partition code
-
-commit 5c04da4ed621f0b7ad86b64b06a489dbd3196766
-Date:   Sun May 28 21:17:59 2023 -0400
-    use new IInOrderComparer in a bunch of spots instead of deprecated IsStrictInOrderComparer
-
-commit b14a4a5199569c50c52b311d78b1dd80154a56e7
-Date:   Mon May 29 20:20:49 2023 -0400
-    more use of IInOrderComparer<>
 
 commit 7fbe3040d69b2a5cfec5896c58eda511b9b58ef2
 Date:   Mon May 29 22:52:16 2023 -0400
@@ -1440,10 +1326,6 @@ commit b7b64b5331df059d1336e252db386d98cac0bff1
 Date:   Mon Jun 19 20:59:18 2023 -0400
     New Configuration::HasEq concept to replace has_eq_v
 
-commit 8486b5004569fb24aafbbfa17c16486d61b088e5
-Date:   Tue Jun 20 19:45:26 2023 -0400
-    Memory::SharedPtr now deprecated, and no longer used (even conditionally)
-
 commit 66f5a3435e307126fd471db67a564188d2b876df
 Date:   Tue Jun 20 21:50:11 2023 -0400
     more cleanup of concept code, and more disabling of SharedPtr deprecation warnings
@@ -1500,20 +1382,9 @@ commit 8607215e408a14aa4619db92933f95b6336f437e
 Date:   Tue Jun 27 11:54:01 2023 -0400
     **NOT BACKWARD COMPAT CHANGE** ONE TEMPLATE ARG VARIATION OF Common::ComparisonRelationDeclaration renamed to Common::ComparisonRelationDeclarationBase; and several cleanups to concepts code
 
-commit 63d5ed4ab52b60c91673ae9c153c562a5e5241a0
-Date:   Tue Jun 27 17:37:41 2023 -0400
-    refactored ExtractComparisonTraits_v and only use that making ExtractComparisonTraits deprecated; Fixed IComparer and now use in in IEqualsComparer/IInOrderComparer
-
-commit b9443d5f26049119f2f3c59beb2d9f16538e331f
-Date:   Tue Jun 27 19:55:13 2023 -0400
-    more cleanups to concepts support in Common/Compare
-
 commit 2637345b664007111686a76b338dc8ddef5ed6a7
 Date:   Tue Jun 27 20:01:54 2023 -0400
     lose a few more accidentally left around IsAddable_v definitions
-
-commit 8db6cddd64cbd81c4d58080fc68af61a06a9b212
-Date:   Thu Jun 29 15:37:51 2023 -0400
 
 commit d1c9ec25378719966d6612548d02566515c1eeaf
 Date:   Thu Jun 29 16:52:20 2023 -0400
