@@ -260,6 +260,7 @@ especially those they need to be aware of when upgrading.
         - qCompilerAndStdLib_clangWithLibStdCPPStringConstexpr_Buggy
         - qCompilerAndStdLib_stdlib_ranges_pretty_broken_Buggy
         - qCompilerAndStdLib_template_Requires_templateDeclarationMatchesOutOfLine_Buggy
+        - qCompilerAndStdLib_template_Requires_templateDeclarationMatchesOutOfLine2_Buggy
       - Support compiler _MSC_VER_2k22_17Pt6_ bug define support
       - new _Stroika_Foundation_STRINGIFY_ macro
       - new Configuration::ConvertibleTo template class as helper for IIterableOf\<T> concept
@@ -565,7 +566,6 @@ especially those they need to be aware of when upgrading.
 - Added Profile configuration for windows, since handy for doing profiling (not auto-built - just defined so can be easily used)
 
 ---
-
 ===
 
 
@@ -607,11 +607,6 @@ commit eb3f343d08d007b1506aa2888a36bbc30dbcd42a
 Date:   Thu Feb 9 23:37:34 2023 -0500
     cosmetic; and progress on Characters_TextConvert (still alot todo before testable)
 
-commit f5be86da953de65256e15bf38d27cc6cbcd8e4ed
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Fri Feb 10 08:37:23 2023 -0500
-    qCompilerAndStdLib_qualified_enum_using_Buggy workaround
-
 commit ae225e915b0745b59a3374c2b7928bdb750d5d16
 Date:   Sat Feb 11 14:39:09 2023 -0500
     A bit more progress on TextCovnert code - renamed ConstructCodeCvt, added eDefault o UnicodeExternalEncodings, and partial implemenation
@@ -635,14 +630,6 @@ Date:   Mon Feb 13 14:06:18 2023 -0500
 commit 329e8ffd50548829367f7f139a02cdc430f043ce
 Date:   Sat Feb 18 12:27:47 2023 -0500
     for macos builds, for some reason, now need brew install pkg-config
-
-commit 6aad5edc0455873bb4e67d1926c69d73547a2172
-Date:   Mon Feb 20 10:47:50 2023 -0500
-    qCompilerAndStdLib_stdlib_codecvt_byname_char8_Buggy and missing locale fixes for recent checkins
-
-commit 08ec0b3e52842137e52038f92dacd5e9d74bb21d
-Date:   Mon Feb 20 11:40:03 2023 -0500
-    qCompilerAndStdLib_stdlib_codecvt_byname_char8_Buggy seems buggy for lib std c++ too
 
 commit ad9b06996829057c5de473c673c625ecc2999a0a
 Date:   Sun Apr 16 11:22:13 2023 -0400
@@ -794,14 +781,6 @@ Date:   Sat May 13 16:08:04 2023 -0400
 commit b9df601637614a400d68a6388b01b1bc4e733aa7
 Date:   Sat May 13 17:12:52 2023 -0400
     get MSYS docker container working either from choco or myss installer, but doesnt seem to matter mcuh one way or other other
-
-commit a9c20cf81bb226809592f2bf203635c1a21073ce
-Date:   Tue May 16 11:17:02 2023 -0400
-    workaround qCompilerAndStdLib_template_Requires_templateDeclarationMatchesOutOfLine2_Buggy
-
-commit ded4d9360f8980279d56f03128d2d67646a97488
-Date:   Tue May 16 20:52:28 2023 -0400
-    qCompilerAndStdLib_iterator_concept_wrongly_requires_default_CTOR_Buggy workaround
 
 commit 8b3a91093b369d9d2697f4bff72a8bf5b6a509e8
 Date:   Wed May 17 11:55:07 2023 -0400
@@ -1013,10 +992,6 @@ commit db752037a368b4f063feced8a2c014295ae892c0
 Date:   Sun Jun 18 08:48:34 2023 -0400
     fixed bug define qCompilerAndStdLib_to_chars_FP_Buggy for _LIBCPP_VERSION <= 15007 - still broken
 
-commit 913f23ac7ac8d35c43dde0fff03219cf41ca21d7
-Date:   Sun Jun 18 20:08:04 2023 -0400
-    lose qCompilerAndStdLib_stdlib_codecvt_byname_char8_Buggy bug define cuz not used and not documetned what it means
-
 commit 7d16b8eb25510136919f3329c3dfcf9625ce576e
 Date:   Sun Jun 18 20:45:47 2023 -0400
     more misc code cleanups - for diff compiler verisons, etc
@@ -1036,18 +1011,6 @@ Date:   Mon Jun 19 20:59:18 2023 -0400
 commit 66f5a3435e307126fd471db67a564188d2b876df
 Date:   Tue Jun 20 21:50:11 2023 -0400
     more cleanup of concept code, and more disabling of SharedPtr deprecation warnings
-
-commit 942e5b8618642a2c93fe913856a437e3e9af3cde
-Date:   Wed Jun 21 10:17:24 2023 -0400
-    magic to refactor IIterbale with template instead of type T (IsAddable_v)
-
-commit 896245b6d4305312af5e2d55d2345aedca62aed0
-Date:   Wed Jun 21 11:44:15 2023 -0400
-    back to using old definition of IIterbale since new one not working except on visual studio
-
-commit 07e44f37bb7047c37668854f7c8ba47c0e840690
-Date:   Wed Jun 21 12:17:10 2023 -0400
-    back to using old definition of IIterbale since new one not working except on visual studio
 
 commit eae6da0c51596cf42369bef7153677e917c6a15d
 Date:   Wed Jun 21 12:32:27 2023 -0400
