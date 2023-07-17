@@ -41,6 +41,7 @@ especially those they need to be aware of when upgrading.
       - comments and use remove_cvref_t intead of remove_cv_t in one place (need todo more)
       - use std::remove_cvref_t directly - no longer need for indirection trhough obsolete Configuration::remove_cvref_t
       - use remove_cvref_t instead of decay_t, since clearer and sufficeint in most (all) cases
+    - in many template concept usages, use derived_from instead of is_base_of_v
   - Foundation
     - Cache
       - TimedCache
@@ -88,6 +89,7 @@ especially those they need to be aware of when upgrading.
       - CodeCvt
         - new CodeCvt<> template to replace use of std::codecvt, and integrate with new UTFConverter.
         - moved stome stuff from TextConvert to CodeCvt template - more of a swiss-army-knife
+        - lose use of deprecated codecvt_utf8_utf16 etc functions (from all over the place)
       - CString
         - cleanup Characters::CString:Length to use template requires instead of a bunch of specializations - much better!
       - String
@@ -285,7 +287,8 @@ especially those they need to be aware of when upgrading.
       - LockFree
         - minor fruitless tweaks to LockFreeDataStructures/forward_list
       - DataStructures
-        -  new Array\<T>: push_back
+        - new Array\<T>: push_back
+        - Array::Apply now takes SequencePolicy seq param, and used in Concrete reps (makes size bigger - not sure worth it)
       - Association
         - Added Association<KEY_TYPE, MAPPED_VALUE_TYPE>::operator[] () syntactic sugar
       - KeyedCollection
@@ -383,6 +386,7 @@ especially those they need to be aware of when upgrading.
       - new UncheckedDynamicPointerCast
     - Execution
       - windows CreateProcess appears to set hProcess to nullptr instead of INVALID_HANDLE_VALUE in some cases, so accomodate
+      - use perfect forwarding for Finally
     - Memory
       - BlockAllocation 
         - Minor tweaks to Memory/BlockAllocator (clarity)
@@ -572,15 +576,19 @@ especially those they need to be aware of when upgrading.
     - Docker v3 in image names for v3 containers
     - Windows
       -  vis studio docker container VS_17_6_4
-- - Scripts
+  - Scripts
     - ApplyConfiguration
       - fixed to handle bad .vscode/c_cpp_properties.json files - if they were empty - it was not updating them, and leaving them empty
     - Misc
       - Update ScriptsLib/FormatCode to call ScriptsLib/GetMessageForMissingTool and updated ScriptsLib/GetMessageForMissingTool to give better suggestions for how to install for windows
   - Skel tool
     - in skel makefile, delegate a few more top level phony makefile targets
-  Github actions/workflows
-  - renamed github action to build-N-test
+  - Github actions/workflows
+    - renamed github action to build-N-test
+    - Merged separate DEBUG and RELEASE workflows into single workflow with build-v3-Docker-Containers.yml file
+    - use macos 13 not macos latest for now on github actions
+    - added new docker container build workflow
+    - new github event run_all
 
 --UNORGNAINZIED
 - support visual studio compiler _MSC_VER_2k22_17Pt2_ (2 new bugs and nothing fixed)
@@ -597,7 +605,6 @@ especially those they need to be aware of when upgrading.
 ---
 ===
 
-
 #if 0
 
 commit d91ba0f18b02a0761b45bb7137cdd0a056dd1c17
@@ -607,10 +614,6 @@ Date:   Fri Jan 27 09:27:55 2023 -0500
 commit 05cd839860285e1fe000ea14e9ad8f578d75ccc7
 Date:   Sat Jan 28 18:17:04 2023 -0500
     lose unneeded options.fCanReadPastEndOfJSONObjectInStream
-
-commit 528fee37c7cf0de4ae3bfb3bfc29977acc59d5b2
-Date:   Mon Feb 6 15:42:13 2023 -0500
-    DataStructure::Array::Apply now takes SequencePolicy seq param, and used in Concrete reps (makes size bigger - not sure worth it)
 
 commit 82b73dd8904528b4760b307aa07786c0af06bd2a
 Date:   Mon Feb 6 20:05:09 2023 -0500
@@ -652,14 +655,6 @@ commit 329e8ffd50548829367f7f139a02cdc430f043ce
 Date:   Sat Feb 18 12:27:47 2023 -0500
     for macos builds, for some reason, now need brew install pkg-config
 
-commit 9f2d5a3261a829076a7c98dc6ee9b63a2194c914
-Date:   Mon Apr 17 08:34:41 2023 -0400
-    simpler impl of container factories using std::function - did assoc and bijection so far
-
-commit 83b53a84c83b631b714d6a8756843a991c4e61a8
-Date:   Mon Apr 17 09:07:40 2023 -0400
-    Collection factory cleanup, and enabled CollectionFactory use of Collection_stdmultiset
-
 commit 06020ca61bdc701ec930483976dea79cb106b6f8
 Date:   Mon Apr 17 10:10:01 2023 -0400
     more fiddling with how container factories work (experimemting with assocation)
@@ -681,44 +676,13 @@ Date:   Tue Apr 18 10:26:13 2023 -0400
     red of BijectionFactory using new pattern
     new factory pattern on collection/densedatahyperrectangle
 
-commit 3fbc48d5ca3ee6992514b644f6e9c6f7115e9623
-Date:   Wed Apr 19 15:26:09 2023 -0400
-
-commit eacc076e3d4980e3a809601f286e053894984d81
-Date:   Wed Apr 19 22:02:17 2023 -0400
-    SortedAssociation_Factory and SortedCollection_Factory upgrade
-
 commit 8bac60bd775825efbcfa53143f994f229a8157d7
 Date:   Fri Apr 21 09:01:03 2023 -0400
     (not backward compatible but to internal routine) change to DataStructure::Array - changed its Find() method to return optional, and more closely mimic LinkedList (so cloning code with if() not a problem)
 
-commit 9ea3209a34083509f25322d0999a80fb99b2051b
-Date:   Sat Apr 29 11:59:54 2023 -0400
-    github actions workaround issue with msys docker containers
-
 commit f9d078f8db9f5a89373a736b3735041a9ca91a53
 Date:   Sat Apr 29 14:20:20 2023 -0400
     replace use of RunArgumentsWithCommonBuildVars with PATCH_PATH_FOR_TOOLPATH_ADDITION_IF_NEEDED since SIMPLER, former not working under DOCKER/MSYS anymore - probably related to https://stroika.atlassian.net/browse/STK-941 WORKAROUND NOT WORKING
-
-commit 91d8ab7aecc4d46d10639e61d4d5b840cc26dcd9
-Date:   Sun Apr 30 17:52:07 2023 -0400
-    refactored windows docker container building; and added (untested) github action to build the containers
-
-commit 6fa3de6e691254f4a43207559531c5df1fca907d
-Date:   Sun Apr 30 17:57:02 2023 -0400
-    tweak build-v3-Docker-Containers.yml
-
-commit a9de2b9dc3fcda50131ea9d51d0f07eabf54a472
-Date:   Sun Apr 30 21:48:33 2023 -0400
-    github docker build actions
-
-commit 95ef6f2b5484fdde8737e9d8ca2ba619cf0536ab
-Date:   Mon May 1 10:21:22 2023 -0400
-    more stuff to .github/workflows/build-v3-Docker-Containers.yml to debug docker build
-
-commit 3c41922f4bcdfbd5554c8f149df96a7d5f261335
-Date:   Mon May 8 02:05:20 2023 -0400
-    cleanup github action for make containers
 
 commit c905b73982f5704e88b26402e2a9822dca5a9b89
 Date:   Mon May 8 02:45:28 2023 -0400
@@ -727,14 +691,6 @@ Date:   Mon May 8 02:45:28 2023 -0400
 commit 29b9e2baa65e53c2eaeb4040bf257e2e636bafa8
 Date:   Mon May 8 02:48:04 2023 -0400
     install dos2unix in docker builder contaeiner for unix
-
-commit 11b28cff89f4d4b31cc7b07461838c9e2d6168c5
-Date:   Mon May 8 04:48:45 2023 -0400
-    experimental zlib cmake build support
-
-commit 77d775eb307b13dad30ba14e09515bfdb470c878
-Date:   Mon May 8 05:00:56 2023 -0400
-    more tweaks for new zlib thirdpartycomponents build
 
 commit 975fb7b275ec4d8244838a3400691352332b5dee
 Date:   Mon May 8 11:40:51 2023 -0400
@@ -751,14 +707,6 @@ Date:   Mon May 8 13:48:07 2023 -0400
 commit 0801e8dd53d78864a80a7c0852613112f624e7bc
 Date:   Fri May 12 10:57:44 2023 -0400
     in IO::Transfer regtest, also just warn - not fail - on timeouts - since remote network servers we ping often timeout
-
-commit 42e31b2acb899cc6012306e94bc9bc49ad638f7d
-Date:   Fri May 12 11:42:14 2023 -0400
-    test if windows-vs2k22-msys-x86_64-Release now builds under docker/github actions
-
-commit 837c469c25ae4ae4994436b7db7a111f040cda52
-Date:   Fri May 12 19:18:26 2023 -0400
-    sigh - docker msys stuff still broken... debug on laptop not github actions
 
 commit 4b38071ad24b09b740339c62873faa25f8bef7e3
 Date:   Sat May 13 15:12:38 2023 -0400
@@ -796,10 +744,6 @@ commit e010dfcc8ee1af8c88d6d58a6bd5b2f80725ef27
 Date:   Thu May 18 19:58:02 2023 -0400
     replace use of deprecated Configuration::IsTPredicate with std::predicate concept
 
-commit e60fa5159ef28e970c8c30b6711f7e01e25b1517
-Date:   Fri May 19 00:01:36 2023 -0400
-    tmphack - reset github action for windows dev so only cgywin builds not msys til thats fixed
-
 commit 7343215fdf4662a7b873e6eb2008319f4bfdaa6c
 Date:   Fri May 19 21:43:01 2023 -0400
     replace a few more uses of typename ITERATOR_OF_ADDABLE with concept input_iterator ITERATOR_OF_ADDABLE
@@ -811,18 +755,6 @@ Date:   Fri May 19 23:13:18 2023 -0400
 commit ee52ade81697a87b06cb304394730a1ed994cfb3
 Date:   Sat May 20 03:38:08 2023 -0400
     switch a few more uses of enable_if_t to concepts or requires
-
-commit c7d0f232db4b535d5015402aec2b550364397b71
-Date:   Tue May 23 16:13:34 2023 -0400
-    use perfect forwarding for Finally
-
-commit 45db12dbd96a5cf32e0bd58b96f9276cdcce0dec
-Date:   Wed May 24 09:03:26 2023 -0400
-    cleanups to KeyValuePair designed to hopefully address issue on xcode 14
-
-commit 060de0522c2db89dea8e68991ff44d2185600add
-Date:   Wed May 24 09:33:49 2023 -0400
-    start converting Properties code to using concpets
 
 commit 27351cc1441942cafd0d85fd11fc565542a1d037
 Date:   Fri May 26 16:00:54 2023 -0400
@@ -860,63 +792,9 @@ commit 1f2437c9a976a27238e25f73a1b26c1c58dd610a
 Date:   Sun Jun 4 16:35:54 2023 -0400
     cleanups to Windows-VS2k22/Dockerfile
 
-commit 5422d2bdc2201bb0fa95943dfb952a61c3b2ff9d
-Date:   Sun Jun 4 21:11:14 2023 -0400
-    experiemntal simplification ot openssl makefile
-
-commit 912214da62d2a943fcbeddca7789588353c53486
-Date:   Mon Jun 5 08:22:02 2023 -0400
-    undo attempted (or limited attempted) openssl makefile cleanup
-
-commit ebbc7f51e99cc98ef84a2464911609892c1b3b25
-Date:   Mon Jun 5 08:41:32 2023 -0400
-    experiment using derived_from instead of is_base_of_v
-
-commit 6f639d4ff7d5f5f66eb4a4e3da6955ceacb7c028
-Date:   Tue Jun 6 07:30:38 2023 -0400
-    even using derived_from, still need decay_t
-
 commit 043ab198f5bb10430d286e303c51458e83457341
 Date:   Sat Jun 10 10:29:32 2023 -0400
     experiemntal fix for issue with msys build under docker windows openssl
-
-commit 9ffa45e3af2c4873048fd45b5e7ba5ade79bc84c
-Date:   Sat Jun 10 12:39:57 2023 -0400
-    use macos 13 not macos latest for now on github actions
-
-commit 491e1a4c6b829ff38bfe5730fd24fd2a935aa517
-Date:   Sat Jun 10 15:37:31 2023 -0400
-    retransated v3-Release workspace file to Debug for github actions
-
-commit 8b95a9893ddbf3e87fd048c121a8749208bc19eb
-Date:   Sat Jun 10 18:52:30 2023 -0400
-    initial try at merged matrix single github workflow
-
-commit db1f88bd6d859f2265223fa6e655a70f59c6034a
-Date:   Sat Jun 10 18:56:38 2023 -0400
-    initial try at merged matrix single github workflow
-
-commit 719ff9df98047609158b4101bff151fb455e42b8
-Date:   Sat Jun 10 20:58:56 2023 -0400
-    more progress factoring github workflow
-
-    progress merging workflow files
-
-commit 5708737dddc56f3bf647e74406e5f9450bff5501
-Date:   Mon Jun 12 07:47:59 2023 -0400
-    more .github action workflow cleanups and delete old 2 file solution
-
-commit 55d5d047f02208c2a8174cf8feba1cf4f07339c6
-Date:   Mon Jun 12 08:09:48 2023 -0400
-    test fix for github event run_all
-
-commit 3ffaa89e28446e49c35c305c595ea5e165f4fa7a
-Date:   Mon Jun 12 09:02:30 2023 -0400
-    test fix for github event run_all(try2)
-
-commit fb393a35cec57e2e8dbd5f829deefa000be96b30
-Date:   Mon Jun 12 22:51:28 2023 -0400
-    lose a few more enable_if_t uses, and translate a few more cases of is_base_of_v to derived_from
 
 commit c2dc7ca217945ef3ba69b21f663d5e33d709936a
 Date:   Tue Jun 13 13:06:04 2023 -0400
@@ -938,24 +816,9 @@ commit 9d3c81a69968cdc618404a06575bcd194eb10a7a
 Date:   Thu Jun 15 09:47:50 2023 -0400
     added regression test to capture recent regression in sycnronized caller staleness cache caught in WTF
 
-commit 7b1967ead0e6eb21f879f48c3d572a568521e18b
-Date:   Thu Jun 15 10:09:40 2023 -0400
-    modest code cleanups (derived_from intead of is_base_of_v etc)
-
 commit 1b854c5ed32b647c3ff46f7c8c35cd2854ba792e
 Date:   Thu Jun 15 10:56:13 2023 -0400
     fixed regression (rencet) in callerstaleness cache regtests
-
-commit 20a22f67b6514e281bf32d089a83229243bb5702
-Date:   Thu Jun 15 13:41:58 2023 -0400
-    derived_from is_base_of_v cleanup
-
-commit 7ef3e6153d46f8693bc15379ff69dda3502f200b
-Date:   Thu Jun 15 17:15:52 2023 -0400
-    finished replaceing use of is_base_of_v with derived_from
-
-commit c114ff2d9be451607ba54973461692181572689c
-Date:   Fri Jun 16 12:42:45 2023 -0400
 
 commit 7d16b8eb25510136919f3329c3dfcf9625ce576e
 Date:   Sun Jun 18 20:45:47 2023 -0400
@@ -987,7 +850,6 @@ Date:   Thu Jun 29 16:52:20 2023 -0400
 
 commit a8b9a08c11a58a7b3bcbda0c576b599746995270
 Date:   Thu Jun 29 19:31:28 2023 -0400
-    lose use of deprecated codecvt_utf8_utf16 etc functions
 
 #endif
 
