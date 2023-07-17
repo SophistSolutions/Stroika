@@ -38,7 +38,7 @@ namespace Stroika::Foundation::DataExchange {
     using Time::DateTime;
 
     /**
-     * \brief   Simple variant-value object, with (variant) basic types analagous to a value in any weakly typed language (like JavaScript, Lisp, etc)
+     * \brief   Simple variant-value (case variant union) object, with (variant) basic types analagous to a value in any weakly typed language (like JavaScript, Lisp, etc)
      *
      *  These objects are internally efficiently copied (shared_ptr), but have copy
      *  by value semantics (since they are never modifyable).
