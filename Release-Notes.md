@@ -37,6 +37,10 @@ especially those they need to be aware of when upgrading.
       <br/>e.g. around qStroika_Foundation_Exection_Throw_TraceThrowpoint
     - use more perfect forwarding (e.g. use PREDICATE&& instead of const PREDICATE& - in response to (oblique) suggestion from https://www.reddit.com/r/cpp/comments/zl7ncq/stroika_an_opensource_modern_portable_threadsavvy/ comment/suggestion)
     - **not 100% backward compatible** - but changed most constexpr string constants throughout stroika from wstring_view to string_view - since they are all ascii. As long as used through String{} API, this will be 100% transparent. But if used directly, it may not compile (but hopefully in obvious ways)
+    - remove_cv_t/remove_cvref_t
+      - comments and use remove_cvref_t intead of remove_cv_t in one place (need todo more)
+      - use std::remove_cvref_t directly - no longer need for indirection trhough obsolete Configuration::remove_cvref_t
+      - use remove_cvref_t instead of decay_t, since clearer and sufficeint in most (all) cases
   - Foundation
     - Cache
       - TimedCache
@@ -160,6 +164,7 @@ especially those they need to be aware of when upgrading.
         - StringWithCStr_ fixed to use IUNICODECanUnambiguouslyConvertFrom instead of IUnicodeCodePointOrPlainChar and use ASCII/LATIN1 for sharedptr reps depending on keepspandata returned on c_str() wrapper
         - no longer need qCompilerAndStdLib_template_requresDefNeededonSpecializations_Buggy and cleanup String::mk_nocheck_ code/docs
         - loosen assert for String::c_str() for case of surrogates
+        - minor tweaks to std::hash<String>::operator() (const String& arg)
         - Add debugging code to StringRepHelperAllFitInSize_ rep makeiterator code - so it tracks count of running iterators and gives better error message when modified during use. Then deleted regression test that tested this case (since it generates failure/crash but not reliably) - dont allow modifying strings when running existing iterator;  had to tweak sizes assumed asserts for extra debug code added
       - StringBuilder
         - major cleanup/fixes - using concepts, using span<>
@@ -291,6 +296,7 @@ especially those they need to be aware of when upgrading.
         - must be more careful comparing VariantValue for equality now - 5 == 5 no longer works - must save .ConvertTo(eInteger)
         - avoid needless operator= in VariantValue::CTOR (boost value), and cleanup use of operator= defs for VariantValue = use more concepts and hopefully fixed some copy/move stuff
         - Minor tweaks to  VariantValue performance (final and mk_ instead of VariantValue CTOR
+        - Fixed https://stroika.atlassian.net/browse/STK-971 - added VariantValue::Normalize() method to do heavy lifting/factor logic for how things compared
       - Variant Reader/Writer
         - General
           - refactoring DataExchange/Variant/Writer code - better abstracting transformations; use that in (so far untested but probably solid) DataExchange::Variant::CharacterDelimitedLines readers/writers
@@ -522,35 +528,9 @@ especially those they need to be aware of when upgrading.
 
 #if 0
 
-
-commit 3ce8d8e12e4f8a8436ae6d3fffd5b16d2ed77396
-Date:   Thu Jan 12 21:44:48 2023 -0500
-
-commit 3638f865194d0d79cf512968c581e6baefaa9fd7
-Date:   Thu Jan 12 14:39:19 2023 -0500
-    minor tweaks to std::hash<String>::operator() (const String& arg) - still should explore
-
-commit d70a58e6acf3e77e3d5e89457f850cd74c398117
-Date:   Thu Jan 12 23:11:56 2023 -0500
-
-commit b3e82ca1204a6c7184e3b8013a4d44a25df34877
-Date:   Fri Jan 13 09:53:34 2023 -0500
-    Fixed https://stroika.atlassian.net/browse/STK-971 - added Normalize() method to do heavy lifting/factor logic for how things compared
-
-commit 0388cb4914ef829007de520f0b5e59f0fe5ab9bc
-Date:   Sat Jan 14 11:58:52 2023 -0500
-    comments and use remove_cvref_t intead of remove_cv_t in one place (need todo more)
-
 commit e292e3013f002342eb4b703d04fc0785eb9fc14b
 Date:   Sat Jan 14 22:32:21 2023 -0500
     deprecate a bunch of Characters/SDKString functions - not great organization and simpler API to just vector through string. A bit more expensive that way but not woth the extra api for stuff thats never used
-
-commit 09547edb8029055eab24f4e8f59811d2505417a1
-Date:   Sat Jan 14 23:12:10 2023 -0500
-    use std::remove_cvref_t directly - no longer need for indirection trhough obsolete Configuration::remove_cvref_t
-
-commit 8133e0e6c6481be7c7809cc6b0234838730508bf
-Date:   Sun Jan 15 12:30:17 2023 -0500
 
 commit bfb96a752aae9b16cf179602e0662295aafab9f0
 Date:   Sun Jan 15 12:36:57 2023 -0500
@@ -599,12 +579,6 @@ Date:   Sat Jan 28 18:17:04 2023 -0500
 commit 70ce0db7187e19375eaf30534488b6af424f2086
 Date:   Sun Jan 29 11:21:29 2023 -0500
     progress building real impl of TextToByteReader - but still quite weak
-
-commit 8e5b7acbed38bb17db686a4f098ce131ac55eede
-Date:   Sun Jan 29 23:19:24 2023 -0500
-
-commit c337eea3bebdedfa4bb35a16b0fff81f3532fd44
-Date:   Mon Jan 30 10:04:43 2023 -0500
 
 commit 14fd656e3b7b8f531fddbfb61ce0eefbffc02076
 Date:   Wed Feb 1 12:38:56 2023 -0500
@@ -1284,7 +1258,6 @@ Date:   Thu Jun 15 10:09:40 2023 -0400
 
 commit 7b7067da0e23e04602b5e7d184e435fc109889b8
 Date:   Thu Jun 15 10:50:04 2023 -0400
-    use remove_cvref_t instead of decay_t, since clearer and sufficeint in most (all) cases
 
 commit 1b854c5ed32b647c3ff46f7c8c35cd2854ba792e
 Date:   Thu Jun 15 10:56:13 2023 -0400
