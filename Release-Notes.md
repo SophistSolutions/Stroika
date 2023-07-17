@@ -216,6 +216,8 @@ especially those they need to be aware of when upgrading.
         - feprecated IsEqualsComparer
         - use new IInOrderComparer in a bunch of spots instead of deprecated IsStrictInOrderComparer
         - refactored ExtractComparisonTraits_v and only use that making ExtractComparisonTraits deprecated; Fixed IComparer and now use in - in IEqualsComparer/IInOrderComparer
+      - CountedValue
+        - Concept cleanups CountedValue
       - GUID
         - added missing value_type so  static_assert (IIterable<GUID>); passes
         - define Common::GUID::size () const method
@@ -261,13 +263,25 @@ especially those they need to be aware of when upgrading.
         - qCompilerAndStdLib_stdlib_ranges_pretty_broken_Buggy
         - qCompilerAndStdLib_template_Requires_templateDeclarationMatchesOutOfLine_Buggy
         - qCompilerAndStdLib_template_Requires_templateDeclarationMatchesOutOfLine2_Buggy
+        - qCompilerAndStdLib_template_ForwardDeclareWithConceptsInTypenameCrasher_Buggy
+        - qCompilerAndStdLib_requires_breaks_soemtimes_but_static_assert_ok_Buggy
+        - qCompilerAndStdLib_template_Requires_constraint_not_treated_constexpr_Buggy
+        - qCompilerAndStdLib_templateConstructorSpecialization_Buggy
       - Support compiler _MSC_VER_2k22_17Pt6_ bug define support
       - new _Stroika_Foundation_STRINGIFY_ macro
       - new Configuration::ConvertibleTo template class as helper for IIterableOf\<T> concept
+      - Concepts.h
+        - MAJOR reworking - losing nearly all preexisting concept-like meta functions/variables (e.g. HasLt) and replacing with appropriate IXXX (e..g IOperatorLt) concepts.
     - Containers
       -  Many Submodules
          - major switch to using concepts, and requires (in place of enable_if_t)
          - not 100% backward compatible for container implementors, but otherwise sb fine; REMOVE _IRep methods for stuff like Keys() and default impl, and instead redo all this using Map(mcuh simpler/cleaner) - only done for Assocation, Bijection, and KeyedCollection so far; deprecated/renamed two Bijection methods Map/InverseMap to avoid name conflict with Iterable Map
+         - restructured how factories work
+           - no need for atomic
+           - direct construction, and args often perfect forward on construction, often avoiding std::function
+           - Many support optional Hints objects as factory construction argument to to be 'registered' as the default factory
+          - AddAll
+            - Use of concepts in AddAll usage, and several constructors that implicitly call AddAll
       - LockFree
         - minor fruitless tweaks to LockFreeDataStructures/forward_list
       - DataStructures
@@ -290,8 +304,18 @@ especially those they need to be aware of when upgrading.
         - Mapping - use requires so cleaer about Mapping::operator== and documented better as well the behavior
       - MultiSet
         - <https://stroika.atlassian.net/browse/STK-953> - new Multiset Top () and TopElements() methods
+        - rewrote MultiSet Elements and UniqueElements() using Map/Generators (much simpler/cleaner, and no need for _IRep methods todo any of that)
+        - fixed Multiset<> code to handle alternate 'countertype' besides default unsinged int
       - Sequence
         - added MOVE ctor for Sequence_stdvector taking std::vector<>
+      - Set
+        - new Set_Array implemetnation
+        - SetFactory now uses Set_Array by default
+        - lose unimplemented Concrete/Set_SparseArray cuz probably not worth doing
+      - Stack
+        - fixed bug with Containers::Stack (serious/rediculous); and improved regtests
+        - Slight cleanup / performance boost of Stack factory and construction mechanism and more tests of said
+        - Minor tweaks to Stack docs and code
     - Cryptograpy
       - Fixed Digester<> to fully support a RETURN_TYPE=Common::GUID - adding regression test and fixing template (worked with MD5 but now works with SuperFastHash and others)
       - Digest::ComputeDigest () and Digester<> etc - now support taking Iterable\<TRIVIALLY_COPYABLE_T> - so for example String
@@ -445,24 +469,29 @@ especially those they need to be aware of when upgrading.
         - fixed GLARING bug in ::DayDifference ()
         - rewrite Date class to be based on chron::year_month_day - https://stroika.atlassian.net/browse/STK-793
         - big changes to Date code - https://stroika.atlassian.net/browse/STK-668 - support full julian date range for Date (4000 BC to distant future - with caveats) - reanmed JulianRepType to JulianRepType
-      - more constructor options for TimeOfDay (..., DataExchange::ValidationStrategy validationStrategy);
-      - cosmetic, and DataExchange::ValidationStrategy support on Timezones CTORs (and use in DateTime code show better validates/throws); and  better https://www.rfc-editor.org/rfc/rfc822#section-5 timezone parsing
-      - fixed GLARING bug in ::DayDifference ()
-      - lose MonthOfYear::eEmptyMonthOfYear, DayOfMonth::eEmptyDayOfMonth and Year::eEmptyYear - not totally backward compatble, but there wasn't any longer much of a sensible use case for these
-      - deprecated Date::mdy/3, and replaced wtih mdy/0
-      - https://stroika.atlassian.net/browse/STK-793 - replaced Time::MonthOfYear enum with trivial wrapper on chrono::month
-      - more cleanups of Date class - using month directly not MonthOfYear - mostly
-      - re-implement Date class DayOfWeek as trivial subclass of weekday
-      -  more Date code cleanups - To/From JulianRep code takes optional DataExchange::ValidationStrategy, and Date::operator++ now deprecated (documented class immutable)
-      - in Date code - replace DayOfMonth with use of chrono::day (but still support old name as construction wrapper)
-      - Import a few date related chrono literals to Time namespace, and regtests and docs examples using them 1906y/May/12d == Date{1906y, May, 12d}
-      - more Date cleanups, regtests and docs; and deprecated Date::AddDays() and replaced with Date::Add() and better overloads ofr operator+/operator- etc; similar for Date::Difference, and Date::DaysSince(now Since)
-      - Support floating point _duration conversion operator; and make _duration literal operators also [[nodiscard]]
-      - Range (traits) DifferenceToSizeT support, and used to fix regression in DateRange code
-      - used [[nodiscard]] in a couple places to help avoid bugs with mutable Date (Add method should not be discard result)
-      - use [[nodiscard]] in a few places; Year/Date/etc no longer have 'off sign' constructor support - caller must do the cast
+        - fixed GLARING bug in ::DayDifference ()
+        - lose MonthOfYear::eEmptyMonthOfYear, DayOfMonth::eEmptyDayOfMonth and Year::eEmptyYear - not totally backward compatble, but there wasn't any longer much of a sensible use case for these
+        - deprecated Date::mdy/3, and replaced wtih mdy/0
+        - https://stroika.atlassian.net/browse/STK-793 - replaced Time::MonthOfYear enum with trivial wrapper on chrono::month
+        - more cleanups of Date class - using month directly not MonthOfYear - mostly
+        - re-implement Date class DayOfWeek as trivial subclass of weekday
+        -  more Date code cleanups - To/From JulianRep code takes optional DataExchange::ValidationStrategy, and Date::operator++ now deprecated (documented class immutable)
+        - in Date code - replace DayOfMonth with use of chrono::day (but still support old name as construction wrapper)
+        - Import a few date related chrono literals to Time namespace, and regtests and docs examples using them 1906y/May/12d == Date{1906y, May, 12d}
+        - more Date cleanups, regtests and docs; and deprecated Date::AddDays() and replaced with Date::Add() and better overloads ofr operator+/operator- etc; similar for Date::Difference, and Date::DaysSince(now Since)
+        - used [[nodiscard]] in a couple places to help avoid bugs with mutable Date (Add method should not be discard result)
+        - use [[nodiscard]] in a few places; Year/Date/etc no longer have 'off sign' constructor support - caller must do the cast
       - DateTime
         - added optional parameter consumedCharacters to DateTime::ParseQuietly, and changed semantics for DateTime::Parse - to generally fail/exception with badly formatted (at least iso8601) datetimes (not just quietly ignore crap at the end); added regtest to reflect that and FIXED regression test I had checked in from sterling - this completes  https://stroika.atlassian.net/browse/STK-950 (**NOTE NOT FULLY BACKWARD COMPATBILE** AS DateTime::Parse() is now a little more likely to throw)
+      - Duration
+        - no longer make Duration DCTORs from numbers be explicit
+      - TimeOfDay
+        - more constructor options for TimeOfDay (..., DataExchange::ValidationStrategy validationStrategy);
+      - Timezone
+        - cosmetic, and DataExchange::ValidationStrategy support on Timezones CTORs (and use in DateTime code show better validates/throws); and  better https://www.rfc-editor.org/rfc/rfc822#section-5 timezone parsing
+      - Misc
+        - Support floating point _duration conversion operator; and make _duration literal operators also [[nodiscard]]
+        - Range (traits) DifferenceToSizeT support, and used to fix regression in DateRange code
   - Traveral
     - Iterable
       - lose shared_from_this support in Iterable and various container subclasses, and String, etc...
@@ -501,12 +530,12 @@ especially those they need to be aware of when upgrading.
     - Added CORSOptions::ToString () const
 - ThirdPartyComponents
   - boost 
-    - Boost 1.82.0
+    - 1.82.0
     - lose TOOLSET_NAME=msvc-14.2 workaround no longer needed
   - libcurl 
     - 8.1.2
   - sqlite 
-    - use 3.42.0
+    - 3.42.0
   - zlib
     - 1.2.12
     - disable ASM build for x64 windows zlib - and created jira ticket https://stroika.atlassian.net/browse/STK-905 to track future cleanup of makefile to reenable this (probably using cmake)
@@ -579,14 +608,6 @@ commit 05cd839860285e1fe000ea14e9ad8f578d75ccc7
 Date:   Sat Jan 28 18:17:04 2023 -0500
     lose unneeded options.fCanReadPastEndOfJSONObjectInStream
 
-commit b75e3fd224460c337aebc4bb829f6a6d07ca58e6
-Date:   Sun Feb 5 10:50:35 2023 -0500
-    rewrote MultiSet Elements and UniqueElements() using Map/Generators (much simpler/cleaner, and no need for _IRep methods todo any of that)
-
-commit 59f5cf6d03cf278190a5e91c14b6ecc47c5bebd0
-Date:   Mon Feb 6 15:37:25 2023 -0500
-    no longer make Duration DCTORs from numbers be explicit
-
 commit 528fee37c7cf0de4ae3bfb3bfc29977acc59d5b2
 Date:   Mon Feb 6 15:42:13 2023 -0500
     DataStructure::Array::Apply now takes SequencePolicy seq param, and used in Concrete reps (makes size bigger - not sure worth it)
@@ -631,25 +652,6 @@ commit 329e8ffd50548829367f7f139a02cdc430f043ce
 Date:   Sat Feb 18 12:27:47 2023 -0500
     for macos builds, for some reason, now need brew install pkg-config
 
-commit ad9b06996829057c5de473c673c625ecc2999a0a
-Date:   Sun Apr 16 11:22:13 2023 -0400
-    start at supporting Hints objects in Container factories
-
-commit 0a6660d2713a70e26182b385f4def922c139d87d
-Date:   Sun Apr 16 12:01:37 2023 -0400
-    new Set_Array implemetnation
-
-commit d46ffce8f5ccaa7a99ee306964e0951590af3ff6
-Date:   Sun Apr 16 13:09:31 2023 -0400
-    SetFactory now uses Set_Array by default
-
-commit b044a0245ec651a94d14dfd7dded01111c255ab1
-Date:   Sun Apr 16 15:10:00 2023 -0400
-
-commit fe6958c520742a1ed06bcfa830150ebf61253626
-Date:   Sun Apr 16 19:46:14 2023 -0400
-    fixed bug with Containers::Stack (serious/rediculous); and improved regtests
-
 commit 9f2d5a3261a829076a7c98dc6ee9b63a2194c914
 Date:   Mon Apr 17 08:34:41 2023 -0400
     simpler impl of container factories using std::function - did assoc and bijection so far
@@ -679,12 +681,8 @@ Date:   Tue Apr 18 10:26:13 2023 -0400
     red of BijectionFactory using new pattern
     new factory pattern on collection/densedatahyperrectangle
 
-Date:   Wed Apr 19 15:11:59 2023 -0400
-    Multiset_Factory and Sequence_Factory updates to lastest
-
 commit 3fbc48d5ca3ee6992514b644f6e9c6f7115e9623
 Date:   Wed Apr 19 15:26:09 2023 -0400
-    Update Set_Factory to use latest pattern
 
 commit eacc076e3d4980e3a809601f286e053894984d81
 Date:   Wed Apr 19 22:02:17 2023 -0400
@@ -782,14 +780,6 @@ commit b9df601637614a400d68a6388b01b1bc4e733aa7
 Date:   Sat May 13 17:12:52 2023 -0400
     get MSYS docker container working either from choco or myss installer, but doesnt seem to matter mcuh one way or other other
 
-commit 8b3a91093b369d9d2697f4bff72a8bf5b6a509e8
-Date:   Wed May 17 11:55:07 2023 -0400
-    more use of concepts in AddAll usage
-
-commit d5d7e2f424ac7c9dd29ba11395bfe5ebf7e8f13e
-Date:   Wed May 17 15:20:18 2023 -0400
-   qCompilerAndStdLib_template_ForwardDeclareWithConceptsInTypenameCrasher_Buggy BWA
-
 commit 615b882cb012888996931d02cc9f58f3e239dfb8
 Date:   Thu May 18 10:37:17 2023 -0400
     cleanup enable_if_t in ToString to use requires
@@ -822,10 +812,6 @@ commit ee52ade81697a87b06cb304394730a1ed994cfb3
 Date:   Sat May 20 03:38:08 2023 -0400
     switch a few more uses of enable_if_t to concepts or requires
 
-commit a78ca171dbab6879f96771b6fc7cf1c92d9849da
-Date:   Tue May 23 12:51:06 2023 -0400
-    maybe find better workaround for qCompilerAndStdLib_requires_breaks_soemtimes_but_static_assert_ok_Buggy
-
 commit c7d0f232db4b535d5015402aec2b550364397b71
 Date:   Tue May 23 16:13:34 2023 -0400
     use perfect forwarding for Finally
@@ -846,10 +832,6 @@ commit 2ce9cfc573a66860039163f1002d3e2beb897083
 Date:   Fri May 26 17:53:08 2023 -0400
     __cpp_lib_atomic_shared_ptr assumed  >= 201711
 
-commit 2c9927ceb7336db696d5224e92ac18d8ba6ae8a8
-Date:   Sat May 27 07:34:51 2023 -0400
-    new attempted qCompilerAndStdLib_template_Requires_constraint_not_treated_constexpr_Buggy BWA
-
 commit 04eefbc4aa104974f21111c103d3bcd88e78a427
 Date:   Sat May 27 11:01:54 2023 -0400
     Synchronized<> use requires instead of enable_if_t in a few places
@@ -861,14 +843,6 @@ Date:   Sun May 28 14:25:52 2023 -0400
 commit 7fbe3040d69b2a5cfec5896c58eda511b9b58ef2
 Date:   Mon May 29 22:52:16 2023 -0400
     workaround issue LINK ERROR annotate_string  started in vs2k 22 17.6 linking boost
-
-commit e03e7ffdce5fb8541ba6144f259c5176a65b5d3d
-Date:   Mon May 29 23:40:01 2023 -0400
-    workaround qCompilerAndStdLib_compiler_crash_on_break_Buggy
-
-commit 0441ed5f2e563be6f32e512cd65eccc483f22600
-Date:   Tue May 30 08:18:16 2023 -0400
-    qCompilerAndStdLib_compiler_crash_on_break_Buggy BWA appears no longer needed
 
 commit 0e191895e709a6daeee4eeda9d308a01d18a56f3
 Date:   Sun Jun 4 10:32:26 2023 -0400
@@ -948,10 +922,6 @@ commit c2dc7ca217945ef3ba69b21f663d5e33d709936a
 Date:   Tue Jun 13 13:06:04 2023 -0400
     fixed configure to set COMPILER_DRIVER_CPlusPlus before using it to adjust CWARNING_FLAGS
 
-commit 786e0c9075db8357d529396509121111ce3bbf42
-Date:   Tue Jun 13 16:49:08 2023 -0400
-    lose bug defines qCompilerAndStdLib_template_default_arguments_then_paramPack_Buggy  and cleanup a few other bug defines
-
 commit fabeb8369986188ffb4f6fbffc70c9fbfd5d1be6
 Date:   Tue Jun 13 20:11:52 2023 -0400
     static_assert __cpp_lib_atomic_shared_ptr
@@ -986,35 +956,14 @@ Date:   Thu Jun 15 17:15:52 2023 -0400
 
 commit c114ff2d9be451607ba54973461692181572689c
 Date:   Fri Jun 16 12:42:45 2023 -0400
-    lose unimplemented Concrete/Set_SparseArray cuz probably not worth doing
-
-commit db752037a368b4f063feced8a2c014295ae892c0
-Date:   Sun Jun 18 08:48:34 2023 -0400
-    fixed bug define qCompilerAndStdLib_to_chars_FP_Buggy for _LIBCPP_VERSION <= 15007 - still broken
 
 commit 7d16b8eb25510136919f3329c3dfcf9625ce576e
 Date:   Sun Jun 18 20:45:47 2023 -0400
     more misc code cleanups - for diff compiler verisons, etc
 
-commit 96ffd0c5db04479b7bd339ace22407330f8b9704
-Date:   Mon Jun 19 06:39:20 2023 -0400
-    adjust version for qCompilerAndStdLib_regexp_Compile_bracket_set_Star_Buggy bug deinfe
-
 commit 85bdb93171a20702d6073d2bfa46e61aa929cd6d
 Date:   Mon Jun 19 13:29:17 2023 -0400
     deprecating some old manual concept stuff, and use officail concept names
-
-commit b7b64b5331df059d1336e252db386d98cac0bff1
-Date:   Mon Jun 19 20:59:18 2023 -0400
-    New Configuration::HasEq concept to replace has_eq_v
-
-commit 66f5a3435e307126fd471db67a564188d2b876df
-Date:   Tue Jun 20 21:50:11 2023 -0400
-    more cleanup of concept code, and more disabling of SharedPtr deprecation warnings
-
-commit eae6da0c51596cf42369bef7153677e917c6a15d
-Date:   Wed Jun 21 12:32:27 2023 -0400
-    dont appear to need tuple workaround for HasLt_v_ HasEq_v_
 
 commit dadc194760a76071e48a310ba14f9d8f328c2c74
 Date:   Wed Jun 21 22:39:44 2023 -0400
@@ -1028,17 +977,9 @@ commit 1fe51528f829970de5e3809c2a0c49fde967f593
 Date:   Thu Jun 22 21:27:23 2023 -0400
     https://stroika.atlassian.net/browse/STK-743: added Containers::Adapters::IAddableTo and used teh concept in ObjectVariantMapper
 
-commit 0f3d3c73a4d436983e62425963f2255c9770358b
-Date:   Mon Jun 26 20:12:37 2023 -0400
-    qCompilerAndStdLib_templateConstructorSpecialization_Buggy workaround
-
 commit 8607215e408a14aa4619db92933f95b6336f437e
 Date:   Tue Jun 27 11:54:01 2023 -0400
     **NOT BACKWARD COMPAT CHANGE** ONE TEMPLATE ARG VARIATION OF Common::ComparisonRelationDeclaration renamed to Common::ComparisonRelationDeclarationBase; and several cleanups to concepts code
-
-commit 2637345b664007111686a76b338dc8ddef5ed6a7
-Date:   Tue Jun 27 20:01:54 2023 -0400
-    lose a few more accidentally left around IsAddable_v definitions
 
 commit d1c9ec25378719966d6612548d02566515c1eeaf
 Date:   Thu Jun 29 16:52:20 2023 -0400
@@ -1047,26 +988,6 @@ Date:   Thu Jun 29 16:52:20 2023 -0400
 commit a8b9a08c11a58a7b3bcbda0c576b599746995270
 Date:   Thu Jun 29 19:31:28 2023 -0400
     lose use of deprecated codecvt_utf8_utf16 etc functions
-
-commit 6dc66ff8b93927a2f0999ee812337487c61a6119
-Date:   Wed Jul 5 12:23:46 2023 -0400
-    Concept cleanups CountedValue
-
-commit 4a653070215c3c6b00efb7e77bf88748852f18b9
-Date:   Wed Jul 5 14:26:13 2023 -0400
-    fixed Multiset<> code to handle alternate 'countertype' besides default unsinged int
-
-commit 15fa30f5a2311e87809c870ec74ac089087c6d6c
-Date:   Thu Jul 6 09:36:24 2023 -0400
-    Slight cleanup / performance boost of Stack factory and construction mechanism and more tests of said
-
-commit e6d15abf578318036f48ecc449eda0a581c07aae
-Date:   Thu Jul 6 10:29:13 2023 -0400
-    lots of small tweaks to Container factory code (untested tweaks - speculative)
-
-commit 7e5d60441de99328ad00f4bdffc2e575f1122e8d
-Date:   Fri Jul 7 08:07:30 2023 -0400
-    Minor tweaks to Stack docs and code
 
 #endif
 
@@ -2994,7 +2915,6 @@ Date:   Fri Jul 7 08:07:30 2023 -0400
      - qCompilerAndStdLib_deduce_template_arguments_CTOR_Buggy bug define and BWA
      - qCompilerAndStdLib_from_chars_FP_Precision_Buggy
      - removed obsolete one - qCompilerAndStdLib_optional_value_const_Buggy etc
-     - new qCompilerAndStdLib_template_default_arguments_then_paramPack_Buggy bug define for xcode 12
      - qCompilerAndStdLib_if_constexpr_annoyingly_evaluates_untaken_path_Buggy bwa for vs2k17
      - qCompilerAndStdLib_explicitly_defaulted_threeway_warning_Buggy is broken for clang++-13
      - qCompilerAndStdLib_template_value_type_ambiguous_confusion_Buggy abd workaround
