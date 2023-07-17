@@ -163,7 +163,7 @@ especially those they need to be aware of when upgrading.
         - experimental use of new IsSpanT/IsSpanT concepts in String CTOR
         - cleanup codecvt use (for locale) in String class (and docuemnt why still using)
         - StringWithCStr_ fixed to use IUNICODECanUnambiguouslyConvertFrom instead of IUnicodeCodePointOrPlainChar and use ASCII/LATIN1 for sharedptr reps depending on keepspandata returned on c_str() wrapper
-        - no longer need qCompilerAndStdLib_template_requresDefNeededonSpecializations_Buggy and cleanup String::mk_nocheck_ code/docs
+        - cleanup String::mk_nocheck_ code/docs
         - loosen assert for String::c_str() for case of surrogates
         - minor tweaks to std::hash<String>::operator() (const String& arg)
         - Add debugging code to StringRepHelperAllFitInSize_ rep makeiterator code - so it tracks count of running iterators and gives better error message when modified during use. Then deleted regression test that tested this case (since it generates failure/crash but not reliably) - dont allow modifying strings when running existing iterator;  had to tweak sizes assumed asserts for extra debug code added
@@ -224,32 +224,32 @@ especially those they need to be aware of when upgrading.
         - GUID noexcept usage, and made it immutable (and fixed one dependency on its mutability)
         - cleanups to GUID::As() template, due to incompatability issues iwth clang++-15
     - Configuration
-        - Lose obsolete bug defines for vs2k17
-          ~~~
-          qCompilerAndStdLib_alignas_Sometimes_Mysteriously_Buggy
-          qCompilerAndStdLib_alignas_Sometimes_Mysteriously_Buggy
-          qCompilerAndStdLib_static_inline_order_of_construction_Buggy
-          qCompilerAndStdLib_maybe_unused_b4_auto_in_for_loop2_Buggy
-          qCompilerAndStdLib_initializer_list_sometimes_very_Buggy
-          qCompilerAndStdLib_maybe_unused_in_lambda_ignored_Buggy
-          qCompilerAndStdLib_MemInitializerWithBitfield_Buggy
-          qCompilerAndStdLib_usingOfEnumFailsToBringIntoScope_Buggy
-          qCompilerAndStdLib_uniformInitializationsFailsOnIntSize_t_Buggy
-          qCompilerAndStdLib_startupAppMagicStaticsNotWorkingFully_Buggy
-          qCompilerAndStdLib_template_value_type_ambiguous_confusion_Buggy
-          qCompilerAndStdLib_constexpr_call_constexpr_sometimes_internalError_Buggy
-          qCompilerAndStdLib_if_constexpr_annoyingly_evaluates_untaken_path_Buggy
-          qCompilerAndStdLib_attributes_before_template_in_Template_Buggy
-          qCompilerAndStdLib_constexpr_stdinitializer_Buggy
-          qCompiler_cpp17InlineStaticMemberOfClassDoubleDeleteAtExit_Buggy
-          qCompilerAndStdLib_uninitialized_copy_n_Warning_Buggy
-          #define qCompilerAndStdLib_TemplateTemplateWithTypeAlias_Buggy
-          #define qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy
-          qCompilerAndStdLib_TemplateUsingOfTemplateOfTemplateSpecializationVariadic_Buggy
-          qCompilerAndStdLib_lambda_expand_in_namespace_Buggy
-          qCompilerAndStdLib_SpaceshipAutoGenForOpEqualsForCommonGUID_Buggy
-          qCompiler_LimitLengthBeforeMainCrash_Buggy
-          ~~~
+      - Lose obsolete bug defines (for vs2k17)
+        ~~~
+        qCompilerAndStdLib_alignas_Sometimes_Mysteriously_Buggy
+        qCompilerAndStdLib_alignas_Sometimes_Mysteriously_Buggy
+        qCompilerAndStdLib_static_inline_order_of_construction_Buggy
+        qCompilerAndStdLib_maybe_unused_b4_auto_in_for_loop2_Buggy
+        qCompilerAndStdLib_initializer_list_sometimes_very_Buggy
+        qCompilerAndStdLib_maybe_unused_in_lambda_ignored_Buggy
+        qCompilerAndStdLib_MemInitializerWithBitfield_Buggy
+        qCompilerAndStdLib_usingOfEnumFailsToBringIntoScope_Buggy
+        qCompilerAndStdLib_uniformInitializationsFailsOnIntSize_t_Buggy
+        qCompilerAndStdLib_startupAppMagicStaticsNotWorkingFully_Buggy
+        qCompilerAndStdLib_template_value_type_ambiguous_confusion_Buggy
+        qCompilerAndStdLib_constexpr_call_constexpr_sometimes_internalError_Buggy
+        qCompilerAndStdLib_if_constexpr_annoyingly_evaluates_untaken_path_Buggy
+        qCompilerAndStdLib_attributes_before_template_in_Template_Buggy
+        qCompilerAndStdLib_constexpr_stdinitializer_Buggy
+        qCompiler_cpp17InlineStaticMemberOfClassDoubleDeleteAtExit_Buggy
+        qCompilerAndStdLib_uninitialized_copy_n_Warning_Buggy
+        #define qCompilerAndStdLib_TemplateTemplateWithTypeAlias_Buggy
+        #define qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy
+        qCompilerAndStdLib_TemplateUsingOfTemplateOfTemplateSpecializationVariadic_Buggy
+        qCompilerAndStdLib_lambda_expand_in_namespace_Buggy
+        qCompilerAndStdLib_SpaceshipAutoGenForOpEqualsForCommonGUID_Buggy
+        qCompiler_LimitLengthBeforeMainCrash_Buggy
+        ~~~
       - new Compiler bug defines
         - qCompilerAndStdLib_copy_warning_overflow_Buggy
         - qCompilerAndStdLib_stdlib_compare_three_way_present_but_Buggy
@@ -258,12 +258,15 @@ especially those they need to be aware of when upgrading.
         - qCompilerAndStdLib_DefaultMemberInitializerNeededEnclosingForDefaultFunArg_Buggy
         - qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
         - qCompilerAndStdLib_clangWithLibStdCPPStringConstexpr_Buggy
-      - Support compiler  _MSC_VER_2k22_17Pt6_ bug define support
+        - qCompilerAndStdLib_stdlib_ranges_pretty_broken_Buggy
+      - Support compiler _MSC_VER_2k22_17Pt6_ bug define support
       - new _Stroika_Foundation_STRINGIFY_ macro
       - new Configuration::ConvertibleTo template class as helper for IIterableOf\<T> concept
     - Containers
       -  ALL
          - major switch to using concepts, and requires (in place of enable_if_t)
+      - LockFree
+        - minor fruitless tweaks to LockFreeDataStructures/forward_list
       - Association
         - Added Association<KEY_TYPE, MAPPED_VALUE_TYPE>::operator[] () syntactic sugar
       - Mapping
@@ -338,8 +341,9 @@ especially those they need to be aware of when upgrading.
         - AssertExternallySynchronizedMutex further performance tweaks
         - Debug::AssertExternallySynchronizedMutex now hides fSharedContext, and accessed via (public was protected) GetSharedContext and SetAssertExternallySynchronizedMutexContext (not backward compatible but close); DataBase::Connection (and sucblasses) changes to use of AssertExternallySynchronizedMutex and chagnes to thread safety rules/docs for these classes (base unspecified if letter is threadsafe and for ODBC and SQLITE say they are not); implies some changes to GetSharedContext/SetAssertExternallySynchronizedMutexContext () usage for these classes (sb all internal and not noticable outside for hte most part)
         - qStroikaFoundationDebugAssertExternallySynchronizedMutexEnabled support - so AssertExternallySynchronizedMutexEnabled independently of qDebug (but defaults to qDebug and not Stroika_Foundation_Debug_Sanitizer_HAS_ThreadSanitizer)
-      - use Debug::DropIntoDebuggerIfPresent () rather than direct call to windows DebugBreak()
+      - use DropIntoDebuggerIfPresent () rather than direct call to windows DebugBreak()
       - fixed (serious regrssion - string visualizer) was broken, and updated older visual studio natvis files to match
+      - new UncheckedDynamicPointerCast
     - Memory
       - BlockAllocation 
         - Minor tweaks to Memory/BlockAllocator (clarity)
@@ -524,7 +528,6 @@ especially those they need to be aware of when upgrading.
 - Github actions/workflows
   - renamed github action to build-N-test
 
-
 --UNORGNAINZIED
 - support visual studio compiler _MSC_VER_2k22_17Pt2_ (2 new bugs and nothing fixed)
 - Updated vs2k versions to VS_17_2_0 and VS_16_11_14 for docker files
@@ -536,7 +539,6 @@ especially those they need to be aware of when upgrading.
 - for ScriptsLib/RunRemoteRegressionTests - set /usr/local/bin first in path (needed to find right realpath in macos)
 
 - Added Profile configuration for windows, since handy for doing profiling (not auto-built - just defined so can be easily used)
-
 
 ---
 
@@ -561,17 +563,9 @@ commit 45309d2e49cbc5416f6c96504cd54c6f5123f62d
 Date:   Sat Jan 21 11:34:32 2023 -0500
     a few small chantes to .clang-format file, and re-ran make format-code (mainly column limit set to 140, PenaltyExcessCharacter AllowShortEnumsOnASingleLine
 
-commit 582af5227810bd9cd992739f3e48b9070d2f62ff
-Date:   Sun Jan 22 13:22:31 2023 -0500
-    workaround qCompilerAndStdLib_template_requresDefNeededonSpecializations_Buggy
-
 commit 6d8c3e5162caf773fa84cd679a21a86b0ebaf301
 Date:   Mon Jan 23 10:47:59 2023 -0500
     qCompilerAndStdLib_template_Requires_templateDeclarationMatchesOutOfLine_Buggy bug define and workaroudn and 
-
-commit 5eaa03418b9b07b8f261f62a80d82c500b07f0fd
-Date:   Thu Jan 26 10:47:57 2023 -0500
-    Block allocation code - annotate with [[likelly]] - no clear diff on windows
 
 commit d91ba0f18b02a0761b45bb7137cdd0a056dd1c17
 Date:   Fri Jan 27 09:27:55 2023 -0500
@@ -584,10 +578,6 @@ Date:   Sat Jan 28 18:17:04 2023 -0500
 commit 70ce0db7187e19375eaf30534488b6af424f2086
 Date:   Sun Jan 29 11:21:29 2023 -0500
     progress building real impl of TextToByteReader - but still quite weak
-
-commit 14fd656e3b7b8f531fddbfb61ce0eefbffc02076
-Date:   Wed Feb 1 12:38:56 2023 -0500
-    fixed overaggressive LIBCPP_VERSION check - need 13 supported for xcode 14
 
 commit da8e896c1d5570b350425a3a02f28267b3daf9cb
 Date:   Thu Feb 2 10:51:43 2023 -0500
@@ -627,7 +617,6 @@ Date:   Fri Feb 3 08:45:58 2023 -0500
 
 commit 59e110cd01aed52b4feeea9d993e8c1e2470b131
 Date:   Sat Feb 4 10:55:39 2023 -0500
-    new Debug::UncheckedDynamicPointerCast
 
 commit b1c39dcdd71c0ee73355f5f6e153c752bbaaab1a
 Date:   Sat Feb 4 12:49:16 2023 -0500
@@ -660,14 +649,6 @@ Date:   Mon Feb 6 15:42:13 2023 -0500
 commit 82b73dd8904528b4760b307aa07786c0af06bd2a
 Date:   Mon Feb 6 20:05:09 2023 -0500
     added back deprecated defintiion of WideStringToNarrowSDKString so easier to upgrade v2.1 Stroika code
-
-commit 557c091332fe1871b092d9023b62c618b1087998
-Date:   Wed Feb 8 11:27:26 2023 -0500
-    qCompilerAndStdLib_stdlib_ranges_pretty_broken_Buggy define and support
-
-commit 50853aa9b8678ae53640d870cc564f97702c1a88
-Date:   Wed Feb 8 12:03:27 2023 -0500
-    workaround qCompilerAndStdLib_stdlib_ranges_pretty_broken_Buggy
 
 commit 0a47e4babea6d47740bee7f77d6fffb8bc91b87e
 Date:   Wed Feb 8 22:14:10 2023 -0500
@@ -1225,14 +1206,6 @@ commit eae6da0c51596cf42369bef7153677e917c6a15d
 Date:   Wed Jun 21 12:32:27 2023 -0400
     dont appear to need tuple workaround for HasLt_v_ HasEq_v_
 
-commit e9c19c2ad37877565aecf61fa2579edfda9e2249
-Date:   Wed Jun 21 21:11:57 2023 -0400
-    dont appear to need tuple workaround for HasLt_v_ HasEq_v_
-
-commit e2a6312f39e9e4db3c271a69b188fa50bcfd30fb
-Date:   Wed Jun 21 22:35:00 2023 -0400
-    dont need tuple support for HasLt concept
-
 commit dadc194760a76071e48a310ba14f9d8f328c2c74
 Date:   Wed Jun 21 22:39:44 2023 -0400
     dont need tuple support for HasLt concept
@@ -1265,10 +1238,6 @@ commit a8b9a08c11a58a7b3bcbda0c576b599746995270
 Date:   Thu Jun 29 19:31:28 2023 -0400
     lose use of deprecated codecvt_utf8_utf16 etc functions
 
-commit 766ef7f35130cb1f5101d8714a9f09a183ae52c3
-Date:   Fri Jun 30 17:32:18 2023 -0400
-    minor fruitless tweaks to LockFreeDataStructures/forward_list
-
 commit 6dc66ff8b93927a2f0999ee812337487c61a6119
 Date:   Wed Jul 5 12:23:46 2023 -0400
     Concept cleanups CountedValue
@@ -1295,7 +1264,6 @@ Date:   Fri Jul 7 11:00:20 2023 -0400
 
 commit 8b7567ed68d446e3582c2b10e097cade0a692f3f
 Date:   Fri Jul 7 11:26:22 2023 -0400
-    minor tweak to draft lockfree linked list code
 
 #endif
 
