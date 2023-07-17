@@ -13,6 +13,7 @@ especially those they need to be aware of when upgrading.
 - Documentation
   - [v3 Roadmap](https://github.com/SophistSolutions/Stroika/discussions/120)
   - [Design Overview.md](./DockerBuildContainers/Design Overview.md)
+    - various cleanups, including new concept support, and revised docs about comparisons
 - Stroika Library
   - General
     - Require C++20 or later (Lose c++17 language compatability)
@@ -259,6 +260,7 @@ especially those they need to be aware of when upgrading.
         - qCompilerAndStdLib_clangWithLibStdCPPStringConstexpr_Buggy
       - Support compiler  _MSC_VER_2k22_17Pt6_ bug define support
       - new _Stroika_Foundation_STRINGIFY_ macro
+      - new Configuration::ConvertibleTo template class as helper for IIterableOf\<T> concept
     - Containers
       -  ALL
          - major switch to using concepts, and requires (in place of enable_if_t)
@@ -271,6 +273,8 @@ especially those they need to be aware of when upgrading.
         - lose Mapping _IRep Keys/MappedValues use use base class Iterable::Map<> todo this (as before)
         - Adjusted regtest to take into account that order of elts can change due to Mapping now defaulting to non-sorted(hashmap)
         - Mapping - use requires so cleaer about Mapping::operator== and documented better as well the behavior
+      - MultiSet
+        - <https://stroika.atlassian.net/browse/STK-953> - new Multiset Top () and TopElements() methods
       - Sequence
         - added MOVE ctor for Sequence_stdvector taking std::vector<>
     - Cryptograpy
@@ -278,7 +282,7 @@ especially those they need to be aware of when upgrading.
       - Digest::ComputeDigest () and Digester<> etc - now support taking Iterable\<TRIVIALLY_COPYABLE_T> - so for example String
       - Digester ctor constexpr
       - Cryptography/Digest/HashBase
-      - more cleanups to do but significant speedup from Digester 'span' support (prelim) - on hashtable stuff from json parsing
+      - Significant speedup from Digester 'span' support (prelim) - on hashtable stuff from json parsing
       - new concept Digest::IHashFunction
     - Database
       - SQLite
@@ -295,7 +299,7 @@ especially those they need to be aware of when upgrading.
         - Fixed https://stroika.atlassian.net/browse/STK-971 - VariantValue compare functions - and at same not - INCOMPATIBLE change - LOSING 'exactTypeMatchOnly' pareter to EqualsComparer/ThreeWayComparer functions for VariantValue (dont think ever used and documented didnt make much sense)
         - must be more careful comparing VariantValue for equality now - 5 == 5 no longer works - must save .ConvertTo(eInteger)
         - avoid needless operator= in VariantValue::CTOR (boost value), and cleanup use of operator= defs for VariantValue = use more concepts and hopefully fixed some copy/move stuff
-        - Minor tweaks to  VariantValue performance (final and mk_ instead of VariantValue CTOR
+        - Minor tweaks to  VariantValue performance (final and mk_ instead of VariantValue CTOR)
         - Fixed https://stroika.atlassian.net/browse/STK-971 - added VariantValue::Normalize() method to do heavy lifting/factor logic for how things compared
       - Variant Reader/Writer
         - General
@@ -443,6 +447,19 @@ especially those they need to be aware of when upgrading.
   - Traveral
     - Iterable
       - lose shared_from_this support in Iterable and various container subclasses, and String, etc...
+      - New feature - Iterable\<T>::Top - designed to address Sterls concern with 'SortedMultiset' <https://stroika.atlassian.net/browse/STK-953>
+      - Iterable<T>::_IteratorRepSharedPtr deprecated; get rid use
+      - small cleanups to Iterable<> Generator code : fixed return value of Iterable<T>::_SafeReadRepAccessor<REP_SUB_TYPE>::_ConstGetRepSharedPtr () - mostly
+      - lose unneeded dynamic_pointer_cast due to fix in iterable::accessor:: ConstGetRepSharedPtr ()
+      - deprecated IterableBase
+      - refactor Iterable<>::_IRep code/apis - lose _Find_equal_to_default_implementation and _Find etc, and just do default impl of the Find/Find_equal_to etc implementations where possible and lose the overrides in each subclass that just called that helper mechanism. Appears to generate (at least testing on windows) basically same code (at least code size didnt change), and much simpler - facilitating future cleanups
+      - **not backwards compatible** change to Iterable<>::end() - went from static to instance method for ranges compatability
+      - new IIterable concept
+      - lose (**not backward compatible change**) shared_ptr argument Iterable<>::IRep::MakeIterator and Find() methods
+      - replace most use of ExtractValueType_t and using IInputIterator amd IIterable in containers instead
+      - deprecated Configuration::IsIterable_v - using ranges::range or IIterable
+    - Iterator
+      - new IInputIterator concept
 - Frameworks
   - Led
     - Tons of Led support cleanups - losing APIs like Led_SDKString2ANSI Led_SDK_String Led_SDK_Char etc, and replacing with already existing (long existing) Stroika Foundation equivilents
@@ -532,18 +549,6 @@ commit e292e3013f002342eb4b703d04fc0785eb9fc14b
 Date:   Sat Jan 14 22:32:21 2023 -0500
     deprecate a bunch of Characters/SDKString functions - not great organization and simpler API to just vector through string. A bit more expensive that way but not woth the extra api for stuff thats never used
 
-commit bfb96a752aae9b16cf179602e0662295aafab9f0
-Date:   Sun Jan 15 12:36:57 2023 -0500
-    New feature - Iterable<T>::Top - designed to address Sterls concern with 'SortedMultiset'
-    https://stroika.atlassian.net/browse/STK-953
-
-commit d89e8a204cc04b155ee21bfc5c7fced7a1740370
-Date:   Sun Jan 15 13:16:54 2023 -0500
-    https://stroika.atlassian.net/browse/STK-953 - new Multiset Top () and TopElements() methods - I believe address this ticket/request
-
-commit 9db114b14f709cd823023e2c65e85b7ce9051bdd
-Date:   Sun Jan 15 14:45:13 2023 -0500
-
 commit d80d779b12f490ed4e734b958927e7a6b79d57cd
 Date:   Tue Jan 17 09:53:16 2023 -0500
     windows CreateProcess appears to set hProcess to nullptr instead of INVALID_HANDLE_VALUE in some cases, so accomodate
@@ -596,10 +601,6 @@ commit 455e2d8c69468e5b9ab8c8b51c7da36e3b20d5f3
 Date:   Thu Feb 2 11:49:08 2023 -0500
     deprecated Iterator<T>::RepSmartPtr - use unique_ptr<IRep> instead - clearer about kind of ptr - and avoids saying in using type the rep-type redundnantly
 
-commit a641c415aff3eca07c48fc09d838aca86dd244cd
-Date:   Thu Feb 2 11:58:07 2023 -0500
-    Iterable<T>::_IteratorRepSharedPtr deprecated
-
 commit 3d689883259e5c3adbadb9cb893567dca57181a3
 Date:   Thu Feb 2 12:34:33 2023 -0500
     deprecated Iterator<>::MakeSmartPtr - and use make_unique directly
@@ -624,29 +625,13 @@ commit 6a65d4b3958dbb3c7c00d803f51e7efc0d60122c
 Date:   Fri Feb 3 08:45:58 2023 -0500
     reduce use of _IRepSharedPtr/etc in container archtype classes
 
-commit 247c0db2c9b5b8a0c692266873b4f873b72a7f78
-Date:   Sat Feb 4 10:44:16 2023 -0500
-    fixed return value of Iterable<T>::_SafeReadRepAccessor<REP_SUB_TYPE>::_ConstGetRepSharedPtr () - mostly
-
 commit 59e110cd01aed52b4feeea9d993e8c1e2470b131
 Date:   Sat Feb 4 10:55:39 2023 -0500
     new Debug::UncheckedDynamicPointerCast
 
-commit 4581f14e48a4e4d8c0b1f4365288e184da680062
-Date:   Sat Feb 4 11:09:59 2023 -0500
-    lose unneeded dynamic_pointer_cast due to fix in iterable::accessor:: ConstGetRepSharedPtr ()
-
 commit b1c39dcdd71c0ee73355f5f6e153c752bbaaab1a
 Date:   Sat Feb 4 12:49:16 2023 -0500
     KeyedCollection rep Keys method now takes KEY rep as smartptr arg
-
-commit 2554271ab45cf128f914ba739cc3cdd7943698bc
-Date:   Sat Feb 4 17:29:31 2023 -0500
-    get rid use of _IterableRepSharedPtr
-
-commit 307e475970a078ba2f4f48fc9f535de33bcb1215
-Date:   Sat Feb 4 17:37:12 2023 -0500
-    deprecated IterableBase
 
 commit 0094f983b4698f64958f844d94b6693e9d5ea060
 Date:   Sat Feb 4 21:10:22 2023 -0500
@@ -656,24 +641,9 @@ commit e0ee0d9a4ed691011a00bec6fd12054c635810fa
 Date:   Sun Feb 5 09:32:11 2023 -0500
     not 100% backward compatible for container implementors, but otherwise sb fine; REMOVE _IRep methods for stuff like Keys() and default impl, and instead redo all this using Map(mcuh simpler/cleaner) - only done for Assocation, Bijection, and KeyedCollection so far; deprecated/renamed two Bijection methods Map/InverseMap to avoid name conflict with Iterable Map
 
-commit 3e906109c8142daf0b0744a36cc4368f73e66b65
-Date:   Sun Feb 5 09:56:18 2023 -0500
-
 commit b75e3fd224460c337aebc4bb829f6a6d07ca58e6
 Date:   Sun Feb 5 10:50:35 2023 -0500
     rewrote MultiSet Elements and UniqueElements() using Map/Generators (much simpler/cleaner, and no need for _IRep methods todo any of that)
-
-commit 1282968814f51fbf54125e214aad32856d729cc6
-Date:   Sun Feb 5 11:27:30 2023 -0500
-    small cleanups to Iterable<> Generator code
-
-commit 73daf6d61474a75056def72184dedeaaa6bec47e
-Date:   Mon Feb 6 09:22:01 2023 -0500
-    refactor Iterable<>::_IRep code/apis - lose _Find_equal_to_default_implementation and _Find etc, and just do default impl of the Find/Find_equal_to etc implementations where possible and lose the overrides in each subclass that just called that helper mechanism. Appears to generate (at least testing on windows) basically same code (at least code size didnt change), and much simpler - facilitating future cleanups
-
-commit 94e5d5015416e2023c21c16a3699ff44dcce3bd8
-Date:   Mon Feb 6 13:39:55 2023 -0500
-    fixed small regression (compile error) in Foundation/Traversal/Iterable.inl
 
 commit 9f4d7b746f99d75359710f5342e3b81ddeff8fa2
 Date:   Mon Feb 6 14:18:51 2023 -0500
@@ -686,10 +656,6 @@ Date:   Mon Feb 6 15:37:25 2023 -0500
 commit 528fee37c7cf0de4ae3bfb3bfc29977acc59d5b2
 Date:   Mon Feb 6 15:42:13 2023 -0500
     DataStructure::Array::Apply now takes SequencePolicy seq param, and used in Concrete reps (makes size bigger - not sure worth it)
-
-commit f871b0c2e9c342c3ba27b9c15719cd13cef2f6d2
-Date:   Mon Feb 6 15:44:22 2023 -0500
-    reverseted change to Iterable<>::Find - now back to Execution::SequencePolicy::eDefault by default
 
 commit 82b73dd8904528b4760b307aa07786c0af06bd2a
 Date:   Mon Feb 6 20:05:09 2023 -0500
@@ -1008,7 +974,6 @@ Date:   Thu May 18 10:37:17 2023 -0400
 
 commit 37dbaa6523f7e5624c23afa6f5e19b482af57bbc
 Date:   Thu May 18 11:04:37 2023 -0400
-    **not backwards compatible** change to Iterable<>::end() - went from static to instance method for ranges compatability
 
 commit 7ccc68d29580a0d90b55640c7a645399cfadcb7d
 Date:   Thu May 18 11:39:14 2023 -0400
@@ -1017,14 +982,6 @@ Date:   Thu May 18 11:39:14 2023 -0400
 commit 666971023fa24f4954c773a0e46bec63ce542a27
 Date:   Thu May 18 11:41:16 2023 -0400
     Iterator::GetEmptyIterator() noexcept
-
-commit 2dcacf5672d2b52f18fb646bfe2bf5a108ca7d7a
-Date:   Thu May 18 11:45:32 2023 -0400
-    start assert (test) Iterables are valid ranges::range type, and make Iterable::end() noexcept
-
-commit f3203bdea9b5affcfccdeecbb36772468b1d299f
-Date:   Thu May 18 11:54:22 2023 -0400
-    experimentally try using ranges::range intead of Configuration::IsIterable_v
 
 commit fafcaee02cb72253a9637a8809d04ad84708468e
 Date:   Thu May 18 13:18:13 2023 -0400
@@ -1042,18 +999,6 @@ commit e60fa5159ef28e970c8c30b6711f7e01e25b1517
 Date:   Fri May 19 00:01:36 2023 -0400
     tmphack - reset github action for windows dev so only cgywin builds not msys til thats fixed
 
-commit 1f4fe084028bb2f2f88f8b204571a595e23eda81
-Date:   Fri May 19 14:59:39 2023 -0400
-    more use of ranges::range concept instead of  enable_if_t IsIterable_v
-
-commit 579dc6e5eca7e059d308d811779e3c4c3664d78f
-Date:   Fri May 19 15:17:08 2023 -0400
-    changed several typename ITERABLE_OF_ADDABLE to ranges::range ITERABLE_OF_ADDABLEranges::range
-
-commit a4329b6aca8fd50e7bc545a7da36d8a9c56150cf
-Date:   Fri May 19 20:41:56 2023 -0400
-    use more ranges::range concepts and lose enable_if_t / IsIterable_v usage
-
 commit 7343215fdf4662a7b873e6eb2008319f4bfdaa6c
 Date:   Fri May 19 21:43:01 2023 -0400
     replace a few more uses of typename ITERATOR_OF_ADDABLE with concept input_iterator ITERATOR_OF_ADDABLE
@@ -1069,10 +1014,6 @@ Date:   Sat May 20 03:38:08 2023 -0400
 commit a78ca171dbab6879f96771b6fc7cf1c92d9849da
 Date:   Tue May 23 12:51:06 2023 -0400
     maybe find better workaround for qCompilerAndStdLib_requires_breaks_soemtimes_but_static_assert_ok_Buggy
-
-commit 4af0f89a0e020affd9b8d84d520c95b29f7a6431
-Date:   Tue May 23 15:53:12 2023 -0400
-    Added new Traveral::IIterable and IIterableOfT
 
 commit c7d0f232db4b535d5015402aec2b550364397b71
 Date:   Tue May 23 16:13:34 2023 -0400
@@ -1212,41 +1153,9 @@ commit 1b105c6e81f92d22a5f522342ede74c5d2f16999
 Date:   Tue Jun 13 21:19:28 2023 -0400
     renamed concepts to start with I and somewhat simpler names
 
-commit 9827ca6d70e366de1032d2bfe1cf725768917308
-Date:   Wed Jun 14 09:39:38 2023 -0400
-    more 'I' in concept name cleanups and docs
-
-commit d41da2b1cc90e48d706bcbd2194051a21f2799be
-Date:   Wed Jun 14 11:46:21 2023 -0400
-    new IInputIteratorOfT concept and experimenting iwth its use, and IIterableOfT more usage, in preps for losing ExtractValueType_t  etc
-
 commit 26f56cff4661bc7bee025e93a2b475a7a86b8716
 Date:   Wed Jun 14 14:08:04 2023 -0400
     use more of IInputIteratorOfT<> instead of input_iterator, and lse a few more uses of ExtractValueType_t and fix typo in last checkin
-
-commit 73425e35e034f33209fa6a1cc970865aac9a3180
-Date:   Wed Jun 14 14:36:45 2023 -0400
-    More conversions to using IInputIteratorOfT<T> and IIterableOfT<T> concepts
-
-commit c6633f061bbefdff40a1923d6182caa64c2d949b
-Date:   Wed Jun 14 16:55:51 2023 -0400
-    more use of IIterableOfT and IInputIteratorOfT, instead of ranges::range and input_iterator
-
-commit 7fe4b60e0283ae8684f9beb84906a4baa2cc68fa
-Date:   Wed Jun 14 19:53:15 2023 -0400
-    ExtractValueType_t  ranges::range to IIterableOfT conversion and input_iterator to IInputIteraterOfT conversion for Multiset code
-
-commit 2165a3e3704bf6ab589d9ba90be4f34cd76e0f53
-Date:   Wed Jun 14 20:45:34 2023 -0400
-    more progress losing ExtractValueType_t and using IInputIteratorOfT amd IIterableOfT in containers
-
-commit 2b8fe46a93fa6bde5d1abd355d827336f0d4215c
-Date:   Wed Jun 14 21:04:53 2023 -0400
-    more progress losing ExtractValueType_t and using IInputIteratorOfT amd IIterableOfT in containers
-
-commit 99ae6f2ec34342f4e06302d566fd99e8a38cc1b6
-Date:   Wed Jun 14 22:51:00 2023 -0400
-    renamed IInputIteratorOfT -> IInputIterator and IIterableOfT -> IIterable
 
 commit 9d3c81a69968cdc618404a06575bcd194eb10a7a
 Date:   Thu Jun 15 09:47:50 2023 -0400
@@ -1255,9 +1164,6 @@ Date:   Thu Jun 15 09:47:50 2023 -0400
 commit 7b1967ead0e6eb21f879f48c3d572a568521e18b
 Date:   Thu Jun 15 10:09:40 2023 -0400
     modest code cleanups (derived_from intead of is_base_of_v etc)
-
-commit 7b7067da0e23e04602b5e7d184e435fc109889b8
-Date:   Thu Jun 15 10:50:04 2023 -0400
 
 commit 1b854c5ed32b647c3ff46f7c8c35cd2854ba792e
 Date:   Thu Jun 15 10:56:13 2023 -0400
@@ -1331,14 +1237,6 @@ commit dadc194760a76071e48a310ba14f9d8f328c2c74
 Date:   Wed Jun 21 22:39:44 2023 -0400
     dont need tuple support for HasLt concept
 
-commit 0c1b76080a792a8d53d50977a247a22aa0eb41cc
-Date:   Thu Jun 22 10:05:13 2023 -0400
-    test fix to IIterableWith from stackoverflow hints
-
-commit 44105968daea89ec2c80976364d12c096131c698
-Date:   Thu Jun 22 11:31:15 2023 -0400
-    cleanups of recent IIterable code - IIterableOf, Configuration::ConvertibleTo, etc
-
 commit 126bc4325a0520b1ffbd1e5ad606a3f2d039c7ab
 Date:   Thu Jun 22 15:53:17 2023 -0400
     Lose continaer IsAddable_v template variable - cannot get workgin reasonably with concpet/contraints, and not used anywhere else, so lose it - and really almost same concept as ConvertibleTo<value_type> so maybe just use that anyhow
@@ -1398,10 +1296,6 @@ Date:   Fri Jul 7 11:00:20 2023 -0400
 commit 8b7567ed68d446e3582c2b10e097cade0a692f3f
 Date:   Fri Jul 7 11:26:22 2023 -0400
     minor tweak to draft lockfree linked list code
-
-commit 0ff94526d639762900da40d4309597569179dc54
-Date:   Fri Jul 7 17:34:55 2023 -0400
-    lose (**not backward compatible change**) shared_ptr argument Iterable<>::IRep::MakeIterator and Find() methods
 
 #endif
 
