@@ -21,7 +21,7 @@ especially those they need to be aware of when upgrading.
 
 - Documentation
   - [v3 Roadmap](https://github.com/SophistSolutions/Stroika/discussions/120)
-  - [Design Overview.md](./DockerBuildContainers/Design Overview.md)
+  - [Design Overview.md](DockerBuildContainers/Design Overview.md)
     - various cleanups, including new concept support, and revised docs about comparisons
 - Stroika Library
   - General
@@ -226,9 +226,7 @@ especially those they need to be aware of when upgrading.
         - experiment using using Common::EqualsComparer to simplify declarations in containers
         - renamed Common::EqualsComparer to IEqualsComparer
         - more cleanups - esp to Iterbale<> to sue the new Common::IEqualsCOmparer - and in doing so fixed longstanding worakround where I - had removed a (useful/needed) type constraint - added back and fixed calls now
-        - more use of IEqualsComparer<KEY_TYPE> - testing narrow case to see if breaks any compilers before I do rest similar
-        - more use of concept IEqualsComparer<KEY_TYPE> in place of enable_if_t<Common::IsEqualsComparer...
-        - feprecated IsEqualsComparer
+        - deprecated IsEqualsComparer; instead use concept IEqualsComparer<KEY_TYPE> in place of enable_if_t<Common::IsEqualsComparer...
         - use new IInOrderComparer in a bunch of spots instead of deprecated IsStrictInOrderComparer
         - refactored ExtractComparisonTraits_v and only use that making ExtractComparisonTraits deprecated; Fixed IComparer and now use in - in IEqualsComparer/IInOrderComparer
         - **NOT BACKWARD COMPAT CHANGE** ONE TEMPLATE ARG VARIATION OF Common::ComparisonRelationDeclaration renamed to Common::ComparisonRelationDeclarationBase; and several cleanups to concepts code
