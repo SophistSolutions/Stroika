@@ -45,23 +45,23 @@ especially those they need to be aware of when upgrading.
   - Foundation
     - Cache
       - TimedCache
-        - fixed small CTOR bug iwth SynchronizedTimedCache
+        - fixed small CTOR bug with SynchronizedTimedCache
         - fix another regresion with SynchronizedTimedCache copy CTOR
         - Added regtest and used to fix bugs with TimedCache
         - antoher regtest to fix another regrssion with TimedCache
-        -  TimedCache (and SynchronizedTimedCache) use Time::Duration directly (no longer support overload taking DUrationSecondsType); should be mostly transparent/backward compatable, except for C++ 2 conversions on construction issue may cause some code to not build without explicit specificaiton (_duration) that something is a duration arg to TimedCache
-      - MANY not entirely backward compatible changes to Cache::TimedCache. MOSTLY, this was LOSING the template parameter TRACK_READ_ACCESS from DefaultTraits, and replacing it with LookupMarksDataAsRefreshed::eTreatFoundThroughLookupAsRefreshed being used rarely in Lookup and LookupValue calls as appropriate. This allowed making Lookup() methods const (thread implications). ALSO - use the nomenclature fresheness throughout TimedCache API, so GetTimeout deprecated, and now GetMinimumAllowedFreshness () (similarly for SetTimeout). DoBookkeeping () DEPRECATED (renamed to) PurgeSpoiledData; and Lookup() no longer calls 'clearold' - but really not needed since Add does now(depending on PurgeSpoiledDataFlagType flag to Add) so not that useful. For most use cases, no changes should be needed to calling code. NOTE STILL NOT YET IMPLEMETNED these changes in SynchronizedTimedCache (next)
-      - progress on SyncrhonizedTimedCache cleanups - and TimedCache cleanups from previous checkin
-      - GetElements() support in TimedCache, and use that in SyncrhonizedTimedCache copy constructor
-      - cleanup example use of Synchronized<Cache::TimedCache; fixed declartion error in TimedCached code only caught by unix compilers; TimedCache::Add (..., freshness) overload added, and used in CopyCTOR (for synchronized cache)
-      - Comments, cleanups, and extra optional arg to TimedCache::LookupValue (): https://stroika.atlassian.net/browse/STK-944
-      - comments and fixed minor recent regression in SynchronizedTimedCache<KEY, VALUE, TRAITS>::LookupValue
-      - TimedCache cleanups (slight semantic changes)
-      - TimedCache::GetElements -> TimedCache::Eleements() to match LRUCache naming (never released)
-      - https://stroika.atlassian.net/browse/STK-944 -- use lock_guard not shared_lock in Cache/SynchronizedTimedCache (probably reverse in Stroika v3)
+        - TimedCache (and SynchronizedTimedCache) use Time::Duration directly (no longer support overload taking DUrationSecondsType): should be mostly transparent/backward compatable, except for C++ 2 conversions on construction issue may cause some code to not build without explicit specificaiton (_duration) that something is a duration arg to TimedCache
+        - TimedCache::GetElements -> TimedCache::Eleements() to match LRUCache naming (never released)
+        - MANY not entirely backward compatible changes to Cache::TimedCache. MOSTLY, this was LOSING the template parameter TRACK_READ_ACCESS from DefaultTraits, and replacing it with LookupMarksDataAsRefreshed::eTreatFoundThroughLookupAsRefreshed being used rarely in Lookup and LookupValue calls as appropriate. This allowed making Lookup() methods const (thread implications). ALSO - use the nomenclature fresheness throughout TimedCache API, so GetTimeout deprecated, and now GetMinimumAllowedFreshness () (similarly for SetTimeout). DoBookkeeping () DEPRECATED (renamed to) PurgeSpoiledData; and Lookup() no longer calls 'clearold' - but really not needed since Add does now(depending on PurgeSpoiledDataFlagType flag to Add) so not that useful. For most use cases, no changes should be needed to calling code. NOTE STILL NOT YET IMPLEMETNED these changes in SynchronizedTimedCache (next)
+        - GetElements() support in TimedCache, and use that in SyncrhonizedTimedCache copy constructor
+        - Comments, cleanups, and extra optional arg to TimedCache::LookupValue (): https://stroika.atlassian.net/browse/STK-944
+        - comments and fixed minor recent regression in SynchronizedTimedCache<KEY, VALUE, TRAITS>::LookupValue
+        - https://stroika.atlassian.net/browse/STK-944 -- use lock_guard not shared_lock in Cache/SynchronizedTimedCache (probably reverse in Stroika v3)
+        - TimedCache now aggregates StatsType instead of inheriting (cuz now can use c++20 [[no_unique_address]])
       - Make Foundation::Cache 'Statistics' classes use atomic, and be internally synchronized
-      - Cache::TimedCache now aggregates StatsType instead of inheriting (cuz now can use c++20 [[no_unique_address]])
+      - CallerStalenessCache
+        - added regression test (9d3c81a69968cdc618404a06575bcd194eb10a7a) to capture recent regression in sycnronized caller staleness cache caught in WTF
     - Characters
+      - new ByteOrderMark flag;
       - Character
         - Added concepts
           - IBasicUNICODECodePoint
@@ -221,6 +221,9 @@ especially those they need to be aware of when upgrading.
         - feprecated IsEqualsComparer
         - use new IInOrderComparer in a bunch of spots instead of deprecated IsStrictInOrderComparer
         - refactored ExtractComparisonTraits_v and only use that making ExtractComparisonTraits deprecated; Fixed IComparer and now use in - in IEqualsComparer/IInOrderComparer
+        - **NOT BACKWARD COMPAT CHANGE** ONE TEMPLATE ARG VARIATION OF Common::ComparisonRelationDeclaration renamed to Common::ComparisonRelationDeclarationBase; and several cleanups to concepts code
+        - Moved ThreeWayComparer to end of file to avoid bug/issue with clang-format (and cuz makes sense to put deprecated stuff at end of file anyhow)
+        - Deprecated Common::ThreeWayCompare () and used compare_three_way{} or <=> (todo more of later) to replace
       - CountedValue
         - Concept cleanups CountedValue
       - GUID
@@ -291,6 +294,8 @@ especially those they need to be aware of when upgrading.
            - Many support optional Hints objects as factory construction argument to to be 'registered' as the default factory
           - AddAll
             - Use of concepts in AddAll usage, and several constructors that implicitly call AddAll
+          - IsAddable_v
+            - Lose continaer IsAddable_v template variable - cannot get workgin reasonably with concpet/contraints, and not used anywhere else, so lose it - and really almost same concept as ConvertibleTo<value_type> so maybe just use that anyhow
       - LockFree
         - minor fruitless tweaks to LockFreeDataStructures/forward_list
       - DataStructures
@@ -341,7 +346,8 @@ especially those they need to be aware of when upgrading.
       - DataExchange::ValidationStrategy support on Date class, and other related cleanups
         - used that to replace (not backward compat but unimportant) Bijection::InjectivityViolationPolicy, and just introduced TimeOfDay::ThrowIfOutOfRangeFlag - with same meaning basically
       - Added draft support for ObjectVariantMapper::MakeCommonSerializer (OptionalSerializerOptions ...) so it can take explicit T serializer
-      - New utility (factoring) Variant::Reader::_ToByteReader (const Streams::InputStream<Characters::Character>::Ptr& in)
+      - ObjectVariantMapper
+        - https://stroika.atlassian.net/browse/STK-743: added Containers::Adapters::IAddableTo and used teh concept in ObjectVariantMapper::MakeCommonSerializer_WithAdder
       - VariantValue
         - Add support to Stroika VariantValue so can be trivially constructed from boost::json::value, if Stroika built with boost
         - support VariantValue::As<boost::json::value> () - for full (easy) interoperability with boost (json support)
@@ -356,6 +362,7 @@ especially those they need to be aware of when upgrading.
         - General
           - refactoring DataExchange/Variant/Writer code - better abstracting transformations; use that in (so far untested but probably solid) DataExchange::Variant::CharacterDelimitedLines readers/writers
           - added assertions Variant::Reader (not null rep); and refactored some Read calls to have new protected _ToByteReader and _ToCharacterReader, so can more easily re-use logic in other subclass constructors (some semantic change but trivial and should be no issue)
+          - New utility (factoring) Variant::Reader::_ToByteReader (const Streams::InputStream<Characters::Character>::Ptr& in)
         - CharacterDelimitedLines
           - Variant/CharacterDelimitedLines/Reader supported convert to VariantValues (basic Reader function) and added regtest of ReadMatrix use
           - better regression tets for new Variant::CharacterDelimitedLines::Writer
@@ -396,6 +403,7 @@ especially those they need to be aware of when upgrading.
     - Execution
       - windows CreateProcess appears to set hProcess to nullptr instead of INVALID_HANDLE_VALUE in some cases, so accomodate
       - use perfect forwarding for Finally
+      - Synchronized<> uses requires instead of enable_if_t in a few places
     - Memory
       - BlockAllocation 
         - Minor tweaks to Memory/BlockAllocator (clarity)
@@ -467,8 +475,10 @@ especially those they need to be aware of when upgrading.
       - Inputstream use requires instead of enable_if_t
       - OutputStream (start of) span support
       - Address (with static_assert) bug I ran into in StreamReader due to InlineBufferElementType_ hack for Character object - hopefully adequite to prevent in future)
-      - TextWriter - deprecated InternallySynchronized overloads of new (use InternallySynchronizedOutputStream explicitly); and draft of support for creating TextWriter from CodeCvt and UnSeekable_UTFConverter_Rep_
-      - placeholder tmphack impl of Foundation/Streams/TextToByteReader and redriected Variant/Reader code to it
+      - TextWriter 
+        - deprecated InternallySynchronized overloads of new (use InternallySynchronizedOutputStream explicitly); and draft of support for creating TextWriter from CodeCvt and UnSeekable_UTFConverter_Rep_
+        - Major changes (depecation old api) for TextWriter - now pass in UnicodeExternalEncodings and ByteOrderMark or CodeCvt- placeholder tmphack impl of Foundation/Streams/TextToByteReader and redriected Variant/Reader code to it
+        - changed TextWriter to defalt to NOT including BOM
       - Improved implemtnation of TextToByteReader (using new stream copy stuff) - but still weak -but probbaly good enuf for now
       - deprecate a few TextReader overloads (InternallySynchronizedInputOutputStream directly)
       - lose OutputStream.cpp and more refactoring to use requires instead of enable_if_t
@@ -526,6 +536,8 @@ especially those they need to be aware of when upgrading.
           Iterator no longer inherites from IteratorBase: deprecated
       - Iterator::DEFAULT CTOR must exist for being range compatible (concept semiregular = std::copyable<T> && std::default_initializable)
       - Iterator::GetEmptyIterator() noexcept
+    - Range
+      - IRange concept and used in partition code
 - Frameworks
   - Led
     - Tons of Led support cleanups - losing APIs like Led_SDKString2ANSI Led_SDK_String Led_SDK_Char etc, and replacing with already existing (long existing) Stroika Foundation equivilents
@@ -575,6 +587,7 @@ especially those they need to be aware of when upgrading.
       - add performance regression test for DoStroikaJSONParse_boost_json2Stk
   - in IO::Transfer regtest, also just warn - not fail - on timeouts - since remote network servers we ping often timeout
   - fixed bad regression test Test_05_ParseRegressionTest_3_ - badly formatted input
+  - tiny progress on https://stroika.atlassian.net/browse/STK-747 jap locale character/number parsing (ToFloat regtests)
 - Build System
   - Clang-Format
     - a few small chantes to .clang-format file, and re-ran make format-code (mainly column limit set to 140, PenaltyExcessCharacter AllowShortEnumsOnASingleLine
@@ -583,6 +596,8 @@ especially those they need to be aware of when upgrading.
     - set configure script to default to --std=c++20 (effectively requiring g++ 9 or later - maybe 10 or later - we'll see)
     - change configure test for libc++ < version 11 - fail with good message
     - Added CMAKE variable to configure script
+  - Default Configurations
+    - Added **Profile** configuration for windows, since handy for doing profiling (not auto-built - just defined so can be easily used)
   - Docker
     - more cleanups to dockerfile for ubuntu 20.04
     - Better docs about docker container windows build workarounds, and need to specify --network "Default Switch" in docker build script in one more place
@@ -603,6 +618,8 @@ especially those they need to be aware of when upgrading.
       - fixed to handle bad .vscode/c_cpp_properties.json files - if they were empty - it was not updating them, and leaving them empty
     - Misc
       - Update ScriptsLib/FormatCode to call ScriptsLib/GetMessageForMissingTool and updated ScriptsLib/GetMessageForMissingTool to give better suggestions for how to install for windows
+    - RunRemoteRegressionTests
+      - set /usr/local/bin first in path (needed to find right realpath in macos)
   - Skel tool
     - in skel makefile, delegate a few more top level phony makefile targets
   - Github actions/workflows
@@ -612,84 +629,6 @@ especially those they need to be aware of when upgrading.
     - added new docker container build workflow
     - new github event run_all
 
---UNORGNAINZIED
-- support visual studio compiler _MSC_VER_2k22_17Pt2_ (2 new bugs and nothing fixed)
-- Updated vs2k versions to VS_17_2_0 and VS_16_11_14 for docker files
-- bug defines and workarounds for _MSC_VER_2k22_17Pt4_ (and a few cosmetic cleanups)
-
-- Moved ThreeWayComparer to end of file to avoid bug/issue with clang-format (and cuz makes sense to put deprecated stuff at end of file anyhow)
-- Deprecated Common::ThreeWayCompare () and used compare_three_way{} or <=> (todo more of later) to replace
-
-- for ScriptsLib/RunRemoteRegressionTests - set /usr/local/bin first in path (needed to find right realpath in macos)
-
-- Added Profile configuration for windows, since handy for doing profiling (not auto-built - just defined so can be easily used)
-
----
-
-===
-
-#if 0
-commit 0a47e4babea6d47740bee7f77d6fffb8bc91b87e
-Date:   Wed Feb 8 22:14:10 2023 -0500
-    tiny progress on https://stroika.atlassian.net/browse/STK-747 jap locale character/number parsing, but not real progress (but fixed bug with test case where had wrong characters)
-
-commit 3ea2961703daa107621deed6f769d704b1adb509
-Date:   Thu Feb 9 08:28:22 2023 -0500
-    enhance (still failing) parse japanese numbers test
-
-commit eb3f343d08d007b1506aa2888a36bbc30dbcd42a
-Date:   Thu Feb 9 23:37:34 2023 -0500
-    cosmetic; and progress on Characters_TextConvert (still alot todo before testable)
-
-commit ae225e915b0745b59a3374c2b7928bdb750d5d16
-Date:   Sat Feb 11 14:39:09 2023 -0500
-    A bit more progress on TextCovnert code - renamed ConstructCodeCvt, added eDefault o UnicodeExternalEncodings, and partial implemenation
-
-commit 83ed004128500910af166db764a9357de207a5e6
-Date:   Sat Feb 11 15:21:42 2023 -0500
-    new Characters::ByteOrderMark flag; Major changes (depecation old api) for TextWriter - now pass in UnicodeExternalEncodings and ByteOrderMark or CodeCvt
-
-commit 2210e6154043e3311a9ca5a8e1ce32fa9f6b2ba6
-Date:   Sat Feb 11 15:37:05 2023 -0500
-    changed TextWriter to defalt to NOT including BOM (just seemed most uses dont include it
-
-commit f04837893cef820ebb83a86381390643b9beb5f0
-Date:   Mon Apr 17 12:22:17 2023 -0400
-    hopefully final design for container factories - implemented for association - and generates much less code; not yet tested on other containers
-
-commit 27351cc1441942cafd0d85fd11fc565542a1d037
-Date:   Fri May 26 16:00:54 2023 -0400
-    test revert some of the CTOR cleanups to KeyValuePair to see if fixes xcode build
-
-commit 04eefbc4aa104974f21111c103d3bcd88e78a427
-Date:   Sat May 27 11:01:54 2023 -0400
-    Synchronized<> use requires instead of enable_if_t in a few places
-
-commit e470fae5c70980bcda3bd69df2dd7c290bee3cd0
-Date:   Sun May 28 14:25:52 2023 -0400
-    IRange concept and used in partition code
-
-commit 9d3c81a69968cdc618404a06575bcd194eb10a7a
-Date:   Thu Jun 15 09:47:50 2023 -0400
-    added regression test to capture recent regression in sycnronized caller staleness cache caught in WTF
-
-commit 1b854c5ed32b647c3ff46f7c8c35cd2854ba792e
-Date:   Thu Jun 15 10:56:13 2023 -0400
-    fixed regression (rencet) in callerstaleness cache regtests
-
-commit 126bc4325a0520b1ffbd1e5ad606a3f2d039c7ab
-Date:   Thu Jun 22 15:53:17 2023 -0400
-    Lose continaer IsAddable_v template variable - cannot get workgin reasonably with concpet/contraints, and not used anywhere else, so lose it - and really almost same concept as ConvertibleTo<value_type> so maybe just use that anyhow
-
-commit 1fe51528f829970de5e3809c2a0c49fde967f593
-Date:   Thu Jun 22 21:27:23 2023 -0400
-    https://stroika.atlassian.net/browse/STK-743: added Containers::Adapters::IAddableTo and used teh concept in ObjectVariantMapper
-
-commit 8607215e408a14aa4619db92933f95b6336f437e
-Date:   Tue Jun 27 11:54:01 2023 -0400
-    **NOT BACKWARD COMPAT CHANGE** ONE TEMPLATE ARG VARIATION OF Common::ComparisonRelationDeclaration renamed to Common::ComparisonRelationDeclarationBase; and several cleanups to concepts code
-
-#endif
 
 ===
 
