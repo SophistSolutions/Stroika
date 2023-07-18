@@ -21,7 +21,7 @@ especially those they need to be aware of when upgrading.
 
 - Documentation
   - [v3 Roadmap](https://github.com/SophistSolutions/Stroika/discussions/120)
-  - [Design Overview.md](DockerBuildContainers/Design Overview.md)
+  - [Design Overview.md](Documentation/Design%20Overview.md)
     - various cleanups, including new concept support, and revised docs about comparisons
 - Stroika Library
   - General
