@@ -10,6 +10,12 @@ especially those they need to be aware of when upgrading.
 ### 3.0d1 {2023-07-18xxxxxxxxxxxxxx}
 
 #### TLDR
+- Major changes, and much work-in-progress. Probably not stable.
+- Major revisions to String and UNICODE code
+- Imporoved scripting/automation (docker container build on github actions and github action workflow factoring better)
+- Use concepts thoroughly (replacing enable_if_t)
+- Require C++20 or later (which implies fewer compilers supported).
+- DateTime rewritten on top of C++20 date time library improvements
 
 #### Change Details
 
@@ -636,7 +642,7 @@ especially those they need to be aware of when upgrading.
 #### Release-Validation
 - Compilers Tested/Supported
   - g++ { 11, 12 }
-  - Clang++ { unix: 13, 14, 15; XCode: 14 }
+  - Clang++ { unix: 13, 14, 15; XCode: 14.3 }
   - MSVC: { 17.6.4 }
 - OS/Platforms Tested/Supported
   - Windows
@@ -644,7 +650,6 @@ especially those they need to be aware of when upgrading.
     - mcr.microsoft.com/windows/servercore:ltsc2019 (build/run under docker)
     - WSL v2
   - MacOS
-    - 11.4 (Big Sur) - x86_64
     - 13.0 (Ventura) - arm64/m1 chip
   - Linux: { Ubuntu: [20.04, 22.04], Raspbian(cross-compiled) }
 - Hardware Tested/Supported
@@ -660,8 +665,7 @@ especially those they need to be aware of when upgrading.
   - raspberrypi
     - runs on raspberry pi with builds from newer gcc versions fails due to my inability to get the latest gcc lib installed on my raspberrypi
 
-
-===
+---
 
 ### 2.1.13 {2023-04-14}
 
