@@ -7,12 +7,12 @@ especially those they need to be aware of when upgrading.
 
 ## History
 
-### 3.0d1 {2023-07-18xxxxxxxxxxxxxx}
+### 3.0d1 {2023-07-18}
 
 #### TLDR
 - Major changes, and much work-in-progress. Probably not stable.
 - Major revisions to String and UNICODE code
-- Imporoved scripting/automation (docker container build on github actions and github action workflow factoring better)
+- Improved scripting/automation (docker container build on github actions and github action workflow factoring better)
 - Use concepts thoroughly (replacing enable_if_t)
 - Require C++20 or later (which implies fewer compilers supported).
 - DateTime rewritten on top of C++20 date time library improvements
@@ -372,7 +372,7 @@ especially those they need to be aware of when upgrading.
         - General
           - refactoring DataExchange/Variant/Writer code - better abstracting transformations; use that in (so far untested but probably solid) DataExchange::Variant::CharacterDelimitedLines readers/writers
           - added assertions Variant::Reader (not null rep); and refactored some Read calls to have new protected _ToByteReader and _ToCharacterReader, so can more easily re-use logic in other subclass constructors (some semantic change but trivial and should be no issue)
-          - New utility (factoring) Variant::Reader::_ToByteReader (const Streams::InputStream<Characters::Character>::Ptr& in)
+          - New utility (factoring) Variant::Reader::_ToByteReader (const Streams::InputStream\<Characters::Character>::Ptr& in)
         - CharacterDelimitedLines
           - Variant/CharacterDelimitedLines/Reader supported convert to VariantValues (basic Reader function) and added regtest of ReadMatrix use
           - better regression tets for new Variant::CharacterDelimitedLines::Writer
@@ -614,15 +614,10 @@ especially those they need to be aware of when upgrading.
     - tweak installed components for Ubuntu2004-RegressionTests/Dockerfile
     - Docker v3 in image names for v3 containers
     - Windows
-      -  vis studio docker container VS_17_6_4
-    - TOORIGANUIZE
-      - get MSYS docker container working either from choco or myss installer, but doesnt seem to matter mcuh one way or other other
-      - replace use of RunArgumentsWithCommonBuildVars with PATCH_PATH_FOR_TOOLPATH_ADDITION_IF_NEEDED since SIMPLER, former not working under DOCKER/MSYS anymore - probably related to https://stroika.atlassian.net/browse/STK-941 WORKAROUND NOT WORKING
-      - workaround issue LINK ERROR annotate_string  started in vs2k 22 17.6 linking boost
-      - in Windows-VS2k22/Dockerfile use explicit set of includes not recommended and then removes (not sure better, seems larger, but maybe can trim back down)
-      - tweaked Windows-MSYS/Dockerfile paths so now all builds except openssl (fixes issue with missing sdk in config file - but still could celanup more/better paths)
-      - simplify Windows-VS2k22/Dockerfile   and smaller hope stull works:
-      - fixed configure to set COMPILER_DRIVER_CPlusPlus before using it to adjust CWARNING_FLAGS
+      - vis studio docker container VS_17_6_4
+      - restructured build in dependent layers, so first compiler, then msys or cygwin layer
+      - Fixed queer MSYS failures under docker
+        - replace use of RunArgumentsWithCommonBuildVars with PATCH_PATH_FOR_TOOLPATH_ADDITION_IF_NEEDED since SIMPLER, former not working under DOCKER/MSYS anymore - probably related to https://stroika.atlassian.net/browse/STK-941 WORKAROUND NOT WORKING
   - Scripts
     - ApplyConfiguration
       - fixed to handle bad .vscode/c_cpp_properties.json files - if they were empty - it was not updating them, and leaving them empty
