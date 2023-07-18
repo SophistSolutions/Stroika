@@ -46,8 +46,8 @@ Change to next version, including the suffix 'x' on version name.
 ## Checkin results
 
 ```bash
-VER=3.0d1 sh -c 'mv Tests/HistoricalPerformanceRegressionTestResults/PerformanceDump-*$VER*.txt Tests/HistoricalPerformanceRegressionTestResults/2.1/ && git add Tests/HistoricalPerformanceRegressionTestResults/2.1/PerformanceDump-*$VER.txt'
-VER=3.0d1 sh -c 'mv Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-*-$VER-OUT.txt Tests/HistoricalRegressionTestResults/2.1/ && git add Tests/HistoricalRegressionTestResults/2.1/REGRESSION-TESTS-*-$VER-OUT.txt'
+VER=3.0d1 sh -c 'mv Tests/HistoricalPerformanceRegressionTestResults/PerformanceDump-*$VER*.txt Tests/HistoricalPerformanceRegressionTestResults/3/ && git add Tests/HistoricalPerformanceRegressionTestResults/3/PerformanceDump-*$VER.txt'
+VER=3.0d1 sh -c 'mv Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-*-$VER-OUT.txt Tests/HistoricalRegressionTestResults/3/ && git add Tests/HistoricalRegressionTestResults/3/REGRESSION-TESTS-*-$VER-OUT.txt'
 ```
 
 

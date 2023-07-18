@@ -7,7 +7,11 @@ especially those they need to be aware of when upgrading.
 
 ## History
 
-### DRAFT v3.0d1 release as of July 10
+### 3.0d1 {2023-07-18xxxxxxxxxxxxxx}
+
+#### TLDR
+
+#### Change Details
 
 - Documentation
   - [v3 Roadmap](https://github.com/SophistSolutions/Stroika/discussions/120)
@@ -628,6 +632,33 @@ especially those they need to be aware of when upgrading.
     - use macos 13 not macos latest for now on github actions
     - added new docker container build workflow
     - new github event run_all
+
+#### Release-Validation
+- Compilers Tested/Supported
+  - g++ { 11, 12 }
+  - Clang++ { unix: 13, 14, 15; XCode: 14 }
+  - MSVC: { 17.6.4 }
+- OS/Platforms Tested/Supported
+  - Windows
+    - Windows 11 version 22H2
+    - mcr.microsoft.com/windows/servercore:ltsc2019 (build/run under docker)
+    - WSL v2
+  - MacOS
+    - 11.4 (Big Sur) - x86_64
+    - 13.0 (Ventura) - arm64/m1 chip
+  - Linux: { Ubuntu: [20.04, 22.04], Raspbian(cross-compiled) }
+- Hardware Tested/Supported
+  - x86, x86_64, arm (linux/raspberrypi - cross-compiled), arm64 (macos/m1)
+- Sanitizers and Code Quality Validators
+  - [ASan](https://github.com/google/sanitizers/wiki/AddressSanitizer), [TSan](https://github.com/google/sanitizers/wiki/ThreadSanitizerCppManual), [UBSan](https://clang.llvm.org/docs/UndefinedBehaviorSanitizer.html)
+  - Valgrind (helgrind/memcheck)
+  - [CodeQL](https://codeql.github.com/)
+- Build Systems
+  - [GitHub Actions](https://github.com/SophistSolutions/Stroika/actions)
+  - Regression tests: [Correctness-Results](Tests/HistoricalRegressionTestResults/3), [Performance-Results](Tests/HistoricalPerformanceRegressionTestResults/3)
+- Known (minor) issues with regression test output
+  - raspberrypi
+    - runs on raspberry pi with builds from newer gcc versions fails due to my inability to get the latest gcc lib installed on my raspberrypi
 
 
 ===
