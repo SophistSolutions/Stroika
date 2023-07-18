@@ -90,6 +90,7 @@ especially those they need to be aware of when upgrading.
         - new CodeCvt<> template to replace use of std::codecvt, and integrate with new UTFConverter.
         - moved stome stuff from TextConvert to CodeCvt template - more of a swiss-army-knife
         - lose use of deprecated codecvt_utf8_utf16 etc functions (from all over the place)
+        - lose LookupCodeConverter cuz codecvt stuff not easy to use (this API not well suited to codecvt limitaitons) and function largely replaced by new CodeCvt template
       - CString
         - cleanup Characters::CString:Length to use template requires instead of a bunch of specializations - much better!
       - String
@@ -192,7 +193,7 @@ especially those they need to be aware of when upgrading.
         - qPlatform_Windows impl (now default on windows cuz seems fastest)
       - ToFloat/String2Int
         - **not backward compatible** - but minor - change in FloatConversion::ToStringOptions parameters - GetUseLocale now returns locale, not optional, and new GetUsingLocaleClassic, and a few changes in rarely used types related
-        - ToFloat and String2Int overloads taking span<> (and more overloads to begin to make up for ambiguity - come back later and rewrite all this using requires
+        - ToFloat and String2Int overloads taking span<> (and more overloads to begin to make up for ambiguity - come back later and rewrite all this using requires)
         - refactoring of ToFloat () using span (not complete but better)
         - progress rewriting ToFloat code to be more C++20-ish/spanish etc
         - fixed small bug with ToFloat logic - peek at s not null terminated
@@ -200,7 +201,9 @@ especially those they need to be aware of when upgrading.
         - fixed https://stroika.atlassian.net/browse/STK-966 - ToFloat failing - due to strtod requires NUL-termination, and new code didn't generally require/pass in NUL-terminated strings (did often enough to be confusing)
         - big simplification to String2Int code using concepts (hopefully still correct)
         - String2Int - method optimizes more span cases; and use Character::AsASCIIQuietly in place of deprecated String::AsASCIIQuietly
-      - deprecate a bunch of Characters/SDKString functions - not great organization and simpler API to just vector through string. A bit more expensive that way but not woth the extra api for stuff thats never used
+      - ToString
+        - cleanup enable_if_t in ToString to use requires
+      - deprecate a bunch of Characters/SDKString functions - e.g. WideStringToNarrowSDKString - not great organization and simpler API to just vector through string. A bit more expensive that way but not woth the extra api for stuff thats never used
     - Common
       - Compare
         - lose Common::strong_ordering and Common::kLess, kEquals, kGreater (**not backwards compatible**)
@@ -274,6 +277,10 @@ especially those they need to be aware of when upgrading.
       - new Configuration::ConvertibleTo template class as helper for IIterableOf\<T> concept
       - Concepts.h
         - MAJOR reworking - losing nearly all preexisting concept-like meta functions/variables (e.g. HasLt) and replacing with appropriate IXXX (e..g IOperatorLt) concepts.
+        - replace use of deprecated Configuration::IsTPredicate with std::predicate concept
+        - and many other similar
+      - BWA
+        - bit_cast and byteswap BWA implementations
     - Containers
       -  Many Submodules
          - major switch to using concepts, and requires (in place of enable_if_t)
@@ -289,6 +296,7 @@ especially those they need to be aware of when upgrading.
       - DataStructures
         - new Array\<T>: push_back
         - Array::Apply now takes SequencePolicy seq param, and used in Concrete reps (makes size bigger - not sure worth it)
+        - (not backward compatible but to internal routine) change to DataStructure::Array - changed its Find() method to return optional, and more closely mimic LinkedList (so cloning code with if() not a problem)
       - Association
         - Added Association<KEY_TYPE, MAPPED_VALUE_TYPE>::operator[] () syntactic sugar
       - KeyedCollection
@@ -361,6 +369,7 @@ especially those they need to be aware of when upgrading.
           - Character::GetSurrogatePair()  use in Variant/JSON/Writer
           - Added support for perfrmance test code to download and run json parser regtest on nlohmann/json : https://stroika.atlassian.net/browse/STK-781'''
           - in new boost support for Variant::JSON::Reader, wrap failures in BadFormatException
+          - lose unneeded options.fCanReadPastEndOfJSONObjectInStream
           - JSON::Reader object now takes options, which allow you to select (defaults to) using boost to parse intead of stroika, but still can select the stroika parser
           - rewrote boost support in DataExchange/Variant/JSON/Reader - so should handle incrmentals etc, and stream of bytes or characters (with some caveats to fix there)
           - Performance
@@ -407,7 +416,7 @@ especially those they need to be aware of when upgrading.
         - a couple minor tweaks to InlineBuffer/StackBuffer - resize_uninitialized requres changes, and tweaked impl (dont case if > size just if > capacity)
         - minor correctness/performance tweaks to recent StackBuffer/InlineBuffer reserve() call changes
         - slight performance tweak for Memory/InlineBuffer and Memory/StackBuffer - delegate through HasEnoughCapacity_ which checks common constant (BUFSIZE) first - to avoid computing capacity when not needed (generally)
-        - mostly cosmetic/constexpr clenaups to StackBuffer/InlineBuffer (and some [[likely]] annotations)
+        - mostly cosmetic/constexpr clenaups to StackBuffer/InlineBuffer (and some \[\[likely]] annotations)
         - Minor progress on basic stroika json reader performance: StreamReader use a few more inlines and likelys, comments, and  factored StackBuffer_DefaultInlineSize and InlineBuffer_DefaultInlineSize size calculation out of template declaration so separately callable/checkable and  Memory::InlineBuffer<char32_t, 128> in StringBuilder instead of default
         - Invariant calls in StackBuffer/InlineBuffer push_back
         - added span CTOR overload to StackBuffer and InlineBuffer
@@ -483,8 +492,8 @@ especially those they need to be aware of when upgrading.
         - in Date code - replace DayOfMonth with use of chrono::day (but still support old name as construction wrapper)
         - Import a few date related chrono literals to Time namespace, and regtests and docs examples using them 1906y/May/12d == Date{1906y, May, 12d}
         - more Date cleanups, regtests and docs; and deprecated Date::AddDays() and replaced with Date::Add() and better overloads ofr operator+/operator- etc; similar for Date::Difference, and Date::DaysSince(now Since)
-        - used [[nodiscard]] in a couple places to help avoid bugs with mutable Date (Add method should not be discard result)
-        - use [[nodiscard]] in a few places; Year/Date/etc no longer have 'off sign' constructor support - caller must do the cast
+        - used \[[nodiscard]] in a couple places to help avoid bugs with mutable Date (Add method should not be discard result)
+        - use \[[nodiscard]] in a few places; Year/Date/etc no longer have 'off sign' constructor support - caller must do the cast
       - DateTime
         - added optional parameter consumedCharacters to DateTime::ParseQuietly, and changed semantics for DateTime::Parse - to generally fail/exception with badly formatted (at least iso8601) datetimes (not just quietly ignore crap at the end); added regtest to reflect that and FIXED regression test I had checked in from sterling - this completes  https://stroika.atlassian.net/browse/STK-950 (**NOTE NOT FULLY BACKWARD COMPATBILE** AS DateTime::Parse() is now a little more likely to throw)
       - Duration
@@ -538,6 +547,8 @@ especially those they need to be aware of when upgrading.
     - lose TOOLSET_NAME=msvc-14.2 workaround no longer needed
   - libcurl 
     - 8.1.2
+  - perl
+    - use strawberryperl instead of activeperl on windows - seems bug for bug compatible, but better installation story, and seems for free of encumbrances
   - sqlite 
     - 3.42.0
   - zlib
@@ -562,6 +573,8 @@ especially those they need to be aware of when upgrading.
     - JSON Performance
       - Added boost_json-parser to performance tests; guess dont need others since this is the fastest I've tried and easy to test against
       - add performance regression test for DoStroikaJSONParse_boost_json2Stk
+  - in IO::Transfer regtest, also just warn - not fail - on timeouts - since remote network servers we ping often timeout
+  - fixed bad regression test Test_05_ParseRegressionTest_3_ - badly formatted input
 - Build System
   - Clang-Format
     - a few small chantes to .clang-format file, and re-ran make format-code (mainly column limit set to 140, PenaltyExcessCharacter AllowShortEnumsOnASingleLine
@@ -569,6 +582,7 @@ especially those they need to be aware of when upgrading.
     - better error reporting in configure script
     - set configure script to default to --std=c++20 (effectively requiring g++ 9 or later - maybe 10 or later - we'll see)
     - change configure test for libc++ < version 11 - fail with good message
+    - Added CMAKE variable to configure script
   - Docker
     - more cleanups to dockerfile for ubuntu 20.04
     - Better docs about docker container windows build workarounds, and need to specify --network "Default Switch" in docker build script in one more place
@@ -576,6 +590,14 @@ especially those they need to be aware of when upgrading.
     - Docker v3 in image names for v3 containers
     - Windows
       -  vis studio docker container VS_17_6_4
+    - TOORIGANUIZE
+      - get MSYS docker container working either from choco or myss installer, but doesnt seem to matter mcuh one way or other other
+      - replace use of RunArgumentsWithCommonBuildVars with PATCH_PATH_FOR_TOOLPATH_ADDITION_IF_NEEDED since SIMPLER, former not working under DOCKER/MSYS anymore - probably related to https://stroika.atlassian.net/browse/STK-941 WORKAROUND NOT WORKING
+      - workaround issue LINK ERROR annotate_string  started in vs2k 22 17.6 linking boost
+      - in Windows-VS2k22/Dockerfile use explicit set of includes not recommended and then removes (not sure better, seems larger, but maybe can trim back down)
+      - tweaked Windows-MSYS/Dockerfile paths so now all builds except openssl (fixes issue with missing sdk in config file - but still could celanup more/better paths)
+      - simplify Windows-VS2k22/Dockerfile   and smaller hope stull works:
+      - fixed configure to set COMPILER_DRIVER_CPlusPlus before using it to adjust CWARNING_FLAGS
   - Scripts
     - ApplyConfiguration
       - fixed to handle bad .vscode/c_cpp_properties.json files - if they were empty - it was not updating them, and leaving them empty
@@ -603,22 +625,10 @@ especially those they need to be aware of when upgrading.
 - Added Profile configuration for windows, since handy for doing profiling (not auto-built - just defined so can be easily used)
 
 ---
+
 ===
 
 #if 0
-
-commit d91ba0f18b02a0761b45bb7137cdd0a056dd1c17
-Date:   Fri Jan 27 09:27:55 2023 -0500
-    fixed bad regression test Test_05_ParseRegressionTest_3_ - badly formatted input
-
-commit 05cd839860285e1fe000ea14e9ad8f578d75ccc7
-Date:   Sat Jan 28 18:17:04 2023 -0500
-    lose unneeded options.fCanReadPastEndOfJSONObjectInStream
-
-commit 82b73dd8904528b4760b307aa07786c0af06bd2a
-Date:   Mon Feb 6 20:05:09 2023 -0500
-    added back deprecated defintiion of WideStringToNarrowSDKString so easier to upgrade v2.1 Stroika code
-
 commit 0a47e4babea6d47740bee7f77d6fffb8bc91b87e
 Date:   Wed Feb 8 22:14:10 2023 -0500
     tiny progress on https://stroika.atlassian.net/browse/STK-747 jap locale character/number parsing, but not real progress (but fixed bug with test case where had wrong characters)
@@ -643,126 +653,13 @@ commit 2210e6154043e3311a9ca5a8e1ce32fa9f6b2ba6
 Date:   Sat Feb 11 15:37:05 2023 -0500
     changed TextWriter to defalt to NOT including BOM (just seemed most uses dont include it
 
-commit bc2ffbdcfde628a999ccc9f14bfad9652d262f26
-Date:   Sun Feb 12 17:40:57 2023 -0500
-    provide workaround for missing bit_cast and improved workaround for miussing byte_swap
-
-commit 9fd369cc98d007ac4d1c5868adb0bd5e68dfe252
-Date:   Mon Feb 13 14:06:18 2023 -0500
-    minor tweaks to bit_cast and byteswap BWA implementations
-
-commit 329e8ffd50548829367f7f139a02cdc430f043ce
-Date:   Sat Feb 18 12:27:47 2023 -0500
-    for macos builds, for some reason, now need brew install pkg-config
-
-commit 06020ca61bdc701ec930483976dea79cb106b6f8
-Date:   Mon Apr 17 10:10:01 2023 -0400
-    more fiddling with how container factories work (experimemting with assocation)
-
-commit 4a8586f226307d61c6311585ebe5990cd4640942
-Date:   Mon Apr 17 10:45:22 2023 -0400
-    maybe good cleanup of Association_Factory - review and test
-
 commit f04837893cef820ebb83a86381390643b9beb5f0
 Date:   Mon Apr 17 12:22:17 2023 -0400
     hopefully final design for container factories - implemented for association - and generates much less code; not yet tested on other containers
 
-commit 4f4b73cb082cf6856412c315c1a230a41eb46473
-Date:   Mon Apr 17 13:43:32 2023 -0400
-    Another tweak to Association_Factory so it works when called before main (magic static inline didn't work - not sure why)
-
-commit 8417dce6e30d2943f10c88ef99669ca518bfba39
-Date:   Tue Apr 18 10:26:13 2023 -0400
-    red of BijectionFactory using new pattern
-    new factory pattern on collection/densedatahyperrectangle
-
-commit 8bac60bd775825efbcfa53143f994f229a8157d7
-Date:   Fri Apr 21 09:01:03 2023 -0400
-    (not backward compatible but to internal routine) change to DataStructure::Array - changed its Find() method to return optional, and more closely mimic LinkedList (so cloning code with if() not a problem)
-
-commit f9d078f8db9f5a89373a736b3735041a9ca91a53
-Date:   Sat Apr 29 14:20:20 2023 -0400
-    replace use of RunArgumentsWithCommonBuildVars with PATCH_PATH_FOR_TOOLPATH_ADDITION_IF_NEEDED since SIMPLER, former not working under DOCKER/MSYS anymore - probably related to https://stroika.atlassian.net/browse/STK-941 WORKAROUND NOT WORKING
-
-commit c905b73982f5704e88b26402e2a9822dca5a9b89
-Date:   Mon May 8 02:45:28 2023 -0400
-    Added CMAKE variable to configure script
-
-commit 29b9e2baa65e53c2eaeb4040bf257e2e636bafa8
-Date:   Mon May 8 02:48:04 2023 -0400
-    install dos2unix in docker builder contaeiner for unix
-
-commit 975fb7b275ec4d8244838a3400691352332b5dee
-Date:   Mon May 8 11:40:51 2023 -0400
-    workaround dispace issue building docker container(s)
-
-commit a867c9abc4cbaf12c4d6ea33371ce297db7a793e
-Date:   Mon May 8 13:04:47 2023 -0400
-    progress on make docker containers windows
-
-commit 092fe4122d25871dbba5f1e84489c28745b33c94
-Date:   Mon May 8 13:48:07 2023 -0400
-    more tweaks to windows docker builds
-
-commit 0801e8dd53d78864a80a7c0852613112f624e7bc
-Date:   Fri May 12 10:57:44 2023 -0400
-    in IO::Transfer regtest, also just warn - not fail - on timeouts - since remote network servers we ping often timeout
-
-commit 4b38071ad24b09b740339c62873faa25f8bef7e3
-Date:   Sat May 13 15:12:38 2023 -0400
-    support building (windows) strawberry perl tool
-
-commit 30984a94a0b9ae5a0c0776e90649b5149aa79314
-Date:   Sat May 13 15:16:08 2023 -0400
-    experiemnt strawberry perl
-
-commit 2be04ce58db1a0fcab239f312bb1c2c1fb78d5b4
-Date:   Sat May 13 16:06:41 2023 -0400
-    use strawberryperl instead of activeperl on windows - seems bug for bug compatible, but better installation story, and seems for free of encumbrances
-
-commit 88f127e2fc1355bafab7450627f5d6494857ecb6
-Date:   Sat May 13 16:08:04 2023 -0400
-    commetns about things to try to make windows vis stud docker container smaller
-
-commit b9df601637614a400d68a6388b01b1bc4e733aa7
-Date:   Sat May 13 17:12:52 2023 -0400
-    get MSYS docker container working either from choco or myss installer, but doesnt seem to matter mcuh one way or other other
-
-commit 615b882cb012888996931d02cc9f58f3e239dfb8
-Date:   Thu May 18 10:37:17 2023 -0400
-    cleanup enable_if_t in ToString to use requires
-
-commit fafcaee02cb72253a9637a8809d04ad84708468e
-Date:   Thu May 18 13:18:13 2023 -0400
-    fixed a couple recent regressions/cleaned up one use of depreacted funciton
-
-commit c6cab7d75dd4f23161591516838e94a07964140f
-Date:   Thu May 18 13:20:56 2023 -0400
-    remote another use of depreacted funciofn and ebale_ioft
-
-commit e010dfcc8ee1af8c88d6d58a6bd5b2f80725ef27
-Date:   Thu May 18 19:58:02 2023 -0400
-    replace use of deprecated Configuration::IsTPredicate with std::predicate concept
-
-commit 7343215fdf4662a7b873e6eb2008319f4bfdaa6c
-Date:   Fri May 19 21:43:01 2023 -0400
-    replace a few more uses of typename ITERATOR_OF_ADDABLE with concept input_iterator ITERATOR_OF_ADDABLE
-
-commit 12aa5279bbff9697dd43d9865d19050dc32103c9
-Date:   Fri May 19 23:13:18 2023 -0400
-    lose more cases of enable_if_t - replacing most with using requires()
-
-commit ee52ade81697a87b06cb304394730a1ed994cfb3
-Date:   Sat May 20 03:38:08 2023 -0400
-    switch a few more uses of enable_if_t to concepts or requires
-
 commit 27351cc1441942cafd0d85fd11fc565542a1d037
 Date:   Fri May 26 16:00:54 2023 -0400
     test revert some of the CTOR cleanups to KeyValuePair to see if fixes xcode build
-
-commit 2ce9cfc573a66860039163f1002d3e2beb897083
-Date:   Fri May 26 17:53:08 2023 -0400
-    __cpp_lib_atomic_shared_ptr assumed  >= 201711
 
 commit 04eefbc4aa104974f21111c103d3bcd88e78a427
 Date:   Sat May 27 11:01:54 2023 -0400
@@ -772,46 +669,6 @@ commit e470fae5c70980bcda3bd69df2dd7c290bee3cd0
 Date:   Sun May 28 14:25:52 2023 -0400
     IRange concept and used in partition code
 
-commit 7fbe3040d69b2a5cfec5896c58eda511b9b58ef2
-Date:   Mon May 29 22:52:16 2023 -0400
-    workaround issue LINK ERROR annotate_string  started in vs2k 22 17.6 linking boost
-
-commit 0e191895e709a6daeee4eeda9d308a01d18a56f3
-Date:   Sun Jun 4 10:32:26 2023 -0400
-    in Windows-VS2k22/Dockerfile use explicit set of includes not recommended and then removes (not sure better, seems larger, but maybe can trim back down)
-
-commit 521a60c306839c37a5fc6796eea3473a2f40ec78
-Date:   Sun Jun 4 10:33:32 2023 -0400
-    tweaked Windows-MSYS/Dockerfile paths so now all builds except openssl (fixes issue with missing sdk in config file - but still could celanup more/better paths)
-
-commit 6cea24f3f65b2bb9f4695b5163b3f43fa8a1bd11
-Date:   Sun Jun 4 11:56:32 2023 -0400
-    simplify Windows-VS2k22/Dockerfile   and smaller hope stull works:
-
-commit 1f2437c9a976a27238e25f73a1b26c1c58dd610a
-Date:   Sun Jun 4 16:35:54 2023 -0400
-    cleanups to Windows-VS2k22/Dockerfile
-
-commit 043ab198f5bb10430d286e303c51458e83457341
-Date:   Sat Jun 10 10:29:32 2023 -0400
-    experiemntal fix for issue with msys build under docker windows openssl
-
-commit c2dc7ca217945ef3ba69b21f663d5e33d709936a
-Date:   Tue Jun 13 13:06:04 2023 -0400
-    fixed configure to set COMPILER_DRIVER_CPlusPlus before using it to adjust CWARNING_FLAGS
-
-commit fabeb8369986188ffb4f6fbffc70c9fbfd5d1be6
-Date:   Tue Jun 13 20:11:52 2023 -0400
-    static_assert __cpp_lib_atomic_shared_ptr
-
-commit 7091f598029d15437ccff873d786d70047836b27
-Date:   Tue Jun 13 21:04:53 2023 -0400
-    undo __cpp_lib_atomic_shared_ptr check - comment out
-
-commit 1b105c6e81f92d22a5f522342ede74c5d2f16999
-Date:   Tue Jun 13 21:19:28 2023 -0400
-    renamed concepts to start with I and somewhat simpler names
-
 commit 9d3c81a69968cdc618404a06575bcd194eb10a7a
 Date:   Thu Jun 15 09:47:50 2023 -0400
     added regression test to capture recent regression in sycnronized caller staleness cache caught in WTF
@@ -819,18 +676,6 @@ Date:   Thu Jun 15 09:47:50 2023 -0400
 commit 1b854c5ed32b647c3ff46f7c8c35cd2854ba792e
 Date:   Thu Jun 15 10:56:13 2023 -0400
     fixed regression (rencet) in callerstaleness cache regtests
-
-commit 7d16b8eb25510136919f3329c3dfcf9625ce576e
-Date:   Sun Jun 18 20:45:47 2023 -0400
-    more misc code cleanups - for diff compiler verisons, etc
-
-commit 85bdb93171a20702d6073d2bfa46e61aa929cd6d
-Date:   Mon Jun 19 13:29:17 2023 -0400
-    deprecating some old manual concept stuff, and use officail concept names
-
-commit dadc194760a76071e48a310ba14f9d8f328c2c74
-Date:   Wed Jun 21 22:39:44 2023 -0400
-    dont need tuple support for HasLt concept
 
 commit 126bc4325a0520b1ffbd1e5ad606a3f2d039c7ab
 Date:   Thu Jun 22 15:53:17 2023 -0400
@@ -843,13 +688,6 @@ Date:   Thu Jun 22 21:27:23 2023 -0400
 commit 8607215e408a14aa4619db92933f95b6336f437e
 Date:   Tue Jun 27 11:54:01 2023 -0400
     **NOT BACKWARD COMPAT CHANGE** ONE TEMPLATE ARG VARIATION OF Common::ComparisonRelationDeclaration renamed to Common::ComparisonRelationDeclarationBase; and several cleanups to concepts code
-
-commit d1c9ec25378719966d6612548d02566515c1eeaf
-Date:   Thu Jun 29 16:52:20 2023 -0400
-    lose LookupCodeConverter cuz codecvt stuff not easy to use (this API not well suited to codecvt limitaitons) and function largely replaced by new CodeCvt template; and fixed a bug with CodeCvt
-
-commit a8b9a08c11a58a7b3bcbda0c576b599746995270
-Date:   Thu Jun 29 19:31:28 2023 -0400
 
 #endif
 
