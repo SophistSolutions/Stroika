@@ -1065,7 +1065,7 @@ namespace {
         RequireNotNull (intoResult);
         Require (wsStart <= wsEnd);
         size_t            inSize = wsEnd - wsStart;
-        CodePageConverter cc (codePage);
+        CodePageConverter cc{codePage};
         // this grossly overestimates size - which is a problem for the RESIZE below!!! COULD pointlessly run out of memroy and intitialize data to good values...
         size_t outSizeBuf = cc.MapFromUNICODE_QuickComputeOutBufSize (wsStart, inSize);
         intoResult->resize (outSizeBuf);
