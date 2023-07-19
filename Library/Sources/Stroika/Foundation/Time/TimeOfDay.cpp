@@ -280,21 +280,18 @@ optional<TimeOfDay> TimeOfDay::ParseQuietly_ (const wstring& rep, const time_get
     wistringstream               iss{rep};
     istreambuf_iterator<wchar_t> itbegin{iss}; // beginning of iss
     istreambuf_iterator<wchar_t> itend;        // end-of-stream
-    if constexpr (qCompilerAndStdLib_std_get_time_pctx_Buggy) {
-        if (formatPattern == "%X"sv) {
-            tmget.get_time (itbegin, itend, iss, errState, &when);
-        }
-        else {
-            // Best I can see to do to workaround this bug
-           // DISABLE_COMPILER_MSC_WARNING_START (4996);
-            return Parse_ (rep, LOCALE_USER_DEFAULT);
-          //  DISABLE_COMPILER_MSC_WARNING_END (4996);
-        }
+#if qCompilerAndStdLib_std_get_time_pctx_Buggy
+    if (formatPattern == "%X"sv) {
+        tmget.get_time (itbegin, itend, iss, errState, &when);
     }
     else {
-        wstring wsFormatPattern = formatPattern.As<wstring> ();
-        (void)tmget.get (itbegin, itend, iss, errState, &when, wsFormatPattern.c_str (), wsFormatPattern.c_str () + wsFormatPattern.length ());
+        // Best I can see to do to workaround this bug
+        return Parse_ (rep, LOCALE_USER_DEFAULT);
     }
+#else
+    wstring wsFormatPattern = formatPattern.As<wstring> ();
+    (void)tmget.get (itbegin, itend, iss, errState, &when, wsFormatPattern.c_str (), wsFormatPattern.c_str () + wsFormatPattern.length ());
+#endif
     if ((errState & ios::badbit) or (errState & ios::failbit)) [[unlikely]] {
 #if qCompilerAndStdLib_locale_get_time_needsStrptime_sometimes_Buggy
         errState = (::strptime (String{rep}.AsNarrowSDKString ().c_str (), formatPattern.AsNarrowSDKString ().c_str (), &when) == nullptr)
@@ -354,10 +351,7 @@ String TimeOfDay::Format (NonStandardPrintFormat pf) const
     }
 }
 
-String TimeOfDay::Format (const locale& l) const
-{ 
-    return Format (l, kLocaleStandardFormat);
-}
+String TimeOfDay::Format (const locale& l) const { return Format (l, kLocaleStandardFormat); }
 
 String TimeOfDay::Format (const String& formatPattern) const
 {
@@ -396,8 +390,5 @@ void TimeOfDay::ClearSecondsField ()
 }
 
 #if qCompilerAndStdLib_linkerLosesInlinesSoCannotBeSeenByDebugger_Buggy && qDebug
-String TimeOfDay::ToString () const 
-{ 
-    return Format (); 
-}
+String TimeOfDay::ToString () const { return Format (); }
 #endif
