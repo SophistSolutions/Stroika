@@ -46,6 +46,7 @@ OUTPUT_WORKDIR_PRETTYNAME="$(shell $(StroikaRoot)ScriptsLib/SubstituteBackVariab
 ZIPPEDFILE=../Origs-Cache/$(BASENAME).tar.gz
 
 FETCHURLS=
+FETCHURLS+=https://www.openssl.org/source/$(BASENAME).tar.gz
 FETCHURLS+=http://www.openssl.org/source/$(BASENAME).tar.gz
 FETCHURLS+=http://www.openssl.org/source/old/1.1.1/$(BASENAME).tar.gz
 FETCHURLS+=http://www.openssl.org/source/old/1.1.0/$(BASENAME).tar.gz
