@@ -274,7 +274,10 @@ DateTime DateTime::Parse (const String& rep, const locale& l, const Traversal::I
     Execution::Throw (FormatException::kThe);
 }
 
-DateTime DateTime::Parse (const String& rep, const String& formatPattern) { return Parse (rep, locale{}, formatPattern); }
+DateTime DateTime::Parse (const String& rep, const String& formatPattern)
+{
+    return Parse (rep, locale{}, formatPattern); 
+}
 
 optional<DateTime> DateTime::ParseQuietly (const String& rep, LocaleIndependentFormat format, size_t* consumedCharacters)
 {
