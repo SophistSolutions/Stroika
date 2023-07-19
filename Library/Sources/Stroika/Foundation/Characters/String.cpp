@@ -1473,8 +1473,7 @@ void String::erase (size_t from, size_t count)
 
 const wchar_t* String::c_str () const noexcept
 {
-    // @todo FIX/LOSE ASAP!!!! - LGP 2023-06-28
-    // UNSAFE - DEPRECATED API
+    // UNSAFE - DEPRECATED  - lose before v3 actually released -- LGP 2023-06-28
     return const_cast<String*> (this)->c_str ();
 }
 const wchar_t* String::c_str ()
