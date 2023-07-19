@@ -895,6 +895,11 @@ namespace {
             VerifyTestResult (c.NthValue (1) == 2);
             VerifyTestResult ((c.NthValue (99) == int{}));
         }
+        {
+            Iterable<int> c{1, 2, 3, 4, 5, 6};
+            VerifyTestResult (c.First () == 1);
+            VerifyTestResult (c.First ([] (int i) { return i == 4; }) == 4);
+        }
     }
 }
 

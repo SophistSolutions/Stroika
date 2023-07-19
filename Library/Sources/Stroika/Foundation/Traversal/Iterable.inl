@@ -801,7 +801,7 @@ namespace Stroika::Foundation::Traversal {
         RequireNotNull (that);
         constexpr bool kUseIterableRepIteration_ = true; // same semantics, but maybe faster cuz avoids Stroika iterator extra virtual calls overhead
         if (kUseIterableRepIteration_) {
-            Iterator<T> t = this->_fRep->Find (nullptr, that, Execution::SequencePolicy::eSeq);
+            Iterator<T> t = this->_fRep->Find (that, Execution::SequencePolicy::eSeq);
             return t ? optional<T>{*t} : optional<T>{};
         }
         else {
