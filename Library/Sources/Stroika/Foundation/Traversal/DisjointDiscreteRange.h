@@ -36,7 +36,9 @@ namespace Stroika::Foundation::Traversal {
 
     public:
         using value_type = typename inherited::value_type;
-        using RangeType  = typename inherited::RangeType;
+        static_assert (same_as<T, value_type>);
+        using RangeType = typename inherited::RangeType;
+        static_assert (same_as<RANGE_TYPE, RangeType>);
 
     public:
         /**
@@ -49,47 +51,10 @@ namespace Stroika::Foundation::Traversal {
         DisjointDiscreteRange (const initializer_list<RangeType>& from);
         template <typename CONTAINER_OF_DISCRETERANGE_OF_T>
         explicit DisjointDiscreteRange (const CONTAINER_OF_DISCRETERANGE_OF_T& from);
-        template <input_iterator COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T>
-        explicit DisjointDiscreteRange (COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T&& start, COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T&& end)
-            requires (is_convertible_v<Configuration::ExtractValueType_t<COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T>, RANGE_TYPE>)
-#if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
-            : inherited{forward<COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T> (start), forward<COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T> (end)} {}
-#endif
-            ;
-        template <input_iterator COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T>
-        explicit DisjointDiscreteRange (COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T&& start, COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T&& end)
-            requires (is_convertible_v<Configuration::ExtractValueType_t<COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T>, T>)
-#if qCompilerAndStdLib_RequiresNotMatchInlineOutOfLineForTemplateClassBeingDefined_Buggy
-        {
-            static_assert (is_convertible_v<Configuration::ExtractValueType_t<COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T>, value_type>);
-            Containers::Sequence<RangeType>   srs{};
-            Containers::SortedSet<value_type> ss{forward<COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T> (start),
-                                                 forward<COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T> (end)};
-            value_type                        startAt{};
-            optional<value_type>              endAt;
-            for (const value_type& i : ss) {
-                if (not endAt.has_value ()) {
-                    startAt = i;
-                    endAt   = i;
-                }
-                else if (RangeType::TraitsType::GetNext (*endAt) == i) {
-                    endAt = i;
-                }
-                else {
-                    Assert (startAt <= *endAt);
-                    srs.Append (RangeType{startAt, *endAt});
-                    startAt = i;
-                    endAt   = i;
-                }
-            }
-            if (endAt) {
-                Assert (startAt <= *endAt);
-                srs.Append (RangeType{startAt, *endAt});
-            }
-            *this = move (THIS_CLASS_{srs});
-        }
-#endif
-        ;
+        template <IInputIterator<RANGE_TYPE> COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T>
+        explicit DisjointDiscreteRange (COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T&& start, COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T&& end);
+        template <IInputIterator<T> COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T>
+        explicit DisjointDiscreteRange (COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T&& start, COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T&& end);
 
     public:
         nonvirtual DisjointDiscreteRange& operator= (const DisjointDiscreteRange& rhs) = default;

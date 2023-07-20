@@ -657,7 +657,7 @@ namespace Stroika::Foundation::Traversal {
     constexpr typename iterator_traits<ITERATOR>::pointer Iterator2Pointer (ITERATOR i);
 
     /**
-     *  IInputIterator concept: input_iterator and iterated over values convertible to OF_T
+     *  IInputIterator concept: std::input_iterator and iterated over values convertible to OF_T
      * 
      *  \note this does not require the input iterator is OF T objects, merely that the T objects it iterates over
      *  can be converted to OF_T objects.
