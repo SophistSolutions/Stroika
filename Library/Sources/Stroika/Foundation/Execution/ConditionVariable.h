@@ -215,7 +215,7 @@ namespace Stroika::Foundation::Execution {
          *      \endcode
          */
         template <typename FUNCTION>
-        nonvirtual void MutateDataNotifyAll (FUNCTION mutatorFunction);
+        nonvirtual void MutateDataNotifyAll (FUNCTION&& mutatorFunction);
 
         /**
          *  Idea is you pass lambda to do actual data change, and this acquires lock first, and notifies one after.
@@ -227,7 +227,7 @@ namespace Stroika::Foundation::Execution {
          *      \endcode
          */
         template <typename FUNCTION>
-        nonvirtual void MutateDataNotifyOne (FUNCTION mutatorFunction);
+        nonvirtual void MutateDataNotifyOne (FUNCTION&& mutatorFunction);
     };
 
 }
