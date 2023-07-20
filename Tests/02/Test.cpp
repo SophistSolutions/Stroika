@@ -1302,6 +1302,7 @@ namespace {
     void Test44_LocaleUNICODEConversions_ ()
     {
         Debug::TraceContextBumper ctx{L"Test44_LocaleUNICODEConversions_"};
+        VerifyTestResult (String{"abcdefgjij"}.AsNarrowSDKString () == "abcdefgjij");   // Failed due to bug in CodePageConverter::MapFromUNICODE before v3.0d2
         auto                      testRoundtrip = [] (const char* localName, const string& localMBString, const wstring& wideStr) {
             bool initializedLocale = false;
             try {

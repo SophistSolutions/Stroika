@@ -850,18 +850,16 @@ void CodePageConverter::MapFromUNICODE (const char32_t* inChars, size_t inCharCn
 {
     char*  useOutChars     = outChars;
     size_t useOutCharCount = *outCharCnt;
-    if (GetHandleBOM ()) {
-        if (useOutCharCount >= 3) {
-            useOutChars += 3; // skip BOM
-            useOutCharCount -= 3;
-            reinterpret_cast<unsigned char*> (outChars)[0] = 0xef;
-            reinterpret_cast<unsigned char*> (outChars)[1] = 0xbb;
-            reinterpret_cast<unsigned char*> (outChars)[2] = 0xbf;
-        }
+    bool addBOM = GetHandleBOM () and useOutCharCount >= 3;
+    if (addBOM) {
+        useOutChars += 3; // skip BOM
+        useOutCharCount -= 3;
+        reinterpret_cast<unsigned char*> (outChars)[0] = 0xef;
+        reinterpret_cast<unsigned char*> (outChars)[1] = 0xbb;
+        reinterpret_cast<unsigned char*> (outChars)[2] = 0xbf;
     }
-
     *outCharCnt = UTFConverter::kThe.Convert (span{inChars, inCharCnt}, span{useOutChars, useOutCharCount}).fTargetProduced;
-    if (useOutCharCount >= 3) {
+    if (addBOM) {
         *outCharCnt += 3;
     }
 }
