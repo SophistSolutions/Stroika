@@ -178,6 +178,13 @@ Examples of common STL methods which appear in Stroika code (with STL semantics)
 - local variables start with lower case (camelcase)
 - properties start with lower case (camelcase) - because they are a hybrid between field and function, but syntactically you must treat them sometimes slightly differently than either, so this makes more clear what is going on. 'f' for plain field, and just starting with lower case to indicate a property.
 
+####
+Rationale
+
+Note this slight variation of naming convention from the std c++ standard is helpful, in that it conveys information with practically no cost. The Stroika
+functions will tend to have slightly different behavior and guarantees than std c++ (stl) counterparts, and the naming convention makes it a little easier to 
+read code with the two libraries intermingled, knowing which style is in use. (for example, stl iterators have different requirements than Stroika ones, Stroika functions tend to use assertions (pre/post condition assertions), that STL/stdc++ libraries dont, etc).
+
 ### Begin/End versus start/length
 
 STL is reasonably consistent, with most APIs using T\* start, T\* end, but some APIs use length instead of end. The Stroika convention is to always use T\* start, T\* end.
