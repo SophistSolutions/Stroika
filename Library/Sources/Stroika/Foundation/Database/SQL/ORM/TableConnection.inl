@@ -20,20 +20,20 @@ namespace Stroika::Foundation::Database::SQL::ORM {
     template <typename T, typename TRAITS>
     TableConnection<T, TRAITS>::TableConnection (const Connection::Ptr& conn, const Schema::Table& tableSchema,
                                                  const ObjectVariantMapper& objectVariantMapper, const OpertionCallbackPtr& operationCallback)
-        : pConnection{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) {
-            const TableConnection* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &TableConnection::pConnection);
+        : connection{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) {
+            const TableConnection* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &TableConnection::connection);
             return thisObj->fConnection_;
         }}
-        , pTableSchema{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) {
-            const TableConnection* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &TableConnection::pTableSchema);
+        , tableSchema{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) {
+            const TableConnection* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &TableConnection::tableSchema);
             return thisObj->fTableSchema_;
         }}
-        , pObjectVariantMapper{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) {
-            const TableConnection* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &TableConnection::pObjectVariantMapper);
+        , objectVariantMapper{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) {
+            const TableConnection* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &TableConnection::objectVariantMapper);
             return thisObj->fObjectVariantMapper_;
         }}
-        , pOperationCallback{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) {
-            const TableConnection* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &TableConnection::pOperationCallback);
+        , operationCallback{[qStroika_Foundation_Common_Property_ExtraCaptureStuff] ([[maybe_unused]] const auto* property) {
+            const TableConnection* thisObj = qStroika_Foundation_Common_Property_OuterObjPtr (property, &TableConnection::operationCallback);
             return thisObj->fTableOpertionCallback_;
         }}
         , fConnection_{conn}

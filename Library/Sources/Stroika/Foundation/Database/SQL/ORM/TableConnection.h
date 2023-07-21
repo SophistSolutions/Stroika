@@ -101,22 +101,22 @@ namespace Stroika::Foundation::Database::SQL::ORM {
     public:
         /**
          */
-        Common::ReadOnlyProperty<Connection::Ptr> pConnection;
+        Common::ReadOnlyProperty<Connection::Ptr> connection;
 
     public:
         /**
          */
-        Common::ReadOnlyProperty<Schema::Table> pTableSchema;
+        Common::ReadOnlyProperty<Schema::Table> tableSchema;
 
     public:
         /**
          */
-        Common::ReadOnlyProperty<ObjectVariantMapper> pObjectVariantMapper;
+        Common::ReadOnlyProperty<ObjectVariantMapper> objectVariantMapper;
 
     public:
         /**
          */
-        Common::ReadOnlyProperty<OpertionCallbackPtr> pOperationCallback;
+        Common::ReadOnlyProperty<OpertionCallbackPtr> operationCallback;
 
     public:
         static const OpertionCallbackPtr kDefaultTracingOpertionCallback;

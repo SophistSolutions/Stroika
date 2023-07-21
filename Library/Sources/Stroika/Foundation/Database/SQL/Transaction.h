@@ -32,7 +32,7 @@ namespace Stroika::Foundation::Database::SQL {
      *      \code
      *          T DB::AddOrMergeUpdate (ORM::TableConnection<T>* dbConnTable, const T& d)
      *          {
-     *              SQL::Transaction t{dbConnTable->pConnection ()->mkTransaction ()};
+     *              SQL::Transaction t{dbConnTable->connection ()->mkTransaction ()};
      *              std::optional<T> result;
      *              if (auto dbObj = dbConnTable->Get (id)) {
      *                  result = T::Merge (*dbObj, d);

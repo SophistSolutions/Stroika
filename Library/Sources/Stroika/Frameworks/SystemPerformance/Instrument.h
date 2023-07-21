@@ -51,7 +51,7 @@ namespace Stroika::Frameworks::SystemPerformance {
      *          that measure data over a period of time (like average CPU usage over a time interval) - they may maintain
      *          state, and return an average over the time since the last call to this instrument instance.
      * 
-     *          When copying instruments, this shared state remains shared. To break that share, use this.pContext = nullptr;
+     *          When copying instruments, this shared state remains shared. To break that share, use this.context = nullptr;
      *
      *  \note   Design Note
      *          Averages captured by instruments are generally relative to the capture interval (time between captures)
@@ -139,31 +139,31 @@ namespace Stroika::Frameworks::SystemPerformance {
          *  When you copy an Instrument, by default it remains linked to its source for some of its shared (averaging) data.
          *  to break that context link, set this context to nullptr, and it automatically creates a new context.
          *  Get() here - always returns non-null. But - its an opaque type, so not terribly useful, except to assign nullptr.
-         *  It is ILLEGAL (Required) that any arguments ASSIGNED to the pContext be either nullptr or of the exact dynamic
+         *  It is ILLEGAL (Required) that any arguments ASSIGNED to the context be either nullptr or of the exact dynamic
          *  type used by the given Instrument (so copied from an earlier version of this instrument or something known to be
          *  of the same type).
          */
-        Common::Property<shared_ptr<ICaptureContext>> pContext;
+        Common::Property<shared_ptr<ICaptureContext>> context;
 
     public:
         /**
          * @brief  Instruments all have a displayable name which can be used for reference. Each (type) instrument should have a unique.
          */
-        Common::ReadOnlyProperty<InstrumentNameType> pInstrumentName;
+        Common::ReadOnlyProperty<InstrumentNameType> instrumentName;
 
     public:
         /**
          *  \brief the set of MeasurementTypes measured by this instrument (often just one)
          * 
-         * \ens pCapturedMeasurementTypes ().size () >= 1
+         * \ens capturedMeasurementTypes ().size () >= 1
          */
-        Common::ReadOnlyProperty<Set<MeasurementType>> pCapturedMeasurementTypes;
+        Common::ReadOnlyProperty<Set<MeasurementType>> capturedMeasurementTypes;
 
     public:
         /**
-         *  \brief mapper for all the types listed in pType2MeasurementTypes().Values (), as well as any required support types.
+         *  \brief mapper for all the types listed in type2MeasurementTypes().Values (), as well as any required support types.
          */
-        Common::ReadOnlyProperty<DataExchange::ObjectVariantMapper> pObjectVariantMapper;
+        Common::ReadOnlyProperty<DataExchange::ObjectVariantMapper> objectVariantMapper;
 
     public:
         /**
@@ -171,7 +171,7 @@ namespace Stroika::Frameworks::SystemPerformance {
          *        this entry will have only one entry, but multiple types could be supported. This MAY not represent all
          *        measurement types supported by this instrument (that is some may not have a C++ struct equivilent)
          */
-        Common::ReadOnlyProperty<Mapping<type_index, MeasurementType>> pType2MeasurementTypes;
+        Common::ReadOnlyProperty<Mapping<type_index, MeasurementType>> type2MeasurementTypes;
 
     public:
         /**
