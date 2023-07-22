@@ -337,7 +337,6 @@ namespace Stroika::Foundation::Characters {
         virtual span<byte>   Characters2Bytes (span<const CHAR_T> from, span<byte> to) const                = 0;
         virtual size_t       ComputeTargetCharacterBufferSize (variant<span<const byte>, size_t> src) const = 0;
         virtual size_t       ComputeTargetByteBufferSize (variant<span<const CHAR_T>, size_t> src) const    = 0;
-        const char16_t*      fMap_;
     };
 
 }

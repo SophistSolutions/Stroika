@@ -87,12 +87,36 @@ namespace Stroika::Foundation::Characters {
     CodePage GetDefaultSDKCodePage ();
 
     /**
+     */
+    class CodePageNotSupportedException : public exception {
+    public:
+        CodePageNotSupportedException (CodePage codePage);
+
+    public:
+        /**
+         *  Provide a 'c string' variant of the exception message. Convert the UNICODE
+         *  string argument to a narrow-string (multibyte) in the SDK code page.
+         *  @see GetDefaultSDKCodePage()
+         */
+        virtual const char* what () const noexcept override;
+
+    public:
+        /**
+         */
+        nonvirtual CodePage GetCodePage () const;
+
+    private:
+        string   fMsg_;
+        CodePage fCodePage_;
+    };
+
+    /**
      *  Helper class to wrap conversions between code pages (on Mac known as scripts)
      *  and UTF-16 (WIDE UNICODE).</p>
      */
     class CodePageConverter {
     public:
-        class CodePageNotSupportedException;
+        using CodePageNotSupportedException = CodePageNotSupportedException;
         enum class HandleBOMFlag {
             eHandleBOM
         };
@@ -174,30 +198,6 @@ namespace Stroika::Foundation::Characters {
     // number of characters written to outChars. This function will NUL-terminate the outChars iff inMBChars
     // was NUL-terminated (and there is enough space in the buffer).
     void MapSBUnicodeTextWithMaybeBOMToUNICODE (const char* inMBChars, size_t inMBCharCnt, wchar_t* outChars, size_t* outCharCnt);
-
-    /**
-     */
-    class CodePageConverter::CodePageNotSupportedException : public exception {
-    public:
-        CodePageNotSupportedException (CodePage codePage);
-
-    public:
-        /**
-         *  Provide a 'c string' variant of the exception message. Convert the UNICODE
-         *  string argument to a narrow-string (multibyte) in the SDK code page.
-         *  @see GetDefaultSDKCodePage()
-         */
-        virtual const char* what () const noexcept override;
-
-    public:
-        /**
-         */
-        nonvirtual CodePage GetCodePage () const;
-
-    private:
-        string   fMsg_;
-        CodePage fCodePage_;
-    };
 
     /*
     @CLASS:         CodePagesInstalled

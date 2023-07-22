@@ -38,11 +38,24 @@ void Characters::Private_::ThrowErrorConvertingCharacters2Bytes_ ()
 
 /*
  ********************************************************************************
+ ************** Private_::ThrowCodePageNotSupportedException_ *******************
+ ********************************************************************************
+ */
+void Characters::Private_::ThrowCodePageNotSupportedException_(CodePage cp)
+{
+  Execution::Throw (CodePageNotSupportedException{cp});
+
+}
+
+/*
+ ********************************************************************************
  ********************** Private_::AsNarrowSDKString_ ****************************
  ********************************************************************************
  */
-string Characters::Private_::AsNarrowSDKString_ (const String& s) { return s.AsNarrowSDKString (); }
-
+string Characters::Private_::AsNarrowSDKString_ (const String& s) 
+{ 
+    return s.AsNarrowSDKString ();
+}
 
 /*
  ********************************************************************************
@@ -279,3 +292,112 @@ size_t Characters::Private_::BuiltinSingleByteTableCodePageRep_::ComputeTargetBy
         return get<span<const char16_t>> (src).size ();
     }
 }
+
+
+
+#if qPlatform_Windows
+/*
+ ********************************************************************************
+ ***************************** Private_::WindowsNative_ *************************
+ ********************************************************************************
+ */
+Characters::Private_::WindowsNative_::WindowsNative_ (CodePage cp)
+    : fCodePage_{cp}
+{
+}
+
+span<char16_t> Characters::Private_::WindowsNative_::Bytes2Characters (span<const byte>* from, span<char16_t> to) const
+{
+    RequireNotNull (from);
+    Require (ComputeTargetCharacterBufferSize (*from) <= to.size ());
+
+        static constexpr DWORD kFLAGS_ = 0;
+    int r = ::MultiByteToWideChar (fCodePage_, kFLAGS_, reinterpret_cast<LPCCH> (from->data ()), static_cast<int> (from->size ()),
+                                   reinterpret_cast < LPWSTR> (to.data ()),  static_cast<int> (to.size ()));
+    if (r == 0) {
+        if (from->empty ()) {
+            return span<char16_t>{};    // OK - empty from produces empty to
+        }
+        else {
+            // find kind of error and throw right one
+            throw "";
+        }
+    }
+    else {
+        return to.subspan (static_cast<size_t> (r));
+    }
+}
+
+span<byte> Characters::Private_::WindowsNative_::Characters2Bytes (span<const char16_t> from, span<byte> to) const
+{
+    Require (ComputeTargetByteBufferSize (from) <= to.size ());
+    static constexpr DWORD kFLAGS_ = 0;
+
+    int r = ::WideCharToMultiByte (fCodePage_, kFLAGS_, reinterpret_cast<LPCWCH> (from.data ()), static_cast<int> (from.size ()),
+                                   reinterpret_cast<LPSTR> (to.data ()), static_cast<int> (to.size ()), nullptr, nullptr);
+    if (r == 0) {
+        if (from.empty ()) {
+            return span<byte>{}; // OK - empty from produces empty to
+        }
+        else {
+            // find kind of error and throw right one
+            throw "";
+        }
+    }
+    else {
+        return to.subspan (static_cast<size_t> (r));
+    }
+}
+
+size_t Characters::Private_::WindowsNative_::ComputeTargetCharacterBufferSize (variant<span<const byte>, size_t> src) const
+{
+    if (const size_t* i = get_if<size_t> (&src)) {
+        return *i;
+    }
+    else {
+        auto s = get<span<const byte>> (src);
+        static constexpr DWORD kFLAGS_ = 0;
+        int r = ::MultiByteToWideChar (fCodePage_, kFLAGS_, reinterpret_cast<LPCCH> (s.data ()), static_cast<int> (s.size ()), nullptr, 0);
+        Assert (r >= 0);
+        if (r == 0) {
+            if (s.size () == 0) {
+                return 0;
+            }
+            else {
+                // throw
+                throw "";
+            }
+        }
+        else {
+            return static_cast<size_t> (r);
+        }
+    }
+}
+
+size_t Characters::Private_::WindowsNative_::ComputeTargetByteBufferSize (variant<span<const char16_t>, size_t> src) const
+{
+    if (const size_t* i = get_if<size_t> (&src)) {
+        constexpr size_t kMaxBytesPerCharWAG_ = 6;
+        return *i * kMaxBytesPerCharWAG_;
+    }
+    else {
+        auto s = get<span<const char16_t>> (src);
+        static constexpr DWORD kFLAGS_ = 0;
+        int r = ::WideCharToMultiByte (fCodePage_, kFLAGS_, reinterpret_cast<LPCWCH> (s.data ()), static_cast<int> (s.size ()), nullptr, 0,
+                                       nullptr, nullptr);
+        Assert (r >= 0);
+        if (r == 0) {
+            if (s.size () == 0) {
+                return 0;
+            }
+            else {
+                // throw
+                throw "";
+            } 
+        }
+        else {
+            return static_cast<size_t> (r);
+        }
+    }
+}
+#endif

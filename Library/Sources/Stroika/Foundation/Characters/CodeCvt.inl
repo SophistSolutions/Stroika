@@ -30,6 +30,7 @@ namespace Stroika::Foundation::Characters {
         };
         void   ThrowErrorConvertingBytes2Characters_ ();
         void   ThrowErrorConvertingCharacters2Bytes_ ();
+        void   ThrowCodePageNotSupportedException_ (CodePage cp);
         string AsNarrowSDKString_ (const String& s);
     }
 
@@ -371,7 +372,19 @@ namespace Stroika::Foundation::Characters {
             virtual span<byte>     Characters2Bytes (span<const char16_t> from, span<byte> to) const override;
             virtual size_t         ComputeTargetCharacterBufferSize (variant<span<const byte>, size_t> src) const override;
             virtual size_t         ComputeTargetByteBufferSize (variant<span<const char16_t>, size_t> src) const override;
+            const char16_t*        fMap_;
         };
+#if qPlatform_Windows
+        struct WindowsNative_ final : CodeCvt<char16_t>::IRep {
+            WindowsNative_ (CodePage cp);
+            virtual ~WindowsNative_ () = default;
+            virtual span<char16_t> Bytes2Characters (span<const byte>* from, span<char16_t> to) const override;
+            virtual span<byte>     Characters2Bytes (span<const char16_t> from, span<byte> to) const override;
+            virtual size_t         ComputeTargetCharacterBufferSize (variant<span<const byte>, size_t> src) const override;
+            virtual size_t         ComputeTargetByteBufferSize (variant<span<const char16_t>, size_t> src) const override;
+            CodePage               fCodePage_;
+        };
+#endif
     }
 
     /*
@@ -443,6 +456,10 @@ namespace Stroika::Foundation::Characters {
     inline CodeCvt<CHAR_T>::CodeCvt (CodePage cp)
         : fRep_{}
     {
+        // A few we have builtin table converters for (BuiltinSingleByteTableCodePageRep_);
+        // a few are just UTF, and we can convert those.
+        // On windows, we can delegate to WindowsNative_
+        // else give up and throw not supported code page.
         switch (cp) {
             case kCodePage_ANSI:
             case kCodePage_MAC:
@@ -451,24 +468,25 @@ namespace Stroika::Foundation::Characters {
             case kCodePage_GREEK:
             case kCodePage_Turkish:
             case kCodePage_HEBREW:
-            case kCodePage_ARABIC: {
+            case kCodePage_ARABIC:
                 fRep_ = make_shared<UTF2UTFRep_<char16_t>> (CodeCvt<char16_t> (make_shared<Private_::BuiltinSingleByteTableCodePageRep_> (cp)));
-            } break;
-            case kCodePage_UTF7: {
-                AssertNotImplemented ();
-            } break;
-            case kCodePage_UTF8: {
+                break;
+            case kCodePage_UTF8:
                 fRep_ = make_shared<UTFConvertRep_<char8_t>> (UTFConverter::kThe);
-            } break;
-            case kCodePage_UNICODE_WIDE: {
+                break;
+            case kCodePage_UNICODE_WIDE:
                 fRep_ = make_shared<UTFConvertRep_<char16_t>> (UTFConverter::kThe);
-            } break;
-            case kCodePage_UNICODE_WIDE_BIGENDIAN: {
+                break;
+            case kCodePage_UNICODE_WIDE_BIGENDIAN:
                 fRep_ = make_shared<UTFConvertSwappedRep_<char16_t>> (UTFConverter::kThe);
-            } break;
+                break;
             default:
-                // windows native sdk one, and else throw not supported.
-                AssertNotImplemented ();
+#if qPlatform_Windows
+                fRep_ = make_shared<UTF2UTFRep_<char16_t>> (CodeCvt<char16_t> (make_shared<Private_::WindowsNative_> (cp)));
+                break;
+#else
+                Private_::ThrowCodePageNotSupportedException_ (cp);
+#endif
         }
     }
     template <IUNICODECanAlwaysConvertTo CHAR_T>
