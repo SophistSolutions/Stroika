@@ -187,13 +187,13 @@ namespace Stroika::Foundation::Characters {
         WideStringToNarrow (ws, codePage, &result);
         return result;
     }
-    inline void NarrowStringToWide (const string& s, int codePage, wstring* intoResult)
+    inline void NarrowStringToWide (const string& s, CodePage codePage, wstring* intoResult)
     {
         RequireNotNull (intoResult);
         const char* sp = s.c_str ();
         NarrowStringToWide (sp, sp + s.length (), codePage, intoResult);
     }
-    inline wstring NarrowStringToWide (const string& s, int codePage)
+    inline wstring NarrowStringToWide (const string& s, CodePage codePage)
     {
         wstring result;
         NarrowStringToWide (s, codePage, &result);

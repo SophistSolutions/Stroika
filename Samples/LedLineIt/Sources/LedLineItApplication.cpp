@@ -181,7 +181,7 @@ public:
     virtual void OnFileOpen () override
     {
         ::CString fileName;
-        int       codePage = 0;
+        CodePage       codePage = 0;
         if (LedLineItDocument::DoPromptOpenFileName (&fileName, &codePage)) {
             OpenDocumentFile (fileName, codePage);
         }

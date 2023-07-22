@@ -65,7 +65,7 @@ namespace Stroika::Foundation::Characters::Platform::Windows {
      ********************************* NarrowStringToWide ***************************
      ********************************************************************************
      */
-    inline void NarrowStringToWide (const char* sStart, const char* sEnd, int codePage, wstring* intoResult)
+    inline void NarrowStringToWide (const char* sStart, const char* sEnd, CodePage codePage, wstring* intoResult)
     {
         RequireNotNull (intoResult);
         Require (sStart <= sEnd);
@@ -330,8 +330,8 @@ namespace Stroika::Foundation::Characters::Platform::Windows {
      ************************ PlatformCodePageConverter *****************************
      ********************************************************************************
      */
-    inline PlatformCodePageConverter::PlatformCodePageConverter (int codePage)
-        : fCodePage (codePage)
+    inline PlatformCodePageConverter::PlatformCodePageConverter (CodePage codePage)
+        : fCodePage_{codePage}
     {
     }
 

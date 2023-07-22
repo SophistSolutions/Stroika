@@ -56,7 +56,7 @@ namespace Stroika::Foundation::Characters::Platform::Windows {
         nonvirtual void MapFromUNICODE (const wchar_t* inChars, size_t inCharCnt, char* outChars, size_t* outCharCnt) const;
 
     private:
-        CodePage fCodePage;
+        CodePage fCodePage_;
     };
 
 }

@@ -1096,7 +1096,7 @@ void Characters::WideStringToNarrow (const wchar_t* wsStart, const wchar_t* wsEn
  ********************************************************************************
  */
 namespace {
-    void PortableNarrowStringToWide_ (const char* sStart, const char* sEnd, int codePage, wstring* intoResult)
+    void PortableNarrowStringToWide_ (const char* sStart, const char* sEnd, CodePage codePage, wstring* intoResult)
     {
         RequireNotNull (intoResult);
         Require (sStart <= sEnd);
@@ -1117,7 +1117,7 @@ namespace {
         }
     }
 }
-void Characters::NarrowStringToWide (const char* sStart, const char* sEnd, int codePage, wstring* intoResult)
+void Characters::NarrowStringToWide (const char* sStart, const char* sEnd, CodePage codePage, wstring* intoResult)
 {
     RequireNotNull (intoResult);
     Require (sStart <= sEnd);

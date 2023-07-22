@@ -13,6 +13,7 @@
 #include <variant>
 
 #include "Character.h"
+#include "CodePage.h"
 
 /**
  *  \file
@@ -63,7 +64,7 @@ namespace Stroika::Foundation::Characters {
     /*
      *  \brief CodeCvt unifies byte <-> unicode conversions, vaguely inspired by (and wraps) std::codecvt, as well as UTFConverter etc, to map between span<bytes> and a span<UNICODE code-point>
      * 
-     *  Note, UTFConverter is probably a slightly better API, and better designed, and faster. HOWEVER, it ONLY converts from UNICODE. std::codecvt can convert to/from
+     *  Note, UTFConverter is probably a slightly better API, and better designed, and faster. HOWEVER, it ONLY converts to/from UNICODE. std::codecvt can convert to/from
      *  any locale code page, and is is more general.
      * 
      *  Use the CodeCvt<> API when your code conversions may involve non UNICODE byte representations.
@@ -71,6 +72,9 @@ namespace Stroika::Foundation::Characters {
      *  Note that this class - like codecvt - and be used to 'page' over an input, and incrementally convert it (though how it does this 
      *  differs from codecvt - not maintaining a partial state - but instead adjusting the amount consumed from the input to reflect
      *  full-character conversions).
+     * 
+     *  \note - if encountering invalid data in the input (invalid characters) - this will 'THROW' and not just fill in special bogus replacement
+     *          characters.
      * 
      *  \note - the BINARY format character is OPAQUE given this API (you get/set bytes). Thie CHAR_T in the template argument
      *          refers to the 'CHARACTER' format you map to/from binary format (so typically wchar_t, or char32_t maybe).
@@ -140,7 +144,24 @@ namespace Stroika::Foundation::Characters {
          *      UNICODE Characters.
          * 
          *  CodeCvt (const string& localeName):
-         *      Is equivilent to mkFromStdCodeCvt<...> (std::codecvt_byname {localeName})
+         *      Is equivilent to mkFromStdCodeCvt<...> (std::codecvt_byname {localeName}) - so it can throw if no such locale name
+         * 
+         *  CodeCvt (CodePage):
+         *      Can throw if the code page is not recognized. NOTE - CodePage is a Windows concept, and though many code pages
+         *      are provided portable (@todo list) - many more are not, and will fail on non-windows, and succeed only on windows.
+         *      The (Windows) code pages which are always (portably) provided include:
+         *          kCodePage_ANSI = 1252,
+         *          kCodePage_MAC             = 2,
+         *          kCodePage_PC              = 437, //  IBM PC code page 437
+         *          kCodePage_PCA             = 850, //  IBM PC code page 850, used by IBM Personal System/2
+         *          kCodePage_GREEK           = 1253,
+         *          kCodePage_Turkish         = 1254,
+         *          kCodePage_HEBREW          = 1255,
+         *          kCodePage_ARABIC          = 1256,
+         *          kCodePage_UNICODE_WIDE           = 1200, // Standard UNICODE for MS-Windows
+         *          kCodePage_UNICODE_WIDE_BIGENDIAN = 1201,
+         *          kCodePage_UTF7 = 65000, ---NYI
+         *          kCodePage_UTF8 = 65001
          * 
          *   To use (wrap) existing std::codecvt<A,B,C> class:
          *      Quirky, because classes not generally directly instantiatable, so instead specify CLASS as template param
@@ -188,6 +209,7 @@ namespace Stroika::Foundation::Characters {
         CodeCvt (const locale& l);
         CodeCvt (const String& localeName);
         CodeCvt (UnicodeExternalEncodings e);
+        CodeCvt (CodePage e);
         template <IUNICODECanAlwaysConvertTo INTERMEDIATE_CHAR_T>
         CodeCvt (const CodeCvt<INTERMEDIATE_CHAR_T>& basedOn);
         CodeCvt (const shared_ptr<IRep>& rep);
@@ -315,6 +337,7 @@ namespace Stroika::Foundation::Characters {
         virtual span<byte>   Characters2Bytes (span<const CHAR_T> from, span<byte> to) const                = 0;
         virtual size_t       ComputeTargetCharacterBufferSize (variant<span<const byte>, size_t> src) const = 0;
         virtual size_t       ComputeTargetByteBufferSize (variant<span<const CHAR_T>, size_t> src) const    = 0;
+        const char16_t*      fMap_;
     };
 
 }

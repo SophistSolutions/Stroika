@@ -12,6 +12,7 @@
 
 #include <bit>
 
+#include "../Debug/Assertions.h"
 #include "UTFConvert.h"
 
 namespace Stroika::Foundation::Characters {
@@ -361,6 +362,18 @@ namespace Stroika::Foundation::Characters {
         }
     };
 
+    namespace Private_ {
+        // a lot of old, important character sets can be represented this way (like old PC character sets for non-asian languages)
+        struct BuiltinSingleByteTableCodePageRep_ final : CodeCvt<char16_t>::IRep {
+            BuiltinSingleByteTableCodePageRep_ (CodePage cp);
+            virtual ~BuiltinSingleByteTableCodePageRep_ () = default;
+            virtual span<char16_t> Bytes2Characters (span<const byte>* from, span<char16_t> to) const override;
+            virtual span<byte>     Characters2Bytes (span<const char16_t> from, span<byte> to) const override;
+            virtual size_t         ComputeTargetCharacterBufferSize (variant<span<const byte>, size_t> src) const override;
+            virtual size_t         ComputeTargetByteBufferSize (variant<span<const char16_t>, size_t> src) const override;
+        };
+    }
+
     /*
      ********************************************************************************
      ******************************* CodeCvt<CHAR_T> ********************************
@@ -423,6 +436,38 @@ namespace Stroika::Foundation::Characters {
 
             // @todo UTF7 (maybe good enuf there to -- not ure - codecvt, or JIRA defer)
             default:
+                AssertNotImplemented ();
+        }
+    }
+    template <IUNICODECanAlwaysConvertTo CHAR_T>
+    inline CodeCvt<CHAR_T>::CodeCvt (CodePage cp)
+        : fRep_{}
+    {
+        switch (cp) {
+            case kCodePage_ANSI:
+            case kCodePage_MAC:
+            case kCodePage_PC:
+            case kCodePage_PCA:
+            case kCodePage_GREEK:
+            case kCodePage_Turkish:
+            case kCodePage_HEBREW:
+            case kCodePage_ARABIC: {
+                fRep_ = make_shared<UTF2UTFRep_<char16_t>> (CodeCvt<char16_t> (make_shared<Private_::BuiltinSingleByteTableCodePageRep_> (cp)));
+            } break;
+            case kCodePage_UTF7: {
+                AssertNotImplemented ();
+            } break;
+            case kCodePage_UTF8: {
+                fRep_ = make_shared<UTFConvertRep_<char8_t>> (UTFConverter::kThe);
+            } break;
+            case kCodePage_UNICODE_WIDE: {
+                fRep_ = make_shared<UTFConvertRep_<char16_t>> (UTFConverter::kThe);
+            } break;
+            case kCodePage_UNICODE_WIDE_BIGENDIAN: {
+                fRep_ = make_shared<UTFConvertSwappedRep_<char16_t>> (UTFConverter::kThe);
+            } break;
+            default:
+                // windows native sdk one, and else throw not supported.
                 AssertNotImplemented ();
         }
     }

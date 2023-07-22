@@ -82,7 +82,7 @@ void PlatformCodePageConverter::MapToUNICODE (const char* inMBChars, size_t inMB
     RequireNotNull (outCharCnt);
     Require (*outCharCnt == 0 or outChars != nullptr);
     //  *outCharCnt = ::MultiByteToWideChar (fCodePage, MB_ERR_INVALID_CHARS, inMBChars, inMBCharCnt, outChars, *outCharCnt);
-    *outCharCnt = ::MultiByteToWideChar (fCodePage, 0, inMBChars, static_cast<int> (inMBCharCnt), outChars, static_cast<int> (*outCharCnt));
+    *outCharCnt = ::MultiByteToWideChar (fCodePage_, 0, inMBChars, static_cast<int> (inMBCharCnt), outChars, static_cast<int> (*outCharCnt));
 #if 0
 // enable to debug cases (e.g. caused when you read a CRLF file with fstream
 // in text mode, and get - somehow - stuff that triggers this ??? - with convert to
@@ -101,5 +101,5 @@ void PlatformCodePageConverter::MapFromUNICODE (const wchar_t* inChars, size_t i
     Require (inCharCnt == 0 or inChars != nullptr);
     RequireNotNull (outCharCnt);
     Require (*outCharCnt == 0 or outChars != nullptr);
-    *outCharCnt = ::WideCharToMultiByte (fCodePage, 0, inChars, static_cast<int> (inCharCnt), outChars, static_cast<int> (*outCharCnt), nullptr, nullptr);
+    *outCharCnt = ::WideCharToMultiByte (fCodePage_, 0, inChars, static_cast<int> (inCharCnt), outChars, static_cast<int> (*outCharCnt), nullptr, nullptr);
 }

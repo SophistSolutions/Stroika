@@ -30,8 +30,8 @@ using Stroika::Foundation::Characters::kCodePage_UTF8;
 
 const CodePage kDefaultNewDocCodePage = CodePagesInstalled ().IsCodePageAvailable (kCodePage_UTF8) ? kCodePage_UTF8 : GetDefaultSDKCodePage ();
 
-const CodePage kAutomaticallyGuessCodePage = -2; // I HOPE this # doesn't conflict with any legit ones!!!
-const CodePage kIGNORECodePage             = -3; // I HOPE this # doesn't conflict with any legit ones!!!
+const CodePage kAutomaticallyGuessCodePage = static_cast<CodePage> (-2); // I HOPE this # doesn't conflict with any legit ones!!!
+const CodePage kIGNORECodePage             = static_cast<CodePage> (-3); // I HOPE this # doesn't conflict with any legit ones!!!
 
 class LedLineItServerItem;
 

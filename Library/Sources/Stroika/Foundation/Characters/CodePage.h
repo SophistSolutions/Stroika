@@ -59,12 +59,6 @@ namespace Stroika::Foundation::Characters {
 
         kCodePage_UTF7 = 65000,
         kCodePage_UTF8 = 65001
-
-/// NOT CURRENTLY USED - SO DON'T DEFINE CUZ I DON'T UNDERSTAND! kCodePage_OEM        =   1,                  // What does this mean??? PC ONLY???
-#if 0
-                                                // Only supported on Win2K
-                                                kCodePage_SYMBOL    =   42,
-#endif
     };
 
     /**
@@ -72,8 +66,10 @@ namespace Stroika::Foundation::Characters {
      *    multibyte (narrow) character set encoding. Use Win32 CodePage numbers. Maybe someday add
      *  a layer to map to/from Mac 'ScriptIDs' - which are basicly analagous.</p>
      *      <p>Use this with @'CodePageConverter'.</p>
+     * 
+     *      UINT in windows SDK;
      */
-    using CodePage = int;
+    using CodePage = uint32_t;
 
     /**
      * TODO:
