@@ -56,8 +56,8 @@ namespace Stroika::Foundation::Characters {
             span<const SERIALIZED_CHAR_T> serializedFrom = ReinterpretBytes_ (*from);
             Assert (serializedFrom.size_bytes () <= from->size ()); // note - serializedFrom could be smaller than from in bytespan
             ConversionResultWithStatus r = fCodeConverter_.ConvertQuietly (serializedFrom, to);
-            if (r.fStatus == ConversionStatusFlag ::sourceIllegal) {
-                UTFConverter::Throw (r.fStatus);
+            if (r.fStatus == ConversionStatusFlag::sourceIllegal) {
+                UTFConverter::Throw (r.fStatus, r.fSourceConsumed);
             }
             *from = from->subspan (r.fSourceConsumed); // from updated to remaining data, if any
             return to.subspan (0, r.fTargetProduced);  // point ACTUAL copied data

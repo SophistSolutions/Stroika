@@ -5,6 +5,8 @@
 
 #include "../Execution/Exceptions.h"
 
+#include "CharacterEncodingException.h"
+
 #include "UTFConvert.h"
 
 using namespace Stroika;
@@ -788,8 +790,7 @@ auto UTFConverter::ConvertQuietly_codeCvt_ (span<const char32_t> source, span<ch
     return ConvertQuietly_codeCvt_helper_ (source, target, UTFConvert_codecvtSupport_::ConvertUTF32toUTF8_codecvt_);
 }
 
-
-void UTFConverter::Throw (ConversionStatusFlag cr)
+void UTFConverter::Throw (ConversionStatusFlag cr, size_t errorAtSourceOffset)
 {
     switch (cr) {
         case ConversionStatusFlag::sourceExhausted: {
@@ -797,8 +798,7 @@ void UTFConverter::Throw (ConversionStatusFlag cr)
             Execution::Throw (kException_);
         }
         case ConversionStatusFlag::sourceIllegal: {
-            static const auto kException_ = Execution::RuntimeErrorException{"Invalid UNICODE source string"sv};
-            Execution::Throw (kException_);
+            Execution::Throw (CharacterEncodingException{CharacterEncodingException::eDecoding, errorAtSourceOffset, "UNICODE"sv});
         }
         default:
             AssertNotReached ();

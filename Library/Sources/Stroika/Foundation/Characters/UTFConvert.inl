@@ -265,8 +265,8 @@ namespace Stroika::Foundation::Characters {
     inline auto UTFConverter::Convert (span<const SRC_T> source, span<TRG_T> target) const -> ConversionResult
     {
         Require ((target.size () >= ComputeTargetBufferSize<TRG_T> (source)));
-        auto result = ConvertQuietly (source, target);
-        ThrowIf_ (result.fStatus);
+        ConversionResultWithStatus result = ConvertQuietly (source, target);
+        ThrowIf_ (result.fStatus, result.fSourceConsumed);
         return result; // slice - no need to return 'status' - we throw on any status but success
     }
     template <IUNICODECanUnambiguouslyConvertFrom SRC_T, IUNICODECanUnambiguouslyConvertFrom TRG_T>
@@ -402,13 +402,13 @@ namespace Stroika::Foundation::Characters {
         }
     }
 #endif
-    inline void UTFConverter::ThrowIf_ (ConversionStatusFlag cr)
+    inline void UTFConverter::ThrowIf_ (ConversionStatusFlag cr, size_t errorAtSourceOffset)
     {
         switch (cr) {
             case ConversionStatusFlag::ok:;
                 break;
             default:
-                Throw (cr);
+                Throw (cr, errorAtSourceOffset);
         }
     }
 #if __has_include("boost/locale/encoding_utf.hpp")

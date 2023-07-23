@@ -263,12 +263,15 @@ namespace Stroika::Foundation::Characters {
          *  \see Convert () above for details. This only differs from Convert, in that it returns a result flag instead
          *       of throwing on errors.
          * 
-         *  \note - possible error status values include 'illegal source', and 'source exhausted'. Source exhausted ins't always an
+         *  \note - possible error status values include 'illegal source', and 'source exhausted'. Source exhausted isn't always an
          *          error, but it is more often than not, so its treated as an error, and you must special case handling if you want
          *          to treat otherwise.
          * 
          *          So - ConvertQuietly () of many characters, but where the LAST character is complete WILL convert all the data up to the last
          *          character, return the number of characters consumed and produced, but ALSO indicate the source exhausted status - not OK.
+         * 
+         *          In case of errors, the return value still indicates how many characters were consumed before the error occurred, and the
+         *          target produced before the error occured.
          * 
          *  Source and target spans can be of any IUNICODECanUnambiguouslyConvertFrom character type (but source const and target non-const)
          * 
@@ -325,7 +328,7 @@ namespace Stroika::Foundation::Characters {
         static const UTFConverter kThe;
 
     public:
-        static void Throw (ConversionStatusFlag cr);
+        static void Throw (ConversionStatusFlag cr, size_t errorAtSourceOffset);
 
     private:
         // find same size, and then remove_const, and then add back const
@@ -372,7 +375,7 @@ namespace Stroika::Foundation::Characters {
         static ConversionResultWithStatus ConvertQuietly_codeCvt_ (span<const char32_t> source, span<char8_t> target);
 
     private:
-        static void ThrowIf_ (ConversionStatusFlag cr);
+        static void ThrowIf_ (ConversionStatusFlag cr, size_t errorAtSourceOffset);
     };
 
     /**

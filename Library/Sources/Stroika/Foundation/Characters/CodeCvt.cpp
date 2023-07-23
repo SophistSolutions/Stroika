@@ -5,6 +5,8 @@
 
 #include "../Execution/Exceptions.h"
 
+#include "CharacterEncodingException.h"
+
 #include "CodeCvt.h"
 
 using namespace Stroika;
@@ -58,6 +60,8 @@ string Characters::Private_::AsNarrowSDKString_ (const String& s) { return s.AsN
 Characters::Private_::BuiltinSingleByteTableCodePageRep_::BuiltinSingleByteTableCodePageRep_ (CodePage cp)
 {
     switch (cp) {
+        // NB: precomputed tables from loop written running on old windows with MultibyteToWideChar, but lost that code. Easier to
+        // reconstruct if needed, than to find it --LGP 2023-07-23
         case kCodePage_ANSI: {
             static constexpr char16_t kMap_[256] = {
                 0x0,    0x1,    0x2,    0x3,    0x4,    0x5,    0x6,    0x7,    0x8,   0x9,    0xa,   0xb,    0xc,   0xd,  0xe,   0xf,
@@ -260,7 +264,8 @@ span<byte> Characters::Private_::BuiltinSingleByteTableCodePageRep_::Characters2
             *oi++ = static_cast<byte> (pi - fMap_);
         }
         else {
-            throw "";//todo fix
+            size_t nCharsConsumed = oi - to.data ();    // one char at a time on both so same and avoids counting or using explicit iterator
+            Execution::Throw (CharacterEncodingException{CharacterEncodingException::eEncoding, nCharsConsumed});   // @todo COULD safe/capture the encoding name as well here easy enuf...
         }
     }
     return to.subspan (oi - to.data ());
