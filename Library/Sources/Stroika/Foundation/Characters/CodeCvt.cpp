@@ -16,6 +16,12 @@ using namespace Stroika::Foundation::Memory;
 
 using std::byte;
 
+// #define qGenTableDumper_ 1
+
+#if qGenTableDumper_
+#include <fstream>
+#endif
+
 /*
  ********************************************************************************
  ************ Private_::ThrowErrorConvertingBytes2Characters_ *******************
@@ -57,11 +63,38 @@ string Characters::Private_::AsNarrowSDKString_ (const String& s) { return s.AsN
  ************** Private_::BuiltinSingleByteTableCodePageRep_ ********************
  ********************************************************************************
  */
+#if qGenTableDumper_
+void dumpTable (CodePage cp, std::filesystem::path p)
+{
+    ofstream o{p, ios::out};
+    o << " static constexpr char16_t kMap_[256] = {" << endl;
+    for (int i = 0; i < 256; ++i) {
+        wchar_t wc{};
+        Verify (MultiByteToWideChar (cp, 0, (char*)&i, 1, &wc, 1));
+        o << hex << "0x" << static_cast<int> (wc) << ", ";
+        if (i % 16 == 15) {
+            o << endl;
+        }
+    }
+    o << endl << " };" << endl;
+};
+#endif
+
+#if qGenTableDumper_
+//const int ignored1 = (dumpTable (kCodePage_ANSI, "kCodePage_ANSI.txt"), 1);
+//const int ignored2 = (dumpTable (kCodePage_MAC, "kCodePage_MAC.txt"), 1);
+//const int ignored3 = (dumpTable (kCodePage_PC, "kCodePage_PC.txt"), 1);
+//const int ignored4 = (dumpTable (kCodePage_PCA, "kCodePage_PCA.txt"), 1);
+//const int ignored5 = (dumpTable (kCodePage_GREEK, "kCodePage_GREEK.txt"), 1);
+//const int ignored6 = (dumpTable (kCodePage_Turkish, "kCodePage_Turkish.txt"), 1);
+//const int ignored7 = (dumpTable (kCodePage_HEBREW, "kCodePage_HEBREW.txt"), 1);
+//const int ignored8 = (dumpTable (kCodePage_ARABIC, "kCodePage_ARABIC.txt"), 1);
+#endif
+
 Characters::Private_::BuiltinSingleByteTableCodePageRep_::BuiltinSingleByteTableCodePageRep_ (CodePage cp)
 {
     switch (cp) {
-        // NB: precomputed tables from loop written running on old windows with MultibyteToWideChar, but lost that code. Easier to
-        // reconstruct if needed, than to find it --LGP 2023-07-23
+        // Tables generated with qGenTableDumper_ on Windows - 2023-07-23
         case kCodePage_ANSI: {
             static constexpr char16_t kMap_[256] = {
                 0x0,    0x1,    0x2,    0x3,    0x4,    0x5,    0x6,    0x7,    0x8,   0x9,    0xa,   0xb,    0xc,   0xd,  0xe,   0xf,
@@ -189,6 +222,7 @@ Characters::Private_::BuiltinSingleByteTableCodePageRep_::BuiltinSingleByteTable
                 0x11e,  0xd1,   0xd2,   0xd3,   0xd4,   0xd5,   0xd6,   0xd7,   0xd8,  0xd9,   0xda,  0xdb,   0xdc,  0x130, 0x15e, 0xdf,
                 0xe0,   0xe1,   0xe2,   0xe3,   0xe4,   0xe5,   0xe6,   0xe7,   0xe8,  0xe9,   0xea,  0xeb,   0xec,  0xed,  0xee,  0xef,
                 0x11f,  0xf1,   0xf2,   0xf3,   0xf4,   0xf5,   0xf6,   0xf7,   0xf8,  0xf9,   0xfa,  0xfb,   0xfc,  0x131, 0x15f, 0xff,
+
             };
             fMap_ = &kMap_[0];
         } break;
@@ -233,6 +267,7 @@ Characters::Private_::BuiltinSingleByteTableCodePageRep_::BuiltinSingleByteTable
                 0x630,  0x631,  0x632,  0x633,  0x634,  0x635,  0x636,  0xd7,   0x637, 0x638,  0x639, 0x63a,  0x640, 0x641,  0x642,  0x643,
                 0xe0,   0x644,  0xe2,   0x645,  0x646,  0x647,  0x648,  0xe7,   0xe8,  0xe9,   0xea,  0xeb,   0x649, 0x64a,  0xee,   0xef,
                 0x64b,  0x64c,  0x64d,  0x64e,  0xf4,   0x64f,  0x650,  0xf7,   0x651, 0xf9,   0x652, 0xfb,   0xfc,  0x200e, 0x200f, 0x6d2,
+
             };
             fMap_ = &kMap_[0];
         } break;
@@ -264,8 +299,8 @@ span<byte> Characters::Private_::BuiltinSingleByteTableCodePageRep_::Characters2
             *oi++ = static_cast<byte> (pi - fMap_);
         }
         else {
-            size_t nCharsConsumed = oi - to.data ();    // one char at a time on both so same and avoids counting or using explicit iterator
-            Execution::Throw (CharacterEncodingException{CharacterEncodingException::eEncoding, nCharsConsumed});   // @todo COULD safe/capture the encoding name as well here easy enuf...
+            size_t nCharsConsumed = oi - to.data (); // one char at a time on both so same and avoids counting or using explicit iterator
+            Execution::Throw (CharacterEncodingException{CharacterEncodingException::eEncoding, nCharsConsumed}); // @todo COULD safe/capture the encoding name as well here easy enuf...
         }
     }
     return to.subspan (oi - to.data ());
@@ -301,7 +336,7 @@ span<char16_t> Characters::Private_::WindowsNative_::Bytes2Characters (span<cons
 {
     RequireNotNull (from);
     Require (ComputeTargetCharacterBufferSize (*from) <= to.size ());
-    static constexpr DWORD kFLAGS_ = MB_ERR_INVALID_CHARS ;
+    static constexpr DWORD kFLAGS_ = MB_ERR_INVALID_CHARS;
     int r = ::MultiByteToWideChar (fCodePage_, kFLAGS_, reinterpret_cast<LPCCH> (from->data ()), static_cast<int> (from->size ()),
                                    reinterpret_cast<LPWSTR> (to.data ()), static_cast<int> (to.size ()));
     if (r == 0) {
@@ -363,13 +398,14 @@ size_t Characters::Private_::WindowsNative_::ComputeTargetCharacterBufferSize (v
 size_t Characters::Private_::WindowsNative_::ComputeTargetByteBufferSize (variant<span<const char16_t>, size_t> src) const
 {
     if (const size_t* i = get_if<size_t> (&src)) {
-        constexpr size_t kMaxBytesPerCharWAG_ = 6;  // @todo improve this WAG, or find some reference/basis, but I think for UNICODE (excluding UTF-7) - I think this number is 4
+        constexpr size_t kMaxBytesPerCharWAG_ = 6; // @todo improve this WAG, or find some reference/basis, but I think for UNICODE (excluding UTF-7) - I think this number is 4
         return *i * kMaxBytesPerCharWAG_;
     }
     else {
         auto                   s       = get<span<const char16_t>> (src);
         static constexpr DWORD kFLAGS_ = WC_ERR_INVALID_CHARS;
-        int r = ::WideCharToMultiByte (fCodePage_, kFLAGS_, reinterpret_cast<LPCWCH> (s.data ()), static_cast<int> (s.size ()), nullptr, 0, nullptr, nullptr);
+        int r = ::WideCharToMultiByte (fCodePage_, kFLAGS_, reinterpret_cast<LPCWCH> (s.data ()), static_cast<int> (s.size ()), nullptr, 0,
+                                       nullptr, nullptr);
         Assert (r >= 0);
         if (r == 0) {
             if (s.size () == 0) {

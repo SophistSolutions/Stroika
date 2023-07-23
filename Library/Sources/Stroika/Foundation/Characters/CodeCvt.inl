@@ -198,7 +198,7 @@ namespace Stroika::Foundation::Characters {
                     ConversionResultWithStatus cr = fIntermediateVSFinalCHARCvt_.ConvertQuietly (intermediateSpan, to);
                     switch (cr.fStatus) {
                         case ConversionStatusFlag::sourceIllegal:
-                            UTFConverter::Throw (cr.fStatus);
+                            UTFConverter::Throw (cr.fStatus, cr.fSourceConsumed);
                         case ConversionStatusFlag::sourceExhausted:
                             // TRICKY - if we have at least one character output, then we need to back out bytes 'from' - til this doesn't happen
                             if (not from->empty ()) {
