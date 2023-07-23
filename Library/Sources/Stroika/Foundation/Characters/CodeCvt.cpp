@@ -240,7 +240,7 @@ Characters::Private_::BuiltinSingleByteTableCodePageRep_::BuiltinSingleByteTable
             fMap_ = &kMap_[0];
         } break;
         default: {
-            Execution::Throw (CodePageConverter::CodePageNotSupportedException{cp});
+            Execution::Throw (CodePageNotSupportedException{cp});
         }
     }
 }
