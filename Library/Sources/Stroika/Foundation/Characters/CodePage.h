@@ -116,7 +116,6 @@ namespace Stroika::Foundation::Characters {
      */
     class CodePageConverter {
     public:
-        using CodePageNotSupportedException = CodePageNotSupportedException;
         enum class HandleBOMFlag {
             eHandleBOM
         };

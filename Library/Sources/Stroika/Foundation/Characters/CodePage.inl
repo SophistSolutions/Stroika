@@ -163,17 +163,20 @@ namespace Stroika::Foundation::Characters {
      ************ CodePageConverter::CodePageNotSupportedException ******************
      ********************************************************************************
      */
-    inline CodePage CodePageConverter::CodePageNotSupportedException::GetCodePage () const { return fCodePage_; }
+    inline CodePage CodePageNotSupportedException::GetCodePage () const { return fCodePage_; }
 
     /*
      ********************************************************************************
      ****************************** CodePagesInstalled ******************************
      ********************************************************************************
      */
-    inline vector<CodePage> CodePagesInstalled::GetAll () { return fCodePages_; }
+    inline vector<CodePage> CodePagesInstalled::GetAll () 
+    {
+        return fCodePages_;
+    }
     inline bool             CodePagesInstalled::IsCodePageAvailable (CodePage cp)
     {
-        return (find (fCodePages_.begin (), fCodePages_.end (), cp) == fCodePages_.end ());
+        return find (fCodePages_.begin (), fCodePages_.end (), cp) == fCodePages_.end ();
     }
     inline void WideStringToNarrow (const wstring& ws, CodePage codePage, string* intoResult)
     {
