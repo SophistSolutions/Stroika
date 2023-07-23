@@ -28,8 +28,8 @@ namespace Stroika::Foundation::Characters {
             }
             ~deletable_facet_ () {}
         };
-        void   ThrowErrorConvertingBytes2Characters_ ();
-        void   ThrowErrorConvertingCharacters2Bytes_ ();
+        void   ThrowErrorConvertingBytes2Characters_ (size_t nSrcCharsWhereError);
+        void   ThrowErrorConvertingCharacters2Bytes_ (size_t nSrcCharsWhereError);
         void   ThrowCodePageNotSupportedException_ (CodePage cp);
         string AsNarrowSDKString_ (const String& s);
     }
@@ -315,7 +315,7 @@ namespace Stroika::Foundation::Characters {
                 Assert (from->size () != 0);
             }
             else if (r != STD_CODE_CVT_T::ok) {
-                Private_::ThrowErrorConvertingBytes2Characters_ ();
+                Private_::ThrowErrorConvertingBytes2Characters_ (_Mid1 - _First1);
             }
             else {
                 Require (_Mid1 == _Last1);
@@ -335,7 +335,7 @@ namespace Stroika::Foundation::Characters {
             mbstate_t     ignoredMBState{};
             auto          r = fCodeCvt_->out (ignoredMBState, _First1, _Last1, _Mid1, _First2, _Last2, _Mid2);
             if (r != STD_CODE_CVT_T::ok) {
-                Private_::ThrowErrorConvertingCharacters2Bytes_ ();
+                Private_::ThrowErrorConvertingCharacters2Bytes_ (_Mid1 - _First1);
             }
             Require (_Mid1 == _Last1);              // used all input
             return to.subspan (0, _Mid2 - _First2); // point ACTUAL copied data

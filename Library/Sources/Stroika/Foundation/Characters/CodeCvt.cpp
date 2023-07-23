@@ -27,10 +27,9 @@ using std::byte;
  ************ Private_::ThrowErrorConvertingBytes2Characters_ *******************
  ********************************************************************************
  */
-void Characters::Private_::ThrowErrorConvertingBytes2Characters_ ()
+void Characters::Private_::ThrowErrorConvertingBytes2Characters_ (size_t nSrcCharsWhereError)
 {
-    static const auto kException_ = Execution::RuntimeErrorException{"Error converting bytes to characters"sv};
-    Execution::Throw (kException_);
+    Execution::Throw (CharacterEncodingException{CharacterEncodingException::eDecoding, nSrcCharsWhereError});
 }
 
 /*
@@ -38,10 +37,9 @@ void Characters::Private_::ThrowErrorConvertingBytes2Characters_ ()
  ************ Private_::ThrowErrorConvertingCharacters2Bytes_ *******************
  ********************************************************************************
  */
-void Characters::Private_::ThrowErrorConvertingCharacters2Bytes_ ()
+void Characters::Private_::ThrowErrorConvertingCharacters2Bytes_ (size_t nSrcCharsWhereError)
 {
-    static const auto kException_ = Execution::RuntimeErrorException{"Error converting characters to output format"sv};
-    Execution::Throw (kException_);
+    Execution::Throw (CharacterEncodingException{CharacterEncodingException::eEncoding, nSrcCharsWhereError});
 }
 
 /*
