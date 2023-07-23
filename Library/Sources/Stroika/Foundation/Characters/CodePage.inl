@@ -170,10 +170,7 @@ namespace Stroika::Foundation::Characters {
      ****************************** CodePagesInstalled ******************************
      ********************************************************************************
      */
-    inline vector<CodePage> CodePagesInstalled::GetAll () 
-    {
-        return fCodePages_;
-    }
+    inline vector<CodePage> CodePagesInstalled::GetAll () { return fCodePages_; }
     inline bool             CodePagesInstalled::IsCodePageAvailable (CodePage cp)
     {
         return find (fCodePages_.begin (), fCodePages_.end (), cp) == fCodePages_.end ();

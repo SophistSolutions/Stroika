@@ -41,21 +41,14 @@ void Characters::Private_::ThrowErrorConvertingCharacters2Bytes_ ()
  ************** Private_::ThrowCodePageNotSupportedException_ *******************
  ********************************************************************************
  */
-void Characters::Private_::ThrowCodePageNotSupportedException_(CodePage cp)
-{
-  Execution::Throw (CodePageNotSupportedException{cp});
-
-}
+void Characters::Private_::ThrowCodePageNotSupportedException_ (CodePage cp) { Execution::Throw (CodePageNotSupportedException{cp}); }
 
 /*
  ********************************************************************************
  ********************** Private_::AsNarrowSDKString_ ****************************
  ********************************************************************************
  */
-string Characters::Private_::AsNarrowSDKString_ (const String& s) 
-{ 
-    return s.AsNarrowSDKString ();
-}
+string Characters::Private_::AsNarrowSDKString_ (const String& s) { return s.AsNarrowSDKString (); }
 
 /*
  ********************************************************************************
@@ -267,7 +260,7 @@ span<byte> Characters::Private_::BuiltinSingleByteTableCodePageRep_::Characters2
             *oi++ = static_cast<byte> (pi - fMap_);
         }
         else {
-            //throw
+            throw "";//todo fix
         }
     }
     return to.subspan (oi - to.data ());
@@ -293,34 +286,25 @@ size_t Characters::Private_::BuiltinSingleByteTableCodePageRep_::ComputeTargetBy
     }
 }
 
-
-
 #if qPlatform_Windows
 /*
  ********************************************************************************
- ***************************** Private_::WindowsNative_ *************************
+ ***************** Characters::Private_::WindowsNative_ *************************
  ********************************************************************************
  */
-Characters::Private_::WindowsNative_::WindowsNative_ (CodePage cp)
-    : fCodePage_{cp}
-{
-}
-
 span<char16_t> Characters::Private_::WindowsNative_::Bytes2Characters (span<const byte>* from, span<char16_t> to) const
 {
     RequireNotNull (from);
     Require (ComputeTargetCharacterBufferSize (*from) <= to.size ());
-
-        static constexpr DWORD kFLAGS_ = 0;
+    static constexpr DWORD kFLAGS_ = MB_ERR_INVALID_CHARS ;
     int r = ::MultiByteToWideChar (fCodePage_, kFLAGS_, reinterpret_cast<LPCCH> (from->data ()), static_cast<int> (from->size ()),
-                                   reinterpret_cast < LPWSTR> (to.data ()),  static_cast<int> (to.size ()));
+                                   reinterpret_cast<LPWSTR> (to.data ()), static_cast<int> (to.size ()));
     if (r == 0) {
         if (from->empty ()) {
-            return span<char16_t>{};    // OK - empty from produces empty to
+            return span<char16_t>{}; // OK - empty from produces empty to
         }
         else {
-            // find kind of error and throw right one
-            throw "";
+            Execution::ThrowSystemErrNo ();
         }
     }
     else {
@@ -331,8 +315,7 @@ span<char16_t> Characters::Private_::WindowsNative_::Bytes2Characters (span<cons
 span<byte> Characters::Private_::WindowsNative_::Characters2Bytes (span<const char16_t> from, span<byte> to) const
 {
     Require (ComputeTargetByteBufferSize (from) <= to.size ());
-    static constexpr DWORD kFLAGS_ = 0;
-
+    static constexpr DWORD kFLAGS_ = WC_ERR_INVALID_CHARS;
     int r = ::WideCharToMultiByte (fCodePage_, kFLAGS_, reinterpret_cast<LPCWCH> (from.data ()), static_cast<int> (from.size ()),
                                    reinterpret_cast<LPSTR> (to.data ()), static_cast<int> (to.size ()), nullptr, nullptr);
     if (r == 0) {
@@ -340,8 +323,7 @@ span<byte> Characters::Private_::WindowsNative_::Characters2Bytes (span<const ch
             return span<byte>{}; // OK - empty from produces empty to
         }
         else {
-            // find kind of error and throw right one
-            throw "";
+            Execution::ThrowSystemErrNo ();
         }
     }
     else {
@@ -355,8 +337,8 @@ size_t Characters::Private_::WindowsNative_::ComputeTargetCharacterBufferSize (v
         return *i;
     }
     else {
-        auto s = get<span<const byte>> (src);
-        static constexpr DWORD kFLAGS_ = 0;
+        auto                   s       = get<span<const byte>> (src);
+        static constexpr DWORD kFLAGS_ = MB_ERR_INVALID_CHARS;
         int r = ::MultiByteToWideChar (fCodePage_, kFLAGS_, reinterpret_cast<LPCCH> (s.data ()), static_cast<int> (s.size ()), nullptr, 0);
         Assert (r >= 0);
         if (r == 0) {
@@ -364,8 +346,7 @@ size_t Characters::Private_::WindowsNative_::ComputeTargetCharacterBufferSize (v
                 return 0;
             }
             else {
-                // throw
-                throw "";
+                Execution::ThrowSystemErrNo ();
             }
         }
         else {
@@ -377,23 +358,21 @@ size_t Characters::Private_::WindowsNative_::ComputeTargetCharacterBufferSize (v
 size_t Characters::Private_::WindowsNative_::ComputeTargetByteBufferSize (variant<span<const char16_t>, size_t> src) const
 {
     if (const size_t* i = get_if<size_t> (&src)) {
-        constexpr size_t kMaxBytesPerCharWAG_ = 6;
+        constexpr size_t kMaxBytesPerCharWAG_ = 6;  // @todo improve this WAG, or find some reference/basis, but I think for UNICODE (excluding UTF-7) - I think this number is 4
         return *i * kMaxBytesPerCharWAG_;
     }
     else {
-        auto s = get<span<const char16_t>> (src);
-        static constexpr DWORD kFLAGS_ = 0;
-        int r = ::WideCharToMultiByte (fCodePage_, kFLAGS_, reinterpret_cast<LPCWCH> (s.data ()), static_cast<int> (s.size ()), nullptr, 0,
-                                       nullptr, nullptr);
+        auto                   s       = get<span<const char16_t>> (src);
+        static constexpr DWORD kFLAGS_ = WC_ERR_INVALID_CHARS;
+        int r = ::WideCharToMultiByte (fCodePage_, kFLAGS_, reinterpret_cast<LPCWCH> (s.data ()), static_cast<int> (s.size ()), nullptr, 0, nullptr, nullptr);
         Assert (r >= 0);
         if (r == 0) {
             if (s.size () == 0) {
                 return 0;
             }
             else {
-                // throw
-                throw "";
-            } 
+                Execution::ThrowSystemErrNo ();
+            }
         }
         else {
             return static_cast<size_t> (r);

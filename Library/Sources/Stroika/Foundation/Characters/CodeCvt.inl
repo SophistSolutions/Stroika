@@ -376,7 +376,10 @@ namespace Stroika::Foundation::Characters {
         };
 #if qPlatform_Windows
         struct WindowsNative_ final : CodeCvt<char16_t>::IRep {
-            WindowsNative_ (CodePage cp);
+            constexpr WindowsNative_ (CodePage cp)
+                : fCodePage_{cp}
+            {
+            }
             virtual ~WindowsNative_ () = default;
             virtual span<char16_t> Bytes2Characters (span<const byte>* from, span<char16_t> to) const override;
             virtual span<byte>     Characters2Bytes (span<const char16_t> from, span<byte> to) const override;
