@@ -407,7 +407,7 @@ namespace Stroika::Foundation::Characters {
     {
     }
     template <IUNICODECanAlwaysConvertTo CHAR_T>
-    inline CodeCvt<CHAR_T>::CodeCvt (const String& localeName)
+    CodeCvt<CHAR_T>::CodeCvt (const String& localeName)
     {
         string ln = Private_::AsNarrowSDKString_ (localeName);
         if constexpr (is_same_v<CHAR_T, wchar_t>) {
@@ -425,7 +425,7 @@ namespace Stroika::Foundation::Characters {
         }
     }
     template <IUNICODECanAlwaysConvertTo CHAR_T>
-    inline CodeCvt<CHAR_T>::CodeCvt (UnicodeExternalEncodings e)
+    CodeCvt<CHAR_T>::CodeCvt (UnicodeExternalEncodings e)
         : fRep_{}
     {
         switch (e) {
@@ -468,7 +468,7 @@ namespace Stroika::Foundation::Characters {
         }
     }
     template <IUNICODECanAlwaysConvertTo CHAR_T>
-    inline CodeCvt<CHAR_T>::CodeCvt (CodePage cp)
+    CodeCvt<CHAR_T>::CodeCvt (CodePage cp)
         : fRep_{}
     {
         // A few we have builtin table converters for (BuiltinSingleByteTableCodePageRep_);
