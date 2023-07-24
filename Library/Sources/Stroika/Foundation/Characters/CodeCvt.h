@@ -318,6 +318,19 @@ namespace Stroika::Foundation::Characters {
     private:
         shared_ptr<IRep> fRep_;
 
+#if qCompilerAndStdLib_template_second_concept_Buggy
+    private:
+        template <typename SERIALIZED_CHAR_T>
+        struct UTFConvertRep_;
+
+    private:
+        template <typename SERIALIZED_CHAR_T>
+        struct UTFConvertSwappedRep_;
+
+    private:
+        template <typename INTERMEDIATE_CHAR_T>
+        struct UTF2UTFRep_;
+#else
     private:
         template <IUNICODECanAlwaysConvertTo SERIALIZED_CHAR_T>
         struct UTFConvertRep_;
@@ -329,6 +342,7 @@ namespace Stroika::Foundation::Characters {
     private:
         template <IUNICODECanAlwaysConvertTo INTERMEDIATE_CHAR_T>
         struct UTF2UTFRep_;
+#endif
 
     private:
         // requires CHAR_T = typename STD_CODE_CVT_T::intern_type

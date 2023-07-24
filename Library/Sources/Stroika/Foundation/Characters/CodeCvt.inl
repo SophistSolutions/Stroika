@@ -41,7 +41,11 @@ namespace Stroika::Foundation::Characters {
      ********************************************************************************
      */
     template <IUNICODECanAlwaysConvertTo CHAR_T>
+#if qCompilerAndStdLib_template_second_concept_Buggy
+    template <typename SERIALIZED_CHAR_T>
+#else
     template <IUNICODECanAlwaysConvertTo SERIALIZED_CHAR_T>
+#endif
     struct CodeCvt<CHAR_T>::UTFConvertRep_ : CodeCvt<CHAR_T>::IRep {
         using ConversionResult           = UTFConverter::ConversionResult;
         using ConversionResultWithStatus = UTFConverter::ConversionResultWithStatus;
@@ -109,7 +113,11 @@ namespace Stroika::Foundation::Characters {
      ********************************************************************************
      */
     template <IUNICODECanAlwaysConvertTo CHAR_T>
+#if qCompilerAndStdLib_template_second_concept_Buggy
+    template <typename SERIALIZED_CHAR_T>
+#else
     template <IUNICODECanAlwaysConvertTo SERIALIZED_CHAR_T>
+#endif
     struct CodeCvt<CHAR_T>::UTFConvertSwappedRep_ : UTFConvertRep_<SERIALIZED_CHAR_T> {
         using inherited = UTFConvertRep_<SERIALIZED_CHAR_T>;
         UTFConvertSwappedRep_ (const UTFConverter& utfCodeCvt)
@@ -157,7 +165,11 @@ namespace Stroika::Foundation::Characters {
      * conversion from bytes to/from desired rep generally through some intermediary rep.
      */
     template <IUNICODECanAlwaysConvertTo CHAR_T>
+#if qCompilerAndStdLib_template_second_concept_Buggy
+    template <typename INTERMEDIATE_CHAR_T>
+#else
     template <IUNICODECanAlwaysConvertTo INTERMEDIATE_CHAR_T>
+#endif
     struct CodeCvt<CHAR_T>::UTF2UTFRep_ : CodeCvt<CHAR_T>::IRep {
         using ConversionResultWithStatus = UTFConverter::ConversionResultWithStatus;
         using ConversionStatusFlag       = UTFConverter::ConversionStatusFlag;
