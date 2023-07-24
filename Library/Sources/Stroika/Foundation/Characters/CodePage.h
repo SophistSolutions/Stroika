@@ -27,49 +27,46 @@ namespace Stroika::Foundation::Characters {
 
     class String;
 
-    /*
-     ********************************************************************************
-     *********************************** Character **********************************
-     ********************************************************************************
-     */
-    enum {
-        kCodePage_INVALID = 0xffffffff, // I hope this is always an invalid code page???
-
-        kCodePage_ANSI = 1252,
-
-        kCodePage_MAC             = 2,
-        kCodePage_PC              = 437, //  IBM PC code page 437
-        kCodePage_PCA             = 850, //  IBM PC code page 850, used by IBM Personal System/2
-        kCodePage_Thai            = 874, // From uniscribe sample code (LGP 2003-01-13)
-        kCodePage_SJIS            = 932,
-        kCodePage_GB2312          = 936, // Chinese (Simplified)
-        kCodePage_Korean          = 949, // Korean
-        kCodePage_BIG5            = 950, // Chinese (Traditional)
-        kCodePage_EasternEuropean = 1250,
-        kCodePage_CYRILIC         = 1251, // Russian (Cyrilic)
-        kCodePage_GREEK           = 1253,
-        kCodePage_Turkish         = 1254,
-        kCodePage_HEBREW          = 1255,
-        kCodePage_ARABIC          = 1256,
-        kCodePage_Baltic          = 1257,
-        kCodePage_Vietnamese      = 1258,
-
-        kCodePage_UNICODE_WIDE           = 1200, // Standard UNICODE for MS-Windows
-        kCodePage_UNICODE_WIDE_BIGENDIAN = 1201,
-
-        kCodePage_UTF7 [[deprecated ("Since v3.0d2 - UTF-7 deprecated")]] = 65000,
-        kCodePage_UTF8                                                    = 65001
-    };
-
     /**
      *       A codePage is a Win32 (really DOS) concept which describes a particular single or
      *    multibyte (narrow) character set encoding. Use Win32 CodePage numbers. Maybe someday add
      *  a layer to map to/from Mac 'ScriptIDs' - which are basicly analagous.</p>
-     *      <p>Use this with @'CodePageConverter'.</p>
      * 
      *      UINT in windows SDK;
      */
     using CodePage = uint32_t;
+
+    /**
+     *  Predefined well known code pages (generally not used/useful except on Windows)
+     * 
+     *  NOTE - not #if qPlatform_Windows or in windows namespace cuz can be used for Windows interoperability on other platforms - much supported portably.
+     */
+    namespace WellKnownCodePages {
+        constexpr CodePage kANSI = 1252;
+
+        constexpr CodePage kMAC             = 2;
+        constexpr CodePage kPC              = 437; //  IBM PC code page 437
+        constexpr CodePage kPCA             = 850; //  IBM PC code page 850, used by IBM Personal System/2
+        constexpr CodePage kThai            = 874; // From uniscribe sample code (LGP 2003-01-13)
+        constexpr CodePage kSJIS            = 932;
+        constexpr CodePage kGB2312          = 936; // Chinese (Simplified)
+        constexpr CodePage kKorean          = 949; // Korean
+        constexpr CodePage kBIG5            = 950; // Chinese (Traditional)
+        constexpr CodePage kEasternEuropean = 1250;
+        constexpr CodePage kCyrilic         = 1251; // Russian (Cyrilic)
+        constexpr CodePage kGreek           = 1253;
+        constexpr CodePage kTurkish         = 1254;
+        constexpr CodePage kHebrew          = 1255;
+        constexpr CodePage kArabic          = 1256;
+        constexpr CodePage kBaltic          = 1257;
+        constexpr CodePage kVietnamese      = 1258;
+
+        constexpr CodePage kUNICODE_WIDE           = 1200; // Standard UNICODE for MS-Windows
+        constexpr CodePage kUNICODE_WIDE_BIGENDIAN = 1201;
+
+        constexpr CodePage kUTF8 = 65001;
+
+    }
 
     /**
      * TODO:
@@ -226,32 +223,6 @@ namespace Stroika::Foundation::Characters {
     };
 
     /*
-    @CLASS:         CodePagesGuesser
-    @DESCRIPTION:   <p>Guess the code page of the given argument text.</p>
-    */
-    class CodePagesGuesser {
-    public:
-        enum class Confidence : uint8_t {
-            eLow    = 0,
-            eMedium = 10,
-            eHigh   = 100
-        };
-
-    public:
-        /*
-        @METHOD:        CodePagesGuesser::Guess
-        @DESCRIPTION:   <p>Guess the code page of the given snippet of text. Return that codepage.
-                    Always make some guess, and return the level of quality of the guess in the
-                    optional parameter 'confidence' - unless its nullptr (which it is by default),
-                    and return the number of bytes of BOM (byte-order-mark) prefix to strip from
-                    the source in 'bytesFromFrontToStrip' unless it is nullptr (which it is by
-                    default).
-                    </p>
-        */
-        nonvirtual CodePage Guess (const void* input, size_t nBytes, Confidence* confidence = nullptr, size_t* bytesFromFrontToStrip = nullptr);
-    };
-
-    /*
     @CLASS:         CodePagePrettyNameMapper
     @DESCRIPTION:   <p>Code to map numeric code pages to symbolic user-interface appropriate names.</p>
     */
@@ -312,7 +283,7 @@ namespace Stroika::Foundation::Characters {
     string  WideStringToASCII (const wstring& s);
 
     wstring MapUNICODETextWithMaybeBOMTowstring (const char* start, const char* end);
-    vector<byte> MapUNICODETextToSerializedFormat (const wchar_t* start, const wchar_t* end, CodePage useCP = kCodePage_UTF8); // suitable for files
+    vector<byte> MapUNICODETextToSerializedFormat (const wchar_t* start, const wchar_t* end, CodePage useCP = WellKnownCodePages::kUTF8); // suitable for files
 
 }
 

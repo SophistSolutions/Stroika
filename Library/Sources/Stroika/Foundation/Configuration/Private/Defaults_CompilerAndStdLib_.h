@@ -1715,18 +1715,13 @@ Test.cpp:173:31: error: template template argument has different template parame
 
 #endif
 
-
-
-
-
-
 /*
          Compiling Library/Sources/Stroika/Foundation/Cryptography/Digest/Algorithm/MD5.cpp ... 
 PLEASE submit a bug report to https://github.com/llvm/llvm-project/issues/ and include the crash backtrace, preprocessed source, and associated run script.
 Stack dump:
-0.	Program arguments: clang++-15 --std=c++2b -I/__w/Stroika/Stroika/Builds/Debug/ThirdPartyComponents/include/ -I/__w/Stroika/Stroika/Library/Sources/ -I/__w/Stroika/Stroika/IntermediateFiles/Debug/ -Wall -Wno-switch -Wno-sign-compare -Wno-unused-function -Wno-unused-local-typedef -Wno-future-compat -Wno-unqualified-std-cast-call -fvisibility=hidden -g -D_GLIBCXX_DEBUG -DqDebug=1 -DqHasFeature_LibCurl=1 -DqHasFeature_OpenSSL=1 -DqHasFeature_WinHTTP=0 -DqHasFeature_Xerces=1 -DqHasFeature_ZLib=1 -DqHasFeature_sqlite=1 -DqHasFeature_LZMA=1 -DqHasFeature_boost=1 -DqTraceToFile=1 -DqDefaultTracingOn=1 -fsanitize=address,undefined -stdlib=libc++ -c CodeCvt.cpp -o /__w/Stroika/Stroika/IntermediateFiles/Debug/Library/Foundation/Characters/CodeCvt.o
-1.	./CodeCvt.inl:400:29: at annotation token
-2.	./CodeCvt.inl:19:1: parsing namespace 'Stroika'
+0.  Program arguments: clang++-15 --std=c++2b -I/__w/Stroika/Stroika/Builds/Debug/ThirdPartyComponents/include/ -I/__w/Stroika/Stroika/Library/Sources/ -I/__w/Stroika/Stroika/IntermediateFiles/Debug/ -Wall -Wno-switch -Wno-sign-compare -Wno-unused-function -Wno-unused-local-typedef -Wno-future-compat -Wno-unqualified-std-cast-call -fvisibility=hidden -g -D_GLIBCXX_DEBUG -DqDebug=1 -DqHasFeature_LibCurl=1 -DqHasFeature_OpenSSL=1 -DqHasFeature_WinHTTP=0 -DqHasFeature_Xerces=1 -DqHasFeature_ZLib=1 -DqHasFeature_sqlite=1 -DqHasFeature_LZMA=1 -DqHasFeature_boost=1 -DqTraceToFile=1 -DqDefaultTracingOn=1 -fsanitize=address,undefined -stdlib=libc++ -c CodeCvt.cpp -o /__w/Stroika/Stroika/IntermediateFiles/Debug/Library/Foundation/Characters/CodeCvt.o
+1.  ./CodeCvt.inl:400:29: at annotation token
+2.  ./CodeCvt.inl:19:1: parsing namespace 'Stroika'
  #0 0x00007fd3fd34d3b1 llvm::sys::PrintStackTrace(llvm::raw_ostream&, int) (/usr/lib/llvm-15/bin/../lib/libLLVM-15.so.1+0xf043b1)
  #1 0x00007fd3fd34b0fe llvm::sys::RunSignalHandlers() (/usr/lib/llvm-15/bin/../lib/libLLVM-15.so.1+0xf020fe)
  #2 0x00007fd3fd34c771 llvm::sys::CleanupOnSignal(unsigned long) (/usr/lib/llvm-15/bin/../lib/libLLVM-15.so.1+0xf03771)
@@ -1744,22 +1739,15 @@ Stack dump:
 
 #if defined(__clang__) && defined(__APPLE__)
 // VERIFIED BROKEN on XCode 14
-#define qCompilerAndStdLib_template_second_concept_Buggy                                                \
-    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 14))
+#define qCompilerAndStdLib_template_second_concept_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 14))
 #elif defined(__clang__) && !defined(__APPLE__)
 // verified still broken in clang++-15
-#define qCompilerAndStdLib_template_second_concept_Buggy                                                \
-    CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 15))
+#define qCompilerAndStdLib_template_second_concept_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 15))
 #else
 #define qCompilerAndStdLib_template_second_concept_Buggy 0
 #endif
 
 #endif
-
-
-
-
-
 
 /*
  *

@@ -156,17 +156,17 @@ namespace Stroika::Foundation::Characters {
          *      Can throw if the code page is not recognized. NOTE - CodePage is a Windows concept, and though many code pages
          *      are provided portable (@todo list) - many more are not, and will fail on non-windows, and succeed only on windows.
          *      The (Windows) code pages which are always (portably) provided include:
-         *          kCodePage_ANSI = 1252,
-         *          kCodePage_MAC             = 2,
-         *          kCodePage_PC              = 437, //  IBM PC code page 437
-         *          kCodePage_PCA             = 850, //  IBM PC code page 850, used by IBM Personal System/2
-         *          kCodePage_GREEK           = 1253,
-         *          kCodePage_Turkish         = 1254,
-         *          kCodePage_HEBREW          = 1255,
-         *          kCodePage_ARABIC          = 1256,
-         *          kCodePage_UNICODE_WIDE           = 1200, // Standard UNICODE for MS-Windows
-         *          kCodePage_UNICODE_WIDE_BIGENDIAN = 1201,
-         *          kCodePage_UTF8 = 65001
+         *          WellKnownCodePages::kANSI
+         *          WellKnownCodePages::kMAC
+         *          WellKnownCodePages::PC,             //  IBM PC code page 437
+         *          WellKnownCodePages::PCA,            //  IBM PC code page 850, used by IBM Personal System/2
+         *          WellKnownCodePages::kGreek,
+         *          WellKnownCodePages::kTurkish,
+         *          WellKnownCodePages::kHebrew,
+         *          WellKnownCodePages::kArabic,
+         *          WellKnownCodePages::kUNICODE_WIDE, // Standard UNICODE for MS-Windows
+         *          WellKnownCodePages::kUNICODE_WIDE_BIGENDIAN,
+         *          WellKnownCodePages::UTF8
          * 
          *   To use (wrap) existing std::codecvt<A,B,C> class:
          *      Quirky, because classes not generally directly instantiatable, so instead specify CLASS as template param

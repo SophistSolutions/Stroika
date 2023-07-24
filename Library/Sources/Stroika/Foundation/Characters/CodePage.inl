@@ -22,6 +22,63 @@
 
 namespace Stroika::Foundation::Characters {
 
+    class [[deprecated ("Since Stroika v3.0d2, use ReadByteOrderMark")]] CodePagesGuesser
+    {
+    public:
+        enum class Confidence : uint8_t {
+            eLow    = 0,
+            eMedium = 10,
+            eHigh   = 100
+        };
+
+    public:
+        /*
+        @METHOD:        CodePagesGuesser::Guess
+        @DESCRIPTION:   <p>Guess the code page of the given snippet of text. Return that codepage.
+                    Always make some guess, and return the level of quality of the guess in the
+                    optional parameter 'confidence' - unless its nullptr (which it is by default),
+                    and return the number of bytes of BOM (byte-order-mark) prefix to strip from
+                    the source in 'bytesFromFrontToStrip' unless it is nullptr (which it is by
+                    default).
+                    </p>
+        */
+        nonvirtual CodePage Guess (const void* input, size_t nBytes, Confidence* confidence = nullptr, size_t* bytesFromFrontToStrip = nullptr);
+    };
+
+    /// <summary>
+    /// DEPRECATED
+    /// </summary>
+    enum {
+        kCodePage_INVALID [[deprecated ("Since v3.0d2 - deprecated - use optional")]] = 0xffffffff, // I hope this is always an invalid code page???
+
+        kCodePage_ANSI [[deprecated ("Since v3.0d2 - deprecated - use WellKnownCodePages::kANSI")]] = WellKnownCodePages::kANSI,
+
+        kCodePage_MAC [[deprecated ("Since v3.0d2 - deprecated - use WellKnownCodePages::kMAC")]]       = WellKnownCodePages::kMAC,
+        kCodePage_PC [[deprecated ("Since v3.0d2 - deprecated - use WellKnownCodePages::kPC")]]         = WellKnownCodePages::kPC,
+        kCodePage_PCA [[deprecated ("Since v3.0d2 - deprecated - use WellKnownCodePages::kPCA")]]       = WellKnownCodePages::kPCA,
+        kCodePage_Thai [[deprecated ("Since v3.0d2 - deprecated - use WellKnownCodePages::kThai")]]     = WellKnownCodePages::kThai,
+        kCodePage_SJIS [[deprecated ("Since v3.0d2 - deprecated - use WellKnownCodePages::kSJIS")]]     = WellKnownCodePages::kSJIS,
+        kCodePage_GB2312 [[deprecated ("Since v3.0d2 - deprecated - use WellKnownCodePages::kGB2312")]] = WellKnownCodePages::kGB2312,
+        kCodePage_Korean [[deprecated ("Since v3.0d2 - deprecated - use WellKnownCodePages::kKorean")]] = WellKnownCodePages::kKorean,
+        kCodePage_BIG5 [[deprecated ("Since v3.0d2 - deprecated - use WellKnownCodePages::kBIG5")]]     = WellKnownCodePages::kBIG5,
+        kCodePage_EasternEuropean [[deprecated ("Since v3.0d2 - deprecated - use WellKnownCodePages::kEasternEuropean")]] =
+            WellKnownCodePages::kEasternEuropean,
+        kCodePage_CYRILIC [[deprecated ("Since v3.0d2 - deprecated - use WellKnownCodePages::kCyrilic")]] = WellKnownCodePages::kCyrilic,
+        kCodePage_GREEK [[deprecated ("Since v3.0d2 - deprecated - use WellKnownCodePages::kGreek")]]     = WellKnownCodePages::kGreek,
+        kCodePage_Turkish [[deprecated ("Since v3.0d2 - deprecated - use WellKnownCodePages::kTurkish")]] = WellKnownCodePages::kTurkish,
+        kCodePage_HEBREW [[deprecated ("Since v3.0d2 - deprecated - use WellKnownCodePages::kHebrew")]]   = WellKnownCodePages::kHebrew,
+        kCodePage_ARABIC [[deprecated ("Since v3.0d2 - deprecated - use WellKnownCodePages::kArabic")]]   = WellKnownCodePages::kArabic,
+        kCodePage_Baltic [[deprecated ("Since v3.0d2 - deprecated - use WellKnownCodePages::kBaltic")]]   = WellKnownCodePages::kBaltic,
+        kCodePage_Vietnamese [[deprecated ("Since v3.0d2 - deprecated - use WellKnownCodePages::kVietnamese")]] = WellKnownCodePages::kVietnamese,
+
+        kCodePage_UNICODE_WIDE [[deprecated ("Since v3.0d2 - deprecated - use WellKnownCodePages::kUNICODE_WIDE")]] = WellKnownCodePages::kUNICODE_WIDE,
+        kCodePage_UNICODE_WIDE_BIGENDIAN [[deprecated ("Since v3.0d2 - deprecated - use WellKnownCodePages::kUNICODE_WIDE_BIGENDIAN")]] =
+            WellKnownCodePages::kUNICODE_WIDE_BIGENDIAN,
+
+        kCodePage_UTF7 [[deprecated ("Since v3.0d2 - UTF-7 deprecated")]]          = 65000,
+        kCodePage_UTF8 [[deprecated ("Since v3.0d2 - WellKnownCodePages::kUTF8")]] = WellKnownCodePages::kUTF8
+    };
+
     /*
      ********************************************************************************
      ****************************** GetDefaultSDKCodePage ***************************
@@ -40,7 +97,7 @@ namespace Stroika::Foundation::Characters {
 //GetACP()              // means essentially the same thing but supposedly (even if we cahced GetACP() - CP_ACP is faster)
 #else
         // MAYBE should use the LOCALE stuff - and get the current code-page from the locale? If such a thing?
-        return kCodePage_UTF8; // So far - this is meaningless on other systems - but this would be the best guess I think
+        return WellKnownCodePages::kUTF8; // So far - this is meaningless on other systems - but this would be the best guess I think
 #endif
     }
 
@@ -219,21 +276,21 @@ namespace Stroika::Foundation::Characters {
         return string{s.begin (), s.end ()};
         DISABLE_COMPILER_MSC_WARNING_END (4244)
     }
-    inline string WideStringToUTF8 (const wstring& ws) { return WideStringToNarrow (ws, kCodePage_UTF8); }
+    inline string WideStringToUTF8 (const wstring& ws) { return WideStringToNarrow (ws, WellKnownCodePages::kUTF8); }
     inline void   UTF8StringToWide (const char* s, wstring* intoStr)
     {
         RequireNotNull (s);
-        NarrowStringToWide (s, s + ::strlen (s), kCodePage_UTF8, intoStr);
+        NarrowStringToWide (s, s + ::strlen (s), WellKnownCodePages::kUTF8, intoStr);
     }
-    inline void    UTF8StringToWide (const string& s, wstring* intoStr) { NarrowStringToWide (s, kCodePage_UTF8, intoStr); }
+    inline void    UTF8StringToWide (const string& s, wstring* intoStr) { NarrowStringToWide (s, WellKnownCodePages::kUTF8, intoStr); }
     inline wstring UTF8StringToWide (const char* s)
     {
         RequireNotNull (s);
         wstring result;
-        NarrowStringToWide (s, s + ::strlen (s), kCodePage_UTF8, &result);
+        NarrowStringToWide (s, s + ::strlen (s), WellKnownCodePages::kUTF8, &result);
         return result;
     }
-    inline wstring UTF8StringToWide (const string& s) { return NarrowStringToWide (s, kCodePage_UTF8); }
+    inline wstring UTF8StringToWide (const string& s) { return NarrowStringToWide (s, WellKnownCodePages::kUTF8); }
 
 }
 

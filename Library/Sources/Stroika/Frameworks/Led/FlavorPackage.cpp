@@ -3,6 +3,7 @@
  */
 #include "../../Foundation/StroikaPreComp.h"
 
+#include "../../Foundation/Characters/CodeCvt.h"
 #include "../../Foundation/Characters/CodePage.h"
 #include "../../Foundation/Characters/LineEndings.h"
 #include "../../Foundation/IO/FileSystem/FileInputStream.h"
@@ -285,7 +286,7 @@ bool FlavorPackageInternalizer::InternalizeFlavor_FILEDataRawBytes (Led_ClipForm
         }
     }
 
-/*
+    /*
      *  If either the suggestedClipFormat was TEXT or it was something else we didn't understand - then just
      *  import that contents as if it was plain text
      *
@@ -293,17 +294,13 @@ bool FlavorPackageInternalizer::InternalizeFlavor_FILEDataRawBytes (Led_ClipForm
      *  prefered code page - so just do the read/replace here...
      */
 #if qWideCharacters
-    CodePage useCodePage = (suggestedCodePage == nullptr or *suggestedCodePage == kCodePage_INVALID) ? CodePagesGuesser ().Guess (rawBytes, nRawBytes)
-                                                                                                     : *suggestedCodePage;
-    if (suggestedCodePage != nullptr) {
-        *suggestedCodePage = useCodePage;
-    }
-    CodePageConverter cpc        = CodePageConverter{useCodePage, CodePageConverter::eHandleBOM};
-    size_t            outCharCnt = cpc.MapToUNICODE_QuickComputeOutBufSize (reinterpret_cast<const char*> (rawBytes), nRawBytes + 1);
+    span<const byte>   rawByteSpan{reinterpret_cast<const byte*> (rawBytes), nRawBytes};
+    CodeCvt<Led_tChar> converter{&rawByteSpan, CodeCvt<Led_tChar>{(suggestedCodePage == nullptr or *suggestedCodePage == kCodePage_INVALID)
+                                                                      ? GetDefaultSDKCodePage ()
+                                                                      : *suggestedCodePage}};
+    size_t             outCharCnt = converter.ComputeTargetCharacterBufferSize (rawByteSpan);
     Memory::StackBuffer<Led_tChar> fileData2{outCharCnt};
-    cpc.MapToUNICODE (reinterpret_cast<const char*> (rawBytes), nRawBytes, static_cast<wchar_t*> (fileData2), &outCharCnt);
-    size_t charsRead = outCharCnt;
-    Assert (charsRead <= nRawBytes);
+    auto                           charsRead = converter.Bytes2Characters (&rawByteSpan, span{fileData2}).size ();
 #else
     Memory::StackBuffer<Led_tChar> fileData2{nRawBytes};
     memcpy (fileData2, (char*)rawBytes, nRawBytes);

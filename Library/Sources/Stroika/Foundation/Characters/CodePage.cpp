@@ -72,7 +72,7 @@ namespace {
 wstring Characters::GetCharsetString (CodePage cp)
 {
     switch (cp) {
-        case kCodePage_UTF8:
+        case WellKnownCodePages::kUTF8:
             return L"UTF-8";
         default:
             return Characters::CString::Format (L"CodePage %d", cp);
@@ -113,7 +113,7 @@ namespace {
         *outCharCnt = nCharsToCopy;
     }
     template <>
-    class TableDrivenCodePageConverter_<kCodePage_ANSI> {
+    class TableDrivenCodePageConverter_<WellKnownCodePages::kANSI> {
     public:
         static void MapToUNICODE (const char* inMBChars, size_t inMBCharCnt, char16_t* outChars, size_t* outCharCnt)
         {
@@ -145,7 +145,7 @@ namespace {
         };
     };
     template <>
-    class TableDrivenCodePageConverter_<kCodePage_MAC> {
+    class TableDrivenCodePageConverter_<WellKnownCodePages::kMAC> {
     public:
         static void MapToUNICODE (const char* inMBChars, size_t inMBCharCnt, char16_t* outChars, size_t* outCharCnt)
         {
@@ -177,7 +177,7 @@ namespace {
         };
     };
     template <>
-    class TableDrivenCodePageConverter_<kCodePage_PC> {
+    class TableDrivenCodePageConverter_<WellKnownCodePages::kPC> {
     public:
         static void MapToUNICODE (const char* inMBChars, size_t inMBCharCnt, char16_t* outChars, size_t* outCharCnt)
         {
@@ -209,7 +209,7 @@ namespace {
         };
     };
     template <>
-    class TableDrivenCodePageConverter_<kCodePage_PCA> {
+    class TableDrivenCodePageConverter_<WellKnownCodePages::kPCA> {
     public:
         static void MapToUNICODE (const char* inMBChars, size_t inMBCharCnt, char16_t* outChars, size_t* outCharCnt)
         {
@@ -241,7 +241,7 @@ namespace {
         };
     };
     template <>
-    class TableDrivenCodePageConverter_<kCodePage_GREEK> {
+    class TableDrivenCodePageConverter_<WellKnownCodePages::kGreek> {
     public:
         static void MapToUNICODE (const char* inMBChars, size_t inMBCharCnt, char16_t* outChars, size_t* outCharCnt)
         {
@@ -273,7 +273,7 @@ namespace {
         };
     };
     template <>
-    class TableDrivenCodePageConverter_<kCodePage_Turkish> {
+    class TableDrivenCodePageConverter_<WellKnownCodePages::kTurkish> {
     public:
         static void MapToUNICODE (const char* inMBChars, size_t inMBCharCnt, char16_t* outChars, size_t* outCharCnt)
         {
@@ -305,7 +305,7 @@ namespace {
         };
     };
     template <>
-    class TableDrivenCodePageConverter_<kCodePage_HEBREW> {
+    class TableDrivenCodePageConverter_<WellKnownCodePages::kHebrew> {
     public:
         static void MapToUNICODE (const char* inMBChars, size_t inMBCharCnt, char16_t* outChars, size_t* outCharCnt)
         {
@@ -337,7 +337,7 @@ namespace {
         };
     };
     template <>
-    class TableDrivenCodePageConverter_<kCodePage_ARABIC> {
+    class TableDrivenCodePageConverter_<WellKnownCodePages::kArabic> {
     public:
         static void MapToUNICODE (const char* inMBChars, size_t inMBCharCnt, char16_t* outChars, size_t* outCharCnt)
         {
@@ -378,14 +378,14 @@ namespace {
     struct DoRunIt {
         DoRunIt ()
         {
-            //WriteCodePageTable (kCodePage_ANSI);
-            //WriteCodePageTable (kCodePage_MAC);
-            //WriteCodePageTable (kCodePage_PC);
-            //WriteCodePageTable (kCodePage_PCA);
-            //WriteCodePageTable (kCodePage_GREEK);
-            //WriteCodePageTable (kCodePage_Turkish);
-            //WriteCodePageTable (kCodePage_HEBREW);
-            //WriteCodePageTable (kCodePage_ARABIC);
+            //WriteCodePageTable (WellKnownCodePages::kANSI);
+            //WriteCodePageTable (WellKnownCodePages::kMAC);
+            //WriteCodePageTable (WellKnownCodePages::kPC);
+            //WriteCodePageTable (WellKnownCodePages::kPCA);
+            //WriteCodePageTable (WellKnownCodePages::kGreek);
+            //WriteCodePageTable (WellKnownCodePages::kTurkish);
+            //WriteCodePageTable (WellKnownCodePages::kHebrew);
+            //WriteCodePageTable (WellKnownCodePages::kArabic);
         }
     } gRunIt;
 #endif
@@ -528,7 +528,7 @@ void Characters::MapSBUnicodeTextWithMaybeBOMToUNICODE (const char* inMBChars, s
     CodePagesGuesser::Confidence confidence = CodePagesGuesser::Confidence::eLow;
     CodePage                     cp         = CodePagesGuesser{}.Guess (inMBChars, inMBCharCnt, &confidence, nullptr);
     if (confidence <= CodePagesGuesser::Confidence::eLow) {
-        cp = kCodePage_UTF8;
+        cp = WellKnownCodePages::kUTF8;
     }
     CodePageConverter cpCvt (cp, CodePageConverter::eHandleBOM);
     cpCvt.MapToUNICODE (inMBChars, inMBCharCnt, outChars, outCharCnt);
@@ -557,23 +557,23 @@ size_t CodePageConverter::MapFromUNICODE_QuickComputeOutBufSize (const wchar_t* 
 {
     size_t resultSize;
     switch (fCodePage) {
-        case kCodePage_ANSI:
+        case WellKnownCodePages::kANSI:
             resultSize = inCharCnt * 1;
             break;
-        case kCodePage_MAC:
+        case WellKnownCodePages::kMAC:
             resultSize = inCharCnt * 1;
             break;
-        case kCodePage_PC:
+        case WellKnownCodePages::kPC:
             resultSize = inCharCnt * 1;
             break;
-        case kCodePage_PCA:
+        case WellKnownCodePages::kPCA:
             resultSize = inCharCnt * 1;
             break;
-        case kCodePage_SJIS:
+        case WellKnownCodePages::kSJIS:
             resultSize = inCharCnt * 2;
             break;
             break; // ITHINK thats right... BOM appears to be 5 chars long? LGP 2001-09-11
-        case kCodePage_UTF8:
+        case WellKnownCodePages::kUTF8:
             resultSize = UTFConverter::ComputeTargetBufferSize<char> (span{inChars, inChars + inCharCnt});
         default:
             resultSize = inCharCnt * 8;
@@ -581,12 +581,12 @@ size_t CodePageConverter::MapFromUNICODE_QuickComputeOutBufSize (const wchar_t* 
     }
     if (GetHandleBOM ()) {
         switch (fCodePage) {
-            case kCodePage_UNICODE_WIDE:
-            case kCodePage_UNICODE_WIDE_BIGENDIAN: {
+            case WellKnownCodePages::kUNICODE_WIDE:
+            case WellKnownCodePages::kUNICODE_WIDE_BIGENDIAN: {
                 // BOM (byte order mark)
                 resultSize += 2;
             } break;
-            case kCodePage_UTF8: {
+            case WellKnownCodePages::kUTF8: {
                 resultSize += 3; // BOM (byte order mark)
             }
         }
@@ -609,37 +609,37 @@ void CodePageConverter::MapToUNICODE (const char* inMBChars, size_t inMBCharCnt,
         }
     }
     switch (fCodePage) {
-        case kCodePage_ANSI:
-            TableDrivenCodePageConverter_<kCodePage_ANSI>::MapToUNICODE (inMBChars, inMBCharCnt, outChars, outCharCnt);
+        case WellKnownCodePages::kANSI:
+            TableDrivenCodePageConverter_<WellKnownCodePages::kANSI>::MapToUNICODE (inMBChars, inMBCharCnt, outChars, outCharCnt);
             break;
-        case kCodePage_MAC:
-            TableDrivenCodePageConverter_<kCodePage_MAC>::MapToUNICODE (inMBChars, inMBCharCnt, outChars, outCharCnt);
+        case WellKnownCodePages::kMAC:
+            TableDrivenCodePageConverter_<WellKnownCodePages::kMAC>::MapToUNICODE (inMBChars, inMBCharCnt, outChars, outCharCnt);
             break;
-        case kCodePage_PC:
-            TableDrivenCodePageConverter_<kCodePage_PC>::MapToUNICODE (inMBChars, inMBCharCnt, outChars, outCharCnt);
+        case WellKnownCodePages::kPC:
+            TableDrivenCodePageConverter_<WellKnownCodePages::kPC>::MapToUNICODE (inMBChars, inMBCharCnt, outChars, outCharCnt);
             break;
-        case kCodePage_PCA:
-            TableDrivenCodePageConverter_<kCodePage_PCA>::MapToUNICODE (inMBChars, inMBCharCnt, outChars, outCharCnt);
+        case WellKnownCodePages::kPCA:
+            TableDrivenCodePageConverter_<WellKnownCodePages::kPCA>::MapToUNICODE (inMBChars, inMBCharCnt, outChars, outCharCnt);
             break;
-        case kCodePage_GREEK:
-            TableDrivenCodePageConverter_<kCodePage_GREEK>::MapToUNICODE (inMBChars, inMBCharCnt, outChars, outCharCnt);
+        case WellKnownCodePages::kGreek:
+            TableDrivenCodePageConverter_<WellKnownCodePages::kGreek>::MapToUNICODE (inMBChars, inMBCharCnt, outChars, outCharCnt);
             break;
-        case kCodePage_Turkish:
-            TableDrivenCodePageConverter_<kCodePage_Turkish>::MapToUNICODE (inMBChars, inMBCharCnt, outChars, outCharCnt);
+        case WellKnownCodePages::kTurkish:
+            TableDrivenCodePageConverter_<WellKnownCodePages::kTurkish>::MapToUNICODE (inMBChars, inMBCharCnt, outChars, outCharCnt);
             break;
-        case kCodePage_HEBREW:
-            TableDrivenCodePageConverter_<kCodePage_HEBREW>::MapToUNICODE (inMBChars, inMBCharCnt, outChars, outCharCnt);
+        case WellKnownCodePages::kHebrew:
+            TableDrivenCodePageConverter_<WellKnownCodePages::kHebrew>::MapToUNICODE (inMBChars, inMBCharCnt, outChars, outCharCnt);
             break;
-        case kCodePage_ARABIC:
-            TableDrivenCodePageConverter_<kCodePage_ARABIC>::MapToUNICODE (inMBChars, inMBCharCnt, outChars, outCharCnt);
+        case WellKnownCodePages::kArabic:
+            TableDrivenCodePageConverter_<WellKnownCodePages::kArabic>::MapToUNICODE (inMBChars, inMBCharCnt, outChars, outCharCnt);
             break;
-        case kCodePage_UNICODE_WIDE: {
+        case WellKnownCodePages::kUNICODE_WIDE: {
             const wchar_t* inWChars   = reinterpret_cast<const wchar_t*> (inMBChars);
             size_t         inWCharCnt = (inMBCharCnt / sizeof (wchar_t));
             *outCharCnt               = inWCharCnt;
             (void)::memcpy (outChars, inWChars, inWCharCnt * sizeof (wchar_t));
         } break;
-        case kCodePage_UNICODE_WIDE_BIGENDIAN: {
+        case WellKnownCodePages::kUNICODE_WIDE_BIGENDIAN: {
             const wchar_t* inWChars   = reinterpret_cast<const wchar_t*> (inMBChars);
             size_t         inWCharCnt = (inMBCharCnt / sizeof (wchar_t));
             *outCharCnt               = inWCharCnt;
@@ -650,7 +650,7 @@ void CodePageConverter::MapToUNICODE (const char* inMBChars, size_t inMBCharCnt,
                 outChars[i] = c;
             }
         } break;
-        case kCodePage_UTF8: {
+        case WellKnownCodePages::kUTF8: {
             *outCharCnt = UTFConverter::kThe.Convert (span{inMBChars, inMBChars + inMBCharCnt}, span{outChars, *outCharCnt}).fTargetProduced;
         } break;
         default: {
@@ -697,19 +697,19 @@ void CodePageConverter::MapFromUNICODE (const char16_t* inChars, size_t inCharCn
 #endif
 
     switch (fCodePage) {
-        case kCodePage_ANSI:
-            TableDrivenCodePageConverter_<kCodePage_ANSI>::MapFromUNICODE (inChars, inCharCnt, outChars, outCharCnt);
+        case WellKnownCodePages::kANSI:
+            TableDrivenCodePageConverter_<WellKnownCodePages::kANSI>::MapFromUNICODE (inChars, inCharCnt, outChars, outCharCnt);
             break;
-        case kCodePage_MAC:
-            TableDrivenCodePageConverter_<kCodePage_MAC>::MapFromUNICODE (inChars, inCharCnt, outChars, outCharCnt);
+        case WellKnownCodePages::kMAC:
+            TableDrivenCodePageConverter_<WellKnownCodePages::kMAC>::MapFromUNICODE (inChars, inCharCnt, outChars, outCharCnt);
             break;
-        case kCodePage_PC:
-            TableDrivenCodePageConverter_<kCodePage_PC>::MapFromUNICODE (inChars, inCharCnt, outChars, outCharCnt);
+        case WellKnownCodePages::kPC:
+            TableDrivenCodePageConverter_<WellKnownCodePages::kPC>::MapFromUNICODE (inChars, inCharCnt, outChars, outCharCnt);
             break;
-        case kCodePage_PCA:
-            TableDrivenCodePageConverter_<kCodePage_PCA>::MapFromUNICODE (inChars, inCharCnt, outChars, outCharCnt);
+        case WellKnownCodePages::kPCA:
+            TableDrivenCodePageConverter_<WellKnownCodePages::kPCA>::MapFromUNICODE (inChars, inCharCnt, outChars, outCharCnt);
             break;
-        case kCodePage_UNICODE_WIDE: {
+        case WellKnownCodePages::kUNICODE_WIDE: {
             if (*outCharCnt >= 2) {
                 wchar_t* outWBytes    = reinterpret_cast<wchar_t*> (outChars);
                 size_t   outByteCount = (inCharCnt * sizeof (wchar_t));
@@ -731,7 +731,7 @@ void CodePageConverter::MapFromUNICODE (const char16_t* inChars, size_t inCharCn
                 *outCharCnt = 0;
             }
         } break;
-        case kCodePage_UNICODE_WIDE_BIGENDIAN: {
+        case WellKnownCodePages::kUNICODE_WIDE_BIGENDIAN: {
             if (*outCharCnt >= 2) {
                 wchar_t* outWBytes    = reinterpret_cast<wchar_t*> (outChars);
                 size_t   outByteCount = (inCharCnt * sizeof (wchar_t));
@@ -758,7 +758,7 @@ void CodePageConverter::MapFromUNICODE (const char16_t* inChars, size_t inCharCn
                 *outCharCnt = 0;
             }
         } break;
-        case kCodePage_UTF8: {
+        case WellKnownCodePages::kUTF8: {
             char*  useOutChars     = outChars;
             size_t useOutCharCount = *outCharCnt;
             if (GetHandleBOM ()) {
@@ -860,9 +860,9 @@ CodePagesInstalled::CodePagesInstalled ()
     }
 #endif
     // Add these 'fake' code pages - which I believe are always available, but never listed by EnumSystemCodePages()
-    accum->insert (kCodePage_UNICODE_WIDE);
-    accum->insert (kCodePage_UNICODE_WIDE_BIGENDIAN);
-    accum->insert (kCodePage_UTF8);
+    accum->insert (WellKnownCodePages::kUNICODE_WIDE);
+    accum->insert (WellKnownCodePages::kUNICODE_WIDE_BIGENDIAN);
+    accum->insert (WellKnownCodePages::kUTF8);
     fCodePages_ = vector<CodePage>{accum->begin (), accum->end ()};
 }
 
@@ -871,6 +871,9 @@ CodePagesInstalled::CodePagesInstalled ()
  ********************************** CodePagesGuesser ****************************
  ********************************************************************************
  */
+DISABLE_COMPILER_MSC_WARNING_START (4996);
+DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
+DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
 CodePage CodePagesGuesser::Guess (const void* input, size_t nBytes, Confidence* confidence, size_t* bytesFromFrontToStrip)
 {
     if (confidence != nullptr) {
@@ -889,7 +892,7 @@ CodePage CodePagesGuesser::Guess (const void* input, size_t nBytes, Confidence* 
             if (bytesFromFrontToStrip != nullptr) {
                 *bytesFromFrontToStrip = 2;
             }
-            return kCodePage_UNICODE_WIDE;
+            return WellKnownCodePages::kUNICODE_WIDE;
         }
         if (c0 == 0xfe and c1 == 0xff) {
             if (confidence != nullptr) {
@@ -898,7 +901,7 @@ CodePage CodePagesGuesser::Guess (const void* input, size_t nBytes, Confidence* 
             if (bytesFromFrontToStrip != nullptr) {
                 *bytesFromFrontToStrip = 2;
             }
-            return kCodePage_UNICODE_WIDE_BIGENDIAN;
+            return WellKnownCodePages::kUNICODE_WIDE_BIGENDIAN;
         }
         if (nBytes >= 3) {
             unsigned char c2 = reinterpret_cast<const unsigned char*> (input)[2];
@@ -909,7 +912,7 @@ CodePage CodePagesGuesser::Guess (const void* input, size_t nBytes, Confidence* 
                 if (bytesFromFrontToStrip != nullptr) {
                     *bytesFromFrontToStrip = 3;
                 }
-                return kCodePage_UTF8;
+                return WellKnownCodePages::kUTF8;
             }
         }
     }
@@ -922,6 +925,9 @@ CodePage CodePagesGuesser::Guess (const void* input, size_t nBytes, Confidence* 
     }
     return Characters::GetDefaultSDKCodePage ();
 }
+DISABLE_COMPILER_MSC_WARNING_END (4996);
+DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
+DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
 
 /*
  ********************************************************************************
@@ -957,19 +963,19 @@ CodePagePrettyNameMapper::CodePageNames CodePagePrettyNameMapper::MakeDefaultCod
 wstring CodePagePrettyNameMapper::GetName (CodePage cp)
 {
     switch (cp) {
-        case kCodePage_UNICODE_WIDE:
+        case WellKnownCodePages::kUNICODE_WIDE:
             return sCodePageNames_.fUNICODE_WIDE;
-        case kCodePage_UNICODE_WIDE_BIGENDIAN:
+        case WellKnownCodePages::kUNICODE_WIDE_BIGENDIAN:
             return sCodePageNames_.fUNICODE_WIDE_BIGENDIAN;
-        case kCodePage_ANSI:
+        case WellKnownCodePages::kANSI:
             return sCodePageNames_.fANSI;
-        case kCodePage_MAC:
+        case WellKnownCodePages::kMAC:
             return sCodePageNames_.fMAC;
-        case kCodePage_PC:
+        case WellKnownCodePages::kPC:
             return sCodePageNames_.fPC;
-        case kCodePage_SJIS:
+        case WellKnownCodePages::kSJIS:
             return sCodePageNames_.fSJIS;
-        case kCodePage_UTF8:
+        case WellKnownCodePages::kUTF8:
             return sCodePageNames_.fUTF8;
         case 850:
             return sCodePageNames_.f850;

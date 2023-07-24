@@ -225,46 +225,46 @@ namespace Stroika::Foundation::Characters::Platform::Windows {
 
         switch (lfCharSet) {
             case ANSI_CHARSET:
-                return kCodePage_ANSI; // right? Maybe SB? kCodePage_ANSI (1252)???
+                return WellKnownCodePages::kANSI; // right? Maybe SB? WellKnownCodePages::kANSI (1252)???
             case MAC_CHARSET:
-                return kCodePage_MAC;
+                return WellKnownCodePages::kMAC;
             case SHIFTJIS_CHARSET:
-                return kCodePage_SJIS; //  Japanese (SJIS)
+                return WellKnownCodePages::kSJIS; //  Japanese (SJIS)
             case HANGEUL_CHARSET:
-                return kCodePage_Korean; //  Hangul
+                return WellKnownCodePages::kKorean; //  Hangul
             case GB2312_CHARSET:
-                return kCodePage_GB2312; //  Chinese
+                return WellKnownCodePages::kGB2312; //  Chinese
             case CHINESEBIG5_CHARSET:
-                return kCodePage_BIG5; //  Chinese
+                return WellKnownCodePages::kBIG5; //  Chinese
             case GREEK_CHARSET:
-                return kCodePage_GREEK; //  Greek
+                return WellKnownCodePages::kGreek; //  Greek
             case TURKISH_CHARSET:
-                return kCodePage_Turkish; //  Turkish
+                return WellKnownCodePages::kTurkish; //  Turkish
             case VIETNAMESE_CHARSET:
-                return kCodePage_Vietnamese; //  Vietnamese
+                return WellKnownCodePages::kVietnamese; //  Vietnamese
             case HEBREW_CHARSET:
-                return kCodePage_HEBREW; //  Hebrew
+                return WellKnownCodePages::kHebrew; //  Hebrew
             case ARABIC_CHARSET:
-                return kCodePage_ARABIC; //  Arabic
+                return WellKnownCodePages::kArabic; //  Arabic
             case 179:
-                return kCodePage_ARABIC; //  Arabic Traditional
+                return WellKnownCodePages::kArabic; //  Arabic Traditional
             case 180:
-                return kCodePage_ARABIC; //  Arabic user
+                return WellKnownCodePages::kArabic; //  Arabic user
             case 181:
-                return kCodePage_HEBREW; //  Hebrew user
+                return WellKnownCodePages::kHebrew; //  Hebrew user
             case BALTIC_CHARSET:
-                return kCodePage_Baltic; //  Baltic
+                return WellKnownCodePages::kBaltic; //  Baltic
             case RUSSIAN_CHARSET:
-                return kCodePage_CYRILIC; //  Russian/Cyrilic
+                return WellKnownCodePages::kCyrilic; //  Russian/Cyrilic
             case THAI_CHARSET:
-                return kCodePage_Thai; //  Thai
+                return WellKnownCodePages::kThai; //  Thai
             case EASTEUROPE_CHARSET:
-                return kCodePage_EasternEuropean; //  aka 'central european'?
+                return WellKnownCodePages::kEasternEuropean; //  aka 'central european'?
             case 254:
-                return kCodePage_PC;
+                return WellKnownCodePages::kPC;
                 break;
             case OEM_CHARSET:
-                return kCodePage_PCA;
+                return WellKnownCodePages::kPCA;
                 break;
             default:
                 return GetDefaultSDKCodePage ();
@@ -285,41 +285,41 @@ namespace Stroika::Foundation::Characters::Platform::Windows {
          */
         switch (PRIMARYLANGID (languageIdenifier)) {
             case LANG_ARABIC:
-                return kCodePage_ARABIC;
+                return WellKnownCodePages::kArabic;
             case LANG_ENGLISH:
-                return kCodePage_ANSI;
+                return WellKnownCodePages::kANSI;
             case LANG_FRENCH:
-                return kCodePage_ANSI;
+                return WellKnownCodePages::kANSI;
             case LANG_GERMAN:
-                return kCodePage_ANSI;
+                return WellKnownCodePages::kANSI;
             case LANG_GREEK:
-                return kCodePage_GREEK;
+                return WellKnownCodePages::kGreek;
             case LANG_HEBREW:
-                return kCodePage_HEBREW;
+                return WellKnownCodePages::kHebrew;
             case LANG_ICELANDIC:
-                return kCodePage_ANSI; // guess? - 2003-01-30
+                return WellKnownCodePages::kANSI; // guess? - 2003-01-30
             case LANG_ITALIAN:
-                return kCodePage_ANSI;
+                return WellKnownCodePages::kANSI;
             case LANG_KOREAN:
-                return kCodePage_Korean;
+                return WellKnownCodePages::kKorean;
             case LANG_POLISH:
-                return kCodePage_EasternEuropean; // a bit of a guess - LGP 2003-01-30
+                return WellKnownCodePages::kEasternEuropean; // a bit of a guess - LGP 2003-01-30
             case LANG_PORTUGUESE:
-                return kCodePage_ANSI;
+                return WellKnownCodePages::kANSI;
             case LANG_RUSSIAN:
-                return kCodePage_CYRILIC;
+                return WellKnownCodePages::kCyrilic;
             case LANG_SPANISH:
-                return kCodePage_ANSI;
+                return WellKnownCodePages::kANSI;
             case LANG_SWEDISH:
-                return kCodePage_ANSI; // guess? - 2003-01-30
+                return WellKnownCodePages::kANSI; // guess? - 2003-01-30
             case LANG_THAI:
-                return kCodePage_Thai;
+                return WellKnownCodePages::kThai;
             case LANG_TURKISH:
-                return kCodePage_Turkish;
+                return WellKnownCodePages::kTurkish;
             case LANG_UKRAINIAN:
-                return kCodePage_CYRILIC; // guess? - 2003-01-30
+                return WellKnownCodePages::kCyrilic; // guess? - 2003-01-30
             case LANG_VIETNAMESE:
-                return kCodePage_Vietnamese;
+                return WellKnownCodePages::kVietnamese;
             default:
                 return GetDefaultSDKCodePage ();
         }

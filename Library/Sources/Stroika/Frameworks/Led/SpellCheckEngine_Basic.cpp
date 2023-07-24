@@ -8,6 +8,7 @@
 
 #include "../../Foundation/Characters/Character.h"
 #include "../../Foundation/Characters/CodePage.h"
+#include "../../Foundation/Characters/CodeCvt.h"
 #include "../../Foundation/IO/FileSystem/FileInputStream.h"
 #include "../../Foundation/IO/FileSystem/FileOutputStream.h"
 #include "../../Foundation/Memory/BLOB.h"
@@ -1071,13 +1072,12 @@ void SpellCheckEngine_Basic_Simple::ReadFromUD ()
     try {
         Memory::BLOB b = IO::FileSystem::FileInputStream::New (filesystem::path (fUDName)).ReadAll ();
 #if qWideCharacters
-        size_t                 fileLen     = b.size ();
-        CodePage               useCodePage = CodePagesGuesser{}.Guess (b.begin (), fileLen);
-        CodePageConverter      cpc         = CodePageConverter{useCodePage, CodePageConverter::eHandleBOM};
-        size_t                 outCharCnt  = cpc.MapToUNICODE_QuickComputeOutBufSize (reinterpret_cast<const char*> (b.begin ()), fileLen);
-        StackBuffer<Led_tChar> fileData2{Memory::eUninitialized, outCharCnt};
-        cpc.MapToUNICODE (reinterpret_cast<const char*> (b.begin ()), fileLen, static_cast<wchar_t*> (fileData2), &outCharCnt);
-        fUD->ReadFromBuffer (static_cast<Led_tChar*> (fileData2), static_cast<Led_tChar*> (fileData2) + outCharCnt);
+        span<const byte> rawByteSpan{b};
+        CodeCvt<Led_tChar> converter{&rawByteSpan};
+        size_t                         outCharCnt = converter.ComputeTargetCharacterBufferSize (rawByteSpan);
+        Memory::StackBuffer<Led_tChar> fileData2{outCharCnt};
+        auto                           charsRead = converter.Bytes2Characters (&rawByteSpan, span{fileData2});
+        fUD->ReadFromBuffer (charsRead.data (), charsRead.data () + charsRead.size ());
 #else
         fUD->ReadFromBuffer (reinterpret_cast<const Led_tChar*> (reader.begin ()), reinterpret_cast<const Led_tChar*> (reader.end ()));
 #endif

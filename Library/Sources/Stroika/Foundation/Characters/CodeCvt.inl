@@ -487,23 +487,23 @@ namespace Stroika::Foundation::Characters {
         // On windows, we can delegate to WindowsNative_
         // else give up and throw not supported code page.
         switch (cp) {
-            case kCodePage_ANSI:
-            case kCodePage_MAC:
-            case kCodePage_PC:
-            case kCodePage_PCA:
-            case kCodePage_GREEK:
-            case kCodePage_Turkish:
-            case kCodePage_HEBREW:
-            case kCodePage_ARABIC:
+            case WellKnownCodePages::kANSI:
+            case WellKnownCodePages::kMAC:
+            case WellKnownCodePages::kPC:
+            case WellKnownCodePages::kPCA:
+            case WellKnownCodePages::kGreek:
+            case WellKnownCodePages::kTurkish:
+            case WellKnownCodePages::kHebrew:
+            case WellKnownCodePages::kArabic:
                 fRep_ = make_shared<UTF2UTFRep_<char16_t>> (CodeCvt<char16_t> (make_shared<Private_::BuiltinSingleByteTableCodePageRep_> (cp)));
                 break;
-            case kCodePage_UTF8:
+            case WellKnownCodePages::kUTF8:
                 fRep_ = make_shared<UTFConvertRep_<char8_t>> (UTFConverter::kThe);
                 break;
-            case kCodePage_UNICODE_WIDE:
+            case WellKnownCodePages::kUNICODE_WIDE:
                 fRep_ = make_shared<UTFConvertRep_<char16_t>> (UTFConverter::kThe);
                 break;
-            case kCodePage_UNICODE_WIDE_BIGENDIAN:
+            case WellKnownCodePages::kUNICODE_WIDE_BIGENDIAN:
                 fRep_ = make_shared<UTFConvertSwappedRep_<char16_t>> (UTFConverter::kThe);
                 break;
             default:

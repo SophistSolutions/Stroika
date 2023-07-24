@@ -3,6 +3,7 @@
  */
 #include "../../../Foundation/StroikaPreComp.h"
 
+#include "../../../Foundation/Characters/CodeCvt.h"
 #include "../../../Foundation/Characters/CodePage.h"
 #include "../../../Foundation/Characters/LineEndings.h"
 #include "../../../Foundation/Memory/StackBuffer.h"
@@ -22,13 +23,12 @@ using namespace Stroika::Frameworks::Led::StyledTextIO;
  ********************************************************************************
  */
 StyledTextIOReader_PlainText::StyledTextIOReader_PlainText (SrcStream* srcStream, SinkStream* sinkStream)
-    : StyledTextIOReader (srcStream, sinkStream)
+    : StyledTextIOReader{srcStream, sinkStream}
 {
 }
 
 void StyledTextIOReader_PlainText::Read ()
 {
-#if 1
     // Read into a contiguous block of memory since it makes the dealing with CRLF
     // strattling a buffer-bounary problem go away. Note that the Memory::StackBuffer<>::GrowToSize()
     // code grows exponentially so that we minimize buffer copies on grows...
@@ -44,31 +44,12 @@ void StyledTextIOReader_PlainText::Read ()
             break;
         }
     }
-#else
-    // read all at once. Requires contiguous block of memory, but is significantly faster
-    // (for reasons I don't completely understand, but don't care so much about either...)
-    // LGP 960515
-    // Also note: this makes the dealing with CRLF strattling a buffer-bounary problem go away.
-    // If we tried to read in chunks, we'd need to be more careful about the Characters::NormalizeTextToNL<Led_tChar> () code.
-    size_t oldPos = GetSrcStream ().current_offset ();
-    GetSrcStream ().seek_to (UINT_MAX);
-    size_t endPos = GetSrcStream ().current_offset ();
-    Assert (endPos >= oldPos);
-    GetSrcStream ().seek_to (oldPos);
-    size_t                    len = endPos - oldPos;
-    Memory::StackBuffer<char> buf{Memory::eUninitialized, len};
-    size_t                    bytesRead = 0;
-    if ((bytesRead = GetSrcStream ().read (buf, len)) != len) {
-        Execution::Throw (DataExchange::BadFormatException::kThe);
-    }
-#endif
 #if qWideCharacters
-    CodePage                       useCodePage = CodePagesGuesser{}.Guess (buf.data (), len);
-    CodePageConverter              cpc         = CodePageConverter{useCodePage};
-    size_t                         outCharCnt  = cpc.MapToUNICODE_QuickComputeOutBufSize (static_cast<const char*> (buf), len + 1);
-    Memory::StackBuffer<Led_tChar> wbuf{Memory::eUninitialized, outCharCnt};
-    cpc.SetHandleBOM (true);
-    cpc.MapToUNICODE (static_cast<const char*> (buf), len, static_cast<wchar_t*> (wbuf), &outCharCnt);
+    span<const byte>   rawByteSpan{reinterpret_cast<const byte*> (buf.data ()), len};
+    CodeCvt<Led_tChar>             converter{&rawByteSpan, CodeCvt<Led_tChar>{GetDefaultSDKCodePage ()}};
+    size_t             outCharCnt = converter.ComputeTargetCharacterBufferSize (rawByteSpan);
+    Memory::StackBuffer<Led_tChar> wbuf{outCharCnt};
+    outCharCnt = converter.Bytes2Characters (&rawByteSpan, span{wbuf}).size ();
     size_t charsRead = outCharCnt;
     Assert (charsRead <= len);
     Led_tChar* useBuf = wbuf.data ();
@@ -101,7 +82,7 @@ bool StyledTextIOReader_PlainText::QuickLookAppearsToBeRightFormat ()
  ********************************************************************************
  */
 StyledTextIOWriter_PlainText::StyledTextIOWriter_PlainText (SrcStream* srcStream, SinkStream* sinkStream)
-    : StyledTextIOWriter (srcStream, sinkStream)
+    : StyledTextIOWriter{srcStream, sinkStream}
 {
 }
 

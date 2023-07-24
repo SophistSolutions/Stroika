@@ -1095,7 +1095,7 @@ namespace {
         void                               Test_UTF82WString_win32API (const char* s, const char* e)
         {
             wstring tmp;
-            NarrowStringToWide (s, e, kCodePage_UTF8, &tmp);
+            NarrowStringToWide (s, e, WellKnownCodePages::kUTF8, &tmp);
         }
         void Test_UTF82WString_codecvt_utf8 (const char* s, const char* e)
         {
@@ -1131,7 +1131,7 @@ namespace {
         void              Test_WString2UTF8_win32API (const wchar_t* s, const wchar_t* e)
         {
             string tmp;
-            WideStringToNarrow (s, e, kCodePage_UTF8, &tmp);
+            WideStringToNarrow (s, e, WellKnownCodePages::kUTF8, &tmp);
         }
         void Test_WString2UTF8_codecvt_utf8 (const wchar_t* s, const wchar_t* e)
         {

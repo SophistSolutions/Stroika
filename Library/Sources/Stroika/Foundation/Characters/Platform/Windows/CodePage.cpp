@@ -30,10 +30,11 @@ string Characters::Platform::Windows::BSTRStringToUTF8 (const BSTR bstr)
     }
     else {
         int    srcStrLen    = ::SysStringLen (bstr);
-        int    stringLength = ::WideCharToMultiByte (kCodePage_UTF8, 0, bstr, srcStrLen, nullptr, 0, nullptr, nullptr);
+        int    stringLength = ::WideCharToMultiByte (WellKnownCodePages::kUTF8, 0, bstr, srcStrLen, nullptr, 0, nullptr, nullptr);
         string result;
         result.resize (stringLength);
-        Verify (::WideCharToMultiByte (kCodePage_UTF8, 0, bstr, srcStrLen, Containers::Start (result), stringLength, nullptr, nullptr) == stringLength);
+        Verify (::WideCharToMultiByte (WellKnownCodePages::kUTF8, 0, bstr, srcStrLen, Containers::Start (result), stringLength, nullptr,
+                                       nullptr) == stringLength);
         return result;
     }
 }
@@ -52,7 +53,7 @@ BSTR Characters::Platform::Windows::UTF8StringToBSTR (const char* ws)
     if (result == nullptr) [[unlikely]] {
         Execution::Throw (bad_alloc{});
     }
-    Verify (::MultiByteToWideChar (kCodePage_UTF8, 0, ws, static_cast<int> (wsLen), result, stringLength) == stringLength);
+    Verify (::MultiByteToWideChar (WellKnownCodePages::kUTF8, 0, ws, static_cast<int> (wsLen), result, stringLength) == stringLength);
     return result;
 }
 
