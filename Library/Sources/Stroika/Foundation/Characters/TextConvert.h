@@ -30,13 +30,20 @@ namespace Stroika::Foundation::Characters {
     };
 
     /**
-     *  returns the byte order mark for the given unicode encoding.
+     *  returns the byte order mark for the given unicode encoding. Size is always <= kMaxBOMSize
      */
     constexpr span<const byte> GetByteOrderMark (UnicodeExternalEncodings e) noexcept;
 
     /**
+     *  Max size of span returned by GetByteOrderMark ()
+     */
+    constexpr size_t kMaxBOMSize = 3;
+
+    /**
      *  returns guessed encoding, and number of bytes consumed. If 'd' doesn't contain
      *  BOM (possible cuz not large enuf) - returns nullopt
+     * 
+     *  Pass in any size span, but recommended to use size kMaxBOMSize (less and you may miss some, more and wont use extra data).
      * 
      *  \par Example Usage:
      *      \code
