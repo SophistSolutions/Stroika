@@ -319,15 +319,15 @@ namespace Stroika::Foundation::Characters {
         shared_ptr<IRep> fRep_;
 
     private:
-        template <typename SERIALIZED_CHAR_T>
+        template <IUNICODECanAlwaysConvertTo SERIALIZED_CHAR_T>
         struct UTFConvertRep_;
 
     private:
-        template <typename SERIALIZED_CHAR_T>
+        template <IUNICODECanAlwaysConvertTo SERIALIZED_CHAR_T>
         struct UTFConvertSwappedRep_;
 
     private:
-        template <typename INTERMEDIATE_CHAR_T>
+        template <IUNICODECanAlwaysConvertTo INTERMEDIATE_CHAR_T>
         struct UTF2UTFRep_;
 
     private:

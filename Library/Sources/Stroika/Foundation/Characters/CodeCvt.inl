@@ -41,7 +41,7 @@ namespace Stroika::Foundation::Characters {
      ********************************************************************************
      */
     template <IUNICODECanAlwaysConvertTo CHAR_T>
-    template <typename SERIALIZED_CHAR_T>
+    template <IUNICODECanAlwaysConvertTo SERIALIZED_CHAR_T>
     struct CodeCvt<CHAR_T>::UTFConvertRep_ : CodeCvt<CHAR_T>::IRep {
         using ConversionResult           = UTFConverter::ConversionResult;
         using ConversionResultWithStatus = UTFConverter::ConversionResultWithStatus;
@@ -109,10 +109,9 @@ namespace Stroika::Foundation::Characters {
      ********************************************************************************
      */
     template <IUNICODECanAlwaysConvertTo CHAR_T>
-    template <typename SERIALIZED_CHAR_T>
+    template <IUNICODECanAlwaysConvertTo SERIALIZED_CHAR_T>
     struct CodeCvt<CHAR_T>::UTFConvertSwappedRep_ : UTFConvertRep_<SERIALIZED_CHAR_T> {
         using inherited = UTFConvertRep_<SERIALIZED_CHAR_T>;
-
         UTFConvertSwappedRep_ (const UTFConverter& utfCodeCvt)
             : inherited{utfCodeCvt}
         {
@@ -158,7 +157,7 @@ namespace Stroika::Foundation::Characters {
      * conversion from bytes to/from desired rep generally through some intermediary rep.
      */
     template <IUNICODECanAlwaysConvertTo CHAR_T>
-    template <typename INTERMEDIATE_CHAR_T>
+    template <IUNICODECanAlwaysConvertTo INTERMEDIATE_CHAR_T>
     struct CodeCvt<CHAR_T>::UTF2UTFRep_ : CodeCvt<CHAR_T>::IRep {
         using ConversionResultWithStatus = UTFConverter::ConversionResultWithStatus;
         using ConversionStatusFlag       = UTFConverter::ConversionStatusFlag;
