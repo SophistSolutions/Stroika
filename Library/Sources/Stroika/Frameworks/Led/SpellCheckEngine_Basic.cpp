@@ -1094,7 +1094,7 @@ void SpellCheckEngine_Basic_Simple::WriteToUD ()
     IO::FileSystem::FileOutputStream::Ptr writer = IO::FileSystem::FileOutputStream::New (filesystem::path (fUDName));
 
 #if qWideCharacters
-    CodePageConverter cpc        = CodePageConverter{kCodePage_UTF8, CodePageConverter::eHandleBOM};
+    CodePageConverter cpc        = CodePageConverter{WellKnownCodePages::kUTF8, CodePageConverter::eHandleBOM};
     size_t            outCharCnt = cpc.MapFromUNICODE_QuickComputeOutBufSize (Traversal::Iterator2Pointer (data.begin ()), data.size ());
     StackBuffer<char> fileData2{Memory::eUninitialized, outCharCnt};
     cpc.MapFromUNICODE (Traversal::Iterator2Pointer (data.begin ()), data.size (), fileData2.data (), &outCharCnt);

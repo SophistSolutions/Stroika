@@ -8,6 +8,7 @@
 #include <sstream>
 
 #include "Stroika/Foundation/Characters/ToString.h"
+#include "Stroika/Foundation/Characters/CodeCvt.h"
 #include "Stroika/Foundation/Containers/Common.h"
 #include "Stroika/Foundation/Containers/Sequence.h"
 #include "Stroika/Foundation/Containers/SortedMapping.h"
@@ -44,13 +45,13 @@ namespace {
     //  void    StreamUtils::WriteTextStream (const wstring& w, ostream& out)
     void WriteTextStream_ (const wstring& w, ostream& out)
     {
-        CodePageConverter         cpc{kCodePage_UTF8, CodePageConverter::eHandleBOM};
-        size_t                    sz = cpc.MapFromUNICODE_QuickComputeOutBufSize (w.c_str (), w.length ());
-        Memory::StackBuffer<char> buf{sz + 1};
-        size_t                    charCnt = sz;
-        cpc.MapFromUNICODE (w.c_str (), w.length (), buf.data (), &charCnt);
-        Assert (charCnt <= sz);
-        out.write (buf.data (), charCnt);
+        CodeCvt<wchar_t> codeCvt{UnicodeExternalEncodings::eUTF8};
+        size_t           sz = codeCvt.ComputeTargetByteBufferSize (w.length ());
+        const auto       bom = GetByteOrderMark (UnicodeExternalEncodings::eUTF8);
+       // out.write (reinterpret_cast<const char*> (bom.data ()), bom.size ());         // https://stroika.atlassian.net/browse/STK-982 - this should work (and I think is) - but causes later failure - so debug why
+        Memory::StackBuffer<byte> buf{ Memory::UninitializedConstructorFlag::eUninitialized, sz};
+        span<byte>                outSpan = codeCvt.Characters2Bytes (span{w}, span{buf});
+        out.write (reinterpret_cast<const char*> (outSpan.data ()), outSpan.size ());
     }
 }
 

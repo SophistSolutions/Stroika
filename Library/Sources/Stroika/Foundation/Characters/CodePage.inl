@@ -79,6 +79,108 @@ namespace Stroika::Foundation::Characters {
         kCodePage_UTF8 [[deprecated ("Since v3.0d2 - WellKnownCodePages::kUTF8")]] = WellKnownCodePages::kUTF8
     };
 
+    class [[deprecated ("Since Stroika v3.0d2, use CodeCvt")]] CodePageConverter
+    {
+    public:
+        enum class HandleBOMFlag {
+            eHandleBOM
+        };
+        static constexpr HandleBOMFlag eHandleBOM = HandleBOMFlag::eHandleBOM;
+
+    public:
+        /**
+         */
+        CodePageConverter (CodePage codePage);
+        CodePageConverter (CodePage codePage, HandleBOMFlag h);
+
+    public:
+        /**
+         *         <p>In UNICODE, files are generally headed by a byte order mark (BOM). This
+                mark is used to indicate if the file is big endian, or little-endian (if the
+                characters are wide-characters). This is true for 2 and 4 byte UNICODE (UCS-2, UCS-4)
+                UNICODE, as well as for UTF-X encodings (such as UTF-7 and UTF-8). It is also used
+                to indicate whether or not the file is in a UTF encoding (as byte order doesn't matter
+                in any (most?) of the UTF encodings.</p>
+                    <p>The basic rubrick for BOM's is that they are the character 0xfeff, as it would
+                be encoded in the given UTF or UCS encoding.</p>
+                    <p>Because of this type of encoding - if you have a 0xfeff character (after
+                decoding) at the beginning of a buffer, there is no way for this routine to know if
+                that was REALLY there, or if it was byte order mark. And its not always desirable for
+                the routine producing these encodings to produce the byte order mark, but sometimes
+                its highly desirable. So - this class lets you get/set a flag to indicate whether or not
+                to process BOMs on input, and whether or not to generate them on encoded outputs.
+                </p>
+                    <p>See also @'CodePageConverter::SetHandleBOM', and note that there is an
+                overloaded CTOR that lets you specify CodePageConverter::eHandleBOM as a final
+                argument to automatically set this BOM converter flag.</p>
+        */
+        nonvirtual bool GetHandleBOM () const;
+        /**
+         * See also @'CodePageConverter::GetHandleBOM'.</p>
+         */
+        nonvirtual void SetHandleBOM (bool handleBOM);
+
+    private:
+        bool fHandleBOM;
+
+    public:
+        /** 
+         *  Map the given multibyte chars in the fCodePage codepage into wide UNICODE
+         *  characters. Pass in a buffer 'outChars' of
+         *  size large enough to accomodate those characrters.</p>
+         *   
+         *  'outCharCnt' is the size of the output buffer coming in, and it contains the number
+         *  of UNICODE chars copied out on return.</p>
+         */
+        nonvirtual void MapToUNICODE (const char* inMBChars, size_t inMBCharCnt, char16_t* outChars, size_t* outCharCnt) const;
+        nonvirtual void MapToUNICODE (const char* inMBChars, size_t inMBCharCnt, char32_t* outChars, size_t* outCharCnt) const;
+        nonvirtual void MapToUNICODE (const char* inMBChars, size_t inMBCharCnt, wchar_t* outChars, size_t* outCharCnt) const;
+
+        /*
+        @METHOD:        CodePageConverter::MapToUNICODE_QuickComputeOutBufSize
+        @DESCRIPTION:   <p>Call to get an upper bound, reasonable buffer size to use to pass to
+                    @'CodePageConverter::MapToUNICODE' calls.</p>
+        */
+        nonvirtual size_t MapToUNICODE_QuickComputeOutBufSize (const char* inMBChars, size_t inMBCharCnt) const;
+
+        nonvirtual void MapFromUNICODE (const char16_t* inChars, size_t inCharCnt, char* outChars, size_t* outCharCnt) const;
+        nonvirtual void MapFromUNICODE (const char32_t* inChars, size_t inCharCnt, char* outChars, size_t* outCharCnt) const;
+        nonvirtual void MapFromUNICODE (const wchar_t* inChars, size_t inCharCnt, char* outChars, size_t* outCharCnt) const;
+
+        /*
+        @METHOD:        CodePageConverter::MapFromUNICODE_QuickComputeOutBufSize
+        @DESCRIPTION:   <p>Call to get an upper bound, reasonable buffer size to use to pass to MapFromUNICODE calls.</p>
+        */
+        nonvirtual size_t MapFromUNICODE_QuickComputeOutBufSize (const char16_t* inChars, size_t inCharCnt) const;
+        nonvirtual size_t MapFromUNICODE_QuickComputeOutBufSize (const char32_t* inChars, size_t inCharCnt) const;
+        nonvirtual size_t MapFromUNICODE_QuickComputeOutBufSize (const wchar_t* inChars, size_t inCharCnt) const;
+
+    private:
+        CodePage fCodePage;
+    };
+
+    [[deprecated ("Since Stroika v3.0d2 - use CodeCvt")]] inline void MapSBUnicodeTextWithMaybeBOMToUNICODE (const char* inMBChars, size_t inMBCharCnt,
+                                                                                                             wchar_t* outChars, size_t* outCharCnt)
+    {
+        DISABLE_COMPILER_MSC_WARNING_START (4996);
+        DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
+        DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
+        RequireNotNull (outChars);
+        RequireNotNull (outCharCnt);
+        [[maybe_unused]] size_t      outBufSize = *outCharCnt;
+        CodePagesGuesser::Confidence confidence = CodePagesGuesser::Confidence::eLow;
+        CodePage                     cp         = CodePagesGuesser{}.Guess (inMBChars, inMBCharCnt, &confidence, nullptr);
+        if (confidence <= CodePagesGuesser::Confidence::eLow) {
+            cp = WellKnownCodePages::kUTF8;
+        }
+        CodePageConverter cpCvt (cp, CodePageConverter::eHandleBOM);
+        cpCvt.MapToUNICODE (inMBChars, inMBCharCnt, outChars, outCharCnt);
+        Ensure (*outCharCnt <= outBufSize);
+        DISABLE_COMPILER_MSC_WARNING_END (4996);
+        DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
+        DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
+    }
+
     /*
      ********************************************************************************
      ****************************** GetDefaultSDKCodePage ***************************

@@ -28,7 +28,9 @@ using Stroika::Foundation::Characters::CodePagesInstalled;
 using Stroika::Foundation::Characters::GetDefaultSDKCodePage;
 using Stroika::Foundation::Characters::kCodePage_UTF8;
 
-const CodePage kDefaultNewDocCodePage = CodePagesInstalled ().IsCodePageAvailable (kCodePage_UTF8) ? kCodePage_UTF8 : GetDefaultSDKCodePage ();
+const CodePage kDefaultNewDocCodePage = CodePagesInstalled{}.IsCodePageAvailable (Characters::WellKnownCodePages::kUTF8)
+                                            ? Characters::WellKnownCodePages::kUTF8
+                                            : GetDefaultSDKCodePage ();
 
 const CodePage kAutomaticallyGuessCodePage = static_cast<CodePage> (-2); // I HOPE this # doesn't conflict with any legit ones!!!
 const CodePage kIGNORECodePage             = static_cast<CodePage> (-3); // I HOPE this # doesn't conflict with any legit ones!!!

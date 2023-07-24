@@ -622,9 +622,9 @@ bool LedLineItDocument::DoPromptFileName (CString* fileName, UINT nIDSTitle, boo
     /*
      *  Bring certain special code pages to the head of the list.
      */
-    (void)ShuffleToFront (&codePages, kCodePage_UNICODE_WIDE_BIGENDIAN);
-    (void)ShuffleToFront (&codePages, kCodePage_UNICODE_WIDE);
-    (void)ShuffleToFront (&codePages, kCodePage_UTF8);
+    (void)ShuffleToFront (&codePages, Characters::WellKnownCodePages::kUNICODE_WIDE_BIGENDIAN);
+    (void)ShuffleToFront (&codePages, Characters::WellKnownCodePages::kUNICODE_WIDE);
+    (void)ShuffleToFront (&codePages, Characters::WellKnownCodePages::kUTF8);
     if (isOpenDialogCall) {
         codePages.insert (codePages.begin (), kAutomaticallyGuessCodePage);
     }

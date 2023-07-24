@@ -5,6 +5,7 @@
 #include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <array>
+#include <codecvt>
 #include <filesystem>
 #include <fstream>
 #include <iostream>
@@ -139,7 +140,6 @@ namespace {
         outTo << "Test " << testName.AsNarrowSDKString () << " (" << baselineTName.AsNarrowSDKString () << " vs "
               << compareWithTName.AsNarrowSDKString () << ")" << endl;
         double performanceScore = (baselineTime == 0) ? 1000000 : compareWithTime / baselineTime;
-        //const char    kOneTab_[]  =   "      ";
         const char kOneTab_[] = "\t";
         {
             FloatConversion::ToStringOptions fo = FloatConversion::ToStringOptions{FloatConversion::eDontTrimZeros, FloatConversion::Precision{2}};
@@ -267,7 +267,6 @@ namespace {
 }
 
 namespace {
-
     template <typename WIDESTRING_IMPL>
     void Test_StructWithStringsFillingAndCopying ()
     {
@@ -300,7 +299,6 @@ namespace {
 }
 
 namespace {
-
     template <typename WIDESTRING_IMPL>
     void Test_StructWithStringsFillingAndCopying2 ()
     {
@@ -338,7 +336,6 @@ namespace {
 }
 
 namespace {
-
     template <typename WIDESTRING_IMPL>
     void Test_SimpleStringAppends1_ ()
     {
@@ -352,7 +349,6 @@ namespace {
 }
 
 namespace {
-
     template <typename WIDESTRING_IMPL>
     void Test_SimpleStringAppends2_ ()
     {
@@ -366,7 +362,6 @@ namespace {
 }
 
 namespace {
-
     template <typename WIDESTRING_IMPL>
     void Test_SimpleStringAppends3_ ()
     {
@@ -418,7 +413,6 @@ namespace {
 }
 
 namespace {
-
     namespace Test_MutexVersusSharedPtrCopy_MUTEXT_PRIVATE_ {
         mutex Test_MutexVersusSharedPtrCopy_MUTEXT_LOCK_mutex;
         int   Test_MutexVersusSharedPtrCopy_MUTEXT_LOCK_int = 1;
@@ -467,7 +461,6 @@ namespace {
 }
 
 namespace {
-
     namespace Test_MutexVersusSpinLock_MUTEXT_PRIVATE_ {
         mutex s_Mutex_;
         int   sCnt2Add_ = 1;
@@ -523,7 +516,6 @@ namespace {
 }
 
 namespace {
-
     template <typename STREAMISH_STRINGBUILDERIMPL, typename STRING_EXTRACTOR>
     void Test_StreamBuilderStringBuildingWithExtract_ (STRING_EXTRACTOR extractor)
     {

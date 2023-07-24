@@ -303,7 +303,7 @@ namespace Stroika::Frameworks::WebServer {
 #endif
         Streams::OutputStream<byte>::Ptr         fUnderlyingOutStream_;
         Streams::BufferedOutputStream<byte>::Ptr fUseOutStream_;
-        Characters::CodePage                     fCodePage_{Characters::kCodePage_UTF8};
+        Characters::CodePage                     fCodePage_{Characters::WellKnownCodePages::kUTF8};
         vector<byte>                             fBodyBytes_{};
         optional<ETagDigester_>                  fETagDigester_; // dual use - if present, then flag for autoComputeETag mode as well
     };

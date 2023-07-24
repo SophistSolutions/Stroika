@@ -517,26 +517,6 @@ namespace {
 
 /*
  ********************************************************************************
- ************* Characters::MapSBUnicodeTextWithMaybeBOMToUNICODE ****************
- ********************************************************************************
- */
-void Characters::MapSBUnicodeTextWithMaybeBOMToUNICODE (const char* inMBChars, size_t inMBCharCnt, wchar_t* outChars, size_t* outCharCnt)
-{
-    RequireNotNull (outChars);
-    RequireNotNull (outCharCnt);
-    [[maybe_unused]] size_t      outBufSize = *outCharCnt;
-    CodePagesGuesser::Confidence confidence = CodePagesGuesser::Confidence::eLow;
-    CodePage                     cp         = CodePagesGuesser{}.Guess (inMBChars, inMBCharCnt, &confidence, nullptr);
-    if (confidence <= CodePagesGuesser::Confidence::eLow) {
-        cp = WellKnownCodePages::kUTF8;
-    }
-    CodePageConverter cpCvt (cp, CodePageConverter::eHandleBOM);
-    cpCvt.MapToUNICODE (inMBChars, inMBCharCnt, outChars, outCharCnt);
-    Ensure (*outCharCnt <= outBufSize);
-}
-
-/*
- ********************************************************************************
  ******************** CodePageNotSupportedException *****************************
  ********************************************************************************
  */
@@ -553,6 +533,9 @@ const char* CodePageNotSupportedException::what () const noexcept { return fMsg_
  ******************************** CodePageConverter *****************************
  ********************************************************************************
  */
+DISABLE_COMPILER_MSC_WARNING_START (4996);
+DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
+DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
 size_t CodePageConverter::MapFromUNICODE_QuickComputeOutBufSize (const wchar_t* inChars, size_t inCharCnt) const
 {
     size_t resultSize;
@@ -827,6 +810,9 @@ void CodePageConverter::MapFromUNICODE (const char32_t* inChars, size_t inCharCn
         *outCharCnt += 3;
     }
 }
+DISABLE_COMPILER_MSC_WARNING_END (4996);
+DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
+DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
 
 /*
  ********************************************************************************
@@ -991,7 +977,7 @@ wstring CodePagePrettyNameMapper::GetName (CodePage cp)
             return sCodePageNames_.f950;
         case 1250:
             return sCodePageNames_.f1250;
-        case 1251:
+        case WellKnownCodePages::kCyrilic:
             return sCodePageNames_.f1251;
         case 10000:
             return sCodePageNames_.f10000;
