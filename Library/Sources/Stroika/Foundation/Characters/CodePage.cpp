@@ -1040,7 +1040,7 @@ namespace {
         RequireNotNull (intoResult);
         Require (sStart <= sEnd);
         size_t            inSize = sEnd - sStart;
-        CodePageConverter cc (codePage);
+        CodePageConverter cc{codePage};
         // this grossly overestimates size - which is a problem for the RESIZE below!!! COULD pointlessly run out of memroy and intitialize data to good values...
         size_t outSizeBuf = cc.MapToUNICODE_QuickComputeOutBufSize (sStart, inSize);
         intoResult->resize (outSizeBuf);
@@ -1072,8 +1072,12 @@ void Characters::NarrowStringToWide (const char* sStart, const char* sEnd, CodeP
  *********************** MapUNICODETextWithMaybeBOMTowstring ********************
  ********************************************************************************
  */
+DISABLE_COMPILER_MSC_WARNING_START (4996);
+DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
+DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
 wstring Characters::MapUNICODETextWithMaybeBOMTowstring (const char* start, const char* end)
 {
+    // THIS IMPL DEPRECATED SO GO AWAY SOON
     Require (start <= end);
     if (start == end) {
         return wstring{};
@@ -1094,14 +1098,21 @@ wstring Characters::MapUNICODETextWithMaybeBOMTowstring (const char* start, cons
         return wstring{wideBuf.data (), wideBuf[outCharCount - 1] == '\0' ? (outCharCount - 1) : outCharCount};
     }
 }
+DISABLE_COMPILER_MSC_WARNING_END (4996);
+DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
+DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
 
 /*
  ********************************************************************************
  *********************** MapUNICODETextWithMaybeBOMTowstring ********************
  ********************************************************************************
  */
+DISABLE_COMPILER_MSC_WARNING_START (4996);
+DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
+DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
 vector<byte> Characters::MapUNICODETextToSerializedFormat (const wchar_t* start, const wchar_t* end, CodePage useCP)
 {
+    // THIS IMPL DEPRECATED SO GO AWAY SOON
     CodePageConverter cpc{useCP, CodePageConverter::eHandleBOM};
     size_t            outCharCount = cpc.MapFromUNICODE_QuickComputeOutBufSize (start, end - start);
     StackBuffer<char> buf{Memory::eUninitialized, outCharCount};
@@ -1109,3 +1120,6 @@ vector<byte> Characters::MapUNICODETextToSerializedFormat (const wchar_t* start,
     const byte* bs = reinterpret_cast<const byte*> (static_cast<const char*> (buf));
     return vector<byte>{bs, bs + outCharCount};
 }
+DISABLE_COMPILER_MSC_WARNING_END (4996);
+DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
+DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"");

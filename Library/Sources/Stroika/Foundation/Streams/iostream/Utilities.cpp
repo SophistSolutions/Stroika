@@ -10,6 +10,9 @@
 
 #include "Utilities.h"
 
+
+// FILE DEPRECATED IN STROIKA v3.0d2
+
 using std::byte;
 
 using namespace Stroika::Foundation;
@@ -19,6 +22,11 @@ using namespace Stroika::Foundation::Execution;
 using namespace Stroika::Foundation::Memory;
 using namespace Stroika::Foundation::Streams;
 using namespace Stroika::Foundation::Streams::iostream;
+
+
+DISABLE_COMPILER_MSC_WARNING_START (4996);
+DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
+DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
 
 /*
  ********************************************************************************
@@ -34,7 +42,8 @@ wstring Streams::iostream::ReadTextStream (istream& in)
     DISABLE_COMPILER_MSC_WARNING_START (6237)
     DISABLE_COMPILER_MSC_WARNING_START (4127)
     if ((sizeof (streamoff) > sizeof (size_t)) and ((end - start) > static_cast<streamoff> (numeric_limits<ptrdiff_t>::max ()))) [[unlikely]] {
-        Execution::Throw (Execution::RuntimeErrorException{"stream too large"sv});
+        static const auto kException_ = Execution::RuntimeErrorException{"stream too large"sv};
+        Execution::Throw (kException_);
     }
     size_t                    bufLen = static_cast<size_t> (end - start);
     Memory::StackBuffer<byte> buf{Memory::eUninitialized, bufLen};
@@ -57,7 +66,8 @@ wstring Streams::iostream::ReadTextStream (wistream& in)
     DISABLE_COMPILER_MSC_WARNING_START (4127)
     DISABLE_COMPILER_MSC_WARNING_START (6237)
     if ((sizeof (streamoff) > sizeof (size_t)) and ((end - start) > static_cast<streamoff> (numeric_limits<ptrdiff_t>::max ()))) [[unlikely]] {
-        Execution::Throw (Execution::RuntimeErrorException{"stream too large"sv});
+        static const auto kException_ = Execution::RuntimeErrorException{"stream too large"sv};
+        Execution::Throw (kException_);
     }
     size_t                       bufLen = static_cast<size_t> (end - start);
     Memory::StackBuffer<wchar_t> buf{Memory::eUninitialized, bufLen};
@@ -85,7 +95,8 @@ vector<byte> Streams::iostream::ReadBytes (istream& in)
     DISABLE_COMPILER_MSC_WARNING_START (4127)
     DISABLE_COMPILER_MSC_WARNING_START (6237)
     if ((sizeof (streamoff) > sizeof (size_t)) and ((end - start) > static_cast<streamoff> (numeric_limits<ptrdiff_t>::max ()))) [[unlikely]] {
-        Execution::Throw (RuntimeErrorException{"stream too large"sv});
+        static const auto kException_ = Execution::RuntimeErrorException{"stream too large"sv};
+        Execution::Throw (kException_);
     }
     size_t            len = static_cast<size_t> (end - start);
     StackBuffer<byte> buf{Memory::eUninitialized, len};
@@ -107,3 +118,7 @@ void Streams::iostream::WriteBytes (ostream& out, const vector<byte>& s)
 {
     out.write (reinterpret_cast<const char*> (Containers::Start (s)), s.size ());
 }
+
+DISABLE_COMPILER_MSC_WARNING_END (4996);
+DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
+DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"");

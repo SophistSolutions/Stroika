@@ -394,6 +394,11 @@ namespace Stroika::Foundation::Characters {
     }
     inline wstring UTF8StringToWide (const string& s) { return NarrowStringToWide (s, WellKnownCodePages::kUTF8); }
 
+    [[deprecated ("Since Stroika v3.0d2 - use CodeCvt")]] vector<byte>
+    MapUNICODETextToSerializedFormat (const wchar_t* start, const wchar_t* end, CodePage useCP = WellKnownCodePages::kUTF8); // suitable for files
+
+    [[deprecated ("Since Stroika v3.0d2 - use CodeCvt")]] wstring MapUNICODETextWithMaybeBOMTowstring (const char* start, const char* end);
+
 }
 
 #endif /*_Stroika_Foundation_Characters_CodePage_inl_*/

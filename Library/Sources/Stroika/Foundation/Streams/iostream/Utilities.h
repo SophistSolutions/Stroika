@@ -11,20 +11,18 @@
 #include "../../Characters/SDKString.h"
 
 /**
- * TODO:
- *      o   While we have a lot of code that is iostream based, and before the Stroika stream stuff matures, many of these
- *          utiltiies maybe handy. I'm not sure we will want them long-term however.
+*   FILE DEPRECATED IN STROIKA v3.0d2
  */
 
 namespace Stroika::Foundation::Streams::iostream {
 
     using std::byte;
 
-    wstring ReadTextStream (istream& in);
-    wstring ReadTextStream (wistream& in);
+    [[deprecated ("Since Stroika v3.0d2, use Foundation::InputStream")]] wstring ReadTextStream (istream& in);
+    [[deprecated ("Since Stroika v3.0d2, use Foundation::InputStream")]] wstring ReadTextStream (wistream& in);
 
-    vector<byte> ReadBytes (istream& in);
-    void         WriteBytes (ostream& out, const vector<byte>& s);
+    [[deprecated ("Since Stroika v3.0d2, use Foundation::InputStream")]] vector<byte> ReadBytes (istream& in);
+    [[deprecated ("Since Stroika v3.0d2, use Foundation::OutputStream")]] void        WriteBytes (ostream& out, const vector<byte>& s);
 
 }
 
