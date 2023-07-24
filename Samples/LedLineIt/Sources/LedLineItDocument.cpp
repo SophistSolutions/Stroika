@@ -27,7 +27,6 @@ using Stroika::Foundation::Characters::CodePagesGuesser;
 using Stroika::Foundation::Characters::kCodePage_INVALID;
 using Stroika::Foundation::Characters::kCodePage_UNICODE_WIDE;
 using Stroika::Foundation::Characters::kCodePage_UNICODE_WIDE_BIGENDIAN;
-using Stroika::Foundation::Characters::kCodePage_UTF7;
 using Stroika::Foundation::Memory::StackBuffer;
 
 // special exception handling just for MFC library implementation
@@ -600,7 +599,7 @@ bool LedLineItDocument::DoPromptOpenFileName (CString* fileName, CodePage* codeP
 
 bool LedLineItDocument::DoPromptFileName (CString* fileName, UINT nIDSTitle, bool isOpenDialogCall, long fileDLogFlags, CodePage* codePage)
 {
-    vector<CodePage> codePages = CodePagesInstalled ().GetAll ();
+    vector<CodePage> codePages = CodePagesInstalled{}.GetAll ();
     if constexpr (qDebug) {
         // We use these magic numbers internally here - just assure they don't conflict...
         Assert (std::find (codePages.begin (), codePages.end (), kAutomaticallyGuessCodePage) == codePages.end ());
@@ -626,7 +625,6 @@ bool LedLineItDocument::DoPromptFileName (CString* fileName, UINT nIDSTitle, boo
     (void)ShuffleToFront (&codePages, kCodePage_UNICODE_WIDE_BIGENDIAN);
     (void)ShuffleToFront (&codePages, kCodePage_UNICODE_WIDE);
     (void)ShuffleToFront (&codePages, kCodePage_UTF8);
-    (void)ShuffleToFront (&codePages, kCodePage_UTF7);
     if (isOpenDialogCall) {
         codePages.insert (codePages.begin (), kAutomaticallyGuessCodePage);
     }

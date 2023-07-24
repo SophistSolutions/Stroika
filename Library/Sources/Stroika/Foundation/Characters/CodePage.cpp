@@ -72,8 +72,6 @@ namespace {
 wstring Characters::GetCharsetString (CodePage cp)
 {
     switch (cp) {
-        case kCodePage_UTF7:
-            return L"UTF-7";
         case kCodePage_UTF8:
             return L"UTF-8";
         default:
@@ -574,8 +572,6 @@ size_t CodePageConverter::MapFromUNICODE_QuickComputeOutBufSize (const wchar_t* 
         case kCodePage_SJIS:
             resultSize = inCharCnt * 2;
             break;
-        case kCodePage_UTF7:
-            resultSize = inCharCnt * 6;
             break; // ITHINK thats right... BOM appears to be 5 chars long? LGP 2001-09-11
         case kCodePage_UTF8:
             resultSize = UTFConverter::ComputeTargetBufferSize<char> (span{inChars, inChars + inCharCnt});
@@ -589,9 +585,6 @@ size_t CodePageConverter::MapFromUNICODE_QuickComputeOutBufSize (const wchar_t* 
             case kCodePage_UNICODE_WIDE_BIGENDIAN: {
                 // BOM (byte order mark)
                 resultSize += 2;
-            } break;
-            case kCodePage_UTF7: {
-                resultSize += 5; // for BOM
             } break;
             case kCodePage_UTF8: {
                 resultSize += 3; // BOM (byte order mark)
@@ -765,35 +758,6 @@ void CodePageConverter::MapFromUNICODE (const char16_t* inChars, size_t inCharCn
                 *outCharCnt = 0;
             }
         } break;
-#if qPlatform_Windows
-        case kCodePage_UTF7: {
-            char*  useOutChars     = outChars;
-            size_t useOutCharCount = *outCharCnt;
-            if (GetHandleBOM ()) {
-                if (*outCharCnt >= 5) {
-                    useOutChars += 5; // skip BOM
-                    useOutCharCount -= 5;
-                    outChars[0] = 0x2b;
-                    outChars[1] = 0x2f;
-                    outChars[2] = 0x76;
-                    outChars[3] = 0x38;
-                    outChars[4] = 0x2d;
-#if qDebug && qPlatform_Windows
-                    countOfBOMCharsAdded = 5;
-#endif
-                }
-                else {
-                    useOutCharCount = 0;
-                }
-            }
-            Characters::Platform::Windows::PlatformCodePageConverter{kCodePage_UTF7}.MapFromUNICODE (SAFE_WIN_WCHART_CAST_ (inChars),
-                                                                                                     inCharCnt, useOutChars, &useOutCharCount);
-            if (GetHandleBOM ()) {
-                useOutCharCount += 5;
-            }
-            *outCharCnt = useOutCharCount;
-        } break;
-#endif
         case kCodePage_UTF8: {
             char*  useOutChars     = outChars;
             size_t useOutCharCount = *outCharCnt;
@@ -948,20 +912,6 @@ CodePage CodePagesGuesser::Guess (const void* input, size_t nBytes, Confidence* 
                 return kCodePage_UTF8;
             }
         }
-        if (nBytes >= 5) {
-            unsigned char c2 = reinterpret_cast<const unsigned char*> (input)[2];
-            unsigned char c3 = reinterpret_cast<const unsigned char*> (input)[3];
-            unsigned char c4 = reinterpret_cast<const unsigned char*> (input)[4];
-            if (c0 == 0x2b and c1 == 0x2f and c2 == 0x76 and c3 == 0x38 and c4 == 0x2d) {
-                if (confidence != nullptr) {
-                    *confidence = Confidence::eHigh;
-                }
-                if (bytesFromFrontToStrip != nullptr) {
-                    *bytesFromFrontToStrip = 5;
-                }
-                return kCodePage_UTF7;
-            }
-        }
     }
 
     /*
@@ -989,7 +939,6 @@ CodePagePrettyNameMapper::CodePageNames CodePagePrettyNameMapper::MakeDefaultCod
     codePageNames.fMAC                    = L"MAC (2)"sv;
     codePageNames.fPC                     = L"IBM PC United States code page (437)"sv;
     codePageNames.fSJIS                   = L"Japanese SJIS {932}"sv;
-    codePageNames.fUTF7                   = L"UNICODE {UTF-7}"sv;
     codePageNames.fUTF8                   = L"UNICODE {UTF-8}"sv;
     codePageNames.f850                    = L"Latin I - MS-DOS Multilingual (850)"sv;
     codePageNames.f851                    = L"Latin II - MS-DOS Slavic (850)"sv;
@@ -1020,8 +969,6 @@ wstring CodePagePrettyNameMapper::GetName (CodePage cp)
             return sCodePageNames_.fPC;
         case kCodePage_SJIS:
             return sCodePageNames_.fSJIS;
-        case kCodePage_UTF7:
-            return sCodePageNames_.fUTF7;
         case kCodePage_UTF8:
             return sCodePageNames_.fUTF8;
         case 850:

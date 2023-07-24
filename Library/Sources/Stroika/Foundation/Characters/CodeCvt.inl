@@ -449,8 +449,6 @@ namespace Stroika::Foundation::Characters {
                     fRep_ = make_shared<UTFConvertSwappedRep_<char32_t>> (UTFConverter::kThe);
                 }
                 break;
-
-            // @todo UTF7 (maybe good enuf there to -- not ure - codecvt, or JIRA defer)
             default:
                 AssertNotImplemented ();
         }

@@ -20,14 +20,9 @@ namespace Stroika::Foundation::Characters {
      */
     constexpr span<const byte> GetByteOrderMark (UnicodeExternalEncodings e) noexcept
     {
-        // Values from https://en.wikipedia.org/wiki/Byte_order_mark (except utf7)
+        // Values from https://en.wikipedia.org/wiki/Byte_order_mark
         using namespace Memory;
         switch (e) {
-            case UnicodeExternalEncodings::eUTF7: {
-                // no idea where I found this, but its in old Stroika code
-                constexpr byte r[] = {0x2b_b, 0x2f_b, 0x76_b, 0x38_b, 0x2d_b};
-                return span<const byte>{&r[0], sizeof (r)};
-            }
             case UnicodeExternalEncodings::eUTF8: {
                 constexpr byte r[] = {0xEF_b, 0xBB_b, 0xBF_b};
                 return span<const byte>{r, sizeof (r)};
@@ -83,10 +78,6 @@ namespace Stroika::Foundation::Characters {
             return r;
         }
         if (auto r = check1 (GetByteOrderMark (UnicodeExternalEncodings::eUTF16_LE))) {
-            return r;
-        }
-        // finally UTF-7
-        if (auto r = check1 (GetByteOrderMark (UnicodeExternalEncodings::eUTF7))) {
             return r;
         }
         return nullopt;

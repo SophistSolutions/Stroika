@@ -57,8 +57,8 @@ namespace Stroika::Foundation::Characters {
         kCodePage_UNICODE_WIDE           = 1200, // Standard UNICODE for MS-Windows
         kCodePage_UNICODE_WIDE_BIGENDIAN = 1201,
 
-        kCodePage_UTF7 = 65000,
-        kCodePage_UTF8 = 65001
+        kCodePage_UTF7 [[deprecated ("Since v3.0d2 - UTF-7 deprecated")]] = 65000,
+        kCodePage_UTF8                                                    = 65001
     };
 
     /**
@@ -281,7 +281,6 @@ namespace Stroika::Foundation::Characters {
         wstring fMAC;
         wstring fPC;
         wstring fSJIS;
-        wstring fUTF7;
         wstring fUTF8;
         wstring f850;
         wstring f851;

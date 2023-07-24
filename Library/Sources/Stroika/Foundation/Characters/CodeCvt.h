@@ -28,9 +28,11 @@ namespace Stroika::Foundation::Characters {
 
     /**
      *  \brief list of external UNICODE character encodings, for file IO (eDefault = eUTF8)
+     * 
+     *  \note - UTF-7 **not** supported because very few places support it/ever used it, and
+     *          https://en.wikipedia.org/wiki/UTF-7 says its obsolete. So don't bother.
      */
     enum class UnicodeExternalEncodings {
-        eUTF7,
         eUTF8,
         eUTF16_BE,
         eUTF16_LE,
@@ -160,7 +162,6 @@ namespace Stroika::Foundation::Characters {
          *          kCodePage_ARABIC          = 1256,
          *          kCodePage_UNICODE_WIDE           = 1200, // Standard UNICODE for MS-Windows
          *          kCodePage_UNICODE_WIDE_BIGENDIAN = 1201,
-         *          kCodePage_UTF7 = 65000, ---NYI
          *          kCodePage_UTF8 = 65001
          * 
          *   To use (wrap) existing std::codecvt<A,B,C> class:
