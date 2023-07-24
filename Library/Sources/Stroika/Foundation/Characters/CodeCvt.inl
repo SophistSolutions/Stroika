@@ -13,6 +13,7 @@
 #include <bit>
 
 #include "../Debug/Assertions.h"
+#include "TextConvert.h"
 #include "UTFConvert.h"
 
 namespace Stroika::Foundation::Characters {
@@ -451,6 +452,19 @@ namespace Stroika::Foundation::Characters {
                 break;
             default:
                 AssertNotImplemented ();
+        }
+    }
+    template <IUNICODECanAlwaysConvertTo CHAR_T>
+    CodeCvt<CHAR_T>::CodeCvt (span<const byte>* guessFormatFrom)
+        : fRep_{}
+    {
+        RequireNotNull (guessFormatFrom);
+        if (optional<tuple<UnicodeExternalEncodings, size_t>> r = ReadByteOrderMark (*guessFormatFrom)) {
+            *guessFormatFrom = guessFormatFrom->subspan (get<size_t> (*r));
+            fRep_            = CodeCvt{get<UnicodeExternalEncodings> (*r)}.fRep_;
+        }
+        else {
+            fRep_ = CodeCvt{}.fRep_;
         }
     }
     template <IUNICODECanAlwaysConvertTo CHAR_T>

@@ -148,6 +148,10 @@ namespace Stroika::Foundation::Characters {
          *  CodeCvt (const string& localeName):
          *      Is equivilent to mkFromStdCodeCvt<...> (std::codecvt_byname {localeName}) - so it can throw if no such locale name
          * 
+         *  CodeCvt (span<const byte>* guessFormatFrom)
+         *      the initial part of the span data (up to kMaxBOMSize bytes) are examined and used to select the CodeCvt to create (else default CodeCvt created).
+         *      If a BOM is found, guessFormatFrom is adjusted to skip it.
+         *  
          *  CodeCvt (CodePage):
          *      Can throw if the code page is not recognized. NOTE - CodePage is a Windows concept, and though many code pages
          *      are provided portable (@todo list) - many more are not, and will fail on non-windows, and succeed only on windows.
@@ -210,6 +214,7 @@ namespace Stroika::Foundation::Characters {
         CodeCvt (const locale& l);
         CodeCvt (const String& localeName);
         CodeCvt (UnicodeExternalEncodings e);
+        CodeCvt (span<const byte>* guessFormatFrom);
         CodeCvt (CodePage e);
         template <IUNICODECanAlwaysConvertTo INTERMEDIATE_CHAR_T>
         CodeCvt (const CodeCvt<INTERMEDIATE_CHAR_T>& basedOn);
