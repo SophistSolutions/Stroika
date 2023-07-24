@@ -455,7 +455,7 @@ namespace Stroika::Foundation::Characters {
         }
     }
     template <IUNICODECanAlwaysConvertTo CHAR_T>
-    CodeCvt<CHAR_T>::CodeCvt (span<const byte>* guessFormatFrom)
+    CodeCvt<CHAR_T>::CodeCvt (span<const byte>* guessFormatFrom, const optional<CodeCvt>& useElse)
         : fRep_{}
     {
         RequireNotNull (guessFormatFrom);
@@ -464,7 +464,7 @@ namespace Stroika::Foundation::Characters {
             fRep_            = CodeCvt{get<UnicodeExternalEncodings> (*r)}.fRep_;
         }
         else {
-            fRep_ = CodeCvt{}.fRep_;
+            fRep_ = useElse ? useElse->fRep_ : CodeCvt{}.fRep_;
         }
     }
     template <IUNICODECanAlwaysConvertTo CHAR_T>

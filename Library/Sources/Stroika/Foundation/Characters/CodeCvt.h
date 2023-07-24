@@ -214,7 +214,7 @@ namespace Stroika::Foundation::Characters {
         CodeCvt (const locale& l);
         CodeCvt (const String& localeName);
         CodeCvt (UnicodeExternalEncodings e);
-        CodeCvt (span<const byte>* guessFormatFrom);
+        CodeCvt (span<const byte>* guessFormatFrom, const optional<CodeCvt>& useElse = nullopt);
         CodeCvt (CodePage e);
         template <IUNICODECanAlwaysConvertTo INTERMEDIATE_CHAR_T>
         CodeCvt (const CodeCvt<INTERMEDIATE_CHAR_T>& basedOn);
