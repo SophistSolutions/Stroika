@@ -1471,14 +1471,21 @@ string String::AsNarrowString (const locale& l, AllowMissingCharacterErrorsFlag)
     span<const wchar_t>          thisData = GetData (&maybeIgnoreBuf1);
     // http://en.cppreference.com/w/cpp/locale/codecvt/out
     mbstate_t                 mbstate{};
-    const wchar_t*            from_next;
-    char*                     to_next;
     Memory::StackBuffer<char> into{Memory::eUninitialized, thisData.size () * 5}; // not sure what size is always big enuf
+    const wchar_t* readFrom = thisData.data ();
+    char* intoIndex = into.data ();
+    Again:
+    const wchar_t*            from_next{nullptr};
+    char*                     to_next{nullptr};
     codecvt_base::result      result =
-        cvt.out (mbstate, thisData.data (), thisData.data () + thisData.size (), from_next, into.data (), into.end (), to_next);
+        cvt.out (mbstate, readFrom, thisData.data () + thisData.size (), from_next, intoIndex, into.end (), to_next);
     if (result != codecvt_base::ok) [[unlikely]] {
-        /// UNCLEAR WHAT TODO HERE??? - skip char and continue consuming? or maybe this already does that? READ DOCS/TEST
-        WeakAssert (false);
+        if (from_next != thisData.data () + thisData.size ()) {
+            readFrom = from_next + 1;   // unclear how much to skip (due to surrogates) - but likely this is a good guess
+            *to_next = '?';           // write 'bad' character
+            intoIndex = to_next + 1;
+            goto Again;
+        }
     }
     return string{into.data (), to_next};
 }
