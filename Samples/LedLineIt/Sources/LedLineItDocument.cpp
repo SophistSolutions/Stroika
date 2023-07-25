@@ -25,8 +25,6 @@ using Stroika::Foundation::Characters::CodePageConverter;
 using Stroika::Foundation::Characters::CodePagePrettyNameMapper;
 using Stroika::Foundation::Characters::CodePagesGuesser;
 using Stroika::Foundation::Characters::kCodePage_INVALID;
-using Stroika::Foundation::Characters::kCodePage_UNICODE_WIDE;
-using Stroika::Foundation::Characters::kCodePage_UNICODE_WIDE_BIGENDIAN;
 using Stroika::Foundation::Memory::StackBuffer;
 
 // special exception handling just for MFC library implementation
@@ -363,7 +361,8 @@ BOOL LedLineItDocument::OnOpenDocument (LPCTSTR lpszPathName)
                 }
                 maxLineSize = max (maxLineSize, curLineSize);
             }
-            if (suggestedCodePage != NULL and (*suggestedCodePage == kCodePage_UNICODE_WIDE or *suggestedCodePage == kCodePage_UNICODE_WIDE_BIGENDIAN)) {
+            if (suggestedCodePage != NULL and (*suggestedCodePage == Characters::WellKnownCodePages::kUNICODE_WIDE or
+                                               *suggestedCodePage == Characters::WellKnownCodePages::kUNICODE_WIDE_BIGENDIAN)) {
                 maxLineSize /= 2; // because we'd be counting null-bytes between chars.
                 // Note this whole computation is VERY approximate - because its counting raw bytes of what could be
                 // encoded text. For example - if the text was SJIS or UTF-7 encoding of far-east text - this would

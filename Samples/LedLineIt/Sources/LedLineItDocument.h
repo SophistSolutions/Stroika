@@ -26,7 +26,6 @@ using namespace Stroika::Frameworks::Led;
 using Stroika::Foundation::Characters::CodePage;
 using Stroika::Foundation::Characters::CodePagesInstalled;
 using Stroika::Foundation::Characters::GetDefaultSDKCodePage;
-using Stroika::Foundation::Characters::kCodePage_UTF8;
 
 const CodePage kDefaultNewDocCodePage = CodePagesInstalled{}.IsCodePageAvailable (Characters::WellKnownCodePages::kUTF8)
                                             ? Characters::WellKnownCodePages::kUTF8

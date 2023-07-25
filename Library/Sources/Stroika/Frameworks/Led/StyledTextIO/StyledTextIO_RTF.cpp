@@ -1241,18 +1241,18 @@ SinkStreamDestination::RowInfo::RowInfo ()
  */
 StyledTextIOReader_RTF::ReaderContext::ReaderContext (StyledTextIOReader_RTF& reader)
     : fReader (reader)
-    , fDocumentCharacterSet (Characters::kCodePage_ANSI)
+    , fDocumentCharacterSet (Characters::WellKnownCodePages::kANSI)
     , // ANSI default, according to RTF spec
-    fCurrentInputCharSetEncoding (Characters::kCodePage_ANSI)
+    fCurrentInputCharSetEncoding (Characters::WellKnownCodePages::kANSI)
     ,
 #if qWideCharacters
 //fMultiByteInputCharBuf (),
 #else
 #if qPlatform_MacOS
-    fCurrentOutputCharSetEncoding (kCodePage_MAC)
+    fCurrentOutputCharSetEncoding (WellKnownCodePages::kMAC)
     ,
 #elif qPlatform_Windows || qStroika_FeatureSupported_XWindows
-    fCurrentOutputCharSetEncoding (kCodePage_ANSI)
+    fCurrentOutputCharSetEncoding (WellKnownCodePages::kANSI)
     , // not sure???
 #endif
     fCharsetMappingTable (fCurrentInputCharSetEncoding, fCurrentOutputCharSetEncoding)
@@ -1405,7 +1405,7 @@ StyledTextIOReader_RTF::ReaderContext::GroupContext::GroupContext (ReaderContext
     : fReaderContext (readerContext)
     , fParentGroup (readerContext.fCurrentGroup)
     , fCurrentGroupStartIdx (readerContext.GetReader ().GetSrcStream ().current_offset ())
-    , fCurrentCodePage (kCodePage_ANSI)
+    , fCurrentCodePage (WellKnownCodePages::kANSI)
     , fCCHSCodePage (0)
     , fDestinationContext () /// LGP 2001-08-22- ------ FOR NOW - BOGUS INITIAL VALUE- BUT SHOULD GET FROM readerContext::Destination::GetContext() rather than from parent group!!!
 {
@@ -1895,7 +1895,7 @@ bool StyledTextIOReader_RTF::HandleControlWord (ReaderContext& readerContext, co
 
 bool StyledTextIOReader_RTF::HandleControlWord_ansi (ReaderContext& readerContext, const RTFIO::ControlWord& /*controlWord*/)
 {
-    readerContext.fDocumentCharacterSet = kCodePage_ANSI;
+    readerContext.fDocumentCharacterSet = WellKnownCodePages::kANSI;
     readerContext.UseInputCharSetEncoding (readerContext.fDocumentCharacterSet);
     return false;
 }
@@ -1943,16 +1943,16 @@ bool StyledTextIOReader_RTF::HandleControlWord_cchs (ReaderContext& readerContex
 
     switch (controlWord.fValue) {
         case 0:
-            readerContext.GetCurrentGroupContext ()->fCCHSCodePage = kCodePage_ANSI;
+            readerContext.GetCurrentGroupContext ()->fCCHSCodePage = WellKnownCodePages::kANSI;
             break;
         case 254:
-            readerContext.GetCurrentGroupContext ()->fCCHSCodePage = kCodePage_PC;
+            readerContext.GetCurrentGroupContext ()->fCCHSCodePage = WellKnownCodePages::kPC;
             break;
         case 255:
-            readerContext.GetCurrentGroupContext ()->fCCHSCodePage = kCodePage_PCA;
+            readerContext.GetCurrentGroupContext ()->fCCHSCodePage = WellKnownCodePages::kPCA;
             break;
         case 256:
-            readerContext.GetCurrentGroupContext ()->fCCHSCodePage = kCodePage_MAC;
+            readerContext.GetCurrentGroupContext ()->fCCHSCodePage = WellKnownCodePages::kMAC;
             break;
         default: {
             // unsure what todo here. We could throw an error, but I suspect its probably best to
@@ -2388,7 +2388,7 @@ bool StyledTextIOReader_RTF::HandleControlWord_ls (ReaderContext& readerContext,
 
 bool StyledTextIOReader_RTF::HandleControlWord_mac (ReaderContext& readerContext, const RTFIO::ControlWord& /*controlWord*/)
 {
-    readerContext.fDocumentCharacterSet = kCodePage_MAC;
+    readerContext.fDocumentCharacterSet = WellKnownCodePages::kMAC;
     readerContext.UseInputCharSetEncoding (readerContext.fDocumentCharacterSet);
     return false;
 }
@@ -2665,14 +2665,14 @@ bool StyledTextIOReader_RTF::HandleControlWord_pard (ReaderContext& readerContex
 
 bool StyledTextIOReader_RTF::HandleControlWord_pc (ReaderContext& readerContext, const RTFIO::ControlWord& /*controlWord*/)
 {
-    readerContext.fDocumentCharacterSet = kCodePage_PC;
+    readerContext.fDocumentCharacterSet = WellKnownCodePages::kPC;
     readerContext.UseInputCharSetEncoding (readerContext.fDocumentCharacterSet);
     return false;
 }
 
 bool StyledTextIOReader_RTF::HandleControlWord_pca (ReaderContext& readerContext, const RTFIO::ControlWord& /*controlWord*/)
 {
-    readerContext.fDocumentCharacterSet = kCodePage_PCA;
+    readerContext.fDocumentCharacterSet = WellKnownCodePages::kPCA;
     readerContext.UseInputCharSetEncoding (readerContext.fDocumentCharacterSet);
     return false;
 }
@@ -4105,14 +4105,14 @@ StyledTextIOWriter_RTF::Table* StyledTextIOWriter_RTF::WriterContext::GetCurRTFT
  */
 StyledTextIOWriter_RTF::StyledTextIOWriter_RTF (SrcStream* srcStream, SinkStream* sinkStream, RTFInfo* rtfInfo)
     : StyledTextIOWriter (srcStream, sinkStream)
-    , fCurrentOutputCharSetEncoding (kCodePage_ANSI)
+    , fCurrentOutputCharSetEncoding{WellKnownCodePages::kANSI}
     ,
 #if !qWideCharacters
 #if qPlatform_MacOS
-    fCurrentInputCharSetEncoding (kCodePage_MAC)
+    fCurrentInputCharSetEncoding (WellKnownCodePages::kMAC)
     ,
 #elif qPlatform_Windows || qStroika_FeatureSupported_XWindows
-    fCurrentInputCharSetEncoding (kCodePage_ANSI)
+    fCurrentInputCharSetEncoding{WellKnownCodePages::kANSI}
     , // not sure???
 #endif
     fCharsetMappingTable (fCurrentInputCharSetEncoding, fCurrentOutputCharSetEncoding)
@@ -4126,7 +4126,7 @@ StyledTextIOWriter_RTF::StyledTextIOWriter_RTF (SrcStream* srcStream, SinkStream
     , fColorTable (nullptr)
     , fListTable (nullptr)
     , fStyleRunSummary ()
-    , fDocumentCharacterSet (kCodePage_ANSI)
+    , fDocumentCharacterSet{WellKnownCodePages::kANSI}
     , fSoftLineBreakChar (srcStream->GetSoftLineBreakCharacter ())
     , fHidableTextRuns (srcStream->GetHidableTextRuns ())
 {
@@ -4862,16 +4862,16 @@ void StyledTextIOWriter_RTF::WriteRTFHexByte (unsigned char theByte)
 void StyledTextIOWriter_RTF::WriteDocCharset ()
 {
     switch (fDocumentCharacterSet) {
-        case kCodePage_ANSI:
+        case WellKnownCodePages::kANSI:
             WriteTag ("ansi");
             break;
-        case kCodePage_MAC:
+        case WellKnownCodePages::kMAC:
             WriteTag ("mac");
             break;
-        case kCodePage_PC:
+        case WellKnownCodePages::kPC:
             WriteTag ("pc");
             break;
-        case kCodePage_PCA:
+        case WellKnownCodePages::kPCA:
             WriteTag ("pca");
             break;
         default: {

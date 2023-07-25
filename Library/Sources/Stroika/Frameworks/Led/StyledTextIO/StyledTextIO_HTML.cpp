@@ -702,7 +702,7 @@ Led_tString StyledTextIOReader_HTML::MapInputTextToTString (const string& text)
 {
 #if qWideCharacters
     Memory::StackBuffer<Led_tChar> wBuf{Memory::eUninitialized, text.length () + 1};
-    CodePageConverter              cpc{kCodePage_ANSI};
+    CodePageConverter              cpc{WellKnownCodePages::kANSI};
     size_t                         outCharCnt = text.length ();
     cpc.MapToUNICODE (text.c_str (), text.length (), wBuf.data (), &outCharCnt);
     wBuf[outCharCnt] = '\0';
@@ -796,9 +796,9 @@ void StyledTextIOReader_HTML::HandleHTMLThingy_EntityReference (const char* text
     if (refName.length () > 0) {
 #if !qWideCharacters
 #if qPlatform_MacOS
-        const CodePage kInternalCodePageToMapTo = kCodePage_MAC;
+        const CodePage kInternalCodePageToMapTo = WellKnownCodePages::kMAC;
 #else
-        const CodePage kInternalCodePageToMapTo = kCodePage_ANSI;
+        const CodePage kInternalCodePageToMapTo = WellKnownCodePages::kANSI;
 #endif
 #endif
         if (refName[0] == '#') {
@@ -1133,7 +1133,7 @@ void StyledTextIOReader_HTML::HandleHTMLThingyTag_a (bool start, const char* tex
             if (EmbeddedObjectCreatorRegistry::Get ().Lookup (StandardURLStyleMarker::kEmbeddingTag, &assoc)) {
                 AssertNotNull (assoc.fReadFromMemory);
 #if qWideCharacters
-                CodePageConverter cpc (kCodePage_ANSI);
+                CodePageConverter cpc (WellKnownCodePages::kANSI);
                 size_t outCharCnt = cpc.MapFromUNICODE_QuickComputeOutBufSize (fHiddenTextAccumulation.c_str (), fHiddenTextAccumulation.length ());
                 Memory::StackBuffer<char> buf{Memory::eUninitialized, outCharCnt};
                 cpc.MapFromUNICODE (fHiddenTextAccumulation.c_str (), fHiddenTextAccumulation.length (), buf.data (), &outCharCnt);
@@ -2245,9 +2245,9 @@ void StyledTextIOWriter_HTML::WriteBodyCharacter (WriterContext& writerContext, 
 // The entity refs we write must be in UNICODE. For non UNICODE Led - make the best guess we can (could parameterize this to make
 // better - but for I18N - really should just use UNICODE).
 #if qPlatform_MacOS
-            const CodePage kInternalCodePageToMapFrom = kCodePage_MAC;
+            const CodePage kInternalCodePageToMapFrom = WellKnownCodePages::kMAC;
 #else
-            const CodePage kInternalCodePageToMapFrom = kCodePage_ANSI;
+            const CodePage kInternalCodePageToMapFrom = WellKnownCodePages::kANSI;
 #endif
             if (static_cast<unsigned int> (c) >= 128) {
                 // ascii chars OK - just have to worry about non-ascii ones...

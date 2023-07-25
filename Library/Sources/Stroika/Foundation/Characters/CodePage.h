@@ -28,10 +28,12 @@ namespace Stroika::Foundation::Characters {
 
     /**
      *       A codePage is a Win32 (really DOS) concept which describes a particular single or
-     *    multibyte (narrow) character set encoding. Use Win32 CodePage numbers. Maybe someday add
-     *  a layer to map to/from Mac 'ScriptIDs' - which are basicly analagous.</p>
+     *    multibyte (narrow) character set encoding. 
+     *  
+     *  \note   Maybe someday add  a layer to map to/from Mac 'ScriptIDs' - which are basicly analagous, just not
+     *          as widely used.
      * 
-     *      UINT in windows SDK;
+     *  \note   UINT in windows SDK;
      */
     using CodePage = uint32_t;
 
@@ -44,12 +46,12 @@ namespace Stroika::Foundation::Characters {
         constexpr CodePage kANSI = 1252;
 
         constexpr CodePage kMAC             = 2;
-        constexpr CodePage kPC              = 437; //  IBM PC code page 437
-        constexpr CodePage kPCA             = 850; //  IBM PC code page 850, used by IBM Personal System/2
+        constexpr CodePage kPC              = 437; // IBM PC code page 437
+        constexpr CodePage kPCA             = 850; // IBM PC code page 850, used by IBM Personal System/2
         constexpr CodePage kThai            = 874; // From uniscribe sample code (LGP 2003-01-13)
         constexpr CodePage kSJIS            = 932;
         constexpr CodePage kGB2312          = 936; // Chinese (Simplified)
-        constexpr CodePage kKorean          = 949; // Korean
+        constexpr CodePage kKorean          = 949;
         constexpr CodePage kBIG5            = 950; // Chinese (Traditional)
         constexpr CodePage kEasternEuropean = 1250;
         constexpr CodePage kCyrilic         = 1251; // Russian (Cyrilic)
@@ -68,20 +70,24 @@ namespace Stroika::Foundation::Characters {
 
     /**
      * TODO:
+     *      @todo CONSIDER DEPRECATING IN STROIKA V3
+     * 
      *      @todo   DEFINE CAREFULLY - BUT CHARSET USED IN HTTP CONTENT TYPE STRINGS
      *
      *      Returns a printable (user-friendly displayable) representation of the given codepage.
-     *
      */
     wstring GetCharsetString (CodePage cp);
 
     /*
+     *      @todo CONSIDER DEPRECATING IN STROIKA V3
+     * 
     @METHOD:        GetDefaultSDKCodePage
     @DESCRIPTION:   <p>Returns the assumed code page of @'SDKChar'.</p>
     */
     CodePage GetDefaultSDKCodePage ();
 
     /**
+    * &&& redo as RuntimeException... - but todo move to separate file
      */
     class CodePageNotSupportedException : public exception {
     public:
@@ -106,6 +112,8 @@ namespace Stroika::Foundation::Characters {
     };
 
     /*
+    * * @todo for v3 - make much clearer/portable!!! -  and use Stroika containers
+    * 
     @CLASS:         CodePagesInstalled
     @DESCRIPTION:
                 <p>Helper class to check what code pages are installed on a given machine.</p>
@@ -175,6 +183,8 @@ namespace Stroika::Foundation::Characters {
         wstring f10001;
         wstring f50220;
     };
+
+    // @todo consider losing MOST of these - at least from this file
 
     void    WideStringToNarrow (const wchar_t* wsStart, const wchar_t* wsEnd, CodePage codePage, string* intoResult);
     void    WideStringToNarrow (const wstring& ws, CodePage codePage, string* intoResult);
