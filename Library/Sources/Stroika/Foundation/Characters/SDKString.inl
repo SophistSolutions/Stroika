@@ -12,7 +12,71 @@
 
 #include "CodePage.h"
 
+namespace Stroika::Foundation::Execution {
+    [[noreturn]] void ThrowSystemErrNo ();
+}
+
 namespace Stroika::Foundation::Characters {
+
+    /*
+     ********************************************************************************
+     ***************************** Characters::SDKString2Narrow *********************
+     ********************************************************************************
+     */
+    inline string SDKString2Narrow (const SDKString& s)
+    {
+        if constexpr (same_as<SDKChar, char>) {
+            return s;
+        }
+        else {
+#if qPlatform_Windows
+            static constexpr DWORD kFLAGS_ = WC_ERR_INVALID_CHARS;
+            int stringLength = ::WideCharToMultiByte (CP_ACP, kFLAGS_, s.c_str (), static_cast<int> (s.length ()), nullptr, 0, nullptr, nullptr);
+            if (stringLength == 0 and s.length () != 0) {
+                Execution::ThrowSystemErrNo ();
+            }
+            string result;
+            result.resize (stringLength);
+            Verify (::WideCharToMultiByte (CP_ACP, kFLAGS_, s.c_str (), static_cast<int> (s.length ()), Containers::Start (result),
+                                           stringLength, nullptr, nullptr) == stringLength);
+            return result;
+#else
+            static_assert (false); // NYI
+#endif
+        }
+    }
+
+    /*
+     ********************************************************************************
+     ***************************** Characters::Narrow2SDKString *********************
+     ********************************************************************************
+     */
+    inline SDKString Narrow2SDKString (const string& s)
+    {
+        if constexpr (same_as<SDKChar, char>) {
+            return s;
+        }
+        else {
+#if qPlatform_Windows
+            static constexpr DWORD kFLAGS_ = MB_ERR_INVALID_CHARS;
+            int stringLength = ::MultiByteToWideChar (CP_ACP, kFLAGS_, s.c_str (), static_cast<int> (s.length ()), nullptr, 0);
+            if (stringLength == 0 and s.length () != 0) {
+                Execution::ThrowSystemErrNo ();
+            }
+            SDKString result;
+            result.resize (stringLength);
+            Verify (::MultiByteToWideChar (CP_ACP, kFLAGS_, s.c_str (), static_cast<int> (s.length ()), Containers::Start (result),
+                                           stringLength) == stringLength);
+            return result;
+#else
+            static_assert (false); // NYI
+#endif
+        }
+    }
+
+    /// <summary>
+    /// DEPRECATED BELOW...
+    /// </summary>
 
     DISABLE_COMPILER_MSC_WARNING_START (4996);
     DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");

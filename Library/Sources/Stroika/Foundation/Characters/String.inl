@@ -787,37 +787,21 @@ namespace Stroika::Foundation::Characters {
         span<const char32_t>          thisData = GetData (&maybeIgnoreBuf1);
         into->assign (reinterpret_cast<const typename T::value_type*> (thisData.data ()), thisData.size ());
     }
-    inline void String::AsSDKString (SDKString* into) const
-    {
-        RequireNotNull (into);
-        Memory::StackBuffer<wchar_t> maybeIgnoreBuf1;
-        span<const wchar_t>          thisData = GetData (&maybeIgnoreBuf1);
-        into->assign (thisData.begin (), thisData.end ());
-#if qTargetPlatformSDKUseswchar_t
-        into->assign (thisData.begin (), thisData.end ());
-#else
-        WideStringToNarrow (thisData.data (), thisData.data () + thisData.size (), GetDefaultSDKCodePage (), into);
-#endif
-    }
     inline SDKString String::AsSDKString () const
     {
-        SDKString result;
-        AsSDKString (&result);
-        return result;
-    }
-    inline string String::AsNarrowSDKString () const
-    {
-        string result;
-        AsNarrowSDKString (&result);
-        return result;
-    }
-    inline void String::AsNarrowSDKString (string* into) const
-    {
-        RequireNotNull (into);
+#if qTargetPlatformSDKUseswchar_t
         Memory::StackBuffer<wchar_t> maybeIgnoreBuf1;
         span<const wchar_t>          thisData = GetData (&maybeIgnoreBuf1);
-        WideStringToNarrow (thisData.data (), thisData.data () + thisData.size (), GetDefaultSDKCodePage (), into);
+        return SDKString{thisData.begin (), thisData.end ()};
+#elif qPlatform_MacOS
+        Memory::StackBuffer<char8_t> maybeIgnoreBuf1;
+        span<const char8_t> thisData = GetData (&maybeIgnoreBuf1);
+        return SDKString{thisData.begin (), thisData.end ()}; // @todo DOCUMENT THAT MACOS USES UTF8 - SRC - LOGIC/RATIONALE
+#else
+        return AsNarrowString (locale{}); // @todo document why - linux one rationale - default - similar
+#endif
     }
+    inline string String::AsNarrowSDKString () const { return SDKString2Narrow (AsSDKString ()); }
     template <typename T>
     inline T String::AsASCII () const
         requires (is_same_v<T, string> or is_same_v<T, Memory::StackBuffer<char>>)

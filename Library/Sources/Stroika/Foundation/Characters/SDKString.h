@@ -32,6 +32,18 @@ namespace Stroika::Foundation::Characters {
 #define SDKSTR(x) x
 #endif
 
+    /**
+     *  On most platforms, this does nothing, but on Windows, it maps wstrings to string using code-page CP_ACP
+     *  @todo add span<> overloads
+     */
+    string SDKString2Narrow (const SDKString& s);
+
+    /**
+     *  On most platforms, this does nothing, but on Windows, it maps strings to wstring using code-page CP_ACP
+     *  @todo add span<> overloads
+     */
+    SDKString Narrow2SDKString (const string& s);
+
 }
 
 /*

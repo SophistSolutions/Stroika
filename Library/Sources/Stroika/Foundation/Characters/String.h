@@ -1083,14 +1083,17 @@ namespace Stroika::Foundation::Characters {
     public:
         /**
          */
-        nonvirtual SDKString AsSDKString () const;
-        nonvirtual void      AsSDKString (SDKString* into) const;
+        nonvirtual SDKString                                       AsSDKString () const;
+        [[deprecated ("Since Stroika v3.0d2 - just use /0")]] void AsSDKString (SDKString* into) const { *into = AsSDKString (); }
 
     public:
         /**
          */
-        nonvirtual string AsNarrowSDKString () const;
-        nonvirtual void   AsNarrowSDKString (string* into) const;
+        nonvirtual string                                          AsNarrowSDKString () const;
+        [[deprecated ("Since Stroika v3.0d2 - just use /0")]] void AsNarrowSDKString (string* into) const
+        {
+            *into = SDKString2Narrow (AsSDKString ());
+        }
 
     public:
         /**
