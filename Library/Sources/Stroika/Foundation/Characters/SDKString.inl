@@ -49,6 +49,28 @@ namespace Stroika::Foundation::Characters {
 #endif
         }
     }
+    inline string SDKString2Narrow (const SDKString& s, AllowMissingCharacterErrorsFlag)
+    {
+        if constexpr (same_as<SDKChar, char>) {
+            return s;
+        }
+        else {
+#if qPlatform_Windows
+            static constexpr DWORD kFLAGS_ = 0;
+            int stringLength = ::WideCharToMultiByte (CP_ACP, kFLAGS_, s.c_str (), static_cast<int> (s.length ()), nullptr, 0, nullptr, nullptr);
+            if (stringLength == 0 and s.length () != 0) {
+                Execution::ThrowSystemErrNo ();
+            }
+            string result;
+            result.resize (stringLength);
+            Verify (::WideCharToMultiByte (CP_ACP, kFLAGS_, s.c_str (), static_cast<int> (s.length ()), Containers::Start (result),
+                                           stringLength, nullptr, nullptr) == stringLength);
+            return result;
+#else
+            AssertNotImplemented ();
+#endif
+        }
+    }
 
     /*
      ********************************************************************************

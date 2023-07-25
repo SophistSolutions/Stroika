@@ -1020,7 +1020,11 @@ namespace Stroika::Foundation::Characters {
          *  leaves 'into' in an undefined (but safe) state.
          */
         nonvirtual string AsNarrowString (const locale& l) const;
-        nonvirtual void   AsNarrowString (const locale& l, string* into) const;
+        nonvirtual string AsNarrowString (const locale& l, AllowMissingCharacterErrorsFlag) const;
+        [[deprecated ("Since Stroika v3.0d2, just use 1 arg version)")]] void AsNarrowString (const locale& l, string* into) const
+        {
+            *into = this->AsNarrowString (l);
+        }
 
     public:
         /**
@@ -1084,12 +1088,14 @@ namespace Stroika::Foundation::Characters {
         /**
          */
         nonvirtual SDKString                                       AsSDKString () const;
+        nonvirtual SDKString                                       AsSDKString (AllowMissingCharacterErrorsFlag) const;
         [[deprecated ("Since Stroika v3.0d2 - just use /0")]] void AsSDKString (SDKString* into) const { *into = AsSDKString (); }
 
     public:
         /**
          */
         nonvirtual string                                          AsNarrowSDKString () const;
+        nonvirtual string                                          AsNarrowSDKString (AllowMissingCharacterErrorsFlag) const;
         [[deprecated ("Since Stroika v3.0d2 - just use /0")]] void AsNarrowSDKString (string* into) const
         {
             *into = SDKString2Narrow (AsSDKString ());

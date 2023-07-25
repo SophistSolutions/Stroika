@@ -730,12 +730,6 @@ namespace Stroika::Foundation::Characters {
             }
         }
     }
-    inline string String::AsNarrowString (const locale& l) const
-    {
-        string result;
-        AsNarrowString (l, &result);
-        return result;
-    }
     template <typename T>
     inline T String::AsUTF8 () const
         requires (is_same_v<T, string> or is_same_v<T, u8string>)
@@ -801,7 +795,25 @@ namespace Stroika::Foundation::Characters {
         return AsNarrowString (locale{}); // @todo document why - linux one rationale - default - similar
 #endif
     }
+    inline SDKString String::AsSDKString (AllowMissingCharacterErrorsFlag) const
+    {
+#if qTargetPlatformSDKUseswchar_t
+        Memory::StackBuffer<wchar_t> maybeIgnoreBuf1;
+        span<const wchar_t>          thisData = GetData (&maybeIgnoreBuf1);
+        return SDKString{thisData.begin (), thisData.end ()};
+#elif qPlatform_MacOS
+        Memory::StackBuffer<char8_t> maybeIgnoreBuf1;
+        span<const char8_t> thisData = GetData (&maybeIgnoreBuf1); // Note this always works, since we can always map to UTF-8 any Stroika string
+        return SDKString{thisData.begin (), thisData.end ()};      // @todo DOCUMENT THAT MACOS USES UTF8 - SRC - LOGIC/RATIONALE
+#else
+        return AsNarrowString (locale{}, AllowMissingCharacterErrorsFlag::eIgnoreErrors); // @todo document why - linux one rationale - default - similar
+#endif
+    }
     inline string String::AsNarrowSDKString () const { return SDKString2Narrow (AsSDKString ()); }
+    inline string String::AsNarrowSDKString (AllowMissingCharacterErrorsFlag) const
+    {
+        return SDKString2Narrow (AsSDKString (AllowMissingCharacterErrorsFlag::eIgnoreErrors), AllowMissingCharacterErrorsFlag::eIgnoreErrors);
+    }
     template <typename T>
     inline T String::AsASCII () const
         requires (is_same_v<T, string> or is_same_v<T, Memory::StackBuffer<char>>)

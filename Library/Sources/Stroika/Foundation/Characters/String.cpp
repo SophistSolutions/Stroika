@@ -1433,7 +1433,7 @@ String String::LimitLength (size_t maxLen, bool keepLeft, const String& ellipsis
     }
 }
 
-void String::AsNarrowString (const locale& l, string* into) const
+string String::AsNarrowString (const locale& l) const
 {
     // Note: this could use CodeCvt, but directly using std::codecvt in this case pretty simple, and
     // more efficient this way --LGP 2023-02-14
@@ -1448,14 +1448,39 @@ void String::AsNarrowString (const locale& l, string* into) const
     mbstate_t      mbstate{};
     const wchar_t* from_next;
     char*          to_next;
-    into->resize (thisData.size () * 5); // not sure what size is always big enuf
+    Memory::StackBuffer<char> into{Memory::eUninitialized, thisData.size () * 5}; // not sure what size is always big enuf
     codecvt_base::result result =
-        cvt.out (mbstate, thisData.data (), thisData.data () + thisData.size (), from_next, into->data (), into->data () + into->size (), to_next);
+        cvt.out (mbstate, thisData.data (), thisData.data () + thisData.size (), from_next, into.data (), into.end (), to_next);
     if (result != codecvt_base::ok) [[unlikely]] {
         static const auto kException_ = Execution::RuntimeErrorException{"Error converting locale multibyte string to UNICODE"sv};
         Execution::Throw (kException_);
     }
-    into->resize (to_next - into->data ());
+    return string{into.data (), to_next};
+}
+
+string String::AsNarrowString (const locale& l, AllowMissingCharacterErrorsFlag) const
+{
+    // Note: this could use CodeCvt, but directly using std::codecvt in this case pretty simple, and
+    // more efficient this way --LGP 2023-02-14
+
+    // See http://en.cppreference.com/w/cpp/locale/codecvt/~codecvt
+    using Destructible_codecvt_byname = deletable_facet_<codecvt_byname<wchar_t, char, mbstate_t>>;
+    Destructible_codecvt_byname cvt{l.name ()};
+
+    Memory::StackBuffer<wchar_t> maybeIgnoreBuf1;
+    span<const wchar_t>          thisData = GetData (&maybeIgnoreBuf1);
+    // http://en.cppreference.com/w/cpp/locale/codecvt/out
+    mbstate_t                 mbstate{};
+    const wchar_t*            from_next;
+    char*                     to_next;
+    Memory::StackBuffer<char> into{Memory::eUninitialized, thisData.size () * 5}; // not sure what size is always big enuf
+    codecvt_base::result      result =
+        cvt.out (mbstate, thisData.data (), thisData.data () + thisData.size (), from_next, into.data (), into.end (), to_next);
+    if (result != codecvt_base::ok) [[unlikely]] {
+        /// UNCLEAR WHAT TODO HERE??? - skip char and continue consuming? or maybe this already does that? READ DOCS/TEST
+        WeakAssert (false);
+    }
+    return string{into.data (), to_next};
 }
 
 void String::erase (size_t from) { *this = RemoveAt (from, size ()); }

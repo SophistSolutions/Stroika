@@ -33,10 +33,20 @@ namespace Stroika::Foundation::Characters {
 #endif
 
     /**
+     *  This flag ignores missing code points (when transforming from UNICODE to some character set that might not contain them),
+     *  and does the best possible to map characters. Needed for things like translating a UNICODE error message to a locale{} 
+     *  characterset which might not contain some of those UNICODE characters.
+     */
+    enum class AllowMissingCharacterErrorsFlag {
+        eIgnoreErrors
+    };
+
+    /**
      *  On most platforms, this does nothing, but on Windows, it maps wstrings to string using code-page CP_ACP
      *  @todo add span<> overloads
      */
     string SDKString2Narrow (const SDKString& s);
+    string SDKString2Narrow (const SDKString& s, AllowMissingCharacterErrorsFlag);
 
     /**
      *  On most platforms, this does nothing, but on Windows, it maps strings to wstring using code-page CP_ACP

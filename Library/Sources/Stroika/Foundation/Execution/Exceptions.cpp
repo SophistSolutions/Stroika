@@ -68,7 +68,7 @@ ExceptionStringHelper::ExceptionStringHelper (const Characters::String& reasonFo
     : fActivities_{activities}
     , fRawErrorMessage_{reasonForError}
     , fFullErrorMessage_{mkMessage_ (reasonForError, activities)}
-    , fSDKCharString_{fFullErrorMessage_.AsNarrowSDKString ()}
+    , fSDKCharString_{fFullErrorMessage_.AsNarrowSDKString (AllowMissingCharacterErrorsFlag::eIgnoreErrors)}
 {
 }
 
