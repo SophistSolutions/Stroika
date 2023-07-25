@@ -9,11 +9,9 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#if qPlatform_Windows
-#include <Windows.h>
-#endif
+#include "../Containers/Common.h"
 
-#include "CodePage.h"
+#include "CodePage.h"   // for deprecated stuff
 
 namespace Stroika::Foundation::Execution {
     [[noreturn]] void ThrowSystemErrNo ();
@@ -33,6 +31,9 @@ namespace Stroika::Foundation::Characters {
         }
         else {
 #if qPlatform_Windows
+#ifndef WC_ERR_INVALID_CHARS
+            constexpr auto WC_ERR_INVALID_CHARS = 0x00000080;   // not always defined in windows depends on WINVER flag
+#endif
             static constexpr DWORD kFLAGS_ = WC_ERR_INVALID_CHARS;
             int stringLength = ::WideCharToMultiByte (CP_ACP, kFLAGS_, s.c_str (), static_cast<int> (s.length ()), nullptr, 0, nullptr, nullptr);
             if (stringLength == 0 and s.length () != 0) {
