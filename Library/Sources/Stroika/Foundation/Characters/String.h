@@ -1086,6 +1086,10 @@ namespace Stroika::Foundation::Characters {
 
     public:
         /**
+         *  See docs on SDKChar for meaning (charactet set).
+         * 
+         *  Note - many UNICODE Strings cannot be represented in the SDKString character set (especially if narrow - depends alot).
+         *  But in that case, AsNarrowSDKString () will throw, unless AllowMissingCharacterErrorsFlag is specified.
          */
         nonvirtual SDKString                                       AsSDKString () const;
         nonvirtual SDKString                                       AsSDKString (AllowMissingCharacterErrorsFlag) const;
@@ -1093,6 +1097,11 @@ namespace Stroika::Foundation::Characters {
 
     public:
         /**
+         *  See docs on SDKChar for meaning (charactet set). If SDKChar is a wide character, there is probably still a
+         *  default 'code page' to interpret narrow characters (Windows CP_ACP). This is a string in that characterset.
+         * 
+         *  Note - many UNICODE Strings cannot be represented in the SDKString character set (especially if narrow - depends alot).
+         *  But in that case, AsNarrowSDKString () will throw, unless AllowMissingCharacterErrorsFlag is specified.
          */
         nonvirtual string                                          AsNarrowSDKString () const;
         nonvirtual string                                          AsNarrowSDKString (AllowMissingCharacterErrorsFlag) const;

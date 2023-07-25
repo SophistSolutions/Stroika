@@ -351,9 +351,13 @@ span<char16_t> Characters::Private_::WindowsNative_::Bytes2Characters (span<cons
 span<byte> Characters::Private_::WindowsNative_::Characters2Bytes (span<const char16_t> from, span<byte> to) const
 {
     Require (ComputeTargetByteBufferSize (from) <= to.size ());
-    static constexpr DWORD kFLAGS_ = WC_ERR_INVALID_CHARS;
-    int r = ::WideCharToMultiByte (fCodePage_, kFLAGS_, reinterpret_cast<LPCWCH> (from.data ()), static_cast<int> (from.size ()),
-                                   reinterpret_cast<LPSTR> (to.data ()), static_cast<int> (to.size ()), nullptr, nullptr);
+    static constexpr DWORD kFLAGS_ = 0; // WC_ERR_INVALID_CHARS doesn't work (https://learn.microsoft.com/en-us/windows/win32/api/stringapiset/nf-stringapiset-widechartomultibyte), so must use lpUsedDefaultChar
+    BOOL usedDefaultChar{false};
+    int  r = ::WideCharToMultiByte (fCodePage_, kFLAGS_, reinterpret_cast<LPCWCH> (from.data ()), static_cast<int> (from.size ()),
+                                    reinterpret_cast<LPSTR> (to.data ()), static_cast<int> (to.size ()), nullptr, &usedDefaultChar);
+    if (usedDefaultChar) {
+        Execution::ThrowSystemErrNo (ERROR_NO_UNICODE_TRANSLATION);
+    }
     if (r == 0) {
         if (from.empty ()) {
             return span<byte>{}; // OK - empty from produces empty to
@@ -363,6 +367,7 @@ span<byte> Characters::Private_::WindowsNative_::Characters2Bytes (span<const ch
         }
     }
     else {
+        Assert (r > 0);
         return to.subspan (static_cast<size_t> (r));
     }
 }
@@ -399,9 +404,8 @@ size_t Characters::Private_::WindowsNative_::ComputeTargetByteBufferSize (varian
     }
     else {
         auto                   s       = get<span<const char16_t>> (src);
-        static constexpr DWORD kFLAGS_ = WC_ERR_INVALID_CHARS;
-        int r = ::WideCharToMultiByte (fCodePage_, kFLAGS_, reinterpret_cast<LPCWCH> (s.data ()), static_cast<int> (s.size ()), nullptr, 0,
-                                       nullptr, nullptr);
+        static constexpr DWORD kFLAGS_ = 0; // WC_ERR_INVALID_CHARS doesn't work (https://learn.microsoft.com/en-us/windows/win32/api/stringapiset/nf-stringapiset-widechartomultibyte)
+        int  r = ::WideCharToMultiByte (fCodePage_, kFLAGS_, reinterpret_cast<LPCWCH> (s.data ()), static_cast<int> (s.size ()), nullptr, 0, nullptr, nullptr);
         Assert (r >= 0);
         if (r == 0) {
             if (s.size () == 0) {
@@ -412,6 +416,7 @@ size_t Characters::Private_::WindowsNative_::ComputeTargetByteBufferSize (varian
             }
         }
         else {
+            Assert (r > 0);
             return static_cast<size_t> (r);
         }
     }

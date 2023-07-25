@@ -15,6 +15,7 @@
 
 namespace Stroika::Foundation::Execution {
     [[noreturn]] void ThrowSystemErrNo ();
+    [[noreturn]] void ThrowSystemErrNo (int sysErr);
 }
 
 namespace Stroika::Foundation::Characters {
@@ -31,18 +32,19 @@ namespace Stroika::Foundation::Characters {
         }
         else {
 #if qPlatform_Windows
-#ifndef WC_ERR_INVALID_CHARS
-            constexpr auto WC_ERR_INVALID_CHARS = 0x00000080; // not always defined in windows depends on WINVER flag
-#endif
-            static constexpr DWORD kFLAGS_ = WC_ERR_INVALID_CHARS;
+            static constexpr DWORD kFLAGS_ = 0; // WC_ERR_INVALID_CHARS doesn't work (https://learn.microsoft.com/en-us/windows/win32/api/stringapiset/nf-stringapiset-widechartomultibyte), so must use lpUsedDefaultChar
             int stringLength = ::WideCharToMultiByte (CP_ACP, kFLAGS_, s.c_str (), static_cast<int> (s.length ()), nullptr, 0, nullptr, nullptr);
             if (stringLength == 0 and s.length () != 0) {
                 Execution::ThrowSystemErrNo ();
             }
             string result;
             result.resize (stringLength);
+            BOOL usedDefaultChar{false};
             Verify (::WideCharToMultiByte (CP_ACP, kFLAGS_, s.c_str (), static_cast<int> (s.length ()), Containers::Start (result),
-                                           stringLength, nullptr, nullptr) == stringLength);
+                                           stringLength, nullptr, &usedDefaultChar) == stringLength);
+            if (usedDefaultChar) {
+                Execution::ThrowSystemErrNo (ERROR_NO_UNICODE_TRANSLATION);
+            }
             return result;
 #else
             AssertNotImplemented ();

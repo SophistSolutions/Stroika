@@ -11,7 +11,8 @@
 #include "SDKChar.h"
 
 /**
- *
+ *  TODO
+ *      @todo CONSIDER directly documenting/supporting EUC - https://en.wikipedia.org/wiki/Extended_Unix_Code as alternate for non-unicode systems
  */
 
 namespace Stroika::Foundation::Characters {

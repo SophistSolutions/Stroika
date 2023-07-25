@@ -34,6 +34,21 @@ namespace Stroika::Foundation::Characters {
 
     /**
      *  SDKChar is the kind of character passed to most/default platform SDK APIs.
+     * 
+     *  Platform-Specific Meaning:
+     *      o   Windows
+     *          Typically this is wchar_t, which is char16_t-ish. Windows SDK also supports an older "A" API (active Code page single byte)
+     *          which Stroika probably still supports, but this has not been tested in a while (not very useful, not used much anymore).
+     * 
+     *      o   Unix
+     *          There is no standard. This could be locale-dependent (often EUC based mutlibyte charactersets).
+     *          Or could be UTF-8. These aren't totally incompatible possabilities.
+     * 
+     *      o   MacOS
+     *          Same as 'Unix' above, but most typically UTF-8. So Stroika assumes UTF-8.
+     * 
+     *      o   Linux
+     *          Same as 'Unix' above - default to assume locale{} based.
      */
     using SDKChar = conditional_t<qTargetPlatformSDKUseswchar_t, wchar_t, char>;
 
