@@ -9,6 +9,9 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
+#if qPlatform_Windows
+#include <Windows.h>
+#endif
 
 #include "CodePage.h"
 
@@ -41,7 +44,7 @@ namespace Stroika::Foundation::Characters {
                                            stringLength, nullptr, nullptr) == stringLength);
             return result;
 #else
-            static_assert (false); // NYI
+            AssertNotImplemented ();
 #endif
         }
     }
@@ -69,7 +72,7 @@ namespace Stroika::Foundation::Characters {
                                            stringLength) == stringLength);
             return result;
 #else
-            static_assert (false); // NYI
+            AssertNotImplemented ();
 #endif
         }
     }
