@@ -586,18 +586,19 @@ namespace Stroika::Foundation::Characters {
         return fRep_->ComputeTargetByteBufferSize (srcSize);
     }
     template <IUNICODECanAlwaysConvertTo CHAR_T>
-    template <typename STRINGISH>
+    template <constructible_from<const CHAR_T*, const CHAR_T*> STRINGISH>
     STRINGISH CodeCvt<CHAR_T>::Bytes2String (span<const byte> from) const
     {
+        size_t                      origSize = from.size ();
         Memory::StackBuffer<CHAR_T> buf{this->ComputeTargetCharacterBufferSize (from)};
         span<CHAR_T>                r = this->Bytes2Characters (&from, span{buf});
         if (not from.empty ()) {
-            /// THROW SPLIT CHAR... BAD CHAR - @todo
+            Private_::ThrowErrorConvertingBytes2Characters_ (origSize - from.size ());
         }
         return STRINGISH{r.begin (), r.end ()};
     }
     template <IUNICODECanAlwaysConvertTo CHAR_T>
-    template <typename BLOBISH>
+    template <constructible_from<const byte*, const byte*> BLOBISH>
     BLOBISH CodeCvt<CHAR_T>::String2Bytes (span<const CHAR_T> from) const
     {
         Memory::StackBuffer<byte> buf{Memory::eUninitialized, this->ComputeTargetByteBufferSize (from)};

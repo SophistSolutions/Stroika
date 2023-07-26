@@ -317,16 +317,16 @@ namespace Stroika::Foundation::Characters {
 
     public:
         /**
-        *  FOR NOW, only support wstring, but later enhance to support other code pages
+         *  Convert a span of bytes to a 'string' like object - anything constructible from a 'span' of characters
          */
-        template <typename STRINGISH>
+        template <constructible_from<const CHAR_T*, const CHAR_T*> STRINGISH>
         nonvirtual STRINGISH Bytes2String (span<const byte> from) const;
 
     public:
         /**
-        *  FOR NOW, only support BLOB or vector<byte>
+         *  Convert a span of characters ('string') to a BLOB-like object - anything constructible from a 'span' of bytes
          */
-        template <typename BLOBISH>
+        template <constructible_from<const byte*, const byte*> BLOBISH>
         nonvirtual BLOBISH String2Bytes (span<const CHAR_T> from) const;
 
     private:
