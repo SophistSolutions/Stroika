@@ -557,7 +557,7 @@ namespace Stroika::Foundation::Characters {
         AssertNotNull (fRep_);
         Require (to.size () >= ComputeTargetCharacterBufferSize (from) or to.size () >= Bytes2Characters (from)); // ComputeTargetCharacterBufferSize cheaper to compute
         size_t origSize = from.size ();
-        auto result = fRep_->Bytes2Characters (&from, to);
+        auto   result   = fRep_->Bytes2Characters (&from, to);
         if (not from.empty ()) {
             Private_::ThrowErrorConvertingBytes2Characters_ (origSize - from.size ());
         }

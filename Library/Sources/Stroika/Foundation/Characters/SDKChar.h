@@ -46,6 +46,7 @@ namespace Stroika::Foundation::Characters {
      * 
      *      o   MacOS
      *          Same as 'Unix' above, but most typically UTF-8. So Stroika assumes UTF-8.
+     *          See <https://stackoverflow.com/questions/3071377/saner-way-to-get-character-encoding-of-the-cli-in-mac-os-x>
      * 
      *      o   Linux
      *          Same as 'Unix' above - default to assume locale{} based.

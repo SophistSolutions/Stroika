@@ -19,6 +19,11 @@ namespace Stroika::Foundation::Characters {
 
     /**
      *  This is the kind of String passed to most platform APIs.
+     * 
+     *  The easiest way to convert between a String and SDKString, is via the String class APIs:
+     *  AsSDKString, AsNarrowSDKString, FromSDKString, FromNarrowSDKString.
+     *
+     *  For std::string (etc) interop, that works, but also @SDKString2Narrow and @Narrow2SDKString
      *
      *  @see SDKChar
      */

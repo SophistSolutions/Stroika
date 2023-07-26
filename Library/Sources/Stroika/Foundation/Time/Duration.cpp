@@ -82,9 +82,10 @@ wstring Duration::As () const
         case eEmpty_:
             return wstring{};
         case eString_:
-            return ASCIIStringToWide (fStringRep_);
+            return wstring{fStringRep_.begin (), fStringRep_.end ()};
         case eNumeric_:
-            return ASCIIStringToWide (UnParseTime_ (count ()));
+            string tmp = UnParseTime_ (count ());
+            return wstring{tmp.begin (), tmp.end ()};
     }
     AssertNotReached ();
     return wstring{};

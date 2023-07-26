@@ -358,26 +358,6 @@ namespace Stroika::Foundation::Characters {
         NarrowStringToWide (s, codePage, &result);
         return result;
     }
-    inline wstring ASCIIStringToWide (const string& s)
-    {
-        if constexpr (qDebug) {
-            for (string::const_iterator i = s.begin (); i != s.end (); ++i) {
-                Assert (isascii (*i));
-            }
-        }
-        return wstring (s.begin (), s.end ());
-    }
-    inline string WideStringToASCII (const wstring& s)
-    {
-        if constexpr (qDebug) {
-            for (wstring::const_iterator i = s.begin (); i != s.end (); ++i) {
-                Assert (isascii (*i));
-            }
-        }
-        DISABLE_COMPILER_MSC_WARNING_START (4244) // 'argument': conversion from 'const wchar_t' to 'const _Elem', possible loss of data
-        return string{s.begin (), s.end ()};
-        DISABLE_COMPILER_MSC_WARNING_END (4244)
-    }
     inline string WideStringToUTF8 (const wstring& ws) { return WideStringToNarrow (ws, WellKnownCodePages::kUTF8); }
     inline void   UTF8StringToWide (const char* s, wstring* intoStr)
     {
@@ -398,6 +378,27 @@ namespace Stroika::Foundation::Characters {
     MapUNICODETextToSerializedFormat (const wchar_t* start, const wchar_t* end, CodePage useCP = WellKnownCodePages::kUTF8); // suitable for files
 
     [[deprecated ("Since Stroika v3.0d2 - use CodeCvt")]] wstring MapUNICODETextWithMaybeBOMTowstring (const char* start, const char* end);
+
+    [[deprecated ("Since Stroika v3.0d2 - use wstring{s.begin(), s.end()}")]] inline wstring ASCIIStringToWide (const string& s)
+    {
+        if constexpr (qDebug) {
+            for (string::const_iterator i = s.begin (); i != s.end (); ++i) {
+                Assert (isascii (*i));
+            }
+        }
+        return wstring (s.begin (), s.end ());
+    }
+    [[deprecated ("Since Stroika v3.0d2 - seems unneeded - use String{}.AsASCII() iuf needed}")]] inline string WideStringToASCII (const wstring& s)
+    {
+        if constexpr (qDebug) {
+            for (wstring::const_iterator i = s.begin (); i != s.end (); ++i) {
+                Assert (isascii (*i));
+            }
+        }
+        DISABLE_COMPILER_MSC_WARNING_START (4244) // 'argument': conversion from 'const wchar_t' to 'const _Elem', possible loss of data
+        return string{s.begin (), s.end ()};
+        DISABLE_COMPILER_MSC_WARNING_END (4244)
+    }
 
 }
 

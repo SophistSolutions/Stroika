@@ -199,9 +199,6 @@ namespace Stroika::Foundation::Characters {
     wstring UTF8StringToWide (const char* ws);
     wstring UTF8StringToWide (const string& ws);
 
-    wstring ASCIIStringToWide (const string& s);
-    string  WideStringToASCII (const wstring& s);
-
 }
 
 /*

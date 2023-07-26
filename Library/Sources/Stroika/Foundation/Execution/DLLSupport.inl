@@ -52,7 +52,7 @@ namespace Stroika::Foundation::Execution {
     {
         AssertNotNull (fModule_);
         RequireNotNull (procName);
-        return GetProcAddress (Characters::WideStringToASCII (procName).c_str ());
+        return GetProcAddress (Characters::String{procName}.AsNarrowSDKString ().c_str ());
     }
 #if !qPlatform_Windows
     inline DLLException::DLLException (const char* message)

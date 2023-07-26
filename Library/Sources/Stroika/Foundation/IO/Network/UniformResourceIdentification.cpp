@@ -333,7 +333,7 @@ String Query::ComputeQueryString () const
         //careful - need to encode first/second
         result += EncodeURLQueryStringField (i->fKey) + "=" + EncodeURLQueryStringField (i->fValue);
     }
-    return ASCIIStringToWide (result);
+    return String{result};
 }
 
 String Query::ToString () const
