@@ -8,6 +8,7 @@
 
 #include "../../../Foundation/Characters/CString/Utilities.h"
 #include "../../../Foundation/Characters/CodePage.h"
+#include "../../../Foundation/Characters/CodeCvt.h"
 #include "../../../Foundation/Characters/LineEndings.h"
 
 #include "../Config.h"
@@ -701,12 +702,7 @@ bool StyledTextIOReader_HTML::LookingAt (const char* text) const
 Led_tString StyledTextIOReader_HTML::MapInputTextToTString (const string& text)
 {
 #if qWideCharacters
-    Memory::StackBuffer<Led_tChar> wBuf{Memory::eUninitialized, text.length () + 1};
-    CodePageConverter              cpc{WellKnownCodePages::kANSI};
-    size_t                         outCharCnt = text.length ();
-    cpc.MapToUNICODE (text.c_str (), text.length (), wBuf.data (), &outCharCnt);
-    wBuf[outCharCnt] = '\0';
-    return Led_tString{wBuf.data ()};
+    return CodeCvt<Led_tChar>{WellKnownCodePages::kANSI}.Bytes2String<Led_tString> (Memory::SpanReInterpretCast<const byte> (span{text}));
 #else
     return text;
 #endif
@@ -1133,12 +1129,10 @@ void StyledTextIOReader_HTML::HandleHTMLThingyTag_a (bool start, const char* tex
             if (EmbeddedObjectCreatorRegistry::Get ().Lookup (StandardURLStyleMarker::kEmbeddingTag, &assoc)) {
                 AssertNotNull (assoc.fReadFromMemory);
 #if qWideCharacters
-                CodePageConverter cpc (WellKnownCodePages::kANSI);
-                size_t outCharCnt = cpc.MapFromUNICODE_QuickComputeOutBufSize (fHiddenTextAccumulation.c_str (), fHiddenTextAccumulation.length ());
-                Memory::StackBuffer<char> buf{Memory::eUninitialized, outCharCnt};
-                cpc.MapFromUNICODE (fHiddenTextAccumulation.c_str (), fHiddenTextAccumulation.length (), buf.data (), &outCharCnt);
-                buf[outCharCnt] = '\0';
-                Led_URLD urld   = Led_URLD{tagValue.c_str (), buf.data ()};
+                Led_URLD urld = Led_URLD{
+                    tagValue.c_str (), 
+                    CodeCvt<Led_tChar>{WellKnownCodePages::kANSI}.String2Bytes<string> (span{fHiddenTextAccumulation}).c_str ()
+                };
 #else
                 Led_URLD urld = Led_URLD{tagValue.c_str (), fHiddenTextAccumulation.c_str ()};
 #endif

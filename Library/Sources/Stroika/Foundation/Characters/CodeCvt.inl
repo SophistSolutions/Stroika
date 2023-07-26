@@ -595,7 +595,7 @@ namespace Stroika::Foundation::Characters {
         if (not from.empty ()) {
             Private_::ThrowErrorConvertingBytes2Characters_ (origSize - from.size ());
         }
-        return STRINGISH{r.begin (), r.end ()};
+        return STRINGISH{r.data (), r.data () + r.size ()};
     }
     template <IUNICODECanAlwaysConvertTo CHAR_T>
     template <constructible_from<const byte*, const byte*> BLOBISH>
@@ -607,7 +607,7 @@ namespace Stroika::Foundation::Characters {
             return string{reinterpret_cast<const char*> (r.data ()), reinterpret_cast<const char*> (r.data ()) + r.size ()};
         }
         else {
-            return BLOBISH{r.begin (), r.end ()};
+            return BLOBISH{r.data (), r.data () + r.size ()};
         }
     }
 
