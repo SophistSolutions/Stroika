@@ -130,6 +130,11 @@ namespace Stroika::Foundation::Memory {
         /**
          *  StackBuffer::StackBuffer (size_t) specifies the initial size - like StackBuffer::StackBuffer {} followed by resize (n); 
          *  StackBuffer::default-ctor creates a zero-sized stack buffer (so resize with resize, or push_back etc).
+         * 
+         *  \par Example Usage
+         *      \code
+         *          Memory::StackBuffer<byte> buf{Memory::eUninitialized, this->ComputeTargetByteBufferSize (from)};
+         *      \endcode
          */
         StackBuffer () noexcept;
         explicit StackBuffer (size_t nElements);
