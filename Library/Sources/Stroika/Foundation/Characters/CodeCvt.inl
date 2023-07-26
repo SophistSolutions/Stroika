@@ -285,10 +285,10 @@ namespace Stroika::Foundation::Characters {
                 }
                 else {
                     if (const size_t* i = get_if<size_t> (&src)) {
-                        fIntermediateVSFinalCHARCvt_.template ComputeTargetBufferSize<INTERMEDIATE_CHAR_T, CHAR_T> (*i);
+                        return fIntermediateVSFinalCHARCvt_.template ComputeTargetBufferSize<INTERMEDIATE_CHAR_T, CHAR_T> (*i);
                     }
                     else {
-                        fIntermediateVSFinalCHARCvt_.template ComputeTargetBufferSize<INTERMEDIATE_CHAR_T> (get<span<const CHAR_T>> (src));
+                        return fIntermediateVSFinalCHARCvt_.template ComputeTargetBufferSize<INTERMEDIATE_CHAR_T> (get<span<const CHAR_T>> (src));
                     }
                 }
             }();
