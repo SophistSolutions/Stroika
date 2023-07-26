@@ -1177,9 +1177,9 @@ void StyledTextFlavorPackageExternalizer::ExternalizeFlavor_RTF (WriterFlavorPac
 {
     Require (from <= to);
     Require (to <= GetTextStore ().GetEnd ());
-    unique_ptr<StandardStyledTextIOSrcStream> source (mkStandardStyledTextIOSrcStream (from, to));
+    unique_ptr<StandardStyledTextIOSrcStream> source{mkStandardStyledTextIOSrcStream (from, to)};
     StyledTextIOWriterSinkStream_Memory       sink;
-    StyledTextIOWriter_RTF                    textWriter (source.get (), &sink);
+    StyledTextIOWriter_RTF                    textWriter{source.get (), &sink};
     textWriter.Write ();
     flavorPackage.AddFlavorData (kRTFClipFormat, sink.GetLength (), sink.PeekAtData ());
 }
@@ -1211,8 +1211,8 @@ StyledTextFlavorPackageExternalizer::mkStandardStyledTextIOSrcStream (size_t sel
 using EmptySelStyleTextRep = StandardStyledTextInteractor::EmptySelStyleTextRep;
 
 EmptySelStyleTextRep::EmptySelStyleTextRep (StandardStyledTextInteractor* interactor, size_t selStart, size_t selEnd)
-    : inherited (selStart, selEnd)
-    , fSavedStyle (interactor->fEmptySelectionStyle)
+    : inherited{selStart, selEnd}
+    , fSavedStyle{interactor->fEmptySelectionStyle}
 {
 }
 

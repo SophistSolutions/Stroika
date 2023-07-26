@@ -250,6 +250,9 @@ namespace Stroika::Foundation::Characters {
          *  If the input buffer ends with any incomplete characters, *from will refer to those characters
          *  on function completion.
          * 
+         *  The overload taking pinter to from returns the amount left. The overload taking span<> - not pointer - 
+         *  throws if not all consumed.
+         * 
          *  The caller typically will wish to save those, and resubmit their BytesToCharacter call
          *  with a new buffer, starting with those (but there is no requirement to do so).
          * 
@@ -267,6 +270,7 @@ namespace Stroika::Foundation::Characters {
          */
         nonvirtual size_t Bytes2Characters (span<const byte> from) const;
         nonvirtual span<CHAR_T> Bytes2Characters (span<const byte>* from, span<CHAR_T> to) const;
+        nonvirtual span<CHAR_T> Bytes2Characters (span<const byte> from, span<CHAR_T> to) const;
 
     public:
         /*

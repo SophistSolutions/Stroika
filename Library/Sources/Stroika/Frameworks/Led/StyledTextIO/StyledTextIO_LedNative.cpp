@@ -15,6 +15,7 @@
 
 #include "../../../Foundation/Characters/CString/Utilities.h"
 #include "../../../Foundation/Characters/CodePage.h"
+#include "../../../Foundation/Characters/CodeCvt.h"
 #include "../../../Foundation/Characters/LineEndings.h"
 #include "../../../Foundation/Characters/String.h"
 #include "../../../Foundation/DataExchange/BadFormatException.h"
@@ -428,13 +429,8 @@ void StyledTextIOReader_LedNativeFileFormat::Read_Version4 (const char* cookie)
 #if qWideCharacters
         size_t                 nChars = totalTextLength;
         StackBuffer<Led_tChar> unicodeText{Memory::eUninitialized, nChars};
-#if 1
-        CodePageConverter (GetDefaultSDKCodePage ()).MapToUNICODE (buf.data (), totalTextLength, unicodeText.data (), &nChars);
-        GetSinkStream ().AppendText (unicodeText.data (), nChars, NULL);
-#else
-        size_t nUNICODEChars = ::MultiByteToWideChar (CP_ACP, 0, buf.data (), totalTextLength, unicodeText.data (), nChars);
-        GetSinkStream ().AppendText (unicodeText.data (), nUNICODEChars, NULL);
-#endif
+        auto                   text = CodeCvt<Led_tChar>{GetDefaultSDKCodePage ()}.Bytes2Characters (Memory::SpanReInterpretCast<const byte> (span{buf}), span{unicodeText});
+        GetSinkStream ().AppendText (text.data (), text.size (), nullptr);
 #else
         GetSinkStream ().AppendText (buf, totalTextLength, NULL);
 #endif
@@ -532,13 +528,8 @@ void StyledTextIOReader_LedNativeFileFormat::Read_Version5 (const char* cookie)
 #if qWideCharacters
         size_t                 nChars = totalTextLength;
         StackBuffer<Led_tChar> unicodeText{Memory::eUninitialized, nChars};
-#if 1
-        CodePageConverter (GetDefaultSDKCodePage ()).MapToUNICODE (buf.data (), totalTextLength, unicodeText.data (), &nChars);
-        GetSinkStream ().AppendText (unicodeText.data (), nChars, NULL);
-#else
-        size_t nUNICODEChars = ::MultiByteToWideChar (CP_ACP, 0, buf, totalTextLength, unicodeText, nChars);
-        GetSinkStream ().AppendText (unicodeText, nUNICODEChars, NULL);
-#endif
+        auto text = CodeCvt<Led_tChar>{GetDefaultSDKCodePage ()}.Bytes2Characters (Memory::SpanReInterpretCast<const byte> (span{buf}), span{unicodeText});
+        GetSinkStream ().AppendText (text.data (), text.size (), nullptr);
 #else
         GetSinkStream ().AppendText (buf, totalTextLength, NULL);
 #endif
@@ -647,8 +638,8 @@ void StyledTextIOReader_LedNativeFileFormat::Read_Version6 (const char* cookie)
 #if qWideCharacters
         size_t                 nChars = totalTextLength;
         StackBuffer<Led_tChar> unicodeText{Memory::eUninitialized, nChars};
-        CodePageConverter{GetDefaultSDKCodePage ()}.MapToUNICODE (buf.data (), totalTextLength, unicodeText.data (), &nChars);
-        GetSinkStream ().AppendText (unicodeText.data (), nChars, NULL);
+        auto text = CodeCvt<Led_tChar>{GetDefaultSDKCodePage ()}.Bytes2Characters (Memory::SpanReInterpretCast<const byte> (span{buf}), span{unicodeText});
+        GetSinkStream ().AppendText (text.data (), text.size (), nullptr);
 #else
         GetSinkStream ().AppendText (buf.data (), totalTextLength, NULL);
 #endif
@@ -877,11 +868,7 @@ void StyledTextIOWriter_LedNativeFileFormat::Write_Version6 ()
 #if qWideCharacters
         size_t            nChars = totalTextLength * sizeof (wchar_t);
         StackBuffer<char> result{Memory::eUninitialized, nChars};
-#if 1
-        CodePageConverter{GetDefaultSDKCodePage ()}.MapFromUNICODE (buf.data (), totalTextLength, result.data (), &nChars);
-#else
-        nChars = WideCharToMultiByte (CP_ACP, 0, buf, totalTextLength, result, nChars, NULL, NULL);
-#endif
+        nChars = CodeCvt<Led_tChar>{GetDefaultSDKCodePage ()}.Characters2Bytes (span{buf}, Memory::SpanReInterpretCast<byte> (span{result})).size ();
         {
             uint32_t encodedTL = 0;
             SizeTToBuf (nChars, &encodedTL);
