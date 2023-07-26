@@ -7,15 +7,19 @@
 #include <mutex>
 #include <set>
 
-#include "../Characters/CString/Utilities.h"
-#include "../Characters/Format.h"
-#include "../Characters/String.h"
-#include "../Characters/StringBuilder.h"
+
 #include "../Configuration/Common.h"
 #include "../Containers/Common.h"
 #include "../Execution/Common.h"
 #include "../Execution/Exceptions.h"
 #include "../Memory/StackBuffer.h"
+
+#include "CString/Utilities.h"
+#include "Format.h"
+#include "String.h"
+#include "StringBuilder.h"
+
+#include "CodeCvt.h"
 
 #include "CodePage.h"
 
@@ -996,28 +1000,6 @@ wstring CodePagePrettyNameMapper::GetName (CodePage cp)
  *********************** Characters::WideStringToNarrow *************************
  ********************************************************************************
  */
-namespace {
-    void PortableWideStringToNarrow_ (const wchar_t* wsStart, const wchar_t* wsEnd, CodePage codePage, string* intoResult)
-    {
-        RequireNotNull (intoResult);
-        Require (wsStart <= wsEnd);
-        size_t            inSize = wsEnd - wsStart;
-        CodePageConverter cc{codePage};
-        // this grossly overestimates size - which is a problem for the RESIZE below!!! COULD pointlessly run out of memroy and intitialize data to good values...
-        size_t outSizeBuf = cc.MapFromUNICODE_QuickComputeOutBufSize (wsStart, inSize);
-        intoResult->resize (outSizeBuf);
-        size_t actualOutSize = 0;
-        if (inSize != 0) {
-            actualOutSize = outSizeBuf;
-            cc.MapFromUNICODE (wsStart, inSize, Containers::Start (*intoResult), &actualOutSize);
-            if (intoResult->size () != actualOutSize) {
-                // shrink
-                Assert (intoResult->size () > actualOutSize);
-                intoResult->resize (actualOutSize);
-            }
-        }
-    }
-}
 void Characters::WideStringToNarrow (const wchar_t* wsStart, const wchar_t* wsEnd, CodePage codePage, string* intoResult)
 {
     RequireNotNull (intoResult);
@@ -1025,7 +1007,7 @@ void Characters::WideStringToNarrow (const wchar_t* wsStart, const wchar_t* wsEn
 #if qPlatform_Windows
     Platform::Windows::WideStringToNarrow (wsStart, wsEnd, codePage, intoResult);
 #else
-    PortableWideStringToNarrow_ (wsStart, wsEnd, codePage, intoResult);
+    *intoResult = CodeCvt<wchar_t>{codePage}.String2Bytes<string> (span{wsStart, wsEnd});
 #endif
 }
 
@@ -1034,6 +1016,7 @@ void Characters::WideStringToNarrow (const wchar_t* wsStart, const wchar_t* wsEn
  *********************** Characters::NarrowStringToWide *************************
  ********************************************************************************
  */
+#if 0
 namespace {
     void PortableNarrowStringToWide_ (const char* sStart, const char* sEnd, CodePage codePage, wstring* intoResult)
     {
@@ -1056,6 +1039,7 @@ namespace {
         }
     }
 }
+#endif
 void Characters::NarrowStringToWide (const char* sStart, const char* sEnd, CodePage codePage, wstring* intoResult)
 {
     RequireNotNull (intoResult);
@@ -1063,7 +1047,7 @@ void Characters::NarrowStringToWide (const char* sStart, const char* sEnd, CodeP
 #if qPlatform_Windows
     Platform::Windows::NarrowStringToWide (sStart, sEnd, codePage, intoResult);
 #else
-    PortableNarrowStringToWide_ (sStart, sEnd, codePage, intoResult);
+    *intoResult = CodeCvt<wchar_t>{codePage}.Bytes2String<wstring> (span{reinterpret_cast<const byte*> (sStart), static_cast<size_t>(sEnd - sStart)});
 #endif
 }
 

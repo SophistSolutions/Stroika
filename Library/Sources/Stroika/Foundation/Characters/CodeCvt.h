@@ -315,6 +315,20 @@ namespace Stroika::Foundation::Characters {
         nonvirtual size_t ComputeTargetByteBufferSize (span<const CHAR_T> src) const;
         nonvirtual size_t ComputeTargetByteBufferSize (size_t srcSize) const;
 
+    public:
+        /**
+        *  FOR NOW, only support wstring, but later enhance to support other code pages
+         */
+        template <typename STRINGISH>
+        nonvirtual STRINGISH Bytes2String (span<const byte> from) const;
+
+    public:
+        /**
+        *  FOR NOW, only support BLOB or vector<byte>
+         */
+        template <typename BLOBISH>
+        nonvirtual BLOBISH String2Bytes (span<const CHAR_T> from) const;
+
     private:
         shared_ptr<IRep> fRep_;
 

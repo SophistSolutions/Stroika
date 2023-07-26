@@ -13,6 +13,8 @@
 #include <bit>
 
 #include "../Debug/Assertions.h"
+#include "../Memory/StackBuffer.h"
+
 #include "TextConvert.h"
 #include "UTFConvert.h"
 
@@ -582,6 +584,30 @@ namespace Stroika::Foundation::Characters {
     inline size_t CodeCvt<CHAR_T>::ComputeTargetByteBufferSize (size_t srcSize) const
     {
         return fRep_->ComputeTargetByteBufferSize (srcSize);
+    }
+    template <IUNICODECanAlwaysConvertTo CHAR_T>
+    template <typename STRINGISH>
+    STRINGISH CodeCvt<CHAR_T>::Bytes2String (span<const byte> from) const
+    {
+        Memory::StackBuffer<CHAR_T> buf{this->ComputeTargetCharacterBufferSize (from)};
+        span<CHAR_T>                r = this->Bytes2Characters (&from, span{buf});
+        if (not from.empty ()) {
+            /// THROW SPLIT CHAR... BAD CHAR - @todo
+        }
+        return STRINGISH{r.begin (), r.end ()};
+    }
+    template <IUNICODECanAlwaysConvertTo CHAR_T>
+    template <typename BLOBISH>
+    BLOBISH CodeCvt<CHAR_T>::String2Bytes (span<const CHAR_T> from) const
+    {
+        Memory::StackBuffer<byte> buf{Memory::eUninitialized, this->ComputeTargetByteBufferSize (from)};
+        const span<const byte>    r = this->Characters2Bytes (from, span{buf});
+        if constexpr (same_as<BLOBISH, string>) {
+            return string{reinterpret_cast<const char*> (r.data ()), reinterpret_cast<const char*> (r.data ()) + r.size ()};
+        }
+        else {
+            return BLOBISH{r.begin (), r.end ()};
+        }
     }
 
 }
