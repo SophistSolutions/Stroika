@@ -679,7 +679,7 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
         nonvirtual void     UseInputCharSetEncoding (CodePage codePage);
 
     private:
-        CodePage fCurrentInputCharSetEncoding;
+        CodePage fCurrentInputCharSetEncoding_;
 #if qWideCharacters
         char fMultiByteInputCharBuf[2];
 #endif
@@ -989,7 +989,7 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
         nonvirtual void     UseInputCharSetEncoding (CodePage codePage);
 
     private:
-        CodePage fCurrentInputCharSetEncoding;
+        CodePage fCurrentInputCharSetEncoding_;
 
     protected:
         RTFIO::SingleByteCharsetToCharsetMappingTable fCharsetMappingTable;
@@ -1173,7 +1173,7 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
 
     //  class   StyledTextIOReader_RTF::ReaderContext
     inline StyledTextIOReader_RTF& StyledTextIOReader_RTF::ReaderContext::GetReader () const { return fReader; }
-    inline CodePage StyledTextIOReader_RTF::ReaderContext::GetCurrentInputCharSetEncoding () const { return fCurrentInputCharSetEncoding; }
+    inline CodePage StyledTextIOReader_RTF::ReaderContext::GetCurrentInputCharSetEncoding () const { return fCurrentInputCharSetEncoding_; }
 #if !qWideCharacters
     inline CodePage StyledTextIOReader_RTF::ReaderContext::GetCurrentOutputCharSetEncoding () const
     {
@@ -1299,7 +1299,7 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
     //  class   StyledTextIOWriter_RTF
     inline CodePage StyledTextIOWriter_RTF::GetCurrentOutputCharSetEncoding () const { return fCurrentOutputCharSetEncoding; }
 #if !qWideCharacters
-    inline CodePage StyledTextIOWriter_RTF::GetCurrentInputCharSetEncoding () const { return fCurrentInputCharSetEncoding; }
+    inline CodePage StyledTextIOWriter_RTF::GetCurrentInputCharSetEncoding () const { return fCurrentInputCharSetEncoding_; }
 #endif
 
 }

@@ -13,6 +13,7 @@
 #include "../../../Foundation/Characters/Platform/Windows/CodePage.h"
 #endif
 #include "../../../Foundation/Characters/CString/Utilities.h"
+#include "../../../Foundation/Characters/CodeCvt.h"
 #include "../../../Foundation/Characters/String.h"
 #include "../../../Foundation/DataExchange/BadFormatException.h"
 #if qPlatform_Windows
@@ -1214,9 +1215,9 @@ void SinkStreamDestination::FlushParaEndings () const
  ********************************************************************************
  */
 SinkStreamDestination::CellInfo::CellInfo ()
-    : f_cellx (TWIPS{0})
-    , f_clcbpat (Color::kWhite)
-    , fColSpan (1)
+    : f_cellx{TWIPS{0}}
+    , f_clcbpat{Color::kWhite}
+    , fColSpan{1}
 {
 }
 
@@ -1226,11 +1227,11 @@ SinkStreamDestination::CellInfo::CellInfo ()
  ********************************************************************************
  */
 SinkStreamDestination::RowInfo::RowInfo ()
-    : f_trrh (TWIPS{0})
-    , f_trleft (TWIPS{0})
-    , fDefaultCellMargins (TWIPS{0}, TWIPS{0}, TWIPS{0}, TWIPS{0})
-    , fDefaultCellSpacing (TWIPS{0}, TWIPS{0}, TWIPS{0}, TWIPS{0})
-    , fCellInfosForThisRow ()
+    : f_trrh{TWIPS{0}}
+    , f_trleft{TWIPS{0}}
+    , fDefaultCellMargins{TWIPS{0}, TWIPS{0}, TWIPS{0}, TWIPS{0}}
+    , fDefaultCellSpacing{TWIPS{0}, TWIPS{0}, TWIPS{0}, TWIPS{0}}
+    , fCellInfosForThisRow {}
 {
 }
 
@@ -1240,10 +1241,10 @@ SinkStreamDestination::RowInfo::RowInfo ()
  ********************************************************************************
  */
 StyledTextIOReader_RTF::ReaderContext::ReaderContext (StyledTextIOReader_RTF& reader)
-    : fReader (reader)
+    : fReader{reader}
     , fDocumentCharacterSet (Characters::WellKnownCodePages::kANSI)
     , // ANSI default, according to RTF spec
-    fCurrentInputCharSetEncoding (Characters::WellKnownCodePages::kANSI)
+    fCurrentInputCharSetEncoding_ (Characters::WellKnownCodePages::kANSI)
     ,
 #if qWideCharacters
 //fMultiByteInputCharBuf (),
@@ -1255,7 +1256,7 @@ StyledTextIOReader_RTF::ReaderContext::ReaderContext (StyledTextIOReader_RTF& re
     fCurrentOutputCharSetEncoding (WellKnownCodePages::kANSI)
     , // not sure???
 #endif
-    fCharsetMappingTable (fCurrentInputCharSetEncoding, fCurrentOutputCharSetEncoding)
+    fCharsetMappingTable (fCurrentInputCharSetEncoding_, fCurrentOutputCharSetEncoding)
     , // note: important these two members DECLARED before this one... else not INITED at this point!
 #endif
 #if qWideCharacters
@@ -1296,11 +1297,11 @@ StyledTextIOReader_RTF::ReaderContext::~ReaderContext ()
 void StyledTextIOReader_RTF::ReaderContext::UseInputCharSetEncoding (CodePage codePage)
 {
 #if qWideCharacters
-    fCurrentInputCharSetEncoding = codePage;
+    fCurrentInputCharSetEncoding_ = codePage;
 #else
-    if (fCurrentInputCharSetEncoding != codePage) {
-        fCurrentInputCharSetEncoding = codePage;
-        fCharsetMappingTable = RTFIO::SingleByteCharsetToCharsetMappingTable (fCurrentInputCharSetEncoding, fCurrentOutputCharSetEncoding);
+    if (fCurrentInputCharSetEncoding_ != codePage) {
+        fCurrentInputCharSetEncoding_ = codePage;
+        fCharsetMappingTable = RTFIO::SingleByteCharsetToCharsetMappingTable (fCurrentInputCharSetEncoding_, fCurrentOutputCharSetEncoding);
     }
 #endif
 }
@@ -1310,7 +1311,7 @@ void StyledTextIOReader_RTF::ReaderContext::UseOutputCharSetEncoding (CodePage c
 {
     if (fCurrentOutputCharSetEncoding != codePage) {
         fCurrentOutputCharSetEncoding = codePage;
-        fCharsetMappingTable = RTFIO::SingleByteCharsetToCharsetMappingTable (fCurrentInputCharSetEncoding, fCurrentOutputCharSetEncoding);
+        fCharsetMappingTable = RTFIO::SingleByteCharsetToCharsetMappingTable (fCurrentInputCharSetEncoding_, fCurrentOutputCharSetEncoding);
     }
 }
 #endif
@@ -1365,7 +1366,9 @@ void StyledTextIOReader_RTF::ReaderContext::PutRawCharToDestination (char c)
 
     wchar_t outChar;
     size_t  nOutChars = 1;
-    CodePageConverter{codePage}.MapToUNICODE (fMultiByteInputCharBuf, fMultiByteInputCharBuf[1] == 0 ? 1 : 2, &outChar, &nOutChars);
+
+    auto inBuf = span{reinterpret_cast<const byte*> (fMultiByteInputCharBuf), 2};
+    nOutChars = Characters::CodeCvt<wchar_t>{codePage}.Bytes2Characters (&inBuf,span{&outChar, 1}).size ();
     Assert (nOutChars == 0 or nOutChars == 1);
     if (nOutChars == 1) {
         GetDestination ().AppendText (&outChar, 1);
@@ -4109,13 +4112,13 @@ StyledTextIOWriter_RTF::StyledTextIOWriter_RTF (SrcStream* srcStream, SinkStream
     ,
 #if !qWideCharacters
 #if qPlatform_MacOS
-    fCurrentInputCharSetEncoding (WellKnownCodePages::kMAC)
+    fCurrentInputCharSetEncoding_{WellKnownCodePages::kMAC}
     ,
 #elif qPlatform_Windows || qStroika_FeatureSupported_XWindows
-    fCurrentInputCharSetEncoding{WellKnownCodePages::kANSI}
+    fCurrentInputCharSetEncoding_{WellKnownCodePages::kANSI}
     , // not sure???
 #endif
-    fCharsetMappingTable (fCurrentInputCharSetEncoding, fCurrentOutputCharSetEncoding)
+    fCharsetMappingTable (fCurrentInputCharSetEncoding_, fCurrentOutputCharSetEncoding)
     , // note: important these two members DECLARED before this one... else not INITED at this point!
 #endif
     fCharactersSavedByName ()
@@ -4153,7 +4156,7 @@ void StyledTextIOWriter_RTF::UseOutputCharSetEncoding (CodePage codePage)
 #else
     if (fCurrentOutputCharSetEncoding != codePage) {
         fCurrentOutputCharSetEncoding = codePage;
-        fCharsetMappingTable = RTFIO::SingleByteCharsetToCharsetMappingTable (fCurrentInputCharSetEncoding, fCurrentOutputCharSetEncoding);
+        fCharsetMappingTable = RTFIO::SingleByteCharsetToCharsetMappingTable (fCurrentInputCharSetEncoding_, fCurrentOutputCharSetEncoding);
     }
 #endif
 }
@@ -4161,9 +4164,9 @@ void StyledTextIOWriter_RTF::UseOutputCharSetEncoding (CodePage codePage)
 #if !qWideCharacters
 void StyledTextIOWriter_RTF::UseInputCharSetEncoding (CodePage codePage)
 {
-    if (fCurrentInputCharSetEncoding != codePage) {
-        fCurrentInputCharSetEncoding = codePage;
-        fCharsetMappingTable = RTFIO::SingleByteCharsetToCharsetMappingTable (fCurrentInputCharSetEncoding, fCurrentOutputCharSetEncoding);
+    if (fCurrentInputCharSetEncoding_ != codePage) {
+        fCurrentInputCharSetEncoding_ = codePage;
+        fCharsetMappingTable = RTFIO::SingleByteCharsetToCharsetMappingTable (fCurrentInputCharSetEncoding_, fCurrentOutputCharSetEncoding);
     }
 }
 #endif
@@ -4351,9 +4354,12 @@ void StyledTextIOWriter_RTF::WriteBodyCharacter (WriterContext& writerContext, L
 
 void StyledTextIOWriter_RTF::WritePlainUnicodeCharCharacterHelper (wchar_t c)
 {
-    char   mbCharBuf[2];
+    char   mbCharBuf[2];    
     size_t mbCharCount = 2;
-    CodePageConverter{fCurrentOutputCharSetEncoding}.MapFromUNICODE (&c, 1, mbCharBuf, &mbCharCount);
+    // NOTE - this code was written with assumption of char16_t == wchar_t - but newer Stroika more picky, so if ever happens just drop
+    // on floor for now --LGP 2023-07-27
+    mbCharCount = CodeCvt<char16_t>{fCurrentOutputCharSetEncoding}.Characters2Bytes (Memory::SpanReInterpretCast<char16_t> (span{&c, 1}),
+                                                                                   Memory::SpanReInterpretCast<byte, char> (span{mbCharBuf})).size();
     Assert (mbCharCount == 1 or mbCharCount == 2);
 
     bool needToWriteUNICODE = c >= 0x80; //  write UNICODE if non-ascii

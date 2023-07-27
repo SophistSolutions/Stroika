@@ -242,6 +242,10 @@ when debugging is ON, then you may want to turn this flag ON.</p>
                 <p>See also @'qMultiByteCharacters' and @'qSingleByteCharacters'. Note that
             @'qWideCharacters', @'qMultiByteCharacters', and @'qSingleByteCharacters' are mutually exclusive.</p>
                 <p>Defaults TRUE (if @'qMultiByteCharacters', and @'qSingleByteCharacters' are false).</p>
+
+
+                \NOTE - as of Stroika 3.0d2 - we will continue supporting this flag, but will switch to always using UNICODE.
+                       Just using char16_t for led_tChar vs. char8_t. NOT NOW - big change. But worthwhile improvement.
 */
 #ifndef qWideCharacters
 #if qMultiByteCharacters || qSingleByteCharacters
