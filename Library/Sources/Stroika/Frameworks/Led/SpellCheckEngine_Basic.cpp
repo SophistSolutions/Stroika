@@ -13,6 +13,7 @@
 #include "../../Foundation/IO/FileSystem/FileOutputStream.h"
 #include "../../Foundation/Memory/BLOB.h"
 #include "../../Foundation/Memory/StackBuffer.h"
+#include "../../Foundation/Streams/TextWriter.h"
 
 #include "SpellCheckEngine_Basic.h"
 
@@ -1092,14 +1093,8 @@ void SpellCheckEngine_Basic_Simple::WriteToUD ()
     vector<Led_tChar> data = fUD->SaveToBuffer ();
 
     IO::FileSystem::FileOutputStream::Ptr writer = IO::FileSystem::FileOutputStream::New (filesystem::path (fUDName));
-
 #if qWideCharacters
-    CodePageConverter cpc        = CodePageConverter{WellKnownCodePages::kUTF8, CodePageConverter::eHandleBOM};
-    size_t            outCharCnt = cpc.MapFromUNICODE_QuickComputeOutBufSize (Traversal::Iterator2Pointer (data.begin ()), data.size ());
-    StackBuffer<char> fileData2{Memory::eUninitialized, outCharCnt};
-    cpc.MapFromUNICODE (Traversal::Iterator2Pointer (data.begin ()), data.size (), fileData2.data (), &outCharCnt);
-    writer.Write (reinterpret_cast<const byte*> (static_cast<char*> (fileData2)),
-                  reinterpret_cast<const byte*> (static_cast<char*> (fileData2)) + outCharCnt);
+    Streams::TextWriter::New (writer, UnicodeExternalEncodings::eUTF8, ByteOrderMark::eInclude).Write (data.data (), data.data () + data.size ());
 #else
     writer.Append (reinterpret_cast<const byte*> (Traversal::Iterator2Pointer (data.begin ())), data.size ());
 #endif
