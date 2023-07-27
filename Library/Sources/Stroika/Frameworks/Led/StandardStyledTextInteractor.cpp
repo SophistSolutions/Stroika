@@ -802,7 +802,7 @@ void StyledTextFlavorPackageInternalizer::InternalizeFlavor_FILEGuessFormatsFrom
 #elif qPlatform_Windows || qStroika_FeatureSupported_XWindows
     const Characters::SDKChar* fileName,
 #endif
-    Led_ClipFormat* suggestedClipFormat, CodePage* suggestedCodePage)
+    Led_ClipFormat* suggestedClipFormat, optional<CodePage> suggestedCodePage)
 {
     inherited::InternalizeFlavor_FILEGuessFormatsFromName (fileName, suggestedClipFormat, suggestedCodePage);
 
@@ -832,7 +832,8 @@ void StyledTextFlavorPackageInternalizer::InternalizeFlavor_FILEGuessFormatsFrom
 #endif
 }
 
-void StyledTextFlavorPackageInternalizer::InternalizeFlavor_FILEGuessFormatsFromStartOfData (Led_ClipFormat* suggestedClipFormat, CodePage* suggestedCodePage,
+void StyledTextFlavorPackageInternalizer::InternalizeFlavor_FILEGuessFormatsFromStartOfData (Led_ClipFormat*    suggestedClipFormat,
+                                                                                             optional<CodePage> suggestedCodePage,
                                                                                              const byte* fileStart, const byte* fileEnd)
 {
     inherited::InternalizeFlavor_FILEGuessFormatsFromStartOfData (suggestedClipFormat, suggestedCodePage, fileStart, fileEnd);

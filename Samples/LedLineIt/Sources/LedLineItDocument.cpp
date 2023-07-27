@@ -348,7 +348,8 @@ BOOL LedLineItDocument::OnOpenDocument (LPCTSTR lpszPathName)
 
     public:
         virtual void InternalizeFlavor_FILEGuessFormatsFromStartOfData ([[maybe_unused]] Led_ClipFormat* suggestedClipFormat,
-                                                                        CodePage* suggestedCodePage, const byte* fileStart, const byte* fileEnd) override
+                                                                        optional<CodePage> suggestedCodePage, const byte* fileStart,
+                                                                        const byte* fileEnd) override
         {
             size_t curLineSize = 0;
             size_t maxLineSize = 0;
@@ -361,8 +362,8 @@ BOOL LedLineItDocument::OnOpenDocument (LPCTSTR lpszPathName)
                 }
                 maxLineSize = max (maxLineSize, curLineSize);
             }
-            if (suggestedCodePage != NULL and (*suggestedCodePage == Characters::WellKnownCodePages::kUNICODE_WIDE or
-                                               *suggestedCodePage == Characters::WellKnownCodePages::kUNICODE_WIDE_BIGENDIAN)) {
+            if (suggestedCodePage and (suggestedCodePage == Characters::WellKnownCodePages::kUNICODE_WIDE or
+                                               suggestedCodePage == Characters::WellKnownCodePages::kUNICODE_WIDE_BIGENDIAN)) {
                 maxLineSize /= 2; // because we'd be counting null-bytes between chars.
                 // Note this whole computation is VERY approximate - because its counting raw bytes of what could be
                 // encoded text. For example - if the text was SJIS or UTF-7 encoding of far-east text - this would
@@ -382,7 +383,8 @@ BOOL LedLineItDocument::OnOpenDocument (LPCTSTR lpszPathName)
             }
         }
 
-        virtual bool InternalizeFlavor_FILEDataRawBytes (Led_ClipFormat* suggestedClipFormat, CodePage* suggestedCodePage, size_t from,
+        virtual bool InternalizeFlavor_FILEDataRawBytes (Led_ClipFormat* suggestedClipFormat, optional<CodePage> suggestedCodePage,
+                                                         size_t from,
                                                          size_t to, const void* rawBytes, size_t nRawBytes) override
         {
             Led_ClipFormat cf = (suggestedClipFormat == NULL or *suggestedClipFormat == kBadClipFormat) ? kTEXTClipFormat : *suggestedClipFormat;
@@ -392,12 +394,7 @@ BOOL LedLineItDocument::OnOpenDocument (LPCTSTR lpszPathName)
 
             if (fBreakLongLines) {
 #if qWideCharacters
-                CodePage useCodePage = (suggestedCodePage == NULL or *suggestedCodePage == kCodePage_INVALID)
-                                           ? CodePagesGuesser ().Guess (rawBytes, nRawBytes)
-                                           : *suggestedCodePage;
-                if (suggestedCodePage != NULL) {
-                    *suggestedCodePage = useCodePage;
-                }
+                CodePage useCodePage = suggestedCodePage.value_or (CodePagesGuesser{}.Guess (rawBytes, nRawBytes));
                 CodePageConverter cpc = CodePageConverter{useCodePage, CodePageConverter::eHandleBOM};
                 size_t outCharCnt     = cpc.MapToUNICODE_QuickComputeOutBufSize (reinterpret_cast<const char*> (rawBytes), nRawBytes + 1);
                 StackBuffer<Led_tChar> fileData2{Memory::eUninitialized, outCharCnt};
@@ -458,7 +455,7 @@ BOOL LedLineItDocument::OnOpenDocument (LPCTSTR lpszPathName)
         size_t fBreakWidths;
     };
 
-    MyFlavorPackageInternalizer internalizer (fTextStore);
+    MyFlavorPackageInternalizer internalizer{fTextStore};
 
     CodePage useCodePage = fCodePage;
     if (LedLineItDocument::sHiddenDocOpenArg != kIGNORECodePage) {
@@ -468,7 +465,8 @@ BOOL LedLineItDocument::OnOpenDocument (LPCTSTR lpszPathName)
         }
     }
     Led_ClipFormat cf = kTEXTClipFormat;
-    internalizer.InternalizeFlavor_FILEData (lpszPathName, &cf, &useCodePage, 0, fTextStore.GetEnd ());
+    internalizer.InternalizeFlavor_FILEData (
+        lpszPathName, &cf, useCodePage == kCodePage_INVALID ? optional<CodePage>{} : optional<CodePage>{useCodePage}, 0, fTextStore.GetEnd ());
     fCodePage = useCodePage; // use whatever codePage file was opened with... by default... for future saves
 
     if (not internalizer.fBreakLongLines) {
@@ -480,7 +478,7 @@ BOOL LedLineItDocument::OnOpenDocument (LPCTSTR lpszPathName)
 void LedLineItDocument::Serialize (CArchive& ar)
 {
     if (ar.IsStoring ()) {
-        const size_t kBufSize = 8 * 1024;
+        constexpr size_t kBufSize = 8 * 1024;
         Led_tChar    buf[kBufSize];
         size_t       offset    = 0;
         size_t       eob       = fTextStore.GetLength ();

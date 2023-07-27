@@ -310,8 +310,8 @@ namespace Stroika::Frameworks::Led {
 #elif qPlatform_Windows || qStroika_FeatureSupported_XWindows
             const SDKChar* fileName,
 #endif
-            Led_ClipFormat* suggestedClipFormat, CodePage* suggestedCodePage) override;
-        virtual void InternalizeFlavor_FILEGuessFormatsFromStartOfData (Led_ClipFormat* suggestedClipFormat, CodePage* suggestedCodePage,
+            Led_ClipFormat* suggestedClipFormat, optional<CodePage> suggestedCodePage) override;
+        virtual void InternalizeFlavor_FILEGuessFormatsFromStartOfData (Led_ClipFormat* suggestedClipFormat, optional<CodePage> suggestedCodePage,
                                                                         const byte* fileStart, const byte* fileEnd) override;
 
     public:

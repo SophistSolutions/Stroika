@@ -85,18 +85,18 @@ namespace Stroika::Frameworks::Led {
 #elif qPlatform_Windows || qStroika_FeatureSupported_XWindows
             const SDKChar* fileName,
 #endif
-            Led_ClipFormat* suggestedClipFormat, CodePage* suggestedCodePage, size_t from, size_t to);
+            Led_ClipFormat* suggestedClipFormat, optional<CodePage> suggestedCodePage, size_t from, size_t to);
         virtual void InternalizeFlavor_FILEGuessFormatsFromName (
 #if qPlatform_MacOS
             const FSSpec* fileName,
 #elif qPlatform_Windows || qStroika_FeatureSupported_XWindows
             const SDKChar* fileName,
 #endif
-            Led_ClipFormat* suggestedClipFormat, CodePage* suggestedCodePage);
-        virtual void InternalizeFlavor_FILEGuessFormatsFromStartOfData (Led_ClipFormat* suggestedClipFormat, CodePage* suggestedCodePage,
+            Led_ClipFormat* suggestedClipFormat, optional<CodePage> suggestedCodePage);
+        virtual void InternalizeFlavor_FILEGuessFormatsFromStartOfData (Led_ClipFormat* suggestedClipFormat, optional<CodePage> suggestedCodePage,
                                                                         const byte* fileStart, const byte* fileEnd);
-        virtual bool InternalizeFlavor_FILEDataRawBytes (Led_ClipFormat* suggestedClipFormat, CodePage* suggestedCodePage, size_t from,
-                                                         size_t to, const void* rawBytes, size_t nRawBytes);
+        virtual bool InternalizeFlavor_FILEDataRawBytes (Led_ClipFormat* suggestedClipFormat, optional<CodePage> suggestedCodePage,
+                                                         size_t from, size_t to, const void* rawBytes, size_t nRawBytes);
 
     private:
         TextStore& fTextStore;
