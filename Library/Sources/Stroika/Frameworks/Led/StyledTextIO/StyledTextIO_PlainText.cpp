@@ -7,6 +7,8 @@
 #include "../../../Foundation/Characters/CodePage.h"
 #include "../../../Foundation/Characters/LineEndings.h"
 #include "../../../Foundation/Memory/StackBuffer.h"
+#include "../../../Foundation/Streams/MemoryStream.h"
+#include "../../../Foundation/Streams/TextWriter.h"
 
 #include "StyledTextIO_PlainText.h"
 
@@ -98,11 +100,10 @@ void StyledTextIOWriter_PlainText::Write ()
 #endif
         bytesRead = Characters::NLToNative<Led_tChar> (buf, bytesRead, buf2, Memory::NEltsOf (buf2));
 #if qWideCharacters
-        Memory::StackBuffer<char> ansiBuf{Memory::eUninitialized, bytesRead * sizeof (Led_tChar)};
-        size_t                    nChars = bytesRead * sizeof (Led_tChar);
-        CodePageConverter{GetDefaultSDKCodePage ()}.MapFromUNICODE (buf2, bytesRead, ansiBuf.data (), &nChars);
-        bytesRead = nChars;
-        write (ansiBuf.data (), bytesRead);
+        Streams::MemoryStream<byte>::Ptr memStream = Streams::MemoryStream<byte>::New ();
+        Streams::TextWriter::New (memStream, Characters::CodeCvt<>{static_cast<CodePage> (CP_ACP)}).Write (buf2, buf2 + bytesRead);
+        auto b = memStream.As<Memory::BLOB> ();
+        write (b.data (), b.size());
 #else
         write (buf2.data (), bytesRead);
 #endif
