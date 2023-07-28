@@ -9,15 +9,16 @@
 #include "Stroika/Foundation/Characters/CString/Utilities.h"
 #include "Stroika/Foundation/Characters/String.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
-#include "Stroika/Foundation/Streams/iostream/Utilities.h"
+#include "Stroika/Foundation/Streams/iostream/InputStreamFromStdIStream.h"
+#include "Stroika/Foundation/Streams/TextReader.h"
 
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::Memory;
 
-const wchar_t kOpenCodeTag[]  = L"<%";
-const wchar_t kCloseCodeTag[] = L"%>";
-const wchar_t kMagicWriteChar = '='; // if first char after open tag - treat as synonym for fResponse.write ()
+constexpr wchar_t kOpenCodeTag[]  = L"<%";
+constexpr wchar_t kCloseCodeTag[] = L"%>";
+constexpr wchar_t kMagicWriteChar = '='; // if first char after open tag - treat as synonym for fResponse.write ()
 
 class CompilerApp {
 public:
@@ -119,7 +120,7 @@ private:
 private:
     nonvirtual void ProcessFile_ (istream& in, ostream& out)
     {
-        wstring orig = Streams::iostream::ReadTextStream (in);
+        wstring orig = Streams::TextReader::New (Streams::iostream::InputStreamFromStdIStream<std::byte>::New (in)).ReadAll ().As<wstring> ();
 
         out << "/*Auto-Generated C++ file from the Source HTML file '" << String::FromSDKString (fInputFile).AsNarrowSDKString () << "'*/" << endl;
         out << "void    " << String::FromSDKString (fFormGeneratorName).AsNarrowSDKString () << " ()" << endl;

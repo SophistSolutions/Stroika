@@ -49,7 +49,7 @@ namespace Stroika::Foundation::Streams::iostream {
      *      \code
      *      stringstream tmpStrm;
      *      tmpStrm << "some xml";
-     *      XML::SAXParse (InputStreamFromStdIStream<byte>::New (tmpStrm), MyCallback ());
+     *      XML::SAXParse (InputStreamFromStdIStream<byte>::New (tmpStrm), MyCallback{});
      *      \endcode
      *
      *      \note   InputStreamFromStdIStream ::Close () does not call close on the owned basic_istream, because there is no such stdC++ method (though filestream has one)
