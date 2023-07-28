@@ -47,8 +47,8 @@ namespace {
     {
         CodeCvt<wchar_t> codeCvt{UnicodeExternalEncodings::eUTF8};
         size_t           sz = codeCvt.ComputeTargetByteBufferSize (w.length ());
-        const auto       bom = GetByteOrderMark (UnicodeExternalEncodings::eUTF8);
-       // out.write (reinterpret_cast<const char*> (bom.data ()), bom.size ());         // https://stroika.atlassian.net/browse/STK-982 - this should work (and I think is) - but causes later failure - so debug why
+        // const auto       bom = GetByteOrderMark (UnicodeExternalEncodings::eUTF8);
+        // out.write (reinterpret_cast<const char*> (bom.data ()), bom.size ());         // https://stroika.atlassian.net/browse/STK-982 - this should work (and I think is) - but causes later failure (reader) - so debug why
         Memory::StackBuffer<byte> buf{ Memory::UninitializedConstructorFlag::eUninitialized, sz};
         span<byte>                outSpan = codeCvt.Characters2Bytes (span{w}, span{buf});
         out.write (reinterpret_cast<const char*> (outSpan.data ()), outSpan.size ());
