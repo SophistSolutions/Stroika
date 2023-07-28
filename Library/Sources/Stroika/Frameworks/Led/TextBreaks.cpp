@@ -7,6 +7,7 @@
 
 #include "../../Foundation/Characters/Character.h"
 #include "../../Foundation/Characters/CodePage.h"
+#include "../../Foundation/Characters/CodeCvt.h"
 
 #include "Config.h"
 
@@ -93,7 +94,7 @@ static bool SJIS_IsEOLChar (const char* mbChar)
         lo = byte0;
     }
     bool isEOLChar = bool (yEOLTable[hi][lo / 8] & yBits[lo & 7]);
-    return (isEOLChar);
+    return isEOLChar;
 }
 
 // CONSIDER USING CodePageConverter class here!!!
@@ -112,7 +113,9 @@ inline bool IsJapaneseBOLChar (wchar_t c)
 {
     char   mbyteChars[2];
     size_t nBytesInThisChar = 2;
-    CodePageConverter{Characters::WellKnownCodePages::kSJIS}.MapFromUNICODE (&c, 1, mbyteChars, &nBytesInThisChar);
+    char16_t useC = static_cast<char16_t> (c);      // this code was originally written for wchar_t == char16_t, so that explains unfortunate casts for now
+    nBytesInThisChar = CodeCvt<char16_t>{Characters::WellKnownCodePages::kSJIS}.Characters2Bytes (
+        span{&useC, 1}, Memory::SpanReInterpretCast<std::byte, char> (span{mbyteChars})).size ();
     Assert (nBytesInThisChar >= 0 and nBytesInThisChar <= 2);
     if (nBytesInThisChar == 0) {
         return 0; // if No SJIS code page, not much we can do!
@@ -123,7 +126,10 @@ inline bool IsJapaneseEOLChar (wchar_t c)
 {
     char   mbyteChars[2];
     size_t nBytesInThisChar = 2;
-    CodePageConverter{Characters::WellKnownCodePages::kSJIS}.MapFromUNICODE (&c, 1, mbyteChars, &nBytesInThisChar);
+    char16_t useC = static_cast<char16_t> (c); // this code was originally written for wchar_t == char16_t, so that explains unfortunate casts for now
+    nBytesInThisChar = CodeCvt<char16_t>{Characters::WellKnownCodePages::kSJIS}
+                           .Characters2Bytes (span{&useC, 1}, Memory::SpanReInterpretCast<std::byte, char> (span{mbyteChars}))
+                           .size ();
     Assert (nBytesInThisChar >= 0 and nBytesInThisChar <= 2);
     if (nBytesInThisChar == 0) {
         return 0; // if No SJIS code page, not much we can do!
@@ -134,7 +140,10 @@ inline unsigned GetJapaneseKutenRow (wchar_t c)
 {
     char   mbyteChars[2];
     size_t nBytesInThisChar = 2;
-    CodePageConverter{Characters::WellKnownCodePages::kSJIS}.MapFromUNICODE (&c, 1, mbyteChars, &nBytesInThisChar);
+    char16_t useC = static_cast<char16_t> (c); // this code was originally written for wchar_t == char16_t, so that explains unfortunate casts for now
+    nBytesInThisChar = CodeCvt<char16_t>{Characters::WellKnownCodePages::kSJIS}
+                           .Characters2Bytes (span{&useC, 1}, Memory::SpanReInterpretCast<std::byte, char> (span{mbyteChars}))
+                           .size ();
     Assert (nBytesInThisChar >= 0 and nBytesInThisChar <= 2);
     if (nBytesInThisChar == 0) {
         return 0; // if No SJIS code page, not much we can do!

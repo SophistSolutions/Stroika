@@ -8,6 +8,7 @@
 
 #include "../../Foundation/Characters/CString/Utilities.h"
 #include "../../Foundation/Characters/CodePage.h"
+#include "../../Foundation/Characters/CodeCvt.h"
 #include "../../Foundation/Characters/Format.h"
 #include "../../Foundation/Characters/String.h"
 #include "../../Foundation/Execution/Throw.h"
@@ -87,10 +88,9 @@ SDKString Led::Led_tString2SDKString (const Led_tString& s)
 */
 Led_tString Led::Led_ANSIString2tString (const string& s)
 {
-    size_t                         nChars = s.length () + 1; // convert null byte, too
-    Memory::StackBuffer<Led_tChar> result{Memory::eUninitialized, nChars};
-    CodePageConverter{GetDefaultSDKCodePage ()}.MapToUNICODE (s.c_str (), s.length () + 1, result.data (), &nChars);
-    return Led_tString{result.data ()};
+    // Up until Stroika v3.0d2 (and maybe for a while after) - this converted from CP_ACP, despite being called 'ANSI' - I htink because I was
+    // once confused about the difference between these two --LGP 2023-07-27
+    return CodeCvt<Led_tChar>{GetDefaultSDKCodePage ()}.Bytes2String<Led_tString> (Memory::SpanReInterpretCast<const byte> (span{s}));
 }
 #endif
 
@@ -101,10 +101,9 @@ Led_tString Led::Led_ANSIString2tString (const string& s)
 */
 string Led::Led_tString2ANSIString (const Led_tString& s)
 {
-    size_t                    nChars = s.length () * sizeof (wchar_t) + 1; // convert null byte, too
-    Memory::StackBuffer<char> result{Memory::eUninitialized, nChars};
-    CodePageConverter{GetDefaultSDKCodePage ()}.MapFromUNICODE (s.c_str (), s.length () + 1, result.data (), &nChars);
-    return string{result.data ()};
+    // Up until Stroika v3.0d2 (and maybe for a while after) - this converted from CP_ACP, despite being called 'ANSI' - I htink because I was
+    // once confused about the difference between these two --LGP 2023-07-27
+    return CodeCvt<Led_tChar>{GetDefaultSDKCodePage ()}.String2Bytes<string> (span{s});
 }
 #endif
 
