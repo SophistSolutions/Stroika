@@ -65,6 +65,8 @@ namespace Stroika::Foundation::Characters {
     /**
      * return #bytes in output buffer (NO nullptr TERM) - assert buffer big enough - output buf as big is input buf
      * always big enough. OK for srcText and outBuf to be SAME PTR.
+     * 
+     *  \note @see String::NormalizeTextToNL
      */
     template <typename TCHAR>
     size_t NormalizeTextToNL (const TCHAR* srcText, size_t srcTextBytes, TCHAR* outBuf, size_t outBufSize);
