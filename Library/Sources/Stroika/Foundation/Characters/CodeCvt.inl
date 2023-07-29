@@ -39,6 +39,24 @@ namespace Stroika::Foundation::Characters {
 
     /*
      ********************************************************************************
+     ***************************** CodeCvt<CHAR_T>::IRep ****************************
+     ********************************************************************************
+     */
+    template <IUNICODECanAlwaysConvertTo CHAR_T>
+    size_t CodeCvt<CHAR_T>::IRep::_Bytes2Characters (span<const byte> from) const
+    {
+        Memory::StackBuffer<CHAR_T> to{this->ComputeTargetCharacterBufferSize (from)};
+        return this->Bytes2Characters (&from, span{to}).size ();
+    }
+    template <IUNICODECanAlwaysConvertTo CHAR_T>
+    size_t CodeCvt<CHAR_T>::IRep::_Characters2Bytes (span<const CHAR_T> from) const
+    {
+        Memory::StackBuffer<byte> to{this->ComputeTargetByteBufferSize (from)};
+        return this->Characters2Bytes (from, span{to}).size ();
+    }
+
+    /*
+     ********************************************************************************
      *********************** CodeCvt<CHAR_T>::UTFConvertRep_ ************************
      ********************************************************************************
      */
@@ -189,7 +207,7 @@ namespace Stroika::Foundation::Characters {
         virtual span<CHAR_T> Bytes2Characters (span<const byte>* from, span<CHAR_T> to) const override
         {
             RequireNotNull (from);
-            Require (to.size () >= ComputeTargetCharacterBufferSize (*from));
+            Require (to.size () >= ComputeTargetCharacterBufferSize (*from) or to.size () >= this->_Bytes2Characters (*from));
             if constexpr (sizeof (CHAR_T) == sizeof (INTERMEDIATE_CHAR_T)) {
                 return span<CHAR_T>{to.begin (),
                                     fBytesVSIntermediateCvt_.Bytes2Characters (from, Memory::SpanReInterpretCast<INTERMEDIATE_CHAR_T> (to)).size ()};
@@ -233,7 +251,7 @@ namespace Stroika::Foundation::Characters {
         }
         virtual span<byte> Characters2Bytes (span<const CHAR_T> from, span<byte> to) const override
         {
-            Require (to.size () >= ComputeTargetByteBufferSize (from));
+            Require (to.size () >= ComputeTargetByteBufferSize (from) or to.size () >= this->_Characters2Bytes (from));
             if constexpr (sizeof (CHAR_T) == sizeof (INTERMEDIATE_CHAR_T)) {
                 return fBytesVSIntermediateCvt_.Characters2Bytes (Memory::SpanReInterpretCast<const INTERMEDIATE_CHAR_T> (from), to);
             }

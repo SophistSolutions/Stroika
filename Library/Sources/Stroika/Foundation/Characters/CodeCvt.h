@@ -239,8 +239,9 @@ namespace Stroika::Foundation::Characters {
          *
          *  Arguments:
          *      o   span<byte> from - initially all of which will be converted or an exeception thrown (only if data corrupt/unconvertable) (updated to point to bytes which form part of a single additional character)
-         *      o   span<CHAR_T> to - buffer to have data converted 'into', which MUST be large enuf (call ComputeTargetCharacterBufferSize)
-         *
+         *      o   span<CHAR_T> to - buffer to have data converted 'into'
+         *          NOTE - all we require is that the result fit into 'to'. BUt we offer a quick way to compute a buffer 'large enough' -  (call ComputeTargetCharacterBufferSize).
+         *          But (a more expnsive) way is to call Bytes2Characters/1 and that will tell you exactly how many needed.
          *  Returns:
          *      subspan of 'to', with converted characters.
          *      Throws on failure (corrupt source content).
@@ -281,6 +282,9 @@ namespace Stroika::Foundation::Characters {
          *  Arguments:
          *      o   span<character> from - all of which will be converted or an exeception thrown (only if data corrupt/unconvertable).
          *      o   OPTIONAL span<byte> to - buffer to have data converted 'into', which MUST be large enuf (call ComputeTargetByteBufferSize)
+         *      o   span<span> to - buffer to have data converted 'into'
+         *          NOTE - all we require is that the result fit into 'to'. BUt we offer a quick way to compute a buffer 'large enough' -  (call ComputeTargetByteBufferSize).
+         *          But (a more expnsive) way is to call Characters2Bytes/1 and that will tell you exactly how many needed.
          *
          *  Returns:
          *      (sub)subspan of 'to', (if provided)with characters converted to appropriate span of bytes.
@@ -375,6 +379,11 @@ namespace Stroika::Foundation::Characters {
         virtual span<byte>   Characters2Bytes (span<const CHAR_T> from, span<byte> to) const                = 0;
         virtual size_t       ComputeTargetCharacterBufferSize (variant<span<const byte>, size_t> src) const = 0;
         virtual size_t       ComputeTargetByteBufferSize (variant<span<const CHAR_T>, size_t> src) const    = 0;
+
+    protected:
+        // handy utility for subclasses / requires calls
+        nonvirtual size_t _Bytes2Characters (span<const byte> from) const;
+        nonvirtual size_t _Characters2Bytes (span<const CHAR_T> from) const;
     };
 
 }

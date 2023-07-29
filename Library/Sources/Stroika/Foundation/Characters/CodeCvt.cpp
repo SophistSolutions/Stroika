@@ -344,7 +344,7 @@ span<char16_t> Characters::Private_::WindowsNative_::Bytes2Characters (span<cons
         }
     }
     else {
-        return to.subspan (static_cast<size_t> (r));
+        return to.subspan (0, static_cast<size_t> (r));
     }
 }
 
@@ -368,7 +368,7 @@ span<byte> Characters::Private_::WindowsNative_::Characters2Bytes (span<const ch
     }
     else {
         Assert (r > 0);
-        return to.subspan (static_cast<size_t> (r));
+        return to.subspan (0, static_cast<size_t> (r));
     }
 }
 
