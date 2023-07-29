@@ -1162,6 +1162,34 @@ String String::ReplaceAll (const Containers::Set<Character>& charSet, const Stri
     return sb.str ();
 }
 
+String String::NoramlizeTextToNL () const
+{
+    PeekSpanData pds = GetPeekSpanData<char> ();
+    Memory::StackBuffer<Character> maybeIgnoreBuf;
+    span<const Character>          charSpan = GetData (pds, &maybeIgnoreBuf);
+    StringBuilder sb;
+    bool                           everChanged{false};
+    for (auto ci = charSpan.begin (); ci != charSpan.end (); ++ci) {
+        Character c = *ci;
+        if (c == '\r') {
+            // peek at next character - and if we have a CRLF sequence - then advance pointer
+            // (so we skip next NL) and pretend this was an NL..
+            if (ci + 1 != charSpan.end () and *(ci + 1) == '\n') {
+                ++ci;
+            }
+            everChanged = true;
+            c = '\n';
+        }
+        sb += c;
+    }
+    if (everChanged) {
+        return sb.str ();
+    }
+    else {
+        return *this;
+    }
+}
+
 Containers::Sequence<String> String::Tokenize (const function<bool (Character)>& isTokenSeperator, bool trim) const
 {
     Containers::Sequence<String> r;

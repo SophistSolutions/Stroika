@@ -830,6 +830,12 @@ namespace Stroika::Foundation::Characters {
 
     public:
         /**
+         *  Replace any CR or LF or CRLF seqeunces with plan NL-terminated text.
+         */
+        nonvirtual String NoramlizeTextToNL () const;
+
+    public:
+        /**
          *  Break this String into constituent parts. This is a simplistic API but at least handy as is.
          *
          *  The caller can specify the token seperators by set, by lambda. This defaults to the lambda "isWhitespace".
