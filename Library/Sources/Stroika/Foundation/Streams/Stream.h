@@ -59,10 +59,10 @@ namespace Stroika::Foundation::Streams {
      *  \note   Configuration::DefaultNames<> supported
      */
     enum class SeekableFlag {
-        eSeekable,
         eNotSeekable,
+        eSeekable,
 
-        Stroika_Define_Enum_Bounds (eSeekable, eNotSeekable)
+        Stroika_Define_Enum_Bounds (eNotSeekable, eSeekable)
     };
 
     /**
