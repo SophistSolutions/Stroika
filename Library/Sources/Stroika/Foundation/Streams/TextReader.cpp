@@ -4,6 +4,7 @@
 #include "../StroikaPreComp.h"
 
 #include "../Characters/CodeCvt.h"
+#include "../Characters/TextConvert.h"
 #include "../Containers/Support/ReserveTweaks.h"
 #include "../Debug/AssertExternallySynchronizedMutex.h"
 #include "../Execution/Common.h"
@@ -554,6 +555,13 @@ private:
  ******************************* Streams::TextReader ****************************
  ********************************************************************************
  */
+auto TextReader::New (const Memory::BLOB& src, AutomaticCodeCvtFlags codeCvtFlags) -> Ptr
+{
+    Ptr p = TextReader::New (src.As<InputStream<byte>::Ptr> (), codeCvtFlags);
+    Ensure (p.IsSeekable ());
+    return p;
+}
+
 auto TextReader::New (const Memory::BLOB& src, const Characters::CodeCvt<>& codeConverter) -> Ptr
 {
     Ptr p = TextReader::New (src.As<InputStream<byte>::Ptr> (), codeConverter, SeekableFlag::eSeekable);
@@ -567,18 +575,39 @@ auto TextReader::New (const InputStream<byte>::Ptr& src, SeekableFlag seekable, 
     Ensure (p.GetSeekability () == seekable);
     return p;
 }
-#if 0
-auto TextReader::New (const InputStream<byte>::Ptr& src, const optional<Characters::String>& localeName, SeekableFlag seekable, ReadAhead readAhead) -> Ptr
-{
-    Ptr p = localeName ? TextReader::New (src, Characters::CodeCvt<char32_t> (localeName->AsNarrowSDKString ()), seekable, readAhead)
-                    : New (src, seekable, readAhead);
-    Ensure (p.GetSeekability () == seekable);
-    return p;
-}
-#endif
 
-auto TextReader::New (const InputStream<byte>::Ptr& src, const Characters::CodeCvt<>& codeConverter, SeekableFlag seekable,
-                      ReadAhead readAhead) -> Ptr
+auto TextReader::New (const InputStream<byte>::Ptr& src, const AutomaticCodeCvtFlags codeCvtFlags, ReadAhead readAhead) -> Ptr
+{
+    Require (src.GetSeekability () == SeekableFlag::eSeekable);
+    auto savedSeek = src.GetOffset ();
+    using namespace Characters;
+    CodeCvt<> codeConverter = [&] () {
+        // read possible BOM, and then chose CodeCvt according to codeCvtFlags
+        byte                                                          bomData[Characters::kMaxBOMSize];
+        optional<tuple<Characters::UnicodeExternalEncodings, size_t>> bomInfo;
+        if (src.ReadAll (begin (bomData), end (bomData)) == Memory::NEltsOf (bomData) and
+            (bomInfo = Characters::ReadByteOrderMark (span{bomData})).has_value ()) {
+            // adjust amount read from input stream if we over-read
+            src.Seek (savedSeek + get<size_t> (*bomInfo)); // adjust amount read from input stream if we read anything (could be a no-op seek)
+            return CodeCvt<>{get<UnicodeExternalEncodings> (*bomInfo)};
+        }
+        else {
+            src.Seek (savedSeek);    // adjust amount read from input stream if we read anything
+            switch (codeCvtFlags) {
+                case AutomaticCodeCvtFlags::eReadBOMAndIfNotPresentUseUTF8:
+                    return CodeCvt<>{UnicodeExternalEncodings::eUTF8};
+                case AutomaticCodeCvtFlags::eReadBOMAndIfNotPresentUseCurrentLocale:
+                    return CodeCvt<>{locale{}};
+                default:
+                    AssertNotReached ();
+                    return CodeCvt<>{};
+            }
+        }
+    }();
+    return New (src, codeConverter, SeekableFlag::eSeekable, readAhead);
+}
+
+auto TextReader::New (const InputStream<byte>::Ptr& src, const Characters::CodeCvt<>& codeConverter, SeekableFlag seekable, ReadAhead readAhead) -> Ptr
 {
     Ptr p = (seekable == SeekableFlag::eSeekable) ? Ptr{make_shared<CachingSeekableBinaryStreamRep_> (src, codeConverter, readAhead)}
                                                   : Ptr{make_shared<UnseekableBinaryStreamRep_> (src, codeConverter)};

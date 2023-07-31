@@ -9,6 +9,8 @@
 #include "Stroika/Foundation/Characters/CString/Utilities.h"
 #include "Stroika/Foundation/Characters/Format.h"
 #include "Stroika/Foundation/Characters/LineEndings.h"
+#include "Stroika/Foundation/Streams/TextReader.h"
+
 #include "Stroika/Frameworks/Led/FlavorPackage.h"
 
 #include "LedLineItServerItem.h"
@@ -394,15 +396,17 @@ BOOL LedLineItDocument::OnOpenDocument (LPCTSTR lpszPathName)
 
             if (fBreakLongLines) {
 #if qWideCharacters
-                CodePage useCodePage = suggestedCodePage.value_or (CodePagesGuesser{}.Guess (rawBytes, nRawBytes));
-                CodePageConverter cpc = CodePageConverter{useCodePage, CodePageConverter::eHandleBOM};
-                size_t outCharCnt     = cpc.MapToUNICODE_QuickComputeOutBufSize (reinterpret_cast<const char*> (rawBytes), nRawBytes + 1);
-                StackBuffer<Led_tChar> fileData2{Memory::eUninitialized, outCharCnt};
-                cpc.MapToUNICODE (reinterpret_cast<const char*> (rawBytes), nRawBytes, static_cast<wchar_t*> (fileData2), &outCharCnt);
-                size_t charsRead = outCharCnt;
-                Assert (charsRead <= nRawBytes);
-                charsRead = Characters::NormalizeTextToNL<Led_tChar> (fileData2.data (), charsRead, fileData2.data (), charsRead);
+                using Characters::String;
+                using Characters::CodeCvt;
+                using Streams::TextReader;
+                Memory::BLOB rawBytesBLOB{span{ reinterpret_cast<const byte*> (rawBytes), nRawBytes }};
 
+                String x = suggestedCodePage ? TextReader::New (rawBytesBLOB, CodeCvt<>{*suggestedCodePage}).ReadAll ()
+                                             : TextReader::New (rawBytesBLOB).ReadAll ();
+                x        = x.NoramlizeTextToNL ();
+                Led_tString tx = x.As<Led_tString> ();
+                size_t      charsRead = tx.length ();
+                const auto  fileData2 = span{tx};
                 {
                     StackBuffer<Led_tChar> patchedData{Memory::eUninitialized, charsRead + charsRead / fBreakWidths};
                     size_t                 curLineSize = 0;

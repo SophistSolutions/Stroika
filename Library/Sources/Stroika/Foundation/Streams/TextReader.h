@@ -98,6 +98,18 @@ namespace Stroika::Foundation::Streams {
 
     public:
         /**
+         */
+        enum class AutomaticCodeCvtFlags {
+            eReadBOMAndIfNotPresentUseUTF8,
+            eReadBOMAndIfNotPresentUseCurrentLocale,
+
+            eDEFAULT = eReadBOMAndIfNotPresentUseCurrentLocale
+        };
+        static constexpr AutomaticCodeCvtFlags eReadBOMAndIfNotPresentUseUTF8 = AutomaticCodeCvtFlags::eReadBOMAndIfNotPresentUseUTF8;
+        static constexpr AutomaticCodeCvtFlags eReadBOMAndIfNotPresentUseCurrentLocale = AutomaticCodeCvtFlags::eReadBOMAndIfNotPresentUseCurrentLocale;
+
+    public:
+        /**
          *  Seekable defaults to true (for Stream and soon everything) since needed for ReadLines () and ReadLine, which is commonly used.
          *  For the constructor taking const InputStream<Character>::Ptr& src, the seekability mimics that of the original source.
          *  For the other constructors, they are seekable.
@@ -114,8 +126,11 @@ namespace Stroika::Foundation::Streams {
          *          }
          *      \endcode
          */
-        static Ptr New (const Memory::BLOB& src, const Characters::CodeCvt<>& codeConverter = {});
-        static Ptr New (const InputStream<byte>::Ptr& src, SeekableFlag seekable = SeekableFlag::eSeekable, ReadAhead readAhead = eReadAheadAllowed);
+        static Ptr New (const Memory::BLOB& src, AutomaticCodeCvtFlags codeCvtFlags = AutomaticCodeCvtFlags::eDEFAULT);
+        static Ptr New (const Memory::BLOB& src, const Characters::CodeCvt<>& codeConverter);
+        static Ptr New (const InputStream<byte>::Ptr& src, SeekableFlag seekable, ReadAhead readAhead = eReadAheadAllowed);
+        static Ptr New (const InputStream<byte>::Ptr& src, AutomaticCodeCvtFlags codeCvtFlags = AutomaticCodeCvtFlags::eDEFAULT,
+                        ReadAhead readAhead = eReadAheadAllowed);
         static Ptr New (const InputStream<byte>::Ptr& src, const Characters::CodeCvt<>& codeConverter,
                         SeekableFlag seekable = SeekableFlag::eSeekable, ReadAhead readAhead = eReadAheadAllowed);
         static Ptr New (const InputStream<Character>::Ptr& src);

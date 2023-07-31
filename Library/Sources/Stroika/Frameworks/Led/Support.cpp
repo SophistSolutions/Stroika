@@ -345,8 +345,7 @@ Led_ClipboardObjectAcquire::Led_ClipboardObjectAcquire (Led_ClipFormat clipType)
  ********************************************************************************
  */
 VariantArrayPacker::VariantArrayPacker (VARIANT* v, VARTYPE vt, size_t nElts)
-    : fSafeArrayVariant (v)
-    , fPtr (nullptr)
+    : fSafeArrayVariant{v}
 {
     RequireNotNull (v);
     // assumes passed in variant is CONSTRUCTED (initied) - but not necesarily having the right type
@@ -372,7 +371,7 @@ void* VariantArrayPacker::PokeAtData () const { return fPtr; }
  ********************************************************************************
  */
 VariantArrayUnpacker::VariantArrayUnpacker (const VARIANT& v)
-    : fSafeArray (v.parray)
+    : fSafeArray{v.parray}
 {
     if (not(v.vt & VT_ARRAY) or fSafeArray == nullptr) {
         throw E_INVALIDARG;

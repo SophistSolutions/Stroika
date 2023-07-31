@@ -478,8 +478,8 @@ namespace Stroika::Frameworks::Led {
         nonvirtual void* PokeAtData () const;
 
     private:
-        VARIANT* fSafeArrayVariant;
-        void*    fPtr;
+        VARIANT* fSafeArrayVariant{nullptr};
+        void*    fPtr{nullptr};
     };
 
     class VariantArrayUnpacker {

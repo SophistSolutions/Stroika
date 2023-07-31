@@ -1367,7 +1367,7 @@ void StyledTextIOReader_RTF::ReaderContext::PutRawCharToDestination (char c)
     wchar_t outChar;
     size_t  nOutChars = 1;
 
-    auto inBuf = span{reinterpret_cast<const byte*> (fMultiByteInputCharBuf), 2};
+    auto inBuf = span{reinterpret_cast<const byte*> (fMultiByteInputCharBuf), fMultiByteInputCharBuf[1] == '\0' ? 1u: 2u};
     nOutChars = Characters::CodeCvt<wchar_t>{codePage}.Bytes2Characters (&inBuf,span{&outChar, 1}).size ();
     Assert (nOutChars == 0 or nOutChars == 1);
     if (nOutChars == 1) {

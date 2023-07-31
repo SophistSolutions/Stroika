@@ -18,30 +18,32 @@ namespace Stroika::Foundation::Characters {
      ************************** Characters::GetByteOrderMark ************************
      ********************************************************************************
      */
+    namespace Private_ {
+        using namespace Memory;
+        constexpr byte kUTF8_bom[]     = {0xEF_b, 0xBB_b, 0xBF_b};
+        constexpr byte kUTF16_BE_bom[] = {0xFE_b, 0xFF_b};
+        constexpr byte kUTF16_LE_bom[] = {0xFF_b, 0xFE_b};
+        constexpr byte kUTF32_BE_bom[] = {0xFE_b, 0xFF_b, 0x00_b};
+        constexpr byte kUTF32_LE_bom[] = {0xFF_b, 0xFE_b, 0x00_b};
+    }
     constexpr span<const byte> GetByteOrderMark (UnicodeExternalEncodings e) noexcept
     {
         // Values from https://en.wikipedia.org/wiki/Byte_order_mark
-        using namespace Memory;
         switch (e) {
             case UnicodeExternalEncodings::eUTF8: {
-                constexpr byte r[] = {0xEF_b, 0xBB_b, 0xBF_b};
-                return span<const byte>{r, sizeof (r)};
+                return span<const byte>{Private_ ::kUTF8_bom, sizeof (Private_ ::kUTF8_bom)};
             }
             case UnicodeExternalEncodings::eUTF16_BE: {
-                constexpr byte r[] = {0xFE_b, 0xFF_b};
-                return span<const byte>{r, sizeof (r)};
+                return span<const byte>{Private_ ::kUTF16_BE_bom, sizeof (Private_ ::kUTF16_BE_bom)};
             }
             case UnicodeExternalEncodings::eUTF16_LE: {
-                constexpr byte r[] = {0xFF_b, 0xFE_b};
-                return span<const byte>{r, sizeof (r)};
+                return span<const byte>{Private_ ::kUTF16_LE_bom, sizeof (Private_ ::kUTF16_LE_bom)};
             }
             case UnicodeExternalEncodings::eUTF32_BE: {
-                constexpr byte r[] = {0xFE_b, 0xFF_b, 0x00_b};
-                return span<const byte>{r, sizeof (r)};
+                return span<const byte>{Private_ ::kUTF32_BE_bom, sizeof (Private_ ::kUTF32_BE_bom)};
             }
             case UnicodeExternalEncodings::eUTF32_LE: {
-                constexpr byte r[] = {0xFF_b, 0xFE_b, 0x00_b};
-                return span<const byte>{r, sizeof (r)};
+                return span<const byte>{Private_ ::kUTF32_LE_bom, sizeof (Private_ ::kUTF32_LE_bom)};
             }
             default:
                 AssertNotReached ();
