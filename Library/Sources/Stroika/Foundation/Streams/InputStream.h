@@ -428,7 +428,7 @@ namespace Stroika::Foundation::Streams {
          *
          *  ReadLine() will return an empty string iff EOF.
          *
-         *      \req IsSeekable ()
+         *      \req IsSeekable () to implement read-ahead required for CRLF mapping support 
          */
         nonvirtual Characters::String ReadLine () const
             requires (is_same_v<ELEMENT_TYPE, Characters::Character>);
@@ -441,8 +441,8 @@ namespace Stroika::Foundation::Streams {
          *          }
          *
          *  Like ReadLine(), the returned lines include trailing newlines/etc.
-         *
-         *      \req IsSeekable ()
+         * 
+         *  However, UNLIKE ReadLine(), this function does NOT require the input stream be seekable!
          */
         nonvirtual Traversal::Iterable<Characters::String> ReadLines () const
             requires (is_same_v<ELEMENT_TYPE, Characters::Character>);

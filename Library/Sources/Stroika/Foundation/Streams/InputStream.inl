@@ -195,7 +195,7 @@ namespace Stroika::Foundation::Streams {
         return _GetRepRWRef ().ReadNonBlocking (intoStart, intoEnd);
     }
     template <typename ELEMENT_TYPE>
-    Characters::Character InputStream<ELEMENT_TYPE>::Ptr::ReadCharacter () const
+    inline Characters::Character InputStream<ELEMENT_TYPE>::Ptr::ReadCharacter () const
         requires (is_same_v<ELEMENT_TYPE, Characters::Character>)
     {
         Characters::Character c;
@@ -256,7 +256,6 @@ namespace Stroika::Foundation::Streams {
                 // if CR is follwed by LF, append that to result too before returning. Otherwise, put the character back
                 if (c == '\n') {
                     result.push_back (c);
-                    return result.str ();
                 }
                 else {
                     this->Seek (Whence::eFromCurrent, -1);
@@ -269,17 +268,59 @@ namespace Stroika::Foundation::Streams {
     Traversal::Iterable<Characters::String> InputStream<ELEMENT_TYPE>::Ptr::ReadLines () const
         requires (is_same_v<ELEMENT_TYPE, Characters::Character>)
     {
-        using namespace Characters;
+ using namespace Characters;
+        using namespace Traversal;
         InputStream<Character>::Ptr copyOfStream = *this;
-        return Traversal::CreateGenerator<String> ([copyOfStream] () -> optional<String> {
-            String line = copyOfStream.ReadLine ();
-            if (line.empty ()) {
-                return nullopt;
-            }
-            else {
-                return line;
-            }
-        });
+        if (this->IsSeekable ()) [[likely]] {
+            return CreateGenerator<String> ([copyOfStream] () -> optional<String> {
+                String line = copyOfStream.ReadLine ();
+                if (line.empty ()) {
+                    return nullopt;
+                }
+                else {
+                    return line;
+                }
+            });
+        }
+        else {
+            // We may need to 'read ahead' on an unseekable stream, so keep a little extra context to make it happen
+            auto readLine = [] (InputStream<Character>::Ptr s, optional<Character> firstChar) -> tuple<String, optional<Character>> {
+                StringBuilder result;
+                while (true) {
+                    Character c = firstChar.value_or (s.ReadCharacter ());
+                    firstChar   = nullopt;
+                    if (c.GetCharacterCode () == '\0') {
+                        return make_tuple (result.str (), nullopt); // EOF
+                    }
+                    result.push_back (c);
+                    if (c == '\n') {
+                        return make_tuple (result.str (), nullopt);
+                    }
+                    else if (c == '\r') {
+                        c = s.ReadCharacter ();
+                        // if CR is follwed by LF, append that to result too before returning. Otherwise, put the character back
+                        if (c == '\n') {
+                            result.push_back (c);
+                            return make_tuple (result.str (), nullopt);
+                        }
+                        else {
+                            return make_tuple (result.str (), c);
+                        }
+                    }
+                };
+            };
+            optional<Character> prefixLineChar; // magic so optional<Character> in mutable lambda
+            return CreateGenerator<String> ([readLine, copyOfStream, prefixLineChar] () mutable -> optional<String> {
+                tuple<String, optional<Character>> lineEtc = readLine (copyOfStream, prefixLineChar);
+                if (get<String> (lineEtc).empty ()) {
+                    return nullopt;
+                }
+                else {
+                    prefixLineChar = get<optional<Character>> (lineEtc);
+                    return get<String> (lineEtc);
+                }
+            });
+        }
     }
     DISABLE_COMPILER_MSC_WARNING_START (6262) // stack usage OK
     template <typename ELEMENT_TYPE>
