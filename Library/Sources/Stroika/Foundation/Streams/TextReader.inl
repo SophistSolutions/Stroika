@@ -31,6 +31,10 @@ namespace Stroika::Foundation::Streams {
      *********************************** TextReader *********************************
      ********************************************************************************
      */
+    inline auto TextReader::New (const InputStream<byte>::Ptr& src) -> Ptr
+    {
+            return New (src, src.GetSeekability ());
+    }
     inline auto TextReader::New (const InputStream<Character>::Ptr& src) -> Ptr { return src; }
 
 }

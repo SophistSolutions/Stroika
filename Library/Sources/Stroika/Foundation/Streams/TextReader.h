@@ -110,9 +110,9 @@ namespace Stroika::Foundation::Streams {
 
     public:
         /**
-         *  Seekable defaults to true (for Stream and soon everything) since needed for ReadLines () and ReadLine, which is commonly used.
+         *  Seekable defaults to the same value as that of the underlying stream wrapped.
          *  For the constructor taking const InputStream<Character>::Ptr& src, the seekability mimics that of the original source.
-         *  For the other constructors, they are seekable.
+         *  Constructors taking a BLOB, the resulting stream will be seekable..
          *
          *  But when you specify it expliticly, the given value will be used
          *
@@ -128,8 +128,9 @@ namespace Stroika::Foundation::Streams {
          */
         static Ptr New (const Memory::BLOB& src, AutomaticCodeCvtFlags codeCvtFlags = AutomaticCodeCvtFlags::eDEFAULT);
         static Ptr New (const Memory::BLOB& src, const Characters::CodeCvt<>& codeConverter);
+        static Ptr New (const InputStream<byte>::Ptr& src);
         static Ptr New (const InputStream<byte>::Ptr& src, SeekableFlag seekable, ReadAhead readAhead = eReadAheadAllowed);
-        static Ptr New (const InputStream<byte>::Ptr& src, AutomaticCodeCvtFlags codeCvtFlags = AutomaticCodeCvtFlags::eDEFAULT,
+        static Ptr New (const InputStream<byte>::Ptr& src, AutomaticCodeCvtFlags codeCvtFlags,
                         ReadAhead readAhead = eReadAheadAllowed);
         static Ptr New (const InputStream<byte>::Ptr& src, const Characters::CodeCvt<>& codeConverter,
                         SeekableFlag seekable = SeekableFlag::eSeekable, ReadAhead readAhead = eReadAheadAllowed);

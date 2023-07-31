@@ -264,6 +264,13 @@ public:
     }
 };
 
+/*
+ *  Note this CAN be used with either a seekable or unseekable byte stream.
+ *  But this always produces a SEEKABLE TextStream, so can be used to produce
+ *  a seekable TextStream from a non-seekable binary stream.
+ * 
+ *  But note - it does this at the cost of KEEPING a copy of the entire stream in memory.
+ */
 class TextReader::CachingSeekableBinaryStreamRep_ final : public FromBinaryStreamBaseRep_ {
     using inherited = FromBinaryStreamBaseRep_;
 
@@ -407,6 +414,7 @@ private:
 private:
     bool fReadAheadAllowed_{false};
     InlineBuffer<Character> fCache_; // Cache uses wchar_t instead of Character so can use resize_uninitialized () - requires is_trivially_constructible
+    // @todo for larger streams, a different data structure than InlineBuffer would be appropriate - E.G. ChunkedArray! probably best.
 };
 
 // Simply iterate over the 'iterable' of characacters, but allow seekability (by saving original iteration start)
