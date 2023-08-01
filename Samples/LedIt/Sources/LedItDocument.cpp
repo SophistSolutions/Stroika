@@ -1465,7 +1465,7 @@ bool LedItDocument::DoPromptOpenFileName (CString& fileName, FileFormat* fileFor
 bool LedItDocument::DoPromptFileName (CString& fileName, UINT nIDSTitle, bool isOpenDialogCall, long fileDLogFlags, FileFormat* fileFormat)
 {
     RequireNotNull (fileFormat);
-    CFileDialog dlgFile (isOpenDialogCall);
+    CFileDialog dlgFile{isOpenDialogCall};
 
     CString title;
     Verify (title.LoadString (nIDSTitle));

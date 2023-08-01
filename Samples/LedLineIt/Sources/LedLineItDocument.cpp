@@ -23,10 +23,7 @@ using std::byte;
 using namespace Stroika::Foundation;
 using namespace Stroika::Frameworks::Led;
 
-using Stroika::Foundation::Characters::CodePageConverter;
 using Stroika::Foundation::Characters::CodePagePrettyNameMapper;
-using Stroika::Foundation::Characters::CodePagesGuesser;
-using Stroika::Foundation::Characters::kCodePage_INVALID;
 using Stroika::Foundation::Memory::StackBuffer;
 
 // special exception handling just for MFC library implementation
@@ -70,9 +67,9 @@ private:
 
 public:
     FileDialogWithCodePage (bool asOpenDialog, const vector<CodePage>& codePages, CodePage initialCodePage)
-        : CFileDialog (asOpenDialog)
-        , fCodePages (codePages)
-        , fCodePage (initialCodePage)
+        : CFileDialog{asOpenDialog}
+        , fCodePages{codePages}
+        , fCodePage{initialCodePage}
     {
         m_ofn.Flags |= OFN_ENABLETEMPLATE | OFN_EXPLORER;
         m_ofn.lpTemplateName = m_lpszTemplateName = MAKEINTRESOURCE (kFileDialogAddOnID);
@@ -119,9 +116,9 @@ namespace {
     class LineTooLongOnReadDialog : public CDialog {
     public:
         LineTooLongOnReadDialog (const SDKString& message, size_t breakCount)
-            : CDialog (kLineTooLongOnRead_DialogID)
-            , fMessage (message)
-            , fBreakCount (breakCount)
+            : CDialog{kLineTooLongOnRead_DialogID}
+            , fMessage{message}
+            , fBreakCount{breakCount}
         {
         }
         virtual BOOL OnInitDialog () override
@@ -191,11 +188,11 @@ INTERFACE_PART (LedLineItDocument, IID_ILedLineIt, Dispatch)
 END_INTERFACE_MAP ()
 
 LedLineItDocument::LedLineItDocument ()
-    : COleServerDoc ()
-    , MarkerOwner ()
-    , fTextStore ()
-    , fCommandHandler (kMaxNumUndoLevels)
-    , fCodePage (kDefaultNewDocCodePage)
+    : COleServerDoc{}
+    , MarkerOwner{}
+    , fTextStore{}
+    , fCommandHandler{kMaxNumUndoLevels}
+    , fCodePage{kDefaultNewDocCodePage}
 {
     EnableAutomation ();
     AfxOleLockApp ();
@@ -342,9 +339,9 @@ BOOL LedLineItDocument::OnOpenDocument (LPCTSTR lpszPathName)
 
     public:
         MyFlavorPackageInternalizer (TextStore& ts)
-            : inherited (ts)
-            , fBreakLongLines (false)
-            , fBreakWidths (kMaxLineSize)
+            : inherited{ts}
+            , fBreakLongLines{false}
+            , fBreakWidths{kMaxLineSize}
         {
         }
 
@@ -464,13 +461,11 @@ BOOL LedLineItDocument::OnOpenDocument (LPCTSTR lpszPathName)
     CodePage useCodePage = fCodePage;
     if (LedLineItDocument::sHiddenDocOpenArg != kIGNORECodePage) {
         useCodePage = sHiddenDocOpenArg;
-        if (useCodePage == kAutomaticallyGuessCodePage) {
-            useCodePage = kCodePage_INVALID; // implies automatically guess
-        }
     }
     Led_ClipFormat cf = kTEXTClipFormat;
-    internalizer.InternalizeFlavor_FILEData (
-        lpszPathName, &cf, useCodePage == kCodePage_INVALID ? optional<CodePage>{} : optional<CodePage>{useCodePage}, 0, fTextStore.GetEnd ());
+    internalizer.InternalizeFlavor_FILEData (lpszPathName, &cf,
+                                             useCodePage == kAutomaticallyGuessCodePage ? optional<CodePage>{} : optional<CodePage>{useCodePage},
+                                             0, fTextStore.GetEnd ());
     fCodePage = useCodePage; // use whatever codePage file was opened with... by default... for future saves
 
     if (not internalizer.fBreakLongLines) {
@@ -486,7 +481,27 @@ void LedLineItDocument::Serialize (CArchive& ar)
         Led_tChar    buf[kBufSize];
         size_t       offset    = 0;
         size_t       eob       = fTextStore.GetLength ();
-        bool         firstTime = true;
+        if (fCodePage == Characters::WellKnownCodePages::kUNICODE_WIDE or
+            fCodePage == Characters::WellKnownCodePages::kUNICODE_WIDE_BIGENDIAN or fCodePage == Characters::WellKnownCodePages::kUTF8) {
+            // write BOM
+            switch (fCodePage) {
+                case Characters::WellKnownCodePages::kUNICODE_WIDE:
+                    ar.Write (Characters::GetByteOrderMark (Characters::UnicodeExternalEncodings::eUTF16).data (),
+                              static_cast<UINT> (Characters::GetByteOrderMark (Characters::UnicodeExternalEncodings::eUTF16).size ()));
+                    break;
+                case Characters::WellKnownCodePages::kUNICODE_WIDE_BIGENDIAN:
+                    ar.Write (Characters::GetByteOrderMark (Characters::UnicodeExternalEncodings::eUTF16_BE).data (),
+                              static_cast<UINT> (Characters::GetByteOrderMark (Characters::UnicodeExternalEncodings::eUTF16_BE).size ()));
+                    break;
+                case Characters::WellKnownCodePages::kUTF8:
+                    ar.Write (Characters::GetByteOrderMark (Characters::UnicodeExternalEncodings::eUTF8).data (),
+                              static_cast<UINT> (Characters::GetByteOrderMark (Characters::UnicodeExternalEncodings::eUTF8).size ()));
+                    break;
+            }
+        }
+#if qWideCharacters
+        Characters::CodeCvt<Led_tChar> codeCvt{fCodePage};
+#endif
         while (offset < eob) {
             size_t charsToWrite = min (kBufSize, eob - offset);
             fTextStore.CopyOut (offset, charsToWrite, buf);
@@ -498,15 +513,10 @@ void LedLineItDocument::Serialize (CArchive& ar)
 #endif
             charsToWrite = Characters::NLToNative<Led_tChar> (buf, charsToWrite, buf2, sizeof (buf2));
 #if qWideCharacters
-            CodePageConverter cpc = CodePageConverter{fCodePage};
-            cpc.SetHandleBOM (firstTime); // only for the first block of text do we write a byte-order mark
-            firstTime                    = false;
-            size_t            outCharCnt = cpc.MapFromUNICODE_QuickComputeOutBufSize (static_cast<Led_tChar*> (buf2), charsToWrite + 1);
-            StackBuffer<char> buf3_{Memory::eUninitialized, outCharCnt};
-            size_t            nBytesToWrite = 0;
-            cpc.MapFromUNICODE (static_cast<Led_tChar*> (buf2), charsToWrite, static_cast<char*> (buf3_), &outCharCnt);
-            nBytesToWrite = outCharCnt;
-            char* buffp   = static_cast<char*> (buf3_);
+             StackBuffer<byte> buf3_{Memory::eUninitialized, codeCvt.ComputeTargetByteBufferSize (span{buf, charsToWrite})};
+            auto              toWrite = codeCvt.Characters2Bytes (span{buf, charsToWrite}, span{buf3_});
+            char*              buffp   = reinterpret_cast<char*> (buf3_.data ());
+            size_t nBytesToWrite        = toWrite.size ();
 #else
             char* buffp = static_cast<char*> (buf2);
             size_t nBytesToWrite = charsToWrite;
@@ -524,21 +534,29 @@ void LedLineItDocument::Serialize (CArchive& ar)
         }
 
         CodePage useCodePage = fCodePage;
+        size_t   bytesToStrip = 0;
+        optional<Characters::UnicodeExternalEncodings> useUnicodEncoding;
         if (LedLineItDocument::sHiddenDocOpenArg != kIGNORECodePage) {
             useCodePage = sHiddenDocOpenArg;
             if (useCodePage == kAutomaticallyGuessCodePage) {
-                CodePagesGuesser::Confidence conf         = CodePagesGuesser::Confidence::eLow;
-                size_t                       bytesToStrip = 0;
-                useCodePage                               = CodePagesGuesser ().Guess (buf.data (), nLen, &conf, &bytesToStrip);
+                optional<tuple<Characters::UnicodeExternalEncodings, size_t>> n =
+                    Characters::ReadByteOrderMark (span{reinterpret_cast<const byte*> (buf.data ()), nLen});
+                if (n) {
+                    bytesToStrip = get<size_t> (*n);
+                    useUnicodEncoding = get<Characters::UnicodeExternalEncodings> (*n);
+                }
             }
         }
 
 #if qWideCharacters
-        CodePageConverter      cpc        = CodePageConverter{useCodePage, CodePageConverter::eHandleBOM};
-        size_t                 outCharCnt = cpc.MapToUNICODE_QuickComputeOutBufSize (static_cast<char*> (buf), nLen + 1);
-        StackBuffer<Led_tChar> result{Memory::eUninitialized, outCharCnt};
-        cpc.MapToUNICODE (static_cast<char*> (buf), nLen, static_cast<wchar_t*> (result), &outCharCnt);
-        nLen             = static_cast<DWORD> (outCharCnt);
+        using Characters::CodeCvt;
+        CodeCvt<Led_tChar> codeCvt{useUnicodEncoding ? CodeCvt<Led_tChar>{*useUnicodEncoding}
+                                                     : (useCodePage == kAutomaticallyGuessCodePage ? CodeCvt<Led_tChar>{locale{}}
+                                                                                                   : CodeCvt<Led_tChar>{useCodePage})};
+        StackBuffer<Led_tChar> result{Memory::eUninitialized,
+                                      codeCvt.ComputeTargetCharacterBufferSize (span{reinterpret_cast<const byte*> (buf.data ()), nLen})+1};
+        span<Led_tChar> n = codeCvt.Bytes2Characters (span{reinterpret_cast<const byte*> (buf.data ()), nLen}.subspan (bytesToStrip), span{result});
+        nLen             = static_cast<DWORD> (n.size());
         result[nLen]     = '\0'; // assure NUL-Term
         Led_tChar* buffp = static_cast<Led_tChar*> (result);
 #else
