@@ -268,7 +268,7 @@ namespace Stroika::Foundation::Streams {
     Traversal::Iterable<Characters::String> InputStream<ELEMENT_TYPE>::Ptr::ReadLines () const
         requires (is_same_v<ELEMENT_TYPE, Characters::Character>)
     {
- using namespace Characters;
+        using namespace Characters;
         using namespace Traversal;
         InputStream<Character>::Ptr copyOfStream = *this;
         if (this->IsSeekable ()) [[likely]] {

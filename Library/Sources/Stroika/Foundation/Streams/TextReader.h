@@ -130,8 +130,7 @@ namespace Stroika::Foundation::Streams {
         static Ptr New (const Memory::BLOB& src, const Characters::CodeCvt<>& codeConverter);
         static Ptr New (const InputStream<byte>::Ptr& src);
         static Ptr New (const InputStream<byte>::Ptr& src, SeekableFlag seekable, ReadAhead readAhead = eReadAheadAllowed);
-        static Ptr New (const InputStream<byte>::Ptr& src, AutomaticCodeCvtFlags codeCvtFlags,
-                        ReadAhead readAhead = eReadAheadAllowed);
+        static Ptr New (const InputStream<byte>::Ptr& src, AutomaticCodeCvtFlags codeCvtFlags, ReadAhead readAhead = eReadAheadAllowed);
         static Ptr New (const InputStream<byte>::Ptr& src, const Characters::CodeCvt<>& codeConverter,
                         SeekableFlag seekable = SeekableFlag::eSeekable, ReadAhead readAhead = eReadAheadAllowed);
         static Ptr New (const InputStream<Character>::Ptr& src);
