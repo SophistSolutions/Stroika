@@ -79,7 +79,29 @@ namespace Stroika::Foundation::Characters {
      ***************************** Characters::Narrow2SDKString *********************
      ********************************************************************************
      */
-    inline SDKString Narrow2SDKString (const string& s)
+    inline SDKString Narrow2SDKString (const span<const char>& s)
+    {
+        if constexpr (same_as<SDKChar, char>) {
+            return SDKString{s.data (), s.data () + s.size ()};
+        }
+        else {
+#if qPlatform_Windows
+            static constexpr DWORD kFLAGS_ = MB_ERR_INVALID_CHARS;
+            int stringLength = ::MultiByteToWideChar (CP_ACP, kFLAGS_, s.data (), static_cast<int> (s.length ()), nullptr, 0);
+            if (stringLength == 0 and s.length () != 0) {
+                Execution::ThrowSystemErrNo ();
+            }
+            SDKString result;
+            result.resize (stringLength);
+            Verify (::MultiByteToWideChar (CP_ACP, kFLAGS_, s.data (), static_cast<int> (s.length ()), Containers::Start (result),
+                                           stringLength) == stringLength);
+            return result;
+#else
+            AssertNotImplemented ();
+#endif
+        }
+    }
+   inline SDKString Narrow2SDKString (const string& s)
     {
         if constexpr (same_as<SDKChar, char>) {
             return s;
@@ -101,7 +123,6 @@ namespace Stroika::Foundation::Characters {
 #endif
         }
     }
-
     /*
      ********************************************************************************
      ******************************* Characters::SDKString2Wide *********************
@@ -109,6 +130,7 @@ namespace Stroika::Foundation::Characters {
      */
 #if qPlatform_Windows
     inline wstring SDKString2Wide (const SDKString& s) { return s; }
+     inline   wstring SDKString2Wide (const span<const SDKChar>& s) { return wstring{s}; }
 #endif
 
     /*
@@ -118,7 +140,19 @@ namespace Stroika::Foundation::Characters {
      */
 #if qPlatform_Windows
     inline SDKString WideString2SDK (const wstring& s) { return s; }
+    inline SDKString WideString2SDK (const span<const SDKChar>& s) { return SDKString{s}; }
 #endif
+
+
+
+    inline wstring NarrowSDKString2Wide (span<const char> s)
+    {
+        return SDKString2Wide (Narrow2SDKString (s));
+    }
+    inline wstring NarrowSDKString2Wide (const string& s)
+    {
+        return SDKString2Wide (Narrow2SDKString (s));
+    }
 
     /// <summary>
     /// DEPRECATED BELOW...

@@ -415,18 +415,12 @@ namespace Stroika::Foundation::Characters {
     }
     inline String String::FromSDKString (span<const SDKChar> s)
     {
-#if qTargetPlatformSDKUseswchar_t
-        return String{s};
-#else
-#ifdef CP_ACP
-        Assert (CP_ACP == 0);
-#else
-        const unsigned char CP_ACP = 0;
-#endif
-        wstring w;
-        NarrowStringToWide (s.data (), s.data () + s.size (), CP_ACP, &w);
-        return String{move (w)};
-#endif
+        if constexpr (same_as<SDKChar,wchar_t>) {
+            return String{s};
+        }
+        else {
+            return String{SDKString2Wide (s)};
+        }
     }
     inline String String::FromSDKString (const SDKString& from) { return FromSDKString (span{from.c_str (), from.length ()}); }
     inline String String::FromNarrowSDKString (const char* from)
@@ -436,15 +430,7 @@ namespace Stroika::Foundation::Characters {
     }
     inline String String::FromNarrowSDKString (span<const char> s)
     {
-#ifdef CP_ACP
-        Assert (CP_ACP == 0);
-#else
-        const unsigned char CP_ACP = 0;
-#endif
-        // @todo FIX PERFORMANCE
-        wstring tmp;
-        NarrowStringToWide (s.data (), s.data () + s.size (), CP_ACP, &tmp);
-        return String{tmp};
+        return String{NarrowSDKString2Wide(s)};
     }
     inline String String::FromNarrowSDKString (const string& from) { return FromNarrowSDKString (span{from.c_str (), from.length ()}); }
     template <typename T>

@@ -6,6 +6,7 @@
 
 #include "../StroikaPreComp.h"
 
+#include <span>
 #include <string>
 
 #include "SDKChar.h"
@@ -58,17 +59,24 @@ namespace Stroika::Foundation::Characters {
      *  On most platforms, this does nothing, but on Windows, it maps strings to wstring using code-page CP_ACP
      *  @todo add span<> overloads
      */
+    SDKString Narrow2SDKString (const span<const char>& s);
     SDKString Narrow2SDKString (const string& s);
+
+    // @todo TONS OF CLENAUPS HERE - INCLUDING USING SPAN, and AVOIDING INTERMEDIATES NOT NEEDED...
+     wstring NarrowSDKString2Wide (span<const char> s);
+     wstring NarrowSDKString2Wide (const string& s);
 
     /**
      *  On Windows, this does nothing as SDKString==wstring, but on other platforms it follows the rules of SDKChar to map it to wstring.
      */
     wstring SDKString2Wide (const SDKString& s);
+    wstring SDKString2Wide (const span<const SDKChar>& s);
 
     /**
      *  On Windows, this does nothing as SDKString==wstring, but on other platforms it follows the rules of SDKChar to map it from wstring.
      */
     SDKString WideString2SDK (const wstring& s);
+    SDKString WideString2SDK (const span<const wchar_t>& s);
 
 }
 

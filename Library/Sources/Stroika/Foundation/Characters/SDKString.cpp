@@ -16,15 +16,23 @@ using namespace Stroika::Foundation::Characters;
  ******************************* Characters::SDKString2Wide *********************
  ********************************************************************************
  */
-
-
 #if !qPlatform_Windows
  wstring Characters::SDKString2Wide (const SDKString& s)
 {
 #if qPlatform_MacOS
-    return CodeCvt<wchar_t>{UnicodeExternalEncodings::eUTF8}.Bytes2String<wstring> (Memory::SpanReInterpretCast<const byte> (span{s}));
+static const CodeCvt<wchar_t> kCvt_ {UnicodeExternalEncodings::eUTF8};
+    return kCvt_.Bytes2String<wstring> (Memory::SpanReInterpretCast<const byte> (span{s}));
 #else
     return CodeCvt<wchar_t>{locale{}}.Bytes2String<wstring> (Memory::SpanReInterpretCast<const byte>  (span{s}));
+#endif
+}
+wstring Characters::SDKString2Wide (const span<const SDKChar>& s)
+ { 
+#if qPlatform_MacOS
+static const CodeCvt<wchar_t> kCvt_ {UnicodeExternalEncodings::eUTF8};
+    return kCvt_.Bytes2String<wstring> (Memory::SpanReInterpretCast<const byte> (s));
+#else
+    return CodeCvt<wchar_t>{locale{}}.Bytes2String<wstring> (Memory::SpanReInterpretCast<const byte>  (s));
 #endif
 }
 #endif
@@ -38,9 +46,19 @@ using namespace Stroika::Foundation::Characters;
 SDKString Characters::WideString2SDK (const wstring& s)
 {
 #if qPlatform_MacOS
-    return CodeCvt<wchar_t>{UnicodeExternalEncodings::eUTF8}.String2Bytes<SDKString> (span{s});
+static const CodeCvt<wchar_t> kCvt_ {UnicodeExternalEncodings::eUTF8};
+    return kCvt_.String2Bytes<SDKString> (span{s});
 #else
     return CodeCvt<wchar_t>{locale{}}.String2Bytes<SDKString> (span{s});
+#endif
+}
+     SDKString Characters::WideString2SDK (const span<const wchar_t>& s) 
+{
+#if qPlatform_MacOS
+static const CodeCvt<wchar_t> kCvt_ {UnicodeExternalEncodings::eUTF8};
+    return kCvt_.String2Bytes<SDKString> (s);
+#else
+    return CodeCvt<wchar_t>{locale{}}.String2Bytes<SDKString> (s);
 #endif
 }
 #endif
