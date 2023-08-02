@@ -87,21 +87,20 @@ namespace Stroika::Foundation::Characters {
         else {
 #if qPlatform_Windows
             static constexpr DWORD kFLAGS_ = MB_ERR_INVALID_CHARS;
-            int stringLength = ::MultiByteToWideChar (CP_ACP, kFLAGS_, s.data (), static_cast<int> (s.size ()), nullptr, 0);
+            int stringLength               = ::MultiByteToWideChar (CP_ACP, kFLAGS_, s.data (), static_cast<int> (s.size ()), nullptr, 0);
             if (stringLength == 0 and s.size () != 0) {
                 Execution::ThrowSystemErrNo ();
             }
             SDKString result;
             result.resize (stringLength);
-            Verify (::MultiByteToWideChar (CP_ACP, kFLAGS_, s.data (), static_cast<int> (s.size ()), Containers::Start (result),
-                                           stringLength) == stringLength);
+            Verify (::MultiByteToWideChar (CP_ACP, kFLAGS_, s.data (), static_cast<int> (s.size ()), Containers::Start (result), stringLength) == stringLength);
             return result;
 #else
             AssertNotImplemented ();
 #endif
         }
     }
-   inline SDKString Narrow2SDKString (const string& s)
+    inline SDKString Narrow2SDKString (const string& s)
     {
         if constexpr (same_as<SDKChar, char>) {
             return s;
@@ -143,16 +142,8 @@ namespace Stroika::Foundation::Characters {
     inline SDKString WideString2SDK (const span<const SDKChar>& s) { return SDKString{s.begin (), s.end ()}; }
 #endif
 
-
-
-    inline wstring NarrowSDKString2Wide (span<const char> s)
-    {
-        return SDKString2Wide (Narrow2SDKString (s));
-    }
-    inline wstring NarrowSDKString2Wide (const string& s)
-    {
-        return SDKString2Wide (Narrow2SDKString (s));
-    }
+    inline wstring NarrowSDKString2Wide (span<const char> s) { return SDKString2Wide (Narrow2SDKString (s)); }
+    inline wstring NarrowSDKString2Wide (const string& s) { return SDKString2Wide (Narrow2SDKString (s)); }
 
     /// <summary>
     /// DEPRECATED BELOW...

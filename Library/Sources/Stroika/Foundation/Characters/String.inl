@@ -415,7 +415,7 @@ namespace Stroika::Foundation::Characters {
     }
     inline String String::FromSDKString (span<const SDKChar> s)
     {
-        if constexpr (same_as<SDKChar,wchar_t>) {
+        if constexpr (same_as<SDKChar, wchar_t>) {
             return String{s};
         }
         else {
@@ -428,10 +428,7 @@ namespace Stroika::Foundation::Characters {
         RequireNotNull (from);
         return FromNarrowSDKString (span{from, ::strlen (from)});
     }
-    inline String String::FromNarrowSDKString (span<const char> s)
-    {
-        return String{NarrowSDKString2Wide(s)};
-    }
+    inline String String::FromNarrowSDKString (span<const char> s) { return String{NarrowSDKString2Wide (s)}; }
     inline String String::FromNarrowSDKString (const string& from) { return FromNarrowSDKString (span{from.c_str (), from.length ()}); }
     template <typename T>
     String String::Concatenate (T&& rhs) const

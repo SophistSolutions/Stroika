@@ -63,8 +63,8 @@ namespace Stroika::Foundation::Characters {
     SDKString Narrow2SDKString (const string& s);
 
     // @todo TONS OF CLENAUPS HERE - INCLUDING USING SPAN, and AVOIDING INTERMEDIATES NOT NEEDED...
-     wstring NarrowSDKString2Wide (span<const char> s);
-     wstring NarrowSDKString2Wide (const string& s);
+    wstring NarrowSDKString2Wide (span<const char> s);
+    wstring NarrowSDKString2Wide (const string& s);
 
     /**
      *  On Windows, this does nothing as SDKString==wstring, but on other platforms it follows the rules of SDKChar to map it to wstring.
