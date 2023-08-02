@@ -79,7 +79,7 @@ namespace Stroika::Foundation::Characters {
      ***************************** Characters::Narrow2SDKString *********************
      ********************************************************************************
      */
-    inline SDKString Narrow2SDKString (const span<const char>& s)
+    inline SDKString Narrow2SDKString (span<const char> s)
     {
         if constexpr (same_as<SDKChar, char>) {
             return SDKString{s.data (), s.data () + s.size ()};
@@ -129,7 +129,7 @@ namespace Stroika::Foundation::Characters {
      */
 #if qPlatform_Windows
     inline wstring SDKString2Wide (const SDKString& s) { return s; }
-    inline wstring SDKString2Wide (const span<const SDKChar>& s) { return wstring{s.begin (), s.end ()}; }
+    inline wstring SDKString2Wide (span<const SDKChar> s) { return wstring{s.begin (), s.end ()}; }
 #endif
 
     /*
@@ -138,9 +138,17 @@ namespace Stroika::Foundation::Characters {
      ********************************************************************************
      */
 #if qPlatform_Windows
-    inline SDKString WideString2SDK (const wstring& s) { return s; }
-    inline SDKString WideString2SDK (const span<const SDKChar>& s) { return SDKString{s.begin (), s.end ()}; }
+    inline SDKString WideString2SDK (span<const SDKChar> s) { return SDKString{s.begin (), s.end ()}; }
 #endif
+    inline SDKString WideString2SDK (const wstring& s)
+    {
+        if constexpr (same_as<wstring, SDKString>) {
+            return s;
+        }
+        else {
+            return WideString2SDK (span{s});
+        }
+    }
 
     inline wstring NarrowSDKString2Wide (span<const char> s) { return SDKString2Wide (Narrow2SDKString (s)); }
     inline wstring NarrowSDKString2Wide (const string& s) { return SDKString2Wide (Narrow2SDKString (s)); }

@@ -422,7 +422,15 @@ namespace Stroika::Foundation::Characters {
             return String{SDKString2Wide (s)};
         }
     }
-    inline String String::FromSDKString (const SDKString& from) { return FromSDKString (span{from.c_str (), from.length ()}); }
+    inline String String::FromSDKString (const SDKString& from)
+    {
+        if constexpr (same_as<SDKString, wstring>) {
+            return String{move (from)};
+        }
+        else {
+            return FromSDKString (span{from.c_str (), from.length ()});
+        }
+    }
     inline String String::FromNarrowSDKString (const char* from)
     {
         RequireNotNull (from);
