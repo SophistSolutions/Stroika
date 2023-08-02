@@ -287,8 +287,14 @@ namespace Stroika::Foundation::Characters {
     {
         Require (h == eHandleBOM);
     }
-    inline bool   CodePageConverter::GetHandleBOM () const { return fHandleBOM; }
-    inline void   CodePageConverter::SetHandleBOM (bool handleBOM) { fHandleBOM = handleBOM; }
+    inline bool CodePageConverter::GetHandleBOM () const
+    {
+        return fHandleBOM;
+    }
+    inline void CodePageConverter::SetHandleBOM (bool handleBOM)
+    {
+        fHandleBOM = handleBOM;
+    }
     inline size_t CodePageConverter::MapToUNICODE_QuickComputeOutBufSize (const char* /*inMBChars*/, size_t inMBCharCnt) const
     {
         size_t resultSize = inMBCharCnt;
@@ -322,15 +328,21 @@ namespace Stroika::Foundation::Characters {
      ************ CodePageConverter::CodePageNotSupportedException ******************
      ********************************************************************************
      */
-    inline CodePage CodePageNotSupportedException::GetCodePage () const { return fCodePage_; }
+    inline CodePage CodePageNotSupportedException::GetCodePage () const
+    {
+        return fCodePage_;
+    }
 
     /*
      ********************************************************************************
      ****************************** CodePagesInstalled ******************************
      ********************************************************************************
      */
-    inline vector<CodePage> CodePagesInstalled::GetAll () { return fCodePages_; }
-    inline bool             CodePagesInstalled::IsCodePageAvailable (CodePage cp)
+    inline vector<CodePage> CodePagesInstalled::GetAll ()
+    {
+        return fCodePages_;
+    }
+    inline bool CodePagesInstalled::IsCodePageAvailable (CodePage cp)
     {
         return find (fCodePages_.begin (), fCodePages_.end (), cp) == fCodePages_.end ();
     }
@@ -358,13 +370,19 @@ namespace Stroika::Foundation::Characters {
         NarrowStringToWide (s, codePage, &result);
         return result;
     }
-    inline string WideStringToUTF8 (const wstring& ws) { return WideStringToNarrow (ws, WellKnownCodePages::kUTF8); }
-    inline void   UTF8StringToWide (const char* s, wstring* intoStr)
+    inline string WideStringToUTF8 (const wstring& ws)
+    {
+        return WideStringToNarrow (ws, WellKnownCodePages::kUTF8);
+    }
+    inline void UTF8StringToWide (const char* s, wstring* intoStr)
     {
         RequireNotNull (s);
         NarrowStringToWide (s, s + ::strlen (s), WellKnownCodePages::kUTF8, intoStr);
     }
-    inline void    UTF8StringToWide (const string& s, wstring* intoStr) { NarrowStringToWide (s, WellKnownCodePages::kUTF8, intoStr); }
+    inline void UTF8StringToWide (const string& s, wstring* intoStr)
+    {
+        NarrowStringToWide (s, WellKnownCodePages::kUTF8, intoStr);
+    }
     inline wstring UTF8StringToWide (const char* s)
     {
         RequireNotNull (s);
@@ -372,7 +390,10 @@ namespace Stroika::Foundation::Characters {
         NarrowStringToWide (s, s + ::strlen (s), WellKnownCodePages::kUTF8, &result);
         return result;
     }
-    inline wstring UTF8StringToWide (const string& s) { return NarrowStringToWide (s, WellKnownCodePages::kUTF8); }
+    inline wstring UTF8StringToWide (const string& s)
+    {
+        return NarrowStringToWide (s, WellKnownCodePages::kUTF8);
+    }
 
     [[deprecated ("Since Stroika v3.0d2 - use CodeCvt")]] vector<byte>
     MapUNICODETextToSerializedFormat (const wchar_t* start, const wchar_t* end, CodePage useCP = WellKnownCodePages::kUTF8); // suitable for files

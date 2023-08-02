@@ -15,7 +15,10 @@ public:
     LedItServerItem (LedItDocument* pContainerDoc);
 
     // Attributes
-    LedItDocument* GetDocument () const { return (LedItDocument*)COleServerItem::GetDocument (); }
+    LedItDocument* GetDocument () const
+    {
+        return (LedItDocument*)COleServerItem::GetDocument ();
+    }
 
     // Overrides
     // ClassWizard generated virtual function overrides

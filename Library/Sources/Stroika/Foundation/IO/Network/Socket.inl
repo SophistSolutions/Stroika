@@ -16,7 +16,9 @@ namespace Stroika::Foundation::IO::Network {
      ********************* Foundation::IO::Network::Socket::Ptr *********************
      ********************************************************************************
      */
-    inline Socket::Ptr::Ptr (nullptr_t) {}
+    inline Socket::Ptr::Ptr (nullptr_t)
+    {
+    }
     inline Socket::Ptr::Ptr (const shared_ptr<_IRep>& rep)
         : fRep_{rep}
     {
@@ -35,7 +37,10 @@ namespace Stroika::Foundation::IO::Network {
         fRep_ = s.fRep_;
         return *this;
     }
-    inline void                      Socket::Ptr::reset () noexcept { fRep_.reset (); }
+    inline void Socket::Ptr::reset () noexcept
+    {
+        fRep_.reset ();
+    }
     inline shared_ptr<Socket::_IRep> Socket::Ptr::_GetSharedRep () const
     {
         AssertExternallySynchronizedMutex::ReadContext declareContext{*this};

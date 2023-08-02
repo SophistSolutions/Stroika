@@ -110,10 +110,19 @@ namespace Stroika::Foundation::IO::Network {
             fArray_16_uint_[i++] = static_cast<uint8_t> (b);
         }
     }
-    constexpr bool                           InternetAddress::empty () const { return fAddressFamily_ == AddressFamily::UNKNOWN; }
-    inline void                              InternetAddress::clear () { fAddressFamily_ = AddressFamily::UNKNOWN; }
-    constexpr InternetAddress::AddressFamily InternetAddress::GetAddressFamily () const { return fAddressFamily_; }
-    constexpr optional<size_t>               InternetAddress::GetAddressSize () const
+    constexpr bool InternetAddress::empty () const
+    {
+        return fAddressFamily_ == AddressFamily::UNKNOWN;
+    }
+    inline void InternetAddress::clear ()
+    {
+        fAddressFamily_ = AddressFamily::UNKNOWN;
+    }
+    constexpr InternetAddress::AddressFamily InternetAddress::GetAddressFamily () const
+    {
+        return fAddressFamily_;
+    }
+    constexpr optional<size_t> InternetAddress::GetAddressSize () const
     {
         switch (GetAddressFamily ()) {
             case AddressFamily::V4:
@@ -124,7 +133,10 @@ namespace Stroika::Foundation::IO::Network {
                 return nullopt;
         }
     }
-    constexpr InternetAddress InternetAddress::min () { return InternetAddress{}; }
+    constexpr InternetAddress InternetAddress::min ()
+    {
+        return InternetAddress{};
+    }
     constexpr InternetAddress InternetAddress::max ()
     {
         // @todo - consider if this is really the max (could have longer address at some point in the future - IPV8, 9, 10??)
@@ -228,9 +240,15 @@ namespace Stroika::Foundation::IO::Network {
             return tmp;
         }
     }
-    inline strong_ordering InternetAddress::operator<=> (const InternetAddress& rhs) const { return TWC_ (*this, rhs); }
-    inline bool InternetAddress::operator== (const InternetAddress& rhs) const { return TWC_ (*this, rhs) == 0; }
-    inline strong_ordering       InternetAddress::TWC_ (const InternetAddress& lhs, const InternetAddress& rhs)
+    inline strong_ordering InternetAddress::operator<=> (const InternetAddress& rhs) const
+    {
+        return TWC_ (*this, rhs);
+    }
+    inline bool InternetAddress::operator== (const InternetAddress& rhs) const
+    {
+        return TWC_ (*this, rhs) == 0;
+    }
+    inline strong_ordering InternetAddress::TWC_ (const InternetAddress& lhs, const InternetAddress& rhs)
     {
         if (auto cmp = lhs.fAddressFamily_ <=> rhs.fAddressFamily_; cmp != strong_ordering::equal) {
             return cmp;

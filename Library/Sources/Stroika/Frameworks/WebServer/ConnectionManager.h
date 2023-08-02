@@ -303,7 +303,10 @@ namespace Stroika::Frameworks::WebServer {
 
         struct MyWaitForIOReady_Traits_ {
             using HighLevelType = shared_ptr<Connection>;
-            static inline auto GetSDKPollable (const HighLevelType& t) { return t->socket ().GetNativeSocket (); }
+            static inline auto GetSDKPollable (const HighLevelType& t)
+            {
+                return t->socket ().GetNativeSocket ();
+            }
         };
         // No need to lock fInactiveSockSetPoller_ since its internally synchronized;
         Execution::UpdatableWaitForIOReady<shared_ptr<Connection>, MyWaitForIOReady_Traits_> fInactiveSockSetPoller_{};

@@ -1,12 +1,15 @@
 #https://clang.llvm.org/docs/ClangFormatStyleOptions.html
 BasedOnStyle: LLVM
+
 AccessModifierOffset: -4
 AllowShortLambdasOnASingleLine: All
+AllowShortFunctionsOnASingleLine: None
 AlignTrailingComments: true
 AlwaysBreakTemplateDeclarations: true
 AlignConsecutiveAssignments: true
 AlignConsecutiveDeclarations: true
 AlignAfterOpenBracket: Align
+AllowShortEnumsOnASingleLine: false
 BreakBeforeBraces: Custom
 BraceWrapping:
   AfterClass: false
@@ -23,15 +26,14 @@ BraceWrapping:
 BreakConstructorInitializersBeforeComma: true
 ColumnLimit:     140
 #ColumnLimit: 0
-PenaltyExcessCharacter: 1
-AllowShortEnumsOnASingleLine: false
-
 Cpp11BracedListStyle: true
 FixNamespaceComments: false
 IndentWidth: 4
 IndentCaseLabels: true
 KeepEmptyLinesAtTheStartOfBlocks: true
+LambdaBodyIndentation: Signature 
 NamespaceIndentation: All
+PenaltyExcessCharacter: 1
 PointerAlignment: Left
 ReflowComments: false
 SortIncludes: true

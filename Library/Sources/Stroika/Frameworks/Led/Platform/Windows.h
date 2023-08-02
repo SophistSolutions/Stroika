@@ -2794,7 +2794,10 @@ namespace Stroika::Frameworks::Led::Platform {
         , fSuperWindowProc{nullptr}
     {
     }
-    inline HWND SimpleWin32WndProcHelper::GetHWND () const { return fHWnd; }
+    inline HWND SimpleWin32WndProcHelper::GetHWND () const
+    {
+        return fHWnd;
+    }
     inline void SimpleWin32WndProcHelper::SetHWND (HWND hWnd)
     {
         if (fHWnd != nullptr) {
@@ -2826,9 +2829,18 @@ namespace Stroika::Frameworks::Led::Platform {
 #endif
         return ::SendMessage (this->GetValidatedHWND (), msg, wParam, lParam);
     }
-    inline bool SimpleWin32WndProcHelper::IsWindowRealized () const { return this->GetHWND () != nullptr; }
-    inline void SimpleWin32WndProcHelper::Assert_Window_Realized () const { Assert (this->IsWindowRealized ()); }
-    inline void SimpleWin32WndProcHelper::Require_Window_Realized () const { Require (this->IsWindowRealized ()); }
+    inline bool SimpleWin32WndProcHelper::IsWindowRealized () const
+    {
+        return this->GetHWND () != nullptr;
+    }
+    inline void SimpleWin32WndProcHelper::Assert_Window_Realized () const
+    {
+        Assert (this->IsWindowRealized ());
+    }
+    inline void SimpleWin32WndProcHelper::Require_Window_Realized () const
+    {
+        Require (this->IsWindowRealized ());
+    }
     inline bool SimpleWin32WndProcHelper::IsWindowUNICODE () const
     {
         Require_Window_Realized ();

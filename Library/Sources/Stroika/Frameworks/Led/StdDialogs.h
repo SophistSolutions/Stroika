@@ -313,7 +313,10 @@ namespace Stroika::Frameworks::Led {
 
     public:
 #if qPlatform_MacOS
-        nonvirtual int GetResID () const { return fResID; }
+        nonvirtual int GetResID () const
+        {
+            return fResID;
+        }
 #endif
 
     private:
@@ -1443,15 +1446,42 @@ namespace Stroika::Frameworks::Led {
         }
 
     public:
-        virtual void DoIgnore () override { fDelegate.DoIgnore (); }
-        virtual void DoIgnoreAll () override { fDelegate.DoIgnoreAll (); }
-        virtual void DoChange (const Led_tString& changeTo) override { fDelegate.DoChange (changeTo); }
-        virtual void DoChangeAll (const Led_tString& changeTo) override { fDelegate.DoChangeAll (changeTo); }
-        virtual bool AddToDictionaryEnabled () const override { return fDelegate.AddToDictionaryEnabled (); }
-        virtual void AddToDictionary (const Led_tString& newWord) override { fDelegate.AddToDictionary (newWord); }
-        virtual void LookupOnWeb (const Led_tString& word) override { fDelegate.LookupOnWeb (word); }
-        virtual bool OptionsDialogEnabled () const override { return fDelegate.OptionsDialogEnabled (); }
-        virtual void OptionsDialog () override { fDelegate.OptionsDialog (); }
+        virtual void DoIgnore () override
+        {
+            fDelegate.DoIgnore ();
+        }
+        virtual void DoIgnoreAll () override
+        {
+            fDelegate.DoIgnoreAll ();
+        }
+        virtual void DoChange (const Led_tString& changeTo) override
+        {
+            fDelegate.DoChange (changeTo);
+        }
+        virtual void DoChangeAll (const Led_tString& changeTo) override
+        {
+            fDelegate.DoChangeAll (changeTo);
+        }
+        virtual bool AddToDictionaryEnabled () const override
+        {
+            return fDelegate.AddToDictionaryEnabled ();
+        }
+        virtual void AddToDictionary (const Led_tString& newWord) override
+        {
+            fDelegate.AddToDictionary (newWord);
+        }
+        virtual void LookupOnWeb (const Led_tString& word) override
+        {
+            fDelegate.LookupOnWeb (word);
+        }
+        virtual bool OptionsDialogEnabled () const override
+        {
+            return fDelegate.OptionsDialogEnabled ();
+        }
+        virtual void OptionsDialog () override
+        {
+            fDelegate.OptionsDialog ();
+        }
 
     private:
         DEL& fDelegate;

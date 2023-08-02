@@ -44,21 +44,30 @@ namespace Stroika::Foundation::Streams {
         Rep_ (const Rep_&)                       = delete;
         nonvirtual Rep_& operator= (const Rep_&) = delete;
 
-        virtual bool IsSeekable () const override { return true; }
+        virtual bool IsSeekable () const override
+        {
+            return true;
+        }
         virtual void CloseWrite () override
         {
             Require (IsOpenWrite ());
             Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
             fOpenWrite_ = false;
         }
-        virtual bool IsOpenWrite () const override { return fOpenWrite_; }
+        virtual bool IsOpenWrite () const override
+        {
+            return fOpenWrite_;
+        }
         virtual void CloseRead () override
         {
             Require (IsOpenRead ());
             Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
             fOpenRead_ = false;
         }
-        virtual bool   IsOpenRead () const override { return fOpenRead_; }
+        virtual bool IsOpenRead () const override
+        {
+            return fOpenRead_;
+        }
         virtual size_t Read (ELEMENT_TYPE* intoStart, ELEMENT_TYPE* intoEnd) override
         {
             RequireNotNull (intoStart);

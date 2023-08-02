@@ -99,14 +99,23 @@ namespace Stroika::Foundation::Math::LinearAlgebra {
             Vector<T>& fV;
             size_t     fIndex;
             T          fValue;
-            ~TMP_ () { fV.SetAt (fIndex, fValue); }
-            operator T& () { return fValue; }
+            ~TMP_ ()
+            {
+                fV.SetAt (fIndex, fValue);
+            }
+            operator T& ()
+            {
+                return fValue;
+            }
         };
 
     public:
         /**
          */
-        nonvirtual TMP_ operator[] (size_t i) { return TMP_{*this, i, GetAt (i)}; }
+        nonvirtual TMP_ operator[] (size_t i)
+        {
+            return TMP_{*this, i, GetAt (i)};
+        }
 #endif
 
     public:

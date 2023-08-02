@@ -32,7 +32,10 @@ namespace Stroika::Foundation::Streams {
 
         // Stream<ELEMENT_TYPE>::_IRep
     public:
-        virtual bool IsSeekable () const override { return fRealStream_.IsSeekable (); }
+        virtual bool IsSeekable () const override
+        {
+            return fRealStream_.IsSeekable ();
+        }
 
         // InputStream::_IRep
     public:
@@ -41,8 +44,14 @@ namespace Stroika::Foundation::Streams {
             fRealStream_.CloseRead ();
             fLogInput_.Close ();
         }
-        virtual bool           IsOpenRead () const override { return fRealStream_.IsOpenRead (); }
-        virtual SeekOffsetType GetReadOffset () const override { return fRealStream_.GetReadOffset (); }
+        virtual bool IsOpenRead () const override
+        {
+            return fRealStream_.IsOpenRead ();
+        }
+        virtual SeekOffsetType GetReadOffset () const override
+        {
+            return fRealStream_.GetReadOffset ();
+        }
         virtual SeekOffsetType SeekRead (Whence whence, SignedSeekOffsetType offset) override
         {
             SeekOffsetType result = fRealStream_.SeekRead (whence, offset);

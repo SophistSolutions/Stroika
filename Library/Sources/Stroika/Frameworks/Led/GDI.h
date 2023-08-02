@@ -546,7 +546,10 @@ namespace Stroika::Frameworks::Led {
             FontNameSpecifier ();
             FontNameSpecifier (const SDKChar* from);
             SDKChar fName[LF_FACESIZE];
-            bool    operator== (const FontNameSpecifier& rhs) const { return ::_tcscmp (fName, rhs.fName) == 0; }
+            bool    operator== (const FontNameSpecifier& rhs) const
+            {
+                return ::_tcscmp (fName, rhs.fName) == 0;
+            }
         };
 #elif qStroika_FeatureSupported_XWindows
         using FontNameSpecifier = SDKString;

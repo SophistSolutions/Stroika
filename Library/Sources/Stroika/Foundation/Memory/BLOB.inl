@@ -151,8 +151,14 @@ namespace Stroika::Foundation::Memory {
         RequireNotNull (b);
         return Hex (b, b + ::strlen (b));
     }
-    inline BLOB BLOB::Hex (const string& s) { return Hex (s.c_str ()); }
-    inline BLOB BLOB::Hex (const string_view& s) { return Hex (s.data (), s.data () + s.length ()); }
+    inline BLOB BLOB::Hex (const string& s)
+    {
+        return Hex (s.c_str ());
+    }
+    inline BLOB BLOB::Hex (const string_view& s)
+    {
+        return Hex (s.data (), s.data () + s.length ());
+    }
     template <typename T>
     inline BLOB BLOB::Raw (const T* s, const T* e)
         requires (is_trivially_copyable_v<T>)
@@ -381,7 +387,10 @@ namespace Stroika::Foundation::Memory {
         Debug::AssertExternallySynchronizedMutex::ReadContext declareContext{fThisAssertExternallySynchronized_};
         return GetSize ();
     }
-    inline strong_ordering BLOB::operator<=> (const BLOB& rhs) const { return TWC_ (*this, rhs); }
+    inline strong_ordering BLOB::operator<=> (const BLOB& rhs) const
+    {
+        return TWC_ (*this, rhs);
+    }
     inline bool BLOB::operator== (const BLOB& rhs) const
     {
         Debug::AssertExternallySynchronizedMutex::ReadContext readLockL{fThisAssertExternallySynchronized_}; // this pattern of double locking might risk a deadlock for real locks, but these locks are fake to assure externally locked

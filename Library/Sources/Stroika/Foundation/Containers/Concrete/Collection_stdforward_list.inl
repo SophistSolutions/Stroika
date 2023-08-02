@@ -72,7 +72,10 @@ namespace Stroika::Foundation::Containers::Concrete {
 
         // Collection<T>::_IRep overrides
     public:
-        virtual shared_ptr<typename Collection<T>::_IRep> CloneEmpty () const override { return Memory::MakeSharedPtr<Rep_> (); }
+        virtual shared_ptr<typename Collection<T>::_IRep> CloneEmpty () const override
+        {
+            return Memory::MakeSharedPtr<Rep_> ();
+        }
         virtual shared_ptr<typename Collection<T>::_IRep> CloneAndPatchIterator (Iterator<value_type>* i) const override
         {
             RequireNotNull (i);

@@ -52,7 +52,10 @@ namespace Stroika::Frameworks::Led {
         fPartitionMarker = rhs.fPartitionMarker;
         return (*this);
     }
-    inline SimpleTextImager::PartitionMarker* SimpleTextImager::RowReference::GetPartitionMarker () const { return (fPartitionMarker); }
+    inline SimpleTextImager::PartitionMarker* SimpleTextImager::RowReference::GetPartitionMarker () const
+    {
+        return (fPartitionMarker);
+    }
 
     //  class   SimpleTextImager
     /*
@@ -77,7 +80,10 @@ namespace Stroika::Frameworks::Led {
     @DESCRIPTION:   <p>Note that the rowHeight associated with this TextImager is invalid. Next time the value is
                 requested (via @'SimpleTextImager::GetRowHeight' ()), recalculate it first.</p>
     */
-    inline void SimpleTextImager::InvalidateRowHeight () { fRowHeight = DistanceType (-1); }
+    inline void SimpleTextImager::InvalidateRowHeight ()
+    {
+        fRowHeight = DistanceType (-1);
+    }
     /*
     @METHOD:        SimpleTextImager::GetNextRowReference
     @DESCRIPTION:   <p>Advance the given row reference argument to the next row. Return true if there
@@ -167,7 +173,10 @@ namespace Stroika::Frameworks::Led {
     @DESCRIPTION:   <p>Gets the length of the given row (in @'Led_tChar's).</p>
                     <p>See also  @'SimpleTextImager::GetStartOfRow' and @'SimpleTextImager::GetEndOfRow'.</p>
     */
-    inline size_t SimpleTextImager::GetRowLength (RowReference row) const { return (GetEndOfRow (row) - GetStartOfRow (row)); }
+    inline size_t SimpleTextImager::GetRowLength (RowReference row) const
+    {
+        return (GetEndOfRow (row) - GetStartOfRow (row));
+    }
     /*
     @METHOD:        SimpleTextImager::GetLastRowReferenceInWindow
     @DESCRIPTION:   <p>Returns the last row-reference in the window (end of window).</p>
@@ -192,7 +201,10 @@ namespace Stroika::Frameworks::Led {
                     <p>NB: There is also a one-arg version of @'SimpleTextImager::GetInterLineSpace' which takes a PM
                 as arg. See its docs, or @'SimpleTextImager::ChangedInterLineSpace' for more details.</p>
     */
-    inline DistanceType SimpleTextImager::GetInterLineSpace () const { return (fInterlineSpace); }
+    inline DistanceType SimpleTextImager::GetInterLineSpace () const
+    {
+        return (fInterlineSpace);
+    }
 
     inline bool operator== (SimpleTextImager::RowReference lhs, SimpleTextImager::RowReference rhs)
     {

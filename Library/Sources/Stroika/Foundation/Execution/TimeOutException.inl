@@ -76,7 +76,10 @@ namespace Stroika::Foundation::Execution {
             Throw (exception2Throw);
         }
     }
-    inline void ThrowIfTimeout (cv_status conditionVariableStatus) { ThrowIfTimeout (conditionVariableStatus, TimeOutException::kThe); }
+    inline void ThrowIfTimeout (cv_status conditionVariableStatus)
+    {
+        ThrowIfTimeout (conditionVariableStatus, TimeOutException::kThe);
+    }
 
     /*
      ********************************************************************************

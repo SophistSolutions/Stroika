@@ -53,7 +53,10 @@ namespace Stroika::Foundation::Streams {
         }
         Rep_ (const Rep_&) = delete;
         Rep_ ()            = delete;
-        virtual bool IsSeekable () const override { return fRealIn_.IsSeekable (); }
+        virtual bool IsSeekable () const override
+        {
+            return fRealIn_.IsSeekable ();
+        }
         virtual void CloseRead () override
         {
             Require (IsOpenRead ());
@@ -61,7 +64,10 @@ namespace Stroika::Foundation::Streams {
             fRealIn_.Close ();
             Assert (fRealIn_ == nullptr);
         }
-        virtual bool           IsOpenRead () const override { return fRealIn_ != nullptr; }
+        virtual bool IsOpenRead () const override
+        {
+            return fRealIn_ != nullptr;
+        }
         virtual SeekOffsetType GetReadOffset () const override
         {
             RequireNotReached ();

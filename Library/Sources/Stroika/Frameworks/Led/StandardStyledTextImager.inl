@@ -22,8 +22,14 @@ namespace Stroika::Frameworks::Led {
         , fFontSpecification (styleInfo)
     {
     }
-    inline FontSpecification StandardStyledTextImager::StandardStyleMarker::GetInfo () const { return fFontSpecification; }
-    inline void StandardStyledTextImager::StandardStyleMarker::SetInfo (const FontSpecification& fsp) { fFontSpecification = fsp; }
+    inline FontSpecification StandardStyledTextImager::StandardStyleMarker::GetInfo () const
+    {
+        return fFontSpecification;
+    }
+    inline void StandardStyledTextImager::StandardStyleMarker::SetInfo (const FontSpecification& fsp)
+    {
+        fFontSpecification = fsp;
+    }
 
     // class StandardStyledTextImager::InfoSummaryRecord
     inline StandardStyledTextImager::InfoSummaryRecord::InfoSummaryRecord (const FontSpecification& fontSpec, size_t length)
@@ -33,8 +39,11 @@ namespace Stroika::Frameworks::Led {
     }
 
     // class StandardStyledTextImager
-    inline StandardStyledTextImager::StyleDatabasePtr StandardStyledTextImager::GetStyleDatabase () const { return fStyleDatabase; }
-    inline FontSpecification                          StandardStyledTextImager::GetStyleInfo (size_t charAfterPos) const
+    inline StandardStyledTextImager::StyleDatabasePtr StandardStyledTextImager::GetStyleDatabase () const
+    {
+        return fStyleDatabase;
+    }
+    inline FontSpecification StandardStyledTextImager::GetStyleInfo (size_t charAfterPos) const
     {
         vector<StandardStyledTextImager::InfoSummaryRecord> result = fStyleDatabase->GetStyleInfo (charAfterPos, 1);
         Assert (result.size () == 1);

@@ -72,7 +72,10 @@ namespace Stroika::Foundation::Execution {
 
     private:
         struct Key_Extractor_ {
-            TimerCallback operator() (const RegisteredTask& r) const { return r.fCallback; };
+            TimerCallback operator() (const RegisteredTask& r) const
+            {
+                return r.fCallback;
+            };
         };
 
     public:

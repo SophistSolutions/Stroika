@@ -19,7 +19,10 @@ namespace CommonTests {
 
         template <typename CONCRETE_CONTAINER>
         struct DefaultFactory {
-            CONCRETE_CONTAINER operator() () const { return CONCRETE_CONTAINER (); };
+            CONCRETE_CONTAINER operator() () const
+            {
+                return CONCRETE_CONTAINER ();
+            };
         };
 
         template <typename CONCRETE_CONTAINER, typename EQUALS_COMPARER = std::equal_to<typename CONCRETE_CONTAINER::MultiSetOfElementType>, typename FACTORY = DefaultFactory<CONCRETE_CONTAINER>>

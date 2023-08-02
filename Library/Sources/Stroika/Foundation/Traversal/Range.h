@@ -141,7 +141,10 @@ namespace Stroika::Foundation::Traversal {
                                                               Configuration::ArgByValueType<value_type> rhs);
 
             // Must be able to convert the underlying 'T' difference type to size_t sometimes
-            static size_t DifferenceToSizeT (UnsignedDifferenceType s) { return size_t (s); }
+            static size_t DifferenceToSizeT (UnsignedDifferenceType s)
+            {
+                return size_t (s);
+            }
             static size_t DifferenceToSizeT (SignedDifferenceType s)
                 requires (not is_same_v<UnsignedDifferenceType, SignedDifferenceType>)
             {

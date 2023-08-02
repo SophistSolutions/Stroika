@@ -50,14 +50,20 @@ namespace Stroika::Foundation::Streams::iostream {
         }
 
     protected:
-        virtual bool IsSeekable () const override { return fSeekable_ == eSeekable; }
+        virtual bool IsSeekable () const override
+        {
+            return fSeekable_ == eSeekable;
+        }
         virtual void CloseRead () override
         {
             Require (IsOpenRead ());
             fOpen_ = false;
             Ensure (not IsOpenRead ());
         }
-        virtual bool   IsOpenRead () const override { return fOpen_; }
+        virtual bool IsOpenRead () const override
+        {
+            return fOpen_;
+        }
         virtual size_t Read (ELEMENT_TYPE* intoStart, ELEMENT_TYPE* intoEnd) override
         {
             RequireNotNull (intoStart);

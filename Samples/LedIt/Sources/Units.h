@@ -27,7 +27,10 @@ public:
     Unit (int nTPU, int nSmallDiv, int nMediumDiv, int nLargeDiv, int nMinMove, const char* nAbbrev, BOOL bSpaceAbbrev);
 
 public:
-    int GetTPU () const { return m_nTPU; };
+    int GetTPU () const
+    {
+        return m_nTPU;
+    };
 };
 
 class StandardUnits {

@@ -16,7 +16,10 @@ namespace Stroika::Foundation::DataExchange::Variant {
      ********************** DataExchange::Writer::_Rep_Cloner ***********************
      ********************************************************************************
      */
-    inline Writer::_SharedPtrIRep Writer::_Rep_Cloner::operator() (const _IRep& t) const { return t.Clone (); }
+    inline Writer::_SharedPtrIRep Writer::_Rep_Cloner::operator() (const _IRep& t) const
+    {
+        return t.Clone ();
+    }
 
     /*
      ********************************************************************************
@@ -27,14 +30,26 @@ namespace Stroika::Foundation::DataExchange::Variant {
         : fRep_{rep}
     {
     }
-    inline String Writer::GetDefaultFileSuffix () const { return fRep_->GetDefaultFileSuffix (); }
-    inline void   Writer::Write (const VariantValue& v, const Streams::OutputStream<std::byte>::Ptr& out) { fRep_->Write (v, out); }
-    inline void   Writer::Write (const VariantValue& v, const Streams::OutputStream<Characters::Character>::Ptr& out)
+    inline String Writer::GetDefaultFileSuffix () const
+    {
+        return fRep_->GetDefaultFileSuffix ();
+    }
+    inline void Writer::Write (const VariantValue& v, const Streams::OutputStream<std::byte>::Ptr& out)
     {
         fRep_->Write (v, out);
     }
-    inline void           Variant::Writer::Write (const VariantValue& v, ostream& out) { Write (v, _WrapBinaryOutput (out)); }
-    inline void           Variant::Writer::Write (const VariantValue& v, wostream& out) { Write (v, _WrapTextOutput (out)); }
+    inline void Writer::Write (const VariantValue& v, const Streams::OutputStream<Characters::Character>::Ptr& out)
+    {
+        fRep_->Write (v, out);
+    }
+    inline void Variant::Writer::Write (const VariantValue& v, ostream& out)
+    {
+        Write (v, _WrapBinaryOutput (out));
+    }
+    inline void Variant::Writer::Write (const VariantValue& v, wostream& out)
+    {
+        Write (v, _WrapTextOutput (out));
+    }
     inline Writer::_IRep& Writer::_GetRep ()
     {
         EnsureNotNull (fRep_.rwget ());
@@ -45,7 +60,10 @@ namespace Stroika::Foundation::DataExchange::Variant {
         EnsureNotNull (fRep_.cget ());
         return *fRep_.cget ();
     }
-    inline Streams::OutputStream<std::byte>::Ptr _WrapBinaryOutput (const Streams::OutputStream<std::byte>::Ptr& out) { return out; }
+    inline Streams::OutputStream<std::byte>::Ptr _WrapBinaryOutput (const Streams::OutputStream<std::byte>::Ptr& out)
+    {
+        return out;
+    }
     inline Streams::OutputStream<Characters::Character>::Ptr _WrapTextOutput (const Streams::OutputStream<Characters::Character>::Ptr& out)
     {
         return out;

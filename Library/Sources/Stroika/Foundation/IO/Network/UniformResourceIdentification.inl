@@ -23,8 +23,14 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
         : inherited{s}
     {
     }
-    inline strong_ordering SchemeType::operator<=> (const SchemeType& rhs) const { return TWC_ (*this, rhs); }
-    inline bool SchemeType::operator== (const SchemeType& rhs) const { return TWC_ (*this, rhs) == 0; }
+    inline strong_ordering SchemeType::operator<=> (const SchemeType& rhs) const
+    {
+        return TWC_ (*this, rhs);
+    }
+    inline bool SchemeType::operator== (const SchemeType& rhs) const
+    {
+        return TWC_ (*this, rhs) == 0;
+    }
 
     /*
      ********************************************************************************
@@ -52,9 +58,15 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
         h.fInternetAddress_ = tmp.second;
         return h;
     }
-    inline optional<String>          Host::AsRegisteredName () const { return fRegisteredName_; }
-    inline optional<InternetAddress> Host::AsInternetAddress () const { return fInternetAddress_; }
-    inline String                    Host::AsDecoded () const
+    inline optional<String> Host::AsRegisteredName () const
+    {
+        return fRegisteredName_;
+    }
+    inline optional<InternetAddress> Host::AsInternetAddress () const
+    {
+        return fInternetAddress_;
+    }
+    inline String Host::AsDecoded () const
     {
         if (fRegisteredName_) {
             return *fRegisteredName_;
@@ -72,8 +84,14 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
     {
         return fEncodedName_.AsASCII<string> ();
     }
-    inline strong_ordering Host::operator<=> (const Host& rhs) const { return TWC_ (*this, rhs); }
-    inline bool Host::     operator== (const Host& rhs) const { return TWC_ (*this, rhs) == 0; }
+    inline strong_ordering Host::operator<=> (const Host& rhs) const
+    {
+        return TWC_ (*this, rhs);
+    }
+    inline bool Host::operator== (const Host& rhs) const
+    {
+        return TWC_ (*this, rhs) == 0;
+    }
     inline strong_ordering Host::TWC_ (const Host& lhs, const Host& rhs)
     {
 #if qCompilerAndStdLib_stdlib_compare_three_way_present_but_Buggy or qCompilerAndStdLib_stdlib_compare_three_way_missing_Buggy
@@ -108,7 +126,10 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
         h.fUserInfo_        = ParseRaw_ (rawURLUserInfo);
         return h;
     }
-    inline String UserInfo::AsDecoded () const { return fUserInfo_; }
+    inline String UserInfo::AsDecoded () const
+    {
+        return fUserInfo_;
+    }
     template <>
     inline String UserInfo::AsEncoded () const
     {
@@ -119,9 +140,18 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
     {
         return fEncodedUserInfo_.AsASCII<string> ();
     }
-    inline strong_ordering UserInfo::operator<=> (const UserInfo& rhs) const { return TWC_ (*this, rhs); }
-    inline bool UserInfo:: operator== (const UserInfo& rhs) const { return TWC_ (*this, rhs) == 0; }
-    inline strong_ordering UserInfo::TWC_ (const UserInfo& lhs, const UserInfo& rhs) { return lhs.AsDecoded () <=> rhs.AsDecoded (); }
+    inline strong_ordering UserInfo::operator<=> (const UserInfo& rhs) const
+    {
+        return TWC_ (*this, rhs);
+    }
+    inline bool UserInfo::operator== (const UserInfo& rhs) const
+    {
+        return TWC_ (*this, rhs) == 0;
+    }
+    inline strong_ordering UserInfo::TWC_ (const UserInfo& lhs, const UserInfo& rhs)
+    {
+        return lhs.AsDecoded () <=> rhs.AsDecoded ();
+    }
 
     /*
      ********************************************************************************
@@ -134,14 +164,38 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
         , fUserInfo_{userInfo}
     {
     }
-    inline optional<Host>     Authority::GetHost () const { return fHost_; }
-    inline void               Authority::SetHost (const optional<Host>& host) { fHost_ = host; }
-    inline optional<PortType> Authority::GetPort () const { return fPort_; }
-    inline void               Authority::SetPort (const optional<PortType>& port) { fPort_ = port; }
-    inline optional<UserInfo> Authority::GetUserInfo () const { return fUserInfo_; }
-    inline void               Authority::SetUserInfo (const optional<UserInfo>& userInfo) { fUserInfo_ = userInfo; }
-    inline strong_ordering Authority::operator<=> (const Authority& rhs) const { return TWC_ (*this, rhs); }
-    inline bool Authority::operator== (const Authority& rhs) const { return TWC_ (*this, rhs) == 0; }
+    inline optional<Host> Authority::GetHost () const
+    {
+        return fHost_;
+    }
+    inline void Authority::SetHost (const optional<Host>& host)
+    {
+        fHost_ = host;
+    }
+    inline optional<PortType> Authority::GetPort () const
+    {
+        return fPort_;
+    }
+    inline void Authority::SetPort (const optional<PortType>& port)
+    {
+        fPort_ = port;
+    }
+    inline optional<UserInfo> Authority::GetUserInfo () const
+    {
+        return fUserInfo_;
+    }
+    inline void Authority::SetUserInfo (const optional<UserInfo>& userInfo)
+    {
+        fUserInfo_ = userInfo;
+    }
+    inline strong_ordering Authority::operator<=> (const Authority& rhs) const
+    {
+        return TWC_ (*this, rhs);
+    }
+    inline bool Authority::operator== (const Authority& rhs) const
+    {
+        return TWC_ (*this, rhs) == 0;
+    }
     inline strong_ordering Authority::TWC_ (const Authority& lhs, const Authority& rhs)
     {
 #if qCompilerAndStdLib_stdlib_compare_three_way_present_but_Buggy or qCompilerAndStdLib_stdlib_compare_three_way_missing_Buggy
@@ -168,15 +222,42 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
      ************************************ Query *************************************
      ********************************************************************************
      */
-    inline const Containers::Mapping<String, String>& Query::GetMap () const { return fMap_; }
-    inline String Query::operator() (const String& idx) const { return Memory::NullCoalesce (fMap_.Lookup (idx)); }
-    inline String Query::  operator() (const string& idx) const { return operator() (Characters::UTF8StringToWide (idx)); }
-    inline bool            Query::HasField (const String& idx) const { return fMap_.ContainsKey (idx); }
-    inline bool            Query::HasField (const string& idx) const { return HasField (Characters::UTF8StringToWide (idx)); }
-    inline void            Query::AddField (const String& idx, const String& value) { fMap_.Add (idx, value); }
-    inline void            Query::RemoveFieldIfAny (const string& idx) { RemoveFieldIfAny (Characters::UTF8StringToWide (idx)); }
-    inline strong_ordering Query::operator<=> (const Query& rhs) const { return TWC_ (*this, rhs); }
-    inline bool Query::operator== (const Query& rhs) const { return TWC_ (*this, rhs) == 0; }
+    inline const Containers::Mapping<String, String>& Query::GetMap () const
+    {
+        return fMap_;
+    }
+    inline String Query::operator() (const String& idx) const
+    {
+        return Memory::NullCoalesce (fMap_.Lookup (idx));
+    }
+    inline String Query::operator() (const string& idx) const
+    {
+        return operator() (Characters::UTF8StringToWide (idx));
+    }
+    inline bool Query::HasField (const String& idx) const
+    {
+        return fMap_.ContainsKey (idx);
+    }
+    inline bool Query::HasField (const string& idx) const
+    {
+        return HasField (Characters::UTF8StringToWide (idx));
+    }
+    inline void Query::AddField (const String& idx, const String& value)
+    {
+        fMap_.Add (idx, value);
+    }
+    inline void Query::RemoveFieldIfAny (const string& idx)
+    {
+        RemoveFieldIfAny (Characters::UTF8StringToWide (idx));
+    }
+    inline strong_ordering Query::operator<=> (const Query& rhs) const
+    {
+        return TWC_ (*this, rhs);
+    }
+    inline bool Query::operator== (const Query& rhs) const
+    {
+        return TWC_ (*this, rhs) == 0;
+    }
 
 }
 

@@ -86,14 +86,23 @@ namespace Stroika::Foundation::DataExchange {
     {
         return fSuffix_ ? optional<String>{fSuffix_->GetPrintName ()} : nullopt;
     }
-    inline Containers::Mapping<String, String> InternetMediaType::GetParameters () const { return fParameters_; }
+    inline Containers::Mapping<String, String> InternetMediaType::GetParameters () const
+    {
+        return fParameters_;
+    }
     template <>
     inline wstring InternetMediaType::As () const
     {
         return As<String> ().As<wstring> ();
     }
-    inline strong_ordering InternetMediaType::operator<=> (const InternetMediaType& rhs) const { return THREEWAYCOMPARE_ (rhs); }
-    inline bool InternetMediaType::operator== (const InternetMediaType& rhs) const { return THREEWAYCOMPARE_ (rhs) == 0; }
+    inline strong_ordering InternetMediaType::operator<=> (const InternetMediaType& rhs) const
+    {
+        return THREEWAYCOMPARE_ (rhs);
+    }
+    inline bool InternetMediaType::operator== (const InternetMediaType& rhs) const
+    {
+        return THREEWAYCOMPARE_ (rhs) == 0;
+    }
 
 }
 #endif /*_Stroika_Foundation_DataExchange_InternetMediaType_inl_*/

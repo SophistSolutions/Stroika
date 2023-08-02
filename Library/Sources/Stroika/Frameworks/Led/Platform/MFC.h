@@ -556,10 +556,14 @@ namespace Stroika::Frameworks::Led::Platform {
         using UpdateMode = TextInteractor::UpdateMode;
 
     protected:
-        Led_MFC_COleControlHelper () {}
+        Led_MFC_COleControlHelper ()
+        {
+        }
 
     public:
-        virtual ~Led_MFC_COleControlHelper () {}
+        virtual ~Led_MFC_COleControlHelper ()
+        {
+        }
 
     public:
         nonvirtual void Refresh (UpdateMode updateMode = TextInteractor::eDefaultUpdate) const

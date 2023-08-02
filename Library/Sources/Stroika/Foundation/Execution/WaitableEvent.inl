@@ -69,9 +69,18 @@ namespace Stroika::Foundation::Execution {
         //Debug::TraceContextBumper ctx{"WaitableEvent::Reset"};
         fWE_.Reset ();
     }
-    inline bool WaitableEvent::PeekIsSet () const noexcept { return fWE_.PeekIsSet (); }
-    inline void WaitableEvent::Wait (Time::DurationSecondsType timeout) { fWE_.WaitUntil (timeout + Time::GetTickCount ()); }
-    inline void WaitableEvent::Wait (Time::Duration timeout) { Wait (timeout.As<Time::DurationSecondsType> ()); }
+    inline bool WaitableEvent::PeekIsSet () const noexcept
+    {
+        return fWE_.PeekIsSet ();
+    }
+    inline void WaitableEvent::Wait (Time::DurationSecondsType timeout)
+    {
+        fWE_.WaitUntil (timeout + Time::GetTickCount ());
+    }
+    inline void WaitableEvent::Wait (Time::Duration timeout)
+    {
+        Wait (timeout.As<Time::DurationSecondsType> ());
+    }
     inline bool WaitableEvent::WaitQuietly (Time::DurationSecondsType timeout)
     {
         return fWE_.WaitUntilQuietly (timeout + Time::GetTickCount ());
@@ -80,8 +89,14 @@ namespace Stroika::Foundation::Execution {
     {
         return WaitQuietly (timeout.As<Time::DurationSecondsType> ());
     }
-    inline void WaitableEvent::WaitUntil (Time::DurationSecondsType timeoutAt) { fWE_.WaitUntil (timeoutAt); }
-    inline bool WaitableEvent::WaitUntilQuietly (Time::DurationSecondsType timeoutAt) { return fWE_.WaitUntilQuietly (timeoutAt); }
+    inline void WaitableEvent::WaitUntil (Time::DurationSecondsType timeoutAt)
+    {
+        fWE_.WaitUntil (timeoutAt);
+    }
+    inline bool WaitableEvent::WaitUntilQuietly (Time::DurationSecondsType timeoutAt)
+    {
+        return fWE_.WaitUntilQuietly (timeoutAt);
+    }
 #if qExecution_WaitableEvent_SupportWaitForMultipleObjects
     template <typename CONTAINER_OF_WAITABLE_EVENTS, typename SET_OF_WAITABLE_EVENTS_RESULT>
     inline SET_OF_WAITABLE_EVENTS_RESULT WaitableEvent::WaitForAny (CONTAINER_OF_WAITABLE_EVENTS waitableEvents, Time::DurationSecondsType timeout)

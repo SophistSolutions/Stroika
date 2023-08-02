@@ -914,7 +914,10 @@ namespace Stroika::Foundation::DataExchange {
 
         private:
             struct TypeMappingDetails_Extractor_ {
-                auto operator() (const TypeMappingDetails& t) const -> type_index { return t.fForType; };
+                auto operator() (const TypeMappingDetails& t) const -> type_index
+                {
+                    return t.fForType;
+                };
             };
             using TypeMappingDetails_Traits_ = Containers::KeyedCollection_DefaultTraits<TypeMappingDetails, type_index, TypeMappingDetails_Extractor_>;
             KeyedCollection<TypeMappingDetails, type_index, TypeMappingDetails_Traits_> fSerializers_;

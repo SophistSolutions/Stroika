@@ -115,7 +115,10 @@ namespace Stroika::Foundation::Containers {
         struct TemporarySliceReference_ {
             const DataHyperRectangle<T, INDEXES...>& fCube;
             tuple<REST_OF_INDEXES...>                fSliceIdxes;
-            T operator[] (INDEX i) const { return fCube.GetAt (i, forward<REST_OF_INDEXES> (fSliceIdxes)...); }
+            T                                        operator[] (INDEX i) const
+            {
+                return fCube.GetAt (i, forward<REST_OF_INDEXES> (fSliceIdxes)...);
+            }
         };
 
     public:

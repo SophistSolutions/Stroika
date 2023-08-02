@@ -109,9 +109,18 @@ namespace Stroika::Foundation::Time {
     {
         //Require (not isnan (duration)); // inf is allowed
     }
-    inline u8string Duration::AsUTF8 () const { return As<Characters::String> ().AsUTF8 (); }
-    inline Duration::~Duration () { destroy_ (); }
-    inline void    Duration::clear () { destroy_ (); }
+    inline u8string Duration::AsUTF8 () const
+    {
+        return As<Characters::String> ().AsUTF8 ();
+    }
+    inline Duration::~Duration ()
+    {
+        destroy_ ();
+    }
+    inline void Duration::clear ()
+    {
+        destroy_ ();
+    }
     constexpr bool Duration::empty () const
     {
         // on construction with an empty string, this produces type eEmpty_
@@ -247,17 +256,32 @@ namespace Stroika::Foundation::Time {
         AssertNotReached ();
         return String{};
     }
-    inline Characters::String     Duration::Format (const PrettyPrintInfo& prettyPrintInfo) const { return PrettyPrint (prettyPrintInfo); }
-    inline Characters::String     Duration::ToString () const { return Format (); }
-    inline /*constexpr*/ Duration Duration::min () { return Duration{numeric_limits<InternalNumericFormatType_>::lowest ()}; }
-    inline /*constexpr*/ Duration Duration::max () { return Duration{numeric_limits<InternalNumericFormatType_>::max ()}; }
+    inline Characters::String Duration::Format (const PrettyPrintInfo& prettyPrintInfo) const
+    {
+        return PrettyPrint (prettyPrintInfo);
+    }
+    inline Characters::String Duration::ToString () const
+    {
+        return Format ();
+    }
+    inline /*constexpr*/ Duration Duration::min ()
+    {
+        return Duration{numeric_limits<InternalNumericFormatType_>::lowest ()};
+    }
+    inline /*constexpr*/ Duration Duration::max ()
+    {
+        return Duration{numeric_limits<InternalNumericFormatType_>::max ()};
+    }
 
     /*
      ********************************************************************************
      ************************** operator "" _duration *******************************
      ********************************************************************************
      */
-    [[nodiscard]] inline Duration operator"" _duration (const char* str, size_t len) { return Duration{string{str, str + len}}; }
+    [[nodiscard]] inline Duration operator"" _duration (const char* str, size_t len)
+    {
+        return Duration{string{str, str + len}};
+    }
     [[nodiscard]] inline Duration operator"" _duration (const wchar_t* str, size_t len)
     {
         return Duration{Characters::String{span{str, len}}};
@@ -274,7 +298,10 @@ namespace Stroika::Foundation::Time {
     {
         return Duration{Characters::String{span{str, len}}};
     }
-    [[nodiscard]] inline Duration operator"" _duration (long double _Val) noexcept { return Duration{_Val}; }
+    [[nodiscard]] inline Duration operator"" _duration (long double _Val) noexcept
+    {
+        return Duration{_Val};
+    }
 
     /*
      ********************************************************************************
@@ -285,7 +312,10 @@ namespace Stroika::Foundation::Time {
     {
         return Duration{lhs + rhs.As<DurationSecondsType> ()};
     }
-    inline Duration operator* (long double lhs, const Duration& rhs) { return Duration (rhs.As<Time::DurationSecondsType> () * lhs); }
+    inline Duration operator* (long double lhs, const Duration& rhs)
+    {
+        return Duration (rhs.As<Time::DurationSecondsType> () * lhs);
+    }
 
 }
 

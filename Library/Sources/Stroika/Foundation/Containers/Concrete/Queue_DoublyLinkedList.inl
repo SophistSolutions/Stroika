@@ -69,8 +69,11 @@ namespace Stroika::Foundation::Containers::Concrete {
 
         // Queue<T>::_IRep overrides
     public:
-        virtual shared_ptr<typename Queue<T>::_IRep> CloneEmpty () const override { return Memory::MakeSharedPtr<Rep_> (); }
-        virtual void                                 AddTail (ArgByValueType<T> item) override
+        virtual shared_ptr<typename Queue<T>::_IRep> CloneEmpty () const override
+        {
+            return Memory::MakeSharedPtr<Rep_> ();
+        }
+        virtual void AddTail (ArgByValueType<T> item) override
         {
             Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fData_};
             fData_.Append (item);

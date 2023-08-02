@@ -62,7 +62,10 @@ namespace Stroika::Foundation::Linguistics {
     {
         return LookupHandler (l)->MakeNounSingular (s);
     }
-    inline String MessageUtiltiesManager::MakeNounSingular (const String& s) const { return LookupHandler ()->MakeNounSingular (s); }
+    inline String MessageUtiltiesManager::MakeNounSingular (const String& s) const
+    {
+        return LookupHandler ()->MakeNounSingular (s);
+    }
 
 }
 

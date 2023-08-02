@@ -16,14 +16,19 @@ namespace Stroika::Foundation::IO::Network {
      ********************************** SocketStream ********************************
      ********************************************************************************
      */
-    inline auto SocketStream::_mkPtr (const shared_ptr<Rep_>& s) -> Ptr { return Ptr{s}; }
+    inline auto SocketStream::_mkPtr (const shared_ptr<Rep_>& s) -> Ptr
+    {
+        return Ptr{s};
+    }
 
     /*
      ********************************************************************************
      ******************************* SocketStream::Ptr ******************************
      ********************************************************************************
      */
-    inline SocketStream::Ptr::Ptr (nullptr_t) {}
+    inline SocketStream::Ptr::Ptr (nullptr_t)
+    {
+    }
 
 }
 

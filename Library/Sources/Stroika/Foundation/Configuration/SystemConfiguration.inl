@@ -48,8 +48,14 @@ namespace Stroika::Foundation::Configuration {
      **************************** SystemConfiguration::CPU **************************
      ********************************************************************************
      */
-    inline unsigned int SystemConfiguration::CPU::GetNumberOfLogicalCores () const { return static_cast<unsigned int> (fCores.size ()); }
-    inline String SystemConfiguration::CPU::GetCPUModelPrintName () const { return fCores.empty () ? String{} : fCores[0].fModelName; }
+    inline unsigned int SystemConfiguration::CPU::GetNumberOfLogicalCores () const
+    {
+        return static_cast<unsigned int> (fCores.size ());
+    }
+    inline String SystemConfiguration::CPU::GetCPUModelPrintName () const
+    {
+        return fCores.empty () ? String{} : fCores[0].fModelName;
+    }
 
 }
 

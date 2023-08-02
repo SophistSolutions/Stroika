@@ -144,7 +144,10 @@ namespace Stroika::Foundation::Debug {
         return *this;
     }
 #if qStroikaFoundationDebugAssertExternallySynchronizedMutexEnabled
-    inline auto AssertExternallySynchronizedMutex::GetSharedContext () const -> shared_ptr<SharedContext> { return fSharedContext_; }
+    inline auto AssertExternallySynchronizedMutex::GetSharedContext () const -> shared_ptr<SharedContext>
+    {
+        return fSharedContext_;
+    }
     inline void AssertExternallySynchronizedMutex::SetAssertExternallySynchronizedMutexContext (const shared_ptr<SharedContext>& sharedContext)
     {
         Require (sharedContext != nullptr);

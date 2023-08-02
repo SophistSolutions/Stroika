@@ -20,8 +20,14 @@ namespace Stroika::Foundation::Execution::Resources {
         : fRep_ (rep)
     {
     }
-    inline Accessor Manager::ReadResource (const Name& name) const { return fRep_->ReadResource (name); }
-    inline Accessor Manager::_mkAccessor (const std::byte* start, const std::byte* end) { return Accessor (start, end); }
+    inline Accessor Manager::ReadResource (const Name& name) const
+    {
+        return fRep_->ReadResource (name);
+    }
+    inline Accessor Manager::_mkAccessor (const std::byte* start, const std::byte* end)
+    {
+        return Accessor (start, end);
+    }
 
 }
 #endif /*_Stroika_Foundation_Execution_Resources_Manager_inl_*/

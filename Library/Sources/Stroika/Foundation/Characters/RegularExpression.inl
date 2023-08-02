@@ -33,7 +33,10 @@ namespace Stroika::Foundation::Characters {
         : RegularExpression{re, SyntaxType::eDEFAULT, co}
     {
     }
-    inline const wregex& RegularExpression::GetCompiled () const { return fCompiledRegExp_; }
+    inline const wregex& RegularExpression::GetCompiled () const
+    {
+        return fCompiledRegExp_;
+    }
 
     /*
      ********************************************************************************
@@ -44,10 +47,22 @@ namespace Stroika::Foundation::Characters {
     {
         return RegularExpression{String::FromStringConstant (span{str, len})};
     }
-    inline RegularExpression operator"" _RegEx (const wchar_t* str, size_t len) { return RegularExpression{String{span{str, len}}}; }
-    inline RegularExpression operator"" _RegEx (const char8_t* str, size_t len) { return RegularExpression{String{span{str, len}}}; }
-    inline RegularExpression operator"" _RegEx (const char16_t* str, size_t len) { return RegularExpression{String{span{str, len}}}; }
-    inline RegularExpression operator"" _RegEx (const char32_t* str, size_t len) { return RegularExpression{String{span{str, len}}}; }
+    inline RegularExpression operator"" _RegEx (const wchar_t* str, size_t len)
+    {
+        return RegularExpression{String{span{str, len}}};
+    }
+    inline RegularExpression operator"" _RegEx (const char8_t* str, size_t len)
+    {
+        return RegularExpression{String{span{str, len}}};
+    }
+    inline RegularExpression operator"" _RegEx (const char16_t* str, size_t len)
+    {
+        return RegularExpression{String{span{str, len}}};
+    }
+    inline RegularExpression operator"" _RegEx (const char32_t* str, size_t len)
+    {
+        return RegularExpression{String{span{str, len}}};
+    }
 
 }
 

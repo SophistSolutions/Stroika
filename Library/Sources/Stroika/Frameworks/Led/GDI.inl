@@ -45,7 +45,10 @@ namespace Stroika::Frameworks::Led {
      ************************************ Led_Point *********************************
      ********************************************************************************
      */
-    inline Led_Point operator- (const Led_Point& lhs, const Led_Point& rhs) { return (Led_Point (lhs.v - rhs.v, lhs.h - rhs.h)); }
+    inline Led_Point operator- (const Led_Point& lhs, const Led_Point& rhs)
+    {
+        return (Led_Point (lhs.v - rhs.v, lhs.h - rhs.h));
+    }
 
     /*
      ********************************************************************************
@@ -257,7 +260,10 @@ namespace Stroika::Frameworks::Led {
         : fValue (v)
     {
     }
-    inline TWIPS::operator long () const { return fValue; }
+    inline TWIPS::operator long () const
+    {
+        return fValue;
+    }
     inline TWIPS& TWIPS::operator+= (const TWIPS& rhs)
     {
         fValue += rhs.fValue;
@@ -273,8 +279,14 @@ namespace Stroika::Frameworks::Led {
         fValue = static_cast<long> (fValue * rhs);
         return *this;
     }
-    inline TWIPS operator+ (const TWIPS& lhs, const TWIPS& rhs) { return TWIPS (static_cast<long> (lhs) + static_cast<long> (rhs)); }
-    inline TWIPS operator- (const TWIPS& lhs, const TWIPS& rhs) { return TWIPS (static_cast<long> (lhs) - static_cast<long> (rhs)); }
+    inline TWIPS operator+ (const TWIPS& lhs, const TWIPS& rhs)
+    {
+        return TWIPS (static_cast<long> (lhs) + static_cast<long> (rhs));
+    }
+    inline TWIPS operator- (const TWIPS& lhs, const TWIPS& rhs)
+    {
+        return TWIPS (static_cast<long> (lhs) - static_cast<long> (rhs));
+    }
 
 #if qPlatform_Windows
     /*
@@ -282,9 +294,15 @@ namespace Stroika::Frameworks::Led {
      ******************************** FontObject ************************************
      ********************************************************************************
      */
-    inline FontObject::~FontObject () { (void)DeleteObject (); }
-    inline FontObject ::operator HFONT () const { return m_hObject; }
-    inline int          FontObject ::GetObject (int nCount, LPVOID lpObject) const
+    inline FontObject::~FontObject ()
+    {
+        (void)DeleteObject ();
+    }
+    inline FontObject ::operator HFONT () const
+    {
+        return m_hObject;
+    }
+    inline int FontObject ::GetObject (int nCount, LPVOID lpObject) const
     {
         Assert (m_hObject != nullptr);
         return ::GetObject (m_hObject, nCount, lpObject);
@@ -297,7 +315,10 @@ namespace Stroika::Frameworks::Led {
         m_hObject = nullptr;
         return ::DeleteObject (h);
     }
-    inline BOOL FontObject ::CreateFontIndirect (const LOGFONT* lpLogFont) { return Attach (::CreateFontIndirect (lpLogFont)); }
+    inline BOOL FontObject ::CreateFontIndirect (const LOGFONT* lpLogFont)
+    {
+        return Attach (::CreateFontIndirect (lpLogFont));
+    }
     inline BOOL FontObject ::Attach (HFONT hObject)
     {
         Assert (m_hObject == nullptr); // only attach once, detach on destroy
@@ -320,9 +341,15 @@ namespace Stroika::Frameworks::Led {
         if (!Attach (::CreateSolidBrush (crColor)))
             Foundation::Execution::Throw (bad_alloc{});
     }
-    inline Brush::~Brush () { (void)DeleteObject (); }
-    inline Brush::operator HBRUSH () const { return m_hObject; }
-    inline BOOL   Brush::Attach (HBRUSH hObject)
+    inline Brush::~Brush ()
+    {
+        (void)DeleteObject ();
+    }
+    inline Brush::operator HBRUSH () const
+    {
+        return m_hObject;
+    }
+    inline BOOL Brush::Attach (HBRUSH hObject)
     {
         Assert (m_hObject == nullptr); // only attach once, detach on destroy
         if (hObject == nullptr)
@@ -487,11 +514,20 @@ namespace Stroika::Frameworks::Led {
         , fOwned (false)
     {
     }
-    inline RgnHandle Region::GetOSRep () const { return fRgn; }
-    inline RgnHandle Region::GetOSRep () { return fRgn; }
+    inline RgnHandle Region::GetOSRep () const
+    {
+        return fRgn;
+    }
+    inline RgnHandle Region::GetOSRep ()
+    {
+        return fRgn;
+    }
 #elif qPlatform_Windows
-    inline Region::operator HRGN () const { return fRgn; }
-    inline int     Region::CombineRgn (Region* pRgn1, Region* pRgn2, int nCombineMode)
+    inline Region::operator HRGN () const
+    {
+        return fRgn;
+    }
+    inline int Region::CombineRgn (Region* pRgn1, Region* pRgn2, int nCombineMode)
     {
         Require (pRgn1 != nullptr);
         Require (pRgn2 != nullptr);
@@ -549,7 +585,10 @@ namespace Stroika::Frameworks::Led {
             m_hObject = nullptr;
         }
     }
-    inline Bitmap:: operator HBITMAP () const { return m_hObject; }
+    inline Bitmap::operator HBITMAP () const
+    {
+        return m_hObject;
+    }
     inline Led_Size Bitmap::GetImageSize () const
     {
         // only valid if m_hObject != nullptr
@@ -564,9 +603,15 @@ namespace Stroika::Frameworks::Led {
      ********************************************************************************
      */
 #if qPlatform_MacOS
-    inline Tablet::operator GrafPtr () const { return fGrafPort; }
+    inline Tablet::operator GrafPtr () const
+    {
+        return fGrafPort;
+    }
 #elif qPlatform_Windows
-    inline Tablet::operator HDC () const { return m_hDC; }
+    inline Tablet::operator HDC () const
+    {
+        return m_hDC;
+    }
 #endif
     /*
     @METHOD:        Tablet::CvtFromTWIPSV
@@ -675,7 +720,10 @@ namespace Stroika::Frameworks::Led {
 #endif
     }
 #if qPlatform_MacOS
-    inline void Tablet::SetPort () { ::SetPort (fGrafPort); }
+    inline void Tablet::SetPort ()
+    {
+        ::SetPort (fGrafPort);
+    }
 #elif qPlatform_Windows
     inline BOOL Tablet::BitBlt (int x, int y, int nWidth, int nHeight, Tablet* pSrcDC, int xSrc, int ySrc, DWORD dwRop)
     {
@@ -722,7 +770,10 @@ namespace Stroika::Frameworks::Led {
         Assert (m_hDC != nullptr);
         return ::WindowFromDC (m_hDC);
     }
-    inline BOOL Tablet::IsPrinting () const { return m_bPrinting; }
+    inline BOOL Tablet::IsPrinting () const
+    {
+        return m_bPrinting;
+    }
     inline BOOL Tablet::RoundRect (int x1, int y1, int x2, int y2, int x3, int y3)
     {
         Assert (m_hDC != nullptr);
@@ -986,8 +1037,14 @@ namespace Stroika::Frameworks::Led {
         }
         return *sThe;
     }
-    inline DistanceType Globals::GetMainScreenLogPixelsH () const { return fLogPixelsH; }
-    inline DistanceType Globals::GetMainScreenLogPixelsV () const { return fLogPixelsV; }
+    inline DistanceType Globals::GetMainScreenLogPixelsH () const
+    {
+        return fLogPixelsH;
+    }
+    inline DistanceType Globals::GetMainScreenLogPixelsV () const
+    {
+        return fLogPixelsV;
+    }
 
     /*
      ********************************************************************************
@@ -1124,8 +1181,14 @@ namespace Stroika::Frameworks::Led {
      ************************************ Led_Size **********************************
      ********************************************************************************
      */
-    inline Led_Size operator+ (Led_Size lhs, Led_Size rhs) { return (Led_Size (lhs.v + rhs.v, lhs.h + rhs.h)); }
-    inline Led_Size operator* (int lhs, Led_Size rhs) { return (Led_Size (lhs * rhs.v, lhs * rhs.h)); }
+    inline Led_Size operator+ (Led_Size lhs, Led_Size rhs)
+    {
+        return (Led_Size (lhs.v + rhs.v, lhs.h + rhs.h));
+    }
+    inline Led_Size operator* (int lhs, Led_Size rhs)
+    {
+        return (Led_Size (lhs * rhs.v, lhs * rhs.h));
+    }
 
     /*
      ********************************************************************************
@@ -1206,8 +1269,11 @@ namespace Stroika::Frameworks::Led {
      ********************************************************************************
      */
 #if qPlatform_MacOS
-    inline Led_Point AsLedPoint (Point p) { return Led_Point (p.v, p.h); }
-    inline Point     AsQDPoint (Led_Point p)
+    inline Led_Point AsLedPoint (Point p)
+    {
+        return Led_Point (p.v, p.h);
+    }
+    inline Point AsQDPoint (Led_Point p)
     {
         Point p2;
         p2.v = p.v;
@@ -1232,8 +1298,11 @@ namespace Stroika::Frameworks::Led {
         newR.right  = r.right;
         return (newR);
     }
-    inline Led_Size AsLedSize (Point s) { return Led_Size (s.v, s.h); }
-    inline Point    GetRectOrigin (const Rect& r)
+    inline Led_Size AsLedSize (Point s)
+    {
+        return Led_Size (s.v, s.h);
+    }
+    inline Point GetRectOrigin (const Rect& r)
     {
         Point p;
         p.v = r.top;
@@ -1247,19 +1316,31 @@ namespace Stroika::Frameworks::Led {
         p.h = r.right - r.left;
         return p;
     }
-    inline short GetRectWidth (const Rect& r) { return (r.right - r.left); }
-    inline short GetRectHeight (const Rect& r) { return (r.bottom - r.top); }
+    inline short GetRectWidth (const Rect& r)
+    {
+        return (r.right - r.left);
+    }
+    inline short GetRectHeight (const Rect& r)
+    {
+        return (r.bottom - r.top);
+    }
 #elif qPlatform_Windows
-    inline Led_Point AsLedPoint (POINT p) { return Led_Point (p.y, p.x); }
-    inline POINT     AsPOINT (Led_Point p)
+    inline Led_Point AsLedPoint (POINT p)
+    {
+        return Led_Point (p.y, p.x);
+    }
+    inline POINT AsPOINT (Led_Point p)
     {
         POINT newP;
         newP.x = p.h;
         newP.y = p.v;
         return newP;
     }
-    inline Led_Rect AsLedRect (RECT r) { return Led_Rect (r.top, r.left, r.bottom - r.top, r.right - r.left); }
-    inline RECT     AsRECT (Led_Rect r)
+    inline Led_Rect AsLedRect (RECT r)
+    {
+        return Led_Rect (r.top, r.left, r.bottom - r.top, r.right - r.left);
+    }
+    inline RECT AsRECT (Led_Rect r)
     {
         RECT newR;
         newR.top    = r.GetTop ();
@@ -1283,7 +1364,10 @@ namespace Stroika::Frameworks::Led {
         return result;
     }
 #elif qStroika_FeatureSupported_XWindows
-    inline Led_Rect AsLedRect (const XRectangle& r) { return Led_Rect (r.y, r.x, r.height, r.width); }
+    inline Led_Rect AsLedRect (const XRectangle& r)
+    {
+        return Led_Rect (r.y, r.x, r.height, r.width);
+    }
     inline XRectangle AsXRect (const Led_Rect& r)
     {
         XRectangle newR;
@@ -1421,7 +1505,10 @@ namespace Stroika::Frameworks::Led {
 #endif
         return (GetAscent () + GetDescent ());
     }
-    inline DistanceType            FontMetrics::GetLineHeight () const { return (GetAscent () + GetDescent () + GetLeading ()); }
+    inline DistanceType FontMetrics::GetLineHeight () const
+    {
+        return (GetAscent () + GetDescent () + GetLeading ());
+    }
     inline nonvirtual DistanceType FontMetrics::GetMaxCharacterWidth () const
     {
 #if qPlatform_MacOS
@@ -1433,14 +1520,29 @@ namespace Stroika::Frameworks::Led {
 #endif
     }
 #if qPlatform_Windows
-    inline nonvirtual DistanceType FontMetrics::GetAveCharacterWidth () const { return fPlatformSpecific.tmAveCharWidth; }
+    inline nonvirtual DistanceType FontMetrics::GetAveCharacterWidth () const
+    {
+        return fPlatformSpecific.tmAveCharWidth;
+    }
 #endif
 #if qPlatform_MacOS
-    inline FontMetrics::operator const FontInfo* () const { return &fPlatformSpecific; }
-    inline FontMetrics::operator FontInfo* () { return (&fPlatformSpecific); }
+    inline FontMetrics::operator const FontInfo* () const
+    {
+        return &fPlatformSpecific;
+    }
+    inline FontMetrics::operator FontInfo* ()
+    {
+        return (&fPlatformSpecific);
+    }
 #elif qPlatform_Windows
-    inline FontMetrics::operator const TEXTMETRIC* () const { return &fPlatformSpecific; }
-    inline FontMetrics::operator TEXTMETRIC* () { return &fPlatformSpecific; }
+    inline FontMetrics::operator const TEXTMETRIC* () const
+    {
+        return &fPlatformSpecific;
+    }
+    inline FontMetrics::operator TEXTMETRIC* ()
+    {
+        return &fPlatformSpecific;
+    }
 #endif
 
     /*
@@ -1469,9 +1571,18 @@ namespace Stroika::Frameworks::Led {
     {
     }
 #endif
-    inline Color::ColorValue Color::GetRed () const { return fRed; }
-    inline Color::ColorValue Color::GetGreen () const { return fGreen; }
-    inline Color::ColorValue Color::GetBlue () const { return fBlue; }
+    inline Color::ColorValue Color::GetRed () const
+    {
+        return fRed;
+    }
+    inline Color::ColorValue Color::GetGreen () const
+    {
+        return fGreen;
+    }
+    inline Color::ColorValue Color::GetBlue () const
+    {
+        return fBlue;
+    }
 #if qPlatform_MacOS
     inline RGBColor Color::GetOSRep () const
     {
@@ -1482,7 +1593,10 @@ namespace Stroika::Frameworks::Led {
         return r;
     }
 #elif qPlatform_Windows
-    inline COLORREF Color::GetOSRep () const { return RGB (fRed >> 8, fGreen >> 8, fBlue >> 8); }
+    inline COLORREF Color::GetOSRep () const
+    {
+        return RGB (fRed >> 8, fGreen >> 8, fBlue >> 8);
+    }
 #endif
     inline Color operator* (Color lhs, float factor)
     {
@@ -1563,8 +1677,14 @@ namespace Stroika::Frameworks::Led {
         if (!Attach (::CreatePen (nPenStyle, nWidth, crColor)))
             Foundation::Execution::Throw (bad_alloc{});
     }
-    inline Pen::~Pen () { (void)DeleteObject (); }
-    inline Pen::operator HPEN () const { return m_hObject; }
+    inline Pen::~Pen ()
+    {
+        (void)DeleteObject ();
+    }
+    inline Pen::operator HPEN () const
+    {
+        return m_hObject;
+    }
     inline BOOL Pen::Attach (HPEN hObject)
     {
         Assert (m_hObject == nullptr); // only attach once, detach on destroy
@@ -1638,7 +1758,10 @@ namespace Stroika::Frameworks::Led {
      ********************************************************************************
      */
 #if qPlatform_Windows
-    inline FontSpecification::FontNameSpecifier::FontNameSpecifier () { fName[0] = '\0'; }
+    inline FontSpecification::FontNameSpecifier::FontNameSpecifier ()
+    {
+        fName[0] = '\0';
+    }
 #endif
 
     /*
@@ -1838,10 +1961,19 @@ namespace Stroika::Frameworks::Led {
             fUnderline = isUnderline;
 #endif
     }
-    inline FontSpecification::SubOrSuperScript FontSpecification::GetStyle_SubOrSuperScript () const { return fSubOrSuperScript; }
-    inline void FontSpecification::SetStyle_SubOrSuperScript (SubOrSuperScript subOrSuperScript) { fSubOrSuperScript = subOrSuperScript; }
+    inline FontSpecification::SubOrSuperScript FontSpecification::GetStyle_SubOrSuperScript () const
+    {
+        return fSubOrSuperScript;
+    }
+    inline void FontSpecification::SetStyle_SubOrSuperScript (SubOrSuperScript subOrSuperScript)
+    {
+        fSubOrSuperScript = subOrSuperScript;
+    }
 #if qPlatform_MacOS
-    inline bool FontSpecification::GetStyle_Outline () const { return (fFontStyle & outline); }
+    inline bool FontSpecification::GetStyle_Outline () const
+    {
+        return (fFontStyle & outline);
+    }
     inline void FontSpecification::SetStyle_Outline (bool isOutline)
     {
         if (isOutline) {
@@ -1851,7 +1983,10 @@ namespace Stroika::Frameworks::Led {
             fFontStyle &= ~outline;
         }
     }
-    inline bool FontSpecification::GetStyle_Shadow () const { return (fFontStyle & shadow); }
+    inline bool FontSpecification::GetStyle_Shadow () const
+    {
+        return (fFontStyle & shadow);
+    }
     inline void FontSpecification::SetStyle_Shadow (bool isShadow)
     {
         if (isShadow) {
@@ -1861,7 +1996,10 @@ namespace Stroika::Frameworks::Led {
             fFontStyle &= ~shadow;
         }
     }
-    inline bool FontSpecification::GetStyle_Condensed () const { return (fFontStyle & condense); }
+    inline bool FontSpecification::GetStyle_Condensed () const
+    {
+        return (fFontStyle & condense);
+    }
     inline void FontSpecification::SetStyle_Condensed (bool isCondensed)
     {
         if (isCondensed) {
@@ -1871,7 +2009,10 @@ namespace Stroika::Frameworks::Led {
             fFontStyle &= ~condense;
         }
     }
-    inline bool FontSpecification::GetStyle_Extended () const { return (fFontStyle & extend); }
+    inline bool FontSpecification::GetStyle_Extended () const
+    {
+        return (fFontStyle & extend);
+    }
     inline void FontSpecification::SetStyle_Extended (bool isExtended)
     {
         if (isExtended) {
@@ -1882,8 +2023,14 @@ namespace Stroika::Frameworks::Led {
         }
     }
 #elif qPlatform_Windows
-        inline bool FontSpecification::GetStyle_Strikeout () const { return !!fFontInfo.lfStrikeOut; }
-        inline void FontSpecification::SetStyle_Strikeout (bool isStrikeout) { fFontInfo.lfStrikeOut = isStrikeout; }
+        inline bool FontSpecification::GetStyle_Strikeout () const
+        {
+            return !!fFontInfo.lfStrikeOut;
+        }
+        inline void FontSpecification::SetStyle_Strikeout (bool isStrikeout)
+        {
+            fFontInfo.lfStrikeOut = isStrikeout;
+        }
 #endif
     // FontSize info
     inline FontSpecification::FontSize FontSpecification::GetPointSize () const
@@ -1922,11 +2069,23 @@ namespace Stroika::Frameworks::Led {
 #endif
     }
 #if qPlatform_Windows
-    inline long FontSpecification::PeekAtTMHeight () const { return fFontInfo.lfHeight; }
-    inline void FontSpecification::PokeAtTMHeight (long tmHeight) { fFontInfo.lfHeight = tmHeight; }
+    inline long FontSpecification::PeekAtTMHeight () const
+    {
+        return fFontInfo.lfHeight;
+    }
+    inline void FontSpecification::PokeAtTMHeight (long tmHeight)
+    {
+        fFontInfo.lfHeight = tmHeight;
+    }
 #endif
-    inline Color FontSpecification::GetTextColor () const { return fTextColor; }
-    inline void  FontSpecification::SetTextColor (const Color& textColor) { fTextColor = textColor; }
+    inline Color FontSpecification::GetTextColor () const
+    {
+        return fTextColor;
+    }
+    inline void FontSpecification::SetTextColor (const Color& textColor)
+    {
+        fTextColor = textColor;
+    }
 #if qPlatform_MacOS
     inline void FontSpecification::GetOSRep (short* fontID, short* fontSize, Style* fontStyle) const
     {
@@ -1947,13 +2106,19 @@ namespace Stroika::Frameworks::Led {
         fFontStyle     = fontStyle;
     }
 #elif qPlatform_Windows
-        inline LOGFONT FontSpecification::GetOSRep () const { return fFontInfo; }
-        inline void    FontSpecification::GetOSRep (LOGFONT* logFont) const
+        inline LOGFONT FontSpecification::GetOSRep () const
+        {
+            return fFontInfo;
+        }
+        inline void FontSpecification::GetOSRep (LOGFONT* logFont) const
         {
             RequireNotNull (logFont);
             *logFont = fFontInfo;
         }
-        inline void FontSpecification::SetOSRep (LOGFONT logFont) { fFontInfo = logFont; }
+        inline void FontSpecification::SetOSRep (LOGFONT logFont)
+        {
+            fFontInfo = logFont;
+        }
         inline void FontSpecification::LightSetOSRep (LOGFONT logFont)
         {
             fFontInfo                  = logFont;
@@ -2174,7 +2339,10 @@ namespace Stroika::Frameworks::Led {
         Require (fFontSpecifierValid);
         return inherited::GetFontNameSpecifier ();
     }
-    inline bool IncrementalFontSpecification::GetFontNameSpecifier_Valid () const { return (fFontSpecifierValid); }
+    inline bool IncrementalFontSpecification::GetFontNameSpecifier_Valid () const
+    {
+        return (fFontSpecifierValid);
+    }
     inline void IncrementalFontSpecification::InvalidateFontNameSpecifier ()
     {
         fFontSpecifierValid = false;
@@ -2262,7 +2430,10 @@ namespace Stroika::Frameworks::Led {
         Require (fStyleValid_Bold);
         return inherited::GetStyle_Bold ();
     }
-    inline bool IncrementalFontSpecification::GetStyle_Bold_Valid () const { return (fStyleValid_Bold); }
+    inline bool IncrementalFontSpecification::GetStyle_Bold_Valid () const
+    {
+        return (fStyleValid_Bold);
+    }
     inline void IncrementalFontSpecification::InvalidateStyle_Bold ()
     {
         fStyleValid_Bold = false;
@@ -2283,7 +2454,10 @@ namespace Stroika::Frameworks::Led {
         Require (fStyleValid_Italic);
         return inherited::GetStyle_Italic ();
     }
-    inline bool IncrementalFontSpecification::GetStyle_Italic_Valid () const { return (fStyleValid_Italic); }
+    inline bool IncrementalFontSpecification::GetStyle_Italic_Valid () const
+    {
+        return (fStyleValid_Italic);
+    }
     inline void IncrementalFontSpecification::InvalidateStyle_Italic ()
     {
         fStyleValid_Italic = false;
@@ -2304,7 +2478,10 @@ namespace Stroika::Frameworks::Led {
         Require (fStyleValid_Underline);
         return inherited::GetStyle_Underline ();
     }
-    inline bool IncrementalFontSpecification::GetStyle_Underline_Valid () const { return (fStyleValid_Underline); }
+    inline bool IncrementalFontSpecification::GetStyle_Underline_Valid () const
+    {
+        return (fStyleValid_Underline);
+    }
     inline void IncrementalFontSpecification::InvalidateStyle_Underline ()
     {
         fStyleValid_Underline = false;
@@ -2325,7 +2502,10 @@ namespace Stroika::Frameworks::Led {
         Require (fStyleValid_SubOrSuperScript);
         return inherited::GetStyle_SubOrSuperScript ();
     }
-    inline bool IncrementalFontSpecification::GetStyle_SubOrSuperScript_Valid () const { return (fStyleValid_SubOrSuperScript); }
+    inline bool IncrementalFontSpecification::GetStyle_SubOrSuperScript_Valid () const
+    {
+        return (fStyleValid_SubOrSuperScript);
+    }
     inline void IncrementalFontSpecification::InvalidateStyle_SubOrSuperScript ()
     {
         fStyleValid_SubOrSuperScript = false;
@@ -2347,8 +2527,14 @@ namespace Stroika::Frameworks::Led {
         Require (fStyleValid_Outline);
         return (inherited::GetStyle_Outline ());
     }
-    inline bool IncrementalFontSpecification::GetStyle_Outline_Valid () const { return (fStyleValid_Outline); }
-    inline void IncrementalFontSpecification::InvalidateStyle_Outline () { fStyleValid_Outline = false; }
+    inline bool IncrementalFontSpecification::GetStyle_Outline_Valid () const
+    {
+        return (fStyleValid_Outline);
+    }
+    inline void IncrementalFontSpecification::InvalidateStyle_Outline ()
+    {
+        fStyleValid_Outline = false;
+    }
     inline void IncrementalFontSpecification::SetStyle_Outline (bool isOutline)
     {
         fStyleValid_Outline = true;
@@ -2359,8 +2545,14 @@ namespace Stroika::Frameworks::Led {
         Require (fStyleValid_Shadow);
         return (inherited::GetStyle_Shadow ());
     }
-    inline bool IncrementalFontSpecification::GetStyle_Shadow_Valid () const { return (fStyleValid_Shadow); }
-    inline void IncrementalFontSpecification::InvalidateStyle_Shadow () { fStyleValid_Shadow = false; }
+    inline bool IncrementalFontSpecification::GetStyle_Shadow_Valid () const
+    {
+        return (fStyleValid_Shadow);
+    }
+    inline void IncrementalFontSpecification::InvalidateStyle_Shadow ()
+    {
+        fStyleValid_Shadow = false;
+    }
     inline void IncrementalFontSpecification::SetStyle_Shadow (bool isShadow)
     {
         fStyleValid_Shadow = true;
@@ -2371,8 +2563,14 @@ namespace Stroika::Frameworks::Led {
         Require (fStyleValid_Condensed);
         return (inherited::GetStyle_Condensed ());
     }
-    inline bool IncrementalFontSpecification::GetStyle_Condensed_Valid () const { return (fStyleValid_Condensed); }
-    inline void IncrementalFontSpecification::InvalidateStyle_Condensed () { fStyleValid_Condensed = false; }
+    inline bool IncrementalFontSpecification::GetStyle_Condensed_Valid () const
+    {
+        return (fStyleValid_Condensed);
+    }
+    inline void IncrementalFontSpecification::InvalidateStyle_Condensed ()
+    {
+        fStyleValid_Condensed = false;
+    }
     inline void IncrementalFontSpecification::SetStyle_Condensed (bool isCondensed)
     {
         fStyleValid_Condensed = true;
@@ -2383,8 +2581,14 @@ namespace Stroika::Frameworks::Led {
         Require (fStyleValid_Extended);
         return (inherited::GetStyle_Extended ());
     }
-    inline bool IncrementalFontSpecification::GetStyle_Extended_Valid () const { return (fStyleValid_Extended); }
-    inline void IncrementalFontSpecification::InvalidateStyle_Extended () { fStyleValid_Extended = false; }
+    inline bool IncrementalFontSpecification::GetStyle_Extended_Valid () const
+    {
+        return (fStyleValid_Extended);
+    }
+    inline void IncrementalFontSpecification::InvalidateStyle_Extended ()
+    {
+        fStyleValid_Extended = false;
+    }
     inline void IncrementalFontSpecification::SetStyle_Extended (bool isExtended)
     {
         fStyleValid_Extended = true;
@@ -2396,7 +2600,10 @@ namespace Stroika::Frameworks::Led {
             Require (fStyleValid_Strikeout);
             return (inherited::GetStyle_Strikeout ());
         }
-        inline bool IncrementalFontSpecification::GetStyle_Strikeout_Valid () const { return (fStyleValid_Strikeout); }
+        inline bool IncrementalFontSpecification::GetStyle_Strikeout_Valid () const
+        {
+            return (fStyleValid_Strikeout);
+        }
         inline void IncrementalFontSpecification::InvalidateStyle_Strikeout ()
         {
             fStyleValid_Strikeout = false;
@@ -2420,7 +2627,10 @@ namespace Stroika::Frameworks::Led {
         Require (not fFontSizeIncrementValid);
         return inherited::GetPointSize ();
     }
-    inline bool IncrementalFontSpecification::GetPointSize_Valid () const { return (fFontSizeValid); }
+    inline bool IncrementalFontSpecification::GetPointSize_Valid () const
+    {
+        return (fFontSizeValid);
+    }
     inline void IncrementalFontSpecification::InvalidatePointSize ()
     {
         fFontSizeValid          = false;
@@ -2453,7 +2663,10 @@ namespace Stroika::Frameworks::Led {
         Require (fFontSizeIncrementValid);
         return (short)inherited::GetPointSize ();
     }
-    inline bool IncrementalFontSpecification::GetPointSizeIncrement_Valid () const { return (fFontSizeIncrementValid); }
+    inline bool IncrementalFontSpecification::GetPointSizeIncrement_Valid () const
+    {
+        return (fFontSizeIncrementValid);
+    }
     inline void IncrementalFontSpecification::InvalidatePointSizeIncrement ()
     {
         fFontSizeValid          = false;
@@ -2477,8 +2690,14 @@ namespace Stroika::Frameworks::Led {
         Require (fTextColorValid);
         return inherited::GetTextColor ();
     }
-    inline bool IncrementalFontSpecification::GetTextColor_Valid () const { return (fTextColorValid); }
-    inline void IncrementalFontSpecification::InvalidateTextColor () { fTextColorValid = false; }
+    inline bool IncrementalFontSpecification::GetTextColor_Valid () const
+    {
+        return (fTextColorValid);
+    }
+    inline void IncrementalFontSpecification::InvalidateTextColor ()
+    {
+        fTextColorValid = false;
+    }
     inline void IncrementalFontSpecification::SetTextColor (const Color& textColor)
     {
         fTextColorValid = true;
@@ -2543,7 +2762,10 @@ namespace Stroika::Frameworks::Led {
             fDidSetOSRepCallFlag    = true;
             inherited::LightSetOSRep (logFont);
         }
-        inline bool IncrementalFontSpecification::GetDidSetOSRepCallFlag () const { return fDidSetOSRepCallFlag; }
+        inline bool IncrementalFontSpecification::GetDidSetOSRepCallFlag () const
+        {
+            return fDidSetOSRepCallFlag;
+        }
 #endif
     inline void IncrementalFontSpecification::MergeIn (const IncrementalFontSpecification& addInTheseAttributes)
     {
@@ -2746,7 +2968,10 @@ namespace Stroika::Frameworks::Led {
     }
 
     //  class   InstalledFonts
-    inline const vector<SDKString>& InstalledFonts::GetUsableFontNames () const { return fFontNames; }
+    inline const vector<SDKString>& InstalledFonts::GetUsableFontNames () const
+    {
+        return fFontNames;
+    }
 
     /*
      ********************************************************************************
@@ -2998,7 +3223,9 @@ namespace Stroika::Frameworks::Led {
             ::PenPat (&pen.fPenPat);
         }
 #elif qStroika_FeatureSupported_XWindows
-        inline GDI_Obj_Selector::GDI_Obj_Selector (Tablet* tablet, const Pen& pen) {}
+        inline GDI_Obj_Selector::GDI_Obj_Selector (Tablet* tablet, const Pen& pen)
+        {
+        }
 #endif
     inline GDI_Obj_Selector::~GDI_Obj_Selector ()
     {
@@ -3018,8 +3245,14 @@ namespace Stroika::Frameworks::Led {
     }
 
 #if qPlatform_MacOS
-    inline void     GDI_RGBForeColor (const RGBColor& color) { ::RGBForeColor (&color); }
-    inline void     GDI_RGBBackColor (const RGBColor& color) { ::RGBBackColor (&color); }
+    inline void GDI_RGBForeColor (const RGBColor& color)
+    {
+        ::RGBForeColor (&color);
+    }
+    inline void GDI_RGBBackColor (const RGBColor& color)
+    {
+        ::RGBBackColor (&color);
+    }
     inline RGBColor GDI_GetForeColor ()
     {
         RGBColor color;
@@ -3070,7 +3303,10 @@ namespace Stroika::Frameworks::Led {
             return Led_ByteSwapFromMac (picture->picFrameRight);
 #endif
     }
-    inline short Led_GetMacPictWidth (const Led_Picture* picture) { return (Led_GetMacPictRight (picture) - Led_GetMacPictLeft (picture)); }
+    inline short Led_GetMacPictWidth (const Led_Picture* picture)
+    {
+        return (Led_GetMacPictRight (picture) - Led_GetMacPictLeft (picture));
+    }
     inline short Led_GetMacPictHeight (const Led_Picture* picture)
     {
         return (Led_GetMacPictBottom (picture) - Led_GetMacPictTop (picture));
@@ -3144,7 +3380,10 @@ namespace Stroika::Frameworks::Led {
             fIMEEnableProc (nullptr, false);
         }
     }
-    inline bool IME::Available () const { return fWinNlsAvailable; }
+    inline bool IME::Available () const
+    {
+        return fWinNlsAvailable;
+    }
     inline void IME::ForgetPosition ()
     {
         fLastX = -1;

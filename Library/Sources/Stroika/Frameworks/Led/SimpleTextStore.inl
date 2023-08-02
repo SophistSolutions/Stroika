@@ -17,7 +17,10 @@ namespace Stroika::Frameworks::Led {
      ******************************** SimpleTextStore *******************************
      ********************************************************************************
      */
-    inline size_t SimpleTextStore::GetLength () const noexcept { return (fLength); }
+    inline size_t SimpleTextStore::GetLength () const noexcept
+    {
+        return (fLength);
+    }
 
 }
 

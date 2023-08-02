@@ -45,7 +45,9 @@ namespace Stroika::Frameworks::Led {
     @DESCRIPTION:   <p>Default implementaiton for calls to @'SpellCheckEngine::Invariant'. Overridden in subclasses
             to check validity of SpellCheck engine.</p>
     */
-    inline void SpellCheckEngine::Invariant_ () const {}
+    inline void SpellCheckEngine::Invariant_ () const
+    {
+    }
 #endif
 
 }

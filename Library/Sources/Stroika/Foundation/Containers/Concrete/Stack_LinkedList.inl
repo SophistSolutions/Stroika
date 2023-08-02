@@ -73,8 +73,11 @@ namespace Stroika::Foundation::Containers::Concrete {
 
         // Stack<T>::_IRep overrides
     public:
-        virtual shared_ptr<typename Stack<T>::_IRep> CloneEmpty () const override { return Memory::MakeSharedPtr<Rep_> (); }
-        virtual void                                 Push (ArgByValueType<value_type> item) override
+        virtual shared_ptr<typename Stack<T>::_IRep> CloneEmpty () const override
+        {
+            return Memory::MakeSharedPtr<Rep_> ();
+        }
+        virtual void Push (ArgByValueType<value_type> item) override
         {
             Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fData_};
             fData_.Prepend (item); // top of stack is first elt of linked list

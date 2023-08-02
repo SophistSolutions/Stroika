@@ -345,8 +345,14 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
         , fInTableCell (true)
     {
     }
-    inline StyledTextIOWriter_HTML&        StyledTextIOWriter_HTML::WriterContext::GetWriter () const { return fWriter; }
-    inline StyledTextIOWriter::SrcStream&  StyledTextIOWriter_HTML::WriterContext::GetSrcStream () const { return fSrcStream; }
+    inline StyledTextIOWriter_HTML& StyledTextIOWriter_HTML::WriterContext::GetWriter () const
+    {
+        return fWriter;
+    }
+    inline StyledTextIOWriter::SrcStream& StyledTextIOWriter_HTML::WriterContext::GetSrcStream () const
+    {
+        return fSrcStream;
+    }
     inline StyledTextIOWriter::SinkStream& StyledTextIOWriter_HTML::WriterContext::GetSinkStream () const
     {
         return fWriter.GetSinkStream ();

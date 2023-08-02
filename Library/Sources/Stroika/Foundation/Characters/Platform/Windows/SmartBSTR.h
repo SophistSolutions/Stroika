@@ -35,7 +35,9 @@ namespace Stroika::Foundation::Characters::Platform::Windows {
     class SmartBSTR {
     public:
         SmartBSTR () = default;
-        SmartBSTR (nullptr_t) {}
+        SmartBSTR (nullptr_t)
+        {
+        }
         SmartBSTR (const wchar_t* from)
             : fStr_ (::SysAllocString (from))
         {
@@ -58,8 +60,14 @@ namespace Stroika::Foundation::Characters::Platform::Windows {
             }
             return *this;
         }
-                     operator BSTR () const noexcept { return fStr_; }
-        unsigned int Length () const noexcept { return ::SysStringLen (fStr_); }
+        operator BSTR () const noexcept
+        {
+            return fStr_;
+        }
+        unsigned int Length () const noexcept
+        {
+            return ::SysStringLen (fStr_);
+        }
 
     private:
         BSTR fStr_ = nullptr;

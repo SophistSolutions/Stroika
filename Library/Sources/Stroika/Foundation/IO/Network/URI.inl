@@ -95,7 +95,10 @@ namespace Stroika::Foundation::IO::Network {
         CheckValidPathForAuthority_ (fAuthority_, path);
         fPath_ = path;
     }
-    inline URI URI::GetSchemeAndAuthority () const { return URI{GetScheme (), GetAuthority ()}; }
+    inline URI URI::GetSchemeAndAuthority () const
+    {
+        return URI{GetScheme (), GetAuthority ()};
+    }
     template <typename RETURN_TYPE>
     RETURN_TYPE URI::GetAuthorityRelativeResource () const
         requires (is_same_v<RETURN_TYPE, String> or is_same_v<RETURN_TYPE, string> or is_same_v<RETURN_TYPE, URI>)
@@ -174,8 +177,14 @@ namespace Stroika::Foundation::IO::Network {
         Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fThisAssertExternallySynchronized_};
         fFragment_ = fragment;
     }
-    inline strong_ordering URI::operator<=> (const URI& rhs) const { return URI::TWC_ (*this, rhs); }
-    inline bool URI::operator== (const URI& rhs) const { return URI::TWC_ (*this, rhs) == 0; }
+    inline strong_ordering URI::operator<=> (const URI& rhs) const
+    {
+        return URI::TWC_ (*this, rhs);
+    }
+    inline bool URI::operator== (const URI& rhs) const
+    {
+        return URI::TWC_ (*this, rhs) == 0;
+    }
     template <typename T>
     inline T URI::As () const
         requires (is_same_v<T, String> or is_same_v<T, string>)

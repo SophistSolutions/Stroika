@@ -108,8 +108,17 @@ protected:
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-inline LedLineItServerItem* LedLineItDocument::GetEmbeddedItem () { return (LedLineItServerItem*)COleServerDoc::GetEmbeddedItem (); }
-inline TextStore&           LedLineItDocument::GetTextStore () { return fTextStore; }
-inline CommandHandler&      LedLineItDocument::GetCommandHandler () { return fCommandHandler; }
+inline LedLineItServerItem* LedLineItDocument::GetEmbeddedItem ()
+{
+    return (LedLineItServerItem*)COleServerDoc::GetEmbeddedItem ();
+}
+inline TextStore& LedLineItDocument::GetTextStore ()
+{
+    return fTextStore;
+}
+inline CommandHandler& LedLineItDocument::GetCommandHandler ()
+{
+    return fCommandHandler;
+}
 
 #endif /*__LedLineItDocument_h__*/

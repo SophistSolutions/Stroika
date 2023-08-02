@@ -23,8 +23,14 @@ namespace Stroika::Foundation::IO::Network {
         Require (internetAddress.GetAddressFamily () == InternetAddress::AddressFamily::V4 or
                  internetAddress.GetAddressFamily () == InternetAddress::AddressFamily::V6);
     }
-    inline InternetAddress CIDR::GetBaseInternetAddress () const { return fBaseAddress_; }
-    inline unsigned int    CIDR::GetNumberOfSignificantBits () const { return fSignificantBits_; }
+    inline InternetAddress CIDR::GetBaseInternetAddress () const
+    {
+        return fBaseAddress_;
+    }
+    inline unsigned int CIDR::GetNumberOfSignificantBits () const
+    {
+        return fSignificantBits_;
+    }
     inline strong_ordering CIDR::operator<=> (const CIDR& rhs) const
     {
         /*

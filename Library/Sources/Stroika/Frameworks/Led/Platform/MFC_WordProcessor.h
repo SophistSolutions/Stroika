@@ -352,7 +352,10 @@ namespace Stroika::Frameworks::Led::Platform {
         AssertNotNull (sDoc);
         sDoc = fOldDoc;
     }
-    inline COleDocument* Led_MFC_ControlItem::DocContextDefiner::GetDoc () { return sDoc; }
+    inline COleDocument* Led_MFC_ControlItem::DocContextDefiner::GetDoc ()
+    {
+        return sDoc;
+    }
 #endif
 }
 

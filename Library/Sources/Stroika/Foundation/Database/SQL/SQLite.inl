@@ -80,7 +80,10 @@ namespace Stroika::Foundation::Database::SQL::SQLite {
     {
         return Debug::UncheckedDynamicPointerCast<IRep> (_fRep).get ();
     }
-    inline ::sqlite3* Connection::Ptr::Peek () const { return Debug::UncheckedDynamicPointerCast<IRep> (_fRep)->Peek (); }
+    inline ::sqlite3* Connection::Ptr::Peek () const
+    {
+        return Debug::UncheckedDynamicPointerCast<IRep> (_fRep)->Peek ();
+    }
 #endif
 
 }

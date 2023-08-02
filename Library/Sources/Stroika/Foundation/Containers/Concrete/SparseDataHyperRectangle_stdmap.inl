@@ -142,8 +142,11 @@ namespace Stroika::Foundation::Containers::Concrete {
 
             // Iterator<tuple<T, INDEXES...>>::IRep
         public:
-            virtual unique_ptr<inherited> Clone () const override { return make_unique<MyIteratorImplHelper_> (*this); }
-            virtual void                  More (optional<tuple<T, INDEXES...>>* result, bool advance) override
+            virtual unique_ptr<inherited> Clone () const override
+            {
+                return make_unique<MyIteratorImplHelper_> (*this);
+            }
+            virtual void More (optional<tuple<T, INDEXES...>>* result, bool advance) override
             {
                 RequireNotNull (result);
                 if (advance) [[likely]] {

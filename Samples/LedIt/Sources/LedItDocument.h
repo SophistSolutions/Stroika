@@ -161,7 +161,10 @@ protected:
     nonvirtual void DoSaveHelper ();
 
 public:
-    nonvirtual LedItView* GetTextView () const { return fTextView; }
+    nonvirtual LedItView* GetTextView () const
+    {
+        return fTextView;
+    }
 
 private:
     LedItView* fTextView;
@@ -192,12 +195,30 @@ SDKString ExtractFileSuffix (const SDKString& from);
  ********************************************************************************
  */
 #if qPlatform_Windows
-inline LedItServerItem* LedItDocument::GetEmbeddedItem () { return (LedItServerItem*)COleServerDoc::GetEmbeddedItem (); }
+inline LedItServerItem* LedItDocument::GetEmbeddedItem ()
+{
+    return (LedItServerItem*)COleServerDoc::GetEmbeddedItem ();
+}
 #endif
-inline TextStore&                                  LedItDocument::GetTextStore () { return fTextStore; }
-inline StandardStyledTextImager::StyleDatabasePtr& LedItDocument::GetStyleDatabase () { return fStyleDatabase; }
-inline WordProcessor::ParagraphDatabasePtr&        LedItDocument::GetParagraphDatabase () { return fParagraphDatabase; }
-inline WordProcessor::HidableTextDatabasePtr&      LedItDocument::GetHidableTextDatabase () { return fHidableTextDatabase; }
-inline CommandHandler&                             LedItDocument::GetCommandHandler () { return fCommandHandler; }
+inline TextStore& LedItDocument::GetTextStore ()
+{
+    return fTextStore;
+}
+inline StandardStyledTextImager::StyleDatabasePtr& LedItDocument::GetStyleDatabase ()
+{
+    return fStyleDatabase;
+}
+inline WordProcessor::ParagraphDatabasePtr& LedItDocument::GetParagraphDatabase ()
+{
+    return fParagraphDatabase;
+}
+inline WordProcessor::HidableTextDatabasePtr& LedItDocument::GetHidableTextDatabase ()
+{
+    return fHidableTextDatabase;
+}
+inline CommandHandler& LedItDocument::GetCommandHandler ()
+{
+    return fCommandHandler;
+}
 
 #endif /*__LedItDocument_h__*/

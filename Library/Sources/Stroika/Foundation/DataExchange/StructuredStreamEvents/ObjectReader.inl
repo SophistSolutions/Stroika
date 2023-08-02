@@ -37,15 +37,24 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
         {
             fBuf_.clear (); // readers can legally be re-used
         }
-        virtual shared_ptr<IElementConsumer> HandleChildStart (const Name& name) override { ThrowUnRecognizedStartElt (name); }
-        virtual void                         HandleTextInside (const String& text) override { fBuf_ += text; }
-        virtual void                         Deactivating () override;
+        virtual shared_ptr<IElementConsumer> HandleChildStart (const Name& name) override
+        {
+            ThrowUnRecognizedStartElt (name);
+        }
+        virtual void HandleTextInside (const String& text) override
+        {
+            fBuf_ += text;
+        }
+        virtual void Deactivating () override;
 
     public:
         /**
          *  Helper to convert a reader to a factory (something that creates the reader).
          */
-        static ReaderFromVoidStarFactory AsFactory () { return IElementConsumer::AsFactory<T, SimpleReader_> (); }
+        static ReaderFromVoidStarFactory AsFactory ()
+        {
+            return IElementConsumer::AsFactory<T, SimpleReader_> ();
+        }
 
     private:
         Characters::StringBuilder<> fBuf_{};
@@ -147,8 +156,14 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
         Require (not fStack_.empty ());
         return fStack_.back ();
     }
-    inline const Registry& Context::GetObjectReaderRegistry () const { return fObjectReaderRegistry_; }
-    inline bool            Context::empty () const { return fStack_.empty (); }
+    inline const Registry& Context::GetObjectReaderRegistry () const
+    {
+        return fObjectReaderRegistry_;
+    }
+    inline bool Context::empty () const
+    {
+        return fStack_.empty ();
+    }
 
     /*
      ********************************************************************************
@@ -687,7 +702,10 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
     {
         Add<T> (MakeCommonReader<T> (forward<ARGS> (args)...));
     }
-    inline optional<ReaderFromVoidStarFactory> Registry::Lookup (type_index t) const { return fFactories_.Lookup (t); }
+    inline optional<ReaderFromVoidStarFactory> Registry::Lookup (type_index t) const
+    {
+        return fFactories_.Lookup (t);
+    }
     template <typename CLASS>
     void Registry::AddCommonReader_Class (const Traversal::Iterable<StructFieldInfo>& fieldDescriptions)
     {
@@ -743,9 +761,15 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
             }
             Characters::StringBuilder<>          fBuf_{};
             ENUM_TYPE*                           fValue_{};
-            virtual shared_ptr<IElementConsumer> HandleChildStart (const Name& name) override { ThrowUnRecognizedStartElt (name); }
-            virtual void                         HandleTextInside (const String& text) override { fBuf_ += text; }
-            virtual void                         Deactivating () override
+            virtual shared_ptr<IElementConsumer> HandleChildStart (const Name& name) override
+            {
+                ThrowUnRecognizedStartElt (name);
+            }
+            virtual void HandleTextInside (const String& text) override
+            {
+                fBuf_ += text;
+            }
+            virtual void Deactivating () override
             {
                 if (auto optVal = fNameMap.InverseLookup (fBuf_.str ())) [[likely]] {
                     *fValue_ = *optVal;
@@ -787,9 +811,15 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
             }
             Characters::StringBuilder<>          fBuf_{};
             ENUM_TYPE*                           fValue_{};
-            virtual shared_ptr<IElementConsumer> HandleChildStart (const Name& name) override { ThrowUnRecognizedStartElt (name); }
-            virtual void                         HandleTextInside (const String& text) override { fBuf_ += text; }
-            virtual void                         Deactivating () override
+            virtual shared_ptr<IElementConsumer> HandleChildStart (const Name& name) override
+            {
+                ThrowUnRecognizedStartElt (name);
+            }
+            virtual void HandleTextInside (const String& text) override
+            {
+                fBuf_ += text;
+            }
+            virtual void Deactivating () override
             {
                 using SerializeAsType = typename std::underlying_type<ENUM_TYPE>::type;
                 SerializeAsType tmp   = Characters::String2Int<SerializeAsType> (fBuf_.str ());
@@ -824,9 +854,15 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
             }
             Characters::StringBuilder<>          fBuf_{};
             T*                                   fValue_{};
-            virtual shared_ptr<IElementConsumer> HandleChildStart (const Name& name) override { ThrowUnRecognizedStartElt (name); }
-            virtual void                         HandleTextInside (const String& text) override { fBuf_ += text; }
-            virtual void                         Deactivating () override
+            virtual shared_ptr<IElementConsumer> HandleChildStart (const Name& name) override
+            {
+                ThrowUnRecognizedStartElt (name);
+            }
+            virtual void HandleTextInside (const String& text) override
+            {
+                fBuf_ += text;
+            }
+            virtual void Deactivating () override
             {
                 *fValue_ = fString2TMapper_ (fBuf_.str ()); // its up to fString2TMapper_ to throw if this conversion cannot be done
             }
@@ -839,7 +875,10 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
     {
         Add<T> (MakeCommonReader_Simple<T> (converterFromString2T));
     }
-    inline ReaderFromVoidStarFactory Registry::MakeCommonReader_ (const String*) { return MakeCommonReader_SimpleReader_<String> (); }
+    inline ReaderFromVoidStarFactory Registry::MakeCommonReader_ (const String*)
+    {
+        return MakeCommonReader_SimpleReader_<String> ();
+    }
     inline ReaderFromVoidStarFactory Registry::MakeCommonReader_ (const IO::Network::URI*)
     {
         return MakeCommonReader_SimpleReader_<IO::Network::URI> ();

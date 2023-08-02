@@ -17,7 +17,10 @@ extern size_t        NormallyDistributedRandomNumber (size_t first, size_t last)
 extern std::mt19937& GetRandomNumberEngine ();
 
 struct Timer {
-    Timer () { fStartTime = GetCurrentTimeInMilliseconds (); }
+    Timer ()
+    {
+        fStartTime = GetCurrentTimeInMilliseconds ();
+    }
 
     ~Timer ()
     {
@@ -28,7 +31,10 @@ struct Timer {
         std::cout << buf << std::flush;
     }
 
-    double GetElapsedTime () { return GetCurrentTimeInMilliseconds () - fStartTime; }
+    double GetElapsedTime ()
+    {
+        return GetCurrentTimeInMilliseconds () - fStartTime;
+    }
 
     static double GetCurrentTimeInMilliseconds ()
     {

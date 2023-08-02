@@ -1243,7 +1243,10 @@ namespace Stroika::Foundation::Traversal {
     private:
 #if (__cplusplus < kStrokia_Foundation_Configuration_cplusplus_20) || qCompilerAndStdLib_lambdas_in_unevaluatedContext_Buggy
         struct Rep_Cloner_ {
-            auto operator() (const _IRep& t) const -> shared_ptr<_IRep> { return Iterable<T>::Clone_ (t); }
+            auto operator() (const _IRep& t) const -> shared_ptr<_IRep>
+            {
+                return Iterable<T>::Clone_ (t);
+            }
         };
 #else
         using Rep_Cloner_ = decltype ([] (const _IRep& t) -> shared_ptr<_IRep> { return Iterable<T>::Clone_ (t); });

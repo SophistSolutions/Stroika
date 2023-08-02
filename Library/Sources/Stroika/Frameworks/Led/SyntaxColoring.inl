@@ -41,7 +41,10 @@ namespace Stroika::Frameworks::Led {
         }
         fMaxKeywordLength = u;
     }
-    inline size_t TableDrivenKeywordSyntaxAnalyzer::KeywordTable::MaxKeywordLength () const { return fMaxKeywordLength; }
+    inline size_t TableDrivenKeywordSyntaxAnalyzer::KeywordTable::MaxKeywordLength () const
+    {
+        return fMaxKeywordLength;
+    }
     inline size_t TableDrivenKeywordSyntaxAnalyzer::KeywordTable::KeywordLength (const Led_tChar* t, size_t nTChars) const
     {
         for (size_t i = 0; i < fNKeywords; ++i) {

@@ -86,7 +86,10 @@ namespace Stroika::Foundation::Containers::Concrete {
 
         // Sequence<T>::_IRep overrides
     public:
-        virtual shared_ptr<typename Sequence<T>::_IRep> CloneEmpty () const override { return Memory::MakeSharedPtr<Rep_> (); }
+        virtual shared_ptr<typename Sequence<T>::_IRep> CloneEmpty () const override
+        {
+            return Memory::MakeSharedPtr<Rep_> ();
+        }
         virtual shared_ptr<typename Sequence<T>::_IRep> CloneAndPatchIterator (Iterator<value_type>* i) const override
         {
             RequireNotNull (i);
@@ -178,8 +181,11 @@ namespace Stroika::Foundation::Containers::Concrete {
             fData_.shrink_to_fit ();
             fChangeCounts_.PerformedChange ();
         }
-        virtual size_t capacity () const override { return fData_.capacity (); }
-        virtual void   reserve (size_t slotsAlloced) override
+        virtual size_t capacity () const override
+        {
+            return fData_.capacity ();
+        }
+        virtual void reserve (size_t slotsAlloced) override
         {
             Debug::AssertExternallySynchronizedMutex::WriteContext declareContext{fData_};
             fData_.reserve (slotsAlloced);

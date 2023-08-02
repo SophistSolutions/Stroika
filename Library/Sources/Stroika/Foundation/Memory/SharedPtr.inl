@@ -136,8 +136,14 @@ namespace Stroika::Foundation::Memory {
                 swap (fPtr_, rhs.fPtr_);
                 swap (fCountHolder_, rhs.fCountHolder_);
             }
-            inline T*                                GetPtr () const noexcept { return fPtr_; }
-            inline void                              SetPtr (T* p) noexcept { fPtr_ = p; }
+            inline T* GetPtr () const noexcept
+            {
+                return fPtr_;
+            }
+            inline void SetPtr (T* p) noexcept
+            {
+                fPtr_ = p;
+            }
             inline SharedPtrBase::ReferenceCountType CurrentRefCount () const noexcept
             {
                 return fCountHolder_ == nullptr ? 0 : fCountHolder_->fCount.load ();

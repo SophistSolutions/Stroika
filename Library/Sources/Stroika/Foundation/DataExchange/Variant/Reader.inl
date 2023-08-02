@@ -18,7 +18,10 @@ namespace Stroika::Foundation::DataExchange::Variant {
      ********************* Variant::Reader::_Rep_Cloner *****************************
      ********************************************************************************
      */
-    inline Reader::_SharedPtrIRep Reader::_Rep_Cloner::operator() (const _IRep& t) const { return t.Clone (); }
+    inline Reader::_SharedPtrIRep Reader::_Rep_Cloner::operator() (const _IRep& t) const
+    {
+        return t.Clone ();
+    }
 
     /*
      ********************************************************************************
@@ -49,9 +52,18 @@ namespace Stroika::Foundation::DataExchange::Variant {
     {
         return Read (_ToCharacterReader (in));
     }
-    inline VariantValue   Variant::Reader::Read (const Memory::BLOB& in) { return Read (_ToByteReader (in)); }
-    inline VariantValue   Variant::Reader::Read (istream& in) { return Read (_ToByteReader (in)); }
-    inline VariantValue   Variant::Reader::Read (wistream& in) { return Read (_ToCharacterReader (in)); }
+    inline VariantValue Variant::Reader::Read (const Memory::BLOB& in)
+    {
+        return Read (_ToByteReader (in));
+    }
+    inline VariantValue Variant::Reader::Read (istream& in)
+    {
+        return Read (_ToByteReader (in));
+    }
+    inline VariantValue Variant::Reader::Read (wistream& in)
+    {
+        return Read (_ToCharacterReader (in));
+    }
     inline Reader::_IRep& Reader::_GetRep ()
     {
         AssertNotNull (fRep_);
@@ -63,7 +75,10 @@ namespace Stroika::Foundation::DataExchange::Variant {
         EnsureNotNull (fRep_.cget ());
         return *fRep_.cget ();
     }
-    inline Streams::InputStream<std::byte>::Ptr Reader::_ToByteReader (const Streams::InputStream<std::byte>::Ptr& in) { return in; }
+    inline Streams::InputStream<std::byte>::Ptr Reader::_ToByteReader (const Streams::InputStream<std::byte>::Ptr& in)
+    {
+        return in;
+    }
     inline Streams::InputStream<std::byte>::Ptr Reader::_ToByteReader (const Streams::InputStream<Characters::Character>::Ptr& in)
     {
         return Streams::TextToByteReader::New (in);

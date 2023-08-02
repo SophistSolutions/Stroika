@@ -21,7 +21,10 @@ namespace Stroika::Foundation::Execution::Platform::Windows {
     {
         ::InitializeCriticalSection (&fCritSec_);
     }
-    inline CriticalSectionMutex::~CriticalSectionMutex () { ::DeleteCriticalSection (&fCritSec_); }
+    inline CriticalSectionMutex::~CriticalSectionMutex ()
+    {
+        ::DeleteCriticalSection (&fCritSec_);
+    }
     inline void CriticalSectionMutex::lock ()
     {
         // EnterCriticalSection supports recursive mutex, but this class non-recursive.
@@ -30,7 +33,10 @@ namespace Stroika::Foundation::Execution::Platform::Windows {
         Require (fCritSec_.OwningThread != ::GetCurrentThread ());
         ::EnterCriticalSection (&fCritSec_);
     }
-    inline void CriticalSectionMutex::unlock () { ::LeaveCriticalSection (&fCritSec_); }
+    inline void CriticalSectionMutex::unlock ()
+    {
+        ::LeaveCriticalSection (&fCritSec_);
+    }
 
 }
 

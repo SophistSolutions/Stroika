@@ -1111,7 +1111,10 @@ namespace Stroika::Foundation::Characters {
          */
         nonvirtual SDKString                                       AsSDKString () const;
         nonvirtual SDKString                                       AsSDKString (AllowMissingCharacterErrorsFlag) const;
-        [[deprecated ("Since Stroika v3.0d2 - just use /0")]] void AsSDKString (SDKString* into) const { *into = AsSDKString (); }
+        [[deprecated ("Since Stroika v3.0d2 - just use /0")]] void AsSDKString (SDKString* into) const
+        {
+            *into = AsSDKString ();
+        }
 
     public:
         /**

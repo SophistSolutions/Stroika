@@ -17,7 +17,10 @@ namespace Stroika::Frameworks::SystemPerformance {
      *********************** SystemPerformance::CaptureSet **************************
      ********************************************************************************
      */
-    inline void CaptureSet::AddInstrument (const Instrument& i) { fInstruments_.Add (i); }
+    inline void CaptureSet::AddInstrument (const Instrument& i)
+    {
+        fInstruments_.Add (i);
+    }
 
 }
 

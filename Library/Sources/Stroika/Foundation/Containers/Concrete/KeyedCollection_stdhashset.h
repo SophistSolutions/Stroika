@@ -96,8 +96,14 @@ namespace Stroika::Foundation::Containers::Concrete {
                 , fKeyHasher{kh}
             {
             }
-            auto operator() (const key_type& k) const noexcept { return fKeyHasher (k); }
-            auto operator() (const value_type& v) const noexcept { return fKeyHasher (fKeyExtractor_ (v)); }
+            auto operator() (const key_type& k) const noexcept
+            {
+                return fKeyHasher (k);
+            }
+            auto operator() (const value_type& v) const noexcept
+            {
+                return fKeyHasher (fKeyExtractor_ (v));
+            }
             [[no_unique_address]] const KeyExtractorType fKeyExtractor_;
             [[no_unique_address]] const KEY_HASHER       fKeyHasher;
 

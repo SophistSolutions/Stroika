@@ -112,8 +112,14 @@ namespace Stroika::Foundation::Containers::LockFreeDataStructures {
             using std::swap; // bring in swap for built-in types
             swap (a.current, b.current);
         }
-             operator ForwardIterator_<const T> () const { return ForwardIterator_<const T> (current); }
-        bool operator== (const ForwardIterator_& rhs) const { return current == rhs.current; }
+        operator ForwardIterator_<const T> () const
+        {
+            return ForwardIterator_<const T> (current);
+        }
+        bool operator== (const ForwardIterator_& rhs) const
+        {
+            return current == rhs.current;
+        }
     };
     // static_assert (weakly_incrementable<forward_list<int>::const_iterator>); // fails cuz cannot take difference of two iterators...
 

@@ -31,8 +31,14 @@ namespace Stroika::Foundation::Memory::Platform::Windows {
         AssertNotNull (fHandle_);
         ::GlobalUnlock (fHandle_);
     }
-    inline byte*  StackBasedHandleLocker::GetPointer () const { return fPointer_; }
-    inline size_t StackBasedHandleLocker::GetSize () const { return ::GlobalSize (fHandle_); }
+    inline byte* StackBasedHandleLocker::GetPointer () const
+    {
+        return fPointer_;
+    }
+    inline size_t StackBasedHandleLocker::GetSize () const
+    {
+        return ::GlobalSize (fHandle_);
+    }
 
 }
 

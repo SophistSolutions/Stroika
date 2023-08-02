@@ -53,7 +53,10 @@ namespace Stroika::Foundation::Execution::Resources {
 #endif
         return fName_.c_str ();
     }
-    inline ResourceType Name::GetType () const { return fType_; }
+    inline ResourceType Name::GetType () const
+    {
+        return fType_;
+    }
 
 }
 

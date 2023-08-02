@@ -327,11 +327,20 @@ public:
     // disambiguate mixins
 public:
     STDMETHOD (get_Name)
-    (BSTR* pVal) { return AL_CommandHelper::get_Name (pVal); }
+    (BSTR* pVal)
+    {
+        return AL_CommandHelper::get_Name (pVal);
+    }
     STDMETHOD (get_InternalName)
-    (BSTR* pVal) { return AL_CommandHelper::get_InternalName (pVal); }
+    (BSTR* pVal)
+    {
+        return AL_CommandHelper::get_InternalName (pVal);
+    }
     STDMETHOD (AppendSelfToMenu)
-    (HMENU menu, IDispatch* acceleratorTable) { return AL_CommandHelper::AppendSelfToMenu (menu, acceleratorTable); }
+    (HMENU menu, IDispatch* acceleratorTable)
+    {
+        return AL_CommandHelper::AppendSelfToMenu (menu, acceleratorTable);
+    }
 };
 
 class ATL_NO_VTABLE AL_CommandListHelper
@@ -372,17 +381,35 @@ public:
     // disambiguate mixins
 public:
     STDMETHOD (GeneratePopupMenu)
-    (IDispatch* acceleratorTable, HMENU* val) { return AL_CommandListHelper::GeneratePopupMenu (acceleratorTable, val); }
+    (IDispatch* acceleratorTable, HMENU* val)
+    {
+        return AL_CommandListHelper::GeneratePopupMenu (acceleratorTable, val);
+    }
     STDMETHOD (LookupCommand)
-    (BSTR internalName, IDispatch** val) { return AL_CommandListHelper::LookupCommand (internalName, val); }
+    (BSTR internalName, IDispatch** val)
+    {
+        return AL_CommandListHelper::LookupCommand (internalName, val);
+    }
     STDMETHOD (IndexOf)
-    (VARIANT internalNameOrObject, UINT* val) { return AL_CommandListHelper::IndexOf (internalNameOrObject, val); }
+    (VARIANT internalNameOrObject, UINT* val)
+    {
+        return AL_CommandListHelper::IndexOf (internalNameOrObject, val);
+    }
     STDMETHOD (get__NewEnum)
-    (IUnknown** ppUnk) { return AL_CommandListHelper::get__NewEnum (ppUnk); }
+    (IUnknown** ppUnk)
+    {
+        return AL_CommandListHelper::get__NewEnum (ppUnk);
+    }
     STDMETHOD (get_Item)
-    (long Index, IDispatch** pVal) { return AL_CommandListHelper::get_Item (Index, pVal); }
+    (long Index, IDispatch** pVal)
+    {
+        return AL_CommandListHelper::get_Item (Index, pVal);
+    }
     STDMETHOD (get_Count)
-    (long* pVal) { return AL_CommandListHelper::get_Count (pVal); }
+    (long* pVal)
+    {
+        return AL_CommandListHelper::get_Count (pVal);
+    }
 
 public:
     STDMETHOD (Insert)
@@ -403,7 +430,10 @@ public:
 
 public:
     static ActiveLedIt_BuiltinCommand* mk (const BuiltinCmdSpec& cmdSpec);
-    void                               SetName (const wstring& name) { fName = name; }
+    void                               SetName (const wstring& name)
+    {
+        fName = name;
+    }
 
 public:
     DECLARE_NO_REGISTRY ()
@@ -443,11 +473,20 @@ public:
 
 public:
     STDMETHOD (get_Name)
-    (BSTR* pVal) { return AL_CommandHelper::get_Name (pVal); }
+    (BSTR* pVal)
+    {
+        return AL_CommandHelper::get_Name (pVal);
+    }
     STDMETHOD (get_InternalName)
-    (BSTR* pVal) { return AL_CommandHelper::get_InternalName (pVal); }
+    (BSTR* pVal)
+    {
+        return AL_CommandHelper::get_InternalName (pVal);
+    }
     STDMETHOD (AppendSelfToMenu)
-    (HMENU menu, IDispatch* acceleratorTable) { return AL_CommandHelper::AppendSelfToMenu (menu, acceleratorTable); }
+    (HMENU menu, IDispatch* acceleratorTable)
+    {
+        return AL_CommandHelper::AppendSelfToMenu (menu, acceleratorTable);
+    }
 
 public:
     STDMETHOD (put_Name)
@@ -608,17 +647,35 @@ public:
     // disambiguate mixins
 public:
     STDMETHOD (GeneratePopupMenu)
-    (IDispatch* acceleratorTable, HMENU* val) { return AL_UserCommandListHelper::GeneratePopupMenu (acceleratorTable, val); }
+    (IDispatch* acceleratorTable, HMENU* val)
+    {
+        return AL_UserCommandListHelper::GeneratePopupMenu (acceleratorTable, val);
+    }
     STDMETHOD (LookupCommand)
-    (BSTR internalName, IDispatch** val) { return AL_UserCommandListHelper::LookupCommand (internalName, val); }
+    (BSTR internalName, IDispatch** val)
+    {
+        return AL_UserCommandListHelper::LookupCommand (internalName, val);
+    }
     STDMETHOD (IndexOf)
-    (VARIANT internalNameOrObject, UINT* val) { return AL_UserCommandListHelper::IndexOf (internalNameOrObject, val); }
+    (VARIANT internalNameOrObject, UINT* val)
+    {
+        return AL_UserCommandListHelper::IndexOf (internalNameOrObject, val);
+    }
     STDMETHOD (get__NewEnum)
-    (IUnknown** ppUnk) { return AL_UserCommandListHelper::get__NewEnum (ppUnk); }
+    (IUnknown** ppUnk)
+    {
+        return AL_UserCommandListHelper::get__NewEnum (ppUnk);
+    }
     STDMETHOD (get_Item)
-    (long Index, IDispatch** pVal) { return AL_UserCommandListHelper::get_Item (Index, pVal); }
+    (long Index, IDispatch** pVal)
+    {
+        return AL_UserCommandListHelper::get_Item (Index, pVal);
+    }
     STDMETHOD (get_Count)
-    (long* pVal) { return AL_UserCommandListHelper::get_Count (pVal); }
+    (long* pVal)
+    {
+        return AL_UserCommandListHelper::get_Count (pVal);
+    }
 
 public:
     HRESULT FinalConstruct ();
@@ -641,31 +698,61 @@ public:
     // disambiguate mixins
 public:
     STDMETHOD (GeneratePopupMenu)
-    (IDispatch* acceleratorTable, HMENU* val) { return AL_CommandListHelper::GeneratePopupMenu (acceleratorTable, val); }
+    (IDispatch* acceleratorTable, HMENU* val)
+    {
+        return AL_CommandListHelper::GeneratePopupMenu (acceleratorTable, val);
+    }
     STDMETHOD (LookupCommand)
-    (BSTR internalName, IDispatch** val) { return AL_CommandListHelper::LookupCommand (internalName, val); }
+    (BSTR internalName, IDispatch** val)
+    {
+        return AL_CommandListHelper::LookupCommand (internalName, val);
+    }
     STDMETHOD (IndexOf)
-    (VARIANT internalNameOrObject, UINT* val) { return AL_CommandListHelper::IndexOf (internalNameOrObject, val); }
+    (VARIANT internalNameOrObject, UINT* val)
+    {
+        return AL_CommandListHelper::IndexOf (internalNameOrObject, val);
+    }
     STDMETHOD (get__NewEnum)
-    (IUnknown** ppUnk) { return AL_CommandListHelper::get__NewEnum (ppUnk); }
+    (IUnknown** ppUnk)
+    {
+        return AL_CommandListHelper::get__NewEnum (ppUnk);
+    }
     STDMETHOD (get_Item)
-    (long Index, IDispatch** pVal) { return AL_CommandListHelper::get_Item (Index, pVal); }
+    (long Index, IDispatch** pVal)
+    {
+        return AL_CommandListHelper::get_Item (Index, pVal);
+    }
     STDMETHOD (get_Count)
-    (long* pVal) { return AL_CommandListHelper::get_Count (pVal); }
+    (long* pVal)
+    {
+        return AL_CommandListHelper::get_Count (pVal);
+    }
 
 public:
     STDMETHOD (get_Name)
-    (BSTR* pVal) { return AL_CommandHelper::get_Name (pVal); }
+    (BSTR* pVal)
+    {
+        return AL_CommandHelper::get_Name (pVal);
+    }
     STDMETHOD (get_InternalName)
-    (BSTR* pVal) { return AL_CommandHelper::get_InternalName (pVal); }
+    (BSTR* pVal)
+    {
+        return AL_CommandHelper::get_InternalName (pVal);
+    }
     STDMETHOD (AppendSelfToMenu)
     (HMENU menu, IDispatch* acceleratorTable);
 
 public:
     STDMETHOD (put_Name)
-    (BSTR val) { return AL_UserCommandHelper::put_Name (val); }
+    (BSTR val)
+    {
+        return AL_UserCommandHelper::put_Name (val);
+    }
     STDMETHOD (put_InternalName)
-    (BSTR val) { return AL_UserCommandHelper::put_InternalName (val); }
+    (BSTR val)
+    {
+        return AL_UserCommandHelper::put_InternalName (val);
+    }
 
 public:
     STDMETHOD (Insert)

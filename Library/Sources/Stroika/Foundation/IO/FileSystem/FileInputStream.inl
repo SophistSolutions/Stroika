@@ -24,7 +24,10 @@ namespace Stroika::Foundation::IO::FileSystem {
     {
         return New (fd, AdoptFDPolicy::eDEFAULT, SeekableFlag::eSeekable, bufferFlag);
     }
-    inline auto FileInputStream::_mkPtr (const shared_ptr<Rep_>& s) -> Ptr { return Ptr{s}; }
+    inline auto FileInputStream::_mkPtr (const shared_ptr<Rep_>& s) -> Ptr
+    {
+        return Ptr{s};
+    }
 
 }
 

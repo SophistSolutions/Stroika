@@ -28,12 +28,30 @@ namespace Stroika::Foundation::Cryptography::OpenSSL {
         fCipher_ = src.fCipher_;
         return *this;
     }
-    inline CipherAlgorithm::operator const EVP_CIPHER* () const { return fCipher_; }
-    inline auto CipherAlgorithm::operator<=> (const CipherAlgorithm& rhs) const { return fCipher_ <=> rhs.fCipher_; }
-    inline bool CipherAlgorithm::operator== (const CipherAlgorithm& rhs) const { return fCipher_ == rhs.fCipher_; }
-    inline String                CipherAlgorithm::ToString () const { return String{::EVP_CIPHER_name (fCipher_)}; }
-    inline size_t                CipherAlgorithm::KeyLength () const { return ::EVP_CIPHER_key_length (fCipher_); }
-    inline size_t                CipherAlgorithm::IVLength () const { return ::EVP_CIPHER_iv_length (fCipher_); }
+    inline CipherAlgorithm::operator const EVP_CIPHER* () const
+    {
+        return fCipher_;
+    }
+    inline auto CipherAlgorithm::operator<=> (const CipherAlgorithm& rhs) const
+    {
+        return fCipher_ <=> rhs.fCipher_;
+    }
+    inline bool CipherAlgorithm::operator== (const CipherAlgorithm& rhs) const
+    {
+        return fCipher_ == rhs.fCipher_;
+    }
+    inline String CipherAlgorithm::ToString () const
+    {
+        return String{::EVP_CIPHER_name (fCipher_)};
+    }
+    inline size_t CipherAlgorithm::KeyLength () const
+    {
+        return ::EVP_CIPHER_key_length (fCipher_);
+    }
+    inline size_t CipherAlgorithm::IVLength () const
+    {
+        return ::EVP_CIPHER_iv_length (fCipher_);
+    }
 #endif
 
 }

@@ -1071,11 +1071,16 @@ namespace Stroika::Frameworks::Led {
         // In case the imager is a TextInteractor - provide dummy implementations...
     public:
         using UpdateMode = typename IMAGER::UpdateMode;
-        virtual bool QueryInputKeyStrokesPending () const override { return false; };
+        virtual bool QueryInputKeyStrokesPending () const override
+        {
+            return false;
+        };
         virtual void RefreshWindowRect_ ([[maybe_unused]] const Led_Rect& windowRectArea, [[maybe_unused]] UpdateMode updateMode) const override
         {
         }
-        virtual void UpdateWindowRect_ ([[maybe_unused]] const Led_Rect& windowRectArea) const override {}
+        virtual void UpdateWindowRect_ ([[maybe_unused]] const Led_Rect& windowRectArea) const override
+        {
+        }
     };
     DISABLE_COMPILER_MSC_WARNING_END (4250) // inherits via dominance warning
 

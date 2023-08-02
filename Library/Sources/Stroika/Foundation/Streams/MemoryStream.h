@@ -124,7 +124,9 @@ namespace Stroika::Foundation ::Streams {
          */
         Ptr () = delete; // 95% of time would be a bug - init with nullptr
         // allow no-arg CTOR when we've converted - not bad - just bad now cuz prev semantics
-        Ptr (nullptr_t) {}
+        Ptr (nullptr_t)
+        {
+        }
         Ptr (const Ptr& from) = default;
 
     protected:

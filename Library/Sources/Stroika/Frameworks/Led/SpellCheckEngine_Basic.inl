@@ -42,11 +42,18 @@ namespace Stroika::Frameworks::Led {
     @METHOD:        SpellCheckEngine_Basic::SetTextBreaker
     @DESCRIPTION:   <p>See @'SpellCheckEngine_Basic::GetTextBreaker'.</p>
     */
-    inline void SpellCheckEngine_Basic::SetTextBreaker (const shared_ptr<TextBreaks>& textBreaker) { fTextBreaker = textBreaker; }
+    inline void SpellCheckEngine_Basic::SetTextBreaker (const shared_ptr<TextBreaks>& textBreaker)
+    {
+        fTextBreaker = textBreaker;
+    }
 
     // class SpellCheckEngine_Basic
-    inline SpellCheckEngine_Basic::Dictionary::Dictionary () {}
-    inline SpellCheckEngine_Basic::Dictionary::~Dictionary () {}
+    inline SpellCheckEngine_Basic::Dictionary::Dictionary ()
+    {
+    }
+    inline SpellCheckEngine_Basic::Dictionary::~Dictionary ()
+    {
+    }
 
 }
 

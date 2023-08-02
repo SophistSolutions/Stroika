@@ -77,9 +77,15 @@ namespace Stroika::Foundation::Characters::FloatConversion {
         : ToStringOptions{ToStringOptions{b1, b2}, forward<ARGS> (args)...}
     {
     }
-    inline optional<unsigned int> ToStringOptions::GetPrecision () const { return fPrecision_; }
-    inline optional<bool>         ToStringOptions::GetTrimTrailingZeros () const { return fTrimTrailingZeros_; }
-    inline locale                 ToStringOptions::GetUseLocale () const
+    inline optional<unsigned int> ToStringOptions::GetPrecision () const
+    {
+        return fPrecision_;
+    }
+    inline optional<bool> ToStringOptions::GetTrimTrailingZeros () const
+    {
+        return fTrimTrailingZeros_;
+    }
+    inline locale ToStringOptions::GetUseLocale () const
     {
         if (fUseCurrentLocale_) {
             return locale{};
@@ -97,8 +103,14 @@ namespace Stroika::Foundation::Characters::FloatConversion {
         }
         return GetUseLocale () == locale::classic ();
     }
-    inline optional<FloatFormatType>    ToStringOptions::GetFloatFormat () const { return fFloatFormat_; }
-    inline optional<ios_base::fmtflags> ToStringOptions::GetIOSFmtFlags () const { return fFmtFlags_; }
+    inline optional<FloatFormatType> ToStringOptions::GetFloatFormat () const
+    {
+        return fFloatFormat_;
+    }
+    inline optional<ios_base::fmtflags> ToStringOptions::GetIOSFmtFlags () const
+    {
+        return fFmtFlags_;
+    }
 
     namespace Private_ {
         // In CPP file

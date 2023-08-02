@@ -669,8 +669,11 @@ namespace Stroika::Foundation::Time {
             *this = Add (1);
             return *this;
         }
-        [[deprecated ("Since Stroika v3.0d1 - use.Add () - now Date immutable")]] Date operator++ (int) { return *this + 1; }
-        [[deprecated ("Since Stroika v3.0d1, use As<year_month_day> ()")]] void        mdy (month* m, day* d, year* y) const
+        [[deprecated ("Since Stroika v3.0d1 - use.Add () - now Date immutable")]] Date operator++ (int)
+        {
+            return *this + 1;
+        }
+        [[deprecated ("Since Stroika v3.0d1, use As<year_month_day> ()")]] void mdy (month* m, day* d, year* y) const
         {
             RequireNotNull (m);
             RequireNotNull (d);
@@ -747,7 +750,10 @@ namespace Stroika::Foundation::Traversal::RangeTraits {
         static Time::Date GetNext (Time::Date n);
         static Time::Date GetPrevious (Time::Date n);
 
-        static size_t DifferenceToSizeT (chrono::days s) { return size_t (s.count ()); }
+        static size_t DifferenceToSizeT (chrono::days s)
+        {
+            return size_t (s.count ());
+        }
     };
 
 }

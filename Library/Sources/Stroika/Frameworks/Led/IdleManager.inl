@@ -46,7 +46,10 @@ namespace Stroika::Frameworks::Led {
         static IdleManager sThe_;
         return sThe_;
     }
-    inline bool IdleManager::GetInIdleMode () const { return fInIdleMode_; }
+    inline bool IdleManager::GetInIdleMode () const
+    {
+        return fInIdleMode_;
+    }
     inline void IdleManager::SetInIdleMode (bool inIdleMode)
     {
         bool effectiveInIdleMode = inIdleMode and fNonIdleContextCount == 0;

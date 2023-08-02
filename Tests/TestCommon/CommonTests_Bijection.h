@@ -21,7 +21,10 @@ namespace CommonTests {
 
         template <typename CONCRETE_CONTAINER>
         struct DefaultFactory {
-            CONCRETE_CONTAINER operator() () const { return CONCRETE_CONTAINER{}; };
+            CONCRETE_CONTAINER operator() () const
+            {
+                return CONCRETE_CONTAINER{};
+            };
         };
 
         template <typename CONCRETE_CONTAINER, typename FACTORY = DefaultFactory<CONCRETE_CONTAINER>>

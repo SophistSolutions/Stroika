@@ -48,8 +48,14 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents {
         result += fLocalName;
         return result;
     }
-    inline strong_ordering Name::operator<=> (const Name& rhs) const { return TWC_ (*this, rhs); }
-    inline bool Name::     operator== (const Name& rhs) const { return TWC_ (*this, rhs) == 0; }
+    inline strong_ordering Name::operator<=> (const Name& rhs) const
+    {
+        return TWC_ (*this, rhs);
+    }
+    inline bool Name::operator== (const Name& rhs) const
+    {
+        return TWC_ (*this, rhs) == 0;
+    }
     inline strong_ordering Name::TWC_ (const Name& lhs, const Name& rhs)
     {
         // Treat EITHER side missing namespace as 'wildcard' matching any namespace

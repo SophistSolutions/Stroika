@@ -61,7 +61,10 @@ struct HashKey {
 
 template <typename T>
 struct Comparer<HashKey<T>> {
-    static int Compare (HashKey<T> v1, HashKey<T> v2) { return Comparer<size_t>::Compare (v1.GetKey (), v2.GetKey ()); }
+    static int Compare (HashKey<T> v1, HashKey<T> v2)
+    {
+        return Comparer<size_t>::Compare (v1.GetKey (), v2.GetKey ());
+    }
 };
 
 #include "HashKey.inl"

@@ -45,7 +45,10 @@ namespace Stroika::Foundation::Streams {
         ~Rep_ ()                                 = default;
         nonvirtual Rep_& operator= (const Rep_&) = delete;
 
-        virtual bool IsSeekable () const override { return true; }
+        virtual bool IsSeekable () const override
+        {
+            return true;
+        }
         virtual void CloseWrite () override
         {
             Require (IsOpenWrite ());
@@ -55,13 +58,19 @@ namespace Stroika::Foundation::Streams {
             }
             fMoreDataWaiter_.Set ();
         }
-        virtual bool IsOpenWrite () const override { return not fClosedForWrites_; }
+        virtual bool IsOpenWrite () const override
+        {
+            return not fClosedForWrites_;
+        }
         virtual void CloseRead () override
         {
             Require (IsOpenRead ());
             fIsOpenForRead_ = false;
         }
-        virtual bool   IsOpenRead () const override { return fIsOpenForRead_; }
+        virtual bool IsOpenRead () const override
+        {
+            return fIsOpenForRead_;
+        }
         virtual size_t Read (ELEMENT_TYPE* intoStart, ELEMENT_TYPE* intoEnd) override
         {
             RequireNotNull (intoStart);

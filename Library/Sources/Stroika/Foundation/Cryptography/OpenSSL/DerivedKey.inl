@@ -26,7 +26,10 @@ namespace Stroika::Foundation::Cryptography::OpenSSL {
         , fIV{keyAndIV.second}
     {
     }
-    inline BLOB DerivedKey::NormalizePassword (const BLOB& passwd) { return passwd; }
+    inline BLOB DerivedKey::NormalizePassword (const BLOB& passwd)
+    {
+        return passwd;
+    }
     inline BLOB DerivedKey::NormalizePassword (const String& passwd)
     {
         string ascii = passwd.AsASCII ();

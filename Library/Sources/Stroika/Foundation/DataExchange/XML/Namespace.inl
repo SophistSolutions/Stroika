@@ -31,9 +31,18 @@ namespace Stroika::Foundation::DataExchange::XML {
         : fNamespaces (namespaces)
     {
     }
-    inline bool                        NamespaceDefinitionsList::empty () const { return fNamespaces.empty (); }
-    inline vector<NamespaceDefinition> NamespaceDefinitionsList::GetNamespaces () const { return fNamespaces; }
-    inline void NamespaceDefinitionsList::SetNamespaces (const vector<NamespaceDefinition>& namespaces) { fNamespaces = namespaces; }
+    inline bool NamespaceDefinitionsList::empty () const
+    {
+        return fNamespaces.empty ();
+    }
+    inline vector<NamespaceDefinition> NamespaceDefinitionsList::GetNamespaces () const
+    {
+        return fNamespaces;
+    }
+    inline void NamespaceDefinitionsList::SetNamespaces (const vector<NamespaceDefinition>& namespaces)
+    {
+        fNamespaces = namespaces;
+    }
 
 }
 

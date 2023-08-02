@@ -139,15 +139,24 @@ namespace Stroika::Foundation::Characters {
         Require (IsASCII ());
         return static_cast<char> (fCharacterCode_);
     }
-    constexpr char32_t   Character::GetCharacterCode () const noexcept { return fCharacterCode_; }
-    constexpr Character::operator char32_t () const noexcept { return fCharacterCode_; }
+    constexpr char32_t Character::GetCharacterCode () const noexcept
+    {
+        return fCharacterCode_;
+    }
+    constexpr Character::operator char32_t () const noexcept
+    {
+        return fCharacterCode_;
+    }
     template <typename T>
     inline T Character::As () const noexcept
         requires (same_as<T, char32_t> or (sizeof (wchar_t) == sizeof (char32_t) and same_as<T, wchar_t>))
     {
         return GetCharacterCode ();
     }
-    constexpr bool Character::IsASCII () const noexcept { return 0x0 <= fCharacterCode_ and fCharacterCode_ <= 0x7f; }
+    constexpr bool Character::IsASCII () const noexcept
+    {
+        return 0x0 <= fCharacterCode_ and fCharacterCode_ <= 0x7f;
+    }
     template <IPossibleCharacterRepresentation CHAR_T>
     constexpr bool Character::IsASCII (span<const CHAR_T> fromS) noexcept
     {
@@ -180,7 +189,10 @@ namespace Stroika::Foundation::Characters {
     {
         CheckASCII (Memory::ConstSpan (s));
     }
-    constexpr bool Character::IsLatin1 () const noexcept { return 0x0 <= fCharacterCode_ and fCharacterCode_ <= 0xff; }
+    constexpr bool Character::IsLatin1 () const noexcept
+    {
+        return 0x0 <= fCharacterCode_ and fCharacterCode_ <= 0xff;
+    }
     template <IUNICODECanUnambiguouslyConvertFrom CHAR_T>
     constexpr bool Character::IsLatin1 (span<const CHAR_T> fromS) noexcept
     {

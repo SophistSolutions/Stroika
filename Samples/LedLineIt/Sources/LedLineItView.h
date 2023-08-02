@@ -168,7 +168,10 @@ public:
  ********************************************************************************
  */
 #if !qDebug
-inline LedLineItDocument& LedLineItView::GetDocument () const { return *(LedLineItDocument*)m_pDocument; }
+inline LedLineItDocument& LedLineItView::GetDocument () const
+{
+    return *(LedLineItDocument*)m_pDocument;
+}
 #endif
 
 #endif /*__LedLineItView_h__*/

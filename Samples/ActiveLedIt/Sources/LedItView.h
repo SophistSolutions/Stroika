@@ -210,7 +210,10 @@ inline void LedItViewController::FireKeyUp (USHORT* pnChar, short nShiftState)
 {
     FireOLEEvent (DISPID_KEYUP, EVENT_PARAM (VTS_PI2 VTS_I2), pnChar, nShiftState);
 }
-inline void LedItViewController::FireKeyPress (USHORT* pnChar) { FireOLEEvent (DISPID_KEYPRESS, EVENT_PARAM (VTS_PI2), pnChar); }
+inline void LedItViewController::FireKeyPress (USHORT* pnChar)
+{
+    FireOLEEvent (DISPID_KEYPRESS, EVENT_PARAM (VTS_PI2), pnChar);
+}
 inline void LedItViewController::FireMouseDown (short nButton, short nShiftState, OLE_XPOS_PIXELS x, OLE_YPOS_PIXELS y)
 {
     FireOLEEvent (DISPID_MOUSEDOWN, EVENT_PARAM (VTS_I2 VTS_I2 VTS_XPOS_PIXELS VTS_YPOS_PIXELS), nButton, nShiftState, x, y);
@@ -223,13 +226,31 @@ inline void LedItViewController::FireMouseMove (short nButton, short nShiftState
 {
     FireOLEEvent (DISPID_MOUSEMOVE, EVENT_PARAM (VTS_I2 VTS_I2 VTS_XPOS_PIXELS VTS_YPOS_PIXELS), nButton, nShiftState, x, y);
 }
-inline void LedItViewController::FireClick () { FireOLEEvent (DISPID_CLICK, EVENT_PARAM (VTS_NONE)); }
-inline void LedItViewController::FireDblClick () { FireOLEEvent (DISPID_DBLCLICK, EVENT_PARAM (VTS_NONE)); }
+inline void LedItViewController::FireClick ()
+{
+    FireOLEEvent (DISPID_CLICK, EVENT_PARAM (VTS_NONE));
+}
+inline void LedItViewController::FireDblClick ()
+{
+    FireOLEEvent (DISPID_DBLCLICK, EVENT_PARAM (VTS_NONE));
+}
 
 //  class   LedItView
-inline bool LedItView::GetWrapToWindow () const { return fWrapToWindow; }
-inline bool LedItView::GetSupportContextMenu () const { return fSupportContextMenu; }
-inline bool LedItView::GetHideDisabledContextMenuItems () const { return fHideDisabledContextMenuItems; }
-inline long LedItView::GetMaxLength () const { return fMaxLength; }
+inline bool LedItView::GetWrapToWindow () const
+{
+    return fWrapToWindow;
+}
+inline bool LedItView::GetSupportContextMenu () const
+{
+    return fSupportContextMenu;
+}
+inline bool LedItView::GetHideDisabledContextMenuItems () const
+{
+    return fHideDisabledContextMenuItems;
+}
+inline long LedItView::GetMaxLength () const
+{
+    return fMaxLength;
+}
 
 #endif /*__LedItView_h__*/

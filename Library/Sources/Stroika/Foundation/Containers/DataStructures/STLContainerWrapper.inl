@@ -16,7 +16,10 @@ namespace Stroika::Foundation::Containers::DataStructures {
         {
             return true;
         }
-        constexpr bool IsStdForwardList_ (...) { return false; }
+        constexpr bool IsStdForwardList_ (...)
+        {
+            return false;
+        }
         template <typename T>
         constexpr bool IsStdForwardList ()
         {

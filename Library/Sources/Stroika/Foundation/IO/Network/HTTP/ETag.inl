@@ -39,7 +39,10 @@ namespace Stroika::Foundation::IO::Network::HTTP {
     {
         return (fWeak ? "\\W\""sv : "\"") + fValue + "\""sv;
     }
-    inline Characters::String ETag::ToString () const { return As<String> (); }
+    inline Characters::String ETag::ToString () const
+    {
+        return As<String> ();
+    }
 
 }
 

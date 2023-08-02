@@ -74,7 +74,10 @@ namespace Stroika::Foundation ::Streams {
             fRealOut_.Close ();
             Assert (fRealOut_ == nullptr);
         }
-        virtual bool           IsOpenWrite () const override { return fRealOut_ != nullptr; }
+        virtual bool IsOpenWrite () const override
+        {
+            return fRealOut_ != nullptr;
+        }
         virtual SeekOffsetType GetWriteOffset () const override
         {
             RequireNotReached ();

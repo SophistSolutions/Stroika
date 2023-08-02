@@ -46,7 +46,10 @@ namespace Stroika::Frameworks::Led {
             fTextStore.DoDidUpdateCalls (fUpdateInfo, fMarkerSink.fMarkers.begin (), fMarkerSink.fMarkers.end ());
         }
     }
-    inline void TextStore::SimpleUpdater::Cancel () { fCanceled = true; }
+    inline void TextStore::SimpleUpdater::Cancel ()
+    {
+        fCanceled = true;
+    }
 
     //  class   TextStore::SearchParameters
     inline TextStore::SearchParameters::SearchParameters (const Led_tString& searchString, bool wrap, bool wholeWord, bool caseSensative)
@@ -114,23 +117,35 @@ namespace Stroika::Frameworks::Led {
     @DESCRIPTION:
                 <p>Returns the list of all MarkerOwners registered for notification of changes to the text.</p>
     */
-    inline const vector<MarkerOwner*>& TextStore::GetMarkerOwners () const noexcept { return fMarkerOwners; }
+    inline const vector<MarkerOwner*>& TextStore::GetMarkerOwners () const noexcept
+    {
+        return fMarkerOwners;
+    }
     /*
     @METHOD:        TextStore::RemoveMarker
     @DESCRIPTION:   <p>Remove the given marker from the text.</p>
     */
-    inline void TextStore::RemoveMarker (Marker* marker) { RemoveMarkers (&marker, 1); }
+    inline void TextStore::RemoveMarker (Marker* marker)
+    {
+        RemoveMarkers (&marker, 1);
+    }
     /*
     @METHOD:        TextStore::GetStart
     @DESCRIPTION:   <p>Returns the marker position of the beginning of the
                 text buffer (always 0).</p>
     */
-    inline size_t TextStore::GetStart () { return (0); }
+    inline size_t TextStore::GetStart ()
+    {
+        return (0);
+    }
     /*
     @METHOD:        TextStore::GetEnd
     @DESCRIPTION:   <p>Returns the marker position of the end of the text buffer.</p>
     */
-    inline size_t TextStore::GetEnd () const { return (GetLength ()); }
+    inline size_t TextStore::GetEnd () const
+    {
+        return (GetLength ());
+    }
     /*
     @METHOD:        TextStore::CollectAllMarkersInRange
     @DESCRIPTION:   <p>CollectAllMarkersInRange () is part of a family of routines to retreive markers
@@ -182,21 +197,33 @@ namespace Stroika::Frameworks::Led {
     }
 #if qSingleByteCharacters || qWideCharacters
     // qMultiByteCharacters Code in C file - COMPLEX/SLOW
-    inline size_t TextStore::CharacterToTCharIndex (size_t i) { return (i); }
-    inline size_t TextStore::TCharToCharacterIndex (size_t i) { return (i); }
+    inline size_t TextStore::CharacterToTCharIndex (size_t i)
+    {
+        return (i);
+    }
+    inline size_t TextStore::TCharToCharacterIndex (size_t i)
+    {
+        return (i);
+    }
 #endif
     /*
     @METHOD:        TextStore::SetMarkerStart
     @DESCRIPTION:   <p>Similar to @'TextStore::SetMarkerRange', except that the end-point doesn't change.
                 Vectors to @'TextStore::SetMarkerRange'. See @'TextStore::SetMarkerEnd'.</p>
     */
-    inline void TextStore::SetMarkerStart (Marker* marker, size_t start) noexcept { SetMarkerRange (marker, start, marker->GetEnd ()); }
+    inline void TextStore::SetMarkerStart (Marker* marker, size_t start) noexcept
+    {
+        SetMarkerRange (marker, start, marker->GetEnd ());
+    }
     /*
     @METHOD:        TextStore::SetMarkerEnd
     @DESCRIPTION:   <p>Similar to @'TextStore::SetMarkerRange', except that the start-point doesn't change.
                 Vectors to @'TextStore::SetMarkerRange'. See @'TextStore::SetMarkerStart'.</p>
     */
-    inline void TextStore::SetMarkerEnd (Marker* marker, size_t end) noexcept { SetMarkerRange (marker, marker->GetStart (), end); }
+    inline void TextStore::SetMarkerEnd (Marker* marker, size_t end) noexcept
+    {
+        SetMarkerRange (marker, marker->GetStart (), end);
+    }
     /*
     @METHOD:        TextStore::SetMarkerLength
     @DESCRIPTION:   <p>Similar to @'TextStore::SetMarkerRange', except that the start-point doesn't change.
@@ -208,7 +235,10 @@ namespace Stroika::Frameworks::Led {
         size_t start = marker->GetStart ();
         SetMarkerRange (marker, start, start + length);
     }
-    inline size_t TextStore::GetLineLength (size_t lineNumber) const { return (GetStartOfLine (lineNumber) - GetEndOfLine (lineNumber)); }
+    inline size_t TextStore::GetLineLength (size_t lineNumber) const
+    {
+        return (GetStartOfLine (lineNumber) - GetEndOfLine (lineNumber));
+    }
     inline size_t TextStore::FindNextCharacter (size_t afterPos) const
     {
         if (afterPos >= GetEnd ()) {
@@ -244,7 +274,10 @@ namespace Stroika::Frameworks::Led {
     @METHOD:        TextStore::SetTextBreaker
     @DESCRIPTION:   <p>See @'TextStore::GetTextBreaker'.</p>
     */
-    inline void TextStore::SetTextBreaker (const shared_ptr<TextBreaks>& textBreaker) { fTextBreaker = textBreaker; }
+    inline void TextStore::SetTextBreaker (const shared_ptr<TextBreaks>& textBreaker)
+    {
+        fTextBreaker = textBreaker;
+    }
     inline void TextStore::Invariant () const
     {
 #if qDebug and qHeavyDebugging

@@ -38,7 +38,9 @@ public:
     {
     }
 
-    ~ZipfDistribution () {}
+    ~ZipfDistribution ()
+    {
+    }
 
     template <class Engine>
     size_t operator() (Engine& eng)
@@ -100,6 +102,9 @@ void FillTestData (std::vector<T>& data, size_t elementsToAdd, bool offset)
     AssertNotReached ();
 }
 
-inline size_t ComputeUniqueValue (size_t index, bool offset) { return index * 2 + ((offset) ? 1 : 0); }
+inline size_t ComputeUniqueValue (size_t index, bool offset)
+{
+    return index * 2 + ((offset) ? 1 : 0);
+}
 
 #include "TestingData.inl"

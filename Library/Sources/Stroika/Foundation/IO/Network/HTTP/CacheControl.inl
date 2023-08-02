@@ -16,7 +16,10 @@ namespace Stroika::Foundation::IO::Network::HTTP {
      ****************************** HTTP::CacheControl ******************************
      ********************************************************************************
      */
-    inline Characters::String CacheControl::ToString () const { return As<Characters::String> (); }
+    inline Characters::String CacheControl::ToString () const
+    {
+        return As<Characters::String> ();
+    }
 
 }
 

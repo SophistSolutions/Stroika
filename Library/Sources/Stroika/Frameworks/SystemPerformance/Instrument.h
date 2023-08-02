@@ -181,7 +181,10 @@ namespace Stroika::Frameworks::SystemPerformance {
     public:
         /**
          */
-        nonvirtual strong_ordering operator<=> (const Instrument& rhs) const { return fInstrumentName_ <=> rhs.fInstrumentName_; }
+        nonvirtual strong_ordering operator<=> (const Instrument& rhs) const
+        {
+            return fInstrumentName_ <=> rhs.fInstrumentName_;
+        }
 
     private:
         InstrumentNameType                                             fInstrumentName_;

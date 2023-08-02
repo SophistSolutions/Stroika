@@ -56,8 +56,14 @@ namespace Stroika::Foundation::Containers::Concrete {
                 , fKeyComparer_{inorderComparer}
             {
             }
-            int operator() (const value_type& lhs, const KEY_TYPE& rhs) const { return fKeyComparer_ (fKeyExtractor_ (lhs), rhs); };
-            int operator() (const KEY_TYPE& lhs, const value_type& rhs) const { return fKeyComparer_ (lhs, fKeyExtractor_ (rhs)); };
+            int operator() (const value_type& lhs, const KEY_TYPE& rhs) const
+            {
+                return fKeyComparer_ (fKeyExtractor_ (lhs), rhs);
+            };
+            int operator() (const KEY_TYPE& lhs, const value_type& rhs) const
+            {
+                return fKeyComparer_ (lhs, fKeyExtractor_ (rhs));
+            };
             int operator() (const value_type& lhs, const value_type& rhs) const
             {
                 return fKeyComparer_ (fKeyExtractor_ (lhs), fKeyExtractor_ (rhs));

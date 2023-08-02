@@ -100,7 +100,10 @@ namespace Stroika::Foundation::Execution {
         }
         return *this;
     }
-    inline Function<void (void)> IntervalTimer::Adder::GetCallback () const { return fFunction_; }
+    inline Function<void (void)> IntervalTimer::Adder::GetCallback () const
+    {
+        return fFunction_;
+    }
 
 }
 

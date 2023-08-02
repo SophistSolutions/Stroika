@@ -25,7 +25,10 @@ namespace Stroika::Foundation::Streams {
         }
 
     protected:
-        virtual bool IsSeekable () const override { return false; }
+        virtual bool IsSeekable () const override
+        {
+            return false;
+        }
         virtual void CloseWrite () override
         {
             Require (IsOpenWrite ());
@@ -34,7 +37,10 @@ namespace Stroika::Foundation::Streams {
             Assert (_fSource == nullptr);
             Ensure (not IsOpenWrite ());
         }
-        virtual bool           IsOpenWrite () const override { return _fSource != nullptr; }
+        virtual bool IsOpenWrite () const override
+        {
+            return _fSource != nullptr;
+        }
         virtual SeekOffsetType GetWriteOffset () const override
         {
             AssertNotImplemented ();
@@ -92,7 +98,10 @@ namespace Stroika::Foundation::Streams {
         }
 
     protected:
-        virtual bool IsSeekable () const override { return false; }
+        virtual bool IsSeekable () const override
+        {
+            return false;
+        }
         virtual void CloseWrite () override
         {
             Require (IsOpenWrite ());
@@ -101,7 +110,10 @@ namespace Stroika::Foundation::Streams {
             Assert (_fSource == nullptr);
             Ensure (not IsOpenWrite ());
         }
-        virtual bool           IsOpenWrite () const override { return _fSource != nullptr; }
+        virtual bool IsOpenWrite () const override
+        {
+            return _fSource != nullptr;
+        }
         virtual SeekOffsetType GetWriteOffset () const override
         {
             AssertNotImplemented ();
@@ -157,7 +169,10 @@ namespace Stroika::Foundation::Streams {
      *********************************** TextWriter *********************************
      ********************************************************************************
      */
-    inline auto            TextWriter::New (const OutputStream<Character>::Ptr& src) -> Ptr { return src; }
+    inline auto TextWriter::New (const OutputStream<Character>::Ptr& src) -> Ptr
+    {
+        return src;
+    }
     inline TextWriter::Ptr TextWriter::New (const OutputStream<byte>::Ptr& src, Characters::CodeCvt<>&& char2OutputConverter)
     {
         return TextWriter::Ptr{make_shared<UnSeekable_CodeCvt_Rep_> (src, move (char2OutputConverter))};

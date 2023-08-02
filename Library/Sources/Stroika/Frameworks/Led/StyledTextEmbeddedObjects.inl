@@ -36,7 +36,10 @@ namespace Stroika::Frameworks::Led {
         }
         return *sThe;
     }
-    inline void EmbeddedObjectCreatorRegistry::AddAssoc (Assoc assoc) { fAssocList.push_back (assoc); }
+    inline void EmbeddedObjectCreatorRegistry::AddAssoc (Assoc assoc)
+    {
+        fAssocList.push_back (assoc);
+    }
     inline void EmbeddedObjectCreatorRegistry::AddAssoc (const char* embeddingTag,
                                                          SimpleEmbeddedObjectStyleMarker* (*memReader) (const char* embeddingTag,
                                                                                                         const void* data, size_t len))
@@ -74,8 +77,14 @@ namespace Stroika::Frameworks::Led {
         assoc.fReadFromFlavorPackage = packageReader;
         AddAssoc (assoc);
     }
-    inline const vector<EmbeddedObjectCreatorRegistry::Assoc>& EmbeddedObjectCreatorRegistry::GetAssocList () const { return fAssocList; }
-    inline void EmbeddedObjectCreatorRegistry::SetAssocList (const vector<Assoc>& assocList) { fAssocList = assocList; }
+    inline const vector<EmbeddedObjectCreatorRegistry::Assoc>& EmbeddedObjectCreatorRegistry::GetAssocList () const
+    {
+        return fAssocList;
+    }
+    inline void EmbeddedObjectCreatorRegistry::SetAssocList (const vector<Assoc>& assocList)
+    {
+        fAssocList = assocList;
+    }
 
     //  class   SimpleEmbeddedObjectStyleMarker
     /*
@@ -154,9 +163,18 @@ namespace Stroika::Frameworks::Led {
                 (like in reading RTF files which contain size annotations), we select an appropriate size.</p>
                     <p>See @'StandardUnknownTypeStyleMarker::SetShownSize'
     */
-    inline TWIPS_Point StandardUnknownTypeStyleMarker::GetShownSize () const { return fShownSize; }
-    inline const void* StandardUnknownTypeStyleMarker::GetData () const { return fData; }
-    inline size_t      StandardUnknownTypeStyleMarker::GetDataLength () const { return fLength; }
+    inline TWIPS_Point StandardUnknownTypeStyleMarker::GetShownSize () const
+    {
+        return fShownSize;
+    }
+    inline const void* StandardUnknownTypeStyleMarker::GetData () const
+    {
+        return fData;
+    }
+    inline size_t StandardUnknownTypeStyleMarker::GetDataLength () const
+    {
+        return fLength;
+    }
 
 }
 

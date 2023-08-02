@@ -78,21 +78,39 @@ namespace Stroika::Frameworks::Led {
 #if !qHasIsAscii && !defined(isascii)
     // I know this used to be part of the UNIX ctype - unsure why it does not appear to
     // be in the ANSI ctype??? - LGP 950211
-    inline bool isascii (unsigned char c) { return (c <= 0x7f); }
+    inline bool isascii (unsigned char c)
+    {
+        return (c <= 0x7f);
+    }
 #endif
 
 #if qWideCharacters
-    inline Led_tString Led_WideString2tString (const wstring& s) { return s; }
-    inline wstring     Led_tString2WideString (const Led_tString& s) { return s; }
+    inline Led_tString Led_WideString2tString (const wstring& s)
+    {
+        return s;
+    }
+    inline wstring Led_tString2WideString (const Led_tString& s)
+    {
+        return s;
+    }
 #endif
 
 #if !qWideCharacters
-    inline Led_tString Led_ANSIString2tString (const string& s) { return s; }
-    inline string      Led_tString2ANSIString (const Led_tString& s) { return s; }
+    inline Led_tString Led_ANSIString2tString (const string& s)
+    {
+        return s;
+    }
+    inline string Led_tString2ANSIString (const Led_tString& s)
+    {
+        return s;
+    }
 #endif
 
 #if qWideCharacters == qTargetPlatformSDKUseswchar_t
-    inline SDKString Led_tString2SDKString (const Led_tString& s) { return Foundation::Characters::String{s}.AsSDKString (); }
+    inline SDKString Led_tString2SDKString (const Led_tString& s)
+    {
+        return Foundation::Characters::String{s}.AsSDKString ();
+    }
 #endif
 
     inline Led_tString Led_SDKString2tString (const SDKString& s)
@@ -135,7 +153,10 @@ namespace Stroika::Frameworks::Led {
         return ((src & 0xff) << 8) + (src >> 8);
 #endif
     }
-    inline short Led_ByteSwapFromMac (short src) { return short (Led_ByteSwapFromMac ((unsigned short)src)); }
+    inline short Led_ByteSwapFromMac (short src)
+    {
+        return short (Led_ByteSwapFromMac ((unsigned short)src));
+    }
 
     inline unsigned short Led_ByteSwapFromWindows (unsigned short src)
     {
@@ -145,7 +166,10 @@ namespace Stroika::Frameworks::Led {
         return src;
 #endif
     }
-    inline short         Led_ByteSwapFromWindows (short src) { return short (Led_ByteSwapFromWindows ((unsigned short)src)); }
+    inline short Led_ByteSwapFromWindows (short src)
+    {
+        return short (Led_ByteSwapFromWindows ((unsigned short)src));
+    }
     inline unsigned long Led_ByteSwapFromWindows (unsigned long src)
     {
 #if qPlatform_MacOS
@@ -154,7 +178,10 @@ namespace Stroika::Frameworks::Led {
         return src;
 #endif
     }
-    inline long Led_ByteSwapFromWindows (long src) { return long (Led_ByteSwapFromWindows ((unsigned long)src)); }
+    inline long Led_ByteSwapFromWindows (long src)
+    {
+        return long (Led_ByteSwapFromWindows ((unsigned long)src));
+    }
 
     inline void UInt16ToBuf (uint16_t u, uint16_t* realBuf)
     {

@@ -51,12 +51,18 @@ namespace Stroika::Foundation::Debug {
 #endif
     }
 #if !qDefaultTracingOn
-    inline TraceContextBumper::TraceContextBumper ([[maybe_unused]] const wchar_t* contextName) noexcept {}
+    inline TraceContextBumper::TraceContextBumper ([[maybe_unused]] const wchar_t* contextName) noexcept
+    {
+    }
     inline TraceContextBumper::TraceContextBumper ([[maybe_unused]] const wchar_t* contextName, [[maybe_unused]] const wchar_t* extraFmt, ...) noexcept
     {
     }
-    inline TraceContextBumper::TraceContextBumper ([[maybe_unused]] const char* contextName) noexcept {}
-    inline TraceContextBumper::~TraceContextBumper () {}
+    inline TraceContextBumper::TraceContextBumper ([[maybe_unused]] const char* contextName) noexcept
+    {
+    }
+    inline TraceContextBumper::~TraceContextBumper ()
+    {
+    }
 #endif
 
     /*
@@ -64,9 +70,18 @@ namespace Stroika::Foundation::Debug {
      ******************************* TraceContextBumper *****************************
      ********************************************************************************
      */
-    inline TraceContextSuppressor::TraceContextSuppressor () noexcept { ++tSuppressCnt_; }
-    inline TraceContextSuppressor::~TraceContextSuppressor () { --tSuppressCnt_; }
-    inline bool TraceContextSuppressor::GetSuppressTraceInThisThread () { return tSuppressCnt_ > 0; }
+    inline TraceContextSuppressor::TraceContextSuppressor () noexcept
+    {
+        ++tSuppressCnt_;
+    }
+    inline TraceContextSuppressor::~TraceContextSuppressor ()
+    {
+        --tSuppressCnt_;
+    }
+    inline bool TraceContextSuppressor::GetSuppressTraceInThisThread ()
+    {
+        return tSuppressCnt_ > 0;
+    }
 
 }
 

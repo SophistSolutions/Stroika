@@ -17,7 +17,10 @@ namespace Stroika::Frameworks::WebServer {
      ********************* Framework::WebServer::Response ***************************
      ********************************************************************************
      */
-    inline void Response::write (const BLOB& b) { write (b.begin (), b.end ()); }
+    inline void Response::write (const BLOB& b)
+    {
+        write (b.begin (), b.end ());
+    }
     inline void Response::write (const wchar_t* e)
     {
         RequireNotNull (e);

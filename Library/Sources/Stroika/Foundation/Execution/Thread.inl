@@ -111,14 +111,19 @@ namespace Stroika::Foundation::Execution {
      *********************************** Thread::Rep_ *******************************
      ********************************************************************************
      */
-    inline void Thread::Ptr::Rep_::Start () { fOK2StartEvent_.Set (); }
+    inline void Thread::Ptr::Rep_::Start ()
+    {
+        fOK2StartEvent_.Set ();
+    }
 
     /*
      ********************************************************************************
      ******************************** Thread::Ptr ***********************************
      ********************************************************************************
      */
-    inline Thread::Ptr::Ptr (nullptr_t) {}
+    inline Thread::Ptr::Ptr (nullptr_t)
+    {
+    }
     inline Thread::Ptr::Ptr (const shared_ptr<Rep_>& rep)
         : fRep_{rep}
     {
@@ -234,7 +239,10 @@ namespace Stroika::Foundation::Execution {
         }
         return GetStatus_ ();
     }
-    inline void Thread::Ptr::Join (Time::DurationSecondsType timeout) const { JoinUntil (timeout + Time::GetTickCount ()); }
+    inline void Thread::Ptr::Join (Time::DurationSecondsType timeout) const
+    {
+        JoinUntil (timeout + Time::GetTickCount ());
+    }
     inline void Thread::Ptr::JoinUntil (Time::DurationSecondsType timeoutAt) const
     {
         Debug::AssertExternallySynchronizedMutex::ReadContext declareReadContext{fThisAssertExternallySynchronized_};
@@ -313,7 +321,10 @@ namespace Stroika::Foundation::Execution {
      ************************ Thread::GetCurrentThreadID ****************************
      ********************************************************************************
      */
-    inline Thread::IDType Thread::GetCurrentThreadID () noexcept { return this_thread::get_id (); }
+    inline Thread::IDType Thread::GetCurrentThreadID () noexcept
+    {
+        return this_thread::get_id ();
+    }
 
     /*
      ********************************************************************************

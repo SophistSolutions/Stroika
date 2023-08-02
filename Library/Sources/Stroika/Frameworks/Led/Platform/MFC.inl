@@ -15,30 +15,45 @@ namespace Stroika::Frameworks::Led::Platform {
     @DESCRIPTION:   Convert a @'Led_Point' to an MFC CPoint.
         <p>See also @'AsLedPoint', @'AsCRect', @'AsLedRect'.
     */
-    inline CPoint AsCPoint (Led_Point p) { return CPoint (p.h, p.v); }
+    inline CPoint AsCPoint (Led_Point p)
+    {
+        return CPoint (p.h, p.v);
+    }
     /*
     @METHOD:        AsLedPoint
     @DESCRIPTION:   Convert an MFC CPoint to a @'Led_Point'.
         <p>See also @'AsCPoint', @'AsCRect', @'AsLedRect'.
     */
-    inline Led_Point AsLedPoint (CPoint p) { return Led_Point (p.y, p.x); }
+    inline Led_Point AsLedPoint (CPoint p)
+    {
+        return Led_Point (p.y, p.x);
+    }
     /*
     @METHOD:        AsCRect
     @DESCRIPTION:   Convert a Led_Rect to an MFC CRect.
         <p>See also @'AsCPoint', @'AsLedPoint', @'AsLedRect'.
     */
-    inline CRect AsCRect (Led_Rect r) { return CRect (r.left, r.top, r.right, r.bottom); }
+    inline CRect AsCRect (Led_Rect r)
+    {
+        return CRect (r.left, r.top, r.right, r.bottom);
+    }
     /*
     @METHOD:        AsLedRect
     @DESCRIPTION:   Convert an MFC CRect to a Led_Rect.
         <p>See also @'AsCPoint', @'AsLedPoint', @'AsCRect'.
     */
-    inline Led_Rect AsLedRect (CRect r) { return Led_Rect (r.top, r.left, r.Height (), r.Width ()); }
+    inline Led_Rect AsLedRect (CRect r)
+    {
+        return Led_Rect (r.top, r.left, r.Height (), r.Width ());
+    }
     /*
     @METHOD:        AsCSize
     @DESCRIPTION:   Convert a Led_Size to an MFC CSize.
     */
-    inline CSize AsCSize (Led_Size s) { return CSize (s.h, s.v); }
+    inline CSize AsCSize (Led_Size s)
+    {
+        return CSize (s.h, s.v);
+    }
 
     //  class   Led_MFC_CDCFromTablet
     inline Led_MFC_CDCFromTablet::Led_MFC_CDCFromTablet (Tablet* t)
@@ -49,8 +64,14 @@ namespace Stroika::Frameworks::Led::Platform {
         fCDC.m_hAttribDC = t->m_hAttribDC;
         fCDC.m_bPrinting = t->m_bPrinting;
     }
-    inline Led_MFC_CDCFromTablet::~Led_MFC_CDCFromTablet () { fCDC.Detach (); }
-    inline Led_MFC_CDCFromTablet::operator CDC* () { return &fCDC; }
+    inline Led_MFC_CDCFromTablet::~Led_MFC_CDCFromTablet ()
+    {
+        fCDC.Detach ();
+    }
+    inline Led_MFC_CDCFromTablet::operator CDC* ()
+    {
+        return &fCDC;
+    }
 
     //  class   Led_MFC_TabletFromCDC
     inline Led_MFC_TabletFromCDC::Led_MFC_TabletFromCDC (CDC* pDC)
@@ -61,9 +82,18 @@ namespace Stroika::Frameworks::Led::Platform {
         fTablet.m_hAttribDC = pDC->m_hAttribDC;
         fTablet.m_bPrinting = pDC->m_bPrinting;
     }
-    inline Led_MFC_TabletFromCDC::~Led_MFC_TabletFromCDC () { fTablet.Detach (); }
-    inline Led_MFC_TabletFromCDC::operator Tablet* () { return &fTablet; }
-    inline Tablet* Led_MFC_TabletFromCDC::operator->() { return &fTablet; }
+    inline Led_MFC_TabletFromCDC::~Led_MFC_TabletFromCDC ()
+    {
+        fTablet.Detach ();
+    }
+    inline Led_MFC_TabletFromCDC::operator Tablet* ()
+    {
+        return &fTablet;
+    }
+    inline Tablet* Led_MFC_TabletFromCDC::operator->()
+    {
+        return &fTablet;
+    }
 
     template <typename MFC_BASE_CLASS, typename BASE_INTERACTOR>
     inline Led_MFC_Helper<MFC_BASE_CLASS, BASE_INTERACTOR>::Led_MFC_Helper ()
@@ -1666,7 +1696,10 @@ namespace Stroika::Frameworks::Led::Platform {
     {
         RequireNotNull (fCmdUI);
     }
-    inline Led_MFC_TmpCmdUpdater::operator Led_MFC_TmpCmdUpdater* () { return this; }
+    inline Led_MFC_TmpCmdUpdater::operator Led_MFC_TmpCmdUpdater* ()
+    {
+        return this;
+    }
     inline Led_MFC_TmpCmdUpdater::operator CCmdUI* ()
     {
         EnsureNotNull (fCmdUI);

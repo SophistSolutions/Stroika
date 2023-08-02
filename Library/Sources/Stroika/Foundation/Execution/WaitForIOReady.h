@@ -164,7 +164,10 @@ namespace Stroika::Foundation::Execution {
              *  To use WaitForIOReady, the high level 'descriptor' objects used mustbe convertible to associated low level
              *  file descriptor objects to use with select/poll/etc...
              */
-            static inline WaitForIOReady_Support::SDKPollableType GetSDKPollable (const HighLevelType& t) { return t; }
+            static inline WaitForIOReady_Support::SDKPollableType GetSDKPollable (const HighLevelType& t)
+            {
+                return t;
+            }
         };
 
     }
