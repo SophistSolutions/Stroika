@@ -418,8 +418,13 @@ namespace Stroika::Foundation::Characters {
 #if qTargetPlatformSDKUseswchar_t
         return String{s};
 #else
+#ifdef CP_ACP
+        Assert (CP_ACP == 0);
+#else
+        const unsigned char CP_ACP = 0;
+#endif
         wstring w;
-        NarrowStringToWide (s.data (), s.data () + s.size (), GetDefaultSDKCodePage (), &w);
+        NarrowStringToWide (s.data (), s.data () + s.size (), CP_ACP, &w);
         return String{move (w)};
 #endif
     }
@@ -431,9 +436,14 @@ namespace Stroika::Foundation::Characters {
     }
     inline String String::FromNarrowSDKString (span<const char> s)
     {
+#ifdef CP_ACP
+        Assert (CP_ACP == 0);
+#else
+        const unsigned char CP_ACP = 0;
+#endif
         // @todo FIX PERFORMANCE
         wstring tmp;
-        NarrowStringToWide (s.data (), s.data () + s.size (), GetDefaultSDKCodePage (), &tmp);
+        NarrowStringToWide (s.data (), s.data () + s.size (), CP_ACP, &tmp);
         return String{tmp};
     }
     inline String String::FromNarrowSDKString (const string& from) { return FromNarrowSDKString (span{from.c_str (), from.length ()}); }
@@ -694,40 +704,29 @@ namespace Stroika::Foundation::Characters {
         Require (i < size ());
         return GetCharAt (i);
     }
-
     template <typename T>
     inline T String::As () const
         requires (IBasicUNICODEStdString<T> or is_same_v<T, String>)
     {
-        T r{}; // for now - KISS, but this can be optimized
-        As (&r);
-        return r;
-    }
-    template <typename T>
-    inline void String::As (T* into) const
-        requires (IBasicUNICODEStdString<T> or is_same_v<T, String>)
-    {
         if constexpr (is_same_v<T, u8string>) {
-            AsUTF8 (into);
+            return AsUTF8<T> ();
         }
         else if constexpr (is_same_v<T, u16string>) {
-            AsUTF16 (into);
+            return AsUTF16<T> ();
         }
         else if constexpr (is_same_v<T, u32string>) {
-            AsUTF32 (into);
+            return AsUTF32<T> ();
         }
         else if constexpr (is_same_v<T, wstring>) {
             if constexpr (sizeof (wchar_t) == 2) {
-                AsUTF16 (into);
+                return AsUTF16<T> ();
             }
             else {
-                AsUTF32 (into);
+                return AsUTF32<T> ();
             }
         }
         else if constexpr (is_same_v<T, String>) {
-            if (into != this) [[likely]] {
-                *into = *this;
-            }
+            return *this;
         }
     }
     template <typename T>
@@ -739,15 +738,6 @@ namespace Stroika::Foundation::Characters {
         return T{reinterpret_cast<const typename T::value_type*> (thisData.data ()), thisData.size ()};
     }
     template <typename T>
-    inline void String::AsUTF8 (T* into) const
-        requires (is_same_v<T, string> or is_same_v<T, u8string>)
-    {
-        RequireNotNull (into);
-        Memory::StackBuffer<char8_t> maybeIgnoreBuf1;
-        span<const char8_t>          thisData = GetData (&maybeIgnoreBuf1);
-        into->assign (reinterpret_cast<const typename T::value_type*> (thisData.data ()), thisData.size ());
-    }
-    template <typename T>
     inline T String::AsUTF16 () const
         requires (is_same_v<T, u16string> or (sizeof (wchar_t) == sizeof (char16_t) and is_same_v<T, wstring>))
     {
@@ -756,30 +746,12 @@ namespace Stroika::Foundation::Characters {
         return T{reinterpret_cast<const typename T::value_type*> (thisData.data ()), thisData.size ()};
     }
     template <typename T>
-    inline void String::AsUTF16 (T* into) const
-        requires (is_same_v<T, u16string> or (sizeof (wchar_t) == sizeof (char16_t) and is_same_v<T, wstring>))
-    {
-        RequireNotNull (into);
-        Memory::StackBuffer<char16_t> maybeIgnoreBuf1;
-        span<const char16_t>          thisData = GetData (&maybeIgnoreBuf1);
-        into->assign (reinterpret_cast<const typename T::value_type*> (thisData.data ()), thisData.size ());
-    }
-    template <typename T>
     inline T String::AsUTF32 () const
         requires (is_same_v<T, u32string> or (sizeof (wchar_t) == sizeof (char32_t) and is_same_v<T, wstring>))
     {
         Memory::StackBuffer<char32_t> maybeIgnoreBuf1;
         span<const char32_t>          thisData = GetData (&maybeIgnoreBuf1);
         return T{reinterpret_cast<const typename T::value_type*> (thisData.data ()), thisData.size ()};
-    }
-    template <typename T>
-    inline void String::AsUTF32 (T* into) const
-        requires (is_same_v<T, u32string> or (sizeof (wchar_t) == sizeof (char32_t) and is_same_v<T, wstring>))
-    {
-        RequireNotNull (into);
-        Memory::StackBuffer<char32_t> maybeIgnoreBuf1;
-        span<const char32_t>          thisData = GetData (&maybeIgnoreBuf1);
-        into->assign (reinterpret_cast<const typename T::value_type*> (thisData.data ()), thisData.size ());
     }
     inline SDKString String::AsSDKString () const
     {

@@ -1016,8 +1016,11 @@ namespace Stroika::Foundation::Characters {
         nonvirtual T As () const
             requires (IBasicUNICODEStdString<T> or is_same_v<T, String>);
         template <typename T>
-        nonvirtual void As (T* into) const
-            requires (IBasicUNICODEStdString<T> or is_same_v<T, String>);
+        [[deprecated ("Since Stroika v3.0d2, just use 0 arg version)")]] void As (T* into) const
+            requires (IBasicUNICODEStdString<T> or is_same_v<T, String>)
+        {
+            *into = this->As<T> ();
+        }
 
     public:
         /**
@@ -1045,8 +1048,11 @@ namespace Stroika::Foundation::Characters {
         nonvirtual T AsUTF8 () const
             requires (is_same_v<T, string> or is_same_v<T, u8string>);
         template <typename T = u8string>
-        nonvirtual void AsUTF8 (T* into) const
-            requires (is_same_v<T, string> or is_same_v<T, u8string>);
+        [[deprecated ("Since Stroika v3.0d2 - use AsUTF8/0")]] void AsUTF8 (T* into) const
+            requires (is_same_v<T, string> or is_same_v<T, u8string>)
+        {
+            *into = this->AsUTF8 ();
+        }
 
     public:
         /**
@@ -1066,8 +1072,11 @@ namespace Stroika::Foundation::Characters {
         nonvirtual T AsUTF16 () const
             requires (is_same_v<T, u16string> or (sizeof (wchar_t) == sizeof (char16_t) and is_same_v<T, wstring>));
         template <typename T = u16string>
-        nonvirtual void AsUTF16 (T* into) const
-            requires (is_same_v<T, u16string> or (sizeof (wchar_t) == sizeof (char16_t) and is_same_v<T, wstring>));
+        [[deprecated ("Since Stroika v3.0d2 - use AsUTF16/0")]] void AsUTF16 (T* into) const
+            requires (is_same_v<T, u16string> or (sizeof (wchar_t) == sizeof (char16_t) and is_same_v<T, wstring>))
+        {
+            *into = AsUTF16 ();
+        }
 
     public:
         /**
@@ -1087,8 +1096,11 @@ namespace Stroika::Foundation::Characters {
         nonvirtual T AsUTF32 () const
             requires (is_same_v<T, u32string> or (sizeof (wchar_t) == sizeof (char32_t) and is_same_v<T, wstring>));
         template <typename T = u32string>
-        nonvirtual void AsUTF32 (T* into) const
-            requires (is_same_v<T, u32string> or (sizeof (wchar_t) == sizeof (char32_t) and is_same_v<T, wstring>));
+        [[deprecated ("Since Stroika v3.0d2 - use AsUTF32/0")]] void AsUTF32 (T* into) const
+            requires (is_same_v<T, u32string> or (sizeof (wchar_t) == sizeof (char32_t) and is_same_v<T, wstring>))
+        {
+            *into = AsUTF32 ();
+        }
 
     public:
         /**

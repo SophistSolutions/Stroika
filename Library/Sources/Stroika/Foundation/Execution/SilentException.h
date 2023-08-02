@@ -23,8 +23,7 @@ namespace Stroika::Foundation::Execution {
     public:
         /**
          *  Provide a 'c string' variant of the exception message. Convert the UNICODE
-         *  string argument to a narrow-string (multibyte) in the SDK code page.
-         *  @see GetDefaultSDKCodePage()
+         *  string argument to a narrow-string (multibyte) in the current locale encoding.
          */
         virtual const char* what () const noexcept override;
     };

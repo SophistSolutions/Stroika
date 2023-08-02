@@ -75,6 +75,7 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\Format.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\Platform\Windows\CodePage.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\RegularExpression.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\SDKString.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\String.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\String2Int.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\ToString.cpp" />

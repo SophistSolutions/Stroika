@@ -132,6 +132,11 @@ namespace Stroika::Foundation::Characters::Platform::Windows {
 // For SPR#1184 I grabbed a few more numbers. The mapping to codepages can be roughly guestimated by looking
 // in the registry around HKEY_LOCAL_MACHINE\SOFTWARE\Classes\MIME\Database\Charset\
         //  -- LGP 2002-11-29
+#ifdef CP_ACP
+        Assert (CP_ACP == 0);
+#else
+        const unsigned char CP_ACP              = 0;
+#endif
 #ifdef ANSI_CHARSET
         Assert (ANSI_CHARSET == 0);
 #else
@@ -267,7 +272,7 @@ namespace Stroika::Foundation::Characters::Platform::Windows {
                 return WellKnownCodePages::kPCA;
                 break;
             default:
-                return GetDefaultSDKCodePage ();
+                return CP_ACP;
         }
     }
 
@@ -278,6 +283,11 @@ namespace Stroika::Foundation::Characters::Platform::Windows {
      */
     inline CodePage Win32PrimaryLangIDToCodePage (USHORT languageIdenifier)
     {
+#ifdef CP_ACP
+        Assert (CP_ACP == 0);
+#else
+        const unsigned char CP_ACP              = 0;
+#endif
         /*
          *  I haven't found this stuff documented anyplace. Its hard to imagine that MSFT doesn't provide their own
          *  mapping routines! Anyhow - I got a start on this from some UNISCRIBE sample code, and have since
@@ -321,7 +331,7 @@ namespace Stroika::Foundation::Characters::Platform::Windows {
             case LANG_VIETNAMESE:
                 return WellKnownCodePages::kVietnamese;
             default:
-                return GetDefaultSDKCodePage ();
+                return CP_ACP;
         }
     }
 

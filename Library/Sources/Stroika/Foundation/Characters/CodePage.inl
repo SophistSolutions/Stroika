@@ -186,7 +186,7 @@ namespace Stroika::Foundation::Characters {
      ****************************** GetDefaultSDKCodePage ***************************
      ********************************************************************************
      */
-    inline CodePage GetDefaultSDKCodePage ()
+    [[deprecated ("Since Stroika v3.0d2 - on windows use CP_ACP, and elsewhere probably dont use")]] inline CodePage GetDefaultSDKCodePage ()
     {
 #if qPlatform_Windows
 //http://blogs.msdn.com/b/michkap/archive/2005/01/06/347834.aspx

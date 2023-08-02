@@ -10,6 +10,7 @@ Also, generic ToString () support - to convert objects to a string format.
 
   - [Character.h](Character.h)
   - [CodePage.h](CodePage.h)
+  - [CodeCvt.h](CodeCvt.h) - generic character encoding conversion utilities
   - [Concrete/](Concrete/)
   - [CString/](CString/)
   - [FloatConversion.h](FloatConversion.h)
@@ -22,4 +23,5 @@ Also, generic ToString () support - to convert objects to a string format.
   - [String.h](String.h) - class **String**
   - [String2Int.h](String2Int.h)
   - [StringBuilder.h](StringBuilder.h) - class **StringBuilder**
+  - [TextConvert.h](TextConvert.h) - Byte Order Mark (BOM)
   - [ToString.h](ToString.h) - function **ToString()**

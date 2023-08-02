@@ -825,6 +825,9 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\CharacterEncodingException.cpp">
       <Filter>Sources\Characters</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\SDKString.cpp">
+      <Filter>Sources\Characters</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.h">

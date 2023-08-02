@@ -434,8 +434,20 @@ namespace Stroika::Foundation::Characters {
     }
     template <IUNICODECanAlwaysConvertTo CHAR_T>
     inline CodeCvt<CHAR_T>::CodeCvt (const locale& l)
-        : CodeCvt{l.name ()}
     {
+        if constexpr (is_same_v<CHAR_T, wchar_t>) {
+            *this = mkFromStdCodeCvt<codecvt_byname<wchar_t, char, mbstate_t>> (l.name ());
+        }
+        else if constexpr (is_same_v<CHAR_T, char16_t> or is_same_v<CHAR_T, char32_t>) {
+            *this = mkFromStdCodeCvt<codecvt_byname<CHAR_T, char8_t, mbstate_t>> (l.name ());
+        }
+        else if constexpr (is_same_v<CHAR_T, Character>) {
+            fRep_ = make_shared<UTF2UTFRep_<char32_t>> (CodeCvt<char32_t>::mkFromStdCodeCvt<codecvt_byname<char32_t, char8_t, mbstate_t>> (l.name ()));
+        }
+        else {
+            // CHAR_T COULD be UTF-8, but not clear if/why that would be useful.
+            AssertNotImplemented ();
+        }
     }
     template <IUNICODECanAlwaysConvertTo CHAR_T>
     CodeCvt<CHAR_T>::CodeCvt (const String& localeName)

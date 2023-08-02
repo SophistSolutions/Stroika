@@ -78,14 +78,6 @@ namespace Stroika::Foundation::Characters {
      */
     wstring GetCharsetString (CodePage cp);
 
-    /*
-     *      @todo CONSIDER DEPRECATING IN STROIKA V3
-     * 
-    @METHOD:        GetDefaultSDKCodePage
-    @DESCRIPTION:   <p>Returns the assumed code page of @'SDKChar'.</p>
-    */
-    CodePage GetDefaultSDKCodePage ();
-
     /**
     * &&& redo as RuntimeException... - but todo move to separate file
      */
@@ -96,8 +88,7 @@ namespace Stroika::Foundation::Characters {
     public:
         /**
          *  Provide a 'c string' variant of the exception message. Convert the UNICODE
-         *  string argument to a narrow-string (multibyte) in the SDK code page.
-         *  @see GetDefaultSDKCodePage()
+         *  string argument to a narrow-string (multibyte) in the current locale multibyte encoding.
          */
         virtual const char* what () const noexcept override;
 

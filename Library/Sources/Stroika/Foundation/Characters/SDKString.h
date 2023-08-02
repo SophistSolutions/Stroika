@@ -60,6 +60,16 @@ namespace Stroika::Foundation::Characters {
      */
     SDKString Narrow2SDKString (const string& s);
 
+    /**
+     *  On Windows, this does nothing as SDKString==wstring, but on other platforms it follows the rules of SDKChar to map it to wstring.
+     */
+    wstring SDKString2Wide (const SDKString& s);
+
+    /**
+     *  On Windows, this does nothing as SDKString==wstring, but on other platforms it follows the rules of SDKChar to map it from wstring.
+     */
+    SDKString WideString2SDK (const wstring& s);
+
 }
 
 /*
