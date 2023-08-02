@@ -19,7 +19,7 @@ using namespace Stroika::Foundation::Characters;
 
 
 #if !qPlatform_Windows
- wstring SDKString2Wide (const SDKString& s)
+ wstring Characters::SDKString2Wide (const SDKString& s)
 {
 #if qPlatform_MacOS
     return CodeCvt<wchar_t>{UnicodeExternalEncodings::eUTF8}.Bytes2String<wstring> (Memory::SpanReInterpretCast<const byte> (span{s}));
@@ -35,7 +35,7 @@ using namespace Stroika::Foundation::Characters;
  ********************************************************************************
  */
 #if !qPlatform_Windows
-SDKString WideString2SDK (const wstring& s)
+SDKString Characters::WideString2SDK (const wstring& s)
 {
 #if qPlatform_MacOS
     return CodeCvt<wchar_t>{UnicodeExternalEncodings::eUTF8}.String2Bytes<SDKString> (span{s});
