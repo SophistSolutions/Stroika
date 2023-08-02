@@ -24,9 +24,15 @@ namespace Stroika::Foundation::Characters {
      *  The easiest way to convert between a String and SDKString, is via the String class APIs:
      *  AsSDKString, AsNarrowSDKString, FromSDKString, FromNarrowSDKString.
      *
-     *  For std::string (etc) interop, that works, but also @SDKString2Narrow and @Narrow2SDKString
+     *  For std::string (etc) interop, that works, but also @SDKString2Narrow and @Narrow2SDK
      *
      *  @see SDKChar
+     * 
+     *      NOTE - in the context of this file, the word "Narrow" refers to single byte encodings of UNICODE
+     *      characters (such as SJIS, UTF-8, or ISO-Latin-1, for example).
+     * 
+     *      NOTE - in the context of this file, the word "Wide" refrers to wchar_t beased encoding of UNICODE
+     *      characters.
      */
     using SDKString = basic_string<SDKChar>;
 
@@ -49,24 +55,23 @@ namespace Stroika::Foundation::Characters {
     };
 
     /**
+     *  On most platforms, this does nothing, but on Windows, it maps strings to wstring using code-page CP_ACP
+     */
+    SDKString Narrow2SDK (span<const char> s);
+    SDKString Narrow2SDK (const string& s);
+
+    /**
+     * Interpret the narrow string in the SDKChar manner (locale/charset) and convert to UNICODE wstring.
+     */
+    wstring NarrowSDK2Wide (span<const char> s);
+    wstring NarrowSDK2Wide (const string& s);
+
+    /**
      *  On most platforms, this does nothing, but on Windows, it maps wstrings to string using code-page CP_ACP
      *  @todo add span<> overloads
      */
     string SDKString2Narrow (const SDKString& s);
     string SDKString2Narrow (const SDKString& s, AllowMissingCharacterErrorsFlag);
-
-    /**
-     *  On most platforms, this does nothing, but on Windows, it maps strings to wstring using code-page CP_ACP
-     *  @todo add span<> overloads
-     */
-    SDKString Narrow2SDKString (span<const char> s);
-    SDKString Narrow2SDKString (const string& s);
-
-    /**
-     */
-    // @todo TONS OF CLENAUPS HERE - INCLUDING USING SPAN, and AVOIDING INTERMEDIATES NOT NEEDED...
-    wstring NarrowSDKString2Wide (span<const char> s);
-    wstring NarrowSDKString2Wide (const string& s);
 
     /**
      *  On Windows, this does nothing as SDKString==wstring, but on other platforms it follows the rules of SDKChar to map it to wstring.

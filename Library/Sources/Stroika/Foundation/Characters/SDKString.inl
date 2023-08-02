@@ -22,6 +22,54 @@ namespace Stroika::Foundation::Characters {
 
     /*
      ********************************************************************************
+     ***************************** Characters::Narrow2SDK ***************************
+     ********************************************************************************
+     */
+    inline SDKString Narrow2SDK (span<const char> s)
+    {
+#if qTargetPlatformSDKUseswchar_t
+        return SDKString{s.data (), s.data () + s.size ()};
+#else
+#if qPlatform_Windows
+        static constexpr DWORD kFLAGS_      = MB_ERR_INVALID_CHARS;
+        int                    stringLength = ::MultiByteToWideChar (CP_ACP, kFLAGS_, s.data (), static_cast<int> (s.size ()), nullptr, 0);
+        if (stringLength == 0 and s.size () != 0) {
+            Execution::ThrowSystemErrNo ();
+        }
+        SDKString result;
+        result.resize (stringLength);
+        Verify (::MultiByteToWideChar (CP_ACP, kFLAGS_, s.data (), static_cast<int> (s.size ()), Containers::Start (result), stringLength) == stringLength);
+        return result;
+#else
+        AssertNotImplemented ();
+#endif
+#endif
+    }
+    inline SDKString Narrow2SDK (const string& s)
+    {
+#if qTargetPlatformSDKUseswchar_t
+        return Narrow2SDK (span{s});
+#else
+        return s;
+#endif
+    }
+
+    /*
+     ********************************************************************************
+     **************************** Characters::NarrowSDK2Wide ************************
+     ********************************************************************************
+     */
+    inline wstring NarrowSDK2Wide (span<const char> s)
+    {
+        return SDKString2Wide (Narrow2SDK (s));
+    }
+    inline wstring NarrowSDK2Wide (const string& s)
+    {
+        return NarrowSDK2Wide (span{s});
+    }
+
+    /*
+     ********************************************************************************
      ***************************** Characters::SDKString2Narrow *********************
      ********************************************************************************
      */
@@ -76,54 +124,6 @@ namespace Stroika::Foundation::Characters {
 
     /*
      ********************************************************************************
-     ***************************** Characters::Narrow2SDKString *********************
-     ********************************************************************************
-     */
-    inline SDKString Narrow2SDKString (span<const char> s)
-    {
-        if constexpr (same_as<SDKChar, char>) {
-            return SDKString{s.data (), s.data () + s.size ()};
-        }
-        else {
-#if qPlatform_Windows
-            static constexpr DWORD kFLAGS_ = MB_ERR_INVALID_CHARS;
-            int stringLength               = ::MultiByteToWideChar (CP_ACP, kFLAGS_, s.data (), static_cast<int> (s.size ()), nullptr, 0);
-            if (stringLength == 0 and s.size () != 0) {
-                Execution::ThrowSystemErrNo ();
-            }
-            SDKString result;
-            result.resize (stringLength);
-            Verify (::MultiByteToWideChar (CP_ACP, kFLAGS_, s.data (), static_cast<int> (s.size ()), Containers::Start (result), stringLength) == stringLength);
-            return result;
-#else
-            AssertNotImplemented ();
-#endif
-        }
-    }
-    inline SDKString Narrow2SDKString (const string& s)
-    {
-        if constexpr (same_as<SDKChar, char>) {
-            return s;
-        }
-        else {
-#if qPlatform_Windows
-            static constexpr DWORD kFLAGS_ = MB_ERR_INVALID_CHARS;
-            int stringLength = ::MultiByteToWideChar (CP_ACP, kFLAGS_, s.c_str (), static_cast<int> (s.length ()), nullptr, 0);
-            if (stringLength == 0 and s.length () != 0) {
-                Execution::ThrowSystemErrNo ();
-            }
-            SDKString result;
-            result.resize (stringLength);
-            Verify (::MultiByteToWideChar (CP_ACP, kFLAGS_, s.c_str (), static_cast<int> (s.length ()), Containers::Start (result),
-                                           stringLength) == stringLength);
-            return result;
-#else
-            AssertNotImplemented ();
-#endif
-        }
-    }
-    /*
-     ********************************************************************************
      ******************************* Characters::SDKString2Wide *********************
      ********************************************************************************
      */
@@ -156,15 +156,6 @@ namespace Stroika::Foundation::Characters {
 #else
         return WideString2SDK (span{s});
 #endif
-    }
-
-    inline wstring NarrowSDKString2Wide (span<const char> s)
-    {
-        return SDKString2Wide (Narrow2SDKString (s));
-    }
-    inline wstring NarrowSDKString2Wide (const string& s)
-    {
-        return SDKString2Wide (Narrow2SDKString (s));
     }
 
     /// <summary>

@@ -438,7 +438,7 @@ namespace Stroika::Foundation::Characters {
     }
     inline String String::FromNarrowSDKString (span<const char> s)
     {
-        return String{NarrowSDKString2Wide (s)};
+        return String{NarrowSDK2Wide (s)};
     }
     inline String String::FromNarrowSDKString (const string& from)
     {
