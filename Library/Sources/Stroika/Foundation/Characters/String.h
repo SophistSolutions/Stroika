@@ -1128,7 +1128,7 @@ namespace Stroika::Foundation::Characters {
         nonvirtual string                                          AsNarrowSDKString (AllowMissingCharacterErrorsFlag) const;
         [[deprecated ("Since Stroika v3.0d2 - just use /0")]] void AsNarrowSDKString (string* into) const
         {
-            *into = SDKString2Narrow (AsSDKString ());
+            *into = SDK2Narrow (AsSDKString ());
         }
 
     public:

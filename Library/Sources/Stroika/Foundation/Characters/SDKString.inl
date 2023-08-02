@@ -28,8 +28,6 @@ namespace Stroika::Foundation::Characters {
     inline SDKString Narrow2SDK (span<const char> s)
     {
 #if qTargetPlatformSDKUseswchar_t
-        return SDKString{s.data (), s.data () + s.size ()};
-#else
 #if qPlatform_Windows
         static constexpr DWORD kFLAGS_      = MB_ERR_INVALID_CHARS;
         int                    stringLength = ::MultiByteToWideChar (CP_ACP, kFLAGS_, s.data (), static_cast<int> (s.size ()), nullptr, 0);
@@ -41,16 +39,47 @@ namespace Stroika::Foundation::Characters {
         Verify (::MultiByteToWideChar (CP_ACP, kFLAGS_, s.data (), static_cast<int> (s.size ()), Containers::Start (result), stringLength) == stringLength);
         return result;
 #else
-        AssertNotImplemented ();
+        AssertNotImplemented (); // nobody but windows uses wchar_t as far as I know
 #endif
+#else
+        return SDKString{s.begin (), s.end ())};
 #endif
     }
     inline SDKString Narrow2SDK (const string& s)
     {
 #if qTargetPlatformSDKUseswchar_t
-        return Narrow2SDK (span{s});
+        return Narrow2SDK (span{s}); // delegate work
 #else
-        return s;
+        return s; // short-circuit so optimizer opportunity
+#endif
+    }
+    inline SDKString Narrow2SDK (span<const char> s, AllowMissingCharacterErrorsFlag)
+    {
+        // @todo FIX AllowMissingCharacterErrorsFlag
+#if qTargetPlatformSDKUseswchar_t
+#if qPlatform_Windows
+        static constexpr DWORD kFLAGS_      = MB_ERR_INVALID_CHARS;
+        int                    stringLength = ::MultiByteToWideChar (CP_ACP, kFLAGS_, s.data (), static_cast<int> (s.size ()), nullptr, 0);
+        if (stringLength == 0 and s.size () != 0) {
+            Execution::ThrowSystemErrNo ();
+        }
+        SDKString result;
+        result.resize (stringLength);
+        Verify (::MultiByteToWideChar (CP_ACP, kFLAGS_, s.data (), static_cast<int> (s.size ()), Containers::Start (result), stringLength) == stringLength);
+        return result;
+#else
+        AssertNotImplemented (); // nobody but windows uses wchar_t as far as I know
+#endif
+#else
+        return SDKString{s.begin (), s.end ())};
+#endif
+    }
+    inline SDKString Narrow2SDK (const string& s, [[maybe_unused]] AllowMissingCharacterErrorsFlag allow)
+    {
+#if qTargetPlatformSDKUseswchar_t
+        return Narrow2SDK (span{s}, allow); // delegate work
+#else
+        return s; // short-circuit so optimizer opportunity
 #endif
     }
 
@@ -61,105 +90,161 @@ namespace Stroika::Foundation::Characters {
      */
     inline wstring NarrowSDK2Wide (span<const char> s)
     {
-        return SDKString2Wide (Narrow2SDK (s));
+        // @todo maybe can optimize based on qTargetPlatformSDKUseswchar_t
+        return SDK2Wide (Narrow2SDK (s));
     }
     inline wstring NarrowSDK2Wide (const string& s)
     {
         return NarrowSDK2Wide (span{s});
     }
-
-    /*
-     ********************************************************************************
-     ***************************** Characters::SDKString2Narrow *********************
-     ********************************************************************************
-     */
-    inline string SDKString2Narrow (const SDKString& s)
+    inline wstring NarrowSDK2Wide (span<const char> s, AllowMissingCharacterErrorsFlag allow)
     {
-        if constexpr (same_as<SDKChar, char>) {
-            return s;
-        }
-        else {
-#if qPlatform_Windows
-            static constexpr DWORD kFLAGS_ = 0; // WC_ERR_INVALID_CHARS doesn't work (https://learn.microsoft.com/en-us/windows/win32/api/stringapiset/nf-stringapiset-widechartomultibyte), so must use lpUsedDefaultChar
-            int stringLength = ::WideCharToMultiByte (CP_ACP, kFLAGS_, s.c_str (), static_cast<int> (s.length ()), nullptr, 0, nullptr, nullptr);
-            if (stringLength == 0 and s.length () != 0) {
-                Execution::ThrowSystemErrNo ();
-            }
-            string result;
-            result.resize (stringLength);
-            BOOL usedDefaultChar{false};
-            Verify (::WideCharToMultiByte (CP_ACP, kFLAGS_, s.c_str (), static_cast<int> (s.length ()), Containers::Start (result),
-                                           stringLength, nullptr, &usedDefaultChar) == stringLength);
-            if (usedDefaultChar) {
-                Execution::ThrowSystemErrNo (ERROR_NO_UNICODE_TRANSLATION);
-            }
-            return result;
-#else
-            AssertNotImplemented ();
-#endif
-        }
+        // @todo maybe can optimize based on qTargetPlatformSDKUseswchar_t
+        return SDK2Wide (Narrow2SDK (s, allow), allow);
     }
-    inline string SDKString2Narrow (const SDKString& s, AllowMissingCharacterErrorsFlag)
+    inline wstring NarrowSDK2Wide (const string& s, AllowMissingCharacterErrorsFlag allow)
     {
-        if constexpr (same_as<SDKChar, char>) {
-            return s;
-        }
-        else {
-#if qPlatform_Windows
-            static constexpr DWORD kFLAGS_ = 0;
-            int stringLength = ::WideCharToMultiByte (CP_ACP, kFLAGS_, s.c_str (), static_cast<int> (s.length ()), nullptr, 0, nullptr, nullptr);
-            if (stringLength == 0 and s.length () != 0) {
-                Execution::ThrowSystemErrNo ();
-            }
-            string result;
-            result.resize (stringLength);
-            Verify (::WideCharToMultiByte (CP_ACP, kFLAGS_, s.c_str (), static_cast<int> (s.length ()), Containers::Start (result),
-                                           stringLength, nullptr, nullptr) == stringLength);
-            return result;
-#else
-            AssertNotImplemented ();
-#endif
-        }
+        return NarrowSDK2Wide (span{s}, allow);
     }
 
     /*
      ********************************************************************************
-     ******************************* Characters::SDKString2Wide *********************
+     ***************************** Characters::SDK2Narrow ***************************
      ********************************************************************************
      */
-#if qPlatform_Windows
-    inline wstring SDKString2Wide (const SDKString& s)
+    inline string SDK2Narrow (span<const SDKChar> s)
     {
+#if qTargetPlatformSDKUseswchar_t
+#if qPlatform_Windows
+        static constexpr DWORD kFLAGS_ = 0; // WC_ERR_INVALID_CHARS doesn't work (https://learn.microsoft.com/en-us/windows/win32/api/stringapiset/nf-stringapiset-widechartomultibyte), so must use lpUsedDefaultChar
+        int stringLength = ::WideCharToMultiByte (CP_ACP, kFLAGS_, s.data (), static_cast<int> (s.size ()), nullptr, 0, nullptr, nullptr);
+        if (stringLength == 0 and s.size () != 0) {
+            Execution::ThrowSystemErrNo ();
+        }
+        string result;
+        result.resize (stringLength);
+        BOOL usedDefaultChar{false};
+        Verify (::WideCharToMultiByte (CP_ACP, kFLAGS_, s.data (), static_cast<int> (s.size ()), Containers::Start (result), stringLength,
+                                       nullptr, &usedDefaultChar) == stringLength);
+        if (usedDefaultChar) {
+            Execution::ThrowSystemErrNo (ERROR_NO_UNICODE_TRANSLATION);
+        }
+        return result;
+#else
+        AssertNotImplemented (); // nobody but windows uses wchar_t as far as I know
+#endif
+#else
         return s;
+#endif
     }
-    inline wstring SDKString2Wide (span<const SDKChar> s)
+    inline string SDK2Narrow (const SDKString& s)
+    {
+#if qTargetPlatformSDKUseswchar_t
+        return SDK2Narrow (span{s}); // delegate work
+#else
+        return s; // short-circuit so optimizer opportunity
+#endif
+    }
+    inline string SDK2Narrow (span<const SDKChar> s, AllowMissingCharacterErrorsFlag)
+    {
+#if qTargetPlatformSDKUseswchar_t
+#if qPlatform_Windows
+        static constexpr DWORD kFLAGS_ = 0;
+        int stringLength = ::WideCharToMultiByte (CP_ACP, kFLAGS_, s.data (), static_cast<int> (s.size ()), nullptr, 0, nullptr, nullptr);
+        if (stringLength == 0 and s.size () != 0) {
+            Execution::ThrowSystemErrNo ();
+        }
+        string result;
+        result.resize (stringLength);
+        Verify (::WideCharToMultiByte (CP_ACP, kFLAGS_, s.data (), static_cast<int> (s.size ()), Containers::Start (result), stringLength,
+                                       nullptr, nullptr) == stringLength);
+        return result;
+#else
+        AssertNotImplemented ();
+#endif
+#else
+        return s;
+#endif
+    }
+    inline string SDK2Narrow (const SDKString& s, [[maybe_unused]] AllowMissingCharacterErrorsFlag allowMissing)
+    {
+#if qTargetPlatformSDKUseswchar_t
+        return SDK2Narrow (span{s}, allowMissing); // delegate work
+#else
+        return s;                         // short-circuit so optimizer opportunity
+#endif
+    }
+
+    /*
+     ********************************************************************************
+     ******************************* Characters::SDK2Wide ***************************
+     ********************************************************************************
+     */
+#if qTargetPlatformSDKUseswchar_t
+    inline wstring SDK2Wide (span<const SDKChar> s)
     {
         return wstring{s.begin (), s.end ()};
     }
 #endif
+    inline wstring SDK2Wide (const SDKString& s)
+    {
+#if qTargetPlatformSDKUseswchar_t
+        return s; // short-circuit so optimizer opportunity
+#else
+        return SDK2Wide (span{s});        // delegate work
+#endif
+    }
+#if qTargetPlatformSDKUseswchar_t
+    inline wstring SDK2Wide (span<const SDKChar> s, AllowMissingCharacterErrorsFlag)
+    {
+        return wstring{s.begin (), s.end ()};
+    }
+#endif
+    inline wstring SDK2Wide (const SDKString& s, [[maybe_unused]] AllowMissingCharacterErrorsFlag allow)
+    {
+#if qTargetPlatformSDKUseswchar_t
+        return s; // short-circuit so optimizer opportunity
+#else
+        return SDK2Wide (span{s}, allow); // delegate work
+#endif
+    }
 
     /*
      ********************************************************************************
-     ******************************* Characters::WideString2SDK *********************
+     ******************************* Characters::Wide2SDK ***************************
      ********************************************************************************
      */
-#if qPlatform_Windows
-    inline SDKString WideString2SDK (span<const SDKChar> s)
+#if qTargetPlatformSDKUseswchar_t
+    inline SDKString Wide2SDK (span<const SDKChar> s)
     {
         return SDKString{s.begin (), s.end ()};
     }
 #endif
-    inline SDKString WideString2SDK (const wstring& s)
+    inline SDKString Wide2SDK (const wstring& s)
     {
 #if qTargetPlatformSDKUseswchar_t
-        return s;
+        return s; // short-circuit so optimizer opportunity
 #else
-        return WideString2SDK (span{s});
+        return Wide2SDK (span{s});
+#endif
+    }
+#if qTargetPlatformSDKUseswchar_t
+    inline SDKString Wide2SDK (span<const SDKChar> s, AllowMissingCharacterErrorsFlag)
+    {
+        return SDKString{s.begin (), s.end ()};
+    }
+#endif
+    inline SDKString Wide2SDK (const wstring& s, [[maybe_unused]] AllowMissingCharacterErrorsFlag allow)
+    {
+#if qTargetPlatformSDKUseswchar_t
+        return s; // short-circuit so optimizer opportunity
+#else
+        return Wide2SDK (span{s}, allow);
 #endif
     }
 
     /// <summary>
-    /// DEPRECATED BELOW...
+    //////////////////////////// DEPRECATED BELOW.../////////////////////////////
     /// </summary>
 
     DISABLE_COMPILER_MSC_WARNING_START (4996);

@@ -419,13 +419,13 @@ namespace Stroika::Foundation::Characters {
             return String{s};
         }
         else {
-            return String{SDKString2Wide (s)};
+            return String{SDK2Wide (s)};
         }
     }
     inline String String::FromSDKString (const SDKString& from)
     {
         if constexpr (same_as<SDKString, wstring>) {
-            return String{move (from)};
+            return String{from};
         }
         else {
             return FromSDKString (span{from.c_str (), from.length ()});
@@ -821,11 +821,11 @@ namespace Stroika::Foundation::Characters {
     }
     inline string String::AsNarrowSDKString () const
     {
-        return SDKString2Narrow (AsSDKString ());
+        return SDK2Narrow (AsSDKString ());
     }
     inline string String::AsNarrowSDKString (AllowMissingCharacterErrorsFlag) const
     {
-        return SDKString2Narrow (AsSDKString (AllowMissingCharacterErrorsFlag::eIgnoreErrors), AllowMissingCharacterErrorsFlag::eIgnoreErrors);
+        return SDK2Narrow (AsSDKString (AllowMissingCharacterErrorsFlag::eIgnoreErrors), AllowMissingCharacterErrorsFlag::eIgnoreErrors);
     }
     template <typename T>
     inline T String::AsASCII () const
