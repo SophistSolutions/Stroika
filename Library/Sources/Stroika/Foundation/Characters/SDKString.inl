@@ -42,7 +42,7 @@ namespace Stroika::Foundation::Characters {
         AssertNotImplemented (); // nobody but windows uses wchar_t as far as I know
 #endif
 #else
-        return SDKString{s.begin (), s.end ())};
+        return SDKString{s.begin (), s.end ()};
 #endif
     }
     inline SDKString Narrow2SDK (const string& s)
