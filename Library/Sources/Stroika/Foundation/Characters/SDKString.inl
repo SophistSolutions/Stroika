@@ -163,7 +163,7 @@ namespace Stroika::Foundation::Characters {
         AssertNotImplemented ();
 #endif
 #else
-        return s;
+        return string{s.begin (), s.end ()};
 #endif
     }
     inline string SDK2Narrow (const SDKString& s, [[maybe_unused]] AllowMissingCharacterErrorsFlag allowMissing)
