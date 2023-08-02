@@ -56,7 +56,13 @@ namespace Stroika::Foundation::Characters {
     };
 
     /**
+     *  Convert string/span of 'char' - interpretting the char in the locale/active code page of the current
+     *  operating systems (@see SDKChar).
+     * 
      *  On most platforms, this does nothing, but on Windows, it maps strings to wstring using code-page CP_ACP
+     * 
+     *  Characters with (detectibly) missing code-points will generate an exception, unless AllowMissingCharacterErrorsFlag is
+     *  specified (but exceptions can happen in any case due to possible bad_alloc).
      */
     SDKString Narrow2SDK (span<const char> s);
     SDKString Narrow2SDK (const string& s);
@@ -67,6 +73,9 @@ namespace Stroika::Foundation::Characters {
      *  Interpret the narrow string in the SDKChar manner (locale/charset) and convert to UNICODE wstring.
      * 
      *  This is identical to SDK2Wide () if SDKChar==char (e.g. on Unix).
+     * 
+     *  Characters with (detectibly) missing code-points will generate an exception, unless AllowMissingCharacterErrorsFlag is
+     *  specified (but exceptions can happen in any case due to possible bad_alloc).
      */
     wstring NarrowSDK2Wide (span<const char> s);
     wstring NarrowSDK2Wide (const string& s);
@@ -74,7 +83,12 @@ namespace Stroika::Foundation::Characters {
     wstring NarrowSDK2Wide (const string& s, AllowMissingCharacterErrorsFlag);
 
     /**
+     *  Interpret the string/span of SDKChar (@see SDKChar) - and convert it to narrow 'char' using the current code-page/locale.
+     * 
      *  On most platforms, this does nothing, but on Windows, it maps wstrings to string using code-page CP_ACP
+     * 
+     *  Characters with (detectibly) missing code-points will generate an exception, unless AllowMissingCharacterErrorsFlag is
+     *  specified (but exceptions can happen in any case due to possible bad_alloc).
      */
     string SDK2Narrow (span<const SDKChar> s);
     string SDK2Narrow (const SDKString& s);
@@ -82,7 +96,12 @@ namespace Stroika::Foundation::Characters {
     string SDK2Narrow (const SDKString& s, AllowMissingCharacterErrorsFlag);
 
     /**
+     *  Interpret the string/span of SDKChar (@see SDKChar) - and convert it to UNICODE 'wchar_t' string using the current code-page/locale.
+     * 
      *  On Windows, this does nothing as SDKString==wstring, but on other platforms it follows the rules of SDKChar to map it to wstring.
+     * 
+     *  Characters with (detectibly) missing code-points will generate an exception, unless AllowMissingCharacterErrorsFlag is
+     *  specified (but exceptions can happen in any case due to possible bad_alloc).
      */
     wstring SDK2Wide (span<const SDKChar> s);
     wstring SDK2Wide (const SDKString& s);
@@ -90,7 +109,12 @@ namespace Stroika::Foundation::Characters {
     wstring SDK2Wide (const SDKString& s, AllowMissingCharacterErrorsFlag);
 
     /**
+     *  Interpret the string/span of UNICODE wchar_t - and convert it an SDKString string, using the current locale/SDKChar/SDKString rules.
+     * 
      *  On Windows, this does nothing as SDKString==wstring, but on other platforms it follows the rules of SDKChar to map it from wstring.
+     * 
+     *  Characters with (detectibly) missing code-points will generate an exception, unless AllowMissingCharacterErrorsFlag is
+     *  specified (but exceptions can happen in any case due to possible bad_alloc).
      */
     SDKString Wide2SDK (span<const wchar_t> s);
     SDKString Wide2SDK (const wstring& s);

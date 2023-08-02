@@ -55,10 +55,9 @@ namespace Stroika::Foundation::Characters {
     }
     inline SDKString Narrow2SDK (span<const char> s, AllowMissingCharacterErrorsFlag)
     {
-        // @todo FIX AllowMissingCharacterErrorsFlag
 #if qTargetPlatformSDKUseswchar_t
 #if qPlatform_Windows
-        static constexpr DWORD kFLAGS_      = MB_ERR_INVALID_CHARS;
+        static constexpr DWORD kFLAGS_      = 0;
         int                    stringLength = ::MultiByteToWideChar (CP_ACP, kFLAGS_, s.data (), static_cast<int> (s.size ()), nullptr, 0);
         if (stringLength == 0 and s.size () != 0) {
             Execution::ThrowSystemErrNo ();
