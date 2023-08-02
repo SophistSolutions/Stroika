@@ -142,12 +142,11 @@ namespace Stroika::Foundation::Characters {
 #endif
     inline SDKString WideString2SDK (const wstring& s)
     {
-        if constexpr (same_as<wstring, SDKString>) {
+        #if qTargetPlatformSDKUseswchar_t
             return s;
-        }
-        else {
+        #else
             return WideString2SDK (span{s});
-        }
+        #endif
     }
 
     inline wstring NarrowSDKString2Wide (span<const char> s) { return SDKString2Wide (Narrow2SDKString (s)); }
