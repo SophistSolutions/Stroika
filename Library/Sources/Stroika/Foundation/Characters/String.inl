@@ -831,26 +831,21 @@ namespace Stroika::Foundation::Characters {
     inline T String::AsASCII () const
         requires (is_same_v<T, string> or is_same_v<T, Memory::StackBuffer<char>>)
     {
-        T r;
-        AsASCII (&r);
-        return r;
-    }
-    template <typename T>
-    inline void String::AsASCII (T* into) const
-        requires (is_same_v<T, string> or is_same_v<T, Memory::StackBuffer<char>>)
-    {
-        if (not AsASCIIQuietly (into)) {
+        if (auto p = AsASCIIQuietly ()) {
+            return *p;
+        }
+        else {
             ThrowInvalidAsciiException_ ();
         }
     }
     template <typename T>
-    inline bool String::AsASCIIQuietly (T* into) const
+    inline optional<T> String::AsASCIIQuietly () const
         requires (is_same_v<T, string> or is_same_v<T, Memory::StackBuffer<char>>)
     {
-        RequireNotNull (into);
         Memory::StackBuffer<wchar_t> ignored1;
         auto                         thisSpan = GetData (&ignored1);
-        return Character::AsASCIIQuietly (thisSpan, into);
+        T                            s;
+        return Character::AsASCIIQuietly (thisSpan, &s) ? s : optional<T>{};
     }
     template <IUNICODECanUnambiguouslyConvertFrom CHAR_TYPE>
     inline String::PeekSpanData String::GetPeekSpanData () const

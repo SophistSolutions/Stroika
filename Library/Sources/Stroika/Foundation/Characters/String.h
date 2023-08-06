@@ -1153,22 +1153,40 @@ namespace Stroika::Foundation::Characters {
         nonvirtual T AsASCII () const
             requires (is_same_v<T, string> or is_same_v<T, Memory::StackBuffer<char>>);
         template <typename T = string>
-        nonvirtual void AsASCII (T* into) const
-            requires (is_same_v<T, string> or is_same_v<T, Memory::StackBuffer<char>>);
+        [[deprecated ("Since v3.0d2 use /0")]] void AsASCII (T* into) const
+            requires (is_same_v<T, string> or is_same_v<T, Memory::StackBuffer<char>>)
+        {
+            if (not AsASCIIQuietly (into)) {
+                ThrowInvalidAsciiException_ ();
+            }
+        }
 
     public:
         /**
          * Convert String losslessly into a standard C++ type.
          * Only specifically specialized variants are supported (right now just <string> supported).
-         * If this source contains any invalid ASCII characters, this returns false, and otherwise true (with set into).
+         * If this source contains any invalid ASCII characters, this returns nullopt, and else a valid engaged string.
          * 
          *  Supported Types:
          *      o   Memory::StackBuffer<char>
          *      o   string
          */
         template <typename T = string>
-        nonvirtual bool AsASCIIQuietly (T* into) const
+        nonvirtual optional<T> AsASCIIQuietly () const
             requires (is_same_v<T, string> or is_same_v<T, Memory::StackBuffer<char>>);
+        template <typename T = string>
+        [[deprecated ("Since v3.0d2 use /0 overload")]] bool AsASCIIQuietly (T* into) const
+            requires (is_same_v<T, string> or is_same_v<T, Memory::StackBuffer<char>>)
+        {
+            auto r = this->AsASCIIQuietly ();
+            if (r) {
+                *into = *r;
+                return true;
+            }
+            else {
+                return false;
+            }
+        }
 
     public:
         /**
@@ -1503,7 +1521,7 @@ namespace Stroika::Foundation::Characters {
         nonvirtual void _AssertRepValidType () const;
 
     private:
-        static void ThrowInvalidAsciiException_ (); // avoid include
+        [[noreturn]] static void ThrowInvalidAsciiException_ (); // avoid include
 
     public:
         friend wostream& operator<< (wostream& out, const String& s);

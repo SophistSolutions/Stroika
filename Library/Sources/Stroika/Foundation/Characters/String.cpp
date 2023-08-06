@@ -1518,7 +1518,10 @@ string String::AsNarrowString (const locale& l, AllowMissingCharacterErrorsFlag)
     return string{into.data (), to_next};
 }
 
-void String::erase (size_t from) { *this = RemoveAt (from, size ()); }
+void String::erase (size_t from) 
+{
+    *this = RemoveAt (from, size ()); 
+}
 
 void String::erase (size_t from, size_t count)
 {
@@ -1551,7 +1554,7 @@ const wchar_t* String::c_str ()
     return result;
 }
 
-void String::ThrowInvalidAsciiException_ ()
+ [[noreturn]] void String::ThrowInvalidAsciiException_ ()
 {
     static const auto kException_ = Execution::RuntimeErrorException{"Error converting non-ascii text to string"sv};
     Execution::Throw (kException_);
