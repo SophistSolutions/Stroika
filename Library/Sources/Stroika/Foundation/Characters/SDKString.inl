@@ -89,7 +89,7 @@ namespace Stroika::Foundation::Characters {
      */
     inline wstring NarrowSDK2Wide (span<const char> s)
     {
-        // @todo maybe can optimize based on qTargetPlatformSDKUseswchar_t
+        // No need to special case qTargetPlatformSDKUseswchar_t cuz SDK2Wide is a no-op inlinable in that case
         return SDK2Wide (Narrow2SDK (s));
     }
     inline wstring NarrowSDK2Wide (const string& s)
@@ -98,7 +98,7 @@ namespace Stroika::Foundation::Characters {
     }
     inline wstring NarrowSDK2Wide (span<const char> s, AllowMissingCharacterErrorsFlag allow)
     {
-        // @todo maybe can optimize based on qTargetPlatformSDKUseswchar_t
+        // No need to special case qTargetPlatformSDKUseswchar_t cuz SDK2Wide is a no-op inlinable in that case
         return SDK2Wide (Narrow2SDK (s, allow), allow);
     }
     inline wstring NarrowSDK2Wide (const string& s, AllowMissingCharacterErrorsFlag allow)
