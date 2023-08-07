@@ -3501,9 +3501,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\Characters\CodeCvt.inl">
       <Filter>Sources\Characters</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Characters\UTFConvert.inl">
-      <Filter>Sources\Common</Filter>
-    </None>
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Set_Array.inl">
       <Filter>Sources\Containers\Concrete</Filter>
     </None>
@@ -3520,6 +3517,9 @@
       <Filter>Sources\Containers\DataStructures</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Characters\CharacterEncodingException.inl">
+      <Filter>Sources\Characters</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Characters\UTFConvert.inl">
       <Filter>Sources\Characters</Filter>
     </None>
   </ItemGroup>
