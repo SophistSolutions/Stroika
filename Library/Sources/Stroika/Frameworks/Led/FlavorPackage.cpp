@@ -296,7 +296,11 @@ bool FlavorPackageInternalizer::InternalizeFlavor_FILEDataRawBytes (Led_ClipForm
      */
 #if qWideCharacters
     span<const byte>   rawByteSpan{reinterpret_cast<const byte*> (rawBytes), nRawBytes};
-    CodeCvt<Led_tChar> converter{&rawByteSpan, CodeCvt<Led_tChar>{suggestedCodePage.value_or (GetDefaultSDKCodePage ())}};
+    #if qPlatform_Windows
+    CodeCvt<Led_tChar> converter{&rawByteSpan, CodeCvt<Led_tChar>{suggestedCodePage.value_or (CP_ACP)}};
+#else
+    CodeCvt<Led_tChar> converter{&rawByteSpan, suggestedCodePage? CodeCvt<Led_tChar>{suggestedCodePage)}: CodeCvt<Led_tChar>{locale{})}};
+#endif
     size_t             outCharCnt = converter.ComputeTargetCharacterBufferSize (rawByteSpan);
     Memory::StackBuffer<Led_tChar> fileData2{outCharCnt};
     auto                           charsRead = converter.Bytes2Characters (&rawByteSpan, span{fileData2}).size ();

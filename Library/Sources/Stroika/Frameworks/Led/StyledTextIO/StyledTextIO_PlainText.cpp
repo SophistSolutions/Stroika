@@ -48,7 +48,7 @@ void StyledTextIOReader_PlainText::Read ()
     }
 #if qWideCharacters
     span<const byte>   rawByteSpan{reinterpret_cast<const byte*> (buf.data ()), len};
-    CodeCvt<Led_tChar>             converter{&rawByteSpan, CodeCvt<Led_tChar>{GetDefaultSDKCodePage ()}};
+    CodeCvt<Led_tChar>             converter{&rawByteSpan, CodeCvt<Led_tChar>{locale{}}};
     size_t             outCharCnt = converter.ComputeTargetCharacterBufferSize (rawByteSpan);
     Memory::StackBuffer<Led_tChar> wbuf{outCharCnt};
     outCharCnt = converter.Bytes2Characters (&rawByteSpan, span{wbuf}).size ();

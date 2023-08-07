@@ -187,6 +187,9 @@ namespace Stroika::Foundation::Characters {
     /*
      * Utility rep to wrap some kind of rep along with (optional) UTFConverter, to complete
      * conversion from bytes to/from desired rep generally through some intermediary rep.
+     * 
+     *  NOTE - this code allows INTERMEDIATE_CHAR_T == CHAR_T special case, and is optimized to do
+     *  nothing for that case (or should be - maybe needs a bit more tweaking of implementation for that to be fully true).
      */
     template <IUNICODECanAlwaysConvertTo CHAR_T>
 #if qCompilerAndStdLib_template_second_concept_Buggy
@@ -527,10 +530,10 @@ namespace Stroika::Foundation::Characters {
         RequireNotNull (guessFormatFrom);
         if (optional<tuple<UnicodeExternalEncodings, size_t>> r = ReadByteOrderMark (*guessFormatFrom)) {
             *guessFormatFrom = guessFormatFrom->subspan (get<size_t> (*r));
-            fRep_            = CodeCvt{get<UnicodeExternalEncodings> (*r)}.fRep_;
+            fRep_            = CodeCvt{get<UnicodeExternalEncodings> (*r), options}.fRep_;
         }
         else {
-            fRep_ = useElse ? useElse->fRep_ : CodeCvt{}.fRep_;
+            fRep_ = useElse ? useElse->fRep_ : CodeCvt{options}.fRep_;
         }
     }
     template <IUNICODECanAlwaysConvertTo CHAR_T>
@@ -592,7 +595,6 @@ namespace Stroika::Foundation::Characters {
     template <IUNICODECanAlwaysConvertTo CHAR_T>
     inline auto CodeCvt<CHAR_T>::Bytes2Characters (span<const byte> from) const -> size_t
     {
-        //quickie reference impl @todo fix/optimize
         Memory::StackBuffer<CHAR_T> to{ComputeTargetCharacterBufferSize (from)};
         return fRep_->Bytes2Characters (&from, span{to}).size ();
     }
@@ -619,7 +621,6 @@ namespace Stroika::Foundation::Characters {
     template <IUNICODECanAlwaysConvertTo CHAR_T>
     inline auto CodeCvt<CHAR_T>::Characters2Bytes (span<const CHAR_T> from) const -> size_t
     {
-        // quickie reference impl
         Memory::StackBuffer<byte> to{ComputeTargetByteBufferSize (from)};
         return fRep_->Characters2Bytes (from, span{to}).size ();
     }

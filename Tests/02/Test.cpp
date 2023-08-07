@@ -1831,7 +1831,7 @@ namespace {
                 codeCvtChar16Test (codeCvt4c);
             }
             if (hasLocale ("en_US.UTF8")) {
-                CodeCvt cc {"en_US.UTF8"};
+                CodeCvt<> cc{"en_US.UTF8"};
                  constexpr char8_t        someRandomText[] = u8"hello mom";
                  span<const byte>         someRandomTextBinarySpan =  as_bytes (span<const char8_t> {someRandomText, Characters::CString::Length (someRandomText)});
                 Memory::StackBuffer<Character> buf{cc.ComputeTargetCharacterBufferSize (someRandomTextBinarySpan)};
