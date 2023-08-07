@@ -74,10 +74,6 @@ namespace {
             targetExhausted, /* insuff. room in target for conversion */
             sourceIllegal    /* source sequence is illegal/malformed */
         };
-        enum ConversionFlags {
-            strictConversion = 0,
-            lenientConversion
-        };
 
         UTFConverter::ConversionStatusFlag cvt_ (ConversionResult cr)
         {
@@ -747,7 +743,7 @@ namespace {
     using ConversionResultWithStatus = Characters::UTFConverter::ConversionResultWithStatus;
     using ConversionStatusFlag       = Characters::UTFConverter::ConversionStatusFlag;
 
-    template <typename IN_T, typename OUT_T, typename FUN2DO_REAL_WORK>
+    template <typename IN_T, typename OUT_T, regular_invocable<const IN_T**, const IN_T*, OUT_T**, OUT_T*,optional<char32_t>> FUN2DO_REAL_WORK>
     inline auto ConvertQuietly_StroikaPortable_helper_ (optional<Character> invalidCharacterReplacement, span<const IN_T> source,
                                                         span<OUT_T> target, FUN2DO_REAL_WORK&& realWork) -> ConversionResultWithStatus
     {
@@ -756,17 +752,12 @@ namespace {
         const IN_T* sourceEnd   = sourceStart + source.size ();
         OUT_T*      targetStart = target.data ();
         OUT_T*      targetEnd   = targetStart + target.size ();
-        if (invalidCharacterReplacement == nullopt) {
-            ConversionResult r = realWork (&sourceStart, sourceEnd, &targetStart, targetEnd, ConversionFlags::lenientConversion); // @todo: look at options - lenientConversion
-            return ConversionResultWithStatus{
-                {static_cast<size_t> (sourceStart - source.data ()), static_cast<size_t> (targetStart - target.data ())}, cvt_ (r)};
-        }
-        else {
             // convert replacement character to target character set, and then pass that
-            ConversionResult r = realWork (&sourceStart, sourceEnd, &targetStart, targetEnd, ConversionFlags::lenientConversion); // @todo: look at options - lenientConversion
+            ConversionResult r = realWork (&sourceStart, sourceEnd, &targetStart, targetEnd,
+                                           invalidCharacterReplacement.has_value () ? invalidCharacterReplacement->As<char32_t> ()
+                                                                                    : optional<char32_t>{});
             return ConversionResultWithStatus{
                 {static_cast<size_t> (sourceStart - source.data ()), static_cast<size_t> (targetStart - target.data ())}, cvt_ (r)};
-        }
     }
 }
 auto UTFConverter::ConvertQuietly_StroikaPortable_ (optional<Character> invalidCharacterReplacement, span<const char8_t> source,
