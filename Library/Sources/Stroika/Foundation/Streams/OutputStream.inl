@@ -160,11 +160,11 @@ namespace Stroika::Foundation::Streams {
         }
         else {
             Memory::StackBuffer<Characters::Character> buf{
-                Memory::eUninitialized, Characters::UTFConverter::ComputeTargetBufferSize<Characters::Character> (span{start, end})};
+                Memory::eUninitialized, Characters::UTFConvert::ComputeTargetBufferSize<Characters::Character> (span{start, end})};
 #if qCompilerAndStdLib_spanOfContainer_Buggy
-            span<Characters::Character> writeSpan = Characters::UTFConverter::kThe.ConvertSpan (span{start, end}, span{buf.data (), buf.size ()});
+            span<Characters::Character> writeSpan = Characters::UTFConvert::kThe.ConvertSpan (span{start, end}, span{buf.data (), buf.size ()});
 #else
-            span<Characters::Character> writeSpan = Characters::UTFConverter::kThe.ConvertSpan (span{start, end}, span{buf});
+            span<Characters::Character> writeSpan = Characters::UTFConvert::kThe.ConvertSpan (span{start, end}, span{buf});
 #endif
             Write (writeSpan.data (), writeSpan.data () + writeSpan.size ());
         }

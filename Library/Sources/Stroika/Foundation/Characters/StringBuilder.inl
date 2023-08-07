@@ -65,11 +65,11 @@ namespace Stroika::Foundation::Characters {
             }
             else {
                 // @todo  OPTIMIZATION OPPORTUNITY - if given an ascii span, can just do those chars one at a time...
-                Memory::StackBuffer<BufferElementType> buf{Memory::eUninitialized, UTFConverter::ComputeTargetBufferSize<BufferElementType> (s)};
+                Memory::StackBuffer<BufferElementType> buf{Memory::eUninitialized, UTFConvert::ComputeTargetBufferSize<BufferElementType> (s)};
 #if qCompilerAndStdLib_spanOfContainer_Buggy
-                Append (UTFConverter::kThe.ConvertSpan (s, span{buf.data (), buf.size ()}));
+                Append (UTFConvert::kThe.ConvertSpan (s, span{buf.data (), buf.size ()}));
 #else
-                Append (UTFConverter::kThe.ConvertSpan (s, span{buf}));
+                Append (UTFConvert::kThe.ConvertSpan (s, span{buf}));
 #endif
             }
         }
@@ -184,7 +184,7 @@ namespace Stroika::Foundation::Characters {
             return fData_.size ();
         }
         else {
-            return UTFConverter::kThe.ComputeCharacterLength (fData_);
+            return UTFConvert::kThe.ComputeCharacterLength (fData_);
         }
     }
     template <typename OPTIONS>
@@ -285,12 +285,11 @@ namespace Stroika::Foundation::Characters {
         }
         else {
 #if qCompilerAndStdLib_spanOfContainer_Buggy
-            probablyIgnoredBuf->resize_uninitialized (UTFConverter::ComputeTargetBufferSize<CHAR_T> (span{fData_.data (), fData_.size ()}));
-            return UTFConverter::kThe.ConvertSpan (span{fData_.data (), fData_.size ()},
-                                                   span{probablyIgnoredBuf->data (), probablyIgnoredBuf->size ()});
+            probablyIgnoredBuf->resize_uninitialized (UTFConvert::ComputeTargetBufferSize<CHAR_T> (span{fData_.data (), fData_.size ()}));
+            return UTFConvert::kThe.ConvertSpan (span{fData_.data (), fData_.size ()}, span{probablyIgnoredBuf->data (), probablyIgnoredBuf->size ()});
 #else
-            probablyIgnoredBuf->resize_uninitialized (UTFConverter::ComputeTargetBufferSize<CHAR_T> (span{fData_}));
-            return UTFConverter::kThe.ConvertSpan (span{fData_}, span{*probablyIgnoredBuf});
+            probablyIgnoredBuf->resize_uninitialized (UTFConvert::ComputeTargetBufferSize<CHAR_T> (span{fData_}));
+            return UTFConvert::kThe.ConvertSpan (span{fData_}, span{*probablyIgnoredBuf});
 #endif
         }
     }

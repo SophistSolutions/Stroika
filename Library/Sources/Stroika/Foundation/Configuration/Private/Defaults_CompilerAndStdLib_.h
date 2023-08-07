@@ -644,7 +644,7 @@ make[3]: *** [/Sandbox/Str
  * error: no viable constructor or deduction guide for deduction of template arguments of 'span'
  * 
 error: no matching constructor for initialization of 'std::span<wchar_t, 18446744073709551615>'
-    return String{buf.begin (), buf.begin () + get<1> (UTFConverter::kThe.Convert (span{from, to}, span{buf}))};
+    return String{buf.begin (), buf.begin () + get<1> (UTFConvert::kThe.Convert (span{from, to}, span{buf}))};
                                                                                                    ^   ~~~~~
               ...
 
@@ -1039,8 +1039,8 @@ make[1]: *** [Makefile:20:
 * 
 * 
 *  file included from UTFConvert.cpp:8:
-./UTFConvert.h:86:66: error: default member initializer for 'fStrictMode' needed within definition of enclosing class 'UTFConverter' outside of member functions
-        constexpr UTFConverter (const Options& options = Options{});
+./UTFConvert.h:86:66: error: default member initializer for 'fStrictMode' needed within definition of enclosing class 'UTFConvert' outside of member functions
+        constexpr UTFConvert (const Options& options = Options{});
                                                                  ^
 ./UTFConvert.h:51:18: note: default member initializer declared here
             bool fStrictMode{false};

@@ -45,7 +45,7 @@ namespace Stroika::Foundation::Characters {
     };
 
     /**
-     * \brief UTFConverter is designed to provide mappings between various UTF encodings of UNICODE characters.
+     * \brief UTFConvert is designed to provide mappings between various UTF encodings of UNICODE characters.
      * 
      *  This area of C++ is a confusingly broken cluster-fuck. Its pretty simple, and well defined. It's been standardized in C++
      *  as of C++11 (though poorly, but better poor than none). But then that standardized code was deprecated in C++17, and
@@ -68,7 +68,7 @@ namespace Stroika::Foundation::Characters {
      *          API setup so the compute-buf-size routine COULD walk the source and compute the exact needed size, without changing API.
      * 
      *  \note Byte Order Markers
-     *      UTFConverter does NOT support byte order marks (BOM) - for that - see Streams::TextReader, and Streams::TextWriter
+     *      UTFConvert does NOT support byte order marks (BOM) - for that - see Streams::TextReader, and Streams::TextWriter
      *
      *  \notes about mbstate_t
      *      mbstate_t is used by the std::codecvt apis and nothing else, and seems opaque and not any obvious use, so just
@@ -78,12 +78,12 @@ namespace Stroika::Foundation::Characters {
      *      o   https://en.wikipedia.org/wiki/UTF-8
      *      o   https://en.wikipedia.org/wiki/UTF-16
      * 
-     *  Though you can construct your own UTFConverter with different options, a typical application will just use
+     *  Though you can construct your own UTFConvert with different options, a typical application will just use
      *      \code
-     *          UTFConverter::kThe
+     *          UTFConvert::kThe
      *      \endcode
      */
-    class UTFConverter final {
+    class UTFConvert final {
     public:
         /**
          */
@@ -140,10 +140,10 @@ namespace Stroika::Foundation::Characters {
         /**
          */
 #if qCompilerAndStdLib_DefaultMemberInitializerNeededEnclosingForDefaultFunArg_Buggy
-        constexpr UTFConverter ();
-        constexpr UTFConverter (const Options& options);
+        constexpr UTFConvert ();
+        constexpr UTFConvert (const Options& options);
 #else
-        constexpr UTFConverter (const Options& options = Options{});
+        constexpr UTFConvert (const Options& options = Options{});
 #endif
 
     public:
@@ -192,8 +192,8 @@ namespace Stroika::Foundation::Characters {
          *
          *  \par Example Usage
          *      \code
-         *          StackBuffer<wchar_t>      buf{Memory::eUninitialized, UTFConverter::ComputeTargetBufferSize<wchar_t> (src)};
-         *          span<wchar_t> spanOfTargetBufferUsed = UTFConverter::kThe.ConvertSpan (src, span{buf});
+         *          StackBuffer<wchar_t>      buf{Memory::eUninitialized, UTFConvert::ComputeTargetBufferSize<wchar_t> (src)};
+         *          span<wchar_t> spanOfTargetBufferUsed = UTFConvert::kThe.ConvertSpan (src, span{buf});
          *          return String{spanOfTargetBufferUsed};
          *      \endcode
          */
@@ -239,8 +239,8 @@ namespace Stroika::Foundation::Characters {
          * 
          *  \par Example Usage
          *      \code
-         *          StackBuffer<wchar_t>      buf{Memory::eUninitialized, UTFConverter::ComputeTargetBufferSize<wchar_t> (src)};
-         *          auto result = UTFConverter::kThe.Convert (src, span{buf});
+         *          StackBuffer<wchar_t>      buf{Memory::eUninitialized, UTFConvert::ComputeTargetBufferSize<wchar_t> (src)};
+         *          auto result = UTFConvert::kThe.Convert (src, span{buf});
          *          return String{buf.begin (), buf.begin () + result.fTargetProduced}; // OR better yet see ConvertSpan
          *      \endcode
          *
@@ -249,8 +249,8 @@ namespace Stroika::Foundation::Characters {
          *  String overloads are simple wrappers on the span code but with simpler to use arguments:
          *  \par Example Usage
          *      \code
-         *          wstring wide_fred = UTFConverter::kThe.Convert<wstring> (u8"fred");
-         *          u16string u16_fred = UTFConverter::kThe.Convert<u16string> (U"fred");
+         *          wstring wide_fred = UTFConvert::kThe.Convert<wstring> (u8"fred");
+         *          u16string u16_fred = UTFConvert::kThe.Convert<u16string> (U"fred");
          *      \endcode
          */
         template <IUNICODECanUnambiguouslyConvertFrom SRC_T, IUNICODECanUnambiguouslyConvertFrom TRG_T>
@@ -349,9 +349,9 @@ namespace Stroika::Foundation::Characters {
 
     public:
         /**
-         *  \brief Nearly always use this default UTFConverter.
+         *  \brief Nearly always use this default UTFConvert.
          */
-        static const UTFConverter kThe;
+        static const UTFConvert kThe;
 
     public:
         static void Throw (ConversionStatusFlag cr, size_t errorAtSourceOffset);
@@ -408,17 +408,78 @@ namespace Stroika::Foundation::Characters {
 
     private:
         static void ThrowIf_ (ConversionStatusFlag cr, size_t errorAtSourceOffset);
+
+        //********************** DEPRECATED BELOW ****************************
+    public:
+        enum [[deprecated ("Since Stroika v3.0d1, use class UTFConvert")]] LEGACY_ConversionResult{
+            conversionOK,    /* conversion successful */
+            sourceExhausted, /* partial character in source, but hit end */
+            targetExhausted, /* insuff. room in target for conversion */
+            sourceIllegal    /* source sequence is illegal/malformed */
+        };
+        enum [[deprecated ("Since Stroika v3.0d1, use class UTFConvert")]] ConversionFlags{strictConversion = 0, lenientConversion};
+
+        /**
+         */
+        [[deprecated ("Since Stroika v3.0d1, could support, but not clearly any reason")]] static bool IsLegalUTF8Sequence (const char* source,
+                                                                                                                            const char* sourceEnd);
+        [[deprecated ("Since Stroika v3.0d1, could support, but not clearly any reason")]] static bool IsLegalUTF8Sequence (const char8_t* source,
+                                                                                                                            const char8_t* sourceEnd);
+
+        template <typename FROM, typename TO>
+        [[deprecated ("Since Stroika v3.0d1, use class UTFConvert")]] static inline size_t
+        QuickComputeConversionOutputBufferSize (const FROM* sourceStart, const FROM* sourceEnd)
+        {
+            return UTFConvert::ComputeTargetBufferSize<TO> (span<const FROM>{sourceStart, sourceEnd});
+        }
+        DISABLE_COMPILER_MSC_WARNING_START (4996);
+        DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
+        DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
+        template <typename FROM, typename TO>
+        [[deprecated ("Since Stroika v3.0d1, use class UTFConvert::kThe")]] static LEGACY_ConversionResult
+        ConvertQuietly (const FROM** sourceStart, const FROM* sourceEnd, TO** targetStart, TO* targetEnd, ConversionFlags flags)
+        {
+            auto r = UTFConvert::kThe.ConvertQuietly (span{*sourceStart, sourceEnd}, span{*targetStart, targetEnd});
+            *sourceStart += get<1> (r);
+            *targetStart += get<2> (r);
+            switch (get<0> (r)) {
+                case UTFConvert::ConversionStatusFlag::ok:
+                    return LEGACY_ConversionResult::conversionOK;
+                case UTFConvert::ConversionStatusFlag::sourceExhausted:
+                    return LEGACY_ConversionResult::sourceExhausted;
+                case UTFConvert::ConversionStatusFlag::sourceIllegal:
+                    return LEGACY_ConversionResult::sourceIllegal;
+                default:
+                    AssertNotReached ();
+                    return LEGACY_ConversionResult::sourceIllegal;
+            }
+        }
+        template <typename FROM, typename TO>
+        [[deprecated ("Since Stroika v3.0d1, use class UTFConvert::kThe")]] static inline void
+        Convert (const FROM** sourceStart, const FROM* sourceEnd, TO** targetStart, TO* targetEnd, ConversionFlags /*flags*/)
+        {
+            RequireNotNull (sourceStart);
+            RequireNotNull (targetStart);
+            Require ((static_cast<size_t> (targetEnd - *targetStart) >= QuickComputeConversionOutputBufferSize<FROM, TO> (*sourceStart, sourceEnd)));
+
+            auto r = UTFConvert::kThe.Convert (span{*sourceStart, sourceEnd}, span{*targetStart, targetEnd});
+            *sourceStart += get<0> (r);
+            *targetStart += get<1> (r);
+        }
+        DISABLE_COMPILER_MSC_WARNING_END (4996);
+        DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
+        DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
     };
 
     /**
      *  This is a function that takes a span of bytes, and an OPTIONAL mbstate_t (TBD), and targetBuffer, translates into targetBuffer, and returns the changes.
-     *  This utility wrapper funciton is meant to capture what you can easily put together from a (configured or default) UTFConverter,
+     *  This utility wrapper funciton is meant to capture what you can easily put together from a (configured or default) UTFConvert,
      *  but in a form more easily used/consumed by a the TextReader code.
      * 
      *  @todo NEED EXAMPLE OR TO LOSE THIS...
      */
     template <typename OUTPUT_CHAR_T>
-    using UTFCodeConverter = function<UTFConverter::ConversionResult (span<const std::byte> source, span<OUTPUT_CHAR_T> targetBuffer)>;
+    using UTFCodeConverter = function<UTFConvert::ConversionResult (span<const std::byte> source, span<OUTPUT_CHAR_T> targetBuffer)>;
 
 }
 

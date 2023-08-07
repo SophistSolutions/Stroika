@@ -1500,49 +1500,49 @@ namespace {
                 char8_t dollarSign[] = u8"$";
                 VerifyTestResult (sizeof (dollarSign) == 2);
                 VerifyTestResult (dollarSign[0] == 0x0024);
-                VerifyTestResult (UTFConverter::NextCharacter (span<const char8_t>{dollarSign}) == 1u);
-                VerifyTestResult (dollarSign[*UTFConverter::NextCharacter (span<const char8_t>{dollarSign})] == '\0');
-                VerifyTestResult (UTFConverter::ComputeCharacterLength (span<const char8_t>{dollarSign}) == 2u); // Nul byte
+                VerifyTestResult (UTFConvert::NextCharacter (span<const char8_t>{dollarSign}) == 1u);
+                VerifyTestResult (dollarSign[*UTFConvert::NextCharacter (span<const char8_t>{dollarSign})] == '\0');
+                VerifyTestResult (UTFConvert::ComputeCharacterLength (span<const char8_t>{dollarSign}) == 2u); // Nul byte
             }
             {
                 //char8_t poundSign[] = u8"£";
                 char8_t poundSign[] = u8"\u00a3";
                 static_assert (sizeof (poundSign) == 3);
-                VerifyTestResult (UTFConverter::NextCharacter (span<const char8_t>{poundSign}) == 2u);
-                VerifyTestResult (poundSign[*UTFConverter::NextCharacter (span<const char8_t>{poundSign})] == '\0');
-                VerifyTestResult (UTFConverter::ComputeCharacterLength (span<const char8_t>{poundSign}) == 2u); // Nul byte
+                VerifyTestResult (UTFConvert::NextCharacter (span<const char8_t>{poundSign}) == 2u);
+                VerifyTestResult (poundSign[*UTFConvert::NextCharacter (span<const char8_t>{poundSign})] == '\0');
+                VerifyTestResult (UTFConvert::ComputeCharacterLength (span<const char8_t>{poundSign}) == 2u); // Nul byte
             }
             {
                 char8_t devanagari[] = u8"\u0939";
                 //char8_t devanagari[] = u8"ह";
                 static_assert (sizeof (devanagari) == 4);
-                VerifyTestResult (UTFConverter::NextCharacter (span<const char8_t>{devanagari}) == 3u);
-                VerifyTestResult (devanagari[*UTFConverter::NextCharacter (span<const char8_t>{devanagari})] == '\0');
-                VerifyTestResult (UTFConverter::ComputeCharacterLength (span<const char8_t>{devanagari}) == 2u); // Nul byte
+                VerifyTestResult (UTFConvert::NextCharacter (span<const char8_t>{devanagari}) == 3u);
+                VerifyTestResult (devanagari[*UTFConvert::NextCharacter (span<const char8_t>{devanagari})] == '\0');
+                VerifyTestResult (UTFConvert::ComputeCharacterLength (span<const char8_t>{devanagari}) == 2u); // Nul byte
             }
             {
                 char8_t euroSign[] = u8"\u0939";
                 //char8_t euroSign[] = u8"€";
                 static_assert (sizeof (euroSign) == 4);
-                VerifyTestResult (UTFConverter::NextCharacter (span<const char8_t>{euroSign}) == 3u);
-                VerifyTestResult (euroSign[*UTFConverter::NextCharacter (span<const char8_t>{euroSign})] == '\0');
-                VerifyTestResult (UTFConverter::ComputeCharacterLength (span<const char8_t>{euroSign}) == 2u); // Nul byte
+                VerifyTestResult (UTFConvert::NextCharacter (span<const char8_t>{euroSign}) == 3u);
+                VerifyTestResult (euroSign[*UTFConvert::NextCharacter (span<const char8_t>{euroSign})] == '\0');
+                VerifyTestResult (UTFConvert::ComputeCharacterLength (span<const char8_t>{euroSign}) == 2u); // Nul byte
             }
             {
                 char8_t hangull[] = u8"\uD55C";
                 //char8_t hangull[] = u8"한";
                 static_assert (sizeof (hangull) == 4);
-                VerifyTestResult (UTFConverter::NextCharacter (span<const char8_t>{hangull}) == 3u);
-                VerifyTestResult (hangull[*UTFConverter::NextCharacter (span<const char8_t>{hangull})] == '\0');
-                VerifyTestResult (UTFConverter::ComputeCharacterLength (span<const char8_t>{hangull}) == 2u); // Nul byte
+                VerifyTestResult (UTFConvert::NextCharacter (span<const char8_t>{hangull}) == 3u);
+                VerifyTestResult (hangull[*UTFConvert::NextCharacter (span<const char8_t>{hangull})] == '\0');
+                VerifyTestResult (UTFConvert::ComputeCharacterLength (span<const char8_t>{hangull}) == 2u); // Nul byte
             }
             {
                 char8_t hwair[] = u8"\U00010348";
                 //char8_t hwair[] = u8"𐍈";
                 static_assert (sizeof (hwair) == 5);
-                VerifyTestResult (UTFConverter::NextCharacter (span<const char8_t>{hwair}) == 4u);
-                VerifyTestResult (hwair[*UTFConverter::NextCharacter (span<const char8_t>{hwair})] == '\0');
-                VerifyTestResult (UTFConverter::ComputeCharacterLength (span<const char8_t>{hwair}) == 2u); // Nul byte
+                VerifyTestResult (UTFConvert::NextCharacter (span<const char8_t>{hwair}) == 4u);
+                VerifyTestResult (hwair[*UTFConvert::NextCharacter (span<const char8_t>{hwair})] == '\0');
+                VerifyTestResult (UTFConvert::ComputeCharacterLength (span<const char8_t>{hwair}) == 2u); // Nul byte
             }
         }
         {
@@ -1550,12 +1550,12 @@ namespace {
                 //char8_t poundSign[] = u8"£";
                 char8_t poundSign[] = u8"\u00a3";
                 static_assert (sizeof (poundSign) == 3);
-                VerifyTestResult (UTFConverter::NextCharacter (span<const char8_t>{poundSign}) == 2u);
-                UTFConverter c;
+                VerifyTestResult (UTFConvert::NextCharacter (span<const char8_t>{poundSign}) == 2u);
+                UTFConvert c;
                 Character outBuf[1024];
                 auto a = c.ConvertQuietly (span<const char8_t>{&poundSign[0], 1}, span<Character> {outBuf});
                 VerifyTestResult (a.fSourceConsumed == 0 and a.fTargetProduced == 0);
-                VerifyTestResult (a.fStatus == UTFConverter::ConversionStatusFlag::sourceExhausted );
+                VerifyTestResult (a.fStatus == UTFConvert::ConversionStatusFlag::sourceExhausted );
                 try {
                     c.Convert (span<const char8_t>{&poundSign[0], 1}, span<Character> {outBuf});
                     VerifyTestResult (false);   // not reached

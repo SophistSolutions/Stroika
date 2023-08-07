@@ -338,7 +338,7 @@ namespace Stroika::Foundation::Characters {
          *        For the case of char, we also do not check/require the nul-termination bit.
          * 
          *  \note for overloads with wchar_t, if sizeof (wchar_t) == 2
-         *        \req Require (UTFConverter::AllFitsInTwoByteEncoding (s));
+         *        \req Require (UTFConvert::AllFitsInTwoByteEncoding (s));
          */
         template <size_t SIZE>
         static String FromStringConstant (const ASCII (&cString)[SIZE]);
@@ -979,7 +979,7 @@ namespace Stroika::Foundation::Characters {
          * 
          *  Returns span of CHAR_T objects written - a subspan of the argument span
          * 
-         *  \req s.size () >= UTFConverter::ComputeTargetBufferSize<CHAR_T> (...this-string-data...);
+         *  \req s.size () >= UTFConvert::ComputeTargetBufferSize<CHAR_T> (...this-string-data...);
          * 
          *  \see See also GetData<CHAR_T> (buf) - similar functionality - except caller doesn't need to know size of buffer to allocate
          */
@@ -1422,11 +1422,11 @@ namespace Stroika::Foundation::Characters {
         }
         [[deprecated ("Since Stroika v3.0d1, use span overloads")]] String InsertAt (const wchar_t* from, const wchar_t* to, size_t at) const
         {
-            Memory::StackBuffer<Character> buf{Memory::eUninitialized, UTFConverter::ComputeTargetBufferSize<Character> (span{from, to})};
+            Memory::StackBuffer<Character> buf{Memory::eUninitialized, UTFConvert::ComputeTargetBufferSize<Character> (span{from, to})};
 #if qCompilerAndStdLib_spanOfContainer_Buggy
-            return InsertAt (UTFConverter::kThe.ConvertSpan (span{from, to}, span{buf.data (), buf.size ()}), at);
+            return InsertAt (UTFConvert::kThe.ConvertSpan (span{from, to}, span{buf.data (), buf.size ()}), at);
 #else
-            return InsertAt (UTFConverter::kThe.ConvertSpan (span{from, to}, span{buf}), at);
+            return InsertAt (UTFConvert::kThe.ConvertSpan (span{from, to}, span{buf}), at);
 #endif
         }
         [[deprecated ("Since Stroika v3.0d1, use span overloads")]] String InsertAt (const Character* from, const Character* to, size_t at) const

@@ -484,11 +484,11 @@ namespace Stroika::Foundation::Characters::FloatConversion {
             }
             else {
                 // must utf convert to wchar_t which we support
-                Memory::StackBuffer<wchar_t> wideBuf{Memory::eUninitialized, UTFConverter::ComputeTargetBufferSize<wchar_t> (srcSpan)};
+                Memory::StackBuffer<wchar_t> wideBuf{Memory::eUninitialized, UTFConvert::ComputeTargetBufferSize<wchar_t> (srcSpan)};
 #if qCompilerAndStdLib_spanOfContainer_Buggy
-                span<const wchar_t> wideSpan = UTFConverter::kThe.ConvertSpan (srcSpan, span{wideBuf.data (), wideBuf.size ()});
+                span<const wchar_t> wideSpan = UTFConvert::kThe.ConvertSpan (srcSpan, span{wideBuf.data (), wideBuf.size ()});
 #else
-                span<const wchar_t> wideSpan = UTFConverter::kThe.ConvertSpan (srcSpan, span{wideBuf});
+                span<const wchar_t> wideSpan = UTFConvert::kThe.ConvertSpan (srcSpan, span{wideBuf});
 #endif
                 if (remainder == nullptr) {
                     d = ToFloat_RespectingLocale_<T, wchar_t> (wideSpan, nullptr);
@@ -497,7 +497,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
                     // do the conversion using wchar_t, and then map back the resulting remainder offset
                     span<const wchar_t>::iterator wideRemainder;
                     d  = ToFloat_RespectingLocale_<T> (wideSpan, &wideRemainder);
-                    ri = UTFConverter::kThe.ConvertOffset<CHAR_T> (wideSpan, wideRemainder - wideSpan.begin ()) + si;
+                    ri = UTFConvert::kThe.ConvertOffset<CHAR_T> (wideSpan, wideRemainder - wideSpan.begin ()) + si;
                 }
             }
             if (remainder == nullptr) {
@@ -687,7 +687,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
                 String legacyRemainer;
                 Ensure (Math::NearlyEquals (Private_::ToFloat_Legacy_<T> (String{s}, &legacyRemainer), result));
 #endif
-                *remainder = s.begin () + UTFConverter::kThe.ConvertOffset<CHAR_T> (
+                *remainder = s.begin () + UTFConvert::kThe.ConvertOffset<CHAR_T> (
                                               span{reinterpret_cast<const char8_t*> (b), reinterpret_cast<const char8_t*> (e)}, ptr - b);
                 Assert (*remainder <= s.end ());
                 // todo fix so can do this - Assert ((legacyRemainer == String{*remainder, s.end ()}));

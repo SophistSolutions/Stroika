@@ -78,7 +78,7 @@ namespace {
                 }
                 // Any 8-bit sequence valid for Latin1
                 if constexpr (is_same_v<CHAR_T, char16_t>) {
-                    Require (UTFConverter::AllFitsInTwoByteEncoding (s));
+                    Require (UTFConvert::AllFitsInTwoByteEncoding (s));
                 }
             }
             Rep& operator= (span<const CHAR_T> s)
@@ -88,7 +88,7 @@ namespace {
                     Require (Character::IsASCII (s));
                 }
                 if constexpr (is_same_v<CHAR_T, char16_t>) {
-                    Require (UTFConverter::AllFitsInTwoByteEncoding (s));
+                    Require (UTFConvert::AllFitsInTwoByteEncoding (s));
                 }
                 _fData = s;
                 return *this;
@@ -576,7 +576,7 @@ String String::FromStringConstant (span<const ASCII> s)
 String String::FromStringConstant (span<const wchar_t> s)
 {
     if constexpr (sizeof (wchar_t) == 2) {
-        Require (UTFConverter::AllFitsInTwoByteEncoding (s));
+        Require (UTFConvert::AllFitsInTwoByteEncoding (s));
     }
     Require (*(s.data () + s.size ()) == '\0'); // crazy weird requirement, but done cuz "x"sv already does NUL-terminate and we can
         // take advantage of that fact - re-using the NUL-terminator for our own c_str() implementation
@@ -638,7 +638,7 @@ inline auto String::mk_nocheck_ (span<const CHAR_T> s) -> shared_ptr<_IRep>
         // nothing to check
     }
     else if constexpr (sizeof (CHAR_T) == 2) {
-        Require (UTFConverter::AllFitsInTwoByteEncoding (s)); // avoid later assertion error
+        Require (UTFConvert::AllFitsInTwoByteEncoding (s)); // avoid later assertion error
     }
     else {
         // again - if larger, nothing to check
@@ -716,16 +716,16 @@ auto String::mk_ (basic_string<char>&& s) -> shared_ptr<_IRep>
 template <>
 auto String::mk_ (basic_string<char16_t>&& s) -> shared_ptr<_IRep>
 {
-    if (UTFConverter::AllFitsInTwoByteEncoding (Memory::ConstSpan (span{s.data (), s.size ()}))) {
+    if (UTFConvert::AllFitsInTwoByteEncoding (Memory::ConstSpan (span{s.data (), s.size ()}))) {
         return Memory::MakeSharedPtr<StdStringDelegator_::Rep<char16_t>> (move (s));
     }
     // copy the data if any surrogates
-    Memory::StackBuffer<char32_t> wideUnicodeBuf{Memory::eUninitialized, UTFConverter::ComputeTargetBufferSize<char32_t> (span{s.data (), s.size ()})};
+    Memory::StackBuffer<char32_t> wideUnicodeBuf{Memory::eUninitialized, UTFConvert::ComputeTargetBufferSize<char32_t> (span{s.data (), s.size ()})};
 #if qCompilerAndStdLib_spanOfContainer_Buggy
     return mk_nocheck_ (
-        Memory::ConstSpan (UTFConverter::kThe.ConvertSpan (span{s.data (), s.size ()}, span{wideUnicodeBuf.data (), wideUnicodeBuf.size ()})));
+        Memory::ConstSpan (UTFConvert::kThe.ConvertSpan (span{s.data (), s.size ()}, span{wideUnicodeBuf.data (), wideUnicodeBuf.size ()})));
 #else
-    return mk_nocheck_ (Memory::ConstSpan (UTFConverter::kThe.ConvertSpan (span{s.data (), s.size ()}, span{wideUnicodeBuf})));
+    return mk_nocheck_ (Memory::ConstSpan (UTFConvert::kThe.ConvertSpan (span{s.data (), s.size ()}, span{wideUnicodeBuf})));
 #endif
 }
 
@@ -739,17 +739,17 @@ template <>
 auto String::mk_ (basic_string<wchar_t>&& s) -> shared_ptr<_IRep>
 {
     if constexpr (sizeof (wchar_t) == 2) {
-        if (UTFConverter::AllFitsInTwoByteEncoding (Memory::ConstSpan (span{s.data (), s.size ()}))) {
+        if (UTFConvert::AllFitsInTwoByteEncoding (Memory::ConstSpan (span{s.data (), s.size ()}))) {
             return Memory::MakeSharedPtr<StdStringDelegator_::Rep<wchar_t>> (move (s));
         }
         // copy the data if any surrogates
         Memory::StackBuffer<char32_t> wideUnicodeBuf{Memory::eUninitialized,
-                                                     UTFConverter::ComputeTargetBufferSize<char32_t> (span{s.data (), s.size ()})};
+                                                     UTFConvert::ComputeTargetBufferSize<char32_t> (span{s.data (), s.size ()})};
 #if qCompilerAndStdLib_spanOfContainer_Buggy
         return mk_nocheck_ (Memory::ConstSpan (
-            UTFConverter::kThe.ConvertSpan (span{s.data (), s.size ()}, span{wideUnicodeBuf.data (), wideUnicodeBuf.size ()})));
+            UTFConvert::kThe.ConvertSpan (span{s.data (), s.size ()}, span{wideUnicodeBuf.data (), wideUnicodeBuf.size ()})));
 #else
-        return mk_nocheck_ (Memory::ConstSpan (UTFConverter::kThe.ConvertSpan (span{s.data (), s.size ()}, span{wideUnicodeBuf})));
+        return mk_nocheck_ (Memory::ConstSpan (UTFConvert::kThe.ConvertSpan (span{s.data (), s.size ()}, span{wideUnicodeBuf})));
 #endif
     }
     else {

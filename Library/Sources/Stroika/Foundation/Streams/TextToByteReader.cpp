@@ -62,7 +62,7 @@ protected:
         Character readBuf[1];
         if (size_t nChars = fSrc_.Read (begin (readBuf), end (readBuf))) {
             char8_t       buf[10];
-            span<char8_t> convertedSpan  = Characters::UTFConverter::kThe.ConvertSpan (span{readBuf, nChars}, span{buf, sizeof (buf)});
+            span<char8_t> convertedSpan  = Characters::UTFConvert::kThe.ConvertSpan (span{readBuf, nChars}, span{buf, sizeof (buf)});
             auto          copiedIntoSpan = Memory::CopySpanData_StaticCast (convertedSpan, intoSpan);
             if (copiedIntoSpan.size () < convertedSpan.size ()) {
                 // save extra bytes in fSrcBufferedSpan_

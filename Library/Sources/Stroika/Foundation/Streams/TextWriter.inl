@@ -93,7 +93,7 @@ namespace Stroika::Foundation::Streams {
         }
         UnSeekable_UTFConverter_Rep_ (const OutputStream<byte>::Ptr& src)
             : _fSource{src}
-            , _fConverter{Characters::UTFConverter::kThe}
+            , _fConverter{Characters::UTFConvert::kThe}
         {
         }
 
@@ -146,7 +146,7 @@ namespace Stroika::Foundation::Streams {
 
     protected:
         OutputStream<byte>::Ptr                                        _fSource;
-        Characters::UTFConverter                                       _fConverter;
+        Characters::UTFConvert                                         _fConverter;
         [[no_unique_address]] Debug::AssertExternallySynchronizedMutex fThisAssertExternallySynchronized_;
     };
 

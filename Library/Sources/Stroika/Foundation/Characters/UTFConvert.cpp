@@ -75,21 +75,21 @@ namespace {
             sourceIllegal    /* source sequence is illegal/malformed */
         };
 
-        UTFConverter::ConversionStatusFlag cvt_ (ConversionResult cr)
+        UTFConvert::ConversionStatusFlag cvt_ (ConversionResult cr)
         {
             switch (cr) {
                 case conversionOK:
-                    return UTFConverter::ConversionStatusFlag::ok;
+                    return UTFConvert::ConversionStatusFlag::ok;
                 case sourceExhausted:
-                    return UTFConverter::ConversionStatusFlag::sourceExhausted;
+                    return UTFConvert::ConversionStatusFlag::sourceExhausted;
                 case targetExhausted:
                     RequireNotReached (); // API doesn't allow this
-                    return UTFConverter::ConversionStatusFlag::sourceIllegal;
+                    return UTFConvert::ConversionStatusFlag::sourceIllegal;
                 case sourceIllegal:
-                    return UTFConverter::ConversionStatusFlag::sourceIllegal;
+                    return UTFConvert::ConversionStatusFlag::sourceIllegal;
                 default:
                     RequireNotReached (); // API doesn't allow this
-                    return UTFConverter::ConversionStatusFlag::sourceIllegal;
+                    return UTFConvert::ConversionStatusFlag::sourceIllegal;
             }
         }
 
@@ -665,24 +665,23 @@ namespace {
 
 namespace {
     namespace UTFConvert_codecvtSupport_ {
-        inline UTFConverter::ConversionStatusFlag cvt_stdcodecvt_results_ (int i)
+        inline UTFConvert::ConversionStatusFlag cvt_stdcodecvt_results_ (int i)
         {
-            using namespace UTFConvert;
             switch (i) {
                 case codecvt_base::ok:
-                    return UTFConverter::ConversionStatusFlag::ok;
+                    return UTFConvert::ConversionStatusFlag::ok;
                 case codecvt_base::error:
-                    return UTFConverter::ConversionStatusFlag::sourceIllegal;
+                    return UTFConvert::ConversionStatusFlag::sourceIllegal;
                 case codecvt_base::partial:
-                    return UTFConverter::ConversionStatusFlag::sourceExhausted; // not quite - couldbe target exhuasted?
+                    return UTFConvert::ConversionStatusFlag::sourceExhausted; // not quite - couldbe target exhuasted?
                 case codecvt_base::noconv:
-                    return UTFConverter::ConversionStatusFlag::sourceIllegal; // not quite
+                    return UTFConvert::ConversionStatusFlag::sourceIllegal; // not quite
                 default:
                     Assert (false);
-                    return UTFConverter::ConversionStatusFlag::sourceIllegal;
+                    return UTFConvert::ConversionStatusFlag::sourceIllegal;
             }
         }
-        inline UTFConverter::ConversionStatusFlag ConvertUTF8toUTF16_codecvt_ (const char8_t** sourceStart, const char8_t* sourceEnd,
+        inline UTFConvert::ConversionStatusFlag ConvertUTF8toUTF16_codecvt_ (const char8_t** sourceStart, const char8_t* sourceEnd,
                                                                                char16_t** targetStart, char16_t* targetEnd)
         {
             static const deletable_facet_<codecvt<char16_t, char8_t, mbstate_t>> cvt;
@@ -694,7 +693,7 @@ namespace {
             *targetStart            = outCursor;
             return cvt_stdcodecvt_results_ (rr);
         }
-        inline UTFConverter::ConversionStatusFlag ConvertUTF16toUTF8_codecvt_ (const char16_t** sourceStart, const char16_t* sourceEnd,
+        inline UTFConvert::ConversionStatusFlag ConvertUTF16toUTF8_codecvt_ (const char16_t** sourceStart, const char16_t* sourceEnd,
                                                                                char8_t** targetStart, char8_t* targetEnd)
         {
             static const deletable_facet_<codecvt<char16_t, char8_t, mbstate_t>> cvt;
@@ -706,7 +705,7 @@ namespace {
             *targetStart            = reinterpret_cast<char8_t*> (outCursor);
             return cvt_stdcodecvt_results_ (rr);
         }
-        inline UTFConverter::ConversionStatusFlag ConvertUTF8toUTF32_codecvt_ (const char8_t** sourceStart, const char8_t* sourceEnd,
+        inline UTFConvert::ConversionStatusFlag ConvertUTF8toUTF32_codecvt_ (const char8_t** sourceStart, const char8_t* sourceEnd,
                                                                                char32_t** targetStart, char32_t* targetEnd)
         {
             static const deletable_facet_<codecvt<char32_t, char8_t, mbstate_t>> cvt;
@@ -719,7 +718,7 @@ namespace {
             *targetStart            = outCursor;
             return cvt_stdcodecvt_results_ (rr);
         }
-        inline UTFConverter::ConversionStatusFlag ConvertUTF32toUTF8_codecvt_ (const char32_t** sourceStart, const char32_t* sourceEnd,
+        inline UTFConvert::ConversionStatusFlag ConvertUTF32toUTF8_codecvt_ (const char32_t** sourceStart, const char32_t* sourceEnd,
                                                                                char8_t** targetStart, char8_t* targetEnd)
         {
             static const deletable_facet_<codecvt<char32_t, char8_t, mbstate_t>> cvt;
@@ -736,12 +735,12 @@ namespace {
 
 /*
  ********************************************************************************
- ***************************** Characters::UTFConverter *************************
+ ***************************** Characters::UTFConvert *************************
  ********************************************************************************
  */
 namespace {
-    using ConversionResultWithStatus = Characters::UTFConverter::ConversionResultWithStatus;
-    using ConversionStatusFlag       = Characters::UTFConverter::ConversionStatusFlag;
+    using ConversionResultWithStatus = Characters::UTFConvert::ConversionResultWithStatus;
+    using ConversionStatusFlag       = Characters::UTFConvert::ConversionStatusFlag;
 
     template <typename IN_T, typename OUT_T, regular_invocable<const IN_T**, const IN_T*, OUT_T**, OUT_T*,optional<char32_t>> FUN2DO_REAL_WORK>
     inline auto ConvertQuietly_StroikaPortable_helper_ (optional<Character> invalidCharacterReplacement, span<const IN_T> source,
@@ -760,32 +759,32 @@ namespace {
                 {static_cast<size_t> (sourceStart - source.data ()), static_cast<size_t> (targetStart - target.data ())}, cvt_ (r)};
     }
 }
-auto UTFConverter::ConvertQuietly_StroikaPortable_ (optional<Character> invalidCharacterReplacement, span<const char8_t> source,
+auto UTFConvert::ConvertQuietly_StroikaPortable_ (optional<Character> invalidCharacterReplacement, span<const char8_t> source,
                                                     span<char16_t> target) -> ConversionResultWithStatus
 {
     return ConvertQuietly_StroikaPortable_helper_ (invalidCharacterReplacement, source, target, UTFConvert_libutfxx_::ConvertUTF8toUTF16_);
 }
-auto UTFConverter::ConvertQuietly_StroikaPortable_ (optional<Character> invalidCharacterReplacement, span<const char8_t> source,
+auto UTFConvert::ConvertQuietly_StroikaPortable_ (optional<Character> invalidCharacterReplacement, span<const char8_t> source,
                                                     span<char32_t> target) -> ConversionResultWithStatus
 {
     return ConvertQuietly_StroikaPortable_helper_ (invalidCharacterReplacement, source, target, UTFConvert_libutfxx_::ConvertUTF8toUTF32_);
 }
-auto UTFConverter::ConvertQuietly_StroikaPortable_ (optional<Character> invalidCharacterReplacement, span<const char16_t> source,
+auto UTFConvert::ConvertQuietly_StroikaPortable_ (optional<Character> invalidCharacterReplacement, span<const char16_t> source,
                                                     span<char32_t> target) -> ConversionResultWithStatus
 {
     return ConvertQuietly_StroikaPortable_helper_ (invalidCharacterReplacement, source, target, UTFConvert_libutfxx_::ConvertUTF16toUTF32_);
 }
-auto UTFConverter::ConvertQuietly_StroikaPortable_ (optional<Character> invalidCharacterReplacement, span<const char32_t> source,
+auto UTFConvert::ConvertQuietly_StroikaPortable_ (optional<Character> invalidCharacterReplacement, span<const char32_t> source,
                                                     span<char16_t> target) -> ConversionResultWithStatus
 {
     return ConvertQuietly_StroikaPortable_helper_ (invalidCharacterReplacement, source, target, UTFConvert_libutfxx_::ConvertUTF32toUTF16_);
 }
-auto UTFConverter::ConvertQuietly_StroikaPortable_ (optional<Character> invalidCharacterReplacement, span<const char32_t> source,
+auto UTFConvert::ConvertQuietly_StroikaPortable_ (optional<Character> invalidCharacterReplacement, span<const char32_t> source,
                                                     span<char8_t> target) -> ConversionResultWithStatus
 {
     return ConvertQuietly_StroikaPortable_helper_ (invalidCharacterReplacement, source, target, UTFConvert_libutfxx_::ConvertUTF32toUTF8_);
 }
-auto UTFConverter::ConvertQuietly_StroikaPortable_ (optional<Character> invalidCharacterReplacement, span<const char16_t> source,
+auto UTFConvert::ConvertQuietly_StroikaPortable_ (optional<Character> invalidCharacterReplacement, span<const char16_t> source,
                                                     span<char8_t> target) -> ConversionResultWithStatus
 {
     return ConvertQuietly_StroikaPortable_helper_ (invalidCharacterReplacement, source, target, UTFConvert_libutfxx_::ConvertUTF16toUTF8_);
@@ -811,24 +810,24 @@ namespace {
         }
     }
 }
-auto UTFConverter::ConvertQuietly_codeCvt_ (span<const char8_t> source, span<char16_t> target) -> ConversionResultWithStatus
+auto UTFConvert::ConvertQuietly_codeCvt_ (span<const char8_t> source, span<char16_t> target) -> ConversionResultWithStatus
 {
     return ConvertQuietly_codeCvt_helper_ (source, target, UTFConvert_codecvtSupport_::ConvertUTF8toUTF16_codecvt_);
 }
-auto UTFConverter::ConvertQuietly_codeCvt_ (span<const char16_t> source, span<char8_t> target) -> ConversionResultWithStatus
+auto UTFConvert::ConvertQuietly_codeCvt_ (span<const char16_t> source, span<char8_t> target) -> ConversionResultWithStatus
 {
     return ConvertQuietly_codeCvt_helper_ (source, target, UTFConvert_codecvtSupport_::ConvertUTF16toUTF8_codecvt_);
 }
-auto UTFConverter::ConvertQuietly_codeCvt_ (span<const char8_t> source, span<char32_t> target) -> ConversionResultWithStatus
+auto UTFConvert::ConvertQuietly_codeCvt_ (span<const char8_t> source, span<char32_t> target) -> ConversionResultWithStatus
 {
     return ConvertQuietly_codeCvt_helper_ (source, target, UTFConvert_codecvtSupport_::ConvertUTF8toUTF32_codecvt_);
 }
-auto UTFConverter::ConvertQuietly_codeCvt_ (span<const char32_t> source, span<char8_t> target) -> ConversionResultWithStatus
+auto UTFConvert::ConvertQuietly_codeCvt_ (span<const char32_t> source, span<char8_t> target) -> ConversionResultWithStatus
 {
     return ConvertQuietly_codeCvt_helper_ (source, target, UTFConvert_codecvtSupport_::ConvertUTF32toUTF8_codecvt_);
 }
 
-void UTFConverter::Throw (ConversionStatusFlag cr, size_t errorAtSourceOffset)
+void UTFConvert::Throw (ConversionStatusFlag cr, size_t errorAtSourceOffset)
 {
     switch (cr) {
         case ConversionStatusFlag::sourceExhausted: {

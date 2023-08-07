@@ -18,7 +18,7 @@
 
 /**
  *  \file
- *      Simple wrapper on std::codecvt, abstracting commonalities between std::codecvt and UTFConverter, to map characters (UNICODE) <--> bytes
+ *      Simple wrapper on std::codecvt, abstracting commonalities between std::codecvt and UTFConvert, to map characters (UNICODE) <--> bytes
  */
 
 namespace Stroika::Foundation::Characters {
@@ -47,9 +47,9 @@ namespace Stroika::Foundation::Characters {
     static_assert (IStdCodeCVT<std::codecvt_byname<wchar_t, char, std::mbstate_t>>);
 
     /*
-     *  \brief CodeCvt unifies byte <-> unicode conversions, vaguely inspired by (and wraps) std::codecvt, as well as UTFConverter etc, to map between span<bytes> and a span<UNICODE code-point>
+     *  \brief CodeCvt unifies byte <-> unicode conversions, vaguely inspired by (and wraps) std::codecvt, as well as UTFConvert etc, to map between span<bytes> and a span<UNICODE code-point>
      * 
-     *  Note, UTFConverter is probably a slightly better API, and better designed, and faster. HOWEVER, it ONLY converts to/from UNICODE. std::codecvt can convert to/from
+     *  Note, UTFConvert is probably a slightly better API, and better designed, and faster. HOWEVER, it ONLY converts to/from UNICODE. std::codecvt can convert to/from
      *  any locale code page, and is is more general.
      * 
      *  Use the CodeCvt<> API when your code conversions may involve non UNICODE byte representations.
@@ -68,7 +68,7 @@ namespace Stroika::Foundation::Characters {
      *      o   You can subclass IRep (to provide your own CodeCvt implementation) and copy CodeCvt objects.
      *          (unless I'm missing something, you can do one or the other with std::codecvt, but not both)
      *      o   Simpler backend virtual API, so easier to create your own compliant CodeCvt object.
-     *          o   CodeCvt leverages these two things via UTFConverter (which uses different library backends to do
+     *          o   CodeCvt leverages these two things via UTFConvert (which uses different library backends to do
      *              the UTF code conversion, hopefully enuf faster to make up for the virtual call overhead this
      *              class introduces).
      *      o   Don't support 'partial' conversion.
@@ -99,8 +99,8 @@ namespace Stroika::Foundation::Characters {
      *          provide safe estimate. If you know for special reasons, you can use a smaller size, but the call must always FIT - no 'targetExhuasted' exceptions thrown.
      *      o   no 'noconv' error code (better in that simpler, but worse in that forces throw on bad characters)
      * 
-     *  Enhancements over UTFConverter:
-     *      o   UTFConverter only supports UNICODE <-> UNICODE translations, even if in different
+     *  Enhancements over UTFConvert:
+     *      o   UTFConvert only supports UNICODE <-> UNICODE translations, even if in different
      *          UNICODE encodings. This API supports UNICODE <-> any arbitrary output binary format.
      *      o   So in particular, it supports translating between UNICODE characters and locale encodings (e.g. SHIFT_JIS, or whatever).
      * 
@@ -167,7 +167,7 @@ namespace Stroika::Foundation::Characters {
          *          Note works with subclasses of std::codecvt like std::codecvt_byname
          * 
          *  To get OTHER conversions, say between char16_t, and char32_t (combines/chains CodeCvt's):
-         *      CodeCvt<CHAR_T>{UnicodeExternalEncodings}               -   Uses UTFConverter, along with any needed byte swapping
+         *      CodeCvt<CHAR_T>{UnicodeExternalEncodings}               -   Uses UTFConvert, along with any needed byte swapping
          *      CodeCvt<CHAR_T>{const CodeCvt<OTHER_CHAR_T> basedOn}    -   Use this to combine CodeCvt's (helpful for locale one)
          * 
          *  \par Example Usage:

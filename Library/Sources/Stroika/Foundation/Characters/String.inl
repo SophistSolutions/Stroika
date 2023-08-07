@@ -97,38 +97,38 @@ namespace Stroika::Foundation::Characters {
             else if constexpr (is_same_v<remove_cvref_t<USTRING>, const char8_t*> or is_same_v<remove_cvref_t<USTRING>, const char16_t*> or
                                is_same_v<remove_cvref_t<USTRING>, const wchar_t*>) {
                 span spn{s, CString::Length (s)};
-                mostlyIgnoredBuf->resize_uninitialized (UTFConverter::ComputeTargetBufferSize<Character> (spn));
+                mostlyIgnoredBuf->resize_uninitialized (UTFConvert::ComputeTargetBufferSize<Character> (spn));
 #if qCompilerAndStdLib_spanOfContainer_Buggy
-                return UTFConverter::kThe.ConvertSpan (spn, span{mostlyIgnoredBuf->data (), mostlyIgnoredBuf->size ()});
+                return UTFConvert::kThe.ConvertSpan (spn, span{mostlyIgnoredBuf->data (), mostlyIgnoredBuf->size ()});
 #else
-                return UTFConverter::kThe.ConvertSpan (spn, span{*mostlyIgnoredBuf});
+                return UTFConvert::kThe.ConvertSpan (spn, span{*mostlyIgnoredBuf});
 #endif
             }
             else if constexpr (is_same_v<remove_cvref_t<USTRING>, u8string> or is_same_v<remove_cvref_t<USTRING>, u16string> or
                                is_same_v<remove_cvref_t<USTRING>, wstring>) {
                 span spn{s.data (), s.size ()};
-                mostlyIgnoredBuf->resize_uninitialized (UTFConverter::ComputeTargetBufferSize<Character> (spn));
+                mostlyIgnoredBuf->resize_uninitialized (UTFConvert::ComputeTargetBufferSize<Character> (spn));
 #if qCompilerAndStdLib_spanOfContainer_Buggy
-                return UTFConverter::kThe.ConvertSpan (spn, span{mostlyIgnoredBuf->data (), mostlyIgnoredBuf->size ()});
+                return UTFConvert::kThe.ConvertSpan (spn, span{mostlyIgnoredBuf->data (), mostlyIgnoredBuf->size ()});
 #else
-                return UTFConverter::kThe.ConvertSpan (spn, span{*mostlyIgnoredBuf});
+                return UTFConvert::kThe.ConvertSpan (spn, span{*mostlyIgnoredBuf});
 #endif
             }
             else if constexpr (is_same_v<remove_cvref_t<USTRING>, u8string_view> or is_same_v<remove_cvref_t<USTRING>, u16string_view> or
                                is_same_v<remove_cvref_t<USTRING>, wstring_view>) {
                 span spn{s.data (), s.size ()};
-                mostlyIgnoredBuf->resize_uninitialized (UTFConverter::ComputeTargetBufferSize<Character> (spn));
+                mostlyIgnoredBuf->resize_uninitialized (UTFConvert::ComputeTargetBufferSize<Character> (spn));
 #if qCompilerAndStdLib_spanOfContainer_Buggy
-                return UTFConverter::kThe.ConvertSpan (spn, span{mostlyIgnoredBuf->data (), mostlyIgnoredBuf->size ()});
+                return UTFConvert::kThe.ConvertSpan (spn, span{mostlyIgnoredBuf->data (), mostlyIgnoredBuf->size ()});
 #else
-                return UTFConverter::kThe.ConvertSpan (spn, span{*mostlyIgnoredBuf});
+                return UTFConvert::kThe.ConvertSpan (spn, span{*mostlyIgnoredBuf});
 #endif
             }
             else {
                 // else must copy data to mostlyIgnoredBuf and use that, so just need a span
                 span spn{s}; // tricky part
-                mostlyIgnoredBuf->resize_uninitialized (UTFConverter::ComputeTargetBufferSize<Character> (spn));
-                return UTFConverter::kThe.ConvertSpan (spn);
+                mostlyIgnoredBuf->resize_uninitialized (UTFConvert::ComputeTargetBufferSize<Character> (spn));
+                return UTFConvert::kThe.ConvertSpan (spn);
             }
         }
     }
@@ -190,18 +190,18 @@ namespace Stroika::Foundation::Characters {
             }
         }
         // at this point, we know the text must be encoded as utf16 or utf32 (but source code still be single byte, like utf8)
-        if (UTFConverter::AllFitsInTwoByteEncoding (s)) {
+        if (UTFConvert::AllFitsInTwoByteEncoding (s)) {
             if constexpr (sizeof (CHAR_T) == 2) {
                 // no transcode needed UTF16->UTF16
                 return mk_nocheck_ (span<const char16_t>{reinterpret_cast<const char16_t*> (s.data ()), s.size ()});
             }
             else {
                 // complex case - could be utf8 src, utf16, or utf32, so must transcode to char16_t
-                Memory::StackBuffer<char16_t> wideUnicodeBuf{Memory::eUninitialized, UTFConverter::ComputeTargetBufferSize<char16_t> (s)};
+                Memory::StackBuffer<char16_t> wideUnicodeBuf{Memory::eUninitialized, UTFConvert::ComputeTargetBufferSize<char16_t> (s)};
 #if qCompilerAndStdLib_spanOfContainer_Buggy
-                return mk_nocheck_ (Memory::ConstSpan (UTFConverter::kThe.ConvertSpan (s, span{wideUnicodeBuf.data (), wideUnicodeBuf.size ()})));
+                return mk_nocheck_ (Memory::ConstSpan (UTFConvert::kThe.ConvertSpan (s, span{wideUnicodeBuf.data (), wideUnicodeBuf.size ()})));
 #else
-                return mk_nocheck_ (Memory::ConstSpan (UTFConverter::kThe.ConvertSpan (s, span{wideUnicodeBuf})));
+                return mk_nocheck_ (Memory::ConstSpan (UTFConvert::kThe.ConvertSpan (s, span{wideUnicodeBuf})));
 #endif
             }
         }
@@ -212,11 +212,11 @@ namespace Stroika::Foundation::Characters {
         }
         else {
             // converting utf8 or utf16 with surrogates to utf32
-            Memory::StackBuffer<char32_t> wideUnicodeBuf{Memory::eUninitialized, UTFConverter::ComputeTargetBufferSize<char32_t> (s)};
+            Memory::StackBuffer<char32_t> wideUnicodeBuf{Memory::eUninitialized, UTFConvert::ComputeTargetBufferSize<char32_t> (s)};
 #if qCompilerAndStdLib_spanOfContainer_Buggy
-            return mk_nocheck_ (Memory::ConstSpan (UTFConverter::kThe.ConvertSpan (s, span{wideUnicodeBuf.data (), wideUnicodeBuf.size ()})));
+            return mk_nocheck_ (Memory::ConstSpan (UTFConvert::kThe.ConvertSpan (s, span{wideUnicodeBuf.data (), wideUnicodeBuf.size ()})));
 #else
-            return mk_nocheck_ (Memory::ConstSpan (UTFConverter::kThe.ConvertSpan (s, span{wideUnicodeBuf})));
+            return mk_nocheck_ (Memory::ConstSpan (UTFConvert::kThe.ConvertSpan (s, span{wideUnicodeBuf})));
 #endif
         }
     }
@@ -379,20 +379,20 @@ namespace Stroika::Foundation::Characters {
         if (Character::IsASCII (s)) [[likely]] {
             return mk_ (span<const char>{reinterpret_cast<const char*> (s.data ()), s.size ()});
         }
-        else if (UTFConverter::AllFitsInTwoByteEncoding (s)) [[likely]] {
-            Memory::StackBuffer<char16_t> buf{Memory::eUninitialized, UTFConverter::kThe.ComputeTargetBufferSize<char16_t> (s)};
+        else if (UTFConvert::AllFitsInTwoByteEncoding (s)) [[likely]] {
+            Memory::StackBuffer<char16_t> buf{Memory::eUninitialized, UTFConvert::kThe.ComputeTargetBufferSize<char16_t> (s)};
 #if qCompilerAndStdLib_spanOfContainer_Buggy
-            return String{UTFConverter::kThe.ConvertSpan (s, span{buf.data (), buf.size ()})};
+            return String{UTFConvert::kThe.ConvertSpan (s, span{buf.data (), buf.size ()})};
 #else
-            return String{UTFConverter::kThe.ConvertSpan (s, span{buf})};
+            return String{UTFConvert::kThe.ConvertSpan (s, span{buf})};
 #endif
         }
         else {
-            Memory::StackBuffer<char32_t> buf{Memory::eUninitialized, UTFConverter::kThe.ComputeTargetBufferSize<char32_t> (s)};
+            Memory::StackBuffer<char32_t> buf{Memory::eUninitialized, UTFConvert::kThe.ComputeTargetBufferSize<char32_t> (s)};
 #if qCompilerAndStdLib_spanOfContainer_Buggy
-            return String{UTFConverter::kThe.ConvertSpan (s, span{buf.data (), buf.size ()})};
+            return String{UTFConvert::kThe.ConvertSpan (s, span{buf.data (), buf.size ()})};
 #else
-            return String{UTFConverter::kThe.ConvertSpan (s, span{buf})};
+            return String{UTFConvert::kThe.ConvertSpan (s, span{buf})};
 #endif
         }
     }
@@ -480,11 +480,11 @@ namespace Stroika::Foundation::Characters {
             switch (psd.fInCP) {
                 case PeekSpanData::StorageCodePointType::eAscii: // maybe could optimize this case too
                 case PeekSpanData::StorageCodePointType::eSingleByteLatin1:
-                    return UTFConverter::kThe.ConvertSpan (psd.fSingleByteLatin1, s);
+                    return UTFConvert::kThe.ConvertSpan (psd.fSingleByteLatin1, s);
                 case PeekSpanData::StorageCodePointType::eChar16:
-                    return UTFConverter::kThe.ConvertSpan (psd.fChar16, s);
+                    return UTFConvert::kThe.ConvertSpan (psd.fChar16, s);
                 case PeekSpanData::StorageCodePointType::eChar32:
-                    return UTFConverter::kThe.ConvertSpan (psd.fChar32, s);
+                    return UTFConvert::kThe.ConvertSpan (psd.fChar32, s);
                 default:
                     AssertNotReached ();
                     return span<CHAR_T>{};
@@ -967,27 +967,27 @@ namespace Stroika::Foundation::Characters {
                     return span{reinterpret_cast<const char8_t*> (pds.fAscii.data ()), pds.fAscii.size ()};
                 case StorageCodePointType::eSingleByteLatin1: {
                     // Convert ISO-Latin to UTF8 requires a little work sadly
-                    possiblyUsedBuffer->resize_uninitialized (UTFConverter::ComputeTargetBufferSize<CHAR_TYPE> (pds.fSingleByteLatin1));
+                    possiblyUsedBuffer->resize_uninitialized (UTFConvert::ComputeTargetBufferSize<CHAR_TYPE> (pds.fSingleByteLatin1));
 #if qCompilerAndStdLib_spanOfContainer_Buggy
-                    return UTFConverter::kThe.ConvertSpan (pds.fSingleByteLatin1, span{possiblyUsedBuffer->data (), possiblyUsedBuffer->size ()});
+                    return UTFConvert::kThe.ConvertSpan (pds.fSingleByteLatin1, span{possiblyUsedBuffer->data (), possiblyUsedBuffer->size ()});
 #else
-                    return UTFConverter::kThe.ConvertSpan (pds.fSingleByteLatin1, span{*possiblyUsedBuffer});
+                    return UTFConvert::kThe.ConvertSpan (pds.fSingleByteLatin1, span{*possiblyUsedBuffer});
 #endif
                 }
                 case StorageCodePointType::eChar16: {
-                    possiblyUsedBuffer->resize_uninitialized (UTFConverter::ComputeTargetBufferSize<CHAR_TYPE> (pds.fChar16));
+                    possiblyUsedBuffer->resize_uninitialized (UTFConvert::ComputeTargetBufferSize<CHAR_TYPE> (pds.fChar16));
 #if qCompilerAndStdLib_spanOfContainer_Buggy
-                    return UTFConverter::kThe.ConvertSpan (pds.fChar16, span{possiblyUsedBuffer->data (), possiblyUsedBuffer->size ()});
+                    return UTFConvert::kThe.ConvertSpan (pds.fChar16, span{possiblyUsedBuffer->data (), possiblyUsedBuffer->size ()});
 #else
-                    return UTFConverter::kThe.ConvertSpan (pds.fChar16, span{*possiblyUsedBuffer});
+                    return UTFConvert::kThe.ConvertSpan (pds.fChar16, span{*possiblyUsedBuffer});
 #endif
                 }
                 case StorageCodePointType::eChar32: {
-                    possiblyUsedBuffer->resize_uninitialized (UTFConverter::ComputeTargetBufferSize<CHAR_TYPE> (pds.fChar32));
+                    possiblyUsedBuffer->resize_uninitialized (UTFConvert::ComputeTargetBufferSize<CHAR_TYPE> (pds.fChar32));
 #if qCompilerAndStdLib_spanOfContainer_Buggy
-                    return UTFConverter::kThe.ConvertSpan (pds.fChar32, span{possiblyUsedBuffer->data (), possiblyUsedBuffer->size ()});
+                    return UTFConvert::kThe.ConvertSpan (pds.fChar32, span{possiblyUsedBuffer->data (), possiblyUsedBuffer->size ()});
 #else
-                    return UTFConverter::kThe.ConvertSpan (pds.fChar32, span{*possiblyUsedBuffer});
+                    return UTFConvert::kThe.ConvertSpan (pds.fChar32, span{*possiblyUsedBuffer});
 #endif
                 }
                 default:
@@ -999,21 +999,21 @@ namespace Stroika::Foundation::Characters {
             switch (pds.fInCP) {
                 case StorageCodePointType::eAscii:
                 case StorageCodePointType::eSingleByteLatin1: {
-                    possiblyUsedBuffer->resize_uninitialized (UTFConverter::ComputeTargetBufferSize<CHAR_TYPE> (pds.fSingleByteLatin1));
+                    possiblyUsedBuffer->resize_uninitialized (UTFConvert::ComputeTargetBufferSize<CHAR_TYPE> (pds.fSingleByteLatin1));
 #if qCompilerAndStdLib_spanOfContainer_Buggy
-                    return UTFConverter::kThe.ConvertSpan (pds.fSingleByteLatin1, span{possiblyUsedBuffer->data (), possiblyUsedBuffer->size ()});
+                    return UTFConvert::kThe.ConvertSpan (pds.fSingleByteLatin1, span{possiblyUsedBuffer->data (), possiblyUsedBuffer->size ()});
 #else
-                    return UTFConverter::kThe.ConvertSpan (pds.fSingleByteLatin1, span{*possiblyUsedBuffer});
+                    return UTFConvert::kThe.ConvertSpan (pds.fSingleByteLatin1, span{*possiblyUsedBuffer});
 #endif
                 }
                 case StorageCodePointType::eChar16:
                     return pds.fChar16;
                 case StorageCodePointType::eChar32: {
-                    possiblyUsedBuffer->resize_uninitialized (UTFConverter::ComputeTargetBufferSize<CHAR_TYPE> (pds.fChar32));
+                    possiblyUsedBuffer->resize_uninitialized (UTFConvert::ComputeTargetBufferSize<CHAR_TYPE> (pds.fChar32));
 #if qCompilerAndStdLib_spanOfContainer_Buggy
-                    return UTFConverter::kThe.ConvertSpan (pds.fChar32, span{possiblyUsedBuffer->data (), possiblyUsedBuffer->size ()});
+                    return UTFConvert::kThe.ConvertSpan (pds.fChar32, span{possiblyUsedBuffer->data (), possiblyUsedBuffer->size ()});
 #else
-                    return UTFConverter::kThe.ConvertSpan (pds.fChar32, span{*possiblyUsedBuffer});
+                    return UTFConvert::kThe.ConvertSpan (pds.fChar32, span{*possiblyUsedBuffer});
 #endif
                 }
                 default:
@@ -1025,19 +1025,19 @@ namespace Stroika::Foundation::Characters {
             switch (pds.fInCP) {
                 case StorageCodePointType::eAscii:
                 case StorageCodePointType::eSingleByteLatin1: {
-                    possiblyUsedBuffer->resize_uninitialized (UTFConverter::ComputeTargetBufferSize<CHAR_TYPE> (pds.fSingleByteLatin1));
+                    possiblyUsedBuffer->resize_uninitialized (UTFConvert::ComputeTargetBufferSize<CHAR_TYPE> (pds.fSingleByteLatin1));
 #if qCompilerAndStdLib_spanOfContainer_Buggy
-                    return UTFConverter::kThe.ConvertSpan (pds.fSingleByteLatin1, span{possiblyUsedBuffer->data (), possiblyUsedBuffer->size ()});
+                    return UTFConvert::kThe.ConvertSpan (pds.fSingleByteLatin1, span{possiblyUsedBuffer->data (), possiblyUsedBuffer->size ()});
 #else
-                    return UTFConverter::kThe.ConvertSpan (pds.fSingleByteLatin1, span{*possiblyUsedBuffer});
+                    return UTFConvert::kThe.ConvertSpan (pds.fSingleByteLatin1, span{*possiblyUsedBuffer});
 #endif
                 }
                 case StorageCodePointType::eChar16: {
-                    possiblyUsedBuffer->resize_uninitialized (UTFConverter::ComputeTargetBufferSize<CHAR_TYPE> (pds.fChar16));
+                    possiblyUsedBuffer->resize_uninitialized (UTFConvert::ComputeTargetBufferSize<CHAR_TYPE> (pds.fChar16));
 #if qCompilerAndStdLib_spanOfContainer_Buggy
-                    return UTFConverter::kThe.ConvertSpan (pds.fChar16, span{possiblyUsedBuffer->data (), possiblyUsedBuffer->size ()});
+                    return UTFConvert::kThe.ConvertSpan (pds.fChar16, span{possiblyUsedBuffer->data (), possiblyUsedBuffer->size ()});
 #else
-                    return UTFConverter::kThe.ConvertSpan (pds.fChar16, span{*possiblyUsedBuffer});
+                    return UTFConvert::kThe.ConvertSpan (pds.fChar16, span{*possiblyUsedBuffer});
 #endif
                 }
                 case StorageCodePointType::eChar32:

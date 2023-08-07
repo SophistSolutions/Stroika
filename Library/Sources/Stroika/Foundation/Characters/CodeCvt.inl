@@ -69,13 +69,13 @@ namespace Stroika::Foundation::Characters {
     template <IUNICODECanAlwaysConvertTo SERIALIZED_CHAR_T>
 #endif
     struct CodeCvt<CHAR_T>::UTFConvertRep_ : CodeCvt<CHAR_T>::IRep {
-        using ConversionResult           = UTFConverter::ConversionResult;
-        using ConversionResultWithStatus = UTFConverter::ConversionResultWithStatus;
-        using ConversionStatusFlag       = UTFConverter::ConversionStatusFlag;
+        using ConversionResult           = UTFConvert::ConversionResult;
+        using ConversionResultWithStatus = UTFConvert::ConversionResultWithStatus;
+        using ConversionStatusFlag       = UTFConvert::ConversionStatusFlag;
         UTFConvertRep_ (const Options& o)
             : fCodeConverter_{o.fInvalidCharacterReplacement
-                                  ? UTFConverter{UTFConverter::Options{.fInvalidCharacterReplacement = *o.fInvalidCharacterReplacement}}
-                                  : UTFConverter::kThe}
+                                  ? UTFConvert{UTFConvert::Options{.fInvalidCharacterReplacement = *o.fInvalidCharacterReplacement}}
+                                  : UTFConvert::kThe}
         {
         }
         virtual span<CHAR_T> Bytes2Characters (span<const byte>* from, span<CHAR_T> to) const override
@@ -86,7 +86,7 @@ namespace Stroika::Foundation::Characters {
             Assert (serializedFrom.size_bytes () <= from->size ()); // note - serializedFrom could be smaller than from in bytespan
             ConversionResultWithStatus r = fCodeConverter_.ConvertQuietly (serializedFrom, to);
             if (r.fStatus == ConversionStatusFlag::sourceIllegal) {
-                UTFConverter::Throw (r.fStatus, r.fSourceConsumed);
+                UTFConvert::Throw (r.fStatus, r.fSourceConsumed);
             }
             *from = from->subspan (r.fSourceConsumed); // from updated to remaining data, if any
             return to.subspan (0, r.fTargetProduced);  // point ACTUAL copied data
@@ -102,23 +102,23 @@ namespace Stroika::Foundation::Characters {
         virtual size_t ComputeTargetCharacterBufferSize (variant<span<const byte>, size_t> src) const override
         {
             if (const size_t* i = get_if<size_t> (&src)) {
-                return UTFConverter::ComputeTargetBufferSize<CHAR_T, SERIALIZED_CHAR_T> (*i / sizeof (SERIALIZED_CHAR_T));
+                return UTFConvert::ComputeTargetBufferSize<CHAR_T, SERIALIZED_CHAR_T> (*i / sizeof (SERIALIZED_CHAR_T));
             }
             else {
-                return UTFConverter::ComputeTargetBufferSize<CHAR_T> (ReinterpretBytes_ (get<span<const byte>> (src)));
+                return UTFConvert::ComputeTargetBufferSize<CHAR_T> (ReinterpretBytes_ (get<span<const byte>> (src)));
             }
         }
         virtual size_t ComputeTargetByteBufferSize (variant<span<const CHAR_T>, size_t> src) const override
         {
             if (const size_t* i = get_if<size_t> (&src)) {
-                return UTFConverter::ComputeTargetBufferSize<SERIALIZED_CHAR_T, CHAR_T> (*i) * sizeof (SERIALIZED_CHAR_T);
+                return UTFConvert::ComputeTargetBufferSize<SERIALIZED_CHAR_T, CHAR_T> (*i) * sizeof (SERIALIZED_CHAR_T);
             }
             else {
-                return UTFConverter::ComputeTargetBufferSize<SERIALIZED_CHAR_T> (get<span<const CHAR_T>> (src)) * sizeof (SERIALIZED_CHAR_T);
+                return UTFConvert::ComputeTargetBufferSize<SERIALIZED_CHAR_T> (get<span<const CHAR_T>> (src)) * sizeof (SERIALIZED_CHAR_T);
             }
         }
         /*
-         *  essentially 'cast' from bytes to from SERIALIZED_CHAR_T (could be char8_t, char16_t or whatever works with UTFConverter)
+         *  essentially 'cast' from bytes to from SERIALIZED_CHAR_T (could be char8_t, char16_t or whatever works with UTFConvert)
          */
         static span<const SERIALIZED_CHAR_T> ReinterpretBytes_ (span<const byte> s)
         {
@@ -128,7 +128,7 @@ namespace Stroika::Foundation::Characters {
         {
             return span<SERIALIZED_CHAR_T>{reinterpret_cast<SERIALIZED_CHAR_T*> (s.data ()), s.size () / sizeof (SERIALIZED_CHAR_T)};
         }
-        UTFConverter fCodeConverter_;
+        UTFConvert fCodeConverter_;
     };
 
     /*
@@ -185,7 +185,7 @@ namespace Stroika::Foundation::Characters {
      ********************************************************************************
      */
     /*
-     * Utility rep to wrap some kind of rep along with (optional) UTFConverter, to complete
+     * Utility rep to wrap some kind of rep along with (optional) UTFConvert, to complete
      * conversion from bytes to/from desired rep generally through some intermediary rep.
      * 
      *  NOTE - this code allows INTERMEDIATE_CHAR_T == CHAR_T special case, and is optimized to do
@@ -198,14 +198,14 @@ namespace Stroika::Foundation::Characters {
     template <IUNICODECanAlwaysConvertTo INTERMEDIATE_CHAR_T>
 #endif
     struct CodeCvt<CHAR_T>::UTF2UTFRep_ : CodeCvt<CHAR_T>::IRep {
-        using ConversionResultWithStatus = UTFConverter::ConversionResultWithStatus;
-        using ConversionStatusFlag       = UTFConverter::ConversionStatusFlag;
+        using ConversionResultWithStatus = UTFConvert::ConversionResultWithStatus;
+        using ConversionStatusFlag       = UTFConvert::ConversionStatusFlag;
         UTF2UTFRep_ (const CodeCvt<INTERMEDIATE_CHAR_T>& origCodeCvt)
             requires (sizeof (CHAR_T) == sizeof (INTERMEDIATE_CHAR_T))
             : fBytesVSIntermediateCvt_{origCodeCvt}
         {
         }
-        UTF2UTFRep_ (const CodeCvt<INTERMEDIATE_CHAR_T>& origCodeCvt, const UTFConverter& secondStep = {})
+        UTF2UTFRep_ (const CodeCvt<INTERMEDIATE_CHAR_T>& origCodeCvt, const UTFConvert& secondStep = {})
             requires (sizeof (CHAR_T) != sizeof (INTERMEDIATE_CHAR_T))
             : fBytesVSIntermediateCvt_{origCodeCvt}
             , fIntermediateVSFinalCHARCvt_{secondStep}
@@ -237,7 +237,7 @@ namespace Stroika::Foundation::Characters {
                     ConversionResultWithStatus cr = fIntermediateVSFinalCHARCvt_.ConvertQuietly (intermediateSpan, to);
                     switch (cr.fStatus) {
                         case ConversionStatusFlag::sourceIllegal:
-                            UTFConverter::Throw (cr.fStatus, cr.fSourceConsumed);
+                            UTFConvert::Throw (cr.fStatus, cr.fSourceConsumed);
                         case ConversionStatusFlag::sourceExhausted:
                             // TRICKY - if we have at least one character output, then we need to back out bytes 'from' - til this doesn't happen
                             if (not from->empty ()) {
@@ -320,7 +320,7 @@ namespace Stroika::Foundation::Characters {
             return fBytesVSIntermediateCvt_.ComputeTargetByteBufferSize (intermediateCharCntMax);
         }
         CodeCvt<INTERMEDIATE_CHAR_T> fBytesVSIntermediateCvt_;
-        conditional_t<sizeof (CHAR_T) != sizeof (INTERMEDIATE_CHAR_T), UTFConverter, byte> fIntermediateVSFinalCHARCvt_; // would like to remove field if sizeof ==, but not sure how (void doesnt work)
+        conditional_t<sizeof (CHAR_T) != sizeof (INTERMEDIATE_CHAR_T), UTFConvert, byte> fIntermediateVSFinalCHARCvt_; // would like to remove field if sizeof ==, but not sure how (void doesnt work)
     };
 
     /*
