@@ -14,10 +14,11 @@
 
 #include "Character.h"
 #include "CodePage.h"
+#include "UTFConvert.h"
 
 /**
  *  \file
- *      Simple wrapper on std::codecvt, abstracting commonalities between std::codecvt and UTFConverter, to map characters <--> bytes
+ *      Simple wrapper on std::codecvt, abstracting commonalities between std::codecvt and UTFConverter, to map characters (UNICODE) <--> bytes
  */
 
 namespace Stroika::Foundation::Characters {
@@ -25,24 +26,6 @@ namespace Stroika::Foundation::Characters {
     using namespace std;
 
     class String; // forward declare to reference without deadly embrace
-
-    /**
-     *  \brief list of external UNICODE character encodings, for file IO (eDefault = eUTF8)
-     * 
-     *  \note - UTF-7 **not** supported because very few places support it/ever used it, and
-     *          https://en.wikipedia.org/wiki/UTF-7 says its obsolete. So don't bother.
-     */
-    enum class UnicodeExternalEncodings {
-        eUTF8,
-        eUTF16_BE,
-        eUTF16_LE,
-        eUTF16 = std::endian::native == std::endian::big ? eUTF16_BE : eUTF16_LE,
-        eUTF32_BE,
-        eUTF32_LE,
-        eUTF32 = std::endian::native == std::endian::big ? eUTF32_BE : eUTF32_LE,
-
-        eDefault = eUTF8,
-    };
 
     namespace Private_ {
         template <typename>
@@ -114,7 +97,7 @@ namespace Stroika::Foundation::Characters {
      *          an output buffer large enuf. This way, can NEVER get get partial conversion due to lack of output buffer space (which simplfies alot
      *          within this API). NOTE - large enuf doesn't necessarily mean as large as ComputeTargetCharacterBufferSize/ComputeTargetByteBufferSize would say, as those
      *          provide safe estimate. If you know for special reasons, you can use a smaller size, but the call must always FIT - no 'targetExhuasted' exceptions thrown.
-     *      o   no 'noconv' error code.
+     *      o   no 'noconv' error code (better in that simpler, but worse in that forces throw on bad characters)
      * 
      *  Enhancements over UTFConverter:
      *      o   UTFConverter only supports UNICODE <-> UNICODE translations, even if in different
@@ -134,6 +117,15 @@ namespace Stroika::Foundation::Characters {
 
     public:
         struct IRep;
+
+    public:
+        struct Options {
+            /**
+             *  if fInvalidCharacterReplacement is nullopt (the default) - throw on invalid characters, and
+             *  otherwise use the value provided in fInvalidCharacterReplacement as the replacement.
+             */
+            optional<CHAR_T> fInvalidCharacterReplacement;
+        };
 
     public:
         /**

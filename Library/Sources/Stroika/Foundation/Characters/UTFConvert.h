@@ -27,6 +27,24 @@
 namespace Stroika::Foundation::Characters {
 
     /**
+     *  \brief list of external UNICODE character encodings, for file IO (eDefault = eUTF8)
+     * 
+     *  \note - UTF-7 **not** supported because very few places support it/ever used it, and
+     *          https://en.wikipedia.org/wiki/UTF-7 says its obsolete. So don't bother.
+     */
+    enum class UnicodeExternalEncodings {
+        eUTF8,
+        eUTF16_BE,
+        eUTF16_LE,
+        eUTF16 = std::endian::native == std::endian::big ? eUTF16_BE : eUTF16_LE,
+        eUTF32_BE,
+        eUTF32_LE,
+        eUTF32 = std::endian::native == std::endian::big ? eUTF32_BE : eUTF32_LE,
+
+        eDefault = eUTF8,
+    };
+
+    /**
      * \brief UTFConverter is designed to provide mappings between various UTF encodings of UNICODE characters.
      * 
      *  This area of C++ is a confusingly broken cluster-fuck. Its pretty simple, and well defined. It's been standardized in C++
@@ -71,10 +89,10 @@ namespace Stroika::Foundation::Characters {
          */
         struct Options {
             /**
-             *  if fStrictMode, then throw exceptions for bad data (if the underlying algorithm allows). If not, just
-             *  silently skip or use xxx character.
+             *  if fInvalidCharacterReplacement is nullopt (the default) - throw on invalid characters, and
+             *  otherwise use the value provided in fInvalidCharacterReplacement as the replacement.
              */
-            bool fStrictMode{false};
+            optional<Character> fInvalidCharacterReplacement;
 
             /**
              *  Different implementations of UTF character conversion
