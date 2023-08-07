@@ -72,8 +72,10 @@ namespace Stroika::Foundation::Characters {
         using ConversionResult           = UTFConverter::ConversionResult;
         using ConversionResultWithStatus = UTFConverter::ConversionResultWithStatus;
         using ConversionStatusFlag       = UTFConverter::ConversionStatusFlag;
-        UTFConvertRep_ (const UTFConverter& utfCodeCvt)
-            : fCodeConverter_{utfCodeCvt}
+        UTFConvertRep_ (const Options& o)
+            : fCodeConverter_{o.fInvalidCharacterReplacement
+                                  ? UTFConverter{UTFConverter::Options{.fInvalidCharacterReplacement = *o.fInvalidCharacterReplacement}}
+                                  : UTFConverter::kThe}
         {
         }
         virtual span<CHAR_T> Bytes2Characters (span<const byte>* from, span<CHAR_T> to) const override
@@ -142,8 +144,8 @@ namespace Stroika::Foundation::Characters {
 #endif
     struct CodeCvt<CHAR_T>::UTFConvertSwappedRep_ : UTFConvertRep_<SERIALIZED_CHAR_T> {
         using inherited = UTFConvertRep_<SERIALIZED_CHAR_T>;
-        UTFConvertSwappedRep_ (const UTFConverter& utfCodeCvt)
-            : inherited{utfCodeCvt}
+        UTFConvertSwappedRep_ (const Options& o)
+            : inherited{o}
         {
         }
         virtual span<CHAR_T> Bytes2Characters (span<const byte>* from, span<CHAR_T> to) const override
@@ -326,10 +328,12 @@ namespace Stroika::Foundation::Characters {
     template <typename STD_CODE_CVT_T>
     struct CodeCvt<CHAR_T>::CodeCvt_WrapStdCodeCvt_ : CodeCvt<CHAR_T>::IRep {
         unique_ptr<STD_CODE_CVT_T> fCodeCvt_;
+        optional<CHAR_T>           fInvalidCharacterReplacement_;
         using extern_type = typename STD_CODE_CVT_T::extern_type;
         static_assert (is_same_v<CHAR_T, typename STD_CODE_CVT_T::intern_type>);
-        CodeCvt_WrapStdCodeCvt_ (unique_ptr<STD_CODE_CVT_T>&& codeCvt)
+        CodeCvt_WrapStdCodeCvt_ (const Options& options, unique_ptr<STD_CODE_CVT_T>&& codeCvt)
             : fCodeCvt_{move (codeCvt)}
+            , fInvalidCharacterReplacement_{options.fInvalidCharacterReplacement}
         {
         }
         virtual span<CHAR_T> Bytes2Characters (span<const byte>* from, span<CHAR_T> to) const override
@@ -349,7 +353,12 @@ namespace Stroika::Foundation::Characters {
                 Assert (from->size () != 0);
             }
             else if (r != STD_CODE_CVT_T::ok) {
-                Private_::ThrowErrorConvertingBytes2Characters_ (_Mid1 - _First1);
+                if (fInvalidCharacterReplacement_) {
+                    AssertNotImplemented (); // must patch in replacement character, and continue...
+                }
+                else {
+                    Private_::ThrowErrorConvertingBytes2Characters_ (_Mid1 - _First1);
+                }
             }
             else {
                 Require (_Mid1 == _Last1);
@@ -369,7 +378,12 @@ namespace Stroika::Foundation::Characters {
             mbstate_t     ignoredMBState{};
             auto          r = fCodeCvt_->out (ignoredMBState, _First1, _Last1, _Mid1, _First2, _Last2, _Mid2);
             if (r != STD_CODE_CVT_T::ok) {
-                Private_::ThrowErrorConvertingCharacters2Bytes_ (_Mid1 - _First1);
+                if (fInvalidCharacterReplacement_) {
+                    AssertNotImplemented (); // must patch in replacement character, and continue...
+                }
+                else {
+                    Private_::ThrowErrorConvertingCharacters2Bytes_ (_Mid1 - _First1);
+                }
             }
             Require (_Mid1 == _Last1);              // used all input
             return to.subspan (0, _Mid2 - _First2); // point ACTUAL copied data
@@ -430,21 +444,25 @@ namespace Stroika::Foundation::Characters {
      ********************************************************************************
      */
     template <IUNICODECanAlwaysConvertTo CHAR_T>
-    inline CodeCvt<CHAR_T>::CodeCvt ()
-        : fRep_{make_shared<UTFConvertRep_<char8_t>> (UTFConverter::kThe)} // default, is to serialize to UTF-8
+    inline CodeCvt<CHAR_T>::CodeCvt (const Options& options)
+        : fRep_{make_shared<UTFConvertRep_<char8_t>> (options)} // default, is to serialize to UTF-8
     {
     }
     template <IUNICODECanAlwaysConvertTo CHAR_T>
-    inline CodeCvt<CHAR_T>::CodeCvt (const locale& l)
+    inline CodeCvt<CHAR_T>::CodeCvt (const locale& l, const Options& options)
     {
         if constexpr (is_same_v<CHAR_T, wchar_t>) {
-            *this = mkFromStdCodeCvt<codecvt_byname<wchar_t, char, mbstate_t>> (l.name ());
+            *this = mkFromStdCodeCvt<codecvt_byname<wchar_t, char, mbstate_t>> (options, l.name ());
         }
         else if constexpr (is_same_v<CHAR_T, char16_t> or is_same_v<CHAR_T, char32_t>) {
-            *this = mkFromStdCodeCvt<codecvt_byname<CHAR_T, char8_t, mbstate_t>> (l.name ());
+            *this = mkFromStdCodeCvt<codecvt_byname<CHAR_T, char8_t, mbstate_t>> (options, l.name ());
         }
         else if constexpr (is_same_v<CHAR_T, Character>) {
-            fRep_ = make_shared<UTF2UTFRep_<char32_t>> (CodeCvt<char32_t>::mkFromStdCodeCvt<codecvt_byname<char32_t, char8_t, mbstate_t>> (l.name ()));
+            CodeCvt<char32_t>::Options useO{.fInvalidCharacterReplacement = options.fInvalidCharacterReplacement
+                                                                                ? Character{*options.fInvalidCharacterReplacement}.As<char32_t> ()
+                                                                                : optional<char32_t>{}};
+            fRep_ = make_shared<UTF2UTFRep_<char32_t>> (
+                CodeCvt<char32_t>::mkFromStdCodeCvt<codecvt_byname<char32_t, char8_t, mbstate_t>> (useO, l.name ()));
         }
         else {
             // CHAR_T COULD be UTF-8, but not clear if/why that would be useful.
@@ -452,17 +470,20 @@ namespace Stroika::Foundation::Characters {
         }
     }
     template <IUNICODECanAlwaysConvertTo CHAR_T>
-    CodeCvt<CHAR_T>::CodeCvt (const String& localeName)
+    CodeCvt<CHAR_T>::CodeCvt (const String& localeName, const Options& options)
     {
         string ln = Private_::AsNarrowSDKString_ (localeName);
         if constexpr (is_same_v<CHAR_T, wchar_t>) {
-            *this = mkFromStdCodeCvt<codecvt_byname<wchar_t, char, mbstate_t>> (ln);
+            *this = mkFromStdCodeCvt<codecvt_byname<wchar_t, char, mbstate_t>> (options, ln);
         }
         else if constexpr (is_same_v<CHAR_T, char16_t> or is_same_v<CHAR_T, char32_t>) {
-            *this = mkFromStdCodeCvt<codecvt_byname<CHAR_T, char8_t, mbstate_t>> (ln);
+            *this = mkFromStdCodeCvt<codecvt_byname<CHAR_T, char8_t, mbstate_t>> (options, ln);
         }
         else if constexpr (is_same_v<CHAR_T, Character>) {
-            fRep_ = make_shared<UTF2UTFRep_<char32_t>> (CodeCvt<char32_t>::mkFromStdCodeCvt<codecvt_byname<char32_t, char8_t, mbstate_t>> (ln));
+            CodeCvt<char32_t>::Options useO{.fInvalidCharacterReplacement = options.fInvalidCharacterReplacement
+                                                                                ? Character{*options.fInvalidCharacterReplacement}.As<char32_t> ()
+                                                                                : optional<char32_t>{}};
+            fRep_ = make_shared<UTF2UTFRep_<char32_t>> (CodeCvt<char32_t>::mkFromStdCodeCvt<codecvt_byname<char32_t, char8_t, mbstate_t>> (useO, ln));
         }
         else {
             // CHAR_T COULD be UTF-8, but not clear if/why that would be useful.
@@ -470,29 +491,29 @@ namespace Stroika::Foundation::Characters {
         }
     }
     template <IUNICODECanAlwaysConvertTo CHAR_T>
-    CodeCvt<CHAR_T>::CodeCvt (UnicodeExternalEncodings e)
+    CodeCvt<CHAR_T>::CodeCvt (UnicodeExternalEncodings e, const Options& options)
         : fRep_{}
     {
         switch (e) {
             case UnicodeExternalEncodings::eUTF8:
-                fRep_ = make_shared<UTFConvertRep_<char8_t>> (UTFConverter::kThe);
+                fRep_ = make_shared<UTFConvertRep_<char8_t>> (options);
                 break;
             case UnicodeExternalEncodings::eUTF16_BE:
             case UnicodeExternalEncodings::eUTF16_LE:
                 if (e == UnicodeExternalEncodings::eUTF16) {
-                    fRep_ = make_shared<UTFConvertRep_<char16_t>> (UTFConverter::kThe);
+                    fRep_ = make_shared<UTFConvertRep_<char16_t>> (options);
                 }
                 else {
-                    fRep_ = make_shared<UTFConvertSwappedRep_<char16_t>> (UTFConverter::kThe);
+                    fRep_ = make_shared<UTFConvertSwappedRep_<char16_t>> (options);
                 }
                 break;
             case UnicodeExternalEncodings::eUTF32_BE:
             case UnicodeExternalEncodings::eUTF32_LE:
                 if (e == UnicodeExternalEncodings::eUTF32) {
-                    fRep_ = make_shared<UTFConvertRep_<char32_t>> (UTFConverter::kThe);
+                    fRep_ = make_shared<UTFConvertRep_<char32_t>> (options);
                 }
                 else {
-                    fRep_ = make_shared<UTFConvertSwappedRep_<char32_t>> (UTFConverter::kThe);
+                    fRep_ = make_shared<UTFConvertSwappedRep_<char32_t>> (options);
                 }
                 break;
             default:
@@ -500,7 +521,7 @@ namespace Stroika::Foundation::Characters {
         }
     }
     template <IUNICODECanAlwaysConvertTo CHAR_T>
-    CodeCvt<CHAR_T>::CodeCvt (span<const byte>* guessFormatFrom, const optional<CodeCvt>& useElse)
+    CodeCvt<CHAR_T>::CodeCvt (span<const byte>* guessFormatFrom, const optional<CodeCvt>& useElse, const Options& options)
         : fRep_{}
     {
         RequireNotNull (guessFormatFrom);
@@ -513,7 +534,7 @@ namespace Stroika::Foundation::Characters {
         }
     }
     template <IUNICODECanAlwaysConvertTo CHAR_T>
-    CodeCvt<CHAR_T>::CodeCvt (CodePage cp)
+    CodeCvt<CHAR_T>::CodeCvt (CodePage cp, const Options& options)
         : fRep_{}
     {
         // A few we have builtin table converters for (BuiltinSingleByteTableCodePageRep_);
@@ -532,13 +553,13 @@ namespace Stroika::Foundation::Characters {
                 fRep_ = make_shared<UTF2UTFRep_<char16_t>> (CodeCvt<char16_t> (make_shared<Private_::BuiltinSingleByteTableCodePageRep_> (cp)));
                 break;
             case WellKnownCodePages::kUTF8:
-                fRep_ = make_shared<UTFConvertRep_<char8_t>> (UTFConverter::kThe);
+                fRep_ = make_shared<UTFConvertRep_<char8_t>> (options);
                 break;
             case WellKnownCodePages::kUNICODE_WIDE:
-                fRep_ = make_shared<UTFConvertRep_<char16_t>> (UTFConverter::kThe);
+                fRep_ = make_shared<UTFConvertRep_<char16_t>> (options);
                 break;
             case WellKnownCodePages::kUNICODE_WIDE_BIGENDIAN:
-                fRep_ = make_shared<UTFConvertSwappedRep_<char16_t>> (UTFConverter::kThe);
+                fRep_ = make_shared<UTFConvertSwappedRep_<char16_t>> (options);
                 break;
             default:
 #if qPlatform_Windows
@@ -562,11 +583,11 @@ namespace Stroika::Foundation::Characters {
     }
     template <IUNICODECanAlwaysConvertTo CHAR_T>
     template <IStdCodeCVT STD_CODECVT, typename... ARGS>
-    inline CodeCvt<CHAR_T> CodeCvt<CHAR_T>::mkFromStdCodeCvt (ARGS... args)
+    inline CodeCvt<CHAR_T> CodeCvt<CHAR_T>::mkFromStdCodeCvt (const Options& options, ARGS... args)
         requires (is_same_v<CHAR_T, typename STD_CODECVT::intern_type>)
     {
         auto u = make_unique<Private_::deletable_facet_<STD_CODECVT>> (forward<ARGS> (args)...);
-        return CodeCvt<CHAR_T>{make_shared<CodeCvt_WrapStdCodeCvt_<Private_::deletable_facet_<STD_CODECVT>>> (move (u))};
+        return CodeCvt<CHAR_T>{make_shared<CodeCvt_WrapStdCodeCvt_<Private_::deletable_facet_<STD_CODECVT>>> (options, move (u))};
     }
     template <IUNICODECanAlwaysConvertTo CHAR_T>
     inline auto CodeCvt<CHAR_T>::Bytes2Characters (span<const byte> from) const -> size_t

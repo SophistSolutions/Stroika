@@ -202,12 +202,14 @@ namespace Stroika::Foundation::Characters {
          *          utf-8
          *          ISO-8859-1
          */
-        CodeCvt ();
-        CodeCvt (const locale& l);
-        CodeCvt (const String& localeName);
-        CodeCvt (UnicodeExternalEncodings e);
-        CodeCvt (span<const byte>* guessFormatFrom, const optional<CodeCvt>& useElse = nullopt);
-        CodeCvt (CodePage e);
+        CodeCvt (const Options& options = Options{});
+        CodeCvt (const CodeCvt& src) = default;
+        CodeCvt (CodeCvt&& src)      = default;
+        CodeCvt (const locale& l, const Options& options = Options{});
+        CodeCvt (const String& localeName, const Options& options = Options{});
+        CodeCvt (UnicodeExternalEncodings e, const Options& options = Options{});
+        CodeCvt (span<const byte>* guessFormatFrom, const optional<CodeCvt>& useElse = nullopt, const Options& options = Options{});
+        CodeCvt (CodePage e, const Options& options = Options{});
         template <IUNICODECanAlwaysConvertTo INTERMEDIATE_CHAR_T>
         CodeCvt (const CodeCvt<INTERMEDIATE_CHAR_T>& basedOn);
         CodeCvt (const shared_ptr<IRep>& rep);
@@ -220,8 +222,12 @@ namespace Stroika::Foundation::Characters {
          *  explicitly with a static function, and that is what we do with mkFromStdCodeCvt.
          */
         template <IStdCodeCVT STD_CODECVT, typename... ARGS>
-        static CodeCvt mkFromStdCodeCvt (ARGS... args)
+        static CodeCvt mkFromStdCodeCvt (const Options& options = {}, ARGS... args)
             requires (is_same_v<CHAR_T, typename STD_CODECVT::intern_type>);
+
+    public:
+        nonvirtual CodeCvt& operator= (const CodeCvt& rhs) = default;
+        nonvirtual CodeCvt& operator= (CodeCvt&& rhs)      = default;
 
     public:
         /**

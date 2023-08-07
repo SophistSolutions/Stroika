@@ -91,8 +91,16 @@ namespace Stroika::Foundation::Characters {
             /**
              *  if fInvalidCharacterReplacement is nullopt (the default) - throw on invalid characters, and
              *  otherwise use the value provided in fInvalidCharacterReplacement as the replacement.
+             * 
+             *  \see kDefaultMissingReplacementCharacter
              */
             optional<Character> fInvalidCharacterReplacement;
+
+            /**
+             * Sensible replacement character (value for fInvalidCharacterReplacement)
+             *      'UNI_REPLACEMENT_CHAR' from https://github.com/codebrainz/libutfxx/blob/master/utf/ConvertUTF.h
+             */
+            static inline constexpr Character kDefaultMissingReplacementCharacter = Character{(char32_t)0x0000FFFD};
 
             /**
              *  Different implementations of UTF character conversion
@@ -295,9 +303,9 @@ namespace Stroika::Foundation::Characters {
          * 
          *  \req target.size () >= ComputeTargetBufferSize<TRG_T> (source)
          * 
-         *  \note, if given illegal UTF-8, or illegal ascii (ASCII) source input, the function should (perhaps peramterized)
-         *         detect the error and return ConversionStatusFlag::sourceIllegal (depending on Options::fStrictMode).
-         *         // @todo RECONSIDER fStrictMode!!!
+         *  \note, if given illegal UTF-8, or illegal ascii (ASCII) source input, the will either return 
+         *          with fStatus==sourceIllegal (if fOptions.fInvalidCharacterReplacement == nullopt), or will just use that
+         *          fInvalidCharacterReplacement character, and treat this as not an error.
          * 
          *  \note multibyteConversionState is often ignored, but since some implementations may use it, it is required (to allow
          *        interface as a whole to always work without knowing which implementations require it).
@@ -374,12 +382,18 @@ namespace Stroika::Foundation::Characters {
 #endif
 
     private:
-        static ConversionResultWithStatus ConvertQuietly_StroikaPortable_ (span<const char8_t> source, span<char16_t> target);
-        static ConversionResultWithStatus ConvertQuietly_StroikaPortable_ (span<const char8_t> source, span<char32_t> target);
-        static ConversionResultWithStatus ConvertQuietly_StroikaPortable_ (span<const char16_t> source, span<char32_t> target);
-        static ConversionResultWithStatus ConvertQuietly_StroikaPortable_ (span<const char32_t> source, span<char16_t> target);
-        static ConversionResultWithStatus ConvertQuietly_StroikaPortable_ (span<const char32_t> source, span<char8_t> target);
-        static ConversionResultWithStatus ConvertQuietly_StroikaPortable_ (span<const char16_t> source, span<char8_t> target);
+        static ConversionResultWithStatus ConvertQuietly_StroikaPortable_ (optional<Character> invalidCharacterReplacement,
+                                                                           span<const char8_t> source, span<char16_t> target);
+        static ConversionResultWithStatus ConvertQuietly_StroikaPortable_ (optional<Character> invalidCharacterReplacement,
+                                                                           span<const char8_t> source, span<char32_t> target);
+        static ConversionResultWithStatus ConvertQuietly_StroikaPortable_ (optional<Character>  invalidCharacterReplacement,
+                                                                           span<const char16_t> source, span<char32_t> target);
+        static ConversionResultWithStatus ConvertQuietly_StroikaPortable_ (optional<Character>  invalidCharacterReplacement,
+                                                                           span<const char32_t> source, span<char16_t> target);
+        static ConversionResultWithStatus ConvertQuietly_StroikaPortable_ (optional<Character>  invalidCharacterReplacement,
+                                                                           span<const char32_t> source, span<char8_t> target);
+        static ConversionResultWithStatus ConvertQuietly_StroikaPortable_ (optional<Character>  invalidCharacterReplacement,
+                                                                           span<const char16_t> source, span<char8_t> target);
 
 #if __has_include("boost/locale/encoding_utf.hpp")
     private:

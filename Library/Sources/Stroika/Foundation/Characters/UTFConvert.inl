@@ -53,6 +53,15 @@ namespace Stroika::Foundation::Characters {
             fUsingOptions.fPreferredImplementation = Options::Implementation::eStroikaPortable;
 #endif
         }
+        if (options.fInvalidCharacterReplacement) {
+            // For now, thats all that supports fInvalidCharacterReplacement, but could do others pretty easily - probably - LGP 2023-08-07
+#if qPlatform_Windows
+            Require (fUsingOptions.fPreferredImplementation == Options::Implementation::eStroikaPortable or
+                     fUsingOptions.fPreferredImplementation == Options::Implementation::eWindowsAPIWide2FromMultibyte);
+#else
+            Require (fUsingOptions.fPreferredImplementation == Options::Implementation::eStroikaPortable);
+#endif
+        }
     }
     inline constexpr UTFConverter UTFConverter::kThe;
     template <IUNICODECanUnambiguouslyConvertFrom CHAR_T>
@@ -325,7 +334,8 @@ namespace Stroika::Foundation::Characters {
         else {
             switch (Private_::ValueOf_ (fUsingOptions.fPreferredImplementation)) {
                 case Options::Implementation::eStroikaPortable: {
-                    return ConvertQuietly_StroikaPortable_ (ConvertToPrimitiveSpan_ (source), ConvertToPrimitiveSpan_ (target));
+                    return ConvertQuietly_StroikaPortable_ (fUsingOptions.fInvalidCharacterReplacement, ConvertToPrimitiveSpan_ (source),
+                                                            ConvertToPrimitiveSpan_ (target));
                 }
 #if qPlatform_Windows
                 case Options::Implementation::eWindowsAPIWide2FromMultibyte: {
@@ -350,7 +360,8 @@ namespace Stroika::Foundation::Characters {
                     }
                 }
             }
-            return ConvertQuietly_StroikaPortable_ (ConvertToPrimitiveSpan_ (source), ConvertToPrimitiveSpan_ (target)); // default if preferred not available
+            return ConvertQuietly_StroikaPortable_ (fUsingOptions.fInvalidCharacterReplacement, ConvertToPrimitiveSpan_ (source),
+                                                    ConvertToPrimitiveSpan_ (target)); // default if preferred not available
         }
     }
     template <IUNICODECanUnambiguouslyConvertFrom TRG_T, IUNICODECanUnambiguouslyConvertFrom SRC_T>
