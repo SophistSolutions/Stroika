@@ -1821,9 +1821,11 @@ namespace {
             if (hasLocale ("en_US.UTF8")) {
                 // Now using codecvt_byname (locale converter)
                 CodeCvt<wchar_t> codeCvt3a =
-                    CodeCvt<wchar_t>::mkFromStdCodeCvt<std::codecvt_byname<wchar_t, char, std::mbstate_t>> ("en_US.UTF8");
-                CodeCvt<char32_t> codeCvt3b = CodeCvt<char32_t>::mkFromStdCodeCvt<std::codecvt_byname<char32_t, char8_t, std::mbstate_t>> ("en_US.UTF8");
-                CodeCvt<char16_t> codeCvt3c = CodeCvt<char16_t>::mkFromStdCodeCvt<std::codecvt_byname<char16_t, char8_t, std::mbstate_t>> ("en_US.UTF8");
+                    CodeCvt<wchar_t>::mkFromStdCodeCvt<std::codecvt_byname<wchar_t, char, std::mbstate_t>> ({} , "en_US.UTF8");
+                CodeCvt<char32_t> codeCvt3b =
+                    CodeCvt<char32_t>::mkFromStdCodeCvt<std::codecvt_byname<char32_t, char8_t, std::mbstate_t>> ({}, "en_US.UTF8");
+                CodeCvt<char16_t> codeCvt3c =
+                    CodeCvt<char16_t>::mkFromStdCodeCvt<std::codecvt_byname<char16_t, char8_t, std::mbstate_t>> ({}, "en_US.UTF8");
                 codeCvtChar16Test (codeCvt3c);
                 CodeCvt<char16_t> codeCvt4c = CodeCvt<char16_t>{"en_US.UTF8"};
                 codeCvtChar16Test (codeCvt4c);
