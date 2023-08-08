@@ -78,6 +78,10 @@ namespace Stroika::Foundation::Characters {
                                   : UTFConvert::kThe}
         {
         }
+        virtual Options GetOptions () const override
+        {
+            return Options{.fInvalidCharacterReplacement = fCodeConverter_.GetOptions ().fInvalidCharacterReplacement};
+        }
         virtual span<CHAR_T> Bytes2Characters (span<const byte>* from, span<CHAR_T> to) const override
         {
             RequireNotNull (from);
@@ -211,6 +215,10 @@ namespace Stroika::Foundation::Characters {
             , fIntermediateVSFinalCHARCvt_{secondStep}
         {
         }
+        virtual Options GetOptions () const override
+        {
+            return Options{.fInvalidCharacterReplacement = fBytesVSIntermediateCvt_.GetOptions ().fInvalidCharacterReplacement};
+        }
         virtual span<CHAR_T> Bytes2Characters (span<const byte>* from, span<CHAR_T> to) const override
         {
             RequireNotNull (from);
@@ -339,6 +347,10 @@ namespace Stroika::Foundation::Characters {
             , fInvalidCharacterReplacement_{options.fInvalidCharacterReplacement}
         {
         }
+        virtual Options GetOptions () const override
+        {
+            return Options{.fInvalidCharacterReplacement = fInvalidCharacterReplacement_};
+        }
         virtual span<CHAR_T> Bytes2Characters (span<const byte>* from, span<CHAR_T> to) const override
         {
             RequireNotNull (from);
@@ -419,6 +431,17 @@ namespace Stroika::Foundation::Characters {
         struct BuiltinSingleByteTableCodePageRep_ final : CodeCvt<char16_t>::IRep {
             BuiltinSingleByteTableCodePageRep_ (CodePage cp, optional<Character> invalidCharacterReplacement);
             virtual ~BuiltinSingleByteTableCodePageRep_ () = default;
+            virtual CodeCvt<char16_t>::Options GetOptions () const override
+            {
+                optional<char16_t> invalRepChar;
+                if (fInvalidCharacterReplacementByte_ != nullopt) {
+                    char16_t x;
+                    auto     byteSpan = span{&*fInvalidCharacterReplacementByte_, 1};
+                    (void)this->Bytes2Characters (&byteSpan, span{&x, 1});
+                    invalRepChar = x;
+                }
+                return CodeCvt<char16_t>::Options{.fInvalidCharacterReplacement = invalRepChar};
+            }
             virtual span<char16_t> Bytes2Characters (span<const byte>* from, span<char16_t> to) const override;
             virtual span<byte>     Characters2Bytes (span<const char16_t> from, span<byte> to) const override;
             virtual size_t         ComputeTargetCharacterBufferSize (variant<span<const byte>, size_t> src) const override;
@@ -433,6 +456,10 @@ namespace Stroika::Foundation::Characters {
             {
             }
             virtual ~WindowsNative_ () = default;
+            virtual CodeCvt<char16_t>::Options GetOptions () const override
+            {
+                return {};
+            }
             virtual span<char16_t> Bytes2Characters (span<const byte>* from, span<char16_t> to) const override;
             virtual span<byte>     Characters2Bytes (span<const char16_t> from, span<byte> to) const override;
             virtual size_t         ComputeTargetCharacterBufferSize (variant<span<const byte>, size_t> src) const override;
@@ -597,6 +624,11 @@ namespace Stroika::Foundation::Characters {
     {
         auto u = make_unique<Private_::deletable_facet_<STD_CODECVT>> (forward<ARGS> (args)...);
         return CodeCvt<CHAR_T>{make_shared<CodeCvt_WrapStdCodeCvt_<Private_::deletable_facet_<STD_CODECVT>>> (options, move (u))};
+    }
+    template <IUNICODECanAlwaysConvertTo CHAR_T>
+    inline auto CodeCvt<CHAR_T>::GetOptions () const -> Options
+    {
+        return fRep_->GetOptions ();
     }
     template <IUNICODECanAlwaysConvertTo CHAR_T>
     inline auto CodeCvt<CHAR_T>::Bytes2Characters (span<const byte> from) const -> size_t

@@ -296,7 +296,7 @@ bool FlavorPackageInternalizer::InternalizeFlavor_FILEDataRawBytes (Led_ClipForm
      */
 #if qWideCharacters
     span<const byte>   rawByteSpan{reinterpret_cast<const byte*> (rawBytes), nRawBytes};
-    #if qPlatform_Windows
+#if qPlatform_Windows
     CodeCvt<Led_tChar> converter{&rawByteSpan, CodeCvt<Led_tChar>{suggestedCodePage.value_or (CP_ACP)}};
 #else
     CodeCvt<Led_tChar> converter{&rawByteSpan, suggestedCodePage? CodeCvt<Led_tChar>{suggestedCodePage)}: CodeCvt<Led_tChar>{locale{})}};
@@ -368,7 +368,7 @@ size_t ReaderClipboardFlavorPackage::ReadFlavorData (Led_ClipFormat clipFormat, 
         return copyNBytes;
     }
 #else
-    Led_ClipboardObjectAcquire clip (clipFormat);
+    Led_ClipboardObjectAcquire clip{clipFormat};
     if (clip.GoodClip ()) {
         size_t copyNBytes = min (bufSize, clip.GetDataLength ());
         (void)::memcpy (buf, clip.GetData (), copyNBytes);

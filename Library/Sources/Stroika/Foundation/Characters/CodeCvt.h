@@ -231,6 +231,11 @@ namespace Stroika::Foundation::Characters {
 
     public:
         /**
+         */
+        nonvirtual Options GetOptions () const;
+
+    public:
+        /**
          *  \brief convert span byte (external serialized format) parameters to characters (like std::codecvt<>::in () - but with spans, and simpler api)
          * 
          *  Convert bytes 'from' to characters 'to'. 
@@ -373,6 +378,7 @@ namespace Stroika::Foundation::Characters {
     template <IUNICODECanAlwaysConvertTo CHAR_T>
     struct CodeCvt<CHAR_T>::IRep {
         virtual ~IRep ()                                                                                    = default;
+        virtual Options      GetOptions () const                                                            = 0;
         virtual span<CHAR_T> Bytes2Characters (span<const byte>* from, span<CHAR_T> to) const               = 0;
         virtual span<byte>   Characters2Bytes (span<const CHAR_T> from, span<byte> to) const                = 0;
         virtual size_t       ComputeTargetCharacterBufferSize (variant<span<const byte>, size_t> src) const = 0;
