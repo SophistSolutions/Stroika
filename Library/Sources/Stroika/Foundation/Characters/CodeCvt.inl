@@ -36,6 +36,7 @@ namespace Stroika::Foundation::Characters {
         void   ThrowErrorConvertingBytes2Characters_ (size_t nSrcCharsWhereError);
         void   ThrowErrorConvertingCharacters2Bytes_ (size_t nSrcCharsWhereError);
         void   ThrowCodePageNotSupportedException_ (CodePage cp);
+        void   ThrowInvalidCharacterProvidedDoesntFitWithProvidedCodeCvt_ ();
         string AsNarrowSDKString_ (const String& s);
     }
 
@@ -80,7 +81,14 @@ namespace Stroika::Foundation::Characters {
         }
         virtual Options GetOptions () const override
         {
-            return Options{.fInvalidCharacterReplacement = fCodeConverter_.GetOptions ().fInvalidCharacterReplacement};
+            // @todo fix - this handling of fInvalidCharacterReplacement charset wrong, but not far off - may need to separately cache constructed
+            // options - simplest way... --LGP 2023-08-07
+            optional<Character> oc = fCodeConverter_.GetOptions ().fInvalidCharacterReplacement;
+            optional<CHAR_T>    useOC;
+            if (oc) {
+                useOC = static_cast<CHAR_T> (oc->As<char32_t> ());
+            }
+            return Options{.fInvalidCharacterReplacement = useOC};
         }
         virtual span<CHAR_T> Bytes2Characters (span<const byte>* from, span<CHAR_T> to) const override
         {
@@ -217,7 +225,15 @@ namespace Stroika::Foundation::Characters {
         }
         virtual Options GetOptions () const override
         {
-            return Options{.fInvalidCharacterReplacement = fBytesVSIntermediateCvt_.GetOptions ().fInvalidCharacterReplacement};
+            // PITA to convert 'undefined character' and not always possible?- but hopefully good enuf -- @todo improve/fix - LGP - 2023-08-07
+            optional<INTERMEDIATE_CHAR_T> oi = fBytesVSIntermediateCvt_.GetOptions ().fInvalidCharacterReplacement;
+            if (oi) {
+                // todo this is generally pretty wrong but will often work... --LGP 2023-08-07
+                return Options{.fInvalidCharacterReplacement = static_cast<CHAR_T> (Character{*oi}.As<char32_t> ())};
+            }
+            else {
+                return Options{};
+            }
         }
         virtual span<CHAR_T> Bytes2Characters (span<const byte>* from, span<CHAR_T> to) const override
         {
@@ -334,18 +350,40 @@ namespace Stroika::Foundation::Characters {
     /*
      *  This is crazy complicated because codecvt goes out of its way to be hard to copy, hard to move, but with
      *  a little care, can be made to work with unique_ptr.
+     * 
+     *  Also, std::codecvt doesn't natively support fInvalidCharacterReplacement, so we have to support manually.
      */
     template <IUNICODECanAlwaysConvertTo CHAR_T>
     template <typename STD_CODE_CVT_T>
     struct CodeCvt<CHAR_T>::CodeCvt_WrapStdCodeCvt_ : CodeCvt<CHAR_T>::IRep {
         unique_ptr<STD_CODE_CVT_T> fCodeCvt_;
         optional<CHAR_T>           fInvalidCharacterReplacement_;
+        optional<span<byte>>       fInvalidCharacterReplacementBytes_;
+        byte                       fInvalidCharacterReplacementBytesBuf[8]; // WAG at sufficient size, but sb enuf
         using extern_type = typename STD_CODE_CVT_T::extern_type;
         static_assert (is_same_v<CHAR_T, typename STD_CODE_CVT_T::intern_type>);
         CodeCvt_WrapStdCodeCvt_ (const Options& options, unique_ptr<STD_CODE_CVT_T>&& codeCvt)
             : fCodeCvt_{move (codeCvt)}
             , fInvalidCharacterReplacement_{options.fInvalidCharacterReplacement}
         {
+            if (fInvalidCharacterReplacement_) {
+                mbstate_t     ignoredMBState{};
+                CHAR_T        invalChar      = *fInvalidCharacterReplacement_;
+                const CHAR_T* invalCharPtr   = nullptr;
+                extern_type*  bytesInvalChar = reinterpret_cast<extern_type*> (&fInvalidCharacterReplacementBytesBuf);
+                auto          r              = fCodeCvt_->out (
+                    ignoredMBState, &invalChar, &invalChar + 1, invalCharPtr, reinterpret_cast<extern_type*> (&fInvalidCharacterReplacementBytesBuf),
+                    reinterpret_cast<extern_type*> (&fInvalidCharacterReplacementBytesBuf + Memory::NEltsOf (fInvalidCharacterReplacementBytesBuf)),
+                    bytesInvalChar);
+                if (r == STD_CODE_CVT_T::ok) {
+                    fInvalidCharacterReplacementBytes_ =
+                        span<byte>{&fInvalidCharacterReplacementBytesBuf[0],
+                                   static_cast<size_t> (bytesInvalChar - reinterpret_cast<extern_type*> (&fInvalidCharacterReplacementBytesBuf))};
+                }
+                else {
+                    Private_::ThrowInvalidCharacterProvidedDoesntFitWithProvidedCodeCvt_ ();
+                }
+            }
         }
         virtual Options GetOptions () const override
         {
@@ -362,14 +400,21 @@ namespace Stroika::Foundation::Characters {
             CHAR_T*            _Last2  = _First2 + to.size ();
             CHAR_T*            _Mid2   = _First2; // DOUBLE CHECK SPEC - NOT SURE IF THIS IS USED ON INPUT
             mbstate_t          ignoredMBState{};
-            auto               r = fCodeCvt_->in (ignoredMBState, _First1, _Last1, _Mid1, _First2, _Last2, _Mid2);
+            size_t             bytesDone = 0;
+            size_t             charsDone = 0;
+        continueWith:
+            auto r = fCodeCvt_->in (ignoredMBState, _First1 + bytesDone, _Last1, _Mid1, _First2 + charsDone, _Last2, _Mid2);
             if (r == STD_CODE_CVT_T::partial) {
-                *from = from->subspan (static_cast<size_t> (_Mid2 - _First2)); // reference remaining bytes, could be partial character at end of multibyte sequence
+                *from = from->subspan (charsDone + static_cast<size_t> (_Mid2 - _First2)); // reference remaining bytes, could be partial character at end of multibyte sequence
                 Assert (from->size () != 0);
             }
             else if (r != STD_CODE_CVT_T::ok) {
                 if (fInvalidCharacterReplacement_) {
-                    AssertNotImplemented (); // must patch in replacement character, and continue...
+                    bytesDone = _Mid1 - _First1 + 1; // skip one byte and try again (no idea how many bytes would have been best to skip)
+                    charsDone = _Mid2 - _First2;
+                    _First2[charsDone] = *fInvalidCharacterReplacement_;
+                    ++charsDone;
+                    goto continueWith;
                 }
                 else {
                     Private_::ThrowErrorConvertingBytes2Characters_ (_Mid1 - _First1);
@@ -391,10 +436,17 @@ namespace Stroika::Foundation::Characters {
             extern_type*  _Last2  = _First2 + to.size ();
             extern_type*  _Mid2   = _First2; // DOUBLE CHECK SPEC - NOT SURE IF THIS IS USED ON INPUT
             mbstate_t     ignoredMBState{};
-            auto          r = fCodeCvt_->out (ignoredMBState, _First1, _Last1, _Mid1, _First2, _Last2, _Mid2);
+            size_t        charsDone = 0;
+            size_t        bytesDone = 0;
+        continueWith:
+            auto r = fCodeCvt_->out (ignoredMBState, _First1 + charsDone, _Last1, _Mid1, _First2 + bytesDone, _Last2, _Mid2);
             if (r != STD_CODE_CVT_T::ok) {
                 if (fInvalidCharacterReplacement_) {
-                    AssertNotImplemented (); // must patch in replacement character, and continue...
+                    charsDone = _Mid1 - _First1 + 1; // skip one character and try again
+                    bytesDone = _Mid2 - _First2;
+                    memcpy (_First2 + bytesDone, fInvalidCharacterReplacementBytes_->data (), fInvalidCharacterReplacementBytes_->size ());
+                    bytesDone += fInvalidCharacterReplacementBytes_->size ();
+                    goto continueWith;
                 }
                 else {
                     Private_::ThrowErrorConvertingCharacters2Bytes_ (_Mid1 - _First1);

@@ -54,6 +54,17 @@ void Characters::Private_::ThrowCodePageNotSupportedException_ (CodePage cp)
 
 /*
  ********************************************************************************
+ **** Private_::ThrowInvalidCharacterProvidedDoesntFitWithProvidedCodeCvt_ ******
+ ********************************************************************************
+ */
+void Characters::Private_::ThrowInvalidCharacterProvidedDoesntFitWithProvidedCodeCvt_ ()
+        {
+    static const auto kException_ = Execution::RuntimeErrorException{"Cannot construct CodeCvt with provided std::code_cvt and provided 'invalid character'"sv};
+    Execution::Throw (kException_);
+        }
+
+/*
+ ********************************************************************************
  ********************** Private_::AsNarrowSDKString_ ****************************
  ********************************************************************************
  */
