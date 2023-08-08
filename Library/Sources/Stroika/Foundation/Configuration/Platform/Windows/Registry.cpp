@@ -189,6 +189,8 @@ Traversal::Iterable<shared_ptr<RegistryKey>> RegistryKey::EnumerateSubKeys () co
         }
         ThrowIfNotERROR_SUCCESS (retCode);
         myContext->fCurIndex++;
+        Assert (cbName <= achKeyBuf.size ());
+        achKeyBuf.resize (cbName);
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
         DbgTrace (L"returning next child key: %s", String::FromSDKString (achKeyBuf).c_str ());
 #endif

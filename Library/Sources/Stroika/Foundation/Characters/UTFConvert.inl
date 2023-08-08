@@ -33,7 +33,7 @@ namespace Stroika::Foundation::Characters {
 
     /*
      ********************************************************************************
-     *************************** Characters::UTFConvert ***************************
+     *************************** Characters::UTFConvert *****************************
      ********************************************************************************
      */
 #if qCompilerAndStdLib_DefaultMemberInitializerNeededEnclosingForDefaultFunArg_Buggy
