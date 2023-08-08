@@ -153,6 +153,31 @@ namespace Stroika::Foundation::Characters {
     {
         return GetCharacterCode ();
     }
+    template <>
+    void Character::AsHelper_ (Memory::StackBuffer<char8_t>* buf) const;
+    template <>
+    void Character::AsHelper_ (Memory::StackBuffer<char16_t>* buf) const;
+    template <IUNICODECodePoint T>
+    inline span<const T> Character::As (Memory::StackBuffer<T>* buf) const
+    {
+        RequireNotNull (buf);
+        if constexpr (sizeof (T) == sizeof (char32_t)) {
+            buf->clear ();
+            buf->push_back (this->GetCharacterCode ());
+            return span{*buf};
+        }
+        else if constexpr (same_as<T, wchar_t>) {
+            Assert (sizeof (wchar_t) == sizeof (char16_t));
+            this->AsHelper_ (reinterpret_cast<Memory::StackBuffer<char16_t>*> (buf));
+            Ensure (1 <= buf->size () and buf->size () <= 3);
+            return span{*buf};
+        }
+        else if constexpr (same_as<T, char8_t> or same_as<T, char16_t>) {
+            this->AsHelper_ (buf);
+            Ensure (1 <= buf->size () and buf->size () <= 3);
+            return span{*buf};
+        }
+    }
     constexpr bool Character::IsASCII () const noexcept
     {
         return 0x0 <= fCharacterCode_ and fCharacterCode_ <= 0x7f;

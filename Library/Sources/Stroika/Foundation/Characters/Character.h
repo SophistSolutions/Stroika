@@ -214,13 +214,20 @@ namespace Stroika::Foundation::Characters {
 
     public:
         /*
-         * \brief return the character as a char32_t  (or on systems where wchar_t is large enuf, as wchar_t)
+         * \brief /0 overload return the character as a char32_t  (or on systems where wchar_t is large enuf, as wchar_t)
+         *        /1 overload return the character as a span<T> - for any IUNICODECodePoint - storing actual data in provided stack buffer.
          * 
-         *  \note Before Stroika v3, this always supported wchar_t.
+         *  \note Before Stroika v3, As<> () always supported wchar_t - now only if its same as char32_t.
          */
         template <typename T>
         constexpr T As () const noexcept
             requires (same_as<T, char32_t> or (sizeof (wchar_t) == sizeof (char32_t) and same_as<T, wchar_t>));
+        template <IUNICODECodePoint T>
+        nonvirtual span<const T> As (Memory::StackBuffer<T>* buf) const;
+
+    private:
+        template <IUNICODECodePoint T>
+        nonvirtual void AsHelper_ (Memory::StackBuffer<T>* buf) const;
 
     public:
         /**
