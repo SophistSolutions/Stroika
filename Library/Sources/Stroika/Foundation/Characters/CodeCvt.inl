@@ -529,6 +529,7 @@ namespace Stroika::Foundation::Characters {
         : fRep_{}
     {
         RequireNotNull (guessFormatFrom);
+        Require (useElse == nullopt or useElse->GetOptions ().fInvalidCharacterReplacement == options.fInvalidCharacterReplacement);
         if (optional<tuple<UnicodeExternalEncodings, size_t>> r = ReadByteOrderMark (*guessFormatFrom)) {
             *guessFormatFrom = guessFormatFrom->subspan (get<size_t> (*r));
             fRep_            = CodeCvt{get<UnicodeExternalEncodings> (*r), options}.fRep_;
