@@ -18,10 +18,6 @@
 /**
  *  \file
  *      This module is designed to provide mappings between various UTF encodings of UNICODE characters.
- * 
- *  TODO:
- *      @todo   Cleanup the option 'lenient' support - not respected in thourough way, and the bad-character / missing
- *              character support not thoroughly supported or documented when not. ALL VERY MINOR though.
  */
 
 namespace Stroika::Foundation::Characters {
@@ -147,6 +143,11 @@ namespace Stroika::Foundation::Characters {
 #endif
 
     public:
+        /**
+         */
+        constexpr Options GetOptions () const;
+
+    public:
         /*
          *  Quickly compute the buffer size needed for a call to Convert (or ConvertSpan)
          *
@@ -270,9 +271,20 @@ namespace Stroika::Foundation::Characters {
          *  \note no need to have status code for 'targetExhausted' because we assert error in that case. DONT DO IT.
          */
         enum class ConversionStatusFlag {
-            ok,              /* conversion successful */
-            sourceExhausted, /* partial character in source, but hit end */
-            sourceIllegal    /* source sequence is illegal/malformed */
+            /**
+             * conversion successful
+             */
+            ok,
+
+            /**
+              * partial character in source, but hit end
+              */
+            sourceExhausted,
+
+            /**
+             * Source sequence is illegal/malformed - only generated if fOptions.fInvalidCharacterReplacement == nullopt
+             */
+            sourceIllegal
         };
 
     public:

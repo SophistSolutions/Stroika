@@ -47,14 +47,20 @@ void Characters::Private_::ThrowErrorConvertingCharacters2Bytes_ (size_t nSrcCha
  ************** Private_::ThrowCodePageNotSupportedException_ *******************
  ********************************************************************************
  */
-void Characters::Private_::ThrowCodePageNotSupportedException_ (CodePage cp) { Execution::Throw (CodePageNotSupportedException{cp}); }
+void Characters::Private_::ThrowCodePageNotSupportedException_ (CodePage cp) 
+{
+    Execution::Throw (CodePageNotSupportedException{cp}); 
+}
 
 /*
  ********************************************************************************
  ********************** Private_::AsNarrowSDKString_ ****************************
  ********************************************************************************
  */
-string Characters::Private_::AsNarrowSDKString_ (const String& s) { return s.AsNarrowSDKString (); }
+string Characters::Private_::AsNarrowSDKString_ (const String& s) 
+{
+    return s.AsNarrowSDKString ();
+}
 
 /*
  ********************************************************************************
@@ -89,7 +95,7 @@ void dumpTable (CodePage cp, std::filesystem::path p)
 //const int ignored8 = (dumpTable (kCodePage_ARABIC, "kCodePage_ARABIC.txt"), 1);
 #endif
 
-Characters::Private_::BuiltinSingleByteTableCodePageRep_::BuiltinSingleByteTableCodePageRep_ (CodePage cp)
+Characters::Private_::BuiltinSingleByteTableCodePageRep_::BuiltinSingleByteTableCodePageRep_ (CodePage cp, optional<Character> invalidCharacterReplacement)
 {
     switch (cp) {
         // Tables generated with qGenTableDumper_ on Windows - 2023-07-23
@@ -271,6 +277,13 @@ Characters::Private_::BuiltinSingleByteTableCodePageRep_::BuiltinSingleByteTable
             Execution::Throw (CodePageNotSupportedException{cp});
         }
     }
+    AssertNotNull (fMap_);
+    if (invalidCharacterReplacement) {
+        if (auto pi = std::find (fMap_, fMap_ + 256, invalidCharacterReplacement->As<char32_t> ()); pi != fMap_ + 256) {
+            fInvalidCharacterReplacementByte_ = static_cast<byte> ( pi - fMap_);
+        }
+    }
+
 }
 
 span<char16_t> Characters::Private_::BuiltinSingleByteTableCodePageRep_::Bytes2Characters (span<const byte>* from, span<char16_t> to) const
@@ -295,8 +308,13 @@ span<byte> Characters::Private_::BuiltinSingleByteTableCodePageRep_::Characters2
             *oi++ = static_cast<byte> (pi - fMap_);
         }
         else {
-            size_t nCharsConsumed = oi - to.data (); // one char at a time on both so same and avoids counting or using explicit iterator
-            Execution::Throw (CharacterEncodingException{CharacterEncodingException::eEncoding, nCharsConsumed}); // @todo COULD safe/capture the encoding name as well here easy enuf...
+            if (fInvalidCharacterReplacementByte_) {
+                *oi++ = *fInvalidCharacterReplacementByte_;
+            }
+            else {
+                size_t nCharsConsumed = oi - to.data (); // one char at a time on both so same and avoids counting or using explicit iterator
+                Execution::Throw (CharacterEncodingException{CharacterEncodingException::eEncoding, nCharsConsumed}); // @todo COULD safe/capture the encoding name as well here easy enuf...
+            }
         }
     }
     return to.subspan (oi - to.data ());

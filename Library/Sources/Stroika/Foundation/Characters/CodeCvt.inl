@@ -417,13 +417,14 @@ namespace Stroika::Foundation::Characters {
     namespace Private_ {
         // a lot of old, important character sets can be represented this way (like old PC character sets for non-asian languages)
         struct BuiltinSingleByteTableCodePageRep_ final : CodeCvt<char16_t>::IRep {
-            BuiltinSingleByteTableCodePageRep_ (CodePage cp);
+            BuiltinSingleByteTableCodePageRep_ (CodePage cp, optional<Character> invalidCharacterReplacement);
             virtual ~BuiltinSingleByteTableCodePageRep_ () = default;
             virtual span<char16_t> Bytes2Characters (span<const byte>* from, span<char16_t> to) const override;
             virtual span<byte>     Characters2Bytes (span<const char16_t> from, span<byte> to) const override;
             virtual size_t         ComputeTargetCharacterBufferSize (variant<span<const byte>, size_t> src) const override;
             virtual size_t         ComputeTargetByteBufferSize (variant<span<const char16_t>, size_t> src) const override;
             const char16_t*        fMap_;
+            optional<byte>         fInvalidCharacterReplacementByte_;
         };
 #if qPlatform_Windows
         struct WindowsNative_ final : CodeCvt<char16_t>::IRep {
@@ -553,7 +554,8 @@ namespace Stroika::Foundation::Characters {
             case WellKnownCodePages::kTurkish:
             case WellKnownCodePages::kHebrew:
             case WellKnownCodePages::kArabic:
-                fRep_ = make_shared<UTF2UTFRep_<char16_t>> (CodeCvt<char16_t> (make_shared<Private_::BuiltinSingleByteTableCodePageRep_> (cp)));
+                fRep_ = make_shared<UTF2UTFRep_<char16_t>> (
+                    CodeCvt<char16_t> (make_shared<Private_::BuiltinSingleByteTableCodePageRep_> (cp, options.fInvalidCharacterReplacement)));
                 break;
             case WellKnownCodePages::kUTF8:
                 fRep_ = make_shared<UTFConvertRep_<char8_t>> (options);
@@ -566,6 +568,9 @@ namespace Stroika::Foundation::Characters {
                 break;
             default:
 #if qPlatform_Windows
+                if (options.fInvalidCharacterReplacement) {
+                    Private_::ThrowCodePageNotSupportedException_ (cp); // WindowsNative_ doesn't support fInvalidCharacterReplacement
+                }
                 fRep_ = make_shared<UTF2UTFRep_<char16_t>> (CodeCvt<char16_t> (make_shared<Private_::WindowsNative_> (cp)));
                 break;
 #else

@@ -46,22 +46,24 @@ namespace Stroika::Foundation::Characters {
         : fOriginalOptions_{options}
         , fUsingOptions{options}
     {
-        if (fUsingOptions.fPreferredImplementation == nullopt) {
 #if qPlatform_Windows
+        if (fUsingOptions.fPreferredImplementation == nullopt and options.fInvalidCharacterReplacement == nullopt) {
             fUsingOptions.fPreferredImplementation = Options::Implementation::eWindowsAPIWide2FromMultibyte;
-#else
-            fUsingOptions.fPreferredImplementation = Options::Implementation::eStroikaPortable;
+        }
 #endif
+        if (fUsingOptions.fPreferredImplementation == nullopt) {
+            fUsingOptions.fPreferredImplementation = Options::Implementation::eStroikaPortable;
         }
         if (options.fInvalidCharacterReplacement) {
-            // For now, thats all that supports fInvalidCharacterReplacement, but could do others pretty easily - probably - LGP 2023-08-07
-#if qPlatform_Windows
-            Require (fUsingOptions.fPreferredImplementation == Options::Implementation::eStroikaPortable or
-                     fUsingOptions.fPreferredImplementation == Options::Implementation::eWindowsAPIWide2FromMultibyte);
-#else
+            // For now, thats all that supports fInvalidCharacterReplacement, but could do others pretty easily - probably
+            // Windows Wide2Multipbyte etc doesnt work with this, so dont use there.
+            //       - LGP 2023-08-07
             Require (fUsingOptions.fPreferredImplementation == Options::Implementation::eStroikaPortable);
-#endif
         }
+    }
+    inline constexpr auto UTFConvert::GetOptions () const -> Options
+    {
+        return fOriginalOptions_;
     }
     inline constexpr UTFConvert UTFConvert::kThe;
     template <IUNICODECanUnambiguouslyConvertFrom CHAR_T>
