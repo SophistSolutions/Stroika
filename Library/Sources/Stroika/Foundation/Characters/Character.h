@@ -219,7 +219,7 @@ namespace Stroika::Foundation::Characters {
          *  \note Before Stroika v3, this always supported wchar_t.
          */
         template <typename T>
-        nonvirtual T As () const noexcept
+        constexpr T As () const noexcept
             requires (same_as<T, char32_t> or (sizeof (wchar_t) == sizeof (char32_t) and same_as<T, wchar_t>));
 
     public:

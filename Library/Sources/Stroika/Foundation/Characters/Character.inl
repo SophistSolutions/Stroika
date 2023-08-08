@@ -148,7 +148,7 @@ namespace Stroika::Foundation::Characters {
         return fCharacterCode_;
     }
     template <typename T>
-    inline T Character::As () const noexcept
+    constexpr T Character::As () const noexcept
         requires (same_as<T, char32_t> or (sizeof (wchar_t) == sizeof (char32_t) and same_as<T, wchar_t>))
     {
         return GetCharacterCode ();
