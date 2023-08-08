@@ -220,6 +220,8 @@ namespace Stroika::Foundation::Characters {
          *  the STD_CODECVT, it cannot be passed by argument to the constructor. And so their
          *  appears no way to deduce or specify those constructor template arguments. But that can be done
          *  explicitly with a static function, and that is what we do with mkFromStdCodeCvt.
+         * 
+         *  \note - everything else has options last argument, but since we use ... parameter pack, options must be first here.
          */
         template <IStdCodeCVT STD_CODECVT, typename... ARGS>
         static CodeCvt mkFromStdCodeCvt (const Options& options = {}, ARGS... args)
