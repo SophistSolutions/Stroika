@@ -27,9 +27,7 @@ wstring Characters::SDK2Wide (span<const SDKChar> s)
 }
 wstring Characters::SDK2Wide (span<const SDKChar> s, AllowMissingCharacterErrorsFlag)
 {
-    // @todo address if replacement char not fit in wchar_t?
-    constexpr auto kOptions_ =
-        CodeCvt<wchar_t>::Options{.fInvalidCharacterReplacement = UTFConvert::Options::kDefaultMissingReplacementCharacter.As<wchar_t> ()};
+    constexpr auto kOptions_ = CodeCvt<wchar_t>::Options{.fInvalidCharacterReplacement = UTFConvert::Options::kDefaultMissingReplacementCharacter};
 #if qPlatform_MacOS
     static const CodeCvt<wchar_t> kCvt_{UnicodeExternalEncodings::eUTF8, kOptions_};
     return kCvt_.Bytes2String<wstring> (Memory::SpanReInterpretCast<const byte> (s));
@@ -56,9 +54,7 @@ SDKString Characters::Wide2SDK (span<const wchar_t> s)
 }
 SDKString Characters::Wide2SDK (span<const wchar_t> s, AllowMissingCharacterErrorsFlag)
 {
-    // @todo address if replacement char not fit in wchar_t?
-    constexpr auto kOptions_ =
-        CodeCvt<wchar_t>::Options{.fInvalidCharacterReplacement = UTFConvert::Options::kDefaultMissingReplacementCharacter.As<wchar_t> ()};
+    constexpr auto kOptions_ = CodeCvt<wchar_t>::Options{.fInvalidCharacterReplacement = UTFConvert::Options::kDefaultMissingReplacementCharacter};
 #if qPlatform_MacOS
     static const CodeCvt<wchar_t> kCvt_{UnicodeExternalEncodings::eUTF8, kOptions_};
     return kCvt_.String2Bytes<SDKString> (s);

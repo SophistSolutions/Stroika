@@ -119,12 +119,22 @@ namespace Stroika::Foundation::Characters {
         struct IRep;
 
     public:
+        /**
+         */
         struct Options {
             /**
-             *  if fInvalidCharacterReplacement is nullopt (the default) - throw on invalid characters, and
-             *  otherwise use the value provided in fInvalidCharacterReplacement as the replacement.
+             *  NOTE - do as New not CTOR, so can still construct Options using designated initializers.
              */
-            optional<CHAR_T> fInvalidCharacterReplacement;
+            template <IUNICODECanAlwaysConvertTo FROM_CHAR_T_OPTIONS>
+            static constexpr inline Options New (typename CodeCvt<FROM_CHAR_T_OPTIONS>::Options o);
+
+            /**
+             *  if fInvalidCharacterReplacement is nullopt (the default) - conversion APIs throw on invalid characters, and
+             *  otherwise use the value provided in fInvalidCharacterReplacement as the replacement for invalid characters.
+             * 
+             *  Note - CodeCvt allows the Character to be comprised of multiple CHAR_T characters potentially.
+             */
+            optional<Character> fInvalidCharacterReplacement;
         };
 
     public:

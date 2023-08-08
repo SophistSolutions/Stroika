@@ -81,14 +81,7 @@ namespace Stroika::Foundation::Characters {
         }
         virtual Options GetOptions () const override
         {
-            // @todo fix - this handling of fInvalidCharacterReplacement charset wrong, but not far off - may need to separately cache constructed
-            // options - simplest way... --LGP 2023-08-07
-            optional<Character> oc = fCodeConverter_.GetOptions ().fInvalidCharacterReplacement;
-            optional<CHAR_T>    useOC;
-            if (oc) {
-                useOC = static_cast<CHAR_T> (oc->As<char32_t> ());
-            }
-            return Options{.fInvalidCharacterReplacement = useOC};
+            return Options{.fInvalidCharacterReplacement = fCodeConverter_.GetOptions ().fInvalidCharacterReplacement};
         }
         virtual span<CHAR_T> Bytes2Characters (span<const byte>* from, span<CHAR_T> to) const override
         {
@@ -225,15 +218,8 @@ namespace Stroika::Foundation::Characters {
         }
         virtual Options GetOptions () const override
         {
-            // PITA to convert 'undefined character' and not always possible?- but hopefully good enuf -- @todo improve/fix - LGP - 2023-08-07
-            optional<INTERMEDIATE_CHAR_T> oi = fBytesVSIntermediateCvt_.GetOptions ().fInvalidCharacterReplacement;
-            if (oi) {
-                // todo this is generally pretty wrong but will often work... --LGP 2023-08-07
-                return Options{.fInvalidCharacterReplacement = static_cast<CHAR_T> (Character{*oi}.As<char32_t> ())};
-            }
-            else {
-                return Options{};
-            }
+            // Not 100% right cuz ignoring  - fIntermediateVSFinalCHARCvt_ - LGP - 2023-08-07
+            return Options{.fInvalidCharacterReplacement = fBytesVSIntermediateCvt_.GetOptions ().fInvalidCharacterReplacement};
         }
         virtual span<CHAR_T> Bytes2Characters (span<const byte>* from, span<CHAR_T> to) const override
         {
@@ -357,7 +343,7 @@ namespace Stroika::Foundation::Characters {
     template <typename STD_CODE_CVT_T>
     struct CodeCvt<CHAR_T>::CodeCvt_WrapStdCodeCvt_ : CodeCvt<CHAR_T>::IRep {
         unique_ptr<STD_CODE_CVT_T> fCodeCvt_;
-        optional<CHAR_T>           fInvalidCharacterReplacement_;
+        optional<Character>        fInvalidCharacterReplacement_;
         optional<span<byte>>       fInvalidCharacterReplacementBytes_;
         byte                       fInvalidCharacterReplacementBytesBuf[8]; // WAG at sufficient size, but sb enuf
         using extern_type = typename STD_CODE_CVT_T::extern_type;
@@ -367,12 +353,14 @@ namespace Stroika::Foundation::Characters {
             , fInvalidCharacterReplacement_{options.fInvalidCharacterReplacement}
         {
             if (fInvalidCharacterReplacement_) {
-                mbstate_t     ignoredMBState{};
-                CHAR_T        invalChar      = *fInvalidCharacterReplacement_;
-                const CHAR_T* invalCharPtr   = nullptr;
-                extern_type*  bytesInvalChar = reinterpret_cast<extern_type*> (&fInvalidCharacterReplacementBytesBuf);
-                auto          r              = fCodeCvt_->out (
-                    ignoredMBState, &invalChar, &invalChar + 1, invalCharPtr, reinterpret_cast<extern_type*> (&fInvalidCharacterReplacementBytesBuf),
+                mbstate_t                   ignoredMBState{};
+                Memory::StackBuffer<CHAR_T> tmpBuf;
+                span<const CHAR_T>          invalCharPartlyEncode = fInvalidCharacterReplacement_->As<CHAR_T> (&tmpBuf);
+                const CHAR_T*               ignoreCharsConsumed   = nullptr;
+                extern_type*                bytesInvalChar        = reinterpret_cast<extern_type*> (&fInvalidCharacterReplacementBytesBuf);
+                auto                        r                     = fCodeCvt_->out (
+                    ignoredMBState, invalCharPartlyEncode.data (), invalCharPartlyEncode.data () + invalCharPartlyEncode.size (),
+                    ignoreCharsConsumed, reinterpret_cast<extern_type*> (&fInvalidCharacterReplacementBytesBuf),
                     reinterpret_cast<extern_type*> (&fInvalidCharacterReplacementBytesBuf + Memory::NEltsOf (fInvalidCharacterReplacementBytesBuf)),
                     bytesInvalChar);
                 if (r == STD_CODE_CVT_T::ok) {
@@ -412,8 +400,13 @@ namespace Stroika::Foundation::Characters {
                 if (fInvalidCharacterReplacement_) {
                     bytesDone = _Mid1 - _First1 + 1; // skip one byte and try again (no idea how many bytes would have been best to skip)
                     charsDone = _Mid2 - _First2;
-                    _First2[charsDone] = *fInvalidCharacterReplacement_;
-                    ++charsDone;
+
+                    Memory::StackBuffer<CHAR_T> badCharTmpBuf;
+                    span<const CHAR_T>          badCharReplaceSpan = fInvalidCharacterReplacement_->As<CHAR_T> (&badCharTmpBuf);
+                    span<CHAR_T>                copied = Memory::CopySpanData (badCharReplaceSpan, span{&_First2[charsDone], _Last2});
+                    Assert (copied.size () >= 0);
+                    charsDone += copied.size ();
+                    Assert (charsDone <= to.size ());
                     goto continueWith;
                 }
                 else {
@@ -523,6 +516,18 @@ namespace Stroika::Foundation::Characters {
 
     /*
      ********************************************************************************
+     ************************* CodeCvt<CHAR_T>::Options *****************************
+     ********************************************************************************
+     */
+    template <IUNICODECanAlwaysConvertTo CHAR_T>
+    template <IUNICODECanAlwaysConvertTo FROM_CHAR_T_OPTIONS>
+    constexpr inline auto CodeCvt<CHAR_T>::Options::New (typename CodeCvt<FROM_CHAR_T_OPTIONS>::Options o) -> Options
+    {
+        return Options{.fInvalidCharacterReplacement = o.fInvalidCharacterReplacement};
+    }
+
+    /*
+     ********************************************************************************
      ******************************* CodeCvt<CHAR_T> ********************************
      ********************************************************************************
      */
@@ -541,11 +546,8 @@ namespace Stroika::Foundation::Characters {
             *this = mkFromStdCodeCvt<codecvt_byname<CHAR_T, char8_t, mbstate_t>> (options, l.name ());
         }
         else if constexpr (is_same_v<CHAR_T, Character>) {
-            CodeCvt<char32_t>::Options useO{.fInvalidCharacterReplacement = options.fInvalidCharacterReplacement
-                                                                                ? Character{*options.fInvalidCharacterReplacement}.As<char32_t> ()
-                                                                                : optional<char32_t>{}};
-            fRep_ = make_shared<UTF2UTFRep_<char32_t>> (
-                CodeCvt<char32_t>::mkFromStdCodeCvt<codecvt_byname<char32_t, char8_t, mbstate_t>> (useO, l.name ()));
+            fRep_ = make_shared<UTF2UTFRep_<char32_t>> (CodeCvt<char32_t>::mkFromStdCodeCvt<codecvt_byname<char32_t, char8_t, mbstate_t>> (
+                CodeCvt<char32_t>::Options::New<CHAR_T> (options), l.name ()));
         }
         else {
             // CHAR_T COULD be UTF-8, but not clear if/why that would be useful.
@@ -563,10 +565,8 @@ namespace Stroika::Foundation::Characters {
             *this = mkFromStdCodeCvt<codecvt_byname<CHAR_T, char8_t, mbstate_t>> (options, ln);
         }
         else if constexpr (is_same_v<CHAR_T, Character>) {
-            CodeCvt<char32_t>::Options useO{.fInvalidCharacterReplacement = options.fInvalidCharacterReplacement
-                                                                                ? Character{*options.fInvalidCharacterReplacement}.As<char32_t> ()
-                                                                                : optional<char32_t>{}};
-            fRep_ = make_shared<UTF2UTFRep_<char32_t>> (CodeCvt<char32_t>::mkFromStdCodeCvt<codecvt_byname<char32_t, char8_t, mbstate_t>> (useO, ln));
+            fRep_ = make_shared<UTF2UTFRep_<char32_t>> (CodeCvt<char32_t>::mkFromStdCodeCvt<codecvt_byname<char32_t, char8_t, mbstate_t>> (
+                CodeCvt<char32_t>::Options::New<CHAR_T> (options), ln));
         }
         else {
             // CHAR_T COULD be UTF-8, but not clear if/why that would be useful.
