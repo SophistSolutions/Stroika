@@ -127,18 +127,4 @@ edge it into the usuable domain.
     ~~~
     --network "Default Switch"
     ~~~
-    in docker run command
-  
-  - Hang building MSYS docker containers
-  
-  ~~~
-  Database directory: /var/lib/pacman/
-  :: Do you want to remove unused repositories? [Y/n]
-  removing unused sync repositories...
-  ~~~
-
-  when you see this, and the build appears to be 'hung', in another 'Administrator' shell do this
-  ~~~
-  cd /c/ProgramData/Docker/tmp
-  rm -rf hcs*/Files/\$Recycle.Bin
-  ~~~
+    in docker run command (and similarly EXTRA_DOCKER_BUILD_ARGS_= --network "Default Switch" in Docker build Makefile)

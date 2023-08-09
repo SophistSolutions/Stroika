@@ -20,10 +20,12 @@ help:
 
 
 ifneq ($(findstring $(DETECTED_HOST_OS),MSYS-Cygwin),)
-# Due to https://stroika.atlassian.net/browse/STK-742 - add   --network "Default Switch" 
+# Due to https://stroika.atlassian.net/browse/STK-742 - you may see the error message building "Invoke-WebRequest : The remote name could not be resolved"
+#	- add   --network "Default Switch" 
 # to build this you may need  --storage-opts "size 100GB", but that currently doesn't work with build, so set
 # in docker windows configuration settings (can get from docker gui - settings/Docker Engine)
 # Build with -m 4GB cuz default of 1GB pages alot
+#EXTRA_DOCKER_BUILD_ARGS_= --network "Default Switch" 
 EXTRA_DOCKER_BUILD_ARGS_=
 endif
 build-images:
