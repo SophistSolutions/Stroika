@@ -58,10 +58,10 @@ void Characters::Private_::ThrowCodePageNotSupportedException_ (CodePage cp)
  ********************************************************************************
  */
 void Characters::Private_::ThrowInvalidCharacterProvidedDoesntFitWithProvidedCodeCvt_ ()
-        {
+{
     static const auto kException_ = Execution::RuntimeErrorException{"Cannot construct CodeCvt with provided std::code_cvt and provided 'invalid character'"sv};
     Execution::Throw (kException_);
-        }
+}
 
 /*
  ********************************************************************************
@@ -312,7 +312,8 @@ span<char16_t> Characters::Private_::BuiltinSingleByteTableCodePageRep_::Bytes2C
 
 span<byte> Characters::Private_::BuiltinSingleByteTableCodePageRep_::Characters2Bytes (span<const char16_t> from, span<byte> to) const
 {
-    // very simple, but stagaringly inefficient algorithm for this case... LGP 2023-07-22
+    // very simple, but stageringly inefficient algorithm for this case... LGP 2023-07-22
+    // Note easy to fix for most characters with reverse direction lookup table (all bit unicode characters back to their binary rep and rest in smaller lookaside table)
     byte* oi = to.data ();
     for (char16_t i : from) {
         if (auto pi = std::find (fMap_, fMap_ + 256, i); pi != fMap_ + 256) {
