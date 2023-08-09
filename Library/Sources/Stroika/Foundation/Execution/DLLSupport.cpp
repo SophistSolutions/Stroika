@@ -32,7 +32,7 @@ namespace {
     DLLHandle LoadDLL_ (const SDKChar* dllName, int flags)
     {
 #if qTargetPlatformSDKUseswchar_t
-        return ::dlopen (Characters::WideStringToUTF8 (dllName).c_str (), flags);
+        return ::dlopen (Characters::SDK2Narrow (dllName).c_str (), flags);
 #else
         return ::dlopen (dllName, flags);
 #endif

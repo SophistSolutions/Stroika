@@ -22,6 +22,34 @@
 
 namespace Stroika::Foundation::Characters {
 
+    /*
+     ********************************************************************************
+     ************ CodePageConverter::CodePageNotSupportedException ******************
+     ********************************************************************************
+     */
+    inline CodePage CodePageNotSupportedException::GetCodePage () const
+    {
+        return fCodePage_;
+    }
+
+    /*
+     ********************************************************************************
+     ****************************** CodePagesInstalled ******************************
+     ********************************************************************************
+     */
+    inline vector<CodePage> CodePagesInstalled::GetAll ()
+    {
+        return fCodePages_;
+    }
+    inline bool CodePagesInstalled::IsCodePageAvailable (CodePage cp)
+    {
+        return find (fCodePages_.begin (), fCodePages_.end (), cp) == fCodePages_.end ();
+    }
+
+    /// <summary>
+    //////////////////////////// DEPRECATED BELOW.../////////////////////////////
+    /// </summary
+
     class [[deprecated ("Since Stroika v3.0d2, use ReadByteOrderMark")]] CodePagesGuesser
     {
     public:
@@ -255,76 +283,68 @@ namespace Stroika::Foundation::Characters {
         }
     }
 
-    /*
-     ********************************************************************************
-     ************ CodePageConverter::CodePageNotSupportedException ******************
-     ********************************************************************************
-     */
-    inline CodePage CodePageNotSupportedException::GetCodePage () const
-    {
-        return fCodePage_;
-    }
+    DISABLE_COMPILER_MSC_WARNING_START (4996);
+    DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
+    DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
 
-    /*
-     ********************************************************************************
-     ****************************** CodePagesInstalled ******************************
-     ********************************************************************************
-     */
-    inline vector<CodePage> CodePagesInstalled::GetAll ()
-    {
-        return fCodePages_;
-    }
-    inline bool CodePagesInstalled::IsCodePageAvailable (CodePage cp)
-    {
-        return find (fCodePages_.begin (), fCodePages_.end (), cp) == fCodePages_.end ();
-    }
-    inline void WideStringToNarrow (const wstring& ws, CodePage codePage, string* intoResult)
-    {
-        RequireNotNull (intoResult);
-        const wchar_t* wsp = ws.c_str ();
-        WideStringToNarrow (wsp, wsp + ws.length (), codePage, intoResult);
-    }
-    inline string WideStringToNarrow (const wstring& ws, CodePage codePage)
-    {
-        string result;
-        WideStringToNarrow (ws, codePage, &result);
-        return result;
-    }
-    inline void NarrowStringToWide (const string& s, CodePage codePage, wstring* intoResult)
+    // @todo consider losing MOST of these - at least from this file
+
+    [[deprecated ("Since Stroika v3.0d2 - use CodeCvt or String")]] void NarrowStringToWide (const char* sStart, const char* sEnd,
+                                                                                             CodePage codePage, wstring* intoResult);
+    [[deprecated ("Since Stroika v3.0d2 - use CodeCvt or String")]] inline void NarrowStringToWide (const string& s, CodePage codePage, wstring* intoResult)
     {
         RequireNotNull (intoResult);
         const char* sp = s.c_str ();
         NarrowStringToWide (sp, sp + s.length (), codePage, intoResult);
     }
-    inline wstring NarrowStringToWide (const string& s, CodePage codePage)
+    [[deprecated ("Since Stroika v3.0d2 - use CodeCvt or String")]] inline wstring NarrowStringToWide (const string& s, CodePage codePage)
     {
         wstring result;
         NarrowStringToWide (s, codePage, &result);
         return result;
     }
-    inline string WideStringToUTF8 (const wstring& ws)
-    {
-        return WideStringToNarrow (ws, WellKnownCodePages::kUTF8);
-    }
-    inline void UTF8StringToWide (const char* s, wstring* intoStr)
+    [[deprecated ("Since Stroika v3.0d2 - use CodeCvt or String::FromUTF8")]] inline void UTF8StringToWide (const char* s, wstring* intoStr)
     {
         RequireNotNull (s);
         NarrowStringToWide (s, s + ::strlen (s), WellKnownCodePages::kUTF8, intoStr);
     }
-    inline void UTF8StringToWide (const string& s, wstring* intoStr)
+    [[deprecated ("Since Stroika v3.0d2 - use CodeCvt or String")]] inline void UTF8StringToWide (const string& s, wstring* intoStr)
     {
         NarrowStringToWide (s, WellKnownCodePages::kUTF8, intoStr);
     }
-    inline wstring UTF8StringToWide (const char* s)
+    [[deprecated ("Since Stroika v3.0d2 - use CodeCvt or String")]] inline wstring UTF8StringToWide (const char* s)
     {
         RequireNotNull (s);
         wstring result;
         NarrowStringToWide (s, s + ::strlen (s), WellKnownCodePages::kUTF8, &result);
         return result;
     }
-    inline wstring UTF8StringToWide (const string& s)
+    [[deprecated ("Since Stroika v3.0d2 - use CodeCvt or String")]] inline wstring UTF8StringToWide (const string& s)
     {
         return NarrowStringToWide (s, WellKnownCodePages::kUTF8);
+    }
+
+    [[deprecated ("Since Stroika v3.0d2 - use CodeCvt")]] void WideStringToNarrow (const wchar_t* wsStart, const wchar_t* wsEnd,
+                                                                                   CodePage codePage, string* intoResult);
+
+    [[deprecated ("Since Stroika v3.0d2 - ")]] inline void WideStringToNarrow (const wstring& ws, CodePage codePage, string* intoResult)
+    {
+        RequireNotNull (intoResult);
+        const wchar_t* wsp = ws.c_str ();
+        WideStringToNarrow (wsp, wsp + ws.length (), codePage, intoResult);
+    }
+    [[deprecated ("Since Stroika v3.0d2 - ")]] inline string WideStringToNarrow (const wstring& ws, CodePage codePage)
+    {
+        string result;
+        WideStringToNarrow (ws, codePage, &result);
+        return result;
+    }
+
+    // @todo DEPRECATE
+
+    [[deprecated ("Since Stroika v3.0d2 - use String::FromSDKString ().AsUTF8 () or CodeCvt<char8_t>{}")]] inline string WideStringToUTF8 (const wstring& ws)
+    {
+        return WideStringToNarrow (ws, WellKnownCodePages::kUTF8);
     }
 
     [[deprecated ("Since Stroika v3.0d2 - use CodeCvt")]] vector<byte>
@@ -352,6 +372,9 @@ namespace Stroika::Foundation::Characters {
         return string{s.begin (), s.end ()};
         DISABLE_COMPILER_MSC_WARNING_END (4244)
     }
+    DISABLE_COMPILER_MSC_WARNING_END (4996);
+    DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
+    DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
 
 }
 

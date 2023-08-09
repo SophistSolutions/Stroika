@@ -77,7 +77,7 @@ wstring Characters::GetCharsetString (CodePage cp)
 {
     switch (cp) {
         case WellKnownCodePages::kUTF8:
-            return L"UTF-8";
+            return L"utf-8";
         default:
             return Characters::CString::Format (L"CodePage %d", cp);
     }

@@ -205,7 +205,7 @@ namespace {
     {
         RequireNotNull (text);
         try {
-            Emit2File_ (emitter, WideStringToUTF8 (text).c_str ());
+            Emit2File_ (emitter, String{text}.AsNarrowSDKString ().c_str ());
         }
         catch (...) {
             AssertNotReached ();

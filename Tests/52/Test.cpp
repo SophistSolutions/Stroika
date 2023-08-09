@@ -1120,11 +1120,6 @@ namespace {
         constexpr wchar_t                  kS1_[] =
             L"asdbf asdkfja sdflkja ls;dkfja s;ldkfj aslkd;fj alksdfj alskdfj aslk;df;j as;lkdfj aslk;dfj asl;dkfj asdf";
         constexpr wchar_t kS2_[] = L"z\u00df\u6c34\U0001d10b";
-        void              Test_WString2UTF8_win32API (const wchar_t* s, const wchar_t* e)
-        {
-            string tmp;
-            WideStringToNarrow (s, e, WellKnownCodePages::kUTF8, &tmp);
-        }
         void Test_WString2UTF8_codecvt_utf8 (const wchar_t* s, const wchar_t* e)
         {
             const wchar_t*                                 sc = s;
@@ -1136,12 +1131,6 @@ namespace {
             [[maybe_unused]] codecvt_utf8<wchar_t>::result r = kConverter_.out (mb, sc, ec, from_next, &tmp[0], &tmp[tmp.size ()], to_next);
             tmp.resize (to_next - &tmp[0]);
         }
-    }
-    void Test_WString2UTF8_win32API ()
-    {
-        using namespace Test_WString2UTF8_;
-        Test_WString2UTF8_win32API (begin (kS1_), end (kS1_));
-        Test_WString2UTF8_win32API (begin (kS2_), end (kS2_));
     }
     void Test_WString2UTF8_codecvt_utf8 ()
     {
@@ -1476,11 +1465,6 @@ namespace {
         Tester (L"UTF82WString win32API vs codecvt_utf8", Test_UTF82WString_win32API, L"win32API", Test_UTF82WString_codecvt_utf8,
                 L"codecvt_utf8", 4900000, 2.0, &failedTests);
 #endif
-#if qPlatform_Windows
-        Tester (L"WString2UTF8 win32API vs codecvt_utf8", Test_WString2UTF8_win32API, L"win32API", Test_WString2UTF8_codecvt_utf8,
-                L"codecvt_utf8", 3150000, 3.6, &failedTests);
-#endif
-
         JSONTests_::Run ();
 
         GetOutStream_ () << "[[[Tests took: " << (DateTime::Now () - startedAt).PrettyPrint ().AsNarrowSDKString () << "]]]" << endl

@@ -232,7 +232,7 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
     }
     inline String Query::operator() (const string& idx) const
     {
-        return operator() (Characters::UTF8StringToWide (idx));
+        return operator() (Characters::String::FromUTF8 (idx));
     }
     inline bool Query::HasField (const String& idx) const
     {
@@ -240,7 +240,7 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
     }
     inline bool Query::HasField (const string& idx) const
     {
-        return HasField (Characters::UTF8StringToWide (idx));
+        return HasField (Characters::String::FromUTF8 (idx));
     }
     inline void Query::AddField (const String& idx, const String& value)
     {
@@ -248,7 +248,7 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
     }
     inline void Query::RemoveFieldIfAny (const string& idx)
     {
-        RemoveFieldIfAny (Characters::UTF8StringToWide (idx));
+        RemoveFieldIfAny (Characters::String::FromUTF8 (idx));
     }
     inline strong_ordering Query::operator<=> (const Query& rhs) const
     {

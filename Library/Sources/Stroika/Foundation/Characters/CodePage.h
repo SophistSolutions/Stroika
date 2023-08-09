@@ -69,12 +69,11 @@ namespace Stroika::Foundation::Characters {
     }
 
     /**
-     * TODO:
-     *      @todo CONSIDER DEPRECATING IN STROIKA V3
+     * \brief Returns a character encoding name registered by the IANA - for the given CodePage
      * 
-     *      @todo   DEFINE CAREFULLY - BUT CHARSET USED IN HTTP CONTENT TYPE STRINGS
-     *
-     *      Returns a printable (user-friendly displayable) representation of the given codepage.
+     *  See https://www.w3.org/International/articles/http-charset/index#charset
+     * 
+     *  This works poorly, but is used in the HTTP Response generation, so cannot be removed for now.
      */
     wstring GetCharsetString (CodePage cp);
 
@@ -174,21 +173,6 @@ namespace Stroika::Foundation::Characters {
         wstring f10001;
         wstring f50220;
     };
-
-    // @todo consider losing MOST of these - at least from this file
-
-    void    WideStringToNarrow (const wchar_t* wsStart, const wchar_t* wsEnd, CodePage codePage, string* intoResult);
-    void    WideStringToNarrow (const wstring& ws, CodePage codePage, string* intoResult);
-    string  WideStringToNarrow (const wstring& ws, CodePage codePage);
-    void    NarrowStringToWide (const char* sStart, const char* sEnd, CodePage codePage, wstring* intoResult);
-    void    NarrowStringToWide (const string& s, CodePage codePage, wstring* intoResult);
-    wstring NarrowStringToWide (const string& s, CodePage codePage);
-
-    string  WideStringToUTF8 (const wstring& ws);
-    void    UTF8StringToWide (const char* s, wstring* intoStr);
-    void    UTF8StringToWide (const string& s, wstring* intoStr);
-    wstring UTF8StringToWide (const char* ws);
-    wstring UTF8StringToWide (const string& ws);
 
 }
 
