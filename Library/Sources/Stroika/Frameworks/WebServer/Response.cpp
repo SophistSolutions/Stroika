@@ -8,6 +8,7 @@
 #include <sstream>
 
 #include "../../Foundation/Characters/CString/Utilities.h"
+#include "../../Foundation/Characters/CodeCvt.h"
 #include "../../Foundation/Characters/Format.h"
 #include "../../Foundation/Characters/StringBuilder.h"
 #include "../../Foundation/Characters/ToString.h"
@@ -380,7 +381,8 @@ void Response::write (const wchar_t* s, const wchar_t* e)
 {
     Require (s <= e);
     if (s < e) {
-        string cpStr = Characters::WideStringToNarrow (wstring{s, e}, fCodePage_);
+        // https://stroika.atlassian.net/browse/STK-983
+        string cpStr = Characters::CodeCvt<wchar_t>{fCodePage_}.String2Bytes<string> (wstring{s, e});
         if (not cpStr.empty ()) {
             write (reinterpret_cast<const byte*> (cpStr.c_str ()), reinterpret_cast<const byte*> (cpStr.c_str () + cpStr.length ()));
         }

@@ -115,6 +115,8 @@ namespace Stroika::Frameworks::WebServer {
          *      \req this->headersCanBeSet()
          *      \req TotalBytesWritten == 0
          * 
+         *  \note SEE https://stroika.atlassian.net/browse/STK-983
+         * 
          * \note - if DataExchange::InternetMediaTypeRegistry::Get ().IsTextFormat (fContentType_), then
          *         the characterset will be automatically folded into the used contentType. To avoid this, 
          *         Use UpdateHeader() to mdofiy teh contenttype field directly.
