@@ -159,17 +159,17 @@ namespace Stroika::Foundation::Characters {
     template <typename APPEND_ARG_T>
     inline auto StringBuilder<OPTIONS>::operator+= (APPEND_ARG_T&& a)
         -> StringBuilder& requires (requires (StringBuilder& s, APPEND_ARG_T&& a) { s.Append (forward<APPEND_ARG_T> (a)); }) {
-                              Append (forward<APPEND_ARG_T> (a));
-                              return *this;
-                          }
+            Append (forward<APPEND_ARG_T> (a));
+            return *this;
+        }
 
     template <typename OPTIONS>
     template <typename APPEND_ARG_T>
     inline auto StringBuilder<OPTIONS>::operator<< (APPEND_ARG_T&& a)
         -> StringBuilder& requires (requires (StringBuilder& s, APPEND_ARG_T&& a) { s.Append (forward<APPEND_ARG_T> (a)); }) {
-                              Append (forward<APPEND_ARG_T> (a));
-                              return *this;
-                          }
+            Append (forward<APPEND_ARG_T> (a));
+            return *this;
+        }
 #endif
     template <typename OPTIONS>
     inline void StringBuilder<OPTIONS>::push_back (Character c)

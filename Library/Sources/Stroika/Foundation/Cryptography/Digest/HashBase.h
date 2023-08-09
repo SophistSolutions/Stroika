@@ -22,10 +22,10 @@ namespace Stroika::Foundation::Cryptography::Digest {
     // https://en.cppreference.com/w/cpp/utility/hash
     template <typename FUNCTION, typename HASHABLE_T>
     concept IHashFunction = std::regular_invocable<FUNCTION, HASHABLE_T> && requires (FUNCTION f, HASHABLE_T t) {
-                                                                                {
-                                                                                    std::invoke (f, t)
-                                                                                    } -> std::convertible_to<size_t>;
-                                                                            };
+        {
+            std::invoke (f, t)
+        } -> std::convertible_to<size_t>;
+    };
 }
 
 /*

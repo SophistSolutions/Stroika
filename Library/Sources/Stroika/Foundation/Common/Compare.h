@@ -181,10 +181,10 @@ namespace Stroika::Foundation::Common {
 
         template <typename T>
         concept HasRelationKind_ = requires (T) {
-                                       {
-                                           T::kComparisonRelationKind
-                                       };
-                                   };
+            {
+                T::kComparisonRelationKind
+            };
+        };
     }
 
     /**
@@ -203,13 +203,11 @@ namespace Stroika::Foundation::Common {
      *  Basically, this means we KNOW if its a LESS or EQUALS etc comparer (see ExtractComparisonTraits_v).
      */
     template <typename POTENTIALLY_COMPARER>
-    concept IComparer = (Private_::HasRelationKind_<remove_cvref_t<POTENTIALLY_COMPARER>> and
-                         requires (POTENTIALLY_COMPARER) {
-                             {
-                                 Private_::ExtractComparisonTraits_<remove_cvref_t<POTENTIALLY_COMPARER>>::kComparisonRelationKind
-                                 } -> convertible_to<ComparisonRelationType>;
-                         }) or
-                        Private_::HasExtractComparisonSpecialization_<remove_cvref_t<POTENTIALLY_COMPARER>>::value;
+    concept IComparer = (Private_::HasRelationKind_<remove_cvref_t<POTENTIALLY_COMPARER>> and requires (POTENTIALLY_COMPARER) {
+                            {
+                                Private_::ExtractComparisonTraits_<remove_cvref_t<POTENTIALLY_COMPARER>>::kComparisonRelationKind
+                            } -> convertible_to<ComparisonRelationType>;
+                        }) or Private_::HasExtractComparisonSpecialization_<remove_cvref_t<POTENTIALLY_COMPARER>>::value;
 
     /**
      *  \brief ExtractComparisonTraits_v<> extracts the @ComparisonRelationType for the given argument comparer. 
@@ -244,9 +242,8 @@ namespace Stroika::Foundation::Common {
      *      \endcode
      */
     template <typename COMPARER, typename ARG_T>
-    concept IEqualsComparer =
-        IPotentiallyComparer<COMPARER, ARG_T> and IComparer<COMPARER> and ExtractComparisonTraits_v<remove_cvref_t<COMPARER>> ==
-    ComparisonRelationType::eEquals;
+    concept IEqualsComparer = IPotentiallyComparer<COMPARER, ARG_T> and IComparer<COMPARER> and
+                              ExtractComparisonTraits_v<remove_cvref_t<COMPARER>> == ComparisonRelationType::eEquals;
 
     /**
      *  Checks that the argument comparer compares values of type ARG_T, and returns a (strict) in-order comparison result.
@@ -256,9 +253,8 @@ namespace Stroika::Foundation::Common {
      *  \see IPotentiallyComparer, and use DeclareInOrderComparer to mark a given function as an in-order comparer.
      */
     template <typename COMPARER, typename ARG_T>
-    concept IInOrderComparer =
-        IPotentiallyComparer<COMPARER, ARG_T> and IComparer<COMPARER> and ExtractComparisonTraits_v<std::remove_cvref_t<COMPARER>> ==
-    ComparisonRelationType::eStrictInOrder;
+    concept IInOrderComparer = IPotentiallyComparer<COMPARER, ARG_T> and IComparer<COMPARER> and
+                               ExtractComparisonTraits_v<std::remove_cvref_t<COMPARER>> == ComparisonRelationType::eStrictInOrder;
 
     /**
      *  Utility class to serve as base class when constructing a comparison 'function' object comparer so ExtractComparisonTraits<> knows

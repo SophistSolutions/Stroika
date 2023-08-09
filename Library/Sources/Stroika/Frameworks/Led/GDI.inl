@@ -1371,10 +1371,10 @@ namespace Stroika::Frameworks::Led {
     inline XRectangle AsXRect (const Led_Rect& r)
     {
         XRectangle newR;
-        newR.x = r.GetLeft ();
-        newR.y = r.GetTop ();
+        newR.x      = r.GetLeft ();
+        newR.y      = r.GetTop ();
         newR.height = r.GetHeight ();
-        newR.width = r.GetWidth ();
+        newR.width  = r.GetWidth ();
         return newR;
     }
 #endif
@@ -1881,8 +1881,8 @@ namespace Stroika::Frameworks::Led {
             fFontInfo.lfUnderline = false;
             fFontInfo.lfStrikeOut = false;
 #elif qStroika_FeatureSupported_XWindows
-            fBold = false;
-            fItalics = false;
+            fBold      = false;
+            fItalics   = false;
             fUnderline = false;
 #endif
     }

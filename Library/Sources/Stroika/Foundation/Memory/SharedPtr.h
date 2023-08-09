@@ -24,8 +24,7 @@ namespace Stroika::Foundation::Memory {
     DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
     DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
 
-    struct [[deprecated ("Since Stroika v3, this is deprecated, and will go away - use shared_ptr")]] SharedPtrBase
-    {
+    struct [[deprecated ("Since Stroika v3, this is deprecated, and will go away - use shared_ptr")]] SharedPtrBase {
         /**
          * Note - though we COULD use a smaller reference count type (e.g. uint32_t - for 64bit machines).
          */
@@ -53,8 +52,7 @@ namespace Stroika::Foundation::Memory {
     }
 
     template <typename T>
-    class [[deprecated ("Since Stroika v3, this is deprecated, and will go away - use shared_ptr")]] SharedPtr : public SharedPtrBase
-    {
+    class [[deprecated ("Since Stroika v3, this is deprecated, and will go away - use shared_ptr")]] SharedPtr : public SharedPtrBase {
     public:
         using element_type = T;
 
@@ -67,22 +65,22 @@ namespace Stroika::Foundation::Memory {
         SharedPtr () noexcept;
         SharedPtr (nullptr_t) noexcept;
         template <typename T2, enable_if_t<is_convertible_v<T2*, T*>>* = nullptr>
-        explicit SharedPtr (T2 * from);
+        explicit SharedPtr (T2* from);
         SharedPtr (const SharedPtr& from) noexcept;
-        SharedPtr (SharedPtr && from) noexcept;
+        SharedPtr (SharedPtr&& from) noexcept;
         template <typename T2, enable_if_t<is_convertible_v<T2*, T*>>* = nullptr>
         SharedPtr (const SharedPtr<T2>& from) noexcept;
         template <typename T2, enable_if_t<is_convertible_v<T2*, T*>>* = nullptr>
-        SharedPtr (SharedPtr<T2> && from) noexcept;
+        SharedPtr (SharedPtr<T2>&& from) noexcept;
 
     private:
         explicit SharedPtr (const Envelope_& from) noexcept;
 
     private:
         template <typename T2>
-        static Envelope_ mkEnvelope_ (T2 * from, enable_if_t<is_convertible_v<T2*, Private_::ReferenceCounterContainerType_*>>* = nullptr);
+        static Envelope_ mkEnvelope_ (T2* from, enable_if_t<is_convertible_v<T2*, Private_::ReferenceCounterContainerType_*>>* = nullptr);
         template <typename T2>
-        static Envelope_ mkEnvelope_ (T2 * from, enable_if_t<!is_convertible_v<T2*, Private_::ReferenceCounterContainerType_*>>* = nullptr);
+        static Envelope_ mkEnvelope_ (T2* from, enable_if_t<!is_convertible_v<T2*, Private_::ReferenceCounterContainerType_*>>* = nullptr);
 
     public:
         nonvirtual SharedPtr& operator= (const SharedPtr& rhs) noexcept;
@@ -164,7 +162,7 @@ namespace Stroika::Foundation::Memory {
     public:
         /**
          */
-        nonvirtual void swap (SharedPtr & rhs);
+        nonvirtual void swap (SharedPtr& rhs);
 
     public:
         /**

@@ -23,14 +23,14 @@ namespace Stroika::Foundation::Configuration {
      *  LIFTED -@todo add docs/reference
      *  from Stroustrup C++11 book - page 800
      */
-    struct [[deprecated ("Since Stroika v3 - use concepts")]] substitution_failure{};
+    struct [[deprecated ("Since Stroika v3 - use concepts")]] substitution_failure {};
 
     /**
      *  LIFTED -@todo add docs/reference
      *  from Stroustrup C++11 book - page 800
      */
     template <typename T>
-    struct [[deprecated ("Since Stroika v3 - use concepts")]] substitution_succeeded : true_type{};
+    struct [[deprecated ("Since Stroika v3 - use concepts")]] substitution_succeeded : true_type {};
     template <>
     struct substitution_succeeded<substitution_failure> : false_type {};
 

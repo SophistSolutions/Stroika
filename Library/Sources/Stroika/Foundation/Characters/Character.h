@@ -59,7 +59,7 @@ namespace Stroika::Foundation::Characters {
      *  \note Considered using Latin1 = uint8_t; But this is better since less likely accidentally used.
      */
     struct Latin1 {
-        uint8_t   data;
+        uint8_t data;
         constexpr operator uint8_t () const
         {
             return data;

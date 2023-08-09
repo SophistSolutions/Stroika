@@ -70,10 +70,10 @@ namespace Stroika::Foundation::Configuration {
     namespace Private_ {
         template <typename T>
         concept HasEq_ = requires (T t) {
-                             {
-                                 t == t
-                                 } -> std::convertible_to<bool>;
-                         };
+            {
+                t == t
+            } -> std::convertible_to<bool>;
+        };
         template <typename T>
         constexpr inline bool HasEq_v_ = HasEq_<T>;
         template <typename T, typename U>
@@ -105,10 +105,10 @@ namespace Stroika::Foundation::Configuration {
     namespace Private_ {
         template <typename T>
         concept HasLtBase_ = requires (T t) {
-                                 {
-                                     t < t
-                                     } -> std::convertible_to<bool>;
-                             };
+            {
+                t < t
+            } -> std::convertible_to<bool>;
+        };
         template <typename T>
         constexpr inline bool HasLt_v_ = HasLtBase_<T>;
         template <typename T, typename U>
@@ -152,18 +152,18 @@ namespace Stroika::Foundation::Configuration {
      */
     template <typename T>
     concept IOperatorSpaceship = requires (T t) {
-                                     {
-                                         t <=> t
-                                         } -> std::convertible_to<partial_ordering>;
-                                 } or requires (T t) {
-                                          {
-                                              t <=> t
-                                              } -> std::convertible_to<strong_ordering>;
-                                      } or requires (T t) {
-                                               {
-                                                   t <=> t
-                                                   } -> std::convertible_to<weak_ordering>;
-                                           };
+        {
+            t <=> t
+        } -> std::convertible_to<partial_ordering>;
+    } or requires (T t) {
+        {
+            t <=> t
+        } -> std::convertible_to<strong_ordering>;
+    } or requires (T t) {
+        {
+            t <=> t
+        } -> std::convertible_to<weak_ordering>;
+    };
 
     /**
      *  A template which ignores its template arguments, and always returns true_type;
@@ -196,10 +196,10 @@ namespace Stroika::Foundation::Configuration {
      */
     template <typename T>
     concept IHasSizeMethod = requires (const T& t) {
-                                 {
-                                     t.size ()
-                                     } -> std::convertible_to<size_t>;
-                             };
+        {
+            t.size ()
+        } -> std::convertible_to<size_t>;
+    };
 
     namespace Private_ {
         template <typename T>
@@ -284,10 +284,10 @@ namespace Stroika::Foundation::Configuration {
 
     template <typename T>
     [[deprecated ("Since Stroika v3.0d1, use require expression")]] constexpr inline bool has_plus_v = requires (T t) {
-                                                                                                           {
-                                                                                                               t + t
-                                                                                                           };
-                                                                                                       };
+        {
+            t + t
+        };
+    };
     namespace Private_ {
         template <typename From, typename To>
         struct is_explicitly_convertible {

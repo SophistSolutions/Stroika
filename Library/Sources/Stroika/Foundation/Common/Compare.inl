@@ -258,129 +258,132 @@ namespace Stroika::Foundation::Common {
     // @TODO SEEMS STILL NEEDED ON CLANG++-10???
     // @TODO PROBABLY DEPRECATE THIS CLASS - and use compare_three_way directly
 #if __cpp_lib_three_way_comparison < 201907L
-    struct [[deprecated ("Since Stroika 3.0d1 - use std::compare_three_way")]] ThreeWayComparer{
-        template <typename LT, typename RT> constexpr auto operator() (LT&& lhs, RT&& rhs) const {using CT = common_type_t<LT, RT>;
-    // ISSUE HERE - PRE C++20, no distinction made between strong_ordering, weak_ordering, and partial_ordering, because
-    // this counts on cooperation with various types and mechanismns like operator<=> = default which we don't have (and declared strong_ordering=int)
-    if (equal_to<CT>{}(forward<LT> (lhs), forward<RT> (rhs))) {
-        return strong_ordering::equal;
-    }
-    return less<CT>{}(forward<LT> (lhs), forward<RT> (rhs)) ? strong_ordering::less : strong_ordering::greater;
-}
-}
-;
-#else
-    struct [[deprecated ("Since Stroika 3.0d1 - use std::compare_three_way")]] ThreeWayComparer{
-        template <typename LT, typename RT> constexpr auto operator() (LT&& lhs, RT&& rhs)
-            const {return compare_three_way{}(forward<LT> (lhs), forward<RT> (rhs));
-}
-}
-;
-#endif
-DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
-DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
-DISABLE_COMPILER_MSC_WARNING_START (4996)
-namespace Private_ {
-    template <>
-    struct ExtractComparisonTraits_<ThreeWayComparer> {
-        static constexpr ComparisonRelationType kComparisonRelationKind = ComparisonRelationType::eThreeWayCompare;
+    struct [[deprecated ("Since Stroika 3.0d1 - use std::compare_three_way")]] ThreeWayComparer {
+        template <typename LT, typename RT>
+        constexpr auto operator() (LT&& lhs, RT&& rhs) const
+        {
+            using CT = common_type_t<LT, RT>;
+            // ISSUE HERE - PRE C++20, no distinction made between strong_ordering, weak_ordering, and partial_ordering, because
+            // this counts on cooperation with various types and mechanismns like operator<=> = default which we don't have (and declared strong_ordering=int)
+            if (equal_to<CT>{}(forward<LT> (lhs), forward<RT> (rhs))) {
+                return strong_ordering::equal;
+            }
+            return less<CT>{}(forward<LT> (lhs), forward<RT> (rhs)) ? strong_ordering::less : strong_ordering::greater;
+        }
     };
-}
-DISABLE_COMPILER_MSC_WARNING_END (4996)
-DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
-DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+#else
+    struct [[deprecated ("Since Stroika 3.0d1 - use std::compare_three_way")]] ThreeWayComparer {
+        template <typename LT, typename RT>
+        constexpr auto operator() (LT&& lhs, RT&& rhs) const
+        {
+            return compare_three_way{}(forward<LT> (lhs), forward<RT> (rhs));
+        }
+    };
+#endif
+    DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+    DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
+    DISABLE_COMPILER_MSC_WARNING_START (4996)
+    namespace Private_ {
+        template <>
+        struct ExtractComparisonTraits_<ThreeWayComparer> {
+            static constexpr ComparisonRelationType kComparisonRelationKind = ComparisonRelationType::eThreeWayCompare;
+        };
+    }
+    DISABLE_COMPILER_MSC_WARNING_END (4996)
+    DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated-declarations\"");
+    DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
 
-constexpr std::strong_ordering kLess [[deprecated ("Since Stroika 3.0d1 - use std::strong_ordering")]]    = std::strong_ordering::less;
-constexpr std::strong_ordering kEqual [[deprecated ("Since Stroika 3.0d1 - use std::strong_ordering")]]   = std::strong_ordering::equal;
-constexpr std::strong_ordering kGreater [[deprecated ("Since Stroika 3.0d1 - use std::strong_ordering")]] = std::strong_ordering::greater;
+    constexpr std::strong_ordering kLess [[deprecated ("Since Stroika 3.0d1 - use std::strong_ordering")]]  = std::strong_ordering::less;
+    constexpr std::strong_ordering kEqual [[deprecated ("Since Stroika 3.0d1 - use std::strong_ordering")]] = std::strong_ordering::equal;
+    constexpr std::strong_ordering kGreater [[deprecated ("Since Stroika 3.0d1 - use std::strong_ordering")]] = std::strong_ordering::greater;
 
 #if qCompilerAndStdLib_stdlib_compare_three_way_present_but_Buggy or qCompilerAndStdLib_stdlib_compare_three_way_missing_Buggy
-struct compare_three_way_BWA {
-    // NOTE - this workaround is GENERALLY INADEQUATE, but is adequate for my current use in Stroika -- LGP 2022-11-01
-    template <typename LT, typename RT>
-    constexpr auto operator() (LT&& lhs, RT&& rhs) const
-    {
-        using CT = common_type_t<LT, RT>;
-        if (equal_to<CT>{}(forward<LT> (lhs), forward<RT> (rhs))) {
-            return strong_ordering::equal;
+    struct compare_three_way_BWA {
+        // NOTE - this workaround is GENERALLY INADEQUATE, but is adequate for my current use in Stroika -- LGP 2022-11-01
+        template <typename LT, typename RT>
+        constexpr auto operator() (LT&& lhs, RT&& rhs) const
+        {
+            using CT = common_type_t<LT, RT>;
+            if (equal_to<CT>{}(forward<LT> (lhs), forward<RT> (rhs))) {
+                return strong_ordering::equal;
+            }
+            return less<CT>{}(forward<LT> (lhs), forward<RT> (rhs)) ? strong_ordering::less : strong_ordering::greater;
         }
-        return less<CT>{}(forward<LT> (lhs), forward<RT> (rhs)) ? strong_ordering::less : strong_ordering::greater;
-    }
-    using is_transparent = void;
-};
+        using is_transparent = void;
+    };
 #endif
-template <typename FUNCTOR, typename FUNCTOR_ARG>
-[[deprecated ("Since Stroika v3.0d1 - use IPotentiallyComparer ")]] constexpr bool IsPotentiallyComparerRelation ()
-{
-    return IPotentiallyComparer<FUNCTOR, FUNCTOR_ARG>;
-}
-template <typename FUNCTOR>
-[[deprecated ("Since Stroika v3.0d1 - use IPotentiallyComparer ")]] constexpr bool IsPotentiallyComparerRelation ()
-{
-    if constexpr (Configuration::FunctionTraits<FUNCTOR>::kArity == 2) {
-        using TRAITS = typename Configuration::FunctionTraits<FUNCTOR>;
-        return is_same_v<typename TRAITS::template arg<0>::type, typename TRAITS::template arg<1>::type> and
-               IsPotentiallyComparerRelation<FUNCTOR, typename Configuration::FunctionTraits<FUNCTOR>::template arg<0>::type> ();
+    template <typename FUNCTOR, typename FUNCTOR_ARG>
+    [[deprecated ("Since Stroika v3.0d1 - use IPotentiallyComparer ")]] constexpr bool IsPotentiallyComparerRelation ()
+    {
+        return IPotentiallyComparer<FUNCTOR, FUNCTOR_ARG>;
     }
-    else {
-        return false;
+    template <typename FUNCTOR>
+    [[deprecated ("Since Stroika v3.0d1 - use IPotentiallyComparer ")]] constexpr bool IsPotentiallyComparerRelation ()
+    {
+        if constexpr (Configuration::FunctionTraits<FUNCTOR>::kArity == 2) {
+            using TRAITS = typename Configuration::FunctionTraits<FUNCTOR>;
+            return is_same_v<typename TRAITS::template arg<0>::type, typename TRAITS::template arg<1>::type> and
+                   IsPotentiallyComparerRelation<FUNCTOR, typename Configuration::FunctionTraits<FUNCTOR>::template arg<0>::type> ();
+        }
+        else {
+            return false;
+        }
     }
-}
-template <typename FUNCTOR>
-[[deprecated ("Since Stroika v3.0d1 - use IPotentiallyComparer ")]] constexpr bool IsPotentiallyComparerRelation (const FUNCTOR& f)
-{
-    return IsPotentiallyComparerRelation<FUNCTOR> ();
-}
-template <typename LT, typename RT>
-[[deprecated ("Since Stroika 3.0d1 - use compare_three_way{} or <=>")]] constexpr strong_ordering ThreeWayCompare (LT&& lhs, RT&& rhs)
-{
-    return compare_three_way{}(forward<LT> (lhs), forward<RT> (rhs));
-}
+    template <typename FUNCTOR>
+    [[deprecated ("Since Stroika v3.0d1 - use IPotentiallyComparer ")]] constexpr bool IsPotentiallyComparerRelation (const FUNCTOR& f)
+    {
+        return IsPotentiallyComparerRelation<FUNCTOR> ();
+    }
+    template <typename LT, typename RT>
+    [[deprecated ("Since Stroika 3.0d1 - use compare_three_way{} or <=>")]] constexpr strong_ordering ThreeWayCompare (LT&& lhs, RT&& rhs)
+    {
+        return compare_three_way{}(forward<LT> (lhs), forward<RT> (rhs));
+    }
 
-template <typename COMPARER>
-[[deprecated ("Since Stroika 3.0d1 - use IEqualsComparer")]] constexpr bool IsEqualsComparer ()
-{
-    return ExtractComparisonTraits_v<std::remove_cvref_t<COMPARER>> == ComparisonRelationType::eEquals;
-}
-template <typename COMPARER, typename ARG_T>
-[[deprecated ("Since Stroika 3.0d1 - use IEqualsComparer")]] constexpr bool IsEqualsComparer ()
-{
-    if constexpr (not IsPotentiallyComparerRelation<COMPARER, ARG_T> ()) {
-        return false;
-    }
-    else {
+    template <typename COMPARER>
+    [[deprecated ("Since Stroika 3.0d1 - use IEqualsComparer")]] constexpr bool IsEqualsComparer ()
+    {
         return ExtractComparisonTraits_v<std::remove_cvref_t<COMPARER>> == ComparisonRelationType::eEquals;
     }
-}
-template <typename COMPARER>
-[[deprecated ("Since Stroika 3.0d1 - use IEqualsComparer")]] constexpr bool IsEqualsComparer (const COMPARER&)
-{
-    return IsEqualsComparer<COMPARER> ();
-}
-template <typename COMPARER>
-[[deprecated ("Since Stroika 3.0d1 - use IInOrderComparer")]] constexpr bool IsStrictInOrderComparer ()
-{
-    return ExtractComparisonTraits_v<std::remove_cvref_t<COMPARER>> == ComparisonRelationType::eStrictInOrder;
-}
-template <typename COMPARER, typename ARG_T>
-[[deprecated ("Since Stroika 3.0d1 - use IInOrderComparer")]] constexpr bool IsStrictInOrderComparer ()
-{
-    if constexpr (not IsPotentiallyComparerRelation<COMPARER, ARG_T> ()) {
-        return false;
+    template <typename COMPARER, typename ARG_T>
+    [[deprecated ("Since Stroika 3.0d1 - use IEqualsComparer")]] constexpr bool IsEqualsComparer ()
+    {
+        if constexpr (not IsPotentiallyComparerRelation<COMPARER, ARG_T> ()) {
+            return false;
+        }
+        else {
+            return ExtractComparisonTraits_v<std::remove_cvref_t<COMPARER>> == ComparisonRelationType::eEquals;
+        }
     }
-    else {
+    template <typename COMPARER>
+    [[deprecated ("Since Stroika 3.0d1 - use IEqualsComparer")]] constexpr bool IsEqualsComparer (const COMPARER&)
+    {
+        return IsEqualsComparer<COMPARER> ();
+    }
+    template <typename COMPARER>
+    [[deprecated ("Since Stroika 3.0d1 - use IInOrderComparer")]] constexpr bool IsStrictInOrderComparer ()
+    {
         return ExtractComparisonTraits_v<std::remove_cvref_t<COMPARER>> == ComparisonRelationType::eStrictInOrder;
     }
-}
-template <typename COMPARER>
-[[deprecated ("Since Stroika 3.0d1 - use IInOrderComparer")]] constexpr bool IsStrictInOrderComparer (const COMPARER&)
-{
-    return ExtractComparisonTraits_v<std::remove_cvref_t<COMPARER>> == ComparisonRelationType::eStrictInOrder;
-}
+    template <typename COMPARER, typename ARG_T>
+    [[deprecated ("Since Stroika 3.0d1 - use IInOrderComparer")]] constexpr bool IsStrictInOrderComparer ()
+    {
+        if constexpr (not IsPotentiallyComparerRelation<COMPARER, ARG_T> ()) {
+            return false;
+        }
+        else {
+            return ExtractComparisonTraits_v<std::remove_cvref_t<COMPARER>> == ComparisonRelationType::eStrictInOrder;
+        }
+    }
+    template <typename COMPARER>
+    [[deprecated ("Since Stroika 3.0d1 - use IInOrderComparer")]] constexpr bool IsStrictInOrderComparer (const COMPARER&)
+    {
+        return ExtractComparisonTraits_v<std::remove_cvref_t<COMPARER>> == ComparisonRelationType::eStrictInOrder;
+    }
 
-template <typename COMPARE_FUNCTION>
-using ExtractComparisonTraits [[deprecated ("Since Stroika v3.0d1 - use ExtractComparisonTraits_v instead")]] =
-    Private_::ExtractComparisonTraits_<COMPARE_FUNCTION>;
+    template <typename COMPARE_FUNCTION>
+    using ExtractComparisonTraits [[deprecated ("Since Stroika v3.0d1 - use ExtractComparisonTraits_v instead")]] =
+        Private_::ExtractComparisonTraits_<COMPARE_FUNCTION>;
 }
 
 #endif /*_Stroika_Foundation_Common_Compare_inl_*/

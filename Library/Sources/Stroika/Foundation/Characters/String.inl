@@ -799,7 +799,7 @@ namespace Stroika::Foundation::Characters {
         return SDKString{thisData.begin (), thisData.end ()};
 #elif qPlatform_MacOS
         Memory::StackBuffer<char8_t> maybeIgnoreBuf1;
-        span<const char8_t> thisData = GetData (&maybeIgnoreBuf1);
+        span<const char8_t>          thisData = GetData (&maybeIgnoreBuf1);
         return SDKString{thisData.begin (), thisData.end ()}; // @todo DOCUMENT THAT MACOS USES UTF8 - SRC - LOGIC/RATIONALE
 #else
         return AsNarrowString (locale{}); // @todo document why - linux one rationale - default - similar
@@ -1334,27 +1334,43 @@ namespace Stroika::Foundation::Characters {
     {
         return String{span{str, len}};
     }
-    class [[deprecated ("Since Stroika v3.0 - just use String::FromStringConstant")]] String_Constant : public String{
-        public : template <size_t SIZE>
-        explicit String_Constant (const wchar_t (&cString)[SIZE]) :
-            String{String::FromStringConstant (std::basic_string_view<wchar_t>{cString, SIZE - 1})} {}
+    class [[deprecated ("Since Stroika v3.0 - just use String::FromStringConstant")]] String_Constant : public String {
+    public:
+        template <size_t SIZE>
+        explicit String_Constant (const wchar_t (&cString)[SIZE])
+            : String{String::FromStringConstant (std::basic_string_view<wchar_t>{cString, SIZE - 1})}
+        {
+        }
 
-        String_Constant (const wchar_t* start, const wchar_t* end) :
-            String{String::FromStringConstant (std::basic_string_view<wchar_t>{start, static_cast<size_t> (end - start)})} {}
+        String_Constant (const wchar_t* start, const wchar_t* end)
+            : String{String::FromStringConstant (std::basic_string_view<wchar_t>{start, static_cast<size_t> (end - start)})}
+        {
+        }
 
-        String_Constant (const std::basic_string_view<wchar_t>& str) : String{String::FromStringConstant (str)} {}
+        String_Constant (const std::basic_string_view<wchar_t>& str)
+            : String{String::FromStringConstant (str)}
+        {
+        }
     };
 }
 namespace Stroika::Foundation::Characters::Concrete {
-    class [[deprecated ("Since Stroika v3.0 - just use String::FromStringConstant")]] String_ExternalMemoryOwnership_ApplicationLifetime : public String{
-        public : template <size_t SIZE>
-        explicit String_ExternalMemoryOwnership_ApplicationLifetime (const wchar_t (&cString)[SIZE - 1]) :
-            String{String::FromStringConstant (basic_string_view<wchar_t>{cString, SIZE})} {}
+    class [[deprecated ("Since Stroika v3.0 - just use String::FromStringConstant")]] String_ExternalMemoryOwnership_ApplicationLifetime : public String {
+    public:
+        template <size_t SIZE>
+        explicit String_ExternalMemoryOwnership_ApplicationLifetime (const wchar_t (&cString)[SIZE - 1])
+            : String{String::FromStringConstant (basic_string_view<wchar_t>{cString, SIZE})}
+        {
+        }
 
-        String_ExternalMemoryOwnership_ApplicationLifetime (const wchar_t* start, const wchar_t* end) :
-            String{String::FromStringConstant (basic_string_view<wchar_t>{start, static_cast<size_t> (end - start)})} {}
+        String_ExternalMemoryOwnership_ApplicationLifetime (const wchar_t* start, const wchar_t* end)
+            : String{String::FromStringConstant (basic_string_view<wchar_t>{start, static_cast<size_t> (end - start)})}
+        {
+        }
 
-        String_ExternalMemoryOwnership_ApplicationLifetime (const basic_string_view<wchar_t>& str) : String{String::FromStringConstant (str)} {}
+        String_ExternalMemoryOwnership_ApplicationLifetime (const basic_string_view<wchar_t>& str)
+            : String{String::FromStringConstant (str)}
+        {
+        }
     };
 }
 

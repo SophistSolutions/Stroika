@@ -430,7 +430,7 @@ namespace Stroika::Foundation::Memory {
             BlockAllocationPool_<AdjustSizeForPool_ ()>::Deallocate (p);
         }
 #else
-        ::            operator delete (p);
+        ::operator delete (p);
 #endif
     }
     template <typename T>

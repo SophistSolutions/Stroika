@@ -1572,10 +1572,10 @@ namespace Stroika::Foundation::Characters {
      */
     template <typename T>
     concept IConvertibleToString = requires (T t) {
-                                       {
-                                           String{t}
-                                       };
-                                   };
+        {
+            String{t}
+        };
+    };
 
     /**
      *  Use Stroika String more easily with std::ostream.

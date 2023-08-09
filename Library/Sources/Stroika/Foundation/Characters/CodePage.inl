@@ -50,8 +50,7 @@ namespace Stroika::Foundation::Characters {
     //////////////////////////// DEPRECATED BELOW.../////////////////////////////
     /// </summary
 
-    class [[deprecated ("Since Stroika v3.0d2, use ReadByteOrderMark")]] CodePagesGuesser
-    {
+    class [[deprecated ("Since Stroika v3.0d2, use ReadByteOrderMark")]] CodePagesGuesser {
     public:
         enum class Confidence : uint8_t {
             eLow    = 0,
@@ -107,8 +106,7 @@ namespace Stroika::Foundation::Characters {
         kCodePage_UTF8 [[deprecated ("Since v3.0d2 - WellKnownCodePages::kUTF8")]] = WellKnownCodePages::kUTF8
     };
 
-    class [[deprecated ("Since Stroika v3.0d2, use CodeCvt")]] CodePageConverter
-    {
+    class [[deprecated ("Since Stroika v3.0d2, use CodeCvt")]] CodePageConverter {
     public:
         enum class HandleBOMFlag {
             eHandleBOM
