@@ -299,7 +299,7 @@ namespace {
                         }
                     }
                 }
-                m->Add (UTF8StringToWide (elt.substr (0, brk)), UTF8StringToWide (val));
+                m->Add (String::FromUTF8 (elt.substr (0, brk)), String::FromUTF8 (val));
             }
             if (e == String::npos) {
                 break;
