@@ -95,7 +95,7 @@
 #define _STROIKA_CONFIGURATION_WARNING_                                                                                                    \
     "Warning: Stroika v3 does not support versions prior to GCC 11 (v2.1 supports g++7 and later, v2.0 supports g++5 and g++6 and g++-7)"
 #endif
-#if __GNUC__ > 12 || (__GNUC__ == 12 && (__GNUC_MINOR__ > 1))
+#if __GNUC__ > 12 || (__GNUC__ == 12 && (__GNUC_MINOR__ > 3))
 #define _STROIKA_CONFIGURATION_WARNING_ "Info: Stroika untested with this version of GCC - USING PREVIOUS COMPILER VERSION BUG DEFINES"
 #define CompilerAndStdLib_AssumeBuggyIfNewerCheck_(X) 1
 #endif
@@ -1377,6 +1377,9 @@ In file included from Namespace.cpp:10:
 #elif defined(__clang__) && !defined(__APPLE__)
 #define qCompilerAndStdLib_requires_breaks_soemtimes_but_static_assert_ok_Buggy                                                            \
     CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 15))
+#elif defined(__GNUC__) && !defined(__clang__)
+// VERIFIED BROKEN IN GCC 12.3 - so wondering if this is not a compiler bug but a me bug --LGP 2023-08-08
+#define qCompilerAndStdLib_requires_breaks_soemtimes_but_static_assert_ok_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ <= 12)
 #elif defined(_MSC_VER)
 // verified broken in _MSC_VER_2k22_17Pt5_ (BUT ONLY WHEN BUILDING INSIDE DOCKER????)
 // Fixed in _MSC_VER_2k22_17Pt6_
