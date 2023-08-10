@@ -118,7 +118,7 @@ Docker for windows is exceedingly flakey, nearly to the point of unusability. Th
 edge it into the usuable domain.
 
 - DNS Resolution error on Docker Desktop windows
-  "Invoke-WebRequest : The remote name could not be resolved: 'github.com'"
+  "Invoke-WebRequest : The remote name could not be resolved: 'github.com'" or "Could not resolve host: github.com"
   - See https://stroika.atlassian.net/browse/STK-742
   - See https://forums.docker.com/t/dns-broken-on-docker-desktop-for-windows/130121
   - See https://github.com/docker/for-win/issues/3810
