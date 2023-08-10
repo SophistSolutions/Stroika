@@ -148,7 +148,7 @@ namespace Stroika::Foundation::Characters {
     {
 #if qTargetPlatformSDKUseswchar_t
 #if qPlatform_Windows
-        static constexpr DWORD kFLAGS_ = 0;
+        static constexpr DWORD kFLAGS_ = 0; // NOTE NOT specifying WC_ERR_INVALID_CHARS so map bad/missing UNICODE characters to some system default char
         int stringLength = ::WideCharToMultiByte (CP_ACP, kFLAGS_, s.data (), static_cast<int> (s.size ()), nullptr, 0, nullptr, nullptr);
         if (stringLength == 0 and s.size () != 0) {
             Execution::ThrowSystemErrNo ();
