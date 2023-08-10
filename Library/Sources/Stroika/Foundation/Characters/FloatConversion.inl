@@ -423,11 +423,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
             // we must copy to a temporary buffer (not super costly, especially since this isn't the main
             // approach tried typically)
             Memory::StackBuffer<CHAR_T> srcBufWithNul{Memory::eUninitialized, srcSpan.size () + 1};
-#if qCompilerAndStdLib_spanOfContainer_Buggy
-            Memory::CopySpanData (srcSpan, span{srcBufWithNul.data (), srcBufWithNul.size ()});
-#else
             Memory::CopySpanData (srcSpan, span{srcBufWithNul});
-#endif
             srcBufWithNul[srcSpan.size ()] = '\0';
             const CHAR_T* si               = srcBufWithNul.begin ();
             const CHAR_T* ei               = srcBufWithNul.end () - 1; // buf nul-terminated, but dont treat the NUL as part of our length
@@ -485,11 +481,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
             else {
                 // must utf convert to wchar_t which we support
                 Memory::StackBuffer<wchar_t> wideBuf{Memory::eUninitialized, UTFConvert::ComputeTargetBufferSize<wchar_t> (srcSpan)};
-#if qCompilerAndStdLib_spanOfContainer_Buggy
-                span<const wchar_t> wideSpan = UTFConvert::kThe.ConvertSpan (srcSpan, span{wideBuf.data (), wideBuf.size ()});
-#else
-                span<const wchar_t> wideSpan = UTFConvert::kThe.ConvertSpan (srcSpan, span{wideBuf});
-#endif
+                span<const wchar_t>          wideSpan = UTFConvert::kThe.ConvertSpan (srcSpan, span{wideBuf});
                 if (remainder == nullptr) {
                     d = ToFloat_RespectingLocale_<T, wchar_t> (wideSpan, nullptr);
                 }
@@ -619,11 +611,7 @@ namespace Stroika::Foundation::Characters::FloatConversion {
         if (Character::AsASCIIQuietly (s, &asciiS)) {
             T result; // intentionally uninitialized
             if constexpr (qCompilerAndStdLib_to_chars_FP_Buggy or qCompilerAndStdLib_from_chars_and_tochars_FP_Precision_Buggy) {
-#if qCompilerAndStdLib_spanOfContainer_Buggy
-                result = Private_::ToFloat_RespectingLocale_<T> (span<const char>{asciiS.data (), asciiS.size ()}, nullptr);
-#else
-                result                       = Private_::ToFloat_RespectingLocale_<T> (span<const char>{asciiS}, nullptr);
-#endif
+                result = Private_::ToFloat_RespectingLocale_<T> (span<const char>{asciiS}, nullptr);
             }
             else {
                 auto b = asciiS.begin ();

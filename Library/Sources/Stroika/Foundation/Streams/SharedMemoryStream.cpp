@@ -51,9 +51,5 @@ Characters::String SharedMemoryStream<Characters::Character>::Ptr::As () const
     AssertMember (&_GetRepConstRef (), Rep_);
     const Rep_& rep = *Debug::UncheckedDynamicCast<const Rep_*> (&_GetRepConstRef ());
     auto        tmp = rep.AsVector ();
-#if qCompilerAndStdLib_spanOfContainer_Buggy
-    return String{span{tmp.data (), tmp.size ()}};
-#else
     return String{span{tmp}};
-#endif
 }

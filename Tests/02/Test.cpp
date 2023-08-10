@@ -696,7 +696,10 @@ namespace {
             VerifyTestResult (String{L"01-23-45-67-89"}.ReplaceAll (L"-", L"x") == L"01x23x45x67x89");
             VerifyTestResult (String{L"01-23-45-67-89"}.ReplaceAll (L"-", L"--") == L"01--23--45--67--89");
         }
-        void Test17_Replace_ () { VerifyTestResult (String{u8"abc"}.Replace (1, 2, L"B") == L"aBc"); }
+        void Test17_Replace_ ()
+        {
+            VerifyTestResult (String{u8"abc"}.Replace (1, 2, L"B") == L"aBc");
+        }
         void Test17_RegExpMatch_ ()
         {
             {
@@ -1132,7 +1135,10 @@ namespace {
 
 namespace {
     namespace Test23_PRIVATE_ {
-        String Test23_help1_ (const wchar_t* format, va_list argsList) { return Characters::FormatV (format, argsList); }
+        String Test23_help1_ (const wchar_t* format, va_list argsList)
+        {
+            return Characters::FormatV (format, argsList);
+        }
         String Test23_help1_HELPER (const wchar_t* format, ...)
         {
             va_list argsList;
@@ -1297,8 +1303,8 @@ namespace {
     void Test44_LocaleUNICODEConversions_ ()
     {
         Debug::TraceContextBumper ctx{L"Test44_LocaleUNICODEConversions_"};
-        VerifyTestResult (String{"abcdefgjij"}.AsNarrowSDKString () == "abcdefgjij");   // Failed due to bug in CodePageConverter::MapFromUNICODE before v3.0d2
-        auto                      testRoundtrip = [] (const char* localName, const string& localMBString, const wstring& wideStr) {
+        VerifyTestResult (String{"abcdefgjij"}.AsNarrowSDKString () == "abcdefgjij"); // Failed due to bug in CodePageConverter::MapFromUNICODE before v3.0d2
+        auto testRoundtrip = [] (const char* localName, const string& localMBString, const wstring& wideStr) {
             bool initializedLocale = false;
             try {
                 locale l{localName};
@@ -1313,7 +1319,7 @@ namespace {
 #if qCompilerAndStdLib_locale_utf8_string_convert_Buggy
 // sigh - fails to convert unicode characters
 #else
-                VerifyTestResult (not initializedLocale); // else means throw from conversion which would be bad
+                VerifyTestResult (not initializedLocale);                                        // else means throw from conversion which would be bad
 #endif
             }
             catch (...) {
@@ -1624,22 +1630,26 @@ namespace {
             // https://www.informit.com/articles/article.aspx?p=2274038&seqNum=10 SURROGATE SAMPLES
             {
                 constexpr auto ch = Character{0x10000};
-                VerifyTestResult ((ch.IsSurrogatePair () and ch.GetSurrogatePair () == pair{static_cast<char16_t> (0xD800), static_cast < char16_t> (0xDC00)}));
+                VerifyTestResult ((ch.IsSurrogatePair () and
+                                   ch.GetSurrogatePair () == pair{static_cast<char16_t> (0xD800), static_cast<char16_t> (0xDC00)}));
                 VerifyTestResult ((ch == Character{0xD800, 0xDC00}));
             }
             {
                 constexpr auto ch = Character{0x10E6D};
-                VerifyTestResult ((ch.IsSurrogatePair () and ch.GetSurrogatePair () == pair{static_cast<char16_t> (0xD803), static_cast<char16_t> (0xDE6D)}));
+                VerifyTestResult ((ch.IsSurrogatePair () and
+                                   ch.GetSurrogatePair () == pair{static_cast<char16_t> (0xD803), static_cast<char16_t> (0xDE6D)}));
                 VerifyTestResult ((ch == Character{0xD803, 0xDE6D}));
             }
             {
                 constexpr auto ch = Character{0x1D11E};
-                VerifyTestResult ((ch.IsSurrogatePair () and ch.GetSurrogatePair () == pair{static_cast<char16_t> (0xD834),      static_cast<char16_t> (0xDD1E)}));
+                VerifyTestResult ((ch.IsSurrogatePair () and
+                                   ch.GetSurrogatePair () == pair{static_cast<char16_t> (0xD834), static_cast<char16_t> (0xDD1E)}));
                 VerifyTestResult ((ch == Character{0xD834, 0xDD1E}));
             }
             {
                 constexpr auto ch = Character{0x10FFFF};
-                VerifyTestResult ((ch.IsSurrogatePair () and ch.GetSurrogatePair () == pair{static_cast<char16_t> (0xDBFF), static_cast<char16_t> (0xDFFF)}));
+                VerifyTestResult ((ch.IsSurrogatePair () and
+                                   ch.GetSurrogatePair () == pair{static_cast<char16_t> (0xDBFF), static_cast<char16_t> (0xDFFF)}));
                 VerifyTestResult ((ch == Character{0xDBFF, 0xDFFF}));
             }
         }
@@ -1793,11 +1803,7 @@ namespace {
             constexpr char16_t        someRandomText[] = u"hello mom";
             span<const char16_t>      someRandomTextSpan{someRandomText, Characters::CString::Length (someRandomText)};
             Memory::StackBuffer<byte> targetBuf{ccvt.ComputeTargetByteBufferSize (someRandomTextSpan)};
-#if qCompilerAndStdLib_spanOfContainer_Buggy
-            auto b = ccvt.Characters2Bytes (someRandomTextSpan, span<byte>{targetBuf.data (), targetBuf.size ()});
-#else
-            auto b = ccvt.Characters2Bytes (someRandomTextSpan, span{targetBuf});
-#endif
+            auto                      b = ccvt.Characters2Bytes (someRandomTextSpan, span{targetBuf});
             VerifyTestResult (b.size () == 9 and b[0] == static_cast<byte> ('h'));
         };
         {
@@ -1817,11 +1823,11 @@ namespace {
                     return false;
                 }
             };
-            // see https://en.cppreference.com/w/cpp/locale/codecvt_byname for cases not deprecated 
+            // see https://en.cppreference.com/w/cpp/locale/codecvt_byname for cases not deprecated
             if (hasLocale ("en_US.UTF8")) {
                 // Now using codecvt_byname (locale converter)
                 CodeCvt<wchar_t> codeCvt3a =
-                    CodeCvt<wchar_t>::mkFromStdCodeCvt<std::codecvt_byname<wchar_t, char, std::mbstate_t>> ({} , "en_US.UTF8");
+                    CodeCvt<wchar_t>::mkFromStdCodeCvt<std::codecvt_byname<wchar_t, char, std::mbstate_t>> ({}, "en_US.UTF8");
                 CodeCvt<char32_t> codeCvt3b =
                     CodeCvt<char32_t>::mkFromStdCodeCvt<std::codecvt_byname<char32_t, char8_t, std::mbstate_t>> ({}, "en_US.UTF8");
                 CodeCvt<char16_t> codeCvt3c =
@@ -1831,17 +1837,13 @@ namespace {
                 codeCvtChar16Test (codeCvt4c);
             }
             if (hasLocale ("en_US.UTF8")) {
-                CodeCvt<> cc{"en_US.UTF8"};
-                 constexpr char8_t        someRandomText[] = u8"hello mom";
-                 span<const byte>         someRandomTextBinarySpan =  as_bytes (span<const char8_t> {someRandomText, Characters::CString::Length (someRandomText)});
+                CodeCvt<>         cc{"en_US.UTF8"};
+                constexpr char8_t someRandomText[] = u8"hello mom";
+                span<const byte>  someRandomTextBinarySpan =
+                    as_bytes (span<const char8_t>{someRandomText, Characters::CString::Length (someRandomText)});
                 Memory::StackBuffer<Character> buf{cc.ComputeTargetCharacterBufferSize (someRandomTextBinarySpan)};
-               
-#if qCompilerAndStdLib_spanOfContainer_Buggy
-                auto b = cc.Bytes2Characters (&someRandomTextBinarySpan, span<byte>{buf.data (), buf.size ()});
-#else
-                auto b = cc.Bytes2Characters (&someRandomTextBinarySpan, span{buf});
-#endif
-                VerifyTestResult (someRandomTextBinarySpan.size () == 0);   // ALL CONSUMED
+                auto                           b = cc.Bytes2Characters (&someRandomTextBinarySpan, span{buf});
+                VerifyTestResult (someRandomTextBinarySpan.size () == 0); // ALL CONSUMED
                 VerifyTestResult (b.size () == 9 and b[0] == 'h');
             }
         }

@@ -28,11 +28,7 @@ namespace Stroika::Foundation::Memory {
         BasicRep_ (span<const byte> s)
             : fData{Memory::eUninitialized, s.size ()}
         {
-#if qCompilerAndStdLib_spanOfContainer_Buggy
-            Memory::CopySpanData (s, span{fData.data (), fData.size ()});
-#else
             Memory::CopySpanData (s, span{fData});
-#endif
         }
 
         BasicRep_ (const initializer_list<pair<const byte*, const byte*>>& startEndPairs);
@@ -100,19 +96,11 @@ namespace Stroika::Foundation::Memory {
     {
     }
     inline BLOB::BLOB (const initializer_list<byte>& bytes)
-#if qCompilerAndStdLib_spanOfContainer_Buggy
-        : BLOB{span{bytes.begin (), bytes.size ()}}
-#else
         : BLOB{span{bytes}}
-#endif
     {
     }
     inline BLOB::BLOB (const initializer_list<uint8_t>& bytes)
-#if qCompilerAndStdLib_spanOfContainer_Buggy
-        : BLOB{as_bytes (span{bytes.begin (), bytes.size ()})}
-#else
         : BLOB{as_bytes (span{bytes})}
-#endif
     {
     }
     inline BLOB::BLOB (span<const byte> s)

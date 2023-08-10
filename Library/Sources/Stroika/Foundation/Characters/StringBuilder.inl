@@ -57,20 +57,12 @@ namespace Stroika::Foundation::Characters {
             if constexpr (is_same_v<CHAR_T, BufferElementType>) {
                 size_t i = fData_.size ();
                 fData_.GrowToSize_uninitialized (i + spanSize);
-#if qCompilerAndStdLib_spanOfContainer_Buggy
-                Memory::CopySpanData_StaticCast (s, span{fData_.data (), fData_.size ()}.subspan (i));
-#else
                 Memory::CopySpanData_StaticCast (s, span<CHAR_T>{fData_}.subspan (i));
-#endif
             }
             else {
                 // @todo  OPTIMIZATION OPPORTUNITY - if given an ascii span, can just do those chars one at a time...
                 Memory::StackBuffer<BufferElementType> buf{Memory::eUninitialized, UTFConvert::ComputeTargetBufferSize<BufferElementType> (s)};
-#if qCompilerAndStdLib_spanOfContainer_Buggy
-                Append (UTFConvert::kThe.ConvertSpan (s, span{buf.data (), buf.size ()}));
-#else
                 Append (UTFConvert::kThe.ConvertSpan (s, span{buf}));
-#endif
             }
         }
     }
@@ -91,22 +83,14 @@ namespace Stroika::Foundation::Characters {
     inline void StringBuilder<OPTIONS>::Append (const basic_string<CHAR_T>& s)
         requires (IUNICODECanUnambiguouslyConvertFrom<CHAR_T>)
     {
-#if qCompilerAndStdLib_spanOfContainer_Buggy
-        Append (span{s.data (), s.size ()});
-#else
         Append (span{s});
-#endif
     }
     template <typename OPTIONS>
     template <IStdBasicStringCompatibleCharacter CHAR_T>
     inline void StringBuilder<OPTIONS>::Append (const basic_string_view<CHAR_T>& s)
         requires (IUNICODECanUnambiguouslyConvertFrom<CHAR_T>)
     {
-#if qCompilerAndStdLib_spanOfContainer_Buggy
-        Append (span{s.data (), s.size ()});
-#else
         Append (span{s});
-#endif
     }
     template <typename OPTIONS>
     inline void StringBuilder<OPTIONS>::Append (const String& s)
@@ -284,13 +268,8 @@ namespace Stroika::Foundation::Characters {
             return span{reinterpret_cast<const CHAR_T*> (fData_.data ()), fData_.size ()};
         }
         else {
-#if qCompilerAndStdLib_spanOfContainer_Buggy
-            probablyIgnoredBuf->resize_uninitialized (UTFConvert::ComputeTargetBufferSize<CHAR_T> (span{fData_.data (), fData_.size ()}));
-            return UTFConvert::kThe.ConvertSpan (span{fData_.data (), fData_.size ()}, span{probablyIgnoredBuf->data (), probablyIgnoredBuf->size ()});
-#else
             probablyIgnoredBuf->resize_uninitialized (UTFConvert::ComputeTargetBufferSize<CHAR_T> (span{fData_}));
             return UTFConvert::kThe.ConvertSpan (span{fData_}, span{*probablyIgnoredBuf});
-#endif
         }
     }
 

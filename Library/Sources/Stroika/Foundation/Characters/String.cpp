@@ -616,13 +616,8 @@ String String::FromNarrowString (span<const char> s, const locale& l)
 shared_ptr<String::_IRep> String::mkEmpty_ ()
 {
     static constexpr wchar_t kEmptyCStr_[] = L"";
-// use StringConstant_ since nul-terminated, and for now works better with CSTR - and why allocate anything...
-#if qCompilerAndStdLib_spanOfContainer_Buggy
-    static const shared_ptr<_IRep> s_ =
-        Memory::MakeSharedPtr<StringConstant_::Rep<wchar_t>> (span<const wchar_t>{&kEmptyCStr_[0], &kEmptyCStr_[0]});
-#else
+    // use StringConstant_ since nul-terminated, and for now works better with CSTR - and why allocate anything...
     static const shared_ptr<_IRep> s_ = Memory::MakeSharedPtr<StringConstant_::Rep<wchar_t>> (span{std::begin (kEmptyCStr_), 0});
-#endif
     return s_;
 }
 
@@ -721,12 +716,7 @@ auto String::mk_ (basic_string<char16_t>&& s) -> shared_ptr<_IRep>
     }
     // copy the data if any surrogates
     Memory::StackBuffer<char32_t> wideUnicodeBuf{Memory::eUninitialized, UTFConvert::ComputeTargetBufferSize<char32_t> (span{s.data (), s.size ()})};
-#if qCompilerAndStdLib_spanOfContainer_Buggy
-    return mk_nocheck_ (
-        Memory::ConstSpan (UTFConvert::kThe.ConvertSpan (span{s.data (), s.size ()}, span{wideUnicodeBuf.data (), wideUnicodeBuf.size ()})));
-#else
     return mk_nocheck_ (Memory::ConstSpan (UTFConvert::kThe.ConvertSpan (span{s.data (), s.size ()}, span{wideUnicodeBuf})));
-#endif
 }
 
 template <>
@@ -745,12 +735,7 @@ auto String::mk_ (basic_string<wchar_t>&& s) -> shared_ptr<_IRep>
         // copy the data if any surrogates
         Memory::StackBuffer<char32_t> wideUnicodeBuf{Memory::eUninitialized,
                                                      UTFConvert::ComputeTargetBufferSize<char32_t> (span{s.data (), s.size ()})};
-#if qCompilerAndStdLib_spanOfContainer_Buggy
-        return mk_nocheck_ (Memory::ConstSpan (
-            UTFConvert::kThe.ConvertSpan (span{s.data (), s.size ()}, span{wideUnicodeBuf.data (), wideUnicodeBuf.size ()})));
-#else
         return mk_nocheck_ (Memory::ConstSpan (UTFConvert::kThe.ConvertSpan (span{s.data (), s.size ()}, span{wideUnicodeBuf})));
-#endif
     }
     else {
         return Memory::MakeSharedPtr<StdStringDelegator_::Rep<wchar_t>> (move (s));

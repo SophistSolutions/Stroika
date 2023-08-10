@@ -1423,11 +1423,7 @@ namespace Stroika::Foundation::Characters {
         [[deprecated ("Since Stroika v3.0d1, use span overloads")]] String InsertAt (const wchar_t* from, const wchar_t* to, size_t at) const
         {
             Memory::StackBuffer<Character> buf{Memory::eUninitialized, UTFConvert::ComputeTargetBufferSize<Character> (span{from, to})};
-#if qCompilerAndStdLib_spanOfContainer_Buggy
-            return InsertAt (UTFConvert::kThe.ConvertSpan (span{from, to}, span{buf.data (), buf.size ()}), at);
-#else
             return InsertAt (UTFConvert::kThe.ConvertSpan (span{from, to}, span{buf}), at);
-#endif
         }
         [[deprecated ("Since Stroika v3.0d1, use span overloads")]] String InsertAt (const Character* from, const Character* to, size_t at) const
         {
