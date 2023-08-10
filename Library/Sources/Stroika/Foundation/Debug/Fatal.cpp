@@ -15,7 +15,7 @@ using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Debug;
 
 namespace {
-    void _DefaultFatalErrorHandler_ (const SDKChar* msg) noexcept
+    void _DefaultFatalErrorHandler_ ([[maybe_unused]] const SDKChar* msg) noexcept
     {
         DbgTrace (SDKSTR ("Fatal Error %s encountered"), msg);
         if (auto exc = current_exception ()) {
