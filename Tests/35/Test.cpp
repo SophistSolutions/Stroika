@@ -180,7 +180,7 @@ namespace {
                 VerifyTestResult (InternetMediaTypeRegistry::Get ().IsTextFormat (ct1));
             }
             {
-                auto dumpCT = [] (const String& label, InternetMediaType i) {
+                auto dumpCT = [] ([[maybe_unused]] const String& label, InternetMediaType i) {
                     [[maybe_unused]] InternetMediaTypeRegistry r = InternetMediaTypeRegistry::Get ();
                     DbgTrace (L"SUFFIX(%s)=%s", label.As<wstring> ().c_str (), Characters::ToString (r.GetPreferredAssociatedFileSuffix (i)).c_str ());
                     DbgTrace (L"ASSOCFILESUFFIXES(%s)=%s", label.As<wstring> ().c_str (),

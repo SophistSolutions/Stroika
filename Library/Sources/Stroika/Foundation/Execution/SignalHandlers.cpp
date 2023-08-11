@@ -468,7 +468,7 @@ void SignalHandlerRegistry::RemoveSignalHandler (SignalID signal, const SignalHa
     SetSignalHandlers (signal, s);
 }
 
-void SignalHandlerRegistry::DefaultCrashSignalHandler (SignalID signal)
+void SignalHandlerRegistry::DefaultCrashSignalHandler ([[maybe_unused]] SignalID signal)
 {
     DbgTrace (L"Serious Signal Error trapped: %s ... Aborting", SignalToName (signal).c_str ());
     abort ();

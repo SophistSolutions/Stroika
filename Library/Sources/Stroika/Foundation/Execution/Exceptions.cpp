@@ -164,7 +164,7 @@ void Execution::Private_::SystemErrorExceptionPrivate_::TranslateException_ (err
     if (errCode == errc::not_enough_memory) {
         Throw (bad_alloc{});
     }
-    if (errCode == errc::timed_out or errCode == errc::stream_timeout) {
+    if (errCode == errc::timed_out) {
         Throw (TimeOutException{errCode});
     }
 #if qCompilerAndStdLib_Winerror_map_doesnt_map_timeout_Buggy
@@ -204,7 +204,7 @@ unique_ptr<exception> Execution::Private_::SystemErrorExceptionPrivate_::Transla
     if (errCode == errc::not_enough_memory) {
         return make_unique<bad_alloc> ();
     }
-    if (errCode == errc::timed_out or errCode == errc::stream_timeout) {
+    if (errCode == errc::timed_out) {
         return make_unique<TimeOutException> (errCode);
     }
 #if qCompilerAndStdLib_Winerror_map_doesnt_map_timeout_Buggy
