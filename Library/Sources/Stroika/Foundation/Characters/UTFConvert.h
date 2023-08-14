@@ -63,7 +63,9 @@ namespace Stroika::Foundation::Characters {
      *      o   Invalid character handling - defaults to generating exception, but can specify options.fInvalidCharacterReplacement in CTOR.
      * 
      *  \note Byte Order Markers
-     *      UTFConvert does NOT support byte order marks (BOM) - for that - see Streams::TextReader, and Streams::TextWriter
+     *      UTFConvert does NOT support byte order marks (BOM) - for that - see Streams::TextReader, and Streams::TextWriter or TextConvert
+     *      The reason is - the conversion methods are templated on the char8_t, char16_t e etc char TYPE, and this doesn't work well with
+     *      dynamically deteecting the character type at runtime.
      *
      *  \notes about mbstate_t
      *      mbstate_t is used by the std::codecvt apis and nothing else, and seems opaque and not any obvious use, so just
