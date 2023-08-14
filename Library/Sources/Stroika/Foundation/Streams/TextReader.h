@@ -190,6 +190,7 @@ namespace Stroika::Foundation::Streams {
     private:
         friend class TextReader;
     };
+
 }
 
 /*

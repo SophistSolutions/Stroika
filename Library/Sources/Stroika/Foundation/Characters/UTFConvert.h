@@ -43,10 +43,8 @@ namespace Stroika::Foundation::Characters {
     /**
      * \brief UTFConvert is designed to provide mappings between various UTF encodings of UNICODE characters.
      * 
-     *  This area of C++ is a confusingly broken cluster-fuck. Its pretty simple, and well defined. It's been standardized in C++
-     *  as of C++11 (though poorly, but better poor than none). But then that standardized code was deprecated in C++17, and
-     *  I BELIEVE still not replaced functionlity as of C++23 (I've searched, but no luck). (MAYBE WRONG - just renamed char to char8_t
-     *  but docs in cppreference dont make that clear; anyhow still a mess).
+     *  This area of C++ is a confusingly broken cluster-fuck. Its pretty simple, and well defined, but painful todo
+     *  with std::codecvt variants...
      * 
      *  Available (plausible) implementations:
      *      o   std C++ code_cvt        (deprecated, and on windows, slow)
