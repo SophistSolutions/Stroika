@@ -47,7 +47,7 @@ namespace Stroika::Foundation::Characters {
      *  with std::codecvt variants...
      * 
      *  Available (plausible) implementations:
-     *      o   std C++ code_cvt        (deprecated, and on windows, slow)
+     *      o   std C++ code_cvt        (on windows, slow)
      *      o   Boost locale utf_to_utf (untested so not sure about this)
      *      o   Windows API             (appears most performant)
      *      o   Stroika portable implementation, based on libutfxx (slow but portable, and works)
@@ -60,6 +60,7 @@ namespace Stroika::Foundation::Characters {
      *          assert we never run out of space. Not a great plan, but probably pretty good, most of the time.
      * 
      *          API setup so the compute-buf-size routine COULD walk the source and compute the exact needed size, without changing API.
+     *      o   Invalid character handling - defaults to generating exception, but can specify options.fInvalidCharacterReplacement in CTOR.
      * 
      *  \note Byte Order Markers
      *      UTFConvert does NOT support byte order marks (BOM) - for that - see Streams::TextReader, and Streams::TextWriter
@@ -132,6 +133,8 @@ namespace Stroika::Foundation::Characters {
 
     public:
         /**
+         *  As of Stroika v3.0d2, if options.fInvalidCharacterReplacement specified, options.fPreferredImplementation must be null or eStroikaPortable.
+         *  That limitation could be lifted in the future.
          */
 #if qCompilerAndStdLib_DefaultMemberInitializerNeededEnclosingForDefaultFunArg_Buggy
         constexpr UTFConvert ();

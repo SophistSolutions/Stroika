@@ -54,7 +54,7 @@ namespace Stroika::Foundation::Characters {
      * 
      *  Use the CodeCvt<> API when your code conversions may involve non UNICODE byte representations.
      * 
-     *  Note that this class - like codecvt - and be used to 'page' over an input, and incrementally convert it (though how it does this 
+     *  Note that this class - like codecvt - can be used to 'page' over an input, and incrementally convert it (though how it does this 
      *  differs from codecvt - not maintaining a partial state - but instead adjusting the amount consumed from the input to reflect
      *  full-character conversions).
      * 
@@ -65,6 +65,7 @@ namespace Stroika::Foundation::Characters {
      *          refers to the 'CHARACTER' format you map to/from binary format (so typically wchar_t, or char32_t maybe).
      *
      *  Enhancements over std::codecvt:
+     *      o   this is a span<> based API
      *      o   You can subclass IRep (to provide your own CodeCvt implementation) and copy CodeCvt objects.
      *          (unless I'm missing something, you can do one or the other with std::codecvt, but not both)
      *      o   Simpler backend virtual API, so easier to create your own compliant CodeCvt object.
@@ -340,14 +341,52 @@ namespace Stroika::Foundation::Characters {
 
     public:
         /**
-         *  Convert a span of bytes to a 'string' like object - anything constructible from a 'span' of characters
+         *  Convert a span of bytes (in a coding defined by the constructor to CodeCvt) to a 'string' like object - anything constructible from a 'span' of characters (e.g. String or wstring)
+         * 
+         *  NOTE - when converting Bytes2String, the String must be encoded using CHAR_T characters.
+         *  The binary rep - can be anything - of course.
+         * 
+         *  \par Example Usage
+         *      \code
+         *          span<const byte> bytes = from_somewhere;
+         *          static const CodeCvt<wchar_t> kCvt_{UnicodeExternalEncodings::eUTF8};
+         *          wstring result = kCvt_.Bytes2String<wstring> (bytes);
+         *      \endcode
+         * 
+         *  \par Example Usage
+         *      \code
+         *          span<const byte> bytes = from_somewhere;
+         *          wstring result = CodeCvt<wchar_t>{locale{}}.Bytes2String<wstring> (bytes);
+         *      \endcode
          */
         template <constructible_from<const CHAR_T*, const CHAR_T*> STRINGISH>
         nonvirtual STRINGISH Bytes2String (span<const byte> from) const;
 
     public:
         /**
-         *  Convert a span of characters ('string') to a BLOB-like object - anything constructible from a 'span' of bytes
+         *  Convert a span of characters ('string') to a BLOB-like object - anything constructible from a 'span' of bytes; note that container of a span of bytes maybe 'string' (special case).
+         * 
+         *  NOTE - when converting String2Bytes, the String must be encoded using CHAR_T characters.
+         *  The binary rep - can be anything - of course.
+         * 
+         *  \par Example Usage
+         *      \code
+         *          span<const wchar_t> s = from_somewhere;
+         *          static const CodeCvt<wchar_t> kCvt_{UnicodeExternalEncodings::eUTF8};
+         *          string utf8String = kCvt_.String2Bytes<string> (s);
+         *      \endcode
+         * 
+         *  \par Example Usage
+         *      \code
+         *          span<const wchar_t> s = from_somewhere;
+         *          Memory::BLOB localeFormatRenderingOfUnicodeInputAsLocaleFormatByteStream =  CodeCvt<wchar_t>{locale{}}.String2Bytes<Memory::BLOB> (s);
+         *      \endcode
+         * 
+         *  \par Example Usage
+         *      \code
+         *          span<const wchar_t> s = from_somewhere;
+         *          string localeFormatRenderingOfUnicodeInputAsLocaleFormatByteStream =  CodeCvt<wchar_t>{locale{}}.String2Bytes<string> (s);
+         *      \endcode
          */
         template <constructible_from<const byte*, const byte*> BLOBISH>
         nonvirtual BLOBISH String2Bytes (span<const CHAR_T> from) const;
