@@ -450,7 +450,7 @@ namespace Stroika::Foundation::Characters {
     }
     template <typename RESULT_T, IPossibleCharacterRepresentation CHAR_T>
     inline bool Character::AsASCIIQuietly (span<const CHAR_T> fromS, RESULT_T* into)
-        requires (same_as<RESULT_T, string> or same_as<RESULT_T, Memory::StackBuffer<ASCII>>)
+        requires (same_as<RESULT_T, string> or same_as<RESULT_T, u8string> or same_as<RESULT_T, Memory::StackBuffer<ASCII>>)
     {
         RequireNotNull (into);
         into->clear ();

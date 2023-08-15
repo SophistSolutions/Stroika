@@ -119,10 +119,12 @@ namespace Stroika::Foundation::Characters::CString {
      *                  a)  Microsoft has this interpretation.
      *                  b)  Its a BETTER interpretation (allowing for stuff like (Format (SDKSTR("time%s"), count==1? SDKSTR (""): SDKSTR ("s"));
      */
-    string  FormatV (const char* format, va_list argsList);
-    wstring FormatV (const wchar_t* format, va_list argsList);
-    string  Format (const char* format, ...);
-    wstring Format (const wchar_t* format, ...);
+    string   FormatV (const char* format, va_list argsList);
+    u8string FormatV (const char8_t* format, va_list argsList);
+    wstring  FormatV (const wchar_t* format, va_list argsList);
+    string   Format (const char* format, ...);
+    u8string Format (const char8_t* format, ...);
+    wstring  Format (const wchar_t* format, ...);
 
     /**
      *  @see String::LimitLength()

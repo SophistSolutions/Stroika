@@ -775,9 +775,9 @@ namespace Stroika::Foundation::Characters {
     }
     template <typename T>
     inline T String::AsASCII () const
-        requires (is_same_v<T, string> or is_same_v<T, Memory::StackBuffer<char>>)
+        requires (is_same_v<T, string> or is_same_v<T, u8string> or is_same_v<T, Memory::StackBuffer<char>>)
     {
-        if (auto p = AsASCIIQuietly ()) {
+        if (auto p = AsASCIIQuietly<T> ()) {
             return *p;
         }
         else {
@@ -786,12 +786,12 @@ namespace Stroika::Foundation::Characters {
     }
     template <typename T>
     inline optional<T> String::AsASCIIQuietly () const
-        requires (is_same_v<T, string> or is_same_v<T, Memory::StackBuffer<char>>)
+        requires (is_same_v<T, string> or is_same_v<T, u8string> or is_same_v<T, Memory::StackBuffer<char>>)
     {
         Memory::StackBuffer<wchar_t> ignored1;
         auto                         thisSpan = GetData (&ignored1);
         T                            s;
-        return Character::AsASCIIQuietly (thisSpan, &s) ? s : optional<T>{};
+        return Character::AsASCIIQuietly<T> (thisSpan, &s) ? s : optional<T>{};
     }
     template <IUNICODECanUnambiguouslyConvertFrom CHAR_TYPE>
     inline String::PeekSpanData String::GetPeekSpanData () const

@@ -60,6 +60,34 @@ string Characters::CString::FormatV (const char* format, va_list argsList)
     return string{msgBuf.data ()};
 }
 
+u8string Characters::CString::FormatV (const char8_t* format, va_list argsList)
+{
+    RequireNotNull (format);
+    Memory::StackBuffer<char8_t, 10 * 1024> msgBuf{Memory::eUninitialized, 10 * 1024};
+    // SUBTLE: va_list looks like it is passed by value, but its not really,
+    // and vswprintf, at least on GCC munges it. So we must use va_copy() to do this safely
+    // @see http://en.cppreference.com/w/cpp/utility/variadic/va_copy
+    va_list argListCopy;
+    va_copy (argListCopy, argsList);
+
+#if __STDC_WANT_SECURE_LIB__
+    while (::vsnprintf_s (reinterpret_cast<char*> (msgBuf.data ()), msgBuf.GetSize (), msgBuf.GetSize () - 1, reinterpret_cast<const char*> (format), argListCopy) < 0) {
+        msgBuf.GrowToSize_uninitialized (msgBuf.GetSize () * 2);
+        va_end (argListCopy);
+        va_copy (argListCopy, argsList);
+    }
+#else
+    while (vsnprintf (reinterpret_cast<char*> (msgBuf.data ()), msgBuf.GetSize (), reinterpret_cast<const char*> (format), argListCopy) < 0) {
+        msgBuf.GrowToSize_uninitialized (msgBuf.GetSize () * 2);
+        va_end (argListCopy);
+        va_copy (argListCopy, argsList);
+    }
+#endif
+    va_end (argListCopy);
+    Assert (::strlen (reinterpret_cast<char*> (msgBuf.data ())) < msgBuf.GetSize ());
+    return u8string{msgBuf.data ()};
+}
+
 DISABLE_COMPILER_MSC_WARNING_START (6262)
 wstring Characters::CString::FormatV (const wchar_t* format, va_list argsList)
 {
@@ -160,6 +188,15 @@ string Characters::CString::Format (const char* format, ...)
     va_list argsList;
     va_start (argsList, format);
     string tmp = FormatV (format, argsList);
+    va_end (argsList);
+    return tmp;
+}
+
+u8string Characters::CString::Format (const char8_t* format, ...)
+{
+    va_list argsList;
+    va_start (argsList, format);
+    u8string tmp = FormatV (format, argsList);
     va_end (argsList);
     return tmp;
 }
