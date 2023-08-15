@@ -62,7 +62,8 @@ void SchemeType::Validate () const
     // https://tools.ietf.org/html/rfc3986#appendix-A  -- scheme        = ALPHA *( ALPHA / DIGIT / "+" / "-" / "." )
     for (Characters::Character c : *this) {
         if (not c.IsASCII () or not(c.IsAlphabetic () or c.IsDigit () or c == '-' or c == '.' or c == '+')) [[unlikely]] {
-            Execution::Throw (Execution::RuntimeErrorException{"bad character in URI scheme"sv});
+            static const auto kException_ = Execution::RuntimeErrorException{"bad character in URI scheme"sv};
+            Execution::Throw (kException_);
         }
     }
 }
@@ -112,7 +113,8 @@ pair<optional<String>, optional<InternetAddress>> Host::ParseRaw_ (const String&
         // must be ipv6 address
         // must be surrounded with []
         if (raw.Last () != ']') {
-            Execution::Throw (Execution::RuntimeErrorException{"IPV6 hostname in URL must be surrounded with []"sv});
+            static const auto kException_ = Execution::RuntimeErrorException{"IPV6 hostname in URL must be surrounded with []"sv};
+            Execution::Throw (kException_);
         }
         return pair<optional<String>, optional<InternetAddress>>{nullopt, InternetAddress{raw.SubString (1, -1), InternetAddress::AddressFamily::V6}};
     }
@@ -179,7 +181,10 @@ String UserInfo::EncodeAsRawURL_ (const String& decodedName)
     return UniformResourceIdentification::PCTEncode2String (decodedName, kUserInfoEncodeOptions_);
 }
 
-String UserInfo::ToString () const { return Characters::ToString (AsDecoded ()); }
+String UserInfo::ToString () const
+{
+    return Characters::ToString (AsDecoded ());
+}
 
 /*
  ********************************************************************************
@@ -246,7 +251,10 @@ optional<Authority> Authority::Parse (const String& rawURLAuthorityText)
     return Authority{host, port, userInfo};
 }
 
-Authority Authority::Normalize () const { return Authority{fHost_ ? fHost_->Normalize () : optional<Host>{}, fPort_, fUserInfo_}; }
+Authority Authority::Normalize () const 
+{ 
+    return Authority{fHost_ ? fHost_->Normalize () : optional<Host>{}, fPort_, fUserInfo_}; 
+}
 
 template <>
 String Authority::As () const
@@ -264,7 +272,10 @@ String Authority::As () const
     return sb.str ();
 }
 
-String Authority::ToString () const { return Characters::ToString (As<String> ()); }
+String Authority::ToString () const 
+{ 
+    return Characters::ToString (As<String> ()); 
+}
 
 /*
  ********************************************************************************
@@ -275,15 +286,15 @@ namespace {
     // According to http://tools.ietf.org/html/rfc3986 - URLs need to be treated as UTF-8 before
     // doing % etc substitution
     // Note - not quite the same as PCTDecode (because of + expansion), and because of looking for = and building a map (and cuz = can be pct encoded)
-    void InitURLQueryDecoder_ (Mapping<String, String>* m, const string& utf8Query)
+    void InitURLQueryDecoder_ (Mapping<String, String>* m, const u8string& utf8Query)
     {
         size_t utfqLen = utf8Query.length ();
         for (size_t i = 0; i < utfqLen;) {
             size_t e   = utf8Query.find ('&', i);
-            string elt = utf8Query.substr (i, e - i);
+            u8string elt = utf8Query.substr (i, e - i);
             size_t brk = elt.find ('=');
             if (brk != string::npos) {
-                string val = elt.substr (brk + 1);
+                u8string val = elt.substr (brk + 1);
                 for (auto p = val.begin (); p != val.end (); ++p) {
                     switch (*p) {
                         case '+':
@@ -311,10 +322,10 @@ namespace {
 Query::Query (const String& query)
     : fMap_{}
 {
-    InitURLQueryDecoder_ (&fMap_, query.AsASCII ());
+    InitURLQueryDecoder_ (&fMap_, query.AsASCII<u8string> ());
 }
 
-Query::Query (const string& query)
+Query::Query (const u8string& query)
     : fMap_{}
 {
     InitURLQueryDecoder_ (&fMap_, query);
@@ -324,14 +335,14 @@ void Query::RemoveFieldIfAny (const String& idx) { fMap_.Remove (idx); }
 
 String Query::ComputeQueryString () const
 {
-    string result;
+    u8string result;
     for (auto i = fMap_.begin (); i != fMap_.end (); ++i) {
         Containers::Support::ReserveTweaks::Reserve4Add1 (result);
         if (not result.empty ()) {
-            result += "&";
+            result += u8"&";
         }
         //careful - need to encode first/second
-        result += EncodeURLQueryStringField (i->fKey) + "=" + EncodeURLQueryStringField (i->fValue);
+        result += EncodeURLQueryStringField (i->fKey) + u8"=" + EncodeURLQueryStringField (i->fValue);
     }
     return String{result};
 }
@@ -369,7 +380,7 @@ strong_ordering Query::TWC_ (const Query& lhs, const Query& rhs)
  ********** UniformResourceIdentification::EncodeURLQueryStringField ************
  ********************************************************************************
  */
-string UniformResourceIdentification::EncodeURLQueryStringField (const String& s)
+u8string UniformResourceIdentification::EncodeURLQueryStringField (const String& s)
 {
     //
     // According to http://tools.ietf.org/html/rfc3986 - URLs need to be treated as UTF-8 before
@@ -378,14 +389,14 @@ string UniformResourceIdentification::EncodeURLQueryStringField (const String& s
     // From http://tools.ietf.org/html/rfc3986#section-2.3
     //      unreserved  = ALPHA / DIGIT / "-" / "." / "_" / "~"
     u8string utf8Query = s.AsUTF8 ();
-    string   result;
+    u8string result;
     size_t   sLength = utf8Query.length ();
     result.reserve (sLength);
     for (size_t i = 0; i < sLength; ++i) {
         Containers::Support::ReserveTweaks::Reserve4Add1 (result);
         switch (utf8Query[i]) {
             case ' ':
-                result += "+";
+                result += u8"+";
                 break;
             default: {
                 char8_t ccode = utf8Query[i];
@@ -393,7 +404,7 @@ string UniformResourceIdentification::EncodeURLQueryStringField (const String& s
                     result += static_cast<char> (utf8Query[i]);
                 }
                 else {
-                    result += CString::Format ("%%%.2x", ccode);
+                    result += CString::Format (u8"%%%.2x", ccode);
                 }
             }
         }
@@ -406,9 +417,9 @@ string UniformResourceIdentification::EncodeURLQueryStringField (const String& s
  ****************** UniformResourceIdentification::PCTEncode ********************
  ********************************************************************************
  */
-string UniformResourceIdentification::PCTEncode (const string& s, const PCTEncodeOptions& options)
+u8string UniformResourceIdentification::PCTEncode (const u8string& s, const PCTEncodeOptions& options)
 {
-    string result;
+    u8string result;
     size_t sLength = s.length ();
     result.reserve (sLength);
 
@@ -480,7 +491,7 @@ string UniformResourceIdentification::PCTEncode (const string& s, const PCTEncod
         }
         if (encode) {
             Containers::Support::ReserveTweaks::Reserve4AddN (result, 3);
-            result += CString::Format ("%%%.2x", c);
+            result += CString::Format (u8"%%%.2x", c);
         }
         else {
             Containers::Support::ReserveTweaks::Reserve4Add1 (result);
@@ -490,9 +501,9 @@ string UniformResourceIdentification::PCTEncode (const string& s, const PCTEncod
     return result;
 }
 
-string UniformResourceIdentification::PCTEncode (const String& s, const PCTEncodeOptions& options)
+u8string UniformResourceIdentification::PCTEncode (const String& s, const PCTEncodeOptions& options)
 {
-    return PCTEncode (s.AsUTF8<string> (), options);
+    return PCTEncode (s.AsUTF8<u8string> (), options);
 }
 
 String UniformResourceIdentification::PCTEncode2String (const String& s, const PCTEncodeOptions& options)
@@ -505,9 +516,9 @@ String UniformResourceIdentification::PCTEncode2String (const String& s, const P
  ************** UniformResourceIdentification::PCTDecode ************************
  ********************************************************************************
  */
-string UniformResourceIdentification::PCTDecode (const string& s)
+u8string UniformResourceIdentification::PCTDecode (const u8string& s)
 {
-    string result;
+    u8string result;
     result.reserve (s.length ());
     for (auto p = s.begin (); p != s.end (); ++p) {
         switch (*p) {
@@ -534,9 +545,15 @@ string UniformResourceIdentification::PCTDecode (const string& s)
  ************** UniformResourceIdentification::PCTDecode2String *****************
  ********************************************************************************
  */
-String UniformResourceIdentification::PCTDecode2String (const string& s) { return String::FromUTF8 (PCTDecode (s)); }
+String UniformResourceIdentification::PCTDecode2String (const u8string& s)
+{
+    return String::FromUTF8 (PCTDecode (s));
+}
 
-String UniformResourceIdentification::PCTDecode2String (const String& s) { return String::FromUTF8 (PCTDecode (s.AsASCII ())); }
+String UniformResourceIdentification::PCTDecode2String (const String& s) 
+{ 
+    return String::FromUTF8 (PCTDecode (s.AsASCII <u8string> ()));
+}
 
 /*
  ********************************************************************************

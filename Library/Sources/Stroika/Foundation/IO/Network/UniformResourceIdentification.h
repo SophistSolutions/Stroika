@@ -522,10 +522,14 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
      *          comparing for equals makes full sense. But comparing < really doesn't, because there is no obvious preferred order for query strings
      *          So pick a preferred ordering (alphabetical) - and compare one after the other
      *          @todo see https://stroika.atlassian.net/browse/STK-144 and fix when that is fixed
+     *
+     * According to http://tools.ietf.org/html/rfc3986 - URLs need to be treated as UTF-8 before doing % etc substitution, so support u8string overload.
      */
     class Query {
     public:
-        Query (const string& query);
+        /**
+         */
+        Query (const u8string& query);
         Query (const String& query);
         Query (const Query&) noexcept = default;
         Query (Query&&) noexcept      = default;
@@ -538,18 +542,18 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
         nonvirtual const Containers::Mapping<String, String>& GetMap () const;
 
     public:
-        nonvirtual String operator() (const string& idx) const;
+        nonvirtual String operator() (const u8string& idx) const;
         nonvirtual String operator() (const String& idx) const;
 
     public:
-        nonvirtual bool HasField (const string& idx) const;
+        nonvirtual bool HasField (const u8string& idx) const;
         nonvirtual bool HasField (const String& idx) const;
 
     public:
         nonvirtual void AddField (const String& idx, const String& value);
 
     public:
-        nonvirtual void RemoveFieldIfAny (const string& idx);
+        nonvirtual void RemoveFieldIfAny (const u8string& idx);
         nonvirtual void RemoveFieldIfAny (const String& idx);
 
     public:
@@ -585,7 +589,7 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
      *  See http://tools.ietf.org/html/rfc3986
      *  This doesn't encode an entire URL, just a particular field
      */
-    string EncodeURLQueryStringField (const String& s);
+    u8string EncodeURLQueryStringField (const String& s);
 
     /**
      *  See https://tools.ietf.org/html/rfc3986#appendix-A for the meaning of encodeGenDelims/encodeSubDelims
@@ -606,16 +610,16 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
         bool allowFragOrQueryChars = false; // pchar / "/" / "?"
         bool allowPathCharacters = false; // COMPLICATED - I THINK this means sub-delims + '/' (@ and : maybe sometimes allowed, but I think always safe to encode)
     };
-    string PCTEncode (const string& s, const PCTEncodeOptions& options);
-    string PCTEncode (const String& s, const PCTEncodeOptions& options);
-    String PCTEncode2String (const String& s, const PCTEncodeOptions& options);
+    u8string PCTEncode (const u8string& s, const PCTEncodeOptions& options);
+    u8string PCTEncode (const String& s, const PCTEncodeOptions& options);
+    String   PCTEncode2String (const String& s, const PCTEncodeOptions& options);
 
     /**
      *  PCTDecode2String () takes the result of PCTDecode, and treats it as UTF8 text, and converts a String from that.
      */
-    string PCTDecode (const string& s);
-    String PCTDecode2String (const string& s);
-    String PCTDecode2String (const String& s);
+    u8string PCTDecode (const u8string& s);
+    String   PCTDecode2String (const u8string& s);
+    String   PCTDecode2String (const String& s);
 
 }
 

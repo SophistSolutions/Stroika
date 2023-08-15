@@ -230,7 +230,7 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
     {
         return Memory::NullCoalesce (fMap_.Lookup (idx));
     }
-    inline String Query::operator() (const string& idx) const
+    inline String Query::operator() (const u8string& idx) const
     {
         return operator() (Characters::String::FromUTF8 (idx));
     }
@@ -238,7 +238,7 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
     {
         return fMap_.ContainsKey (idx);
     }
-    inline bool Query::HasField (const string& idx) const
+    inline bool Query::HasField (const u8string& idx) const
     {
         return HasField (Characters::String::FromUTF8 (idx));
     }
@@ -246,7 +246,7 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
     {
         fMap_.Add (idx, value);
     }
-    inline void Query::RemoveFieldIfAny (const string& idx)
+    inline void Query::RemoveFieldIfAny (const u8string& idx)
     {
         RemoveFieldIfAny (Characters::String::FromUTF8 (idx));
     }
