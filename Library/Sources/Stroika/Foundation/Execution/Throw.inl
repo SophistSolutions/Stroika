@@ -51,7 +51,7 @@ namespace Stroika::Foundation::Execution {
         throw e2Throw;
     }
     template <typename T>
-    [[noreturn]] inline void Throw (const T& e2Throw, const char* traceMsg)
+    [[noreturn]] inline void Throw (const T& e2Throw, [[maybe_unused]] const char* traceMsg)
     {
         static_assert (is_convertible_v<T*, exception*>);
         DbgTrace ("%s", traceMsg);
