@@ -70,7 +70,7 @@ namespace Stroika::Foundation::Time {
      ************************* TimeOfDay operators **********************************
      ********************************************************************************
      */
-    constexpr bool operator<(TimeOfDay lhs, TimeOfDay rhs)
+    constexpr bool operator< (TimeOfDay lhs, TimeOfDay rhs)
     {
         return Common::ThreeWayCompare (lhs.GetAsSecondsCount (), rhs.GetAsSecondsCount ()) < 0;
     }

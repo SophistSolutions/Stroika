@@ -50,7 +50,7 @@ namespace Stroika::Foundation::IO::Network {
         }
     }
 #else
-    inline bool CIDR::operator<(const CIDR& rhs) const
+    inline bool CIDR::operator< (const CIDR& rhs) const
     {
         using Common::strong_ordering;
         using Common::ThreeWayCompare;

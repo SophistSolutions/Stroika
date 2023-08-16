@@ -714,11 +714,11 @@ namespace Stroika::Foundation::Execution {
     /**
      */
     template <typename T, typename TRAITS>
-    bool operator<(const Synchronized<T, TRAITS>& lhs, T rhs);
+    bool operator< (const Synchronized<T, TRAITS>& lhs, T rhs);
     template <typename T, typename TRAITS>
-    bool operator<(T lhs, const Synchronized<T, TRAITS>& rhs);
+    bool operator< (T lhs, const Synchronized<T, TRAITS>& rhs);
     template <typename T, typename TRAITS>
-    bool operator<(const Synchronized<T, TRAITS>& lhs, const Synchronized<T, TRAITS>& rhs);
+    bool operator< (const Synchronized<T, TRAITS>& lhs, const Synchronized<T, TRAITS>& rhs);
 
     /**
      */

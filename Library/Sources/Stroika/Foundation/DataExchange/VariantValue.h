@@ -461,7 +461,7 @@ namespace Stroika::Foundation::DataExchange {
     };
 
 #if __cpp_impl_three_way_comparison < 201907
-    bool operator<(const VariantValue& lhs, const VariantValue& rhs);
+    bool operator< (const VariantValue& lhs, const VariantValue& rhs);
     bool operator<= (const VariantValue& lhs, const VariantValue& rhs);
     bool operator== (const VariantValue& lhs, const VariantValue& rhs);
     bool operator!= (const VariantValue& lhs, const VariantValue& rhs);

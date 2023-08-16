@@ -3211,7 +3211,7 @@ stHarness/SimpleClass.cpp ...
 #if !defined(_NoOp_)
 #if defined(_MSC_VER)
 #if qCompilerAndStdLib_ArgumentDependentLookupInTemplateExpansionTooAggressiveNowBroken_Buggy
-#define _NoOp_(...) 
+#define _NoOp_(...)
 #else
 #define _NoOp_ __noop
 #endif

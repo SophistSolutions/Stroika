@@ -290,7 +290,7 @@ namespace Stroika::Foundation::Memory {
 
 #if __cpp_impl_three_way_comparison < 201907
     public:
-        nonvirtual bool operator<(const SharedPtr& rhs) const noexcept;
+        nonvirtual bool operator< (const SharedPtr& rhs) const noexcept;
         nonvirtual bool operator<= (const SharedPtr& rhs) const noexcept;
         nonvirtual bool operator> (const SharedPtr& rhs) const noexcept;
         nonvirtual bool operator>= (const SharedPtr& rhs) const noexcept;

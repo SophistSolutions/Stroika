@@ -281,7 +281,7 @@ namespace Stroika::Foundation::IO::Network {
      ************************* InternetAddress operators ****************************
      ********************************************************************************
      */
-    inline bool operator<(const InternetAddress& lhs, const InternetAddress& rhs)
+    inline bool operator< (const InternetAddress& lhs, const InternetAddress& rhs)
     {
         return InternetAddress::TWC_ (lhs, rhs) < 0;
     }

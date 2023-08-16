@@ -363,7 +363,7 @@ namespace Stroika::Foundation::IO::Network {
 
     private:
 #if __cpp_impl_three_way_comparison < 201907
-        friend bool operator<(const URI& lhs, const URI& rhs);
+        friend bool operator< (const URI& lhs, const URI& rhs);
         friend bool operator<= (const URI& lhs, const URI& rhs);
         friend bool operator== (const URI& lhs, const URI& rhs);
         friend bool operator!= (const URI& lhs, const URI& rhs);
@@ -395,7 +395,7 @@ namespace Stroika::Foundation::IO::Network {
     optional<String> URI::GetAbsPath () const;
 
 #if __cpp_impl_three_way_comparison < 201907
-    bool operator<(const URI& lhs, const URI& rhs);
+    bool operator< (const URI& lhs, const URI& rhs);
     bool operator<= (const URI& lhs, const URI& rhs);
     bool operator== (const URI& lhs, const URI& rhs);
     bool operator!= (const URI& lhs, const URI& rhs);

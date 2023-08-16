@@ -85,7 +85,7 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents {
 
 #if __cpp_impl_three_way_comparison < 201907
     private:
-        friend bool operator<(const Name& lhs, const Name& rhs);
+        friend bool operator< (const Name& lhs, const Name& rhs);
         friend bool operator<= (const Name& lhs, const Name& rhs);
         friend bool operator== (const Name& lhs, const Name& rhs);
         friend bool operator!= (const Name& lhs, const Name& rhs);
@@ -95,7 +95,7 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents {
     };
 
 #if __cpp_impl_three_way_comparison < 201907
-    bool operator<(const Name& lhs, const Name& rhs);
+    bool operator< (const Name& lhs, const Name& rhs);
     bool operator<= (const Name& lhs, const Name& rhs);
     bool operator== (const Name& lhs, const Name& rhs);
     bool operator!= (const Name& lhs, const Name& rhs);

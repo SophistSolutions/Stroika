@@ -145,7 +145,7 @@ namespace Stroika::Foundation::Common {
      ********************************************************************************
      */
     template <typename KEY_TYPE, typename VALUE_TYPE>
-    inline bool operator<(const KeyValuePair<KEY_TYPE, VALUE_TYPE>& lhs, const KeyValuePair<KEY_TYPE, VALUE_TYPE>& rhs)
+    inline bool operator< (const KeyValuePair<KEY_TYPE, VALUE_TYPE>& lhs, const KeyValuePair<KEY_TYPE, VALUE_TYPE>& rhs)
     {
         strong_ordering cmp = Common::ThreeWayCompare (lhs.fKey, rhs.fKey);
         if (cmp != kEqual) {
@@ -156,7 +156,7 @@ namespace Stroika::Foundation::Common {
     template <typename KEY_TYPE, typename VALUE_TYPE>
     inline bool operator<= (const KeyValuePair<KEY_TYPE, VALUE_TYPE>& lhs, const KeyValuePair<KEY_TYPE, VALUE_TYPE>& rhs)
     {
-        return operator<(lhs, rhs) or operator== (lhs, rhs);
+        return operator< (lhs, rhs) or operator== (lhs, rhs);
     }
     template <typename KEY_TYPE, typename VALUE_TYPE, enable_if_t<Configuration::has_eq_v<KEY_TYPE> and Configuration::has_eq_v<VALUE_TYPE>>*>
     inline bool operator== (const KeyValuePair<KEY_TYPE, VALUE_TYPE>& lhs, const KeyValuePair<KEY_TYPE, VALUE_TYPE>& rhs)

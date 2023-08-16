@@ -222,7 +222,7 @@ namespace Stroika::Foundation::DataExchange {
      *  Basic operator overloads with the obvious meaning, and simply indirect to @Version::ThreeWayComparer (const Version& rhs)
      */
     template <typename ATOM_MANAGER>
-    bool operator<(Atom<ATOM_MANAGER> lhs, Atom<ATOM_MANAGER> rhs);
+    bool operator< (Atom<ATOM_MANAGER> lhs, Atom<ATOM_MANAGER> rhs);
     template <typename ATOM_MANAGER>
     bool operator<= (Atom<ATOM_MANAGER> lhs, Atom<ATOM_MANAGER> rhs);
     template <typename ATOM_MANAGER>

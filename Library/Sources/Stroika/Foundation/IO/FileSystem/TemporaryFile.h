@@ -54,7 +54,7 @@ namespace Stroika::Foundation::IO::FileSystem {
         ScopedTmpDir& operator= (const ScopedTmpDir&) = delete;
 
     public:
-        nonvirtual           operator Directory () const;
+        nonvirtual operator Directory () const;
         nonvirtual Directory GetDirectory () const;
 
     private:

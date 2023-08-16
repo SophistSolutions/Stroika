@@ -380,7 +380,7 @@ namespace Stroika::Foundation::IO::Network {
 
 #if __cpp_impl_three_way_comparison < 201907
     private:
-        friend bool operator<(const InternetAddress& lhs, const InternetAddress& rhs);
+        friend bool operator< (const InternetAddress& lhs, const InternetAddress& rhs);
         friend bool operator<= (const InternetAddress& lhs, const InternetAddress& rhs);
         friend bool operator== (const InternetAddress& lhs, const InternetAddress& rhs);
         friend bool operator!= (const InternetAddress& lhs, const InternetAddress& rhs);
@@ -390,7 +390,7 @@ namespace Stroika::Foundation::IO::Network {
     };
 
 #if __cpp_impl_three_way_comparison < 201907
-    bool operator<(const InternetAddress& lhs, const InternetAddress& rhs);
+    bool operator< (const InternetAddress& lhs, const InternetAddress& rhs);
     bool operator<= (const InternetAddress& lhs, const InternetAddress& rhs);
     bool operator== (const InternetAddress& lhs, const InternetAddress& rhs);
     bool operator!= (const InternetAddress& lhs, const InternetAddress& rhs);

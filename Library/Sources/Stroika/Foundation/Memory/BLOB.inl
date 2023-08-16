@@ -369,7 +369,7 @@ namespace Stroika::Foundation::Memory {
      ********************************************************************************
      */
 #if __cpp_impl_three_way_comparison < 201907
-    inline bool operator<(const BLOB& lhs, const BLOB& rhs)
+    inline bool operator< (const BLOB& lhs, const BLOB& rhs)
     {
         return BLOB::TWC_ (lhs, rhs) < 0;
     }

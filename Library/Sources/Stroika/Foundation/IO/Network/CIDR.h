@@ -109,7 +109,7 @@ namespace Stroika::Foundation::IO::Network {
     public:
         /**
          */
-        nonvirtual bool operator<(const CIDR& rhs) const;
+        nonvirtual bool operator< (const CIDR& rhs) const;
 #endif
 
     public:

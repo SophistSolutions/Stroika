@@ -407,7 +407,7 @@ namespace Stroika::Foundation::IO::Network {
 
 #if __cpp_impl_three_way_comparison < 201907
     private:
-        friend bool operator<(const Socket::Ptr& lhs, const Socket::Ptr& rhs);
+        friend bool operator< (const Socket::Ptr& lhs, const Socket::Ptr& rhs);
         friend bool operator<= (const Socket::Ptr& lhs, const Socket::Ptr& rhs);
         friend bool operator== (const Socket::Ptr& lhs, const Socket::Ptr& rhs);
         friend bool operator!= (const Socket::Ptr& lhs, const Socket::Ptr& rhs);
@@ -417,7 +417,7 @@ namespace Stroika::Foundation::IO::Network {
     };
 
 #if __cpp_impl_three_way_comparison < 201907
-    bool operator<(const Socket::Ptr& lhs, const Socket::Ptr& rhs);
+    bool operator< (const Socket::Ptr& lhs, const Socket::Ptr& rhs);
     bool operator<= (const Socket::Ptr& lhs, const Socket::Ptr& rhs);
     bool operator== (const Socket::Ptr& lhs, const Socket::Ptr& rhs);
     bool operator!= (const Socket::Ptr& lhs, const Socket::Ptr& rhs);

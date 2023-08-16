@@ -38,7 +38,7 @@ namespace Stroika::Foundation::Cryptography::OpenSSL {
         return fDigester_ <=> rhs.fDigester_;
     }
 #else
-    inline auto DigestAlgorithm::operator<(const DigestAlgorithm& rhs) const
+    inline auto DigestAlgorithm::operator< (const DigestAlgorithm& rhs) const
     {
         return fDigester_ < rhs.fDigester_;
     }

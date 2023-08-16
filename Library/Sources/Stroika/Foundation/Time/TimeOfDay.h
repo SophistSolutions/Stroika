@@ -297,7 +297,7 @@ namespace Stroika::Foundation::Time {
 #endif
 
 #if __cpp_impl_three_way_comparison < 201907
-    constexpr bool operator<(TimeOfDay lhs, TimeOfDay rhs);
+    constexpr bool operator< (TimeOfDay lhs, TimeOfDay rhs);
     constexpr bool operator<= (TimeOfDay lhs, TimeOfDay rhs);
     constexpr bool operator== (TimeOfDay lhs, TimeOfDay rhs);
     constexpr bool operator!= (TimeOfDay lhs, TimeOfDay rhs);

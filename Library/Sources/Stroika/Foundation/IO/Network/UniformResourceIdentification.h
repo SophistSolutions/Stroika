@@ -172,7 +172,7 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
 
 #if __cpp_impl_three_way_comparison < 201907
     private:
-        friend bool operator<(const SchemeType& lhs, const SchemeType& rhs);
+        friend bool operator< (const SchemeType& lhs, const SchemeType& rhs);
         friend bool operator<= (const SchemeType& lhs, const SchemeType& rhs);
         friend bool operator== (const SchemeType& lhs, const SchemeType& rhs);
         friend bool operator!= (const SchemeType& lhs, const SchemeType& rhs);
@@ -182,7 +182,7 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
     };
 
 #if __cpp_impl_three_way_comparison < 201907
-    bool operator<(const SchemeType& lhs, const SchemeType& rhs);
+    bool operator< (const SchemeType& lhs, const SchemeType& rhs);
     bool operator<= (const SchemeType& lhs, const SchemeType& rhs);
     bool operator== (const SchemeType& lhs, const SchemeType& rhs);
     bool operator!= (const SchemeType& lhs, const SchemeType& rhs);
@@ -321,7 +321,7 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
 
 #if __cpp_impl_three_way_comparison < 201907
     private:
-        friend bool operator<(const Host& lhs, const Host& rhs);
+        friend bool operator< (const Host& lhs, const Host& rhs);
         friend bool operator<= (const Host& lhs, const Host& rhs);
         friend bool operator== (const Host& lhs, const Host& rhs);
         friend bool operator!= (const Host& lhs, const Host& rhs);
@@ -336,7 +336,7 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
     string Host::AsEncoded () const;
 
 #if __cpp_impl_three_way_comparison < 201907
-    bool operator<(const Host& lhs, const Host& rhs);
+    bool operator< (const Host& lhs, const Host& rhs);
     bool operator<= (const Host& lhs, const Host& rhs);
     bool operator== (const Host& lhs, const Host& rhs);
     bool operator!= (const Host& lhs, const Host& rhs);
@@ -441,7 +441,7 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
 
 #if __cpp_impl_three_way_comparison < 201907
     private:
-        friend bool operator<(const UserInfo& lhs, const UserInfo& rhs);
+        friend bool operator< (const UserInfo& lhs, const UserInfo& rhs);
         friend bool operator<= (const UserInfo& lhs, const UserInfo& rhs);
         friend bool operator== (const UserInfo& lhs, const UserInfo& rhs);
         friend bool operator!= (const UserInfo& lhs, const UserInfo& rhs);
@@ -456,7 +456,7 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
     string UserInfo::AsEncoded () const;
 
 #if __cpp_impl_three_way_comparison < 201907
-    bool operator<(const UserInfo& lhs, const UserInfo& rhs);
+    bool operator< (const UserInfo& lhs, const UserInfo& rhs);
     bool operator<= (const UserInfo& lhs, const UserInfo& rhs);
     bool operator== (const UserInfo& lhs, const UserInfo& rhs);
     bool operator!= (const UserInfo& lhs, const UserInfo& rhs);
@@ -583,7 +583,7 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
 
 #if __cpp_impl_three_way_comparison < 201907
     private:
-        friend bool operator<(const Authority& lhs, const Authority& rhs);
+        friend bool operator< (const Authority& lhs, const Authority& rhs);
         friend bool operator<= (const Authority& lhs, const Authority& rhs);
         friend bool operator== (const Authority& lhs, const Authority& rhs);
         friend bool operator!= (const Authority& lhs, const Authority& rhs);
@@ -593,7 +593,7 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
     };
 
 #if __cpp_impl_three_way_comparison < 201907
-    bool operator<(const Authority& lhs, const Authority& rhs);
+    bool operator< (const Authority& lhs, const Authority& rhs);
     bool operator<= (const Authority& lhs, const Authority& rhs);
     bool operator== (const Authority& lhs, const Authority& rhs);
     bool operator!= (const Authority& lhs, const Authority& rhs);
@@ -672,7 +672,7 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
 
 #if __cpp_impl_three_way_comparison < 201907
     private:
-        friend bool operator<(const Query& lhs, const Query& rhs);
+        friend bool operator< (const Query& lhs, const Query& rhs);
         friend bool operator<= (const Query& lhs, const Query& rhs);
         friend bool operator== (const Query& lhs, const Query& rhs);
         friend bool operator!= (const Query& lhs, const Query& rhs);
@@ -682,7 +682,7 @@ namespace Stroika::Foundation::IO::Network::UniformResourceIdentification {
     };
 
 #if __cpp_impl_three_way_comparison < 201907
-    bool operator<(const Query& lhs, const Query& rhs);
+    bool operator< (const Query& lhs, const Query& rhs);
     bool operator<= (const Query& lhs, const Query& rhs);
     bool operator== (const Query& lhs, const Query& rhs);
     bool operator!= (const Query& lhs, const Query& rhs);

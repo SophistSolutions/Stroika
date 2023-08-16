@@ -307,7 +307,7 @@ namespace Stroika::Foundation::DataExchange {
             nonvirtual strong_ordering operator<=> (const TypeMappingDetails& rhs) const;
 
 #else
-            nonvirtual bool operator<(const TypeMappingDetails& rhs) const;
+            nonvirtual bool operator< (const TypeMappingDetails& rhs) const;
 #endif
             /**
              */

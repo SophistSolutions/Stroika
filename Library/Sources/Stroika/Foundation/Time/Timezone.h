@@ -228,7 +228,7 @@ namespace Stroika::Foundation::Time {
     public:
         /**
          */
-        nonvirtual constexpr bool operator<(const Timezone& rhs) const;
+        nonvirtual constexpr bool operator< (const Timezone& rhs) const;
 #endif
 
     public:

@@ -138,7 +138,7 @@ namespace Stroika::Foundation::Execution {
     public:
         nonvirtual bool         operator== (const SignalHandler& rhs) const;
         nonvirtual bool         operator!= (const SignalHandler& rhs) const;
-        nonvirtual bool         operator<(const SignalHandler& rhs) const;
+        nonvirtual bool         operator< (const SignalHandler& rhs) const;
 #endif
 
     private:

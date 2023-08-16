@@ -62,7 +62,7 @@ namespace Stroika::Foundation::Cryptography::OpenSSL {
 #if __cpp_impl_three_way_comparison >= 201907
         nonvirtual auto operator<=> (const DigestAlgorithm& rhs) const;
 #else
-        nonvirtual auto operator<(const DigestAlgorithm& rhs) const;
+        nonvirtual auto operator< (const DigestAlgorithm& rhs) const;
 #endif
         nonvirtual bool operator== (const DigestAlgorithm& rhs) const;
 

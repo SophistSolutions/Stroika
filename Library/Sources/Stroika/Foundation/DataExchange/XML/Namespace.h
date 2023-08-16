@@ -41,7 +41,7 @@ namespace Stroika::Foundation::DataExchange::XML {
     };
 #if __cpp_impl_three_way_comparison < 201907
     // order by URI, but equal requires both equal
-    bool operator<(const NamespaceDefinition& lhs, const NamespaceDefinition& rhs);
+    bool operator< (const NamespaceDefinition& lhs, const NamespaceDefinition& rhs);
     bool operator== (const NamespaceDefinition& lhs, const NamespaceDefinition& rhs);
 #endif
 
@@ -68,12 +68,12 @@ namespace Stroika::Foundation::DataExchange::XML {
 
 #if __cpp_impl_three_way_comparison < 201907
     private:
-        friend bool operator<(const NamespaceDefinitionsList& lhs, const NamespaceDefinitionsList& rhs);
+        friend bool operator< (const NamespaceDefinitionsList& lhs, const NamespaceDefinitionsList& rhs);
         friend bool operator== (const NamespaceDefinitionsList& lhs, const NamespaceDefinitionsList& rhs);
 #endif
     };
 #if __cpp_impl_three_way_comparison < 201907
-    bool operator<(const NamespaceDefinitionsList& lhs, const NamespaceDefinitionsList& rhs);
+    bool operator< (const NamespaceDefinitionsList& lhs, const NamespaceDefinitionsList& rhs);
     bool operator== (const NamespaceDefinitionsList& lhs, const NamespaceDefinitionsList& rhs);
 #endif
 

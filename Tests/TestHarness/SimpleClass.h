@@ -31,10 +31,10 @@ namespace Stroika {
         static size_t     GetTotalLiveCount ();
 
         SimpleClass operator+ (const SimpleClass& rhs) const;
-        explicit    operator size_t () const;
+        explicit operator size_t () const;
 
         bool operator== (const SimpleClass& rhs) const;
-        bool operator<(const SimpleClass& rhs) const;
+        bool operator< (const SimpleClass& rhs) const;
 
     private:
         size_t        fValue_;

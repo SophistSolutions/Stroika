@@ -939,15 +939,15 @@ namespace Stroika::Foundation::Characters {
      *********************************** operator< **********************************
      ********************************************************************************
      */
-    inline bool operator<(const String& lhs, const String& rhs)
+    inline bool operator< (const String& lhs, const String& rhs)
     {
         return String::ThreeWayComparer{}(lhs, rhs) < 0;
     }
-    inline bool operator<(const String& lhs, const wchar_t* rhs)
+    inline bool operator< (const String& lhs, const wchar_t* rhs)
     {
         return String::ThreeWayComparer{}(lhs, rhs) < 0;
     }
-    inline bool operator<(const wchar_t* lhs, const String& rhs)
+    inline bool operator< (const wchar_t* lhs, const String& rhs)
     {
         RequireNotNull (lhs);
         return String::ThreeWayComparer{}(lhs, rhs) < 0;

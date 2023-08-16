@@ -152,7 +152,7 @@ namespace Stroika::Frameworks::Led::Platform {
         ~Led_MFC_TabletFromCDC ();
 
     public:
-                operator Tablet* ();
+        operator Tablet* ();
         Tablet* operator->();
 
     private:

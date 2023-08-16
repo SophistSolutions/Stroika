@@ -76,7 +76,7 @@ namespace Stroika::Foundation::Math {
      ******************** Math::Angle relationship operators ************************
      ********************************************************************************
      */
-    constexpr bool operator<(const Angle& lhs, const Angle& rhs)
+    constexpr bool operator< (const Angle& lhs, const Angle& rhs)
     {
         return Common::ThreeWayCompare (lhs.AsRadians (), rhs.AsRadians ()) < 0;
     }

@@ -202,7 +202,7 @@ namespace Stroika::Foundation::Characters {
     /**
      *  Basic operator overloads with the obvious meaning, and simply indirect to @Character::ThreeWayComparer{}
      */
-    bool operator<(Character lhs, Character rhs);
+    bool operator< (Character lhs, Character rhs);
     bool operator<= (Character lhs, Character rhs);
     bool operator== (Character lhs, Character rhs);
     bool operator!= (Character lhs, Character rhs);

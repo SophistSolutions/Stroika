@@ -346,7 +346,7 @@ namespace Stroika::Foundation::Memory {
 
 #if __cpp_impl_three_way_comparison < 201907
     private:
-        friend bool operator<(const BLOB& lhs, const BLOB& rhs);
+        friend bool operator< (const BLOB& lhs, const BLOB& rhs);
         friend bool operator<= (const BLOB& lhs, const BLOB& rhs);
         friend bool operator!= (const BLOB& lhs, const BLOB& rhs);
         friend bool operator>= (const BLOB& lhs, const BLOB& rhs);
@@ -401,7 +401,7 @@ namespace Stroika::Foundation::Memory {
     /**
      */
 #if __cpp_impl_three_way_comparison < 201907
-    bool operator<(const BLOB& lhs, const BLOB& rhs);
+    bool operator< (const BLOB& lhs, const BLOB& rhs);
     bool operator<= (const BLOB& lhs, const BLOB& rhs);
     bool operator!= (const BLOB& lhs, const BLOB& rhs);
     bool operator>= (const BLOB& lhs, const BLOB& rhs);

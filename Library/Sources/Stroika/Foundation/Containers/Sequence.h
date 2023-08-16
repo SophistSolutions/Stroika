@@ -697,7 +697,7 @@ namespace Stroika::Foundation::Containers {
      *  @Sequence<>::ThreeWayComparer and equal_to<Sequence<>>
      */
     template <typename T>
-    bool operator<(const Sequence<T>& lhs, const Sequence<T>& rhs);
+    bool operator< (const Sequence<T>& lhs, const Sequence<T>& rhs);
     template <typename T>
     bool operator<= (const Sequence<T>& lhs, const Sequence<T>& rhs);
     template <typename T>

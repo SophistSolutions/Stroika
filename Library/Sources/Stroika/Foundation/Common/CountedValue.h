@@ -90,7 +90,7 @@ namespace Stroika::Foundation::Common {
      *  Basic operator overloads with the obvious meaning, and simply indirect to @CountedValue<KEY_TYPE, VALUE_TYPE>::ThreeWayComparer (const Version& rhs), and EqualsComparer
      */
     template <typename VALUE_TYPE, typename COUNTER_TYPE>
-    bool operator<(typename Configuration::ArgByValueType<CountedValue<VALUE_TYPE, COUNTER_TYPE>> lhs, typename Configuration::ArgByValueType<CountedValue<VALUE_TYPE, COUNTER_TYPE>> rhs);
+    bool operator< (typename Configuration::ArgByValueType<CountedValue<VALUE_TYPE, COUNTER_TYPE>> lhs, typename Configuration::ArgByValueType<CountedValue<VALUE_TYPE, COUNTER_TYPE>> rhs);
     template <typename VALUE_TYPE, typename COUNTER_TYPE>
     bool operator<= (typename Configuration::ArgByValueType<CountedValue<VALUE_TYPE, COUNTER_TYPE>> lhs, typename Configuration::ArgByValueType<CountedValue<VALUE_TYPE, COUNTER_TYPE>> rhs);
     template <typename VALUE_TYPE, typename COUNTER_TYPE, enable_if_t<Configuration::has_eq_v<VALUE_TYPE>>* = nullptr>

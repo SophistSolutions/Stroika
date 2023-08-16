@@ -192,7 +192,7 @@ namespace Stroika::Frameworks::SystemPerformance {
 #endif
 #if __cpp_impl_three_way_comparison < 201907
     public:
-        bool operator<(const Instrument& rhs) const
+        bool operator< (const Instrument& rhs) const
         {
             return fInstrumentName_ < rhs.fInstrumentName_;
         }

@@ -146,7 +146,7 @@ namespace Stroika::Frameworks::Led {
     public:
         FontObject () = default;
         ~FontObject ();
-        nonvirtual      operator HFONT () const;
+        nonvirtual operator HFONT () const;
         nonvirtual int  GetObject (int nCount, LPVOID lpObject) const;
         nonvirtual BOOL DeleteObject ();
         nonvirtual BOOL CreateFontIndirect (const LOGFONT* lpLogFont);
@@ -164,7 +164,7 @@ namespace Stroika::Frameworks::Led {
     public:
         Brush (COLORREF crColor);
         ~Brush ();
-        nonvirtual      operator HBRUSH () const;
+        nonvirtual operator HBRUSH () const;
         nonvirtual BOOL Attach (HBRUSH hObject);
         nonvirtual BOOL DeleteObject ();
 
@@ -207,7 +207,7 @@ namespace Stroika::Frameworks::Led {
     template <typename COORD_TYPE>
     bool operator!= (const Point_Base<COORD_TYPE>& lhs, const Point_Base<COORD_TYPE>& rhs);
     template <typename COORD_TYPE>
-    bool operator<(const Point_Base<COORD_TYPE>& lhs, const Point_Base<COORD_TYPE>& rhs);
+    bool operator< (const Point_Base<COORD_TYPE>& lhs, const Point_Base<COORD_TYPE>& rhs);
     template <typename COORD_TYPE>
     bool operator<= (const Point_Base<COORD_TYPE>& lhs, const Point_Base<COORD_TYPE>& rhs);
     template <typename COORD_TYPE>
@@ -332,7 +332,7 @@ namespace Stroika::Frameworks::Led {
     private:
         bool fOwned;
 #elif qPlatform_Windows
-             operator HRGN () const;
+        operator HRGN () const;
         int  CombineRgn (Region* pRgn1, Region* pRgn2, int nCombineMode);
         BOOL PtInRegion (int x, int y) const;
         BOOL PtInRegion (POINT point) const;
@@ -467,7 +467,7 @@ namespace Stroika::Frameworks::Led {
     public:
         Pen (int nPenStyle, int nWidth, COLORREF crColor);
         ~Pen ();
-        nonvirtual      operator HPEN () const;
+        nonvirtual operator HPEN () const;
         nonvirtual BOOL Attach (HPEN hObject);
         nonvirtual BOOL DeleteObject ();
 
@@ -977,7 +977,7 @@ namespace Stroika::Frameworks::Led {
     SIZE      AsSIZE (Led_Size s);
     Led_Size  AsLedSize (SIZE s);
 #elif qStroika_FeatureSupported_XWindows
-    Led_Rect AsLedRect (const XRectangle& r);
+    Led_Rect   AsLedRect (const XRectangle& r);
     XRectangle AsXRect (const Led_Rect& r);
 #endif
 
@@ -1034,8 +1034,8 @@ namespace Stroika::Frameworks::Led {
         operator const FontInfo* () const;
         operator FontInfo* ();
 #elif qPlatform_Windows
-                   operator const TEXTMETRIC* () const;
-                   operator TEXTMETRIC* ();
+        operator const TEXTMETRIC* () const;
+        operator TEXTMETRIC* ();
 #endif
 
     private:
@@ -1082,7 +1082,7 @@ namespace Stroika::Frameworks::Led {
 #if qPlatform_MacOS
         nonvirtual operator GrafPtr () const;
 #elif qPlatform_Windows
-        nonvirtual          operator HDC () const;
+        nonvirtual operator HDC () const;
 #endif
 
     public:
@@ -1227,12 +1227,12 @@ namespace Stroika::Frameworks::Led {
         mutable DistanceType fLogPixelsH;
 #elif qStroika_FeatureSupported_XWindows
     private:
-        Display* fDisplay;
-        Drawable fDrawable;
-        GC fGC;
-        Colormap fColormap;
+        Display*             fDisplay;
+        Drawable             fDrawable;
+        GC                   fGC;
+        Colormap             fColormap;
         mutable XFontStruct* fCachedFontInfo;
-        map<string, string> fFontMappingCache;
+        map<string, string>  fFontMappingCache;
 #endif
 
     public:
@@ -1298,7 +1298,7 @@ namespace Stroika::Frameworks::Led {
 
     public:
         nonvirtual void DeleteObject ();
-        nonvirtual      operator HBITMAP () const;
+        nonvirtual operator HBITMAP () const;
 
     public:
         nonvirtual Led_Size GetImageSize () const;

@@ -43,7 +43,7 @@ namespace Stroika::Frameworks::Led {
         return (lhs.v != rhs.v or lhs.h != rhs.h);
     }
     template <typename COORD_TYPE>
-    inline bool operator<(const Point_Base<COORD_TYPE>& lhs, const Point_Base<COORD_TYPE>& rhs)
+    inline bool operator< (const Point_Base<COORD_TYPE>& lhs, const Point_Base<COORD_TYPE>& rhs)
     {
         return ((lhs.v <= rhs.v) and (lhs.h <= rhs.h) and (lhs != rhs));
     }
@@ -1414,10 +1414,10 @@ namespace Stroika::Frameworks::Led {
     inline XRectangle AsXRect (const Led_Rect& r)
     {
         XRectangle newR;
-        newR.x = r.GetLeft ();
-        newR.y = r.GetTop ();
+        newR.x      = r.GetLeft ();
+        newR.y      = r.GetTop ();
         newR.height = r.GetHeight ();
-        newR.width = r.GetWidth ();
+        newR.width  = r.GetWidth ();
         return newR;
     }
 #endif
@@ -1936,8 +1936,8 @@ namespace Stroika::Frameworks::Led {
             fFontInfo.lfUnderline = false;
             fFontInfo.lfStrikeOut = false;
 #elif qStroika_FeatureSupported_XWindows
-            fBold = false;
-            fItalics = false;
+            fBold      = false;
+            fItalics   = false;
             fUnderline = false;
 #endif
     }

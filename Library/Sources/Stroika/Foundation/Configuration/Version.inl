@@ -70,7 +70,7 @@ namespace Stroika::Foundation::Configuration {
      ********************************************************************************
      */
 #if __cpp_impl_three_way_comparison < 201907
-    constexpr bool operator<(const Version& lhs, const Version& rhs)
+    constexpr bool operator< (const Version& lhs, const Version& rhs)
     {
         return make_signed_t<Binary32BitFullVersionType> (lhs.AsFullVersionNum ()) < make_signed_t<Binary32BitFullVersionType> (rhs.AsFullVersionNum ());
     }

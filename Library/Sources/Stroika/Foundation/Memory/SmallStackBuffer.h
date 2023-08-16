@@ -16,8 +16,7 @@ namespace Stroika::Foundation::Memory {
 
     using std::byte;
 
-    class [[deprecated ("Since Stroika 2.1r4, use BufferCommon")]] SmallStackBufferCommon
-    {
+    class [[deprecated ("Since Stroika 2.1r4, use BufferCommon")]] SmallStackBufferCommon {
     public:
         using UninitializedConstructorFlag = Memory::UninitializedConstructorFlag;
     };

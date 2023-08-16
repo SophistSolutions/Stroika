@@ -81,7 +81,7 @@ namespace Stroika::Foundation::DataExchange {
     };
 
 #if __cpp_impl_three_way_comparison < 201907
-    bool operator<(const StructFieldMetaInfo& lhs, const StructFieldMetaInfo& rhs);
+    bool operator< (const StructFieldMetaInfo& lhs, const StructFieldMetaInfo& rhs);
     bool operator== (const StructFieldMetaInfo& lhs, const StructFieldMetaInfo& rhs);
 #endif
 

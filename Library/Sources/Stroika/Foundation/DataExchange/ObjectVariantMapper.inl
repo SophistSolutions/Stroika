@@ -102,7 +102,7 @@ namespace Stroika::Foundation::DataExchange {
 #endif
     }
 #else
-    inline bool ObjectVariantMapper::TypeMappingDetails::operator<(const TypeMappingDetails& rhs) const
+    inline bool ObjectVariantMapper::TypeMappingDetails::operator< (const TypeMappingDetails& rhs) const
     {
         return fForType < rhs.fForType;
     }

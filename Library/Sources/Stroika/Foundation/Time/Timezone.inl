@@ -57,7 +57,7 @@ namespace Stroika::Foundation::Time {
     {
         return fTZ_ != rhs.fTZ_ or fBiasInMinutesFromUTC_ != rhs.fBiasInMinutesFromUTC_;
     }
-    inline constexpr bool Timezone::operator<(const Timezone& rhs) const
+    inline constexpr bool Timezone::operator< (const Timezone& rhs) const
     {
         if (fTZ_ != rhs.fTZ_) {
             return fTZ_ < rhs.fTZ_;

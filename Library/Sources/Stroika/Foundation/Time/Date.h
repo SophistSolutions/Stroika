@@ -512,7 +512,7 @@ namespace Stroika::Foundation::Time {
 #endif
 
 #if __cpp_impl_three_way_comparison < 201907
-    constexpr bool operator<(const Date& lhs, const Date& rhs);
+    constexpr bool operator< (const Date& lhs, const Date& rhs);
     constexpr bool operator<= (const Date& lhs, const Date& rhs);
     constexpr bool operator== (const Date& lhs, const Date& rhs);
     constexpr bool operator!= (const Date& lhs, const Date& rhs);

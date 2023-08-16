@@ -226,8 +226,8 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
                 fName[0] = '\0';
             }
             ControlWordAtomName (const char* c);
-                  operator char* () { return fName; }
-                  operator const char* () const { return fName; }
+            operator char* () { return fName; }
+            operator const char* () const { return fName; }
             char& operator[] (size_t i)
             {
                 Require (i <= eMaxControlAtomNameLen);
@@ -250,12 +250,12 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
 
     public:
 #if qFriendDeclarationsDontWorkWithNestedClassesBug
-        friend bool operator<(const RTFIO::StringNControlWordAtom& lhs, const RTFIO::StringNControlWordAtom& rhs)
+        friend bool operator< (const RTFIO::StringNControlWordAtom& lhs, const RTFIO::StringNControlWordAtom& rhs)
         {
             return lhs.first < rhs.first;
         }
 #else
-        friend bool operator<(const RTFIO::StringNControlWordAtom& lhs, const RTFIO::StringNControlWordAtom& rhs);
+        friend bool operator< (const RTFIO::StringNControlWordAtom& lhs, const RTFIO::StringNControlWordAtom& rhs);
 #endif
     private:
         struct StringNControlWordAtom_Comparator;
@@ -1106,7 +1106,7 @@ namespace Stroika::Frameworks::Led::StyledTextIO {
 
 //  class   RTFIO::StringNControlWordAtom
 #if !qFriendDeclarationsDontWorkWithNestedClassesBug && !qUseMapForControlWordMap
-    inline bool operator<(const RTFIO::StringNControlWordAtom& lhs, const RTFIO::StringNControlWordAtom& rhs)
+    inline bool operator< (const RTFIO::StringNControlWordAtom& lhs, const RTFIO::StringNControlWordAtom& rhs)
     {
         return lhs.first < rhs.first;
     }

@@ -578,17 +578,17 @@ namespace Stroika::Foundation::Execution {
      ********************************************************************************
      */
     template <typename T, typename TRAITS>
-    inline bool operator<(const Synchronized<T, TRAITS>& lhs, T rhs)
+    inline bool operator< (const Synchronized<T, TRAITS>& lhs, T rhs)
     {
         return lhs.load () < rhs;
     }
     template <typename T, typename TRAITS>
-    inline bool operator<(T lhs, const Synchronized<T, TRAITS>& rhs)
+    inline bool operator< (T lhs, const Synchronized<T, TRAITS>& rhs)
     {
         return lhs < rhs.load ();
     }
     template <typename T, typename TRAITS>
-    inline bool operator<(const Synchronized<T, TRAITS>& lhs, const Synchronized<T, TRAITS>& rhs)
+    inline bool operator< (const Synchronized<T, TRAITS>& lhs, const Synchronized<T, TRAITS>& rhs)
     {
         // preload to avoid possible deadlock
         auto l = lhs.load ();

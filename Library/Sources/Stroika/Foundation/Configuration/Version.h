@@ -137,7 +137,7 @@ namespace Stroika::Foundation::Configuration {
     /**
      *  Basic operator overloads with the obvious meaning, and simply indirect to @Version::ThreeWayComparer ()
      */
-    constexpr bool operator<(const Version& lhs, const Version& rhs);
+    constexpr bool operator< (const Version& lhs, const Version& rhs);
     constexpr bool operator<= (const Version& lhs, const Version& rhs);
     constexpr bool operator== (const Version& lhs, const Version& rhs);
     constexpr bool operator!= (const Version& lhs, const Version& rhs);

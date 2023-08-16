@@ -38,7 +38,7 @@ namespace Stroika::Foundation::Cryptography::OpenSSL {
         return fCipher_ <=> rhs.fCipher_;
     }
 #else
-    inline auto CipherAlgorithm::operator<(const CipherAlgorithm& rhs) const
+    inline auto CipherAlgorithm::operator< (const CipherAlgorithm& rhs) const
     {
         return fCipher_ < rhs.fCipher_;
     }

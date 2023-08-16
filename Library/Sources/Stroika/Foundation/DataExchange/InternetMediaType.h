@@ -160,7 +160,7 @@ namespace Stroika::Foundation::DataExchange {
 
 #if __cpp_impl_three_way_comparison < 201907
     private:
-        friend bool operator<(const InternetMediaType& lhs, const InternetMediaType& rhs);
+        friend bool operator< (const InternetMediaType& lhs, const InternetMediaType& rhs);
         friend bool operator<= (const InternetMediaType& lhs, const InternetMediaType& rhs);
         friend bool operator== (const InternetMediaType& lhs, const InternetMediaType& rhs);
         friend bool operator!= (const InternetMediaType& lhs, const InternetMediaType& rhs);
@@ -177,7 +177,7 @@ namespace Stroika::Foundation::DataExchange {
     /**
      *  Basic operator overloads with the obvious meaning, and simply indirect to @InternetMediaType::ThreeWayComparer ()
      */
-    bool operator<(const InternetMediaType& lhs, const InternetMediaType& rhs);
+    bool operator< (const InternetMediaType& lhs, const InternetMediaType& rhs);
     bool operator<= (const InternetMediaType& lhs, const InternetMediaType& rhs);
     bool operator== (const InternetMediaType& lhs, const InternetMediaType& rhs);
     bool operator!= (const InternetMediaType& lhs, const InternetMediaType& rhs);
