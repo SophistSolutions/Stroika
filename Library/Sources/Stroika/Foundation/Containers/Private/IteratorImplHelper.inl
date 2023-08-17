@@ -84,7 +84,7 @@ namespace Stroika::Foundation::Containers::Private {
         ValidateChangeCount ();
         // Typically calls have advance = true
         if (advance) [[likely]] {
-            Require (not fIterator.Done ()); // new requirement since Stroika 2.1b14
+            Require (not fIterator.Done ());
             ++fIterator;
         }
         if (fIterator.Done ()) [[unlikely]] {

@@ -70,11 +70,11 @@ namespace Stroika::Foundation::Containers::Private {
         using inherited = typename Iterator<T>::IRep;
 
     public:
-        // using RepSmartPtr                 = typename Iterator<T>::RepSmartPtr;
         using DataStructureImplValueType_ = DATASTRUCTURE_CONTAINER_VALUE;
 
     public:
         IteratorImplHelper_ ()                           = delete;
+        IteratorImplHelper_ (IteratorImplHelper_&&)      = default;
         IteratorImplHelper_ (const IteratorImplHelper_&) = default;
         template <typename... ADDITIONAL_BACKEND_ITERATOR_CTOR_ARGUMENTS>
         explicit IteratorImplHelper_ (const DATASTRUCTURE_CONTAINER* data, const ContainerDebugChangeCounts_* changeCounter = nullptr,
@@ -108,8 +108,8 @@ namespace Stroika::Foundation::Containers::Private {
     public:
         mutable DATASTRUCTURE_CONTAINER_ITERATOR fIterator;
 #if qDebug
-        const ContainerDebugChangeCounts_*           fChangeCounter;
-        ContainerDebugChangeCounts_::ChangeCountType fLastCapturedChangeCount;
+        const ContainerDebugChangeCounts_*           fChangeCounter{nullptr};
+        ContainerDebugChangeCounts_::ChangeCountType fLastCapturedChangeCount{nullptr};
 #endif
     };
 
