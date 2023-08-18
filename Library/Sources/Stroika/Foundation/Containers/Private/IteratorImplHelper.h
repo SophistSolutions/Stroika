@@ -106,10 +106,10 @@ namespace Stroika::Foundation::Containers::Private {
         nonvirtual void ValidateChangeCount () const;
 
     public:
-        mutable DATASTRUCTURE_CONTAINER_ITERATOR fIterator;
+        mutable DATASTRUCTURE_CONTAINER_ITERATOR fIterator{};
 #if qDebug
         const ContainerDebugChangeCounts_*           fChangeCounter{nullptr};
-        ContainerDebugChangeCounts_::ChangeCountType fLastCapturedChangeCount{nullptr};
+        ContainerDebugChangeCounts_::ChangeCountType fLastCapturedChangeCount{};
 #endif
     };
 
