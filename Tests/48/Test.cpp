@@ -484,19 +484,23 @@ namespace {
                 int k;
             };
             struct ab : public a, public b {};
+            DISABLE_COMPILER_MSC_WARNING_START (4121);
+            DISABLE_COMPILER_MSC_WARNING_START (4324);
             struct alignas (16) al {
                 float a;
                 alignas (8) char b;
                 char bb;
                 char arr[20];
             };
-            #pragma pack(push, 2)
+#pragma pack(push, 2)
             struct al2 {
                 char a;
                 int  b;
                 char c;
             };
-            #pragma pack(pop)
+#pragma pack(pop)
+            DISABLE_COMPILER_MSC_WARNING_END (4121);
+            DISABLE_COMPILER_MSC_WARNING_END (4324);
         }
 
         void DoTest ()

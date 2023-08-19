@@ -20,84 +20,84 @@ namespace Stroika::Foundation::Memory {
      ********************************************************************************
      */
     namespace Private_ {
-
-
-        /// BASED ON CODE FROM - https://gist.github.com/graphitemaster/494f21190bb2c63c5516 ---
-
+        namespace OffsetOf_ {
+            // BASED ON CODE FROM - https://gist.github.com/graphitemaster/494f21190bb2c63c5516
 #pragma pack(push, 1)
-        template <typename Member, std::size_t O>
-        struct Pad {
-            char   pad[O];
-            Member m;
-        };
-#pragma pack(pop)
-        template <typename Member>
-        struct Pad<Member, 0> {
-            Member m;
-        };
-
-        template <typename Base, typename Member, std::size_t O>
-        struct MakeUnion {
-            union U {
-                char           c;
-                Base           base;
-                Pad<Member, O> pad;
-                constexpr U () noexcept
-                    : c{} {};
-                ~U () = delete;
+            template <typename MEMBER, size_t O>
+            struct Pad {
+                char   pad[O];
+                MEMBER m;
             };
-            constexpr static U* u{};
-        };
+#pragma pack(pop)
+            template <typename MEMBER>
+            struct Pad<MEMBER, 0> {
+                MEMBER m;
+            };
 
-        template <typename Member, typename Base, typename Orig>
-        struct offset_of_impl {
-            template <std::size_t off, auto union_part = MakeUnion<Base, Member, off>::u>
-            static constexpr std::ptrdiff_t offset2 (Member Orig::*member)
-            {
-                if constexpr (off > sizeof (Base)) {
-                    throw 1;
-                }
-                else {
-                    const auto diff1 = &((static_cast<const Orig*> (&union_part->base))->*member);
-                    const auto diff2 = &union_part->pad.m;
-                    if (diff1 > diff2) {
-                        constexpr auto MIN = sizeof (Member) < alignof (Orig) ? sizeof (Member) : alignof (Orig);
-                        return offset2<off + MIN> (member);
+            DISABLE_COMPILER_MSC_WARNING_START (4324);
+            template <typename BASE, typename MEMBER, size_t O>
+            struct MakeUnion {
+                union U {
+                    char           c;
+                    BASE           base;
+                    Pad<MEMBER, O> pad;
+                    constexpr U () noexcept
+                        : c{} {};
+                    ~U () = delete;
+                };
+                constexpr static U* u{};
+            };
+            DISABLE_COMPILER_MSC_WARNING_END (4324);
+
+            template <typename MEMBER, typename BASE_CLASS, typename ORIG_CLASS>
+            struct offset_of_impl {
+                template <size_t off, auto union_part = MakeUnion<BASE_CLASS, MEMBER, off>::u>
+                static constexpr ptrdiff_t offset2 (MEMBER ORIG_CLASS::*member)
+                {
+                    if constexpr (off > sizeof (BASE_CLASS)) {
+                        throw 1;
                     }
                     else {
-                        return off;
+                        const auto diff1 = &((static_cast<const ORIG_CLASS*> (&union_part->base))->*member);
+                        const auto diff2 = &union_part->pad.m;
+                        if (diff1 > diff2) {
+                            constexpr auto MIN = sizeof (MEMBER) < alignof (ORIG_CLASS) ? sizeof (MEMBER) : alignof (ORIG_CLASS);
+                            return offset2<off + MIN> (member);
+                        }
+                        else {
+                            return off;
+                        }
                     }
                 }
+            };
+
+            template <class MEMBER, class BASE_CLASS>
+            tuple<MEMBER, BASE_CLASS> get_types (MEMBER BASE_CLASS::*); // never defined, never really called, just used to extrac types with decltype()
+
+            template <class TheBase = void, class TT>
+            inline constexpr ptrdiff_t offset_of (TT member)
+            {
+                using T      = decltype (get_types (declval<TT> ()));
+                using Member = tuple_element_t<0, T>;
+                using Orig   = tuple_element_t<1, T>;
+                using Base   = conditional_t<is_void_v<TheBase>, Orig, TheBase>;
+                return offset_of_impl<Member, Base, Orig>::template offset2<0> (member);
             }
-        };
 
-        template <class Member, class Base>
-        std::tuple<Member, Base> get_types (Member Base::*);
-
-        template <class TheBase = void, class TT>
-        inline constexpr std::ptrdiff_t offset_of (TT member)
-        {
-            using T      = decltype (get_types (std::declval<TT> ()));
-            using Member = std::tuple_element_t<0, T>;
-            using Orig   = std::tuple_element_t<1, T>;
-            using Base   = std::conditional_t<std::is_void_v<TheBase>, Orig, TheBase>;
-            return offset_of_impl<Member, Base, Orig>::template offset2<0> (member);
+            template <auto member, class TheBase = void>
+            inline constexpr ptrdiff_t offset_of ()
+            {
+                return offset_of<TheBase> (member);
+            }
         }
-
-        template <auto member, class TheBase = void>
-        inline constexpr std::ptrdiff_t offset_of ()
-        {
-            return offset_of<TheBase> (member);
-        }
-
     }
     template <typename OUTER_OBJECT, typename DATA_MEMBER_TYPE>
     inline constexpr size_t ConvertPointerToDataMemberToOffset (DATA_MEMBER_TYPE (OUTER_OBJECT::*dataMember))
     {
         //https://stackoverflow.com/questions/12141446/offset-from-member-pointer-without-temporary-instance
-        // return reinterpret_cast<char*> (&(((OUTER_OBJECT*)0)->*dataMember)) - reinterpret_cast<char*> (0);
-      //  return Private_::offset_of_impl<DATA_MEMBER_TYPE, OUTER_OBJECT, OUTER_OBJECT>::offset2 (dataMember);
-        return Private_::offset_of (dataMember);
+
+        // @todo UPDATE this stackoverflow with reference to this code and GITHUB GIST explanation...
+        return Private_::OffsetOf_::offset_of (dataMember);
     }
 
     /*
@@ -110,8 +110,8 @@ namespace Stroika::Foundation::Memory {
     {
         RequireNotNull (aggregatedMember);
         RequireNotNull (aggregatedPtrToMember);
-        std::byte* adjustedAggregatedMember = reinterpret_cast<std::byte*> (static_cast<AGGREGATED_OBJECT_TYPE*> (aggregatedMember));
-        ptrdiff_t  adjustment               = static_cast<ptrdiff_t> (ConvertPointerToDataMemberToOffset (aggregatedPtrToMember));
+        byte*     adjustedAggregatedMember = reinterpret_cast<byte*> (static_cast<AGGREGATED_OBJECT_TYPE*> (aggregatedMember));
+        ptrdiff_t adjustment               = static_cast<ptrdiff_t> (ConvertPointerToDataMemberToOffset (aggregatedPtrToMember));
         return reinterpret_cast<OUTER_OBJECT*> (adjustedAggregatedMember - adjustment);
     }
     template <typename APPARENT_MEMBER_TYPE, typename OUTER_OBJECT, typename AGGREGATED_OBJECT_TYPE>
@@ -120,8 +120,7 @@ namespace Stroika::Foundation::Memory {
     {
         RequireNotNull (aggregatedMember);
         RequireNotNull (aggregatedPtrToMember);
-        const std::byte* adjustedAggregatedMember =
-            reinterpret_cast<const std::byte*> (static_cast<const AGGREGATED_OBJECT_TYPE*> (aggregatedMember));
+        const byte* adjustedAggregatedMember = reinterpret_cast<const byte*> (static_cast<const AGGREGATED_OBJECT_TYPE*> (aggregatedMember));
         ptrdiff_t adjustment = static_cast<ptrdiff_t> (ConvertPointerToDataMemberToOffset (aggregatedPtrToMember));
         return reinterpret_cast<const OUTER_OBJECT*> (adjustedAggregatedMember - adjustment);
     }
