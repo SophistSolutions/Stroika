@@ -365,10 +365,14 @@ namespace {
         void DoTest ()
         {
             {
+                #if 0
                 VerifyTestResult (ConvertPointerToDataMemberToOffset (&Private_::X1::a) == 0 or
                                   ConvertPointerToDataMemberToOffset (&Private_::X1::b) == 0);
                 VerifyTestResult (ConvertPointerToDataMemberToOffset (&Private_::X1::a) != 0 or
                                   ConvertPointerToDataMemberToOffset (&Private_::X1::b) != 0);
+                #endif
+                VerifyTestResult (ConvertPointerToDataMemberToOffset (&Private_::X1::a) == 0);
+                VerifyTestResult (ConvertPointerToDataMemberToOffset (&Private_::X1::b) >= sizeof (int));
             }
             {
                 Private_::X1 t;
@@ -450,6 +454,91 @@ namespace {
     }
 }
 
+
+namespace {
+    namespace Test14_OffsetOf_ {
+        namespace Private_ {
+            struct s {
+                float a;
+                char  b;
+                char  bb;
+                int   c;
+                s () = delete; // no constructor
+            };
+            #pragma pack(push, 1)
+            struct s2 {
+                float  a;
+                char   b;
+                char   bb;
+                int    c;
+                double d;
+                char   e;
+            };
+            #pragma pack(pop)
+            struct a {
+                int i;
+                int j;
+            };
+            struct b {
+                int i;
+                int k;
+            };
+            struct ab : public a, public b {};
+            struct alignas (16) al {
+                float a;
+                alignas (8) char b;
+                char bb;
+                char arr[20];
+            };
+            #pragma pack(push, 2)
+            struct al2 {
+                char a;
+                int  b;
+                char c;
+            };
+            #pragma pack(pop)
+        }
+
+        void DoTest ()
+        {
+            using namespace Private_;
+            // no constructor, default aligning
+            Assert (ConvertPointerToDataMemberToOffset (&s::a) == 0);
+            Assert (ConvertPointerToDataMemberToOffset (&s::b) == sizeof (float));
+            Assert (ConvertPointerToDataMemberToOffset (&s::bb) == sizeof (float) + sizeof (char));
+            Assert (ConvertPointerToDataMemberToOffset (&s::c) == alignof (s) * 2); // aligned b with bb
+
+            // no alignment
+            Assert (ConvertPointerToDataMemberToOffset (&s2::a) == 0);
+            Assert (ConvertPointerToDataMemberToOffset (&s2::b) == sizeof (float));
+            Assert (ConvertPointerToDataMemberToOffset (&s2::bb) == sizeof (float) + sizeof (char));
+            Assert (ConvertPointerToDataMemberToOffset (&s2::c) == sizeof (float) + sizeof (char) * 2);
+            Assert (ConvertPointerToDataMemberToOffset (&s2::d) == sizeof (float) + sizeof (char) * 2 + sizeof (int));
+            Assert (ConvertPointerToDataMemberToOffset (&s2::e) == sizeof (float) + sizeof (char) * 2 + sizeof (int) + sizeof (double));
+
+            // simply
+            Assert (ConvertPointerToDataMemberToOffset (&a::i) == 0);
+            Assert (ConvertPointerToDataMemberToOffset (&a::j) == sizeof (int));
+            Assert (ConvertPointerToDataMemberToOffset (&b::i) == 0);
+            Assert (ConvertPointerToDataMemberToOffset (&b::k) == sizeof (int));
+
+            // other based
+            //Assert (ConvertPointerToDataMemberToOffset(&ab::j) == sizeof (int));
+            //Assert (ConvertPointerToDataMemberToOffset<ab> (&ab::k) == sizeof (int) * 3);
+
+            // special alignments
+            Assert (ConvertPointerToDataMemberToOffset (&al::a) == 0);
+            Assert (ConvertPointerToDataMemberToOffset (&al::b) == 8);
+            Assert (ConvertPointerToDataMemberToOffset (&al::bb) == 9);
+           // Assert (ConvertPointerToDataMemberToOffset (&al::arr) == 16);
+
+            Assert (ConvertPointerToDataMemberToOffset (&al2::a) == 0);
+            Assert (ConvertPointerToDataMemberToOffset (&al2::b) == 2);
+            Assert (ConvertPointerToDataMemberToOffset (&al2::c) == 6);
+        }
+    }
+}
+
 namespace {
 
     void DoRegressionTests_ ()
@@ -465,6 +554,7 @@ namespace {
         Test11_ObjectFieldUtilities_::DoTest ();
         Test12_OffsetOf_::DoTest ();
         Test13_Resize_::DoTest ();
+        Test14_OffsetOf_::DoTest ();
     }
 }
 
