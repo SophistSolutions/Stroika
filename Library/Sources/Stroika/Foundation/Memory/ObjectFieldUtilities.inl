@@ -52,6 +52,8 @@ namespace Stroika::Foundation::Memory {
             template <typename MEMBER, typename BASE_CLASS, typename ORIG_CLASS>
             struct offset_of_impl {
                 template <size_t off, auto union_part = MakeUnion<BASE_CLASS, MEMBER, off>::u>
+                __attribute__((no_sanitize("undefined")))       // This gets called with nullptr as 'object' for computing diff below to avoid ever building the object (cuz just computing offsets)
+                                                                // sadly, at least with clang++-15, this doesn't work with c++ style [[]] attributes
                 static constexpr ptrdiff_t offset2 (MEMBER ORIG_CLASS::*member)
                 {
                     if constexpr (off > sizeof (BASE_CLASS)) {
