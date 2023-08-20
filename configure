@@ -1058,8 +1058,9 @@ sub	SetDefaultForCompilerDriver_
 	if (IsGCCOrGPlusPlus_($COMPILER_DRIVER_CPlusPlus) and (11.0 <= GetGCCVersion_ ($COMPILER_DRIVER_CPlusPlus) and GetGCCVersion_ ($COMPILER_DRIVER_CPlusPlus) < 13.0)) {
 		push @CXXFLAGS, '-ftemplate-depth=5000';
 	}
-	if (("$^O" neq "darwin") and IsClangPlusPlus_Plus_($COMPILER_DRIVER_CPlusPlus) and ($STDCXXLIB eq "libstdc++") and (15.0 <= GetClangVersion_ ($COMPILER_DRIVER_CPlusPlus) and GetClangVersion_ ($COMPILER_DRIVER_CPlusPlus) < 16.0)) {
+	if (not ("$^O" eq "darwin") and IsClangPlusPlus_($COMPILER_DRIVER_CPlusPlus) and ($STDCXXLIB eq "libstdc++") and (15.0 <= GetClangVersion_ ($COMPILER_DRIVER_CPlusPlus) and GetClangVersion_ ($COMPILER_DRIVER_CPlusPlus) < 16.0)) {
 		push @CXXFLAGS, '-ftemplate-depth=5000';
+		push @CXXFLAGS, '-Wstack-exhausted';
 	}
 
 	if (("$^O" eq "darwin") and IsClangPlusPlus_($COMPILER_DRIVER_CPlusPlus)) {
