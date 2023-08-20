@@ -22,39 +22,6 @@ namespace Stroika::Foundation::Memory {
     using std::byte;
 
     /**
-     *  \brief convert the given pointer to data member to a size_t offset - like offsetof () macro, but with pointer to member and working for non-standard layout objects
-     *
-     *  This is similar to offsetof(), but with pointer to member objects.
-     * 
-     *  In fact, offsetof(X,Y) is equivilent to ConvertPointerToDataMemberToOffset (&X::Y)
-     * 
-     *  Since - according to https://en.cppreference.com/w/cpp/types/offsetof - offsetof is
-     *  not allowed on non-standard-layout objects, this attempts to workaround that, while remaining constexpr.
-     * 
-     *  See discussion in https://gist.github.com/graphitemaster/494f21190bb2c63c5516
-     * 
-     *  This function also (attempts) to support non-standard layout objects, where it needs to know the starting actual object, as well as the object
-     *  used in the X::Y base/member expression (this is the 3/type-argument template).
-     * 
-     *  \par Example Usage
-     *      \code
-     *          struct X1 {
-     *              int a;
-     *              int b;
-     *          };
-     *          void DoTest ()
-     *          {
-     *              assert (ConvertPointerToDataMemberToOffset (&X1::a) == 0);
-     *              assert (ConvertPointerToDataMemberToOffset (&X1::b) >= sizeof (int));
-     *          }
-     *      \endcode
-     */
-    template <typename OUTER_OBJECT, typename BASE_OBJECT, typename DATA_MEMBER_TYPE>
-    constexpr size_t ConvertPointerToDataMemberToOffset (DATA_MEMBER_TYPE (BASE_OBJECT::*dataMember));
-    template <typename OUTER_OBJECT, typename DATA_MEMBER_TYPE>
-    constexpr size_t ConvertPointerToDataMemberToOffset (DATA_MEMBER_TYPE (OUTER_OBJECT::*dataMember));
-
-    /**
      *  Given an objects field (given by pointer to member) and that owned object, run 'offsetof' backwards
      *  to get the original owning object.
      * 
@@ -75,10 +42,6 @@ namespace Stroika::Foundation::Memory {
      *          };
      *          void DoTest ()
      *          {
-     *              {
-     *                  assert (ConvertPointerToDataMemberToOffset (&X1::a) == 0 or ConvertPointerToDataMemberToOffset (&X1::b) == 0);
-     *                  assert (ConvertPointerToDataMemberToOffset (&X1::a) != 0 or ConvertPointerToDataMemberToOffset (&X1::b) != 0);
-     *              }
      *              {
      *                  X1 t;
      *                  static_assert (is_standard_layout_v<X1>);

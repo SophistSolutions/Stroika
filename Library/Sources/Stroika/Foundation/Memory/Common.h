@@ -89,6 +89,19 @@ namespace Stroika::Foundation::Memory {
      *          static_assert (OffsetOf (&Person::firstName) == 0);
      *      \endcode
      * 
+     *  \par Example Usage
+     *      \code
+     *          struct X1 {
+     *              int a;
+     *              int b;
+     *          };
+     *          void DoTest ()
+     *          {
+     *              assert (OffsetOf (&X1::a) == 0);
+     *              assert (OffsetOf (&X1::b) >= sizeof (int));
+     *          }
+     *      \endcode
+     * 
      *  @see https://gist.github.com/graphitemaster/494f21190bb2c63c5516
      *  @see https://en.cppreference.com/w/cpp/types/offsetof
      *  @see https://stackoverflow.com/questions/65940393/c-why-the-restriction-on-offsetof-for-non-standard-layout-objects-or-how-t
@@ -99,11 +112,28 @@ namespace Stroika::Foundation::Memory {
      *      @todo   Try to get this working more uniformly - regardless of is_default_constructible_v, and with constexpr, and
      *              more reliably portably, and detect errors somehow for cases where this cannot work, but not as widely warning
      *              as offsetof() - care about case of struct x { private: int a; public: int b; working}.
+     
+     &&&& lift docs from below
+     *  \brief convert the given pointer to data member to a size_t offset - like offsetof () macro, but with pointer to member and working for non-standard layout objects
+     *
+     *  This is similar to offsetof(), but with pointer to member objects.
+     * 
+     *  In fact, offsetof(X,Y) is equivilent to ConvertPointerToDataMemberToOffset (&X::Y)
+     * 
+     *  Since - according to https://en.cppreference.com/w/cpp/types/offsetof - offsetof is
+     *  not allowed on non-standard-layout objects, this attempts to workaround that, while remaining constexpr.
+     * 
+     *  See discussion in https://gist.github.com/graphitemaster/494f21190bb2c63c5516
+     * 
+     *  This function also (attempts) to support non-standard layout objects, where it needs to know the starting actual object, as well as the object
+     *  used in the X::Y base/member expression (this is the 3/type-argument template).
+
+     * 
      */
-    template <typename FIELD_VALUE_TYPE, typename OWNING_OBJECT>
-    size_t OffsetOf (FIELD_VALUE_TYPE OWNING_OBJECT::*member);
-    template <typename FIELD_VALUE_TYPE, typename OWNING_OBJECT>
-    size_t constexpr OffsetOf_Constexpr (FIELD_VALUE_TYPE OWNING_OBJECT::*member);
+    template <typename OUTER_OBJECT, typename BASE_OBJECT, typename DATA_MEMBER_TYPE>
+    constexpr size_t OffsetOf (DATA_MEMBER_TYPE (BASE_OBJECT::*dataMember));
+    template <typename OUTER_OBJECT, typename DATA_MEMBER_TYPE>
+    constexpr size_t OffsetOf (DATA_MEMBER_TYPE (OUTER_OBJECT::*dataMember));
 
     /**
      *  \brief UninitializedConstructorFlag::eUninitialized is a flag to some memory routines to allocate without initializing
