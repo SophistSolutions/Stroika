@@ -79,6 +79,8 @@ namespace Stroika::Foundation::Debug {
 #define Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_ADDRESS __attribute__ ((no_sanitize_address))
 #elif defined(__GNUC__)
 #define Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_ADDRESS [[gnu::no_sanitize_address]]
+#elif defined(_MSC_VER)
+#define Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_ADDRESS __declspec (no_sanitize_address)
 #endif
 #endif
 #if !defined(Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_ADDRESS)
@@ -181,14 +183,10 @@ namespace Stroika::Foundation::Debug {
      */
 #if Stroika_Foundation_Debug_Sanitizer_HAS_UndefinedBehaviorSanitizer
 #if defined(__clang__)
-#if defined(__APPLE__)
-// apple clang++ 11 gives warning no_sanitize_undefined unrecognized, and also doesn't like [[]] notation
 #define Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_UNDEFINED __attribute__ ((no_sanitize ("undefined")))
-#else
-#define Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_UNDEFINED [[gnu::no_sanitize_undefined]]
-#endif
 #elif defined(__GNUC__)
 #define Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_UNDEFINED [[gnu::no_sanitize_undefined]]
+// NO UBSAN YET ON VS
 #endif
 #endif
 #if !defined(Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_UNDEFINED)
