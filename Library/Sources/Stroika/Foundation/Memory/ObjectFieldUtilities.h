@@ -26,10 +26,15 @@ namespace Stroika::Foundation::Memory {
      *
      *  This is similar to offsetof(), but with pointer to member objects.
      * 
+     *  In fact, offsetof(X,Y) is equivilent to ConvertPointerToDataMemberToOffset (&X::Y)
+     * 
      *  Since - according to https://en.cppreference.com/w/cpp/types/offsetof - offsetof is
      *  not allowed on non-standard-layout objects, this attempts to workaround that, while remaining constexpr.
      * 
      *  See discussion in https://gist.github.com/graphitemaster/494f21190bb2c63c5516
+     * 
+     *  This function also (attempts) to support non-standard layout objects, where it needs to know the starting actual object, as well as the object
+     *  used in the X::Y base/member expression (this is the 3/type-argument template).
      * 
      *  \par Example Usage
      *      \code
@@ -44,6 +49,8 @@ namespace Stroika::Foundation::Memory {
      *          }
      *      \endcode
      */
+    template <typename OUTER_OBJECT, typename BASE_OBJECT, typename DATA_MEMBER_TYPE>
+    constexpr size_t ConvertPointerToDataMemberToOffset (DATA_MEMBER_TYPE (BASE_OBJECT::*dataMember));
     template <typename OUTER_OBJECT, typename DATA_MEMBER_TYPE>
     constexpr size_t ConvertPointerToDataMemberToOffset (DATA_MEMBER_TYPE (OUTER_OBJECT::*dataMember));
 

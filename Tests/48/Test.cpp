@@ -507,38 +507,45 @@ namespace {
         {
             using namespace Private_;
             // no constructor, default aligning
-            Assert (ConvertPointerToDataMemberToOffset (&s::a) == 0);
-            Assert (ConvertPointerToDataMemberToOffset (&s::b) == sizeof (float));
-            Assert (ConvertPointerToDataMemberToOffset (&s::bb) == sizeof (float) + sizeof (char));
-            Assert (ConvertPointerToDataMemberToOffset (&s::c) == alignof (s) * 2); // aligned b with bb
+            VerifyTestResult (ConvertPointerToDataMemberToOffset (&s::a) == 0);
+            VerifyTestResult (ConvertPointerToDataMemberToOffset (&s::b) == sizeof (float));
+            VerifyTestResult (ConvertPointerToDataMemberToOffset (&s::bb) == sizeof (float) + sizeof (char));
+            VerifyTestResult (ConvertPointerToDataMemberToOffset (&s::c) == alignof (s) * 2); // aligned b with bb
 
             // no alignment
-            Assert (ConvertPointerToDataMemberToOffset (&s2::a) == 0);
-            Assert (ConvertPointerToDataMemberToOffset (&s2::b) == sizeof (float));
-            Assert (ConvertPointerToDataMemberToOffset (&s2::bb) == sizeof (float) + sizeof (char));
-            Assert (ConvertPointerToDataMemberToOffset (&s2::c) == sizeof (float) + sizeof (char) * 2);
-            Assert (ConvertPointerToDataMemberToOffset (&s2::d) == sizeof (float) + sizeof (char) * 2 + sizeof (int));
-            Assert (ConvertPointerToDataMemberToOffset (&s2::e) == sizeof (float) + sizeof (char) * 2 + sizeof (int) + sizeof (double));
+            VerifyTestResult (ConvertPointerToDataMemberToOffset (&s2::a) == 0);
+            VerifyTestResult (ConvertPointerToDataMemberToOffset (&s2::b) == sizeof (float));
+            VerifyTestResult (ConvertPointerToDataMemberToOffset (&s2::bb) == sizeof (float) + sizeof (char));
+            VerifyTestResult (ConvertPointerToDataMemberToOffset (&s2::c) == sizeof (float) + sizeof (char) * 2);
+            VerifyTestResult (ConvertPointerToDataMemberToOffset (&s2::d) == sizeof (float) + sizeof (char) * 2 + sizeof (int));
+            VerifyTestResult (ConvertPointerToDataMemberToOffset (&s2::e) == sizeof (float) + sizeof (char) * 2 + sizeof (int) + sizeof (double));
+            static_assert (is_standard_layout_v<s2>);
+            VerifyTestResult (ConvertPointerToDataMemberToOffset (&s2::a) == offsetof (s2, a));
+            VerifyTestResult (ConvertPointerToDataMemberToOffset (&s2::b) == offsetof (s2, b));
+            VerifyTestResult (ConvertPointerToDataMemberToOffset (&s2::bb) == offsetof (s2, bb));
+            VerifyTestResult (ConvertPointerToDataMemberToOffset (&s2::c) == offsetof (s2, c));
+            VerifyTestResult (ConvertPointerToDataMemberToOffset (&s2::d) == offsetof (s2, d));
+            VerifyTestResult (ConvertPointerToDataMemberToOffset (&s2::e) == offsetof (s2, e));
 
             // simply
-            Assert (ConvertPointerToDataMemberToOffset (&a::i) == 0);
-            Assert (ConvertPointerToDataMemberToOffset (&a::j) == sizeof (int));
-            Assert (ConvertPointerToDataMemberToOffset (&b::i) == 0);
-            Assert (ConvertPointerToDataMemberToOffset (&b::k) == sizeof (int));
+            VerifyTestResult (ConvertPointerToDataMemberToOffset (&a::i) == 0);
+            VerifyTestResult (ConvertPointerToDataMemberToOffset (&a::j) == sizeof (int));
+            VerifyTestResult (ConvertPointerToDataMemberToOffset (&b::i) == 0);
+            VerifyTestResult (ConvertPointerToDataMemberToOffset (&b::k) == sizeof (int));
 
             // other based
             //Assert (ConvertPointerToDataMemberToOffset(&ab::j) == sizeof (int));
             //Assert (ConvertPointerToDataMemberToOffset<ab> (&ab::k) == sizeof (int) * 3);
 
             // special alignments
-            Assert (ConvertPointerToDataMemberToOffset (&al::a) == 0);
-            Assert (ConvertPointerToDataMemberToOffset (&al::b) == 8);
-            Assert (ConvertPointerToDataMemberToOffset (&al::bb) == 9);
+            VerifyTestResult (ConvertPointerToDataMemberToOffset (&al::a) == 0);
+            VerifyTestResult (ConvertPointerToDataMemberToOffset (&al::b) == 8);
+            VerifyTestResult (ConvertPointerToDataMemberToOffset (&al::bb) == 9);
            // Assert (ConvertPointerToDataMemberToOffset (&al::arr) == 16);
 
-            Assert (ConvertPointerToDataMemberToOffset (&al2::a) == 0);
-            Assert (ConvertPointerToDataMemberToOffset (&al2::b) == 2);
-            Assert (ConvertPointerToDataMemberToOffset (&al2::c) == 6);
+            VerifyTestResult (ConvertPointerToDataMemberToOffset (&al2::a) == 0);
+            VerifyTestResult (ConvertPointerToDataMemberToOffset (&al2::b) == 2);
+            VerifyTestResult (ConvertPointerToDataMemberToOffset (&al2::c) == 6);
         }
     }
 }
