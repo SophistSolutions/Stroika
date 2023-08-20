@@ -111,11 +111,11 @@ namespace {
             virtual void StartElement (const StructuredStreamEvents::Name& name) override
             {
                 fEltDepthCount++;
-                fEltStack.push_back (Memory::NullCoalesce (name.fNamespaceURI) + L"/" + name.fLocalName);
+                fEltStack.push_back (Memory::NullCoalesce (name.fNamespaceURI) + "/" + name.fLocalName);
             }
             virtual void EndElement (const StructuredStreamEvents::Name& name) override
             {
-                VerifyTestResult (fEltStack.back () == Memory::NullCoalesce (name.fNamespaceURI) + L"/" + name.fLocalName);
+                VerifyTestResult (fEltStack.back () == Memory::NullCoalesce (name.fNamespaceURI) + "/" + name.fLocalName);
                 fEltStack.pop_back ();
                 fEltDepthCount--;
             }
@@ -177,31 +177,31 @@ namespace {
             registry.AddCommonType<optional<String>> ();
 
             registry.AddCommonReader_Class<Person_> (initializer_list<ObjectReader::StructFieldInfo>{
-                {Name{L"FirstName"}, StructFieldMetaInfo{&Person_::firstName}},
-                {Name{L"LastName"}, StructFieldMetaInfo{&Person_::lastName}},
-                {Name{L"MiddleName"}, StructFieldMetaInfo{&Person_::middleName}},
+                {Name{"FirstName"}, StructFieldMetaInfo{&Person_::firstName}},
+                {Name{"LastName"}, StructFieldMetaInfo{&Person_::lastName}},
+                {Name{"MiddleName"}, StructFieldMetaInfo{&Person_::middleName}},
             });
             registry.AddCommonReader_Class<Appointment_> (initializer_list<ObjectReader::StructFieldInfo>{
-                {Name{L"When"}, StructFieldMetaInfo{&Appointment_::when}},
-                {Name{L"WithWhom"}, StructFieldMetaInfo{&Appointment_::withWhom}},
+                {Name{"When"}, StructFieldMetaInfo{&Appointment_::when}},
+                {Name{"WithWhom"}, StructFieldMetaInfo{&Appointment_::withWhom}},
             });
-            registry.AddCommonType<vector<Appointment_>> (Name{L"Appointment"});
+            registry.AddCommonType<vector<Appointment_>> (Name{"Appointment"});
 
             {
                 vector<Appointment_>                     calendar;
                 ObjectReader::IConsumerDelegateToContext ctx{
                     registry,
                     make_shared<ObjectReader::ReadDownToReader> (
-                        make_shared<ObjectReader::RepeatedElementReader<vector<Appointment_>>> (&calendar), Name{L"Appointment"})};
+                        make_shared<ObjectReader::RepeatedElementReader<vector<Appointment_>>> (&calendar), Name{"Appointment"})};
                 XML::SAXParse (mkdata_ (), ctx);
                 VerifyTestResult (calendar.size () == 2);
-                VerifyTestResult (calendar[0].withWhom.firstName == L"Jim");
-                VerifyTestResult (calendar[0].withWhom.lastName == L"Smith");
-                VerifyTestResult (*calendar[0].withWhom.middleName == L"Up");
+                VerifyTestResult (calendar[0].withWhom.firstName == "Jim");
+                VerifyTestResult (calendar[0].withWhom.lastName == "Smith");
+                VerifyTestResult (*calendar[0].withWhom.middleName == "Up");
                 VerifyTestResult (
                     (calendar[0].when and calendar[0].when->GetDate () == Time::Date{Time::Year (2005), Time::June, Time::DayOfMonth (1)}));
-                VerifyTestResult (calendar[1].withWhom.firstName == L"Fred");
-                VerifyTestResult (calendar[1].withWhom.lastName == L"Down");
+                VerifyTestResult (calendar[1].withWhom.firstName == "Fred");
+                VerifyTestResult (calendar[1].withWhom.lastName == "Down");
             }
             // must figure out how to get below working
             {
@@ -210,13 +210,13 @@ namespace {
                     registry, make_shared<ObjectReader::ReadDownToReader> (registry.MakeContextReader (&calendar))};
                 XML::SAXParse (mkdata_ (), ctx);
                 VerifyTestResult (calendar.size () == 2);
-                VerifyTestResult (calendar[0].withWhom.firstName == L"Jim");
-                VerifyTestResult (calendar[0].withWhom.lastName == L"Smith");
-                VerifyTestResult (*calendar[0].withWhom.middleName == L"Up");
+                VerifyTestResult (calendar[0].withWhom.firstName == "Jim");
+                VerifyTestResult (calendar[0].withWhom.lastName == "Smith");
+                VerifyTestResult (*calendar[0].withWhom.middleName == "Up");
                 VerifyTestResult (
                     (calendar[0].when and calendar[0].when->GetDate () == Time::Date{Time::Year (2005), Time::June, Time::DayOfMonth (1)}));
-                VerifyTestResult (calendar[1].withWhom.firstName == L"Fred");
-                VerifyTestResult (calendar[1].withWhom.lastName == L"Down");
+                VerifyTestResult (calendar[1].withWhom.firstName == "Fred");
+                VerifyTestResult (calendar[1].withWhom.lastName == "Down");
             }
         }
     }
@@ -262,31 +262,30 @@ namespace {
             registry.AddCommonType<String> ();
 
             registry.AddCommonReader_Class<Person_> (initializer_list<ObjectReader::StructFieldInfo>{
-                {Name{L"FirstName"}, StructFieldMetaInfo{&Person_::firstName}},
-                {Name{L"LastName"}, StructFieldMetaInfo{&Person_::lastName}},
+                {Name{"FirstName"}, StructFieldMetaInfo{&Person_::firstName}},
+                {Name{"LastName"}, StructFieldMetaInfo{&Person_::lastName}},
             });
 
             vector<Person_> people;
             {
                 ObjectReader::IConsumerDelegateToContext ctx{
                     registry, make_shared<ObjectReader::ReadDownToReader> (make_shared<ObjectReader::RepeatedElementReader<vector<Person_>>> (&people),
-                                                                           Name (L"envelope2"), Name (L"WithWhom"))};
+                                                                           Name{"envelope2"}, Name{"WithWhom"})};
                 XML::SAXParse (mkdata_ (), ctx);
 
                 VerifyTestResult (people.size () == 2);
-                VerifyTestResult (people[0].firstName == L"Jim");
-                VerifyTestResult (people[0].lastName == L"Smith");
-                VerifyTestResult (people[1].firstName == L"Fred");
-                VerifyTestResult (people[1].lastName == L"Down");
+                VerifyTestResult (people[0].firstName == "Jim");
+                VerifyTestResult (people[0].lastName == "Smith");
+                VerifyTestResult (people[1].firstName == "Fred");
+                VerifyTestResult (people[1].lastName == "Down");
             }
 
             vector<Person_> people2; // add the vector type to the registry instead of explicitly constructing the right reader
             {
                 ObjectReader::Registry newRegistry = registry;
-                newRegistry.AddCommonType<vector<Person_>> (Name (L"WithWhom"));
+                newRegistry.AddCommonType<vector<Person_>> (Name{"WithWhom"});
                 ObjectReader::IConsumerDelegateToContext ctx{
-                    newRegistry,
-                    make_shared<ObjectReader::ReadDownToReader> (newRegistry.MakeContextReader (&people2), Name (L"envelope2"))};
+                    newRegistry, make_shared<ObjectReader::ReadDownToReader> (newRegistry.MakeContextReader (&people2), Name{"envelope2"})};
                 XML::SAXParse (mkdata_ (), ctx);
                 VerifyTestResult (people2 == people);
             }
@@ -294,10 +293,9 @@ namespace {
             Sequence<Person_> people3; // use sequence instead of vector
             {
                 ObjectReader::Registry newRegistry = registry;
-                newRegistry.AddCommonType<Sequence<Person_>> (Name (L"WithWhom"));
+                newRegistry.AddCommonType<Sequence<Person_>> (Name{"WithWhom"});
                 ObjectReader::IConsumerDelegateToContext ctx{
-                    newRegistry,
-                    make_shared<ObjectReader::ReadDownToReader> (newRegistry.MakeContextReader (&people3), Name (L"envelope2"))};
+                    newRegistry, make_shared<ObjectReader::ReadDownToReader> (newRegistry.MakeContextReader (&people3), Name{"envelope2"})};
                 XML::SAXParse (mkdata_ (), ctx);
                 VerifyTestResult (people3.As<vector<Person_>> () == people);
             }
@@ -360,24 +358,24 @@ namespace {
             mapper.AddCommonType<String> ();
 
             mapper.AddCommonReader_Class<ManagedObjectReference> (initializer_list<ObjectReader::StructFieldInfo>{
-                {Name{L"type", Name::eAttribute}, StructFieldMetaInfo{&ManagedObjectReference::type}},
+                {Name{"type", Name::eAttribute}, StructFieldMetaInfo{&ManagedObjectReference::type}},
                 {Name{Name::eValue}, StructFieldMetaInfo{&ManagedObjectReference::value}}});
             mapper.AddCommonReader_Class<ObjectContent> (initializer_list<ObjectReader::StructFieldInfo>{
-                {Name{L"obj"}, StructFieldMetaInfo{&ObjectContent::obj}}
-                /// wrong - must be mapping of this --metaInfo.Add (L"propSet", pair<type_index, size_t> {typeid(decltype (ObjectContent::value)), offsetof(ObjectContent, propSet)});
+                {Name{"obj"}, StructFieldMetaInfo{&ObjectContent::obj}}
+                /// wrong - must be mapping of this --metaInfo.Add ("propSet", pair<type_index, size_t> {typeid(decltype (ObjectContent::value)), offsetof(ObjectContent, propSet)});
             });
 
             vector<ObjectContent>                    objsContent;
             ObjectReader::IConsumerDelegateToContext ctx{
                 mapper, make_shared<ObjectReader::ReadDownToReader> (make_shared<ObjectReader::RepeatedElementReader<vector<ObjectContent>>> (&objsContent),
-                                                                     Name (L"RetrievePropertiesResponse"), Name (L"returnval"))};
+                                                                     Name{"RetrievePropertiesResponse"}, Name{"returnval"})};
             XML::SAXParse (mkdata_ (), ctx);
 
             VerifyTestResult (objsContent.size () == 2);
-            VerifyTestResult (objsContent[0].obj.type == L"VirtualMachine");
-            VerifyTestResult (objsContent[0].obj.value == L"8");
-            VerifyTestResult (objsContent[1].obj.type == L"VirtualMachine");
-            VerifyTestResult (objsContent[1].obj.value == L"9");
+            VerifyTestResult (objsContent[0].obj.type == "VirtualMachine");
+            VerifyTestResult (objsContent[0].obj.value == "8");
+            VerifyTestResult (objsContent[1].obj.type == "VirtualMachine");
+            VerifyTestResult (objsContent[1].obj.value == "9");
         }
     }
 }
@@ -404,14 +402,14 @@ namespace {
             ObjectReader::Registry mapper;
             mapper.AddCommonType<String> ();
             mapper.AddCommonReader_Class<Person_> (initializer_list<ObjectReader::StructFieldInfo>{
-                {Name{L"FirstName"}, StructFieldMetaInfo{&Person_::firstName}},
-                {Name{L"LastName"}, StructFieldMetaInfo{&Person_::lastName}},
+                {Name{"FirstName"}, StructFieldMetaInfo{&Person_::firstName}},
+                {Name{"LastName"}, StructFieldMetaInfo{&Person_::lastName}},
             });
             Person_ p;
             ObjectReader::IConsumerDelegateToContext tmp{mapper, make_shared<ObjectReader::ReadDownToReader> (mapper.MakeContextReader (&p))};
             XML::SAXParse (mkdata_ (), tmp);
-            VerifyTestResult (p.firstName == L"Jim");
-            VerifyTestResult (p.lastName == L"Smith");
+            VerifyTestResult (p.firstName == "Jim");
+            VerifyTestResult (p.lastName == "Smith");
         }
         void DoTests () { DoTest1 (); }
     }
@@ -472,25 +470,25 @@ namespace {
             ObjectReader::Registry registry;
             registry.AddCommonType<String> ();
             registry.AddCommonReader_NamedEnumerations<GenderType_> (Containers::Bijection<GenderType_, String>{
-                pair<GenderType_, String>{GenderType_::Male, L"Male"},
-                pair<GenderType_, String>{GenderType_::Female, L"Female"},
+                pair<GenderType_, String>{GenderType_::Male, "Male"},
+                pair<GenderType_, String>{GenderType_::Female, "Female"},
             });
             registry.AddCommonType<optional<GenderType_>> ();
             registry.AddCommonReader_Class<Person_> (initializer_list<ObjectReader::StructFieldInfo>{
-                {Name{L"FirstName"}, StructFieldMetaInfo{&Person_::firstName}},
-                {Name{L"LastName"}, StructFieldMetaInfo{&Person_::lastName}},
-                {Name{L"Gender"}, StructFieldMetaInfo{&Person_::gender}},
+                {Name{"FirstName"}, StructFieldMetaInfo{&Person_::firstName}},
+                {Name{"LastName"}, StructFieldMetaInfo{&Person_::lastName}},
+                {Name{"Gender"}, StructFieldMetaInfo{&Person_::gender}},
             });
             registry.AddCommonType<vector<Person_>> ();
             registry.Add<vector<Person_>> (ObjectReader::RepeatedElementReader<vector<Person_>>::AsFactory ());
             registry.AddCommonReader_Class<Address_> (initializer_list<ObjectReader::StructFieldInfo>{
-                {Name{L"city"}, StructFieldMetaInfo{&Address_::city}},
-                {Name{L"state"}, StructFieldMetaInfo{&Address_::state}},
+                {Name{"city"}, StructFieldMetaInfo{&Address_::city}},
+                {Name{"state"}, StructFieldMetaInfo{&Address_::state}},
             });
             registry.Add<vector<Address_>> (ObjectReader::RepeatedElementReader<vector<Address_>>::AsFactory ());
             registry.AddCommonReader_Class<Data_> (initializer_list<ObjectReader::StructFieldInfo>{
-                {Name{L"person"}, StructFieldMetaInfo{&Data_::people}},
-                {Name{L"address"}, StructFieldMetaInfo{&Data_::addresses}},
+                {Name{"person"}, StructFieldMetaInfo{&Data_::people}},
+                {Name{"address"}, StructFieldMetaInfo{&Data_::addresses}},
             });
 
             Data_ data;
@@ -499,19 +497,19 @@ namespace {
                                                              make_shared<ObjectReader::ReadDownToReader> (registry.MakeContextReader (&data))};
                 XML::SAXParse (mkdata_ (), ctx);
                 VerifyTestResult (data.people.size () == 2);
-                VerifyTestResult (data.people[0].firstName == L"Jim");
-                VerifyTestResult (data.people[0].lastName == L"Smith");
+                VerifyTestResult (data.people[0].firstName == "Jim");
+                VerifyTestResult (data.people[0].lastName == "Smith");
                 VerifyTestResult (data.people[0].gender == GenderType_::Male);
-                VerifyTestResult (data.people[1].firstName == L"Fred");
-                VerifyTestResult (data.people[1].lastName == L"Down");
+                VerifyTestResult (data.people[1].firstName == "Fred");
+                VerifyTestResult (data.people[1].lastName == "Down");
                 VerifyTestResult (not data.people[1].gender.has_value ());
                 VerifyTestResult (data.addresses.size () == 3);
-                VerifyTestResult (data.addresses[0].city == L"Boston");
-                VerifyTestResult (data.addresses[0].state == L"MA");
-                VerifyTestResult (data.addresses[1].city == L"New York");
-                VerifyTestResult (data.addresses[1].state == L"NY");
-                VerifyTestResult (data.addresses[2].city == L"Albany");
-                VerifyTestResult (data.addresses[2].state == L"NY");
+                VerifyTestResult (data.addresses[0].city == "Boston");
+                VerifyTestResult (data.addresses[0].state == "MA");
+                VerifyTestResult (data.addresses[1].city == "New York");
+                VerifyTestResult (data.addresses[1].state == "NY");
+                VerifyTestResult (data.addresses[2].city == "Albany");
+                VerifyTestResult (data.addresses[2].state == "NY");
             }
         }
     }
@@ -612,7 +610,7 @@ namespace {
                 static const ReaderFromVoidStarFactory sEltReader_ = [] () -> ReaderFromVoidStarFactory {
                     using KVPType_ = KeyValuePair<TunerNumberType_, TARGET_TYPE>;
                     return Registry::MakeClassReader<KVPType_> (initializer_list<StructFieldInfo>{
-                        {Name{L"Tuner", Name::eAttribute}, StructFieldMetaInfo{&KVPType_::fKey}},
+                        {Name{"Tuner", Name::eAttribute}, StructFieldMetaInfo{&KVPType_::fKey}},
                         {Name{Name::eValue}, StructFieldMetaInfo{&KVPType_::fValue}},
                     });
                 }();
@@ -628,10 +626,10 @@ namespace {
         {
             ObjectReader::Registry registry;
             registry.AddCommonReader_NamedEnumerations<TunerNumberType_> (Containers::Bijection<TunerNumberType_, String>{
-                pair<TunerNumberType_, String>{TunerNumberType_::eT1, L"1"},
-                pair<TunerNumberType_, String>{TunerNumberType_::eT2, L"2"},
-                pair<TunerNumberType_, String>{TunerNumberType_::eT3, L"3"},
-                pair<TunerNumberType_, String>{TunerNumberType_::eT4, L"4"},
+                pair<TunerNumberType_, String>{TunerNumberType_::eT1, "1"},
+                pair<TunerNumberType_, String>{TunerNumberType_::eT2, "2"},
+                pair<TunerNumberType_, String>{TunerNumberType_::eT3, "3"},
+                pair<TunerNumberType_, String>{TunerNumberType_::eT4, "4"},
             });
             registry.AddCommonType<optional<TunerNumberType_>> ();
             registry.AddCommonType<WaveNumberType_> ();
@@ -644,20 +642,20 @@ namespace {
             registry.Add<TECPowerConsumptionStatsType_> (TunerMappingReader_<CurrentType_>::AsFactory ());
             registry.AddCommonType<optional<TECPowerConsumptionStatsType_>> ();
             registry.AddCommonReader_Class<SensorDataType_> (initializer_list<ObjectReader::StructFieldInfo>{
-                {Name{L"ActiveLaser"}, StructFieldMetaInfo{&SensorDataType_::ActiveLaser}},
-                {Name{L"DetectorTemperature"}, StructFieldMetaInfo{&SensorDataType_::DetectorTemperature}},
-                {Name{L"OpticsTemperature"}, StructFieldMetaInfo{&SensorDataType_::OpticsTemperature}},
-                {Name{L"ExternalTemperature1"}, StructFieldMetaInfo{&SensorDataType_::ExternalTemperature1}},
-                {Name{L"LaserTemperature"}, StructFieldMetaInfo{&SensorDataType_::LaserTemperatures}},
-                {Name{L"LaserCurrent"}, StructFieldMetaInfo{&SensorDataType_::LaserCurrents}},
-                {Name{L"MirrorTemperature"}, StructFieldMetaInfo{&SensorDataType_::MirrorTemperatures}},
-                {Name{L"TECPowerConsumptionStats"}, StructFieldMetaInfo{&SensorDataType_::TECPowerConsumptionStats}},
+                {Name{"ActiveLaser"}, StructFieldMetaInfo{&SensorDataType_::ActiveLaser}},
+                {Name{"DetectorTemperature"}, StructFieldMetaInfo{&SensorDataType_::DetectorTemperature}},
+                {Name{"OpticsTemperature"}, StructFieldMetaInfo{&SensorDataType_::OpticsTemperature}},
+                {Name{"ExternalTemperature1"}, StructFieldMetaInfo{&SensorDataType_::ExternalTemperature1}},
+                {Name{"LaserTemperature"}, StructFieldMetaInfo{&SensorDataType_::LaserTemperatures}},
+                {Name{"LaserCurrent"}, StructFieldMetaInfo{&SensorDataType_::LaserCurrents}},
+                {Name{"MirrorTemperature"}, StructFieldMetaInfo{&SensorDataType_::MirrorTemperatures}},
+                {Name{"TECPowerConsumptionStats"}, StructFieldMetaInfo{&SensorDataType_::TECPowerConsumptionStats}},
             });
 
             SensorDataType_ data;
             {
                 ObjectReader::IConsumerDelegateToContext consumerCallback{
-                    registry, make_shared<ObjectReader::ReadDownToReader> (registry.MakeContextReader (&data), Name{L"Sensors"})};
+                    registry, make_shared<ObjectReader::ReadDownToReader> (registry.MakeContextReader (&data), Name{"Sensors"})};
                 //consumerCallback.fContext.fTraceThisReader = true;
                 XML::SAXParse (mkdata_ (), consumerCallback);
                 DbgTrace (L"LaserTemperatures=%s", Characters::ToString (data.LaserTemperatures).c_str ());
@@ -737,26 +735,26 @@ namespace {
                 {
                     ObjectReader::IConsumerDelegateToContext consumerCallback{
                         registry, make_shared<ObjectReader::ReadDownToReader> (registry.MakeContextReader (&data),
-                                                                               Name{L"GetAlarmsResponse"}, Name{L"Alarm"})};
+                                                                               Name{"GetAlarmsResponse"}, Name{"Alarm"})};
                     XML::SAXParse (mkdata_ (), consumerCallback);
                     DbgTrace (L"Alarms=%s", Characters::ToString (data).c_str ());
                 }
-                VerifyTestResult ((data == Set<AlarmType_>{L"Fred", L"Critical_LaserOverheating"}));
+                VerifyTestResult ((data == Set<AlarmType_>{"Fred", "Critical_LaserOverheating"}));
             }
-            const Name kAlarmName_ = Name{L"Alarm"};
+            const Name kAlarmName_ = Name{"Alarm"};
             registry.Add<Set<AlarmType_>> (ObjectReader::RepeatedElementReader<Set<AlarmType_>>::AsFactory (kAlarmName_));
             {
                 // Example matching THE RIGHT sub-element
                 Set<AlarmType_> data;
                 {
                     ObjectReader::IConsumerDelegateToContext consumerCallback{
-                        registry, make_shared<ObjectReader::ReadDownToReader> (registry.MakeContextReader (&data), Name{L"GetAlarmsResponse"}, kAlarmName_)};
+                        registry, make_shared<ObjectReader::ReadDownToReader> (registry.MakeContextReader (&data), Name{"GetAlarmsResponse"}, kAlarmName_)};
                     XML::SAXParse (mkdata_ (), consumerCallback);
                     DbgTrace (L"Alarms=%s", Characters::ToString (data).c_str ());
                 }
-                VerifyTestResult ((data == Set<AlarmType_>{L"Fred", L"Critical_LaserOverheating"}));
+                VerifyTestResult ((data == Set<AlarmType_>{"Fred", "Critical_LaserOverheating"}));
             }
-            const Name kWrongAlarmName_ = Name{L"xxxAlarm"};
+            const Name kWrongAlarmName_ = Name{"xxxAlarm"};
             registry.Add<Set<AlarmType_>> (ObjectReader::RepeatedElementReader<Set<AlarmType_>>::AsFactory (kWrongAlarmName_));
             {
                 // Example matching THE WRONG sub-element
@@ -764,7 +762,7 @@ namespace {
                 {
                     ObjectReader::IConsumerDelegateToContext consumerCallback{
                         registry, make_shared<ObjectReader::ReadDownToReader> (registry.MakeContextReader (&data),
-                                                                               Name{L"GetAlarmsResponse"}, kWrongAlarmName_)};
+                                                                               Name{"GetAlarmsResponse"}, kWrongAlarmName_)};
                     XML::SAXParse (mkdata_ (), consumerCallback);
                     DbgTrace (L"Alarms=%s", Characters::ToString (data).c_str ());
                 }
@@ -850,8 +848,8 @@ namespace {
                     static const ReaderFromVoidStarFactory sEltReader_ = [] () -> ReaderFromVoidStarFactory {
                         using KVPType_ = SpectrumType_::value_type;
                         return Registry::MakeClassReader<KVPType_> (initializer_list<StructFieldInfo>{
-                            {Name{L"waveNumber", Name::eAttribute}, StructFieldMetaInfo{&KVPType_::fKey}},
-                            {Name{L"intensity", Name::eAttribute}, StructFieldMetaInfo{&KVPType_::fValue}},
+                            {Name{"waveNumber", Name::eAttribute}, StructFieldMetaInfo{&KVPType_::fKey}},
+                            {Name{"intensity", Name::eAttribute}, StructFieldMetaInfo{&KVPType_::fValue}},
                         });
                     }();
                     DISABLE_COMPILER_MSC_WARNING_END (4573)
@@ -874,8 +872,8 @@ namespace {
                     static const ReaderFromVoidStarFactory sEltReader_ = [] () -> ReaderFromVoidStarFactory {
                         using KVPType_ = KeyValuePair<String, String>;
                         return Registry::MakeClassReader<KVPType_> (initializer_list<StructFieldInfo>{
-                            {Name{L"Key", Name::eAttribute}, StructFieldMetaInfo{&KVPType_::fKey}},
-                            {Name{L"Value", Name::eAttribute}, StructFieldMetaInfo{&KVPType_::fValue}},
+                            {Name{"Key", Name::eAttribute}, StructFieldMetaInfo{&KVPType_::fKey}},
+                            {Name{"Value", Name::eAttribute}, StructFieldMetaInfo{&KVPType_::fValue}},
                         });
                     }();
                     return make_shared<RepeatedElementReader<Mapping<String, String>>> (fValuePtr_, sEltReader_);
@@ -900,18 +898,18 @@ namespace {
             registry.AddCommonType<optional<SpectrumType_>> ();
             registry.Add<PersistenceScanAuxDataType_> (PRIVATE_::StringKVStringReader::AsFactory ());
             registry.AddCommonReader_Class<PersistentScanDetailsType_> (initializer_list<ObjectReader::StructFieldInfo>{
-                {Name{L"ScanID"}, StructFieldMetaInfo{&PersistentScanDetailsType_::ScanID}},
-                {Name{L"ScanStart"}, StructFieldMetaInfo{&PersistentScanDetailsType_::ScanStart}},
-                {Name{L"ScanEnd"}, StructFieldMetaInfo{&PersistentScanDetailsType_::ScanEnd}},
-                {Name{L"ScanLabel"}, StructFieldMetaInfo{&PersistentScanDetailsType_::ScanLabel}},
-                {Name{L"RawSpectrum"}, StructFieldMetaInfo{&PersistentScanDetailsType_::RawSpectrum}},
-                {Name{L"AuxData"}, StructFieldMetaInfo{&PersistentScanDetailsType_::AuxData}},
+                {Name{"ScanID"}, StructFieldMetaInfo{&PersistentScanDetailsType_::ScanID}},
+                {Name{"ScanStart"}, StructFieldMetaInfo{&PersistentScanDetailsType_::ScanStart}},
+                {Name{"ScanEnd"}, StructFieldMetaInfo{&PersistentScanDetailsType_::ScanEnd}},
+                {Name{"ScanLabel"}, StructFieldMetaInfo{&PersistentScanDetailsType_::ScanLabel}},
+                {Name{"RawSpectrum"}, StructFieldMetaInfo{&PersistentScanDetailsType_::RawSpectrum}},
+                {Name{"AuxData"}, StructFieldMetaInfo{&PersistentScanDetailsType_::AuxData}},
             });
             PersistentScanDetailsType_ data;
             {
                 ObjectReader::IConsumerDelegateToContext consumerCallback{
                     registry, make_shared<ObjectReader::ReadDownToReader> (registry.MakeContextReader (&data),
-                                                                           Name{L"ScanPersistenceGetScanDetailsResponse"}, Name{L"Scan"})};
+                                                                           Name{"ScanPersistenceGetScanDetailsResponse"}, Name{"Scan"})};
                 //consumerCallback.fContext.fTraceThisReader = true;
                 XML::SAXParse (mkdata_ (), consumerCallback);
                 DbgTrace (L"ScanID=%s", Characters::ToString (data.ScanID).c_str ());
@@ -925,14 +923,14 @@ namespace {
                 }
                 DbgTrace (L"AuxData=%s", Characters::ToString (data.AuxData).c_str ());
                 VerifyTestResult (data.ScanID == 8320);
-                VerifyTestResult (data.ScanStart == DateTime::Parse (L"2016-07-28T20:14:30Z", DateTime::kISO8601Format));
-                VerifyTestResult (data.ScanEnd == DateTime::Parse (L"2016-07-28T20:14:44Z", DateTime::kISO8601Format));
+                VerifyTestResult (data.ScanStart == DateTime::Parse ("2016-07-28T20:14:30Z", DateTime::kISO8601Format));
+                VerifyTestResult (data.ScanEnd == DateTime::Parse ("2016-07-28T20:14:44Z", DateTime::kISO8601Format));
                 VerifyTestResult (not data.ScanLabel.has_value ());
                 VerifyTestResult ((data.RawSpectrum == Mapping<WaveNumberType_, IntensityType_>{pair<WaveNumberType_, IntensityType_>{901.5, 0},
                                                                                                 pair<WaveNumberType_, IntensityType_>{902.5, 1}}));
                 VerifyTestResult (
-                    (data.AuxData == Mapping<String, String>{pair<String, String>{L"Cell-Pressure", L"1000"}, pair<String, String>{L"Cell-Temperature", L"0"},
-                                                             pair<String, String>{L"EngineId", L"B1E56F82-B217-40D3-A24D-FAC491EDCDE8"}}));
+                    (data.AuxData == Mapping<String, String>{pair<String, String>{"Cell-Pressure", "1000"}, pair<String, String>{"Cell-Temperature", "0"},
+                                                             pair<String, String>{"EngineId", "B1E56F82-B217-40D3-A24D-FAC491EDCDE8"}}));
             }
         }
     }
@@ -967,16 +965,16 @@ namespace {
             ObjectReader::Registry registry;
             registry.AddCommonType<double> ();
             registry.AddCommonReader_Class<Values_> (initializer_list<ObjectReader::StructFieldInfo>{
-                {Name{L"valueMissing"}, StructFieldMetaInfo{&Values_::valueMissing}},
-                {Name{L"valueExplicitGood"}, StructFieldMetaInfo{&Values_::valueExplicitGood}},
-                {Name{L"valueExplicitNAN1"}, StructFieldMetaInfo{&Values_::valueExplicitNAN1}},
-                {Name{L"valueExplicitNAN2"}, StructFieldMetaInfo{&Values_::valueExplicitNAN2}},
+                {Name{"valueMissing"}, StructFieldMetaInfo{&Values_::valueMissing}},
+                {Name{"valueExplicitGood"}, StructFieldMetaInfo{&Values_::valueExplicitGood}},
+                {Name{"valueExplicitNAN1"}, StructFieldMetaInfo{&Values_::valueExplicitNAN1}},
+                {Name{"valueExplicitNAN2"}, StructFieldMetaInfo{&Values_::valueExplicitNAN2}},
             });
             {
                 Values_ values{};
                 values.valueMissing = 999;
                 ObjectReader::IConsumerDelegateToContext ctx{
-                    registry, make_shared<ObjectReader::ReadDownToReader> (registry.MakeContextReader (&values), Name{L"Values"})};
+                    registry, make_shared<ObjectReader::ReadDownToReader> (registry.MakeContextReader (&values), Name{"Values"})};
                 XML::SAXParse (mkdata_ (), ctx);
                 VerifyTestResult (values.valueMissing == 999);
                 VerifyTestResult (Math::NearlyEquals (values.valueExplicitGood, 3.0));
@@ -1003,14 +1001,14 @@ namespace {
             nonvirtual String        ToString () const
             {
                 StringBuilder out;
-                out += L"{";
+                out += "{";
                 if (MirrorOperationFrequency) {
-                    out += L"MirrorOperationFrequency: '" + Characters::ToString (*MirrorOperationFrequency) + L"',";
+                    out += "MirrorOperationFrequency: '" + Characters::ToString (*MirrorOperationFrequency) + "',";
                 }
                 if (MirrorResonantFrequency) {
-                    out += L"MirrorResonantFrequency: '" + Characters::ToString (*MirrorResonantFrequency) + L"',";
+                    out += "MirrorResonantFrequency: '" + Characters::ToString (*MirrorResonantFrequency) + "',";
                 }
-                out += L"}";
+                out += "}";
                 return out.str ();
             }
         };
@@ -1075,7 +1073,7 @@ namespace {
         struct TunerMappingReader_ : public ObjectReader::IElementConsumer {
             Mapping<TunerNumberType_, PerTunerFactorySettingsType_>* fValuePtr_;
             TunerMappingReader_ (Mapping<TunerNumberType_, PerTunerFactorySettingsType_>* v)
-                : fValuePtr_ (v)
+                : fValuePtr_{v}
             {
             }
             virtual shared_ptr<IElementConsumer> HandleChildStart ([[maybe_unused]] const Name& name) override
@@ -1086,17 +1084,17 @@ namespace {
                     {
                         using KVPType_ = KeyValuePair<TunerNumberType_, PerTunerFactorySettingsType_>;
                         static const ReaderFromVoidStarFactory kTunerReader_ = Registry::MakeClassReader<KVPType_> (initializer_list<StructFieldInfo>{
-                            {Name{L"Tuner", Name::eAttribute}, StructFieldMetaInfo{&KVPType_::fKey}},
+                            {Name{"Tuner", Name::eAttribute}, StructFieldMetaInfo{&KVPType_::fKey}},
                         });
                         Sequence<MixinEltTraits> tmp;
                         tmp += MixinEltTraits{kTunerReader_,
                                               [] (const Name& name) {
-                                                  return name == Name{L"Tuner", Name::eAttribute};
+                                                  return name == Name{"Tuner", Name::eAttribute};
                                               },
                                               [] (KVPType_* kvp) { return reinterpret_cast<byte*> (&kvp->fKey); }};
                         tmp += MixinEltTraits{k_PerTunerFactorySettingsType_ReaderFactory_,
                                               [] (const Name& name) {
-                                                  return name != Name{L"Tuner", Name::eAttribute};
+                                                  return name != Name{"Tuner", Name::eAttribute};
                                               },
                                               [] (KVPType_* kvp) { return reinterpret_cast<byte*> (&kvp->fValue); }};
                         return tmp;
@@ -1122,10 +1120,10 @@ namespace {
         {
             ObjectReader::Registry registry;
             registry.AddCommonReader_NamedEnumerations<TunerNumberType_> (Containers::Bijection<TunerNumberType_, String>{
-                pair<TunerNumberType_, String>{TunerNumberType_::eT1, L"1"},
-                pair<TunerNumberType_, String>{TunerNumberType_::eT2, L"2"},
-                pair<TunerNumberType_, String>{TunerNumberType_::eT3, L"3"},
-                pair<TunerNumberType_, String>{TunerNumberType_::eT4, L"4"},
+                pair<TunerNumberType_, String>{TunerNumberType_::eT1, "1"},
+                pair<TunerNumberType_, String>{TunerNumberType_::eT2, "2"},
+                pair<TunerNumberType_, String>{TunerNumberType_::eT3, "3"},
+                pair<TunerNumberType_, String>{TunerNumberType_::eT4, "4"},
             });
             registry.AddCommonType<optional<TunerNumberType_>> ();
             registry.AddCommonType<FrequencyType_> ();
@@ -1133,14 +1131,14 @@ namespace {
             registry.Add<PerTunerFactorySettingsType_> (k_PerTunerFactorySettingsType_ReaderFactory_);
             registry.Add<Mapping<TunerNumberType_, PerTunerFactorySettingsType_>> (TunerMappingReader_::AsFactory ());
             registry.AddCommonReader_Class<FactorySettingsType_> (initializer_list<ObjectReader::StructFieldInfo>{
-                {Name{L"Tuners"}, StructFieldMetaInfo{&FactorySettingsType_::Tuners}},
+                {Name{"Tuners"}, StructFieldMetaInfo{&FactorySettingsType_::Tuners}},
             });
 
             FactorySettingsType_ data;
             {
                 ObjectReader::IConsumerDelegateToContext consumerCallback{
                     registry,
-                    make_shared<ObjectReader::ReadDownToReader> (registry.MakeContextReader (&data), Name{L"GetFactorySettingsResponse"})};
+                    make_shared<ObjectReader::ReadDownToReader> (registry.MakeContextReader (&data), Name{"GetFactorySettingsResponse"})};
                 //consumerCallback.fContext.fTraceThisReader = true;
                 XML::SAXParse (mkdata_ (), consumerCallback);
                 DbgTrace (L"Tuners=%s", Characters::ToString (data.Tuners).c_str ());
@@ -1194,12 +1192,12 @@ namespace {
             registry.AddCommonType<MY_TEST_RANGE_::value_type> ();
             registry.Add<MY_TEST_RANGE_> (ObjectReader::RangeReader<MY_TEST_RANGE_>::AsFactory ());
             registry.AddCommonReader_Class<Values_> (initializer_list<ObjectReader::StructFieldInfo>{
-                {Name{L"r"}, StructFieldMetaInfo{&Values_::r}},
+                {Name{"r"}, StructFieldMetaInfo{&Values_::r}},
             });
             {
                 Values_                                  values{};
                 ObjectReader::IConsumerDelegateToContext ctx{
-                    registry, make_shared<ObjectReader::ReadDownToReader> (registry.MakeContextReader (&values), Name{L"Values"})};
+                    registry, make_shared<ObjectReader::ReadDownToReader> (registry.MakeContextReader (&values), Name{"Values"})};
                 XML::SAXParse (mkdata_ (), ctx);
                 VerifyTestResult (Math::NearlyEquals (values.r.GetLowerBound (), 3.0));
                 VerifyTestResult (Math::NearlyEquals (values.r.GetUpperBound (), 6.0));
@@ -1248,18 +1246,18 @@ namespace {
             registry.AddCommonType<String> ();
             static const auto kGenderType_Reader_ =
                 ObjectReader::Registry::MakeCommonReader_NamedEnumerations<GenderType_> (Containers::Bijection<GenderType_, String>{
-                    pair<GenderType_, String>{GenderType_::Male, L"Male"},
-                    pair<GenderType_, String>{GenderType_::Female, L"Female"},
+                    pair<GenderType_, String>{GenderType_::Male, "Male"},
+                    pair<GenderType_, String>{GenderType_::Female, "Female"},
                 });
             registry.AddCommonReader_Class<Person_> (initializer_list<ObjectReader::StructFieldInfo>{
-                {Name{L"FirstName"}, StructFieldMetaInfo{&Person_::firstName}},
-                {Name{L"LastName"}, StructFieldMetaInfo{&Person_::lastName}},
-                {Name{L"Gender"}, StructFieldMetaInfo{&Person_::gender}, kGenderType_Reader_},
+                {Name{"FirstName"}, StructFieldMetaInfo{&Person_::firstName}},
+                {Name{"LastName"}, StructFieldMetaInfo{&Person_::lastName}},
+                {Name{"Gender"}, StructFieldMetaInfo{&Person_::gender}, kGenderType_Reader_},
             });
             registry.AddCommonType<vector<Person_>> ();
             registry.Add<vector<Person_>> (ObjectReader::RepeatedElementReader<vector<Person_>>::AsFactory ());
             registry.AddCommonReader_Class<Data_> (initializer_list<ObjectReader::StructFieldInfo>{
-                {Name{L"person"}, StructFieldMetaInfo{&Data_::people}},
+                {Name{"person"}, StructFieldMetaInfo{&Data_::people}},
             });
 
             Data_ data;
@@ -1268,11 +1266,11 @@ namespace {
                                                              make_shared<ObjectReader::ReadDownToReader> (registry.MakeContextReader (&data))};
                 XML::SAXParse (mkdata_ (), ctx);
                 VerifyTestResult (data.people.size () == 2);
-                VerifyTestResult (data.people[0].firstName == L"Jim");
-                VerifyTestResult (data.people[0].lastName == L"Smith");
+                VerifyTestResult (data.people[0].firstName == "Jim");
+                VerifyTestResult (data.people[0].lastName == "Smith");
                 VerifyTestResult (data.people[0].gender == GenderType_::Male);
-                VerifyTestResult (data.people[1].firstName == L"Fred");
-                VerifyTestResult (data.people[1].lastName == L"Down");
+                VerifyTestResult (data.people[1].firstName == "Fred");
+                VerifyTestResult (data.people[1].lastName == "Down");
                 VerifyTestResult (data.people[1].gender == GenderType_::Female);
             }
         }
@@ -1323,14 +1321,14 @@ namespace T14_SAXObjectReader_CustomSimpleType_ {
             return result;
         });
         registry.AddCommonReader_Class<Person_> (initializer_list<ObjectReader::StructFieldInfo>{
-            {Name{L"FirstName"}, StructFieldMetaInfo{&Person_::firstName}},
-            {Name{L"LastName"}, StructFieldMetaInfo{&Person_::lastName}},
-            {Name{L"Gender"}, StructFieldMetaInfo{&Person_::gender}},
+            {Name{"FirstName"}, StructFieldMetaInfo{&Person_::firstName}},
+            {Name{"LastName"}, StructFieldMetaInfo{&Person_::lastName}},
+            {Name{"Gender"}, StructFieldMetaInfo{&Person_::gender}},
         });
         registry.AddCommonType<vector<Person_>> ();
         registry.Add<vector<Person_>> (ObjectReader::RepeatedElementReader<vector<Person_>>::AsFactory ());
         registry.AddCommonReader_Class<Data_> (initializer_list<ObjectReader::StructFieldInfo>{
-            {Name{L"person"}, StructFieldMetaInfo{&Data_::people}},
+            {Name{"person"}, StructFieldMetaInfo{&Data_::people}},
         });
 
         Data_ data;
@@ -1338,12 +1336,12 @@ namespace T14_SAXObjectReader_CustomSimpleType_ {
             ObjectReader::IConsumerDelegateToContext ctx{registry, make_shared<ObjectReader::ReadDownToReader> (registry.MakeContextReader (&data))};
             XML::SAXParse (mkdata_ (), ctx);
             VerifyTestResult (data.people.size () == 2);
-            VerifyTestResult (data.people[0].firstName == L"Jim");
-            VerifyTestResult (data.people[0].lastName == L"Smith");
-            VerifyTestResult (data.people[0].gender.fRep == L"Male");
-            VerifyTestResult (data.people[1].firstName == L"Fred");
-            VerifyTestResult (data.people[1].lastName == L"Down");
-            VerifyTestResult (data.people[1].gender.fRep == L"Female");
+            VerifyTestResult (data.people[0].firstName == "Jim");
+            VerifyTestResult (data.people[0].lastName == "Smith");
+            VerifyTestResult (data.people[0].gender.fRep == "Male");
+            VerifyTestResult (data.people[1].firstName == "Fred");
+            VerifyTestResult (data.people[1].lastName == "Down");
+            VerifyTestResult (data.people[1].gender.fRep == "Female");
         }
     }
 }
