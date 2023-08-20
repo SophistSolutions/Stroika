@@ -11,6 +11,7 @@
  */
 
 #include "../Debug/Assertions.h"
+#include "../Debug/Sanitizer.h"
 
 namespace Stroika::Foundation::Memory {
 
@@ -21,7 +22,7 @@ namespace Stroika::Foundation::Memory {
      */
     namespace Private_ {
         namespace OffsetOf_ {
-            // BASED ON CODE FROM - https://gist.github.com/graphitemaster/494f21190bb2c63c5516
+            // OffsetOf_ BASED ON CODE FROM - https://gist.github.com/graphitemaster/494f21190bb2c63c5516
 #pragma pack(push, 1)
             template <typename MEMBER, size_t O>
             struct Pad {
@@ -45,7 +46,7 @@ namespace Stroika::Foundation::Memory {
                         : c{} {};
                     ~U () = delete;
                 };
-                constexpr static U* u{};
+                constexpr static U* u{nullptr}; // don't actually allocate an object (maybe use declval instead?)
             };
             DISABLE_COMPILER_MSC_WARNING_END (4324);
 
@@ -53,8 +54,7 @@ namespace Stroika::Foundation::Memory {
             struct offset_of_impl {
                 template <size_t off, auto union_part = MakeUnion<BASE_CLASS, MEMBER, off>::u>
                 // This gets called with nullptr as 'object' for computing diff below to avoid ever building the object (cuz just computing offsets)
-                Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_UNDEFINED
-                static constexpr ptrdiff_t offset2 (MEMBER ORIG_CLASS::*member)
+                Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_UNDEFINED static constexpr ptrdiff_t offset2 (MEMBER ORIG_CLASS::*member)
                 {
                     if constexpr (off > sizeof (BASE_CLASS)) {
                         throw 1;
