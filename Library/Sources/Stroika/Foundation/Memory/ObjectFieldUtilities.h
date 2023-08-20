@@ -22,7 +22,7 @@ namespace Stroika::Foundation::Memory {
     using std::byte;
 
     /**
-     *  \brief convert the given pointer to data member to a size_t offset.
+     *  \brief convert the given pointer to data member to a size_t offset - like offsetof () macro, but with pointer to member and working for non-standard layout objects
      *
      *  This is similar to offsetof(), but with pointer to member objects.
      * 

@@ -83,31 +83,18 @@ namespace Stroika::Foundation::Memory {
                 using Base   = conditional_t<is_void_v<TheBase>, Orig, TheBase>;
                 return offset_of_impl<Member, Base, Orig>::template offset2<0> (member);
             }
-
-            template <auto member, class TheBase = void>
-            inline constexpr ptrdiff_t offset_of ()
-            {
-                return offset_of<TheBase> (member);
-            }
         }
     }
     template <typename OUTER_OBJECT, typename BASE_OBJECT, typename DATA_MEMBER_TYPE>
     inline constexpr size_t ConvertPointerToDataMemberToOffset (DATA_MEMBER_TYPE (BASE_OBJECT::*dataMember))
     {
-        // @todo UPDATE this stackoverflow with reference to this code and GITHUB GIST explanation...
         return Private_::OffsetOf_::offset_of<OUTER_OBJECT> (dataMember);
     }
     template <typename OUTER_OBJECT, typename DATA_MEMBER_TYPE>
     inline constexpr size_t ConvertPointerToDataMemberToOffset (DATA_MEMBER_TYPE (OUTER_OBJECT::*dataMember))
     {
         //https://stackoverflow.com/questions/12141446/offset-from-member-pointer-without-temporary-instance
-
-        // @todo UPDATE this stackoverflow with reference to this code and GITHUB GIST explanation...
-        auto result = Private_::OffsetOf_::offset_of<OUTER_OBJECT> (dataMember);
-        if constexpr (is_standard_layout_v<OUTER_OBJECT>) {
-            //Ensure (result == offsetof (&))   // not sure how to extract orig object from pointer to member?
-        }
-        return result;
+        return Private_::OffsetOf_::offset_of<OUTER_OBJECT> (dataMember);
     }
 
     /*
