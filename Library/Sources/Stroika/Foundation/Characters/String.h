@@ -187,6 +187,10 @@ namespace Stroika::Foundation::Characters {
          * 
          *  \note the basic_string move Constructors MAY move or copy the underlying std string, but they still maintain
          *        the same requirements on their arguments as the copy basic_string constructors (eg. char must be ascii)
+         * 
+         *  \see also - FromUTF8, FromSDKString, FromNarrowSDKString, FromStringConstant, FromLatin1, which are all like constructors
+         *       but with special names to avoid confusion and make clear their arguments, and not participate in overloading. Note, chose
+         *       this path instead of FLAG argument and explicit on CTOR, cuz more terse.
          */
         String ();
         template <IUNICODECanUnambiguouslyConvertFrom CHAR_T>
